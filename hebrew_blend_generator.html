@@ -554,7 +554,7 @@ const LETTERS = [
   { heb: 'ג', base: 'ג', name: 'Gimel',  sofit: null, sounds: { a:'Gah',  e:'Geh',  i:'Gee',  o:'Goh',  u:'Goo',  sh:'G\'' } },
   { heb: 'ד', base: 'ד', name: 'Dalet',  sofit: null, sounds: { a:'Dah',  e:'Deh',  i:'Dee',  o:'Doh',  u:'Doo',  sh:'D\'' } },
   { heb: 'ה', base: 'ה', name: 'Heh',    sofit: null, sounds: { a:'Hah',  e:'Heh',  i:'Hee',  o:'Hoh',  u:'Hoo',  sh:'H\'' } },
-  { heb: 'ו', base: 'ו', name: 'Vav',    sofit: null, sounds: { a:'Vah',  e:'Veh',  i:'Vee',  o:'Voh',  u:'Voo',  sh:'V\'' } },
+  { heb: 'ו', base: 'ו', name: 'Vav',    sofit: null, sounds: { a:'Vah',  e:'Veh',  i:'Vee',  o:'Oh',   u:'Oo',   sh:'V\'' } },
   { heb: 'ז', base: 'ז', name: 'Zayin',  sofit: null, sounds: { a:'Zah',  e:'Zeh',  i:'Zee',  o:'Zoh',  u:'Zoo',  sh:'Z\'' } },
   { heb: 'ח', base: 'ח', name: 'Chet',   sofit: null, sounds: { a:'Chah', e:'Cheh', i:'Chee', o:'Choh', u:'Choo', sh:'Ch\'' } },
   { heb: 'ט', base: 'ט', name: 'Tet',    sofit: null, sounds: { a:'Tah',  e:'Teh',  i:'Tee',  o:'Toh',  u:'Too',  sh:'T\'' } },
@@ -587,6 +587,13 @@ const SOFIT_CHARS = new Set(['ך','ם','ן','ף','ץ']);
 function withNikud(letterObj, vowelKey, isFirst) {
   const base = letterObj.base;
   if (!isFirst) return base; // second letter: bare consonant (no vowel)
+
+  // Vav special cases: Cholam = וֹ (dot above), Kubutz/Shuruk = וּ (dot inside)
+  if (base === 'ו') {
+    if (vowelKey === 'o') return 'וֹ';  // Vav Cholam
+    if (vowelKey === 'u') return 'וּ';  // Vav Shuruk
+  }
+
   const mark = NIKUD[vowelKey] || '';
   return base + mark;
 }
