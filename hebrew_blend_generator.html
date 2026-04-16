@@ -384,6 +384,14 @@
   .empty-state h2 { font-family: 'Libre Baskerville', serif; color: var(--navy); }
   .empty-state p { font-size: 0.88rem; max-width: 320px; }
 
+  /* Sheets */
+  .sheet { }
+  .answer-key-sheet {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 3px dashed var(--border);
+  }
+
   /* ── PRINT ── */
   @media print {
     .sidebar, header { display: none !important; }
@@ -400,6 +408,12 @@
     .btn { display: none; }
     .blend-answer.hidden { visibility: hidden; }
     .empty-state { display: none !important; }
+    .answer-key-sheet {
+      margin-top: 0;
+      padding-top: 20px;
+      border-top: none;
+      page-break-before: always;
+    }
   }
 </style>
 </head>
@@ -755,15 +769,10 @@ function renderWorksheet() {
   const ws = document.getElementById('worksheet');
   ws.innerHTML = '';
 
-  // Answer key banner
-  if (showAnswers) {
-    const banner = document.createElement('div');
-    banner.className = 'answer-key-banner';
-    banner.textContent = '✦ Answer Key ✦';
-    ws.appendChild(banner);
-  }
+  // ── PAGE 1: Student Sheet ──
+  const studentSheet = document.createElement('div');
+  studentSheet.className = 'sheet';
 
-  // Header
   const header = document.createElement('div');
   header.className = 'ws-header';
   header.innerHTML = `
@@ -776,27 +785,68 @@ function renderWorksheet() {
       <div class="ws-field">Date: <div class="ws-field-line" style="width:80px"></div></div>
     </div>
   `;
-  ws.appendChild(header);
+  studentSheet.appendChild(header);
 
-  // Grid
   const grid = document.createElement('div');
   grid.className = 'blends-grid';
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-  ws.appendChild(grid);
+  studentSheet.appendChild(grid);
 
   blends.forEach((b, idx) => {
     if (isInverse) {
-      renderInverseCell(grid, b, idx, showAnswers);
+      renderInverseCell(grid, b, idx, false); // never show answers on student sheet
     } else {
-      renderHebrewCell(grid, b, idx, showAnswers);
+      renderHebrewCell(grid, b, idx, false);
     }
   });
 
-  // Number label
   const footer = document.createElement('div');
   footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
   footer.textContent = `${blends.length} blends · Hebrew Blend Generator`;
-  ws.appendChild(footer);
+  studentSheet.appendChild(footer);
+
+  ws.appendChild(studentSheet);
+
+  // ── PAGE 2: Answer Key (only if toggled) ──
+  if (showAnswers) {
+    const answerSheet = document.createElement('div');
+    answerSheet.className = 'sheet answer-key-sheet';
+
+    const akBanner = document.createElement('div');
+    akBanner.className = 'answer-key-banner';
+    akBanner.textContent = '✦ Answer Key ✦';
+    answerSheet.appendChild(akBanner);
+
+    const akHeader = document.createElement('div');
+    akHeader.className = 'ws-header';
+    akHeader.innerHTML = `
+      <div>
+        <div class="ws-title">${title}</div>
+        <div class="ws-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div>
+      </div>
+    `;
+    answerSheet.appendChild(akHeader);
+
+    const akGrid = document.createElement('div');
+    akGrid.className = 'blends-grid';
+    akGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    answerSheet.appendChild(akGrid);
+
+    blends.forEach((b, idx) => {
+      if (isInverse) {
+        renderInverseCell(akGrid, b, idx, true); // show answers
+      } else {
+        renderHebrewCell(akGrid, b, idx, true);
+      }
+    });
+
+    const akFooter = document.createElement('div');
+    akFooter.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+    akFooter.textContent = `${blends.length} blends · Hebrew Blend Generator — Answer Key`;
+    answerSheet.appendChild(akFooter);
+
+    ws.appendChild(answerSheet);
+  }
 }
 
 function renderHebrewCell(grid, b, idx, showAnswers) {
