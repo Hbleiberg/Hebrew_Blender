@@ -647,35 +647,20 @@ function initLetters() {
     if (l.vavVariant) return;
 
     if (l.heb === 'ו') {
-      // Vav gets a special wide tile spanning 2 columns, with sub-tiles for variants
-      const wrapper = document.createElement('div');
-      wrapper.style.cssText = 'grid-column: span 2; display: flex; flex-direction: column; gap: 4px;';
-
-      // Main Vav tile
-      const mainTile = document.createElement('div');
-      mainTile.className = 'letter-tile' + (selectedLetters.has('ו') ? ' selected' : '');
-      mainTile.dataset.heb = 'ו';
-      mainTile.innerHTML = `<span class="heb">ו</span><span class="name">Vav</span>`;
-      mainTile.onclick = () => toggleLetter('ו', mainTile);
-      wrapper.appendChild(mainTile);
-
-      // Sub-tiles row
-      const subRow = document.createElement('div');
-      subRow.style.cssText = 'display: flex; gap: 4px;';
-
-      const variants = LETTERS.filter(v => v.vavVariant);
-      variants.forEach(v => {
-        const sub = document.createElement('div');
-        sub.className = 'letter-tile letter-tile-sub' + (selectedLetters.has(v.heb) ? ' selected' : '');
-        sub.dataset.heb = v.heb;
-        sub.style.flex = '1';
-        sub.innerHTML = `<span class="heb" style="font-size:1rem;">${v.heb}</span><span class="name">${v.name.replace('Vav ','')}</span>`;
-        sub.onclick = () => toggleLetter(v.heb, sub);
-        subRow.appendChild(sub);
+      // Render plain Vav + its two vowel-letter variants as normal tiles
+      const vavTiles = [
+        { heb: 'ו',  name: 'Vav' },
+        { heb: 'וֹ', name: 'Cholam' },
+        { heb: 'וּ', name: 'Shuruk' },
+      ];
+      vavTiles.forEach(vt => {
+        const div = document.createElement('div');
+        div.className = 'letter-tile' + (selectedLetters.has(vt.heb) ? ' selected' : '');
+        div.dataset.heb = vt.heb;
+        div.innerHTML = `<span class="heb">${vt.heb}</span><span class="name">${vt.name}</span>`;
+        div.onclick = () => toggleLetter(vt.heb, div);
+        grid.appendChild(div);
       });
-
-      wrapper.appendChild(subRow);
-      grid.appendChild(wrapper);
       return;
     }
 
