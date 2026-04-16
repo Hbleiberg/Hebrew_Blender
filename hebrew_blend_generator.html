@@ -604,12 +604,12 @@ function withNikud(letterObj, vowelKey, isFirst) {
 }
 
 const VOWELS = [
-  { key: 'a',  label: 'Kamatz / Patach', sub: 'AH sound', nikud: 'בָ' },
-  { key: 'e',  label: 'Segol / Tzeirei', sub: 'EH sound', nikud: 'בֶ' },
-  { key: 'i',  label: 'Chirik',           sub: 'EE sound', nikud: 'בִ' },
-  { key: 'o',  label: 'Cholam',           sub: 'OH sound', nikud: 'בֹ' },
-  { key: 'u',  label: 'Kubutz',           sub: 'OO sound', nikud: 'בֻ' },
-  { key: 'sh', label: 'Shva',             sub: 'ə sound',  nikud: 'בְ' },
+  { key: 'a',  label: 'Kamatz / Patach', sub: 'AH sound', nikud: 'אָ' },
+  { key: 'e',  label: 'Segol / Tzeirei', sub: 'EH sound', nikud: 'אֶ' },
+  { key: 'i',  label: 'Chirik',           sub: 'EE sound', nikud: 'אִ' },
+  { key: 'o',  label: 'Cholam',           sub: 'OH sound', nikud: 'אֹ' },
+  { key: 'u',  label: 'Kubutz',           sub: 'OO sound', nikud: 'אֻ' },
+  { key: 'sh', label: 'Shva',             sub: 'ə sound',  nikud: 'אְ' },
 ];
 
 // ══════════════════════════════════════════════
@@ -902,7 +902,7 @@ function renderHebrewCell(grid, b, idx, showAnswers) {
 
   // Number
   const num = document.createElement('div');
-  num.style.cssText = 'font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;';
+  num.style.cssText = 'font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:left;';
   num.textContent = idx + 1;
   cell.appendChild(num);
 
