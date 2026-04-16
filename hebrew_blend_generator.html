@@ -387,6 +387,7 @@
   /* ── PRINT ── */
   @media print {
     .sidebar, header { display: none !important; }
+    .app { display: block; }
     .main { padding: 0; }
     .worksheet {
       border: none;
@@ -398,6 +399,7 @@
     body { background: white; }
     .btn { display: none; }
     .blend-answer.hidden { visibility: hidden; }
+    .empty-state { display: none !important; }
   }
 </style>
 </head>
@@ -492,7 +494,7 @@
     <!-- Generate -->
     <div>
       <button class="btn btn-primary" onclick="generate()">⬡ Generate Worksheet</button>
-      <button class="btn btn-secondary" onclick="window.print()">🖨 Print</button>
+      <button class="btn btn-secondary" id="printBtn" onclick="window.print()" disabled style="opacity:0.4;cursor:not-allowed;">🖨 Print</button>
     </div>
 
   </aside>
@@ -735,6 +737,10 @@ function generate() {
   }
 
   renderWorksheet();
+  const printBtn = document.getElementById('printBtn');
+  printBtn.disabled = false;
+  printBtn.style.opacity = '1';
+  printBtn.style.cursor = 'pointer';
 }
 
 // ══════════════════════════════════════════════
