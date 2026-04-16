@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hebrew Blend Worksheet Generator</title>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root {
     --navy: #1a2744;
@@ -455,6 +457,26 @@
             <span class="slider"></span>
           </label>
         </div>
+        <div class="toggle-row">
+          <span>Focus Letter</span>
+          <label class="toggle">
+            <input type="checkbox" id="focusToggle" onchange="toggleFocusUI()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div id="focusOptions" style="display:none;margin-top:6px;display:none;flex-direction:column;gap:6px;">
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.82rem;">
+            <span style="color:var(--navy);font-weight:600;white-space:nowrap;">Lock letter</span>
+            <select id="focusLetter" style="flex:1;"></select>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.82rem;">
+            <span style="color:var(--navy);font-weight:600;white-space:nowrap;">In position</span>
+            <select id="focusPosition" style="flex:1;">
+              <option value="first">First (right)</option>
+              <option value="second">Second (left)</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -484,6 +506,10 @@
           <div class="option-label">Title</div>
           <input type="text" id="wsTitle" value="Hebrew Blends" style="width:160px;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;">
         </div>
+        <div class="option-row">
+          <div class="option-label">Subtitle</div>
+          <input type="text" id="wsSubtitle" placeholder="Optional instructions..." style="width:160px;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;">
+        </div>
       </div>
     </div>
 
@@ -511,7 +537,9 @@
     <!-- Generate -->
     <div>
       <button class="btn btn-primary" onclick="generate()">⬡ Generate Worksheet</button>
+      <button class="btn btn-outline" id="regenBtn" onclick="regenerate()" disabled style="opacity:0.4;cursor:not-allowed;">↺ Regenerate</button>
       <button class="btn btn-secondary" id="printBtn" onclick="window.print()" disabled style="opacity:0.4;cursor:not-allowed;">🖨 Print</button>
+      <button class="btn btn-outline" id="pdfBtn" onclick="exportPDF()" disabled style="opacity:0.4;cursor:not-allowed;margin-top:8px;">⬇ Export PDF</button>
     </div>
 
   </aside>
@@ -722,8 +750,102 @@ function selectNoSofit() {
 }
 
 // ══════════════════════════════════════════════
-//  GENERATION LOGIC
+//  FOCUS LETTER UI
 // ══════════════════════════════════════════════
+function toggleFocusUI() {
+  const on = document.getElementById('focusToggle').checked;
+  document.getElementById('focusOptions').style.display = on ? 'flex' : 'none';
+}
+
+function populateFocusDropdown() {
+  const sel = document.getElementById('focusLetter');
+  sel.innerHTML = '';
+  // All selectable letters that can go in first position
+  const VAV_VARIANTS = new Set(['וֹ','וּ']);
+  const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
+  LETTERS.forEach(l => {
+    const opt = document.createElement('option');
+    opt.value = l.heb;
+    opt.textContent = `${l.heb}  ${l.name}`;
+    sel.appendChild(opt);
+    if (l.sofit) {
+      const sfOpt = document.createElement('option');
+      sfOpt.value = l.sofit;
+      sfOpt.textContent = `${l.sofit}  ${l.name} sofit`;
+      sel.appendChild(sfOpt);
+    }
+    if (l.heb === 'ו') {
+      [{ heb:'וֹ', name:'Vav Cholam'}, {heb:'וּ', name:'Vav Shuruk'}].forEach(v => {
+        const vOpt = document.createElement('option');
+        vOpt.value = v.heb;
+        vOpt.textContent = `${v.heb}  ${v.name}`;
+        sel.appendChild(vOpt);
+      });
+    }
+  });
+}
+
+// ══════════════════════════════════════════════
+//  REGENERATE
+// ══════════════════════════════════════════════
+function regenerate() {
+  // Re-run the blend generation with the same settings, new random picks
+  generate();
+}
+
+function enableButtons() {
+  ['printBtn','regenBtn','pdfBtn'].forEach(id => {
+    const btn = document.getElementById(id);
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+  });
+}
+
+async function exportPDF() {
+  const { jsPDF } = window.jspdf;
+  const ws = document.getElementById('worksheet');
+  const title = document.getElementById('wsTitle').value || 'Hebrew Blends';
+  const showAnswers = document.getElementById('answerKeyToggle').checked;
+
+  const pdfBtn = document.getElementById('pdfBtn');
+  pdfBtn.textContent = '⏳ Generating...';
+  pdfBtn.disabled = true;
+
+  try {
+    const sheets = ws.querySelectorAll('.sheet');
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const margin = 12;
+
+    for (let i = 0; i < sheets.length; i++) {
+      const sheet = sheets[i];
+      const canvas = await html2canvas(sheet, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const imgW = pageW - margin * 2;
+      const imgH = (canvas.height * imgW) / canvas.width;
+
+      if (i > 0) pdf.addPage();
+      pdf.addImage(imgData, 'PNG', margin, margin, imgW, Math.min(imgH, pageH - margin * 2));
+    }
+
+    const filename = `${title.replace(/\s+/g, '_')}_Hebrew_Blends.pdf`;
+    pdf.save(filename);
+  } catch (err) {
+    alert('PDF export failed. Try using Print → Save as PDF instead.');
+    console.error(err);
+  } finally {
+    pdfBtn.textContent = '⬇ Export PDF';
+    pdfBtn.disabled = false;
+  }
+}
 
 function getLetter(heb) {
   if (SOFIT_CHARS.has(heb)) {
@@ -747,20 +869,30 @@ function autoCols(count) {
 }
 
 function generate() {
-  // Validate
   const vowelKeys = [...selectedVowels];
   if (vowelKeys.length === 0) { alert('Please select at least one vowel.'); return; }
 
-  // Letters that have a sofit form must NEVER appear in second position as their regular form —
-  // only their sofit version is valid word-finally. Also כ and פ (without dagesh) are mid-word
-  // only; their sofit forms ך/ף handle word-final position.
   const VAV_VARIANTS = new Set(['וֹ','וּ']);
   const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
-  const firstPool  = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h));
-  const secondPool = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h));
+
+  let firstPool  = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h));
+  let secondPool = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h));
+
+  // Focus letter mode
+  const focusOn = document.getElementById('focusToggle').checked;
+  let focusHeb = null, focusPos = null;
+  if (focusOn) {
+    focusHeb = document.getElementById('focusLetter').value;
+    focusPos = document.getElementById('focusPosition').value;
+    if (focusPos === 'first') {
+      firstPool = [focusHeb];
+    } else {
+      secondPool = [focusHeb];
+    }
+  }
 
   if (firstPool.length === 0 || secondPool.length === 0) {
-    alert('Please select more letters. At least one non-sofit letter is needed for first position, and at least one letter without a sofit form (or a sofit letter itself) for second position.');
+    alert('Please select more letters. At least one non-sofit letter is needed for first position, and at least one valid letter for second position.');
     return;
   }
 
@@ -776,32 +908,18 @@ function generate() {
     const secondObj = getLetter(second);
 
     const firstSound = getSound(firstObj, vowel);
-    // Second letter is bare — strip the vowel suffix to get just the consonant sound.
-    // Shva sound is stored as e.g. "B'" — remove the apostrophe to get "B"
     const secondConsonant = secondObj.sounds['sh'].replace("'", '');
-
-    // e.g. "Bah" + "L" = "BahL"
     const combined = firstSound + secondConsonant;
 
-    // Hebrew display: first letter + nikud, second letter bare
     const firstDisplay  = withNikud(firstObj, vowel, true);
     const secondDisplay = SOFIT_CHARS.has(second) ? second : secondObj.base;
     const hebrewDisplay = firstDisplay + secondDisplay;
 
-    blends.push({
-      firstHeb: first, secondHeb: second,
-      firstObj, secondObj,
-      vowel,
-      combined,
-      hebrewDisplay,
-    });
+    blends.push({ firstHeb: first, secondHeb: second, firstObj, secondObj, vowel, combined, hebrewDisplay });
   }
 
   renderWorksheet();
-  const printBtn = document.getElementById('printBtn');
-  printBtn.disabled = false;
-  printBtn.style.opacity = '1';
-  printBtn.style.cursor = 'pointer';
+  enableButtons();
 }
 
 // ══════════════════════════════════════════════
@@ -811,7 +929,8 @@ function renderWorksheet() {
   const isInverse   = document.getElementById('inverseToggle').checked;
   const showAnswers = document.getElementById('answerKeyToggle').checked;
   const cols        = autoCols(blends.length);
-  const title       = document.getElementById('wsTitle').value || 'Hebrew Blends';
+  const title    = document.getElementById('wsTitle').value || 'Hebrew Blends';
+  const subtitle = document.getElementById('wsSubtitle').value;
 
   const ws = document.getElementById('worksheet');
   ws.innerHTML = '';
@@ -825,7 +944,7 @@ function renderWorksheet() {
   header.innerHTML = `
     <div>
       <div class="ws-title">${title}</div>
-      <div class="ws-subtitle">${isInverse ? 'Write the Hebrew blend that matches each sound.' : 'Read each Hebrew blend aloud.'}</div>
+      <div class="ws-subtitle">${subtitle || (isInverse ? 'Write the Hebrew blend that matches each sound.' : 'Read each Hebrew blend aloud.')}</div>
     </div>
     <div class="ws-meta">
       <div class="ws-field">Name: <div class="ws-field-line"></div></div>
@@ -955,12 +1074,14 @@ function renderInverseCell(grid, b, idx, showAnswers) {
 document.getElementById('inverseToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(); });
 document.getElementById('answerKeyToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(); });
 document.getElementById('wsTitle').addEventListener('input', () => { if (blends.length) renderWorksheet(); });
+document.getElementById('wsSubtitle').addEventListener('input', () => { if (blends.length) renderWorksheet(); });
 
 // ══════════════════════════════════════════════
 //  BOOT
 // ══════════════════════════════════════════════
 initVowels();
 initLetters();
+populateFocusDropdown();
 </script>
 </body>
 </html>
