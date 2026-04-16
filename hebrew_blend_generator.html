@@ -250,6 +250,7 @@
     border-radius: 10px;
     padding: 36px 40px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    direction: ltr;
   }
 
   .ws-header {
@@ -289,6 +290,7 @@
   .blends-grid {
     display: grid;
     gap: 10px 14px;
+    direction: ltr;
   }
 
   /* Hebrew mode cell */
@@ -837,6 +839,7 @@ function renderWorksheet() {
   const grid = document.createElement('div');
   grid.className = 'blends-grid';
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  grid.style.direction = 'rtl';
   studentSheet.appendChild(grid);
 
   blends.forEach((b, idx) => {
@@ -877,6 +880,7 @@ function renderWorksheet() {
     const akGrid = document.createElement('div');
     akGrid.className = 'blends-grid';
     akGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    akGrid.style.direction = 'rtl';
     answerSheet.appendChild(akGrid);
 
     blends.forEach((b, idx) => {
@@ -902,7 +906,7 @@ function renderHebrewCell(grid, b, idx, showAnswers) {
 
   // Number
   const num = document.createElement('div');
-  num.style.cssText = 'font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:left;';
+  num.style.cssText = 'font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;';
   num.textContent = idx + 1;
   cell.appendChild(num);
 
