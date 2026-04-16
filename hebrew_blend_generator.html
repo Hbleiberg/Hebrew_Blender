@@ -142,17 +142,17 @@
   /* Vowel selector */
   .vowel-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 4px;
   }
   .vowel-chip {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 0.8rem;
+    gap: 4px;
+    font-size: 0.78rem;
     cursor: pointer;
     user-select: none;
-    padding: 4px 6px;
+    padding: 4px 4px;
     border-radius: 4px;
     transition: background 0.15s;
   }
@@ -604,12 +604,12 @@ function withNikud(letterObj, vowelKey, isFirst) {
 }
 
 const VOWELS = [
-  { key: 'a',  label: 'Kamatz / Patach', sub: 'AH sound', nikud: 'אָ' },
-  { key: 'e',  label: 'Segol / Tzeirei', sub: 'EH sound', nikud: 'אֶ' },
-  { key: 'i',  label: 'Chirik',           sub: 'EE sound', nikud: 'אִ' },
-  { key: 'o',  label: 'Cholam',           sub: 'OH sound', nikud: 'אֹ' },
-  { key: 'u',  label: 'Kubutz',           sub: 'OO sound', nikud: 'אֻ' },
-  { key: 'sh', label: 'Shva',             sub: 'ə sound',  nikud: 'אְ' },
+  { key: 'a',  label: 'Kamatz / Patach', sub: 'AH sound', nikud: 'בָ' },
+  { key: 'e',  label: 'Segol / Tzeirei', sub: 'EH sound', nikud: 'בֶ' },
+  { key: 'i',  label: 'Chirik',           sub: 'EE sound', nikud: 'בִ' },
+  { key: 'o',  label: 'Cholam',           sub: 'OH sound', nikud: 'בֹ' },
+  { key: 'u',  label: 'Kubutz',           sub: 'OO sound', nikud: 'בֻ' },
+  { key: 'sh', label: 'Shva',             sub: 'ə sound',  nikud: 'בְ' },
 ];
 
 // ══════════════════════════════════════════════
