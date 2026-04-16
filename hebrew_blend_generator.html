@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><!DOCTYPE html>
-<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -860,11 +858,13 @@ initVowels();
 initLetters();
 </script>
 </body>
-</html>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hebrew Blend Worksheet Generator</title>
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --navy: #1a2744;
@@ -1058,7 +1058,7 @@ initLetters();
   }
   .letter-tile:hover { border-color: var(--gold); }
   .letter-tile.selected { background: var(--navy); border-color: var(--navy); color: var(--white); }
-  .letter-tile .heb { font-size: 1.2rem; direction: rtl; }
+  .letter-tile .heb { font-size: 1.2rem; font-family: 'Frank Ruhl Libre', serif; direction: rtl; }
   .letter-tile .name { font-size: 0.55rem; text-align: center; line-height: 1.2; opacity: 0.75; }
 
   /* Action buttons */
@@ -1163,6 +1163,7 @@ initLetters();
   }
   .blend-hebrew {
     font-size: 2rem;
+    font-family: 'Frank Ruhl Libre', serif;
     direction: rtl;
     line-height: 1.4;
     color: var(--navy);
@@ -1206,6 +1207,7 @@ initLetters();
     align-items: center;
     justify-content: center;
     font-size: 1.1rem;
+    font-family: 'Frank Ruhl Libre', serif;
   }
   .blend-write-box.answer-shown {
     border-color: var(--gold);
