@@ -142,8 +142,8 @@
   /* Vowel selector */
   .vowel-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
+    grid-template-columns: 1fr;
+    gap: 4px;
   }
   .vowel-chip {
     display: flex;
@@ -182,6 +182,7 @@
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 5px;
+    direction: rtl;
   }
   .letter-tile {
     display: flex;
@@ -199,7 +200,7 @@
   .letter-tile:hover { border-color: var(--gold); }
   .letter-tile.selected { background: var(--navy); border-color: var(--navy); color: var(--white); }
   .letter-tile .heb { font-size: 1.2rem; font-family: 'Frank Ruhl Libre', serif; direction: rtl; }
-  .letter-tile .name { font-size: 0.55rem; text-align: center; line-height: 1.2; opacity: 0.75; }
+  .letter-tile .name { font-size: 0.55rem; text-align: center; line-height: 1.2; opacity: 0.75; direction: ltr; }
 
   /* Action buttons */
   .btn {
@@ -591,12 +592,12 @@ function withNikud(letterObj, vowelKey, isFirst) {
 }
 
 const VOWELS = [
-  { key: 'a',  label: 'Kamatz / Patach', sub: 'a sound' },
-  { key: 'e',  label: 'Segol / Tzeirei', sub: 'e sound' },
-  { key: 'i',  label: 'Chirik',           sub: 'i sound' },
-  { key: 'o',  label: 'Cholam',           sub: 'o sound' },
-  { key: 'u',  label: 'Kubutz',           sub: 'u sound' },
-  { key: 'sh', label: 'Shva',             sub: 'ə sound' },
+  { key: 'a',  label: 'Kamatz / Patach', sub: 'AH sound', nikud: 'אָ' },
+  { key: 'e',  label: 'Segol / Tzeirei', sub: 'EH sound', nikud: 'אֶ' },
+  { key: 'i',  label: 'Chirik',           sub: 'EE sound', nikud: 'אִ' },
+  { key: 'o',  label: 'Cholam',           sub: 'OH sound', nikud: 'אֹ' },
+  { key: 'u',  label: 'Kubutz',           sub: 'OO sound', nikud: 'אֻ' },
+  { key: 'sh', label: 'Shva',             sub: 'ə sound',  nikud: 'אְ' },
 ];
 
 // ══════════════════════════════════════════════
@@ -617,7 +618,10 @@ function initVowels() {
     chip.innerHTML = `
       <input type="checkbox" ${selectedVowels.has(v.key) ? 'checked' : ''}
         onchange="toggleVowel('${v.key}', this.checked)">
-      <span><strong>${v.label}</strong><br><span style="color:var(--muted);font-size:0.72rem">${v.sub}</span></span>
+      <span style="display:flex;align-items:center;gap:6px;">
+        <span style="font-family:'Frank Ruhl Libre',serif;font-size:1.4rem;direction:rtl;min-width:20px;text-align:center;">${v.nikud}</span>
+        <span><strong>${v.label}</strong><br><span style="color:var(--muted);font-size:0.72rem">${v.sub}</span></span>
+      </span>
     `;
     grid.appendChild(chip);
   });
