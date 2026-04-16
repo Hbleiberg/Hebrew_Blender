@@ -554,7 +554,9 @@ const LETTERS = [
   { heb: 'ג', base: 'ג', name: 'Gimel',  sofit: null, sounds: { a:'Gah',  e:'Geh',  i:'Gee',  o:'Goh',  u:'Goo',  sh:'G\'' } },
   { heb: 'ד', base: 'ד', name: 'Dalet',  sofit: null, sounds: { a:'Dah',  e:'Deh',  i:'Dee',  o:'Doh',  u:'Doo',  sh:'D\'' } },
   { heb: 'ה', base: 'ה', name: 'Heh',    sofit: null, sounds: { a:'Hah',  e:'Heh',  i:'Hee',  o:'Hoh',  u:'Hoo',  sh:'H\'' } },
-  { heb: 'ו', base: 'ו', name: 'Vav',    sofit: null, sounds: { a:'Vah',  e:'Veh',  i:'Vee',  o:'Oh',   u:'Oo',   sh:'V\'' } },
+  { heb: 'ו', base: 'ו', name: 'Vav',          sofit: null, sounds: { a:'Vah', e:'Veh', i:'Vee', o:'Oh',  u:'Oo',  sh:'V\'' } },
+  { heb: 'וֹ', base: 'וֹ', name: 'Vav Cholam',   sofit: null, vavVariant: 'o', sounds: { a:'Oh', e:'Oh', i:'Oh', o:'Oh', u:'Oh', sh:'Oh' } },
+  { heb: 'וּ', base: 'וּ', name: 'Vav Shuruk',   sofit: null, vavVariant: 'u', sounds: { a:'Oo', e:'Oo', i:'Oo', o:'Oo', u:'Oo', sh:'Oo' } },
   { heb: 'ז', base: 'ז', name: 'Zayin',  sofit: null, sounds: { a:'Zah',  e:'Zeh',  i:'Zee',  o:'Zoh',  u:'Zoo',  sh:'Z\'' } },
   { heb: 'ח', base: 'ח', name: 'Chet',   sofit: null, sounds: { a:'Chah', e:'Cheh', i:'Chee', o:'Choh', u:'Choo', sh:'Ch\'' } },
   { heb: 'ט', base: 'ט', name: 'Tet',    sofit: null, sounds: { a:'Tah',  e:'Teh',  i:'Tee',  o:'Toh',  u:'Too',  sh:'T\'' } },
@@ -586,12 +588,15 @@ const SOFIT_CHARS = new Set(['ך','ם','ן','ף','ץ']);
 // firstLetter = true → attach vowel; false (sofit or naked 2nd) → bare letter
 function withNikud(letterObj, vowelKey, isFirst) {
   const base = letterObj.base;
-  if (!isFirst) return base; // second letter: bare consonant (no vowel)
+  if (!isFirst) return base;
 
-  // Vav special cases: Cholam = וֹ (dot above), Kubutz/Shuruk = וּ (dot inside)
+  // Vav variants already contain their own dot — return as-is regardless of vowel
+  if (letterObj.vavVariant) return base;
+
+  // Plain Vav with Cholam/Shuruk uses the dotted forms
   if (base === 'ו') {
-    if (vowelKey === 'o') return 'וֹ';  // Vav Cholam
-    if (vowelKey === 'u') return 'וּ';  // Vav Shuruk
+    if (vowelKey === 'o') return 'וֹ';
+    if (vowelKey === 'u') return 'וּ';
   }
 
   const mark = NIKUD[vowelKey] || '';
@@ -636,20 +641,61 @@ function initVowels() {
 
 function initLetters() {
   const grid = document.getElementById('letterGrid');
-  // Add sofit letters as separate tiles
-  const allTiles = [];
-  LETTERS.forEach(l => {
-    allTiles.push({ heb: l.heb, name: l.name, isSofit: false });
-    if (l.sofit) allTiles.push({ heb: l.sofit, name: l.name + ' (sf)', isSofit: true });
-  });
 
-  allTiles.forEach(tile => {
+  LETTERS.forEach(l => {
+    // Skip vav variants — they render inside the Vav tile
+    if (l.vavVariant) return;
+
+    if (l.heb === 'ו') {
+      // Vav gets a special wide tile spanning 2 columns, with sub-tiles for variants
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'grid-column: span 2; display: flex; flex-direction: column; gap: 4px;';
+
+      // Main Vav tile
+      const mainTile = document.createElement('div');
+      mainTile.className = 'letter-tile' + (selectedLetters.has('ו') ? ' selected' : '');
+      mainTile.dataset.heb = 'ו';
+      mainTile.innerHTML = `<span class="heb">ו</span><span class="name">Vav</span>`;
+      mainTile.onclick = () => toggleLetter('ו', mainTile);
+      wrapper.appendChild(mainTile);
+
+      // Sub-tiles row
+      const subRow = document.createElement('div');
+      subRow.style.cssText = 'display: flex; gap: 4px;';
+
+      const variants = LETTERS.filter(v => v.vavVariant);
+      variants.forEach(v => {
+        const sub = document.createElement('div');
+        sub.className = 'letter-tile letter-tile-sub' + (selectedLetters.has(v.heb) ? ' selected' : '');
+        sub.dataset.heb = v.heb;
+        sub.style.flex = '1';
+        sub.innerHTML = `<span class="heb" style="font-size:1rem;">${v.heb}</span><span class="name">${v.name.replace('Vav ','')}</span>`;
+        sub.onclick = () => toggleLetter(v.heb, sub);
+        subRow.appendChild(sub);
+      });
+
+      wrapper.appendChild(subRow);
+      grid.appendChild(wrapper);
+      return;
+    }
+
+    // Regular tile
     const div = document.createElement('div');
-    div.className = 'letter-tile' + (selectedLetters.has(tile.heb) ? ' selected' : '');
-    div.dataset.heb = tile.heb;
-    div.innerHTML = `<span class="heb">${tile.heb}</span><span class="name">${tile.name.replace(' (sf)',' sofit')}</span>`;
-    div.onclick = () => toggleLetter(tile.heb, div);
+    div.className = 'letter-tile' + (selectedLetters.has(l.heb) ? ' selected' : '');
+    div.dataset.heb = l.heb;
+    div.innerHTML = `<span class="heb">${l.heb}</span><span class="name">${l.name}</span>`;
+    div.onclick = () => toggleLetter(l.heb, div);
     grid.appendChild(div);
+
+    // Sofit sub-tile
+    if (l.sofit) {
+      const sf = document.createElement('div');
+      sf.className = 'letter-tile' + (selectedLetters.has(l.sofit) ? ' selected' : '');
+      sf.dataset.heb = l.sofit;
+      sf.innerHTML = `<span class="heb">${l.sofit}</span><span class="name">${l.name} sofit</span>`;
+      sf.onclick = () => toggleLetter(l.sofit, sf);
+      grid.appendChild(sf);
+    }
   });
 }
 
@@ -669,7 +715,10 @@ function toggleVowel(key, checked) {
 }
 
 function selectAllLetters() {
-  selectedLetters = new Set([...LETTERS.map(l=>l.heb), ...LETTERS.filter(l=>l.sofit).map(l=>l.sofit)]);
+  selectedLetters = new Set([
+    ...LETTERS.map(l => l.heb),
+    ...LETTERS.filter(l => l.sofit).map(l => l.sofit)
+  ]);
   document.querySelectorAll('.letter-tile').forEach(t => t.classList.add('selected'));
 }
 
@@ -679,7 +728,7 @@ function clearAllLetters() {
 }
 
 function selectNoSofit() {
-  selectedLetters = new Set(LETTERS.map(l=>l.heb));
+  selectedLetters = new Set(LETTERS.map(l => l.heb)); // includes vav variants since they're in LETTERS
   document.querySelectorAll('.letter-tile').forEach(t => {
     const heb = t.dataset.heb;
     if (SOFIT_CHARS.has(heb)) t.classList.remove('selected');
@@ -693,7 +742,6 @@ function selectNoSofit() {
 
 function getLetter(heb) {
   if (SOFIT_CHARS.has(heb)) {
-    // find parent letter
     return LETTERS.find(l => l.sofit === heb);
   }
   return LETTERS.find(l => l.heb === heb);
@@ -721,9 +769,10 @@ function generate() {
   // Letters that have a sofit form must NEVER appear in second position as their regular form —
   // only their sofit version is valid word-finally. Also כ and פ (without dagesh) are mid-word
   // only; their sofit forms ך/ף handle word-final position.
+  const VAV_VARIANTS = new Set(['וֹ','וּ']);
   const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
   const firstPool  = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h));
-  const secondPool = [...selectedLetters].filter(h => !HAS_SOFIT.has(h)); // exclude regular forms that have a sofit
+  const secondPool = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h));
 
   if (firstPool.length === 0 || secondPool.length === 0) {
     alert('Please select more letters. At least one non-sofit letter is needed for first position, and at least one letter without a sofit form (or a sofit letter itself) for second position.');
