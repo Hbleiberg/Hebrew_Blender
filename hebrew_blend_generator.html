@@ -680,7 +680,8 @@
     flex-shrink: 0;
   }
   .bingo-card.two-up {
-    max-width: 340px;
+    max-width: 46%;
+    flex: 1;
   }
   .bingo-card-header {
     background: var(--navy);
@@ -741,17 +742,25 @@
   .bingo-cell .sound { font-size: 0.6rem; color: var(--muted); font-style: italic; margin-top: 1px; }
 
   .bingo-card.four-up {
-    max-width: 260px;
+    max-width: 100%;
+    width: 100%;
   }
-  .bingo-card-header.four-up { font-size: 0.75rem; direction: rtl; }
+  .bingo-card-header.four-up { font-size: 0.8rem; direction: rtl; }
   .bingo-card-header.two-up { direction: rtl; }
-  .bingo-card.four-up .bingo-cell { min-height: 36px; }
-  .bingo-card.four-up .bingo-cell .heb { font-size: 0.95rem; }
+  .bingo-card.four-up .bingo-cell { min-height: 52px; }
+  .bingo-card.four-up .bingo-cell .heb { font-size: 1.1rem; }
   .bingo-page.four-up {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 16px;
     align-items: start;
+  }
+  @media print {
+    .bingo-page.four-up {
+      gap: 10px;
+      page-break-inside: avoid;
+    }
+    .bingo-card.four-up .bingo-cell { min-height: 44px; }
   }
   .caller-sheet { page-break-before: always; }
   .caller-title {
