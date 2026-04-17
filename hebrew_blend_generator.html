@@ -1,5 +1,2917 @@
 <!DOCTYPE html>
+<html lang="en"><!DOCTYPE html>
 <html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hebrew Blend Worksheet Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  // Apply dark mode BEFORE first paint to prevent flash
+  if (localStorage.getItem('hebrewBlender_darkMode') === '1') {
+    document.documentElement.classList.add('dark-early');
+  }
+</script>
+<style>
+  :root {
+    --navy: #1a2744;
+    --gold: #c9922a;
+    --gold-light: #f0d080;
+    --cream: #fdf8ef;
+    --warm-gray: #e8e0d0;
+    --text: #1a2744;
+    --muted: #6b6050;
+    --border: #c8bfa8;
+    --white: #ffffff;
+  }
+
+  /* Applied instantly in <head> before first paint to prevent dark mode flash */
+  html.dark-early body,
+  body.dark {
+    --navy: #1a2744;
+    --gold: #e0a832;
+    --gold-light: #f5d97a;
+    --cream: #161c2a;
+    --warm-gray: #1e2535;
+    --text: #dde4f0;
+    --muted: #8a94a8;
+    --border: #2a3349;
+    --white: #1e2535;
+  }
+  body.dark header { background: #0d1220; border-bottom-color: var(--gold); }
+  body.dark header h1,
+  body.dark header p { color: #dde4f0; }
+  body.dark header p { color: var(--gold-light); }
+  body.dark .panel-title { background: #0d1220; color: #dde4f0; }
+  body.dark .panel-title::after { color: var(--gold-light); }
+  body.dark .sidebar { background: #1e2535; border-right-color: var(--border); }
+  body.dark .panel { background: #161c2a; border-color: var(--border); }
+  body.dark .option-label,
+  body.dark .toggle-row,
+  body.dark .panel-body { color: #dde4f0; }
+  body.dark select,
+  body.dark input[type="text"],
+  body.dark input[type="number"] { background: #0d1220; color: #dde4f0; border-color: var(--border); }
+  body.dark .worksheet { background: #1e2535; border-color: var(--border); color: #dde4f0; }
+  body.dark .ws-title { color: #dde4f0; }
+  body.dark .ws-subtitle { color: var(--muted); }
+  body.dark .ws-header { border-bottom-color: #4a5a7a; }
+  body.dark .ws-field-line { border-bottom-color: #dde4f0; }
+  body.dark .blend-hebrew { color: #dde4f0; }
+  body.dark .blend-cell { border-bottom-color: var(--border); }
+  body.dark .answer-key-banner { background: #0d1220; color: var(--gold-light); }
+  body.dark .flip-card-front { background: #1e2535; color: #dde4f0; border-color: var(--border); }
+  body.dark .flip-card-back { background: #0d1220; color: var(--gold-light); }
+  body.dark .letter-tile { background: #1e2535; border-color: var(--border); color: #dde4f0; }
+  body.dark .letter-tile.selected { background: #2a4070; border-color: #4a6aaa; color: #dde4f0; }
+  body.dark .letter-tile:hover { border-color: var(--gold); }
+  body.dark .vowel-chip { color: #dde4f0; }
+  body.dark .vowel-chip:hover { background: #252d3e; }
+  body.dark .btn-xs { background: #1e2535; color: #dde4f0; border-color: var(--border); }
+  body.dark .btn-xs:hover { background: #2a3349; }
+  body.dark .empty-state h2 { color: #dde4f0; }
+  body.dark .empty-state p { color: var(--muted); }
+  body.dark .btn-outline { border-color: #4a5a7a; color: #8a9ab8; }
+  body.dark .btn-secondary { background: #2a3a5a; color: #dde4f0; }
+  body.dark .btn[disabled],
+  body.dark .btn:disabled { opacity: 1 !important; color: #3d4f6a !important; border-color: #2a3349 !important; background-color: transparent !important; }
+  body.dark #focusYudWarning { color: var(--gold-light); }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--navy);
+    color: var(--white);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 4px solid var(--gold);
+  }
+  header .star { font-size: 28px; }
+  header h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.01em;
+  }
+  header p { font-size: 0.82rem; color: var(--gold-light); margin-top: 2px; }
+
+  /* ── LAYOUT ── */
+  .app { display: flex; min-height: calc(100vh - 72px); }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    background: var(--white);
+    border-right: 1px solid var(--border);
+    padding: 20px;
+    overflow-y: auto;
+    overflow-x: visible;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+  }
+
+  .panel {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: visible;
+  }
+  .panel-title {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    border-radius: 8px 8px 0 0;
+  }
+  .panel-title::after {
+    content: '▾';
+    font-size: 1rem;
+    color: var(--gold-light);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .panel.collapsed .panel-title::after {
+    transform: rotate(-90deg);
+  }
+  .panel.collapsed .panel-body {
+    display: none;
+  }
+  .panel-body { padding: 14px; }
+
+  /* Options */
+  .option-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .option-row:last-child { margin-bottom: 0; }
+  .option-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .sub-label {
+    color: var(--text);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  select, input[type="number"] {
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px 8px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    background: var(--white);
+    color: var(--text);
+    cursor: pointer;
+  }
+  select:focus, input[type="number"]:focus { outline: 2px solid var(--gold); }
+  input[type="number"] { width: 64px; text-align: center; }
+
+  /* Toggle switch */
+  .toggle-wrap { display: flex; flex-direction: column; gap: 10px; }
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.85rem;
+  }
+  .toggle {
+    position: relative;
+    width: 40px; height: 22px;
+    flex-shrink: 0;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; inset: 0;
+    background: var(--border);
+    border-radius: 22px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .slider::before {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    left: 3px; top: 3px;
+    background: var(--white);
+    border-radius: 50%;
+    transition: transform 0.2s;
+  }
+  .toggle input:checked + .slider { background: var(--gold); }
+  .toggle input:checked + .slider::before { transform: translateX(18px); }
+
+  /* Vowel selector */
+  .vowel-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+  .vowel-chip {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 4px;
+    border-radius: 4px;
+    transition: background 0.15s;
+  }
+  .vowel-chip:hover { background: var(--warm-gray); }
+  .vowel-chip input { accent-color: var(--gold); width: 14px; height: 14px; cursor: pointer; }
+
+  /* Letter selector */
+  .letter-controls {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .btn-xs {
+    font-size: 0.72rem;
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--white);
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--navy);
+    transition: background 0.15s;
+  }
+  .btn-xs:hover { background: var(--warm-gray); }
+
+  .letter-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    direction: rtl;
+  }
+  .letter-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 5px 3px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+    background: var(--white);
+  }
+  .letter-tile:hover { border-color: var(--gold); }
+  .letter-tile.selected { background: var(--navy); border-color: var(--navy); color: var(--white); }
+  .letter-tile .heb { font-size: 1.2rem; font-family: 'Frank Ruhl Libre', serif; direction: rtl; }
+  .letter-tile .name { font-size: 0.55rem; text-align: center; line-height: 1.2; opacity: 0.75; direction: ltr; }
+
+  /* Action buttons */
+  .btn {
+    width: 100%;
+    padding: 11px;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--navy);
+  }
+  .btn-primary:hover { background: #b8821e; color: var(--white); }
+  .btn-secondary {
+    background: var(--navy);
+    color: var(--white);
+    margin-top: 8px;
+  }
+  .btn-secondary:hover { background: #0f1a33; }
+  .btn-outline {
+    background: transparent;
+    color: var(--navy);
+    border: 1.5px solid var(--navy);
+    margin-top: 8px;
+  }
+  .btn[disabled], .btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed !important;
+  }
+
+  /* ── MAIN ── */
+  .main {
+    flex: 1;
+    padding: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── MAIN TOOLBAR ── */
+  .main-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 28px;
+    background: var(--cream);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .main-content {
+    padding: 28px 36px;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  /* Worksheet */
+  .worksheet {
+    max-width: 760px;
+    margin: 0 auto;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 36px 40px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    direction: ltr;
+  }
+
+  .ws-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--navy);
+  }
+  .ws-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.4rem;
+    color: var(--navy);
+  }
+  .ws-subtitle { font-size: 0.82rem; color: var(--muted); margin-top: 3px; }
+  .ws-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+  .ws-field {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .ws-field-line {
+    width: 120px;
+    border-bottom: 1px solid var(--text);
+    height: 16px;
+  }
+
+  /* Blends grid */
+  .blends-grid {
+    display: grid;
+    gap: 10px 14px;
+    direction: ltr;
+  }
+
+  /* Hebrew mode cell */
+  .blend-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    border-bottom: 1.5px solid var(--border);
+    padding-bottom: 4px;
+    min-height: 64px;
+    gap: 2px;
+  }
+  .blend-hebrew {
+    font-size: 2rem;
+    font-family: 'Frank Ruhl Libre', serif;
+    direction: rtl;
+    line-height: 1.4;
+    color: var(--navy);
+  }
+  .blend-answer {
+    font-size: 0.72rem;
+    color: var(--gold);
+    letter-spacing: 0.04em;
+    font-style: italic;
+    min-height: 14px;
+  }
+  .blend-answer.hidden { visibility: hidden; }
+
+  /* Inverse mode cell */
+  .blend-cell-inv {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 6px;
+    min-height: 64px;
+    gap: 4px;
+    background: var(--cream);
+  }
+  .blend-roman {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 0.03em;
+  }
+  .blend-write-box {
+    width: 52px;
+    height: 28px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    background: var(--white);
+    direction: rtl;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-family: 'Frank Ruhl Libre', serif;
+  }
+  .blend-write-box.answer-shown {
+    border-color: var(--gold);
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  /* Answer key banner */
+  .answer-key-banner {
+    background: var(--navy);
+    color: var(--gold-light);
+    text-align: center;
+    padding: 6px;
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    border-radius: 4px;
+  }
+
+  /* Empty state */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 16px;
+    color: var(--muted);
+    text-align: center;
+  }
+  .empty-state .star { font-size: 48px; opacity: 0.4; }
+  .empty-state h2 { font-family: 'Libre Baskerville', serif; color: var(--navy); }
+  .empty-state p { font-size: 0.88rem; max-width: 320px; }
+
+  /* ── SIDEBAR COLLAPSE ── */
+  .sidebar-toggle-btn {
+    position: fixed;
+    left: 320px;
+    top: 50vh;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 48px;
+    border-radius: 0 6px 6px 0;
+    border: 1px solid var(--border);
+    border-left: none;
+    background: var(--white);
+    color: var(--muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    transition: background 0.15s, color 0.15s;
+    padding: 0;
+    line-height: 1;
+  }
+  .sidebar-toggle-btn:hover { background: var(--warm-gray); color: var(--text); }
+  body.dark .sidebar-toggle-btn { background: #1e2535; border-color: var(--border); color: var(--muted); }
+  body.dark .sidebar-toggle-btn:hover { background: #2a3349; }
+
+  #appSidebar.hidden { display: none; }
+  #appSidebar.hidden ~ .sidebar-toggle-btn { display: none; }
+
+  .sidebar-show-btn {
+    position: fixed;
+    left: 0;
+    top: 50vh;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 48px;
+    border-radius: 0 6px 6px 0;
+    border: 1px solid var(--border);
+    border-left: none;
+    background: var(--white);
+    color: var(--muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: background 0.15s;
+  }
+  .sidebar-show-btn:hover { background: var(--warm-gray); }
+  body.dark .sidebar-show-btn { background: #1e2535; border-color: var(--border); color: var(--muted); }
+
+  /* ── MAIN TOOLBAR ── */
+  .main-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 20px;
+    background: var(--cream);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .main-content {
+    padding: 28px 36px;
+  }
+  .zoom-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    flex: 1;
+    max-width: 600px;
+  }
+  .zoom-bar input[type=range] {
+    flex: 1;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+  .worksheet-scaler {
+    transform-origin: top center;
+    transition: transform 0.2s;
+  }
+
+  /* ── SHUFFLE ANIMATION ── */
+  @keyframes cardFlip {
+    0%   { opacity: 1; transform: rotateY(0deg) scale(1); }
+    40%  { opacity: 0; transform: rotateY(90deg) scale(0.9); }
+    60%  { opacity: 0; transform: rotateY(90deg) scale(0.9); }
+    100% { opacity: 1; transform: rotateY(0deg) scale(1); }
+  }
+  .blend-cell.shuffling, .blend-cell-inv.shuffling {
+    animation: cardFlip 0.5s ease both;
+  }
+
+  /* ── TIMER ── */
+  .timer-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--warm-gray);
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  .timer-display {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--navy);
+    min-width: 70px;
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+  .timer-display.urgent { color: #c0392b; animation: pulse 0.5s infinite alternate; }
+  @keyframes pulse { from { opacity: 1; } to { opacity: 0.5; } }
+  .timer-controls { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  /* ── SCORE ── */
+  .score-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 14px;
+    background: var(--warm-gray);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-size: 0.88rem;
+  }
+  .score-correct { color: #27ae60; font-weight: 700; }
+  .score-incorrect { color: #c0392b; font-weight: 700; }
+  .score-remaining { color: var(--muted); }
+  .score-summary {
+    background: var(--navy);
+    color: var(--white);
+    border-radius: 10px;
+    padding: 24px;
+    text-align: center;
+    margin-top: 16px;
+  }
+  .score-summary h2 { font-family: 'Libre Baskerville', serif; font-size: 1.4rem; margin-bottom: 8px; }
+  .score-summary .big-score { font-size: 3rem; font-weight: 700; color: var(--gold-light); line-height: 1; }
+  .score-summary p { font-size: 0.88rem; opacity: 0.8; margin-top: 6px; }
+
+  /* ── FLIP CARD with score buttons ── */
+  .flip-card-score-btns {
+    display: none;
+    gap: 6px;
+    margin-top: 6px;
+    justify-content: center;
+  }
+  .flip-card.flipped .flip-card-score-btns { display: flex; }
+  .score-btn {
+    padding: 3px 10px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .score-btn.correct { background: #27ae60; color: white; }
+  .score-btn.incorrect { background: #c0392b; color: white; }
+
+  /* ── PRESET PANEL ── */
+  .preset-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .preset-row input[type="text"] {
+    flex: 1;
+    padding: 4px 7px;
+    font-size: 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: inherit;
+    background: var(--white);
+    color: var(--text);
+  }
+  .preset-list { display: flex; flex-direction: column; gap: 4px; }
+  .preset-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 0.8rem;
+  }
+  .preset-item span { flex: 1; }
+  .preset-item button { font-size: 0.72rem; padding: 2px 7px; border: 1px solid var(--border); border-radius: 3px; background: transparent; cursor: pointer; font-family: inherit; color: var(--text); }
+  .preset-item button:hover { background: var(--warm-gray); }
+  .preset-item .del-btn { color: #c0392b; border-color: #c0392b; }
+
+  /* ── LANDSCAPE PRINT ── */
+  @media print and (orientation: landscape) {
+    .blends-grid { grid-template-columns: repeat(10, 1fr) !important; }
+    .blend-hebrew { font-size: 1.4rem; }
+    .blend-cell { min-height: 44px; }
+  }
+  body.landscape-mode .blends-grid { grid-template-columns: repeat(10, 1fr) !important; }
+
+  /* ── BLEND TYPE SELECTOR ── */
+  .blend-type-selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .blend-type-btn {
+    padding: 7px 4px;
+    font-size: 0.72rem;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    background: var(--white);
+    color: var(--muted);
+    border: none;
+    border-right: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+    line-height: 1.3;
+  }
+  .blend-type-btn:last-child { border-right: none; }
+  .blend-type-btn:hover { background: var(--warm-gray); color: var(--text); }
+  .blend-type-btn.active { background: var(--navy); color: var(--white); }
+  body.dark .blend-type-btn { background: var(--white); color: var(--muted); }
+  body.dark .blend-type-btn.active { background: #2a4070; color: #dde4f0; }
+  body.dark .blend-type-btn:hover { background: var(--warm-gray); }
+  .tooltip-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--muted);
+    color: var(--white);
+    font-size: 0.6rem;
+    font-weight: 700;
+    cursor: help;
+    margin-left: 4px;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+  .tooltip-wrap .tooltip-box {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a2744;
+    color: #f0e8d8;
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.5;
+    padding: 8px 11px;
+    border-radius: 6px;
+    width: 220px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 999;
+    pointer-events: none;
+    white-space: normal;
+  }
+  .tooltip-wrap .tooltip-box::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-bottom-color: #1a2744;
+  }
+  .tooltip-wrap:hover .tooltip-box { display: block; }
+  .bingo-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+    padding: 16px 0;
+  }
+  .bingo-page.two-up {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+  }
+  .bingo-card {
+    border: 2px solid var(--navy);
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 420px;
+    flex-shrink: 0;
+  }
+  .bingo-card.two-up {
+    max-width: 46%;
+    flex: 1;
+  }
+  .bingo-card-header {
+    background: #1a2744;
+    color: #ffffff;
+    display: grid;
+    text-align: center;
+    font-family: 'Libre Baskerville', serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    direction: rtl;
+  }
+  .bingo-card-header.two-up { font-size: 0.9rem; }
+  .bingo-card-header span {
+    padding: 6px 2px;
+    border-left: 1px solid rgba(255,255,255,0.2);
+  }
+  .bingo-card-header span:last-child { border-left: none; }
+  .bingo-card-num {
+    background: #c9922a;
+    color: #ffffff;
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px;
+    letter-spacing: 0.05em;
+  }
+  .bingo-grid {
+    display: grid;
+    border-top: 1px solid #c8bfa8;
+  }
+  .bingo-card {
+    border: 2px solid #1a2744;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 420px;
+    flex-shrink: 0;
+    background: #ffffff;
+    color: #1a2744;
+  }
+  .bingo-cell {
+    border-right: 1px solid #c8bfa8;
+    border-bottom: 1px solid #c8bfa8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 2px;
+    min-height: 60px;
+    text-align: center;
+    background: #ffffff;
+  }
+  .bingo-cell.last-col { border-right: none; }
+  .bingo-cell.last-row { border-bottom: none; }
+  .bingo-card.two-up .bingo-cell { min-height: 48px; }
+  .bingo-cell .heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.4rem; direction: rtl; line-height: 1.2; color: #1a2744; }
+  .bingo-card.two-up .bingo-cell .heb { font-size: 1.1rem; }
+  .bingo-cell .sound { font-size: 0.6rem; color: #6b6050; font-style: italic; margin-top: 1px; }
+  .bingo-card-num {
+    background: #c9922a;
+    color: #ffffff;
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px;
+    letter-spacing: 0.05em;
+  }
+  .bingo-grid {
+    display: grid;
+    border-top: 1px solid #c8bfa8;
+  }
+
+  .bingo-card.four-up {
+    max-width: 100%;
+    width: 100%;
+  }
+  .bingo-card-header.four-up { font-size: 0.8rem; direction: rtl; }
+  .bingo-card-header.two-up { direction: rtl; }
+  .bingo-card.four-up .bingo-cell { min-height: 52px; }
+  .bingo-card.four-up .bingo-cell .heb { font-size: 1.1rem; }
+  .bingo-page.four-up {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+  @media print {
+    .bingo-page.four-up {
+      gap: 10px;
+      page-break-inside: avoid;
+    }
+    .bingo-card.four-up .bingo-cell { min-height: 44px; }
+  }
+  .caller-sheet { page-break-before: always; }
+  .caller-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.2rem;
+    color: var(--navy);
+    margin-bottom: 4px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--navy);
+  }
+  .caller-subtitle { font-size: 0.78rem; color: var(--muted); margin-bottom: 14px; }
+  .caller-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    direction: ltr;
+  }
+  .caller-item {
+    border: 1px solid #c8bfa8;
+    border-radius: 5px;
+    padding: 6px 4px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background: #ffffff;
+    cursor: pointer;
+  }
+  .caller-item .num { font-size: 0.6rem; color: #6b6050; }
+  .caller-item .heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.3rem; direction: rtl; color: #1a2744; }
+  .caller-item .sound { font-size: 0.65rem; color: #6b6050; font-style: italic; }
+  .caller-item.called { background: #e8e0d0; }
+
+  @media print {
+    .bingo-page.two-up { flex-direction: row; }
+    .bingo-card { page-break-inside: avoid; }
+    .bingo-page-break { page-break-before: always; }
+  }
+  body.dark .timer-bar,
+  body.dark .score-bar { background: var(--warm-gray); }
+  body.dark .timer-display { color: #dde4f0; }
+  body.dark .score-summary { background: #0d1220; }
+  body.dark .preset-item { background: #1e2535; border-color: var(--border); color: #dde4f0; }
+  body.dark .preset-item button { color: #dde4f0; border-color: var(--border); }
+  body.dark .preset-row input[type="text"] { background: #0d1220; color: #dde4f0; border-color: var(--border); }
+  body.dark footer { background: #1e2535; border-top-color: var(--border); }
+  .self-check-grid {
+    display: grid;
+    gap: 12px;
+    direction: rtl;
+  }
+  .flip-card {
+    perspective: 600px;
+    min-height: 90px;
+    cursor: pointer;
+  }
+  .flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 90px;
+    transition: transform 0.45s;
+    transform-style: preserve-3d;
+  }
+  .flip-card.flipped .flip-card-inner {
+    transform: rotateY(180deg);
+  }
+  .flip-card-front, .flip-card-back {
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: 1.5px solid var(--border);
+  }
+  .flip-card-front {
+    background: var(--white);
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 2rem;
+    color: var(--navy);
+  }
+  .flip-card-back {
+    background: var(--navy);
+    color: var(--gold-light);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    transform: rotateY(180deg);
+  }
+  .flip-card-num {
+    font-size: 0.6rem;
+    color: var(--muted);
+    font-family: 'Source Sans 3', sans-serif;
+    position: absolute;
+    top: 5px;
+    left: 6px;
+    direction: ltr;
+  }
+  .flip-card-hint {
+    font-size: 0.65rem;
+    color: var(--muted);
+    font-family: 'Source Sans 3', sans-serif;
+    margin-top: 2px;
+  }
+  .self-check-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+  }
+  .self-check-controls .btn-xs { font-size: 0.78rem; padding: 5px 12px; }
+  .answer-key-sheet {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 3px dashed var(--border);
+  }
+
+  @page { margin: 0.5in; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 700px) {
+    header {
+      padding: 12px 16px;
+      gap: 10px;
+    }
+    header .star { font-size: 20px; }
+    header h1 { font-size: 1.1rem; }
+    header p { display: none; }
+
+    .app { flex-direction: column; }
+
+    .sidebar {
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      padding: 12px;
+      gap: 10px;
+      overflow-y: visible;
+    }
+
+    .main { padding: 0; }
+    .main-content { padding: 12px; }
+
+    .worksheet {
+      padding: 16px;
+      border-radius: 6px;
+    }
+
+    .ws-header {
+      flex-direction: column;
+      gap: 8px;
+    }
+    .ws-meta { align-items: flex-start; }
+    .ws-title { font-size: 1.1rem; }
+
+    .blend-hebrew { font-size: 1.5rem; }
+    .blend-cell { min-height: 52px; }
+
+    .letter-grid { grid-template-columns: repeat(4, 1fr); }
+
+    .vowel-grid { grid-template-columns: 1fr; }
+
+    .btn { font-size: 0.85rem; padding: 10px; }
+
+    /* Floating generate bar on mobile */
+    .mobile-fab {
+      display: flex;
+      gap: 8px;
+      position: sticky;
+      bottom: 0;
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      padding: 10px 12px;
+      z-index: 100;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+    }
+    .mobile-fab .btn { margin-top: 0; flex: 1; }
+
+    /* Hide desktop button group on mobile */
+    .desktop-buttons { display: none; }
+  }
+
+  @media (min-width: 701px) {
+    .mobile-fab { display: none; }
+    .desktop-buttons { display: block; }
+  }
+
+  /* ── PRINT ── */
+  @page { margin: 0.35in; }
+  @media print {
+    .sidebar, header, footer, .mobile-fab, .zoom-bar, .print-tip, .main-toolbar { display: none !important; }
+    .app { display: block; min-height: unset; }
+    .main { padding: 0; overflow: visible; }
+    .self-check-controls { display: none !important; }
+    .flip-card-hint { display: none; }
+    .flip-card-back { display: none; }
+    .worksheet-scaler { transform: none !important; }
+    .worksheet {
+      border: none;
+      box-shadow: none;
+      border-radius: 0;
+      padding: 0;
+      max-width: 100%;
+      width: 100%;
+    }
+    .ws-header { margin-bottom: 10px; padding-bottom: 8px; }
+    .blends-grid { gap: 4px 8px; }
+    .blend-cell { min-height: 46px; }
+    body { background: white; margin: 0; }
+    .btn { display: none; }
+    .blend-answer.hidden { visibility: hidden; }
+    .empty-state { display: none !important; }
+    .answer-key-sheet {
+      margin-top: 0;
+      padding-top: 16px;
+      border-top: none;
+      page-break-before: always;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="star">✡</span>
+  <div style="flex:1;">
+    <h1>Hebrew Blend Worksheet Generator</h1>
+    <p id="headerSub">Two-letter syllable practice for emerging Hebrew readers</p>
+  </div>
+  <button id="darkToggle" onclick="toggleDark()" title="Toggle dark mode" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:1rem;flex-shrink:0;">🌙</button>
+</header>
+
+<button class="sidebar-show-btn" id="sidebarShowBtn" onclick="toggleSidebar()" title="Show sidebar">›</button>
+
+<div class="app" id="appContainer">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" id="appSidebar">
+    <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Hide sidebar">‹</button>
+
+    <!-- Mode -->
+    <div class="panel">
+      <div class="panel-title">Worksheet Mode</div>
+      <div class="panel-body toggle-wrap">
+
+        <!-- Blend type selector -->
+        <div style="margin-bottom:10px;">
+          <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">Practice Type</div>
+          <div class="blend-type-selector" id="blendTypeSelector">
+            <button class="blend-type-btn" data-type="one" onclick="setBlendType('one')">1-Letter</button>
+            <button class="blend-type-btn active" data-type="two" onclick="setBlendType('two')">2-Letter</button>
+            <button class="blend-type-btn" data-type="three" onclick="setBlendType('three')">3-Letter <span style="font-size:0.55rem;background:var(--gold);color:var(--navy);padding:1px 4px;border-radius:3px;font-weight:700;">BETA</span></button>
+            <button class="blend-type-btn" data-type="nikud" onclick="setBlendType('nikud')">Vowels Only</button>
+          </div>
+        </div>
+
+        <!-- Three-letter sub-option -->
+        <div id="threeLetterOptions" style="display:none;margin-bottom:8px;padding-left:16px;border-left:2px solid var(--border);">
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:58px;">Vowel on</span>
+            <select id="vowelPosition" style="flex:1;font-size:0.78rem;padding:3px 6px;">
+              <option value="first">First letter only</option>
+              <option value="both">First &amp; second letters</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div style="border-top:1px solid var(--border);margin:4px 0 8px;"></div>
+
+        <div class="toggle-row" id="rowInverse">
+          <span>Inverse Mode <span style="font-size:0.72rem;color:var(--muted)">(English → write Hebrew)</span></span>
+          <label class="toggle">
+            <input type="checkbox" id="inverseToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row" id="rowAnswerKey">
+          <span>Show Answer Key</span>
+          <label class="toggle">
+            <input type="checkbox" id="answerKeyToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row" id="rowFocus">
+          <span>Lock Letters</span>
+          <label class="toggle">
+            <input type="checkbox" id="focusToggle" onchange="toggleFocusUI()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div id="focusOptions" style="display:none;margin-top:4px;flex-direction:column;gap:4px;padding-left:16px;border-left:2px solid var(--border);">
+          <div id="lockRow1" style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <input type="checkbox" id="lock1Active" style="accent-color:var(--gold);cursor:pointer;" onchange="updateFocusYudWarning()">
+            <span class="sub-label" style="font-size:0.78rem;min-width:42px;">Pos 1</span>
+            <select id="lock1Letter" style="flex:1;font-size:0.78rem;padding:3px 6px;"></select>
+          </div>
+          <div id="lockRow2" style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <input type="checkbox" id="lock2Active" style="accent-color:var(--gold);cursor:pointer;" onchange="updateFocusYudWarning()">
+            <span class="sub-label" style="font-size:0.78rem;min-width:42px;">Pos 2</span>
+            <select id="lock2Letter" style="flex:1;font-size:0.78rem;padding:3px 6px;"></select>
+          </div>
+          <div id="lockRow3" style="display:none;gap:6px;align-items:center;font-size:0.78rem;">
+            <input type="checkbox" id="lock3Active" style="accent-color:var(--gold);cursor:pointer;" onchange="updateFocusYudWarning()">
+            <span class="sub-label" style="font-size:0.78rem;min-width:42px;">Pos 3</span>
+            <select id="lock3Letter" style="flex:1;font-size:0.78rem;padding:3px 6px;"></select>
+          </div>
+          <div id="focusYudWarning" style="display:none;font-size:0.72rem;color:var(--gold);background:rgba(201,146,42,0.12);border-radius:4px;padding:4px 7px;">
+            ⚠ Yud + Yud blends will be skipped
+          </div>
+        </div>
+        <div class="toggle-row" id="rowBingo" style="margin-top:4px;">
+          <span>Bingo Mode
+            <span class="tooltip-wrap">?
+              <span class="tooltip-box">Generates unique randomized bingo cards using Hebrew blends.<br><br>Print one card per student, then call out blends aloud — students mark off matches.<br><br>Includes a caller sheet for the teacher.</span>
+            </span>
+          </span>
+          <label class="toggle">
+            <input type="checkbox" id="bingoToggle" onchange="toggleBingoUI()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div id="bingoOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--border);flex-direction:column;gap:5px;">
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Grid size</span>
+            <select id="bingoGrid" style="flex:1;font-size:0.78rem;padding:3px 6px;">
+              <option value="3">3 × 3</option>
+              <option value="4">4 × 4</option>
+              <option value="5" selected>5 × 5</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Cards</span>
+            <input type="number" id="bingoCards" min="1" max="200" value="30" style="flex:1;font-size:0.78rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;font-family:inherit;background:var(--white);color:var(--text);">
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Per page</span>
+            <select id="bingoPerPage" style="flex:1;font-size:0.78rem;padding:3px 6px;">
+              <option value="1">1 card</option>
+              <option value="2" selected>2 cards</option>
+              <option value="4">4 cards</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Free space</span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="bingoFreeSpace" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Show sounds</span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="bingoShowSounds">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Caller sheet</span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="bingoCallerSheet" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:72px;line-height:1.3;">All cards match
+              <span class="tooltip-wrap" style="font-size:0.55rem;">?
+                <span class="tooltip-box">Every student's card contains the same blends — just in different positions.<br><br>Every blend you call will be on every card. Great for younger students and faster games.</span>
+              </span>
+            </span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="bingoSharedBlends">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="toggle-row" id="rowSelfCheck" style="margin-top:4px;">
+          <span>Student Self-Check Mode</span>
+          <label class="toggle">
+            <input type="checkbox" id="selfCheckToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div id="selfCheckOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--border);flex-direction:column;gap:6px;">
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;flex:1;">Timer</span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="timerToggle" onchange="document.getElementById('timerDurationRow').style.display=this.checked?'flex':'none'">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div id="timerDurationRow" style="display:none;gap:6px;align-items:center;font-size:0.78rem;padding-left:8px;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:52px;">Duration</span>
+            <select id="timerDuration" style="flex:1;font-size:0.78rem;padding:3px 6px;">
+              <option value="60">1 min</option>
+              <option value="120" selected>2 min</option>
+              <option value="180">3 min</option>
+              <option value="300">5 min</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;flex:1;">Audio <span style="font-size:0.65rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;">BETA</span></span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="audioToggle">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Layout -->
+    <div class="panel" id="panelLayout">
+      <div class="panel-title">Layout</div>
+      <div class="panel-body">
+
+        <div class="option-row">
+          <div>
+            <div class="option-label">Total Blends</div>
+          </div>
+          <select id="blendCount">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="40" selected>40</option>
+            <option value="50">50</option>
+            <option value="60">60</option>
+            <option value="70">70</option>
+            <option value="80">80</option>
+            <option value="90">90</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+        <div class="option-row">
+          <div class="option-label">Title</div>
+          <input type="text" id="wsTitle" value="Hebrew Blends" style="width:160px;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;">
+        </div>
+        <div class="option-row">
+          <div class="option-label">Subtitle</div>
+          <input type="text" id="wsSubtitle" placeholder="Optional instructions..." style="width:160px;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;">
+        </div>
+        <div class="option-row" style="margin-top:4px;">
+          <div class="option-label">Exclude Repeats</div>
+          <label class="toggle"><input type="checkbox" id="excludeRepeats"><span class="slider"></span></label>
+        </div>
+        <div class="option-row">
+          <div class="option-label">Landscape Print</div>
+          <label class="toggle"><input type="checkbox" id="landscapeMode" onchange="toggleLandscape(this.checked)"><span class="slider"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vowels -->
+    <div class="panel" id="panelVowels">
+      <div class="panel-title">Vowels Included</div>
+      <div class="panel-body">
+        <div class="vowel-grid" id="vowelGrid"></div>
+      </div>
+    </div>
+
+    <!-- Letters -->
+    <div class="panel" id="panelLetters">
+      <div class="panel-title">Letters Included</div>
+      <div class="panel-body">
+        <div class="letter-controls">
+          <button class="btn-xs" onclick="selectAllLetters()">All</button>
+          <button class="btn-xs" onclick="clearAllLetters()">None</button>
+          <button class="btn-xs" onclick="selectNoSofit()">No Sofit</button>
+        </div>
+        <div class="letter-grid" id="letterGrid"></div>
+      </div>
+    </div>
+
+    <!-- Presets -->
+    <div class="panel">
+      <div class="panel-title">Saved Presets</div>
+      <div class="panel-body">
+        <div class="preset-row">
+          <input type="text" id="presetName" placeholder="Preset name...">
+          <button class="btn-xs" onclick="savePreset()">💾 Save</button>
+        </div>
+        <div class="preset-list" id="presetList"></div>
+      </div>
+    </div>
+
+    <!-- Generate (desktop) -->
+    <div class="desktop-buttons">
+      <button class="btn btn-primary" onclick="generate()">⬡ Generate Worksheet</button>
+      <button class="btn btn-outline" id="regenBtn" onclick="regenerate()" disabled style="opacity:0.4;cursor:not-allowed;">↺ Regenerate</button>
+      <button class="btn btn-secondary" id="printBtn" onclick="window.print()" disabled style="opacity:0.4;cursor:not-allowed;">🖨 Print</button>
+      <button class="btn btn-outline" id="pdfBtn" onclick="exportPDF()" disabled style="opacity:0.4;cursor:not-allowed;margin-top:8px;">⬇ Export PDF</button>
+      <div class="print-tip" id="printTip" style="display:none;margin-top:8px;font-size:0.72rem;color:var(--muted);background:var(--warm-gray);border-radius:5px;padding:7px 9px;line-height:1.4;">
+        💡 <strong>Print tip:</strong> In the print dialog, uncheck <em>Headers and footers</em> to remove the URL and date.
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- Mobile FAB -->
+  <div class="mobile-fab">
+    <button class="btn btn-primary" onclick="generate()">⬡ Generate</button>
+    <button class="btn btn-outline" id="regenBtnMob" onclick="regenerate()" disabled style="opacity:0.4;cursor:not-allowed;">↺</button>
+    <button class="btn btn-secondary" id="printBtnMob" onclick="window.print()" disabled style="opacity:0.4;cursor:not-allowed;">🖨</button>
+    <button class="btn btn-outline" id="pdfBtnMob" onclick="exportPDF()" disabled style="opacity:0.4;cursor:not-allowed;">⬇ PDF</button>
+  </div>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main">
+    <div class="main-toolbar">
+      <div class="zoom-bar" id="zoomBar">
+        <span>🔍</span>
+        <input type="range" id="zoomSlider" min="50" max="200" value="100" oninput="applyZoom(this.value)">
+        <span id="zoomLabel">100%</span>
+      </div>
+    </div>
+    <div class="main-content">
+    <div class="worksheet-scaler" id="worksheetScaler">
+      <div class="worksheet" id="worksheet">
+        <div class="empty-state">
+          <div class="star">✡</div>
+          <h2>Ready to Generate</h2>
+          <p>Select your letters and vowels on the left, then click <strong>Generate Worksheet</strong>.</p>
+        </div>
+      </div>
+    </div>
+    </div>
+  </main>
+
+</div>
+
+<footer style="text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);">
+  Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="color:var(--gold);text-decoration:none;font-weight:600;">Harrison Bleiberg</a>
+  &nbsp;·&nbsp;
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" style="color:var(--gold);text-decoration:none;">
+    CC BY-NC-SA 4.0
+  </a>
+  &nbsp;·&nbsp;
+  Free to use and adapt for non-commercial educational purposes with attribution
+</footer>
+
+<script>
+//  DATA
+// ══════════════════════════════════════════════
+// Unicode nikud (vowel diacritics) — applied AFTER the consonant character
+// For Cholam (o): the dot sits above/after the letter as \u05B9
+// For letters that carry dagesh (בּ כּ פּ), the dagesh is already baked into the heb string
+const NIKUD = {
+  a:  '\u05B8',  // Kamatz  ָ
+  e:  '\u05B6',  // Segol   ֶ
+  i:  '\u05B4',  // Chirik  ִ
+  o:  '\u05B9',  // Cholam  ֹ
+  u:  '\u05BB',  // Kubutz  ֻ
+  sh: '\u05B0',  // Shva    ְ
+};
+
+// Base consonant for nikud attachment (strip any existing nikud/dagesh from stored heb string)
+// We store a clean base separately so we can compose letter + nikud cleanly
+const LETTERS = [
+  { heb: 'א', base: 'א', name: 'Alef',   sofit: null, sounds: { a:'Ah',   e:'Eh',   i:'EE',   o:'Oh',   u:'Oo',   sh:'\'' } },
+  { heb: 'בּ', base: 'בּ', name: 'Bet',    sofit: null, sounds: { a:'Bah',  e:'Beh',  i:'Bee',  o:'Boh',  u:'Boo',  sh:'B\'' } },
+  { heb: 'ב', base: 'ב', name: 'Vet',    sofit: null, sounds: { a:'Vah',  e:'Veh',  i:'Vee',  o:'Voh',  u:'Voo',  sh:'V\'' } },
+  { heb: 'ג', base: 'ג', name: 'Gimel',  sofit: null, sounds: { a:'Gah',  e:'Geh',  i:'Gee',  o:'Goh',  u:'Goo',  sh:'G\'' } },
+  { heb: 'ד', base: 'ד', name: 'Dalet',  sofit: null, sounds: { a:'Dah',  e:'Deh',  i:'Dee',  o:'Doh',  u:'Doo',  sh:'D\'' } },
+  { heb: 'ה', base: 'ה', name: 'Heh',    sofit: null, sounds: { a:'Hah',  e:'Heh',  i:'Hee',  o:'Hoh',  u:'Hoo',  sh:'H\'' } },
+  { heb: 'ו', base: 'ו', name: 'Vav',          sofit: null, sounds: { a:'Vah', e:'Veh', i:'Vee', o:'Oh',  u:'Oo',  sh:'V\'' } },
+  { heb: 'וֹ', base: 'וֹ', name: 'Vav Cholam',   sofit: null, vavVariant: 'o', sounds: { a:'Oh', e:'Oh', i:'Oh', o:'Oh', u:'Oh', sh:'Oh' } },
+  { heb: 'וּ', base: 'וּ', name: 'Vav Shuruk',   sofit: null, vavVariant: 'u', sounds: { a:'Oo', e:'Oo', i:'Oo', o:'Oo', u:'Oo', sh:'Oo' } },
+  { heb: 'ז', base: 'ז', name: 'Zayin',  sofit: null, sounds: { a:'Zah',  e:'Zeh',  i:'Zee',  o:'Zoh',  u:'Zoo',  sh:'Z\'' } },
+  { heb: 'ח', base: 'ח', name: 'Chet',   sofit: null, sounds: { a:'Chah', e:'Cheh', i:'Chee', o:'Choh', u:'Choo', sh:'Ch\'' } },
+  { heb: 'ט', base: 'ט', name: 'Tet',    sofit: null, sounds: { a:'Tah',  e:'Teh',  i:'Tee',  o:'Toh',  u:'Too',  sh:'T\'' } },
+  { heb: 'י', base: 'י', name: 'Yod',    sofit: null, sounds: { a:'Yah',  e:'Yeh',  i:'Yee',  o:'Yoh',  u:'Yoo',  sh:'Y\'' } },
+  { heb: 'כּ', base: 'כּ', name: 'Kaf',    sofit: null, sounds: { a:'Kah',  e:'Keh',  i:'Kee',  o:'Koh',  u:'Koo',  sh:'K\'' } },
+  { heb: 'כ', base: 'כ', name: 'Chaf',   sofit: 'ך',  sounds: { a:'Chah', e:'Cheh', i:'Chee', o:'Choh', u:'Choo', sh:'Ch\'' } },
+  { heb: 'ל', base: 'ל', name: 'Lamed',  sofit: null, sounds: { a:'Lah',  e:'Leh',  i:'Lee',  o:'Loh',  u:'Loo',  sh:'L\'' } },
+  { heb: 'מ', base: 'מ', name: 'Mem',    sofit: 'ם',  sounds: { a:'Mah',  e:'Meh',  i:'Mee',  o:'Moh',  u:'Moo',  sh:'M\'' } },
+  { heb: 'נ', base: 'נ', name: 'Nun',    sofit: 'ן',  sounds: { a:'Nah',  e:'Neh',  i:'Nee',  o:'Noh',  u:'Noo',  sh:'N\'' } },
+  { heb: 'ס', base: 'ס', name: 'Samech', sofit: null, sounds: { a:'Sah',  e:'Seh',  i:'See',  o:'Soh',  u:'Soo',  sh:'S\'' } },
+  { heb: 'ע', base: 'ע', name: 'Ayin',   sofit: null, sounds: { a:'Ah',   e:'Eh',   i:'EE',   o:'Oh',   u:'Oo',   sh:'\'' } },
+  { heb: 'פּ', base: 'פּ', name: 'Peh',    sofit: null, sounds: { a:'Pah',  e:'Peh',  i:'Pee',  o:'Poh',  u:'Poo',  sh:'P\'' } },
+  { heb: 'פ', base: 'פ', name: 'Feh',    sofit: 'ף',  sounds: { a:'Fah',  e:'Feh',  i:'Fee',  o:'Foh',  u:'Foo',  sh:'F\'' } },
+  { heb: 'צ', base: 'צ', name: 'Tzadi',  sofit: 'ץ',  sounds: { a:'Tzah', e:'Tzeh', i:'Tzee', o:'Tzoh', u:'Tzoo', sh:'Tz\'' } },
+  { heb: 'ק', base: 'ק', name: 'Kuf',    sofit: null, sounds: { a:'Kah',  e:'Keh',  i:'Kee',  o:'Koh',  u:'Koo',  sh:'K\'' } },
+  { heb: 'ר', base: 'ר', name: 'Resh',   sofit: null, sounds: { a:'Rah',  e:'Reh',  i:'Ree',  o:'Roh',  u:'Roo',  sh:'R\'' } },
+  { heb: 'ש', base: 'ש', name: 'Shin',   sofit: null, sounds: { a:'Shah', e:'Sheh', i:'Shee', o:'Shoh', u:'Shoo', sh:'Sh\'' } },
+  { heb: 'שׂ', base: 'שׂ', name: 'Sin',    sofit: null, sounds: { a:'Sah',  e:'Seh',  i:'See',  o:'Soh',  u:'Soo',  sh:'S\'' } },
+  { heb: 'ת', base: 'ת', name: 'Tav',    sofit: null, sounds: { a:'Tah',  e:'Teh',  i:'Tee',  o:'Toh',  u:'Too',  sh:'T\'' } },
+];
+
+// Sofit base chars for display (no vowel on sofit — it's always word-final)
+const SOFIT_BASE = { 'ך':'ך', 'ם':'ם', 'ן':'ן', 'ף':'ף', 'ץ':'ץ' };
+
+// Sofit-only letters (can only appear as 2nd letter)
+const SOFIT_CHARS = new Set(['ך','ם','ן','ף','ץ']);
+
+// Compose a Hebrew letter with its vowel nikud for display
+// firstLetter = true → attach vowel; false (sofit or naked 2nd) → bare letter
+function withNikud(letterObj, vowelKey, isFirst) {
+  const base = letterObj.base;
+  if (!isFirst) return base;
+
+  // Vav variants already contain their own dot — return as-is regardless of vowel
+  if (letterObj.vavVariant) return base;
+
+  // Plain Vav with Cholam/Shuruk uses the dotted forms
+  if (base === 'ו') {
+    if (vowelKey === 'o') return 'וֹ';
+    if (vowelKey === 'u') return 'וּ';
+  }
+
+  const mark = NIKUD[vowelKey] || '';
+  return base + mark;
+}
+
+const VOWELS = [
+  { key: 'a',  label: 'Kamatz / Patach', sub: 'AH sound', nikud: 'אָ' },
+  { key: 'e',  label: 'Segol / Tzeirei', sub: 'EH sound', nikud: 'אֶ' },
+  { key: 'i',  label: 'Chirik',           sub: 'EE sound', nikud: 'אִ' },
+  { key: 'o',  label: 'Cholam',           sub: 'OH sound', nikud: 'אֹ' },
+  { key: 'u',  label: 'Kubutz',           sub: 'OO sound', nikud: 'אֻ' },
+  { key: 'sh', label: 'Shva',             sub: 'ə sound',  nikud: 'אְ' },
+];
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let selectedLetters = new Set(LETTERS.map(l => l.heb));
+let selectedVowels  = new Set(['a','e','i','o','u']);
+let blends = [];
+
+// ══════════════════════════════════════════════
+//  INIT UI
+// ══════════════════════════════════════════════
+function initVowels() {
+  const grid = document.getElementById('vowelGrid');
+  VOWELS.forEach(v => {
+    const chip = document.createElement('label');
+    chip.className = 'vowel-chip';
+    chip.setAttribute('data-key', v.key);
+    chip.innerHTML = `
+      <input type="checkbox" ${selectedVowels.has(v.key) ? 'checked' : ''}
+        onchange="toggleVowel('${v.key}', this.checked)">
+      <span style="display:flex;align-items:center;gap:6px;">
+        <span style="font-family:'Frank Ruhl Libre',serif;font-size:1.4rem;direction:rtl;min-width:20px;text-align:center;">${v.nikud}</span>
+        <span><strong>${v.label}</strong><br><span style="color:var(--muted);font-size:0.72rem">${v.sub}</span></span>
+      </span>
+    `;
+    grid.appendChild(chip);
+  });
+}
+
+function initLetters() {
+  const grid = document.getElementById('letterGrid');
+
+  LETTERS.forEach(l => {
+    // Skip vav variants — they render inside the Vav tile
+    if (l.vavVariant) return;
+
+    if (l.heb === 'ו') {
+      // Render plain Vav + its two vowel-letter variants as normal tiles
+      const vavTiles = [
+        { heb: 'ו',  name: 'Vav' },
+        { heb: 'וֹ', name: 'Cholam' },
+        { heb: 'וּ', name: 'Shuruk' },
+      ];
+      vavTiles.forEach(vt => {
+        const div = document.createElement('div');
+        div.className = 'letter-tile' + (selectedLetters.has(vt.heb) ? ' selected' : '');
+        div.dataset.heb = vt.heb;
+        div.innerHTML = `<span class="heb">${vt.heb}</span><span class="name">${vt.name}</span>`;
+        div.onclick = () => toggleLetter(vt.heb, div);
+        grid.appendChild(div);
+      });
+      return;
+    }
+
+    // Regular tile
+    const div = document.createElement('div');
+    div.className = 'letter-tile' + (selectedLetters.has(l.heb) ? ' selected' : '');
+    div.dataset.heb = l.heb;
+    div.innerHTML = `<span class="heb">${l.heb}</span><span class="name">${l.name}</span>`;
+    div.onclick = () => toggleLetter(l.heb, div);
+    grid.appendChild(div);
+
+    // Sofit sub-tile
+    if (l.sofit) {
+      const sf = document.createElement('div');
+      sf.className = 'letter-tile' + (selectedLetters.has(l.sofit) ? ' selected' : '');
+      sf.dataset.heb = l.sofit;
+      sf.innerHTML = `<span class="heb">${l.sofit}</span><span class="name">${l.name} sofit</span>`;
+      sf.onclick = () => toggleLetter(l.sofit, sf);
+      grid.appendChild(sf);
+    }
+  });
+}
+
+function toggleLetter(heb, el) {
+  if (selectedLetters.has(heb)) {
+    selectedLetters.delete(heb);
+    el.classList.remove('selected');
+  } else {
+    selectedLetters.add(heb);
+    el.classList.add('selected');
+  }
+}
+
+function toggleVowel(key, checked) {
+  if (checked) selectedVowels.add(key);
+  else selectedVowels.delete(key);
+}
+
+function selectAllLetters() {
+  selectedLetters = new Set([
+    ...LETTERS.map(l => l.heb),
+    ...LETTERS.filter(l => l.sofit).map(l => l.sofit)
+  ]);
+  document.querySelectorAll('.letter-tile').forEach(t => t.classList.add('selected'));
+}
+
+function clearAllLetters() {
+  selectedLetters.clear();
+  document.querySelectorAll('.letter-tile').forEach(t => t.classList.remove('selected'));
+}
+
+function selectNoSofit() {
+  selectedLetters = new Set(LETTERS.map(l => l.heb)); // includes vav variants since they're in LETTERS
+  document.querySelectorAll('.letter-tile').forEach(t => {
+    const heb = t.dataset.heb;
+    if (SOFIT_CHARS.has(heb)) t.classList.remove('selected');
+    else t.classList.add('selected');
+  });
+}
+
+// ── LANDSCAPE MODE ──
+function toggleLandscape(on) {
+  document.body.classList.toggle('landscape-mode', on);
+  if (blends.length) renderWorksheet(false);
+}
+
+// ══════════════════════════════════════════════
+//  PRESET SYSTEM
+// ══════════════════════════════════════════════
+function getSettings() {
+  return {
+    // Letters & vowels
+    selectedLetters: [...selectedLetters],
+    selectedVowels:  [...selectedVowels],
+    // Layout
+    blendCount:   document.getElementById('blendCount').value,
+    wsTitle:      document.getElementById('wsTitle').value,
+    wsSubtitle:   document.getElementById('wsSubtitle').value,
+    excludeRepeats: document.getElementById('excludeRepeats').checked,
+    landscape:    document.getElementById('landscapeMode').checked,
+    // Worksheet mode toggles
+    blendType:    document.querySelector('.blend-type-btn.active')?.dataset.type || 'two',
+    inverse:      document.getElementById('inverseToggle').checked,
+    answerKey:    document.getElementById('answerKeyToggle').checked,
+    oneLetter:    document.querySelector('.blend-type-btn.active')?.dataset.type === 'one',
+    nikudOnly:    document.querySelector('.blend-type-btn.active')?.dataset.type === 'nikud',
+    threeLetter:  document.querySelector('.blend-type-btn.active')?.dataset.type === 'three',
+    threeLetter:  document.getElementById('threeLetterToggle').checked,
+    vowelPosition: document.getElementById('vowelPosition').value,
+    selfCheck:    document.getElementById('selfCheckToggle').checked,
+    timerOn:      document.getElementById('timerToggle').checked,
+    timerDuration: document.getElementById('timerDuration').value,
+    audio:        document.getElementById('audioToggle').checked,
+    bingo:        document.getElementById('bingoToggle').checked,
+    bingoGrid:    document.getElementById('bingoGrid').value,
+    bingoCards:   document.getElementById('bingoCards').value,
+    bingoPerPage: document.getElementById('bingoPerPage').value,
+    bingoFreeSpace:   document.getElementById('bingoFreeSpace').checked,
+    bingoShowSounds:  document.getElementById('bingoShowSounds').checked,
+    bingoCallerSheet: document.getElementById('bingoCallerSheet').checked,
+    bingoSharedBlends: document.getElementById('bingoSharedBlends').checked,
+    // Focus letters
+    focusOn:      document.getElementById('focusToggle').checked,
+    lock1Active:  document.getElementById('lock1Active').checked,
+    lock1Letter:  document.getElementById('lock1Letter').value,
+    lock2Active:  document.getElementById('lock2Active').checked,
+    lock2Letter:  document.getElementById('lock2Letter').value,
+    lock3Active:  document.getElementById('lock3Active').checked,
+    lock3Letter:  document.getElementById('lock3Letter').value,
+  };
+}
+
+function applySettings(s) {
+  // Letters
+  selectedLetters = new Set(s.selectedLetters || []);
+  selectedVowels  = new Set(s.selectedVowels  || []);
+  document.querySelectorAll('.letter-tile').forEach(t => {
+    t.classList.toggle('selected', selectedLetters.has(t.dataset.heb));
+  });
+  document.querySelectorAll('#vowelGrid label[data-key]').forEach(chip => {
+    const key = chip.getAttribute('data-key');
+    const cb  = chip.querySelector('input[type=checkbox]');
+    if (cb) cb.checked = selectedVowels.has(key);
+  });
+
+  // Layout
+  if (s.blendCount)           document.getElementById('blendCount').value = s.blendCount;
+  if (s.wsTitle !== undefined) document.getElementById('wsTitle').value = s.wsTitle;
+  if (s.wsSubtitle !== undefined) document.getElementById('wsSubtitle').value = s.wsSubtitle;
+  if (s.excludeRepeats !== undefined) document.getElementById('excludeRepeats').checked = s.excludeRepeats;
+  if (s.landscape !== undefined) { document.getElementById('landscapeMode').checked = s.landscape; toggleLandscape(s.landscape); }
+
+  // Determine and restore blend type selector
+  const blendType = s.blendType || (s.nikudOnly ? 'nikud' : s.oneLetter ? 'one' : s.threeLetter ? 'three' : 'two');
+  document.getElementById('oneLetterToggle').checked   = blendType === 'one';
+  document.getElementById('nikudOnlyToggle').checked   = blendType === 'nikud';
+  document.getElementById('threeLetterToggle').checked = blendType === 'three';
+  if (s.vowelPosition) document.getElementById('vowelPosition').value = s.vowelPosition;
+  if (s.timerOn !== undefined)   document.getElementById('timerToggle').checked = s.timerOn;
+  if (s.timerDuration)           document.getElementById('timerDuration').value = s.timerDuration;
+  if (s.audio !== undefined)     document.getElementById('audioToggle').checked = s.audio;
+  if (s.timerOn !== undefined)   document.getElementById('timerDurationRow').style.display = s.timerOn ? 'flex' : 'none';
+
+  // Bingo
+  if (s.bingo !== undefined) document.getElementById('bingoToggle').checked = s.bingo;
+  if (s.bingoGrid)    document.getElementById('bingoGrid').value = s.bingoGrid;
+  if (s.bingoCards)   document.getElementById('bingoCards').value = s.bingoCards;
+  if (s.bingoPerPage) document.getElementById('bingoPerPage').value = s.bingoPerPage;
+  if (s.bingoFreeSpace !== undefined)    document.getElementById('bingoFreeSpace').checked = s.bingoFreeSpace;
+  if (s.bingoShowSounds !== undefined)   document.getElementById('bingoShowSounds').checked = s.bingoShowSounds;
+  if (s.bingoCallerSheet !== undefined)  document.getElementById('bingoCallerSheet').checked = s.bingoCallerSheet;
+  if (s.bingoSharedBlends !== undefined) document.getElementById('bingoSharedBlends').checked = s.bingoSharedBlends;
+
+  // Focus letters
+  if (s.focusOn !== undefined) document.getElementById('focusToggle').checked = s.focusOn;
+  if (s.lock1Active !== undefined) document.getElementById('lock1Active').checked = s.lock1Active;
+  if (s.lock1Letter) document.getElementById('lock1Letter').value = s.lock1Letter;
+  if (s.lock2Active !== undefined) document.getElementById('lock2Active').checked = s.lock2Active;
+  if (s.lock2Letter) document.getElementById('lock2Letter').value = s.lock2Letter;
+  if (s.lock3Active !== undefined) document.getElementById('lock3Active').checked = s.lock3Active;
+  if (s.lock3Letter) document.getElementById('lock3Letter').value = s.lock3Letter;
+
+  // Now fire all UI toggle functions AFTER all values are set
+  setBlendType(blendType);
+  toggleFocusUI();
+  toggleBingoUI();
+
+  // Self-check last — overrides everything
+  if (s.selfCheck !== undefined) {
+    document.getElementById('selfCheckToggle').checked = s.selfCheck;
+    document.getElementById('selfCheckToggle').dispatchEvent(new Event('change'));
+  }
+}
+
+function savePreset() {
+  const name = document.getElementById('presetName').value.trim();
+  if (!name) { alert('Please enter a preset name.'); return; }
+  const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+  presets[name] = getSettings();
+  localStorage.setItem('hebrewBlender_presets', JSON.stringify(presets));
+  document.getElementById('presetName').value = '';
+  renderPresets();
+}
+
+function deletePreset(name) {
+  const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+  delete presets[name];
+  localStorage.setItem('hebrewBlender_presets', JSON.stringify(presets));
+  renderPresets();
+}
+
+function loadPreset(name) {
+  const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+  if (presets[name]) applySettings(presets[name]);
+}
+
+function renderPresets() {
+  const list = document.getElementById('presetList');
+  list.innerHTML = '';
+  const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+  if (Object.keys(presets).length === 0) {
+    list.innerHTML = '<div style="font-size:0.75rem;color:var(--muted);text-align:center;padding:6px;">No saved presets</div>';
+    return;
+  }
+  Object.keys(presets).forEach(name => {
+    const item = document.createElement('div');
+    item.className = 'preset-item';
+    item.innerHTML = `
+      <span>${name}</span>
+      <button onclick="loadPreset('${name.replace(/'/g,"\\'")}')">Load</button>
+      <button class="del-btn" onclick="deletePreset('${name.replace(/'/g,"\\'")}')">✕</button>
+    `;
+    list.appendChild(item);
+  });
+}
+
+// ══════════════════════════════════════════════
+//  TIMER
+// ══════════════════════════════════════════════
+let timerInterval = null;
+let timerRemaining = 0;
+
+function startTimer(seconds) {
+  clearInterval(timerInterval);
+  timerRemaining = seconds;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timerRemaining--;
+    updateTimerDisplay();
+    if (timerRemaining <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      document.getElementById('scTimerDisplay').classList.add('urgent');
+      showScoreSummary();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+}
+
+function resetTimer() {
+  stopTimer();
+  const dur = parseInt(document.getElementById('timerDuration').value);
+  timerRemaining = dur;
+  updateTimerDisplay();
+  if (document.getElementById('scTimerDisplay')) {
+    document.getElementById('scTimerDisplay').classList.remove('urgent');
+  }
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('scTimerDisplay');
+  if (!el) return;
+  const m = Math.floor(timerRemaining / 60);
+  const s = timerRemaining % 60;
+  el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  el.classList.toggle('urgent', timerRemaining <= 10 && timerRemaining > 0);
+}
+
+// ══════════════════════════════════════════════
+//  SCORE
+// ══════════════════════════════════════════════
+let scoreCorrect = 0;
+let scoreIncorrect = 0;
+
+function markScore(correct, cardEl) {
+  if (correct) scoreCorrect++; else scoreIncorrect++;
+  // Dim the card to show it's been scored
+  cardEl.style.opacity = '0.5';
+  cardEl.style.pointerEvents = 'none';
+  updateScoreBar();
+}
+
+function updateScoreBar() {
+  const el = document.getElementById('scScoreBar');
+  if (!el) return;
+  const total = blends.length;
+  const done = scoreCorrect + scoreIncorrect;
+  const remaining = total - done;
+  el.querySelector('.score-correct').textContent = `✓ ${scoreCorrect}`;
+  el.querySelector('.score-incorrect').textContent = `✗ ${scoreIncorrect}`;
+  el.querySelector('.score-remaining').textContent = `${remaining} left`;
+  if (remaining === 0) showScoreSummary();
+}
+
+function showScoreSummary() {
+  stopTimer();
+  const ws = document.getElementById('worksheet');
+  const existing = ws.querySelector('.score-summary');
+  if (existing) return;
+  const total = blends.length;
+  const done = scoreCorrect + scoreIncorrect;
+  const pct = done > 0 ? Math.round((scoreCorrect / done) * 100) : 0;
+  const summary = document.createElement('div');
+  summary.className = 'score-summary';
+  summary.innerHTML = `
+    <h2>Session Complete!</h2>
+    <div class="big-score">${pct}%</div>
+    <p>${scoreCorrect} correct · ${scoreIncorrect} incorrect · ${total} total</p>
+    <button class="btn-xs" style="margin-top:12px;" onclick="resetSelfCheck()">Try Again</button>
+  `;
+  ws.appendChild(summary);
+}
+
+function resetSelfCheck() {
+  scoreCorrect = 0;
+  scoreIncorrect = 0;
+  resetTimer();
+  renderWorksheet(false);
+}
+
+// ══════════════════════════════════════════════
+//  AUDIO (BETA)
+// ══════════════════════════════════════════════
+function speakBlend(text) {
+  if (!window.speechSynthesis) return;
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'he-IL';
+  utt.rate = 0.85;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utt);
+}
+function toggleDark() {
+  const isDark = document.body.classList.toggle('dark');
+  document.getElementById('darkToggle').textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+  localStorage.setItem('hebrewBlender_darkMode', isDark ? '1' : '0');
+}
+
+function initDarkMode() {
+  const saved = localStorage.getItem('hebrewBlender_darkMode');
+  if (saved === '1') {
+    document.body.classList.add('dark');
+    document.getElementById('darkToggle').textContent = '☀️ Light Mode';
+  } else {
+    document.getElementById('darkToggle').textContent = '🌙 Dark Mode';
+  }
+  // Remove early class now that body.dark takes over
+  document.documentElement.classList.remove('dark-early');
+}
+
+// ── SIDEBAR COLLAPSE ──
+function toggleSidebar() {
+  const sidebar   = document.getElementById('appSidebar');
+  const showBtn   = document.getElementById('sidebarShowBtn');
+  const collapsed = sidebar.classList.toggle('hidden');
+  showBtn.style.display = collapsed ? 'flex' : 'none';
+}
+function applyZoom(val) {
+  document.getElementById('worksheetScaler').style.transform = `scale(${val/100})`;
+  document.getElementById('zoomLabel').textContent = `${val}%`;
+  localStorage.setItem('hebrewBlender_zoom', val);
+}
+
+function initZoom() {
+  const saved = localStorage.getItem('hebrewBlender_zoom');
+  if (saved) {
+    document.getElementById('zoomSlider').value = saved;
+    applyZoom(saved);
+  }
+}
+
+// ── THREE LETTER UI ──
+function toggleThreeLetterUI() {
+  const on = document.getElementById('threeLetterToggle').checked;
+  document.getElementById('threeLetterOptions').style.display = on ? 'block' : 'none';
+  document.getElementById('lockRow3').style.display = on ? 'flex' : 'none';
+  document.getElementById('headerSub').textContent = on
+    ? 'Three-letter syllable practice for emerging Hebrew readers'
+    : 'Two-letter syllable practice for emerging Hebrew readers';
+}
+
+// ── BLEND TYPE SELECTOR ──
+function setBlendType(type) {
+  // Update button active states
+  document.querySelectorAll('.blend-type-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.type === type);
+  });
+
+  // Set hidden toggle values for getSettings/applySettings compatibility
+  document.getElementById('oneLetterToggle').checked  = type === 'one';
+  document.getElementById('nikudOnlyToggle').checked  = type === 'nikud';
+  document.getElementById('threeLetterToggle').checked = type === 'three';
+
+  // Show/hide three-letter sub-option
+  document.getElementById('threeLetterOptions').style.display = type === 'three' ? 'block' : 'none';
+
+  // Show/hide letter panel (nikud doesn't need letters)
+  document.getElementById('panelLetters').style.display = type === 'nikud' ? 'none' : '';
+
+  // Show/hide lock rows (one-letter and nikud don't need pos 2/3)
+  document.getElementById('lockRow2').style.display = (type === 'two' || type === 'three') ? 'flex' : 'none';
+  document.getElementById('lockRow3').style.display = type === 'three' ? 'flex' : 'none';
+
+  // Update header subtitle
+  const subtitles = {
+    two:   'Two-letter syllable practice for emerging Hebrew readers',
+    one:   'Single-letter drill with vowel sounds',
+    three: 'Three-letter syllable practice for emerging Hebrew readers',
+    nikud: 'Vowel sound recognition drill',
+  };
+  document.getElementById('headerSub').textContent = subtitles[type];
+
+  if (blends.length) generate(false);
+}
+
+// Keep these stubs so existing code that calls them doesn't break
+function toggleOneLetterMode() {
+  setBlendType(document.getElementById('oneLetterToggle').checked ? 'one' : 'two');
+}
+function toggleNikudOnlyMode() {
+  setBlendType(document.getElementById('nikudOnlyToggle').checked ? 'nikud' : 'two');
+}
+function toggleThreeLetterUI() {
+  const on = document.getElementById('threeLetterToggle').checked;
+  document.getElementById('threeLetterOptions').style.display = on ? 'block' : 'none';
+  document.getElementById('lockRow3').style.display = on ? 'flex' : 'none';
+}
+
+// ── ONE-LETTER GENERATION ──
+function generateOneLetter() {
+  const vowelKeys = [...selectedVowels];
+  if (vowelKeys.length === 0) return [];
+  const VAV_VARIANTS = new Set(['וֹ','וּ']);
+  const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
+  const pool = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h));
+  if (pool.length === 0) return [];
+
+  const count = parseInt(document.getElementById('blendCount').value);
+  const result = [];
+  for (let i = 0; i < count; i++) {
+    let vowel = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
+    const letter = pool[Math.floor(Math.random() * pool.length)];
+    const letterObj = getLetter(letter);
+
+    // Vav + Shva guard
+    if ((letter === 'ו' || letter === 'וֹ' || letter === 'וּ') && vowel === 'sh') {
+      const alt = vowelKeys.filter(v => v !== 'sh');
+      if (alt.length === 0) continue;
+      vowel = alt[Math.floor(Math.random() * alt.length)];
+    }
+    // Sin/Shin + Cholam guard
+    if ((letter === 'שׂ' || letter === 'ש') && vowel === 'o') {
+      const alt = vowelKeys.filter(v => v !== 'o');
+      if (alt.length === 0) continue;
+      vowel = alt[Math.floor(Math.random() * alt.length)];
+    }
+
+    const hebrewDisplay = withNikud(letterObj, vowel, true);
+    const combined = getSound(letterObj, vowel);
+    result.push({ hebrewDisplay, combined, vowel });
+  }
+  return result;
+}
+
+// ── NIKUD-ONLY GENERATION ──
+function generateNikudOnly() {
+  const vowelKeys = [...selectedVowels];
+  if (vowelKeys.length === 0) return [];
+  const count = parseInt(document.getElementById('blendCount').value);
+  const alefObj = getLetter('א');
+  const result = [];
+  for (let i = 0; i < count; i++) {
+    const vowel = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
+    const mark = NIKUD[vowel] || '';
+    const hebrewDisplay = 'א' + mark;
+    const combined = getSound(alefObj, vowel);
+    result.push({ hebrewDisplay, combined, vowel, nikudOnly: true });
+  }
+  return result;
+}
+function toggleBingoUI() {
+  const on = document.getElementById('bingoToggle').checked;
+  document.getElementById('bingoOptions').style.display = on ? 'flex' : 'none';
+
+  const hideRows = ['rowInverse','rowAnswerKey','rowFocus','rowThreeLetter','rowSelfCheck','rowOneLetter','rowNikudOnly'];
+  hideRows.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = on ? 'none' : ''; });
+  document.getElementById('panelLayout').style.display = on ? 'none' : '';
+
+  if (on) {
+    ['focusOptions','threeLetterOptions','selfCheckOptions'].forEach(id => {
+      const el = document.getElementById(id); if(el) el.style.display = 'none';
+    });
+  } else {
+    document.getElementById('focusOptions').style.display =
+      document.getElementById('focusToggle').checked ? 'flex' : 'none';
+    document.getElementById('threeLetterOptions').style.display =
+      document.getElementById('threeLetterToggle').checked ? 'block' : 'none';
+    document.getElementById('selfCheckOptions').style.display =
+      document.getElementById('selfCheckToggle').checked ? 'flex' : 'none';
+  }
+
+  if (blends.length) renderWorksheet(false);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('bingoSharedBlends').addEventListener('change', function() {
+    document.getElementById('bingoSharedNote').style.display = this.checked ? 'block' : 'none';
+  });
+});
+
+// ── BINGO GENERATION ──
+function generateBingoBlend(firstPool, secondPool, vowelKeys, excludeRepeats) {
+  let attempts = 0, first, second, vowel;
+  do {
+    vowel  = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
+    first  = firstPool[Math.floor(Math.random() * firstPool.length)];
+    second = secondPool[Math.floor(Math.random() * secondPool.length)];
+    attempts++;
+  } while (attempts < 30 && (
+    (first === 'י' && second === 'י') ||
+    (excludeRepeats && first === second)
+  ));
+  if (first === 'י' && second === 'י') return null;
+
+  // Sin/Shin + Cholam guard
+  if ((first === 'שׂ' || first === 'ש') && vowel === 'o') {
+    const alt = vowelKeys.filter(v => v !== 'o');
+    if (alt.length === 0) return null;
+    vowel = alt[Math.floor(Math.random() * alt.length)];
+  }
+  // Vav + Shva guard
+  if ((first === 'ו' || first === 'וֹ' || first === 'וּ') && vowel === 'sh') {
+    const alt = vowelKeys.filter(v => v !== 'sh');
+    if (alt.length === 0) return null;
+    vowel = alt[Math.floor(Math.random() * alt.length)];
+  }
+
+  const firstObj  = getLetter(first);
+  const secondObj = getLetter(second);
+  const firstSound      = getSound(firstObj, vowel);
+  const secondConsonant = secondObj.sounds['sh'].replace("'", '');
+  const combined        = firstSound + secondConsonant;
+  const firstDisplay    = withNikud(firstObj, vowel, true);
+  const secondDisplay   = SOFIT_CHARS.has(second) ? second : secondObj.base;
+  const hebrewDisplay   = firstDisplay + secondDisplay;
+  return { hebrewDisplay, combined, key: first + vowel + second };
+}
+
+// ── BINGO RENDER ──
+function renderBingo(ws) {
+  ws.innerHTML = '';
+
+  const gridSize    = parseInt(document.getElementById('bingoGrid').value);
+  const numCards    = parseInt(document.getElementById('bingoCards').value);
+  const perPage     = parseInt(document.getElementById('bingoPerPage').value);
+  const freeSpace   = document.getElementById('bingoFreeSpace').checked;
+  const showSounds  = document.getElementById('bingoShowSounds').checked;
+  const callerOn    = document.getElementById('bingoCallerSheet').checked;
+  const excludeRep  = document.getElementById('excludeRepeats').checked;
+  const sharedBlends = document.getElementById('bingoSharedBlends').checked;
+
+  const vowelKeys = [...selectedVowels];
+  if (vowelKeys.length === 0) { ws.innerHTML = '<div class="empty-state"><h2>Please select at least one vowel.</h2></div>'; return; }
+
+  const VAV_VARIANTS = new Set(['וֹ','וּ']);
+  const HAS_SOFIT    = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
+  let firstPool  = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h));
+  let secondPool = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h) && h !== 'ו');
+
+  if (firstPool.length === 0 || secondPool.length === 0) {
+    ws.innerHTML = '<div class="empty-state"><h2>Please select more letters.</h2></div>'; return;
+  }
+
+  const cellsNeeded = freeSpace ? gridSize * gridSize - 1 : gridSize * gridSize;
+  const BINGO_HEADERS = { 3: ['ב','י','נ'], 4: ['ב','י','נ','ג'], 5: ['ב','י','נ','ג','ו'] };
+  const headers = BINGO_HEADERS[gridSize];
+
+  // Build caller pool — ensure every selected vowel is represented equally
+  // Generate blends for each vowel separately, then interleave
+  const callerPool = [];
+  const callerKeys = new Set();
+
+  function tryAddBlend(vowelKey) {
+    let attempts = 0;
+    while (attempts < 50) {
+      attempts++;
+      const b = generateBingoBlend(firstPool, secondPool, [vowelKey], excludeRep);
+      if (b && !callerKeys.has(b.key)) {
+        callerPool.push(b);
+        callerKeys.add(b.key);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Round-robin across vowels until we have enough blends
+  // Shared mode only needs cellsNeeded unique blends; normal mode needs more
+  const targetSize = sharedBlends ? cellsNeeded : Math.min(cellsNeeded * numCards, 200);
+  let safetyBreak = 0;
+  while (callerPool.length < targetSize && safetyBreak < 3000) {
+    safetyBreak++;
+    for (const v of vowelKeys) {
+      if (callerPool.length >= targetSize) break;
+      tryAddBlend(v);
+    }
+  }
+
+  // Shuffle helper
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // If sharedBlends: generate one master set of cellsNeeded blends, shuffle positions per card
+  // If not: each card draws randomly from the full caller pool
+  const masterPool = sharedBlends ? shuffle(callerPool).slice(0, cellsNeeded) : null;
+
+  // Generate each card
+  const cards = [];
+  for (let c = 0; c < numCards; c++) {
+    const pool = sharedBlends
+      ? shuffle(masterPool)           // same blends, different positions
+      : shuffle(callerPool).slice(0, cellsNeeded); // different blends each card
+    const cells = [];
+    let idx = 0;
+    for (let r = 0; r < gridSize; r++) {
+      for (let col = 0; col < gridSize; col++) {
+        const center = Math.floor(gridSize / 2);
+        if (freeSpace && r === center && col === center) {
+          cells.push({ free: true });
+        } else {
+          cells.push(pool[idx++] || { hebrewDisplay: '?', combined: '?', key: '?' });
+        }
+      }
+    }
+    cards.push({ num: c + 1, cells });
+  }
+
+  // Render cards in pages
+  for (let i = 0; i < cards.length; i += perPage) {
+    const page = document.createElement('div');
+    const twoUp  = perPage === 2;
+    const fourUp = perPage === 4;
+    page.className = `bingo-page${twoUp ? ' two-up' : fourUp ? ' four-up' : ''}`;
+    if (i > 0) page.classList.add('bingo-page-break');
+
+    for (let j = i; j < Math.min(i + perPage, cards.length); j++) {
+      const card = cards[j];
+      const cardEl = document.createElement('div');
+      cardEl.className = `bingo-card${twoUp ? ' two-up' : fourUp ? ' four-up' : ''}`;
+
+      // Card number
+      const numBar = document.createElement('div');
+      numBar.className = 'bingo-card-num';
+      numBar.textContent = `CARD #${card.num}`;
+      cardEl.appendChild(numBar);
+
+      // Header row (B-I-N-G-O)
+      const headerEl = document.createElement('div');
+      headerEl.className = `bingo-card-header${twoUp ? ' two-up' : fourUp ? ' four-up' : ''}`;
+      headerEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+      headers.forEach(h => {
+        const s = document.createElement('span');
+        s.textContent = h;
+        headerEl.appendChild(s);
+      });
+      cardEl.appendChild(headerEl);
+
+      // Grid
+      const gridEl = document.createElement('div');
+      gridEl.className = 'bingo-grid';
+      gridEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+
+      card.cells.forEach((cell, cellIdx) => {
+        const row = Math.floor(cellIdx / gridSize);
+        const col = cellIdx % gridSize;
+        const cellEl = document.createElement('div');
+        let cls = 'bingo-cell';
+        if (col === gridSize - 1) cls += ' last-col';
+        if (row === gridSize - 1) cls += ' last-row';
+        if (cell.free) {
+          cellEl.className = cls + ' free-space';
+          cellEl.innerHTML = '<span style="font-size:1rem;">✡</span><span>FREE</span>';
+        } else {
+          cellEl.className = cls;
+          cellEl.innerHTML = `<span class="heb">${cell.hebrewDisplay}</span>${showSounds ? `<span class="sound">${cell.combined}</span>` : ''}`;
+        }
+        gridEl.appendChild(cellEl);
+      });
+      cardEl.appendChild(gridEl);
+      page.appendChild(cardEl);
+    }
+    ws.appendChild(page);
+  }
+
+  // Caller sheet — use master pool if shared, otherwise full pool
+  if (callerOn) {
+    const callerSource = sharedBlends ? shuffle(masterPool) : shuffle(callerPool);
+    const sheet = document.createElement('div');
+    sheet.className = 'caller-sheet';
+    sheet.innerHTML = `
+      <div class="caller-title">📋 Caller Sheet</div>
+      <div class="caller-subtitle">Call each blend in order. Check them off as you go.</div>`;
+    const grid = document.createElement('div');
+    grid.className = 'caller-grid';
+    callerSource.forEach((b, i) => {
+      const item = document.createElement('div');
+      item.className = 'caller-item';
+      item.onclick = () => item.classList.toggle('called');
+      item.innerHTML = `<span class="num">${i + 1}</span><span class="heb">${b.hebrewDisplay}</span><span class="sound">${b.combined}</span>`;
+      grid.appendChild(item);
+    });
+    sheet.appendChild(grid);
+    ws.appendChild(sheet);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  FOCUS LETTER UI
+// ══════════════════════════════════════════════
+function toggleFocusUI() {
+  const on = document.getElementById('focusToggle').checked;
+  document.getElementById('focusOptions').style.display = on ? 'flex' : 'none';
+  if (on) updateFocusYudWarning();
+}
+
+function updateFocusYudWarning() {
+  const locks = [
+    { active: document.getElementById('lock1Active').checked, letter: document.getElementById('lock1Letter').value },
+    { active: document.getElementById('lock2Active').checked, letter: document.getElementById('lock2Letter').value },
+    { active: document.getElementById('lock3Active').checked, letter: document.getElementById('lock3Letter').value },
+  ];
+  const yudLocks = locks.filter(l => l.active && l.letter === 'י').length;
+  document.getElementById('focusYudWarning').style.display = yudLocks >= 2 ? 'block' : 'none';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  ['lock1Letter','lock2Letter','lock3Letter','lock1Active','lock2Active','lock3Active'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', () => {
+      if (document.getElementById('focusToggle').checked) updateFocusYudWarning();
+    });
+  });
+});
+
+function populateFocusDropdown() {
+  const VAV_VARIANTS = new Set(['וֹ','וּ']);
+  const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
+
+  // Position 1: no sofit
+  // Position 2: no sofit, no HAS_SOFIT, no vav variants
+  // Position 3: same as position 2 but sofit ARE allowed
+  const pools = {
+    lock1: LETTERS.filter(l => !SOFIT_CHARS.has(l.heb)),
+    lock2: LETTERS.filter(l => !SOFIT_CHARS.has(l.heb) && !HAS_SOFIT.has(l.heb) && !VAV_VARIANTS.has(l.heb)),
+    lock3: LETTERS.filter(l => !HAS_SOFIT.has(l.heb) && !VAV_VARIANTS.has(l.heb)),
+  };
+
+  // Add sofit letters to position 3 pool
+  const sofitEntries = LETTERS
+    .filter(l => l.sofit)
+    .map(l => ({ heb: l.sofit, base: l.sofit, name: l.name + ' sofit', sofit: null }));
+
+  Object.entries(pools).forEach(([id, pool]) => {
+    const sel = document.getElementById(id + 'Letter');
+    sel.innerHTML = '';
+    const entries = id === 'lock3' ? [...pool, ...sofitEntries] : pool;
+    entries.forEach(l => {
+      const opt = document.createElement('option');
+      opt.value = l.heb;
+      opt.textContent = `${l.heb}  ${l.name}`;
+      sel.appendChild(opt);
+    });
+  });
+}
+
+// ══════════════════════════════════════════════
+//  REGENERATE
+// ══════════════════════════════════════════════
+function regenerate() {
+  generate(true); // pass animate flag
+}
+
+function enableButtons() {
+  ['printBtn','regenBtn','pdfBtn','printBtnMob','regenBtnMob','pdfBtnMob'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.disabled = false;
+    btn.style.opacity = '';
+    btn.style.cursor = '';
+  });
+  const tip = document.getElementById('printTip');
+  if (tip) tip.style.display = 'block';
+}
+
+// Collapsible panels on mobile
+function initPanelCollapse() {
+  document.querySelectorAll('.panel-title').forEach(title => {
+    title.addEventListener('click', () => {
+      title.closest('.panel').classList.toggle('collapsed');
+    });
+  });
+}
+
+async function exportPDF() {
+  const { jsPDF } = window.jspdf;
+  const ws = document.getElementById('worksheet');
+  const title = document.getElementById('wsTitle').value || 'Hebrew Blends';
+
+  const pdfBtn = document.getElementById('pdfBtn');
+  pdfBtn.textContent = '⏳ Generating...';
+  pdfBtn.disabled = true;
+
+  // Temporarily force light mode for clean PDF output
+  const wasDark = document.body.classList.contains('dark');
+  if (wasDark) document.body.classList.remove('dark');
+
+  try {
+    const sheets = ws.querySelectorAll('.sheet');
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const margin = 12;
+
+    for (let i = 0; i < sheets.length; i++) {
+      const sheet = sheets[i];
+      const canvas = await html2canvas(sheet, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const imgW = pageW - margin * 2;
+      const imgH = (canvas.height * imgW) / canvas.width;
+
+      if (i > 0) pdf.addPage();
+      pdf.addImage(imgData, 'PNG', margin, margin, imgW, Math.min(imgH, pageH - margin * 2));
+    }
+
+    const filename = `${title.replace(/\s+/g, '_')}_Hebrew_Blends.pdf`;
+    pdf.save(filename);
+  } catch (err) {
+    alert('PDF export failed. Try using Print → Save as PDF instead.');
+    console.error(err);
+  } finally {
+    // Restore dark mode if it was on
+    if (wasDark) document.body.classList.add('dark');
+    pdfBtn.textContent = '⬇ Export PDF';
+    pdfBtn.disabled = false;
+  }
+}
+
+function getLetter(heb) {
+  if (SOFIT_CHARS.has(heb)) {
+    return LETTERS.find(l => l.sofit === heb);
+  }
+  return LETTERS.find(l => l.heb === heb);
+}
+
+function getSound(letterObj, vowelKey) {
+  return letterObj.sounds[vowelKey] || '?';
+}
+
+// Auto-calculate columns to make a clean grid that fits on a printed page
+function autoCols(count) {
+  if (count <= 20) return 4;
+  if (count <= 30) return 5;
+  if (count <= 50) return 5;
+  if (count <= 60) return 6;
+  if (count <= 80) return 8;
+  return 10;
+}
+
+function generate(animate = false) {
+  const vowelKeys = [...selectedVowels];
+  if (vowelKeys.length === 0) { alert('Please select at least one vowel.'); return; }
+
+  const VAV_VARIANTS = new Set(['וֹ','וּ']);
+  const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
+
+  let firstPool  = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h));
+  let secondPool = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h));
+
+  // Rule 1: Remove plain ו from second pool — always confusing there
+  secondPool = secondPool.filter(h => h !== 'ו');
+
+  // Per-position letter locks
+  const focusOn = document.getElementById('focusToggle').checked;
+  if (focusOn) {
+    if (document.getElementById('lock1Active').checked) {
+      firstPool = [document.getElementById('lock1Letter').value];
+    }
+    if (document.getElementById('lock2Active').checked) {
+      const l2 = document.getElementById('lock2Letter').value;
+      secondPool = [l2];
+    }
+    // Yud+Yud guard across all locked positions
+    const lockedYuds = ['lock1','lock2','lock3']
+      .filter(p => document.getElementById(p+'Active').checked &&
+                   document.getElementById(p+'Letter').value === 'י').length;
+    if (lockedYuds >= 2) {
+      if (firstPool.includes('י') && firstPool.length === 1) firstPool = ['א']; // fallback
+    }
+  }
+
+  if (firstPool.length === 0 || secondPool.length === 0) {
+    alert('Please select more letters. At least one non-sofit letter is needed for first position, and at least one valid letter for second position.');
+    return;
+  }
+
+  const count = parseInt(document.getElementById('blendCount').value);
+  const activeType  = document.querySelector('.blend-type-btn.active')?.dataset.type || 'two';
+  const threeLetter = activeType === 'three';
+  const vowelPos = document.getElementById('vowelPosition').value;
+
+  blends = [];
+  for (let i = 0; i < count; i++) {
+    let vowel  = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
+    const excludeRepeats = document.getElementById('excludeRepeats').checked;
+    let first, second, attempts = 0;
+    do {
+      first  = firstPool[Math.floor(Math.random() * firstPool.length)];
+      second = secondPool[Math.floor(Math.random() * secondPool.length)];
+      attempts++;
+    } while (attempts < 20 && (
+      (first === 'י' && second === 'י') ||
+      (excludeRepeats && first === second)
+    ));
+    if (first === 'י' && second === 'י') continue;
+    if (excludeRepeats && first === second) continue;
+
+    // Sin (שׂ) and Shin (ש) + Cholam is visually invalid — reroll vowel
+    if ((first === 'שׂ' || first === 'ש') && vowel === 'o') {
+      const altVowels = vowelKeys.filter(v => v !== 'o');
+      if (altVowels.length > 0) vowel = altVowels[Math.floor(Math.random() * altVowels.length)];
+      else continue;
+    }
+
+    // Rule 2: Plain ו as first letter — force vowel to match its dot form
+    // Cholam → וֹ already handled in withNikud; Kubutz → וּ already handled
+    // But skip Shva for plain Vav — ו with Shva is pedagogically meaningless
+    if (first === 'ו' && vowel === 'sh') {
+      const altVowels = vowelKeys.filter(v => v !== 'sh');
+      if (altVowels.length > 0) vowel = altVowels[Math.floor(Math.random() * altVowels.length)];
+      else continue;
+    }
+
+    // Rule 3: Vav variants (וֹ וּ) as first letter + Shva selected — skip, they carry their own vowel
+    if ((first === 'וֹ' || first === 'וּ') && vowel === 'sh') {
+      const altVowels = vowelKeys.filter(v => v !== 'sh');
+      if (altVowels.length > 0) vowel = altVowels[Math.floor(Math.random() * altVowels.length)];
+      else continue;
+    }
+
+    const firstObj  = getLetter(first);
+    const secondObj = getLetter(second);
+
+    const firstSound      = getSound(firstObj, vowel);
+    const secondConsonant = secondObj.sounds['sh'].replace("'", '');
+    const firstDisplay    = withNikud(firstObj, vowel, true);
+    const secondDisplay   = SOFIT_CHARS.has(second) ? second : secondObj.base;
+
+    if (threeLetter) {
+      const vowel2   = vowelPos === 'both' ? vowelKeys[Math.floor(Math.random() * vowelKeys.length)] : null;
+      // Third pool: secondPool + sofits, no vav variants; override if lock3 active
+      const VAV_VARIANTS = new Set(['וֹ','וּ']);
+      const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
+      let thirdPool = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h));
+      if (focusOn && document.getElementById('lock3Active').checked) {
+        thirdPool = [document.getElementById('lock3Letter').value];
+      }
+      if (thirdPool.length === 0) thirdPool = secondPool;
+      const third    = thirdPool[Math.floor(Math.random() * thirdPool.length)];
+      const thirdObj = getLetter(third);
+      const thirdDisplay = SOFIT_CHARS.has(third) ? third : thirdObj.base;
+
+      let midDisplay, midSound;
+      if (vowelPos === 'both' && vowel2) {
+        midDisplay = withNikud(secondObj, vowel2, true);
+        midSound   = getSound(secondObj, vowel2);
+      } else {
+        midDisplay = secondDisplay;
+        midSound   = secondConsonant;
+      }
+
+      const thirdConsonant = thirdObj.sounds['sh'].replace("'", '');
+      const combined     = firstSound + midSound + thirdConsonant;
+      const hebrewDisplay = firstDisplay + midDisplay + thirdDisplay;
+
+      blends.push({ firstHeb: first, secondHeb: second, thirdHeb: third,
+        firstObj, secondObj, thirdObj, vowel, combined, hebrewDisplay, threeLetter: true });
+    } else {
+      const combined      = firstSound + secondConsonant;
+      const hebrewDisplay = firstDisplay + secondDisplay;
+      blends.push({ firstHeb: first, secondHeb: second, firstObj, secondObj,
+        vowel, combined, hebrewDisplay, threeLetter: false });
+    }
+  }
+
+  renderWorksheet(animate);
+  enableButtons();
+}
+
+// ══════════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════════
+let isShuffling = false;
+
+function renderWorksheet(animate = false) {
+  const isInverse   = document.getElementById('inverseToggle').checked;
+  const showAnswers = document.getElementById('answerKeyToggle').checked;
+  const selfCheck   = document.getElementById('selfCheckToggle').checked;
+  const bingo       = document.getElementById('bingoToggle').checked;
+  const activeType  = document.querySelector('.blend-type-btn.active')?.dataset.type || 'two';
+  const oneLetter   = activeType === 'one';
+  const nikudOnly   = activeType === 'nikud';
+  const cols        = autoCols(blends.length);
+  const title       = document.getElementById('wsTitle').value || 'Hebrew Blends';
+  const subtitle    = document.getElementById('wsSubtitle').value;
+
+  const ws = document.getElementById('worksheet');
+
+  if (bingo) { renderBingo(ws); return; }
+  if (selfCheck) { renderSelfCheck(ws, cols, title, subtitle); return; }
+
+  // One-letter and nikud-only use the same blend cells but with single-item data
+  if (oneLetter || nikudOnly) {
+    // Re-generate single items on each render
+    const items = oneLetter ? generateOneLetter() : generateNikudOnly();
+    if (items.length === 0) { ws.innerHTML = '<div class="empty-state"><h2>Please select letters and vowels.</h2></div>'; return; }
+    ws.innerHTML = '';
+    const sheet = document.createElement('div');
+    sheet.className = 'sheet';
+    const header = document.createElement('div');
+    header.className = 'ws-header';
+    header.innerHTML = `
+      <div>
+        <div class="ws-title">${title}</div>
+        <div class="ws-subtitle">${subtitle || (oneLetter ? 'Read each Hebrew letter aloud.' : 'Say the vowel sound aloud.')}</div>
+      </div>
+      <div class="ws-meta">
+        <div class="ws-field">Name: <div class="ws-field-line"></div></div>
+        <div class="ws-field">Date: <div class="ws-field-line" style="width:80px"></div></div>
+      </div>`;
+    sheet.appendChild(header);
+    const grid = document.createElement('div');
+    grid.className = 'blends-grid';
+    grid.style.gridTemplateColumns = `repeat(${autoCols(items.length)}, 1fr)`;
+    grid.style.direction = 'rtl';
+    sheet.appendChild(grid);
+    items.forEach((b, idx) => renderHebrewCell(grid, b, idx, showAnswers));
+    const footer = document.createElement('div');
+    footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+    footer.textContent = `${items.length} items · Hebrew Blend Generator`;
+    sheet.appendChild(footer);
+    ws.appendChild(sheet);
+    return;
+  }
+
+  ws.innerHTML = '';
+
+  // ── PAGE 1: Student Sheet ──
+  const studentSheet = document.createElement('div');
+  studentSheet.className = 'sheet';
+
+  const header = document.createElement('div');
+  header.className = 'ws-header';
+  header.innerHTML = `
+    <div>
+      <div class="ws-title">${title}</div>
+      <div class="ws-subtitle">${subtitle || (isInverse ? 'Write the Hebrew blend that matches each sound.' : 'Read each Hebrew blend aloud.')}</div>
+    </div>
+    <div class="ws-meta">
+      <div class="ws-field">Name: <div class="ws-field-line"></div></div>
+      <div class="ws-field">Date: <div class="ws-field-line" style="width:80px"></div></div>
+    </div>
+  `;
+  studentSheet.appendChild(header);
+
+  const grid = document.createElement('div');
+  grid.className = 'blends-grid';
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  grid.style.direction = 'rtl';
+  studentSheet.appendChild(grid);
+
+  blends.forEach((b, idx) => {
+    if (isInverse) renderInverseCell(grid, b, idx, false);
+    else renderHebrewCell(grid, b, idx, false);
+  });
+
+  const footer = document.createElement('div');
+  footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  footer.textContent = `${blends.length} blends · Hebrew Blend Generator`;
+  studentSheet.appendChild(footer);
+  ws.appendChild(studentSheet);
+
+  // ── PAGE 2: Answer Key ──
+  if (showAnswers) {
+    const answerSheet = document.createElement('div');
+    answerSheet.className = 'sheet answer-key-sheet';
+
+    const akBanner = document.createElement('div');
+    akBanner.className = 'answer-key-banner';
+    akBanner.textContent = '✦ Answer Key ✦';
+    answerSheet.appendChild(akBanner);
+
+    const akHeader = document.createElement('div');
+    akHeader.className = 'ws-header';
+    akHeader.innerHTML = `
+      <div>
+        <div class="ws-title">${title}</div>
+        <div class="ws-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div>
+      </div>
+    `;
+    answerSheet.appendChild(akHeader);
+
+    const akGrid = document.createElement('div');
+    akGrid.className = 'blends-grid';
+    akGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    akGrid.style.direction = 'rtl';
+    answerSheet.appendChild(akGrid);
+
+    blends.forEach((b, idx) => {
+      if (isInverse) renderInverseCell(akGrid, b, idx, true);
+      else renderHebrewCell(akGrid, b, idx, true);
+    });
+
+    const akFooter = document.createElement('div');
+    akFooter.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+    akFooter.textContent = `${blends.length} blends · Hebrew Blend Generator — Answer Key`;
+    answerSheet.appendChild(akFooter);
+    ws.appendChild(answerSheet);
+  }
+
+  // Shuffle animation
+  if (animate) {
+    ws.querySelectorAll('.blend-cell, .blend-cell-inv').forEach((cell, i) => {
+      cell.style.animationDelay = `${i * 18}ms`;
+      cell.classList.add('shuffling');
+      cell.addEventListener('animationend', () => cell.classList.remove('shuffling'), { once: true });
+    });
+  }
+}
+
+// ── SELF-CHECK MODE ──
+function renderSelfCheck(ws, cols, title, subtitle) {
+  ws.innerHTML = '';
+  scoreCorrect = 0;
+  scoreIncorrect = 0;
+  stopTimer();
+
+  const timerOn  = document.getElementById('timerToggle').checked;
+  const timerDur = parseInt(document.getElementById('timerDuration').value);
+  const audioOn  = document.getElementById('audioToggle').checked;
+
+  // Header
+  const scHeader = document.createElement('div');
+  scHeader.className = 'ws-header';
+  scHeader.innerHTML = `
+    <div>
+      <div class="ws-title">${title}</div>
+      <div class="ws-subtitle">${subtitle || 'Tap each card to reveal the pronunciation.'}</div>
+    </div>`;
+  ws.appendChild(scHeader);
+
+  // Timer bar
+  if (timerOn) {
+    const timerBar = document.createElement('div');
+    timerBar.className = 'timer-bar';
+    timerBar.id = 'scTimerBar';
+    timerBar.innerHTML = `
+      <span id="scTimerDisplay" class="timer-display">-:--</span>
+      <div class="timer-controls">
+        <button class="btn-xs" onclick="startTimer(${timerDur})">▶ Start</button>
+        <button class="btn-xs" onclick="stopTimer()">⏸ Pause</button>
+        <button class="btn-xs" onclick="resetTimer()">↺ Reset</button>
+      </div>`;
+    ws.appendChild(timerBar);
+    timerRemaining = timerDur;
+    updateTimerDisplay();
+  }
+
+  // Score bar
+  const scoreBar = document.createElement('div');
+  scoreBar.className = 'score-bar';
+  scoreBar.id = 'scScoreBar';
+  scoreBar.innerHTML = `
+    <span class="score-correct">✓ 0</span>
+    <span class="score-incorrect">✗ 0</span>
+    <span class="score-remaining">${blends.length} left</span>
+    <button class="btn-xs" style="margin-left:auto;" onclick="resetSelfCheck()">↺ Reset</button>`;
+  ws.appendChild(scoreBar);
+
+  // Controls
+  const controls = document.createElement('div');
+  controls.className = 'self-check-controls';
+  controls.innerHTML = `
+    <button class="btn-xs" onclick="flipAllCards(true)">Reveal All</button>
+    <button class="btn-xs" onclick="flipAllCards(false)">Hide All</button>
+    ${audioOn ? '<span style="font-size:0.75rem;color:var(--muted);">🔊 Tap back to hear</span>' : '<span style="font-size:0.75rem;color:var(--muted);">Tap a card to flip</span>'}`;
+  ws.appendChild(controls);
+
+  // Grid
+  const grid = document.createElement('div');
+  grid.className = 'self-check-grid';
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  ws.appendChild(grid);
+
+  blends.forEach((b, idx) => {
+    const card = document.createElement('div');
+    card.className = 'flip-card';
+    card.innerHTML = `
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <span class="flip-card-num">${idx + 1}</span>
+          <span style="direction:rtl;font-family:'Frank Ruhl Libre',serif;font-size:2rem;">${b.hebrewDisplay}</span>
+          <span class="flip-card-hint">tap to reveal</span>
+        </div>
+        <div class="flip-card-back">
+          <span class="flip-card-num" style="color:var(--gold-light);">${idx + 1}</span>
+          <span style="font-size:1.1rem;">${b.combined}</span>
+          ${audioOn ? `<button class="btn-xs" style="margin-top:4px;font-size:0.7rem;" onclick="event.stopPropagation();speakBlend('${b.combined}')">🔊</button>` : ''}
+        </div>
+      </div>
+      <div class="flip-card-score-btns">
+        <button class="score-btn correct" onclick="markScore(true, this.closest('.flip-card'))">✓ Got it</button>
+        <button class="score-btn incorrect" onclick="markScore(false, this.closest('.flip-card'))">✗ Missed</button>
+      </div>`;
+    card.querySelector('.flip-card-inner').addEventListener('click', () => card.classList.toggle('flipped'));
+    grid.appendChild(card);
+  });
+}
+
+function flipAllCards(reveal) {
+  document.querySelectorAll('.flip-card').forEach(c => {
+    if (reveal) c.classList.add('flipped');
+    else c.classList.remove('flipped');
+  });
+}
+
+function renderHebrewCell(grid, b, idx, showAnswers) {
+  const cell = document.createElement('div');
+  cell.className = 'blend-cell';
+
+  // Number
+  const num = document.createElement('div');
+  num.style.cssText = 'font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;';
+  num.textContent = idx + 1;
+  cell.appendChild(num);
+
+  // Hebrew blend — written RTL, first letter + second letter
+  // In actual Hebrew a syllable is: consonant + vowel; so "first" letter with the vowel sound,
+  // then "second" letter. Display order RTL: first letter on right, second on left.
+  const heb = document.createElement('div');
+  heb.className = 'blend-hebrew';
+  heb.textContent = b.hebrewDisplay; // precomposed: first+nikud + second(bare)
+  cell.appendChild(heb);
+
+  // Answer
+  const ans = document.createElement('div');
+  ans.className = 'blend-answer' + (showAnswers ? '' : ' hidden');
+  ans.textContent = b.combined;
+  cell.appendChild(ans);
+
+  grid.appendChild(cell);
+}
+
+function renderInverseCell(grid, b, idx, showAnswers) {
+  const cell = document.createElement('div');
+  cell.className = 'blend-cell-inv';
+
+  const num = document.createElement('div');
+  num.style.cssText = 'font-size:0.6rem;color:var(--muted);align-self:flex-start;';
+  num.textContent = idx + 1;
+  cell.appendChild(num);
+
+  const roman = document.createElement('div');
+  roman.className = 'blend-roman';
+  roman.textContent = b.combined;
+  cell.appendChild(roman);
+
+  const box = document.createElement('div');
+  box.className = 'blend-write-box' + (showAnswers ? ' answer-shown' : '');
+  if (showAnswers) {
+    box.textContent = b.hebrewDisplay;
+  }
+  cell.appendChild(box);
+
+  grid.appendChild(cell);
+}
+
+// ══════════════════════════════════════════════
+//  Re-render on toggle changes (no re-generate)
+// ══════════════════════════════════════════════
+document.getElementById('inverseToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(false); });
+document.getElementById('answerKeyToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(false); });
+document.getElementById('selfCheckToggle').addEventListener('change', () => {
+  const on = document.getElementById('selfCheckToggle').checked;
+  // Mutually exclusive with bingo
+  if (on) { document.getElementById('bingoToggle').checked = false; toggleBingoUI(); }
+  const hidePanels = ['panelLayout', 'panelVowels', 'panelLetters'];
+  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus'];
+  const hideBtns   = ['printBtn', 'pdfBtn', 'printBtnMob', 'pdfBtnMob'];
+
+  hidePanels.forEach(id => document.getElementById(id).style.display = on ? 'none' : '');
+  hideRows.forEach(id => document.getElementById(id).style.display = on ? 'none' : '');
+  hideBtns.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
+  document.getElementById('selfCheckOptions').style.display = on ? 'flex' : 'none';
+
+  // Sub-options: restore only if their parent toggle is on
+  if (on) {
+    document.getElementById('focusOptions').style.display = 'none';
+    document.getElementById('threeLetterOptions').style.display = 'none';
+  } else {
+    document.getElementById('focusOptions').style.display =
+      document.getElementById('focusToggle').checked ? 'flex' : 'none';
+    document.getElementById('threeLetterOptions').style.display =
+      document.getElementById('threeLetterToggle').checked ? 'block' : 'none';
+  }
+
+  if (blends.length) renderWorksheet(false);
+});
+document.getElementById('wsTitle').addEventListener('input', () => { if (blends.length) renderWorksheet(false); });
+document.getElementById('wsSubtitle').addEventListener('input', () => { if (blends.length) renderWorksheet(false); });
+
+// ══════════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════════
+initVowels();
+initLetters();
+populateFocusDropdown();
+initPanelCollapse();
+initDarkMode();
+initZoom();
+renderPresets();
+
+// Collapse all panels by default on mobile
+if (window.innerWidth <= 700) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.add('collapsed'));
+}
+</script>
+</body>
+</html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
