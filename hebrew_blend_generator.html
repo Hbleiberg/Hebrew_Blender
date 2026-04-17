@@ -730,10 +730,11 @@
     background: var(--gold-light);
     color: var(--navy);
     font-family: 'Libre Baskerville', serif;
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
+    gap: 2px;
   }
   .bingo-cell .heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.4rem; direction: rtl; line-height: 1.2; color: var(--navy); }
   .bingo-card.two-up .bingo-cell .heb { font-size: 1.1rem; }
@@ -1477,21 +1478,47 @@ function toggleLandscape(on) {
 // ══════════════════════════════════════════════
 function getSettings() {
   return {
+    // Letters & vowels
     selectedLetters: [...selectedLetters],
-    selectedVowels: [...selectedVowels],
-    blendCount: document.getElementById('blendCount').value,
-    wsTitle: document.getElementById('wsTitle').value,
-    wsSubtitle: document.getElementById('wsSubtitle').value,
-    threeLetter: document.getElementById('threeLetterToggle').checked,
-    vowelPosition: document.getElementById('vowelPosition').value,
+    selectedVowels:  [...selectedVowels],
+    // Layout
+    blendCount:   document.getElementById('blendCount').value,
+    wsTitle:      document.getElementById('wsTitle').value,
+    wsSubtitle:   document.getElementById('wsSubtitle').value,
     excludeRepeats: document.getElementById('excludeRepeats').checked,
-    landscape: document.getElementById('landscapeMode').checked,
+    landscape:    document.getElementById('landscapeMode').checked,
+    // Worksheet mode toggles
+    inverse:      document.getElementById('inverseToggle').checked,
+    answerKey:    document.getElementById('answerKeyToggle').checked,
+    threeLetter:  document.getElementById('threeLetterToggle').checked,
+    vowelPosition: document.getElementById('vowelPosition').value,
+    selfCheck:    document.getElementById('selfCheckToggle').checked,
+    timerOn:      document.getElementById('timerToggle').checked,
+    timerDuration: document.getElementById('timerDuration').value,
+    audio:        document.getElementById('audioToggle').checked,
+    bingo:        document.getElementById('bingoToggle').checked,
+    bingoGrid:    document.getElementById('bingoGrid').value,
+    bingoCards:   document.getElementById('bingoCards').value,
+    bingoPerPage: document.getElementById('bingoPerPage').value,
+    bingoFreeSpace:   document.getElementById('bingoFreeSpace').checked,
+    bingoShowSounds:  document.getElementById('bingoShowSounds').checked,
+    bingoCallerSheet: document.getElementById('bingoCallerSheet').checked,
+    bingoSharedBlends: document.getElementById('bingoSharedBlends').checked,
+    // Focus letters
+    focusOn:      document.getElementById('focusToggle').checked,
+    lock1Active:  document.getElementById('lock1Active').checked,
+    lock1Letter:  document.getElementById('lock1Letter').value,
+    lock2Active:  document.getElementById('lock2Active').checked,
+    lock2Letter:  document.getElementById('lock2Letter').value,
+    lock3Active:  document.getElementById('lock3Active').checked,
+    lock3Letter:  document.getElementById('lock3Letter').value,
   };
 }
 
 function applySettings(s) {
+  // Letters
   selectedLetters = new Set(s.selectedLetters || []);
-  selectedVowels  = new Set(s.selectedVowels || []);
+  selectedVowels  = new Set(s.selectedVowels  || []);
   document.querySelectorAll('.letter-tile').forEach(t => {
     t.classList.toggle('selected', selectedLetters.has(t.dataset.heb));
   });
@@ -1499,18 +1526,50 @@ function applySettings(s) {
     const key = cb.closest('label').getAttribute('data-key');
     if (key) cb.checked = selectedVowels.has(key);
   });
-  if (s.blendCount) document.getElementById('blendCount').value = s.blendCount;
+
+  // Layout
+  if (s.blendCount)           document.getElementById('blendCount').value = s.blendCount;
   if (s.wsTitle !== undefined) document.getElementById('wsTitle').value = s.wsTitle;
   if (s.wsSubtitle !== undefined) document.getElementById('wsSubtitle').value = s.wsSubtitle;
-  if (s.threeLetter !== undefined) {
-    document.getElementById('threeLetterToggle').checked = s.threeLetter;
-    toggleThreeLetterUI();
-  }
-  if (s.vowelPosition) document.getElementById('vowelPosition').value = s.vowelPosition;
   if (s.excludeRepeats !== undefined) document.getElementById('excludeRepeats').checked = s.excludeRepeats;
-  if (s.landscape !== undefined) {
-    document.getElementById('landscapeMode').checked = s.landscape;
-    toggleLandscape(s.landscape);
+  if (s.landscape !== undefined) { document.getElementById('landscapeMode').checked = s.landscape; toggleLandscape(s.landscape); }
+
+  // Mode toggles
+  if (s.inverse !== undefined)   document.getElementById('inverseToggle').checked = s.inverse;
+  if (s.answerKey !== undefined) document.getElementById('answerKeyToggle').checked = s.answerKey;
+  if (s.threeLetter !== undefined) { document.getElementById('threeLetterToggle').checked = s.threeLetter; toggleThreeLetterUI(); }
+  if (s.vowelPosition) document.getElementById('vowelPosition').value = s.vowelPosition;
+  if (s.timerOn !== undefined)   document.getElementById('timerToggle').checked = s.timerOn;
+  if (s.timerDuration)           document.getElementById('timerDuration').value = s.timerDuration;
+  if (s.audio !== undefined)     document.getElementById('audioToggle').checked = s.audio;
+  if (s.timerOn !== undefined)   document.getElementById('timerDurationRow').style.display = s.timerOn ? 'flex' : 'none';
+
+  // Bingo
+  if (s.bingo !== undefined) {
+    document.getElementById('bingoToggle').checked = s.bingo;
+    toggleBingoUI();
+  }
+  if (s.bingoGrid)    document.getElementById('bingoGrid').value = s.bingoGrid;
+  if (s.bingoCards)   document.getElementById('bingoCards').value = s.bingoCards;
+  if (s.bingoPerPage) document.getElementById('bingoPerPage').value = s.bingoPerPage;
+  if (s.bingoFreeSpace !== undefined)   document.getElementById('bingoFreeSpace').checked = s.bingoFreeSpace;
+  if (s.bingoShowSounds !== undefined)  document.getElementById('bingoShowSounds').checked = s.bingoShowSounds;
+  if (s.bingoCallerSheet !== undefined) document.getElementById('bingoCallerSheet').checked = s.bingoCallerSheet;
+  if (s.bingoSharedBlends !== undefined) document.getElementById('bingoSharedBlends').checked = s.bingoSharedBlends;
+
+  // Focus letters
+  if (s.focusOn !== undefined) { document.getElementById('focusToggle').checked = s.focusOn; toggleFocusUI(); }
+  if (s.lock1Active !== undefined) document.getElementById('lock1Active').checked = s.lock1Active;
+  if (s.lock1Letter) document.getElementById('lock1Letter').value = s.lock1Letter;
+  if (s.lock2Active !== undefined) document.getElementById('lock2Active').checked = s.lock2Active;
+  if (s.lock2Letter) document.getElementById('lock2Letter').value = s.lock2Letter;
+  if (s.lock3Active !== undefined) document.getElementById('lock3Active').checked = s.lock3Active;
+  if (s.lock3Letter) document.getElementById('lock3Letter').value = s.lock3Letter;
+
+  // Self-check last (it triggers UI hide/show logic)
+  if (s.selfCheck !== undefined) {
+    document.getElementById('selfCheckToggle').checked = s.selfCheck;
+    document.getElementById('selfCheckToggle').dispatchEvent(new Event('change'));
   }
 }
 
@@ -1907,7 +1966,7 @@ function renderBingo(ws) {
         if (row === gridSize - 1) cls += ' last-row';
         if (cell.free) {
           cellEl.className = cls + ' free-space';
-          cellEl.textContent = '★ FREE ★';
+          cellEl.innerHTML = '<span style="font-size:1rem;">★</span><span>FREE</span>';
         } else {
           cellEl.className = cls;
           cellEl.innerHTML = `<span class="heb">${cell.hebrewDisplay}</span>${showSounds ? `<span class="sound">${cell.combined}</span>` : ''}`;
