@@ -20,7 +20,36 @@
     --white: #ffffff;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body.dark {
+    --navy: #a8c4e8;
+    --gold: #e0a832;
+    --gold-light: #f5d97a;
+    --cream: #1a1f2e;
+    --warm-gray: #252b3a;
+    --text: #e8e2d8;
+    --muted: #a0a8b8;
+    --border: #2e3750;
+    --white: #212838;
+  }
+
+  body.dark header {
+    background: #0d1525;
+    border-bottom-color: var(--gold);
+  }
+  body.dark .panel-title {
+    background: #0d1525;
+  }
+  body.dark .answer-key-banner {
+    background: #0d1525;
+  }
+  body.dark .flip-card-back {
+    background: #0d1525;
+  }
+  body.dark .letter-tile.selected {
+    background: #2a4a7a;
+    border-color: #2a4a7a;
+    color: #e8e2d8;
+  }
 
   body {
     font-family: 'Source Sans 3', sans-serif;
@@ -407,8 +436,105 @@
   .empty-state h2 { font-family: 'Libre Baskerville', serif; color: var(--navy); }
   .empty-state p { font-size: 0.88rem; max-width: 320px; }
 
-  /* Sheets */
-  .sheet { }
+  /* ── ZOOM SLIDER ── */
+  .zoom-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .zoom-bar input[type=range] {
+    flex: 1;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+  .worksheet-scaler {
+    transform-origin: top center;
+    transition: transform 0.2s;
+  }
+
+  /* ── SHUFFLE ANIMATION ── */
+  @keyframes cardFlip {
+    0%   { opacity: 1; transform: rotateY(0deg) scale(1); }
+    40%  { opacity: 0; transform: rotateY(90deg) scale(0.9); }
+    60%  { opacity: 0; transform: rotateY(90deg) scale(0.9); }
+    100% { opacity: 1; transform: rotateY(0deg) scale(1); }
+  }
+  .blend-cell.shuffling, .blend-cell-inv.shuffling {
+    animation: cardFlip 0.5s ease both;
+  }
+
+  /* ── SELF-CHECK CARDS ── */
+  .self-check-grid {
+    display: grid;
+    gap: 12px;
+    direction: rtl;
+  }
+  .flip-card {
+    perspective: 600px;
+    min-height: 90px;
+    cursor: pointer;
+  }
+  .flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 90px;
+    transition: transform 0.45s;
+    transform-style: preserve-3d;
+  }
+  .flip-card.flipped .flip-card-inner {
+    transform: rotateY(180deg);
+  }
+  .flip-card-front, .flip-card-back {
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: 1.5px solid var(--border);
+  }
+  .flip-card-front {
+    background: var(--white);
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 2rem;
+    color: var(--navy);
+  }
+  .flip-card-back {
+    background: var(--navy);
+    color: var(--gold-light);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    transform: rotateY(180deg);
+  }
+  .flip-card-num {
+    font-size: 0.6rem;
+    color: var(--muted);
+    font-family: 'Source Sans 3', sans-serif;
+    position: absolute;
+    top: 5px;
+    left: 6px;
+    direction: ltr;
+  }
+  .flip-card-hint {
+    font-size: 0.65rem;
+    color: var(--muted);
+    font-family: 'Source Sans 3', sans-serif;
+    margin-top: 2px;
+  }
+  .self-check-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+  }
+  .self-check-controls .btn-xs { font-size: 0.78rem; padding: 5px 12px; }
   .answer-key-sheet {
     margin-top: 48px;
     padding-top: 32px;
@@ -489,6 +615,10 @@
     .sidebar, header { display: none !important; }
     .app { display: block; }
     .main { padding: 0; }
+    .zoom-bar { display: none !important; }
+    .self-check-controls { display: none !important; }
+    .flip-card-hint { display: none; }
+    .flip-card-back { display: none; }
     .worksheet {
       border: none;
       box-shadow: none;
@@ -513,10 +643,11 @@
 
 <header>
   <span class="star">✡</span>
-  <div>
+  <div style="flex:1;">
     <h1>Hebrew Blend Worksheet Generator</h1>
-    <p>Two-letter syllable practice for emerging Hebrew readers</p>
+    <p id="headerSub">Two-letter syllable practice for emerging Hebrew readers</p>
   </div>
+  <button id="darkToggle" onclick="toggleDark()" title="Toggle dark mode" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:1rem;flex-shrink:0;">🌙</button>
 </header>
 
 <div class="app">
@@ -561,6 +692,32 @@
               <option value="second">Second (left)</option>
             </select>
           </div>
+          <div id="focusYudWarning" style="display:none;font-size:0.72rem;color:var(--gold);background:rgba(201,146,42,0.12);border-radius:4px;padding:4px 7px;">
+            ⚠ Yud + Yud blends will be skipped
+          </div>
+        </div>
+        <div class="toggle-row" style="margin-top:4px;">
+          <span>Three-Letter Blends</span>
+          <label class="toggle">
+            <input type="checkbox" id="threeLetterToggle" onchange="toggleThreeLetterUI()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div id="threeLetterOptions" style="display:none;margin-top:6px;">
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.82rem;">
+            <span style="color:var(--navy);font-weight:600;white-space:nowrap;">Vowel on</span>
+            <select id="vowelPosition" style="flex:1;">
+              <option value="first">First letter only</option>
+              <option value="both">First &amp; second letters</option>
+            </select>
+          </div>
+        </div>
+        <div class="toggle-row" style="margin-top:4px;">
+          <span>Student Self-Check Mode</span>
+          <label class="toggle">
+            <input type="checkbox" id="selfCheckToggle">
+            <span class="slider"></span>
+          </label>
         </div>
       </div>
     </div>
@@ -639,11 +796,18 @@
 
   <!-- ══ MAIN ══ -->
   <main class="main">
-    <div class="worksheet" id="worksheet">
-      <div class="empty-state">
-        <div class="star">✡</div>
-        <h2>Ready to Generate</h2>
-        <p>Select your letters and vowels on the left, then click <strong>Generate Worksheet</strong>.</p>
+    <div class="zoom-bar" id="zoomBar" style="display:none;">
+      <span>🔍</span>
+      <input type="range" id="zoomSlider" min="50" max="150" value="100" oninput="applyZoom(this.value)">
+      <span id="zoomLabel">100%</span>
+    </div>
+    <div class="worksheet-scaler" id="worksheetScaler">
+      <div class="worksheet" id="worksheet">
+        <div class="empty-state">
+          <div class="star">✡</div>
+          <h2>Ready to Generate</h2>
+          <p>Select your letters and vowels on the left, then click <strong>Generate Worksheet</strong>.</p>
+        </div>
       </div>
     </div>
   </main>
@@ -842,13 +1006,58 @@ function selectNoSofit() {
   });
 }
 
+// ── DARK MODE ──
+function toggleDark() {
+  document.body.classList.toggle('dark');
+  document.getElementById('darkToggle').textContent =
+    document.body.classList.contains('dark') ? '☀️' : '🌙';
+}
+
+// ── ZOOM ──
+function applyZoom(val) {
+  document.getElementById('worksheetScaler').style.transform = `scale(${val/100})`;
+  document.getElementById('zoomLabel').textContent = `${val}%`;
+}
+
+// ── THREE LETTER UI ──
+function toggleThreeLetterUI() {
+  const on = document.getElementById('threeLetterToggle').checked;
+  document.getElementById('threeLetterOptions').style.display = on ? 'block' : 'none';
+  document.getElementById('headerSub').textContent = on
+    ? 'Three-letter syllable practice for emerging Hebrew readers'
+    : 'Two-letter syllable practice for emerging Hebrew readers';
+}
+
 // ══════════════════════════════════════════════
 //  FOCUS LETTER UI
 // ══════════════════════════════════════════════
 function toggleFocusUI() {
   const on = document.getElementById('focusToggle').checked;
   document.getElementById('focusOptions').style.display = on ? 'flex' : 'none';
+  if (on) updateFocusYudWarning();
 }
+
+function updateFocusYudWarning() {
+  // No need to disable yud in dropdown — generation already filters it.
+  // But show a small warning if yud is selected and would pair with yud.
+  const focusHeb = document.getElementById('focusLetter').value;
+  const focusPos = document.getElementById('focusPosition').value;
+  const warning  = document.getElementById('focusYudWarning');
+  if (focusHeb === 'י' && selectedLetters.has('י')) {
+    warning.style.display = 'block';
+  } else {
+    warning.style.display = 'none';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('focusLetter').addEventListener('change', () => {
+    if (document.getElementById('focusToggle').checked) updateFocusYudWarning();
+  });
+  document.getElementById('focusPosition').addEventListener('change', () => {
+    if (document.getElementById('focusToggle').checked) updateFocusYudWarning();
+  });
+});
 
 function populateFocusDropdown() {
   const sel = document.getElementById('focusLetter');
@@ -871,8 +1080,7 @@ function populateFocusDropdown() {
 //  REGENERATE
 // ══════════════════════════════════════════════
 function regenerate() {
-  // Re-run the blend generation with the same settings, new random picks
-  generate();
+  generate(true); // pass animate flag
 }
 
 function enableButtons() {
@@ -883,6 +1091,7 @@ function enableButtons() {
     btn.style.opacity = '1';
     btn.style.cursor = 'pointer';
   });
+  document.getElementById('zoomBar').style.display = 'flex';
 }
 
 // Collapsible panels on mobile
@@ -960,7 +1169,7 @@ function autoCols(count) {
   return 10;
 }
 
-function generate() {
+function generate(animate = false) {
   const vowelKeys = [...selectedVowels];
   if (vowelKeys.length === 0) { alert('Please select at least one vowel.'); return; }
 
@@ -978,8 +1187,12 @@ function generate() {
     focusPos = document.getElementById('focusPosition').value;
     if (focusPos === 'first') {
       firstPool = [focusHeb];
+      // If focus letter is yud, remove yud from second pool
+      if (focusHeb === 'י') secondPool = secondPool.filter(h => h !== 'י');
     } else {
       secondPool = [focusHeb];
+      // If focus letter is yud, remove yud from first pool
+      if (focusHeb === 'י') firstPool = firstPool.filter(h => h !== 'י');
     }
   }
 
@@ -989,42 +1202,84 @@ function generate() {
   }
 
   const count = parseInt(document.getElementById('blendCount').value);
+  const threeLetter = document.getElementById('threeLetterToggle').checked;
+  const vowelPos = document.getElementById('vowelPosition').value; // 'first' or 'both'
 
   blends = [];
   for (let i = 0; i < count; i++) {
-    const vowel   = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
-    const first   = firstPool[Math.floor(Math.random() * firstPool.length)];
-    const second  = secondPool[Math.floor(Math.random() * secondPool.length)];
+    const vowel  = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
+    let first, second, attempts = 0;
+    do {
+      first  = firstPool[Math.floor(Math.random() * firstPool.length)];
+      second = secondPool[Math.floor(Math.random() * secondPool.length)];
+      attempts++;
+    } while (first === 'י' && second === 'י' && attempts < 20);
+    // If after 20 attempts still yud+yud (e.g. only yud selected), skip this blend
+    if (first === 'י' && second === 'י') continue;
 
     const firstObj  = getLetter(first);
     const secondObj = getLetter(second);
 
-    const firstSound = getSound(firstObj, vowel);
+    const firstSound      = getSound(firstObj, vowel);
     const secondConsonant = secondObj.sounds['sh'].replace("'", '');
-    const combined = firstSound + secondConsonant;
+    const firstDisplay    = withNikud(firstObj, vowel, true);
+    const secondDisplay   = SOFIT_CHARS.has(second) ? second : secondObj.base;
 
-    const firstDisplay  = withNikud(firstObj, vowel, true);
-    const secondDisplay = SOFIT_CHARS.has(second) ? second : secondObj.base;
-    const hebrewDisplay = firstDisplay + secondDisplay;
+    if (threeLetter) {
+      const vowel2   = vowelPos === 'both' ? vowelKeys[Math.floor(Math.random() * vowelKeys.length)] : null;
+      // Third letter: always from secondPool but must not be a vav variant
+      const thirdPool2 = secondPool.filter(h => !['וֹ','וּ'].includes(h));
+      const third    = thirdPool2[Math.floor(Math.random() * thirdPool2.length)];
+      const thirdObj = getLetter(third);
+      const thirdDisplay = SOFIT_CHARS.has(third) ? third : thirdObj.base;
 
-    blends.push({ firstHeb: first, secondHeb: second, firstObj, secondObj, vowel, combined, hebrewDisplay });
+      let midDisplay, midSound;
+      if (vowelPos === 'both' && vowel2) {
+        midDisplay = withNikud(secondObj, vowel2, true);
+        midSound   = getSound(secondObj, vowel2);
+      } else {
+        midDisplay = secondDisplay;
+        midSound   = secondConsonant;
+      }
+
+      const thirdConsonant = thirdObj.sounds['sh'].replace("'", '');
+      const combined     = firstSound + midSound + thirdConsonant;
+      const hebrewDisplay = firstDisplay + midDisplay + thirdDisplay;
+
+      blends.push({ firstHeb: first, secondHeb: second, thirdHeb: third,
+        firstObj, secondObj, thirdObj, vowel, combined, hebrewDisplay, threeLetter: true });
+    } else {
+      const combined      = firstSound + secondConsonant;
+      const hebrewDisplay = firstDisplay + secondDisplay;
+      blends.push({ firstHeb: first, secondHeb: second, firstObj, secondObj,
+        vowel, combined, hebrewDisplay, threeLetter: false });
+    }
   }
 
-  renderWorksheet();
+  renderWorksheet(animate);
   enableButtons();
 }
 
 // ══════════════════════════════════════════════
 //  RENDER
 // ══════════════════════════════════════════════
-function renderWorksheet() {
+let isShuffling = false;
+
+function renderWorksheet(animate = false) {
   const isInverse   = document.getElementById('inverseToggle').checked;
   const showAnswers = document.getElementById('answerKeyToggle').checked;
+  const selfCheck   = document.getElementById('selfCheckToggle').checked;
   const cols        = autoCols(blends.length);
-  const title    = document.getElementById('wsTitle').value || 'Hebrew Blends';
-  const subtitle = document.getElementById('wsSubtitle').value;
+  const title       = document.getElementById('wsTitle').value || 'Hebrew Blends';
+  const subtitle    = document.getElementById('wsSubtitle').value;
 
   const ws = document.getElementById('worksheet');
+
+  if (selfCheck) {
+    renderSelfCheck(ws, cols, title, subtitle);
+    return;
+  }
+
   ws.innerHTML = '';
 
   // ── PAGE 1: Student Sheet ──
@@ -1052,21 +1307,17 @@ function renderWorksheet() {
   studentSheet.appendChild(grid);
 
   blends.forEach((b, idx) => {
-    if (isInverse) {
-      renderInverseCell(grid, b, idx, false); // never show answers on student sheet
-    } else {
-      renderHebrewCell(grid, b, idx, false);
-    }
+    if (isInverse) renderInverseCell(grid, b, idx, false);
+    else renderHebrewCell(grid, b, idx, false);
   });
 
   const footer = document.createElement('div');
   footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
   footer.textContent = `${blends.length} blends · Hebrew Blend Generator`;
   studentSheet.appendChild(footer);
-
   ws.appendChild(studentSheet);
 
-  // ── PAGE 2: Answer Key (only if toggled) ──
+  // ── PAGE 2: Answer Key ──
   if (showAnswers) {
     const answerSheet = document.createElement('div');
     answerSheet.className = 'sheet answer-key-sheet';
@@ -1093,20 +1344,78 @@ function renderWorksheet() {
     answerSheet.appendChild(akGrid);
 
     blends.forEach((b, idx) => {
-      if (isInverse) {
-        renderInverseCell(akGrid, b, idx, true); // show answers
-      } else {
-        renderHebrewCell(akGrid, b, idx, true);
-      }
+      if (isInverse) renderInverseCell(akGrid, b, idx, true);
+      else renderHebrewCell(akGrid, b, idx, true);
     });
 
     const akFooter = document.createElement('div');
     akFooter.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
     akFooter.textContent = `${blends.length} blends · Hebrew Blend Generator — Answer Key`;
     answerSheet.appendChild(akFooter);
-
     ws.appendChild(answerSheet);
   }
+
+  // Shuffle animation
+  if (animate) {
+    ws.querySelectorAll('.blend-cell, .blend-cell-inv').forEach((cell, i) => {
+      cell.style.animationDelay = `${i * 18}ms`;
+      cell.classList.add('shuffling');
+      cell.addEventListener('animationend', () => cell.classList.remove('shuffling'), { once: true });
+    });
+  }
+}
+
+// ── SELF-CHECK MODE ──
+function renderSelfCheck(ws, cols, title, subtitle) {
+  ws.innerHTML = '';
+
+  const scHeader = document.createElement('div');
+  scHeader.className = 'ws-header';
+  scHeader.innerHTML = `
+    <div>
+      <div class="ws-title">${title}</div>
+      <div class="ws-subtitle">${subtitle || 'Tap each card to reveal the pronunciation.'}</div>
+    </div>`;
+  ws.appendChild(scHeader);
+
+  const controls = document.createElement('div');
+  controls.className = 'self-check-controls';
+  controls.innerHTML = `
+    <button class="btn-xs" onclick="flipAllCards(true)">Reveal All</button>
+    <button class="btn-xs" onclick="flipAllCards(false)">Hide All</button>
+    <span style="font-size:0.75rem;color:var(--muted);margin-left:4px;">Tap a card to flip</span>`;
+  ws.appendChild(controls);
+
+  const grid = document.createElement('div');
+  grid.className = 'self-check-grid';
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  ws.appendChild(grid);
+
+  blends.forEach((b, idx) => {
+    const card = document.createElement('div');
+    card.className = 'flip-card';
+    card.onclick = () => card.classList.toggle('flipped');
+    card.innerHTML = `
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <span class="flip-card-num">${idx + 1}</span>
+          <span style="direction:rtl;">${b.hebrewDisplay}</span>
+          <span class="flip-card-hint">tap to reveal</span>
+        </div>
+        <div class="flip-card-back">
+          <span class="flip-card-num" style="color:var(--gold-light);">${idx + 1}</span>
+          <span>${b.combined}</span>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function flipAllCards(reveal) {
+  document.querySelectorAll('.flip-card').forEach(c => {
+    if (reveal) c.classList.add('flipped');
+    else c.classList.remove('flipped');
+  });
 }
 
 function renderHebrewCell(grid, b, idx, showAnswers) {
@@ -1163,10 +1472,11 @@ function renderInverseCell(grid, b, idx, showAnswers) {
 // ══════════════════════════════════════════════
 //  Re-render on toggle changes (no re-generate)
 // ══════════════════════════════════════════════
-document.getElementById('inverseToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(); });
-document.getElementById('answerKeyToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(); });
-document.getElementById('wsTitle').addEventListener('input', () => { if (blends.length) renderWorksheet(); });
-document.getElementById('wsSubtitle').addEventListener('input', () => { if (blends.length) renderWorksheet(); });
+document.getElementById('inverseToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(false); });
+document.getElementById('answerKeyToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(false); });
+document.getElementById('selfCheckToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(false); });
+document.getElementById('wsTitle').addEventListener('input', () => { if (blends.length) renderWorksheet(false); });
+document.getElementById('wsSubtitle').addEventListener('input', () => { if (blends.length) renderWorksheet(false); });
 
 // ══════════════════════════════════════════════
 //  BOOT
