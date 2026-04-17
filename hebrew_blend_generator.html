@@ -610,7 +610,123 @@
   }
   body.landscape-mode .blends-grid { grid-template-columns: repeat(10, 1fr) !important; }
 
-  /* ── DARK MODE additions ── */
+  /* ── BINGO ── */
+  .bingo-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+    padding: 16px 0;
+  }
+  .bingo-page.two-up {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+  }
+  .bingo-card {
+    border: 2px solid var(--navy);
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 420px;
+    flex-shrink: 0;
+  }
+  .bingo-card.two-up {
+    max-width: 340px;
+  }
+  .bingo-card-header {
+    background: var(--navy);
+    color: var(--white);
+    display: grid;
+    text-align: center;
+    font-family: 'Libre Baskerville', serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+  }
+  .bingo-card-header.two-up { font-size: 0.9rem; }
+  .bingo-card-header span {
+    padding: 6px 2px;
+    border-right: 1px solid rgba(255,255,255,0.2);
+  }
+  .bingo-card-header span:last-child { border-right: none; }
+  .bingo-card-num {
+    background: var(--gold);
+    color: var(--navy);
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px;
+    letter-spacing: 0.05em;
+  }
+  .bingo-grid {
+    display: grid;
+    border-top: 1px solid var(--border);
+  }
+  .bingo-cell {
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 2px;
+    min-height: 60px;
+    text-align: center;
+  }
+  .bingo-card.two-up .bingo-cell { min-height: 48px; }
+  .bingo-cell:nth-child(5n) { border-right: none; }
+  .bingo-cell.free-space {
+    background: var(--gold-light);
+    color: var(--navy);
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .bingo-cell .heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.4rem; direction: rtl; line-height: 1.2; color: var(--navy); }
+  .bingo-card.two-up .bingo-cell .heb { font-size: 1.1rem; }
+  .bingo-cell .sound { font-size: 0.6rem; color: var(--muted); font-style: italic; margin-top: 1px; }
+
+  /* Caller sheet */
+  .caller-sheet { page-break-before: always; }
+  .caller-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.2rem;
+    color: var(--navy);
+    margin-bottom: 4px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--navy);
+  }
+  .caller-subtitle { font-size: 0.78rem; color: var(--muted); margin-bottom: 14px; }
+  .caller-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    direction: ltr;
+  }
+  .caller-item {
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 6px 4px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .caller-item .num { font-size: 0.6rem; color: var(--muted); }
+  .caller-item .heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.3rem; direction: rtl; color: var(--navy); }
+  .caller-item .sound { font-size: 0.65rem; color: var(--muted); font-style: italic; }
+  .caller-item.called { background: var(--warm-gray); }
+
+  @media print {
+    .bingo-page.two-up { flex-direction: row; }
+    .bingo-card { page-break-inside: avoid; }
+    .bingo-page-break { page-break-before: always; }
+  }
   body.dark .timer-bar,
   body.dark .score-bar { background: var(--warm-gray); }
   body.dark .timer-display { color: #dde4f0; }
@@ -873,7 +989,62 @@
             </select>
           </div>
         </div>
-        <div class="toggle-row" id="rowSelfCheck" style="margin-top:4px;">
+        <div class="toggle-row" id="rowBingo" style="margin-top:4px;">
+          <span>Bingo Mode</span>
+          <label class="toggle">
+            <input type="checkbox" id="bingoToggle" onchange="toggleBingoUI()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div id="bingoOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--border);flex-direction:column;gap:5px;">
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Grid size</span>
+            <select id="bingoGrid" style="flex:1;font-size:0.78rem;padding:3px 6px;">
+              <option value="3">3 × 3</option>
+              <option value="4">4 × 4</option>
+              <option value="5" selected>5 × 5</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Cards</span>
+            <select id="bingoCards" style="flex:1;font-size:0.78rem;padding:3px 6px;">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+              <option value="25">25</option>
+              <option value="30" selected>30</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Per page</span>
+            <select id="bingoPerPage" style="flex:1;font-size:0.78rem;padding:3px 6px;">
+              <option value="1">1 card</option>
+              <option value="2" selected>2 cards</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Free space</span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="bingoFreeSpace" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Show sounds</span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="bingoShowSounds">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Caller sheet</span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="bingoCallerSheet" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
           <span>Student Self-Check Mode</span>
           <label class="toggle">
             <input type="checkbox" id="selfCheckToggle">
@@ -1457,6 +1628,197 @@ function toggleThreeLetterUI() {
     : 'Two-letter syllable practice for emerging Hebrew readers';
 }
 
+// ── BINGO MODE UI ──
+function toggleBingoUI() {
+  const on = document.getElementById('bingoToggle').checked;
+  document.getElementById('bingoOptions').style.display = on ? 'flex' : 'none';
+  const hideRows = ['rowInverse','rowAnswerKey','rowFocus','focusOptions',
+                    'rowThreeLetter','threeLetterOptions','rowSelfCheck','selfCheckOptions'];
+  hideRows.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = on ? 'none' : ''; });
+  if (blends.length) renderWorksheet(false);
+}
+
+// ── BINGO GENERATION ──
+function generateBingoBlend(firstPool, secondPool, vowelKeys, excludeRepeats) {
+  let attempts = 0, first, second, vowel;
+  do {
+    vowel  = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
+    first  = firstPool[Math.floor(Math.random() * firstPool.length)];
+    second = secondPool[Math.floor(Math.random() * secondPool.length)];
+    attempts++;
+  } while (attempts < 30 && (
+    (first === 'י' && second === 'י') ||
+    (excludeRepeats && first === second)
+  ));
+  if (first === 'י' && second === 'י') return null;
+
+  // Sin/Shin + Cholam guard
+  if ((first === 'שׂ' || first === 'ש') && vowel === 'o') {
+    const alt = vowelKeys.filter(v => v !== 'o');
+    if (alt.length === 0) return null;
+    vowel = alt[Math.floor(Math.random() * alt.length)];
+  }
+  // Vav + Shva guard
+  if ((first === 'ו' || first === 'וֹ' || first === 'וּ') && vowel === 'sh') {
+    const alt = vowelKeys.filter(v => v !== 'sh');
+    if (alt.length === 0) return null;
+    vowel = alt[Math.floor(Math.random() * alt.length)];
+  }
+
+  const firstObj  = getLetter(first);
+  const secondObj = getLetter(second);
+  const firstSound      = getSound(firstObj, vowel);
+  const secondConsonant = secondObj.sounds['sh'].replace("'", '');
+  const combined        = firstSound + secondConsonant;
+  const firstDisplay    = withNikud(firstObj, vowel, true);
+  const secondDisplay   = SOFIT_CHARS.has(second) ? second : secondObj.base;
+  const hebrewDisplay   = firstDisplay + secondDisplay;
+  return { hebrewDisplay, combined, key: first + vowel + second };
+}
+
+// ── BINGO RENDER ──
+function renderBingo(ws) {
+  ws.innerHTML = '';
+
+  const gridSize    = parseInt(document.getElementById('bingoGrid').value);
+  const numCards    = parseInt(document.getElementById('bingoCards').value);
+  const perPage     = parseInt(document.getElementById('bingoPerPage').value);
+  const freeSpace   = document.getElementById('bingoFreeSpace').checked;
+  const showSounds  = document.getElementById('bingoShowSounds').checked;
+  const callerOn    = document.getElementById('bingoCallerSheet').checked;
+  const excludeRep  = document.getElementById('excludeRepeats').checked;
+
+  const vowelKeys = [...selectedVowels];
+  if (vowelKeys.length === 0) { ws.innerHTML = '<div class="empty-state"><h2>Please select at least one vowel.</h2></div>'; return; }
+
+  const VAV_VARIANTS = new Set(['וֹ','וּ']);
+  const HAS_SOFIT    = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
+  let firstPool  = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h));
+  let secondPool = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h) && h !== 'ו');
+
+  if (firstPool.length === 0 || secondPool.length === 0) {
+    ws.innerHTML = '<div class="empty-state"><h2>Please select more letters.</h2></div>'; return;
+  }
+
+  const cellsNeeded = freeSpace ? gridSize * gridSize - 1 : gridSize * gridSize;
+  const BINGO_HEADERS = { 3: ['ב','י','נ'], 4: ['ב','י','נ','ג'], 5: ['ב','י','נ','ג','ו'] };
+  const headers = BINGO_HEADERS[gridSize];
+
+  // Build a large pool of unique blends for caller sheet
+  const callerPool = [];
+  const callerKeys = new Set();
+  let safetyBreak = 0;
+  while (callerPool.length < Math.min(cellsNeeded * numCards, 200) && safetyBreak < 2000) {
+    safetyBreak++;
+    const b = generateBingoBlend(firstPool, secondPool, vowelKeys, excludeRep);
+    if (b && !callerKeys.has(b.key)) {
+      callerPool.push(b);
+      callerKeys.add(b.key);
+    }
+  }
+
+  // Shuffle helper
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // Generate each card
+  const cards = [];
+  for (let c = 0; c < numCards; c++) {
+    // Each card gets a random selection from the caller pool
+    const pool = shuffle(callerPool).slice(0, cellsNeeded);
+    const cells = [];
+    let idx = 0;
+    for (let r = 0; r < gridSize; r++) {
+      for (let col = 0; col < gridSize; col++) {
+        const center = Math.floor(gridSize / 2);
+        if (freeSpace && r === center && col === center) {
+          cells.push({ free: true });
+        } else {
+          cells.push(pool[idx++] || { hebrewDisplay: '?', combined: '?', key: '?' });
+        }
+      }
+    }
+    cards.push({ num: c + 1, cells });
+  }
+
+  // Render cards in pages
+  for (let i = 0; i < cards.length; i += perPage) {
+    const page = document.createElement('div');
+    page.className = `bingo-page${perPage === 2 ? ' two-up' : ''}`;
+    if (i > 0) page.classList.add('bingo-page-break');
+
+    for (let j = i; j < Math.min(i + perPage, cards.length); j++) {
+      const card = cards[j];
+      const cardEl = document.createElement('div');
+      cardEl.className = `bingo-card${perPage === 2 ? ' two-up' : ''}`;
+
+      // Card number
+      const numBar = document.createElement('div');
+      numBar.className = 'bingo-card-num';
+      numBar.textContent = `CARD #${card.num}`;
+      cardEl.appendChild(numBar);
+
+      // Header row (B-I-N-G-O)
+      const headerEl = document.createElement('div');
+      headerEl.className = `bingo-card-header${perPage === 2 ? ' two-up' : ''}`;
+      headerEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+      headers.forEach(h => {
+        const s = document.createElement('span');
+        s.textContent = h;
+        headerEl.appendChild(s);
+      });
+      cardEl.appendChild(headerEl);
+
+      // Grid
+      const gridEl = document.createElement('div');
+      gridEl.className = 'bingo-grid';
+      gridEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+
+      card.cells.forEach(cell => {
+        const cellEl = document.createElement('div');
+        if (cell.free) {
+          cellEl.className = 'bingo-cell free-space';
+          cellEl.textContent = '★ FREE ★';
+        } else {
+          cellEl.className = 'bingo-cell';
+          cellEl.innerHTML = `<span class="heb">${cell.hebrewDisplay}</span>${showSounds ? `<span class="sound">${cell.combined}</span>` : ''}`;
+        }
+        gridEl.appendChild(cellEl);
+      });
+      cardEl.appendChild(gridEl);
+      page.appendChild(cardEl);
+    }
+    ws.appendChild(page);
+  }
+
+  // Caller sheet
+  if (callerOn) {
+    const callerShuffled = shuffle(callerPool);
+    const sheet = document.createElement('div');
+    sheet.className = 'caller-sheet';
+    sheet.innerHTML = `
+      <div class="caller-title">📋 Caller Sheet</div>
+      <div class="caller-subtitle">Call each blend in order. Check them off as you go.</div>`;
+    const grid = document.createElement('div');
+    grid.className = 'caller-grid';
+    callerShuffled.forEach((b, i) => {
+      const item = document.createElement('div');
+      item.className = 'caller-item';
+      item.onclick = () => item.classList.toggle('called');
+      item.innerHTML = `<span class="num">${i + 1}</span><span class="heb">${b.hebrewDisplay}</span><span class="sound">${b.combined}</span>`;
+      grid.appendChild(item);
+    });
+    sheet.appendChild(grid);
+    ws.appendChild(sheet);
+  }
+}
+
 // ══════════════════════════════════════════════
 //  FOCUS LETTER UI
 // ══════════════════════════════════════════════
@@ -1754,11 +2116,17 @@ function renderWorksheet(animate = false) {
   const isInverse   = document.getElementById('inverseToggle').checked;
   const showAnswers = document.getElementById('answerKeyToggle').checked;
   const selfCheck   = document.getElementById('selfCheckToggle').checked;
+  const bingo       = document.getElementById('bingoToggle').checked;
   const cols        = autoCols(blends.length);
   const title       = document.getElementById('wsTitle').value || 'Hebrew Blends';
   const subtitle    = document.getElementById('wsSubtitle').value;
 
   const ws = document.getElementById('worksheet');
+
+  if (bingo) {
+    renderBingo(ws);
+    return;
+  }
 
   if (selfCheck) {
     renderSelfCheck(ws, cols, title, subtitle);
@@ -2004,6 +2372,8 @@ document.getElementById('inverseToggle').addEventListener('change', () => { if (
 document.getElementById('answerKeyToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(false); });
 document.getElementById('selfCheckToggle').addEventListener('change', () => {
   const on = document.getElementById('selfCheckToggle').checked;
+  // Mutually exclusive with bingo
+  if (on) { document.getElementById('bingoToggle').checked = false; toggleBingoUI(); }
   const hidePanels = ['panelLayout', 'panelVowels', 'panelLetters'];
   const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowThreeLetter'];
   const hideBtns   = ['printBtn', 'pdfBtn', 'printBtnMob', 'pdfBtnMob'];
