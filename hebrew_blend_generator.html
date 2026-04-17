@@ -718,7 +718,7 @@
           </div>
         </div>
         <div class="toggle-row" style="margin-top:4px;">
-          <span>Three-Letter Blends</span>
+          <span>Three-Letter Blends <span style="font-size:0.65rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
           <label class="toggle">
             <input type="checkbox" id="threeLetterToggle" onchange="toggleThreeLetterUI()">
             <span class="slider"></span>
@@ -744,7 +744,7 @@
     </div>
 
     <!-- Layout -->
-    <div class="panel">
+    <div class="panel" id="panelLayout">
       <div class="panel-title">Layout</div>
       <div class="panel-body">
 
@@ -777,7 +777,7 @@
     </div>
 
     <!-- Vowels -->
-    <div class="panel">
+    <div class="panel" id="panelVowels">
       <div class="panel-title">Vowels Included</div>
       <div class="panel-body">
         <div class="vowel-grid" id="vowelGrid"></div>
@@ -785,7 +785,7 @@
     </div>
 
     <!-- Letters -->
-    <div class="panel">
+    <div class="panel" id="panelLetters">
       <div class="panel-title">Letters Included</div>
       <div class="panel-body">
         <div class="letter-controls">
@@ -1512,7 +1512,14 @@ function renderInverseCell(grid, b, idx, showAnswers) {
 // ══════════════════════════════════════════════
 document.getElementById('inverseToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(false); });
 document.getElementById('answerKeyToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(false); });
-document.getElementById('selfCheckToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(false); });
+document.getElementById('selfCheckToggle').addEventListener('change', () => {
+  const on = document.getElementById('selfCheckToggle').checked;
+  const hide = ['panelLayout', 'panelVowels', 'panelLetters'];
+  hide.forEach(id => {
+    document.getElementById(id).style.display = on ? 'none' : '';
+  });
+  if (blends.length) renderWorksheet(false);
+});
 document.getElementById('wsTitle').addEventListener('input', () => { if (blends.length) renderWorksheet(false); });
 document.getElementById('wsSubtitle').addEventListener('input', () => { if (blends.length) renderWorksheet(false); });
 
