@@ -1591,6 +1591,9 @@ function generate(animate = false) {
   let firstPool  = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h));
   let secondPool = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h));
 
+  // Rule 1: Remove plain ו from second pool — always confusing there
+  secondPool = secondPool.filter(h => h !== 'ו');
+
   // Per-position letter locks
   const focusOn = document.getElementById('focusToggle').checked;
   if (focusOn) {
@@ -1639,7 +1642,23 @@ function generate(animate = false) {
     if ((first === 'שׂ' || first === 'ש') && vowel === 'o') {
       const altVowels = vowelKeys.filter(v => v !== 'o');
       if (altVowels.length > 0) vowel = altVowels[Math.floor(Math.random() * altVowels.length)];
-      else continue; // Cholam is the only vowel and Sin/Shin is chosen — skip blend
+      else continue;
+    }
+
+    // Rule 2: Plain ו as first letter — force vowel to match its dot form
+    // Cholam → וֹ already handled in withNikud; Kubutz → וּ already handled
+    // But skip Shva for plain Vav — ו with Shva is pedagogically meaningless
+    if (first === 'ו' && vowel === 'sh') {
+      const altVowels = vowelKeys.filter(v => v !== 'sh');
+      if (altVowels.length > 0) vowel = altVowels[Math.floor(Math.random() * altVowels.length)];
+      else continue;
+    }
+
+    // Rule 3: Vav variants (וֹ וּ) as first letter + Shva selected — skip, they carry their own vowel
+    if ((first === 'וֹ' || first === 'וּ') && vowel === 'sh') {
+      const altVowels = vowelKeys.filter(v => v !== 'sh');
+      if (altVowels.length > 0) vowel = altVowels[Math.floor(Math.random() * altVowels.length)];
+      else continue;
     }
 
     const firstObj  = getLetter(first);
