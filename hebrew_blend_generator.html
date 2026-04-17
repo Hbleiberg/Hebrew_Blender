@@ -684,8 +684,8 @@
     flex: 1;
   }
   .bingo-card-header {
-    background: var(--navy);
-    color: var(--white);
+    background: #1a2744;
+    color: #ffffff;
     display: grid;
     text-align: center;
     font-family: 'Libre Baskerville', serif;
@@ -701,8 +701,8 @@
   }
   .bingo-card-header span:last-child { border-left: none; }
   .bingo-card-num {
-    background: var(--gold);
-    color: var(--navy);
+    background: #c9922a;
+    color: #ffffff;
     text-align: center;
     font-size: 0.7rem;
     font-weight: 700;
@@ -711,11 +711,21 @@
   }
   .bingo-grid {
     display: grid;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid #c8bfa8;
+  }
+  .bingo-card {
+    border: 2px solid #1a2744;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 420px;
+    flex-shrink: 0;
+    background: #ffffff;
+    color: #1a2744;
   }
   .bingo-cell {
-    border-right: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
+    border-right: 1px solid #c8bfa8;
+    border-bottom: 1px solid #c8bfa8;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -723,23 +733,27 @@
     padding: 4px 2px;
     min-height: 60px;
     text-align: center;
+    background: #ffffff;
   }
   .bingo-cell.last-col { border-right: none; }
   .bingo-cell.last-row { border-bottom: none; }
   .bingo-card.two-up .bingo-cell { min-height: 48px; }
-  .bingo-cell.free-space {
-    background: var(--gold-light);
-    color: var(--navy);
-    font-family: 'Libre Baskerville', serif;
+  .bingo-cell .heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.4rem; direction: rtl; line-height: 1.2; color: #1a2744; }
+  .bingo-card.two-up .bingo-cell .heb { font-size: 1.1rem; }
+  .bingo-cell .sound { font-size: 0.6rem; color: #6b6050; font-style: italic; margin-top: 1px; }
+  .bingo-card-num {
+    background: #c9922a;
+    color: #ffffff;
+    text-align: center;
     font-size: 0.7rem;
     font-weight: 700;
+    padding: 3px;
     letter-spacing: 0.05em;
-    text-transform: uppercase;
-    gap: 2px;
   }
-  .bingo-cell .heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.4rem; direction: rtl; line-height: 1.2; color: var(--navy); }
-  .bingo-card.two-up .bingo-cell .heb { font-size: 1.1rem; }
-  .bingo-cell .sound { font-size: 0.6rem; color: var(--muted); font-style: italic; margin-top: 1px; }
+  .bingo-grid {
+    display: grid;
+    border-top: 1px solid #c8bfa8;
+  }
 
   .bingo-card.four-up {
     max-width: 100%;
@@ -779,7 +793,7 @@
     direction: ltr;
   }
   .caller-item {
-    border: 1px solid var(--border);
+    border: 1px solid #c8bfa8;
     border-radius: 5px;
     padding: 6px 4px;
     text-align: center;
@@ -787,11 +801,13 @@
     flex-direction: column;
     align-items: center;
     gap: 2px;
+    background: #ffffff;
+    cursor: pointer;
   }
-  .caller-item .num { font-size: 0.6rem; color: var(--muted); }
-  .caller-item .heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.3rem; direction: rtl; color: var(--navy); }
-  .caller-item .sound { font-size: 0.65rem; color: var(--muted); font-style: italic; }
-  .caller-item.called { background: var(--warm-gray); }
+  .caller-item .num { font-size: 0.6rem; color: #6b6050; }
+  .caller-item .heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.3rem; direction: rtl; color: #1a2744; }
+  .caller-item .sound { font-size: 0.65rem; color: #6b6050; font-style: italic; }
+  .caller-item.called { background: #e8e0d0; }
 
   @media print {
     .bingo-page.two-up { flex-direction: row; }
@@ -1977,7 +1993,7 @@ function renderBingo(ws) {
         if (row === gridSize - 1) cls += ' last-row';
         if (cell.free) {
           cellEl.className = cls + ' free-space';
-          cellEl.innerHTML = '<span style="font-size:1rem;">★</span><span>FREE</span>';
+          cellEl.innerHTML = '<span style="font-size:1rem;">✡</span><span>FREE</span>';
         } else {
           cellEl.className = cls;
           cellEl.innerHTML = `<span class="heb">${cell.hebrewDisplay}</span>${showSounds ? `<span class="sound">${cell.combined}</span>` : ''}`;
