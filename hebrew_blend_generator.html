@@ -1554,8 +1554,9 @@ function getSettings() {
     blendType:    document.querySelector('.blend-type-btn.active')?.dataset.type || 'two',
     inverse:      document.getElementById('inverseToggle').checked,
     answerKey:    document.getElementById('answerKeyToggle').checked,
-    oneLetter:    document.getElementById('oneLetterToggle').checked,
-    nikudOnly:    document.getElementById('nikudOnlyToggle').checked,
+    oneLetter:    document.querySelector('.blend-type-btn.active')?.dataset.type === 'one',
+    nikudOnly:    document.querySelector('.blend-type-btn.active')?.dataset.type === 'nikud',
+    threeLetter:  document.querySelector('.blend-type-btn.active')?.dataset.type === 'three',
     threeLetter:  document.getElementById('threeLetterToggle').checked,
     vowelPosition: document.getElementById('vowelPosition').value,
     selfCheck:    document.getElementById('selfCheckToggle').checked,
@@ -2366,8 +2367,9 @@ function generate(animate = false) {
   }
 
   const count = parseInt(document.getElementById('blendCount').value);
-  const threeLetter = document.getElementById('threeLetterToggle').checked;
-  const vowelPos = document.getElementById('vowelPosition').value; // 'first' or 'both'
+  const activeType  = document.querySelector('.blend-type-btn.active')?.dataset.type || 'two';
+  const threeLetter = activeType === 'three';
+  const vowelPos = document.getElementById('vowelPosition').value;
 
   blends = [];
   for (let i = 0; i < count; i++) {
@@ -2467,8 +2469,9 @@ function renderWorksheet(animate = false) {
   const showAnswers = document.getElementById('answerKeyToggle').checked;
   const selfCheck   = document.getElementById('selfCheckToggle').checked;
   const bingo       = document.getElementById('bingoToggle').checked;
-  const oneLetter   = document.getElementById('oneLetterToggle').checked;
-  const nikudOnly   = document.getElementById('nikudOnlyToggle').checked;
+  const activeType  = document.querySelector('.blend-type-btn.active')?.dataset.type || 'two';
+  const oneLetter   = activeType === 'one';
+  const nikudOnly   = activeType === 'nikud';
   const cols        = autoCols(blends.length);
   const title       = document.getElementById('wsTitle').value || 'Hebrew Blends';
   const subtitle    = document.getElementById('wsSubtitle').value;
