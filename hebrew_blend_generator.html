@@ -1024,9 +1024,19 @@ function selectNoSofit() {
 
 // ── DARK MODE ──
 function toggleDark() {
-  document.body.classList.toggle('dark');
-  document.getElementById('darkToggle').textContent =
-    document.body.classList.contains('dark') ? '☀️' : '🌙';
+  const isDark = document.body.classList.toggle('dark');
+  document.getElementById('darkToggle').textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+  localStorage.setItem('hebrewBlender_darkMode', isDark ? '1' : '0');
+}
+
+function initDarkMode() {
+  const saved = localStorage.getItem('hebrewBlender_darkMode');
+  if (saved === '1') {
+    document.body.classList.add('dark');
+    document.getElementById('darkToggle').textContent = '☀️ Light Mode';
+  } else {
+    document.getElementById('darkToggle').textContent = '🌙 Dark Mode';
+  }
 }
 
 // ── ZOOM ──
@@ -1508,6 +1518,7 @@ initVowels();
 initLetters();
 populateFocusDropdown();
 initPanelCollapse();
+initDarkMode();
 
 // Collapse all panels by default on mobile
 if (window.innerWidth <= 700) {
