@@ -495,7 +495,6 @@
 
   .sidebar-toggle-btn {
     position: fixed;
-    left: 320px;
     top: 50vh;
     transform: translateY(-50%);
     width: 16px;
@@ -1907,11 +1906,22 @@ function initDarkMode() {
 }
 
 // ── SIDEBAR COLLAPSE ──
+function positionSidebarTab() {
+  const sidebar = document.getElementById('appSidebar');
+  const btn = document.getElementById('sidebarToggleBtn');
+  if (!sidebar.classList.contains('hidden')) {
+    const rect = sidebar.getBoundingClientRect();
+    btn.style.left = rect.right + 'px';
+  }
+}
+
 function toggleSidebar() {
-  const sidebar   = document.getElementById('appSidebar');
-  const showBtn   = document.getElementById('sidebarShowBtn');
+  const sidebar  = document.getElementById('appSidebar');
+  const showBtn  = document.getElementById('sidebarShowBtn');
+  const hideBtn  = document.getElementById('sidebarToggleBtn');
   const collapsed = sidebar.classList.toggle('hidden');
   showBtn.style.display = collapsed ? 'flex' : 'none';
+  hideBtn.style.display = collapsed ? 'none' : 'flex';
 }
 function applyZoom(val) {
   document.getElementById('worksheetScaler').style.transform = `scale(${val/100})`;
@@ -2898,6 +2908,8 @@ initPanelCollapse();
 initDarkMode();
 initZoom();
 renderPresets();
+positionSidebarTab();
+window.addEventListener('resize', positionSidebarTab);
 
 // Collapse all panels by default on mobile
 if (window.innerWidth <= 700) {
