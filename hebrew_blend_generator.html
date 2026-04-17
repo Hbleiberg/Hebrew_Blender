@@ -123,7 +123,7 @@
     background: var(--cream);
     border: 1px solid var(--border);
     border-radius: 8px;
-    overflow: hidden;
+    overflow: visible;
   }
   .panel-title {
     background: var(--navy);
@@ -138,6 +138,7 @@
     justify-content: space-between;
     align-items: center;
     user-select: none;
+    border-radius: 8px 8px 0 0;
   }
   .panel-title::after {
     content: '▾';
@@ -610,7 +611,53 @@
   }
   body.landscape-mode .blends-grid { grid-template-columns: repeat(10, 1fr) !important; }
 
-  /* ── BINGO ── */
+  /* ── CUSTOM TOOLTIP ── */
+  .tooltip-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--muted);
+    color: var(--white);
+    font-size: 0.6rem;
+    font-weight: 700;
+    cursor: help;
+    margin-left: 4px;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+  .tooltip-wrap .tooltip-box {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--navy);
+    color: var(--white);
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.5;
+    padding: 8px 11px;
+    border-radius: 6px;
+    width: 220px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 999;
+    pointer-events: none;
+    white-space: normal;
+  }
+  .tooltip-wrap .tooltip-box::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-bottom-color: var(--navy);
+  }
+  .tooltip-wrap:hover .tooltip-box { display: block; }
   .bingo-page {
     display: flex;
     flex-direction: column;
@@ -1001,7 +1048,11 @@
           </div>
         </div>
         <div class="toggle-row" id="rowBingo" style="margin-top:4px;">
-          <span>Bingo Mode</span>
+          <span>Bingo Mode
+            <span class="tooltip-wrap">?
+              <span class="tooltip-box">Generates unique randomized bingo cards using Hebrew blends.<br><br>Print one card per student, then call out blends aloud — students mark off matches.<br><br>Includes a caller sheet for the teacher.</span>
+            </span>
+          </span>
           <label class="toggle">
             <input type="checkbox" id="bingoToggle" onchange="toggleBingoUI()">
             <span class="slider"></span>
