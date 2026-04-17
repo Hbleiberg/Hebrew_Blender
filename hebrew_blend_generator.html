@@ -690,7 +690,18 @@
   .bingo-card.two-up .bingo-cell .heb { font-size: 1.1rem; }
   .bingo-cell .sound { font-size: 0.6rem; color: var(--muted); font-style: italic; margin-top: 1px; }
 
-  /* Caller sheet */
+  .bingo-card.four-up {
+    max-width: 260px;
+  }
+  .bingo-card-header.four-up { font-size: 0.75rem; }
+  .bingo-card.four-up .bingo-cell { min-height: 36px; }
+  .bingo-card.four-up .bingo-cell .heb { font-size: 0.95rem; }
+  .bingo-page.four-up {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: start;
+  }
   .caller-sheet { page-break-before: always; }
   .caller-title {
     font-family: 'Libre Baskerville', serif;
@@ -1021,6 +1032,7 @@
             <select id="bingoPerPage" style="flex:1;font-size:0.78rem;padding:3px 6px;">
               <option value="1">1 card</option>
               <option value="2" selected>2 cards</option>
+              <option value="4">4 cards</option>
             </select>
           </div>
           <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
@@ -1636,6 +1648,7 @@ function toggleBingoUI() {
 
   const hideRows = ['rowInverse','rowAnswerKey','rowFocus','rowThreeLetter','rowSelfCheck'];
   hideRows.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = on ? 'none' : ''; });
+  document.getElementById('panelLayout').style.display = on ? 'none' : '';
 
   if (on) {
     // Hide all sub-options when bingo turns on
@@ -1721,16 +1734,33 @@ function renderBingo(ws) {
   const BINGO_HEADERS = { 3: ['ב','י','נ'], 4: ['ב','י','נ','ג'], 5: ['ב','י','נ','ג','ו'] };
   const headers = BINGO_HEADERS[gridSize];
 
-  // Build a large pool of unique blends for caller sheet
+  // Build caller pool — ensure every selected vowel is represented equally
+  // Generate blends for each vowel separately, then interleave
   const callerPool = [];
   const callerKeys = new Set();
+
+  function tryAddBlend(vowelKey) {
+    let attempts = 0;
+    while (attempts < 50) {
+      attempts++;
+      const b = generateBingoBlend(firstPool, secondPool, [vowelKey], excludeRep);
+      if (b && !callerKeys.has(b.key)) {
+        callerPool.push(b);
+        callerKeys.add(b.key);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Round-robin across vowels until we have enough blends
+  const targetSize = Math.min(cellsNeeded * numCards, 200);
   let safetyBreak = 0;
-  while (callerPool.length < Math.min(cellsNeeded * numCards, 200) && safetyBreak < 2000) {
+  while (callerPool.length < targetSize && safetyBreak < 3000) {
     safetyBreak++;
-    const b = generateBingoBlend(firstPool, secondPool, vowelKeys, excludeRep);
-    if (b && !callerKeys.has(b.key)) {
-      callerPool.push(b);
-      callerKeys.add(b.key);
+    for (const v of vowelKeys) {
+      if (callerPool.length >= targetSize) break;
+      tryAddBlend(v);
     }
   }
 
@@ -1767,13 +1797,15 @@ function renderBingo(ws) {
   // Render cards in pages
   for (let i = 0; i < cards.length; i += perPage) {
     const page = document.createElement('div');
-    page.className = `bingo-page${perPage === 2 ? ' two-up' : ''}`;
+    const twoUp  = perPage === 2;
+    const fourUp = perPage === 4;
+    page.className = `bingo-page${twoUp ? ' two-up' : fourUp ? ' four-up' : ''}`;
     if (i > 0) page.classList.add('bingo-page-break');
 
     for (let j = i; j < Math.min(i + perPage, cards.length); j++) {
       const card = cards[j];
       const cardEl = document.createElement('div');
-      cardEl.className = `bingo-card${perPage === 2 ? ' two-up' : ''}`;
+      cardEl.className = `bingo-card${twoUp ? ' two-up' : fourUp ? ' four-up' : ''}`;
 
       // Card number
       const numBar = document.createElement('div');
@@ -1783,7 +1815,7 @@ function renderBingo(ws) {
 
       // Header row (B-I-N-G-O)
       const headerEl = document.createElement('div');
-      headerEl.className = `bingo-card-header${perPage === 2 ? ' two-up' : ''}`;
+      headerEl.className = `bingo-card-header${twoUp ? ' two-up' : fourUp ? ' four-up' : ''}`;
       headerEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
       headers.forEach(h => {
         const s = document.createElement('span');
