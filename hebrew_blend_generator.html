@@ -680,21 +680,21 @@
     <div class="panel">
       <div class="panel-title">Worksheet Mode</div>
       <div class="panel-body toggle-wrap">
-        <div class="toggle-row">
+        <div class="toggle-row" id="rowInverse">
           <span>Inverse Mode <span style="font-size:0.72rem;color:var(--muted)">(English → write Hebrew)</span></span>
           <label class="toggle">
             <input type="checkbox" id="inverseToggle">
             <span class="slider"></span>
           </label>
         </div>
-        <div class="toggle-row">
+        <div class="toggle-row" id="rowAnswerKey">
           <span>Show Answer Key</span>
           <label class="toggle">
             <input type="checkbox" id="answerKeyToggle">
             <span class="slider"></span>
           </label>
         </div>
-        <div class="toggle-row">
+        <div class="toggle-row" id="rowFocus">
           <span>Focus Letter</span>
           <label class="toggle">
             <input type="checkbox" id="focusToggle" onchange="toggleFocusUI()">
@@ -717,7 +717,7 @@
             ⚠ Yud + Yud blends will be skipped
           </div>
         </div>
-        <div class="toggle-row" style="margin-top:4px;">
+        <div class="toggle-row" id="rowThreeLetter" style="margin-top:4px;">
           <span>Three-Letter Blends <span style="font-size:0.65rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
           <label class="toggle">
             <input type="checkbox" id="threeLetterToggle" onchange="toggleThreeLetterUI()">
@@ -733,7 +733,7 @@
             </select>
           </div>
         </div>
-        <div class="toggle-row" style="margin-top:4px;">
+        <div class="toggle-row" id="rowSelfCheck" style="margin-top:4px;">
           <span>Student Self-Check Mode</span>
           <label class="toggle">
             <input type="checkbox" id="selfCheckToggle">
@@ -1514,10 +1514,12 @@ document.getElementById('inverseToggle').addEventListener('change', () => { if (
 document.getElementById('answerKeyToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(false); });
 document.getElementById('selfCheckToggle').addEventListener('change', () => {
   const on = document.getElementById('selfCheckToggle').checked;
-  const hide = ['panelLayout', 'panelVowels', 'panelLetters'];
-  hide.forEach(id => {
-    document.getElementById(id).style.display = on ? 'none' : '';
-  });
+  const hidePanels = ['panelLayout', 'panelVowels', 'panelLetters'];
+  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'focusOptions', 'rowThreeLetter', 'threeLetterOptions'];
+  const hideBtns   = ['printBtn', 'pdfBtn', 'printBtnMob', 'pdfBtnMob'];
+  hidePanels.forEach(id => document.getElementById(id).style.display = on ? 'none' : '');
+  hideRows.forEach(id => document.getElementById(id).style.display = on ? 'none' : '');
+  hideBtns.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   if (blends.length) renderWorksheet(false);
 });
 document.getElementById('wsTitle').addEventListener('input', () => { if (blends.length) renderWorksheet(false); });
