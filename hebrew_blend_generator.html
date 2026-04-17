@@ -493,58 +493,53 @@
   .empty-state h2 { font-family: 'Libre Baskerville', serif; color: var(--navy); }
   .empty-state p { font-size: 0.88rem; max-width: 320px; }
 
-  /* ── SIDEBAR COLLAPSE ── */
   .sidebar-toggle-btn {
     position: fixed;
     left: 320px;
     top: 50vh;
     transform: translateY(-50%);
-    width: 14px;
-    height: 48px;
+    width: 16px;
+    height: 52px;
     border-radius: 0 6px 6px 0;
-    border: 1px solid var(--border);
-    border-left: none;
-    background: var(--white);
-    color: var(--muted);
-    font-size: 0.75rem;
+    border: none;
+    background: var(--navy);
+    color: var(--gold-light);
+    font-size: 0.8rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 50;
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.15s;
     padding: 0;
     line-height: 1;
+    box-shadow: 2px 0 6px rgba(0,0,0,0.15);
   }
-  .sidebar-toggle-btn:hover { background: var(--warm-gray); color: var(--text); }
-  body.dark .sidebar-toggle-btn { background: #1e2535; border-color: var(--border); color: var(--muted); }
-  body.dark .sidebar-toggle-btn:hover { background: #2a3349; }
+  .sidebar-toggle-btn:hover { background: #0f1a33; }
 
   #appSidebar.hidden { display: none; }
-  #appSidebar.hidden ~ .sidebar-toggle-btn { display: none; }
 
   .sidebar-show-btn {
     position: fixed;
     left: 0;
     top: 50vh;
     transform: translateY(-50%);
-    width: 14px;
-    height: 48px;
+    width: 16px;
+    height: 52px;
     border-radius: 0 6px 6px 0;
-    border: 1px solid var(--border);
-    border-left: none;
-    background: var(--white);
-    color: var(--muted);
-    font-size: 0.75rem;
+    border: none;
+    background: var(--navy);
+    color: var(--gold-light);
+    font-size: 0.8rem;
     cursor: pointer;
     display: none;
     align-items: center;
     justify-content: center;
     z-index: 100;
     transition: background 0.15s;
+    box-shadow: 2px 0 6px rgba(0,0,0,0.15);
   }
-  .sidebar-show-btn:hover { background: var(--warm-gray); }
-  body.dark .sidebar-show-btn { background: #1e2535; border-color: var(--border); color: var(--muted); }
+  .sidebar-show-btn:hover { background: #0f1a33; }
 
   /* ── MAIN TOOLBAR ── */
   .main-toolbar {
@@ -1131,10 +1126,10 @@
 <button class="sidebar-show-btn" id="sidebarShowBtn" onclick="toggleSidebar()" title="Show sidebar">›</button>
 
 <div class="app" id="appContainer">
+  <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Hide sidebar">‹</button>
 
   <!-- ══ SIDEBAR ══ -->
   <aside class="sidebar" id="appSidebar">
-    <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Hide sidebar">‹</button>
 
     <!-- Mode -->
     <div class="panel">
