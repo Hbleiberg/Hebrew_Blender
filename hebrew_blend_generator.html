@@ -68,10 +68,6 @@
   body.dark .btn-secondary { background: #2a3a5a; color: #dde4f0; }
   body.dark .btn[disabled],
   body.dark .btn:disabled { opacity: 1 !important; color: #3d4f6a !important; border-color: #2a3349 !important; background-color: transparent !important; }
-  body.dark #focusOptions span,
-  body.dark #threeLetterOptions span { color: #dde4f0; }
-  body.dark #focusOptions select,
-  body.dark #threeLetterOptions select { background: #0d1220; color: #dde4f0; border-color: var(--border); }
   body.dark #focusYudWarning { color: var(--gold-light); }
 
   body {
@@ -163,7 +159,11 @@
     font-weight: 600;
     color: var(--navy);
   }
-  .option-sub { font-size: 0.75rem; color: var(--muted); }
+  .sub-label {
+    color: var(--text);
+    font-weight: 600;
+    white-space: nowrap;
+  }
 
   select, input[type="number"] {
     border: 1px solid var(--border);
@@ -708,11 +708,11 @@
         </div>
         <div id="focusOptions" style="display:none;margin-top:6px;display:none;flex-direction:column;gap:6px;">
           <div style="display:flex;gap:6px;align-items:center;font-size:0.82rem;">
-            <span style="color:var(--navy);font-weight:600;white-space:nowrap;">Lock letter</span>
+            <span class="sub-label">Lock letter</span>
             <select id="focusLetter" style="flex:1;"></select>
           </div>
           <div style="display:flex;gap:6px;align-items:center;font-size:0.82rem;">
-            <span style="color:var(--navy);font-weight:600;white-space:nowrap;">In position</span>
+            <span class="sub-label">In position</span>
             <select id="focusPosition" style="flex:1;">
               <option value="first">First (right)</option>
               <option value="second">Second (left)</option>
@@ -731,7 +731,7 @@
         </div>
         <div id="threeLetterOptions" style="display:none;margin-top:6px;">
           <div style="display:flex;gap:6px;align-items:center;font-size:0.82rem;">
-            <span style="color:var(--navy);font-weight:600;white-space:nowrap;">Vowel on</span>
+            <span class="sub-label">Vowel on</span>
             <select id="vowelPosition" style="flex:1;">
               <option value="first">First letter only</option>
               <option value="both">First &amp; second letters</option>
