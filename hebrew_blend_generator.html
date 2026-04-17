@@ -1045,6 +1045,7 @@
             </label>
           </div>
         </div>
+        <div class="toggle-row" id="rowSelfCheck" style="margin-top:4px;">
           <span>Student Self-Check Mode</span>
           <label class="toggle">
             <input type="checkbox" id="selfCheckToggle">
@@ -1632,9 +1633,25 @@ function toggleThreeLetterUI() {
 function toggleBingoUI() {
   const on = document.getElementById('bingoToggle').checked;
   document.getElementById('bingoOptions').style.display = on ? 'flex' : 'none';
-  const hideRows = ['rowInverse','rowAnswerKey','rowFocus','focusOptions',
-                    'rowThreeLetter','threeLetterOptions','rowSelfCheck','selfCheckOptions'];
+
+  const hideRows = ['rowInverse','rowAnswerKey','rowFocus','rowThreeLetter','rowSelfCheck'];
   hideRows.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = on ? 'none' : ''; });
+
+  if (on) {
+    // Hide all sub-options when bingo turns on
+    ['focusOptions','threeLetterOptions','selfCheckOptions'].forEach(id => {
+      const el = document.getElementById(id); if(el) el.style.display = 'none';
+    });
+  } else {
+    // Restore sub-options only if their parent toggle is on
+    document.getElementById('focusOptions').style.display =
+      document.getElementById('focusToggle').checked ? 'flex' : 'none';
+    document.getElementById('threeLetterOptions').style.display =
+      document.getElementById('threeLetterToggle').checked ? 'block' : 'none';
+    document.getElementById('selfCheckOptions').style.display =
+      document.getElementById('selfCheckToggle').checked ? 'flex' : 'none';
+  }
+
   if (blends.length) renderWorksheet(false);
 }
 
