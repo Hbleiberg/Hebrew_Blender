@@ -114,9 +114,11 @@
     border-right: 1px solid var(--border);
     padding: 20px;
     overflow-y: auto;
+    overflow-x: visible;
     display: flex;
     flex-direction: column;
     gap: 20px;
+    position: relative;
   }
 
   .panel {
@@ -321,7 +323,27 @@
   /* ── MAIN ── */
   .main {
     flex: 1;
+    padding: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── MAIN TOOLBAR ── */
+  .main-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 28px;
+    background: var(--cream);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .main-content {
     padding: 28px 36px;
+    flex: 1;
     overflow-y: auto;
   }
 
@@ -991,7 +1013,8 @@
       overflow-y: visible;
     }
 
-    .main { padding: 12px; }
+    .main { padding: 0; }
+    .main-content { padding: 12px; }
 
     .worksheet {
       padding: 16px;
@@ -1365,6 +1388,7 @@
         <span id="zoomLabel">100%</span>
       </div>
     </div>
+    <div class="main-content">
     <div class="worksheet-scaler" id="worksheetScaler">
       <div class="worksheet" id="worksheet">
         <div class="empty-state">
@@ -1373,6 +1397,7 @@
           <p>Select your letters and vowels on the left, then click <strong>Generate Worksheet</strong>.</p>
         </div>
       </div>
+    </div>
     </div>
   </main>
 
