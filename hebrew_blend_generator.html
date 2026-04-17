@@ -1520,11 +1520,24 @@ document.getElementById('answerKeyToggle').addEventListener('change', () => { if
 document.getElementById('selfCheckToggle').addEventListener('change', () => {
   const on = document.getElementById('selfCheckToggle').checked;
   const hidePanels = ['panelLayout', 'panelVowels', 'panelLetters'];
-  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'focusOptions', 'rowThreeLetter', 'threeLetterOptions'];
+  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowThreeLetter'];
   const hideBtns   = ['printBtn', 'pdfBtn', 'printBtnMob', 'pdfBtnMob'];
+
   hidePanels.forEach(id => document.getElementById(id).style.display = on ? 'none' : '');
   hideRows.forEach(id => document.getElementById(id).style.display = on ? 'none' : '');
   hideBtns.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
+
+  // Sub-options: restore only if their parent toggle is on
+  if (on) {
+    document.getElementById('focusOptions').style.display = 'none';
+    document.getElementById('threeLetterOptions').style.display = 'none';
+  } else {
+    document.getElementById('focusOptions').style.display =
+      document.getElementById('focusToggle').checked ? 'flex' : 'none';
+    document.getElementById('threeLetterOptions').style.display =
+      document.getElementById('threeLetterToggle').checked ? 'block' : 'none';
+  }
+
   if (blends.length) renderWorksheet(false);
 });
 document.getElementById('wsTitle').addEventListener('input', () => { if (blends.length) renderWorksheet(false); });
