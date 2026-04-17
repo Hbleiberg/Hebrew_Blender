@@ -471,23 +471,68 @@
   .empty-state h2 { font-family: 'Libre Baskerville', serif; color: var(--navy); }
   .empty-state p { font-size: 0.88rem; max-width: 320px; }
 
-  /* ── ZOOM SLIDER ── */
-  .zoom-bar {
+  /* ── SIDEBAR COLLAPSE ── */
+  .sidebar {
+    position: relative;
+  }
+  .sidebar-toggle-btn {
+    position: absolute;
+    right: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 48px;
+    border-radius: 0 6px 6px 0;
+    border: 1px solid var(--border);
+    border-left: none;
+    background: var(--white);
+    color: var(--muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: background 0.15s, color 0.15s;
+    padding: 0;
+    line-height: 1;
+  }
+  .sidebar-toggle-btn:hover { background: var(--warm-gray); color: var(--text); }
+  body.dark .sidebar-toggle-btn { background: #1e2535; border-color: var(--border); color: var(--muted); }
+  body.dark .sidebar-toggle-btn:hover { background: #2a3349; }
+
+  /* Sidebar hidden state */
+  #appSidebar.hidden { display: none; }
+  #appSidebar.hidden + * .sidebar-toggle-btn { } /* handled by show button */
+  .sidebar-show-btn {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 48px;
+    border-radius: 0 6px 6px 0;
+    border: 1px solid var(--border);
+    border-left: none;
+    background: var(--white);
+    color: var(--muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: background 0.15s;
+  }
+  .sidebar-show-btn:hover { background: var(--warm-gray); }
+  body.dark .sidebar-show-btn { background: #1e2535; border-color: var(--border); color: var(--muted); }
+
+  /* ── MAIN TOOLBAR ── */
+  .main-toolbar {
     display: flex;
     align-items: center;
     gap: 10px;
     margin-bottom: 12px;
-    font-size: 0.8rem;
-    color: var(--muted);
-  }
-  .zoom-bar input[type=range] {
-    flex: 1;
-    accent-color: var(--gold);
-    cursor: pointer;
-  }
-  .worksheet-scaler {
-    transform-origin: top center;
-    transition: transform 0.2s;
   }
 
   /* ── SHUFFLE ANIMATION ── */
@@ -995,7 +1040,7 @@
   /* ── PRINT ── */
   @page { margin: 0.35in; }
   @media print {
-    .sidebar, header, footer, .mobile-fab, .zoom-bar, .print-tip { display: none !important; }
+    .sidebar, header, footer, .mobile-fab, .zoom-bar, .print-tip, .main-toolbar { display: none !important; }
     .app { display: block; min-height: unset; }
     .main { padding: 0; overflow: visible; }
     .self-check-controls { display: none !important; }
@@ -1037,10 +1082,13 @@
   <button id="darkToggle" onclick="toggleDark()" title="Toggle dark mode" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:1rem;flex-shrink:0;">🌙</button>
 </header>
 
-<div class="app">
+<button class="sidebar-show-btn" id="sidebarShowBtn" onclick="toggleSidebar()" title="Show sidebar">›</button>
+
+<div class="app" id="appContainer">
 
   <!-- ══ SIDEBAR ══ -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="appSidebar">
+    <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Hide sidebar">‹</button>
 
     <!-- Mode -->
     <div class="panel">
@@ -1310,10 +1358,12 @@
 
   <!-- ══ MAIN ══ -->
   <main class="main">
-    <div class="zoom-bar" id="zoomBar" style="display:none;">
-      <span>🔍</span>
-      <input type="range" id="zoomSlider" min="50" max="150" value="100" oninput="applyZoom(this.value)">
-      <span id="zoomLabel">100%</span>
+    <div class="main-toolbar">
+      <div class="zoom-bar" id="zoomBar">
+        <span>🔍</span>
+        <input type="range" id="zoomSlider" min="50" max="150" value="100" oninput="applyZoom(this.value)">
+        <span id="zoomLabel">100%</span>
+      </div>
     </div>
     <div class="worksheet-scaler" id="worksheetScaler">
       <div class="worksheet" id="worksheet">
@@ -1813,7 +1863,13 @@ function initDarkMode() {
   document.documentElement.classList.remove('dark-early');
 }
 
-// ── ZOOM ──
+// ── SIDEBAR COLLAPSE ──
+function toggleSidebar() {
+  const sidebar   = document.getElementById('appSidebar');
+  const showBtn   = document.getElementById('sidebarShowBtn');
+  const collapsed = sidebar.classList.toggle('hidden');
+  showBtn.style.display = collapsed ? 'flex' : 'none';
+}
 function applyZoom(val) {
   document.getElementById('worksheetScaler').style.transform = `scale(${val/100})`;
   document.getElementById('zoomLabel').textContent = `${val}%`;
@@ -2244,7 +2300,6 @@ function enableButtons() {
     btn.style.opacity = '';
     btn.style.cursor = '';
   });
-  document.getElementById('zoomBar').style.display = 'flex';
   const tip = document.getElementById('printTip');
   if (tip) tip.style.display = 'block';
 }
