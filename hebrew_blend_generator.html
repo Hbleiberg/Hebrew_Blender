@@ -691,13 +691,14 @@
     font-weight: 700;
     font-size: 1.1rem;
     letter-spacing: 0.15em;
+    direction: rtl;
   }
   .bingo-card-header.two-up { font-size: 0.9rem; }
   .bingo-card-header span {
     padding: 6px 2px;
-    border-right: 1px solid rgba(255,255,255,0.2);
+    border-left: 1px solid rgba(255,255,255,0.2);
   }
-  .bingo-card-header span:last-child { border-right: none; }
+  .bingo-card-header span:last-child { border-left: none; }
   .bingo-card-num {
     background: var(--gold);
     color: var(--navy);
@@ -722,8 +723,9 @@
     min-height: 60px;
     text-align: center;
   }
+  .bingo-cell.last-col { border-right: none; }
+  .bingo-cell.last-row { border-bottom: none; }
   .bingo-card.two-up .bingo-cell { min-height: 48px; }
-  .bingo-cell:nth-child(5n) { border-right: none; }
   .bingo-cell.free-space {
     background: var(--gold-light);
     color: var(--navy);
@@ -740,7 +742,8 @@
   .bingo-card.four-up {
     max-width: 260px;
   }
-  .bingo-card-header.four-up { font-size: 0.75rem; }
+  .bingo-card-header.four-up { font-size: 0.75rem; direction: rtl; }
+  .bingo-card-header.two-up { direction: rtl; }
   .bingo-card.four-up .bingo-cell { min-height: 36px; }
   .bingo-card.four-up .bingo-cell .heb { font-size: 0.95rem; }
   .bingo-page.four-up {
@@ -1106,6 +1109,16 @@
               <input type="checkbox" id="bingoCallerSheet" checked>
               <span class="slider"></span>
             </label>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:72px;line-height:1.3;">All cards match</span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="bingoSharedBlends">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div id="bingoSharedNote" style="display:none;font-size:0.7rem;color:var(--muted);padding:3px 2px;line-height:1.4;">
+            Every blend called will appear on all cards — positions differ, blends are the same.
           </div>
         </div>
         <div class="toggle-row" id="rowSelfCheck" style="margin-top:4px;">
@@ -1702,12 +1715,10 @@ function toggleBingoUI() {
   document.getElementById('panelLayout').style.display = on ? 'none' : '';
 
   if (on) {
-    // Hide all sub-options when bingo turns on
     ['focusOptions','threeLetterOptions','selfCheckOptions'].forEach(id => {
       const el = document.getElementById(id); if(el) el.style.display = 'none';
     });
   } else {
-    // Restore sub-options only if their parent toggle is on
     document.getElementById('focusOptions').style.display =
       document.getElementById('focusToggle').checked ? 'flex' : 'none';
     document.getElementById('threeLetterOptions').style.display =
@@ -1718,6 +1729,12 @@ function toggleBingoUI() {
 
   if (blends.length) renderWorksheet(false);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('bingoSharedBlends').addEventListener('change', function() {
+    document.getElementById('bingoSharedNote').style.display = this.checked ? 'block' : 'none';
+  });
+});
 
 // ── BINGO GENERATION ──
 function generateBingoBlend(firstPool, secondPool, vowelKeys, excludeRepeats) {
@@ -1768,6 +1785,7 @@ function renderBingo(ws) {
   const showSounds  = document.getElementById('bingoShowSounds').checked;
   const callerOn    = document.getElementById('bingoCallerSheet').checked;
   const excludeRep  = document.getElementById('excludeRepeats').checked;
+  const sharedBlends = document.getElementById('bingoSharedBlends').checked;
 
   const vowelKeys = [...selectedVowels];
   if (vowelKeys.length === 0) { ws.innerHTML = '<div class="empty-state"><h2>Please select at least one vowel.</h2></div>'; return; }
@@ -1825,11 +1843,16 @@ function renderBingo(ws) {
     return a;
   }
 
+  // If sharedBlends: generate one master set of cellsNeeded blends, shuffle positions per card
+  // If not: each card draws randomly from the full caller pool
+  const masterPool = sharedBlends ? shuffle(callerPool).slice(0, cellsNeeded) : null;
+
   // Generate each card
   const cards = [];
   for (let c = 0; c < numCards; c++) {
-    // Each card gets a random selection from the caller pool
-    const pool = shuffle(callerPool).slice(0, cellsNeeded);
+    const pool = sharedBlends
+      ? shuffle(masterPool)           // same blends, different positions
+      : shuffle(callerPool).slice(0, cellsNeeded); // different blends each card
     const cells = [];
     let idx = 0;
     for (let r = 0; r < gridSize; r++) {
@@ -1880,13 +1903,18 @@ function renderBingo(ws) {
       gridEl.className = 'bingo-grid';
       gridEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
 
-      card.cells.forEach(cell => {
+      card.cells.forEach((cell, cellIdx) => {
+        const row = Math.floor(cellIdx / gridSize);
+        const col = cellIdx % gridSize;
         const cellEl = document.createElement('div');
+        let cls = 'bingo-cell';
+        if (col === gridSize - 1) cls += ' last-col';
+        if (row === gridSize - 1) cls += ' last-row';
         if (cell.free) {
-          cellEl.className = 'bingo-cell free-space';
+          cellEl.className = cls + ' free-space';
           cellEl.textContent = '★ FREE ★';
         } else {
-          cellEl.className = 'bingo-cell';
+          cellEl.className = cls;
           cellEl.innerHTML = `<span class="heb">${cell.hebrewDisplay}</span>${showSounds ? `<span class="sound">${cell.combined}</span>` : ''}`;
         }
         gridEl.appendChild(cellEl);
@@ -1897,9 +1925,9 @@ function renderBingo(ws) {
     ws.appendChild(page);
   }
 
-  // Caller sheet
+  // Caller sheet — use master pool if shared, otherwise full pool
   if (callerOn) {
-    const callerShuffled = shuffle(callerPool);
+    const callerSource = sharedBlends ? shuffle(masterPool) : shuffle(callerPool);
     const sheet = document.createElement('div');
     sheet.className = 'caller-sheet';
     sheet.innerHTML = `
@@ -1907,7 +1935,7 @@ function renderBingo(ws) {
       <div class="caller-subtitle">Call each blend in order. Check them off as you go.</div>`;
     const grid = document.createElement('div');
     grid.className = 'caller-grid';
-    callerShuffled.forEach((b, i) => {
+    callerSource.forEach((b, i) => {
       const item = document.createElement('div');
       item.className = 'caller-item';
       item.onclick = () => item.classList.toggle('called');
