@@ -763,28 +763,33 @@
   }
 
   /* ── PRINT ── */
+  @page { margin: 0.35in; }
   @media print {
-    .sidebar, header { display: none !important; }
-    .app { display: block; }
-    .main { padding: 0; }
-    .zoom-bar { display: none !important; }
+    .sidebar, header, footer, .mobile-fab, .zoom-bar, .print-tip { display: none !important; }
+    .app { display: block; min-height: unset; }
+    .main { padding: 0; overflow: visible; }
     .self-check-controls { display: none !important; }
     .flip-card-hint { display: none; }
     .flip-card-back { display: none; }
+    .worksheet-scaler { transform: none !important; }
     .worksheet {
       border: none;
       box-shadow: none;
       border-radius: 0;
-      padding: 20px;
+      padding: 0;
       max-width: 100%;
+      width: 100%;
     }
-    body { background: white; }
+    .ws-header { margin-bottom: 10px; padding-bottom: 8px; }
+    .blends-grid { gap: 4px 8px; }
+    .blend-cell { min-height: 46px; }
+    body { background: white; margin: 0; }
     .btn { display: none; }
     .blend-answer.hidden { visibility: hidden; }
     .empty-state { display: none !important; }
     .answer-key-sheet {
       margin-top: 0;
-      padding-top: 20px;
+      padding-top: 16px;
       border-top: none;
       page-break-before: always;
     }
@@ -983,6 +988,9 @@
       <button class="btn btn-outline" id="regenBtn" onclick="regenerate()" disabled style="opacity:0.4;cursor:not-allowed;">↺ Regenerate</button>
       <button class="btn btn-secondary" id="printBtn" onclick="window.print()" disabled style="opacity:0.4;cursor:not-allowed;">🖨 Print</button>
       <button class="btn btn-outline" id="pdfBtn" onclick="exportPDF()" disabled style="opacity:0.4;cursor:not-allowed;margin-top:8px;">⬇ Export PDF</button>
+      <div class="print-tip" id="printTip" style="display:none;margin-top:8px;font-size:0.72rem;color:var(--muted);background:var(--warm-gray);border-radius:5px;padding:7px 9px;line-height:1.4;">
+        💡 <strong>Print tip:</strong> In the print dialog, uncheck <em>Headers and footers</em> to remove the URL and date.
+      </div>
     </div>
 
   </aside>
@@ -1524,6 +1532,8 @@ function enableButtons() {
     btn.style.cursor = '';
   });
   document.getElementById('zoomBar').style.display = 'flex';
+  const tip = document.getElementById('printTip');
+  if (tip) tip.style.display = 'block';
 }
 
 // Collapsible panels on mobile
