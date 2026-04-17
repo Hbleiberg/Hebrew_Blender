@@ -1373,6 +1373,7 @@ function initVowels() {
   VOWELS.forEach(v => {
     const chip = document.createElement('label');
     chip.className = 'vowel-chip';
+    chip.setAttribute('data-key', v.key);
     chip.innerHTML = `
       <input type="checkbox" ${selectedVowels.has(v.key) ? 'checked' : ''}
         onchange="toggleVowel('${v.key}', this.checked)">
@@ -1522,9 +1523,10 @@ function applySettings(s) {
   document.querySelectorAll('.letter-tile').forEach(t => {
     t.classList.toggle('selected', selectedLetters.has(t.dataset.heb));
   });
-  document.querySelectorAll('#vowelGrid input[type=checkbox]').forEach(cb => {
-    const key = cb.closest('label').getAttribute('data-key');
-    if (key) cb.checked = selectedVowels.has(key);
+  document.querySelectorAll('#vowelGrid label[data-key]').forEach(chip => {
+    const key = chip.getAttribute('data-key');
+    const cb  = chip.querySelector('input[type=checkbox]');
+    if (cb) cb.checked = selectedVowels.has(key);
   });
 
   // Layout
