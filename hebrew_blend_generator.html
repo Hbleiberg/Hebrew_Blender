@@ -7,6 +7,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  // Apply dark mode BEFORE first paint to prevent flash
+  if (localStorage.getItem('hebrewBlender_darkMode') === '1') {
+    document.documentElement.classList.add('dark-early');
+  }
+</script>
 <style>
   :root {
     --navy: #1a2744;
@@ -20,6 +26,8 @@
     --white: #ffffff;
   }
 
+  /* Applied instantly in <head> before first paint to prevent dark mode flash */
+  html.dark-early body,
   body.dark {
     --navy: #1a2744;
     --gold: #e0a832;
@@ -1421,6 +1429,8 @@ function initDarkMode() {
   } else {
     document.getElementById('darkToggle').textContent = '🌙 Dark Mode';
   }
+  // Remove early class now that body.dark takes over
+  document.documentElement.classList.remove('dark-early');
 }
 
 // ── ZOOM ──
@@ -1529,11 +1539,14 @@ async function exportPDF() {
   const { jsPDF } = window.jspdf;
   const ws = document.getElementById('worksheet');
   const title = document.getElementById('wsTitle').value || 'Hebrew Blends';
-  const showAnswers = document.getElementById('answerKeyToggle').checked;
 
   const pdfBtn = document.getElementById('pdfBtn');
   pdfBtn.textContent = '⏳ Generating...';
   pdfBtn.disabled = true;
+
+  // Temporarily force light mode for clean PDF output
+  const wasDark = document.body.classList.contains('dark');
+  if (wasDark) document.body.classList.remove('dark');
 
   try {
     const sheets = ws.querySelectorAll('.sheet');
@@ -1565,6 +1578,8 @@ async function exportPDF() {
     alert('PDF export failed. Try using Print → Save as PDF instead.');
     console.error(err);
   } finally {
+    // Restore dark mode if it was on
+    if (wasDark) document.body.classList.add('dark');
     pdfBtn.textContent = '⬇ Export PDF';
     pdfBtn.disabled = false;
   }
