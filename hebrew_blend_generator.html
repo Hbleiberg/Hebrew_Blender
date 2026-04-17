@@ -21,35 +21,51 @@
   }
 
   body.dark {
-    --navy: #a8c4e8;
+    --navy: #1a2744;
     --gold: #e0a832;
     --gold-light: #f5d97a;
-    --cream: #1a1f2e;
-    --warm-gray: #252b3a;
-    --text: #e8e2d8;
-    --muted: #a0a8b8;
-    --border: #2e3750;
-    --white: #212838;
+    --cream: #161c2a;
+    --warm-gray: #1e2535;
+    --text: #dde4f0;
+    --muted: #8a94a8;
+    --border: #2a3349;
+    --white: #1e2535;
   }
-
-  body.dark header {
-    background: #0d1525;
-    border-bottom-color: var(--gold);
-  }
-  body.dark .panel-title {
-    background: #0d1525;
-  }
-  body.dark .answer-key-banner {
-    background: #0d1525;
-  }
-  body.dark .flip-card-back {
-    background: #0d1525;
-  }
-  body.dark .letter-tile.selected {
-    background: #2a4a7a;
-    border-color: #2a4a7a;
-    color: #e8e2d8;
-  }
+  body.dark header { background: #0d1220; border-bottom-color: var(--gold); }
+  body.dark header h1,
+  body.dark header p { color: #dde4f0; }
+  body.dark header p { color: var(--gold-light); }
+  body.dark .panel-title { background: #0d1220; color: #dde4f0; }
+  body.dark .panel-title::after { color: var(--gold-light); }
+  body.dark .sidebar { background: #1e2535; border-right-color: var(--border); }
+  body.dark .panel { background: #161c2a; border-color: var(--border); }
+  body.dark .option-label,
+  body.dark .toggle-row,
+  body.dark .panel-body { color: #dde4f0; }
+  body.dark select,
+  body.dark input[type="text"],
+  body.dark input[type="number"] { background: #0d1220; color: #dde4f0; border-color: var(--border); }
+  body.dark .worksheet { background: #1e2535; border-color: var(--border); color: #dde4f0; }
+  body.dark .ws-title { color: #dde4f0; }
+  body.dark .ws-subtitle { color: var(--muted); }
+  body.dark .ws-header { border-bottom-color: #4a5a7a; }
+  body.dark .ws-field-line { border-bottom-color: #dde4f0; }
+  body.dark .blend-hebrew { color: #dde4f0; }
+  body.dark .blend-cell { border-bottom-color: var(--border); }
+  body.dark .answer-key-banner { background: #0d1220; color: var(--gold-light); }
+  body.dark .flip-card-front { background: #1e2535; color: #dde4f0; border-color: var(--border); }
+  body.dark .flip-card-back { background: #0d1220; color: var(--gold-light); }
+  body.dark .letter-tile { background: #1e2535; border-color: var(--border); color: #dde4f0; }
+  body.dark .letter-tile.selected { background: #2a4070; border-color: #4a6aaa; color: #dde4f0; }
+  body.dark .letter-tile:hover { border-color: var(--gold); }
+  body.dark .vowel-chip { color: #dde4f0; }
+  body.dark .vowel-chip:hover { background: #252d3e; }
+  body.dark .btn-xs { background: #1e2535; color: #dde4f0; border-color: var(--border); }
+  body.dark .btn-xs:hover { background: #2a3349; }
+  body.dark .empty-state h2 { color: #dde4f0; }
+  body.dark .empty-state p { color: var(--muted); }
+  body.dark .mobile-fab { background: #1e2535; border-top-color: var(--border); }
+  body.dark .answer-key-sheet { border-top-color: var(--border); }
 
   body {
     font-family: 'Source Sans 3', sans-serif;
@@ -1207,7 +1223,7 @@ function generate(animate = false) {
 
   blends = [];
   for (let i = 0; i < count; i++) {
-    const vowel  = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
+    let vowel  = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
     let first, second, attempts = 0;
     do {
       first  = firstPool[Math.floor(Math.random() * firstPool.length)];
@@ -1216,6 +1232,13 @@ function generate(animate = false) {
     } while (first === 'י' && second === 'י' && attempts < 20);
     // If after 20 attempts still yud+yud (e.g. only yud selected), skip this blend
     if (first === 'י' && second === 'י') continue;
+
+    // Sin (שׂ) and Shin (ש) + Cholam is visually invalid — reroll vowel
+    if ((first === 'שׂ' || first === 'ש') && vowel === 'o') {
+      const altVowels = vowelKeys.filter(v => v !== 'o');
+      if (altVowels.length > 0) vowel = altVowels[Math.floor(Math.random() * altVowels.length)];
+      else continue; // Cholam is the only vowel and Sin/Shin is chosen — skip blend
+    }
 
     const firstObj  = getLetter(first);
     const secondObj = getLetter(second);
