@@ -492,7 +492,124 @@
     animation: cardFlip 0.5s ease both;
   }
 
-  /* ── SELF-CHECK CARDS ── */
+  /* ── TIMER ── */
+  .timer-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--warm-gray);
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  .timer-display {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--navy);
+    min-width: 70px;
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+  .timer-display.urgent { color: #c0392b; animation: pulse 0.5s infinite alternate; }
+  @keyframes pulse { from { opacity: 1; } to { opacity: 0.5; } }
+  .timer-controls { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  /* ── SCORE ── */
+  .score-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 14px;
+    background: var(--warm-gray);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-size: 0.88rem;
+  }
+  .score-correct { color: #27ae60; font-weight: 700; }
+  .score-incorrect { color: #c0392b; font-weight: 700; }
+  .score-remaining { color: var(--muted); }
+  .score-summary {
+    background: var(--navy);
+    color: var(--white);
+    border-radius: 10px;
+    padding: 24px;
+    text-align: center;
+    margin-top: 16px;
+  }
+  .score-summary h2 { font-family: 'Libre Baskerville', serif; font-size: 1.4rem; margin-bottom: 8px; }
+  .score-summary .big-score { font-size: 3rem; font-weight: 700; color: var(--gold-light); line-height: 1; }
+  .score-summary p { font-size: 0.88rem; opacity: 0.8; margin-top: 6px; }
+
+  /* ── FLIP CARD with score buttons ── */
+  .flip-card-score-btns {
+    display: none;
+    gap: 6px;
+    margin-top: 6px;
+    justify-content: center;
+  }
+  .flip-card.flipped .flip-card-score-btns { display: flex; }
+  .score-btn {
+    padding: 3px 10px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .score-btn.correct { background: #27ae60; color: white; }
+  .score-btn.incorrect { background: #c0392b; color: white; }
+
+  /* ── PRESET PANEL ── */
+  .preset-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .preset-row input[type="text"] {
+    flex: 1;
+    padding: 4px 7px;
+    font-size: 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: inherit;
+    background: var(--white);
+    color: var(--text);
+  }
+  .preset-list { display: flex; flex-direction: column; gap: 4px; }
+  .preset-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 0.8rem;
+  }
+  .preset-item span { flex: 1; }
+  .preset-item button { font-size: 0.72rem; padding: 2px 7px; border: 1px solid var(--border); border-radius: 3px; background: transparent; cursor: pointer; font-family: inherit; color: var(--text); }
+  .preset-item button:hover { background: var(--warm-gray); }
+  .preset-item .del-btn { color: #c0392b; border-color: #c0392b; }
+
+  /* ── LANDSCAPE PRINT ── */
+  @media print and (orientation: landscape) {
+    .blends-grid { grid-template-columns: repeat(10, 1fr) !important; }
+    .blend-hebrew { font-size: 1.4rem; }
+    .blend-cell { min-height: 44px; }
+  }
+  body.landscape-mode .blends-grid { grid-template-columns: repeat(10, 1fr) !important; }
+
+  /* ── DARK MODE additions ── */
+  body.dark .timer-bar,
+  body.dark .score-bar { background: var(--warm-gray); }
+  body.dark .timer-display { color: #dde4f0; }
+  body.dark .score-summary { background: #0d1220; }
+  body.dark .preset-item { background: #1e2535; border-color: var(--border); color: #dde4f0; }
+  body.dark .preset-item button { color: #dde4f0; border-color: var(--border); }
+  body.dark .preset-row input[type="text"] { background: #0d1220; color: #dde4f0; border-color: var(--border); }
   .self-check-grid {
     display: grid;
     gap: 12px;
@@ -749,6 +866,26 @@
             <span class="slider"></span>
           </label>
         </div>
+        <div id="selfCheckOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--border);flex-direction:column;gap:4px;">
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;">Timer</span>
+            <select id="timerDuration" style="flex:1;font-size:0.78rem;padding:3px 6px;">
+              <option value="0">Off</option>
+              <option value="60">1 min</option>
+              <option value="120" selected>2 min</option>
+              <option value="180">3 min</option>
+              <option value="300">5 min</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;">Audio</span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:left;">
+              <input type="checkbox" id="audioToggle">
+              <span class="slider"></span>
+            </label>
+            <span style="font-size:0.65rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;">BETA</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -782,6 +919,14 @@
           <div class="option-label">Subtitle</div>
           <input type="text" id="wsSubtitle" placeholder="Optional instructions..." style="width:160px;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;">
         </div>
+        <div class="option-row" style="margin-top:4px;">
+          <div class="option-label">Exclude Repeats</div>
+          <label class="toggle"><input type="checkbox" id="excludeRepeats"><span class="slider"></span></label>
+        </div>
+        <div class="option-row">
+          <div class="option-label">Landscape Print</div>
+          <label class="toggle"><input type="checkbox" id="landscapeMode" onchange="toggleLandscape(this.checked)"><span class="slider"></span></label>
+        </div>
       </div>
     </div>
 
@@ -803,6 +948,18 @@
           <button class="btn-xs" onclick="selectNoSofit()">No Sofit</button>
         </div>
         <div class="letter-grid" id="letterGrid"></div>
+      </div>
+    </div>
+
+    <!-- Presets -->
+    <div class="panel">
+      <div class="panel-title">Saved Presets</div>
+      <div class="panel-body">
+        <div class="preset-row">
+          <input type="text" id="presetName" placeholder="Preset name...">
+          <button class="btn-xs" onclick="savePreset()">💾 Save</button>
+        </div>
+        <div class="preset-list" id="presetList"></div>
       </div>
     </div>
 
@@ -1036,7 +1193,205 @@ function selectNoSofit() {
   });
 }
 
-// ── DARK MODE ──
+// ── LANDSCAPE MODE ──
+function toggleLandscape(on) {
+  document.body.classList.toggle('landscape-mode', on);
+  if (blends.length) renderWorksheet(false);
+}
+
+// ══════════════════════════════════════════════
+//  PRESET SYSTEM
+// ══════════════════════════════════════════════
+function getSettings() {
+  return {
+    selectedLetters: [...selectedLetters],
+    selectedVowels: [...selectedVowels],
+    blendCount: document.getElementById('blendCount').value,
+    wsTitle: document.getElementById('wsTitle').value,
+    wsSubtitle: document.getElementById('wsSubtitle').value,
+    threeLetter: document.getElementById('threeLetterToggle').checked,
+    vowelPosition: document.getElementById('vowelPosition').value,
+    excludeRepeats: document.getElementById('excludeRepeats').checked,
+    landscape: document.getElementById('landscapeMode').checked,
+  };
+}
+
+function applySettings(s) {
+  selectedLetters = new Set(s.selectedLetters || []);
+  selectedVowels  = new Set(s.selectedVowels || []);
+  document.querySelectorAll('.letter-tile').forEach(t => {
+    t.classList.toggle('selected', selectedLetters.has(t.dataset.heb));
+  });
+  document.querySelectorAll('#vowelGrid input[type=checkbox]').forEach(cb => {
+    const key = cb.closest('label').getAttribute('data-key');
+    if (key) cb.checked = selectedVowels.has(key);
+  });
+  if (s.blendCount) document.getElementById('blendCount').value = s.blendCount;
+  if (s.wsTitle !== undefined) document.getElementById('wsTitle').value = s.wsTitle;
+  if (s.wsSubtitle !== undefined) document.getElementById('wsSubtitle').value = s.wsSubtitle;
+  if (s.threeLetter !== undefined) {
+    document.getElementById('threeLetterToggle').checked = s.threeLetter;
+    toggleThreeLetterUI();
+  }
+  if (s.vowelPosition) document.getElementById('vowelPosition').value = s.vowelPosition;
+  if (s.excludeRepeats !== undefined) document.getElementById('excludeRepeats').checked = s.excludeRepeats;
+  if (s.landscape !== undefined) {
+    document.getElementById('landscapeMode').checked = s.landscape;
+    toggleLandscape(s.landscape);
+  }
+}
+
+function savePreset() {
+  const name = document.getElementById('presetName').value.trim();
+  if (!name) { alert('Please enter a preset name.'); return; }
+  const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+  presets[name] = getSettings();
+  localStorage.setItem('hebrewBlender_presets', JSON.stringify(presets));
+  document.getElementById('presetName').value = '';
+  renderPresets();
+}
+
+function deletePreset(name) {
+  const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+  delete presets[name];
+  localStorage.setItem('hebrewBlender_presets', JSON.stringify(presets));
+  renderPresets();
+}
+
+function loadPreset(name) {
+  const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+  if (presets[name]) applySettings(presets[name]);
+}
+
+function renderPresets() {
+  const list = document.getElementById('presetList');
+  list.innerHTML = '';
+  const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+  if (Object.keys(presets).length === 0) {
+    list.innerHTML = '<div style="font-size:0.75rem;color:var(--muted);text-align:center;padding:6px;">No saved presets</div>';
+    return;
+  }
+  Object.keys(presets).forEach(name => {
+    const item = document.createElement('div');
+    item.className = 'preset-item';
+    item.innerHTML = `
+      <span>${name}</span>
+      <button onclick="loadPreset('${name.replace(/'/g,"\\'")}')">Load</button>
+      <button class="del-btn" onclick="deletePreset('${name.replace(/'/g,"\\'")}')">✕</button>
+    `;
+    list.appendChild(item);
+  });
+}
+
+// ══════════════════════════════════════════════
+//  TIMER
+// ══════════════════════════════════════════════
+let timerInterval = null;
+let timerRemaining = 0;
+
+function startTimer(seconds) {
+  clearInterval(timerInterval);
+  timerRemaining = seconds;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timerRemaining--;
+    updateTimerDisplay();
+    if (timerRemaining <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      document.getElementById('scTimerDisplay').classList.add('urgent');
+      showScoreSummary();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+}
+
+function resetTimer() {
+  stopTimer();
+  const dur = parseInt(document.getElementById('timerDuration').value);
+  timerRemaining = dur;
+  updateTimerDisplay();
+  if (document.getElementById('scTimerDisplay')) {
+    document.getElementById('scTimerDisplay').classList.remove('urgent');
+  }
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('scTimerDisplay');
+  if (!el) return;
+  const m = Math.floor(timerRemaining / 60);
+  const s = timerRemaining % 60;
+  el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  el.classList.toggle('urgent', timerRemaining <= 10 && timerRemaining > 0);
+}
+
+// ══════════════════════════════════════════════
+//  SCORE
+// ══════════════════════════════════════════════
+let scoreCorrect = 0;
+let scoreIncorrect = 0;
+
+function markScore(correct, cardEl) {
+  if (correct) scoreCorrect++; else scoreIncorrect++;
+  // Dim the card to show it's been scored
+  cardEl.style.opacity = '0.5';
+  cardEl.style.pointerEvents = 'none';
+  updateScoreBar();
+}
+
+function updateScoreBar() {
+  const el = document.getElementById('scScoreBar');
+  if (!el) return;
+  const total = blends.length;
+  const done = scoreCorrect + scoreIncorrect;
+  const remaining = total - done;
+  el.querySelector('.score-correct').textContent = `✓ ${scoreCorrect}`;
+  el.querySelector('.score-incorrect').textContent = `✗ ${scoreIncorrect}`;
+  el.querySelector('.score-remaining').textContent = `${remaining} left`;
+  if (remaining === 0) showScoreSummary();
+}
+
+function showScoreSummary() {
+  stopTimer();
+  const ws = document.getElementById('worksheet');
+  const existing = ws.querySelector('.score-summary');
+  if (existing) return;
+  const total = blends.length;
+  const done = scoreCorrect + scoreIncorrect;
+  const pct = done > 0 ? Math.round((scoreCorrect / done) * 100) : 0;
+  const summary = document.createElement('div');
+  summary.className = 'score-summary';
+  summary.innerHTML = `
+    <h2>Session Complete!</h2>
+    <div class="big-score">${pct}%</div>
+    <p>${scoreCorrect} correct · ${scoreIncorrect} incorrect · ${total} total</p>
+    <button class="btn-xs" style="margin-top:12px;" onclick="resetSelfCheck()">Try Again</button>
+  `;
+  ws.appendChild(summary);
+}
+
+function resetSelfCheck() {
+  scoreCorrect = 0;
+  scoreIncorrect = 0;
+  resetTimer();
+  renderWorksheet(false);
+}
+
+// ══════════════════════════════════════════════
+//  AUDIO (BETA)
+// ══════════════════════════════════════════════
+function speakBlend(text) {
+  if (!window.speechSynthesis) return;
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'he-IL';
+  utt.rate = 0.85;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utt);
+}
 function toggleDark() {
   const isDark = document.body.classList.toggle('dark');
   document.getElementById('darkToggle').textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
@@ -1262,14 +1617,18 @@ function generate(animate = false) {
   blends = [];
   for (let i = 0; i < count; i++) {
     let vowel  = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
+    const excludeRepeats = document.getElementById('excludeRepeats').checked;
     let first, second, attempts = 0;
     do {
       first  = firstPool[Math.floor(Math.random() * firstPool.length)];
       second = secondPool[Math.floor(Math.random() * secondPool.length)];
       attempts++;
-    } while (first === 'י' && second === 'י' && attempts < 20);
-    // If after 20 attempts still yud+yud (e.g. only yud selected), skip this blend
+    } while (attempts < 20 && (
+      (first === 'י' && second === 'י') ||
+      (excludeRepeats && first === second)
+    ));
     if (first === 'י' && second === 'י') continue;
+    if (excludeRepeats && first === second) continue;
 
     // Sin (שׂ) and Shin (ש) + Cholam is visually invalid — reroll vowel
     if ((first === 'שׂ' || first === 'ש') && vowel === 'o') {
@@ -1435,7 +1794,14 @@ function renderWorksheet(animate = false) {
 // ── SELF-CHECK MODE ──
 function renderSelfCheck(ws, cols, title, subtitle) {
   ws.innerHTML = '';
+  scoreCorrect = 0;
+  scoreIncorrect = 0;
+  stopTimer();
 
+  const timerDur = parseInt(document.getElementById('timerDuration').value);
+  const audioOn  = document.getElementById('audioToggle').checked;
+
+  // Header
   const scHeader = document.createElement('div');
   scHeader.className = 'ws-header';
   scHeader.innerHTML = `
@@ -1445,14 +1811,44 @@ function renderSelfCheck(ws, cols, title, subtitle) {
     </div>`;
   ws.appendChild(scHeader);
 
+  // Timer bar
+  if (timerDur > 0) {
+    const timerBar = document.createElement('div');
+    timerBar.className = 'timer-bar';
+    timerBar.id = 'scTimerBar';
+    timerBar.innerHTML = `
+      <span id="scTimerDisplay" class="timer-display">-:--</span>
+      <div class="timer-controls">
+        <button class="btn-xs" onclick="startTimer(${timerDur})">▶ Start</button>
+        <button class="btn-xs" onclick="stopTimer()">⏸ Pause</button>
+        <button class="btn-xs" onclick="resetTimer()">↺ Reset</button>
+      </div>`;
+    ws.appendChild(timerBar);
+    timerRemaining = timerDur;
+    updateTimerDisplay();
+  }
+
+  // Score bar
+  const scoreBar = document.createElement('div');
+  scoreBar.className = 'score-bar';
+  scoreBar.id = 'scScoreBar';
+  scoreBar.innerHTML = `
+    <span class="score-correct">✓ 0</span>
+    <span class="score-incorrect">✗ 0</span>
+    <span class="score-remaining">${blends.length} left</span>
+    <button class="btn-xs" style="margin-left:auto;" onclick="resetSelfCheck()">↺ Reset</button>`;
+  ws.appendChild(scoreBar);
+
+  // Controls
   const controls = document.createElement('div');
   controls.className = 'self-check-controls';
   controls.innerHTML = `
     <button class="btn-xs" onclick="flipAllCards(true)">Reveal All</button>
     <button class="btn-xs" onclick="flipAllCards(false)">Hide All</button>
-    <span style="font-size:0.75rem;color:var(--muted);margin-left:4px;">Tap a card to flip</span>`;
+    ${audioOn ? '<span style="font-size:0.75rem;color:var(--muted);">🔊 Tap back to hear</span>' : '<span style="font-size:0.75rem;color:var(--muted);">Tap a card to flip</span>'}`;
   ws.appendChild(controls);
 
+  // Grid
   const grid = document.createElement('div');
   grid.className = 'self-check-grid';
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
@@ -1461,19 +1857,24 @@ function renderSelfCheck(ws, cols, title, subtitle) {
   blends.forEach((b, idx) => {
     const card = document.createElement('div');
     card.className = 'flip-card';
-    card.onclick = () => card.classList.toggle('flipped');
     card.innerHTML = `
       <div class="flip-card-inner">
         <div class="flip-card-front">
           <span class="flip-card-num">${idx + 1}</span>
-          <span style="direction:rtl;">${b.hebrewDisplay}</span>
+          <span style="direction:rtl;font-family:'Frank Ruhl Libre',serif;font-size:2rem;">${b.hebrewDisplay}</span>
           <span class="flip-card-hint">tap to reveal</span>
         </div>
         <div class="flip-card-back">
           <span class="flip-card-num" style="color:var(--gold-light);">${idx + 1}</span>
-          <span>${b.combined}</span>
+          <span style="font-size:1.1rem;">${b.combined}</span>
+          ${audioOn ? `<button class="btn-xs" style="margin-top:4px;font-size:0.7rem;" onclick="event.stopPropagation();speakBlend('${b.combined}')">🔊</button>` : ''}
         </div>
+      </div>
+      <div class="flip-card-score-btns">
+        <button class="score-btn correct" onclick="markScore(true, this.closest('.flip-card'))">✓ Got it</button>
+        <button class="score-btn incorrect" onclick="markScore(false, this.closest('.flip-card'))">✗ Missed</button>
       </div>`;
+    card.querySelector('.flip-card-inner').addEventListener('click', () => card.classList.toggle('flipped'));
     grid.appendChild(card);
   });
 }
@@ -1550,6 +1951,7 @@ document.getElementById('selfCheckToggle').addEventListener('change', () => {
   hidePanels.forEach(id => document.getElementById(id).style.display = on ? 'none' : '');
   hideRows.forEach(id => document.getElementById(id).style.display = on ? 'none' : '');
   hideBtns.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
+  document.getElementById('selfCheckOptions').style.display = on ? 'flex' : 'none';
 
   // Sub-options: restore only if their parent toggle is on
   if (on) {
@@ -1575,6 +1977,7 @@ initLetters();
 populateFocusDropdown();
 initPanelCollapse();
 initDarkMode();
+renderPresets();
 
 // Collapse all panels by default on mobile
 if (window.innerWidth <= 700) {
