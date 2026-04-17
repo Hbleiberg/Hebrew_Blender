@@ -562,7 +562,6 @@
     font-size: 0.8rem;
     color: var(--muted);
     flex: 1;
-    max-width: 600px;
   }
   .zoom-bar input[type=range] {
     flex: 1;
@@ -1136,7 +1135,7 @@
       <div class="panel-body toggle-wrap">
 
         <!-- Blend type selector -->
-        <div style="margin-bottom:10px;">
+        <div id="blendTypeWrapper" style="margin-bottom:10px;">
           <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">Practice Type</div>
           <div class="blend-type-selector" id="blendTypeSelector">
             <button class="blend-type-btn" data-type="one" onclick="setBlendType('one')">1-Letter</button>
@@ -1158,7 +1157,7 @@
         </div>
 
         <!-- Divider -->
-        <div style="border-top:1px solid var(--border);margin:4px 0 8px;"></div>
+        <div id="modeDivider" style="border-top:1px solid var(--border);margin:4px 0 8px;"></div>
 
         <div class="toggle-row" id="rowInverse">
           <span>Inverse Mode <span style="font-size:0.72rem;color:var(--muted)">(English → write Hebrew)</span></span>
@@ -2874,12 +2873,16 @@ document.getElementById('selfCheckToggle').addEventListener('change', () => {
   // Mutually exclusive with bingo
   if (on) { document.getElementById('bingoToggle').checked = false; toggleBingoUI(); }
   const hidePanels = ['panelLayout', 'panelVowels', 'panelLetters'];
-  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus'];
+  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowBingo'];
   const hideBtns   = ['printBtn', 'pdfBtn', 'printBtnMob', 'pdfBtnMob'];
+  const blendTypeWrapper = document.getElementById('blendTypeWrapper');
 
   hidePanels.forEach(id => document.getElementById(id).style.display = on ? 'none' : '');
-  hideRows.forEach(id => document.getElementById(id).style.display = on ? 'none' : '');
+  hideRows.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   hideBtns.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
+  if (blendTypeWrapper) blendTypeWrapper.style.display = on ? 'none' : '';
+  const modeDivider = document.getElementById('modeDivider');
+  if (modeDivider) modeDivider.style.display = on ? 'none' : '';
   document.getElementById('selfCheckOptions').style.display = on ? 'flex' : 'none';
 
   // Sub-options: restore only if their parent toggle is on
