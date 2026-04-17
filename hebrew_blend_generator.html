@@ -611,7 +611,34 @@
   }
   body.landscape-mode .blends-grid { grid-template-columns: repeat(10, 1fr) !important; }
 
-  /* ── CUSTOM TOOLTIP ── */
+  /* ── BLEND TYPE SELECTOR ── */
+  .blend-type-selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .blend-type-btn {
+    padding: 7px 4px;
+    font-size: 0.72rem;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    background: var(--white);
+    color: var(--muted);
+    border: none;
+    border-right: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+    line-height: 1.3;
+  }
+  .blend-type-btn:last-child { border-right: none; }
+  .blend-type-btn:hover { background: var(--warm-gray); color: var(--text); }
+  .blend-type-btn.active { background: var(--navy); color: var(--white); }
+  body.dark .blend-type-btn { background: var(--white); color: var(--muted); }
+  body.dark .blend-type-btn.active { background: #2a4070; color: #dde4f0; }
+  body.dark .blend-type-btn:hover { background: var(--warm-gray); }
   .tooltip-wrap {
     position: relative;
     display: inline-flex;
@@ -1019,6 +1046,32 @@
     <div class="panel">
       <div class="panel-title">Worksheet Mode</div>
       <div class="panel-body toggle-wrap">
+
+        <!-- Blend type selector -->
+        <div style="margin-bottom:10px;">
+          <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">Practice Type</div>
+          <div class="blend-type-selector" id="blendTypeSelector">
+            <button class="blend-type-btn" data-type="one" onclick="setBlendType('one')">1-Letter</button>
+            <button class="blend-type-btn active" data-type="two" onclick="setBlendType('two')">2-Letter</button>
+            <button class="blend-type-btn" data-type="three" onclick="setBlendType('three')">3-Letter <span style="font-size:0.55rem;background:var(--gold);color:var(--navy);padding:1px 4px;border-radius:3px;font-weight:700;">BETA</span></button>
+            <button class="blend-type-btn" data-type="nikud" onclick="setBlendType('nikud')">Vowels Only</button>
+          </div>
+        </div>
+
+        <!-- Three-letter sub-option -->
+        <div id="threeLetterOptions" style="display:none;margin-bottom:8px;padding-left:16px;border-left:2px solid var(--border);">
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:58px;">Vowel on</span>
+            <select id="vowelPosition" style="flex:1;font-size:0.78rem;padding:3px 6px;">
+              <option value="first">First letter only</option>
+              <option value="both">First &amp; second letters</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div style="border-top:1px solid var(--border);margin:4px 0 8px;"></div>
+
         <div class="toggle-row" id="rowInverse">
           <span>Inverse Mode <span style="font-size:0.72rem;color:var(--muted)">(English → write Hebrew)</span></span>
           <label class="toggle">
@@ -1058,22 +1111,6 @@
           </div>
           <div id="focusYudWarning" style="display:none;font-size:0.72rem;color:var(--gold);background:rgba(201,146,42,0.12);border-radius:4px;padding:4px 7px;">
             ⚠ Yud + Yud blends will be skipped
-          </div>
-        </div>
-        <div class="toggle-row" id="rowThreeLetter" style="margin-top:4px;">
-          <span>Three-Letter Blends <span style="font-size:0.65rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
-          <label class="toggle">
-            <input type="checkbox" id="threeLetterToggle" onchange="toggleThreeLetterUI()">
-            <span class="slider"></span>
-          </label>
-        </div>
-        <div id="threeLetterOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--border);">
-          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
-            <span class="sub-label" style="font-size:0.78rem;min-width:58px;">Vowel on</span>
-            <select id="vowelPosition" style="flex:1;font-size:0.78rem;padding:3px 6px;">
-              <option value="first">First letter only</option>
-              <option value="both">First &amp; second letters</option>
-            </select>
           </div>
         </div>
         <div class="toggle-row" id="rowBingo" style="margin-top:4px;">
@@ -1514,8 +1551,11 @@ function getSettings() {
     excludeRepeats: document.getElementById('excludeRepeats').checked,
     landscape:    document.getElementById('landscapeMode').checked,
     // Worksheet mode toggles
+    blendType:    document.querySelector('.blend-type-btn.active')?.dataset.type || 'two',
     inverse:      document.getElementById('inverseToggle').checked,
     answerKey:    document.getElementById('answerKeyToggle').checked,
+    oneLetter:    document.getElementById('oneLetterToggle').checked,
+    nikudOnly:    document.getElementById('nikudOnlyToggle').checked,
     threeLetter:  document.getElementById('threeLetterToggle').checked,
     vowelPosition: document.getElementById('vowelPosition').value,
     selfCheck:    document.getElementById('selfCheckToggle').checked,
@@ -1561,10 +1601,11 @@ function applySettings(s) {
   if (s.excludeRepeats !== undefined) document.getElementById('excludeRepeats').checked = s.excludeRepeats;
   if (s.landscape !== undefined) { document.getElementById('landscapeMode').checked = s.landscape; toggleLandscape(s.landscape); }
 
-  // Mode toggles
-  if (s.inverse !== undefined)   document.getElementById('inverseToggle').checked = s.inverse;
-  if (s.answerKey !== undefined) document.getElementById('answerKeyToggle').checked = s.answerKey;
-  if (s.threeLetter !== undefined) { document.getElementById('threeLetterToggle').checked = s.threeLetter; toggleThreeLetterUI(); }
+  // Determine and restore blend type selector
+  const blendType = s.blendType || (s.nikudOnly ? 'nikud' : s.oneLetter ? 'one' : s.threeLetter ? 'three' : 'two');
+  document.getElementById('oneLetterToggle').checked   = blendType === 'one';
+  document.getElementById('nikudOnlyToggle').checked   = blendType === 'nikud';
+  document.getElementById('threeLetterToggle').checked = blendType === 'three';
   if (s.vowelPosition) document.getElementById('vowelPosition').value = s.vowelPosition;
   if (s.timerOn !== undefined)   document.getElementById('timerToggle').checked = s.timerOn;
   if (s.timerDuration)           document.getElementById('timerDuration').value = s.timerDuration;
@@ -1572,20 +1613,17 @@ function applySettings(s) {
   if (s.timerOn !== undefined)   document.getElementById('timerDurationRow').style.display = s.timerOn ? 'flex' : 'none';
 
   // Bingo
-  if (s.bingo !== undefined) {
-    document.getElementById('bingoToggle').checked = s.bingo;
-    toggleBingoUI();
-  }
+  if (s.bingo !== undefined) document.getElementById('bingoToggle').checked = s.bingo;
   if (s.bingoGrid)    document.getElementById('bingoGrid').value = s.bingoGrid;
   if (s.bingoCards)   document.getElementById('bingoCards').value = s.bingoCards;
   if (s.bingoPerPage) document.getElementById('bingoPerPage').value = s.bingoPerPage;
-  if (s.bingoFreeSpace !== undefined)   document.getElementById('bingoFreeSpace').checked = s.bingoFreeSpace;
-  if (s.bingoShowSounds !== undefined)  document.getElementById('bingoShowSounds').checked = s.bingoShowSounds;
-  if (s.bingoCallerSheet !== undefined) document.getElementById('bingoCallerSheet').checked = s.bingoCallerSheet;
+  if (s.bingoFreeSpace !== undefined)    document.getElementById('bingoFreeSpace').checked = s.bingoFreeSpace;
+  if (s.bingoShowSounds !== undefined)   document.getElementById('bingoShowSounds').checked = s.bingoShowSounds;
+  if (s.bingoCallerSheet !== undefined)  document.getElementById('bingoCallerSheet').checked = s.bingoCallerSheet;
   if (s.bingoSharedBlends !== undefined) document.getElementById('bingoSharedBlends').checked = s.bingoSharedBlends;
 
   // Focus letters
-  if (s.focusOn !== undefined) { document.getElementById('focusToggle').checked = s.focusOn; toggleFocusUI(); }
+  if (s.focusOn !== undefined) document.getElementById('focusToggle').checked = s.focusOn;
   if (s.lock1Active !== undefined) document.getElementById('lock1Active').checked = s.lock1Active;
   if (s.lock1Letter) document.getElementById('lock1Letter').value = s.lock1Letter;
   if (s.lock2Active !== undefined) document.getElementById('lock2Active').checked = s.lock2Active;
@@ -1593,7 +1631,12 @@ function applySettings(s) {
   if (s.lock3Active !== undefined) document.getElementById('lock3Active').checked = s.lock3Active;
   if (s.lock3Letter) document.getElementById('lock3Letter').value = s.lock3Letter;
 
-  // Self-check last (it triggers UI hide/show logic)
+  // Now fire all UI toggle functions AFTER all values are set
+  setBlendType(blendType);
+  toggleFocusUI();
+  toggleBingoUI();
+
+  // Self-check last — overrides everything
   if (s.selfCheck !== undefined) {
     document.getElementById('selfCheckToggle').checked = s.selfCheck;
     document.getElementById('selfCheckToggle').dispatchEvent(new Event('change'));
@@ -1785,12 +1828,110 @@ function toggleThreeLetterUI() {
     : 'Two-letter syllable practice for emerging Hebrew readers';
 }
 
-// ── BINGO MODE UI ──
+// ── BLEND TYPE SELECTOR ──
+function setBlendType(type) {
+  // Update button active states
+  document.querySelectorAll('.blend-type-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.type === type);
+  });
+
+  // Set hidden toggle values for getSettings/applySettings compatibility
+  document.getElementById('oneLetterToggle').checked  = type === 'one';
+  document.getElementById('nikudOnlyToggle').checked  = type === 'nikud';
+  document.getElementById('threeLetterToggle').checked = type === 'three';
+
+  // Show/hide three-letter sub-option
+  document.getElementById('threeLetterOptions').style.display = type === 'three' ? 'block' : 'none';
+
+  // Show/hide letter panel (nikud doesn't need letters)
+  document.getElementById('panelLetters').style.display = type === 'nikud' ? 'none' : '';
+
+  // Show/hide lock rows (one-letter and nikud don't need pos 2/3)
+  document.getElementById('lockRow2').style.display = (type === 'two' || type === 'three') ? 'flex' : 'none';
+  document.getElementById('lockRow3').style.display = type === 'three' ? 'flex' : 'none';
+
+  // Update header subtitle
+  const subtitles = {
+    two:   'Two-letter syllable practice for emerging Hebrew readers',
+    one:   'Single-letter drill with vowel sounds',
+    three: 'Three-letter syllable practice for emerging Hebrew readers',
+    nikud: 'Vowel sound recognition drill',
+  };
+  document.getElementById('headerSub').textContent = subtitles[type];
+
+  if (blends.length) generate(false);
+}
+
+// Keep these stubs so existing code that calls them doesn't break
+function toggleOneLetterMode() {
+  setBlendType(document.getElementById('oneLetterToggle').checked ? 'one' : 'two');
+}
+function toggleNikudOnlyMode() {
+  setBlendType(document.getElementById('nikudOnlyToggle').checked ? 'nikud' : 'two');
+}
+function toggleThreeLetterUI() {
+  const on = document.getElementById('threeLetterToggle').checked;
+  document.getElementById('threeLetterOptions').style.display = on ? 'block' : 'none';
+  document.getElementById('lockRow3').style.display = on ? 'flex' : 'none';
+}
+
+// ── ONE-LETTER GENERATION ──
+function generateOneLetter() {
+  const vowelKeys = [...selectedVowels];
+  if (vowelKeys.length === 0) return [];
+  const VAV_VARIANTS = new Set(['וֹ','וּ']);
+  const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
+  const pool = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h));
+  if (pool.length === 0) return [];
+
+  const count = parseInt(document.getElementById('blendCount').value);
+  const result = [];
+  for (let i = 0; i < count; i++) {
+    let vowel = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
+    const letter = pool[Math.floor(Math.random() * pool.length)];
+    const letterObj = getLetter(letter);
+
+    // Vav + Shva guard
+    if ((letter === 'ו' || letter === 'וֹ' || letter === 'וּ') && vowel === 'sh') {
+      const alt = vowelKeys.filter(v => v !== 'sh');
+      if (alt.length === 0) continue;
+      vowel = alt[Math.floor(Math.random() * alt.length)];
+    }
+    // Sin/Shin + Cholam guard
+    if ((letter === 'שׂ' || letter === 'ש') && vowel === 'o') {
+      const alt = vowelKeys.filter(v => v !== 'o');
+      if (alt.length === 0) continue;
+      vowel = alt[Math.floor(Math.random() * alt.length)];
+    }
+
+    const hebrewDisplay = withNikud(letterObj, vowel, true);
+    const combined = getSound(letterObj, vowel);
+    result.push({ hebrewDisplay, combined, vowel });
+  }
+  return result;
+}
+
+// ── NIKUD-ONLY GENERATION ──
+function generateNikudOnly() {
+  const vowelKeys = [...selectedVowels];
+  if (vowelKeys.length === 0) return [];
+  const count = parseInt(document.getElementById('blendCount').value);
+  const alefObj = getLetter('א');
+  const result = [];
+  for (let i = 0; i < count; i++) {
+    const vowel = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
+    const mark = NIKUD[vowel] || '';
+    const hebrewDisplay = 'א' + mark;
+    const combined = getSound(alefObj, vowel);
+    result.push({ hebrewDisplay, combined, vowel, nikudOnly: true });
+  }
+  return result;
+}
 function toggleBingoUI() {
   const on = document.getElementById('bingoToggle').checked;
   document.getElementById('bingoOptions').style.display = on ? 'flex' : 'none';
 
-  const hideRows = ['rowInverse','rowAnswerKey','rowFocus','rowThreeLetter','rowSelfCheck'];
+  const hideRows = ['rowInverse','rowAnswerKey','rowFocus','rowThreeLetter','rowSelfCheck','rowOneLetter','rowNikudOnly'];
   hideRows.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = on ? 'none' : ''; });
   document.getElementById('panelLayout').style.display = on ? 'none' : '';
 
@@ -2326,19 +2467,48 @@ function renderWorksheet(animate = false) {
   const showAnswers = document.getElementById('answerKeyToggle').checked;
   const selfCheck   = document.getElementById('selfCheckToggle').checked;
   const bingo       = document.getElementById('bingoToggle').checked;
+  const oneLetter   = document.getElementById('oneLetterToggle').checked;
+  const nikudOnly   = document.getElementById('nikudOnlyToggle').checked;
   const cols        = autoCols(blends.length);
   const title       = document.getElementById('wsTitle').value || 'Hebrew Blends';
   const subtitle    = document.getElementById('wsSubtitle').value;
 
   const ws = document.getElementById('worksheet');
 
-  if (bingo) {
-    renderBingo(ws);
-    return;
-  }
+  if (bingo) { renderBingo(ws); return; }
+  if (selfCheck) { renderSelfCheck(ws, cols, title, subtitle); return; }
 
-  if (selfCheck) {
-    renderSelfCheck(ws, cols, title, subtitle);
+  // One-letter and nikud-only use the same blend cells but with single-item data
+  if (oneLetter || nikudOnly) {
+    // Re-generate single items on each render
+    const items = oneLetter ? generateOneLetter() : generateNikudOnly();
+    if (items.length === 0) { ws.innerHTML = '<div class="empty-state"><h2>Please select letters and vowels.</h2></div>'; return; }
+    ws.innerHTML = '';
+    const sheet = document.createElement('div');
+    sheet.className = 'sheet';
+    const header = document.createElement('div');
+    header.className = 'ws-header';
+    header.innerHTML = `
+      <div>
+        <div class="ws-title">${title}</div>
+        <div class="ws-subtitle">${subtitle || (oneLetter ? 'Read each Hebrew letter aloud.' : 'Say the vowel sound aloud.')}</div>
+      </div>
+      <div class="ws-meta">
+        <div class="ws-field">Name: <div class="ws-field-line"></div></div>
+        <div class="ws-field">Date: <div class="ws-field-line" style="width:80px"></div></div>
+      </div>`;
+    sheet.appendChild(header);
+    const grid = document.createElement('div');
+    grid.className = 'blends-grid';
+    grid.style.gridTemplateColumns = `repeat(${autoCols(items.length)}, 1fr)`;
+    grid.style.direction = 'rtl';
+    sheet.appendChild(grid);
+    items.forEach((b, idx) => renderHebrewCell(grid, b, idx, showAnswers));
+    const footer = document.createElement('div');
+    footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+    footer.textContent = `${items.length} items · Hebrew Blend Generator`;
+    sheet.appendChild(footer);
+    ws.appendChild(sheet);
     return;
   }
 
@@ -2584,7 +2754,7 @@ document.getElementById('selfCheckToggle').addEventListener('change', () => {
   // Mutually exclusive with bingo
   if (on) { document.getElementById('bingoToggle').checked = false; toggleBingoUI(); }
   const hidePanels = ['panelLayout', 'panelVowels', 'panelLetters'];
-  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowThreeLetter'];
+  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus'];
   const hideBtns   = ['printBtn', 'pdfBtn', 'printBtnMob', 'pdfBtnMob'];
 
   hidePanels.forEach(id => document.getElementById(id).style.display = on ? 'none' : '');
