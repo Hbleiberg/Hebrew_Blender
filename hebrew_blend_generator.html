@@ -700,23 +700,27 @@
           </label>
         </div>
         <div class="toggle-row" id="rowFocus">
-          <span>Focus Letter</span>
+          <span>Lock Letters</span>
           <label class="toggle">
             <input type="checkbox" id="focusToggle" onchange="toggleFocusUI()">
             <span class="slider"></span>
           </label>
         </div>
-        <div id="focusOptions" style="display:none;margin-top:4px;display:none;flex-direction:column;gap:4px;padding-left:16px;border-left:2px solid var(--border);">
-          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
-            <span class="sub-label" style="font-size:0.78rem;min-width:70px;">Lock letter</span>
-            <select id="focusLetter" style="flex:1;font-size:0.78rem;padding:3px 6px;"></select>
+        <div id="focusOptions" style="display:none;margin-top:4px;flex-direction:column;gap:4px;padding-left:16px;border-left:2px solid var(--border);">
+          <div id="lockRow1" style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <input type="checkbox" id="lock1Active" style="accent-color:var(--gold);cursor:pointer;" onchange="updateFocusYudWarning()">
+            <span class="sub-label" style="font-size:0.78rem;min-width:42px;">Pos 1</span>
+            <select id="lock1Letter" style="flex:1;font-size:0.78rem;padding:3px 6px;"></select>
           </div>
-          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
-            <span class="sub-label" style="font-size:0.78rem;min-width:70px;">In position</span>
-            <select id="focusPosition" style="flex:1;font-size:0.78rem;padding:3px 6px;">
-              <option value="first">First (right)</option>
-              <option value="second">Second (left)</option>
-            </select>
+          <div id="lockRow2" style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <input type="checkbox" id="lock2Active" style="accent-color:var(--gold);cursor:pointer;" onchange="updateFocusYudWarning()">
+            <span class="sub-label" style="font-size:0.78rem;min-width:42px;">Pos 2</span>
+            <select id="lock2Letter" style="flex:1;font-size:0.78rem;padding:3px 6px;"></select>
+          </div>
+          <div id="lockRow3" style="display:none;gap:6px;align-items:center;font-size:0.78rem;">
+            <input type="checkbox" id="lock3Active" style="accent-color:var(--gold);cursor:pointer;" onchange="updateFocusYudWarning()">
+            <span class="sub-label" style="font-size:0.78rem;min-width:42px;">Pos 3</span>
+            <select id="lock3Letter" style="flex:1;font-size:0.78rem;padding:3px 6px;"></select>
           </div>
           <div id="focusYudWarning" style="display:none;font-size:0.72rem;color:var(--gold);background:rgba(201,146,42,0.12);border-radius:4px;padding:4px 7px;">
             ⚠ Yud + Yud blends will be skipped
@@ -1059,6 +1063,7 @@ function applyZoom(val) {
 function toggleThreeLetterUI() {
   const on = document.getElementById('threeLetterToggle').checked;
   document.getElementById('threeLetterOptions').style.display = on ? 'block' : 'none';
+  document.getElementById('lockRow3').style.display = on ? 'flex' : 'none';
   document.getElementById('headerSub').textContent = on
     ? 'Three-letter syllable practice for emerging Hebrew readers'
     : 'Two-letter syllable practice for emerging Hebrew readers';
@@ -1074,41 +1079,52 @@ function toggleFocusUI() {
 }
 
 function updateFocusYudWarning() {
-  // No need to disable yud in dropdown — generation already filters it.
-  // But show a small warning if yud is selected and would pair with yud.
-  const focusHeb = document.getElementById('focusLetter').value;
-  const focusPos = document.getElementById('focusPosition').value;
-  const warning  = document.getElementById('focusYudWarning');
-  if (focusHeb === 'י' && selectedLetters.has('י')) {
-    warning.style.display = 'block';
-  } else {
-    warning.style.display = 'none';
-  }
+  const locks = [
+    { active: document.getElementById('lock1Active').checked, letter: document.getElementById('lock1Letter').value },
+    { active: document.getElementById('lock2Active').checked, letter: document.getElementById('lock2Letter').value },
+    { active: document.getElementById('lock3Active').checked, letter: document.getElementById('lock3Letter').value },
+  ];
+  const yudLocks = locks.filter(l => l.active && l.letter === 'י').length;
+  document.getElementById('focusYudWarning').style.display = yudLocks >= 2 ? 'block' : 'none';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('focusLetter').addEventListener('change', () => {
-    if (document.getElementById('focusToggle').checked) updateFocusYudWarning();
-  });
-  document.getElementById('focusPosition').addEventListener('change', () => {
-    if (document.getElementById('focusToggle').checked) updateFocusYudWarning();
+  ['lock1Letter','lock2Letter','lock3Letter','lock1Active','lock2Active','lock3Active'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', () => {
+      if (document.getElementById('focusToggle').checked) updateFocusYudWarning();
+    });
   });
 });
 
 function populateFocusDropdown() {
-  const sel = document.getElementById('focusLetter');
-  sel.innerHTML = '';
-  LETTERS.forEach(l => {
-    const opt = document.createElement('option');
-    opt.value = l.heb;
-    opt.textContent = `${l.heb}  ${l.name}`;
-    sel.appendChild(opt);
-    if (l.sofit) {
-      const sfOpt = document.createElement('option');
-      sfOpt.value = l.sofit;
-      sfOpt.textContent = `${l.sofit}  ${l.name} sofit`;
-      sel.appendChild(sfOpt);
-    }
+  const VAV_VARIANTS = new Set(['וֹ','וּ']);
+  const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
+
+  // Position 1: no sofit
+  // Position 2: no sofit, no HAS_SOFIT, no vav variants
+  // Position 3: same as position 2 but sofit ARE allowed
+  const pools = {
+    lock1: LETTERS.filter(l => !SOFIT_CHARS.has(l.heb)),
+    lock2: LETTERS.filter(l => !SOFIT_CHARS.has(l.heb) && !HAS_SOFIT.has(l.heb) && !VAV_VARIANTS.has(l.heb)),
+    lock3: LETTERS.filter(l => !HAS_SOFIT.has(l.heb) && !VAV_VARIANTS.has(l.heb)),
+  };
+
+  // Add sofit letters to position 3 pool
+  const sofitEntries = LETTERS
+    .filter(l => l.sofit)
+    .map(l => ({ heb: l.sofit, base: l.sofit, name: l.name + ' sofit', sofit: null }));
+
+  Object.entries(pools).forEach(([id, pool]) => {
+    const sel = document.getElementById(id + 'Letter');
+    sel.innerHTML = '';
+    const entries = id === 'lock3' ? [...pool, ...sofitEntries] : pool;
+    entries.forEach(l => {
+      const opt = document.createElement('option');
+      opt.value = l.heb;
+      opt.textContent = `${l.heb}  ${l.name}`;
+      sel.appendChild(opt);
+    });
   });
 }
 
@@ -1215,20 +1231,22 @@ function generate(animate = false) {
   let firstPool  = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h));
   let secondPool = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h));
 
-  // Focus letter mode
+  // Per-position letter locks
   const focusOn = document.getElementById('focusToggle').checked;
-  let focusHeb = null, focusPos = null;
   if (focusOn) {
-    focusHeb = document.getElementById('focusLetter').value;
-    focusPos = document.getElementById('focusPosition').value;
-    if (focusPos === 'first') {
-      firstPool = [focusHeb];
-      // If focus letter is yud, remove yud from second pool
-      if (focusHeb === 'י') secondPool = secondPool.filter(h => h !== 'י');
-    } else {
-      secondPool = [focusHeb];
-      // If focus letter is yud, remove yud from first pool
-      if (focusHeb === 'י') firstPool = firstPool.filter(h => h !== 'י');
+    if (document.getElementById('lock1Active').checked) {
+      firstPool = [document.getElementById('lock1Letter').value];
+    }
+    if (document.getElementById('lock2Active').checked) {
+      const l2 = document.getElementById('lock2Letter').value;
+      secondPool = [l2];
+    }
+    // Yud+Yud guard across all locked positions
+    const lockedYuds = ['lock1','lock2','lock3']
+      .filter(p => document.getElementById(p+'Active').checked &&
+                   document.getElementById(p+'Letter').value === 'י').length;
+    if (lockedYuds >= 2) {
+      if (firstPool.includes('י') && firstPool.length === 1) firstPool = ['א']; // fallback
     }
   }
 
@@ -1270,9 +1288,15 @@ function generate(animate = false) {
 
     if (threeLetter) {
       const vowel2   = vowelPos === 'both' ? vowelKeys[Math.floor(Math.random() * vowelKeys.length)] : null;
-      // Third letter: always from secondPool but must not be a vav variant
-      const thirdPool2 = secondPool.filter(h => !['וֹ','וּ'].includes(h));
-      const third    = thirdPool2[Math.floor(Math.random() * thirdPool2.length)];
+      // Third pool: secondPool + sofits, no vav variants; override if lock3 active
+      const VAV_VARIANTS = new Set(['וֹ','וּ']);
+      const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
+      let thirdPool = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h));
+      if (focusOn && document.getElementById('lock3Active').checked) {
+        thirdPool = [document.getElementById('lock3Letter').value];
+      }
+      if (thirdPool.length === 0) thirdPool = secondPool;
+      const third    = thirdPool[Math.floor(Math.random() * thirdPool.length)];
       const thirdObj = getLetter(third);
       const thirdDisplay = SOFIT_CHARS.has(third) ? third : thirdObj.base;
 
