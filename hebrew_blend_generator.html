@@ -3286,14 +3286,13 @@ function toggleRealWordsUI() {
 
   // Hide panels/rows that conflict with Real Words mode
   const hidePanels = ['panelLayout', 'panelVowels', 'panelLetters'];
-  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowBingo', 'rowSelfCheck'];
+  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowSelfCheck'];
   hidePanels.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   hideRows.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   ['blendTypeWrapper','modeDivider'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
 
   if (on) {
-    // Uncheck conflicting modes
-    document.getElementById('bingoToggle').checked = false;
+    // Uncheck conflicting modes (not Bingo — it stays accessible)
     document.getElementById('selfCheckToggle').checked = false;
     toggleBingoUI();
     document.getElementById('selfCheckOptions').style.display = 'none';
