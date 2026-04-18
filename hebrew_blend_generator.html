@@ -1673,7 +1673,7 @@
           <input type="text" id="wsSubtitle" placeholder="Optional instructions..." style="width:160px;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;">
         </div>
         <div class="option-row" style="margin-top:4px;">
-          <div class="option-label">Exclude Repeats</div>
+          <div class="option-label">Exclude Repeats <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box">When on, no two blends in the same worksheet will share the same pair of letters — useful for variety drills.</span></span></div>
           <label class="toggle"><input type="checkbox" id="excludeRepeats"><span class="slider"></span></label>
         </div>
         <div class="option-row">
@@ -1982,9 +1982,9 @@ function setHeaderLang(lang) {
 }
 function wsMetaHTML() {
   if (headerLang === 'he') {
-    return `<div class="ws-meta" style="align-items:flex-start;">
-      <div class="ws-field"><span style="font-family:'Frank Ruhl Libre',serif;">שֵׁם</span>: <div class="ws-field-line"></div></div>
-      <div class="ws-field"><span style="font-family:'Frank Ruhl Libre',serif;">תַּאֲרִיךְ</span>: <div class="ws-field-line" style="width:80px"></div></div>
+    return `<div class="ws-meta">
+      <div class="ws-field"><span style="font-family:'Frank Ruhl Libre',serif;">שֵׁם:</span> <div class="ws-field-line"></div></div>
+      <div class="ws-field"><span style="font-family:'Frank Ruhl Libre',serif;">תַאֲרִיךְ:</span> <div class="ws-field-line" style="width:80px"></div></div>
     </div>`;
   }
   return `<div class="ws-meta">
