@@ -1440,12 +1440,11 @@
           <!-- Drill Type -->
           <div>
             <div style="font-size:0.7rem;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">Drill Type</div>
-            <div class="blend-type-selector" style="grid-template-columns:repeat(5,1fr);">
+            <div class="blend-type-selector" style="grid-template-columns:repeat(4,1fr);">
               <button class="rw-drill-btn active" data-drill="reading" onclick="setRealWordDrill('reading')">Reading</button>
               <button class="rw-drill-btn" data-drill="vocab" onclick="setRealWordDrill('vocab')">Vocab</button>
               <button class="rw-drill-btn" data-drill="reverse" onclick="setRealWordDrill('reverse')">Reverse</button>
               <button class="rw-drill-btn" data-drill="identify" onclick="setRealWordDrill('identify')">Identify</button>
-              <button class="rw-drill-btn" data-drill="bingo" onclick="setRealWordDrill('bingo')">Bingo</button>
             </div>
           </div>
 
@@ -3370,13 +3369,9 @@ function setRealWordDrill(type) {
   rwDrillType = type;
   document.querySelectorAll('.rw-drill-btn').forEach(b => b.classList.toggle('active', b.dataset.drill === type));
 
-  // Show/hide bingo sub-options
-  const bingoOpts = document.getElementById('rwBingoOptions');
-  if (bingoOpts) bingoOpts.style.display = type === 'bingo' ? 'flex' : 'none';
-
-  // Show/hide mixed mode (hidden for bingo and identify — identify always mixes)
+  // Show/hide mixed mode (hidden for identify — identify always mixes)
   const mixedRow = document.getElementById('rwMixedRow');
-  if (mixedRow) mixedRow.style.display = (type === 'bingo' || type === 'identify') ? 'none' : '';
+  if (mixedRow) mixedRow.style.display = (type === 'identify') ? 'none' : '';
 
   // Identify mode always needs blends mixed in — force rwMixed on
   const mixedCb = document.getElementById('rwMixed');
