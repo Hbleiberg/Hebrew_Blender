@@ -72,6 +72,8 @@
   body.dark .vowel-chip { color: #dde4f0; }
   body.dark .vowel-chip:hover { background: #252d3e; }
   body.dark .btn-xs { background: #1e2535; color: #dde4f0; border-color: var(--border); }
+  body.dark #bingoCards { background: #1e2535; color: #dde4f0; }
+  body.dark #bingoCards + div button { background: #1e2535; color: #dde4f0; border-color: var(--border); }
   body.dark .btn-xs:hover { background: #2a3349; }
   body.dark .empty-state h2 { color: #dde4f0; }
   body.dark .empty-state p { color: var(--muted); }
@@ -259,6 +261,8 @@
     gap: 6px;
     margin-bottom: 10px;
   }
+  #bingoCards::-webkit-inner-spin-button,
+  #bingoCards::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
   .btn-xs {
     font-size: 0.72rem;
     padding: 3px 8px;
@@ -1366,7 +1370,13 @@
           </div>
           <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
             <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Cards</span>
-            <input type="number" id="bingoCards" min="1" max="200" value="30" style="flex:1;font-size:0.78rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;font-family:inherit;background:var(--white);color:var(--text);">
+            <div style="display:flex;flex:1;align-items:stretch;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
+              <input type="number" id="bingoCards" min="1" max="200" value="30" style="flex:1;font-size:0.78rem;padding:3px 6px;border:none;font-family:inherit;background:var(--white);color:var(--text);text-align:center;-moz-appearance:textfield;" oninput="this.value=Math.max(1,Math.min(200,parseInt(this.value)||1))">
+              <div style="display:flex;flex-direction:column;border-left:1px solid var(--border);">
+                <button type="button" onclick="adjustBingoCards(-1)" style="flex:1;padding:0 5px;background:var(--white);border:none;border-bottom:1px solid var(--border);cursor:pointer;font-size:0.55rem;color:var(--text);line-height:1;">▲</button>
+                <button type="button" onclick="adjustBingoCards(1)" style="flex:1;padding:0 5px;background:var(--white);border:none;cursor:pointer;font-size:0.55rem;color:var(--text);line-height:1;">▼</button>
+              </div>
+            </div>
           </div>
           <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
             <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Per page</span>
@@ -1456,12 +1466,12 @@
 
           <!-- Drill Type -->
           <div>
-            <div style="font-size:0.7rem;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">Drill Type</div>
+            <div style="font-size:0.7rem;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">Drill Type <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box"><strong>Reading</strong> — Hebrew shown, students read aloud and flip to check.<br><br><strong>Vocab</strong> — Flip cards: Hebrew front, English translation back.<br><br><strong>Reverse</strong> — English shown, students recall or write the Hebrew.<br><br><strong>Identify</strong> — Mixed real words + nonsense blends; students circle the real ones. Includes a teacher answer key.</span></span></div>
             <div class="blend-type-selector" style="grid-template-columns:repeat(4,1fr);">
-              <button class="rw-drill-btn active" data-drill="reading" onclick="setRealWordDrill('reading')">Reading<span class="tooltip-wrap" style="font-size:0.6rem;margin-left:2px;">?<span class="tooltip-box">Each card shows the Hebrew word. Students read it aloud and flip to check the transliteration.</span></span></button>
-              <button class="rw-drill-btn" data-drill="vocab" onclick="setRealWordDrill('vocab')">Vocab<span class="tooltip-wrap" style="font-size:0.6rem;margin-left:2px;">?<span class="tooltip-box">Flip cards: Hebrew on the front, English translation on the back. Great for vocabulary review.</span></span></button>
-              <button class="rw-drill-btn" data-drill="reverse" onclick="setRealWordDrill('reverse')">Reverse<span class="tooltip-wrap" style="font-size:0.6rem;margin-left:2px;">?<span class="tooltip-box">English translation shown — students recall or write the Hebrew word. Tests active recall.</span></span></button>
-              <button class="rw-drill-btn" data-drill="identify" onclick="setRealWordDrill('identify')">Identify<span class="tooltip-wrap" style="font-size:0.6rem;margin-left:2px;">?<span class="tooltip-box">Mixed sheet of real words and nonsense blends. Students circle the real Hebrew words. Auto-generates a matching answer key for the teacher.</span></span></button>
+              <button class="rw-drill-btn active" data-drill="reading" onclick="setRealWordDrill('reading')">Reading</button>
+              <button class="rw-drill-btn" data-drill="vocab" onclick="setRealWordDrill('vocab')">Vocab</button>
+              <button class="rw-drill-btn" data-drill="reverse" onclick="setRealWordDrill('reverse')">Reverse</button>
+              <button class="rw-drill-btn" data-drill="identify" onclick="setRealWordDrill('identify')">Identify</button>
             </div>
           </div>
 
@@ -2328,6 +2338,11 @@ function generateNikudOnly() {
   }
   return result;
 }
+function adjustBingoCards(delta) {
+  const el = document.getElementById('bingoCards');
+  el.value = Math.max(1, Math.min(200, (parseInt(el.value) || 1) + delta));
+}
+
 function toggleBingoUI() {
   const on = document.getElementById('bingoToggle').checked;
   document.getElementById('bingoOptions').style.display = on ? 'flex' : 'none';
