@@ -24,6 +24,7 @@
     --muted: #6b6050;
     --border: #c8bfa8;
     --white: #ffffff;
+    --bingo-heb-size: 1.4rem;
   }
 
   /* Applied instantly in <head> before first paint to prevent dark mode flash */
@@ -991,8 +992,8 @@
   .bingo-cell.last-col { border-right: none; }
   .bingo-cell.last-row { border-bottom: none; }
   .bingo-card.two-up .bingo-cell { min-height: 48px; }
-  .bingo-cell .heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.4rem; direction: rtl; line-height: 1.2; color: #1a2744; }
-  .bingo-card.two-up .bingo-cell .heb { font-size: 1.1rem; }
+  .bingo-cell .heb { font-family: 'Frank Ruhl Libre', serif; font-size: var(--bingo-heb-size); direction: rtl; line-height: 1.2; color: #1a2744; }
+  .bingo-card.two-up .bingo-cell .heb { font-size: calc(var(--bingo-heb-size) * 0.8); }
   .bingo-cell .sound { font-size: 0.6rem; color: #6b6050; font-style: italic; margin-top: 1px; }
   .bingo-card-num {
     background: #c9922a;
@@ -1015,7 +1016,7 @@
   .bingo-card-header.four-up { font-size: 0.8rem; direction: rtl; }
   .bingo-card-header.two-up { direction: rtl; }
   .bingo-card.four-up .bingo-cell { min-height: 52px; }
-  .bingo-card.four-up .bingo-cell .heb { font-size: 1.1rem; }
+  .bingo-card.four-up .bingo-cell .heb { font-size: calc(var(--bingo-heb-size) * 0.8); }
   .bingo-page.four-up {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1384,6 +1385,15 @@
               <option value="1">1 card</option>
               <option value="2" selected>2 cards</option>
               <option value="4">4 cards</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Font size</span>
+            <select id="bingoFontSize" style="flex:1;font-size:0.78rem;padding:3px 6px;" onchange="setBingoFontSize(this.value)">
+              <option value="1.1rem">Small</option>
+              <option value="1.4rem" selected>Medium</option>
+              <option value="1.8rem">Large</option>
+              <option value="2.2rem">X-Large</option>
             </select>
           </div>
           <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
@@ -2338,6 +2348,10 @@ function generateNikudOnly() {
   }
   return result;
 }
+function setBingoFontSize(size) {
+  document.documentElement.style.setProperty('--bingo-heb-size', size);
+}
+
 function adjustBingoCards(delta) {
   const el = document.getElementById('bingoCards');
   el.value = Math.max(1, Math.min(200, (parseInt(el.value) || 1) + delta));
