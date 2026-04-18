@@ -1556,8 +1556,6 @@
             </div>
           </div>
 
-          <!-- Generate button -->
-          <button class="btn btn-primary" style="width:100%;margin-top:4px;" onclick="generateRealWords()">⬡ Generate</button>
         </div>
       </div>
     </div>
@@ -2708,8 +2706,21 @@ function autoCols(count) {
 }
 
 function generate(animate = false) {
+  const rwOn = document.getElementById('realWordsToggle').checked;
+  const mixed = rwOn && document.getElementById('rwMixed').checked;
+
+  // Real Words mode without mixing: skip blend generation entirely
+  if (rwOn && !mixed) {
+    generateRealWords();
+    return;
+  }
+
   const vowelKeys = [...selectedVowels];
-  if (vowelKeys.length === 0) { alert('Please select at least one vowel.'); return; }
+  if (vowelKeys.length === 0) {
+    if (rwOn) { blends = []; generateRealWords(); return; }
+    alert('Please select at least one vowel.');
+    return;
+  }
 
   const VAV_VARIANTS = new Set(['וֹ','וּ']);
   const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
@@ -2740,6 +2751,7 @@ function generate(animate = false) {
   }
 
   if (firstPool.length === 0 || secondPool.length === 0) {
+    if (rwOn) { blends = []; generateRealWords(); return; }
     alert('Please select more letters. At least one non-sofit letter is needed for first position, and at least one valid letter for second position.');
     return;
   }
@@ -2752,12 +2764,14 @@ function generate(animate = false) {
   // For one-letter and nikud-only, generate directly into blends then render
   if (activeType === 'one') {
     blends = generateOneLetter();
+    if (rwOn) { generateRealWords(); return; }
     renderWorksheet(animate);
     enableButtons();
     return;
   }
   if (activeType === 'nikud') {
     blends = generateNikudOnly();
+    if (rwOn) { generateRealWords(); return; }
     renderWorksheet(animate);
     enableButtons();
     return;
@@ -2866,6 +2880,10 @@ function generate(animate = false) {
     }
   }
 
+  if (rwOn) {
+    generateRealWords();
+    return;
+  }
   renderWorksheet(animate);
   enableButtons();
 }
