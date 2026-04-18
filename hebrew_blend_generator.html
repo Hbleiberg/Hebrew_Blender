@@ -2821,9 +2821,12 @@ async function exportPDF() {
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
-        onclone: (clonedDoc) => {
+        width: sheet.scrollWidth + 8,
+        height: sheet.scrollHeight + 8,
+        onclone: (clonedDoc, el) => {
           clonedDoc.body.classList.remove('dark');
           clonedDoc.documentElement.classList.remove('dark-early');
+          el.style.padding = '4px';
         },
       });
 
