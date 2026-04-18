@@ -2331,7 +2331,8 @@ function generateOneLetter() {
 
   const count = parseInt(document.getElementById('blendCount').value);
   const result = [];
-  for (let i = 0; i < count; i++) {
+  let safetyLimit = count * 50;
+  while (result.length < count && safetyLimit-- > 0) {
     let vowel = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
     const letter = pool[Math.floor(Math.random() * pool.length)];
     const letterObj = getLetter(letter);
