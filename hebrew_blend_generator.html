@@ -1031,6 +1031,25 @@
     gap: 16px;
     align-items: start;
   }
+  /* Cut lines for multi-card pages */
+  .bingo-page.two-up, .bingo-page.four-up { position: relative; }
+  .bingo-page.two-up::after, .bingo-page.four-up::after {
+    content: '✂ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -';
+    position: absolute; left: 50%; top: 0; bottom: 0;
+    border-left: none;
+    writing-mode: vertical-lr;
+    font-size: 0.6rem; color: #bbb; letter-spacing: 2px;
+    pointer-events: none; white-space: nowrap; overflow: hidden;
+    transform: translateX(-50%);
+  }
+  .bingo-page.four-up::before {
+    content: '✂ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -';
+    position: absolute; top: 50%; left: 0; right: 0;
+    font-size: 0.6rem; color: #bbb; letter-spacing: 2px;
+    pointer-events: none; white-space: nowrap; overflow: hidden;
+    transform: translateY(-50%);
+    z-index: 1;
+  }
   @media print {
     .bingo-page.four-up {
       gap: 10px;
