@@ -3271,33 +3271,6 @@ function isImpossibleCombo(first, second, third, vowel) {
 }
 
 
-function isImpossibleCombo(first, second, third) {
-  // N4: Matres cannot be C1
-  if (MATRES_SET.has(first)) return true;
-
-  // N2: Sofit cannot be C1 (non-final position)
-  if (second !== null && SOFIT_CHARS_SET.has(first)) return true;
-  if (third !== null && SOFIT_CHARS_SET.has(first)) return true;
-
-  // N2: Sofit cannot be C2 in a 3-letter blend (it's not the final position)
-  if (third !== null && second !== null && SOFIT_CHARS_SET.has(second)) return true;
-
-  // N4: Matres cannot be C2 or C3
-  if (second !== null && MATRES_SET.has(second)) return true;
-  if (third !== null && MATRES_SET.has(third)) return true;
-
-  // N3: Non-sofit form of sofit-requiring letter must not be in final position
-  // (Final position = second in 2-letter, third in 3-letter)
-  const finalLetter = third !== null ? third : (second !== null ? second : first);
-  if (NEEDS_SOFIT_FINAL.has(finalLetter)) return true;
-
-  // Yud+Yud (God's name) — always skip
-  if (first === 'י' && second === 'י') return true;
-  if (second === 'י' && third === 'י') return true;
-
-  return false;
-}
-
 // ══════════════════════════════════════════════
 //  REAL WORDS — combined 1-letter, 2-letter, 3-letter (1,223 entries)
 //  Source: curated CSV lists. Filter by .letters property client-side.
