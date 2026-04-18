@@ -877,7 +877,7 @@
     position: relative;
     background: var(--white);
   }
-  .rw-heb { font-family: 'Frank Ruhl Libre', serif; font-size: 2rem; direction: rtl; color: var(--navy); line-height: 1.2; }
+  .rw-heb { font-family: 'Frank Ruhl Libre', serif; font-size: 2rem; direction: rtl; color: var(--text); line-height: 1.2; }
   .rw-translit { font-size: 0.72rem; color: var(--muted); font-style: italic; }
   .rw-translation { font-size: 0.75rem; color: var(--gold); font-weight: 600; }
   .rw-pos-tag { position: absolute; top: 4px; right: 6px; font-size: 0.58rem; color: var(--muted); text-transform: uppercase; }
@@ -3471,7 +3471,7 @@ function generateRealWords() {
       card.innerHTML = `
         <span class="rw-num">${idx + 1}</span>
         <span class="rw-pos-tag">${w.pos}</span>
-        <span style="font-size:0.88rem;font-weight:600;color:var(--navy);text-align:center;">${w.translation || w.translit}</span>
+        <span style="font-size:0.88rem;font-weight:600;color:var(--text);text-align:center;">${w.translation || w.translit}</span>
         <div style="border-bottom:1.5px solid var(--border);width:90%;margin-top:8px;min-height:24px;"></div>`;
       grid.appendChild(card);
     } else {
