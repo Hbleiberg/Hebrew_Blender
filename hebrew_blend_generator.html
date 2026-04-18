@@ -1043,8 +1043,8 @@
     border-left: 2px dashed #bbb;
     pointer-events: none; z-index: 2;
   }
-  /* Horizontal cut line between top and bottom rows (four-up only) */
-  .bingo-page.four-up::before {
+  /* Horizontal cut line between top and bottom rows (four-up, only when both rows have cards) */
+  .bingo-page.four-up.has-two-rows::before {
     content: '';
     position: absolute;
     top: 50%;
@@ -1499,12 +1499,13 @@
 
           <!-- Drill Type -->
           <div>
-            <div style="font-size:0.7rem;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">Drill Type <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box"><strong>Reading</strong> — Hebrew shown, students read aloud and flip to check.<br><br><strong>Vocab</strong> — Flip cards: Hebrew front, English translation back.<br><br><strong>Reverse</strong> — English shown, students recall or write the Hebrew.<br><br><strong>Identify</strong> — Mixed real words + nonsense blends; students circle the real ones. Includes a teacher answer key.</span></span></div>
-            <div class="blend-type-selector" style="grid-template-columns:repeat(4,1fr);">
+            <div style="font-size:0.7rem;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">Drill Type <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box"><strong>Reading</strong> — Hebrew shown, students read aloud and flip to check.<br><br><strong>Vocab</strong> — Flip cards: Hebrew front, English translation back.<br><br><strong>Reverse</strong> — English shown, students recall or write the Hebrew.<br><br><strong>Identify</strong> — Mixed real words + nonsense blends; students circle the real ones. Includes a teacher answer key.<br><br><strong>Bingo</strong> — Generates unique bingo cards with real Hebrew words. Teacher calls words aloud; students mark matches.</span></span></div>
+            <div class="blend-type-selector" style="grid-template-columns:repeat(5,1fr);">
               <button class="rw-drill-btn active" data-drill="reading" onclick="setRealWordDrill('reading')">Reading</button>
               <button class="rw-drill-btn" data-drill="vocab" onclick="setRealWordDrill('vocab')">Vocab</button>
               <button class="rw-drill-btn" data-drill="reverse" onclick="setRealWordDrill('reverse')">Reverse</button>
               <button class="rw-drill-btn" data-drill="identify" onclick="setRealWordDrill('identify')">Identify</button>
+              <button class="rw-drill-btn" data-drill="bingo" onclick="setRealWordDrill('bingo')">Bingo</button>
             </div>
           </div>
 
@@ -2628,7 +2629,9 @@ function renderBingo(ws) {
     const page = document.createElement('div');
     const twoUp  = perPage === 2;
     const fourUp = perPage === 4;
+    const cardsOnPage = Math.min(perPage, cards.length - i);
     page.className = `bingo-page${twoUp ? ' two-up' : fourUp ? ' four-up' : ''}`;
+    if (fourUp && cardsOnPage > 2) page.classList.add('has-two-rows');
     if (i > 0) page.classList.add('bingo-page-break');
 
     for (let j = i; j < Math.min(i + perPage, cards.length); j++) {
@@ -3479,9 +3482,9 @@ function setRealWordDrill(type) {
   rwDrillType = type;
   document.querySelectorAll('.rw-drill-btn').forEach(b => b.classList.toggle('active', b.dataset.drill === type));
 
-  // Show/hide mixed mode (hidden for identify — identify always mixes)
+  // Show/hide mixed mode (hidden for identify and bingo)
   const mixedRow = document.getElementById('rwMixedRow');
-  if (mixedRow) mixedRow.style.display = (type === 'identify') ? 'none' : '';
+  if (mixedRow) mixedRow.style.display = (type === 'identify' || type === 'bingo') ? 'none' : '';
 
   // Identify mode always needs blends mixed in — force rwMixed on
   const mixedCb = document.getElementById('rwMixed');
@@ -3490,6 +3493,10 @@ function setRealWordDrill(type) {
   // Auto-set translation visibility
   const translToggle = document.getElementById('rwShowTranslation');
   if (translToggle) translToggle.checked = (type === 'vocab');
+
+  // Show bingo sub-options only for bingo drill
+  const rwBingoOpts = document.getElementById('rwBingoOptions');
+  if (rwBingoOpts) rwBingoOpts.style.display = (type === 'bingo') ? 'flex' : 'none';
 
   updateRwPoolInfo();
 }
@@ -3866,7 +3873,9 @@ function generateRealWordsBingo(pool) {
   for (let i = 0; i < cards.length; i += perPage) {
     const page = document.createElement('div');
     const twoUp = perPage === 2, fourUp = perPage === 4;
+    const cardsOnPage2 = Math.min(perPage, cards.length - i);
     page.className = `bingo-page${twoUp ? ' two-up' : fourUp ? ' four-up' : ''}`;
+    if (fourUp && cardsOnPage2 > 2) page.classList.add('has-two-rows');
     if (i > 0) page.classList.add('bingo-page-break');
 
     for (let j = i; j < Math.min(i + perPage, cards.length); j++) {
