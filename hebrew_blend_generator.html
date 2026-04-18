@@ -3409,7 +3409,13 @@ const MATRES = new Set(['וֹ','וּ']);
  * @param {string} vowel  - vowel key: 'a','e','i','o','u','sh'
  * @returns {boolean} true = impossible, skip this combination
  */
+// Gutturals take Chataf (compound shva) not simple Shva
+const GUTTURALS = new Set(['א','ה','ח','ע']);
+
 function isImpossibleCombo(first, second, third, vowel) {
+  // Rule N1 (refined): Gutturals cannot take simple Shva — they use Chataf vowels instead
+  if (vowel === 'sh' && GUTTURALS.has(first)) return true;
+
   // Rule N4: Matres cannot be C1 (they are vowels, not consonants)
   if (MATRES.has(first)) return true;
 
