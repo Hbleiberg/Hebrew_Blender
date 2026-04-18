@@ -1439,10 +1439,11 @@
           <!-- Drill Type -->
           <div>
             <div style="font-size:0.7rem;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">Drill Type</div>
-            <div class="blend-type-selector">
+            <div class="blend-type-selector" style="grid-template-columns:repeat(5,1fr);">
               <button class="rw-drill-btn active" data-drill="reading" onclick="setRealWordDrill('reading')">Reading</button>
               <button class="rw-drill-btn" data-drill="vocab" onclick="setRealWordDrill('vocab')">Vocab</button>
               <button class="rw-drill-btn" data-drill="reverse" onclick="setRealWordDrill('reverse')">Reverse</button>
+              <button class="rw-drill-btn" data-drill="identify" onclick="setRealWordDrill('identify')">Identify</button>
               <button class="rw-drill-btn" data-drill="bingo" onclick="setRealWordDrill('bingo')">Bingo</button>
             </div>
           </div>
@@ -1573,7 +1574,7 @@
       <div class="panel-title">Layout</div>
       <div class="panel-body">
 
-        <div class="option-row">
+        <div class="option-row" id="rowBlendCount">
           <div>
             <div class="option-label">Total Blends</div>
           </div>
@@ -3293,8 +3294,8 @@ function toggleRealWordsUI() {
   opts.style.display = on ? 'flex' : 'none';
 
   // Hide panels/rows that conflict with Real Words mode
-  const hidePanels = ['panelLayout', 'panelVowels', 'panelLetters'];
-  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowSelfCheck'];
+  const hidePanels = ['panelVowels', 'panelLetters'];
+  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowSelfCheck', 'rowBlendCount'];
   hidePanels.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   hideRows.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   ['blendTypeWrapper','modeDivider'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
@@ -3318,9 +3319,13 @@ function setRealWordDrill(type) {
   const bingoOpts = document.getElementById('rwBingoOptions');
   if (bingoOpts) bingoOpts.style.display = type === 'bingo' ? 'flex' : 'none';
 
-  // Show/hide mixed mode (not applicable for bingo)
+  // Show/hide mixed mode (hidden for bingo and identify — identify always mixes)
   const mixedRow = document.getElementById('rwMixedRow');
-  if (mixedRow) mixedRow.style.display = type === 'bingo' ? 'none' : '';
+  if (mixedRow) mixedRow.style.display = (type === 'bingo' || type === 'identify') ? 'none' : '';
+
+  // Identify mode always needs blends mixed in — force rwMixed on
+  const mixedCb = document.getElementById('rwMixed');
+  if (mixedCb) mixedCb.checked = (type === 'identify');
 
   // Auto-set translation visibility
   const translToggle = document.getElementById('rwShowTranslation');
@@ -3400,6 +3405,11 @@ function generateRealWords() {
   // ── BINGO MODE ──
   if (drill === 'bingo') {
     generateRealWordsBingo(pool);
+    return;
+  }
+
+  if (drill === 'identify') {
+    generateIdentifyDrill(pool, count, showTranslit);
     return;
   }
 
@@ -3497,6 +3507,94 @@ function generateRealWords() {
   sheet.appendChild(footer);
   ws.appendChild(sheet);
   updateRwPoolInfo();
+  enableButtons();
+}
+
+// ── IDENTIFY THE REAL WORD ──
+function generateIdentifyDrill(pool, count, showTranslit) {
+  const realWords = rwShuffle(pool).slice(0, Math.min(count, pool.length));
+  const blendItems = blends.length > 0
+    ? rwShuffle(blends).slice(0, count).map(b => ({
+        heb: b.hebrewDisplay, translit: b.combined, translation: '', pos: 'blend', isReal: false
+      }))
+    : [];
+
+  const realItems = realWords.map(w => ({ ...w, isReal: true }));
+  const items = rwShuffle([...realItems, ...blendItems]).slice(0, count * 2);
+
+  if (items.length === 0) { alert('No words available.'); return; }
+
+  const ws = document.getElementById('worksheet');
+  ws.innerHTML = '';
+
+  function makeGrid(items, reveal) {
+    const cols = items.length <= 20 ? 4 : 5;
+    const grid = document.createElement('div');
+    grid.className = 'rw-grid';
+    grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    items.forEach((w, idx) => {
+      const card = document.createElement('div');
+      card.className = 'rw-card';
+      if (reveal && w.isReal) {
+        card.style.outline = '2px solid var(--gold)';
+        card.style.background = 'rgba(201,146,42,0.08)';
+      }
+      card.innerHTML = `
+        <span class="rw-num">${idx + 1}${reveal && w.isReal ? ' ★' : ''}</span>
+        <span class="rw-pos-tag">${reveal ? w.pos : ''}</span>
+        <span class="rw-heb">${w.heb}</span>
+        ${showTranslit ? `<span class="rw-translit">${w.translit}</span>` : ''}
+        ${reveal && w.isReal && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}
+        ${!reveal ? `<div style="margin-top:6px;width:20px;height:20px;border:1.5px solid var(--border);border-radius:50%;"></div>` : ''}`;
+      grid.appendChild(card);
+    });
+    return grid;
+  }
+
+  // ── Student sheet ──
+  const studentSheet = document.createElement('div');
+  studentSheet.className = 'sheet';
+  const hdr = document.createElement('div');
+  hdr.className = 'ws-header';
+  hdr.innerHTML = `
+    <div>
+      <div class="ws-title">Identify the Real Word</div>
+      <div class="ws-subtitle">Circle the real Hebrew words. The others are nonsense blends.</div>
+    </div>
+    <div class="ws-meta">
+      <div class="ws-field">Name: <div class="ws-field-line"></div></div>
+      <div class="ws-field">Date: <div class="ws-field-line" style="width:80px"></div></div>
+    </div>`;
+  studentSheet.appendChild(hdr);
+  studentSheet.appendChild(makeGrid(items, false));
+  const foot = document.createElement('div');
+  foot.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  foot.textContent = `${items.length} items · Hebrew Blend Generator`;
+  studentSheet.appendChild(foot);
+  ws.appendChild(studentSheet);
+
+  // ── Answer key sheet ──
+  const keySheet = document.createElement('div');
+  keySheet.className = 'sheet answer-key-sheet';
+  const akBanner = document.createElement('div');
+  akBanner.className = 'answer-key-banner';
+  akBanner.textContent = '✦ Answer Key ✦';
+  keySheet.appendChild(akBanner);
+  const keyHdr = document.createElement('div');
+  keyHdr.className = 'ws-header';
+  keyHdr.innerHTML = `
+    <div>
+      <div class="ws-title">Identify the Real Word</div>
+      <div class="ws-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy &nbsp;·&nbsp; ★ = real word</div>
+    </div>`;
+  keySheet.appendChild(keyHdr);
+  keySheet.appendChild(makeGrid(items, true));
+  const keyFoot = document.createElement('div');
+  keyFoot.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  keyFoot.textContent = `${items.filter(w => w.isReal).length} real words · ${items.filter(w => !w.isReal).length} blends · Hebrew Blend Generator — Answer Key`;
+  keySheet.appendChild(keyFoot);
+  ws.appendChild(keySheet);
+
   enableButtons();
 }
 
