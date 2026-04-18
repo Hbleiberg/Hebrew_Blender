@@ -1391,7 +1391,7 @@
             </label>
           </div>
           <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
-            <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Caller sheet</span>
+            <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Caller sheet<span class="tooltip-wrap" style="font-size:0.6rem;margin-left:3px;">?<span class="tooltip-box">Adds a teacher page listing every blend in the call order. Check them off as you call them during the game.</span></span></span>
             <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
               <input type="checkbox" id="bingoCallerSheet" checked>
               <span class="slider"></span>
@@ -1458,10 +1458,10 @@
           <div>
             <div style="font-size:0.7rem;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">Drill Type</div>
             <div class="blend-type-selector" style="grid-template-columns:repeat(4,1fr);">
-              <button class="rw-drill-btn active" data-drill="reading" onclick="setRealWordDrill('reading')">Reading</button>
-              <button class="rw-drill-btn" data-drill="vocab" onclick="setRealWordDrill('vocab')">Vocab</button>
-              <button class="rw-drill-btn" data-drill="reverse" onclick="setRealWordDrill('reverse')">Reverse</button>
-              <button class="rw-drill-btn" data-drill="identify" onclick="setRealWordDrill('identify')">Identify</button>
+              <button class="rw-drill-btn active" data-drill="reading" onclick="setRealWordDrill('reading')">Reading<span class="tooltip-wrap" style="font-size:0.6rem;margin-left:2px;">?<span class="tooltip-box">Each card shows the Hebrew word. Students read it aloud and flip to check the transliteration.</span></span></button>
+              <button class="rw-drill-btn" data-drill="vocab" onclick="setRealWordDrill('vocab')">Vocab<span class="tooltip-wrap" style="font-size:0.6rem;margin-left:2px;">?<span class="tooltip-box">Flip cards: Hebrew on the front, English translation on the back. Great for vocabulary review.</span></span></button>
+              <button class="rw-drill-btn" data-drill="reverse" onclick="setRealWordDrill('reverse')">Reverse<span class="tooltip-wrap" style="font-size:0.6rem;margin-left:2px;">?<span class="tooltip-box">English translation shown — students recall or write the Hebrew word. Tests active recall.</span></span></button>
+              <button class="rw-drill-btn" data-drill="identify" onclick="setRealWordDrill('identify')">Identify<span class="tooltip-wrap" style="font-size:0.6rem;margin-left:2px;">?<span class="tooltip-box">Mixed sheet of real words and nonsense blends. Students circle the real Hebrew words. Auto-generates a matching answer key for the teacher.</span></span></button>
             </div>
           </div>
 
