@@ -1982,9 +1982,9 @@ function setHeaderLang(lang) {
 }
 function wsMetaHTML() {
   if (headerLang === 'he') {
-    return `<div class="ws-meta" style="direction:rtl;align-items:flex-start;">
-      <div class="ws-field"><div class="ws-field-line"></div> :שם</div>
-      <div class="ws-field"><div class="ws-field-line" style="width:80px"></div> :תאריך</div>
+    return `<div class="ws-meta" style="align-items:flex-start;">
+      <div class="ws-field"><span style="font-family:'Frank Ruhl Libre',serif;">שֵׁם</span>: <div class="ws-field-line"></div></div>
+      <div class="ws-field"><span style="font-family:'Frank Ruhl Libre',serif;">תַּאֲרִיךְ</span>: <div class="ws-field-line" style="width:80px"></div></div>
     </div>`;
   }
   return `<div class="ws-meta">
