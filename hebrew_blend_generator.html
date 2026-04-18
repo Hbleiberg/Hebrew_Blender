@@ -126,7 +126,7 @@
   header p { font-size: 0.82rem; color: var(--gold-light); margin-top: 2px; }
 
   /* ── LAYOUT ── */
-  .app { display: flex; height: calc(100vh - 72px); overflow: hidden; }
+  .app { display: flex; min-height: calc(100vh - 72px); }
 
   /* ── SIDEBAR ── */
   .sidebar {
@@ -358,10 +358,9 @@
   .main {
     flex: 1;
     padding: 0;
-    overflow: hidden;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    min-width: 0;
   }
 
   /* ── MAIN TOOLBAR ── */
