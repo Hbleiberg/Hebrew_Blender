@@ -2803,7 +2803,12 @@ async function exportPDF() {
   if (wasDark) document.body.classList.remove('dark');
 
   try {
-    const sheets = ws.querySelectorAll('.sheet');
+    let sheets = [...ws.querySelectorAll('.sheet')];
+    if (sheets.length === 0) {
+      // Bingo mode: pages are .bingo-page + optional .caller-sheet
+      sheets = [...ws.querySelectorAll('.bingo-page, .caller-sheet')];
+    }
+    if (sheets.length === 0) sheets = [ws];
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
