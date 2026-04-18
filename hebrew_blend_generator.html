@@ -2942,9 +2942,10 @@ function generate(animate = false) {
   }
 
   blends = [];
-  for (let i = 0; i < count; i++) {
+  const excludeRepeats = document.getElementById('excludeRepeats').checked;
+  let safetyLimit = count * 50;
+  while (blends.length < count && safetyLimit-- > 0) {
     let vowel  = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
-    const excludeRepeats = document.getElementById('excludeRepeats').checked;
     let first, second, attempts = 0;
     do {
       first  = firstPool[Math.floor(Math.random() * firstPool.length)];
