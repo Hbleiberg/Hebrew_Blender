@@ -2298,6 +2298,9 @@ function toggleBingoUI() {
   document.getElementById('panelLayout').style.display = on ? 'none' : '';
 
   if (on) {
+    // Force off Real Words mode so they can't coexist
+    document.getElementById('realWordsToggle').checked = false;
+    document.getElementById('realWordsOptions').style.display = 'none';
     ['focusOptions','threeLetterOptions','selfCheckOptions'].forEach(id => {
       const el = document.getElementById(id); if(el) el.style.display = 'none';
     });
@@ -3278,9 +3281,10 @@ function toggleRealWordsUI() {
   ['blendTypeWrapper','modeDivider'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
 
   if (on) {
-    // Uncheck conflicting modes (not Bingo — it stays accessible)
+    // Uncheck conflicting modes
     document.getElementById('selfCheckToggle').checked = false;
-    toggleBingoUI();
+    document.getElementById('bingoToggle').checked = false;
+    document.getElementById('bingoOptions').style.display = 'none';
     document.getElementById('selfCheckOptions').style.display = 'none';
     document.getElementById('focusOptions').style.display = 'none';
     document.getElementById('threeLetterOptions').style.display = 'none';
