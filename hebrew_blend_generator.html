@@ -24,7 +24,7 @@
     --muted: #6b6050;
     --border: #c8bfa8;
     --white: #ffffff;
-    --bingo-heb-size: 1.4rem;
+    --bingo-heb-size: 2.2rem;
   }
 
   /* Applied instantly in <head> before first paint to prevent dark mode flash */
@@ -1388,15 +1388,6 @@
             </select>
           </div>
           <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
-            <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Font size</span>
-            <select id="bingoFontSize" style="flex:1;font-size:0.78rem;padding:3px 6px;" onchange="setBingoFontSize(this.value)">
-              <option value="1.1rem">Small</option>
-              <option value="1.4rem" selected>Medium</option>
-              <option value="1.8rem">Large</option>
-              <option value="2.2rem">X-Large</option>
-            </select>
-          </div>
-          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
             <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Free space</span>
             <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
               <input type="checkbox" id="bingoFreeSpace" checked>
@@ -2348,10 +2339,6 @@ function generateNikudOnly() {
   }
   return result;
 }
-function setBingoFontSize(size) {
-  document.documentElement.style.setProperty('--bingo-heb-size', size);
-}
-
 function adjustBingoCards(delta) {
   const el = document.getElementById('bingoCards');
   el.value = Math.max(1, Math.min(200, (parseInt(el.value) || 1) + delta));
