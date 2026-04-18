@@ -1205,7 +1205,8 @@
   /* ── PRINT ── */
   @page { margin: 0.35in; }
   @media print {
-    .sidebar, header, footer, .mobile-fab, .zoom-bar, .print-tip, .main-toolbar { display: none !important; }
+    .sidebar, header, footer, .mobile-fab, .zoom-bar, .print-tip, .main-toolbar,
+    .sidebar-toggle-btn, .sidebar-show-btn { display: none !important; }
     .app { display: block; min-height: unset; }
     .main { padding: 0; overflow: visible; }
     .self-check-controls { display: none !important; }
@@ -1242,7 +1243,7 @@
   <span class="star">✡</span>
   <div style="flex:1;">
     <h1>Hebrew Blend Worksheet Generator</h1>
-    <p id="headerSub">Two-letter syllable practice for emerging Hebrew readers</p>
+    <p id="headerSub">Phonetic Hebrew decoding practice for emerging readers</p>
   </div>
   <button id="darkToggle" onclick="toggleDark()" title="Toggle dark mode" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:1rem;flex-shrink:0;">🌙</button>
 </header>
@@ -1917,7 +1918,6 @@ function getSettings() {
     oneLetter:    document.querySelector('.blend-type-btn.active')?.dataset.type === 'one',
     nikudOnly:    document.querySelector('.blend-type-btn.active')?.dataset.type === 'nikud',
     threeLetter:  document.querySelector('.blend-type-btn.active')?.dataset.type === 'three',
-    threeLetter:  document.getElementById('threeLetterToggle').checked,
     vowelPosition: document.getElementById('vowelPosition').value,
     selfCheck:    document.getElementById('selfCheckToggle').checked,
     timerOn:      document.getElementById('timerToggle').checked,
@@ -1964,9 +1964,7 @@ function applySettings(s) {
 
   // Determine and restore blend type selector
   const blendType = s.blendType || (s.nikudOnly ? 'nikud' : s.oneLetter ? 'one' : s.threeLetter ? 'three' : 'two');
-  document.getElementById('oneLetterToggle').checked   = blendType === 'one';
-  document.getElementById('nikudOnlyToggle').checked   = blendType === 'nikud';
-  document.getElementById('threeLetterToggle').checked = blendType === 'three';
+  setBlendType(blendType);
   if (s.vowelPosition) document.getElementById('vowelPosition').value = s.vowelPosition;
   if (s.timerOn !== undefined)   document.getElementById('timerToggle').checked = s.timerOn;
   if (s.timerDuration)           document.getElementById('timerDuration').value = s.timerDuration;
@@ -2205,27 +2203,12 @@ function initZoom() {
   }
 }
 
-// ── THREE LETTER UI ──
-function toggleThreeLetterUI() {
-  const on = document.getElementById('threeLetterToggle').checked;
-  document.getElementById('threeLetterOptions').style.display = on ? 'block' : 'none';
-  document.getElementById('lockRow3').style.display = on ? 'flex' : 'none';
-  document.getElementById('headerSub').textContent = on
-    ? 'Three-letter syllable practice for emerging Hebrew readers'
-    : 'Two-letter syllable practice for emerging Hebrew readers';
-}
-
 // ── BLEND TYPE SELECTOR ──
 function setBlendType(type) {
   // Update button active states
   document.querySelectorAll('.blend-type-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.type === type);
   });
-
-  // Set hidden toggle values for getSettings/applySettings compatibility
-  document.getElementById('oneLetterToggle').checked  = type === 'one';
-  document.getElementById('nikudOnlyToggle').checked  = type === 'nikud';
-  document.getElementById('threeLetterToggle').checked = type === 'three';
 
   // Show/hide three-letter sub-option
   document.getElementById('threeLetterOptions').style.display = type === 'three' ? 'block' : 'none';
@@ -2239,10 +2222,10 @@ function setBlendType(type) {
 
   // Update header subtitle
   const subtitles = {
-    two:   'Two-letter syllable practice for emerging Hebrew readers',
-    one:   'Single-letter drill with vowel sounds',
-    three: 'Three-letter syllable practice for emerging Hebrew readers',
-    nikud: 'Vowel sound recognition drill',
+    two:   'Phonetic Hebrew decoding practice for emerging readers',
+    one:   'Phonetic Hebrew decoding — single-letter drills',
+    three: 'Phonetic Hebrew decoding — three-letter syllables',
+    nikud: 'Phonetic Hebrew decoding — vowel recognition',
   };
   document.getElementById('headerSub').textContent = subtitles[type];
 
@@ -2250,17 +2233,9 @@ function setBlendType(type) {
 }
 
 // Keep these stubs so existing code that calls them doesn't break
-function toggleOneLetterMode() {
-  setBlendType(document.getElementById('oneLetterToggle').checked ? 'one' : 'two');
-}
-function toggleNikudOnlyMode() {
-  setBlendType(document.getElementById('nikudOnlyToggle').checked ? 'nikud' : 'two');
-}
-function toggleThreeLetterUI() {
-  const on = document.getElementById('threeLetterToggle').checked;
-  document.getElementById('threeLetterOptions').style.display = on ? 'block' : 'none';
-  document.getElementById('lockRow3').style.display = on ? 'flex' : 'none';
-}
+function toggleOneLetterMode() { setBlendType('one'); }
+function toggleNikudOnlyMode() { setBlendType('nikud'); }
+function toggleThreeLetterUI() { setBlendType('three'); }
 
 // ── ONE-LETTER GENERATION ──
 function generateOneLetter() {
@@ -2330,7 +2305,7 @@ function toggleBingoUI() {
     document.getElementById('focusOptions').style.display =
       document.getElementById('focusToggle').checked ? 'flex' : 'none';
     document.getElementById('threeLetterOptions').style.display =
-      document.getElementById('threeLetterToggle').checked ? 'block' : 'none';
+      (document.querySelector('.blend-type-btn.active')?.dataset.type === 'three') ? 'block' : 'none';
     document.getElementById('selfCheckOptions').style.display =
       document.getElementById('selfCheckToggle').checked ? 'flex' : 'none';
   }
@@ -3207,7 +3182,8 @@ document.getElementById('selfCheckToggle').addEventListener('change', () => {
     document.getElementById('threeLetterOptions').style.display = 'none';
   } else {
     document.getElementById('focusOptions').style.display = document.getElementById('focusToggle').checked ? 'flex' : 'none';
-    document.getElementById('threeLetterOptions').style.display = document.getElementById('threeLetterToggle').checked ? 'block' : 'none';
+    document.getElementById('threeLetterOptions').style.display =
+      (document.querySelector('.blend-type-btn.active')?.dataset.type === 'three') ? 'block' : 'none';
   }
   if (blends.length) renderWorksheet(false);
 });
