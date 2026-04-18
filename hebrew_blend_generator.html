@@ -2801,10 +2801,6 @@ async function exportPDF() {
   pdfBtn.textContent = '⏳ Generating...';
   pdfBtn.disabled = true;
 
-  // Temporarily force light mode for clean PDF output
-  const wasDark = document.body.classList.contains('dark');
-  if (wasDark) document.body.classList.remove('dark');
-
   try {
     let sheets = [...ws.querySelectorAll('.sheet')];
     if (sheets.length === 0) {
@@ -2824,6 +2820,10 @@ async function exportPDF() {
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
+        onclone: (clonedDoc) => {
+          clonedDoc.body.classList.remove('dark');
+          clonedDoc.documentElement.classList.remove('dark-early');
+        },
       });
 
       const imgData = canvas.toDataURL('image/png');
@@ -2840,8 +2840,6 @@ async function exportPDF() {
     alert('PDF export failed. Try using Print → Save as PDF instead.');
     console.error(err);
   } finally {
-    // Restore dark mode if it was on
-    if (wasDark) document.body.classList.add('dark');
     pdfBtn.textContent = '⬇ Export PDF';
     pdfBtn.disabled = false;
   }
