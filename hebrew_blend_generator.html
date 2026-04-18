@@ -66,6 +66,9 @@
   body.dark .letter-tile { background: #1e2535; border-color: var(--border); color: #dde4f0; }
   body.dark .letter-tile.selected { background: #2a4070; border-color: #4a6aaa; color: #dde4f0; }
   body.dark .letter-tile:hover { border-color: var(--gold); }
+  body.dark .rw-letter-tile { background: #1e2535; border-color: var(--border); color: #dde4f0; }
+  body.dark .rw-letter-tile.selected { background: #2a4070; border-color: #4a6aaa; color: #dde4f0; }
+  body.dark .rw-letter-tile:hover { border-color: var(--gold); }
   body.dark .vowel-chip { color: #dde4f0; }
   body.dark .vowel-chip:hover { background: #252d3e; }
   body.dark .btn-xs { background: #1e2535; color: #dde4f0; border-color: var(--border); }
@@ -292,6 +295,16 @@
   .letter-tile.selected { background: var(--navy); border-color: var(--navy); color: var(--white); }
   .letter-tile .heb { font-size: 1.2rem; font-family: 'Frank Ruhl Libre', serif; direction: rtl; }
   .letter-tile .name { font-size: 0.55rem; text-align: center; line-height: 1.2; opacity: 0.75; direction: ltr; }
+  .rw-letter-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3px; direction: rtl; }
+  .rw-letter-tile {
+    display: flex; flex-direction: column; align-items: center; gap: 1px;
+    padding: 3px 2px; border: 1px solid var(--border); border-radius: 4px;
+    cursor: pointer; transition: all 0.15s; user-select: none; background: var(--white);
+  }
+  .rw-letter-tile:hover { border-color: var(--gold); }
+  .rw-letter-tile.selected { background: var(--navy); border-color: var(--navy); color: var(--white); }
+  .rw-letter-tile .heb { font-size: 1rem; font-family: 'Frank Ruhl Libre', serif; direction: rtl; }
+  .rw-letter-tile .name { font-size: 0.45rem; text-align: center; line-height: 1.2; opacity: 0.75; direction: ltr; }
 
   /* Action buttons */
   .btn {
@@ -1502,6 +1515,18 @@
                 <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwEraModern" checked style="accent-color:var(--gold);"> Modern</label>
               </div>
             </div>
+          </div>
+
+          <!-- Letter Filter -->
+          <div style="border-top:1px solid var(--border);padding-top:6px;">
+            <div style="font-size:0.7rem;color:var(--muted);margin-bottom:3px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">Letter Filter</div>
+            <div style="font-size:0.68rem;color:var(--muted);margin-bottom:5px;">Only show words using these letters</div>
+            <div style="display:flex;gap:3px;margin-bottom:5px;">
+              <button class="btn-xs" onclick="rwSelectAllLetters()">All</button>
+              <button class="btn-xs" onclick="rwSelectNoSofit()">No Sofit</button>
+              <button class="btn-xs" onclick="rwClearLetters()">None</button>
+            </div>
+            <div id="rwLetterGrid" class="rw-letter-grid"></div>
           </div>
 
           <!-- Display options -->
@@ -3418,6 +3443,8 @@ function setRealWordDrill(type) {
 
 // Show/hide caller translation sub-row
 document.addEventListener('DOMContentLoaded', () => {
+  initRwLetterGrid();
+
   const callerCb = document.getElementById('rwBingoCaller');
   const callerTranslRow = document.getElementById('rwBingoCallerTranslRow');
   if (callerCb && callerTranslRow) {
@@ -3433,6 +3460,59 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.querySelectorAll('.rw-pos').forEach(cb => cb.addEventListener('change', updateRwPoolInfo));
 });
+
+let rwLetterFilter = new Set();
+
+function initRwLetterGrid() {
+  const grid = document.getElementById('rwLetterGrid');
+  if (!grid) return;
+  LETTERS.forEach(l => {
+    if (l.vavVariant) return;
+    const tiles = l.heb === 'ו'
+      ? [{ heb: 'ו', name: 'Vav' }]
+      : [{ heb: l.heb, name: l.name }];
+    if (l.sofit) tiles.push({ heb: l.sofit, name: l.name + ' sf' });
+    tiles.forEach(t => {
+      const div = document.createElement('div');
+      div.className = 'rw-letter-tile';
+      div.dataset.heb = t.heb;
+      div.innerHTML = `<span class="heb">${t.heb}</span><span class="name">${t.name}</span>`;
+      div.onclick = () => toggleRwLetter(t.heb, div);
+      grid.appendChild(div);
+    });
+  });
+}
+
+function toggleRwLetter(heb, el) {
+  if (rwLetterFilter.has(heb)) { rwLetterFilter.delete(heb); el.classList.remove('selected'); }
+  else { rwLetterFilter.add(heb); el.classList.add('selected'); }
+  updateRwPoolInfo();
+}
+
+function rwSelectAllLetters() {
+  rwLetterFilter = new Set([
+    ...LETTERS.map(l => l.heb),
+    ...LETTERS.filter(l => l.sofit).map(l => l.sofit)
+  ]);
+  document.querySelectorAll('.rw-letter-tile').forEach(t => t.classList.add('selected'));
+  updateRwPoolInfo();
+}
+
+function rwClearLetters() {
+  rwLetterFilter.clear();
+  document.querySelectorAll('.rw-letter-tile').forEach(t => t.classList.remove('selected'));
+  updateRwPoolInfo();
+}
+
+function rwSelectNoSofit() {
+  rwLetterFilter = new Set(LETTERS.filter(l => !l.vavVariant).map(l => l.heb));
+  document.querySelectorAll('.rw-letter-tile').forEach(t => {
+    const heb = t.dataset.heb;
+    if (SOFIT_CHARS.has(heb)) t.classList.remove('selected');
+    else t.classList.add('selected');
+  });
+  updateRwPoolInfo();
+}
 
 function getRwPool() {
   const len1 = document.getElementById('rwLen1').checked;
@@ -3452,7 +3532,12 @@ function getRwPool() {
       if (p === 'other') return !['noun','root','verb','adjective','pronoun','preposition','conjunction'].some(k => w.pos.includes(k));
       return w.pos.includes(p);
     });
-    return posMatch;
+    if (!posMatch) return false;
+    if (rwLetterFilter.size > 0) {
+      const consonants = [...w.heb].filter(c => c.charCodeAt(0) >= 0x05D0 && c.charCodeAt(0) <= 0x05EA);
+      if (!consonants.every(c => rwLetterFilter.has(c))) return false;
+    }
+    return true;
   });
 }
 
