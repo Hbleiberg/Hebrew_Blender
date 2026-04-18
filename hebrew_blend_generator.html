@@ -1632,7 +1632,7 @@
     </div>
 
     <!-- Presets -->
-    <div class="panel">
+    <div class="panel" id="panelPresets">
       <div class="panel-title">Saved Presets</div>
       <div class="panel-body">
         <div class="preset-row">
@@ -3192,13 +3192,14 @@ document.getElementById('inverseToggle').addEventListener('change', () => { if (
 document.getElementById('answerKeyToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(false); });
 document.getElementById('selfCheckToggle').addEventListener('change', () => {
   const on = document.getElementById('selfCheckToggle').checked;
-  if (on) { document.getElementById('bingoToggle').checked = false; toggleBingoUI(); }
-  const hidePanels = ['panelLayout', 'panelVowels', 'panelLetters', 'panelRealWords'];
+  if (on) {
+    document.getElementById('bingoToggle').checked = false; toggleBingoUI();
+    document.getElementById('realWordsToggle').checked = false; toggleRealWordsUI();
+  }
+  const hidePanels = ['panelLayout', 'panelVowels', 'panelLetters', 'panelPresets'];
   const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowBingo', 'rowRealWords'];
-  const hideBtns   = ['printBtn', 'pdfBtn', 'printBtnMob', 'pdfBtnMob'];
   hidePanels.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   hideRows.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
-  hideBtns.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   ['blendTypeWrapper','modeDivider'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   document.getElementById('selfCheckOptions').style.display = on ? 'flex' : 'none';
   if (on) {
