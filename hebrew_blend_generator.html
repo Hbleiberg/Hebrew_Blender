@@ -3348,7 +3348,7 @@ function toggleRealWordsUI() {
 
   // Hide panels/rows that conflict with Real Words mode
   const hidePanels = ['panelVowels', 'panelLetters'];
-  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowSelfCheck', 'rowBlendCount'];
+  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowSelfCheck', 'rowBlendCount', 'rowBingo'];
   hidePanels.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   hideRows.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   ['blendTypeWrapper','modeDivider'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
