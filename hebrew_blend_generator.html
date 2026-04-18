@@ -3410,9 +3410,6 @@ const MATRES = new Set(['וֹ','וּ']);
  * @returns {boolean} true = impossible, skip this combination
  */
 function isImpossibleCombo(first, second, third, vowel) {
-  // Rule N1: Shva is not a syllable nucleus — no standalone C+shva syllable
-  if (vowel === 'sh') return true;
-
   // Rule N4: Matres cannot be C1 (they are vowels, not consonants)
   if (MATRES.has(first)) return true;
 
