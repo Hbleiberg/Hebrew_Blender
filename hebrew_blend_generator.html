@@ -1680,6 +1680,13 @@
           <div class="option-label">Landscape Print</div>
           <label class="toggle"><input type="checkbox" id="landscapeMode" onchange="toggleLandscape(this.checked)"><span class="slider"></span></label>
         </div>
+        <div class="option-row">
+          <div class="option-label">Header Labels</div>
+          <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:5px;overflow:hidden;font-size:0.78rem;">
+            <button id="headerLangEn" onclick="setHeaderLang('en')" style="padding:4px 10px;border:none;cursor:pointer;font-family:inherit;background:var(--navy);color:#fff;">English</button>
+            <button id="headerLangHe" onclick="setHeaderLang('he')" style="padding:4px 10px;border:none;cursor:pointer;font-family:'Frank Ruhl Libre',serif;background:var(--white);color:var(--text);">עברית</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1961,6 +1968,29 @@ function selectNoSofit() {
     if (SOFIT_CHARS.has(heb)) t.classList.remove('selected');
     else t.classList.add('selected');
   });
+}
+
+// ── HEADER LANGUAGE ──
+let headerLang = 'en';
+function setHeaderLang(lang) {
+  headerLang = lang;
+  document.getElementById('headerLangEn').style.background = lang === 'en' ? 'var(--navy)' : 'var(--white)';
+  document.getElementById('headerLangEn').style.color      = lang === 'en' ? '#fff' : 'var(--text)';
+  document.getElementById('headerLangHe').style.background = lang === 'he' ? 'var(--navy)' : 'var(--white)';
+  document.getElementById('headerLangHe').style.color      = lang === 'he' ? '#fff' : 'var(--text)';
+  if (blends.length) renderWorksheet(false);
+}
+function wsMetaHTML() {
+  if (headerLang === 'he') {
+    return `<div class="ws-meta" style="direction:rtl;align-items:flex-start;">
+      <div class="ws-field"><div class="ws-field-line"></div> :שם</div>
+      <div class="ws-field"><div class="ws-field-line" style="width:80px"></div> :תאריך</div>
+    </div>`;
+  }
+  return `<div class="ws-meta">
+    <div class="ws-field">Name: <div class="ws-field-line"></div></div>
+    <div class="ws-field">Date: <div class="ws-field-line" style="width:80px"></div></div>
+  </div>`;
 }
 
 // ── LANDSCAPE MODE ──
@@ -3101,10 +3131,7 @@ function renderWorksheet(animate = false) {
         <div class="ws-title">${title}</div>
         <div class="ws-subtitle">${subtitle || (oneLetter ? 'Read each Hebrew letter aloud.' : 'Say the vowel sound aloud.')}</div>
       </div>
-      <div class="ws-meta">
-        <div class="ws-field">Name: <div class="ws-field-line"></div></div>
-        <div class="ws-field">Date: <div class="ws-field-line" style="width:80px"></div></div>
-      </div>`;
+      ${wsMetaHTML()}`;
     sheet.appendChild(header);
     const grid = document.createElement('div');
     grid.className = 'blends-grid';
@@ -3133,10 +3160,7 @@ function renderWorksheet(animate = false) {
       <div class="ws-title">${title}</div>
       <div class="ws-subtitle">${subtitle || (isInverse ? 'Write the Hebrew blend that matches each sound.' : 'Read each Hebrew blend aloud.')}</div>
     </div>
-    <div class="ws-meta">
-      <div class="ws-field">Name: <div class="ws-field-line"></div></div>
-      <div class="ws-field">Date: <div class="ws-field-line" style="width:80px"></div></div>
-    </div>
+    ${wsMetaHTML()}
   `;
   studentSheet.appendChild(header);
 
@@ -3675,10 +3699,7 @@ function generateRealWords() {
       <div class="ws-title">Hebrew Word Practice</div>
       <div class="ws-subtitle">${drillLabels[drill]}${mixed ? ' <em>(★ = real word)</em>' : ''}</div>
     </div>
-    <div class="ws-meta">
-      <div class="ws-field">Name: <div class="ws-field-line"></div></div>
-      <div class="ws-field">Date: <div class="ws-field-line" style="width:80px"></div></div>
-    </div>`;
+    ${wsMetaHTML()}`;
   sheet.appendChild(header);
 
   const cols = items.length <= 20 ? 4 : items.length <= 40 ? 5 : 6;
@@ -3794,10 +3815,7 @@ function generateIdentifyDrill(pool, count, showTranslit) {
       <div class="ws-title">Identify the Real Word</div>
       <div class="ws-subtitle">Circle the real Hebrew words. The others are nonsense blends.</div>
     </div>
-    <div class="ws-meta">
-      <div class="ws-field">Name: <div class="ws-field-line"></div></div>
-      <div class="ws-field">Date: <div class="ws-field-line" style="width:80px"></div></div>
-    </div>`;
+    ${wsMetaHTML()}`;
   studentSheet.appendChild(hdr);
   studentSheet.appendChild(makeGrid(items, false));
   const foot = document.createElement('div');
