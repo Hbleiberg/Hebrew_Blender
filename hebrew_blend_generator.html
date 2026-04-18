@@ -931,7 +931,7 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 16px;
+    gap: 48px;
   }
   .bingo-card {
     border: 2px solid var(--navy);
@@ -992,14 +992,14 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 4px 2px;
-    min-height: 60px;
+    padding: 6px 4px;
+    min-height: 72px;
     text-align: center;
     background: #ffffff;
   }
   .bingo-cell.last-col { border-right: none; }
   .bingo-cell.last-row { border-bottom: none; }
-  .bingo-card.two-up .bingo-cell { min-height: 48px; }
+  .bingo-card.two-up .bingo-cell { min-height: 60px; }
   .bingo-cell .heb { font-family: 'Frank Ruhl Libre', serif; font-size: var(--bingo-heb-size); direction: rtl; line-height: 1.2; color: #1a2744; }
   .bingo-card.two-up .bingo-cell .heb { font-size: calc(var(--bingo-heb-size) * 0.8); }
   .bingo-cell .sound { font-size: 0.6rem; color: #6b6050; font-style: italic; margin-top: 1px; }
@@ -1023,12 +1023,12 @@
   }
   .bingo-card-header.four-up { font-size: 0.8rem; direction: rtl; }
   .bingo-card-header.two-up { direction: rtl; }
-  .bingo-card.four-up .bingo-cell { min-height: 52px; }
+  .bingo-card.four-up .bingo-cell { min-height: 64px; }
   .bingo-card.four-up .bingo-cell .heb { font-size: calc(var(--bingo-heb-size) * 0.8); }
   .bingo-page.four-up {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 40px 48px;
     align-items: start;
   }
   /* Cut lines for multi-card pages */
@@ -1057,10 +1057,10 @@
   .bingo-page-break { border-top: 2px dashed #bbb; padding-top: 20px; margin-top: 8px; }
   @media print {
     .bingo-page.four-up {
-      gap: 10px;
+      gap: 32px 40px;
       page-break-inside: avoid;
     }
-    .bingo-card.four-up .bingo-cell { min-height: 44px; }
+    .bingo-card.four-up .bingo-cell { min-height: 56px; }
   }
   .caller-sheet { page-break-before: always; }
   .caller-title {
