@@ -2487,6 +2487,20 @@ function generate(animate = false) {
   const threeLetter = activeType === 'three';
   const vowelPos = document.getElementById('vowelPosition').value;
 
+  // For one-letter and nikud-only, generate directly into blends then render
+  if (activeType === 'one') {
+    blends = generateOneLetter();
+    renderWorksheet(animate);
+    enableButtons();
+    return;
+  }
+  if (activeType === 'nikud') {
+    blends = generateNikudOnly();
+    renderWorksheet(animate);
+    enableButtons();
+    return;
+  }
+
   blends = [];
   for (let i = 0; i < count; i++) {
     let vowel  = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
@@ -2544,7 +2558,13 @@ function generate(animate = false) {
         thirdPool = [document.getElementById('lock3Letter').value];
       }
       if (thirdPool.length === 0) thirdPool = secondPool;
-      const third    = thirdPool[Math.floor(Math.random() * thirdPool.length)];
+      let third = thirdPool[Math.floor(Math.random() * thirdPool.length)];
+      // Yud+Yud guard for third position
+      if (second === 'י' && third === 'י') {
+        const alt = thirdPool.filter(h => h !== 'י');
+        if (alt.length > 0) third = alt[Math.floor(Math.random() * alt.length)];
+        else continue;
+      }
       const thirdObj = getLetter(third);
       const thirdDisplay = SOFIT_CHARS.has(third) ? third : thirdObj.base;
 
@@ -2553,18 +2573,27 @@ function generate(animate = false) {
         midDisplay = withNikud(secondObj, vowel2, true);
         midSound   = getSound(secondObj, vowel2);
       } else {
+        // Silent yud rule: chirik (i) + yud as second letter → yud is silent
+        const secondIsYud = (second === 'י');
+        const effectiveSecondConsonant = (vowel === 'i' && secondIsYud) ? '' : secondConsonant;
         midDisplay = secondDisplay;
-        midSound   = secondConsonant;
+        midSound   = effectiveSecondConsonant;
       }
 
-      const thirdConsonant = thirdObj.sounds['sh'].replace("'", '');
+      // Silent yud rule for third letter: if the vowel on the preceding letter is chirik and third is yud
+      const precedingVowel = (vowelPos === 'both' && vowel2) ? vowel2 : vowel;
+      const thirdIsYudSilent = (third === 'י' && precedingVowel === 'i');
+      const thirdConsonant = thirdIsYudSilent ? '' : thirdObj.sounds['sh'].replace("'", '');
       const combined     = firstSound + midSound + thirdConsonant;
       const hebrewDisplay = firstDisplay + midDisplay + thirdDisplay;
 
       blends.push({ firstHeb: first, secondHeb: second, thirdHeb: third,
         firstObj, secondObj, thirdObj, vowel, combined, hebrewDisplay, threeLetter: true });
     } else {
-      const combined      = firstSound + secondConsonant;
+      // Silent yud rule: chirik (i) + yud as second letter → yud is silent, don't add its consonant
+      const secondIsYud = (second === 'י');
+      const effectiveSecondConsonant = (vowel === 'i' && secondIsYud) ? '' : secondConsonant;
+      const combined      = firstSound + effectiveSecondConsonant;
       const hebrewDisplay = firstDisplay + secondDisplay;
       blends.push({ firstHeb: first, secondHeb: second, firstObj, secondObj,
         vowel, combined, hebrewDisplay, threeLetter: false });
@@ -2595,13 +2624,13 @@ function renderWorksheet(animate = false) {
   const ws = document.getElementById('worksheet');
 
   if (bingo) { renderBingo(ws); return; }
-  if (selfCheck) { renderSelfCheck(ws, cols, title, subtitle); return; }
 
-  // One-letter and nikud-only use the same blend cells but with single-item data
+  // One-letter and nikud-only: blends is already populated by generate()
+  // selfCheck uses blends array directly so it works for all types
+  if (selfCheck) { renderSelfCheck(ws, autoCols(blends.length), title, subtitle); return; }
+
   if (oneLetter || nikudOnly) {
-    // Re-generate single items on each render
-    const items = oneLetter ? generateOneLetter() : generateNikudOnly();
-    if (items.length === 0) { ws.innerHTML = '<div class="empty-state"><h2>Please select letters and vowels.</h2></div>'; return; }
+    if (blends.length === 0) { ws.innerHTML = '<div class="empty-state"><h2>Please select letters and vowels.</h2></div>'; return; }
     ws.innerHTML = '';
     const sheet = document.createElement('div');
     sheet.className = 'sheet';
@@ -2619,13 +2648,13 @@ function renderWorksheet(animate = false) {
     sheet.appendChild(header);
     const grid = document.createElement('div');
     grid.className = 'blends-grid';
-    grid.style.gridTemplateColumns = `repeat(${autoCols(items.length)}, 1fr)`;
+    grid.style.gridTemplateColumns = `repeat(${autoCols(blends.length)}, 1fr)`;
     grid.style.direction = 'rtl';
     sheet.appendChild(grid);
-    items.forEach((b, idx) => renderHebrewCell(grid, b, idx, showAnswers));
+    blends.forEach((b, idx) => renderHebrewCell(grid, b, idx, showAnswers));
     const footer = document.createElement('div');
     footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-    footer.textContent = `${items.length} items · Hebrew Blend Generator`;
+    footer.textContent = `${blends.length} items · Hebrew Blend Generator`;
     sheet.appendChild(footer);
     ws.appendChild(sheet);
     return;
