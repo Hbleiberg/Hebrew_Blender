@@ -1274,12 +1274,16 @@
 
         <!-- Three-letter sub-option -->
         <div id="threeLetterOptions" style="display:none;margin-bottom:8px;padding-left:16px;border-left:2px solid var(--border);">
-          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+          <div style="display:flex;gap:10px;align-items:center;font-size:0.78rem;flex-wrap:wrap;">
             <span class="sub-label" style="font-size:0.78rem;min-width:58px;">Vowel on</span>
-            <select id="vowelPosition" style="flex:1;font-size:0.78rem;padding:3px 6px;">
-              <option value="first">First letter only</option>
-              <option value="both">First &amp; second letters</option>
-            </select>
+            <label style="display:flex;gap:4px;align-items:center;cursor:pointer;">
+              <input type="checkbox" id="vowelOnFirst" checked>
+              <span>1st letter</span>
+            </label>
+            <label style="display:flex;gap:4px;align-items:center;cursor:pointer;">
+              <input type="checkbox" id="vowelOnSecond">
+              <span>2nd letter</span>
+            </label>
           </div>
         </div>
 
@@ -1917,7 +1921,7 @@ function getSettings() {
     oneLetter:    document.querySelector('.blend-type-btn.active')?.dataset.type === 'one',
     nikudOnly:    document.querySelector('.blend-type-btn.active')?.dataset.type === 'nikud',
     threeLetter:  document.querySelector('.blend-type-btn.active')?.dataset.type === 'three',
-    vowelPosition: document.getElementById('vowelPosition').value,
+    vowelPosition: getVowelPos(),
     selfCheck:    document.getElementById('selfCheckToggle').checked,
     timerOn:      document.getElementById('timerToggle').checked,
     timerDuration: document.getElementById('timerDuration').value,
@@ -1964,7 +1968,10 @@ function applySettings(s) {
   // Determine and restore blend type selector
   const blendType = s.blendType || (s.nikudOnly ? 'nikud' : s.oneLetter ? 'one' : s.threeLetter ? 'three' : 'two');
   setBlendType(blendType);
-  if (s.vowelPosition) document.getElementById('vowelPosition').value = s.vowelPosition;
+  if (s.vowelPosition) {
+    document.getElementById('vowelOnFirst').checked  = s.vowelPosition !== 'second';
+    document.getElementById('vowelOnSecond').checked = (s.vowelPosition === 'second' || s.vowelPosition === 'both');
+  }
   if (s.timerOn !== undefined)   document.getElementById('timerToggle').checked = s.timerOn;
   if (s.timerDuration)           document.getElementById('timerDuration').value = s.timerDuration;
   if (s.audio !== undefined)     document.getElementById('audioToggle').checked = s.audio;
@@ -2202,6 +2209,14 @@ function initZoom() {
   }
 }
 
+function getVowelPos() {
+  const first  = document.getElementById('vowelOnFirst')?.checked ?? true;
+  const second = document.getElementById('vowelOnSecond')?.checked ?? false;
+  if (first && second) return 'both';
+  if (second) return 'second';
+  return 'first';
+}
+
 // ── BLEND TYPE SELECTOR ──
 function setBlendType(type) {
   // Update button active states
@@ -2398,14 +2413,21 @@ function generateBingoBlendThree(firstPool, secondPool, thirdPool, vowelKeys, vo
     vowel = alt[Math.floor(Math.random() * alt.length)];
   }
   const firstObj = getLetter(first), secondObj = getLetter(second), thirdObj = getLetter(third);
-  const firstSound   = getSound(firstObj, vowel);
-  const firstDisplay = withNikud(firstObj, vowel, true);
-  let midDisplay, midSound;
+  let firstSound, firstDisplay, midDisplay, midSound;
   const vowel2 = (vowelPos === 'both') ? vowelKeys[Math.floor(Math.random() * vowelKeys.length)] : null;
-  if (vowelPos === 'both' && vowel2) {
-    midDisplay = withNikud(secondObj, vowel2, true);
-    midSound   = getSound(secondObj, vowel2);
+  if (vowelPos === 'second') {
+    firstDisplay = firstObj.base;
+    firstSound   = firstObj.sounds['sh'].replace("'", '');
+    midDisplay   = withNikud(secondObj, vowel, true);
+    midSound     = getSound(secondObj, vowel);
+  } else if (vowelPos === 'both' && vowel2) {
+    firstDisplay = withNikud(firstObj, vowel, true);
+    firstSound   = getSound(firstObj, vowel);
+    midDisplay   = withNikud(secondObj, vowel2, true);
+    midSound     = getSound(secondObj, vowel2);
   } else {
+    firstDisplay = withNikud(firstObj, vowel, true);
+    firstSound   = getSound(firstObj, vowel);
     const sc = secondObj.sounds['sh'].replace("'", '');
     midDisplay = SOFIT_CHARS.has(second) ? second : secondObj.base;
     midSound   = (vowel === 'i' && second === 'י') ? '' : sc;
@@ -2427,7 +2449,7 @@ function renderBingo(ws) {
   const activeType   = document.querySelector('.blend-type-btn.active')?.dataset.type || 'two';
   const oneLetter    = activeType === 'one';
   const threeLetter  = activeType === 'three';
-  const vowelPos     = document.getElementById('vowelPosition').value;
+  const vowelPos     = getVowelPos();
 
   const gridSize    = parseInt(document.getElementById('bingoGrid').value);
   const numCards    = parseInt(document.getElementById('bingoCards').value);
@@ -2819,7 +2841,7 @@ function generate(animate = false) {
   const count = parseInt(document.getElementById('blendCount').value);
   const activeType  = document.querySelector('.blend-type-btn.active')?.dataset.type || 'two';
   const threeLetter = activeType === 'three';
-  const vowelPos = document.getElementById('vowelPosition').value;
+  const vowelPos = getVowelPos();
 
   // For one-letter and nikud-only, generate directly into blends then render
   if (activeType === 'one') {
@@ -2908,10 +2930,20 @@ function generate(animate = false) {
       const thirdObj = getLetter(third);
       const thirdDisplay = SOFIT_CHARS.has(third) ? third : thirdObj.base;
 
+      // For 'second' mode: vowel goes on second letter; first is consonant-only
+      let effFirstDisplay = firstDisplay, effFirstSound = firstSound;
+      if (vowelPos === 'second') {
+        effFirstDisplay = firstObj.base;
+        effFirstSound   = firstObj.sounds['sh'].replace("'", '');
+      }
+
       let midDisplay, midSound;
       if (vowelPos === 'both' && vowel2) {
         midDisplay = withNikud(secondObj, vowel2, true);
         midSound   = getSound(secondObj, vowel2);
+      } else if (vowelPos === 'second') {
+        midDisplay = withNikud(secondObj, vowel, true);
+        midSound   = getSound(secondObj, vowel);
       } else {
         // Silent yud rule: chirik (i) + yud as second letter → yud is silent
         const secondIsYud = (second === 'י');
@@ -2920,12 +2952,12 @@ function generate(animate = false) {
         midSound   = effectiveSecondConsonant;
       }
 
-      // Silent yud rule for third letter: if the vowel on the preceding letter is chirik and third is yud
+      // Silent yud rule for third letter
       const precedingVowel = (vowelPos === 'both' && vowel2) ? vowel2 : vowel;
       const thirdIsYudSilent = (third === 'י' && precedingVowel === 'i');
       const thirdConsonant = thirdIsYudSilent ? '' : thirdObj.sounds['sh'].replace("'", '');
-      const combined     = firstSound + midSound + thirdConsonant;
-      const hebrewDisplay = firstDisplay + midDisplay + thirdDisplay;
+      const combined     = effFirstSound + midSound + thirdConsonant;
+      const hebrewDisplay = effFirstDisplay + midDisplay + thirdDisplay;
 
       blends.push({ firstHeb: first, secondHeb: second, thirdHeb: third,
         firstObj, secondObj, thirdObj, vowel, combined, hebrewDisplay, threeLetter: true });
