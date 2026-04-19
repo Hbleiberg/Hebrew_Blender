@@ -3751,11 +3751,11 @@ function generateRealWords() {
   const count = parseInt(document.getElementById('rwCount').value);
   const showTranslit = document.getElementById('rwShowTranslit').checked;
   const showTranslation = document.getElementById('rwShowTranslation').checked;
-  const translOnKey = showTranslation && rwTranslPage === 'key' && drill === 'reading';
-  const showTranslInline = showTranslation && !translOnKey;
   const mixed = document.getElementById('rwMixed').checked;
   const starReal = mixed && document.getElementById('rwStarReal').checked;
   const drill = rwDrillType;
+  const translOnKey = showTranslation && rwTranslPage === 'key' && drill === 'reading';
+  const showTranslInline = showTranslation && !translOnKey;
 
   if (pool.length === 0) {
     alert('No words match your current filters. Try enabling more options.');
