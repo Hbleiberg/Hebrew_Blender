@@ -1797,14 +1797,25 @@
     <!-- Advanced -->
     <div class="panel collapsed" style="margin-top:4px;">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Advanced</div>
-      <div class="panel-body" style="display:flex;flex-direction:column;gap:10px;">
+      <div class="panel-body" style="display:flex;flex-direction:column;gap:8px;">
+
+        <!-- Shetef Code -->
         <div>
-          <div style="font-size:0.72rem;font-weight:600;margin-bottom:5px;color:var(--text);">Backup Presets</div>
-          <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;line-height:1.4;">Export your saved presets as text you can copy and store. Paste it back to restore.</div>
-          <button class="btn-xs" onclick="exportPresets()" style="margin-bottom:6px;">⬆ Export backup</button>
-          <textarea id="presetBackupBox" rows="4" spellcheck="false" placeholder="Paste backup here to import…" style="width:100%;font-size:0.7rem;font-family:monospace;border:1px solid var(--border);border-radius:5px;background:var(--cream);color:var(--text);padding:6px;resize:vertical;outline:none;"></textarea>
-          <button class="btn-xs" onclick="importPresets()" style="margin-top:4px;">⬇ Import from backup</button>
+          <button class="btn-xs" onclick="generateShetefCode()" style="width:100%;">📋 Generate Shetef Code</button>
+          <textarea id="shetefCodeBox" rows="6" spellcheck="false" readonly style="display:none;margin-top:6px;width:100%;font-size:0.72rem;font-family:monospace;border:1px solid var(--border);border-radius:5px;background:var(--cream);color:var(--text);padding:6px;resize:vertical;outline:none;direction:rtl;unicode-bidi:plaintext;"></textarea>
         </div>
+
+        <!-- Backup Presets sub-panel -->
+        <div class="panel collapsed" style="border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+          <div class="panel-title" style="font-size:0.72rem;padding:6px 10px;" onclick="this.closest('.panel').classList.toggle('collapsed')">Backup Presets</div>
+          <div class="panel-body" style="display:flex;flex-direction:column;gap:6px;">
+            <div style="font-size:0.72rem;color:var(--muted);line-height:1.4;">Export your saved presets as text you can copy and store. Paste it back to restore.</div>
+            <button class="btn-xs" onclick="exportPresets()">⬆ Export backup</button>
+            <textarea id="presetBackupBox" rows="4" spellcheck="false" placeholder="Paste backup here to import…" style="width:100%;font-size:0.7rem;font-family:monospace;border:1px solid var(--border);border-radius:5px;background:var(--cream);color:var(--text);padding:6px;resize:vertical;outline:none;"></textarea>
+            <button class="btn-xs" onclick="importPresets()">⬇ Import from backup</button>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -1940,6 +1951,7 @@ const VOWELS = [
 let selectedLetters = new Set(LETTERS.map(l => l.heb));
 let selectedVowels  = new Set(['a','e','i','o','u']);
 let blends = [];
+let lastShetefItems = null;
 
 // ══════════════════════════════════════════════
 //  INIT UI
@@ -2292,6 +2304,26 @@ function deletePreset(name) {
 function loadPreset(name) {
   const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
   if (presets[name]) applySettings(presets[name]);
+}
+
+function generateShetefCode() {
+  const box = document.getElementById('shetefCodeBox');
+  if (!lastShetefItems) { box.value = '(Generate a worksheet first.)'; box.style.display = 'block'; return; }
+  let lines = [];
+  if (lastShetefItems.mode === 'real') {
+    lastShetefItems.items.forEach(w => {
+      const right = w.translit || w.translation || '';
+      lines.push(right ? `${w.heb} - ${right}` : w.heb);
+    });
+  } else {
+    lastShetefItems.items.forEach(b => {
+      lines.push(b.combined ? `${b.hebrewDisplay} - ${b.combined}` : b.hebrewDisplay);
+    });
+  }
+  box.value = lines.join('\n');
+  box.style.display = 'block';
+  box.select();
+  try { navigator.clipboard.writeText(box.value); } catch(e) {}
 }
 
 function exportPresets() {
@@ -3288,6 +3320,7 @@ function generate(animate = false) {
     generateRealWords();
     return;
   }
+  lastShetefItems = { mode: 'blend', items: blends };
   renderWorksheet(animate);
   enableButtons();
 }
@@ -3983,6 +4016,7 @@ function generateRealWords() {
     }));
     items = rwShuffle([...items, ...blendItems]).slice(0, count * 2);
   }
+  lastShetefItems = { mode: 'real', items };
 
   const ws = document.getElementById('worksheet');
   ws.innerHTML = '';
