@@ -42,7 +42,7 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .app{display:flex;flex:1;overflow:hidden;}
 .sidebar{width:300px;flex-shrink:0;background:var(--white);border-right:1px solid var(--border);padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
 #appSidebar.hidden{display:none;}
-.sidebar-toggle-btn{position:fixed;top:50vh;transform:translateY(-50%);width:16px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:50;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
+.sidebar-toggle-btn{position:fixed;left:300px;top:50vh;transform:translateY(-50%);width:16px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:50;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
 .sidebar-toggle-btn:hover{background:#0f1a33;}
 .sidebar-show-btn{position:fixed;left:0;top:50vh;transform:translateY(-50%);width:16px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:100;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
 .sidebar-show-btn:hover{background:#0f1a33;}
@@ -60,6 +60,7 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1px 8px;}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px 8px;}
 .filter-note{font-size:0.68rem;color:var(--muted);margin-top:4px;}
+.era-body{display:flex;gap:16px;}
 .pos-all-btn{flex:1;padding:3px 0;font-size:0.72rem;font-family:'Source Sans 3',sans-serif;background:var(--warm-gray);color:var(--text);border:1px solid var(--border);border-radius:4px;cursor:pointer;}
 .pos-all-btn:hover{border-color:var(--gold);color:var(--gold);}
 .filter-sub{margin-top:6px;padding-left:6px;border-left:2px solid var(--border);}
@@ -203,7 +204,7 @@ footer a{color:var(--gold);text-decoration:none;}
     <!-- Era -->
     <div class="panel">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Era</div>
-      <div class="panel-body" style="display:flex;gap:16px;">
+      <div class="panel-body era-body">
         <label class="cb-label"><input type="checkbox" id="eraBib" checked> Biblical</label>
         <label class="cb-label"><input type="checkbox" id="eraMod" checked> Modern</label>
       </div>
