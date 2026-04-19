@@ -15,7 +15,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
   // Apply dark mode BEFORE first paint to prevent flash
   if (localStorage.getItem('hebrewBlender_darkMode') === '1') {
@@ -2781,7 +2780,6 @@ function renderBingo(ws) {
       grid.appendChild(item);
     });
     sheet.appendChild(grid);
-    sheet.appendChild(makeSheetFooter('Hebrew Blend Generator'));
     ws.appendChild(sheet);
   }
 }
@@ -2938,23 +2936,6 @@ function getLetter(heb) {
 
 function getSound(letterObj, vowelKey) {
   return letterObj.sounds[vowelKey] || '?';
-}
-
-const QR_URL = 'https://hbleiberg.github.io/Hebrew_Blender/hebrew_blend_generator.html';
-function makeSheetFooter(text) {
-  const footer = document.createElement('div');
-  footer.style.cssText = 'margin-top:20px;display:flex;align-items:flex-end;justify-content:space-between;border-top:1px solid var(--border);padding-top:8px;gap:8px;';
-  const label = document.createElement('div');
-  label.style.cssText = 'font-size:0.72rem;color:var(--muted);';
-  label.textContent = text;
-  footer.appendChild(label);
-  if (typeof QRCode !== 'undefined') {
-    const qrWrap = document.createElement('div');
-    qrWrap.style.cssText = 'flex-shrink:0;';
-    new QRCode(qrWrap, { text: QR_URL, width: 50, height: 50, colorDark: '#1a2744', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
-    footer.appendChild(qrWrap);
-  }
-  return footer;
 }
 
 // Auto-calculate columns to make a clean grid that fits on a printed page
@@ -3212,7 +3193,10 @@ function renderWorksheet(animate = false) {
     grid.style.direction = 'rtl';
     sheet.appendChild(grid);
     blends.forEach((b, idx) => renderHebrewCell(grid, b, idx, showAnswers));
-    sheet.appendChild(makeSheetFooter(`${blends.length} items · Hebrew Blend Generator`));
+    const footer = document.createElement('div');
+    footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+    footer.textContent = `${blends.length} items · Hebrew Blend Generator`;
+    sheet.appendChild(footer);
     ws.appendChild(sheet);
     return;
   }
@@ -3245,7 +3229,10 @@ function renderWorksheet(animate = false) {
     else renderHebrewCell(grid, b, idx, false);
   });
 
-  studentSheet.appendChild(makeSheetFooter(`${blends.length} blends · Hebrew Blend Generator`));
+  const footer = document.createElement('div');
+  footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  footer.textContent = `${blends.length} blends · Hebrew Blend Generator`;
+  studentSheet.appendChild(footer);
   ws.appendChild(studentSheet);
 
   // ── PAGE 2: Answer Key ──
@@ -3279,7 +3266,10 @@ function renderWorksheet(animate = false) {
       else renderHebrewCell(akGrid, b, idx, true);
     });
 
-    answerSheet.appendChild(makeSheetFooter(`${blends.length} blends · Hebrew Blend Generator — Answer Key`));
+    const akFooter = document.createElement('div');
+    akFooter.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+    akFooter.textContent = `${blends.length} blends · Hebrew Blend Generator — Answer Key`;
+    answerSheet.appendChild(akFooter);
     ws.appendChild(answerSheet);
   }
 
@@ -3819,7 +3809,10 @@ function generateRealWords() {
 
   sheet.appendChild(grid);
 
-  sheet.appendChild(makeSheetFooter(`${items.length} words · Hebrew Blend Generator`));
+  const footer = document.createElement('div');
+  footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  footer.textContent = `${items.length} words · Hebrew Blend Generator`;
+  sheet.appendChild(footer);
   ws.appendChild(sheet);
   updateRwPoolInfo();
   enableButtons();
@@ -3879,7 +3872,10 @@ function generateIdentifyDrill(pool, count, showTranslit) {
     ${wsMetaHTML()}`;
   studentSheet.appendChild(hdr);
   studentSheet.appendChild(makeGrid(items, false));
-  studentSheet.appendChild(makeSheetFooter(`${items.length} items · Hebrew Blend Generator`));
+  const foot = document.createElement('div');
+  foot.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  foot.textContent = `${items.length} items · Hebrew Blend Generator`;
+  studentSheet.appendChild(foot);
   ws.appendChild(studentSheet);
 
   // ── Answer key sheet ──
@@ -3898,7 +3894,10 @@ function generateIdentifyDrill(pool, count, showTranslit) {
     </div>`;
   keySheet.appendChild(keyHdr);
   keySheet.appendChild(makeGrid(items, true));
-  keySheet.appendChild(makeSheetFooter(`${items.filter(w => w.isReal).length} real words · ${items.filter(w => !w.isReal).length} blends · Hebrew Blend Generator — Answer Key`));
+  const keyFoot = document.createElement('div');
+  keyFoot.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  keyFoot.textContent = `${items.filter(w => w.isReal).length} real words · ${items.filter(w => !w.isReal).length} blends · Hebrew Blend Generator — Answer Key`;
+  keySheet.appendChild(keyFoot);
   ws.appendChild(keySheet);
 
   enableButtons();
@@ -4016,7 +4015,6 @@ function generateRealWordsBingo(pool) {
       grid.appendChild(item);
     });
     sheet.appendChild(grid);
-    sheet.appendChild(makeSheetFooter('Hebrew Blend Generator'));
     ws.appendChild(sheet);
   }
 
