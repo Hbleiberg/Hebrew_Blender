@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CMLC81Z0HC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CMLC81Z0HC');
+</script>
+<title>Hebrew Blender</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<script>(function(){try{if(localStorage.getItem('hebrewBlenderDark')==='true'){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<style>
+:root {
+  --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
+  --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
+}
+html.dark-early body,body.dark {
+  --navy:#1a2744;--gold:#e0a832;--gold-light:#f5d97a;--cream:#161c2a;
+  --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+header{background:var(--navy);color:var(--white);padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
+header .star{font-size:32px;}
+header h1{font-family:'Libre Baskerville',serif;font-size:1.8rem;letter-spacing:0.01em;}
+header p{font-size:0.88rem;color:var(--gold-light);margin-top:3px;}
+header .hright{margin-left:auto;}
+.dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;}
+.dark-btn:hover{background:rgba(255,255,255,0.1);}
+
+.hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;}
+.hero-title{font-family:'Libre Baskerville',serif;font-size:2rem;color:var(--text);text-align:center;margin-bottom:8px;}
+.hero-sub{font-size:1rem;color:var(--muted);text-align:center;margin-bottom:48px;max-width:520px;line-height:1.5;}
+
+.cards{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;width:100%;max-width:760px;}
+
+.page-card{background:var(--white);border:2px solid var(--border);border-radius:14px;padding:36px 32px;flex:1;min-width:260px;max-width:340px;display:flex;flex-direction:column;align-items:center;gap:14px;text-decoration:none;color:var(--text);transition:border-color 0.2s,box-shadow 0.2s,transform 0.15s;cursor:pointer;}
+.page-card:hover{border-color:var(--gold);box-shadow:0 6px 24px rgba(0,0,0,0.12);transform:translateY(-2px);}
+.page-card .icon{font-size:3rem;line-height:1;}
+.page-card h2{font-family:'Libre Baskerville',serif;font-size:1.25rem;text-align:center;}
+.page-card p{font-size:0.82rem;color:var(--muted);text-align:center;line-height:1.5;}
+.page-card .go-btn{margin-top:6px;background:var(--navy);color:var(--gold-light);border:none;border-radius:7px;padding:9px 28px;font-size:0.88rem;font-family:'Source Sans 3',sans-serif;font-weight:600;cursor:pointer;letter-spacing:0.02em;transition:background 0.15s;}
+.page-card:hover .go-btn{background:var(--gold);color:var(--navy);}
+
+footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
+footer a{color:var(--gold);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="star">✡</span>
+  <div>
+    <h1>Hebrew Blender</h1>
+    <p>Tools for Hebrew literacy instruction</p>
+  </div>
+  <div class="hright">
+    <button class="dark-btn" id="darkBtn" onclick="toggleDark()">🌙 Dark</button>
+  </div>
+</header>
+
+<div class="hero">
+  <p class="hero-sub">Choose a tool to get started</p>
+
+  <div class="cards">
+
+    <a class="page-card" href="hebrew_blend_generator.html">
+      <div class="icon">📄</div>
+      <h2>Worksheet Generator</h2>
+      <p>Create printable Hebrew decoding worksheets, bingo cards, and vocabulary drills for classroom use.</p>
+      <div class="go-btn">Open Generator →</div>
+    </a>
+
+    <a class="page-card" href="hebrew_dictionary.html">
+      <div class="icon">🔍</div>
+      <h2>Word Lookup</h2>
+      <p>Browse and filter the Hebrew dictionary by length, part of speech, era, and letter position.</p>
+      <div class="go-btn">Open Dictionary →</div>
+    </a>
+
+  </div>
+</div>
+
+<footer>
+  Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="font-weight:600;">Harrison Bleiberg</a><br>
+  Word Data from <a href="https://kaikki.org/dictionary/Hebrew/index.html" target="_blank">Kaikki.org</a><br>
+  Free to use and adapt for non-commercial educational purposes with attribution &nbsp;·&nbsp;
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a>
+</footer>
+
+<script>
+function toggleDark() {
+  const dark = document.body.classList.toggle('dark');
+  try { localStorage.setItem('hebrewBlenderDark', dark); } catch(e) {}
+  document.getElementById('darkBtn').textContent = dark ? '☀ Light' : '🌙 Dark';
+}
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    if (localStorage.getItem('hebrewBlenderDark') === 'true') {
+      document.body.classList.add('dark');
+      document.getElementById('darkBtn').textContent = '☀ Light';
+    }
+  } catch(e) {}
+});
+</script>
+</body>
+</html>
