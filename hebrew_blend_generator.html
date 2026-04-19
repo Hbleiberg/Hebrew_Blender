@@ -874,6 +874,21 @@
   }
   .tooltip-wrap:hover .tooltip-box { display: block; }
 
+  /* ── RW COLLAPSIBLE SECTIONS ── */
+  .rw-section { border-top: 1px solid var(--border); padding-top: 6px; }
+  .rw-section-header {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 0.7rem; color: var(--muted); font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    cursor: pointer; user-select: none; margin-bottom: 5px;
+  }
+  .rw-section-header::before {
+    content: '▾'; font-size: 0.85rem; color: var(--gold-light);
+    transition: transform 0.2s; flex-shrink: 0;
+  }
+  .rw-section.collapsed .rw-section-header::before { transform: rotate(-90deg); }
+  .rw-section.collapsed .rw-section-body { display: none; }
+
   /* ── REAL WORDS CARDS ── */
   .rw-drill-btn {
     padding: 7px 4px;
@@ -1500,128 +1515,128 @@
         <div id="realWordsOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--border);flex-direction:column;gap:6px;">
 
           <!-- Drill Type -->
-          <div>
-            <div style="font-size:0.7rem;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">Drill Type <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box"><strong>Reading</strong> — Hebrew shown, students read aloud and flip to check.<br><br><strong>Vocab</strong> — Flip cards: Hebrew front, English translation back.<br><br><strong>Reverse</strong> — English shown, students recall or write the Hebrew.<br><br><strong>Identify</strong> — Mixed real words + nonsense blends; students circle the real ones. Includes a teacher answer key.<br><br><strong>Bingo</strong> — Generates unique bingo cards with real Hebrew words. Teacher calls words aloud; students mark matches.</span></span></div>
-            <div class="blend-type-selector" style="grid-template-columns:repeat(5,1fr);">
-              <button class="rw-drill-btn active" data-drill="reading" onclick="setRealWordDrill('reading')">Reading</button>
-              <button class="rw-drill-btn" data-drill="vocab" onclick="setRealWordDrill('vocab')">Vocab</button>
-              <button class="rw-drill-btn" data-drill="reverse" onclick="setRealWordDrill('reverse')">Reverse</button>
-              <button class="rw-drill-btn" data-drill="identify" onclick="setRealWordDrill('identify')">Identify</button>
-              <button class="rw-drill-btn" data-drill="bingo" onclick="setRealWordDrill('bingo')">Bingo</button>
-            </div>
-          </div>
-
-          <!-- Mixed mode toggle -->
-          <div class="toggle-row" id="rwMixedRow">
-            <span style="font-size:0.82rem;">Mix with generated blends
-              <span class="tooltip-wrap" style="font-size:0.55rem;">?
-                <span class="tooltip-box">When on, real words are mixed in with randomly generated blends. Students won't know which are real — great for a "find the real words" activity.</span>
-              </span>
-            </span>
-            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-              <input type="checkbox" id="rwMixed" onchange="toggleRwStarRow()">
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div class="toggle-row" id="rwStarRealRow" style="display:none;padding-left:16px;">
-            <span style="font-size:0.82rem;">Star real words</span>
-            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-              <input type="checkbox" id="rwStarReal" checked onchange="toggleRwStarPageRow()">
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div id="rwStarPageRow" style="display:none;padding-left:32px;">
-            <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
-              <button class="rw-drill-btn active" data-star="same" onclick="setRwStarPage('same')">Same page</button>
-              <button class="rw-drill-btn" data-star="key" onclick="setRwStarPage('key')">Answer key</button>
+          <div class="rw-section">
+            <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Drill Type <span class="tooltip-wrap" style="font-size:0.65rem;text-transform:none;letter-spacing:normal;font-weight:400;">?<span class="tooltip-box"><strong>Reading</strong> — Hebrew shown, students read aloud and flip to check.<br><br><strong>Vocab</strong> — Flip cards: Hebrew front, English translation back.<br><br><strong>Reverse</strong> — English shown, students recall or write the Hebrew.<br><br><strong>Identify</strong> — Mixed real words + nonsense blends; students circle the real ones. Includes a teacher answer key.<br><br><strong>Bingo</strong> — Generates unique bingo cards with real Hebrew words. Teacher calls words aloud; students mark matches.</span></span></div>
+            <div class="rw-section-body">
+              <div class="blend-type-selector" style="grid-template-columns:repeat(5,1fr);margin-bottom:6px;">
+                <button class="rw-drill-btn active" data-drill="reading" onclick="setRealWordDrill('reading')">Reading</button>
+                <button class="rw-drill-btn" data-drill="vocab" onclick="setRealWordDrill('vocab')">Vocab</button>
+                <button class="rw-drill-btn" data-drill="reverse" onclick="setRealWordDrill('reverse')">Reverse</button>
+                <button class="rw-drill-btn" data-drill="identify" onclick="setRealWordDrill('identify')">Identify</button>
+                <button class="rw-drill-btn" data-drill="bingo" onclick="setRealWordDrill('bingo')">Bingo</button>
+              </div>
+              <div class="toggle-row" id="rwMixedRow">
+                <span style="font-size:0.82rem;">Mix with generated blends
+                  <span class="tooltip-wrap" style="font-size:0.55rem;">?
+                    <span class="tooltip-box">When on, real words are mixed in with randomly generated blends. Students won't know which are real — great for a "find the real words" activity.</span>
+                  </span>
+                </span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+                  <input type="checkbox" id="rwMixed" onchange="toggleRwStarRow()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row" id="rwStarRealRow" style="display:none;padding-left:16px;">
+                <span style="font-size:0.82rem;">Star real words</span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+                  <input type="checkbox" id="rwStarReal" checked onchange="toggleRwStarPageRow()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div id="rwStarPageRow" style="display:none;padding-left:32px;">
+                <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
+                  <button class="rw-drill-btn active" data-star="same" onclick="setRwStarPage('same')">Same page</button>
+                  <button class="rw-drill-btn" data-star="key" onclick="setRwStarPage('key')">Answer key</button>
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- Word Filters -->
-          <div style="border-top:1px solid var(--border);padding-top:6px;">
-            <div style="font-size:0.7rem;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">Word Filters</div>
-
-            <!-- Length -->
-            <div style="margin-bottom:6px;">
-              <div style="font-size:0.72rem;font-weight:600;margin-bottom:3px;color:var(--text);">Length</div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwLen1" checked style="accent-color:var(--gold);"> Prefixes</label>
-                <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwLen2" checked style="accent-color:var(--gold);"> 2-Letter</label>
-                <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwLen3" checked style="accent-color:var(--gold);"> 3-Letter</label>
+          <div class="rw-section">
+            <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Word Filters</div>
+            <div class="rw-section-body">
+              <div style="margin-bottom:6px;">
+                <div style="font-size:0.72rem;font-weight:600;margin-bottom:3px;color:var(--text);">Length</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwLen1" checked style="accent-color:var(--gold);"> Prefixes</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwLen2" checked style="accent-color:var(--gold);"> 2-Letter</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwLen3" checked style="accent-color:var(--gold);"> 3-Letter</label>
+                </div>
               </div>
-            </div>
-
-            <!-- Part of speech -->
-            <div style="margin-bottom:6px;">
-              <div style="font-size:0.72rem;font-weight:600;margin-bottom:3px;color:var(--text);">Part of Speech</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;">
-                <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="noun" checked style="accent-color:var(--gold);"> Noun</label>
-                <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="root" checked style="accent-color:var(--gold);"> Root (שׁורש)</label>
-                <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="verb" checked style="accent-color:var(--gold);"> Verb</label>
-                <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="adjective" checked style="accent-color:var(--gold);"> Adjective</label>
-                <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="pronoun" checked style="accent-color:var(--gold);"> Pronoun</label>
-                <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="preposition" checked style="accent-color:var(--gold);"> Preposition</label>
-                <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="conjunction" checked style="accent-color:var(--gold);"> Conjunction</label>
-                <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="other" checked style="accent-color:var(--gold);"> Other</label>
+              <div style="margin-bottom:6px;">
+                <div style="font-size:0.72rem;font-weight:600;margin-bottom:3px;color:var(--text);">Part of Speech</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;">
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="noun" checked style="accent-color:var(--gold);"> Noun</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="root" checked style="accent-color:var(--gold);"> Root (שׁורש)</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="verb" checked style="accent-color:var(--gold);"> Verb</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="adjective" checked style="accent-color:var(--gold);"> Adjective</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="pronoun" checked style="accent-color:var(--gold);"> Pronoun</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="preposition" checked style="accent-color:var(--gold);"> Preposition</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="conjunction" checked style="accent-color:var(--gold);"> Conjunction</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="other" checked style="accent-color:var(--gold);"> Other</label>
+                </div>
               </div>
-            </div>
-
-            <!-- Era -->
-            <div>
-              <div style="font-size:0.72rem;font-weight:600;margin-bottom:3px;color:var(--text);">Era</div>
-              <div style="display:flex;gap:10px;">
-                <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwEraBiblical" checked style="accent-color:var(--gold);"> Biblical</label>
-                <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwEraModern" checked style="accent-color:var(--gold);"> Modern</label>
+              <div>
+                <div style="font-size:0.72rem;font-weight:600;margin-bottom:3px;color:var(--text);">Era</div>
+                <div style="display:flex;gap:10px;">
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwEraBiblical" checked style="accent-color:var(--gold);"> Biblical</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwEraModern" checked style="accent-color:var(--gold);"> Modern</label>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- Letter Filter -->
-          <div style="border-top:1px solid var(--border);padding-top:6px;">
-            <div style="font-size:0.7rem;color:var(--muted);margin-bottom:3px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">Letter Filter</div>
-            <div style="font-size:0.68rem;color:var(--muted);margin-bottom:5px;">Only show words using these letters</div>
-            <div style="display:flex;gap:3px;margin-bottom:5px;">
-              <button class="btn-xs" onclick="rwSelectAllLetters()">All</button>
-              <button class="btn-xs" onclick="rwSelectNoSofit()">No Sofit</button>
-              <button class="btn-xs" onclick="rwClearLetters()">None</button>
+          <div class="rw-section">
+            <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Letter Filter</div>
+            <div class="rw-section-body">
+              <div style="font-size:0.68rem;color:var(--muted);margin-bottom:5px;">Only show words using these letters</div>
+              <div style="display:flex;gap:3px;margin-bottom:5px;">
+                <button class="btn-xs" onclick="rwSelectAllLetters()">All</button>
+                <button class="btn-xs" onclick="rwSelectNoSofit()">No Sofit</button>
+                <button class="btn-xs" onclick="rwClearLetters()">None</button>
+              </div>
+              <div id="rwLetterGrid" class="rw-letter-grid"></div>
             </div>
-            <div id="rwLetterGrid" class="rw-letter-grid"></div>
           </div>
 
           <!-- Display options -->
-          <div style="border-top:1px solid var(--border);padding-top:6px;">
-            <div style="font-size:0.7rem;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">Display</div>
-            <div class="toggle-row">
-              <span style="font-size:0.8rem;">Show Transliteration</span>
-              <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="rwShowTranslit" checked onchange="onRwTranslitChange()"><span class="slider"></span></label>
-            </div>
-            <div id="rwTranslitPageRow" style="display:none;padding-left:16px;">
-              <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
-                <button class="rw-drill-btn active" data-translit="same" onclick="setRwTranslitPage('same')">Same page</button>
-                <button class="rw-drill-btn" data-translit="key" onclick="setRwTranslitPage('key')">Answer key</button>
+          <div class="rw-section">
+            <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Display</div>
+            <div class="rw-section-body">
+              <div class="toggle-row">
+                <span style="font-size:0.8rem;">Show Transliteration</span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="rwShowTranslit" checked onchange="onRwTranslitChange()"><span class="slider"></span></label>
               </div>
-            </div>
-            <div class="toggle-row" id="rwTranslationRow">
-              <span style="font-size:0.8rem;">Show Translation</span>
-              <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="rwShowTranslation" onchange="onRwTranslChange()"><span class="slider"></span></label>
-            </div>
-            <div id="rwTranslPageRow" style="display:none;padding-left:16px;">
-              <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
-                <button class="rw-drill-btn active" data-transl="same" onclick="setRwTranslPage('same')">Same page</button>
-                <button class="rw-drill-btn" data-transl="key" onclick="setRwTranslPage('key')">Answer key</button>
+              <div id="rwTranslitPageRow" style="display:none;padding-left:16px;">
+                <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
+                  <button class="rw-drill-btn active" data-translit="same" onclick="setRwTranslitPage('same')">Same page</button>
+                  <button class="rw-drill-btn" data-translit="key" onclick="setRwTranslitPage('key')">Answer key</button>
+                </div>
               </div>
+              <div class="toggle-row" id="rwTranslationRow">
+                <span style="font-size:0.8rem;">Show Translation</span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="rwShowTranslation" onchange="onRwTranslChange()"><span class="slider"></span></label>
+              </div>
+              <div id="rwTranslPageRow" style="display:none;padding-left:16px;">
+                <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
+                  <button class="rw-drill-btn active" data-transl="same" onclick="setRwTranslPage('same')">Same page</button>
+                  <button class="rw-drill-btn" data-transl="key" onclick="setRwTranslPage('key')">Answer key</button>
+                </div>
+              </div>
+              <div style="margin-top:6px;display:flex;align-items:center;gap:8px;">
+                <span style="font-size:0.8rem;flex:1;">Number of Words</span>
+                <select id="rwCount" style="font-size:0.78rem;padding:3px 6px;">
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="30" selected>30</option>
+                  <option value="40">40</option>
+                  <option value="50">50</option>
+                </select>
+              </div>
+              <div id="rwPoolInfo" style="margin-top:4px;font-size:0.7rem;color:var(--muted);text-align:center;"></div>
             </div>
-            <div style="margin-top:6px;display:flex;align-items:center;gap:8px;">
-              <span style="font-size:0.8rem;flex:1;">Number of Words</span>
-              <select id="rwCount" style="font-size:0.78rem;padding:3px 6px;">
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="30" selected>30</option>
-                <option value="40">40</option>
-                <option value="50">50</option>
-              </select>
-            </div>
-            <div id="rwPoolInfo" style="margin-top:4px;font-size:0.7rem;color:var(--muted);text-align:center;"></div>
           </div>
 
           <!-- Bingo sub-options (shown only when drill=bingo) -->
