@@ -1794,6 +1794,20 @@
       </div>
     </div>
 
+    <!-- Advanced -->
+    <div class="panel collapsed" style="margin-top:4px;">
+      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Advanced</div>
+      <div class="panel-body" style="display:flex;flex-direction:column;gap:10px;">
+        <div>
+          <div style="font-size:0.72rem;font-weight:600;margin-bottom:5px;color:var(--text);">Backup Presets</div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;line-height:1.4;">Export your saved presets as text you can copy and store. Paste it back to restore.</div>
+          <button class="btn-xs" onclick="exportPresets()" style="margin-bottom:6px;">⬆ Export backup</button>
+          <textarea id="presetBackupBox" rows="4" spellcheck="false" placeholder="Paste backup here to import…" style="width:100%;font-size:0.7rem;font-family:monospace;border:1px solid var(--border);border-radius:5px;background:var(--cream);color:var(--text);padding:6px;resize:vertical;outline:none;"></textarea>
+          <button class="btn-xs" onclick="importPresets()" style="margin-top:4px;">⬇ Import from backup</button>
+        </div>
+      </div>
+    </div>
+
   </aside>
 
   <!-- Mobile FAB -->
@@ -2278,6 +2292,32 @@ function deletePreset(name) {
 function loadPreset(name) {
   const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
   if (presets[name]) applySettings(presets[name]);
+}
+
+function exportPresets() {
+  const presets = localStorage.getItem('hebrewBlender_presets') || '{}';
+  const box = document.getElementById('presetBackupBox');
+  box.value = presets;
+  box.select();
+  try { navigator.clipboard.writeText(presets); } catch(e) {}
+}
+
+function importPresets() {
+  const box = document.getElementById('presetBackupBox');
+  const text = box.value.trim();
+  if (!text) { alert('Paste a backup into the text box first.'); return; }
+  try {
+    const parsed = JSON.parse(text);
+    if (typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error();
+    const existing = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+    const merged = Object.assign({}, existing, parsed);
+    localStorage.setItem('hebrewBlender_presets', JSON.stringify(merged));
+    box.value = '';
+    renderPresets();
+    alert(`Imported ${Object.keys(parsed).length} preset(s). Duplicates were overwritten.`);
+  } catch(e) {
+    alert('Invalid backup. Make sure you pasted the full exported text.');
+  }
 }
 
 function renderPresets() {
