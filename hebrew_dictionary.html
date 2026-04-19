@@ -156,13 +156,14 @@ footer a{color:var(--gold);text-decoration:none;}
       <div class="panel-body">
         <label class="cb-label" style="margin-bottom:6px;font-weight:600;"><input type="checkbox" id="lenAllCb" checked onchange="toggleAllLengths(this)"> All Words</label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 10px;margin-bottom:6px;">
-          <label class="cb-label"><input type="checkbox" class="lcb" value="1" checked> Prefixes</label>
+          <label class="cb-label"><input type="checkbox" class="lcb" value="1" checked> Prefixes/Suffixes</label>
           <label class="cb-label"><input type="checkbox" class="lcb" value="2" checked> 2-Letter</label>
           <label class="cb-label"><input type="checkbox" class="lcb" value="3" checked> 3-Letter</label>
           <label class="cb-label"><input type="checkbox" class="lcb" value="4" checked> 4-Letter</label>
           <label class="cb-label"><input type="checkbox" class="lcb" value="5" checked> 5-Letter</label>
           <label class="cb-label"><input type="checkbox" class="lcb" value="6" checked> 6-Letter</label>
-          <label class="cb-label"><input type="checkbox" class="lcb" value="7plus" checked> 7+ Letter</label>
+          <label class="cb-label"><input type="checkbox" class="lcb" value="7" checked> 7-Letter</label>
+          <label class="cb-label"><input type="checkbox" class="lcb" value="8plus" checked> 8+ Letter</label>
         </div>
       </div>
     </div>
@@ -346,7 +347,7 @@ function onFilter() {
   const eraMod = document.getElementById('eraMod').checked;
 
   filtered = ALL_WORDS.filter(w => {
-    const lk = w.len >= 7 ? '7plus' : String(w.len);
+    const lk = w.len >= 8 ? '8plus' : String(w.len);
     if (!checkedLen.has(lk)) return false;
 
     const pm = [...checkedPos].some(p => {
