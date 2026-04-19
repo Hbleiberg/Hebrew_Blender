@@ -267,7 +267,7 @@ let shown = 0;
 const PAGE = 100;
 const posFilters = Array.from({length:6}, () => new Set());
 
-fetch('hebrew_words.json?v=2')
+fetch('hebrew_words.json?v=3')
   .then(r => r.json())
   .then(data => {
     ALL_WORDS = Object.entries(data).flatMap(([cnt, words]) =>
