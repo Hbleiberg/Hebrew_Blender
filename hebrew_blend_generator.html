@@ -2170,14 +2170,16 @@ function applySettings(s) {
   setBlendType(blendType);
   toggleFocusUI();
   toggleBingoUI();
-  if (s.realWords) toggleRealWordsUI();
   if (s.rwDrillType) setRealWordDrill(s.rwDrillType);
 
-  // Self-check last — overrides everything
+  // Self-check next
   if (s.selfCheck !== undefined) {
     document.getElementById('selfCheckToggle').checked = s.selfCheck;
     document.getElementById('selfCheckToggle').dispatchEvent(new Event('change'));
   }
+
+  // Real Words last — must run after selfCheck dispatchEvent, which re-shows rows when selfCheck=false
+  toggleRealWordsUI();
 }
 
 function savePreset() {
