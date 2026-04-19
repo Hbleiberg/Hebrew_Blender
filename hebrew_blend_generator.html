@@ -1981,9 +1981,9 @@ function setHeaderLang(lang) {
 }
 function wsMetaHTML() {
   if (headerLang === 'he') {
-    return `<div style="display:grid;grid-template-columns:auto auto auto;column-gap:4px;row-gap:8px;align-items:center;font-size:0.82rem;color:var(--muted);">
-      <span dir="rtl" style="font-family:'Frank Ruhl Libre',serif;display:block;text-align:right;">שֵׁם</span><span>:</span><div class="ws-field-line"></div>
-      <span dir="rtl" style="font-family:'Frank Ruhl Libre',serif;display:block;text-align:right;">תַאֲרִיךְ</span><span>:</span><div class="ws-field-line" style="width:80px"></div>
+    return `<div style="display:grid;grid-template-columns:auto 1fr;column-gap:8px;row-gap:8px;align-items:center;font-size:0.82rem;color:var(--muted);direction:rtl;">
+      <span style="font-family:'Frank Ruhl Libre',serif;white-space:nowrap;">שֵׁם:</span><div class="ws-field-line"></div>
+      <span style="font-family:'Frank Ruhl Libre',serif;white-space:nowrap;">תַאֲרִיךְ:</span><div class="ws-field-line" style="width:80px"></div>
     </div>`;
   }
   return `<div class="ws-meta">
