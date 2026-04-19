@@ -1581,6 +1581,7 @@
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="pronoun" checked style="accent-color:var(--gold);"> Pronoun</label>
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="preposition" checked style="accent-color:var(--gold);"> Preposition</label>
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="conjunction" checked style="accent-color:var(--gold);"> Conjunction</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="adverb" checked style="accent-color:var(--gold);"> Adverb</label>
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="other" checked style="accent-color:var(--gold);"> Other</label>
                 </div>
               </div>
@@ -3732,7 +3733,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initRwLetterGrid();
 
   // Load Hebrew word dictionary from JSON
-  fetch('hebrew_words.json')
+  fetch('hebrew_words.json?v=2')
     .then(r => r.json())
     .then(data => {
       REAL_WORDS = Object.entries(data).flatMap(([count, words]) =>
@@ -3843,7 +3844,7 @@ function getRwPool() {
     else if (era === 'Biblical' && !eraBib) return false;
     else if (era === 'Modern' && !eraMod) return false;
     const posMatch = selectedPos.some(p => {
-      if (p === 'other') return !['noun','root','verb','adjective','pronoun','preposition','conjunction'].some(k => w.pos.includes(k));
+      if (p === 'other') return !['noun','root','verb','adjective','pronoun','preposition','conjunction','adverb'].some(k => w.pos.includes(k));
       if (p === 'noun') return w.pos.includes('noun') && !w.pos.includes('proper');
       return w.pos.includes(p);
     });
