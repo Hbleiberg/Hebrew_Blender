@@ -13,7 +13,7 @@
 </script>
 <title>Hebrew Word Lookup</title>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
-<script>(function(){try{if(localStorage.getItem('hebrewBlenderDark')==='true'){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<script>(function(){try{if(localStorage.getItem('hebrewBlender_darkMode')==='1'){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
 <style>
 :root {
   --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
@@ -406,14 +406,14 @@ function toggleSidebar() {
 function toggleDark() {
   const dark = document.body.classList.toggle('dark');
   document.documentElement.classList.remove('dark-early');
-  try { localStorage.setItem('hebrewBlenderDark', dark); } catch(e) {}
+  try { localStorage.setItem('hebrewBlender_darkMode', dark ? '1' : '0'); } catch(e) {}
   document.getElementById('darkBtn').textContent = dark ? '☀ Light' : '🌙 Dark';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   initPosFilters();
   try {
-    if (localStorage.getItem('hebrewBlenderDark') === 'true') {
+    if (localStorage.getItem('hebrewBlender_darkMode') === '1') {
       document.body.classList.add('dark');
       document.getElementById('darkBtn').textContent = '☀ Light';
     }
