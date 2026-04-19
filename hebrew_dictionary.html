@@ -252,6 +252,10 @@ footer a{color:var(--gold);text-decoration:none;}
             <span style="font-size:0.72rem;color:var(--muted);" id="bulkCount">0 selected</span>
             <button class="pos-all-btn" onclick="clearBulkSelection()">Clear</button>
           </div>
+          <div style="display:flex;gap:4px;margin-bottom:6px;">
+            <button class="pos-all-btn" style="flex:1;font-size:0.65rem;" onclick="selectAllOnPage()">Select page</button>
+            <button class="pos-all-btn" style="flex:1;font-size:0.65rem;" onclick="selectAllMatching()">Select all matching</button>
+          </div>
           <textarea id="bulkTextarea" readonly rows="6" style="width:100%;font-size:0.75rem;font-family:'Frank Ruhl Libre',serif;direction:rtl;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;"></textarea>
           <button class="pos-all-btn" style="width:100%;margin-top:5px;" onclick="copyBulkText()">Copy All</button>
         </div>
@@ -353,6 +357,20 @@ function clearBulkSelection() {
   bulkSelected.clear();
   updateBulkTextarea();
   document.querySelectorAll('.wc-bulk-cb').forEach(cb => { cb.checked = false; cb.closest('.word-card').classList.remove('bulk-selected'); });
+}
+
+function selectAllOnPage() {
+  document.querySelectorAll('.wc-bulk-cb').forEach(cb => {
+    if (!cb.checked) { cb.checked = true; cb.dispatchEvent(new Event('change', {bubbles:true})); }
+  });
+}
+
+function selectAllMatching() {
+  filtered.forEach(w => bulkSelected.set(w.word, {w, text: wordBulkText(w)}));
+  updateBulkTextarea();
+  document.querySelectorAll('.wc-bulk-cb').forEach(cb => {
+    cb.checked = true; cb.closest('.word-card').classList.add('bulk-selected');
+  });
 }
 
 function copyBulkText() {
