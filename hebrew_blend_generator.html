@@ -1526,9 +1526,15 @@
           <div class="toggle-row" id="rwStarRealRow" style="display:none;padding-left:16px;">
             <span style="font-size:0.82rem;">Star real words</span>
             <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-              <input type="checkbox" id="rwStarReal" checked>
+              <input type="checkbox" id="rwStarReal" checked onchange="toggleRwStarPageRow()">
               <span class="slider"></span>
             </label>
+          </div>
+          <div id="rwStarPageRow" style="display:none;padding-left:32px;">
+            <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
+              <button class="rw-drill-btn active" data-star="same" onclick="setRwStarPage('same')">Same page</button>
+              <button class="rw-drill-btn" data-star="key" onclick="setRwStarPage('key')">Answer key</button>
+            </div>
           </div>
 
           <!-- Word Filters -->
@@ -2058,6 +2064,7 @@ function getSettings() {
     rwCount:           document.getElementById('rwCount').value,
     rwMixed:           document.getElementById('rwMixed').checked,
     rwStarReal:        document.getElementById('rwStarReal').checked,
+    rwStarPage,
     rwShowTranslit:    document.getElementById('rwShowTranslit').checked,
     rwShowTranslation: document.getElementById('rwShowTranslation').checked,
     rwTranslPage,
@@ -2135,7 +2142,8 @@ function applySettings(s) {
   if (s.realWords !== undefined) document.getElementById('realWordsToggle').checked = s.realWords;
   if (s.rwCount)                 document.getElementById('rwCount').value = s.rwCount;
   if (s.rwMixed !== undefined)   { document.getElementById('rwMixed').checked = s.rwMixed; toggleRwStarRow(); }
-  if (s.rwStarReal !== undefined) document.getElementById('rwStarReal').checked = s.rwStarReal;
+  if (s.rwStarReal !== undefined) { document.getElementById('rwStarReal').checked = s.rwStarReal; toggleRwStarPageRow(); }
+  if (s.rwStarPage) { rwStarPage = s.rwStarPage; document.querySelectorAll('[data-star]').forEach(b => b.classList.toggle('active', b.dataset.star === rwStarPage)); }
   if (s.rwShowTranslit !== undefined)    document.getElementById('rwShowTranslit').checked = s.rwShowTranslit;
   if (s.rwShowTranslation !== undefined) { document.getElementById('rwShowTranslation').checked = s.rwShowTranslation; }
   if (s.rwTranslPage) { rwTranslPage = s.rwTranslPage; document.querySelectorAll('[data-transl]').forEach(b => b.classList.toggle('active', b.dataset.transl === rwTranslPage)); toggleRwTranslPageRow(); }
@@ -3583,6 +3591,23 @@ function toggleRwStarRow() {
   const mixed = document.getElementById('rwMixed').checked;
   const row = document.getElementById('rwStarRealRow');
   if (row) row.style.display = mixed ? '' : 'none';
+  if (!mixed) { const pr = document.getElementById('rwStarPageRow'); if (pr) pr.style.display = 'none'; }
+  else toggleRwStarPageRow();
+}
+
+let rwStarPage = 'same';
+
+function toggleRwStarPageRow() {
+  const on = document.getElementById('rwStarReal').checked;
+  const row = document.getElementById('rwStarPageRow');
+  if (row) row.style.display = on ? '' : 'none';
+}
+
+function setRwStarPage(val) {
+  rwStarPage = val;
+  document.querySelectorAll('[data-star]').forEach(b => b.classList.toggle('active', b.dataset.star === val));
+  const ws = document.getElementById('worksheet');
+  if (ws.querySelector('.rw-card, .rw-flip')) generateRealWords();
 }
 
 let rwTranslPage = 'same';
@@ -3752,8 +3777,10 @@ function generateRealWords() {
   const showTranslit = document.getElementById('rwShowTranslit').checked;
   const showTranslation = document.getElementById('rwShowTranslation').checked;
   const mixed = document.getElementById('rwMixed').checked;
-  const starReal = mixed && document.getElementById('rwStarReal').checked;
+  const starRealOn = mixed && document.getElementById('rwStarReal').checked;
   const drill = rwDrillType;
+  const starOnKey = starRealOn && rwStarPage === 'key' && drill === 'reading';
+  const starReal = starRealOn && !starOnKey;
   const translOnKey = showTranslation && rwTranslPage === 'key' && drill === 'reading';
   const showTranslInline = showTranslation && !translOnKey;
 
@@ -3864,17 +3891,17 @@ function generateRealWords() {
   sheet.appendChild(footer);
   ws.appendChild(sheet);
 
-  // Translation answer key sheet
-  if (translOnKey) {
+  // Answer key sheet (stars and/or translations on separate page)
+  if (starOnKey || translOnKey) {
     const keySheet = document.createElement('div');
     keySheet.className = 'sheet answer-key-sheet';
     const banner = document.createElement('div');
     banner.className = 'answer-key-banner';
-    banner.textContent = '✦ Translation Key ✦';
+    banner.textContent = starOnKey && translOnKey ? '✦ Answer Key ✦' : starOnKey ? '✦ Real Word Key ✦' : '✦ Translation Key ✦';
     keySheet.appendChild(banner);
     const keyHdr = document.createElement('div');
     keyHdr.className = 'ws-header';
-    keyHdr.innerHTML = `<div><div class="ws-title">Hebrew Word Practice</div><div class="ws-subtitle" style="color:var(--gold)">Translation Key — Teacher Copy</div></div>`;
+    keyHdr.innerHTML = `<div><div class="ws-title">Hebrew Word Practice</div><div class="ws-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>`;
     keySheet.appendChild(keyHdr);
     const keyGrid = document.createElement('div');
     keyGrid.className = 'rw-grid';
@@ -3882,19 +3909,19 @@ function generateRealWords() {
     items.forEach((w, idx) => {
       const card = document.createElement('div');
       card.className = 'rw-card';
-      if (starReal && w.isReal) { card.style.outline = '2px solid var(--gold)'; card.style.background = 'rgba(201,146,42,0.08)'; }
+      if (starRealOn && w.isReal) { card.style.outline = '2px solid var(--gold)'; card.style.background = 'rgba(201,146,42,0.08)'; }
       card.innerHTML = `
-        <span class="rw-num">${idx + 1}${starReal && w.isReal ? ' ★' : ''}</span>
+        <span class="rw-num">${idx + 1}${starRealOn && w.isReal ? ' ★' : ''}</span>
         <span class="rw-pos-tag">${w.pos}</span>
         <span class="rw-heb">${w.heb}</span>
         ${showTranslit ? `<span class="rw-translit">${w.translit}</span>` : ''}
-        ${w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
+        ${translOnKey && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
       keyGrid.appendChild(card);
     });
     keySheet.appendChild(keyGrid);
     const akFooter = document.createElement('div');
     akFooter.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-    akFooter.textContent = `${items.length} words · Hebrew Blend Generator — Translation Key`;
+    akFooter.textContent = `${items.length} words · Hebrew Blend Generator — Answer Key`;
     keySheet.appendChild(akFooter);
     ws.appendChild(keySheet);
   }
