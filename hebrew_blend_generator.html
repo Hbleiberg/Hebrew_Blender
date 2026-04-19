@@ -1580,13 +1580,41 @@
           <div id="cwMixedRow">
             <div class="toggle-row">
               <span style="font-size:0.82rem;">Mix in nonsense blends
-                <span class="tooltip-wrap" style="font-size:0.55rem;">?<span class="tooltip-box">Real words from your list are mixed with generated nonsense blends. Generate blends in standard mode first, then return to custom mode.</span></span>
+                <span class="tooltip-wrap" style="font-size:0.55rem;">?<span class="tooltip-box">Randomly generated nonsense blends are mixed in with your words. Blends are checked against the full word list and your imported list to ensure they are not real Hebrew words.</span></span>
               </span>
-              <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="cwMixed" onchange="toggleCwStarRow()"><span class="slider"></span></label>
+              <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="cwMixed" onchange="toggleCwBlendOpts()"><span class="slider"></span></label>
             </div>
-            <div class="toggle-row" id="cwStarRealRow" style="display:none;padding-left:16px;">
-              <span style="font-size:0.82rem;">Star real words</span>
-              <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="cwStarReal" checked><span class="slider"></span></label>
+            <div id="cwBlendOpts" style="display:none;padding-left:12px;border-left:2px solid var(--border);margin-top:4px;display:none;flex-direction:column;gap:6px;">
+              <div class="toggle-row">
+                <span style="font-size:0.82rem;">Star real words</span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="cwStarReal" checked><span class="slider"></span></label>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:0.8rem;flex:1;">Blends to mix in</span>
+                <select id="cwBlendCount" style="font-size:0.78rem;padding:3px 6px;">
+                  <option value="match">Same as words</option>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="30">30</option>
+                  <option value="50">50</option>
+                </select>
+              </div>
+              <div>
+                <div style="font-size:0.72rem;font-weight:600;margin-bottom:4px;color:var(--text);">Vowels in blends</div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <button class="btn-xs" onclick="setCwBlendVowels(true)">All</button>
+                  <button class="btn-xs" onclick="setCwBlendVowels(false)">None</button>
+                </div>
+                <div class="vowel-grid" id="cwBlendVowelGrid"></div>
+              </div>
+              <div>
+                <div style="font-size:0.72rem;font-weight:600;margin-bottom:4px;color:var(--text);">Letters in blends</div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <button class="btn-xs" onclick="setCwBlendLetters(true)">All</button>
+                  <button class="btn-xs" onclick="setCwBlendLetters(false)">None</button>
+                </div>
+                <div class="rw-letter-grid" id="cwBlendLetterGrid"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -3934,20 +3962,78 @@ function setCwTranslPage(val) {
   document.querySelectorAll('[data-cw-transl]').forEach(b => b.classList.toggle('active', b.dataset.cwTransl === val));
 }
 
-function toggleCwStarRow() {
-  const row = document.getElementById('cwStarRealRow');
-  if (row) row.style.display = document.getElementById('cwMixed').checked ? '' : 'none';
+let cwBlendLetters = new Set(LETTERS.filter(l => !l.sofit).map(l => l.heb));
+let cwBlendVowels  = new Set(['a','e','i','o','u']);
+
+function initCwBlendGrids() {
+  // Vowel chips
+  const vg = document.getElementById('cwBlendVowelGrid');
+  if (!vg || vg.children.length) return;
+  VOWELS.forEach(v => {
+    const chip = document.createElement('label');
+    chip.className = 'vowel-chip';
+    chip.innerHTML = `<input type="checkbox" ${cwBlendVowels.has(v.key) ? 'checked' : ''} style="accent-color:var(--gold);"><span style="display:flex;align-items:center;gap:5px;"><span style="font-family:'Frank Ruhl Libre',serif;font-size:1.2rem;direction:rtl;min-width:20px;text-align:center;">${v.nikud}</span><span style="font-size:0.72rem;">${v.label}</span></span>`;
+    chip.querySelector('input').addEventListener('change', e => { e.target.checked ? cwBlendVowels.add(v.key) : cwBlendVowels.delete(v.key); });
+    vg.appendChild(chip);
+  });
+  // Letter grid — base letters only (no sofits, no vav variants)
+  const lg = document.getElementById('cwBlendLetterGrid');
+  const baseLets = LETTERS.filter(l => !l.sofit && l.heb !== 'וֹ' && l.heb !== 'וּ');
+  baseLets.forEach(l => {
+    const tile = document.createElement('div');
+    tile.className = 'rw-letter-tile' + (cwBlendLetters.has(l.heb) ? ' selected' : '');
+    tile.innerHTML = `<span class="heb">${l.heb}</span><span class="name">${l.name}</span>`;
+    tile.addEventListener('click', () => {
+      if (cwBlendLetters.has(l.heb)) { cwBlendLetters.delete(l.heb); tile.classList.remove('selected'); }
+      else { cwBlendLetters.add(l.heb); tile.classList.add('selected'); }
+    });
+    lg.appendChild(tile);
+  });
+}
+
+function setCwBlendVowels(on) {
+  cwBlendVowels = on ? new Set(VOWELS.map(v => v.key)) : new Set();
+  document.querySelectorAll('#cwBlendVowelGrid input').forEach(cb => cb.checked = on);
+}
+
+function setCwBlendLetters(on) {
+  const baseLets = LETTERS.filter(l => !l.sofit && l.heb !== 'וֹ' && l.heb !== 'וּ');
+  cwBlendLetters = on ? new Set(baseLets.map(l => l.heb)) : new Set();
+  document.querySelectorAll('#cwBlendLetterGrid .rw-letter-tile').forEach(t => t.classList.toggle('selected', on));
+}
+
+function toggleCwBlendOpts() {
+  const on = document.getElementById('cwMixed').checked;
+  const opts = document.getElementById('cwBlendOpts');
+  if (opts) opts.style.display = on ? 'flex' : 'none';
+  if (on) initCwBlendGrids();
+}
+
+function stripNikud(str) {
+  // Remove Hebrew diacritics (nikkud) U+05B0–U+05C7 and dagesh U+05BC
+  return str.replace(/[\u05B0-\u05C7]/g, '');
+}
+
+function isRealWord(hebrewDisplay) {
+  const bare = stripNikud(hebrewDisplay);
+  // Check main word list
+  if (REAL_WORDS.some(w => w.bare === bare || w.heb === hebrewDisplay)) return true;
+  // Check imported custom list
+  if (customWordlistData.some(w => stripNikud(w.heb) === bare || w.heb === hebrewDisplay)) return true;
+  return false;
 }
 
 function ensureCvcBlends(needed) {
   const VAV_VARIANTS = new Set(['וֹ','וּ']);
   const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
-  const vowelKeys = selectedVowels.size ? [...selectedVowels] : ['a','e','i','o','u'];
-  const firstPool  = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h) && !VAV_VARIANTS.has(h));
-  const secondPool = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h) && h !== 'ו');
-  if (!firstPool.length || !secondPool.length) return;
+  const letterPool = cwBlendLetters.size ? cwBlendLetters : new Set(LETTERS.filter(l => !l.sofit).map(l => l.heb));
+  const vowelKeys  = cwBlendVowels.size  ? [...cwBlendVowels]  : ['a','e','i','o','u'];
+  const firstPool  = [...letterPool].filter(h => !SOFIT_CHARS.has(h) && !VAV_VARIANTS.has(h));
+  const secondPool = [...letterPool].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h) && h !== 'ו');
+  if (!firstPool.length || !secondPool.length || !vowelKeys.length) return;
   blends = [];
-  let safety = needed * 60;
+  const seen = new Set();
+  let safety = needed * 120;
   while (blends.length < needed && safety-- > 0) {
     let vowel = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
     const first  = firstPool[Math.floor(Math.random() * firstPool.length)];
@@ -3958,8 +4044,13 @@ function ensureCvcBlends(needed) {
     if (first === 'ו' && vowel === 'sh') { const alt = vowelKeys.filter(v => v !== 'sh'); if (!alt.length) continue; vowel = alt[Math.floor(Math.random() * alt.length)]; }
     const firstObj  = getLetter(first);
     const secondObj = getLetter(second);
+    const hebrewDisplay = withNikud(firstObj, vowel, true) + (SOFIT_CHARS.has(second) ? second : secondObj.base);
+    // Skip if this is actually a real word or already generated
+    if (isRealWord(hebrewDisplay)) continue;
+    if (seen.has(hebrewDisplay)) continue;
+    seen.add(hebrewDisplay);
     blends.push({
-      hebrewDisplay: withNikud(firstObj, vowel, true) + (SOFIT_CHARS.has(second) ? second : secondObj.base),
+      hebrewDisplay,
       combined: getSound(firstObj, vowel) + secondObj.sounds['sh'].replace("'", ''),
     });
   }
@@ -3989,9 +4080,11 @@ function generateCustomWordlist() {
 
   let items = pool.map(w => ({ ...w, isReal: true }));
   if (mixed) {
-    if (!blends.length) ensureCvcBlends(count * 3);
-    const blendItems = rwShuffle(blends).slice(0, count).map(b => ({ heb: b.hebrewDisplay, word: b.hebrewDisplay, translit: b.combined, translation: '', pos: 'blend', era: 'Both', isReal: false }));
-    items = rwShuffle([...items, ...blendItems]).slice(0, count * 2);
+    const blendCountVal = document.getElementById('cwBlendCount') ? document.getElementById('cwBlendCount').value : 'match';
+    const blendCount = blendCountVal === 'match' ? count : parseInt(blendCountVal) || count;
+    ensureCvcBlends(blendCount * 3); // generate more than needed so filter has room
+    const blendItems = rwShuffle(blends).slice(0, blendCount).map(b => ({ heb: b.hebrewDisplay, word: b.hebrewDisplay, translit: b.combined, translation: '', pos: 'blend', era: 'Both', isReal: false }));
+    items = rwShuffle([...items, ...blendItems]);
   }
   const starReal = starRealOn;
   lastShetefItems = { mode: 'real', items };
