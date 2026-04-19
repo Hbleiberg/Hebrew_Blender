@@ -2024,7 +2024,7 @@ function updateCombosCount() {
   if (type === 'one')   combos = first.length * v;
   else if (type === 'two')   combos = first.length * v * second.length;
   else if (type === 'three') combos = first.length * v * second.length * second.length;
-  el.textContent = combos > 0 ? `${combos.toLocaleString()} possible combinations` : '';
+  el.textContent = combos > 0 ? `${combos.toLocaleString('en-US')} possible combinations` : '';
 }
 
 function selectAllLetters() {
