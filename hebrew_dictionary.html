@@ -242,9 +242,11 @@ footer a{color:var(--gold);text-decoration:none;}
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Advanced</div>
       <div class="panel-body">
         <div style="font-size:0.72rem;font-weight:600;margin-bottom:6px;color:var(--text);">Copy Mode</div>
-        <label class="cb-label"><input type="radio" name="copyMode" value="word" checked onchange="copyMode='word'" style="accent-color:var(--gold);"> Only word</label>
+        <label class="cb-label"><input type="radio" name="copyMode" value="word" checked onchange="copyMode='word'" style="accent-color:var(--gold);"> Word</label>
         <label class="cb-label"><input type="radio" name="copyMode" value="definition" onchange="copyMode='definition'" style="accent-color:var(--gold);"> Word — Definition</label>
+        <label class="cb-label"><input type="radio" name="copyMode" value="transdef" onchange="copyMode='transdef'" style="accent-color:var(--gold);"> Word — Transliteration — Definition</label>
         <label class="cb-label"><input type="radio" name="copyMode" value="defonly" onchange="copyMode='defonly'" style="accent-color:var(--gold);"> Definition</label>
+        <label class="cb-label"><input type="radio" name="copyMode" value="allinfo" onchange="copyMode='allinfo'" style="accent-color:var(--gold);"> All info</label>
         <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
         <label class="cb-label" title="Select multiple words from the results. Each selected word is added to a text box below — one per line — in whatever Copy Mode is active."><input type="checkbox" id="bulkModeCb" style="accent-color:var(--gold);" onchange="toggleBulkMode(this.checked)"> Bulk Copy Mode</label>
         <div id="bulkPanel" style="display:none;margin-top:8px;">
@@ -335,10 +337,26 @@ let showGematria = false;
 let bulkMode = false;
 const bulkSelected = new Map(); // bare -> {w, text}
 
-function wordBulkText(w) {
-  return copyMode === 'definition' && w.translation ? `${w.word} — ${w.translation}`
-       : copyMode === 'defonly' ? (w.translation || w.word) : w.word;
+function getWordCopyText(w) {
+  const parts = [w.word];
+  if (copyMode === 'definition') return w.translation ? `${w.word} — ${w.translation}` : w.word;
+  if (copyMode === 'defonly') return w.translation || w.word;
+  if (copyMode === 'transdef') {
+    const mid = [w.translit, w.translation].filter(Boolean).join(' — ');
+    return mid ? `${w.word} — ${mid}` : w.word;
+  }
+  if (copyMode === 'allinfo') {
+    const segs = [w.word];
+    if (w.translit) segs.push(w.translit);
+    if (w.translation) segs.push(w.translation);
+    if (w.pos) segs.push(w.pos);
+    if (w.era) segs.push(w.era);
+    if (showGematria) segs.push(`ג${calcGematria(w.bare)}`);
+    return segs.join(' — ');
+  }
+  return w.word;
 }
+function wordBulkText(w) { return getWordCopyText(w); }
 
 function updateBulkTextarea() {
   document.getElementById('bulkTextarea').value = [...bulkSelected.values()].map(e => e.text).join('\n');
@@ -597,7 +615,7 @@ function loadMore() {
     btn.className = 'wc-copy';
     btn.innerHTML = COPY_ICON;
     btn.title = 'Copy Hebrew';
-    btn.addEventListener('click', e => { e.stopPropagation(); const text = copyMode === 'definition' && w.translation ? `${w.word} — ${w.translation}` : copyMode === 'defonly' ? (w.translation || w.word) : w.word; copyWord(btn, text); });
+    btn.addEventListener('click', e => { e.stopPropagation(); copyWord(btn, getWordCopyText(w)); });
     card.appendChild(btn);
     const srch = document.createElement('a');
     srch.className = 'wc-search';
