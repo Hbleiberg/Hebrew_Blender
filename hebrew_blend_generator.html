@@ -2008,39 +2008,58 @@ function getSettings() {
     selectedLetters: [...selectedLetters],
     selectedVowels:  [...selectedVowels],
     // Layout
-    blendCount:   document.getElementById('blendCount').value,
-    wsTitle:      document.getElementById('wsTitle').value,
-    wsSubtitle:   document.getElementById('wsSubtitle').value,
+    blendCount:    document.getElementById('blendCount').value,
+    wsTitle:       document.getElementById('wsTitle').value,
+    wsSubtitle:    document.getElementById('wsSubtitle').value,
     excludeRepeats: document.getElementById('excludeRepeats').checked,
-    landscape:    document.getElementById('landscapeMode').checked,
-    // Worksheet mode toggles
-    blendType:    document.querySelector('.blend-type-btn.active')?.dataset.type || 'two',
-    inverse:      document.getElementById('inverseToggle').checked,
-    answerKey:    document.getElementById('answerKeyToggle').checked,
-    oneLetter:    document.querySelector('.blend-type-btn.active')?.dataset.type === 'one',
-    nikudOnly:    document.querySelector('.blend-type-btn.active')?.dataset.type === 'nikud',
-    threeLetter:  document.querySelector('.blend-type-btn.active')?.dataset.type === 'three',
+    landscape:     document.getElementById('landscapeMode').checked,
+    headerLang,
+    // Blend type & mode
+    blendType:     document.querySelector('.blend-type-btn.active')?.dataset.type || 'two',
     vowelPosition: getVowelPos(),
-    selfCheck:    document.getElementById('selfCheckToggle').checked,
-    timerOn:      document.getElementById('timerToggle').checked,
+    inverse:       document.getElementById('inverseToggle').checked,
+    answerKey:     document.getElementById('answerKeyToggle').checked,
+    selfCheck:     document.getElementById('selfCheckToggle').checked,
+    timerOn:       document.getElementById('timerToggle').checked,
     timerDuration: document.getElementById('timerDuration').value,
-    audio:        document.getElementById('audioToggle').checked,
-    bingo:        document.getElementById('bingoToggle').checked,
-    bingoGrid:    document.getElementById('bingoGrid').value,
-    bingoCards:   document.getElementById('bingoCards').value,
-    bingoPerPage: document.getElementById('bingoPerPage').value,
-    bingoFreeSpace:   document.getElementById('bingoFreeSpace').checked,
-    bingoShowSounds:  document.getElementById('bingoShowSounds').checked,
-    bingoCallerSheet: document.getElementById('bingoCallerSheet').checked,
-    bingoSharedBlends: document.getElementById('bingoSharedBlends').checked,
+    audio:         document.getElementById('audioToggle').checked,
     // Focus letters
-    focusOn:      document.getElementById('focusToggle').checked,
-    lock1Active:  document.getElementById('lock1Active').checked,
-    lock1Letter:  document.getElementById('lock1Letter').value,
-    lock2Active:  document.getElementById('lock2Active').checked,
-    lock2Letter:  document.getElementById('lock2Letter').value,
-    lock3Active:  document.getElementById('lock3Active').checked,
-    lock3Letter:  document.getElementById('lock3Letter').value,
+    focusOn:       document.getElementById('focusToggle').checked,
+    lock1Active:   document.getElementById('lock1Active').checked,
+    lock1Letter:   document.getElementById('lock1Letter').value,
+    lock2Active:   document.getElementById('lock2Active').checked,
+    lock2Letter:   document.getElementById('lock2Letter').value,
+    lock3Active:   document.getElementById('lock3Active').checked,
+    lock3Letter:   document.getElementById('lock3Letter').value,
+    // Bingo
+    bingo:             document.getElementById('bingoToggle').checked,
+    bingoGrid:         document.getElementById('bingoGrid').value,
+    bingoCards:        document.getElementById('bingoCards').value,
+    bingoPerPage:      document.getElementById('bingoPerPage').value,
+    bingoFreeSpace:    document.getElementById('bingoFreeSpace').checked,
+    bingoShowSounds:   document.getElementById('bingoShowSounds').checked,
+    bingoCallerSheet:  document.getElementById('bingoCallerSheet').checked,
+    bingoSharedBlends: document.getElementById('bingoSharedBlends').checked,
+    // Real Words
+    realWords:         document.getElementById('realWordsToggle').checked,
+    rwDrillType,
+    rwCount:           document.getElementById('rwCount').value,
+    rwMixed:           document.getElementById('rwMixed').checked,
+    rwShowTranslit:    document.getElementById('rwShowTranslit').checked,
+    rwShowTranslation: document.getElementById('rwShowTranslation').checked,
+    rwLen1:            document.getElementById('rwLen1').checked,
+    rwLen2:            document.getElementById('rwLen2').checked,
+    rwLen3:            document.getElementById('rwLen3').checked,
+    rwEraBiblical:     document.getElementById('rwEraBiblical').checked,
+    rwEraModern:       document.getElementById('rwEraModern').checked,
+    rwLetterFilter:    [...rwLetterFilter],
+    rwBingoGrid:       document.getElementById('rwBingoGrid').value,
+    rwBingoCards:      document.getElementById('rwBingoCards').value,
+    rwBingoPerPage:    document.getElementById('rwBingoPerPage').value,
+    rwBingoFreeSpace:  document.getElementById('rwBingoFreeSpace').checked,
+    rwBingoShared:     document.getElementById('rwBingoShared').checked,
+    rwBingoCaller:     document.getElementById('rwBingoCaller').checked,
+    rwBingoCallerTransl: document.getElementById('rwBingoCallerTransl').checked,
   };
 }
 
@@ -2058,47 +2077,77 @@ function applySettings(s) {
   });
 
   // Layout
-  if (s.blendCount)           document.getElementById('blendCount').value = s.blendCount;
-  if (s.wsTitle !== undefined) document.getElementById('wsTitle').value = s.wsTitle;
+  if (s.blendCount)              document.getElementById('blendCount').value = s.blendCount;
+  if (s.wsTitle !== undefined)   document.getElementById('wsTitle').value = s.wsTitle;
   if (s.wsSubtitle !== undefined) document.getElementById('wsSubtitle').value = s.wsSubtitle;
   if (s.excludeRepeats !== undefined) document.getElementById('excludeRepeats').checked = s.excludeRepeats;
   if (s.landscape !== undefined) { document.getElementById('landscapeMode').checked = s.landscape; toggleLandscape(s.landscape); }
+  if (s.headerLang) setHeaderLang(s.headerLang);
 
-  // Determine and restore blend type selector
+  // Blend type & mode
   const blendType = s.blendType || (s.nikudOnly ? 'nikud' : s.oneLetter ? 'one' : s.threeLetter ? 'three' : 'two');
   setBlendType(blendType);
   if (s.vowelPosition) {
     document.getElementById('vowelOnFirst').checked  = s.vowelPosition !== 'second';
     document.getElementById('vowelOnSecond').checked = (s.vowelPosition === 'second' || s.vowelPosition === 'both');
   }
+  if (s.inverse !== undefined)   document.getElementById('inverseToggle').checked = s.inverse;
+  if (s.answerKey !== undefined) document.getElementById('answerKeyToggle').checked = s.answerKey;
   if (s.timerOn !== undefined)   document.getElementById('timerToggle').checked = s.timerOn;
   if (s.timerDuration)           document.getElementById('timerDuration').value = s.timerDuration;
   if (s.audio !== undefined)     document.getElementById('audioToggle').checked = s.audio;
   if (s.timerOn !== undefined)   document.getElementById('timerDurationRow').style.display = s.timerOn ? 'flex' : 'none';
 
+  // Focus letters
+  if (s.focusOn !== undefined)   document.getElementById('focusToggle').checked = s.focusOn;
+  if (s.lock1Active !== undefined) document.getElementById('lock1Active').checked = s.lock1Active;
+  if (s.lock1Letter)             document.getElementById('lock1Letter').value = s.lock1Letter;
+  if (s.lock2Active !== undefined) document.getElementById('lock2Active').checked = s.lock2Active;
+  if (s.lock2Letter)             document.getElementById('lock2Letter').value = s.lock2Letter;
+  if (s.lock3Active !== undefined) document.getElementById('lock3Active').checked = s.lock3Active;
+  if (s.lock3Letter)             document.getElementById('lock3Letter').value = s.lock3Letter;
+
   // Bingo
-  if (s.bingo !== undefined) document.getElementById('bingoToggle').checked = s.bingo;
-  if (s.bingoGrid)    document.getElementById('bingoGrid').value = s.bingoGrid;
-  if (s.bingoCards)   document.getElementById('bingoCards').value = s.bingoCards;
-  if (s.bingoPerPage) document.getElementById('bingoPerPage').value = s.bingoPerPage;
+  if (s.bingo !== undefined)         document.getElementById('bingoToggle').checked = s.bingo;
+  if (s.bingoGrid)                   document.getElementById('bingoGrid').value = s.bingoGrid;
+  if (s.bingoCards)                  document.getElementById('bingoCards').value = s.bingoCards;
+  if (s.bingoPerPage)                document.getElementById('bingoPerPage').value = s.bingoPerPage;
   if (s.bingoFreeSpace !== undefined)    document.getElementById('bingoFreeSpace').checked = s.bingoFreeSpace;
   if (s.bingoShowSounds !== undefined)   document.getElementById('bingoShowSounds').checked = s.bingoShowSounds;
   if (s.bingoCallerSheet !== undefined)  document.getElementById('bingoCallerSheet').checked = s.bingoCallerSheet;
   if (s.bingoSharedBlends !== undefined) document.getElementById('bingoSharedBlends').checked = s.bingoSharedBlends;
 
-  // Focus letters
-  if (s.focusOn !== undefined) document.getElementById('focusToggle').checked = s.focusOn;
-  if (s.lock1Active !== undefined) document.getElementById('lock1Active').checked = s.lock1Active;
-  if (s.lock1Letter) document.getElementById('lock1Letter').value = s.lock1Letter;
-  if (s.lock2Active !== undefined) document.getElementById('lock2Active').checked = s.lock2Active;
-  if (s.lock2Letter) document.getElementById('lock2Letter').value = s.lock2Letter;
-  if (s.lock3Active !== undefined) document.getElementById('lock3Active').checked = s.lock3Active;
-  if (s.lock3Letter) document.getElementById('lock3Letter').value = s.lock3Letter;
+  // Real Words
+  if (s.realWords !== undefined) document.getElementById('realWordsToggle').checked = s.realWords;
+  if (s.rwCount)                 document.getElementById('rwCount').value = s.rwCount;
+  if (s.rwMixed !== undefined)   document.getElementById('rwMixed').checked = s.rwMixed;
+  if (s.rwShowTranslit !== undefined)    document.getElementById('rwShowTranslit').checked = s.rwShowTranslit;
+  if (s.rwShowTranslation !== undefined) document.getElementById('rwShowTranslation').checked = s.rwShowTranslation;
+  if (s.rwLen1 !== undefined)    document.getElementById('rwLen1').checked = s.rwLen1;
+  if (s.rwLen2 !== undefined)    document.getElementById('rwLen2').checked = s.rwLen2;
+  if (s.rwLen3 !== undefined)    document.getElementById('rwLen3').checked = s.rwLen3;
+  if (s.rwEraBiblical !== undefined) document.getElementById('rwEraBiblical').checked = s.rwEraBiblical;
+  if (s.rwEraModern !== undefined)   document.getElementById('rwEraModern').checked = s.rwEraModern;
+  if (s.rwLetterFilter) {
+    rwLetterFilter = new Set(s.rwLetterFilter);
+    document.querySelectorAll('.rw-letter-tile').forEach(t => {
+      t.classList.toggle('selected', rwLetterFilter.has(t.dataset.heb));
+    });
+  }
+  if (s.rwBingoGrid)    document.getElementById('rwBingoGrid').value = s.rwBingoGrid;
+  if (s.rwBingoCards)   document.getElementById('rwBingoCards').value = s.rwBingoCards;
+  if (s.rwBingoPerPage) document.getElementById('rwBingoPerPage').value = s.rwBingoPerPage;
+  if (s.rwBingoFreeSpace !== undefined)    document.getElementById('rwBingoFreeSpace').checked = s.rwBingoFreeSpace;
+  if (s.rwBingoShared !== undefined)       document.getElementById('rwBingoShared').checked = s.rwBingoShared;
+  if (s.rwBingoCaller !== undefined)       document.getElementById('rwBingoCaller').checked = s.rwBingoCaller;
+  if (s.rwBingoCallerTransl !== undefined) document.getElementById('rwBingoCallerTransl').checked = s.rwBingoCallerTransl;
 
-  // Now fire all UI toggle functions AFTER all values are set
+  // Fire UI toggle functions after all values are set
   setBlendType(blendType);
   toggleFocusUI();
   toggleBingoUI();
+  if (s.realWords) toggleRealWordsUI();
+  if (s.rwDrillType) setRealWordDrill(s.rwDrillType);
 
   // Self-check last — overrides everything
   if (s.selfCheck !== undefined) {
