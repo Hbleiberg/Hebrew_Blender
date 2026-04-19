@@ -3528,49 +3528,74 @@ function renderGematriaSheet(ws) {
   const subtitle = document.getElementById('wsSubtitle').value;
   const cols     = autoCols(blends.length);
   ws.innerHTML   = '';
+  scoreCorrect = 0; scoreIncorrect = 0; stopTimer();
 
-  // ── Student sheet ──
-  const studentSheet = document.createElement('div');
-  studentSheet.className = 'sheet';
-  const header = document.createElement('div');
-  header.className = 'ws-header';
-  header.innerHTML = `
+  // ── Header ──
+  const scHeader = document.createElement('div');
+  scHeader.className = 'ws-header';
+  scHeader.innerHTML = `
     <div>
       <div class="ws-title">${title}</div>
-      <div class="ws-subtitle">${subtitle || 'Write the Gematria value of each word on the line below it.'}</div>
-    </div>
-    ${wsMetaHTML()}`;
-  studentSheet.appendChild(header);
+      <div class="ws-subtitle">${subtitle || 'Write the Gematria value of each word, then tap to check.'}</div>
+    </div>`;
+  ws.appendChild(scHeader);
 
+  // ── Score bar ──
+  const scoreBar = document.createElement('div');
+  scoreBar.className = 'score-bar';
+  scoreBar.id = 'scScoreBar';
+  scoreBar.innerHTML = `
+    <span class="score-correct">✓ 0</span>
+    <span class="score-incorrect">✗ 0</span>
+    <span class="score-remaining">${blends.length} left</span>
+    <button class="btn-xs" style="margin-left:auto;" onclick="resetGematriaCheck()">↺ Reset</button>`;
+  ws.appendChild(scoreBar);
+
+  // ── Controls ──
+  const controls = document.createElement('div');
+  controls.className = 'self-check-controls';
+  controls.innerHTML = `
+    <button class="btn-xs" onclick="flipAllCards(true)">Reveal All</button>
+    <button class="btn-xs" onclick="flipAllCards(false)">Hide All</button>
+    <span style="font-size:0.75rem;color:var(--muted);">Tap a card to reveal its Gematria value</span>`;
+  ws.appendChild(controls);
+
+  // ── Interactive flip-card grid ──
   const grid = document.createElement('div');
-  grid.className = 'blends-grid';
+  grid.className = 'self-check-grid';
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-  grid.style.direction = 'rtl';
-  blends.forEach((b, idx) => {
-    const cell = document.createElement('div');
-    cell.className = 'blend-cell';
-    cell.style.minHeight = '80px';
-    const num = document.createElement('div');
-    num.style.cssText = 'font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;';
-    num.textContent = idx + 1;
-    const heb = document.createElement('div');
-    heb.className = 'blend-hebrew';
-    heb.textContent = b.hebrewDisplay;
-    const blank = document.createElement('div');
-    blank.className = 'gematria-blank';
-    cell.appendChild(num); cell.appendChild(heb); cell.appendChild(blank);
-    grid.appendChild(cell);
-  });
-  studentSheet.appendChild(grid);
-  const foot = document.createElement('div');
-  foot.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-  foot.textContent = `${blends.length} items · Hebrew Blend Generator`;
-  studentSheet.appendChild(foot);
-  ws.appendChild(studentSheet);
+  ws.appendChild(grid);
 
-  // ── Answer key sheet ──
+  blends.forEach((b, idx) => {
+    const val = calcGematria(b.hebrewDisplay);
+    const card = document.createElement('div');
+    card.className = 'flip-card';
+    card.innerHTML = `
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <span class="flip-card-num">${idx + 1}</span>
+          <span style="direction:rtl;font-family:'Frank Ruhl Libre',serif;font-size:2rem;">${b.hebrewDisplay}</span>
+          <div class="gematria-blank" style="margin-top:8px;"></div>
+          <span class="flip-card-hint">tap to reveal</span>
+        </div>
+        <div class="flip-card-back">
+          <span class="flip-card-num" style="color:var(--gold-light);">${idx + 1}</span>
+          <span style="direction:rtl;font-family:'Frank Ruhl Libre',serif;font-size:1.4rem;opacity:0.7;">${b.hebrewDisplay}</span>
+          <span style="font-size:1.8rem;font-weight:700;color:var(--gold-light);margin-top:4px;">${val}</span>
+        </div>
+      </div>
+      <div class="flip-card-score-btns">
+        <button class="score-btn correct"   onclick="markScore(true,  this.closest('.flip-card'))">✓ Got it</button>
+        <button class="score-btn incorrect" onclick="markScore(false, this.closest('.flip-card'))">✗ Missed</button>
+      </div>`;
+    card.querySelector('.flip-card-inner').addEventListener('click', () => card.classList.toggle('flipped'));
+    grid.appendChild(card);
+  });
+
+  // ── Printable answer key (hidden on screen, visible in print) ──
   const keySheet = document.createElement('div');
   keySheet.className = 'sheet answer-key-sheet';
+  keySheet.innerHTML = '';
   const banner = document.createElement('div');
   banner.className = 'answer-key-banner';
   banner.textContent = '✦ Answer Key ✦';
@@ -3588,16 +3613,10 @@ function renderGematriaSheet(ws) {
     const cell = document.createElement('div');
     cell.className = 'blend-cell';
     cell.style.minHeight = '80px';
-    const num = document.createElement('div');
-    num.style.cssText = 'font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;';
-    num.textContent = idx + 1;
-    const heb = document.createElement('div');
-    heb.className = 'blend-hebrew';
-    heb.textContent = b.hebrewDisplay;
-    const gval = document.createElement('div');
-    gval.className = 'gematria-value';
-    gval.textContent = val;
-    cell.appendChild(num); cell.appendChild(heb); cell.appendChild(gval);
+    cell.innerHTML = `
+      <div style="font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;">${idx + 1}</div>
+      <div class="blend-hebrew">${b.hebrewDisplay}</div>
+      <div class="gematria-value">${val}</div>`;
     keyGrid.appendChild(cell);
   });
   keySheet.appendChild(keyGrid);
@@ -3606,6 +3625,14 @@ function renderGematriaSheet(ws) {
   keyFoot.textContent = `${blends.length} items · Hebrew Blend Generator — Gematria Answer Key`;
   keySheet.appendChild(keyFoot);
   ws.appendChild(keySheet);
+}
+
+function resetGematriaCheck() {
+  scoreCorrect = 0; scoreIncorrect = 0;
+  document.querySelectorAll('.flip-card').forEach(c => {
+    c.classList.remove('flipped','scored-correct','scored-incorrect');
+  });
+  updateScoreBar();
 }
 
 // ══════════════════════════════════════════════
