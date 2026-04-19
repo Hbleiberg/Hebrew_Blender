@@ -87,8 +87,12 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .sort-sel{padding:4px 8px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--text);font-size:0.8rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;outline:none;}
 .content{flex:1;overflow-y:auto;padding:18px 20px;}
 .results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:16px;}
-.word-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:3px;cursor:default;transition:border-color 0.15s,box-shadow 0.15s;}
+.word-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:3px;cursor:default;transition:border-color 0.15s,box-shadow 0.15s;position:relative;}
 .word-card:hover{border-color:var(--gold);box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+.wc-copy{position:absolute;top:7px;left:7px;background:none;border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:0.63rem;color:var(--muted);cursor:pointer;line-height:1.5;font-family:'Source Sans 3',sans-serif;opacity:0;pointer-events:none;transition:opacity 0.15s,border-color 0.15s,color 0.15s;}
+.word-card:hover .wc-copy{opacity:1;pointer-events:auto;}
+.wc-copy:hover,.wc-copy.copied{border-color:var(--gold);color:var(--gold);}
+@media(hover:none){.wc-copy{opacity:0.55;pointer-events:auto;}}
 .wc-heb{font-family:'Frank Ruhl Libre',serif;font-size:1.9rem;direction:rtl;text-align:right;line-height:1.2;}
 .wc-translit{font-size:0.76rem;color:var(--muted);font-style:italic;text-align:right;}
 .wc-transl{font-size:0.8rem;line-height:1.35;margin-top:2px;}
@@ -107,6 +111,15 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .loading{text-align:center;padding:60px 20px;color:var(--muted);font-style:italic;}
 footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);flex-shrink:0;}
 footer a{color:var(--gold);text-decoration:none;}
+@media(max-width:680px){
+  .app{flex-direction:column;overflow:visible;}
+  #appSidebar{display:flex!important;width:100%;overflow-y:visible;border-right:none;border-bottom:1px solid var(--border);}
+  .main{overflow:visible;}
+  .content{overflow-y:visible;padding:14px 12px;}
+  .sidebar-toggle-btn,.sidebar-show-btn{display:none!important;}
+  body{overflow-y:auto;}
+  .results-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
+}
 </style>
 </head>
 <body>
@@ -359,6 +372,12 @@ function onFilter() {
   updateLenAll();
 }
 
+function copyWord(btn, text) {
+  const finish = () => { btn.textContent = '✓'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500); };
+  if (navigator.clipboard) { navigator.clipboard.writeText(text).then(finish).catch(finish); }
+  else { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch(e) {} document.body.removeChild(ta); finish(); }
+}
+
 function loadMore() {
   const grid = document.getElementById('resultsGrid');
   filtered.slice(shown, shown + PAGE).forEach(w => {
@@ -366,7 +385,13 @@ function loadMore() {
     card.className = 'word-card';
     const ec = w.era === 'Biblical' ? 'b-bib' : w.era === 'Modern' ? 'b-mod' : 'b-both';
     const el = w.era === 'Both' ? 'Bib + Mod' : w.era;
-    card.innerHTML = `
+    const btn = document.createElement('button');
+    btn.className = 'wc-copy';
+    btn.textContent = 'Copy';
+    btn.addEventListener('click', e => { e.stopPropagation(); copyWord(btn, w.word); });
+    card.appendChild(btn);
+    const inner = document.createElement('div');
+    inner.innerHTML = `
       <div class="wc-heb">${w.word}</div>
       ${w.translit ? `<div class="wc-translit">${w.translit}</div>` : ''}
       ${w.translation ? `<div class="wc-transl">${w.translation}</div>` : ''}
@@ -375,6 +400,7 @@ function loadMore() {
         <span class="badge ${ec}">${el}</span>
         <span class="badge b-len">${w.len}L</span>
       </div>`;
+    while (inner.firstChild) card.appendChild(inner.firstChild);
     grid.appendChild(card);
   });
   shown = Math.min(shown + PAGE, filtered.length);
