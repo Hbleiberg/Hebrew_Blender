@@ -653,6 +653,19 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.lcb,.pcb').forEach(cb => cb.addEventListener('change', onFilter));
   document.getElementById('eraBib').addEventListener('change', onFilter);
   document.getElementById('eraMod').addEventListener('change', onFilter);
+
+  // Sync JS state with any browser-restored form values
+  const restoredMode = document.querySelector('input[name="copyMode"]:checked');
+  if (restoredMode) copyMode = restoredMode.value;
+
+  const gematriaCb = document.getElementById('showGematriaCb');
+  if (gematriaCb && gematriaCb.checked) showGematria = true;
+
+  const hideVowelCb = document.getElementById('hideNoVowelsCb');
+  if (hideVowelCb && hideVowelCb.checked) hideNoVowels = true;
+
+  const bulkCb = document.getElementById('bulkModeCb');
+  if (bulkCb && bulkCb.checked) toggleBulkMode(true);
 });
 </script>
 </body>
