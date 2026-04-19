@@ -137,6 +137,7 @@ footer a{color:var(--gold);text-decoration:none;}
     <div class="panel">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Word Length</div>
       <div class="panel-body">
+        <label class="cb-label" style="margin-bottom:6px;font-weight:600;"><input type="checkbox" id="lenAllCb" checked onchange="toggleAllLengths(this)"> All Words</label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 10px;margin-bottom:6px;">
           <label class="cb-label"><input type="checkbox" class="lcb" value="1" checked> Prefixes</label>
           <label class="cb-label"><input type="checkbox" class="lcb" value="2" checked> 2-Letter</label>
@@ -355,6 +356,7 @@ function onFilter() {
   const n = filtered.length;
   document.getElementById('resultCount').textContent =
     n === 0 ? 'No words found' : n === 1 ? '1 word' : `${n.toLocaleString()} words`;
+  updateLenAll();
 }
 
 function loadMore() {
@@ -377,6 +379,19 @@ function loadMore() {
   });
   shown = Math.min(shown + PAGE, filtered.length);
   document.getElementById('loadMoreWrap').style.display = shown < filtered.length ? 'block' : 'none';
+}
+
+function toggleAllLengths(cb) {
+  document.querySelectorAll('.lcb').forEach(el => { el.checked = cb.checked; });
+  onFilter();
+}
+
+function updateLenAll() {
+  const cbs = document.querySelectorAll('.lcb');
+  const all = document.getElementById('lenAllCb');
+  const checkedCount = [...cbs].filter(c => c.checked).length;
+  all.checked = checkedCount === cbs.length;
+  all.indeterminate = checkedCount > 0 && checkedCount < cbs.length;
 }
 
 function toggleSidebar() {
