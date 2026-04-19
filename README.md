@@ -2,7 +2,7 @@
 
 A pair of browser-based tools for Hebrew literacy instruction — no installation, no build step, no server required. Open any HTML file directly in a browser or serve the folder statically.
 
-**Live site:** [hbleiberg.github.io/Hebrew_Blender](https://hbleiberg.github.io/Hebrew_Blender) *(if GitHub Pages is enabled)*
+**Live site:** [hbleiberg.github.io/Hebrew_Blender](https://hbleiberg.github.io/Hebrew_Blender)
 
 ---
 
