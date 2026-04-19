@@ -1755,6 +1755,10 @@
     <div class="panel" id="panelVowels">
       <div class="panel-title">Vowels Included</div>
       <div class="panel-body">
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <button class="btn-xs" onclick="setAllVowels(true)">All</button>
+          <button class="btn-xs" onclick="setAllVowels(false)">None</button>
+        </div>
         <div class="vowel-grid" id="vowelGrid"></div>
       </div>
     </div>
@@ -2050,6 +2054,14 @@ function toggleLetter(heb, el) {
 function toggleVowel(key, checked) {
   if (checked) selectedVowels.add(key);
   else selectedVowels.delete(key);
+  updateCombosCount();
+}
+
+function setAllVowels(checked) {
+  VOWELS.forEach(v => {
+    if (checked) selectedVowels.add(v.key); else selectedVowels.delete(v.key);
+  });
+  document.querySelectorAll('#vowelGrid input[type="checkbox"]').forEach(cb => cb.checked = checked);
   updateCombosCount();
 }
 
