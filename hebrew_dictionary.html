@@ -90,10 +90,8 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:16px;}
 .word-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:3px;cursor:default;transition:border-color 0.15s,box-shadow 0.15s;position:relative;}
 .word-card:hover{border-color:var(--gold);box-shadow:0 2px 8px rgba(0,0,0,0.08);}
-.wc-copy{position:absolute;top:7px;left:7px;background:none;border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:0.63rem;color:var(--muted);cursor:pointer;line-height:1.5;font-family:'Source Sans 3',sans-serif;opacity:0;pointer-events:none;transition:opacity 0.15s,border-color 0.15s,color 0.15s;}
-.word-card:hover .wc-copy{opacity:1;pointer-events:auto;}
-.wc-copy:hover,.wc-copy.copied{border-color:var(--gold);color:var(--gold);}
-@media(hover:none){.wc-copy{opacity:0.55;pointer-events:auto;}}
+.wc-copy{position:absolute;top:7px;left:7px;background:none;border:1px solid var(--border);border-radius:4px;padding:3px;color:var(--muted);cursor:pointer;line-height:0;opacity:0.4;transition:opacity 0.15s,border-color 0.15s,color 0.15s;display:flex;align-items:center;justify-content:center;}
+.wc-copy:hover,.wc-copy.copied{border-color:var(--gold);color:var(--gold);opacity:1;}
 .wc-heb{font-family:'Frank Ruhl Libre',serif;font-size:1.9rem;direction:rtl;text-align:right;line-height:1.2;}
 .wc-translit{font-size:0.76rem;color:var(--muted);font-style:italic;text-align:right;}
 .wc-transl{font-size:0.8rem;line-height:1.35;margin-top:2px;}
@@ -374,8 +372,10 @@ function onFilter() {
   updateLenAll();
 }
 
+const COPY_ICON = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+const CHECK_ICON = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
 function copyWord(btn, text) {
-  const finish = () => { btn.textContent = '✓'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500); };
+  const finish = () => { btn.innerHTML = CHECK_ICON; btn.classList.add('copied'); setTimeout(() => { btn.innerHTML = COPY_ICON; btn.classList.remove('copied'); }, 1500); };
   if (navigator.clipboard) { navigator.clipboard.writeText(text).then(finish).catch(finish); }
   else { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch(e) {} document.body.removeChild(ta); finish(); }
 }
@@ -389,7 +389,8 @@ function loadMore() {
     const el = w.era === 'Both' ? 'Bib + Mod' : w.era;
     const btn = document.createElement('button');
     btn.className = 'wc-copy';
-    btn.textContent = 'Copy';
+    btn.innerHTML = COPY_ICON;
+    btn.title = 'Copy Hebrew';
     btn.addEventListener('click', e => { e.stopPropagation(); copyWord(btn, w.word); });
     card.appendChild(btn);
     const inner = document.createElement('div');
