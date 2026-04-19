@@ -3939,6 +3939,32 @@ function toggleCwStarRow() {
   if (row) row.style.display = document.getElementById('cwMixed').checked ? '' : 'none';
 }
 
+function ensureCvcBlends(needed) {
+  const VAV_VARIANTS = new Set(['וֹ','וּ']);
+  const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
+  const vowelKeys = selectedVowels.size ? [...selectedVowels] : ['a','e','i','o','u'];
+  const firstPool  = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h) && !VAV_VARIANTS.has(h));
+  const secondPool = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h) && h !== 'ו');
+  if (!firstPool.length || !secondPool.length) return;
+  blends = [];
+  let safety = needed * 60;
+  while (blends.length < needed && safety-- > 0) {
+    let vowel = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
+    const first  = firstPool[Math.floor(Math.random() * firstPool.length)];
+    const second = secondPool[Math.floor(Math.random() * secondPool.length)];
+    if (first === 'י' && second === 'י') continue;
+    if (isImpossibleCombo(first, second, null, vowel)) continue;
+    if ((first === 'שׂ' || first === 'ש') && vowel === 'o') { const alt = vowelKeys.filter(v => v !== 'o'); if (!alt.length) continue; vowel = alt[Math.floor(Math.random() * alt.length)]; }
+    if (first === 'ו' && vowel === 'sh') { const alt = vowelKeys.filter(v => v !== 'sh'); if (!alt.length) continue; vowel = alt[Math.floor(Math.random() * alt.length)]; }
+    const firstObj  = getLetter(first);
+    const secondObj = getLetter(second);
+    blends.push({
+      hebrewDisplay: withNikud(firstObj, vowel, true) + (SOFIT_CHARS.has(second) ? second : secondObj.base),
+      combined: getSound(firstObj, vowel) + secondObj.sounds['sh'].replace("'", ''),
+    });
+  }
+}
+
 function generateCustomWordlist() {
   if (!customWordlistData.length) { alert('No wordlist imported. Open Advanced → Import Custom Wordlist and click Import.'); return; }
 
@@ -3963,7 +3989,7 @@ function generateCustomWordlist() {
 
   let items = pool.map(w => ({ ...w, isReal: true }));
   if (mixed) {
-    if (!blends.length) { alert('No blends available to mix in. Generate a blend worksheet in standard mode first, then return to custom mode.'); return; }
+    if (!blends.length) ensureCvcBlends(count * 3);
     const blendItems = rwShuffle(blends).slice(0, count).map(b => ({ heb: b.hebrewDisplay, word: b.hebrewDisplay, translit: b.combined, translation: '', pos: 'blend', era: 'Both', isReal: false }));
     items = rwShuffle([...items, ...blendItems]).slice(0, count * 2);
   }
