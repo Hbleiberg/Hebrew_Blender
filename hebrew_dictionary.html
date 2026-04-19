@@ -220,6 +220,8 @@ footer a{color:var(--gold);text-decoration:none;}
       <div class="panel-body">
         <div class="filter-note" style="margin-bottom:6px;">Show only words whose vowels are all in the selected set.</div>
         <div class="vowel-grid" id="vowelFilterGrid"></div>
+        <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
+        <label class="cb-label"><input type="checkbox" id="hideNoVowelsCb" onchange="hideNoVowels=this.checked;onFilter()"> Hide words with no vowels</label>
       </div>
     </div>
 
@@ -305,6 +307,7 @@ const VOWEL_DEFS = [
   {u:'\u05B3', label:'Hataf Qamats', sub:'o',   ex:'אֳ'},
 ];
 const vowelFilters = new Set();
+let hideNoVowels = false;
 
 let ALL_WORDS = [];
 let copyMode = 'word';
@@ -446,6 +449,8 @@ function onFilter() {
         if (!vowelFilters.has(vd.u) && w.word.includes(vd.u)) return false;
       }
     }
+
+    if (hideNoVowels && !VOWEL_DEFS.some(vd => w.word.includes(vd.u))) return false;
 
     if (q) {
       if (!w.word.includes(q) && !w.bare.includes(q) &&
