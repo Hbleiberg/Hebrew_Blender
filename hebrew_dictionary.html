@@ -97,6 +97,10 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:16px;}
 .word-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:3px;cursor:default;transition:border-color 0.15s,box-shadow 0.15s;position:relative;}
 .word-card:hover{border-color:var(--gold);box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+.word-card.bulk-selected{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 10%,var(--white));}
+.wc-bulk-cb{position:absolute;top:8px;right:8px;width:16px;height:16px;accent-color:var(--gold);cursor:pointer;display:none;}
+body.bulk-mode .wc-bulk-cb{display:block;}
+body.bulk-mode .word-card{cursor:pointer;}
 .wc-copy,.wc-search{position:absolute;top:7px;background:none;border:1px solid var(--border);border-radius:4px;padding:3px;color:var(--muted);cursor:pointer;line-height:0;opacity:0.4;transition:opacity 0.15s,border-color 0.15s,color 0.15s;display:flex;align-items:center;justify-content:center;text-decoration:none;}
 .wc-copy{left:7px;}
 .wc-search{left:30px;}
@@ -242,6 +246,16 @@ footer a{color:var(--gold);text-decoration:none;}
         <label class="cb-label"><input type="radio" name="copyMode" value="definition" onchange="copyMode='definition'" style="accent-color:var(--gold);"> Word — Definition</label>
         <label class="cb-label"><input type="radio" name="copyMode" value="defonly" onchange="copyMode='defonly'" style="accent-color:var(--gold);"> Definition</label>
         <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
+        <label class="cb-label"><input type="checkbox" id="bulkModeCb" style="accent-color:var(--gold);" onchange="toggleBulkMode(this.checked)"> Bulk Copy Mode</label>
+        <div id="bulkPanel" style="display:none;margin-top:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span style="font-size:0.72rem;color:var(--muted);" id="bulkCount">0 selected</span>
+            <button class="pos-all-btn" onclick="clearBulkSelection()">Clear</button>
+          </div>
+          <textarea id="bulkTextarea" readonly rows="6" style="width:100%;font-size:0.75rem;font-family:'Frank Ruhl Libre',serif;direction:rtl;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;"></textarea>
+          <button class="pos-all-btn" style="width:100%;margin-top:5px;" onclick="copyBulkText()">Copy All</button>
+        </div>
+        <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
         <label class="cb-label"><input type="checkbox" id="showGematriaCb" style="accent-color:var(--gold);" onchange="showGematria=this.checked;rerender()"> Show Gematria Value</label>
       </div>
     </div>
@@ -314,6 +328,38 @@ let hideNoVowels = false;
 let ALL_WORDS = [];
 let copyMode = 'word';
 let showGematria = false;
+let bulkMode = false;
+const bulkSelected = new Map(); // bare -> {w, text}
+
+function wordBulkText(w) {
+  return copyMode === 'definition' && w.translation ? `${w.word} — ${w.translation}`
+       : copyMode === 'defonly' ? (w.translation || w.word) : w.word;
+}
+
+function updateBulkTextarea() {
+  document.getElementById('bulkTextarea').value = [...bulkSelected.values()].map(e => e.text).join('\n');
+  document.getElementById('bulkCount').textContent = `${bulkSelected.size} selected`;
+}
+
+function toggleBulkMode(on) {
+  bulkMode = on;
+  document.body.classList.toggle('bulk-mode', on);
+  document.getElementById('bulkPanel').style.display = on ? 'block' : 'none';
+  if (!on) { bulkSelected.clear(); updateBulkTextarea(); }
+  rerender();
+}
+
+function clearBulkSelection() {
+  bulkSelected.clear();
+  updateBulkTextarea();
+  document.querySelectorAll('.wc-bulk-cb').forEach(cb => { cb.checked = false; cb.closest('.word-card').classList.remove('bulk-selected'); });
+}
+
+function copyBulkText() {
+  const ta = document.getElementById('bulkTextarea');
+  if (!ta.value) return;
+  navigator.clipboard.writeText(ta.value).catch(() => { ta.select(); document.execCommand('copy'); });
+}
 
 const GEMATRIA = {'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,'כ':20,'ך':20,'ל':30,'מ':40,'ם':40,'נ':50,'ן':50,'ס':60,'ע':70,'פ':80,'ף':80,'צ':90,'ץ':90,'ק':100,'ר':200,'ש':300,'ת':400};
 function calcGematria(word) {
@@ -511,6 +557,24 @@ function loadMore() {
     card.className = 'word-card';
     const ec = w.era === 'Biblical' ? 'b-bib' : w.era === 'Modern' ? 'b-mod' : 'b-both';
     const el = w.era === 'Both' ? 'Bib + Mod' : w.era;
+    const bulkCb = document.createElement('input');
+    bulkCb.type = 'checkbox';
+    bulkCb.className = 'wc-bulk-cb';
+    bulkCb.checked = bulkSelected.has(w.bare);
+    bulkCb.addEventListener('change', e => {
+      e.stopPropagation();
+      if (e.target.checked) { bulkSelected.set(w.bare, {w, text: wordBulkText(w)}); } else { bulkSelected.delete(w.bare); }
+      card.classList.toggle('bulk-selected', e.target.checked);
+      updateBulkTextarea();
+    });
+    card.appendChild(bulkCb);
+    if (bulkSelected.has(w.bare)) card.classList.add('bulk-selected');
+    card.addEventListener('click', e => {
+      if (!bulkMode) return;
+      if (e.target === bulkCb) return;
+      bulkCb.checked = !bulkCb.checked;
+      bulkCb.dispatchEvent(new Event('change', {bubbles:true}));
+    });
     const btn = document.createElement('button');
     btn.className = 'wc-copy';
     btn.innerHTML = COPY_ICON;
