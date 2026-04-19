@@ -1563,6 +1563,8 @@
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwLen2" checked style="accent-color:var(--gold);"> 2-Letter</label>
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwLen3" checked style="accent-color:var(--gold);"> 3-Letter</label>
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwLen4" style="accent-color:var(--gold);"> 4-Letter</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwLen5" style="accent-color:var(--gold);"> 5-Letter</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwLen6" style="accent-color:var(--gold);"> 6-Letter</label>
                 </div>
                 <div style="margin-top:5px;padding-left:4px;border-left:2px solid var(--border);">
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;color:var(--text-muted);"><input type="checkbox" id="rwLenShorter" style="accent-color:var(--gold);"> Include shorter words</label>
@@ -2108,6 +2110,8 @@ function getSettings() {
     rwLen2:            document.getElementById('rwLen2').checked,
     rwLen3:            document.getElementById('rwLen3').checked,
     rwLen4:            document.getElementById('rwLen4').checked,
+    rwLen5:            document.getElementById('rwLen5').checked,
+    rwLen6:            document.getElementById('rwLen6').checked,
     rwLenShorter:      document.getElementById('rwLenShorter').checked,
     rwEraBiblical:     document.getElementById('rwEraBiblical').checked,
     rwEraModern:       document.getElementById('rwEraModern').checked,
@@ -2190,6 +2194,8 @@ function applySettings(s) {
   if (s.rwLen2 !== undefined)    document.getElementById('rwLen2').checked = s.rwLen2;
   if (s.rwLen3 !== undefined)    document.getElementById('rwLen3').checked = s.rwLen3;
   if (s.rwLen4 !== undefined)    document.getElementById('rwLen4').checked = s.rwLen4;
+  if (s.rwLen5 !== undefined)    document.getElementById('rwLen5').checked = s.rwLen5;
+  if (s.rwLen6 !== undefined)    document.getElementById('rwLen6').checked = s.rwLen6;
   if (s.rwLenShorter !== undefined) document.getElementById('rwLenShorter').checked = s.rwLenShorter;
   if (s.rwEraBiblical !== undefined) document.getElementById('rwEraBiblical').checked = s.rwEraBiblical;
   if (s.rwEraModern !== undefined)   document.getElementById('rwEraModern').checked = s.rwEraModern;
@@ -3752,7 +3758,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Filter change listeners
-  ['rwLen1','rwLen2','rwLen3','rwLen4','rwLenShorter','rwEraBiblical','rwEraModern'].forEach(id => {
+  ['rwLen1','rwLen2','rwLen3','rwLen4','rwLen5','rwLen6','rwLenShorter','rwEraBiblical','rwEraModern'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('change', updateRwPoolInfo);
   });
@@ -3817,16 +3823,19 @@ function getRwPool() {
   const len2 = document.getElementById('rwLen2').checked;
   const len3 = document.getElementById('rwLen3').checked;
   const len4 = document.getElementById('rwLen4').checked;
+  const len5 = document.getElementById('rwLen5').checked;
+  const len6 = document.getElementById('rwLen6').checked;
   const lenShorter = document.getElementById('rwLenShorter').checked;
   const eraBib = document.getElementById('rwEraBiblical').checked;
   const eraMod = document.getElementById('rwEraModern').checked;
   const selectedPos = [...document.querySelectorAll('.rw-pos:checked')].map(cb => cb.value);
 
-  const maxSel = Math.max(len1?1:0, len2?2:0, len3?3:0, len4?4:0);
+  const maxSel = Math.max(len1?1:0, len2?2:0, len3?3:0, len4?4:0, len5?5:0, len6?6:0);
 
   return REAL_WORDS.filter(w => {
     const exact = (w.letters === 1 && len1) || (w.letters === 2 && len2) ||
-                  (w.letters === 3 && len3) || (w.letters === 4 && len4);
+                  (w.letters === 3 && len3) || (w.letters === 4 && len4) ||
+                  (w.letters === 5 && len5) || (w.letters === 6 && len6);
     if (!exact && !(lenShorter && maxSel > 0 && w.letters < maxSel)) return false;
     const era = w.era;
     if (era === 'Both') { if (!eraBib && !eraMod) return false; }
