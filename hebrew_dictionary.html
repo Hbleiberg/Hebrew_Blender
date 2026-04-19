@@ -215,6 +215,8 @@ footer a{color:var(--gold);text-decoration:none;}
       <div class="panel-body" id="posFilterBody"></div>
     </div>
 
+    <div id="sidebarWordCount" style="text-align:center;font-size:0.75rem;color:var(--muted);padding:4px 0 2px;"></div>
+
   </aside>
 
   <div class="main">
@@ -382,8 +384,9 @@ function onFilter() {
   loadMore();
 
   const n = filtered.length;
-  document.getElementById('resultCount').textContent =
-    n === 0 ? 'No words found' : n === 1 ? '1 word' : `${n.toLocaleString()} words`;
+  const countText = n === 0 ? 'No words found' : n === 1 ? '1 word' : `${n.toLocaleString()} words`;
+  document.getElementById('resultCount').textContent = countText;
+  document.getElementById('sidebarWordCount').textContent = countText;
   updateLenAll();
 }
 
