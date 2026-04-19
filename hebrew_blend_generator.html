@@ -3523,10 +3523,12 @@ function toggleGematriaMode() {
   if (blends.length) renderWorksheet(false);
 }
 
-function renderGematriaSheet(ws) {
+function renderGematriaSheet(ws, items) {
+  // items: array of {hebrewDisplay}. Falls back to global blends when omitted.
+  if (!items) items = blends.map(b => ({ hebrewDisplay: b.hebrewDisplay }));
   const title    = document.getElementById('wsTitle').value || 'Hebrew Blends';
   const subtitle = document.getElementById('wsSubtitle').value;
-  const cols     = autoCols(blends.length);
+  const cols     = autoCols(items.length);
   ws.innerHTML   = '';
   scoreCorrect = 0; scoreIncorrect = 0; stopTimer();
 
@@ -3547,7 +3549,7 @@ function renderGematriaSheet(ws) {
   scoreBar.innerHTML = `
     <span class="score-correct">✓ 0</span>
     <span class="score-incorrect">✗ 0</span>
-    <span class="score-remaining">${blends.length} left</span>
+    <span class="score-remaining">${items.length} left</span>
     <button class="btn-xs" style="margin-left:auto;" onclick="resetGematriaCheck()">↺ Reset</button>`;
   ws.appendChild(scoreBar);
 
@@ -3566,7 +3568,7 @@ function renderGematriaSheet(ws) {
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
   ws.appendChild(grid);
 
-  blends.forEach((b, idx) => {
+  items.forEach((b, idx) => {
     const val = calcGematria(b.hebrewDisplay);
     const card = document.createElement('div');
     card.className = 'flip-card';
@@ -3592,10 +3594,9 @@ function renderGematriaSheet(ws) {
     grid.appendChild(card);
   });
 
-  // ── Printable answer key (hidden on screen, visible in print) ──
+  // ── Printable answer key ──
   const keySheet = document.createElement('div');
   keySheet.className = 'sheet answer-key-sheet';
-  keySheet.innerHTML = '';
   const banner = document.createElement('div');
   banner.className = 'answer-key-banner';
   banner.textContent = '✦ Answer Key ✦';
@@ -3608,7 +3609,7 @@ function renderGematriaSheet(ws) {
   keyGrid.className = 'blends-grid';
   keyGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
   keyGrid.style.direction = 'rtl';
-  blends.forEach((b, idx) => {
+  items.forEach((b, idx) => {
     const val = calcGematria(b.hebrewDisplay);
     const cell = document.createElement('div');
     cell.className = 'blend-cell';
@@ -4229,6 +4230,13 @@ function generateCustomWordlist() {
   const showTranslInline   = showTranslation && !translOnKey;
 
   const pool = rwShuffle([...customWordlistData]).slice(0, count);
+
+  if (document.getElementById('gematriaToggle').checked) {
+    const ws = document.getElementById('worksheet');
+    ws.innerHTML = '';
+    renderGematriaSheet(ws, pool.map(w => ({ hebrewDisplay: w.heb })));
+    return;
+  }
 
   if (drill === 'bingo') { generateRealWordsBingo(pool); return; }
   if (drill === 'identify') { generateIdentifyDrill(pool, count, showTranslit); return; }
