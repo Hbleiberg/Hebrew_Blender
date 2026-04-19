@@ -25,7 +25,7 @@ html.dark-early body,body.dark {
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
-header{background:var(--navy);color:var(--white);padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
+header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
 header .star{font-size:32px;}
 header h1{font-family:'Libre Baskerville',serif;font-size:1.8rem;letter-spacing:0.01em;}
 header p{font-size:0.88rem;color:var(--gold-light);margin-top:3px;}
@@ -96,6 +96,7 @@ footer a{color:var(--gold);text-decoration:none;}
 <script>
 function toggleDark() {
   const dark = document.body.classList.toggle('dark');
+  document.documentElement.classList.remove('dark-early');
   try { localStorage.setItem('hebrewBlenderDark', dark); } catch(e) {}
   document.getElementById('darkBtn').textContent = dark ? '☀ Light' : '🌙 Dark';
 }
