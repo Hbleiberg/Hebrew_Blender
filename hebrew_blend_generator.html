@@ -1574,6 +1574,7 @@
                 <div style="font-size:0.72rem;font-weight:600;margin-bottom:3px;color:var(--text);">Part of Speech</div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;">
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="noun" checked style="accent-color:var(--gold);"> Noun</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="proper noun" checked style="accent-color:var(--gold);"> Proper Noun</label>
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="root" checked style="accent-color:var(--gold);"> Root (שׁורש)</label>
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="verb" checked style="accent-color:var(--gold);"> Verb</label>
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="adjective" checked style="accent-color:var(--gold);"> Adjective</label>
@@ -3843,6 +3844,7 @@ function getRwPool() {
     else if (era === 'Modern' && !eraMod) return false;
     const posMatch = selectedPos.some(p => {
       if (p === 'other') return !['noun','root','verb','adjective','pronoun','preposition','conjunction'].some(k => w.pos.includes(k));
+      if (p === 'noun') return w.pos.includes('noun') && !w.pos.includes('proper');
       return w.pos.includes(p);
     });
     if (!posMatch) return false;
