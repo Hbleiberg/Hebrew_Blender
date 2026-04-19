@@ -179,6 +179,16 @@ footer a{color:var(--gold);text-decoration:none;}
           <label class="cb-label"><input type="checkbox" class="pcb" value="preposition" checked> Preposition</label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="conjunction" checked> Conjunction</label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="root" checked> Root (שׁורש)</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="interjection" checked> Interjection</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="numeral" checked> Numeral</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="particle" checked> Particle</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="phrase" checked> Phrase</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="determiner" checked> Determiner</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="prepositional phrase" checked> Prep. Phrase</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="postposition" checked> Postposition</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="name" checked> Name</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="name element" checked> Name Element</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="article" checked> Article</label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="other" checked> Other</label>
         </div>
       </div>
@@ -241,7 +251,7 @@ const CONSONANTS = [
   {h:'ר',n:'Resh'},{h:'ש',n:'Shin/Sin'},{h:'ת',n:'Tav'},
 ];
 
-const POS_KNOWN = ['noun','root','verb','adjective','pronoun','preposition','conjunction','adverb'];
+const POS_KNOWN = ['noun','proper noun','verb','adjective','adverb','pronoun','preposition','conjunction','root','interjection','numeral','particle','phrase','determiner','prepositional phrase','postposition','name','name element','article'];
 
 let ALL_WORDS = [];
 let filtered = [];
@@ -329,9 +339,8 @@ function onFilter() {
     if (!checkedLen.has(lk) && !(shorter && maxLen > 0 && w.len < maxLen)) return false;
 
     const pm = [...checkedPos].some(p => {
-      if (p === 'other') return !POS_KNOWN.some(k => w.pos.includes(k));
-      if (p === 'noun') return w.pos.includes('noun') && !w.pos.includes('proper');
-      return w.pos.includes(p);
+      if (p === 'other') return !POS_KNOWN.includes(w.pos);
+      return w.pos === p;
     });
     if (!pm) return false;
 
