@@ -1595,6 +1595,12 @@
               <span style="font-size:0.8rem;">Show Transliteration</span>
               <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="rwShowTranslit" checked onchange="onRwTranslitChange()"><span class="slider"></span></label>
             </div>
+            <div id="rwTranslitPageRow" style="display:none;padding-left:16px;">
+              <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
+                <button class="rw-drill-btn active" data-translit="same" onclick="setRwTranslitPage('same')">Same page</button>
+                <button class="rw-drill-btn" data-translit="key" onclick="setRwTranslitPage('key')">Answer key</button>
+              </div>
+            </div>
             <div class="toggle-row" id="rwTranslationRow">
               <span style="font-size:0.8rem;">Show Translation</span>
               <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="rwShowTranslation" onchange="onRwTranslChange()"><span class="slider"></span></label>
@@ -2066,6 +2072,7 @@ function getSettings() {
     rwStarReal:        document.getElementById('rwStarReal').checked,
     rwStarPage,
     rwShowTranslit:    document.getElementById('rwShowTranslit').checked,
+    rwTranslitPage,
     rwShowTranslation: document.getElementById('rwShowTranslation').checked,
     rwTranslPage,
     rwLen1:            document.getElementById('rwLen1').checked,
@@ -2144,7 +2151,8 @@ function applySettings(s) {
   if (s.rwMixed !== undefined)   { document.getElementById('rwMixed').checked = s.rwMixed; toggleRwStarRow(); }
   if (s.rwStarReal !== undefined) { document.getElementById('rwStarReal').checked = s.rwStarReal; toggleRwStarPageRow(); }
   if (s.rwStarPage) { rwStarPage = s.rwStarPage; document.querySelectorAll('[data-star]').forEach(b => b.classList.toggle('active', b.dataset.star === rwStarPage)); }
-  if (s.rwShowTranslit !== undefined)    document.getElementById('rwShowTranslit').checked = s.rwShowTranslit;
+  if (s.rwShowTranslit !== undefined) { document.getElementById('rwShowTranslit').checked = s.rwShowTranslit; }
+  if (s.rwTranslitPage) { rwTranslitPage = s.rwTranslitPage; document.querySelectorAll('[data-translit]').forEach(b => b.classList.toggle('active', b.dataset.translit === rwTranslitPage)); toggleRwTranslitPageRow(); }
   if (s.rwShowTranslation !== undefined) { document.getElementById('rwShowTranslation').checked = s.rwShowTranslation; }
   if (s.rwTranslPage) { rwTranslPage = s.rwTranslPage; document.querySelectorAll('[data-transl]').forEach(b => b.classList.toggle('active', b.dataset.transl === rwTranslPage)); toggleRwTranslPageRow(); }
   if (s.rwLen1 !== undefined)    document.getElementById('rwLen1').checked = s.rwLen1;
@@ -3627,7 +3635,23 @@ function setRwTranslPage(val) {
   if (ws.querySelector('.rw-card, .rw-flip')) generateRealWords();
 }
 
+let rwTranslitPage = 'same';
+
+function toggleRwTranslitPageRow() {
+  const show = document.getElementById('rwShowTranslit').checked;
+  const row = document.getElementById('rwTranslitPageRow');
+  if (row) row.style.display = (show && rwDrillType === 'reading') ? '' : 'none';
+}
+
+function setRwTranslitPage(val) {
+  rwTranslitPage = val;
+  document.querySelectorAll('[data-translit]').forEach(b => b.classList.toggle('active', b.dataset.translit === val));
+  const ws = document.getElementById('worksheet');
+  if (ws.querySelector('.rw-card, .rw-flip')) generateRealWords();
+}
+
 function onRwTranslitChange() {
+  toggleRwTranslitPageRow();
   const ws = document.getElementById('worksheet');
   if (ws.querySelector('.rw-card, .rw-flip')) generateRealWords();
 }
@@ -3655,6 +3679,7 @@ function setRealWordDrill(type) {
   const translToggle = document.getElementById('rwShowTranslation');
   if (translToggle) translToggle.checked = (type === 'vocab');
   toggleRwTranslPageRow();
+  toggleRwTranslitPageRow();
 
   // Show bingo sub-options only for bingo drill
   const rwBingoOpts = document.getElementById('rwBingoOptions');
@@ -3788,6 +3813,8 @@ function generateRealWords() {
   const drill = rwDrillType;
   const starOnKey = starRealOn && rwStarPage === 'key' && drill === 'reading';
   const starReal = starRealOn && !starOnKey;
+  const translitOnKey = showTranslit && rwTranslitPage === 'key' && drill === 'reading';
+  const showTranslitInline = showTranslit && !translitOnKey;
   const translOnKey = showTranslation && rwTranslPage === 'key' && drill === 'reading';
   const showTranslInline = showTranslation && !translOnKey;
 
@@ -3884,7 +3911,7 @@ function generateRealWords() {
         <span class="rw-num">${idx + 1}${starReal && w.isReal ? ' ★' : ''}</span>
         <span class="rw-pos-tag">${w.pos}</span>
         <span class="rw-heb">${w.heb}</span>
-        ${showTranslit ? `<span class="rw-translit">${w.translit}</span>` : ''}
+        ${showTranslitInline ? `<span class="rw-translit">${w.translit}</span>` : ''}
         ${showTranslInline && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
       grid.appendChild(card);
     }
@@ -3899,12 +3926,12 @@ function generateRealWords() {
   ws.appendChild(sheet);
 
   // Answer key sheet (stars and/or translations on separate page)
-  if (starOnKey || translOnKey) {
+  if (starOnKey || translOnKey || translitOnKey) {
     const keySheet = document.createElement('div');
     keySheet.className = 'sheet answer-key-sheet';
     const banner = document.createElement('div');
     banner.className = 'answer-key-banner';
-    banner.textContent = starOnKey && translOnKey ? '✦ Answer Key ✦' : starOnKey ? '✦ Real Word Key ✦' : '✦ Translation Key ✦';
+    banner.textContent = '✦ Answer Key ✦';
     keySheet.appendChild(banner);
     const keyHdr = document.createElement('div');
     keyHdr.className = 'ws-header';
