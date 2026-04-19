@@ -218,7 +218,7 @@ footer a{color:var(--gold);text-decoration:none;}
     <div class="panel collapsed">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Filter by Vowel</div>
       <div class="panel-body">
-        <div class="filter-note" style="margin-bottom:6px;">Words containing all selected vowels.</div>
+        <div class="filter-note" style="margin-bottom:6px;">Show only words whose vowels are all in the selected set.</div>
         <div class="vowel-grid" id="vowelFilterGrid"></div>
       </div>
     </div>
@@ -336,18 +336,34 @@ fetch('hebrew_words.json?v=4')
     document.getElementById('loadingMsg').textContent = 'Failed to load. Open via a local server (not file://).';
   });
 
+function setAllVowels(checked) {
+  document.querySelectorAll('#vowelFilterGrid input[type="checkbox"]').forEach(cb => {
+    cb.checked = checked;
+    checked ? vowelFilters.add(cb.dataset.u) : vowelFilters.delete(cb.dataset.u);
+  });
+  if (!checked) vowelFilters.clear();
+  onFilter();
+}
+
 function initVowelFilter() {
   const grid = document.getElementById('vowelFilterGrid');
+  const btns = document.createElement('div');
+  btns.style.cssText = 'display:flex;gap:6px;margin-bottom:8px;';
+  btns.innerHTML = `<button class="pos-all-btn" onclick="setAllVowels(true)">All</button><button class="pos-all-btn" onclick="setAllVowels(false)">None</button>`;
+  grid.before(btns);
   VOWEL_DEFS.forEach(v => {
     const chip = document.createElement('label');
     chip.className = 'vowel-chip';
     chip.innerHTML = `
-      <input type="checkbox">
+      <input type="checkbox" data-u="${v.u}">
       <span style="display:flex;align-items:center;gap:6px;">
         <span style="font-family:'Frank Ruhl Libre',serif;font-size:1.4rem;direction:rtl;min-width:22px;text-align:center;">${v.ex}</span>
         <span><strong>${v.label}</strong>${v.sub ? `<br><span style="color:var(--muted);font-size:0.72rem">${v.sub}</span>` : ''}</span>
       </span>`;
-    chip.querySelector('input').addEventListener('change', e => {
+    const cb = chip.querySelector('input');
+    cb.checked = true;
+    vowelFilters.add(v.u);
+    cb.addEventListener('change', e => {
       if (e.target.checked) vowelFilters.add(v.u); else vowelFilters.delete(v.u);
       onFilter();
     });
@@ -425,8 +441,10 @@ function onFilter() {
       if (!w.cons[i] || !posFilters[i].has(w.cons[i])) return false;
     }
 
-    for (const v of vowelFilters) {
-      if (!w.word.includes(v)) return false;
+    if (vowelFilters.size < VOWEL_DEFS.length) {
+      for (const vd of VOWEL_DEFS) {
+        if (!vowelFilters.has(vd.u) && w.word.includes(vd.u)) return false;
+      }
     }
 
     if (q) {
