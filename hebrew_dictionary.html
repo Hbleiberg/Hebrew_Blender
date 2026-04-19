@@ -560,15 +560,15 @@ function loadMore() {
     const bulkCb = document.createElement('input');
     bulkCb.type = 'checkbox';
     bulkCb.className = 'wc-bulk-cb';
-    bulkCb.checked = bulkSelected.has(w.bare);
+    bulkCb.checked = bulkSelected.has(w.word);
     bulkCb.addEventListener('change', e => {
       e.stopPropagation();
-      if (e.target.checked) { bulkSelected.set(w.bare, {w, text: wordBulkText(w)}); } else { bulkSelected.delete(w.bare); }
+      if (e.target.checked) { bulkSelected.set(w.word, {w, text: wordBulkText(w)}); } else { bulkSelected.delete(w.word); }
       card.classList.toggle('bulk-selected', e.target.checked);
       updateBulkTextarea();
     });
     card.appendChild(bulkCb);
-    if (bulkSelected.has(w.bare)) card.classList.add('bulk-selected');
+    if (bulkSelected.has(w.word)) card.classList.add('bulk-selected');
     card.addEventListener('click', e => {
       if (!bulkMode) return;
       if (e.target === bulkCb) return;
