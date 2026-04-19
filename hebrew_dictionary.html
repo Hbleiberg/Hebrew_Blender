@@ -93,8 +93,10 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:16px;}
 .word-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:3px;cursor:default;transition:border-color 0.15s,box-shadow 0.15s;position:relative;}
 .word-card:hover{border-color:var(--gold);box-shadow:0 2px 8px rgba(0,0,0,0.08);}
-.wc-copy{position:absolute;top:7px;left:7px;background:none;border:1px solid var(--border);border-radius:4px;padding:3px;color:var(--muted);cursor:pointer;line-height:0;opacity:0.4;transition:opacity 0.15s,border-color 0.15s,color 0.15s;display:flex;align-items:center;justify-content:center;}
-.wc-copy:hover,.wc-copy.copied{border-color:var(--gold);color:var(--gold);opacity:1;}
+.wc-copy,.wc-search{position:absolute;top:7px;background:none;border:1px solid var(--border);border-radius:4px;padding:3px;color:var(--muted);cursor:pointer;line-height:0;opacity:0.4;transition:opacity 0.15s,border-color 0.15s,color 0.15s;display:flex;align-items:center;justify-content:center;text-decoration:none;}
+.wc-copy{left:7px;}
+.wc-search{left:30px;}
+.wc-copy:hover,.wc-copy.copied,.wc-search:hover{border-color:var(--gold);color:var(--gold);opacity:1;}
 .wc-heb{font-family:'Frank Ruhl Libre',serif;font-size:1.9rem;direction:rtl;text-align:right;line-height:1.2;}
 .wc-translit{font-size:0.76rem;color:var(--muted);font-style:italic;text-align:right;}
 .wc-transl{font-size:0.8rem;line-height:1.35;margin-top:2px;}
@@ -417,6 +419,14 @@ function loadMore() {
     btn.title = 'Copy Hebrew';
     btn.addEventListener('click', e => { e.stopPropagation(); copyWord(btn, w.word); });
     card.appendChild(btn);
+    const srch = document.createElement('a');
+    srch.className = 'wc-search';
+    srch.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
+    srch.title = 'Look up on Google';
+    srch.href = 'https://www.google.com/search?q=' + encodeURIComponent(w.word);
+    srch.target = '_blank';
+    srch.rel = 'noopener';
+    card.appendChild(srch);
     const inner = document.createElement('div');
     inner.innerHTML = `
       <div class="wc-heb">${w.word}</div>
