@@ -1593,7 +1593,7 @@
             <div style="font-size:0.7rem;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">Display</div>
             <div class="toggle-row">
               <span style="font-size:0.8rem;">Show Transliteration</span>
-              <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="rwShowTranslit" checked><span class="slider"></span></label>
+              <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="rwShowTranslit" checked onchange="onRwTranslitChange()"><span class="slider"></span></label>
             </div>
             <div class="toggle-row" id="rwTranslationRow">
               <span style="font-size:0.8rem;">Show Translation</span>
@@ -3623,6 +3623,11 @@ function toggleRwTranslPageRow() {
 function setRwTranslPage(val) {
   rwTranslPage = val;
   document.querySelectorAll('[data-transl]').forEach(b => b.classList.toggle('active', b.dataset.transl === val));
+  const ws = document.getElementById('worksheet');
+  if (ws.querySelector('.rw-card, .rw-flip')) generateRealWords();
+}
+
+function onRwTranslitChange() {
   const ws = document.getElementById('worksheet');
   if (ws.querySelector('.rw-card, .rw-flip')) generateRealWords();
 }
