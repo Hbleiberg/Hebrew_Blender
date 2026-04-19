@@ -1766,6 +1766,7 @@
           <button class="btn-xs" onclick="selectNoSofit()">No Sofit</button>
         </div>
         <div class="letter-grid" id="letterGrid"></div>
+        <div id="combosCount" style="margin-top:8px;font-size:0.72rem;color:var(--muted);text-align:center;"></div>
       </div>
     </div>
 
@@ -1998,11 +1999,30 @@ function toggleLetter(heb, el) {
     selectedLetters.add(heb);
     el.classList.add('selected');
   }
+  updateCombosCount();
 }
 
 function toggleVowel(key, checked) {
   if (checked) selectedVowels.add(key);
   else selectedVowels.delete(key);
+  updateCombosCount();
+}
+
+function updateCombosCount() {
+  const el = document.getElementById('combosCount');
+  if (!el) return;
+  const type = document.querySelector('.blend-type-btn.active')?.dataset.type || 'two';
+  if (type === 'nikud') { el.textContent = ''; return; }
+  const VAV_VARIANTS = new Set(['וֹ','וּ']);
+  const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
+  const first  = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h));
+  const second = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h) && h !== 'ו');
+  const v = selectedVowels.size;
+  let combos = 0;
+  if (type === 'one')   combos = first.length * v;
+  else if (type === 'two')   combos = first.length * v * second.length;
+  else if (type === 'three') combos = first.length * v * second.length * second.length;
+  el.textContent = combos > 0 ? `${combos.toLocaleString()} possible combinations` : '';
 }
 
 function selectAllLetters() {
@@ -2011,11 +2031,13 @@ function selectAllLetters() {
     ...LETTERS.filter(l => l.sofit).map(l => l.sofit)
   ]);
   document.querySelectorAll('.letter-tile').forEach(t => t.classList.add('selected'));
+  updateCombosCount();
 }
 
 function clearAllLetters() {
   selectedLetters.clear();
   document.querySelectorAll('.letter-tile').forEach(t => t.classList.remove('selected'));
+  updateCombosCount();
 }
 
 function selectNoSofit() {
@@ -2025,6 +2047,7 @@ function selectNoSofit() {
     if (SOFIT_CHARS.has(heb)) t.classList.remove('selected');
     else t.classList.add('selected');
   });
+  updateCombosCount();
 }
 
 // ── HEADER LANGUAGE ──
@@ -2466,6 +2489,7 @@ function setBlendType(type) {
   };
   document.getElementById('headerSub').textContent = subtitles[type];
 
+  updateCombosCount();
   if (blends.length) generate(false);
 }
 
@@ -4238,6 +4262,7 @@ function generateRealWordsBingo(pool) {
 
 initVowels();
 initLetters();
+updateCombosCount();
 populateFocusDropdown();
 initPanelCollapse();
 initDarkMode();

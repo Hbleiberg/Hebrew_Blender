@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hebrew Word Lookup</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<script>(function(){try{if(localStorage.getItem('hebrewBlenderDark')==='true'){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<style>
+:root {
+  --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
+  --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
+}
+html.dark-early body,body.dark {
+  --navy:#1a2744;--gold:#e0a832;--gold-light:#f5d97a;--cream:#161c2a;
+  --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+header{background:var(--navy);color:var(--white);padding:18px 32px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);flex-shrink:0;}
+header .star{font-size:28px;}
+header h1{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
+header p{font-size:0.82rem;color:var(--gold-light);margin-top:2px;}
+header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:4px 12px;font-size:0.78rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;}
+.dark-btn:hover{background:rgba(255,255,255,0.1);}
+.nav-btn{background:var(--gold);color:var(--navy);border:none;border-radius:6px;padding:4px 12px;font-size:0.78rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;}
+.nav-btn:hover{background:var(--gold-light);}
+.app{display:flex;flex:1;overflow:hidden;}
+.sidebar{width:300px;flex-shrink:0;background:var(--white);border-right:1px solid var(--border);padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
+#appSidebar.hidden{display:none;}
+.sidebar-toggle-btn{position:fixed;top:50vh;transform:translateY(-50%);width:16px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:50;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
+.sidebar-toggle-btn:hover{background:#0f1a33;}
+.sidebar-show-btn{position:fixed;left:0;top:50vh;transform:translateY(-50%);width:16px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:100;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
+.sidebar-show-btn:hover{background:#0f1a33;}
+.search-wrap input{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);outline:none;}
+.search-wrap input:focus{border-color:var(--gold);}
+.search-wrap input::placeholder{color:var(--muted);}
+.panel{background:var(--cream);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.panel-title{background:var(--navy);color:var(--white);font-family:'Libre Baskerville',serif;font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;padding:8px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+.panel-title::after{content:'▾';font-size:1rem;color:var(--gold-light);transition:transform 0.2s;}
+.panel.collapsed .panel-title::after{transform:rotate(-90deg);}
+.panel.collapsed .panel-body{display:none;}
+.panel-body{padding:12px;}
+.cb-label{display:flex;align-items:center;gap:4px;font-size:0.75rem;cursor:pointer;line-height:1.6;}
+.cb-label input{accent-color:var(--gold);cursor:pointer;flex-shrink:0;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1px 8px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px 8px;}
+.filter-note{font-size:0.68rem;color:var(--muted);margin-top:4px;}
+.filter-sub{margin-top:6px;padding-left:6px;border-left:2px solid var(--border);}
+/* Position filter */
+.pos-sec{margin-bottom:4px;}
+.pos-sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;background:var(--warm-gray);border-radius:4px;cursor:pointer;font-size:0.75rem;font-weight:600;user-select:none;gap:4px;}
+.pos-sec-hdr .hdr-left{display:flex;align-items:center;gap:6px;flex:1;min-width:0;}
+.pos-sec-hdr .lbl{white-space:nowrap;}
+.pos-badges{display:flex;gap:2px;flex-wrap:wrap;}
+.pbadge{background:var(--navy);color:var(--gold-light);border-radius:3px;padding:1px 5px;font-size:0.7rem;font-family:'Frank Ruhl Libre',serif;}
+.pos-clear{background:none;border:none;color:var(--muted);font-size:0.75rem;cursor:pointer;padding:0 2px;line-height:1;}
+.pos-clear:hover{color:var(--gold);}
+.pos-arrow{color:var(--muted);font-size:0.65rem;transition:transform 0.15s;flex-shrink:0;}
+.pos-sec.open .pos-arrow{transform:rotate(0deg);}
+.pos-sec:not(.open) .pos-arrow{transform:rotate(-90deg);}
+.pos-sec-body{display:none;padding-top:6px;}
+.pos-sec.open .pos-sec-body{display:block;}
+.letter-pos-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;direction:rtl;}
+.lpt{display:flex;flex-direction:column;align-items:center;padding:3px 1px;border:1px solid var(--border);border-radius:3px;cursor:pointer;transition:all 0.12s;user-select:none;background:var(--white);}
+.lpt:hover{border-color:var(--gold);}
+.lpt.selected{background:var(--navy);border-color:var(--navy);color:var(--white);}
+.lpt .h{font-size:0.9rem;font-family:'Frank Ruhl Libre',serif;direction:rtl;line-height:1.3;}
+.lpt .n{font-size:0.38rem;text-align:center;opacity:0.7;direction:ltr;line-height:1;}
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.toolbar{display:flex;align-items:center;gap:10px;padding:10px 20px;background:var(--cream);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;}
+.result-count{font-size:0.85rem;color:var(--muted);flex:1;}
+.sort-sel{padding:4px 8px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--text);font-size:0.8rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;outline:none;}
+.content{flex:1;overflow-y:auto;padding:18px 20px;}
+.results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:16px;}
+.word-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:3px;cursor:default;transition:border-color 0.15s,box-shadow 0.15s;}
+.word-card:hover{border-color:var(--gold);box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+.wc-heb{font-family:'Frank Ruhl Libre',serif;font-size:1.9rem;direction:rtl;text-align:right;line-height:1.2;}
+.wc-translit{font-size:0.76rem;color:var(--muted);font-style:italic;text-align:right;}
+.wc-transl{font-size:0.8rem;line-height:1.35;margin-top:2px;}
+.wc-badges{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px;}
+.badge{font-size:0.63rem;padding:2px 5px;border-radius:3px;font-weight:600;text-transform:uppercase;letter-spacing:0.03em;white-space:nowrap;}
+.b-pos{background:var(--warm-gray);color:var(--muted);}
+.b-bib{background:#e8f0ff;color:#2a4080;}
+.b-mod{background:#e8f5e8;color:#1a5c1a;}
+.b-both{background:var(--warm-gray);color:var(--muted);}
+.b-len{background:var(--navy);color:var(--gold-light);}
+body.dark .b-bib{background:#1a2a4a;color:#7a9fd0;}
+body.dark .b-mod{background:#1a3a1a;color:#7acf7a;}
+.load-more-wrap{text-align:center;padding:14px 0;}
+.load-more-btn{background:var(--navy);color:var(--gold-light);border:none;border-radius:6px;padding:8px 28px;font-size:0.85rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;}
+.load-more-btn:hover{background:#0f1a33;}
+.empty{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty .big{font-size:2.5rem;margin-bottom:8px;}
+.loading{text-align:center;padding:60px 20px;color:var(--muted);font-style:italic;}
+footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);flex-shrink:0;}
+footer a{color:var(--gold);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="star">✡</span>
+  <div>
+    <h1>Hebrew Word Lookup</h1>
+    <p>Browse and filter the Hebrew dictionary</p>
+  </div>
+  <div class="hright">
+    <a class="nav-btn" href="hebrew_blend_generator.html">← Generator</a>
+    <button class="dark-btn" id="darkBtn" onclick="toggleDark()">🌙 Dark</button>
+  </div>
+</header>
+
+<button class="sidebar-show-btn" id="sidebarShowBtn" onclick="toggleSidebar()" title="Show sidebar">›</button>
+<button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Hide sidebar">‹</button>
+
+<div class="app" id="appContainer">
+  <aside class="sidebar" id="appSidebar">
+
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="Search Hebrew, translit, or English…" oninput="onFilter()">
+    </div>
+
+    <!-- Word Length -->
+    <div class="panel">
+      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Word Length</div>
+      <div class="panel-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 10px;margin-bottom:6px;">
+          <label class="cb-label"><input type="checkbox" class="lcb" value="1" checked> Prefixes</label>
+          <label class="cb-label"><input type="checkbox" class="lcb" value="2" checked> 2-Letter</label>
+          <label class="cb-label"><input type="checkbox" class="lcb" value="3" checked> 3-Letter</label>
+          <label class="cb-label"><input type="checkbox" class="lcb" value="4" checked> 4-Letter</label>
+          <label class="cb-label"><input type="checkbox" class="lcb" value="5" checked> 5-Letter</label>
+          <label class="cb-label"><input type="checkbox" class="lcb" value="6" checked> 6-Letter</label>
+          <label class="cb-label"><input type="checkbox" class="lcb" value="7plus" checked> 7+ Letter</label>
+        </div>
+        <div class="filter-sub">
+          <label class="cb-label"><input type="checkbox" id="lenShortCb"> Include shorter words</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Part of Speech -->
+    <div class="panel">
+      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Part of Speech</div>
+      <div class="panel-body">
+        <div class="grid2">
+          <label class="cb-label"><input type="checkbox" class="pcb" value="noun" checked> Noun</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="proper noun" checked> Proper Noun</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="verb" checked> Verb</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="adjective" checked> Adjective</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="adverb" checked> Adverb</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="pronoun" checked> Pronoun</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="preposition" checked> Preposition</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="conjunction" checked> Conjunction</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="root" checked> Root (שׁורש)</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="other" checked> Other</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Era -->
+    <div class="panel">
+      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Era</div>
+      <div class="panel-body" style="display:flex;gap:16px;">
+        <label class="cb-label"><input type="checkbox" id="eraBib" checked> Biblical</label>
+        <label class="cb-label"><input type="checkbox" id="eraMod" checked> Modern</label>
+      </div>
+    </div>
+
+    <!-- Filter by Letter Position -->
+    <div class="panel">
+      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Filter by Letter</div>
+      <div class="panel-body" id="posFilterBody"></div>
+    </div>
+
+  </aside>
+
+  <div class="main">
+    <div class="toolbar">
+      <span class="result-count" id="resultCount">Loading…</span>
+      <label style="font-size:0.8rem;color:var(--muted);">Sort:</label>
+      <select class="sort-sel" id="sortSel" onchange="onFilter()">
+        <option value="alpha">Hebrew A→Z</option>
+        <option value="len-asc">Length ↑</option>
+        <option value="len-desc">Length ↓</option>
+        <option value="transl">Translation A→Z</option>
+      </select>
+    </div>
+    <div class="content">
+      <div class="loading" id="loadingMsg">Loading dictionary…</div>
+      <div class="results-grid" id="resultsGrid" style="display:none;"></div>
+      <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
+        <button class="load-more-btn" onclick="loadMore()">Show more</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="font-weight:600;">Harrison Bleiberg</a><br>
+  Word Data from <a href="https://kaikki.org/dictionary/Hebrew/index.html" target="_blank">Kaikki.org</a><br>
+  Free to use and adapt for non-commercial educational purposes with attribution &nbsp;·&nbsp;
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a>
+</footer>
+
+<script>
+const CONSONANTS = [
+  {h:'א',n:'Alef'},{h:'ב',n:'Bet'},{h:'ג',n:'Gimel'},{h:'ד',n:'Dalet'},
+  {h:'ה',n:'Heh'},{h:'ו',n:'Vav'},{h:'ז',n:'Zayin'},{h:'ח',n:'Chet'},
+  {h:'ט',n:'Tet'},{h:'י',n:'Yod'},{h:'כ',n:'Kaf'},{h:'ך',n:'Chaf sf'},
+  {h:'ל',n:'Lamed'},{h:'מ',n:'Mem'},{h:'ם',n:'Mem sf'},{h:'נ',n:'Nun'},
+  {h:'ן',n:'Nun sf'},{h:'ס',n:'Samech'},{h:'ע',n:'Ayin'},{h:'פ',n:'Peh'},
+  {h:'ף',n:'Feh sf'},{h:'צ',n:'Tzadi'},{h:'ץ',n:'Tzadi sf'},{h:'ק',n:'Kuf'},
+  {h:'ר',n:'Resh'},{h:'ש',n:'Shin'},{h:'ת',n:'Tav'},
+];
+
+const POS_KNOWN = ['noun','root','verb','adjective','pronoun','preposition','conjunction','adverb'];
+
+let ALL_WORDS = [];
+let filtered = [];
+let shown = 0;
+const PAGE = 100;
+const posFilters = Array.from({length:6}, () => new Set());
+
+fetch('hebrew_words.json?v=2')
+  .then(r => r.json())
+  .then(data => {
+    ALL_WORDS = Object.entries(data).flatMap(([cnt, words]) =>
+      words.map(w => ({
+        word: w.word,
+        bare: w.bare || '',
+        cons: Array.isArray(w.letters) ? w.letters : [],
+        translit: w.translit || '',
+        pos: w.pos || '',
+        translation: w.translation || '',
+        era: w.era || 'Both',
+        len: parseInt(cnt)
+      }))
+    );
+    document.getElementById('loadingMsg').style.display = 'none';
+    document.getElementById('resultsGrid').style.display = 'grid';
+    onFilter();
+  })
+  .catch(() => {
+    document.getElementById('loadingMsg').textContent = 'Failed to load. Open via a local server (not file://).';
+  });
+
+function initPosFilters() {
+  const body = document.getElementById('posFilterBody');
+  const labels = ['1st','2nd','3rd','4th','5th','6th'];
+  labels.forEach((lbl, i) => {
+    const sec = document.createElement('div');
+    sec.className = 'pos-sec';
+    sec.innerHTML = `
+      <div class="pos-sec-hdr" onclick="togglePosSec(${i})">
+        <div class="hdr-left">
+          <span class="lbl">${lbl} Letter</span>
+          <div class="pos-badges" id="pb${i}"></div>
+        </div>
+        <button class="pos-clear" onclick="event.stopPropagation();clearPos(${i})" title="Clear">✕</button>
+        <span class="pos-arrow">▾</span>
+      </div>
+      <div class="pos-sec-body">
+        <div class="letter-pos-grid" id="pg${i}"></div>
+      </div>`;
+    body.appendChild(sec);
+    const grid = sec.querySelector(`#pg${i}`);
+    CONSONANTS.forEach(c => {
+      const t = document.createElement('div');
+      t.className = 'lpt';
+      t.dataset.h = c.h;
+      t.innerHTML = `<span class="h">${c.h}</span><span class="n">${c.n}</span>`;
+      t.onclick = () => { posFilters[i].has(c.h) ? posFilters[i].delete(c.h) : posFilters[i].add(c.h); t.classList.toggle('selected'); updatePB(i); onFilter(); };
+      grid.appendChild(t);
+    });
+  });
+}
+
+function togglePosSec(i) { document.querySelectorAll('.pos-sec')[i].classList.toggle('open'); }
+
+function clearPos(i) {
+  posFilters[i].clear();
+  document.querySelectorAll(`#pg${i} .lpt`).forEach(t => t.classList.remove('selected'));
+  updatePB(i); onFilter();
+}
+
+function updatePB(i) {
+  document.getElementById(`pb${i}`).innerHTML = [...posFilters[i]].map(h => `<span class="pbadge">${h}</span>`).join('');
+}
+
+function onFilter() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const checkedLen = new Set([...document.querySelectorAll('.lcb:checked')].map(c => c.value));
+  const shorter = document.getElementById('lenShortCb').checked;
+  const maxLen = Math.max(...[...checkedLen].map(v => v === '7plus' ? 7 : parseInt(v)).filter(n => !isNaN(n)), 0);
+  const checkedPos = new Set([...document.querySelectorAll('.pcb:checked')].map(c => c.value));
+  const eraBib = document.getElementById('eraBib').checked;
+  const eraMod = document.getElementById('eraMod').checked;
+
+  filtered = ALL_WORDS.filter(w => {
+    const lk = w.len >= 7 ? '7plus' : String(w.len);
+    if (!checkedLen.has(lk) && !(shorter && maxLen > 0 && w.len < maxLen)) return false;
+
+    const pm = [...checkedPos].some(p => {
+      if (p === 'other') return !POS_KNOWN.some(k => w.pos.includes(k));
+      if (p === 'noun') return w.pos.includes('noun') && !w.pos.includes('proper');
+      return w.pos.includes(p);
+    });
+    if (!pm) return false;
+
+    const era = w.era;
+    if (era === 'Both') { if (!eraBib && !eraMod) return false; }
+    else if (era === 'Biblical' && !eraBib) return false;
+    else if (era === 'Modern' && !eraMod) return false;
+
+    for (let i = 0; i < 6; i++) {
+      if (posFilters[i].size === 0) continue;
+      if (!w.cons[i] || !posFilters[i].has(w.cons[i])) return false;
+    }
+
+    if (q) {
+      if (!w.word.includes(q) && !w.bare.includes(q) &&
+          !w.translit.toLowerCase().includes(q) &&
+          !w.translation.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+
+  const sort = document.getElementById('sortSel').value;
+  filtered.sort((a,b) => {
+    if (sort === 'alpha') return a.bare.localeCompare(b.bare, 'he');
+    if (sort === 'len-asc') return a.len - b.len || a.bare.localeCompare(b.bare,'he');
+    if (sort === 'len-desc') return b.len - a.len || a.bare.localeCompare(b.bare,'he');
+    if (sort === 'transl') return a.translation.localeCompare(b.translation);
+    return 0;
+  });
+
+  shown = 0;
+  document.getElementById('resultsGrid').innerHTML = '';
+  loadMore();
+
+  const n = filtered.length;
+  document.getElementById('resultCount').textContent =
+    n === 0 ? 'No words found' : n === 1 ? '1 word' : `${n.toLocaleString()} words`;
+}
+
+function loadMore() {
+  const grid = document.getElementById('resultsGrid');
+  filtered.slice(shown, shown + PAGE).forEach(w => {
+    const card = document.createElement('div');
+    card.className = 'word-card';
+    const ec = w.era === 'Biblical' ? 'b-bib' : w.era === 'Modern' ? 'b-mod' : 'b-both';
+    const el = w.era === 'Both' ? 'Bib + Mod' : w.era;
+    card.innerHTML = `
+      <div class="wc-heb">${w.word}</div>
+      ${w.translit ? `<div class="wc-translit">${w.translit}</div>` : ''}
+      ${w.translation ? `<div class="wc-transl">${w.translation}</div>` : ''}
+      <div class="wc-badges">
+        ${w.pos ? `<span class="badge b-pos">${w.pos}</span>` : ''}
+        <span class="badge ${ec}">${el}</span>
+        <span class="badge b-len">${w.len}L</span>
+      </div>`;
+    grid.appendChild(card);
+  });
+  shown = Math.min(shown + PAGE, filtered.length);
+  document.getElementById('loadMoreWrap').style.display = shown < filtered.length ? 'block' : 'none';
+}
+
+function toggleSidebar() {
+  const s = document.getElementById('appSidebar');
+  const show = document.getElementById('sidebarShowBtn');
+  const hide = document.getElementById('sidebarToggleBtn');
+  const c = s.classList.toggle('hidden');
+  show.style.display = c ? 'flex' : 'none';
+  hide.style.display = c ? 'none' : 'flex';
+}
+
+function toggleDark() {
+  const dark = document.body.classList.toggle('dark');
+  try { localStorage.setItem('hebrewBlenderDark', dark); } catch(e) {}
+  document.getElementById('darkBtn').textContent = dark ? '☀ Light' : '🌙 Dark';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initPosFilters();
+  try {
+    if (localStorage.getItem('hebrewBlenderDark') === 'true') {
+      document.body.classList.add('dark');
+      document.getElementById('darkBtn').textContent = '☀ Light';
+    }
+  } catch(e) {}
+  document.querySelectorAll('.lcb,.pcb').forEach(cb => cb.addEventListener('change', onFilter));
+  document.getElementById('lenShortCb').addEventListener('change', onFilter);
+  document.getElementById('eraBib').addEventListener('change', onFilter);
+  document.getElementById('eraMod').addEventListener('change', onFilter);
+});
+</script>
+</body>
+</html>
