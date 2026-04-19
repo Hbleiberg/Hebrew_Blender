@@ -1519,7 +1519,14 @@
               </span>
             </span>
             <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-              <input type="checkbox" id="rwMixed">
+              <input type="checkbox" id="rwMixed" onchange="toggleRwStarRow()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row" id="rwStarRealRow" style="display:none;padding-left:16px;">
+            <span style="font-size:0.82rem;">Star real words</span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="rwStarReal" checked>
               <span class="slider"></span>
             </label>
           </div>
@@ -2044,6 +2051,7 @@ function getSettings() {
     rwDrillType,
     rwCount:           document.getElementById('rwCount').value,
     rwMixed:           document.getElementById('rwMixed').checked,
+    rwStarReal:        document.getElementById('rwStarReal').checked,
     rwShowTranslit:    document.getElementById('rwShowTranslit').checked,
     rwShowTranslation: document.getElementById('rwShowTranslation').checked,
     rwLen1:            document.getElementById('rwLen1').checked,
@@ -2119,7 +2127,8 @@ function applySettings(s) {
   // Real Words
   if (s.realWords !== undefined) document.getElementById('realWordsToggle').checked = s.realWords;
   if (s.rwCount)                 document.getElementById('rwCount').value = s.rwCount;
-  if (s.rwMixed !== undefined)   document.getElementById('rwMixed').checked = s.rwMixed;
+  if (s.rwMixed !== undefined)   { document.getElementById('rwMixed').checked = s.rwMixed; toggleRwStarRow(); }
+  if (s.rwStarReal !== undefined) document.getElementById('rwStarReal').checked = s.rwStarReal;
   if (s.rwShowTranslit !== undefined)    document.getElementById('rwShowTranslit').checked = s.rwShowTranslit;
   if (s.rwShowTranslation !== undefined) document.getElementById('rwShowTranslation').checked = s.rwShowTranslation;
   if (s.rwLen1 !== undefined)    document.getElementById('rwLen1').checked = s.rwLen1;
@@ -3562,6 +3571,12 @@ function toggleRealWordsUI() {
   }
 }
 
+function toggleRwStarRow() {
+  const mixed = document.getElementById('rwMixed').checked;
+  const row = document.getElementById('rwStarRealRow');
+  if (row) row.style.display = mixed ? '' : 'none';
+}
+
 function setRealWordDrill(type) {
   rwDrillType = type;
   document.querySelectorAll('.rw-drill-btn').forEach(b => b.classList.toggle('active', b.dataset.drill === type));
@@ -3573,6 +3588,7 @@ function setRealWordDrill(type) {
   // Identify mode always needs blends mixed in — force rwMixed on
   const mixedCb = document.getElementById('rwMixed');
   if (mixedCb) mixedCb.checked = (type === 'identify');
+  toggleRwStarRow();
 
   // Auto-set translation visibility
   const translToggle = document.getElementById('rwShowTranslation');
@@ -3706,6 +3722,7 @@ function generateRealWords() {
   const showTranslit = document.getElementById('rwShowTranslit').checked;
   const showTranslation = document.getElementById('rwShowTranslation').checked;
   const mixed = document.getElementById('rwMixed').checked;
+  const starReal = mixed && document.getElementById('rwStarReal').checked;
   const drill = rwDrillType;
 
   if (pool.length === 0) {
@@ -3751,7 +3768,7 @@ function generateRealWords() {
   header.innerHTML = `
     <div>
       <div class="ws-title">Hebrew Word Practice</div>
-      <div class="ws-subtitle">${drillLabels[drill]}${mixed ? ' <em>(★ = real word)</em>' : ''}</div>
+      <div class="ws-subtitle">${drillLabels[drill]}${starReal ? ' <em>(★ = real word)</em>' : ''}</div>
     </div>
     ${wsMetaHTML()}`;
   sheet.appendChild(header);
@@ -3796,9 +3813,9 @@ function generateRealWords() {
       // Reading drill
       const card = document.createElement('div');
       card.className = 'rw-card';
-      if (mixed && w.isReal) card.style.outline = '2px solid var(--gold)';
+      if (starReal && w.isReal) card.style.outline = '2px solid var(--gold)';
       card.innerHTML = `
-        <span class="rw-num">${idx + 1}${mixed && w.isReal ? ' ★' : ''}</span>
+        <span class="rw-num">${idx + 1}${starReal && w.isReal ? ' ★' : ''}</span>
         <span class="rw-pos-tag">${w.pos}</span>
         <span class="rw-heb">${w.heb}</span>
         ${showTranslit ? `<span class="rw-translit">${w.translit}</span>` : ''}
