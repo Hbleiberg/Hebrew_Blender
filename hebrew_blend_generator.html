@@ -462,6 +462,8 @@
     min-height: 14px;
   }
   .blend-answer.hidden { visibility: hidden; }
+  .gematria-blank { width: 52px; height: 1px; background: var(--border); margin-top: 8px; align-self: center; }
+  .gematria-value { font-size: 0.85rem; font-weight: 700; color: var(--gold); margin-top: 6px; }
 
   /* Inverse mode cell */
   .blend-cell-inv {
@@ -1472,6 +1474,17 @@
               <span class="slider"></span>
             </label>
           </div>
+        </div>
+        <div class="toggle-row" id="rowGematria" style="margin-top:4px;">
+          <span>Gematria Mode
+            <span class="tooltip-wrap">?
+              <span class="tooltip-box">Each word or blend is shown with a blank line underneath. Students write the total Gematria value of the letters. An answer key is always generated on a second page.</span>
+            </span>
+          </span>
+          <label class="toggle">
+            <input type="checkbox" id="gematriaToggle" onchange="toggleGematriaMode()">
+            <span class="slider"></span>
+          </label>
         </div>
         <div class="toggle-row" id="rowSelfCheck" style="margin-top:4px;">
           <span>Student Self-Check Mode</span>
@@ -2788,7 +2801,7 @@ function toggleBingoUI() {
   const on = document.getElementById('bingoToggle').checked;
   document.getElementById('bingoOptions').style.display = on ? 'flex' : 'none';
 
-  const hideRows = ['rowInverse','rowAnswerKey','rowFocus','rowThreeLetter','rowSelfCheck','rowOneLetter','rowNikudOnly','rowRealWords'];
+  const hideRows = ['rowInverse','rowAnswerKey','rowFocus','rowThreeLetter','rowSelfCheck','rowGematria','rowOneLetter','rowNikudOnly','rowRealWords'];
   hideRows.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = on ? 'none' : ''; });
   document.getElementById('panelLayout').style.display = on ? 'none' : '';
 
@@ -3483,6 +3496,119 @@ function generate(animate = false) {
 }
 
 // ══════════════════════════════════════════════
+//  GEMATRIA
+// ══════════════════════════════════════════════
+const GEMATRIA_MAP = {'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,'כ':20,'ך':20,'ל':30,'מ':40,'ם':40,'נ':50,'ן':50,'ס':60,'ע':70,'פ':80,'ף':80,'צ':90,'ץ':90,'ק':100,'ר':200,'ש':300,'ת':400};
+
+function calcGematria(str) {
+  let sum = 0;
+  for (const ch of str) sum += GEMATRIA_MAP[ch] || 0;
+  return sum;
+}
+
+function toggleGematriaMode() {
+  const on = document.getElementById('gematriaToggle').checked;
+  if (on) {
+    // Gematria is incompatible with these modes
+    ['bingoToggle','selfCheckToggle'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.checked) { el.checked = false; el.dispatchEvent(new Event('change')); }
+    });
+    document.getElementById('rowBingo').style.display = 'none';
+    document.getElementById('rowSelfCheck').style.display = 'none';
+  } else {
+    document.getElementById('rowBingo').style.display = '';
+    document.getElementById('rowSelfCheck').style.display = '';
+  }
+  if (blends.length) renderWorksheet(false);
+}
+
+function renderGematriaSheet(ws) {
+  const title    = document.getElementById('wsTitle').value || 'Hebrew Blends';
+  const subtitle = document.getElementById('wsSubtitle').value;
+  const cols     = autoCols(blends.length);
+  ws.innerHTML   = '';
+
+  // ── Student sheet ──
+  const studentSheet = document.createElement('div');
+  studentSheet.className = 'sheet';
+  const header = document.createElement('div');
+  header.className = 'ws-header';
+  header.innerHTML = `
+    <div>
+      <div class="ws-title">${title}</div>
+      <div class="ws-subtitle">${subtitle || 'Write the Gematria value of each word on the line below it.'}</div>
+    </div>
+    ${wsMetaHTML()}`;
+  studentSheet.appendChild(header);
+
+  const grid = document.createElement('div');
+  grid.className = 'blends-grid';
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  grid.style.direction = 'rtl';
+  blends.forEach((b, idx) => {
+    const cell = document.createElement('div');
+    cell.className = 'blend-cell';
+    cell.style.minHeight = '80px';
+    const num = document.createElement('div');
+    num.style.cssText = 'font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;';
+    num.textContent = idx + 1;
+    const heb = document.createElement('div');
+    heb.className = 'blend-hebrew';
+    heb.textContent = b.hebrewDisplay;
+    const blank = document.createElement('div');
+    blank.className = 'gematria-blank';
+    cell.appendChild(num); cell.appendChild(heb); cell.appendChild(blank);
+    grid.appendChild(cell);
+  });
+  studentSheet.appendChild(grid);
+  const foot = document.createElement('div');
+  foot.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  foot.textContent = `${blends.length} items · Hebrew Blend Generator`;
+  studentSheet.appendChild(foot);
+  ws.appendChild(studentSheet);
+
+  // ── Answer key sheet ──
+  const keySheet = document.createElement('div');
+  keySheet.className = 'sheet answer-key-sheet';
+  const banner = document.createElement('div');
+  banner.className = 'answer-key-banner';
+  banner.textContent = '✦ Answer Key ✦';
+  keySheet.appendChild(banner);
+  const keyHeader = document.createElement('div');
+  keyHeader.className = 'ws-header';
+  keyHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle" style="color:var(--gold)">Gematria Answer Key — Teacher Copy</div></div>`;
+  keySheet.appendChild(keyHeader);
+  const keyGrid = document.createElement('div');
+  keyGrid.className = 'blends-grid';
+  keyGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  keyGrid.style.direction = 'rtl';
+  blends.forEach((b, idx) => {
+    const val = calcGematria(b.hebrewDisplay);
+    const cell = document.createElement('div');
+    cell.className = 'blend-cell';
+    cell.style.minHeight = '80px';
+    const num = document.createElement('div');
+    num.style.cssText = 'font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;';
+    num.textContent = idx + 1;
+    const heb = document.createElement('div');
+    heb.className = 'blend-hebrew';
+    heb.textContent = b.hebrewDisplay;
+    const gval = document.createElement('div');
+    gval.className = 'gematria-value';
+    gval.textContent = val;
+    cell.appendChild(num); cell.appendChild(heb); cell.appendChild(gval);
+    keyGrid.appendChild(cell);
+  });
+  keySheet.appendChild(keyGrid);
+  const keyFoot = document.createElement('div');
+  keyFoot.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  keyFoot.textContent = `${blends.length} items · Hebrew Blend Generator — Gematria Answer Key`;
+  keySheet.appendChild(keyFoot);
+  ws.appendChild(keySheet);
+}
+
+// ══════════════════════════════════════════════
 //  RENDER
 // ══════════════════════════════════════════════
 let isShuffling = false;
@@ -3502,6 +3628,7 @@ function renderWorksheet(animate = false) {
   const ws = document.getElementById('worksheet');
 
   if (bingo) { renderBingo(ws); return; }
+  if (document.getElementById('gematriaToggle').checked) { renderGematriaSheet(ws); return; }
 
   // One-letter and nikud-only: blends is already populated by generate()
   // selfCheck uses blends array directly so it works for all types
@@ -3776,11 +3903,12 @@ document.getElementById('selfCheckToggle').addEventListener('change', () => {
     document.getElementById('realWordsToggle').checked = false; toggleRealWordsUI();
   }
   const hidePanels = ['panelLayout', 'panelVowels', 'panelLetters', 'panelPresets'];
-  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowBingo', 'rowRealWords'];
+  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowBingo', 'rowGematria', 'rowRealWords'];
   hidePanels.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   hideRows.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   ['blendTypeWrapper','modeDivider'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   document.getElementById('selfCheckOptions').style.display = on ? 'flex' : 'none';
+  if (on && document.getElementById('gematriaToggle').checked) { document.getElementById('gematriaToggle').checked = false; }
   if (on) {
     document.getElementById('focusOptions').style.display = 'none';
     document.getElementById('threeLetterOptions').style.display = 'none';
