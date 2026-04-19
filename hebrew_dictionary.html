@@ -60,6 +60,8 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1px 8px;}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px 8px;}
 .filter-note{font-size:0.68rem;color:var(--muted);margin-top:4px;}
+.pos-all-btn{flex:1;padding:3px 0;font-size:0.72rem;font-family:'Source Sans 3',sans-serif;background:var(--warm-gray);color:var(--text);border:1px solid var(--border);border-radius:4px;cursor:pointer;}
+.pos-all-btn:hover{border-color:var(--gold);color:var(--gold);}
 .filter-sub{margin-top:6px;padding-left:6px;border-left:2px solid var(--border);}
 /* Position filter */
 .pos-sec{margin-bottom:4px;}
@@ -169,6 +171,10 @@ footer a{color:var(--gold);text-decoration:none;}
     <div class="panel">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Part of Speech</div>
       <div class="panel-body">
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <button class="pos-all-btn" onclick="setPosAll(true)">All</button>
+          <button class="pos-all-btn" onclick="setPosAll(false)">None</button>
+        </div>
         <div class="grid2">
           <label class="cb-label"><input type="checkbox" class="pcb" value="noun" checked> Noun</label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="proper noun" checked> Proper Noun</label>
@@ -417,6 +423,11 @@ function loadMore() {
   });
   shown = Math.min(shown + PAGE, filtered.length);
   document.getElementById('loadMoreWrap').style.display = shown < filtered.length ? 'block' : 'none';
+}
+
+function setPosAll(checked) {
+  document.querySelectorAll('.pcb').forEach(cb => cb.checked = checked);
+  onFilter();
 }
 
 function toggleAllLengths(cb) {
