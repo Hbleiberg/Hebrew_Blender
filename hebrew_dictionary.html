@@ -116,6 +116,11 @@ body.bulk-mode .word-card{cursor:pointer;}
 .b-both{background:var(--warm-gray);color:var(--muted);}
 .b-len{background:var(--navy);color:var(--gold-light);}
 .load-more-wrap{text-align:center;padding:14px 0;}
+.tip-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:var(--muted);color:var(--white);font-size:0.58rem;font-weight:700;cursor:help;margin-left:4px;vertical-align:middle;flex-shrink:0;}
+.tip-wrap.tip-gold{background:var(--gold);color:var(--navy);}
+.tip-wrap .tip-box{display:none;position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:#1a2744;color:#f0e8d8;font-size:0.74rem;font-weight:400;line-height:1.5;padding:8px 11px;border-radius:6px;width:220px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:999;pointer-events:none;white-space:normal;}
+.tip-wrap .tip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1a2744;}
+.tip-wrap:hover .tip-box{display:block;}
 .load-more-btn{background:var(--navy);color:var(--gold-light);border:none;border-radius:6px;padding:8px 28px;font-size:0.85rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;}
 .load-more-btn:hover{background:#0f1a33;}
 .empty{text-align:center;padding:60px 20px;color:var(--muted);}
@@ -246,7 +251,7 @@ footer a{color:var(--gold);text-decoration:none;}
         <label class="cb-label"><input type="radio" name="copyMode" value="definition" onchange="copyMode='definition'" style="accent-color:var(--gold);"> Word — Definition</label>
         <label class="cb-label"><input type="radio" name="copyMode" value="transdef" onchange="copyMode='transdef'" style="accent-color:var(--gold);"> Word — Transliteration — Definition</label>
         <label class="cb-label"><input type="radio" name="copyMode" value="defonly" onchange="copyMode='defonly'" style="accent-color:var(--gold);"> Definition</label>
-        <label class="cb-label"><input type="radio" name="copyMode" value="allinfo" onchange="copyMode='allinfo'" style="accent-color:var(--gold);"> All info</label>
+        <label class="cb-label"><input type="radio" name="copyMode" value="allinfo" onchange="copyMode='allinfo'" style="accent-color:var(--gold);"> All info<span class="tip-wrap">?<span class="tip-box">Copies: Hebrew word — transliteration — translation — part of speech — era. Gematria value is appended if "Show Gematria Value" is enabled.</span></span><span class="tip-wrap tip-gold">!<span class="tip-box">Select this option when using Bulk Copy to generate a manual input list for the Worksheet Generator.</span></span></label>
         <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
         <label class="cb-label" title="Select multiple words from the results. Each selected word is added to a text box below — one per line — in whatever Copy Mode is active."><input type="checkbox" id="bulkModeCb" style="accent-color:var(--gold);" onchange="toggleBulkMode(this.checked)"> Bulk Copy Mode</label>
         <div id="bulkPanel" style="display:none;margin-top:8px;">

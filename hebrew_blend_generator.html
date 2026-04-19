@@ -1516,6 +1516,23 @@
             <span class="slider"></span>
           </label>
         </div>
+        <div class="toggle-row" id="rowManualInput" style="margin-top:4px;">
+          <span>Manual Word Input
+            <span class="tooltip-wrap">?
+              <span class="tooltip-box">Paste your own word list to control exactly what appears on the worksheet. Use "All info" copy mode in the Word Lookup dictionary to generate the input.</span>
+            </span>
+          </span>
+          <label class="toggle">
+            <input type="checkbox" id="manualInputToggle" onchange="toggleManualInputUI()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div id="manualInputOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--border);flex-direction:column;gap:6px;">
+          <div style="font-size:0.72rem;color:var(--muted);line-height:1.4;">Paste words exported from the Word Lookup dictionary (one per line). Accepted formats:<br>
+          <strong>Hebrew</strong> or <strong>Hebrew — translit — definition — pos — era</strong></div>
+          <textarea id="manualInputText" rows="8" placeholder="אָב&#10;אֵם — em — mother — noun — Both&#10;…" style="width:100%;font-size:0.78rem;font-family:'Frank Ruhl Libre',serif;direction:rtl;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;"></textarea>
+          <div id="manualInputCount" style="font-size:0.7rem;color:var(--muted);text-align:center;"></div>
+        </div>
         <div id="realWordsOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--border);flex-direction:column;gap:6px;">
 
           <!-- Drill Type -->
@@ -3157,6 +3174,11 @@ function autoCols(count) {
 }
 
 function generate(animate = false) {
+  if (document.getElementById('manualInputToggle').checked) {
+    generateManualInput();
+    return;
+  }
+
   const rwOn = document.getElementById('realWordsToggle').checked;
   const mixed = rwOn && document.getElementById('rwMixed').checked;
 
@@ -3746,10 +3768,89 @@ let REAL_WORDS = [];
 let rwDrillType = 'reading';
 
 // ── REAL WORDS UI TOGGLE ──
+function toggleManualInputUI() {
+  const on = document.getElementById('manualInputToggle').checked;
+  document.getElementById('manualInputOptions').style.display = on ? 'flex' : 'none';
+  if (on) {
+    document.getElementById('realWordsToggle').checked = false;
+    toggleRealWordsUI();
+  }
+  const hidePanels = ['panelVowels', 'panelLetters'];
+  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowSelfCheck', 'rowBlendCount', 'rowBingo', 'rowRealWords'];
+  hidePanels.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
+  hideRows.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
+  ['blendTypeWrapper','modeDivider'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
+  document.getElementById('manualInputText').addEventListener('input', updateManualInputCount);
+  updateManualInputCount();
+}
+
+function updateManualInputCount() {
+  const lines = parseManualInput();
+  const el = document.getElementById('manualInputCount');
+  if (el) el.textContent = lines.length ? `${lines.length} word${lines.length === 1 ? '' : 's'} detected` : '';
+}
+
+function parseManualInput() {
+  const raw = (document.getElementById('manualInputText').value || '').split('\n');
+  return raw.map(line => {
+    line = line.trim();
+    if (!line) return null;
+    const parts = line.split(/\s*—\s*|\s*-\s*/);
+    return {
+      heb:         parts[0] || '',
+      word:        parts[0] || '',
+      translit:    parts[1] || '',
+      translation: parts[2] || '',
+      pos:         parts[3] || '',
+      era:         parts[4] || 'Both',
+    };
+  }).filter(w => w && w.heb);
+}
+
+function generateManualInput() {
+  const items = parseManualInput();
+  if (!items.length) { alert('No valid words found. Paste at least one Hebrew word.'); return; }
+  const showTranslit = true;
+  const showTranslation = true;
+  lastShetefItems = { mode: 'real', items };
+  const ws = document.getElementById('worksheet');
+  ws.innerHTML = '';
+  const sheet = document.createElement('div');
+  sheet.className = 'sheet';
+  const header = document.createElement('div');
+  header.className = 'ws-header';
+  header.innerHTML = `<div><div class="ws-title">Hebrew Word Practice</div><div class="ws-subtitle">Read each Hebrew word aloud.</div></div>${wsMetaHTML()}`;
+  sheet.appendChild(header);
+  const cols = items.length <= 20 ? 4 : items.length <= 40 ? 5 : 6;
+  const grid = document.createElement('div');
+  grid.className = 'rw-grid';
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  items.forEach((w, idx) => {
+    const cell = document.createElement('div');
+    cell.className = 'rw-cell';
+    cell.innerHTML = `
+      <span class="rw-num">${idx + 1}</span>
+      ${w.pos ? `<span class="rw-pos-tag">${w.pos}</span>` : ''}
+      <span class="rw-heb">${w.heb}</span>
+      ${w.translit ? `<span class="rw-translit">${w.translit}</span>` : ''}
+      ${w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
+    grid.appendChild(cell);
+  });
+  sheet.appendChild(grid);
+  ws.appendChild(sheet);
+  document.getElementById('regenBtn').disabled = true;
+  document.getElementById('regenBtn').style.opacity = '0.4';
+}
+
 function toggleRealWordsUI() {
   const on = document.getElementById('realWordsToggle').checked;
   const opts = document.getElementById('realWordsOptions');
   opts.style.display = on ? 'flex' : 'none';
+
+  if (on) {
+    document.getElementById('manualInputToggle').checked = false;
+    document.getElementById('manualInputOptions').style.display = 'none';
+  }
 
   // Hide panels/rows that conflict with Real Words mode
   const hidePanels = ['panelVowels', 'panelLetters'];
