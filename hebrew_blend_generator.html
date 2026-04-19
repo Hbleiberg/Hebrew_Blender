@@ -1516,23 +1516,81 @@
             <span class="slider"></span>
           </label>
         </div>
-        <div class="toggle-row" id="rowManualInput" style="margin-top:4px;">
-          <span>Manual Word Input
-            <span class="tooltip-wrap">?
-              <span class="tooltip-box">Paste your own word list to control exactly what appears on the worksheet. Use "All info" copy mode in the Word Lookup dictionary to generate the input.</span>
-            </span>
-          </span>
-          <label class="toggle">
-            <input type="checkbox" id="manualInputToggle" onchange="toggleManualInputUI()">
-            <span class="slider"></span>
-          </label>
+        <!-- Custom wordlist options — shown after import -->
+        <div id="customWordlistOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--gold);flex-direction:column;gap:6px;">
+          <div style="font-size:0.72rem;font-weight:600;color:var(--gold);">✓ Custom wordlist: <span id="cwWordCount">0</span> words</div>
+
+          <!-- Drill Type -->
+          <div class="rw-section">
+            <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Drill Type <span class="tooltip-wrap" style="font-size:0.65rem;text-transform:none;letter-spacing:normal;font-weight:400;">?<span class="tooltip-box"><strong>Reading</strong> — Hebrew shown, students read aloud.<br><br><strong>Vocab</strong> — Flip cards: Hebrew front, translation back.<br><br><strong>Reverse</strong> — Translation shown, students write the Hebrew.<br><br><strong>Identify</strong> — Custom words mixed with nonsense blends; students circle the real ones.<br><br><strong>Bingo</strong> — Unique bingo cards from your word list.</span></span></div>
+            <div class="rw-section-body">
+              <div class="blend-type-selector" style="grid-template-columns:repeat(5,1fr);margin-bottom:4px;">
+                <button class="rw-drill-btn active" data-cw-drill="reading"  onclick="setCwDrill('reading')">Reading</button>
+                <button class="rw-drill-btn"        data-cw-drill="vocab"    onclick="setCwDrill('vocab')">Vocab</button>
+                <button class="rw-drill-btn"        data-cw-drill="reverse"  onclick="setCwDrill('reverse')">Reverse</button>
+                <button class="rw-drill-btn"        data-cw-drill="identify" onclick="setCwDrill('identify')">Identify</button>
+                <button class="rw-drill-btn"        data-cw-drill="bingo"    onclick="setCwDrill('bingo')">Bingo</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Display -->
+          <div class="rw-section">
+            <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Display</div>
+            <div class="rw-section-body">
+              <div class="toggle-row">
+                <span style="font-size:0.8rem;">Show Transliteration</span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="cwShowTranslit" checked onchange="onCwTranslitChange()"><span class="slider"></span></label>
+              </div>
+              <div id="cwTranslitPageRow" style="display:none;padding-left:16px;">
+                <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
+                  <button class="rw-drill-btn active" data-cw-translit="same" onclick="setCwTranslitPage('same')">Same page</button>
+                  <button class="rw-drill-btn"        data-cw-translit="key"  onclick="setCwTranslitPage('key')">Answer key</button>
+                </div>
+              </div>
+              <div class="toggle-row">
+                <span style="font-size:0.8rem;">Show Translation</span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="cwShowTranslation" onchange="onCwTranslChange()"><span class="slider"></span></label>
+              </div>
+              <div id="cwTranslPageRow" style="display:none;padding-left:16px;">
+                <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
+                  <button class="rw-drill-btn active" data-cw-transl="same" onclick="setCwTranslPage('same')">Same page</button>
+                  <button class="rw-drill-btn"        data-cw-transl="key"  onclick="setCwTranslPage('key')">Answer key</button>
+                </div>
+              </div>
+              <div class="toggle-row">
+                <span style="font-size:0.8rem;">Show Part of Speech</span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="cwShowPos"><span class="slider"></span></label>
+              </div>
+              <div style="margin-top:6px;display:flex;align-items:center;gap:8px;">
+                <span style="font-size:0.8rem;flex:1;">Words on sheet</span>
+                <select id="cwCount" style="font-size:0.78rem;padding:3px 6px;">
+                  <option value="10">10</option>
+                  <option value="20" selected>20</option>
+                  <option value="30">30</option>
+                  <option value="40">40</option>
+                  <option value="50">50</option>
+                  <option value="all">All</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mix in nonsense blends -->
+          <div id="cwMixedRow">
+            <div class="toggle-row">
+              <span style="font-size:0.82rem;">Mix in nonsense blends
+                <span class="tooltip-wrap" style="font-size:0.55rem;">?<span class="tooltip-box">Real words from your list are mixed with generated nonsense blends. Generate blends in standard mode first, then return to custom mode.</span></span>
+              </span>
+              <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="cwMixed" onchange="toggleCwStarRow()"><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row" id="cwStarRealRow" style="display:none;padding-left:16px;">
+              <span style="font-size:0.82rem;">Star real words</span>
+              <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="cwStarReal" checked><span class="slider"></span></label>
+            </div>
+          </div>
         </div>
-        <div id="manualInputOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--border);flex-direction:column;gap:6px;">
-          <div style="font-size:0.72rem;color:var(--muted);line-height:1.4;">Paste words exported from the Word Lookup dictionary (one per line). Accepted formats:<br>
-          <strong>Hebrew</strong> or <strong>Hebrew — translit — definition — pos — era</strong></div>
-          <textarea id="manualInputText" rows="8" placeholder="אָב&#10;אֵם — em — mother — noun — Both&#10;…" style="width:100%;font-size:0.78rem;font-family:'Frank Ruhl Libre',serif;direction:rtl;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;"></textarea>
-          <div id="manualInputCount" style="font-size:0.7rem;color:var(--muted);text-align:center;"></div>
-        </div>
+
         <div id="realWordsOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--border);flex-direction:column;gap:6px;">
 
           <!-- Drill Type -->
@@ -1849,6 +1907,23 @@
                   <textarea id="shetefCodeBox" rows="6" spellcheck="false" readonly placeholder="Click Generate after creating a worksheet…" style="width:100%;font-size:0.72rem;font-family:monospace;border:1px solid var(--border);border-radius:5px;background:var(--cream);color:var(--text);padding:6px;resize:vertical;outline:none;direction:rtl;unicode-bidi:plaintext;"></textarea>
                   <button onclick="copyTextarea('shetefCodeBox')" title="Copy" style="position:absolute;top:5px;right:5px;background:none;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:0.65rem;color:var(--muted);cursor:pointer;" id="shetefCopyBtn">Copy</button>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Import Custom Wordlist sub-panel -->
+          <div class="panel collapsed" style="border:1px solid var(--gold);border-radius:6px;overflow:hidden;">
+            <div class="panel-title" style="font-size:0.72rem;padding:6px 10px;">Import Custom Wordlist</div>
+            <div class="panel-body">
+              <div class="adv-body-sm">
+                <div style="font-size:0.72rem;color:var(--muted);line-height:1.5;">In the <strong>Word Lookup</strong> dictionary, enable <strong>Bulk Copy Mode</strong> and set Copy Mode to <strong>All info</strong>. Select your words, copy, then paste below. Plain Hebrew (one per line) also works.</div>
+                <textarea id="cwImportTextarea" rows="7" placeholder="אָב — av — father — noun — Both&#10;אֵם — em — mother — noun — Both&#10;…" style="width:100%;font-size:0.75rem;font-family:'Frank Ruhl Libre',serif;direction:rtl;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;" oninput="updateCwImportCount()"></textarea>
+                <div id="cwImportCount" style="font-size:0.7rem;color:var(--muted);text-align:center;min-height:1em;"></div>
+                <div style="display:flex;gap:6px;">
+                  <button class="btn-xs" style="flex:1;" onclick="importCustomWordlist()">⬇ Import</button>
+                  <button class="btn-xs" style="flex:1;" onclick="clearCustomWordlist()">✕ Clear</button>
+                </div>
+                <div id="cwImportStatus" style="font-size:0.72rem;text-align:center;color:var(--gold);font-weight:600;min-height:1.2em;"></div>
               </div>
             </div>
           </div>
@@ -3174,8 +3249,8 @@ function autoCols(count) {
 }
 
 function generate(animate = false) {
-  if (document.getElementById('manualInputToggle').checked) {
-    generateManualInput();
+  if (cwModeActive) {
+    generateCustomWordlist();
     return;
   }
 
@@ -3768,91 +3843,203 @@ let REAL_WORDS = [];
 let rwDrillType = 'reading';
 
 // ── REAL WORDS UI TOGGLE ──
-function toggleManualInputUI() {
-  const on = document.getElementById('manualInputToggle').checked;
-  document.getElementById('manualInputOptions').style.display = on ? 'flex' : 'none';
-  if (on) {
-    document.getElementById('realWordsToggle').checked = false;
-    toggleRealWordsUI();
-  }
-  const hidePanels = ['panelVowels', 'panelLetters'];
-  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowSelfCheck', 'rowBlendCount', 'rowBingo', 'rowRealWords'];
-  hidePanels.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
-  hideRows.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
-  ['blendTypeWrapper','modeDivider'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
-  document.getElementById('manualInputText').addEventListener('input', updateManualInputCount);
-  updateManualInputCount();
-}
+// ── CUSTOM WORDLIST ──
+let customWordlistData = [];
+let cwModeActive = false;
+let cwDrillType = 'reading';
+let cwTranslitPage = 'same';
+let cwTranslPage = 'same';
 
-function updateManualInputCount() {
-  const lines = parseManualInput();
-  const el = document.getElementById('manualInputCount');
-  if (el) el.textContent = lines.length ? `${lines.length} word${lines.length === 1 ? '' : 's'} detected` : '';
-}
-
-function parseManualInput() {
-  const raw = (document.getElementById('manualInputText').value || '').split('\n');
-  return raw.map(line => {
+function parseCwText(text) {
+  return (text || '').split('\n').map(line => {
     line = line.trim();
     if (!line) return null;
-    const parts = line.split(/\s*—\s*|\s*-\s*/);
-    return {
-      heb:         parts[0] || '',
-      word:        parts[0] || '',
-      translit:    parts[1] || '',
-      translation: parts[2] || '',
-      pos:         parts[3] || '',
-      era:         parts[4] || 'Both',
-    };
-  }).filter(w => w && w.heb);
+    // Split on em-dash, en-dash, or hyphen surrounded by spaces
+    const parts = line.split(/\s*[—–]\s*|\s+-\s+/);
+    const heb = (parts[0] || '').trim();
+    if (!heb) return null;
+    return { heb, word: heb, translit: (parts[1]||'').trim(), translation: (parts[2]||'').trim(), pos: (parts[3]||'').trim(), era: (parts[4]||'Both').trim(), isReal: true };
+  }).filter(Boolean);
 }
 
-function generateManualInput() {
-  const items = parseManualInput();
-  if (!items.length) { alert('No valid words found. Paste at least one Hebrew word.'); return; }
-  const showTranslit = true;
-  const showTranslation = true;
+function updateCwImportCount() {
+  const n = parseCwText(document.getElementById('cwImportTextarea').value).length;
+  document.getElementById('cwImportCount').textContent = n ? `${n} word${n !== 1 ? 's' : ''} detected` : '';
+}
+
+function importCustomWordlist() {
+  const parsed = parseCwText(document.getElementById('cwImportTextarea').value);
+  if (!parsed.length) { alert('No valid Hebrew words found. Make sure each line starts with a Hebrew word.'); return; }
+  customWordlistData = parsed;
+  document.getElementById('cwWordCount').textContent = parsed.length;
+  document.getElementById('cwImportStatus').textContent = `✓ ${parsed.length} word${parsed.length !== 1 ? 's' : ''} imported`;
+  activateCustomWordlistMode(true);
+}
+
+function clearCustomWordlist() {
+  customWordlistData = [];
+  document.getElementById('cwImportTextarea').value = '';
+  document.getElementById('cwImportCount').textContent = '';
+  document.getElementById('cwImportStatus').textContent = '';
+  activateCustomWordlistMode(false);
+}
+
+function activateCustomWordlistMode(on) {
+  cwModeActive = on;
+  document.getElementById('customWordlistOptions').style.display = on ? 'flex' : 'none';
+  const hidePanels = ['panelVowels', 'panelLetters'];
+  const hideRows = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowSelfCheck', 'rowBlendCount', 'rowBingo', 'rowRealWords'];
+  hidePanels.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
+  hideRows.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
+  ['blendTypeWrapper', 'modeDivider'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
+  if (on) {
+    document.getElementById('realWordsToggle').checked = false;
+    document.getElementById('realWordsOptions').style.display = 'none';
+    ['selfCheckToggle','bingoToggle'].forEach(id => { const el = document.getElementById(id); if (el) el.checked = false; });
+    ['bingoOptions','selfCheckOptions','focusOptions','threeLetterOptions'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+    onCwTranslitChange();
+    onCwTranslChange();
+  }
+}
+
+function setCwDrill(drill) {
+  cwDrillType = drill;
+  document.querySelectorAll('[data-cw-drill]').forEach(b => b.classList.toggle('active', b.dataset.cwDrill === drill));
+  // Mix in blends not meaningful for vocab or bingo
+  const mixRow = document.getElementById('cwMixedRow');
+  if (mixRow) mixRow.style.display = ['vocab', 'bingo'].includes(drill) ? 'none' : '';
+  onCwTranslitChange();
+  onCwTranslChange();
+}
+
+function onCwTranslitChange() {
+  const show = document.getElementById('cwShowTranslit') && document.getElementById('cwShowTranslit').checked;
+  const row = document.getElementById('cwTranslitPageRow');
+  if (row) row.style.display = (show && cwDrillType === 'reading') ? '' : 'none';
+}
+
+function onCwTranslChange() {
+  const show = document.getElementById('cwShowTranslation') && document.getElementById('cwShowTranslation').checked;
+  const row = document.getElementById('cwTranslPageRow');
+  if (row) row.style.display = (show && cwDrillType === 'reading') ? '' : 'none';
+}
+
+function setCwTranslitPage(val) {
+  cwTranslitPage = val;
+  document.querySelectorAll('[data-cw-translit]').forEach(b => b.classList.toggle('active', b.dataset.cwTranslit === val));
+}
+
+function setCwTranslPage(val) {
+  cwTranslPage = val;
+  document.querySelectorAll('[data-cw-transl]').forEach(b => b.classList.toggle('active', b.dataset.cwTransl === val));
+}
+
+function toggleCwStarRow() {
+  const row = document.getElementById('cwStarRealRow');
+  if (row) row.style.display = document.getElementById('cwMixed').checked ? '' : 'none';
+}
+
+function generateCustomWordlist() {
+  if (!customWordlistData.length) { alert('No wordlist imported. Open Advanced → Import Custom Wordlist and click Import.'); return; }
+
+  const drill = cwDrillType;
+  const showTranslit    = document.getElementById('cwShowTranslit').checked;
+  const showTranslation = document.getElementById('cwShowTranslation').checked;
+  const showPos         = document.getElementById('cwShowPos').checked;
+  const mixed           = document.getElementById('cwMixed').checked;
+  const starRealOn      = mixed && document.getElementById('cwStarReal').checked;
+  const cwCountVal      = document.getElementById('cwCount').value;
+  const count           = cwCountVal === 'all' ? customWordlistData.length : Math.min(parseInt(cwCountVal) || 20, customWordlistData.length);
+
+  const translitOnKey   = showTranslit    && cwTranslitPage === 'key' && drill === 'reading';
+  const showTranslitInline = showTranslit && !translitOnKey;
+  const translOnKey     = showTranslation && cwTranslPage   === 'key' && drill === 'reading';
+  const showTranslInline   = showTranslation && !translOnKey;
+
+  const pool = rwShuffle([...customWordlistData]).slice(0, count);
+
+  if (drill === 'bingo') { generateRealWordsBingo(pool); return; }
+  if (drill === 'identify') { generateIdentifyDrill(pool, count, showTranslit); return; }
+
+  let items = pool.map(w => ({ ...w, isReal: true }));
+  if (mixed) {
+    if (!blends.length) { alert('No blends available to mix in. Generate a blend worksheet in standard mode first, then return to custom mode.'); return; }
+    const blendItems = rwShuffle(blends).slice(0, count).map(b => ({ heb: b.hebrewDisplay, word: b.hebrewDisplay, translit: b.combined, translation: '', pos: 'blend', era: 'Both', isReal: false }));
+    items = rwShuffle([...items, ...blendItems]).slice(0, count * 2);
+  }
+  const starReal = starRealOn;
   lastShetefItems = { mode: 'real', items };
+
   const ws = document.getElementById('worksheet');
   ws.innerHTML = '';
   const sheet = document.createElement('div');
   sheet.className = 'sheet';
   const header = document.createElement('div');
   header.className = 'ws-header';
-  header.innerHTML = `<div><div class="ws-title">Hebrew Word Practice</div><div class="ws-subtitle">Read each Hebrew word aloud.</div></div>${wsMetaHTML()}`;
+  const drillLabels = { reading: 'Read each Hebrew word aloud.', vocab: 'Tap each card to reveal the meaning.', reverse: 'Write the Hebrew for each English word.' };
+  header.innerHTML = `<div><div class="ws-title">Hebrew Word Practice</div><div class="ws-subtitle">${drillLabels[drill]}${starReal ? ' <em>(★ = real word)</em>' : ''}</div></div>${wsMetaHTML()}`;
   sheet.appendChild(header);
+
   const cols = items.length <= 20 ? 4 : items.length <= 40 ? 5 : 6;
   const grid = document.createElement('div');
   grid.className = 'rw-grid';
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
   items.forEach((w, idx) => {
-    const cell = document.createElement('div');
-    cell.className = 'rw-cell';
-    cell.innerHTML = `
-      <span class="rw-num">${idx + 1}</span>
-      ${w.pos ? `<span class="rw-pos-tag">${w.pos}</span>` : ''}
-      <span class="rw-heb">${w.heb}</span>
-      ${w.translit ? `<span class="rw-translit">${w.translit}</span>` : ''}
-      ${w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
+    if (drill === 'vocab') {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'rw-flip'; wrapper.style.minHeight = '90px';
+      wrapper.innerHTML = `<div class="rw-flip-inner"><div class="rw-flip-front"><span class="rw-num">${idx+1}</span>${showPos && w.pos ? `<span class="rw-pos-tag">${w.pos}</span>` : ''}<span class="rw-heb">${w.heb}</span>${showTranslitInline && w.translit ? `<span class="rw-translit">${w.translit}</span>` : ''}<span class="rw-translit" style="font-size:0.65rem;opacity:0.6;">tap to flip</span></div><div class="rw-flip-back"><span class="rw-num">${idx+1}</span><span class="rw-heb" style="font-size:1.3rem;">${w.heb}</span>${w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}</div></div>`;
+      wrapper.querySelector('.rw-flip-inner').addEventListener('click', () => wrapper.classList.toggle('flipped'));
+      grid.appendChild(wrapper); return;
+    }
+    if (drill === 'reverse') {
+      const cell = document.createElement('div'); cell.className = 'rw-cell';
+      cell.innerHTML = `<span class="rw-num">${idx+1}</span>${showPos && w.pos ? `<span class="rw-pos-tag">${w.pos}</span>` : ''}<span class="rw-heb" style="opacity:0;">${w.heb}</span>${w.translation ? `<span class="rw-translation">${w.translation}</span>` : '<span class="rw-translation">—</span>'}`;
+      grid.appendChild(cell); return;
+    }
+    // Reading
+    const cell = document.createElement('div'); cell.className = 'rw-cell';
+    if (starReal && !w.isReal) cell.classList.add('rw-blend');
+    cell.innerHTML = `<span class="rw-num">${idx+1}</span>${showPos && w.pos ? `<span class="rw-pos-tag">${w.pos}</span>` : ''}<span class="rw-heb">${starReal && w.isReal ? '★ ' : ''}${w.heb}</span>${showTranslitInline && w.translit ? `<span class="rw-translit">${w.translit}</span>` : ''}${showTranslInline && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
     grid.appendChild(cell);
   });
+
   sheet.appendChild(grid);
   ws.appendChild(sheet);
-  document.getElementById('regenBtn').disabled = true;
-  document.getElementById('regenBtn').style.opacity = '0.4';
+
+  // Answer key sheet (transliteration and/or translation on separate page)
+  if ((translitOnKey || translOnKey) && items.some(w => w.isReal)) {
+    const keySheet = document.createElement('div'); keySheet.className = 'sheet'; keySheet.style.marginTop = '32px';
+    const keyHdr = document.createElement('div'); keyHdr.className = 'ws-header';
+    keyHdr.innerHTML = `<div><div class="ws-title" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>`;
+    keySheet.appendChild(keyHdr);
+    const keyGrid = document.createElement('div'); keyGrid.className = 'rw-grid';
+    keyGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    items.forEach((w, idx) => {
+      if (!w.isReal) return;
+      const cell = document.createElement('div'); cell.className = 'rw-cell';
+      cell.innerHTML = `<span class="rw-num">${idx+1}</span><span class="rw-heb">${w.heb}</span>${translitOnKey && w.translit ? `<span class="rw-translit">${w.translit}</span>` : ''}${translOnKey && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
+      keyGrid.appendChild(cell);
+    });
+    keySheet.appendChild(keyGrid);
+    ws.appendChild(keySheet);
+  }
+
+  const rb = document.getElementById('regenBtn');
+  if (rb) { rb.disabled = false; rb.style.opacity = '1'; rb.style.cursor = 'pointer'; }
 }
 
 function toggleRealWordsUI() {
   const on = document.getElementById('realWordsToggle').checked;
-  const opts = document.getElementById('realWordsOptions');
-  opts.style.display = on ? 'flex' : 'none';
+  document.getElementById('realWordsOptions').style.display = on ? 'flex' : 'none';
 
   if (on) {
-    document.getElementById('manualInputToggle').checked = false;
-    document.getElementById('manualInputOptions').style.display = 'none';
+    // Deactivate custom wordlist mode (keep data, just hide controls)
+    cwModeActive = false;
+    document.getElementById('customWordlistOptions').style.display = 'none';
   }
 
-  // Hide panels/rows that conflict with Real Words mode
   const hidePanels = ['panelVowels', 'panelLetters'];
   const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowSelfCheck', 'rowBlendCount', 'rowBingo'];
   hidePanels.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
@@ -3860,7 +4047,6 @@ function toggleRealWordsUI() {
   ['blendTypeWrapper','modeDivider'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
 
   if (on) {
-    // Uncheck conflicting modes
     document.getElementById('selfCheckToggle').checked = false;
     document.getElementById('bingoToggle').checked = false;
     document.getElementById('bingoOptions').style.display = 'none';
