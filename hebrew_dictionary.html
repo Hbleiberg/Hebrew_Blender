@@ -225,6 +225,7 @@ footer a{color:var(--gold);text-decoration:none;}
         <div style="font-size:0.72rem;font-weight:600;margin-bottom:6px;color:var(--text);">Copy Mode</div>
         <label class="cb-label"><input type="radio" name="copyMode" value="word" checked onchange="copyMode='word'" style="accent-color:var(--gold);"> Only word</label>
         <label class="cb-label"><input type="radio" name="copyMode" value="definition" onchange="copyMode='definition'" style="accent-color:var(--gold);"> Word — Definition</label>
+        <label class="cb-label"><input type="radio" name="copyMode" value="defonly" onchange="copyMode='defonly'" style="accent-color:var(--gold);"> Definition</label>
       </div>
     </div>
 
@@ -424,7 +425,7 @@ function loadMore() {
     btn.className = 'wc-copy';
     btn.innerHTML = COPY_ICON;
     btn.title = 'Copy Hebrew';
-    btn.addEventListener('click', e => { e.stopPropagation(); copyWord(btn, copyMode === 'definition' && w.translation ? `${w.word} — ${w.translation}` : w.word); });
+    btn.addEventListener('click', e => { e.stopPropagation(); const text = copyMode === 'definition' && w.translation ? `${w.word} — ${w.translation}` : copyMode === 'defonly' ? (w.translation || w.word) : w.word; copyWord(btn, text); });
     card.appendChild(btn);
     const srch = document.createElement('a');
     srch.className = 'wc-search';
