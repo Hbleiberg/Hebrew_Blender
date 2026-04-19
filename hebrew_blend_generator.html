@@ -2971,6 +2971,12 @@ function generate(animate = false) {
   let firstPool  = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h));
   let secondPool = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h));
 
+  // In mixed Real Words mode, restrict blends to the same letter filter
+  if (mixed && rwLetterFilter.size > 0) {
+    firstPool  = firstPool.filter(h => rwLetterFilter.has(h));
+    secondPool = secondPool.filter(h => rwLetterFilter.has(h));
+  }
+
   // Rule 1: Remove plain ו from second pool — always confusing there
   secondPool = secondPool.filter(h => h !== 'ו');
 
