@@ -246,7 +246,7 @@ footer a{color:var(--gold);text-decoration:none;}
         <label class="cb-label"><input type="radio" name="copyMode" value="definition" onchange="copyMode='definition'" style="accent-color:var(--gold);"> Word — Definition</label>
         <label class="cb-label"><input type="radio" name="copyMode" value="defonly" onchange="copyMode='defonly'" style="accent-color:var(--gold);"> Definition</label>
         <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
-        <label class="cb-label"><input type="checkbox" id="bulkModeCb" style="accent-color:var(--gold);" onchange="toggleBulkMode(this.checked)"> Bulk Copy Mode</label>
+        <label class="cb-label" title="Select multiple words from the results. Each selected word is added to a text box below — one per line — in whatever Copy Mode is active."><input type="checkbox" id="bulkModeCb" style="accent-color:var(--gold);" onchange="toggleBulkMode(this.checked)"> Bulk Copy Mode</label>
         <div id="bulkPanel" style="display:none;margin-top:8px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
             <span style="font-size:0.72rem;color:var(--muted);" id="bulkCount">0 selected</span>
