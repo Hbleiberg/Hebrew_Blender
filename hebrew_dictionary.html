@@ -241,6 +241,8 @@ footer a{color:var(--gold);text-decoration:none;}
         <label class="cb-label"><input type="radio" name="copyMode" value="word" checked onchange="copyMode='word'" style="accent-color:var(--gold);"> Only word</label>
         <label class="cb-label"><input type="radio" name="copyMode" value="definition" onchange="copyMode='definition'" style="accent-color:var(--gold);"> Word — Definition</label>
         <label class="cb-label"><input type="radio" name="copyMode" value="defonly" onchange="copyMode='defonly'" style="accent-color:var(--gold);"> Definition</label>
+        <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
+        <label class="cb-label"><input type="checkbox" id="showGematriaCb" style="accent-color:var(--gold);" onchange="showGematria=this.checked;rerender()"> Show Gematria Value</label>
       </div>
     </div>
 
@@ -311,6 +313,14 @@ let hideNoVowels = false;
 
 let ALL_WORDS = [];
 let copyMode = 'word';
+let showGematria = false;
+
+const GEMATRIA = {'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,'כ':20,'ך':20,'ל':30,'מ':40,'ם':40,'נ':50,'ן':50,'ס':60,'ע':70,'פ':80,'ף':80,'צ':90,'ץ':90,'ק':100,'ר':200,'ש':300,'ת':400};
+function calcGematria(word) {
+  let sum = 0;
+  for (const ch of word) sum += GEMATRIA[ch] || 0;
+  return sum;
+}
 let filtered = [];
 let shown = 0;
 const PAGE = 100;
@@ -480,6 +490,12 @@ function onFilter() {
   updateLenAll();
 }
 
+function rerender() {
+  shown = 0;
+  document.getElementById('resultsGrid').innerHTML = '';
+  loadMore();
+}
+
 const COPY_ICON = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
 const CHECK_ICON = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
 function copyWord(btn, text) {
@@ -518,6 +534,7 @@ function loadMore() {
         ${w.pos ? `<span class="badge b-pos">${w.pos}</span>` : ''}
         <span class="badge ${ec}">${el}</span>
         <span class="badge b-len">${w.len}L</span>
+        ${showGematria ? `<span class="badge" style="background:var(--warm-gray);color:var(--muted);">&#x05D2; ${calcGematria(w.bare)}</span>` : ''}
       </div>`;
     while (inner.firstChild) card.appendChild(inner.firstChild);
     grid.appendChild(card);
