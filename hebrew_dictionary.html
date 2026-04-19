@@ -164,9 +164,6 @@ footer a{color:var(--gold);text-decoration:none;}
           <label class="cb-label"><input type="checkbox" class="lcb" value="6" checked> 6-Letter</label>
           <label class="cb-label"><input type="checkbox" class="lcb" value="7plus" checked> 7+ Letter</label>
         </div>
-        <div class="filter-sub">
-          <label class="cb-label"><input type="checkbox" id="lenShortCb"> Include shorter words</label>
-        </div>
       </div>
     </div>
 
@@ -344,15 +341,13 @@ function updatePB(i) {
 function onFilter() {
   const q = document.getElementById('searchInput').value.trim().toLowerCase();
   const checkedLen = new Set([...document.querySelectorAll('.lcb:checked')].map(c => c.value));
-  const shorter = document.getElementById('lenShortCb').checked;
-  const maxLen = Math.max(...[...checkedLen].map(v => v === '7plus' ? 7 : parseInt(v)).filter(n => !isNaN(n)), 0);
   const checkedPos = new Set([...document.querySelectorAll('.pcb:checked')].map(c => c.value));
   const eraBib = document.getElementById('eraBib').checked;
   const eraMod = document.getElementById('eraMod').checked;
 
   filtered = ALL_WORDS.filter(w => {
     const lk = w.len >= 7 ? '7plus' : String(w.len);
-    if (!checkedLen.has(lk) && !(shorter && maxLen > 0 && w.len < maxLen)) return false;
+    if (!checkedLen.has(lk)) return false;
 
     const pm = [...checkedPos].some(p => {
       if (p === 'other') return !POS_KNOWN.includes(w.pos);
@@ -487,7 +482,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   } catch(e) {}
   document.querySelectorAll('.lcb,.pcb').forEach(cb => cb.addEventListener('change', onFilter));
-  document.getElementById('lenShortCb').addEventListener('change', onFilter);
   document.getElementById('eraBib').addEventListener('change', onFilter);
   document.getElementById('eraMod').addEventListener('change', onFilter);
 });
