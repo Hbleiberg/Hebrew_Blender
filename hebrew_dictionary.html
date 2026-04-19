@@ -218,6 +218,16 @@ footer a{color:var(--gold);text-decoration:none;}
 
     <div id="sidebarWordCount" style="text-align:center;font-size:0.75rem;color:var(--muted);padding:4px 0 2px;"></div>
 
+    <!-- Advanced -->
+    <div class="panel collapsed">
+      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Advanced</div>
+      <div class="panel-body">
+        <div style="font-size:0.72rem;font-weight:600;margin-bottom:6px;color:var(--text);">Copy Mode</div>
+        <label class="cb-label"><input type="radio" name="copyMode" value="word" checked onchange="copyMode='word'" style="accent-color:var(--gold);"> Only word</label>
+        <label class="cb-label"><input type="radio" name="copyMode" value="definition" onchange="copyMode='definition'" style="accent-color:var(--gold);"> Word — Definition</label>
+      </div>
+    </div>
+
   </aside>
 
   <div class="main">
@@ -268,6 +278,7 @@ const CONSONANTS = [
 const POS_KNOWN = ['noun','proper noun','verb','adjective','adverb','pronoun','preposition','conjunction','root','interjection','numeral','particle','phrase','determiner','prepositional phrase','postposition','name','name element','article'];
 
 let ALL_WORDS = [];
+let copyMode = 'word';
 let filtered = [];
 let shown = 0;
 const PAGE = 100;
@@ -413,7 +424,7 @@ function loadMore() {
     btn.className = 'wc-copy';
     btn.innerHTML = COPY_ICON;
     btn.title = 'Copy Hebrew';
-    btn.addEventListener('click', e => { e.stopPropagation(); copyWord(btn, w.word); });
+    btn.addEventListener('click', e => { e.stopPropagation(); copyWord(btn, copyMode === 'definition' && w.translation ? `${w.word} — ${w.translation}` : w.word); });
     card.appendChild(btn);
     const srch = document.createElement('a');
     srch.className = 'wc-search';
