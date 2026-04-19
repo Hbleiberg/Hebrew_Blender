@@ -3760,7 +3760,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initRwLetterGrid();
 
   // Load Hebrew word dictionary from JSON
-  fetch('hebrew_words.json?v=3')
+  fetch('hebrew_words.json?v=4')
     .then(r => r.json())
     .then(data => {
       REAL_WORDS = Object.entries(data).flatMap(([count, words]) =>

@@ -250,13 +250,18 @@ footer a{color:var(--gold);text-decoration:none;}
 
 <script>
 const CONSONANTS = [
-  {h:'א',n:'Alef'},{h:'ב',n:'Bet/Vet'},{h:'ג',n:'Gimel'},{h:'ד',n:'Dalet'},
-  {h:'ה',n:'Heh'},{h:'ו',n:'Vav'},{h:'ז',n:'Zayin'},{h:'ח',n:'Chet'},
-  {h:'ט',n:'Tet'},{h:'י',n:'Yod'},{h:'כ',n:'Kaf/Chaf'},{h:'ך',n:'Chaf sf'},
-  {h:'ל',n:'Lamed'},{h:'מ',n:'Mem'},{h:'ם',n:'Mem sf'},{h:'נ',n:'Nun'},
-  {h:'ן',n:'Nun sf'},{h:'ס',n:'Samech'},{h:'ע',n:'Ayin'},{h:'פ',n:'Peh/Feh'},
-  {h:'ף',n:'Feh sf'},{h:'צ',n:'Tzadi'},{h:'ץ',n:'Tzadi sf'},{h:'ק',n:'Kuf'},
-  {h:'ר',n:'Resh'},{h:'ש',n:'Shin/Sin'},{h:'ת',n:'Tav'},
+  {h:'א',n:'Alef'},
+  {h:'בּ',n:'Bet'},{h:'ב',n:'Vet'},
+  {h:'ג',n:'Gimel'},{h:'ד',n:'Dalet'},{h:'ה',n:'Heh'},{h:'ו',n:'Vav'},
+  {h:'ז',n:'Zayin'},{h:'ח',n:'Chet'},{h:'ט',n:'Tet'},{h:'י',n:'Yod'},
+  {h:'כּ',n:'Kaf'},{h:'כ',n:'Khaf'},{h:'ך',n:'Khaf sf'},
+  {h:'ל',n:'Lamed'},{h:'מ',n:'Mem'},{h:'ם',n:'Mem sf'},
+  {h:'נ',n:'Nun'},{h:'ן',n:'Nun sf'},
+  {h:'ס',n:'Samech'},{h:'ע',n:'Ayin'},
+  {h:'פּ',n:'Pe'},{h:'פ',n:'Fe'},{h:'ף',n:'Fe sf'},
+  {h:'צ',n:'Tzadi'},{h:'ץ',n:'Tzadi sf'},{h:'ק',n:'Kuf'},{h:'ר',n:'Resh'},
+  {h:'שׁ',n:'Shin'},{h:'שׂ',n:'Sin'},{h:'ש',n:'Shin/Sin'},
+  {h:'ת',n:'Tav'},
 ];
 
 const POS_KNOWN = ['noun','proper noun','verb','adjective','adverb','pronoun','preposition','conjunction','root','interjection','numeral','particle','phrase','determiner','prepositional phrase','postposition','name','name element','article'];
@@ -267,7 +272,7 @@ let shown = 0;
 const PAGE = 100;
 const posFilters = Array.from({length:6}, () => new Set());
 
-fetch('hebrew_words.json?v=3')
+fetch('hebrew_words.json?v=4')
   .then(r => r.json())
   .then(data => {
     ALL_WORDS = Object.entries(data).flatMap(([cnt, words]) =>
