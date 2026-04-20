@@ -53,7 +53,7 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .panel-title{background:var(--navy);color:#fff;font-family:'Libre Baskerville',serif;font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;padding:8px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;border-radius:8px 8px 0 0;}
 .panel-title::after{content:'▾';font-size:1rem;color:var(--gold-light);transition:transform 0.2s;}
 .panel.collapsed .panel-title::after{transform:rotate(-90deg);}
-.panel.collapsed .panel-body{display:none;}
+.panel.collapsed .panel-body{display:none !important;}
 .panel-body{padding:12px;}
 .adv-section{border:1px solid var(--border);border-radius:6px;margin-bottom:8px;}
 .adv-section:last-child{margin-bottom:0;}
@@ -125,9 +125,9 @@ body.bulk-mode .word-card{cursor:pointer;}
 .load-more-wrap{text-align:center;padding:14px 0;}
 .tip-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:var(--muted);color:var(--white);font-size:0.58rem;font-weight:700;cursor:help;margin-left:4px;vertical-align:middle;flex-shrink:0;}
 .tip-wrap.tip-gold{background:var(--gold);color:var(--navy);}
-.tip-wrap .tip-box{display:none;position:absolute;bottom:calc(100% + 7px);right:0;left:auto;transform:none;background:#1a2744;color:#f0e8d8;font-size:0.74rem;font-weight:400;line-height:1.5;padding:8px 11px;border-radius:6px;width:220px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:999;pointer-events:none;white-space:normal;}
-.tip-wrap .tip-box::after{content:'';position:absolute;top:100%;right:4px;left:auto;transform:none;border:5px solid transparent;border-top-color:#1a2744;}
-.tip-wrap:hover .tip-box{display:block;}
+.tip-wrap .tip-box{display:none;}
+#globalTip{display:none;position:fixed;background:#1a2744;color:#f0e8d8;font-size:0.74rem;font-weight:400;line-height:1.5;padding:8px 11px;border-radius:6px;width:220px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:9999;pointer-events:none;white-space:normal;}
+#globalTip::after{content:'';position:absolute;top:100%;left:8px;border:5px solid transparent;border-top-color:#1a2744;}
 .load-more-btn{background:var(--navy);color:var(--gold-light);border:none;border-radius:6px;padding:8px 28px;font-size:0.85rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;}
 .load-more-btn:hover{background:#0f1a33;}
 .empty{text-align:center;padding:60px 20px;color:var(--muted);}
@@ -160,6 +160,7 @@ footer a{color:var(--gold);text-decoration:none;}
   </div>
 </header>
 
+<div id="globalTip"></div>
 <button class="sidebar-show-btn" id="sidebarShowBtn" onclick="toggleSidebar()" title="Show sidebar">›</button>
 <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Hide sidebar">‹</button>
 
@@ -806,6 +807,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const bulkCb = document.getElementById('bulkModeCb');
   if (bulkCb && bulkCb.checked) toggleBulkMode(true);
+
+  // Fixed-position tooltip to escape sidebar overflow clipping
+  const gTip = document.getElementById('globalTip');
+  document.querySelectorAll('.tip-wrap').forEach(wrap => {
+    wrap.addEventListener('mouseenter', () => {
+      const box = wrap.querySelector('.tip-box');
+      if (!box) return;
+      gTip.textContent = box.textContent;
+      gTip.style.top = '-9999px';
+      gTip.style.left = '0';
+      gTip.style.display = 'block';
+      const rect = wrap.getBoundingClientRect();
+      const tipH = gTip.offsetHeight;
+      let left = rect.left;
+      if (left + 220 > window.innerWidth - 8) left = window.innerWidth - 228;
+      if (left < 8) left = 8;
+      gTip.style.left = left + 'px';
+      gTip.style.top = (rect.top - tipH - 7) + 'px';
+    });
+    wrap.addEventListener('mouseleave', () => { gTip.style.display = 'none'; });
+  });
 });
 </script>
 </body>
