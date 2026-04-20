@@ -626,7 +626,9 @@
   body.dark #fsBtn { background: #0d1220; }
   body.fullscreen header,
   body.fullscreen footer { display: none !important; }
-  body.fullscreen .app { min-height: 100vh; }
+  body.fullscreen .app { height: 100vh; min-height: unset; }
+  body.fullscreen .main { overflow: hidden; }
+  body.fullscreen .main-content { overflow-y: auto; flex: 1; }
   .worksheet-scaler {
     transform-origin: top center;
     transition: transform 0.2s;
