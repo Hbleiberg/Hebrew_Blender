@@ -2616,9 +2616,10 @@ let scoreIncorrect = 0;
 
 function markScore(correct, cardEl) {
   if (correct) scoreCorrect++; else scoreIncorrect++;
-  // Dim the card to show it's been scored
   cardEl.style.opacity = '0.5';
-  cardEl.style.pointerEvents = 'none';
+  // Disable only the score buttons so the card can still be flipped to review Hebrew
+  const btns = cardEl.querySelector('.flip-card-score-btns');
+  if (btns) btns.style.pointerEvents = 'none';
   updateScoreBar();
 }
 
