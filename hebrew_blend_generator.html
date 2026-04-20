@@ -2292,11 +2292,10 @@ function initLetters() {
     if (l.vavVariant) return;
 
     if (l.heb === 'ו') {
-      // Render plain Vav + its two vowel-letter variants as normal tiles
+      // Render plain Vav + Cholam variant (Shuruk handled via vowel selector)
       const vavTiles = [
         { heb: 'ו',  name: 'Vav' },
         { heb: 'וֹ', name: 'Cholam' },
-        { heb: 'וּ', name: 'Shuruk' },
       ];
       vavTiles.forEach(vt => {
         const div = document.createElement('div');
