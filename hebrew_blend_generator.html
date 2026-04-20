@@ -1490,14 +1490,14 @@
           <div class="toggle-row" style="font-size:0.82rem;">
             <span>Self Check</span>
             <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-              <input type="checkbox" id="gematriaSelfCheck" onchange="onGematriaOptionChange()">
+              <input type="checkbox" id="gematriaSelfCheck" onchange="document.getElementById('gematriaAnswerKey').checked=false;onGematriaOptionChange()">
               <span class="slider"></span>
             </label>
           </div>
           <div class="toggle-row" style="font-size:0.82rem;">
             <span>Answer Key</span>
             <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-              <input type="checkbox" id="gematriaAnswerKey" checked onchange="onGematriaOptionChange()">
+              <input type="checkbox" id="gematriaAnswerKey" checked onchange="document.getElementById('gematriaSelfCheck').checked=false;onGematriaOptionChange()">
               <span class="slider"></span>
             </label>
           </div>
