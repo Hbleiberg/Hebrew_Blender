@@ -2186,54 +2186,54 @@ const VOWEL_GROUPS = [
     key: 'aqua', sound: 'AH', label: 'AH sound',
     bg: 'rgba(0,180,210,0.18)', border: '#00b4d2', darkBg: 'rgba(0,160,190,0.25)', darkBorder: '#00c4e0',
     vowels: [
-      { key: 'a',       label: 'Kamatz',      nikud: 'אָ', isMain: true  },
-      { key: 'patah',   label: 'Patach',       nikud: 'אַ', isMain: true  },
-      { key: 'hpatah',  label: 'Hataf Patach', nikud: 'אֲ', isMain: false },
-      { key: 'hkamatz', label: 'Hataf Kamatz', nikud: 'אֳ', isMain: false },
+      { key: 'a',       label: 'Kamatz',      sub: 'AH sound', nikud: 'אָ', isMain: true  },
+      { key: 'patah',   label: 'Patach',       sub: 'AH sound', nikud: 'אַ', isMain: true  },
+      { key: 'hpatah',  label: 'Hataf Patach', sub: 'AH sound', nikud: 'אֲ', isMain: false },
+      { key: 'hkamatz', label: 'Hataf Kamatz', sub: 'AH sound', nikud: 'אֳ', isMain: false },
     ]
   },
   {
     key: 'red', sound: 'EH', label: 'EH sound',
     bg: 'rgba(210,50,50,0.15)', border: '#d03232', darkBg: 'rgba(220,60,60,0.22)', darkBorder: '#e05050',
     vowels: [
-      { key: 'e',      label: 'Segol',       nikud: 'אֶ', isMain: true  },
-      { key: 'hsegol', label: 'Hataf Segol', nikud: 'אֱ', isMain: false },
+      { key: 'e',      label: 'Segol',       sub: 'EH sound', nikud: 'אֶ', isMain: true  },
+      { key: 'hsegol', label: 'Hataf Segol', sub: 'EH sound', nikud: 'אֱ', isMain: false },
     ]
   },
   {
     key: 'grey', sound: 'EY', label: 'EY sound',
     bg: 'rgba(130,130,140,0.18)', border: '#888898', darkBg: 'rgba(140,140,155,0.25)', darkBorder: '#aaaabc',
     vowels: [
-      { key: 'tzere', label: 'Tzere', nikud: 'אֵ', isMain: true },
+      { key: 'tzere', label: 'Tzere', sub: 'EY sound', nikud: 'אֵ', isMain: true },
     ]
   },
   {
     key: 'green', sound: 'EE', label: 'EE sound',
     bg: 'rgba(40,160,60,0.15)', border: '#28a03c', darkBg: 'rgba(50,180,70,0.22)', darkBorder: '#30c050',
     vowels: [
-      { key: 'i', label: 'Chirik', nikud: 'אִ', isMain: true },
+      { key: 'i', label: 'Chirik', sub: 'EE sound', nikud: 'אִ', isMain: true },
     ]
   },
   {
     key: 'yellow', sound: 'OH', label: 'OH sound',
     bg: 'rgba(200,165,0,0.18)', border: '#c8a800', darkBg: 'rgba(220,185,0,0.25)', darkBorder: '#e0c020',
     vowels: [
-      { key: 'o', label: 'Holam', nikud: 'אֹ', isMain: true },
+      { key: 'o', label: 'Holam', sub: 'OH sound', nikud: 'אֹ', isMain: true },
     ]
   },
   {
     key: 'blue', sound: 'OO', label: 'OO sound',
     bg: 'rgba(40,80,200,0.15)', border: '#2850c8', darkBg: 'rgba(60,100,220,0.22)', darkBorder: '#5080e0',
     vowels: [
-      { key: 'u',      label: 'Kubutz', nikud: 'אֻ', isMain: true },
-      { key: 'shuruk', label: 'Shuruk', nikud: 'וּ', isMain: true },
+      { key: 'u',      label: 'Kubutz', sub: 'OO sound', nikud: 'אֻ', isMain: true },
+      { key: 'shuruk', label: 'Shuruk', sub: 'OO sound', nikud: 'וּ', isMain: true },
     ]
   },
   {
     key: 'purple', sound: 'UH', label: 'UH sound',
     bg: 'rgba(130,60,180,0.15)', border: '#823cb4', darkBg: 'rgba(150,70,200,0.22)', darkBorder: '#a060d0',
     vowels: [
-      { key: 'sh', label: 'Shva', nikud: 'אְ', isMain: false },
+      { key: 'sh', label: 'Shva', sub: 'ə sound', nikud: 'אְ', isMain: false },
     ]
   },
 ];
@@ -2275,7 +2275,7 @@ function initVowels() {
           onchange="toggleVowel('${v.key}', this.checked)">
         <span style="display:flex;align-items:center;gap:6px;">
           <span style="font-family:'Frank Ruhl Libre',serif;font-size:1.4rem;direction:rtl;min-width:24px;text-align:center;">${v.nikud}</span>
-          <span style="font-weight:600;">${v.label}</span>
+          <span><strong>${v.label}</strong><br><span style="color:var(--muted);font-size:0.72rem">${v.sub}</span></span>
         </span>
       `;
       section.appendChild(chip);
@@ -4464,7 +4464,7 @@ function initCwBlendGrids() {
       const chip = document.createElement('label');
       chip.className = 'vowel-chip';
       chip.setAttribute('data-key', v.key);
-      chip.innerHTML = `<input type="checkbox" ${cwBlendVowels.has(v.key) ? 'checked' : ''} style="accent-color:var(--gold);"><span style="display:flex;align-items:center;gap:5px;"><span style="font-family:'Frank Ruhl Libre',serif;font-size:1.2rem;direction:rtl;min-width:22px;text-align:center;">${v.nikud}</span><span style="font-size:0.72rem;font-weight:600;">${v.label}</span></span>`;
+      chip.innerHTML = `<input type="checkbox" ${cwBlendVowels.has(v.key) ? 'checked' : ''} style="accent-color:var(--gold);"><span style="display:flex;align-items:center;gap:5px;"><span style="font-family:'Frank Ruhl Libre',serif;font-size:1.2rem;direction:rtl;min-width:22px;text-align:center;">${v.nikud}</span><span><strong style="font-size:0.72rem;">${v.label}</strong><br><span style="color:var(--muted);font-size:0.66rem;">${v.sub}</span></span></span>`;
       chip.querySelector('input').addEventListener('change', e => { e.target.checked ? cwBlendVowels.add(v.key) : cwBlendVowels.delete(v.key); });
       section.appendChild(chip);
     });
