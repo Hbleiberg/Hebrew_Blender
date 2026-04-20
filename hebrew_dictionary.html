@@ -267,7 +267,23 @@ footer a{color:var(--gold);text-decoration:none;}
           <button class="pos-all-btn" style="width:100%;margin-top:5px;" onclick="copyBulkText()">Copy All</button>
         </div>
         <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
-        <label class="cb-label"><input type="checkbox" id="showGematriaCb" style="accent-color:var(--gold);" onchange="showGematria=this.checked;rerender()"> Show Gematria Value</label>
+        <label class="cb-label"><input type="checkbox" id="showGematriaCb" style="accent-color:var(--gold);" onchange="onShowGematriaChange()"> Show Gematria Value</label>
+        <div id="gematriaFilterPanel" style="display:none;padding-left:14px;margin-top:6px;border-left:2px solid var(--border);">
+          <div style="font-size:0.72rem;font-weight:600;margin-bottom:4px;color:var(--muted);">Filter by Gematria</div>
+          <select id="gematriaFilterType" onchange="onGematriaFilterChange()" style="font-size:0.75rem;width:100%;padding:3px 4px;margin-bottom:4px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
+            <option value="none">No filter</option>
+            <option value="exact">Exact value</option>
+            <option value="gte">Equal to / above (≥)</option>
+            <option value="lte">Equal to / below (≤)</option>
+            <option value="range">Range</option>
+          </select>
+          <div id="gematriaFilterInputs" style="display:none;flex-direction:column;gap:3px;">
+            <input type="number" id="gematriaVal1" min="1" placeholder="Value" oninput="onFilter()" style="font-size:0.75rem;width:100%;box-sizing:border-box;padding:3px 5px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
+            <input type="number" id="gematriaVal2" min="1" placeholder="To" oninput="onFilter()" style="display:none;font-size:0.75rem;width:100%;box-sizing:border-box;padding:3px 5px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
+          </div>
+        </div>
+        <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
+        <label class="cb-label"><input type="checkbox" id="enableSortGematriaCb" style="accent-color:var(--gold);" onchange="toggleGematriaSort(this.checked)"> Enable Sort By Gematria Value</label>
       </div>
     </div>
 
@@ -340,6 +356,38 @@ let ALL_WORDS = [];
 let copyMode = 'word';
 let showGematria = false;
 let bulkMode = false;
+
+function onShowGematriaChange() {
+  showGematria = document.getElementById('showGematriaCb').checked;
+  const panel = document.getElementById('gematriaFilterPanel');
+  if (panel) panel.style.display = showGematria ? 'block' : 'none';
+  if (!showGematria) {
+    document.getElementById('gematriaFilterType').value = 'none';
+    onGematriaFilterChange(false);
+  }
+  rerender();
+}
+
+function onGematriaFilterChange(runFilter = true) {
+  const type = document.getElementById('gematriaFilterType').value;
+  const inputs = document.getElementById('gematriaFilterInputs');
+  const val2 = document.getElementById('gematriaVal2');
+  inputs.style.display = type === 'none' ? 'none' : 'flex';
+  val2.style.display = type === 'range' ? '' : 'none';
+  if (runFilter) onFilter();
+}
+
+function toggleGematriaSort(on) {
+  const sel = document.getElementById('sortSel');
+  [...sel.options].forEach(o => { if (o.value === 'gem-asc' || o.value === 'gem-desc') sel.remove(o.index); });
+  if (on) {
+    sel.add(new Option('Gematria ↑', 'gem-asc'));
+    sel.add(new Option('Gematria ↓', 'gem-desc'));
+  } else if (sel.value === 'gem-asc' || sel.value === 'gem-desc') {
+    sel.value = 'alpha';
+    onFilter();
+  }
+}
 const bulkSelected = new Map(); // bare -> {w, text}
 
 function getWordCopyText(w) {
@@ -565,12 +613,29 @@ function onFilter() {
     return true;
   });
 
+  // Gematria filter
+  const gft = document.getElementById('gematriaFilterType')?.value || 'none';
+  if (gft !== 'none') {
+    const v1 = parseInt(document.getElementById('gematriaVal1').value) || 0;
+    const v2 = parseInt(document.getElementById('gematriaVal2').value) || 0;
+    filtered = filtered.filter(w => {
+      const g = calcGematria(w.bare);
+      if (gft === 'exact') return g === v1;
+      if (gft === 'gte')   return g >= v1;
+      if (gft === 'lte')   return g <= v1;
+      if (gft === 'range') return g >= v1 && g <= v2;
+      return true;
+    });
+  }
+
   const sort = document.getElementById('sortSel').value;
   filtered.sort((a,b) => {
-    if (sort === 'alpha') return a.bare.localeCompare(b.bare, 'he');
-    if (sort === 'len-asc') return a.len - b.len || a.bare.localeCompare(b.bare,'he');
+    if (sort === 'alpha')    return a.bare.localeCompare(b.bare, 'he');
+    if (sort === 'len-asc')  return a.len - b.len || a.bare.localeCompare(b.bare,'he');
     if (sort === 'len-desc') return b.len - a.len || a.bare.localeCompare(b.bare,'he');
-    if (sort === 'transl') return a.translation.localeCompare(b.translation);
+    if (sort === 'transl')   return a.translation.localeCompare(b.translation);
+    if (sort === 'gem-asc')  return calcGematria(a.bare) - calcGematria(b.bare) || a.bare.localeCompare(b.bare,'he');
+    if (sort === 'gem-desc') return calcGematria(b.bare) - calcGematria(a.bare) || a.bare.localeCompare(b.bare,'he');
     return 0;
   });
 
@@ -708,7 +773,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (restoredMode) copyMode = restoredMode.value;
 
   const gematriaCb = document.getElementById('showGematriaCb');
-  if (gematriaCb && gematriaCb.checked) showGematria = true;
+  if (gematriaCb && gematriaCb.checked) {
+    showGematria = true;
+    document.getElementById('gematriaFilterPanel').style.display = 'block';
+  }
+  const sortGemCb = document.getElementById('enableSortGematriaCb');
+  if (sortGemCb && sortGemCb.checked) toggleGematriaSort(true);
 
   const hideVowelCb = document.getElementById('hideNoVowelsCb');
   if (hideVowelCb && hideVowelCb.checked) hideNoVowels = true;
