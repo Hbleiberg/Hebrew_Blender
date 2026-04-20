@@ -67,7 +67,7 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1px 8px;}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px 8px;}
 /* Vowel filter */
-.vowel-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+.vowel-grid{display:flex;flex-direction:column;gap:0;}.vowel-group-section{transition:background 0.15s;}
 .vowel-chip{display:flex;align-items:center;gap:4px;font-size:0.78rem;cursor:pointer;user-select:none;padding:4px;border-radius:4px;transition:background 0.15s;}
 .vowel-chip:hover{background:var(--warm-gray);}
 .vowel-chip input{accent-color:var(--gold);width:14px;height:14px;cursor:pointer;flex-shrink:0;}
@@ -365,19 +365,65 @@ const CONSONANTS = [
 
 const POS_KNOWN = ['noun','proper noun','verb','adjective','adverb','pronoun','preposition','conjunction','root','interjection','numeral','particle','phrase','determiner','prepositional phrase','postposition','name','name element','article'];
 
-const VOWEL_DEFS = [
-  {u:'\u05B7', label:'Patah',        sub:'a',   ex:'אַ'},
-  {u:'\u05B8', label:'Qamats',       sub:'a',   ex:'אָ'},
-  {u:'\u05B4', label:'Hiriq',        sub:'i',   ex:'אִ'},
-  {u:'\u05B5', label:'Tsere',        sub:'e',   ex:'אֵ'},
-  {u:'\u05B6', label:'Segol',        sub:'e',   ex:'אֶ'},
-  {u:'\u05B9', label:'Holam',        sub:'o',   ex:'אֹ'},
-  {u:'\u05BB', label:'Qubuts',       sub:'u',   ex:'אֻ'},
-  {u:'\u05B0', label:'Shva',         sub:'',    ex:'אְ'},
-  {u:'\u05B2', label:'Hataf Patah',  sub:'a',   ex:'אֲ'},
-  {u:'\u05B1', label:'Hataf Segol',  sub:'e',   ex:'אֱ'},
-  {u:'\u05B3', label:'Hataf Qamats', sub:'o',   ex:'אֳ'},
+const DICT_VOWEL_GROUPS = [
+  {
+    key: 'aqua', sound: 'AH', colorName: 'Aqua',
+    bg: 'rgba(0,180,210,0.18)', border: '#00b4d2', darkBg: 'rgba(0,160,190,0.25)', darkBorder: '#00c4e0',
+    vowels: [
+      { u: '\u05B8', label: 'Kamatz',      sub: 'AH sound', ex: 'אָ', isMain: true  },
+      { u: '\u05B7', label: 'Patach',       sub: 'AH sound', ex: 'אַ', isMain: true  },
+      { u: '\u05B2', label: 'Hataf Patach', sub: 'short AH', ex: 'אֲ', isMain: false },
+      { u: '\u05B3', label: 'Hataf Kamatz', sub: 'short AH', ex: 'אֳ', isMain: false },
+    ]
+  },
+  {
+    key: 'red', sound: 'EH', colorName: 'Red',
+    bg: 'rgba(210,50,50,0.15)', border: '#d03232', darkBg: 'rgba(220,60,60,0.22)', darkBorder: '#e05050',
+    vowels: [
+      { u: '\u05B6', label: 'Segol',       sub: 'EH sound', ex: 'אֶ', isMain: true  },
+      { u: '\u05B1', label: 'Hataf Segol', sub: 'short EH', ex: 'אֱ', isMain: false },
+    ]
+  },
+  {
+    key: 'grey', sound: 'EY', colorName: 'Grey',
+    bg: 'rgba(130,130,140,0.18)', border: '#888898', darkBg: 'rgba(140,140,155,0.25)', darkBorder: '#aaaabc',
+    vowels: [
+      { u: '\u05B5', label: 'Tzere', sub: 'EY sound', ex: 'אֵ', isMain: true },
+    ]
+  },
+  {
+    key: 'green', sound: 'EE', colorName: 'Green',
+    bg: 'rgba(40,160,60,0.15)', border: '#28a03c', darkBg: 'rgba(50,180,70,0.22)', darkBorder: '#30c050',
+    vowels: [
+      { u: '\u05B4', label: 'Chirik', sub: 'EE sound', ex: 'אִ', isMain: true },
+    ]
+  },
+  {
+    key: 'yellow', sound: 'OH', colorName: 'Yellow',
+    bg: 'rgba(200,165,0,0.18)', border: '#c8a800', darkBg: 'rgba(220,185,0,0.25)', darkBorder: '#e0c020',
+    vowels: [
+      { u: '\u05B9',             label: 'Holam',      sub: 'OH sound', ex: 'אֹ', isMain: true },
+      { u: '\u05D5\u05B9', label: 'Vav Cholam', sub: 'OH sound', ex: 'וֹ', isMain: true },
+    ]
+  },
+  {
+    key: 'blue', sound: 'OO', colorName: 'Blue',
+    bg: 'rgba(40,80,200,0.15)', border: '#2850c8', darkBg: 'rgba(60,100,220,0.22)', darkBorder: '#5080e0',
+    vowels: [
+      { u: '\u05BB',             label: 'Kubutz', sub: 'OO sound', ex: 'אֻ', isMain: true },
+      { u: '\u05D5\u05BC', label: 'Shuruk', sub: 'OO sound', ex: 'וּ', isMain: true },
+    ]
+  },
+  {
+    key: 'purple', sound: 'UH', colorName: 'Purple',
+    bg: 'rgba(130,60,180,0.15)', border: '#823cb4', darkBg: 'rgba(150,70,200,0.22)', darkBorder: '#a060d0',
+    vowels: [
+      { u: '\u05B0', label: 'Shva', sub: 'UH / silent', ex: 'אְ', isMain: false },
+    ]
+  },
 ];
+const VOWEL_DEFS = DICT_VOWEL_GROUPS.flatMap(g => g.vowels);
+const MAIN_VOWEL_US = new Set(VOWEL_DEFS.filter(v => v.isMain).map(v => v.u));
 const vowelFilters = new Set();
 let hideNoVowels = false;
 
@@ -530,29 +576,67 @@ function setAllVowels(checked) {
   onFilter();
 }
 
+function setMainVowelFilter() {
+  document.querySelectorAll('#vowelFilterGrid input[type="checkbox"]').forEach(cb => {
+    const isMain = MAIN_VOWEL_US.has(cb.dataset.u);
+    cb.checked = isMain;
+    isMain ? vowelFilters.add(cb.dataset.u) : vowelFilters.delete(cb.dataset.u);
+  });
+  onFilter();
+}
+
 function initVowelFilter() {
   const grid = document.getElementById('vowelFilterGrid');
   const btns = document.createElement('div');
-  btns.style.cssText = 'display:flex;gap:6px;margin-bottom:8px;';
-  btns.innerHTML = `<button class="pos-all-btn" onclick="setAllVowels(true)">All</button><button class="pos-all-btn" onclick="setAllVowels(false)">None</button>`;
+  btns.style.cssText = 'display:flex;gap:5px;margin-bottom:8px;';
+  btns.innerHTML = `<button class="pos-all-btn" onclick="setAllVowels(true)">All</button><button class="pos-all-btn" onclick="setMainVowelFilter()">Main</button><button class="pos-all-btn" onclick="setAllVowels(false)">None</button>`;
   grid.before(btns);
-  VOWEL_DEFS.forEach(v => {
-    const chip = document.createElement('label');
-    chip.className = 'vowel-chip';
-    chip.innerHTML = `
-      <input type="checkbox" data-u="${v.u}">
-      <span style="display:flex;align-items:center;gap:6px;">
-        <span style="font-family:'Frank Ruhl Libre',serif;font-size:1.4rem;direction:rtl;min-width:22px;text-align:center;">${v.ex}</span>
-        <span><strong>${v.label}</strong>${v.sub ? `<br><span style="color:var(--muted);font-size:0.72rem">${v.sub}</span>` : ''}</span>
-      </span>`;
-    const cb = chip.querySelector('input');
-    cb.checked = true;
-    vowelFilters.add(v.u);
-    cb.addEventListener('change', e => {
-      if (e.target.checked) vowelFilters.add(v.u); else vowelFilters.delete(v.u);
-      onFilter();
+  const isDark = document.body.classList.contains('dark') || document.documentElement.classList.contains('dark-early');
+  DICT_VOWEL_GROUPS.forEach(group => {
+    const section = document.createElement('div');
+    section.className = 'vowel-group-section';
+    section.setAttribute('data-group', group.key);
+    const bg = isDark ? group.darkBg : group.bg;
+    const border = isDark ? group.darkBorder : group.border;
+    section.style.cssText = `background:${bg};border:1.5px solid ${border};border-radius:6px;padding:5px 7px;margin-bottom:4px;`;
+    const header = document.createElement('div');
+    header.style.cssText = 'font-size:0.68rem;font-weight:700;letter-spacing:0.04em;margin-bottom:3px;opacity:0.75;';
+    header.innerHTML = `<u>${group.sound[0]}</u>${group.sound.slice(1)} Sound – ${group.colorName}`;
+    header.style.color = isDark ? group.darkBorder : group.border;
+    section.appendChild(header);
+    group.vowels.forEach(v => {
+      const chip = document.createElement('label');
+      chip.className = 'vowel-chip';
+      chip.innerHTML = `
+        <input type="checkbox" data-u="${v.u}">
+        <span style="display:flex;align-items:center;gap:6px;">
+          <span style="font-family:'Frank Ruhl Libre',serif;font-size:1.4rem;direction:rtl;min-width:24px;text-align:center;">${v.ex}</span>
+          <span><strong>${v.label}</strong><br><span style="color:var(--muted);font-size:0.72rem">${v.sub}</span></span>
+        </span>`;
+      const cb = chip.querySelector('input');
+      cb.checked = true;
+      vowelFilters.add(v.u);
+      cb.addEventListener('change', e => {
+        if (e.target.checked) vowelFilters.add(v.u); else vowelFilters.delete(v.u);
+        onFilter();
+      });
+      section.appendChild(chip);
     });
-    grid.appendChild(chip);
+    grid.appendChild(section);
+  });
+}
+
+function refreshDictVowelGroupColors() {
+  const isDark = document.body.classList.contains('dark');
+  document.querySelectorAll('#vowelFilterGrid .vowel-group-section[data-group]').forEach(sec => {
+    const group = DICT_VOWEL_GROUPS.find(g => g.key === sec.getAttribute('data-group'));
+    if (!group) return;
+    const bg = isDark ? group.darkBg : group.bg;
+    const border = isDark ? group.darkBorder : group.border;
+    sec.style.background = bg;
+    sec.style.borderColor = border;
+    const hdr = sec.querySelector('div');
+    if (hdr) { hdr.style.color = border; hdr.innerHTML = `<u>${group.sound[0]}</u>${group.sound.slice(1)} Sound – ${group.colorName}`; }
   });
 }
 
@@ -798,6 +882,7 @@ function toggleDark() {
   document.documentElement.classList.remove('dark-early');
   try { localStorage.setItem('hebrewBlender_darkMode', dark ? '1' : '0'); } catch(e) {}
   document.getElementById('darkBtn').textContent = dark ? '☀ Light' : '🌙 Dark';
+  refreshDictVowelGroupColors();
 }
 
 document.addEventListener('DOMContentLoaded', () => {

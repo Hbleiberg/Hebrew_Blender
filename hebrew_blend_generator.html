@@ -2169,12 +2169,14 @@ function withNikud(letterObj, vowelKey, isFirst) {
 
   // Plain Vav with Cholam/Shuruk uses the dotted forms
   if (base === 'ו') {
-    if (vowelKey === 'o') return 'וֹ';
+    if (vowelKey === 'o' || vowelKey === 'vcholam') return 'וֹ';
     if (vowelKey === 'u' || vowelKey === 'shuruk') return 'וּ';
   }
 
-  // Shuruk on any non-Vav letter: append Vav+Dagesh after consonant
+  // Shuruk on any non-Vav: append Vav+Dagesh after consonant
   if (vowelKey === 'shuruk') return base + 'וּ';
+  // Vav Cholam on any non-Vav: append Vav+Holam after consonant
+  if (vowelKey === 'vcholam') return base + 'וֹ';
 
   const mark = NIKUD[vowelKey] || '';
   return base + mark;
@@ -2183,7 +2185,7 @@ function withNikud(letterObj, vowelKey, isFirst) {
 // Color-coded vowel groups (mirrors teacher's curriculum chart)
 const VOWEL_GROUPS = [
   {
-    key: 'aqua', sound: 'AH', label: 'AH sound',
+    key: 'aqua', sound: 'AH', colorName: 'Aqua', label: 'AH sound',
     bg: 'rgba(0,180,210,0.18)', border: '#00b4d2', darkBg: 'rgba(0,160,190,0.25)', darkBorder: '#00c4e0',
     vowels: [
       { key: 'a',       label: 'Kamatz',      sub: 'AH sound', nikud: 'אָ', isMain: true  },
@@ -2193,7 +2195,7 @@ const VOWEL_GROUPS = [
     ]
   },
   {
-    key: 'red', sound: 'EH', label: 'EH sound',
+    key: 'red', sound: 'EH', colorName: 'Red', label: 'EH sound',
     bg: 'rgba(210,50,50,0.15)', border: '#d03232', darkBg: 'rgba(220,60,60,0.22)', darkBorder: '#e05050',
     vowels: [
       { key: 'e',      label: 'Segol',       sub: 'EH sound', nikud: 'אֶ', isMain: true  },
@@ -2201,28 +2203,29 @@ const VOWEL_GROUPS = [
     ]
   },
   {
-    key: 'grey', sound: 'EY', label: 'EY sound',
+    key: 'grey', sound: 'EY', colorName: 'Grey', label: 'EY sound',
     bg: 'rgba(130,130,140,0.18)', border: '#888898', darkBg: 'rgba(140,140,155,0.25)', darkBorder: '#aaaabc',
     vowels: [
       { key: 'tzere', label: 'Tzere', sub: 'EY sound', nikud: 'אֵ', isMain: true },
     ]
   },
   {
-    key: 'green', sound: 'EE', label: 'EE sound',
+    key: 'green', sound: 'EE', colorName: 'Green', label: 'EE sound',
     bg: 'rgba(40,160,60,0.15)', border: '#28a03c', darkBg: 'rgba(50,180,70,0.22)', darkBorder: '#30c050',
     vowels: [
       { key: 'i', label: 'Chirik', sub: 'EE sound', nikud: 'אִ', isMain: true },
     ]
   },
   {
-    key: 'yellow', sound: 'OH', label: 'OH sound',
+    key: 'yellow', sound: 'OH', colorName: 'Yellow', label: 'OH sound',
     bg: 'rgba(200,165,0,0.18)', border: '#c8a800', darkBg: 'rgba(220,185,0,0.25)', darkBorder: '#e0c020',
     vowels: [
-      { key: 'o', label: 'Holam', sub: 'OH sound', nikud: 'אֹ', isMain: true },
+      { key: 'o',       label: 'Holam',      sub: 'OH sound', nikud: 'אֹ', isMain: true },
+      { key: 'vcholam', label: 'Vav Cholam', sub: 'OH sound', nikud: 'וֹ', isMain: true },
     ]
   },
   {
-    key: 'blue', sound: 'OO', label: 'OO sound',
+    key: 'blue', sound: 'OO', colorName: 'Blue', label: 'OO sound',
     bg: 'rgba(40,80,200,0.15)', border: '#2850c8', darkBg: 'rgba(60,100,220,0.22)', darkBorder: '#5080e0',
     vowels: [
       { key: 'u',      label: 'Kubutz', sub: 'OO sound', nikud: 'אֻ', isMain: true },
@@ -2230,7 +2233,7 @@ const VOWEL_GROUPS = [
     ]
   },
   {
-    key: 'purple', sound: 'UH', label: 'UH sound',
+    key: 'purple', sound: 'UH', colorName: 'Purple', label: 'UH sound',
     bg: 'rgba(130,60,180,0.15)', border: '#823cb4', darkBg: 'rgba(150,70,200,0.22)', darkBorder: '#a060d0',
     vowels: [
       { key: 'sh', label: 'Shva', sub: 'UH / silent', nikud: 'אְ', isMain: false },
@@ -2263,7 +2266,7 @@ function initVowels() {
     section.style.cssText = `background:${bg};border:1.5px solid ${border};border-radius:6px;padding:5px 7px;margin-bottom:4px;`;
     const header = document.createElement('div');
     header.style.cssText = 'font-size:0.68rem;font-weight:700;letter-spacing:0.04em;margin-bottom:3px;opacity:0.75;';
-    header.textContent = group.label;
+    header.innerHTML = `<u>${group.sound[0]}</u>${group.sound.slice(1)} Sound – ${group.colorName}`;
     header.style.color = isDark ? group.darkBorder : group.border;
     section.appendChild(header);
     group.vowels.forEach(v => {
@@ -2825,7 +2828,7 @@ function refreshVowelGroupColors() {
     sec.style.background = bg;
     sec.style.borderColor = border;
     const hdr = sec.querySelector('div');
-    if (hdr) hdr.style.color = border;
+    if (hdr) { hdr.style.color = border; hdr.innerHTML = `<u>${group.sound[0]}</u>${group.sound.slice(1)} Sound – ${group.colorName}`; }
   });
 }
 
@@ -3516,7 +3519,7 @@ function getLetter(heb) {
 
 function getSound(letterObj, vowelKey) {
   // Map derived vowels to their base sound key in the letter's sounds table
-  const DERIVED = { patah: 'a', hpatah: 'a', hkamatz: 'a', hsegol: 'e', shuruk: 'u' };
+  const DERIVED = { patah: 'a', hpatah: 'a', hkamatz: 'a', hsegol: 'e', shuruk: 'u', vcholam: 'o' };
   if (DERIVED[vowelKey]) return letterObj.sounds[DERIVED[vowelKey]] || '?';
   // Tzere: "EY" variant — replace trailing Eh/eh with Ey/ey in the 'e' sound
   if (vowelKey === 'tzere') {
@@ -4457,7 +4460,7 @@ function initCwBlendGrids() {
     section.style.cssText = `background:${bg};border:1.5px solid ${border};border-radius:6px;padding:4px 6px;margin-bottom:3px;`;
     const hdr = document.createElement('div');
     hdr.style.cssText = `font-size:0.65rem;font-weight:700;letter-spacing:0.04em;margin-bottom:2px;opacity:0.75;color:${border};`;
-    hdr.textContent = group.label;
+    hdr.innerHTML = `<u>${group.sound[0]}</u>${group.sound.slice(1)} Sound – ${group.colorName}`;
     section.appendChild(hdr);
     group.vowels.forEach(v => {
       const chip = document.createElement('label');
