@@ -80,7 +80,7 @@
   body.dark .rw-letter-tile.selected { background: #2a4070; border-color: #4a6aaa; color: #dde4f0; }
   body.dark .rw-letter-tile:hover { border-color: var(--gold); }
   body.dark .vowel-chip { color: #dde4f0; }
-  body.dark .vowel-chip:hover { background: #252d3e; }
+  body.dark .vowel-chip:hover { background: rgba(255,255,255,0.06); }
   body.dark .btn-xs { background: #1e2535; color: #dde4f0; border-color: var(--border); }
   body.dark #bingoCards { background: #1e2535; color: #dde4f0; }
   body.dark #bingoCards + div button { background: #1e2535; color: #dde4f0; border-color: var(--border); }
@@ -249,10 +249,11 @@
 
   /* Vowel selector */
   .vowel-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
   }
+  .vowel-group-section { transition: background 0.15s; }
   .vowel-chip {
     display: flex;
     align-items: center;
@@ -1303,7 +1304,7 @@
 
     .letter-grid { grid-template-columns: repeat(4, 1fr); }
 
-    .vowel-grid { grid-template-columns: 1fr; }
+    .vowel-grid { flex-direction: column; }
 
     .btn { font-size: 0.85rem; padding: 10px; }
 
@@ -1948,8 +1949,9 @@
     <div class="panel" id="panelVowels">
       <div class="panel-title">Vowels Included</div>
       <div class="panel-body">
-        <div style="display:flex;gap:6px;margin-bottom:8px;">
+        <div style="display:flex;gap:5px;margin-bottom:8px;">
           <button class="btn-xs" onclick="setAllVowels(true)">All</button>
+          <button class="btn-xs" onclick="setMainVowels()">Main</button>
           <button class="btn-xs" onclick="setAllVowels(false)">None</button>
         </div>
         <div class="vowel-grid" id="vowelGrid"></div>
@@ -2103,12 +2105,18 @@
 // For Cholam (o): the dot sits above/after the letter as \u05B9
 // For letters that carry dagesh (בּ כּ פּ), the dagesh is already baked into the heb string
 const NIKUD = {
-  a:  '\u05B8',  // Kamatz  ָ
-  e:  '\u05B6',  // Segol   ֶ
-  i:  '\u05B4',  // Chirik  ִ
-  o:  '\u05B9',  // Cholam  ֹ
-  u:  '\u05BB',  // Kubutz  ֻ
-  sh: '\u05B0',  // Shva    ְ
+  a:       '\u05B8',  // Kamatz
+  patah:   '\u05B7',  // Patach
+  hpatah:  '\u05B2',  // Hataf Patach
+  hkamatz: '\u05B3',  // Hataf Kamatz
+  e:       '\u05B6',  // Segol
+  hsegol:  '\u05B1',  // Hataf Segol
+  tzere:   '\u05B5',  // Tzere
+  i:       '\u05B4',  // Chirik
+  o:       '\u05B9',  // Holam
+  u:       '\u05BB',  // Kubutz
+  shuruk:  null,            // Special: Vav+Dagesh appended after consonant
+  sh:      '\u05B0',  // Shva
 };
 
 // Base consonant for nikud attachment (strip any existing nikud/dagesh from stored heb string)
@@ -2162,27 +2170,81 @@ function withNikud(letterObj, vowelKey, isFirst) {
   // Plain Vav with Cholam/Shuruk uses the dotted forms
   if (base === 'ו') {
     if (vowelKey === 'o') return 'וֹ';
-    if (vowelKey === 'u') return 'וּ';
+    if (vowelKey === 'u' || vowelKey === 'shuruk') return 'וּ';
   }
+
+  // Shuruk on any non-Vav letter: append Vav+Dagesh after consonant
+  if (vowelKey === 'shuruk') return base + 'וּ';
 
   const mark = NIKUD[vowelKey] || '';
   return base + mark;
 }
 
-const VOWELS = [
-  { key: 'a',  label: 'Kamatz / Patach', sub: 'AH sound', nikud: 'אָ' },
-  { key: 'e',  label: 'Segol / Tzeirei', sub: 'EH sound', nikud: 'אֶ' },
-  { key: 'i',  label: 'Chirik',           sub: 'EE sound', nikud: 'אִ' },
-  { key: 'o',  label: 'Cholam',           sub: 'OH sound', nikud: 'אֹ' },
-  { key: 'u',  label: 'Kubutz',           sub: 'OO sound', nikud: 'אֻ' },
-  { key: 'sh', label: 'Shva',             sub: 'ə sound',  nikud: 'אְ' },
+// Color-coded vowel groups (mirrors teacher's curriculum chart)
+const VOWEL_GROUPS = [
+  {
+    key: 'aqua', sound: 'AH', label: 'AH sound',
+    bg: 'rgba(0,180,210,0.18)', border: '#00b4d2', darkBg: 'rgba(0,160,190,0.25)', darkBorder: '#00c4e0',
+    vowels: [
+      { key: 'a',       label: 'Kamatz',      nikud: 'אָ', isMain: true  },
+      { key: 'patah',   label: 'Patach',       nikud: 'אַ', isMain: true  },
+      { key: 'hpatah',  label: 'Hataf Patach', nikud: 'אֲ', isMain: false },
+      { key: 'hkamatz', label: 'Hataf Kamatz', nikud: 'אֳ', isMain: false },
+    ]
+  },
+  {
+    key: 'red', sound: 'EH', label: 'EH sound',
+    bg: 'rgba(210,50,50,0.15)', border: '#d03232', darkBg: 'rgba(220,60,60,0.22)', darkBorder: '#e05050',
+    vowels: [
+      { key: 'e',      label: 'Segol',       nikud: 'אֶ', isMain: true  },
+      { key: 'hsegol', label: 'Hataf Segol', nikud: 'אֱ', isMain: false },
+    ]
+  },
+  {
+    key: 'grey', sound: 'EY', label: 'EY sound',
+    bg: 'rgba(130,130,140,0.18)', border: '#888898', darkBg: 'rgba(140,140,155,0.25)', darkBorder: '#aaaabc',
+    vowels: [
+      { key: 'tzere', label: 'Tzere', nikud: 'אֵ', isMain: true },
+    ]
+  },
+  {
+    key: 'green', sound: 'EE', label: 'EE sound',
+    bg: 'rgba(40,160,60,0.15)', border: '#28a03c', darkBg: 'rgba(50,180,70,0.22)', darkBorder: '#30c050',
+    vowels: [
+      { key: 'i', label: 'Chirik', nikud: 'אִ', isMain: true },
+    ]
+  },
+  {
+    key: 'yellow', sound: 'OH', label: 'OH sound',
+    bg: 'rgba(200,165,0,0.18)', border: '#c8a800', darkBg: 'rgba(220,185,0,0.25)', darkBorder: '#e0c020',
+    vowels: [
+      { key: 'o', label: 'Holam', nikud: 'אֹ', isMain: true },
+    ]
+  },
+  {
+    key: 'blue', sound: 'OO', label: 'OO sound',
+    bg: 'rgba(40,80,200,0.15)', border: '#2850c8', darkBg: 'rgba(60,100,220,0.22)', darkBorder: '#5080e0',
+    vowels: [
+      { key: 'u',      label: 'Kubutz', nikud: 'אֻ', isMain: true },
+      { key: 'shuruk', label: 'Shuruk', nikud: 'וּ', isMain: true },
+    ]
+  },
+  {
+    key: 'purple', sound: 'UH', label: 'UH sound',
+    bg: 'rgba(130,60,180,0.15)', border: '#823cb4', darkBg: 'rgba(150,70,200,0.22)', darkBorder: '#a060d0',
+    vowels: [
+      { key: 'sh', label: 'Shva', nikud: 'אְ', isMain: false },
+    ]
+  },
 ];
+const VOWELS = VOWEL_GROUPS.flatMap(g => g.vowels);
+const MAIN_VOWEL_KEYS = new Set(VOWELS.filter(v => v.isMain).map(v => v.key));
 
 // ══════════════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════════════
 let selectedLetters = new Set(LETTERS.map(l => l.heb));
-let selectedVowels  = new Set(['a','e','i','o','u']);
+let selectedVowels  = new Set(MAIN_VOWEL_KEYS);
 let blends = [];
 let lastShetefItems = null;
 
@@ -2191,19 +2253,34 @@ let lastShetefItems = null;
 // ══════════════════════════════════════════════
 function initVowels() {
   const grid = document.getElementById('vowelGrid');
-  VOWELS.forEach(v => {
-    const chip = document.createElement('label');
-    chip.className = 'vowel-chip';
-    chip.setAttribute('data-key', v.key);
-    chip.innerHTML = `
-      <input type="checkbox" ${selectedVowels.has(v.key) ? 'checked' : ''}
-        onchange="toggleVowel('${v.key}', this.checked)">
-      <span style="display:flex;align-items:center;gap:6px;">
-        <span style="font-family:'Frank Ruhl Libre',serif;font-size:1.4rem;direction:rtl;min-width:20px;text-align:center;">${v.nikud}</span>
-        <span><strong>${v.label}</strong><br><span style="color:var(--muted);font-size:0.72rem">${v.sub}</span></span>
-      </span>
-    `;
-    grid.appendChild(chip);
+  const isDark = document.body.classList.contains('dark') || document.documentElement.classList.contains('dark-early');
+  VOWEL_GROUPS.forEach(group => {
+    const section = document.createElement('div');
+    section.className = 'vowel-group-section';
+    section.setAttribute('data-group', group.key);
+    const bg = isDark ? group.darkBg : group.bg;
+    const border = isDark ? group.darkBorder : group.border;
+    section.style.cssText = `background:${bg};border:1.5px solid ${border};border-radius:6px;padding:5px 7px;margin-bottom:4px;`;
+    const header = document.createElement('div');
+    header.style.cssText = 'font-size:0.68rem;font-weight:700;letter-spacing:0.04em;margin-bottom:3px;opacity:0.75;';
+    header.textContent = group.label;
+    header.style.color = isDark ? group.darkBorder : group.border;
+    section.appendChild(header);
+    group.vowels.forEach(v => {
+      const chip = document.createElement('label');
+      chip.className = 'vowel-chip';
+      chip.setAttribute('data-key', v.key);
+      chip.innerHTML = `
+        <input type="checkbox" ${selectedVowels.has(v.key) ? 'checked' : ''}
+          onchange="toggleVowel('${v.key}', this.checked)">
+        <span style="display:flex;align-items:center;gap:6px;">
+          <span style="font-family:'Frank Ruhl Libre',serif;font-size:1.4rem;direction:rtl;min-width:24px;text-align:center;">${v.nikud}</span>
+          <span style="font-weight:600;">${v.label}</span>
+        </span>
+      `;
+      section.appendChild(chip);
+    });
+    grid.appendChild(section);
   });
 }
 
@@ -2274,6 +2351,18 @@ function setAllVowels(checked) {
     if (checked) selectedVowels.add(v.key); else selectedVowels.delete(v.key);
   });
   document.querySelectorAll('#vowelGrid input[type="checkbox"]').forEach(cb => cb.checked = checked);
+  updateCombosCount();
+}
+
+function setMainVowels() {
+  VOWELS.forEach(v => {
+    if (v.isMain) selectedVowels.add(v.key); else selectedVowels.delete(v.key);
+  });
+  document.querySelectorAll('#vowelGrid label[data-key]').forEach(chip => {
+    const v = VOWELS.find(x => x.key === chip.getAttribute('data-key'));
+    const cb = chip.querySelector('input[type=checkbox]');
+    if (cb && v) cb.checked = v.isMain;
+  });
   updateCombosCount();
 }
 
@@ -2727,10 +2816,25 @@ function speakBlend(text) {
   speechSynthesis.cancel();
   speechSynthesis.speak(utt);
 }
+function refreshVowelGroupColors() {
+  const isDark = document.body.classList.contains('dark');
+  document.querySelectorAll('#vowelGrid .vowel-group-section[data-group]').forEach(sec => {
+    const group = VOWEL_GROUPS.find(g => g.key === sec.getAttribute('data-group'));
+    if (!group) return;
+    const bg = isDark ? group.darkBg : group.bg;
+    const border = isDark ? group.darkBorder : group.border;
+    sec.style.background = bg;
+    sec.style.borderColor = border;
+    const hdr = sec.querySelector('div');
+    if (hdr) hdr.style.color = border;
+  });
+}
+
 function toggleDark() {
   const isDark = document.body.classList.toggle('dark');
   document.getElementById('darkToggle').textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
   localStorage.setItem('hebrewBlender_darkMode', isDark ? '1' : '0');
+  refreshVowelGroupColors();
 }
 
 function initDarkMode() {
@@ -3412,6 +3516,14 @@ function getLetter(heb) {
 }
 
 function getSound(letterObj, vowelKey) {
+  // Map derived vowels to their base sound key in the letter's sounds table
+  const DERIVED = { patah: 'a', hpatah: 'a', hkamatz: 'a', hsegol: 'e', shuruk: 'u' };
+  if (DERIVED[vowelKey]) return letterObj.sounds[DERIVED[vowelKey]] || '?';
+  // Tzere: "EY" variant — replace trailing Eh/eh with Ey/ey in the 'e' sound
+  if (vowelKey === 'tzere') {
+    const base = letterObj.sounds['e'] || '?';
+    return base.replace(/Eh$/, 'Ey').replace(/eh$/, 'ey');
+  }
   return letterObj.sounds[vowelKey] || '?';
 }
 
@@ -4330,18 +4442,33 @@ function setCwTranslPage(val) {
 }
 
 let cwBlendLetters = new Set(LETTERS.filter(l => !l.sofit).map(l => l.heb));
-let cwBlendVowels  = new Set(['a','e','i','o','u']);
+let cwBlendVowels  = new Set(MAIN_VOWEL_KEYS);
 
 function initCwBlendGrids() {
-  // Vowel chips
+  // Vowel chips — grouped by color
   const vg = document.getElementById('cwBlendVowelGrid');
   if (!vg || vg.children.length) return;
-  VOWELS.forEach(v => {
-    const chip = document.createElement('label');
-    chip.className = 'vowel-chip';
-    chip.innerHTML = `<input type="checkbox" ${cwBlendVowels.has(v.key) ? 'checked' : ''} style="accent-color:var(--gold);"><span style="display:flex;align-items:center;gap:5px;"><span style="font-family:'Frank Ruhl Libre',serif;font-size:1.2rem;direction:rtl;min-width:20px;text-align:center;">${v.nikud}</span><span style="font-size:0.72rem;">${v.label}</span></span>`;
-    chip.querySelector('input').addEventListener('change', e => { e.target.checked ? cwBlendVowels.add(v.key) : cwBlendVowels.delete(v.key); });
-    vg.appendChild(chip);
+  const isDark = document.body.classList.contains('dark') || document.documentElement.classList.contains('dark-early');
+  VOWEL_GROUPS.forEach(group => {
+    const section = document.createElement('div');
+    section.className = 'vowel-group-section';
+    section.setAttribute('data-group', group.key);
+    const bg = isDark ? group.darkBg : group.bg;
+    const border = isDark ? group.darkBorder : group.border;
+    section.style.cssText = `background:${bg};border:1.5px solid ${border};border-radius:6px;padding:4px 6px;margin-bottom:3px;`;
+    const hdr = document.createElement('div');
+    hdr.style.cssText = `font-size:0.65rem;font-weight:700;letter-spacing:0.04em;margin-bottom:2px;opacity:0.75;color:${border};`;
+    hdr.textContent = group.label;
+    section.appendChild(hdr);
+    group.vowels.forEach(v => {
+      const chip = document.createElement('label');
+      chip.className = 'vowel-chip';
+      chip.setAttribute('data-key', v.key);
+      chip.innerHTML = `<input type="checkbox" ${cwBlendVowels.has(v.key) ? 'checked' : ''} style="accent-color:var(--gold);"><span style="display:flex;align-items:center;gap:5px;"><span style="font-family:'Frank Ruhl Libre',serif;font-size:1.2rem;direction:rtl;min-width:22px;text-align:center;">${v.nikud}</span><span style="font-size:0.72rem;font-weight:600;">${v.label}</span></span>`;
+      chip.querySelector('input').addEventListener('change', e => { e.target.checked ? cwBlendVowels.add(v.key) : cwBlendVowels.delete(v.key); });
+      section.appendChild(chip);
+    });
+    vg.appendChild(section);
   });
   // Letter grid — base letters only (no sofits, no vav variants)
   const lg = document.getElementById('cwBlendLetterGrid');
@@ -4394,7 +4521,7 @@ function ensureCvcBlends(needed) {
   const VAV_VARIANTS = new Set(['וֹ','וּ']);
   const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
   const letterPool = cwBlendLetters.size ? cwBlendLetters : new Set(LETTERS.filter(l => !l.sofit).map(l => l.heb));
-  const vowelKeys  = cwBlendVowels.size  ? [...cwBlendVowels]  : ['a','e','i','o','u'];
+  const vowelKeys  = cwBlendVowels.size  ? [...cwBlendVowels]  : [...MAIN_VOWEL_KEYS];
   const firstPool  = [...letterPool].filter(h => !SOFIT_CHARS.has(h) && !VAV_VARIANTS.has(h));
   const secondPool = [...letterPool].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h) && h !== 'ו');
   if (!firstPool.length || !secondPool.length || !vowelKeys.length) return;
