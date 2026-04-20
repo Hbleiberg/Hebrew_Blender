@@ -1487,17 +1487,17 @@
           </label>
         </div>
         <div id="gematriaOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--border);flex-direction:column;gap:4px;">
-          <div id="gematriaSelfCheckRow" class="toggle-row" style="font-size:0.82rem;display:none;">
+          <div class="toggle-row" style="font-size:0.82rem;">
             <span>Self Check</span>
             <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-              <input type="checkbox" id="gematriaSelfCheck" onchange="document.getElementById('gematriaAnswerKey').checked=false;document.getElementById('gematriaAnswerKeyRow').style.display=this.checked?'none':'';document.getElementById('gematriaSelfCheckRow').style.display='';onGematriaOptionChange()">
+              <input type="checkbox" id="gematriaSelfCheck" onchange="document.getElementById('gematriaAnswerKey').checked=false;setGematriaSelfCheckMode(this.checked);onGematriaOptionChange()">
               <span class="slider"></span>
             </label>
           </div>
-          <div id="gematriaAnswerKeyRow" class="toggle-row" style="font-size:0.82rem;">
+          <div class="toggle-row" style="font-size:0.82rem;">
             <span>Answer Key</span>
             <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-              <input type="checkbox" id="gematriaAnswerKey" checked onchange="document.getElementById('gematriaSelfCheck').checked=false;document.getElementById('gematriaSelfCheckRow').style.display=this.checked?'none':'';document.getElementById('gematriaAnswerKeyRow').style.display='';onGematriaOptionChange()">
+              <input type="checkbox" id="gematriaAnswerKey" checked onchange="document.getElementById('gematriaSelfCheck').checked=false;setGematriaSelfCheckMode(false);onGematriaOptionChange()">
               <span class="slider"></span>
             </label>
           </div>
@@ -3534,12 +3534,28 @@ function toggleGematriaMode() {
     document.getElementById('rowBingo').style.display = 'none';
     document.getElementById('rowSelfCheck').style.display = 'none';
   } else {
+    // Restore anything hidden by self-check mode before closing
+    const sc = document.getElementById('gematriaSelfCheck');
+    if (sc && sc.checked) { sc.checked = false; setGematriaSelfCheckMode(false); }
     document.getElementById('rowBingo').style.display = '';
     document.getElementById('rowSelfCheck').style.display = '';
   }
   const gematriaOpts = document.getElementById('gematriaOptions');
   if (gematriaOpts) gematriaOpts.style.display = on ? 'flex' : 'none';
   if (blends.length) renderWorksheet(false);
+}
+
+const GEMATRIA_SELFCHECK_HIDE = [
+  'panelVowels','panelLetters','blendTypeWrapper','modeDivider',
+  'rowInverse','rowAnswerKey','rowFocus','rowThreeLetter','rowSelfCheck',
+  'rowBingo','rowBlendCount','rowOneLetter','rowNikudOnly','rowRealWords',
+];
+
+function setGematriaSelfCheckMode(on) {
+  GEMATRIA_SELFCHECK_HIDE.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = on ? 'none' : '';
+  });
 }
 
 function onGematriaOptionChange() {
