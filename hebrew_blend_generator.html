@@ -1246,7 +1246,12 @@
     margin-bottom: 12px;
     align-items: center;
   }
-  .self-check-controls .btn-xs { font-size: 0.78rem; padding: 5px 12px; }
+  .sc-cols-group { display: flex; gap: 2px; align-items: center; }
+  .sc-cols-btn { padding: 3px 8px; font-size: 0.72rem; border: 1px solid var(--border); border-radius: 4px; background: var(--white); color: var(--text); cursor: pointer; font-family: inherit; transition: background 0.1s; }
+  .sc-cols-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .sc-cols-btn.active { background: var(--navy); color: var(--gold-light); border-color: var(--navy); }
+  body.dark .sc-cols-btn { background: #1e2535; color: var(--text); }
+  body.dark .sc-cols-btn.active { background: #2a4070; border-color: #4a6aaa; color: #dde4f0; }
   .answer-key-sheet {
     margin-top: 48px;
     padding-top: 32px;
@@ -3710,10 +3715,18 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
     controls.innerHTML = `
       <button class="btn-xs" onclick="flipAllCards(true)">Reveal All</button>
       <button class="btn-xs" onclick="flipAllCards(false)">Hide All</button>
+      <div class="sc-cols-group">
+        <span style="font-size:0.72rem;color:var(--muted);">Per row:</span>
+        <button class="sc-cols-btn" onclick="setSCCols(1,this)">1</button>
+        <button class="sc-cols-btn" onclick="setSCCols(2,this)">2</button>
+        <button class="sc-cols-btn" onclick="setSCCols(3,this)">3</button>
+        <button class="sc-cols-btn" onclick="setSCCols(5,this)">5</button>
+      </div>
       <span style="font-size:0.75rem;color:var(--muted);">Tap a card to reveal its Gematria value</span>`;
     ws.appendChild(controls);
 
     const grid = document.createElement('div');
+    grid.id = 'scGrid';
     grid.className = 'self-check-grid';
     grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
     ws.appendChild(grid);
@@ -4005,11 +4018,19 @@ function renderSelfCheck(ws, cols, title, subtitle) {
   controls.innerHTML = `
     <button class="btn-xs" onclick="flipAllCards(true)">Reveal All</button>
     <button class="btn-xs" onclick="flipAllCards(false)">Hide All</button>
+    <div class="sc-cols-group">
+      <span style="font-size:0.72rem;color:var(--muted);">Per row:</span>
+      <button class="sc-cols-btn" onclick="setSCCols(1,this)">1</button>
+      <button class="sc-cols-btn" onclick="setSCCols(2,this)">2</button>
+      <button class="sc-cols-btn" onclick="setSCCols(3,this)">3</button>
+      <button class="sc-cols-btn" onclick="setSCCols(5,this)">5</button>
+    </div>
     ${audioOn ? '<span style="font-size:0.75rem;color:var(--muted);">🔊 Tap back to hear</span>' : '<span style="font-size:0.75rem;color:var(--muted);">Tap a card to flip</span>'}`;
   ws.appendChild(controls);
 
   // Grid
   const grid = document.createElement('div');
+  grid.id = 'scGrid';
   grid.className = 'self-check-grid';
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
   ws.appendChild(grid);
@@ -4037,6 +4058,13 @@ function renderSelfCheck(ws, cols, title, subtitle) {
     card.querySelector('.flip-card-inner').addEventListener('click', () => card.classList.toggle('flipped'));
     grid.appendChild(card);
   });
+}
+
+function setSCCols(n, btn) {
+  const grid = document.getElementById('scGrid');
+  if (grid) grid.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
+  document.querySelectorAll('.sc-cols-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
 }
 
 function flipAllCards(reveal) {
