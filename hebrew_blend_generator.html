@@ -4155,7 +4155,9 @@ document.getElementById('selfCheckToggle').addEventListener('change', () => {
 });
 document.getElementById('wsTitle').addEventListener('input', () => { if (blends.length) renderWorksheet(false); });
 document.getElementById('wsSubtitle').addEventListener('input', () => { if (blends.length) renderWorksheet(false); });
-document.getElementById('audioToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(false); });
+document.getElementById('audioToggle').addEventListener('change', () => {
+  if (blends.length && !document.getElementById('selfCheckToggle').checked) renderWorksheet(false);
+});
 
 // ══════════════════════════════════════════════
 //  PHONOTACTIC FILTER — MIH Rules N1–N4
