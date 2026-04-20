@@ -55,6 +55,13 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .panel.collapsed .panel-title::after{transform:rotate(-90deg);}
 .panel.collapsed .panel-body{display:none;}
 .panel-body{padding:12px;}
+.adv-section{border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:8px;}
+.adv-section:last-child{margin-bottom:0;}
+.adv-section-title{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:var(--warm-gray);font-size:0.72rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;user-select:none;color:var(--text);}
+.adv-section-title::after{content:'▾';font-size:0.9rem;color:var(--muted);transition:transform 0.2s;}
+.adv-section.collapsed .adv-section-title::after{transform:rotate(-90deg);}
+.adv-section-body{padding:10px;}
+.adv-section.collapsed .adv-section-body{display:none;}
 .cb-label{display:flex;align-items:center;gap:4px;font-size:0.75rem;cursor:pointer;line-height:1.6;}
 .cb-label input{accent-color:var(--gold);cursor:pointer;flex-shrink:0;}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1px 8px;}
@@ -245,45 +252,59 @@ footer a{color:var(--gold);text-decoration:none;}
     <!-- Advanced -->
     <div class="panel collapsed">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Advanced</div>
-      <div class="panel-body">
-        <div style="font-size:0.72rem;font-weight:600;margin-bottom:6px;color:var(--text);">Copy Mode</div>
-        <label class="cb-label"><input type="radio" name="copyMode" value="word" checked onchange="onCopyModeChange('word')" style="accent-color:var(--gold);"> Word</label>
-        <label class="cb-label"><input type="radio" name="copyMode" value="definition" onchange="onCopyModeChange('definition')" style="accent-color:var(--gold);"> Word — Definition</label>
-        <label class="cb-label"><input type="radio" name="copyMode" value="transdef" onchange="onCopyModeChange('transdef')" style="accent-color:var(--gold);"> Word — Transliteration — Definition</label>
-        <label class="cb-label"><input type="radio" name="copyMode" value="defonly" onchange="onCopyModeChange('defonly')" style="accent-color:var(--gold);"> Definition</label>
-        <label class="cb-label"><input type="radio" name="copyMode" value="allinfo" onchange="onCopyModeChange('allinfo')" style="accent-color:var(--gold);"> All info<span class="tip-wrap">?<span class="tip-box">Copies: Hebrew word — transliteration — translation — part of speech — era. Gematria value is appended if "Show Gematria Value" is enabled.</span></span><span class="tip-wrap tip-gold">!<span class="tip-box">Select this option when using Bulk Copy to generate a manual input list for the Worksheet Generator.</span></span></label>
-        <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
-        <label class="cb-label" title="Select multiple words from the results. Each selected word is added to a text box below — one per line — in whatever Copy Mode is active."><input type="checkbox" id="bulkModeCb" style="accent-color:var(--gold);" onchange="toggleBulkMode(this.checked)"> Bulk Copy Mode</label>
-        <div id="bulkPanel" style="display:none;margin-top:8px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-            <span style="font-size:0.72rem;color:var(--muted);" id="bulkCount">0 selected</span>
-            <button class="pos-all-btn" onclick="clearBulkSelection()">Clear</button>
-          </div>
-          <div style="display:flex;gap:4px;margin-bottom:6px;">
-            <button class="pos-all-btn" style="flex:1;font-size:0.65rem;" onclick="selectAllOnPage()">Select page</button>
-            <button class="pos-all-btn" style="flex:1;font-size:0.65rem;" onclick="selectAllMatching()">Select all matching</button>
-          </div>
-          <textarea id="bulkTextarea" readonly rows="6" style="width:100%;font-size:0.75rem;font-family:'Frank Ruhl Libre',serif;direction:rtl;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;"></textarea>
-          <button class="pos-all-btn" style="width:100%;margin-top:5px;" onclick="copyBulkText()">Copy All</button>
-        </div>
-        <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
-        <label class="cb-label"><input type="checkbox" id="showGematriaCb" style="accent-color:var(--gold);" onchange="onShowGematriaChange()"> Show Gematria Value</label>
-        <div id="gematriaFilterPanel" style="display:none;padding-left:14px;margin-top:6px;border-left:2px solid var(--border);">
-          <div style="font-size:0.72rem;font-weight:600;margin-bottom:4px;color:var(--muted);">Filter by Gematria</div>
-          <select id="gematriaFilterType" onchange="onGematriaFilterChange()" style="font-size:0.75rem;width:100%;padding:3px 4px;margin-bottom:4px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
-            <option value="none">No filter</option>
-            <option value="exact">Exact value</option>
-            <option value="gte">Equal to / above (≥)</option>
-            <option value="lte">Equal to / below (≤)</option>
-            <option value="range">Range</option>
-          </select>
-          <div id="gematriaFilterInputs" style="display:none;flex-direction:column;gap:3px;">
-            <input type="number" id="gematriaVal1" min="1" placeholder="Value" oninput="onFilter()" style="font-size:0.75rem;width:100%;box-sizing:border-box;padding:3px 5px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
-            <input type="number" id="gematriaVal2" min="1" placeholder="To" oninput="onFilter()" style="display:none;font-size:0.75rem;width:100%;box-sizing:border-box;padding:3px 5px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
+      <div class="panel-body" style="display:flex;flex-direction:column;gap:0;">
+
+        <!-- Copy Options -->
+        <div class="adv-section">
+          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Copy Options</div>
+          <div class="adv-section-body">
+            <div style="font-size:0.72rem;font-weight:600;margin-bottom:6px;color:var(--text);">Copy Mode</div>
+            <label class="cb-label"><input type="radio" name="copyMode" value="word" checked onchange="onCopyModeChange('word')" style="accent-color:var(--gold);"> Word</label>
+            <label class="cb-label"><input type="radio" name="copyMode" value="definition" onchange="onCopyModeChange('definition')" style="accent-color:var(--gold);"> Word — Definition</label>
+            <label class="cb-label"><input type="radio" name="copyMode" value="transdef" onchange="onCopyModeChange('transdef')" style="accent-color:var(--gold);"> Word — Transliteration — Definition</label>
+            <label class="cb-label"><input type="radio" name="copyMode" value="defonly" onchange="onCopyModeChange('defonly')" style="accent-color:var(--gold);"> Definition</label>
+            <label class="cb-label"><input type="radio" name="copyMode" value="allinfo" onchange="onCopyModeChange('allinfo')" style="accent-color:var(--gold);"> All info<span class="tip-wrap">?<span class="tip-box">Copies: Hebrew word — transliteration — translation — part of speech — era. Gematria value is appended if "Show Gematria Value" is enabled.</span></span><span class="tip-wrap tip-gold">!<span class="tip-box">Select this option when using Bulk Copy to generate a manual input list for the Worksheet Generator.</span></span></label>
+            <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
+            <label class="cb-label" title="Select multiple words from the results. Each selected word is added to a text box below — one per line — in whatever Copy Mode is active."><input type="checkbox" id="bulkModeCb" style="accent-color:var(--gold);" onchange="toggleBulkMode(this.checked)"> Bulk Copy Mode</label>
+            <div id="bulkPanel" style="display:none;margin-top:8px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                <span style="font-size:0.72rem;color:var(--muted);" id="bulkCount">0 selected</span>
+                <button class="pos-all-btn" onclick="clearBulkSelection()">Clear</button>
+              </div>
+              <div style="display:flex;gap:4px;margin-bottom:6px;">
+                <button class="pos-all-btn" style="flex:1;font-size:0.65rem;" onclick="selectAllOnPage()">Select page</button>
+                <button class="pos-all-btn" style="flex:1;font-size:0.65rem;" onclick="selectAllMatching()">Select all matching</button>
+              </div>
+              <textarea id="bulkTextarea" readonly rows="6" style="width:100%;font-size:0.75rem;font-family:'Frank Ruhl Libre',serif;direction:rtl;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;"></textarea>
+              <button class="pos-all-btn" style="width:100%;margin-top:5px;" onclick="copyBulkText()">Copy All</button>
+            </div>
           </div>
         </div>
-        <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
-        <label class="cb-label"><input type="checkbox" id="enableSortGematriaCb" style="accent-color:var(--gold);" onchange="toggleGematriaSort(this.checked)"> Enable Sort By Gematria Value<span class="tip-wrap">?<span class="tip-box">Adds Gematria ↑ and Gematria ↓ options to the Sort menu, letting you order words by their total Gematria value.</span></span></label>
+
+        <!-- Gematria Options -->
+        <div class="adv-section">
+          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Gematria Options</div>
+          <div class="adv-section-body">
+            <label class="cb-label"><input type="checkbox" id="showGematriaCb" style="accent-color:var(--gold);" onchange="onShowGematriaChange()"> Show Gematria Value</label>
+            <div id="gematriaFilterPanel" style="display:none;padding-left:14px;margin-top:6px;border-left:2px solid var(--border);">
+              <div style="font-size:0.72rem;font-weight:600;margin-bottom:4px;color:var(--muted);">Filter by Gematria</div>
+              <select id="gematriaFilterType" onchange="onGematriaFilterChange()" style="font-size:0.75rem;width:100%;padding:3px 4px;margin-bottom:4px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
+                <option value="none">No filter</option>
+                <option value="exact">Exact value</option>
+                <option value="gte">Equal to / above (≥)</option>
+                <option value="lte">Equal to / below (≤)</option>
+                <option value="range">Range</option>
+              </select>
+              <div id="gematriaFilterInputs" style="display:none;flex-direction:column;gap:3px;">
+                <input type="number" id="gematriaVal1" min="1" placeholder="Value" oninput="onFilter()" style="font-size:0.75rem;width:100%;box-sizing:border-box;padding:3px 5px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
+                <input type="number" id="gematriaVal2" min="1" placeholder="To" oninput="onFilter()" style="display:none;font-size:0.75rem;width:100%;box-sizing:border-box;padding:3px 5px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
+              </div>
+            </div>
+            <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
+            <label class="cb-label"><input type="checkbox" id="enableSortGematriaCb" style="accent-color:var(--gold);" onchange="toggleGematriaSort(this.checked)"> Enable Sort By Gematria Value<span class="tip-wrap">?<span class="tip-box">Adds Gematria ↑ and Gematria ↓ options to the Sort menu, letting you order words by their total Gematria value.</span></span></label>
+          </div>
+        </div>
+
       </div>
     </div>
 
