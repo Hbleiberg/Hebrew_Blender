@@ -2757,11 +2757,18 @@ function applyZoom(val) {
 const FS_ENTER_ICON = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg>`;
 const FS_EXIT_ICON  = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5,0.5 4.5,4.5 0.5,4.5"/><polyline points="13.5,4.5 9.5,4.5 9.5,0.5"/><polyline points="9.5,13.5 9.5,9.5 13.5,9.5"/><polyline points="0.5,9.5 4.5,9.5 4.5,13.5"/></svg>`;
 function toggleFullscreen() {
-  const on = document.body.classList.toggle('fullscreen');
-  const btn = document.getElementById('fsBtn');
-  btn.innerHTML = on ? FS_EXIT_ICON : FS_ENTER_ICON;
-  btn.title = on ? 'Exit full screen' : 'Full screen';
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen();
+  }
 }
+document.addEventListener('fullscreenchange', () => {
+  const on = !!document.fullscreenElement;
+  document.body.classList.toggle('fullscreen', on);
+  const btn = document.getElementById('fsBtn');
+  if (btn) { btn.innerHTML = on ? FS_EXIT_ICON : FS_ENTER_ICON; btn.title = on ? 'Exit full screen' : 'Full screen'; }
+});
 
 function initZoom() {
   const saved = localStorage.getItem('hebrewBlender_zoom');
