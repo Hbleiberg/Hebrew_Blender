@@ -247,11 +247,11 @@ footer a{color:var(--gold);text-decoration:none;}
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Advanced</div>
       <div class="panel-body">
         <div style="font-size:0.72rem;font-weight:600;margin-bottom:6px;color:var(--text);">Copy Mode</div>
-        <label class="cb-label"><input type="radio" name="copyMode" value="word" checked onchange="copyMode='word'" style="accent-color:var(--gold);"> Word</label>
-        <label class="cb-label"><input type="radio" name="copyMode" value="definition" onchange="copyMode='definition'" style="accent-color:var(--gold);"> Word — Definition</label>
-        <label class="cb-label"><input type="radio" name="copyMode" value="transdef" onchange="copyMode='transdef'" style="accent-color:var(--gold);"> Word — Transliteration — Definition</label>
-        <label class="cb-label"><input type="radio" name="copyMode" value="defonly" onchange="copyMode='defonly'" style="accent-color:var(--gold);"> Definition</label>
-        <label class="cb-label"><input type="radio" name="copyMode" value="allinfo" onchange="copyMode='allinfo'" style="accent-color:var(--gold);"> All info<span class="tip-wrap">?<span class="tip-box">Copies: Hebrew word — transliteration — translation — part of speech — era. Gematria value is appended if "Show Gematria Value" is enabled.</span></span><span class="tip-wrap tip-gold">!<span class="tip-box">Select this option when using Bulk Copy to generate a manual input list for the Worksheet Generator.</span></span></label>
+        <label class="cb-label"><input type="radio" name="copyMode" value="word" checked onchange="onCopyModeChange('word')" style="accent-color:var(--gold);"> Word</label>
+        <label class="cb-label"><input type="radio" name="copyMode" value="definition" onchange="onCopyModeChange('definition')" style="accent-color:var(--gold);"> Word — Definition</label>
+        <label class="cb-label"><input type="radio" name="copyMode" value="transdef" onchange="onCopyModeChange('transdef')" style="accent-color:var(--gold);"> Word — Transliteration — Definition</label>
+        <label class="cb-label"><input type="radio" name="copyMode" value="defonly" onchange="onCopyModeChange('defonly')" style="accent-color:var(--gold);"> Definition</label>
+        <label class="cb-label"><input type="radio" name="copyMode" value="allinfo" onchange="onCopyModeChange('allinfo')" style="accent-color:var(--gold);"> All info<span class="tip-wrap">?<span class="tip-box">Copies: Hebrew word — transliteration — translation — part of speech — era. Gematria value is appended if "Show Gematria Value" is enabled.</span></span><span class="tip-wrap tip-gold">!<span class="tip-box">Select this option when using Bulk Copy to generate a manual input list for the Worksheet Generator.</span></span></label>
         <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
         <label class="cb-label" title="Select multiple words from the results. Each selected word is added to a text box below — one per line — in whatever Copy Mode is active."><input type="checkbox" id="bulkModeCb" style="accent-color:var(--gold);" onchange="toggleBulkMode(this.checked)"> Bulk Copy Mode</label>
         <div id="bulkPanel" style="display:none;margin-top:8px;">
@@ -366,6 +366,14 @@ function wordBulkText(w) { return getWordCopyText(w); }
 function updateBulkTextarea() {
   document.getElementById('bulkTextarea').value = [...bulkSelected.values()].map(e => e.text).join('\n');
   document.getElementById('bulkCount').textContent = `${bulkSelected.size} selected`;
+}
+
+function onCopyModeChange(mode) {
+  copyMode = mode;
+  if (bulkSelected.size) {
+    bulkSelected.forEach((entry, key) => { entry.text = getWordCopyText(entry.w); });
+    updateBulkTextarea();
+  }
 }
 
 function toggleBulkMode(on) {
