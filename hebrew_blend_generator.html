@@ -607,19 +607,23 @@
     accent-color: var(--gold);
     cursor: pointer;
   }
-  .fs-btn {
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 4px 6px;
+  #fsBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    background: var(--navy);
+    color: var(--gold-light);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 12px;
     cursor: pointer;
-    color: var(--muted);
     line-height: 0;
-    flex-shrink: 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    transition: background 0.15s, transform 0.1s;
   }
-  .fs-btn:hover { border-color: var(--gold); color: var(--gold); }
-  body.dark .fs-btn { border-color: var(--border); color: var(--muted); }
-  body.dark .fs-btn:hover { border-color: var(--gold); color: var(--gold); }
+  #fsBtn:hover { background: #2a3a6a; transform: scale(1.08); }
+  body.dark #fsBtn { background: #0d1220; }
   body.fullscreen header,
   body.fullscreen footer { display: none !important; }
   body.fullscreen .app { min-height: 100vh; }
@@ -1320,7 +1324,7 @@
   @page { margin: 0.35in; }
   @media print {
     .sidebar, header, footer, .mobile-fab, .zoom-bar, .print-tip, .main-toolbar,
-    .sidebar-toggle-btn, .sidebar-show-btn { display: none !important; }
+    .sidebar-toggle-btn, .sidebar-show-btn, #fsBtn { display: none !important; }
     .app { display: block; min-height: unset; }
     .main { padding: 0; overflow: visible; }
     .self-check-controls { display: none !important; }
@@ -2054,7 +2058,6 @@
         <input type="range" id="zoomSlider" min="50" max="200" value="100" oninput="applyZoom(this.value)">
         <span id="zoomLabel">100%</span>
       </div>
-      <button class="fs-btn" id="fsBtn" onclick="toggleFullscreen()" title="Full screen"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg></button>
     </div>
     <div class="main-content">
     <div class="worksheet-scaler" id="worksheetScaler">
@@ -2070,6 +2073,8 @@
   </main>
 
 </div>
+
+<button id="fsBtn" onclick="toggleFullscreen()" title="Full screen"><svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg></button>
 
 <footer style="text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);">
   Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="color:var(--gold);text-decoration:none;font-weight:600;">Harrison Bleiberg</a>
