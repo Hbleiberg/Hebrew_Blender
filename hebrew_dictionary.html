@@ -367,7 +367,7 @@ const POS_KNOWN = ['noun','proper noun','verb','adjective','adverb','pronoun','p
 
 const DICT_VOWEL_GROUPS = [
   {
-    key: 'aqua', sound: 'AH', colorName: 'Aqua',
+    key: 'aqua', sound: 'AH', colorName: 'Aqua', colorHtml: '<u>A</u>qua',
     bg: 'rgba(0,180,210,0.18)', border: '#00b4d2', darkBg: 'rgba(0,160,190,0.25)', darkBorder: '#00c4e0',
     vowels: [
       { u: '\u05B8', label: 'Kamatz',      sub: 'AH sound', ex: 'אָ', isMain: true  },
@@ -377,7 +377,7 @@ const DICT_VOWEL_GROUPS = [
     ]
   },
   {
-    key: 'red', sound: 'EH', colorName: 'Red',
+    key: 'red', sound: 'EH', colorName: 'Red', colorHtml: 'R<u>e</u>d',
     bg: 'rgba(210,50,50,0.15)', border: '#d03232', darkBg: 'rgba(220,60,60,0.22)', darkBorder: '#e05050',
     vowels: [
       { u: '\u05B6', label: 'Segol',       sub: 'EH sound', ex: 'אֶ', isMain: true  },
@@ -385,21 +385,21 @@ const DICT_VOWEL_GROUPS = [
     ]
   },
   {
-    key: 'grey', sound: 'EY', colorName: 'Grey',
+    key: 'grey', sound: 'EY', colorName: 'Grey', colorHtml: 'Gr<u>ey</u>',
     bg: 'rgba(130,130,140,0.18)', border: '#888898', darkBg: 'rgba(140,140,155,0.25)', darkBorder: '#aaaabc',
     vowels: [
       { u: '\u05B5', label: 'Tzere', sub: 'EY sound', ex: 'אֵ', isMain: true },
     ]
   },
   {
-    key: 'green', sound: 'EE', colorName: 'Green',
+    key: 'green', sound: 'EE', colorName: 'Green', colorHtml: 'Gr<u>ee</u>n',
     bg: 'rgba(40,160,60,0.15)', border: '#28a03c', darkBg: 'rgba(50,180,70,0.22)', darkBorder: '#30c050',
     vowels: [
       { u: '\u05B4', label: 'Chirik', sub: 'EE sound', ex: 'אִ', isMain: true },
     ]
   },
   {
-    key: 'yellow', sound: 'OH', colorName: 'Yellow',
+    key: 'yellow', sound: 'OH', colorName: 'Yellow', colorHtml: 'Yell<u>ow</u>',
     bg: 'rgba(200,165,0,0.18)', border: '#c8a800', darkBg: 'rgba(220,185,0,0.25)', darkBorder: '#e0c020',
     vowels: [
       { u: '\u05B9',             label: 'Holam',      sub: 'OH sound', ex: 'אֹ', isMain: true },
@@ -407,7 +407,7 @@ const DICT_VOWEL_GROUPS = [
     ]
   },
   {
-    key: 'blue', sound: 'OO', colorName: 'Blue',
+    key: 'blue', sound: 'OO', colorName: 'Blue', colorHtml: 'Bl<u>ue</u>',
     bg: 'rgba(40,80,200,0.15)', border: '#2850c8', darkBg: 'rgba(60,100,220,0.22)', darkBorder: '#5080e0',
     vowels: [
       { u: '\u05BB',             label: 'Kubutz', sub: 'OO sound', ex: 'אֻ', isMain: true },
@@ -415,7 +415,7 @@ const DICT_VOWEL_GROUPS = [
     ]
   },
   {
-    key: 'purple', sound: 'UH', colorName: 'Purple',
+    key: 'purple', sound: 'UH', colorName: 'Purple', colorHtml: 'P<u>u</u>rple',
     bg: 'rgba(130,60,180,0.15)', border: '#823cb4', darkBg: 'rgba(150,70,200,0.22)', darkBorder: '#a060d0',
     vowels: [
       { u: '\u05B0', label: 'Shva', sub: 'UH / silent', ex: 'אְ', isMain: false },
@@ -604,7 +604,7 @@ function initVowelFilter() {
     const header = document.createElement('div');
     header.style.cssText = 'font-size:0.68rem;font-weight:700;letter-spacing:0.04em;margin-bottom:0;opacity:0.75;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;';
     const hdrText = document.createElement('span');
-    hdrText.innerHTML = `<u>${group.sound[0]}</u>${group.sound.slice(1)} Sound – ${group.colorName}`;
+    hdrText.innerHTML = `${group.sound} Sound – ${group.colorHtml}`;
     const arrow = document.createElement('span');
     arrow.className = 'vg-arrow';
     arrow.textContent = '▾';
@@ -655,7 +655,7 @@ function refreshDictVowelGroupColors() {
     if (hdr) {
       hdr.style.color = border;
       const span = hdr.firstElementChild;
-      if (span) span.innerHTML = `<u>${group.sound[0]}</u>${group.sound.slice(1)} Sound – ${group.colorName}`;
+      if (span) span.innerHTML = `${group.sound} Sound – ${group.colorHtml}`;
     }
   });
 }
