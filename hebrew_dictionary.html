@@ -599,10 +599,25 @@ function initVowelFilter() {
     const bg = isDark ? group.darkBg : group.bg;
     const border = isDark ? group.darkBorder : group.border;
     section.style.cssText = `background:${bg};border:1.5px solid ${border};border-radius:6px;padding:5px 7px;margin-bottom:4px;`;
+    const chipsWrap = document.createElement('div');
+    chipsWrap.className = 'vowel-group-chips';
     const header = document.createElement('div');
-    header.style.cssText = 'font-size:0.68rem;font-weight:700;letter-spacing:0.04em;margin-bottom:3px;opacity:0.75;';
-    header.innerHTML = `<u>${group.sound[0]}</u>${group.sound.slice(1)} Sound – ${group.colorName}`;
+    header.style.cssText = 'font-size:0.68rem;font-weight:700;letter-spacing:0.04em;margin-bottom:0;opacity:0.75;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;';
+    const hdrText = document.createElement('span');
+    hdrText.innerHTML = `<u>${group.sound[0]}</u>${group.sound.slice(1)} Sound – ${group.colorName}`;
+    const arrow = document.createElement('span');
+    arrow.className = 'vg-arrow';
+    arrow.textContent = '▾';
+    arrow.style.cssText = 'font-size:0.75rem;transition:transform 0.2s;';
+    header.appendChild(hdrText);
+    header.appendChild(arrow);
     header.style.color = isDark ? group.darkBorder : group.border;
+    header.addEventListener('click', () => {
+      const collapsed = chipsWrap.style.display === 'none';
+      chipsWrap.style.display = collapsed ? '' : 'none';
+      arrow.style.transform = collapsed ? '' : 'rotate(-90deg)';
+      section.style.paddingBottom = collapsed ? '' : '2px';
+    });
     section.appendChild(header);
     group.vowels.forEach(v => {
       const chip = document.createElement('label');
@@ -620,8 +635,9 @@ function initVowelFilter() {
         if (e.target.checked) vowelFilters.add(v.u); else vowelFilters.delete(v.u);
         onFilter();
       });
-      section.appendChild(chip);
+      chipsWrap.appendChild(chip);
     });
+    section.appendChild(chipsWrap);
     grid.appendChild(section);
   });
 }
@@ -635,8 +651,12 @@ function refreshDictVowelGroupColors() {
     const border = isDark ? group.darkBorder : group.border;
     sec.style.background = bg;
     sec.style.borderColor = border;
-    const hdr = sec.querySelector('div');
-    if (hdr) { hdr.style.color = border; hdr.innerHTML = `<u>${group.sound[0]}</u>${group.sound.slice(1)} Sound – ${group.colorName}`; }
+    const hdr = sec.firstElementChild;
+    if (hdr) {
+      hdr.style.color = border;
+      const span = hdr.firstElementChild;
+      if (span) span.innerHTML = `<u>${group.sound[0]}</u>${group.sound.slice(1)} Sound – ${group.colorName}`;
+    }
   });
 }
 
