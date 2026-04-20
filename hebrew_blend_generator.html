@@ -1120,33 +1120,11 @@
   @media print {
     .bingo-card { page-break-inside: avoid; }
     .bingo-page-break { page-break-before: always; border-top: none; padding-top: 0; margin-top: 0; }
-    /* Consistent positioning on every page so a paper cutter can be used */
-    .bingo-page {
-      padding: 0;
-      margin: 0;
-    }
-    .bingo-page.two-up {
-      flex-direction: row;
-      height: 100vh;
-      gap: 0;
-      align-items: stretch;
-    }
-    .bingo-card.two-up {
-      max-width: 50%;
-      flex: 1;
-      border-radius: 0;
-    }
-    .bingo-page.four-up {
-      height: 100vh;
-      grid-template-rows: 1fr 1fr;
-      gap: 0;
-      align-items: stretch;
-      padding: 0;
-    }
-    .bingo-card.four-up {
-      max-width: 100%;
-      border-radius: 0;
-    }
+    .bingo-page { padding: 0; margin: 0; }
+    .bingo-page.four-up { gap: 0; padding: 0; }
+    .bingo-card.four-up { max-width: 100%; border-radius: 0; }
+    .bingo-page.two-up { flex-direction: row; gap: 0; }
+    .bingo-card.two-up { max-width: 50%; flex: 1; border-radius: 0; }
   }
   body.dark .timer-bar,
   body.dark .score-bar { background: var(--warm-gray); }
@@ -2984,6 +2962,37 @@ function generateBingoBlendThree(firstPool, secondPool, thirdPool, vowelKeys, vo
 }
 
 // ── BINGO RENDER ──
+function makeBingoPhantom(gridSize, fourUp, twoUp) {
+  const BINGO_HEADERS = { 3: ['ב','י','נ'], 4: ['ב','י','נ','ג'], 5: ['ב','י','נ','ג','ו'] };
+  const cardEl = document.createElement('div');
+  cardEl.className = `bingo-card${twoUp ? ' two-up' : fourUp ? ' four-up' : ''}`;
+  cardEl.style.visibility = 'hidden';
+  cardEl.setAttribute('aria-hidden', 'true');
+  const numBar = document.createElement('div');
+  numBar.className = 'bingo-card-num';
+  cardEl.appendChild(numBar);
+  const headerEl = document.createElement('div');
+  headerEl.className = `bingo-card-header${twoUp ? ' two-up' : fourUp ? ' four-up' : ''}`;
+  headerEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+  (BINGO_HEADERS[gridSize] || []).forEach(() => { headerEl.appendChild(document.createElement('span')); });
+  cardEl.appendChild(headerEl);
+  const gridEl = document.createElement('div');
+  gridEl.className = 'bingo-grid';
+  gridEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+  for (let r = 0; r < gridSize; r++) {
+    for (let col = 0; col < gridSize; col++) {
+      const cellEl = document.createElement('div');
+      let cls = 'bingo-cell';
+      if (col === gridSize - 1) cls += ' last-col';
+      if (r === gridSize - 1) cls += ' last-row';
+      cellEl.className = cls;
+      gridEl.appendChild(cellEl);
+    }
+  }
+  cardEl.appendChild(gridEl);
+  return cardEl;
+}
+
 function renderBingo(ws) {
   ws.innerHTML = '';
 
@@ -3098,7 +3107,7 @@ function renderBingo(ws) {
     const fourUp = perPage === 4;
     const cardsOnPage = Math.min(perPage, cards.length - i);
     page.className = `bingo-page${twoUp ? ' two-up' : fourUp ? ' four-up' : ''}`;
-    if (fourUp && cardsOnPage > 2) page.classList.add('has-two-rows');
+    if (fourUp) page.classList.add('has-two-rows');
     if (i > 0) page.classList.add('bingo-page-break');
 
     for (let j = i; j < Math.min(i + perPage, cards.length); j++) {
@@ -3147,6 +3156,15 @@ function renderBingo(ws) {
       cardEl.appendChild(gridEl);
       page.appendChild(cardEl);
     }
+
+    // Pad page with invisible phantoms so every page has identical structure
+    // (keeps cut-line positions consistent for paper cutters)
+    if (twoUp || fourUp) {
+      for (let p = cardsOnPage; p < perPage; p++) {
+        page.appendChild(makeBingoPhantom(gridSize, fourUp, twoUp));
+      }
+    }
+
     ws.appendChild(page);
   }
 
@@ -4991,7 +5009,7 @@ function generateRealWordsBingo(pool) {
     const twoUp = perPage === 2, fourUp = perPage === 4;
     const cardsOnPage2 = Math.min(perPage, cards.length - i);
     page.className = `bingo-page${twoUp ? ' two-up' : fourUp ? ' four-up' : ''}`;
-    if (fourUp && cardsOnPage2 > 2) page.classList.add('has-two-rows');
+    if (fourUp) page.classList.add('has-two-rows');
     if (i > 0) page.classList.add('bingo-page-break');
 
     for (let j = i; j < Math.min(i + perPage, cards.length); j++) {
@@ -5033,6 +5051,14 @@ function generateRealWordsBingo(pool) {
       cardEl.appendChild(gridEl);
       page.appendChild(cardEl);
     }
+
+    // Pad page with invisible phantoms so every page has identical structure
+    if (twoUp || fourUp) {
+      for (let p = cardsOnPage2; p < perPage; p++) {
+        page.appendChild(makeBingoPhantom(gridSize, fourUp, twoUp));
+      }
+    }
+
     ws.appendChild(page);
   }
 
