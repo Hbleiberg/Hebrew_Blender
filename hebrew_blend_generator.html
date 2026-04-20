@@ -1118,9 +1118,35 @@
   .caller-item.called { background: #e8e0d0; }
 
   @media print {
-    .bingo-page.two-up { flex-direction: row; }
     .bingo-card { page-break-inside: avoid; }
     .bingo-page-break { page-break-before: always; border-top: none; padding-top: 0; margin-top: 0; }
+    /* Consistent positioning on every page so a paper cutter can be used */
+    .bingo-page {
+      padding: 0;
+      margin: 0;
+    }
+    .bingo-page.two-up {
+      flex-direction: row;
+      height: 100vh;
+      gap: 0;
+      align-items: stretch;
+    }
+    .bingo-card.two-up {
+      max-width: 50%;
+      flex: 1;
+      border-radius: 0;
+    }
+    .bingo-page.four-up {
+      height: 100vh;
+      grid-template-rows: 1fr 1fr;
+      gap: 0;
+      align-items: stretch;
+      padding: 0;
+    }
+    .bingo-card.four-up {
+      max-width: 100%;
+      border-radius: 0;
+    }
   }
   body.dark .timer-bar,
   body.dark .score-bar { background: var(--warm-gray); }
@@ -1769,6 +1795,10 @@
                   <button class="rw-drill-btn active" data-transl="same" onclick="setRwTranslPage('same')">Same page</button>
                   <button class="rw-drill-btn" data-transl="key" onclick="setRwTranslPage('key')">Answer key</button>
                 </div>
+              </div>
+              <div class="toggle-row" id="rwShowGematriaRow" style="display:none;">
+                <span style="font-size:0.8rem;">Show Gematria</span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="rwShowGematria" checked onchange="if(document.getElementById('worksheet').querySelector('.blend-cell'))generateRealWords()"><span class="slider"></span></label>
               </div>
               <div style="margin-top:6px;display:flex;align-items:center;gap:8px;">
                 <span style="font-size:0.8rem;flex:1;">Number of Words</span>
@@ -3566,7 +3596,7 @@ function onGematriaOptionChange() {
   if (document.getElementById('gematriaToggle').checked) renderWorksheet(false);
 }
 
-function renderGematriaSheet(ws, items) {
+function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = false, showGematriaVal = true) {
   if (!items) items = blends.map(b => ({ hebrewDisplay: b.hebrewDisplay }));
   const selfCheck  = document.getElementById('gematriaSelfCheck')?.checked ?? false;
   const showAnsKey = document.getElementById('gematriaAnswerKey')?.checked ?? true;
@@ -3680,7 +3710,9 @@ function renderGematriaSheet(ws, items) {
       cell.innerHTML = `
         <div style="font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;">${idx + 1}</div>
         <div class="blend-hebrew">${b.hebrewDisplay}</div>
-        <div class="gematria-value">${val}</div>`;
+        ${showTranslit && b.translit ? `<div style="font-size:0.7rem;color:var(--muted);margin-top:2px;">${b.translit}</div>` : ''}
+        ${showTranslation && b.translation ? `<div style="font-size:0.7rem;margin-top:2px;">${b.translation}</div>` : ''}
+        ${showGematriaVal ? `<div class="gematria-value">${val}</div>` : ''}`;
       keyGrid.appendChild(cell);
     });
     keySheet.appendChild(keyGrid);
@@ -4496,6 +4528,10 @@ function setRealWordDrill(type) {
   const gematriaOpts = document.getElementById('gematriaOptions');
   if (gematriaOpts) gematriaOpts.style.display = (type === 'gematria') ? 'flex' : (document.getElementById('gematriaToggle').checked ? 'flex' : 'none');
 
+  // Show Gematria value toggle only for gematria drill
+  const gematriaValRow = document.getElementById('rwShowGematriaRow');
+  if (gematriaValRow) gematriaValRow.style.display = (type === 'gematria') ? '' : 'none';
+
   updateRwPoolInfo();
 }
 
@@ -4680,7 +4716,11 @@ function generateRealWords() {
     const words = rwShuffle(pool).slice(0, Math.min(count, pool.length));
     const ws = document.getElementById('worksheet');
     ws.innerHTML = '';
-    renderGematriaSheet(ws, words.map(w => ({ hebrewDisplay: w.heb })));
+    renderGematriaSheet(ws,
+      words.map(w => ({ hebrewDisplay: w.heb, translit: w.translit, translation: w.translation })),
+      showTranslit, showTranslation,
+      document.getElementById('rwShowGematria')?.checked ?? true
+    );
     enableButtons();
     return;
   }
