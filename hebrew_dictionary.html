@@ -98,6 +98,11 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 /* Main */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .toolbar{display:flex;align-items:center;gap:10px;padding:10px 20px;background:var(--cream);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;}
+.fs-btn{background:none;border:1px solid var(--border);border-radius:4px;padding:4px 6px;cursor:pointer;color:var(--muted);line-height:0;flex-shrink:0;}
+.fs-btn:hover{border-color:var(--gold);color:var(--gold);}
+body.fullscreen header{display:none !important;}
+body.fullscreen .app{height:100vh;}
+body.fullscreen .sidebar{display:flex !important;}
 .result-count{font-size:0.85rem;color:var(--muted);flex:1;}
 .sort-sel{padding:4px 8px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--text);font-size:0.8rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;outline:none;}
 .content{flex:1;overflow-y:auto;padding:18px 20px;}
@@ -321,6 +326,7 @@ footer a{color:var(--gold);text-decoration:none;}
         <option value="len-desc">Length ↓</option>
         <option value="transl">Translation A→Z</option>
       </select>
+      <button class="fs-btn" id="fsBtn" onclick="toggleFullscreen()" title="Full screen"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg></button>
     </div>
     <div class="content">
       <div class="loading" id="loadingMsg">Loading dictionary…</div>
@@ -768,6 +774,15 @@ function toggleSidebar() {
   const c = s.classList.toggle('hidden');
   show.style.display = c ? 'flex' : 'none';
   hide.style.display = c ? 'none' : 'flex';
+}
+
+const FS_ENTER_ICON = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg>`;
+const FS_EXIT_ICON  = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5,0.5 4.5,4.5 0.5,4.5"/><polyline points="13.5,4.5 9.5,4.5 9.5,0.5"/><polyline points="9.5,13.5 9.5,9.5 13.5,9.5"/><polyline points="0.5,9.5 4.5,9.5 4.5,13.5"/></svg>`;
+function toggleFullscreen() {
+  const on = document.body.classList.toggle('fullscreen');
+  const btn = document.getElementById('fsBtn');
+  btn.innerHTML = on ? FS_EXIT_ICON : FS_ENTER_ICON;
+  btn.title = on ? 'Exit full screen' : 'Full screen';
 }
 
 function toggleDark() {

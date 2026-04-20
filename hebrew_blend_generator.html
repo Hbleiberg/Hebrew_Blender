@@ -607,6 +607,23 @@
     accent-color: var(--gold);
     cursor: pointer;
   }
+  .fs-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 6px;
+    cursor: pointer;
+    color: var(--muted);
+    line-height: 0;
+    flex-shrink: 0;
+  }
+  .fs-btn:hover { border-color: var(--gold); color: var(--gold); }
+  body.dark .fs-btn { border-color: var(--border); color: var(--muted); }
+  body.dark .fs-btn:hover { border-color: var(--gold); color: var(--gold); }
+  body.fullscreen header,
+  body.fullscreen footer { display: none !important; }
+  body.fullscreen .app { min-height: 100vh; }
+  body.fullscreen .sidebar { display: flex !important; }
   .worksheet-scaler {
     transform-origin: top center;
     transition: transform 0.2s;
@@ -2038,6 +2055,7 @@
         <input type="range" id="zoomSlider" min="50" max="200" value="100" oninput="applyZoom(this.value)">
         <span id="zoomLabel">100%</span>
       </div>
+      <button class="fs-btn" id="fsBtn" onclick="toggleFullscreen()" title="Full screen"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg></button>
     </div>
     <div class="main-content">
     <div class="worksheet-scaler" id="worksheetScaler">
@@ -2735,6 +2753,14 @@ function applyZoom(val) {
   document.getElementById('worksheetScaler').style.transform = `scale(${val/100})`;
   document.getElementById('zoomLabel').textContent = `${val}%`;
   localStorage.setItem('hebrewBlender_zoom', val);
+}
+const FS_ENTER_ICON = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg>`;
+const FS_EXIT_ICON  = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5,0.5 4.5,4.5 0.5,4.5"/><polyline points="13.5,4.5 9.5,4.5 9.5,0.5"/><polyline points="9.5,13.5 9.5,9.5 13.5,9.5"/><polyline points="0.5,9.5 4.5,9.5 4.5,13.5"/></svg>`;
+function toggleFullscreen() {
+  const on = document.body.classList.toggle('fullscreen');
+  const btn = document.getElementById('fsBtn');
+  btn.innerHTML = on ? FS_EXIT_ICON : FS_ENTER_ICON;
+  btn.title = on ? 'Exit full screen' : 'Full screen';
 }
 
 function initZoom() {
@@ -4087,6 +4113,7 @@ document.getElementById('selfCheckToggle').addEventListener('change', () => {
 });
 document.getElementById('wsTitle').addEventListener('input', () => { if (blends.length) renderWorksheet(false); });
 document.getElementById('wsSubtitle').addEventListener('input', () => { if (blends.length) renderWorksheet(false); });
+document.getElementById('audioToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(false); });
 
 // ══════════════════════════════════════════════
 //  PHONOTACTIC FILTER — MIH Rules N1–N4
