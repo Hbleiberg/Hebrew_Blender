@@ -3269,9 +3269,9 @@ function renderBingo(ws) {
         : threeLetter
           ? generateBingoBlendThree(firstPool, secondPool, thirdPool, [vowelKey], vowelPos, excludeRep)
           : generateBingoBlend(firstPool, secondPool, [vowelKey], excludeRep);
-      if (b && !callerKeys.has(b.key)) {
+      if (b && !callerKeys.has(b.combined)) {
         callerPool.push(b);
-        callerKeys.add(b.key);
+        callerKeys.add(b.combined);
         return true;
       }
     }
