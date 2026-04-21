@@ -5525,6 +5525,7 @@ function initFontSelector() {
             '<a class="font-opt-attr" href="' + font.link + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + font.attr + '</a>' +
           '</span>';
         btn.onclick = () => setHebFont(font.name);
+        loadHebFont(font);
         grid.appendChild(btn);
       });
     });
