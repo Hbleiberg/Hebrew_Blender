@@ -2129,7 +2129,7 @@ const LETTERS = [
   { heb: 'ד', base: 'ד', name: 'Dalet',  sofit: null, sounds: { a:'Dah',  e:'Deh',  i:'Dee',  o:'Doh',  u:'Doo',  sh:'D\'' } },
   { heb: 'ה', base: 'ה', name: 'Heh',    sofit: null, sounds: { a:'Hah',  e:'Heh',  i:'Hee',  o:'Hoh',  u:'Hoo',  sh:'H\'' } },
   { heb: 'ו', base: 'ו', name: 'Vav',          sofit: null, sounds: { a:'Vah', e:'Veh', i:'Vee', o:'Oh',  u:'Oo',  sh:'V\'' } },
-  { heb: 'וֹ', base: 'וֹ', name: 'Vav Cholam',   sofit: null, vavVariant: 'o', sounds: { a:'Oh', e:'Oh', i:'Oh', o:'Oh', u:'Oh', sh:'Oh' } },
+  { heb: 'וֹ', base: 'וֹ', name: 'Vav Holam',   sofit: null, vavVariant: 'o', sounds: { a:'Oh', e:'Oh', i:'Oh', o:'Oh', u:'Oh', sh:'Oh' } },
   { heb: 'וּ', base: 'וּ', name: 'Vav Shuruk',   sofit: null, vavVariant: 'u', sounds: { a:'Oo', e:'Oo', i:'Oo', o:'Oo', u:'Oo', sh:'Oo' } },
   { heb: 'ז', base: 'ז', name: 'Zayin',  sofit: null, sounds: { a:'Zah',  e:'Zeh',  i:'Zee',  o:'Zoh',  u:'Zoo',  sh:'Z\'' } },
   { heb: 'ח', base: 'ח', name: 'Chet',   sofit: null, sounds: { a:'Chah', e:'Cheh', i:'Chee', o:'Choh', u:'Choo', sh:'Ch\'' } },
@@ -2175,7 +2175,7 @@ function withNikud(letterObj, vowelKey, isFirst) {
 
   // Shuruk on any non-Vav: append Vav+Dagesh after consonant
   if (vowelKey === 'shuruk') return base + 'וּ';
-  // Vav Cholam on any non-Vav: append Vav+Holam after consonant
+  // Vav Holam on any non-Vav: append Vav+Holam after consonant
   if (vowelKey === 'vcholam') return base + 'וֹ';
 
   const mark = NIKUD[vowelKey] || '';
@@ -2221,7 +2221,7 @@ const VOWEL_GROUPS = [
     bg: 'rgba(200,165,0,0.18)', border: '#c8a800', darkBg: 'rgba(220,185,0,0.25)', darkBorder: '#e0c020',
     vowels: [
       { key: 'o',       label: 'Holam',      sub: 'OH sound', nikud: 'אֹ', isMain: true },
-      { key: 'vcholam', label: 'Vav Cholam', sub: 'OH sound', nikud: 'וֹ', isMain: true },
+      { key: 'vcholam', label: 'Vav Holam', sub: 'OH sound', nikud: 'וֹ', isMain: true },
     ]
   },
   {
