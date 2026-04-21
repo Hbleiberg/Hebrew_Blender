@@ -2311,19 +2311,12 @@ function initLetters() {
     if (l.vavVariant) return;
 
     if (l.heb === 'ו') {
-      // Render plain Vav + Cholam variant (Shuruk handled via vowel selector)
-      const vavTiles = [
-        { heb: 'ו',  name: 'Vav' },
-        { heb: 'וֹ', name: 'Cholam' },
-      ];
-      vavTiles.forEach(vt => {
-        const div = document.createElement('div');
-        div.className = 'letter-tile' + (selectedLetters.has(vt.heb) ? ' selected' : '');
-        div.dataset.heb = vt.heb;
-        div.innerHTML = `<span class="heb">${vt.heb}</span><span class="name">${vt.name}</span>`;
-        div.onclick = () => toggleLetter(vt.heb, div);
-        grid.appendChild(div);
-      });
+      const div = document.createElement('div');
+      div.className = 'letter-tile' + (selectedLetters.has('ו') ? ' selected' : '');
+      div.dataset.heb = 'ו';
+      div.innerHTML = `<span class="heb">ו</span><span class="name">Vav</span>`;
+      div.onclick = () => toggleLetter('ו', div);
+      grid.appendChild(div);
       return;
     }
 
