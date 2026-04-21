@@ -21,6 +21,7 @@
   --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
   --era-bib-bg:#e8f0ff;--era-bib-text:#2a4080;
   --era-mod-bg:#e8f5e8;--era-mod-text:#1a5c1a;
+  --heb-font:var(--heb-font);
 }
 html.dark-early body,body.dark {
   --navy:#1a2744;--gold:#e0a832;--gold-light:#f5d97a;--cream:#161c2a;
@@ -81,7 +82,7 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .pos-sec-hdr .hdr-left{display:flex;align-items:center;gap:6px;flex:1;min-width:0;}
 .pos-sec-hdr .lbl{white-space:nowrap;}
 .pos-badges{display:flex;gap:2px;flex-wrap:wrap;}
-.pbadge{background:var(--navy);color:var(--gold-light);border-radius:3px;padding:1px 5px;font-size:0.7rem;font-family:'Frank Ruhl Libre',serif;}
+.pbadge{background:var(--navy);color:var(--gold-light);border-radius:3px;padding:1px 5px;font-size:0.7rem;font-family:var(--heb-font);}
 .pos-clear{background:none;border:none;color:var(--muted);font-size:0.75rem;cursor:pointer;padding:0 2px;line-height:1;}
 .pos-clear:hover{color:var(--gold);}
 .pos-arrow{color:var(--muted);font-size:0.65rem;transition:transform 0.15s;flex-shrink:0;}
@@ -93,7 +94,7 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .lpt{display:flex;flex-direction:column;align-items:center;padding:3px 1px;border:1px solid var(--border);border-radius:3px;cursor:pointer;transition:all 0.12s;user-select:none;background:var(--white);}
 .lpt:hover{border-color:var(--gold);}
 .lpt.selected{background:var(--navy);border-color:var(--navy);color:#fff;}
-.lpt .h{font-size:0.9rem;font-family:'Frank Ruhl Libre',serif;direction:rtl;line-height:1.3;}
+.lpt .h{font-size:0.9rem;font-family:var(--heb-font);direction:rtl;line-height:1.3;}
 .lpt .n{font-size:0.38rem;text-align:center;opacity:0.7;direction:ltr;line-height:1;}
 /* Main */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
@@ -117,7 +118,7 @@ body.bulk-mode .word-card{cursor:pointer;}
 .wc-copy{left:7px;}
 .wc-search{left:30px;}
 .wc-copy:hover,.wc-copy.copied,.wc-search:hover{border-color:var(--gold);color:var(--gold);opacity:1;}
-.wc-heb{font-family:'Frank Ruhl Libre',serif;font-size:1.9rem;direction:rtl;text-align:right;line-height:1.2;}
+.wc-heb{font-family:var(--heb-font);font-size:1.9rem;direction:rtl;text-align:right;line-height:1.2;}
 .wc-translit{font-size:0.76rem;color:var(--muted);font-style:italic;text-align:right;}
 .wc-transl{font-size:0.8rem;line-height:1.35;margin-top:2px;}
 .wc-badges{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px;}
@@ -149,6 +150,26 @@ footer a{color:var(--gold);text-decoration:none;}
   body{overflow-y:auto;}
   .results-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
 }
+
+  /* Font selector */
+  .font-opt {
+    width: 100%; display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px;
+    background: var(--white); cursor: pointer; text-align: left;
+    font-family: inherit; margin-bottom: 4px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .font-opt:hover { border-color: var(--gold); }
+  .font-opt.active { border-color: var(--navy); background: var(--warm-gray); }
+  body.dark .font-opt { background: #1e2535; border-color: var(--border); }
+  body.dark .font-opt.active { background: #2a3349; border-color: var(--gold-light); }
+  body.dark .font-opt:hover { border-color: var(--gold); }
+  .font-opt-preview { font-size: 1.25rem; direction: rtl; min-width: 52px;
+    flex-shrink: 0; text-align: right; line-height: 1; }
+  .font-opt-info { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+  .font-opt-label { font-weight: 600; font-size: 0.78rem; }
+  .font-opt-attr { font-size: 0.64rem; color: var(--muted); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; }
 </style>
 </head>
 <body>
@@ -262,6 +283,15 @@ footer a{color:var(--gold);text-decoration:none;}
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Advanced</div>
       <div class="panel-body" style="display:flex;flex-direction:column;gap:0;">
 
+
+        <!-- Font Selector -->
+        <div class="adv-section">
+          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Hebrew Font</div>
+          <div class="adv-section-body">
+            <div class="font-selector-grid"></div>
+          </div>
+        </div>
+
         <!-- Copy Options -->
         <div class="adv-section">
           <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Copy Options</div>
@@ -283,7 +313,7 @@ footer a{color:var(--gold);text-decoration:none;}
                 <button class="pos-all-btn" style="flex:1;font-size:0.65rem;" onclick="selectAllOnPage()">Select page</button>
                 <button class="pos-all-btn" style="flex:1;font-size:0.65rem;" onclick="selectAllMatching()">Select all matching</button>
               </div>
-              <textarea id="bulkTextarea" readonly rows="6" style="width:100%;font-size:0.75rem;font-family:'Frank Ruhl Libre',serif;direction:rtl;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;"></textarea>
+              <textarea id="bulkTextarea" readonly rows="6" style="width:100%;font-size:0.75rem;font-family:var(--heb-font);direction:rtl;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;"></textarea>
               <button class="pos-all-btn" style="width:100%;margin-top:5px;" onclick="copyBulkText()">Copy All</button>
             </div>
           </div>
@@ -625,7 +655,7 @@ function initVowelFilter() {
       chip.innerHTML = `
         <input type="checkbox" data-u="${v.u}">
         <span style="display:flex;align-items:center;gap:6px;">
-          <span style="font-family:'Frank Ruhl Libre',serif;font-size:1.4rem;direction:rtl;min-width:24px;text-align:center;">${v.ex}</span>
+          <span style="font-family:var(--heb-font);font-size:1.4rem;direction:rtl;min-width:24px;text-align:center;">${v.ex}</span>
           <span><strong>${v.label}</strong><br><span style="color:var(--muted);font-size:0.72rem">${v.sub}</span></span>
         </span>`;
       const cb = chip.querySelector('input');
@@ -905,9 +935,105 @@ function toggleDark() {
   refreshDictVowelGroupColors();
 }
 
+// ══════════════════════════════════════════════
+//  HEBREW FONT SELECTOR
+// ══════════════════════════════════════════════
+const HEB_FONTS = [
+  {
+    name: 'Frank Ruhl Libre',
+    stack: "'Frank Ruhl Libre', serif",
+    attr: 'Yanek Iontef — OFL',
+    load: null
+  },
+  {
+    name: 'Noto Serif Hebrew',
+    stack: "'Noto Serif Hebrew', serif",
+    attr: 'Google / Noto Team — OFL',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@400;700&display=swap' }
+  },
+  {
+    name: 'Noto Sans Hebrew',
+    stack: "'Noto Sans Hebrew', sans-serif",
+    attr: 'Google / Noto Team — OFL',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700&display=swap' }
+  },
+  {
+    name: 'Alef',
+    stack: "'Alef', sans-serif",
+    attr: 'HaGilda & Mushon Zer-Aviv — OFL',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap' }
+  },
+  {
+    name: 'Ezra SIL',
+    stack: "'Ezra SIL', serif",
+    attr: 'SIL International — OFL',
+    load: { type: 'face', css: "@font-face{font-family:'Ezra SIL';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/SIL%20(OFL)/Ezra%20SIL/SILEOT.ttf') format('truetype');font-weight:normal;font-style:normal;}" }
+  },
+  {
+    name: 'Shlomo',
+    stack: "'Shlomo', serif",
+    attr: 'Shlomo Orbach — OFL',
+    load: { type: 'face', css: "@font-face{font-family:'Shlomo';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20(OFL)/Shlomo/Shlomo.ttf') format('truetype');font-weight:normal;font-style:normal;}" }
+  },
+  {
+    name: 'Dyslexia Hebrew',
+    stack: "'DyslexiaHebrew', sans-serif",
+    attr: 'Jake Shoag — OFL',
+    load: { type: 'face', css: "@font-face{font-family:'DyslexiaHebrew';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Shoag%2C%20Jake%20(OFL)/DyslexiaHebrew-Regular.otf') format('opentype');font-weight:normal;font-style:normal;}" }
+  },
+];
+
+function loadHebFont(font) {
+  if (!font.load) return;
+  const id = 'font-' + font.name.replace(/\s+/g, '-');
+  if (document.getElementById(id)) return;
+  if (font.load.type === 'gfonts') {
+    const link = document.createElement('link');
+    link.id = id; link.rel = 'stylesheet'; link.href = font.load.url;
+    document.head.appendChild(link);
+  } else if (font.load.type === 'face') {
+    const style = document.createElement('style');
+    style.id = id; style.textContent = font.load.css;
+    document.head.appendChild(style);
+  }
+}
+
+function setHebFont(name, save = true) {
+  const font = HEB_FONTS.find(f => f.name === name);
+  if (!font) return;
+  loadHebFont(font);
+  document.documentElement.style.setProperty('--heb-font', font.stack);
+  if (save) try { localStorage.setItem('hebrewBlender_hebFont', name); } catch(e) {}
+  document.querySelectorAll('.font-opt').forEach(el =>
+    el.classList.toggle('active', el.dataset.font === name));
+}
+
+function initFontSelector() {
+  const saved = localStorage.getItem('hebrewBlender_hebFont');
+  const active = saved || 'Frank Ruhl Libre';
+  if (saved) setHebFont(saved, false);
+
+  document.querySelectorAll('.font-selector-grid').forEach(grid => {
+    HEB_FONTS.forEach(font => {
+      const btn = document.createElement('button');
+      btn.className = 'font-opt' + (font.name === active ? ' active' : '');
+      btn.dataset.font = font.name;
+      btn.innerHTML =
+        '<span class="font-opt-preview" style="font-family:' + font.stack + ';">אֶרֶץ</span>' +
+        '<span class="font-opt-info">' +
+          '<span class="font-opt-label">' + font.name + '</span>' +
+          '<span class="font-opt-attr">' + font.attr + '</span>' +
+        '</span>';
+      btn.onclick = () => setHebFont(font.name);
+      grid.appendChild(btn);
+    });
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initVowelFilter();
   initPosFilters();
+  initFontSelector();
   try {
     if (localStorage.getItem('hebrewBlender_darkMode') === '1') {
       document.body.classList.add('dark');

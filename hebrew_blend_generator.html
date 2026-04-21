@@ -34,6 +34,7 @@
     --border: #c8bfa8;
     --white: #ffffff;
     --bingo-heb-size: 2.2rem;
+    --heb-font: var(--heb-font);
   }
 
   /* Applied instantly in <head> before first paint to prevent dark mode flash */
@@ -310,7 +311,7 @@
   }
   .letter-tile:hover { border-color: var(--gold); }
   .letter-tile.selected { background: var(--navy); border-color: var(--navy); color: var(--white); }
-  .letter-tile .heb { font-size: 1.2rem; font-family: 'Frank Ruhl Libre', serif; direction: rtl; }
+  .letter-tile .heb { font-size: 1.2rem; font-family: var(--heb-font); direction: rtl; }
   .letter-tile .name { font-size: 0.55rem; text-align: center; line-height: 1.2; opacity: 0.75; direction: ltr; }
   .rw-letter-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3px; direction: rtl; }
   .rw-letter-tile {
@@ -320,7 +321,7 @@
   }
   .rw-letter-tile:hover { border-color: var(--gold); }
   .rw-letter-tile.selected { background: var(--navy); border-color: var(--navy); color: var(--white); }
-  .rw-letter-tile .heb { font-size: 1rem; font-family: 'Frank Ruhl Libre', serif; direction: rtl; }
+  .rw-letter-tile .heb { font-size: 1rem; font-family: var(--heb-font); direction: rtl; }
   .rw-letter-tile .name { font-size: 0.45rem; text-align: center; line-height: 1.2; opacity: 0.75; direction: ltr; }
 
   /* Action buttons */
@@ -450,7 +451,7 @@
   }
   .blend-hebrew {
     font-size: 2rem;
-    font-family: 'Frank Ruhl Libre', serif;
+    font-family: var(--heb-font);
     direction: rtl;
     line-height: 1.4;
     color: var(--navy);
@@ -496,7 +497,7 @@
     align-items: center;
     justify-content: center;
     font-size: 1.1rem;
-    font-family: 'Frank Ruhl Libre', serif;
+    font-family: var(--heb-font);
   }
   .blend-write-box.answer-shown {
     border-color: var(--gold);
@@ -795,7 +796,7 @@
     background: var(--white);
   }
   .rw-heb {
-    font-family: 'Frank Ruhl Libre', serif;
+    font-family: var(--heb-font);
     font-size: 2rem;
     direction: rtl;
     color: var(--navy);
@@ -972,7 +973,7 @@
     overflow: hidden;
     background: var(--white);
   }
-  .rw-heb { font-family: 'Frank Ruhl Libre', serif; font-size: 2rem; direction: rtl; color: var(--text); line-height: 1.2; }
+  .rw-heb { font-family: var(--heb-font); font-size: 2rem; direction: rtl; color: var(--text); line-height: 1.2; }
   .rw-translit { font-size: 0.72rem; color: var(--muted); font-style: italic; }
   .rw-translation { font-size: 0.75rem; color: var(--gold); font-weight: 600; }
   .rw-pos-tag { position: absolute; top: 4px; right: 6px; font-size: 0.58rem; color: var(--muted); text-transform: uppercase; }
@@ -1069,7 +1070,7 @@
   .bingo-cell.last-col { border-right: none; }
   .bingo-cell.last-row { border-bottom: none; }
   .bingo-card.two-up .bingo-cell { min-height: 60px; }
-  .bingo-cell .heb { font-family: 'Frank Ruhl Libre', serif; font-size: var(--bingo-heb-size); direction: rtl; line-height: 1.2; color: #1a2744; }
+  .bingo-cell .heb { font-family: var(--heb-font); font-size: var(--bingo-heb-size); direction: rtl; line-height: 1.2; color: #1a2744; }
   .bingo-card.two-up .bingo-cell .heb { font-size: calc(var(--bingo-heb-size) * 0.8); }
   .bingo-cell .sound { font-size: 0.6rem; color: #6b6050; font-style: italic; margin-top: 1px; }
   .bingo-card-num {
@@ -1160,7 +1161,7 @@
     cursor: pointer;
   }
   .caller-item .num { font-size: 0.6rem; color: #6b6050; }
-  .caller-item .heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.3rem; direction: rtl; color: #1a2744; }
+  .caller-item .heb { font-family: var(--heb-font); font-size: 1.3rem; direction: rtl; color: #1a2744; }
   .caller-item .sound { font-size: 0.65rem; color: #6b6050; font-style: italic; }
   .caller-item.called { background: #e8e0d0; }
 
@@ -1216,7 +1217,7 @@
   }
   .flip-card-front {
     background: var(--white);
-    font-family: 'Frank Ruhl Libre', serif;
+    font-family: var(--heb-font);
     font-size: 2rem;
     color: var(--navy);
   }
@@ -1364,6 +1365,26 @@
       page-break-before: always;
     }
   }
+
+  /* Font selector */
+  .font-opt {
+    width: 100%; display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px;
+    background: var(--white); cursor: pointer; text-align: left;
+    font-family: inherit; margin-bottom: 4px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .font-opt:hover { border-color: var(--gold); }
+  .font-opt.active { border-color: var(--navy); background: var(--warm-gray); }
+  body.dark .font-opt { background: #1e2535; border-color: var(--border); }
+  body.dark .font-opt.active { background: #2a3349; border-color: var(--gold-light); }
+  body.dark .font-opt:hover { border-color: var(--gold); }
+  .font-opt-preview { font-size: 1.25rem; direction: rtl; min-width: 52px;
+    flex-shrink: 0; text-align: right; line-height: 1; }
+  .font-opt-info { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+  .font-opt-label { font-weight: 600; font-size: 0.78rem; }
+  .font-opt-attr { font-size: 0.64rem; color: var(--muted); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; }
 </style>
 </head>
 <body>
@@ -1939,7 +1960,7 @@
           <div class="option-label">Header Labels</div>
           <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:5px;overflow:hidden;font-size:0.78rem;">
             <button id="headerLangEn" onclick="setHeaderLang('en')" style="padding:4px 10px;border:none;cursor:pointer;font-family:inherit;background:var(--navy);color:#fff;">English</button>
-            <button id="headerLangHe" onclick="setHeaderLang('he')" style="padding:4px 10px;border:none;cursor:pointer;font-family:'Frank Ruhl Libre',serif;background:var(--white);color:var(--text);">עברית</button>
+            <button id="headerLangHe" onclick="setHeaderLang('he')" style="padding:4px 10px;border:none;cursor:pointer;font-family:var(--heb-font);background:var(--white);color:var(--text);">עברית</button>
           </div>
         </div>
       </div>
@@ -2001,6 +2022,15 @@
       <div class="panel-body">
         <div class="adv-body">
 
+
+          <!-- Font Selector sub-panel -->
+          <div class="panel collapsed" style="border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:8px;">
+            <div class="panel-title" style="font-size:0.72rem;padding:6px 10px;">Hebrew Font</div>
+            <div class="panel-body">
+              <div class="font-selector-grid"></div>
+            </div>
+          </div>
+
           <!-- Backup Presets sub-panel -->
           <div class="panel collapsed" style="border:1px solid var(--border);border-radius:6px;overflow:hidden;">
             <div class="panel-title" style="font-size:0.72rem;padding:6px 10px;">Backup Presets</div>
@@ -2037,7 +2067,7 @@
             <div class="panel-body">
               <div class="adv-body-sm">
                 <div style="font-size:0.72rem;color:var(--muted);line-height:1.5;">In the <strong>Word Lookup</strong> dictionary, enable <strong>Bulk Copy Mode</strong> and set Copy Mode to <strong>All info</strong>. Select your words, copy, then paste below. Plain Hebrew (one per line) also works.</div>
-                <textarea id="cwImportTextarea" rows="7" placeholder="אָב — av — father — noun — Both&#10;אֵם — em — mother — noun — Both&#10;…" style="width:100%;font-size:0.75rem;font-family:'Frank Ruhl Libre',serif;direction:rtl;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;" oninput="updateCwImportCount()"></textarea>
+                <textarea id="cwImportTextarea" rows="7" placeholder="אָב — av — father — noun — Both&#10;אֵם — em — mother — noun — Both&#10;…" style="width:100%;font-size:0.75rem;font-family:var(--heb-font);direction:rtl;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;" oninput="updateCwImportCount()"></textarea>
                 <div id="cwImportCount" style="font-size:0.7rem;color:var(--muted);text-align:center;min-height:1em;"></div>
                 <div style="display:flex;gap:6px;">
                   <button class="btn-xs" style="flex:1;" onclick="importCustomWordlist()">⬇ Import</button>
@@ -2292,7 +2322,7 @@ function initVowels() {
         <input type="checkbox" ${selectedVowels.has(v.key) ? 'checked' : ''}
           onchange="toggleVowel('${v.key}', this.checked)">
         <span style="display:flex;align-items:center;gap:6px;">
-          <span style="font-family:'Frank Ruhl Libre',serif;font-size:1.4rem;direction:rtl;min-width:24px;text-align:center;">${v.nikud}</span>
+          <span style="font-family:var(--heb-font);font-size:1.4rem;direction:rtl;min-width:24px;text-align:center;">${v.nikud}</span>
           <span><strong>${v.label}</strong><br><span style="color:var(--muted);font-size:0.72rem">${v.sub}</span></span>
         </span>
       `;
@@ -2432,8 +2462,8 @@ function setHeaderLang(lang) {
 function wsMetaHTML() {
   if (headerLang === 'he') {
     return `<div style="display:grid;grid-template-columns:auto 1fr;column-gap:8px;row-gap:8px;align-items:center;font-size:0.82rem;color:var(--muted);direction:rtl;">
-      <span style="font-family:'Frank Ruhl Libre',serif;white-space:nowrap;">שֵׁם:</span><div class="ws-field-line"></div>
-      <span style="font-family:'Frank Ruhl Libre',serif;white-space:nowrap;">תַאֲרִיךְ:</span><div class="ws-field-line" style="width:80px"></div>
+      <span style="font-family:var(--heb-font);white-space:nowrap;">שֵׁם:</span><div class="ws-field-line"></div>
+      <span style="font-family:var(--heb-font);white-space:nowrap;">תַאֲרִיךְ:</span><div class="ws-field-line" style="width:80px"></div>
     </div>`;
   }
   return `<div class="ws-meta">
@@ -3868,13 +3898,13 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
         <div class="flip-card-inner">
           <div class="flip-card-front">
             <span class="flip-card-num">${idx + 1}</span>
-            <span style="direction:rtl;font-family:'Frank Ruhl Libre',serif;font-size:2rem;">${b.hebrewDisplay}</span>
+            <span style="direction:rtl;font-family:var(--heb-font);font-size:2rem;">${b.hebrewDisplay}</span>
             <div class="gematria-blank" style="margin-top:8px;"></div>
             <span class="flip-card-hint">tap to reveal</span>
           </div>
           <div class="flip-card-back">
             <span class="flip-card-num" style="color:var(--gold-light);">${idx + 1}</span>
-            <span style="direction:rtl;font-family:'Frank Ruhl Libre',serif;font-size:1.4rem;opacity:0.7;">${b.hebrewDisplay}</span>
+            <span style="direction:rtl;font-family:var(--heb-font);font-size:1.4rem;opacity:0.7;">${b.hebrewDisplay}</span>
             <span style="font-size:1.8rem;font-weight:700;color:var(--gold-light);margin-top:4px;">${val}</span>
           </div>
         </div>
@@ -4171,7 +4201,7 @@ function renderSelfCheck(ws, cols, title, subtitle) {
       <div class="flip-card-inner">
         <div class="flip-card-front">
           <span class="flip-card-num">${idx + 1}</span>
-          <span style="direction:rtl;font-family:'Frank Ruhl Libre',serif;font-size:2rem;">${b.hebrewDisplay}</span>
+          <span style="direction:rtl;font-family:var(--heb-font);font-size:2rem;">${b.hebrewDisplay}</span>
           <span class="flip-card-hint">tap to reveal</span>
         </div>
         <div class="flip-card-back">
@@ -4493,7 +4523,7 @@ function initCwBlendGrids() {
       const chip = document.createElement('label');
       chip.className = 'vowel-chip';
       chip.setAttribute('data-key', v.key);
-      chip.innerHTML = `<input type="checkbox" ${cwBlendVowels.has(v.key) ? 'checked' : ''} style="accent-color:var(--gold);"><span style="display:flex;align-items:center;gap:5px;"><span style="font-family:'Frank Ruhl Libre',serif;font-size:1.2rem;direction:rtl;min-width:22px;text-align:center;">${v.nikud}</span><span><strong style="font-size:0.72rem;">${v.label}</strong><br><span style="color:var(--muted);font-size:0.66rem;">${v.sub}</span></span></span>`;
+      chip.innerHTML = `<input type="checkbox" ${cwBlendVowels.has(v.key) ? 'checked' : ''} style="accent-color:var(--gold);"><span style="display:flex;align-items:center;gap:5px;"><span style="font-family:var(--heb-font);font-size:1.2rem;direction:rtl;min-width:22px;text-align:center;">${v.nikud}</span><span><strong style="font-size:0.72rem;">${v.label}</strong><br><span style="color:var(--muted);font-size:0.66rem;">${v.sub}</span></span></span>`;
       chip.querySelector('input').addEventListener('change', e => { e.target.checked ? cwBlendVowels.add(v.key) : cwBlendVowels.delete(v.key); });
       cwChipsWrap.appendChild(chip);
     });
@@ -5339,12 +5369,108 @@ function generateRealWordsBingo(pool) {
   enableButtons();
 }
 
+// ══════════════════════════════════════════════
+//  HEBREW FONT SELECTOR
+// ══════════════════════════════════════════════
+const HEB_FONTS = [
+  {
+    name: 'Frank Ruhl Libre',
+    stack: "'Frank Ruhl Libre', serif",
+    attr: 'Yanek Iontef — OFL',
+    load: null
+  },
+  {
+    name: 'Noto Serif Hebrew',
+    stack: "'Noto Serif Hebrew', serif",
+    attr: 'Google / Noto Team — OFL',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@400;700&display=swap' }
+  },
+  {
+    name: 'Noto Sans Hebrew',
+    stack: "'Noto Sans Hebrew', sans-serif",
+    attr: 'Google / Noto Team — OFL',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700&display=swap' }
+  },
+  {
+    name: 'Alef',
+    stack: "'Alef', sans-serif",
+    attr: 'HaGilda & Mushon Zer-Aviv — OFL',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap' }
+  },
+  {
+    name: 'Ezra SIL',
+    stack: "'Ezra SIL', serif",
+    attr: 'SIL International — OFL',
+    load: { type: 'face', css: "@font-face{font-family:'Ezra SIL';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/SIL%20(OFL)/Ezra%20SIL/SILEOT.ttf') format('truetype');font-weight:normal;font-style:normal;}" }
+  },
+  {
+    name: 'Shlomo',
+    stack: "'Shlomo', serif",
+    attr: 'Shlomo Orbach — OFL',
+    load: { type: 'face', css: "@font-face{font-family:'Shlomo';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20(OFL)/Shlomo/Shlomo.ttf') format('truetype');font-weight:normal;font-style:normal;}" }
+  },
+  {
+    name: 'Dyslexia Hebrew',
+    stack: "'DyslexiaHebrew', sans-serif",
+    attr: 'Jake Shoag — OFL',
+    load: { type: 'face', css: "@font-face{font-family:'DyslexiaHebrew';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Shoag%2C%20Jake%20(OFL)/DyslexiaHebrew-Regular.otf') format('opentype');font-weight:normal;font-style:normal;}" }
+  },
+];
+
+function loadHebFont(font) {
+  if (!font.load) return;
+  const id = 'font-' + font.name.replace(/\s+/g, '-');
+  if (document.getElementById(id)) return;
+  if (font.load.type === 'gfonts') {
+    const link = document.createElement('link');
+    link.id = id; link.rel = 'stylesheet'; link.href = font.load.url;
+    document.head.appendChild(link);
+  } else if (font.load.type === 'face') {
+    const style = document.createElement('style');
+    style.id = id; style.textContent = font.load.css;
+    document.head.appendChild(style);
+  }
+}
+
+function setHebFont(name, save = true) {
+  const font = HEB_FONTS.find(f => f.name === name);
+  if (!font) return;
+  loadHebFont(font);
+  document.documentElement.style.setProperty('--heb-font', font.stack);
+  if (save) try { localStorage.setItem('hebrewBlender_hebFont', name); } catch(e) {}
+  document.querySelectorAll('.font-opt').forEach(el =>
+    el.classList.toggle('active', el.dataset.font === name));
+}
+
+function initFontSelector() {
+  const saved = localStorage.getItem('hebrewBlender_hebFont');
+  const active = saved || 'Frank Ruhl Libre';
+  if (saved) setHebFont(saved, false);
+
+  document.querySelectorAll('.font-selector-grid').forEach(grid => {
+    HEB_FONTS.forEach(font => {
+      const btn = document.createElement('button');
+      btn.className = 'font-opt' + (font.name === active ? ' active' : '');
+      btn.dataset.font = font.name;
+      btn.innerHTML =
+        '<span class="font-opt-preview" style="font-family:' + font.stack + ';">אֶרֶץ</span>' +
+        '<span class="font-opt-info">' +
+          '<span class="font-opt-label">' + font.name + '</span>' +
+          '<span class="font-opt-attr">' + font.attr + '</span>' +
+        '</span>';
+      btn.onclick = () => setHebFont(font.name);
+      grid.appendChild(btn);
+    });
+  });
+}
+
 initVowels();
 initLetters();
 updateCombosCount();
 populateFocusDropdown();
 initPanelCollapse();
 initDarkMode();
+initFontSelector();
 initZoom();
 renderPresets();
 positionSidebarTab();
