@@ -21,7 +21,7 @@
   --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
   --era-bib-bg:#e8f0ff;--era-bib-text:#2a4080;
   --era-mod-bg:#e8f5e8;--era-mod-text:#1a5c1a;
-  --heb-font:var(--heb-font);
+  --heb-font:'Frank Ruhl Libre', serif;
 }
 html.dark-early body,body.dark {
   --navy:#1a2744;--gold:#e0a832;--gold-light:#f5d97a;--cream:#161c2a;
@@ -169,7 +169,11 @@ footer a{color:var(--gold);text-decoration:none;}
   .font-opt-info { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
   .font-opt-label { font-weight: 600; font-size: 0.78rem; }
   .font-opt-attr { font-size: 0.64rem; color: var(--muted); white-space: nowrap;
-    overflow: hidden; text-overflow: ellipsis; }
+    overflow: hidden; text-overflow: ellipsis; text-decoration: none; }
+  .font-opt-attr:hover { color: var(--gold); text-decoration: underline; }
+  .font-section-hdr { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--muted); margin: 8px 0 4px;
+    padding-bottom: 3px; border-bottom: 1px solid var(--border); }
 </style>
 </head>
 <body>
@@ -939,47 +943,71 @@ function toggleDark() {
 //  HEBREW FONT SELECTOR
 // ══════════════════════════════════════════════
 const HEB_FONTS = [
+  // ── Block Fonts ──────────────────────────────
   {
+    section: 'Block',
     name: 'Frank Ruhl Libre',
     stack: "'Frank Ruhl Libre', serif",
     attr: 'Yanek Iontef — OFL',
+    link: 'https://github.com/fontef/frankruhllibre',
     load: null
   },
   {
+    section: 'Block',
     name: 'Noto Serif Hebrew',
     stack: "'Noto Serif Hebrew', serif",
     attr: 'Google / Noto Team — OFL',
+    link: 'https://fonts.google.com/noto/specimen/Noto+Serif+Hebrew',
     load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@400;700&display=swap' }
   },
   {
+    section: 'Block',
     name: 'Noto Sans Hebrew',
     stack: "'Noto Sans Hebrew', sans-serif",
     attr: 'Google / Noto Team — OFL',
+    link: 'https://fonts.google.com/noto/specimen/Noto+Sans+Hebrew',
     load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700&display=swap' }
   },
   {
+    section: 'Block',
     name: 'Alef',
     stack: "'Alef', sans-serif",
     attr: 'HaGilda & Mushon Zer-Aviv — OFL',
+    link: 'https://alef.hagilda.com/',
     load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap' }
   },
   {
+    section: 'Block',
     name: 'Ezra SIL',
     stack: "'Ezra SIL', serif",
     attr: 'SIL International — OFL',
+    link: 'https://software.sil.org/ezra/',
     load: { type: 'face', css: "@font-face{font-family:'Ezra SIL';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/SIL%20(OFL)/Ezra%20SIL/SILEOT.ttf') format('truetype');font-weight:normal;font-style:normal;}" }
   },
   {
+    section: 'Block',
     name: 'Shlomo',
     stack: "'Shlomo', serif",
     attr: 'Shlomo Orbach — OFL',
+    link: 'https://github.com/aharonium/fonts',
     load: { type: 'face', css: "@font-face{font-family:'Shlomo';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20(OFL)/Shlomo/Shlomo.ttf') format('truetype');font-weight:normal;font-style:normal;}" }
   },
   {
+    section: 'Block',
     name: 'Dyslexia Hebrew',
     stack: "'DyslexiaHebrew', sans-serif",
     attr: 'Jake Shoag — OFL',
+    link: 'https://github.com/aharonium/fonts',
     load: { type: 'face', css: "@font-face{font-family:'DyslexiaHebrew';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Shoag%2C%20Jake%20(OFL)/DyslexiaHebrew-Regular.otf') format('opentype');font-weight:normal;font-style:normal;}" }
+  },
+  // ── Cursive / Script Fonts ───────────────────
+  {
+    section: 'Cursive',
+    name: 'Noto Rashi Hebrew',
+    stack: "'Noto Rashi Hebrew', serif",
+    attr: 'Google / Noto Team — OFL',
+    link: 'https://fonts.google.com/noto/specimen/Noto+Rashi+Hebrew',
+    load: { type: 'gfonts', url: 'https://fonts.googleapis.com/css2?family=Noto+Rashi+Hebrew:wght@400;700&display=swap' }
   },
 ];
 
@@ -1014,21 +1042,29 @@ function initFontSelector() {
   if (saved) setHebFont(saved, false);
 
   document.querySelectorAll('.font-selector-grid').forEach(grid => {
-    HEB_FONTS.forEach(font => {
-      const btn = document.createElement('button');
-      btn.className = 'font-opt' + (font.name === active ? ' active' : '');
-      btn.dataset.font = font.name;
-      btn.innerHTML =
-        '<span class="font-opt-preview" style="font-family:' + font.stack + ';">אֶרֶץ</span>' +
-        '<span class="font-opt-info">' +
-          '<span class="font-opt-label">' + font.name + '</span>' +
-          '<span class="font-opt-attr">' + font.attr + '</span>' +
-        '</span>';
-      btn.onclick = () => setHebFont(font.name);
-      grid.appendChild(btn);
+    const sections = [...new Set(HEB_FONTS.map(f => f.section))];
+    sections.forEach(sec => {
+      const hdr = document.createElement('div');
+      hdr.className = 'font-section-hdr';
+      hdr.textContent = sec === 'Cursive' ? 'Cursive / Script' : sec + ' Fonts';
+      grid.appendChild(hdr);
+      HEB_FONTS.filter(f => f.section === sec).forEach(font => {
+        const btn = document.createElement('button');
+        btn.className = 'font-opt' + (font.name === active ? ' active' : '');
+        btn.dataset.font = font.name;
+        btn.innerHTML =
+          '<span class="font-opt-preview" style="font-family:' + font.stack + ';">אֶרֶץ</span>' +
+          '<span class="font-opt-info">' +
+            '<span class="font-opt-label">' + font.name + '</span>' +
+            '<a class="font-opt-attr" href="' + font.link + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + font.attr + '</a>' +
+          '</span>';
+        btn.onclick = () => setHebFont(font.name);
+        grid.appendChild(btn);
+      });
     });
   });
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
   initVowelFilter();
