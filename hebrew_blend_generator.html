@@ -4138,12 +4138,36 @@ function renderWorksheet(animate = false) {
     grid.style.gridTemplateColumns = `repeat(${autoCols(blends.length)}, 1fr)`;
     grid.style.direction = 'rtl';
     sheet.appendChild(grid);
-    blends.forEach((b, idx) => renderHebrewCell(grid, b, idx, showAnswers));
+    blends.forEach((b, idx) => renderHebrewCell(grid, b, idx, false));
     const footer = document.createElement('div');
     footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
     footer.textContent = `${blends.length} items · Hebrew Blend Generator`;
     sheet.appendChild(footer);
     ws.appendChild(sheet);
+
+    if (showAnswers) {
+      const answerSheet = document.createElement('div');
+      answerSheet.className = 'sheet answer-key-sheet';
+      const akBanner = document.createElement('div');
+      akBanner.className = 'answer-key-banner';
+      akBanner.textContent = '✦ Answer Key ✦';
+      answerSheet.appendChild(akBanner);
+      const akHeader = document.createElement('div');
+      akHeader.className = 'ws-header';
+      akHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>`;
+      answerSheet.appendChild(akHeader);
+      const akGrid = document.createElement('div');
+      akGrid.className = 'blends-grid';
+      akGrid.style.gridTemplateColumns = `repeat(${autoCols(blends.length)}, 1fr)`;
+      akGrid.style.direction = 'rtl';
+      answerSheet.appendChild(akGrid);
+      blends.forEach((b, idx) => renderHebrewCell(akGrid, b, idx, true));
+      const akFooter = document.createElement('div');
+      akFooter.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+      akFooter.textContent = `${blends.length} items · Hebrew Blend Generator — Answer Key`;
+      answerSheet.appendChild(akFooter);
+      ws.appendChild(answerSheet);
+    }
     return;
   }
 
