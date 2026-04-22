@@ -48,8 +48,10 @@ header .hright{margin-left:auto;}
 .page-card .go-btn{margin-top:6px;background:var(--navy);color:var(--gold-light);border:none;border-radius:7px;padding:9px 28px;font-size:0.88rem;font-family:'Source Sans 3',sans-serif;font-weight:600;cursor:pointer;letter-spacing:0.02em;transition:background 0.15s;}
 .page-card:hover .go-btn{background:var(--gold);color:var(--navy);}
 
-footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
-footer a{color:var(--gold);text-decoration:none;}
+.bookmark-btn{margin-top:28px;display:flex;align-items:center;gap:7px;background:none;border:1px solid var(--border);border-radius:7px;padding:7px 18px;font-size:0.82rem;font-family:'Source Sans 3',sans-serif;color:var(--muted);cursor:pointer;transition:border-color 0.15s,color 0.15s;}
+.bookmark-btn:hover{border-color:var(--gold);color:var(--gold);}
+.bookmark-tip{margin-top:10px;font-size:0.78rem;color:var(--muted);text-align:center;opacity:0;transition:opacity 0.25s;pointer-events:none;}
+.bookmark-tip.show{opacity:1;}
 </style>
 </head>
 <body>
@@ -85,6 +87,9 @@ footer a{color:var(--gold);text-decoration:none;}
     </a>
 
   </div>
+
+  <button class="bookmark-btn" onclick="showBookmarkTip()">🔖 Bookmark this page</button>
+  <div class="bookmark-tip" id="bookmarkTip"></div>
 </div>
 
 <footer>
@@ -96,6 +101,18 @@ footer a{color:var(--gold);text-decoration:none;}
 </footer>
 
 <script>
+function showBookmarkTip() {
+  const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+  const isMobile = /Android|iPhone|iPad/.test(navigator.userAgent);
+  const tip = document.getElementById('bookmarkTip');
+  tip.textContent = isMobile
+    ? 'Tap the share/menu button in your browser and choose "Add to Home Screen" or "Add Bookmark".'
+    : `Press ${isMac ? '⌘' : 'Ctrl'}+D to bookmark this page.`;
+  tip.classList.add('show');
+  clearTimeout(tip._t);
+  tip._t = setTimeout(() => tip.classList.remove('show'), 4000);
+}
+
 function toggleDark() {
   const dark = document.body.classList.toggle('dark');
   document.documentElement.classList.remove('dark-early');
