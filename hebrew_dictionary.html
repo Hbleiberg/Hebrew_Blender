@@ -295,7 +295,7 @@ footer a{color:var(--gold);text-decoration:none;}
 
 
         <!-- Font Selector -->
-        <div class="adv-section">
+        <div class="adv-section collapsed">
           <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Hebrew Font</div>
           <div class="adv-section-body">
               <div class="font-size-row">
@@ -310,10 +310,10 @@ footer a{color:var(--gold);text-decoration:none;}
         </div>
 
         <!-- Copy Options -->
-        <div class="adv-section">
+        <div class="adv-section collapsed">
           <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Copy Options</div>
           <div class="adv-section-body">
-            <div style="font-size:0.72rem;font-weight:600;margin-bottom:6px;color:var(--text);">Copy Mode</div>
+            <div style="font-size:0.72rem;font-weight:600;margin-bottom:6px;color:var(--text);">Copy Mode <span class="tip-wrap" style="font-weight:400;text-transform:none;letter-spacing:normal;">?<span class="tip-box">Changes the format used when clicking the copy button on a word card.</span></span></div>
             <label class="cb-label"><input type="radio" name="copyMode" value="word" checked onchange="onCopyModeChange('word')" style="accent-color:var(--gold);"> Word</label>
             <label class="cb-label"><input type="radio" name="copyMode" value="definition" onchange="onCopyModeChange('definition')" style="accent-color:var(--gold);"> Word — Definition</label>
             <label class="cb-label"><input type="radio" name="copyMode" value="transdef" onchange="onCopyModeChange('transdef')" style="accent-color:var(--gold);"> Word — Transliteration — Definition</label>
@@ -337,7 +337,7 @@ footer a{color:var(--gold);text-decoration:none;}
         </div>
 
         <!-- Gematria Options -->
-        <div class="adv-section">
+        <div class="adv-section collapsed">
           <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Gematria Options</div>
           <div class="adv-section-body">
             <label class="cb-label"><input type="checkbox" id="showGematriaCb" style="accent-color:var(--gold);" onchange="onShowGematriaChange()"> Show Gematria Value</label>
