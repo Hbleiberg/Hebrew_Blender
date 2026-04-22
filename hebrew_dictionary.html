@@ -152,11 +152,12 @@ footer a{color:var(--gold);text-decoration:none;}
 }
 
   /* Font selector */
+  .font-selector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
   .font-opt {
-    width: 100%; display: flex; align-items: center; gap: 8px;
+    display: flex; align-items: center; gap: 8px;
     padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px;
     background: var(--white); cursor: pointer; text-align: left;
-    font-family: inherit; margin-bottom: 4px;
+    font-family: inherit;
     transition: border-color 0.15s, background 0.15s;
   }
   .font-opt:hover { border-color: var(--gold); }
@@ -173,7 +174,8 @@ footer a{color:var(--gold);text-decoration:none;}
   .font-opt-attr:hover { color: var(--gold); text-decoration: underline; }
   .font-section-hdr { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em;
     text-transform: uppercase; color: var(--muted); margin: 8px 0 4px;
-    padding-bottom: 3px; border-bottom: 1px solid var(--border); }
+    padding-bottom: 3px; border-bottom: 1px solid var(--border);
+    grid-column: 1 / -1; }
 </style>
 </head>
 <body>
@@ -1087,7 +1089,7 @@ function initFontSelector() {
         btn.innerHTML =
           '<span class="font-opt-preview" style="font-family:' + font.stack + ';">אֶרֶץ</span>' +
           '<span class="font-opt-info">' +
-            '<span class="font-opt-label">' + font.name + '</span>' +
+            '<span class="font-opt-label">' + font.name + (font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : '') + '</span>' +
             '<a class="font-opt-attr" href="' + font.link + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + font.attr + '</a>' +
           '</span>';
         btn.onclick = () => setHebFont(font.name);
