@@ -3211,8 +3211,14 @@ function generateBingoBlend(firstPool, secondPool, vowelKeys, excludeRepeats) {
   const secondObj = getLetter(second);
   const firstSound      = getSound(firstObj, vowel);
   const secondConsonant = secondObj.sounds['sh'].replace("'", '');
-  const combined        = firstSound + secondConsonant;
   const firstDisplay    = withNikud(firstObj, vowel, true);
+
+  // vcholam / shuruk add a visual Vav — don't append another consonant
+  if (vowel === 'vcholam' || vowel === 'shuruk') {
+    return { hebrewDisplay: firstDisplay, combined: firstSound, key: first + vowel };
+  }
+
+  const combined        = firstSound + secondConsonant;
   const secondDisplay   = SOFIT_CHARS.has(second) ? second : secondObj.base;
   const hebrewDisplay   = firstDisplay + secondDisplay;
   return { hebrewDisplay, combined, key: first + vowel + second };
@@ -3821,6 +3827,14 @@ function generate(animate = false) {
     const secondConsonant = secondObj.sounds['sh'].replace("'", '');
     const firstDisplay    = withNikud(firstObj, vowel, true);
     const secondDisplay   = SOFIT_CHARS.has(second) ? second : secondObj.base;
+
+    // vcholam / shuruk append a literal Vav to the first consonant.
+    // In 2-letter mode that Vav is the visual "second character" — adding
+    // another consonant would make the cell look like a 3-letter word.
+    if (!threeLetter && (vowel === 'vcholam' || vowel === 'shuruk')) {
+      blends.push({ hebrewDisplay: firstDisplay, combined: firstSound, key: first + vowel });
+      continue;
+    }
 
     if (threeLetter) {
       const vowel2   = vowelPos === 'both' ? vowelKeys[Math.floor(Math.random() * vowelKeys.length)] : null;
