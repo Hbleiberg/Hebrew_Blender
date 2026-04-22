@@ -1370,9 +1370,9 @@
   /* Font selector */
   .font-selector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
   .font-opt {
-    display: flex; align-items: center; gap: 8px;
-    padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px;
-    background: var(--white); cursor: pointer; text-align: left;
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    padding: 6px 4px 5px; border: 1px solid var(--border); border-radius: 6px;
+    background: var(--white); cursor: pointer;
     font-family: inherit;
     transition: border-color 0.15s, background 0.15s;
   }
@@ -1381,11 +1381,11 @@
   body.dark .font-opt { background: #1e2535; border-color: var(--border); }
   body.dark .font-opt.active { background: #2a3349; border-color: var(--gold-light); }
   body.dark .font-opt:hover { border-color: var(--gold); }
-  .font-opt-preview { font-size: 1.25rem; direction: rtl; min-width: 52px;
-    flex-shrink: 0; text-align: right; line-height: 1; }
-  .font-opt-info { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
-  .font-opt-label { font-weight: 600; font-size: 0.78rem; }
-  .font-opt-attr { font-size: 0.64rem; color: var(--muted); white-space: nowrap;
+  .font-opt-preview { font-size: 1.4rem; direction: rtl; line-height: 1.3; margin-bottom: 3px; }
+  .font-opt-info { display: flex; flex-direction: column; gap: 1px; width: 100%; }
+  .font-opt-label { font-weight: 600; font-size: 0.72rem; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; }
+  .font-opt-attr { font-size: 0.58rem; color: var(--muted); white-space: nowrap;
     overflow: hidden; text-overflow: ellipsis; text-decoration: none; }
   .font-opt-attr:hover { color: var(--gold); text-decoration: underline; }
   .font-section-hdr { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em;
