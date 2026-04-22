@@ -2613,6 +2613,20 @@ function getSettings() {
     rwBingoShared:     document.getElementById('rwBingoShared').checked,
     rwBingoCaller:     document.getElementById('rwBingoCaller').checked,
     rwBingoCallerTransl: document.getElementById('rwBingoCallerTransl').checked,
+    // Gematria
+    gematriaMode:      document.getElementById('gematriaToggle').checked,
+    gematriaSelfCheck: document.getElementById('gematriaSelfCheck').checked,
+    gematriaAnswerKey: document.getElementById('gematriaAnswerKey').checked,
+    // Custom Wordlist
+    cwShowTranslit:    document.getElementById('cwShowTranslit').checked,
+    cwShowTranslation: document.getElementById('cwShowTranslation').checked,
+    cwShowPos:         document.getElementById('cwShowPos').checked,
+    cwCount:           document.getElementById('cwCount').value,
+    cwMixed:           document.getElementById('cwMixed').checked,
+    cwStarReal:        document.getElementById('cwStarReal').checked,
+    cwBlendCount:      document.getElementById('cwBlendCount')?.value,
+    // Real Words extras
+    rwShowGematria:    document.getElementById('rwShowGematria').checked,
   };
 }
 
@@ -2710,6 +2724,23 @@ function applySettings(s) {
   if (s.rwBingoShared !== undefined)       document.getElementById('rwBingoShared').checked = s.rwBingoShared;
   if (s.rwBingoCaller !== undefined)       document.getElementById('rwBingoCaller').checked = s.rwBingoCaller;
   if (s.rwBingoCallerTransl !== undefined) document.getElementById('rwBingoCallerTransl').checked = s.rwBingoCallerTransl;
+
+  // Gematria
+  if (s.gematriaMode !== undefined) { document.getElementById('gematriaToggle').checked = s.gematriaMode; toggleGematriaMode(); }
+  if (s.gematriaSelfCheck !== undefined) document.getElementById('gematriaSelfCheck').checked = s.gematriaSelfCheck;
+  if (s.gematriaAnswerKey !== undefined) document.getElementById('gematriaAnswerKey').checked = s.gematriaAnswerKey;
+
+  // Custom Wordlist
+  if (s.cwShowTranslit !== undefined)    document.getElementById('cwShowTranslit').checked = s.cwShowTranslit;
+  if (s.cwShowTranslation !== undefined) document.getElementById('cwShowTranslation').checked = s.cwShowTranslation;
+  if (s.cwShowPos !== undefined)         document.getElementById('cwShowPos').checked = s.cwShowPos;
+  if (s.cwCount)                         document.getElementById('cwCount').value = s.cwCount;
+  if (s.cwMixed !== undefined)           { document.getElementById('cwMixed').checked = s.cwMixed; toggleCwBlendOpts(); }
+  if (s.cwStarReal !== undefined)        document.getElementById('cwStarReal').checked = s.cwStarReal;
+  if (s.cwBlendCount && document.getElementById('cwBlendCount')) document.getElementById('cwBlendCount').value = s.cwBlendCount;
+
+  // Real Words extras
+  if (s.rwShowGematria !== undefined) document.getElementById('rwShowGematria').checked = s.rwShowGematria;
 
   // Fire UI toggle functions after all values are set
   setBlendType(blendType);
@@ -3308,7 +3339,7 @@ function renderBingo(ws) {
 
   const VAV_VARIANTS = new Set(['וֹ','וּ']);
   const HAS_SOFIT    = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
-  let firstPool  = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h));
+  let firstPool  = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h) && !VAV_VARIANTS.has(h));
   let secondPool = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h) && h !== 'ו');
   let thirdPool  = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h));
 
@@ -3682,7 +3713,7 @@ function generate(animate = false) {
   const VAV_VARIANTS = new Set(['וֹ','וּ']);
   const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
 
-  let firstPool  = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h));
+  let firstPool  = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h) && !VAV_VARIANTS.has(h));
   let secondPool = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h));
 
   // In mixed Real Words mode, restrict blends to the same letter filter
