@@ -1993,6 +1993,10 @@
           <button class="btn-xs" onclick="selectAllLetters()">All</button>
           <button class="btn-xs" onclick="clearAllLetters()">None</button>
           <button class="btn-xs" onclick="selectNoSofit()">No Sofit</button>
+          <label class="btn-xs" style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none;">
+            <input type="checkbox" id="dageshTavToggle" onchange="setDageshTav(this.checked)" style="accent-color:var(--gold);width:13px;height:13px;">
+            Dagesh Tav / Sav
+          </label>
         </div>
         <div class="letter-grid" id="letterGrid"></div>
         <div id="combosCount" style="margin-top:8px;font-size:0.72rem;color:var(--muted);text-align:center;"></div>
@@ -2185,7 +2189,9 @@ const LETTERS = [
   { heb: 'ר', base: 'ר', name: 'Resh',   sofit: null, sounds: { a:'Rah',  e:'Reh',  i:'Ree',  o:'Roh',  u:'Roo',  sh:'R\'' } },
   { heb: 'ש', base: 'ש', name: 'Shin',   sofit: null, sounds: { a:'Shah', e:'Sheh', i:'Shee', o:'Shoh', u:'Shoo', sh:'Sh\'' } },
   { heb: 'שׂ', base: 'שׂ', name: 'Sin',    sofit: null, sounds: { a:'Sah',  e:'Seh',  i:'See',  o:'Soh',  u:'Soo',  sh:'S\'' } },
-  { heb: 'ת', base: 'ת', name: 'Tav',    sofit: null, sounds: { a:'Tah',  e:'Teh',  i:'Tee',  o:'Toh',  u:'Too',  sh:'T\'' } },
+  { heb: 'ת', base: 'ת', name: 'Tav',    sofit: null, sounds: { a:'Tah',  e:'Teh',  i:'Tee',  o:'Toh',  u:'Too',  sh:'T\'' }, normalTav: true },
+  { heb: 'תּ', base: 'תּ', name: 'Tav',    sofit: null, sounds: { a:'Tah',  e:'Teh',  i:'Tee',  o:'Toh',  u:'Too',  sh:'T\'' }, dageshTav: true },
+  { heb: 'ת', base: 'ת', name: 'Sav',    sofit: null, sounds: { a:'Sah',  e:'Seh',  i:'See',  o:'Soh',  u:'Soo',  sh:'S\'' }, savVariant: true },
 ];
 
 // Sofit base chars for display (no vowel on sofit — it's always word-final)
@@ -2282,7 +2288,8 @@ const MAIN_VOWEL_KEYS = new Set(VOWELS.filter(v => v.isMain).map(v => v.key));
 // ══════════════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════════════
-let selectedLetters = new Set(LETTERS.map(l => l.heb));
+let dageshTavEnabled = false;
+let selectedLetters = new Set(LETTERS.filter(l => !l.dageshTav && !l.savVariant).map(l => l.heb));
 let selectedVowels  = new Set(MAIN_VOWEL_KEYS);
 let blends = [];
 let lastShetefItems = null;
@@ -2343,8 +2350,10 @@ function initLetters() {
   const grid = document.getElementById('letterGrid');
 
   LETTERS.forEach(l => {
-    // Skip vav variants — they render inside the Vav tile
     if (l.vavVariant) return;
+    if (l.normalTav && dageshTavEnabled) return;
+    if (l.dageshTav && !dageshTavEnabled) return;
+    if (l.savVariant && !dageshTavEnabled) return;
 
     if (l.heb === 'ו') {
       const div = document.createElement('div');
@@ -2431,11 +2440,25 @@ function updateCombosCount() {
 }
 
 function selectAllLetters() {
+  const active = LETTERS.filter(l => dageshTavEnabled ? !l.normalTav : !l.dageshTav && !l.savVariant);
   selectedLetters = new Set([
-    ...LETTERS.map(l => l.heb),
+    ...active.map(l => l.heb),
     ...LETTERS.filter(l => l.sofit).map(l => l.sofit)
   ]);
   document.querySelectorAll('.letter-tile').forEach(t => t.classList.add('selected'));
+  updateCombosCount();
+}
+
+function setDageshTav(enabled) {
+  dageshTavEnabled = enabled;
+  if (enabled) {
+    if (selectedLetters.has('ת')) selectedLetters.add('תּ');
+  } else {
+    selectedLetters.delete('תּ');
+  }
+  const grid = document.getElementById('letterGrid');
+  grid.innerHTML = '';
+  initLetters();
   updateCombosCount();
 }
 
@@ -2492,6 +2515,7 @@ function getSettings() {
     // Letters & vowels
     selectedLetters: [...selectedLetters],
     selectedVowels:  [...selectedVowels],
+    dageshTav:       dageshTavEnabled,
     // Layout
     blendCount:    document.getElementById('blendCount').value,
     wsTitle:       document.getElementById('wsTitle').value,
@@ -2559,6 +2583,13 @@ function getSettings() {
 
 function applySettings(s) {
   // Letters
+  if (s.dageshTav !== undefined) {
+    dageshTavEnabled = s.dageshTav;
+    const el = document.getElementById('dageshTavToggle');
+    if (el) el.checked = s.dageshTav;
+    const grid = document.getElementById('letterGrid');
+    if (grid) { grid.innerHTML = ''; initLetters(); }
+  }
   selectedLetters = new Set(s.selectedLetters || []);
   selectedVowels  = new Set(s.selectedVowels  || []);
   document.querySelectorAll('.letter-tile').forEach(t => {
@@ -3561,10 +3592,12 @@ async function exportPDF() {
 }
 
 function getLetter(heb) {
-  if (SOFIT_CHARS.has(heb)) {
-    return LETTERS.find(l => l.sofit === heb);
+  if (SOFIT_CHARS.has(heb)) return LETTERS.find(l => l.sofit === heb);
+  if (dageshTavEnabled) {
+    const sav = LETTERS.find(l => l.heb === heb && l.savVariant);
+    if (sav) return sav;
   }
-  return LETTERS.find(l => l.heb === heb);
+  return LETTERS.find(l => l.heb === heb && !l.savVariant);
 }
 
 function getSound(letterObj, vowelKey) {
