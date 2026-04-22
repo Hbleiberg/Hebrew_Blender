@@ -395,7 +395,9 @@ const CONSONANTS = [
   {h:'פּ',n:'Pe'},{h:'פ',n:'Fe'},{h:'ף',n:'Fe sf'},
   {h:'צ',n:'Tzadi'},{h:'ץ',n:'Tzadi sf'},{h:'ק',n:'Kuf'},{h:'ר',n:'Resh'},
   {h:'שׁ',n:'Shin'},{h:'שׂ',n:'Sin'},{h:'ש',n:'Shin/Sin'},
-  {h:'ת',n:'Tav'},
+  {h:'ת', n:'Tav', normalTav:true},
+  {h:'תּ',n:'Tav', dageshTav:true},
+  {h:'ת', n:'Sav', savVariant:true},
 ];
 
 const POS_KNOWN = ['noun','proper noun','verb','adjective','adverb','pronoun','preposition','conjunction','root','interjection','numeral','particle','phrase','determiner','prepositional phrase','postposition','name','name element','article'];
@@ -578,6 +580,7 @@ let filtered = [];
 let shown = 0;
 const PAGE = 100;
 const posFilters = Array.from({length:6}, () => new Set());
+let dageshTavEnabled = false;
 
 fetch('hebrew_words.json?v=4')
   .then(r => r.json())
@@ -695,8 +698,31 @@ function refreshDictVowelGroupColors() {
   });
 }
 
+function buildPosFilterTiles(grid, i) {
+  grid.innerHTML = '';
+  CONSONANTS.forEach(c => {
+    if (c.normalTav && dageshTavEnabled) return;
+    if (c.dageshTav && !dageshTavEnabled) return;
+    if (c.savVariant && !dageshTavEnabled) return;
+    const t = document.createElement('div');
+    t.className = 'lpt' + (posFilters[i].has(c.h) ? ' selected' : '');
+    t.dataset.h = c.h;
+    t.innerHTML = `<span class="h">${c.h}</span><span class="n">${c.n}</span>`;
+    t.onclick = () => { posFilters[i].has(c.h) ? posFilters[i].delete(c.h) : posFilters[i].add(c.h); t.classList.toggle('selected'); updatePB(i); onFilter(); };
+    grid.appendChild(t);
+  });
+}
+
 function initPosFilters() {
   const body = document.getElementById('posFilterBody');
+  body.innerHTML = '';
+  const ctrlRow = document.createElement('div');
+  ctrlRow.style.cssText = 'margin-bottom:8px;';
+  ctrlRow.innerHTML = `<label style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none;font-size:0.78rem;">
+    <input type="checkbox" id="dageshTavToggle" ${dageshTavEnabled ? 'checked' : ''} onchange="setDictDageshTav(this.checked)" style="accent-color:var(--gold);width:13px;height:13px;">
+    Dagesh Tav / Sav
+  </label>`;
+  body.appendChild(ctrlRow);
   const labels = ['1st','2nd','3rd','4th','5th','6th'];
   labels.forEach((lbl, i) => {
     const sec = document.createElement('div');
@@ -714,16 +740,19 @@ function initPosFilters() {
         <div class="letter-pos-grid" id="pg${i}"></div>
       </div>`;
     body.appendChild(sec);
-    const grid = sec.querySelector(`#pg${i}`);
-    CONSONANTS.forEach(c => {
-      const t = document.createElement('div');
-      t.className = 'lpt';
-      t.dataset.h = c.h;
-      t.innerHTML = `<span class="h">${c.h}</span><span class="n">${c.n}</span>`;
-      t.onclick = () => { posFilters[i].has(c.h) ? posFilters[i].delete(c.h) : posFilters[i].add(c.h); t.classList.toggle('selected'); updatePB(i); onFilter(); };
-      grid.appendChild(t);
-    });
+    buildPosFilterTiles(sec.querySelector(`#pg${i}`), i);
   });
+}
+
+function setDictDageshTav(enabled) {
+  dageshTavEnabled = enabled;
+  posFilters.forEach(f => {
+    if (enabled) { if (f.has('ת')) f.add('תּ'); }
+    else { f.delete('תּ'); }
+  });
+  initPosFilters();
+  posFilters.forEach((f, i) => updatePB(i));
+  onFilter();
 }
 
 function togglePosSec(i) { document.querySelectorAll('.pos-sec')[i].classList.toggle('open'); }
