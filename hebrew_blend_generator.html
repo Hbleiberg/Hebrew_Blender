@@ -1820,10 +1820,14 @@
             <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Letter Filter</div>
             <div class="rw-section-body">
               <div style="font-size:0.68rem;color:var(--muted);margin-bottom:5px;">Only show words using these letters</div>
-              <div style="display:flex;gap:3px;margin-bottom:5px;">
+              <div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:5px;">
                 <button class="btn-xs" onclick="rwSelectAllLetters()">All</button>
                 <button class="btn-xs" onclick="rwSelectNoSofit()">No Sofit</button>
                 <button class="btn-xs" onclick="rwClearLetters()">None</button>
+                <label class="btn-xs" style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none;">
+                  <input type="checkbox" id="dageshTavToggle" onchange="setDageshTav(this.checked)" style="accent-color:var(--gold);width:13px;height:13px;">
+                  Dagesh Tav / Sav
+                </label>
               </div>
               <div id="rwLetterGrid" class="rw-letter-grid"></div>
               <div id="rwPoolInfo" style="margin-top:6px;font-size:0.7rem;color:var(--muted);text-align:center;"></div>
@@ -2451,14 +2455,45 @@ function selectAllLetters() {
 
 function setDageshTav(enabled) {
   dageshTavEnabled = enabled;
+  // Sync all checkboxes with the same id across any duplicated controls
+  document.querySelectorAll('#dageshTavToggle').forEach(el => el.checked = enabled);
+  // Main blend letter grid
   if (enabled) {
     if (selectedLetters.has('ת')) selectedLetters.add('תּ');
   } else {
     selectedLetters.delete('תּ');
   }
   const grid = document.getElementById('letterGrid');
-  grid.innerHTML = '';
-  initLetters();
+  if (grid) { grid.innerHTML = ''; initLetters(); }
+  // Real-word letter grid
+  const rwGrid = document.getElementById('rwLetterGrid');
+  if (rwGrid) {
+    if (enabled) { if (rwLetterFilter.has('ת')) rwLetterFilter.add('תּ'); }
+    else { rwLetterFilter.delete('תּ'); }
+    rwGrid.innerHTML = '';
+    initRwLetterGrid();
+  }
+  // cwBlend letter grid (only if rendered)
+  const cwGrid = document.getElementById('cwBlendLetterGrid');
+  if (cwGrid && cwGrid.children.length) {
+    if (enabled) { if (cwBlendLetters.has('ת')) cwBlendLetters.add('תּ'); }
+    else { cwBlendLetters.delete('תּ'); }
+    cwGrid.innerHTML = '';
+    const baseLets = LETTERS.filter(l =>
+      !l.sofit && l.heb !== 'וֹ' && l.heb !== 'וּ' &&
+      (dageshTavEnabled ? !l.normalTav : !l.dageshTav && !l.savVariant)
+    );
+    baseLets.forEach(l => {
+      const tile = document.createElement('div');
+      tile.className = 'rw-letter-tile' + (cwBlendLetters.has(l.heb) ? ' selected' : '');
+      tile.innerHTML = `<span class="heb">${l.heb}</span><span class="name">${l.name}</span>`;
+      tile.addEventListener('click', () => {
+        if (cwBlendLetters.has(l.heb)) { cwBlendLetters.delete(l.heb); tile.classList.remove('selected'); }
+        else { cwBlendLetters.add(l.heb); tile.classList.add('selected'); }
+      });
+      cwGrid.appendChild(tile);
+    });
+  }
   updateCombosCount();
 }
 
@@ -4526,7 +4561,7 @@ function setCwTranslPage(val) {
   document.querySelectorAll('[data-cw-transl]').forEach(b => b.classList.toggle('active', b.dataset.cwTransl === val));
 }
 
-let cwBlendLetters = new Set(LETTERS.filter(l => !l.sofit).map(l => l.heb));
+let cwBlendLetters = new Set(LETTERS.filter(l => !l.sofit && !l.dageshTav && !l.savVariant).map(l => l.heb));
 let cwBlendVowels  = new Set(MAIN_VOWEL_KEYS);
 
 function initCwBlendGrids() {
@@ -4572,7 +4607,10 @@ function initCwBlendGrids() {
   });
   // Letter grid — base letters only (no sofits, no vav variants)
   const lg = document.getElementById('cwBlendLetterGrid');
-  const baseLets = LETTERS.filter(l => !l.sofit && l.heb !== 'וֹ' && l.heb !== 'וּ');
+  const baseLets = LETTERS.filter(l =>
+    !l.sofit && l.heb !== 'וֹ' && l.heb !== 'וּ' &&
+    (dageshTavEnabled ? !l.normalTav : !l.dageshTav && !l.savVariant)
+  );
   baseLets.forEach(l => {
     const tile = document.createElement('div');
     tile.className = 'rw-letter-tile' + (cwBlendLetters.has(l.heb) ? ' selected' : '');
@@ -4591,7 +4629,10 @@ function setCwBlendVowels(on) {
 }
 
 function setCwBlendLetters(on) {
-  const baseLets = LETTERS.filter(l => !l.sofit && l.heb !== 'וֹ' && l.heb !== 'וּ');
+  const baseLets = LETTERS.filter(l =>
+    !l.sofit && l.heb !== 'וֹ' && l.heb !== 'וּ' &&
+    (dageshTavEnabled ? !l.normalTav : !l.dageshTav && !l.savVariant)
+  );
   cwBlendLetters = on ? new Set(baseLets.map(l => l.heb)) : new Set();
   document.querySelectorAll('#cwBlendLetterGrid .rw-letter-tile').forEach(t => t.classList.toggle('selected', on));
 }
@@ -4923,6 +4964,9 @@ function initRwLetterGrid() {
   if (!grid) return;
   LETTERS.forEach(l => {
     if (l.vavVariant) return;
+    if (l.normalTav && dageshTavEnabled) return;
+    if (l.dageshTav && !dageshTavEnabled) return;
+    if (l.savVariant && !dageshTavEnabled) return;
     const tiles = l.heb === 'ו'
       ? [{ heb: 'ו', name: 'Vav' }]
       : [{ heb: l.heb, name: l.name }];
@@ -4945,11 +4989,12 @@ function toggleRwLetter(heb, el) {
 }
 
 function rwSelectAllLetters() {
+  const active = LETTERS.filter(l => dageshTavEnabled ? !l.normalTav : !l.dageshTav && !l.savVariant);
   rwLetterFilter = new Set([
-    ...LETTERS.map(l => l.heb),
+    ...active.map(l => l.heb),
     ...LETTERS.filter(l => l.sofit).map(l => l.sofit)
   ]);
-  document.querySelectorAll('.rw-letter-tile').forEach(t => t.classList.add('selected'));
+  document.querySelectorAll('#rwLetterGrid .rw-letter-tile').forEach(t => t.classList.add('selected'));
   updateRwPoolInfo();
 }
 
@@ -4960,8 +5005,12 @@ function rwClearLetters() {
 }
 
 function rwSelectNoSofit() {
-  rwLetterFilter = new Set(LETTERS.filter(l => !l.vavVariant).map(l => l.heb));
-  document.querySelectorAll('.rw-letter-tile').forEach(t => {
+  const active = LETTERS.filter(l =>
+    !l.vavVariant &&
+    (dageshTavEnabled ? !l.normalTav : !l.dageshTav && !l.savVariant)
+  );
+  rwLetterFilter = new Set(active.map(l => l.heb));
+  document.querySelectorAll('#rwLetterGrid .rw-letter-tile').forEach(t => {
     const heb = t.dataset.heb;
     if (SOFIT_CHARS.has(heb)) t.classList.remove('selected');
     else t.classList.add('selected');
