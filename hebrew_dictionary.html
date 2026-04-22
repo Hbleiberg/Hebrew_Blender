@@ -22,6 +22,7 @@
   --era-bib-bg:#e8f0ff;--era-bib-text:#2a4080;
   --era-mod-bg:#e8f5e8;--era-mod-text:#1a5c1a;
   --heb-font:'Frank Ruhl Libre', serif;
+  --heb-font-size: 2rem;
 }
 html.dark-early body,body.dark {
   --navy:#1a2744;--gold:#e0a832;--gold-light:#f5d97a;--cream:#161c2a;
@@ -118,7 +119,7 @@ body.bulk-mode .word-card{cursor:pointer;}
 .wc-copy{left:7px;}
 .wc-search{left:30px;}
 .wc-copy:hover,.wc-copy.copied,.wc-search:hover{border-color:var(--gold);color:var(--gold);opacity:1;}
-.wc-heb{font-family:var(--heb-font);font-size:1.9rem;direction:rtl;text-align:right;line-height:1.2;}
+.wc-heb{font-family:var(--heb-font);font-size:var(--heb-font-size);direction:rtl;text-align:right;line-height:1.2;}
 .wc-translit{font-size:0.76rem;color:var(--muted);font-style:italic;text-align:right;}
 .wc-transl{font-size:0.8rem;line-height:1.35;margin-top:2px;}
 .wc-badges{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px;}
@@ -152,6 +153,12 @@ footer a{color:var(--gold);text-decoration:none;}
 }
 
   /* Font selector */
+  .font-size-row { display:flex; align-items:center; gap:6px; margin-bottom:8px; }
+  .font-size-row .fs-label { font-size:0.72rem; color:var(--muted); font-weight:600; white-space:nowrap; }
+  .font-size-row input[type=range] { flex:1; accent-color:var(--gold); cursor:pointer; height:4px; }
+  .font-size-row .fs-val { font-size:0.68rem; color:var(--muted); min-width:38px; text-align:right; font-variant-numeric:tabular-nums; }
+  .font-size-row .fs-reset { background:none; border:1px solid var(--border); border-radius:4px; padding:1px 6px; font-size:0.78rem; cursor:pointer; color:var(--muted); line-height:1.4; font-family:inherit; }
+  .font-size-row .fs-reset:hover { border-color:var(--gold); color:var(--gold); }
   .font-selector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
   .font-opt {
     display: flex; flex-direction: column; align-items: center; text-align: center;
@@ -293,6 +300,13 @@ footer a{color:var(--gold);text-decoration:none;}
         <div class="adv-section">
           <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Hebrew Font</div>
           <div class="adv-section-body">
+              <div class="font-size-row">
+                <span class="fs-label">Size</span>
+                <input type="range" id="hebFontSizeSlider" min="0" max="100" value="50" step="1"
+                       oninput="setHebFontSize(this.value)" ondblclick="resetHebFontSize()">
+                <span class="fs-val" id="hebFontSizeVal">2.00rem</span>
+                <button class="fs-reset" onclick="resetHebFontSize()" title="Reset to default">↺</button>
+              </div>
             <div class="font-selector-grid"></div>
           </div>
         </div>
@@ -1098,6 +1112,19 @@ function setHebFont(name, save = true) {
     el.classList.toggle('active', el.dataset.font === name));
 }
 
+function setHebFontSize(val) {
+  const size = (0.7 + Number(val) * 0.026).toFixed(2);
+  document.documentElement.style.setProperty('--heb-font-size', size + 'rem');
+  const el = document.getElementById('hebFontSizeVal');
+  if (el) el.textContent = size + 'rem';
+  try { localStorage.setItem('hebrewBlender_hebFontSize', val); } catch(e) {}
+}
+
+function resetHebFontSize() {
+  const sl = document.getElementById('hebFontSizeSlider');
+  if (sl) { sl.value = 50; setHebFontSize(50); }
+}
+
 function initFontSelector() {
   const saved = localStorage.getItem('hebrewBlender_hebFont');
   const active = saved || 'Frank Ruhl Libre';
@@ -1133,6 +1160,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initVowelFilter();
   initPosFilters();
   initFontSelector();
+  try {
+    const fv = localStorage.getItem('hebrewBlender_hebFontSize');
+    if (fv !== null) { const sl = document.getElementById('hebFontSizeSlider'); if (sl) { sl.value = fv; setHebFontSize(fv); } }
+  } catch(e) {}
   try {
     if (localStorage.getItem('hebrewBlender_darkMode') === '1') {
       document.body.classList.add('dark');
