@@ -1128,8 +1128,9 @@
   .bingo-page-break { border-top: 2px dashed #bbb; padding-top: 20px; margin-top: 8px; }
   @media print {
     .bingo-page.four-up {
-      gap: 32px 40px;
+      gap: 0;
       page-break-inside: avoid;
+      align-items: stretch;
     }
     .bingo-card.four-up .bingo-cell { min-height: 56px; }
   }
@@ -1170,10 +1171,10 @@
     .bingo-card { page-break-inside: avoid; }
     .bingo-page-break { page-break-before: always; border-top: none; padding-top: 0; margin-top: 0; }
     .bingo-page { padding: 0; margin: 0; }
-    .bingo-page.four-up { gap: 10px; padding: 0; }
+    .bingo-page.four-up { gap: 0; padding: 0; align-items: stretch; }
     .bingo-card.four-up { max-width: 100%; border-radius: 0; }
-    .bingo-page.two-up { flex-direction: row; gap: 10px; }
-    .bingo-card.two-up { max-width: calc(50% - 5px); flex: 1; border-radius: 0; }
+    .bingo-page.two-up { flex-direction: row; gap: 0; align-items: stretch; }
+    .bingo-card.two-up { max-width: 50%; width: 50%; flex: 1; border-radius: 0; }
   }
   body.dark .timer-bar,
   body.dark .score-bar { background: var(--warm-gray); }
