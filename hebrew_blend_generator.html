@@ -3982,22 +3982,28 @@ function generate(animate = false) {
     const firstObj  = getLetter(first);
     const secondObj = getLetter(second);
 
-    const firstSound      = getSound(firstObj, vowel);
+    let firstSound      = getSound(firstObj, vowel);
     const secondConsonant = secondObj.sounds['sh'].replace("'", '');
-    const firstDisplay    = withNikud(firstObj, vowel, true);
+    let firstDisplay    = withNikud(firstObj, vowel, true);
     const secondDisplay   = SOFIT_CHARS.has(second) ? second : secondObj.base;
 
-    // vcholam / shuruk append a literal Vav to the first consonant.
-    // That Vav counts as a visual character, so adding more consonants
-    // would make a 2-letter blend look 3-chars and a 3-letter blend look 4-chars.
-    // Always treat the result as a 1-consonant cell (consonant + Vav only).
+    // vcholam / shuruk: Vav is either the vowel marker (vavAsLetter=false) or the letter itself (vavAsLetter=true)
     if (vowel === 'vcholam' || vowel === 'shuruk') {
-      blends.push({ hebrewDisplay: firstDisplay, combined: firstSound, key: first + vowel });
-      continue;
+      if (!threeLetter) {
+        // 2-letter mode: push consonant+vav blend
+        blends.push({ hebrewDisplay: firstDisplay, combined: firstSound, key: first + vowel });
+        continue;
+      }
+      if (!vavAsLetter) continue; // 3-letter mode, vav-as-vowel would produce 4 visible chars — skip
+      // 3-letter mode, vavAsLetter=true: standalone וֹ/וּ acts as the first letter
+      firstDisplay = vowel === 'vcholam' ? 'וֹ' : 'וּ';
+      firstSound   = getSound(getLetter('ו'), vowel);
     }
 
     if (threeLetter) {
-      const vowel2   = vowelPos === 'both' ? vowelKeys[Math.floor(Math.random() * vowelKeys.length)] : null;
+      // When vavAsLetter=false, vcholam/shuruk on the second letter would also produce 4 chars — exclude them
+      const vowel2Keys = (!vavAsLetter) ? vowelKeys.filter(v => v !== 'vcholam' && v !== 'shuruk') : vowelKeys;
+      const vowel2   = vowelPos === 'both' ? (vowel2Keys.length > 0 ? vowel2Keys[Math.floor(Math.random() * vowel2Keys.length)] : null) : null;
       // Third pool: secondPool + sofits, no vav variants; override if lock3 active
       const VAV_VARIANTS = new Set(['וֹ','וּ']);
       const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
@@ -4027,8 +4033,13 @@ function generate(animate = false) {
 
       let midDisplay, midSound;
       if (vowelPos === 'both' && vowel2) {
-        midDisplay = withNikud(secondObj, vowel2, true);
-        midSound   = getSound(secondObj, vowel2);
+        if (vavAsLetter && (vowel2 === 'vcholam' || vowel2 === 'shuruk')) {
+          midDisplay = vowel2 === 'vcholam' ? 'וֹ' : 'וּ';
+          midSound   = getSound(getLetter('ו'), vowel2);
+        } else {
+          midDisplay = withNikud(secondObj, vowel2, true);
+          midSound   = getSound(secondObj, vowel2);
+        }
       } else if (vowelPos === 'second') {
         midDisplay = withNikud(secondObj, vowel, true);
         midSound   = getSound(secondObj, vowel);
