@@ -1998,7 +1998,7 @@
           <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;cursor:pointer;user-select:none;">
             <input type="checkbox" id="vavAsLetterCheck" onchange="setVavAsLetter(this.checked)" style="accent-color:var(--gold);width:13px;height:13px;">
             Count וֹ/וּ as a letter
-            <span class="tooltip-wrap" style="font-size:0.6rem;">?<span class="tooltip-box">When unchecked (default), vav-holam (וֹ) and shuruk (וּ) are skipped in one-letter mode so each cell stays one character. When checked, they display as two characters — the consonant followed by the Vav.</span></span>
+            <span class="tooltip-wrap" style="font-size:0.6rem;">?<span class="tooltip-box">When unchecked (default), vav-holam (וֹ) and shuruk (וּ) are skipped in one-letter mode to keep every cell to a single character. When checked, they appear on their own as וֹ and וּ — the Vav itself is the letter.</span></span>
           </label>
         </div>
       </div>
@@ -3168,8 +3168,16 @@ function generateOneLetter() {
       vowel = alt[Math.floor(Math.random() * alt.length)];
     }
 
-    const hebrewDisplay = withNikud(letterObj, vowel, true);
-    const combined = getSound(letterObj, vowel);
+    // When vavAsLetter is on, vcholam/shuruk appear as standalone וֹ/וּ (Vav is the letter)
+    let hebrewDisplay, combined;
+    if (vavAsLetter && vowel === 'vcholam') {
+      hebrewDisplay = 'וֹ'; combined = getSound(getLetter('ו'), vowel);
+    } else if (vavAsLetter && vowel === 'shuruk') {
+      hebrewDisplay = 'וּ'; combined = getSound(getLetter('ו'), vowel);
+    } else {
+      hebrewDisplay = withNikud(letterObj, vowel, true);
+      combined = getSound(letterObj, vowel);
+    }
     result.push({ hebrewDisplay, combined, vowel });
   }
   return result;
@@ -3292,8 +3300,15 @@ function generateBingoBlendOne(pool, vowelKeys) {
     vowel = alt[Math.floor(Math.random() * alt.length)];
   }
   const obj = getLetter(letter);
-  const display = withNikud(obj, vowel, true);
-  return { hebrewDisplay: display, combined: getSound(obj, vowel), key: letter + vowel };
+  let display, combined, key;
+  if (vavAsLetter && vowel === 'vcholam') {
+    display = 'וֹ'; combined = getSound(getLetter('ו'), vowel); key = 'ו' + vowel;
+  } else if (vavAsLetter && vowel === 'shuruk') {
+    display = 'וּ'; combined = getSound(getLetter('ו'), vowel); key = 'ו' + vowel;
+  } else {
+    display = withNikud(obj, vowel, true); combined = getSound(obj, vowel); key = letter + vowel;
+  }
+  return { hebrewDisplay: display, combined, key };
 }
 
 function generateBingoBlendThree(firstPool, secondPool, thirdPool, vowelKeys, vowelPos, excludeRepeats) {
