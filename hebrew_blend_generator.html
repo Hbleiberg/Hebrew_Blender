@@ -1486,55 +1486,6 @@
             <span class="slider"></span>
           </label>
         </div>
-        <div class="toggle-row" id="rowFocus">
-          <span>Lock Letters</span>
-          <label class="toggle">
-            <input type="checkbox" id="focusToggle" onchange="toggleFocusUI()">
-            <span class="slider"></span>
-          </label>
-        </div>
-        <div id="focusOptions" style="display:none;margin-top:6px;flex-direction:column;gap:8px;">
-          <label class="btn-xs" style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none;align-self:flex-start;">
-            <input type="checkbox" id="dageshTavToggle" onchange="setDageshTav(this.checked)" style="accent-color:var(--gold);width:13px;height:13px;">
-            Dagesh Tav / Sav
-          </label>
-          <div id="lockSection1">
-            <div class="lock-pos-header">
-              <input type="checkbox" id="lock1Active" style="accent-color:var(--gold);cursor:pointer;" onchange="toggleLockSection(1,this.checked);updateFocusYudWarning()">
-              <span class="pos-label">First Letter</span>
-              <div class="lock-btns" id="lockBtns1" style="display:none;">
-                <button class="btn-xs" onclick="lockSelectAll(1)">All</button>
-                <button class="btn-xs" onclick="lockClearAll(1)">None</button>
-              </div>
-            </div>
-            <div class="lock-letter-grid" id="lockGrid1" style="display:none;"></div>
-          </div>
-          <div id="lockSection2">
-            <div class="lock-pos-header">
-              <input type="checkbox" id="lock2Active" style="accent-color:var(--gold);cursor:pointer;" onchange="toggleLockSection(2,this.checked);updateFocusYudWarning()">
-              <span class="pos-label">Second Letter</span>
-              <div class="lock-btns" id="lockBtns2" style="display:none;">
-                <button class="btn-xs" onclick="lockSelectAll(2)">All</button>
-                <button class="btn-xs" onclick="lockClearAll(2)">None</button>
-              </div>
-            </div>
-            <div class="lock-letter-grid" id="lockGrid2" style="display:none;"></div>
-          </div>
-          <div id="lockSection3" style="display:none;">
-            <div class="lock-pos-header">
-              <input type="checkbox" id="lock3Active" style="accent-color:var(--gold);cursor:pointer;" onchange="toggleLockSection(3,this.checked);updateFocusYudWarning()">
-              <span class="pos-label">Third Letter</span>
-              <div class="lock-btns" id="lockBtns3" style="display:none;">
-                <button class="btn-xs" onclick="lockSelectAll(3)">All</button>
-                <button class="btn-xs" onclick="lockClearAll(3)">None</button>
-              </div>
-            </div>
-            <div class="lock-letter-grid" id="lockGrid3" style="display:none;"></div>
-          </div>
-          <div id="focusYudWarning" style="display:none;font-size:0.72rem;color:var(--gold);background:rgba(201,146,42,0.12);border-radius:4px;padding:4px 7px;">
-            ⚠ Yud + Yud blends will be skipped
-          </div>
-        </div>
         <div class="toggle-row" id="rowBingo" style="margin-top:4px;">
           <span>Bingo Mode
             <span class="tooltip-wrap">?
@@ -2023,6 +1974,73 @@
       </div>
     </div>
 
+    <!-- Letters -->
+    <div class="panel" id="panelLetters">
+      <div class="panel-title">Letters Included</div>
+      <div class="panel-body">
+        <div class="letter-controls">
+          <button class="btn-xs" onclick="selectAllLetters()">All</button>
+          <button class="btn-xs" onclick="clearAllLetters()">None</button>
+          <button class="btn-xs" onclick="selectNoSofit()">No Sofit</button>
+          <label class="btn-xs" style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none;">
+            <input type="checkbox" id="dageshTavToggle" onchange="setDageshTav(this.checked)" style="accent-color:var(--gold);width:13px;height:13px;">
+            Dagesh Tav / Sav
+          </label>
+        </div>
+        <div class="letter-grid" id="letterGrid"></div>
+        <!-- Lock Letters -->
+        <div style="margin-top:10px;border-top:1px solid var(--border);padding-top:8px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Lock Letters</span>
+            <label class="toggle" style="transform:scale(0.8);transform-origin:right center;">
+              <input type="checkbox" id="focusToggle" onchange="toggleFocusUI()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div id="focusOptions" style="display:none;margin-top:6px;flex-direction:column;gap:8px;">
+            <div id="lockSection1">
+              <div class="lock-pos-header">
+                <input type="checkbox" id="lock1Active" style="accent-color:var(--gold);cursor:pointer;" onchange="toggleLockSection(1,this.checked);updateFocusYudWarning()">
+                <span class="pos-label">First Letter</span>
+                <div class="lock-btns" id="lockBtns1" style="display:none;">
+                  <button class="btn-xs" onclick="lockSelectAll(1)">All</button>
+                  <button class="btn-xs" onclick="lockClearAll(1)">None</button>
+                </div>
+              </div>
+              <div class="lock-letter-grid" id="lockGrid1" style="display:none;"></div>
+            </div>
+            <div id="lockSection2">
+              <div class="lock-pos-header">
+                <input type="checkbox" id="lock2Active" style="accent-color:var(--gold);cursor:pointer;" onchange="toggleLockSection(2,this.checked);updateFocusYudWarning()">
+                <span class="pos-label">Second Letter</span>
+                <div class="lock-btns" id="lockBtns2" style="display:none;">
+                  <button class="btn-xs" onclick="lockSelectAll(2)">All</button>
+                  <button class="btn-xs" onclick="lockClearAll(2)">None</button>
+                </div>
+              </div>
+              <div class="lock-letter-grid" id="lockGrid2" style="display:none;"></div>
+            </div>
+            <div id="lockSection3" style="display:none;">
+              <div class="lock-pos-header">
+                <input type="checkbox" id="lock3Active" style="accent-color:var(--gold);cursor:pointer;" onchange="toggleLockSection(3,this.checked);updateFocusYudWarning()">
+                <span class="pos-label">Third Letter</span>
+                <div class="lock-btns" id="lockBtns3" style="display:none;">
+                  <button class="btn-xs" onclick="lockSelectAll(3)">All</button>
+                  <button class="btn-xs" onclick="lockClearAll(3)">None</button>
+                </div>
+              </div>
+              <div class="lock-letter-grid" id="lockGrid3" style="display:none;"></div>
+            </div>
+            <div id="lockSelectionWarning" style="display:none;font-size:0.72rem;color:var(--gold);background:rgba(201,146,42,0.12);border-radius:4px;padding:4px 7px;"></div>
+            <div id="focusYudWarning" style="display:none;font-size:0.72rem;color:var(--gold);background:rgba(201,146,42,0.12);border-radius:4px;padding:4px 7px;">
+              ⚠ Yud + Yud blends will be skipped
+            </div>
+          </div>
+        </div>
+        <div id="combosCount" style="margin-top:8px;font-size:0.72rem;color:var(--muted);text-align:center;"></div>
+      </div>
+    </div>
+
     <!-- Vowels -->
     <div class="panel" id="panelVowels">
       <div class="panel-title">Vowels Included</div>
@@ -2040,24 +2058,6 @@
             <span class="tooltip-wrap" style="font-size:0.6rem;">?<span class="tooltip-box">When unchecked (default), vav-holam (<span style="font-family:var(--heb-font);">וֹ</span>) and shuruk (<span style="font-family:var(--heb-font);">וּ</span>) appear alongside a consonant — the Vav is the vowel marker, not counted as a letter. When checked, they appear as standalone <span style="font-family:var(--heb-font);">וֹ</span> and <span style="font-family:var(--heb-font);">וּ</span> — the Vav itself is the letter.</span></span>
           </label>
         </div>
-      </div>
-    </div>
-
-    <!-- Letters -->
-    <div class="panel" id="panelLetters">
-      <div class="panel-title">Letters Included</div>
-      <div class="panel-body">
-        <div class="letter-controls">
-          <button class="btn-xs" onclick="selectAllLetters()">All</button>
-          <button class="btn-xs" onclick="clearAllLetters()">None</button>
-          <button class="btn-xs" onclick="selectNoSofit()">No Sofit</button>
-          <label class="btn-xs" style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none;">
-            <input type="checkbox" id="dageshTavToggle" onchange="setDageshTav(this.checked)" style="accent-color:var(--gold);width:13px;height:13px;">
-            Dagesh Tav / Sav
-          </label>
-        </div>
-        <div class="letter-grid" id="letterGrid"></div>
-        <div id="combosCount" style="margin-top:8px;font-size:0.72rem;color:var(--muted);text-align:center;"></div>
       </div>
     </div>
 
@@ -2508,11 +2508,17 @@ function updateCombosCount() {
   if (type === 'nikud') { el.textContent = ''; return; }
   const VAV_VARIANTS = new Set(['וֹ','וּ']);
   const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
-  const first  = [...selectedLetters].filter(h => !SOFIT_CHARS.has(h));
-  const second = [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h) && h !== 'ו');
-  const v = selectedVowels.size;
+  const focusOn = document.getElementById('focusToggle')?.checked;
+  const l1on = focusOn && document.getElementById('lock1Active')?.checked && lockLetters[0].size > 0;
+  const l2on = focusOn && document.getElementById('lock2Active')?.checked && lockLetters[1].size > 0;
+  const first  = l1on ? [...lockLetters[0]] : [...selectedLetters].filter(h => !SOFIT_CHARS.has(h));
+  const second = l2on ? [...lockLetters[1]] : [...selectedLetters].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h) && h !== 'ו');
+  // vcholam/shuruk bypass pos 2 when locked, so exclude them from vowel count then
+  const v = (l2on)
+    ? [...selectedVowels].filter(k => k !== 'vcholam' && k !== 'shuruk').length
+    : selectedVowels.size;
   let combos = 0;
-  if (type === 'one')   combos = first.length * v;
+  if (type === 'one')   combos = first.length * selectedVowels.size;
   else if (type === 'two')   combos = first.length * v * second.length;
   else if (type === 'three') combos = first.length * v * second.length * second.length;
   el.textContent = combos > 0 ? `${combos.toLocaleString('en-US')} possible combinations` : '';
@@ -3250,7 +3256,7 @@ function toggleBingoUI() {
   const on = document.getElementById('bingoToggle').checked;
   document.getElementById('bingoOptions').style.display = on ? 'flex' : 'none';
 
-  const hideRows = ['rowInverse','rowAnswerKey','rowFocus','rowThreeLetter','rowSelfCheck','rowGematria','rowOneLetter','rowNikudOnly','rowRealWords'];
+  const hideRows = ['rowInverse','rowAnswerKey','rowThreeLetter','rowSelfCheck','rowGematria','rowOneLetter','rowNikudOnly','rowRealWords'];
   hideRows.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = on ? 'none' : ''; });
   document.getElementById('panelLayout').style.display = on ? 'none' : '';
 
@@ -3636,6 +3642,7 @@ function toggleFocusUI() {
   const on = document.getElementById('focusToggle').checked;
   document.getElementById('focusOptions').style.display = on ? 'flex' : 'none';
   if (on) updateFocusYudWarning();
+  updateCombosCount();
 }
 
 function updateFocusYudWarning() {
@@ -3681,27 +3688,52 @@ function initLockGrids() {
 function toggleLockSection(pos, on) {
   document.getElementById(`lockGrid${pos}`).style.display = on ? '' : 'none';
   document.getElementById(`lockBtns${pos}`).style.display = on ? '' : 'none';
+  updateCombosCount();
 }
 
 function toggleLockLetter(pos, heb, el) {
   const set = lockLetters[pos - 1];
-  if (set.has(heb)) { set.delete(heb); el.classList.remove('selected'); }
-  else { set.add(heb); el.classList.add('selected'); }
+  if (set.has(heb)) {
+    set.delete(heb);
+    el.classList.remove('selected');
+  } else {
+    if (!selectedLetters.has(heb)) {
+      const warn = document.getElementById('lockSelectionWarning');
+      if (warn) {
+        warn.textContent = `⚠ ${heb} isn't in your Letters Included selection — add it there first.`;
+        warn.style.display = 'block';
+        clearTimeout(warn._t);
+        warn._t = setTimeout(() => { warn.style.display = 'none'; }, 3500);
+      }
+      return;
+    }
+    set.add(heb);
+    el.classList.add('selected');
+  }
   updateFocusYudWarning();
+  updateCombosCount();
 }
 
 function lockSelectAll(pos) {
   const grid = document.getElementById(`lockGrid${pos}`);
   if (!grid) return;
-  lockLetters[pos - 1] = new Set([...grid.querySelectorAll('.lock-letter-tile')].map(t => t.dataset.heb));
-  grid.querySelectorAll('.lock-letter-tile').forEach(t => t.classList.add('selected'));
+  lockLetters[pos - 1] = new Set(
+    [...grid.querySelectorAll('.lock-letter-tile')]
+      .map(t => t.dataset.heb)
+      .filter(h => selectedLetters.has(h))
+  );
+  grid.querySelectorAll('.lock-letter-tile').forEach(t =>
+    t.classList.toggle('selected', lockLetters[pos - 1].has(t.dataset.heb))
+  );
   updateFocusYudWarning();
+  updateCombosCount();
 }
 
 function lockClearAll(pos) {
   lockLetters[pos - 1] = new Set();
   document.querySelectorAll(`#lockGrid${pos} .lock-letter-tile`).forEach(t => t.classList.remove('selected'));
   updateFocusYudWarning();
+  updateCombosCount();
 }
 
 // ══════════════════════════════════════════════
@@ -4072,7 +4104,7 @@ function toggleGematriaMode() {
 
 const GEMATRIA_SELFCHECK_HIDE = [
   'panelVowels','panelLetters','panelLayout','panelAdvanced','blendTypeWrapper','modeDivider',
-  'rowInverse','rowAnswerKey','rowFocus','rowThreeLetter','rowSelfCheck',
+  'rowInverse','rowAnswerKey','rowThreeLetter','rowSelfCheck',
   'rowBingo','rowBlendCount','rowOneLetter','rowNikudOnly','rowRealWords',
 ];
 
@@ -4569,7 +4601,7 @@ document.getElementById('selfCheckToggle').addEventListener('change', () => {
     document.getElementById('realWordsToggle').checked = false; toggleRealWordsUI();
   }
   const hidePanels = ['panelLayout', 'panelVowels', 'panelLetters', 'panelPresets'];
-  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowBingo', 'rowGematria', 'rowRealWords'];
+  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowBingo', 'rowGematria', 'rowRealWords'];
   hidePanels.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   hideRows.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   ['blendTypeWrapper','modeDivider'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
@@ -4713,7 +4745,7 @@ function activateCustomWordlistMode(on) {
   cwModeActive = on;
   document.getElementById('customWordlistOptions').style.display = on ? 'flex' : 'none';
   const hidePanels = ['panelVowels', 'panelLetters'];
-  const hideRows = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowSelfCheck', 'rowBlendCount', 'rowBingo', 'rowRealWords'];
+  const hideRows = ['rowInverse', 'rowAnswerKey', 'rowSelfCheck', 'rowBlendCount', 'rowBingo', 'rowRealWords'];
   hidePanels.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   hideRows.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   ['blendTypeWrapper', 'modeDivider'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
@@ -5001,7 +5033,7 @@ function toggleRealWordsUI() {
   }
 
   const hidePanels = ['panelVowels', 'panelLetters'];
-  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowFocus', 'rowSelfCheck', 'rowBlendCount', 'rowBingo'];
+  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowSelfCheck', 'rowBlendCount', 'rowBingo'];
   hidePanels.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   hideRows.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
   ['blendTypeWrapper','modeDivider'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
