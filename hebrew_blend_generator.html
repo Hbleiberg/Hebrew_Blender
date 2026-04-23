@@ -1494,6 +1494,10 @@
           </label>
         </div>
         <div id="focusOptions" style="display:none;margin-top:6px;flex-direction:column;gap:8px;">
+          <label class="btn-xs" style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none;align-self:flex-start;">
+            <input type="checkbox" id="dageshTavToggle" onchange="setDageshTav(this.checked)" style="accent-color:var(--gold);width:13px;height:13px;">
+            Dagesh Tav / Sav
+          </label>
           <div id="lockSection1">
             <div class="lock-pos-header">
               <input type="checkbox" id="lock1Active" style="accent-color:var(--gold);cursor:pointer;" onchange="toggleLockSection(1,this.checked);updateFocusYudWarning()">
@@ -1505,7 +1509,7 @@
             </div>
             <div class="lock-letter-grid" id="lockGrid1" style="display:none;"></div>
           </div>
-          <div id="lockSection2" style="display:none;">
+          <div id="lockSection2">
             <div class="lock-pos-header">
               <input type="checkbox" id="lock2Active" style="accent-color:var(--gold);cursor:pointer;" onchange="toggleLockSection(2,this.checked);updateFocusYudWarning()">
               <span class="pos-label">Position 2</span>
@@ -2565,6 +2569,11 @@ function setDageshTav(enabled) {
       cwGrid.appendChild(tile);
     });
   }
+  // Lock letter grids
+  if (enabled) { [0,1,2].forEach(i => { if (lockLetters[i].has('ת')) lockLetters[i].add('תּ'); }); }
+  else { [0,1,2].forEach(i => lockLetters[i].delete('תּ')); }
+  initLockGrids();
+
   updateCombosCount();
 }
 
@@ -3640,10 +3649,13 @@ function updateFocusYudWarning() {
 function initLockGrids() {
   const VAV_VARIANTS = new Set(['וֹ','וּ']);
   const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
+  const base = l =>
+    !l.vavVariant &&
+    (dageshTavEnabled ? !l.normalTav : !l.dageshTav && !l.savVariant);
   const pools = [
-    LETTERS.filter(l => !SOFIT_CHARS.has(l.heb)),
-    LETTERS.filter(l => !SOFIT_CHARS.has(l.heb) && !HAS_SOFIT.has(l.heb) && !VAV_VARIANTS.has(l.heb)),
-    LETTERS.filter(l => !HAS_SOFIT.has(l.heb) && !VAV_VARIANTS.has(l.heb)),
+    LETTERS.filter(l => base(l) && !SOFIT_CHARS.has(l.heb) && !VAV_VARIANTS.has(l.heb)),
+    LETTERS.filter(l => base(l) && !SOFIT_CHARS.has(l.heb) && !HAS_SOFIT.has(l.heb) && !VAV_VARIANTS.has(l.heb)),
+    LETTERS.filter(l => base(l) && !HAS_SOFIT.has(l.heb) && !VAV_VARIANTS.has(l.heb)),
   ];
   const sofitEntries = LETTERS
     .filter(l => l.sofit)
@@ -5822,6 +5834,7 @@ initLetters();
 updateCombosCount();
 updateVavAsLetterVisibility();
 initLockGrids();
+setBlendType(document.querySelector('.blend-type-btn.active')?.dataset.type || 'two');
 initPanelCollapse();
 initDarkMode();
 initFontSelector();
