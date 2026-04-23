@@ -3138,7 +3138,16 @@ function generateOneLetter() {
       vowel = alt[Math.floor(Math.random() * alt.length)];
     }
 
-    const hebrewDisplay = withNikud(letterObj, vowel, true);
+    // Vav Holam / Shuruk add a literal Vav character (2 chars) on non-Vav letters.
+    // In 1-letter mode use the single-diacritic equivalent so each cell stays 1 character.
+    let hebrewDisplay;
+    if (vowel === 'vcholam' && letterObj.base !== 'ו') {
+      hebrewDisplay = letterObj.base + NIKUD['o'];
+    } else if (vowel === 'shuruk' && letterObj.base !== 'ו') {
+      hebrewDisplay = letterObj.base + NIKUD['u'];
+    } else {
+      hebrewDisplay = withNikud(letterObj, vowel, true);
+    }
     const combined = getSound(letterObj, vowel);
     result.push({ hebrewDisplay, combined, vowel });
   }
@@ -3257,7 +3266,15 @@ function generateBingoBlendOne(pool, vowelKeys) {
     vowel = alt[Math.floor(Math.random() * alt.length)];
   }
   const obj = getLetter(letter);
-  return { hebrewDisplay: withNikud(obj, vowel, true), combined: getSound(obj, vowel), key: letter + vowel };
+  let display;
+  if (vowel === 'vcholam' && obj.base !== 'ו') {
+    display = obj.base + NIKUD['o'];
+  } else if (vowel === 'shuruk' && obj.base !== 'ו') {
+    display = obj.base + NIKUD['u'];
+  } else {
+    display = withNikud(obj, vowel, true);
+  }
+  return { hebrewDisplay: display, combined: getSound(obj, vowel), key: letter + vowel };
 }
 
 function generateBingoBlendThree(firstPool, secondPool, thirdPool, vowelKeys, vowelPos, excludeRepeats) {
