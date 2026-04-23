@@ -1996,7 +1996,7 @@
         <div class="vowel-grid" id="vowelGrid"></div>
         <div id="vavAsLetterRow" style="display:none;margin-top:10px;border-top:1px solid var(--border);padding-top:8px;">
           <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;cursor:pointer;user-select:none;">
-            <input type="checkbox" id="vavAsLetterCheck" onchange="setVavAsLetter(this.checked)" style="accent-color:var(--gold);width:13px;height:13px;">
+            <input type="checkbox" id="vavAsLetterCheck" onchange="setVavAsLetter(this.checked)" checked style="accent-color:var(--gold);width:13px;height:13px;">
             Count <span style="font-family:var(--heb-font);direction:rtl;">וֹ/וּ</span> as a letter
             <span class="tooltip-wrap" style="font-size:0.6rem;">?<span class="tooltip-box">When unchecked (default), vav-holam (<span style="font-family:var(--heb-font);">וֹ</span>) and shuruk (<span style="font-family:var(--heb-font);">וּ</span>) appear alongside a consonant — the Vav is the vowel marker, not counted as a letter. When checked, they appear as standalone <span style="font-family:var(--heb-font);">וֹ</span> and <span style="font-family:var(--heb-font);">וּ</span> — the Vav itself is the letter.</span></span>
           </label>
@@ -2317,7 +2317,7 @@ const MAIN_VOWEL_KEYS = new Set(VOWELS.filter(v => v.isMain).map(v => v.key));
 let dageshTavEnabled = false;
 let selectedLetters = new Set(LETTERS.filter(l => !l.dageshTav && !l.savVariant).map(l => l.heb));
 let selectedVowels  = new Set(MAIN_VOWEL_KEYS);
-let vavAsLetter = false;
+let vavAsLetter = true;
 let blends = [];
 let lastShetefItems = null;
 
