@@ -1998,7 +1998,7 @@
           <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;cursor:pointer;user-select:none;">
             <input type="checkbox" id="vavAsLetterCheck" onchange="setVavAsLetter(this.checked)" style="accent-color:var(--gold);width:13px;height:13px;">
             Count <span style="font-family:var(--heb-font);direction:rtl;">וֹ/וּ</span> as a letter
-            <span class="tooltip-wrap" style="font-size:0.6rem;">?<span class="tooltip-box">When unchecked (default), vav-holam (<span style="font-family:var(--heb-font);">וֹ</span>) and shuruk (<span style="font-family:var(--heb-font);">וּ</span>) are skipped in one-letter mode to keep every cell to a single character. When checked, they appear on their own as <span style="font-family:var(--heb-font);">וֹ</span> and <span style="font-family:var(--heb-font);">וּ</span> — the Vav itself is the letter.</span></span>
+            <span class="tooltip-wrap" style="font-size:0.6rem;">?<span class="tooltip-box">When unchecked (default), vav-holam (<span style="font-family:var(--heb-font);">וֹ</span>) and shuruk (<span style="font-family:var(--heb-font);">וּ</span>) appear alongside a consonant — the Vav is the vowel marker, not counted as a letter. When checked, they appear as standalone <span style="font-family:var(--heb-font);">וֹ</span> and <span style="font-family:var(--heb-font);">וּ</span> — the Vav itself is the letter.</span></span>
           </label>
         </div>
       </div>
@@ -3135,12 +3135,7 @@ function toggleThreeLetterUI() { setBlendType('three'); }
 
 // ── ONE-LETTER GENERATION ──
 function generateOneLetter() {
-  const allVowelKeys = [...selectedVowels];
-  // vcholam/shuruk produce 2 chars (consonant + Vav). Skip them in 1-letter mode
-  // unless the user has explicitly opted in via the "Count וֹ/וּ as a letter" checkbox.
-  const vowelKeys = vavAsLetter
-    ? allVowelKeys
-    : allVowelKeys.filter(v => v !== 'vcholam' && v !== 'shuruk');
+  const vowelKeys = [...selectedVowels];
   if (vowelKeys.length === 0) return [];
   const VAV_VARIANTS = new Set(['וֹ','וּ']);
   const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
@@ -3168,7 +3163,8 @@ function generateOneLetter() {
       vowel = alt[Math.floor(Math.random() * alt.length)];
     }
 
-    // When vavAsLetter is on, vcholam/shuruk appear as standalone וֹ/וּ (Vav is the letter)
+    // When checked: vcholam/shuruk appear as standalone וֹ/וּ (Vav is the letter).
+    // When unchecked: appear normally with the selected consonant (Vav is just the vowel marker).
     let hebrewDisplay, combined;
     if (vavAsLetter && vowel === 'vcholam') {
       hebrewDisplay = 'וֹ'; combined = getSound(getLetter('ו'), vowel);
@@ -3282,20 +3278,16 @@ function generateBingoBlend(firstPool, secondPool, vowelKeys, excludeRepeats) {
 }
 
 function generateBingoBlendOne(pool, vowelKeys) {
-  // vcholam/shuruk produce 2 chars — skip unless user opted in
-  const effectiveKeys = vavAsLetter
-    ? vowelKeys
-    : vowelKeys.filter(v => v !== 'vcholam' && v !== 'shuruk');
-  if (effectiveKeys.length === 0) return null;
-  let vowel = effectiveKeys[Math.floor(Math.random() * effectiveKeys.length)];
+  if (vowelKeys.length === 0) return null;
+  let vowel = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
   let letter = pool[Math.floor(Math.random() * pool.length)];
   if ((letter === 'ו' || letter === 'וֹ' || letter === 'וּ') && vowel === 'sh') {
-    const alt = effectiveKeys.filter(v => v !== 'sh');
+    const alt = vowelKeys.filter(v => v !== 'sh');
     if (alt.length === 0) return null;
     vowel = alt[Math.floor(Math.random() * alt.length)];
   }
   if ((letter === 'שׂ' || letter === 'ש') && vowel === 'o') {
-    const alt = effectiveKeys.filter(v => v !== 'o');
+    const alt = vowelKeys.filter(v => v !== 'o');
     if (alt.length === 0) return null;
     vowel = alt[Math.floor(Math.random() * alt.length)];
   }
