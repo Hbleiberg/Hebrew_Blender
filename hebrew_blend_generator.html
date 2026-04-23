@@ -1496,36 +1496,36 @@
         <div id="focusOptions" style="display:none;margin-top:6px;flex-direction:column;gap:8px;">
           <div id="lockSection1">
             <div class="lock-pos-header">
-              <input type="checkbox" id="lock1Active" style="accent-color:var(--gold);cursor:pointer;" onchange="updateFocusYudWarning()">
+              <input type="checkbox" id="lock1Active" style="accent-color:var(--gold);cursor:pointer;" onchange="toggleLockSection(1,this.checked);updateFocusYudWarning()">
               <span class="pos-label">Position 1</span>
-              <div class="lock-btns">
+              <div class="lock-btns" id="lockBtns1" style="display:none;">
                 <button class="btn-xs" onclick="lockSelectAll(1)">All</button>
                 <button class="btn-xs" onclick="lockClearAll(1)">None</button>
               </div>
             </div>
-            <div class="lock-letter-grid" id="lockGrid1"></div>
+            <div class="lock-letter-grid" id="lockGrid1" style="display:none;"></div>
           </div>
           <div id="lockSection2" style="display:none;">
             <div class="lock-pos-header">
-              <input type="checkbox" id="lock2Active" style="accent-color:var(--gold);cursor:pointer;" onchange="updateFocusYudWarning()">
+              <input type="checkbox" id="lock2Active" style="accent-color:var(--gold);cursor:pointer;" onchange="toggleLockSection(2,this.checked);updateFocusYudWarning()">
               <span class="pos-label">Position 2</span>
-              <div class="lock-btns">
+              <div class="lock-btns" id="lockBtns2" style="display:none;">
                 <button class="btn-xs" onclick="lockSelectAll(2)">All</button>
                 <button class="btn-xs" onclick="lockClearAll(2)">None</button>
               </div>
             </div>
-            <div class="lock-letter-grid" id="lockGrid2"></div>
+            <div class="lock-letter-grid" id="lockGrid2" style="display:none;"></div>
           </div>
           <div id="lockSection3" style="display:none;">
             <div class="lock-pos-header">
-              <input type="checkbox" id="lock3Active" style="accent-color:var(--gold);cursor:pointer;" onchange="updateFocusYudWarning()">
+              <input type="checkbox" id="lock3Active" style="accent-color:var(--gold);cursor:pointer;" onchange="toggleLockSection(3,this.checked);updateFocusYudWarning()">
               <span class="pos-label">Position 3</span>
-              <div class="lock-btns">
+              <div class="lock-btns" id="lockBtns3" style="display:none;">
                 <button class="btn-xs" onclick="lockSelectAll(3)">All</button>
                 <button class="btn-xs" onclick="lockClearAll(3)">None</button>
               </div>
             </div>
-            <div class="lock-letter-grid" id="lockGrid3"></div>
+            <div class="lock-letter-grid" id="lockGrid3" style="display:none;"></div>
           </div>
           <div id="focusYudWarning" style="display:none;font-size:0.72rem;color:var(--gold);background:rgba(201,146,42,0.12);border-radius:4px;padding:4px 7px;">
             ⚠ Yud + Yud blends will be skipped
@@ -2749,11 +2749,11 @@ function applySettings(s) {
 
   // Focus letters
   if (s.focusOn !== undefined)   document.getElementById('focusToggle').checked = s.focusOn;
-  if (s.lock1Active !== undefined) document.getElementById('lock1Active').checked = s.lock1Active;
+  if (s.lock1Active !== undefined) { document.getElementById('lock1Active').checked = s.lock1Active; toggleLockSection(1, s.lock1Active); }
   if (s.lock1Letters) { lockLetters[0] = new Set(s.lock1Letters); document.querySelectorAll('#lockGrid1 .lock-letter-tile').forEach(t => t.classList.toggle('selected', lockLetters[0].has(t.dataset.heb))); }
-  if (s.lock2Active !== undefined) document.getElementById('lock2Active').checked = s.lock2Active;
+  if (s.lock2Active !== undefined) { document.getElementById('lock2Active').checked = s.lock2Active; toggleLockSection(2, s.lock2Active); }
   if (s.lock2Letters) { lockLetters[1] = new Set(s.lock2Letters); document.querySelectorAll('#lockGrid2 .lock-letter-tile').forEach(t => t.classList.toggle('selected', lockLetters[1].has(t.dataset.heb))); }
-  if (s.lock3Active !== undefined) document.getElementById('lock3Active').checked = s.lock3Active;
+  if (s.lock3Active !== undefined) { document.getElementById('lock3Active').checked = s.lock3Active; toggleLockSection(3, s.lock3Active); }
   if (s.lock3Letters) { lockLetters[2] = new Set(s.lock3Letters); document.querySelectorAll('#lockGrid3 .lock-letter-tile').forEach(t => t.classList.toggle('selected', lockLetters[2].has(t.dataset.heb))); }
   updateFocusYudWarning();
 
@@ -3664,6 +3664,11 @@ function initLockGrids() {
       grid.appendChild(div);
     });
   });
+}
+
+function toggleLockSection(pos, on) {
+  document.getElementById(`lockGrid${pos}`).style.display = on ? '' : 'none';
+  document.getElementById(`lockBtns${pos}`).style.display = on ? '' : 'none';
 }
 
 function toggleLockLetter(pos, heb, el) {
