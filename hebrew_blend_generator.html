@@ -1129,7 +1129,7 @@
   .bingo-page-break { border-top: 2px dashed #bbb; padding-top: 20px; margin-top: 8px; }
   @media print {
     .bingo-page.four-up {
-      gap: 0;
+      gap: 6px;
       page-break-inside: avoid;
       align-items: stretch;
     }
@@ -1172,7 +1172,7 @@
     .bingo-card { page-break-inside: avoid; }
     .bingo-page-break { page-break-before: always; border-top: none; padding-top: 0; margin-top: 0; }
     .bingo-page { padding: 0; margin: 0; }
-    .bingo-page.four-up { gap: 0; padding: 0; align-items: stretch; }
+    .bingo-page.four-up { gap: 6px; padding: 0; align-items: stretch; }
     .bingo-card.four-up { max-width: 100%; border-radius: 0; }
     .bingo-page.two-up { flex-direction: row; gap: 0; align-items: stretch; }
     .bingo-card.two-up { max-width: 50%; width: 50%; flex: 1; border-radius: 0; }
@@ -1994,6 +1994,13 @@
           <button class="btn-xs" onclick="setAllVowels(false)">None</button>
         </div>
         <div class="vowel-grid" id="vowelGrid"></div>
+        <div id="vavAsLetterRow" style="display:none;margin-top:10px;border-top:1px solid var(--border);padding-top:8px;">
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;cursor:pointer;user-select:none;">
+            <input type="checkbox" id="vavAsLetterCheck" onchange="setVavAsLetter(this.checked)" style="accent-color:var(--gold);width:13px;height:13px;">
+            Count וֹ/וּ as a letter
+            <span class="tooltip-wrap" style="font-size:0.6rem;">?<span class="tooltip-box">When unchecked (default), vav-holam (וֹ) and shuruk (וּ) are skipped in one-letter mode so each cell stays one character. When checked, they display as two characters — the consonant followed by the Vav.</span></span>
+          </label>
+        </div>
       </div>
     </div>
 
@@ -2310,6 +2317,7 @@ const MAIN_VOWEL_KEYS = new Set(VOWELS.filter(v => v.isMain).map(v => v.key));
 let dageshTavEnabled = false;
 let selectedLetters = new Set(LETTERS.filter(l => !l.dageshTav && !l.savVariant).map(l => l.heb));
 let selectedVowels  = new Set(MAIN_VOWEL_KEYS);
+let vavAsLetter = false;
 let blends = [];
 let lastShetefItems = null;
 
@@ -2419,6 +2427,7 @@ function toggleVowel(key, checked) {
   if (checked) selectedVowels.add(key);
   else selectedVowels.delete(key);
   updateCombosCount();
+  updateVavAsLetterVisibility();
 }
 
 function setAllVowels(checked) {
@@ -2427,6 +2436,7 @@ function setAllVowels(checked) {
   });
   document.querySelectorAll('#vowelGrid input[type="checkbox"]').forEach(cb => cb.checked = checked);
   updateCombosCount();
+  updateVavAsLetterVisibility();
 }
 
 function setMainVowels() {
@@ -2439,6 +2449,16 @@ function setMainVowels() {
     if (cb && v) cb.checked = v.isMain;
   });
   updateCombosCount();
+  updateVavAsLetterVisibility();
+}
+
+function setVavAsLetter(val) {
+  vavAsLetter = !!val;
+}
+
+function updateVavAsLetterVisibility() {
+  const row = document.getElementById('vavAsLetterRow');
+  if (row) row.style.display = (selectedVowels.has('vcholam') || selectedVowels.has('shuruk')) ? '' : 'none';
 }
 
 function updateCombosCount() {
@@ -2644,6 +2664,7 @@ function getSettings() {
     rwShowGematria:    document.getElementById('rwShowGematria').checked,
     // Font size
     hebFontSize:       document.getElementById('hebFontSizeSlider').value,
+    vavAsLetter,
   };
 }
 
@@ -2666,6 +2687,7 @@ function applySettings(s) {
     const cb  = chip.querySelector('input[type=checkbox]');
     if (cb) cb.checked = selectedVowels.has(key);
   });
+  updateVavAsLetterVisibility();
 
   // Layout
   if (s.blendCount)              document.getElementById('blendCount').value = s.blendCount;
@@ -2761,6 +2783,9 @@ function applySettings(s) {
 
   // Font size
   if (s.hebFontSize !== undefined) { const sl = document.getElementById('hebFontSizeSlider'); if (sl) { sl.value = s.hebFontSize; setHebFontSize(s.hebFontSize); } }
+
+  // Vav-as-letter
+  if (s.vavAsLetter !== undefined) { vavAsLetter = s.vavAsLetter; const cb = document.getElementById('vavAsLetterCheck'); if (cb) cb.checked = vavAsLetter; updateVavAsLetterVisibility(); }
 
   // Fire UI toggle functions after all values are set
   setBlendType(blendType);
@@ -3110,7 +3135,12 @@ function toggleThreeLetterUI() { setBlendType('three'); }
 
 // ── ONE-LETTER GENERATION ──
 function generateOneLetter() {
-  const vowelKeys = [...selectedVowels];
+  const allVowelKeys = [...selectedVowels];
+  // vcholam/shuruk produce 2 chars (consonant + Vav). Skip them in 1-letter mode
+  // unless the user has explicitly opted in via the "Count וֹ/וּ as a letter" checkbox.
+  const vowelKeys = vavAsLetter
+    ? allVowelKeys
+    : allVowelKeys.filter(v => v !== 'vcholam' && v !== 'shuruk');
   if (vowelKeys.length === 0) return [];
   const VAV_VARIANTS = new Set(['וֹ','וּ']);
   const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
@@ -3138,16 +3168,7 @@ function generateOneLetter() {
       vowel = alt[Math.floor(Math.random() * alt.length)];
     }
 
-    // Vav Holam / Shuruk add a literal Vav character (2 chars) on non-Vav letters.
-    // In 1-letter mode use the single-diacritic equivalent so each cell stays 1 character.
-    let hebrewDisplay;
-    if (vowel === 'vcholam' && letterObj.base !== 'ו') {
-      hebrewDisplay = letterObj.base + NIKUD['o'];
-    } else if (vowel === 'shuruk' && letterObj.base !== 'ו') {
-      hebrewDisplay = letterObj.base + NIKUD['u'];
-    } else {
-      hebrewDisplay = withNikud(letterObj, vowel, true);
-    }
+    const hebrewDisplay = withNikud(letterObj, vowel, true);
     const combined = getSound(letterObj, vowel);
     result.push({ hebrewDisplay, combined, vowel });
   }
@@ -3253,27 +3274,25 @@ function generateBingoBlend(firstPool, secondPool, vowelKeys, excludeRepeats) {
 }
 
 function generateBingoBlendOne(pool, vowelKeys) {
-  let vowel = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
+  // vcholam/shuruk produce 2 chars — skip unless user opted in
+  const effectiveKeys = vavAsLetter
+    ? vowelKeys
+    : vowelKeys.filter(v => v !== 'vcholam' && v !== 'shuruk');
+  if (effectiveKeys.length === 0) return null;
+  let vowel = effectiveKeys[Math.floor(Math.random() * effectiveKeys.length)];
   let letter = pool[Math.floor(Math.random() * pool.length)];
   if ((letter === 'ו' || letter === 'וֹ' || letter === 'וּ') && vowel === 'sh') {
-    const alt = vowelKeys.filter(v => v !== 'sh');
+    const alt = effectiveKeys.filter(v => v !== 'sh');
     if (alt.length === 0) return null;
     vowel = alt[Math.floor(Math.random() * alt.length)];
   }
   if ((letter === 'שׂ' || letter === 'ש') && vowel === 'o') {
-    const alt = vowelKeys.filter(v => v !== 'o');
+    const alt = effectiveKeys.filter(v => v !== 'o');
     if (alt.length === 0) return null;
     vowel = alt[Math.floor(Math.random() * alt.length)];
   }
   const obj = getLetter(letter);
-  let display;
-  if (vowel === 'vcholam' && obj.base !== 'ו') {
-    display = obj.base + NIKUD['o'];
-  } else if (vowel === 'shuruk' && obj.base !== 'ו') {
-    display = obj.base + NIKUD['u'];
-  } else {
-    display = withNikud(obj, vowel, true);
-  }
+  const display = withNikud(obj, vowel, true);
   return { hebrewDisplay: display, combined: getSound(obj, vowel), key: letter + vowel };
 }
 
