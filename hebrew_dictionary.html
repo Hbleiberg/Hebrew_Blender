@@ -1091,8 +1091,7 @@ function colorizeHebrew(text) {
     } else if (colorCodingMode === 'both') {
       out.push(`<span style="color:${color}">${syllable}</span>`);
     } else {
-      // Vowel mode: consonant stays default text color, marks inherit the vowel color
-      out.push(`<span style="color:${color}"><span style="color:var(--text)">${ch}</span>${nikudStr}</span>`);
+      out.push(`<span style="color:${color};opacity:0.55">${syllable}</span>`);
     }
     i = j;
   }
@@ -1122,11 +1121,9 @@ function applyColorExStyle(el, color) {
     el.textContent = example;
     el.style.color = color;
   } else {
-    // Vowel mode: consonant in default color, marks get the vowel color
-    const chars = [...example];
-    const consonant = chars[0] || '';
-    const marksStr = chars.slice(1).join('');
-    el.innerHTML = `<span style="color:${color}"><span style="color:var(--text)">${consonant}</span>${marksStr}</span>`;
+    el.textContent = example;
+    el.style.color = color;
+    el.style.opacity = '0.55';
   }
 }
 
@@ -1151,6 +1148,7 @@ function setColorMode(mode) {
   document.getElementById('colorModeVowel').classList.toggle('active', mode === 'vowel');
   document.getElementById('colorModeBoth').classList.toggle('active', mode === 'both');
   document.getElementById('colorStyleRow').style.display = (mode === 'both') ? 'flex' : 'none';
+  if (mode === 'vowel') { colorStyle = 'color'; document.getElementById('colorStyleLetter').classList.add('active'); document.getElementById('colorStyleHighlight').classList.remove('active'); }
   updateColorMobileNote();
   refreshColorExPreviews();
   if (colorCodingEnabled) rerender();
