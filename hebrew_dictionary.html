@@ -1091,7 +1091,8 @@ function colorizeHebrew(text) {
     } else if (colorCodingMode === 'both') {
       out.push(`<span style="color:${color}">${syllable}</span>`);
     } else {
-      out.push(`<span style="color:${color};opacity:0.55">${syllable}</span>`);
+      // Vowel mode: consonant stays default text color, marks inherit the vowel color
+      out.push(`<span style="color:${color}"><span style="color:var(--text)">${ch}</span>${nikudStr}</span>`);
     }
     i = j;
   }
@@ -1113,15 +1114,19 @@ function applyColorExStyle(el, color) {
   el.style.borderRadius = '';
   el.style.textDecoration = '';
   el.style.textUnderlineOffset = '';
-  el.textContent = example;
   if (colorStyle === 'highlight') {
+    el.textContent = example;
     el.style.backgroundColor = color + '50';
     el.style.borderRadius = '2px';
   } else if (colorCodingMode === 'both') {
+    el.textContent = example;
     el.style.color = color;
   } else {
-    el.style.color = color;
-    el.style.opacity = '0.55';
+    // Vowel mode: consonant in default color, marks get the vowel color
+    const chars = [...example];
+    const consonant = chars[0] || '';
+    const marksStr = chars.slice(1).join('');
+    el.innerHTML = `<span style="color:${color}"><span style="color:var(--text)">${consonant}</span>${marksStr}</span>`;
   }
 }
 
