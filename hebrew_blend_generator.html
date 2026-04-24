@@ -2184,6 +2184,9 @@
                     <button id="colorModeVowel" class="color-mode-btn active" onclick="setColorMode('vowel')">Vowel</button>
                     <button id="colorModeBoth" class="color-mode-btn" onclick="setColorMode('both')">Vowel + Letter</button>
                   </div>
+                  <div id="colorMobileNote" style="display:none;font-size:0.68rem;color:var(--muted);background:var(--warm-gray);border-radius:4px;padding:5px 7px;line-height:1.4;">
+                    ⚠️ Vowel coloring may not display correctly on mobile — please view on desktop for the best experience.
+                  </div>
                   <div id="colorPickerList"></div>
                   <button class="btn-xs" onclick="resetNikudColors()" style="font-size:0.68rem;width:100%;">↺ Reset to defaults</button>
                 </div>
@@ -3237,13 +3240,21 @@ function colorizeHebrew(text, mode) {
 function toggleColorCoding(on) {
   colorCodingEnabled = on;
   document.getElementById('colorCodingOptions').style.display = on ? 'flex' : 'none';
+  const note = document.getElementById('colorMobileNote');
+  if (note) note.style.display = (on && colorCodingMode === 'vowel' && isMobileDevice()) ? 'block' : 'none';
   renderWorksheet(false);
+}
+
+function isMobileDevice() {
+  return /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
 function setColorMode(mode) {
   colorCodingMode = mode;
   document.getElementById('colorModeVowel').classList.toggle('active', mode === 'vowel');
   document.getElementById('colorModeBoth').classList.toggle('active', mode === 'both');
+  const note = document.getElementById('colorMobileNote');
+  if (note) note.style.display = (mode === 'vowel' && isMobileDevice()) ? 'block' : 'none';
   refreshColorExPreviews();
   renderWorksheet(false);
 }
