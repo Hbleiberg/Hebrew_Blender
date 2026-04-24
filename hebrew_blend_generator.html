@@ -4570,12 +4570,10 @@ function renderHebrewCell(grid, b, idx, showAnswers, fillVowels = false) {
   heb.textContent = (fillVowels && !showAnswers) ? stripNikud(b.hebrewDisplay) : b.hebrewDisplay;
   cell.appendChild(heb);
 
-  if (!fillVowels || showAnswers) {
-    const ans = document.createElement('div');
-    ans.className = 'blend-answer' + (showAnswers ? '' : ' hidden');
-    ans.textContent = b.combined;
-    cell.appendChild(ans);
-  }
+  const ans = document.createElement('div');
+  ans.className = 'blend-answer' + (showAnswers || fillVowels ? '' : ' hidden');
+  ans.textContent = b.combined;
+  cell.appendChild(ans);
 
   grid.appendChild(cell);
 }
