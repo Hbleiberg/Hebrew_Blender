@@ -3175,13 +3175,61 @@ function getNikudColor(key) {
   return (document.body.classList.contains('dark') ? NIKUD_DEFAULTS_DARK : NIKUD_DEFAULTS_LIGHT)[key] || '#888';
 }
 
-function getColoredHebrewHTML(text, vowelKey, mode) {
-  const color = getNikudColor(vowelKey);
-  if (!color) return text;
-  if (mode === 'both') return `<span style="color:${color}">${text}</span>`;
-  if (vowelKey === 'vcholam') return text.replace(/וֹ/g, `<span style="color:${color}">וֹ</span>`);
-  if (vowelKey === 'shuruk')  return text.replace(/וּ/g, `<span style="color:${color}">וּ</span>`);
-  return text.replace(/[ְ-ׇ]/g, m => `<span style="color:${color}">${m}</span>`);
+// Maps each nikud Unicode char to its vowel key (dagesh U+05BC excluded — it's not a vowel)
+const NIKUD_CHAR_TO_KEY = {
+  'ָ':'a', 'ַ':'patah', 'ֲ':'hpatah', 'ֳ':'hkamatz',
+  'ֶ':'e', 'ֱ':'hsegol', 'ֵ':'tzere', 'ִ':'i',
+  'ֹ':'o', 'ֻ':'u', 'ְ':'sh'
+};
+
+// Color Hebrew text by syllable. Always wraps base-letter + all its combining marks
+// together in one span so combining chars never detach.
+// "vowel" mode  → colored underline under the syllable; text stays neutral.
+// "both" mode   → colored text for the whole syllable.
+// Bare consonants (no vowel mark, or only dagesh) are never colored.
+// Dagesh (U+05BC) on non-vav letters is never treated as a vowel.
+function colorizeHebrew(text, mode) {
+  if (!colorCodingEnabled) return text;
+  const DAGESH = 'ּ';
+  const chars = [...text];
+  const out = [];
+  let i = 0;
+  while (i < chars.length) {
+    const ch = chars[i];
+    const cp = ch.codePointAt(0);
+    const isHebLetter = cp >= 0x05D0 && cp <= 0x05EA;
+    const isNikud    = cp >= 0x05B0 && cp <= 0x05C7;
+    if (!isHebLetter && !isNikud) { out.push(ch); i++; continue; }
+    if (isNikud) { out.push(ch); i++; continue; } // lone combining char — leave as-is
+    // Collect all combining marks that follow this letter
+    let marks = '';
+    let j = i + 1;
+    while (j < chars.length && chars[j].codePointAt(0) >= 0x05B0 && chars[j].codePointAt(0) <= 0x05C7) {
+      marks += chars[j++];
+    }
+    if (!marks) { out.push(ch); i++; continue; } // bare consonant — no color
+    const isVav = (ch === 'ו');
+    // Determine the primary vowel key from the marks
+    let key = null;
+    for (const m of [...marks]) {
+      if (isVav && m === 'ֹ') { key = 'vcholam'; break; }   // vav + holam
+      if (isVav && m === DAGESH)   { key = 'shuruk';  break; }   // vav + dagesh = shuruk
+      if (m === DAGESH) continue;                                  // dagesh on other letters — not a vowel
+      const k = NIKUD_CHAR_TO_KEY[m];
+      if (k) { key = k; break; }
+    }
+    if (!key) { out.push(ch + marks); i = j; continue; } // only dagesh, no vowel — no color
+    const color = getNikudColor(key);
+    const syllable = ch + marks;
+    if (mode === 'both') {
+      out.push(`<span style="color:${color}">${syllable}</span>`);
+    } else {
+      // "Vowel" mode: underline shows the vowel color; consonant text stays neutral
+      out.push(`<span style="text-decoration:underline 2px solid ${color};text-underline-offset:2px">${syllable}</span>`);
+    }
+    i = j;
+  }
+  return out.join('');
 }
 
 function toggleColorCoding(on) {
@@ -4735,8 +4783,8 @@ function renderHebrewCell(grid, b, idx, showAnswers, fillVowels = false) {
   const heb = document.createElement('div');
   heb.className = 'blend-hebrew';
   const displayText = (fillVowels && !showAnswers) ? stripNikud(b.hebrewDisplay) : b.hebrewDisplay;
-  if (colorCodingEnabled && b.vowel) {
-    heb.innerHTML = getColoredHebrewHTML(displayText, b.vowel, colorCodingMode);
+  if (colorCodingEnabled) {
+    heb.innerHTML = colorizeHebrew(displayText, colorCodingMode);
   } else {
     heb.textContent = displayText;
   }

@@ -1059,12 +1059,7 @@ function colorizeHebrew(text) {
     const isHebLetter = cp >= 0x05D0 && cp <= 0x05EA;
     const isNikud = cp >= 0x05B0 && cp <= 0x05C7;
     if (!isHebLetter && !isNikud) { out.push(ch); i++; continue; }
-    if (isNikud) {
-      const key = NIKUD_CHAR_TO_KEY[ch];
-      const color = key ? getNikudColor(key) : null;
-      out.push(color ? `<span style="color:${color}">${ch}</span>` : ch);
-      i++; continue;
-    }
+    if (isNikud) { out.push(ch); i++; continue; }
     // Hebrew letter — collect following nikud
     let nikudStr = '';
     let j = i + 1;
@@ -1082,14 +1077,11 @@ function colorizeHebrew(text) {
     }
     if (!primaryKey) { out.push(ch + nikudStr); i = j; continue; }
     const color = getNikudColor(primaryKey);
+    const syllable = ch + nikudStr;
     if (colorCodingMode === 'both') {
-      out.push(`<span style="color:${color}">${ch}${nikudStr}</span>`);
-    } else if (primaryKey === 'vcholam' || primaryKey === 'shuruk') {
-      out.push(`<span style="color:${color}">${ch}${nikudStr}</span>`);
+      out.push(`<span style="color:${color}">${syllable}</span>`);
     } else {
-      const dagesh = [...nikudStr].filter(c => c === 'ּ').join('');
-      const vowelPart = [...nikudStr].filter(c => c !== 'ּ').join('');
-      out.push(ch + dagesh + (vowelPart ? `<span style="color:${color}">${vowelPart}</span>` : ''));
+      out.push(`<span style="text-decoration:underline 2px solid ${color};text-underline-offset:2px">${syllable}</span>`);
     }
     i = j;
   }
