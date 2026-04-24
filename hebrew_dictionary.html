@@ -76,6 +76,11 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .era-body{display:flex;gap:16px;}
 .pos-all-btn{flex:1;padding:3px 0;font-size:0.72rem;font-family:'Source Sans 3',sans-serif;background:var(--warm-gray);color:var(--text);border:1px solid var(--border);border-radius:4px;cursor:pointer;}
 .pos-all-btn:hover{border-color:var(--gold);color:var(--gold);}
+.color-mode-btn{flex:1;padding:4px 6px;font-size:0.72rem;border:none;background:var(--warm-gray);color:var(--muted);cursor:pointer;border-right:1px solid var(--border);font-family:inherit;}
+.color-mode-btn:last-child{border-right:none;}
+.color-mode-btn.active{background:var(--navy);color:var(--white);}
+body.dark .color-mode-btn.active{background:#2a4070;color:#dde4f0;}
+.color-pick-example{font-family:var(--heb-font,serif);font-size:1.1rem;width:26px;text-align:center;}
 .filter-sub{margin-top:6px;padding-left:6px;border-left:2px solid var(--border);}
 /* Position filter */
 .pos-sec{margin-bottom:4px;}
@@ -357,6 +362,25 @@ footer a{color:var(--gold);text-decoration:none;}
             </div>
             <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
             <label class="cb-label"><input type="checkbox" id="enableSortGematriaCb" style="accent-color:var(--gold);" onchange="toggleGematriaSort(this.checked)"> Enable Sort By Gematria Value<span class="tip-wrap">?<span class="tip-box">Adds Gematria ↑ and Gematria ↓ options to the Sort menu, letting you order words by their total Gematria value.</span></span></label>
+          </div>
+        </div>
+
+        <!-- Color Code Nikkud -->
+        <div class="adv-section collapsed">
+          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Color Code Nikkud</div>
+          <div class="adv-section-body" style="display:flex;flex-direction:column;gap:6px;">
+            <label class="cb-label" style="font-size:0.78rem;">
+              <input type="checkbox" id="colorCodingToggle" style="accent-color:var(--gold);" onchange="toggleColorCoding(this.checked)">
+              Enable color coding
+            </label>
+            <div id="colorCodingOptions" style="display:none;flex-direction:column;gap:8px;">
+              <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
+                <button id="colorModeVowel" class="color-mode-btn active" onclick="setColorMode('vowel')">Vowel</button>
+                <button id="colorModeBoth" class="color-mode-btn" onclick="setColorMode('both')">Vowel + Letter</button>
+              </div>
+              <div id="colorPickerList"></div>
+              <button class="pos-all-btn" onclick="resetNikudColors()" style="font-size:0.68rem;width:100%;">↺ Reset to defaults</button>
+            </div>
           </div>
         </div>
 
@@ -916,7 +940,7 @@ function loadMore() {
     card.appendChild(srch);
     const inner = document.createElement('div');
     inner.innerHTML = `
-      <div class="wc-heb">${w.word}</div>
+      <div class="wc-heb">${colorizeHebrew(w.word)}</div>
       ${w.translit ? `<div class="wc-translit">${w.translit}</div>` : ''}
       ${w.translation ? `<div class="wc-transl">${w.translation}</div>` : ''}
       <div class="wc-badges">
@@ -975,12 +999,171 @@ document.addEventListener('fullscreenchange', () => {
   if (btn) { btn.innerHTML = on ? FS_EXIT_ICON : FS_ENTER_ICON; btn.title = on ? 'Exit full screen' : 'Full screen'; }
 });
 
+// ── COLOR CODING ──
+const VOWEL_COLOR_DEFS = [
+  { key: 'a',       name: 'Kamatz',       example: 'אָ' },
+  { key: 'patah',   name: 'Patach',       example: 'אַ' },
+  { key: 'hpatah',  name: 'Hataf Patach', example: 'אֲ' },
+  { key: 'e',       name: 'Segol',        example: 'אֶ' },
+  { key: 'hsegol',  name: 'Hataf Segol',  example: 'אֱ' },
+  { key: 'tzere',   name: 'Tzere',        example: 'אֵ' },
+  { key: 'i',       name: 'Chirik',       example: 'אִ' },
+  { key: 'o',       name: 'Holam',        example: 'אֹ' },
+  { key: 'vcholam', name: 'Vav Holam',    example: 'וֹ' },
+  { key: 'hkamatz', name: 'Hataf Kamatz', example: 'אֳ' },
+  { key: 'u',       name: 'Kubutz',       example: 'אֻ' },
+  { key: 'shuruk',  name: 'Shuruk',       example: 'וּ' },
+  { key: 'sh',      name: 'Shva',         example: 'אְ' },
+];
+const NIKUD_DEFAULTS_LIGHT = {
+  a:'#0099bb',patah:'#0099bb',hpatah:'#0099bb',
+  e:'#cc3333',hsegol:'#cc3333',
+  tzere:'#7777aa',
+  i:'#228833',
+  o:'#bb8800',vcholam:'#bb8800',hkamatz:'#bb8800',
+  u:'#3355cc',shuruk:'#3355cc',
+  sh:'#8833bb'
+};
+const NIKUD_DEFAULTS_DARK = {
+  a:'#33ccee',patah:'#33ccee',hpatah:'#33ccee',
+  e:'#ee5555',hsegol:'#ee5555',
+  tzere:'#aaaadd',
+  i:'#44cc66',
+  o:'#ddaa00',vcholam:'#ddaa00',hkamatz:'#ddaa00',
+  u:'#6688ff',shuruk:'#6688ff',
+  sh:'#bb66ee'
+};
+const NIKUD_CHAR_TO_KEY = {
+  'ָ':'a', 'ַ':'patah', 'ֲ':'hpatah', 'ֳ':'hkamatz',
+  'ֶ':'e', 'ֱ':'hsegol', 'ֵ':'tzere', 'ִ':'i',
+  'ֹ':'o', 'ֻ':'u', 'ְ':'sh'
+};
+let colorCodingEnabled = false;
+let colorCodingMode = 'vowel';
+let nikudColorOverrides = {};
+
+function getNikudColor(key) {
+  if (nikudColorOverrides[key] !== undefined) return nikudColorOverrides[key];
+  return (document.body.classList.contains('dark') ? NIKUD_DEFAULTS_DARK : NIKUD_DEFAULTS_LIGHT)[key] || '#888';
+}
+
+function colorizeHebrew(text) {
+  if (!colorCodingEnabled) return text;
+  const chars = [...text];
+  const n = chars.length;
+  const out = [];
+  let i = 0;
+  while (i < n) {
+    const ch = chars[i];
+    const cp = ch.codePointAt(0);
+    const isHebLetter = cp >= 0x05D0 && cp <= 0x05EA;
+    const isNikud = cp >= 0x05B0 && cp <= 0x05C7;
+    if (!isHebLetter && !isNikud) { out.push(ch); i++; continue; }
+    if (isNikud) {
+      const key = NIKUD_CHAR_TO_KEY[ch];
+      const color = key ? getNikudColor(key) : null;
+      out.push(color ? `<span style="color:${color}">${ch}</span>` : ch);
+      i++; continue;
+    }
+    // Hebrew letter — collect following nikud
+    let nikudStr = '';
+    let j = i + 1;
+    while (j < n && chars[j].codePointAt(0) >= 0x05B0 && chars[j].codePointAt(0) <= 0x05C7) {
+      nikudStr += chars[j++];
+    }
+    if (!nikudStr) { out.push(ch); i++; continue; }
+    const isVav = ch === 'ו';
+    let primaryKey = null;
+    for (const nc of [...nikudStr]) {
+      if (isVav && nc === 'ֹ') { primaryKey = 'vcholam'; break; }
+      if (isVav && nc === 'ּ') { primaryKey = 'shuruk';  break; }
+      const k = NIKUD_CHAR_TO_KEY[nc];
+      if (k) { primaryKey = k; break; }
+    }
+    if (!primaryKey) { out.push(ch + nikudStr); i = j; continue; }
+    const color = getNikudColor(primaryKey);
+    if (colorCodingMode === 'both') {
+      out.push(`<span style="color:${color}">${ch}${nikudStr}</span>`);
+    } else if (primaryKey === 'vcholam' || primaryKey === 'shuruk') {
+      out.push(`<span style="color:${color}">${ch}${nikudStr}</span>`);
+    } else {
+      const dagesh = [...nikudStr].filter(c => c === 'ּ').join('');
+      const vowelPart = [...nikudStr].filter(c => c !== 'ּ').join('');
+      out.push(ch + dagesh + (vowelPart ? `<span style="color:${color}">${vowelPart}</span>` : ''));
+    }
+    i = j;
+  }
+  return out.join('');
+}
+
+function toggleColorCoding(on) {
+  colorCodingEnabled = on;
+  document.getElementById('colorCodingOptions').style.display = on ? 'flex' : 'none';
+  rerender();
+}
+
+function setColorMode(mode) {
+  colorCodingMode = mode;
+  document.getElementById('colorModeVowel').classList.toggle('active', mode === 'vowel');
+  document.getElementById('colorModeBoth').classList.toggle('active', mode === 'both');
+  if (colorCodingEnabled) rerender();
+}
+
+function initColorPickers() {
+  const list = document.getElementById('colorPickerList');
+  if (!list) return;
+  list.innerHTML = '';
+  VOWEL_COLOR_DEFS.forEach(def => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:6px;';
+    const ex = document.createElement('div');
+    ex.className = 'color-pick-example';
+    ex.id = `colorEx_${def.key}`;
+    ex.style.color = getNikudColor(def.key);
+    ex.textContent = def.example;
+    const lbl = document.createElement('span');
+    lbl.style.cssText = 'flex:1;font-size:0.75rem;';
+    lbl.textContent = def.name;
+    const pick = document.createElement('input');
+    pick.type = 'color';
+    pick.id = `colorPick_${def.key}`;
+    pick.value = getNikudColor(def.key);
+    pick.style.cssText = 'width:30px;height:22px;border:none;cursor:pointer;padding:0;background:none;border-radius:3px;';
+    pick.addEventListener('input', e => {
+      nikudColorOverrides[def.key] = e.target.value;
+      const ex2 = document.getElementById(`colorEx_${def.key}`);
+      if (ex2) ex2.style.color = e.target.value;
+      if (colorCodingEnabled) rerender();
+    });
+    row.appendChild(ex); row.appendChild(lbl); row.appendChild(pick);
+    list.appendChild(row);
+  });
+}
+
+function updateColorPickerValues() {
+  VOWEL_COLOR_DEFS.forEach(def => {
+    if (nikudColorOverrides[def.key] !== undefined) return;
+    const color = getNikudColor(def.key);
+    const pick = document.getElementById(`colorPick_${def.key}`);
+    const ex   = document.getElementById(`colorEx_${def.key}`);
+    if (pick) pick.value = color;
+    if (ex)   ex.style.color = color;
+  });
+  if (colorCodingEnabled) rerender();
+}
+
+function resetNikudColors() {
+  nikudColorOverrides = {};
+  updateColorPickerValues();
+}
+
 function toggleDark() {
   const dark = document.body.classList.toggle('dark');
   document.documentElement.classList.remove('dark-early');
   try { localStorage.setItem('hebrewBlender_darkMode', dark ? '1' : '0'); } catch(e) {}
   document.getElementById('darkBtn').textContent = dark ? '☀ Light' : '🌙 Dark';
   refreshDictVowelGroupColors();
+  updateColorPickerValues();
 }
 
 // ══════════════════════════════════════════════
@@ -1160,6 +1343,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initVowelFilter();
   initPosFilters();
   initFontSelector();
+  initColorPickers();
   try {
     const fv = localStorage.getItem('hebrewBlender_hebFontSize');
     if (fv !== null) { const sl = document.getElementById('hebFontSizeSlider'); if (sl) { sl.value = fv; setHebFontSize(fv); } }
