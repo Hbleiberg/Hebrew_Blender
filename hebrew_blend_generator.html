@@ -2406,32 +2406,32 @@ const VOWEL_COLOR_DEFS = [
   { key: 'a',       name: 'Kamatz',       example: 'אָ' },
   { key: 'patah',   name: 'Patach',       example: 'אַ' },
   { key: 'hpatah',  name: 'Hataf Patach', example: 'אֲ' },
+  { key: 'hkamatz', name: 'Hataf Kamatz', example: 'אֳ' },
   { key: 'e',       name: 'Segol',        example: 'אֶ' },
   { key: 'hsegol',  name: 'Hataf Segol',  example: 'אֱ' },
   { key: 'tzere',   name: 'Tzere',        example: 'אֵ' },
   { key: 'i',       name: 'Chirik',       example: 'אִ' },
   { key: 'o',       name: 'Holam',        example: 'אֹ' },
   { key: 'vcholam', name: 'Vav Holam',    example: 'וֹ' },
-  { key: 'hkamatz', name: 'Hataf Kamatz', example: 'אֳ' },
   { key: 'u',       name: 'Kubutz',       example: 'אֻ' },
   { key: 'shuruk',  name: 'Shuruk',       example: 'וּ' },
   { key: 'sh',      name: 'Shva',         example: 'אְ' },
 ];
 const NIKUD_DEFAULTS_LIGHT = {
-  a:'#0099bb', patah:'#0099bb', hpatah:'#0099bb',
+  a:'#0099bb', patah:'#0099bb', hpatah:'#0099bb', hkamatz:'#0099bb',
   e:'#cc3333', hsegol:'#cc3333',
   tzere:'#7777aa',
   i:'#228833',
-  o:'#bb8800', vcholam:'#bb8800', hkamatz:'#bb8800',
+  o:'#bb8800', vcholam:'#bb8800',
   u:'#3355cc', shuruk:'#3355cc',
   sh:'#8833bb'
 };
 const NIKUD_DEFAULTS_DARK = {
-  a:'#33ccee', patah:'#33ccee', hpatah:'#33ccee',
+  a:'#33ccee', patah:'#33ccee', hpatah:'#33ccee', hkamatz:'#33ccee',
   e:'#ee5555', hsegol:'#ee5555',
   tzere:'#aaaadd',
   i:'#44cc66',
-  o:'#ddaa00', vcholam:'#ddaa00', hkamatz:'#ddaa00',
+  o:'#ddaa00', vcholam:'#ddaa00',
   u:'#6688ff', shuruk:'#6688ff',
   sh:'#bb66ee'
 };
@@ -3232,20 +3232,10 @@ function colorizeHebrew(text, mode) {
     } else if (mode === 'both') {
       out.push(`<span style="color:${color}">${syllable}</span>`);
     } else {
-      // vowel mode: wrap the full syllable in the vowel color so combining marks
-      // stay in the same inline run as their base letter (prevents misalignment).
-      // An inner span reverts just the letter+dagesh back to the default text color
-      // so only the actual vowel nikkud marks are visibly colored.
-      // Dagesh on vav is treated as a vowel mark (shuruk).
-      const letterColor = document.body.classList.contains('dark') ? '#dde4f0' : '#1a2744';
-      let nonVowelPart = ch;
-      let vowelPart = '';
-      for (const m of [...marks]) {
-        const isVowelMark = (isVav && (m === 'ֹ' || m === DAGESH)) ||
-                            (!isVav && m !== DAGESH && !!NIKUD_CHAR_TO_KEY[m]);
-        if (isVowelMark) vowelPart += m; else nonVowelPart += m;
-      }
-      out.push(`<span style="color:${color}"><span style="color:${letterColor}">${nonVowelPart}</span>${vowelPart}</span>`);
+      // vowel mode: HTML combining chars cannot be colored independently of their base letter
+      // (putting them in a separate span makes them invisible/misaligned in all browsers).
+      // Use a colored underline at the nikkud level instead — letter stays in default color.
+      out.push(`<span style="text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${syllable}</span>`);
     }
     i = j;
   }
@@ -3292,12 +3282,11 @@ function applyColorExStyle(el, color) {
     el.textContent = example;
     el.style.color = color;
   } else {
-    // vowel mode preview: outer span sets vowel color; inner span reverts letter to default
-    const letterColor = document.body.classList.contains('dark') ? '#dde4f0' : '#1a2744';
-    const exChars = [...example];
-    const letterChar = exChars[0];
-    const nikudChars = exChars.slice(1).join('');
-    el.innerHTML = `<span style="color:${color}"><span style="color:${letterColor}">${letterChar}</span>${nikudChars}</span>`;
+    // vowel mode preview: colored underline shows vowel class; letter stays in default color
+    el.textContent = example;
+    el.style.textDecoration = `underline solid ${color}`;
+    el.style.textDecorationThickness = '2px';
+    el.style.textUnderlineOffset = '0.4em';
   }
 }
 
