@@ -2137,7 +2137,7 @@
                     <button id="colorModeVowel" class="color-mode-btn active" onclick="setColorMode('vowel')">Vowel</button>
                     <button id="colorModeBoth" class="color-mode-btn" onclick="setColorMode('both')">Vowel + Letter</button>
                   </div>
-                  <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
+                  <div id="colorStyleRow" style="display:none;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
                     <button id="colorStyleLetter" class="color-mode-btn active" onclick="setColorStyle('color')">Color Letter</button>
                     <button id="colorStyleHighlight" class="color-mode-btn" onclick="setColorStyle('highlight')">Highlight</button>
                   </div>
@@ -3263,6 +3263,7 @@ function setColorMode(mode) {
   colorCodingMode = mode;
   document.getElementById('colorModeVowel').classList.toggle('active', mode === 'vowel');
   document.getElementById('colorModeBoth').classList.toggle('active', mode === 'both');
+  document.getElementById('colorStyleRow').style.display = (mode === 'both') ? 'flex' : 'none';
   updateColorMobileNote();
   refreshColorExPreviews();
   renderWorksheet(false);
