@@ -3224,18 +3224,10 @@ function colorizeHebrew(text, mode) {
     if (mode === 'both') {
       out.push(`<span style="color:${color}">${syllable}</span>`);
     } else {
-      // "Vowel" mode: color only the combining marks; base letter inherits default color
-      out.push(ch);
-      for (const m of [...marks]) {
-        const isVavHolam  = isVav && m === 'ֹ';
-        const isVavShuruk = isVav && m === DAGESH;
-        let mKey = null;
-        if (isVavHolam)  mKey = 'vcholam';
-        else if (isVavShuruk) mKey = 'shuruk';
-        else if (m !== DAGESH) mKey = NIKUD_CHAR_TO_KEY[m]; // dagesh on non-vav: no color
-        const mColor = mKey ? getNikudColor(mKey) : null;
-        out.push(mColor ? `<span style="color:${mColor}">${m}</span>` : m);
-      }
+      // "Vowel" mode: outer span sets vowel color; inner span resets consonant to normal text
+      // color; combining marks stay as direct text children of outer span so they remain in
+      // the same shaping run as the consonant and don't float on WebKit
+      out.push(`<span style="color:${color}"><span style="color:var(--text)">${ch}</span>${marks}</span>`);
     }
     i = j;
   }
@@ -3266,16 +3258,14 @@ function applyColorExStyle(el, color) {
     el.textContent = example;
     el.style.color = color;
   } else {
-    // Color only the nikud marks in the example glyph
-    const DAGESH_CH = 'ּ';
-    let html = '';
+    // Same inner-outer pattern as colorizeHebrew: base letter resets to --text, marks inherit color
+    let base = '', nikud = '';
     for (const c of [...example]) {
       const cp = c.codePointAt(0);
-      const isNikud = cp >= 0x05B0 && cp <= 0x05C7;
-      let shouldColor = isNikud && (c !== DAGESH_CH || vowelKey === 'shuruk');
-      html += shouldColor ? `<span style="color:${color}">${c}</span>` : c;
+      if (cp >= 0x05D0 && cp <= 0x05EA) base += c;
+      else if (cp >= 0x05B0 && cp <= 0x05C7) nikud += c;
     }
-    el.innerHTML = html;
+    el.innerHTML = `<span style="color:${color}"><span style="color:var(--text)">${base}</span>${nikud}</span>`;
   }
 }
 

@@ -1081,18 +1081,7 @@ function colorizeHebrew(text) {
     if (colorCodingMode === 'both') {
       out.push(`<span style="color:${color}">${syllable}</span>`);
     } else {
-      // "Vowel" mode: color only the combining marks; base letter inherits default color
-      out.push(ch);
-      for (const m of [...nikudStr]) {
-        const isVavHolam  = isVav && m === 'ֹ';
-        const isVavShuruk = isVav && m === 'ּ';
-        let mKey = null;
-        if (isVavHolam)  mKey = 'vcholam';
-        else if (isVavShuruk) mKey = 'shuruk';
-        else if (m !== 'ּ') mKey = NIKUD_CHAR_TO_KEY[m];
-        const mColor = mKey ? getNikudColor(mKey) : null;
-        out.push(mColor ? `<span style="color:${mColor}">${m}</span>` : m);
-      }
+      out.push(`<span style="color:${color}"><span style="color:var(--text)">${ch}</span>${nikudStr}</span>`);
     }
     i = j;
   }
@@ -1115,15 +1104,13 @@ function applyColorExStyle(el, color) {
     el.textContent = example;
     el.style.color = color;
   } else {
-    const DAGESH_CH = 'ּ';
-    let html = '';
+    let base = '', nikud = '';
     for (const c of [...example]) {
       const cp = c.codePointAt(0);
-      const isNikud = cp >= 0x05B0 && cp <= 0x05C7;
-      const shouldColor = isNikud && (c !== DAGESH_CH || vowelKey === 'shuruk');
-      html += shouldColor ? `<span style="color:${color}">${c}</span>` : c;
+      if (cp >= 0x05D0 && cp <= 0x05EA) base += c;
+      else if (cp >= 0x05B0 && cp <= 0x05C7) nikud += c;
     }
-    el.innerHTML = html;
+    el.innerHTML = `<span style="color:${color}"><span style="color:var(--text)">${base}</span>${nikud}</span>`;
   }
 }
 
