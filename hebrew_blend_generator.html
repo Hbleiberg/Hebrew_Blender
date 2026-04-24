@@ -1479,6 +1479,13 @@
             <span class="slider"></span>
           </label>
         </div>
+        <div class="toggle-row" id="rowFillVowels">
+          <span>Fill in the Vowels <span style="font-size:0.72rem;color:var(--muted)">(students add nikkud)</span></span>
+          <label class="toggle">
+            <input type="checkbox" id="fillVowelsToggle" onchange="renderWorksheet(false)">
+            <span class="slider"></span>
+          </label>
+        </div>
         <div class="toggle-row" id="rowAnswerKey">
           <span>Show Answer Key</span>
           <label class="toggle">
@@ -2648,6 +2655,7 @@ function getSettings() {
     blendType:     document.querySelector('.blend-type-btn.active')?.dataset.type || 'two',
     vowelPosition: getVowelPos(),
     inverse:       document.getElementById('inverseToggle').checked,
+    fillVowels:    document.getElementById('fillVowelsToggle').checked,
     answerKey:     document.getElementById('answerKeyToggle').checked,
     selfCheck:     document.getElementById('selfCheckToggle').checked,
     timerOn:       document.getElementById('timerToggle').checked,
@@ -2755,8 +2763,9 @@ function applySettings(s) {
     document.getElementById('vowelOnFirst').checked  = s.vowelPosition !== 'second';
     document.getElementById('vowelOnSecond').checked = (s.vowelPosition === 'second' || s.vowelPosition === 'both');
   }
-  if (s.inverse !== undefined)   document.getElementById('inverseToggle').checked = s.inverse;
-  if (s.answerKey !== undefined) document.getElementById('answerKeyToggle').checked = s.answerKey;
+  if (s.inverse !== undefined)     document.getElementById('inverseToggle').checked = s.inverse;
+  if (s.fillVowels !== undefined)  document.getElementById('fillVowelsToggle').checked = s.fillVowels;
+  if (s.answerKey !== undefined)   document.getElementById('answerKeyToggle').checked = s.answerKey;
   if (s.timerOn !== undefined)   document.getElementById('timerToggle').checked = s.timerOn;
   if (s.timerDuration)           document.getElementById('timerDuration').value = s.timerDuration;
   if (s.audio !== undefined)     document.getElementById('audioToggle').checked = s.audio;
@@ -4282,6 +4291,7 @@ let isShuffling = false;
 
 function renderWorksheet(animate = false) {
   const isInverse   = document.getElementById('inverseToggle').checked;
+  const fillVowels  = document.getElementById('fillVowelsToggle').checked;
   const showAnswers = document.getElementById('answerKeyToggle').checked;
   const selfCheck   = document.getElementById('selfCheckToggle').checked;
   const bingo       = document.getElementById('bingoToggle').checked;
@@ -4320,7 +4330,7 @@ function renderWorksheet(animate = false) {
     grid.style.gridTemplateColumns = `repeat(${autoCols(blends.length)}, 1fr)`;
     grid.style.direction = 'rtl';
     sheet.appendChild(grid);
-    blends.forEach((b, idx) => renderHebrewCell(grid, b, idx, false));
+    blends.forEach((b, idx) => renderHebrewCell(grid, b, idx, false, fillVowels));
     const footer = document.createElement('div');
     footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
     footer.textContent = `${blends.length} items · Hebrew Blend Generator`;
@@ -4364,7 +4374,7 @@ function renderWorksheet(animate = false) {
   header.innerHTML = `
     <div>
       <div class="ws-title">${title}</div>
-      <div class="ws-subtitle">${subtitle || (isInverse ? 'Write the Hebrew blend that matches each sound.' : 'Read each Hebrew blend aloud.')}</div>
+      <div class="ws-subtitle">${subtitle || (fillVowels ? 'Add the nikkud to each blend.' : isInverse ? 'Write the Hebrew blend that matches each sound.' : 'Read each Hebrew blend aloud.')}</div>
     </div>
     ${wsMetaHTML()}
   `;
@@ -4378,7 +4388,7 @@ function renderWorksheet(animate = false) {
 
   blends.forEach((b, idx) => {
     if (isInverse) renderInverseCell(grid, b, idx, false);
-    else renderHebrewCell(grid, b, idx, false);
+    else renderHebrewCell(grid, b, idx, false, fillVowels);
   });
 
   const footer = document.createElement('div');
@@ -4546,29 +4556,26 @@ function flipAllCards(reveal) {
   });
 }
 
-function renderHebrewCell(grid, b, idx, showAnswers) {
+function renderHebrewCell(grid, b, idx, showAnswers, fillVowels = false) {
   const cell = document.createElement('div');
   cell.className = 'blend-cell';
 
-  // Number
   const num = document.createElement('div');
   num.style.cssText = 'font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;';
   num.textContent = idx + 1;
   cell.appendChild(num);
 
-  // Hebrew blend — written RTL, first letter + second letter
-  // In actual Hebrew a syllable is: consonant + vowel; so "first" letter with the vowel sound,
-  // then "second" letter. Display order RTL: first letter on right, second on left.
   const heb = document.createElement('div');
   heb.className = 'blend-hebrew';
-  heb.textContent = b.hebrewDisplay; // precomposed: first+nikud + second(bare)
+  heb.textContent = (fillVowels && !showAnswers) ? stripNikud(b.hebrewDisplay) : b.hebrewDisplay;
   cell.appendChild(heb);
 
-  // Answer
-  const ans = document.createElement('div');
-  ans.className = 'blend-answer' + (showAnswers ? '' : ' hidden');
-  ans.textContent = b.combined;
-  cell.appendChild(ans);
+  if (!fillVowels || showAnswers) {
+    const ans = document.createElement('div');
+    ans.className = 'blend-answer' + (showAnswers ? '' : ' hidden');
+    ans.textContent = b.combined;
+    cell.appendChild(ans);
+  }
 
   grid.appendChild(cell);
 }
