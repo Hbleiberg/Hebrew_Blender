@@ -1081,7 +1081,7 @@ function colorizeHebrew(text) {
     if (colorCodingMode === 'both') {
       out.push(`<span style="color:${color}">${syllable}</span>`);
     } else {
-      out.push(`<span style="text-decoration:underline 2px solid ${color};text-underline-offset:2px">${syllable}</span>`);
+      out.push(`<span style="background-color:${color}44;border-radius:2px">${syllable}</span>`);
     }
     i = j;
   }

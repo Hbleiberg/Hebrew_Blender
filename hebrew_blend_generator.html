@@ -3224,8 +3224,8 @@ function colorizeHebrew(text, mode) {
     if (mode === 'both') {
       out.push(`<span style="color:${color}">${syllable}</span>`);
     } else {
-      // "Vowel" mode: underline shows the vowel color; consonant text stays neutral
-      out.push(`<span style="text-decoration:underline 2px solid ${color};text-underline-offset:2px">${syllable}</span>`);
+      // "Vowel" mode: tinted background leaves text rendering untouched
+      out.push(`<span style="background-color:${color}44;border-radius:2px">${syllable}</span>`);
     }
     i = j;
   }
