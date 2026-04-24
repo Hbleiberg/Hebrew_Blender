@@ -3232,17 +3232,20 @@ function colorizeHebrew(text, mode) {
     } else if (mode === 'both') {
       out.push(`<span style="color:${color}">${syllable}</span>`);
     } else {
-      // vowel mode: letter (and non-vowel marks like dagesh) stays in default text color;
-      // only the actual vowel nikkud marks are colored.
-      // Dagesh on vav acts as shuruk (a vowel), so it IS colored in that case.
-      let letterPart = ch;
+      // vowel mode: wrap the full syllable in the vowel color so combining marks
+      // stay in the same inline run as their base letter (prevents misalignment).
+      // An inner span reverts just the letter+dagesh back to the default text color
+      // so only the actual vowel nikkud marks are visibly colored.
+      // Dagesh on vav is treated as a vowel mark (shuruk).
+      const letterColor = document.body.classList.contains('dark') ? '#dde4f0' : '#1a2744';
+      let nonVowelPart = ch;
       let vowelPart = '';
       for (const m of [...marks]) {
         const isVowelMark = (isVav && (m === 'ֹ' || m === DAGESH)) ||
                             (!isVav && m !== DAGESH && !!NIKUD_CHAR_TO_KEY[m]);
-        if (isVowelMark) vowelPart += m; else letterPart += m;
+        if (isVowelMark) vowelPart += m; else nonVowelPart += m;
       }
-      out.push(`${letterPart}<span style="color:${color}">${vowelPart}</span>`);
+      out.push(`<span style="color:${color}"><span style="color:${letterColor}">${nonVowelPart}</span>${vowelPart}</span>`);
     }
     i = j;
   }
@@ -3289,11 +3292,12 @@ function applyColorExStyle(el, color) {
     el.textContent = example;
     el.style.color = color;
   } else {
-    // vowel mode preview: letter in default color, nikkud marks in vowel color
+    // vowel mode preview: outer span sets vowel color; inner span reverts letter to default
+    const letterColor = document.body.classList.contains('dark') ? '#dde4f0' : '#1a2744';
     const exChars = [...example];
     const letterChar = exChars[0];
     const nikudChars = exChars.slice(1).join('');
-    el.innerHTML = `${letterChar}<span style="color:${color}">${nikudChars}</span>`;
+    el.innerHTML = `<span style="color:${color}"><span style="color:${letterColor}">${letterChar}</span>${nikudChars}</span>`;
   }
 }
 
