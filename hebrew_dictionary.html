@@ -1081,7 +1081,7 @@ function colorizeHebrew(text) {
     if (colorCodingMode === 'both') {
       out.push(`<span style="color:${color}">${syllable}</span>`);
     } else {
-      out.push(`<span style="background-color:${color}44;border-radius:2px">${syllable}</span>`);
+      out.push(`<span style="text-decoration:underline 2px solid ${color};text-underline-offset:0.6em;text-decoration-skip-ink:none">${syllable}</span>`);
     }
     i = j;
   }
@@ -1094,10 +1094,30 @@ function toggleColorCoding(on) {
   rerender();
 }
 
+function applyColorExStyle(el, color) {
+  if (colorCodingMode === 'both') {
+    el.style.color = color;
+    el.style.textDecoration = '';
+    el.style.textUnderlineOffset = '';
+  } else {
+    el.style.color = '';
+    el.style.textDecoration = `underline 2px solid ${color}`;
+    el.style.textUnderlineOffset = '0.6em';
+  }
+}
+
+function refreshColorExPreviews() {
+  VOWEL_COLOR_DEFS.forEach(def => {
+    const ex = document.getElementById(`colorEx_${def.key}`);
+    if (ex) applyColorExStyle(ex, getNikudColor(def.key));
+  });
+}
+
 function setColorMode(mode) {
   colorCodingMode = mode;
   document.getElementById('colorModeVowel').classList.toggle('active', mode === 'vowel');
   document.getElementById('colorModeBoth').classList.toggle('active', mode === 'both');
+  refreshColorExPreviews();
   if (colorCodingEnabled) rerender();
 }
 
@@ -1111,7 +1131,7 @@ function initColorPickers() {
     const ex = document.createElement('div');
     ex.className = 'color-pick-example';
     ex.id = `colorEx_${def.key}`;
-    ex.style.color = getNikudColor(def.key);
+    applyColorExStyle(ex, getNikudColor(def.key));
     ex.textContent = def.example;
     const lbl = document.createElement('span');
     lbl.style.cssText = 'flex:1;font-size:0.75rem;';
@@ -1124,7 +1144,7 @@ function initColorPickers() {
     pick.addEventListener('input', e => {
       nikudColorOverrides[def.key] = e.target.value;
       const ex2 = document.getElementById(`colorEx_${def.key}`);
-      if (ex2) ex2.style.color = e.target.value;
+      if (ex2) applyColorExStyle(ex2, e.target.value);
       if (colorCodingEnabled) rerender();
     });
     row.appendChild(ex); row.appendChild(lbl); row.appendChild(pick);
@@ -1139,7 +1159,7 @@ function updateColorPickerValues() {
     const pick = document.getElementById(`colorPick_${def.key}`);
     const ex   = document.getElementById(`colorEx_${def.key}`);
     if (pick) pick.value = color;
-    if (ex)   ex.style.color = color;
+    if (ex)   applyColorExStyle(ex, color);
   });
   if (colorCodingEnabled) rerender();
 }
