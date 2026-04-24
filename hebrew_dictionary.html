@@ -63,7 +63,7 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .adv-section-title::after{content:'▾';font-size:0.9rem;color:var(--muted);transition:transform 0.2s;}
 .adv-section.collapsed .adv-section-title::after{transform:rotate(-90deg);}
 .adv-section-body{padding:10px;}
-.adv-section.collapsed .adv-section-body{display:none;}
+.adv-section.collapsed .adv-section-body{display:none !important;}
 .cb-label{display:flex;align-items:center;gap:4px;font-size:0.75rem;cursor:pointer;line-height:1.6;}
 .cb-label input{accent-color:var(--gold);cursor:pointer;flex-shrink:0;}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1px 8px;}
@@ -324,15 +324,9 @@ footer a{color:var(--gold);text-decoration:none;}
             </label>
             <div id="colorCodingOptions" style="display:none;flex-direction:column;gap:8px;">
               <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
-                <button id="colorModeVowel" class="color-mode-btn active" onclick="setColorMode('vowel')">Vowel</button>
-                <button id="colorModeBoth" class="color-mode-btn" onclick="setColorMode('both')">Vowel + Letter</button>
-              </div>
-              <div id="colorStyleRow" style="display:none;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
-                <button id="colorStyleLetter" class="color-mode-btn active" onclick="setColorStyle('color')">Color Letter</button>
-                <button id="colorStyleHighlight" class="color-mode-btn" onclick="setColorStyle('highlight')">Highlight</button>
-              </div>
-              <div id="colorMobileNote" style="display:none;font-size:0.68rem;color:var(--muted);background:var(--warm-gray);border-radius:4px;padding:5px 7px;line-height:1.4;">
-                ⚠️ Vowel coloring may not display correctly on mobile — please view on desktop for the best experience.
+                <button id="colorModeLetter"    class="color-mode-btn active" onclick="setColorMode('letter')">Letter</button>
+                <button id="colorModeHighlight" class="color-mode-btn"        onclick="setColorMode('highlight')">Highlight</button>
+                <button id="colorModeUnderline" class="color-mode-btn"        onclick="setColorMode('underline')">Underline</button>
               </div>
               <div id="colorPickerList"></div>
               <button class="pos-all-btn" onclick="resetNikudColors()" style="font-size:0.68rem;width:100%;">↺ Reset to defaults</button>
@@ -1011,32 +1005,32 @@ const VOWEL_COLOR_DEFS = [
   { key: 'a',       name: 'Kamatz',       example: 'אָ' },
   { key: 'patah',   name: 'Patach',       example: 'אַ' },
   { key: 'hpatah',  name: 'Hataf Patach', example: 'אֲ' },
+  { key: 'hkamatz', name: 'Hataf Kamatz', example: 'אֳ' },
   { key: 'e',       name: 'Segol',        example: 'אֶ' },
   { key: 'hsegol',  name: 'Hataf Segol',  example: 'אֱ' },
   { key: 'tzere',   name: 'Tzere',        example: 'אֵ' },
   { key: 'i',       name: 'Chirik',       example: 'אִ' },
   { key: 'o',       name: 'Holam',        example: 'אֹ' },
   { key: 'vcholam', name: 'Vav Holam',    example: 'וֹ' },
-  { key: 'hkamatz', name: 'Hataf Kamatz', example: 'אֳ' },
   { key: 'u',       name: 'Kubutz',       example: 'אֻ' },
   { key: 'shuruk',  name: 'Shuruk',       example: 'וּ' },
   { key: 'sh',      name: 'Shva',         example: 'אְ' },
 ];
 const NIKUD_DEFAULTS_LIGHT = {
-  a:'#0099bb',patah:'#0099bb',hpatah:'#0099bb',
+  a:'#0099bb',patah:'#0099bb',hpatah:'#0099bb',hkamatz:'#0099bb',
   e:'#cc3333',hsegol:'#cc3333',
   tzere:'#7777aa',
   i:'#228833',
-  o:'#bb8800',vcholam:'#bb8800',hkamatz:'#bb8800',
+  o:'#bb8800',vcholam:'#bb8800',
   u:'#3355cc',shuruk:'#3355cc',
   sh:'#8833bb'
 };
 const NIKUD_DEFAULTS_DARK = {
-  a:'#33ccee',patah:'#33ccee',hpatah:'#33ccee',
+  a:'#33ccee',patah:'#33ccee',hpatah:'#33ccee',hkamatz:'#33ccee',
   e:'#ee5555',hsegol:'#ee5555',
   tzere:'#aaaadd',
   i:'#44cc66',
-  o:'#ddaa00',vcholam:'#ddaa00',hkamatz:'#ddaa00',
+  o:'#ddaa00',vcholam:'#ddaa00',
   u:'#6688ff',shuruk:'#6688ff',
   sh:'#bb66ee'
 };
@@ -1046,8 +1040,7 @@ const NIKUD_CHAR_TO_KEY = {
   'ֹ':'o', 'ֻ':'u', 'ְ':'sh'
 };
 let colorCodingEnabled = false;
-let colorCodingMode = 'vowel';
-let colorStyle = 'color'; // 'color' | 'highlight'
+let colorCodingMode = 'letter'; // 'letter' | 'highlight' | 'underline'
 let nikudColorOverrides = {};
 
 function getNikudColor(key) {
@@ -1086,12 +1079,12 @@ function colorizeHebrew(text) {
     if (!primaryKey) { out.push(ch + nikudStr); i = j; continue; }
     const color = getNikudColor(primaryKey);
     const syllable = ch + nikudStr;
-    if (colorStyle === 'highlight') {
+    if (colorCodingMode === 'highlight') {
       out.push(`<span style="background-color:${color}50;border-radius:2px;">${syllable}</span>`);
-    } else if (colorCodingMode === 'both') {
-      out.push(`<span style="color:${color}">${syllable}</span>`);
+    } else if (colorCodingMode === 'underline') {
+      out.push(`<span style="text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${syllable}</span>`);
     } else {
-      out.push(`<span style="color:${color};opacity:0.55">${syllable}</span>`);
+      out.push(`<span style="color:${color}">${syllable}</span>`);
     }
     i = j;
   }
@@ -1101,29 +1094,27 @@ function colorizeHebrew(text) {
 function toggleColorCoding(on) {
   colorCodingEnabled = on;
   document.getElementById('colorCodingOptions').style.display = on ? 'flex' : 'none';
-  updateColorMobileNote();
   rerender();
 }
 
 function applyColorExStyle(el, color) {
   const example = el.dataset.example || el.textContent;
   el.style.color = '';
-  el.style.opacity = '';
   el.style.backgroundColor = '';
   el.style.borderRadius = '';
   el.style.textDecoration = '';
   el.style.textUnderlineOffset = '';
-  if (colorStyle === 'highlight') {
-    el.textContent = example;
+  el.style.textDecorationThickness = '';
+  el.textContent = example;
+  if (colorCodingMode === 'highlight') {
     el.style.backgroundColor = color + '50';
     el.style.borderRadius = '2px';
-  } else if (colorCodingMode === 'both') {
-    el.textContent = example;
-    el.style.color = color;
+  } else if (colorCodingMode === 'underline') {
+    el.style.textDecoration = `underline solid ${color}`;
+    el.style.textDecorationThickness = '2px';
+    el.style.textUnderlineOffset = '0.4em';
   } else {
-    el.textContent = example;
     el.style.color = color;
-    el.style.opacity = '0.55';
   }
 }
 
@@ -1134,31 +1125,11 @@ function refreshColorExPreviews() {
   });
 }
 
-function isMobileDevice() {
-  return /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
-}
-
-function updateColorMobileNote() {
-  const note = document.getElementById('colorMobileNote');
-  if (note) note.style.display = (colorCodingEnabled && colorStyle === 'color' && colorCodingMode === 'vowel' && isMobileDevice()) ? 'block' : 'none';
-}
-
 function setColorMode(mode) {
   colorCodingMode = mode;
-  document.getElementById('colorModeVowel').classList.toggle('active', mode === 'vowel');
-  document.getElementById('colorModeBoth').classList.toggle('active', mode === 'both');
-  document.getElementById('colorStyleRow').style.display = (mode === 'both') ? 'flex' : 'none';
-  if (mode === 'vowel') { colorStyle = 'color'; document.getElementById('colorStyleLetter').classList.add('active'); document.getElementById('colorStyleHighlight').classList.remove('active'); }
-  updateColorMobileNote();
-  refreshColorExPreviews();
-  if (colorCodingEnabled) rerender();
-}
-
-function setColorStyle(style) {
-  colorStyle = style;
-  document.getElementById('colorStyleLetter').classList.toggle('active', style === 'color');
-  document.getElementById('colorStyleHighlight').classList.toggle('active', style === 'highlight');
-  updateColorMobileNote();
+  document.getElementById('colorModeLetter').classList.toggle('active',    mode === 'letter');
+  document.getElementById('colorModeHighlight').classList.toggle('active', mode === 'highlight');
+  document.getElementById('colorModeUnderline').classList.toggle('active', mode === 'underline');
   refreshColorExPreviews();
   if (colorCodingEnabled) rerender();
 }

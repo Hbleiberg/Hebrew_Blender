@@ -2134,12 +2134,9 @@
                 </div>
                 <div id="colorCodingOptions" style="display:none;flex-direction:column;gap:8px;">
                   <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
-                    <button id="colorModeVowel" class="color-mode-btn active" onclick="setColorMode('vowel')">Vowel</button>
-                    <button id="colorModeBoth" class="color-mode-btn" onclick="setColorMode('both')">Vowel + Letter</button>
-                  </div>
-                  <div id="colorStyleRow" style="display:none;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
-                    <button id="colorStyleLetter" class="color-mode-btn active" onclick="setColorStyle('color')">Color Letter</button>
-                    <button id="colorStyleHighlight" class="color-mode-btn" onclick="setColorStyle('highlight')">Highlight</button>
+                    <button id="colorModeLetter"    class="color-mode-btn active" onclick="setColorMode('letter')">Letter</button>
+                    <button id="colorModeHighlight" class="color-mode-btn"        onclick="setColorMode('highlight')">Highlight</button>
+                    <button id="colorModeUnderline" class="color-mode-btn"        onclick="setColorMode('underline')">Underline</button>
                   </div>
 <div id="colorPickerList"></div>
                   <button class="btn-xs" onclick="resetNikudColors()" style="font-size:0.68rem;width:100%;">↺ Reset to defaults</button>
@@ -2436,8 +2433,7 @@ const NIKUD_DEFAULTS_DARK = {
   sh:'#bb66ee'
 };
 let colorCodingEnabled = false;
-let colorCodingMode = 'vowel';
-let colorStyle = 'color'; // 'color' | 'highlight'
+let colorCodingMode = 'letter'; // 'letter' | 'highlight' | 'underline'
 let nikudColorOverrides = {};
 let blends = [];
 let lastShetefItems = null;
@@ -2801,7 +2797,6 @@ function getSettings() {
     // Color coding
     colorCoding:       colorCodingEnabled,
     colorCodingMode,
-    colorStyle,
     nikudColorOverrides: { ...nikudColorOverrides },
   };
 }
@@ -2933,8 +2928,13 @@ function applySettings(s) {
     document.getElementById('colorCodingToggle').checked = colorCodingEnabled;
     document.getElementById('colorCodingOptions').style.display = colorCodingEnabled ? 'flex' : 'none';
   }
-  if (s.colorCodingMode) { colorCodingMode = s.colorCodingMode; setColorMode(s.colorCodingMode); }
-  if (s.colorStyle) { colorStyle = s.colorStyle; setColorStyle(s.colorStyle); }
+  if (s.colorCodingMode) {
+    // Migrate old format: ('vowel'/'both' + colorStyle) → new ('letter'/'highlight'/'underline')
+    let mode = s.colorCodingMode;
+    if (mode === 'vowel') mode = 'underline';
+    else if (mode === 'both') mode = (s.colorStyle === 'highlight') ? 'highlight' : 'letter';
+    setColorMode(mode);
+  }
   if (s.nikudColorOverrides) {
     nikudColorOverrides = { ...s.nikudColorOverrides };
     updateColorPickerValues();
@@ -3227,15 +3227,12 @@ function colorizeHebrew(text, mode) {
     if (!key) { out.push(ch + marks); i = j; continue; } // only dagesh, no vowel — no color
     const color = getNikudColor(key);
     const syllable = ch + marks;
-    if (colorStyle === 'highlight') {
+    if (mode === 'highlight') {
       out.push(`<span style="background-color:${color}50;border-radius:2px;">${syllable}</span>`);
-    } else if (mode === 'both') {
-      out.push(`<span style="color:${color}">${syllable}</span>`);
-    } else {
-      // vowel mode: HTML combining chars cannot be colored independently of their base letter
-      // (putting them in a separate span makes them invisible/misaligned in all browsers).
-      // Use a colored underline at the nikkud level instead — letter stays in default color.
+    } else if (mode === 'underline') {
       out.push(`<span style="text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${syllable}</span>`);
+    } else {
+      out.push(`<span style="color:${color}">${syllable}</span>`);
     }
     i = j;
   }
@@ -3250,18 +3247,9 @@ function toggleColorCoding(on) {
 
 function setColorMode(mode) {
   colorCodingMode = mode;
-  document.getElementById('colorModeVowel').classList.toggle('active', mode === 'vowel');
-  document.getElementById('colorModeBoth').classList.toggle('active', mode === 'both');
-  document.getElementById('colorStyleRow').style.display = (mode === 'both') ? 'flex' : 'none';
-  if (mode === 'vowel') { colorStyle = 'color'; document.getElementById('colorStyleLetter').classList.add('active'); document.getElementById('colorStyleHighlight').classList.remove('active'); }
-  refreshColorExPreviews();
-  renderWorksheet(false);
-}
-
-function setColorStyle(style) {
-  colorStyle = style;
-  document.getElementById('colorStyleLetter').classList.toggle('active', style === 'color');
-  document.getElementById('colorStyleHighlight').classList.toggle('active', style === 'highlight');
+  document.getElementById('colorModeLetter').classList.toggle('active',    mode === 'letter');
+  document.getElementById('colorModeHighlight').classList.toggle('active', mode === 'highlight');
+  document.getElementById('colorModeUnderline').classList.toggle('active', mode === 'underline');
   refreshColorExPreviews();
   renderWorksheet(false);
 }
@@ -3269,24 +3257,21 @@ function setColorStyle(style) {
 function applyColorExStyle(el, color) {
   const example = el.dataset.example || el.textContent;
   el.style.color = '';
-  el.style.opacity = '';
   el.style.backgroundColor = '';
   el.style.borderRadius = '';
   el.style.textDecoration = '';
   el.style.textUnderlineOffset = '';
-  if (colorStyle === 'highlight') {
-    el.textContent = example;
+  el.style.textDecorationThickness = '';
+  el.textContent = example;
+  if (colorCodingMode === 'highlight') {
     el.style.backgroundColor = color + '50';
     el.style.borderRadius = '2px';
-  } else if (colorCodingMode === 'both') {
-    el.textContent = example;
-    el.style.color = color;
-  } else {
-    // vowel mode preview: colored underline shows vowel class; letter stays in default color
-    el.textContent = example;
+  } else if (colorCodingMode === 'underline') {
     el.style.textDecoration = `underline solid ${color}`;
     el.style.textDecorationThickness = '2px';
     el.style.textUnderlineOffset = '0.4em';
+  } else {
+    el.style.color = color;
   }
 }
 
