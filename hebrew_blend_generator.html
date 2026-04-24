@@ -3224,10 +3224,10 @@ function colorizeHebrew(text, mode) {
     if (mode === 'both') {
       out.push(`<span style="color:${color}">${syllable}</span>`);
     } else {
-      // "Vowel" mode: outer span sets vowel color; inner span resets consonant to normal text
-      // color; combining marks stay as direct text children of outer span so they remain in
-      // the same shaping run as the consonant and don't float on WebKit
-      out.push(`<span style="color:${color}"><span style="color:var(--text)">${ch}</span>${marks}</span>`);
+      // "Vowel" mode: color the whole syllable at reduced opacity so the vowel mark stands out
+      // visually while the consonant feels de-emphasized. Keeping base+marks in one span is the
+      // only way to prevent combining chars from floating on iOS Safari.
+      out.push(`<span style="color:${color};opacity:0.55">${syllable}</span>`);
     }
     i = j;
   }
@@ -3252,20 +3252,17 @@ function applyColorExStyle(el, color) {
   const example  = el.dataset.example  || el.textContent;
   const vowelKey = el.dataset.vowelKey || '';
   el.style.color = '';
+  el.style.opacity = '';
   el.style.textDecoration = '';
   el.style.textUnderlineOffset = '';
   if (colorCodingMode === 'both') {
     el.textContent = example;
     el.style.color = color;
+    el.style.opacity = '';
   } else {
-    // Same inner-outer pattern as colorizeHebrew: base letter resets to --text, marks inherit color
-    let base = '', nikud = '';
-    for (const c of [...example]) {
-      const cp = c.codePointAt(0);
-      if (cp >= 0x05D0 && cp <= 0x05EA) base += c;
-      else if (cp >= 0x05B0 && cp <= 0x05C7) nikud += c;
-    }
-    el.innerHTML = `<span style="color:${color}"><span style="color:var(--text)">${base}</span>${nikud}</span>`;
+    el.textContent = example;
+    el.style.color = color;
+    el.style.opacity = '0.55';
   }
 }
 
