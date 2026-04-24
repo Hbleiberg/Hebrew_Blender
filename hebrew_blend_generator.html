@@ -3993,14 +3993,8 @@ function generate(animate = false) {
         // Standalone וֹ/וּ acts as the first letter — pair with second (or third) consonant
         firstDisplay = vowel === 'vcholam' ? 'וֹ' : 'וּ';
         firstSound   = getSound(getLetter('ו'), vowel);
-        // Fall through to 2-letter or 3-letter block below
-      } else if (!threeLetter) {
-        // 2-letter mode, vav-as-vowel: consonant+vav is the complete blend
-        blends.push({ hebrewDisplay: firstDisplay, combined: firstSound, key: first + vowel });
-        continue;
-      } else {
-        continue; // 3-letter mode, vav-as-vowel would produce 4 visible chars — skip
       }
+      // vavAsLetter=false: vav is the vowel marker on the consonant — fall through normally
     }
 
     if (threeLetter) {
