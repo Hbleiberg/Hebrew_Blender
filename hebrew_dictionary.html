@@ -1081,7 +1081,18 @@ function colorizeHebrew(text) {
     if (colorCodingMode === 'both') {
       out.push(`<span style="color:${color}">${syllable}</span>`);
     } else {
-      out.push(`<span style="text-decoration:underline 2px solid ${color};text-underline-offset:0.6em;text-decoration-skip-ink:none">${syllable}</span>`);
+      // "Vowel" mode: color only the combining marks; base letter inherits default color
+      out.push(ch);
+      for (const m of [...nikudStr]) {
+        const isVavHolam  = isVav && m === 'ֹ';
+        const isVavShuruk = isVav && m === 'ּ';
+        let mKey = null;
+        if (isVavHolam)  mKey = 'vcholam';
+        else if (isVavShuruk) mKey = 'shuruk';
+        else if (m !== 'ּ') mKey = NIKUD_CHAR_TO_KEY[m];
+        const mColor = mKey ? getNikudColor(mKey) : null;
+        out.push(mColor ? `<span style="color:${mColor}">${m}</span>` : m);
+      }
     }
     i = j;
   }
@@ -1095,14 +1106,24 @@ function toggleColorCoding(on) {
 }
 
 function applyColorExStyle(el, color) {
+  const example  = el.dataset.example  || el.textContent;
+  const vowelKey = el.dataset.vowelKey || '';
+  el.style.color = '';
+  el.style.textDecoration = '';
+  el.style.textUnderlineOffset = '';
   if (colorCodingMode === 'both') {
+    el.textContent = example;
     el.style.color = color;
-    el.style.textDecoration = '';
-    el.style.textUnderlineOffset = '';
   } else {
-    el.style.color = '';
-    el.style.textDecoration = `underline 2px solid ${color}`;
-    el.style.textUnderlineOffset = '0.6em';
+    const DAGESH_CH = 'ּ';
+    let html = '';
+    for (const c of [...example]) {
+      const cp = c.codePointAt(0);
+      const isNikud = cp >= 0x05B0 && cp <= 0x05C7;
+      const shouldColor = isNikud && (c !== DAGESH_CH || vowelKey === 'shuruk');
+      html += shouldColor ? `<span style="color:${color}">${c}</span>` : c;
+    }
+    el.innerHTML = html;
   }
 }
 
@@ -1131,8 +1152,9 @@ function initColorPickers() {
     const ex = document.createElement('div');
     ex.className = 'color-pick-example';
     ex.id = `colorEx_${def.key}`;
+    ex.dataset.example  = def.example;
+    ex.dataset.vowelKey = def.key;
     applyColorExStyle(ex, getNikudColor(def.key));
-    ex.textContent = def.example;
     const lbl = document.createElement('span');
     lbl.style.cssText = 'flex:1;font-size:0.75rem;';
     lbl.textContent = def.name;
