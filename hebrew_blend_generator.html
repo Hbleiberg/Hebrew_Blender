@@ -2141,10 +2141,7 @@
                     <button id="colorStyleLetter" class="color-mode-btn active" onclick="setColorStyle('color')">Color Letter</button>
                     <button id="colorStyleHighlight" class="color-mode-btn" onclick="setColorStyle('highlight')">Highlight</button>
                   </div>
-                  <div id="colorMobileNote" style="display:none;font-size:0.68rem;color:var(--muted);background:var(--warm-gray);border-radius:4px;padding:5px 7px;line-height:1.4;">
-                    ⚠️ Vowel coloring may not display correctly on mobile — please view on desktop for the best experience.
-                  </div>
-                  <div id="colorPickerList"></div>
+<div id="colorPickerList"></div>
                   <button class="btn-xs" onclick="resetNikudColors()" style="font-size:0.68rem;width:100%;">↺ Reset to defaults</button>
                 </div>
               </div>
@@ -3192,12 +3189,11 @@ const NIKUD_CHAR_TO_KEY = {
   'ֹ':'o', 'ֻ':'u', 'ְ':'sh'
 };
 
-// Color Hebrew text by syllable. Always wraps base-letter + all its combining marks
-// together in one span so combining chars never detach.
-// "vowel" mode  → colored underline under the syllable; text stays neutral.
-// "both" mode   → colored text for the whole syllable.
+// Color Hebrew text by syllable.
+// "vowel" mode  → only the nikkud marks are colored; the base letter stays in the default text color.
+// "both" mode   → the whole syllable (letter + nikkud) is colored.
 // Bare consonants (no vowel mark, or only dagesh) are never colored.
-// Dagesh (U+05BC) on non-vav letters is never treated as a vowel.
+// Dagesh (U+05BC) on non-vav letters is not treated as a vowel.
 function colorizeHebrew(text, mode) {
   if (!colorCodingEnabled) return text;
   const DAGESH = 'ּ';
@@ -3236,7 +3232,17 @@ function colorizeHebrew(text, mode) {
     } else if (mode === 'both') {
       out.push(`<span style="color:${color}">${syllable}</span>`);
     } else {
-      out.push(`<span style="color:${color};opacity:0.55">${syllable}</span>`);
+      // vowel mode: letter (and non-vowel marks like dagesh) stays in default text color;
+      // only the actual vowel nikkud marks are colored.
+      // Dagesh on vav acts as shuruk (a vowel), so it IS colored in that case.
+      let letterPart = ch;
+      let vowelPart = '';
+      for (const m of [...marks]) {
+        const isVowelMark = (isVav && (m === 'ֹ' || m === DAGESH)) ||
+                            (!isVav && m !== DAGESH && !!NIKUD_CHAR_TO_KEY[m]);
+        if (isVowelMark) vowelPart += m; else letterPart += m;
+      }
+      out.push(`${letterPart}<span style="color:${color}">${vowelPart}</span>`);
     }
     i = j;
   }
@@ -3246,17 +3252,7 @@ function colorizeHebrew(text, mode) {
 function toggleColorCoding(on) {
   colorCodingEnabled = on;
   document.getElementById('colorCodingOptions').style.display = on ? 'flex' : 'none';
-  updateColorMobileNote();
   renderWorksheet(false);
-}
-
-function isMobileDevice() {
-  return /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
-}
-
-function updateColorMobileNote() {
-  const note = document.getElementById('colorMobileNote');
-  if (note) note.style.display = (colorCodingEnabled && colorStyle === 'color' && colorCodingMode === 'vowel' && isMobileDevice()) ? 'block' : 'none';
 }
 
 function setColorMode(mode) {
@@ -3265,7 +3261,6 @@ function setColorMode(mode) {
   document.getElementById('colorModeBoth').classList.toggle('active', mode === 'both');
   document.getElementById('colorStyleRow').style.display = (mode === 'both') ? 'flex' : 'none';
   if (mode === 'vowel') { colorStyle = 'color'; document.getElementById('colorStyleLetter').classList.add('active'); document.getElementById('colorStyleHighlight').classList.remove('active'); }
-  updateColorMobileNote();
   refreshColorExPreviews();
   renderWorksheet(false);
 }
@@ -3274,7 +3269,6 @@ function setColorStyle(style) {
   colorStyle = style;
   document.getElementById('colorStyleLetter').classList.toggle('active', style === 'color');
   document.getElementById('colorStyleHighlight').classList.toggle('active', style === 'highlight');
-  updateColorMobileNote();
   refreshColorExPreviews();
   renderWorksheet(false);
 }
@@ -3295,9 +3289,11 @@ function applyColorExStyle(el, color) {
     el.textContent = example;
     el.style.color = color;
   } else {
-    el.textContent = example;
-    el.style.color = color;
-    el.style.opacity = '0.55';
+    // vowel mode preview: letter in default color, nikkud marks in vowel color
+    const exChars = [...example];
+    const letterChar = exChars[0];
+    const nikudChars = exChars.slice(1).join('');
+    el.innerHTML = `${letterChar}<span style="color:${color}">${nikudChars}</span>`;
   }
 }
 
