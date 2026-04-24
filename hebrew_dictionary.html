@@ -314,6 +314,28 @@ footer a{color:var(--gold);text-decoration:none;}
           </div>
         </div>
 
+        <!-- Color Code Nikkud -->
+        <div class="adv-section collapsed">
+          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Color Code Nikkud</div>
+          <div class="adv-section-body" style="display:flex;flex-direction:column;gap:6px;">
+            <label class="cb-label" style="font-size:0.78rem;">
+              <input type="checkbox" id="colorCodingToggle" style="accent-color:var(--gold);" onchange="toggleColorCoding(this.checked)">
+              Enable color coding
+            </label>
+            <div id="colorCodingOptions" style="display:none;flex-direction:column;gap:8px;">
+              <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
+                <button id="colorModeVowel" class="color-mode-btn active" onclick="setColorMode('vowel')">Vowel</button>
+                <button id="colorModeBoth" class="color-mode-btn" onclick="setColorMode('both')">Vowel + Letter</button>
+              </div>
+              <div id="colorMobileNote" style="display:none;font-size:0.68rem;color:var(--muted);background:var(--warm-gray);border-radius:4px;padding:5px 7px;line-height:1.4;">
+                ⚠️ Vowel coloring may not display correctly on mobile — please view on desktop for the best experience.
+              </div>
+              <div id="colorPickerList"></div>
+              <button class="pos-all-btn" onclick="resetNikudColors()" style="font-size:0.68rem;width:100%;">↺ Reset to defaults</button>
+            </div>
+          </div>
+        </div>
+
         <!-- Copy Options -->
         <div class="adv-section collapsed">
           <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Copy Options</div>
@@ -362,28 +384,6 @@ footer a{color:var(--gold);text-decoration:none;}
             </div>
             <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
             <label class="cb-label"><input type="checkbox" id="enableSortGematriaCb" style="accent-color:var(--gold);" onchange="toggleGematriaSort(this.checked)"> Enable Sort By Gematria Value<span class="tip-wrap">?<span class="tip-box">Adds Gematria ↑ and Gematria ↓ options to the Sort menu, letting you order words by their total Gematria value.</span></span></label>
-          </div>
-        </div>
-
-        <!-- Color Code Nikkud -->
-        <div class="adv-section collapsed">
-          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Color Code Nikkud</div>
-          <div class="adv-section-body" style="display:flex;flex-direction:column;gap:6px;">
-            <label class="cb-label" style="font-size:0.78rem;">
-              <input type="checkbox" id="colorCodingToggle" style="accent-color:var(--gold);" onchange="toggleColorCoding(this.checked)">
-              Enable color coding
-            </label>
-            <div id="colorCodingOptions" style="display:none;flex-direction:column;gap:8px;">
-              <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
-                <button id="colorModeVowel" class="color-mode-btn active" onclick="setColorMode('vowel')">Vowel</button>
-                <button id="colorModeBoth" class="color-mode-btn" onclick="setColorMode('both')">Vowel + Letter</button>
-              </div>
-              <div id="colorMobileNote" style="display:none;font-size:0.68rem;color:var(--muted);background:var(--warm-gray);border-radius:4px;padding:5px 7px;line-height:1.4;">
-                ⚠️ Vowel coloring may not display correctly on mobile — please view on desktop for the best experience.
-              </div>
-              <div id="colorPickerList"></div>
-              <button class="pos-all-btn" onclick="resetNikudColors()" style="font-size:0.68rem;width:100%;">↺ Reset to defaults</button>
-            </div>
           </div>
         </div>
 
