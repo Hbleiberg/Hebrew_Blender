@@ -2137,6 +2137,10 @@
                     <button id="colorModeVowel" class="color-mode-btn active" onclick="setColorMode('vowel')">Vowel</button>
                     <button id="colorModeBoth" class="color-mode-btn" onclick="setColorMode('both')">Vowel + Letter</button>
                   </div>
+                  <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
+                    <button id="colorStyleLetter" class="color-mode-btn active" onclick="setColorStyle('color')">Color Letter</button>
+                    <button id="colorStyleHighlight" class="color-mode-btn" onclick="setColorStyle('highlight')">Highlight</button>
+                  </div>
                   <div id="colorMobileNote" style="display:none;font-size:0.68rem;color:var(--muted);background:var(--warm-gray);border-radius:4px;padding:5px 7px;line-height:1.4;">
                     ⚠️ Vowel coloring may not display correctly on mobile — please view on desktop for the best experience.
                   </div>
@@ -2436,6 +2440,7 @@ const NIKUD_DEFAULTS_DARK = {
 };
 let colorCodingEnabled = false;
 let colorCodingMode = 'vowel';
+let colorStyle = 'color'; // 'color' | 'highlight'
 let nikudColorOverrides = {};
 let blends = [];
 let lastShetefItems = null;
@@ -2799,6 +2804,7 @@ function getSettings() {
     // Color coding
     colorCoding:       colorCodingEnabled,
     colorCodingMode,
+    colorStyle,
     nikudColorOverrides: { ...nikudColorOverrides },
   };
 }
@@ -2931,6 +2937,7 @@ function applySettings(s) {
     document.getElementById('colorCodingOptions').style.display = colorCodingEnabled ? 'flex' : 'none';
   }
   if (s.colorCodingMode) { colorCodingMode = s.colorCodingMode; setColorMode(s.colorCodingMode); }
+  if (s.colorStyle) { colorStyle = s.colorStyle; setColorStyle(s.colorStyle); }
   if (s.nikudColorOverrides) {
     nikudColorOverrides = { ...s.nikudColorOverrides };
     updateColorPickerValues();
@@ -3224,12 +3231,11 @@ function colorizeHebrew(text, mode) {
     if (!key) { out.push(ch + marks); i = j; continue; } // only dagesh, no vowel — no color
     const color = getNikudColor(key);
     const syllable = ch + marks;
-    if (mode === 'both') {
+    if (colorStyle === 'highlight') {
+      out.push(`<span style="background-color:${color}50;border-radius:2px;">${syllable}</span>`);
+    } else if (mode === 'both') {
       out.push(`<span style="color:${color}">${syllable}</span>`);
     } else {
-      // "Vowel" mode: color the whole syllable at reduced opacity so the vowel mark stands out
-      // visually while the consonant feels de-emphasized. Keeping base+marks in one span is the
-      // only way to prevent combining chars from floating on iOS Safari.
       out.push(`<span style="color:${color};opacity:0.55">${syllable}</span>`);
     }
     i = j;
@@ -3240,8 +3246,7 @@ function colorizeHebrew(text, mode) {
 function toggleColorCoding(on) {
   colorCodingEnabled = on;
   document.getElementById('colorCodingOptions').style.display = on ? 'flex' : 'none';
-  const note = document.getElementById('colorMobileNote');
-  if (note) note.style.display = (on && colorCodingMode === 'vowel' && isMobileDevice()) ? 'block' : 'none';
+  updateColorMobileNote();
   renderWorksheet(false);
 }
 
@@ -3249,29 +3254,44 @@ function isMobileDevice() {
   return /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
+function updateColorMobileNote() {
+  const note = document.getElementById('colorMobileNote');
+  if (note) note.style.display = (colorCodingEnabled && colorStyle === 'color' && colorCodingMode === 'vowel' && isMobileDevice()) ? 'block' : 'none';
+}
+
 function setColorMode(mode) {
   colorCodingMode = mode;
   document.getElementById('colorModeVowel').classList.toggle('active', mode === 'vowel');
   document.getElementById('colorModeBoth').classList.toggle('active', mode === 'both');
-  const note = document.getElementById('colorMobileNote');
-  if (note) note.style.display = (mode === 'vowel' && isMobileDevice()) ? 'block' : 'none';
+  updateColorMobileNote();
+  refreshColorExPreviews();
+  renderWorksheet(false);
+}
+
+function setColorStyle(style) {
+  colorStyle = style;
+  document.getElementById('colorStyleLetter').classList.toggle('active', style === 'color');
+  document.getElementById('colorStyleHighlight').classList.toggle('active', style === 'highlight');
+  updateColorMobileNote();
   refreshColorExPreviews();
   renderWorksheet(false);
 }
 
 function applyColorExStyle(el, color) {
-  const example  = el.dataset.example  || el.textContent;
-  const vowelKey = el.dataset.vowelKey || '';
+  const example = el.dataset.example || el.textContent;
   el.style.color = '';
   el.style.opacity = '';
+  el.style.backgroundColor = '';
+  el.style.borderRadius = '';
   el.style.textDecoration = '';
   el.style.textUnderlineOffset = '';
-  if (colorCodingMode === 'both') {
-    el.textContent = example;
+  el.textContent = example;
+  if (colorStyle === 'highlight') {
+    el.style.backgroundColor = color + '50';
+    el.style.borderRadius = '2px';
+  } else if (colorCodingMode === 'both') {
     el.style.color = color;
-    el.style.opacity = '';
   } else {
-    el.textContent = example;
     el.style.color = color;
     el.style.opacity = '0.55';
   }

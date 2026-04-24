@@ -327,6 +327,10 @@ footer a{color:var(--gold);text-decoration:none;}
                 <button id="colorModeVowel" class="color-mode-btn active" onclick="setColorMode('vowel')">Vowel</button>
                 <button id="colorModeBoth" class="color-mode-btn" onclick="setColorMode('both')">Vowel + Letter</button>
               </div>
+              <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
+                <button id="colorStyleLetter" class="color-mode-btn active" onclick="setColorStyle('color')">Color Letter</button>
+                <button id="colorStyleHighlight" class="color-mode-btn" onclick="setColorStyle('highlight')">Highlight</button>
+              </div>
               <div id="colorMobileNote" style="display:none;font-size:0.68rem;color:var(--muted);background:var(--warm-gray);border-radius:4px;padding:5px 7px;line-height:1.4;">
                 ⚠️ Vowel coloring may not display correctly on mobile — please view on desktop for the best experience.
               </div>
@@ -1043,6 +1047,7 @@ const NIKUD_CHAR_TO_KEY = {
 };
 let colorCodingEnabled = false;
 let colorCodingMode = 'vowel';
+let colorStyle = 'color'; // 'color' | 'highlight'
 let nikudColorOverrides = {};
 
 function getNikudColor(key) {
@@ -1081,7 +1086,9 @@ function colorizeHebrew(text) {
     if (!primaryKey) { out.push(ch + nikudStr); i = j; continue; }
     const color = getNikudColor(primaryKey);
     const syllable = ch + nikudStr;
-    if (colorCodingMode === 'both') {
+    if (colorStyle === 'highlight') {
+      out.push(`<span style="background-color:${color}50;border-radius:2px;">${syllable}</span>`);
+    } else if (colorCodingMode === 'both') {
       out.push(`<span style="color:${color}">${syllable}</span>`);
     } else {
       out.push(`<span style="color:${color};opacity:0.55">${syllable}</span>`);
@@ -1094,24 +1101,25 @@ function colorizeHebrew(text) {
 function toggleColorCoding(on) {
   colorCodingEnabled = on;
   document.getElementById('colorCodingOptions').style.display = on ? 'flex' : 'none';
-  const note = document.getElementById('colorMobileNote');
-  if (note) note.style.display = (on && colorCodingMode === 'vowel' && isMobileDevice()) ? 'block' : 'none';
+  updateColorMobileNote();
   rerender();
 }
 
 function applyColorExStyle(el, color) {
-  const example  = el.dataset.example  || el.textContent;
-  const vowelKey = el.dataset.vowelKey || '';
+  const example = el.dataset.example || el.textContent;
   el.style.color = '';
   el.style.opacity = '';
+  el.style.backgroundColor = '';
+  el.style.borderRadius = '';
   el.style.textDecoration = '';
   el.style.textUnderlineOffset = '';
-  if (colorCodingMode === 'both') {
-    el.textContent = example;
+  el.textContent = example;
+  if (colorStyle === 'highlight') {
+    el.style.backgroundColor = color + '50';
+    el.style.borderRadius = '2px';
+  } else if (colorCodingMode === 'both') {
     el.style.color = color;
-    el.style.opacity = '';
   } else {
-    el.textContent = example;
     el.style.color = color;
     el.style.opacity = '0.55';
   }
@@ -1128,12 +1136,25 @@ function isMobileDevice() {
   return /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
+function updateColorMobileNote() {
+  const note = document.getElementById('colorMobileNote');
+  if (note) note.style.display = (colorCodingEnabled && colorStyle === 'color' && colorCodingMode === 'vowel' && isMobileDevice()) ? 'block' : 'none';
+}
+
 function setColorMode(mode) {
   colorCodingMode = mode;
   document.getElementById('colorModeVowel').classList.toggle('active', mode === 'vowel');
   document.getElementById('colorModeBoth').classList.toggle('active', mode === 'both');
-  const note = document.getElementById('colorMobileNote');
-  if (note) note.style.display = (mode === 'vowel' && isMobileDevice()) ? 'block' : 'none';
+  updateColorMobileNote();
+  refreshColorExPreviews();
+  if (colorCodingEnabled) rerender();
+}
+
+function setColorStyle(style) {
+  colorStyle = style;
+  document.getElementById('colorStyleLetter').classList.toggle('active', style === 'color');
+  document.getElementById('colorStyleHighlight').classList.toggle('active', style === 'highlight');
+  updateColorMobileNote();
   refreshColorExPreviews();
   if (colorCodingEnabled) rerender();
 }
