@@ -207,6 +207,12 @@
   .day-item.colored .day-eng { color: rgba(255,255,255,0.85); }
   .day-item.day-today { box-shadow: 0 0 0 3px var(--gold); transform: scale(1.02); }
   body.dark .day-item:not(.colored) { background: #232b40; color: var(--text); }
+  /* English mode: badge on left, text left-aligned */
+  .day-item.badge-left .day-badge { order: -1; }
+  .day-item.badge-left .day-main { align-items: flex-start; direction: ltr; }
+  .day-item.badge-left .badge-text { direction: ltr; font-family: inherit; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.03em; }
+  /* Both mode: English sub-label under Hebrew badge text */
+  .badge-text-eng { font-size: 0.6rem; color: var(--gold-light); margin-top: 2px; direction: ltr; line-height: 1.2; opacity: 0.85; }
 
   /* ───── Center: date/time ───── */
   .dash-center {
@@ -1374,31 +1380,44 @@
       if (i === today) cls += ' day-today';
       const useColor = settings.colorDays !== false;
       if (useColor) cls += ' colored';
-      item.className = cls;
       if (useColor) item.style.background = day.bg;
 
       // Determine badge content
-      let badgeEmoji = '', badgeText = '';
+      let badgeEmoji = '', badgeText = '', badgeEngText = '';
       const emojiSet = (settings.dowEmojiSet && settings.dowEmojiSet !== 'none')
         ? (DOW_EMOJI_SETS[settings.dowEmojiSet] || DOW_EMOJI_SETS.chick) : null;
-      if (i === today  && settings.showToday)        { badgeEmoji = emojiSet ? emojiSet.today : ''; badgeText = hebDisplay('הַיּוֹם'); }
-      else if (i === yest && settings.showYesterday) { badgeEmoji = emojiSet ? emojiSet.yest  : ''; badgeText = hebDisplay('אֶתְמֹל הָיָה'); }
-      else if (i === tom  && settings.showTomorrow)  { badgeEmoji = emojiSet ? emojiSet.tom   : ''; badgeText = hebDisplay('מָחָר יִהְיֶה'); }
+      const lang = settings.dowLang || 'he';
+      if (i === today && settings.showToday) {
+        badgeEmoji = emojiSet ? emojiSet.today : '';
+        badgeText = lang === 'en' ? 'Today' : hebDisplay('הַיּוֹם');
+        if (lang === 'both') badgeEngText = 'Today';
+      } else if (i === yest && settings.showYesterday) {
+        badgeEmoji = emojiSet ? emojiSet.yest : '';
+        badgeText = lang === 'en' ? 'Yesterday' : hebDisplay('אֶתְמֹל הָיָה');
+        if (lang === 'both') badgeEngText = 'Yesterday';
+      } else if (i === tom && settings.showTomorrow) {
+        badgeEmoji = emojiSet ? emojiSet.tom : '';
+        badgeText = lang === 'en' ? 'Tomorrow' : hebDisplay('מָחָר יִהְיֶה');
+        if (lang === 'both') badgeEngText = 'Tomorrow';
+      }
+
+      if (lang === 'en') cls += ' badge-left';
+      item.className = cls;
 
       let nameHtml = '<div class="day-main">';
-      if (settings.dowLang === 'he' || settings.dowLang === 'both') {
+      if (lang === 'he' || lang === 'both')
         nameHtml += `<div class="day-heb">${hebDisplay(day.heb)}</div>`;
-      }
-      if (settings.dowLang === 'en' || settings.dowLang === 'both') {
+      if (lang === 'en' || lang === 'both')
         nameHtml += `<div class="day-eng">${day.eng}</div>`;
-      }
       nameHtml += '</div>';
 
       let badgeHtml = '';
       if (badgeText) {
         badgeHtml = `<div class="day-badge">` +
           (badgeEmoji ? `<div class="badge-emoji">${badgeEmoji}</div>` : '') +
-          `<div class="badge-text">${badgeText}</div></div>`;
+          `<div class="badge-text">${badgeText}</div>` +
+          (badgeEngText ? `<div class="badge-text-eng">${badgeEngText}</div>` : '') +
+          `</div>`;
       }
 
       item.innerHTML = nameHtml + badgeHtml;
