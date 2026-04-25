@@ -1,0 +1,1459 @@
+
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classroom Dashboard — Hebrew Blender</title><!-- Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=G-CMLC81Z0HC"></script><script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CMLC81Z0HC');
+</script><link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=David+Libre:wght@400;500;700&family=Noto+Rashi+Hebrew&display=swap" rel="stylesheet"><!-- Early dark mode (avoid flash) --><script>
+  if (localStorage.getItem('hebrewBlender_darkMode') === '1') {
+    document.documentElement.classList.add('dark-early');
+  }
+</script><style>
+  /* ───── Design tokens ───── */
+  :root {
+    --navy: #1a2744;
+    --navy-deep: #0d1220;
+    --gold: #c9922a;
+    --gold-light: #f0d080;
+    --cream: #fdf8ef;
+    --warm-gray: #e8e0d0;
+    --text: #1a2744;
+    --muted: #6b6050;
+    --border: #c8bfa8;
+    --white: #ffffff;
+    --heb-font: 'Frank Ruhl Libre', serif;
+    --shadow-sm: 0 2px 8px rgba(26, 39, 68, 0.05);
+    --shadow-md: 0 4px 16px rgba(26, 39, 68, 0.08);
+    --shadow-lg: 0 12px 32px rgba(26, 39, 68, 0.12);
+  }
+
+  html.dark-early body,
+  body.dark {
+    --navy: #1a2744;
+    --gold: #e0a832;
+    --gold-light: #f5d97a;
+    --cream: #161c2a;
+    --warm-gray: #1e2535;
+    --text: #dde4f0;
+    --muted: #8a94a8;
+    --border: #2a3349;
+    --white: #1e2535;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ───── Header ───── */
+  header {
+    background: var(--navy);
+    color: var(--white);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 4px solid var(--gold);
+  }
+  body.dark header { background: var(--navy-deep); }
+  .star { font-size: 28px; color: var(--gold); flex-shrink: 0; }
+  .htitle { flex: 1; min-width: 0; }
+  header h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.35rem;
+    color: var(--white);
+    line-height: 1.2;
+  }
+  header p {
+    font-size: 0.78rem;
+    color: var(--gold-light);
+    margin-top: 2px;
+  }
+  .beta-tag {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--navy);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-left: 6px;
+    text-transform: uppercase;
+  }
+  .hright { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+  .hbtn {
+    background: rgba(255,255,255,0.08);
+    color: var(--white);
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+  }
+  .hbtn:hover { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.3); }
+  .hbtn.icon-btn { padding: 7px 10px; font-size: 1rem; }
+  .hbtn svg { width: 16px; height: 16px; }
+
+  /* ───── Dashboard grid ───── */
+  .dashboard {
+    display: grid;
+    grid-template-columns: 290px 1fr 290px;
+    gap: 24px;
+    padding: 28px;
+    min-height: calc(100vh - 76px);
+  }
+  .dash-col {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 18px;
+    box-shadow: var(--shadow-sm);
+  }
+  body.dark .dash-col {
+    background: #1e2535;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  .col-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ───── Days list ───── */
+  .day-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 11px 8px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background: transparent;
+    transition: all 0.25s ease;
+    text-align: center;
+  }
+  .day-item:last-child { margin-bottom: 0; }
+  .day-heb {
+    font-family: var(--heb-font);
+    font-size: 1.45rem;
+    font-weight: 500;
+    direction: rtl;
+    line-height: 1.2;
+  }
+  .day-eng {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 3px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .day-annot {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 5px;
+    font-family: var(--heb-font);
+    direction: rtl;
+  }
+  .day-sunday {
+    background: rgba(220, 60, 60, 0.10);
+    border-color: rgba(220, 60, 60, 0.25);
+  }
+  body.dark .day-sunday {
+    background: rgba(220, 80, 80, 0.15);
+    border-color: rgba(220, 80, 80, 0.35);
+  }
+  .day-shabbat {
+    background: linear-gradient(135deg,
+      rgba(180, 140, 220, 0.18) 0%,
+      rgba(220, 180, 140, 0.18) 50%,
+      rgba(160, 200, 220, 0.18) 100%);
+    border-color: rgba(180, 140, 220, 0.35);
+  }
+  body.dark .day-shabbat {
+    background: linear-gradient(135deg,
+      rgba(180, 140, 220, 0.22) 0%,
+      rgba(220, 180, 140, 0.22) 50%,
+      rgba(160, 200, 220, 0.22) 100%);
+  }
+  .day-today {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201, 146, 42, 0.18);
+    transform: scale(1.03);
+    background: var(--white);
+  }
+  body.dark .day-today { background: #232b40; }
+  .day-today.day-sunday { background: rgba(220, 60, 60, 0.10); }
+  .day-today.day-shabbat {
+    background: linear-gradient(135deg,
+      rgba(180, 140, 220, 0.18) 0%,
+      rgba(220, 180, 140, 0.18) 50%,
+      rgba(160, 200, 220, 0.18) 100%);
+  }
+
+  /* ───── Center: date/time ───── */
+  .dash-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 30px 24px;
+    text-align: center;
+  }
+  .eng-date {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.35rem;
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .heb-date {
+    font-family: var(--heb-font);
+    font-size: 2.6rem;
+    direction: rtl;
+    color: var(--text);
+    font-weight: 500;
+    line-height: 1.2;
+    margin: 4px 0;
+  }
+  .current-time {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 3.4rem;
+    color: var(--navy);
+    letter-spacing: 0.02em;
+    font-weight: 700;
+    margin-top: 6px;
+  }
+  body.dark .current-time { color: var(--gold-light); }
+  .dash-text-display {
+    margin-top: 28px;
+    padding: 22px 18px 4px;
+    border-top: 1px solid var(--border);
+    width: 100%;
+    font-size: 1.2rem;
+    line-height: 1.55;
+  }
+
+  /* ───── Weather ───── */
+  .weather-block { text-align: center; padding: 8px 0; }
+  .weather-emoji { font-size: 4.6rem; margin: 8px 0 4px; line-height: 1; }
+  .weather-temp {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  body.dark .weather-temp { color: var(--gold-light); }
+  .weather-label {
+    font-family: var(--heb-font);
+    font-size: 1.5rem;
+    direction: rtl;
+    color: var(--text);
+    margin-top: 8px;
+  }
+  .weather-label.ltr { direction: ltr; font-family: 'Libre Baskerville', serif; font-size: 1.2rem; }
+  .weather-descriptor {
+    font-family: var(--heb-font);
+    font-size: 1.05rem;
+    direction: rtl;
+    color: var(--muted);
+    margin-top: 4px;
+    font-style: italic;
+  }
+  .weather-descriptor.ltr { direction: ltr; font-family: 'Source Sans 3', sans-serif; }
+  .weather-city {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 16px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .weather-loading {
+    color: var(--muted);
+    font-style: italic;
+    padding: 30px 0;
+    font-size: 0.9rem;
+  }
+
+  /* ───── Settings drawer ───── */
+  .settings-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(13, 18, 32, 0.45);
+    z-index: 90;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .settings-backdrop.open { opacity: 1; pointer-events: auto; }
+  .settings-modal {
+    position: fixed;
+    top: 0; right: 0;
+    width: 380px;
+    max-width: 92vw;
+    height: 100vh;
+    background: var(--white);
+    border-left: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+    z-index: 100;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .settings-modal.open { transform: translateX(0); }
+  .settings-header {
+    padding: 14px 20px;
+    background: var(--navy);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  body.dark .settings-header { background: var(--navy-deep); }
+  .settings-header h2 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    color: var(--white);
+  }
+  .settings-close {
+    background: rgba(255,255,255,0.12);
+    color: var(--white);
+    border: none;
+    border-radius: 4px;
+    width: 32px; height: 32px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    line-height: 1;
+    transition: background 0.15s;
+  }
+  .settings-close:hover { background: rgba(255,255,255,0.22); }
+  .settings-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+  }
+
+  /* ───── Panel ───── */
+  .panel {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  body.dark .panel { background: var(--navy-deep); }
+  .panel:last-child { margin-bottom: 0; }
+  .panel-title {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 9px 14px;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  body.dark .panel-title { background: #0a0f1c; }
+  .panel-title::after { content: '−'; color: var(--gold-light); font-size: 1.1rem; line-height: 0.5; }
+  .panel.collapsed .panel-title::after { content: '+'; }
+  .panel-body { padding: 14px; }
+  .panel.collapsed .panel-body { display: none; }
+
+  /* ───── Form rows ───── */
+  .form-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 10px;
+  }
+  .form-row:last-child { margin-bottom: 0; }
+  .form-row label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    flex: 1;
+    color: var(--text);
+  }
+  .panel hr {
+    margin: 12px 0;
+    border: none;
+    border-top: 1px solid var(--border);
+  }
+
+  input[type="text"], select, input[type="number"], textarea {
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: var(--text);
+    padding: 6px 9px;
+    border-radius: 4px;
+    font: inherit;
+    font-size: 0.85rem;
+    width: 100%;
+    max-width: 180px;
+  }
+  body.dark input[type="text"], body.dark select,
+  body.dark input[type="number"], body.dark textarea {
+    background: var(--navy-deep);
+    color: var(--text);
+  }
+  textarea { max-width: 100%; }
+
+  .btn {
+    background: var(--gold);
+    color: var(--navy);
+    border: 1px solid var(--gold);
+    padding: 7px 14px;
+    border-radius: 5px;
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.15s;
+  }
+  .btn:hover { background: var(--gold-light); border-color: var(--gold-light); }
+  .btn-xs { padding: 4px 9px; font-size: 0.75rem; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border);
+  }
+  .btn-secondary:hover { background: var(--warm-gray); border-color: var(--muted); }
+  body.dark .btn-secondary { color: var(--text); }
+  body.dark .btn-secondary:hover { background: #2a3349; }
+
+  /* ───── Toggle switch ───── */
+  .toggle {
+    position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; inset: 0;
+    background: var(--border);
+    border-radius: 22px;
+    transition: 0.2s;
+    cursor: pointer;
+  }
+  .slider::before {
+    content: '';
+    position: absolute;
+    height: 16px; width: 16px;
+    left: 3px; top: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.2s;
+  }
+  input:checked + .slider { background: var(--gold); }
+  input:checked + .slider::before { transform: translateX(16px); }
+
+  /* ───── Radio group ───── */
+  .radio-group {
+    display: inline-flex;
+    gap: 3px;
+    background: var(--warm-gray);
+    border-radius: 5px;
+    padding: 3px;
+  }
+  body.dark .radio-group { background: #2a3349; }
+  .radio-group input { display: none; }
+  .radio-group label {
+    text-align: center;
+    padding: 4px 10px;
+    border-radius: 3px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--muted);
+    transition: 0.15s;
+    flex: none;
+  }
+  .radio-group input:checked + label {
+    background: var(--white);
+    color: var(--gold);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  body.dark .radio-group input:checked + label { background: #1e2535; color: var(--gold-light); }
+
+  /* ───── Presets ───── */
+  .preset-list {
+    display: flex; flex-direction: column;
+    gap: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 8px;
+  }
+  .preset-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.82rem;
+  }
+  body.dark .preset-item { background: var(--navy-deep); }
+  .preset-name { flex: 1; font-weight: 600; }
+  .preset-empty {
+    color: var(--muted);
+    font-size: 0.78rem;
+    padding: 8px;
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* ───── Editor toolbar ───── */
+  .editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 6px;
+    background: var(--warm-gray);
+    border-radius: 4px 4px 0 0;
+    border: 1px solid var(--border);
+    border-bottom: none;
+    margin-top: 8px;
+  }
+  body.dark .editor-toolbar { background: #2a3349; }
+  .ed-btn {
+    background: var(--white);
+    border: 1px solid var(--border);
+    padding: 4px 9px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text);
+    font-family: inherit;
+  }
+  body.dark .ed-btn { background: var(--navy-deep); }
+  .ed-btn:hover { background: var(--gold-light); color: var(--navy); }
+  .ed-color {
+    width: 32px; height: 28px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    cursor: pointer;
+    background: var(--white);
+  }
+  .ed-select {
+    width: auto;
+    max-width: 90px;
+    padding: 3px 6px;
+    font-size: 0.78rem;
+  }
+  .editor {
+    border: 1px solid var(--border);
+    background: var(--white);
+    padding: 10px;
+    min-height: 90px;
+    border-radius: 0 0 4px 4px;
+    font-size: 0.95rem;
+    outline: none;
+    direction: auto;
+  }
+  body.dark .editor { background: var(--navy-deep); color: var(--text); }
+  .editor:focus { border-color: var(--gold); }
+
+  /* ───── Font selector ───── */
+  .font-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
+  .font-opt {
+    border: 1px solid var(--border);
+    background: var(--white);
+    padding: 8px 6px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    text-align: center;
+    direction: rtl;
+    transition: all 0.15s;
+    color: var(--text);
+  }
+  body.dark .font-opt { background: var(--navy-deep); }
+  .font-opt:hover { border-color: var(--gold); }
+  .font-opt.active {
+    border-color: var(--gold);
+    background: rgba(201, 146, 42, 0.12);
+    color: var(--gold);
+  }
+  body.dark .font-opt.active { background: rgba(224, 168, 50, 0.18); color: var(--gold-light); }
+
+  /* ───── Fullscreen ───── */
+  body.fullscreen header { display: none; }
+  body.fullscreen .dashboard {
+    min-height: 100vh;
+    padding: 40px;
+    gap: 32px;
+  }
+  body.fullscreen .heb-date { font-size: 3.2rem; }
+  body.fullscreen .current-time { font-size: 4.2rem; }
+  body.fullscreen .weather-emoji { font-size: 5.6rem; }
+  body.fullscreen .weather-temp { font-size: 3rem; }
+
+  /* ───── Responsive ───── */
+  @media (max-width: 980px) {
+    .dashboard { grid-template-columns: 1fr; gap: 16px; padding: 18px; }
+    header { padding: 12px 18px; }
+    header h1 { font-size: 1.15rem; }
+    header p { display: none; }
+  }
+  @media (max-width: 600px) {
+    .hbtn { padding: 6px 8px; font-size: 0.78rem; }
+    .hbtn .hbtn-label { display: none; }
+    .heb-date { font-size: 2rem; }
+    .current-time { font-size: 2.6rem; }
+  }
+</style></head>
+<body><header>
+  <div class="star">✡</div>
+  <div class="htitle">
+    <h1>Classroom Dashboard <span class="beta-tag">Beta</span></h1>
+    <p>Live Hebrew date, time, weather, and days of the week</p>
+  </div>
+  <div class="hright">
+    <a class="hbtn" href="index.html"><span>←</span><span class="hbtn-label">Home</span></a>
+    <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
+    <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
+    <button id="fsBtn" class="hbtn icon-btn" onclick="toggleFullscreen()" title="Fullscreen"></button>
+  </div>
+</header><div class="dashboard">
+  <!-- LEFT: Days -->
+  <div class="dash-col">
+    <div class="col-title">Days of the Week</div>
+    <div id="daysList"></div>
+  </div><!-- CENTER: Date / Time / Custom Text --><div class="dash-col dash-center">
+    <div id="dateTimeBlock" style="width:100%;">
+      <div class="eng-date" id="engDate"></div>
+      <div class="heb-date" id="hebDate"></div>
+      <div class="current-time" id="currentTime"></div>
+    </div>
+    <div id="dashTextWrap" style="display:none;width:100%;">
+      <div id="dashTextDisplay" class="dash-text-display"></div>
+    </div>
+  </div><!-- RIGHT: Weather --><div class="dash-col">
+    <div class="col-title">Weather</div>
+    <div id="weatherBlock" class="weather-block">
+      <div class="weather-loading">Loading weather…</div>
+    </div>
+  </div>
+</div><!-- ───── Settings drawer ───── --><div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
+<div class="settings-modal" id="settingsModal">
+  <div class="settings-header">
+    <h2>⚙️  Dashboard Settings</h2>
+    <button class="settings-close" onclick="closeSettings()" title="Close">×</button>
+  </div>
+  <div class="settings-body">
+<div class="panel">
+  <div class="panel-title">Location</div>
+  <div class="panel-body">
+    <div class="form-row">
+      <input type="text" id="locationInput" placeholder="City, e.g. New York" style="max-width:220px;">
+      <button class="btn btn-xs" onclick="updateLocation()">Update</button>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-title">Date &amp; Time</div>
+  <div class="panel-body">
+    <div class="form-row">
+      <label>English format</label>
+      <div class="radio-group">
+        <input type="radio" name="engDateFmt" id="ef-mdy" value="MDY"><label for="ef-mdy">M/D/Y</label>
+        <input type="radio" name="engDateFmt" id="ef-dmy" value="DMY"><label for="ef-dmy">D/M/Y</label>
+        <input type="radio" name="engDateFmt" id="ef-long" value="LONG"><label for="ef-long">Long</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Show weekday in English date</label>
+      <span class="toggle"><input type="checkbox" id="showEngDOW"><span class="slider"></span></span>
+    </div>
+    <div class="form-row">
+      <label>Hide English date</label>
+      <span class="toggle"><input type="checkbox" id="hideEngDate"><span class="slider"></span></span>
+    </div>
+    <hr>
+    <div class="form-row">
+      <label>Hebrew date</label>
+      <div class="radio-group">
+        <input type="radio" name="hebDateScript" id="hs-he" value="he"><label for="hs-he">עִבְרִית</label>
+        <input type="radio" name="hebDateScript" id="hs-translit" value="translit"><label for="hs-translit">A–Z</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Hide Hebrew date</label>
+      <span class="toggle"><input type="checkbox" id="hideHebDate"><span class="slider"></span></span>
+    </div>
+    <hr>
+    <div class="form-row">
+      <label>Time format</label>
+      <div class="radio-group">
+        <input type="radio" name="timeFmt" id="tf-12" value="12"><label for="tf-12">12-hr</label>
+        <input type="radio" name="timeFmt" id="tf-24" value="24"><label for="tf-24">24-hr</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Hide time</label>
+      <span class="toggle"><input type="checkbox" id="hideTime"><span class="slider"></span></span>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-title">Weather</div>
+  <div class="panel-body">
+    <div class="form-row">
+      <label>Temperature unit</label>
+      <div class="radio-group">
+        <input type="radio" name="tempUnit" id="tu-f" value="F"><label for="tu-f">°F</label>
+        <input type="radio" name="tempUnit" id="tu-c" value="C"><label for="tu-c">°C</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Label language</label>
+      <div class="radio-group">
+        <input type="radio" name="weatherLabelLang" id="wl-he" value="he"><label for="wl-he">עִבְרִית</label>
+        <input type="radio" name="weatherLabelLang" id="wl-en" value="en"><label for="wl-en">English</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Hide weather</label>
+      <span class="toggle"><input type="checkbox" id="hideWeather"><span class="slider"></span></span>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-title">Day of Week</div>
+  <div class="panel-body">
+    <div class="form-row">
+      <label>Display</label>
+      <div class="radio-group">
+        <input type="radio" name="dowLang" id="dl-he" value="he"><label for="dl-he">עִבְרִית</label>
+        <input type="radio" name="dowLang" id="dl-both" value="both"><label for="dl-both">Both</label>
+        <input type="radio" name="dowLang" id="dl-en" value="en"><label for="dl-en">English</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Yesterday/today/tomorrow markers</label>
+      <span class="toggle"><input type="checkbox" id="showYestTomorrow"><span class="slider"></span></span>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-title">Dashboard Text</div>
+  <div class="panel-body">
+    <div class="form-row">
+      <label>Show custom text</label>
+      <span class="toggle"><input type="checkbox" id="enableDashText"><span class="slider"></span></span>
+    </div>
+    <div class="editor-toolbar">
+      <button class="ed-btn" onclick="fmt('bold')" type="button"><b>B</b></button>
+      <button class="ed-btn" onclick="fmt('italic')" type="button"><i>I</i></button>
+      <button class="ed-btn" onclick="fmt('underline')" type="button"><u>U</u></button>
+      <button class="ed-btn" onclick="setAlign('Right')" type="button">RTL</button>
+      <button class="ed-btn" onclick="setAlign('Center')" type="button">Ctr</button>
+      <button class="ed-btn" onclick="setAlign('Left')" type="button">LTR</button>
+      <input type="color" class="ed-color" onchange="fmt('foreColor', this.value)" title="Text color">
+      <select class="ed-select" onchange="fmt('fontSize', this.value)" title="Size">
+        <option value="3">Normal</option>
+        <option value="5">Large</option>
+        <option value="6">XL</option>
+        <option value="7">XXL</option>
+      </select>
+    </div>
+    <div id="dashEditor" class="editor" contenteditable="true" oninput="syncDashText()"></div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-title">Presets</div>
+  <div class="panel-body">
+    <div class="form-row">
+      <input type="text" id="presetName" placeholder="Preset name" style="max-width:200px;">
+      <button class="btn btn-xs" onclick="savePreset()">Save</button>
+    </div>
+    <div class="preset-list" id="presetList"></div>
+    <hr>
+    <div style="display:flex;gap:6px;margin-bottom:8px;">
+      <button class="btn btn-xs btn-secondary" onclick="exportPresets()" style="flex:1;">Export</button>
+      <button class="btn btn-xs btn-secondary" onclick="importPresets()" style="flex:1;">Import</button>
+    </div>
+    <textarea id="presetBackupBox" placeholder="Paste backup JSON here, or click Export…" style="height:80px;font-family:monospace;font-size:0.72rem;"></textarea>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-title">Hebrew Settings</div>
+  <div class="panel-body">
+    <div style="margin-bottom:8px;font-size:0.85rem;font-weight:600;">Hebrew font</div>
+    <div class="font-options" id="fontOptions"></div>
+    <hr>
+    <div class="form-row">
+      <label>Show nikkud</label>
+      <span class="toggle"><input type="checkbox" id="showNikkud"><span class="slider"></span></span>
+    </div>
+    <div class="form-row">
+      <label>Color-code nikkud</label>
+      <span class="toggle"><input type="checkbox" id="colorCodeNikkud"><span class="slider"></span></span>
+    </div>
+  </div>
+</div>
+</div>
+</div><script>
+  /* ────────── CONSTANTS ────────── */
+  const DAYS = [
+    {heb:'יוֹם רִאשׁוֹן',  eng:'Sunday',    cls:'day-sunday'},
+    {heb:'יוֹם שֵׁנִי',    eng:'Monday',    cls:''},
+    {heb:'יוֹם שְׁלִישִׁי', eng:'Tuesday',   cls:''},
+    {heb:'יוֹם רְבִיעִי',   eng:'Wednesday', cls:''},
+    {heb:'יוֹם חֲמִישִׁי',  eng:'Thursday',  cls:''},
+    {heb:'יוֹם שִׁישִּׁי',  eng:'Friday',    cls:''},
+    {heb:'יוֹם שַׁבָּת',    eng:'Saturday',  cls:'day-shabbat'},
+  ];
+
+  const HEB_MONTHS_HE = ['תִּשְׁרֵי','חֶשְׁוָן','כִּסְלֵו','טֵבֵת','שְׁבָט','אֲדָר','אֲדָר א׳','אֲדָר ב׳','נִיסָן','אִיָּר','סִיוָן','תַּמּוּז','אָב','אֱלוּל'];
+  const HEB_MONTHS_TRANSLIT = ['Tishrei','Cheshvan','Kislev','Tevet','Shevat','Adar','Adar I','Adar II','Nisan','Iyar','Sivan','Tammuz','Av','Elul'];
+
+  const WEATHER_WMO = {
+    0:  {emoji:'☀️',  he:'שֶׁמֶשׁ',          en:'Clear'},
+    1:  {emoji:'🌤️', he:'מְעֻנָּן חֶלְקִית', en:'Partly Cloudy'},
+    2:  {emoji:'⛅',  he:'מְעֻנָּן חֶלְקִית', en:'Partly Cloudy'},
+    3:  {emoji:'☁️',  he:'עֲנָנִים',         en:'Overcast'},
+    45: {emoji:'🌫️', he:'עֲרָפֶל',          en:'Fog'},
+    48: {emoji:'🌫️', he:'עֲרָפֶל',          en:'Fog'},
+    51: {emoji:'🌦️', he:'טַפְטוּף',          en:'Drizzle'},
+    53: {emoji:'🌦️', he:'טַפְטוּף',          en:'Drizzle'},
+    55: {emoji:'🌦️', he:'טַפְטוּף',          en:'Drizzle'},
+    61: {emoji:'🌧️', he:'גֶּשֶׁם',           en:'Rain'},
+    63: {emoji:'🌧️', he:'גֶּשֶׁם',           en:'Rain'},
+    65: {emoji:'🌧️', he:'גֶּשֶׁם חָזָק',     en:'Heavy Rain'},
+    71: {emoji:'❄️',  he:'שֶׁלֶג',           en:'Snow'},
+    73: {emoji:'❄️',  he:'שֶׁלֶג',           en:'Snow'},
+    75: {emoji:'❄️',  he:'שֶׁלֶג חָזָק',     en:'Heavy Snow'},
+    77: {emoji:'❄️',  he:'שֶׁלֶג',           en:'Snow Grains'},
+    80: {emoji:'🌧️', he:'גֶּשֶׁם',           en:'Showers'},
+    81: {emoji:'🌧️', he:'גֶּשֶׁם',           en:'Showers'},
+    82: {emoji:'🌧️', he:'גֶּשֶׁם חָזָק',     en:'Heavy Showers'},
+    85: {emoji:'🌨️', he:'שֶׁלֶג',           en:'Snow Showers'},
+    86: {emoji:'🌨️', he:'שֶׁלֶג חָזָק',     en:'Snow Showers'},
+    95: {emoji:'⛈️', he:'סְעָרָה',          en:'Thunderstorm'},
+    96: {emoji:'⛈️', he:'סְעָרָה',          en:'Thunderstorm'},
+    99: {emoji:'⛈️', he:'סְעָרָה חֲזָקָה',  en:'Thunderstorm'},
+  };
+
+  const HEB_FONTS = [
+    {name:'Frank Ruhl Libre',  family:"'Frank Ruhl Libre', serif",  display:'אִיָּר'},
+    {name:'David Libre',       family:"'David Libre', serif",        display:'אִיָּר'},
+    {name:'Noto Rashi',        family:"'Noto Rashi Hebrew', serif",  display:'אִיָּר'},
+    {name:'Serif',             family:"serif",                        display:'אִיָּר'},
+  ];
+
+  const FS_ENTER = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>';
+  const FS_EXIT  = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>';
+
+  /* ────────── STATE ────────── */
+  let settings = {
+    location: 'New York',
+    engDateFmt: 'MDY',
+    showEngDOW: false,
+    hideEngDate: false,
+    hebDateScript: 'he',
+    hideHebDate: false,
+    timeFmt: '12',
+    hideTime: false,
+    tempUnit: 'F',
+    weatherLabelLang: 'he',
+    hideWeather: false,
+    dowLang: 'he',
+    showYestTomorrow: true,
+    enableDashText: false,
+    dashTextHTML: '',
+    hebFont: 'Frank Ruhl Libre',
+    showNikkud: true,
+    colorCodeNikkud: false,
+  };
+  let presets = {};
+  let weatherCache = null;
+  let weatherTimer = null;
+  let clockInterval = null;
+
+  /* ────────── HEBREW CALENDAR (Reingold-Dershowitz) ────────── */
+  function gregorianToJDN(y, m, d) {
+    const a  = Math.floor((14 - m) / 12);
+    const yy = y + 4800 - a;
+    const mm = m + 12 * a - 3;
+    return d + Math.floor((153 * mm + 2) / 5) + 365 * yy
+         + Math.floor(yy / 4) - Math.floor(yy / 100) + Math.floor(yy / 400) - 32045;
+  }
+
+  function hebrewLeapYear(y) { return ((7 * y + 1) % 19) < 7; }
+  function hebrewMonthsInYear(y) { return hebrewLeapYear(y) ? 13 : 12; }
+
+  function hebrewCalendarElapsedDays(y) {
+    const monthsElapsed = 235 * Math.floor((y - 1) / 19) + 12 * ((y - 1) % 19) +
+                          Math.floor((7 * ((y - 1) % 19) + 1) / 19);
+    const partsElapsed  = 204 + 793 * (monthsElapsed % 1080);
+    const hoursElapsed  = 5 + 12 * monthsElapsed
+                          + 793 * Math.floor(monthsElapsed / 1080)
+                          + Math.floor(partsElapsed / 1080);
+    const conjunctionDay   = 1 + 29 * monthsElapsed + Math.floor(hoursElapsed / 24);
+    const conjunctionParts = 1080 * (hoursElapsed % 24) + (partsElapsed % 1080);
+
+    let altDay = conjunctionDay;
+    if (conjunctionParts >= 19440 ||
+        ((conjunctionDay % 7) === 2 && conjunctionParts >= 9924  && !hebrewLeapYear(y)) ||
+        ((conjunctionDay % 7) === 1 && conjunctionParts >= 16789 &&  hebrewLeapYear(y - 1))) {
+      altDay = conjunctionDay + 1;
+    }
+    if ((altDay % 7) === 0 || (altDay % 7) === 3 || (altDay % 7) === 5) altDay += 1;
+    return altDay;
+  }
+
+  function hebrewYearLength(y) { return hebrewCalendarElapsedDays(y + 1) - hebrewCalendarElapsedDays(y); }
+  function longCheshvan(y) { return hebrewYearLength(y) % 10 === 5; }
+  function shortKislev(y)  { return hebrewYearLength(y) % 10 === 3; }
+
+  function daysInHebrewMonth(m, y) {
+    if (m === 1) return 30;                                  // Tishrei
+    if (m === 2) return longCheshvan(y) ? 30 : 29;           // Cheshvan
+    if (m === 3) return shortKislev(y) ? 29 : 30;            // Kislev
+    if (m === 4) return 29;                                  // Tevet
+    if (m === 5) return 30;                                  // Shevat
+    if (m === 6) return hebrewLeapYear(y) ? 30 : 29;         // Adar I (leap) or Adar
+    if (m === 7 && hebrewLeapYear(y)) return 29;             // Adar II
+    if (!hebrewLeapYear(y)) {
+      // m=7 Nisan, 8 Iyar, 9 Sivan, 10 Tammuz, 11 Av, 12 Elul
+      return [30, 29, 30, 29, 30, 29][m - 7];
+    } else {
+      // m=8 Nisan, 9 Iyar, ..., 13 Elul
+      return [30, 29, 30, 29, 30, 29][m - 8];
+    }
+  }
+
+  const JDN_AM1 = 347997; // 1 Tishrei AM 1 in Julian Day Number
+
+  function hebrewToJDN(y, m, d) {
+    let jdn = JDN_AM1 + hebrewCalendarElapsedDays(y);
+    for (let mi = 1; mi < m; mi++) jdn += daysInHebrewMonth(mi, y);
+    return jdn + d - 1;
+  }
+
+  function jdnToHebrew(jdn) {
+    let y = Math.floor((jdn - JDN_AM1) / 365.25) + 1;
+    while (hebrewToJDN(y + 1, 1, 1) <= jdn) y++;
+    while (hebrewToJDN(y, 1, 1) > jdn) y--;
+    let m = 1;
+    const total = hebrewMonthsInYear(y);
+    while (m <= total) {
+      const monthEnd = hebrewToJDN(y, m, daysInHebrewMonth(m, y));
+      if (jdn <= monthEnd) break;
+      m++;
+    }
+    const monthStart = hebrewToJDN(y, m, 1);
+    return { year: y, month: m, day: jdn - monthStart + 1 };
+  }
+
+  function monthIdx(m, y) {
+    const leap = hebrewLeapYear(y);
+    if (m <= 5) return m - 1;                       // Tishrei..Shevat
+    if (m === 6) return leap ? 6 : 5;               // Adar I or Adar
+    if (m === 7) return leap ? 7 : 8;               // Adar II or Nisan
+    if (leap)   return 8 + (m - 8);                 // Nisan..Elul (leap)
+    return 9 + (m - 8);                             // Iyar..Elul (non-leap)
+  }
+
+  function numToHebLetters(n) {
+    const HUNDREDS = ['','ק','ר','ש','ת','תק','תר','תש','תת','תתק'];
+    const TENS     = ['','י','כ','ל','מ','נ','ס','ע','פ','צ'];
+    const ONES     = ['','א','ב','ג','ד','ה','ו','ז','ח','ט'];
+    n = n % 1000;
+    const h = Math.floor(n / 100);
+    const t = Math.floor((n % 100) / 10);
+    const o = n % 10;
+    let r = HUNDREDS[h];
+    if (t === 1 && o === 5)      r += 'טו';
+    else if (t === 1 && o === 6) r += 'טז';
+    else                         r += TENS[t] + ONES[o];
+    if (r.length > 1)      r = r.slice(0, -1) + '״' + r.slice(-1);
+    else if (r.length === 1) r += '׳';
+    return r;
+  }
+
+  function formatHebDate(date) {
+    const jdn = gregorianToJDN(date.getFullYear(), date.getMonth() + 1, date.getDate());
+    const heb = jdnToHebrew(jdn);
+    const idx = monthIdx(heb.month, heb.year);
+    if (settings.hebDateScript === 'translit') {
+      return `${heb.day} ${HEB_MONTHS_TRANSLIT[idx]} ${heb.year}`;
+    }
+    return `${numToHebLetters(heb.day)} ${HEB_MONTHS_HE[idx]} ${numToHebLetters(heb.year)}`;
+  }
+
+  /* ────────── NIKKUD ────────── */
+  const NIKKUD_RE = /[\u0591-\u05C7]/g;
+  function maybeStripNikkud(s) { return settings.showNikkud ? s : s.replace(NIKKUD_RE, ''); }
+
+  /* ────────── DATE / TIME DISPLAY ────────── */
+  function updateDateTimeDisplay() {
+    const now = new Date();
+
+    const engEl = document.getElementById('engDate');
+    if (settings.hideEngDate) {
+      engEl.style.display = 'none';
+    } else {
+      engEl.style.display = '';
+      let s = '';
+      if (settings.engDateFmt === 'LONG') {
+        const opts = { year: 'numeric', month: 'long', day: 'numeric' };
+        if (settings.showEngDOW) opts.weekday = 'long';
+        s = now.toLocaleDateString('en-US', opts);
+      } else {
+        const m = now.getMonth() + 1, d = now.getDate(), y = now.getFullYear();
+        s = settings.engDateFmt === 'DMY' ? `${d}/${m}/${y}` : `${m}/${d}/${y}`;
+        if (settings.showEngDOW) s = now.toLocaleDateString('en-US', { weekday: 'long' }) + ', ' + s;
+      }
+      engEl.textContent = s;
+    }
+
+    const hebEl = document.getElementById('hebDate');
+    if (settings.hideHebDate) {
+      hebEl.style.display = 'none';
+    } else {
+      hebEl.style.display = '';
+      hebEl.textContent = settings.hebDateScript === 'he'
+        ? maybeStripNikkud(formatHebDate(now))
+        : formatHebDate(now);
+      hebEl.style.direction = settings.hebDateScript === 'he' ? 'rtl' : 'ltr';
+      hebEl.style.fontFamily = settings.hebDateScript === 'he'
+        ? 'var(--heb-font)'
+        : "'Libre Baskerville', serif";
+    }
+
+    const timeEl = document.getElementById('currentTime');
+    if (settings.hideTime) {
+      timeEl.style.display = 'none';
+    } else {
+      timeEl.style.display = '';
+      const opts = settings.timeFmt === '24'
+        ? { hour: '2-digit', minute: '2-digit', hour12: false }
+        : { hour: 'numeric', minute: '2-digit', hour12: true };
+      timeEl.textContent = now.toLocaleTimeString('en-US', opts);
+    }
+  }
+
+  function startClock() {
+    updateDateTimeDisplay();
+    if (clockInterval) clearInterval(clockInterval);
+    clockInterval = setInterval(updateDateTimeDisplay, 1000);
+  }
+
+  /* ────────── DAYS LIST ────────── */
+  function renderDaysList() {
+    const today = new Date().getDay();
+    const list = document.getElementById('daysList');
+    list.innerHTML = '';
+    const yest = (today + 6) % 7;
+    const tom  = (today + 1) % 7;
+
+    DAYS.forEach((day, i) => {
+      const item = document.createElement('div');
+      let cls = 'day-item ' + (day.cls || '');
+      if (i === today) cls += ' day-today';
+      item.className = cls.trim();
+
+      let html = '';
+      if (settings.dowLang === 'he' || settings.dowLang === 'both') {
+        html += `<div class="day-heb">${maybeStripNikkud(day.heb)}</div>`;
+      }
+      if (settings.dowLang === 'en' || settings.dowLang === 'both') {
+        html += `<div class="day-eng">${day.eng}</div>`;
+      }
+      if (settings.showYestTomorrow) {
+        if (i === today)      html += `<div class="day-annot">🐣 ${maybeStripNikkud('הַיּוֹם')}</div>`;
+        else if (i === yest)  html += `<div class="day-annot">🥚 ${maybeStripNikkud('אֶתְמוֹל הָיָה')}</div>`;
+        else if (i === tom)   html += `<div class="day-annot">🐔 ${maybeStripNikkud('מָחָר יִהְיֶה')}</div>`;
+      }
+      item.innerHTML = html;
+      list.appendChild(item);
+    });
+  }
+
+  /* ────────── WEATHER (Open-Meteo, no API key) ────────── */
+  async function fetchWeather() {
+    if (settings.hideWeather) {
+      document.getElementById('weatherBlock').innerHTML = '';
+      return;
+    }
+    const block = document.getElementById('weatherBlock');
+    block.innerHTML = '<div class="weather-loading">Loading weather…</div>';
+    try {
+      const geoRes = await fetch(
+        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(settings.location)}&count=1`
+      );
+      const geo = await geoRes.json();
+      if (!geo.results || !geo.results.length) {
+        block.innerHTML = `<div class="weather-loading">Location "${settings.location}" not found.</div>`;
+        return;
+      }
+      const place = geo.results[0];
+      const wRes = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,weathercode`
+      );
+      const wData = await wRes.json();
+      weatherCache = { data: wData, place };
+      renderWeather();
+    } catch (e) {
+      block.innerHTML = '<div class="weather-loading">Weather unavailable</div>';
+    }
+  }
+
+  function renderWeather() {
+    const block = document.getElementById('weatherBlock');
+    if (settings.hideWeather) { block.innerHTML = ''; return; }
+    if (!weatherCache) return;
+
+    const { data, place } = weatherCache;
+    const tempC = data.current.temperature_2m;
+    const tempStr = settings.tempUnit === 'F'
+      ? Math.round(tempC * 9 / 5 + 32) + '°F'
+      : Math.round(tempC) + '°C';
+    const code = data.current.weathercode;
+    const w = WEATHER_WMO[code] || { emoji: '🌤️', he: 'מֶזֶג אֲוִיר', en: 'Weather' };
+    const isHe = settings.weatherLabelLang === 'he';
+    const label = isHe ? maybeStripNikkud(w.he) : w.en;
+    let descriptor;
+    if (isHe) {
+      descriptor = tempC > 25 ? 'חָם' : tempC < 15 ? 'קַר' : 'נָעִים';
+      descriptor = maybeStripNikkud(descriptor);
+    } else {
+      descriptor = tempC > 25 ? 'Hot' : tempC < 15 ? 'Cold' : 'Pleasant';
+    }
+    block.innerHTML = `
+      <div class="weather-emoji">${w.emoji}</div>
+      <div class="weather-temp">${tempStr}</div>
+      <div class="weather-label ${isHe ? '' : 'ltr'}">${label}</div>
+      <div class="weather-descriptor ${isHe ? '' : 'ltr'}">${descriptor}</div>
+      <div class="weather-city">${place.name}${place.country ? ', ' + place.country : ''}</div>
+    `;
+  }
+
+  function scheduleWeatherRefresh() {
+    fetchWeather();
+    if (weatherTimer) clearInterval(weatherTimer);
+    weatherTimer = setInterval(fetchWeather, 30 * 60 * 1000);
+  }
+
+  function updateLocation() {
+    const v = document.getElementById('locationInput').value.trim();
+    if (!v) return;
+    settings.location = v;
+    saveSettingsToStorage();
+    fetchWeather();
+  }
+
+  /* ────────── SETTINGS DRAWER ────────── */
+  function openSettings() {
+    document.getElementById('settingsBackdrop').classList.add('open');
+    document.getElementById('settingsModal').classList.add('open');
+    syncFormToSettings();
+  }
+  function closeSettings() {
+    document.getElementById('settingsBackdrop').classList.remove('open');
+    document.getElementById('settingsModal').classList.remove('open');
+    saveSettingsToStorage();
+  }
+
+  function syncFormToSettings() {
+    const $ = id => document.getElementById(id);
+    $('locationInput').value = settings.location;
+    document.querySelector(`input[name="engDateFmt"][value="${settings.engDateFmt}"]`).checked = true;
+    $('showEngDOW').checked = settings.showEngDOW;
+    $('hideEngDate').checked = settings.hideEngDate;
+    document.querySelector(`input[name="hebDateScript"][value="${settings.hebDateScript}"]`).checked = true;
+    $('hideHebDate').checked = settings.hideHebDate;
+    document.querySelector(`input[name="timeFmt"][value="${settings.timeFmt}"]`).checked = true;
+    $('hideTime').checked = settings.hideTime;
+    document.querySelector(`input[name="tempUnit"][value="${settings.tempUnit}"]`).checked = true;
+    document.querySelector(`input[name="weatherLabelLang"][value="${settings.weatherLabelLang}"]`).checked = true;
+    $('hideWeather').checked = settings.hideWeather;
+    document.querySelector(`input[name="dowLang"][value="${settings.dowLang}"]`).checked = true;
+    $('showYestTomorrow').checked = settings.showYestTomorrow;
+    $('enableDashText').checked = settings.enableDashText;
+    $('showNikkud').checked = settings.showNikkud;
+    $('colorCodeNikkud').checked = settings.colorCodeNikkud;
+  }
+
+  function wireFormListeners() {
+    const refreshAll = () => { updateDateTimeDisplay(); renderDaysList(); renderWeather(); };
+    document.querySelectorAll('input[name="engDateFmt"]').forEach(r =>
+      r.addEventListener('change', () => { settings.engDateFmt = r.value; updateDateTimeDisplay(); }));
+    document.getElementById('showEngDOW').addEventListener('change', e => { settings.showEngDOW = e.target.checked; updateDateTimeDisplay(); });
+    document.getElementById('hideEngDate').addEventListener('change', e => { settings.hideEngDate = e.target.checked; updateDateTimeDisplay(); });
+    document.querySelectorAll('input[name="hebDateScript"]').forEach(r =>
+      r.addEventListener('change', () => { settings.hebDateScript = r.value; updateDateTimeDisplay(); }));
+    document.getElementById('hideHebDate').addEventListener('change', e => { settings.hideHebDate = e.target.checked; updateDateTimeDisplay(); });
+    document.querySelectorAll('input[name="timeFmt"]').forEach(r =>
+      r.addEventListener('change', () => { settings.timeFmt = r.value; updateDateTimeDisplay(); }));
+    document.getElementById('hideTime').addEventListener('change', e => { settings.hideTime = e.target.checked; updateDateTimeDisplay(); });
+    document.querySelectorAll('input[name="tempUnit"]').forEach(r =>
+      r.addEventListener('change', () => { settings.tempUnit = r.value; renderWeather(); }));
+    document.querySelectorAll('input[name="weatherLabelLang"]').forEach(r =>
+      r.addEventListener('change', () => { settings.weatherLabelLang = r.value; renderWeather(); }));
+    document.getElementById('hideWeather').addEventListener('change', e => {
+      settings.hideWeather = e.target.checked;
+      if (e.target.checked) document.getElementById('weatherBlock').innerHTML = '';
+      else fetchWeather();
+    });
+    document.querySelectorAll('input[name="dowLang"]').forEach(r =>
+      r.addEventListener('change', () => { settings.dowLang = r.value; renderDaysList(); }));
+    document.getElementById('showYestTomorrow').addEventListener('change', e => { settings.showYestTomorrow = e.target.checked; renderDaysList(); });
+    document.getElementById('showNikkud').addEventListener('change', e => { settings.showNikkud = e.target.checked; refreshAll(); });
+    document.getElementById('colorCodeNikkud').addEventListener('change', e => { settings.colorCodeNikkud = e.target.checked; refreshAll(); });
+    document.getElementById('enableDashText').addEventListener('change', e => toggleDashText(e.target.checked));
+  }
+
+  function applySettings(s) {
+    Object.assign(settings, s);
+    setHebFont(settings.hebFont);
+    syncFormToSettings();
+    document.getElementById('dashEditor').innerHTML = settings.dashTextHTML || '';
+    syncDashText();
+    toggleDashText(settings.enableDashText);
+    updateDateTimeDisplay();
+    renderDaysList();
+    renderWeather();
+  }
+
+  function getSettings() {
+    settings.dashTextHTML = document.getElementById('dashEditor').innerHTML;
+    return JSON.parse(JSON.stringify(settings));
+  }
+
+  function saveSettingsToStorage() {
+    settings.dashTextHTML = document.getElementById('dashEditor').innerHTML;
+    localStorage.setItem('hebrewDashboard_settings', JSON.stringify(settings));
+  }
+  function loadSettingsFromStorage() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('hebrewDashboard_settings'));
+      if (saved) Object.assign(settings, saved);
+    } catch (e) {}
+  }
+
+  /* ────────── PRESETS ────────── */
+  function loadPresets() {
+    try { presets = JSON.parse(localStorage.getItem('hebrewDashboard_presets')) || {}; }
+    catch (e) { presets = {}; }
+  }
+  function savePresetsStorage() { localStorage.setItem('hebrewDashboard_presets', JSON.stringify(presets)); }
+
+  function savePreset() {
+    const name = document.getElementById('presetName').value.trim();
+    if (!name) { alert('Please enter a preset name.'); return; }
+    presets[name] = getSettings();
+    savePresetsStorage();
+    document.getElementById('presetName').value = '';
+    renderPresets();
+  }
+  function loadPreset(name) {
+    if (!presets[name]) return;
+    applySettings(presets[name]);
+    saveSettingsToStorage();
+  }
+  function deletePreset(name) {
+    if (!confirm(`Delete preset "${name}"?`)) return;
+    delete presets[name];
+    savePresetsStorage();
+    renderPresets();
+  }
+  function renderPresets() {
+    const list = document.getElementById('presetList');
+    list.innerHTML = '';
+    const names = Object.keys(presets);
+    if (!names.length) {
+      list.innerHTML = '<div class="preset-empty">No saved presets yet</div>';
+      return;
+    }
+    names.forEach(name => {
+      const item = document.createElement('div');
+      item.className = 'preset-item';
+      const safe = name.replace(/'/g, "\\'");
+      item.innerHTML = `
+        <span class="preset-name"></span>
+        <button class="btn btn-xs" onclick="loadPreset('${safe}')">Load</button>
+        <button class="btn btn-xs btn-secondary" onclick="deletePreset('${safe}')" title="Delete">×</button>
+      `;
+      item.querySelector('.preset-name').textContent = name;
+      list.appendChild(item);
+    });
+  }
+  function exportPresets() {
+    document.getElementById('presetBackupBox').value = JSON.stringify(presets, null, 2);
+  }
+  function importPresets() {
+    try {
+      const v = document.getElementById('presetBackupBox').value;
+      const parsed = JSON.parse(v);
+      Object.assign(presets, parsed);
+      savePresetsStorage();
+      renderPresets();
+      alert('Presets imported.');
+    } catch (e) { alert('Invalid JSON.'); }
+  }
+
+  /* ────────── EDITOR ────────── */
+  function fmt(cmd, val = null) {
+    document.getElementById('dashEditor').focus();
+    document.execCommand(cmd, false, val);
+    syncDashText();
+  }
+  function setAlign(dir) { fmt('justify' + dir); }
+  function syncDashText() {
+    const ed = document.getElementById('dashEditor');
+    document.getElementById('dashTextDisplay').innerHTML = ed.innerHTML;
+    settings.dashTextHTML = ed.innerHTML;
+  }
+  function toggleDashText(on) {
+    settings.enableDashText = !!on;
+    document.getElementById('dashTextWrap').style.display = on ? 'block' : 'none';
+    const cb = document.getElementById('enableDashText');
+    if (cb) cb.checked = !!on;
+  }
+
+  /* ────────── HEBREW FONT ────────── */
+  function initFontSelector() {
+    const opts = document.getElementById('fontOptions');
+    opts.innerHTML = '';
+    HEB_FONTS.forEach(f => {
+      const div = document.createElement('div');
+      div.className = 'font-opt' + (f.name === settings.hebFont ? ' active' : '');
+      div.style.fontFamily = f.family;
+      div.textContent = f.display;
+      div.title = f.name;
+      div.dataset.fontName = f.name;
+      div.onclick = () => setHebFont(f.name);
+      opts.appendChild(div);
+    });
+  }
+  function setHebFont(name) {
+    const f = HEB_FONTS.find(x => x.name === name) || HEB_FONTS[0];
+    settings.hebFont = f.name;
+    document.documentElement.style.setProperty('--heb-font', f.family);
+    document.querySelectorAll('.font-opt').forEach(el =>
+      el.classList.toggle('active', el.dataset.fontName === f.name));
+  }
+
+  /* ────────── DARK MODE ────────── */
+  function toggleDark() {
+    document.documentElement.classList.remove('dark-early');
+    document.body.classList.toggle('dark');
+    const isDark = document.body.classList.contains('dark');
+    localStorage.setItem('hebrewBlender_darkMode', isDark ? '1' : '0');
+    document.getElementById('darkBtn').textContent = isDark ? '☀️' : '🌙';
+  }
+  function initDark() {
+    if (localStorage.getItem('hebrewBlender_darkMode') === '1') {
+      document.body.classList.add('dark');
+      document.getElementById('darkBtn').textContent = '☀️';
+    }
+    document.documentElement.classList.remove('dark-early');
+  }
+
+  /* ────────── FULLSCREEN ────────── */
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+  }
+  document.addEventListener('fullscreenchange', () => {
+    const isFs = !!document.fullscreenElement;
+    document.body.classList.toggle('fullscreen', isFs);
+    document.getElementById('fsBtn').innerHTML = isFs ? FS_EXIT : FS_ENTER;
+  });
+
+  /* ────────── PANEL COLLAPSE ────────── */
+  function initPanelCollapse() {
+    document.querySelectorAll('.panel-title').forEach(t => {
+      t.addEventListener('click', () => t.parentElement.classList.toggle('collapsed'));
+    });
+  }
+
+  /* ────────── INIT ────────── */
+  document.addEventListener('DOMContentLoaded', () => {
+    loadSettingsFromStorage();
+    loadPresets();
+    initDark();
+    initFontSelector();
+    initPanelCollapse();
+    setHebFont(settings.hebFont);
+    syncFormToSettings();
+    wireFormListeners();
+    document.getElementById('dashEditor').innerHTML = settings.dashTextHTML || '';
+    syncDashText();
+    toggleDashText(settings.enableDashText);
+    document.getElementById('fsBtn').innerHTML = FS_ENTER;
+    startClock();
+    renderDaysList();
+    scheduleWeatherRefresh();
+    renderPresets();
+    // Re-render days at midnight
+    const msToMidnight = (() => {
+      const n = new Date();
+      const m = new Date(n.getFullYear(), n.getMonth(), n.getDate() + 1);
+      return m - n + 1000;
+    })();
+    setTimeout(function tick() {
+      renderDaysList();
+      setTimeout(tick, 24 * 3600 * 1000);
+    }, msToMidnight);
+  });
+
+  // ESC closes settings
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('settingsModal').classList.contains('open')) {
+      closeSettings();
+    }
+  });
+</script></body>
+</html>
