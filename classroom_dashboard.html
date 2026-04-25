@@ -592,31 +592,43 @@
   .editor:focus { border-color: var(--gold); }
 
   /* ───── Font selector ───── */
-  .font-options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5px;
+  .font-options { display: flex; flex-direction: column; gap: 4px; }
+  .font-section-hdr {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+    margin: 10px 0 2px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
   }
+  .font-section-hdr.first { margin-top: 0; padding-top: 0; border-top: none; }
   .font-opt {
     border: 1px solid var(--border);
     background: var(--white);
-    padding: 8px 6px;
+    padding: 7px 10px;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 1.1rem;
-    text-align: center;
-    direction: rtl;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     transition: all 0.15s;
     color: var(--text);
+    text-align: left;
+    width: 100%;
   }
   body.dark .font-opt { background: var(--navy-deep); }
   .font-opt:hover { border-color: var(--gold); }
   .font-opt.active {
     border-color: var(--gold);
-    background: rgba(201, 146, 42, 0.12);
-    color: var(--gold);
+    background: rgba(201, 146, 42, 0.10);
   }
-  body.dark .font-opt.active { background: rgba(224, 168, 50, 0.18); color: var(--gold-light); }
+  body.dark .font-opt.active { background: rgba(224, 168, 50, 0.16); }
+  .font-opt-preview { font-size: 1.4rem; direction: rtl; min-width: 44px; text-align: center; color: var(--text); }
+  .font-opt.active .font-opt-preview { color: var(--gold); }
+  body.dark .font-opt.active .font-opt-preview { color: var(--gold-light); }
+  .font-opt-name { font-size: 0.78rem; font-weight: 600; color: var(--text); }
 
   /* ───── Fullscreen ───── */
   body.fullscreen header { display: none; }
@@ -838,6 +850,14 @@
       <label>Color-code nikkud</label>
       <span class="toggle"><input type="checkbox" id="colorCodeNikkud"><span class="slider"></span></span>
     </div>
+    <div class="form-row" id="colorModeRow" style="display:none;">
+      <label>Color style</label>
+      <div class="radio-group">
+        <input type="radio" name="colorMode" id="cm-letter" value="letter"><label for="cm-letter">Color</label>
+        <input type="radio" name="colorMode" id="cm-highlight" value="highlight"><label for="cm-highlight">Highlight</label>
+        <input type="radio" name="colorMode" id="cm-underline" value="underline"><label for="cm-underline">Underline</label>
+      </div>
+    </div>
   </div>
 </div>
 </div>
@@ -884,11 +904,55 @@
   };
 
   const HEB_FONTS = [
-    {name:'Frank Ruhl Libre',  family:"'Frank Ruhl Libre', serif",  display:'אִיָּר'},
-    {name:'David Libre',       family:"'David Libre', serif",        display:'אִיָּר'},
-    {name:'Noto Rashi',        family:"'Noto Rashi Hebrew', serif",  display:'אִיָּר'},
-    {name:'Serif',             family:"serif",                        display:'אִיָּר'},
+    // ── Block ──────────────────────────────────────
+    { section:'Block',   name:'Frank Ruhl Libre',   family:"'Frank Ruhl Libre', serif",        load:null },
+    { section:'Block',   name:'David Libre',         family:"'David Libre', serif",              load:null },
+    { section:'Block',   name:'Noto Serif Hebrew',   family:"'Noto Serif Hebrew', serif",        load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@400;700&display=swap'} },
+    { section:'Block',   name:'Noto Sans Hebrew',    family:"'Noto Sans Hebrew', sans-serif",    load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700&display=swap'} },
+    { section:'Block',   name:'Alef',                family:"'Alef', sans-serif",                load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap'} },
+    { section:'Block',   name:'Ezra SIL',            family:"'Ezra SIL', serif",                 load:{type:'face',css:"@font-face{font-family:'Ezra SIL';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/SIL%20(OFL)/Ezra%20SIL/SILEOT.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+    { section:'Block',   name:'Shlomo',              family:"'Shlomo', serif",                   load:{type:'face',css:"@font-face{font-family:'Shlomo';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20(OFL)/Shlomo/Shlomo.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+    { section:'Block',   name:'Dyslexia Hebrew',     family:"'DyslexiaHebrew', sans-serif",      load:{type:'face',css:"@font-face{font-family:'DyslexiaHebrew';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Shoag%2C%20Jake%20(OFL)/DyslexiaHebrew-Regular.otf') format('opentype');font-weight:normal;font-style:normal;}"} },
+    // ── Cursive / Script ───────────────────────────
+    { section:'Cursive', name:'Noto Rashi Hebrew',   family:"'Noto Rashi Hebrew', serif",        load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Noto+Rashi+Hebrew:wght@400;700&display=swap'} },
+    { section:'Cursive', name:'Solitreo',            family:"'Solitreo', cursive",               load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Solitreo&display=swap'} },
+    { section:'Cursive', name:'Gveret Levin',        family:"'Gveret Levin', cursive",           load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Gveret+Levin&display=swap'} },
+    { section:'Cursive', name:'Playpen Sans Hebrew', family:"'Playpen Sans Hebrew', cursive",    load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Playpen+Sans+Hebrew&display=swap'} },
+    { section:'Cursive', name:'Shmulik CLM',         family:"'Shmulik CLM', cursive",            load:{type:'face',css:"@font-face{font-family:'Shmulik CLM';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Culmus%20Project%20(GPL%20and%20GPL%2BFE)/Yoram%20Gnat%20(GPL%2BFE)/Shmulik%20CLM/ShmulikCLM.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
   ];
+
+  const VOWEL_GROUPS = [
+    { key:'aqua',   vowels:['ָ','ַ','ֲ','ֳ'] },
+    { key:'red',    vowels:['ֶ','ֱ'] },
+    { key:'grey',   vowels:['ֵ'] },
+    { key:'green',  vowels:['ִ'] },
+    { key:'yellow', vowels:['ֹ'] },
+    { key:'blue',   vowels:['ֻ'] },
+    { key:'purple', vowels:['ְ'] },
+  ];
+  const NIKUD_DEFAULTS_LIGHT = {
+    a:'#0099bb', patah:'#0099bb', hpatah:'#0099bb', hkamatz:'#0099bb',
+    e:'#cc3333', hsegol:'#cc3333',
+    tzere:'#7777aa',
+    i:'#228833',
+    o:'#bb8800', vcholam:'#bb8800',
+    u:'#3355cc', shuruk:'#3355cc',
+    sh:'#8833bb'
+  };
+  const NIKUD_DEFAULTS_DARK = {
+    a:'#33ccee', patah:'#33ccee', hpatah:'#33ccee', hkamatz:'#33ccee',
+    e:'#ee5555', hsegol:'#ee5555',
+    tzere:'#aaaadd',
+    i:'#44cc66',
+    o:'#ddaa00', vcholam:'#ddaa00',
+    u:'#6688ff', shuruk:'#6688ff',
+    sh:'#bb66ee'
+  };
+  const NIKUD_CHAR_TO_KEY = {
+    'ָ':'a','ַ':'patah','ֲ':'hpatah','ֳ':'hkamatz',
+    'ֶ':'e','ֱ':'hsegol','ֵ':'tzere','ִ':'i',
+    'ֹ':'o','ֻ':'u','ְ':'sh'
+  };
 
   const FS_ENTER = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>';
   const FS_EXIT  = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>';
@@ -913,6 +977,7 @@
     hebFont: 'Frank Ruhl Libre',
     showNikkud: true,
     colorCodeNikkud: false,
+    colorCodingMode: 'letter',
   };
   let presets = {};
   let weatherCache = null;
@@ -1031,9 +1096,60 @@
     return `${numToHebLetters(heb.day)} ${HEB_MONTHS_HE[idx]} ${numToHebLetters(heb.year)}`;
   }
 
-  /* ────────── NIKKUD ────────── */
+  /* ────────── NIKKUD + COLOR ────────── */
   const NIKKUD_RE = /[\u0591-\u05C7]/g;
-  function maybeStripNikkud(s) { return settings.showNikkud ? s : s.replace(NIKKUD_RE, ''); }
+  function stripNikkud(s) { return s.replace(NIKKUD_RE, ''); }
+
+  function getNikudColor(key) {
+    return (document.body.classList.contains('dark') ? NIKUD_DEFAULTS_DARK : NIKUD_DEFAULTS_LIGHT)[key] || '#888';
+  }
+
+  function colorizeHebrew(text, mode) {
+    const DAGESH = '\u05BC';
+    const chars = [...text];
+    const out = [];
+    let i = 0;
+    while (i < chars.length) {
+      const ch = chars[i];
+      const cp = ch.codePointAt(0);
+      const isHebLetter = cp >= 0x05D0 && cp <= 0x05EA;
+      const isNikud     = cp >= 0x05B0 && cp <= 0x05C7;
+      if (!isHebLetter && !isNikud) { out.push(ch); i++; continue; }
+      if (isNikud) { out.push(ch); i++; continue; }
+      let marks = '', j = i + 1;
+      while (j < chars.length && chars[j].codePointAt(0) >= 0x05B0 && chars[j].codePointAt(0) <= 0x05C7) marks += chars[j++];
+      if (!marks) { out.push(ch); i++; continue; }
+      const isVav = ch === '\u05D5';
+      let key = null;
+      for (const m of [...marks]) {
+        if (isVav && m === '\u05B9') { key = 'vcholam'; break; }
+        if (isVav && m === DAGESH)    { key = 'shuruk';  break; }
+        if (m === DAGESH) continue;
+        const k = NIKUD_CHAR_TO_KEY[m];
+        if (k) { key = k; break; }
+      }
+      if (!key) { out.push(ch + marks); i = j; continue; }
+      const color = getNikudColor(key);
+      const syl = ch + marks;
+      if (mode === 'highlight') {
+        out.push(`<span style="background-color:${color}50;border-radius:2px;">${syl}</span>`);
+      } else if (mode === 'underline') {
+        out.push(`<span style="text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${syl}</span>`);
+      } else {
+        out.push(`<span style="color:${color}">${syl}</span>`);
+      }
+      i = j;
+    }
+    return out.join('');
+  }
+
+  function hebDisplay(s) {
+    if (!settings.showNikkud) return stripNikkud(s);
+    if (settings.colorCodeNikkud) return colorizeHebrew(s, settings.colorCodingMode);
+    return s;
+  }
+
+  function maybeStripNikkud(s) { return settings.showNikkud ? s : stripNikkud(s); }
 
   /* ────────── DATE / TIME DISPLAY ────────── */
   function updateDateTimeDisplay() {
@@ -1062,9 +1178,11 @@
       hebEl.style.display = 'none';
     } else {
       hebEl.style.display = '';
-      hebEl.textContent = settings.hebDateScript === 'he'
-        ? maybeStripNikkud(formatHebDate(now))
-        : formatHebDate(now);
+      if (settings.hebDateScript === 'he') {
+        hebEl.innerHTML = hebDisplay(formatHebDate(now));
+      } else {
+        hebEl.textContent = formatHebDate(now);
+      }
       hebEl.style.direction = settings.hebDateScript === 'he' ? 'rtl' : 'ltr';
       hebEl.style.fontFamily = settings.hebDateScript === 'he'
         ? 'var(--heb-font)'
@@ -1105,15 +1223,15 @@
 
       let html = '';
       if (settings.dowLang === 'he' || settings.dowLang === 'both') {
-        html += `<div class="day-heb">${maybeStripNikkud(day.heb)}</div>`;
+        html += `<div class="day-heb">${hebDisplay(day.heb)}</div>`;
       }
       if (settings.dowLang === 'en' || settings.dowLang === 'both') {
         html += `<div class="day-eng">${day.eng}</div>`;
       }
       if (settings.showYestTomorrow) {
-        if (i === today)      html += `<div class="day-annot">🐣 ${maybeStripNikkud('הַיּוֹם')}</div>`;
-        else if (i === yest)  html += `<div class="day-annot">🥚 ${maybeStripNikkud('אֶתְמוֹל הָיָה')}</div>`;
-        else if (i === tom)   html += `<div class="day-annot">🐔 ${maybeStripNikkud('מָחָר יִהְיֶה')}</div>`;
+        if (i === today)      html += `<div class="day-annot">🐣 ${hebDisplay('הַיּוֹם')}</div>`;
+        else if (i === yest)  html += `<div class="day-annot">🥚 ${hebDisplay('אֶתְמוֹל הָיָה')}</div>`;
+        else if (i === tom)   html += `<div class="day-annot">🐔 ${hebDisplay('מָחָר יִהְיֶה')}</div>`;
       }
       item.innerHTML = html;
       list.appendChild(item);
@@ -1162,11 +1280,10 @@
     const code = data.current.weathercode;
     const w = WEATHER_WMO[code] || { emoji: '🌤️', he: 'מֶזֶג אֲוִיר', en: 'Weather' };
     const isHe = settings.weatherLabelLang === 'he';
-    const label = isHe ? maybeStripNikkud(w.he) : w.en;
+    const label = isHe ? hebDisplay(w.he) : w.en;
     let descriptor;
     if (isHe) {
-      descriptor = tempC > 25 ? 'חָם' : tempC < 15 ? 'קַר' : 'נָעִים';
-      descriptor = maybeStripNikkud(descriptor);
+      descriptor = hebDisplay(tempC > 25 ? 'חָם' : tempC < 15 ? 'קַר' : 'נָעִים');
     } else {
       descriptor = tempC > 25 ? 'Hot' : tempC < 15 ? 'Cold' : 'Pleasant';
     }
@@ -1223,6 +1340,10 @@
     $('enableDashText').checked = settings.enableDashText;
     $('showNikkud').checked = settings.showNikkud;
     $('colorCodeNikkud').checked = settings.colorCodeNikkud;
+    const cmr = $('colorModeRow');
+    if (cmr) cmr.style.display = settings.colorCodeNikkud ? 'flex' : 'none';
+    const cmRadio = document.querySelector(`input[name="colorMode"][value="${settings.colorCodingMode}"]`);
+    if (cmRadio) cmRadio.checked = true;
   }
 
   function wireFormListeners() {
@@ -1250,7 +1371,13 @@
       r.addEventListener('change', () => { settings.dowLang = r.value; renderDaysList(); }));
     document.getElementById('showYestTomorrow').addEventListener('change', e => { settings.showYestTomorrow = e.target.checked; renderDaysList(); });
     document.getElementById('showNikkud').addEventListener('change', e => { settings.showNikkud = e.target.checked; refreshAll(); });
-    document.getElementById('colorCodeNikkud').addEventListener('change', e => { settings.colorCodeNikkud = e.target.checked; refreshAll(); });
+    document.getElementById('colorCodeNikkud').addEventListener('change', e => {
+      settings.colorCodeNikkud = e.target.checked;
+      document.getElementById('colorModeRow').style.display = e.target.checked ? 'flex' : 'none';
+      refreshAll();
+    });
+    document.querySelectorAll('input[name="colorMode"]').forEach(r =>
+      r.addEventListener('change', () => { settings.colorCodingMode = r.value; refreshAll(); }));
     document.getElementById('enableDashText').addEventListener('change', e => toggleDashText(e.target.checked));
   }
 
@@ -1363,23 +1490,50 @@
   }
 
   /* ────────── HEBREW FONT ────────── */
+  function loadHebFont(font) {
+    if (!font.load) return;
+    const id = 'font-' + font.name.replace(/\s+/g, '-');
+    if (document.getElementById(id)) return;
+    if (font.load.type === 'gfonts') {
+      const link = document.createElement('link');
+      link.id = id; link.rel = 'stylesheet'; link.href = font.load.url;
+      document.head.appendChild(link);
+    } else if (font.load.type === 'face') {
+      const style = document.createElement('style');
+      style.id = id; style.textContent = font.load.css;
+      document.head.appendChild(style);
+    }
+  }
+
   function initFontSelector() {
     const opts = document.getElementById('fontOptions');
     opts.innerHTML = '';
-    HEB_FONTS.forEach(f => {
-      const div = document.createElement('div');
-      div.className = 'font-opt' + (f.name === settings.hebFont ? ' active' : '');
-      div.style.fontFamily = f.family;
-      div.textContent = f.display;
-      div.title = f.name;
-      div.dataset.fontName = f.name;
-      div.onclick = () => setHebFont(f.name);
-      opts.appendChild(div);
+    const sections = [...new Set(HEB_FONTS.map(f => f.section))];
+    let firstSection = true;
+    sections.forEach(sec => {
+      const hdr = document.createElement('div');
+      hdr.className = 'font-section-hdr' + (firstSection ? ' first' : '');
+      hdr.textContent = sec === 'Cursive' ? 'Cursive / Script' : sec + ' Fonts';
+      opts.appendChild(hdr);
+      firstSection = false;
+      HEB_FONTS.filter(f => f.section === sec).forEach(font => {
+        const btn = document.createElement('button');
+        btn.className = 'font-opt' + (font.name === settings.hebFont ? ' active' : '');
+        btn.dataset.fontName = font.name;
+        btn.innerHTML =
+          `<span class="font-opt-preview" style="font-family:${font.family};">אֶרֶץ</span>` +
+          `<span class="font-opt-name">${font.name}</span>`;
+        btn.onclick = () => setHebFont(font.name);
+        loadHebFont(font);
+        opts.appendChild(btn);
+      });
     });
   }
+
   function setHebFont(name) {
     const f = HEB_FONTS.find(x => x.name === name) || HEB_FONTS[0];
     settings.hebFont = f.name;
+    loadHebFont(f);
     document.documentElement.style.setProperty('--heb-font', f.family);
     document.querySelectorAll('.font-opt').forEach(el =>
       el.classList.toggle('active', el.dataset.fontName === f.name));
@@ -1392,6 +1546,7 @@
     const isDark = document.body.classList.contains('dark');
     localStorage.setItem('hebrewBlender_darkMode', isDark ? '1' : '0');
     document.getElementById('darkBtn').textContent = isDark ? '☀️' : '🌙';
+    if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); }
   }
   function initDark() {
     if (localStorage.getItem('hebrewBlender_darkMode') === '1') {

@@ -1,6 +1,6 @@
 # Hebrew Blender
 
-A pair of browser-based tools for Hebrew literacy instruction — no installation, no build step, no server required. Open any HTML file directly in a browser or serve the folder statically.
+A suite of browser-based tools for Hebrew literacy instruction — no installation, no build step, no server required. Open any HTML file directly in a browser or serve the folder statically.
 
 **Live site:** [hbleiberg.github.io/Hebrew_Blender](https://hbleiberg.github.io/Hebrew_Blender)
 
@@ -26,8 +26,21 @@ Browse and filter the full Hebrew word list.
 - Paginated results (100 per page) with an expandable sidebar
 - Dark mode synced with the generator via `localStorage`
 
+### Classroom Dashboard (`classroom_dashboard.html`) — Beta
+A live display board designed for classroom projectors and SmartBoards.
+
+- **Hebrew days of the week** — full column with color-coded today / yesterday / tomorrow markers
+- **Live Hebrew date + clock** — correct Hebrew calendar (Reingold-Dershowitz algorithm), 12/24-hr time, English and Hebrew date formats
+- **Live weather** — Open-Meteo geocoded weather (no API key), 30-minute refresh, Fahrenheit/Celsius, Hebrew or English labels
+- **Configurable dashboard text** — rich-text editor (bold, italic, RTL/LTR, color, size) displayed prominently in the center column
+- **Settings drawer** — Location, Date & Time, Weather, Day of Week, Dashboard Text, Presets, Hebrew Settings (full font picker + nikkud color-coding)
+- **Nikkud color-coding** — same vowel-color scheme as the Worksheet Generator; three styles: color, highlight, underline
+- Full 13-font picker (Block and Cursive sections) with dynamic loading
+- Dark mode (no-flash), fullscreen mode, ESC-to-close, presets save/load/export/import
+- SmartBoard compatible — responsive at any display resolution
+
 ### Landing Page (`index.html`)
-Home page with navigation cards to both tools.
+Home page with navigation cards to all three tools.
 
 ---
 
@@ -35,9 +48,10 @@ Home page with navigation cards to both tools.
 
 | File | Description |
 |---|---|
-| `index.html` | Landing page — navigation hub linking to both tools |
+| `index.html` | Landing page — navigation hub linking to all tools |
 | `hebrew_blend_generator.html` | Worksheet / bingo / drill generator (main app) |
 | `hebrew_dictionary.html` | Interactive word lookup and filter page |
+| `classroom_dashboard.html` | Live classroom projector / SmartBoard dashboard (Beta) |
 | `hebrew_words.json` | Structured word data (~2 MB, ~9,400 entries) loaded by both HTML pages via `fetch()` |
 | `hebrew_dictionary_4_19_2026.csv` | Source CSV used to build and update `hebrew_words.json`; includes Hebrew (nikkud), transliteration, translation, POS, and era fields |
 | `phonotactic_blending_filter_spec.md` | Detailed linguistic specification for the phonotactic validity filter used by the generator; cites Bolozky, Bat-El, Asherov & Bat-El, and the Academy of the Hebrew Language |
