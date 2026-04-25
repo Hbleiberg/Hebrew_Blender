@@ -149,74 +149,64 @@
   /* ───── Days list ───── */
   .day-item {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 11px 8px;
+    flex-direction: row;
+    align-items: stretch;
     margin-bottom: 6px;
     border-radius: 8px;
+    overflow: hidden;
     border: 2px solid transparent;
-    background: transparent;
-    transition: all 0.25s ease;
-    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: var(--warm-gray);
   }
   .day-item:last-child { margin-bottom: 0; }
+  .day-main {
+    flex: 1;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    direction: rtl;
+  }
   .day-heb {
     font-family: var(--heb-font);
-    font-size: 1.45rem;
+    font-size: 1.35rem;
     font-weight: 500;
-    direction: rtl;
     line-height: 1.2;
+    color: inherit;
   }
   .day-eng {
-    font-size: 0.72rem;
-    color: var(--muted);
-    margin-top: 3px;
+    font-size: 0.68rem;
+    margin-top: 2px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     font-weight: 600;
+    opacity: 0.8;
   }
-  .day-annot {
-    font-size: 0.85rem;
-    color: var(--muted);
-    margin-top: 5px;
+  .day-badge {
+    width: 74px;
+    flex-shrink: 0;
+    background: rgba(0,0,0,0.22);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 4px;
+    text-align: center;
+  }
+  .badge-emoji { font-size: 1.4rem; line-height: 1; }
+  .badge-text {
     font-family: var(--heb-font);
+    font-size: 0.72rem;
+    color: var(--gold-light);
+    margin-top: 3px;
     direction: rtl;
+    line-height: 1.25;
   }
-  .day-sunday {
-    background: rgba(220, 60, 60, 0.10);
-    border-color: rgba(220, 60, 60, 0.25);
-  }
-  body.dark .day-sunday {
-    background: rgba(220, 80, 80, 0.15);
-    border-color: rgba(220, 80, 80, 0.35);
-  }
-  .day-shabbat {
-    background: linear-gradient(135deg,
-      rgba(180, 140, 220, 0.18) 0%,
-      rgba(220, 180, 140, 0.18) 50%,
-      rgba(160, 200, 220, 0.18) 100%);
-    border-color: rgba(180, 140, 220, 0.35);
-  }
-  body.dark .day-shabbat {
-    background: linear-gradient(135deg,
-      rgba(180, 140, 220, 0.22) 0%,
-      rgba(220, 180, 140, 0.22) 50%,
-      rgba(160, 200, 220, 0.22) 100%);
-  }
-  .day-today {
-    border-color: var(--gold);
-    box-shadow: 0 0 0 3px rgba(201, 146, 42, 0.18);
-    transform: scale(1.03);
-    background: var(--white);
-  }
-  body.dark .day-today { background: #232b40; }
-  .day-today.day-sunday { background: rgba(220, 60, 60, 0.10); }
-  .day-today.day-shabbat {
-    background: linear-gradient(135deg,
-      rgba(180, 140, 220, 0.18) 0%,
-      rgba(220, 180, 140, 0.18) 50%,
-      rgba(160, 200, 220, 0.18) 100%);
-  }
+  .day-item.colored { color: #fff; }
+  .day-item.colored .day-eng { color: rgba(255,255,255,0.85); }
+  .day-item.day-today { box-shadow: 0 0 0 3px var(--gold); transform: scale(1.02); }
+  body.dark .day-item:not(.colored) { background: #232b40; color: var(--text); }
 
   /* ───── Center: date/time ───── */
   .dash-center {
@@ -800,6 +790,10 @@
       </div>
     </div>
     <div class="form-row">
+      <label>Color days of the week</label>
+      <label class="toggle"><input type="checkbox" id="colorDays"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
       <label>Yesterday/today/tomorrow markers</label>
       <label class="toggle"><input type="checkbox" id="showYestTomorrow"><span class="slider"></span></label>
     </div>
@@ -888,13 +882,13 @@
 </div><script>
   /* ────────── CONSTANTS ────────── */
   const DAYS = [
-    {heb:'יוֹם רִאשׁוֹן',  eng:'Sunday',    cls:'day-sunday'},
-    {heb:'יוֹם שֵׁנִי',    eng:'Monday',    cls:''},
-    {heb:'יוֹם שְׁלִישִׁי', eng:'Tuesday',   cls:''},
-    {heb:'יוֹם רְבִיעִי',   eng:'Wednesday', cls:''},
-    {heb:'יוֹם חֲמִישִׁי',  eng:'Thursday',  cls:''},
-    {heb:'יוֹם שִׁישִּׁי',  eng:'Friday',    cls:''},
-    {heb:'יוֹם שַׁבָּת',    eng:'Saturday',  cls:'day-shabbat'},
+    {heb:'יוֹם רִאשׁוֹן',  eng:'Sunday',    bg:'#c62828'},
+    {heb:'יוֹם שֵׁנִי',    eng:'Monday',    bg:'#e65100'},
+    {heb:'יוֹם שְׁלִישִׁי', eng:'Tuesday',   bg:'#c8a000'},
+    {heb:'יוֹם רְבִיעִי',   eng:'Wednesday', bg:'#2e7d32'},
+    {heb:'יוֹם חֲמִישִׁי',  eng:'Thursday',  bg:'#1565c0'},
+    {heb:'יוֹם שִׁישִּׁי',  eng:'Friday',    bg:'#1a237e'},
+    {heb:'יוֹם שַׁבָּת',    eng:'Saturday',  bg:'#6a1b9a'},
   ];
 
   const HEB_MONTHS_HE = ['תִּשְׁרֵי','חֶשְׁוָן','כִּסְלֵו','טֵבֵת','שְׁבָט','אֲדָר','אֲדָר א׳','אֲדָר ב׳','נִיסָן','אִיָּר','סִיוָן','תַּמּוּז','אָב','אֱלוּל'];
@@ -1013,6 +1007,7 @@
     dowLang: 'he',
     showYestTomorrow: true,
     showDOWEmojis: true,
+    colorDays: true,
     enableDashText: false,
     dashTextHTML: '',
     hebFont: 'Frank Ruhl Libre',
@@ -1310,24 +1305,39 @@
 
     DAYS.forEach((day, i) => {
       const item = document.createElement('div');
-      let cls = 'day-item ' + (day.cls || '');
+      let cls = 'day-item';
       if (i === today) cls += ' day-today';
-      item.className = cls.trim();
+      const useColor = settings.colorDays !== false;
+      if (useColor) cls += ' colored';
+      item.className = cls;
+      if (useColor) item.style.background = day.bg;
 
-      let html = '';
-      if (settings.dowLang === 'he' || settings.dowLang === 'both') {
-        html += `<div class="day-heb">${hebDisplay(day.heb)}</div>`;
-      }
-      if (settings.dowLang === 'en' || settings.dowLang === 'both') {
-        html += `<div class="day-eng">${day.eng}</div>`;
-      }
+      // Determine badge content
+      let badgeEmoji = '', badgeText = '';
       if (settings.showYestTomorrow) {
         const em = settings.showDOWEmojis;
-        if (i === today)      html += `<div class="day-annot">${em ? '🐣 ' : ''}${hebDisplay('הַיּוֹם')}</div>`;
-        else if (i === yest)  html += `<div class="day-annot">${em ? '🥚 ' : ''}${hebDisplay('אֶתְמוֹל הָיָה')}</div>`;
-        else if (i === tom)   html += `<div class="day-annot">${em ? '🐔 ' : ''}${hebDisplay('מָחָר יִהְיֶה')}</div>`;
+        if (i === today)     { badgeEmoji = em ? '🐣' : ''; badgeText = hebDisplay('הַיּוֹם'); }
+        else if (i === yest) { badgeEmoji = em ? '🥚' : ''; badgeText = hebDisplay('אֶתְמוֹל הָיָה'); }
+        else if (i === tom)  { badgeEmoji = em ? '🐔' : ''; badgeText = hebDisplay('מָחָר יִהְיֶה'); }
       }
-      item.innerHTML = html;
+
+      let nameHtml = '<div class="day-main">';
+      if (settings.dowLang === 'he' || settings.dowLang === 'both') {
+        nameHtml += `<div class="day-heb">${hebDisplay(day.heb)}</div>`;
+      }
+      if (settings.dowLang === 'en' || settings.dowLang === 'both') {
+        nameHtml += `<div class="day-eng">${day.eng}</div>`;
+      }
+      nameHtml += '</div>';
+
+      let badgeHtml = '';
+      if (badgeText) {
+        badgeHtml = `<div class="day-badge">` +
+          (badgeEmoji ? `<div class="badge-emoji">${badgeEmoji}</div>` : '') +
+          `<div class="badge-text">${badgeText}</div></div>`;
+      }
+
+      item.innerHTML = nameHtml + badgeHtml;
       list.appendChild(item);
     });
   }
@@ -1430,6 +1440,7 @@
     document.querySelector(`input[name="weatherLabelLang"][value="${settings.weatherLabelLang}"]`).checked = true;
     $('hideWeather').checked = settings.hideWeather;
     document.querySelector(`input[name="dowLang"][value="${settings.dowLang}"]`).checked = true;
+    $('colorDays').checked = settings.colorDays !== false;
     $('showYestTomorrow').checked = settings.showYestTomorrow;
     $('showDOWEmojis').checked = settings.showDOWEmojis;
     $('enableDashText').checked = settings.enableDashText;
@@ -1470,6 +1481,7 @@
     });
     document.querySelectorAll('input[name="dowLang"]').forEach(r =>
       r.addEventListener('change', () => { settings.dowLang = r.value; renderDaysList(); }));
+    document.getElementById('colorDays').addEventListener('change', e => { settings.colorDays = e.target.checked; renderDaysList(); });
     document.getElementById('showYestTomorrow').addEventListener('change', e => { settings.showYestTomorrow = e.target.checked; renderDaysList(); });
     document.getElementById('showDOWEmojis').addEventListener('change', e => { settings.showDOWEmojis = e.target.checked; renderDaysList(); });
     document.getElementById('showNikkud').addEventListener('change', e => { settings.showNikkud = e.target.checked; refreshAll(); });
