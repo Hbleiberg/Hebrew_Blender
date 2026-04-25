@@ -1326,7 +1326,7 @@
         if (i === today)      html += `<div class="day-annot">${em ? '🐣 ' : ''}${hebDisplay('הַיּוֹם')}</div>`;
         else if (i === yest)  html += `<div class="day-annot">${em ? '🥚 ' : ''}${hebDisplay('אֶתְמוֹל הָיָה')}</div>`;
         else if (i === tom)   html += `<div class="day-annot">${em ? '🐔 ' : ''}${hebDisplay('מָחָר יִהְיֶה')}</div>`;
-      
+      }
       item.innerHTML = html;
       list.appendChild(item);
     });
