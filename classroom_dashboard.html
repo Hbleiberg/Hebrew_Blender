@@ -846,6 +846,10 @@
       </div>
     </div>
     <div class="form-row">
+      <label>Hide weather emoji</label>
+      <label class="toggle"><input type="checkbox" id="hideWeatherEmoji"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
       <label>Hide weather</label>
       <label class="toggle"><input type="checkbox" id="hideWeather"><span class="slider"></span></label>
     </div>
@@ -1105,6 +1109,7 @@
     hideTime: false,
     tempUnit: 'F',
     weatherLabelLang: 'he',
+    hideWeatherEmoji: false,
     hideWeather: false,
     dowLang: 'he',
     showYesterday: true,
@@ -1549,7 +1554,7 @@
       descriptor = tempC > 25 ? 'Hot' : tempC < 15 ? 'Cold' : 'Pleasant';
     }
     block.innerHTML = `
-      <div class="weather-emoji">${w.emoji}</div>
+      ${settings.hideWeatherEmoji ? '' : `<div class="weather-emoji">${w.emoji}</div>`}
       <div class="weather-temp">${tempStr}</div>
       <div class="weather-label ${isHe ? '' : 'ltr'}">${label}</div>
       <div class="weather-descriptor ${isHe ? '' : 'ltr'}">${descriptor}</div>
@@ -1596,6 +1601,7 @@
     $('hideTime').checked = settings.hideTime;
     document.querySelector(`input[name="tempUnit"][value="${settings.tempUnit}"]`).checked = true;
     document.querySelector(`input[name="weatherLabelLang"][value="${settings.weatherLabelLang}"]`).checked = true;
+    $('hideWeatherEmoji').checked = settings.hideWeatherEmoji;
     $('hideWeather').checked = settings.hideWeather;
     document.querySelector(`input[name="dowLang"][value="${settings.dowLang}"]`).checked = true;
     $('colorDays').checked = settings.colorDays !== false;
@@ -1637,6 +1643,9 @@
       r.addEventListener('change', () => { settings.tempUnit = r.value; renderWeather(); }));
     document.querySelectorAll('input[name="weatherLabelLang"]').forEach(r =>
       r.addEventListener('change', () => { settings.weatherLabelLang = r.value; renderWeather(); }));
+    document.getElementById('hideWeatherEmoji').addEventListener('change', e => {
+      settings.hideWeatherEmoji = e.target.checked; renderWeather();
+    });
     document.getElementById('hideWeather').addEventListener('change', e => {
       settings.hideWeather = e.target.checked;
       if (e.target.checked) document.getElementById('weatherBlock').innerHTML = '';
