@@ -1867,7 +1867,46 @@
     document.execCommand(cmd, false, val);
     syncDashText();
   }
-  function setAlign(dir) { fmt('justify' + dir); }
+  function setAlign(dir) {
+    const ed = document.getElementById('dashEditor');
+    ed.focus();
+    const alignVal = { Left: 'left', Center: 'center', Right: 'right' }[dir];
+    if (!alignVal) return;
+    const sel = window.getSelection();
+    if (!sel || !sel.rangeCount) return;
+
+    // Collect all direct children of ed that overlap the selection
+    const range = sel.getRangeAt(0);
+    let anySet = false;
+    for (const child of [...ed.childNodes]) {
+      let overlaps = false;
+      try {
+        const cr = document.createRange();
+        cr.selectNode(child);
+        overlaps = range.compareBoundaryPoints(Range.END_TO_START, cr) >= 0 &&
+                   range.compareBoundaryPoints(Range.START_TO_END, cr) <= 0;
+      } catch(e) { continue; }
+      if (!overlaps) continue;
+      if (child.nodeType === Node.TEXT_NODE) {
+        const div = document.createElement('div');
+        ed.insertBefore(div, child);
+        div.appendChild(child);
+        div.style.textAlign = alignVal;
+      } else if (child.nodeType === Node.ELEMENT_NODE) {
+        child.style.textAlign = alignVal;
+      }
+      anySet = true;
+    }
+    if (!anySet) {
+      // Cursor directly in ed with no children — wrap in div
+      const div = document.createElement('div');
+      div.style.textAlign = alignVal;
+      div.innerHTML = ed.innerHTML || '<br>';
+      ed.innerHTML = '';
+      ed.appendChild(div);
+    }
+    syncDashText();
+  }
   function insertLink() {
     const ed = document.getElementById('dashEditor');
     ed.focus();
