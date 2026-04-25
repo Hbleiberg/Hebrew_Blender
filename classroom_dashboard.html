@@ -876,7 +876,7 @@
       </div>
     </div>
     <div class="form-row">
-      <label title="Limits description to: Sun, Clouds, Sun &amp; Clouds, Snow, Fog">Simple weather description</label>
+      <label title="Limits description to: Sun, Clouds, Sun and Clouds, Sun/Clouds/Rain, Rain, Snow, Fog">Simple weather description</label>
       <label class="toggle"><input type="checkbox" id="simpleWeatherDesc"><span class="slider"></span></label>
     </div>
     <div class="form-row">
@@ -1067,16 +1067,22 @@
   };
 
   const WEATHER_SIMPLE_MAP = {
-    0:'sun', 1:'sunClouds', 2:'sunClouds', 3:'clouds',
+    0:'sun', 1:'sun', 2:'sunClouds', 3:'clouds',
     45:'fog', 48:'fog',
+    51:'sunCloudsRain', 53:'sunCloudsRain', 55:'rain',
+    61:'rain', 63:'rain', 65:'rain',
+    80:'sunCloudsRain', 81:'rain', 82:'rain',
     71:'snow', 73:'snow', 75:'snow', 77:'snow', 85:'snow', 86:'snow',
+    95:'rain', 96:'rain', 99:'rain',
   };
   const WEATHER_SIMPLE = {
-    sun:       { he:'שֶׁמֶשׁ',            en:'Sun' },
-    sunClouds: { he:'שֶׁמֶשׁ וַעֲנָנִים', en:'Sun and Clouds' },
-    clouds:    { he:'עֲנָנִים',           en:'Clouds' },
-    snow:      { he:'שֶׁלֶג',             en:'Snow' },
-    fog:       { he:'עֲרָפֶל',            en:'Fog' },
+    sun:           { he:'שֶׁמֶשׁ',                        en:'Sun' },
+    sunClouds:     { he:'שֶׁמֶשׁ וַעֲנָנִים',             en:'Sun and Clouds' },
+    sunCloudsRain: { he:'שֶׁמֶשׁ וַעֲנָנִים וְגֶשֶׁם',   en:'Sun, Clouds and Rain' },
+    rain:          { he:'גֶּשֶׁם',                        en:'Rain' },
+    clouds:        { he:'עֲנָנִים',                       en:'Clouds' },
+    snow:          { he:'שֶׁלֶג',                         en:'Snow' },
+    fog:           { he:'עֲרָפֶל',                        en:'Fog' },
   };
 
   const HEB_FONTS = [
