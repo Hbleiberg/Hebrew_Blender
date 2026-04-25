@@ -850,8 +850,16 @@
       </div>
     </div>
     <div class="form-row">
+      <label>Simple weather description</label>
+      <label class="toggle"><input type="checkbox" id="simpleWeatherDesc"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
       <label>Hide weather emoji</label>
       <label class="toggle"><input type="checkbox" id="hideWeatherEmoji"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Hide weather description</label>
+      <label class="toggle"><input type="checkbox" id="hideWeatherDesc"><span class="slider"></span></label>
     </div>
     <div class="form-row">
       <label>Hide weather</label>
@@ -1037,6 +1045,19 @@
     99: {emoji:'⛈️', he:'סְעָרָה חֲזָקָה',  en:'Thunderstorm'},
   };
 
+  const WEATHER_SIMPLE_MAP = {
+    0:'sun', 1:'sunClouds', 2:'sunClouds', 3:'clouds',
+    45:'fog', 48:'fog',
+    71:'snow', 73:'snow', 75:'snow', 77:'snow', 85:'snow', 86:'snow',
+  };
+  const WEATHER_SIMPLE = {
+    sun:       { he:'שֶׁמֶשׁ',            en:'Sun' },
+    sunClouds: { he:'שֶׁמֶשׁ וַעֲנָנִים', en:'Sun and Clouds' },
+    clouds:    { he:'עֲנָנִים',           en:'Clouds' },
+    snow:      { he:'שֶׁלֶג',             en:'Snow' },
+    fog:       { he:'עֲרָפֶל',            en:'Fog' },
+  };
+
   const HEB_FONTS = [
     // ── Block ──────────────────────────────────────
     { section:'Block',   name:'Frank Ruhl Libre',   family:"'Frank Ruhl Libre', serif",        load:null },
@@ -1119,7 +1140,9 @@
     hideTime: false,
     tempUnit: 'F',
     weatherLabelLang: 'he',
+    simpleWeatherDesc: false,
     hideWeatherEmoji: false,
+    hideWeatherDesc: false,
     hideWeather: false,
     dowLang: 'he',
     showYesterday: true,
@@ -1556,7 +1579,13 @@
     const code = data.current.weathercode;
     const w = WEATHER_WMO[code] || { emoji: '🌤️', he: 'מֶזֶג אֲוִיר', en: 'Weather' };
     const isHe = settings.weatherLabelLang === 'he';
-    const label = isHe ? hebDisplay(w.he) : w.en;
+    let label;
+    if (settings.simpleWeatherDesc) {
+      const sk = WEATHER_SIMPLE_MAP[code] || 'clouds';
+      label = isHe ? hebDisplay(WEATHER_SIMPLE[sk].he) : WEATHER_SIMPLE[sk].en;
+    } else {
+      label = isHe ? hebDisplay(w.he) : w.en;
+    }
     let descriptor;
     if (isHe) {
       descriptor = hebDisplay(tempC > 25 ? 'חָם' : tempC < 15 ? 'קַר' : 'נָעִים');
@@ -1566,7 +1595,7 @@
     block.innerHTML = `
       ${settings.hideWeatherEmoji ? '' : `<div class="weather-emoji">${w.emoji}</div>`}
       <div class="weather-temp">${tempStr}</div>
-      <div class="weather-label ${isHe ? '' : 'ltr'}">${label}</div>
+      ${settings.hideWeatherDesc ? '' : `<div class="weather-label ${isHe ? '' : 'ltr'}">${label}</div>`}
       <div class="weather-descriptor ${isHe ? '' : 'ltr'}">${descriptor}</div>
       <div class="weather-city">${place.name}${place.country ? ', ' + place.country : ''}</div>
     `;
@@ -1612,6 +1641,8 @@
     document.querySelector(`input[name="tempUnit"][value="${settings.tempUnit}"]`).checked = true;
     document.querySelector(`input[name="weatherLabelLang"][value="${settings.weatherLabelLang}"]`).checked = true;
     $('hideWeatherEmoji').checked = settings.hideWeatherEmoji;
+    $('hideWeatherDesc').checked = settings.hideWeatherDesc;
+    $('simpleWeatherDesc').checked = settings.simpleWeatherDesc;
     $('hideWeather').checked = settings.hideWeather;
     document.querySelector(`input[name="dowLang"][value="${settings.dowLang}"]`).checked = true;
     $('colorDays').checked = settings.colorDays !== false;
@@ -1655,6 +1686,12 @@
       r.addEventListener('change', () => { settings.weatherLabelLang = r.value; renderWeather(); }));
     document.getElementById('hideWeatherEmoji').addEventListener('change', e => {
       settings.hideWeatherEmoji = e.target.checked; renderWeather();
+    });
+    document.getElementById('hideWeatherDesc').addEventListener('change', e => {
+      settings.hideWeatherDesc = e.target.checked; renderWeather();
+    });
+    document.getElementById('simpleWeatherDesc').addEventListener('change', e => {
+      settings.simpleWeatherDesc = e.target.checked; renderWeather();
     });
     document.getElementById('hideWeather').addEventListener('change', e => {
       settings.hideWeather = e.target.checked;
