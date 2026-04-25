@@ -1460,11 +1460,11 @@
       const lang = settings.dowLang || 'he';
       if (i === today && settings.showToday) {
         badgeEmoji = emojiSet ? emojiSet.today : '';
-        badgeText = lang === 'en' ? 'Today' : hebDisplay('הַיּוֹם');
+        badgeText = lang === 'en' ? 'Today' : hebDisplay('הַיוֹם');
         if (lang === 'both') badgeEngText = 'Today';
       } else if (i === yest && settings.showYesterday) {
         badgeEmoji = emojiSet ? emojiSet.yest : '';
-        badgeText = lang === 'en' ? 'Yesterday' : hebDisplay('אֶתְמֹל הָיָה');
+        badgeText = lang === 'en' ? 'Yesterday' : hebDisplay('אֶתְמוֹל הָיָה');
         if (lang === 'both') badgeEngText = 'Yesterday';
       } else if (i === tom && settings.showTomorrow) {
         badgeEmoji = emojiSet ? emojiSet.tom : '';
