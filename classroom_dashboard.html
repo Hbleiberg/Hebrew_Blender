@@ -389,6 +389,19 @@
   .panel-body { padding: 14px; }
   .panel.collapsed .panel-body { display: none; }
 
+  /* ───── Sub-section (collapsible within a panel) ───── */
+  .sub-section { border-bottom: 1px solid var(--border); margin-bottom: 10px; padding-bottom: 6px; }
+  .sub-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .sub-section-hdr {
+    font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--muted);
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; user-select: none; padding: 2px 0 7px;
+  }
+  .sub-section-hdr::after { content: '▾'; font-size: 0.75rem; transition: transform 0.2s; flex-shrink: 0; }
+  .sub-section.collapsed .sub-section-hdr::after { transform: rotate(-90deg); }
+  .sub-section.collapsed .sub-section-body { display: none; }
+
   /* ───── Form rows ───── */
   .form-row {
     display: flex;
@@ -752,46 +765,63 @@
 <div class="panel">
   <div class="panel-title">Date &amp; Time</div>
   <div class="panel-body">
-    <div class="form-row">
-      <label>Date format</label>
-      <div class="radio-group">
-        <input type="radio" name="engDateFmt" id="ef-mdy" value="MDY"><label for="ef-mdy">MM/DD/YYYY</label>
-        <input type="radio" name="engDateFmt" id="ef-dmy" value="DMY"><label for="ef-dmy">DD/MM/YYYY</label>
+
+    <div class="sub-section">
+      <div class="sub-section-hdr">English Date</div>
+      <div class="sub-section-body">
+        <div class="form-row">
+          <label>Date format</label>
+          <div class="radio-group">
+            <input type="radio" name="engDateFmt" id="ef-mdy" value="MDY"><label for="ef-mdy">MM/DD/YYYY</label>
+            <input type="radio" name="engDateFmt" id="ef-dmy" value="DMY"><label for="ef-dmy">DD/MM/YYYY</label>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Show day of the week</label>
+          <label class="toggle"><input type="checkbox" id="showEngDOW"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label>Hide English date</label>
+          <label class="toggle"><input type="checkbox" id="hideEngDate"><span class="slider"></span></label>
+        </div>
       </div>
     </div>
-    <div class="form-row">
-      <label>Show day of the week</label>
-      <label class="toggle"><input type="checkbox" id="showEngDOW"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label>Hide English date</label>
-      <label class="toggle"><input type="checkbox" id="hideEngDate"><span class="slider"></span></label>
-    </div>
-    <hr>
-    <div class="form-row">
-      <label>Hebrew date</label>
-      <div class="radio-group">
-        <input type="radio" name="hebDateScript" id="hs-he" value="he"><label for="hs-he">עברית</label>
-        <input type="radio" name="hebDateScript" id="hs-translit" value="translit"><label for="hs-translit">English</label>
-        <input type="radio" name="hebDateScript" id="hs-both" value="both"><label for="hs-both">Both</label>
+
+    <div class="sub-section">
+      <div class="sub-section-hdr">Hebrew Date</div>
+      <div class="sub-section-body">
+        <div class="form-row">
+          <label>Display</label>
+          <div class="radio-group">
+            <input type="radio" name="hebDateScript" id="hs-he" value="he"><label for="hs-he">עברית</label>
+            <input type="radio" name="hebDateScript" id="hs-translit" value="translit"><label for="hs-translit">English</label>
+            <input type="radio" name="hebDateScript" id="hs-both" value="both"><label for="hs-both">Both</label>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Hide Hebrew date</label>
+          <label class="toggle"><input type="checkbox" id="hideHebDate"><span class="slider"></span></label>
+        </div>
       </div>
     </div>
-    <div class="form-row">
-      <label>Hide Hebrew date</label>
-      <label class="toggle"><input type="checkbox" id="hideHebDate"><span class="slider"></span></label>
-    </div>
-    <hr>
-    <div class="form-row">
-      <label>Time format</label>
-      <div class="radio-group">
-        <input type="radio" name="timeFmt" id="tf-12" value="12"><label for="tf-12">12-hr</label>
-        <input type="radio" name="timeFmt" id="tf-24" value="24"><label for="tf-24">24-hr</label>
+
+    <div class="sub-section">
+      <div class="sub-section-hdr">Time</div>
+      <div class="sub-section-body">
+        <div class="form-row">
+          <label>Time format</label>
+          <div class="radio-group">
+            <input type="radio" name="timeFmt" id="tf-12" value="12"><label for="tf-12">12-hr</label>
+            <input type="radio" name="timeFmt" id="tf-24" value="24"><label for="tf-24">24-hr</label>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Hide time</label>
+          <label class="toggle"><input type="checkbox" id="hideTime"><span class="slider"></span></label>
+        </div>
       </div>
     </div>
-    <div class="form-row">
-      <label>Hide time</label>
-      <label class="toggle"><input type="checkbox" id="hideTime"><span class="slider"></span></label>
-    </div>
+
   </div>
 </div>
 
@@ -1812,6 +1842,9 @@
   function initPanelCollapse() {
     document.querySelectorAll('.panel-title').forEach(t => {
       t.addEventListener('click', () => t.parentElement.classList.toggle('collapsed'));
+    });
+    document.querySelectorAll('.sub-section-hdr').forEach(h => {
+      h.addEventListener('click', () => h.parentElement.classList.toggle('collapsed'));
     });
   }
 
