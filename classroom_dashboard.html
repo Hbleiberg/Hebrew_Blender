@@ -794,8 +794,16 @@
       <label class="toggle"><input type="checkbox" id="colorDays"><span class="slider"></span></label>
     </div>
     <div class="form-row">
-      <label>Yesterday/today/tomorrow markers</label>
-      <label class="toggle"><input type="checkbox" id="showYestTomorrow"><span class="slider"></span></label>
+      <label>Show Yesterday marker</label>
+      <label class="toggle"><input type="checkbox" id="showYesterday"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Show Today marker</label>
+      <label class="toggle"><input type="checkbox" id="showToday"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Show Tomorrow marker</label>
+      <label class="toggle"><input type="checkbox" id="showTomorrow"><span class="slider"></span></label>
     </div>
     <div class="form-row">
       <label>Show 🥚🐣🐔 emojis</label>
@@ -1005,7 +1013,9 @@
     weatherLabelLang: 'he',
     hideWeather: false,
     dowLang: 'he',
-    showYestTomorrow: true,
+    showYesterday: true,
+    showToday: true,
+    showTomorrow: true,
     showDOWEmojis: true,
     colorDays: true,
     enableDashText: false,
@@ -1314,12 +1324,10 @@
 
       // Determine badge content
       let badgeEmoji = '', badgeText = '';
-      if (settings.showYestTomorrow) {
-        const em = settings.showDOWEmojis;
-        if (i === today)     { badgeEmoji = em ? '🐣' : ''; badgeText = hebDisplay('הַיּוֹם'); }
-        else if (i === yest) { badgeEmoji = em ? '🥚' : ''; badgeText = hebDisplay('אֶתְמוֹל הָיָה'); }
-        else if (i === tom)  { badgeEmoji = em ? '🐔' : ''; badgeText = hebDisplay('מָחָר יִהְיֶה'); }
-      }
+      const em = settings.showDOWEmojis;
+      if (i === today  && settings.showToday)     { badgeEmoji = em ? '🐣' : ''; badgeText = hebDisplay('הַיּוֹם'); }
+      else if (i === yest && settings.showYesterday) { badgeEmoji = em ? '🥚' : ''; badgeText = hebDisplay('אֶתְמוֹל הָיָה'); }
+      else if (i === tom  && settings.showTomorrow)  { badgeEmoji = em ? '🐔' : ''; badgeText = hebDisplay('מָחָר יִהְיֶה'); }
 
       let nameHtml = '<div class="day-main">';
       if (settings.dowLang === 'he' || settings.dowLang === 'both') {
@@ -1441,7 +1449,9 @@
     $('hideWeather').checked = settings.hideWeather;
     document.querySelector(`input[name="dowLang"][value="${settings.dowLang}"]`).checked = true;
     $('colorDays').checked = settings.colorDays !== false;
-    $('showYestTomorrow').checked = settings.showYestTomorrow;
+    $('showYesterday').checked = settings.showYesterday;
+    $('showToday').checked = settings.showToday;
+    $('showTomorrow').checked = settings.showTomorrow;
     $('showDOWEmojis').checked = settings.showDOWEmojis;
     $('enableDashText').checked = settings.enableDashText;
     $('showNikkud').checked = settings.showNikkud;
@@ -1482,7 +1492,9 @@
     document.querySelectorAll('input[name="dowLang"]').forEach(r =>
       r.addEventListener('change', () => { settings.dowLang = r.value; renderDaysList(); }));
     document.getElementById('colorDays').addEventListener('change', e => { settings.colorDays = e.target.checked; renderDaysList(); });
-    document.getElementById('showYestTomorrow').addEventListener('change', e => { settings.showYestTomorrow = e.target.checked; renderDaysList(); });
+    document.getElementById('showYesterday').addEventListener('change', e => { settings.showYesterday = e.target.checked; renderDaysList(); });
+    document.getElementById('showToday').addEventListener('change', e => { settings.showToday = e.target.checked; renderDaysList(); });
+    document.getElementById('showTomorrow').addEventListener('change', e => { settings.showTomorrow = e.target.checked; renderDaysList(); });
     document.getElementById('showDOWEmojis').addEventListener('change', e => { settings.showDOWEmojis = e.target.checked; renderDaysList(); });
     document.getElementById('showNikkud').addEventListener('change', e => { settings.showNikkud = e.target.checked; refreshAll(); });
     document.getElementById('colorCodeNikkud').addEventListener('change', e => {
