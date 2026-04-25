@@ -1036,11 +1036,11 @@
     girl:  { yest:'👶',  today:'👧',  tom:'👩' },
   };
 
-  const HEB_MONTHS_HE = ['תִּשְׁרֵי','חֶשְׁוָן','כִּסְלֵו','טֵבֵת','שְׁבָט','אֲדָר','אֲדָר א׳','אֲדָר ב׳','נִיסָן','אִיָּר','סִיוָן','תַּמּוּז','אָב','אֱלוּל'];
+  const HEB_MONTHS_HE = ['תִּשְרֵי','חֶשְוָן','כִּסְלֵו','טֵבֵת','שְבָט','אֲדָר','אֲדָר א׳','אֲדָר ב׳','נִיסָן','אִיָּר','סִיוָן','תַּמּוּז','אָב','אֱלוּל'];
   const HEB_MONTHS_TRANSLIT = ['Tishrei','Cheshvan','Kislev','Tevet','Shevat','Adar','Adar I','Adar II','Nisan','Iyar','Sivan','Tammuz','Av','Elul'];
 
   const WEATHER_WMO = {
-    0:  {emoji:'☀️',  he:'שֶׁמֶשׁ',          en:'Clear'},
+    0:  {emoji:'☀️',  he:'שֶמֶש',          en:'Clear'},
     1:  {emoji:'🌤️', he:'מְעֻנָּן חֶלְקִית', en:'Partly Cloudy'},
     2:  {emoji:'⛅',  he:'מְעֻנָּן חֶלְקִית', en:'Partly Cloudy'},
     3:  {emoji:'☁️',  he:'עֲנָנִים',         en:'Overcast'},
@@ -1049,18 +1049,18 @@
     51: {emoji:'🌦️', he:'טַפְטוּף',          en:'Drizzle'},
     53: {emoji:'🌦️', he:'טַפְטוּף',          en:'Drizzle'},
     55: {emoji:'🌦️', he:'טַפְטוּף',          en:'Drizzle'},
-    61: {emoji:'🌧️', he:'גֶּשֶׁם',           en:'Rain'},
-    63: {emoji:'🌧️', he:'גֶּשֶׁם',           en:'Rain'},
-    65: {emoji:'🌧️', he:'גֶּשֶׁם חָזָק',     en:'Heavy Rain'},
-    71: {emoji:'❄️',  he:'שֶׁלֶג',           en:'Snow'},
-    73: {emoji:'❄️',  he:'שֶׁלֶג',           en:'Snow'},
-    75: {emoji:'❄️',  he:'שֶׁלֶג חָזָק',     en:'Heavy Snow'},
-    77: {emoji:'❄️',  he:'שֶׁלֶג',           en:'Snow Grains'},
-    80: {emoji:'🌧️', he:'גֶּשֶׁם',           en:'Showers'},
-    81: {emoji:'🌧️', he:'גֶּשֶׁם',           en:'Showers'},
-    82: {emoji:'🌧️', he:'גֶּשֶׁם חָזָק',     en:'Heavy Showers'},
-    85: {emoji:'🌨️', he:'שֶׁלֶג',           en:'Snow Showers'},
-    86: {emoji:'🌨️', he:'שֶׁלֶג חָזָק',     en:'Snow Showers'},
+    61: {emoji:'🌧️', he:'גֶּשֶם',           en:'Rain'},
+    63: {emoji:'🌧️', he:'גֶּשֶם',           en:'Rain'},
+    65: {emoji:'🌧️', he:'גֶּשֶם חָזָק',     en:'Heavy Rain'},
+    71: {emoji:'❄️',  he:'שֶלֶג',           en:'Snow'},
+    73: {emoji:'❄️',  he:'שֶלֶג',           en:'Snow'},
+    75: {emoji:'❄️',  he:'שֶלֶג חָזָק',     en:'Heavy Snow'},
+    77: {emoji:'❄️',  he:'שֶלֶג',           en:'Snow Grains'},
+    80: {emoji:'🌧️', he:'גֶּשֶם',           en:'Showers'},
+    81: {emoji:'🌧️', he:'גֶּשֶם',           en:'Showers'},
+    82: {emoji:'🌧️', he:'גֶּשֶם חָזָק',     en:'Heavy Showers'},
+    85: {emoji:'🌨️', he:'שֶלֶג',           en:'Snow Showers'},
+    86: {emoji:'🌨️', he:'שֶלֶג חָזָק',     en:'Snow Showers'},
     95: {emoji:'⛈️', he:'סְעָרָה',          en:'Thunderstorm'},
     96: {emoji:'⛈️', he:'סְעָרָה',          en:'Thunderstorm'},
     99: {emoji:'⛈️', he:'סְעָרָה חֲזָקָה',  en:'Thunderstorm'},
@@ -1076,12 +1076,12 @@
     95:'rain', 96:'rain', 99:'rain',
   };
   const WEATHER_SIMPLE = {
-    sun:           { he:'שֶׁמֶשׁ',                        en:'Sun' },
-    sunClouds:     { he:'שֶׁמֶשׁ וַעֲנָנִים',             en:'Sun and Clouds' },
-    sunCloudsRain: { he:'שֶׁמֶשׁ וַעֲנָנִים וְגֶשֶׁם',   en:'Sun, Clouds and Rain' },
-    rain:          { he:'גֶּשֶׁם',                        en:'Rain' },
+    sun:           { he:'שֶמֶש',                        en:'Sun' },
+    sunClouds:     { he:'שֶמֶש וַעֲנָנִים',             en:'Sun and Clouds' },
+    sunCloudsRain: { he:'שֶמֶש וַעֲנָנִים וְגֶשֶם',   en:'Sun, Clouds and Rain' },
+    rain:          { he:'גֶּשֶם',                        en:'Rain' },
     clouds:        { he:'עֲנָנִים',                       en:'Clouds' },
-    snow:          { he:'שֶׁלֶג',                         en:'Snow' },
+    snow:          { he:'שֶלֶג',                         en:'Snow' },
     fog:           { he:'עֲרָפֶל',                        en:'Fog' },
   };
 
@@ -1999,7 +1999,7 @@
       dowTitle.style.direction = isHeb ? 'rtl' : '';
       wxTitle.style.direction = isHeb ? 'rtl' : '';
       dowTitle.innerHTML = isHeb ? hebDisplay('אֵיזֶה יוֹם הַיוֹם?') : 'Days of the Week';
-      wxTitle.innerHTML = isHeb ? hebDisplay('מַה יֵשׁ בַּחוּץ?') : 'Weather';
+      wxTitle.innerHTML = isHeb ? hebDisplay('מַה יֵש בַּחוּץ?') : 'Weather';
     }
   }
 
