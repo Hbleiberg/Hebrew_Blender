@@ -158,3 +158,120 @@ colorCodingMode: 'letter', // 'letter' | 'highlight' | 'underline'
 nikudColorOverrides: {},   // key → hex string
 ```
 When toggling `colorCodeNikkud` on, always call `initColorPickers()` to populate the picker inputs with current colors.
+
+---
+
+## Settings Drawer & Panel Collapse (`classroom_dashboard.html`)
+
+### Drawer structure
+The settings UI is a slide-in modal from the right edge. Three elements:
+
+| Element | Role |
+|---|---|
+| `.settings-backdrop` | Full-screen dark overlay; click closes drawer |
+| `.settings-modal` | The 380px panel (`max-width: 92vw`); slides in via `transform: translateX` |
+| `.settings-header` | Navy bar with title + close button (`×`) |
+| `.settings-body` | Scrollable content area holding all `.panel` blocks |
+
+Open/close is controlled by toggling the `.open` class on both backdrop and modal:
+```js
+function openSettings() {
+  document.getElementById('settingsBackdrop').classList.add('open');
+  document.getElementById('settingsModal').classList.add('open');
+  syncFormToSettings();
+}
+function closeSettings() {
+  document.getElementById('settingsBackdrop').classList.remove('open');
+  document.getElementById('settingsModal').classList.remove('open');
+  saveSettingsToStorage();
+}
+```
+Settings are saved to `localStorage` on close.
+
+### Drawer CSS
+```css
+.settings-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(13, 18, 32, 0.45);
+  z-index: 90;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+.settings-backdrop.open { opacity: 1; pointer-events: auto; }
+
+.settings-modal {
+  position: fixed; top: 0; right: 0;
+  width: 380px; max-width: 92vw; height: 100vh;
+  background: var(--white);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  display: flex; flex-direction: column;
+}
+.settings-modal.open { transform: translateX(0); }
+
+.settings-header {
+  padding: 14px 20px;
+  background: var(--navy);    /* use #fff for text, not var(--white) */
+  color: #fff;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+body.dark .settings-header { background: var(--navy-deep); }
+
+.settings-header h2 {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1rem; letter-spacing: 0.05em; color: #fff;
+}
+
+.settings-close {
+  background: rgba(255,255,255,0.12); color: #fff;
+  border: none; border-radius: 4px;
+  width: 32px; height: 32px;
+  cursor: pointer; font-size: 1.2rem;
+}
+.settings-close:hover { background: rgba(255,255,255,0.22); }
+
+.settings-body { flex: 1; overflow-y: auto; padding: 16px; }
+```
+
+### Panel (collapsible section) CSS
+```css
+.panel {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+body.dark .panel { background: var(--navy-deep); }
+
+.panel-title {
+  background: var(--navy); color: #fff;   /* always #fff, not var(--white) */
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 9px 14px;
+  cursor: pointer; user-select: none;
+  display: flex; justify-content: space-between; align-items: center;
+}
+body.dark .panel-title { background: #0a0f1c; }
+
+/* Collapse indicator — ▲ when open, ▼ when collapsed */
+.panel-title::after       { content: '▲'; color: var(--gold-light); font-size: 0.7rem; }
+.panel.collapsed .panel-title::after { content: '▼'; }
+
+.panel-body { padding: 14px; }
+.panel.collapsed .panel-body { display: none; }
+```
+
+### Panel collapse JS
+```js
+function initPanelCollapse() {
+  document.querySelectorAll('.panel-title').forEach(t => {
+    t.addEventListener('click', () => t.parentElement.classList.toggle('collapsed'));
+  });
+}
+```
+Called once at `DOMContentLoaded`. Toggling `.collapsed` on the `.panel` element hides `.panel-body` and swaps the `::after` arrow via CSS.
