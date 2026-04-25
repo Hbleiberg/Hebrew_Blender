@@ -601,6 +601,22 @@
   body.dark .editor { background: var(--navy-deep); color: var(--text); }
   .editor:focus { border-color: var(--gold); }
 
+  /* ── Spoiler ── */
+  .spoiler {
+    background: #111;
+    color: transparent;
+    border-radius: 3px;
+    cursor: pointer;
+    user-select: none;
+    padding: 0 3px;
+    transition: background 0.25s, color 0.25s;
+    display: inline-block;
+  }
+  .spoiler.revealed { background: rgba(0,0,0,0.08); color: inherit; }
+  body.dark .spoiler.revealed { background: rgba(255,255,255,0.08); }
+  /* In the editor, always show spoiler text so teacher can read/edit it */
+  #dashEditor .spoiler { background: #c0392b33; color: inherit; cursor: text; user-select: text; }
+
   /* ───── Font selector ───── */
   .font-options { display: flex; flex-direction: column; gap: 4px; }
   .font-section-hdr {
@@ -859,6 +875,7 @@
       <button class="ed-btn" onclick="setAlign('Right')" type="button">RTL</button>
       <button class="ed-btn" onclick="setAlign('Center')" type="button">Ctr</button>
       <button class="ed-btn" onclick="setAlign('Left')" type="button">LTR</button>
+      <button class="ed-btn" onclick="insertSpoiler()" type="button" title="Wrap selection in spoiler (hidden until tapped)">||</button>
       <input type="color" class="ed-color" onchange="fmt('foreColor', this.value)" title="Text color">
       <select class="ed-select" onchange="fmt('fontSize', this.value)" title="Size">
         <option value="3">Normal</option>
@@ -1557,6 +1574,10 @@
     document.querySelectorAll('input[name="colorMode"]').forEach(r =>
       r.addEventListener('change', () => { settings.colorCodingMode = r.value; refreshAll(); }));
     document.getElementById('enableDashText').addEventListener('change', e => toggleDashText(e.target.checked));
+    document.getElementById('dashTextDisplay').addEventListener('click', e => {
+      const sp = e.target.closest('.spoiler');
+      if (sp) { e.stopPropagation(); sp.classList.toggle('revealed'); }
+    });
   }
 
   function applySettings(s) {
@@ -1660,6 +1681,23 @@
     syncDashText();
   }
   function setAlign(dir) { fmt('justify' + dir); }
+  function insertSpoiler() {
+    const ed = document.getElementById('dashEditor');
+    ed.focus();
+    const sel = window.getSelection();
+    if (!sel || !sel.rangeCount) return;
+    const range = sel.getRangeAt(0);
+    if (range.collapsed) return;
+    const span = document.createElement('span');
+    span.className = 'spoiler';
+    try {
+      range.surroundContents(span);
+    } catch(e) {
+      span.appendChild(range.extractContents());
+      range.insertNode(span);
+    }
+    syncDashText();
+  }
   function syncDashText() {
     const ed = document.getElementById('dashEditor');
     document.getElementById('dashTextDisplay').innerHTML = ed.innerHTML;
