@@ -516,7 +516,7 @@
   }
   .emoji-set-btn:hover { border-color: var(--gold); }
   .emoji-set-btn.active { border-color: var(--gold); background: var(--white); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-  .emoji-set-btn[data-set="none"] { font-size: 0.78rem; font-weight: 600; color: var(--muted); padding: 4px 12px; }
+  .emoji-set-btn[data-set="none"] { font-weight: 600; color: var(--muted); }
   body.dark .emoji-set-btn { background: #2a3349; }
   body.dark .emoji-set-btn.active { background: #1e2535; }
 
@@ -831,6 +831,7 @@
         <button class="emoji-set-btn" data-set="city">🌇🏙️🌃</button>
         <button class="emoji-set-btn" data-set="time">⏪️▶️⏩️</button>
         <button class="emoji-set-btn" data-set="arrow">🔼⏹️🔽</button>
+        <button class="emoji-set-btn" data-set="plant">🌱🪴🌲</button>
         <button class="emoji-set-btn" data-set="boy">👶👦🧔‍♂️</button>
         <button class="emoji-set-btn" data-set="girl">👶👧👩</button>
         <button class="emoji-set-btn" data-set="none">None</button>
@@ -931,6 +932,7 @@
     city:  { yest:'🌇',  today:'🏙️', tom:'🌃' },
     time:  { yest:'⏪️', today:'▶️',  tom:'⏩️' },
     arrow: { yest:'🔼',  today:'⏹️', tom:'🔽' },
+    plant: { yest:'🌱',  today:'🪴',  tom:'🌲' },
     boy:   { yest:'👶',  today:'👦',  tom:'🧔‍♂️' },
     girl:  { yest:'👶',  today:'👧',  tom:'👩' },
   };
