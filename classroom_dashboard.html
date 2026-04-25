@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <title>Classroom Dashboard — Hebrew Blender</title><!-- Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=G-CMLC81Z0HC"></script><script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -630,6 +631,18 @@
   body.dark .font-opt.active .font-opt-preview { color: var(--gold-light); }
   .font-opt-name { font-size: 0.78rem; font-weight: 600; color: var(--text); }
 
+  /* ───── Nikkud color pickers ───── */
+  .color-pick-list { display: flex; flex-direction: column; gap: 3px; margin-top: 6px; }
+  .color-pick-row { display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+  .color-pick-ex { font-family: var(--heb-font); font-size: 1.15rem; direction: rtl; width: 26px; text-align: center; }
+  .color-pick-label { flex: 1; font-size: 0.78rem; color: var(--text); }
+  .color-pick-input { width: 28px; height: 22px; border: 1px solid var(--border); border-radius: 3px; cursor: pointer; padding: 0; }
+
+  /* ───── Display size slider ───── */
+  .size-row { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; margin-top: 8px; }
+  .size-row input[type=range] { flex: 1; accent-color: var(--gold); cursor: pointer; }
+  .size-val { min-width: 36px; font-size: 0.75rem; color: var(--muted); }
+
   /* ───── Fullscreen ───── */
   body.fullscreen header { display: none; }
   body.fullscreen .dashboard {
@@ -790,6 +803,10 @@
       <label>Yesterday/today/tomorrow markers</label>
       <label class="toggle"><input type="checkbox" id="showYestTomorrow"><span class="slider"></span></label>
     </div>
+    <div class="form-row">
+      <label>Show 🥚🐣🐔 emojis</label>
+      <label class="toggle"><input type="checkbox" id="showDOWEmojis"><span class="slider"></span></label>
+    </div>
   </div>
 </div>
 
@@ -799,6 +816,11 @@
     <div class="form-row">
       <label>Show custom text</label>
       <label class="toggle"><input type="checkbox" id="enableDashText"><span class="slider"></span></label>
+    </div>
+    <div class="size-row">
+      <label for="dashTextSizeSlider">Display size</label>
+      <input type="range" id="dashTextSizeSlider" min="0.8" max="5" step="0.1" value="1.8" oninput="setDashTextSize(this.value)">
+      <span class="size-val" id="dashTextSizeVal">1.8rem</span>
     </div>
     <div class="editor-toolbar">
       <button class="ed-btn" onclick="fmt('bold')" type="button"><b>B</b></button>
@@ -858,6 +880,8 @@
         <input type="radio" name="colorMode" id="cm-underline" value="underline"><label for="cm-underline">Underline</label>
       </div>
     </div>
+    <div class="color-pick-list" id="colorPickerList" style="display:none;"></div>
+    <button class="btn btn-xs btn-secondary" id="nikudResetBtn" onclick="resetNikudColors()" style="display:none;font-size:0.72rem;margin-top:4px;">↺ Reset vowel colors</button>
   </div>
 </div>
 </div>
@@ -954,6 +978,22 @@
     'ֹ':'o','ֻ':'u','ְ':'sh'
   };
 
+  const VOWEL_COLOR_DEFS = [
+    { key:'a',       name:'Kamatz',      example:'\u05D0\u05B8' },
+    { key:'patah',   name:'Patach',      example:'\u05D0\u05B7' },
+    { key:'hpatah',  name:'H. Patach',   example:'\u05D0\u05B2' },
+    { key:'hkamatz', name:'H. Kamatz',   example:'\u05D0\u05B3' },
+    { key:'e',       name:'Segol',       example:'\u05D0\u05B6' },
+    { key:'hsegol',  name:'H. Segol',    example:'\u05D0\u05B1' },
+    { key:'tzere',   name:'Tzere',       example:'\u05D0\u05B5' },
+    { key:'i',       name:'Chirik',      example:'\u05D0\u05B4' },
+    { key:'o',       name:'Holam',       example:'\u05D0\u05B9' },
+    { key:'vcholam', name:'Vav Holam',   example:'\u05D5\u05B9' },
+    { key:'u',       name:'Kubutz',      example:'\u05D0\u05BB' },
+    { key:'shuruk',  name:'Shuruk',      example:'\u05D5\u05BC' },
+    { key:'sh',      name:'Shva',        example:'\u05D0\u05B0' },
+  ];
+
   const FS_ENTER = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>';
   const FS_EXIT  = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>';
 
@@ -972,12 +1012,15 @@
     hideWeather: false,
     dowLang: 'he',
     showYestTomorrow: true,
+    showDOWEmojis: true,
     enableDashText: false,
     dashTextHTML: '',
     hebFont: 'Frank Ruhl Libre',
     showNikkud: true,
     colorCodeNikkud: false,
     colorCodingMode: 'letter',
+    nikudColorOverrides: {},
+    dashTextSize: 1.8,
   };
   let presets = {};
   let weatherCache = null;
@@ -1101,6 +1144,9 @@
   function stripNikkud(s) { return s.replace(NIKKUD_RE, ''); }
 
   function getNikudColor(key) {
+    if (settings.nikudColorOverrides && settings.nikudColorOverrides[key] !== undefined) {
+      return settings.nikudColorOverrides[key];
+    }
     return (document.body.classList.contains('dark') ? NIKUD_DEFAULTS_DARK : NIKUD_DEFAULTS_LIGHT)[key] || '#888';
   }
 
@@ -1150,6 +1196,53 @@
   }
 
   function maybeStripNikkud(s) { return settings.showNikkud ? s : stripNikkud(s); }
+
+  /* ────────── NIKKUD COLOR PICKERS ────────── */
+  function initColorPickers() {
+    const list = document.getElementById('colorPickerList');
+    if (!list) return;
+    list.innerHTML = '';
+    VOWEL_COLOR_DEFS.forEach(def => {
+      const row = document.createElement('div');
+      row.className = 'color-pick-row';
+      const ex = document.createElement('span');
+      ex.className = 'color-pick-ex';
+      ex.textContent = def.example;
+      const lbl = document.createElement('span');
+      lbl.className = 'color-pick-label';
+      lbl.textContent = def.name;
+      const inp = document.createElement('input');
+      inp.type = 'color';
+      inp.className = 'color-pick-input';
+      inp.value = getNikudColor(def.key);
+      inp.addEventListener('input', () => {
+        if (!settings.nikudColorOverrides) settings.nikudColorOverrides = {};
+        settings.nikudColorOverrides[def.key] = inp.value;
+        if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); }
+      });
+      row.appendChild(ex);
+      row.appendChild(lbl);
+      row.appendChild(inp);
+      list.appendChild(row);
+    });
+  }
+  function resetNikudColors() {
+    settings.nikudColorOverrides = {};
+    initColorPickers();
+    if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); }
+  }
+
+  /* ────────── DASHBOARD TEXT SIZE ────────── */
+  function setDashTextSize(val) {
+    const v = parseFloat(val);
+    settings.dashTextSize = v;
+    document.getElementById('dashTextDisplay').style.fontSize = v + 'rem';
+    const lbl = document.getElementById('dashTextSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(1) + 'rem';
+    const sl = document.getElementById('dashTextSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
 
   /* ────────── DATE / TIME DISPLAY ────────── */
   function updateDateTimeDisplay() {
@@ -1229,10 +1322,11 @@
         html += `<div class="day-eng">${day.eng}</div>`;
       }
       if (settings.showYestTomorrow) {
-        if (i === today)      html += `<div class="day-annot">🐣 ${hebDisplay('הַיּוֹם')}</div>`;
-        else if (i === yest)  html += `<div class="day-annot">🥚 ${hebDisplay('אֶתְמוֹל הָיָה')}</div>`;
-        else if (i === tom)   html += `<div class="day-annot">🐔 ${hebDisplay('מָחָר יִהְיֶה')}</div>`;
-      }
+        const em = settings.showDOWEmojis;
+        if (i === today)      html += `<div class="day-annot">${em ? '🐣 ' : ''}${hebDisplay('הַיּוֹם')}</div>`;
+        else if (i === yest)  html += `<div class="day-annot">${em ? '🥚 ' : ''}${hebDisplay('אֶתְמוֹל הָיָה')}</div>`;
+        else if (i === tom)   html += `<div class="day-annot">${em ? '🐔 ' : ''}${hebDisplay('מָחָר יִהְיֶה')}</div>`;
+      
       item.innerHTML = html;
       list.appendChild(item);
     });
@@ -1337,6 +1431,7 @@
     $('hideWeather').checked = settings.hideWeather;
     document.querySelector(`input[name="dowLang"][value="${settings.dowLang}"]`).checked = true;
     $('showYestTomorrow').checked = settings.showYestTomorrow;
+    $('showDOWEmojis').checked = settings.showDOWEmojis;
     $('enableDashText').checked = settings.enableDashText;
     $('showNikkud').checked = settings.showNikkud;
     $('colorCodeNikkud').checked = settings.colorCodeNikkud;
@@ -1344,6 +1439,12 @@
     if (cmr) cmr.style.display = settings.colorCodeNikkud ? 'flex' : 'none';
     const cmRadio = document.querySelector(`input[name="colorMode"][value="${settings.colorCodingMode}"]`);
     if (cmRadio) cmRadio.checked = true;
+    const cpl = $('colorPickerList');
+    if (cpl) { cpl.style.display = settings.colorCodeNikkud ? 'flex' : 'none'; cpl.style.flexDirection = 'column'; }
+    const nrb = $('nikudResetBtn');
+    if (nrb) nrb.style.display = settings.colorCodeNikkud ? 'inline-block' : 'none';
+    if (settings.colorCodeNikkud) initColorPickers();
+    setDashTextSize(settings.dashTextSize || 1.8);
   }
 
   function wireFormListeners() {
@@ -1370,10 +1471,15 @@
     document.querySelectorAll('input[name="dowLang"]').forEach(r =>
       r.addEventListener('change', () => { settings.dowLang = r.value; renderDaysList(); }));
     document.getElementById('showYestTomorrow').addEventListener('change', e => { settings.showYestTomorrow = e.target.checked; renderDaysList(); });
+    document.getElementById('showDOWEmojis').addEventListener('change', e => { settings.showDOWEmojis = e.target.checked; renderDaysList(); });
     document.getElementById('showNikkud').addEventListener('change', e => { settings.showNikkud = e.target.checked; refreshAll(); });
     document.getElementById('colorCodeNikkud').addEventListener('change', e => {
       settings.colorCodeNikkud = e.target.checked;
-      document.getElementById('colorModeRow').style.display = e.target.checked ? 'flex' : 'none';
+      const on = e.target.checked;
+      document.getElementById('colorModeRow').style.display = on ? 'flex' : 'none';
+      document.getElementById('colorPickerList').style.display = on ? 'flex' : 'none';
+      document.getElementById('nikudResetBtn').style.display = on ? 'inline-block' : 'none';
+      if (on) initColorPickers();
       refreshAll();
     });
     document.querySelectorAll('input[name="colorMode"]').forEach(r =>
@@ -1388,6 +1494,7 @@
     document.getElementById('dashEditor').innerHTML = settings.dashTextHTML || '';
     syncDashText();
     toggleDashText(settings.enableDashText);
+    setDashTextSize(settings.dashTextSize || 1.8);
     updateDateTimeDisplay();
     renderDaysList();
     renderWeather();
