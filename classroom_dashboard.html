@@ -876,7 +876,7 @@
       </div>
     </div>
     <div class="form-row">
-      <label>Simple weather description</label>
+      <label title="Limits description to: Sun, Clouds, Sun &amp; Clouds, Snow, Fog">Simple weather description</label>
       <label class="toggle"><input type="checkbox" id="simpleWeatherDesc"><span class="slider"></span></label>
     </div>
     <div class="form-row">
@@ -1934,8 +1934,11 @@
     } else {
       dowTitle.style.display = '';
       wxTitle.style.display = '';
-      dowTitle.innerHTML = lang === 'he' ? hebDisplay('אֵיזֶה יוֹם הַיוֹם?') : 'Days of the Week';
-      wxTitle.innerHTML = lang === 'he' ? hebDisplay('מַה יֵשׁ בַּחוּץ?') : 'Weather';
+      const isHeb = lang === 'he';
+      dowTitle.style.direction = isHeb ? 'rtl' : '';
+      wxTitle.style.direction = isHeb ? 'rtl' : '';
+      dowTitle.innerHTML = isHeb ? hebDisplay('אֵיזֶה יוֹם הַיוֹם?') : 'Days of the Week';
+      wxTitle.innerHTML = isHeb ? hebDisplay('מַה יֵשׁ בַּחוּץ?') : 'Weather';
     }
   }
 
