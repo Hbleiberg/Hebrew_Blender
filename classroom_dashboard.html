@@ -731,8 +731,8 @@
   </div>
 </header><div class="dashboard">
   <!-- LEFT: Days -->
-  <div class="dash-col">
-    <div class="col-title">Days of the Week</div>
+  <div class="dash-col" id="dowCol">
+    <div class="col-title" id="dowColTitle">Days of the Week</div>
     <div id="daysList"></div>
   </div><!-- CENTER: Date / Time / Custom Text --><div class="dash-col dash-center">
     <div id="dateTimeBlock" style="width:100%;">
@@ -743,8 +743,8 @@
     <div id="dashTextWrap" style="display:none;width:100%;">
       <div id="dashTextDisplay" class="dash-text-display"></div>
     </div>
-  </div><!-- RIGHT: Weather --><div class="dash-col">
-    <div class="col-title">Weather</div>
+  </div><!-- RIGHT: Weather --><div class="dash-col" id="weatherCol">
+    <div class="col-title" id="weatherColTitle">Weather</div>
     <div id="weatherBlock" class="weather-block">
       <div class="weather-loading">Loading weather…</div>
     </div>
@@ -770,6 +770,44 @@
 </div>
 
 <div class="panel">
+  <div class="panel-title">Display Options</div>
+  <div class="panel-body">
+    <div class="form-row">
+      <label>Column headers</label>
+      <div class="radio-group">
+        <input type="radio" name="headerLang" id="hl-he" value="he"><label for="hl-he">עִבְרִית</label>
+        <input type="radio" name="headerLang" id="hl-en" value="en"><label for="hl-en">English</label>
+        <input type="radio" name="headerLang" id="hl-none" value="none"><label for="hl-none">None</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Hide English date</label>
+      <label class="toggle"><input type="checkbox" id="hideEngDate"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Hide Hebrew date</label>
+      <label class="toggle"><input type="checkbox" id="hideHebDate"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Hide time</label>
+      <label class="toggle"><input type="checkbox" id="hideTime"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Hide weather</label>
+      <label class="toggle"><input type="checkbox" id="hideWeather"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Hide day of the week</label>
+      <label class="toggle"><input type="checkbox" id="hideDOW"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Hide dashboard text</label>
+      <label class="toggle"><input type="checkbox" id="hideDashText"><span class="slider"></span></label>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
   <div class="panel-title">Date &amp; Time</div>
   <div class="panel-body">
 
@@ -787,10 +825,6 @@
           <label>Show day of the week</label>
           <label class="toggle"><input type="checkbox" id="showEngDOW"><span class="slider"></span></label>
         </div>
-        <div class="form-row">
-          <label>Hide English date</label>
-          <label class="toggle"><input type="checkbox" id="hideEngDate"><span class="slider"></span></label>
-        </div>
       </div>
     </div>
 
@@ -805,10 +839,6 @@
             <input type="radio" name="hebDateScript" id="hs-both" value="both"><label for="hs-both">Both</label>
           </div>
         </div>
-        <div class="form-row">
-          <label>Hide Hebrew date</label>
-          <label class="toggle"><input type="checkbox" id="hideHebDate"><span class="slider"></span></label>
-        </div>
       </div>
     </div>
 
@@ -821,10 +851,6 @@
             <input type="radio" name="timeFmt" id="tf-12" value="12"><label for="tf-12">12-hr</label>
             <input type="radio" name="timeFmt" id="tf-24" value="24"><label for="tf-24">24-hr</label>
           </div>
-        </div>
-        <div class="form-row">
-          <label>Hide time</label>
-          <label class="toggle"><input type="checkbox" id="hideTime"><span class="slider"></span></label>
         </div>
       </div>
     </div>
@@ -860,10 +886,6 @@
     <div class="form-row">
       <label>Hide weather description</label>
       <label class="toggle"><input type="checkbox" id="hideWeatherDesc"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label>Hide weather</label>
-      <label class="toggle"><input type="checkbox" id="hideWeather"><span class="slider"></span></label>
     </div>
   </div>
 </div>
@@ -914,10 +936,6 @@
 <div class="panel">
   <div class="panel-title">Dashboard Text</div>
   <div class="panel-body">
-    <div class="form-row">
-      <label>Show custom text</label>
-      <label class="toggle"><input type="checkbox" id="enableDashText"><span class="slider"></span></label>
-    </div>
     <div class="size-row">
       <label for="dashTextSizeSlider">Display size</label>
       <input type="range" id="dashTextSizeSlider" min="0.8" max="5" step="0.1" value="1.8" oninput="setDashTextSize(this.value)">
@@ -1150,6 +1168,8 @@
     showTomorrow: true,
     dowEmojiSet: 'chick',
     colorDays: true,
+    headerLang: 'he',
+    hideDOW: false,
     enableDashText: true,
     dashTextHTML: '',
     hebFont: 'Frank Ruhl Libre',
@@ -1439,6 +1459,8 @@
 
   /* ────────── DAYS LIST ────────── */
   function renderDaysList() {
+    const dowCol = document.getElementById('dowCol');
+    if (dowCol) dowCol.style.display = settings.hideDOW ? 'none' : '';
     const today = new Date().getDay();
     const list = document.getElementById('daysList');
     list.innerHTML = '';
@@ -1498,10 +1520,9 @@
 
   /* ────────── WEATHER (Open-Meteo, no API key) ────────── */
   async function fetchWeather() {
-    if (settings.hideWeather) {
-      document.getElementById('weatherBlock').innerHTML = '';
-      return;
-    }
+    const weatherCol = document.getElementById('weatherCol');
+    if (weatherCol) weatherCol.style.display = settings.hideWeather ? 'none' : '';
+    if (settings.hideWeather) return;
     const block = document.getElementById('weatherBlock');
     block.innerHTML = '<div class="weather-loading">Loading weather…</div>';
     try {
@@ -1653,7 +1674,9 @@
     document.querySelectorAll('.emoji-set-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.set === activeSet);
     });
-    $('enableDashText').checked = settings.enableDashText;
+    document.querySelector(`input[name="headerLang"][value="${settings.headerLang || 'he'}"]`).checked = true;
+    $('hideDOW').checked = settings.hideDOW;
+    $('hideDashText').checked = !settings.enableDashText;
     $('showNikkud').checked = settings.showNikkud;
     $('colorCodeNikkud').checked = settings.colorCodeNikkud;
     const cmr = $('colorModeRow');
@@ -1695,8 +1718,9 @@
     });
     document.getElementById('hideWeather').addEventListener('change', e => {
       settings.hideWeather = e.target.checked;
-      if (e.target.checked) document.getElementById('weatherBlock').innerHTML = '';
-      else fetchWeather();
+      const wCol = document.getElementById('weatherCol');
+      if (wCol) wCol.style.display = e.target.checked ? 'none' : '';
+      if (!e.target.checked) fetchWeather();
     });
     document.querySelectorAll('input[name="dowLang"]').forEach(r =>
       r.addEventListener('change', () => { settings.dowLang = r.value; renderDaysList(); }));
@@ -1723,7 +1747,13 @@
     });
     document.querySelectorAll('input[name="colorMode"]').forEach(r =>
       r.addEventListener('change', () => { settings.colorCodingMode = r.value; refreshAll(); }));
-    document.getElementById('enableDashText').addEventListener('change', e => toggleDashText(e.target.checked));
+    document.querySelectorAll('input[name="headerLang"]').forEach(r =>
+      r.addEventListener('change', () => { settings.headerLang = r.value; updateColTitles(); }));
+    document.getElementById('hideDOW').addEventListener('change', e => {
+      settings.hideDOW = e.target.checked;
+      document.getElementById('dowCol').style.display = e.target.checked ? 'none' : '';
+    });
+    document.getElementById('hideDashText').addEventListener('change', e => toggleDashText(!e.target.checked));
     document.getElementById('dashTextDisplay').addEventListener('click', e => {
       const sp = e.target.closest('.spoiler');
       if (!sp) return;
@@ -1889,8 +1919,24 @@
   function toggleDashText(on) {
     settings.enableDashText = !!on;
     document.getElementById('dashTextWrap').style.display = on ? 'block' : 'none';
-    const cb = document.getElementById('enableDashText');
-    if (cb) cb.checked = !!on;
+    const cb = document.getElementById('hideDashText');
+    if (cb) cb.checked = !on;
+  }
+
+  function updateColTitles() {
+    const lang = settings.headerLang || 'he';
+    const dowTitle = document.getElementById('dowColTitle');
+    const wxTitle = document.getElementById('weatherColTitle');
+    if (!dowTitle || !wxTitle) return;
+    if (lang === 'none') {
+      dowTitle.style.display = 'none';
+      wxTitle.style.display = 'none';
+    } else {
+      dowTitle.style.display = '';
+      wxTitle.style.display = '';
+      dowTitle.innerHTML = lang === 'he' ? hebDisplay('אֵיזֶה יוֹם הַיוֹם?') : 'Days of the Week';
+      wxTitle.innerHTML = lang === 'he' ? hebDisplay('מַה יֵשׁ בַּחוּץ?') : 'Weather';
+    }
   }
 
   /* ────────── HEBREW FONT ────────── */
@@ -1994,6 +2040,7 @@
     document.getElementById('dashEditor').innerHTML = settings.dashTextHTML || '';
     syncDashText();
     toggleDashText(settings.enableDashText);
+    updateColTitles();
     document.getElementById('fsBtn').innerHTML = FS_ENTER;
     startClock();
     renderDaysList();
