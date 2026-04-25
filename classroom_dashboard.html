@@ -593,6 +593,7 @@
   }
   body.dark .ed-btn { background: var(--navy-deep); }
   .ed-btn:hover { background: var(--gold-light); color: var(--navy); }
+  .ed-sep { width: 1px; background: var(--border); align-self: stretch; margin: 1px 2px; flex-shrink: 0; }
   .ed-color {
     width: 32px; height: 28px;
     padding: 0;
@@ -635,6 +636,9 @@
   body.dark .spoiler.revealed { background: rgba(255,255,255,0.08); }
   /* In the editor, always show spoiler text so teacher can read/edit it */
   #dashEditor .spoiler { background: #c0392b33; color: inherit; cursor: text; user-select: text; }
+  /* Links */
+  #dashEditor a, .dash-text-display a { color: var(--gold); text-decoration: underline; cursor: pointer; }
+  body.dark #dashEditor a, body.dark .dash-text-display a { color: var(--gold-light); }
 
   /* ───── Font selector ───── */
   .font-options { display: flex; flex-direction: column; gap: 4px; }
@@ -915,13 +919,19 @@
       <button class="ed-btn" onclick="fmt('bold')" type="button"><b>B</b></button>
       <button class="ed-btn" onclick="fmt('italic')" type="button"><i>I</i></button>
       <button class="ed-btn" onclick="fmt('underline')" type="button"><u>U</u></button>
+      <button class="ed-btn" onclick="fmt('strikeThrough')" type="button"><s>S</s></button>
+      <span class="ed-sep"></span>
       <button class="ed-btn" onclick="setAlign('Right')" type="button">RTL</button>
       <button class="ed-btn" onclick="setAlign('Center')" type="button">Ctr</button>
       <button class="ed-btn" onclick="setAlign('Left')" type="button">LTR</button>
+      <span class="ed-sep"></span>
+      <button class="ed-btn" onclick="insertLink()" type="button" title="Insert link (or remove if cursor is inside one)">🔗</button>
       <button class="ed-btn" onclick="insertSpoiler()" type="button" title="Wrap selection in spoiler (hidden until tapped)">||</button>
+      <span class="ed-sep"></span>
       <input type="color" class="ed-color" onchange="fmt('foreColor', this.value)" title="Text color">
       <select class="ed-select" onchange="fmt('fontSize', this.value)" title="Size">
-        <option value="3">Normal</option>
+        <option value="2">Small</option>
+        <option value="3" selected>Normal</option>
         <option value="5">Large</option>
         <option value="6">XL</option>
         <option value="7">XXL</option>
@@ -1117,7 +1127,7 @@
     showTomorrow: true,
     dowEmojiSet: 'chick',
     colorDays: true,
-    enableDashText: false,
+    enableDashText: true,
     dashTextHTML: '',
     hebFont: 'Frank Ruhl Libre',
     showNikkud: true,
@@ -1679,7 +1689,13 @@
     document.getElementById('enableDashText').addEventListener('change', e => toggleDashText(e.target.checked));
     document.getElementById('dashTextDisplay').addEventListener('click', e => {
       const sp = e.target.closest('.spoiler');
-      if (sp) { e.stopPropagation(); sp.classList.toggle('revealed'); }
+      if (!sp) return;
+      if (!sp.classList.contains('revealed')) {
+        e.preventDefault(); sp.classList.add('revealed'); e.stopPropagation();
+      } else if (!e.target.closest('a')) {
+        sp.classList.remove('revealed'); e.stopPropagation();
+      }
+      // revealed + clicking a link → fall through to default
     });
   }
 
@@ -1785,6 +1801,32 @@
     syncDashText();
   }
   function setAlign(dir) { fmt('justify' + dir); }
+  function insertLink() {
+    const ed = document.getElementById('dashEditor');
+    ed.focus();
+    const sel = window.getSelection();
+    if (!sel || !sel.rangeCount) return;
+    const existingAnchor = sel.anchorNode?.parentElement?.closest('a');
+    if (existingAnchor) {
+      document.execCommand('unlink', false, null);
+      syncDashText();
+      return;
+    }
+    const url = prompt('Enter URL:', 'https://');
+    if (!url || !url.trim()) return;
+    const href = url.trim();
+    const range = sel.getRangeAt(0);
+    const a = document.createElement('a');
+    a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    if (range.collapsed) {
+      a.textContent = href;
+      range.insertNode(a);
+    } else {
+      try { range.surroundContents(a); }
+      catch(e) { a.appendChild(range.extractContents()); range.insertNode(a); }
+    }
+    syncDashText();
+  }
   function insertSpoiler() {
     const ed = document.getElementById('dashEditor');
     ed.focus();
