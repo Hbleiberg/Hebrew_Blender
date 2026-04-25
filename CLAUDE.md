@@ -258,9 +258,9 @@ body.dark .panel { background: var(--navy-deep); }
 }
 body.dark .panel-title { background: #0a0f1c; }
 
-/* Collapse indicator — ▲ when open, ▼ when collapsed */
-.panel-title::after       { content: '▲'; color: var(--gold-light); font-size: 0.7rem; }
-.panel.collapsed .panel-title::after { content: '▼'; }
+/* Collapse indicator — ▾ rotates −90° when collapsed (matches generator/dictionary) */
+.panel-title::after { content: '▾'; color: var(--gold-light); font-size: 1rem; transition: transform 0.2s; flex-shrink: 0; }
+.panel.collapsed .panel-title::after { transform: rotate(-90deg); }
 
 .panel-body { padding: 14px; }
 .panel.collapsed .panel-body { display: none; }

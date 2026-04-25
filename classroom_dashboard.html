@@ -384,8 +384,8 @@
     align-items: center;
   }
   body.dark .panel-title { background: #0a0f1c; }
-  .panel-title::after { content: '▲'; color: var(--gold-light); font-size: 0.7rem; line-height: 1; }
-  .panel.collapsed .panel-title::after { content: '▼'; }
+  .panel-title::after { content: '▾'; color: var(--gold-light); font-size: 1rem; transition: transform 0.2s; flex-shrink: 0; }
+  .panel.collapsed .panel-title::after { transform: rotate(-90deg); }
   .panel-body { padding: 14px; }
   .panel.collapsed .panel-body { display: none; }
 
