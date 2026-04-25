@@ -980,7 +980,10 @@
       <button class="btn btn-xs btn-secondary" onclick="exportPresets()" style="flex:1;">Export</button>
       <button class="btn btn-xs btn-secondary" onclick="importPresets()" style="flex:1;">Import</button>
     </div>
-    <textarea id="presetBackupBox" placeholder="Paste backup JSON here, or click Export…" style="height:80px;font-family:monospace;font-size:0.72rem;"></textarea>
+    <div style="position:relative;">
+      <textarea id="presetBackupBox" placeholder="Paste backup JSON here, or click Export…" style="height:80px;font-family:monospace;font-size:0.72rem;width:100%;"></textarea>
+      <button onclick="copyPresetBackup()" id="presetCopyBtn" title="Copy" style="position:absolute;top:5px;right:5px;background:none;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:0.65rem;color:var(--muted);cursor:pointer;">Copy</button>
+    </div>
   </div>
 </div>
 
@@ -1801,9 +1804,15 @@
   }
 
   /* ────────── PRESETS ────────── */
+  const DEFAULT_PRESET = {"Default":{"location":"New York","engDateFmt":"MDY","showEngDOW":true,"hideEngDate":false,"hebDateScript":"translit","hideHebDate":false,"timeFmt":"12","hideTime":false,"tempUnit":"F","weatherLabelLang":"he","simpleWeatherDesc":false,"hideWeatherEmoji":false,"hideWeatherDesc":false,"hideWeather":false,"dowLang":"he","showYesterday":true,"showToday":true,"showTomorrow":true,"dowEmojiSet":"chick","colorDays":true,"headerLang":"he","hideDOW":false,"enableDashText":true,"dashTextHTML":"This dashboard has support for <b>bold</b>, <i>italics</i>, <u>underline</u> and <strike>strikethrough</strike>. You can insert <a href=\"https://google.com\" target=\"_blank\" rel=\"noopener noreferrer\">links</a>.<div><br><div style=\"text-align: center;\">You can center text.</div><div style=\"text-align: left;\"><span style=\"font-size: small; text-align: right;\">Change the </span><span style=\"text-align: right;\"><font size=\"6\">size</font></span><span style=\"font-size: small; text-align: right;\">.</span></div><div style=\"text-align: left;\"><span style=\"text-align: right;\"><font size=\"3\">And you can also <span class=\"spoiler\">hide spoilers</span>. (Click the box.)</font></span></div><div style=\"text-align: left;\"><span style=\"text-align: right;\"><font size=\"3\"><br></font></span></div><div style=\"text-align: left;\"><span style=\"text-align: right;\"><font size=\"3\">Click the gear at the top to edit this text and change how this dashboard works!</font></span></div></div>","hebFont":"Frank Ruhl Libre","showNikkud":true,"colorCodeNikkud":false,"colorCodingMode":"letter","nikudColorOverrides":{},"dashTextSize":1.8,"showYestTomorrow":true}};
+
   function loadPresets() {
     try { presets = JSON.parse(localStorage.getItem('hebrewDashboard_presets')) || {}; }
     catch (e) { presets = {}; }
+    if (Object.keys(presets).length === 0) {
+      Object.assign(presets, DEFAULT_PRESET);
+      savePresetsStorage();
+    }
   }
   function savePresetsStorage() { localStorage.setItem('hebrewDashboard_presets', JSON.stringify(presets)); }
 
@@ -1849,6 +1858,13 @@
   }
   function exportPresets() {
     document.getElementById('presetBackupBox').value = JSON.stringify(presets, null, 2);
+  }
+  function copyPresetBackup() {
+    const box = document.getElementById('presetBackupBox');
+    const btn = document.getElementById('presetCopyBtn');
+    if (!box.value) return;
+    navigator.clipboard.writeText(box.value).catch(() => { box.select(); document.execCommand('copy'); });
+    btn.textContent = '✓'; setTimeout(() => btn.textContent = 'Copy', 1500);
   }
   function importPresets() {
     try {
