@@ -501,6 +501,25 @@
   }
   body.dark .radio-group input:checked + label { background: #1e2535; color: var(--gold-light); }
 
+  .emoji-set-btns { display: flex; flex-wrap: wrap; gap: 4px; }
+  .emoji-set-btn {
+    background: var(--warm-gray);
+    border: 2px solid transparent;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    color: var(--text);
+    line-height: 1.3;
+    transition: border-color 0.15s, background 0.15s;
+    font-family: inherit;
+  }
+  .emoji-set-btn:hover { border-color: var(--gold); }
+  .emoji-set-btn.active { border-color: var(--gold); background: var(--white); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+  .emoji-set-btn[data-set="none"] { font-size: 0.78rem; font-weight: 600; color: var(--muted); padding: 4px 12px; }
+  body.dark .emoji-set-btn { background: #2a3349; }
+  body.dark .emoji-set-btn.active { background: #1e2535; }
+
   /* ───── Presets ───── */
   .preset-list {
     display: flex; flex-direction: column;
@@ -806,15 +825,15 @@
       <label class="toggle"><input type="checkbox" id="showTomorrow"><span class="slider"></span></label>
     </div>
     <div class="form-row">
-      <label>Show emojis</label>
-      <label class="toggle"><input type="checkbox" id="showDOWEmojis"><span class="slider"></span></label>
-    </div>
-    <div class="form-row" id="emojiSetRow">
       <label>Emoji sequence</label>
-      <div class="radio-group">
-        <input type="radio" name="dowEmojiSet" id="es-chick" value="chick"><label for="es-chick">🥚🐣🐔</label>
-        <input type="radio" name="dowEmojiSet" id="es-boy"   value="boy"><label for="es-boy">👦</label>
-        <input type="radio" name="dowEmojiSet" id="es-girl"  value="girl"><label for="es-girl">👧</label>
+      <div class="emoji-set-btns" id="emojiSetBtns">
+        <button class="emoji-set-btn" data-set="chick">🥚🐣🐔</button>
+        <button class="emoji-set-btn" data-set="city">🌇🏙️🌃</button>
+        <button class="emoji-set-btn" data-set="time">⏪️▶️⏩️</button>
+        <button class="emoji-set-btn" data-set="arrow">🔼⏹️🔽</button>
+        <button class="emoji-set-btn" data-set="boy">👶👦🧔‍♂️</button>
+        <button class="emoji-set-btn" data-set="girl">👶👧👩</button>
+        <button class="emoji-set-btn" data-set="none">None</button>
       </div>
     </div>
   </div>
@@ -908,9 +927,12 @@
   ];
 
   const DOW_EMOJI_SETS = {
-    chick: { yest:'🥚', today:'🐣', tom:'🐔' },
-    boy:   { yest:'👶', today:'👦', tom:'🧔‍♂️' },
-    girl:  { yest:'👶', today:'👧', tom:'👩' },
+    chick: { yest:'🥚',  today:'🐣',  tom:'🐔' },
+    city:  { yest:'🌇',  today:'🏙️', tom:'🌃' },
+    time:  { yest:'⏪️', today:'▶️',  tom:'⏩️' },
+    arrow: { yest:'🔼',  today:'⏹️', tom:'🔽' },
+    boy:   { yest:'👶',  today:'👦',  tom:'🧔‍♂️' },
+    girl:  { yest:'👶',  today:'👧',  tom:'👩' },
   };
 
   const HEB_MONTHS_HE = ['תִּשְׁרֵי','חֶשְׁוָן','כִּסְלֵו','טֵבֵת','שְׁבָט','אֲדָר','אֲדָר א׳','אֲדָר ב׳','נִיסָן','אִיָּר','סִיוָן','תַּמּוּז','אָב','אֱלוּל'];
@@ -1030,7 +1052,6 @@
     showYesterday: true,
     showToday: true,
     showTomorrow: true,
-    showDOWEmojis: true,
     dowEmojiSet: 'chick',
     colorDays: true,
     enableDashText: false,
@@ -1339,11 +1360,11 @@
 
       // Determine badge content
       let badgeEmoji = '', badgeText = '';
-      const em = settings.showDOWEmojis;
-      const emojiSet = DOW_EMOJI_SETS[settings.dowEmojiSet] || DOW_EMOJI_SETS.chick;
-      if (i === today  && settings.showToday)        { badgeEmoji = em ? emojiSet.today : ''; badgeText = hebDisplay('הַיּוֹם'); }
-      else if (i === yest && settings.showYesterday) { badgeEmoji = em ? emojiSet.yest  : ''; badgeText = hebDisplay('אֶתְמוֹל הָיָה'); }
-      else if (i === tom  && settings.showTomorrow)  { badgeEmoji = em ? emojiSet.tom   : ''; badgeText = hebDisplay('מָחָר יִהְיֶה'); }
+      const emojiSet = (settings.dowEmojiSet && settings.dowEmojiSet !== 'none')
+        ? (DOW_EMOJI_SETS[settings.dowEmojiSet] || DOW_EMOJI_SETS.chick) : null;
+      if (i === today  && settings.showToday)        { badgeEmoji = emojiSet ? emojiSet.today : ''; badgeText = hebDisplay('הַיּוֹם'); }
+      else if (i === yest && settings.showYesterday) { badgeEmoji = emojiSet ? emojiSet.yest  : ''; badgeText = hebDisplay('אֶתְמֹל הָיָה'); }
+      else if (i === tom  && settings.showTomorrow)  { badgeEmoji = emojiSet ? emojiSet.tom   : ''; badgeText = hebDisplay('מָחָר יִהְיֶה'); }
 
       let nameHtml = '<div class="day-main">';
       if (settings.dowLang === 'he' || settings.dowLang === 'both') {
@@ -1468,10 +1489,10 @@
     $('showYesterday').checked = settings.showYesterday;
     $('showToday').checked = settings.showToday;
     $('showTomorrow').checked = settings.showTomorrow;
-    $('showDOWEmojis').checked = settings.showDOWEmojis;
-    const esr = document.querySelector(`input[name="dowEmojiSet"][value="${settings.dowEmojiSet || 'chick'}"]`);
-    if (esr) esr.checked = true;
-    $('emojiSetRow').style.display = settings.showDOWEmojis ? 'flex' : 'none';
+    const activeSet = settings.dowEmojiSet || 'chick';
+    document.querySelectorAll('.emoji-set-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.set === activeSet);
+    });
     $('enableDashText').checked = settings.enableDashText;
     $('showNikkud').checked = settings.showNikkud;
     $('colorCodeNikkud').checked = settings.colorCodeNikkud;
@@ -1514,13 +1535,13 @@
     document.getElementById('showYesterday').addEventListener('change', e => { settings.showYesterday = e.target.checked; renderDaysList(); });
     document.getElementById('showToday').addEventListener('change', e => { settings.showToday = e.target.checked; renderDaysList(); });
     document.getElementById('showTomorrow').addEventListener('change', e => { settings.showTomorrow = e.target.checked; renderDaysList(); });
-    document.getElementById('showDOWEmojis').addEventListener('change', e => {
-      settings.showDOWEmojis = e.target.checked;
-      document.getElementById('emojiSetRow').style.display = e.target.checked ? 'flex' : 'none';
-      renderDaysList();
+    document.querySelectorAll('.emoji-set-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        settings.dowEmojiSet = btn.dataset.set;
+        document.querySelectorAll('.emoji-set-btn').forEach(b => b.classList.toggle('active', b === btn));
+        renderDaysList(); saveSettingsToStorage();
+      });
     });
-    document.querySelectorAll('input[name="dowEmojiSet"]').forEach(r =>
-      r.addEventListener('change', () => { settings.dowEmojiSet = r.value; renderDaysList(); }));
     document.getElementById('showNikkud').addEventListener('change', e => { settings.showNikkud = e.target.checked; refreshAll(); });
     document.getElementById('colorCodeNikkud').addEventListener('change', e => {
       settings.colorCodeNikkud = e.target.checked;
@@ -1561,7 +1582,11 @@
   function loadSettingsFromStorage() {
     try {
       const saved = JSON.parse(localStorage.getItem('hebrewDashboard_settings'));
-      if (saved) Object.assign(settings, saved);
+      if (saved) {
+        Object.assign(settings, saved);
+        if (saved.showDOWEmojis === false) settings.dowEmojiSet = 'none';
+        delete settings.showDOWEmojis;
+      }
     } catch (e) {}
   }
 
