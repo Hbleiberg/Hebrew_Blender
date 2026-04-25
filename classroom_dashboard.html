@@ -772,8 +772,9 @@
     <div class="form-row">
       <label>Hebrew date</label>
       <div class="radio-group">
-        <input type="radio" name="hebDateScript" id="hs-he" value="he"><label for="hs-he">עִבְרִית</label>
-        <input type="radio" name="hebDateScript" id="hs-translit" value="translit"><label for="hs-translit">A–Z</label>
+        <input type="radio" name="hebDateScript" id="hs-he" value="he"><label for="hs-he">עברית</label>
+        <input type="radio" name="hebDateScript" id="hs-translit" value="translit"><label for="hs-translit">English</label>
+        <input type="radio" name="hebDateScript" id="hs-both" value="both"><label for="hs-both">Both</label>
       </div>
     </div>
     <div class="form-row">
@@ -1195,11 +1196,12 @@
     return r;
   }
 
-  function formatHebDate(date) {
+  function formatHebDate(date, scriptOverride) {
     const jdn = gregorianToJDN(date.getFullYear(), date.getMonth() + 1, date.getDate());
     const heb = jdnToHebrew(jdn);
     const idx = monthIdx(heb.month, heb.year);
-    if (settings.hebDateScript === 'translit') {
+    const script = scriptOverride || settings.hebDateScript;
+    if (script === 'translit') {
       return `${heb.day} ${HEB_MONTHS_TRANSLIT[idx]} ${heb.year}`;
     }
     return `${numToHebLetters(heb.day)} ${HEB_MONTHS_HE[idx]} ${numToHebLetters(heb.year)}`;
@@ -1337,15 +1339,21 @@
       hebEl.style.display = 'none';
     } else {
       hebEl.style.display = '';
-      if (settings.hebDateScript === 'he') {
+      if (settings.hebDateScript === 'both') {
+        hebEl.innerHTML =
+          `<div style="direction:rtl;font-family:var(--heb-font);">${hebDisplay(formatHebDate(now,'he'))}</div>` +
+          `<div style="direction:ltr;font-family:'Libre Baskerville',serif;font-size:0.75em;opacity:0.8;">${formatHebDate(now,'translit')}</div>`;
+        hebEl.style.direction = '';
+        hebEl.style.fontFamily = '';
+      } else if (settings.hebDateScript === 'he') {
         hebEl.innerHTML = hebDisplay(formatHebDate(now));
+        hebEl.style.direction = 'rtl';
+        hebEl.style.fontFamily = 'var(--heb-font)';
       } else {
         hebEl.textContent = formatHebDate(now);
+        hebEl.style.direction = 'ltr';
+        hebEl.style.fontFamily = "'Libre Baskerville', serif";
       }
-      hebEl.style.direction = settings.hebDateScript === 'he' ? 'rtl' : 'ltr';
-      hebEl.style.fontFamily = settings.hebDateScript === 'he'
-        ? 'var(--heb-font)'
-        : "'Libre Baskerville', serif";
     }
 
     const timeEl = document.getElementById('currentTime');
