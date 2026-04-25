@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CMLC81Z0HC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CMLC81Z0HC');
+</script>
+<title>Classroom Dashboard — Hebrew Blender</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<script>(function(){try{if(localStorage.getItem('hebrewBlender_darkMode')==='1'){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<style>
+:root {
+  --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
+  --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
+  --heb-font:'Frank Ruhl Libre',serif;
+}
+html.dark-early body,body.dark {
+  --navy:#1a2744;--gold:#e0a832;--gold-light:#f5d97a;--cream:#161c2a;
+  --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;
+}
+body.dark header { background:#0d1220; border-bottom-color:var(--gold); }
+body.dark .panel-title { background:#0d1220; color:#dde4f0; }
+body.dark .panel-title::after { color:var(--gold-light); }
+body.dark .panel { background:#161c2a; border-color:var(--border); }
+body.dark .panel-body { color:#dde4f0; }
+body.dark .toggle-row { color:#dde4f0; }
+body.dark select,body.dark input[type="text"],body.dark input[type="number"] { background:#0d1220;color:#dde4f0;border-color:var(--border); }
+body.dark .btn-xs { background:#1e2535;color:#dde4f0;border-color:var(--border); }
+body.dark .btn-xs:hover { background:#2a3349; }
+body.dark .preset-item { background:#1e2535;border-color:var(--border); }
+body.dark .preset-item button { color:#dde4f0;border-color:var(--border); }
+body.dark .font-opt { background:#1e2535;border-color:var(--border);color:#dde4f0; }
+body.dark .font-opt.active { background:#2a3349;border-color:var(--gold-light); }
+body.dark .font-opt:hover { border-color:var(--gold); }
+body.dark .color-mode-btn { background:#1e2535;color:#8a94a8; }
+body.dark .color-mode-btn.active { background:#2a4070;color:#dde4f0; }
+body.dark .settings-modal { background:#1e2535; }
+body.dark .settings-header { background:#0d1220; }
+body.dark .settings-body { background:#1e2535; }
+body.dark .day-item { background:#1e2535;border-color:var(--border);color:#dde4f0; }
+body.dark .day-item.day-sunday { background:rgba(220,60,60,0.18); }
+body.dark .day-item.day-shabbat { background:linear-gradient(to bottom,rgba(148,0,211,0.28),rgba(75,0,130,0.22),rgba(0,0,255,0.18),rgba(0,180,0,0.14),rgba(220,220,0,0.18),rgba(255,127,0,0.18),rgba(255,0,0,0.18)); }
+body.dark .weather-block { color:#dde4f0; }
+body.dark .dash-text-editor { background:#0d1220;color:#dde4f0;border-color:var(--border); }
+
+*,*::before,*::after { box-sizing:border-box;margin:0;padding:0; }
+body {
+  font-family:'Source Sans 3',sans-serif;
+  background:var(--cream);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ── HEADER ── */
+header {
+  background:var(--navy);
+  color:#fff;
+  padding:14px 24px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  border-bottom:4px solid var(--gold);
+  flex-shrink:0;
+}
+header .star { font-size:24px; }
+header h1 { font-family:'Libre Baskerville',serif;font-size:1.3rem;letter-spacing:0.01em; }
+header p { font-size:0.78rem;color:var(--gold-light);margin-top:1px; }
+.hbtn {
+  background:transparent;
+  border:1.5px solid var(--gold-light);
+  color:var(--gold-light);
+  border-radius:6px;
+  padding:5px 10px;
+  font-size:0.8rem;
+  cursor:pointer;
+  font-family:'Source Sans 3',sans-serif;
+  line-height:1;
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+.hbtn:hover { background:rgba(255,255,255,0.1); }
+.header-right { margin-left:auto;display:flex;align-items:center;gap:8px; }
+
+/* ── DASHBOARD GRID ── */
+.dashboard {
+  display:grid;
+  grid-template-columns:220px 1fr 220px;
+  flex:1;
+  min-height:0;
+}
+.dash-col { overflow-y:auto; }
+.dash-left { border-right:1px solid var(--border);padding:16px 12px; }
+.dash-right { border-left:1px solid var(--border);padding:16px 12px; }
+.dash-center {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:28px 20px 20px;
+  gap:20px;
+  overflow-y:auto;
+}
+
+/* ── DATE / TIME ── */
+.date-time-block { text-align:center;width:100%; }
+.eng-date { font-family:'Libre Baskerville',serif;font-size:1.3rem;color:var(--text);line-height:1.3; }
+.heb-date { font-family:var(--heb-font);font-size:2rem;direction:rtl;color:var(--text);margin-top:4px;line-height:1.3; }
+.current-time { font-family:'Libre Baskerville',serif;font-size:2.8rem;font-weight:700;letter-spacing:0.04em;color:var(--navy);margin-top:8px;line-height:1; }
+body.dark .current-time { color:var(--gold-light); }
+
+/* ── DAYS OF WEEK ── */
+.days-list { display:flex;flex-direction:column;gap:6px; }
+.day-item {
+  border-radius:7px;
+  padding:8px 10px;
+  border:1.5px solid var(--border);
+  background:var(--white);
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  transition:border-color 0.15s;
+}
+.day-name-heb { font-family:var(--heb-font);font-size:1.15rem;direction:rtl;line-height:1.2; }
+.day-name-eng { font-size:0.72rem;color:var(--muted); }
+.day-annotation { font-size:0.72rem;margin-top:2px; }
+.day-annotation.is-heb { font-family:var(--heb-font);direction:rtl;color:var(--gold); }
+.day-annotation.is-eng { color:var(--gold); }
+.day-item.day-sunday { background:rgba(220,50,50,0.1);border-color:#d04040; }
+.day-item.day-shabbat {
+  background:linear-gradient(to bottom,
+    rgba(148,0,211,0.18),rgba(75,0,130,0.14),rgba(0,0,255,0.1),
+    rgba(0,180,0,0.08),rgba(220,200,0,0.1),rgba(255,127,0,0.1),rgba(255,0,0,0.1));
+  border-color:#8b2dc6;
+}
+.day-item.day-today { border-color:var(--gold)!important;box-shadow:0 0 0 2px rgba(201,146,42,0.22); }
+body.dark .day-item.day-today { box-shadow:0 0 0 2px rgba(224,168,50,0.3); }
+
+/* ── WEATHER ── */
+.weather-block { text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:8px; }
+.weather-emoji { font-size:3.5rem;line-height:1; }
+.weather-label { font-size:0.9rem;color:var(--muted); }
+.weather-label.is-heb { font-family:var(--heb-font);font-size:1rem;direction:rtl; }
+.weather-temp { font-family:'Libre Baskerville',serif;font-size:2.2rem;font-weight:700;color:var(--navy);line-height:1; }
+body.dark .weather-temp { color:var(--gold-light); }
+.weather-desc-heb { font-family:var(--heb-font);font-size:1.6rem;direction:rtl;color:var(--gold); }
+.weather-city { font-size:0.78rem;color:var(--muted);margin-top:4px; }
+.weather-error { font-size:0.82rem;color:#c0392b;text-align:center; }
+.weather-placeholder { font-size:0.82rem;color:var(--muted);text-align:center;padding:12px 0; }
+
+/* ── DASHBOARD TEXT DISPLAY ── */
+.dash-text-wrap { width:100%;max-width:680px; }
+.dash-text-display {
+  font-family:var(--heb-font);
+  font-size:1.8rem;
+  direction:rtl;
+  text-align:center;
+  line-height:1.6;
+  min-height:40px;
+  word-break:break-word;
+}
+
+/* ── SETTINGS MODAL ── */
+.settings-backdrop { display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200; }
+.settings-backdrop.open { display:block; }
+.settings-modal {
+  display:none;position:fixed;top:0;right:0;
+  width:340px;height:100vh;
+  background:var(--white);
+  border-left:1px solid var(--border);
+  z-index:201;
+  flex-direction:column;
+  overflow:hidden;
+  box-shadow:-4px 0 20px rgba(0,0,0,0.18);
+}
+.settings-modal.open { display:flex; }
+.settings-header {
+  background:var(--navy);
+  color:#fff;
+  padding:12px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:3px solid var(--gold);
+  flex-shrink:0;
+  font-family:'Libre Baskerville',serif;
+  font-size:0.9rem;
+  letter-spacing:0.04em;
+}
+.settings-header button { background:transparent;border:none;color:var(--gold-light);cursor:pointer;font-size:1.1rem;line-height:1; }
+.settings-body { overflow-y:auto;flex:1;padding:12px;display:flex;flex-direction:column;gap:8px; }
+.settings-section { display:flex;flex-direction:column;gap:5px; }
+.settings-section label { font-size:0.8rem;font-weight:600;color:var(--navy); }
+body.dark .settings-section label { color:var(--gold-light); }
+.settings-section input[type="text"] {
+  padding:5px 8px;font-size:0.82rem;border:1px solid var(--border);
+  border-radius:5px;font-family:inherit;background:var(--white);color:var(--text);
+  width:100%;
+}
+.settings-section input[type="text"]:focus { outline:2px solid var(--gold); }
+.sub-hdr {
+  font-size:0.68rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;
+  color:var(--muted);margin:8px 0 3px;padding-bottom:2px;border-bottom:1px solid var(--border);
+}
+.radio-row { display:flex;gap:12px;flex-wrap:wrap; }
+.radio-row label { display:flex;align-items:center;gap:4px;font-size:0.8rem;cursor:pointer;font-weight:400; }
+body.dark .radio-row label { color:#dde4f0; }
+.radio-row input[type="radio"] { accent-color:var(--gold);cursor:pointer; }
+
+/* ── PANEL / TOGGLE / BUTTONS ── */
+.panel { background:var(--cream);border:1px solid var(--border);border-radius:8px;overflow:visible; }
+.panel-title {
+  background:var(--navy);color:var(--white);
+  font-family:'Libre Baskerville',serif;font-size:0.75rem;letter-spacing:0.07em;text-transform:uppercase;
+  padding:7px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+  user-select:none;border-radius:8px 8px 0 0;
+}
+.panel-title::after { content:'▾';font-size:0.9rem;color:var(--gold-light);transition:transform 0.2s;flex-shrink:0; }
+.panel.collapsed .panel-title::after { transform:rotate(-90deg); }
+.panel.collapsed .panel-body { display:none; }
+.panel-body { padding:10px 12px;display:flex;flex-direction:column;gap:7px; }
+.toggle-wrap { display:flex;flex-direction:column;gap:8px; }
+.toggle-row { display:flex;align-items:center;justify-content:space-between;font-size:0.82rem; }
+.toggle { position:relative;width:38px;height:21px;flex-shrink:0; }
+.toggle input { opacity:0;width:0;height:0; }
+.slider { position:absolute;inset:0;background:var(--border);border-radius:22px;cursor:pointer;transition:background 0.2s; }
+.slider::before { content:'';position:absolute;width:15px;height:15px;left:3px;top:3px;background:var(--white);border-radius:50%;transition:transform 0.2s; }
+.toggle input:checked + .slider { background:var(--gold); }
+.toggle input:checked + .slider::before { transform:translateX(17px); }
+.btn-xs { font-size:0.72rem;padding:3px 8px;border:1px solid var(--border);border-radius:4px;background:var(--white);cursor:pointer;font-family:inherit;color:var(--navy);transition:background 0.15s; }
+.btn-xs:hover { background:var(--warm-gray); }
+.preset-row { display:flex;gap:5px;align-items:center; }
+.preset-row input[type="text"] { flex:1;padding:4px 6px;font-size:0.78rem;border:1px solid var(--border);border-radius:4px;font-family:inherit;background:var(--white);color:var(--text); }
+.preset-list { display:flex;flex-direction:column;gap:3px; }
+.preset-item { display:flex;align-items:center;gap:5px;padding:4px 7px;background:var(--white);border:1px solid var(--border);border-radius:5px;font-size:0.78rem; }
+.preset-item span { flex:1; }
+.preset-item button { font-size:0.7rem;padding:2px 6px;border:1px solid var(--border);border-radius:3px;background:transparent;cursor:pointer;font-family:inherit;color:var(--text); }
+.preset-item button:hover { background:var(--warm-gray); }
+.preset-item .del-btn { color:#c0392b;border-color:#c0392b; }
+.color-mode-btn { flex:1;padding:4px 5px;font-size:0.72rem;border:none;background:var(--white);color:var(--muted);cursor:pointer;border-right:1px solid var(--border);font-family:inherit; }
+.color-mode-btn:last-child { border-right:none; }
+.color-mode-btn.active { background:var(--navy);color:var(--white); }
+.color-pick-example { font-family:var(--heb-font);font-size:1.1rem;width:26px;text-align:center; }
+
+/* ── FONT SELECTOR ── */
+.font-selector-grid { display:grid;grid-template-columns:1fr 1fr;gap:4px; }
+.font-opt { display:flex;flex-direction:column;align-items:center;text-align:center;padding:4px 3px;border:1px solid var(--border);border-radius:5px;background:var(--white);cursor:pointer;color:var(--text);font-family:inherit;transition:border-color 0.15s,background 0.15s; }
+.font-opt:hover { border-color:var(--gold); }
+.font-opt.active { border-color:var(--navy);background:var(--warm-gray); }
+.font-opt-preview { font-size:1.3rem;direction:rtl;line-height:1.2;margin-bottom:2px; }
+.font-opt-info { display:flex;flex-direction:column;gap:0;width:100%; }
+.font-opt-label { font-weight:600;font-size:0.6rem;line-height:1.2;word-break:break-word; }
+.font-opt-attr { font-size:0.5rem;color:var(--muted);line-height:1.2;word-break:break-word;text-decoration:none; }
+.font-opt-attr:hover { color:var(--gold);text-decoration:underline; }
+.font-section-hdr { font-size:0.65rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 3px;padding-bottom:2px;border-bottom:1px solid var(--border);grid-column:1/-1; }
+
+/* ── DASHBOARD TEXT EDITOR ── */
+.text-toolbar { display:flex;gap:3px;flex-wrap:wrap;margin-bottom:5px; }
+.text-toolbar button { padding:3px 7px;border:1px solid var(--border);border-radius:4px;background:var(--white);cursor:pointer;font-family:inherit;font-size:0.82rem;color:var(--text); }
+.text-toolbar button:hover { background:var(--warm-gray);border-color:var(--gold); }
+.text-toolbar input[type="color"] { width:28px;height:24px;border:1px solid var(--border);border-radius:4px;cursor:pointer;padding:0;background:none; }
+.text-toolbar select { font-size:0.78rem;padding:2px 4px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);cursor:pointer; }
+.dash-text-editor {
+  border:1px solid var(--border);border-radius:6px;padding:8px 10px;
+  min-height:70px;font-family:var(--heb-font);font-size:1.1rem;
+  direction:rtl;background:var(--cream);color:var(--text);outline:none;
+  width:100%;
+}
+.dash-text-editor:focus { border-color:var(--gold); }
+.font-size-row { display:flex;align-items:center;gap:6px;font-size:0.78rem; }
+.font-size-row input[type=range] { flex:1;accent-color:var(--gold);cursor:pointer; }
+
+/* ── BACKUP TEXTAREA ── */
+.backup-wrap { position:relative; }
+.backup-wrap textarea { width:100%;font-size:0.72rem;font-family:monospace;border:1px solid var(--border);border-radius:4px;padding:5px;background:var(--cream);color:var(--text);resize:vertical; }
+.backup-wrap .copy-btn { position:absolute;top:4px;right:4px;font-size:0.65rem;padding:2px 5px; }
+
+/* ── FULLSCREEN ── */
+#fsBtn {
+  position:fixed;bottom:16px;right:16px;z-index:9999;
+  background:var(--navy);color:var(--gold-light);border:none;
+  border-radius:8px;padding:9px 11px;cursor:pointer;line-height:0;
+  box-shadow:0 2px 10px rgba(0,0,0,0.3);transition:background 0.15s,transform 0.1s;
+}
+#fsBtn:hover { background:#2a3a6a;transform:scale(1.08); }
+body.dark #fsBtn { background:#0d1220; }
+body.fullscreen header { display:none!important; }
+body.fullscreen .dashboard { height:100vh; }
+
+@media(max-width:700px){
+  .dashboard { grid-template-columns:1fr; }
+  .dash-left,.dash-right { border:none;border-bottom:1px solid var(--border); }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="star">✡</span>
+  <div style="flex:1;">
+    <h1>Classroom Dashboard</h1>
+    <p>לוח הכיתה — Hebrew Blender</p>
+  </div>
+  <div class="header-right">
+    <a href="index.html" class="hbtn">← Home</a>
+    <button class="hbtn" id="darkToggle" onclick="toggleDark()">🌙</button>
+    <button class="hbtn" id="gearBtn" onclick="openSettings()" title="Settings">⚙️</button>
+    <button id="fsBtn" onclick="toggleFullscreen()" title="Full screen"></button>
+  </div>
+</header>
+
+<div class="dashboard">
+
+  <!-- LEFT: Days of week -->
+  <div class="dash-col dash-left" id="colDays">
+    <div class="days-list" id="daysList"></div>
+  </div>
+
+  <!-- CENTER: Date/time + display text -->
+  <div class="dash-col dash-center">
+    <div class="date-time-block" id="dateTimeBlock">
+      <div class="eng-date" id="engDate"></div>
+      <div class="heb-date" id="hebDate"></div>
+      <div class="current-time" id="currentTime"></div>
+    </div>
+    <div class="dash-text-wrap" id="dashTextWrap" style="display:none;">
+      <div class="dash-text-display" id="dashTextDisplay"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Weather -->
+  <div class="dash-col dash-right" id="colWeather">
+    <div class="weather-block" id="weatherBlock">
+      <div class="weather-placeholder">Enter a location in Settings to show weather.</div>
+    </div>
+  </div>
+
+</div><!-- /dashboard -->
+
+<!-- Settings backdrop -->
+<div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
+
+<!-- Settings modal -->
+<div class="settings-modal" id="settingsModal">
+  <div class="settings-header">
+    <span>⚙️ Settings</span>
+    <button onclick="closeSettings()" title="Close">✕</button>
+  </div>
+  <div class="settings-body">
+
+    <!-- Location -->
+    <div class="settings-section">
+      <label for="locationInput">Location (for weather)</label>
+      <div style="display:flex;gap:5px;">
+        <input type="text" id="locationInput" placeholder="e.g. New York" style="flex:1;">
+        <button class="btn-xs" onclick="fetchWeather()">Update</button>
+      </div>
+    </div>
+    <hr style="border:none;border-top:1px solid var(--border);">
+
+    <!-- Date/Time Settings -->
+    <div class="panel collapsed" id="panelDateTime">
+      <div class="panel-title">Date / Time Settings</div>
+      <div class="panel-body">
+        <div class="sub-hdr">English date display</div>
+        <div class="radio-row">
+          <label><input type="radio" name="engDateFmt" value="MDY"> MM/DD/YYYY</label>
+          <label><input type="radio" name="engDateFmt" value="DMY"> DD/MM/YYYY</label>
+        </div>
+        <div class="toggle-row">
+          <span>Show English day of week</span>
+          <label class="toggle"><input type="checkbox" id="showEngDOW" onchange="onSettingChange()"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <span>Hide English date</span>
+          <label class="toggle"><input type="checkbox" id="hideEngDate" onchange="onSettingChange()"><span class="slider"></span></label>
+        </div>
+
+        <div class="sub-hdr">Hebrew date display</div>
+        <div class="radio-row">
+          <label><input type="radio" name="hebDateScript" value="he"> עברית</label>
+          <label><input type="radio" name="hebDateScript" value="translit"> Transliterated</label>
+        </div>
+        <div class="toggle-row">
+          <span>Hide Hebrew date</span>
+          <label class="toggle"><input type="checkbox" id="hideHebDate" onchange="onSettingChange()"><span class="slider"></span></label>
+        </div>
+
+        <div class="sub-hdr">Time display</div>
+        <div class="radio-row">
+          <label><input type="radio" name="timeFmt" value="12"> 12-hour</label>
+          <label><input type="radio" name="timeFmt" value="24"> 24-hour</label>
+        </div>
+        <div class="toggle-row">
+          <span>Hide time</span>
+          <label class="toggle"><input type="checkbox" id="hideTime" onchange="onSettingChange()"><span class="slider"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weather Display -->
+    <div class="panel collapsed" id="panelWeather">
+      <div class="panel-title">Weather Display</div>
+      <div class="panel-body">
+        <div class="radio-row">
+          <label><input type="radio" name="tempUnit" value="F"> Fahrenheit</label>
+          <label><input type="radio" name="tempUnit" value="C"> Celsius</label>
+        </div>
+        <div class="sub-hdr">Emoji labels</div>
+        <div class="radio-row">
+          <label><input type="radio" name="weatherLabelLang" value="he"> עברית</label>
+          <label><input type="radio" name="weatherLabelLang" value="en"> English</label>
+        </div>
+        <div class="toggle-row">
+          <span>Hide weather</span>
+          <label class="toggle"><input type="checkbox" id="hideWeather" onchange="onSettingChange()"><span class="slider"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Day of Week Display -->
+    <div class="panel collapsed" id="panelDOW">
+      <div class="panel-title">Day of Week Display</div>
+      <div class="panel-body">
+        <div class="radio-row">
+          <label><input type="radio" name="dowLang" value="he"> עברית</label>
+          <label><input type="radio" name="dowLang" value="en"> English</label>
+        </div>
+        <div class="toggle-row">
+          <span>Show yesterday / tomorrow</span>
+          <label class="toggle"><input type="checkbox" id="showYestTomorrow" onchange="onSettingChange()"><span class="slider"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Text -->
+    <div class="panel collapsed" id="panelDashText">
+      <div class="panel-title">Dashboard Text</div>
+      <div class="panel-body">
+        <div class="toggle-row">
+          <span>Enable dashboard text</span>
+          <label class="toggle"><input type="checkbox" id="enableDashText" onchange="toggleDashText(this.checked)"><span class="slider"></span></label>
+        </div>
+        <div id="dashTextEditorWrap" style="display:none;">
+          <div class="text-toolbar">
+            <button onclick="fmt('bold')" title="Bold"><b>B</b></button>
+            <button onclick="fmt('italic')" title="Italic"><i>I</i></button>
+            <button onclick="fmt('underline')" title="Underline"><u>U</u></button>
+            <span style="width:1px;background:var(--border);margin:0 2px;"></span>
+            <button onclick="setAlign('left')" title="Left">⬅</button>
+            <button onclick="setAlign('center')" title="Center">≡</button>
+            <button onclick="setAlign('right')" title="Right">➡</button>
+            <span style="width:1px;background:var(--border);margin:0 2px;"></span>
+            <input type="color" id="textColorPicker" value="#1a2744" onchange="fmt('foreColor',this.value)" title="Font color">
+          </div>
+          <div class="font-size-row">
+            <span>Size</span>
+            <input type="range" id="dashTextSizeSlider" min="0.6" max="6" step="0.1" value="1.8" oninput="setDashTextSize(this.value)">
+            <span id="dashTextSizeVal" style="min-width:36px;font-size:0.75rem;">1.8rem</span>
+          </div>
+          <div class="dash-text-editor" id="dashTextEditor" contenteditable="true"
+               dir="auto" spellcheck="false" oninput="syncDashText()"
+               style="margin-top:6px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Presets -->
+    <div class="panel collapsed" id="panelPresets">
+      <div class="panel-title">Dashboard Presets</div>
+      <div class="panel-body">
+        <div class="preset-row">
+          <input type="text" id="presetName" placeholder="Preset name…">
+          <button class="btn-xs" onclick="savePreset()">💾 Save</button>
+        </div>
+        <div class="preset-list" id="presetList"></div>
+        <hr style="border:none;border-top:1px solid var(--border);margin:4px 0;">
+        <div style="font-size:0.72rem;color:var(--muted);font-weight:600;">Export / Import</div>
+        <button class="btn-xs" onclick="exportPresets()">⬆ Export backup</button>
+        <div class="backup-wrap">
+          <textarea id="presetBackupBox" rows="3" placeholder="Paste backup here to import…"></textarea>
+          <button class="btn-xs copy-btn" id="presetCopyBtn" onclick="copyTextarea('presetBackupBox')">Copy</button>
+        </div>
+        <button class="btn-xs" onclick="importPresets()">⬇ Import from backup</button>
+      </div>
+    </div>
+
+    <!-- Hebrew Settings -->
+    <div class="panel collapsed" id="panelHebrew">
+      <div class="panel-title">Hebrew Settings</div>
+      <div class="panel-body">
+        <div class="sub-hdr" style="margin-top:0;">Hebrew font</div>
+        <div class="font-selector-grid" id="fontSelectorGrid"></div>
+        <div class="sub-hdr">Nikkud</div>
+        <div class="toggle-row">
+          <span>Show nikkud</span>
+          <label class="toggle"><input type="checkbox" id="showNikkud" checked onchange="onSettingChange()"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <span>Color-code nikkud</span>
+          <label class="toggle"><input type="checkbox" id="colorCodeNikkud" onchange="toggleColorCodeNikkud(this.checked)"><span class="slider"></span></label>
+        </div>
+        <div id="nikudColorModeRow" style="display:none;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
+          <button class="color-mode-btn active" id="cmLetter" onclick="setNikudColorMode('letter')">Letter</button>
+          <button class="color-mode-btn" id="cmHighlight" onclick="setNikudColorMode('highlight')">Highlight</button>
+          <button class="color-mode-btn" id="cmUnderline" onclick="setNikudColorMode('underline')">Underline</button>
+        </div>
+        <div id="colorPickerList"></div>
+        <button class="btn-xs" id="nikudResetBtn" onclick="resetNikudColors()" style="display:none;font-size:0.68rem;">↺ Reset nikkud colors</button>
+      </div>
+    </div>
+
+  </div><!-- /settings-body -->
+</div><!-- /settings-modal -->
+
+<script>
+</script>
+</body>
+</html>
