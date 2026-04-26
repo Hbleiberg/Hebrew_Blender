@@ -1805,6 +1805,8 @@
         if (saved.showDOWEmojis === false) settings.dowEmojiSet = 'none';
         delete settings.showDOWEmojis;
         if (settings.engDateFmt === 'LONG') settings.engDateFmt = 'MDY';
+      } else {
+        Object.assign(settings, DEFAULT_PRESET['Default']);
       }
     } catch (e) {}
   }
