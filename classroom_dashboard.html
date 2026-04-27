@@ -1913,24 +1913,42 @@
     if (!alignVal) return;
     const sel = window.getSelection();
     if (!sel || !sel.rangeCount) return;
+    const range = sel.getRangeAt(0);
 
-    // Find the innermost <div> inside ed that contains the cursor
-    let node = sel.getRangeAt(0).startContainer;
-    if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
-    let block = null;
-    while (node && node !== ed) {
-      if (node.tagName === 'DIV') { block = node; break; }
-      node = node.parentNode;
+    // Return the direct child of `ed` that contains `node`
+    function editorBlock(node) {
+      let n = node.nodeType === Node.TEXT_NODE ? node.parentNode : node;
+      while (n && n.parentNode !== ed) n = n.parentNode;
+      return (n && n !== ed) ? n : null;
     }
 
-    if (block) {
-      block.style.textAlign = alignVal;
-    } else {
-      // No block wrapper — wrap all content in one div
+    const startBlock = editorBlock(range.startContainer);
+    const endBlock   = editorBlock(range.endContainer);
+
+    if (!startBlock) {
+      // Bare text with no block wrapper — wrap everything once
       const div = document.createElement('div');
       div.style.textAlign = alignVal;
       while (ed.firstChild) div.appendChild(ed.firstChild);
       ed.appendChild(div);
+      syncDashText();
+      return;
+    }
+
+    // Align every direct child of the editor between start and end
+    const children = Array.from(ed.childNodes);
+    const from = children.indexOf(startBlock);
+    const to   = endBlock ? children.indexOf(endBlock) : from;
+    for (let i = Math.min(from, to); i <= Math.max(from, to); i++) {
+      const child = children[i];
+      if (child.nodeType === Node.ELEMENT_NODE) {
+        child.style.textAlign = alignVal;
+      } else if (child.nodeType === Node.TEXT_NODE && child.textContent.trim()) {
+        const div = document.createElement('div');
+        div.style.textAlign = alignVal;
+        ed.insertBefore(div, child);
+        div.appendChild(child);
+      }
     }
     syncDashText();
   }
