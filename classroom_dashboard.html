@@ -52,6 +52,8 @@
     background: var(--cream);
     color: var(--text);
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -118,9 +120,10 @@
   .dashboard {
     display: grid;
     grid-template-columns: 290px 1fr 290px;
+    grid-template-rows: 1fr;
     gap: 24px;
     padding: 28px;
-    min-height: calc(100vh - 76px);
+    flex: 1;
   }
   .dash-col {
     background: var(--white);
@@ -258,23 +261,23 @@
   }
 
   /* ───── Weather ───── */
-  .weather-block { text-align: center; padding: 8px 0; }
-  .weather-emoji { font-size: 4.6rem; margin: 8px 0 4px; line-height: 1; }
+  .weather-block { text-align: center; padding: 4px 0; }
+  .weather-emoji { font-size: 3.2rem; margin: 4px 0 2px; line-height: 1; }
   .weather-temp {
     font-family: 'Libre Baskerville', serif;
-    font-size: 2.6rem;
+    font-size: 2rem;
     font-weight: 700;
     color: var(--navy);
   }
   body.dark .weather-temp { color: var(--gold-light); }
   .weather-label {
     font-family: var(--heb-font);
-    font-size: 1.5rem;
+    font-size: 1.1rem;
     direction: rtl;
     color: var(--text);
-    margin-top: 8px;
+    margin-top: 4px;
   }
-  .weather-label.ltr { direction: ltr; font-family: 'Libre Baskerville', serif; font-size: 1.2rem; }
+  .weather-label.ltr { direction: ltr; font-family: 'Libre Baskerville', serif; font-size: 1rem; }
   .weather-descriptor {
     font-family: var(--heb-font);
     font-size: 1.05rem;
@@ -716,8 +719,8 @@
   body.fullscreen #fsExitBtn { display: block; }
   body.fullscreen .heb-date { font-size: 3.2rem; }
   body.fullscreen .current-time { font-size: 4.2rem; }
-  body.fullscreen .weather-emoji { font-size: 5.6rem; }
-  body.fullscreen .weather-temp { font-size: 3rem; }
+  body.fullscreen .weather-emoji { font-size: 4.2rem; }
+  body.fullscreen .weather-temp { font-size: 2.4rem; }
 
   /* ───── Responsive ───── */
   @media (max-width: 980px) {
@@ -1759,8 +1762,8 @@
     } else {
       const anchor = document.getElementById('videoBelowSlot');
       anchor.parentNode.insertBefore(panel, anchor.nextSibling);
-      panel.style.width = '290px';
-      panel.style.margin = '0 28px 28px auto';
+      panel.style.width = '';
+      panel.style.margin = '0 28px 28px';
     }
   }
 
