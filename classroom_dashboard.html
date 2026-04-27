@@ -147,7 +147,22 @@
     margin-bottom: 16px;
     padding-bottom: 12px;
     border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
   }
+  .col-title::after {
+    content: '▾';
+    font-size: 0.85rem;
+    color: var(--gold);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .dash-col.collapsed .col-title::after { transform: rotate(-90deg); }
+  .dash-col.collapsed .col-body { display: none; }
 
   /* ───── Days list ───── */
   .day-item {
@@ -760,7 +775,9 @@
   <!-- LEFT: Days -->
   <div class="dash-col" id="dowCol">
     <div class="col-title" id="dowColTitle">Days of the Week</div>
-    <div id="daysList"></div>
+    <div class="col-body" id="dowBody">
+      <div id="daysList"></div>
+    </div>
   </div><!-- CENTER: Date / Time / Custom Text --><div class="dash-col dash-center">
     <div id="dateTimeBlock" style="width:100%;">
       <div class="eng-date" id="engDate"></div>
@@ -772,16 +789,18 @@
     </div>
   </div><!-- RIGHT: Weather --><div class="dash-col" id="weatherCol">
     <div class="col-title" id="weatherColTitle">Weather</div>
-    <div id="weatherBlock" class="weather-block">
-      <div class="weather-loading">Loading weather…</div>
+    <div class="col-body" id="weatherBody">
+      <div id="weatherBlock" class="weather-block">
+        <div class="weather-loading">Loading weather…</div>
+      </div>
     </div>
-    <div id="videoSidebarSlot"></div>
   </div>
 </div>
 <div id="videoBelowSlot"></div>
+<div id="videoSidebarSlot"></div>
 <div id="videoPanel" style="display:none;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);">
   <div id="videoPanelHeader" onclick="toggleVideoCollapse()" style="background:var(--navy);color:#fff;padding:7px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;border-bottom:2px solid var(--gold);">
-    <span style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;">▶ Video</span>
+    <span id="videoHeaderLabel" style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;">Video</span>
     <span id="videoCollapseArrow" style="font-size:1rem;color:var(--gold-light);transition:transform 0.2s;">▾</span>
   </div>
   <div id="videoBody" style="overflow:hidden;transition:height 0.25s ease;padding:10px;">
@@ -1252,6 +1271,8 @@
     videoEmbedUrl: '',
     videoCollapsed: false,
     videoLayout: 'below',
+    dowCollapsed: false,
+    weatherCollapsed: false,
   };
   let presets = {};
   let _savedEditorRange = null;
@@ -1756,12 +1777,13 @@
   function setVideoLayout(layout) {
     const panel = document.getElementById('videoPanel');
     if (layout === 'sidebar') {
-      document.getElementById('videoSidebarSlot').appendChild(panel);
-      panel.style.width = '';
-      panel.style.margin = '16px 0 0';
+      const slot = document.getElementById('videoSidebarSlot');
+      slot.parentNode.insertBefore(panel, slot.nextSibling);
+      panel.style.width = '290px';
+      panel.style.margin = '0 28px 28px auto';
     } else {
-      const anchor = document.getElementById('videoBelowSlot');
-      anchor.parentNode.insertBefore(panel, anchor.nextSibling);
+      const slot = document.getElementById('videoBelowSlot');
+      slot.parentNode.insertBefore(panel, slot.nextSibling);
       panel.style.width = '';
       panel.style.margin = '0 28px 28px';
     }
@@ -1970,6 +1992,8 @@
     applyZoom(settings.zoomLevel || 100);
     toggleZoomBar(!settings.hideZoomBar);
     applyVideoEmbed(settings.showVideoEmbed, settings.videoEmbedUrl);
+    applyColCollapse('dowCol', !!settings.dowCollapsed);
+    applyColCollapse('weatherCol', !!settings.weatherCollapsed);
     updateDateTimeDisplay();
     renderDaysList();
     renderWeather();
@@ -2226,6 +2250,16 @@
     if (cb) cb.checked = !on;
   }
 
+  function applyColCollapse(colId, collapsed) {
+    document.getElementById(colId).classList.toggle('collapsed', collapsed);
+  }
+
+  function toggleColCollapse(colId, settingKey) {
+    settings[settingKey] = !settings[settingKey];
+    applyColCollapse(colId, settings[settingKey]);
+    saveSettingsToStorage();
+  }
+
   function updateColTitles() {
     const lang = settings.headerLang || 'he';
     const dowTitle = document.getElementById('dowColTitle');
@@ -2240,8 +2274,14 @@
       const isHeb = lang === 'he';
       dowTitle.style.direction = isHeb ? 'rtl' : '';
       wxTitle.style.direction = isHeb ? 'rtl' : '';
-      dowTitle.innerHTML = isHeb ? hebDisplay('אֵיזֶה יוֹם הַיוֹם?') : 'Days of the Week';
-      wxTitle.innerHTML = isHeb ? hebDisplay('מַה יֵש בַּחוּץ?') : 'Weather';
+      dowTitle.innerHTML = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('אֵיזֶה יוֹם הַיוֹם?') : 'Days of the Week'}</span>`;
+      wxTitle.innerHTML  = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('מַה יֵש בַּחוּץ?') : 'Weather'}</span>`;
+    }
+    const vLabel = document.getElementById('videoHeaderLabel');
+    if (vLabel) {
+      const isHebV = (settings.headerLang || 'he') === 'he';
+      vLabel.textContent = isHebV ? 'וִידֵאוֹ' : 'Video';
+      vLabel.style.direction = isHebV ? 'rtl' : '';
     }
   }
 
@@ -2349,6 +2389,10 @@
     applyZoom(settings.zoomLevel || 100);
     toggleZoomBar(!settings.hideZoomBar);
     applyVideoEmbed(settings.showVideoEmbed, settings.videoEmbedUrl);
+    applyColCollapse('dowCol', !!settings.dowCollapsed);
+    applyColCollapse('weatherCol', !!settings.weatherCollapsed);
+    document.getElementById('dowColTitle').addEventListener('click', () => toggleColCollapse('dowCol', 'dowCollapsed'));
+    document.getElementById('weatherColTitle').addEventListener('click', () => toggleColCollapse('weatherCol', 'weatherCollapsed'));
     document.getElementById('dashEditor').addEventListener('blur', () => {
       const sel = window.getSelection();
       if (sel && sel.rangeCount > 0) _savedEditorRange = sel.getRangeAt(0).cloneRange();
