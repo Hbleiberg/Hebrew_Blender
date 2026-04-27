@@ -1935,8 +1935,8 @@
     syncDashText();
   }
   function insertLink() {
+    restoreEditorFocus();
     const ed = document.getElementById('dashEditor');
-    ed.focus();
     const sel = window.getSelection();
     if (!sel || !sel.rangeCount) return;
     const existingAnchor = sel.anchorNode?.parentElement?.closest('a');
@@ -1961,13 +1961,14 @@
     syncDashText();
   }
   function insertSpoiler() {
-    const ed = document.getElementById('dashEditor');
-    ed.focus();
+    restoreEditorFocus();
     const sel = window.getSelection();
     if (!sel || !sel.rangeCount) return;
     const range = sel.getRangeAt(0);
-    // If cursor/selection is inside an existing spoiler, unwrap it
-    const existing = sel.anchorNode?.parentElement?.closest('.spoiler');
+    // Toggle off if anchor OR focus is inside an existing spoiler
+    const nodeEl = n => n?.nodeType === 3 ? n.parentElement : n;
+    const existing = nodeEl(sel.anchorNode)?.closest('.spoiler')
+                  || nodeEl(sel.focusNode)?.closest('.spoiler');
     if (existing) {
       const parent = existing.parentNode;
       while (existing.firstChild) parent.insertBefore(existing.firstChild, existing);
@@ -2150,6 +2151,14 @@
   // Prevent toolbar buttons from stealing focus/selection from the editor
   document.querySelector('.editor-toolbar').addEventListener('mousedown', e => {
     e.preventDefault();
+  });
+
+  // Always keep _savedEditorRange current while editor has focus
+  document.addEventListener('selectionchange', () => {
+    if (document.activeElement === document.getElementById('dashEditor')) {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) _savedEditorRange = sel.getRangeAt(0).cloneRange();
+    }
   });
 </script></body>
 </html>
