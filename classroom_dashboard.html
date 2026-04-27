@@ -772,9 +772,11 @@
     <div id="weatherBlock" class="weather-block">
       <div class="weather-loading">Loading weather…</div>
     </div>
+    <div id="videoSidebarSlot"></div>
   </div>
 </div>
-<div id="videoPanel" style="display:none;width:290px;margin:0 28px 28px auto;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);">
+<div id="videoBelowSlot"></div>
+<div id="videoPanel" style="display:none;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);">
   <div id="videoPanelHeader" onclick="toggleVideoCollapse()" style="background:var(--navy);color:#fff;padding:7px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;border-bottom:2px solid var(--gold);">
     <span style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;">▶ Video</span>
     <span id="videoCollapseArrow" style="font-size:1rem;color:var(--gold-light);transition:transform 0.2s;">▾</span>
@@ -846,7 +848,15 @@
       <label>Show video embed</label>
       <label class="toggle"><input type="checkbox" id="showVideoEmbed"><span class="slider"></span></label>
     </div>
-    <div id="videoUrlRow" style="display:none;flex-direction:column;gap:6px;margin-top:4px;">
+    <div id="videoUrlRow" style="display:none;flex-direction:column;gap:8px;margin-top:4px;padding:8px;background:var(--cream);border:1px solid var(--border);border-radius:6px;">
+      <div style="display:flex;gap:14px;font-size:0.78rem;">
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+          <input type="radio" name="videoLayout" id="vlBelow" value="below" style="accent-color:var(--gold);"> Under dashboard
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+          <input type="radio" name="videoLayout" id="vlSidebar" value="sidebar" style="accent-color:var(--gold);"> In sidebar
+        </label>
+      </div>
       <input type="text" id="videoUrlInput" placeholder="Paste YouTube URL…" style="width:100%;box-sizing:border-box;">
       <button class="btn btn-xs" onclick="updateVideoEmbed()">Update Video</button>
     </div>
@@ -1238,6 +1248,7 @@
     showVideoEmbed: false,
     videoEmbedUrl: '',
     videoCollapsed: false,
+    videoLayout: 'below',
   };
   let presets = {};
   let _savedEditorRange = null;
@@ -1739,6 +1750,20 @@
     saveSettingsToStorage();
   }
 
+  function setVideoLayout(layout) {
+    const panel = document.getElementById('videoPanel');
+    if (layout === 'sidebar') {
+      document.getElementById('videoSidebarSlot').appendChild(panel);
+      panel.style.width = '';
+      panel.style.margin = '16px 0 0';
+    } else {
+      const anchor = document.getElementById('videoBelowSlot');
+      anchor.parentNode.insertBefore(panel, anchor.nextSibling);
+      panel.style.width = '290px';
+      panel.style.margin = '0 28px 28px auto';
+    }
+  }
+
   function applyVideoEmbed(show, url) {
     const panel  = document.getElementById('videoPanel');
     const iframe = document.getElementById('videoIframe');
@@ -1746,6 +1771,7 @@
     const id = url ? extractYouTubeId(url) : null;
     if (id) {
       if (!iframe.src.includes(id)) iframe.src = 'https://www.youtube.com/embed/' + id;
+      setVideoLayout(settings.videoLayout || 'below');
       panel.style.display = 'block';
       // Apply collapse state without animation on initial load
       const body  = document.getElementById('videoBody');
@@ -1821,6 +1847,8 @@
     $('showVideoEmbed').checked = !!settings.showVideoEmbed;
     $('videoUrlInput').value = settings.videoEmbedUrl || '';
     toggleVideoUrlRow(!!settings.showVideoEmbed);
+    const vlRadio = document.querySelector(`input[name="videoLayout"][value="${settings.videoLayout || 'below'}"]`);
+    if (vlRadio) vlRadio.checked = true;
     $('showNikkud').checked = settings.showNikkud;
     $('colorCodeNikkud').checked = settings.colorCodeNikkud;
     const cmr = $('colorModeRow');
@@ -1909,6 +1937,12 @@
       applyVideoEmbed(e.target.checked, settings.videoEmbedUrl);
       saveSettingsToStorage();
     });
+    document.querySelectorAll('input[name="videoLayout"]').forEach(r =>
+      r.addEventListener('change', () => {
+        settings.videoLayout = r.value;
+        if (settings.showVideoEmbed) setVideoLayout(r.value);
+        saveSettingsToStorage();
+      }));
     document.getElementById('zoomSlider').addEventListener('input', e => applyZoom(+e.target.value));
     document.getElementById('dashTextDisplay').addEventListener('click', e => {
       const sp = e.target.closest('.spoiler');
