@@ -773,6 +773,10 @@
       <div class="weather-loading">Loading weather…</div>
     </div>
   </div>
+</div>
+<div id="videoPanel" style="display:none;padding:0 20px 20px;">
+  <iframe id="videoIframe" src="" allowfullscreen
+    style="width:100%;aspect-ratio:16/9;border:none;border-radius:10px;display:block;background:#000;"></iframe>
 </div><!-- ───── Settings drawer ───── --><div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
 <div class="settings-modal" id="settingsModal">
   <div class="settings-header">
@@ -831,6 +835,14 @@
     <div class="form-row">
       <label>Hide zoom bar</label>
       <label class="toggle"><input type="checkbox" id="hideZoomBar"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Show video embed</label>
+      <label class="toggle"><input type="checkbox" id="showVideoEmbed"><span class="slider"></span></label>
+    </div>
+    <div id="videoUrlRow" style="display:none;flex-direction:column;gap:6px;margin-top:4px;">
+      <input type="text" id="videoUrlInput" placeholder="Paste YouTube URL…" style="width:100%;box-sizing:border-box;">
+      <button class="btn btn-xs" onclick="updateVideoEmbed()">Update Video</button>
     </div>
   </div>
 </div>
@@ -1217,6 +1229,8 @@
     dashTextSize: 1.8,
     zoomLevel: 100,
     hideZoomBar: false,
+    showVideoEmbed: false,
+    videoEmbedUrl: '',
   };
   let presets = {};
   let _savedEditorRange = null;
@@ -1689,6 +1703,37 @@
     saveSettingsToStorage();
   }
 
+  function extractYouTubeId(url) {
+    const m = url.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : null;
+  }
+
+  function applyVideoEmbed(show, url) {
+    const panel  = document.getElementById('videoPanel');
+    const iframe = document.getElementById('videoIframe');
+    if (!show) { panel.style.display = 'none'; iframe.src = ''; return; }
+    const id = url ? extractYouTubeId(url) : null;
+    if (id) {
+      iframe.src = 'https://www.youtube.com/embed/' + id;
+      panel.style.display = 'block';
+    } else {
+      panel.style.display = 'none';
+      iframe.src = '';
+    }
+  }
+
+  function updateVideoEmbed() {
+    const url = document.getElementById('videoUrlInput').value.trim();
+    settings.videoEmbedUrl = url;
+    applyVideoEmbed(settings.showVideoEmbed, url);
+    saveSettingsToStorage();
+  }
+
+  function toggleVideoUrlRow(show) {
+    const row = document.getElementById('videoUrlRow');
+    row.style.display = show ? 'flex' : 'none';
+  }
+
   function applyZoom(val) {
     val = Math.min(200, Math.max(50, val));
     document.querySelector('.dashboard').style.zoom = val / 100;
@@ -1731,6 +1776,9 @@
     $('hideDOW').checked = settings.hideDOW;
     $('hideDashText').checked = !settings.enableDashText;
     $('hideZoomBar').checked = settings.hideZoomBar;
+    $('showVideoEmbed').checked = !!settings.showVideoEmbed;
+    $('videoUrlInput').value = settings.videoEmbedUrl || '';
+    toggleVideoUrlRow(!!settings.showVideoEmbed);
     $('showNikkud').checked = settings.showNikkud;
     $('colorCodeNikkud').checked = settings.colorCodeNikkud;
     const cmr = $('colorModeRow');
@@ -1813,6 +1861,12 @@
       toggleZoomBar(!e.target.checked);
       saveSettingsToStorage();
     });
+    document.getElementById('showVideoEmbed').addEventListener('change', e => {
+      settings.showVideoEmbed = e.target.checked;
+      toggleVideoUrlRow(e.target.checked);
+      applyVideoEmbed(e.target.checked, settings.videoEmbedUrl);
+      saveSettingsToStorage();
+    });
     document.getElementById('zoomSlider').addEventListener('input', e => applyZoom(+e.target.value));
     document.getElementById('dashTextDisplay').addEventListener('click', e => {
       const sp = e.target.closest('.spoiler');
@@ -1836,6 +1890,7 @@
     setDashTextSize(settings.dashTextSize || 1.8);
     applyZoom(settings.zoomLevel || 100);
     toggleZoomBar(!settings.hideZoomBar);
+    applyVideoEmbed(settings.showVideoEmbed, settings.videoEmbedUrl);
     updateDateTimeDisplay();
     renderDaysList();
     renderWeather();
@@ -2214,6 +2269,7 @@
     toggleDashText(settings.enableDashText);
     applyZoom(settings.zoomLevel || 100);
     toggleZoomBar(!settings.hideZoomBar);
+    applyVideoEmbed(settings.showVideoEmbed, settings.videoEmbedUrl);
     document.getElementById('dashEditor').addEventListener('blur', () => {
       const sel = window.getSelection();
       if (sel && sel.rangeCount > 0) _savedEditorRange = sel.getRangeAt(0).cloneRange();
