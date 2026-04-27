@@ -947,9 +947,9 @@
       <button class="ed-btn" onclick="fmt('underline')" type="button"><u>U</u></button>
       <button class="ed-btn" onclick="fmt('strikeThrough')" type="button"><s>S</s></button>
       <span class="ed-sep"></span>
-      <button class="ed-btn" onclick="setAlign('Right')" type="button">RTL</button>
-      <button class="ed-btn" onclick="setAlign('Center')" type="button">Ctr</button>
-      <button class="ed-btn" onclick="setAlign('Left')" type="button">LTR</button>
+      <button class="ed-btn" onclick="setAlign('Right')" type="button" title="Align right (RTL)"><svg width="14" height="11" viewBox="0 0 14 11" fill="currentColor"><rect x="0" y="0" width="14" height="1.5" rx="0.75"/><rect x="5" y="4" width="9" height="1.5" rx="0.75"/><rect x="2" y="8" width="12" height="1.5" rx="0.75"/></svg></button>
+      <button class="ed-btn" onclick="setAlign('Center')" type="button" title="Center"><svg width="14" height="11" viewBox="0 0 14 11" fill="currentColor"><rect x="0" y="0" width="14" height="1.5" rx="0.75"/><rect x="2.5" y="4" width="9" height="1.5" rx="0.75"/><rect x="1" y="8" width="12" height="1.5" rx="0.75"/></svg></button>
+      <button class="ed-btn" onclick="setAlign('Left')" type="button" title="Align left (LTR)"><svg width="14" height="11" viewBox="0 0 14 11" fill="currentColor"><rect x="0" y="0" width="14" height="1.5" rx="0.75"/><rect x="0" y="4" width="9" height="1.5" rx="0.75"/><rect x="0" y="8" width="12" height="1.5" rx="0.75"/></svg></button>
       <span class="ed-sep"></span>
       <button class="ed-btn" onclick="insertLink()" type="button" title="Insert link (or remove if cursor is inside one)">🔗</button>
       <button class="ed-btn" onclick="insertSpoiler()" type="button" title="Wrap selection in spoiler (hidden until tapped)">Spoiler</button>
@@ -1837,6 +1837,11 @@
     applySettings(presets[name]);
     saveSettingsToStorage();
   }
+  function overwritePreset(name) {
+    if (!confirm(`Overwrite preset "${name}" with current settings?`)) return;
+    presets[name] = getSettings();
+    savePresetsStorage();
+  }
   function deletePreset(name) {
     if (!confirm(`Delete preset "${name}"?`)) return;
     delete presets[name];
@@ -1858,6 +1863,7 @@
       item.innerHTML = `
         <span class="preset-name"></span>
         <button class="btn btn-xs" onclick="loadPreset('${safe}')">Load</button>
+        <button class="btn btn-xs btn-secondary" onclick="overwritePreset('${safe}')" title="Overwrite with current settings">↺</button>
         <button class="btn btn-xs btn-secondary" onclick="deletePreset('${safe}')" title="Delete">×</button>
       `;
       item.querySelector('.preset-name').textContent = name;
@@ -1899,35 +1905,45 @@
     const sel = window.getSelection();
     if (!sel || !sel.rangeCount) return;
 
-    // Collect all direct children of ed that overlap the selection
-    const range = sel.getRangeAt(0);
-    let anySet = false;
-    for (const child of [...ed.childNodes]) {
-      let overlaps = false;
-      try {
-        const cr = document.createRange();
-        cr.selectNode(child);
-        overlaps = range.compareBoundaryPoints(Range.END_TO_START, cr) >= 0 &&
-                   range.compareBoundaryPoints(Range.START_TO_END, cr) <= 0;
-      } catch(e) { continue; }
-      if (!overlaps) continue;
-      if (child.nodeType === Node.TEXT_NODE) {
-        const div = document.createElement('div');
-        ed.insertBefore(div, child);
-        div.appendChild(child);
-        div.style.textAlign = alignVal;
-      } else if (child.nodeType === Node.ELEMENT_NODE) {
-        child.style.textAlign = alignVal;
+    // Walk up from a node to find its direct-child-of-ed ancestor
+    const directChild = node => {
+      while (node && node !== ed) {
+        if (node.parentNode === ed) return node;
+        node = node.parentNode;
       }
-      anySet = true;
-    }
-    if (!anySet) {
-      // Cursor directly in ed with no children — wrap in div
+      return null;
+    };
+
+    const range = sel.getRangeAt(0);
+    const startBlock = directChild(range.startContainer);
+    const endBlock   = directChild(range.endContainer);
+
+    if (!startBlock) {
+      // Editor empty or cursor directly in ed — wrap everything
       const div = document.createElement('div');
       div.style.textAlign = alignVal;
       div.innerHTML = ed.innerHTML || '<br>';
       ed.innerHTML = '';
       ed.appendChild(div);
+      syncDashText();
+      return;
+    }
+
+    // Apply textAlign to every child of ed from startBlock to endBlock
+    let active = false;
+    for (const child of [...ed.childNodes]) {
+      if (child === startBlock) active = true;
+      if (active) {
+        if (child.nodeType === Node.TEXT_NODE) {
+          const div = document.createElement('div');
+          div.style.textAlign = alignVal;
+          ed.insertBefore(div, child);
+          div.appendChild(child);
+        } else if (child.nodeType === Node.ELEMENT_NODE) {
+          child.style.textAlign = alignVal;
+        }
+      }
+      if (child === endBlock) break;
     }
     syncDashText();
   }
@@ -1963,6 +1979,15 @@
     const sel = window.getSelection();
     if (!sel || !sel.rangeCount) return;
     const range = sel.getRangeAt(0);
+    // If cursor/selection is inside an existing spoiler, unwrap it
+    const existing = sel.anchorNode?.parentElement?.closest('.spoiler');
+    if (existing) {
+      const parent = existing.parentNode;
+      while (existing.firstChild) parent.insertBefore(existing.firstChild, existing);
+      parent.removeChild(existing);
+      syncDashText();
+      return;
+    }
     if (range.collapsed) return;
     const span = document.createElement('span');
     span.className = 'spoiler';
