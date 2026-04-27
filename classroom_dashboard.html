@@ -2165,8 +2165,9 @@
   });
 
   // Prevent toolbar buttons from stealing focus/selection from the editor
+  // Don't preventDefault on select/input so they remain interactive
   document.querySelector('.editor-toolbar').addEventListener('mousedown', e => {
-    e.preventDefault();
+    if (e.target.tagName === 'BUTTON' || e.target.closest('button')) e.preventDefault();
   });
 
   // Always keep _savedEditorRange current while editor has focus
