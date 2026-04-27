@@ -839,6 +839,10 @@
         <div id="weatherBlock" class="weather-block">
           <div class="weather-loading">Loading weather…</div>
         </div>
+        <div style="text-align:center;margin-top:6px;">
+          <button onclick="renderWeather()" title="Refresh weather"
+            style="font-size:0.68rem;padding:2px 8px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--muted);cursor:pointer;">↺ Refresh</button>
+        </div>
       </div>
     </div>
     <div id="videoSidebarSlot"></div>
@@ -976,6 +980,10 @@
             <input type="radio" name="timeFmt" id="tf-12" value="12"><label for="tf-12">12-hr</label>
             <input type="radio" name="timeFmt" id="tf-24" value="24"><label for="tf-24">24-hr</label>
           </div>
+        </div>
+        <div class="form-row">
+          <label>Show seconds</label>
+          <label class="toggle"><input type="checkbox" id="showSeconds"><span class="slider"></span></label>
         </div>
       </div>
     </div>
@@ -1289,6 +1297,7 @@
     hebDateScript: 'he',
     hideHebDate: false,
     timeFmt: '12',
+    showSeconds: false,
     hideTime: false,
     tempUnit: 'F',
     weatherLabelLang: 'he',
@@ -1590,6 +1599,7 @@
       const opts = settings.timeFmt === '24'
         ? { hour: '2-digit', minute: '2-digit', hour12: false }
         : { hour: 'numeric', minute: '2-digit', hour12: true };
+      if (settings.showSeconds) opts.second = '2-digit';
       timeEl.textContent = now.toLocaleTimeString('en-US', opts);
     }
   }
@@ -1885,6 +1895,7 @@
     $('hideHebDate').checked = settings.hideHebDate;
     document.querySelector(`input[name="timeFmt"][value="${settings.timeFmt}"]`).checked = true;
     $('hideTime').checked = settings.hideTime;
+    $('showSeconds').checked = !!settings.showSeconds;
     document.querySelector(`input[name="tempUnit"][value="${settings.tempUnit}"]`).checked = true;
     document.querySelector(`input[name="weatherLabelLang"][value="${settings.weatherLabelLang}"]`).checked = true;
     $('hideWeatherEmoji').checked = settings.hideWeatherEmoji;
@@ -1935,6 +1946,7 @@
     document.querySelectorAll('input[name="timeFmt"]').forEach(r =>
       r.addEventListener('change', () => { settings.timeFmt = r.value; updateDateTimeDisplay(); }));
     document.getElementById('hideTime').addEventListener('change', e => { settings.hideTime = e.target.checked; updateDateTimeDisplay(); });
+    document.getElementById('showSeconds').addEventListener('change', e => { settings.showSeconds = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
     document.querySelectorAll('input[name="tempUnit"]').forEach(r =>
       r.addEventListener('change', () => { settings.tempUnit = r.value; renderWeather(); }));
     document.querySelectorAll('input[name="weatherLabelLang"]').forEach(r =>
