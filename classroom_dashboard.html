@@ -774,9 +774,15 @@
     </div>
   </div>
 </div>
-<div id="videoPanel" style="display:none;padding:0 20px 20px;">
-  <iframe id="videoIframe" src="" allowfullscreen
-    style="width:100%;aspect-ratio:16/9;border:none;border-radius:10px;display:block;background:#000;"></iframe>
+<div id="videoPanel" style="display:none;">
+  <div id="videoPanelHeader" onclick="toggleVideoCollapse()" style="background:var(--navy);color:#fff;padding:7px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;border-bottom:2px solid var(--gold);">
+    <span style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;">▶ Video</span>
+    <span id="videoCollapseArrow" style="font-size:1rem;color:var(--gold-light);transition:transform 0.2s;">▾</span>
+  </div>
+  <div id="videoBody" style="overflow:hidden;transition:height 0.25s ease;padding:0 20px 20px;">
+    <iframe id="videoIframe" src="" allowfullscreen
+      style="width:100%;aspect-ratio:16/9;border:none;border-radius:10px;display:block;background:#000;margin-top:16px;"></iframe>
+  </div>
 </div><!-- ───── Settings drawer ───── --><div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
 <div class="settings-modal" id="settingsModal">
   <div class="settings-header">
@@ -1231,6 +1237,7 @@
     hideZoomBar: false,
     showVideoEmbed: false,
     videoEmbedUrl: '',
+    videoCollapsed: false,
   };
   let presets = {};
   let _savedEditorRange = null;
@@ -1708,17 +1715,52 @@
     return m ? m[1] : null;
   }
 
+  function applyVideoCollapse(collapsed) {
+    const body  = document.getElementById('videoBody');
+    const arrow = document.getElementById('videoCollapseArrow');
+    if (collapsed) {
+      // Freeze current height then animate to 0 — iframe stays in DOM so audio plays
+      body.style.height = body.scrollHeight + 'px';
+      requestAnimationFrame(() => { body.style.height = '0px'; });
+      if (arrow) arrow.style.transform = 'rotate(-90deg)';
+    } else {
+      body.style.height = body.scrollHeight + 'px';
+      body.addEventListener('transitionend', function h() {
+        body.style.height = '';  // let it be natural height again
+        body.removeEventListener('transitionend', h);
+      });
+      if (arrow) arrow.style.transform = '';
+    }
+  }
+
+  function toggleVideoCollapse() {
+    settings.videoCollapsed = !settings.videoCollapsed;
+    applyVideoCollapse(settings.videoCollapsed);
+    saveSettingsToStorage();
+  }
+
   function applyVideoEmbed(show, url) {
     const panel  = document.getElementById('videoPanel');
     const iframe = document.getElementById('videoIframe');
-    if (!show) { panel.style.display = 'none'; iframe.src = ''; return; }
+    if (!show) { panel.style.display = 'none'; return; }
     const id = url ? extractYouTubeId(url) : null;
     if (id) {
-      iframe.src = 'https://www.youtube.com/embed/' + id;
+      if (!iframe.src.includes(id)) iframe.src = 'https://www.youtube.com/embed/' + id;
       panel.style.display = 'block';
+      // Apply collapse state without animation on initial load
+      const body  = document.getElementById('videoBody');
+      const arrow = document.getElementById('videoCollapseArrow');
+      if (settings.videoCollapsed) {
+        body.style.transition = 'none';
+        body.style.height = '0px';
+        if (arrow) arrow.style.transform = 'rotate(-90deg)';
+        requestAnimationFrame(() => { body.style.transition = ''; });
+      } else {
+        body.style.height = '';
+        if (arrow) arrow.style.transform = '';
+      }
     } else {
       panel.style.display = 'none';
-      iframe.src = '';
     }
   }
 
