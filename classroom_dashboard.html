@@ -729,7 +729,14 @@
     <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
     <button id="fsBtn" class="hbtn icon-btn" onclick="toggleFullscreen()" title="Fullscreen"></button>
   </div>
-</header><div class="dashboard">
+</header>
+<div id="zoomBar" style="background:var(--warm-gray);border-bottom:1px solid var(--border);padding:5px 20px;display:flex;align-items:center;gap:10px;font-size:0.78rem;color:var(--text);">
+  <span style="font-weight:600;white-space:nowrap;">🔍 Zoom</span>
+  <input type="range" id="zoomSlider" min="50" max="200" step="5" value="100" style="flex:1;max-width:220px;accent-color:var(--gold);cursor:pointer;">
+  <span id="zoomLabel" style="white-space:nowrap;min-width:36px;">100%</span>
+  <button onclick="applyZoom(100)" style="font-size:0.7rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);cursor:pointer;">Reset</button>
+</div>
+<div class="dashboard">
   <!-- LEFT: Days -->
   <div class="dash-col" id="dowCol">
     <div class="col-title" id="dowColTitle">Days of the Week</div>
@@ -803,6 +810,10 @@
     <div class="form-row">
       <label>Hide dashboard text</label>
       <label class="toggle"><input type="checkbox" id="hideDashText"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Hide zoom bar</label>
+      <label class="toggle"><input type="checkbox" id="hideZoomBar"><span class="slider"></span></label>
     </div>
   </div>
 </div>
@@ -1187,6 +1198,8 @@
     colorCodingMode: 'letter',
     nikudColorOverrides: {},
     dashTextSize: 1.8,
+    zoomLevel: 100,
+    hideZoomBar: false,
   };
   let presets = {};
   let _savedEditorRange = null;
@@ -1659,6 +1672,19 @@
     saveSettingsToStorage();
   }
 
+  function applyZoom(val) {
+    val = Math.min(200, Math.max(50, val));
+    document.querySelector('.dashboard').style.zoom = val / 100;
+    document.getElementById('zoomLabel').textContent = val + '%';
+    document.getElementById('zoomSlider').value = val;
+    settings.zoomLevel = val;
+    saveSettingsToStorage();
+  }
+
+  function toggleZoomBar(show) {
+    document.getElementById('zoomBar').style.display = show ? '' : 'none';
+  }
+
   function syncFormToSettings() {
     const $ = id => document.getElementById(id);
     $('locationInput').value = settings.location;
@@ -1687,6 +1713,7 @@
     document.querySelector(`input[name="headerLang"][value="${settings.headerLang || 'he'}"]`).checked = true;
     $('hideDOW').checked = settings.hideDOW;
     $('hideDashText').checked = !settings.enableDashText;
+    $('hideZoomBar').checked = settings.hideZoomBar;
     $('showNikkud').checked = settings.showNikkud;
     $('colorCodeNikkud').checked = settings.colorCodeNikkud;
     const cmr = $('colorModeRow');
@@ -1764,6 +1791,12 @@
       document.getElementById('dowCol').style.display = e.target.checked ? 'none' : '';
     });
     document.getElementById('hideDashText').addEventListener('change', e => toggleDashText(!e.target.checked));
+    document.getElementById('hideZoomBar').addEventListener('change', e => {
+      settings.hideZoomBar = e.target.checked;
+      toggleZoomBar(!e.target.checked);
+      saveSettingsToStorage();
+    });
+    document.getElementById('zoomSlider').addEventListener('input', e => applyZoom(+e.target.value));
     document.getElementById('dashTextDisplay').addEventListener('click', e => {
       const sp = e.target.closest('.spoiler');
       if (!sp) return;
@@ -1784,6 +1817,8 @@
     syncDashText();
     toggleDashText(settings.enableDashText);
     setDashTextSize(settings.dashTextSize || 1.8);
+    applyZoom(settings.zoomLevel || 100);
+    toggleZoomBar(!settings.hideZoomBar);
     updateDateTimeDisplay();
     renderDaysList();
     renderWeather();
@@ -2160,6 +2195,8 @@
     document.getElementById('dashEditor').innerHTML = settings.dashTextHTML || '';
     syncDashText();
     toggleDashText(settings.enableDashText);
+    applyZoom(settings.zoomLevel || 100);
+    toggleZoomBar(!settings.hideZoomBar);
     document.getElementById('dashEditor').addEventListener('blur', () => {
       const sel = window.getSelection();
       if (sel && sel.rangeCount > 0) _savedEditorRange = sel.getRangeAt(0).cloneRange();
