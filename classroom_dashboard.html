@@ -1965,14 +1965,30 @@
     const sel = window.getSelection();
     if (!sel || !sel.rangeCount) return;
     const range = sel.getRangeAt(0);
-    // Toggle off if anchor OR focus is inside an existing spoiler
     const nodeEl = n => n?.nodeType === 3 ? n.parentElement : n;
-    const existing = nodeEl(sel.anchorNode)?.closest('.spoiler')
-                  || nodeEl(sel.focusNode)?.closest('.spoiler');
-    if (existing) {
-      const parent = existing.parentNode;
-      while (existing.firstChild) parent.insertBefore(existing.firstChild, existing);
-      parent.removeChild(existing);
+    // Collect all spoilers that overlap the selection
+    const ed = document.getElementById('dashEditor');
+    const overlappingSpoilers = [];
+    ed.querySelectorAll('.spoiler').forEach(sp => {
+      const r = document.createRange();
+      r.selectNode(sp);
+      if (range.compareBoundaryPoints(Range.END_TO_START, r) < 0 &&
+          range.compareBoundaryPoints(Range.START_TO_END, r) > 0) {
+        overlappingSpoilers.push(sp);
+      }
+    });
+    // Also check if anchor/focus node is inside a spoiler not fully in range
+    const anchorSpoiler = nodeEl(sel.anchorNode)?.closest('.spoiler');
+    const focusSpoiler  = nodeEl(sel.focusNode)?.closest('.spoiler');
+    [anchorSpoiler, focusSpoiler].forEach(sp => {
+      if (sp && !overlappingSpoilers.includes(sp)) overlappingSpoilers.push(sp);
+    });
+    if (overlappingSpoilers.length > 0) {
+      overlappingSpoilers.forEach(sp => {
+        const parent = sp.parentNode;
+        while (sp.firstChild) parent.insertBefore(sp.firstChild, sp);
+        parent.removeChild(sp);
+      });
       syncDashText();
       return;
     }
