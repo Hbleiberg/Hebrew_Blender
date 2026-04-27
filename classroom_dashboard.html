@@ -2155,5 +2155,10 @@
       closeSettings();
     }
   });
+
+  // Prevent toolbar buttons from stealing focus/selection from the editor
+  document.querySelector('.editor-toolbar').addEventListener('mousedown', e => {
+    e.preventDefault();
+  });
 </script></body>
 </html>

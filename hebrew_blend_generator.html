@@ -2966,6 +2966,12 @@ function savePreset() {
   renderPresets();
 }
 
+function overwritePreset(name) {
+  if (!confirm(`Overwrite preset "${name}" with current settings?`)) return;
+  const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+  presets[name] = getSettings();
+  localStorage.setItem('hebrewBlender_presets', JSON.stringify(presets));
+}
 function deletePreset(name) {
   if (!confirm(`Are you sure you want to delete the preset "${name}"?`)) return;
   const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
@@ -3042,6 +3048,7 @@ function renderPresets() {
     item.innerHTML = `
       <span>${name}</span>
       <button onclick="loadPreset('${name.replace(/'/g,"\\'")}')">Load</button>
+      <button onclick="overwritePreset('${name.replace(/'/g,"\\'")}')">↺</button>
       <button class="del-btn" onclick="deletePreset('${name.replace(/'/g,"\\'")}')">✕</button>
     `;
     list.appendChild(item);
