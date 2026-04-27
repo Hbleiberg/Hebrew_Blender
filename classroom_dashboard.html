@@ -161,6 +161,17 @@
     min-height: 0;
     padding: 10px;
   }
+  /* Collapse: max-height so iframe stays in DOM (audio keeps playing) */
+  #videoBody {
+    overflow: hidden;
+    max-height: 4000px;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+  }
+  #videoBody.vcollapsed {
+    max-height: 0 !important;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
   .right-col-wrap #videoPanel #videoIframe {
     width: 100%;
     height: 100%;
@@ -839,7 +850,7 @@
     <span id="videoHeaderLabel" style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;">Video</span>
     <span id="videoCollapseArrow" style="font-size:1rem;color:var(--gold-light);transition:transform 0.2s;">▾</span>
   </div>
-  <div id="videoBody" style="overflow:hidden;transition:height 0.25s ease;padding:10px;">
+  <div id="videoBody" style="padding:10px;">
     <iframe id="videoIframe" src="" allowfullscreen
       style="width:100%;aspect-ratio:16/9;border:none;border-radius:8px;display:block;background:#000;"></iframe>
   </div>
@@ -1786,27 +1797,18 @@
     return m ? m[1] : null;
   }
 
-  function applyVideoCollapse(collapsed) {
+  function applyVideoCollapse(collapsed, instant) {
     const body  = document.getElementById('videoBody');
     const arrow = document.getElementById('videoCollapseArrow');
-    if (collapsed) {
-      // Freeze current height then animate to 0 — iframe stays in DOM so audio plays
-      body.style.height = body.scrollHeight + 'px';
-      requestAnimationFrame(() => { body.style.height = '0px'; });
-      if (arrow) arrow.style.transform = 'rotate(-90deg)';
-    } else {
-      body.style.height = body.scrollHeight + 'px';
-      body.addEventListener('transitionend', function h() {
-        body.style.height = '';  // let it be natural height again
-        body.removeEventListener('transitionend', h);
-      });
-      if (arrow) arrow.style.transform = '';
-    }
+    if (instant) body.style.transition = 'none';
+    body.classList.toggle('vcollapsed', !!collapsed);
+    if (arrow) arrow.style.transform = collapsed ? 'rotate(-90deg)' : '';
+    if (instant) requestAnimationFrame(() => { body.style.transition = ''; });
   }
 
   function toggleVideoCollapse() {
     settings.videoCollapsed = !settings.videoCollapsed;
-    applyVideoCollapse(settings.videoCollapsed);
+    applyVideoCollapse(settings.videoCollapsed, false);
     saveSettingsToStorage();
   }
 
@@ -1838,22 +1840,11 @@
     if (!show) { panel.style.display = 'none'; return; }
     const id = url ? extractYouTubeId(url) : null;
     if (id) {
-      const embedUrl = 'https://www.youtube.com/embed/' + id;
-      if (iframe.src !== embedUrl) iframe.src = embedUrl;
+      // Always set src — empty src="" is resolved to the page URL by browsers
+      iframe.src = 'https://www.youtube.com/embed/' + id;
       setVideoLayout(settings.videoLayout || 'below');
       panel.style.display = 'block';
-      // Apply collapse state without animation on initial load
-      const body  = document.getElementById('videoBody');
-      const arrow = document.getElementById('videoCollapseArrow');
-      if (settings.videoCollapsed) {
-        body.style.transition = 'none';
-        body.style.height = '0px';
-        if (arrow) arrow.style.transform = 'rotate(-90deg)';
-        requestAnimationFrame(() => { body.style.transition = ''; });
-      } else {
-        body.style.height = '';
-        if (arrow) arrow.style.transform = '';
-      }
+      applyVideoCollapse(settings.videoCollapsed, true); // instant on load
     } else {
       panel.style.display = 'none';
     }
