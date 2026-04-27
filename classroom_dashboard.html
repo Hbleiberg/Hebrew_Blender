@@ -1189,6 +1189,7 @@
     dashTextSize: 1.8,
   };
   let presets = {};
+  let _savedEditorRange = null;
   let weatherCache = null;
   let weatherTimer = null;
   let clockInterval = null;
@@ -1892,14 +1893,22 @@
   }
 
   /* ────────── EDITOR ────────── */
+  function restoreEditorFocus() {
+    const ed = document.getElementById('dashEditor');
+    ed.focus();
+    if (_savedEditorRange) {
+      const sel = window.getSelection();
+      if (sel) { sel.removeAllRanges(); sel.addRange(_savedEditorRange); }
+    }
+  }
   function fmt(cmd, val = null) {
-    document.getElementById('dashEditor').focus();
+    restoreEditorFocus();
     document.execCommand(cmd, false, val);
     syncDashText();
   }
   function setAlign(dir) {
+    restoreEditorFocus();
     const ed = document.getElementById('dashEditor');
-    ed.focus();
     const alignVal = { Left: 'left', Center: 'center', Right: 'right' }[dir];
     if (!alignVal) return;
     const sel = window.getSelection();
@@ -2131,6 +2140,10 @@
     document.getElementById('dashEditor').innerHTML = settings.dashTextHTML || '';
     syncDashText();
     toggleDashText(settings.enableDashText);
+    document.getElementById('dashEditor').addEventListener('blur', () => {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) _savedEditorRange = sel.getRangeAt(0).cloneRange();
+    });
     updateColTitles();
     document.getElementById('fsBtn').innerHTML = FS_ENTER;
     startClock();
