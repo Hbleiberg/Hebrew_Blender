@@ -2156,6 +2156,7 @@
     document.getElementById('dashEditor').addEventListener('blur', () => {
       const sel = window.getSelection();
       if (sel && sel.rangeCount > 0) _savedEditorRange = sel.getRangeAt(0).cloneRange();
+      saveSettingsToStorage();
     });
     updateColTitles();
     document.getElementById('fsBtn').innerHTML = FS_ENTER;
