@@ -1923,7 +1923,14 @@
     }
 
     const startBlock = editorBlock(range.startContainer);
-    const endBlock   = editorBlock(range.endContainer);
+    // When a drag-selection ends between block children, endContainer is the
+    // editor element itself and endOffset is the index of the next child.
+    // The last *included* child is at endOffset-1.
+    let endBlock = editorBlock(range.endContainer);
+    if (!endBlock && range.endContainer === ed) {
+      const idx = range.endOffset - 1;
+      if (idx >= 0) endBlock = ed.childNodes[idx];
+    }
 
     if (!startBlock) {
       // Bare text with no block wrapper — wrap everything once
