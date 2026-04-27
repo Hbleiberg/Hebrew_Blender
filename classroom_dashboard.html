@@ -1838,7 +1838,8 @@
     if (!show) { panel.style.display = 'none'; return; }
     const id = url ? extractYouTubeId(url) : null;
     if (id) {
-      if (!iframe.src.includes(id)) iframe.src = 'https://www.youtube.com/embed/' + id;
+      const embedUrl = 'https://www.youtube.com/embed/' + id;
+      if (iframe.src !== embedUrl) iframe.src = embedUrl;
       setVideoLayout(settings.videoLayout || 'below');
       panel.style.display = 'block';
       // Apply collapse state without animation on initial load
