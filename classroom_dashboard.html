@@ -698,6 +698,22 @@
     padding: 40px;
     gap: 32px;
   }
+  #fsExitBtn {
+    display: none;
+    position: fixed;
+    top: 12px; right: 14px;
+    z-index: 200;
+    background: rgba(13,18,32,0.72);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+  }
+  #fsExitBtn:hover { background: rgba(13,18,32,0.92); }
+  body.fullscreen #fsExitBtn { display: block; }
   body.fullscreen .heb-date { font-size: 3.2rem; }
   body.fullscreen .current-time { font-size: 4.2rem; }
   body.fullscreen .weather-emoji { font-size: 5.6rem; }
@@ -732,10 +748,11 @@
 </header>
 <div id="zoomBar" style="background:var(--warm-gray);border-bottom:1px solid var(--border);padding:5px 20px;display:flex;align-items:center;gap:10px;font-size:0.78rem;color:var(--text);">
   <span style="font-weight:600;white-space:nowrap;">🔍 Zoom</span>
-  <input type="range" id="zoomSlider" min="50" max="200" step="5" value="100" style="flex:1;max-width:220px;accent-color:var(--gold);cursor:pointer;">
+  <input type="range" id="zoomSlider" min="50" max="200" step="5" value="100" style="flex:1;accent-color:var(--gold);cursor:pointer;">
   <span id="zoomLabel" style="white-space:nowrap;min-width:36px;">100%</span>
   <button onclick="applyZoom(100)" style="font-size:0.7rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);cursor:pointer;">Reset</button>
 </div>
+<button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen">✕ Exit Fullscreen</button>
 <div class="dashboard">
   <!-- LEFT: Days -->
   <div class="dash-col" id="dowCol">
