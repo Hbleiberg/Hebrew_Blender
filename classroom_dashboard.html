@@ -136,6 +136,31 @@
     background: #1e2535;
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   }
+  .right-col-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+  /* Weather card: compact, don't stretch */
+  .right-col-wrap #weatherCol { flex-shrink: 0; }
+  /* Video card in sidebar fills remaining height */
+  .right-col-wrap #videoPanel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .right-col-wrap #videoPanel #videoBody {
+    flex: 1;
+    min-height: 0;
+    padding: 10px;
+  }
+  .right-col-wrap #videoPanel #videoIframe {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: unset;
+  }
 
   .col-title {
     font-family: 'Libre Baskerville', serif;
@@ -787,17 +812,19 @@
     <div id="dashTextWrap" style="display:none;width:100%;">
       <div id="dashTextDisplay" class="dash-text-display"></div>
     </div>
-  </div><!-- RIGHT: Weather --><div class="dash-col" id="weatherCol">
-    <div class="col-title" id="weatherColTitle">Weather</div>
-    <div class="col-body" id="weatherBody">
-      <div id="weatherBlock" class="weather-block">
-        <div class="weather-loading">Loading weather…</div>
+  </div><!-- RIGHT: Weather --><div class="right-col-wrap">
+    <div class="dash-col" id="weatherCol">
+      <div class="col-title" id="weatherColTitle">Weather</div>
+      <div class="col-body" id="weatherBody">
+        <div id="weatherBlock" class="weather-block">
+          <div class="weather-loading">Loading weather…</div>
+        </div>
       </div>
     </div>
+    <div id="videoSidebarSlot"></div>
   </div>
 </div>
 <div id="videoBelowSlot"></div>
-<div id="videoSidebarSlot"></div>
 <div id="videoPanel" style="display:none;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);">
   <div id="videoPanelHeader" onclick="toggleVideoCollapse()" style="background:var(--navy);color:#fff;padding:7px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;border-bottom:2px solid var(--gold);">
     <span id="videoHeaderLabel" style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;">Video</span>
@@ -1775,17 +1802,24 @@
   }
 
   function setVideoLayout(layout) {
-    const panel = document.getElementById('videoPanel');
+    const panel  = document.getElementById('videoPanel');
+    const iframe = document.getElementById('videoIframe');
+    panel.style.border       = '1px solid var(--border)';
+    panel.style.borderRadius = '12px';
+    panel.style.boxShadow    = 'var(--shadow-sm)';
     if (layout === 'sidebar') {
-      const slot = document.getElementById('videoSidebarSlot');
-      slot.parentNode.insertBefore(panel, slot.nextSibling);
-      panel.style.width = '290px';
-      panel.style.margin = '0 28px 28px auto';
+      document.getElementById('videoSidebarSlot').appendChild(panel);
+      panel.style.width  = '';
+      panel.style.margin = '';
+      // iframe fills card height — aspect-ratio handled by CSS
+      iframe.style.aspectRatio = '';
     } else {
       const slot = document.getElementById('videoBelowSlot');
       slot.parentNode.insertBefore(panel, slot.nextSibling);
-      panel.style.width = '';
+      panel.style.width  = '';
       panel.style.margin = '0 28px 28px';
+      // restore 16:9 aspect ratio for full-width below mode
+      iframe.style.aspectRatio = '16/9';
     }
   }
 
