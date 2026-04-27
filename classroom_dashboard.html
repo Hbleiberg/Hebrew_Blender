@@ -774,14 +774,14 @@
     </div>
   </div>
 </div>
-<div id="videoPanel" style="display:none;">
-  <div id="videoPanelHeader" onclick="toggleVideoCollapse()" style="background:var(--navy);color:#fff;padding:7px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;border-bottom:2px solid var(--gold);">
+<div id="videoPanel" style="display:none;width:290px;margin:0 28px 28px auto;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);">
+  <div id="videoPanelHeader" onclick="toggleVideoCollapse()" style="background:var(--navy);color:#fff;padding:7px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;border-bottom:2px solid var(--gold);">
     <span style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;">▶ Video</span>
     <span id="videoCollapseArrow" style="font-size:1rem;color:var(--gold-light);transition:transform 0.2s;">▾</span>
   </div>
-  <div id="videoBody" style="overflow:hidden;transition:height 0.25s ease;padding:0 20px 20px;">
+  <div id="videoBody" style="overflow:hidden;transition:height 0.25s ease;padding:10px;">
     <iframe id="videoIframe" src="" allowfullscreen
-      style="width:100%;aspect-ratio:16/9;border:none;border-radius:10px;display:block;background:#000;margin-top:16px;"></iframe>
+      style="width:100%;aspect-ratio:16/9;border:none;border-radius:8px;display:block;background:#000;"></iframe>
   </div>
 </div><!-- ───── Settings drawer ───── --><div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
 <div class="settings-modal" id="settingsModal">
