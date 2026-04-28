@@ -877,7 +877,7 @@
 <div id="videoPanel" style="display:none;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);">
   <div id="videoPanelHeader" onclick="toggleVideoCollapse()" style="background:var(--navy);color:#fff;padding:7px 14px;display:flex;align-items:center;cursor:pointer;user-select:none;border-bottom:2px solid var(--gold);">
     <span id="videoCollapseArrow" style="font-size:1rem;color:var(--gold-light);transition:transform 0.2s;flex-shrink:0;">▾</span>
-    <span id="videoHeaderLabel" style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;flex:1;text-align:center;">Video</span>
+    <span id="videoHeaderLabel" style="font-family:'Libre Baskerville',serif;letter-spacing:0.08em;text-transform:uppercase;flex:1;text-align:center;">Video</span>
     <span style="width:1rem;flex-shrink:0;"></span>
   </div>
   <div id="videoBody" style="padding:10px;">
@@ -919,6 +919,7 @@
       <label for="colTitleSizeSlider">Header size</label>
       <input type="range" id="colTitleSizeSlider" min="0.5" max="1.8" step="0.05" value="0.78" oninput="setColTitleSize(this.value)">
       <span class="size-val" id="colTitleSizeVal">0.78rem</span>
+      <button class="btn-xs" onclick="setColTitleSize(0.78)" title="Restore default">↺</button>
     </div>
     <div class="form-row">
       <label>Hide English date</label>
