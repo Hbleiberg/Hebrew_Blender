@@ -330,6 +330,12 @@
     color: var(--navy);
   }
   body.dark .weather-temp { color: var(--gold-light); }
+  .weather-highlow {
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.03em;
+    margin-top: 1px;
+  }
   .weather-label {
     font-family: var(--heb-font);
     font-size: 1.1rem;
@@ -1020,6 +1026,10 @@
       <label>Hide weather description</label>
       <label class="toggle"><input type="checkbox" id="hideWeatherDesc"><span class="slider"></span></label>
     </div>
+    <div class="form-row">
+      <label>Show High/Low</label>
+      <label class="toggle"><input type="checkbox" id="showHighLow"><span class="slider"></span></label>
+    </div>
   </div>
 </div>
 
@@ -1304,6 +1314,7 @@
     simpleWeatherDesc: false,
     hideWeatherEmoji: false,
     hideWeatherDesc: false,
+    showHighLow: false,
     hideWeather: false,
     dowLang: 'he',
     showYesterday: true,
@@ -1694,7 +1705,7 @@
         place = geo.results[0];
       }
       const wRes = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,weathercode`
+        `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,weathercode&daily=temperature_2m_max,temperature_2m_min&timezone=auto`
       );
       const wData = await wRes.json();
       weatherCache = { data: wData, place };
@@ -1766,9 +1777,21 @@
     } else {
       descriptor = tempC > 25 ? 'Hot' : tempC < 15 ? 'Cold' : 'Pleasant';
     }
+    let hlHtml = '';
+    if (settings.showHighLow && data.daily) {
+      const maxC = data.daily.temperature_2m_max?.[0];
+      const minC = data.daily.temperature_2m_min?.[0];
+      if (maxC !== undefined && minC !== undefined) {
+        const toDisplay = c => settings.tempUnit === 'F'
+          ? Math.round(c * 9 / 5 + 32) + '°'
+          : Math.round(c) + '°';
+        hlHtml = `<div class="weather-highlow">H: ${toDisplay(maxC)} · L: ${toDisplay(minC)}</div>`;
+      }
+    }
     block.innerHTML = `
       ${settings.hideWeatherEmoji ? '' : `<div class="weather-emoji">${w.emoji}</div>`}
       <div class="weather-temp">${tempStr}</div>
+      ${hlHtml}
       ${settings.hideWeatherDesc ? '' : `<div class="weather-label ${isHe ? '' : 'ltr'}">${label}</div>`}
       <div class="weather-descriptor ${isHe ? '' : 'ltr'}">${descriptor}</div>
       <div class="weather-city">${place.name}${place.country ? ', ' + place.country : ''}</div>
@@ -1901,6 +1924,7 @@
     $('hideWeatherEmoji').checked = settings.hideWeatherEmoji;
     $('hideWeatherDesc').checked = settings.hideWeatherDesc;
     $('simpleWeatherDesc').checked = settings.simpleWeatherDesc;
+    $('showHighLow').checked = !!settings.showHighLow;
     $('hideWeather').checked = settings.hideWeather;
     document.querySelector(`input[name="dowLang"][value="${settings.dowLang}"]`).checked = true;
     $('colorDays').checked = settings.colorDays !== false;
@@ -1959,6 +1983,9 @@
     });
     document.getElementById('simpleWeatherDesc').addEventListener('change', e => {
       settings.simpleWeatherDesc = e.target.checked; renderWeather();
+    });
+    document.getElementById('showHighLow').addEventListener('change', e => {
+      settings.showHighLow = e.target.checked; renderWeather();
     });
     document.getElementById('hideWeather').addEventListener('change', e => {
       settings.hideWeather = e.target.checked;
