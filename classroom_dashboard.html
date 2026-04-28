@@ -1019,16 +1019,20 @@
       <label class="toggle"><input type="checkbox" id="simpleWeatherDesc"><span class="slider"></span></label>
     </div>
     <div class="form-row">
+      <label>Hide temperature</label>
+      <label class="toggle"><input type="checkbox" id="hideTemperature"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
       <label>Hide weather emoji</label>
       <label class="toggle"><input type="checkbox" id="hideWeatherEmoji"><span class="slider"></span></label>
     </div>
     <div class="form-row">
-      <label>Hide weather description</label>
-      <label class="toggle"><input type="checkbox" id="hideWeatherDesc"><span class="slider"></span></label>
+      <label>Hide High/Low</label>
+      <label class="toggle"><input type="checkbox" id="hideHighLow"><span class="slider"></span></label>
     </div>
     <div class="form-row">
-      <label>Show High/Low</label>
-      <label class="toggle"><input type="checkbox" id="showHighLow"><span class="slider"></span></label>
+      <label>Hide weather description</label>
+      <label class="toggle"><input type="checkbox" id="hideWeatherDesc"><span class="slider"></span></label>
     </div>
   </div>
 </div>
@@ -1312,9 +1316,10 @@
     tempUnit: 'F',
     weatherLabelLang: 'he',
     simpleWeatherDesc: false,
+    hideTemperature: false,
     hideWeatherEmoji: false,
+    hideHighLow: false,
     hideWeatherDesc: false,
-    showHighLow: false,
     hideWeather: false,
     dowLang: 'he',
     showYesterday: true,
@@ -1778,7 +1783,7 @@
       descriptor = tempC > 25 ? 'Hot' : tempC < 15 ? 'Cold' : 'Pleasant';
     }
     let hlHtml = '';
-    if (settings.showHighLow && data.daily) {
+    if (!settings.hideHighLow && data.daily) {
       const maxC = data.daily.temperature_2m_max?.[0];
       const minC = data.daily.temperature_2m_min?.[0];
       if (maxC !== undefined && minC !== undefined) {
@@ -1790,7 +1795,7 @@
     }
     block.innerHTML = `
       ${settings.hideWeatherEmoji ? '' : `<div class="weather-emoji">${w.emoji}</div>`}
-      <div class="weather-temp">${tempStr}</div>
+      ${settings.hideTemperature ? '' : `<div class="weather-temp">${tempStr}</div>`}
       ${hlHtml}
       ${settings.hideWeatherDesc ? '' : `<div class="weather-label ${isHe ? '' : 'ltr'}">${label}</div>`}
       <div class="weather-descriptor ${isHe ? '' : 'ltr'}">${descriptor}</div>
@@ -1921,10 +1926,11 @@
     $('showSeconds').checked = !!settings.showSeconds;
     document.querySelector(`input[name="tempUnit"][value="${settings.tempUnit}"]`).checked = true;
     document.querySelector(`input[name="weatherLabelLang"][value="${settings.weatherLabelLang}"]`).checked = true;
+    $('hideTemperature').checked = !!settings.hideTemperature;
     $('hideWeatherEmoji').checked = settings.hideWeatherEmoji;
+    $('hideHighLow').checked = !!settings.hideHighLow;
     $('hideWeatherDesc').checked = settings.hideWeatherDesc;
     $('simpleWeatherDesc').checked = settings.simpleWeatherDesc;
-    $('showHighLow').checked = !!settings.showHighLow;
     $('hideWeather').checked = settings.hideWeather;
     document.querySelector(`input[name="dowLang"][value="${settings.dowLang}"]`).checked = true;
     $('colorDays').checked = settings.colorDays !== false;
@@ -1984,8 +1990,11 @@
     document.getElementById('simpleWeatherDesc').addEventListener('change', e => {
       settings.simpleWeatherDesc = e.target.checked; renderWeather();
     });
-    document.getElementById('showHighLow').addEventListener('change', e => {
-      settings.showHighLow = e.target.checked; renderWeather();
+    document.getElementById('hideTemperature').addEventListener('change', e => {
+      settings.hideTemperature = e.target.checked; renderWeather();
+    });
+    document.getElementById('hideHighLow').addEventListener('change', e => {
+      settings.hideHighLow = e.target.checked; renderWeather();
     });
     document.getElementById('hideWeather').addEventListener('change', e => {
       settings.hideWeather = e.target.checked;
