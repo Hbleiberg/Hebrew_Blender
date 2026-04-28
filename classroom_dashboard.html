@@ -877,9 +877,10 @@
 </div>
 <div id="videoBelowSlot"></div>
 <div id="videoPanel" style="display:none;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);">
-  <div id="videoPanelHeader" onclick="toggleVideoCollapse()" style="background:var(--navy);color:#fff;padding:7px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;border-bottom:2px solid var(--gold);">
-    <span id="videoHeaderLabel" style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;">Video</span>
-    <span id="videoCollapseArrow" style="font-size:1rem;color:var(--gold-light);transition:transform 0.2s;">▾</span>
+  <div id="videoPanelHeader" onclick="toggleVideoCollapse()" style="background:var(--navy);color:#fff;padding:7px 14px;display:flex;align-items:center;cursor:pointer;user-select:none;border-bottom:2px solid var(--gold);">
+    <span id="videoCollapseArrow" style="font-size:1rem;color:var(--gold-light);transition:transform 0.2s;flex-shrink:0;">▾</span>
+    <span id="videoHeaderLabel" style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;flex:1;text-align:center;">Video</span>
+    <span style="width:1rem;flex-shrink:0;"></span>
   </div>
   <div id="videoBody" style="padding:10px;">
     <iframe id="videoIframe" src="" allowfullscreen
