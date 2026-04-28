@@ -486,7 +486,7 @@
     flex: 1;
     color: var(--text);
   }
-  .tip-wrap { position: relative; display: inline-flex; align-items: center; }
+  .tip-wrap { display: inline-flex; align-items: center; }
   .tip-icon {
     display: inline-flex; align-items: center; justify-content: center;
     width: 15px; height: 15px; border-radius: 50%;
@@ -494,19 +494,17 @@
     font-size: 0.65rem; font-weight: 700; font-style: normal;
     cursor: default; margin-left: 5px; flex-shrink: 0; line-height: 1;
   }
-  .tip-bubble {
-    display: none; position: absolute; left: 22px; top: 50%;
-    transform: translateY(-50%);
+  body.dark .tip-icon { background: var(--warm-gray); }
+  #tipFloat {
+    display: none; position: fixed;
     background: var(--navy); color: #fff;
     font-size: 0.72rem; font-weight: 400; line-height: 1.45;
     padding: 6px 9px; border-radius: 6px;
-    width: 200px; z-index: 200;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    max-width: 220px; z-index: 9999;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     pointer-events: none;
   }
-  .tip-wrap:hover .tip-bubble { display: block; }
-  body.dark .tip-icon { background: var(--warm-gray); }
-  body.dark .tip-bubble { background: #0a0f1c; }
+  body.dark #tipFloat { background: #0a0f1c; }
   .panel hr {
     margin: 12px 0;
     border: none;
@@ -1043,7 +1041,7 @@
       </div>
     </div>
     <div class="form-row">
-      <label>Simple weather description <span class="tip-wrap"><i class="tip-icon">?</i><span class="tip-bubble">Limits description to: Sun, Clouds, Sun &amp; Clouds, Rain, Snow, or Fog — instead of full WMO detail.</span></span></label>
+      <label>Simple weather description <span class="tip-wrap" data-tip="Limits description to: Sun, Clouds, Sun &amp; Clouds, Rain, Snow, or Fog — instead of full WMO detail."><i class="tip-icon">?</i></span></label>
       <label class="toggle"><input type="checkbox" id="simpleWeatherDesc"><span class="slider"></span></label>
     </div>
     <div class="form-row">
@@ -1592,6 +1590,8 @@
     const v = parseFloat(val);
     settings.colTitleSize = v;
     document.querySelectorAll('.col-title').forEach(el => el.style.fontSize = v + 'rem');
+    const vh = document.getElementById('videoPanelHeader');
+    if (vh) vh.style.fontSize = v + 'rem';
     const lbl = document.getElementById('colTitleSizeVal');
     if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
     const sl = document.getElementById('colTitleSizeSlider');
@@ -2568,5 +2568,32 @@
       if (sel && sel.rangeCount > 0) _savedEditorRange = sel.getRangeAt(0).cloneRange();
     }
   });
+
+  /* ── Tooltip ── */
+  (function() {
+    const tip = document.createElement('div');
+    tip.id = 'tipFloat';
+    document.body.appendChild(tip);
+    document.querySelectorAll('.tip-wrap').forEach(wrap => {
+      wrap.addEventListener('mouseenter', () => {
+        const text = wrap.dataset.tip;
+        if (!text) return;
+        tip.textContent = text;
+        tip.style.display = 'block';
+        const r = wrap.querySelector('.tip-icon').getBoundingClientRect();
+        const tw = tip.offsetWidth;
+        const th = tip.offsetHeight;
+        // Appear above the icon, centered; clamp to viewport
+        let left = r.left + r.width / 2 - tw / 2;
+        let top  = r.top - th - 6;
+        if (left < 6) left = 6;
+        if (left + tw > window.innerWidth - 6) left = window.innerWidth - tw - 6;
+        if (top < 6) top = r.bottom + 6; // flip below if no room above
+        tip.style.left = left + 'px';
+        tip.style.top  = top  + 'px';
+      });
+      wrap.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+    });
+  })();
 </script></body>
 </html>

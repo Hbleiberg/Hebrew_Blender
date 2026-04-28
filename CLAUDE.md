@@ -278,6 +278,80 @@ Called once at `DOMContentLoaded`. Toggling `.collapsed` on the `.panel` element
 
 ---
 
+## Tooltips (`classroom_dashboard.html`)
+
+### Why not pure CSS
+
+`.panel` has `overflow: hidden` (needed to clip `.panel-title` to rounded corners) and `.settings-body` has `overflow-y: auto`. Both cut off `position: absolute` children, clipping any CSS-only tooltip bubble.
+
+### Pattern: `position: fixed` floating div driven by JS
+
+**Single floating element** — one `<div id="tipFloat">` is appended to `<body>` at init time and reused for all tooltips.
+
+**Markup** — use `.tip-wrap` with `data-tip` on the wrapper and `.tip-icon` on the `?` badge. No child bubble span needed:
+```html
+<span class="tip-wrap" data-tip="Your tooltip text here."><i class="tip-icon">?</i></span>
+```
+
+**CSS:**
+```css
+.tip-wrap { display: inline-flex; align-items: center; }
+.tip-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 15px; height: 15px; border-radius: 50%;
+  background: var(--border); color: var(--muted);
+  font-size: 0.65rem; font-weight: 700; font-style: normal;
+  cursor: default; margin-left: 5px; flex-shrink: 0; line-height: 1;
+}
+body.dark .tip-icon { background: var(--warm-gray); }
+#tipFloat {
+  display: none; position: fixed;
+  background: var(--navy); color: #fff;
+  font-size: 0.72rem; font-weight: 400; line-height: 1.45;
+  padding: 6px 9px; border-radius: 6px;
+  max-width: 220px; z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  pointer-events: none;
+}
+body.dark #tipFloat { background: #0a0f1c; }
+```
+
+**JS** (runs in an IIFE after DOM is ready, at end of `<script>`):
+```js
+(function() {
+  const tip = document.createElement('div');
+  tip.id = 'tipFloat';
+  document.body.appendChild(tip);
+  document.querySelectorAll('.tip-wrap').forEach(wrap => {
+    wrap.addEventListener('mouseenter', () => {
+      const text = wrap.dataset.tip;
+      if (!text) return;
+      tip.textContent = text;
+      tip.style.display = 'block';
+      const r = wrap.querySelector('.tip-icon').getBoundingClientRect();
+      const tw = tip.offsetWidth, th = tip.offsetHeight;
+      // Appear above the icon, centered; clamp to viewport edges
+      let left = r.left + r.width / 2 - tw / 2;
+      let top  = r.top - th - 6;
+      if (left < 6) left = 6;
+      if (left + tw > window.innerWidth - 6) left = window.innerWidth - tw - 6;
+      if (top < 6) top = r.bottom + 6; // flip below if no room above
+      tip.style.left = left + 'px';
+      tip.style.top  = top  + 'px';
+    });
+    wrap.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+  });
+})();
+```
+
+**Key points:**
+- `position: fixed` escapes all `overflow` clipping from `.panel` and `.settings-body`
+- Tooltip appears **above** the `?` icon by default; flips **below** if near the top of the viewport
+- Viewport clamping prevents left/right overflow
+- One `#tipFloat` element is reused for all tooltips — never create per-tooltip bubble spans
+
+---
+
 ## Letter Selector (`hebrew_blend_generator.html`)
 
 ### CSS
