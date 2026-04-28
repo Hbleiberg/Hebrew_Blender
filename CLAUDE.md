@@ -76,7 +76,10 @@ Builds the font picker UI inside `#fontOptions`. Groups fonts under section head
 - A preview span styled with `font.family` displaying `אֶרֶץ`
 - The font name
 
-A **↺ Default** button above the list calls `setHebFont('Frank Ruhl Libre')` to restore the default. The default font is `'Frank Ruhl Libre'` (first entry in `HEB_FONTS`, `settings.hebFont` default).
+Frank Ruhl Libre is the default font (`settings.hebFont` default). Its button appends `[DEFAULT]` in small muted text after the name — same pattern as the generator:
+```js
+`${font.name}${font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}`
+```
 
 ### `setHebFont(name)`
 ```js

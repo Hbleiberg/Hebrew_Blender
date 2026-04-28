@@ -1164,10 +1164,7 @@
 <div class="panel">
   <div class="panel-title">Hebrew Settings</div>
   <div class="panel-body">
-    <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
-      <span style="font-size:0.85rem;font-weight:600;">Hebrew font</span>
-      <button class="btn-xs" onclick="setHebFont('Frank Ruhl Libre')" title="Restore default font">↺ Default</button>
-    </div>
+    <div style="margin-bottom:8px;font-size:0.85rem;font-weight:600;">Hebrew font</div>
     <div class="font-options" id="fontOptions"></div>
     <hr>
     <div class="form-row">
@@ -2454,7 +2451,7 @@
         btn.dataset.fontName = font.name;
         btn.innerHTML =
           `<span class="font-opt-preview" style="font-family:${font.family};">אֶרֶץ</span>` +
-          `<span class="font-opt-name">${font.name}</span>`;
+          `<span class="font-opt-name">${font.name}${font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}</span>`;
         btn.onclick = () => setHebFont(font.name);
         loadHebFont(font);
         opts.appendChild(btn);
