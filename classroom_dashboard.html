@@ -917,6 +917,11 @@
         <input type="radio" name="headerLang" id="hl-none" value="none"><label for="hl-none">None</label>
       </div>
     </div>
+    <div class="size-row">
+      <label for="colTitleSizeSlider">Header size</label>
+      <input type="range" id="colTitleSizeSlider" min="0.5" max="1.8" step="0.05" value="0.78" oninput="setColTitleSize(this.value)">
+      <span class="size-val" id="colTitleSizeVal">0.78rem</span>
+    </div>
     <div class="form-row">
       <label>Hide English date</label>
       <label class="toggle"><input type="checkbox" id="hideEngDate"><span class="slider"></span></label>
@@ -1351,6 +1356,7 @@
     dowEmojiSet: 'chick',
     colorDays: true,
     headerLang: 'he',
+    colTitleSize: 0.78,
     hideDOW: false,
     enableDashText: true,
     dashTextHTML: '',
@@ -1582,6 +1588,16 @@
   }
 
   /* ────────── DASHBOARD TEXT SIZE ────────── */
+  function setColTitleSize(val) {
+    const v = parseFloat(val);
+    settings.colTitleSize = v;
+    document.querySelectorAll('.col-title').forEach(el => el.style.fontSize = v + 'rem');
+    const lbl = document.getElementById('colTitleSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
+    const sl = document.getElementById('colTitleSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
   function setDashTextSize(val) {
     const v = parseFloat(val);
     settings.dashTextSize = v;
@@ -1972,6 +1988,7 @@
       btn.classList.toggle('active', btn.dataset.set === activeSet);
     });
     document.querySelector(`input[name="headerLang"][value="${settings.headerLang || 'he'}"]`).checked = true;
+    setColTitleSize(settings.colTitleSize || 0.78);
     $('hideDOW').checked = settings.hideDOW;
     $('hideDashText').checked = !settings.enableDashText;
     $('hideZoomBar').checked = settings.hideZoomBar;
@@ -2059,6 +2076,7 @@
       r.addEventListener('change', () => { settings.colorCodingMode = r.value; refreshAll(); }));
     document.querySelectorAll('input[name="headerLang"]').forEach(r =>
       r.addEventListener('change', () => { settings.headerLang = r.value; updateColTitles(); }));
+    document.getElementById('colTitleSizeSlider').addEventListener('input', e => { setColTitleSize(e.target.value); saveSettingsToStorage(); });
     document.getElementById('hideDOW').addEventListener('change', e => {
       settings.hideDOW = e.target.checked;
       document.getElementById('dowCol').style.display = e.target.checked ? 'none' : '';
@@ -2102,6 +2120,7 @@
     syncDashText();
     toggleDashText(settings.enableDashText);
     setDashTextSize(settings.dashTextSize || 1.8);
+    setColTitleSize(settings.colTitleSize || 0.78);
     applyZoom(settings.zoomLevel || 100);
     toggleZoomBar(!settings.hideZoomBar);
     applyVideoEmbed(settings.showVideoEmbed, settings.videoEmbedUrl);
