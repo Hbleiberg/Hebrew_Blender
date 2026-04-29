@@ -685,6 +685,13 @@
   .schedule-del-btn:hover { color: #cc3333; }
   .schedule-until-lbl { font-size: 0.72rem; color: var(--muted); flex-shrink: 0; }
   .saved-schedule-list { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+  .drag-handle {
+    cursor: grab; color: var(--muted); font-size: 0.85rem;
+    padding: 0 2px; flex-shrink: 0; line-height: 1; user-select: none;
+  }
+  .drag-handle:active { cursor: grabbing; }
+  .preset-item.drag-over { border-color: var(--gold); background: rgba(201,146,42,0.08); }
+  .preset-item.dragging  { opacity: 0.4; }
   #scheduleCountdown {
     display: none;
     font-size: 0.75rem; color: var(--muted);
@@ -2287,6 +2294,37 @@
     savePresetsStorage();
     renderPresets();
   }
+  function makeSortable(listEl, getKeys, reorderFn) {
+    let dragSrc = null;
+    listEl.querySelectorAll('.preset-item').forEach(item => {
+      item.addEventListener('dragstart', e => {
+        dragSrc = item;
+        item.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      item.addEventListener('dragend', () => {
+        item.classList.remove('dragging');
+        listEl.querySelectorAll('.preset-item').forEach(i => i.classList.remove('drag-over'));
+      });
+      item.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        listEl.querySelectorAll('.preset-item').forEach(i => i.classList.remove('drag-over'));
+        if (item !== dragSrc) item.classList.add('drag-over');
+      });
+      item.addEventListener('drop', e => {
+        e.preventDefault();
+        if (!dragSrc || dragSrc === item) return;
+        const keys = getKeys();
+        const fromIdx = [...listEl.querySelectorAll('.preset-item')].indexOf(dragSrc);
+        const toIdx   = [...listEl.querySelectorAll('.preset-item')].indexOf(item);
+        const reordered = [...keys];
+        reordered.splice(toIdx, 0, reordered.splice(fromIdx, 1)[0]);
+        reorderFn(reordered);
+      });
+    });
+  }
+
   function renderPresets() {
     const list = document.getElementById('presetList');
     list.innerHTML = '';
@@ -2298,8 +2336,10 @@
     names.forEach(name => {
       const item = document.createElement('div');
       item.className = 'preset-item';
+      item.draggable = true;
       const safe = name.replace(/'/g, "\\'");
       item.innerHTML = `
+        <span class="drag-handle" title="Drag to reorder">⠿</span>
         <span class="preset-name"></span>
         <button class="btn btn-xs" onclick="loadPreset('${safe}')">Load</button>
         <button class="btn btn-xs btn-secondary" onclick="overwritePreset('${safe}')" title="Overwrite with current settings">↺</button>
@@ -2307,6 +2347,13 @@
       `;
       item.querySelector('.preset-name').textContent = name;
       list.appendChild(item);
+    });
+    makeSortable(list, () => Object.keys(presets), reordered => {
+      const newPresets = {};
+      reordered.forEach(k => { newPresets[k] = presets[k]; });
+      presets = newPresets;
+      savePresetsStorage();
+      renderPresets();
     });
   }
   function exportPresets() {
@@ -2424,8 +2471,10 @@
     names.forEach(name => {
       const item = document.createElement('div');
       item.className = 'preset-item';
+      item.draggable = true;
       const safe = name.replace(/'/g, "\\'");
       item.innerHTML = `
+        <span class="drag-handle" title="Drag to reorder">⠿</span>
         <span class="preset-name"></span>
         <button class="btn btn-xs" onclick="loadSavedSchedule('${safe}')">Load</button>
         <button class="btn btn-xs btn-secondary" onclick="overwriteSavedSchedule('${safe}')" title="Overwrite with current schedule">↺</button>
@@ -2433,6 +2482,13 @@
       `;
       item.querySelector('.preset-name').textContent = name;
       list.appendChild(item);
+    });
+    makeSortable(list, () => Object.keys(savedSchedules), reordered => {
+      const newSched = {};
+      reordered.forEach(k => { newSched[k] = savedSchedules[k]; });
+      savedSchedules = newSched;
+      saveSchedulesStorage();
+      renderSavedSchedules();
     });
   }
 

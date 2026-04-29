@@ -11,6 +11,99 @@ Whenever a new UI control is added to `hebrew_blend_generator.html`, it must be 
 
 ---
 
+## Preset Lists — Drag-to-Reorder
+
+Every preset list (`.preset-list` / `.saved-schedule-list`) must support drag-to-reorder. Use the shared `makeSortable` helper defined in each file.
+
+### Pattern
+
+**CSS** (same block in both files):
+```css
+.drag-handle { cursor: grab; color: var(--muted); font-size: 0.85rem; padding: 0 2px; flex-shrink: 0; line-height: 1; user-select: none; }
+.drag-handle:active { cursor: grabbing; }
+.preset-item.drag-over { border-color: var(--gold); background: rgba(201,146,42,0.08); }
+.preset-item.dragging  { opacity: 0.4; }
+```
+
+**Each `.preset-item` must have:**
+```html
+<div class="preset-item" draggable="true">
+  <span class="drag-handle" title="Drag to reorder">⠿</span>
+  <!-- name + action buttons -->
+</div>
+```
+
+**`makeSortable` helper** (defined once per file, called at the end of every render function):
+```js
+function makeSortable(listEl, getKeys, reorderFn) {
+  let dragSrc = null;
+  listEl.querySelectorAll('.preset-item').forEach(item => {
+    item.addEventListener('dragstart', e => {
+      dragSrc = item;
+      item.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    item.addEventListener('dragend', () => {
+      item.classList.remove('dragging');
+      listEl.querySelectorAll('.preset-item').forEach(i => i.classList.remove('drag-over'));
+    });
+    item.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      listEl.querySelectorAll('.preset-item').forEach(i => i.classList.remove('drag-over'));
+      if (item !== dragSrc) item.classList.add('drag-over');
+    });
+    item.addEventListener('drop', e => {
+      e.preventDefault();
+      if (!dragSrc || dragSrc === item) return;
+      const keys = getKeys();
+      const fromIdx = [...listEl.querySelectorAll('.preset-item')].indexOf(dragSrc);
+      const toIdx   = [...listEl.querySelectorAll('.preset-item')].indexOf(item);
+      const reordered = [...keys];
+      reordered.splice(toIdx, 0, reordered.splice(fromIdx, 1)[0]);
+      reorderFn(reordered);
+    });
+  });
+}
+```
+
+**Call at the end of each render function:**
+```js
+// Dashboard presets
+makeSortable(list, () => Object.keys(presets), reordered => {
+  const newPresets = {};
+  reordered.forEach(k => { newPresets[k] = presets[k]; });
+  presets = newPresets;
+  savePresetsStorage();
+  renderPresets();
+});
+
+// Dashboard saved schedules
+makeSortable(list, () => Object.keys(savedSchedules), reordered => {
+  const newSched = {};
+  reordered.forEach(k => { newSched[k] = savedSchedules[k]; });
+  savedSchedules = newSched;
+  saveSchedulesStorage();
+  renderSavedSchedules();
+});
+
+// Generator (reads/writes localStorage directly)
+makeSortable(list, () => Object.keys(JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}')), reordered => {
+  const stored = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+  const newPresets = {};
+  reordered.forEach(k => { newPresets[k] = stored[k]; });
+  localStorage.setItem('hebrewBlender_presets', JSON.stringify(newPresets));
+  renderPresets();
+});
+```
+
+**Key points:**
+- Order is preserved via JS object insertion order (reliable in all modern engines for string keys)
+- `makeSortable` is defined once per file and reused for all lists in that file
+- The `⠿` braille character is the drag handle glyph
+
+---
+
 ## Dark Mode (`classroom_dashboard.html`)
 
 ### No-flash IIFE
