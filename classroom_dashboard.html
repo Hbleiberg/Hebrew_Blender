@@ -2219,7 +2219,15 @@
   }
 
   function applySettings(s) {
+    // Preserve schedule configuration — it must never be overwritten by loading a display preset
+    const savedSchedule = {
+      scheduleEnabled:        settings.scheduleEnabled,
+      scheduleShowCountdown:  settings.scheduleShowCountdown,
+      countdownShowPresetName: settings.countdownShowPresetName,
+      currentSchedule:        settings.currentSchedule,
+    };
     Object.assign(settings, s);
+    Object.assign(settings, savedSchedule);
     setHebFont(settings.hebFont);
     syncFormToSettings();
     document.getElementById('dashEditor').innerHTML = settings.dashTextHTML || '';

@@ -139,14 +139,14 @@ footer a{color:var(--gold);text-decoration:none;}
       <button class="ie-modal-close" onclick="closeIEModal()">×</button>
     </div>
     <div class="ie-modal-body">
-      <p class="ie-note">Export bundles all presets and saved schedules from both the Generator and Dashboard into one block of text. Paste a previously exported block to import everything back.</p>
+      <p class="ie-note">Export bundles all presets, saved schedules, and dashboard settings from both the Generator and Dashboard into one block of text. Paste a previously exported block to import everything back.</p>
       <div class="btn-row">
         <button class="ie-action-btn primary" onclick="exportAllSettings()">⬇ Export All Settings</button>
-        <button class="ie-action-btn secondary" onclick="copyIEText()" id="ieCopyBtn">Copy</button>
         <button class="ie-action-btn primary" onclick="importAllSettings()">⬆ Import All Settings</button>
         <button class="ie-action-btn" style="background:#a83232;color:#fff;margin-left:auto;" onclick="eraseAllSettings()">🗑 Erase All Settings</button>
       </div>
       <textarea id="ieTextarea" placeholder="Click 'Export All Settings' to generate a backup, or paste a backup here and click 'Import All Settings'…" spellcheck="false"></textarea>
+      <div><button class="ie-action-btn secondary" onclick="copyIEText()" id="ieCopyBtn">Copy to Clipboard</button></div>
     </div>
   </div>
 </div>
@@ -170,9 +170,10 @@ function closeIEModal(e) {
 function exportAllSettings() {
   const blob = {
     _hebrewBlenderExport: 1,
-    generatorPresets:   JSON.parse(localStorage.getItem('hebrewBlender_presets')      || '{}'),
-    dashboardPresets:   JSON.parse(localStorage.getItem('hebrewDashboard_presets')    || '{}'),
-    dashboardSchedules: JSON.parse(localStorage.getItem('hebrewDashboard_schedules')  || '{}'),
+    generatorPresets:    JSON.parse(localStorage.getItem('hebrewBlender_presets')      || '{}'),
+    dashboardPresets:    JSON.parse(localStorage.getItem('hebrewDashboard_presets')    || '{}'),
+    dashboardSchedules:  JSON.parse(localStorage.getItem('hebrewDashboard_schedules')  || '{}'),
+    dashboardSettings:   JSON.parse(localStorage.getItem('hebrewDashboard_settings')   || '{}'),
   };
   document.getElementById('ieTextarea').value = JSON.stringify(blob, null, 2);
 }
@@ -182,7 +183,7 @@ function importAllSettings() {
   let parsed;
   try { parsed = JSON.parse(raw); } catch(e) { alert('Invalid JSON — please paste the full export block.'); return; }
   if (!parsed._hebrewBlenderExport) { alert('This doesn\'t look like a Hebrew Blender export. Make sure you copied the full block.'); return; }
-  if (!confirm('This will merge the imported presets and schedules into your current ones. Any name conflicts will be overwritten. Continue?')) return;
+  if (!confirm('This will overwrite your current dashboard settings and merge all imported presets and schedules. Continue?')) return;
   try {
     if (parsed.generatorPresets) {
       const existing = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
@@ -196,7 +197,11 @@ function importAllSettings() {
       const existing = JSON.parse(localStorage.getItem('hebrewDashboard_schedules') || '{}');
       localStorage.setItem('hebrewDashboard_schedules', JSON.stringify(Object.assign(existing, parsed.dashboardSchedules)));
     }
-    alert('Import successful! Open the Generator or Dashboard to see your presets.');
+    if (parsed.dashboardSettings) {
+      const existing = JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}');
+      localStorage.setItem('hebrewDashboard_settings', JSON.stringify(Object.assign(existing, parsed.dashboardSettings)));
+    }
+    alert('Import successful! Reload the Dashboard to apply all settings.');
   } catch(e) { alert('Import failed: ' + e.message); }
 }
 function copyIEText() {
