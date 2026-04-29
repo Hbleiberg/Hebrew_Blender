@@ -684,6 +684,8 @@
   }
   .schedule-del-btn:hover { color: #cc3333; }
   .schedule-until-lbl { font-size: 0.72rem; color: var(--muted); flex-shrink: 0; }
+  .schedule-row.drag-over { border: 1px solid var(--gold); background: rgba(201,146,42,0.08); border-radius: 4px; }
+  .schedule-row.dragging  { opacity: 0.4; }
   .saved-schedule-list { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
   .drag-handle {
     cursor: grab; color: var(--muted); font-size: 0.85rem;
@@ -2306,9 +2308,10 @@
     savePresetsStorage();
     renderPresets();
   }
-  function makeSortable(listEl, getKeys, reorderFn) {
+  function makeSortable(listEl, getKeys, reorderFn, itemSel) {
+    itemSel = itemSel || '.preset-item';
     let dragSrc = null;
-    listEl.querySelectorAll('.preset-item').forEach(item => {
+    listEl.querySelectorAll(itemSel).forEach(item => {
       item.addEventListener('dragstart', e => {
         dragSrc = item;
         item.classList.add('dragging');
@@ -2316,20 +2319,20 @@
       });
       item.addEventListener('dragend', () => {
         item.classList.remove('dragging');
-        listEl.querySelectorAll('.preset-item').forEach(i => i.classList.remove('drag-over'));
+        listEl.querySelectorAll(itemSel).forEach(i => i.classList.remove('drag-over'));
       });
       item.addEventListener('dragover', e => {
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
-        listEl.querySelectorAll('.preset-item').forEach(i => i.classList.remove('drag-over'));
+        listEl.querySelectorAll(itemSel).forEach(i => i.classList.remove('drag-over'));
         if (item !== dragSrc) item.classList.add('drag-over');
       });
       item.addEventListener('drop', e => {
         e.preventDefault();
         if (!dragSrc || dragSrc === item) return;
         const keys = getKeys();
-        const fromIdx = [...listEl.querySelectorAll('.preset-item')].indexOf(dragSrc);
-        const toIdx   = [...listEl.querySelectorAll('.preset-item')].indexOf(item);
+        const fromIdx = [...listEl.querySelectorAll(itemSel)].indexOf(dragSrc);
+        const toIdx   = [...listEl.querySelectorAll(itemSel)].indexOf(item);
         const reordered = [...keys];
         reordered.splice(toIdx, 0, reordered.splice(fromIdx, 1)[0]);
         reorderFn(reordered);
@@ -2430,13 +2433,21 @@
     rows.forEach((entry, i) => {
       const row = document.createElement('div');
       row.className = 'schedule-row';
+      row.draggable = true;
       row.innerHTML =
+        `<span class="drag-handle" title="Drag to reorder">⠿</span>` +
         `<select class="schedule-preset-sel" onchange="updateScheduleEntry(${i},'preset',this.value)">${getPresetOptions(entry.preset)}</select>` +
         `<span class="schedule-until-lbl">until</span>` +
         `<input type="time" class="schedule-time-input" value="${entry.until || ''}" onchange="updateScheduleEntry(${i},'until',this.value)">` +
         `<button class="schedule-del-btn" title="Remove" onclick="removeScheduleRow(${i})">×</button>`;
       container.appendChild(row);
     });
+    makeSortable(container, () => [...settings.currentSchedule], reordered => {
+      settings.currentSchedule = reordered;
+      _lastScheduleKey = null;
+      saveSettingsToStorage();
+      renderScheduleRows();
+    }, '.schedule-row');
   }
 
   function addScheduleRow() {
