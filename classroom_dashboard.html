@@ -2120,47 +2120,48 @@
   function wireFormListeners() {
     const refreshAll = () => { updateDateTimeDisplay(); renderDaysList(); renderWeather(); };
     document.querySelectorAll('input[name="engDateFmt"]').forEach(r =>
-      r.addEventListener('change', () => { settings.engDateFmt = r.value; updateDateTimeDisplay(); }));
-    document.getElementById('showEngDOW').addEventListener('change', e => { settings.showEngDOW = e.target.checked; updateDateTimeDisplay(); });
-    document.getElementById('hideEngDate').addEventListener('change', e => { settings.hideEngDate = e.target.checked; updateDateTimeDisplay(); });
+      r.addEventListener('change', () => { settings.engDateFmt = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
+    document.getElementById('showEngDOW').addEventListener('change', e => { settings.showEngDOW = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
+    document.getElementById('hideEngDate').addEventListener('change', e => { settings.hideEngDate = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
     document.querySelectorAll('input[name="hebDateScript"]').forEach(r =>
-      r.addEventListener('change', () => { settings.hebDateScript = r.value; updateDateTimeDisplay(); }));
-    document.getElementById('hideHebDate').addEventListener('change', e => { settings.hideHebDate = e.target.checked; updateDateTimeDisplay(); });
+      r.addEventListener('change', () => { settings.hebDateScript = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
+    document.getElementById('hideHebDate').addEventListener('change', e => { settings.hideHebDate = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
     document.querySelectorAll('input[name="timeFmt"]').forEach(r =>
-      r.addEventListener('change', () => { settings.timeFmt = r.value; updateDateTimeDisplay(); }));
-    document.getElementById('hideTime').addEventListener('change', e => { settings.hideTime = e.target.checked; updateDateTimeDisplay(); });
+      r.addEventListener('change', () => { settings.timeFmt = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
+    document.getElementById('hideTime').addEventListener('change', e => { settings.hideTime = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
     document.getElementById('showSeconds').addEventListener('change', e => { settings.showSeconds = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
     document.querySelectorAll('input[name="tempUnit"]').forEach(r =>
-      r.addEventListener('change', () => { settings.tempUnit = r.value; renderWeather(); }));
+      r.addEventListener('change', () => { settings.tempUnit = r.value; renderWeather(); saveSettingsToStorage(); }));
     document.querySelectorAll('input[name="weatherLabelLang"]').forEach(r =>
-      r.addEventListener('change', () => { settings.weatherLabelLang = r.value; renderWeather(); }));
+      r.addEventListener('change', () => { settings.weatherLabelLang = r.value; renderWeather(); saveSettingsToStorage(); }));
     document.getElementById('hideWeatherEmoji').addEventListener('change', e => {
-      settings.hideWeatherEmoji = e.target.checked; renderWeather();
+      settings.hideWeatherEmoji = e.target.checked; renderWeather(); saveSettingsToStorage();
     });
     document.getElementById('hideWeatherDesc').addEventListener('change', e => {
-      settings.hideWeatherDesc = e.target.checked; renderWeather();
+      settings.hideWeatherDesc = e.target.checked; renderWeather(); saveSettingsToStorage();
     });
     document.getElementById('simpleWeatherDesc').addEventListener('change', e => {
-      settings.simpleWeatherDesc = e.target.checked; renderWeather();
+      settings.simpleWeatherDesc = e.target.checked; renderWeather(); saveSettingsToStorage();
     });
     document.getElementById('hideTemperature').addEventListener('change', e => {
-      settings.hideTemperature = e.target.checked; renderWeather();
+      settings.hideTemperature = e.target.checked; renderWeather(); saveSettingsToStorage();
     });
     document.getElementById('hideHighLow').addEventListener('change', e => {
-      settings.hideHighLow = e.target.checked; renderWeather();
+      settings.hideHighLow = e.target.checked; renderWeather(); saveSettingsToStorage();
     });
     document.getElementById('hideWeather').addEventListener('change', e => {
       settings.hideWeather = e.target.checked;
       const wCol = document.getElementById('weatherCol');
       if (wCol) wCol.style.display = e.target.checked ? 'none' : '';
       if (!e.target.checked) fetchWeather();
+      saveSettingsToStorage();
     });
     document.querySelectorAll('input[name="dowLang"]').forEach(r =>
-      r.addEventListener('change', () => { settings.dowLang = r.value; renderDaysList(); }));
-    document.getElementById('colorDays').addEventListener('change', e => { settings.colorDays = e.target.checked; renderDaysList(); });
-    document.getElementById('showYesterday').addEventListener('change', e => { settings.showYesterday = e.target.checked; renderDaysList(); });
-    document.getElementById('showToday').addEventListener('change', e => { settings.showToday = e.target.checked; renderDaysList(); });
-    document.getElementById('showTomorrow').addEventListener('change', e => { settings.showTomorrow = e.target.checked; renderDaysList(); });
+      r.addEventListener('change', () => { settings.dowLang = r.value; renderDaysList(); saveSettingsToStorage(); }));
+    document.getElementById('colorDays').addEventListener('change', e => { settings.colorDays = e.target.checked; renderDaysList(); saveSettingsToStorage(); });
+    document.getElementById('showYesterday').addEventListener('change', e => { settings.showYesterday = e.target.checked; renderDaysList(); saveSettingsToStorage(); });
+    document.getElementById('showToday').addEventListener('change', e => { settings.showToday = e.target.checked; renderDaysList(); saveSettingsToStorage(); });
+    document.getElementById('showTomorrow').addEventListener('change', e => { settings.showTomorrow = e.target.checked; renderDaysList(); saveSettingsToStorage(); });
     document.querySelectorAll('.emoji-set-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         settings.dowEmojiSet = btn.dataset.set;
@@ -2168,7 +2169,7 @@
         renderDaysList(); saveSettingsToStorage();
       });
     });
-    document.getElementById('showNikkud').addEventListener('change', e => { settings.showNikkud = e.target.checked; refreshAll(); });
+    document.getElementById('showNikkud').addEventListener('change', e => { settings.showNikkud = e.target.checked; refreshAll(); saveSettingsToStorage(); });
     document.getElementById('colorCodeNikkud').addEventListener('change', e => {
       settings.colorCodeNikkud = e.target.checked;
       const on = e.target.checked;
@@ -2176,16 +2177,17 @@
       document.getElementById('colorPickerList').style.display = on ? 'flex' : 'none';
       document.getElementById('nikudResetBtn').style.display = on ? 'inline-block' : 'none';
       if (on) initColorPickers();
-      refreshAll();
+      refreshAll(); saveSettingsToStorage();
     });
     document.querySelectorAll('input[name="colorMode"]').forEach(r =>
-      r.addEventListener('change', () => { settings.colorCodingMode = r.value; refreshAll(); }));
+      r.addEventListener('change', () => { settings.colorCodingMode = r.value; refreshAll(); saveSettingsToStorage(); }));
     document.querySelectorAll('input[name="headerLang"]').forEach(r =>
-      r.addEventListener('change', () => { settings.headerLang = r.value; updateColTitles(); }));
+      r.addEventListener('change', () => { settings.headerLang = r.value; updateColTitles(); saveSettingsToStorage(); }));
     document.getElementById('colTitleSizeSlider').addEventListener('input', e => { setColTitleSize(e.target.value); saveSettingsToStorage(); });
     document.getElementById('hideDOW').addEventListener('change', e => {
       settings.hideDOW = e.target.checked;
       document.getElementById('dowCol').style.display = e.target.checked ? 'none' : '';
+      saveSettingsToStorage();
     });
     document.getElementById('hideDashText').addEventListener('change', e => toggleDashText(!e.target.checked));
     document.getElementById('hideZoomBar').addEventListener('change', e => {
