@@ -4,6 +4,54 @@
 - Always commit and push directly to `main`
 - Do not create feature branches
 
+## Import / Export All Settings (`index.html`)
+
+`index.html` has a gear button that opens a modal with **Export All Settings**, **Import All Settings**, and **Erase All Settings**. These functions bundle every tool's localStorage data into a single JSON blob so users can back up and restore everything in one step.
+
+### Current localStorage keys included
+
+| Blob key | localStorage key | What it holds |
+|---|---|---|
+| `generatorPresets` | `hebrewBlender_presets` | Hebrew Blend Generator saved presets |
+| `dashboardPresets` | `hebrewDashboard_presets` | Classroom Dashboard saved presets |
+| `dashboardSchedules` | `hebrewDashboard_schedules` | Classroom Dashboard saved schedules |
+| `dashboardSettings` | `hebrewDashboard_settings` | All Classroom Dashboard settings (zoom, video URL, header size, etc.) |
+
+### Rule: any new tool with persistent data must be added here
+
+When a new tool is added to this site that saves **any** data to `localStorage`, its key(s) must be added to all three functions in `index.html`:
+
+**`exportAllSettings`** — add one entry to the blob object:
+```js
+myToolPresets: JSON.parse(localStorage.getItem('hebrewMyTool_presets') || '{}'),
+```
+
+**`importAllSettings`** — add a corresponding merge block:
+```js
+if (parsed.myToolPresets) {
+  const existing = JSON.parse(localStorage.getItem('hebrewMyTool_presets') || '{}');
+  localStorage.setItem('hebrewMyTool_presets', JSON.stringify(Object.assign(existing, parsed.myToolPresets)));
+}
+```
+Use `Object.assign` so importing merges with existing data rather than wiping it. If a key holds a flat settings object (not a presets map), use `Object.assign` the same way — the imported values overwrite the existing ones field-by-field.
+
+**`eraseAllSettings`** — add the key to the array:
+```js
+'hebrewMyTool_presets',
+```
+
+### Naming convention for localStorage keys
+
+Follow the existing pattern: `hebrew<ToolCamelCase>_<dataType>`.
+
+Examples:
+- `hebrewBlender_presets` — Generator presets
+- `hebrewDashboard_presets` — Dashboard presets
+- `hebrewDashboard_settings` — Dashboard settings blob
+- `hebrewDashboard_schedules` — Dashboard schedules
+
+---
+
 ## Preset Save/Restore
 Whenever a new UI control is added to `hebrew_blend_generator.html`, it must be included in both:
 - `getSettings()` — serialize the control's current value
