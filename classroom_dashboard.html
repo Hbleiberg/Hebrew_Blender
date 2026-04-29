@@ -655,6 +655,43 @@
     text-align: center;
   }
 
+  /* ───── Schedule Sync ───── */
+  .schedule-row {
+    display: flex; align-items: center; gap: 5px;
+    margin-bottom: 6px;
+  }
+  .schedule-preset-sel {
+    flex: 1; min-width: 0;
+    font-size: 0.78rem; font-family: inherit;
+    padding: 3px 5px;
+    border: 1px solid var(--border); border-radius: 4px;
+    background: var(--white); color: var(--text);
+    cursor: pointer;
+  }
+  body.dark .schedule-preset-sel { background: var(--navy-deep); color: var(--text); border-color: var(--border); }
+  .schedule-time-input {
+    width: 82px; flex-shrink: 0;
+    font-size: 0.78rem; font-family: inherit;
+    padding: 3px 5px;
+    border: 1px solid var(--border); border-radius: 4px;
+    background: var(--white); color: var(--text);
+  }
+  body.dark .schedule-time-input { background: var(--navy-deep); color: var(--text); border-color: var(--border); }
+  .schedule-del-btn {
+    flex-shrink: 0; background: none; border: none;
+    font-size: 1rem; line-height: 1; cursor: pointer;
+    color: var(--muted); padding: 0 2px;
+  }
+  .schedule-del-btn:hover { color: #cc3333; }
+  .schedule-until-lbl { font-size: 0.72rem; color: var(--muted); flex-shrink: 0; }
+  .saved-schedule-list { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+  #scheduleCountdown {
+    display: none;
+    font-size: 0.75rem; color: var(--muted);
+    text-align: center; margin-top: 3px;
+    letter-spacing: 0.02em;
+  }
+
   /* ───── Editor toolbar ───── */
   .editor-toolbar {
     display: flex;
@@ -853,6 +890,7 @@
       <div class="eng-date" id="engDate"></div>
       <div class="heb-date" id="hebDate"></div>
       <div class="current-time" id="currentTime"></div>
+      <div id="scheduleCountdown"></div>
     </div>
     <div id="dashTextWrap" style="display:none;width:100%;">
       <div id="dashTextDisplay" class="dash-text-display"></div>
@@ -1162,6 +1200,43 @@
 </div>
 
 <div class="panel">
+  <div class="panel-title">Schedule Sync</div>
+  <div class="panel-body">
+    <div class="form-row" style="margin-bottom:12px;">
+      <label>Enable Schedule Sync</label>
+      <label class="toggle"><input type="checkbox" id="scheduleEnabled" onchange="toggleScheduleSync(this.checked)"><span class="slider"></span></label>
+    </div>
+    <div id="scheduleSyncBody" style="display:none;">
+      <div class="sub-section">
+        <div class="sub-section-hdr">Schedule Input</div>
+        <div class="sub-section-body">
+          <div id="scheduleRows"></div>
+          <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;">
+            <button class="btn-xs" onclick="addScheduleRow()">+ Add</button>
+            <button class="btn-xs btn-secondary" onclick="saveScheduleAs()">Save Schedule As…</button>
+          </div>
+        </div>
+      </div>
+      <div class="sub-section">
+        <div class="sub-section-hdr">Load Schedule</div>
+        <div class="sub-section-body">
+          <div class="saved-schedule-list" id="savedScheduleList"></div>
+        </div>
+      </div>
+      <div class="sub-section">
+        <div class="sub-section-hdr">Schedule Sync Options</div>
+        <div class="sub-section-body">
+          <div class="form-row">
+            <label>Show countdown to next class</label>
+            <label class="toggle"><input type="checkbox" id="scheduleShowCountdown" onchange="setScheduleCountdown(this.checked)"><span class="slider"></span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
   <div class="panel-title">Hebrew Settings</div>
   <div class="panel-body">
     <div style="margin-bottom:8px;font-size:0.85rem;font-weight:600;">Hebrew font</div>
@@ -1373,8 +1448,13 @@
     videoLayout: 'below',
     dowCollapsed: false,
     weatherCollapsed: false,
+    scheduleEnabled: false,
+    scheduleShowCountdown: false,
+    currentSchedule: [],
   };
   let presets = {};
+  let savedSchedules = {};
+  let _lastScheduleKey = null;
   let _savedEditorRange = null;
   let weatherCache = null;
   let weatherTimer = null;
@@ -1665,6 +1745,7 @@
       if (settings.showSeconds) opts.second = '2-digit';
       timeEl.textContent = now.toLocaleTimeString('en-US', opts);
     }
+    updateCountdown();
   }
 
   function startClock() {
@@ -2010,6 +2091,12 @@
     if (nrb) nrb.style.display = settings.colorCodeNikkud ? 'inline-block' : 'none';
     if (settings.colorCodeNikkud) initColorPickers();
     setDashTextSize(settings.dashTextSize || 1.8);
+    const schedEnabled = !!settings.scheduleEnabled;
+    $('scheduleEnabled').checked = schedEnabled;
+    const ssBody = $('scheduleSyncBody');
+    if (ssBody) ssBody.style.display = schedEnabled ? '' : 'none';
+    $('scheduleShowCountdown').checked = !!settings.scheduleShowCountdown;
+    if (schedEnabled) { renderScheduleRows(); renderSavedSchedules(); }
   }
 
   function wireFormListeners() {
@@ -2215,7 +2302,8 @@
     });
   }
   function exportPresets() {
-    document.getElementById('presetBackupBox').value = JSON.stringify(presets, null, 2);
+    const blob = { presets, savedSchedules };
+    document.getElementById('presetBackupBox').value = JSON.stringify(blob, null, 2);
   }
   function copyPresetBackup() {
     const box = document.getElementById('presetBackupBox');
@@ -2228,11 +2316,188 @@
     try {
       const v = document.getElementById('presetBackupBox').value;
       const parsed = JSON.parse(v);
-      Object.assign(presets, parsed);
+      if (parsed.presets) {
+        Object.assign(presets, parsed.presets);
+        if (parsed.savedSchedules) Object.assign(savedSchedules, parsed.savedSchedules);
+      } else {
+        Object.assign(presets, parsed);
+      }
       savePresetsStorage();
+      saveSchedulesStorage();
       renderPresets();
-      alert('Presets imported.');
+      renderSavedSchedules();
+      alert('Imported successfully.');
     } catch (e) { alert('Invalid JSON.'); }
+  }
+
+  /* ────────── SCHEDULE SYNC ────────── */
+  function saveSchedulesStorage() {
+    localStorage.setItem('hebrewDashboard_schedules', JSON.stringify(savedSchedules));
+  }
+  function loadSchedulesStorage() {
+    try { savedSchedules = JSON.parse(localStorage.getItem('hebrewDashboard_schedules')) || {}; }
+    catch (e) { savedSchedules = {}; }
+  }
+
+  function timeToMins(t) {
+    if (!t) return Infinity;
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
+  }
+
+  function getPresetOptions(selectedName) {
+    return Object.keys(presets).map(name =>
+      `<option value="${name.replace(/"/g, '&quot;')}"${name === selectedName ? ' selected' : ''}>${name}</option>`
+    ).join('');
+  }
+
+  function renderScheduleRows() {
+    const container = document.getElementById('scheduleRows');
+    if (!container) return;
+    const rows = settings.currentSchedule || [];
+    if (!rows.length) {
+      container.innerHTML = '<div style="font-size:0.75rem;color:var(--muted);font-style:italic;padding:4px 0;">No entries yet — click + Add.</div>';
+      return;
+    }
+    container.innerHTML = '';
+    rows.forEach((entry, i) => {
+      const row = document.createElement('div');
+      row.className = 'schedule-row';
+      row.innerHTML =
+        `<select class="schedule-preset-sel" onchange="updateScheduleEntry(${i},'preset',this.value)">${getPresetOptions(entry.preset)}</select>` +
+        `<span class="schedule-until-lbl">until</span>` +
+        `<input type="time" class="schedule-time-input" value="${entry.until || ''}" onchange="updateScheduleEntry(${i},'until',this.value)">` +
+        `<button class="schedule-del-btn" title="Remove" onclick="removeScheduleRow(${i})">×</button>`;
+      container.appendChild(row);
+    });
+  }
+
+  function addScheduleRow() {
+    if (!settings.currentSchedule) settings.currentSchedule = [];
+    const firstPreset = Object.keys(presets)[0] || '';
+    settings.currentSchedule.push({ preset: firstPreset, until: '' });
+    renderScheduleRows();
+    saveSettingsToStorage();
+  }
+
+  function removeScheduleRow(i) {
+    settings.currentSchedule.splice(i, 1);
+    _lastScheduleKey = null;
+    renderScheduleRows();
+    saveSettingsToStorage();
+  }
+
+  function updateScheduleEntry(i, field, value) {
+    if (!settings.currentSchedule[i]) return;
+    settings.currentSchedule[i][field] = value;
+    _lastScheduleKey = null;
+    saveSettingsToStorage();
+  }
+
+  function saveScheduleAs() {
+    const rows = settings.currentSchedule || [];
+    if (!rows.length) { alert('Add at least one schedule entry first.'); return; }
+    const name = prompt('Schedule name:');
+    if (!name || !name.trim()) return;
+    savedSchedules[name.trim()] = JSON.parse(JSON.stringify(rows));
+    saveSchedulesStorage();
+    renderSavedSchedules();
+  }
+
+  function renderSavedSchedules() {
+    const list = document.getElementById('savedScheduleList');
+    if (!list) return;
+    const names = Object.keys(savedSchedules);
+    if (!names.length) {
+      list.innerHTML = '<div style="font-size:0.75rem;color:var(--muted);font-style:italic;padding:4px 0;">No saved schedules yet.</div>';
+      return;
+    }
+    list.innerHTML = '';
+    names.forEach(name => {
+      const item = document.createElement('div');
+      item.className = 'preset-item';
+      const safe = name.replace(/'/g, "\\'");
+      item.innerHTML = `
+        <span class="preset-name"></span>
+        <button class="btn btn-xs" onclick="loadSavedSchedule('${safe}')">Load</button>
+        <button class="btn btn-xs btn-secondary" onclick="overwriteSavedSchedule('${safe}')" title="Overwrite with current schedule">↺</button>
+        <button class="btn btn-xs btn-secondary" onclick="deleteSavedSchedule('${safe}')" title="Delete">×</button>
+      `;
+      item.querySelector('.preset-name').textContent = name;
+      list.appendChild(item);
+    });
+  }
+
+  function loadSavedSchedule(name) {
+    if (!savedSchedules[name]) return;
+    settings.currentSchedule = JSON.parse(JSON.stringify(savedSchedules[name]));
+    _lastScheduleKey = null;
+    renderScheduleRows();
+    saveSettingsToStorage();
+  }
+
+  function overwriteSavedSchedule(name) {
+    if (!confirm(`Overwrite schedule "${name}" with the current schedule?`)) return;
+    savedSchedules[name] = JSON.parse(JSON.stringify(settings.currentSchedule || []));
+    saveSchedulesStorage();
+  }
+
+  function deleteSavedSchedule(name) {
+    if (!confirm(`Delete schedule "${name}"?`)) return;
+    delete savedSchedules[name];
+    saveSchedulesStorage();
+    renderSavedSchedules();
+  }
+
+  function toggleScheduleSync(enabled) {
+    settings.scheduleEnabled = enabled;
+    const body = document.getElementById('scheduleSyncBody');
+    if (body) body.style.display = enabled ? '' : 'none';
+    if (enabled) { renderScheduleRows(); renderSavedSchedules(); }
+    _lastScheduleKey = null;
+    saveSettingsToStorage();
+  }
+
+  function setScheduleCountdown(enabled) {
+    settings.scheduleShowCountdown = enabled;
+    updateCountdown();
+    saveSettingsToStorage();
+  }
+
+  function checkSchedule() {
+    if (!settings.scheduleEnabled || !settings.currentSchedule?.length) return;
+    const now = new Date();
+    const nowMins = now.getHours() * 60 + now.getMinutes();
+    const sorted = [...settings.currentSchedule]
+      .filter(e => e.preset && e.until)
+      .sort((a, b) => timeToMins(a.until) - timeToMins(b.until));
+    const active = sorted.find(e => timeToMins(e.until) > nowMins);
+    if (!active) return;
+    const key = active.preset + '|' + active.until;
+    if (key !== _lastScheduleKey && presets[active.preset]) {
+      _lastScheduleKey = key;
+      applySettings(presets[active.preset]);
+    }
+  }
+
+  function updateCountdown() {
+    const el = document.getElementById('scheduleCountdown');
+    if (!el) return;
+    if (!settings.scheduleEnabled || !settings.scheduleShowCountdown || !settings.currentSchedule?.length) {
+      el.style.display = 'none'; return;
+    }
+    const now = new Date();
+    const nowMins = now.getHours() * 60 + now.getMinutes();
+    const sorted = [...settings.currentSchedule]
+      .filter(e => e.preset && e.until)
+      .sort((a, b) => timeToMins(a.until) - timeToMins(b.until));
+    const next = sorted.find(e => timeToMins(e.until) > nowMins);
+    if (!next) { el.style.display = 'none'; return; }
+    const diffMins = timeToMins(next.until) - nowMins;
+    const h = Math.floor(diffMins / 60), m = diffMins % 60;
+    const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
+    el.textContent = `Next: ${next.preset} in ${timeStr}`;
+    el.style.display = '';
   }
 
   /* ────────── EDITOR ────────── */
@@ -2510,6 +2775,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     loadSettingsFromStorage();
     loadPresets();
+    loadSchedulesStorage();
     initDark();
     initFontSelector();
     initPanelCollapse();
@@ -2537,6 +2803,8 @@
     renderDaysList();
     scheduleWeatherRefresh();
     renderPresets();
+    checkSchedule();
+    setInterval(checkSchedule, 30000);
     // Re-render days at midnight
     const msToMidnight = (() => {
       const n = new Date();
