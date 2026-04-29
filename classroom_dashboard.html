@@ -2261,7 +2261,6 @@
         Object.assign(settings, saved);
         if (saved.showDOWEmojis === false) settings.dowEmojiSet = 'none';
         delete settings.showDOWEmojis;
-        if (settings.engDateFmt === 'LONG') settings.engDateFmt = 'MDY';
       } else {
         Object.assign(settings, DEFAULT_PRESET['Default']);
       }
@@ -2568,14 +2567,27 @@
     const sorted = [...settings.currentSchedule]
       .filter(e => e.preset && e.until)
       .sort((a, b) => timeToMins(a.until) - timeToMins(b.until));
+    if (!sorted.length) { el.style.display = 'none'; return; }
     const next = sorted.find(e => timeToMins(e.until) > nowMins);
-    if (!next) { el.style.display = 'none'; return; }
-    const diffMins = timeToMins(next.until) - nowMins;
-    const h = Math.floor(diffMins / 60), m = diffMins % 60;
-    const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
-    el.textContent = settings.countdownShowPresetName !== false
-      ? `Next: ${next.preset} in ${timeStr}`
-      : `Next class in ${timeStr}`;
+    let diffMins, label;
+    if (!next) {
+      // All entries passed — wrap to tomorrow's first class
+      const first = sorted[0];
+      diffMins = (24 * 60 - nowMins) + timeToMins(first.until);
+      const h = Math.floor(diffMins / 60), m = diffMins % 60;
+      const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
+      label = settings.countdownShowPresetName !== false
+        ? `Next: ${first.preset} (tomorrow) in ${timeStr}`
+        : `Next class (tomorrow) in ${timeStr}`;
+    } else {
+      diffMins = timeToMins(next.until) - nowMins;
+      const h = Math.floor(diffMins / 60), m = diffMins % 60;
+      const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
+      label = settings.countdownShowPresetName !== false
+        ? `Next: ${next.preset} in ${timeStr}`
+        : `Next class in ${timeStr}`;
+    }
+    el.textContent = label;
     el.style.display = 'block';
   }
 
