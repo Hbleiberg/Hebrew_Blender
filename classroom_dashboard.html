@@ -1230,6 +1230,10 @@
             <label>Show countdown to next class</label>
             <label class="toggle"><input type="checkbox" id="scheduleShowCountdown" onchange="setScheduleCountdown(this.checked)"><span class="slider"></span></label>
           </div>
+          <div class="form-row" id="countdownPresetNameRow" style="display:none;padding-left:16px;">
+            <label style="font-size:0.8rem;font-weight:500;color:var(--muted);">Show preset name</label>
+            <label class="toggle"><input type="checkbox" id="countdownShowPresetName" onchange="settings.countdownShowPresetName=this.checked;updateCountdown();saveSettingsToStorage();"><span class="slider"></span></label>
+          </div>
         </div>
       </div>
     </div>
@@ -1450,6 +1454,7 @@
     weatherCollapsed: false,
     scheduleEnabled: false,
     scheduleShowCountdown: false,
+    countdownShowPresetName: true,
     currentSchedule: [],
   };
   let presets = {};
@@ -2096,6 +2101,9 @@
     const ssBody = $('scheduleSyncBody');
     if (ssBody) ssBody.style.display = schedEnabled ? '' : 'none';
     $('scheduleShowCountdown').checked = !!settings.scheduleShowCountdown;
+    $('countdownShowPresetName').checked = settings.countdownShowPresetName !== false;
+    const cpnRow = $('countdownPresetNameRow');
+    if (cpnRow) cpnRow.style.display = settings.scheduleShowCountdown ? '' : 'none';
     if (schedEnabled) { renderScheduleRows(); renderSavedSchedules(); }
   }
 
@@ -2460,6 +2468,8 @@
 
   function setScheduleCountdown(enabled) {
     settings.scheduleShowCountdown = enabled;
+    const row = document.getElementById('countdownPresetNameRow');
+    if (row) row.style.display = enabled ? '' : 'none';
     updateCountdown();
     saveSettingsToStorage();
   }
@@ -2496,7 +2506,9 @@
     const diffMins = timeToMins(next.until) - nowMins;
     const h = Math.floor(diffMins / 60), m = diffMins % 60;
     const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
-    el.textContent = `Next: ${next.preset} in ${timeStr}`;
+    el.textContent = settings.countdownShowPresetName !== false
+      ? `Next: ${next.preset} in ${timeStr}`
+      : `Next class in ${timeStr}`;
     el.style.display = 'block';
   }
 
