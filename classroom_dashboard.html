@@ -2581,25 +2581,35 @@
       .filter(e => e.preset && e.until)
       .sort((a, b) => timeToMins(a.until) - timeToMins(b.until));
     if (!sorted.length) { el.style.display = 'none'; return; }
-    const next = sorted.find(e => timeToMins(e.until) > nowMins);
-    let diffMins, label;
-    if (!next) {
-      // All entries passed — wrap to tomorrow's first class
-      const first = sorted[0];
-      diffMins = (24 * 60 - nowMins) + timeToMins(first.until);
-      const h = Math.floor(diffMins / 60), m = diffMins % 60;
-      const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
-      label = settings.countdownShowPresetName !== false
-        ? `Next: ${first.preset} (tomorrow) in ${timeStr}`
-        : `Next class (tomorrow) in ${timeStr}`;
+
+    // Find the current active period (first whose until > now)
+    const currentIdx = sorted.findIndex(e => timeToMins(e.until) > nowMins);
+
+    let targetEntry, diffMins, isTomorrow = false;
+    if (currentIdx === -1) {
+      // All periods done today — wrap to tomorrow's first entry
+      targetEntry = sorted[0];
+      diffMins = (24 * 60 - nowMins) + timeToMins(targetEntry.until);
+      isTomorrow = true;
     } else {
-      diffMins = timeToMins(next.until) - nowMins;
-      const h = Math.floor(diffMins / 60), m = diffMins % 60;
-      const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
-      label = settings.countdownShowPresetName !== false
-        ? `Next: ${next.preset} in ${timeStr}`
-        : `Next class in ${timeStr}`;
+      // Time until current period ends = when next period begins
+      diffMins = timeToMins(sorted[currentIdx].until) - nowMins;
+      const nextIdx = currentIdx + 1;
+      if (nextIdx < sorted.length) {
+        targetEntry = sorted[nextIdx];
+      } else {
+        // Current period is the last one today — next is tomorrow's first
+        targetEntry = sorted[0];
+        isTomorrow = true;
+      }
     }
+
+    const h = Math.floor(diffMins / 60), m = diffMins % 60;
+    const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
+    const suffix = isTomorrow ? ' (tomorrow)' : '';
+    const label = settings.countdownShowPresetName !== false
+      ? `Next: ${targetEntry.preset}${suffix} in ${timeStr}`
+      : `Next class${suffix} in ${timeStr}`;
     el.textContent = label;
     el.style.display = 'block';
   }
