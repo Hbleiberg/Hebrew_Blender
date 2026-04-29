@@ -144,6 +144,7 @@ footer a{color:var(--gold);text-decoration:none;}
         <button class="ie-action-btn primary" onclick="exportAllSettings()">⬇ Export All Settings</button>
         <button class="ie-action-btn secondary" onclick="copyIEText()" id="ieCopyBtn">Copy</button>
         <button class="ie-action-btn primary" onclick="importAllSettings()">⬆ Import All Settings</button>
+        <button class="ie-action-btn" style="background:#a83232;color:#fff;margin-left:auto;" onclick="eraseAllSettings()">🗑 Erase All Settings</button>
       </div>
       <textarea id="ieTextarea" placeholder="Click 'Export All Settings' to generate a backup, or paste a backup here and click 'Import All Settings'…" spellcheck="false"></textarea>
     </div>
@@ -204,6 +205,20 @@ function copyIEText() {
   const btn = document.getElementById('ieCopyBtn');
   navigator.clipboard.writeText(ta.value).catch(() => { ta.select(); document.execCommand('copy'); });
   btn.textContent = '✓ Copied'; setTimeout(() => btn.textContent = 'Copy', 1800);
+}
+
+function eraseAllSettings() {
+  if (!confirm('⚠️ WARNING: This will permanently erase ALL presets, saved schedules, and settings for both the Generator and the Dashboard.\n\nThis cannot be undone. Export a backup first if you want to keep your data.\n\nAre you sure you want to erase everything?')) return;
+  if (!confirm('Final confirmation: erase all Hebrew Blender data on this device?')) return;
+  const keys = [
+    'hebrewBlender_presets',
+    'hebrewDashboard_presets',
+    'hebrewDashboard_schedules',
+    'hebrewDashboard_settings',
+  ];
+  keys.forEach(k => localStorage.removeItem(k));
+  document.getElementById('ieTextarea').value = '';
+  alert('All settings and presets have been erased.');
 }
 
 function showBookmarkTip() {
