@@ -268,25 +268,30 @@ body.dark .slider::before { background: #d8dde9; }
   background: var(--white);
   border: 1px solid var(--border-strong);
   border-radius: 10px;
-  font-family: var(--heb-font);
-  font-size: 1.7rem;
-  padding: 10px 4px;
+  padding: 8px 4px 6px;
   text-align: center;
   cursor: pointer;
   user-select: none;
   transition: background 0.12s, border-color 0.12s, transform 0.05s;
   position: relative;
   min-height: 56px;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+}
+.letter-tile .heb-char {
+  font-family: var(--heb-font);
+  font-size: 1.7rem;
+  line-height: 1;
+  direction: rtl;
 }
 .letter-tile small {
   display: block;
   font-family: var(--sans);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: var(--muted);
   font-weight: 500;
-  margin-top: 2px;
   direction: ltr;
+  line-height: 1.2;
+  text-align: center;
 }
 .letter-tile.selected {
   background: var(--gold);
@@ -437,6 +442,10 @@ body.dark .slider::before { background: #d8dde9; }
 .font-opt small { display: block; direction: ltr; font-size: 0.7rem; color: var(--muted); font-family: var(--sans); margin-top: 4px; }
 .font-opt.active { background: var(--gold); border-color: var(--gold); color: var(--navy); }
 .font-opt.active small { color: var(--navy-deep); }
+.font-section-hdr {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--muted); margin: 10px 0 4px; grid-column: 1 / -1;
+}
 
 /* ============== TEXTAREA / BACKUP ============== */
 .tx-area {
@@ -945,9 +954,11 @@ const LETTERS = [
   { heb: 'ץ', name: 'Tzadi Sofit', sofit:true, hasSofit:false, isVav:false, sounds: { a:'Tzah', e:'Tzeh', i:'Tzee', o:'Tzo', u:'Tzoo', sh:"Tz'" } },
   { heb: 'ק', name: 'Kuf',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Kah', e:'Keh', i:'Kee', o:'Ko', u:'Koo', sh:"K'" } },
   { heb: 'ר', name: 'Resh',  sofit:false, hasSofit:false, isVav:false, sounds: { a:'Rah', e:'Reh', i:'Ree', o:'Ro', u:'Roo', sh:"R'" } },
-  { heb: 'שׁ', name: 'Shin',  sofit:false, hasSofit:false, isVav:false, sounds: { a:'Shah', e:'Sheh', i:'Shee', o:'Sho', u:'Shoo', sh:"Sh'" } },
+  { heb: 'ש', name: 'Shin',  sofit:false, hasSofit:false, isVav:false, sounds: { a:'Shah', e:'Sheh', i:'Shee', o:'Sho', u:'Shoo', sh:"Sh'" } },
   { heb: 'שׂ', name: 'Sin',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Sah', e:'Seh', i:'See', o:'So', u:'Soo', sh:"S'" } },
-  { heb: 'ת', name: 'Sav',   sofit:false, hasSofit:false, isVav:false, isTav:true, sounds: { a:'Tah', e:'Teh', i:'Tee', o:'To', u:'Too', sh:"T'" } } // becomes Tav (תּ) when dagesh enabled
+  { heb: 'ת',  name: 'Tav',   sofit:false, hasSofit:false, isVav:false, normalTav:true,  sounds: { a:'Tah', e:'Teh', i:'Tee', o:'To', u:'Too', sh:"T'" } },
+  { heb: 'תּ', name: 'Tav',   sofit:false, hasSofit:false, isVav:false, dageshTav:true,  sounds: { a:'Tah', e:'Teh', i:'Tee', o:'To', u:'Too', sh:"T'" } },
+  { heb: 'ת',  name: 'Sav',   sofit:false, hasSofit:false, isVav:false, savVariant:true, sounds: { a:'Sah', e:'Seh', i:'See', o:'So', u:'Soo', sh:"S'" } },
 ];
 
 const SOFIT_BASE = { 'ך':'כ', 'ם':'מ', 'ן':'נ', 'ף':'פ', 'ץ':'צ' };
@@ -959,66 +970,60 @@ const HAS_SOFIT_CHARS = new Set(['כ','מ','נ','פ','צ']);
    slice(1) extracts the combining char for syllable construction. */
 const VOWEL_GROUPS = [
   {
-    key: 'a', name: 'A Sounds',
-    color: '#e85d5d', colorDark: '#f08585',
-    bg: '#fde7e7', bgDark: '#3a1f1f',
+    key: 'aqua', sound: 'AH', colorName: 'Aqua', colorHtml: '<u>A</u>qua', label: 'AH sound',
+    bg: 'rgba(0,180,210,0.18)', border: '#00b4d2', darkBg: 'rgba(0,160,190,0.25)', darkBorder: '#00c4e0',
     vowels: [
-      { key: 'a',       name: 'Kamatz',       nikud: 'אָ', main: true },
-      { key: 'patah',   name: 'Patah',        nikud: 'אַ', main: true },
-      { key: 'hpatah',  name: 'Hataf-Patah',  nikud: 'אֲ', main: false },
-      { key: 'hkamatz', name: 'Hataf-Kamatz', nikud: 'אֳ', main: false }
+      { key: 'a',       label: 'Kamatz',      sub: 'AH sound', nikud: 'אָ', isMain: true  },
+      { key: 'patah',   label: 'Patach',       sub: 'AH sound', nikud: 'אַ', isMain: true  },
+      { key: 'hpatah',  label: 'Hataf Patach', sub: 'short AH', nikud: 'אֲ', isMain: false },
+      { key: 'hkamatz', label: 'Hataf Kamatz', sub: 'short AH', nikud: 'אֳ', isMain: false },
     ]
   },
   {
-    key: 'e', name: 'E Sounds',
-    color: '#d98b25', colorDark: '#e9a850',
-    bg: '#fbecd6', bgDark: '#3a2c14',
+    key: 'red', sound: 'EH', colorName: 'Red', colorHtml: 'R<u>e</u>d', label: 'EH sound',
+    bg: 'rgba(210,50,50,0.15)', border: '#d03232', darkBg: 'rgba(220,60,60,0.22)', darkBorder: '#e05050',
     vowels: [
-      { key: 'e',       name: 'Segol',        nikud: 'אֶ', main: true },
-      { key: 'tzere',   name: 'Tzere',        nikud: 'אֵ', main: true },
-      { key: 'hsegol',  name: 'Hataf-Segol',  nikud: 'אֱ', main: false }
+      { key: 'e',      label: 'Segol',       sub: 'EH sound', nikud: 'אֶ', isMain: true  },
+      { key: 'hsegol', label: 'Hataf Segol', sub: 'short EH', nikud: 'אֱ', isMain: false },
     ]
   },
   {
-    key: 'i', name: 'I Sounds',
-    color: '#caa617', colorDark: '#e0c244',
-    bg: '#fbf3cf', bgDark: '#3b3414',
+    key: 'grey', sound: 'EY', colorName: 'Grey', colorHtml: 'Gr<u>ey</u>', label: 'EY sound',
+    bg: 'rgba(130,130,140,0.18)', border: '#888898', darkBg: 'rgba(140,140,155,0.25)', darkBorder: '#aaaabc',
     vowels: [
-      { key: 'i',       name: 'Hirik',        nikud: 'אִ', main: true }
+      { key: 'tzere', label: 'Tzere', sub: 'EY sound', nikud: 'אֵ', isMain: true },
     ]
   },
   {
-    key: 'o', name: 'O Sounds',
-    color: '#3aa66a', colorDark: '#5fc287',
-    bg: '#dcf2e3', bgDark: '#163522',
+    key: 'green', sound: 'EE', colorName: 'Green', colorHtml: 'Gr<u>ee</u>n', label: 'EE sound',
+    bg: 'rgba(40,160,60,0.15)', border: '#28a03c', darkBg: 'rgba(50,180,70,0.22)', darkBorder: '#30c050',
     vowels: [
-      { key: 'o',        name: 'Cholam',          nikud: 'אֹ', main: true },
-      { key: 'vcholam',  name: 'Cholam-Vav (וֹ)', nikud: 'וֹ', main: true }
+      { key: 'i', label: 'Chirik', sub: 'EE sound', nikud: 'אִ', isMain: true },
     ]
   },
   {
-    key: 'u', name: 'U Sounds',
-    color: '#3a82c4', colorDark: '#62a3df',
-    bg: '#dcebfa', bgDark: '#152437',
+    key: 'yellow', sound: 'OH', colorName: 'Yellow', colorHtml: 'Yell<u>ow</u>', label: 'OH sound',
+    bg: 'rgba(200,165,0,0.18)', border: '#c8a800', darkBg: 'rgba(220,185,0,0.25)', darkBorder: '#e0c020',
     vowels: [
-      { key: 'u',       name: 'Kubutz',       nikud: 'אֻ', main: true },
-      { key: 'shuruk',  name: 'Shuruk (וּ)',  nikud: 'וּ', main: true }
+      { key: 'o',       label: 'Holam',     sub: 'OH sound', nikud: 'אֹ', isMain: true },
+      { key: 'vcholam', label: 'Vav Holam', sub: 'OH sound', nikud: 'וֹ', isMain: true },
     ]
   },
   {
-    key: 'sh', name: 'Sh\'va',
-    color: '#7a5fbf', colorDark: '#a48cda',
-    bg: '#e6dff5', bgDark: '#221a3a',
+    key: 'blue', sound: 'OO', colorName: 'Blue', colorHtml: 'Bl<u>ue</u>', label: 'OO sound',
+    bg: 'rgba(40,80,200,0.15)', border: '#2850c8', darkBg: 'rgba(60,100,220,0.22)', darkBorder: '#5080e0',
     vowels: [
-      { key: 'sh',      name: 'Sh\'va',       nikud: 'אְ', main: true }
+      { key: 'u',      label: 'Kubutz', sub: 'OO sound', nikud: 'אֻ', isMain: true },
+      { key: 'shuruk', label: 'Shuruk', sub: 'OO sound', nikud: 'וּ', isMain: true },
     ]
   },
   {
-    key: 'mixed', name: 'Specials',
-    color: '#9c4f8c', colorDark: '#c47bb4',
-    bg: '#f1dded', bgDark: '#311a2c',
-    vowels: []
-  }
+    key: 'purple', sound: 'UH', colorName: 'Purple', colorHtml: 'P<u>u</u>rple', label: 'UH sound',
+    bg: 'rgba(130,60,180,0.15)', border: '#823cb4', darkBg: 'rgba(150,70,200,0.22)', darkBorder: '#a060d0',
+    vowels: [
+      { key: 'sh', label: 'Shva', sub: 'UH / silent', nikud: 'אְ', isMain: false },
+    ]
+  },
 ];
 
 /* Sound classes for a given vowel key */
@@ -1080,11 +1085,20 @@ const NIKUD_CHAR_TO_KEY = {
 
 /* Hebrew fonts available */
 const HEB_FONTS = [
-  { id: 'frank',   label: 'Frank Ruhl', stack: "'Frank Ruhl Libre', 'Noto Serif Hebrew', serif" },
-  { id: 'david',   label: 'David',       stack: "'David Libre', 'Frank Ruhl Libre', serif" },
-  { id: 'noto',    label: 'Noto Serif',  stack: "'Noto Serif Hebrew', 'Frank Ruhl Libre', serif" },
-  { id: 'heebo',   label: 'Heebo',       stack: "'Heebo', 'Frank Ruhl Libre', sans-serif" },
-  { id: 'assist',  label: 'Assistant',   stack: "'Assistant', 'Heebo', sans-serif" }
+  // ── Block Fonts ──────────────────────────────
+  { section:'Block', name:'Frank Ruhl Libre', stack:"'Frank Ruhl Libre', serif", attr:'Yanek Iontef — OFL', link:'https://github.com/fontef/frankruhllibre', load:null },
+  { section:'Block', name:'Noto Serif Hebrew', stack:"'Noto Serif Hebrew', serif", attr:'Google / Noto Team — OFL', link:'https://fonts.google.com/noto/specimen/Noto+Serif+Hebrew', load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@400;700&display=swap'} },
+  { section:'Block', name:'Noto Sans Hebrew',  stack:"'Noto Sans Hebrew', sans-serif", attr:'Google / Noto Team — OFL', link:'https://fonts.google.com/noto/specimen/Noto+Sans+Hebrew', load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700&display=swap'} },
+  { section:'Block', name:'Alef', stack:"'Alef', sans-serif", attr:'HaGilda & Mushon Zer-Aviv — OFL', link:'https://alef.hagilda.com/', load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap'} },
+  { section:'Block', name:'Ezra SIL', stack:"'Ezra SIL', serif", attr:'SIL International — OFL', link:'https://software.sil.org/ezra/', load:{type:'face',css:"@font-face{font-family:'Ezra SIL';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/SIL%20(OFL)/Ezra%20SIL/SILEOT.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+  { section:'Block', name:'Shlomo', stack:"'Shlomo', serif", attr:'Shlomo Orbach — OFL', link:'https://github.com/aharonium/fonts', load:{type:'face',css:"@font-face{font-family:'Shlomo';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20(OFL)/Shlomo/Shlomo.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+  { section:'Block', name:'Dyslexia Hebrew', stack:"'DyslexiaHebrew', sans-serif", attr:'Jake Shoag — OFL', link:'https://github.com/aharonium/fonts', load:{type:'face',css:"@font-face{font-family:'DyslexiaHebrew';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Shoag%2C%20Jake%20(OFL)/DyslexiaHebrew-Regular.otf') format('opentype');font-weight:normal;font-style:normal;}"} },
+  // ── Cursive / Script Fonts ───────────────────
+  { section:'Cursive', name:'Solitreo', stack:"'Solitreo', cursive", attr:'Nathan Gross & Bryan Kirschen — OFL', link:'https://fonts.google.com/specimen/Solitreo', load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Solitreo&display=swap'} },
+  { section:'Cursive', name:'Gveret Levin', stack:"'Gveret Levin', cursive", attr:'Gili Levin / Google Fonts — OFL', link:'https://fonts.google.com/specimen/Gveret+Levin', load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Gveret+Levin&display=swap'} },
+  { section:'Cursive', name:'Noto Rashi Hebrew', stack:"'Noto Rashi Hebrew', serif", attr:'Google / Noto Team — OFL', link:'https://fonts.google.com/noto/specimen/Noto+Rashi+Hebrew', load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Noto+Rashi+Hebrew:wght@400;700&display=swap'} },
+  { section:'Cursive', name:'Playpen Sans Hebrew', stack:"'Playpen Sans Hebrew', cursive", attr:'TypeTogether — OFL', link:'https://fonts.google.com/specimen/Playpen+Sans+Hebrew', load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Playpen+Sans+Hebrew&display=swap'} },
+  { section:'Cursive', name:'Shmulik CLM', stack:"'Shmulik CLM', cursive", attr:'Yoram Gnat / Culmus Project — GPL+FE', link:'https://culmus.sourceforge.io/', load:{type:'face',css:"@font-face{font-family:'Shmulik CLM';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Culmus%20Project%20(GPL%20and%20GPL%2BFE)/Yoram%20Gnat%20(GPL%2BFE)/Shmulik%20CLM/ShmulikCLM.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
 ];
 
 /* =========================================================================
@@ -1103,7 +1117,7 @@ let lockLetters = new Set();
 let colorCodingEnabled = false;
 let colorCodingMode = 'letter';
 let nikudColorOverrides = {};
-let hebFontId = 'frank';
+let hebFontId = 'Frank Ruhl Libre';
 
 let currentCards = [];
 let currentIndex = 0;
@@ -1141,27 +1155,46 @@ function initDarkMode() {
 /* =========================================================================
    FONT
    ========================================================================= */
-function loadHebFont(id) {
-  // All used fonts already preloaded via Google Fonts <link>.
-  return Promise.resolve();
+function loadHebFont(font) {
+  if (!font.load) return;
+  const id = 'font-' + font.name.replace(/\s+/g, '-');
+  if (document.getElementById(id)) return;
+  if (font.load.type === 'gfonts') {
+    const link = document.createElement('link');
+    link.id = id; link.rel = 'stylesheet'; link.href = font.load.url;
+    document.head.appendChild(link);
+  } else if (font.load.type === 'face') {
+    const style = document.createElement('style');
+    style.id = id; style.textContent = font.load.css;
+    document.head.appendChild(style);
+  }
 }
-function setHebFont(id) {
-  const f = HEB_FONTS.find(x => x.id === id) || HEB_FONTS[0];
-  hebFontId = f.id;
-  document.documentElement.style.setProperty('--heb-font', f.stack);
-  document.querySelectorAll('.font-opt').forEach(b => b.classList.toggle('active', b.dataset.fid === f.id));
+function setHebFont(name) {
+  const font = HEB_FONTS.find(f => f.name === name) || HEB_FONTS[0];
+  hebFontId = font.name;
+  loadHebFont(font);
+  document.documentElement.style.setProperty('--heb-font', font.stack);
+  document.querySelectorAll('.font-opt').forEach(b => b.classList.toggle('active', b.dataset.fontName === font.name));
   saveSettings();
 }
 function initFontSelector() {
   const host = document.getElementById('fontGrid');
-  host.innerHTML = HEB_FONTS.map(f => `
-    <button class="font-opt ${f.id === hebFontId ? 'active' : ''}" data-fid="${f.id}" style="font-family: ${f.stack}">
-      אבג
-      <small>${f.label}</small>
-    </button>
-  `).join('');
-  host.querySelectorAll('.font-opt').forEach(btn => {
-    btn.addEventListener('click', () => setHebFont(btn.dataset.fid));
+  host.innerHTML = '';
+  const sections = [...new Set(HEB_FONTS.map(f => f.section))];
+  sections.forEach(sec => {
+    const hdr = document.createElement('div');
+    hdr.className = 'font-section-hdr';
+    hdr.textContent = sec === 'Cursive' ? 'Cursive / Script' : sec + ' Fonts';
+    host.appendChild(hdr);
+    HEB_FONTS.filter(f => f.section === sec).forEach(font => {
+      loadHebFont(font);
+      const btn = document.createElement('button');
+      btn.className = 'font-opt' + (font.name === hebFontId ? ' active' : '');
+      btn.dataset.fontName = font.name;
+      btn.innerHTML = `<span style="font-family:${font.stack};font-size:1.4rem;direction:rtl;display:block;">אֶרֶץ</span><small>${font.name}${font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}</small>`;
+      btn.addEventListener('click', () => setHebFont(font.name));
+      host.appendChild(btn);
+    });
   });
 }
 
@@ -1246,10 +1279,11 @@ function refreshVowelGroupColors() {
     const key = g.dataset.key;
     const grp = VOWEL_GROUPS.find(x => x.key === key);
     if (!grp) return;
-    g.style.background = isDark() ? grp.bgDark : grp.bg;
-    g.style.borderColor = isDark() ? grp.colorDark : grp.color;
+    const borderCol = isDark() ? grp.darkBorder : grp.border;
+    g.style.background = isDark() ? grp.darkBg : grp.bg;
+    g.style.borderColor = borderCol;
     const head = g.querySelector('.vgroup-head');
-    if (head) head.style.color = isDark() ? grp.colorDark : grp.color;
+    if (head) head.style.color = borderCol;
   });
 }
 
@@ -1257,17 +1291,11 @@ function refreshVowelGroupColors() {
    LETTERS UI
    ========================================================================= */
 function getDisplayLetters() {
-  // Returns the list of letters to show, factoring in dageshTavEnabled.
-  return LETTERS.map(L => {
-    if (L.isTav) {
-      const isTav = dageshTavEnabled;
-      return {
-        ...L,
-        heb: isTav ? 'תּ' : 'ת',
-        name: isTav ? 'Tav' : 'Sav'
-      };
-    }
-    return L;
+  return LETTERS.filter(L => {
+    if (L.normalTav && dageshTavEnabled) return false;
+    if (L.dageshTav && !dageshTavEnabled) return false;
+    if (L.savVariant && !dageshTavEnabled) return false;
+    return true;
   });
 }
 
@@ -1276,7 +1304,7 @@ function initLetters() {
   const display = getDisplayLetters();
   grid.innerHTML = display.map(L => `
     <div class="letter-tile ${selectedLetters.has(L.heb) ? 'selected' : ''}" data-heb="${L.heb}">
-      ${L.heb}
+      <span class="heb-char">${L.heb}</span>
       <small>${L.name}</small>
     </div>
   `).join('');
@@ -1324,12 +1352,16 @@ function applyLetterButtons() {
     initLetters(); saveSettings();
   });
   document.getElementById('dageshTavToggle').addEventListener('change', (e) => {
-    // Replace ת ↔ תּ in selected sets
-    const oldChar = dageshTavEnabled ? 'תּ' : 'ת';
-    const newChar = e.target.checked ? 'תּ' : 'ת';
     dageshTavEnabled = e.target.checked;
-    if (selectedLetters.has(oldChar)) { selectedLetters.delete(oldChar); selectedLetters.add(newChar); }
-    if (lockLetters.has(oldChar)) { lockLetters.delete(oldChar); lockLetters.add(newChar); }
+    if (dageshTavEnabled) {
+      // normalTav (ת) was selected → keep ת (becomes sav) and also add תּ (dagesh tav)
+      if (selectedLetters.has('ת')) selectedLetters.add('תּ');
+      if (lockLetters.has('ת')) lockLetters.add('תּ');
+    } else {
+      // Remove dagesh tav; plain ת stays (becomes normalTav)
+      selectedLetters.delete('תּ');
+      lockLetters.delete('תּ');
+    }
     initLetters();
     saveSettings();
   });
@@ -1340,33 +1372,41 @@ function applyLetterButtons() {
    ========================================================================= */
 function initVowels() {
   const host = document.getElementById('vowelHost');
-  host.innerHTML = VOWEL_GROUPS.filter(g => g.vowels.length > 0).map(g => `
-    <div class="vgroup" data-key="${g.key}">
-      <div class="vgroup-head" style="color:${isDark() ? g.colorDark : g.color}">${g.name}</div>
-      <div class="vgroup-body">
-        ${g.vowels.map(v => `
-          <div class="vtile ${selectedVowels.has(v.key) ? 'selected' : ''}" data-key="${v.key}">
-            <div class="vheb">${v.nikud}</div>
-            <div class="vname">${v.name}</div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `).join('');
-  host.querySelectorAll('.vgroup-head').forEach(h => {
-    h.addEventListener('click', () => h.parentElement.classList.toggle('collapsed'));
-  });
-  host.querySelectorAll('.vtile').forEach(t => {
-    t.addEventListener('click', () => {
-      const key = t.dataset.key;
-      if (selectedVowels.has(key)) selectedVowels.delete(key);
-      else selectedVowels.add(key);
-      t.classList.toggle('selected');
-      updateVavAsLetterVisibility();
-      saveSettings();
+  host.innerHTML = '';
+  VOWEL_GROUPS.filter(g => g.vowels.length > 0).forEach(g => {
+    const borderCol = isDark() ? g.darkBorder : g.border;
+    const group = document.createElement('div');
+    group.className = 'vgroup';
+    group.dataset.key = g.key;
+    group.style.background = isDark() ? g.darkBg : g.bg;
+    group.style.borderColor = borderCol;
+
+    const head = document.createElement('div');
+    head.className = 'vgroup-head';
+    head.style.color = borderCol;
+    head.innerHTML = `${g.sound} Sound – ${g.colorHtml}`;
+    head.addEventListener('click', () => group.classList.toggle('collapsed'));
+    group.appendChild(head);
+
+    const body = document.createElement('div');
+    body.className = 'vgroup-body';
+    g.vowels.forEach(v => {
+      const tile = document.createElement('div');
+      tile.className = 'vtile' + (selectedVowels.has(v.key) ? ' selected' : '');
+      tile.dataset.key = v.key;
+      tile.innerHTML = `<div class="vheb">${v.nikud}</div><div class="vname">${v.label}</div>`;
+      tile.addEventListener('click', () => {
+        if (selectedVowels.has(v.key)) selectedVowels.delete(v.key);
+        else selectedVowels.add(v.key);
+        tile.classList.toggle('selected');
+        updateVavAsLetterVisibility();
+        saveSettings();
+      });
+      body.appendChild(tile);
     });
+    group.appendChild(body);
+    host.appendChild(group);
   });
-  refreshVowelGroupColors();
 }
 function applyVowelButtons() {
   document.getElementById('vowelAll').addEventListener('click', () => {
@@ -1376,7 +1416,7 @@ function applyVowelButtons() {
   });
   document.getElementById('vowelMain').addEventListener('click', () => {
     selectedVowels.clear();
-    VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => { if (v.main) selectedVowels.add(v.key); }));
+    VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => { if (v.isMain) selectedVowels.add(v.key); }));
     initVowels(); updateVavAsLetterVisibility(); saveSettings();
   });
   document.getElementById('vowelNone').addEventListener('click', () => {
@@ -1510,7 +1550,9 @@ function applySettings(s) {
   colorCodingEnabled = !!s.colorCodingEnabled;
   colorCodingMode = s.colorCodingMode || 'letter';
   nikudColorOverrides = { ...(s.nikudColorOverrides || {}) };
-  hebFontId = s.hebFontId || 'frank';
+  const fontMigration = { frank:'Frank Ruhl Libre', david:'David Libre', noto:'Noto Serif Hebrew', heebo:'Heebo', assist:'Assistant' };
+  const rawFont = s.hebFontId || 'Frank Ruhl Libre';
+  hebFontId = fontMigration[rawFont] || (HEB_FONTS.find(f => f.name === rawFont) ? rawFont : 'Frank Ruhl Libre');
 
   // Reflect in UI
   setLetterMode(mode);
@@ -1542,11 +1584,11 @@ function loadSettings() {
     else {
       // sensible defaults: all letters except sofit, main vowels
       getDisplayLetters().forEach(L => { if (!L.sofit) selectedLetters.add(L.heb); });
-      VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => { if (v.main) selectedVowels.add(v.key); }));
+      VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => { if (v.isMain) selectedVowels.add(v.key); }));
     }
   } catch(e) {
     getDisplayLetters().forEach(L => { if (!L.sofit) selectedLetters.add(L.heb); });
-    VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => { if (v.main) selectedVowels.add(v.key); }));
+    VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => { if (v.isMain) selectedVowels.add(v.key); }));
   }
 }
 
@@ -1889,6 +1931,18 @@ function renderCurrentCard() {
   document.getElementById('progressBar').style.width = `${((currentIndex + 1) / total) * 100}%`;
 
   const fcCard = document.getElementById('fcCard');
+
+  // Instantly snap to the target face BEFORE updating content so the back face
+  // is never visible with the next card's text during the flip transition.
+  if (!isFlipped && fcCard.classList.contains('flipped')) {
+    fcCard.style.transition = 'none';
+    fcCard.classList.remove('flipped');
+    void fcCard.offsetHeight; // force reflow so transition:none takes effect
+    fcCard.style.transition = '';
+  } else if (isFlipped && !fcCard.classList.contains('flipped')) {
+    fcCard.classList.add('flipped');
+  }
+
   const front = document.getElementById('fcFrontHeb');
   const back = document.getElementById('fcBackTr');
 
@@ -1910,9 +1964,6 @@ function renderCurrentCard() {
     back.style.direction = 'ltr';
     back.style.fontSize = 'clamp(1.4rem, 6vw, 2.4rem)';
   }
-
-  // Reset flip
-  fcCard.classList.toggle('flipped', isFlipped);
 
   // Badges
   const fb = document.getElementById('fcFrontBadge');
