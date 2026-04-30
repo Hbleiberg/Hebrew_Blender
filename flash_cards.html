@@ -1220,42 +1220,47 @@ function colorizeHebrew(text) {
   if (!colorCodingEnabled) return escapeHtml(text);
   const chars = [...text];
   let out = '';
-  for (let i = 0; i < chars.length; i++) {
+  let i = 0;
+  while (i < chars.length) {
     const ch = chars[i];
-    const next = chars[i+1];
-    const key = NIKUD_CHAR_TO_KEY[ch];
-    if (key) {
-      const color = getNikudColor(key);
-      // Already-rendered base char is just before; we wrap previous emitted char
-      // Simpler approach: wrap each base+nikud pair by lookahead instead. So
-      // here we just emit the nikud char with style.
-      if (colorCodingMode === 'letter') {
-        out += `<span style="color:${color}">${escapeHtml(ch)}</span>`;
-      } else if (colorCodingMode === 'highlight') {
-        out += `<span style="background:${color}33">${escapeHtml(ch)}</span>`;
-      } else if (colorCodingMode === 'underline') {
-        out += `<span style="text-decoration:underline; text-decoration-color:${color}">${escapeHtml(ch)}</span>`;
-      }
-    } else {
-      // base letter — find a following nikud to colorize the base too
-      let combinedKey = null;
+    const cp = ch.codePointAt(0);
+    // Hebrew base letters: U+05D0–6U+05EA
+    if (cp >= 0x05D0 && cp <= 0x05EA) {
+      // Collect base letter + all immediately following combining chars (U+0591–6U+05CF)
+      let cluster = ch;
+      let colorKey = null;
       let j = i + 1;
-      while (j < chars.length && NIKUD_CHAR_TO_KEY[chars[j]] === undefined && /[\u0591-\u05C7]/.test(chars[j])) j++;
-      if (j < chars.length && NIKUD_CHAR_TO_KEY[chars[j]]) {
-        combinedKey = NIKUD_CHAR_TO_KEY[chars[j]];
+      while (j < chars.length) {
+        const ncp = chars[j].codePointAt(0);
+        if (ncp >= 0x0591 && ncp <= 0x05CF) {
+          const k = NIKUD_CHAR_TO_KEY[chars[j]];
+          if (k && !colorKey) colorKey = k;
+          cluster += chars[j];
+          j++;
+        } else {
+          break;
+        }
       }
-      if (combinedKey) {
-        const color = getNikudColor(combinedKey);
+      // Vav (U+05D5) + dagesh (U+05BC) with no other vowel nikkud = shuruk
+      if (!colorKey && cp === 0x05D5 && cluster.includes('\u05BC')) {
+        colorKey = 'shuruk';
+      }
+      if (colorKey) {
+        const color = getNikudColor(colorKey);
         if (colorCodingMode === 'letter') {
-          out += `<span style="color:${color}">${escapeHtml(ch)}</span>`;
+          out += `<span style="color:${color}">${escapeHtml(cluster)}</span>`;
         } else if (colorCodingMode === 'highlight') {
-          out += `<span style="background:${color}33">${escapeHtml(ch)}</span>`;
+          out += `<span style="background:${color}33">${escapeHtml(cluster)}</span>`;
         } else if (colorCodingMode === 'underline') {
-          out += `<span style="text-decoration:underline; text-decoration-color:${color}">${escapeHtml(ch)}</span>`;
+          out += `<span style="text-decoration:underline solid ${color}">${escapeHtml(cluster)}</span>`;
         }
       } else {
-        out += escapeHtml(ch);
+        out += escapeHtml(cluster);
       }
+      i = j;
+    } else {
+      out += escapeHtml(ch);
+      i++;
     }
   }
   return out;
