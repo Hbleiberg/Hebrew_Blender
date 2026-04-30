@@ -413,17 +413,16 @@ body.dark .slider::before { background: #d8dde9; }
 
 /* ============== COLOR PICKERS ============== */
 .color-picker-row {
-  display: grid;
-  grid-template-columns: 1fr 36px;
-  gap: 8px;
+  display: flex;
   align-items: center;
-  margin: 6px 0;
+  gap: 8px;
+  margin: 4px 0;
 }
-.color-picker-row .lbl { font-size: 0.88rem; color: var(--ink-soft); }
+.color-picker-row .lbl { font-size: 0.88rem; color: var(--ink-soft); flex: 1; }
 .color-picker-row input[type=color] {
-  width: 36px; height: 32px; padding: 0;
+  width: 36px; height: 28px; padding: 0; flex-shrink: 0;
   border: 1px solid var(--border-strong);
-  border-radius: 8px;
+  border-radius: 6px;
   background: transparent;
   cursor: pointer;
 }
