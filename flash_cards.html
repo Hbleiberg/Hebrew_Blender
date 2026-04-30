@@ -412,29 +412,19 @@ body.dark .slider::before { background: #d8dde9; }
 .preset-row { display: flex; gap: 6px; }
 
 /* ============== COLOR PICKERS ============== */
-.color-group-row {
+.color-picker-row {
   display: flex;
   align-items: center;
-  gap: 5px;
-  margin: 3px 0;
+  gap: 8px;
+  margin: 4px 0;
 }
-.color-group-lbl {
-  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.04em;
-  color: var(--ink-soft); width: 24px; flex-shrink: 0; text-align: right;
-}
-.color-tile {
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
+.color-picker-row .lbl { font-size: 0.88rem; color: var(--ink-soft); flex: 1; }
+.color-picker-row input[type=color] {
+  width: 36px; height: 28px; padding: 0; flex-shrink: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: transparent;
   cursor: pointer;
-}
-.color-tile-heb {
-  font-family: var(--heb-font); font-size: 1.05rem;
-  direction: rtl; text-align: center; line-height: 1.2;
-  min-width: 26px;
-}
-.color-tile input[type=color] {
-  width: 26px; height: 14px; padding: 0;
-  border: 1px solid var(--border-strong); border-radius: 3px;
-  background: transparent; cursor: pointer;
 }
 
 /* ============== FONT SELECTOR ============== */
@@ -1305,46 +1295,22 @@ function initColorPickers() {
   const host = document.getElementById('colorPickers');
   if (!host) return;
   host.innerHTML = '';
-  const COLOR_GROUPS = [
-    { sound: 'AH', keys: ['a', 'patah', 'hpatah', 'hkamatz'] },
-    { sound: 'EH', keys: ['e', 'hsegol'] },
-    { sound: 'AY', keys: ['tzere'] },
-    { sound: 'EE', keys: ['i'] },
-    { sound: 'OH', keys: ['o', 'vcholam'] },
-    { sound: 'OO', keys: ['u', 'shuruk'] },
-    { sound: 'SH', keys: ['sh'] },
-  ];
-  COLOR_GROUPS.forEach(group => {
+  VOWEL_COLOR_DEFS.forEach(def => {
+    const color = getNikudColor(def.key);
     const row = document.createElement('div');
-    row.className = 'color-group-row';
-    const lbl = document.createElement('span');
-    lbl.className = 'color-group-lbl';
-    lbl.textContent = group.sound;
-    row.appendChild(lbl);
-    group.keys.forEach(key => {
-      const def = VOWEL_COLOR_DEFS.find(d => d.key === key);
-      if (!def) return;
-      const tile = document.createElement('div');
-      tile.className = 'color-tile';
-      tile.title = def.name;
-      const heb = document.createElement('span');
-      heb.className = 'color-tile-heb';
-      heb.dataset.previewKey = key;
-      heb.textContent = def.example;
-      applyPreviewColor(heb, key);
-      const input = document.createElement('input');
-      input.type = 'color';
-      input.dataset.key = key;
-      input.value = getNikudColor(key);
-      input.addEventListener('input', e => {
-        nikudColorOverrides[key] = e.target.value;
-        applyPreviewColor(heb, key);
-        saveSettings();
-        if (document.getElementById('screenCard').classList.contains('active')) renderCurrentCard();
-      });
-      tile.appendChild(heb);
-      tile.appendChild(input);
-      row.appendChild(tile);
+    row.className = 'color-picker-row';
+    row.innerHTML = `
+      <span data-preview-key="${def.key}" style="font-family:var(--heb-font);font-size:1.1rem;direction:rtl;min-width:22px;text-align:center;">${def.example}</span>
+      <span class="lbl" style="flex:1;">${def.name}</span>
+      <input type="color" data-key="${def.key}" value="${color}" />
+    `;
+    const preview = row.querySelector('[data-preview-key]');
+    applyPreviewColor(preview, def.key);
+    row.querySelector('input').addEventListener('input', e => {
+      nikudColorOverrides[def.key] = e.target.value;
+      applyPreviewColor(preview, def.key);
+      saveSettings();
+      if (document.getElementById('screenCard').classList.contains('active')) renderCurrentCard();
     });
     host.appendChild(row);
   });
