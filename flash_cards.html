@@ -2087,7 +2087,7 @@ function showResults() {
     `;
   }).join('');
 
-  mistakeIndices = scores.map((s, i) => s === false ? i : -1).filter(i => i >= 0);
+  mistakeIndices = scores.map((s, i) => (s === false || s === null) ? i : -1).filter(i => i >= 0);
   document.getElementById('mistakesBtn').disabled = mistakeIndices.length === 0;
 
   showScreen('screenResults');
