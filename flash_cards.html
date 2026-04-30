@@ -1034,7 +1034,7 @@ const VOWEL_GROUPS = [
 /* Sound classes for a given vowel key */
 const VOWEL_TO_SOUNDS = {
   a:'a', patah:'a', hpatah:'a', hkamatz:'a',
-  e:'e', hsegol:'e', tzere:'e',
+  e:'e', hsegol:'e', tzere:'a',
   i:'i',
   o:'o', vcholam:'o',
   u:'u', shuruk:'u',
@@ -1784,7 +1784,7 @@ function getSound(letter, vowelKey) {
   const sClass = VOWEL_TO_SOUNDS[vowelKey];
   let s = letter.sounds[sClass] || '';
   if (vowelKey === 'tzere') {
-    if (s.endsWith('eh')) s = s.slice(0, -2) + 'ey';
+    s = s.replace(/ah$/i, 'ay');
   }
   return s;
 }
