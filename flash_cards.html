@@ -11,9 +11,9 @@
 /* No-flash dark-mode IIFE — runs before paint */
 (function () {
   try {
-    var s = localStorage.getItem('hebrewBlender_dark');
+    var s = localStorage.getItem('hebrewBlender_darkMode');
     if (s === '1' || (s === null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark-pre');
+      document.documentElement.classList.add('dark-early');
       document.addEventListener('DOMContentLoaded', function(){ document.body.classList.add('dark'); });
     }
   } catch(e) {}
@@ -48,7 +48,7 @@
   --serif: 'Libre Baskerville', Georgia, serif;
   --sans: 'Assistant', system-ui, -apple-system, sans-serif;
 }
-html.dark-pre, html.dark-pre body { background: #0f1626; color: #e9eaf0; }
+html.dark-early, html.dark-early body { background: #0f1626; color: #e9eaf0; }
 body.dark {
   --navy: #0f1626;
   --navy-deep: #060a14;
@@ -1121,8 +1121,8 @@ function isDark() { return document.body.classList.contains('dark'); }
 function toggleDark(force) {
   const next = (force === undefined) ? !isDark() : !!force;
   document.body.classList.toggle('dark', next);
-  document.documentElement.classList.toggle('dark-pre', next);
-  try { localStorage.setItem('hebrewBlender_dark', next ? '1' : '0'); } catch(e){}
+  document.documentElement.classList.toggle('dark-early', next);
+  try { localStorage.setItem('hebrewBlender_darkMode', next ? '1' : '0'); } catch(e){}
   document.getElementById('darkToggle').textContent = next ? '☀️' : '🌙';
   const drawerToggle = document.getElementById('darkToggleDrawer');
   if (drawerToggle) drawerToggle.checked = next;
