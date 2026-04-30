@@ -507,6 +507,11 @@ body.dark .slider::before { background: #d8dde9; }
 .fc-back  { background: var(--navy); transform: rotateY(180deg); border-color: var(--navy); }
 .fc-heb   { font-family: var(--heb-font); font-size: clamp(3rem, 12vw, 6rem); direction: rtl; line-height: 1.1; color: var(--ink); }
 .fc-front .fc-heb { color: var(--navy); }
+
+/* Dark mode card overrides — prevent front/back from blending into the page bg */
+body.dark .fc-front { background: #1e2d4a; border-color: #3a5080; }
+body.dark .fc-front .fc-heb { color: var(--ink); }
+body.dark .fc-back  { background: #0e1e36; border-color: #2a4060; }
 .fc-translit { font-family: var(--serif); font-size: clamp(1.4rem, 6vw, 2.4rem); color: var(--gold-light); }
 .fc-hint { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
 .fc-back .fc-hint { color: rgba(255,255,255,0.55); }
