@@ -117,6 +117,13 @@ footer a{color:var(--gold);text-decoration:none;}
       <div class="go-btn">Open Dashboard →</div>
     </a>
 
+    <a class="page-card" href="flash_cards.html">
+      <div class="icon">🃏</div>
+      <h2>Flash Cards</h2>
+      <p>Practice reading Hebrew syllables with interactive flash cards — one, two, or three letters at a time.</p>
+      <div class="go-btn">Open Flash Cards →</div>
+    </a>
+
     <a class="page-card" href="resources.html">
       <div class="icon">📚</div>
       <h2>Teaching Resources</h2>
@@ -174,6 +181,7 @@ function exportAllSettings() {
     dashboardPresets:    JSON.parse(localStorage.getItem('hebrewDashboard_presets')    || '{}'),
     dashboardSchedules:  JSON.parse(localStorage.getItem('hebrewDashboard_schedules')  || '{}'),
     dashboardSettings:   JSON.parse(localStorage.getItem('hebrewDashboard_settings')   || '{}'),
+    flashCardPresets:    JSON.parse(localStorage.getItem('hebrewFlashCards_presets')   || '{}'),
   };
   document.getElementById('ieTextarea').value = JSON.stringify(blob, null, 2);
 }
@@ -201,6 +209,10 @@ function importAllSettings() {
       const existing = JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}');
       localStorage.setItem('hebrewDashboard_settings', JSON.stringify(Object.assign(existing, parsed.dashboardSettings)));
     }
+    if (parsed.flashCardPresets) {
+      const existing = JSON.parse(localStorage.getItem('hebrewFlashCards_presets') || '{}');
+      localStorage.setItem('hebrewFlashCards_presets', JSON.stringify(Object.assign(existing, parsed.flashCardPresets)));
+    }
     alert('Import successful! Reload the Dashboard to apply all settings.');
   } catch(e) { alert('Import failed: ' + e.message); }
 }
@@ -220,6 +232,7 @@ function eraseAllSettings() {
     'hebrewDashboard_presets',
     'hebrewDashboard_schedules',
     'hebrewDashboard_settings',
+    'hebrewFlashCards_presets',
   ];
   keys.forEach(k => localStorage.removeItem(k));
   document.getElementById('ieTextarea').value = '';
