@@ -1262,7 +1262,7 @@ function colorizeHebrew(text) {
         } else if (colorCodingMode === 'highlight') {
           out += `<span style="background:${color}33">${escapeHtml(cluster)}</span>`;
         } else if (colorCodingMode === 'underline') {
-          out += `<span style="text-decoration:underline solid ${color}">${escapeHtml(cluster)}</span>`;
+          out += `<span style="text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${escapeHtml(cluster)}</span>`;
         }
       } else {
         out += escapeHtml(cluster);
@@ -1282,12 +1282,16 @@ function applyPreviewColor(el, key) {
   el.style.color = '';
   el.style.background = '';
   el.style.textDecoration = '';
+  el.style.textDecorationThickness = '';
+  el.style.textUnderlineOffset = '';
   if (colorCodingMode === 'letter') {
     el.style.color = color;
   } else if (colorCodingMode === 'highlight') {
     el.style.background = color + '33';
   } else if (colorCodingMode === 'underline') {
     el.style.textDecoration = 'underline solid ' + color;
+    el.style.textDecorationThickness = '2px';
+    el.style.textUnderlineOffset = '0.4em';
   }
 }
 
