@@ -1866,7 +1866,7 @@ function generateCard() {
     if (vavAsLetter && m === 1) {
       // Single-letter card: just the vav syllable
       result.heb = vowel.nikud;
-      result.translit = (vowel.key === 'vcholam') ? 'O' : 'U';
+      result.translit = (vowel.key === 'vcholam') ? 'O' : 'Oo';
       return result;
     } else if (vavAsLetter) {
       // Treat the final position as the vav-vowel syllable
@@ -1880,7 +1880,7 @@ function generateCard() {
         translit += (i === 0) ? L.sounds.a.replace(/ah$/i, '') + '' : sh;
       }
       heb += vowel.nikud;
-      translit += (vowel.key === 'vcholam') ? 'o' : 'u';
+      translit += (vowel.key === 'vcholam') ? 'o' : 'oo';
       // Capitalize first letter
       result.heb = heb;
       result.translit = capitalize(translit);
