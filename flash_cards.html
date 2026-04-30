@@ -1,0 +1,2134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Flash Cards — Hebrew Blender</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Frank+Ruhl+Libre:wght@400;500;700;900&family=David+Libre:wght@400;500;700&family=Noto+Serif+Hebrew:wght@400;500;700&family=Heebo:wght@400;500;700&family=Assistant:wght@400;500;700&display=swap" rel="stylesheet">
+<script>
+/* No-flash dark-mode IIFE — runs before paint */
+(function () {
+  try {
+    var s = localStorage.getItem('hebrewBlender_dark');
+    if (s === '1' || (s === null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark-pre');
+      document.addEventListener('DOMContentLoaded', function(){ document.body.classList.add('dark'); });
+    }
+  } catch(e) {}
+})();
+</script>
+<style>
+/* ============== TOKENS ============== */
+:root {
+  --navy: #1a2a47;
+  --navy-deep: #11192c;
+  --navy-soft: #2a3d60;
+  --gold: #c9a24a;
+  --gold-light: #e9c97a;
+  --white: #ffffff;
+  --paper: #fbf8f1;
+  --ink: #1c2333;
+  --ink-soft: #4a5468;
+  --muted: #8893a8;
+  --border: #e3dfd2;
+  --border-strong: #c9c2ad;
+  --bg: #f5f1e6;
+  --panel-bg: #ffffff;
+  --good: #2f8a4d;
+  --good-soft: #d8efd8;
+  --bad: #b2363a;
+  --bad-soft: #f3d6d6;
+  --shadow-sm: 0 1px 2px rgba(20, 30, 50, 0.06), 0 1px 1px rgba(20, 30, 50, 0.04);
+  --shadow-md: 0 6px 14px rgba(20, 30, 50, 0.08), 0 2px 4px rgba(20, 30, 50, 0.05);
+  --shadow-lg: 0 18px 40px rgba(20, 30, 50, 0.16), 0 6px 12px rgba(20, 30, 50, 0.08);
+  --radius: 14px;
+  --heb-font: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif;
+  --serif: 'Libre Baskerville', Georgia, serif;
+  --sans: 'Assistant', system-ui, -apple-system, sans-serif;
+}
+html.dark-pre, html.dark-pre body { background: #0f1626; color: #e9eaf0; }
+body.dark {
+  --navy: #0f1626;
+  --navy-deep: #060a14;
+  --navy-soft: #1c2740;
+  --gold: #d6b25a;
+  --gold-light: #f0d586;
+  --white: #1a2236;
+  --paper: #14192a;
+  --ink: #e9eaf0;
+  --ink-soft: #b9c0d0;
+  --muted: #7c8499;
+  --border: #2a3454;
+  --border-strong: #3b4870;
+  --bg: #0f1626;
+  --panel-bg: #1a2236;
+  --good: #5fb87b;
+  --good-soft: #1f3a28;
+  --bad: #e26b6e;
+  --bad-soft: #3a1d1f;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 14px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+
+/* ============== BASE ============== */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+button { font: inherit; cursor: pointer; }
+a { color: inherit; }
+input, select, textarea, button { font-family: inherit; color: inherit; }
+
+/* ============== HEADER ============== */
+.app-header {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--navy);
+  color: var(--white);
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  padding-top: max(10px, env(safe-area-inset-top));
+  box-shadow: var(--shadow-md);
+}
+body.dark .app-header { background: var(--navy-deep); border-bottom: 1px solid var(--border); }
+.app-header h1 {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0;
+  text-align: center;
+  color: var(--gold-light);
+  letter-spacing: 0.02em;
+}
+.h-btn {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.06);
+  color: var(--gold-light);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  text-decoration: none;
+  transition: background 0.15s, transform 0.1s;
+}
+.h-btn:hover { background: rgba(255,255,255,0.14); }
+.h-btn:active { transform: scale(0.94); }
+.h-right { display: flex; gap: 6px; }
+
+/* ============== LAYOUT ============== */
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 14px 14px 100px;
+}
+.screen { display: none; }
+.screen.active { display: block; animation: fadeIn 0.25s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* ============== PANELS ============== */
+.panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.panel-title {
+  margin: 0;
+  padding: 14px 16px;
+  font-family: var(--serif);
+  font-size: 1.02rem;
+  color: var(--navy);
+  background: linear-gradient(180deg, var(--paper), var(--white));
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  user-select: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+body.dark .panel-title {
+  color: var(--gold-light);
+  background: linear-gradient(180deg, #1f2942, var(--panel-bg));
+}
+.panel-title::after {
+  content: '▾';
+  font-size: 0.85rem;
+  color: var(--muted);
+  transition: transform 0.2s;
+}
+.panel.collapsed .panel-title::after { transform: rotate(-90deg); }
+.panel:not(.collapsed) .panel-title { border-bottom-color: var(--border); }
+.panel-body { padding: 14px 16px; }
+.panel.collapsed .panel-body { display: none; }
+
+/* ============== BUTTONS ============== */
+.btn {
+  background: var(--white);
+  color: var(--ink);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: background 0.15s, transform 0.05s, border-color 0.15s;
+}
+.btn:hover { background: var(--paper); }
+.btn:active { transform: scale(0.97); }
+.btn.primary {
+  background: var(--navy);
+  color: var(--gold-light);
+  border-color: var(--navy);
+}
+.btn.primary:hover { background: var(--navy-soft); }
+.btn.gold {
+  background: var(--gold);
+  color: var(--navy);
+  border-color: var(--gold);
+  font-weight: 700;
+}
+.btn.gold:hover { background: var(--gold-light); }
+.btn.danger { color: var(--bad); border-color: var(--bad); background: transparent; }
+.btn.danger:hover { background: var(--bad-soft); }
+.btn.ghost { background: transparent; border-color: var(--border); }
+.btn.sm { padding: 6px 10px; font-size: 0.85rem; border-radius: 8px; }
+.btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+
+.btn-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.btn-row.center { justify-content: center; }
+
+/* ============== RADIO PILL GROUPS ============== */
+.pill-group {
+  display: inline-flex;
+  background: var(--paper);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+}
+.pill-group .pill {
+  background: transparent; border: none; color: var(--ink-soft);
+  padding: 7px 14px; border-radius: 999px;
+  font-size: 0.9rem; font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+}
+.pill-group .pill.active {
+  background: var(--navy); color: var(--gold-light);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ============== TOGGLES ============== */
+.row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.row .label { color: var(--ink-soft); font-size: 0.92rem; }
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px; height: 24px;
+  flex-shrink: 0;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; inset: 0;
+  background: var(--border-strong); border-radius: 999px;
+  transition: background 0.2s;
+}
+.slider::before {
+  content: ''; position: absolute;
+  width: 18px; height: 18px;
+  left: 3px; top: 3px;
+  background: var(--white); border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+body.dark .slider::before { background: #d8dde9; }
+.switch input:checked + .slider { background: var(--gold); }
+.switch input:checked + .slider::before { transform: translateX(20px); }
+.has-tip { border-bottom: 1px dotted var(--muted); cursor: help; }
+
+/* ============== LETTER GRID ============== */
+.letter-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  direction: rtl;
+  margin-top: 10px;
+}
+.letter-tile {
+  background: var(--white);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  font-family: var(--heb-font);
+  font-size: 1.7rem;
+  padding: 10px 4px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s, border-color 0.12s, transform 0.05s;
+  position: relative;
+  min-height: 56px;
+  display: flex; align-items: center; justify-content: center;
+}
+.letter-tile small {
+  display: block;
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  color: var(--muted);
+  font-weight: 500;
+  margin-top: 2px;
+  direction: ltr;
+}
+.letter-tile.selected {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--navy);
+}
+.letter-tile.selected small { color: var(--navy-deep); }
+.letter-tile:active { transform: scale(0.96); }
+
+.mini-letter-grid { grid-template-columns: repeat(6, 1fr); margin-top: 8px; }
+.mini-letter-grid .letter-tile { font-size: 1.3rem; min-height: 44px; padding: 6px 2px; }
+.mini-letter-grid .letter-tile small { display: none; }
+
+/* ============== VOWEL GRID ============== */
+.vgroup {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin: 8px 0;
+  overflow: hidden;
+  background: var(--white);
+}
+.vgroup-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px;
+  font-size: 0.92rem; font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+.vgroup-head::after { content: '▾'; font-size: 0.75rem; opacity: 0.6; transition: transform 0.2s; }
+.vgroup.collapsed .vgroup-head::after { transform: rotate(-90deg); }
+.vgroup-body { padding: 8px 10px 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); gap: 6px; }
+.vgroup.collapsed .vgroup-body { display: none; }
+.vtile {
+  background: var(--white);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 6px 4px;
+  cursor: pointer;
+  text-align: center;
+  user-select: none;
+  transition: background 0.12s, border-color 0.12s;
+}
+.vtile .vheb {
+  font-family: var(--heb-font);
+  font-size: 1.45rem;
+  direction: rtl;
+  line-height: 1;
+}
+.vtile .vname {
+  font-size: 0.66rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.vtile.selected { background: var(--gold); border-color: var(--gold); color: var(--navy); }
+.vtile.selected .vname { color: var(--navy-deep); }
+
+/* ============== CARD COUNT ============== */
+.count-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+.count-btn {
+  padding: 10px 0;
+  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  background: var(--white);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background 0.12s;
+}
+.count-btn.active {
+  background: var(--navy); color: var(--gold-light); border-color: var(--navy);
+}
+
+/* ============== START STICKY ============== */
+.start-cta {
+  position: sticky;
+  bottom: 0;
+  margin: 16px -14px -100px;
+  padding: 14px 14px calc(14px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, transparent, var(--bg) 30%);
+  z-index: 10;
+}
+.start-cta .btn {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* ============== PRESET LIST ============== */
+.preset-list { list-style: none; margin: 8px 0 0; padding: 0; }
+.preset-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--white);
+  margin-bottom: 6px;
+  cursor: grab;
+}
+.preset-item.dragging { opacity: 0.4; }
+.preset-item .pname { flex: 1; font-weight: 500; font-size: 0.95rem; }
+.preset-item .drag { color: var(--muted); cursor: grab; user-select: none; padding: 0 4px; }
+.preset-input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--white);
+  font-size: 0.95rem;
+}
+.preset-row { display: flex; gap: 6px; }
+
+/* ============== COLOR PICKERS ============== */
+.color-picker-row {
+  display: grid;
+  grid-template-columns: 1fr 36px;
+  gap: 8px;
+  align-items: center;
+  margin: 6px 0;
+}
+.color-picker-row .lbl { font-size: 0.88rem; color: var(--ink-soft); }
+.color-picker-row input[type=color] {
+  width: 36px; height: 32px; padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* ============== FONT SELECTOR ============== */
+.font-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 6px; margin-top: 8px; }
+.font-opt {
+  padding: 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: var(--white);
+  cursor: pointer;
+  text-align: center;
+  font-size: 1.4rem;
+  direction: rtl;
+  transition: background 0.12s, border-color 0.12s;
+}
+.font-opt small { display: block; direction: ltr; font-size: 0.7rem; color: var(--muted); font-family: var(--sans); margin-top: 4px; }
+.font-opt.active { background: var(--gold); border-color: var(--gold); color: var(--navy); }
+.font-opt.active small { color: var(--navy-deep); }
+
+/* ============== TEXTAREA / BACKUP ============== */
+.tx-area {
+  width: 100%;
+  min-height: 110px;
+  padding: 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: var(--paper);
+  font-family: ui-monospace, 'SF Mono', monospace;
+  font-size: 0.78rem;
+  resize: vertical;
+}
+
+/* ============== CARD SCREEN ============== */
+.progress {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.progress > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+.card-meta {
+  text-align: center;
+  font-size: 0.92rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  margin-bottom: 18px;
+}
+.fc-perspective { perspective: 1200px; width: min(420px, 90vw); margin: 0 auto; }
+.fc-card {
+  position: relative; width: 100%;
+  height: clamp(220px, 44vw, 340px);
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer; border-radius: 16px;
+}
+.fc-card.flipped { transform: rotateY(180deg); }
+.fc-face {
+  position: absolute; inset: 0;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: 16px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 12px;
+  border: 2px solid var(--border-strong);
+  box-shadow: var(--shadow-md);
+  padding: 18px;
+}
+.fc-front { background: var(--white); }
+.fc-back  { background: var(--navy); transform: rotateY(180deg); border-color: var(--navy); }
+.fc-heb   { font-family: var(--heb-font); font-size: clamp(3rem, 12vw, 6rem); direction: rtl; line-height: 1.1; color: var(--ink); }
+.fc-front .fc-heb { color: var(--navy); }
+.fc-translit { font-family: var(--serif); font-size: clamp(1.4rem, 6vw, 2.4rem); color: var(--gold-light); }
+.fc-hint { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
+.fc-back .fc-hint { color: rgba(255,255,255,0.55); }
+.fc-back-q { color: rgba(255,255,255,0.78); font-size: 0.85rem; margin-top: 6px; letter-spacing: 0.04em; }
+.fc-badge {
+  position: absolute;
+  top: 10px; left: 10px;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem;
+  color: white;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+}
+.fc-badge.good { background: var(--good); }
+.fc-badge.bad { background: var(--bad); }
+
+.fc-mark-row {
+  display: flex; gap: 10px; margin-top: 14px;
+  width: min(420px, 90vw); margin-left: auto; margin-right: auto;
+}
+.fc-mark-row button {
+  flex: 1;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 12px;
+  border: 2px solid;
+}
+.fc-mark-yes { background: var(--good-soft); border-color: var(--good); color: var(--good); }
+.fc-mark-no  { background: var(--bad-soft);  border-color: var(--bad);  color: var(--bad); }
+.fc-mark-yes:hover { background: var(--good); color: white; }
+.fc-mark-no:hover  { background: var(--bad);  color: white; }
+
+.fc-nav {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 8px;
+  align-items: center;
+  margin-top: 16px;
+  width: min(420px, 90vw);
+  margin-left: auto; margin-right: auto;
+}
+.fc-nav .nav-btn {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  background: var(--white);
+  font-weight: 600;
+}
+.fc-nav .nav-btn.flip {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--navy);
+  font-size: 1.2rem;
+  width: 56px; height: 48px;
+  padding: 0;
+}
+
+/* ============== RESULTS ============== */
+.results-hero {
+  text-align: center;
+  padding: 30px 20px 24px;
+}
+.results-hero .pct {
+  font-family: var(--serif);
+  font-size: clamp(3.5rem, 14vw, 5.5rem);
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1;
+  margin: 0;
+}
+body.dark .results-hero .pct { color: var(--gold-light); }
+.results-hero .frac {
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin-top: 6px;
+  letter-spacing: 0.05em;
+}
+.results-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.result-item {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 6px;
+  background: var(--white);
+}
+.result-item.good { border-color: var(--good); background: var(--good-soft); }
+.result-item.bad  { border-color: var(--bad);  background: var(--bad-soft); }
+.result-item .rmark { font-weight: 700; font-size: 1.1rem; }
+.result-item.good .rmark { color: var(--good); }
+.result-item.bad .rmark { color: var(--bad); }
+.result-item .rheb { font-family: var(--heb-font); font-size: 1.5rem; direction: rtl; }
+.result-item .rtr { font-family: var(--serif); color: var(--ink-soft); font-size: 0.95rem; }
+
+.results-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+.results-actions .btn { padding: 14px; font-size: 1rem; font-weight: 600; }
+
+/* ============== DRAWER ============== */
+.drawer-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(15, 22, 38, 0.5);
+  z-index: 90;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+.drawer-backdrop.open { opacity: 1; pointer-events: auto; }
+.drawer {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: min(380px, 92vw);
+  background: var(--bg);
+  z-index: 100;
+  transform: translateX(100%);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  padding: 16px;
+  padding-top: max(16px, env(safe-area-inset-top));
+  box-shadow: var(--shadow-lg);
+}
+.drawer.open { transform: translateX(0); }
+.drawer h2 { font-family: var(--serif); margin: 0 0 16px; font-size: 1.2rem; color: var(--navy); }
+body.dark .drawer h2 { color: var(--gold-light); }
+.drawer-close {
+  position: absolute; top: 14px; right: 14px;
+  width: 36px; height: 36px;
+  border-radius: 50%; border: 1px solid var(--border);
+  background: var(--white); font-size: 1.1rem;
+}
+
+/* ============== TOOLTIP ============== */
+#tipFloat {
+  position: fixed;
+  background: var(--navy);
+  color: var(--gold-light);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  max-width: 240px;
+  z-index: 200;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  box-shadow: var(--shadow-md);
+  line-height: 1.4;
+}
+#tipFloat.show { opacity: 1; }
+
+/* ============== UTILITIES ============== */
+.sub { color: var(--muted); font-size: 0.84rem; }
+.warn { color: var(--bad); font-size: 0.88rem; padding: 8px; background: var(--bad-soft); border-radius: 8px; border: 1px solid var(--bad); }
+.hide { display: none !important; }
+.divider { height: 1px; background: var(--border); margin: 14px -16px; }
+.muted-row { font-size: 0.85rem; color: var(--muted); margin: 6px 0; }
+hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
+
+/* compact mobile */
+@media (max-width: 420px) {
+  .letter-tile { font-size: 1.5rem; min-height: 50px; }
+  .vtile .vheb { font-size: 1.3rem; }
+  .count-grid { grid-template-columns: repeat(5, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ============== HEADER ============== -->
+<header class="app-header">
+  <a href="index.html" class="h-btn" title="Home" aria-label="Home">←</a>
+  <h1>Flash Cards</h1>
+  <div class="h-right">
+    <button class="h-btn" id="darkToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
+    <button class="h-btn" id="gearBtn" title="Settings" aria-label="Settings">⚙️</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ============== SETUP SCREEN ============== -->
+<section id="screenSetup" class="screen active">
+
+  <!-- PRESETS -->
+  <div class="panel collapsed" id="panelPresets">
+    <h3 class="panel-title">Presets</h3>
+    <div class="panel-body">
+      <div class="preset-row">
+        <input type="text" class="preset-input" id="presetName" placeholder="Preset name…" maxlength="40" />
+        <button class="btn primary sm" id="savePresetBtn">Save</button>
+      </div>
+      <ul class="preset-list" id="presetList"></ul>
+      <p class="sub" id="presetEmpty">No presets yet — configure your settings, then save them here.</p>
+    </div>
+  </div>
+
+  <!-- MODE -->
+  <div class="panel" id="panelMode">
+    <h3 class="panel-title">Mode</h3>
+    <div class="panel-body">
+      <div class="row">
+        <span class="label">Letters per card:</span>
+        <div class="pill-group" id="modePills">
+          <button class="pill" data-mode="1">1 Letter</button>
+          <button class="pill active" data-mode="2">2 Letter</button>
+          <button class="pill" data-mode="3">3 Letter</button>
+        </div>
+      </div>
+      <div class="row">
+        <label class="switch"><input type="checkbox" id="inverseToggle"><span class="slider"></span></label>
+        <span class="label has-tip" data-tip="Show the transliteration first; flip to reveal the Hebrew.">Inverse Mode</span>
+      </div>
+
+      <div id="lockBlock" class="hide">
+        <hr class="soft" />
+        <div class="row">
+          <label class="switch"><input type="checkbox" id="lockToggle"><span class="slider"></span></label>
+          <span class="label has-tip" data-tip="Force a specific letter (or set of letters) to always appear at the chosen position.">Lock Letter</span>
+        </div>
+        <div id="lockOptions" class="hide">
+          <div class="row">
+            <span class="label">Position:</span>
+            <div class="pill-group" id="lockPosPills">
+              <button class="pill active" data-pos="1">1st</button>
+              <button class="pill" data-pos="2">2nd</button>
+              <button class="pill" data-pos="3">3rd</button>
+            </div>
+          </div>
+          <div class="sub">Tap the locked letter(s) below:</div>
+          <div class="letter-grid mini-letter-grid" id="lockGrid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD COUNT -->
+  <div class="panel" id="panelCount">
+    <h3 class="panel-title">Card Count</h3>
+    <div class="panel-body">
+      <div class="count-grid" id="countGrid"></div>
+    </div>
+  </div>
+
+  <!-- LETTERS -->
+  <div class="panel" id="panelLetters">
+    <h3 class="panel-title">Letter Select</h3>
+    <div class="panel-body">
+      <div class="btn-row">
+        <button class="btn sm" id="letterAll">All</button>
+        <button class="btn sm" id="letterNone">None</button>
+        <button class="btn sm" id="letterNoSofit">No Sofit</button>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <label class="switch"><input type="checkbox" id="dageshTavToggle"><span class="slider"></span></label>
+        <span class="label has-tip" data-tip="Add the Tav with dagesh ('Tav') versus without ('Sav').">Dagesh Tav / Sav</span>
+      </div>
+      <div class="letter-grid" id="letterGrid"></div>
+    </div>
+  </div>
+
+  <!-- VOWELS -->
+  <div class="panel" id="panelVowels">
+    <h3 class="panel-title">Vowel Select</h3>
+    <div class="panel-body">
+      <div class="btn-row">
+        <button class="btn sm" id="vowelAll">All</button>
+        <button class="btn sm" id="vowelMain">Main</button>
+        <button class="btn sm" id="vowelNone">None</button>
+      </div>
+      <div id="vowelHost"></div>
+      <div class="row" id="vavRow" style="display:none">
+        <label class="switch"><input type="checkbox" id="vavAsLetterToggle" checked><span class="slider"></span></label>
+        <span class="label has-tip" data-tip="When using cholam-vav (וֹ) or shuruk (וּ), treat the vav as the letter itself rather than a separate consonant.">Vav as Letter</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADVANCED -->
+  <div class="panel collapsed" id="panelAdvanced">
+    <h3 class="panel-title">Advanced Settings</h3>
+    <div class="panel-body">
+
+      <!-- Color coding -->
+      <div class="row">
+        <label class="switch"><input type="checkbox" id="colorCodeToggle"><span class="slider"></span></label>
+        <span class="label">Nikkud Color Coding</span>
+      </div>
+      <div id="colorCodeOpts" class="hide">
+        <div class="pill-group" id="colorModePills" style="margin: 6px 0">
+          <button class="pill active" data-cmode="letter">Letter</button>
+          <button class="pill" data-cmode="highlight">Highlight</button>
+          <button class="pill" data-cmode="underline">Underline</button>
+        </div>
+        <div id="colorPickers"></div>
+        <button class="btn sm ghost" id="colorReset" style="margin-top:6px">Reset Colors</button>
+      </div>
+
+      <hr class="soft" />
+
+      <!-- Font selector -->
+      <div class="label" style="font-weight:600; margin-bottom:4px">Hebrew Font</div>
+      <div class="font-grid" id="fontGrid"></div>
+
+      <hr class="soft" />
+
+      <!-- Backup -->
+      <div class="label" style="font-weight:600; margin-bottom:4px">Backup Presets</div>
+      <textarea class="tx-area" id="backupArea" placeholder="Exported preset JSON appears here…"></textarea>
+      <div class="btn-row" style="margin-top:6px">
+        <button class="btn sm" id="exportBtn">Export</button>
+        <button class="btn sm" id="importBtn">Import</button>
+        <button class="btn sm ghost" id="copyBtn">Copy</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- START -->
+  <div class="start-cta">
+    <button class="btn gold" id="startBtn">Start Practicing! ✨</button>
+  </div>
+
+</section>
+
+<!-- ============== CARD SCREEN ============== -->
+<section id="screenCard" class="screen">
+  <div class="progress"><span id="progressBar" style="width:0%"></span></div>
+  <p class="card-meta" id="cardMeta">Card 1 of 10</p>
+
+  <div class="fc-perspective">
+    <div class="fc-card" id="fcCard" tabindex="0" role="button" aria-label="Flash card. Tap or press space to flip.">
+      <div class="fc-face fc-front">
+        <div class="fc-heb" id="fcFrontHeb"></div>
+        <div class="fc-hint">Tap to flip</div>
+        <div class="fc-badge hide" id="fcFrontBadge"></div>
+      </div>
+      <div class="fc-face fc-back">
+        <div class="fc-translit" id="fcBackTr"></div>
+        <div class="fc-back-q">Did I get it?</div>
+        <div class="fc-badge hide" id="fcBackBadge"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fc-mark-row">
+    <button class="fc-mark-no"  id="markNo">✗ No</button>
+    <button class="fc-mark-yes" id="markYes">✓ Yes</button>
+  </div>
+
+  <div class="fc-nav">
+    <button class="nav-btn" id="prevBtn">‹ Prev</button>
+    <button class="nav-btn flip" id="flipBtn" title="Flip">↺</button>
+    <button class="nav-btn" id="nextBtn">Next ›</button>
+  </div>
+
+  <div style="text-align:center; margin-top:18px;">
+    <button class="btn ghost sm" id="endEarlyBtn">End Practice Early</button>
+  </div>
+</section>
+
+<!-- ============== RESULTS SCREEN ============== -->
+<section id="screenResults" class="screen">
+  <div class="results-hero">
+    <p class="pct" id="resultsPct">0%</p>
+    <p class="frac" id="resultsFrac">0 / 0 correct</p>
+  </div>
+
+  <div class="panel collapsed" id="panelResults">
+    <h3 class="panel-title">Results</h3>
+    <div class="panel-body">
+      <ul class="results-list" id="resultsList"></ul>
+    </div>
+  </div>
+
+  <div class="results-actions">
+    <button class="btn primary" id="redoBtn">Redo This Card Set</button>
+    <button class="btn gold" id="mistakesBtn">Practice My Mistakes</button>
+    <button class="btn ghost" id="backToSetupBtn">Return to Options</button>
+  </div>
+</section>
+
+</main>
+
+<!-- ============== SETTINGS DRAWER ============== -->
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <button class="drawer-close" id="drawerClose" aria-label="Close">✕</button>
+  <h2>Settings</h2>
+  <p class="sub">Use the panels on the main page to configure letters, vowels, and color coding.</p>
+  <hr class="soft" />
+  <div class="row">
+    <span class="label">Dark mode</span>
+    <label class="switch" style="margin-left:auto"><input type="checkbox" id="darkToggleDrawer"><span class="slider"></span></label>
+  </div>
+  <hr class="soft" />
+  <p class="sub">Hebrew Blender — Flash Cards</p>
+</aside>
+
+<!-- ============== TOOLTIP ============== -->
+<div id="tipFloat" role="tooltip"></div>
+
+<script>
+/* =========================================================================
+   CONSTANTS
+   ========================================================================= */
+
+/* Hebrew letters. heb = display, name = English name, sofit/hasSofit flags,
+   sounds keyed by vowel-sound-class. The 'sh' (sheva) value is the
+   consonant + apostrophe form; consonant-only is derived by stripping ' . */
+const LETTERS = [
+  { heb: 'א', name: 'Alef',  sofit:false, hasSofit:false, isVav:false, sounds: { a:'Ah', e:'Eh', i:'Ee', o:'Oh', u:'Oo', sh:"'" } },
+  { heb: 'בּ', name: 'Bet',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Bah', e:'Beh', i:'Bee', o:'Bo', u:'Boo', sh:"B'" } },
+  { heb: 'ב', name: 'Vet',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Vah', e:'Veh', i:'Vee', o:'Vo', u:'Voo', sh:"V'" } },
+  { heb: 'ג', name: 'Gimel', sofit:false, hasSofit:false, isVav:false, sounds: { a:'Gah', e:'Geh', i:'Gee', o:'Go', u:'Goo', sh:"G'" } },
+  { heb: 'ד', name: 'Dalet', sofit:false, hasSofit:false, isVav:false, sounds: { a:'Dah', e:'Deh', i:'Dee', o:'Do', u:'Doo', sh:"D'" } },
+  { heb: 'ה', name: 'Heh',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Hah', e:'Heh', i:'Hee', o:'Ho', u:'Hoo', sh:"H'" } },
+  { heb: 'ו', name: 'Vav',   sofit:false, hasSofit:false, isVav:true,  sounds: { a:'Vah', e:'Veh', i:'Vee', o:'Vo', u:'Voo', sh:"V'" } },
+  { heb: 'ז', name: 'Zayin', sofit:false, hasSofit:false, isVav:false, sounds: { a:'Zah', e:'Zeh', i:'Zee', o:'Zo', u:'Zoo', sh:"Z'" } },
+  { heb: 'ח', name: 'Chet',  sofit:false, hasSofit:false, isVav:false, sounds: { a:'Chah', e:'Cheh', i:'Chee', o:'Cho', u:'Choo', sh:"Ch'" } },
+  { heb: 'ט', name: 'Tet',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Tah', e:'Teh', i:'Tee', o:'To', u:'Too', sh:"T'" } },
+  { heb: 'י', name: 'Yod',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Yah', e:'Yeh', i:'Yee', o:'Yo', u:'Yoo', sh:"Y'" } },
+  { heb: 'כּ', name: 'Kaf',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Kah', e:'Keh', i:'Kee', o:'Ko', u:'Koo', sh:"K'" } },
+  { heb: 'כ', name: 'Khaf',  sofit:false, hasSofit:true,  isVav:false, sounds: { a:'Khah', e:'Kheh', i:'Khee', o:'Kho', u:'Khoo', sh:"Kh'" } },
+  { heb: 'ך', name: 'Khaf Sofit', sofit:true, hasSofit:false, isVav:false, sounds: { a:'Khah', e:'Kheh', i:'Khee', o:'Kho', u:'Khoo', sh:"Kh'" } },
+  { heb: 'ל', name: 'Lamed', sofit:false, hasSofit:false, isVav:false, sounds: { a:'Lah', e:'Leh', i:'Lee', o:'Lo', u:'Loo', sh:"L'" } },
+  { heb: 'מ', name: 'Mem',   sofit:false, hasSofit:true,  isVav:false, sounds: { a:'Mah', e:'Meh', i:'Mee', o:'Mo', u:'Moo', sh:"M'" } },
+  { heb: 'ם', name: 'Mem Sofit', sofit:true, hasSofit:false, isVav:false, sounds: { a:'Mah', e:'Meh', i:'Mee', o:'Mo', u:'Moo', sh:"M'" } },
+  { heb: 'נ', name: 'Nun',   sofit:false, hasSofit:true,  isVav:false, sounds: { a:'Nah', e:'Neh', i:'Nee', o:'No', u:'Noo', sh:"N'" } },
+  { heb: 'ן', name: 'Nun Sofit', sofit:true, hasSofit:false, isVav:false, sounds: { a:'Nah', e:'Neh', i:'Nee', o:'No', u:'Noo', sh:"N'" } },
+  { heb: 'ס', name: 'Samekh',sofit:false, hasSofit:false, isVav:false, sounds: { a:'Sah', e:'Seh', i:'See', o:'So', u:'Soo', sh:"S'" } },
+  { heb: 'ע', name: 'Ayin',  sofit:false, hasSofit:false, isVav:false, sounds: { a:'Ah', e:'Eh', i:'Ee', o:'Oh', u:'Oo', sh:"'" } },
+  { heb: 'פּ', name: 'Peh',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Pah', e:'Peh', i:'Pee', o:'Po', u:'Poo', sh:"P'" } },
+  { heb: 'פ', name: 'Feh',   sofit:false, hasSofit:true,  isVav:false, sounds: { a:'Fah', e:'Feh', i:'Fee', o:'Fo', u:'Foo', sh:"F'" } },
+  { heb: 'ף', name: 'Feh Sofit', sofit:true, hasSofit:false, isVav:false, sounds: { a:'Fah', e:'Feh', i:'Fee', o:'Fo', u:'Foo', sh:"F'" } },
+  { heb: 'צ', name: 'Tzadi', sofit:false, hasSofit:true,  isVav:false, sounds: { a:'Tzah', e:'Tzeh', i:'Tzee', o:'Tzo', u:'Tzoo', sh:"Tz'" } },
+  { heb: 'ץ', name: 'Tzadi Sofit', sofit:true, hasSofit:false, isVav:false, sounds: { a:'Tzah', e:'Tzeh', i:'Tzee', o:'Tzo', u:'Tzoo', sh:"Tz'" } },
+  { heb: 'ק', name: 'Kuf',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Kah', e:'Keh', i:'Kee', o:'Ko', u:'Koo', sh:"K'" } },
+  { heb: 'ר', name: 'Resh',  sofit:false, hasSofit:false, isVav:false, sounds: { a:'Rah', e:'Reh', i:'Ree', o:'Ro', u:'Roo', sh:"R'" } },
+  { heb: 'שׁ', name: 'Shin',  sofit:false, hasSofit:false, isVav:false, sounds: { a:'Shah', e:'Sheh', i:'Shee', o:'Sho', u:'Shoo', sh:"Sh'" } },
+  { heb: 'שׂ', name: 'Sin',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Sah', e:'Seh', i:'See', o:'So', u:'Soo', sh:"S'" } },
+  { heb: 'ת', name: 'Sav',   sofit:false, hasSofit:false, isVav:false, isTav:true, sounds: { a:'Tah', e:'Teh', i:'Tee', o:'To', u:'Too', sh:"T'" } } // becomes Tav (תּ) when dagesh enabled
+];
+
+const SOFIT_BASE = { 'ך':'כ', 'ם':'מ', 'ן':'נ', 'ף':'פ', 'ץ':'צ' };
+const SOFIT_CHARS = new Set(['ך','ם','ן','ף','ץ']);
+const HAS_SOFIT_CHARS = new Set(['כ','מ','נ','פ','צ']);
+
+/* Vowel groups — 7 groups, each with display info.
+   nikud field is the alef + combining vowel mark (display);
+   slice(1) extracts the combining char for syllable construction. */
+const VOWEL_GROUPS = [
+  {
+    key: 'a', name: 'A Sounds',
+    color: '#e85d5d', colorDark: '#f08585',
+    bg: '#fde7e7', bgDark: '#3a1f1f',
+    vowels: [
+      { key: 'a',       name: 'Kamatz',       nikud: 'אָ', main: true },
+      { key: 'patah',   name: 'Patah',        nikud: 'אַ', main: true },
+      { key: 'hpatah',  name: 'Hataf-Patah',  nikud: 'אֲ', main: false },
+      { key: 'hkamatz', name: 'Hataf-Kamatz', nikud: 'אֳ', main: false }
+    ]
+  },
+  {
+    key: 'e', name: 'E Sounds',
+    color: '#d98b25', colorDark: '#e9a850',
+    bg: '#fbecd6', bgDark: '#3a2c14',
+    vowels: [
+      { key: 'e',       name: 'Segol',        nikud: 'אֶ', main: true },
+      { key: 'tzere',   name: 'Tzere',        nikud: 'אֵ', main: true },
+      { key: 'hsegol',  name: 'Hataf-Segol',  nikud: 'אֱ', main: false }
+    ]
+  },
+  {
+    key: 'i', name: 'I Sounds',
+    color: '#caa617', colorDark: '#e0c244',
+    bg: '#fbf3cf', bgDark: '#3b3414',
+    vowels: [
+      { key: 'i',       name: 'Hirik',        nikud: 'אִ', main: true }
+    ]
+  },
+  {
+    key: 'o', name: 'O Sounds',
+    color: '#3aa66a', colorDark: '#5fc287',
+    bg: '#dcf2e3', bgDark: '#163522',
+    vowels: [
+      { key: 'o',        name: 'Cholam',          nikud: 'אֹ', main: true },
+      { key: 'vcholam',  name: 'Cholam-Vav (וֹ)', nikud: 'וֹ', main: true }
+    ]
+  },
+  {
+    key: 'u', name: 'U Sounds',
+    color: '#3a82c4', colorDark: '#62a3df',
+    bg: '#dcebfa', bgDark: '#152437',
+    vowels: [
+      { key: 'u',       name: 'Kubutz',       nikud: 'אֻ', main: true },
+      { key: 'shuruk',  name: 'Shuruk (וּ)',  nikud: 'וּ', main: true }
+    ]
+  },
+  {
+    key: 'sh', name: 'Sh\'va',
+    color: '#7a5fbf', colorDark: '#a48cda',
+    bg: '#e6dff5', bgDark: '#221a3a',
+    vowels: [
+      { key: 'sh',      name: 'Sh\'va',       nikud: 'אְ', main: true }
+    ]
+  },
+  {
+    key: 'mixed', name: 'Specials',
+    color: '#9c4f8c', colorDark: '#c47bb4',
+    bg: '#f1dded', bgDark: '#311a2c',
+    vowels: []
+  }
+];
+
+/* Sound classes for a given vowel key */
+const VOWEL_TO_SOUNDS = {
+  a:'a', patah:'a', hpatah:'a', hkamatz:'a',
+  e:'e', hsegol:'e', tzere:'e',
+  i:'i',
+  o:'o', vcholam:'o',
+  u:'u', shuruk:'u',
+  sh:'sh'
+};
+
+/* Default nikud colors (per vowel key) for color coding */
+const NIKUD_DEFAULTS_LIGHT = {
+  a:       '#c9302c',
+  patah:   '#e0593f',
+  hpatah:  '#d2603c',
+  hkamatz: '#c45a3c',
+  e:       '#c87317',
+  tzere:   '#b25e07',
+  hsegol:  '#b06407',
+  i:       '#a08400',
+  o:       '#1f7a3f',
+  vcholam: '#1f7a3f',
+  u:       '#1d5e9c',
+  shuruk:  '#1d5e9c',
+  sh:      '#5a3a99'
+};
+const NIKUD_DEFAULTS_DARK = {
+  a:       '#f08585',
+  patah:   '#f5a888',
+  hpatah:  '#f0997a',
+  hkamatz: '#e89376',
+  e:       '#f0b070',
+  tzere:   '#e9a55a',
+  hsegol:  '#e9a55a',
+  i:       '#e0c244',
+  o:       '#5fc287',
+  vcholam: '#5fc287',
+  u:       '#62a3df',
+  shuruk:  '#62a3df',
+  sh:      '#a48cda'
+};
+
+/* Map combining-character → vowel key, used by colorizeHebrew() */
+const NIKUD_CHAR_TO_KEY = {
+  '\u05B7': 'patah',
+  '\u05B8': 'a',         // kamatz
+  '\u05B6': 'e',         // segol
+  '\u05B5': 'tzere',
+  '\u05B4': 'i',         // hirik
+  '\u05B9': 'o',         // cholam
+  '\u05BB': 'u',         // kubutz
+  '\u05B0': 'sh',        // sheva
+  '\u05B1': 'hsegol',    // hataf-segol
+  '\u05B2': 'hpatah',    // hataf-patah
+  '\u05B3': 'hkamatz'    // hataf-kamatz
+};
+
+/* Hebrew fonts available */
+const HEB_FONTS = [
+  { id: 'frank',   label: 'Frank Ruhl', stack: "'Frank Ruhl Libre', 'Noto Serif Hebrew', serif" },
+  { id: 'david',   label: 'David',       stack: "'David Libre', 'Frank Ruhl Libre', serif" },
+  { id: 'noto',    label: 'Noto Serif',  stack: "'Noto Serif Hebrew', 'Frank Ruhl Libre', serif" },
+  { id: 'heebo',   label: 'Heebo',       stack: "'Heebo', 'Frank Ruhl Libre', sans-serif" },
+  { id: 'assist',  label: 'Assistant',   stack: "'Assistant', 'Heebo', sans-serif" }
+];
+
+/* =========================================================================
+   STATE
+   ========================================================================= */
+let mode = 2;
+let inverse = false;
+let cardCount = 10;
+let selectedLetters = new Set();
+let selectedVowels = new Set();
+let dageshTavEnabled = false;
+let vavAsLetter = true;
+let lockEnabled = false;
+let lockPosition = 1;
+let lockLetters = new Set();
+let colorCodingEnabled = false;
+let colorCodingMode = 'letter';
+let nikudColorOverrides = {};
+let hebFontId = 'frank';
+
+let currentCards = [];
+let currentIndex = 0;
+let scores = []; // null = unscored, true = correct, false = wrong
+let isFlipped = false;
+let savedCards = [];
+let mistakeIndices = [];
+
+const COUNT_OPTIONS = [5, 10, 15, 20, 25, 30, 40, 50, 75, 100];
+
+/* =========================================================================
+   DARK MODE
+   ========================================================================= */
+function isDark() { return document.body.classList.contains('dark'); }
+function toggleDark(force) {
+  const next = (force === undefined) ? !isDark() : !!force;
+  document.body.classList.toggle('dark', next);
+  document.documentElement.classList.toggle('dark-pre', next);
+  try { localStorage.setItem('hebrewBlender_dark', next ? '1' : '0'); } catch(e){}
+  document.getElementById('darkToggle').textContent = next ? '☀️' : '🌙';
+  const drawerToggle = document.getElementById('darkToggleDrawer');
+  if (drawerToggle) drawerToggle.checked = next;
+  refreshVowelGroupColors();
+  initColorPickers();
+  if (document.getElementById('screenCard').classList.contains('active')) renderCurrentCard();
+}
+function initDarkMode() {
+  document.getElementById('darkToggle').textContent = isDark() ? '☀️' : '🌙';
+  const drawerToggle = document.getElementById('darkToggleDrawer');
+  if (drawerToggle) drawerToggle.checked = isDark();
+  document.getElementById('darkToggle').addEventListener('click', () => toggleDark());
+  if (drawerToggle) drawerToggle.addEventListener('change', (e) => toggleDark(e.target.checked));
+}
+
+/* =========================================================================
+   FONT
+   ========================================================================= */
+function loadHebFont(id) {
+  // All used fonts already preloaded via Google Fonts <link>.
+  return Promise.resolve();
+}
+function setHebFont(id) {
+  const f = HEB_FONTS.find(x => x.id === id) || HEB_FONTS[0];
+  hebFontId = f.id;
+  document.documentElement.style.setProperty('--heb-font', f.stack);
+  document.querySelectorAll('.font-opt').forEach(b => b.classList.toggle('active', b.dataset.fid === f.id));
+  saveSettings();
+}
+function initFontSelector() {
+  const host = document.getElementById('fontGrid');
+  host.innerHTML = HEB_FONTS.map(f => `
+    <button class="font-opt ${f.id === hebFontId ? 'active' : ''}" data-fid="${f.id}" style="font-family: ${f.stack}">
+      אבג
+      <small>${f.label}</small>
+    </button>
+  `).join('');
+  host.querySelectorAll('.font-opt').forEach(btn => {
+    btn.addEventListener('click', () => setHebFont(btn.dataset.fid));
+  });
+}
+
+/* =========================================================================
+   COLOR CODING
+   ========================================================================= */
+function getNikudColor(key) {
+  if (nikudColorOverrides[key]) return nikudColorOverrides[key];
+  const defs = isDark() ? NIKUD_DEFAULTS_DARK : NIKUD_DEFAULTS_LIGHT;
+  return defs[key] || (isDark() ? '#e9eaf0' : '#1c2333');
+}
+function colorizeHebrew(text) {
+  if (!colorCodingEnabled) return escapeHtml(text);
+  const chars = [...text];
+  let out = '';
+  for (let i = 0; i < chars.length; i++) {
+    const ch = chars[i];
+    const next = chars[i+1];
+    const key = NIKUD_CHAR_TO_KEY[ch];
+    if (key) {
+      const color = getNikudColor(key);
+      // Already-rendered base char is just before; we wrap previous emitted char
+      // Simpler approach: wrap each base+nikud pair by lookahead instead. So
+      // here we just emit the nikud char with style.
+      if (colorCodingMode === 'letter') {
+        out += `<span style="color:${color}">${escapeHtml(ch)}</span>`;
+      } else if (colorCodingMode === 'highlight') {
+        out += `<span style="background:${color}33">${escapeHtml(ch)}</span>`;
+      } else if (colorCodingMode === 'underline') {
+        out += `<span style="text-decoration:underline; text-decoration-color:${color}">${escapeHtml(ch)}</span>`;
+      }
+    } else {
+      // base letter — find a following nikud to colorize the base too
+      let combinedKey = null;
+      let j = i + 1;
+      while (j < chars.length && NIKUD_CHAR_TO_KEY[chars[j]] === undefined && /[\u0591-\u05C7]/.test(chars[j])) j++;
+      if (j < chars.length && NIKUD_CHAR_TO_KEY[chars[j]]) {
+        combinedKey = NIKUD_CHAR_TO_KEY[chars[j]];
+      }
+      if (combinedKey) {
+        const color = getNikudColor(combinedKey);
+        if (colorCodingMode === 'letter') {
+          out += `<span style="color:${color}">${escapeHtml(ch)}</span>`;
+        } else if (colorCodingMode === 'highlight') {
+          out += `<span style="background:${color}33">${escapeHtml(ch)}</span>`;
+        } else if (colorCodingMode === 'underline') {
+          out += `<span style="text-decoration:underline; text-decoration-color:${color}">${escapeHtml(ch)}</span>`;
+        }
+      } else {
+        out += escapeHtml(ch);
+      }
+    }
+  }
+  return out;
+}
+function escapeHtml(s) { return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function initColorPickers() {
+  const host = document.getElementById('colorPickers');
+  if (!host) return;
+  const keys = Object.keys(NIKUD_DEFAULTS_LIGHT);
+  host.innerHTML = keys.map(k => {
+    const color = getNikudColor(k);
+    return `
+      <div class="color-picker-row">
+        <span class="lbl">${k}</span>
+        <input type="color" data-key="${k}" value="${color}" />
+      </div>
+    `;
+  }).join('');
+  host.querySelectorAll('input[type=color]').forEach(inp => {
+    inp.addEventListener('input', () => {
+      nikudColorOverrides[inp.dataset.key] = inp.value;
+      saveSettings();
+      if (document.getElementById('screenCard').classList.contains('active')) renderCurrentCard();
+    });
+  });
+}
+
+function refreshVowelGroupColors() {
+  document.querySelectorAll('.vgroup').forEach(g => {
+    const key = g.dataset.key;
+    const grp = VOWEL_GROUPS.find(x => x.key === key);
+    if (!grp) return;
+    g.style.background = isDark() ? grp.bgDark : grp.bg;
+    g.style.borderColor = isDark() ? grp.colorDark : grp.color;
+    const head = g.querySelector('.vgroup-head');
+    if (head) head.style.color = isDark() ? grp.colorDark : grp.color;
+  });
+}
+
+/* =========================================================================
+   LETTERS UI
+   ========================================================================= */
+function getDisplayLetters() {
+  // Returns the list of letters to show, factoring in dageshTavEnabled.
+  return LETTERS.map(L => {
+    if (L.isTav) {
+      const isTav = dageshTavEnabled;
+      return {
+        ...L,
+        heb: isTav ? 'תּ' : 'ת',
+        name: isTav ? 'Tav' : 'Sav'
+      };
+    }
+    return L;
+  });
+}
+
+function initLetters() {
+  const grid = document.getElementById('letterGrid');
+  const display = getDisplayLetters();
+  grid.innerHTML = display.map(L => `
+    <div class="letter-tile ${selectedLetters.has(L.heb) ? 'selected' : ''}" data-heb="${L.heb}">
+      ${L.heb}
+      <small>${L.name}</small>
+    </div>
+  `).join('');
+  grid.querySelectorAll('.letter-tile').forEach(tile => {
+    tile.addEventListener('click', () => {
+      const heb = tile.dataset.heb;
+      if (selectedLetters.has(heb)) selectedLetters.delete(heb);
+      else selectedLetters.add(heb);
+      tile.classList.toggle('selected');
+      saveSettings();
+    });
+  });
+  // Lock grid (mini)
+  initLockGrid();
+}
+function initLockGrid() {
+  const grid = document.getElementById('lockGrid');
+  if (!grid) return;
+  const display = getDisplayLetters();
+  grid.innerHTML = display.map(L => `
+    <div class="letter-tile ${lockLetters.has(L.heb) ? 'selected' : ''}" data-heb="${L.heb}">${L.heb}</div>
+  `).join('');
+  grid.querySelectorAll('.letter-tile').forEach(tile => {
+    tile.addEventListener('click', () => {
+      const heb = tile.dataset.heb;
+      if (lockLetters.has(heb)) lockLetters.delete(heb);
+      else lockLetters.add(heb);
+      tile.classList.toggle('selected');
+      saveSettings();
+    });
+  });
+}
+function applyLetterButtons() {
+  document.getElementById('letterAll').addEventListener('click', () => {
+    getDisplayLetters().forEach(L => selectedLetters.add(L.heb));
+    initLetters(); saveSettings();
+  });
+  document.getElementById('letterNone').addEventListener('click', () => {
+    selectedLetters.clear();
+    initLetters(); saveSettings();
+  });
+  document.getElementById('letterNoSofit').addEventListener('click', () => {
+    selectedLetters.clear();
+    getDisplayLetters().forEach(L => { if (!L.sofit) selectedLetters.add(L.heb); });
+    initLetters(); saveSettings();
+  });
+  document.getElementById('dageshTavToggle').addEventListener('change', (e) => {
+    // Replace ת ↔ תּ in selected sets
+    const oldChar = dageshTavEnabled ? 'תּ' : 'ת';
+    const newChar = e.target.checked ? 'תּ' : 'ת';
+    dageshTavEnabled = e.target.checked;
+    if (selectedLetters.has(oldChar)) { selectedLetters.delete(oldChar); selectedLetters.add(newChar); }
+    if (lockLetters.has(oldChar)) { lockLetters.delete(oldChar); lockLetters.add(newChar); }
+    initLetters();
+    saveSettings();
+  });
+}
+
+/* =========================================================================
+   VOWELS UI
+   ========================================================================= */
+function initVowels() {
+  const host = document.getElementById('vowelHost');
+  host.innerHTML = VOWEL_GROUPS.filter(g => g.vowels.length > 0).map(g => `
+    <div class="vgroup" data-key="${g.key}">
+      <div class="vgroup-head" style="color:${isDark() ? g.colorDark : g.color}">${g.name}</div>
+      <div class="vgroup-body">
+        ${g.vowels.map(v => `
+          <div class="vtile ${selectedVowels.has(v.key) ? 'selected' : ''}" data-key="${v.key}">
+            <div class="vheb">${v.nikud}</div>
+            <div class="vname">${v.name}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  host.querySelectorAll('.vgroup-head').forEach(h => {
+    h.addEventListener('click', () => h.parentElement.classList.toggle('collapsed'));
+  });
+  host.querySelectorAll('.vtile').forEach(t => {
+    t.addEventListener('click', () => {
+      const key = t.dataset.key;
+      if (selectedVowels.has(key)) selectedVowels.delete(key);
+      else selectedVowels.add(key);
+      t.classList.toggle('selected');
+      updateVavAsLetterVisibility();
+      saveSettings();
+    });
+  });
+  refreshVowelGroupColors();
+}
+function applyVowelButtons() {
+  document.getElementById('vowelAll').addEventListener('click', () => {
+    selectedVowels.clear();
+    VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => selectedVowels.add(v.key)));
+    initVowels(); updateVavAsLetterVisibility(); saveSettings();
+  });
+  document.getElementById('vowelMain').addEventListener('click', () => {
+    selectedVowels.clear();
+    VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => { if (v.main) selectedVowels.add(v.key); }));
+    initVowels(); updateVavAsLetterVisibility(); saveSettings();
+  });
+  document.getElementById('vowelNone').addEventListener('click', () => {
+    selectedVowels.clear();
+    initVowels(); updateVavAsLetterVisibility(); saveSettings();
+  });
+  document.getElementById('vavAsLetterToggle').addEventListener('change', (e) => {
+    vavAsLetter = e.target.checked;
+    saveSettings();
+  });
+}
+function updateVavAsLetterVisibility() {
+  const showVav = selectedVowels.has('vcholam') || selectedVowels.has('shuruk');
+  document.getElementById('vavRow').style.display = showVav ? '' : 'none';
+}
+
+/* =========================================================================
+   MODE / COUNT UI
+   ========================================================================= */
+function setLetterMode(m) {
+  mode = m;
+  document.querySelectorAll('#modePills .pill').forEach(p => p.classList.toggle('active', +p.dataset.mode === m));
+  document.getElementById('lockBlock').classList.toggle('hide', m < 2);
+  // Force lockPosition to be valid
+  if (lockPosition > m) lockPosition = m;
+  document.querySelectorAll('#lockPosPills .pill').forEach(p => {
+    p.classList.toggle('active', +p.dataset.pos === lockPosition);
+    p.style.display = (+p.dataset.pos > m) ? 'none' : '';
+  });
+  saveSettings();
+}
+function setCardCount(n) {
+  cardCount = n;
+  document.querySelectorAll('.count-btn').forEach(b => b.classList.toggle('active', +b.dataset.n === n));
+  saveSettings();
+}
+function initCountGrid() {
+  const grid = document.getElementById('countGrid');
+  grid.innerHTML = COUNT_OPTIONS.map(n => `<button class="count-btn ${n===cardCount?'active':''}" data-n="${n}">${n}</button>`).join('');
+  grid.querySelectorAll('.count-btn').forEach(b => b.addEventListener('click', () => setCardCount(+b.dataset.n)));
+}
+
+/* =========================================================================
+   PANELS / DRAWER / TOOLTIP
+   ========================================================================= */
+function initPanelCollapse() {
+  document.querySelectorAll('.panel-title').forEach(t => {
+    t.addEventListener('click', () => t.parentElement.classList.toggle('collapsed'));
+  });
+}
+function initDrawer() {
+  const d = document.getElementById('drawer');
+  const bd = document.getElementById('drawerBackdrop');
+  document.getElementById('gearBtn').addEventListener('click', () => {
+    d.classList.add('open'); bd.classList.add('open'); d.setAttribute('aria-hidden','false');
+  });
+  function close() { d.classList.remove('open'); bd.classList.remove('open'); d.setAttribute('aria-hidden','true'); }
+  document.getElementById('drawerClose').addEventListener('click', close);
+  bd.addEventListener('click', close);
+}
+
+(function tooltipIIFE() {
+  const tip = document.getElementById('tipFloat');
+  if (!tip) return;
+  let pinned = null;
+  function show(el) {
+    const text = el.dataset.tip || '';
+    if (!text) return;
+    tip.textContent = text;
+    const r = el.getBoundingClientRect();
+    tip.style.left = Math.max(8, r.left) + 'px';
+    tip.style.top  = (r.bottom + 6) + 'px';
+    // Adjust if overflowing right
+    requestAnimationFrame(() => {
+      const tr = tip.getBoundingClientRect();
+      if (tr.right > window.innerWidth - 6) {
+        tip.style.left = (window.innerWidth - tr.width - 8) + 'px';
+      }
+    });
+    tip.classList.add('show');
+  }
+  function hide() { tip.classList.remove('show'); }
+  document.addEventListener('mouseover', e => {
+    const el = e.target.closest('.has-tip');
+    if (el) show(el);
+  });
+  document.addEventListener('mouseout', e => {
+    if (e.target.closest && e.target.closest('.has-tip')) hide();
+  });
+  document.addEventListener('click', e => {
+    const el = e.target.closest('.has-tip');
+    if (el) {
+      if (pinned === el) { pinned = null; hide(); }
+      else { pinned = el; show(el); setTimeout(() => { if (pinned === el) { pinned = null; hide(); } }, 3000); }
+    } else if (!e.target.closest('#tipFloat')) {
+      pinned = null; hide();
+    }
+  });
+})();
+
+/* =========================================================================
+   PRESETS
+   ========================================================================= */
+const PRESET_KEY = 'hebrewFlashCards_presets';
+
+function getSettings() {
+  return {
+    mode, inverse, cardCount,
+    selectedLetters: [...selectedLetters],
+    selectedVowels: [...selectedVowels],
+    dageshTavEnabled, vavAsLetter,
+    lockEnabled, lockPosition,
+    lockLetters: [...lockLetters],
+    colorCodingEnabled, colorCodingMode,
+    nikudColorOverrides: { ...nikudColorOverrides },
+    hebFontId
+  };
+}
+function applySettings(s) {
+  if (!s) return;
+  mode = s.mode || 2;
+  inverse = !!s.inverse;
+  cardCount = s.cardCount || 10;
+  selectedLetters = new Set(s.selectedLetters || []);
+  selectedVowels = new Set(s.selectedVowels || []);
+  dageshTavEnabled = !!s.dageshTavEnabled;
+  vavAsLetter = s.vavAsLetter !== false;
+  lockEnabled = !!s.lockEnabled;
+  lockPosition = s.lockPosition || 1;
+  lockLetters = new Set(s.lockLetters || []);
+  colorCodingEnabled = !!s.colorCodingEnabled;
+  colorCodingMode = s.colorCodingMode || 'letter';
+  nikudColorOverrides = { ...(s.nikudColorOverrides || {}) };
+  hebFontId = s.hebFontId || 'frank';
+
+  // Reflect in UI
+  setLetterMode(mode);
+  setCardCount(cardCount);
+  document.getElementById('inverseToggle').checked = inverse;
+  document.getElementById('dageshTavToggle').checked = dageshTavEnabled;
+  document.getElementById('vavAsLetterToggle').checked = vavAsLetter;
+  document.getElementById('lockToggle').checked = lockEnabled;
+  document.getElementById('lockOptions').classList.toggle('hide', !lockEnabled);
+  document.getElementById('colorCodeToggle').checked = colorCodingEnabled;
+  document.getElementById('colorCodeOpts').classList.toggle('hide', !colorCodingEnabled);
+  document.querySelectorAll('#colorModePills .pill').forEach(p => p.classList.toggle('active', p.dataset.cmode === colorCodingMode));
+  document.querySelectorAll('#lockPosPills .pill').forEach(p => p.classList.toggle('active', +p.dataset.pos === lockPosition));
+  setHebFont(hebFontId);
+  initLetters();
+  initVowels();
+  initColorPickers();
+  updateVavAsLetterVisibility();
+}
+
+const SETTINGS_KEY = 'hebrewFlashCards_settings';
+function saveSettings() {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(getSettings())); } catch(e){}
+}
+function loadSettings() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || 'null');
+    if (s) applySettings(s);
+    else {
+      // sensible defaults: all letters except sofit, main vowels
+      getDisplayLetters().forEach(L => { if (!L.sofit) selectedLetters.add(L.heb); });
+      VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => { if (v.main) selectedVowels.add(v.key); }));
+    }
+  } catch(e) {
+    getDisplayLetters().forEach(L => { if (!L.sofit) selectedLetters.add(L.heb); });
+    VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => { if (v.main) selectedVowels.add(v.key); }));
+  }
+}
+
+function readPresets() {
+  try { return JSON.parse(localStorage.getItem(PRESET_KEY) || '{}'); } catch(e) { return {}; }
+}
+function writePresets(obj) {
+  try { localStorage.setItem(PRESET_KEY, JSON.stringify(obj)); } catch(e){}
+}
+function savePreset() {
+  const nameInput = document.getElementById('presetName');
+  const name = (nameInput.value || '').trim();
+  if (!name) { nameInput.focus(); return; }
+  const presets = readPresets();
+  if (presets[name]) {
+    if (!confirm(`Overwrite preset "${name}"?`)) return;
+  }
+  presets[name] = { settings: getSettings(), order: Date.now() };
+  writePresets(presets);
+  nameInput.value = '';
+  renderPresets();
+}
+function loadPreset(name) {
+  const presets = readPresets();
+  if (!presets[name]) return;
+  applySettings(presets[name].settings);
+  saveSettings();
+}
+function deletePreset(name) {
+  if (!confirm(`Delete preset "${name}"?`)) return;
+  const presets = readPresets();
+  delete presets[name];
+  writePresets(presets);
+  renderPresets();
+}
+function overwritePreset(name) {
+  const presets = readPresets();
+  if (!presets[name]) return;
+  if (!confirm(`Overwrite preset "${name}" with current settings?`)) return;
+  presets[name] = { settings: getSettings(), order: presets[name].order || Date.now() };
+  writePresets(presets);
+  renderPresets();
+}
+
+function renderPresets() {
+  const presets = readPresets();
+  const names = Object.keys(presets).sort((a, b) => (presets[a].order || 0) - (presets[b].order || 0));
+  const list = document.getElementById('presetList');
+  const empty = document.getElementById('presetEmpty');
+  list.innerHTML = '';
+  if (names.length === 0) { empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  names.forEach(name => {
+    const li = document.createElement('li');
+    li.className = 'preset-item';
+    li.draggable = true;
+    li.dataset.name = name;
+    li.innerHTML = `
+      <span class="drag" aria-hidden="true">⋮⋮</span>
+      <span class="pname"></span>
+      <button class="btn sm primary" data-act="load">Load</button>
+      <button class="btn sm" data-act="overwrite">Save</button>
+      <button class="btn sm danger" data-act="delete">✕</button>
+    `;
+    li.querySelector('.pname').textContent = name;
+    li.querySelector('[data-act=load]').addEventListener('click', () => loadPreset(name));
+    li.querySelector('[data-act=overwrite]').addEventListener('click', () => overwritePreset(name));
+    li.querySelector('[data-act=delete]').addEventListener('click', () => deletePreset(name));
+    list.appendChild(li);
+  });
+  makeSortable(list, () => {
+    // Re-order order field based on new DOM order
+    const presets = readPresets();
+    [...list.children].forEach((li, i) => {
+      const n = li.dataset.name;
+      if (presets[n]) presets[n].order = i;
+    });
+    writePresets(presets);
+  });
+}
+
+function makeSortable(list, onChange) {
+  let dragEl = null;
+  list.addEventListener('dragstart', e => {
+    const li = e.target.closest('.preset-item');
+    if (!li) return;
+    dragEl = li;
+    li.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  list.addEventListener('dragover', e => {
+    e.preventDefault();
+    const after = getDragAfter(list, e.clientY);
+    if (!dragEl) return;
+    if (after == null) list.appendChild(dragEl);
+    else list.insertBefore(dragEl, after);
+  });
+  list.addEventListener('dragend', () => {
+    if (!dragEl) return;
+    dragEl.classList.remove('dragging');
+    dragEl = null;
+    if (onChange) onChange();
+  });
+  function getDragAfter(container, y) {
+    const els = [...container.querySelectorAll('.preset-item:not(.dragging)')];
+    return els.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) return { offset, el: child };
+      return closest;
+    }, { offset: -Infinity }).el;
+  }
+}
+
+/* Backup */
+function exportPresets() {
+  const data = {
+    presets: readPresets(),
+    settings: getSettings(),
+    exportedAt: new Date().toISOString()
+  };
+  document.getElementById('backupArea').value = JSON.stringify(data, null, 2);
+}
+function importPresets() {
+  try {
+    const text = document.getElementById('backupArea').value;
+    const data = JSON.parse(text);
+    if (data.presets) {
+      const existing = readPresets();
+      writePresets(Object.assign(existing, data.presets));
+      renderPresets();
+      alert('Imported successfully.');
+    } else {
+      alert('No "presets" key found.');
+    }
+  } catch(e) {
+    alert('Invalid JSON: ' + e.message);
+  }
+}
+function copyTextarea() {
+  const ta = document.getElementById('backupArea');
+  ta.select();
+  document.execCommand('copy');
+  const btn = document.getElementById('copyBtn');
+  const orig = btn.textContent;
+  btn.textContent = 'Copied!';
+  setTimeout(() => btn.textContent = orig, 1200);
+}
+
+/* =========================================================================
+   CARD GENERATION
+   ========================================================================= */
+function getDisplayLetterByHeb(heb) {
+  return getDisplayLetters().find(L => L.heb === heb);
+}
+function getSound(letter, vowelKey) {
+  const sClass = VOWEL_TO_SOUNDS[vowelKey];
+  let s = letter.sounds[sClass] || '';
+  if (vowelKey === 'tzere') {
+    if (s.endsWith('eh')) s = s.slice(0, -2) + 'ey';
+  }
+  return s;
+}
+function getNikudCombiningChar(vowel) {
+  // vowel.nikud is e.g. 'אַ'; slice off the alef
+  return vowel.nikud.slice(1);
+}
+
+function buildPool(filterFn) {
+  const all = getDisplayLetters();
+  return all.filter(L => selectedLetters.has(L.heb)).filter(filterFn);
+}
+function pickRandom(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+function pickVowel() {
+  const keys = [...selectedVowels];
+  if (keys.length === 0) return null;
+  // Build flat vowel list with full data
+  const all = [];
+  VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => { if (selectedVowels.has(v.key)) all.push(v); }));
+  return pickRandom(all);
+}
+
+function generateCard() {
+  // Build a single card object: { heb, translit }
+  const m = mode;
+  const result = { heb: '', translit: '' };
+
+  // Position pools
+  const firstPool = buildPool(L => !L.sofit && !L.isVav);
+  const midPool   = buildPool(L => !L.hasSofit && !L.isVav && L.heb !== 'ו');
+  const lastPool  = buildPool(L => !L.isVav); // sofit allowed at end
+
+  if (firstPool.length === 0) return null;
+
+  // Lock override: when locked, replace appropriate pool with [...lockLetters mapped to letter objs]
+  const lockObjs = [...lockLetters].map(getDisplayLetterByHeb).filter(Boolean);
+
+  function getPoolForPosition(pos) {
+    let pool;
+    if (m === 1)            pool = firstPool;
+    else if (pos === 1)     pool = firstPool;
+    else if (pos === m)     pool = lastPool;
+    else                    pool = midPool;
+    if (lockEnabled && lockPosition === pos && lockObjs.length > 0) {
+      pool = lockObjs;
+    }
+    return pool;
+  }
+
+  // Build positions
+  const positions = [];
+  for (let i = 1; i <= m; i++) {
+    const pool = getPoolForPosition(i);
+    if (pool.length === 0) return null;
+    positions.push(pickRandom(pool));
+  }
+
+  // Pick a vowel for the FINAL position (the syllable being read).
+  // For multi-letter cards, intermediate consonants use sheva-like consonant-only sound.
+  let vowel = pickVowel();
+  if (!vowel) return null;
+
+  // Guards: vav + shva → repick vowel; sin/shin + holam → repick vowel
+  let guardTries = 0;
+  while (guardTries < 8) {
+    const finalLetter = positions[m - 1];
+    if (finalLetter.heb === 'ו' && vowel.key === 'sh') { vowel = pickVowel(); guardTries++; continue; }
+    if ((finalLetter.heb === 'שׁ' || finalLetter.heb === 'שׂ') && (vowel.key === 'o' || vowel.key === 'vcholam')) {
+      vowel = pickVowel(); guardTries++; continue;
+    }
+    break;
+  }
+  if (!vowel) return null;
+
+  // Special: vcholam / shuruk are whole-syllable (וֹ / וּ). Build accordingly.
+  if (vowel.key === 'vcholam' || vowel.key === 'shuruk') {
+    if (vavAsLetter && m === 1) {
+      // Single-letter card: just the vav syllable
+      result.heb = vowel.nikud;
+      result.translit = (vowel.key === 'vcholam') ? 'O' : 'U';
+      return result;
+    } else if (vavAsLetter) {
+      // Treat the final position as the vav-vowel syllable
+      // Replace the final letter with the vav syllable
+      let heb = '';
+      let translit = '';
+      for (let i = 0; i < m - 1; i++) {
+        const L = positions[i];
+        heb += L.heb + '\u05B0'; // sheva-style intermediate
+        const sh = (L.sounds.sh || '').replace(/'/g, '');
+        translit += (i === 0) ? L.sounds.a.replace(/ah$/i, '') + '' : sh;
+      }
+      heb += vowel.nikud;
+      translit += (vowel.key === 'vcholam') ? 'o' : 'u';
+      // Capitalize first letter
+      result.heb = heb;
+      result.translit = capitalize(translit);
+      return result;
+    }
+    // else fall through, treat vowel as ordinary mark on final letter
+  }
+
+  // Standard build: each position is a letter; final gets the chosen vowel,
+  // intermediates get a combining sheva (or implicit consonant cluster).
+  let heb = '';
+  let translit = '';
+
+  for (let i = 0; i < m; i++) {
+    const L = positions[i];
+    const isLast = (i === m - 1);
+    if (isLast) {
+      const nikud = getNikudCombiningChar(vowel);
+      heb += L.heb + nikud;
+      const sound = getSound(L, vowel.key);
+      if (i === 0) translit += sound;
+      else {
+        // Subsequent letter, append sound but lowercase its first char (unless it's a single-letter card)
+        translit += sound.toLowerCase();
+      }
+    } else {
+      // Intermediate: add a sheva-like marker for visual cue
+      heb += L.heb + '\u05B0';
+      const sh = (L.sounds.sh || '').replace(/'/g, '');
+      if (i === 0) translit += sh;
+      else translit += sh.toLowerCase();
+    }
+  }
+  result.heb = heb;
+  result.translit = capitalize(translit);
+  return result;
+}
+function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function generateDeck(n) {
+  const deck = [];
+  let attempts = 0;
+  while (deck.length < n && attempts < n * 20) {
+    const c = generateCard();
+    if (c) deck.push(c);
+    attempts++;
+  }
+  return deck;
+}
+
+/* =========================================================================
+   PRACTICE FLOW
+   ========================================================================= */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+function startPractice() {
+  // Validate
+  const issues = [];
+  if (selectedLetters.size === 0) issues.push('Select at least one letter.');
+  if (selectedVowels.size === 0) issues.push('Select at least one vowel.');
+  if (lockEnabled && lockLetters.size === 0) issues.push('Lock is on but no lock letter is chosen.');
+  if (issues.length) { alert(issues.join('\n')); return; }
+
+  const deck = generateDeck(cardCount);
+  if (deck.length === 0) { alert("Couldn't generate cards with the current selection."); return; }
+  currentCards = deck;
+  savedCards = deck.slice();
+  currentIndex = 0;
+  scores = new Array(deck.length).fill(null);
+  isFlipped = false;
+  renderCurrentCard();
+  showScreen('screenCard');
+}
+
+function renderCurrentCard() {
+  if (currentCards.length === 0) return;
+  const card = currentCards[currentIndex];
+  const total = currentCards.length;
+  const meta = document.getElementById('cardMeta');
+  meta.textContent = `Card ${currentIndex + 1} of ${total}`;
+  document.getElementById('progressBar').style.width = `${((currentIndex + 1) / total) * 100}%`;
+
+  const fcCard = document.getElementById('fcCard');
+  const front = document.getElementById('fcFrontHeb');
+  const back = document.getElementById('fcBackTr');
+
+  if (inverse) {
+    // Inverse: translit on front, hebrew on back
+    front.textContent = card.translit;
+    front.style.fontFamily = 'var(--serif)';
+    front.style.direction = 'ltr';
+    back.innerHTML = colorizeHebrew(card.heb);
+    back.style.fontFamily = 'var(--heb-font)';
+    back.style.direction = 'rtl';
+    back.style.fontSize = 'clamp(3rem, 12vw, 5rem)';
+  } else {
+    front.innerHTML = colorizeHebrew(card.heb);
+    front.style.fontFamily = 'var(--heb-font)';
+    front.style.direction = 'rtl';
+    back.textContent = card.translit;
+    back.style.fontFamily = 'var(--serif)';
+    back.style.direction = 'ltr';
+    back.style.fontSize = 'clamp(1.4rem, 6vw, 2.4rem)';
+  }
+
+  // Reset flip
+  fcCard.classList.toggle('flipped', isFlipped);
+
+  // Badges
+  const fb = document.getElementById('fcFrontBadge');
+  const bb = document.getElementById('fcBackBadge');
+  fb.classList.add('hide'); bb.classList.add('hide');
+  fb.classList.remove('good','bad'); bb.classList.remove('good','bad');
+  if (scores[currentIndex] === true) {
+    fb.classList.remove('hide'); fb.classList.add('good'); fb.textContent = '✓';
+    bb.classList.remove('hide'); bb.classList.add('good'); bb.textContent = '✓';
+  } else if (scores[currentIndex] === false) {
+    fb.classList.remove('hide'); fb.classList.add('bad'); fb.textContent = '✗';
+    bb.classList.remove('hide'); bb.classList.add('bad'); bb.textContent = '✗';
+  }
+
+  // Disable nav at edges (visual only)
+  document.getElementById('prevBtn').disabled = (currentIndex === 0);
+  // next stays enabled to allow skipping
+}
+
+function flipCard() {
+  isFlipped = !isFlipped;
+  document.getElementById('fcCard').classList.toggle('flipped', isFlipped);
+}
+
+function markCorrect(e) {
+  if (e) e.stopPropagation();
+  scores[currentIndex] = true;
+  setTimeout(autoAdvance, 220);
+}
+function markIncorrect(e) {
+  if (e) e.stopPropagation();
+  scores[currentIndex] = false;
+  setTimeout(autoAdvance, 220);
+}
+function autoAdvance() {
+  if (currentIndex < currentCards.length - 1) {
+    currentIndex++;
+    isFlipped = false;
+    renderCurrentCard();
+  } else {
+    // End of deck
+    showResults();
+  }
+}
+function nextCard() {
+  if (currentIndex < currentCards.length - 1) {
+    currentIndex++;
+    isFlipped = false;
+    renderCurrentCard();
+  } else {
+    showResults();
+  }
+}
+function prevCard() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    isFlipped = false;
+    renderCurrentCard();
+  }
+}
+
+function showResults() {
+  const total = currentCards.length;
+  const correctCount = scores.filter(s => s === true).length;
+  const pct = total ? Math.round((correctCount / total) * 100) : 0;
+  document.getElementById('resultsPct').textContent = pct + '%';
+  document.getElementById('resultsFrac').textContent = `${correctCount} / ${total} correct`;
+
+  // Build list
+  const list = document.getElementById('resultsList');
+  list.innerHTML = currentCards.map((c, i) => {
+    const s = scores[i];
+    const cls = s === true ? 'good' : s === false ? 'bad' : '';
+    const mark = s === true ? '✓' : s === false ? '✗' : '–';
+    return `
+      <li class="result-item ${cls}">
+        <span class="rmark">${mark}</span>
+        <span class="rheb">${c.heb}</span>
+        <span class="rtr">${escapeHtml(c.translit)}</span>
+      </li>
+    `;
+  }).join('');
+
+  mistakeIndices = scores.map((s, i) => s === false ? i : -1).filter(i => i >= 0);
+  document.getElementById('mistakesBtn').disabled = mistakeIndices.length === 0;
+
+  showScreen('screenResults');
+}
+
+function redoSameSet() {
+  currentCards = savedCards.slice();
+  currentIndex = 0;
+  scores = new Array(currentCards.length).fill(null);
+  isFlipped = false;
+  renderCurrentCard();
+  showScreen('screenCard');
+}
+function practiceMistakes() {
+  if (mistakeIndices.length === 0) return;
+  currentCards = mistakeIndices.map(i => savedCards[i]);
+  savedCards = currentCards.slice();
+  currentIndex = 0;
+  scores = new Array(currentCards.length).fill(null);
+  isFlipped = false;
+  renderCurrentCard();
+  showScreen('screenCard');
+}
+function returnToSetup() {
+  showScreen('screenSetup');
+}
+
+/* =========================================================================
+   WIRE UP CARD SCREEN
+   ========================================================================= */
+function wireCardScreen() {
+  document.getElementById('fcCard').addEventListener('click', flipCard);
+  document.getElementById('flipBtn').addEventListener('click', flipCard);
+  document.getElementById('nextBtn').addEventListener('click', nextCard);
+  document.getElementById('prevBtn').addEventListener('click', prevCard);
+  document.getElementById('markYes').addEventListener('click', markCorrect);
+  document.getElementById('markNo').addEventListener('click', markIncorrect);
+  document.getElementById('endEarlyBtn').addEventListener('click', () => {
+    if (confirm('End practice and see results so far?')) showResults();
+  });
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('screenCard').classList.contains('active')) return;
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipCard(); }
+    else if (e.key === 'ArrowLeft') { prevCard(); }
+    else if (e.key === 'ArrowRight') { nextCard(); }
+    else if (e.key.toLowerCase() === 'y') markCorrect();
+    else if (e.key.toLowerCase() === 'n') markIncorrect();
+  });
+}
+
+/* =========================================================================
+   INIT
+   ========================================================================= */
+function wireSetupScreen() {
+  document.querySelectorAll('#modePills .pill').forEach(p => p.addEventListener('click', () => setLetterMode(+p.dataset.mode)));
+  document.getElementById('inverseToggle').addEventListener('change', e => { inverse = e.target.checked; saveSettings(); });
+  document.getElementById('lockToggle').addEventListener('change', e => {
+    lockEnabled = e.target.checked;
+    document.getElementById('lockOptions').classList.toggle('hide', !lockEnabled);
+    saveSettings();
+  });
+  document.querySelectorAll('#lockPosPills .pill').forEach(p => p.addEventListener('click', () => {
+    lockPosition = +p.dataset.pos;
+    document.querySelectorAll('#lockPosPills .pill').forEach(x => x.classList.toggle('active', x === p));
+    saveSettings();
+  }));
+  applyLetterButtons();
+  applyVowelButtons();
+
+  // Color coding
+  document.getElementById('colorCodeToggle').addEventListener('change', e => {
+    colorCodingEnabled = e.target.checked;
+    document.getElementById('colorCodeOpts').classList.toggle('hide', !colorCodingEnabled);
+    saveSettings();
+  });
+  document.querySelectorAll('#colorModePills .pill').forEach(p => p.addEventListener('click', () => {
+    colorCodingMode = p.dataset.cmode;
+    document.querySelectorAll('#colorModePills .pill').forEach(x => x.classList.toggle('active', x === p));
+    saveSettings();
+  }));
+  document.getElementById('colorReset').addEventListener('click', () => {
+    nikudColorOverrides = {};
+    initColorPickers();
+    saveSettings();
+  });
+
+  // Presets
+  document.getElementById('savePresetBtn').addEventListener('click', savePreset);
+  document.getElementById('presetName').addEventListener('keydown', e => { if (e.key === 'Enter') savePreset(); });
+
+  // Backup
+  document.getElementById('exportBtn').addEventListener('click', exportPresets);
+  document.getElementById('importBtn').addEventListener('click', importPresets);
+  document.getElementById('copyBtn').addEventListener('click', copyTextarea);
+
+  // Start
+  document.getElementById('startBtn').addEventListener('click', startPractice);
+}
+
+function wireResultsScreen() {
+  document.getElementById('redoBtn').addEventListener('click', redoSameSet);
+  document.getElementById('mistakesBtn').addEventListener('click', practiceMistakes);
+  document.getElementById('backToSetupBtn').addEventListener('click', returnToSetup);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initDarkMode();
+  loadSettings();
+  initLetters();
+  initVowels();
+  updateVavAsLetterVisibility();
+  initColorPickers();
+  initFontSelector();
+  initCountGrid();
+  setLetterMode(mode);
+  setCardCount(cardCount);
+  renderPresets();
+  initPanelCollapse();
+  initDrawer();
+  wireSetupScreen();
+  wireCardScreen();
+  wireResultsScreen();
+
+  // Reflect current settings in checkboxes (in case loadSettings missed something)
+  document.getElementById('inverseToggle').checked = inverse;
+  document.getElementById('dageshTavToggle').checked = dageshTavEnabled;
+  document.getElementById('vavAsLetterToggle').checked = vavAsLetter;
+  document.getElementById('lockToggle').checked = lockEnabled;
+  document.getElementById('lockOptions').classList.toggle('hide', !lockEnabled);
+  document.getElementById('colorCodeToggle').checked = colorCodingEnabled;
+  document.getElementById('colorCodeOpts').classList.toggle('hide', !colorCodingEnabled);
+});
+</script>
+</body>
+</html>
