@@ -697,7 +697,6 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
   <h1>Flash Cards</h1>
   <div class="h-right">
     <button class="h-btn" id="darkToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
-    <button class="h-btn" id="gearBtn" title="Settings" aria-label="Settings">⚙️</button>
   </div>
 </header>
 
@@ -1263,6 +1262,26 @@ function colorizeHebrew(text) {
 }
 function escapeHtml(s) { return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
+function applyPreviewColor(el, key) {
+  const color = getNikudColor(key);
+  el.style.color = '';
+  el.style.background = '';
+  el.style.textDecoration = '';
+  if (colorCodingMode === 'letter') {
+    el.style.color = color;
+  } else if (colorCodingMode === 'highlight') {
+    el.style.background = color + '33';
+  } else if (colorCodingMode === 'underline') {
+    el.style.textDecoration = 'underline solid ' + color;
+  }
+}
+
+function refreshColorPickerPreviews() {
+  document.querySelectorAll('#colorPickers [data-preview-key]').forEach(el => {
+    applyPreviewColor(el, el.dataset.previewKey);
+  });
+}
+
 function initColorPickers() {
   const host = document.getElementById('colorPickers');
   if (!host) return;
@@ -1272,12 +1291,15 @@ function initColorPickers() {
     const row = document.createElement('div');
     row.className = 'color-picker-row';
     row.innerHTML = `
-      <span style="font-family:var(--heb-font);font-size:1.1rem;direction:rtl;min-width:22px;text-align:center;">${def.example}</span>
+      <span data-preview-key="${def.key}" style="font-family:var(--heb-font);font-size:1.1rem;direction:rtl;min-width:22px;text-align:center;">${def.example}</span>
       <span class="lbl" style="flex:1;">${def.name}</span>
       <input type="color" data-key="${def.key}" value="${color}" />
     `;
+    const preview = row.querySelector('[data-preview-key]');
+    applyPreviewColor(preview, def.key);
     row.querySelector('input').addEventListener('input', e => {
       nikudColorOverrides[def.key] = e.target.value;
+      applyPreviewColor(preview, def.key);
       saveSettings();
       if (document.getElementById('screenCard').classList.contains('active')) renderCurrentCard();
     });
@@ -1481,9 +1503,6 @@ function initPanelCollapse() {
 function initDrawer() {
   const d = document.getElementById('drawer');
   const bd = document.getElementById('drawerBackdrop');
-  document.getElementById('gearBtn').addEventListener('click', () => {
-    d.classList.add('open'); bd.classList.add('open'); d.setAttribute('aria-hidden','false');
-  });
   function close() { d.classList.remove('open'); bd.classList.remove('open'); d.setAttribute('aria-hidden','true'); }
   document.getElementById('drawerClose').addEventListener('click', close);
   bd.addEventListener('click', close);
@@ -1995,6 +2014,9 @@ function renderCurrentCard() {
     bb.classList.remove('hide'); bb.classList.add('bad'); bb.textContent = '✗';
   }
 
+  // Show yes/no buttons only on the back face
+  document.querySelector('.fc-mark-row').classList.toggle('hide', !isFlipped);
+
   // Disable nav at edges (visual only)
   document.getElementById('prevBtn').disabled = (currentIndex === 0);
   // next stays enabled to allow skipping
@@ -2003,6 +2025,7 @@ function renderCurrentCard() {
 function flipCard() {
   isFlipped = !isFlipped;
   document.getElementById('fcCard').classList.toggle('flipped', isFlipped);
+  document.querySelector('.fc-mark-row').classList.toggle('hide', !isFlipped);
 }
 
 function markCorrect(e) {
@@ -2143,6 +2166,7 @@ function wireSetupScreen() {
   document.querySelectorAll('#colorModePills .pill').forEach(p => p.addEventListener('click', () => {
     colorCodingMode = p.dataset.cmode;
     document.querySelectorAll('#colorModePills .pill').forEach(x => x.classList.toggle('active', x === p));
+    refreshColorPickerPreviews();
     saveSettings();
   }));
   document.getElementById('colorReset').addEventListener('click', () => {
