@@ -199,6 +199,8 @@ body.dark .panel-title {
   font-weight: 700;
 }
 .btn.gold:hover { background: var(--gold-light); }
+.btn.play { color: var(--good); border-color: var(--good); background: transparent; }
+.btn.play:hover { background: var(--good-soft); }
 .btn.danger { color: var(--bad); border-color: var(--bad); background: transparent; }
 .btn.danger:hover { background: var(--bad-soft); }
 .btn.ghost { background: transparent; border-color: var(--border); }
@@ -1617,6 +1619,10 @@ function loadPreset(name) {
   applySettings(presets[name].settings);
   saveSettings();
 }
+function playPreset(name) {
+  loadPreset(name);
+  startPractice();
+}
 function deletePreset(name) {
   if (!confirm(`Delete preset "${name}"?`)) return;
   const presets = readPresets();
@@ -1649,11 +1655,13 @@ function renderPresets() {
     li.innerHTML = `
       <span class="drag" aria-hidden="true">⋮⋮</span>
       <span class="pname"></span>
+      <button class="btn sm play" data-act="play">▶ Play</button>
       <button class="btn sm primary" data-act="load">Load</button>
       <button class="btn sm" data-act="overwrite">Save</button>
       <button class="btn sm danger" data-act="delete">✕</button>
     `;
     li.querySelector('.pname').textContent = name;
+    li.querySelector('[data-act=play]').addEventListener('click', () => playPreset(name));
     li.querySelector('[data-act=load]').addEventListener('click', () => loadPreset(name));
     li.querySelector('[data-act=overwrite]').addEventListener('click', () => overwritePreset(name));
     li.querySelector('[data-act=delete]').addEventListener('click', () => deletePreset(name));
