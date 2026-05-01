@@ -276,6 +276,15 @@
   .day-item.badge-left .badge-text { direction: ltr; font-family: inherit; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.03em; }
   /* Both mode: English sub-label under Hebrew badge text */
   .badge-text-eng { font-size: 0.6rem; color: var(--gold-light); margin-top: 2px; direction: ltr; line-height: 1.2; opacity: 0.85; }
+  /* TTS tap-to-read: tappable areas */
+  .tts-tappable .day-main,
+  .tts-tappable .day-badge { cursor: pointer; transition: opacity 0.15s; }
+  .tts-tappable .day-main:hover,
+  .tts-tappable .day-badge:hover { opacity: 0.7; }
+  .weather-tts-on .weather-label,
+  .weather-tts-on .weather-descriptor { cursor: pointer; transition: opacity 0.15s; }
+  .weather-tts-on .weather-label:hover,
+  .weather-tts-on .weather-descriptor:hover { opacity: 0.7; }
 
   /* ───── Center: date/time ───── */
   .dash-center {
@@ -1108,6 +1117,10 @@
       <label>Hide weather description</label>
       <label class="toggle"><input type="checkbox" id="hideWeatherDesc"><span class="slider"></span></label>
     </div>
+    <div class="form-row">
+      <label>Tap to read <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></label>
+      <label class="toggle"><input type="checkbox" id="tapToReadWeather"><span class="slider"></span></label>
+    </div>
   </div>
 </div>
 
@@ -1150,6 +1163,10 @@
         <button class="emoji-set-btn" data-set="girl">👶👧👩</button>
         <button class="emoji-set-btn" data-set="none">None</button>
       </div>
+    </div>
+    <div class="form-row">
+      <label>Tap to read <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></label>
+      <label class="toggle"><input type="checkbox" id="tapToReadDow"><span class="slider"></span></label>
     </div>
   </div>
 </div>
@@ -1462,6 +1479,8 @@
     videoEmbedUrl: '',
     videoCollapsed: false,
     videoLayout: 'below',
+    tapToReadDow: false,
+    tapToReadWeather: false,
     dowCollapsed: false,
     weatherCollapsed: false,
     scheduleEnabled: false,
@@ -1592,6 +1611,15 @@
 
   /* ────────── NIKKUD + COLOR ────────── */
   const NIKKUD_RE = /[\u0591-\u05C7]/g;
+  function speakDash(text) {
+    if (!window.speechSynthesis || !text) return;
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = 'he-IL';
+    utt.rate = 0.85;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utt);
+  }
+
   function stripNikkud(s) { return s.replace(NIKKUD_RE, ''); }
 
   function getNikudColor(key) {
@@ -1791,27 +1819,33 @@
 
       // Determine badge content
       let badgeEmoji = '', badgeText = '', badgeEngText = '';
+      let badgeSpeakText = '', daySpeakText = '';
       const emojiSet = (settings.dowEmojiSet && settings.dowEmojiSet !== 'none')
         ? (DOW_EMOJI_SETS[settings.dowEmojiSet] || DOW_EMOJI_SETS.chick) : null;
       const lang = settings.dowLang || 'he';
       if (i === today && settings.showToday) {
         badgeEmoji = emojiSet ? emojiSet.today : '';
         badgeText = lang === 'en' ? 'Today' : hebDisplay('הַיוֹם');
+        badgeSpeakText = lang === 'en' ? 'Today' : 'הַיוֹם';
         if (lang === 'both') badgeEngText = 'Today';
       } else if (i === yest && settings.showYesterday) {
         badgeEmoji = emojiSet ? emojiSet.yest : '';
         badgeText = lang === 'en' ? 'Yesterday' : hebDisplay('אֶתְמוֹל הָיָה');
+        badgeSpeakText = lang === 'en' ? 'Yesterday' : 'אֶתְמוֹל הָיָה';
         if (lang === 'both') badgeEngText = 'Yesterday';
       } else if (i === tom && settings.showTomorrow) {
         badgeEmoji = emojiSet ? emojiSet.tom : '';
         badgeText = lang === 'en' ? 'Tomorrow' : hebDisplay('מָחָר יִהְיֶה');
+        badgeSpeakText = lang === 'en' ? 'Tomorrow' : 'מָחָר יִהְיֶה';
         if (lang === 'both') badgeEngText = 'Tomorrow';
       }
+      daySpeakText = lang === 'en' ? day.eng : day.heb;
 
       if (lang === 'en') cls += ' badge-left';
+      if (settings.tapToReadDow) cls += ' tts-tappable';
       item.className = cls;
 
-      let nameHtml = '<div class="day-main">';
+      let nameHtml = `<div class="day-main" data-speak="${daySpeakText}">`;
       if (lang === 'he' || lang === 'both')
         nameHtml += `<div class="day-heb">${hebDisplay(day.heb)}</div>`;
       if (lang === 'en' || lang === 'both')
@@ -1820,7 +1854,7 @@
 
       let badgeHtml = '';
       if (badgeText) {
-        badgeHtml = `<div class="day-badge">` +
+        badgeHtml = `<div class="day-badge" data-speak="${badgeSpeakText}">` +
           (badgeEmoji ? `<div class="badge-emoji">${badgeEmoji}</div>` : '') +
           `<div class="badge-text">${badgeText}</div>` +
           (badgeEngText ? `<div class="badge-text-eng">${badgeEngText}</div>` : '') +
@@ -1828,6 +1862,14 @@
       }
 
       item.innerHTML = nameHtml + badgeHtml;
+
+      if (settings.tapToReadDow) {
+        item.addEventListener('click', e => {
+          const target = e.target.closest('[data-speak]');
+          if (target) speakDash(target.dataset.speak);
+        });
+      }
+
       list.appendChild(item);
     });
   }
@@ -1914,19 +1956,19 @@
     const code = data.current.weathercode;
     const w = WEATHER_WMO[code] || { emoji: '🌤️', he: 'מֶזֶג אֲוִיר', en: 'Weather' };
     const isHe = settings.weatherLabelLang === 'he';
-    let label;
+    let label, labelRaw;
     if (settings.simpleWeatherDesc) {
       const sk = WEATHER_SIMPLE_MAP[code] || 'clouds';
-      label = isHe ? hebDisplay(WEATHER_SIMPLE[sk].he) : WEATHER_SIMPLE[sk].en;
+      labelRaw = isHe ? WEATHER_SIMPLE[sk].he : WEATHER_SIMPLE[sk].en;
+      label = isHe ? hebDisplay(labelRaw) : labelRaw;
     } else {
-      label = isHe ? hebDisplay(w.he) : w.en;
+      labelRaw = isHe ? w.he : w.en;
+      label = isHe ? hebDisplay(labelRaw) : labelRaw;
     }
-    let descriptor;
-    if (isHe) {
-      descriptor = hebDisplay(tempC > 25 ? 'חָם' : tempC < 15 ? 'קַר' : 'נָעִים');
-    } else {
-      descriptor = tempC > 25 ? 'Hot' : tempC < 15 ? 'Cold' : 'Pleasant';
-    }
+    const descriptorRaw = isHe
+      ? (tempC > 25 ? 'חָם' : tempC < 15 ? 'קַר' : 'נָעִים')
+      : (tempC > 25 ? 'Hot' : tempC < 15 ? 'Cold' : 'Pleasant');
+    const descriptor = isHe ? hebDisplay(descriptorRaw) : descriptorRaw;
     let hlHtml = '';
     if (!settings.hideHighLow && data.daily) {
       const maxC = data.daily.temperature_2m_max?.[0];
@@ -1938,6 +1980,8 @@
         hlHtml = `<div class="weather-highlow">H: ${toDisplay(maxC)} · L: ${toDisplay(minC)}</div>`;
       }
     }
+    const ttsOn = settings.tapToReadWeather;
+    block.classList.toggle('weather-tts-on', !!ttsOn);
     block.innerHTML = `
       ${settings.hideWeatherEmoji ? '' : `<div class="weather-emoji">${w.emoji}</div>`}
       ${settings.hideTemperature ? '' : `<div class="weather-temp">${tempStr}</div>`}
@@ -1946,6 +1990,12 @@
       <div class="weather-descriptor ${isHe ? '' : 'ltr'}">${descriptor}</div>
       <div class="weather-city">${place.name}${place.country ? ', ' + place.country : ''}</div>
     `;
+    if (ttsOn) {
+      const labelEl = block.querySelector('.weather-label');
+      const descEl  = block.querySelector('.weather-descriptor');
+      if (labelEl) labelEl.addEventListener('click', () => speakDash(labelRaw));
+      if (descEl)  descEl.addEventListener('click',  () => speakDash(descriptorRaw));
+    }
   }
 
   function scheduleWeatherRefresh() {
@@ -2082,6 +2132,8 @@
     $('showYesterday').checked = settings.showYesterday;
     $('showToday').checked = settings.showToday;
     $('showTomorrow').checked = settings.showTomorrow;
+    $('tapToReadDow').checked = !!settings.tapToReadDow;
+    $('tapToReadWeather').checked = !!settings.tapToReadWeather;
     const activeSet = settings.dowEmojiSet || 'chick';
     document.querySelectorAll('.emoji-set-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.set === activeSet);
@@ -2158,12 +2210,18 @@
       if (!e.target.checked) fetchWeather();
       saveSettingsToStorage();
     });
+    document.getElementById('tapToReadWeather').addEventListener('change', e => {
+      settings.tapToReadWeather = e.target.checked; renderWeather(); saveSettingsToStorage();
+    });
     document.querySelectorAll('input[name="dowLang"]').forEach(r =>
       r.addEventListener('change', () => { settings.dowLang = r.value; renderDaysList(); saveSettingsToStorage(); }));
     document.getElementById('colorDays').addEventListener('change', e => { settings.colorDays = e.target.checked; renderDaysList(); saveSettingsToStorage(); });
     document.getElementById('showYesterday').addEventListener('change', e => { settings.showYesterday = e.target.checked; renderDaysList(); saveSettingsToStorage(); });
     document.getElementById('showToday').addEventListener('change', e => { settings.showToday = e.target.checked; renderDaysList(); saveSettingsToStorage(); });
     document.getElementById('showTomorrow').addEventListener('change', e => { settings.showTomorrow = e.target.checked; renderDaysList(); saveSettingsToStorage(); });
+    document.getElementById('tapToReadDow').addEventListener('change', e => {
+      settings.tapToReadDow = e.target.checked; renderDaysList(); saveSettingsToStorage();
+    });
     document.querySelectorAll('.emoji-set-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         settings.dowEmojiSet = btn.dataset.set;
