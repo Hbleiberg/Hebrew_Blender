@@ -969,6 +969,8 @@ const LETTERS = [
 const SOFIT_BASE = { 'ך':'כ', 'ם':'מ', 'ן':'נ', 'ף':'פ', 'ץ':'צ' };
 const SOFIT_CHARS = new Set(['ך','ם','ן','ף','ץ']);
 const HAS_SOFIT_CHARS = new Set(['כ','מ','נ','פ','צ']);
+// Rule N1 (refined): gutturals take chataf vowels, not simple shva
+const GUTTURALS = new Set(['א','ה','ח','ע']);
 
 /* Vowel groups — 7 groups, each with display info.
    nikud field is the alef + combining vowel mark (display);
@@ -1825,8 +1827,10 @@ function generateCard() {
 
   // Position pools
   const firstPool = buildPool(L => !L.sofit && !L.isVav);
-  const midPool   = buildPool(L => !L.hasSofit && !L.isVav && L.heb !== 'ו');
-  const lastPool  = buildPool(L => !L.isVav); // sofit allowed at end
+  // N2: sofit letters (ך ם ן ף ץ) cannot appear in non-final positions
+  const midPool   = buildPool(L => !L.sofit && !L.hasSofit && !L.isVav && L.heb !== 'ו');
+  // N3: non-sofit forms of כמנפצ cannot be word-final; sofit forms (hasSofit:false) remain available
+  const lastPool  = buildPool(L => !L.isVav && !L.hasSofit);
 
   if (firstPool.length === 0) return null;
 
@@ -1862,6 +1866,8 @@ function generateCard() {
   let guardTries = 0;
   while (guardTries < 8) {
     const finalLetter = positions[m - 1];
+    // N1 (refined): gutturals cannot take simple shva — they use chataf vowels
+    if (vowel.key === 'sh' && GUTTURALS.has(finalLetter.heb)) { vowel = pickVowel(); guardTries++; continue; }
     if (finalLetter.heb === 'ו' && vowel.key === 'sh') { vowel = pickVowel(); guardTries++; continue; }
     if ((finalLetter.heb === 'שׁ' || finalLetter.heb === 'שׂ') && (vowel.key === 'o' || vowel.key === 'vcholam')) {
       vowel = pickVowel(); guardTries++; continue;
