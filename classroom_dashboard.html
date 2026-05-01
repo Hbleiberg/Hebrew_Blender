@@ -992,6 +992,9 @@
       <label>Show text size options</label>
       <label class="toggle"><input type="checkbox" id="showTextSizeOptions"><span class="slider"></span></label>
     </div>
+    <div style="padding-left:18px;margin-bottom:6px;">
+      <button class="btn btn-xs btn-secondary" onclick="resetAllTextSizes()">↺ Reset all text sizes</button>
+    </div>
     <div class="form-row">
       <label>Hide zoom bar</label>
       <label class="toggle"><input type="checkbox" id="hideZoomBar"><span class="slider"></span></label>
@@ -1927,6 +1930,21 @@
     if (lbl) lbl.textContent = v.toFixed(1) + 'rem';
     const sl = document.getElementById('dowEmojiSizeSlider');
     if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function resetAllTextSizes() {
+    if (!confirm('Reset all text sizes to defaults?')) return;
+    setEngDateSize(1.35);
+    setHebDateSize(2.6);
+    setTimeSize(3.4);
+    setTempSize(2.0);
+    setWeatherLabelSize(1.1);
+    setWeatherHLSize(0.72);
+    setWeatherDescSize(1.05);
+    setDowDisplaySize(1.35);
+    setDowYTTSize(0.72);
+    setDowEmojiSize(1.4);
+    saveSettingsToStorage();
   }
 
   /* ────────── DATE / TIME DISPLAY ────────── */
