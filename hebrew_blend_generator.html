@@ -1582,6 +1582,90 @@
             </label>
           </div>
         </div>
+        <div class="toggle-row" id="rowNumberPractice" style="margin-top:4px;">
+          <span>Number Practice
+            <span class="tooltip-wrap">?
+              <span class="tooltip-box">Practice Hebrew numbers from 0–9999.<br><br>Show students a digit and have them write the Hebrew word — or show the Hebrew word and have them write the digit. Supports masculine and feminine forms.</span>
+            </span>
+          </span>
+          <label class="toggle">
+            <input type="checkbox" id="numberPracticeToggle" onchange="toggleNumberPracticeUI()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div id="numberPracticeOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--border);flex-direction:column;gap:6px;">
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:90px;">Total questions</span>
+            <select id="npCount" style="flex:1;font-size:0.78rem;padding:3px 6px;">
+              <option value="10">10</option>
+              <option value="20" selected>20</option>
+              <option value="30">30</option>
+              <option value="40">40</option>
+              <option value="50">50</option>
+              <option value="60">60</option>
+              <option value="70">70</option>
+              <option value="80">80</option>
+              <option value="90">90</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:90px;">Gender</span>
+            <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);flex:1;">
+              <button class="rw-drill-btn active" data-np-gender="f" onclick="setNpGender('f')">Feminine</button>
+              <button class="rw-drill-btn"        data-np-gender="m" onclick="setNpGender('m')">Masculine</button>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;flex-wrap:wrap;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:90px;">Number range</span>
+            <input type="number" id="npMin" min="0" max="9999" value="0" oninput="onNpRangeChange()" style="width:62px;font-size:0.78rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
+            <span style="font-size:0.78rem;color:var(--muted);">to</span>
+            <input type="number" id="npMax" min="0" max="9999" value="20" oninput="onNpRangeChange()" style="width:62px;font-size:0.78rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:90px;">Display</span>
+            <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);flex:1;">
+              <button class="rw-drill-btn active" data-np-display="number" onclick="setNpDisplay('number')">Number</button>
+              <button class="rw-drill-btn"        data-np-display="word"   onclick="setNpDisplay('word')">Hebrew word</button>
+            </div>
+          </div>
+          <div class="toggle-row" style="font-size:0.82rem;">
+            <span>Show Transliteration</span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="npShowTranslit" onchange="onNpTranslitChange()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div id="npTranslitPageRow" style="display:none;padding-left:16px;">
+            <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
+              <button class="rw-drill-btn active" data-np-translit="same" onclick="setNpTranslitPage('same')">Same page</button>
+              <button class="rw-drill-btn"        data-np-translit="key"  onclick="setNpTranslitPage('key')">Answer key</button>
+            </div>
+          </div>
+          <div class="toggle-row" style="font-size:0.82rem;">
+            <span>Show Answer Key</span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="npAnswerKey" onchange="onNpOptionChange()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row" style="font-size:0.82rem;">
+            <span>Student Self-Check Mode</span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="npSelfCheck" onchange="onNpSelfCheckChange()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div id="npSelfCheckOptions" style="display:none;padding-left:16px;flex-direction:column;gap:4px;">
+            <div class="toggle-row" style="font-size:0.82rem;">
+              <span>Audio <span style="font-size:0.65rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;">BETA</span></span>
+              <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+                <input type="checkbox" id="npAudio" onchange="onNpOptionChange()">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
         <div class="toggle-row" id="rowGematria" style="margin-top:4px;">
           <span>Gematria Mode
             <span class="tooltip-wrap">?
@@ -2778,6 +2862,18 @@ function getSettings() {
     bingoShowSounds:   document.getElementById('bingoShowSounds').checked,
     bingoCallerSheet:  document.getElementById('bingoCallerSheet').checked,
     bingoSharedBlends: document.getElementById('bingoSharedBlends').checked,
+    // Number Practice
+    numberPractice:    document.getElementById('numberPracticeToggle').checked,
+    npCount:           document.getElementById('npCount').value,
+    npGender,
+    npMin:             document.getElementById('npMin').value,
+    npMax:             document.getElementById('npMax').value,
+    npDisplay,
+    npShowTranslit:    document.getElementById('npShowTranslit').checked,
+    npTranslitPage,
+    npAnswerKey:       document.getElementById('npAnswerKey').checked,
+    npSelfCheck:       document.getElementById('npSelfCheck').checked,
+    npAudio:           document.getElementById('npAudio').checked,
     // Real Words
     realWords:         document.getElementById('realWordsToggle').checked,
     rwDrillType,
@@ -2900,6 +2996,19 @@ function applySettings(s) {
   if (s.bingoCallerSheet !== undefined)  document.getElementById('bingoCallerSheet').checked = s.bingoCallerSheet;
   if (s.bingoSharedBlends !== undefined) document.getElementById('bingoSharedBlends').checked = s.bingoSharedBlends;
 
+  // Number Practice
+  if (s.numberPractice !== undefined) document.getElementById('numberPracticeToggle').checked = s.numberPractice;
+  if (s.npCount)                      document.getElementById('npCount').value = s.npCount;
+  if (s.npGender)                     setNpGender(s.npGender);
+  if (s.npMin !== undefined)          document.getElementById('npMin').value = s.npMin;
+  if (s.npMax !== undefined)          document.getElementById('npMax').value = s.npMax;
+  if (s.npDisplay)                    setNpDisplay(s.npDisplay);
+  if (s.npShowTranslit !== undefined) document.getElementById('npShowTranslit').checked = s.npShowTranslit;
+  if (s.npTranslitPage)               setNpTranslitPage(s.npTranslitPage);
+  if (s.npAnswerKey !== undefined)    document.getElementById('npAnswerKey').checked = s.npAnswerKey;
+  if (s.npSelfCheck !== undefined)    document.getElementById('npSelfCheck').checked = s.npSelfCheck;
+  if (s.npAudio !== undefined)        document.getElementById('npAudio').checked = s.npAudio;
+
   // Real Words
   if (s.realWords !== undefined) document.getElementById('realWordsToggle').checked = s.realWords;
   if (s.rwCount)                 document.getElementById('rwCount').value = s.rwCount;
@@ -2979,6 +3088,9 @@ function applySettings(s) {
   setBlendType(blendType);
   toggleFocusUI();
   toggleBingoUI();
+  toggleNumberPracticeUI();
+  onNpTranslitChange();
+  onNpSelfCheckChange();
   syncFillVowelsUI();
   if (s.rwDrillType) setRealWordDrill(s.rwDrillType);
 
@@ -3631,6 +3743,445 @@ function onFillVowelsChange() {
   renderWorksheet(false);
 }
 
+// ══════════════════════════════════════════════
+//  NUMBER PRACTICE (Hebrew numbers 0–9999)
+// ══════════════════════════════════════════════
+
+const HEB_NUM_ONES_F = {
+  1:  { heb:'אַחַת',     tr:'achat' },
+  2:  { heb:'שְׁתַּיִם',    tr:'shtayim' },
+  3:  { heb:'שָׁלוֹשׁ',    tr:'shalosh' },
+  4:  { heb:'אַרְבַּע',    tr:'arba' },
+  5:  { heb:'חָמֵשׁ',     tr:'chamesh' },
+  6:  { heb:'שֵׁשׁ',       tr:'shesh' },
+  7:  { heb:'שֶׁבַע',      tr:'sheva' },
+  8:  { heb:'שְׁמוֹנֶה',   tr:'shmone' },
+  9:  { heb:'תֵּשַׁע',     tr:'tesha' },
+  10: { heb:'עֶשֶׂר',      tr:'eser' },
+};
+const HEB_NUM_ONES_M = {
+  1:  { heb:'אֶחָד',       tr:'echad' },
+  2:  { heb:'שְׁנַיִם',     tr:'shnayim' },
+  3:  { heb:'שְׁלוֹשָׁה',   tr:'shlosha' },
+  4:  { heb:'אַרְבָּעָה',   tr:"arba'a" },
+  5:  { heb:'חֲמִשָּׁה',    tr:'chamisha' },
+  6:  { heb:'שִׁשָּׁה',     tr:'shisha' },
+  7:  { heb:'שִׁבְעָה',     tr:"shiv'a" },
+  8:  { heb:'שְׁמוֹנָה',    tr:'shmona' },
+  9:  { heb:'תִּשְׁעָה',    tr:"tish'a" },
+  10: { heb:'עֲשָׂרָה',     tr:'asara' },
+};
+const HEB_NUM_TEENS_F = {
+  11: { heb:'אַחַת עֶשְׂרֵה',     tr:'achat-esre' },
+  12: { heb:'שְׁתֵּים עֶשְׂרֵה',   tr:'shteim-esre' },
+  13: { heb:'שְׁלוֹשׁ עֶשְׂרֵה',   tr:'shlosh-esre' },
+  14: { heb:'אַרְבַּע עֶשְׂרֵה',   tr:'arba-esre' },
+  15: { heb:'חֲמֵשׁ עֶשְׂרֵה',     tr:'chamesh-esre' },
+  16: { heb:'שֵׁשׁ עֶשְׂרֵה',      tr:'shesh-esre' },
+  17: { heb:'שְׁבַע עֶשְׂרֵה',     tr:'shva-esre' },
+  18: { heb:'שְׁמוֹנֶה עֶשְׂרֵה',  tr:'shmone-esre' },
+  19: { heb:'תְּשַׁע עֶשְׂרֵה',    tr:'tsha-esre' },
+};
+const HEB_NUM_TEENS_M = {
+  11: { heb:'אַחַד עָשָׂר',       tr:'achad-asar' },
+  12: { heb:'שְׁנֵים עָשָׂר',      tr:'shneim-asar' },
+  13: { heb:'שְׁלוֹשָׁה עָשָׂר',   tr:'shlosha-asar' },
+  14: { heb:'אַרְבָּעָה עָשָׂר',   tr:"arba'a-asar" },
+  15: { heb:'חֲמִשָּׁה עָשָׂר',    tr:'chamisha-asar' },
+  16: { heb:'שִׁשָּׁה עָשָׂר',     tr:'shisha-asar' },
+  17: { heb:'שִׁבְעָה עָשָׂר',     tr:"shiv'a-asar" },
+  18: { heb:'שְׁמוֹנָה עָשָׂר',    tr:'shmona-asar' },
+  19: { heb:'תִּשְׁעָה עָשָׂר',    tr:"tish'a-asar" },
+};
+const HEB_NUM_TENS = {
+  20: { heb:'עֶשְׂרִים',     tr:'esrim' },
+  30: { heb:'שְׁלוֹשִׁים',   tr:'shloshim' },
+  40: { heb:'אַרְבָּעִים',   tr:"arba'im" },
+  50: { heb:'חֲמִשִּׁים',    tr:'chamishim' },
+  60: { heb:'שִׁשִּׁים',     tr:'shishim' },
+  70: { heb:'שִׁבְעִים',     tr:"shiv'im" },
+  80: { heb:'שְׁמוֹנִים',    tr:'shmonim' },
+  90: { heb:'תִּשְׁעִים',    tr:"tish'im" },
+};
+const HEB_NUM_HUNDREDS = {
+  100: { heb:'מֵאָה',           tr:"me'a" },
+  200: { heb:'מָאתַיִם',         tr:'matayim' },
+  300: { heb:'שְׁלוֹשׁ מֵאוֹת',  tr:"shlosh me'ot" },
+  400: { heb:'אַרְבַּע מֵאוֹת',  tr:"arba me'ot" },
+  500: { heb:'חֲמֵשׁ מֵאוֹת',    tr:"chamesh me'ot" },
+  600: { heb:'שֵׁשׁ מֵאוֹת',     tr:"shesh me'ot" },
+  700: { heb:'שְׁבַע מֵאוֹת',    tr:"shva me'ot" },
+  800: { heb:'שְׁמוֹנֶה מֵאוֹת', tr:"shmone me'ot" },
+  900: { heb:'תְּשַׁע מֵאוֹת',   tr:"tsha me'ot" },
+};
+// Construct forms used as the multiplier in "X thousand" (3-9 only)
+const HEB_NUM_CONSTR_M = {
+  3: { heb:'שְׁלוֹשֶׁת', tr:'shloshet' },
+  4: { heb:'אַרְבַּעַת', tr:"arba'at" },
+  5: { heb:'חֲמֵשֶׁת',   tr:'chameshet' },
+  6: { heb:'שֵׁשֶׁת',     tr:'sheshet' },
+  7: { heb:'שִׁבְעַת',    tr:"shiv'at" },
+  8: { heb:'שְׁמוֹנַת',   tr:'shmonat' },
+  9: { heb:'תִּשְׁעַת',   tr:"tish'at" },
+};
+
+function numToHebrew(n, gender) {
+  n = Math.max(0, Math.min(9999, Math.floor(n)));
+  if (n === 0) return { heb: 'אֶפֶס', tr: 'efes' };
+
+  const groups = [];
+  const thousands = Math.floor(n / 1000);
+  const rem1     = n % 1000;
+  const hundreds = Math.floor(rem1 / 100) * 100;
+  const rem2     = rem1 % 100;
+  const tens     = Math.floor(rem2 / 10) * 10;
+  const ones     = rem2 % 10;
+
+  if (thousands === 1)      groups.push({ heb:'אֶלֶף',     tr:'elef' });
+  else if (thousands === 2) groups.push({ heb:'אַלְפַּיִם', tr:'alpayim' });
+  else if (thousands >= 3) {
+    const c = HEB_NUM_CONSTR_M[thousands];
+    groups.push({ heb:`${c.heb} אֲלָפִים`, tr:`${c.tr} alafim` });
+  }
+
+  if (hundreds > 0) groups.push(HEB_NUM_HUNDREDS[hundreds]);
+
+  if (rem2 > 0) {
+    const onesT  = (gender === 'm') ? HEB_NUM_ONES_M  : HEB_NUM_ONES_F;
+    const teensT = (gender === 'm') ? HEB_NUM_TEENS_M : HEB_NUM_TEENS_F;
+    if (rem2 <= 10)         groups.push(onesT[rem2]);
+    else if (rem2 < 20)     groups.push(teensT[rem2]);
+    else if (ones === 0)    groups.push(HEB_NUM_TENS[tens]);
+    else { groups.push(HEB_NUM_TENS[tens]); groups.push(onesT[ones]); }
+  }
+
+  // The connector "ve-" attaches to the FINAL group when there are 2+ groups
+  if (groups.length >= 2) {
+    const last = groups[groups.length - 1];
+    groups[groups.length - 1] = { heb: `וְ${last.heb}`, tr: `ve-${last.tr}` };
+  }
+
+  return {
+    heb: groups.map(g => g.heb).join(' '),
+    tr:  groups.map(g => g.tr).join(' '),
+  };
+}
+
+let numberPracticeItems = [];
+let npGender        = 'f';
+let npDisplay       = 'number';
+let npTranslitPage  = 'same';
+
+const NP_HIDE_PANELS = ['panelLayout', 'panelLetters', 'panelVowels'];
+const NP_HIDE_ROWS   = ['rowInverse', 'rowFillVowels', 'rowAnswerKey', 'rowSelfCheck',
+                        'rowGematria', 'rowRealWords', 'rowBingo'];
+const NP_HIDE_MISC   = ['blendTypeWrapper', 'modeDivider', 'bingoOptions',
+                        'gematriaOptions', 'selfCheckOptions', 'realWordsOptions',
+                        'customWordlistOptions', 'fillVowelsDageshRow',
+                        'threeLetterOptions', 'focusOptions'];
+
+function toggleNumberPracticeUI() {
+  const on = document.getElementById('numberPracticeToggle').checked;
+
+  if (on) {
+    document.getElementById('bingoToggle').checked        = false;
+    document.getElementById('gematriaToggle').checked     = false;
+    document.getElementById('realWordsToggle').checked    = false;
+    document.getElementById('selfCheckToggle').checked    = false;
+    document.getElementById('inverseToggle').checked      = false;
+    document.getElementById('fillVowelsToggle').checked   = false;
+    document.getElementById('answerKeyToggle').checked    = false;
+    cwModeActive = false;
+  }
+
+  NP_HIDE_PANELS.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
+  NP_HIDE_ROWS.forEach(id   => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
+
+  if (on) {
+    NP_HIDE_MISC.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+    document.getElementById('numberPracticeOptions').style.display = 'flex';
+    renderNumberPractice(document.getElementById('worksheet'));
+  } else {
+    document.getElementById('numberPracticeOptions').style.display = 'none';
+    // Restore other modes' UI based on their own toggle states
+    toggleBingoUI();
+  }
+}
+
+function setNpGender(g) {
+  npGender = g;
+  document.querySelectorAll('[data-np-gender]').forEach(b => b.classList.toggle('active', b.dataset.npGender === g));
+  // Re-derive Hebrew word/translit for existing numbers
+  numberPracticeItems = numberPracticeItems.map(it => {
+    const w = numToHebrew(it.n, npGender);
+    return { n: it.n, heb: w.heb, tr: w.tr };
+  });
+  if (document.getElementById('numberPracticeToggle').checked) renderNumberPractice(document.getElementById('worksheet'));
+}
+
+function setNpDisplay(d) {
+  npDisplay = d;
+  document.querySelectorAll('[data-np-display]').forEach(b => b.classList.toggle('active', b.dataset.npDisplay === d));
+  if (document.getElementById('numberPracticeToggle').checked) renderNumberPractice(document.getElementById('worksheet'));
+}
+
+function setNpTranslitPage(p) {
+  npTranslitPage = p;
+  document.querySelectorAll('[data-np-translit]').forEach(b => b.classList.toggle('active', b.dataset.npTranslit === p));
+  if (document.getElementById('numberPracticeToggle').checked) renderNumberPractice(document.getElementById('worksheet'));
+}
+
+function onNpTranslitChange() {
+  document.getElementById('npTranslitPageRow').style.display =
+    document.getElementById('npShowTranslit').checked ? '' : 'none';
+  if (document.getElementById('numberPracticeToggle').checked) renderNumberPractice(document.getElementById('worksheet'));
+}
+
+function onNpSelfCheckChange() {
+  document.getElementById('npSelfCheckOptions').style.display =
+    document.getElementById('npSelfCheck').checked ? 'flex' : 'none';
+  if (document.getElementById('numberPracticeToggle').checked) renderNumberPractice(document.getElementById('worksheet'));
+}
+
+function onNpOptionChange() {
+  if (document.getElementById('numberPracticeToggle').checked) renderNumberPractice(document.getElementById('worksheet'));
+}
+
+function onNpRangeChange() {
+  // Clamp to 0-9999 without forcing user to retype on every keystroke
+  const minEl = document.getElementById('npMin');
+  const maxEl = document.getElementById('npMax');
+  if (minEl.value !== '') minEl.value = Math.max(0, Math.min(9999, parseInt(minEl.value) || 0));
+  if (maxEl.value !== '') maxEl.value = Math.max(0, Math.min(9999, parseInt(maxEl.value) || 0));
+}
+
+function generateNumberPractice() {
+  const count = parseInt(document.getElementById('npCount').value) || 20;
+  let min = parseInt(document.getElementById('npMin').value);
+  let max = parseInt(document.getElementById('npMax').value);
+  if (isNaN(min)) min = 0;
+  if (isNaN(max)) max = 0;
+  min = Math.max(0, Math.min(9999, min));
+  max = Math.max(0, Math.min(9999, max));
+  if (min > max) { const t = min; min = max; max = t; }
+  document.getElementById('npMin').value = min;
+  document.getElementById('npMax').value = max;
+
+  const range = max - min + 1;
+  const preferUnique = range >= count;
+  const seen = new Set();
+  numberPracticeItems = [];
+  let safety = count * 100;
+  while (numberPracticeItems.length < count && safety-- > 0) {
+    const n = min + Math.floor(Math.random() * range);
+    if (preferUnique && seen.has(n)) continue;
+    seen.add(n);
+    const w = numToHebrew(n, npGender);
+    numberPracticeItems.push({ n, heb: w.heb, tr: w.tr });
+  }
+  renderNumberPractice(document.getElementById('worksheet'));
+  enableButtons();
+}
+
+function renderNumberPractice(ws) {
+  ws.innerHTML = '';
+  const items = numberPracticeItems;
+  if (items.length === 0) {
+    ws.innerHTML = '<div class="empty-state"><h2>Click Generate to create a Number Practice sheet.</h2></div>';
+    return;
+  }
+
+  const title    = document.getElementById('wsTitle').value || 'Hebrew Number Practice';
+  const subtitle = document.getElementById('wsSubtitle').value;
+  const display  = npDisplay;
+  const showTrl  = document.getElementById('npShowTranslit').checked;
+  const trlOnPg  = npTranslitPage === 'same';
+  const showAns  = document.getElementById('npAnswerKey').checked;
+  const selfCh   = document.getElementById('npSelfCheck').checked;
+  const audioOn  = document.getElementById('npAudio').checked;
+
+  if (selfCh) { renderNumberPracticeSelfCheck(ws, items, title, subtitle, audioOn, showTrl); return; }
+
+  const cols = autoCols(items.length);
+
+  // Student sheet
+  const sheet = document.createElement('div');
+  sheet.className = 'sheet';
+
+  const header = document.createElement('div');
+  header.className = 'ws-header';
+  const sub = subtitle || (display === 'number'
+    ? 'Write each number as a Hebrew word.'
+    : 'Write each Hebrew number as a digit.');
+  header.innerHTML = `
+    <div>
+      <div class="ws-title">${title}</div>
+      <div class="ws-subtitle">${sub}</div>
+    </div>
+    ${wsMetaHTML()}`;
+  sheet.appendChild(header);
+
+  const grid = document.createElement('div');
+  grid.className = 'blends-grid';
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  grid.style.direction = display === 'word' ? 'rtl' : 'ltr';
+  sheet.appendChild(grid);
+
+  items.forEach((it, idx) => {
+    const cell = document.createElement('div');
+    cell.className = 'blend-cell';
+    cell.style.alignItems = 'center';
+    cell.style.minHeight = '90px';
+
+    const num = document.createElement('div');
+    num.style.cssText = 'font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;';
+    num.textContent = idx + 1;
+    cell.appendChild(num);
+
+    const prompt = document.createElement('div');
+    if (display === 'number') {
+      prompt.style.cssText = 'font-size:1.9rem;font-weight:700;color:var(--text);direction:ltr;text-align:center;line-height:1.2;';
+      prompt.textContent = it.n;
+    } else {
+      prompt.style.cssText = 'font-family:var(--heb-font);font-size:1.5rem;direction:rtl;text-align:center;line-height:1.4;color:var(--text);';
+      prompt.textContent = it.heb;
+    }
+    cell.appendChild(prompt);
+
+    if (display === 'word' && showTrl && trlOnPg) {
+      const tr = document.createElement('div');
+      tr.style.cssText = 'font-size:0.72rem;color:var(--muted);font-style:italic;direction:ltr;text-align:center;margin-top:2px;';
+      tr.textContent = it.tr;
+      cell.appendChild(tr);
+    }
+
+    const line = document.createElement('div');
+    line.style.cssText = 'border-bottom:1.5px solid var(--text);width:80%;height:24px;margin-top:10px;';
+    cell.appendChild(line);
+
+    grid.appendChild(cell);
+  });
+
+  const footer = document.createElement('div');
+  footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  footer.textContent = `${items.length} items · Hebrew Number Practice`;
+  sheet.appendChild(footer);
+  ws.appendChild(sheet);
+
+  // Answer key page (also used when transliteration is set to "Answer key")
+  const wantKey = showAns || (showTrl && !trlOnPg);
+  if (wantKey) {
+    const ak = document.createElement('div');
+    ak.className = 'sheet answer-key-sheet';
+    const banner = document.createElement('div');
+    banner.className = 'answer-key-banner';
+    banner.textContent = '✦ Answer Key ✦';
+    ak.appendChild(banner);
+    const akHeader = document.createElement('div');
+    akHeader.className = 'ws-header';
+    akHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>`;
+    ak.appendChild(akHeader);
+
+    const akGrid = document.createElement('div');
+    akGrid.className = 'blends-grid';
+    akGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    akGrid.style.direction = 'rtl';
+    ak.appendChild(akGrid);
+
+    items.forEach((it, idx) => {
+      const cell = document.createElement('div');
+      cell.className = 'blend-cell';
+      cell.style.alignItems = 'center';
+      const num = document.createElement('div');
+      num.style.cssText = 'font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;';
+      num.textContent = idx + 1;
+      cell.appendChild(num);
+      const dig = document.createElement('div');
+      dig.style.cssText = 'font-size:1.2rem;font-weight:700;direction:ltr;text-align:center;color:var(--text);';
+      dig.textContent = it.n;
+      cell.appendChild(dig);
+      const heb = document.createElement('div');
+      heb.style.cssText = 'font-family:var(--heb-font);font-size:1.25rem;direction:rtl;text-align:center;color:var(--text);margin-top:2px;line-height:1.4;';
+      heb.textContent = it.heb;
+      cell.appendChild(heb);
+      if (showTrl) {
+        const tr = document.createElement('div');
+        tr.style.cssText = 'font-size:0.72rem;color:var(--muted);font-style:italic;direction:ltr;text-align:center;margin-top:2px;';
+        tr.textContent = it.tr;
+        cell.appendChild(tr);
+      }
+      akGrid.appendChild(cell);
+    });
+
+    const akFooter = document.createElement('div');
+    akFooter.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+    akFooter.textContent = `${items.length} items · Hebrew Number Practice — Answer Key`;
+    ak.appendChild(akFooter);
+    ws.appendChild(ak);
+  }
+}
+
+function renderNumberPracticeSelfCheck(ws, items, title, subtitle, audioOn, showTrl) {
+  ws.innerHTML = '';
+  const display = npDisplay;
+
+  const scHeader = document.createElement('div');
+  scHeader.className = 'ws-header';
+  scHeader.innerHTML = `
+    <div>
+      <div class="ws-title">${title}</div>
+      <div class="ws-subtitle">${subtitle || 'Tap each card to reveal the answer.'}</div>
+    </div>`;
+  ws.appendChild(scHeader);
+
+  const controls = document.createElement('div');
+  controls.className = 'sc-controls';
+  controls.innerHTML = `
+    <button class="btn-xs" onclick="flipAllCards(true)">Reveal All</button>
+    <button class="btn-xs" onclick="flipAllCards(false)">Hide All</button>
+    <div class="sc-cols-control">
+      <span style="font-size:0.75rem;color:var(--muted);">Columns:</span>
+      <button class="sc-cols-btn" onclick="setSCCols(2,this)">2</button>
+      <button class="sc-cols-btn active" onclick="setSCCols(3,this)">3</button>
+      <button class="sc-cols-btn" onclick="setSCCols(5,this)">5</button>
+    </div>
+    ${audioOn ? '<span style="font-size:0.75rem;color:var(--muted);">🔊 Tap back to hear</span>' : '<span style="font-size:0.75rem;color:var(--muted);">Tap a card to flip</span>'}`;
+  ws.appendChild(controls);
+
+  const grid = document.createElement('div');
+  grid.id = 'scGrid';
+  grid.className = 'self-check-grid';
+  grid.style.gridTemplateColumns = `repeat(3, 1fr)`;
+  ws.appendChild(grid);
+
+  items.forEach((it, idx) => {
+    const card = document.createElement('div');
+    card.className = 'flip-card';
+    card.dataset.heb = it.heb;
+    const front = display === 'number'
+      ? `<span style="font-size:2.2rem;font-weight:700;">${it.n}</span>`
+      : `<span style="direction:rtl;font-family:var(--heb-font);font-size:2rem;line-height:1.4;">${it.heb}</span>`;
+    const back = display === 'number'
+      ? `<span style="direction:rtl;font-family:var(--heb-font);font-size:1.6rem;line-height:1.4;">${it.heb}</span>${showTrl ? `<span style="font-size:0.85rem;color:var(--gold-light);font-style:italic;margin-top:4px;">${it.tr}</span>` : ''}`
+      : `<span style="font-size:2rem;font-weight:700;">${it.n}</span>${showTrl ? `<span style="font-size:0.85rem;color:var(--gold-light);font-style:italic;margin-top:4px;">${it.tr}</span>` : ''}`;
+    card.innerHTML = `
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <span class="flip-card-num">${idx + 1}</span>
+          ${front}
+          <span class="flip-card-hint">tap to reveal</span>
+        </div>
+        <div class="flip-card-back">
+          <span class="flip-card-num" style="color:var(--gold-light);">${idx + 1}</span>
+          ${back}
+          ${audioOn ? `<button class="btn-xs" style="margin-top:6px;font-size:0.7rem;" onclick="event.stopPropagation();speakBlend(this.closest('.flip-card').dataset.heb)">🔊</button>` : ''}
+        </div>
+      </div>`;
+    card.querySelector('.flip-card-inner').addEventListener('click', () => card.classList.toggle('flipped'));
+    grid.appendChild(card);
+  });
+}
+
 function toggleBingoUI() {
   const on = document.getElementById('bingoToggle').checked;
   document.getElementById('bingoOptions').style.display = on ? 'flex' : 'none';
@@ -4233,6 +4784,11 @@ function autoCols(count) {
 }
 
 function generate(animate = false) {
+  if (document.getElementById('numberPracticeToggle')?.checked) {
+    generateNumberPractice();
+    return;
+  }
+
   if (cwModeActive) {
     generateCustomWordlist();
     return;
@@ -4668,6 +5224,7 @@ function renderWorksheet(animate = false) {
 
   const ws = document.getElementById('worksheet');
 
+  if (document.getElementById('numberPracticeToggle')?.checked) { renderNumberPractice(ws); return; }
   if (bingo) { renderBingo(ws); return; }
   if (document.getElementById('gematriaToggle').checked) { renderGematriaSheet(ws); return; }
 
