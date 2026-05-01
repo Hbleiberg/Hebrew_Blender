@@ -4,10 +4,151 @@
 - Always commit and push directly to `main`
 - Do not create feature branches
 
+## Import / Export All Settings (`index.html`)
+
+`index.html` has a gear button that opens a modal with **Export All Settings**, **Import All Settings**, and **Erase All Settings**. These functions bundle every tool's localStorage data into a single JSON blob so users can back up and restore everything in one step.
+
+### Current localStorage keys included
+
+| Blob key | localStorage key | What it holds |
+|---|---|---|
+| `generatorPresets` | `hebrewBlender_presets` | Hebrew Blend Generator saved presets |
+| `dashboardPresets` | `hebrewDashboard_presets` | Classroom Dashboard saved presets |
+| `dashboardSchedules` | `hebrewDashboard_schedules` | Classroom Dashboard saved schedules |
+| `dashboardSettings` | `hebrewDashboard_settings` | All Classroom Dashboard settings (zoom, video URL, header size, etc.) |
+
+### Rule: any new tool with persistent data must be added here
+
+When a new tool is added to this site that saves **any** data to `localStorage`, its key(s) must be added to all three functions in `index.html`:
+
+**`exportAllSettings`** — add one entry to the blob object:
+```js
+myToolPresets: JSON.parse(localStorage.getItem('hebrewMyTool_presets') || '{}'),
+```
+
+**`importAllSettings`** — add a corresponding merge block:
+```js
+if (parsed.myToolPresets) {
+  const existing = JSON.parse(localStorage.getItem('hebrewMyTool_presets') || '{}');
+  localStorage.setItem('hebrewMyTool_presets', JSON.stringify(Object.assign(existing, parsed.myToolPresets)));
+}
+```
+Use `Object.assign` so importing merges with existing data rather than wiping it. If a key holds a flat settings object (not a presets map), use `Object.assign` the same way — the imported values overwrite the existing ones field-by-field.
+
+**`eraseAllSettings`** — add the key to the array:
+```js
+'hebrewMyTool_presets',
+```
+
+### Naming convention for localStorage keys
+
+Follow the existing pattern: `hebrew<ToolCamelCase>_<dataType>`.
+
+Examples:
+- `hebrewBlender_presets` — Generator presets
+- `hebrewDashboard_presets` — Dashboard presets
+- `hebrewDashboard_settings` — Dashboard settings blob
+- `hebrewDashboard_schedules` — Dashboard schedules
+
+---
+
 ## Preset Save/Restore
 Whenever a new UI control is added to `hebrew_blend_generator.html`, it must be included in both:
 - `getSettings()` — serialize the control's current value
 - `applySettings()` — restore the value and call any related UI toggle functions (e.g. `toggleGematriaMode()`, `toggleCwBlendOpts()`) so dependent rows update correctly
+
+---
+
+## Preset Lists — Drag-to-Reorder
+
+Every preset list (`.preset-list` / `.saved-schedule-list`) must support drag-to-reorder. Use the shared `makeSortable` helper defined in each file.
+
+### Pattern
+
+**CSS** (same block in both files):
+```css
+.drag-handle { cursor: grab; color: var(--muted); font-size: 0.85rem; padding: 0 2px; flex-shrink: 0; line-height: 1; user-select: none; }
+.drag-handle:active { cursor: grabbing; }
+.preset-item.drag-over { border-color: var(--gold); background: rgba(201,146,42,0.08); }
+.preset-item.dragging  { opacity: 0.4; }
+```
+
+**Each `.preset-item` must have:**
+```html
+<div class="preset-item" draggable="true">
+  <span class="drag-handle" title="Drag to reorder">⠿</span>
+  <!-- name + action buttons -->
+</div>
+```
+
+**`makeSortable` helper** (defined once per file, called at the end of every render function):
+```js
+function makeSortable(listEl, getKeys, reorderFn) {
+  let dragSrc = null;
+  listEl.querySelectorAll('.preset-item').forEach(item => {
+    item.addEventListener('dragstart', e => {
+      dragSrc = item;
+      item.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    item.addEventListener('dragend', () => {
+      item.classList.remove('dragging');
+      listEl.querySelectorAll('.preset-item').forEach(i => i.classList.remove('drag-over'));
+    });
+    item.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      listEl.querySelectorAll('.preset-item').forEach(i => i.classList.remove('drag-over'));
+      if (item !== dragSrc) item.classList.add('drag-over');
+    });
+    item.addEventListener('drop', e => {
+      e.preventDefault();
+      if (!dragSrc || dragSrc === item) return;
+      const keys = getKeys();
+      const fromIdx = [...listEl.querySelectorAll('.preset-item')].indexOf(dragSrc);
+      const toIdx   = [...listEl.querySelectorAll('.preset-item')].indexOf(item);
+      const reordered = [...keys];
+      reordered.splice(toIdx, 0, reordered.splice(fromIdx, 1)[0]);
+      reorderFn(reordered);
+    });
+  });
+}
+```
+
+**Call at the end of each render function:**
+```js
+// Dashboard presets
+makeSortable(list, () => Object.keys(presets), reordered => {
+  const newPresets = {};
+  reordered.forEach(k => { newPresets[k] = presets[k]; });
+  presets = newPresets;
+  savePresetsStorage();
+  renderPresets();
+});
+
+// Dashboard saved schedules
+makeSortable(list, () => Object.keys(savedSchedules), reordered => {
+  const newSched = {};
+  reordered.forEach(k => { newSched[k] = savedSchedules[k]; });
+  savedSchedules = newSched;
+  saveSchedulesStorage();
+  renderSavedSchedules();
+});
+
+// Generator (reads/writes localStorage directly)
+makeSortable(list, () => Object.keys(JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}')), reordered => {
+  const stored = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+  const newPresets = {};
+  reordered.forEach(k => { newPresets[k] = stored[k]; });
+  localStorage.setItem('hebrewBlender_presets', JSON.stringify(newPresets));
+  renderPresets();
+});
+```
+
+**Key points:**
+- Order is preserved via JS object insertion order (reliable in all modern engines for string keys)
+- `makeSortable` is defined once per file and reused for all lists in that file
+- The `⠿` braille character is the drag handle glyph
 
 ---
 
@@ -75,6 +216,11 @@ Injects a `<link>` (gfonts) or `<style>` (@font-face) into `<head>`. Deduplicate
 Builds the font picker UI inside `#fontOptions`. Groups fonts under section headers (`Block Fonts` / `Cursive / Script`). Each button shows:
 - A preview span styled with `font.family` displaying `אֶרֶץ`
 - The font name
+
+Frank Ruhl Libre is the default font (`settings.hebFont` default). Its button appends `[DEFAULT]` in small muted text after the name — same pattern as the generator:
+```js
+`${font.name}${font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}`
+```
 
 ### `setHebFont(name)`
 ```js
@@ -275,6 +421,80 @@ function initPanelCollapse() {
 }
 ```
 Called once at `DOMContentLoaded`. Toggling `.collapsed` on the `.panel` element hides `.panel-body` and swaps the `::after` arrow via CSS.
+
+---
+
+## Tooltips (`classroom_dashboard.html`)
+
+### Why not pure CSS
+
+`.panel` has `overflow: hidden` (needed to clip `.panel-title` to rounded corners) and `.settings-body` has `overflow-y: auto`. Both cut off `position: absolute` children, clipping any CSS-only tooltip bubble.
+
+### Pattern: `position: fixed` floating div driven by JS
+
+**Single floating element** — one `<div id="tipFloat">` is appended to `<body>` at init time and reused for all tooltips.
+
+**Markup** — use `.tip-wrap` with `data-tip` on the wrapper and `.tip-icon` on the `?` badge. No child bubble span needed:
+```html
+<span class="tip-wrap" data-tip="Your tooltip text here."><i class="tip-icon">?</i></span>
+```
+
+**CSS:**
+```css
+.tip-wrap { display: inline-flex; align-items: center; }
+.tip-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 15px; height: 15px; border-radius: 50%;
+  background: var(--border); color: var(--muted);
+  font-size: 0.65rem; font-weight: 700; font-style: normal;
+  cursor: default; margin-left: 5px; flex-shrink: 0; line-height: 1;
+}
+body.dark .tip-icon { background: var(--warm-gray); }
+#tipFloat {
+  display: none; position: fixed;
+  background: var(--navy); color: #fff;
+  font-size: 0.72rem; font-weight: 400; line-height: 1.45;
+  padding: 6px 9px; border-radius: 6px;
+  max-width: 220px; z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  pointer-events: none;
+}
+body.dark #tipFloat { background: #0a0f1c; }
+```
+
+**JS** (runs in an IIFE after DOM is ready, at end of `<script>`):
+```js
+(function() {
+  const tip = document.createElement('div');
+  tip.id = 'tipFloat';
+  document.body.appendChild(tip);
+  document.querySelectorAll('.tip-wrap').forEach(wrap => {
+    wrap.addEventListener('mouseenter', () => {
+      const text = wrap.dataset.tip;
+      if (!text) return;
+      tip.textContent = text;
+      tip.style.display = 'block';
+      const r = wrap.querySelector('.tip-icon').getBoundingClientRect();
+      const tw = tip.offsetWidth, th = tip.offsetHeight;
+      // Appear above the icon, centered; clamp to viewport edges
+      let left = r.left + r.width / 2 - tw / 2;
+      let top  = r.top - th - 6;
+      if (left < 6) left = 6;
+      if (left + tw > window.innerWidth - 6) left = window.innerWidth - tw - 6;
+      if (top < 6) top = r.bottom + 6; // flip below if no room above
+      tip.style.left = left + 'px';
+      tip.style.top  = top  + 'px';
+    });
+    wrap.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+  });
+})();
+```
+
+**Key points:**
+- `position: fixed` escapes all `overflow` clipping from `.panel` and `.settings-body`
+- Tooltip appears **above** the `?` icon by default; flips **below** if near the top of the viewport
+- Viewport clamping prevents left/right overflow
+- One `#tipFloat` element is reused for all tooltips — never create per-tooltip bubble spans
 
 ---
 

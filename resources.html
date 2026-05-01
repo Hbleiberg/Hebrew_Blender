@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CMLC81Z0HC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CMLC81Z0HC');
+</script>
+<title>Teaching Resources — Hebrew Blender</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<script>(function(){try{if(localStorage.getItem('hebrewBlender_darkMode')==='1'){document.documentElement.classList.add('dark-early');}}catch(e){}})();</script>
+<style>
+:root {
+  --navy:#1a2744;--navy-deep:#0d1220;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
+  --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
+  --shadow-md:0 4px 16px rgba(0,0,0,0.10);
+}
+html.dark-early body,body.dark {
+  --gold:#e0a832;--gold-light:#f5d97a;--cream:#161c2a;
+  --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+
+/* ── Header ── */
+header{background:var(--navy);color:#fff;padding:16px 32px;display:flex;align-items:center;gap:14px;border-bottom:4px solid var(--gold);}
+header .star{font-size:28px;}
+header h1{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
+header p{font-size:0.82rem;color:var(--gold-light);margin-top:2px;}
+header .hright{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.hbtn{display:inline-flex;align-items:center;gap:5px;background:none;border:1px solid rgba(255,255,255,0.3);color:#fff;border-radius:6px;padding:5px 12px;font-size:0.82rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;text-decoration:none;transition:background 0.15s;}
+.hbtn:hover{background:rgba(255,255,255,0.12);}
+.dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;}
+.dark-btn:hover{background:rgba(255,255,255,0.1);}
+
+/* ── Main content ── */
+main{flex:1;padding:32px 24px;max-width:1160px;margin:0 auto;width:100%;}
+.page-heading{font-family:'Libre Baskerville',serif;font-size:1.6rem;color:var(--text);margin-bottom:4px;}
+.page-sub{font-size:0.9rem;color:var(--muted);margin-bottom:28px;}
+
+/* ── Filter bar ── */
+.filter-bar{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;padding:16px 18px;background:var(--white);border:1px solid var(--border);border-radius:10px;}
+.filter-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.filter-label{font-size:0.68rem;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--muted);min-width:88px;flex-shrink:0;}
+.filter-btn{font-size:0.76rem;padding:4px 13px;border:1.5px solid var(--border);border-radius:20px;background:transparent;color:var(--text);cursor:pointer;font-family:'Source Sans 3',sans-serif;transition:all 0.15s;white-space:nowrap;}
+.filter-btn:hover{border-color:var(--gold);color:var(--gold);}
+.filter-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+body.dark .filter-btn.active{background:#2a3f6a;border-color:#4a6aaa;}
+
+/* ── Results count ── */
+.results-count{font-size:0.8rem;color:var(--muted);margin-bottom:14px;}
+
+/* ── Resource grid ── */
+.resource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;}
+
+/* ── Resource card ── */
+.resource-card{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:9px;transition:border-color 0.2s,box-shadow 0.15s,transform 0.15s;text-decoration:none;color:var(--text);}
+.resource-card:hover{border-color:var(--gold);box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.card-icon{font-size:1.6rem;line-height:1;flex-shrink:0;margin-top:1px;}
+.card-cat-badge{font-size:0.6rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;padding:2px 9px;border-radius:10px;background:rgba(26,39,68,0.09);color:var(--navy);white-space:nowrap;}
+body.dark .card-cat-badge{background:rgba(221,228,240,0.1);color:#aab8d8;}
+.card-title{font-family:'Libre Baskerville',serif;font-size:1rem;font-weight:700;line-height:1.3;}
+.card-desc{font-size:0.82rem;color:var(--muted);line-height:1.55;flex:1;}
+.card-grade{font-size:0.72rem;font-weight:600;color:var(--gold);}
+body.dark .card-grade{color:var(--gold-light);}
+.card-link{display:inline-flex;align-items:center;gap:4px;font-size:0.76rem;font-weight:600;color:var(--navy);margin-top:2px;opacity:0.55;transition:opacity 0.15s;}
+body.dark .card-link{color:#aab8d8;}
+.resource-card:hover .card-link{opacity:1;}
+.resource-card:hover .card-link::after{transform:translateX(3px);}
+.card-link::after{content:'→';display:inline-block;transition:transform 0.15s;}
+
+/* ── Empty state ── */
+.empty-state{text-align:center;padding:60px 24px;color:var(--muted);}
+.empty-state .emoji{font-size:2.5rem;margin-bottom:12px;}
+.empty-state p{font-size:0.9rem;}
+
+/* ── Footer ── */
+footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
+footer a{color:var(--gold);text-decoration:none;}
+
+@media(max-width:640px){
+  header{padding:12px 16px;}
+  main{padding:20px 14px;}
+  .filter-label{min-width:72px;}
+  .resource-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="star">✡</span>
+  <div>
+    <h1>Teaching Resources</h1>
+    <p>Hebrew literacy tools and references</p>
+  </div>
+  <div class="hright">
+    <a class="hbtn" href="index.html">← Back</a>
+    <button class="dark-btn" id="darkBtn" onclick="toggleDark()">🌙 Dark</button>
+  </div>
+</header>
+
+<main>
+  <h2 class="page-heading">Resources</h2>
+  <p class="page-sub">A curated collection of resources for Hebrew and Jewish education.</p>
+
+  <div class="filter-bar">
+    <div class="filter-row">
+      <span class="filter-label">Category</span>
+      <button class="filter-btn active" data-filter="cat" data-value="all">All</button>
+      <button class="filter-btn" data-filter="cat" data-value="lesson-planning">📘 Lesson Planning</button>
+      <button class="filter-btn" data-filter="cat" data-value="printable">🖨️ Printables</button>
+      <button class="filter-btn" data-filter="cat" data-value="tanakh">📖 Tanakh</button>
+      <button class="filter-btn" data-filter="cat" data-value="hebrew">🇮🇱 Hebrew</button>
+      <button class="filter-btn" data-filter="cat" data-value="culture">🎭 Culture</button>
+      <button class="filter-btn" data-filter="cat" data-value="misc">🧩 Miscellaneous</button>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Age Group</span>
+      <button class="filter-btn active" data-filter="age" data-value="all">All Ages</button>
+      <button class="filter-btn" data-filter="age" data-value="early">Early Learners (K–2)</button>
+      <button class="filter-btn" data-filter="age" data-value="elementary">Elementary (3–5)</button>
+      <button class="filter-btn" data-filter="age" data-value="middle">Middle / High (6–12)</button>
+      <button class="filter-btn" data-filter="age" data-value="adult">Adult / Teacher</button>
+    </div>
+  </div>
+
+  <p class="results-count" id="resultsCount"></p>
+  <div class="resource-grid" id="resourceGrid"></div>
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <div class="emoji">🔍</div>
+    <p>No resources match the selected filters.</p>
+  </div>
+</main>
+
+<footer>
+  Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="font-weight:600;">Harrison Bleiberg</a><br>
+  Word Data from <a href="https://kaikki.org/dictionary/Hebrew/index.html" target="_blank">Kaikki.org</a><br>
+  Free to use and adapt for non-commercial educational purposes with attribution &nbsp;·&nbsp;
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
+  <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank">GitHub</a>
+</footer>
+
+<script>
+/* ── Resource data ── */
+const RESOURCES = [
+
+  /* ── Lesson Planning ── */
+  {
+    title: 'Jewish Education Project',
+    desc:  'Strong source of lesson frameworks and innovative strategies for Jewish educators.',
+    url:   'https://www.jewishedproject.org/',
+    cat:   'lesson-planning',
+    ages:  ['adult'],
+    gradeLabel: 'Adult/Teacher (adaptable K–12)',
+  },
+  {
+    title: 'Prizmah',
+    desc:  'Big-picture curriculum guidance and school-wide planning resources.',
+    url:   'https://prizmah.org/',
+    cat:   'lesson-planning',
+    ages:  ['adult'],
+    gradeLabel: 'Adult/Teacher (K–12 systems-level)',
+  },
+  {
+    title: 'The Lookstein Center',
+    desc:  'Extensive lesson plans and curricular materials, especially for Tanakh and Jewish thought.',
+    url:   'https://www.lookstein.org/',
+    cat:   'lesson-planning',
+    ages:  ['elementary', 'middle', 'adult'],
+    gradeLabel: '3–5, 6–8, 9–12, Adult/Teacher',
+  },
+  {
+    title: 'Institute for Curriculum Services',
+    desc:  'Standards-aligned curricula with clear structure and supporting materials.',
+    url:   'https://www.icsresources.org/',
+    cat:   'lesson-planning',
+    ages:  ['middle', 'adult'],
+    gradeLabel: '6–8, 9–12, Adult/Teacher',
+  },
+  {
+    title: 'Jewish Educator Portal',
+    desc:  'Searchable database of lesson plans, activities, and tools across subjects.',
+    url:   'https://educator.jewishedproject.org/',
+    cat:   'lesson-planning',
+    ages:  ['early', 'elementary', 'middle', 'adult'],
+    gradeLabel: 'K–2, 3–5, 6–8, 9–12, Adult/Teacher',
+  },
+  {
+    title: 'Facing History & Ourselves',
+    desc:  'Inquiry-based lessons on identity, ethics, and history.',
+    url:   'https://www.facinghistory.org/',
+    cat:   'lesson-planning',
+    ages:  ['middle', 'adult'],
+    gradeLabel: '6–8, 9–12, Adult/Teacher',
+  },
+
+  /* ── Printables ── */
+  {
+    title: 'PJ Library',
+    desc:  'Printable guides and activities tied to stories and values.',
+    url:   'https://pjlibrary.org/',
+    cat:   'printable',
+    ages:  ['early', 'elementary'],
+    gradeLabel: 'K–2, 3–5',
+  },
+  {
+    title: 'Jewish Interactive',
+    desc:  'Downloadable games, worksheets, and interactive activities.',
+    url:   'https://jewishinteractive.org/',
+    cat:   'printable',
+    ages:  ['early', 'elementary', 'middle'],
+    gradeLabel: 'K–2, 3–5 (some 6–8)',
+  },
+  {
+    title: 'BimBam',
+    desc:  'Video-based content with printable extensions.',
+    url:   'https://www.bimbam.com/',
+    cat:   'printable',
+    ages:  ['early', 'elementary'],
+    gradeLabel: 'K–2, 3–5',
+  },
+  {
+    title: 'The Kefar',
+    desc:  'Coloring sheets and classroom printables.',
+    url:   'https://www.thekefar.com/',
+    cat:   'printable',
+    ages:  ['early', 'elementary'],
+    gradeLabel: 'K–2, 3–5',
+  },
+
+  {
+    title: 'HebrewWorksheets.com',
+    desc:  'Free and paid worksheets and resources for Hebrew teachers.',
+    url:   'https://www.hebrewworksheets.com/freehebrewworksheetspdf',
+    cat:   'printable',
+    ages:  ['early', 'elementary', 'middle'],
+    gradeLabel: 'K–2, 3–5 (some 6–8)',
+  },
+
+  /* ── Tanakh ── */
+  {
+    title: 'Sefaria',
+    desc:  'Primary texts with translations and source sheet tools.',
+    url:   'https://www.sefaria.org/',
+    cat:   'tanakh',
+    ages:  ['elementary', 'middle', 'adult'],
+    gradeLabel: '3–5 (guided), 6–8, 9–12, Adult/Teacher',
+  },
+  {
+    title: '929 Project',
+    desc:  'Chapter-by-chapter Tanakh learning with multimedia support.',
+    url:   'https://929.org.il/',
+    cat:   'tanakh',
+    ages:  ['middle', 'adult'],
+    gradeLabel: '6–8, 9–12, Adult/Teacher (adaptable 3–5)',
+  },
+  {
+    title: 'Aleph Beta',
+    desc:  'Engaging videos exploring Torah ideas.',
+    url:   'https://www.alephbeta.org/',
+    cat:   'tanakh',
+    ages:  ['elementary', 'middle'],
+    gradeLabel: '3–5, 6–8 (select use 9–12)',
+  },
+  {
+    title: 'Torah Cafe',
+    desc:  'Library of recorded Torah classes.',
+    url:   'https://www.torahcafe.com/',
+    cat:   'tanakh',
+    ages:  ['middle', 'adult'],
+    gradeLabel: '9–12, Adult/Teacher',
+  },
+
+  {
+    title: 'Tiptoe Through the Torah',
+    desc:  'Simple and digestible summaries of Torah portions for all ages.',
+    url:   'https://tiptoethroughthetorah.com/',
+    cat:   'tanakh',
+    ages:  ['early', 'elementary', 'middle', 'adult'],
+    gradeLabel: 'All Ages',
+  },
+
+  /* ── Hebrew ── */
+  {
+    title: 'HebrewPod101',
+    desc:  'Structured lessons and listening practice.',
+    url:   'https://www.hebrewpod101.com/',
+    cat:   'hebrew',
+    ages:  ['middle', 'adult'],
+    gradeLabel: '6–8, 9–12, Adult/Teacher',
+  },
+  {
+    title: 'Duolingo',
+    desc:  'Gamified Hebrew vocabulary and reading practice.',
+    url:   'https://www.duolingo.com/',
+    cat:   'hebrew',
+    ages:  ['elementary', 'middle'],
+    gradeLabel: '3–5, 6–8, 9–12',
+  },
+  {
+    title: 'Jewish Interactive',
+    desc:  'Interactive Hebrew learning tools and activities.',
+    url:   'https://jewishinteractive.org/',
+    cat:   'hebrew',
+    ages:  ['early', 'elementary'],
+    gradeLabel: 'K–2, 3–5',
+  },
+  {
+    title: 'Hebrew Blender',
+    desc:  'A collection of free tools for Hebrew literacy instruction, including a worksheet/game generator, interactive dictionary, and classroom dashboard.',
+    url:   'index.html',
+    cat:   'hebrew',
+    ages:  ['early', 'elementary', 'middle', 'adult'],
+    gradeLabel: 'K–2, 3–5, 6–8, Adult',
+  },
+  {
+    title: 'ALittleHebrew',
+    desc:  'Automatic Hebrew transliteration tool with support for multiple transliteration types and even braille.',
+    url:   'https://alittlehebrew.com/',
+    cat:   'hebrew',
+    ages:  ['adult'],
+    gradeLabel: 'Adult/Teacher',
+  },
+  {
+    title: 'Nakdan',
+    desc:  'Automatically adds nikkud (vowels) to any Hebrew text.',
+    url:   'https://nakdan.dicta.org.il/',
+    cat:   'hebrew',
+    ages:  ['adult'],
+    gradeLabel: 'Adult/Teacher',
+  },
+
+  /* ── Culture ── */
+  {
+    title: 'Yad Vashem',
+    desc:  'Holocaust education materials and primary sources with careful scaffolding.',
+    url:   'https://www.yadvashem.org/',
+    cat:   'culture',
+    ages:  ['middle', 'adult'],
+    gradeLabel: '6–8, 9–12, Adult/Teacher',
+  },
+  {
+    title: 'Jewish Virtual Library',
+    desc:  'Broad reference for Jewish history and global life.',
+    url:   'https://www.jewishvirtuallibrary.org/',
+    cat:   'culture',
+    ages:  ['middle', 'adult'],
+    gradeLabel: '6–8, 9–12, Adult/Teacher',
+  },
+  {
+    title: 'Unpacked for Educators',
+    desc:  'Videos and lessons on identity and Israel.',
+    url:   'https://unpacked.education/',
+    cat:   'culture',
+    ages:  ['elementary', 'middle'],
+    gradeLabel: '6–8, 9–12 (select 3–5)',
+  },
+  {
+    title: 'Center for Jewish-Inclusive Learning',
+    desc:  'Interactive identity-focused learning experiences.',
+    url:   'https://cjilearning.org/',
+    cat:   'culture',
+    ages:  ['elementary', 'middle'],
+    gradeLabel: '3–5, 6–8, 9–12',
+  },
+  {
+    title: 'Kulanu',
+    desc:  'Resources highlighting global Jewish communities.',
+    url:   'https://kulanu.org/',
+    cat:   'culture',
+    ages:  ['elementary', 'middle'],
+    gradeLabel: '3–5, 6–8, 9–12',
+  },
+  {
+    title: 'Center for Jewish History',
+    desc:  'Primary sources and archival materials.',
+    url:   'https://www.cjh.org/',
+    cat:   'culture',
+    ages:  ['middle', 'adult'],
+    gradeLabel: '9–12, Adult/Teacher',
+  },
+  {
+    title: 'Melton Centre for Jewish Education',
+    desc:  'Research and thought leadership in Jewish education.',
+    url:   'https://melton.huji.ac.il/',
+    cat:   'culture',
+    ages:  ['adult'],
+    gradeLabel: 'Adult/Teacher',
+  },
+  {
+    title: 'Encyclopedia of Southern Jewish Communities',
+    desc:  'Regional resource highlighting Southern Jewish communities and stories.',
+    url:   'https://www.isjl.org/encyclopedia-of-southern-jewish-communities.html',
+    cat:   'culture',
+    ages:  ['elementary', 'middle'],
+    gradeLabel: '3–5, 6–8, 9–12',
+  },
+
+  {
+    title: 'Zemirot Database',
+    desc:  'A collection of Jewish music, including lyrics and recordings.',
+    url:   'https://zemirotdatabase.org/',
+    cat:   'culture',
+    ages:  ['adult'],
+    gradeLabel: 'Adult/Teacher',
+  },
+
+  /* ── Miscellaneous ── */
+  {
+    title: 'Interesting Halachic Debates',
+    desc:  'A curated list of interesting Halachic debates, including applications of Halacha in popular culture. An excellent conversation starter.',
+    url:   'https://jewish-education.tumblr.com/interesting-halacha',
+    cat:   'misc',
+    ages:  ['middle', 'adult'],
+    gradeLabel: '6–8, 9–12, Adult/Teacher',
+  },
+  {
+    title: 'IsItAJewishHolidayToday.com',
+    desc:  'Quick, clear answer to whether today is a Jewish holiday.',
+    url:   'https://isitajewishholidaytoday.com/',
+    cat:   'misc',
+    ages:  ['early', 'elementary', 'middle', 'adult'],
+    gradeLabel: 'K–2, 3–5, 6–8, 9–12, Adult/Teacher',
+  },
+  {
+    title: 'My Jewish Learning',
+    desc:  'Accessible articles on holidays, traditions, and Jewish life.',
+    url:   'https://www.myjewishlearning.com/',
+    cat:   'misc',
+    ages:  ['elementary', 'middle', 'adult'],
+    gradeLabel: '3–5, 6–8, 9–12, Adult/Teacher',
+  },
+  {
+    title: 'Chabad.org',
+    desc:  'Stories, explanations, and holiday guides.',
+    url:   'https://www.chabad.org/',
+    cat:   'misc',
+    ages:  ['early', 'elementary', 'middle', 'adult'],
+    gradeLabel: 'K–2 (select), 3–5, 6–8, Adult/Teacher',
+  },
+  {
+    title: 'Institute of Jewish Knowledge and Learning',
+    desc:  'Wide range of lectures and classes.',
+    url:   'https://www.ijkl.org/',
+    cat:   'misc',
+    ages:  ['middle', 'adult'],
+    gradeLabel: '9–12, Adult/Teacher',
+  },
+  {
+    title: 'JewQ',
+    desc:  'Gamified Jewish knowledge quizzes.',
+    url:   'https://ckids.org/jewq',
+    cat:   'misc',
+    ages:  ['elementary', 'middle'],
+    gradeLabel: '3–5, 6–8',
+  },
+  {
+    title: 'Kabbalah Online',
+    desc:  'Accessible introductions to deeper spiritual ideas.',
+    url:   'https://www.kabbalaonline.org/',
+    cat:   'misc',
+    ages:  ['middle', 'adult'],
+    gradeLabel: '9–12, Adult/Teacher',
+  },
+  {
+    title: 'Stanford University Jewish Studies Guide',
+    desc:  'Curated academic research gateway.',
+    url:   'https://guides.library.stanford.edu/jewish-studies',
+    cat:   'misc',
+    ages:  ['middle', 'adult'],
+    gradeLabel: '9–12, Adult/Teacher',
+  },
+];
+
+/* ── Category metadata ── */
+const CAT_META = {
+  'lesson-planning': { label: 'Lesson Planning', icon: '📘' },
+  'printable':       { label: 'Printables',       icon: '🖨️' },
+  'tanakh':          { label: 'Tanakh',            icon: '📖' },
+  'hebrew':          { label: 'Hebrew',            icon: '🇮🇱' },
+  'culture':         { label: 'Culture',           icon: '🎭' },
+  'misc':            { label: 'Miscellaneous',     icon: '🧩' },
+};
+
+/* ── Filter state ── */
+let activeCat = 'all';
+let activeAge = 'all';
+
+/* ── Render ── */
+function render() {
+  const filtered = RESOURCES.filter(r => {
+    const catOk = activeCat === 'all' || r.cat === activeCat;
+    const ageOk = activeAge === 'all' || r.ages.includes(activeAge);
+    return catOk && ageOk;
+  });
+
+  const grid   = document.getElementById('resourceGrid');
+  const empty  = document.getElementById('emptyState');
+  const count  = document.getElementById('resultsCount');
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = '';
+    count.textContent = '';
+    return;
+  }
+
+  empty.style.display = 'none';
+  count.textContent = `Showing ${filtered.length} of ${RESOURCES.length} resources`;
+
+  grid.innerHTML = filtered.map(r => {
+    const cat = CAT_META[r.cat] || { label: r.cat, icon: '📌' };
+    const target = r.url === 'index.html' ? '_self' : '_blank';
+    return `
+    <a class="resource-card" href="${r.url}" target="${target}" rel="noopener">
+      <div class="card-top">
+        <div class="card-icon">${cat.icon}</div>
+        <span class="card-cat-badge">${cat.label}</span>
+      </div>
+      <div class="card-title">${r.title}</div>
+      <div class="card-desc">${r.desc}</div>
+      <div class="card-grade">Grades: ${r.gradeLabel}</div>
+      <span class="card-link">Visit resource</span>
+    </a>`;
+  }).join('');
+}
+
+/* ── Filter buttons ── */
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const type  = btn.dataset.filter;
+    const value = btn.dataset.value;
+    document.querySelectorAll(`.filter-btn[data-filter="${type}"]`).forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (type === 'cat') activeCat = value;
+    else activeAge = value;
+    render();
+  });
+});
+
+/* ── Dark mode ── */
+function toggleDark() {
+  const dark = document.body.classList.toggle('dark');
+  document.documentElement.classList.remove('dark-early');
+  try { localStorage.setItem('hebrewBlender_darkMode', dark ? '1' : '0'); } catch(e) {}
+  document.getElementById('darkBtn').textContent = dark ? '☀ Light' : '🌙 Dark';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    if (localStorage.getItem('hebrewBlender_darkMode') === '1') {
+      document.body.classList.add('dark');
+      document.getElementById('darkBtn').textContent = '☀ Light';
+    }
+  } catch(e) {}
+  render();
+});
+</script>
+</body>
+</html>

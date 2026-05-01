@@ -52,6 +52,8 @@
     background: var(--cream);
     color: var(--text);
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -118,33 +120,94 @@
   .dashboard {
     display: grid;
     grid-template-columns: 290px 1fr 290px;
+    grid-template-rows: 1fr;
     gap: 24px;
     padding: 28px;
-    min-height: calc(100vh - 76px);
+    flex: 1;
   }
   .dash-col {
     background: var(--white);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 22px 18px;
+    padding: 0;
     box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
+  /* Center column keeps its own internal padding since it has no col-title */
+  .dash-col.dash-center { padding: 22px 18px; }
   body.dark .dash-col {
     background: #1e2535;
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   }
+  .right-col-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+  /* Weather card: compact, don't stretch */
+  .right-col-wrap #weatherCol { flex-shrink: 0; }
+  /* Video card in sidebar fills remaining height */
+  .right-col-wrap #videoPanel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .right-col-wrap #videoPanel #videoBody {
+    flex: 1;
+    min-height: 0;
+    padding: 10px;
+  }
+  /* Collapse: max-height so iframe stays in DOM (audio keeps playing) */
+  #videoBody {
+    overflow: hidden;
+    max-height: 4000px;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+  }
+  #videoBody.vcollapsed {
+    max-height: 0 !important;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .right-col-wrap #videoPanel #videoIframe {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: unset;
+  }
 
   .col-title {
     font-family: 'Libre Baskerville', serif;
-    font-size: 0.7rem;
-    letter-spacing: 0.14em;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--gold);
-    text-align: center;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border);
+    color: #fff;
+    background: var(--navy);
+    border-bottom: 2px solid var(--gold);
+    padding: 9px 14px;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
   }
+  body.dark .col-title { background: #0a0f1c; }
+  .col-title::after {
+    content: '▾';
+    font-size: 0.9rem;
+    color: var(--gold-light);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .dash-col.collapsed .col-title::after { transform: rotate(-90deg); }
+  .col-body {
+    padding: 16px 18px;
+    flex: 1;
+  }
+  .dash-col.collapsed .col-body { display: none; }
 
   /* ───── Days list ───── */
   .day-item {
@@ -258,23 +321,29 @@
   }
 
   /* ───── Weather ───── */
-  .weather-block { text-align: center; padding: 8px 0; }
-  .weather-emoji { font-size: 4.6rem; margin: 8px 0 4px; line-height: 1; }
+  .weather-block { text-align: center; padding: 4px 0; }
+  .weather-emoji { font-size: 3.2rem; margin: 4px 0 2px; line-height: 1; }
   .weather-temp {
     font-family: 'Libre Baskerville', serif;
-    font-size: 2.6rem;
+    font-size: 2rem;
     font-weight: 700;
     color: var(--navy);
   }
   body.dark .weather-temp { color: var(--gold-light); }
+  .weather-highlow {
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.03em;
+    margin-top: 1px;
+  }
   .weather-label {
     font-family: var(--heb-font);
-    font-size: 1.5rem;
+    font-size: 1.1rem;
     direction: rtl;
     color: var(--text);
-    margin-top: 8px;
+    margin-top: 4px;
   }
-  .weather-label.ltr { direction: ltr; font-family: 'Libre Baskerville', serif; font-size: 1.2rem; }
+  .weather-label.ltr { direction: ltr; font-family: 'Libre Baskerville', serif; font-size: 1rem; }
   .weather-descriptor {
     font-family: var(--heb-font);
     font-size: 1.05rem;
@@ -417,6 +486,25 @@
     flex: 1;
     color: var(--text);
   }
+  .tip-wrap { display: inline-flex; align-items: center; }
+  .tip-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--border); color: var(--muted);
+    font-size: 0.65rem; font-weight: 700; font-style: normal;
+    cursor: default; margin-left: 5px; flex-shrink: 0; line-height: 1;
+  }
+  body.dark .tip-icon { background: var(--warm-gray); }
+  #tipFloat {
+    display: none; position: fixed;
+    background: var(--navy); color: #fff;
+    font-size: 0.72rem; font-weight: 400; line-height: 1.45;
+    padding: 6px 9px; border-radius: 6px;
+    max-width: 220px; z-index: 9999;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    pointer-events: none;
+  }
+  body.dark #tipFloat { background: #0a0f1c; }
   .panel hr {
     margin: 12px 0;
     border: none;
@@ -567,6 +655,52 @@
     text-align: center;
   }
 
+  /* ───── Schedule Sync ───── */
+  .schedule-row {
+    display: flex; align-items: center; gap: 5px;
+    margin-bottom: 6px;
+  }
+  .schedule-preset-sel {
+    flex: 1; min-width: 0;
+    font-size: 0.78rem; font-family: inherit;
+    padding: 3px 5px;
+    border: 1px solid var(--border); border-radius: 4px;
+    background: var(--white); color: var(--text);
+    cursor: pointer;
+  }
+  body.dark .schedule-preset-sel { background: var(--navy-deep); color: var(--text); border-color: var(--border); }
+  .schedule-time-input {
+    width: 82px; flex-shrink: 0;
+    font-size: 0.78rem; font-family: inherit;
+    padding: 3px 5px;
+    border: 1px solid var(--border); border-radius: 4px;
+    background: var(--white); color: var(--text);
+  }
+  body.dark .schedule-time-input { background: var(--navy-deep); color: var(--text); border-color: var(--border); }
+  .schedule-del-btn {
+    flex-shrink: 0; background: none; border: none;
+    font-size: 1rem; line-height: 1; cursor: pointer;
+    color: var(--muted); padding: 0 2px;
+  }
+  .schedule-del-btn:hover { color: #cc3333; }
+  .schedule-until-lbl { font-size: 0.72rem; color: var(--muted); flex-shrink: 0; }
+  .schedule-row.drag-over { border: 1px solid var(--gold); background: rgba(201,146,42,0.08); border-radius: 4px; }
+  .schedule-row.dragging  { opacity: 0.4; }
+  .saved-schedule-list { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+  .drag-handle {
+    cursor: grab; color: var(--muted); font-size: 0.85rem;
+    padding: 0 2px; flex-shrink: 0; line-height: 1; user-select: none;
+  }
+  .drag-handle:active { cursor: grabbing; }
+  .preset-item.drag-over { border-color: var(--gold); background: rgba(201,146,42,0.08); }
+  .preset-item.dragging  { opacity: 0.4; }
+  #scheduleCountdown {
+    display: none;
+    font-size: 0.75rem; color: var(--muted);
+    text-align: center; margin-top: 3px;
+    letter-spacing: 0.02em;
+  }
+
   /* ───── Editor toolbar ───── */
   .editor-toolbar {
     display: flex;
@@ -698,10 +832,26 @@
     padding: 40px;
     gap: 32px;
   }
+  #fsExitBtn {
+    display: none;
+    position: fixed;
+    top: 12px; right: 14px;
+    z-index: 200;
+    background: rgba(13,18,32,0.72);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+  }
+  #fsExitBtn:hover { background: rgba(13,18,32,0.92); }
+  body.fullscreen #fsExitBtn { display: block; }
   body.fullscreen .heb-date { font-size: 3.2rem; }
   body.fullscreen .current-time { font-size: 4.2rem; }
-  body.fullscreen .weather-emoji { font-size: 5.6rem; }
-  body.fullscreen .weather-temp { font-size: 3rem; }
+  body.fullscreen .weather-emoji { font-size: 4.2rem; }
+  body.fullscreen .weather-temp { font-size: 2.4rem; }
 
   /* ───── Responsive ───── */
   @media (max-width: 980px) {
@@ -729,25 +879,57 @@
     <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
     <button id="fsBtn" class="hbtn icon-btn" onclick="toggleFullscreen()" title="Fullscreen"></button>
   </div>
-</header><div class="dashboard">
+</header>
+<div id="zoomBar" style="background:var(--warm-gray);border-bottom:1px solid var(--border);padding:5px 20px;display:flex;align-items:center;gap:10px;font-size:0.78rem;color:var(--text);">
+  <span style="font-weight:600;white-space:nowrap;">🔍 Zoom</span>
+  <input type="range" id="zoomSlider" min="50" max="200" step="5" value="100" style="flex:1;accent-color:var(--gold);cursor:pointer;">
+  <span id="zoomLabel" style="white-space:nowrap;min-width:36px;">100%</span>
+  <button onclick="applyZoom(100)" style="font-size:0.7rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);cursor:pointer;">Reset</button>
+</div>
+<button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen">✕ Exit Fullscreen</button>
+<div class="dashboard">
   <!-- LEFT: Days -->
   <div class="dash-col" id="dowCol">
     <div class="col-title" id="dowColTitle">Days of the Week</div>
-    <div id="daysList"></div>
+    <div class="col-body" id="dowBody">
+      <div id="daysList"></div>
+    </div>
   </div><!-- CENTER: Date / Time / Custom Text --><div class="dash-col dash-center">
     <div id="dateTimeBlock" style="width:100%;">
       <div class="eng-date" id="engDate"></div>
       <div class="heb-date" id="hebDate"></div>
       <div class="current-time" id="currentTime"></div>
+      <div id="scheduleCountdown"></div>
     </div>
     <div id="dashTextWrap" style="display:none;width:100%;">
       <div id="dashTextDisplay" class="dash-text-display"></div>
     </div>
-  </div><!-- RIGHT: Weather --><div class="dash-col" id="weatherCol">
-    <div class="col-title" id="weatherColTitle">Weather</div>
-    <div id="weatherBlock" class="weather-block">
-      <div class="weather-loading">Loading weather…</div>
+  </div><!-- RIGHT: Weather --><div class="right-col-wrap">
+    <div class="dash-col" id="weatherCol">
+      <div class="col-title" id="weatherColTitle">Weather</div>
+      <div class="col-body" id="weatherBody">
+        <div id="weatherBlock" class="weather-block">
+          <div class="weather-loading">Loading weather…</div>
+        </div>
+        <div style="text-align:center;margin-top:6px;">
+          <button onclick="renderWeather()" title="Refresh weather"
+            style="font-size:0.68rem;padding:2px 8px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--muted);cursor:pointer;">↺ Refresh</button>
+        </div>
+      </div>
     </div>
+    <div id="videoSidebarSlot"></div>
+  </div>
+</div>
+<div id="videoBelowSlot"></div>
+<div id="videoPanel" style="display:none;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);">
+  <div id="videoPanelHeader" onclick="toggleVideoCollapse()" style="background:var(--navy);color:#fff;padding:7px 14px;display:flex;align-items:center;cursor:pointer;user-select:none;border-bottom:2px solid var(--gold);">
+    <span id="videoCollapseArrow" style="font-size:1rem;color:var(--gold-light);transition:transform 0.2s;flex-shrink:0;">▾</span>
+    <span id="videoHeaderLabel" style="font-family:'Libre Baskerville',serif;letter-spacing:0.08em;text-transform:uppercase;flex:1;text-align:center;">Video</span>
+    <span style="width:1rem;flex-shrink:0;"></span>
+  </div>
+  <div id="videoBody" style="padding:10px;">
+    <iframe id="videoIframe" src="" allowfullscreen
+      style="width:100%;aspect-ratio:16/9;border:none;border-radius:8px;display:block;background:#000;"></iframe>
   </div>
 </div><!-- ───── Settings drawer ───── --><div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
 <div class="settings-modal" id="settingsModal">
@@ -780,6 +962,12 @@
         <input type="radio" name="headerLang" id="hl-none" value="none"><label for="hl-none">None</label>
       </div>
     </div>
+    <div class="size-row">
+      <label for="colTitleSizeSlider">Header size</label>
+      <input type="range" id="colTitleSizeSlider" min="0.5" max="1.8" step="0.05" value="0.78" oninput="setColTitleSize(this.value)">
+      <span class="size-val" id="colTitleSizeVal">0.78rem</span>
+      <button class="btn-xs" onclick="setColTitleSize(0.78)" title="Restore default">↺</button>
+    </div>
     <div class="form-row">
       <label>Hide English date</label>
       <label class="toggle"><input type="checkbox" id="hideEngDate"><span class="slider"></span></label>
@@ -804,6 +992,26 @@
       <label>Hide dashboard text</label>
       <label class="toggle"><input type="checkbox" id="hideDashText"><span class="slider"></span></label>
     </div>
+    <div class="form-row">
+      <label>Hide zoom bar</label>
+      <label class="toggle"><input type="checkbox" id="hideZoomBar"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Show video embed</label>
+      <label class="toggle"><input type="checkbox" id="showVideoEmbed"><span class="slider"></span></label>
+    </div>
+    <div id="videoUrlRow" style="display:none;flex-direction:column;gap:8px;margin-top:4px;padding:8px;background:var(--cream);border:1px solid var(--border);border-radius:6px;">
+      <div style="display:flex;gap:14px;font-size:0.78rem;">
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+          <input type="radio" name="videoLayout" id="vlBelow" value="below" style="accent-color:var(--gold);"> Under dashboard
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+          <input type="radio" name="videoLayout" id="vlSidebar" value="sidebar" style="accent-color:var(--gold);"> In sidebar
+        </label>
+      </div>
+      <input type="text" id="videoUrlInput" placeholder="Paste YouTube URL…" style="width:100%;box-sizing:border-box;">
+      <button class="btn btn-xs" onclick="updateVideoEmbed()">Update Video</button>
+    </div>
   </div>
 </div>
 
@@ -819,6 +1027,7 @@
           <div class="radio-group">
             <input type="radio" name="engDateFmt" id="ef-mdy" value="MDY"><label for="ef-mdy">MM/DD/YYYY</label>
             <input type="radio" name="engDateFmt" id="ef-dmy" value="DMY"><label for="ef-dmy">DD/MM/YYYY</label>
+            <input type="radio" name="engDateFmt" id="ef-long" value="LONG"><label for="ef-long">Long</label>
           </div>
         </div>
         <div class="form-row">
@@ -852,6 +1061,10 @@
             <input type="radio" name="timeFmt" id="tf-24" value="24"><label for="tf-24">24-hr</label>
           </div>
         </div>
+        <div class="form-row">
+          <label>Show seconds</label>
+          <label class="toggle"><input type="checkbox" id="showSeconds"><span class="slider"></span></label>
+        </div>
       </div>
     </div>
 
@@ -876,12 +1089,20 @@
       </div>
     </div>
     <div class="form-row">
-      <label title="Limits description to: Sun, Clouds, Sun and Clouds, Sun/Clouds/Rain, Rain, Snow, Fog">Simple weather description</label>
+      <label>Simple weather description <span class="tip-wrap" data-tip="Limits description to: Sun, Clouds, Sun &amp; Clouds, Rain, Snow, or Fog — instead of full WMO detail."><i class="tip-icon">?</i></span></label>
       <label class="toggle"><input type="checkbox" id="simpleWeatherDesc"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Hide temperature</label>
+      <label class="toggle"><input type="checkbox" id="hideTemperature"><span class="slider"></span></label>
     </div>
     <div class="form-row">
       <label>Hide weather emoji</label>
       <label class="toggle"><input type="checkbox" id="hideWeatherEmoji"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Hide High/Low</label>
+      <label class="toggle"><input type="checkbox" id="hideHighLow"><span class="slider"></span></label>
     </div>
     <div class="form-row">
       <label>Hide weather description</label>
@@ -947,9 +1168,9 @@
       <button class="ed-btn" onclick="fmt('underline')" type="button"><u>U</u></button>
       <button class="ed-btn" onclick="fmt('strikeThrough')" type="button"><s>S</s></button>
       <span class="ed-sep"></span>
-      <button class="ed-btn" onclick="setAlign('Right')" type="button">RTL</button>
-      <button class="ed-btn" onclick="setAlign('Center')" type="button">Ctr</button>
-      <button class="ed-btn" onclick="setAlign('Left')" type="button">LTR</button>
+      <button class="ed-btn" onclick="setAlign('Right')" type="button" title="Align right (RTL)"><svg width="14" height="11" viewBox="0 0 14 11" fill="currentColor"><rect x="0" y="0" width="14" height="1.5" rx="0.75"/><rect x="5" y="4" width="9" height="1.5" rx="0.75"/><rect x="2" y="8" width="12" height="1.5" rx="0.75"/></svg></button>
+      <button class="ed-btn" onclick="setAlign('Center')" type="button" title="Center"><svg width="14" height="11" viewBox="0 0 14 11" fill="currentColor"><rect x="0" y="0" width="14" height="1.5" rx="0.75"/><rect x="2.5" y="4" width="9" height="1.5" rx="0.75"/><rect x="1" y="8" width="12" height="1.5" rx="0.75"/></svg></button>
+      <button class="ed-btn" onclick="setAlign('Left')" type="button" title="Align left (LTR)"><svg width="14" height="11" viewBox="0 0 14 11" fill="currentColor"><rect x="0" y="0" width="14" height="1.5" rx="0.75"/><rect x="0" y="4" width="9" height="1.5" rx="0.75"/><rect x="0" y="8" width="12" height="1.5" rx="0.75"/></svg></button>
       <span class="ed-sep"></span>
       <button class="ed-btn" onclick="insertLink()" type="button" title="Insert link (or remove if cursor is inside one)">🔗</button>
       <button class="ed-btn" onclick="insertSpoiler()" type="button" title="Wrap selection in spoiler (hidden until tapped)">Spoiler</button>
@@ -988,11 +1209,55 @@
 </div>
 
 <div class="panel">
+  <div class="panel-title">Schedule Sync</div>
+  <div class="panel-body">
+    <div class="form-row" style="margin-bottom:12px;">
+      <label>Enable Schedule Sync</label>
+      <label class="toggle"><input type="checkbox" id="scheduleEnabled" onchange="toggleScheduleSync(this.checked)"><span class="slider"></span></label>
+    </div>
+    <div id="scheduleSyncBody" style="display:none;">
+      <div class="sub-section">
+        <div class="sub-section-hdr">Schedule Input</div>
+        <div class="sub-section-body">
+          <div id="scheduleRows"></div>
+          <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;">
+            <button class="btn-xs" onclick="addScheduleRow()">+ Add</button>
+            <button class="btn-xs btn-secondary" onclick="saveScheduleAs()">Save Schedule As…</button>
+          </div>
+        </div>
+      </div>
+      <div class="sub-section">
+        <div class="sub-section-hdr">Load Schedule</div>
+        <div class="sub-section-body">
+          <div class="saved-schedule-list" id="savedScheduleList"></div>
+        </div>
+      </div>
+      <div class="sub-section">
+        <div class="sub-section-hdr">Schedule Sync Options</div>
+        <div class="sub-section-body">
+          <div class="form-row">
+            <label>Show countdown to next class</label>
+            <label class="toggle"><input type="checkbox" id="scheduleShowCountdown" onchange="setScheduleCountdown(this.checked)"><span class="slider"></span></label>
+          </div>
+          <div class="form-row" id="countdownPresetNameRow" style="display:none;padding-left:16px;">
+            <label style="font-size:0.8rem;font-weight:500;color:var(--muted);">Show preset name</label>
+            <label class="toggle"><input type="checkbox" id="countdownShowPresetName" onchange="settings.countdownShowPresetName=this.checked;updateCountdown();saveSettingsToStorage();"><span class="slider"></span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
   <div class="panel-title">Hebrew Settings</div>
   <div class="panel-body">
-    <div style="margin-bottom:8px;font-size:0.85rem;font-weight:600;">Hebrew font</div>
-    <div class="font-options" id="fontOptions"></div>
-    <hr>
+    <div class="sub-section">
+      <div class="sub-section-hdr">Hebrew Font</div>
+      <div class="sub-section-body">
+        <div class="font-options" id="fontOptions"></div>
+      </div>
+    </div>
     <div class="form-row">
       <label>Show nikkud</label>
       <label class="toggle"><input type="checkbox" id="showNikkud"><span class="slider"></span></label>
@@ -1164,11 +1429,14 @@
     hebDateScript: 'he',
     hideHebDate: false,
     timeFmt: '12',
+    showSeconds: false,
     hideTime: false,
     tempUnit: 'F',
     weatherLabelLang: 'he',
     simpleWeatherDesc: false,
+    hideTemperature: false,
     hideWeatherEmoji: false,
+    hideHighLow: false,
     hideWeatherDesc: false,
     hideWeather: false,
     dowLang: 'he',
@@ -1178,6 +1446,7 @@
     dowEmojiSet: 'chick',
     colorDays: true,
     headerLang: 'he',
+    colTitleSize: 0.78,
     hideDOW: false,
     enableDashText: true,
     dashTextHTML: '',
@@ -1187,8 +1456,23 @@
     colorCodingMode: 'letter',
     nikudColorOverrides: {},
     dashTextSize: 1.8,
+    zoomLevel: 100,
+    hideZoomBar: false,
+    showVideoEmbed: false,
+    videoEmbedUrl: '',
+    videoCollapsed: false,
+    videoLayout: 'below',
+    dowCollapsed: false,
+    weatherCollapsed: false,
+    scheduleEnabled: false,
+    scheduleShowCountdown: false,
+    countdownShowPresetName: true,
+    currentSchedule: [],
   };
   let presets = {};
+  let savedSchedules = {};
+  let _lastScheduleKey = null;
+  let _savedEditorRange = null;
   let weatherCache = null;
   let weatherTimer = null;
   let clockInterval = null;
@@ -1400,6 +1684,18 @@
   }
 
   /* ────────── DASHBOARD TEXT SIZE ────────── */
+  function setColTitleSize(val) {
+    const v = parseFloat(val);
+    settings.colTitleSize = v;
+    document.querySelectorAll('.col-title').forEach(el => el.style.fontSize = v + 'rem');
+    const vh = document.getElementById('videoPanelHeader');
+    if (vh) vh.style.fontSize = v + 'rem';
+    const lbl = document.getElementById('colTitleSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
+    const sl = document.getElementById('colTitleSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
   function setDashTextSize(val) {
     const v = parseFloat(val);
     settings.dashTextSize = v;
@@ -1421,7 +1717,14 @@
     } else {
       engEl.style.display = '';
       const m = now.getMonth() + 1, d = now.getDate(), y = now.getFullYear();
-      let s = settings.engDateFmt === 'DMY' ? `${d}/${m}/${y}` : `${m}/${d}/${y}`;
+      let s;
+      if (settings.engDateFmt === 'LONG') {
+        const monthName = now.toLocaleDateString('en-US', { month: 'long' });
+        const sfx = d === 1 || d === 21 || d === 31 ? 'st' : d === 2 || d === 22 ? 'nd' : d === 3 || d === 23 ? 'rd' : 'th';
+        s = `${monthName} ${d}${sfx}, ${y}`;
+      } else {
+        s = settings.engDateFmt === 'DMY' ? `${d}/${m}/${y}` : `${m}/${d}/${y}`;
+      }
       if (settings.showEngDOW) s = now.toLocaleDateString('en-US', { weekday: 'long' }) + ', ' + s;
       engEl.textContent = s;
     }
@@ -1456,8 +1759,10 @@
       const opts = settings.timeFmt === '24'
         ? { hour: '2-digit', minute: '2-digit', hour12: false }
         : { hour: 'numeric', minute: '2-digit', hour12: true };
+      if (settings.showSeconds) opts.second = '2-digit';
       timeEl.textContent = now.toLocaleTimeString('en-US', opts);
     }
+    updateCountdown();
   }
 
   function startClock() {
@@ -1550,7 +1855,7 @@
         place = geo.results[0];
       }
       const wRes = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,weathercode`
+        `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,weathercode&daily=temperature_2m_max,temperature_2m_min&timezone=auto`
       );
       const wData = await wRes.json();
       weatherCache = { data: wData, place };
@@ -1622,9 +1927,21 @@
     } else {
       descriptor = tempC > 25 ? 'Hot' : tempC < 15 ? 'Cold' : 'Pleasant';
     }
+    let hlHtml = '';
+    if (!settings.hideHighLow && data.daily) {
+      const maxC = data.daily.temperature_2m_max?.[0];
+      const minC = data.daily.temperature_2m_min?.[0];
+      if (maxC !== undefined && minC !== undefined) {
+        const toDisplay = c => settings.tempUnit === 'F'
+          ? Math.round(c * 9 / 5 + 32) + '°'
+          : Math.round(c) + '°';
+        hlHtml = `<div class="weather-highlow">H: ${toDisplay(maxC)} · L: ${toDisplay(minC)}</div>`;
+      }
+    }
     block.innerHTML = `
       ${settings.hideWeatherEmoji ? '' : `<div class="weather-emoji">${w.emoji}</div>`}
-      <div class="weather-temp">${tempStr}</div>
+      ${settings.hideTemperature ? '' : `<div class="weather-temp">${tempStr}</div>`}
+      ${hlHtml}
       ${settings.hideWeatherDesc ? '' : `<div class="weather-label ${isHe ? '' : 'ltr'}">${label}</div>`}
       <div class="weather-descriptor ${isHe ? '' : 'ltr'}">${descriptor}</div>
       <div class="weather-city">${place.name}${place.country ? ', ' + place.country : ''}</div>
@@ -1658,6 +1975,89 @@
     saveSettingsToStorage();
   }
 
+  function extractYouTubeId(url) {
+    const m = url.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : null;
+  }
+
+  function applyVideoCollapse(collapsed, instant) {
+    const body  = document.getElementById('videoBody');
+    const arrow = document.getElementById('videoCollapseArrow');
+    if (instant) body.style.transition = 'none';
+    body.classList.toggle('vcollapsed', !!collapsed);
+    if (arrow) arrow.style.transform = collapsed ? 'rotate(-90deg)' : '';
+    if (instant) requestAnimationFrame(() => { body.style.transition = ''; });
+  }
+
+  function toggleVideoCollapse() {
+    settings.videoCollapsed = !settings.videoCollapsed;
+    applyVideoCollapse(settings.videoCollapsed, false);
+    saveSettingsToStorage();
+  }
+
+  function setVideoLayout(layout) {
+    const panel  = document.getElementById('videoPanel');
+    const iframe = document.getElementById('videoIframe');
+    panel.style.border       = '1px solid var(--border)';
+    panel.style.borderRadius = '12px';
+    panel.style.boxShadow    = 'var(--shadow-sm)';
+    if (layout === 'sidebar') {
+      document.getElementById('videoSidebarSlot').appendChild(panel);
+      panel.style.width  = '';
+      panel.style.margin = '';
+      // iframe fills card height — aspect-ratio handled by CSS
+      iframe.style.aspectRatio = '';
+    } else {
+      const slot = document.getElementById('videoBelowSlot');
+      slot.parentNode.insertBefore(panel, slot.nextSibling);
+      panel.style.width  = '';
+      panel.style.margin = '0 28px 28px';
+      // restore 16:9 aspect ratio for full-width below mode
+      iframe.style.aspectRatio = '16/9';
+    }
+  }
+
+  function applyVideoEmbed(show, url) {
+    const panel  = document.getElementById('videoPanel');
+    const iframe = document.getElementById('videoIframe');
+    if (!show) { panel.style.display = 'none'; return; }
+    const id = url ? extractYouTubeId(url) : null;
+    if (id) {
+      // Always set src — empty src="" is resolved to the page URL by browsers
+      iframe.src = 'https://www.youtube.com/embed/' + id;
+      setVideoLayout(settings.videoLayout || 'below');
+      panel.style.display = 'block';
+      applyVideoCollapse(settings.videoCollapsed, true); // instant on load
+    } else {
+      panel.style.display = 'none';
+    }
+  }
+
+  function updateVideoEmbed() {
+    const url = document.getElementById('videoUrlInput').value.trim();
+    settings.videoEmbedUrl = url;
+    applyVideoEmbed(settings.showVideoEmbed, url);
+    saveSettingsToStorage();
+  }
+
+  function toggleVideoUrlRow(show) {
+    const row = document.getElementById('videoUrlRow');
+    row.style.display = show ? 'flex' : 'none';
+  }
+
+  function applyZoom(val) {
+    val = Math.min(200, Math.max(50, val));
+    document.querySelector('.dashboard').style.zoom = val / 100;
+    document.getElementById('zoomLabel').textContent = val + '%';
+    document.getElementById('zoomSlider').value = val;
+    settings.zoomLevel = val;
+    saveSettingsToStorage();
+  }
+
+  function toggleZoomBar(show) {
+    document.getElementById('zoomBar').style.display = show ? '' : 'none';
+  }
+
   function syncFormToSettings() {
     const $ = id => document.getElementById(id);
     $('locationInput').value = settings.location;
@@ -1668,9 +2068,12 @@
     $('hideHebDate').checked = settings.hideHebDate;
     document.querySelector(`input[name="timeFmt"][value="${settings.timeFmt}"]`).checked = true;
     $('hideTime').checked = settings.hideTime;
+    $('showSeconds').checked = !!settings.showSeconds;
     document.querySelector(`input[name="tempUnit"][value="${settings.tempUnit}"]`).checked = true;
     document.querySelector(`input[name="weatherLabelLang"][value="${settings.weatherLabelLang}"]`).checked = true;
+    $('hideTemperature').checked = !!settings.hideTemperature;
     $('hideWeatherEmoji').checked = settings.hideWeatherEmoji;
+    $('hideHighLow').checked = !!settings.hideHighLow;
     $('hideWeatherDesc').checked = settings.hideWeatherDesc;
     $('simpleWeatherDesc').checked = settings.simpleWeatherDesc;
     $('hideWeather').checked = settings.hideWeather;
@@ -1684,8 +2087,15 @@
       btn.classList.toggle('active', btn.dataset.set === activeSet);
     });
     document.querySelector(`input[name="headerLang"][value="${settings.headerLang || 'he'}"]`).checked = true;
+    setColTitleSize(settings.colTitleSize || 0.78);
     $('hideDOW').checked = settings.hideDOW;
     $('hideDashText').checked = !settings.enableDashText;
+    $('hideZoomBar').checked = settings.hideZoomBar;
+    $('showVideoEmbed').checked = !!settings.showVideoEmbed;
+    $('videoUrlInput').value = settings.videoEmbedUrl || '';
+    toggleVideoUrlRow(!!settings.showVideoEmbed);
+    const vlRadio = document.querySelector(`input[name="videoLayout"][value="${settings.videoLayout || 'below'}"]`);
+    if (vlRadio) vlRadio.checked = true;
     $('showNikkud').checked = settings.showNikkud;
     $('colorCodeNikkud').checked = settings.colorCodeNikkud;
     const cmr = $('colorModeRow');
@@ -1698,45 +2108,62 @@
     if (nrb) nrb.style.display = settings.colorCodeNikkud ? 'inline-block' : 'none';
     if (settings.colorCodeNikkud) initColorPickers();
     setDashTextSize(settings.dashTextSize || 1.8);
+    const schedEnabled = !!settings.scheduleEnabled;
+    $('scheduleEnabled').checked = schedEnabled;
+    const ssBody = $('scheduleSyncBody');
+    if (ssBody) ssBody.style.display = schedEnabled ? '' : 'none';
+    $('scheduleShowCountdown').checked = !!settings.scheduleShowCountdown;
+    $('countdownShowPresetName').checked = settings.countdownShowPresetName !== false;
+    const cpnRow = $('countdownPresetNameRow');
+    if (cpnRow) cpnRow.style.display = settings.scheduleShowCountdown ? '' : 'none';
+    if (schedEnabled) { renderScheduleRows(); renderSavedSchedules(); }
   }
 
   function wireFormListeners() {
     const refreshAll = () => { updateDateTimeDisplay(); renderDaysList(); renderWeather(); };
     document.querySelectorAll('input[name="engDateFmt"]').forEach(r =>
-      r.addEventListener('change', () => { settings.engDateFmt = r.value; updateDateTimeDisplay(); }));
-    document.getElementById('showEngDOW').addEventListener('change', e => { settings.showEngDOW = e.target.checked; updateDateTimeDisplay(); });
-    document.getElementById('hideEngDate').addEventListener('change', e => { settings.hideEngDate = e.target.checked; updateDateTimeDisplay(); });
+      r.addEventListener('change', () => { settings.engDateFmt = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
+    document.getElementById('showEngDOW').addEventListener('change', e => { settings.showEngDOW = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
+    document.getElementById('hideEngDate').addEventListener('change', e => { settings.hideEngDate = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
     document.querySelectorAll('input[name="hebDateScript"]').forEach(r =>
-      r.addEventListener('change', () => { settings.hebDateScript = r.value; updateDateTimeDisplay(); }));
-    document.getElementById('hideHebDate').addEventListener('change', e => { settings.hideHebDate = e.target.checked; updateDateTimeDisplay(); });
+      r.addEventListener('change', () => { settings.hebDateScript = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
+    document.getElementById('hideHebDate').addEventListener('change', e => { settings.hideHebDate = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
     document.querySelectorAll('input[name="timeFmt"]').forEach(r =>
-      r.addEventListener('change', () => { settings.timeFmt = r.value; updateDateTimeDisplay(); }));
-    document.getElementById('hideTime').addEventListener('change', e => { settings.hideTime = e.target.checked; updateDateTimeDisplay(); });
+      r.addEventListener('change', () => { settings.timeFmt = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
+    document.getElementById('hideTime').addEventListener('change', e => { settings.hideTime = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
+    document.getElementById('showSeconds').addEventListener('change', e => { settings.showSeconds = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
     document.querySelectorAll('input[name="tempUnit"]').forEach(r =>
-      r.addEventListener('change', () => { settings.tempUnit = r.value; renderWeather(); }));
+      r.addEventListener('change', () => { settings.tempUnit = r.value; renderWeather(); saveSettingsToStorage(); }));
     document.querySelectorAll('input[name="weatherLabelLang"]').forEach(r =>
-      r.addEventListener('change', () => { settings.weatherLabelLang = r.value; renderWeather(); }));
+      r.addEventListener('change', () => { settings.weatherLabelLang = r.value; renderWeather(); saveSettingsToStorage(); }));
     document.getElementById('hideWeatherEmoji').addEventListener('change', e => {
-      settings.hideWeatherEmoji = e.target.checked; renderWeather();
+      settings.hideWeatherEmoji = e.target.checked; renderWeather(); saveSettingsToStorage();
     });
     document.getElementById('hideWeatherDesc').addEventListener('change', e => {
-      settings.hideWeatherDesc = e.target.checked; renderWeather();
+      settings.hideWeatherDesc = e.target.checked; renderWeather(); saveSettingsToStorage();
     });
     document.getElementById('simpleWeatherDesc').addEventListener('change', e => {
-      settings.simpleWeatherDesc = e.target.checked; renderWeather();
+      settings.simpleWeatherDesc = e.target.checked; renderWeather(); saveSettingsToStorage();
+    });
+    document.getElementById('hideTemperature').addEventListener('change', e => {
+      settings.hideTemperature = e.target.checked; renderWeather(); saveSettingsToStorage();
+    });
+    document.getElementById('hideHighLow').addEventListener('change', e => {
+      settings.hideHighLow = e.target.checked; renderWeather(); saveSettingsToStorage();
     });
     document.getElementById('hideWeather').addEventListener('change', e => {
       settings.hideWeather = e.target.checked;
       const wCol = document.getElementById('weatherCol');
       if (wCol) wCol.style.display = e.target.checked ? 'none' : '';
       if (!e.target.checked) fetchWeather();
+      saveSettingsToStorage();
     });
     document.querySelectorAll('input[name="dowLang"]').forEach(r =>
-      r.addEventListener('change', () => { settings.dowLang = r.value; renderDaysList(); }));
-    document.getElementById('colorDays').addEventListener('change', e => { settings.colorDays = e.target.checked; renderDaysList(); });
-    document.getElementById('showYesterday').addEventListener('change', e => { settings.showYesterday = e.target.checked; renderDaysList(); });
-    document.getElementById('showToday').addEventListener('change', e => { settings.showToday = e.target.checked; renderDaysList(); });
-    document.getElementById('showTomorrow').addEventListener('change', e => { settings.showTomorrow = e.target.checked; renderDaysList(); });
+      r.addEventListener('change', () => { settings.dowLang = r.value; renderDaysList(); saveSettingsToStorage(); }));
+    document.getElementById('colorDays').addEventListener('change', e => { settings.colorDays = e.target.checked; renderDaysList(); saveSettingsToStorage(); });
+    document.getElementById('showYesterday').addEventListener('change', e => { settings.showYesterday = e.target.checked; renderDaysList(); saveSettingsToStorage(); });
+    document.getElementById('showToday').addEventListener('change', e => { settings.showToday = e.target.checked; renderDaysList(); saveSettingsToStorage(); });
+    document.getElementById('showTomorrow').addEventListener('change', e => { settings.showTomorrow = e.target.checked; renderDaysList(); saveSettingsToStorage(); });
     document.querySelectorAll('.emoji-set-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         settings.dowEmojiSet = btn.dataset.set;
@@ -1744,7 +2171,7 @@
         renderDaysList(); saveSettingsToStorage();
       });
     });
-    document.getElementById('showNikkud').addEventListener('change', e => { settings.showNikkud = e.target.checked; refreshAll(); });
+    document.getElementById('showNikkud').addEventListener('change', e => { settings.showNikkud = e.target.checked; refreshAll(); saveSettingsToStorage(); });
     document.getElementById('colorCodeNikkud').addEventListener('change', e => {
       settings.colorCodeNikkud = e.target.checked;
       const on = e.target.checked;
@@ -1752,17 +2179,37 @@
       document.getElementById('colorPickerList').style.display = on ? 'flex' : 'none';
       document.getElementById('nikudResetBtn').style.display = on ? 'inline-block' : 'none';
       if (on) initColorPickers();
-      refreshAll();
+      refreshAll(); saveSettingsToStorage();
     });
     document.querySelectorAll('input[name="colorMode"]').forEach(r =>
-      r.addEventListener('change', () => { settings.colorCodingMode = r.value; refreshAll(); }));
+      r.addEventListener('change', () => { settings.colorCodingMode = r.value; refreshAll(); saveSettingsToStorage(); }));
     document.querySelectorAll('input[name="headerLang"]').forEach(r =>
-      r.addEventListener('change', () => { settings.headerLang = r.value; updateColTitles(); }));
+      r.addEventListener('change', () => { settings.headerLang = r.value; updateColTitles(); saveSettingsToStorage(); }));
+    document.getElementById('colTitleSizeSlider').addEventListener('input', e => { setColTitleSize(e.target.value); saveSettingsToStorage(); });
     document.getElementById('hideDOW').addEventListener('change', e => {
       settings.hideDOW = e.target.checked;
       document.getElementById('dowCol').style.display = e.target.checked ? 'none' : '';
+      saveSettingsToStorage();
     });
     document.getElementById('hideDashText').addEventListener('change', e => toggleDashText(!e.target.checked));
+    document.getElementById('hideZoomBar').addEventListener('change', e => {
+      settings.hideZoomBar = e.target.checked;
+      toggleZoomBar(!e.target.checked);
+      saveSettingsToStorage();
+    });
+    document.getElementById('showVideoEmbed').addEventListener('change', e => {
+      settings.showVideoEmbed = e.target.checked;
+      toggleVideoUrlRow(e.target.checked);
+      applyVideoEmbed(e.target.checked, settings.videoEmbedUrl);
+      saveSettingsToStorage();
+    });
+    document.querySelectorAll('input[name="videoLayout"]').forEach(r =>
+      r.addEventListener('change', () => {
+        settings.videoLayout = r.value;
+        if (settings.showVideoEmbed) setVideoLayout(r.value);
+        saveSettingsToStorage();
+      }));
+    document.getElementById('zoomSlider').addEventListener('input', e => applyZoom(+e.target.value));
     document.getElementById('dashTextDisplay').addEventListener('click', e => {
       const sp = e.target.closest('.spoiler');
       if (!sp) return;
@@ -1776,13 +2223,27 @@
   }
 
   function applySettings(s) {
+    // Preserve schedule configuration — it must never be overwritten by loading a display preset
+    const savedSchedule = {
+      scheduleEnabled:        settings.scheduleEnabled,
+      scheduleShowCountdown:  settings.scheduleShowCountdown,
+      countdownShowPresetName: settings.countdownShowPresetName,
+      currentSchedule:        settings.currentSchedule,
+    };
     Object.assign(settings, s);
+    Object.assign(settings, savedSchedule);
     setHebFont(settings.hebFont);
     syncFormToSettings();
     document.getElementById('dashEditor').innerHTML = settings.dashTextHTML || '';
     syncDashText();
     toggleDashText(settings.enableDashText);
     setDashTextSize(settings.dashTextSize || 1.8);
+    setColTitleSize(settings.colTitleSize || 0.78);
+    applyZoom(settings.zoomLevel || 100);
+    toggleZoomBar(!settings.hideZoomBar);
+    applyVideoEmbed(settings.showVideoEmbed, settings.videoEmbedUrl);
+    applyColCollapse('dowCol', !!settings.dowCollapsed);
+    applyColCollapse('weatherCol', !!settings.weatherCollapsed);
     updateDateTimeDisplay();
     renderDaysList();
     renderWeather();
@@ -1804,13 +2265,14 @@
         Object.assign(settings, saved);
         if (saved.showDOWEmojis === false) settings.dowEmojiSet = 'none';
         delete settings.showDOWEmojis;
-        if (settings.engDateFmt === 'LONG') settings.engDateFmt = 'MDY';
+      } else {
+        Object.assign(settings, DEFAULT_PRESET['Default']);
       }
     } catch (e) {}
   }
 
   /* ────────── PRESETS ────────── */
-  const DEFAULT_PRESET = {"Default":{"location":"New York","engDateFmt":"MDY","showEngDOW":true,"hideEngDate":false,"hebDateScript":"translit","hideHebDate":false,"timeFmt":"12","hideTime":false,"tempUnit":"F","weatherLabelLang":"he","simpleWeatherDesc":false,"hideWeatherEmoji":false,"hideWeatherDesc":false,"hideWeather":false,"dowLang":"he","showYesterday":true,"showToday":true,"showTomorrow":true,"dowEmojiSet":"chick","colorDays":true,"headerLang":"he","hideDOW":false,"enableDashText":true,"dashTextHTML":"This dashboard has support for <b>bold</b>, <i>italics</i>, <u>underline</u> and <strike>strikethrough</strike>. You can insert <a href=\"https://google.com\" target=\"_blank\" rel=\"noopener noreferrer\">links</a>.<div><br><div style=\"text-align: center;\">You can center text.</div><div style=\"text-align: left;\"><span style=\"font-size: small; text-align: right;\">Change the </span><span style=\"text-align: right;\"><font size=\"6\">size</font></span><span style=\"font-size: small; text-align: right;\">.</span></div><div style=\"text-align: left;\"><span style=\"text-align: right;\"><font size=\"3\">And you can also <span class=\"spoiler\">hide spoilers</span>. (Click the box.)</font></span></div><div style=\"text-align: left;\"><span style=\"text-align: right;\"><font size=\"3\"><br></font></span></div><div style=\"text-align: left;\"><span style=\"text-align: right;\"><font size=\"3\">Click the gear at the top to edit this text and change how this dashboard works!</font></span></div></div>","hebFont":"Frank Ruhl Libre","showNikkud":true,"colorCodeNikkud":false,"colorCodingMode":"letter","nikudColorOverrides":{},"dashTextSize":1.8,"showYestTomorrow":true}};
+  const DEFAULT_PRESET = {"Default":{"location":"New York","engDateFmt":"MDY","showEngDOW":true,"hideEngDate":false,"hebDateScript":"translit","hideHebDate":false,"timeFmt":"12","hideTime":false,"tempUnit":"F","weatherLabelLang":"he","simpleWeatherDesc":false,"hideWeatherEmoji":false,"hideWeatherDesc":false,"hideWeather":false,"dowLang":"he","showYesterday":true,"showToday":true,"showTomorrow":true,"dowEmojiSet":"chick","colorDays":true,"headerLang":"he","hideDOW":false,"enableDashText":true,"dashTextHTML":"<div>This dashboard has support for <b>bold</b>, <i>italics</i>, <u>underline</u> and <strike>strikethrough</strike>. You can insert <a href=\"https://google.com\" target=\"_blank\" rel=\"noopener noreferrer\">links</a>.</div><div><br></div><div style=\"text-align: center;\">You can center text.</div><div>Change the <font size=\"6\">size</font>.</div><div>And you can also <span class=\"spoiler\">hide spoilers</span>. (Click the box.)</div><div><br></div><div>Click the gear icon at the top to edit this text and change how this dashboard works!</div>","hebFont":"Frank Ruhl Libre","showNikkud":true,"colorCodeNikkud":false,"colorCodingMode":"letter","nikudColorOverrides":{},"dashTextSize":1.8,"showYestTomorrow":true}};
 
   function loadPresets() {
     try { presets = JSON.parse(localStorage.getItem('hebrewDashboard_presets')) || {}; }
@@ -1835,12 +2297,49 @@
     applySettings(presets[name]);
     saveSettingsToStorage();
   }
+  function overwritePreset(name) {
+    if (!confirm(`Overwrite preset "${name}" with current settings?`)) return;
+    presets[name] = getSettings();
+    savePresetsStorage();
+  }
   function deletePreset(name) {
     if (!confirm(`Delete preset "${name}"?`)) return;
     delete presets[name];
     savePresetsStorage();
     renderPresets();
   }
+  function makeSortable(listEl, getKeys, reorderFn, itemSel) {
+    itemSel = itemSel || '.preset-item';
+    let dragSrc = null;
+    listEl.querySelectorAll(itemSel).forEach(item => {
+      item.addEventListener('dragstart', e => {
+        dragSrc = item;
+        item.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      item.addEventListener('dragend', () => {
+        item.classList.remove('dragging');
+        listEl.querySelectorAll(itemSel).forEach(i => i.classList.remove('drag-over'));
+      });
+      item.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        listEl.querySelectorAll(itemSel).forEach(i => i.classList.remove('drag-over'));
+        if (item !== dragSrc) item.classList.add('drag-over');
+      });
+      item.addEventListener('drop', e => {
+        e.preventDefault();
+        if (!dragSrc || dragSrc === item) return;
+        const keys = getKeys();
+        const fromIdx = [...listEl.querySelectorAll(itemSel)].indexOf(dragSrc);
+        const toIdx   = [...listEl.querySelectorAll(itemSel)].indexOf(item);
+        const reordered = [...keys];
+        reordered.splice(toIdx, 0, reordered.splice(fromIdx, 1)[0]);
+        reorderFn(reordered);
+      });
+    });
+  }
+
   function renderPresets() {
     const list = document.getElementById('presetList');
     list.innerHTML = '';
@@ -1852,18 +2351,29 @@
     names.forEach(name => {
       const item = document.createElement('div');
       item.className = 'preset-item';
+      item.draggable = true;
       const safe = name.replace(/'/g, "\\'");
       item.innerHTML = `
+        <span class="drag-handle" title="Drag to reorder">⠿</span>
         <span class="preset-name"></span>
         <button class="btn btn-xs" onclick="loadPreset('${safe}')">Load</button>
+        <button class="btn btn-xs btn-secondary" onclick="overwritePreset('${safe}')" title="Overwrite with current settings">↺</button>
         <button class="btn btn-xs btn-secondary" onclick="deletePreset('${safe}')" title="Delete">×</button>
       `;
       item.querySelector('.preset-name').textContent = name;
       list.appendChild(item);
     });
+    makeSortable(list, () => Object.keys(presets), reordered => {
+      const newPresets = {};
+      reordered.forEach(k => { newPresets[k] = presets[k]; });
+      presets = newPresets;
+      savePresetsStorage();
+      renderPresets();
+    });
   }
   function exportPresets() {
-    document.getElementById('presetBackupBox').value = JSON.stringify(presets, null, 2);
+    const blob = { presets, savedSchedules };
+    document.getElementById('presetBackupBox').value = JSON.stringify(blob, null, 2);
   }
   function copyPresetBackup() {
     const box = document.getElementById('presetBackupBox');
@@ -1876,62 +2386,304 @@
     try {
       const v = document.getElementById('presetBackupBox').value;
       const parsed = JSON.parse(v);
-      Object.assign(presets, parsed);
+      if (parsed.presets) {
+        Object.assign(presets, parsed.presets);
+        if (parsed.savedSchedules) Object.assign(savedSchedules, parsed.savedSchedules);
+      } else {
+        Object.assign(presets, parsed);
+      }
       savePresetsStorage();
+      saveSchedulesStorage();
       renderPresets();
-      alert('Presets imported.');
+      renderSavedSchedules();
+      alert('Imported successfully.');
     } catch (e) { alert('Invalid JSON.'); }
   }
 
+  /* ────────── SCHEDULE SYNC ────────── */
+  function saveSchedulesStorage() {
+    localStorage.setItem('hebrewDashboard_schedules', JSON.stringify(savedSchedules));
+  }
+  function loadSchedulesStorage() {
+    try { savedSchedules = JSON.parse(localStorage.getItem('hebrewDashboard_schedules')) || {}; }
+    catch (e) { savedSchedules = {}; }
+  }
+
+  function timeToMins(t) {
+    if (!t) return Infinity;
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
+  }
+
+  function getPresetOptions(selectedName) {
+    return Object.keys(presets).map(name =>
+      `<option value="${name.replace(/"/g, '&quot;')}"${name === selectedName ? ' selected' : ''}>${name}</option>`
+    ).join('');
+  }
+
+  function renderScheduleRows() {
+    const container = document.getElementById('scheduleRows');
+    if (!container) return;
+    const rows = settings.currentSchedule || [];
+    if (!rows.length) {
+      container.innerHTML = '<div style="font-size:0.75rem;color:var(--muted);font-style:italic;padding:4px 0;">No entries yet — click + Add.</div>';
+      return;
+    }
+    container.innerHTML = '';
+    rows.forEach((entry, i) => {
+      const row = document.createElement('div');
+      row.className = 'schedule-row';
+      row.draggable = true;
+      row.innerHTML =
+        `<span class="drag-handle" title="Drag to reorder">⠿</span>` +
+        `<select class="schedule-preset-sel" onchange="updateScheduleEntry(${i},'preset',this.value)">${getPresetOptions(entry.preset)}</select>` +
+        `<span class="schedule-until-lbl">until</span>` +
+        `<input type="time" class="schedule-time-input" value="${entry.until || ''}" onchange="updateScheduleEntry(${i},'until',this.value)">` +
+        `<button class="schedule-del-btn" title="Remove" onclick="removeScheduleRow(${i})">×</button>`;
+      container.appendChild(row);
+    });
+    makeSortable(container, () => [...settings.currentSchedule], reordered => {
+      settings.currentSchedule = reordered;
+      _lastScheduleKey = null;
+      saveSettingsToStorage();
+      renderScheduleRows();
+    }, '.schedule-row');
+  }
+
+  function addScheduleRow() {
+    if (!settings.currentSchedule) settings.currentSchedule = [];
+    const firstPreset = Object.keys(presets)[0] || '';
+    settings.currentSchedule.push({ preset: firstPreset, until: '' });
+    renderScheduleRows();
+    saveSettingsToStorage();
+  }
+
+  function removeScheduleRow(i) {
+    settings.currentSchedule.splice(i, 1);
+    _lastScheduleKey = null;
+    renderScheduleRows();
+    saveSettingsToStorage();
+  }
+
+  function updateScheduleEntry(i, field, value) {
+    if (!settings.currentSchedule[i]) return;
+    settings.currentSchedule[i][field] = value;
+    _lastScheduleKey = null;
+    saveSettingsToStorage();
+  }
+
+  function saveScheduleAs() {
+    const rows = settings.currentSchedule || [];
+    if (!rows.length) { alert('Add at least one schedule entry first.'); return; }
+    const name = prompt('Schedule name:');
+    if (!name || !name.trim()) return;
+    savedSchedules[name.trim()] = JSON.parse(JSON.stringify(rows));
+    saveSchedulesStorage();
+    renderSavedSchedules();
+  }
+
+  function renderSavedSchedules() {
+    const list = document.getElementById('savedScheduleList');
+    if (!list) return;
+    const names = Object.keys(savedSchedules);
+    if (!names.length) {
+      list.innerHTML = '<div style="font-size:0.75rem;color:var(--muted);font-style:italic;padding:4px 0;">No saved schedules yet.</div>';
+      return;
+    }
+    list.innerHTML = '';
+    names.forEach(name => {
+      const item = document.createElement('div');
+      item.className = 'preset-item';
+      item.draggable = true;
+      const safe = name.replace(/'/g, "\\'");
+      item.innerHTML = `
+        <span class="drag-handle" title="Drag to reorder">⠿</span>
+        <span class="preset-name"></span>
+        <button class="btn btn-xs" onclick="loadSavedSchedule('${safe}')">Load</button>
+        <button class="btn btn-xs btn-secondary" onclick="overwriteSavedSchedule('${safe}')" title="Overwrite with current schedule">↺</button>
+        <button class="btn btn-xs btn-secondary" onclick="deleteSavedSchedule('${safe}')" title="Delete">×</button>
+      `;
+      item.querySelector('.preset-name').textContent = name;
+      list.appendChild(item);
+    });
+    makeSortable(list, () => Object.keys(savedSchedules), reordered => {
+      const newSched = {};
+      reordered.forEach(k => { newSched[k] = savedSchedules[k]; });
+      savedSchedules = newSched;
+      saveSchedulesStorage();
+      renderSavedSchedules();
+    });
+  }
+
+  function loadSavedSchedule(name) {
+    if (!savedSchedules[name]) return;
+    settings.currentSchedule = JSON.parse(JSON.stringify(savedSchedules[name]));
+    _lastScheduleKey = null;
+    renderScheduleRows();
+    saveSettingsToStorage();
+  }
+
+  function overwriteSavedSchedule(name) {
+    if (!confirm(`Overwrite schedule "${name}" with the current schedule?`)) return;
+    savedSchedules[name] = JSON.parse(JSON.stringify(settings.currentSchedule || []));
+    saveSchedulesStorage();
+  }
+
+  function deleteSavedSchedule(name) {
+    if (!confirm(`Delete schedule "${name}"?`)) return;
+    delete savedSchedules[name];
+    saveSchedulesStorage();
+    renderSavedSchedules();
+  }
+
+  function toggleScheduleSync(enabled) {
+    settings.scheduleEnabled = enabled;
+    const body = document.getElementById('scheduleSyncBody');
+    if (body) body.style.display = enabled ? '' : 'none';
+    if (enabled) { renderScheduleRows(); renderSavedSchedules(); }
+    _lastScheduleKey = null;
+    saveSettingsToStorage();
+  }
+
+  function setScheduleCountdown(enabled) {
+    settings.scheduleShowCountdown = enabled;
+    const row = document.getElementById('countdownPresetNameRow');
+    if (row) row.style.display = enabled ? '' : 'none';
+    updateCountdown();
+    saveSettingsToStorage();
+  }
+
+  function checkSchedule() {
+    if (!settings.scheduleEnabled || !settings.currentSchedule?.length) return;
+    const now = new Date();
+    const nowMins = now.getHours() * 60 + now.getMinutes();
+    const sorted = [...settings.currentSchedule]
+      .filter(e => e.preset && e.until)
+      .sort((a, b) => timeToMins(a.until) - timeToMins(b.until));
+    const active = sorted.find(e => timeToMins(e.until) > nowMins);
+    if (!active) return;
+    const key = active.preset + '|' + active.until;
+    if (key !== _lastScheduleKey && presets[active.preset]) {
+      _lastScheduleKey = key;
+      applySettings(presets[active.preset]);
+    }
+  }
+
+  function updateCountdown() {
+    const el = document.getElementById('scheduleCountdown');
+    if (!el) return;
+    if (!settings.scheduleEnabled || !settings.scheduleShowCountdown || !settings.currentSchedule?.length) {
+      el.style.display = 'none'; return;
+    }
+    const now = new Date();
+    const nowMins = now.getHours() * 60 + now.getMinutes();
+    const sorted = [...settings.currentSchedule]
+      .filter(e => e.preset && e.until)
+      .sort((a, b) => timeToMins(a.until) - timeToMins(b.until));
+    if (!sorted.length) { el.style.display = 'none'; return; }
+
+    // Find the current active period (first whose until > now)
+    const currentIdx = sorted.findIndex(e => timeToMins(e.until) > nowMins);
+
+    let targetEntry, diffMins, isTomorrow = false;
+    if (currentIdx === -1) {
+      // All periods done today — wrap to tomorrow's first entry
+      targetEntry = sorted[0];
+      diffMins = (24 * 60 - nowMins) + timeToMins(targetEntry.until);
+      isTomorrow = true;
+    } else {
+      // Time until current period ends = when next period begins
+      diffMins = timeToMins(sorted[currentIdx].until) - nowMins;
+      const nextIdx = currentIdx + 1;
+      if (nextIdx < sorted.length) {
+        targetEntry = sorted[nextIdx];
+      } else {
+        // Current period is the last one today — next is tomorrow's first
+        targetEntry = sorted[0];
+        isTomorrow = true;
+      }
+    }
+
+    const h = Math.floor(diffMins / 60), m = diffMins % 60;
+    const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
+    const suffix = isTomorrow ? ' (tomorrow)' : '';
+    const label = settings.countdownShowPresetName !== false
+      ? `Next: ${targetEntry.preset}${suffix} in ${timeStr}`
+      : `Next class${suffix} in ${timeStr}`;
+    el.textContent = label;
+    el.style.display = 'block';
+  }
+
   /* ────────── EDITOR ────────── */
+  function restoreEditorFocus() {
+    const ed = document.getElementById('dashEditor');
+    ed.focus();
+    if (_savedEditorRange) {
+      const sel = window.getSelection();
+      if (sel) { sel.removeAllRanges(); sel.addRange(_savedEditorRange); }
+    }
+  }
   function fmt(cmd, val = null) {
-    document.getElementById('dashEditor').focus();
+    restoreEditorFocus();
     document.execCommand(cmd, false, val);
     syncDashText();
   }
   function setAlign(dir) {
+    restoreEditorFocus();
     const ed = document.getElementById('dashEditor');
-    ed.focus();
     const alignVal = { Left: 'left', Center: 'center', Right: 'right' }[dir];
     if (!alignVal) return;
     const sel = window.getSelection();
     if (!sel || !sel.rangeCount) return;
-
-    // Collect all direct children of ed that overlap the selection
     const range = sel.getRangeAt(0);
-    let anySet = false;
-    for (const child of [...ed.childNodes]) {
-      let overlaps = false;
-      try {
-        const cr = document.createRange();
-        cr.selectNode(child);
-        overlaps = range.compareBoundaryPoints(Range.END_TO_START, cr) >= 0 &&
-                   range.compareBoundaryPoints(Range.START_TO_END, cr) <= 0;
-      } catch(e) { continue; }
-      if (!overlaps) continue;
-      if (child.nodeType === Node.TEXT_NODE) {
-        const div = document.createElement('div');
-        ed.insertBefore(div, child);
-        div.appendChild(child);
-        div.style.textAlign = alignVal;
-      } else if (child.nodeType === Node.ELEMENT_NODE) {
-        child.style.textAlign = alignVal;
-      }
-      anySet = true;
+
+    // Return the direct child of `ed` that contains `node`
+    function editorBlock(node) {
+      let n = node.nodeType === Node.TEXT_NODE ? node.parentNode : node;
+      while (n && n.parentNode !== ed) n = n.parentNode;
+      return (n && n !== ed) ? n : null;
     }
-    if (!anySet) {
-      // Cursor directly in ed with no children — wrap in div
+
+    const startBlock = editorBlock(range.startContainer);
+    // When a drag-selection ends between block children, endContainer is the
+    // editor element itself and endOffset is the index of the next child.
+    // The last *included* child is at endOffset-1.
+    let endBlock = editorBlock(range.endContainer);
+    if (!endBlock && range.endContainer === ed) {
+      const idx = range.endOffset - 1;
+      if (idx >= 0) endBlock = ed.childNodes[idx];
+    }
+
+    if (!startBlock) {
+      // Bare text with no block wrapper — wrap everything once
       const div = document.createElement('div');
       div.style.textAlign = alignVal;
-      div.innerHTML = ed.innerHTML || '<br>';
-      ed.innerHTML = '';
+      while (ed.firstChild) div.appendChild(ed.firstChild);
       ed.appendChild(div);
+      syncDashText();
+      return;
+    }
+
+    // Align every direct child of the editor between start and end
+    const children = Array.from(ed.childNodes);
+    const from = children.indexOf(startBlock);
+    const to   = endBlock ? children.indexOf(endBlock) : from;
+    for (let i = Math.min(from, to); i <= Math.max(from, to); i++) {
+      const child = children[i];
+      if (child.nodeType === Node.ELEMENT_NODE) {
+        child.style.textAlign = alignVal;
+      } else if (child.nodeType === Node.TEXT_NODE && child.textContent.trim()) {
+        const div = document.createElement('div');
+        div.style.textAlign = alignVal;
+        ed.insertBefore(div, child);
+        div.appendChild(child);
+      }
     }
     syncDashText();
   }
   function insertLink() {
+    restoreEditorFocus();
     const ed = document.getElementById('dashEditor');
-    ed.focus();
     const sel = window.getSelection();
     if (!sel || !sel.rangeCount) return;
     const existingAnchor = sel.anchorNode?.parentElement?.closest('a');
@@ -1956,11 +2708,37 @@
     syncDashText();
   }
   function insertSpoiler() {
-    const ed = document.getElementById('dashEditor');
-    ed.focus();
+    restoreEditorFocus();
     const sel = window.getSelection();
     if (!sel || !sel.rangeCount) return;
     const range = sel.getRangeAt(0);
+    const nodeEl = n => n?.nodeType === 3 ? n.parentElement : n;
+    // Collect all spoilers that overlap the selection
+    const ed = document.getElementById('dashEditor');
+    const overlappingSpoilers = [];
+    ed.querySelectorAll('.spoiler').forEach(sp => {
+      const r = document.createRange();
+      r.selectNode(sp);
+      if (range.compareBoundaryPoints(Range.END_TO_START, r) < 0 &&
+          range.compareBoundaryPoints(Range.START_TO_END, r) > 0) {
+        overlappingSpoilers.push(sp);
+      }
+    });
+    // Also check if anchor/focus node is inside a spoiler not fully in range
+    const anchorSpoiler = nodeEl(sel.anchorNode)?.closest('.spoiler');
+    const focusSpoiler  = nodeEl(sel.focusNode)?.closest('.spoiler');
+    [anchorSpoiler, focusSpoiler].forEach(sp => {
+      if (sp && !overlappingSpoilers.includes(sp)) overlappingSpoilers.push(sp);
+    });
+    if (overlappingSpoilers.length > 0) {
+      overlappingSpoilers.forEach(sp => {
+        const parent = sp.parentNode;
+        while (sp.firstChild) parent.insertBefore(sp.firstChild, sp);
+        parent.removeChild(sp);
+      });
+      syncDashText();
+      return;
+    }
     if (range.collapsed) return;
     const span = document.createElement('span');
     span.className = 'spoiler';
@@ -1984,6 +2762,16 @@
     if (cb) cb.checked = !on;
   }
 
+  function applyColCollapse(colId, collapsed) {
+    document.getElementById(colId).classList.toggle('collapsed', collapsed);
+  }
+
+  function toggleColCollapse(colId, settingKey) {
+    settings[settingKey] = !settings[settingKey];
+    applyColCollapse(colId, settings[settingKey]);
+    saveSettingsToStorage();
+  }
+
   function updateColTitles() {
     const lang = settings.headerLang || 'he';
     const dowTitle = document.getElementById('dowColTitle');
@@ -1998,8 +2786,14 @@
       const isHeb = lang === 'he';
       dowTitle.style.direction = isHeb ? 'rtl' : '';
       wxTitle.style.direction = isHeb ? 'rtl' : '';
-      dowTitle.innerHTML = isHeb ? hebDisplay('אֵיזֶה יוֹם הַיוֹם?') : 'Days of the Week';
-      wxTitle.innerHTML = isHeb ? hebDisplay('מַה יֵש בַּחוּץ?') : 'Weather';
+      dowTitle.innerHTML = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('אֵיזֶה יוֹם הַיוֹם?') : 'Days of the Week'}</span><span></span>`;
+      wxTitle.innerHTML  = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('מַה יֵש בַּחוּץ?') : 'Weather'}</span><span></span>`;
+    }
+    const vLabel = document.getElementById('videoHeaderLabel');
+    if (vLabel) {
+      const isHebV = (settings.headerLang || 'he') === 'he';
+      vLabel.textContent = isHebV ? 'וִידֵאוֹ' : 'Video';
+      vLabel.style.direction = isHebV ? 'rtl' : '';
     }
   }
 
@@ -2036,7 +2830,7 @@
         btn.dataset.fontName = font.name;
         btn.innerHTML =
           `<span class="font-opt-preview" style="font-family:${font.family};">אֶרֶץ</span>` +
-          `<span class="font-opt-name">${font.name}</span>`;
+          `<span class="font-opt-name">${font.name}${font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}</span>`;
         btn.onclick = () => setHebFont(font.name);
         loadHebFont(font);
         opts.appendChild(btn);
@@ -2095,6 +2889,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     loadSettingsFromStorage();
     loadPresets();
+    loadSchedulesStorage();
     initDark();
     initFontSelector();
     initPanelCollapse();
@@ -2104,12 +2899,26 @@
     document.getElementById('dashEditor').innerHTML = settings.dashTextHTML || '';
     syncDashText();
     toggleDashText(settings.enableDashText);
+    applyZoom(settings.zoomLevel || 100);
+    toggleZoomBar(!settings.hideZoomBar);
+    applyVideoEmbed(settings.showVideoEmbed, settings.videoEmbedUrl);
+    applyColCollapse('dowCol', !!settings.dowCollapsed);
+    applyColCollapse('weatherCol', !!settings.weatherCollapsed);
+    document.getElementById('dowColTitle').addEventListener('click', () => toggleColCollapse('dowCol', 'dowCollapsed'));
+    document.getElementById('weatherColTitle').addEventListener('click', () => toggleColCollapse('weatherCol', 'weatherCollapsed'));
+    document.getElementById('dashEditor').addEventListener('blur', () => {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) _savedEditorRange = sel.getRangeAt(0).cloneRange();
+      saveSettingsToStorage();
+    });
     updateColTitles();
     document.getElementById('fsBtn').innerHTML = FS_ENTER;
     startClock();
     renderDaysList();
     scheduleWeatherRefresh();
     renderPresets();
+    checkSchedule();
+    setInterval(checkSchedule, 30000);
     // Re-render days at midnight
     const msToMidnight = (() => {
       const n = new Date();
@@ -2128,5 +2937,46 @@
       closeSettings();
     }
   });
+
+  // Prevent toolbar buttons from stealing focus/selection from the editor
+  // Don't preventDefault on select/input so they remain interactive
+  document.querySelector('.editor-toolbar').addEventListener('mousedown', e => {
+    if (e.target.tagName === 'BUTTON' || e.target.closest('button')) e.preventDefault();
+  });
+
+  // Always keep _savedEditorRange current while editor has focus
+  document.addEventListener('selectionchange', () => {
+    if (document.activeElement === document.getElementById('dashEditor')) {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) _savedEditorRange = sel.getRangeAt(0).cloneRange();
+    }
+  });
+
+  /* ── Tooltip ── */
+  (function() {
+    const tip = document.createElement('div');
+    tip.id = 'tipFloat';
+    document.body.appendChild(tip);
+    document.querySelectorAll('.tip-wrap').forEach(wrap => {
+      wrap.addEventListener('mouseenter', () => {
+        const text = wrap.dataset.tip;
+        if (!text) return;
+        tip.textContent = text;
+        tip.style.display = 'block';
+        const r = wrap.querySelector('.tip-icon').getBoundingClientRect();
+        const tw = tip.offsetWidth;
+        const th = tip.offsetHeight;
+        // Appear above the icon, centered; clamp to viewport
+        let left = r.left + r.width / 2 - tw / 2;
+        let top  = r.top - th - 6;
+        if (left < 6) left = 6;
+        if (left + tw > window.innerWidth - 6) left = window.innerWidth - tw - 6;
+        if (top < 6) top = r.bottom + 6; // flip below if no room above
+        tip.style.left = left + 'px';
+        tip.style.top  = top  + 'px';
+      });
+      wrap.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+    });
+  })();
 </script></body>
 </html>

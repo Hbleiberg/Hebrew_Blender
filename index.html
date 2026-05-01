@@ -53,6 +53,27 @@ header .hright{margin-left:auto;}
 .bookmark-btn:hover{border-color:var(--gold);color:var(--gold);}
 .bookmark-tip{margin-top:10px;font-size:0.78rem;color:var(--muted);text-align:center;opacity:0;transition:opacity 0.25s;pointer-events:none;}
 .bookmark-tip.show{opacity:1;}
+.ie-btn{margin-top:10px;display:inline-flex;align-items:center;gap:5px;background:none;border:none;font-size:0.75rem;font-family:'Source Sans 3',sans-serif;color:var(--muted);cursor:pointer;padding:4px 8px;border-radius:5px;transition:color 0.15s;}
+.ie-btn:hover{color:var(--gold);}
+
+/* Import/Export modal */
+.ie-backdrop{display:none;position:fixed;inset:0;background:rgba(13,18,32,0.5);z-index:200;align-items:center;justify-content:center;}
+.ie-backdrop.open{display:flex;}
+.ie-modal{background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.2);width:520px;max-width:94vw;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;}
+.ie-modal-hdr{background:var(--navy);color:#fff;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.ie-modal-hdr h3{font-family:'Libre Baskerville',serif;font-size:0.9rem;letter-spacing:0.05em;color:#fff;}
+.ie-modal-close{background:rgba(255,255,255,0.12);color:#fff;border:none;border-radius:4px;width:28px;height:28px;cursor:pointer;font-size:1.1rem;line-height:1;}
+.ie-modal-close:hover{background:rgba(255,255,255,0.22);}
+.ie-modal-body{padding:16px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;flex:1;}
+.ie-modal-body textarea{width:100%;height:200px;font-family:monospace;font-size:0.72rem;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--cream);color:var(--text);resize:vertical;}
+body.dark .ie-modal-body textarea{background:#0d1220;}
+.ie-modal-body .btn-row{display:flex;gap:8px;flex-wrap:wrap;}
+.ie-action-btn{padding:7px 16px;border-radius:6px;font-size:0.82rem;font-family:'Source Sans 3',sans-serif;font-weight:600;cursor:pointer;border:none;transition:background 0.15s;}
+.ie-action-btn.primary{background:var(--navy);color:#fff;}
+.ie-action-btn.primary:hover{background:var(--gold);color:var(--navy);}
+.ie-action-btn.secondary{background:var(--warm-gray);color:var(--text);border:1px solid var(--border);}
+.ie-action-btn.secondary:hover{border-color:var(--gold);color:var(--gold);}
+.ie-note{font-size:0.75rem;color:var(--muted);line-height:1.4;}
 footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
 footer a{color:var(--gold);text-decoration:none;}
 </style>
@@ -96,10 +117,45 @@ footer a{color:var(--gold);text-decoration:none;}
       <div class="go-btn">Open Dashboard →</div>
     </a>
 
+    <a class="page-card" href="flash_cards.html">
+      <div class="icon">🃏</div>
+      <h2>Flash Cards</h2>
+      <p>Practice reading Hebrew syllables with interactive flash cards — one, two, or three letters at a time. Optimized for mobile.</p>
+      <div class="go-btn">Open Flash Cards →</div>
+    </a>
+
+    <a class="page-card" href="resources.html">
+      <div class="icon">📚</div>
+      <h2>Teaching Resources</h2>
+      <p>A curated collection of websites, printables, and tools for Hebrew and Jewish education — organized by category and age group.</p>
+      <div class="go-btn">Browse Resources →</div>
+    </a>
+
   </div>
 
   <button class="bookmark-btn" onclick="showBookmarkTip()">🔖 Bookmark this page</button>
   <div class="bookmark-tip" id="bookmarkTip"></div>
+  <button class="ie-btn" onclick="openIEModal()">⚙ Import / Export All Settings</button>
+</div>
+
+<!-- Import/Export modal -->
+<div class="ie-backdrop" id="ieBackdrop" onclick="closeIEModal(event)">
+  <div class="ie-modal" onclick="event.stopPropagation()">
+    <div class="ie-modal-hdr">
+      <h3>⚙ Import / Export All Settings</h3>
+      <button class="ie-modal-close" onclick="closeIEModal()">×</button>
+    </div>
+    <div class="ie-modal-body">
+      <p class="ie-note">Export bundles all presets, saved schedules, and dashboard settings from the Generator, Dashboard, and Flash Cards into one block of text. Paste a previously exported block to import everything back.</p>
+      <div class="btn-row">
+        <button class="ie-action-btn primary" onclick="exportAllSettings()">⬇ Export All Settings</button>
+        <button class="ie-action-btn primary" onclick="importAllSettings()">⬆ Import All Settings</button>
+        <button class="ie-action-btn" style="background:#a83232;color:#fff;margin-left:auto;" onclick="eraseAllSettings()">🗑 Erase All Settings</button>
+      </div>
+      <textarea id="ieTextarea" placeholder="Click 'Export All Settings' to generate a backup, or paste a backup here and click 'Import All Settings'…" spellcheck="false"></textarea>
+      <div><button class="ie-action-btn secondary" onclick="copyIEText()" id="ieCopyBtn">Copy to Clipboard</button></div>
+    </div>
+  </div>
 </div>
 
 <footer>
@@ -111,6 +167,78 @@ footer a{color:var(--gold);text-decoration:none;}
 </footer>
 
 <script>
+function openIEModal() {
+  document.getElementById('ieBackdrop').classList.add('open');
+}
+function closeIEModal(e) {
+  if (e && e.target !== document.getElementById('ieBackdrop')) return;
+  document.getElementById('ieBackdrop').classList.remove('open');
+}
+function exportAllSettings() {
+  const blob = {
+    _hebrewBlenderExport: 1,
+    generatorPresets:    JSON.parse(localStorage.getItem('hebrewBlender_presets')      || '{}'),
+    dashboardPresets:    JSON.parse(localStorage.getItem('hebrewDashboard_presets')    || '{}'),
+    dashboardSchedules:  JSON.parse(localStorage.getItem('hebrewDashboard_schedules')  || '{}'),
+    dashboardSettings:   JSON.parse(localStorage.getItem('hebrewDashboard_settings')   || '{}'),
+    flashCardPresets:    JSON.parse(localStorage.getItem('hebrewFlashCards_presets')   || '{}'),
+  };
+  document.getElementById('ieTextarea').value = JSON.stringify(blob, null, 2);
+}
+function importAllSettings() {
+  const raw = document.getElementById('ieTextarea').value.trim();
+  if (!raw) { alert('Paste an exported settings block first.'); return; }
+  let parsed;
+  try { parsed = JSON.parse(raw); } catch(e) { alert('Invalid JSON — please paste the full export block.'); return; }
+  if (!parsed._hebrewBlenderExport) { alert('This doesn\'t look like a Hebrew Blender export. Make sure you copied the full block.'); return; }
+  if (!confirm('This will overwrite your current dashboard settings and merge all imported presets and schedules. Continue?')) return;
+  try {
+    if (parsed.generatorPresets) {
+      const existing = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+      localStorage.setItem('hebrewBlender_presets', JSON.stringify(Object.assign(existing, parsed.generatorPresets)));
+    }
+    if (parsed.dashboardPresets) {
+      const existing = JSON.parse(localStorage.getItem('hebrewDashboard_presets') || '{}');
+      localStorage.setItem('hebrewDashboard_presets', JSON.stringify(Object.assign(existing, parsed.dashboardPresets)));
+    }
+    if (parsed.dashboardSchedules) {
+      const existing = JSON.parse(localStorage.getItem('hebrewDashboard_schedules') || '{}');
+      localStorage.setItem('hebrewDashboard_schedules', JSON.stringify(Object.assign(existing, parsed.dashboardSchedules)));
+    }
+    if (parsed.dashboardSettings) {
+      const existing = JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}');
+      localStorage.setItem('hebrewDashboard_settings', JSON.stringify(Object.assign(existing, parsed.dashboardSettings)));
+    }
+    if (parsed.flashCardPresets) {
+      const existing = JSON.parse(localStorage.getItem('hebrewFlashCards_presets') || '{}');
+      localStorage.setItem('hebrewFlashCards_presets', JSON.stringify(Object.assign(existing, parsed.flashCardPresets)));
+    }
+    alert('Import successful! Reload the Dashboard to apply all settings.');
+  } catch(e) { alert('Import failed: ' + e.message); }
+}
+function copyIEText() {
+  const ta = document.getElementById('ieTextarea');
+  if (!ta.value) { alert('Nothing to copy — export first.'); return; }
+  const btn = document.getElementById('ieCopyBtn');
+  navigator.clipboard.writeText(ta.value).catch(() => { ta.select(); document.execCommand('copy'); });
+  btn.textContent = '✓ Copied'; setTimeout(() => btn.textContent = 'Copy', 1800);
+}
+
+function eraseAllSettings() {
+  if (!confirm('⚠️ WARNING: This will permanently erase ALL presets, saved schedules, and settings for both the Generator and the Dashboard.\n\nThis cannot be undone. Export a backup first if you want to keep your data.\n\nAre you sure you want to erase everything?')) return;
+  if (!confirm('Final confirmation: erase all Hebrew Blender data on this device?')) return;
+  const keys = [
+    'hebrewBlender_presets',
+    'hebrewDashboard_presets',
+    'hebrewDashboard_schedules',
+    'hebrewDashboard_settings',
+    'hebrewFlashCards_presets',
+  ];
+  keys.forEach(k => localStorage.removeItem(k));
+  document.getElementById('ieTextarea').value = '';
+  alert('All settings and presets have been erased.');
+}
+
 function showBookmarkTip() {
   const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
   const isMobile = /Android|iPhone|iPad/.test(navigator.userAgent);
@@ -136,6 +264,9 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('darkBtn').textContent = '☀ Light';
     }
   } catch(e) {}
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('ieBackdrop').classList.remove('open');
 });
 </script>
 </body>
