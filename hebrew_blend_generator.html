@@ -1594,7 +1594,7 @@
           </label>
         </div>
         <div id="numberPracticeOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--border);flex-direction:column;gap:6px;">
-          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+          <div id="npCountRow" style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
             <span class="sub-label" style="font-size:0.78rem;min-width:90px;">Total questions</span>
             <select id="npCount" style="flex:1;font-size:0.78rem;padding:3px 6px;">
               <option value="10">10</option>
@@ -1642,14 +1642,14 @@
               <button class="rw-drill-btn"        data-np-translit="key"  onclick="setNpTranslitPage('key')">Answer key</button>
             </div>
           </div>
-          <div class="toggle-row" style="font-size:0.82rem;">
+          <div class="toggle-row" id="npAnswerKeyRow" style="font-size:0.82rem;">
             <span>Show Answer Key</span>
             <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
               <input type="checkbox" id="npAnswerKey" onchange="onNpOptionChange()">
               <span class="slider"></span>
             </label>
           </div>
-          <div class="toggle-row" style="font-size:0.82rem;">
+          <div class="toggle-row" id="npSelfCheckRow" style="font-size:0.82rem;">
             <span>Student Self-Check Mode</span>
             <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
               <input type="checkbox" id="npSelfCheck" onchange="onNpSelfCheckChange()">
@@ -1661,6 +1661,71 @@
               <span>Audio <span style="font-size:0.65rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;">BETA</span></span>
               <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
                 <input type="checkbox" id="npAudio" onchange="onNpOptionChange()">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+          <div class="toggle-row" id="npBingoRow" style="font-size:0.82rem;">
+            <span>Bingo Mode
+              <span class="tooltip-wrap">?<span class="tooltip-box">Generate printable bingo cards filled with numbers (or Hebrew number words). Includes a teacher caller sheet showing both the digit and the Hebrew word.</span></span>
+            </span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="npBingo" onchange="onNpBingoChange()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div id="npBingoOptions" style="display:none;padding-left:16px;flex-direction:column;gap:5px;">
+            <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+              <span class="sub-label" style="font-size:0.78rem;min-width:80px;">Grid size</span>
+              <select id="npBingoGrid" onchange="onNpOptionChange()" style="flex:1;font-size:0.78rem;padding:3px 6px;">
+                <option value="3">3 × 3</option>
+                <option value="4">4 × 4</option>
+                <option value="5" selected>5 × 5</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+              <span class="sub-label" style="font-size:0.78rem;min-width:80px;">Cards</span>
+              <input type="number" id="npBingoCards" min="1" max="200" value="30" onchange="onNpOptionChange()" oninput="this.value=Math.max(1,Math.min(200,parseInt(this.value)||1))" style="flex:1;font-size:0.78rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
+            </div>
+            <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+              <span class="sub-label" style="font-size:0.78rem;min-width:80px;">Per page</span>
+              <select id="npBingoPerPage" onchange="onNpOptionChange()" style="flex:1;font-size:0.78rem;padding:3px 6px;">
+                <option value="1">1 card</option>
+                <option value="2">2 cards</option>
+                <option value="4" selected>4 cards</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+              <span class="sub-label" style="font-size:0.78rem;min-width:80px;">Free space</span>
+              <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+                <input type="checkbox" id="npBingoFreeSpace" checked onchange="onNpOptionChange()">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+              <span class="sub-label" style="font-size:0.78rem;min-width:80px;line-height:1.3;">Show pair
+                <span class="tooltip-wrap" style="font-size:0.55rem;">?<span class="tooltip-box">Shows the matching digit under each Hebrew word (or vice-versa) on every cell.</span></span>
+              </span>
+              <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+                <input type="checkbox" id="npBingoShowPair" onchange="onNpOptionChange()">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+              <span class="sub-label" style="font-size:0.78rem;min-width:80px;line-height:1.3;">Caller sheet
+                <span class="tooltip-wrap" style="font-size:0.55rem;">?<span class="tooltip-box">Adds a teacher page listing every number drawn, with both digit and Hebrew word, in the call order.</span></span>
+              </span>
+              <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+                <input type="checkbox" id="npBingoCaller" checked onchange="onNpOptionChange()">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+              <span class="sub-label" style="font-size:0.78rem;min-width:80px;line-height:1.3;">All cards match
+                <span class="tooltip-wrap" style="font-size:0.55rem;">?<span class="tooltip-box">Every student's card contains the same numbers — just in different positions.</span></span>
+              </span>
+              <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+                <input type="checkbox" id="npBingoShared" onchange="onNpOptionChange()">
                 <span class="slider"></span>
               </label>
             </div>
@@ -2874,6 +2939,14 @@ function getSettings() {
     npAnswerKey:       document.getElementById('npAnswerKey').checked,
     npSelfCheck:       document.getElementById('npSelfCheck').checked,
     npAudio:           document.getElementById('npAudio').checked,
+    npBingo:            document.getElementById('npBingo').checked,
+    npBingoGrid:        document.getElementById('npBingoGrid').value,
+    npBingoCards:       document.getElementById('npBingoCards').value,
+    npBingoPerPage:     document.getElementById('npBingoPerPage').value,
+    npBingoFreeSpace:   document.getElementById('npBingoFreeSpace').checked,
+    npBingoShowPair:    document.getElementById('npBingoShowPair').checked,
+    npBingoCaller:      document.getElementById('npBingoCaller').checked,
+    npBingoShared:      document.getElementById('npBingoShared').checked,
     // Real Words
     realWords:         document.getElementById('realWordsToggle').checked,
     rwDrillType,
@@ -3008,6 +3081,14 @@ function applySettings(s) {
   if (s.npAnswerKey !== undefined)    document.getElementById('npAnswerKey').checked = s.npAnswerKey;
   if (s.npSelfCheck !== undefined)    document.getElementById('npSelfCheck').checked = s.npSelfCheck;
   if (s.npAudio !== undefined)        document.getElementById('npAudio').checked = s.npAudio;
+  if (s.npBingo !== undefined)        document.getElementById('npBingo').checked = s.npBingo;
+  if (s.npBingoGrid)                  document.getElementById('npBingoGrid').value = s.npBingoGrid;
+  if (s.npBingoCards)                 document.getElementById('npBingoCards').value = s.npBingoCards;
+  if (s.npBingoPerPage)               document.getElementById('npBingoPerPage').value = s.npBingoPerPage;
+  if (s.npBingoFreeSpace !== undefined) document.getElementById('npBingoFreeSpace').checked = s.npBingoFreeSpace;
+  if (s.npBingoShowPair !== undefined)  document.getElementById('npBingoShowPair').checked = s.npBingoShowPair;
+  if (s.npBingoCaller !== undefined)    document.getElementById('npBingoCaller').checked = s.npBingoCaller;
+  if (s.npBingoShared !== undefined)    document.getElementById('npBingoShared').checked = s.npBingoShared;
 
   // Real Words
   if (s.realWords !== undefined) document.getElementById('realWordsToggle').checked = s.realWords;
@@ -3091,6 +3172,7 @@ function applySettings(s) {
   toggleNumberPracticeUI();
   onNpTranslitChange();
   onNpSelfCheckChange();
+  onNpBingoChange();
   syncFillVowelsUI();
   if (s.rwDrillType) setRealWordDrill(s.rwDrillType);
 
@@ -3956,6 +4038,12 @@ function onNpRangeChange() {
 }
 
 function generateNumberPractice() {
+  if (document.getElementById('npBingo')?.checked) {
+    numberPracticeItems = [];
+    renderNumberPractice(document.getElementById('worksheet'));
+    enableButtons();
+    return;
+  }
   const count = parseInt(document.getElementById('npCount').value) || 20;
   let min = parseInt(document.getElementById('npMin').value);
   let max = parseInt(document.getElementById('npMax').value);
@@ -3985,6 +4073,13 @@ function generateNumberPractice() {
 
 function renderNumberPractice(ws) {
   ws.innerHTML = '';
+
+  // Bingo sub-mode generates its own pool — runs even before any items are drawn
+  if (document.getElementById('npBingo')?.checked) {
+    renderNumberPracticeBingo(ws);
+    return;
+  }
+
   const items = numberPracticeItems;
   if (items.length === 0) {
     ws.innerHTML = '<div class="empty-state"><h2>Click Generate to create a Number Practice sheet.</h2></div>';
@@ -4180,6 +4275,191 @@ function renderNumberPracticeSelfCheck(ws, items, title, subtitle, audioOn, show
     card.querySelector('.flip-card-inner').addEventListener('click', () => card.classList.toggle('flipped'));
     grid.appendChild(card);
   });
+}
+
+function onNpBingoChange() {
+  const on = document.getElementById('npBingo').checked;
+  document.getElementById('npBingoOptions').style.display = on ? 'flex' : 'none';
+  // Hide options that don't apply in bingo mode
+  document.getElementById('npCountRow').style.display       = on ? 'none' : 'flex';
+  document.getElementById('npAnswerKeyRow').style.display   = on ? 'none' : '';
+  document.getElementById('npSelfCheckRow').style.display   = on ? 'none' : '';
+  if (on) {
+    document.getElementById('npSelfCheck').checked = false;
+    document.getElementById('npSelfCheckOptions').style.display = 'none';
+    document.getElementById('npAnswerKey').checked = false;
+  }
+  if (document.getElementById('numberPracticeToggle').checked) {
+    renderNumberPractice(document.getElementById('worksheet'));
+  }
+}
+
+function renderNumberPracticeBingo(ws) {
+  ws.innerHTML = '';
+
+  const gridSize    = parseInt(document.getElementById('npBingoGrid').value);
+  const numCards    = parseInt(document.getElementById('npBingoCards').value);
+  const perPage     = parseInt(document.getElementById('npBingoPerPage').value);
+  const freeSpace   = document.getElementById('npBingoFreeSpace').checked;
+  const showPair    = document.getElementById('npBingoShowPair').checked;
+  const callerOn    = document.getElementById('npBingoCaller').checked;
+  const sharedItems = document.getElementById('npBingoShared').checked;
+  const display     = npDisplay;
+  const showTrl     = document.getElementById('npShowTranslit').checked;
+
+  let min = parseInt(document.getElementById('npMin').value);
+  let max = parseInt(document.getElementById('npMax').value);
+  if (isNaN(min)) min = 0;
+  if (isNaN(max)) max = 0;
+  min = Math.max(0, Math.min(9999, min));
+  max = Math.max(0, Math.min(9999, max));
+  if (min > max) { const t = min; min = max; max = t; }
+  const range = max - min + 1;
+
+  const cellsNeeded = freeSpace ? gridSize * gridSize - 1 : gridSize * gridSize;
+  if (range < cellsNeeded) {
+    ws.innerHTML = `<div class="empty-state"><h2>Number range too small for bingo.</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">A ${gridSize}×${gridSize} card needs at least ${cellsNeeded} unique numbers, but the range ${min}–${max} only has ${range}. Widen the range or pick a smaller grid.</p></div>`;
+    return;
+  }
+
+  // Build pool of unique numbers
+  const targetSize = sharedItems ? cellsNeeded : Math.min(cellsNeeded * numCards, range);
+  const pool = [];
+  const seen = new Set();
+  let safety = targetSize * 50;
+  while (pool.length < targetSize && safety-- > 0) {
+    const n = min + Math.floor(Math.random() * range);
+    if (seen.has(n)) continue;
+    seen.add(n);
+    const w = numToHebrew(n, npGender);
+    pool.push({ n, heb: w.heb, tr: w.tr });
+  }
+
+  function shuffle(a) {
+    const r = [...a];
+    for (let i = r.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [r[i], r[j]] = [r[j], r[i]];
+    }
+    return r;
+  }
+
+  const masterPool = sharedItems ? shuffle(pool).slice(0, cellsNeeded) : null;
+  const BINGO_HEADERS = { 3: ['ב','י','נ'], 4: ['ב','י','נ','ג'], 5: ['ב','י','נ','ג','ו'] };
+  const headers = BINGO_HEADERS[gridSize];
+
+  // Build cards
+  const cards = [];
+  for (let c = 0; c < numCards; c++) {
+    const drawn = sharedItems ? shuffle(masterPool) : shuffle(pool).slice(0, cellsNeeded);
+    const cells = [];
+    let idx = 0;
+    for (let r = 0; r < gridSize; r++) {
+      for (let col = 0; col < gridSize; col++) {
+        const center = Math.floor(gridSize / 2);
+        if (freeSpace && r === center && col === center) cells.push({ free: true });
+        else cells.push(drawn[idx++] || { n: '?', heb: '?', tr: '?' });
+      }
+    }
+    cards.push({ num: c + 1, cells });
+  }
+
+  // Render pages
+  for (let i = 0; i < cards.length; i += perPage) {
+    const page = document.createElement('div');
+    const twoUp  = perPage === 2;
+    const fourUp = perPage === 4;
+    const cardsOnPage = Math.min(perPage, cards.length - i);
+    page.className = `bingo-page${twoUp ? ' two-up' : fourUp ? ' four-up' : ''}`;
+    if (fourUp) page.classList.add('has-two-rows');
+    if (i > 0) page.classList.add('bingo-page-break');
+
+    for (let j = i; j < Math.min(i + perPage, cards.length); j++) {
+      const card = cards[j];
+      const cardEl = document.createElement('div');
+      cardEl.className = `bingo-card${twoUp ? ' two-up' : fourUp ? ' four-up' : ''}`;
+
+      const numBar = document.createElement('div');
+      numBar.className = 'bingo-card-num';
+      numBar.textContent = `CARD #${card.num}`;
+      cardEl.appendChild(numBar);
+
+      const headerEl = document.createElement('div');
+      headerEl.className = `bingo-card-header${twoUp ? ' two-up' : fourUp ? ' four-up' : ''}`;
+      headerEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+      headers.forEach(h => {
+        const s = document.createElement('span');
+        s.textContent = h;
+        headerEl.appendChild(s);
+      });
+      cardEl.appendChild(headerEl);
+
+      const gridEl = document.createElement('div');
+      gridEl.className = 'bingo-grid';
+      gridEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+
+      card.cells.forEach((cell, cellIdx) => {
+        const row = Math.floor(cellIdx / gridSize);
+        const col = cellIdx % gridSize;
+        const cellEl = document.createElement('div');
+        let cls = 'bingo-cell';
+        if (col === gridSize - 1) cls += ' last-col';
+        if (row === gridSize - 1) cls += ' last-row';
+        if (cell.free) {
+          cellEl.className = cls + ' free-space';
+          cellEl.innerHTML = '<span style="font-size:1rem;">✡</span><span>FREE</span>';
+        } else {
+          cellEl.className = cls;
+          if (display === 'number') {
+            cellEl.innerHTML =
+              `<span style="font-size:1.6rem;font-weight:700;color:#1a2744;direction:ltr;line-height:1.1;">${cell.n}</span>` +
+              (showPair ? `<span style="font-family:var(--heb-font);direction:rtl;font-size:0.75rem;line-height:1.2;color:#1a2744;margin-top:2px;text-align:center;">${cell.heb}</span>` : '');
+          } else {
+            cellEl.innerHTML =
+              `<span class="heb" style="font-size:0.95rem;line-height:1.3;text-align:center;">${cell.heb}</span>` +
+              (showPair ? `<span class="sound" style="direction:ltr;">${cell.n}</span>` : '');
+          }
+        }
+        gridEl.appendChild(cellEl);
+      });
+      cardEl.appendChild(gridEl);
+      page.appendChild(cardEl);
+    }
+
+    if (twoUp || fourUp) {
+      for (let p = cardsOnPage; p < perPage; p++) {
+        page.appendChild(makeBingoPhantom(gridSize, fourUp, twoUp));
+      }
+    }
+
+    ws.appendChild(page);
+  }
+
+  // Caller sheet
+  if (callerOn) {
+    const callerSource = sharedItems ? shuffle(masterPool) : shuffle(pool);
+    const sheet = document.createElement('div');
+    sheet.className = 'caller-sheet';
+    sheet.innerHTML = `
+      <div class="caller-title">📋 Caller Sheet</div>
+      <div class="caller-subtitle">Call each number in order. Check them off as you go.</div>`;
+    const grid = document.createElement('div');
+    grid.className = 'caller-grid';
+    callerSource.forEach((it, i) => {
+      const item = document.createElement('div');
+      item.className = 'caller-item';
+      item.onclick = () => item.classList.toggle('called');
+      const trHtml = showTrl ? `<span class="sound">${it.tr}</span>` : '';
+      item.innerHTML =
+        `<span class="num">${i + 1}</span>` +
+        `<span style="font-size:1.1rem;font-weight:700;color:#1a2744;direction:ltr;">${it.n}</span>` +
+        `<span class="heb">${it.heb}</span>` +
+        trHtml;
+      grid.appendChild(item);
+    });
+    sheet.appendChild(grid);
+    ws.appendChild(sheet);
+  }
 }
 
 function toggleBingoUI() {
