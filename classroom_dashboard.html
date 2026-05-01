@@ -27,6 +27,17 @@
     --border: #c8bfa8;
     --white: #ffffff;
     --heb-font: 'Frank Ruhl Libre', serif;
+    --eng-date-size: 1.35rem;
+    --heb-date-size: 2.6rem;
+    --time-size: 3.4rem;
+    --temp-size: 2rem;
+    --weather-label-size: 1.1rem;
+    --weather-hl-size: 0.72rem;
+    --weather-desc-size: 1.05rem;
+    --dow-display-size: 1.35rem;
+    --dow-eng-size: 0.68rem;
+    --dow-ytt-size: 0.72rem;
+    --dow-emoji-size: 1.4rem;
     --shadow-sm: 0 2px 8px rgba(26, 39, 68, 0.05);
     --shadow-md: 0 4px 16px rgba(26, 39, 68, 0.08);
     --shadow-lg: 0 12px 32px rgba(26, 39, 68, 0.12);
@@ -233,13 +244,13 @@
   }
   .day-heb {
     font-family: var(--heb-font);
-    font-size: 1.35rem;
+    font-size: var(--dow-display-size);
     font-weight: 500;
     line-height: 1.2;
     color: inherit;
   }
   .day-eng {
-    font-size: 0.68rem;
+    font-size: var(--dow-eng-size);
     margin-top: 2px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -257,10 +268,10 @@
     padding: 6px 4px;
     text-align: center;
   }
-  .badge-emoji { font-size: 1.4rem; line-height: 1; }
+  .badge-emoji { font-size: var(--dow-emoji-size); line-height: 1; }
   .badge-text {
     font-family: var(--heb-font);
-    font-size: 0.72rem;
+    font-size: var(--dow-ytt-size);
     color: var(--gold-light);
     margin-top: 3px;
     direction: rtl;
@@ -298,13 +309,13 @@
   }
   .eng-date {
     font-family: 'Libre Baskerville', serif;
-    font-size: 1.35rem;
+    font-size: var(--eng-date-size);
     color: var(--muted);
     font-weight: 400;
   }
   .heb-date {
     font-family: var(--heb-font);
-    font-size: 2.6rem;
+    font-size: var(--heb-date-size);
     direction: rtl;
     color: var(--text);
     font-weight: 500;
@@ -313,7 +324,7 @@
   }
   .current-time {
     font-family: 'Libre Baskerville', serif;
-    font-size: 3.4rem;
+    font-size: var(--time-size);
     color: var(--navy);
     letter-spacing: 0.02em;
     font-weight: 700;
@@ -334,28 +345,28 @@
   .weather-emoji { font-size: 3.2rem; margin: 4px 0 2px; line-height: 1; }
   .weather-temp {
     font-family: 'Libre Baskerville', serif;
-    font-size: 2rem;
+    font-size: var(--temp-size);
     font-weight: 700;
     color: var(--navy);
   }
   body.dark .weather-temp { color: var(--gold-light); }
   .weather-highlow {
-    font-size: 0.72rem;
+    font-size: var(--weather-hl-size);
     color: var(--muted);
     letter-spacing: 0.03em;
     margin-top: 1px;
   }
   .weather-label {
     font-family: var(--heb-font);
-    font-size: 1.1rem;
+    font-size: var(--weather-label-size);
     direction: rtl;
     color: var(--text);
     margin-top: 4px;
   }
-  .weather-label.ltr { direction: ltr; font-family: 'Libre Baskerville', serif; font-size: 1rem; }
+  .weather-label.ltr { direction: ltr; font-family: 'Libre Baskerville', serif; }
   .weather-descriptor {
     font-family: var(--heb-font);
-    font-size: 1.05rem;
+    font-size: var(--weather-desc-size);
     direction: rtl;
     color: var(--muted);
     margin-top: 4px;
@@ -977,29 +988,9 @@
       <span class="size-val" id="colTitleSizeVal">0.78rem</span>
       <button class="btn-xs" onclick="setColTitleSize(0.78)" title="Restore default">↺</button>
     </div>
-    <div class="form-row">
-      <label>Hide English date</label>
-      <label class="toggle"><input type="checkbox" id="hideEngDate"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label>Hide Hebrew date</label>
-      <label class="toggle"><input type="checkbox" id="hideHebDate"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label>Hide time</label>
-      <label class="toggle"><input type="checkbox" id="hideTime"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label>Hide weather</label>
-      <label class="toggle"><input type="checkbox" id="hideWeather"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label>Hide day of the week</label>
-      <label class="toggle"><input type="checkbox" id="hideDOW"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label>Hide dashboard text</label>
-      <label class="toggle"><input type="checkbox" id="hideDashText"><span class="slider"></span></label>
+    <div class="form-row" style="margin-top:8px;">
+      <label>Show text size options</label>
+      <label class="toggle"><input type="checkbox" id="showTextSizeOptions"><span class="slider"></span></label>
     </div>
     <div class="form-row">
       <label>Hide zoom bar</label>
@@ -1043,6 +1034,16 @@
           <label>Show day of the week</label>
           <label class="toggle"><input type="checkbox" id="showEngDOW"><span class="slider"></span></label>
         </div>
+        <div class="size-row text-size-opt" style="display:none;">
+          <label for="engDateSizeSlider">Eng Date size</label>
+          <input type="range" id="engDateSizeSlider" min="0.5" max="3" step="0.05" value="1.35" oninput="setEngDateSize(this.value)">
+          <span class="size-val" id="engDateSizeVal">1.35rem</span>
+          <button class="btn-xs" onclick="setEngDateSize(1.35)" title="Restore default">↺</button>
+        </div>
+        <div class="form-row">
+          <label>Hide English date</label>
+          <label class="toggle"><input type="checkbox" id="hideEngDate"><span class="slider"></span></label>
+        </div>
       </div>
     </div>
 
@@ -1056,6 +1057,16 @@
             <input type="radio" name="hebDateScript" id="hs-translit" value="translit"><label for="hs-translit">English</label>
             <input type="radio" name="hebDateScript" id="hs-both" value="both"><label for="hs-both">Both</label>
           </div>
+        </div>
+        <div class="size-row text-size-opt" style="display:none;">
+          <label for="hebDateSizeSlider">Heb Date size</label>
+          <input type="range" id="hebDateSizeSlider" min="0.5" max="5" step="0.1" value="2.6" oninput="setHebDateSize(this.value)">
+          <span class="size-val" id="hebDateSizeVal">2.6rem</span>
+          <button class="btn-xs" onclick="setHebDateSize(2.6)" title="Restore default">↺</button>
+        </div>
+        <div class="form-row">
+          <label>Hide Hebrew date</label>
+          <label class="toggle"><input type="checkbox" id="hideHebDate"><span class="slider"></span></label>
         </div>
       </div>
     </div>
@@ -1074,6 +1085,16 @@
           <label>Show seconds</label>
           <label class="toggle"><input type="checkbox" id="showSeconds"><span class="slider"></span></label>
         </div>
+        <div class="size-row text-size-opt" style="display:none;">
+          <label for="timeSizeSlider">Time size</label>
+          <input type="range" id="timeSizeSlider" min="0.5" max="6" step="0.1" value="3.4" oninput="setTimeSize(this.value)">
+          <span class="size-val" id="timeSizeVal">3.4rem</span>
+          <button class="btn-xs" onclick="setTimeSize(3.4)" title="Restore default">↺</button>
+        </div>
+        <div class="form-row">
+          <label>Hide time</label>
+          <label class="toggle"><input type="checkbox" id="hideTime"><span class="slider"></span></label>
+        </div>
       </div>
     </div>
 
@@ -1090,12 +1111,24 @@
         <input type="radio" name="tempUnit" id="tu-c" value="C"><label for="tu-c">°C</label>
       </div>
     </div>
+    <div class="size-row text-size-opt" style="display:none;">
+      <label for="tempSizeSlider">Temp size</label>
+      <input type="range" id="tempSizeSlider" min="0.5" max="4" step="0.1" value="2" oninput="setTempSize(this.value)">
+      <span class="size-val" id="tempSizeVal">2rem</span>
+      <button class="btn-xs" onclick="setTempSize(2)" title="Restore default">↺</button>
+    </div>
     <div class="form-row">
       <label>Label language</label>
       <div class="radio-group">
         <input type="radio" name="weatherLabelLang" id="wl-he" value="he"><label for="wl-he">עִבְרִית</label>
         <input type="radio" name="weatherLabelLang" id="wl-en" value="en"><label for="wl-en">English</label>
       </div>
+    </div>
+    <div class="size-row text-size-opt" style="display:none;">
+      <label for="weatherLabelSizeSlider">Label size</label>
+      <input type="range" id="weatherLabelSizeSlider" min="0.5" max="3" step="0.05" value="1.1" oninput="setWeatherLabelSize(this.value)">
+      <span class="size-val" id="weatherLabelSizeVal">1.1rem</span>
+      <button class="btn-xs" onclick="setWeatherLabelSize(1.1)" title="Restore default">↺</button>
     </div>
     <div class="form-row">
       <label>Simple weather description <span class="tip-wrap" data-tip="Limits description to: Sun, Clouds, Sun &amp; Clouds, Rain, Snow, or Fog — instead of full WMO detail."><i class="tip-icon">?</i></span></label>
@@ -1113,13 +1146,30 @@
       <label>Hide High/Low</label>
       <label class="toggle"><input type="checkbox" id="hideHighLow"><span class="slider"></span></label>
     </div>
+    <div class="size-row text-size-opt" style="display:none;">
+      <label for="weatherHLSizeSlider">H/L size</label>
+      <input type="range" id="weatherHLSizeSlider" min="0.3" max="2" step="0.05" value="0.72" oninput="setWeatherHLSize(this.value)">
+      <span class="size-val" id="weatherHLSizeVal">0.72rem</span>
+      <button class="btn-xs" onclick="setWeatherHLSize(0.72)" title="Restore default">↺</button>
+    </div>
     <div class="form-row">
       <label>Hide weather description</label>
       <label class="toggle"><input type="checkbox" id="hideWeatherDesc"><span class="slider"></span></label>
     </div>
+    <div class="size-row text-size-opt" style="display:none;">
+      <label for="weatherDescSizeSlider">Description size</label>
+      <input type="range" id="weatherDescSizeSlider" min="0.4" max="3" step="0.05" value="1.05" oninput="setWeatherDescSize(this.value)">
+      <span class="size-val" id="weatherDescSizeVal">1.05rem</span>
+      <button class="btn-xs" onclick="setWeatherDescSize(1.05)" title="Restore default">↺</button>
+    </div>
     <div class="form-row">
       <label>Tap to read <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></label>
       <label class="toggle"><input type="checkbox" id="tapToReadWeather"><span class="slider"></span></label>
+    </div>
+    <hr>
+    <div class="form-row">
+      <label>Hide weather panel</label>
+      <label class="toggle"><input type="checkbox" id="hideWeather"><span class="slider"></span></label>
     </div>
   </div>
 </div>
@@ -1134,6 +1184,12 @@
         <input type="radio" name="dowLang" id="dl-both" value="both"><label for="dl-both">Both</label>
         <input type="radio" name="dowLang" id="dl-en" value="en"><label for="dl-en">English</label>
       </div>
+    </div>
+    <div class="size-row text-size-opt" style="display:none;">
+      <label for="dowDisplaySizeSlider">Display size</label>
+      <input type="range" id="dowDisplaySizeSlider" min="0.5" max="3" step="0.05" value="1.35" oninput="setDowDisplaySize(this.value)">
+      <span class="size-val" id="dowDisplaySizeVal">1.35rem</span>
+      <button class="btn-xs" onclick="setDowDisplaySize(1.35)" title="Restore default">↺</button>
     </div>
     <div class="form-row">
       <label>Color days of the week</label>
@@ -1151,6 +1207,12 @@
       <label>Show Tomorrow marker</label>
       <label class="toggle"><input type="checkbox" id="showTomorrow"><span class="slider"></span></label>
     </div>
+    <div class="size-row text-size-opt" style="display:none;">
+      <label for="dowYTTSizeSlider">Y/T/T size</label>
+      <input type="range" id="dowYTTSizeSlider" min="0.3" max="2" step="0.05" value="0.72" oninput="setDowYTTSize(this.value)">
+      <span class="size-val" id="dowYTTSizeVal">0.72rem</span>
+      <button class="btn-xs" onclick="setDowYTTSize(0.72)" title="Restore default">↺</button>
+    </div>
     <div class="form-row">
       <label>Emoji sequence</label>
       <div class="emoji-set-btns" id="emojiSetBtns">
@@ -1164,9 +1226,20 @@
         <button class="emoji-set-btn" data-set="none">None</button>
       </div>
     </div>
+    <div class="size-row text-size-opt" style="display:none;">
+      <label for="dowEmojiSizeSlider">Emoji size</label>
+      <input type="range" id="dowEmojiSizeSlider" min="0.5" max="4" step="0.1" value="1.4" oninput="setDowEmojiSize(this.value)">
+      <span class="size-val" id="dowEmojiSizeVal">1.4rem</span>
+      <button class="btn-xs" onclick="setDowEmojiSize(1.4)" title="Restore default">↺</button>
+    </div>
     <div class="form-row">
       <label>Tap to read <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></label>
       <label class="toggle"><input type="checkbox" id="tapToReadDow"><span class="slider"></span></label>
+    </div>
+    <hr>
+    <div class="form-row">
+      <label>Hide Day of Week panel</label>
+      <label class="toggle"><input type="checkbox" id="hideDOW"><span class="slider"></span></label>
     </div>
   </div>
 </div>
@@ -1202,6 +1275,10 @@
       </select>
     </div>
     <div id="dashEditor" class="editor" contenteditable="true" oninput="syncDashText()"></div>
+    <div class="form-row" style="margin-top:10px;">
+      <label>Hide dashboard text</label>
+      <label class="toggle"><input type="checkbox" id="hideDashText"><span class="slider"></span></label>
+    </div>
   </div>
 </div>
 
@@ -1487,6 +1564,17 @@
     scheduleShowCountdown: false,
     countdownShowPresetName: true,
     currentSchedule: [],
+    showTextSizeOptions: false,
+    engDateSize: 1.35,
+    hebDateSize: 2.6,
+    timeSize: 3.4,
+    tempSize: 2.0,
+    weatherLabelSize: 1.1,
+    weatherHLSize: 0.72,
+    weatherDescSize: 1.05,
+    dowDisplaySize: 1.35,
+    dowYTTSize: 0.72,
+    dowEmojiSize: 1.4,
   };
   let presets = {};
   let savedSchedules = {};
@@ -1734,6 +1822,112 @@
     if (sl && sl.value !== String(val)) sl.value = val;
   }
 
+  function toggleTextSizeOptions(show) {
+    document.querySelectorAll('.text-size-opt').forEach(el => {
+      el.style.display = show ? '' : 'none';
+    });
+  }
+
+  function setEngDateSize(val) {
+    const v = parseFloat(val);
+    settings.engDateSize = v;
+    document.documentElement.style.setProperty('--eng-date-size', v + 'rem');
+    const lbl = document.getElementById('engDateSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
+    const sl = document.getElementById('engDateSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setHebDateSize(val) {
+    const v = parseFloat(val);
+    settings.hebDateSize = v;
+    document.documentElement.style.setProperty('--heb-date-size', v + 'rem');
+    const lbl = document.getElementById('hebDateSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(1) + 'rem';
+    const sl = document.getElementById('hebDateSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setTimeSize(val) {
+    const v = parseFloat(val);
+    settings.timeSize = v;
+    document.documentElement.style.setProperty('--time-size', v + 'rem');
+    const lbl = document.getElementById('timeSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(1) + 'rem';
+    const sl = document.getElementById('timeSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setTempSize(val) {
+    const v = parseFloat(val);
+    settings.tempSize = v;
+    document.documentElement.style.setProperty('--temp-size', v + 'rem');
+    const lbl = document.getElementById('tempSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(1) + 'rem';
+    const sl = document.getElementById('tempSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setWeatherLabelSize(val) {
+    const v = parseFloat(val);
+    settings.weatherLabelSize = v;
+    document.documentElement.style.setProperty('--weather-label-size', v + 'rem');
+    const lbl = document.getElementById('weatherLabelSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
+    const sl = document.getElementById('weatherLabelSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setWeatherHLSize(val) {
+    const v = parseFloat(val);
+    settings.weatherHLSize = v;
+    document.documentElement.style.setProperty('--weather-hl-size', v + 'rem');
+    const lbl = document.getElementById('weatherHLSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
+    const sl = document.getElementById('weatherHLSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setWeatherDescSize(val) {
+    const v = parseFloat(val);
+    settings.weatherDescSize = v;
+    document.documentElement.style.setProperty('--weather-desc-size', v + 'rem');
+    const lbl = document.getElementById('weatherDescSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
+    const sl = document.getElementById('weatherDescSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setDowDisplaySize(val) {
+    const v = parseFloat(val);
+    settings.dowDisplaySize = v;
+    document.documentElement.style.setProperty('--dow-display-size', v + 'rem');
+    document.documentElement.style.setProperty('--dow-eng-size', (v * 0.5).toFixed(3) + 'rem');
+    const lbl = document.getElementById('dowDisplaySizeVal');
+    if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
+    const sl = document.getElementById('dowDisplaySizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setDowYTTSize(val) {
+    const v = parseFloat(val);
+    settings.dowYTTSize = v;
+    document.documentElement.style.setProperty('--dow-ytt-size', v + 'rem');
+    const lbl = document.getElementById('dowYTTSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
+    const sl = document.getElementById('dowYTTSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setDowEmojiSize(val) {
+    const v = parseFloat(val);
+    settings.dowEmojiSize = v;
+    document.documentElement.style.setProperty('--dow-emoji-size', v + 'rem');
+    const lbl = document.getElementById('dowEmojiSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(1) + 'rem';
+    const sl = document.getElementById('dowEmojiSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
 
   /* ────────── DATE / TIME DISPLAY ────────── */
   function updateDateTimeDisplay() {
@@ -2140,6 +2334,19 @@
     });
     document.querySelector(`input[name="headerLang"][value="${settings.headerLang || 'he'}"]`).checked = true;
     setColTitleSize(settings.colTitleSize || 0.78);
+    const showTso = !!settings.showTextSizeOptions;
+    $('showTextSizeOptions').checked = showTso;
+    toggleTextSizeOptions(showTso);
+    setEngDateSize(settings.engDateSize || 1.35);
+    setHebDateSize(settings.hebDateSize || 2.6);
+    setTimeSize(settings.timeSize || 3.4);
+    setTempSize(settings.tempSize || 2.0);
+    setWeatherLabelSize(settings.weatherLabelSize || 1.1);
+    setWeatherHLSize(settings.weatherHLSize || 0.72);
+    setWeatherDescSize(settings.weatherDescSize || 1.05);
+    setDowDisplaySize(settings.dowDisplaySize || 1.35);
+    setDowYTTSize(settings.dowYTTSize || 0.72);
+    setDowEmojiSize(settings.dowEmojiSize || 1.4);
     $('hideDOW').checked = settings.hideDOW;
     $('hideDashText').checked = !settings.enableDashText;
     $('hideZoomBar').checked = settings.hideZoomBar;
@@ -2244,6 +2451,21 @@
     document.querySelectorAll('input[name="headerLang"]').forEach(r =>
       r.addEventListener('change', () => { settings.headerLang = r.value; updateColTitles(); saveSettingsToStorage(); }));
     document.getElementById('colTitleSizeSlider').addEventListener('input', e => { setColTitleSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('showTextSizeOptions').addEventListener('change', e => {
+      settings.showTextSizeOptions = e.target.checked;
+      toggleTextSizeOptions(e.target.checked);
+      saveSettingsToStorage();
+    });
+    document.getElementById('engDateSizeSlider').addEventListener('input', e => { setEngDateSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('hebDateSizeSlider').addEventListener('input', e => { setHebDateSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('timeSizeSlider').addEventListener('input', e => { setTimeSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('tempSizeSlider').addEventListener('input', e => { setTempSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('weatherLabelSizeSlider').addEventListener('input', e => { setWeatherLabelSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('weatherHLSizeSlider').addEventListener('input', e => { setWeatherHLSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('weatherDescSizeSlider').addEventListener('input', e => { setWeatherDescSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('dowDisplaySizeSlider').addEventListener('input', e => { setDowDisplaySize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('dowYTTSizeSlider').addEventListener('input', e => { setDowYTTSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('dowEmojiSizeSlider').addEventListener('input', e => { setDowEmojiSize(e.target.value); saveSettingsToStorage(); });
     document.getElementById('hideDOW').addEventListener('change', e => {
       settings.hideDOW = e.target.checked;
       document.getElementById('dowCol').style.display = e.target.checked ? 'none' : '';
