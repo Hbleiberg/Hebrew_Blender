@@ -794,7 +794,7 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
       <div id="vowelHost"></div>
       <div class="row" id="vavRow" style="display:none">
         <label class="switch"><input type="checkbox" id="vavAsLetterToggle" checked><span class="slider"></span></label>
-        <span class="label has-tip" data-tip="When using cholam-vav (וֹ) or shuruk (וּ), treat the vav as the letter itself rather than a separate consonant.">Vav as Letter</span>
+        <span class="label has-tip" data-tip="When using cholam-vav (וֹ) or shuruk (וּ), treat the vav as the letter itself rather than a separate consonant.">Count וֹ/וּ as a letter</span>
       </div>
     </div>
   </div>
@@ -1884,22 +1884,8 @@ function generateCard() {
       result.translit = (vowel.key === 'vcholam') ? 'Oh' : 'Oo';
       return result;
     } else if (vavAsLetter) {
-      // Treat the final position as the vav-vowel syllable
-      // Replace the final letter with the vav syllable
-      let heb = '';
-      let translit = '';
-      for (let i = 0; i < m - 1; i++) {
-        const L = positions[i];
-        heb += L.heb + '\u05B0'; // sheva-style intermediate
-        const sh = (L.sounds.sh || '').replace(/'/g, '');
-        translit += (i === 0) ? L.sounds.a.replace(/ah$/i, '') + '' : sh;
-      }
-      heb += vowel.nikud;
-      translit += (vowel.key === 'vcholam') ? 'oh' : 'oo';
-      // Capitalize first letter
-      result.heb = heb;
-      result.translit = capitalize(translit);
-      return result;
+      // N4: mater lectionis cannot occupy a C-slot in a multi-letter blend
+      return null;
     }
     // else fall through, treat vowel as ordinary mark on final letter
   }
