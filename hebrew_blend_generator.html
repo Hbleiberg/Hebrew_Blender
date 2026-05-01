@@ -4466,14 +4466,17 @@ function toggleBingoUI() {
   const on = document.getElementById('bingoToggle').checked;
   document.getElementById('bingoOptions').style.display = on ? 'flex' : 'none';
 
-  const hideRows = ['rowInverse','rowAnswerKey','rowThreeLetter','rowSelfCheck','rowGematria','rowOneLetter','rowNikudOnly','rowRealWords'];
+  const hideRows = ['rowInverse','rowAnswerKey','rowThreeLetter','rowSelfCheck','rowGematria','rowOneLetter','rowNikudOnly','rowRealWords','rowFillVowels','rowNumberPractice'];
   hideRows.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = on ? 'none' : ''; });
   document.getElementById('panelLayout').style.display = on ? 'none' : '';
 
   if (on) {
-    // Force off Real Words mode so they can't coexist
+    // Force off Real Words and Number Practice so they can't coexist
     document.getElementById('realWordsToggle').checked = false;
     document.getElementById('realWordsOptions').style.display = 'none';
+    document.getElementById('numberPracticeToggle').checked = false;
+    document.getElementById('numberPracticeOptions').style.display = 'none';
+    document.getElementById('fillVowelsToggle').checked = false;
     ['focusOptions','threeLetterOptions','selfCheckOptions'].forEach(id => {
       const el = document.getElementById(id); if(el) el.style.display = 'none';
     });
