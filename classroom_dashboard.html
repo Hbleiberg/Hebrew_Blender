@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <title>Classroom Dashboard — Hebrew Blender</title><!-- Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=G-CMLC81Z0HC"></script><script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -26,6 +27,17 @@
     --border: #c8bfa8;
     --white: #ffffff;
     --heb-font: 'Frank Ruhl Libre', serif;
+    --eng-date-size: 1.35rem;
+    --heb-date-size: 2.6rem;
+    --time-size: 3.4rem;
+    --temp-size: 2rem;
+    --weather-label-size: 1.1rem;
+    --weather-hl-size: 0.72rem;
+    --weather-desc-size: 1.05rem;
+    --dow-display-size: 1.35rem;
+    --dow-eng-size: 0.68rem;
+    --dow-ytt-size: 0.72rem;
+    --dow-emoji-size: 1.4rem;
     --shadow-sm: 0 2px 8px rgba(26, 39, 68, 0.05);
     --shadow-md: 0 4px 16px rgba(26, 39, 68, 0.08);
     --shadow-lg: 0 12px 32px rgba(26, 39, 68, 0.12);
@@ -51,13 +63,15 @@
     background: var(--cream);
     color: var(--text);
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     -webkit-font-smoothing: antialiased;
   }
 
   /* ───── Header ───── */
   header {
     background: var(--navy);
-    color: var(--white);
+    color: #fff;
     padding: 14px 28px;
     display: flex;
     align-items: center;
@@ -70,7 +84,7 @@
   header h1 {
     font-family: 'Libre Baskerville', serif;
     font-size: 1.35rem;
-    color: var(--white);
+    color: #fff;
     line-height: 1.2;
   }
   header p {
@@ -95,7 +109,7 @@
   .hright { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
   .hbtn {
     background: rgba(255,255,255,0.08);
-    color: var(--white);
+    color: #fff;
     border: 1px solid rgba(255,255,255,0.18);
     padding: 7px 12px;
     border-radius: 6px;
@@ -117,105 +131,162 @@
   .dashboard {
     display: grid;
     grid-template-columns: 290px 1fr 290px;
+    grid-template-rows: 1fr;
     gap: 24px;
     padding: 28px;
-    min-height: calc(100vh - 76px);
+    flex: 1;
   }
   .dash-col {
     background: var(--white);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 22px 18px;
+    padding: 0;
     box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
+  /* Center column keeps its own internal padding since it has no col-title */
+  .dash-col.dash-center { padding: 22px 18px; }
   body.dark .dash-col {
     background: #1e2535;
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   }
+  .right-col-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+  /* Weather card: compact, don't stretch */
+  .right-col-wrap #weatherCol { flex-shrink: 0; }
+  /* Video card in sidebar fills remaining height */
+  .right-col-wrap #videoPanel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .right-col-wrap #videoPanel #videoBody {
+    flex: 1;
+    min-height: 0;
+    padding: 10px;
+  }
+  /* Collapse: max-height so iframe stays in DOM (audio keeps playing) */
+  #videoBody {
+    overflow: hidden;
+    max-height: 4000px;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+  }
+  #videoBody.vcollapsed {
+    max-height: 0 !important;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .right-col-wrap #videoPanel #videoIframe {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: unset;
+  }
 
   .col-title {
     font-family: 'Libre Baskerville', serif;
-    font-size: 0.7rem;
-    letter-spacing: 0.14em;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--gold);
-    text-align: center;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border);
+    color: #fff;
+    background: var(--navy);
+    border-bottom: 2px solid var(--gold);
+    padding: 9px 14px;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
   }
+  body.dark .col-title { background: #0a0f1c; }
+  .col-title::after {
+    content: '▾';
+    font-size: 0.9rem;
+    color: var(--gold-light);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .dash-col.collapsed .col-title::after { transform: rotate(-90deg); }
+  .col-body {
+    padding: 16px 18px;
+    flex: 1;
+  }
+  .dash-col.collapsed .col-body { display: none; }
 
   /* ───── Days list ───── */
   .day-item {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 11px 8px;
+    flex-direction: row;
+    align-items: stretch;
     margin-bottom: 6px;
     border-radius: 8px;
+    overflow: hidden;
     border: 2px solid transparent;
-    background: transparent;
-    transition: all 0.25s ease;
-    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: var(--warm-gray);
   }
   .day-item:last-child { margin-bottom: 0; }
+  .day-main {
+    flex: 1;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    direction: rtl;
+  }
   .day-heb {
     font-family: var(--heb-font);
-    font-size: 1.45rem;
+    font-size: var(--dow-display-size);
     font-weight: 500;
-    direction: rtl;
     line-height: 1.2;
+    color: inherit;
   }
   .day-eng {
-    font-size: 0.72rem;
-    color: var(--muted);
-    margin-top: 3px;
+    font-size: var(--dow-eng-size);
+    margin-top: 2px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     font-weight: 600;
+    opacity: 0.8;
   }
-  .day-annot {
-    font-size: 0.85rem;
-    color: var(--muted);
-    margin-top: 5px;
+  .day-badge {
+    width: 74px;
+    flex-shrink: 0;
+    background: rgba(0,0,0,0.22);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 4px;
+    text-align: center;
+  }
+  .badge-emoji { font-size: var(--dow-emoji-size); line-height: 1; }
+  .badge-text {
     font-family: var(--heb-font);
+    font-size: var(--dow-ytt-size);
+    color: var(--gold-light);
+    margin-top: 3px;
     direction: rtl;
+    line-height: 1.25;
   }
-  .day-sunday {
-    background: rgba(220, 60, 60, 0.10);
-    border-color: rgba(220, 60, 60, 0.25);
-  }
-  body.dark .day-sunday {
-    background: rgba(220, 80, 80, 0.15);
-    border-color: rgba(220, 80, 80, 0.35);
-  }
-  .day-shabbat {
-    background: linear-gradient(135deg,
-      rgba(180, 140, 220, 0.18) 0%,
-      rgba(220, 180, 140, 0.18) 50%,
-      rgba(160, 200, 220, 0.18) 100%);
-    border-color: rgba(180, 140, 220, 0.35);
-  }
-  body.dark .day-shabbat {
-    background: linear-gradient(135deg,
-      rgba(180, 140, 220, 0.22) 0%,
-      rgba(220, 180, 140, 0.22) 50%,
-      rgba(160, 200, 220, 0.22) 100%);
-  }
-  .day-today {
-    border-color: var(--gold);
-    box-shadow: 0 0 0 3px rgba(201, 146, 42, 0.18);
-    transform: scale(1.03);
-    background: var(--white);
-  }
-  body.dark .day-today { background: #232b40; }
-  .day-today.day-sunday { background: rgba(220, 60, 60, 0.10); }
-  .day-today.day-shabbat {
-    background: linear-gradient(135deg,
-      rgba(180, 140, 220, 0.18) 0%,
-      rgba(220, 180, 140, 0.18) 50%,
-      rgba(160, 200, 220, 0.18) 100%);
-  }
+  .day-item.colored { color: #fff; }
+  .day-item.colored .day-eng { color: rgba(255,255,255,0.85); }
+  .day-item.day-today { box-shadow: 0 0 0 3px var(--gold); transform: scale(1.02); }
+  body.dark .day-item:not(.colored) { background: #232b40; color: var(--text); }
+  /* English mode: badge on left, text left-aligned */
+  .day-item.badge-left .day-badge { order: -1; }
+  .day-item.badge-left .day-main { align-items: flex-start; direction: ltr; }
+  .day-item.badge-left .badge-text { direction: ltr; font-family: inherit; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.03em; }
+  /* Both mode: English sub-label under Hebrew badge text */
+  .badge-text-eng { font-size: 0.6rem; color: var(--gold-light); margin-top: 2px; direction: ltr; line-height: 1.2; opacity: 0.85; }
 
   /* ───── Center: date/time ───── */
   .dash-center {
@@ -229,13 +300,13 @@
   }
   .eng-date {
     font-family: 'Libre Baskerville', serif;
-    font-size: 1.35rem;
+    font-size: var(--eng-date-size);
     color: var(--muted);
     font-weight: 400;
   }
   .heb-date {
     font-family: var(--heb-font);
-    font-size: 2.6rem;
+    font-size: var(--heb-date-size);
     direction: rtl;
     color: var(--text);
     font-weight: 500;
@@ -244,7 +315,7 @@
   }
   .current-time {
     font-family: 'Libre Baskerville', serif;
-    font-size: 3.4rem;
+    font-size: var(--time-size);
     color: var(--navy);
     letter-spacing: 0.02em;
     font-weight: 700;
@@ -261,26 +332,32 @@
   }
 
   /* ───── Weather ───── */
-  .weather-block { text-align: center; padding: 8px 0; }
-  .weather-emoji { font-size: 4.6rem; margin: 8px 0 4px; line-height: 1; }
+  .weather-block { text-align: center; padding: 4px 0; }
+  .weather-emoji { font-size: 3.2rem; margin: 4px 0 2px; line-height: 1; }
   .weather-temp {
     font-family: 'Libre Baskerville', serif;
-    font-size: 2.6rem;
+    font-size: var(--temp-size);
     font-weight: 700;
     color: var(--navy);
   }
   body.dark .weather-temp { color: var(--gold-light); }
+  .weather-highlow {
+    font-size: var(--weather-hl-size);
+    color: var(--muted);
+    letter-spacing: 0.03em;
+    margin-top: 1px;
+  }
   .weather-label {
     font-family: var(--heb-font);
-    font-size: 1.5rem;
+    font-size: var(--weather-label-size);
     direction: rtl;
     color: var(--text);
-    margin-top: 8px;
+    margin-top: 4px;
   }
-  .weather-label.ltr { direction: ltr; font-family: 'Libre Baskerville', serif; font-size: 1.2rem; }
+  .weather-label.ltr { direction: ltr; font-family: 'Libre Baskerville', serif; }
   .weather-descriptor {
     font-family: var(--heb-font);
-    font-size: 1.05rem;
+    font-size: var(--weather-desc-size);
     direction: rtl;
     color: var(--muted);
     margin-top: 4px;
@@ -331,7 +408,7 @@
   .settings-header {
     padding: 14px 20px;
     background: var(--navy);
-    color: var(--white);
+    color: #fff;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -342,11 +419,11 @@
     font-family: 'Libre Baskerville', serif;
     font-size: 1rem;
     letter-spacing: 0.05em;
-    color: var(--white);
+    color: #fff;
   }
   .settings-close {
     background: rgba(255,255,255,0.12);
-    color: var(--white);
+    color: #fff;
     border: none;
     border-radius: 4px;
     width: 32px; height: 32px;
@@ -374,7 +451,7 @@
   .panel:last-child { margin-bottom: 0; }
   .panel-title {
     background: var(--navy);
-    color: var(--white);
+    color: #fff;
     font-family: 'Libre Baskerville', serif;
     font-size: 0.72rem;
     letter-spacing: 0.1em;
@@ -387,10 +464,23 @@
     align-items: center;
   }
   body.dark .panel-title { background: #0a0f1c; }
-  .panel-title::after { content: '−'; color: var(--gold-light); font-size: 1.1rem; line-height: 0.5; }
-  .panel.collapsed .panel-title::after { content: '+'; }
+  .panel-title::after { content: '▾'; color: var(--gold-light); font-size: 1rem; transition: transform 0.2s; flex-shrink: 0; }
+  .panel.collapsed .panel-title::after { transform: rotate(-90deg); }
   .panel-body { padding: 14px; }
   .panel.collapsed .panel-body { display: none; }
+
+  /* ───── Sub-section (collapsible within a panel) ───── */
+  .sub-section { border-bottom: 1px solid var(--border); margin-bottom: 10px; padding-bottom: 6px; }
+  .sub-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .sub-section-hdr {
+    font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--muted);
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; user-select: none; padding: 2px 0 7px;
+  }
+  .sub-section-hdr::after { content: '▾'; font-size: 0.75rem; transition: transform 0.2s; flex-shrink: 0; }
+  .sub-section.collapsed .sub-section-hdr::after { transform: rotate(-90deg); }
+  .sub-section.collapsed .sub-section-body { display: none; }
 
   /* ───── Form rows ───── */
   .form-row {
@@ -401,12 +491,31 @@
     gap: 10px;
   }
   .form-row:last-child { margin-bottom: 0; }
-  .form-row label {
+  .form-row label:not(.toggle) {
     font-size: 0.85rem;
     font-weight: 600;
     flex: 1;
     color: var(--text);
   }
+  .tip-wrap { display: inline-flex; align-items: center; }
+  .tip-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--border); color: var(--muted);
+    font-size: 0.65rem; font-weight: 700; font-style: normal;
+    cursor: default; margin-left: 5px; flex-shrink: 0; line-height: 1;
+  }
+  body.dark .tip-icon { background: var(--warm-gray); }
+  #tipFloat {
+    display: none; position: fixed;
+    background: var(--navy); color: #fff;
+    font-size: 0.72rem; font-weight: 400; line-height: 1.45;
+    padding: 6px 9px; border-radius: 6px;
+    max-width: 220px; z-index: 9999;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    pointer-events: none;
+  }
+  body.dark #tipFloat { background: #0a0f1c; }
   .panel hr {
     margin: 12px 0;
     border: none;
@@ -510,6 +619,25 @@
   }
   body.dark .radio-group input:checked + label { background: #1e2535; color: var(--gold-light); }
 
+  .emoji-set-btns { display: flex; flex-wrap: wrap; gap: 4px; }
+  .emoji-set-btn {
+    background: var(--warm-gray);
+    border: 2px solid transparent;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    color: var(--text);
+    line-height: 1.3;
+    transition: border-color 0.15s, background 0.15s;
+    font-family: inherit;
+  }
+  .emoji-set-btn:hover { border-color: var(--gold); }
+  .emoji-set-btn.active { border-color: var(--gold); background: var(--white); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+  .emoji-set-btn[data-set="none"] { font-weight: 600; color: var(--muted); }
+  body.dark .emoji-set-btn { background: #2a3349; }
+  body.dark .emoji-set-btn.active { background: #1e2535; }
+
   /* ───── Presets ───── */
   .preset-list {
     display: flex; flex-direction: column;
@@ -538,6 +666,52 @@
     text-align: center;
   }
 
+  /* ───── Schedule Sync ───── */
+  .schedule-row {
+    display: flex; align-items: center; gap: 5px;
+    margin-bottom: 6px;
+  }
+  .schedule-preset-sel {
+    flex: 1; min-width: 0;
+    font-size: 0.78rem; font-family: inherit;
+    padding: 3px 5px;
+    border: 1px solid var(--border); border-radius: 4px;
+    background: var(--white); color: var(--text);
+    cursor: pointer;
+  }
+  body.dark .schedule-preset-sel { background: var(--navy-deep); color: var(--text); border-color: var(--border); }
+  .schedule-time-input {
+    width: 82px; flex-shrink: 0;
+    font-size: 0.78rem; font-family: inherit;
+    padding: 3px 5px;
+    border: 1px solid var(--border); border-radius: 4px;
+    background: var(--white); color: var(--text);
+  }
+  body.dark .schedule-time-input { background: var(--navy-deep); color: var(--text); border-color: var(--border); }
+  .schedule-del-btn {
+    flex-shrink: 0; background: none; border: none;
+    font-size: 1rem; line-height: 1; cursor: pointer;
+    color: var(--muted); padding: 0 2px;
+  }
+  .schedule-del-btn:hover { color: #cc3333; }
+  .schedule-until-lbl { font-size: 0.72rem; color: var(--muted); flex-shrink: 0; }
+  .schedule-row.drag-over { border: 1px solid var(--gold); background: rgba(201,146,42,0.08); border-radius: 4px; }
+  .schedule-row.dragging  { opacity: 0.4; }
+  .saved-schedule-list { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+  .drag-handle {
+    cursor: grab; color: var(--muted); font-size: 0.85rem;
+    padding: 0 2px; flex-shrink: 0; line-height: 1; user-select: none;
+  }
+  .drag-handle:active { cursor: grabbing; }
+  .preset-item.drag-over { border-color: var(--gold); background: rgba(201,146,42,0.08); }
+  .preset-item.dragging  { opacity: 0.4; }
+  #scheduleCountdown {
+    display: none;
+    font-size: 0.75rem; color: var(--muted);
+    text-align: center; margin-top: 3px;
+    letter-spacing: 0.02em;
+  }
+
   /* ───── Editor toolbar ───── */
   .editor-toolbar {
     display: flex;
@@ -564,6 +738,7 @@
   }
   body.dark .ed-btn { background: var(--navy-deep); }
   .ed-btn:hover { background: var(--gold-light); color: var(--navy); }
+  .ed-sep { width: 1px; background: var(--border); align-self: stretch; margin: 1px 2px; flex-shrink: 0; }
   .ed-color {
     width: 32px; height: 28px;
     padding: 0;
@@ -590,6 +765,25 @@
   }
   body.dark .editor { background: var(--navy-deep); color: var(--text); }
   .editor:focus { border-color: var(--gold); }
+
+  /* ── Spoiler ── */
+  .spoiler {
+    background: #111;
+    color: transparent;
+    border-radius: 3px;
+    cursor: pointer;
+    user-select: none;
+    padding: 0 3px;
+    transition: background 0.25s, color 0.25s;
+    display: inline-block;
+  }
+  .spoiler.revealed { background: rgba(0,0,0,0.08); color: inherit; }
+  body.dark .spoiler.revealed { background: rgba(255,255,255,0.08); }
+  /* In the editor, always show spoiler text so teacher can read/edit it */
+  #dashEditor .spoiler { background: #c0392b33; color: inherit; cursor: text; user-select: text; }
+  /* Links */
+  #dashEditor a, .dash-text-display a { color: var(--gold); text-decoration: underline; cursor: pointer; }
+  body.dark #dashEditor a, body.dark .dash-text-display a { color: var(--gold-light); }
 
   /* ───── Font selector ───── */
   .font-options { display: flex; flex-direction: column; gap: 4px; }
@@ -630,6 +824,18 @@
   body.dark .font-opt.active .font-opt-preview { color: var(--gold-light); }
   .font-opt-name { font-size: 0.78rem; font-weight: 600; color: var(--text); }
 
+  /* ───── Nikkud color pickers ───── */
+  .color-pick-list { display: flex; flex-direction: column; gap: 3px; margin-top: 6px; }
+  .color-pick-row { display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+  .color-pick-ex { font-family: var(--heb-font); font-size: 1.15rem; direction: rtl; width: 26px; text-align: center; }
+  .color-pick-label { flex: 1; font-size: 0.78rem; color: var(--text); }
+  .color-pick-input { width: 28px; height: 22px; border: 1px solid var(--border); border-radius: 3px; cursor: pointer; padding: 0; }
+
+  /* ───── Display size slider ───── */
+  .size-row { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; margin-top: 8px; }
+  .size-row input[type=range] { flex: 1; accent-color: var(--gold); cursor: pointer; }
+  .size-val { min-width: 36px; font-size: 0.75rem; color: var(--muted); }
+
   /* ───── Fullscreen ───── */
   body.fullscreen header { display: none; }
   body.fullscreen .dashboard {
@@ -637,10 +843,26 @@
     padding: 40px;
     gap: 32px;
   }
+  #fsExitBtn {
+    display: none;
+    position: fixed;
+    top: 12px; right: 14px;
+    z-index: 200;
+    background: rgba(13,18,32,0.72);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+  }
+  #fsExitBtn:hover { background: rgba(13,18,32,0.92); }
+  body.fullscreen #fsExitBtn { display: block; }
   body.fullscreen .heb-date { font-size: 3.2rem; }
   body.fullscreen .current-time { font-size: 4.2rem; }
-  body.fullscreen .weather-emoji { font-size: 5.6rem; }
-  body.fullscreen .weather-temp { font-size: 3rem; }
+  body.fullscreen .weather-emoji { font-size: 4.2rem; }
+  body.fullscreen .weather-temp { font-size: 2.4rem; }
 
   /* ───── Responsive ───── */
   @media (max-width: 980px) {
@@ -668,25 +890,57 @@
     <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
     <button id="fsBtn" class="hbtn icon-btn" onclick="toggleFullscreen()" title="Fullscreen"></button>
   </div>
-</header><div class="dashboard">
+</header>
+<div id="zoomBar" style="background:var(--warm-gray);border-bottom:1px solid var(--border);padding:5px 20px;display:flex;align-items:center;gap:10px;font-size:0.78rem;color:var(--text);">
+  <span style="font-weight:600;white-space:nowrap;">🔍 Zoom</span>
+  <input type="range" id="zoomSlider" min="50" max="200" step="5" value="100" style="flex:1;accent-color:var(--gold);cursor:pointer;">
+  <span id="zoomLabel" style="white-space:nowrap;min-width:36px;">100%</span>
+  <button onclick="applyZoom(100)" style="font-size:0.7rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);cursor:pointer;">Reset</button>
+</div>
+<button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen">✕ Exit Fullscreen</button>
+<div class="dashboard">
   <!-- LEFT: Days -->
-  <div class="dash-col">
-    <div class="col-title">Days of the Week</div>
-    <div id="daysList"></div>
+  <div class="dash-col" id="dowCol">
+    <div class="col-title" id="dowColTitle">Days of the Week</div>
+    <div class="col-body" id="dowBody">
+      <div id="daysList"></div>
+    </div>
   </div><!-- CENTER: Date / Time / Custom Text --><div class="dash-col dash-center">
     <div id="dateTimeBlock" style="width:100%;">
       <div class="eng-date" id="engDate"></div>
       <div class="heb-date" id="hebDate"></div>
       <div class="current-time" id="currentTime"></div>
+      <div id="scheduleCountdown"></div>
     </div>
     <div id="dashTextWrap" style="display:none;width:100%;">
       <div id="dashTextDisplay" class="dash-text-display"></div>
     </div>
-  </div><!-- RIGHT: Weather --><div class="dash-col">
-    <div class="col-title">Weather</div>
-    <div id="weatherBlock" class="weather-block">
-      <div class="weather-loading">Loading weather…</div>
+  </div><!-- RIGHT: Weather --><div class="right-col-wrap">
+    <div class="dash-col" id="weatherCol">
+      <div class="col-title" id="weatherColTitle">Weather</div>
+      <div class="col-body" id="weatherBody">
+        <div id="weatherBlock" class="weather-block">
+          <div class="weather-loading">Loading weather…</div>
+        </div>
+        <div style="text-align:center;margin-top:6px;">
+          <button onclick="renderWeather()" title="Refresh weather"
+            style="font-size:0.68rem;padding:2px 8px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--muted);cursor:pointer;">↺ Refresh</button>
+        </div>
+      </div>
     </div>
+    <div id="videoSidebarSlot"></div>
+  </div>
+</div>
+<div id="videoBelowSlot"></div>
+<div id="videoPanel" style="display:none;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);">
+  <div id="videoPanelHeader" onclick="toggleVideoCollapse()" style="background:var(--navy);color:#fff;padding:7px 14px;display:flex;align-items:center;cursor:pointer;user-select:none;border-bottom:2px solid var(--gold);">
+    <span id="videoCollapseArrow" style="font-size:1rem;color:var(--gold-light);transition:transform 0.2s;flex-shrink:0;">▾</span>
+    <span id="videoHeaderLabel" style="font-family:'Libre Baskerville',serif;letter-spacing:0.08em;text-transform:uppercase;flex:1;text-align:center;">Video</span>
+    <span style="width:1rem;flex-shrink:0;"></span>
+  </div>
+  <div id="videoBody" style="padding:10px;">
+    <iframe id="videoIframe" src="" allowfullscreen
+      style="width:100%;aspect-ratio:16/9;border:none;border-radius:8px;display:block;background:#000;"></iframe>
   </div>
 </div><!-- ───── Settings drawer ───── --><div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
 <div class="settings-modal" id="settingsModal">
@@ -702,52 +956,139 @@
       <input type="text" id="locationInput" placeholder="City, e.g. New York" style="max-width:220px;">
       <button class="btn btn-xs" onclick="updateLocation()">Update</button>
     </div>
+    <div class="form-row" style="margin-top:4px;">
+      <button class="btn btn-xs" id="currentLocBtn" onclick="useCurrentLocation()" style="width:100%;">📍 Current Location</button>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-title">Display Options</div>
+  <div class="panel-body">
+    <div class="form-row">
+      <label>Column headers</label>
+      <div class="radio-group">
+        <input type="radio" name="headerLang" id="hl-he" value="he"><label for="hl-he">עִבְרִית</label>
+        <input type="radio" name="headerLang" id="hl-en" value="en"><label for="hl-en">English</label>
+        <input type="radio" name="headerLang" id="hl-none" value="none"><label for="hl-none">None</label>
+      </div>
+    </div>
+    <div class="size-row">
+      <label for="colTitleSizeSlider">Header size</label>
+      <input type="range" id="colTitleSizeSlider" min="0.5" max="1.8" step="0.05" value="0.78" oninput="setColTitleSize(this.value)">
+      <span class="size-val" id="colTitleSizeVal">0.78rem</span>
+      <button class="btn-xs" onclick="setColTitleSize(0.78)" title="Restore default">↺</button>
+    </div>
+    <div class="form-row" style="margin-top:8px;">
+      <label>Show text size options</label>
+      <label class="toggle"><input type="checkbox" id="showTextSizeOptions"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Hide zoom bar</label>
+      <label class="toggle"><input type="checkbox" id="hideZoomBar"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Show video embed</label>
+      <label class="toggle"><input type="checkbox" id="showVideoEmbed"><span class="slider"></span></label>
+    </div>
+    <div id="videoUrlRow" style="display:none;flex-direction:column;gap:8px;margin-top:4px;padding:8px;background:var(--cream);border:1px solid var(--border);border-radius:6px;">
+      <div style="display:flex;gap:14px;font-size:0.78rem;">
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+          <input type="radio" name="videoLayout" id="vlBelow" value="below" style="accent-color:var(--gold);"> Under dashboard
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+          <input type="radio" name="videoLayout" id="vlSidebar" value="sidebar" style="accent-color:var(--gold);"> In sidebar
+        </label>
+      </div>
+      <input type="text" id="videoUrlInput" placeholder="Paste YouTube URL…" style="width:100%;box-sizing:border-box;">
+      <button class="btn btn-xs" onclick="updateVideoEmbed()">Update Video</button>
+    </div>
   </div>
 </div>
 
 <div class="panel">
   <div class="panel-title">Date &amp; Time</div>
   <div class="panel-body">
-    <div class="form-row">
-      <label>English format</label>
-      <div class="radio-group">
-        <input type="radio" name="engDateFmt" id="ef-mdy" value="MDY"><label for="ef-mdy">M/D/Y</label>
-        <input type="radio" name="engDateFmt" id="ef-dmy" value="DMY"><label for="ef-dmy">D/M/Y</label>
-        <input type="radio" name="engDateFmt" id="ef-long" value="LONG"><label for="ef-long">Long</label>
+
+    <div class="sub-section">
+      <div class="sub-section-hdr">English Date</div>
+      <div class="sub-section-body">
+        <div class="form-row">
+          <label>Date format</label>
+          <div class="radio-group">
+            <input type="radio" name="engDateFmt" id="ef-mdy" value="MDY"><label for="ef-mdy">MM/DD/YYYY</label>
+            <input type="radio" name="engDateFmt" id="ef-dmy" value="DMY"><label for="ef-dmy">DD/MM/YYYY</label>
+            <input type="radio" name="engDateFmt" id="ef-long" value="LONG"><label for="ef-long">Long</label>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Show day of the week</label>
+          <label class="toggle"><input type="checkbox" id="showEngDOW"><span class="slider"></span></label>
+        </div>
+        <div class="size-row text-size-opt" style="display:none;">
+          <label for="engDateSizeSlider">Eng Date size</label>
+          <input type="range" id="engDateSizeSlider" min="0.5" max="3" step="0.05" value="1.35" oninput="setEngDateSize(this.value)">
+          <span class="size-val" id="engDateSizeVal">1.35rem</span>
+          <button class="btn-xs" onclick="setEngDateSize(1.35)" title="Restore default">↺</button>
+        </div>
+        <div class="form-row">
+          <label>Hide English date</label>
+          <label class="toggle"><input type="checkbox" id="hideEngDate"><span class="slider"></span></label>
+        </div>
       </div>
     </div>
-    <div class="form-row">
-      <label>Show weekday in English date</label>
-      <span class="toggle"><input type="checkbox" id="showEngDOW"><span class="slider"></span></span>
-    </div>
-    <div class="form-row">
-      <label>Hide English date</label>
-      <span class="toggle"><input type="checkbox" id="hideEngDate"><span class="slider"></span></span>
-    </div>
-    <hr>
-    <div class="form-row">
-      <label>Hebrew date</label>
-      <div class="radio-group">
-        <input type="radio" name="hebDateScript" id="hs-he" value="he"><label for="hs-he">עִבְרִית</label>
-        <input type="radio" name="hebDateScript" id="hs-translit" value="translit"><label for="hs-translit">A–Z</label>
+
+    <div class="sub-section">
+      <div class="sub-section-hdr">Hebrew Date</div>
+      <div class="sub-section-body">
+        <div class="form-row">
+          <label>Display</label>
+          <div class="radio-group">
+            <input type="radio" name="hebDateScript" id="hs-he" value="he"><label for="hs-he">עברית</label>
+            <input type="radio" name="hebDateScript" id="hs-translit" value="translit"><label for="hs-translit">English</label>
+            <input type="radio" name="hebDateScript" id="hs-both" value="both"><label for="hs-both">Both</label>
+          </div>
+        </div>
+        <div class="size-row text-size-opt" style="display:none;">
+          <label for="hebDateSizeSlider">Heb Date size</label>
+          <input type="range" id="hebDateSizeSlider" min="0.5" max="5" step="0.1" value="2.6" oninput="setHebDateSize(this.value)">
+          <span class="size-val" id="hebDateSizeVal">2.6rem</span>
+          <button class="btn-xs" onclick="setHebDateSize(2.6)" title="Restore default">↺</button>
+        </div>
+        <div class="form-row">
+          <label>Hide Hebrew date</label>
+          <label class="toggle"><input type="checkbox" id="hideHebDate"><span class="slider"></span></label>
+        </div>
       </div>
     </div>
-    <div class="form-row">
-      <label>Hide Hebrew date</label>
-      <span class="toggle"><input type="checkbox" id="hideHebDate"><span class="slider"></span></span>
-    </div>
-    <hr>
-    <div class="form-row">
-      <label>Time format</label>
-      <div class="radio-group">
-        <input type="radio" name="timeFmt" id="tf-12" value="12"><label for="tf-12">12-hr</label>
-        <input type="radio" name="timeFmt" id="tf-24" value="24"><label for="tf-24">24-hr</label>
+
+    <div class="sub-section">
+      <div class="sub-section-hdr">Time</div>
+      <div class="sub-section-body">
+        <div class="form-row">
+          <label>Time format</label>
+          <div class="radio-group">
+            <input type="radio" name="timeFmt" id="tf-12" value="12"><label for="tf-12">12-hr</label>
+            <input type="radio" name="timeFmt" id="tf-24" value="24"><label for="tf-24">24-hr</label>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Show seconds</label>
+          <label class="toggle"><input type="checkbox" id="showSeconds"><span class="slider"></span></label>
+        </div>
+        <div class="size-row text-size-opt" style="display:none;">
+          <label for="timeSizeSlider">Time size</label>
+          <input type="range" id="timeSizeSlider" min="0.5" max="6" step="0.1" value="3.4" oninput="setTimeSize(this.value)">
+          <span class="size-val" id="timeSizeVal">3.4rem</span>
+          <button class="btn-xs" onclick="setTimeSize(3.4)" title="Restore default">↺</button>
+        </div>
+        <div class="form-row">
+          <label>Hide time</label>
+          <label class="toggle"><input type="checkbox" id="hideTime"><span class="slider"></span></label>
+        </div>
       </div>
     </div>
-    <div class="form-row">
-      <label>Hide time</label>
-      <span class="toggle"><input type="checkbox" id="hideTime"><span class="slider"></span></span>
-    </div>
+
   </div>
 </div>
 
@@ -761,6 +1102,12 @@
         <input type="radio" name="tempUnit" id="tu-c" value="C"><label for="tu-c">°C</label>
       </div>
     </div>
+    <div class="size-row text-size-opt" style="display:none;">
+      <label for="tempSizeSlider">Temp size</label>
+      <input type="range" id="tempSizeSlider" min="0.5" max="4" step="0.1" value="2" oninput="setTempSize(this.value)">
+      <span class="size-val" id="tempSizeVal">2rem</span>
+      <button class="btn-xs" onclick="setTempSize(2)" title="Restore default">↺</button>
+    </div>
     <div class="form-row">
       <label>Label language</label>
       <div class="radio-group">
@@ -768,9 +1115,48 @@
         <input type="radio" name="weatherLabelLang" id="wl-en" value="en"><label for="wl-en">English</label>
       </div>
     </div>
+    <div class="size-row text-size-opt" style="display:none;">
+      <label for="weatherLabelSizeSlider">Label size</label>
+      <input type="range" id="weatherLabelSizeSlider" min="0.5" max="3" step="0.05" value="1.1" oninput="setWeatherLabelSize(this.value)">
+      <span class="size-val" id="weatherLabelSizeVal">1.1rem</span>
+      <button class="btn-xs" onclick="setWeatherLabelSize(1.1)" title="Restore default">↺</button>
+    </div>
     <div class="form-row">
-      <label>Hide weather</label>
-      <span class="toggle"><input type="checkbox" id="hideWeather"><span class="slider"></span></span>
+      <label>Simple weather description <span class="tip-wrap" data-tip="Limits description to: Sun, Clouds, Sun &amp; Clouds, Rain, Snow, or Fog — instead of full WMO detail."><i class="tip-icon">?</i></span></label>
+      <label class="toggle"><input type="checkbox" id="simpleWeatherDesc"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Hide temperature</label>
+      <label class="toggle"><input type="checkbox" id="hideTemperature"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Hide weather emoji</label>
+      <label class="toggle"><input type="checkbox" id="hideWeatherEmoji"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Hide High/Low</label>
+      <label class="toggle"><input type="checkbox" id="hideHighLow"><span class="slider"></span></label>
+    </div>
+    <div class="size-row text-size-opt" style="display:none;">
+      <label for="weatherHLSizeSlider">H/L size</label>
+      <input type="range" id="weatherHLSizeSlider" min="0.3" max="2" step="0.05" value="0.72" oninput="setWeatherHLSize(this.value)">
+      <span class="size-val" id="weatherHLSizeVal">0.72rem</span>
+      <button class="btn-xs" onclick="setWeatherHLSize(0.72)" title="Restore default">↺</button>
+    </div>
+    <div class="form-row">
+      <label>Hide weather description</label>
+      <label class="toggle"><input type="checkbox" id="hideWeatherDesc"><span class="slider"></span></label>
+    </div>
+    <div class="size-row text-size-opt" style="display:none;">
+      <label for="weatherDescSizeSlider">Description size</label>
+      <input type="range" id="weatherDescSizeSlider" min="0.4" max="3" step="0.05" value="1.05" oninput="setWeatherDescSize(this.value)">
+      <span class="size-val" id="weatherDescSizeVal">1.05rem</span>
+      <button class="btn-xs" onclick="setWeatherDescSize(1.05)" title="Restore default">↺</button>
+    </div>
+    <hr>
+    <div class="form-row">
+      <label>Hide weather panel</label>
+      <label class="toggle"><input type="checkbox" id="hideWeather"><span class="slider"></span></label>
     </div>
   </div>
 </div>
@@ -786,9 +1172,57 @@
         <input type="radio" name="dowLang" id="dl-en" value="en"><label for="dl-en">English</label>
       </div>
     </div>
+    <div class="size-row text-size-opt" style="display:none;">
+      <label for="dowDisplaySizeSlider">Display size</label>
+      <input type="range" id="dowDisplaySizeSlider" min="0.5" max="3" step="0.05" value="1.35" oninput="setDowDisplaySize(this.value)">
+      <span class="size-val" id="dowDisplaySizeVal">1.35rem</span>
+      <button class="btn-xs" onclick="setDowDisplaySize(1.35)" title="Restore default">↺</button>
+    </div>
     <div class="form-row">
-      <label>Yesterday/today/tomorrow markers</label>
-      <span class="toggle"><input type="checkbox" id="showYestTomorrow"><span class="slider"></span></span>
+      <label>Color days of the week</label>
+      <label class="toggle"><input type="checkbox" id="colorDays"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Show Yesterday marker</label>
+      <label class="toggle"><input type="checkbox" id="showYesterday"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Show Today marker</label>
+      <label class="toggle"><input type="checkbox" id="showToday"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Show Tomorrow marker</label>
+      <label class="toggle"><input type="checkbox" id="showTomorrow"><span class="slider"></span></label>
+    </div>
+    <div class="size-row text-size-opt" style="display:none;">
+      <label for="dowYTTSizeSlider">Y/T/T size</label>
+      <input type="range" id="dowYTTSizeSlider" min="0.3" max="2" step="0.05" value="0.72" oninput="setDowYTTSize(this.value)">
+      <span class="size-val" id="dowYTTSizeVal">0.72rem</span>
+      <button class="btn-xs" onclick="setDowYTTSize(0.72)" title="Restore default">↺</button>
+    </div>
+    <div class="form-row">
+      <label>Emoji sequence</label>
+      <div class="emoji-set-btns" id="emojiSetBtns">
+        <button class="emoji-set-btn" data-set="chick">🥚🐣🐔</button>
+        <button class="emoji-set-btn" data-set="city">🌇🏙️🌃</button>
+        <button class="emoji-set-btn" data-set="time">⏪️▶️⏩️</button>
+        <button class="emoji-set-btn" data-set="arrow">🔼⏹️🔽</button>
+        <button class="emoji-set-btn" data-set="plant">🌱🪴🌲</button>
+        <button class="emoji-set-btn" data-set="boy">👶👦🧔‍♂️</button>
+        <button class="emoji-set-btn" data-set="girl">👶👧👩</button>
+        <button class="emoji-set-btn" data-set="none">None</button>
+      </div>
+    </div>
+    <div class="size-row text-size-opt" style="display:none;">
+      <label for="dowEmojiSizeSlider">Emoji size</label>
+      <input type="range" id="dowEmojiSizeSlider" min="0.5" max="4" step="0.1" value="1.4" oninput="setDowEmojiSize(this.value)">
+      <span class="size-val" id="dowEmojiSizeVal">1.4rem</span>
+      <button class="btn-xs" onclick="setDowEmojiSize(1.4)" title="Restore default">↺</button>
+    </div>
+    <hr>
+    <div class="form-row">
+      <label>Hide Day of Week panel</label>
+      <label class="toggle"><input type="checkbox" id="hideDOW"><span class="slider"></span></label>
     </div>
   </div>
 </div>
@@ -796,26 +1230,38 @@
 <div class="panel">
   <div class="panel-title">Dashboard Text</div>
   <div class="panel-body">
-    <div class="form-row">
-      <label>Show custom text</label>
-      <span class="toggle"><input type="checkbox" id="enableDashText"><span class="slider"></span></span>
+    <div class="size-row">
+      <label for="dashTextSizeSlider">Display size</label>
+      <input type="range" id="dashTextSizeSlider" min="0.8" max="5" step="0.1" value="1.8" oninput="setDashTextSize(this.value)">
+      <span class="size-val" id="dashTextSizeVal">1.8rem</span>
     </div>
     <div class="editor-toolbar">
       <button class="ed-btn" onclick="fmt('bold')" type="button"><b>B</b></button>
       <button class="ed-btn" onclick="fmt('italic')" type="button"><i>I</i></button>
       <button class="ed-btn" onclick="fmt('underline')" type="button"><u>U</u></button>
-      <button class="ed-btn" onclick="setAlign('Right')" type="button">RTL</button>
-      <button class="ed-btn" onclick="setAlign('Center')" type="button">Ctr</button>
-      <button class="ed-btn" onclick="setAlign('Left')" type="button">LTR</button>
+      <button class="ed-btn" onclick="fmt('strikeThrough')" type="button"><s>S</s></button>
+      <span class="ed-sep"></span>
+      <button class="ed-btn" onclick="setAlign('Right')" type="button" title="Align right (RTL)"><svg width="14" height="11" viewBox="0 0 14 11" fill="currentColor"><rect x="0" y="0" width="14" height="1.5" rx="0.75"/><rect x="5" y="4" width="9" height="1.5" rx="0.75"/><rect x="2" y="8" width="12" height="1.5" rx="0.75"/></svg></button>
+      <button class="ed-btn" onclick="setAlign('Center')" type="button" title="Center"><svg width="14" height="11" viewBox="0 0 14 11" fill="currentColor"><rect x="0" y="0" width="14" height="1.5" rx="0.75"/><rect x="2.5" y="4" width="9" height="1.5" rx="0.75"/><rect x="1" y="8" width="12" height="1.5" rx="0.75"/></svg></button>
+      <button class="ed-btn" onclick="setAlign('Left')" type="button" title="Align left (LTR)"><svg width="14" height="11" viewBox="0 0 14 11" fill="currentColor"><rect x="0" y="0" width="14" height="1.5" rx="0.75"/><rect x="0" y="4" width="9" height="1.5" rx="0.75"/><rect x="0" y="8" width="12" height="1.5" rx="0.75"/></svg></button>
+      <span class="ed-sep"></span>
+      <button class="ed-btn" onclick="insertLink()" type="button" title="Insert link (or remove if cursor is inside one)">🔗</button>
+      <button class="ed-btn" onclick="insertSpoiler()" type="button" title="Wrap selection in spoiler (hidden until tapped)">Spoiler</button>
+      <span class="ed-sep"></span>
       <input type="color" class="ed-color" onchange="fmt('foreColor', this.value)" title="Text color">
       <select class="ed-select" onchange="fmt('fontSize', this.value)" title="Size">
-        <option value="3">Normal</option>
+        <option value="2">Small</option>
+        <option value="3" selected>Normal</option>
         <option value="5">Large</option>
         <option value="6">XL</option>
         <option value="7">XXL</option>
       </select>
     </div>
     <div id="dashEditor" class="editor" contenteditable="true" oninput="syncDashText()"></div>
+    <div class="form-row" style="margin-top:10px;">
+      <label>Hide dashboard text</label>
+      <label class="toggle"><input type="checkbox" id="hideDashText"><span class="slider"></span></label>
+    </div>
   </div>
 </div>
 
@@ -832,23 +1278,70 @@
       <button class="btn btn-xs btn-secondary" onclick="exportPresets()" style="flex:1;">Export</button>
       <button class="btn btn-xs btn-secondary" onclick="importPresets()" style="flex:1;">Import</button>
     </div>
-    <textarea id="presetBackupBox" placeholder="Paste backup JSON here, or click Export…" style="height:80px;font-family:monospace;font-size:0.72rem;"></textarea>
+    <div style="position:relative;">
+      <textarea id="presetBackupBox" placeholder="Paste backup JSON here, or click Export…" style="height:80px;font-family:monospace;font-size:0.72rem;width:100%;"></textarea>
+      <button onclick="copyPresetBackup()" id="presetCopyBtn" title="Copy" style="position:absolute;top:5px;right:5px;background:none;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:0.65rem;color:var(--muted);cursor:pointer;">Copy</button>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-title">Schedule Sync</div>
+  <div class="panel-body">
+    <div class="form-row" style="margin-bottom:12px;">
+      <label>Enable Schedule Sync</label>
+      <label class="toggle"><input type="checkbox" id="scheduleEnabled" onchange="toggleScheduleSync(this.checked)"><span class="slider"></span></label>
+    </div>
+    <div id="scheduleSyncBody" style="display:none;">
+      <div class="sub-section">
+        <div class="sub-section-hdr">Schedule Input</div>
+        <div class="sub-section-body">
+          <div id="scheduleRows"></div>
+          <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;">
+            <button class="btn-xs" onclick="addScheduleRow()">+ Add</button>
+            <button class="btn-xs btn-secondary" onclick="saveScheduleAs()">Save Schedule As…</button>
+          </div>
+        </div>
+      </div>
+      <div class="sub-section">
+        <div class="sub-section-hdr">Load Schedule</div>
+        <div class="sub-section-body">
+          <div class="saved-schedule-list" id="savedScheduleList"></div>
+        </div>
+      </div>
+      <div class="sub-section">
+        <div class="sub-section-hdr">Schedule Sync Options</div>
+        <div class="sub-section-body">
+          <div class="form-row">
+            <label>Show countdown to next class</label>
+            <label class="toggle"><input type="checkbox" id="scheduleShowCountdown" onchange="setScheduleCountdown(this.checked)"><span class="slider"></span></label>
+          </div>
+          <div class="form-row" id="countdownPresetNameRow" style="display:none;padding-left:16px;">
+            <label style="font-size:0.8rem;font-weight:500;color:var(--muted);">Show preset name</label>
+            <label class="toggle"><input type="checkbox" id="countdownShowPresetName" onchange="settings.countdownShowPresetName=this.checked;updateCountdown();saveSettingsToStorage();"><span class="slider"></span></label>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
 <div class="panel">
   <div class="panel-title">Hebrew Settings</div>
   <div class="panel-body">
-    <div style="margin-bottom:8px;font-size:0.85rem;font-weight:600;">Hebrew font</div>
-    <div class="font-options" id="fontOptions"></div>
-    <hr>
+    <div class="sub-section">
+      <div class="sub-section-hdr">Hebrew Font</div>
+      <div class="sub-section-body">
+        <div class="font-options" id="fontOptions"></div>
+      </div>
+    </div>
     <div class="form-row">
       <label>Show nikkud</label>
-      <span class="toggle"><input type="checkbox" id="showNikkud"><span class="slider"></span></span>
+      <label class="toggle"><input type="checkbox" id="showNikkud"><span class="slider"></span></label>
     </div>
     <div class="form-row">
       <label>Color-code nikkud</label>
-      <span class="toggle"><input type="checkbox" id="colorCodeNikkud"><span class="slider"></span></span>
+      <label class="toggle"><input type="checkbox" id="colorCodeNikkud"><span class="slider"></span></label>
     </div>
     <div class="form-row" id="colorModeRow" style="display:none;">
       <label>Color style</label>
@@ -858,26 +1351,38 @@
         <input type="radio" name="colorMode" id="cm-underline" value="underline"><label for="cm-underline">Underline</label>
       </div>
     </div>
+    <div class="color-pick-list" id="colorPickerList" style="display:none;"></div>
+    <button class="btn btn-xs btn-secondary" id="nikudResetBtn" onclick="resetNikudColors()" style="display:none;font-size:0.72rem;margin-top:4px;">↺ Reset vowel colors</button>
   </div>
 </div>
 </div>
 </div><script>
   /* ────────── CONSTANTS ────────── */
   const DAYS = [
-    {heb:'יוֹם רִאשׁוֹן',  eng:'Sunday',    cls:'day-sunday'},
-    {heb:'יוֹם שֵׁנִי',    eng:'Monday',    cls:''},
-    {heb:'יוֹם שְׁלִישִׁי', eng:'Tuesday',   cls:''},
-    {heb:'יוֹם רְבִיעִי',   eng:'Wednesday', cls:''},
-    {heb:'יוֹם חֲמִישִׁי',  eng:'Thursday',  cls:''},
-    {heb:'יוֹם שִׁישִּׁי',  eng:'Friday',    cls:''},
-    {heb:'יוֹם שַׁבָּת',    eng:'Saturday',  cls:'day-shabbat'},
+    {heb:'יוֹם רִאשוֹן',  eng:'Sunday',    bg:'#c62828'},
+    {heb:'יוֹם שֵנִי',    eng:'Monday',    bg:'#e65100'},
+    {heb:'יוֹם שְלִישִי', eng:'Tuesday',   bg:'#c8a000'},
+    {heb:'יוֹם רְבִיעִי',   eng:'Wednesday', bg:'#2e7d32'},
+    {heb:'יוֹם חֲמִישִי',  eng:'Thursday',  bg:'#1565c0'},
+    {heb:'יוֹם שִישִי',  eng:'Friday',    bg:'#1a237e'},
+    {heb:'יוֹם שַבָּת',    eng:'Saturday',  bg:'#6a1b9a'},
   ];
 
-  const HEB_MONTHS_HE = ['תִּשְׁרֵי','חֶשְׁוָן','כִּסְלֵו','טֵבֵת','שְׁבָט','אֲדָר','אֲדָר א׳','אֲדָר ב׳','נִיסָן','אִיָּר','סִיוָן','תַּמּוּז','אָב','אֱלוּל'];
+  const DOW_EMOJI_SETS = {
+    chick: { yest:'🥚',  today:'🐣',  tom:'🐔' },
+    city:  { yest:'🌇',  today:'🏙️', tom:'🌃' },
+    time:  { yest:'⏪️', today:'▶️',  tom:'⏩️' },
+    arrow: { yest:'🔼',  today:'⏹️', tom:'🔽' },
+    plant: { yest:'🌱',  today:'🪴',  tom:'🌲' },
+    boy:   { yest:'👶',  today:'👦',  tom:'🧔‍♂️' },
+    girl:  { yest:'👶',  today:'👧',  tom:'👩' },
+  };
+
+  const HEB_MONTHS_HE = ['תִּשְרֵי','חֶשְוָן','כִּסְלֵו','טֵבֵת','שְבָט','אֲדָר','אֲדָר א׳','אֲדָר ב׳','נִיסָן','אִיָּר','סִיוָן','תַּמּוּז','אָב','אֱלוּל'];
   const HEB_MONTHS_TRANSLIT = ['Tishrei','Cheshvan','Kislev','Tevet','Shevat','Adar','Adar I','Adar II','Nisan','Iyar','Sivan','Tammuz','Av','Elul'];
 
   const WEATHER_WMO = {
-    0:  {emoji:'☀️',  he:'שֶׁמֶשׁ',          en:'Clear'},
+    0:  {emoji:'☀️',  he:'שֶמֶש',          en:'Clear'},
     1:  {emoji:'🌤️', he:'מְעֻנָּן חֶלְקִית', en:'Partly Cloudy'},
     2:  {emoji:'⛅',  he:'מְעֻנָּן חֶלְקִית', en:'Partly Cloudy'},
     3:  {emoji:'☁️',  he:'עֲנָנִים',         en:'Overcast'},
@@ -886,21 +1391,40 @@
     51: {emoji:'🌦️', he:'טַפְטוּף',          en:'Drizzle'},
     53: {emoji:'🌦️', he:'טַפְטוּף',          en:'Drizzle'},
     55: {emoji:'🌦️', he:'טַפְטוּף',          en:'Drizzle'},
-    61: {emoji:'🌧️', he:'גֶּשֶׁם',           en:'Rain'},
-    63: {emoji:'🌧️', he:'גֶּשֶׁם',           en:'Rain'},
-    65: {emoji:'🌧️', he:'גֶּשֶׁם חָזָק',     en:'Heavy Rain'},
-    71: {emoji:'❄️',  he:'שֶׁלֶג',           en:'Snow'},
-    73: {emoji:'❄️',  he:'שֶׁלֶג',           en:'Snow'},
-    75: {emoji:'❄️',  he:'שֶׁלֶג חָזָק',     en:'Heavy Snow'},
-    77: {emoji:'❄️',  he:'שֶׁלֶג',           en:'Snow Grains'},
-    80: {emoji:'🌧️', he:'גֶּשֶׁם',           en:'Showers'},
-    81: {emoji:'🌧️', he:'גֶּשֶׁם',           en:'Showers'},
-    82: {emoji:'🌧️', he:'גֶּשֶׁם חָזָק',     en:'Heavy Showers'},
-    85: {emoji:'🌨️', he:'שֶׁלֶג',           en:'Snow Showers'},
-    86: {emoji:'🌨️', he:'שֶׁלֶג חָזָק',     en:'Snow Showers'},
+    61: {emoji:'🌧️', he:'גֶּשֶם',           en:'Rain'},
+    63: {emoji:'🌧️', he:'גֶּשֶם',           en:'Rain'},
+    65: {emoji:'🌧️', he:'גֶּשֶם חָזָק',     en:'Heavy Rain'},
+    71: {emoji:'❄️',  he:'שֶלֶג',           en:'Snow'},
+    73: {emoji:'❄️',  he:'שֶלֶג',           en:'Snow'},
+    75: {emoji:'❄️',  he:'שֶלֶג חָזָק',     en:'Heavy Snow'},
+    77: {emoji:'❄️',  he:'שֶלֶג',           en:'Snow Grains'},
+    80: {emoji:'🌧️', he:'גֶּשֶם',           en:'Showers'},
+    81: {emoji:'🌧️', he:'גֶּשֶם',           en:'Showers'},
+    82: {emoji:'🌧️', he:'גֶּשֶם חָזָק',     en:'Heavy Showers'},
+    85: {emoji:'🌨️', he:'שֶלֶג',           en:'Snow Showers'},
+    86: {emoji:'🌨️', he:'שֶלֶג חָזָק',     en:'Snow Showers'},
     95: {emoji:'⛈️', he:'סְעָרָה',          en:'Thunderstorm'},
     96: {emoji:'⛈️', he:'סְעָרָה',          en:'Thunderstorm'},
     99: {emoji:'⛈️', he:'סְעָרָה חֲזָקָה',  en:'Thunderstorm'},
+  };
+
+  const WEATHER_SIMPLE_MAP = {
+    0:'sun', 1:'sun', 2:'sunClouds', 3:'clouds',
+    45:'fog', 48:'fog',
+    51:'sunCloudsRain', 53:'sunCloudsRain', 55:'rain',
+    61:'rain', 63:'rain', 65:'rain',
+    80:'sunCloudsRain', 81:'rain', 82:'rain',
+    71:'snow', 73:'snow', 75:'snow', 77:'snow', 85:'snow', 86:'snow',
+    95:'rain', 96:'rain', 99:'rain',
+  };
+  const WEATHER_SIMPLE = {
+    sun:           { he:'שֶמֶש',                        en:'Sun' },
+    sunClouds:     { he:'שֶמֶש וַעֲנָנִים',             en:'Sun and Clouds' },
+    sunCloudsRain: { he:'שֶמֶש וַעֲנָנִים וְגֶשֶם',   en:'Sun, Clouds and Rain' },
+    rain:          { he:'גֶּשֶם',                        en:'Rain' },
+    clouds:        { he:'עֲנָנִים',                       en:'Clouds' },
+    snow:          { he:'שֶלֶג',                         en:'Snow' },
+    fog:           { he:'עֲרָפֶל',                        en:'Fog' },
   };
 
   const HEB_FONTS = [
@@ -954,6 +1478,22 @@
     'ֹ':'o','ֻ':'u','ְ':'sh'
   };
 
+  const VOWEL_COLOR_DEFS = [
+    { key:'a',       name:'Kamatz',      example:'\u05D0\u05B8' },
+    { key:'patah',   name:'Patach',      example:'\u05D0\u05B7' },
+    { key:'hpatah',  name:'H. Patach',   example:'\u05D0\u05B2' },
+    { key:'hkamatz', name:'H. Kamatz',   example:'\u05D0\u05B3' },
+    { key:'e',       name:'Segol',       example:'\u05D0\u05B6' },
+    { key:'hsegol',  name:'H. Segol',    example:'\u05D0\u05B1' },
+    { key:'tzere',   name:'Tzere',       example:'\u05D0\u05B5' },
+    { key:'i',       name:'Chirik',      example:'\u05D0\u05B4' },
+    { key:'o',       name:'Holam',       example:'\u05D0\u05B9' },
+    { key:'vcholam', name:'Vav Holam',   example:'\u05D5\u05B9' },
+    { key:'u',       name:'Kubutz',      example:'\u05D0\u05BB' },
+    { key:'shuruk',  name:'Shuruk',      example:'\u05D5\u05BC' },
+    { key:'sh',      name:'Shva',        example:'\u05D0\u05B0' },
+  ];
+
   const FS_ENTER = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>';
   const FS_EXIT  = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>';
 
@@ -966,20 +1506,61 @@
     hebDateScript: 'he',
     hideHebDate: false,
     timeFmt: '12',
+    showSeconds: false,
     hideTime: false,
     tempUnit: 'F',
     weatherLabelLang: 'he',
+    simpleWeatherDesc: false,
+    hideTemperature: false,
+    hideWeatherEmoji: false,
+    hideHighLow: false,
+    hideWeatherDesc: false,
     hideWeather: false,
     dowLang: 'he',
-    showYestTomorrow: true,
-    enableDashText: false,
+    showYesterday: true,
+    showToday: true,
+    showTomorrow: true,
+    dowEmojiSet: 'chick',
+    colorDays: true,
+    headerLang: 'he',
+    colTitleSize: 0.78,
+    hideDOW: false,
+    enableDashText: true,
     dashTextHTML: '',
     hebFont: 'Frank Ruhl Libre',
     showNikkud: true,
     colorCodeNikkud: false,
     colorCodingMode: 'letter',
+    nikudColorOverrides: {},
+    dashTextSize: 1.8,
+    zoomLevel: 100,
+    hideZoomBar: false,
+    showVideoEmbed: false,
+    videoEmbedUrl: '',
+    videoCollapsed: false,
+    videoLayout: 'below',
+    dowCollapsed: false,
+    weatherCollapsed: false,
+    scheduleEnabled: false,
+    scheduleShowCountdown: false,
+    countdownShowPresetName: true,
+    currentSchedule: [],
+    showTextSizeOptions: false,
+    engDateSize: 1.35,
+    hebDateSize: 2.6,
+    timeSize: 3.4,
+    tempSize: 2.0,
+    weatherLabelSize: 1.1,
+    weatherHLSize: 0.72,
+    weatherDescSize: 1.05,
+    dowDisplaySize: 1.35,
+    dowYTTSize: 0.72,
+    dowEmojiSize: 1.4,
   };
   let presets = {};
+  let savedSchedules = {};
+  let _lastScheduleKey = null;
+  let _savedEditorRange = null;
   let weatherCache = null;
   let weatherTimer = null;
   let clockInterval = null;
@@ -1086,11 +1667,12 @@
     return r;
   }
 
-  function formatHebDate(date) {
+  function formatHebDate(date, scriptOverride) {
     const jdn = gregorianToJDN(date.getFullYear(), date.getMonth() + 1, date.getDate());
     const heb = jdnToHebrew(jdn);
     const idx = monthIdx(heb.month, heb.year);
-    if (settings.hebDateScript === 'translit') {
+    const script = scriptOverride || settings.hebDateScript;
+    if (script === 'translit') {
       return `${heb.day} ${HEB_MONTHS_TRANSLIT[idx]} ${heb.year}`;
     }
     return `${numToHebLetters(heb.day)} ${HEB_MONTHS_HE[idx]} ${numToHebLetters(heb.year)}`;
@@ -1101,6 +1683,9 @@
   function stripNikkud(s) { return s.replace(NIKKUD_RE, ''); }
 
   function getNikudColor(key) {
+    if (settings.nikudColorOverrides && settings.nikudColorOverrides[key] !== undefined) {
+      return settings.nikudColorOverrides[key];
+    }
     return (document.body.classList.contains('dark') ? NIKUD_DEFAULTS_DARK : NIKUD_DEFAULTS_LIGHT)[key] || '#888';
   }
 
@@ -1151,6 +1736,171 @@
 
   function maybeStripNikkud(s) { return settings.showNikkud ? s : stripNikkud(s); }
 
+  /* ────────── NIKKUD COLOR PICKERS ────────── */
+  function initColorPickers() {
+    const list = document.getElementById('colorPickerList');
+    if (!list) return;
+    list.innerHTML = '';
+    VOWEL_COLOR_DEFS.forEach(def => {
+      const row = document.createElement('div');
+      row.className = 'color-pick-row';
+      const ex = document.createElement('span');
+      ex.className = 'color-pick-ex';
+      ex.textContent = def.example;
+      const lbl = document.createElement('span');
+      lbl.className = 'color-pick-label';
+      lbl.textContent = def.name;
+      const inp = document.createElement('input');
+      inp.type = 'color';
+      inp.className = 'color-pick-input';
+      inp.value = getNikudColor(def.key);
+      inp.addEventListener('input', () => {
+        if (!settings.nikudColorOverrides) settings.nikudColorOverrides = {};
+        settings.nikudColorOverrides[def.key] = inp.value;
+        if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); }
+      });
+      row.appendChild(ex);
+      row.appendChild(lbl);
+      row.appendChild(inp);
+      list.appendChild(row);
+    });
+  }
+  function resetNikudColors() {
+    settings.nikudColorOverrides = {};
+    initColorPickers();
+    if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); }
+  }
+
+  /* ────────── DASHBOARD TEXT SIZE ────────── */
+  function setColTitleSize(val) {
+    const v = parseFloat(val);
+    settings.colTitleSize = v;
+    document.querySelectorAll('.col-title').forEach(el => el.style.fontSize = v + 'rem');
+    const vh = document.getElementById('videoPanelHeader');
+    if (vh) vh.style.fontSize = v + 'rem';
+    const lbl = document.getElementById('colTitleSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
+    const sl = document.getElementById('colTitleSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setDashTextSize(val) {
+    const v = parseFloat(val);
+    settings.dashTextSize = v;
+    document.getElementById('dashTextDisplay').style.fontSize = v + 'rem';
+    const lbl = document.getElementById('dashTextSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(1) + 'rem';
+    const sl = document.getElementById('dashTextSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function toggleTextSizeOptions(show) {
+    document.querySelectorAll('.text-size-opt').forEach(el => {
+      el.style.display = show ? '' : 'none';
+    });
+  }
+
+  function setEngDateSize(val) {
+    const v = parseFloat(val);
+    settings.engDateSize = v;
+    document.documentElement.style.setProperty('--eng-date-size', v + 'rem');
+    const lbl = document.getElementById('engDateSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
+    const sl = document.getElementById('engDateSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setHebDateSize(val) {
+    const v = parseFloat(val);
+    settings.hebDateSize = v;
+    document.documentElement.style.setProperty('--heb-date-size', v + 'rem');
+    const lbl = document.getElementById('hebDateSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(1) + 'rem';
+    const sl = document.getElementById('hebDateSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setTimeSize(val) {
+    const v = parseFloat(val);
+    settings.timeSize = v;
+    document.documentElement.style.setProperty('--time-size', v + 'rem');
+    const lbl = document.getElementById('timeSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(1) + 'rem';
+    const sl = document.getElementById('timeSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setTempSize(val) {
+    const v = parseFloat(val);
+    settings.tempSize = v;
+    document.documentElement.style.setProperty('--temp-size', v + 'rem');
+    const lbl = document.getElementById('tempSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(1) + 'rem';
+    const sl = document.getElementById('tempSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setWeatherLabelSize(val) {
+    const v = parseFloat(val);
+    settings.weatherLabelSize = v;
+    document.documentElement.style.setProperty('--weather-label-size', v + 'rem');
+    const lbl = document.getElementById('weatherLabelSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
+    const sl = document.getElementById('weatherLabelSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setWeatherHLSize(val) {
+    const v = parseFloat(val);
+    settings.weatherHLSize = v;
+    document.documentElement.style.setProperty('--weather-hl-size', v + 'rem');
+    const lbl = document.getElementById('weatherHLSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
+    const sl = document.getElementById('weatherHLSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setWeatherDescSize(val) {
+    const v = parseFloat(val);
+    settings.weatherDescSize = v;
+    document.documentElement.style.setProperty('--weather-desc-size', v + 'rem');
+    const lbl = document.getElementById('weatherDescSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
+    const sl = document.getElementById('weatherDescSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setDowDisplaySize(val) {
+    const v = parseFloat(val);
+    settings.dowDisplaySize = v;
+    document.documentElement.style.setProperty('--dow-display-size', v + 'rem');
+    document.documentElement.style.setProperty('--dow-eng-size', (v * 0.5).toFixed(3) + 'rem');
+    const lbl = document.getElementById('dowDisplaySizeVal');
+    if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
+    const sl = document.getElementById('dowDisplaySizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setDowYTTSize(val) {
+    const v = parseFloat(val);
+    settings.dowYTTSize = v;
+    document.documentElement.style.setProperty('--dow-ytt-size', v + 'rem');
+    const lbl = document.getElementById('dowYTTSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
+    const sl = document.getElementById('dowYTTSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
+  function setDowEmojiSize(val) {
+    const v = parseFloat(val);
+    settings.dowEmojiSize = v;
+    document.documentElement.style.setProperty('--dow-emoji-size', v + 'rem');
+    const lbl = document.getElementById('dowEmojiSizeVal');
+    if (lbl) lbl.textContent = v.toFixed(1) + 'rem';
+    const sl = document.getElementById('dowEmojiSizeSlider');
+    if (sl && sl.value !== String(val)) sl.value = val;
+  }
+
   /* ────────── DATE / TIME DISPLAY ────────── */
   function updateDateTimeDisplay() {
     const now = new Date();
@@ -1160,16 +1910,16 @@
       engEl.style.display = 'none';
     } else {
       engEl.style.display = '';
-      let s = '';
+      const m = now.getMonth() + 1, d = now.getDate(), y = now.getFullYear();
+      let s;
       if (settings.engDateFmt === 'LONG') {
-        const opts = { year: 'numeric', month: 'long', day: 'numeric' };
-        if (settings.showEngDOW) opts.weekday = 'long';
-        s = now.toLocaleDateString('en-US', opts);
+        const monthName = now.toLocaleDateString('en-US', { month: 'long' });
+        const sfx = d === 1 || d === 21 || d === 31 ? 'st' : d === 2 || d === 22 ? 'nd' : d === 3 || d === 23 ? 'rd' : 'th';
+        s = `${monthName} ${d}${sfx}, ${y}`;
       } else {
-        const m = now.getMonth() + 1, d = now.getDate(), y = now.getFullYear();
         s = settings.engDateFmt === 'DMY' ? `${d}/${m}/${y}` : `${m}/${d}/${y}`;
-        if (settings.showEngDOW) s = now.toLocaleDateString('en-US', { weekday: 'long' }) + ', ' + s;
       }
+      if (settings.showEngDOW) s = now.toLocaleDateString('en-US', { weekday: 'long' }) + ', ' + s;
       engEl.textContent = s;
     }
 
@@ -1178,15 +1928,21 @@
       hebEl.style.display = 'none';
     } else {
       hebEl.style.display = '';
-      if (settings.hebDateScript === 'he') {
+      if (settings.hebDateScript === 'both') {
+        hebEl.innerHTML =
+          `<div style="direction:rtl;font-family:var(--heb-font);">${hebDisplay(formatHebDate(now,'he'))}</div>` +
+          `<div style="direction:ltr;font-family:'Libre Baskerville',serif;font-size:0.75em;opacity:0.8;">${formatHebDate(now,'translit')}</div>`;
+        hebEl.style.direction = '';
+        hebEl.style.fontFamily = '';
+      } else if (settings.hebDateScript === 'he') {
         hebEl.innerHTML = hebDisplay(formatHebDate(now));
+        hebEl.style.direction = 'rtl';
+        hebEl.style.fontFamily = 'var(--heb-font)';
       } else {
         hebEl.textContent = formatHebDate(now);
+        hebEl.style.direction = 'ltr';
+        hebEl.style.fontFamily = "'Libre Baskerville', serif";
       }
-      hebEl.style.direction = settings.hebDateScript === 'he' ? 'rtl' : 'ltr';
-      hebEl.style.fontFamily = settings.hebDateScript === 'he'
-        ? 'var(--heb-font)'
-        : "'Libre Baskerville', serif";
     }
 
     const timeEl = document.getElementById('currentTime');
@@ -1197,8 +1953,10 @@
       const opts = settings.timeFmt === '24'
         ? { hour: '2-digit', minute: '2-digit', hour12: false }
         : { hour: 'numeric', minute: '2-digit', hour12: true };
+      if (settings.showSeconds) opts.second = '2-digit';
       timeEl.textContent = now.toLocaleTimeString('en-US', opts);
     }
+    updateCountdown();
   }
 
   function startClock() {
@@ -1209,6 +1967,8 @@
 
   /* ────────── DAYS LIST ────────── */
   function renderDaysList() {
+    const dowCol = document.getElementById('dowCol');
+    if (dowCol) dowCol.style.display = settings.hideDOW ? 'none' : '';
     const today = new Date().getDay();
     const list = document.getElementById('daysList');
     list.innerHTML = '';
@@ -1217,47 +1977,79 @@
 
     DAYS.forEach((day, i) => {
       const item = document.createElement('div');
-      let cls = 'day-item ' + (day.cls || '');
+      let cls = 'day-item';
       if (i === today) cls += ' day-today';
-      item.className = cls.trim();
+      const useColor = settings.colorDays !== false;
+      if (useColor) cls += ' colored';
+      if (useColor) item.style.background = day.bg;
 
-      let html = '';
-      if (settings.dowLang === 'he' || settings.dowLang === 'both') {
-        html += `<div class="day-heb">${hebDisplay(day.heb)}</div>`;
+      // Determine badge content
+      let badgeEmoji = '', badgeText = '', badgeEngText = '';
+      const emojiSet = (settings.dowEmojiSet && settings.dowEmojiSet !== 'none')
+        ? (DOW_EMOJI_SETS[settings.dowEmojiSet] || DOW_EMOJI_SETS.chick) : null;
+      const lang = settings.dowLang || 'he';
+      if (i === today && settings.showToday) {
+        badgeEmoji = emojiSet ? emojiSet.today : '';
+        badgeText = lang === 'en' ? 'Today' : hebDisplay('הַיוֹם');
+        if (lang === 'both') badgeEngText = 'Today';
+      } else if (i === yest && settings.showYesterday) {
+        badgeEmoji = emojiSet ? emojiSet.yest : '';
+        badgeText = lang === 'en' ? 'Yesterday' : hebDisplay('אֶתְמוֹל הָיָה');
+        if (lang === 'both') badgeEngText = 'Yesterday';
+      } else if (i === tom && settings.showTomorrow) {
+        badgeEmoji = emojiSet ? emojiSet.tom : '';
+        badgeText = lang === 'en' ? 'Tomorrow' : hebDisplay('מָחָר יִהְיֶה');
+        if (lang === 'both') badgeEngText = 'Tomorrow';
       }
-      if (settings.dowLang === 'en' || settings.dowLang === 'both') {
-        html += `<div class="day-eng">${day.eng}</div>`;
+
+      if (lang === 'en') cls += ' badge-left';
+      item.className = cls;
+
+      let nameHtml = '<div class="day-main">';
+      if (lang === 'he' || lang === 'both')
+        nameHtml += `<div class="day-heb">${hebDisplay(day.heb)}</div>`;
+      if (lang === 'en' || lang === 'both')
+        nameHtml += `<div class="day-eng">${day.eng}</div>`;
+      nameHtml += '</div>';
+
+      let badgeHtml = '';
+      if (badgeText) {
+        badgeHtml = `<div class="day-badge">` +
+          (badgeEmoji ? `<div class="badge-emoji">${badgeEmoji}</div>` : '') +
+          `<div class="badge-text">${badgeText}</div>` +
+          (badgeEngText ? `<div class="badge-text-eng">${badgeEngText}</div>` : '') +
+          `</div>`;
       }
-      if (settings.showYestTomorrow) {
-        if (i === today)      html += `<div class="day-annot">🐣 ${hebDisplay('הַיּוֹם')}</div>`;
-        else if (i === yest)  html += `<div class="day-annot">🥚 ${hebDisplay('אֶתְמוֹל הָיָה')}</div>`;
-        else if (i === tom)   html += `<div class="day-annot">🐔 ${hebDisplay('מָחָר יִהְיֶה')}</div>`;
-      }
-      item.innerHTML = html;
+
+      item.innerHTML = nameHtml + badgeHtml;
       list.appendChild(item);
     });
   }
 
   /* ────────── WEATHER (Open-Meteo, no API key) ────────── */
   async function fetchWeather() {
-    if (settings.hideWeather) {
-      document.getElementById('weatherBlock').innerHTML = '';
-      return;
-    }
+    const weatherCol = document.getElementById('weatherCol');
+    if (weatherCol) weatherCol.style.display = settings.hideWeather ? 'none' : '';
+    if (settings.hideWeather) return;
     const block = document.getElementById('weatherBlock');
     block.innerHTML = '<div class="weather-loading">Loading weather…</div>';
     try {
-      const geoRes = await fetch(
-        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(settings.location)}&count=1`
-      );
-      const geo = await geoRes.json();
-      if (!geo.results || !geo.results.length) {
-        block.innerHTML = `<div class="weather-loading">Location "${settings.location}" not found.</div>`;
-        return;
+      let place;
+      if (settings._geoCoords) {
+        place = settings._geoCoords;
+      } else {
+        const geoRes = await fetch(
+          `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(settings.location)}&count=1`
+        );
+        const geo = await geoRes.json();
+        if (!geo.results || !geo.results.length) {
+          block.innerHTML = `<div class="weather-loading">Location "${settings.location}" not found.</div>`;
+          return;
+        }
+        place = geo.results[0];
       }
-      const place = geo.results[0];
       const wRes = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,weathercode`
+        `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,weathercode&daily=temperature_2m_max,temperature_2m_min&timezone=auto`
       );
       const wData = await wRes.json();
       weatherCache = { data: wData, place };
@@ -1265,6 +2057,42 @@
     } catch (e) {
       block.innerHTML = '<div class="weather-loading">Weather unavailable</div>';
     }
+  }
+
+  async function useCurrentLocation() {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by this browser.');
+      return;
+    }
+    const btn = document.getElementById('currentLocBtn');
+    btn.textContent = '…';
+    btn.disabled = true;
+    navigator.geolocation.getCurrentPosition(async pos => {
+      const { latitude, longitude } = pos.coords;
+      try {
+        const r = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+        );
+        const d = await r.json();
+        const city = d.address?.city || d.address?.town || d.address?.village || d.address?.county || 'Current Location';
+        const country = d.address?.country || '';
+        settings._geoCoords = { latitude, longitude, name: city, country };
+        document.getElementById('locationInput').value = city;
+        settings.location = city;
+        await fetchWeather();
+        saveSettingsToStorage();
+      } catch (e) {
+        settings._geoCoords = { latitude, longitude, name: 'Current Location', country: '' };
+        await fetchWeather();
+      } finally {
+        btn.textContent = '📍 Current Location';
+        btn.disabled = false;
+      }
+    }, err => {
+      btn.textContent = '📍 Current Location';
+      btn.disabled = false;
+      alert('Could not get location: ' + (err.message || 'Permission denied'));
+    });
   }
 
   function renderWeather() {
@@ -1280,17 +2108,35 @@
     const code = data.current.weathercode;
     const w = WEATHER_WMO[code] || { emoji: '🌤️', he: 'מֶזֶג אֲוִיר', en: 'Weather' };
     const isHe = settings.weatherLabelLang === 'he';
-    const label = isHe ? hebDisplay(w.he) : w.en;
+    let label;
+    if (settings.simpleWeatherDesc) {
+      const sk = WEATHER_SIMPLE_MAP[code] || 'clouds';
+      label = isHe ? hebDisplay(WEATHER_SIMPLE[sk].he) : WEATHER_SIMPLE[sk].en;
+    } else {
+      label = isHe ? hebDisplay(w.he) : w.en;
+    }
     let descriptor;
     if (isHe) {
       descriptor = hebDisplay(tempC > 25 ? 'חָם' : tempC < 15 ? 'קַר' : 'נָעִים');
     } else {
       descriptor = tempC > 25 ? 'Hot' : tempC < 15 ? 'Cold' : 'Pleasant';
     }
+    let hlHtml = '';
+    if (!settings.hideHighLow && data.daily) {
+      const maxC = data.daily.temperature_2m_max?.[0];
+      const minC = data.daily.temperature_2m_min?.[0];
+      if (maxC !== undefined && minC !== undefined) {
+        const toDisplay = c => settings.tempUnit === 'F'
+          ? Math.round(c * 9 / 5 + 32) + '°'
+          : Math.round(c) + '°';
+        hlHtml = `<div class="weather-highlow">H: ${toDisplay(maxC)} · L: ${toDisplay(minC)}</div>`;
+      }
+    }
     block.innerHTML = `
-      <div class="weather-emoji">${w.emoji}</div>
-      <div class="weather-temp">${tempStr}</div>
-      <div class="weather-label ${isHe ? '' : 'ltr'}">${label}</div>
+      ${settings.hideWeatherEmoji ? '' : `<div class="weather-emoji">${w.emoji}</div>`}
+      ${settings.hideTemperature ? '' : `<div class="weather-temp">${tempStr}</div>`}
+      ${hlHtml}
+      ${settings.hideWeatherDesc ? '' : `<div class="weather-label ${isHe ? '' : 'ltr'}">${label}</div>`}
       <div class="weather-descriptor ${isHe ? '' : 'ltr'}">${descriptor}</div>
       <div class="weather-city">${place.name}${place.country ? ', ' + place.country : ''}</div>
     `;
@@ -1306,6 +2152,7 @@
     const v = document.getElementById('locationInput').value.trim();
     if (!v) return;
     settings.location = v;
+    delete settings._geoCoords;
     saveSettingsToStorage();
     fetchWeather();
   }
@@ -1322,6 +2169,89 @@
     saveSettingsToStorage();
   }
 
+  function extractYouTubeId(url) {
+    const m = url.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : null;
+  }
+
+  function applyVideoCollapse(collapsed, instant) {
+    const body  = document.getElementById('videoBody');
+    const arrow = document.getElementById('videoCollapseArrow');
+    if (instant) body.style.transition = 'none';
+    body.classList.toggle('vcollapsed', !!collapsed);
+    if (arrow) arrow.style.transform = collapsed ? 'rotate(-90deg)' : '';
+    if (instant) requestAnimationFrame(() => { body.style.transition = ''; });
+  }
+
+  function toggleVideoCollapse() {
+    settings.videoCollapsed = !settings.videoCollapsed;
+    applyVideoCollapse(settings.videoCollapsed, false);
+    saveSettingsToStorage();
+  }
+
+  function setVideoLayout(layout) {
+    const panel  = document.getElementById('videoPanel');
+    const iframe = document.getElementById('videoIframe');
+    panel.style.border       = '1px solid var(--border)';
+    panel.style.borderRadius = '12px';
+    panel.style.boxShadow    = 'var(--shadow-sm)';
+    if (layout === 'sidebar') {
+      document.getElementById('videoSidebarSlot').appendChild(panel);
+      panel.style.width  = '';
+      panel.style.margin = '';
+      // iframe fills card height — aspect-ratio handled by CSS
+      iframe.style.aspectRatio = '';
+    } else {
+      const slot = document.getElementById('videoBelowSlot');
+      slot.parentNode.insertBefore(panel, slot.nextSibling);
+      panel.style.width  = '';
+      panel.style.margin = '0 28px 28px';
+      // restore 16:9 aspect ratio for full-width below mode
+      iframe.style.aspectRatio = '16/9';
+    }
+  }
+
+  function applyVideoEmbed(show, url) {
+    const panel  = document.getElementById('videoPanel');
+    const iframe = document.getElementById('videoIframe');
+    if (!show) { panel.style.display = 'none'; return; }
+    const id = url ? extractYouTubeId(url) : null;
+    if (id) {
+      // Always set src — empty src="" is resolved to the page URL by browsers
+      iframe.src = 'https://www.youtube.com/embed/' + id;
+      setVideoLayout(settings.videoLayout || 'below');
+      panel.style.display = 'block';
+      applyVideoCollapse(settings.videoCollapsed, true); // instant on load
+    } else {
+      panel.style.display = 'none';
+    }
+  }
+
+  function updateVideoEmbed() {
+    const url = document.getElementById('videoUrlInput').value.trim();
+    settings.videoEmbedUrl = url;
+    applyVideoEmbed(settings.showVideoEmbed, url);
+    saveSettingsToStorage();
+  }
+
+  function toggleVideoUrlRow(show) {
+    const row = document.getElementById('videoUrlRow');
+    row.style.display = show ? 'flex' : 'none';
+  }
+
+  function applyZoom(val) {
+    val = Math.min(200, Math.max(50, val));
+    document.querySelector('.dashboard').style.zoom = val / 100;
+    document.getElementById('zoomLabel').textContent = val + '%';
+    document.getElementById('zoomSlider').value = val;
+    settings.zoomLevel = val;
+    saveSettingsToStorage();
+  }
+
+  function toggleZoomBar(show) {
+    document.getElementById('zoomBar').style.display = show ? '' : 'none';
+  }
+
   function syncFormToSettings() {
     const $ = id => document.getElementById(id);
     $('locationInput').value = settings.location;
@@ -1332,62 +2262,210 @@
     $('hideHebDate').checked = settings.hideHebDate;
     document.querySelector(`input[name="timeFmt"][value="${settings.timeFmt}"]`).checked = true;
     $('hideTime').checked = settings.hideTime;
+    $('showSeconds').checked = !!settings.showSeconds;
     document.querySelector(`input[name="tempUnit"][value="${settings.tempUnit}"]`).checked = true;
     document.querySelector(`input[name="weatherLabelLang"][value="${settings.weatherLabelLang}"]`).checked = true;
+    $('hideTemperature').checked = !!settings.hideTemperature;
+    $('hideWeatherEmoji').checked = settings.hideWeatherEmoji;
+    $('hideHighLow').checked = !!settings.hideHighLow;
+    $('hideWeatherDesc').checked = settings.hideWeatherDesc;
+    $('simpleWeatherDesc').checked = settings.simpleWeatherDesc;
     $('hideWeather').checked = settings.hideWeather;
     document.querySelector(`input[name="dowLang"][value="${settings.dowLang}"]`).checked = true;
-    $('showYestTomorrow').checked = settings.showYestTomorrow;
-    $('enableDashText').checked = settings.enableDashText;
+    $('colorDays').checked = settings.colorDays !== false;
+    $('showYesterday').checked = settings.showYesterday;
+    $('showToday').checked = settings.showToday;
+    $('showTomorrow').checked = settings.showTomorrow;
+    const activeSet = settings.dowEmojiSet || 'chick';
+    document.querySelectorAll('.emoji-set-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.set === activeSet);
+    });
+    document.querySelector(`input[name="headerLang"][value="${settings.headerLang || 'he'}"]`).checked = true;
+    setColTitleSize(settings.colTitleSize || 0.78);
+    const showTso = !!settings.showTextSizeOptions;
+    $('showTextSizeOptions').checked = showTso;
+    toggleTextSizeOptions(showTso);
+    setEngDateSize(settings.engDateSize || 1.35);
+    setHebDateSize(settings.hebDateSize || 2.6);
+    setTimeSize(settings.timeSize || 3.4);
+    setTempSize(settings.tempSize || 2.0);
+    setWeatherLabelSize(settings.weatherLabelSize || 1.1);
+    setWeatherHLSize(settings.weatherHLSize || 0.72);
+    setWeatherDescSize(settings.weatherDescSize || 1.05);
+    setDowDisplaySize(settings.dowDisplaySize || 1.35);
+    setDowYTTSize(settings.dowYTTSize || 0.72);
+    setDowEmojiSize(settings.dowEmojiSize || 1.4);
+    $('hideDOW').checked = settings.hideDOW;
+    $('hideDashText').checked = !settings.enableDashText;
+    $('hideZoomBar').checked = settings.hideZoomBar;
+    $('showVideoEmbed').checked = !!settings.showVideoEmbed;
+    $('videoUrlInput').value = settings.videoEmbedUrl || '';
+    toggleVideoUrlRow(!!settings.showVideoEmbed);
+    const vlRadio = document.querySelector(`input[name="videoLayout"][value="${settings.videoLayout || 'below'}"]`);
+    if (vlRadio) vlRadio.checked = true;
     $('showNikkud').checked = settings.showNikkud;
     $('colorCodeNikkud').checked = settings.colorCodeNikkud;
     const cmr = $('colorModeRow');
     if (cmr) cmr.style.display = settings.colorCodeNikkud ? 'flex' : 'none';
     const cmRadio = document.querySelector(`input[name="colorMode"][value="${settings.colorCodingMode}"]`);
     if (cmRadio) cmRadio.checked = true;
+    const cpl = $('colorPickerList');
+    if (cpl) { cpl.style.display = settings.colorCodeNikkud ? 'flex' : 'none'; cpl.style.flexDirection = 'column'; }
+    const nrb = $('nikudResetBtn');
+    if (nrb) nrb.style.display = settings.colorCodeNikkud ? 'inline-block' : 'none';
+    if (settings.colorCodeNikkud) initColorPickers();
+    setDashTextSize(settings.dashTextSize || 1.8);
+    const schedEnabled = !!settings.scheduleEnabled;
+    $('scheduleEnabled').checked = schedEnabled;
+    const ssBody = $('scheduleSyncBody');
+    if (ssBody) ssBody.style.display = schedEnabled ? '' : 'none';
+    $('scheduleShowCountdown').checked = !!settings.scheduleShowCountdown;
+    $('countdownShowPresetName').checked = settings.countdownShowPresetName !== false;
+    const cpnRow = $('countdownPresetNameRow');
+    if (cpnRow) cpnRow.style.display = settings.scheduleShowCountdown ? '' : 'none';
+    if (schedEnabled) { renderScheduleRows(); renderSavedSchedules(); }
   }
 
   function wireFormListeners() {
     const refreshAll = () => { updateDateTimeDisplay(); renderDaysList(); renderWeather(); };
     document.querySelectorAll('input[name="engDateFmt"]').forEach(r =>
-      r.addEventListener('change', () => { settings.engDateFmt = r.value; updateDateTimeDisplay(); }));
-    document.getElementById('showEngDOW').addEventListener('change', e => { settings.showEngDOW = e.target.checked; updateDateTimeDisplay(); });
-    document.getElementById('hideEngDate').addEventListener('change', e => { settings.hideEngDate = e.target.checked; updateDateTimeDisplay(); });
+      r.addEventListener('change', () => { settings.engDateFmt = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
+    document.getElementById('showEngDOW').addEventListener('change', e => { settings.showEngDOW = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
+    document.getElementById('hideEngDate').addEventListener('change', e => { settings.hideEngDate = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
     document.querySelectorAll('input[name="hebDateScript"]').forEach(r =>
-      r.addEventListener('change', () => { settings.hebDateScript = r.value; updateDateTimeDisplay(); }));
-    document.getElementById('hideHebDate').addEventListener('change', e => { settings.hideHebDate = e.target.checked; updateDateTimeDisplay(); });
+      r.addEventListener('change', () => { settings.hebDateScript = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
+    document.getElementById('hideHebDate').addEventListener('change', e => { settings.hideHebDate = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
     document.querySelectorAll('input[name="timeFmt"]').forEach(r =>
-      r.addEventListener('change', () => { settings.timeFmt = r.value; updateDateTimeDisplay(); }));
-    document.getElementById('hideTime').addEventListener('change', e => { settings.hideTime = e.target.checked; updateDateTimeDisplay(); });
+      r.addEventListener('change', () => { settings.timeFmt = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
+    document.getElementById('hideTime').addEventListener('change', e => { settings.hideTime = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
+    document.getElementById('showSeconds').addEventListener('change', e => { settings.showSeconds = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
     document.querySelectorAll('input[name="tempUnit"]').forEach(r =>
-      r.addEventListener('change', () => { settings.tempUnit = r.value; renderWeather(); }));
+      r.addEventListener('change', () => { settings.tempUnit = r.value; renderWeather(); saveSettingsToStorage(); }));
     document.querySelectorAll('input[name="weatherLabelLang"]').forEach(r =>
-      r.addEventListener('change', () => { settings.weatherLabelLang = r.value; renderWeather(); }));
+      r.addEventListener('change', () => { settings.weatherLabelLang = r.value; renderWeather(); saveSettingsToStorage(); }));
+    document.getElementById('hideWeatherEmoji').addEventListener('change', e => {
+      settings.hideWeatherEmoji = e.target.checked; renderWeather(); saveSettingsToStorage();
+    });
+    document.getElementById('hideWeatherDesc').addEventListener('change', e => {
+      settings.hideWeatherDesc = e.target.checked; renderWeather(); saveSettingsToStorage();
+    });
+    document.getElementById('simpleWeatherDesc').addEventListener('change', e => {
+      settings.simpleWeatherDesc = e.target.checked; renderWeather(); saveSettingsToStorage();
+    });
+    document.getElementById('hideTemperature').addEventListener('change', e => {
+      settings.hideTemperature = e.target.checked; renderWeather(); saveSettingsToStorage();
+    });
+    document.getElementById('hideHighLow').addEventListener('change', e => {
+      settings.hideHighLow = e.target.checked; renderWeather(); saveSettingsToStorage();
+    });
     document.getElementById('hideWeather').addEventListener('change', e => {
       settings.hideWeather = e.target.checked;
-      if (e.target.checked) document.getElementById('weatherBlock').innerHTML = '';
-      else fetchWeather();
+      const wCol = document.getElementById('weatherCol');
+      if (wCol) wCol.style.display = e.target.checked ? 'none' : '';
+      if (!e.target.checked) fetchWeather();
+      saveSettingsToStorage();
     });
     document.querySelectorAll('input[name="dowLang"]').forEach(r =>
-      r.addEventListener('change', () => { settings.dowLang = r.value; renderDaysList(); }));
-    document.getElementById('showYestTomorrow').addEventListener('change', e => { settings.showYestTomorrow = e.target.checked; renderDaysList(); });
-    document.getElementById('showNikkud').addEventListener('change', e => { settings.showNikkud = e.target.checked; refreshAll(); });
+      r.addEventListener('change', () => { settings.dowLang = r.value; renderDaysList(); saveSettingsToStorage(); }));
+    document.getElementById('colorDays').addEventListener('change', e => { settings.colorDays = e.target.checked; renderDaysList(); saveSettingsToStorage(); });
+    document.getElementById('showYesterday').addEventListener('change', e => { settings.showYesterday = e.target.checked; renderDaysList(); saveSettingsToStorage(); });
+    document.getElementById('showToday').addEventListener('change', e => { settings.showToday = e.target.checked; renderDaysList(); saveSettingsToStorage(); });
+    document.getElementById('showTomorrow').addEventListener('change', e => { settings.showTomorrow = e.target.checked; renderDaysList(); saveSettingsToStorage(); });
+    document.querySelectorAll('.emoji-set-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        settings.dowEmojiSet = btn.dataset.set;
+        document.querySelectorAll('.emoji-set-btn').forEach(b => b.classList.toggle('active', b === btn));
+        renderDaysList(); saveSettingsToStorage();
+      });
+    });
+    document.getElementById('showNikkud').addEventListener('change', e => { settings.showNikkud = e.target.checked; refreshAll(); saveSettingsToStorage(); });
     document.getElementById('colorCodeNikkud').addEventListener('change', e => {
       settings.colorCodeNikkud = e.target.checked;
-      document.getElementById('colorModeRow').style.display = e.target.checked ? 'flex' : 'none';
-      refreshAll();
+      const on = e.target.checked;
+      document.getElementById('colorModeRow').style.display = on ? 'flex' : 'none';
+      document.getElementById('colorPickerList').style.display = on ? 'flex' : 'none';
+      document.getElementById('nikudResetBtn').style.display = on ? 'inline-block' : 'none';
+      if (on) initColorPickers();
+      refreshAll(); saveSettingsToStorage();
     });
     document.querySelectorAll('input[name="colorMode"]').forEach(r =>
-      r.addEventListener('change', () => { settings.colorCodingMode = r.value; refreshAll(); }));
-    document.getElementById('enableDashText').addEventListener('change', e => toggleDashText(e.target.checked));
+      r.addEventListener('change', () => { settings.colorCodingMode = r.value; refreshAll(); saveSettingsToStorage(); }));
+    document.querySelectorAll('input[name="headerLang"]').forEach(r =>
+      r.addEventListener('change', () => { settings.headerLang = r.value; updateColTitles(); saveSettingsToStorage(); }));
+    document.getElementById('colTitleSizeSlider').addEventListener('input', e => { setColTitleSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('showTextSizeOptions').addEventListener('change', e => {
+      settings.showTextSizeOptions = e.target.checked;
+      toggleTextSizeOptions(e.target.checked);
+      saveSettingsToStorage();
+    });
+    document.getElementById('engDateSizeSlider').addEventListener('input', e => { setEngDateSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('hebDateSizeSlider').addEventListener('input', e => { setHebDateSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('timeSizeSlider').addEventListener('input', e => { setTimeSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('tempSizeSlider').addEventListener('input', e => { setTempSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('weatherLabelSizeSlider').addEventListener('input', e => { setWeatherLabelSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('weatherHLSizeSlider').addEventListener('input', e => { setWeatherHLSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('weatherDescSizeSlider').addEventListener('input', e => { setWeatherDescSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('dowDisplaySizeSlider').addEventListener('input', e => { setDowDisplaySize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('dowYTTSizeSlider').addEventListener('input', e => { setDowYTTSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('dowEmojiSizeSlider').addEventListener('input', e => { setDowEmojiSize(e.target.value); saveSettingsToStorage(); });
+    document.getElementById('hideDOW').addEventListener('change', e => {
+      settings.hideDOW = e.target.checked;
+      document.getElementById('dowCol').style.display = e.target.checked ? 'none' : '';
+      saveSettingsToStorage();
+    });
+    document.getElementById('hideDashText').addEventListener('change', e => toggleDashText(!e.target.checked));
+    document.getElementById('hideZoomBar').addEventListener('change', e => {
+      settings.hideZoomBar = e.target.checked;
+      toggleZoomBar(!e.target.checked);
+      saveSettingsToStorage();
+    });
+    document.getElementById('showVideoEmbed').addEventListener('change', e => {
+      settings.showVideoEmbed = e.target.checked;
+      toggleVideoUrlRow(e.target.checked);
+      applyVideoEmbed(e.target.checked, settings.videoEmbedUrl);
+      saveSettingsToStorage();
+    });
+    document.querySelectorAll('input[name="videoLayout"]').forEach(r =>
+      r.addEventListener('change', () => {
+        settings.videoLayout = r.value;
+        if (settings.showVideoEmbed) setVideoLayout(r.value);
+        saveSettingsToStorage();
+      }));
+    document.getElementById('zoomSlider').addEventListener('input', e => applyZoom(+e.target.value));
+    document.getElementById('dashTextDisplay').addEventListener('click', e => {
+      const sp = e.target.closest('.spoiler');
+      if (!sp) return;
+      if (!sp.classList.contains('revealed')) {
+        e.preventDefault(); sp.classList.add('revealed'); e.stopPropagation();
+      } else if (!e.target.closest('a')) {
+        sp.classList.remove('revealed'); e.stopPropagation();
+      }
+      // revealed + clicking a link → fall through to default
+    });
   }
 
   function applySettings(s) {
+    // Preserve schedule configuration — it must never be overwritten by loading a display preset
+    const savedSchedule = {
+      scheduleEnabled:        settings.scheduleEnabled,
+      scheduleShowCountdown:  settings.scheduleShowCountdown,
+      countdownShowPresetName: settings.countdownShowPresetName,
+      currentSchedule:        settings.currentSchedule,
+    };
     Object.assign(settings, s);
+    Object.assign(settings, savedSchedule);
     setHebFont(settings.hebFont);
     syncFormToSettings();
     document.getElementById('dashEditor').innerHTML = settings.dashTextHTML || '';
     syncDashText();
     toggleDashText(settings.enableDashText);
+    setDashTextSize(settings.dashTextSize || 1.8);
+    setColTitleSize(settings.colTitleSize || 0.78);
+    applyZoom(settings.zoomLevel || 100);
+    toggleZoomBar(!settings.hideZoomBar);
+    applyVideoEmbed(settings.showVideoEmbed, settings.videoEmbedUrl);
+    applyColCollapse('dowCol', !!settings.dowCollapsed);
+    applyColCollapse('weatherCol', !!settings.weatherCollapsed);
     updateDateTimeDisplay();
     renderDaysList();
     renderWeather();
@@ -1405,14 +2483,26 @@
   function loadSettingsFromStorage() {
     try {
       const saved = JSON.parse(localStorage.getItem('hebrewDashboard_settings'));
-      if (saved) Object.assign(settings, saved);
+      if (saved) {
+        Object.assign(settings, saved);
+        if (saved.showDOWEmojis === false) settings.dowEmojiSet = 'none';
+        delete settings.showDOWEmojis;
+      } else {
+        Object.assign(settings, DEFAULT_PRESET['Default']);
+      }
     } catch (e) {}
   }
 
   /* ────────── PRESETS ────────── */
+  const DEFAULT_PRESET = {"Default":{"location":"New York","engDateFmt":"MDY","showEngDOW":true,"hideEngDate":false,"hebDateScript":"translit","hideHebDate":false,"timeFmt":"12","hideTime":false,"tempUnit":"F","weatherLabelLang":"he","simpleWeatherDesc":false,"hideWeatherEmoji":false,"hideWeatherDesc":false,"hideWeather":false,"dowLang":"he","showYesterday":true,"showToday":true,"showTomorrow":true,"dowEmojiSet":"chick","colorDays":true,"headerLang":"he","hideDOW":false,"enableDashText":true,"dashTextHTML":"<div>This dashboard has support for <b>bold</b>, <i>italics</i>, <u>underline</u> and <strike>strikethrough</strike>. You can insert <a href=\"https://google.com\" target=\"_blank\" rel=\"noopener noreferrer\">links</a>.</div><div><br></div><div style=\"text-align: center;\">You can center text.</div><div>Change the <font size=\"6\">size</font>.</div><div>And you can also <span class=\"spoiler\">hide spoilers</span>. (Click the box.)</div><div><br></div><div>Click the gear icon at the top to edit this text and change how this dashboard works!</div>","hebFont":"Frank Ruhl Libre","showNikkud":true,"colorCodeNikkud":false,"colorCodingMode":"letter","nikudColorOverrides":{},"dashTextSize":1.8,"showYestTomorrow":true}};
+
   function loadPresets() {
     try { presets = JSON.parse(localStorage.getItem('hebrewDashboard_presets')) || {}; }
     catch (e) { presets = {}; }
+    if (Object.keys(presets).length === 0) {
+      Object.assign(presets, DEFAULT_PRESET);
+      savePresetsStorage();
+    }
   }
   function savePresetsStorage() { localStorage.setItem('hebrewDashboard_presets', JSON.stringify(presets)); }
 
@@ -1429,12 +2519,49 @@
     applySettings(presets[name]);
     saveSettingsToStorage();
   }
+  function overwritePreset(name) {
+    if (!confirm(`Overwrite preset "${name}" with current settings?`)) return;
+    presets[name] = getSettings();
+    savePresetsStorage();
+  }
   function deletePreset(name) {
     if (!confirm(`Delete preset "${name}"?`)) return;
     delete presets[name];
     savePresetsStorage();
     renderPresets();
   }
+  function makeSortable(listEl, getKeys, reorderFn, itemSel) {
+    itemSel = itemSel || '.preset-item';
+    let dragSrc = null;
+    listEl.querySelectorAll(itemSel).forEach(item => {
+      item.addEventListener('dragstart', e => {
+        dragSrc = item;
+        item.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      item.addEventListener('dragend', () => {
+        item.classList.remove('dragging');
+        listEl.querySelectorAll(itemSel).forEach(i => i.classList.remove('drag-over'));
+      });
+      item.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        listEl.querySelectorAll(itemSel).forEach(i => i.classList.remove('drag-over'));
+        if (item !== dragSrc) item.classList.add('drag-over');
+      });
+      item.addEventListener('drop', e => {
+        e.preventDefault();
+        if (!dragSrc || dragSrc === item) return;
+        const keys = getKeys();
+        const fromIdx = [...listEl.querySelectorAll(itemSel)].indexOf(dragSrc);
+        const toIdx   = [...listEl.querySelectorAll(itemSel)].indexOf(item);
+        const reordered = [...keys];
+        reordered.splice(toIdx, 0, reordered.splice(fromIdx, 1)[0]);
+        reorderFn(reordered);
+      });
+    });
+  }
+
   function renderPresets() {
     const list = document.getElementById('presetList');
     list.innerHTML = '';
@@ -1446,37 +2573,405 @@
     names.forEach(name => {
       const item = document.createElement('div');
       item.className = 'preset-item';
+      item.draggable = true;
       const safe = name.replace(/'/g, "\\'");
       item.innerHTML = `
+        <span class="drag-handle" title="Drag to reorder">⠿</span>
         <span class="preset-name"></span>
         <button class="btn btn-xs" onclick="loadPreset('${safe}')">Load</button>
+        <button class="btn btn-xs btn-secondary" onclick="overwritePreset('${safe}')" title="Overwrite with current settings">↺</button>
         <button class="btn btn-xs btn-secondary" onclick="deletePreset('${safe}')" title="Delete">×</button>
       `;
       item.querySelector('.preset-name').textContent = name;
       list.appendChild(item);
     });
+    makeSortable(list, () => Object.keys(presets), reordered => {
+      const newPresets = {};
+      reordered.forEach(k => { newPresets[k] = presets[k]; });
+      presets = newPresets;
+      savePresetsStorage();
+      renderPresets();
+    });
   }
   function exportPresets() {
-    document.getElementById('presetBackupBox').value = JSON.stringify(presets, null, 2);
+    const blob = { presets, savedSchedules };
+    document.getElementById('presetBackupBox').value = JSON.stringify(blob, null, 2);
+  }
+  function copyPresetBackup() {
+    const box = document.getElementById('presetBackupBox');
+    const btn = document.getElementById('presetCopyBtn');
+    if (!box.value) return;
+    navigator.clipboard.writeText(box.value).catch(() => { box.select(); document.execCommand('copy'); });
+    btn.textContent = '✓'; setTimeout(() => btn.textContent = 'Copy', 1500);
   }
   function importPresets() {
     try {
       const v = document.getElementById('presetBackupBox').value;
       const parsed = JSON.parse(v);
-      Object.assign(presets, parsed);
+      if (parsed.presets) {
+        Object.assign(presets, parsed.presets);
+        if (parsed.savedSchedules) Object.assign(savedSchedules, parsed.savedSchedules);
+      } else {
+        Object.assign(presets, parsed);
+      }
       savePresetsStorage();
+      saveSchedulesStorage();
       renderPresets();
-      alert('Presets imported.');
+      renderSavedSchedules();
+      alert('Imported successfully.');
     } catch (e) { alert('Invalid JSON.'); }
   }
 
+  /* ────────── SCHEDULE SYNC ────────── */
+  function saveSchedulesStorage() {
+    localStorage.setItem('hebrewDashboard_schedules', JSON.stringify(savedSchedules));
+  }
+  function loadSchedulesStorage() {
+    try { savedSchedules = JSON.parse(localStorage.getItem('hebrewDashboard_schedules')) || {}; }
+    catch (e) { savedSchedules = {}; }
+  }
+
+  function timeToMins(t) {
+    if (!t) return Infinity;
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
+  }
+
+  function getPresetOptions(selectedName) {
+    return Object.keys(presets).map(name =>
+      `<option value="${name.replace(/"/g, '&quot;')}"${name === selectedName ? ' selected' : ''}>${name}</option>`
+    ).join('');
+  }
+
+  function renderScheduleRows() {
+    const container = document.getElementById('scheduleRows');
+    if (!container) return;
+    const rows = settings.currentSchedule || [];
+    if (!rows.length) {
+      container.innerHTML = '<div style="font-size:0.75rem;color:var(--muted);font-style:italic;padding:4px 0;">No entries yet — click + Add.</div>';
+      return;
+    }
+    container.innerHTML = '';
+    rows.forEach((entry, i) => {
+      const row = document.createElement('div');
+      row.className = 'schedule-row';
+      row.draggable = true;
+      row.innerHTML =
+        `<span class="drag-handle" title="Drag to reorder">⠿</span>` +
+        `<select class="schedule-preset-sel" onchange="updateScheduleEntry(${i},'preset',this.value)">${getPresetOptions(entry.preset)}</select>` +
+        `<span class="schedule-until-lbl">until</span>` +
+        `<input type="time" class="schedule-time-input" value="${entry.until || ''}" onchange="updateScheduleEntry(${i},'until',this.value)">` +
+        `<button class="schedule-del-btn" title="Remove" onclick="removeScheduleRow(${i})">×</button>`;
+      container.appendChild(row);
+    });
+    makeSortable(container, () => [...settings.currentSchedule], reordered => {
+      settings.currentSchedule = reordered;
+      _lastScheduleKey = null;
+      saveSettingsToStorage();
+      renderScheduleRows();
+    }, '.schedule-row');
+  }
+
+  function addScheduleRow() {
+    if (!settings.currentSchedule) settings.currentSchedule = [];
+    const firstPreset = Object.keys(presets)[0] || '';
+    settings.currentSchedule.push({ preset: firstPreset, until: '' });
+    renderScheduleRows();
+    saveSettingsToStorage();
+  }
+
+  function removeScheduleRow(i) {
+    settings.currentSchedule.splice(i, 1);
+    _lastScheduleKey = null;
+    renderScheduleRows();
+    saveSettingsToStorage();
+  }
+
+  function updateScheduleEntry(i, field, value) {
+    if (!settings.currentSchedule[i]) return;
+    settings.currentSchedule[i][field] = value;
+    _lastScheduleKey = null;
+    saveSettingsToStorage();
+  }
+
+  function saveScheduleAs() {
+    const rows = settings.currentSchedule || [];
+    if (!rows.length) { alert('Add at least one schedule entry first.'); return; }
+    const name = prompt('Schedule name:');
+    if (!name || !name.trim()) return;
+    savedSchedules[name.trim()] = JSON.parse(JSON.stringify(rows));
+    saveSchedulesStorage();
+    renderSavedSchedules();
+  }
+
+  function renderSavedSchedules() {
+    const list = document.getElementById('savedScheduleList');
+    if (!list) return;
+    const names = Object.keys(savedSchedules);
+    if (!names.length) {
+      list.innerHTML = '<div style="font-size:0.75rem;color:var(--muted);font-style:italic;padding:4px 0;">No saved schedules yet.</div>';
+      return;
+    }
+    list.innerHTML = '';
+    names.forEach(name => {
+      const item = document.createElement('div');
+      item.className = 'preset-item';
+      item.draggable = true;
+      const safe = name.replace(/'/g, "\\'");
+      item.innerHTML = `
+        <span class="drag-handle" title="Drag to reorder">⠿</span>
+        <span class="preset-name"></span>
+        <button class="btn btn-xs" onclick="loadSavedSchedule('${safe}')">Load</button>
+        <button class="btn btn-xs btn-secondary" onclick="overwriteSavedSchedule('${safe}')" title="Overwrite with current schedule">↺</button>
+        <button class="btn btn-xs btn-secondary" onclick="deleteSavedSchedule('${safe}')" title="Delete">×</button>
+      `;
+      item.querySelector('.preset-name').textContent = name;
+      list.appendChild(item);
+    });
+    makeSortable(list, () => Object.keys(savedSchedules), reordered => {
+      const newSched = {};
+      reordered.forEach(k => { newSched[k] = savedSchedules[k]; });
+      savedSchedules = newSched;
+      saveSchedulesStorage();
+      renderSavedSchedules();
+    });
+  }
+
+  function loadSavedSchedule(name) {
+    if (!savedSchedules[name]) return;
+    settings.currentSchedule = JSON.parse(JSON.stringify(savedSchedules[name]));
+    _lastScheduleKey = null;
+    renderScheduleRows();
+    saveSettingsToStorage();
+  }
+
+  function overwriteSavedSchedule(name) {
+    if (!confirm(`Overwrite schedule "${name}" with the current schedule?`)) return;
+    savedSchedules[name] = JSON.parse(JSON.stringify(settings.currentSchedule || []));
+    saveSchedulesStorage();
+  }
+
+  function deleteSavedSchedule(name) {
+    if (!confirm(`Delete schedule "${name}"?`)) return;
+    delete savedSchedules[name];
+    saveSchedulesStorage();
+    renderSavedSchedules();
+  }
+
+  function toggleScheduleSync(enabled) {
+    settings.scheduleEnabled = enabled;
+    const body = document.getElementById('scheduleSyncBody');
+    if (body) body.style.display = enabled ? '' : 'none';
+    if (enabled) { renderScheduleRows(); renderSavedSchedules(); }
+    _lastScheduleKey = null;
+    saveSettingsToStorage();
+  }
+
+  function setScheduleCountdown(enabled) {
+    settings.scheduleShowCountdown = enabled;
+    const row = document.getElementById('countdownPresetNameRow');
+    if (row) row.style.display = enabled ? '' : 'none';
+    updateCountdown();
+    saveSettingsToStorage();
+  }
+
+  function checkSchedule() {
+    if (!settings.scheduleEnabled || !settings.currentSchedule?.length) return;
+    const now = new Date();
+    const nowMins = now.getHours() * 60 + now.getMinutes();
+    const sorted = [...settings.currentSchedule]
+      .filter(e => e.preset && e.until)
+      .sort((a, b) => timeToMins(a.until) - timeToMins(b.until));
+    const active = sorted.find(e => timeToMins(e.until) > nowMins);
+    if (!active) return;
+    const key = active.preset + '|' + active.until;
+    if (key !== _lastScheduleKey && presets[active.preset]) {
+      _lastScheduleKey = key;
+      applySettings(presets[active.preset]);
+    }
+  }
+
+  function updateCountdown() {
+    const el = document.getElementById('scheduleCountdown');
+    if (!el) return;
+    if (!settings.scheduleEnabled || !settings.scheduleShowCountdown || !settings.currentSchedule?.length) {
+      el.style.display = 'none'; return;
+    }
+    const now = new Date();
+    const nowMins = now.getHours() * 60 + now.getMinutes();
+    const sorted = [...settings.currentSchedule]
+      .filter(e => e.preset && e.until)
+      .sort((a, b) => timeToMins(a.until) - timeToMins(b.until));
+    if (!sorted.length) { el.style.display = 'none'; return; }
+
+    // Find the current active period (first whose until > now)
+    const currentIdx = sorted.findIndex(e => timeToMins(e.until) > nowMins);
+
+    let targetEntry, diffMins, isTomorrow = false;
+    if (currentIdx === -1) {
+      // All periods done today — wrap to tomorrow's first entry
+      targetEntry = sorted[0];
+      diffMins = (24 * 60 - nowMins) + timeToMins(targetEntry.until);
+      isTomorrow = true;
+    } else {
+      // Time until current period ends = when next period begins
+      diffMins = timeToMins(sorted[currentIdx].until) - nowMins;
+      const nextIdx = currentIdx + 1;
+      if (nextIdx < sorted.length) {
+        targetEntry = sorted[nextIdx];
+      } else {
+        // Current period is the last one today — next is tomorrow's first
+        targetEntry = sorted[0];
+        isTomorrow = true;
+      }
+    }
+
+    const h = Math.floor(diffMins / 60), m = diffMins % 60;
+    const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
+    const suffix = isTomorrow ? ' (tomorrow)' : '';
+    const label = settings.countdownShowPresetName !== false
+      ? `Next: ${targetEntry.preset}${suffix} in ${timeStr}`
+      : `Next class${suffix} in ${timeStr}`;
+    el.textContent = label;
+    el.style.display = 'block';
+  }
+
   /* ────────── EDITOR ────────── */
+  function restoreEditorFocus() {
+    const ed = document.getElementById('dashEditor');
+    ed.focus();
+    if (_savedEditorRange) {
+      const sel = window.getSelection();
+      if (sel) { sel.removeAllRanges(); sel.addRange(_savedEditorRange); }
+    }
+  }
   function fmt(cmd, val = null) {
-    document.getElementById('dashEditor').focus();
+    restoreEditorFocus();
     document.execCommand(cmd, false, val);
     syncDashText();
   }
-  function setAlign(dir) { fmt('justify' + dir); }
+  function setAlign(dir) {
+    restoreEditorFocus();
+    const ed = document.getElementById('dashEditor');
+    const alignVal = { Left: 'left', Center: 'center', Right: 'right' }[dir];
+    if (!alignVal) return;
+    const sel = window.getSelection();
+    if (!sel || !sel.rangeCount) return;
+    const range = sel.getRangeAt(0);
+
+    // Return the direct child of `ed` that contains `node`
+    function editorBlock(node) {
+      let n = node.nodeType === Node.TEXT_NODE ? node.parentNode : node;
+      while (n && n.parentNode !== ed) n = n.parentNode;
+      return (n && n !== ed) ? n : null;
+    }
+
+    const startBlock = editorBlock(range.startContainer);
+    // When a drag-selection ends between block children, endContainer is the
+    // editor element itself and endOffset is the index of the next child.
+    // The last *included* child is at endOffset-1.
+    let endBlock = editorBlock(range.endContainer);
+    if (!endBlock && range.endContainer === ed) {
+      const idx = range.endOffset - 1;
+      if (idx >= 0) endBlock = ed.childNodes[idx];
+    }
+
+    if (!startBlock) {
+      // Bare text with no block wrapper — wrap everything once
+      const div = document.createElement('div');
+      div.style.textAlign = alignVal;
+      while (ed.firstChild) div.appendChild(ed.firstChild);
+      ed.appendChild(div);
+      syncDashText();
+      return;
+    }
+
+    // Align every direct child of the editor between start and end
+    const children = Array.from(ed.childNodes);
+    const from = children.indexOf(startBlock);
+    const to   = endBlock ? children.indexOf(endBlock) : from;
+    for (let i = Math.min(from, to); i <= Math.max(from, to); i++) {
+      const child = children[i];
+      if (child.nodeType === Node.ELEMENT_NODE) {
+        child.style.textAlign = alignVal;
+      } else if (child.nodeType === Node.TEXT_NODE && child.textContent.trim()) {
+        const div = document.createElement('div');
+        div.style.textAlign = alignVal;
+        ed.insertBefore(div, child);
+        div.appendChild(child);
+      }
+    }
+    syncDashText();
+  }
+  function insertLink() {
+    restoreEditorFocus();
+    const ed = document.getElementById('dashEditor');
+    const sel = window.getSelection();
+    if (!sel || !sel.rangeCount) return;
+    const existingAnchor = sel.anchorNode?.parentElement?.closest('a');
+    if (existingAnchor) {
+      document.execCommand('unlink', false, null);
+      syncDashText();
+      return;
+    }
+    const url = prompt('Enter URL:', 'https://');
+    if (!url || !url.trim()) return;
+    const href = url.trim();
+    const range = sel.getRangeAt(0);
+    const a = document.createElement('a');
+    a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    if (range.collapsed) {
+      a.textContent = href;
+      range.insertNode(a);
+    } else {
+      try { range.surroundContents(a); }
+      catch(e) { a.appendChild(range.extractContents()); range.insertNode(a); }
+    }
+    syncDashText();
+  }
+  function insertSpoiler() {
+    restoreEditorFocus();
+    const sel = window.getSelection();
+    if (!sel || !sel.rangeCount) return;
+    const range = sel.getRangeAt(0);
+    const nodeEl = n => n?.nodeType === 3 ? n.parentElement : n;
+    // Collect all spoilers that overlap the selection
+    const ed = document.getElementById('dashEditor');
+    const overlappingSpoilers = [];
+    ed.querySelectorAll('.spoiler').forEach(sp => {
+      const r = document.createRange();
+      r.selectNode(sp);
+      if (range.compareBoundaryPoints(Range.END_TO_START, r) < 0 &&
+          range.compareBoundaryPoints(Range.START_TO_END, r) > 0) {
+        overlappingSpoilers.push(sp);
+      }
+    });
+    // Also check if anchor/focus node is inside a spoiler not fully in range
+    const anchorSpoiler = nodeEl(sel.anchorNode)?.closest('.spoiler');
+    const focusSpoiler  = nodeEl(sel.focusNode)?.closest('.spoiler');
+    [anchorSpoiler, focusSpoiler].forEach(sp => {
+      if (sp && !overlappingSpoilers.includes(sp)) overlappingSpoilers.push(sp);
+    });
+    if (overlappingSpoilers.length > 0) {
+      overlappingSpoilers.forEach(sp => {
+        const parent = sp.parentNode;
+        while (sp.firstChild) parent.insertBefore(sp.firstChild, sp);
+        parent.removeChild(sp);
+      });
+      syncDashText();
+      return;
+    }
+    if (range.collapsed) return;
+    const span = document.createElement('span');
+    span.className = 'spoiler';
+    try {
+      range.surroundContents(span);
+    } catch(e) {
+      span.appendChild(range.extractContents());
+      range.insertNode(span);
+    }
+    syncDashText();
+  }
   function syncDashText() {
     const ed = document.getElementById('dashEditor');
     document.getElementById('dashTextDisplay').innerHTML = ed.innerHTML;
@@ -1485,8 +2980,43 @@
   function toggleDashText(on) {
     settings.enableDashText = !!on;
     document.getElementById('dashTextWrap').style.display = on ? 'block' : 'none';
-    const cb = document.getElementById('enableDashText');
-    if (cb) cb.checked = !!on;
+    const cb = document.getElementById('hideDashText');
+    if (cb) cb.checked = !on;
+  }
+
+  function applyColCollapse(colId, collapsed) {
+    document.getElementById(colId).classList.toggle('collapsed', collapsed);
+  }
+
+  function toggleColCollapse(colId, settingKey) {
+    settings[settingKey] = !settings[settingKey];
+    applyColCollapse(colId, settings[settingKey]);
+    saveSettingsToStorage();
+  }
+
+  function updateColTitles() {
+    const lang = settings.headerLang || 'he';
+    const dowTitle = document.getElementById('dowColTitle');
+    const wxTitle = document.getElementById('weatherColTitle');
+    if (!dowTitle || !wxTitle) return;
+    if (lang === 'none') {
+      dowTitle.style.display = 'none';
+      wxTitle.style.display = 'none';
+    } else {
+      dowTitle.style.display = '';
+      wxTitle.style.display = '';
+      const isHeb = lang === 'he';
+      dowTitle.style.direction = isHeb ? 'rtl' : '';
+      wxTitle.style.direction = isHeb ? 'rtl' : '';
+      dowTitle.innerHTML = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('אֵיזֶה יוֹם הַיוֹם?') : 'Days of the Week'}</span><span></span>`;
+      wxTitle.innerHTML  = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('מַה יֵש בַּחוּץ?') : 'Weather'}</span><span></span>`;
+    }
+    const vLabel = document.getElementById('videoHeaderLabel');
+    if (vLabel) {
+      const isHebV = (settings.headerLang || 'he') === 'he';
+      vLabel.textContent = isHebV ? 'וִידֵאוֹ' : 'Video';
+      vLabel.style.direction = isHebV ? 'rtl' : '';
+    }
   }
 
   /* ────────── HEBREW FONT ────────── */
@@ -1522,7 +3052,7 @@
         btn.dataset.fontName = font.name;
         btn.innerHTML =
           `<span class="font-opt-preview" style="font-family:${font.family};">אֶרֶץ</span>` +
-          `<span class="font-opt-name">${font.name}</span>`;
+          `<span class="font-opt-name">${font.name}${font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}</span>`;
         btn.onclick = () => setHebFont(font.name);
         loadHebFont(font);
         opts.appendChild(btn);
@@ -1572,12 +3102,16 @@
     document.querySelectorAll('.panel-title').forEach(t => {
       t.addEventListener('click', () => t.parentElement.classList.toggle('collapsed'));
     });
+    document.querySelectorAll('.sub-section-hdr').forEach(h => {
+      h.addEventListener('click', () => h.parentElement.classList.toggle('collapsed'));
+    });
   }
 
   /* ────────── INIT ────────── */
   document.addEventListener('DOMContentLoaded', () => {
     loadSettingsFromStorage();
     loadPresets();
+    loadSchedulesStorage();
     initDark();
     initFontSelector();
     initPanelCollapse();
@@ -1587,11 +3121,26 @@
     document.getElementById('dashEditor').innerHTML = settings.dashTextHTML || '';
     syncDashText();
     toggleDashText(settings.enableDashText);
+    applyZoom(settings.zoomLevel || 100);
+    toggleZoomBar(!settings.hideZoomBar);
+    applyVideoEmbed(settings.showVideoEmbed, settings.videoEmbedUrl);
+    applyColCollapse('dowCol', !!settings.dowCollapsed);
+    applyColCollapse('weatherCol', !!settings.weatherCollapsed);
+    document.getElementById('dowColTitle').addEventListener('click', () => toggleColCollapse('dowCol', 'dowCollapsed'));
+    document.getElementById('weatherColTitle').addEventListener('click', () => toggleColCollapse('weatherCol', 'weatherCollapsed'));
+    document.getElementById('dashEditor').addEventListener('blur', () => {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) _savedEditorRange = sel.getRangeAt(0).cloneRange();
+      saveSettingsToStorage();
+    });
+    updateColTitles();
     document.getElementById('fsBtn').innerHTML = FS_ENTER;
     startClock();
     renderDaysList();
     scheduleWeatherRefresh();
     renderPresets();
+    checkSchedule();
+    setInterval(checkSchedule, 30000);
     // Re-render days at midnight
     const msToMidnight = (() => {
       const n = new Date();
@@ -1610,5 +3159,46 @@
       closeSettings();
     }
   });
+
+  // Prevent toolbar buttons from stealing focus/selection from the editor
+  // Don't preventDefault on select/input so they remain interactive
+  document.querySelector('.editor-toolbar').addEventListener('mousedown', e => {
+    if (e.target.tagName === 'BUTTON' || e.target.closest('button')) e.preventDefault();
+  });
+
+  // Always keep _savedEditorRange current while editor has focus
+  document.addEventListener('selectionchange', () => {
+    if (document.activeElement === document.getElementById('dashEditor')) {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) _savedEditorRange = sel.getRangeAt(0).cloneRange();
+    }
+  });
+
+  /* ── Tooltip ── */
+  (function() {
+    const tip = document.createElement('div');
+    tip.id = 'tipFloat';
+    document.body.appendChild(tip);
+    document.querySelectorAll('.tip-wrap').forEach(wrap => {
+      wrap.addEventListener('mouseenter', () => {
+        const text = wrap.dataset.tip;
+        if (!text) return;
+        tip.textContent = text;
+        tip.style.display = 'block';
+        const r = wrap.querySelector('.tip-icon').getBoundingClientRect();
+        const tw = tip.offsetWidth;
+        const th = tip.offsetHeight;
+        // Appear above the icon, centered; clamp to viewport
+        let left = r.left + r.width / 2 - tw / 2;
+        let top  = r.top - th - 6;
+        if (left < 6) left = 6;
+        if (left + tw > window.innerWidth - 6) left = window.innerWidth - tw - 6;
+        if (top < 6) top = r.bottom + 6; // flip below if no room above
+        tip.style.left = left + 'px';
+        tip.style.top  = top  + 'px';
+      });
+      wrap.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+    });
+  })();
 </script></body>
 </html>
