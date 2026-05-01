@@ -890,7 +890,7 @@
 <body><header>
   <div class="star">✡</div>
   <div class="htitle">
-    <h1>Classroom Dashboard <span class="beta-tag">Beta</span></h1>
+    <h1>Classroom Dashboard</h1>
     <p>Live Hebrew date, time, weather, and days of the week</p>
   </div>
   <div class="hright">
@@ -2323,6 +2323,22 @@
     row.style.display = show ? 'flex' : 'none';
   }
 
+  function updateDashboardGrid() {
+    const dashboard = document.querySelector('.dashboard');
+    const rightWrap = document.querySelector('.right-col-wrap');
+    if (!dashboard || !rightWrap) return;
+    const leftHidden = !!settings.hideDOW;
+    const videoInSidebar = !!settings.showVideoEmbed &&
+      settings.videoLayout === 'sidebar' &&
+      document.getElementById('videoPanel')?.style.display !== 'none';
+    const rightHidden = !!settings.hideWeather && !videoInSidebar;
+    rightWrap.style.display = rightHidden ? 'none' : '';
+    if (leftHidden && rightHidden) dashboard.style.gridTemplateColumns = '1fr';
+    else if (leftHidden) dashboard.style.gridTemplateColumns = '1fr 290px';
+    else if (rightHidden) dashboard.style.gridTemplateColumns = '290px 1fr';
+    else dashboard.style.gridTemplateColumns = '';
+  }
+
   function applyZoom(val) {
     val = Math.min(200, Math.max(50, val));
     document.querySelector('.dashboard').style.zoom = val / 100;
@@ -2451,6 +2467,7 @@
       const wCol = document.getElementById('weatherCol');
       if (wCol) wCol.style.display = e.target.checked ? 'none' : '';
       if (!e.target.checked) fetchWeather();
+      updateDashboardGrid();
       saveSettingsToStorage();
     });
     document.getElementById('tapToReadWeather').addEventListener('change', e => {
@@ -2508,6 +2525,7 @@
     document.getElementById('hideDOW').addEventListener('change', e => {
       settings.hideDOW = e.target.checked;
       document.getElementById('dowCol').style.display = e.target.checked ? 'none' : '';
+      updateDashboardGrid();
       saveSettingsToStorage();
     });
     document.getElementById('hideDashText').addEventListener('change', e => toggleDashText(!e.target.checked));
@@ -2520,12 +2538,14 @@
       settings.showVideoEmbed = e.target.checked;
       toggleVideoUrlRow(e.target.checked);
       applyVideoEmbed(e.target.checked, settings.videoEmbedUrl);
+      updateDashboardGrid();
       saveSettingsToStorage();
     });
     document.querySelectorAll('input[name="videoLayout"]').forEach(r =>
       r.addEventListener('change', () => {
         settings.videoLayout = r.value;
         if (settings.showVideoEmbed) setVideoLayout(r.value);
+        updateDashboardGrid();
         saveSettingsToStorage();
       }));
     document.getElementById('zoomSlider').addEventListener('input', e => applyZoom(+e.target.value));
@@ -2576,6 +2596,7 @@
     updateDateTimeDisplay();
     renderDaysList();
     renderWeather();
+    updateDashboardGrid();
   }
 
   function getSettings() {
@@ -3233,6 +3254,7 @@
     applyVideoEmbed(settings.showVideoEmbed, settings.videoEmbedUrl);
     applyColCollapse('dowCol', !!settings.dowCollapsed);
     applyColCollapse('weatherCol', !!settings.weatherCollapsed);
+    updateDashboardGrid();
     document.getElementById('dowColTitle').addEventListener('click', () => toggleColCollapse('dowCol', 'dowCollapsed'));
     document.getElementById('weatherColTitle').addEventListener('click', () => toggleColCollapse('weatherCol', 'weatherCollapsed'));
     document.getElementById('dashEditor').addEventListener('blur', () => {
