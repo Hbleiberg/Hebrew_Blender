@@ -422,3 +422,189 @@ Three places in the research literature show genuine disagreement that the educa
 **OCP and identical consonants.** Experimental work (Berent & Shimron 1997; Berent, Everett & Shimron 2001) shows that native speakers *do* encode root-level C1=C2 avoidance psycholinguistically. This is consistent with — not contradictory to — the claim that surface wordforms with identical consonants are fully pronounceable. The filter correctly does not reject them.
 
 **Key takeaway for the generator design.** The most common mistake in Hebrew-decoder phonotactic filtering is to import classical/Tiberian rules (dagesh-qal distribution, guttural gemination bans, root OCP) that are either morphological, dead, or purely prescriptive in MIH. This filter is deliberately narrow: five rules (N1–N4, applied across depths; N9 held in reserve) cover every genuinely unpronounceable or non-realizable output in the generator's combinatoric space, while letting through every phonotactically legal sequence the student should practice — including pairs like /dada/, /mama/, /babab/, and /koko/ that might look "wrong" to a prescriptivist but are perfectly decodable MIH syllable sequences. That is exactly the space of outputs a *Chaverim Ba'Ivrit* student needs to read.
+
+---
+
+---
+
+# Part II — Classical / Tiberian rules for kriah worksheet generation
+
+*Context: Aleph Champ, TaL AM, HaSulam, and similar elementary kriah curricula. Rules derived from Tiberian Masoretic grammar (Gesenius, Joüon-Muraoka). Contrast with Part I, which covers Modern Israeli Hebrew and is deliberately permissive; these rules are stricter because the curriculum targets authentic nikud-pointed text.*
+
+## Overview
+
+For an elementary kriah worksheet generator, impossible Hebrew letter+vowel blends fall into seven well-defined categories: **final-form letters carrying vowels they cannot bear, gutturals taking dagesh or plain shva, BeGeD KeFeT letters lacking dagesh kal at word-start, chatafim attached to non-gutturals, two consecutive shvas at word-start, mater lectionis letters carrying their own vowels, and sofit/non-sofit forms in wrong word positions.** Distinctions between "absolutely impossible" (hard exclude) and "extremely rare/biblical-only" (soft exclude) are flagged throughout, since elementary kriah curricula exclude both categories.
+
+---
+
+## T1. Letter and vowel inventory
+
+The 27 graphemes split into five behavioral classes that drive almost all the rules.
+
+| Category | Members |
+|---|---|
+| True gutturals (no dagesh, no plain shva, take chatafim) | א ה ח ע |
+| Quasi-guttural (no dagesh, takes plain shva, no chatafim) | ר |
+| BeGeD KeFeT (dagesh kal positionally) | ב ג ד כ פ ת |
+| Modern audible bgdkpt (sound changes with dagesh) | ב כ פ |
+| Sofit letters (word-end only) | ך ם ן ף ץ |
+| Sofit-required at word-end | כ→ך, מ→ם, נ→ן, פ→ף, צ→ץ |
+| Mater lectionis letters | א ה ו י |
+
+**Vowel length tiers:**
+- **Long vowels** — kamatz gadol, tzere, cholam, chirik malei, shuruk, tzere malei, kamatz-he: prefer open or stressed syllables.
+- **Short vowels** — patach, segol, chirik chaser, kubutz, kamatz katan: prefer closed unstressed syllables.
+- **Ultra-short (chatafim)** — chataf-patach (ֲ), chataf-segol (ֱ), chataf-kamatz (ֳ), shva na: syllable-openers under specific letters only.
+
+There is no chataf-chirik, chataf-tzere, or chataf-kubutz in standard Hebrew.
+
+---
+
+## T2. Absolutely impossible 2-letter (letter+vowel) blends — hard exclude
+
+### T2.1 Final-form letter restrictions
+
+- **ם, ן, ף, ץ** carry no nikud whatsoever — no vowel, no dagesh, no shva. Word-end only.
+- **ך** accepts only **kamatz (ךָ)** or **shva (ךְ)**. Any other vowel on kaf sofit is invalid.
+- All five sofit letters cannot appear in word-initial or word-medial positions; use the regular forms there.
+
+### T2.2 Guttural + dagesh is impossible
+
+**א ה ח ע ר** never take dagesh chazak. Resh's restriction is nearly absolute; roughly twenty Masoretic textual curiosities exist (e.g., 1 Sam 17:25) but are not productive and must be excluded from any pedagogical generator. The dot inside final hey (הּ) is **mappiq**, not dagesh — graphically identical but functionally different.
+
+### T2.3 Gutturals + plain shva na is impossible
+
+True gutturals (א ה ח ע) cannot host a vocal shva. A chataf vowel substitutes:
+- **Chataf-patach (ֲ)** — default and most common.
+- **Chataf-segol (ֱ)** — primarily under alef (אֱלֹהִים, אֱמֶת) and occasionally hey/chet.
+- **Chataf-kamatz (ֳ)** — rarest; forms like אֳנִיָּה.
+
+Resh takes plain shva normally and does not take chatafim — a critical distinction from the true gutturals.
+
+### T2.4 Non-gutturals + chatafim is invalid
+
+Any letter outside {א ה ח ע} paired with a chataf vowel is non-standard. **Resh with any chataf is invalid.** A handful of Tiberian exceptions exist in proper names (מָרְדֳּכַי) but are excluded from elementary worksheets.
+
+### T2.5 Mater lectionis carrying its own vowel
+
+- Final ה functioning as mater lectionis carries no nikud of its own.
+- Vav as cholam malei (וֹ) or shuruk (וּ) cannot take additional nikud.
+- Bare yod functioning as chirik malei, tzere malei, or segol-yod carries no nikud of its own.
+
+### T2.6 Word-initial vet, khaf, or fey without dagesh kal
+
+At absolute word-beginning, ב כ פ always take dagesh kal in standard Hebrew. The fricatives ב כ פ at word-start occur only in modern foreign loanwords and attached prefixes — both excluded from elementary kriah.
+
+---
+
+## T3. Invalid 2-letter blend rule set (encodable)
+
+Fail if any condition matches:
+
+- letter ∈ {ם, ן, ף, ץ} with any vowel
+- letter = ך with vowel ∉ {kamatz, shva}
+- letter ∈ {א, ה, ח, ע, ר} with any dagesh
+- letter ∈ {א, ה, ח, ע} with plain shva (use chataf instead)
+- letter ∉ {א, ה, ח, ע} with any chataf vowel
+- letter = ר with any chataf
+- letter ∈ {ב, כ, פ} at word-initial position without dagesh kal
+- final ה without mappiq carrying any vowel
+- vav functioning as cholam-malei or shuruk carrying additional nikud
+- bare yod functioning as chirik-malei or tzere-malei carrying its own vowel
+- sofit letter at word-initial or word-medial position
+- non-sofit form of {כ, מ, נ, פ, צ} at word-final position
+
+---
+
+## T4. Position-dependent rules for 3-letter blends
+
+### T4.1 No word can begin with two shvas
+
+A word cannot begin with two vowelless consonants (the "Rule of Shva," Wegner). Word-initial shva is always shva na, and a second shva cannot immediately follow. Three consecutive shvas are likewise impossible.
+
+### T4.2 BeGeD KeFeT dagesh kal is positionally determined
+
+A begadkefat letter takes dagesh kal in exactly two environments:
+1. At the absolute beginning of a word.
+2. After a shva nach (silent shva closing a previous syllable).
+
+It loses dagesh kal after any full vowel, after a shva na, or after a mater lectionis. In a CVC blend, a begadkefat in position 2 (after the position-1 vowel) takes no dagesh and reads as fricative: בָּב = "bav," not "bab."
+
+### T4.3 Vowel length follows syllable structure
+
+- **Open syllables** (ending in a vowel) — long vowels are normal: kamatz, tzere, cholam, chirik malei, shuruk.
+- **Stressed closed syllables** — both long and short vowels permitted.
+- **Closed unstressed syllables** — only short vowels: patach, segol, chirik chaser, kubutz, kamatz katan. A kamatz in an unstressed closed syllable is necessarily kamatz katan (/o/), as in חָכְמָה /chochma/.
+
+### T4.4 Final-position constraints
+
+- The third letter must use the sofit form if its base form is in {כ מ נ פ צ}.
+- If the third letter is ך, it may carry shva (ךְ) orthographically.
+- **Patach genuvah (furtive patach):** if the third letter is ח, ע, or הּ following a long vowel, patach genuvah appears under it and is pronounced before the consonant: רוּחַ = "ruach," נֹחַ = "noach." Furtive patach is invalid anywhere except this final-position guttural environment.
+
+### T4.5 Invalid 3-letter blend patterns (encodable)
+
+- Word starting with two shvas in a row
+- Begadkefat in position 2 with dagesh kal when position 1 ends in a vowel (should be fricative)
+- Begadkefat in position 1 of any blend without dagesh kal
+- Long vowel (other than kamatz katan) in closed unstressed syllable in pedagogically-strict mode
+- Furtive patach anywhere except under final ח, ע, or הּ following a long vowel
+- Sofit form in position 1 or 2
+- Guttural in middle position followed by plain shva (should be chataf)
+- Final position 3 letter ∈ {כ מ נ פ צ} as non-sofit form
+
+---
+
+## T5. Soft-exclude category: rare but documented
+
+These combinations exist in Biblical or specialized texts but must not appear in elementary worksheets:
+
+- **Resh with dagesh** — ~17 occurrences in Tanakh (Prov 14:10, Song 5:2).
+- **Alef with dagesh** — ~4 occurrences (Lev 23:17).
+- **Chataf-kamatz under non-gutturals** — proper names (מָרְדֳּכַי) and pausal forms.
+- **Begadkefat with dagesh kal at word-end after shva nach** — grammatically valid (שָׁמַרְתְּ "you killed") but pedagogically advanced.
+- **Word-final shva on letters other than ך** — specifically final tav in feminine 2sg perfect verbs; real but late-introduced.
+- **Vet/khaf/fey at word-start** — appears in foreign loanwords only.
+- **Plain shva on a guttural at word-middle in a closed syllable** — some Tiberian traditions; most editions print chatafim.
+
+---
+
+## T6. Valid versus invalid examples for verification
+
+**Valid 2-letter blends:** בָּ שֵׁ גוּ מִי פָּ אֲ אֱ חָ עוֹ רֵ נוֹ קוּ
+
+**Valid 3-letter blends:** בַּת שֶׁל גוּר מֶלֶךְ (sofit kaf + shva) נֹחַ (patach genuvah) כָּתַב שָׁלוֹם רוּחַ יֶלֶד אִם
+
+**Invalid blends to filter out:**
+- אּ — alef + dagesh
+- רּ — resh + dagesh
+- ם + any vowel
+- ץָ — tzadi sofit + kamatz
+- בֲ — bet + chataf-patach
+- מֱ — mem + chataf-segol
+- רֲ — resh + chataf
+- vowel on mem sofit or nun sofit
+- בְשְׁ at word-start (two consecutive shvas)
+- פְ at word-start without dagesh kal
+- regular כ at word-end after a vowel
+- kaf sofit with patach, chirik, or cholam
+
+---
+
+## T7. Comparison with Part I (MIH) rules
+
+The table below summarizes how the two rule sets diverge on the same constraints. When building a generator, choose the rule set that matches the curriculum target.
+
+| Constraint | Part I (MIH / Chaverim Ba'Ivrit) | Part II (Tiberian / Kriah) |
+|---|---|---|
+| Dagesh-qal on ב כ פ | Both forms valid everywhere (N5) | Word-initial must have dagesh kal (T2.6) |
+| Dagesh on gutturals א ה ח ע ר | Not a pronounceability issue in MIH (N6) | Hard exclude (T2.2) |
+| Chatafim on non-gutturals | Not in MIH generator inventory | Hard exclude (T2.4) |
+| Plain shva on gutturals | Not addressed (gutturals are silent codas) | Hard exclude; use chataf instead (T2.3) |
+| Two shvas word-initial | Dormant (N9 only fires if schema permits shva onset) | Hard exclude (T4.1) |
+| Vowel length / syllable structure | Not a filter (MIH neutralizes length) | Enforced in pedagogically-strict mode (T4.3) |
+| Identical consonants (/dada/) | Explicitly allowed (N6, N7) | Allowed (no rule targets this) |
+| Sofit placement | Hard exclude (N2, N3) | Hard exclude (T2, T3) |
+| Mater carrying its own vowel | Hard exclude (N4) | Hard exclude (T2.5) |
+
+**Bottom line:** Part I and Part II share the sofit and mater rules completely. Part II adds seven additional rule families (guttural-dagesh, guttural-shva, chataf distribution, begadkefat positioning, shva sequencing, vowel-length/syllable-type, and furtive patach placement) that are irrelevant in MIH but essential for authentic Tiberian-pointed kriah material.
