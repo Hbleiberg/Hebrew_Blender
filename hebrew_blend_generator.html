@@ -3766,12 +3766,12 @@ function updateModeVisibility() {
     rowInverse:        !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo,
     rowFillVowels:     !testMode && blends && s.drill !== 'gematria' && !s.bingo,
     rowGematria:       !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'inverse',
-    rowBingo:          !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'inverse',
-    rowAnswerKey:      !testMode && blends && s.drill !== 'fillvowels' && !s.bingo,
+    rowBingo:          !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'inverse' && s.drill !== 'gematria',
+    rowAnswerKey:      !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo,
     rowSelfCheck:      !gemSC    && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo,
     rowBlendCount:     !testMode && blends && !s.bingo,
-    rowRealWords:      !testMode && s.source !== 'numbers' && !cwModeActive && !s.bingo,
-    rowNumberPractice: !testMode && s.source !== 'realwords' && !cwModeActive && !s.bingo,
+    rowRealWords:      !testMode && s.source !== 'numbers' && !cwModeActive && !s.bingo && !(blends && s.drill === 'gematria'),
+    rowNumberPractice: !testMode && s.source !== 'realwords' && !cwModeActive && !s.bingo && !(blends && s.drill === 'gematria'),
 
     // Sub-option panels
     bingoOptions:          blends && s.bingo && !testMode,
@@ -3824,13 +3824,21 @@ function enforceMutex(opts) {
     if (opts.drill !== 'inverse')    set('inverseToggle',    false);
     if (opts.drill !== 'fillvowels') set('fillVowelsToggle', false);
     if (opts.drill !== 'gematria')   set('gematriaToggle',   false);
-    // Bingo only layers on standard or gematria.
-    if (opts.drill === 'inverse' || opts.drill === 'fillvowels') set('bingoToggle', false);
-    // Self-check only layers on standard, inverse, gematria.
+    // Bingo only layers on standard. Gematria has its own answer-key flow,
+    // and overlap with bingo cards makes no sense.
+    if (opts.drill === 'inverse' || opts.drill === 'fillvowels' || opts.drill === 'gematria') set('bingoToggle', false);
+    // Self-check only layers on standard, inverse.
     // (Gematria has its own gematriaSelfCheck inside its options panel.)
     if (opts.drill === 'fillvowels' || opts.drill === 'gematria') set('selfCheckToggle', false);
-    // Answer key only layers on standard, inverse, gematria.
-    if (opts.drill === 'fillvowels') set('answerKeyToggle', false);
+    // Answer key only layers on standard, inverse.
+    // (Gematria's answer-key sub-toggle lives in gematriaOptions.)
+    if (opts.drill === 'fillvowels' || opts.drill === 'gematria') set('answerKeyToggle', false);
+    // Gematria is a blends-source drill — clear conflicting non-blends sources.
+    if (opts.drill === 'gematria') {
+      set('numberPracticeToggle', false);
+      set('realWordsToggle',      false);
+      cwModeActive = false;
+    }
   }
 
   // Layer 3 — Bingo: clears incompatible drill formats and orthogonal flags.
