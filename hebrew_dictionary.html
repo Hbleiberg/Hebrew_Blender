@@ -120,10 +120,12 @@ body.fullscreen .app{height:100vh;min-height:unset;}
 .wc-bulk-cb{position:absolute;top:8px;right:8px;width:16px;height:16px;accent-color:var(--gold);cursor:pointer;display:none;}
 body.bulk-mode .wc-bulk-cb{display:block;}
 body.bulk-mode .word-card{cursor:pointer;}
-.wc-copy,.wc-search{position:absolute;top:7px;background:none;border:1px solid var(--border);border-radius:4px;padding:3px;color:var(--muted);cursor:pointer;line-height:0;opacity:0.4;transition:opacity 0.15s,border-color 0.15s,color 0.15s;display:flex;align-items:center;justify-content:center;text-decoration:none;}
+.wc-copy,.wc-search,.wc-speak{position:absolute;top:7px;background:none;border:1px solid var(--border);border-radius:4px;padding:3px;color:var(--muted);cursor:pointer;line-height:0;opacity:0.4;transition:opacity 0.15s,border-color 0.15s,color 0.15s;display:flex;align-items:center;justify-content:center;text-decoration:none;}
 .wc-copy{left:7px;}
 .wc-search{left:30px;}
-.wc-copy:hover,.wc-copy.copied,.wc-search:hover{border-color:var(--gold);color:var(--gold);opacity:1;}
+.wc-speak{left:53px;font-size:0.75rem;display:none;line-height:1;}
+body.dict-audio-on .wc-speak{display:flex;}
+.wc-copy:hover,.wc-copy.copied,.wc-search:hover,.wc-speak:hover{border-color:var(--gold);color:var(--gold);opacity:1;}
 .wc-heb{font-family:var(--heb-font);font-size:var(--heb-font-size);direction:rtl;text-align:right;line-height:1.2;}
 .wc-translit{font-size:0.76rem;color:var(--muted);font-style:italic;text-align:right;}
 .wc-transl{font-size:0.8rem;line-height:1.35;margin-top:2px;}
@@ -382,6 +384,17 @@ footer a{color:var(--gold);text-decoration:none;}
             </div>
             <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
             <label class="cb-label"><input type="checkbox" id="enableSortGematriaCb" style="accent-color:var(--gold);" onchange="toggleGematriaSort(this.checked)"> Enable Sort By Gematria Value<span class="tip-wrap">?<span class="tip-box">Adds Gematria ↑ and Gematria ↓ options to the Sort menu, letting you order words by their total Gematria value.</span></span></label>
+          </div>
+        </div>
+
+        <!-- Audio -->
+        <div class="adv-section collapsed">
+          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Audio</div>
+          <div class="adv-section-body">
+            <label class="cb-label" style="font-size:0.78rem;">
+              <input type="checkbox" id="dictAudioToggle" style="accent-color:var(--gold);" onchange="toggleDictAudio(this.checked)">
+              Show pronunciation button <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span>
+            </label>
           </div>
         </div>
 
@@ -900,6 +913,15 @@ function copyWord(btn, text) {
   else { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch(e) {} document.body.removeChild(ta); finish(); }
 }
 
+function speakWord(text) {
+  if (!window.speechSynthesis) return;
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'he-IL';
+  utt.rate = 0.85;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utt);
+}
+
 function loadMore() {
   const grid = document.getElementById('resultsGrid');
   filtered.slice(shown, shown + PAGE).forEach(w => {
@@ -931,6 +953,12 @@ function loadMore() {
     btn.title = 'Copy Hebrew';
     btn.addEventListener('click', e => { e.stopPropagation(); copyWord(btn, getWordCopyText(w)); });
     card.appendChild(btn);
+    const speakBtn = document.createElement('button');
+    speakBtn.className = 'wc-speak';
+    speakBtn.textContent = '🔊';
+    speakBtn.title = 'Hear pronunciation';
+    speakBtn.addEventListener('click', e => { e.stopPropagation(); speakWord(w.word); });
+    card.appendChild(speakBtn);
     const srch = document.createElement('a');
     srch.className = 'wc-search';
     srch.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
@@ -1089,6 +1117,11 @@ function colorizeHebrew(text) {
     i = j;
   }
   return out.join('');
+}
+
+function toggleDictAudio(on) {
+  document.body.classList.toggle('dict-audio-on', on);
+  try { localStorage.setItem('hebrewDictionary_audioEnabled', on ? '1' : '0'); } catch(e) {}
 }
 
 function toggleColorCoding(on) {
@@ -1373,6 +1406,13 @@ document.addEventListener('DOMContentLoaded', () => {
   try {
     const fv = localStorage.getItem('hebrewBlender_hebFontSize');
     if (fv !== null) { const sl = document.getElementById('hebFontSizeSlider'); if (sl) { sl.value = fv; setHebFontSize(fv); } }
+  } catch(e) {}
+  try {
+    if (localStorage.getItem('hebrewDictionary_audioEnabled') === '1') {
+      document.body.classList.add('dict-audio-on');
+      const cb = document.getElementById('dictAudioToggle');
+      if (cb) cb.checked = true;
+    }
   } catch(e) {}
   try {
     if (localStorage.getItem('hebrewBlender_darkMode') === '1') {

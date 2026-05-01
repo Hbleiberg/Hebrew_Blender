@@ -182,6 +182,7 @@ function exportAllSettings() {
     dashboardSchedules:  JSON.parse(localStorage.getItem('hebrewDashboard_schedules')  || '{}'),
     dashboardSettings:   JSON.parse(localStorage.getItem('hebrewDashboard_settings')   || '{}'),
     flashCardPresets:    JSON.parse(localStorage.getItem('hebrewFlashCards_presets')   || '{}'),
+    dictAudioEnabled:    localStorage.getItem('hebrewDictionary_audioEnabled') || '0',
   };
   document.getElementById('ieTextarea').value = JSON.stringify(blob, null, 2);
 }
@@ -213,6 +214,9 @@ function importAllSettings() {
       const existing = JSON.parse(localStorage.getItem('hebrewFlashCards_presets') || '{}');
       localStorage.setItem('hebrewFlashCards_presets', JSON.stringify(Object.assign(existing, parsed.flashCardPresets)));
     }
+    if (parsed.dictAudioEnabled !== undefined) {
+      localStorage.setItem('hebrewDictionary_audioEnabled', parsed.dictAudioEnabled);
+    }
     alert('Import successful! Reload the Dashboard to apply all settings.');
   } catch(e) { alert('Import failed: ' + e.message); }
 }
@@ -233,6 +237,7 @@ function eraseAllSettings() {
     'hebrewDashboard_schedules',
     'hebrewDashboard_settings',
     'hebrewFlashCards_presets',
+    'hebrewDictionary_audioEnabled',
   ];
   keys.forEach(k => localStorage.removeItem(k));
   document.getElementById('ieTextarea').value = '';

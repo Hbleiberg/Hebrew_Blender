@@ -4862,6 +4862,7 @@ function renderSelfCheck(ws, cols, title, subtitle) {
   blends.forEach((b, idx) => {
     const card = document.createElement('div');
     card.className = 'flip-card';
+    card.dataset.heb = b.hebrewDisplay;
     card.innerHTML = `
       <div class="flip-card-inner">
         <div class="flip-card-front">
@@ -4872,7 +4873,7 @@ function renderSelfCheck(ws, cols, title, subtitle) {
         <div class="flip-card-back">
           <span class="flip-card-num" style="color:var(--gold-light);">${idx + 1}</span>
           <span style="font-size:1.1rem;">${b.combined}</span>
-          ${audioOn ? `<button class="btn-xs" style="margin-top:4px;font-size:0.7rem;" onclick="event.stopPropagation();speakBlend('${b.combined}')">🔊</button>` : ''}
+          ${audioOn ? `<button class="btn-xs" style="margin-top:4px;font-size:0.7rem;" onclick="event.stopPropagation();speakBlend(this.closest('.flip-card').dataset.heb)">🔊</button>` : ''}
         </div>
       </div>
       <div class="flip-card-score-btns">

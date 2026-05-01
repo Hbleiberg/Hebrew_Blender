@@ -821,6 +821,14 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
 
       <hr class="soft" />
 
+      <!-- Audio -->
+      <div class="row">
+        <label class="switch"><input type="checkbox" id="audioToggle"><span class="slider"></span></label>
+        <span class="label">Audio <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
+      </div>
+
+      <hr class="soft" />
+
       <!-- Font selector -->
       <div class="label" style="font-weight:600; margin-bottom:4px">Hebrew Font</div>
       <div class="font-grid" id="fontGrid"></div>
@@ -859,6 +867,7 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
       </div>
       <div class="fc-face fc-back">
         <div class="fc-translit" id="fcBackTr"></div>
+        <button id="fcSpeakBtn" class="btn-xs" style="display:none;margin:6px auto 0;font-size:0.8rem;" onclick="event.stopPropagation();">🔊 Hear</button>
         <div class="fc-back-q">Did I get it?</div>
         <div class="fc-badge hide" id="fcBackBadge"></div>
       </div>
@@ -1128,6 +1137,7 @@ let colorCodingEnabled = false;
 let colorCodingMode = 'letter';
 let nikudColorOverrides = {};
 let hebFontId = 'Frank Ruhl Libre';
+let audioEnabled = false;
 
 let currentCards = [];
 let currentIndex = 0;
@@ -1571,7 +1581,7 @@ function getSettings() {
     lockLetters: [...lockLetters],
     colorCodingEnabled, colorCodingMode,
     nikudColorOverrides: { ...nikudColorOverrides },
-    hebFontId
+    hebFontId, audioEnabled
   };
 }
 function applySettings(s) {
@@ -1605,6 +1615,8 @@ function applySettings(s) {
   document.getElementById('colorCodeOpts').classList.toggle('hide', !colorCodingEnabled);
   document.querySelectorAll('#colorModePills .pill').forEach(p => p.classList.toggle('active', p.dataset.cmode === colorCodingMode));
   document.querySelectorAll('#lockPosPills .pill').forEach(p => p.classList.toggle('active', +p.dataset.pos === lockPosition));
+  audioEnabled = !!s.audioEnabled;
+  document.getElementById('audioToggle').checked = audioEnabled;
   setHebFont(hebFontId);
   initLetters();
   initVowels();
@@ -1957,6 +1969,15 @@ function startPractice() {
   showScreen('screenCard');
 }
 
+function speakWord(text) {
+  if (!window.speechSynthesis) return;
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'he-IL';
+  utt.rate = 0.85;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utt);
+}
+
 function renderCurrentCard() {
   if (currentCards.length === 0) return;
   const card = currentCards[currentIndex];
@@ -1998,6 +2019,15 @@ function renderCurrentCard() {
     back.style.fontFamily = 'var(--serif)';
     back.style.direction = 'ltr';
     back.style.fontSize = 'clamp(1.4rem, 6vw, 2.4rem)';
+  }
+
+  // Audio speak button
+  const speakBtn = document.getElementById('fcSpeakBtn');
+  if (audioEnabled) {
+    speakBtn.style.display = 'block';
+    speakBtn.onclick = (e) => { e.stopPropagation(); speakWord(card.heb); };
+  } else {
+    speakBtn.style.display = 'none';
   }
 
   // Badges
@@ -2156,6 +2186,12 @@ function wireSetupScreen() {
   applyLetterButtons();
   applyVowelButtons();
 
+  // Audio
+  document.getElementById('audioToggle').addEventListener('change', e => {
+    audioEnabled = e.target.checked;
+    saveSettings();
+  });
+
   // Color coding
   document.getElementById('colorCodeToggle').addEventListener('change', e => {
     colorCodingEnabled = e.target.checked;
@@ -2219,6 +2255,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('lockOptions').classList.toggle('hide', !lockEnabled);
   document.getElementById('colorCodeToggle').checked = colorCodingEnabled;
   document.getElementById('colorCodeOpts').classList.toggle('hide', !colorCodingEnabled);
+  document.getElementById('audioToggle').checked = audioEnabled;
 });
 </script>
 </body>
