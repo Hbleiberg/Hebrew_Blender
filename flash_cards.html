@@ -1367,7 +1367,7 @@ function initLockGrid() {
   if (!grid) return;
   const display = getDisplayLetters();
   grid.innerHTML = display.map(L => `
-    <div class="letter-tile ${lockLetters.has(L.heb) ? 'selected' : ''}" data-heb="${L.heb}">${L.heb}</div>
+    <div class="letter-tile ${lockLetters.has(L.heb) ? 'selected' : ''}" data-heb="${L.heb}"><span class="heb-char">${L.heb}</span></div>
   `).join('');
   grid.querySelectorAll('.letter-tile').forEach(tile => {
     tile.addEventListener('click', () => {
