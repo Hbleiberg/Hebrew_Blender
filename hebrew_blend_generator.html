@@ -2981,6 +2981,10 @@ function getSettings() {
     gematriaSelfCheck: document.getElementById('gematriaSelfCheck').checked,
     gematriaAnswerKey: document.getElementById('gematriaAnswerKey').checked,
     // Custom Wordlist
+    cwModeActive,
+    cwDrillType,
+    cwTranslitPage,
+    cwTranslPage,
     cwShowTranslit:    document.getElementById('cwShowTranslit').checked,
     cwShowTranslation: document.getElementById('cwShowTranslation').checked,
     cwShowPos:         document.getElementById('cwShowPos').checked,
@@ -3124,8 +3128,8 @@ function applySettings(s) {
   if (s.rwBingoCaller !== undefined)       document.getElementById('rwBingoCaller').checked = s.rwBingoCaller;
   if (s.rwBingoCallerTransl !== undefined) document.getElementById('rwBingoCallerTransl').checked = s.rwBingoCallerTransl;
 
-  // Gematria
-  if (s.gematriaMode !== undefined) { document.getElementById('gematriaToggle').checked = s.gematriaMode; toggleGematriaMode(); }
+  // Gematria — set values only; visibility flows through updateModeVisibility() at end.
+  if (s.gematriaMode !== undefined)      document.getElementById('gematriaToggle').checked = s.gematriaMode;
   if (s.gematriaSelfCheck !== undefined) document.getElementById('gematriaSelfCheck').checked = s.gematriaSelfCheck;
   if (s.gematriaAnswerKey !== undefined) document.getElementById('gematriaAnswerKey').checked = s.gematriaAnswerKey;
 
@@ -3137,6 +3141,15 @@ function applySettings(s) {
   if (s.cwMixed !== undefined)           { document.getElementById('cwMixed').checked = s.cwMixed; toggleCwBlendOpts(); }
   if (s.cwStarReal !== undefined)        document.getElementById('cwStarReal').checked = s.cwStarReal;
   if (s.cwBlendCount && document.getElementById('cwBlendCount')) document.getElementById('cwBlendCount').value = s.cwBlendCount;
+  if (s.cwDrillType)     setCwDrill(s.cwDrillType);
+  if (s.cwTranslitPage)  setCwTranslitPage(s.cwTranslitPage);
+  if (s.cwTranslPage)    setCwTranslPage(s.cwTranslPage);
+  // Only activate cw mode if data was actually imported this session.
+  if (s.cwModeActive && customWordlistData.length > 0) {
+    activateCustomWordlistMode(true);
+  } else {
+    cwModeActive = false;
+  }
 
   // Real Words extras
   if (s.rwShowGematria !== undefined) document.getElementById('rwShowGematria').checked = s.rwShowGematria;
@@ -3165,25 +3178,20 @@ function applySettings(s) {
     updateColorPickerValues();
   }
 
-  // Fire UI toggle functions after all values are set
-  setBlendType(blendType);
-  toggleFocusUI();
-  toggleBingoUI();
-  toggleNumberPracticeUI();
+  // Set self-check value (visibility flows through updateModeVisibility).
+  if (s.selfCheck !== undefined) document.getElementById('selfCheckToggle').checked = s.selfCheck;
+
+  // Restore drill-type sub-states that affect visibility (no-mutex: pure data updates).
+  if (s.rwDrillType) setRealWordDrill(s.rwDrillType);
+
+  // Number Practice sub-row visibility (within the np options panel).
   onNpTranslitChange();
   onNpSelfCheckChange();
   onNpBingoChange();
-  syncFillVowelsUI();
-  if (s.rwDrillType) setRealWordDrill(s.rwDrillType);
 
-  // Self-check next
-  if (s.selfCheck !== undefined) {
-    document.getElementById('selfCheckToggle').checked = s.selfCheck;
-    document.getElementById('selfCheckToggle').dispatchEvent(new Event('change'));
-  }
-
-  // Real Words last — must run after selfCheck dispatchEvent, which re-shows rows when selfCheck=false
-  toggleRealWordsUI();
+  // Final, single visibility pass — replaces the previous order-dependent
+  // chain of toggle handlers and inline style.display mutations.
+  updateModeVisibility();
 }
 
 function savePreset() {
@@ -3689,6 +3697,164 @@ function getVowelPos() {
   return 'first';
 }
 
+// ══════════════════════════════════════════════
+//  CENTRAL MODE STATE MACHINE
+//  Single source of truth for which sections are
+//  visible based on the current set of toggles.
+//  Every mode handler delegates to updateModeVisibility().
+//  See /root/.claude/plans/in-the-hebrew-generator-peaceful-glacier.md
+//  for the layered model and full compatibility table.
+// ══════════════════════════════════════════════
+
+function computeModeState() {
+  const np = document.getElementById('numberPracticeToggle').checked;
+  const rw = document.getElementById('realWordsToggle').checked;
+  const cw = cwModeActive;
+  const source = np ? 'numbers' : rw ? 'realwords' : cw ? 'customwordlist' : 'blends';
+
+  let drill = 'standard';
+  if (source === 'blends') {
+    if      (document.getElementById('fillVowelsToggle').checked) drill = 'fillvowels';
+    else if (document.getElementById('gematriaToggle').checked)   drill = 'gematria';
+    else if (document.getElementById('inverseToggle').checked)    drill = 'inverse';
+  }
+
+  return {
+    source, drill,
+    blendType: document.querySelector('.blend-type-btn.active')?.dataset.type || 'two',
+    bingo:     document.getElementById('bingoToggle').checked,
+    selfCheck: document.getElementById('selfCheckToggle').checked,
+    answerKey: document.getElementById('answerKeyToggle').checked,
+    focus:     document.getElementById('focusToggle').checked,
+    gematriaSelfCheck: document.getElementById('gematriaSelfCheck')?.checked ?? false,
+  };
+}
+
+// Sub-option panels are styled with flex-direction:column inline, so they
+// need display:flex to render. Major panels and toggle rows fall back to '' (CSS default).
+const _MODE_FLEX_IDS = new Set([
+  'bingoOptions','gematriaOptions','selfCheckOptions','realWordsOptions',
+  'customWordlistOptions','numberPracticeOptions','focusOptions',
+]);
+const _MODE_BLOCK_IDS = new Set(['threeLetterOptions','fillVowelsDageshRow']);
+
+function updateModeVisibility() {
+  const s = computeModeState();
+  const blends = s.source === 'blends';
+  // Test-taking modes hide setup panels so the student only sees the
+  // worksheet (and a small selfCheckOptions / gematriaOptions stub).
+  const gemSC  = blends && s.drill === 'gematria' && s.gematriaSelfCheck;
+  const stdSC  = blends && s.selfCheck && !s.bingo
+                       && s.drill !== 'fillvowels' && s.drill !== 'gematria';
+  const testMode = gemSC || stdSC;
+
+  const v = {
+    // Major panels
+    panelLetters:  blends && s.blendType !== 'nikud' && !testMode,
+    panelVowels:   blends && !testMode,
+    panelLayout:   !testMode && !(blends && s.bingo),
+    panelAdvanced: !testMode,
+    panelPresets:  !testMode,
+
+    // Worksheet-mode structural elements
+    blendTypeWrapper:   !testMode && blends && s.drill !== 'fillvowels',
+    modeDivider:        !testMode && blends,
+    threeLetterOptions: !testMode && blends && s.blendType === 'three' && s.drill !== 'fillvowels',
+    focusOptions:       blends && s.focus && !testMode,
+
+    // Mode toggle rows
+    rowInverse:        !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo,
+    rowFillVowels:     !testMode && blends && s.drill !== 'gematria' && !s.bingo,
+    rowGematria:       !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'inverse',
+    rowBingo:          !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'inverse',
+    rowAnswerKey:      !testMode && blends && s.drill !== 'fillvowels' && !s.bingo,
+    rowSelfCheck:      !gemSC    && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo,
+    rowBlendCount:     !testMode && blends && !s.bingo,
+    rowRealWords:      !testMode && s.source !== 'numbers' && !cwModeActive && !s.bingo,
+    rowNumberPractice: !testMode && s.source !== 'realwords' && !cwModeActive && !s.bingo,
+
+    // Sub-option panels
+    bingoOptions:          blends && s.bingo && !testMode,
+    gematriaOptions:       (blends && s.drill === 'gematria') ||
+                           (s.source === 'realwords' && (typeof rwDrillType !== 'undefined') && rwDrillType === 'gematria'),
+    selfCheckOptions:      blends && s.selfCheck && s.drill !== 'fillvowels'
+                                  && s.drill !== 'gematria' && !s.bingo,
+    realWordsOptions:      s.source === 'realwords',
+    customWordlistOptions: s.source === 'customwordlist',
+    numberPracticeOptions: s.source === 'numbers',
+    fillVowelsDageshRow:   blends && s.drill === 'fillvowels',
+  };
+
+  for (const id in v) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    if (!v[id]) {
+      el.style.display = 'none';
+    } else if (_MODE_FLEX_IDS.has(id)) {
+      el.style.display = 'flex';
+    } else if (_MODE_BLOCK_IDS.has(id)) {
+      el.style.display = 'block';
+    } else {
+      el.style.display = '';
+    }
+  }
+}
+
+// Force-clear toggles that conflict with the chosen mode/drill.
+// Call BEFORE setting the new mode's checkbox so the mutex is enforced.
+// opts: { source?, drill?, bingoOn?, selfCheckOn?, answerKeyOn? }
+function enforceMutex(opts) {
+  opts = opts || {};
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.checked = val; };
+
+  // Layer 1 — Source (mutually exclusive)
+  if (opts.source) {
+    if (opts.source !== 'numbers')        set('numberPracticeToggle', false);
+    if (opts.source !== 'realwords')      set('realWordsToggle', false);
+    if (opts.source !== 'customwordlist') cwModeActive = false;
+    // Switching to a non-blends source clears every blends-only flag.
+    if (opts.source !== 'blends') {
+      ['inverseToggle','fillVowelsToggle','gematriaToggle','bingoToggle',
+       'selfCheckToggle','answerKeyToggle'].forEach(id => set(id, false));
+    }
+  }
+
+  // Layer 2 — Drill format (mutually exclusive within source=blends)
+  if (opts.drill) {
+    if (opts.drill !== 'inverse')    set('inverseToggle',    false);
+    if (opts.drill !== 'fillvowels') set('fillVowelsToggle', false);
+    if (opts.drill !== 'gematria')   set('gematriaToggle',   false);
+    // Bingo only layers on standard or gematria.
+    if (opts.drill === 'inverse' || opts.drill === 'fillvowels') set('bingoToggle', false);
+    // Self-check only layers on standard, inverse, gematria.
+    // (Gematria has its own gematriaSelfCheck inside its options panel.)
+    if (opts.drill === 'fillvowels' || opts.drill === 'gematria') set('selfCheckToggle', false);
+    // Answer key only layers on standard, inverse, gematria.
+    if (opts.drill === 'fillvowels') set('answerKeyToggle', false);
+  }
+
+  // Layer 3 — Bingo: clears incompatible drill formats and orthogonal flags.
+  if (opts.bingoOn) {
+    set('inverseToggle',    false);
+    set('fillVowelsToggle', false);
+    set('selfCheckToggle',  false);
+    set('answerKeyToggle',  false);
+    set('numberPracticeToggle', false);
+    set('realWordsToggle',  false);
+    cwModeActive = false;
+  }
+
+  // Layer 3 — Self-Check & Answer Key are mutex with each other and with bingo.
+  if (opts.selfCheckOn) {
+    set('answerKeyToggle', false);
+    set('bingoToggle',     false);
+  }
+  if (opts.answerKeyOn) {
+    set('selfCheckToggle', false);
+    set('bingoToggle',     false);
+  }
+}
+
 // ── BLEND TYPE SELECTOR ──
 function setBlendType(type) {
   // Update button active states
@@ -3696,17 +3862,26 @@ function setBlendType(type) {
     btn.classList.toggle('active', btn.dataset.type === type);
   });
 
-  // Show/hide three-letter sub-option
-  document.getElementById('threeLetterOptions').style.display = type === 'three' ? 'block' : 'none';
-
-  // Show/hide letter panel (nikud doesn't need letters)
-  document.getElementById('panelLetters').style.display = type === 'nikud' ? 'none' : '';
-
-  // Show/hide lock position sections (one-letter and nikud don't need pos 2/3)
+  // Lock position sections: positions 2 and 3 are only meaningful for the
+  // matching blend types. Clear their data so a stale selection doesn't
+  // silently re-engage if the user later switches back.
   document.getElementById('lockSection2').style.display = (type === 'two' || type === 'three') ? '' : 'none';
   document.getElementById('lockSection3').style.display = type === 'three' ? '' : 'none';
+  const clearLockPos = (pos) => {
+    lockLetters[pos - 1] = new Set();
+    const cb = document.getElementById(`lock${pos}Active`);
+    if (cb) cb.checked = false;
+    const grid = document.getElementById(`lockGrid${pos}`);
+    if (grid) {
+      grid.style.display = 'none';
+      grid.querySelectorAll('.lock-letter-tile.selected').forEach(t => t.classList.remove('selected'));
+    }
+    const btns = document.getElementById(`lockBtns${pos}`);
+    if (btns) btns.style.display = 'none';
+  };
+  if (type !== 'two' && type !== 'three') clearLockPos(2);
+  if (type !== 'three') clearLockPos(3);
 
-  // Update header subtitle
   const subtitles = {
     two:   'Phonetic Hebrew decoding practice for emerging readers',
     one:   'Phonetic Hebrew decoding — single-letter drills',
@@ -3715,6 +3890,7 @@ function setBlendType(type) {
   };
   document.getElementById('headerSub').textContent = subtitles[type];
 
+  updateModeVisibility();
   updateCombosCount();
   if (blends.length) generate(false);
 }
@@ -3791,37 +3967,14 @@ function adjustBingoCards(delta) {
   el.value = Math.max(1, Math.min(200, (parseInt(el.value) || 1) + delta));
 }
 
-function syncFillVowelsUI() {
-  const on = document.getElementById('fillVowelsToggle').checked;
-  const fillHide = ['blendTypeWrapper','threeLetterOptions','modeDivider',
-                    'rowInverse','rowBingo','bingoOptions','rowGematria','gematriaOptions'];
-  if (on) {
-    fillHide.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
-    document.getElementById('fillVowelsDageshRow').style.display = 'block';
-  } else {
-    document.getElementById('blendTypeWrapper').style.display = '';
-    const activeType = document.querySelector('.blend-type-btn.active')?.dataset.type;
-    document.getElementById('threeLetterOptions').style.display = (activeType === 'three') ? 'block' : 'none';
-    document.getElementById('modeDivider').style.display = '';
-    document.getElementById('rowInverse').style.display = '';
-    document.getElementById('rowBingo').style.display = '';
-    document.getElementById('bingoOptions').style.display =
-      document.getElementById('bingoToggle').checked ? 'flex' : 'none';
-    document.getElementById('rowGematria').style.display = '';
-    document.getElementById('gematriaOptions').style.display =
-      document.getElementById('gematriaToggle').checked ? 'flex' : 'none';
-    document.getElementById('fillVowelsDageshRow').style.display = 'none';
-  }
-}
+// Kept as a thin alias so any legacy call sites continue to work.
+function syncFillVowelsUI() { updateModeVisibility(); }
 
 function onFillVowelsChange() {
-  const on = document.getElementById('fillVowelsToggle').checked;
-  if (on) {
-    document.getElementById('bingoToggle').checked = false;
-    document.getElementById('gematriaToggle').checked = false;
-    document.getElementById('inverseToggle').checked = false;
+  if (document.getElementById('fillVowelsToggle').checked) {
+    enforceMutex({ source: 'blends', drill: 'fillvowels' });
   }
-  syncFillVowelsUI();
+  updateModeVisibility();
   renderWorksheet(false);
 }
 
@@ -3954,40 +4107,11 @@ let npGender        = 'f';
 let npDisplay       = 'number';
 let npTranslitPage  = 'same';
 
-const NP_HIDE_PANELS = ['panelLayout', 'panelLetters', 'panelVowels'];
-const NP_HIDE_ROWS   = ['rowInverse', 'rowFillVowels', 'rowAnswerKey', 'rowSelfCheck',
-                        'rowGematria', 'rowRealWords', 'rowBingo'];
-const NP_HIDE_MISC   = ['blendTypeWrapper', 'modeDivider', 'bingoOptions',
-                        'gematriaOptions', 'selfCheckOptions', 'realWordsOptions',
-                        'customWordlistOptions', 'fillVowelsDageshRow',
-                        'threeLetterOptions', 'focusOptions'];
-
 function toggleNumberPracticeUI() {
   const on = document.getElementById('numberPracticeToggle').checked;
-
-  if (on) {
-    document.getElementById('bingoToggle').checked        = false;
-    document.getElementById('gematriaToggle').checked     = false;
-    document.getElementById('realWordsToggle').checked    = false;
-    document.getElementById('selfCheckToggle').checked    = false;
-    document.getElementById('inverseToggle').checked      = false;
-    document.getElementById('fillVowelsToggle').checked   = false;
-    document.getElementById('answerKeyToggle').checked    = false;
-    cwModeActive = false;
-  }
-
-  NP_HIDE_PANELS.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
-  NP_HIDE_ROWS.forEach(id   => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
-
-  if (on) {
-    NP_HIDE_MISC.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
-    document.getElementById('numberPracticeOptions').style.display = 'flex';
-    renderNumberPractice(document.getElementById('worksheet'));
-  } else {
-    document.getElementById('numberPracticeOptions').style.display = 'none';
-    // Restore other modes' UI based on their own toggle states
-    toggleBingoUI();
-  }
+  if (on) enforceMutex({ source: 'numbers' });
+  updateModeVisibility();
+  if (on) renderNumberPractice(document.getElementById('worksheet'));
 }
 
 function setNpGender(g) {
@@ -4463,32 +4587,8 @@ function renderNumberPracticeBingo(ws) {
 }
 
 function toggleBingoUI() {
-  const on = document.getElementById('bingoToggle').checked;
-  document.getElementById('bingoOptions').style.display = on ? 'flex' : 'none';
-
-  const hideRows = ['rowInverse','rowAnswerKey','rowThreeLetter','rowSelfCheck','rowGematria','rowOneLetter','rowNikudOnly','rowRealWords','rowFillVowels','rowNumberPractice'];
-  hideRows.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = on ? 'none' : ''; });
-  document.getElementById('panelLayout').style.display = on ? 'none' : '';
-
-  if (on) {
-    // Force off Real Words and Number Practice so they can't coexist
-    document.getElementById('realWordsToggle').checked = false;
-    document.getElementById('realWordsOptions').style.display = 'none';
-    document.getElementById('numberPracticeToggle').checked = false;
-    document.getElementById('numberPracticeOptions').style.display = 'none';
-    document.getElementById('fillVowelsToggle').checked = false;
-    ['focusOptions','threeLetterOptions','selfCheckOptions'].forEach(id => {
-      const el = document.getElementById(id); if(el) el.style.display = 'none';
-    });
-  } else {
-    document.getElementById('focusOptions').style.display =
-      document.getElementById('focusToggle').checked ? 'flex' : 'none';
-    document.getElementById('threeLetterOptions').style.display =
-      (document.querySelector('.blend-type-btn.active')?.dataset.type === 'three') ? 'block' : 'none';
-    document.getElementById('selfCheckOptions').style.display =
-      document.getElementById('selfCheckToggle').checked ? 'flex' : 'none';
-  }
-
+  if (document.getElementById('bingoToggle').checked) enforceMutex({ bingoOn: true });
+  updateModeVisibility();
   if (blends.length) renderWorksheet(false);
 }
 
@@ -4854,9 +4954,8 @@ function renderBingo(ws) {
 //  FOCUS LETTER UI
 // ══════════════════════════════════════════════
 function toggleFocusUI() {
-  const on = document.getElementById('focusToggle').checked;
-  document.getElementById('focusOptions').style.display = on ? 'flex' : 'none';
-  if (on) updateFocusYudWarning();
+  updateModeVisibility();
+  if (document.getElementById('focusToggle').checked) updateFocusYudWarning();
   updateCombosCount();
 }
 
@@ -5303,37 +5402,19 @@ function calcGematria(str) {
 function toggleGematriaMode() {
   const on = document.getElementById('gematriaToggle').checked;
   if (on) {
-    // Gematria is incompatible with these modes
-    ['bingoToggle','selfCheckToggle'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el && el.checked) { el.checked = false; el.dispatchEvent(new Event('change')); }
-    });
-    document.getElementById('rowBingo').style.display = 'none';
-    document.getElementById('rowSelfCheck').style.display = 'none';
+    enforceMutex({ source: 'blends', drill: 'gematria' });
   } else {
-    // Restore anything hidden by self-check mode before closing
+    // When turning gematria off, also clear its own self-check sub-state.
     const sc = document.getElementById('gematriaSelfCheck');
-    if (sc && sc.checked) { sc.checked = false; setGematriaSelfCheckMode(false); }
-    document.getElementById('rowBingo').style.display = '';
-    document.getElementById('rowSelfCheck').style.display = '';
+    if (sc && sc.checked) sc.checked = false;
   }
-  const gematriaOpts = document.getElementById('gematriaOptions');
-  if (gematriaOpts) gematriaOpts.style.display = on ? 'flex' : 'none';
+  updateModeVisibility();
   if (blends.length) renderWorksheet(false);
 }
 
-const GEMATRIA_SELFCHECK_HIDE = [
-  'panelVowels','panelLetters','panelLayout','panelAdvanced','blendTypeWrapper','modeDivider',
-  'rowInverse','rowAnswerKey','rowThreeLetter','rowSelfCheck',
-  'rowBingo','rowBlendCount','rowOneLetter','rowNikudOnly','rowRealWords',
-];
-
-function setGematriaSelfCheckMode(on) {
-  GEMATRIA_SELFCHECK_HIDE.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = on ? 'none' : '';
-  });
-}
+// Gematria self-check is handled via updateModeVisibility(); this function
+// is kept as a thin alias for the inline onchange in the gematria options panel.
+function setGematriaSelfCheckMode(_on) { updateModeVisibility(); }
 
 function onGematriaOptionChange() {
   const ws = document.getElementById('worksheet');
@@ -5816,29 +5897,21 @@ function renderInverseCell(grid, b, idx, showAnswers) {
 // ══════════════════════════════════════════════
 //  Re-render on toggle changes (no re-generate)
 // ══════════════════════════════════════════════
-document.getElementById('inverseToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(false); });
-document.getElementById('answerKeyToggle').addEventListener('change', () => { if (blends.length) renderWorksheet(false); });
+document.getElementById('inverseToggle').addEventListener('change', () => {
+  if (document.getElementById('inverseToggle').checked) {
+    enforceMutex({ source: 'blends', drill: 'inverse' });
+  }
+  updateModeVisibility();
+  if (blends.length) renderWorksheet(false);
+});
+document.getElementById('answerKeyToggle').addEventListener('change', () => {
+  if (document.getElementById('answerKeyToggle').checked) enforceMutex({ answerKeyOn: true });
+  updateModeVisibility();
+  if (blends.length) renderWorksheet(false);
+});
 document.getElementById('selfCheckToggle').addEventListener('change', () => {
-  const on = document.getElementById('selfCheckToggle').checked;
-  if (on) {
-    document.getElementById('bingoToggle').checked = false; toggleBingoUI();
-    document.getElementById('realWordsToggle').checked = false; toggleRealWordsUI();
-  }
-  const hidePanels = ['panelLayout', 'panelVowels', 'panelLetters', 'panelPresets'];
-  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowBingo', 'rowGematria', 'rowRealWords'];
-  hidePanels.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
-  hideRows.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
-  ['blendTypeWrapper','modeDivider'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
-  document.getElementById('selfCheckOptions').style.display = on ? 'flex' : 'none';
-  if (on && document.getElementById('gematriaToggle').checked) { document.getElementById('gematriaToggle').checked = false; }
-  if (on) {
-    document.getElementById('focusOptions').style.display = 'none';
-    document.getElementById('threeLetterOptions').style.display = 'none';
-  } else {
-    document.getElementById('focusOptions').style.display = document.getElementById('focusToggle').checked ? 'flex' : 'none';
-    document.getElementById('threeLetterOptions').style.display =
-      (document.querySelector('.blend-type-btn.active')?.dataset.type === 'three') ? 'block' : 'none';
-  }
+  if (document.getElementById('selfCheckToggle').checked) enforceMutex({ selfCheckOn: true });
+  updateModeVisibility();
   if (blends.length) renderWorksheet(false);
 });
 document.getElementById('wsTitle').addEventListener('input', () => { if (blends.length) renderWorksheet(false); });
@@ -5966,17 +6039,9 @@ function clearCustomWordlist() {
 
 function activateCustomWordlistMode(on) {
   cwModeActive = on;
-  document.getElementById('customWordlistOptions').style.display = on ? 'flex' : 'none';
-  const hidePanels = ['panelVowels', 'panelLetters'];
-  const hideRows = ['rowInverse', 'rowAnswerKey', 'rowSelfCheck', 'rowBlendCount', 'rowBingo', 'rowRealWords'];
-  hidePanels.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
-  hideRows.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
-  ['blendTypeWrapper', 'modeDivider'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
+  if (on) enforceMutex({ source: 'customwordlist' });
+  updateModeVisibility();
   if (on) {
-    document.getElementById('realWordsToggle').checked = false;
-    document.getElementById('realWordsOptions').style.display = 'none';
-    ['selfCheckToggle','bingoToggle'].forEach(id => { const el = document.getElementById(id); if (el) el.checked = false; });
-    ['bingoOptions','selfCheckOptions','focusOptions','threeLetterOptions'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
     onCwTranslitChange();
     onCwTranslChange();
   }
@@ -5985,11 +6050,18 @@ function activateCustomWordlistMode(on) {
 function setCwDrill(drill) {
   cwDrillType = drill;
   document.querySelectorAll('[data-cw-drill]').forEach(b => b.classList.toggle('active', b.dataset.cwDrill === drill));
-  // Mix in blends not meaningful for vocab or bingo
+  // Mix in blends not meaningful for vocab or bingo — also clear the checkbox
+  // so the option doesn't stay invisibly active when its row hides.
   const mixRow = document.getElementById('cwMixedRow');
-  if (mixRow) mixRow.style.display = ['vocab', 'bingo'].includes(drill) ? 'none' : '';
+  const mixHidden = ['vocab', 'bingo'].includes(drill);
+  if (mixRow) mixRow.style.display = mixHidden ? 'none' : '';
+  if (mixHidden) {
+    const mixCb = document.getElementById('cwMixed');
+    if (mixCb && mixCb.checked) { mixCb.checked = false; toggleCwBlendOpts(); }
+  }
   onCwTranslitChange();
   onCwTranslChange();
+  updateModeVisibility();
 }
 
 function onCwTranslitChange() {
@@ -6250,29 +6322,9 @@ function generateCustomWordlist() {
 
 function toggleRealWordsUI() {
   const on = document.getElementById('realWordsToggle').checked;
-  document.getElementById('realWordsOptions').style.display = on ? 'flex' : 'none';
-
-  if (on) {
-    // Deactivate custom wordlist mode (keep data, just hide controls)
-    cwModeActive = false;
-    document.getElementById('customWordlistOptions').style.display = 'none';
-  }
-
-  const hidePanels = ['panelVowels', 'panelLetters'];
-  const hideRows   = ['rowInverse', 'rowAnswerKey', 'rowSelfCheck', 'rowBlendCount', 'rowBingo'];
-  hidePanels.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
-  hideRows.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
-  ['blendTypeWrapper','modeDivider'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? 'none' : ''; });
-
-  if (on) {
-    document.getElementById('selfCheckToggle').checked = false;
-    document.getElementById('bingoToggle').checked = false;
-    document.getElementById('bingoOptions').style.display = 'none';
-    document.getElementById('selfCheckOptions').style.display = 'none';
-    document.getElementById('focusOptions').style.display = 'none';
-    document.getElementById('threeLetterOptions').style.display = 'none';
-    updateRwPoolInfo();
-  }
+  if (on) enforceMutex({ source: 'realwords' });
+  updateModeVisibility();
+  if (on) updateRwPoolInfo();
 }
 
 function toggleRwStarRow() {
@@ -6363,14 +6415,12 @@ function setRealWordDrill(type) {
   const rwBingoOpts = document.getElementById('rwBingoOptions');
   if (rwBingoOpts) rwBingoOpts.style.display = (type === 'bingo') ? 'block' : 'none';
 
-  // Show gematria sub-options when gematria drill is active
-  const gematriaOpts = document.getElementById('gematriaOptions');
-  if (gematriaOpts) gematriaOpts.style.display = (type === 'gematria') ? 'flex' : (document.getElementById('gematriaToggle').checked ? 'flex' : 'none');
-
   // Show Gematria value toggle only for gematria drill
   const gematriaValRow = document.getElementById('rwShowGematriaRow');
   if (gematriaValRow) gematriaValRow.style.display = (type === 'gematria') ? '' : 'none';
 
+  // Central updater handles gematriaOptions visibility (it reads rwDrillType)
+  updateModeVisibility();
   updateRwPoolInfo();
 }
 
