@@ -3662,8 +3662,8 @@ function generateBingoBlend(firstPool, secondPool, vowelKeys, excludeRepeats) {
     if (alt.length === 0) return null;
     vowel = alt[Math.floor(Math.random() * alt.length)];
   }
-  // Vav + Shva guard
-  if ((first === 'ו' || first === 'וֹ' || first === 'וּ') && vowel === 'sh') {
+  // Rule N1: Shva cannot be a syllable nucleus — reroll to a full vowel
+  if (vowel === 'sh') {
     const alt = vowelKeys.filter(v => v !== 'sh');
     if (alt.length === 0) return null;
     vowel = alt[Math.floor(Math.random() * alt.length)];
@@ -3690,7 +3690,8 @@ function generateBingoBlendOne(pool, vowelKeys) {
   if (vowelKeys.length === 0) return null;
   let vowel = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
   let letter = pool[Math.floor(Math.random() * pool.length)];
-  if ((letter === 'ו' || letter === 'וֹ' || letter === 'וּ') && vowel === 'sh') {
+  // Rule N1: Shva cannot be a syllable nucleus — reroll to a full vowel
+  if (vowel === 'sh') {
     const alt = vowelKeys.filter(v => v !== 'sh');
     if (alt.length === 0) return null;
     vowel = alt[Math.floor(Math.random() * alt.length)];
@@ -3729,7 +3730,8 @@ function generateBingoBlendThree(firstPool, secondPool, thirdPool, vowelKeys, vo
     const alt = vowelKeys.filter(v => v !== 'o'); if (alt.length === 0) return null;
     vowel = alt[Math.floor(Math.random() * alt.length)];
   }
-  if ((first === 'ו' || first === 'וֹ' || first === 'וּ') && vowel === 'sh') {
+  // Rule N1: Shva cannot be a syllable nucleus — reroll to a full vowel
+  if (vowel === 'sh') {
     const alt = vowelKeys.filter(v => v !== 'sh'); if (alt.length === 0) return null;
     vowel = alt[Math.floor(Math.random() * alt.length)];
   }
@@ -4310,8 +4312,13 @@ function generate(animate = false) {
     ));
     if (first === 'י' && second === 'י') continue;
     if (excludeRepeats && first === second) continue;
-    // Phonotactic filter (Rules N1-N4)
-    if (isImpossibleCombo(first, second, null, vowel)) continue;
+
+    // Reroll shva for vav before the phonotactic filter fires, so vav still appears in blends
+    if (first === 'ו' && vowel === 'sh') {
+      const altVowels = vowelKeys.filter(v => v !== 'sh');
+      if (altVowels.length > 0) vowel = altVowels[Math.floor(Math.random() * altVowels.length)];
+      else continue;
+    }
 
     // Sin (שׂ) and Shin (ש) + Cholam is visually invalid — reroll vowel
     if ((first === 'שׂ' || first === 'ש') && vowel === 'o') {
@@ -4320,21 +4327,8 @@ function generate(animate = false) {
       else continue;
     }
 
-    // Rule 2: Plain ו as first letter — force vowel to match its dot form
-    // Cholam → וֹ already handled in withNikud; Kubutz → וּ already handled
-    // But skip Shva for plain Vav — ו with Shva is pedagogically meaningless
-    if (first === 'ו' && vowel === 'sh') {
-      const altVowels = vowelKeys.filter(v => v !== 'sh');
-      if (altVowels.length > 0) vowel = altVowels[Math.floor(Math.random() * altVowels.length)];
-      else continue;
-    }
-
-    // Rule 3: Vav variants (וֹ וּ) as first letter + Shva selected — skip, they carry their own vowel
-    if ((first === 'וֹ' || first === 'וּ') && vowel === 'sh') {
-      const altVowels = vowelKeys.filter(v => v !== 'sh');
-      if (altVowels.length > 0) vowel = altVowels[Math.floor(Math.random() * altVowels.length)];
-      else continue;
-    }
+    // Phonotactic filter (Rules N1-N4): rejects all remaining shva combos and other impossibles
+    if (isImpossibleCombo(first, second, null, vowel)) continue;
 
     const firstObj  = getLetter(first);
     const secondObj = getLetter(second);
@@ -5017,12 +5011,11 @@ const MATRES = new Set(['וֹ','וּ']);
  * @param {string} vowel  - vowel key: 'a','e','i','o','u','sh'
  * @returns {boolean} true = impossible, skip this combination
  */
-// Gutturals take Chataf (compound shva) not simple Shva
-const GUTTURALS = new Set(['א','ה','ח','ע']);
-
 function isImpossibleCombo(first, second, third, vowel) {
-  // Rule N1 (refined): Gutturals cannot take simple Shva — they use Chataf vowels instead
-  if (vowel === 'sh' && GUTTURALS.has(first)) return true;
+  // Rule N1: Shva is not a syllable nucleus — any consonant + shva alone is an impossible
+  // standalone syllable (Section 2.3 of phonotactic spec: all 21 non-sofit/non-mater consonants
+  // + shva = impossible; this generalizes the earlier guttural-only restriction).
+  if (vowel === 'sh') return true;
 
   // Rule N4: Matres cannot be C1 (they are vowels, not consonants)
   if (MATRES.has(first)) return true;
@@ -5274,9 +5267,9 @@ function ensureCvcBlends(needed) {
     const first  = firstPool[Math.floor(Math.random() * firstPool.length)];
     const second = secondPool[Math.floor(Math.random() * secondPool.length)];
     if (first === 'י' && second === 'י') continue;
-    if (isImpossibleCombo(first, second, null, vowel)) continue;
-    if ((first === 'שׂ' || first === 'ש') && vowel === 'o') { const alt = vowelKeys.filter(v => v !== 'o'); if (!alt.length) continue; vowel = alt[Math.floor(Math.random() * alt.length)]; }
     if (first === 'ו' && vowel === 'sh') { const alt = vowelKeys.filter(v => v !== 'sh'); if (!alt.length) continue; vowel = alt[Math.floor(Math.random() * alt.length)]; }
+    if ((first === 'שׂ' || first === 'ש') && vowel === 'o') { const alt = vowelKeys.filter(v => v !== 'o'); if (!alt.length) continue; vowel = alt[Math.floor(Math.random() * alt.length)]; }
+    if (isImpossibleCombo(first, second, null, vowel)) continue;
     const firstObj  = getLetter(first);
     const secondObj = getLetter(second);
     const hebrewDisplay = withNikud(firstObj, vowel, true) + (SOFIT_CHARS.has(second) ? second : secondObj.base);
