@@ -1744,6 +1744,13 @@
         </div>
         <div id="gematriaOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--border);flex-direction:column;gap:4px;">
           <div class="toggle-row" style="font-size:0.82rem;">
+            <span>Inverse <span style="font-size:0.72rem;color:var(--muted)">(show numbers)</span></span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="gematriaInverse" onchange="onGematriaOptionChange()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row" style="font-size:0.82rem;">
             <span>Self Check</span>
             <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
               <input type="checkbox" id="gematriaSelfCheck" onchange="document.getElementById('gematriaAnswerKey').checked=false;setGematriaSelfCheckMode(this.checked);onGematriaOptionChange()">
@@ -2980,6 +2987,7 @@ function getSettings() {
     gematriaMode:      document.getElementById('gematriaToggle').checked,
     gematriaSelfCheck: document.getElementById('gematriaSelfCheck').checked,
     gematriaAnswerKey: document.getElementById('gematriaAnswerKey').checked,
+    gematriaInverse:   document.getElementById('gematriaInverse').checked,
     // Custom Wordlist
     cwModeActive,
     cwDrillType,
@@ -3132,6 +3140,7 @@ function applySettings(s) {
   if (s.gematriaMode !== undefined)      document.getElementById('gematriaToggle').checked = s.gematriaMode;
   if (s.gematriaSelfCheck !== undefined) document.getElementById('gematriaSelfCheck').checked = s.gematriaSelfCheck;
   if (s.gematriaAnswerKey !== undefined) document.getElementById('gematriaAnswerKey').checked = s.gematriaAnswerKey;
+  if (s.gematriaInverse !== undefined)   document.getElementById('gematriaInverse').checked = s.gematriaInverse;
 
   // Custom Wordlist
   if (s.cwShowTranslit !== undefined)    document.getElementById('cwShowTranslit').checked = s.cwShowTranslit;
@@ -5436,6 +5445,7 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
   if (!items) items = blends.map(b => ({ hebrewDisplay: b.hebrewDisplay }));
   const selfCheck  = document.getElementById('gematriaSelfCheck')?.checked ?? false;
   const showAnsKey = document.getElementById('gematriaAnswerKey')?.checked ?? true;
+  const inverse    = document.getElementById('gematriaInverse')?.checked ?? false;
   const title    = document.getElementById('wsTitle').value || 'Hebrew Blends';
   const subtitle = document.getElementById('wsSubtitle').value;
   const cols     = autoCols(items.length);
@@ -5446,7 +5456,10 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
 
     const scHeader = document.createElement('div');
     scHeader.className = 'ws-header';
-    scHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle">${subtitle || 'Write the Gematria value of each word, then tap to check.'}</div></div>`;
+    const scSub = subtitle || (inverse
+      ? 'Write the Hebrew word that matches each Gematria value, then tap to check.'
+      : 'Write the Gematria value of each word, then tap to check.');
+    scHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle">${scSub}</div></div>`;
     ws.appendChild(scHeader);
 
     const scoreBar = document.createElement('div');
@@ -5471,7 +5484,7 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
         <button class="sc-cols-btn" onclick="setSCCols(3,this)">3</button>
         <button class="sc-cols-btn" onclick="setSCCols(5,this)">5</button>
       </div>
-      <span style="font-size:0.75rem;color:var(--muted);">Tap a card to reveal its Gematria value</span>`;
+      <span style="font-size:0.75rem;color:var(--muted);">${inverse ? 'Tap a card to reveal the Hebrew word' : 'Tap a card to reveal its Gematria value'}</span>`;
     ws.appendChild(controls);
 
     const grid = document.createElement('div');
@@ -5484,18 +5497,26 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
       const val = calcGematria(b.hebrewDisplay);
       const card = document.createElement('div');
       card.className = 'flip-card';
+      const front = inverse
+        ? `<span style="font-size:2.2rem;font-weight:700;color:var(--text);">${val}</span>
+           <div class="gematria-blank" style="margin-top:8px;width:120px;"></div>`
+        : `<span style="direction:rtl;font-family:var(--heb-font);font-size:2rem;">${b.hebrewDisplay}</span>
+           <div class="gematria-blank" style="margin-top:8px;"></div>`;
+      const back = inverse
+        ? `<span style="font-size:1.4rem;font-weight:700;opacity:0.7;">${val}</span>
+           <span style="direction:rtl;font-family:var(--heb-font);font-size:1.8rem;color:var(--gold-light);margin-top:4px;">${b.hebrewDisplay}</span>`
+        : `<span style="direction:rtl;font-family:var(--heb-font);font-size:1.4rem;opacity:0.7;">${b.hebrewDisplay}</span>
+           <span style="font-size:1.8rem;font-weight:700;color:var(--gold-light);margin-top:4px;">${val}</span>`;
       card.innerHTML = `
         <div class="flip-card-inner">
           <div class="flip-card-front">
             <span class="flip-card-num">${idx + 1}</span>
-            <span style="direction:rtl;font-family:var(--heb-font);font-size:2rem;">${b.hebrewDisplay}</span>
-            <div class="gematria-blank" style="margin-top:8px;"></div>
+            ${front}
             <span class="flip-card-hint">tap to reveal</span>
           </div>
           <div class="flip-card-back">
             <span class="flip-card-num" style="color:var(--gold-light);">${idx + 1}</span>
-            <span style="direction:rtl;font-family:var(--heb-font);font-size:1.4rem;opacity:0.7;">${b.hebrewDisplay}</span>
-            <span style="font-size:1.8rem;font-weight:700;color:var(--gold-light);margin-top:4px;">${val}</span>
+            ${back}
           </div>
         </div>
         <div class="flip-card-score-btns">
@@ -5511,20 +5532,31 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
     sheet.className = 'sheet';
     const header = document.createElement('div');
     header.className = 'ws-header';
-    header.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle">${subtitle || 'Write the Gematria value below each word.'}</div></div>`;
+    const plainSub = subtitle || (inverse
+      ? 'Write the Hebrew word that has each Gematria value.'
+      : 'Write the Gematria value below each word.');
+    header.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle">${plainSub}</div></div>`;
     sheet.appendChild(header);
     const grid = document.createElement('div');
     grid.className = 'blends-grid';
     grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-    grid.style.direction = 'rtl';
+    grid.style.direction = inverse ? 'ltr' : 'rtl';
     items.forEach((b, idx) => {
       const cell = document.createElement('div');
       cell.className = 'blend-cell';
       cell.style.minHeight = '80px';
-      cell.innerHTML = `
-        <div style="font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;">${idx + 1}</div>
-        <div class="blend-hebrew">${b.hebrewDisplay}</div>
-        <div class="gematria-blank"></div>`;
+      if (inverse) {
+        const val = calcGematria(b.hebrewDisplay);
+        cell.innerHTML = `
+          <div style="font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;">${idx + 1}</div>
+          <div style="font-size:1.6rem;font-weight:700;color:var(--text);direction:ltr;align-self:center;">${val}</div>
+          <div class="gematria-blank" style="width:120px;"></div>`;
+      } else {
+        cell.innerHTML = `
+          <div style="font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;">${idx + 1}</div>
+          <div class="blend-hebrew">${b.hebrewDisplay}</div>
+          <div class="gematria-blank"></div>`;
+      }
       grid.appendChild(cell);
     });
     sheet.appendChild(grid);
