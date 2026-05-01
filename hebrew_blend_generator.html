@@ -2203,6 +2203,23 @@
             </div>
           </div>
 
+          <!-- TTS Reading Speed -->
+          <div style="margin-top:8px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--cream);">
+            <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.04em;color:var(--text);margin-bottom:6px;">
+              Hebrew TTS Reading Speed <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span>
+            </div>
+            <div class="font-size-row">
+              <span class="fs-label">Slow</span>
+              <input type="range" id="ttsRateSlider" min="0.5" max="1.5" step="0.05" value="0.85"
+                     oninput="document.getElementById('ttsRateVal').textContent = parseFloat(this.value).toFixed(2) + '×'">
+              <span class="fs-val" id="ttsRateVal">0.85×</span>
+              <button class="fs-reset" onclick="document.getElementById('ttsRateSlider').value=0.85;document.getElementById('ttsRateVal').textContent='0.85×';" title="Reset to default">↺</button>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:var(--muted);margin-top:1px;padding:0 2px;">
+              <span>Slower</span><span>Fast</span>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -2743,6 +2760,7 @@ function getSettings() {
     timerOn:       document.getElementById('timerToggle').checked,
     timerDuration: document.getElementById('timerDuration').value,
     audio:         document.getElementById('audioToggle').checked,
+    ttsRate:       parseFloat(document.getElementById('ttsRateSlider')?.value || 0.85),
     // Focus letters
     focusOn:       document.getElementById('focusToggle').checked,
     lock1Active:   document.getElementById('lock1Active').checked,
@@ -2856,6 +2874,10 @@ function applySettings(s) {
   if (s.timerOn !== undefined)   document.getElementById('timerToggle').checked = s.timerOn;
   if (s.timerDuration)           document.getElementById('timerDuration').value = s.timerDuration;
   if (s.audio !== undefined)     document.getElementById('audioToggle').checked = s.audio;
+  if (s.ttsRate !== undefined)   {
+    const sl = document.getElementById('ttsRateSlider');
+    if (sl) { sl.value = s.ttsRate; document.getElementById('ttsRateVal').textContent = parseFloat(s.ttsRate).toFixed(2) + '×'; }
+  }
   if (s.timerOn !== undefined)   document.getElementById('timerDurationRow').style.display = s.timerOn ? 'flex' : 'none';
 
   // Focus letters
@@ -3216,7 +3238,7 @@ function speakBlend(text) {
   if (!window.speechSynthesis) return;
   const utt = new SpeechSynthesisUtterance(text);
   utt.lang = 'he-IL';
-  utt.rate = 0.85;
+  utt.rate = parseFloat(document.getElementById('ttsRateSlider')?.value || 0.85);
   speechSynthesis.cancel();
   speechSynthesis.speak(utt);
 }

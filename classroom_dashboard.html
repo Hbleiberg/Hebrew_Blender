@@ -1373,6 +1373,21 @@
     </div>
     <div class="color-pick-list" id="colorPickerList" style="display:none;"></div>
     <button class="btn btn-xs btn-secondary" id="nikudResetBtn" onclick="resetNikudColors()" style="display:none;font-size:0.72rem;margin-top:4px;">↺ Reset vowel colors</button>
+
+    <div class="form-row" style="margin-top:12px;flex-direction:column;align-items:stretch;gap:4px;">
+      <label style="font-size:0.78rem;font-weight:600;">Hebrew TTS Reading Speed <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></label>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span style="font-size:0.65rem;color:var(--muted);">Slow</span>
+        <input type="range" id="ttsRateSlider" min="0.5" max="1.5" step="0.05" value="0.85" style="flex:1;accent-color:var(--gold);"
+               oninput="document.getElementById('ttsRateVal').textContent = parseFloat(this.value).toFixed(2) + '×'">
+        <span id="ttsRateVal" style="font-size:0.72rem;color:var(--text);min-width:36px;text-align:right;">0.85×</span>
+        <button class="btn btn-xs btn-secondary" style="padding:2px 6px;font-size:0.65rem;"
+                onclick="document.getElementById('ttsRateSlider').value=0.85;document.getElementById('ttsRateVal').textContent='0.85×';settings.ttsRate=0.85;saveSettingsToStorage();">↺</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:var(--muted);padding:0 1px;">
+        <span>Slower</span><span>Fast</span>
+      </div>
+    </div>
   </div>
 </div>
 </div>
@@ -1561,6 +1576,7 @@
     videoLayout: 'below',
     tapToReadDow: false,
     tapToReadWeather: false,
+    ttsRate: 0.85,
     dowCollapsed: false,
     weatherCollapsed: false,
     scheduleEnabled: false,
@@ -1706,7 +1722,7 @@
     if (!window.speechSynthesis || !text) return;
     const utt = new SpeechSynthesisUtterance(text);
     utt.lang = 'he-IL';
-    utt.rate = 0.85;
+    utt.rate = settings.ttsRate || 0.85;
     speechSynthesis.cancel();
     speechSynthesis.speak(utt);
   }
@@ -2346,6 +2362,8 @@
     $('showTomorrow').checked = settings.showTomorrow;
     $('tapToReadDow').checked = !!settings.tapToReadDow;
     $('tapToReadWeather').checked = !!settings.tapToReadWeather;
+    const ttsRateSl = $('ttsRateSlider');
+    if (ttsRateSl) { ttsRateSl.value = settings.ttsRate || 0.85; $('ttsRateVal').textContent = parseFloat(ttsRateSl.value).toFixed(2) + '×'; }
     const activeSet = settings.dowEmojiSet || 'chick';
     document.querySelectorAll('.emoji-set-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.set === activeSet);
@@ -2437,6 +2455,9 @@
     });
     document.getElementById('tapToReadWeather').addEventListener('change', e => {
       settings.tapToReadWeather = e.target.checked; renderWeather(); saveSettingsToStorage();
+    });
+    document.getElementById('ttsRateSlider').addEventListener('change', e => {
+      settings.ttsRate = parseFloat(e.target.value); saveSettingsToStorage();
     });
     document.querySelectorAll('input[name="dowLang"]').forEach(r =>
       r.addEventListener('change', () => { settings.dowLang = r.value; renderDaysList(); saveSettingsToStorage(); }));
