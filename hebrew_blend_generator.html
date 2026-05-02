@@ -349,6 +349,19 @@
   .lock-pos-header { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
   .lock-pos-header .pos-label { font-size:0.72rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; }
   .lock-pos-header .lock-btns { display:flex; gap:3px; margin-left:auto; }
+  .lock-vowel-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
+  .lock-vowel-tile {
+    display: flex; flex-direction: column; align-items: center; gap: 1px;
+    padding: 4px 2px; border: 1px solid var(--border); border-radius: 4px;
+    cursor: pointer; transition: all 0.15s; user-select: none; background: var(--white);
+  }
+  .lock-vowel-tile:hover { border-color: var(--gold); }
+  .lock-vowel-tile.selected { background: var(--navy); border-color: var(--navy); color: var(--white); }
+  .lock-vowel-tile .heb { font-size: 1.1rem; font-family: var(--heb-font); direction: rtl; }
+  .lock-vowel-tile .name { font-size: 0.55rem; text-align: center; line-height: 1.1; opacity: 0.78; direction: ltr; }
+  body.dark .lock-vowel-tile { background: #1e2535; border-color: var(--border); color: #dde4f0; }
+  body.dark .lock-vowel-tile.selected { background: #2a4070; border-color: #4a6aaa; color: #dde4f0; }
+  body.dark .lock-vowel-tile:hover { border-color: var(--gold); }
 
   /* Action buttons */
   .btn {
@@ -2391,6 +2404,29 @@
             <span class="tooltip-wrap" style="font-size:0.6rem;">?<span class="tooltip-box">When unchecked (default), vav-holam (<span style="font-family:var(--heb-font);">וֹ</span>) and shuruk (<span style="font-family:var(--heb-font);">וּ</span>) appear alongside a consonant — the Vav is the vowel marker, not counted as a letter. When checked, they appear as standalone <span style="font-family:var(--heb-font);">וֹ</span> and <span style="font-family:var(--heb-font);">וּ</span> — the Vav itself is the letter.</span></span>
           </label>
         </div>
+        <!-- Lock Vowels -->
+        <div style="margin-top:10px;border-top:1px solid var(--border);padding-top:8px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Lock Vowels
+              <span class="tooltip-wrap" style="font-size:0.6rem;font-weight:400;text-transform:none;letter-spacing:normal;">?<span class="tooltip-box">When on, generated blends use only the locked vowels — a quick way to drill a single vowel sound (or a small set) without changing the main vowel selection above.</span></span>
+            </span>
+            <label class="toggle" style="transform:scale(0.8);transform-origin:right center;">
+              <input type="checkbox" id="vowelLockToggle" onchange="toggleVowelLockUI()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div id="vowelLockOptions" style="display:none;margin-top:6px;flex-direction:column;gap:6px;">
+            <div class="lock-pos-header">
+              <span class="pos-label">Locked Vowels</span>
+              <div class="lock-btns">
+                <button class="btn-xs" onclick="lockVowelSelectAll()">All</button>
+                <button class="btn-xs" onclick="lockVowelClearAll()">None</button>
+              </div>
+            </div>
+            <div class="lock-vowel-grid" id="lockVowelGrid"></div>
+            <div id="lockVowelWarning" style="display:none;font-size:0.72rem;color:var(--gold);background:rgba(201,146,42,0.12);border-radius:4px;padding:4px 7px;"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2740,6 +2776,7 @@ let selectedLetters = new Set(LETTERS.filter(l => !l.dageshTav && !l.savVariant)
 let selectedVowels  = new Set(MAIN_VOWEL_KEYS);
 let vavAsLetter = true;
 let lockLetters = [new Set(), new Set(), new Set()]; // pos 1, 2, 3
+let lockVowels  = new Set();                          // single-pool vowel lock
 
 // ── COLOR CODING ──
 const VOWEL_COLOR_DEFS = [
@@ -2999,6 +3036,7 @@ function setDageshTav(enabled) {
   if (enabled) { [0,1,2].forEach(i => { if (lockLetters[i].has('ת')) lockLetters[i].add('תּ'); }); }
   else { [0,1,2].forEach(i => lockLetters[i].delete('תּ')); }
   initLockGrids();
+initLockVowelGrid();
 
   updateCombosCount();
 }
@@ -3084,6 +3122,8 @@ function getSettings() {
     lock2Letters:  [...lockLetters[1]],
     lock3Active:   document.getElementById('lock3Active').checked,
     lock3Letters:  [...lockLetters[2]],
+    vowelLockOn:   document.getElementById('vowelLockToggle')?.checked,
+    lockVowels:    [...lockVowels],
     // Bingo
     bingo:             document.getElementById('bingoToggle').checked,
     bingoGrid:         document.getElementById('bingoGrid').value,
@@ -3234,6 +3274,16 @@ function applySettings(s) {
   if (s.lock2Letters) { lockLetters[1] = new Set(s.lock2Letters); document.querySelectorAll('#lockGrid2 .lock-letter-tile').forEach(t => t.classList.toggle('selected', lockLetters[1].has(t.dataset.heb))); }
   if (s.lock3Active !== undefined) { document.getElementById('lock3Active').checked = s.lock3Active; toggleLockSection(3, s.lock3Active); }
   if (s.lock3Letters) { lockLetters[2] = new Set(s.lock3Letters); document.querySelectorAll('#lockGrid3 .lock-letter-tile').forEach(t => t.classList.toggle('selected', lockLetters[2].has(t.dataset.heb))); }
+  if (s.vowelLockOn !== undefined) {
+    document.getElementById('vowelLockToggle').checked = !!s.vowelLockOn;
+    toggleVowelLockUI();
+  }
+  if (s.lockVowels) {
+    lockVowels = new Set(s.lockVowels);
+    document.querySelectorAll('#lockVowelGrid .lock-vowel-tile').forEach(t =>
+      t.classList.toggle('selected', lockVowels.has(t.dataset.vkey))
+    );
+  }
   updateFocusYudWarning();
 
   // Bingo
@@ -4107,7 +4157,7 @@ function toggleThreeLetterUI() { setBlendType('three'); }
 
 // ── ONE-LETTER GENERATION ──
 function generateOneLetter() {
-  const vowelKeys = [...selectedVowels];
+  const vowelKeys = getActiveVowelKeys();
   if (vowelKeys.length === 0) return [];
   const VAV_VARIANTS = new Set(['וֹ','וּ']);
   const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
@@ -4153,7 +4203,7 @@ function generateOneLetter() {
 
 // ── NIKUD-ONLY GENERATION ──
 function generateNikudOnly() {
-  const vowelKeys = [...selectedVowels];
+  const vowelKeys = getActiveVowelKeys();
   if (vowelKeys.length === 0) return [];
   const count = parseInt(document.getElementById('blendCount').value);
   const alefObj = getLetter('א');
@@ -4975,7 +5025,7 @@ function renderBingo(ws) {
   const excludeRep  = document.getElementById('excludeRepeats').checked;
   const sharedBlends = document.getElementById('bingoSharedBlends').checked;
 
-  const vowelKeys = [...selectedVowels];
+  const vowelKeys = getActiveVowelKeys();
   if (vowelKeys.length === 0) { ws.innerHTML = '<div class="empty-state"><h2>Please select at least one vowel.</h2></div>'; return; }
 
   const VAV_VARIANTS = new Set(['וֹ','וּ']);
@@ -5255,6 +5305,73 @@ function lockClearAll(pos) {
   updateCombosCount();
 }
 
+// ── Vowel Lock ──
+function initLockVowelGrid() {
+  const grid = document.getElementById('lockVowelGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  VOWELS.forEach(v => {
+    const div = document.createElement('div');
+    div.className = 'lock-vowel-tile' + (lockVowels.has(v.key) ? ' selected' : '');
+    div.dataset.vkey = v.key;
+    div.innerHTML = `<span class="heb">${v.nikud}</span><span class="name">${v.label}</span>`;
+    div.onclick = () => toggleLockVowel(v.key, div);
+    grid.appendChild(div);
+  });
+}
+
+function toggleLockVowel(key, el) {
+  if (lockVowels.has(key)) {
+    lockVowels.delete(key);
+    el.classList.remove('selected');
+  } else {
+    if (!selectedVowels.has(key)) {
+      const warn = document.getElementById('lockVowelWarning');
+      if (warn) {
+        warn.textContent = `⚠ That vowel isn't in your Vowels Included selection — add it above first.`;
+        warn.style.display = 'block';
+        clearTimeout(warn._t);
+        warn._t = setTimeout(() => { warn.style.display = 'none'; }, 3500);
+      }
+      return;
+    }
+    lockVowels.add(key);
+    el.classList.add('selected');
+  }
+  updateCombosCount();
+}
+
+function lockVowelSelectAll() {
+  lockVowels = new Set(VOWELS.map(v => v.key).filter(k => selectedVowels.has(k)));
+  document.querySelectorAll('#lockVowelGrid .lock-vowel-tile').forEach(t =>
+    t.classList.toggle('selected', lockVowels.has(t.dataset.vkey))
+  );
+  updateCombosCount();
+}
+
+function lockVowelClearAll() {
+  lockVowels = new Set();
+  document.querySelectorAll('#lockVowelGrid .lock-vowel-tile').forEach(t => t.classList.remove('selected'));
+  updateCombosCount();
+}
+
+function toggleVowelLockUI() {
+  const on = document.getElementById('vowelLockToggle').checked;
+  document.getElementById('vowelLockOptions').style.display = on ? 'flex' : 'none';
+  updateCombosCount();
+}
+
+// Vowel pool used by every generator path. The Vowel Lock takes precedence
+// when active and non-empty — same pattern as the existing letter Lock.
+function getActiveVowelKeys() {
+  const lockOn = document.getElementById('vowelLockToggle')?.checked;
+  if (lockOn && lockVowels.size > 0) {
+    // Stay safe: only return locked vowels that are still in the main selection.
+    return [...lockVowels].filter(k => selectedVowels.has(k));
+  }
+  return [...selectedVowels];
+}
+
 // ══════════════════════════════════════════════
 //  REGENERATE
 // ══════════════════════════════════════════════
@@ -5390,7 +5507,7 @@ function generate(animate = false) {
     return;
   }
 
-  let vowelKeys = [...selectedVowels];
+  let vowelKeys = getActiveVowelKeys();
   if (vowelKeys.length === 0) {
     if (rwOn) { blends = []; generateRealWords(); return; }
     alert('Please select at least one vowel.');
@@ -7934,6 +8051,7 @@ initLetters();
 updateCombosCount();
 updateVavAsLetterVisibility();
 initLockGrids();
+initLockVowelGrid();
 initColorPickers();
 setBlendType(document.querySelector('.blend-type-btn.active')?.dataset.type || 'two');
 initPanelCollapse();
