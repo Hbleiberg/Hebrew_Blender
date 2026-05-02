@@ -1686,29 +1686,6 @@
               <button class="rw-drill-btn"        data-np-translit="key"  onclick="setNpTranslitPage('key')">Answer key</button>
             </div>
           </div>
-          <div class="toggle-row" id="npAnswerKeyRow" style="font-size:0.82rem;">
-            <span>Show Answer Key</span>
-            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-              <input type="checkbox" id="npAnswerKey" onchange="onNpOptionChange()">
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div class="toggle-row" id="npSelfCheckRow" style="font-size:0.82rem;">
-            <span>Student Self-Check Mode</span>
-            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-              <input type="checkbox" id="npSelfCheck" onchange="onNpSelfCheckChange()">
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div id="npSelfCheckOptions" style="display:none;padding-left:16px;flex-direction:column;gap:4px;">
-            <div class="toggle-row" style="font-size:0.82rem;">
-              <span>Audio <span style="font-size:0.65rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;">BETA</span></span>
-              <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-                <input type="checkbox" id="npAudio" onchange="onNpOptionChange()">
-                <span class="slider"></span>
-              </label>
-            </div>
-          </div>
           <div class="toggle-row" id="npBingoRow" style="font-size:0.82rem;">
             <span>Bingo Mode
               <span class="tooltip-wrap">?<span class="tooltip-box">Generate printable bingo cards filled with numbers (or Hebrew number words). Includes a teacher caller sheet showing both the digit and the Hebrew word.</span></span>
@@ -1770,6 +1747,30 @@
               </span>
               <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
                 <input type="checkbox" id="npBingoShared" onchange="onNpOptionChange()">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+          <div style="border-top:1px solid var(--border);margin:8px 0 4px;"></div>
+          <div class="toggle-row" id="npAnswerKeyRow" style="font-size:0.82rem;">
+            <span>Show Answer Key</span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="npAnswerKey" onchange="onNpOptionChange()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row" id="npSelfCheckRow" style="font-size:0.82rem;">
+            <span>Student Self-Check Mode</span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="npSelfCheck" onchange="onNpSelfCheckChange()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div id="npSelfCheckOptions" style="display:none;padding-left:16px;flex-direction:column;gap:4px;">
+            <div class="toggle-row" style="font-size:0.82rem;">
+              <span>Audio <span style="font-size:0.65rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;">BETA</span></span>
+              <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+                <input type="checkbox" id="npAudio" onchange="onNpOptionChange()">
                 <span class="slider"></span>
               </label>
             </div>
