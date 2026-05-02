@@ -2385,10 +2385,23 @@ function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
 function generateDeck(n) {
   const deck = [];
+  const usedHeb = new Set();
   let attempts = 0;
-  while (deck.length < n && attempts < n * 20) {
+  let stuckCount = 0;
+  while (deck.length < n && attempts < n * 30) {
     const c = generateCard();
-    if (c) deck.push(c);
+    if (c && !usedHeb.has(c.heb)) {
+      deck.push(c);
+      usedHeb.add(c.heb);
+      stuckCount = 0;
+    } else {
+      stuckCount++;
+      if (stuckCount > 30) {
+        // Unique pool exhausted — start a new pass allowing repeats
+        usedHeb.clear();
+        stuckCount = 0;
+      }
+    }
     attempts++;
   }
   return deck;
