@@ -2317,6 +2317,9 @@ function generateCard() {
     positions.push(pickRandom(pool));
   }
 
+  // Sofits never take nikkud
+  if (positions[vowelPos - 1].sofit) return null;
+
   // Pick vowel (locked or random)
   const allVowelsList = [];
   VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => allVowelsList.push(v)));
@@ -2344,6 +2347,9 @@ function generateCard() {
     break;
   }
   if (!vowel) return null;
+  // Hard blocks: catch cases where guard loop exhausted retries on an impossible combo
+  if ((vowelLetter.heb === 'שׁ' || vowelLetter.heb === 'שׂ') && (vowel.key === 'o' || vowel.key === 'vcholam')) return null;
+  if (vowel.key === 'sh' && (GUTTURALS.has(vowelLetter.heb) || vowelLetter.heb === 'ו')) return null;
 
   // Special: vcholam / shuruk (mater lectionis)
   if (vowel.key === 'vcholam' || vowel.key === 'shuruk') {
