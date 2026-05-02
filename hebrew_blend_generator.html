@@ -1504,13 +1504,6 @@
             Include dageshim
           </label>
         </div>
-        <div class="toggle-row" id="rowAnswerKey">
-          <span>Show Answer Key</span>
-          <label class="toggle">
-            <input type="checkbox" id="answerKeyToggle">
-            <span class="slider"></span>
-          </label>
-        </div>
         <div class="toggle-row" id="rowBingo" style="margin-top:4px;">
           <span>Bingo Mode
             <span class="tooltip-wrap">?
@@ -1557,7 +1550,7 @@
             </label>
           </div>
           <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
-            <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Show sounds</span>
+            <span class="sub-label" style="font-size:0.78rem;min-width:72px;line-height:1.3;">Show Transliteration on card</span>
             <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
               <input type="checkbox" id="bingoShowSounds">
               <span class="slider"></span>
@@ -1765,42 +1758,10 @@
             </label>
           </div>
         </div>
-        <div class="toggle-row" id="rowSelfCheck" style="margin-top:4px;">
-          <span>Student Self-Check Mode</span>
-          <label class="toggle">
-            <input type="checkbox" id="selfCheckToggle">
-            <span class="slider"></span>
-          </label>
-        </div>
-        <div id="selfCheckOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--border);flex-direction:column;gap:6px;">
-          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
-            <span class="sub-label" style="font-size:0.78rem;flex:1;">Timer</span>
-            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-              <input type="checkbox" id="timerToggle" onchange="document.getElementById('timerDurationRow').style.display=this.checked?'flex':'none'">
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div id="timerDurationRow" style="display:none;gap:6px;align-items:center;font-size:0.78rem;padding-left:8px;">
-            <span class="sub-label" style="font-size:0.78rem;min-width:52px;">Duration</span>
-            <select id="timerDuration" style="flex:1;font-size:0.78rem;padding:3px 6px;">
-              <option value="60">1 min</option>
-              <option value="120" selected>2 min</option>
-              <option value="180">3 min</option>
-              <option value="300">5 min</option>
-            </select>
-          </div>
-          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
-            <span class="sub-label" style="font-size:0.78rem;flex:1;">Audio <span style="font-size:0.65rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;">BETA</span></span>
-            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-              <input type="checkbox" id="audioToggle">
-              <span class="slider"></span>
-            </label>
-          </div>
-        </div>
         <div class="toggle-row" id="rowRealWords" style="margin-top:4px;">
           <span>Real Words Mode
             <span class="tooltip-wrap">?
-              <span class="tooltip-box">Practice with real Hebrew words from a curated list of over 13,000 entries.<br><br>Choose Reading, Vocab (flip cards), or Reverse drill. Supports Bingo mode with real words.</span>
+              <span class="tooltip-box">Practice with real Hebrew words from a curated list of over 13,000 entries.<br><br>Drill types: <strong>Reading</strong>, <strong>Vocab</strong> (flip cards), <strong>Reverse</strong> (English → Hebrew), <strong>Identify</strong> (real vs. nonsense), <strong>Bingo</strong>, <strong>Gematria</strong>, and <strong>Fill Vowels</strong>.</span>
             </span>
           </span>
           <label class="toggle">
@@ -1915,7 +1876,7 @@
 
           <!-- Drill Type -->
           <div class="rw-section">
-            <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Drill Type <span class="tooltip-wrap" style="font-size:0.65rem;text-transform:none;letter-spacing:normal;font-weight:400;">?<span class="tooltip-box"><strong>Reading</strong> — Hebrew shown, students read aloud and flip to check.<br><br><strong>Vocab</strong> — Flip cards: Hebrew front, English translation back.<br><br><strong>Reverse</strong> — English shown, students recall or write the Hebrew.<br><br><strong>Identify</strong> — Mixed real words + nonsense blends; students circle the real ones. Includes a teacher answer key.<br><br><strong>Bingo</strong> — Generates unique bingo cards with real Hebrew words. Teacher calls words aloud; students mark matches.<br><br><strong>Gematria</strong> — Each word is shown with a blank line. Students calculate and write the total Gematria value of the letters. An answer key is generated on a second page.</span></span></div>
+            <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Drill Type <span class="tooltip-wrap" style="font-size:0.65rem;text-transform:none;letter-spacing:normal;font-weight:400;">?<span class="tooltip-box"><strong>Reading</strong> — Hebrew shown, students read aloud and flip to check.<br><br><strong>Vocab</strong> — Flip cards: Hebrew front, English translation back.<br><br><strong>Reverse</strong> — English shown, students recall or write the Hebrew.<br><br><strong>Identify</strong> — Mixed real words + nonsense blends; students circle the real ones. Includes a teacher answer key.<br><br><strong>Bingo</strong> — Generates unique bingo cards with real Hebrew words. Teacher calls words aloud; students mark matches.<br><br><strong>Gematria</strong> — Each word is shown with a blank line. Students calculate and write the total Gematria value of the letters. An answer key is generated on a second page.<br><br><strong>Fill in Vowels</strong> — Hebrew words shown with their nikkud stripped. Students write in the vowel marks. Optional Include Dageshim keeps the dot inside letters intact.</span></span></div>
             <div class="rw-section-body">
               <div class="blend-type-selector" style="grid-template-columns:repeat(3,1fr);margin-bottom:6px;">
                 <button class="rw-drill-btn active" data-drill="reading" onclick="setRealWordDrill('reading')">Reading</button>
@@ -1924,6 +1885,14 @@
                 <button class="rw-drill-btn" data-drill="identify" onclick="setRealWordDrill('identify')">Identify</button>
                 <button class="rw-drill-btn" data-drill="bingo" onclick="setRealWordDrill('bingo')">Bingo</button>
                 <button class="rw-drill-btn" data-drill="gematria" onclick="setRealWordDrill('gematria')">Gematria</button>
+                <button class="rw-drill-btn" data-drill="fillvowels" onclick="setRealWordDrill('fillvowels')">Fill Vowels</button>
+              </div>
+              <div class="toggle-row" id="rwFillVowelsDageshRow" style="display:none;">
+                <span style="font-size:0.82rem;">Include dageshim</span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+                  <input type="checkbox" id="rwFillVowelsDagesh" onchange="if(document.getElementById('worksheet').querySelector('.blend-cell, .rw-card, .flip-card'))generateRealWords()">
+                  <span class="slider"></span>
+                </label>
               </div>
               <div class="toggle-row" id="rwMixedRow">
                 <span style="font-size:0.82rem;">Mix with generated blends
@@ -2015,31 +1984,48 @@
 
           <!-- Display options -->
           <div class="rw-section">
-            <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Display</div>
+            <div class="rw-section-header" id="rwDisplayHeader" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Display</div>
             <div class="rw-section-body">
-              <div class="toggle-row">
+              <div class="toggle-row rw-display-only">
                 <span style="font-size:0.8rem;">Show Transliteration</span>
                 <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="rwShowTranslit" checked onchange="onRwTranslitChange()"><span class="slider"></span></label>
               </div>
-              <div id="rwTranslitPageRow" style="display:none;padding-left:16px;">
+              <div id="rwTranslitPageRow" class="rw-display-only" style="display:none;padding-left:16px;">
                 <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
                   <button class="rw-drill-btn active" data-translit="same" onclick="setRwTranslitPage('same')">Same page</button>
                   <button class="rw-drill-btn" data-translit="key" onclick="setRwTranslitPage('key')">Answer key</button>
                 </div>
               </div>
-              <div class="toggle-row" id="rwTranslationRow">
+              <div class="toggle-row rw-display-only" id="rwTranslationRow">
                 <span style="font-size:0.8rem;">Show Translation</span>
                 <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="rwShowTranslation" onchange="onRwTranslChange()"><span class="slider"></span></label>
               </div>
-              <div id="rwTranslPageRow" style="display:none;padding-left:16px;">
+              <div id="rwTranslPageRow" class="rw-display-only" style="display:none;padding-left:16px;">
                 <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
                   <button class="rw-drill-btn active" data-transl="same" onclick="setRwTranslPage('same')">Same page</button>
                   <button class="rw-drill-btn" data-transl="key" onclick="setRwTranslPage('key')">Answer key</button>
                 </div>
               </div>
-              <div class="toggle-row" id="rwShowGematriaRow" style="display:none;">
-                <span style="font-size:0.8rem;">Show Gematria</span>
-                <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="rwShowGematria" checked onchange="if(document.getElementById('worksheet').querySelector('.blend-cell'))generateRealWords()"><span class="slider"></span></label>
+              <div class="toggle-row rw-gem-only" style="display:none;font-size:0.82rem;">
+                <span>Inverse <span style="font-size:0.72rem;color:var(--muted)">(show numbers)</span></span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+                  <input type="checkbox" id="rwGematriaInverse" onchange="onRwGemOptionChange()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row rw-gem-only" style="display:none;font-size:0.82rem;">
+                <span>Self Check</span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+                  <input type="checkbox" id="rwGematriaSelfCheck" onchange="if(this.checked){document.getElementById('rwGematriaAnswerKey').checked=false;}onRwGemOptionChange()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row rw-gem-only" style="display:none;font-size:0.82rem;">
+                <span>Answer Key</span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+                  <input type="checkbox" id="rwGematriaAnswerKey" checked onchange="if(this.checked){document.getElementById('rwGematriaSelfCheck').checked=false;}onRwGemOptionChange()">
+                  <span class="slider"></span>
+                </label>
               </div>
               <div style="margin-top:6px;display:flex;align-items:center;gap:8px;">
                 <span style="font-size:0.8rem;flex:1;">Number of Words</span>
@@ -2103,6 +2089,48 @@
             </div>
           </div>
 
+        </div>
+
+        <!-- Output options (live at the bottom of every drill type) -->
+        <div style="border-top:1px solid var(--border);margin:10px 0 6px;"></div>
+        <div class="toggle-row" id="rowAnswerKey">
+          <span>Show Answer Key</span>
+          <label class="toggle">
+            <input type="checkbox" id="answerKeyToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row" id="rowSelfCheck" style="margin-top:4px;">
+          <span>Student Self-Check Mode</span>
+          <label class="toggle">
+            <input type="checkbox" id="selfCheckToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div id="selfCheckOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--border);flex-direction:column;gap:6px;">
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;flex:1;">Timer</span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="timerToggle" onchange="document.getElementById('timerDurationRow').style.display=this.checked?'flex':'none'">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div id="timerDurationRow" style="display:none;gap:6px;align-items:center;font-size:0.78rem;padding-left:8px;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:52px;">Duration</span>
+            <select id="timerDuration" style="flex:1;font-size:0.78rem;padding:3px 6px;">
+              <option value="60">1 min</option>
+              <option value="120" selected>2 min</option>
+              <option value="180">3 min</option>
+              <option value="300">5 min</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;flex:1;">Audio <span style="font-size:0.65rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;">BETA</span></span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="audioToggle">
+              <span class="slider"></span>
+            </label>
+          </div>
         </div>
       </div>
     </div>
@@ -3001,7 +3029,10 @@ function getSettings() {
     cwStarReal:        document.getElementById('cwStarReal').checked,
     cwBlendCount:      document.getElementById('cwBlendCount')?.value,
     // Real Words extras
-    rwShowGematria:    document.getElementById('rwShowGematria').checked,
+    rwGematriaInverse:   document.getElementById('rwGematriaInverse').checked,
+    rwGematriaSelfCheck: document.getElementById('rwGematriaSelfCheck').checked,
+    rwGematriaAnswerKey: document.getElementById('rwGematriaAnswerKey').checked,
+    rwFillVowelsDagesh:  document.getElementById('rwFillVowelsDagesh').checked,
     // Font size
     hebFontSize:       document.getElementById('hebFontSizeSlider').value,
     vavAsLetter,
@@ -3161,7 +3192,10 @@ function applySettings(s) {
   }
 
   // Real Words extras
-  if (s.rwShowGematria !== undefined) document.getElementById('rwShowGematria').checked = s.rwShowGematria;
+  if (s.rwGematriaInverse !== undefined)   document.getElementById('rwGematriaInverse').checked = s.rwGematriaInverse;
+  if (s.rwGematriaSelfCheck !== undefined) document.getElementById('rwGematriaSelfCheck').checked = s.rwGematriaSelfCheck;
+  if (s.rwGematriaAnswerKey !== undefined) document.getElementById('rwGematriaAnswerKey').checked = s.rwGematriaAnswerKey;
+  if (s.rwFillVowelsDagesh !== undefined)  document.getElementById('rwFillVowelsDagesh').checked = s.rwFillVowelsDagesh;
 
   // Font size
   if (s.hebFontSize !== undefined) { const sl = document.getElementById('hebFontSizeSlider'); if (sl) { sl.value = s.hebFontSize; setHebFontSize(s.hebFontSize); } }
@@ -3774,7 +3808,7 @@ function updateModeVisibility() {
     // Mode toggle rows
     rowInverse:        !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo,
     rowFillVowels:     !testMode && blends && s.drill !== 'gematria' && !s.bingo,
-    rowGematria:       !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'inverse',
+    rowGematria:       !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'inverse' && !s.bingo,
     rowBingo:          !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'inverse' && s.drill !== 'gematria',
     rowAnswerKey:      !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo,
     rowSelfCheck:      !gemSC    && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo,
@@ -3784,8 +3818,7 @@ function updateModeVisibility() {
 
     // Sub-option panels
     bingoOptions:          blends && s.bingo && !testMode,
-    gematriaOptions:       (blends && s.drill === 'gematria') ||
-                           (s.source === 'realwords' && (typeof rwDrillType !== 'undefined') && rwDrillType === 'gematria'),
+    gematriaOptions:       blends && s.drill === 'gematria',
     selfCheckOptions:      blends && s.selfCheck && s.drill !== 'fillvowels'
                                   && s.drill !== 'gematria' && !s.bingo,
     realWordsOptions:      s.source === 'realwords',
@@ -5443,9 +5476,20 @@ function onGematriaOptionChange() {
 
 function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = false, showGematriaVal = true) {
   if (!items) items = blends.map(b => ({ hebrewDisplay: b.hebrewDisplay }));
-  const selfCheck  = document.getElementById('gematriaSelfCheck')?.checked ?? false;
-  const showAnsKey = document.getElementById('gematriaAnswerKey')?.checked ?? true;
-  const inverse    = document.getElementById('gematriaInverse')?.checked ?? false;
+  // In real-words gematria the toggles live in the Display (Gematria Options)
+  // section under realWordsOptions; standard blends-gematria uses the toggles
+  // inside the gematriaOptions panel.
+  const isRwGem = document.getElementById('realWordsToggle')?.checked &&
+                  (typeof rwDrillType !== 'undefined') && rwDrillType === 'gematria';
+  const selfCheck  = isRwGem
+    ? (document.getElementById('rwGematriaSelfCheck')?.checked ?? false)
+    : (document.getElementById('gematriaSelfCheck')?.checked ?? false);
+  const showAnsKey = isRwGem
+    ? (document.getElementById('rwGematriaAnswerKey')?.checked ?? true)
+    : (document.getElementById('gematriaAnswerKey')?.checked ?? true);
+  const inverse    = isRwGem
+    ? (document.getElementById('rwGematriaInverse')?.checked ?? false)
+    : (document.getElementById('gematriaInverse')?.checked ?? false);
   const title    = document.getElementById('wsTitle').value || 'Hebrew Blends';
   const subtitle = document.getElementById('wsSubtitle').value;
   const cols     = autoCols(items.length);
@@ -6436,14 +6480,18 @@ function setRealWordDrill(type) {
   rwDrillType = type;
   document.querySelectorAll('.rw-drill-btn').forEach(b => b.classList.toggle('active', b.dataset.drill === type));
 
-  // Show/hide mixed mode (hidden for identify, bingo, and gematria)
+  // Show/hide mixed mode (hidden for identify, bingo, gematria, fillvowels)
   const mixedRow = document.getElementById('rwMixedRow');
-  if (mixedRow) mixedRow.style.display = (type === 'identify' || type === 'bingo' || type === 'gematria') ? 'none' : '';
+  if (mixedRow) mixedRow.style.display = (type === 'identify' || type === 'bingo' || type === 'gematria' || type === 'fillvowels') ? 'none' : '';
 
   // Identify mode always needs blends mixed in — force rwMixed on
   const mixedCb = document.getElementById('rwMixed');
   if (mixedCb) mixedCb.checked = (type === 'identify');
   toggleRwStarRow();
+
+  // Fill-vowels include-dageshim sub-option
+  const fvRow = document.getElementById('rwFillVowelsDageshRow');
+  if (fvRow) fvRow.style.display = (type === 'fillvowels') ? '' : 'none';
 
   // Auto-set translation visibility
   const translToggle = document.getElementById('rwShowTranslation');
@@ -6455,13 +6503,31 @@ function setRealWordDrill(type) {
   const rwBingoOpts = document.getElementById('rwBingoOptions');
   if (rwBingoOpts) rwBingoOpts.style.display = (type === 'bingo') ? 'block' : 'none';
 
-  // Show Gematria value toggle only for gematria drill
-  const gematriaValRow = document.getElementById('rwShowGematriaRow');
-  if (gematriaValRow) gematriaValRow.style.display = (type === 'gematria') ? '' : 'none';
+  // Display section morphs into "Gematria Options" for the gematria drill:
+  // hide the standard display toggles and reveal the gematria-only toggles.
+  const isGem = type === 'gematria';
+  document.querySelectorAll('.rw-gem-only').forEach(el => el.style.display = isGem ? '' : 'none');
+  document.querySelectorAll('.rw-display-only').forEach(el => {
+    if (isGem) { el.style.display = 'none'; }
+    else { el.style.display = ''; }
+  });
+  // For non-gematria drills, the translit/translation sub-page rows revert to
+  // their toggle-controlled state — re-run their handlers.
+  if (!isGem) { toggleRwTranslitPageRow(); toggleRwTranslPageRow(); }
+  const dispHeader = document.getElementById('rwDisplayHeader');
+  if (dispHeader) dispHeader.textContent = isGem ? 'Gematria Options' : 'Display';
 
   // Central updater handles gematriaOptions visibility (it reads rwDrillType)
   updateModeVisibility();
   updateRwPoolInfo();
+}
+
+// Re-render real-words gematria sheet on option toggles
+function onRwGemOptionChange() {
+  const ws = document.getElementById('worksheet');
+  if (ws && ws.querySelector('.blend-cell, .flip-card, .rw-card')) {
+    if (document.getElementById('realWordsToggle')?.checked && rwDrillType === 'gematria') generateRealWords();
+  }
 }
 
 // Show/hide caller translation sub-row
@@ -6653,11 +6719,21 @@ function generateRealWords() {
     const words = rwShuffle(pool).slice(0, Math.min(count, pool.length));
     const ws = document.getElementById('worksheet');
     ws.innerHTML = '';
+    // Display section's toggles are now the source of truth in real-words gematria.
+    // Hide translit/translation since they're not part of the drill.
     renderGematriaSheet(ws,
       words.map(w => ({ hebrewDisplay: w.heb, translit: w.translit, translation: w.translation })),
-      showTranslit, showTranslation,
-      document.getElementById('rwShowGematria')?.checked ?? true
+      false, false, true
     );
+    enableButtons();
+    return;
+  }
+
+  if (drill === 'fillvowels') {
+    const words = rwShuffle(pool).slice(0, Math.min(count, pool.length));
+    const ws = document.getElementById('worksheet');
+    ws.innerHTML = '';
+    renderRealWordsFillVowels(ws, words, showTranslit, showTranslation);
     enableButtons();
     return;
   }
@@ -6791,6 +6867,74 @@ function generateRealWords() {
 
   updateRwPoolInfo();
   enableButtons();
+}
+
+// ── FILL IN THE VOWELS (real words) ──
+function renderRealWordsFillVowels(ws, words, showTranslit, showTranslation) {
+  const keepDagesh = document.getElementById('rwFillVowelsDagesh')?.checked ?? false;
+  const showAnswers = false; // student sheet only on page 1; answer key on page 2
+  const title    = document.getElementById('wsTitle').value || 'Hebrew Words';
+  const subtitle = document.getElementById('wsSubtitle').value;
+  const cols     = autoCols(words.length);
+
+  const sheet = document.createElement('div');
+  sheet.className = 'sheet';
+  const header = document.createElement('div');
+  header.className = 'ws-header';
+  header.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle">${subtitle || 'Add the nikkud (vowels) to each Hebrew word.'}</div></div>${wsMetaHTML()}`;
+  sheet.appendChild(header);
+
+  const grid = document.createElement('div');
+  grid.className = 'rw-grid';
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  sheet.appendChild(grid);
+
+  words.forEach((w, idx) => {
+    const card = document.createElement('div');
+    card.className = 'rw-card blend-cell';
+    const stripped = stripNikud(w.heb, keepDagesh);
+    let inner = `<span class="rw-num">${idx + 1}</span>`;
+    inner += `<div class="rw-heb">${stripped}</div>`;
+    if (showTranslit && w.translit) inner += `<div class="rw-translit">${w.translit}</div>`;
+    if (showTranslation && w.translation) inner += `<div class="rw-translation">${w.translation}</div>`;
+    card.innerHTML = inner;
+    grid.appendChild(card);
+  });
+
+  const footer = document.createElement('div');
+  footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  footer.textContent = `${words.length} words · Hebrew Blend Generator — Fill in the Vowels`;
+  sheet.appendChild(footer);
+  ws.appendChild(sheet);
+
+  // Answer key page — full nikkud restored
+  const ak = document.createElement('div');
+  ak.className = 'sheet answer-key-sheet';
+  const banner = document.createElement('div');
+  banner.className = 'answer-key-banner';
+  banner.textContent = '✦ Answer Key ✦';
+  ak.appendChild(banner);
+  const akHeader = document.createElement('div');
+  akHeader.className = 'ws-header';
+  akHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>`;
+  ak.appendChild(akHeader);
+  const akGrid = document.createElement('div');
+  akGrid.className = 'rw-grid';
+  akGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  ak.appendChild(akGrid);
+
+  words.forEach((w, idx) => {
+    const card = document.createElement('div');
+    card.className = 'rw-card blend-cell';
+    let inner = `<span class="rw-num">${idx + 1}</span>`;
+    inner += `<div class="rw-heb">${w.heb}</div>`;
+    if (showTranslit && w.translit) inner += `<div class="rw-translit">${w.translit}</div>`;
+    if (showTranslation && w.translation) inner += `<div class="rw-translation">${w.translation}</div>`;
+    card.innerHTML = inner;
+    akGrid.appendChild(card);
+  });
+  ak.appendChild(akGrid);
+  ws.appendChild(ak);
 }
 
 // ── IDENTIFY THE REAL WORD ──
