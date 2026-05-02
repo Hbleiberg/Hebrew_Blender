@@ -2374,10 +2374,16 @@ function generateCard() {
       heb += L.heb + getNikudCombiningChar(vowel);
       const sound = getSound(L, vowel.key);
       translit += i === 0 ? sound : sound.toLowerCase();
-    } else {
+    } else if (pos < vowelPos) {
+      // Leading consonant \u2014 shva connector
       heb += L.heb + '\u05B0';
       const sh = (L.sounds.sh || '').replace(/'/g, '');
       translit += i === 0 ? sh : sh.toLowerCase();
+    } else {
+      // Trailing consonant \u2014 bare (no nikkud)
+      heb += L.heb;
+      const sh = (L.sounds.sh || '').replace(/'/g, '');
+      translit += sh.toLowerCase();
     }
   }
   result.heb = heb;
