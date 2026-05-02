@@ -2655,14 +2655,14 @@ function renderCurrentCard() {
       back.style.direction = 'rtl';
       back.style.fontSize = 'clamp(1.2rem, 5vw, 2rem)';
     } else if (numberFront === 'translit') {
-      front.textContent = card.romanized || card.heb;
-      front.style.fontFamily = 'var(--serif)';
-      front.style.direction = 'ltr';
+      front.textContent = card.heb;
+      front.style.fontFamily = 'var(--heb-font)';
+      front.style.direction = 'rtl';
       front.style.fontSize = 'clamp(1.2rem, 5vw, 2rem)';
-      back.textContent = card.heb;
-      back.style.fontFamily = 'var(--heb-font)';
-      back.style.direction = 'rtl';
-      back.style.fontSize = 'clamp(1.2rem, 5vw, 2rem)';
+      back.textContent = card.romanized || card.heb;
+      back.style.fontFamily = 'var(--serif)';
+      back.style.direction = 'ltr';
+      back.style.fontSize = 'clamp(1.4rem, 6vw, 2.4rem)';
     } else {
       front.textContent = card.heb;
       front.style.fontFamily = 'var(--heb-font)';
