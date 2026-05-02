@@ -50,6 +50,14 @@ A live display board designed for classroom projectors and SmartBoards.
 - Dark mode (no-flash), fullscreen mode, ESC-to-close, presets save/load/export/import
 - SmartBoard compatible — responsive at any display resolution
 
+### Teaching Resources (`resources.html`)
+A curated, filterable directory of external Hebrew and Jewish-education resources.
+
+- **Category filter** — Lesson Planning, Printables, Tanakh, Hebrew, Culture, Miscellaneous
+- **Age-group filter** — Early Learners (K–2), Elementary (3–5), Middle/High (6–12), Adult/Teacher
+- Each resource has a title, short description, age-range label, and outbound link
+- All entries live in a single `RESOURCES` array inside the file — easy to add to or curate
+
 ### Landing Page (`index.html`)
 Home page with navigation cards to all the tools above. Also hosts the global Import / Export / Erase All Settings modal (gear icon) that round-trips every tool's `localStorage` data as a single JSON blob.
 
@@ -64,6 +72,7 @@ Home page with navigation cards to all the tools above. Also hosts the global Im
 | `hebrew_dictionary.html` | Interactive word lookup and filter page |
 | `flash_cards.html` | Interactive syllable flash cards — Beta |
 | `classroom_dashboard.html` | Live classroom projector / SmartBoard dashboard — Beta |
+| `resources.html` | Curated directory of external Hebrew / Jewish-education resources |
 | `hebrew_words.json` | Structured word data (~2 MB, ~9,400 entries) loaded by both HTML pages via `fetch()` |
 | `hebrew_dictionary_4_19_2026.csv` | Source CSV used to build and update `hebrew_words.json`; includes Hebrew (nikkud), transliteration, translation, POS, and era fields |
 | `phonotactic_blending_filter_spec.md` | Detailed linguistic specification for the phonotactic validity filter used by the generator; cites Bolozky, Bat-El, Asherov & Bat-El, and the Academy of the Hebrew Language |
