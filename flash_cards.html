@@ -1049,6 +1049,34 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
 
       <hr class="soft" />
 
+      <!-- Timer -->
+      <div class="label" style="font-weight:600; margin-bottom:6px">Timer</div>
+      <div class="pill-group" id="timerModePills" style="margin-bottom:8px;flex-wrap:wrap;">
+        <button class="pill active" data-tmode="off">Off</button>
+        <button class="pill" data-tmode="track">Time Tracker</button>
+        <button class="pill" data-tmode="limit">Time Limit</button>
+      </div>
+      <div id="timerOpts" class="hide">
+        <div class="row" style="margin-bottom:6px;">
+          <label class="switch"><input type="checkbox" id="timerShowToggle" checked><span class="slider"></span></label>
+          <span class="label" id="timerShowLabel">Show timer on screen</span>
+        </div>
+        <div id="timerLimitRow" class="hide">
+          <div class="sub" style="margin-bottom:4px;">Time limit:</div>
+          <div class="pill-group" id="timeLimitPills" style="flex-wrap:wrap;gap:4px;">
+            <button class="pill" data-secs="15">0:15</button>
+            <button class="pill" data-secs="30">0:30</button>
+            <button class="pill active" data-secs="60">1:00</button>
+            <button class="pill" data-secs="90">1:30</button>
+            <button class="pill" data-secs="120">2:00</button>
+            <button class="pill" data-secs="180">3:00</button>
+            <button class="pill" data-secs="300">5:00</button>
+          </div>
+        </div>
+      </div>
+
+      <hr class="soft" />
+
       <!-- Font selector -->
       <div class="label" style="font-weight:600; margin-bottom:4px">Hebrew Font</div>
       <div class="font-grid" id="fontGrid"></div>
@@ -1077,6 +1105,7 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
 <section id="screenCard" class="screen">
   <div class="progress"><span id="progressBar" style="width:0%"></span></div>
   <p class="card-meta" id="cardMeta">Card 1 of 10</p>
+  <p id="timerDisplay" style="display:none;text-align:center;font-size:0.85rem;color:var(--muted);margin:0 0 4px;"></p>
 
   <div class="fc-perspective">
     <div class="fc-card" id="fcCard" tabindex="0" role="button" aria-label="Flash card. Tap or press space to flip.">
@@ -1115,6 +1144,7 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
   <div class="results-hero">
     <p class="pct" id="resultsPct">0%</p>
     <p class="frac" id="resultsFrac">0 / 0 correct</p>
+    <p id="resultsTime" style="display:none;font-size:0.85rem;color:var(--muted);margin:4px 0 0;"></p>
   </div>
 
   <div class="panel collapsed" id="panelResults">
@@ -1362,6 +1392,12 @@ let hebFontId = 'Frank Ruhl Libre';
 let audioEnabled = false;
 let nameLetterMode = false;
 let nameLetterShowLetter = true;
+let timerMode = 'off';       // 'off' | 'track' | 'limit'
+let timerShowOnScreen = true;
+let timeLimitSeconds = 60;
+let timerInterval = null;
+let timerElapsed = 0;
+let timerRemaining = 0;
 let vowelPositions = new Set([2]);
 let vowelLockEnabled = false;
 let vowelLockPosition = 2;
@@ -1879,6 +1915,7 @@ function getSettings() {
     colorCodingEnabled, colorCodingMode,
     nikudColorOverrides: { ...nikudColorOverrides },
     hebFontId, audioEnabled, nameLetterMode, nameLetterShowLetter,
+    timerMode, timerShowOnScreen, timeLimitSeconds,
     ttsRate: parseFloat(document.getElementById('ttsRateSlider')?.value || 0.85),
     vowelPositions: [...vowelPositions],
     vowelLockEnabled,
@@ -1926,6 +1963,15 @@ function applySettings(s) {
   document.querySelectorAll('#lockPosPills .pill').forEach(p => p.classList.toggle('active', +p.dataset.pos === lockPosition));
   audioEnabled = !!s.audioEnabled;
   document.getElementById('audioToggle').checked = audioEnabled;
+  timerMode = s.timerMode || 'off';
+  timerShowOnScreen = s.timerShowOnScreen !== false;
+  timeLimitSeconds = s.timeLimitSeconds || 60;
+  document.querySelectorAll('#timerModePills .pill').forEach(p => p.classList.toggle('active', p.dataset.tmode === timerMode));
+  document.getElementById('timerOpts').classList.toggle('hide', timerMode === 'off');
+  document.getElementById('timerLimitRow').classList.toggle('hide', timerMode !== 'limit');
+  document.getElementById('timerShowToggle').checked = timerShowOnScreen;
+  document.getElementById('timerShowLabel').textContent = timerMode === 'limit' ? 'Show countdown on screen' : 'Show timer on screen';
+  document.querySelectorAll('#timeLimitPills .pill').forEach(p => p.classList.toggle('active', +p.dataset.secs === timeLimitSeconds));
   nameLetterMode = !!s.nameLetterMode;
   nameLetterShowLetter = s.nameLetterShowLetter !== false;
   document.getElementById('nameLetterToggle').checked = nameLetterMode;
@@ -2354,6 +2400,49 @@ function showScreen(id) {
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
+/* =========================================================================
+   TIMER
+   ========================================================================= */
+function formatTimerSecs(secs) {
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+function updateTimerDisplay() {
+  const el = document.getElementById('timerDisplay');
+  if (!el) return;
+  if (timerMode === 'track') {
+    el.textContent = `⏱ ${formatTimerSecs(timerElapsed)}`;
+  } else if (timerMode === 'limit') {
+    el.textContent = `⏳ ${formatTimerSecs(timerRemaining)}`;
+  }
+}
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  const el = document.getElementById('timerDisplay');
+  if (el) el.style.display = 'none';
+}
+function startTimer() {
+  stopTimer();
+  if (timerMode === 'off') return;
+  const el = document.getElementById('timerDisplay');
+  if (timerShowOnScreen && el) { el.style.display = ''; updateTimerDisplay(); }
+  if (timerMode === 'track') {
+    timerElapsed = 0;
+    timerInterval = setInterval(() => {
+      timerElapsed++;
+      if (timerShowOnScreen) updateTimerDisplay();
+    }, 1000);
+  } else if (timerMode === 'limit') {
+    timerRemaining = timeLimitSeconds;
+    timerInterval = setInterval(() => {
+      timerRemaining--;
+      if (timerShowOnScreen) updateTimerDisplay();
+      if (timerRemaining <= 0) { stopTimer(); showResults(); }
+    }, 1000);
+  }
+}
+
 function startPractice() {
   // Validate
   const issues = [];
@@ -2371,6 +2460,7 @@ function startPractice() {
   isFlipped = false;
   renderCurrentCard();
   showScreen('screenCard');
+  startTimer();
 }
 
 function speakWord(text) {
@@ -2517,11 +2607,19 @@ function prevCard() {
 }
 
 function showResults() {
+  stopTimer();
   const total = currentCards.length;
   const correctCount = scores.filter(s => s === true).length;
   const pct = total ? Math.round((correctCount / total) * 100) : 0;
   document.getElementById('resultsPct').textContent = pct + '%';
   document.getElementById('resultsFrac').textContent = `${correctCount} / ${total} correct`;
+  const timeEl = document.getElementById('resultsTime');
+  if (timerMode === 'track') {
+    timeEl.style.display = '';
+    timeEl.textContent = `Time: ${formatTimerSecs(timerElapsed)}`;
+  } else {
+    timeEl.style.display = 'none';
+  }
 
   // Build list
   const list = document.getElementById('resultsList');
@@ -2551,6 +2649,7 @@ function redoSameSet() {
   isFlipped = false;
   renderCurrentCard();
   showScreen('screenCard');
+  startTimer();
 }
 function practiceMistakes() {
   if (mistakeIndices.length === 0) return;
@@ -2561,8 +2660,10 @@ function practiceMistakes() {
   isFlipped = false;
   renderCurrentCard();
   showScreen('screenCard');
+  startTimer();
 }
 function returnToSetup() {
+  stopTimer();
   showScreen('screenSetup');
 }
 
@@ -2626,6 +2727,25 @@ function wireSetupScreen() {
     audioEnabled = e.target.checked;
     saveSettings();
   });
+
+  // Timer
+  document.querySelectorAll('#timerModePills .pill').forEach(p => p.addEventListener('click', () => {
+    timerMode = p.dataset.tmode;
+    document.querySelectorAll('#timerModePills .pill').forEach(x => x.classList.toggle('active', x === p));
+    document.getElementById('timerOpts').classList.toggle('hide', timerMode === 'off');
+    document.getElementById('timerLimitRow').classList.toggle('hide', timerMode !== 'limit');
+    document.getElementById('timerShowLabel').textContent = timerMode === 'limit' ? 'Show countdown on screen' : 'Show timer on screen';
+    saveSettings();
+  }));
+  document.getElementById('timerShowToggle').addEventListener('change', e => {
+    timerShowOnScreen = e.target.checked;
+    saveSettings();
+  });
+  document.querySelectorAll('#timeLimitPills .pill').forEach(p => p.addEventListener('click', () => {
+    timeLimitSeconds = +p.dataset.secs;
+    document.querySelectorAll('#timeLimitPills .pill').forEach(x => x.classList.toggle('active', x === p));
+    saveSettings();
+  }));
 
   // Color coding
   document.getElementById('colorCodeToggle').addEventListener('change', e => {
