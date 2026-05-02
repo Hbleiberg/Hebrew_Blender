@@ -840,6 +840,11 @@ body.dark .drawer h2 { color: var(--gold-light); }
 .sub { color: var(--muted); font-size: 0.84rem; }
 .warn { color: var(--bad); font-size: 0.88rem; padding: 8px; background: var(--bad-soft); border-radius: 8px; border: 1px solid var(--bad); }
 .hide { display: none !important; }
+.color-tile { border-radius: 6px; border: 2px solid transparent; cursor: pointer; overflow: hidden; transition: border-color 0.15s; user-select: none; }
+.color-tile:hover { border-color: var(--gold); }
+.color-tile.selected { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
+.color-tile-swatch { height: 26px; }
+.color-tile-label { font-size: 0.52rem; text-align: center; padding: 2px 1px; background: var(--white); color: var(--text); line-height: 1.2; }
 .divider { height: 1px; background: var(--border); margin: 14px -16px; }
 .muted-row { font-size: 0.85rem; color: var(--muted); margin: 6px 0; }
 hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
@@ -936,6 +941,7 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
       <div id="otherModeSection" class="hide">
         <div class="pill-group" id="otherSubPills" style="margin-bottom:10px;">
           <button class="pill active" data-sub="numbers">Numbers</button>
+          <button class="pill" data-sub="colors">Colors</button>
         </div>
         <div id="numOpts">
           <div class="row" style="gap:8px;align-items:center;margin-bottom:8px;">
@@ -965,6 +971,38 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
               <input type="checkbox" id="numTranslitToggle" style="accent-color:var(--gold);width:13px;height:13px;">
               Show transliteration
             </label>
+          </div>
+        </div>
+        <div id="colorOpts" class="hide">
+          <div style="margin-bottom:8px;">
+            <div style="display:flex;gap:5px;margin-bottom:6px;">
+              <button class="btn-xs" id="colorSelectNone">None</button>
+              <button class="btn-xs" id="colorSelectMain">Main Colors</button>
+              <button class="btn-xs" id="colorSelectAll">All</button>
+            </div>
+            <div id="colorTileGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;"></div>
+          </div>
+          <div class="row" style="margin-bottom:8px;">
+            <span class="label" style="flex-shrink:0;margin-right:8px;">Gender:</span>
+            <div class="pill-group" id="colorGenderPills">
+              <button class="pill active" data-cgender="masculine">Masculine</button>
+              <button class="pill" data-cgender="feminine">Feminine</button>
+            </div>
+          </div>
+          <div class="row" style="margin-bottom:8px;">
+            <span class="label" style="flex-shrink:0;margin-right:8px;">Display:</span>
+            <div class="pill-group" id="colorDisplayPills">
+              <button class="pill active" data-cdisplay="color">Color</button>
+              <button class="pill" data-cdisplay="color+name">Color + Name</button>
+              <button class="pill" data-cdisplay="name">Name</button>
+            </div>
+          </div>
+          <div class="row">
+            <span class="label" style="flex-shrink:0;margin-right:8px;">Front:</span>
+            <div class="pill-group" id="colorFrontPills">
+              <button class="pill active" data-cfront="color">Color</button>
+              <button class="pill" data-cfront="hebrew">Hebrew Word</button>
+            </div>
           </div>
         </div>
       </div><!-- /otherModeSection -->
@@ -1269,6 +1307,22 @@ const LETTERS = [
 /* =========================================================================
    HEBREW NUMBER DATA
    ========================================================================= */
+const COLOR_DATA = [
+  { key:'red',       name:'Red',        css:'#e74c3c', heb_m:'אָדוֹם',    heb_f:'אֲדֻמָּה',  textDark:false, isMain:true  },
+  { key:'blue',      name:'Blue',       css:'#3498db', heb_m:'כָּחוֹל',   heb_f:'כְּחֻלָּה', textDark:false, isMain:true  },
+  { key:'green',     name:'Green',      css:'#27ae60', heb_m:'יָרוֹק',    heb_f:'יְרֻקָּה',  textDark:false, isMain:true  },
+  { key:'yellow',    name:'Yellow',     css:'#f1c40f', heb_m:'צָהוֹב',    heb_f:'צְהֻבָּה',  textDark:true,  isMain:true  },
+  { key:'orange',    name:'Orange',     css:'#e67e22', heb_m:'כָּתוֹם',   heb_f:'כְּתֻמָּה', textDark:false, isMain:true  },
+  { key:'purple',    name:'Purple',     css:'#9b59b6', heb_m:'סָגוֹל',    heb_f:'סְגֻלָּה',  textDark:false, isMain:true  },
+  { key:'white',     name:'White',      css:'#f0f0f0', heb_m:'לָבָן',     heb_f:'לְבָנָה',   textDark:true,  isMain:true  },
+  { key:'black',     name:'Black',      css:'#2c3e50', heb_m:'שָׁחוֹר',   heb_f:'שְׁחֹרָה',  textDark:false, isMain:true  },
+  { key:'pink',      name:'Pink',       css:'#e91e8c', heb_m:'וָרוֹד',    heb_f:'וְרֻדָּה',  textDark:false, isMain:false },
+  { key:'brown',     name:'Brown',      css:'#795548', heb_m:'חוּם',      heb_f:'חוּמָּה',   textDark:false, isMain:false },
+  { key:'gray',      name:'Gray',       css:'#9e9e9e', heb_m:'אָפוֹר',    heb_f:'אֲפוּרָה',  textDark:false, isMain:false },
+  { key:'lightblue', name:'Light Blue', css:'#87ceeb', heb_m:'תְּכֵלֶת',  heb_f:'תְּכֵלֶת',  textDark:true,  isMain:false },
+  { key:'gold',      name:'Gold',       css:'#d4ac0d', heb_m:'זָהוּב',    heb_f:'זְהוּבָּה', textDark:true,  isMain:false },
+];
+
 const NUM_UNITS_F = {1:'אַחַת',2:'שְׁתַּיִם',3:'שָׁלוֹשׁ',4:'אַרְבַּע',5:'חָמֵשׁ',6:'שֵׁשׁ',7:'שֶׁבַע',8:'שְׁמֹנֶה',9:'תֵּשַׁע',10:'עֶשֶׂר'};
 const NUM_UNITS_M = {1:'אֶחָד',2:'שְׁנַיִם',3:'שְׁלוֹשָׁה',4:'אַרְבָּעָה',5:'חֲמִישָּׁה',6:'שִׁשָּׁה',7:'שִׁבְעָה',8:'שְׁמֹנָה',9:'תִּשְׁעָה',10:'עֲשָׂרָה'};
 const NUM_TEENS_F = {11:'אַחַת עֶשְׂרֵה',12:'שְׁתֵּים עֶשְׂרֵה',13:'שְׁלוֹשׁ עֶשְׂרֵה',14:'אַרְבַּע עֶשְׂרֵה',15:'חֲמֵשׁ עֶשְׂרֵה',16:'שֵׁשׁ עֶשְׂרֵה',17:'שְׁבַע עֶשְׂרֵה',18:'שְׁמֹנֶה עֶשְׂרֵה',19:'תְּשַׁע עֶשְׂרֵה'};
@@ -1471,6 +1525,10 @@ let numberMax = 100;
 let numberGender = 'feminine';
 let numberFront = 'number';
 let numberShowTranslit = false;
+let colorGender = 'masculine';
+let colorDisplayMode = 'color';
+let colorFront = 'color';
+let selectedColors = new Set(COLOR_DATA.filter(c => c.isMain).map(c => c.key));
 let timerMode = 'off';       // 'off' | 'track' | 'limit'
 let timerShowOnScreen = true;
 let timeLimitSeconds = 60;
@@ -1886,6 +1944,31 @@ function updateVavAsLetterVisibility() {
 /* =========================================================================
    MODE / COUNT UI
    ========================================================================= */
+function syncOtherSubUI() {
+  document.querySelectorAll('#otherSubPills .pill').forEach(p =>
+    p.classList.toggle('active', p.dataset.sub === otherSubMode));
+  document.getElementById('numOpts').classList.toggle('hide', otherSubMode !== 'numbers');
+  document.getElementById('colorOpts').classList.toggle('hide', otherSubMode !== 'colors');
+}
+
+function initColorTiles() {
+  const grid = document.getElementById('colorTileGrid');
+  grid.innerHTML = '';
+  COLOR_DATA.forEach(c => {
+    const tile = document.createElement('div');
+    tile.className = 'color-tile' + (selectedColors.has(c.key) ? ' selected' : '');
+    tile.dataset.colorKey = c.key;
+    const swatchBorder = c.key === 'white' ? 'border-bottom:1px solid var(--border);' : '';
+    tile.innerHTML = `<div class="color-tile-swatch" style="background:${c.css};${swatchBorder}"></div><div class="color-tile-label">${c.name}</div>`;
+    tile.addEventListener('click', () => {
+      selectedColors.has(c.key) ? selectedColors.delete(c.key) : selectedColors.add(c.key);
+      tile.classList.toggle('selected', selectedColors.has(c.key));
+      saveSettings();
+    });
+    grid.appendChild(tile);
+  });
+}
+
 function setOtherMode(on) {
   otherModeActive = on;
   document.getElementById('otherModePill').classList.toggle('active', on);
@@ -2010,6 +2093,7 @@ function getSettings() {
     nikudColorOverrides: { ...nikudColorOverrides },
     hebFontId, audioEnabled, nameLetterMode, nameLetterShowLetter,
     otherModeActive, otherSubMode, numberMin, numberMax, numberGender, numberFront, numberShowTranslit,
+    colorGender, colorDisplayMode, colorFront, selectedColors: [...selectedColors],
     timerMode, timerShowOnScreen, timeLimitSeconds,
     ttsRate: parseFloat(document.getElementById('ttsRateSlider')?.value || 0.85),
     vowelPositions: [...vowelPositions],
@@ -2086,6 +2170,10 @@ function applySettings(s) {
     numberFront = 'number';
   }
   numberShowTranslit = !!s.numberShowTranslit;
+  colorGender = s.colorGender || 'masculine';
+  colorDisplayMode = s.colorDisplayMode || 'color';
+  colorFront = s.colorFront || 'color';
+  selectedColors = s.selectedColors ? new Set(s.selectedColors) : new Set(COLOR_DATA.filter(c => c.isMain).map(c => c.key));
   setOtherMode(otherModeActive);
   document.querySelector('#numMinInput') && (document.getElementById('numMinInput').value = numberMin);
   document.querySelector('#numMaxInput') && (document.getElementById('numMaxInput').value = numberMax);
@@ -2093,6 +2181,11 @@ function applySettings(s) {
   document.querySelectorAll('#numShowPills .pill').forEach(p => p.classList.toggle('active', p.dataset.nshow === numberFront));
   const numTranslitToggle = document.getElementById('numTranslitToggle');
   if (numTranslitToggle) numTranslitToggle.checked = numberShowTranslit;
+  initColorTiles();
+  document.querySelectorAll('#colorGenderPills .pill').forEach(p => p.classList.toggle('active', p.dataset.cgender === colorGender));
+  document.querySelectorAll('#colorDisplayPills .pill').forEach(p => p.classList.toggle('active', p.dataset.cdisplay === colorDisplayMode));
+  document.querySelectorAll('#colorFrontPills .pill').forEach(p => p.classList.toggle('active', p.dataset.cfront === colorFront));
+  syncOtherSubUI();
   if (!otherModeActive) document.getElementById('panelVowels').style.display = nameLetterMode ? 'none' : '';
   document.querySelectorAll('#nameLetterFrontPills .pill').forEach(p =>
     p.classList.toggle('active', p.dataset.nlf === (nameLetterShowLetter ? 'letter' : 'name')));
@@ -2411,6 +2504,14 @@ function generateCard() {
     return { heb: words, translit: String(n), romanized };
   }
 
+  if (otherModeActive && otherSubMode === 'colors') {
+    const pool = COLOR_DATA.filter(c => selectedColors.has(c.key));
+    if (pool.length === 0) return null;
+    const c = pool[Math.floor(Math.random() * pool.length)];
+    const heb = colorGender === 'masculine' ? c.heb_m : c.heb_f;
+    return { heb, translit: c.name, colorCss: c.css, textDark: c.textDark };
+  }
+
   const result = { heb: '', translit: '' };
 
   const firstPool = buildPool(L => !L.sofit && !L.isVav);
@@ -2606,6 +2707,9 @@ function startPractice() {
   if (otherModeActive && otherSubMode === 'numbers' && numberMin > numberMax) {
     issues.push('Range min must be ≤ max.');
   }
+  if (otherModeActive && otherSubMode === 'colors' && selectedColors.size === 0) {
+    issues.push('Select at least one color.');
+  }
   if (issues.length) { alert(issues.join('\n')); return; }
 
   const deck = generateDeck(cardCount);
@@ -2653,7 +2757,38 @@ function renderCurrentCard() {
   const front = document.getElementById('fcFrontHeb');
   const back = document.getElementById('fcBackTr');
 
-  if (otherModeActive && otherSubMode === 'numbers') {
+  // Reset inline styles that colors branch may set
+  front.style.cssText = '';
+  back.style.cssText = '';
+
+  if (otherModeActive && otherSubMode === 'colors') {
+    function colorSwatchHTML(cl) {
+      const border = cl.textDark ? 'border:1px solid var(--border);' : '';
+      const swatch = `background:${cl.colorCss};border-radius:10px;width:100%;height:clamp(90px,22vw,160px);${border}`;
+      if (colorDisplayMode === 'color') {
+        return `<div style="${swatch}"></div>`;
+      } else if (colorDisplayMode === 'color+name') {
+        const textColor = cl.textDark ? '#333' : '#fff';
+        const shadow = cl.textDark ? '' : 'text-shadow:0 1px 4px rgba(0,0,0,0.45);';
+        return `<div style="${swatch}display:flex;align-items:center;justify-content:center;"><span style="color:${textColor};font-size:clamp(1.4rem,6vw,2.2rem);font-weight:700;${shadow}">${cl.translit}</span></div>`;
+      } else {
+        return `<div style="font-family:var(--serif);font-size:clamp(1.8rem,7vw,3rem);color:var(--text);direction:ltr;">${cl.translit}</div>`;
+      }
+    }
+    function hebColorSide(el) {
+      el.textContent = card.heb;
+      el.style.fontFamily = 'var(--heb-font)';
+      el.style.direction = 'rtl';
+      el.style.fontSize = 'clamp(2rem, 8vw, 3.5rem)';
+    }
+    if (colorFront === 'color') {
+      front.innerHTML = colorSwatchHTML(card);
+      hebColorSide(back);
+    } else {
+      hebColorSide(front);
+      back.innerHTML = colorSwatchHTML(card);
+    }
+  } else if (otherModeActive && otherSubMode === 'numbers') {
     function hebSide(el) {
       if (numberShowTranslit) {
         el.innerHTML = `<div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(1.2rem,5vw,2rem);margin-bottom:6px;">${card.heb}</div><div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;">${card.romanized || ''}</div>`;
@@ -2909,6 +3044,42 @@ function wireSetupScreen() {
 
   // Other / Numbers mode
   document.getElementById('otherModePill').addEventListener('click', () => setOtherMode(true));
+  document.querySelectorAll('#otherSubPills .pill').forEach(p => p.addEventListener('click', () => {
+    otherSubMode = p.dataset.sub;
+    syncOtherSubUI();
+    saveSettings();
+  }));
+  // Color tile bulk selectors
+  document.getElementById('colorSelectNone').addEventListener('click', () => {
+    selectedColors.clear();
+    initColorTiles();
+    saveSettings();
+  });
+  document.getElementById('colorSelectMain').addEventListener('click', () => {
+    selectedColors = new Set(COLOR_DATA.filter(c => c.isMain).map(c => c.key));
+    initColorTiles();
+    saveSettings();
+  });
+  document.getElementById('colorSelectAll').addEventListener('click', () => {
+    selectedColors = new Set(COLOR_DATA.map(c => c.key));
+    initColorTiles();
+    saveSettings();
+  });
+  document.querySelectorAll('#colorGenderPills .pill').forEach(p => p.addEventListener('click', () => {
+    colorGender = p.dataset.cgender;
+    document.querySelectorAll('#colorGenderPills .pill').forEach(x => x.classList.toggle('active', x === p));
+    saveSettings();
+  }));
+  document.querySelectorAll('#colorDisplayPills .pill').forEach(p => p.addEventListener('click', () => {
+    colorDisplayMode = p.dataset.cdisplay;
+    document.querySelectorAll('#colorDisplayPills .pill').forEach(x => x.classList.toggle('active', x === p));
+    saveSettings();
+  }));
+  document.querySelectorAll('#colorFrontPills .pill').forEach(p => p.addEventListener('click', () => {
+    colorFront = p.dataset.cfront;
+    document.querySelectorAll('#colorFrontPills .pill').forEach(x => x.classList.toggle('active', x === p));
+    saveSettings();
+  }));
   document.querySelectorAll('#numGenderPills .pill').forEach(p => p.addEventListener('click', () => {
     numberGender = p.dataset.gender;
     document.querySelectorAll('#numGenderPills .pill').forEach(x => x.classList.toggle('active', x === p));
@@ -3005,6 +3176,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initColorPickers();
   initFontSelector();
   initCountGrid();
+  initColorTiles();
+  syncOtherSubUI();
   setLetterMode(mode);
   setCardCount(cardCount);
   renderPresets();
