@@ -2817,7 +2817,7 @@ function renderCurrentCard() {
     }
     function hebColorSide(el) {
       if (colorShowTranslit && card.romanized) {
-        el.innerHTML = `<div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(2rem,8vw,3.5rem);margin-bottom:6px;">${card.heb}</div><div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;">${card.romanized}</div>`;
+        el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;"><div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(2rem,8vw,3.5rem);text-align:center;">${card.heb}</div><div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;text-align:center;">${card.romanized}</div></div>`;
       } else {
         el.textContent = card.heb;
         el.style.fontFamily = 'var(--heb-font)';
@@ -2835,8 +2835,8 @@ function renderCurrentCard() {
   } else if (otherModeActive && otherSubMode === 'numbers') {
     function hebSide(el) {
       if (numberShowTranslit) {
-        const trLine = card.romanized ? `<div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;">${card.romanized}</div>` : '';
-        el.innerHTML = `<div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(1.2rem,5vw,2rem);${trLine ? 'margin-bottom:6px;' : ''}">${card.heb}</div>${trLine}`;
+        const trLine = card.romanized ? `<div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;text-align:center;">${card.romanized}</div>` : '';
+        el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;"><div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(1.2rem,5vw,2rem);text-align:center;">${card.heb}</div>${trLine}</div>`;
         el.style.fontFamily = '';
         el.style.direction = '';
         el.style.fontSize = '';
