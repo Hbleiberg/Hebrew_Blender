@@ -2563,15 +2563,43 @@
               <span class="slider"></span>
             </label>
           </div>
-          <div id="vowelLockOptions" style="display:none;margin-top:6px;flex-direction:column;gap:6px;">
-            <div class="lock-pos-header">
-              <span class="pos-label">Locked Vowels</span>
-              <div class="lock-btns">
-                <button class="btn-xs" onclick="lockVowelSelectAll()">All</button>
-                <button class="btn-xs" onclick="lockVowelClearAll()">None</button>
+          <div id="vowelLockOptions" style="display:none;margin-top:6px;flex-direction:column;gap:8px;">
+            <div id="vowelLockSection1">
+              <div class="lock-pos-header">
+                <input type="checkbox" id="vowelLock1Active" style="accent-color:var(--gold);cursor:pointer;" onchange="toggleVowelLockSection(1,this.checked)">
+                <span class="pos-label">First Letter</span>
+                <div class="lock-btns" id="vowelLockBtns1" style="display:none;">
+                  <button class="btn-xs" onclick="lockVowelSelectAll(1)">All</button>
+                  <button class="btn-xs" onclick="lockVowelSelectMain(1)">Main</button>
+                  <button class="btn-xs" onclick="lockVowelClearAll(1)">None</button>
+                </div>
               </div>
+              <div class="lock-vowel-grid" id="lockVowelGrid1" style="display:none;"></div>
             </div>
-            <div class="lock-vowel-grid" id="lockVowelGrid"></div>
+            <div id="vowelLockSection2" style="display:none;">
+              <div class="lock-pos-header">
+                <input type="checkbox" id="vowelLock2Active" style="accent-color:var(--gold);cursor:pointer;" onchange="toggleVowelLockSection(2,this.checked)">
+                <span class="pos-label">Second Letter</span>
+                <div class="lock-btns" id="vowelLockBtns2" style="display:none;">
+                  <button class="btn-xs" onclick="lockVowelSelectAll(2)">All</button>
+                  <button class="btn-xs" onclick="lockVowelSelectMain(2)">Main</button>
+                  <button class="btn-xs" onclick="lockVowelClearAll(2)">None</button>
+                </div>
+              </div>
+              <div class="lock-vowel-grid" id="lockVowelGrid2" style="display:none;"></div>
+            </div>
+            <div id="vowelLockSection3" style="display:none;">
+              <div class="lock-pos-header">
+                <input type="checkbox" id="vowelLock3Active" style="accent-color:var(--gold);cursor:pointer;" onchange="toggleVowelLockSection(3,this.checked)">
+                <span class="pos-label">Third Letter</span>
+                <div class="lock-btns" id="vowelLockBtns3" style="display:none;">
+                  <button class="btn-xs" onclick="lockVowelSelectAll(3)">All</button>
+                  <button class="btn-xs" onclick="lockVowelSelectMain(3)">Main</button>
+                  <button class="btn-xs" onclick="lockVowelClearAll(3)">None</button>
+                </div>
+              </div>
+              <div class="lock-vowel-grid" id="lockVowelGrid3" style="display:none;"></div>
+            </div>
             <div id="lockVowelWarning" style="display:none;font-size:0.72rem;color:var(--gold);background:rgba(201,146,42,0.12);border-radius:4px;padding:4px 7px;"></div>
           </div>
         </div>
@@ -2949,7 +2977,7 @@ let selectedLetters = new Set(LETTERS.filter(l => !l.dageshTav && !l.savVariant)
 let selectedVowels  = new Set(MAIN_VOWEL_KEYS);
 let vavAsLetter = true;
 let lockLetters = [new Set(), new Set(), new Set()]; // pos 1, 2, 3
-let lockVowels  = new Set();                          // single-pool vowel lock
+let lockVowels  = [new Set(), new Set(), new Set()];  // pos 1, 2, 3
 
 // ── COLOR CODING ──
 const VOWEL_COLOR_DEFS = [
@@ -3271,7 +3299,7 @@ function setDageshTav(enabled) {
   if (enabled) { [0,1,2].forEach(i => { if (lockLetters[i].has('ת')) lockLetters[i].add('תּ'); }); }
   else { [0,1,2].forEach(i => lockLetters[i].delete('תּ')); }
   initLockGrids();
-initLockVowelGrid();
+initLockVowelGrids();
 
   updateCombosCount();
 }
@@ -3357,8 +3385,13 @@ function getSettings() {
     lock2Letters:  [...lockLetters[1]],
     lock3Active:   document.getElementById('lock3Active').checked,
     lock3Letters:  [...lockLetters[2]],
-    vowelLockOn:   document.getElementById('vowelLockToggle')?.checked,
-    lockVowels:    [...lockVowels],
+    vowelLockOn:    document.getElementById('vowelLockToggle')?.checked,
+    vowelLock1Active: document.getElementById('vowelLock1Active')?.checked,
+    vowelLock2Active: document.getElementById('vowelLock2Active')?.checked,
+    vowelLock3Active: document.getElementById('vowelLock3Active')?.checked,
+    lockVowels1:    [...lockVowels[0]],
+    lockVowels2:    [...lockVowels[1]],
+    lockVowels3:    [...lockVowels[2]],
     // Bingo
     bingo:             document.getElementById('bingoToggle').checked,
     bingoGrid:         document.getElementById('bingoGrid').value,
@@ -3515,12 +3548,21 @@ function applySettings(s) {
     document.getElementById('vowelLockToggle').checked = !!s.vowelLockOn;
     toggleVowelLockUI();
   }
-  if (s.lockVowels) {
-    lockVowels = new Set(s.lockVowels);
-    document.querySelectorAll('#lockVowelGrid .lock-vowel-tile').forEach(t =>
-      t.classList.toggle('selected', lockVowels.has(t.dataset.vkey))
-    );
-  }
+  // Per-position vowel locks; tolerate the legacy single-set "lockVowels"
+  // shape from earlier presets by funneling it into position 1.
+  if (s.lockVowels && !s.lockVowels1) s.lockVowels1 = s.lockVowels;
+  [1, 2, 3].forEach(pos => {
+    const activeKey = `vowelLock${pos}Active`;
+    const setKey    = `lockVowels${pos}`;
+    if (s[activeKey] !== undefined) {
+      document.getElementById(`vowelLock${pos}Active`).checked = !!s[activeKey];
+      toggleVowelLockSection(pos, !!s[activeKey]);
+    }
+    if (s[setKey]) {
+      lockVowels[pos - 1] = new Set(s[setKey]);
+      _syncVowelLockGrid(pos);
+    }
+  });
   updateFocusYudWarning();
 
   // Bingo
@@ -4372,6 +4414,12 @@ function setBlendType(type) {
   // silently re-engage if the user later switches back.
   document.getElementById('lockSection2').style.display = (type === 'two' || type === 'three') ? '' : 'none';
   document.getElementById('lockSection3').style.display = type === 'three' ? '' : 'none';
+  // Vowel-lock sections 2 + 3 only matter for 3-letter blends (pos 1 is
+  // always available because every other blend type has a vowel on letter 1).
+  const vlockSec2 = document.getElementById('vowelLockSection2');
+  const vlockSec3 = document.getElementById('vowelLockSection3');
+  if (vlockSec2) vlockSec2.style.display = type === 'three' ? '' : 'none';
+  if (vlockSec3) vlockSec3.style.display = type === 'three' ? '' : 'none';
   const clearLockPos = (pos) => {
     lockLetters[pos - 1] = new Set();
     const cb = document.getElementById(`lock${pos}Active`);
@@ -5198,7 +5246,8 @@ function generateBingoBlendThree(firstPool, secondPool, thirdPool, vowelKeys, vo
   }
   const firstObj = getLetter(first), secondObj = getLetter(second), thirdObj = getLetter(third);
   let firstSound, firstDisplay, midDisplay, midSound;
-  const vowel2 = (vowelPos === 'both') ? vowelKeys[Math.floor(Math.random() * vowelKeys.length)] : null;
+  const v2BingoPool = getActiveVowelKeys(2);
+  const vowel2 = (vowelPos === 'both' && v2BingoPool.length) ? v2BingoPool[Math.floor(Math.random() * v2BingoPool.length)] : null;
   if (vowelPos === 'second') {
     firstDisplay = firstObj.base;
     firstSound   = firstObj.sounds['sh'].replace("'", '');
@@ -5555,24 +5604,34 @@ function lockClearAll(pos) {
   updateCombosCount();
 }
 
-// ── Vowel Lock ──
-function initLockVowelGrid() {
-  const grid = document.getElementById('lockVowelGrid');
-  if (!grid) return;
-  grid.innerHTML = '';
-  VOWELS.forEach(v => {
-    const div = document.createElement('div');
-    div.className = 'lock-vowel-tile' + (lockVowels.has(v.key) ? ' selected' : '');
-    div.dataset.vkey = v.key;
-    div.innerHTML = `<span class="heb">${v.nikud}</span><span class="name">${v.label}</span>`;
-    div.onclick = () => toggleLockVowel(v.key, div);
-    grid.appendChild(div);
+// ── Vowel Lock (per-position) ──
+function initLockVowelGrids() {
+  [1, 2, 3].forEach(pos => {
+    const grid = document.getElementById(`lockVowelGrid${pos}`);
+    if (!grid) return;
+    grid.innerHTML = '';
+    const set = lockVowels[pos - 1];
+    VOWELS.forEach(v => {
+      const div = document.createElement('div');
+      div.className = 'lock-vowel-tile' + (set.has(v.key) ? ' selected' : '');
+      div.dataset.vkey = v.key;
+      div.innerHTML = `<span class="heb">${v.nikud}</span><span class="name">${v.label}</span>`;
+      div.onclick = () => toggleLockVowel(pos, v.key, div);
+      grid.appendChild(div);
+    });
   });
 }
 
-function toggleLockVowel(key, el) {
-  if (lockVowels.has(key)) {
-    lockVowels.delete(key);
+function toggleVowelLockSection(pos, on) {
+  document.getElementById(`lockVowelGrid${pos}`).style.display = on ? '' : 'none';
+  document.getElementById(`vowelLockBtns${pos}`).style.display = on ? '' : 'none';
+  updateCombosCount();
+}
+
+function toggleLockVowel(pos, key, el) {
+  const set = lockVowels[pos - 1];
+  if (set.has(key)) {
+    set.delete(key);
     el.classList.remove('selected');
   } else {
     if (!selectedVowels.has(key)) {
@@ -5585,23 +5644,36 @@ function toggleLockVowel(key, el) {
       }
       return;
     }
-    lockVowels.add(key);
+    set.add(key);
     el.classList.add('selected');
   }
   updateCombosCount();
 }
 
-function lockVowelSelectAll() {
-  lockVowels = new Set(VOWELS.map(v => v.key).filter(k => selectedVowels.has(k)));
-  document.querySelectorAll('#lockVowelGrid .lock-vowel-tile').forEach(t =>
-    t.classList.toggle('selected', lockVowels.has(t.dataset.vkey))
+function _syncVowelLockGrid(pos) {
+  const set = lockVowels[pos - 1];
+  document.querySelectorAll(`#lockVowelGrid${pos} .lock-vowel-tile`).forEach(t =>
+    t.classList.toggle('selected', set.has(t.dataset.vkey))
   );
+}
+
+function lockVowelSelectAll(pos) {
+  lockVowels[pos - 1] = new Set(VOWELS.map(v => v.key).filter(k => selectedVowels.has(k)));
+  _syncVowelLockGrid(pos);
   updateCombosCount();
 }
 
-function lockVowelClearAll() {
-  lockVowels = new Set();
-  document.querySelectorAll('#lockVowelGrid .lock-vowel-tile').forEach(t => t.classList.remove('selected'));
+function lockVowelSelectMain(pos) {
+  lockVowels[pos - 1] = new Set(
+    VOWELS.filter(v => v.isMain).map(v => v.key).filter(k => selectedVowels.has(k))
+  );
+  _syncVowelLockGrid(pos);
+  updateCombosCount();
+}
+
+function lockVowelClearAll(pos) {
+  lockVowels[pos - 1] = new Set();
+  _syncVowelLockGrid(pos);
   updateCombosCount();
 }
 
@@ -5611,13 +5683,16 @@ function toggleVowelLockUI() {
   updateCombosCount();
 }
 
-// Vowel pool used by every generator path. The Vowel Lock takes precedence
-// when active and non-empty — same pattern as the existing letter Lock.
-function getActiveVowelKeys() {
+// Vowel pool for a given letter position. The per-position Vowel Lock takes
+// precedence when its section is active and the locked set is non-empty —
+// same pattern as the letter lock. pos defaults to 1 (the historical caller
+// is the global "first vowel" pick, matching pre-feature behavior).
+function getActiveVowelKeys(pos) {
+  pos = pos || 1;
   const lockOn = document.getElementById('vowelLockToggle')?.checked;
-  if (lockOn && lockVowels.size > 0) {
-    // Stay safe: only return locked vowels that are still in the main selection.
-    return [...lockVowels].filter(k => selectedVowels.has(k));
+  const sectionOn = document.getElementById(`vowelLock${pos}Active`)?.checked;
+  if (lockOn && sectionOn && lockVowels[pos - 1].size > 0) {
+    return [...lockVowels[pos - 1]].filter(k => selectedVowels.has(k));
   }
   return [...selectedVowels];
 }
@@ -5757,7 +5832,7 @@ function generate(animate = false) {
     return;
   }
 
-  let vowelKeys = getActiveVowelKeys();
+  let vowelKeys = getActiveVowelKeys(1);
   if (vowelKeys.length === 0) {
     if (rwOn) { blends = []; generateRealWords(); return; }
     alert('Please select at least one vowel.');
@@ -5882,7 +5957,8 @@ function generate(animate = false) {
 
     if (threeLetter) {
       // When vavAsLetter=false, vcholam/shuruk on the second letter would also produce 4 chars — exclude them
-      const vowel2Keys = (!vavAsLetter) ? vowelKeys.filter(v => v !== 'vcholam' && v !== 'shuruk') : vowelKeys;
+      const v2Pool = getActiveVowelKeys(2);
+      const vowel2Keys = (!vavAsLetter) ? v2Pool.filter(v => v !== 'vcholam' && v !== 'shuruk') : v2Pool;
       const vowel2   = vowelPos === 'both' ? (vowel2Keys.length > 0 ? vowel2Keys[Math.floor(Math.random() * vowel2Keys.length)] : null) : null;
       // Third pool: secondPool + sofits, no vav variants; override if lock3 active
       const VAV_VARIANTS = new Set(['וֹ','וּ']);
@@ -8307,7 +8383,7 @@ initLetters();
 updateCombosCount();
 updateVavAsLetterVisibility();
 initLockGrids();
-initLockVowelGrid();
+initLockVowelGrids();
 initColorPickers();
 setBlendType(document.querySelector('.blend-type-btn.active')?.dataset.type || 'two');
 initPanelCollapse();
