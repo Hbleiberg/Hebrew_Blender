@@ -1554,6 +1554,14 @@ function rebuildDeckTranslit() {
   if (!HT) return;
   const apply = c => {
     if (!c) return;
+    if (c.skipTranslitRebuild) {
+      // Numbers/colors cards: translit holds Arabic numeral or English name — don't touch it.
+      // For numbers, update romanized (Hebrew words → transliteration).
+      if (c.romanized !== undefined) {
+        c.romanized = HT.apply(c.heb || '', '', translitStyle);
+      }
+      return;
+    }
     if (c.translitDefault === undefined) c.translitDefault = c.translit || '';
     c.translit = HT.apply(c.heb || '', c.translitDefault, translitStyle);
   };
@@ -2501,7 +2509,7 @@ function generateCard() {
     if (!words) return null;
     const HT = window.HebrewTransliterator;
     const romanized = (HT && typeof HT.apply === 'function') ? HT.apply(words, '', translitStyle) : '';
-    return { heb: words, translit: String(n), romanized };
+    return { heb: words, translit: String(n), romanized, skipTranslitRebuild: true };
   }
 
   if (otherModeActive && otherSubMode === 'colors') {
@@ -2509,7 +2517,7 @@ function generateCard() {
     if (pool.length === 0) return null;
     const c = pool[Math.floor(Math.random() * pool.length)];
     const heb = colorGender === 'masculine' ? c.heb_m : c.heb_f;
-    return { heb, translit: c.name, colorCss: c.css, textDark: c.textDark };
+    return { heb, translit: c.name, colorCss: c.css, textDark: c.textDark, skipTranslitRebuild: true };
   }
 
   const result = { heb: '', translit: '' };
