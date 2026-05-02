@@ -958,8 +958,13 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
             <div class="pill-group" id="numShowPills">
               <button class="pill active" data-nshow="number">Show Number</button>
               <button class="pill" data-nshow="words">Show Words</button>
-              <button class="pill" data-nshow="translit">Show Translit</button>
             </div>
+          </div>
+          <div class="row" style="margin-top:8px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;cursor:pointer;">
+              <input type="checkbox" id="numTranslitToggle" style="accent-color:var(--gold);width:13px;height:13px;">
+              Show transliteration
+            </label>
           </div>
         </div>
       </div><!-- /otherModeSection -->
@@ -1465,6 +1470,7 @@ let numberMin = 1;
 let numberMax = 100;
 let numberGender = 'feminine';
 let numberFront = 'number';
+let numberShowTranslit = false;
 let timerMode = 'off';       // 'off' | 'track' | 'limit'
 let timerShowOnScreen = true;
 let timeLimitSeconds = 60;
@@ -2003,7 +2009,7 @@ function getSettings() {
     colorCodingEnabled, colorCodingMode,
     nikudColorOverrides: { ...nikudColorOverrides },
     hebFontId, audioEnabled, nameLetterMode, nameLetterShowLetter,
-    otherModeActive, otherSubMode, numberMin, numberMax, numberGender, numberFront,
+    otherModeActive, otherSubMode, numberMin, numberMax, numberGender, numberFront, numberShowTranslit,
     timerMode, timerShowOnScreen, timeLimitSeconds,
     ttsRate: parseFloat(document.getElementById('ttsRateSlider')?.value || 0.85),
     vowelPositions: [...vowelPositions],
@@ -2072,18 +2078,21 @@ function applySettings(s) {
   numberMax = (s.numberMax !== undefined) ? s.numberMax : 100;
   numberGender = s.numberGender || 'feminine';
   // Migrate old boolean numberShowNum → numberFront string
-  if (s.numberFront) {
+  if (s.numberFront && s.numberFront !== 'translit') {
     numberFront = s.numberFront;
   } else if (s.numberShowNum !== undefined) {
     numberFront = s.numberShowNum ? 'number' : 'words';
   } else {
     numberFront = 'number';
   }
+  numberShowTranslit = !!s.numberShowTranslit;
   setOtherMode(otherModeActive);
   document.querySelector('#numMinInput') && (document.getElementById('numMinInput').value = numberMin);
   document.querySelector('#numMaxInput') && (document.getElementById('numMaxInput').value = numberMax);
   document.querySelectorAll('#numGenderPills .pill').forEach(p => p.classList.toggle('active', p.dataset.gender === numberGender));
   document.querySelectorAll('#numShowPills .pill').forEach(p => p.classList.toggle('active', p.dataset.nshow === numberFront));
+  const numTranslitToggle = document.getElementById('numTranslitToggle');
+  if (numTranslitToggle) numTranslitToggle.checked = numberShowTranslit;
   if (!otherModeActive) document.getElementById('panelVowels').style.display = nameLetterMode ? 'none' : '';
   document.querySelectorAll('#nameLetterFrontPills .pill').forEach(p =>
     p.classList.toggle('active', p.dataset.nlf === (nameLetterShowLetter ? 'letter' : 'name')));
@@ -2645,33 +2654,29 @@ function renderCurrentCard() {
   const back = document.getElementById('fcBackTr');
 
   if (otherModeActive && otherSubMode === 'numbers') {
+    function hebSide(el) {
+      if (numberShowTranslit) {
+        el.innerHTML = `<div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(1.2rem,5vw,2rem);margin-bottom:6px;">${card.heb}</div><div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;">${card.romanized || ''}</div>`;
+        el.style.fontFamily = '';
+        el.style.direction = '';
+        el.style.fontSize = '';
+      } else {
+        el.textContent = card.heb;
+        el.style.fontFamily = 'var(--heb-font)';
+        el.style.direction = 'rtl';
+        el.style.fontSize = 'clamp(1.2rem, 5vw, 2rem)';
+      }
+    }
+    function numSide(el) {
+      el.textContent = card.translit;
+      el.style.fontFamily = 'var(--serif)';
+      el.style.direction = 'ltr';
+      el.style.fontSize = 'clamp(3rem, 12vw, 5rem)';
+    }
     if (numberFront === 'number') {
-      front.textContent = card.translit;
-      front.style.fontFamily = 'var(--serif)';
-      front.style.direction = 'ltr';
-      front.style.fontSize = 'clamp(3rem, 12vw, 5rem)';
-      back.textContent = card.heb;
-      back.style.fontFamily = 'var(--heb-font)';
-      back.style.direction = 'rtl';
-      back.style.fontSize = 'clamp(1.2rem, 5vw, 2rem)';
-    } else if (numberFront === 'translit') {
-      front.textContent = card.translit;
-      front.style.fontFamily = 'var(--serif)';
-      front.style.direction = 'ltr';
-      front.style.fontSize = 'clamp(3rem, 12vw, 5rem)';
-      back.innerHTML = `<div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(1.2rem,5vw,2rem);margin-bottom:6px;">${card.heb}</div><div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;">${card.romanized || ''}</div>`;
-      back.style.fontFamily = '';
-      back.style.direction = '';
-      back.style.fontSize = '';
+      numSide(front); hebSide(back);
     } else {
-      front.textContent = card.heb;
-      front.style.fontFamily = 'var(--heb-font)';
-      front.style.direction = 'rtl';
-      front.style.fontSize = 'clamp(1.2rem, 5vw, 2rem)';
-      back.textContent = card.translit;
-      back.style.fontFamily = 'var(--serif)';
-      back.style.direction = 'ltr';
-      back.style.fontSize = 'clamp(3rem, 12vw, 5rem)';
+      hebSide(front); numSide(back);
     }
   } else if (nameLetterMode) {
     if (nameLetterShowLetter) {
@@ -2914,6 +2919,10 @@ function wireSetupScreen() {
     document.querySelectorAll('#numShowPills .pill').forEach(x => x.classList.toggle('active', x === p));
     saveSettings();
   }));
+  document.getElementById('numTranslitToggle').addEventListener('change', e => {
+    numberShowTranslit = e.target.checked;
+    saveSettings();
+  });
   document.getElementById('numMinInput').addEventListener('change', e => {
     numberMin = Math.max(0, Math.min(9999, parseInt(e.target.value) || 0));
     e.target.value = numberMin;
