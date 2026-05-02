@@ -855,6 +855,55 @@
     gap: 10px;
     direction: ltr;
   }
+  /* Word Search grid */
+  .ws-grid {
+    display: grid;
+    gap: 0;
+    border: 2px solid var(--border);
+    margin: 12px auto;
+    width: fit-content;
+    background: var(--white);
+  }
+  .ws-cell {
+    width: 30px; height: 30px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--heb-font);
+    font-size: 1.05rem;
+    color: var(--text);
+    direction: rtl;
+    unicode-bidi: isolate;
+    background: var(--white);
+  }
+  .ws-cell.last-col { border-right: none; }
+  .ws-cell.last-row { border-bottom: none; }
+  .ws-cell.ws-word { background: rgba(201,146,42,0.22); font-weight: 700; }
+  body.dark .ws-cell { background: #1e2535; }
+  body.dark .ws-cell.ws-word { background: rgba(224,168,50,0.30); }
+  .ws-wordbank {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px 18px;
+    margin: 16px auto 0;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    max-width: 520px;
+  }
+  .ws-wordbank-title {
+    grid-column: 1 / -1;
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 4px; margin-bottom: 2px;
+  }
+  .ws-wordbank-item { display: flex; flex-direction: column; }
+  .ws-wordbank-heb { font-family: var(--heb-font); font-size: 1.15rem; direction: rtl; color: var(--text); }
+  .ws-wordbank-tr  { font-size: 0.72rem; color: var(--muted); font-style: italic; }
+  .ws-wordbank-tn  { font-size: 0.78rem; color: var(--gold); font-weight: 600; }
+
   /* Flip cards for vocab drill */
   .rw-flip { perspective: 600px; cursor: pointer; }
   .rw-flip-inner {
@@ -1204,6 +1253,8 @@
     .bingo-card.four-up { max-width: 100%; border-radius: 0; }
     .bingo-page.two-up { flex-direction: row; gap: 0; align-items: stretch; }
     .bingo-card.two-up { max-width: 50%; width: 50%; flex: 1; border-radius: 0; }
+    /* Word Search: tinted cells don't always print on B/W; outline instead */
+    .ws-cell.ws-word { background: transparent !important; outline: 2px solid #c9922a; outline-offset: -2px; }
   }
   body.dark .timer-bar,
   body.dark .score-bar { background: var(--warm-gray); }
@@ -1876,7 +1927,7 @@
 
           <!-- Drill Type -->
           <div class="rw-section">
-            <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Drill Type <span class="tooltip-wrap" style="font-size:0.65rem;text-transform:none;letter-spacing:normal;font-weight:400;">?<span class="tooltip-box"><strong>Reading</strong> — Hebrew shown, students read aloud and flip to check.<br><br><strong>Self-Check</strong> — Flip cards: Hebrew front, English translation back.<br><br><strong>Reverse</strong> — English shown, students recall or write the Hebrew.<br><br><strong>ID Real Words</strong> — Mixed real words + nonsense blends; students circle the real ones. Includes a teacher answer key.<br><br><strong>ID Parts of Speech</strong> — Hebrew words shown; students write the part of speech. Answer key includes a small POS tag on each card.<br><br><strong>Bingo</strong> — Generates unique bingo cards with real Hebrew words. Teacher calls words aloud; students mark matches.<br><br><strong>Gematria</strong> — Each word is shown with a blank line. Students calculate and write the total Gematria value of the letters. An answer key is generated on a second page.<br><br><strong>Fill Vowels</strong> — Hebrew words shown with their nikkud stripped. Students write in the vowel marks. Optional Include Dageshim keeps the dot inside letters intact.</span></span></div>
+            <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Drill Type <span class="tooltip-wrap" style="font-size:0.65rem;text-transform:none;letter-spacing:normal;font-weight:400;">?<span class="tooltip-box"><strong>Reading</strong> — Hebrew shown, students read aloud and flip to check.<br><br><strong>Self-Check</strong> — Flip cards: Hebrew front, English translation back.<br><br><strong>Reverse</strong> — English shown, students recall or write the Hebrew.<br><br><strong>ID Real Words</strong> — Mixed real words + nonsense blends; students circle the real ones. Includes a teacher answer key.<br><br><strong>ID Parts of Speech</strong> — Hebrew words shown; students write the part of speech. Answer key includes a small POS tag on each card.<br><br><strong>Bingo</strong> — Generates unique bingo cards with real Hebrew words. Teacher calls words aloud; students mark matches.<br><br><strong>Gematria</strong> — Each word is shown with a blank line. Students calculate and write the total Gematria value of the letters. An answer key is generated on a second page.<br><br><strong>Fill Vowels</strong> — Hebrew words shown with their nikkud stripped. Students write in the vowel marks. Optional Include Dageshim keeps the dot inside letters intact.<br><br><strong>Word Search</strong> — A printable Hebrew word search puzzle. Pick grid size (10×10–18×18), word count (5–10), and which directions are allowed. Optional word bank for the student page; the answer key highlights every placed word.</span></span></div>
             <div class="rw-section-body">
               <div class="blend-type-selector" style="grid-template-columns:repeat(3,1fr);margin-bottom:6px;">
                 <button class="rw-drill-btn active" data-drill="reading" onclick="setRealWordDrill('reading')">Reading</button>
@@ -1887,6 +1938,7 @@
                 <button class="rw-drill-btn" data-drill="bingo" onclick="setRealWordDrill('bingo')">Bingo</button>
                 <button class="rw-drill-btn" data-drill="gematria" onclick="setRealWordDrill('gematria')">Gematria</button>
                 <button class="rw-drill-btn" data-drill="fillvowels" onclick="setRealWordDrill('fillvowels')">Fill Vowels</button>
+                <button class="rw-drill-btn" data-drill="wordsearch" onclick="setRealWordDrill('wordsearch')">Word Search</button>
               </div>
             </div>
           </div>
@@ -2061,6 +2113,56 @@
                   <input type="checkbox" id="rwFillVowelsDagesh" onchange="if(document.getElementById('worksheet').querySelector('.blend-cell, .rw-card, .flip-card'))generateRealWords()">
                   <span class="slider"></span>
                 </label>
+              </div>
+              <!-- Word Search-only rows -->
+              <div class="rw-ws-only" id="rwWsWordCountRow" style="display:none;align-items:center;gap:8px;">
+                <span style="font-size:0.8rem;flex:1;">Number of Words</span>
+                <select id="wsWordCount" onchange="if(document.getElementById('worksheet').querySelector('.ws-grid'))generateRealWords()" style="font-size:0.78rem;padding:3px 6px;">
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8" selected>8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                </select>
+              </div>
+              <div class="rw-ws-only" id="rwWsGridSizeRow" style="display:none;align-items:center;gap:8px;">
+                <span style="font-size:0.8rem;flex:1;">Grid Size</span>
+                <select id="wsGridSize" onchange="if(document.getElementById('worksheet').querySelector('.ws-grid'))generateRealWords()" style="font-size:0.78rem;padding:3px 6px;">
+                  <option value="10">10 × 10</option>
+                  <option value="12" selected>12 × 12</option>
+                  <option value="15">15 × 15</option>
+                  <option value="18">18 × 18</option>
+                </select>
+              </div>
+              <div class="toggle-row rw-ws-only" style="display:none;font-size:0.82rem;">
+                <span>Show Nikkud</span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+                  <input type="checkbox" id="wsShowNikkud" onchange="if(document.getElementById('worksheet').querySelector('.ws-grid'))generateRealWords()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row rw-ws-only" style="display:none;font-size:0.82rem;">
+                <span>Show Word Bank</span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+                  <input type="checkbox" id="wsShowWordBank" checked onchange="if(document.getElementById('worksheet').querySelector('.ws-grid'))generateRealWords()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="rw-ws-only" id="rwWsDirectionsRow" style="display:none;flex-direction:column;gap:4px;margin-top:4px;">
+                <div style="font-size:0.72rem;font-weight:600;color:var(--text);">Directions
+                  <span class="tooltip-wrap" style="font-size:0.55rem;font-weight:400;">?<span class="tooltip-box">Pick which directions words can be hidden in. ← is right-to-left (the natural Hebrew reading direction). Enable more directions for harder puzzles.</span></span>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:3px 8px;">
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.85rem;cursor:pointer;"><input type="checkbox" class="ws-dir" value="W" checked style="accent-color:var(--gold);"> ←</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.85rem;cursor:pointer;"><input type="checkbox" class="ws-dir" value="E" style="accent-color:var(--gold);"> →</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.85rem;cursor:pointer;"><input type="checkbox" class="ws-dir" value="S" checked style="accent-color:var(--gold);"> ↓</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.85rem;cursor:pointer;"><input type="checkbox" class="ws-dir" value="N" style="accent-color:var(--gold);"> ↑</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.85rem;cursor:pointer;"><input type="checkbox" class="ws-dir" value="SE" style="accent-color:var(--gold);"> ↘</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.85rem;cursor:pointer;"><input type="checkbox" class="ws-dir" value="SW" style="accent-color:var(--gold);"> ↙</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.85rem;cursor:pointer;"><input type="checkbox" class="ws-dir" value="NE" style="accent-color:var(--gold);"> ↗</label>
+                  <label style="display:flex;align-items:center;gap:3px;font-size:0.85rem;cursor:pointer;"><input type="checkbox" class="ws-dir" value="NW" style="accent-color:var(--gold);"> ↖</label>
+                </div>
               </div>
             </div>
           </div>
@@ -3059,6 +3161,11 @@ function getSettings() {
     rwGematriaInverse:   document.getElementById('rwGematriaInverse').checked,
     rwGematriaSelfCheck: document.getElementById('rwGematriaSelfCheck').checked,
     rwFillVowelsDagesh:    document.getElementById('rwFillVowelsDagesh').checked,
+    wsWordCount:           document.getElementById('wsWordCount')?.value,
+    wsGridSize:            document.getElementById('wsGridSize')?.value,
+    wsShowNikkud:          document.getElementById('wsShowNikkud')?.checked,
+    wsShowWordBank:        document.getElementById('wsShowWordBank')?.checked,
+    wsDirections:          [...document.querySelectorAll('.ws-dir:checked')].map(cb => cb.value),
     // Font size
     hebFontSize:       document.getElementById('hebFontSizeSlider').value,
     vavAsLetter,
@@ -3220,6 +3327,14 @@ function applySettings(s) {
   if (s.rwGematriaInverse !== undefined)   document.getElementById('rwGematriaInverse').checked = s.rwGematriaInverse;
   if (s.rwGematriaSelfCheck !== undefined) document.getElementById('rwGematriaSelfCheck').checked = s.rwGematriaSelfCheck;
   if (s.rwFillVowelsDagesh !== undefined)    document.getElementById('rwFillVowelsDagesh').checked = s.rwFillVowelsDagesh;
+  if (s.wsWordCount)                         document.getElementById('wsWordCount').value = s.wsWordCount;
+  if (s.wsGridSize)                          document.getElementById('wsGridSize').value = s.wsGridSize;
+  if (s.wsShowNikkud !== undefined)          document.getElementById('wsShowNikkud').checked = s.wsShowNikkud;
+  if (s.wsShowWordBank !== undefined)        document.getElementById('wsShowWordBank').checked = s.wsShowWordBank;
+  if (s.wsDirections) {
+    const sel = new Set(s.wsDirections);
+    document.querySelectorAll('.ws-dir').forEach(cb => { cb.checked = sel.has(cb.value); });
+  }
 
   // Font size
   if (s.hebFontSize !== undefined) { const sl = document.getElementById('hebFontSizeSlider'); if (sl) { sl.value = s.hebFontSize; setHebFontSize(s.hebFontSize); } }
@@ -6515,7 +6630,7 @@ function _rwSyncPageButtons(scopeSel, attr, val) {
 //   vocab                          → 'vocab'   set (Front/Back/Both)
 const _RW_PAGE_FLAVOR = {
   reading: 'reading', reverse: 'reading', gematria: 'reading', fillvowels: 'reading',
-  identify: 'reading', idpos: 'reading',
+  identify: 'reading', idpos: 'reading', wordsearch: 'reading',
   bingo: 'bingo', vocab: 'vocab',
 };
 
@@ -6646,9 +6761,9 @@ function setRealWordDrill(type) {
   document.querySelectorAll('.rw-drill-btn').forEach(b => b.classList.toggle('active', b.dataset.drill === type));
 
   // Mix-with-blends doesn't make sense for these drills. Identify auto-mixes;
-  // bingo/gematria/fillvowels never mix.
+  // bingo/gematria/fillvowels/wordsearch never mix.
   const mixedRow = document.getElementById('rwMixedRow');
-  const mixedHidden = (type === 'identify' || type === 'bingo' || type === 'gematria' || type === 'fillvowels');
+  const mixedHidden = (type === 'identify' || type === 'bingo' || type === 'gematria' || type === 'fillvowels' || type === 'wordsearch');
   if (mixedRow) mixedRow.style.display = mixedHidden ? 'none' : '';
   const mixedCb = document.getElementById('rwMixed');
   if (mixedCb) {
@@ -6672,6 +6787,7 @@ function setRealWordDrill(type) {
     case 'reverse':
     case 'identify':
     case 'idpos':
+    case 'wordsearch':
       SET(showTranslit, true);  SET(showTranslation, true);
       rwTranslitPage = 'key';   rwTranslPage = 'key';
       if (type === 'identify' || type === 'idpos') {
@@ -6706,14 +6822,24 @@ function setRealWordDrill(type) {
   //   • fillvowels → Include-Dageshim shown alongside translit/translation
   //   • identify   → Star Real Words rows relocate just under Number of Words
   //   • idpos      → POS selector relocates from Word Filters into Drill Options
+  //   • wordsearch → custom rows shown; Number of Words row hidden (overridden by wsWordCount)
   const isGem   = type === 'gematria';
   const isFv    = type === 'fillvowels';
   const isIdent = type === 'identify';
   const isIdpos = type === 'idpos';
+  const isWs    = type === 'wordsearch';
   document.querySelectorAll('.rw-gem-only').forEach(el => el.style.display = isGem ? '' : 'none');
   document.querySelectorAll('.rw-fv-only').forEach(el => el.style.display = isFv ? '' : 'none');
   document.querySelectorAll('.rw-idpos-only').forEach(el => el.style.display = isIdpos ? '' : 'none');
+  document.querySelectorAll('.rw-ws-only').forEach(el => {
+    // Restore each row's natural display value (flex/grid) when shown
+    const tag = el.tagName === 'DIV' && el.classList.contains('toggle-row') ? '' : (el.id === 'rwWsDirectionsRow' ? 'flex' : 'flex');
+    el.style.display = isWs ? tag : 'none';
+  });
   document.querySelectorAll('.rw-display-only').forEach(el => { el.style.display = ''; });
+  // Word Search has its own word-count select — hide the standard one.
+  const countRow = document.getElementById('rwCountRow');
+  if (countRow) countRow.style.display = isWs ? 'none' : 'flex';
   toggleRwTranslitPageRow(); toggleRwTranslPageRow();
   _relocateStarRealRow(isIdent);
   _relocatePosFilter(isIdpos);
@@ -6776,6 +6902,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (el) el.addEventListener('change', updateRwPoolInfo);
   });
   document.querySelectorAll('.rw-pos').forEach(cb => cb.addEventListener('change', updateRwPoolInfo));
+
+  // Word Search direction checkboxes — re-render when toggled if a grid is on screen.
+  document.querySelectorAll('.ws-dir').forEach(cb => cb.addEventListener('change', () => {
+    if (document.getElementById('worksheet').querySelector('.ws-grid')) generateRealWords();
+  }));
 });
 
 let rwLetterFilter = new Set();
@@ -6958,6 +7089,12 @@ function generateRealWords() {
     return;
   }
 
+  if (drill === 'wordsearch') {
+    generateWordSearch(pool);
+    enableButtons();
+    return;
+  }
+
   const words = rwShuffle(pool).slice(0, Math.min(count, pool.length));
 
   // If mixed mode: interleave with generated blends
@@ -7120,6 +7257,215 @@ function generateRealWords() {
 }
 
 // ── FILL IN THE VOWELS (real words) ──
+// ── WORD SEARCH (real words) ──
+
+// Split a Hebrew string into atomic visual letters. A "letter" is one base
+// codepoint plus any trailing combining marks (nikkud + dagesh, U+05B0–U+05C7).
+// Used both for placing words in the grid and computing word length.
+function splitHebLetters(str) {
+  const out = [];
+  let cur = '';
+  for (const ch of str) {
+    const code = ch.codePointAt(0);
+    if (code >= 0x05B0 && code <= 0x05C7) {
+      cur += ch;            // combining mark glues to the previous base
+    } else {
+      if (cur) out.push(cur);
+      cur = ch;
+    }
+  }
+  if (cur) out.push(cur);
+  return out;
+}
+
+const _WS_DIRS = {
+  E:  [ 0,  1], W:  [ 0, -1],
+  S:  [ 1,  0], N:  [-1,  0],
+  SE: [ 1,  1], SW: [ 1, -1],
+  NE: [-1,  1], NW: [-1, -1],
+};
+
+function generateWordSearch(pool) {
+  const ws = document.getElementById('worksheet');
+  ws.innerHTML = '';
+
+  const wantCount    = parseInt(document.getElementById('wsWordCount').value) || 8;
+  const gridSize     = parseInt(document.getElementById('wsGridSize').value)  || 12;
+  const showNikkud   = document.getElementById('wsShowNikkud').checked;
+  const showWordBank = document.getElementById('wsShowWordBank').checked;
+  const dirKeys = [...document.querySelectorAll('.ws-dir:checked')].map(cb => cb.value);
+  if (dirKeys.length === 0) {
+    ws.innerHTML = '<div class="empty-state"><h2>Pick at least one direction.</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">Word Search needs somewhere to hide the words — enable at least one arrow under Drill Options → Directions.</p></div>';
+    return;
+  }
+  const dirs = dirKeys.map(k => _WS_DIRS[k]);
+
+  // Standard 3-way placement for the word bank's translit/translation.
+  const showTranslit    = document.getElementById('rwShowTranslit').checked;
+  const showTranslation = document.getElementById('rwShowTranslation').checked;
+  const trOnSheet = showTranslit    && (rwTranslitPage === 'same' || rwTranslitPage === 'both');
+  const trOnKey   = showTranslit    && (rwTranslitPage === 'key'  || rwTranslitPage === 'both');
+  const tnOnSheet = showTranslation && (rwTranslPage   === 'same' || rwTranslPage   === 'both');
+  const tnOnKey   = showTranslation && (rwTranslPage   === 'key'  || rwTranslPage   === 'both');
+
+  // Pick words: only those that fit in the grid in their grid form (with or
+  // without nikkud) and skip any whose split-length exceeds gridSize.
+  const candidates = rwShuffle(pool);
+  const chosen = [];
+  for (const w of candidates) {
+    if (chosen.length >= wantCount) break;
+    const gridText = showNikkud ? w.heb : stripNikud(w.heb);
+    const cells = splitHebLetters(gridText);
+    if (cells.length < 2 || cells.length > gridSize) continue;
+    chosen.push({ ...w, gridText, cells });
+  }
+  if (chosen.length === 0) {
+    ws.innerHTML = '<div class="empty-state"><h2>No words match.</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">Loosen your Word Filters or pick a larger grid size.</p></div>';
+    return;
+  }
+
+  // Place longest words first to maximize fit chance.
+  chosen.sort((a, b) => b.cells.length - a.cells.length);
+
+  const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(null));
+  const placements = [];                       // [{ word, cells: [[r,c], …] }]
+
+  function tryPlace(word) {
+    for (let attempt = 0; attempt < 250; attempt++) {
+      const [dr, dc] = dirs[Math.floor(Math.random() * dirs.length)];
+      const len = word.cells.length;
+      const startR = Math.floor(Math.random() * gridSize);
+      const startC = Math.floor(Math.random() * gridSize);
+      const endR = startR + dr * (len - 1);
+      const endC = startC + dc * (len - 1);
+      if (endR < 0 || endR >= gridSize || endC < 0 || endC >= gridSize) continue;
+      let ok = true;
+      for (let i = 0; i < len; i++) {
+        const r = startR + dr * i, c = startC + dc * i;
+        if (grid[r][c] !== null && grid[r][c] !== word.cells[i]) { ok = false; break; }
+      }
+      if (!ok) continue;
+      const cells = [];
+      for (let i = 0; i < len; i++) {
+        const r = startR + dr * i, c = startC + dc * i;
+        grid[r][c] = word.cells[i];
+        cells.push([r, c]);
+      }
+      return cells;
+    }
+    return null;
+  }
+
+  const placedWords = [];
+  for (const w of chosen) {
+    const cells = tryPlace(w);
+    if (cells) {
+      placedWords.push(w);
+      placements.push({ word: w, cells });
+    }
+  }
+  if (placedWords.length === 0) {
+    ws.innerHTML = '<div class="empty-state"><h2>Could not place any words.</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">Try a larger grid or shorter words.</p></div>';
+    return;
+  }
+
+  // Fill empty cells with random base consonants. When nikkud are shown we
+  // also drop a vowel mark on roughly one out of every two filler letters so
+  // the grid blends in with the placed words.
+  const NIKUD_FILLERS = ['ָ','ַ','ֶ','ֵ','ִ','ֹ','ֻ','ְ'];
+  const fillerPool = LETTERS
+    .filter(l => !SOFIT_CHARS.has(l.heb) && l.heb !== 'ו' && l.heb !== 'וֹ' && l.heb !== 'וּ')
+    .map(l => l.base);
+  for (let r = 0; r < gridSize; r++) {
+    for (let c = 0; c < gridSize; c++) {
+      if (grid[r][c] !== null) continue;
+      let ch = fillerPool[Math.floor(Math.random() * fillerPool.length)];
+      if (showNikkud && Math.random() < 0.5) {
+        ch += NIKUD_FILLERS[Math.floor(Math.random() * NIKUD_FILLERS.length)];
+      }
+      grid[r][c] = ch;
+    }
+  }
+
+  // Mark which cells belong to a placed word so the answer key can highlight.
+  const marked = Array.from({ length: gridSize }, () => Array(gridSize).fill(false));
+  for (const p of placements) for (const [r, c] of p.cells) marked[r][c] = true;
+
+  // ── Helpers to render one full sheet (student or answer key) ──
+  function renderGrid(highlight) {
+    const g = document.createElement('div');
+    g.className = 'ws-grid';
+    g.style.gridTemplateColumns = `repeat(${gridSize}, 30px)`;
+    for (let r = 0; r < gridSize; r++) {
+      for (let c = 0; c < gridSize; c++) {
+        const cell = document.createElement('div');
+        let cls = 'ws-cell';
+        if (c === gridSize - 1) cls += ' last-col';
+        if (r === gridSize - 1) cls += ' last-row';
+        if (highlight && marked[r][c]) cls += ' ws-word';
+        cell.className = cls;
+        cell.textContent = grid[r][c];
+        g.appendChild(cell);
+      }
+    }
+    return g;
+  }
+  function renderWordBank(showTr, showTn) {
+    const wb = document.createElement('div');
+    wb.className = 'ws-wordbank';
+    wb.innerHTML = '<div class="ws-wordbank-title">Word Bank</div>';
+    placedWords.forEach(w => {
+      const item = document.createElement('div');
+      item.className = 'ws-wordbank-item';
+      let html = `<span class="ws-wordbank-heb">${w.heb}</span>`;
+      if (showTr && w.translit)    html += `<span class="ws-wordbank-tr">${w.translit}</span>`;
+      if (showTn && w.translation) html += `<span class="ws-wordbank-tn">${w.translation}</span>`;
+      item.innerHTML = html;
+      wb.appendChild(item);
+    });
+    return wb;
+  }
+
+  const title    = document.getElementById('wsTitle').value || 'Hebrew Word Search';
+  const subtitle = document.getElementById('wsSubtitle').value;
+
+  // ── Student sheet ──
+  const sheet = document.createElement('div');
+  sheet.className = 'sheet';
+  const header = document.createElement('div');
+  header.className = 'ws-header';
+  header.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle">${subtitle || 'Find each word hidden in the grid.'}</div></div>${wsMetaHTML()}`;
+  sheet.appendChild(header);
+  sheet.appendChild(renderGrid(false));
+  if (showWordBank) sheet.appendChild(renderWordBank(trOnSheet, tnOnSheet));
+  const footer = document.createElement('div');
+  footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  footer.textContent = `${placedWords.length} of ${chosen.length} words placed · Hebrew Blend Generator`;
+  sheet.appendChild(footer);
+  ws.appendChild(sheet);
+
+  // ── Answer key sheet (always rendered: the highlighted grid is the answer) ──
+  const ak = document.createElement('div');
+  ak.className = 'sheet answer-key-sheet';
+  const banner = document.createElement('div');
+  banner.className = 'answer-key-banner';
+  banner.textContent = '✦ Answer Key ✦';
+  ak.appendChild(banner);
+  const akHeader = document.createElement('div');
+  akHeader.className = 'ws-header';
+  akHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>`;
+  ak.appendChild(akHeader);
+  ak.appendChild(renderGrid(true));
+  ak.appendChild(renderWordBank(trOnKey, tnOnKey));
+  const akFooter = document.createElement('div');
+  akFooter.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  akFooter.textContent = `${placedWords.length} words · Hebrew Blend Generator — Word Search Answer Key`;
+  ak.appendChild(akFooter);
+  ws.appendChild(ak);
+
+  lastShetefItems = { mode: 'real', items: placedWords };
+}
+
 function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnOnKey) {
   const keepDagesh = document.getElementById('rwFillVowelsDagesh')?.checked ?? false;
   const title    = document.getElementById('wsTitle').value || 'Hebrew Words';
