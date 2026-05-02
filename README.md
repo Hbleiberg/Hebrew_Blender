@@ -26,6 +26,17 @@ Browse and filter the full Hebrew word list.
 - Paginated results (100 per page) with an expandable sidebar
 - Dark mode synced with the generator via `localStorage`
 
+### Flash Cards (`flash_cards.html`) — Beta
+Interactive flash cards for practicing Hebrew syllables — mobile-first.
+
+- **Letter modes** — drill 1, 2, or 3-letter syllables (CV / CVC / CVCVC) algorithmically generated from the same letter + vowel pools as the generator
+- **Configurable vowel position** — choose which slot inside the syllable carries the vowel
+- **Letter & vowel locking** — pin a specific letter or vowel to a specific position (mirrors the generator's lock concept)
+- **Inverse mode** — show transliteration on the front and Hebrew on the back
+- **Scoring & results** — mark each card right/wrong, then review missed cards on a results screen
+- **Presets** — save and load deck configurations
+- Tap to flip; same Hebrew font picker, nikkud color-coding, Hebrew TTS, and dark mode as the rest of the suite
+
 ### Classroom Dashboard (`classroom_dashboard.html`) — Beta
 A live display board designed for classroom projectors and SmartBoards.
 
@@ -40,7 +51,7 @@ A live display board designed for classroom projectors and SmartBoards.
 - SmartBoard compatible — responsive at any display resolution
 
 ### Landing Page (`index.html`)
-Home page with navigation cards to all three tools.
+Home page with navigation cards to all the tools above. Also hosts the global Import / Export / Erase All Settings modal (gear icon) that round-trips every tool's `localStorage` data as a single JSON blob.
 
 ---
 
@@ -51,7 +62,8 @@ Home page with navigation cards to all three tools.
 | `index.html` | Landing page — navigation hub linking to all tools |
 | `hebrew_blend_generator.html` | Worksheet / bingo / drill generator (main app) |
 | `hebrew_dictionary.html` | Interactive word lookup and filter page |
-| `classroom_dashboard.html` | Live classroom projector / SmartBoard dashboard (Beta) |
+| `flash_cards.html` | Interactive syllable flash cards — Beta |
+| `classroom_dashboard.html` | Live classroom projector / SmartBoard dashboard — Beta |
 | `hebrew_words.json` | Structured word data (~2 MB, ~9,400 entries) loaded by both HTML pages via `fetch()` |
 | `hebrew_dictionary_4_19_2026.csv` | Source CSV used to build and update `hebrew_words.json`; includes Hebrew (nikkud), transliteration, translation, POS, and era fields |
 | `phonotactic_blending_filter_spec.md` | Detailed linguistic specification for the phonotactic validity filter used by the generator; cites Bolozky, Bat-El, Asherov & Bat-El, and the Academy of the Hebrew Language |
