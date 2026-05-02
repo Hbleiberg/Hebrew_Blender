@@ -1887,51 +1887,6 @@
                 <button class="rw-drill-btn" data-drill="gematria" onclick="setRealWordDrill('gematria')">Gematria</button>
                 <button class="rw-drill-btn" data-drill="fillvowels" onclick="setRealWordDrill('fillvowels')">Fill Vowels</button>
               </div>
-              <div class="toggle-row rw-fv-only" id="rwFillVowelsDageshRow" style="display:none;">
-                <span style="font-size:0.82rem;">Include dageshim</span>
-                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-                  <input type="checkbox" id="rwFillVowelsDagesh" onchange="if(document.getElementById('worksheet').querySelector('.blend-cell, .rw-card, .flip-card'))generateRealWords()">
-                  <span class="slider"></span>
-                </label>
-              </div>
-              <div class="toggle-row rw-fv-only" style="display:none;">
-                <span style="font-size:0.82rem;">Show Transliteration</span>
-                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-                  <input type="checkbox" id="rwFvShowTranslit" onchange="if(document.getElementById('worksheet').querySelector('.blend-cell, .rw-card, .flip-card'))generateRealWords()">
-                  <span class="slider"></span>
-                </label>
-              </div>
-              <div class="toggle-row rw-fv-only" style="display:none;">
-                <span style="font-size:0.82rem;">Show Translation</span>
-                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-                  <input type="checkbox" id="rwFvShowTranslation" onchange="if(document.getElementById('worksheet').querySelector('.blend-cell, .rw-card, .flip-card'))generateRealWords()">
-                  <span class="slider"></span>
-                </label>
-              </div>
-              <div class="toggle-row" id="rwMixedRow">
-                <span style="font-size:0.82rem;">Mix with generated blends
-                  <span class="tooltip-wrap" style="font-size:0.55rem;">?
-                    <span class="tooltip-box">When on, real words are mixed in with randomly generated blends. Students won't know which are real — great for a "find the real words" activity.</span>
-                  </span>
-                </span>
-                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-                  <input type="checkbox" id="rwMixed" onchange="toggleRwStarRow()">
-                  <span class="slider"></span>
-                </label>
-              </div>
-              <div class="toggle-row" id="rwStarRealRow" style="display:none;padding-left:16px;">
-                <span style="font-size:0.82rem;">Star real words</span>
-                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-                  <input type="checkbox" id="rwStarReal" checked onchange="toggleRwStarPageRow()">
-                  <span class="slider"></span>
-                </label>
-              </div>
-              <div id="rwStarPageRow" style="display:none;padding-left:32px;">
-                <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
-                  <button class="rw-drill-btn active" data-star="same" onclick="setRwStarPage('same')">Same page</button>
-                  <button class="rw-drill-btn" data-star="key" onclick="setRwStarPage('key')">Answer key</button>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -1998,8 +1953,19 @@
 
           <!-- Display options -->
           <div class="rw-section">
-            <div class="rw-section-header" id="rwDisplayHeader" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Display</div>
+            <div class="rw-section-header" id="rwDisplayHeader" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Drill Options</div>
             <div class="rw-section-body" id="rwDisplayBody">
+              <!-- Number of Words is always the first option in Drill Options -->
+              <div id="rwCountRow" style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:0.8rem;flex:1;">Number of Words</span>
+                <select id="rwCount" style="font-size:0.78rem;padding:3px 6px;">
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="30" selected>30</option>
+                  <option value="40">40</option>
+                  <option value="50">50</option>
+                </select>
+              </div>
               <!-- Identify-only: Star Real Words (relocated here from Drill Type) -->
               <!-- Reverse-only options -->
               <div class="toggle-row rw-reverse-only" style="display:none;">
@@ -2016,15 +1982,30 @@
                   <span class="slider"></span>
                 </label>
               </div>
-              <div id="rwCountRow" style="display:flex;align-items:center;gap:8px;">
-                <span style="font-size:0.8rem;flex:1;">Number of Words</span>
-                <select id="rwCount" style="font-size:0.78rem;padding:3px 6px;">
-                  <option value="10">10</option>
-                  <option value="20">20</option>
-                  <option value="30" selected>30</option>
-                  <option value="40">40</option>
-                  <option value="50">50</option>
-                </select>
+              <!-- Mix / Star Real Words trio (relocated here from Drill Type) -->
+              <div class="toggle-row" id="rwMixedRow">
+                <span style="font-size:0.82rem;">Mix with generated blends
+                  <span class="tooltip-wrap" style="font-size:0.55rem;">?
+                    <span class="tooltip-box">When on, real words are mixed in with randomly generated blends. Students won't know which are real — great for a "find the real words" activity.</span>
+                  </span>
+                </span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+                  <input type="checkbox" id="rwMixed" onchange="toggleRwStarRow()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row" id="rwStarRealRow" style="display:none;padding-left:16px;">
+                <span style="font-size:0.82rem;">Star real words</span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+                  <input type="checkbox" id="rwStarReal" checked onchange="toggleRwStarPageRow()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div id="rwStarPageRow" style="display:none;padding-left:32px;">
+                <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
+                  <button class="rw-drill-btn active" data-star="same" onclick="setRwStarPage('same')">Same page</button>
+                  <button class="rw-drill-btn" data-star="key" onclick="setRwStarPage('key')">Answer key</button>
+                </div>
               </div>
               <div class="toggle-row rw-display-only">
                 <span style="font-size:0.8rem;">Show Transliteration</span>
@@ -2040,6 +2021,11 @@
                   <button class="rw-drill-btn active" data-translit="card"   onclick="setRwTranslitPage('card')">Card</button>
                   <button class="rw-drill-btn"        data-translit="caller" onclick="setRwTranslitPage('caller')">Caller</button>
                   <button class="rw-drill-btn"        data-translit="both"   onclick="setRwTranslitPage('both')">Both</button>
+                </div>
+                <div class="rw-translit-page-vocab blend-type-selector" style="display:none;grid-template-columns:repeat(3,1fr);margin-top:2px;">
+                  <button class="rw-drill-btn"        data-translit="front" onclick="setRwTranslitPage('front')">Front</button>
+                  <button class="rw-drill-btn active" data-translit="back"  onclick="setRwTranslitPage('back')">Back</button>
+                  <button class="rw-drill-btn"        data-translit="both"  onclick="setRwTranslitPage('both')">Both</button>
                 </div>
               </div>
               <div class="toggle-row rw-display-only" id="rwTranslationRow">
@@ -2057,6 +2043,11 @@
                   <button class="rw-drill-btn"        data-transl="caller" onclick="setRwTranslPage('caller')">Caller</button>
                   <button class="rw-drill-btn"        data-transl="both"   onclick="setRwTranslPage('both')">Both</button>
                 </div>
+                <div class="rw-transl-page-vocab blend-type-selector" style="display:none;grid-template-columns:repeat(3,1fr);margin-top:2px;">
+                  <button class="rw-drill-btn"        data-transl="front" onclick="setRwTranslPage('front')">Front</button>
+                  <button class="rw-drill-btn active" data-transl="back"  onclick="setRwTranslPage('back')">Back</button>
+                  <button class="rw-drill-btn"        data-transl="both"  onclick="setRwTranslPage('both')">Both</button>
+                </div>
               </div>
               <div class="toggle-row rw-gem-only" style="display:none;font-size:0.82rem;">
                 <span>Inverse <span style="font-size:0.72rem;color:var(--muted)">(show numbers)</span></span>
@@ -2068,14 +2059,15 @@
               <div class="toggle-row rw-gem-only" style="display:none;font-size:0.82rem;">
                 <span>Self Check</span>
                 <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-                  <input type="checkbox" id="rwGematriaSelfCheck" onchange="if(this.checked){document.getElementById('rwGematriaAnswerKey').checked=false;}onRwGemOptionChange()">
+                  <input type="checkbox" id="rwGematriaSelfCheck" onchange="onRwGemOptionChange()">
                   <span class="slider"></span>
                 </label>
               </div>
-              <div class="toggle-row rw-gem-only" style="display:none;font-size:0.82rem;">
-                <span>Answer Key</span>
+              <!-- Include-Dageshim moved here from Drill Type so it lives next to the rest of the fill-vowels options. -->
+              <div class="toggle-row rw-fv-only" id="rwFillVowelsDageshRow" style="display:none;font-size:0.82rem;">
+                <span>Include dageshim</span>
                 <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-                  <input type="checkbox" id="rwGematriaAnswerKey" checked onchange="if(this.checked){document.getElementById('rwGematriaSelfCheck').checked=false;}onRwGemOptionChange()">
+                  <input type="checkbox" id="rwFillVowelsDagesh" onchange="if(document.getElementById('worksheet').querySelector('.blend-cell, .rw-card, .flip-card'))generateRealWords()">
                   <span class="slider"></span>
                 </label>
               </div>
@@ -3075,10 +3067,7 @@ function getSettings() {
     // Real Words extras
     rwGematriaInverse:   document.getElementById('rwGematriaInverse').checked,
     rwGematriaSelfCheck: document.getElementById('rwGematriaSelfCheck').checked,
-    rwGematriaAnswerKey: document.getElementById('rwGematriaAnswerKey').checked,
     rwFillVowelsDagesh:    document.getElementById('rwFillVowelsDagesh').checked,
-    rwFvShowTranslit:      document.getElementById('rwFvShowTranslit').checked,
-    rwFvShowTranslation:   document.getElementById('rwFvShowTranslation').checked,
     rwReverseAnswerKey:    document.getElementById('rwReverseAnswerKey').checked,
     rwReverseShowTranslit: document.getElementById('rwReverseShowTranslit').checked,
     // Font size
@@ -3241,10 +3230,7 @@ function applySettings(s) {
   // Real Words extras
   if (s.rwGematriaInverse !== undefined)   document.getElementById('rwGematriaInverse').checked = s.rwGematriaInverse;
   if (s.rwGematriaSelfCheck !== undefined) document.getElementById('rwGematriaSelfCheck').checked = s.rwGematriaSelfCheck;
-  if (s.rwGematriaAnswerKey !== undefined) document.getElementById('rwGematriaAnswerKey').checked = s.rwGematriaAnswerKey;
   if (s.rwFillVowelsDagesh !== undefined)    document.getElementById('rwFillVowelsDagesh').checked = s.rwFillVowelsDagesh;
-  if (s.rwFvShowTranslit !== undefined)      document.getElementById('rwFvShowTranslit').checked = s.rwFvShowTranslit;
-  if (s.rwFvShowTranslation !== undefined)   document.getElementById('rwFvShowTranslation').checked = s.rwFvShowTranslation;
   if (s.rwReverseAnswerKey !== undefined)    document.getElementById('rwReverseAnswerKey').checked = s.rwReverseAnswerKey;
   if (s.rwReverseShowTranslit !== undefined) document.getElementById('rwReverseShowTranslit').checked = s.rwReverseShowTranslit;
 
@@ -5550,12 +5536,22 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
   const selfCheck  = isRwGem
     ? (document.getElementById('rwGematriaSelfCheck')?.checked ?? false)
     : (document.getElementById('gematriaSelfCheck')?.checked ?? false);
+  // Real-words gematria no longer has a separate Answer Key toggle: when Self
+  // Check is off, the printable sheet plus its answer key always render.
   const showAnsKey = isRwGem
-    ? (document.getElementById('rwGematriaAnswerKey')?.checked ?? true)
+    ? !selfCheck
     : (document.getElementById('gematriaAnswerKey')?.checked ?? true);
   const inverse    = isRwGem
     ? (document.getElementById('rwGematriaInverse')?.checked ?? false)
     : (document.getElementById('gematriaInverse')?.checked ?? false);
+  // Real-words gematria honors per-side placement for translit/translation.
+  // 'same' = worksheet only, 'key' = answer key only, 'both' = both.
+  const rwTrPlace = isRwGem ? rwTranslitPage : 'key';
+  const rwTnPlace = isRwGem ? rwTranslPage   : 'key';
+  const rwTrOnSheet = isRwGem && document.getElementById('rwShowTranslit')?.checked    && (rwTrPlace === 'same' || rwTrPlace === 'both');
+  const rwTrOnKey   = isRwGem && document.getElementById('rwShowTranslit')?.checked    && (rwTrPlace === 'key'  || rwTrPlace === 'both');
+  const rwTnOnSheet = isRwGem && document.getElementById('rwShowTranslation')?.checked && (rwTnPlace === 'same' || rwTnPlace === 'both');
+  const rwTnOnKey   = isRwGem && document.getElementById('rwShowTranslation')?.checked && (rwTnPlace === 'key'  || rwTnPlace === 'both');
   const title    = document.getElementById('wsTitle').value || 'Hebrew Blends';
   const subtitle = document.getElementById('wsSubtitle').value;
   const cols     = autoCols(items.length);
@@ -5607,16 +5603,24 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
       const val = calcGematria(b.hebrewDisplay);
       const card = document.createElement('div');
       card.className = 'flip-card';
+      const trFront = (rwTrOnSheet && b.translit)    ? `<span style="font-size:0.75rem;color:var(--muted);font-style:italic;margin-top:4px;">${b.translit}</span>` : '';
+      const trBack  = (rwTrOnKey   && b.translit)    ? `<span style="font-size:0.8rem;color:var(--gold-light);font-style:italic;margin-top:4px;">${b.translit}</span>`  : '';
+      const tnFront = (rwTnOnSheet && b.translation) ? `<span style="font-size:0.78rem;color:var(--gold);font-weight:600;margin-top:2px;">${b.translation}</span>` : '';
+      const tnBack  = (rwTnOnKey   && b.translation) ? `<span style="font-size:0.85rem;color:var(--gold-light);font-weight:600;margin-top:2px;">${b.translation}</span>` : '';
       const front = inverse
         ? `<span style="font-size:2.2rem;font-weight:700;color:var(--text);">${val}</span>
+           ${trFront}${tnFront}
            <div class="gematria-blank" style="margin-top:8px;width:120px;"></div>`
         : `<span style="direction:rtl;font-family:var(--heb-font);font-size:2rem;">${b.hebrewDisplay}</span>
+           ${trFront}${tnFront}
            <div class="gematria-blank" style="margin-top:8px;"></div>`;
       const back = inverse
         ? `<span style="font-size:1.4rem;font-weight:700;opacity:0.7;">${val}</span>
-           <span style="direction:rtl;font-family:var(--heb-font);font-size:1.8rem;color:var(--gold-light);margin-top:4px;">${b.hebrewDisplay}</span>`
+           <span style="direction:rtl;font-family:var(--heb-font);font-size:1.8rem;color:var(--gold-light);margin-top:4px;">${b.hebrewDisplay}</span>
+           ${trBack}${tnBack}`
         : `<span style="direction:rtl;font-family:var(--heb-font);font-size:1.4rem;opacity:0.7;">${b.hebrewDisplay}</span>
-           <span style="font-size:1.8rem;font-weight:700;color:var(--gold-light);margin-top:4px;">${val}</span>`;
+           <span style="font-size:1.8rem;font-weight:700;color:var(--gold-light);margin-top:4px;">${val}</span>
+           ${trBack}${tnBack}`;
       card.innerHTML = `
         <div class="flip-card-inner">
           <div class="flip-card-front">
@@ -5655,16 +5659,20 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
       const cell = document.createElement('div');
       cell.className = 'blend-cell';
       cell.style.minHeight = '80px';
+      const trExtra = (rwTrOnSheet && b.translit)    ? `<div style="font-size:0.7rem;color:var(--muted);font-style:italic;direction:ltr;margin-top:2px;">${b.translit}</div>` : '';
+      const tnExtra = (rwTnOnSheet && b.translation) ? `<div style="font-size:0.72rem;color:var(--gold);font-weight:600;direction:ltr;margin-top:2px;">${b.translation}</div>` : '';
       if (inverse) {
         const val = calcGematria(b.hebrewDisplay);
         cell.innerHTML = `
           <div style="font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;">${idx + 1}</div>
           <div style="font-size:1.6rem;font-weight:700;color:var(--text);direction:ltr;align-self:center;">${val}</div>
+          ${trExtra}${tnExtra}
           <div class="gematria-blank" style="width:120px;"></div>`;
       } else {
         cell.innerHTML = `
           <div style="font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;">${idx + 1}</div>
           <div class="blend-hebrew">${b.hebrewDisplay}</div>
+          ${trExtra}${tnExtra}
           <div class="gematria-blank"></div>`;
       }
       grid.appendChild(cell);
@@ -5693,11 +5701,13 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
       const cell = document.createElement('div');
       cell.className = 'blend-cell';
       cell.style.minHeight = '80px';
+      const showTr = isRwGem ? rwTrOnKey : showTranslit;
+      const showTn = isRwGem ? rwTnOnKey : showTranslation;
       cell.innerHTML = `
         <div style="font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;">${idx + 1}</div>
         <div class="blend-hebrew">${b.hebrewDisplay}</div>
-        ${showTranslit && b.translit ? `<div style="font-size:0.7rem;color:var(--muted);margin-top:2px;">${b.translit}</div>` : ''}
-        ${showTranslation && b.translation ? `<div style="font-size:0.7rem;margin-top:2px;">${b.translation}</div>` : ''}
+        ${showTr && b.translit ? `<div style="font-size:0.7rem;color:var(--muted);font-style:italic;direction:ltr;margin-top:2px;">${b.translit}</div>` : ''}
+        ${showTn && b.translation ? `<div style="font-size:0.72rem;color:var(--gold);font-weight:600;direction:ltr;margin-top:2px;">${b.translation}</div>` : ''}
         ${showGematriaVal ? `<div class="gematria-value">${val}</div>` : ''}`;
       keyGrid.appendChild(cell);
     });
@@ -6512,49 +6522,60 @@ function _rwSyncPageButtons(scopeSel, attr, val) {
   });
 }
 
+// Drills that surface a page-placement selector + which button set they use:
+//   reading, gematria, fillvowels → 'reading' set (Worksheet/Answer Key/Both)
+//   bingo                          → 'bingo'   set (Card/Caller/Both)
+//   vocab                          → 'vocab'   set (Front/Back/Both)
+const _RW_PAGE_FLAVOR = {
+  reading: 'reading', gematria: 'reading', fillvowels: 'reading',
+  bingo: 'bingo', vocab: 'vocab',
+};
+
+function _rwPageRowVisible(drillType) {
+  return _RW_PAGE_FLAVOR[drillType] != null;
+}
+
+function _rwActivateFlavor(row, attr, flavor, currentVal) {
+  const flavors = ['reading','bingo','vocab'];
+  flavors.forEach(f => {
+    const el = row.querySelector('.rw-' + (attr === 'data-transl' ? 'transl' : 'translit') + '-page-' + f);
+    if (el) el.style.display = (f === flavor) ? '' : 'none';
+  });
+  if (flavor) {
+    _rwSyncPageButtons('.rw-' + (attr === 'data-transl' ? 'transl' : 'translit') + '-page-' + flavor, attr, currentVal);
+  }
+}
+
 function toggleRwTranslPageRow() {
   const show = document.getElementById('rwShowTranslation').checked;
   const row = document.getElementById('rwTranslPageRow');
   if (!row) return;
-  const isReading = rwDrillType === 'reading';
-  const isBingo   = rwDrillType === 'bingo';
-  row.style.display = (show && (isReading || isBingo)) ? '' : 'none';
-  const readBtns = row.querySelector('.rw-transl-page-reading');
-  const bingoBtns = row.querySelector('.rw-transl-page-bingo');
-  if (readBtns)  readBtns.style.display  = isReading ? '' : 'none';
-  if (bingoBtns) bingoBtns.style.display = isBingo   ? '' : 'none';
-  // Re-sync active state to the right button set
-  if (isBingo)        _rwSyncPageButtons('.rw-transl-page-bingo',   'data-transl', rwTranslPage);
-  else if (isReading) _rwSyncPageButtons('.rw-transl-page-reading', 'data-transl', rwTranslPage);
+  const flavor = _RW_PAGE_FLAVOR[rwDrillType] || null;
+  row.style.display = (show && flavor) ? '' : 'none';
+  _rwActivateFlavor(row, 'data-transl', flavor, rwTranslPage);
 }
 
 function setRwTranslPage(val) {
   rwTranslPage = val;
   document.querySelectorAll('[data-transl]').forEach(b => b.classList.toggle('active', b.dataset.transl === val));
   const ws = document.getElementById('worksheet');
-  if (ws.querySelector('.rw-card, .rw-flip, .bingo-card')) generateRealWords();
+  if (ws.querySelector('.rw-card, .rw-flip, .bingo-card, .blend-cell')) generateRealWords();
 }
 
 function toggleRwTranslitPageRow() {
   const show = document.getElementById('rwShowTranslit').checked;
   const row = document.getElementById('rwTranslitPageRow');
   if (!row) return;
-  const isReading = rwDrillType === 'reading';
-  const isBingo   = rwDrillType === 'bingo';
-  row.style.display = (show && (isReading || isBingo)) ? '' : 'none';
-  const readBtns = row.querySelector('.rw-translit-page-reading');
-  const bingoBtns = row.querySelector('.rw-translit-page-bingo');
-  if (readBtns)  readBtns.style.display  = isReading ? '' : 'none';
-  if (bingoBtns) bingoBtns.style.display = isBingo   ? '' : 'none';
-  if (isBingo)        _rwSyncPageButtons('.rw-translit-page-bingo',   'data-translit', rwTranslitPage);
-  else if (isReading) _rwSyncPageButtons('.rw-translit-page-reading', 'data-translit', rwTranslitPage);
+  const flavor = _RW_PAGE_FLAVOR[rwDrillType] || null;
+  row.style.display = (show && flavor) ? '' : 'none';
+  _rwActivateFlavor(row, 'data-translit', flavor, rwTranslitPage);
 }
 
 function setRwTranslitPage(val) {
   rwTranslitPage = val;
   document.querySelectorAll('[data-translit]').forEach(b => b.classList.toggle('active', b.dataset.translit === val));
   const ws = document.getElementById('worksheet');
-  if (ws.querySelector('.rw-card, .rw-flip, .bingo-card')) generateRealWords();
+  if (ws.querySelector('.rw-card, .rw-flip, .bingo-card, .blend-cell')) generateRealWords();
 }
 
 function onRwTranslitChange() {
@@ -6569,26 +6590,42 @@ function onRwTranslChange() {
   if (ws.querySelector('.rw-card, .rw-flip')) generateRealWords();
 }
 
-// Cached "home" location of the Star Real Words row inside Drill Type.
-// We move the actual node into Display when the Identify drill is active so
-// it ends up at the top of the Display panel; all other drills get it back.
-let _rwStarRealHome = null;
+// Cached "home" locations for rows we relocate per drill.
+// The Star Real Words rows live in Display by default but for the Identify
+// drill they move to the very top of the Display panel.
+let _rwStarHomes = null;
 
 function _relocateStarRealRow(forIdentify) {
-  const row = document.getElementById('rwStarRealRow');
-  if (!row) return;
+  const star = document.getElementById('rwStarRealRow');
+  const page = document.getElementById('rwStarPageRow');
   const display = document.getElementById('rwDisplayBody');
-  if (!_rwStarRealHome) {
-    // Cache original parent + nextSibling so we can put it back exactly.
-    _rwStarRealHome = { parent: row.parentNode, next: row.nextSibling };
+  if (!star || !page || !display) return;
+  if (!_rwStarHomes) {
+    _rwStarHomes = {
+      starParent: star.parentNode, starNext: star.nextSibling,
+      pageParent: page.parentNode, pageNext: page.nextSibling,
+    };
   }
   if (forIdentify) {
-    if (display && row.parentNode !== display) display.insertBefore(row, display.firstChild);
-    row.style.paddingLeft = '0';
-    row.style.display = '';
-  } else if (_rwStarRealHome.parent && row.parentNode !== _rwStarRealHome.parent) {
-    _rwStarRealHome.parent.insertBefore(row, _rwStarRealHome.next);
-    row.style.paddingLeft = '';
+    // Number of Words must always be the first option in Drill Options, so
+    // we drop the star rows right after rwCountRow rather than at the top.
+    const countRow = document.getElementById('rwCountRow');
+    const after = (countRow && countRow.parentNode === display) ? countRow.nextSibling : display.firstChild;
+    if (star.parentNode !== display || star.previousSibling !== countRow) {
+      display.insertBefore(star, after);
+    }
+    display.insertBefore(page, star.nextSibling);
+    star.style.paddingLeft = '0';
+    page.style.paddingLeft = '16px';
+  } else if (_rwStarHomes.starParent) {
+    if (star.parentNode !== _rwStarHomes.starParent || star.nextSibling !== _rwStarHomes.starNext) {
+      _rwStarHomes.starParent.insertBefore(star, _rwStarHomes.starNext);
+    }
+    if (page.parentNode !== _rwStarHomes.pageParent || page.nextSibling !== _rwStarHomes.pageNext) {
+      _rwStarHomes.pageParent.insertBefore(page, _rwStarHomes.pageNext);
+    }
+    star.style.paddingLeft = '16px';
+    page.style.paddingLeft = '32px';
   }
 }
 
@@ -6596,61 +6633,70 @@ function setRealWordDrill(type) {
   rwDrillType = type;
   document.querySelectorAll('.rw-drill-btn').forEach(b => b.classList.toggle('active', b.dataset.drill === type));
 
-  // Show/hide mixed mode (hidden for identify, bingo, gematria, fillvowels, reverse)
-  const mixedRow = document.getElementById('rwMixedRow');
-  if (mixedRow) mixedRow.style.display = (type === 'identify' || type === 'bingo' || type === 'gematria' || type === 'fillvowels') ? 'none' : '';
-
-  // Identify mode always needs blends mixed in — force rwMixed on
+  // Identify always wants blends mixed in — force rwMixed on, otherwise leave
+  // the user's choice intact.
   const mixedCb = document.getElementById('rwMixed');
-  if (mixedCb) mixedCb.checked = (type === 'identify');
+  if (mixedCb && type === 'identify') mixedCb.checked = true;
   toggleRwStarRow();
-
-  // Fill-vowels sub-options (Include Dageshim + Show Translit + Show Translation)
-  document.querySelectorAll('.rw-fv-only').forEach(el => el.style.display = (type === 'fillvowels') ? '' : 'none');
-
-  // Reset translit/translation page-defaults when switching drill flavor.
-  // Reading uses 'same' | 'key' | 'both'; bingo uses 'card' | 'caller' | 'both'.
-  const READING_VALS = new Set(['same','key','both']);
-  const BINGO_VALS   = new Set(['card','caller','both']);
-  if (type === 'bingo') {
-    if (!BINGO_VALS.has(rwTranslitPage)) rwTranslitPage = 'card';
-    if (!BINGO_VALS.has(rwTranslPage))   rwTranslPage   = 'card';
-  } else {
-    if (!READING_VALS.has(rwTranslitPage)) rwTranslitPage = 'same';
-    if (!READING_VALS.has(rwTranslPage))   rwTranslPage   = 'same';
-  }
-
-  // Auto-set translation visibility (vocab/self-check is the only drill that
-  // wants translation flipped on by default).
-  const translToggle = document.getElementById('rwShowTranslation');
-  if (translToggle) translToggle.checked = (type === 'vocab');
-  toggleRwTranslPageRow();
-  toggleRwTranslitPageRow();
 
   // Show bingo sub-options only for bingo drill
   const rwBingoOpts = document.getElementById('rwBingoOptions');
   if (rwBingoOpts) rwBingoOpts.style.display = (type === 'bingo') ? 'block' : 'none';
 
+  // Per-drill default state for Show Translit / Show Translation + their
+  // page-row placement. Set every time the user enters the drill — that's
+  // what "default" means in this UI.
+  const showTranslit    = document.getElementById('rwShowTranslit');
+  const showTranslation = document.getElementById('rwShowTranslation');
+  const SET = (el, v) => { if (el) el.checked = v; };
+  switch (type) {
+    case 'reading':
+      SET(showTranslit, true);  SET(showTranslation, true);
+      rwTranslitPage = 'key';   rwTranslPage = 'key';
+      break;
+    case 'vocab':
+      SET(showTranslit, true);  SET(showTranslation, true);
+      rwTranslitPage = 'back';  rwTranslPage = 'back';
+      break;
+    case 'bingo':
+      SET(showTranslit, true);  SET(showTranslation, true);
+      rwTranslitPage = 'caller'; rwTranslPage = 'caller';
+      break;
+    case 'gematria':
+      SET(showTranslit, true);  SET(showTranslation, true);
+      rwTranslitPage = 'key';   rwTranslPage = 'key';
+      break;
+    case 'fillvowels':
+      SET(showTranslit, true);  SET(showTranslation, true);
+      rwTranslitPage = 'key';   rwTranslPage = 'key';
+      break;
+    // reverse/identify keep whatever the user set
+  }
+
   // Display section morphs based on drill:
-  //  • gematria  → swaps in Inverse / Self Check / Answer Key
-  //  • fillvowels → translit/translation move into Drill Type
-  //  • reverse   → translit/translation hide; Answer Key + indented Show Translit appear
-  //  • identify  → Star Real Words row relocates to the top of Display
-  const isGem    = type === 'gematria';
-  const isFv     = type === 'fillvowels';
-  const isRev    = type === 'reverse';
-  const isIdent  = type === 'identify';
+  //   • reverse  → standard translit/translation hide; Answer Key + indented
+  //     Show Translit shown instead
+  //   • gematria → Inverse / Self Check shown alongside the standard translit
+  //     and translation toggles
+  //   • fillvowels → Include-Dageshim row shown alongside the standard
+  //     translit and translation toggles
+  //   • identify → Star Real Words rows relocate to top of Display
+  const isGem   = type === 'gematria';
+  const isFv    = type === 'fillvowels';
+  const isRev   = type === 'reverse';
+  const isIdent = type === 'identify';
   document.querySelectorAll('.rw-gem-only').forEach(el => el.style.display = isGem ? '' : 'none');
+  document.querySelectorAll('.rw-fv-only').forEach(el => el.style.display = isFv ? '' : 'none');
   document.querySelectorAll('.rw-reverse-only').forEach(el => el.style.display = isRev ? '' : 'none');
   document.querySelectorAll('.rw-display-only').forEach(el => {
-    el.style.display = (isGem || isFv || isRev) ? 'none' : '';
+    el.style.display = isRev ? 'none' : '';
   });
-  if (!isGem && !isFv && !isRev) { toggleRwTranslitPageRow(); toggleRwTranslPageRow(); }
+  if (!isRev) { toggleRwTranslitPageRow(); toggleRwTranslPageRow(); }
   if (isRev) onRwReverseAnsKeyChange();
   _relocateStarRealRow(isIdent);
 
   const dispHeader = document.getElementById('rwDisplayHeader');
-  if (dispHeader) dispHeader.textContent = isGem ? 'Gematria Options' : 'Display';
+  if (dispHeader) dispHeader.textContent = 'Drill Options';
 
   // Central updater handles gematriaOptions visibility (it reads rwDrillType)
   updateModeVisibility();
@@ -6679,6 +6725,19 @@ function onRwGemOptionChange() {
 // Show/hide caller translation sub-row
 document.addEventListener('DOMContentLoaded', () => {
   initRwLetterGrid();
+
+  // Move "Drill Options" section to live right under "Drill Type" (it sits
+  // between Drill Type and Word Filters in the rendered sidebar). Bingo
+  // sub-options follow immediately after Drill Options when the bingo drill
+  // is active. Done in JS so the authoring layout stays readable.
+  const realWordsOpts = document.getElementById('realWordsOptions');
+  const drillTypeSec  = realWordsOpts?.querySelector('.rw-section'); // first one
+  const drillOptsSec  = document.getElementById('rwDisplayHeader')?.closest('.rw-section');
+  const bingoSec      = document.getElementById('rwBingoOptions');
+  if (realWordsOpts && drillTypeSec && drillOptsSec && drillOptsSec !== drillTypeSec) {
+    realWordsOpts.insertBefore(drillOptsSec, drillTypeSec.nextElementSibling);
+    if (bingoSec) realWordsOpts.insertBefore(bingoSec, drillOptsSec.nextElementSibling);
+  }
 
   // Load Hebrew word dictionary from JSON
   fetch('hebrew_words.json?v=4')
@@ -6873,10 +6932,14 @@ function generateRealWords() {
     const words = rwShuffle(pool).slice(0, Math.min(count, pool.length));
     const ws = document.getElementById('worksheet');
     ws.innerHTML = '';
-    // Drill Type panel owns the translit/translation toggles for this drill
-    const fvShowTr = document.getElementById('rwFvShowTranslit')?.checked ?? false;
-    const fvShowTn = document.getElementById('rwFvShowTranslation')?.checked ?? false;
-    renderRealWordsFillVowels(ws, words, fvShowTr, fvShowTn);
+    // Reuses the standard Display section translit/translation toggles +
+    // their three-way placement. 'same' = student worksheet, 'key' = answer
+    // key, 'both' = both pages.
+    const fvTrOnSheet = showTranslit    && (rwTranslitPage === 'same' || rwTranslitPage === 'both');
+    const fvTrOnKey   = showTranslit    && (rwTranslitPage === 'key'  || rwTranslitPage === 'both');
+    const fvTnOnSheet = showTranslation && (rwTranslPage   === 'same' || rwTranslPage   === 'both');
+    const fvTnOnKey   = showTranslation && (rwTranslPage   === 'key'  || rwTranslPage   === 'both');
+    renderRealWordsFillVowels(ws, words, fvTrOnSheet, fvTnOnSheet, fvTrOnKey, fvTnOnKey);
     enableButtons();
     return;
   }
@@ -6919,6 +6982,12 @@ function generateRealWords() {
   grid.className = 'rw-grid';
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
 
+  // Vocab/self-check placement: front | back | both
+  const vocabTrlOnFront = drill === 'vocab' && showTranslit    && (rwTranslitPage === 'front' || rwTranslitPage === 'both');
+  const vocabTrlOnBack  = drill === 'vocab' && showTranslit    && (rwTranslitPage === 'back'  || rwTranslitPage === 'both');
+  const vocabTnOnFront  = drill === 'vocab' && showTranslation && (rwTranslPage   === 'front' || rwTranslPage   === 'both');
+  const vocabTnOnBack   = drill === 'vocab' && showTranslation && (rwTranslPage   === 'back'  || rwTranslPage   === 'both');
+
   items.forEach((w, idx) => {
     if (drill === 'vocab') {
       const wrapper = document.createElement('div');
@@ -6930,13 +6999,15 @@ function generateRealWords() {
             <span class="rw-num">${idx + 1}</span>
             <span class="rw-pos-tag">${w.pos}</span>
             <span class="rw-heb">${w.heb}</span>
-            ${showTranslit ? `<span class="rw-translit">${w.translit}</span>` : ''}
+            ${vocabTrlOnFront && w.translit ? `<span class="rw-translit">${w.translit}</span>` : ''}
+            ${vocabTnOnFront && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}
             <span class="rw-translit" style="font-size:0.65rem;opacity:0.6;">tap to flip</span>
           </div>
           <div class="rw-flip-back">
             <span class="rw-num">${idx + 1}</span>
             <span class="rw-heb" style="font-size:1.3rem;">${w.heb}</span>
-            <span class="rw-translation">${w.translation}</span>
+            ${vocabTrlOnBack && w.translit ? `<span class="rw-translit">${w.translit}</span>` : ''}
+            ${vocabTnOnBack && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}
           </div>
         </div>`;
       wrapper.querySelector('.rw-flip-inner').addEventListener('click', () => wrapper.classList.toggle('flipped'));
@@ -7048,9 +7119,8 @@ function generateRealWords() {
 }
 
 // ── FILL IN THE VOWELS (real words) ──
-function renderRealWordsFillVowels(ws, words, showTranslit, showTranslation) {
+function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnOnKey) {
   const keepDagesh = document.getElementById('rwFillVowelsDagesh')?.checked ?? false;
-  const showAnswers = false; // student sheet only on page 1; answer key on page 2
   const title    = document.getElementById('wsTitle').value || 'Hebrew Words';
   const subtitle = document.getElementById('wsSubtitle').value;
   const cols     = autoCols(words.length);
@@ -7073,8 +7143,8 @@ function renderRealWordsFillVowels(ws, words, showTranslit, showTranslation) {
     const stripped = stripNikud(w.heb, keepDagesh);
     let inner = `<span class="rw-num">${idx + 1}</span>`;
     inner += `<div class="rw-heb">${stripped}</div>`;
-    if (showTranslit && w.translit) inner += `<div class="rw-translit">${w.translit}</div>`;
-    if (showTranslation && w.translation) inner += `<div class="rw-translation">${w.translation}</div>`;
+    if (trOnSheet && w.translit) inner += `<div class="rw-translit">${w.translit}</div>`;
+    if (tnOnSheet && w.translation) inner += `<div class="rw-translation">${w.translation}</div>`;
     card.innerHTML = inner;
     grid.appendChild(card);
   });
@@ -7106,8 +7176,8 @@ function renderRealWordsFillVowels(ws, words, showTranslit, showTranslation) {
     card.className = 'rw-card blend-cell';
     let inner = `<span class="rw-num">${idx + 1}</span>`;
     inner += `<div class="rw-heb">${w.heb}</div>`;
-    if (showTranslit && w.translit) inner += `<div class="rw-translit">${w.translit}</div>`;
-    if (showTranslation && w.translation) inner += `<div class="rw-translation">${w.translation}</div>`;
+    if (trOnKey && w.translit) inner += `<div class="rw-translit">${w.translit}</div>`;
+    if (tnOnKey && w.translation) inner += `<div class="rw-translation">${w.translation}</div>`;
     card.innerHTML = inner;
     akGrid.appendChild(card);
   });
