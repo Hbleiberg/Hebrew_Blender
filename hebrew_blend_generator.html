@@ -1887,10 +1887,24 @@
                 <button class="rw-drill-btn" data-drill="gematria" onclick="setRealWordDrill('gematria')">Gematria</button>
                 <button class="rw-drill-btn" data-drill="fillvowels" onclick="setRealWordDrill('fillvowels')">Fill Vowels</button>
               </div>
-              <div class="toggle-row" id="rwFillVowelsDageshRow" style="display:none;">
+              <div class="toggle-row rw-fv-only" id="rwFillVowelsDageshRow" style="display:none;">
                 <span style="font-size:0.82rem;">Include dageshim</span>
                 <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
                   <input type="checkbox" id="rwFillVowelsDagesh" onchange="if(document.getElementById('worksheet').querySelector('.blend-cell, .rw-card, .flip-card'))generateRealWords()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row rw-fv-only" style="display:none;">
+                <span style="font-size:0.82rem;">Show Transliteration</span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+                  <input type="checkbox" id="rwFvShowTranslit" onchange="if(document.getElementById('worksheet').querySelector('.blend-cell, .rw-card, .flip-card'))generateRealWords()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row rw-fv-only" style="display:none;">
+                <span style="font-size:0.82rem;">Show Translation</span>
+                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+                  <input type="checkbox" id="rwFvShowTranslation" onchange="if(document.getElementById('worksheet').querySelector('.blend-cell, .rw-card, .flip-card'))generateRealWords()">
                   <span class="slider"></span>
                 </label>
               </div>
@@ -3032,7 +3046,9 @@ function getSettings() {
     rwGematriaInverse:   document.getElementById('rwGematriaInverse').checked,
     rwGematriaSelfCheck: document.getElementById('rwGematriaSelfCheck').checked,
     rwGematriaAnswerKey: document.getElementById('rwGematriaAnswerKey').checked,
-    rwFillVowelsDagesh:  document.getElementById('rwFillVowelsDagesh').checked,
+    rwFillVowelsDagesh:    document.getElementById('rwFillVowelsDagesh').checked,
+    rwFvShowTranslit:      document.getElementById('rwFvShowTranslit').checked,
+    rwFvShowTranslation:   document.getElementById('rwFvShowTranslation').checked,
     // Font size
     hebFontSize:       document.getElementById('hebFontSizeSlider').value,
     vavAsLetter,
@@ -3195,7 +3211,9 @@ function applySettings(s) {
   if (s.rwGematriaInverse !== undefined)   document.getElementById('rwGematriaInverse').checked = s.rwGematriaInverse;
   if (s.rwGematriaSelfCheck !== undefined) document.getElementById('rwGematriaSelfCheck').checked = s.rwGematriaSelfCheck;
   if (s.rwGematriaAnswerKey !== undefined) document.getElementById('rwGematriaAnswerKey').checked = s.rwGematriaAnswerKey;
-  if (s.rwFillVowelsDagesh !== undefined)  document.getElementById('rwFillVowelsDagesh').checked = s.rwFillVowelsDagesh;
+  if (s.rwFillVowelsDagesh !== undefined)    document.getElementById('rwFillVowelsDagesh').checked = s.rwFillVowelsDagesh;
+  if (s.rwFvShowTranslit !== undefined)      document.getElementById('rwFvShowTranslit').checked = s.rwFvShowTranslit;
+  if (s.rwFvShowTranslation !== undefined)   document.getElementById('rwFvShowTranslation').checked = s.rwFvShowTranslation;
 
   // Font size
   if (s.hebFontSize !== undefined) { const sl = document.getElementById('hebFontSizeSlider'); if (sl) { sl.value = s.hebFontSize; setHebFontSize(s.hebFontSize); } }
@@ -6489,9 +6507,8 @@ function setRealWordDrill(type) {
   if (mixedCb) mixedCb.checked = (type === 'identify');
   toggleRwStarRow();
 
-  // Fill-vowels include-dageshim sub-option
-  const fvRow = document.getElementById('rwFillVowelsDageshRow');
-  if (fvRow) fvRow.style.display = (type === 'fillvowels') ? '' : 'none';
+  // Fill-vowels sub-options (Include Dageshim + Show Translit + Show Translation)
+  document.querySelectorAll('.rw-fv-only').forEach(el => el.style.display = (type === 'fillvowels') ? '' : 'none');
 
   // Auto-set translation visibility
   const translToggle = document.getElementById('rwShowTranslation');
@@ -6503,17 +6520,17 @@ function setRealWordDrill(type) {
   const rwBingoOpts = document.getElementById('rwBingoOptions');
   if (rwBingoOpts) rwBingoOpts.style.display = (type === 'bingo') ? 'block' : 'none';
 
-  // Display section morphs into "Gematria Options" for the gematria drill:
-  // hide the standard display toggles and reveal the gematria-only toggles.
+  // Display section morphs based on drill: gematria swaps in its own toggles,
+  // fillvowels moves its translit/translation toggles up to Drill Type.
   const isGem = type === 'gematria';
+  const isFv  = type === 'fillvowels';
   document.querySelectorAll('.rw-gem-only').forEach(el => el.style.display = isGem ? '' : 'none');
   document.querySelectorAll('.rw-display-only').forEach(el => {
-    if (isGem) { el.style.display = 'none'; }
-    else { el.style.display = ''; }
+    el.style.display = (isGem || isFv) ? 'none' : '';
   });
-  // For non-gematria drills, the translit/translation sub-page rows revert to
+  // For drills that surface the Display section, sub-page rows revert to
   // their toggle-controlled state — re-run their handlers.
-  if (!isGem) { toggleRwTranslitPageRow(); toggleRwTranslPageRow(); }
+  if (!isGem && !isFv) { toggleRwTranslitPageRow(); toggleRwTranslPageRow(); }
   const dispHeader = document.getElementById('rwDisplayHeader');
   if (dispHeader) dispHeader.textContent = isGem ? 'Gematria Options' : 'Display';
 
@@ -6733,7 +6750,10 @@ function generateRealWords() {
     const words = rwShuffle(pool).slice(0, Math.min(count, pool.length));
     const ws = document.getElementById('worksheet');
     ws.innerHTML = '';
-    renderRealWordsFillVowels(ws, words, showTranslit, showTranslation);
+    // Drill Type panel owns the translit/translation toggles for this drill
+    const fvShowTr = document.getElementById('rwFvShowTranslit')?.checked ?? false;
+    const fvShowTn = document.getElementById('rwFvShowTranslation')?.checked ?? false;
+    renderRealWordsFillVowels(ws, words, fvShowTr, fvShowTn);
     enableButtons();
     return;
   }
