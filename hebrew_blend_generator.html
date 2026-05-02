@@ -3766,9 +3766,9 @@ function updateModeVisibility() {
     panelPresets:  !testMode,
 
     // Worksheet-mode structural elements
-    blendTypeWrapper:   !testMode && blends && s.drill !== 'fillvowels',
+    blendTypeWrapper:   !testMode && blends,
     modeDivider:        !testMode && blends,
-    threeLetterOptions: !testMode && blends && s.blendType === 'three' && s.drill !== 'fillvowels',
+    threeLetterOptions: !testMode && blends && s.blendType === 'three',
     focusOptions:       blends && s.focus && !testMode,
 
     // Mode toggle rows
@@ -3779,8 +3779,8 @@ function updateModeVisibility() {
     rowAnswerKey:      !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo,
     rowSelfCheck:      !gemSC    && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo,
     rowBlendCount:     !testMode && blends && !s.bingo,
-    rowRealWords:      !testMode && s.source !== 'numbers' && !cwModeActive && !s.bingo && !(blends && s.drill === 'gematria'),
-    rowNumberPractice: !testMode && s.source !== 'realwords' && !cwModeActive && !s.bingo && !(blends && s.drill === 'gematria'),
+    rowRealWords:      !testMode && s.source !== 'numbers' && !cwModeActive && !s.bingo && !(blends && s.drill === 'gematria') && !(blends && s.drill === 'fillvowels'),
+    rowNumberPractice: !testMode && s.source !== 'realwords' && !cwModeActive && !s.bingo && !(blends && s.drill === 'gematria') && !(blends && s.drill === 'fillvowels'),
 
     // Sub-option panels
     bingoOptions:          blends && s.bingo && !testMode,
