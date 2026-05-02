@@ -1967,21 +1967,6 @@
                 </select>
               </div>
               <!-- Identify-only: Star Real Words (relocated here from Drill Type) -->
-              <!-- Reverse-only options -->
-              <div class="toggle-row rw-reverse-only" style="display:none;">
-                <span style="font-size:0.8rem;">Answer Key</span>
-                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-                  <input type="checkbox" id="rwReverseAnswerKey" onchange="onRwReverseAnsKeyChange()">
-                  <span class="slider"></span>
-                </label>
-              </div>
-              <div class="toggle-row rw-reverse-only" id="rwReverseShowTranslitRow" style="display:none;padding-left:16px;">
-                <span style="font-size:0.8rem;">Show Transliteration</span>
-                <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-                  <input type="checkbox" id="rwReverseShowTranslit" onchange="if(document.getElementById('worksheet').querySelector('.blend-cell, .rw-card, .flip-card'))generateRealWords()">
-                  <span class="slider"></span>
-                </label>
-              </div>
               <!-- Mix / Star Real Words trio (relocated here from Drill Type) -->
               <div class="toggle-row" id="rwMixedRow">
                 <span style="font-size:0.82rem;">Mix with generated blends
@@ -3068,8 +3053,6 @@ function getSettings() {
     rwGematriaInverse:   document.getElementById('rwGematriaInverse').checked,
     rwGematriaSelfCheck: document.getElementById('rwGematriaSelfCheck').checked,
     rwFillVowelsDagesh:    document.getElementById('rwFillVowelsDagesh').checked,
-    rwReverseAnswerKey:    document.getElementById('rwReverseAnswerKey').checked,
-    rwReverseShowTranslit: document.getElementById('rwReverseShowTranslit').checked,
     // Font size
     hebFontSize:       document.getElementById('hebFontSizeSlider').value,
     vavAsLetter,
@@ -3231,8 +3214,6 @@ function applySettings(s) {
   if (s.rwGematriaInverse !== undefined)   document.getElementById('rwGematriaInverse').checked = s.rwGematriaInverse;
   if (s.rwGematriaSelfCheck !== undefined) document.getElementById('rwGematriaSelfCheck').checked = s.rwGematriaSelfCheck;
   if (s.rwFillVowelsDagesh !== undefined)    document.getElementById('rwFillVowelsDagesh').checked = s.rwFillVowelsDagesh;
-  if (s.rwReverseAnswerKey !== undefined)    document.getElementById('rwReverseAnswerKey').checked = s.rwReverseAnswerKey;
-  if (s.rwReverseShowTranslit !== undefined) document.getElementById('rwReverseShowTranslit').checked = s.rwReverseShowTranslit;
 
   // Font size
   if (s.hebFontSize !== undefined) { const sl = document.getElementById('hebFontSizeSlider'); if (sl) { sl.value = s.hebFontSize; setHebFontSize(s.hebFontSize); } }
@@ -6407,7 +6388,7 @@ function generateCustomWordlist() {
   }
 
   if (drill === 'bingo') { generateRealWordsBingo(pool); return; }
-  if (drill === 'identify') { generateIdentifyDrill(pool, count, showTranslit); return; }
+  if (drill === 'identify') { generateIdentifyDrill(pool, count, showTranslit, showTranslation, showTranslit, showTranslation); return; }
 
   let items = pool.map(w => ({ ...w, isReal: true }));
   if (mixed) {
@@ -6527,7 +6508,7 @@ function _rwSyncPageButtons(scopeSel, attr, val) {
 //   bingo                          → 'bingo'   set (Card/Caller/Both)
 //   vocab                          → 'vocab'   set (Front/Back/Both)
 const _RW_PAGE_FLAVOR = {
-  reading: 'reading', gematria: 'reading', fillvowels: 'reading',
+  reading: 'reading', reverse: 'reading', gematria: 'reading', fillvowels: 'reading',
   bingo: 'bingo', vocab: 'vocab',
 };
 
@@ -6651,8 +6632,17 @@ function setRealWordDrill(type) {
   const SET = (el, v) => { if (el) el.checked = v; };
   switch (type) {
     case 'reading':
+    case 'reverse':
+    case 'identify':
       SET(showTranslit, true);  SET(showTranslation, true);
       rwTranslitPage = 'key';   rwTranslPage = 'key';
+      if (type === 'identify') {
+        const starCb = document.getElementById('rwStarReal');
+        if (starCb) starCb.checked = true;
+        rwStarPage = 'key';
+        document.querySelectorAll('[data-star]').forEach(b => b.classList.toggle('active', b.dataset.star === 'key'));
+        toggleRwStarPageRow();
+      }
       break;
     case 'vocab':
       SET(showTranslit, true);  SET(showTranslation, true);
@@ -6673,26 +6663,17 @@ function setRealWordDrill(type) {
     // reverse/identify keep whatever the user set
   }
 
-  // Display section morphs based on drill:
-  //   • reverse  → standard translit/translation hide; Answer Key + indented
-  //     Show Translit shown instead
-  //   • gematria → Inverse / Self Check shown alongside the standard translit
-  //     and translation toggles
-  //   • fillvowels → Include-Dageshim row shown alongside the standard
-  //     translit and translation toggles
-  //   • identify → Star Real Words rows relocate to top of Display
+  // Drill Options morphs based on drill:
+  //   • gematria   → Inverse / Self Check shown alongside translit/translation
+  //   • fillvowels → Include-Dageshim shown alongside translit/translation
+  //   • identify   → Star Real Words rows relocate just under Number of Words
   const isGem   = type === 'gematria';
   const isFv    = type === 'fillvowels';
-  const isRev   = type === 'reverse';
   const isIdent = type === 'identify';
   document.querySelectorAll('.rw-gem-only').forEach(el => el.style.display = isGem ? '' : 'none');
   document.querySelectorAll('.rw-fv-only').forEach(el => el.style.display = isFv ? '' : 'none');
-  document.querySelectorAll('.rw-reverse-only').forEach(el => el.style.display = isRev ? '' : 'none');
-  document.querySelectorAll('.rw-display-only').forEach(el => {
-    el.style.display = isRev ? 'none' : '';
-  });
-  if (!isRev) { toggleRwTranslitPageRow(); toggleRwTranslPageRow(); }
-  if (isRev) onRwReverseAnsKeyChange();
+  document.querySelectorAll('.rw-display-only').forEach(el => { el.style.display = ''; });
+  toggleRwTranslitPageRow(); toggleRwTranslPageRow();
   _relocateStarRealRow(isIdent);
 
   const dispHeader = document.getElementById('rwDisplayHeader');
@@ -6701,17 +6682,6 @@ function setRealWordDrill(type) {
   // Central updater handles gematriaOptions visibility (it reads rwDrillType)
   updateModeVisibility();
   updateRwPoolInfo();
-}
-
-// Reverse drill: indented "Show Transliteration" only meaningful when the
-// Answer Key page is being printed (otherwise there's nowhere to put it).
-function onRwReverseAnsKeyChange() {
-  const on = document.getElementById('rwReverseAnswerKey')?.checked ?? false;
-  const sub = document.getElementById('rwReverseShowTranslitRow');
-  if (sub) sub.style.display = (rwDrillType === 'reverse' && on) ? '' : 'none';
-  if (rwDrillType === 'reverse' && document.getElementById('worksheet').querySelector('.blend-cell, .rw-card, .flip-card')) {
-    generateRealWords();
-  }
 }
 
 // Re-render real-words gematria sheet on option toggles
@@ -6910,7 +6880,7 @@ function generateRealWords() {
   }
 
   if (drill === 'identify') {
-    generateIdentifyDrill(pool, count, showTranslit);
+    generateIdentifyDrill(pool, count, showTranslitInline, showTranslInline, translitOnKey, translOnKey);
     return;
   }
 
@@ -7015,10 +6985,17 @@ function generateRealWords() {
     } else if (drill === 'reverse') {
       const card = document.createElement('div');
       card.className = 'rw-card';
+      // Reverse: prompt is English (translation) and/or translit per the
+      // 3-way placement — fall back to whichever is available if the user
+      // turned both off so the card always shows something to translate.
+      let prompts = '';
+      if (showTranslInline && w.translation)  prompts += `<span style="font-size:0.88rem;font-weight:600;color:var(--text);text-align:center;">${w.translation}</span>`;
+      if (showTranslitInline && w.translit)   prompts += `<span class="rw-translit">${w.translit}</span>`;
+      if (!prompts) prompts = `<span style="font-size:0.88rem;font-weight:600;color:var(--text);text-align:center;">${w.translation || w.translit}</span>`;
       card.innerHTML = `
         <span class="rw-num">${idx + 1}</span>
         <span class="rw-pos-tag">${w.pos}</span>
-        <span style="font-size:0.88rem;font-weight:600;color:var(--text);text-align:center;">${w.translation || w.translit}</span>
+        ${prompts}
         <div style="border-bottom:1.5px solid var(--border);width:90%;margin-top:8px;min-height:24px;"></div>`;
       grid.appendChild(card);
     } else {
@@ -7079,40 +7056,6 @@ function generateRealWords() {
     ws.appendChild(keySheet);
   }
 
-  // Reverse drill answer key — shows the matching Hebrew word + optional translit
-  if (drill === 'reverse' && document.getElementById('rwReverseAnswerKey')?.checked) {
-    const revAnsTr = document.getElementById('rwReverseShowTranslit')?.checked ?? false;
-    const ak = document.createElement('div');
-    ak.className = 'sheet answer-key-sheet';
-    const banner = document.createElement('div');
-    banner.className = 'answer-key-banner';
-    banner.textContent = '✦ Answer Key ✦';
-    ak.appendChild(banner);
-    const akHdr = document.createElement('div');
-    akHdr.className = 'ws-header';
-    akHdr.innerHTML = `<div><div class="ws-title">Hebrew Word Practice</div><div class="ws-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>`;
-    ak.appendChild(akHdr);
-    const akGrid = document.createElement('div');
-    akGrid.className = 'rw-grid';
-    akGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-    items.forEach((w, idx) => {
-      const card = document.createElement('div');
-      card.className = 'rw-card';
-      card.innerHTML = `
-        <span class="rw-num">${idx + 1}</span>
-        <span class="rw-pos-tag">${w.pos}</span>
-        <span style="font-size:0.82rem;color:var(--muted);text-align:center;">${w.translation || w.translit}</span>
-        <span class="rw-heb">${w.heb}</span>
-        ${revAnsTr && w.translit ? `<span class="rw-translit">${w.translit}</span>` : ''}`;
-      akGrid.appendChild(card);
-    });
-    ak.appendChild(akGrid);
-    const akFooter = document.createElement('div');
-    akFooter.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-    akFooter.textContent = `${items.length} words · Hebrew Blend Generator — Answer Key`;
-    ak.appendChild(akFooter);
-    ws.appendChild(ak);
-  }
 
   updateRwPoolInfo();
   enableButtons();
@@ -7186,7 +7129,7 @@ function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnO
 }
 
 // ── IDENTIFY THE REAL WORD ──
-function generateIdentifyDrill(pool, count, showTranslit) {
+function generateIdentifyDrill(pool, count, trOnSheet, tnOnSheet, trOnKey, tnOnKey) {
   const realWords = rwShuffle(pool).slice(0, Math.min(count, pool.length));
   const blendItems = blends.length > 0
     ? rwShuffle(blends).slice(0, count).map(b => ({
@@ -7207,6 +7150,8 @@ function generateIdentifyDrill(pool, count, showTranslit) {
     const grid = document.createElement('div');
     grid.className = 'rw-grid';
     grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    const showTr = reveal ? trOnKey : trOnSheet;
+    const showTn = reveal ? tnOnKey : tnOnSheet;
     items.forEach((w, idx) => {
       const card = document.createElement('div');
       card.className = 'rw-card';
@@ -7218,8 +7163,8 @@ function generateIdentifyDrill(pool, count, showTranslit) {
         <span class="rw-num">${idx + 1}${reveal && w.isReal ? ' ★' : ''}</span>
         <span class="rw-pos-tag">${reveal ? w.pos : ''}</span>
         <span class="rw-heb">${w.heb}</span>
-        ${showTranslit ? `<span class="rw-translit">${w.translit}</span>` : ''}
-        ${reveal && w.isReal && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}
+        ${showTr ? `<span class="rw-translit">${w.translit}</span>` : ''}
+        ${showTn && w.isReal && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}
         ${!reveal ? `<div style="margin-top:6px;width:20px;height:20px;border:1.5px solid var(--border);border-radius:50%;"></div>` : ''}`;
       grid.appendChild(card);
     });
