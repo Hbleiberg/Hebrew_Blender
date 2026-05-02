@@ -2005,9 +2005,14 @@
                 <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="rwShowTranslit" checked onchange="onRwTranslitChange()"><span class="slider"></span></label>
               </div>
               <div id="rwTranslitPageRow" class="rw-display-only" style="display:none;padding-left:16px;">
-                <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
+                <div class="rw-translit-page-reading blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
                   <button class="rw-drill-btn active" data-translit="same" onclick="setRwTranslitPage('same')">Same page</button>
                   <button class="rw-drill-btn" data-translit="key" onclick="setRwTranslitPage('key')">Answer key</button>
+                </div>
+                <div class="rw-translit-page-bingo blend-type-selector" style="display:none;grid-template-columns:repeat(3,1fr);margin-top:2px;">
+                  <button class="rw-drill-btn active" data-translit="card"   onclick="setRwTranslitPage('card')">Card</button>
+                  <button class="rw-drill-btn"        data-translit="caller" onclick="setRwTranslitPage('caller')">Caller</button>
+                  <button class="rw-drill-btn"        data-translit="both"   onclick="setRwTranslitPage('both')">Both</button>
                 </div>
               </div>
               <div class="toggle-row rw-display-only" id="rwTranslationRow">
@@ -2015,9 +2020,14 @@
                 <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="rwShowTranslation" onchange="onRwTranslChange()"><span class="slider"></span></label>
               </div>
               <div id="rwTranslPageRow" class="rw-display-only" style="display:none;padding-left:16px;">
-                <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
+                <div class="rw-transl-page-reading blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
                   <button class="rw-drill-btn active" data-transl="same" onclick="setRwTranslPage('same')">Same page</button>
                   <button class="rw-drill-btn" data-transl="key" onclick="setRwTranslPage('key')">Answer key</button>
+                </div>
+                <div class="rw-transl-page-bingo blend-type-selector" style="display:none;grid-template-columns:repeat(3,1fr);margin-top:2px;">
+                  <button class="rw-drill-btn active" data-transl="card"   onclick="setRwTranslPage('card')">Card</button>
+                  <button class="rw-drill-btn"        data-transl="caller" onclick="setRwTranslPage('caller')">Caller</button>
+                  <button class="rw-drill-btn"        data-transl="both"   onclick="setRwTranslPage('both')">Both</button>
                 </div>
               </div>
               <div class="toggle-row rw-gem-only" style="display:none;font-size:0.82rem;">
@@ -2094,10 +2104,6 @@
                 <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
                   <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Caller sheet</span>
                   <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="rwBingoCaller" checked><span class="slider"></span></label>
-                </div>
-                <div id="rwBingoCallerTranslRow" style="display:flex;gap:6px;align-items:center;font-size:0.78rem;padding-left:8px;">
-                  <span class="sub-label" style="font-size:0.78rem;min-width:64px;line-height:1.3;">Show translation on caller sheet</span>
-                  <label class="toggle" style="transform:scale(0.85);transform-origin:right;"><input type="checkbox" id="rwBingoCallerTransl"><span class="slider"></span></label>
                 </div>
               </div>
             </div>
@@ -3024,7 +3030,6 @@ function getSettings() {
     rwBingoFreeSpace:  document.getElementById('rwBingoFreeSpace').checked,
     rwBingoShared:     document.getElementById('rwBingoShared').checked,
     rwBingoCaller:     document.getElementById('rwBingoCaller').checked,
-    rwBingoCallerTransl: document.getElementById('rwBingoCallerTransl').checked,
     // Gematria
     gematriaMode:      document.getElementById('gematriaToggle').checked,
     gematriaSelfCheck: document.getElementById('gematriaSelfCheck').checked,
@@ -3181,7 +3186,6 @@ function applySettings(s) {
   if (s.rwBingoFreeSpace !== undefined)    document.getElementById('rwBingoFreeSpace').checked = s.rwBingoFreeSpace;
   if (s.rwBingoShared !== undefined)       document.getElementById('rwBingoShared').checked = s.rwBingoShared;
   if (s.rwBingoCaller !== undefined)       document.getElementById('rwBingoCaller').checked = s.rwBingoCaller;
-  if (s.rwBingoCallerTransl !== undefined) document.getElementById('rwBingoCallerTransl').checked = s.rwBingoCallerTransl;
 
   // Gematria — set values only; visibility flows through updateModeVisibility() at end.
   if (s.gematriaMode !== undefined)      document.getElementById('gematriaToggle').checked = s.gematriaMode;
@@ -3825,14 +3829,14 @@ function updateModeVisibility() {
 
     // Mode toggle rows
     rowInverse:        !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo,
-    rowFillVowels:     !testMode && blends && s.drill !== 'gematria' && !s.bingo,
+    rowFillVowels:     !testMode && blends && s.drill !== 'gematria' && s.drill !== 'inverse' && !s.bingo,
     rowGematria:       !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'inverse' && !s.bingo,
     rowBingo:          !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'inverse' && s.drill !== 'gematria',
     rowAnswerKey:      !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo,
     rowSelfCheck:      !gemSC    && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo,
     rowBlendCount:     !testMode && blends && !s.bingo,
-    rowRealWords:      !testMode && s.source !== 'numbers' && !cwModeActive && !s.bingo && !(blends && s.drill === 'gematria') && !(blends && s.drill === 'fillvowels'),
-    rowNumberPractice: !testMode && s.source !== 'realwords' && !cwModeActive && !s.bingo && !(blends && s.drill === 'gematria') && !(blends && s.drill === 'fillvowels'),
+    rowRealWords:      !testMode && s.source !== 'numbers' && !cwModeActive && !s.bingo && !(blends && s.drill === 'gematria') && !(blends && s.drill === 'fillvowels') && !(blends && s.drill === 'inverse'),
+    rowNumberPractice: !testMode && s.source !== 'realwords' && !cwModeActive && !s.bingo && !(blends && s.drill === 'gematria') && !(blends && s.drill === 'fillvowels') && !(blends && s.drill === 'inverse'),
 
     // Sub-option panels
     bingoOptions:          blends && s.bingo && !testMode,
@@ -6452,34 +6456,61 @@ function setRwStarPage(val) {
   if (ws.querySelector('.rw-card, .rw-flip')) generateRealWords();
 }
 
-let rwTranslPage = 'same';
+// rwTranslPage / rwTranslitPage hold:
+//   'same' | 'key'                  for the reading drill
+//   'card' | 'caller' | 'both'      for the bingo drill
+let rwTranslPage   = 'same';
+let rwTranslitPage = 'same';
+
+function _rwSyncPageButtons(scopeSel, attr, val) {
+  document.querySelectorAll(scopeSel + ' [' + attr + ']').forEach(b => {
+    b.classList.toggle('active', b.getAttribute(attr) === val);
+  });
+}
 
 function toggleRwTranslPageRow() {
   const show = document.getElementById('rwShowTranslation').checked;
   const row = document.getElementById('rwTranslPageRow');
-  if (row) row.style.display = (show && rwDrillType === 'reading') ? '' : 'none';
+  if (!row) return;
+  const isReading = rwDrillType === 'reading';
+  const isBingo   = rwDrillType === 'bingo';
+  row.style.display = (show && (isReading || isBingo)) ? '' : 'none';
+  const readBtns = row.querySelector('.rw-transl-page-reading');
+  const bingoBtns = row.querySelector('.rw-transl-page-bingo');
+  if (readBtns)  readBtns.style.display  = isReading ? '' : 'none';
+  if (bingoBtns) bingoBtns.style.display = isBingo   ? '' : 'none';
+  // Re-sync active state to the right button set
+  if (isBingo)        _rwSyncPageButtons('.rw-transl-page-bingo',   'data-transl', rwTranslPage);
+  else if (isReading) _rwSyncPageButtons('.rw-transl-page-reading', 'data-transl', rwTranslPage);
 }
 
 function setRwTranslPage(val) {
   rwTranslPage = val;
   document.querySelectorAll('[data-transl]').forEach(b => b.classList.toggle('active', b.dataset.transl === val));
   const ws = document.getElementById('worksheet');
-  if (ws.querySelector('.rw-card, .rw-flip')) generateRealWords();
+  if (ws.querySelector('.rw-card, .rw-flip, .bingo-card')) generateRealWords();
 }
-
-let rwTranslitPage = 'same';
 
 function toggleRwTranslitPageRow() {
   const show = document.getElementById('rwShowTranslit').checked;
   const row = document.getElementById('rwTranslitPageRow');
-  if (row) row.style.display = (show && rwDrillType === 'reading') ? '' : 'none';
+  if (!row) return;
+  const isReading = rwDrillType === 'reading';
+  const isBingo   = rwDrillType === 'bingo';
+  row.style.display = (show && (isReading || isBingo)) ? '' : 'none';
+  const readBtns = row.querySelector('.rw-translit-page-reading');
+  const bingoBtns = row.querySelector('.rw-translit-page-bingo');
+  if (readBtns)  readBtns.style.display  = isReading ? '' : 'none';
+  if (bingoBtns) bingoBtns.style.display = isBingo   ? '' : 'none';
+  if (isBingo)        _rwSyncPageButtons('.rw-translit-page-bingo',   'data-translit', rwTranslitPage);
+  else if (isReading) _rwSyncPageButtons('.rw-translit-page-reading', 'data-translit', rwTranslitPage);
 }
 
 function setRwTranslitPage(val) {
   rwTranslitPage = val;
   document.querySelectorAll('[data-translit]').forEach(b => b.classList.toggle('active', b.dataset.translit === val));
   const ws = document.getElementById('worksheet');
-  if (ws.querySelector('.rw-card, .rw-flip')) generateRealWords();
+  if (ws.querySelector('.rw-card, .rw-flip, .bingo-card')) generateRealWords();
 }
 
 function onRwTranslitChange() {
@@ -6509,6 +6540,18 @@ function setRealWordDrill(type) {
 
   // Fill-vowels sub-options (Include Dageshim + Show Translit + Show Translation)
   document.querySelectorAll('.rw-fv-only').forEach(el => el.style.display = (type === 'fillvowels') ? '' : 'none');
+
+  // Reset translit/translation page-defaults when switching drill flavor
+  // (reading uses 'same'/'key', bingo uses 'card'/'caller'/'both').
+  const READING_VALS = new Set(['same','key']);
+  const BINGO_VALS   = new Set(['card','caller','both']);
+  if (type === 'bingo') {
+    if (!BINGO_VALS.has(rwTranslitPage)) rwTranslitPage = 'card';
+    if (!BINGO_VALS.has(rwTranslPage))   rwTranslPage   = 'card';
+  } else {
+    if (!READING_VALS.has(rwTranslitPage)) rwTranslitPage = 'same';
+    if (!READING_VALS.has(rwTranslPage))   rwTranslPage   = 'same';
+  }
 
   // Auto-set translation visibility
   const translToggle = document.getElementById('rwShowTranslation');
@@ -6569,14 +6612,6 @@ document.addEventListener('DOMContentLoaded', () => {
       updateRwPoolInfo();
     })
     .catch(err => console.warn('Failed to load hebrew_words.json:', err));
-
-  const callerCb = document.getElementById('rwBingoCaller');
-  const callerTranslRow = document.getElementById('rwBingoCallerTranslRow');
-  if (callerCb && callerTranslRow) {
-    callerCb.addEventListener('change', () => {
-      callerTranslRow.style.display = callerCb.checked ? 'flex' : 'none';
-    });
-  }
 
   // Filter change listeners
   ['rwLen1','rwLen2','rwLen3','rwLen4','rwLen5','rwLen6','rwLen7','rwLen8plus','rwEraBiblical','rwEraModern'].forEach(id => {
@@ -7050,9 +7085,13 @@ function generateRealWordsBingo(pool) {
   const freeSpace = document.getElementById('rwBingoFreeSpace').checked;
   const shared    = document.getElementById('rwBingoShared').checked;
   const callerOn  = document.getElementById('rwBingoCaller').checked;
-  const callerTransl = document.getElementById('rwBingoCallerTransl').checked;
-  const showTranslit = document.getElementById('rwShowTranslit').checked;
+  const showTranslit    = document.getElementById('rwShowTranslit').checked;
   const showTranslation = document.getElementById('rwShowTranslation').checked;
+  // Placement: 'card' | 'caller' | 'both' (defaults to 'card' for bingo)
+  const translitOnCard   = showTranslit    && (rwTranslitPage === 'card'   || rwTranslitPage === 'both');
+  const translitOnCaller = showTranslit    && (rwTranslitPage === 'caller' || rwTranslitPage === 'both');
+  const translOnCard     = showTranslation && (rwTranslPage   === 'card'   || rwTranslPage   === 'both');
+  const translOnCaller   = showTranslation && (rwTranslPage   === 'caller' || rwTranslPage   === 'both');
 
   const cellsNeeded = freeSpace ? gridSize * gridSize - 1 : gridSize * gridSize;
   const BINGO_HEADERS = { 3: ['ב','י','נ'], 4: ['ב','י','נ','ג'], 5: ['ב','י','נ','ג','ו'] };
@@ -7127,7 +7166,7 @@ function generateRealWordsBingo(pool) {
           cellEl.innerHTML = '<span style="font-size:1rem;">✡</span><span>FREE</span>';
         } else {
           cellEl.className = cls;
-          cellEl.innerHTML = `<span class="heb" style="font-size:1.2rem;">${cell.heb}</span>${showTranslit ? `<span class="sound">${cell.translit}</span>` : ''}${showTranslation && cell.translation ? `<span class="sound" style="font-size:0.6rem;">${cell.translation}</span>` : ''}`;
+          cellEl.innerHTML = `<span class="heb" style="font-size:1.2rem;">${cell.heb}</span>${translitOnCard ? `<span class="sound">${cell.translit}</span>` : ''}${translOnCard && cell.translation ? `<span class="sound" style="font-size:0.6rem;">${cell.translation}</span>` : ''}`;
         }
         gridEl.appendChild(cellEl);
       });
@@ -7158,7 +7197,7 @@ function generateRealWordsBingo(pool) {
       const item = document.createElement('div');
       item.className = 'caller-item';
       item.onclick = () => item.classList.toggle('called');
-      item.innerHTML = `<span class="num">${i + 1}</span><span class="heb">${w.heb}</span><span class="sound">${w.translit}</span>${callerTransl && w.translation ? `<span class="sound" style="font-size:0.6rem;font-style:italic;">${w.translation}</span>` : ''}`;
+      item.innerHTML = `<span class="num">${i + 1}</span><span class="heb">${w.heb}</span>${translitOnCaller ? `<span class="sound">${w.translit}</span>` : ''}${translOnCaller && w.translation ? `<span class="sound" style="font-size:0.6rem;font-style:italic;">${w.translation}</span>` : ''}`;
       grid.appendChild(item);
     });
     sheet.appendChild(grid);
