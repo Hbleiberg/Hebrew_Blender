@@ -893,9 +893,20 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
           <button class="pill" data-mode="3">3 Letter</button>
         </div>
       </div>
-      <div class="row">
+      <div class="row" id="inverseRow">
         <label class="switch"><input type="checkbox" id="inverseToggle"><span class="slider"></span></label>
         <span class="label has-tip" data-tip="Show the transliteration first; flip to reveal the Hebrew.">Inverse Mode</span>
+      </div>
+      <!-- Name the Letter (1-letter mode only) -->
+      <div class="row" id="nameLetterRow" style="display:none;">
+        <label class="switch"><input type="checkbox" id="nameLetterToggle"><span class="slider"></span></label>
+        <span class="label">Name the Letter</span>
+      </div>
+      <div id="nameLetterOpts" class="hide">
+        <div class="pill-group" id="nameLetterFrontPills" style="margin-top:6px;">
+          <button class="pill active" data-nlf="letter">Letter</button>
+          <button class="pill" data-nlf="name">Name</button>
+        </div>
       </div>
 
       <div id="lockBlock" class="hide">
@@ -1349,6 +1360,8 @@ let colorCodingMode = 'letter';
 let nikudColorOverrides = {};
 let hebFontId = 'Frank Ruhl Libre';
 let audioEnabled = false;
+let nameLetterMode = false;
+let nameLetterShowLetter = true;
 let vowelPositions = new Set([2]);
 let vowelLockEnabled = false;
 let vowelLockPosition = 2;
@@ -1771,8 +1784,19 @@ function setLetterMode(m) {
   if (vowelLockPosition > m) vowelLockPosition = m;
   updateVowelPositionUI();
   updateVowelLockUI();
+  document.getElementById('nameLetterRow').style.display = m === 1 ? '' : 'none';
+  if (m > 1 && nameLetterMode) setNameLetterMode(false);
   saveSettings();
 }
+function setNameLetterMode(on) {
+  nameLetterMode = on;
+  document.getElementById('nameLetterToggle').checked = on;
+  document.getElementById('nameLetterOpts').classList.toggle('hide', !on);
+  document.getElementById('inverseRow').classList.toggle('hide', on);
+  document.getElementById('panelVowels').style.display = on ? 'none' : '';
+  saveSettings();
+}
+
 function setCardCount(n) {
   cardCount = n;
   document.querySelectorAll('.count-btn').forEach(b => b.classList.toggle('active', +b.dataset.n === n));
@@ -1854,7 +1878,7 @@ function getSettings() {
     lockLetters: [...lockLetters],
     colorCodingEnabled, colorCodingMode,
     nikudColorOverrides: { ...nikudColorOverrides },
-    hebFontId, audioEnabled,
+    hebFontId, audioEnabled, nameLetterMode, nameLetterShowLetter,
     ttsRate: parseFloat(document.getElementById('ttsRateSlider')?.value || 0.85),
     vowelPositions: [...vowelPositions],
     vowelLockEnabled,
@@ -1902,6 +1926,14 @@ function applySettings(s) {
   document.querySelectorAll('#lockPosPills .pill').forEach(p => p.classList.toggle('active', +p.dataset.pos === lockPosition));
   audioEnabled = !!s.audioEnabled;
   document.getElementById('audioToggle').checked = audioEnabled;
+  nameLetterMode = !!s.nameLetterMode;
+  nameLetterShowLetter = s.nameLetterShowLetter !== false;
+  document.getElementById('nameLetterToggle').checked = nameLetterMode;
+  document.getElementById('nameLetterOpts').classList.toggle('hide', !nameLetterMode);
+  document.getElementById('inverseRow').classList.toggle('hide', nameLetterMode);
+  document.getElementById('panelVowels').style.display = nameLetterMode ? 'none' : '';
+  document.querySelectorAll('#nameLetterFrontPills .pill').forEach(p =>
+    p.classList.toggle('active', p.dataset.nlf === (nameLetterShowLetter ? 'letter' : 'name')));
   if (s.ttsRate !== undefined) {
     const sl = document.getElementById('ttsRateSlider');
     if (sl) { sl.value = s.ttsRate; document.getElementById('ttsRateVal').textContent = parseFloat(s.ttsRate).toFixed(2) + '×'; }
@@ -2198,6 +2230,14 @@ function pickVowel() {
 
 function generateCard() {
   const m = mode;
+
+  if (nameLetterMode) {
+    const pool = buildPool(L => true);
+    if (pool.length === 0) return null;
+    const L = pickRandom(pool);
+    return { heb: L.heb, translit: L.name };
+  }
+
   const result = { heb: '', translit: '' };
 
   const firstPool = buildPool(L => !L.sofit && !L.isVav);
@@ -2366,7 +2406,25 @@ function renderCurrentCard() {
   const front = document.getElementById('fcFrontHeb');
   const back = document.getElementById('fcBackTr');
 
-  if (inverse) {
+  if (nameLetterMode) {
+    if (nameLetterShowLetter) {
+      front.textContent = card.heb;
+      front.style.fontFamily = 'var(--heb-font)';
+      front.style.direction = 'rtl';
+      back.textContent = card.translit;
+      back.style.fontFamily = 'var(--serif)';
+      back.style.direction = 'ltr';
+      back.style.fontSize = 'clamp(1.4rem, 6vw, 2.4rem)';
+    } else {
+      front.textContent = card.translit;
+      front.style.fontFamily = 'var(--serif)';
+      front.style.direction = 'ltr';
+      back.textContent = card.heb;
+      back.style.fontFamily = 'var(--heb-font)';
+      back.style.direction = 'rtl';
+      back.style.fontSize = 'clamp(3rem, 12vw, 5rem)';
+    }
+  } else if (inverse) {
     // Inverse: translit on front, hebrew on back
     front.textContent = card.translit;
     front.style.fontFamily = 'var(--serif)';
@@ -2555,6 +2613,13 @@ function wireSetupScreen() {
     updateVowelLockUI();
     saveSettings();
   });
+
+  document.getElementById('nameLetterToggle').addEventListener('change', e => setNameLetterMode(e.target.checked));
+  document.querySelectorAll('#nameLetterFrontPills .pill').forEach(p => p.addEventListener('click', () => {
+    nameLetterShowLetter = p.dataset.nlf === 'letter';
+    document.querySelectorAll('#nameLetterFrontPills .pill').forEach(x => x.classList.toggle('active', x === p));
+    saveSettings();
+  }));
 
   // Audio
   document.getElementById('audioToggle').addEventListener('change', e => {
