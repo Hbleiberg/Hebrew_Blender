@@ -1968,7 +1968,7 @@
                 </select>
               </div>
               <!-- ID Parts of Speech: collapsible POS selector relocates here from Word Filters when idpos drill is active -->
-              <div class="rw-section rw-idpos-only" id="rwIdposPosSection" style="display:none;border-top:none;padding-top:0;margin-top:6px;">
+              <div class="rw-section rw-idpos-only" id="rwIdposPosSection" style="display:none;border-top:none;padding-top:0;margin-top:6px;margin-bottom:10px;">
                 <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Parts of Speech</div>
                 <div class="rw-section-body" id="rwIdposPosSlot"></div>
               </div>
@@ -6645,10 +6645,16 @@ function setRealWordDrill(type) {
   rwDrillType = type;
   document.querySelectorAll('.rw-drill-btn').forEach(b => b.classList.toggle('active', b.dataset.drill === type));
 
-  // Identify always wants blends mixed in — force rwMixed on, otherwise leave
-  // the user's choice intact.
+  // Mix-with-blends doesn't make sense for these drills. Identify auto-mixes;
+  // bingo/gematria/fillvowels never mix.
+  const mixedRow = document.getElementById('rwMixedRow');
+  const mixedHidden = (type === 'identify' || type === 'bingo' || type === 'gematria' || type === 'fillvowels');
+  if (mixedRow) mixedRow.style.display = mixedHidden ? 'none' : '';
   const mixedCb = document.getElementById('rwMixed');
-  if (mixedCb && type === 'identify') mixedCb.checked = true;
+  if (mixedCb) {
+    if (type === 'identify') mixedCb.checked = true;
+    else if (mixedHidden) mixedCb.checked = false;
+  }
   toggleRwStarRow();
 
   // Show bingo sub-options only for bingo drill
@@ -6668,7 +6674,7 @@ function setRealWordDrill(type) {
     case 'idpos':
       SET(showTranslit, true);  SET(showTranslation, true);
       rwTranslitPage = 'key';   rwTranslPage = 'key';
-      if (type === 'identify') {
+      if (type === 'identify' || type === 'idpos') {
         const starCb = document.getElementById('rwStarReal');
         if (starCb) starCb.checked = true;
         rwStarPage = 'key';
