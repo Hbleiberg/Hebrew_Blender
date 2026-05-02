@@ -1006,6 +1006,12 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
               <button class="pill" data-cfront="hebrew">Hebrew Word</button>
             </div>
           </div>
+          <div class="row" style="margin-top:8px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;cursor:pointer;">
+              <input type="checkbox" id="colorTranslitToggle" style="accent-color:var(--gold);width:13px;height:13px;">
+              Show transliteration
+            </label>
+          </div>
         </div>
       </div><!-- /otherModeSection -->
     </div>
@@ -1530,6 +1536,7 @@ let numberShowTranslit = false;
 let colorGender = 'masculine';
 let colorDisplayMode = 'color';
 let colorFront = 'color';
+let colorShowTranslit = false;
 let selectedColors = new Set(COLOR_DATA.filter(c => c.isMain).map(c => c.key));
 let timerMode = 'off';       // 'off' | 'track' | 'limit'
 let timerShowOnScreen = true;
@@ -2103,7 +2110,7 @@ function getSettings() {
     nikudColorOverrides: { ...nikudColorOverrides },
     hebFontId, audioEnabled, nameLetterMode, nameLetterShowLetter,
     otherModeActive, otherSubMode, numberMin, numberMax, numberGender, numberFront, numberShowTranslit,
-    colorGender, colorDisplayMode, colorFront, selectedColors: [...selectedColors],
+    colorGender, colorDisplayMode, colorFront, colorShowTranslit, selectedColors: [...selectedColors],
     timerMode, timerShowOnScreen, timeLimitSeconds,
     ttsRate: parseFloat(document.getElementById('ttsRateSlider')?.value || 0.85),
     vowelPositions: [...vowelPositions],
@@ -2183,6 +2190,7 @@ function applySettings(s) {
   colorGender = s.colorGender || 'masculine';
   colorDisplayMode = s.colorDisplayMode || 'color';
   colorFront = s.colorFront || 'color';
+  colorShowTranslit = !!s.colorShowTranslit;
   selectedColors = s.selectedColors ? new Set(s.selectedColors) : new Set(COLOR_DATA.filter(c => c.isMain).map(c => c.key));
   setOtherMode(otherModeActive);
   document.querySelector('#numMinInput') && (document.getElementById('numMinInput').value = numberMin);
@@ -2195,6 +2203,8 @@ function applySettings(s) {
   document.querySelectorAll('#colorGenderPills .pill').forEach(p => p.classList.toggle('active', p.dataset.cgender === colorGender));
   document.querySelectorAll('#colorDisplayPills .pill').forEach(p => p.classList.toggle('active', p.dataset.cdisplay === colorDisplayMode));
   document.querySelectorAll('#colorFrontPills .pill').forEach(p => p.classList.toggle('active', p.dataset.cfront === colorFront));
+  const colorTranslitToggle = document.getElementById('colorTranslitToggle');
+  if (colorTranslitToggle) colorTranslitToggle.checked = colorShowTranslit;
   syncOtherSubUI();
   if (!otherModeActive) document.getElementById('panelVowels').style.display = nameLetterMode ? 'none' : '';
   document.querySelectorAll('#nameLetterFrontPills .pill').forEach(p =>
@@ -2519,7 +2529,9 @@ function generateCard() {
     if (pool.length === 0) return null;
     const c = pool[Math.floor(Math.random() * pool.length)];
     const heb = colorGender === 'masculine' ? c.heb_m : c.heb_f;
-    return { heb, translit: c.name, colorCss: c.css, textDark: c.textDark, skipTranslitRebuild: true };
+    const HT = window.HebrewTransliterator;
+    const romanized = (HT && typeof HT.apply === 'function') ? HT.apply(heb, '', translitStyle) : '';
+    return { heb, translit: c.name, colorCss: c.css, textDark: c.textDark, romanized, skipTranslitRebuild: true };
   }
 
   const result = { heb: '', translit: '' };
@@ -2786,10 +2798,17 @@ function renderCurrentCard() {
       }
     }
     function hebColorSide(el) {
-      el.textContent = card.heb;
-      el.style.fontFamily = 'var(--heb-font)';
-      el.style.direction = 'rtl';
-      el.style.fontSize = 'clamp(2rem, 8vw, 3.5rem)';
+      if (colorShowTranslit && card.romanized) {
+        el.innerHTML = `<div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(2rem,8vw,3.5rem);margin-bottom:6px;">${card.heb}</div><div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;">${card.romanized}</div>`;
+        el.style.fontFamily = '';
+        el.style.direction = '';
+        el.style.fontSize = '';
+      } else {
+        el.textContent = card.heb;
+        el.style.fontFamily = 'var(--heb-font)';
+        el.style.direction = 'rtl';
+        el.style.fontSize = 'clamp(2rem, 8vw, 3.5rem)';
+      }
     }
     if (colorFront === 'color') {
       front.innerHTML = colorSwatchHTML(card);
@@ -3103,6 +3122,10 @@ function wireSetupScreen() {
   }));
   document.getElementById('numTranslitToggle').addEventListener('change', e => {
     numberShowTranslit = e.target.checked;
+    saveSettings();
+  });
+  document.getElementById('colorTranslitToggle').addEventListener('change', e => {
+    colorShowTranslit = e.target.checked;
     saveSettings();
   });
   document.getElementById('numMinInput').addEventListener('change', e => {
