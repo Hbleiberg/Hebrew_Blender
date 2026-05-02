@@ -183,6 +183,7 @@ function exportAllSettings() {
     dashboardSettings:   JSON.parse(localStorage.getItem('hebrewDashboard_settings')   || '{}'),
     flashCardPresets:    JSON.parse(localStorage.getItem('hebrewFlashCards_presets')   || '{}'),
     dictAudioEnabled:    localStorage.getItem('hebrewDictionary_audioEnabled') || '0',
+    dictTranslitStyle:   localStorage.getItem('hebrewDictionary_translitStyle') || 'default',
   };
   document.getElementById('ieTextarea').value = JSON.stringify(blob, null, 2);
 }
@@ -217,6 +218,9 @@ function importAllSettings() {
     if (parsed.dictAudioEnabled !== undefined) {
       localStorage.setItem('hebrewDictionary_audioEnabled', parsed.dictAudioEnabled);
     }
+    if (parsed.dictTranslitStyle !== undefined) {
+      localStorage.setItem('hebrewDictionary_translitStyle', parsed.dictTranslitStyle);
+    }
     alert('Import successful! Reload the Dashboard to apply all settings.');
   } catch(e) { alert('Import failed: ' + e.message); }
 }
@@ -238,6 +242,7 @@ function eraseAllSettings() {
     'hebrewDashboard_settings',
     'hebrewFlashCards_presets',
     'hebrewDictionary_audioEnabled',
+    'hebrewDictionary_translitStyle',
   ];
   keys.forEach(k => localStorage.removeItem(k));
   document.getElementById('ieTextarea').value = '';

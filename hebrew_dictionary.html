@@ -15,6 +15,151 @@
 <title>Hebrew Word Lookup</title>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <script>(function(){try{if(localStorage.getItem('hebrewBlender_darkMode')==='1'){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<!-- Hebrew transliteration library loader (lazy via esm.sh).
+     Keep in sync across hebrew_blend_generator.html, hebrew_dictionary.html, flash_cards.html. -->
+<script type="module">
+  const CDN_URLS = [
+    'https://esm.sh/hebrew-transliteration@2.9.1',
+    'https://cdn.jsdelivr.net/npm/hebrew-transliteration@2.9.1/+esm'
+  ];
+  const SCHEMAS_URLS = [
+    'https://esm.sh/hebrew-transliteration@2.9.1/schemas',
+    'https://cdn.jsdelivr.net/npm/hebrew-transliteration@2.9.1/dist/esm/schemas/index.js'
+  ];
+
+  function buildModernIsraeli(SBL) {
+    return new SBL({
+      ALEF: '', AYIN: '',
+      BET: 'v', BET_DAGESH: 'b',
+      VAV: 'v',
+      HET: 'kh',
+      TET: 't',
+      KAF: 'kh', KAF_DAGESH: 'k', FINAL_KAF: 'kh',
+      PE: 'f', PE_DAGESH: 'p', FINAL_PE: 'f',
+      TSADI: 'ts', FINAL_TSADI: 'ts',
+      QOF: 'k',
+      SHIN: 'sh', SIN: 's',
+      TAV: 't', TAV_DAGESH: 't',
+      PATAH: 'a', QAMATS: 'a', QAMATS_QATAN: 'o', QAMATS_HE: 'a',
+      HATAF_PATAH: 'a', HATAF_QAMATS: 'o', HATAF_SEGOL: 'e',
+      SEGOL: 'e', TSERE: 'e', TSERE_YOD: 'e',
+      HIRIQ: 'i', HIRIQ_YOD: 'i',
+      HOLAM: 'o', HOLAM_HASER: 'o', HOLAM_VAV: 'o',
+      QUBUTS: 'u', SHUREQ: 'u',
+      VOCAL_SHEVA: '',
+      FURTIVE_PATAH: 'a',
+      longVowels: false
+    });
+  }
+
+  function buildAshkenazi(SBL) {
+    return new SBL({
+      ALEF: '', AYIN: '',
+      BET: 'v', BET_DAGESH: 'b',
+      VAV: 'v',
+      HET: 'ch',
+      KAF: 'ch', FINAL_KAF: 'ch', KAF_DAGESH: 'k',
+      PE: 'f', PE_DAGESH: 'p', FINAL_PE: 'f',
+      TSADI: 'ts', FINAL_TSADI: 'ts',
+      SHIN: 'sh', SIN: 's',
+      TAV: 's', TAV_DAGESH: 't',
+      PATAH: 'a',
+      QAMATS: 'o', QAMATS_QATAN: 'o', QAMATS_HE: 'o',
+      HATAF_PATAH: 'a', HATAF_QAMATS: 'o', HATAF_SEGOL: 'e',
+      SEGOL: 'e', TSERE: 'ey', TSERE_YOD: 'ey',
+      HIRIQ: 'i', HIRIQ_YOD: 'i',
+      HOLAM: 'oy', HOLAM_HASER: 'oy', HOLAM_VAV: 'oy',
+      QUBUTS: 'u', SHUREQ: 'u',
+      VOCAL_SHEVA: '',
+      longVowels: false
+    });
+  }
+
+  function buildSimpleStressed(SBL) {
+    return new SBL({
+      ALEF: '', AYIN: '',
+      BET: 'v', BET_DAGESH: 'b',
+      VAV: 'v',
+      HET: 'kh',
+      TET: 't',
+      KAF: 'kh', KAF_DAGESH: 'k', FINAL_KAF: 'kh',
+      PE: 'f', PE_DAGESH: 'p', FINAL_PE: 'f',
+      TSADI: 'ts', FINAL_TSADI: 'ts',
+      QOF: 'k',
+      SHIN: 'sh', SIN: 's',
+      TAV: 't', TAV_DAGESH: 't',
+      PATAH: 'a', QAMATS: 'a', QAMATS_QATAN: 'o', QAMATS_HE: 'a',
+      HATAF_PATAH: 'a', HATAF_QAMATS: 'o', HATAF_SEGOL: 'e',
+      SEGOL: 'e', TSERE: 'e', TSERE_YOD: 'e',
+      HIRIQ: 'i', HIRIQ_YOD: 'i',
+      HOLAM: 'o', HOLAM_HASER: 'o', HOLAM_VAV: 'o',
+      QUBUTS: 'u', SHUREQ: 'u',
+      VOCAL_SHEVA: '',
+      FURTIVE_PATAH: 'a',
+      longVowels: false,
+      SYLLABLE_SEPARATOR: '-'
+    });
+  }
+
+  async function tryImport(urls) {
+    for (const url of urls) {
+      try { return await import(url); }
+      catch (e) { console.warn('[hebrew-translit] Failed to load', url, e); }
+    }
+    return null;
+  }
+
+  window.HebrewTransliterator = {
+    ready: false,
+    failed: false,
+    loadPromise: null,
+    lib: null,
+    schemas: {},
+    apply(hebrewText, defaultTranslit, styleKey) {
+      if (!styleKey || styleKey === 'default') return defaultTranslit;
+      if (!this.ready || !this.lib) return defaultTranslit;
+      const schema = this.schemas[styleKey];
+      if (!schema) return defaultTranslit;
+      try {
+        let out = this.lib.transliterate(hebrewText, schema);
+        if (styleKey === 'simpleStressed' && out && out.includes('-')) {
+          out = out.split(/(\s+)/).map(tok => {
+            if (!tok.includes('-')) return tok;
+            const parts = tok.split('-');
+            parts[parts.length - 1] = parts[parts.length - 1].toUpperCase();
+            return parts.join('-');
+          }).join('');
+        }
+        return out;
+      } catch (e) {
+        console.warn('[hebrew-translit]', e);
+        return defaultTranslit;
+      }
+    },
+    ensureLoaded() {
+      if (this.loadPromise) return this.loadPromise;
+      this.loadPromise = (async () => {
+        const main = await tryImport(CDN_URLS);
+        if (!main || !main.transliterate || !main.SBL) {
+          this.failed = true;
+          window.dispatchEvent(new Event('translitlibfailed'));
+          return false;
+        }
+        const schemasMod = await tryImport(SCHEMAS_URLS);
+        this.lib = main;
+        try { this.schemas.sbl = new main.SBL({}); } catch (e) { console.warn(e); }
+        this.schemas.brill = schemasMod ? schemasMod.brillAcademic : null;
+        try { this.schemas.modernIsraeli  = buildModernIsraeli(main.SBL); }  catch (e) { console.warn(e); }
+        try { this.schemas.ashkenazi      = buildAshkenazi(main.SBL); }      catch (e) { console.warn(e); }
+        try { this.schemas.simpleStressed = buildSimpleStressed(main.SBL); } catch (e) { console.warn(e); }
+        this.ready = true;
+        window.dispatchEvent(new Event('translitlibloaded'));
+        return true;
+      })();
+      return this.loadPromise;
+    }
+  };
+</script>
 <style>
 :root {
   --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
@@ -398,6 +543,29 @@ footer a{color:var(--gold);text-decoration:none;}
           </div>
         </div>
 
+        <!-- Transliteration -->
+        <div class="adv-section collapsed">
+          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Transliteration</div>
+          <div class="adv-section-body" style="display:flex;flex-direction:column;gap:8px;">
+            <label style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;">
+              <span style="color:var(--muted);font-size:0.7rem;letter-spacing:0.04em;text-transform:uppercase;">Style</span>
+              <select id="translitStyleSelect" onchange="onTranslitStyleChange(this.value)"
+                      style="width:100%;font-size:0.8rem;padding:5px 7px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--text);font-family:inherit;">
+                <option value="default">Default (built-in)</option>
+                <option value="sbl">SBL Academic</option>
+                <option value="brill">Brill Academic</option>
+                <option value="modernIsraeli">Modern Israeli</option>
+                <option value="ashkenazi">Ashkenazi</option>
+                <option value="simpleStressed">Simple Stressed</option>
+              </select>
+            </label>
+            <div id="translitLoadStatus" style="font-size:0.7rem;color:var(--muted);min-height:1em;text-align:center;"></div>
+            <div style="font-size:0.65rem;color:var(--muted);text-align:center;border-top:1px solid var(--border);padding-top:6px;line-height:1.4;">
+              Powered by <a href="https://github.com/charlesLoder/hebrew-transliteration" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">hebrew-transliteration</a> by Charles Loder
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -521,6 +689,48 @@ let copyMode = 'word';
 let showGematria = false;
 let bulkMode = false;
 
+let translitStyle = (() => {
+  try { return localStorage.getItem('hebrewDictionary_translitStyle') || 'default'; }
+  catch (e) { return 'default'; }
+})();
+
+function buildTranslitDisplay() {
+  const HT = window.HebrewTransliterator;
+  if (!HT) return;
+  ALL_WORDS.forEach(w => {
+    w.translitDisplay = HT.apply(w.word || '', w.translit || '', translitStyle);
+  });
+}
+
+function onTranslitStyleChange(val) {
+  translitStyle = val || 'default';
+  try { localStorage.setItem('hebrewDictionary_translitStyle', translitStyle); } catch (e) {}
+  const status = document.getElementById('translitLoadStatus');
+  if (translitStyle === 'default') {
+    if (status) status.textContent = '';
+    buildTranslitDisplay();
+    if (typeof rerender === 'function') rerender();
+    return;
+  }
+  if (status) status.textContent = 'Loading library…';
+  window.HebrewTransliterator.ensureLoaded().then(() => {
+    if (window.HebrewTransliterator.ready) {
+      if (status) status.textContent = '';
+      buildTranslitDisplay();
+      if (typeof rerender === 'function') rerender();
+    } else {
+      if (status) status.textContent = 'Library failed to load — using default style.';
+    }
+  });
+}
+
+window.addEventListener('translitlibloaded', () => {
+  if (translitStyle !== 'default') {
+    buildTranslitDisplay();
+    if (typeof rerender === 'function') rerender();
+  }
+});
+
 function onShowGematriaChange() {
   showGematria = document.getElementById('showGematriaCb').checked;
   const panel = document.getElementById('gematriaFilterPanel');
@@ -555,16 +765,17 @@ function toggleGematriaSort(on) {
 const bulkSelected = new Map(); // bare -> {w, text}
 
 function getWordCopyText(w) {
+  const tr = w.translitDisplay ?? w.translit;
   const parts = [w.word];
   if (copyMode === 'definition') return w.translation ? `${w.word} — ${w.translation}` : w.word;
   if (copyMode === 'defonly') return w.translation || w.word;
   if (copyMode === 'transdef') {
-    const mid = [w.translit, w.translation].filter(Boolean).join(' — ');
+    const mid = [tr, w.translation].filter(Boolean).join(' — ');
     return mid ? `${w.word} — ${mid}` : w.word;
   }
   if (copyMode === 'allinfo') {
     const segs = [w.word];
-    if (w.translit) segs.push(w.translit);
+    if (tr) segs.push(tr);
     if (w.translation) segs.push(w.translation);
     if (w.pos) segs.push(w.pos);
     if (w.era) segs.push(w.era);
@@ -643,12 +854,19 @@ fetch('hebrew_words.json?v=4')
         bare: w.bare || '',
         cons: Array.isArray(w.letters) ? w.letters : [],
         translit: w.translit || '',
+        translitDisplay: w.translit || '',
         pos: w.pos || '',
         translation: w.translation || '',
         era: w.era || 'Both',
         len: parseInt(cnt)
       }))
     );
+    if (translitStyle !== 'default') {
+      window.HebrewTransliterator.ensureLoaded().then(() => {
+        buildTranslitDisplay();
+        if (typeof rerender === 'function') rerender();
+      });
+    }
     document.getElementById('loadingMsg').style.display = 'none';
     document.getElementById('resultsGrid').style.display = 'grid';
     onFilter();
@@ -970,7 +1188,7 @@ function loadMore() {
     const inner = document.createElement('div');
     inner.innerHTML = `
       <div class="wc-heb">${colorizeHebrew(w.word)}</div>
-      ${w.translit ? `<div class="wc-translit">${w.translit}</div>` : ''}
+      ${w.translit ? `<div class="wc-translit">${w.translitDisplay ?? w.translit}</div>` : ''}
       ${w.translation ? `<div class="wc-transl">${w.translation}</div>` : ''}
       <div class="wc-badges">
         ${w.pos ? `<span class="badge b-pos">${w.pos}</span>` : ''}
@@ -1413,6 +1631,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const cb = document.getElementById('dictAudioToggle');
       if (cb) cb.checked = true;
     }
+  } catch(e) {}
+  try {
+    const sel = document.getElementById('translitStyleSelect');
+    if (sel) sel.value = translitStyle;
+    if (translitStyle !== 'default') window.HebrewTransliterator.ensureLoaded();
   } catch(e) {}
   try {
     if (localStorage.getItem('hebrewBlender_darkMode') === '1') {

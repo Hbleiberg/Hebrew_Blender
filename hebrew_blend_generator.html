@@ -16,6 +16,151 @@
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- Hebrew transliteration library loader (lazy via esm.sh).
+     Keep in sync across hebrew_blend_generator.html, hebrew_dictionary.html, flash_cards.html. -->
+<script type="module">
+  const CDN_URLS = [
+    'https://esm.sh/hebrew-transliteration@2.9.1',
+    'https://cdn.jsdelivr.net/npm/hebrew-transliteration@2.9.1/+esm'
+  ];
+  const SCHEMAS_URLS = [
+    'https://esm.sh/hebrew-transliteration@2.9.1/schemas',
+    'https://cdn.jsdelivr.net/npm/hebrew-transliteration@2.9.1/dist/esm/schemas/index.js'
+  ];
+
+  function buildModernIsraeli(SBL) {
+    return new SBL({
+      ALEF: '', AYIN: '',
+      BET: 'v', BET_DAGESH: 'b',
+      VAV: 'v',
+      HET: 'kh',
+      TET: 't',
+      KAF: 'kh', KAF_DAGESH: 'k', FINAL_KAF: 'kh',
+      PE: 'f', PE_DAGESH: 'p', FINAL_PE: 'f',
+      TSADI: 'ts', FINAL_TSADI: 'ts',
+      QOF: 'k',
+      SHIN: 'sh', SIN: 's',
+      TAV: 't', TAV_DAGESH: 't',
+      PATAH: 'a', QAMATS: 'a', QAMATS_QATAN: 'o', QAMATS_HE: 'a',
+      HATAF_PATAH: 'a', HATAF_QAMATS: 'o', HATAF_SEGOL: 'e',
+      SEGOL: 'e', TSERE: 'e', TSERE_YOD: 'e',
+      HIRIQ: 'i', HIRIQ_YOD: 'i',
+      HOLAM: 'o', HOLAM_HASER: 'o', HOLAM_VAV: 'o',
+      QUBUTS: 'u', SHUREQ: 'u',
+      VOCAL_SHEVA: '',
+      FURTIVE_PATAH: 'a',
+      longVowels: false
+    });
+  }
+
+  function buildAshkenazi(SBL) {
+    return new SBL({
+      ALEF: '', AYIN: '',
+      BET: 'v', BET_DAGESH: 'b',
+      VAV: 'v',
+      HET: 'ch',
+      KAF: 'ch', FINAL_KAF: 'ch', KAF_DAGESH: 'k',
+      PE: 'f', PE_DAGESH: 'p', FINAL_PE: 'f',
+      TSADI: 'ts', FINAL_TSADI: 'ts',
+      SHIN: 'sh', SIN: 's',
+      TAV: 's', TAV_DAGESH: 't',
+      PATAH: 'a',
+      QAMATS: 'o', QAMATS_QATAN: 'o', QAMATS_HE: 'o',
+      HATAF_PATAH: 'a', HATAF_QAMATS: 'o', HATAF_SEGOL: 'e',
+      SEGOL: 'e', TSERE: 'ey', TSERE_YOD: 'ey',
+      HIRIQ: 'i', HIRIQ_YOD: 'i',
+      HOLAM: 'oy', HOLAM_HASER: 'oy', HOLAM_VAV: 'oy',
+      QUBUTS: 'u', SHUREQ: 'u',
+      VOCAL_SHEVA: '',
+      longVowels: false
+    });
+  }
+
+  function buildSimpleStressed(SBL) {
+    return new SBL({
+      ALEF: '', AYIN: '',
+      BET: 'v', BET_DAGESH: 'b',
+      VAV: 'v',
+      HET: 'kh',
+      TET: 't',
+      KAF: 'kh', KAF_DAGESH: 'k', FINAL_KAF: 'kh',
+      PE: 'f', PE_DAGESH: 'p', FINAL_PE: 'f',
+      TSADI: 'ts', FINAL_TSADI: 'ts',
+      QOF: 'k',
+      SHIN: 'sh', SIN: 's',
+      TAV: 't', TAV_DAGESH: 't',
+      PATAH: 'a', QAMATS: 'a', QAMATS_QATAN: 'o', QAMATS_HE: 'a',
+      HATAF_PATAH: 'a', HATAF_QAMATS: 'o', HATAF_SEGOL: 'e',
+      SEGOL: 'e', TSERE: 'e', TSERE_YOD: 'e',
+      HIRIQ: 'i', HIRIQ_YOD: 'i',
+      HOLAM: 'o', HOLAM_HASER: 'o', HOLAM_VAV: 'o',
+      QUBUTS: 'u', SHUREQ: 'u',
+      VOCAL_SHEVA: '',
+      FURTIVE_PATAH: 'a',
+      longVowels: false,
+      SYLLABLE_SEPARATOR: '-'
+    });
+  }
+
+  async function tryImport(urls) {
+    for (const url of urls) {
+      try { return await import(url); }
+      catch (e) { console.warn('[hebrew-translit] Failed to load', url, e); }
+    }
+    return null;
+  }
+
+  window.HebrewTransliterator = {
+    ready: false,
+    failed: false,
+    loadPromise: null,
+    lib: null,
+    schemas: {},
+    apply(hebrewText, defaultTranslit, styleKey) {
+      if (!styleKey || styleKey === 'default') return defaultTranslit;
+      if (!this.ready || !this.lib) return defaultTranslit;
+      const schema = this.schemas[styleKey];
+      if (!schema) return defaultTranslit;
+      try {
+        let out = this.lib.transliterate(hebrewText, schema);
+        if (styleKey === 'simpleStressed' && out && out.includes('-')) {
+          out = out.split(/(\s+)/).map(tok => {
+            if (!tok.includes('-')) return tok;
+            const parts = tok.split('-');
+            parts[parts.length - 1] = parts[parts.length - 1].toUpperCase();
+            return parts.join('-');
+          }).join('');
+        }
+        return out;
+      } catch (e) {
+        console.warn('[hebrew-translit]', e);
+        return defaultTranslit;
+      }
+    },
+    ensureLoaded() {
+      if (this.loadPromise) return this.loadPromise;
+      this.loadPromise = (async () => {
+        const main = await tryImport(CDN_URLS);
+        if (!main || !main.transliterate || !main.SBL) {
+          this.failed = true;
+          window.dispatchEvent(new Event('translitlibfailed'));
+          return false;
+        }
+        const schemasMod = await tryImport(SCHEMAS_URLS);
+        this.lib = main;
+        try { this.schemas.sbl = new main.SBL({}); } catch (e) { console.warn(e); }
+        this.schemas.brill = schemasMod ? schemasMod.brillAcademic : null;
+        try { this.schemas.modernIsraeli  = buildModernIsraeli(main.SBL); }  catch (e) { console.warn(e); }
+        try { this.schemas.ashkenazi      = buildAshkenazi(main.SBL); }      catch (e) { console.warn(e); }
+        try { this.schemas.simpleStressed = buildSimpleStressed(main.SBL); } catch (e) { console.warn(e); }
+        this.ready = true;
+        window.dispatchEvent(new Event('translitlibloaded'));
+        return true;
+      })();
+      return this.loadPromise;
+    }
+  };
+</script>
 <script>
   // Apply dark mode BEFORE first paint to prevent flash
   if (localStorage.getItem('hebrewBlender_darkMode') === '1') {
@@ -2482,6 +2627,31 @@
             </div>
           </div>
 
+          <!-- Transliteration sub-panel -->
+          <div class="panel collapsed" style="border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+            <div class="panel-title" style="font-size:0.72rem;padding:6px 10px;">Transliteration</div>
+            <div class="panel-body">
+              <div class="adv-body-sm" style="gap:6px;">
+                <label style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;">
+                  <span style="color:var(--muted);font-size:0.7rem;letter-spacing:0.04em;text-transform:uppercase;">Style</span>
+                  <select id="translitStyleSelect" onchange="onTranslitStyleChange(this.value)"
+                          style="width:100%;font-size:0.8rem;padding:5px 7px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--text);font-family:inherit;">
+                    <option value="default">Default (built-in)</option>
+                    <option value="sbl">SBL Academic</option>
+                    <option value="brill">Brill Academic</option>
+                    <option value="modernIsraeli">Modern Israeli</option>
+                    <option value="ashkenazi">Ashkenazi</option>
+                    <option value="simpleStressed">Simple Stressed</option>
+                  </select>
+                </label>
+                <div id="translitLoadStatus" style="font-size:0.7rem;color:var(--muted);min-height:1em;text-align:center;"></div>
+                <div style="font-size:0.65rem;color:var(--muted);text-align:center;border-top:1px solid var(--border);padding-top:6px;margin-top:2px;line-height:1.4;">
+                  Powered by <a href="https://github.com/charlesLoder/hebrew-transliteration" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">hebrew-transliteration</a> by Charles Loder
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Color Code Nikkud sub-panel -->
           <div class="panel collapsed" style="border:1px solid var(--border);border-radius:6px;overflow:hidden;">
             <div class="panel-title" style="font-size:0.72rem;padding:6px 10px;">Color Code Nikkud</div>
@@ -2817,6 +2987,68 @@ let colorCodingMode = 'letter'; // 'letter' | 'highlight' | 'underline'
 let nikudColorOverrides = {};
 let blends = [];
 let lastShetefItems = null;
+let translitStyle = 'default';
+
+function rebuildTranslitDisplay() {
+  const HT = window.HebrewTransliterator;
+  if (!HT) return;
+  if (Array.isArray(blends)) {
+    blends.forEach(b => {
+      b.translitDisplay = HT.apply(b.hebrewDisplay, b.combined, translitStyle);
+    });
+  }
+  if (typeof REAL_WORDS !== 'undefined' && Array.isArray(REAL_WORDS)) {
+    REAL_WORDS.forEach(w => {
+      w.translitDisplay = HT.apply(w.word || w.heb || '', w.translit || '', translitStyle);
+    });
+  }
+  if (typeof customWordlistData !== 'undefined' && Array.isArray(customWordlistData)) {
+    customWordlistData.forEach(w => {
+      w.translitDisplay = HT.apply(w.heb || w.word || '', w.translit || '', translitStyle);
+    });
+  }
+}
+
+function rerenderAfterTranslitChange() {
+  try {
+    if (typeof cwModeActive !== 'undefined' && cwModeActive) {
+      if (typeof renderCustomWordlist === 'function') { renderCustomWordlist(); return; }
+    }
+    const rwToggle = document.getElementById('realWordsToggle');
+    if (rwToggle && rwToggle.checked) {
+      if (typeof renderRealWords === 'function') { renderRealWords(); return; }
+    }
+    if (blends.length && typeof renderWorksheet === 'function') renderWorksheet(false);
+  } catch (e) { console.warn('[translit] rerender failed', e); }
+}
+
+function onTranslitStyleChange(val) {
+  translitStyle = val || 'default';
+  const status = document.getElementById('translitLoadStatus');
+  if (translitStyle === 'default') {
+    if (status) status.textContent = '';
+    rebuildTranslitDisplay();
+    rerenderAfterTranslitChange();
+    return;
+  }
+  if (status) status.textContent = 'Loading library…';
+  window.HebrewTransliterator.ensureLoaded().then(ok => {
+    if (window.HebrewTransliterator.ready) {
+      if (status) status.textContent = '';
+      rebuildTranslitDisplay();
+      rerenderAfterTranslitChange();
+    } else {
+      if (status) status.textContent = 'Library failed to load — using default style.';
+    }
+  });
+}
+
+window.addEventListener('translitlibloaded', () => {
+  if (translitStyle !== 'default') {
+    rebuildTranslitDisplay();
+    rerenderAfterTranslitChange();
+  }
+});
 
 // ══════════════════════════════════════════════
 //  INIT UI
@@ -3214,6 +3446,8 @@ function getSettings() {
     colorCoding:       colorCodingEnabled,
     colorCodingMode,
     nikudColorOverrides: { ...nikudColorOverrides },
+    // Transliteration style
+    translitStyle,
   };
 }
 
@@ -3411,6 +3645,19 @@ function applySettings(s) {
     updateColorPickerValues();
   }
 
+  // Transliteration style
+  if (s.translitStyle) {
+    translitStyle = s.translitStyle;
+    const sel = document.getElementById('translitStyleSelect');
+    if (sel) sel.value = translitStyle;
+    if (translitStyle !== 'default') {
+      window.HebrewTransliterator.ensureLoaded().then(() => {
+        rebuildTranslitDisplay();
+        rerenderAfterTranslitChange();
+      });
+    }
+  }
+
   // Set self-check value (visibility flows through updateModeVisibility).
   if (s.selfCheck !== undefined) document.getElementById('selfCheckToggle').checked = s.selfCheck;
 
@@ -3462,7 +3709,7 @@ function generateShetefCode() {
   let lines = [];
   if (lastShetefItems.mode === 'real') {
     lastShetefItems.items.forEach(w => {
-      const right = w.translation || w.translit || '';
+      const right = w.translation || w.translitDisplay || w.translit || '';
       lines.push(right ? `${w.heb} - ${right}` : w.heb);
     });
   } else {
@@ -5164,7 +5411,7 @@ function renderBingo(ws) {
           cellEl.innerHTML = '<span style="font-size:1rem;">✡</span><span>FREE</span>';
         } else {
           cellEl.className = cls;
-          cellEl.innerHTML = `<span class="heb">${cell.hebrewDisplay}</span>${showSounds ? `<span class="sound">${cell.combined}</span>` : ''}`;
+          cellEl.innerHTML = `<span class="heb">${cell.hebrewDisplay}</span>${showSounds ? `<span class="sound">${cell.translitDisplay ?? cell.combined}</span>` : ''}`;
         }
         gridEl.appendChild(cellEl);
       });
@@ -5197,7 +5444,7 @@ function renderBingo(ws) {
       const item = document.createElement('div');
       item.className = 'caller-item';
       item.onclick = () => item.classList.toggle('called');
-      item.innerHTML = `<span class="num">${i + 1}</span><span class="heb">${b.hebrewDisplay}</span><span class="sound">${b.combined}</span>`;
+      item.innerHTML = `<span class="num">${i + 1}</span><span class="heb">${b.hebrewDisplay}</span><span class="sound">${b.translitDisplay ?? b.combined}</span>`;
       grid.appendChild(item);
     });
     sheet.appendChild(grid);
@@ -5954,6 +6201,9 @@ function resetGematriaCheck() {
 let isShuffling = false;
 
 function renderWorksheet(animate = false) {
+  // Refresh transliteration display strings before each render so style changes
+  // (or freshly generated blends) pick up the active style.
+  if (translitStyle !== 'default') rebuildTranslitDisplay();
   const isInverse   = document.getElementById('inverseToggle').checked;
   const fillVowels  = document.getElementById('fillVowelsToggle').checked;
   const showAnswers = document.getElementById('answerKeyToggle').checked;
@@ -6195,7 +6445,7 @@ function renderSelfCheck(ws, cols, title, subtitle) {
         </div>
         <div class="flip-card-back">
           <span class="flip-card-num" style="color:var(--gold-light);">${idx + 1}</span>
-          <span style="font-size:1.1rem;">${b.combined}</span>
+          <span style="font-size:1.1rem;">${b.translitDisplay ?? b.combined}</span>
           ${audioOn ? `<button class="btn-xs" style="margin-top:4px;font-size:0.7rem;" onclick="event.stopPropagation();speakBlend(this.closest('.flip-card').dataset.heb)">🔊</button>` : ''}
         </div>
       </div>
@@ -6244,7 +6494,7 @@ function renderHebrewCell(grid, b, idx, showAnswers, fillVowels = false) {
 
   const ans = document.createElement('div');
   ans.className = 'blend-answer' + (showAnswers || fillVowels ? '' : ' hidden');
-  ans.textContent = b.combined;
+  ans.textContent = b.translitDisplay ?? b.combined;
   cell.appendChild(ans);
 
   grid.appendChild(cell);
@@ -6261,7 +6511,7 @@ function renderInverseCell(grid, b, idx, showAnswers) {
 
   const roman = document.createElement('div');
   roman.className = 'blend-roman';
-  roman.textContent = b.combined;
+  roman.textContent = b.translitDisplay ?? b.combined;
   cell.appendChild(roman);
 
   const box = document.createElement('div');
@@ -6404,6 +6654,7 @@ function importCustomWordlist() {
   const parsed = parseCwText(document.getElementById('cwImportTextarea').value);
   if (!parsed.length) { alert('No valid Hebrew words found. Make sure each line starts with a Hebrew word.'); return; }
   customWordlistData = parsed;
+  rebuildTranslitDisplay();
   document.getElementById('cwWordCount').textContent = parsed.length;
   document.getElementById('cwImportStatus').textContent = `✓ ${parsed.length} word${parsed.length !== 1 ? 's' : ''} imported`;
   activateCustomWordlistMode(true);
@@ -6634,7 +6885,7 @@ function generateCustomWordlist() {
     const blendCountVal = document.getElementById('cwBlendCount') ? document.getElementById('cwBlendCount').value : 'match';
     const blendCount = blendCountVal === 'match' ? count : parseInt(blendCountVal) || count;
     ensureCvcBlends(blendCount * 3); // generate more than needed so filter has room
-    const blendItems = rwShuffle(blends).slice(0, blendCount).map(b => ({ heb: b.hebrewDisplay, word: b.hebrewDisplay, translit: b.combined, translation: '', pos: 'blend', era: 'Both', isReal: false }));
+    const blendItems = rwShuffle(blends).slice(0, blendCount).map(b => ({ heb: b.hebrewDisplay, word: b.hebrewDisplay, translit: b.translitDisplay ?? b.combined, translation: '', pos: 'blend', era: 'Both', isReal: false }));
     items = rwShuffle([...items, ...blendItems]);
   }
   const starReal = starRealOn;
@@ -6659,7 +6910,7 @@ function generateCustomWordlist() {
     if (drill === 'vocab') {
       const wrapper = document.createElement('div');
       wrapper.className = 'rw-flip'; wrapper.style.minHeight = '90px';
-      wrapper.innerHTML = `<div class="rw-flip-inner"><div class="rw-flip-front"><span class="rw-num">${idx+1}</span>${showPos && w.pos ? `<span class="rw-pos-tag">${w.pos}</span>` : ''}<span class="rw-heb">${w.heb}</span>${showTranslitInline && w.translit ? `<span class="rw-translit">${w.translit}</span>` : ''}<span class="rw-translit" style="font-size:0.65rem;opacity:0.6;">tap to flip</span></div><div class="rw-flip-back"><span class="rw-num">${idx+1}</span><span class="rw-heb" style="font-size:1.3rem;">${w.heb}</span>${w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}</div></div>`;
+      wrapper.innerHTML = `<div class="rw-flip-inner"><div class="rw-flip-front"><span class="rw-num">${idx+1}</span>${showPos && w.pos ? `<span class="rw-pos-tag">${w.pos}</span>` : ''}<span class="rw-heb">${w.heb}</span>${showTranslitInline && w.translit ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}<span class="rw-translit" style="font-size:0.65rem;opacity:0.6;">tap to flip</span></div><div class="rw-flip-back"><span class="rw-num">${idx+1}</span><span class="rw-heb" style="font-size:1.3rem;">${w.heb}</span>${w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}</div></div>`;
       wrapper.querySelector('.rw-flip-inner').addEventListener('click', () => wrapper.classList.toggle('flipped'));
       grid.appendChild(wrapper); return;
     }
@@ -6671,7 +6922,7 @@ function generateCustomWordlist() {
     // Reading
     const cell = document.createElement('div'); cell.className = 'rw-cell';
     if (starReal && !w.isReal) cell.classList.add('rw-blend');
-    cell.innerHTML = `<span class="rw-num">${idx+1}</span>${showPos && w.pos ? `<span class="rw-pos-tag">${w.pos}</span>` : ''}<span class="rw-heb">${starReal && w.isReal ? '★ ' : ''}${w.heb}</span>${showTranslitInline && w.translit ? `<span class="rw-translit">${w.translit}</span>` : ''}${showTranslInline && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
+    cell.innerHTML = `<span class="rw-num">${idx+1}</span>${showPos && w.pos ? `<span class="rw-pos-tag">${w.pos}</span>` : ''}<span class="rw-heb">${starReal && w.isReal ? '★ ' : ''}${w.heb}</span>${showTranslitInline && w.translit ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}${showTranslInline && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
     grid.appendChild(cell);
   });
 
@@ -6689,7 +6940,7 @@ function generateCustomWordlist() {
     items.forEach((w, idx) => {
       if (!w.isReal) return;
       const cell = document.createElement('div'); cell.className = 'rw-cell';
-      cell.innerHTML = `<span class="rw-num">${idx+1}</span><span class="rw-heb">${w.heb}</span>${translitOnKey && w.translit ? `<span class="rw-translit">${w.translit}</span>` : ''}${translOnKey && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
+      cell.innerHTML = `<span class="rw-num">${idx+1}</span><span class="rw-heb">${w.heb}</span>${translitOnKey && w.translit ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}${translOnKey && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
       keyGrid.appendChild(cell);
     });
     keySheet.appendChild(keyGrid);
@@ -7010,12 +7261,14 @@ document.addEventListener('DOMContentLoaded', () => {
           heb: w.word,
           bare: w.bare || '',
           translit: w.translit || '',
+          translitDisplay: w.translit || '',
           pos: w.pos || '',
           translation: w.translation || '',
           era: w.era || 'Both',
           letters: parseInt(count)
         }))
       );
+      rebuildTranslitDisplay();
       updateRwPoolInfo();
     })
     .catch(err => console.warn('Failed to load hebrew_words.json:', err));
@@ -7190,7 +7443,7 @@ function generateRealWords() {
     // Display section's toggles are now the source of truth in real-words gematria.
     // Hide translit/translation since they're not part of the drill.
     renderGematriaSheet(ws,
-      words.map(w => ({ hebrewDisplay: w.heb, translit: w.translit, translation: w.translation })),
+      words.map(w => ({ hebrewDisplay: w.heb, translit: w.translitDisplay ?? w.translit, translation: w.translation })),
       false, false, true
     );
     enableButtons();
@@ -7225,7 +7478,7 @@ function generateRealWords() {
   let items = words.map(w => ({ ...w, isReal: true }));
   if (mixed && blends.length > 0) {
     const blendItems = rwShuffle(blends).slice(0, count).map(b => ({
-      heb: b.hebrewDisplay, translit: b.combined, translation: '', pos: 'blend', era: 'Both', isReal: false
+      heb: b.hebrewDisplay, translit: b.translitDisplay ?? b.combined, translation: '', pos: 'blend', era: 'Both', isReal: false
     }));
     items = rwShuffle([...items, ...blendItems]).slice(0, count * 2);
   }
@@ -7275,14 +7528,14 @@ function generateRealWords() {
             <span class="rw-num">${idx + 1}</span>
             <span class="rw-pos-tag">${w.pos}</span>
             <span class="rw-heb">${w.heb}</span>
-            ${vocabTrlOnFront && w.translit ? `<span class="rw-translit">${w.translit}</span>` : ''}
+            ${vocabTrlOnFront && w.translit ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}
             ${vocabTnOnFront && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}
             <span class="rw-translit" style="font-size:0.65rem;opacity:0.6;">tap to flip</span>
           </div>
           <div class="rw-flip-back">
             <span class="rw-num">${idx + 1}</span>
             <span class="rw-heb" style="font-size:1.3rem;">${w.heb}</span>
-            ${vocabTrlOnBack && w.translit ? `<span class="rw-translit">${w.translit}</span>` : ''}
+            ${vocabTrlOnBack && w.translit ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}
             ${vocabTnOnBack && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}
           </div>
         </div>`;
@@ -7296,8 +7549,8 @@ function generateRealWords() {
       // turned both off so the card always shows something to translate.
       let prompts = '';
       if (showTranslInline && w.translation)  prompts += `<span style="font-size:0.88rem;font-weight:600;color:var(--text);text-align:center;">${w.translation}</span>`;
-      if (showTranslitInline && w.translit)   prompts += `<span class="rw-translit">${w.translit}</span>`;
-      if (!prompts) prompts = `<span style="font-size:0.88rem;font-weight:600;color:var(--text);text-align:center;">${w.translation || w.translit}</span>`;
+      if (showTranslitInline && w.translit)   prompts += `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>`;
+      if (!prompts) prompts = `<span style="font-size:0.88rem;font-weight:600;color:var(--text);text-align:center;">${w.translation || (w.translitDisplay ?? w.translit)}</span>`;
       card.innerHTML = `
         <span class="rw-num">${idx + 1}</span>
         <span class="rw-pos-tag">${w.pos}</span>
@@ -7310,7 +7563,7 @@ function generateRealWords() {
       card.innerHTML = `
         <span class="rw-num">${idx + 1}</span>
         <span class="rw-heb">${w.heb}</span>
-        ${showTranslitInline && w.translit ? `<span class="rw-translit">${w.translit}</span>` : ''}
+        ${showTranslitInline && w.translit ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}
         ${showTranslInline && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}
         <div style="border-bottom:1.5px solid var(--border);width:90%;margin-top:8px;min-height:20px;"></div>`;
       grid.appendChild(card);
@@ -7323,7 +7576,7 @@ function generateRealWords() {
         <span class="rw-num">${idx + 1}${starReal && w.isReal ? ' ★' : ''}</span>
         <span class="rw-pos-tag">${w.pos}</span>
         <span class="rw-heb">${w.heb}</span>
-        ${showTranslitInline ? `<span class="rw-translit">${w.translit}</span>` : ''}
+        ${showTranslitInline ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}
         ${showTranslInline && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
       grid.appendChild(card);
     }
@@ -7363,7 +7616,7 @@ function generateRealWords() {
         <span class="rw-num">${idx + 1}${starRealOn && w.isReal ? ' ★' : ''}</span>
         <span class="rw-pos-tag">${w.pos}</span>
         <span class="rw-heb">${w.heb}</span>
-        ${translitOnKey ? `<span class="rw-translit">${w.translit}</span>` : ''}
+        ${translitOnKey ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}
         ${translOnKey && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
       keyGrid.appendChild(card);
     });
@@ -7542,7 +7795,7 @@ function generateWordSearch(pool) {
       const item = document.createElement('div');
       item.className = 'ws-wordbank-item';
       let html = `<span class="ws-wordbank-heb">${w.heb}</span>`;
-      if (showTr && w.translit)    html += `<span class="ws-wordbank-tr">${w.translit}</span>`;
+      if (showTr && w.translit)    html += `<span class="ws-wordbank-tr">${w.translitDisplay ?? w.translit}</span>`;
       if (showTn && w.translation) html += `<span class="ws-wordbank-tn">${w.translation}</span>`;
       item.innerHTML = html;
       wb.appendChild(item);
@@ -7614,7 +7867,7 @@ function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnO
     const stripped = stripNikud(w.heb, keepDagesh);
     let inner = `<span class="rw-num">${idx + 1}</span>`;
     inner += `<div class="rw-heb">${stripped}</div>`;
-    if (trOnSheet && w.translit) inner += `<div class="rw-translit">${w.translit}</div>`;
+    if (trOnSheet && w.translit) inner += `<div class="rw-translit">${w.translitDisplay ?? w.translit}</div>`;
     if (tnOnSheet && w.translation) inner += `<div class="rw-translation">${w.translation}</div>`;
     card.innerHTML = inner;
     grid.appendChild(card);
@@ -7647,7 +7900,7 @@ function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnO
     card.className = 'rw-card blend-cell';
     let inner = `<span class="rw-num">${idx + 1}</span>`;
     inner += `<div class="rw-heb">${w.heb}</div>`;
-    if (trOnKey && w.translit) inner += `<div class="rw-translit">${w.translit}</div>`;
+    if (trOnKey && w.translit) inner += `<div class="rw-translit">${w.translitDisplay ?? w.translit}</div>`;
     if (tnOnKey && w.translation) inner += `<div class="rw-translation">${w.translation}</div>`;
     card.innerHTML = inner;
     akGrid.appendChild(card);
@@ -7661,7 +7914,7 @@ function generateIdentifyDrill(pool, count, trOnSheet, tnOnSheet, trOnKey, tnOnK
   const realWords = rwShuffle(pool).slice(0, Math.min(count, pool.length));
   const blendItems = blends.length > 0
     ? rwShuffle(blends).slice(0, count).map(b => ({
-        heb: b.hebrewDisplay, translit: b.combined, translation: '', pos: 'blend', isReal: false
+        heb: b.hebrewDisplay, translit: b.translitDisplay ?? b.combined, translation: '', pos: 'blend', isReal: false
       }))
     : [];
 
@@ -7691,7 +7944,7 @@ function generateIdentifyDrill(pool, count, trOnSheet, tnOnSheet, trOnKey, tnOnK
         <span class="rw-num">${idx + 1}${reveal && w.isReal ? ' ★' : ''}</span>
         <span class="rw-pos-tag">${reveal ? w.pos : ''}</span>
         <span class="rw-heb">${w.heb}</span>
-        ${showTr ? `<span class="rw-translit">${w.translit}</span>` : ''}
+        ${showTr ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}
         ${showTn && w.isReal && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}
         ${!reveal ? `<div style="margin-top:6px;width:20px;height:20px;border:1.5px solid var(--border);border-radius:50%;"></div>` : ''}`;
       grid.appendChild(card);
@@ -7863,7 +8116,7 @@ function generateRealWordsBingo(pool) {
       const item = document.createElement('div');
       item.className = 'caller-item';
       item.onclick = () => item.classList.toggle('called');
-      item.innerHTML = `<span class="num">${i + 1}</span><span class="heb">${w.heb}</span>${translitOnCaller ? `<span class="sound">${w.translit}</span>` : ''}${translOnCaller && w.translation ? `<span class="sound" style="font-size:0.6rem;font-style:italic;">${w.translation}</span>` : ''}`;
+      item.innerHTML = `<span class="num">${i + 1}</span><span class="heb">${w.heb}</span>${translitOnCaller ? `<span class="sound">${w.translitDisplay ?? w.translit}</span>` : ''}${translOnCaller && w.translation ? `<span class="sound" style="font-size:0.6rem;font-style:italic;">${w.translation}</span>` : ''}`;
       grid.appendChild(item);
     });
     sheet.appendChild(grid);
