@@ -2229,11 +2229,10 @@ function applySettings(s) {
   translitStyle = s.translitStyle || 'default';
   const tsSel = document.getElementById('translitStyleSelect');
   if (tsSel) tsSel.value = translitStyle;
-  if (translitStyle !== 'default') {
-    window.HebrewTransliterator.ensureLoaded().then(() => {
-      rebuildDeckTranslit();
-    });
-  }
+  // Always load the library so romanized fields on numbers/colors cards get populated
+  window.HebrewTransliterator.ensureLoaded().then(() => {
+    rebuildDeckTranslit();
+  });
 }
 
 const SETTINGS_KEY = 'hebrewFlashCards_settings';
