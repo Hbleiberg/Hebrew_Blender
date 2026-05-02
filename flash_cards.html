@@ -988,6 +988,8 @@ const LETTERS = [
 const SOFIT_BASE = { 'ך':'כ', 'ם':'מ', 'ן':'נ', 'ף':'פ', 'ץ':'צ' };
 const SOFIT_CHARS = new Set(['ך','ם','ן','ף','ץ']);
 const HAS_SOFIT_CHARS = new Set(['כ','מ','נ','פ','צ']);
+// N1 refined: gutturals take chataf vowels, not simple shva
+const GUTTURALS = new Set(['א','ה','ח','ע']);
 
 /* Vowel groups — 7 groups, each with display info.
    nikud field is the alef + combining vowel mark (display);
@@ -1891,15 +1893,16 @@ function generateCard() {
   let guardTries = 0;
   while (guardTries < 8) {
     const finalLetter = positions[m - 1];
-    // N1 (Part 2 §2.3): shva is impossible as a syllable nucleus for ALL consonants
-    if (vowel.key === 'sh') { vowel = pickVowel(); guardTries++; continue; }
+    // N1 refined: gutturals and vav cannot take simple shva (use chataf instead)
+    if (vowel.key === 'sh' && (GUTTURALS.has(finalLetter.heb) || finalLetter.heb === 'ו')) {
+      vowel = pickVowel(); guardTries++; continue;
+    }
     if ((finalLetter.heb === 'שׁ' || finalLetter.heb === 'שׂ') && (vowel.key === 'o' || vowel.key === 'vcholam')) {
       vowel = pickVowel(); guardTries++; continue;
     }
     break;
   }
-  // If only shva was available, no valid card can be built
-  if (!vowel || vowel.key === 'sh') return null;
+  if (!vowel) return null;
 
   // Special: vcholam / shuruk are whole-syllable (וֹ / וּ). Build accordingly.
   if (vowel.key === 'vcholam' || vowel.key === 'shuruk') {
