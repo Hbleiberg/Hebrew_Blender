@@ -6877,6 +6877,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bingoSec) realWordsOpts.insertBefore(bingoSec, drillOptsSec.nextElementSibling);
   }
 
+  // Sync the Drill Options panel to the initial drill (reading) so the
+  // 3-way placement rows appear right away — without this, rwTranslitPageRow
+  // and rwTranslPageRow start at HTML's display:none even though their
+  // parent toggles are checked.
+  setRealWordDrill(rwDrillType);
+
   // Load Hebrew word dictionary from JSON
   fetch('hebrew_words.json?v=4')
     .then(r => r.json())
