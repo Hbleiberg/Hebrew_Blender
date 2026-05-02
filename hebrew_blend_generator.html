@@ -6897,12 +6897,14 @@ function generateRealWords() {
   const drill = rwDrillType;
   const starOnKey = starRealOn && rwStarPage === 'key' && drill === 'reading';
   const starReal = starRealOn && !starOnKey;
-  // Reading drill: 'same' (worksheet only), 'key' (answer key only), or 'both'.
-  // Other drills: always inline, no answer key.
-  const translitOnKey      = showTranslit    && drill === 'reading' && (rwTranslitPage === 'key' || rwTranslitPage === 'both');
-  const showTranslitInline = showTranslit    && (drill !== 'reading' || rwTranslitPage === 'same' || rwTranslitPage === 'both');
-  const translOnKey        = showTranslation && drill === 'reading' && (rwTranslPage   === 'key' || rwTranslPage   === 'both');
-  const showTranslInline   = showTranslation && (drill !== 'reading' || rwTranslPage   === 'same' || rwTranslPage   === 'both');
+  // Drills that share the Worksheet / Answer Key / Both placement selector
+  // (reading, reverse, identify, idpos, fillvowels) honor it; bingo + vocab
+  // have their own placement schemes handled elsewhere in the renderer.
+  const flavorReading = (_RW_PAGE_FLAVOR[drill] === 'reading');
+  const translitOnKey      = showTranslit    && flavorReading && (rwTranslitPage === 'key'  || rwTranslitPage === 'both');
+  const showTranslitInline = showTranslit    && (!flavorReading || rwTranslitPage === 'same' || rwTranslitPage === 'both');
+  const translOnKey        = showTranslation && flavorReading && (rwTranslPage   === 'key'  || rwTranslPage   === 'both');
+  const showTranslInline   = showTranslation && (!flavorReading || rwTranslPage   === 'same' || rwTranslPage   === 'both');
 
   if (pool.length === 0) {
     alert('No words match your current filters. Try enabling more options.');
@@ -7069,8 +7071,10 @@ function generateRealWords() {
   ws.appendChild(sheet);
 
   // Answer key sheet (stars and/or translations on separate page)
-  // ID Parts of Speech always emits an answer key — its POS tags are the answer.
-  if (starOnKey || translOnKey || translitOnKey || drill === 'idpos') {
+  // ID Parts of Speech and Reverse always emit an answer key — the POS tag and
+  // the Hebrew word respectively are the answers, so the teacher always needs
+  // a key sheet regardless of where translit/translation are placed.
+  if (starOnKey || translOnKey || translitOnKey || drill === 'idpos' || drill === 'reverse') {
     const keySheet = document.createElement('div');
     keySheet.className = 'sheet answer-key-sheet';
     const banner = document.createElement('div');
