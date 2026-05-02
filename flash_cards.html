@@ -350,6 +350,20 @@ body.dark .slider::before { background: #d8dde9; }
 .vtile.selected { background: var(--gold); border-color: var(--gold); color: var(--navy); }
 .vtile.selected .vname { color: var(--navy-deep); }
 
+.vlk-tile {
+  background: var(--white);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  padding: 4px 3px;
+  cursor: pointer;
+  text-align: center;
+  user-select: none;
+  min-width: 34px;
+  transition: background 0.12s, border-color 0.12s;
+}
+.vlk-tile .vheb { font-family: var(--heb-font); font-size: 1.1rem; direction: rtl; line-height: 1.2; }
+.vlk-tile.selected { background: var(--gold); border-color: var(--gold); color: var(--navy); }
+
 /* ============== CARD COUNT ============== */
 .count-grid {
   display: grid;
@@ -796,6 +810,24 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
         <label class="switch"><input type="checkbox" id="vavAsLetterToggle" checked><span class="slider"></span></label>
         <span class="label has-tip" data-tip="When using cholam-vav (וֹ) or shuruk (וּ), treat the vav as the letter itself rather than a separate consonant.">Count <span style="font-family:var(--heb-font);direction:rtl;">וֹ/וּ</span> as a letter</span>
       </div>
+      <!-- Vowel Position (hidden in 1-letter mode) -->
+      <div class="row" id="vowelPosRow" style="display:none;margin-top:8px;align-items:center;gap:8px;">
+        <span class="label" style="flex-shrink:0;">Vowel on letter:</span>
+        <div class="pill-group" id="vowelPosPills"></div>
+      </div>
+      <!-- Vowel Lock -->
+      <div class="row" style="margin-top:8px;">
+        <label class="switch"><input type="checkbox" id="vowelLockToggle"><span class="slider"></span></label>
+        <span class="label">Vowel Lock</span>
+      </div>
+      <div id="vowelLockSection" class="hide">
+        <div class="row" style="margin-top:6px;align-items:center;gap:8px;">
+          <span class="label" style="flex-shrink:0;">Position:</span>
+          <div class="pill-group" id="vowelLockPosPills"></div>
+        </div>
+        <div class="sub" style="margin-top:8px;margin-bottom:4px;">Locked vowel:</div>
+        <div id="vowelLockGrid" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
+      </div>
     </div>
   </div>
 
@@ -1150,6 +1182,10 @@ let colorCodingMode = 'letter';
 let nikudColorOverrides = {};
 let hebFontId = 'Frank Ruhl Libre';
 let audioEnabled = false;
+let vowelPositions = new Set([2]);
+let vowelLockEnabled = false;
+let vowelLockPosition = 2;
+let lockedVowelKey = null;
 
 let currentCards = [];
 let currentIndex = 0;
@@ -1510,6 +1546,9 @@ function setLetterMode(m) {
     p.classList.toggle('active', +p.dataset.pos === lockPosition);
     p.style.display = (+p.dataset.pos > m) ? 'none' : '';
   });
+  if (vowelLockPosition > m) vowelLockPosition = m;
+  updateVowelPositionUI();
+  updateVowelLockUI();
   saveSettings();
 }
 function setCardCount(n) {
@@ -1594,7 +1633,11 @@ function getSettings() {
     colorCodingEnabled, colorCodingMode,
     nikudColorOverrides: { ...nikudColorOverrides },
     hebFontId, audioEnabled,
-    ttsRate: parseFloat(document.getElementById('ttsRateSlider')?.value || 0.85)
+    ttsRate: parseFloat(document.getElementById('ttsRateSlider')?.value || 0.85),
+    vowelPositions: [...vowelPositions],
+    vowelLockEnabled,
+    vowelLockPosition,
+    lockedVowelKey,
   };
 }
 function applySettings(s) {
@@ -1615,9 +1658,15 @@ function applySettings(s) {
   const fontMigration = { frank:'Frank Ruhl Libre', david:'David Libre', noto:'Noto Serif Hebrew', heebo:'Heebo', assist:'Assistant' };
   const rawFont = s.hebFontId || 'Frank Ruhl Libre';
   hebFontId = fontMigration[rawFont] || (HEB_FONTS.find(f => f.name === rawFont) ? rawFont : 'Frank Ruhl Libre');
+  vowelPositions = new Set((s.vowelPositions || []).filter(p => p >= 1 && p <= (s.mode || 2)));
+  if (vowelPositions.size === 0) vowelPositions.add(s.mode || 2);
+  vowelLockEnabled = !!s.vowelLockEnabled;
+  vowelLockPosition = s.vowelLockPosition || (s.mode || 2);
+  lockedVowelKey = s.lockedVowelKey || null;
 
   // Reflect in UI
   setLetterMode(mode);
+  document.getElementById('vowelLockToggle').checked = vowelLockEnabled;
   setCardCount(cardCount);
   document.getElementById('inverseToggle').checked = inverse;
   document.getElementById('dageshTavToggle').checked = dageshTavEnabled;
@@ -1653,10 +1702,12 @@ function loadSettings() {
       // sensible defaults: all letters except sofit, main vowels
       getDisplayLetters().forEach(L => { if (!L.sofit) selectedLetters.add(L.heb); });
       VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => { if (v.isMain) selectedVowels.add(v.key); }));
+      vowelPositions = new Set([mode]);
     }
   } catch(e) {
     getDisplayLetters().forEach(L => { if (!L.sofit) selectedLetters.add(L.heb); });
     VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => { if (v.isMain) selectedVowels.add(v.key); }));
+    vowelPositions = new Set([mode]);
   }
 }
 
@@ -1813,6 +1864,71 @@ function copyTextarea() {
 }
 
 /* =========================================================================
+   VOWEL POSITION & VOWEL LOCK UI
+   ========================================================================= */
+function updateVowelPositionUI() {
+  const row = document.getElementById('vowelPosRow');
+  const container = document.getElementById('vowelPosPills');
+  row.style.display = mode > 1 ? '' : 'none';
+  if (mode <= 1) return;
+  // Ensure at least one position <= mode is active
+  if (![...vowelPositions].some(p => p >= 1 && p <= mode)) vowelPositions.add(mode);
+  container.innerHTML = '';
+  const labels = ['1st', '2nd', '3rd'];
+  for (let i = 1; i <= mode; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'pill' + (vowelPositions.has(i) ? ' active' : '');
+    btn.textContent = labels[i - 1];
+    btn.addEventListener('click', () => {
+      if (vowelPositions.has(i) && vowelPositions.size > 1) vowelPositions.delete(i);
+      else vowelPositions.add(i);
+      btn.classList.toggle('active', vowelPositions.has(i));
+      saveSettings();
+    });
+    container.appendChild(btn);
+  }
+}
+
+function updateVowelLockUI() {
+  const section = document.getElementById('vowelLockSection');
+  section.classList.toggle('hide', !vowelLockEnabled);
+  if (!vowelLockEnabled) return;
+  // Position pills
+  const posPills = document.getElementById('vowelLockPosPills');
+  posPills.innerHTML = '';
+  const labels = ['1st', '2nd', '3rd'];
+  for (let i = 1; i <= mode; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'pill' + (vowelLockPosition === i ? ' active' : '');
+    btn.textContent = labels[i - 1];
+    btn.addEventListener('click', () => {
+      vowelLockPosition = i;
+      document.querySelectorAll('#vowelLockPosPills .pill').forEach(b => b.classList.toggle('active', b === btn));
+      saveSettings();
+    });
+    posPills.appendChild(btn);
+  }
+  renderVowelLockGrid();
+}
+
+function renderVowelLockGrid() {
+  const grid = document.getElementById('vowelLockGrid');
+  grid.innerHTML = '';
+  VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => {
+    const tile = document.createElement('div');
+    tile.className = 'vlk-tile' + (lockedVowelKey === v.key ? ' selected' : '');
+    tile.title = v.label;
+    tile.innerHTML = `<div class="vheb">${v.nikud}</div>`;
+    tile.addEventListener('click', () => {
+      lockedVowelKey = (lockedVowelKey === v.key) ? null : v.key;
+      renderVowelLockGrid();
+      saveSettings();
+    });
+    grid.appendChild(tile);
+  }));
+}
+
+/* =========================================================================
    CARD GENERATION
    ========================================================================= */
 function getDisplayLetterByHeb(heb) {
@@ -1848,35 +1964,32 @@ function pickVowel() {
 }
 
 function generateCard() {
-  // Build a single card object: { heb, translit }
   const m = mode;
   const result = { heb: '', translit: '' };
 
-  // Position pools
   const firstPool = buildPool(L => !L.sofit && !L.isVav);
-  // N2: sofit letters (ך ם ן ף ץ) cannot appear in non-final positions
   const midPool   = buildPool(L => !L.sofit && !L.hasSofit && !L.isVav && L.heb !== 'ו');
-  // N3: non-sofit forms of כמנפצ cannot be word-final; sofit forms (hasSofit:false) remain available
   const lastPool  = buildPool(L => !L.isVav && !L.hasSofit);
 
   if (firstPool.length === 0) return null;
 
-  // Lock override: when locked, replace appropriate pool with [...lockLetters mapped to letter objs]
   const lockObjs = [...lockLetters].map(getDisplayLetterByHeb).filter(Boolean);
 
   function getPoolForPosition(pos) {
     let pool;
-    if (m === 1)            pool = firstPool;
-    else if (pos === 1)     pool = firstPool;
-    else if (pos === m)     pool = lastPool;
-    else                    pool = midPool;
-    if (lockEnabled && lockPosition === pos && lockObjs.length > 0) {
-      pool = lockObjs;
-    }
+    if (m === 1)          pool = firstPool;
+    else if (pos === 1)   pool = firstPool;
+    else if (pos === m)   pool = lastPool;
+    else                  pool = midPool;
+    if (lockEnabled && lockPosition === pos && lockObjs.length > 0) pool = lockObjs;
     return pool;
   }
 
-  // Build positions
+  // Determine vowel position for this card
+  const eligibleVowelPos = m === 1 ? [1] : [...vowelPositions].filter(p => p >= 1 && p <= m);
+  const vowelPos = pickRandom(eligibleVowelPos.length ? eligibleVowelPos : [m]);
+
+  // Build letter positions
   const positions = [];
   for (let i = 1; i <= m; i++) {
     const pool = getPoolForPosition(i);
@@ -1884,63 +1997,63 @@ function generateCard() {
     positions.push(pickRandom(pool));
   }
 
-  // Pick a vowel for the FINAL position (the syllable being read).
-  // For multi-letter cards, intermediate consonants use sheva-like consonant-only sound.
-  let vowel = pickVowel();
-  if (!vowel) return null;
-
-  // Guards: repick vowel for impossible combos
-  let guardTries = 0;
-  while (guardTries < 8) {
-    const finalLetter = positions[m - 1];
-    // N1 refined: gutturals and vav cannot take simple shva (use chataf instead)
-    if (vowel.key === 'sh' && (GUTTURALS.has(finalLetter.heb) || finalLetter.heb === 'ו')) {
-      vowel = pickVowel(); guardTries++; continue;
-    }
-    if ((finalLetter.heb === 'שׁ' || finalLetter.heb === 'שׂ') && (vowel.key === 'o' || vowel.key === 'vcholam')) {
-      vowel = pickVowel(); guardTries++; continue;
-    }
-    break;
+  // Pick vowel (locked or random)
+  const allVowelsList = [];
+  VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => allVowelsList.push(v)));
+  const isVowelLocked = vowelLockEnabled && vowelLockPosition === vowelPos && lockedVowelKey;
+  let vowel;
+  if (isVowelLocked) {
+    vowel = allVowelsList.find(v => v.key === lockedVowelKey) || null;
+    if (!vowel) return null;
+  } else {
+    vowel = pickVowel();
   }
   if (!vowel) return null;
 
-  // Special: vcholam / shuruk are whole-syllable (וֹ / וּ). Build accordingly.
+  // Guards against impossible letter+vowel combos at the vowel position
+  const vowelLetter = positions[vowelPos - 1];
+  if (isVowelLocked) {
+    if (vowel.key === 'sh' && (GUTTURALS.has(vowelLetter.heb) || vowelLetter.heb === 'ו')) return null;
+    if ((vowelLetter.heb === 'שׁ' || vowelLetter.heb === 'שׂ') && (vowel.key === 'o' || vowel.key === 'vcholam')) return null;
+  } else {
+    let guardTries = 0;
+    while (guardTries < 8) {
+      if (vowel.key === 'sh' && (GUTTURALS.has(vowelLetter.heb) || vowelLetter.heb === 'ו')) {
+        vowel = pickVowel(); guardTries++; continue;
+      }
+      if ((vowelLetter.heb === 'שׁ' || vowelLetter.heb === 'שׂ') && (vowel.key === 'o' || vowel.key === 'vcholam')) {
+        vowel = pickVowel(); guardTries++; continue;
+      }
+      break;
+    }
+  }
+  if (!vowel) return null;
+
+  // Special: vcholam / shuruk (mater lectionis)
   if (vowel.key === 'vcholam' || vowel.key === 'shuruk') {
     if (vavAsLetter && m === 1) {
-      // Single-letter card: just the vav syllable
       result.heb = vowel.nikud;
       result.translit = (vowel.key === 'vcholam') ? 'Oh' : 'Oo';
       return result;
     } else if (vavAsLetter) {
-      // N4: mater lectionis cannot occupy a C-slot in a multi-letter blend
-      return null;
+      return null; // N4: mater cannot occupy a C-slot
     }
-    // else fall through, treat vowel as ordinary mark on final letter
   }
 
-  // Standard build: each position is a letter; final gets the chosen vowel,
-  // intermediates get a combining sheva (or implicit consonant cluster).
+  // Standard build
   let heb = '';
   let translit = '';
-
   for (let i = 0; i < m; i++) {
     const L = positions[i];
-    const isLast = (i === m - 1);
-    if (isLast) {
-      const nikud = getNikudCombiningChar(vowel);
-      heb += L.heb + nikud;
+    const pos = i + 1;
+    if (pos === vowelPos) {
+      heb += L.heb + getNikudCombiningChar(vowel);
       const sound = getSound(L, vowel.key);
-      if (i === 0) translit += sound;
-      else {
-        // Subsequent letter, append sound but lowercase its first char (unless it's a single-letter card)
-        translit += sound.toLowerCase();
-      }
+      translit += i === 0 ? sound : sound.toLowerCase();
     } else {
-      // Intermediate: add a sheva-like marker for visual cue
       heb += L.heb + '\u05B0';
       const sh = (L.sounds.sh || '').replace(/'/g, '');
-      if (i === 0) translit += sh;
-      else translit += sh.toLowerCase();
+      translit += i === 0 ? sh : sh.toLowerCase();
     }
   }
   result.heb = heb;
@@ -2203,6 +2316,12 @@ function wireSetupScreen() {
   }));
   applyLetterButtons();
   applyVowelButtons();
+
+  document.getElementById('vowelLockToggle').addEventListener('change', e => {
+    vowelLockEnabled = e.target.checked;
+    updateVowelLockUI();
+    saveSettings();
+  });
 
   // Audio
   document.getElementById('audioToggle').addEventListener('change', e => {
