@@ -2782,27 +2782,34 @@ function renderCurrentCard() {
   // Reset inline styles that colors branch may set
   front.style.cssText = '';
   back.style.cssText = '';
+  front.parentElement.style.background = '';
+  front.parentElement.style.borderColor = '';
+  back.parentElement.style.background = '';
+  back.parentElement.style.borderColor = '';
 
   if (otherModeActive && otherSubMode === 'colors') {
-    function colorSwatchHTML(cl) {
-      const border = cl.textDark ? 'border:1px solid var(--border);' : '';
-      const swatch = `background:${cl.colorCss};border-radius:10px;width:100%;height:clamp(90px,22vw,160px);${border}`;
+    function paintColorFace(el) {
+      const face = el.parentElement;
       if (colorDisplayMode === 'color') {
-        return `<div style="${swatch}"></div>`;
+        face.style.background = card.colorCss;
+        face.style.borderColor = card.colorCss;
+        el.innerHTML = '';
       } else if (colorDisplayMode === 'color+name') {
-        const textColor = cl.textDark ? '#333' : '#fff';
-        const shadow = cl.textDark ? '' : 'text-shadow:0 1px 4px rgba(0,0,0,0.45);';
-        return `<div style="${swatch}display:flex;align-items:center;justify-content:center;"><span style="color:${textColor};font-size:clamp(1.4rem,6vw,2.2rem);font-weight:700;${shadow}">${cl.translit}</span></div>`;
+        face.style.background = card.colorCss;
+        face.style.borderColor = card.colorCss;
+        const textColor = card.textDark ? '#333' : '#fff';
+        const shadow = card.textDark ? '' : 'text-shadow:0 1px 4px rgba(0,0,0,0.45);';
+        el.innerHTML = `<span style="color:${textColor};font-size:clamp(1.8rem,7vw,3rem);font-weight:700;${shadow}">${card.translit}</span>`;
       } else {
-        return `<div style="font-family:var(--serif);font-size:clamp(1.8rem,7vw,3rem);color:var(--text);direction:ltr;">${cl.translit}</div>`;
+        el.textContent = card.translit;
+        el.style.fontFamily = 'var(--serif)';
+        el.style.direction = 'ltr';
+        el.style.fontSize = 'clamp(1.8rem, 7vw, 3rem)';
       }
     }
     function hebColorSide(el) {
       if (colorShowTranslit && card.romanized) {
         el.innerHTML = `<div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(2rem,8vw,3.5rem);margin-bottom:6px;">${card.heb}</div><div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;">${card.romanized}</div>`;
-        el.style.fontFamily = '';
-        el.style.direction = '';
-        el.style.fontSize = '';
       } else {
         el.textContent = card.heb;
         el.style.fontFamily = 'var(--heb-font)';
@@ -2811,11 +2818,11 @@ function renderCurrentCard() {
       }
     }
     if (colorFront === 'color') {
-      front.innerHTML = colorSwatchHTML(card);
+      paintColorFace(front);
       hebColorSide(back);
     } else {
       hebColorSide(front);
-      back.innerHTML = colorSwatchHTML(card);
+      paintColorFace(back);
     }
   } else if (otherModeActive && otherSubMode === 'numbers') {
     function hebSide(el) {
