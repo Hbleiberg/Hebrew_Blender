@@ -1185,7 +1185,7 @@ let audioEnabled = false;
 let vowelPositions = new Set([2]);
 let vowelLockEnabled = false;
 let vowelLockPosition = 2;
-let lockedVowelKey = null;
+let lockedVowelKeys = new Set();
 
 let currentCards = [];
 let currentIndex = 0;
@@ -1637,7 +1637,7 @@ function getSettings() {
     vowelPositions: [...vowelPositions],
     vowelLockEnabled,
     vowelLockPosition,
-    lockedVowelKey,
+    lockedVowelKeys: [...lockedVowelKeys],
   };
 }
 function applySettings(s) {
@@ -1662,7 +1662,7 @@ function applySettings(s) {
   if (vowelPositions.size === 0) vowelPositions.add(s.mode || 2);
   vowelLockEnabled = !!s.vowelLockEnabled;
   vowelLockPosition = s.vowelLockPosition || (s.mode || 2);
-  lockedVowelKey = s.lockedVowelKey || null;
+  lockedVowelKeys = new Set(s.lockedVowelKeys || (s.lockedVowelKey ? [s.lockedVowelKey] : []));
 
   // Reflect in UI
   setLetterMode(mode);
@@ -1916,11 +1916,12 @@ function renderVowelLockGrid() {
   grid.innerHTML = '';
   VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => {
     const tile = document.createElement('div');
-    tile.className = 'vlk-tile' + (lockedVowelKey === v.key ? ' selected' : '');
+    tile.className = 'vlk-tile' + (lockedVowelKeys.has(v.key) ? ' selected' : '');
     tile.title = v.label;
     tile.innerHTML = `<div class="vheb">${v.nikud}</div>`;
     tile.addEventListener('click', () => {
-      lockedVowelKey = (lockedVowelKey === v.key) ? null : v.key;
+      if (lockedVowelKeys.has(v.key)) lockedVowelKeys.delete(v.key);
+      else lockedVowelKeys.add(v.key);
       renderVowelLockGrid();
       saveSettings();
     });
@@ -2000,11 +2001,12 @@ function generateCard() {
   // Pick vowel (locked or random)
   const allVowelsList = [];
   VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => allVowelsList.push(v)));
-  const isVowelLocked = vowelLockEnabled && vowelLockPosition === vowelPos && lockedVowelKey;
+  const isVowelLocked = vowelLockEnabled && vowelLockPosition === vowelPos && lockedVowelKeys.size > 0;
+  const lockedList = isVowelLocked ? allVowelsList.filter(v => lockedVowelKeys.has(v.key)) : [];
   let vowel;
   if (isVowelLocked) {
-    vowel = allVowelsList.find(v => v.key === lockedVowelKey) || null;
-    if (!vowel) return null;
+    if (lockedList.length === 0) return null;
+    vowel = pickRandom(lockedList);
   } else {
     vowel = pickVowel();
   }
@@ -2012,20 +2014,15 @@ function generateCard() {
 
   // Guards against impossible letter+vowel combos at the vowel position
   const vowelLetter = positions[vowelPos - 1];
-  if (isVowelLocked) {
-    if (vowel.key === 'sh' && (GUTTURALS.has(vowelLetter.heb) || vowelLetter.heb === 'ו')) return null;
-    if ((vowelLetter.heb === 'שׁ' || vowelLetter.heb === 'שׂ') && (vowel.key === 'o' || vowel.key === 'vcholam')) return null;
-  } else {
-    let guardTries = 0;
-    while (guardTries < 8) {
-      if (vowel.key === 'sh' && (GUTTURALS.has(vowelLetter.heb) || vowelLetter.heb === 'ו')) {
-        vowel = pickVowel(); guardTries++; continue;
-      }
-      if ((vowelLetter.heb === 'שׁ' || vowelLetter.heb === 'שׂ') && (vowel.key === 'o' || vowel.key === 'vcholam')) {
-        vowel = pickVowel(); guardTries++; continue;
-      }
-      break;
+  let guardTries = 0;
+  while (guardTries < 8) {
+    if (vowel.key === 'sh' && (GUTTURALS.has(vowelLetter.heb) || vowelLetter.heb === 'ו')) {
+      vowel = isVowelLocked ? pickRandom(lockedList) : pickVowel(); guardTries++; continue;
     }
+    if ((vowelLetter.heb === 'שׁ' || vowelLetter.heb === 'שׂ') && (vowel.key === 'o' || vowel.key === 'vcholam')) {
+      vowel = isVowelLocked ? pickRandom(lockedList) : pickVowel(); guardTries++; continue;
+    }
+    break;
   }
   if (!vowel) return null;
 
