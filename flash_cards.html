@@ -1558,16 +1558,25 @@ let mistakeIndices = [];
 
 let translitStyle = 'default';
 
+function getRomanizedStyle() {
+  if (translitStyle !== 'default') return translitStyle;
+  const HT = window.HebrewTransliterator;
+  if (!HT || !HT.ready) return null;
+  return HT.schemas.modernIsraeli ? 'modernIsraeli'
+       : HT.schemas.sbl           ? 'sbl'
+       : HT.schemas.ashkenazi     ? 'ashkenazi'
+       : null;
+}
+
 function rebuildDeckTranslit() {
   const HT = window.HebrewTransliterator;
   if (!HT) return;
   const apply = c => {
     if (!c) return;
     if (c.skipTranslitRebuild) {
-      // Numbers/colors cards: translit holds Arabic numeral or English name — don't touch it.
-      // For numbers, update romanized (Hebrew words → transliteration).
       if (c.romanized !== undefined) {
-        c.romanized = HT.apply(c.heb || '', '', translitStyle);
+        const style = getRomanizedStyle();
+        c.romanized = style ? HT.apply(c.heb || '', '', style) : '';
       }
       return;
     }
@@ -2520,7 +2529,8 @@ function generateCard() {
     const words = hebrewNumber(n, numberGender);
     if (!words) return null;
     const HT = window.HebrewTransliterator;
-    const romanized = (HT && typeof HT.apply === 'function') ? HT.apply(words, '', translitStyle) : '';
+    const style = getRomanizedStyle();
+    const romanized = (style && typeof HT.apply === 'function') ? HT.apply(words, '', style) : '';
     return { heb: words, translit: String(n), romanized, skipTranslitRebuild: true };
   }
 
@@ -2530,7 +2540,8 @@ function generateCard() {
     const c = pool[Math.floor(Math.random() * pool.length)];
     const heb = colorGender === 'masculine' ? c.heb_m : c.heb_f;
     const HT = window.HebrewTransliterator;
-    const romanized = (HT && typeof HT.apply === 'function') ? HT.apply(heb, '', translitStyle) : '';
+    const style = getRomanizedStyle();
+    const romanized = (style && typeof HT.apply === 'function') ? HT.apply(heb, '', style) : '';
     return { heb, translit: c.name, colorCss: c.css, textDark: c.textDark, romanized, skipTranslitRebuild: true };
   }
 
@@ -3130,10 +3141,12 @@ function wireSetupScreen() {
   document.getElementById('numTranslitToggle').addEventListener('change', e => {
     numberShowTranslit = e.target.checked;
     saveSettings();
+    if (document.getElementById('screenCard').classList.contains('active')) renderCurrentCard();
   });
   document.getElementById('colorTranslitToggle').addEventListener('change', e => {
     colorShowTranslit = e.target.checked;
     saveSettings();
+    if (document.getElementById('screenCard').classList.contains('active')) renderCurrentCard();
   });
   document.getElementById('numMinInput').addEventListener('change', e => {
     numberMin = Math.max(0, Math.min(9999, parseInt(e.target.value) || 0));
