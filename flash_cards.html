@@ -958,6 +958,7 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
             <div class="pill-group" id="numShowPills">
               <button class="pill active" data-nshow="number">Show Number</button>
               <button class="pill" data-nshow="words">Show Words</button>
+              <button class="pill" data-nshow="translit">Show Translit</button>
             </div>
           </div>
         </div>
@@ -1463,7 +1464,7 @@ let otherSubMode = 'numbers';
 let numberMin = 1;
 let numberMax = 100;
 let numberGender = 'feminine';
-let numberShowNum = true;
+let numberFront = 'number';
 let timerMode = 'off';       // 'off' | 'track' | 'limit'
 let timerShowOnScreen = true;
 let timeLimitSeconds = 60;
@@ -2002,7 +2003,7 @@ function getSettings() {
     colorCodingEnabled, colorCodingMode,
     nikudColorOverrides: { ...nikudColorOverrides },
     hebFontId, audioEnabled, nameLetterMode, nameLetterShowLetter,
-    otherModeActive, otherSubMode, numberMin, numberMax, numberGender, numberShowNum,
+    otherModeActive, otherSubMode, numberMin, numberMax, numberGender, numberFront,
     timerMode, timerShowOnScreen, timeLimitSeconds,
     ttsRate: parseFloat(document.getElementById('ttsRateSlider')?.value || 0.85),
     vowelPositions: [...vowelPositions],
@@ -2070,12 +2071,19 @@ function applySettings(s) {
   numberMin = (s.numberMin !== undefined) ? s.numberMin : 1;
   numberMax = (s.numberMax !== undefined) ? s.numberMax : 100;
   numberGender = s.numberGender || 'feminine';
-  numberShowNum = s.numberShowNum !== false;
+  // Migrate old boolean numberShowNum → numberFront string
+  if (s.numberFront) {
+    numberFront = s.numberFront;
+  } else if (s.numberShowNum !== undefined) {
+    numberFront = s.numberShowNum ? 'number' : 'words';
+  } else {
+    numberFront = 'number';
+  }
   setOtherMode(otherModeActive);
   document.querySelector('#numMinInput') && (document.getElementById('numMinInput').value = numberMin);
   document.querySelector('#numMaxInput') && (document.getElementById('numMaxInput').value = numberMax);
   document.querySelectorAll('#numGenderPills .pill').forEach(p => p.classList.toggle('active', p.dataset.gender === numberGender));
-  document.querySelectorAll('#numShowPills .pill').forEach(p => p.classList.toggle('active', p.dataset.nshow === (numberShowNum ? 'number' : 'words')));
+  document.querySelectorAll('#numShowPills .pill').forEach(p => p.classList.toggle('active', p.dataset.nshow === numberFront));
   if (!otherModeActive) document.getElementById('panelVowels').style.display = nameLetterMode ? 'none' : '';
   document.querySelectorAll('#nameLetterFrontPills .pill').forEach(p =>
     p.classList.toggle('active', p.dataset.nlf === (nameLetterShowLetter ? 'letter' : 'name')));
@@ -2389,7 +2397,9 @@ function generateCard() {
     const n = Math.floor(Math.random() * (hi - lo + 1)) + lo;
     const words = hebrewNumber(n, numberGender);
     if (!words) return null;
-    return { heb: words, translit: String(n) };
+    const HT = window.HebrewTransliterator;
+    const romanized = (HT && typeof HT.apply === 'function') ? HT.apply(words, words, translitStyle) : words;
+    return { heb: words, translit: String(n), romanized };
   }
 
   const result = { heb: '', translit: '' };
@@ -2635,11 +2645,20 @@ function renderCurrentCard() {
   const back = document.getElementById('fcBackTr');
 
   if (otherModeActive && otherSubMode === 'numbers') {
-    if (numberShowNum) {
+    if (numberFront === 'number') {
       front.textContent = card.translit;
       front.style.fontFamily = 'var(--serif)';
       front.style.direction = 'ltr';
       front.style.fontSize = 'clamp(3rem, 12vw, 5rem)';
+      back.textContent = card.heb;
+      back.style.fontFamily = 'var(--heb-font)';
+      back.style.direction = 'rtl';
+      back.style.fontSize = 'clamp(1.2rem, 5vw, 2rem)';
+    } else if (numberFront === 'translit') {
+      front.textContent = card.romanized || card.heb;
+      front.style.fontFamily = 'var(--serif)';
+      front.style.direction = 'ltr';
+      front.style.fontSize = 'clamp(1.2rem, 5vw, 2rem)';
       back.textContent = card.heb;
       back.style.fontFamily = 'var(--heb-font)';
       back.style.direction = 'rtl';
@@ -2891,7 +2910,7 @@ function wireSetupScreen() {
     saveSettings();
   }));
   document.querySelectorAll('#numShowPills .pill').forEach(p => p.addEventListener('click', () => {
-    numberShowNum = p.dataset.nshow === 'number';
+    numberFront = p.dataset.nshow;
     document.querySelectorAll('#numShowPills .pill').forEach(x => x.classList.toggle('active', x === p));
     saveSettings();
   }));
