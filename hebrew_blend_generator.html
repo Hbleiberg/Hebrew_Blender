@@ -1761,7 +1761,7 @@
         <div class="toggle-row" id="rowRealWords" style="margin-top:4px;">
           <span>Real Words Mode
             <span class="tooltip-wrap">?
-              <span class="tooltip-box">Practice with real Hebrew words from a curated list of over 13,000 entries.<br><br>Drill types: <strong>Reading</strong>, <strong>Self-Check</strong> (flip cards), <strong>Reverse</strong> (English → Hebrew), <strong>Identify</strong> (real vs. nonsense), <strong>Bingo</strong>, <strong>Gematria</strong>, and <strong>Fill Vowels</strong>.</span>
+              <span class="tooltip-box">Practice with real Hebrew words from a curated list of over 13,000 entries.<br><br>Drill types:<br>• <strong>Reading</strong> — Hebrew shown, students read aloud.<br>• <strong>Self-Check</strong> — flip cards (Hebrew front, translation back).<br>• <strong>Reverse</strong> — English shown, students write the Hebrew.<br>• <strong>ID Real Words</strong> — real words mixed with nonsense blends; students circle the real ones.<br>• <strong>ID Parts of Speech</strong> — students label each word's part of speech.<br>• <strong>Bingo</strong> — printable bingo cards with real words + caller sheet.<br>• <strong>Gematria</strong> — students compute the Gematria value of each word.<br>• <strong>Fill Vowels</strong> — Hebrew with nikkud stripped; students fill them in.</span>
             </span>
           </span>
           <label class="toggle">
@@ -1876,13 +1876,14 @@
 
           <!-- Drill Type -->
           <div class="rw-section">
-            <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Drill Type <span class="tooltip-wrap" style="font-size:0.65rem;text-transform:none;letter-spacing:normal;font-weight:400;">?<span class="tooltip-box"><strong>Reading</strong> — Hebrew shown, students read aloud and flip to check.<br><br><strong>Self-Check</strong> — Flip cards: Hebrew front, English translation back.<br><br><strong>Reverse</strong> — English shown, students recall or write the Hebrew.<br><br><strong>Identify</strong> — Mixed real words + nonsense blends; students circle the real ones. Includes a teacher answer key.<br><br><strong>Bingo</strong> — Generates unique bingo cards with real Hebrew words. Teacher calls words aloud; students mark matches.<br><br><strong>Gematria</strong> — Each word is shown with a blank line. Students calculate and write the total Gematria value of the letters. An answer key is generated on a second page.<br><br><strong>Fill in Vowels</strong> — Hebrew words shown with their nikkud stripped. Students write in the vowel marks. Optional Include Dageshim keeps the dot inside letters intact.</span></span></div>
+            <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Drill Type <span class="tooltip-wrap" style="font-size:0.65rem;text-transform:none;letter-spacing:normal;font-weight:400;">?<span class="tooltip-box"><strong>Reading</strong> — Hebrew shown, students read aloud and flip to check.<br><br><strong>Self-Check</strong> — Flip cards: Hebrew front, English translation back.<br><br><strong>Reverse</strong> — English shown, students recall or write the Hebrew.<br><br><strong>ID Real Words</strong> — Mixed real words + nonsense blends; students circle the real ones. Includes a teacher answer key.<br><br><strong>ID Parts of Speech</strong> — Hebrew words shown; students write the part of speech. Answer key includes a small POS tag on each card.<br><br><strong>Bingo</strong> — Generates unique bingo cards with real Hebrew words. Teacher calls words aloud; students mark matches.<br><br><strong>Gematria</strong> — Each word is shown with a blank line. Students calculate and write the total Gematria value of the letters. An answer key is generated on a second page.<br><br><strong>Fill Vowels</strong> — Hebrew words shown with their nikkud stripped. Students write in the vowel marks. Optional Include Dageshim keeps the dot inside letters intact.</span></span></div>
             <div class="rw-section-body">
               <div class="blend-type-selector" style="grid-template-columns:repeat(3,1fr);margin-bottom:6px;">
                 <button class="rw-drill-btn active" data-drill="reading" onclick="setRealWordDrill('reading')">Reading</button>
                 <button class="rw-drill-btn" data-drill="vocab" onclick="setRealWordDrill('vocab')">Self-Check</button>
                 <button class="rw-drill-btn" data-drill="reverse" onclick="setRealWordDrill('reverse')">Reverse</button>
-                <button class="rw-drill-btn" data-drill="identify" onclick="setRealWordDrill('identify')">Identify</button>
+                <button class="rw-drill-btn" data-drill="identify" onclick="setRealWordDrill('identify')">ID Real Words</button>
+                <button class="rw-drill-btn" data-drill="idpos" onclick="setRealWordDrill('idpos')">ID Parts of Speech</button>
                 <button class="rw-drill-btn" data-drill="bingo" onclick="setRealWordDrill('bingo')">Bingo</button>
                 <button class="rw-drill-btn" data-drill="gematria" onclick="setRealWordDrill('gematria')">Gematria</button>
                 <button class="rw-drill-btn" data-drill="fillvowels" onclick="setRealWordDrill('fillvowels')">Fill Vowels</button>
@@ -1907,9 +1908,9 @@
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.75rem;cursor:pointer;"><input type="checkbox" id="rwLen8plus" style="accent-color:var(--gold);"> 8+ Letter</label>
                 </div>
               </div>
-              <div style="margin-bottom:6px;">
-                <div style="font-size:0.72rem;font-weight:600;margin-bottom:3px;color:var(--text);">Part of Speech</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;">
+              <div id="rwPosFilterBlock" style="margin-bottom:6px;">
+                <div id="rwPosFilterLabel" style="font-size:0.72rem;font-weight:600;margin-bottom:3px;color:var(--text);">Part of Speech</div>
+                <div id="rwPosFilterGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;">
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="noun" checked style="accent-color:var(--gold);"> Noun</label>
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="proper noun" checked style="accent-color:var(--gold);"> Proper Noun</label>
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.72rem;cursor:pointer;"><input type="checkbox" class="rw-pos" value="root" checked style="accent-color:var(--gold);"> Root (שׁורש)</label>
@@ -1965,6 +1966,11 @@
                   <option value="40">40</option>
                   <option value="50">50</option>
                 </select>
+              </div>
+              <!-- ID Parts of Speech: collapsible POS selector relocates here from Word Filters when idpos drill is active -->
+              <div class="rw-section rw-idpos-only collapsed" id="rwIdposPosSection" style="display:none;border-top:none;padding-top:0;margin-top:6px;">
+                <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Parts of Speech</div>
+                <div class="rw-section-body" id="rwIdposPosSlot"></div>
               </div>
               <!-- Identify-only: Star Real Words (relocated here from Drill Type) -->
               <!-- Mix / Star Real Words trio (relocated here from Drill Type) -->
@@ -6509,6 +6515,7 @@ function _rwSyncPageButtons(scopeSel, attr, val) {
 //   vocab                          → 'vocab'   set (Front/Back/Both)
 const _RW_PAGE_FLAVOR = {
   reading: 'reading', reverse: 'reading', gematria: 'reading', fillvowels: 'reading',
+  identify: 'reading', idpos: 'reading',
   bingo: 'bingo', vocab: 'vocab',
 };
 
@@ -6569,6 +6576,30 @@ function onRwTranslChange() {
   toggleRwTranslPageRow();
   const ws = document.getElementById('worksheet');
   if (ws.querySelector('.rw-card, .rw-flip')) generateRealWords();
+}
+
+// Cached "home" location for the Part-of-Speech filter block. Lives inside
+// Word Filters by default; the ID Parts of Speech drill pulls it up into the
+// Drill Options panel so students can configure which categories appear.
+let _rwPosFilterHome = null;
+function _relocatePosFilter(forIdpos) {
+  const block = document.getElementById('rwPosFilterBlock');
+  const slot  = document.getElementById('rwIdposPosSlot');
+  if (!block || !slot) return;
+  if (!_rwPosFilterHome) {
+    _rwPosFilterHome = { parent: block.parentNode, next: block.nextSibling };
+  }
+  if (forIdpos) {
+    if (block.parentNode !== slot) slot.appendChild(block);
+    block.style.marginBottom = '0';
+    const label = document.getElementById('rwPosFilterLabel');
+    if (label) label.style.display = 'none';   // section header already says "Parts of Speech"
+  } else if (_rwPosFilterHome.parent && block.parentNode !== _rwPosFilterHome.parent) {
+    _rwPosFilterHome.parent.insertBefore(block, _rwPosFilterHome.next);
+    block.style.marginBottom = '';
+    const label = document.getElementById('rwPosFilterLabel');
+    if (label) label.style.display = '';
+  }
 }
 
 // Cached "home" locations for rows we relocate per drill.
@@ -6634,6 +6665,7 @@ function setRealWordDrill(type) {
     case 'reading':
     case 'reverse':
     case 'identify':
+    case 'idpos':
       SET(showTranslit, true);  SET(showTranslation, true);
       rwTranslitPage = 'key';   rwTranslPage = 'key';
       if (type === 'identify') {
@@ -6667,14 +6699,18 @@ function setRealWordDrill(type) {
   //   • gematria   → Inverse / Self Check shown alongside translit/translation
   //   • fillvowels → Include-Dageshim shown alongside translit/translation
   //   • identify   → Star Real Words rows relocate just under Number of Words
+  //   • idpos      → POS selector relocates from Word Filters into Drill Options
   const isGem   = type === 'gematria';
   const isFv    = type === 'fillvowels';
   const isIdent = type === 'identify';
+  const isIdpos = type === 'idpos';
   document.querySelectorAll('.rw-gem-only').forEach(el => el.style.display = isGem ? '' : 'none');
   document.querySelectorAll('.rw-fv-only').forEach(el => el.style.display = isFv ? '' : 'none');
+  document.querySelectorAll('.rw-idpos-only').forEach(el => el.style.display = isIdpos ? '' : 'none');
   document.querySelectorAll('.rw-display-only').forEach(el => { el.style.display = ''; });
   toggleRwTranslitPageRow(); toggleRwTranslPageRow();
   _relocateStarRealRow(isIdent);
+  _relocatePosFilter(isIdpos);
 
   const dispHeader = document.getElementById('rwDisplayHeader');
   if (dispHeader) dispHeader.textContent = 'Drill Options';
@@ -6938,6 +6974,7 @@ function generateRealWords() {
     reading: 'Read each Hebrew word aloud.',
     vocab:   'Tap each card to reveal the meaning.',
     reverse: 'Write the Hebrew for each English word.',
+    idpos:   'Write the part of speech for each word.',
   };
   header.innerHTML = `
     <div>
@@ -6998,6 +7035,16 @@ function generateRealWords() {
         ${prompts}
         <div style="border-bottom:1.5px solid var(--border);width:90%;margin-top:8px;min-height:24px;"></div>`;
       grid.appendChild(card);
+    } else if (drill === 'idpos') {
+      const card = document.createElement('div');
+      card.className = 'rw-card';
+      card.innerHTML = `
+        <span class="rw-num">${idx + 1}</span>
+        <span class="rw-heb">${w.heb}</span>
+        ${showTranslitInline && w.translit ? `<span class="rw-translit">${w.translit}</span>` : ''}
+        ${showTranslInline && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}
+        <div style="border-bottom:1.5px solid var(--border);width:90%;margin-top:8px;min-height:20px;"></div>`;
+      grid.appendChild(card);
     } else {
       // Reading drill
       const card = document.createElement('div');
@@ -7022,7 +7069,8 @@ function generateRealWords() {
   ws.appendChild(sheet);
 
   // Answer key sheet (stars and/or translations on separate page)
-  if (starOnKey || translOnKey || translitOnKey) {
+  // ID Parts of Speech always emits an answer key — its POS tags are the answer.
+  if (starOnKey || translOnKey || translitOnKey || drill === 'idpos') {
     const keySheet = document.createElement('div');
     keySheet.className = 'sheet answer-key-sheet';
     const banner = document.createElement('div');
