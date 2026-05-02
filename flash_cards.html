@@ -2500,7 +2500,7 @@ function generateCard() {
     const words = hebrewNumber(n, numberGender);
     if (!words) return null;
     const HT = window.HebrewTransliterator;
-    const romanized = (HT && typeof HT.apply === 'function') ? HT.apply(words, words, translitStyle) : words;
+    const romanized = (HT && typeof HT.apply === 'function') ? HT.apply(words, '', translitStyle) : '';
     return { heb: words, translit: String(n), romanized };
   }
 
@@ -2791,7 +2791,8 @@ function renderCurrentCard() {
   } else if (otherModeActive && otherSubMode === 'numbers') {
     function hebSide(el) {
       if (numberShowTranslit) {
-        el.innerHTML = `<div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(1.2rem,5vw,2rem);margin-bottom:6px;">${card.heb}</div><div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;">${card.romanized || ''}</div>`;
+        const trLine = card.romanized ? `<div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;">${card.romanized}</div>` : '';
+        el.innerHTML = `<div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(1.2rem,5vw,2rem);${trLine ? 'margin-bottom:6px;' : ''}">${card.heb}</div>${trLine}`;
         el.style.fontFamily = '';
         el.style.direction = '';
         el.style.fontSize = '';
