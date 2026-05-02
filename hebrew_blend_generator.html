@@ -1669,8 +1669,8 @@
           <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
             <span class="sub-label" style="font-size:0.78rem;min-width:90px;">Display</span>
             <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);flex:1;">
-              <button class="rw-drill-btn active" data-np-display="number" onclick="setNpDisplay('number')">Number</button>
-              <button class="rw-drill-btn"        data-np-display="word"   onclick="setNpDisplay('word')">Hebrew word</button>
+              <button class="rw-drill-btn"        data-np-display="number" onclick="setNpDisplay('number')">Number</button>
+              <button class="rw-drill-btn active" data-np-display="word"   onclick="setNpDisplay('word')">Hebrew word</button>
             </div>
           </div>
           <div class="toggle-row" style="font-size:0.82rem;">
@@ -1755,7 +1755,7 @@
           <div class="toggle-row" id="npAnswerKeyRow" style="font-size:0.82rem;">
             <span>Show Answer Key</span>
             <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
-              <input type="checkbox" id="npAnswerKey" onchange="onNpOptionChange()">
+              <input type="checkbox" id="npAnswerKey" checked onchange="onNpOptionChange()">
               <span class="slider"></span>
             </label>
           </div>
@@ -4309,7 +4309,7 @@ function numToHebrew(n, gender) {
 
 let numberPracticeItems = [];
 let npGender        = 'f';
-let npDisplay       = 'number';
+let npDisplay       = 'word';
 let npTranslitPage  = 'same';
 
 function toggleNumberPracticeUI() {
