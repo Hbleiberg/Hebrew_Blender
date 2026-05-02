@@ -1619,12 +1619,10 @@ function onTranslitStyleChange(val) {
 }
 
 window.addEventListener('translitlibloaded', () => {
-  if (translitStyle !== 'default') {
-    rebuildDeckTranslit();
-    const cardScreen = document.getElementById('screenCard');
-    if (cardScreen && cardScreen.classList.contains('active') && typeof renderCurrentCard === 'function') {
-      renderCurrentCard();
-    }
+  rebuildDeckTranslit();
+  const cardScreen = document.getElementById('screenCard');
+  if (cardScreen && cardScreen.classList.contains('active') && typeof renderCurrentCard === 'function') {
+    renderCurrentCard();
   }
 });
 
