@@ -1695,6 +1695,40 @@
         <!-- Divider -->
         <div id="modeDivider" style="border-top:1px solid var(--border);margin:4px 0 8px;"></div>
 
+        <!-- Name the Letter — visible only when 1-Letter is the active blend type -->
+        <div class="toggle-row" id="rowNameTheLetter" style="display:none;">
+          <span>Name the Letter
+            <span class="tooltip-wrap">?<span class="tooltip-box">Drill Hebrew letter names. Students see a Hebrew letter and write its name (Alef, Bet…). Turn on Inverse to flip it: the name is shown and the student writes the Hebrew letter.</span></span>
+          </span>
+          <label class="toggle">
+            <input type="checkbox" id="nameTheLetterToggle" onchange="toggleNameTheLetterUI()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div id="nameTheLetterOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--border);flex-direction:column;gap:6px;">
+          <div class="toggle-row" style="font-size:0.82rem;">
+            <span>Inverse <span style="font-size:0.72rem;color:var(--muted)">(show letter name)</span></span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="ntlInverse" onchange="onNtlOptionChange()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row" style="font-size:0.82rem;">
+            <span>Show Answer Key</span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="ntlAnswerKey" checked onchange="onNtlOptionChange()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row" style="font-size:0.82rem;">
+            <span>Student Self-Check Mode</span>
+            <label class="toggle" style="transform:scale(0.85);transform-origin:right;">
+              <input type="checkbox" id="ntlSelfCheck" onchange="onNtlOptionChange()">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
         <div class="toggle-row" id="rowInverse">
           <span>Inverse Mode <span style="font-size:0.72rem;color:var(--muted)">(English → write Hebrew)</span></span>
           <label class="toggle">
@@ -3402,6 +3436,10 @@ function getSettings() {
     bingoCallerSheet:  document.getElementById('bingoCallerSheet').checked,
     bingoSharedBlends: document.getElementById('bingoSharedBlends').checked,
     // Number Practice
+    nameTheLetter:     document.getElementById('nameTheLetterToggle').checked,
+    ntlInverse:        document.getElementById('ntlInverse').checked,
+    ntlAnswerKey:      document.getElementById('ntlAnswerKey').checked,
+    ntlSelfCheck:      document.getElementById('ntlSelfCheck').checked,
     numberPractice:    document.getElementById('numberPracticeToggle').checked,
     npCount:           document.getElementById('npCount').value,
     npGender,
@@ -3576,6 +3614,10 @@ function applySettings(s) {
   if (s.bingoSharedBlends !== undefined) document.getElementById('bingoSharedBlends').checked = s.bingoSharedBlends;
 
   // Number Practice
+  if (s.nameTheLetter !== undefined) document.getElementById('nameTheLetterToggle').checked = s.nameTheLetter;
+  if (s.ntlInverse !== undefined)    document.getElementById('ntlInverse').checked    = s.ntlInverse;
+  if (s.ntlAnswerKey !== undefined)  document.getElementById('ntlAnswerKey').checked  = s.ntlAnswerKey;
+  if (s.ntlSelfCheck !== undefined)  document.getElementById('ntlSelfCheck').checked  = s.ntlSelfCheck;
   if (s.numberPractice !== undefined) document.getElementById('numberPracticeToggle').checked = s.numberPractice;
   if (s.npCount)                      document.getElementById('npCount').value = s.npCount;
   if (s.npGender)                     setNpGender(s.npGender);
@@ -4275,6 +4317,7 @@ function computeModeState() {
 const _MODE_FLEX_IDS = new Set([
   'bingoOptions','gematriaOptions','selfCheckOptions','realWordsOptions',
   'customWordlistOptions','numberPracticeOptions','focusOptions',
+  'nameTheLetterOptions',
 ]);
 const _MODE_BLOCK_IDS = new Set(['threeLetterOptions','fillVowelsDageshRow']);
 
@@ -4286,32 +4329,41 @@ function updateModeVisibility() {
   const gemSC  = blends && s.drill === 'gematria' && s.gematriaSelfCheck;
   const stdSC  = blends && s.selfCheck && !s.bingo
                        && s.drill !== 'fillvowels' && s.drill !== 'gematria';
-  const testMode = gemSC || stdSC;
+  // Name the Letter is its own takeover — only valid on 1-letter blends.
+  const isNtl  = blends && s.blendType === 'one' &&
+                 !!document.getElementById('nameTheLetterToggle')?.checked;
+  // NTL Self-Check is the test-mode equivalent for this drill.
+  const ntlSC  = isNtl && !!document.getElementById('ntlSelfCheck')?.checked;
+  const testMode = gemSC || stdSC || ntlSC;
 
   const v = {
     // Major panels
     panelLetters:  blends && s.blendType !== 'nikud' && !testMode,
-    panelVowels:   blends && !testMode,
+    panelVowels:   blends && !testMode && !isNtl,
     panelLayout:   !testMode && !(blends && s.bingo),
     panelAdvanced: !testMode,
     panelPresets:  !testMode,
 
     // Worksheet-mode structural elements
-    blendTypeWrapper:   !testMode && blends,
-    modeDivider:        !testMode && blends,
-    threeLetterOptions: !testMode && blends && s.blendType === 'three',
-    focusOptions:       blends && s.focus && !testMode,
+    blendTypeWrapper:   !testMode && blends && !isNtl,
+    modeDivider:        !testMode && blends && !isNtl,
+    threeLetterOptions: !testMode && blends && s.blendType === 'three' && !isNtl,
+    focusOptions:       blends && s.focus && !testMode && !isNtl,
 
-    // Mode toggle rows
-    rowInverse:        !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo,
-    rowFillVowels:     !testMode && blends && s.drill !== 'gematria' && s.drill !== 'inverse' && !s.bingo,
-    rowGematria:       !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'inverse' && !s.bingo,
-    rowBingo:          !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'inverse' && s.drill !== 'gematria',
-    rowAnswerKey:      !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo,
-    rowSelfCheck:      !gemSC    && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo,
+    // Name the Letter rows
+    rowNameTheLetter:    blends && s.blendType === 'one' && !testMode,
+    nameTheLetterOptions: isNtl && !testMode,
+
+    // Mode toggle rows (every standard worksheet-mode row hides under NTL)
+    rowInverse:        !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo && !isNtl,
+    rowFillVowels:     !testMode && blends && s.drill !== 'gematria' && s.drill !== 'inverse' && !s.bingo && !isNtl,
+    rowGematria:       !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'inverse' && !s.bingo && !isNtl,
+    rowBingo:          !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'inverse' && s.drill !== 'gematria' && !isNtl,
+    rowAnswerKey:      !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo && !isNtl,
+    rowSelfCheck:      !gemSC    && !ntlSC && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo && !isNtl,
     rowBlendCount:     !testMode && blends && !s.bingo,
-    rowRealWords:      !testMode && s.source !== 'numbers' && !cwModeActive && !s.bingo && !(blends && s.drill === 'gematria') && !(blends && s.drill === 'fillvowels') && !(blends && s.drill === 'inverse'),
-    rowNumberPractice: !testMode && s.source !== 'realwords' && !cwModeActive && !s.bingo && !(blends && s.drill === 'gematria') && !(blends && s.drill === 'fillvowels') && !(blends && s.drill === 'inverse'),
+    rowRealWords:      !testMode && s.source !== 'numbers' && !cwModeActive && !s.bingo && !(blends && s.drill === 'gematria') && !(blends && s.drill === 'fillvowels') && !(blends && s.drill === 'inverse') && !isNtl,
+    rowNumberPractice: !testMode && s.source !== 'realwords' && !cwModeActive && !s.bingo && !(blends && s.drill === 'gematria') && !(blends && s.drill === 'fillvowels') && !(blends && s.drill === 'inverse') && !isNtl,
 
     // Sub-option panels
     bingoOptions:          blends && s.bingo && !testMode,
@@ -4409,6 +4461,13 @@ function setBlendType(type) {
     btn.classList.toggle('active', btn.dataset.type === type);
   });
 
+  // Name the Letter only makes sense in 1-letter mode — auto-clear it when
+  // the user switches to anything else.
+  if (type !== 'one') {
+    const ntl = document.getElementById('nameTheLetterToggle');
+    if (ntl && ntl.checked) ntl.checked = false;
+  }
+
   // Lock position sections: positions 2 and 3 are only meaningful for the
   // matching blend types. Clear their data so a stale selection doesn't
   // silently re-engage if the user later switches back.
@@ -4454,6 +4513,163 @@ function toggleNikudOnlyMode() { setBlendType('nikud'); }
 function toggleThreeLetterUI() { setBlendType('three'); }
 
 // ── ONE-LETTER GENERATION ──
+// ── Name the Letter generator + renderer ──
+function generateNameTheLetter() {
+  const count = parseInt(document.getElementById('blendCount').value) || 20;
+  const VAV_VARIANTS = new Set(['וֹ','וּ']);
+  const pool = [...selectedLetters].filter(h => !VAV_VARIANTS.has(h));
+  if (pool.length === 0) { alert('Please select at least one letter.'); return; }
+
+  const excludeRepeats = document.getElementById('excludeRepeats').checked;
+  blends = [];
+  for (let i = 0; i < count; i++) {
+    let heb, attempts = 0;
+    do {
+      heb = pool[Math.floor(Math.random() * pool.length)];
+      attempts++;
+    } while (excludeRepeats && pool.length > blends.length && attempts < 25 && blends.some(b => b.key === heb));
+    const obj = getLetter(heb);
+    blends.push({ hebrewDisplay: obj.base, combined: obj.name, key: heb });
+  }
+  renderWorksheet(false);
+  enableButtons();
+}
+
+function renderNameTheLetter(ws) {
+  ws.innerHTML = '';
+  if (blends.length === 0) {
+    ws.innerHTML = '<div class="empty-state"><h2>Please select at least one letter.</h2></div>';
+    return;
+  }
+
+  const inverse  = document.getElementById('ntlInverse').checked;
+  const showAk   = document.getElementById('ntlAnswerKey').checked;
+  const selfCh   = document.getElementById('ntlSelfCheck').checked;
+  const title    = document.getElementById('wsTitle').value || 'Name the Letter';
+  const subtitle = document.getElementById('wsSubtitle').value;
+  const cols     = autoCols(blends.length);
+
+  // ── Self-check flip cards ──
+  if (selfCh) {
+    scoreCorrect = 0; scoreIncorrect = 0; stopTimer();
+    const scHeader = document.createElement('div');
+    scHeader.className = 'ws-header';
+    scHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle">${subtitle || (inverse ? 'Tap each card to reveal the Hebrew letter.' : 'Tap each card to reveal the letter’s name.')}</div></div>`;
+    ws.appendChild(scHeader);
+    const controls = document.createElement('div');
+    controls.className = 'sc-controls';
+    controls.innerHTML = `
+      <button class="btn-xs" onclick="flipAllCards(true)">Reveal All</button>
+      <button class="btn-xs" onclick="flipAllCards(false)">Hide All</button>
+      <div class="sc-cols-control">
+        <span style="font-size:0.75rem;color:var(--muted);">Columns:</span>
+        <button class="sc-cols-btn" onclick="setSCCols(2,this)">2</button>
+        <button class="sc-cols-btn active" onclick="setSCCols(3,this)">3</button>
+        <button class="sc-cols-btn" onclick="setSCCols(5,this)">5</button>
+      </div>`;
+    ws.appendChild(controls);
+    const grid = document.createElement('div');
+    grid.id = 'scGrid';
+    grid.className = 'self-check-grid';
+    grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+    ws.appendChild(grid);
+    blends.forEach((b, idx) => {
+      const card = document.createElement('div');
+      card.className = 'flip-card';
+      const front = inverse
+        ? `<span style="font-size:1.5rem;font-weight:700;color:var(--text);">${b.combined}</span>`
+        : `<span style="direction:rtl;font-family:var(--heb-font);font-size:2.6rem;">${b.hebrewDisplay}</span>`;
+      const back = inverse
+        ? `<span style="direction:rtl;font-family:var(--heb-font);font-size:2.4rem;color:var(--gold-light);">${b.hebrewDisplay}</span>`
+        : `<span style="font-size:1.5rem;font-weight:700;color:var(--gold-light);">${b.combined}</span>`;
+      card.innerHTML = `
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <span class="flip-card-num">${idx + 1}</span>
+            ${front}
+            <span class="flip-card-hint">tap to reveal</span>
+          </div>
+          <div class="flip-card-back">
+            <span class="flip-card-num" style="color:var(--gold-light);">${idx + 1}</span>
+            ${back}
+          </div>
+        </div>`;
+      card.querySelector('.flip-card-inner').addEventListener('click', () => card.classList.toggle('flipped'));
+      grid.appendChild(card);
+    });
+    return;
+  }
+
+  // ── Student sheet ──
+  const sheet = document.createElement('div');
+  sheet.className = 'sheet';
+  const header = document.createElement('div');
+  header.className = 'ws-header';
+  const subDefault = inverse
+    ? 'Write the Hebrew letter that matches each name.'
+    : 'Write the name of each Hebrew letter.';
+  header.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle">${subtitle || subDefault}</div></div>${wsMetaHTML()}`;
+  sheet.appendChild(header);
+
+  const grid = document.createElement('div');
+  grid.className = 'blends-grid';
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  grid.style.direction = inverse ? 'ltr' : 'rtl';
+  blends.forEach((b, idx) => {
+    const cell = document.createElement('div');
+    cell.className = 'blend-cell';
+    cell.style.alignItems = 'center';
+    cell.style.minHeight = '100px';
+    const num = `<div style="font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;">${idx + 1}</div>`;
+    const prompt = inverse
+      ? `<div style="font-size:1.4rem;font-weight:700;color:var(--text);direction:ltr;text-align:center;">${b.combined}</div>`
+      : `<div style="font-family:var(--heb-font);font-size:2.4rem;direction:rtl;text-align:center;color:var(--text);line-height:1.1;">${b.hebrewDisplay}</div>`;
+    const line = `<div style="border-bottom:1.5px solid var(--text);width:80%;height:24px;margin-top:10px;"></div>`;
+    cell.innerHTML = num + prompt + line;
+    grid.appendChild(cell);
+  });
+  sheet.appendChild(grid);
+  const footer = document.createElement('div');
+  footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  footer.textContent = `${blends.length} letters · Hebrew Blend Generator — Name the Letter`;
+  sheet.appendChild(footer);
+  ws.appendChild(sheet);
+
+  // ── Answer key ──
+  if (showAk) {
+    const ak = document.createElement('div');
+    ak.className = 'sheet answer-key-sheet';
+    const banner = document.createElement('div');
+    banner.className = 'answer-key-banner';
+    banner.textContent = '✦ Answer Key ✦';
+    ak.appendChild(banner);
+    const akHdr = document.createElement('div');
+    akHdr.className = 'ws-header';
+    akHdr.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>`;
+    ak.appendChild(akHdr);
+    const akGrid = document.createElement('div');
+    akGrid.className = 'blends-grid';
+    akGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    akGrid.style.direction = 'rtl';
+    blends.forEach((b, idx) => {
+      const cell = document.createElement('div');
+      cell.className = 'blend-cell';
+      cell.style.alignItems = 'center';
+      cell.innerHTML = `
+        <div style="font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;">${idx + 1}</div>
+        <div style="font-family:var(--heb-font);font-size:2rem;direction:rtl;text-align:center;color:var(--text);line-height:1.1;">${b.hebrewDisplay}</div>
+        <div style="font-size:0.95rem;font-weight:700;direction:ltr;text-align:center;color:var(--gold);margin-top:4px;">${b.combined}</div>`;
+      akGrid.appendChild(cell);
+    });
+    ak.appendChild(akGrid);
+    const akFoot = document.createElement('div');
+    akFoot.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+    akFoot.textContent = `${blends.length} letters · Hebrew Blend Generator — Name the Letter Answer Key`;
+    ak.appendChild(akFoot);
+    ws.appendChild(ak);
+  }
+}
+
 function generateOneLetter() {
   const vowelKeys = getActiveVowelKeys();
   if (vowelKeys.length === 0) return [];
@@ -4522,6 +4738,27 @@ function adjustBingoCards(delta) {
 
 // Kept as a thin alias so any legacy call sites continue to work.
 function syncFillVowelsUI() { updateModeVisibility(); }
+
+// ── Name the Letter (1-letter takeover drill) ──
+function toggleNameTheLetterUI() {
+  const on = document.getElementById('nameTheLetterToggle').checked;
+  if (on) {
+    // Clear every conflicting source/drill toggle so nothing competes with
+    // the takeover. updateModeVisibility() does the actual hiding.
+    ['inverseToggle','fillVowelsToggle','answerKeyToggle','selfCheckToggle',
+     'bingoToggle','gematriaToggle','realWordsToggle','numberPracticeToggle']
+      .forEach(id => { const el = document.getElementById(id); if (el) el.checked = false; });
+    cwModeActive = false;
+  }
+  updateModeVisibility();
+  if (blends.length) renderWorksheet(false);
+}
+
+function onNtlOptionChange() {
+  if (document.getElementById('worksheet').querySelector('.blend-cell, .flip-card')) {
+    renderWorksheet(false);
+  }
+}
 
 function onFillVowelsChange() {
   if (document.getElementById('fillVowelsToggle').checked) {
@@ -5813,6 +6050,11 @@ function autoCols(count) {
 }
 
 function generate(animate = false) {
+  if (document.getElementById('nameTheLetterToggle')?.checked) {
+    generateNameTheLetter();
+    return;
+  }
+
   if (document.getElementById('numberPracticeToggle')?.checked) {
     generateNumberPractice();
     return;
@@ -6297,6 +6539,7 @@ function renderWorksheet(animate = false) {
 
   const ws = document.getElementById('worksheet');
 
+  if (document.getElementById('nameTheLetterToggle')?.checked) { renderNameTheLetter(ws); return; }
   if (document.getElementById('numberPracticeToggle')?.checked) { renderNumberPractice(ws); return; }
   if (bingo) { renderBingo(ws); return; }
   if (document.getElementById('gematriaToggle').checked) { renderGematriaSheet(ws); return; }
