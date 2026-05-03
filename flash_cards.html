@@ -1161,6 +1161,14 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
 
       <hr class="soft" />
 
+      <!-- Hide Prev button -->
+      <div class="row">
+        <label class="switch"><input type="checkbox" id="hidePrevToggle"><span class="slider"></span></label>
+        <span class="label">Hide Back Button</span>
+      </div>
+
+      <hr class="soft" />
+
       <!-- Backup -->
       <div class="label" style="font-weight:600; margin-bottom:4px">Backup Presets</div>
       <textarea class="tx-area" id="backupArea" placeholder="Exported preset JSON appears here…"></textarea>
@@ -1502,6 +1510,7 @@ const HEB_FONTS = [
    ========================================================================= */
 let mode = 2;
 let inverse = false;
+let hidePrevBtn = false;
 let cardCount = 10;
 let selectedLetters = new Set();
 let selectedVowels = new Set();
@@ -2132,7 +2141,7 @@ const PRESET_KEY = 'hebrewFlashCards_presets';
 
 function getSettings() {
   return {
-    mode, inverse, cardCount,
+    mode, inverse, hidePrevBtn, cardCount,
     selectedLetters: [...selectedLetters],
     selectedVowels: [...selectedVowels],
     dageshTavEnabled, vavAsLetter,
@@ -2155,6 +2164,9 @@ function applySettings(s) {
   if (!s) return;
   mode = s.mode || 2;
   inverse = !!s.inverse;
+  hidePrevBtn = !!s.hidePrevBtn;
+  const hidePrevToggle = document.getElementById('hidePrevToggle');
+  if (hidePrevToggle) hidePrevToggle.checked = hidePrevBtn;
   cardCount = s.cardCount || 10;
   selectedLetters = new Set(s.selectedLetters || []);
   selectedVowels = new Set(s.selectedVowels || []);
@@ -2991,8 +3003,10 @@ function renderCurrentCard() {
   // Show yes/no buttons only on the back face
   document.querySelector('.fc-mark-row').classList.toggle('hide', !isFlipped);
 
-  // Disable nav at edges (visual only)
-  document.getElementById('prevBtn').disabled = (currentIndex === 0);
+  // Show/hide prev button
+  const prevBtnEl = document.getElementById('prevBtn');
+  prevBtnEl.style.display = hidePrevBtn ? 'none' : '';
+  prevBtnEl.disabled = (currentIndex === 0);
   // next stays enabled to allow skipping
 }
 
@@ -3132,6 +3146,12 @@ function wireCardScreen() {
 function wireSetupScreen() {
   document.querySelectorAll('#modePills .pill[data-mode]').forEach(p => p.addEventListener('click', () => setLetterMode(+p.dataset.mode)));
   document.getElementById('inverseToggle').addEventListener('change', e => { inverse = e.target.checked; saveSettings(); });
+  document.getElementById('hidePrevToggle').addEventListener('change', e => {
+    hidePrevBtn = e.target.checked;
+    const btn = document.getElementById('prevBtn');
+    if (btn) btn.style.display = hidePrevBtn ? 'none' : '';
+    saveSettings();
+  });
   document.getElementById('lockToggle').addEventListener('change', e => {
     anyLetterLock = e.target.checked;
     document.getElementById('lockOptions').classList.toggle('hide', !anyLetterLock);
