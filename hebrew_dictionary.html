@@ -267,7 +267,8 @@ body.fullscreen .app{height:100vh;min-height:unset;}
 .word-card.bulk-selected{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 10%,var(--white));}
 .wc-bulk-cb{position:absolute;top:8px;right:8px;width:16px;height:16px;accent-color:var(--gold);cursor:pointer;display:none;}
 body.bulk-mode .wc-bulk-cb{display:block;}
-body.bulk-mode .word-card{cursor:pointer;}
+body.bulk-mode .word-card,body.bulk-mode .emoji-card{cursor:pointer;}
+.emoji-card.bulk-selected{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 10%,var(--white));}
 .wc-copy,.wc-search,.wc-speak{position:absolute;top:7px;background:none;border:1px solid var(--border);border-radius:4px;padding:3px;color:var(--muted);cursor:pointer;line-height:0;opacity:0.4;transition:opacity 0.15s,border-color 0.15s,color 0.15s;display:flex;align-items:center;justify-content:center;text-decoration:none;}
 .wc-copy{left:7px;}
 .wc-search{left:30px;}
@@ -858,7 +859,9 @@ function updateBulkTextarea() {
 function onCopyModeChange(mode) {
   copyMode = mode;
   if (bulkSelected.size) {
-    bulkSelected.forEach((entry, key) => { entry.text = getWordCopyText(entry.w); });
+    bulkSelected.forEach((entry, key) => {
+      entry.text = entry.e ? emojiBulkText(entry.e) : getWordCopyText(entry.w);
+    });
     updateBulkTextarea();
   }
 }
@@ -874,7 +877,11 @@ function toggleBulkMode(on) {
 function clearBulkSelection() {
   bulkSelected.clear();
   updateBulkTextarea();
-  document.querySelectorAll('.wc-bulk-cb').forEach(cb => { cb.checked = false; cb.closest('.word-card').classList.remove('bulk-selected'); });
+  document.querySelectorAll('.wc-bulk-cb').forEach(cb => {
+    cb.checked = false;
+    const card = cb.closest('.word-card,.emoji-card');
+    if (card) card.classList.remove('bulk-selected');
+  });
 }
 
 function selectAllOnPage() {
@@ -884,10 +891,16 @@ function selectAllOnPage() {
 }
 
 function selectAllMatching() {
-  filtered.forEach(w => bulkSelected.set(w.word, {w, text: wordBulkText(w)}));
+  if (emojiMode) {
+    emojiFiltered.forEach(e => bulkSelected.set(emojiKey(e), {e, text: emojiBulkText(e)}));
+  } else {
+    filtered.forEach(w => bulkSelected.set(w.word, {w, text: wordBulkText(w)}));
+  }
   updateBulkTextarea();
   document.querySelectorAll('.wc-bulk-cb').forEach(cb => {
-    cb.checked = true; cb.closest('.word-card').classList.add('bulk-selected');
+    cb.checked = true;
+    const card = cb.closest('.word-card,.emoji-card');
+    if (card) card.classList.add('bulk-selected');
   });
 }
 
@@ -1777,6 +1790,11 @@ function setEmojiGender(g) {
   document.querySelectorAll('.emoji-gender-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.gender === g));
   saveEmojiSettings();
+  // Refresh any bulk-selected emoji entries — their visible forms changed.
+  if (bulkSelected.size) {
+    bulkSelected.forEach(entry => { if (entry.e) entry.text = emojiBulkText(entry.e); });
+    updateBulkTextarea();
+  }
   onFilter();
 }
 
@@ -1879,6 +1897,43 @@ function renderEmojiCatTree() {
   });
 }
 
+function emojiKey(e) { return e.emoji + '|' + e.english; }
+
+function emojiVisibleForms(e) {
+  const out = [];
+  const showMasc = (emojiGender === 'all' || emojiGender === 'masc') && e.hebrew_masculine;
+  const showFem  = (emojiGender === 'all' || emojiGender === 'fem')  && e.hebrew_feminine;
+  if (showMasc) out.push({ heb: e.hebrew_masculine, translit: e.translit_masculine });
+  if (showFem)  out.push({ heb: e.hebrew_feminine,  translit: e.translit_feminine });
+  if (!out.length) {
+    // Fallback to whichever form exists when filter excludes everything
+    if (e.hebrew_masculine) out.push({ heb: e.hebrew_masculine, translit: e.translit_masculine });
+    else if (e.hebrew_feminine) out.push({ heb: e.hebrew_feminine, translit: e.translit_feminine });
+  }
+  return out;
+}
+
+function emojiBulkText(e) {
+  const forms = emojiVisibleForms(e);
+  const lineFor = f => {
+    if (copyMode === 'definition') return f.heb && e.english ? `${f.heb} — ${e.english}` : (f.heb || e.english);
+    if (copyMode === 'defonly')    return e.english || f.heb;
+    if (copyMode === 'transdef') {
+      const mid = [f.translit, e.english].filter(Boolean).join(' — ');
+      return mid ? `${f.heb} — ${mid}` : f.heb;
+    }
+    if (copyMode === 'allinfo') {
+      const segs = [f.heb];
+      if (f.translit) segs.push(f.translit);
+      if (e.english)  segs.push(e.english);
+      segs.push(`${e.category} (${e.subcategory})`);
+      return segs.filter(Boolean).join(' — ');
+    }
+    return f.heb;
+  };
+  return forms.map(lineFor).join('\n');
+}
+
 function emojiMatchesSearch(e, q) {
   if (!q) return true;
   const ql = q.toLowerCase();
@@ -1951,7 +2006,28 @@ function renderEmojiResults() {
     if (showFem)  addForm('♀ Feminine',  'fem',  e.hebrew_feminine,  e.translit_feminine);
     if (fallbackMasc) addForm('♀ Feminine (only form)', 'fem', e.hebrew_feminine, e.translit_feminine);
     if (fallbackFem)  addForm('♂ Masculine (only form)', 'masc', e.hebrew_masculine, e.translit_masculine);
-    card.innerHTML = `
+    const key = emojiKey(e);
+    const bulkCb = document.createElement('input');
+    bulkCb.type = 'checkbox';
+    bulkCb.className = 'wc-bulk-cb';
+    bulkCb.checked = bulkSelected.has(key);
+    bulkCb.addEventListener('change', ev => {
+      ev.stopPropagation();
+      if (ev.target.checked) bulkSelected.set(key, { e, text: emojiBulkText(e) });
+      else bulkSelected.delete(key);
+      card.classList.toggle('bulk-selected', ev.target.checked);
+      updateBulkTextarea();
+    });
+    card.appendChild(bulkCb);
+    if (bulkSelected.has(key)) card.classList.add('bulk-selected');
+    card.addEventListener('click', ev => {
+      if (!bulkMode) return;
+      if (ev.target === bulkCb || ev.target.closest('.ec-speak')) return;
+      bulkCb.checked = !bulkCb.checked;
+      bulkCb.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    const inner = document.createElement('div');
+    inner.innerHTML = `
       <div class="ec-emoji">${e.emoji}</div>
       <div class="ec-english">${e.english}</div>
       ${formsHtml}
@@ -1959,6 +2035,7 @@ function renderEmojiResults() {
         <span class="ec-tag cat">${e.category}</span>
         <span class="ec-tag">${e.subcategory}</span>
       </div>`;
+    while (inner.firstChild) card.appendChild(inner.firstChild);
     grid.appendChild(card);
   });
   shown = Math.min(shown + PAGE, emojiFiltered.length);
