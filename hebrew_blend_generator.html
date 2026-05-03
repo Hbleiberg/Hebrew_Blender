@@ -705,6 +705,12 @@
     margin-bottom: 20px;
     border-radius: 4px;
   }
+  .ws-brand {
+    font-size: 0.62rem;
+    opacity: 0.7;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+  }
 
   /* Empty state */
   .empty-state {
@@ -4637,8 +4643,8 @@ function renderNameTheLetter(ws) {
   });
   sheet.appendChild(grid);
   const footer = document.createElement('div');
-  footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-  footer.textContent = `${blends.length} letters · Hebrew Blend Generator — Name the Letter`;
+  footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${blends.length} letters · Hebrew Blend Generator — Name the Letter</span>`;
   sheet.appendChild(footer);
   ws.appendChild(sheet);
 
@@ -4670,8 +4676,8 @@ function renderNameTheLetter(ws) {
     });
     ak.appendChild(akGrid);
     const akFoot = document.createElement('div');
-    akFoot.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-    akFoot.textContent = `${blends.length} letters · Hebrew Blend Generator — Name the Letter Answer Key`;
+    akFoot.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+    akFoot.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${blends.length} letters · Hebrew Blend Generator — Name the Letter Answer Key</span>`;
     ak.appendChild(akFoot);
     ws.appendChild(ak);
   }
@@ -5079,8 +5085,8 @@ function renderNumberPractice(ws) {
   });
 
   const footer = document.createElement('div');
-  footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-  footer.textContent = `${items.length} items · Hebrew Number Practice`;
+  footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${items.length} items · Hebrew Number Practice</span>`;
   sheet.appendChild(footer);
   ws.appendChild(sheet);
 
@@ -5130,8 +5136,8 @@ function renderNumberPractice(ws) {
     });
 
     const akFooter = document.createElement('div');
-    akFooter.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-    akFooter.textContent = `${items.length} items · Hebrew Number Practice — Answer Key`;
+    akFooter.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+    akFooter.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${items.length} items · Hebrew Number Practice — Answer Key</span>`;
     ak.appendChild(akFooter);
     ws.appendChild(ak);
   }
@@ -6508,8 +6514,8 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
     });
     keySheet.appendChild(keyGrid);
     const keyFoot = document.createElement('div');
-    keyFoot.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-    keyFoot.textContent = `${items.length} items · Hebrew Blend Generator — Gematria Answer Key`;
+    keyFoot.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+    keyFoot.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${items.length} items · Hebrew Blend Generator — Gematria Answer Key</span>`;
     keySheet.appendChild(keyFoot);
     ws.appendChild(keySheet);
   }
@@ -6580,8 +6586,8 @@ function renderWorksheet(animate = false) {
     sheet.appendChild(grid);
     blends.forEach((b, idx) => renderHebrewCell(grid, b, idx, false, fillVowels));
     const footer = document.createElement('div');
-    footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-    footer.textContent = `${blends.length} items · Hebrew Blend Generator`;
+    footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+    footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${blends.length} items · Hebrew Blend Generator</span>`;
     sheet.appendChild(footer);
     ws.appendChild(sheet);
 
@@ -6603,8 +6609,8 @@ function renderWorksheet(animate = false) {
       answerSheet.appendChild(akGrid);
       blends.forEach((b, idx) => renderHebrewCell(akGrid, b, idx, true));
       const akFooter = document.createElement('div');
-      akFooter.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-      akFooter.textContent = `${blends.length} items · Hebrew Blend Generator — Answer Key`;
+      akFooter.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+      akFooter.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${blends.length} items · Hebrew Blend Generator — Answer Key</span>`;
       answerSheet.appendChild(akFooter);
       ws.appendChild(answerSheet);
     }
@@ -6640,8 +6646,8 @@ function renderWorksheet(animate = false) {
   });
 
   const footer = document.createElement('div');
-  footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-  footer.textContent = `${blends.length} blends · Hebrew Blend Generator`;
+  footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${blends.length} blends · Hebrew Blend Generator</span>`;
   studentSheet.appendChild(footer);
   ws.appendChild(studentSheet);
 
@@ -6677,8 +6683,8 @@ function renderWorksheet(animate = false) {
     });
 
     const akFooter = document.createElement('div');
-    akFooter.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-    akFooter.textContent = `${blends.length} blends · Hebrew Blend Generator — Answer Key`;
+    akFooter.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+    akFooter.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${blends.length} blends · Hebrew Blend Generator — Answer Key</span>`;
     answerSheet.appendChild(akFooter);
     ws.appendChild(answerSheet);
   }
@@ -7935,8 +7941,8 @@ function generateRealWords() {
   sheet.appendChild(grid);
 
   const footer = document.createElement('div');
-  footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-  footer.textContent = `${items.length} words · Hebrew Blend Generator`;
+  footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${items.length} words · Hebrew Blend Generator</span>`;
   sheet.appendChild(footer);
   ws.appendChild(sheet);
 
@@ -7972,8 +7978,8 @@ function generateRealWords() {
     });
     keySheet.appendChild(keyGrid);
     const akFooter = document.createElement('div');
-    akFooter.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-    akFooter.textContent = `${items.length} words · Hebrew Blend Generator — Answer Key`;
+    akFooter.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+    akFooter.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${items.length} words · Hebrew Blend Generator — Answer Key</span>`;
     keySheet.appendChild(akFooter);
     ws.appendChild(keySheet);
   }
@@ -8166,8 +8172,8 @@ function generateWordSearch(pool) {
   sheet.appendChild(renderGrid(false));
   if (showWordBank) sheet.appendChild(renderWordBank(trOnSheet, tnOnSheet));
   const footer = document.createElement('div');
-  footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-  footer.textContent = `${placedWords.length} of ${chosen.length} words placed · Hebrew Blend Generator`;
+  footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${placedWords.length} of ${chosen.length} words placed · Hebrew Blend Generator</span>`;
   sheet.appendChild(footer);
   ws.appendChild(sheet);
 
@@ -8185,8 +8191,8 @@ function generateWordSearch(pool) {
   ak.appendChild(renderGrid(true));
   ak.appendChild(renderWordBank(trOnKey, tnOnKey));
   const akFooter = document.createElement('div');
-  akFooter.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-  akFooter.textContent = `${placedWords.length} words · Hebrew Blend Generator — Word Search Answer Key`;
+  akFooter.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  akFooter.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${placedWords.length} words · Hebrew Blend Generator — Word Search Answer Key</span>`;
   ak.appendChild(akFooter);
   ws.appendChild(ak);
 
@@ -8224,8 +8230,8 @@ function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnO
   });
 
   const footer = document.createElement('div');
-  footer.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-  footer.textContent = `${words.length} words · Hebrew Blend Generator — Fill in the Vowels`;
+  footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${words.length} words · Hebrew Blend Generator — Fill in the Vowels</span>`;
   sheet.appendChild(footer);
   ws.appendChild(sheet);
 
@@ -8316,7 +8322,7 @@ function generateIdentifyDrill(pool, count, trOnSheet, tnOnSheet, trOnKey, tnOnK
   studentSheet.appendChild(hdr);
   studentSheet.appendChild(makeGrid(items, false));
   const foot = document.createElement('div');
-  foot.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  foot.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
   foot.textContent = `${items.length} items · Hebrew Blend Generator`;
   studentSheet.appendChild(foot);
   ws.appendChild(studentSheet);
@@ -8338,8 +8344,8 @@ function generateIdentifyDrill(pool, count, trOnSheet, tnOnSheet, trOnKey, tnOnK
   keySheet.appendChild(keyHdr);
   keySheet.appendChild(makeGrid(items, true));
   const keyFoot = document.createElement('div');
-  keyFoot.style.cssText = 'margin-top:20px;text-align:right;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-  keyFoot.textContent = `${items.filter(w => w.isReal).length} real words · ${items.filter(w => !w.isReal).length} blends · Hebrew Blend Generator — Answer Key`;
+  keyFoot.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  keyFoot.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${items.filter(w => w.isReal).length} real words · ${items.filter(w => !w.isReal).length} blends · Hebrew Blend Generator — Answer Key</span>`;
   keySheet.appendChild(keyFoot);
   ws.appendChild(keySheet);
 
