@@ -1064,6 +1064,13 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
               Show gender (♂/♀)
             </label>
           </div>
+          <div class="row hide" id="emojiGenderSideRow" style="margin-top:4px;margin-left:22px;">
+            <div class="pill-group" id="emojiGenderSidePills">
+              <button class="pill" data-eside="emoji">Emoji side</button>
+              <button class="pill active" data-eside="hebrew">Hebrew side</button>
+              <button class="pill" data-eside="both">Both</button>
+            </div>
+          </div>
         </div>
       </div><!-- /otherModeSection -->
     </div>
@@ -1603,6 +1610,7 @@ let emojiGender = 'both';               // 'masc' | 'fem' | 'both' (Show M/F For
 let emojiFront = 'emoji';               // 'emoji' | 'hebrew'
 let emojiShowTranslit = false;
 let emojiShowGender = false;
+let emojiGenderSide = 'hebrew';         // 'emoji' | 'hebrew' | 'both' (where ♂/♀ glyph appears)
 let selectedEmojiSubs = new Set();      // "Category|Subcategory" strings; populated after fetch
 let timerMode = 'off';       // 'off' | 'track' | 'limit'
 let timerShowOnScreen = true;
@@ -2200,6 +2208,10 @@ function setAllEmojiSubs(checked) {
   saveSettings();
 }
 
+function syncEmojiGenderSideRow() {
+  document.getElementById('emojiGenderSideRow').classList.toggle('hide', !emojiShowGender);
+}
+
 
 function initColorTiles() {
   const grid = document.getElementById('colorTileGrid');
@@ -2338,7 +2350,7 @@ function getSettings() {
     hebFontId, audioEnabled, nameLetterMode, nameLetterShowLetter,
     otherModeActive, otherSubMode, numberMin, numberMax, numberGender, numberFront, numberShowTranslit,
     colorGender, colorDisplayMode, colorFront, colorShowTranslit, selectedColors: [...selectedColors],
-    emojiGender, emojiFront, emojiShowTranslit, emojiShowGender,
+    emojiGender, emojiFront, emojiShowTranslit, emojiShowGender, emojiGenderSide,
     selectedEmojiSubs: [...selectedEmojiSubs],
     timerMode, timerShowOnScreen, timeLimitSeconds,
     ttsRate: parseFloat(document.getElementById('ttsRateSlider')?.value || 0.85),
@@ -2453,6 +2465,7 @@ function applySettings(s) {
   emojiFront        = s.emojiFront || 'emoji';
   emojiShowTranslit = !!s.emojiShowTranslit;
   emojiShowGender   = !!s.emojiShowGender;
+  emojiGenderSide   = s.emojiGenderSide || 'hebrew';
   selectedEmojiSubs = new Set(s.selectedEmojiSubs || []);
   setOtherMode(otherModeActive);
   document.querySelector('#numMinInput') && (document.getElementById('numMinInput').value = numberMin);
@@ -2474,6 +2487,9 @@ function applySettings(s) {
     p.classList.toggle('active', p.dataset.efront === emojiFront));
   const eTr = document.getElementById('emojiTranslitToggle');     if (eTr) eTr.checked = emojiShowTranslit;
   const eGl = document.getElementById('emojiGenderLabelToggle');  if (eGl) eGl.checked = emojiShowGender;
+  document.querySelectorAll('#emojiGenderSidePills .pill').forEach(p =>
+    p.classList.toggle('active', p.dataset.eside === emojiGenderSide));
+  syncEmojiGenderSideRow();
   syncOtherSubUI();
   if (!otherModeActive) document.getElementById('panelVowels').style.display = nameLetterMode ? 'none' : '';
   document.querySelectorAll('#nameLetterFrontPills .pill').forEach(p =>
@@ -3177,17 +3193,20 @@ function renderCurrentCard() {
       hebSide(front); numSide(back);
     }
   } else if (otherModeActive && otherSubMode === 'emoji') {
+    const genderGlyph = card.genderForm === 'm' ? '♂' : (card.genderForm === 'f' ? '♀' : '');
+    const showGenderEmoji = emojiShowGender && genderGlyph && (emojiGenderSide === 'emoji' || emojiGenderSide === 'both');
+    const showGenderHeb   = emojiShowGender && genderGlyph && (emojiGenderSide === 'hebrew' || emojiGenderSide === 'both');
     function emojiSide(el) {
+      const genderLine = showGenderEmoji
+        ? `<div style="font-family:var(--serif);font-size:clamp(1.2rem,5vw,2rem);opacity:0.7;line-height:1;margin-top:6px;">${genderGlyph}</div>` : '';
       const enLine = card.english
         ? `<div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.75;text-align:center;margin-top:8px;">${card.english}</div>` : '';
-      el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:0;width:100%;"><div style="font-size:clamp(4rem,18vw,8rem);line-height:1;">${card.emoji}</div>${enLine}</div>`;
+      el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:0;width:100%;"><div style="font-size:clamp(4rem,18vw,8rem);line-height:1;">${card.emoji}</div>${genderLine}${enLine}</div>`;
       el.style.fontFamily = ''; el.style.direction = ''; el.style.fontSize = '';
     }
     function hebEmojiSide(el) {
-      const genderGlyph = card.genderForm === 'm' ? '♂' : (card.genderForm === 'f' ? '♀' : '');
-      const showGender  = emojiShowGender && genderGlyph;
-      const hebInner    = colorizeHebrew(card.heb) +
-        (showGender ? ` <span style="font-family:var(--serif);font-size:0.55em;opacity:0.7;">${genderGlyph}</span>` : '');
+      const hebInner = colorizeHebrew(card.heb) +
+        (showGenderHeb ? ` <span style="font-family:var(--serif);font-size:0.55em;opacity:0.7;">${genderGlyph}</span>` : '');
       const trLine = (emojiShowTranslit && card.romanized)
         ? `<div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;text-align:center;">${card.romanized}</div>` : '';
       if (trLine) {
@@ -3522,9 +3541,16 @@ function wireSetupScreen() {
   });
   document.getElementById('emojiGenderLabelToggle').addEventListener('change', e => {
     emojiShowGender = e.target.checked;
+    syncEmojiGenderSideRow();
     saveSettings();
     if (document.getElementById('screenCard').classList.contains('active')) renderCurrentCard();
   });
+  document.querySelectorAll('#emojiGenderSidePills .pill').forEach(p => p.addEventListener('click', () => {
+    emojiGenderSide = p.dataset.eside;
+    document.querySelectorAll('#emojiGenderSidePills .pill').forEach(x => x.classList.toggle('active', x === p));
+    saveSettings();
+    if (document.getElementById('screenCard').classList.contains('active')) renderCurrentCard();
+  }));
 
   // Audio
   document.getElementById('audioToggle').addEventListener('change', e => {
