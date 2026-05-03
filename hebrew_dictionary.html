@@ -285,6 +285,38 @@ body.dict-audio-on .wc-speak{display:flex;}
 .b-both{background:var(--warm-gray);color:var(--muted);}
 .b-len{background:var(--navy);color:var(--gold-light);}
 .load-more-wrap{text-align:center;padding:14px 0;}
+/* Emoji mode */
+body.emoji-mode .word-mode-panel{display:none;}
+.emoji-gender-btn{flex:1;padding:5px 8px;background:var(--white);color:var(--text);border:none;font-size:0.74rem;font-family:inherit;cursor:pointer;border-right:1px solid var(--border);transition:background 0.15s;}
+.emoji-gender-btn:last-child{border-right:none;}
+.emoji-gender-btn:hover{background:var(--warm-gray);}
+.emoji-gender-btn.active{background:var(--navy);color:#fff;}
+body.dark .emoji-gender-btn.active{background:#0a0f1c;}
+.emoji-cat-row{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:0.78rem;cursor:pointer;user-select:none;}
+.emoji-cat-row input{accent-color:var(--gold);width:13px;height:13px;cursor:pointer;}
+.emoji-cat-row.is-cat{font-weight:600;}
+.emoji-cat-row.is-sub{padding-left:18px;font-size:0.73rem;color:var(--muted);}
+.emoji-cat-arrow{display:inline-block;width:10px;font-size:0.7rem;color:var(--muted);transition:transform 0.15s;}
+.emoji-cat-group.collapsed .emoji-cat-arrow{transform:rotate(-90deg);}
+.emoji-cat-group.collapsed .emoji-sub-list{display:none;}
+.emoji-cat-count{margin-left:auto;font-size:0.65rem;color:var(--muted);font-weight:400;}
+/* Emoji card */
+.emoji-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:14px 12px 10px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;transition:border-color 0.15s,box-shadow 0.15s;position:relative;}
+.emoji-card:hover{border-color:var(--gold);box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+.ec-emoji{font-size:3rem;line-height:1.1;margin-bottom:2px;}
+.ec-english{font-size:0.78rem;color:var(--muted);font-weight:600;letter-spacing:0.02em;text-transform:uppercase;}
+.ec-form{display:flex;flex-direction:column;align-items:center;gap:1px;margin-top:4px;width:100%;}
+.ec-form + .ec-form{margin-top:6px;padding-top:6px;border-top:1px dashed var(--border);}
+.ec-gender{font-size:0.62rem;font-weight:700;color:var(--muted);letter-spacing:0.05em;}
+.ec-gender.masc{color:#3a78c0;}
+.ec-gender.fem{color:#c9468f;}
+body.dark .ec-gender.masc{color:#7ab0e8;}
+body.dark .ec-gender.fem{color:#ec88bb;}
+.ec-heb{font-family:var(--heb-font);font-size:var(--heb-font-size);direction:rtl;line-height:1.2;}
+.ec-translit{font-size:0.76rem;color:var(--muted);font-style:italic;}
+.ec-tags{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+.ec-tag{font-size:0.62rem;padding:2px 6px;border-radius:3px;background:var(--warm-gray);color:var(--muted);font-weight:600;letter-spacing:0.03em;text-transform:uppercase;}
+.ec-tag.cat{background:var(--navy);color:var(--gold-light);}
 .tip-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:var(--muted);color:var(--white);font-size:0.58rem;font-weight:700;cursor:help;margin-left:4px;vertical-align:middle;flex-shrink:0;}
 .tip-wrap.tip-gold{background:var(--gold);color:var(--navy);}
 .tip-wrap .tip-box{display:none;}
@@ -381,11 +413,30 @@ footer a{color:var(--gold);text-decoration:none;}
           <label class="cb-label"><input type="checkbox" class="lcb" value="7" checked> 7-Letter</label>
           <label class="cb-label"><input type="checkbox" class="lcb" value="8plus" checked> 8+ Letter</label>
         </div>
+        <hr style="border:none;border-top:1px solid var(--border);margin:8px 0 6px;">
+        <label class="cb-label"><input type="checkbox" id="emojiModeCb" style="accent-color:var(--gold);" onchange="toggleEmojiMode(this.checked)"> Emojis</label>
+      </div>
+    </div>
+
+    <!-- Emoji Categories (only visible in emoji mode) -->
+    <div class="panel emoji-only-panel" id="emojiCatPanel" style="display:none;">
+      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Emoji Categories</div>
+      <div class="panel-body">
+        <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:10px;">
+          <button class="emoji-gender-btn active" data-gender="all" onclick="setEmojiGender('all')">All</button>
+          <button class="emoji-gender-btn" data-gender="masc" onclick="setEmojiGender('masc')">♂ Masc</button>
+          <button class="emoji-gender-btn" data-gender="fem" onclick="setEmojiGender('fem')">♀ Fem</button>
+        </div>
+        <div style="display:flex;gap:5px;margin-bottom:8px;">
+          <button class="pos-all-btn" onclick="setAllEmojiCats(true)">All</button>
+          <button class="pos-all-btn" onclick="setAllEmojiCats(false)">None</button>
+        </div>
+        <div id="emojiCatTree"></div>
       </div>
     </div>
 
     <!-- Part of Speech -->
-    <div class="panel">
+    <div class="panel word-mode-panel">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Part of Speech</div>
       <div class="panel-body">
         <div style="display:flex;gap:6px;margin-bottom:8px;">
@@ -418,7 +469,7 @@ footer a{color:var(--gold);text-decoration:none;}
     </div>
 
     <!-- Era -->
-    <div class="panel">
+    <div class="panel word-mode-panel">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Era</div>
       <div class="panel-body era-body">
         <label class="cb-label"><input type="checkbox" id="eraBib" checked> Biblical</label>
@@ -427,7 +478,7 @@ footer a{color:var(--gold);text-decoration:none;}
     </div>
 
     <!-- Filter by Vowel -->
-    <div class="panel collapsed">
+    <div class="panel collapsed word-mode-panel">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Filter by Vowel</div>
       <div class="panel-body">
         <div class="filter-note" style="margin-bottom:6px;">Show only words whose vowels are all in the selected set.</div>
@@ -438,7 +489,7 @@ footer a{color:var(--gold);text-decoration:none;}
     </div>
 
     <!-- Filter by Letter Position -->
-    <div class="panel">
+    <div class="panel word-mode-panel">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Filter by Letter</div>
       <div class="panel-body" id="posFilterBody"></div>
     </div>
@@ -585,6 +636,8 @@ footer a{color:var(--gold);text-decoration:none;}
         <option value="len-asc">Length ↑</option>
         <option value="len-desc">Length ↓</option>
         <option value="transl">Translation A→Z</option>
+        <option value="cat" class="emoji-sort-only" style="display:none;">Category</option>
+        <option value="english" class="emoji-sort-only" style="display:none;">English A→Z</option>
       </select>
     </div>
     <div class="content">
@@ -1041,6 +1094,17 @@ function updatePB(i) {
 }
 
 function onFilter() {
+  if (emojiMode) {
+    filterEmojis();
+    shown = 0;
+    document.getElementById('resultsGrid').innerHTML = '';
+    renderEmojiResults();
+    const n = emojiFiltered.length;
+    const countText = n === 0 ? 'No emojis found' : n === 1 ? '1 emoji' : `${n.toLocaleString()} emojis`;
+    document.getElementById('resultCount').textContent = countText;
+    document.getElementById('sidebarWordCount').textContent = countText;
+    return;
+  }
   const q = document.getElementById('searchInput').value.trim().toLowerCase();
   const checkedLen = new Set([...document.querySelectorAll('.lcb:checked')].map(c => c.value));
   const checkedPos = new Set([...document.querySelectorAll('.pcb:checked')].map(c => c.value));
@@ -1144,6 +1208,7 @@ function speakWord(text) {
 }
 
 function loadMore() {
+  if (emojiMode) { renderEmojiResults(); return; }
   const grid = document.getElementById('resultsGrid');
   filtered.slice(shown, shown + PAGE).forEach(w => {
     const card = document.createElement('div');
@@ -1619,6 +1684,275 @@ function initFontSelector() {
 }
 
 
+// ===== Emoji Mode =====
+const EMOJI_SETTINGS_KEY = 'hebrewDictionary_emojiSettings';
+let EMOJI_DATA = null;          // { categories: [{name, subcategories:[]}], emojis: [...] }
+let emojiMode = false;
+let emojiGender = 'all';        // 'all' | 'masc' | 'fem'
+let emojiSelectedSubs = null;   // Set of "Category|Subcategory" — null = all selected
+let emojiFiltered = [];
+
+function loadEmojiSettings() {
+  try {
+    const raw = localStorage.getItem(EMOJI_SETTINGS_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch(e) { return null; }
+}
+function saveEmojiSettings() {
+  try {
+    const blob = {
+      mode: emojiMode,
+      gender: emojiGender,
+      excludedSubs: emojiSelectedSubs ? null : []  // placeholder, real value set below
+    };
+    if (EMOJI_DATA && emojiSelectedSubs) {
+      const allSubs = [];
+      EMOJI_DATA.categories.forEach(c => c.subcategories.forEach(s => allSubs.push(c.name + '|' + s)));
+      blob.excludedSubs = allSubs.filter(k => !emojiSelectedSubs.has(k));
+    }
+    localStorage.setItem(EMOJI_SETTINGS_KEY, JSON.stringify(blob));
+  } catch(e) {}
+}
+
+function ensureAllSubsSelected() {
+  if (!EMOJI_DATA) return;
+  if (emojiSelectedSubs) return;
+  emojiSelectedSubs = new Set();
+  EMOJI_DATA.categories.forEach(c => c.subcategories.forEach(s => emojiSelectedSubs.add(c.name + '|' + s)));
+}
+
+function toggleEmojiMode(on) {
+  emojiMode = on;
+  document.body.classList.toggle('emoji-mode', on);
+  document.getElementById('emojiCatPanel').style.display = on ? '' : 'none';
+  document.querySelectorAll('.emoji-sort-only').forEach(o => o.style.display = on ? '' : 'none');
+  // When entering emoji mode, force a sort that makes sense
+  const sortSel = document.getElementById('sortSel');
+  if (on) {
+    if (!['cat','english'].includes(sortSel.value)) sortSel.value = 'cat';
+  } else {
+    if (['cat','english'].includes(sortSel.value)) sortSel.value = 'alpha';
+  }
+  if (on && !EMOJI_DATA) {
+    fetchEmojiData().then(() => { renderEmojiCatTree(); onFilter(); });
+  } else {
+    if (on) renderEmojiCatTree();
+    onFilter();
+  }
+  saveEmojiSettings();
+}
+
+function fetchEmojiData() {
+  return fetch('hebrew_emojis.json?v=1')
+    .then(r => r.json())
+    .then(data => {
+      EMOJI_DATA = data;
+      // Restore persisted exclusions, or default to "all selected"
+      const saved = loadEmojiSettings();
+      const allSubs = new Set();
+      data.categories.forEach(c => c.subcategories.forEach(s => allSubs.add(c.name + '|' + s)));
+      if (saved && Array.isArray(saved.excludedSubs)) {
+        emojiSelectedSubs = new Set([...allSubs].filter(k => !saved.excludedSubs.includes(k)));
+      } else {
+        emojiSelectedSubs = allSubs;
+      }
+    })
+    .catch(() => {
+      const tree = document.getElementById('emojiCatTree');
+      if (tree) tree.innerHTML = '<div style="color:var(--muted);font-size:0.78rem;">Failed to load emoji data.</div>';
+    });
+}
+
+function setEmojiGender(g) {
+  emojiGender = g;
+  document.querySelectorAll('.emoji-gender-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.gender === g));
+  saveEmojiSettings();
+  onFilter();
+}
+
+function setAllEmojiCats(checked) {
+  if (!EMOJI_DATA) return;
+  ensureAllSubsSelected();
+  if (checked) {
+    EMOJI_DATA.categories.forEach(c => c.subcategories.forEach(s => emojiSelectedSubs.add(c.name + '|' + s)));
+  } else {
+    emojiSelectedSubs.clear();
+  }
+  renderEmojiCatTree();
+  saveEmojiSettings();
+  onFilter();
+}
+
+function toggleEmojiCat(catName, checked) {
+  ensureAllSubsSelected();
+  const cat = EMOJI_DATA.categories.find(c => c.name === catName);
+  if (!cat) return;
+  cat.subcategories.forEach(s => {
+    const k = catName + '|' + s;
+    checked ? emojiSelectedSubs.add(k) : emojiSelectedSubs.delete(k);
+  });
+  renderEmojiCatTree();
+  saveEmojiSettings();
+  onFilter();
+}
+
+function toggleEmojiSub(catName, subName, checked) {
+  ensureAllSubsSelected();
+  const k = catName + '|' + subName;
+  checked ? emojiSelectedSubs.add(k) : emojiSelectedSubs.delete(k);
+  renderEmojiCatTree();
+  saveEmojiSettings();
+  onFilter();
+}
+
+function renderEmojiCatTree() {
+  const tree = document.getElementById('emojiCatTree');
+  if (!tree || !EMOJI_DATA) return;
+  ensureAllSubsSelected();
+  // Pre-count entries per subcategory
+  const subCounts = {};
+  EMOJI_DATA.emojis.forEach(e => {
+    const k = e.category + '|' + e.subcategory;
+    subCounts[k] = (subCounts[k] || 0) + 1;
+  });
+  tree.innerHTML = '';
+  EMOJI_DATA.categories.forEach(c => {
+    const subs = c.subcategories;
+    const totalSelected = subs.filter(s => emojiSelectedSubs.has(c.name + '|' + s)).length;
+    const allSelected = totalSelected === subs.length;
+    const noneSelected = totalSelected === 0;
+    const totalCount = subs.reduce((n,s) => n + (subCounts[c.name + '|' + s] || 0), 0);
+    const group = document.createElement('div');
+    group.className = 'emoji-cat-group';
+    const catRow = document.createElement('label');
+    catRow.className = 'emoji-cat-row is-cat';
+    const arrow = document.createElement('span');
+    arrow.className = 'emoji-cat-arrow';
+    arrow.textContent = '▾';
+    arrow.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); group.classList.toggle('collapsed'); });
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = allSelected;
+    cb.indeterminate = !allSelected && !noneSelected;
+    cb.addEventListener('change', e => toggleEmojiCat(c.name, e.target.checked));
+    catRow.appendChild(arrow);
+    catRow.appendChild(cb);
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = c.name;
+    catRow.appendChild(nameSpan);
+    const cnt = document.createElement('span');
+    cnt.className = 'emoji-cat-count';
+    cnt.textContent = totalCount;
+    catRow.appendChild(cnt);
+    group.appendChild(catRow);
+    const subList = document.createElement('div');
+    subList.className = 'emoji-sub-list';
+    subs.forEach(s => {
+      const subRow = document.createElement('label');
+      subRow.className = 'emoji-cat-row is-sub';
+      const scb = document.createElement('input');
+      scb.type = 'checkbox';
+      scb.checked = emojiSelectedSubs.has(c.name + '|' + s);
+      scb.addEventListener('change', e => toggleEmojiSub(c.name, s, e.target.checked));
+      subRow.appendChild(scb);
+      const sn = document.createElement('span');
+      sn.textContent = s;
+      subRow.appendChild(sn);
+      const sCnt = document.createElement('span');
+      sCnt.className = 'emoji-cat-count';
+      sCnt.textContent = subCounts[c.name + '|' + s] || 0;
+      subRow.appendChild(sCnt);
+      subList.appendChild(subRow);
+    });
+    group.appendChild(subList);
+    tree.appendChild(group);
+  });
+}
+
+function emojiMatchesSearch(e, q) {
+  if (!q) return true;
+  const ql = q.toLowerCase();
+  if (e.english.toLowerCase().includes(ql)) return true;
+  if (e.hebrew_masculine && e.hebrew_masculine.includes(q)) return true;
+  if (e.hebrew_feminine && e.hebrew_feminine.includes(q)) return true;
+  if (e.translit_masculine && e.translit_masculine.toLowerCase().includes(ql)) return true;
+  if (e.translit_feminine && e.translit_feminine.toLowerCase().includes(ql)) return true;
+  if (e.category.toLowerCase().includes(ql)) return true;
+  if (e.subcategory.toLowerCase().includes(ql)) return true;
+  return false;
+}
+
+function filterEmojis() {
+  if (!EMOJI_DATA) { emojiFiltered = []; return; }
+  ensureAllSubsSelected();
+  const q = document.getElementById('searchInput').value.trim();
+  emojiFiltered = EMOJI_DATA.emojis.filter(e => {
+    if (!emojiSelectedSubs.has(e.category + '|' + e.subcategory)) return false;
+    if (!emojiMatchesSearch(e, q)) return false;
+    return true;
+  });
+
+  const catOrder = {};
+  EMOJI_DATA.categories.forEach((c, i) => {
+    catOrder[c.name] = i;
+    c.subcategories.forEach((s, j) => { catOrder[c.name + '|' + s] = j; });
+  });
+  const sort = document.getElementById('sortSel').value;
+  emojiFiltered.sort((a,b) => {
+    if (sort === 'english') return a.english.localeCompare(b.english);
+    if (sort === 'alpha') {
+      const ah = a.hebrew_masculine || a.hebrew_feminine || '';
+      const bh = b.hebrew_masculine || b.hebrew_feminine || '';
+      return ah.localeCompare(bh, 'he');
+    }
+    if (sort === 'transl') return a.english.localeCompare(b.english);
+    // Default for emoji mode: category → subcategory → english
+    const ca = (catOrder[a.category] ?? 99) - (catOrder[b.category] ?? 99);
+    if (ca) return ca;
+    const sa = (catOrder[a.category + '|' + a.subcategory] ?? 99) - (catOrder[b.category + '|' + b.subcategory] ?? 99);
+    if (sa) return sa;
+    return a.english.localeCompare(b.english);
+  });
+}
+
+function renderEmojiResults() {
+  const grid = document.getElementById('resultsGrid');
+  emojiFiltered.slice(shown, shown + PAGE).forEach(e => {
+    const card = document.createElement('div');
+    card.className = 'emoji-card';
+    const showMasc = (emojiGender === 'all' || emojiGender === 'masc') && e.hebrew_masculine;
+    const showFem  = (emojiGender === 'all' || emojiGender === 'fem')  && e.hebrew_feminine;
+    // Fallbacks: if user picked masc but only fem exists, still show fem (so the entry isn't blank)
+    const fallbackMasc = (emojiGender === 'masc' && !e.hebrew_masculine && e.hebrew_feminine);
+    const fallbackFem  = (emojiGender === 'fem'  && !e.hebrew_feminine  && e.hebrew_masculine);
+    let formsHtml = '';
+    const addForm = (label, cls, heb, translit) => {
+      formsHtml += `<div class="ec-form">
+        <span class="ec-gender ${cls}">${label}</span>
+        <div class="ec-heb">${colorizeHebrew(heb)}</div>
+        ${translit ? `<div class="ec-translit">${translit}</div>` : ''}
+      </div>`;
+    };
+    if (showMasc) addForm('♂ Masculine', 'masc', e.hebrew_masculine, e.translit_masculine);
+    if (showFem)  addForm('♀ Feminine',  'fem',  e.hebrew_feminine,  e.translit_feminine);
+    if (fallbackMasc) addForm('♀ Feminine (only form)', 'fem', e.hebrew_feminine, e.translit_feminine);
+    if (fallbackFem)  addForm('♂ Masculine (only form)', 'masc', e.hebrew_masculine, e.translit_masculine);
+    card.innerHTML = `
+      <div class="ec-emoji">${e.emoji}</div>
+      <div class="ec-english">${e.english}</div>
+      ${formsHtml}
+      <div class="ec-tags">
+        <span class="ec-tag cat">${e.category}</span>
+        <span class="ec-tag">${e.subcategory}</span>
+      </div>`;
+    grid.appendChild(card);
+  });
+  shown = Math.min(shown + PAGE, emojiFiltered.length);
+  document.getElementById('loadMoreWrap').style.display = shown < emojiFiltered.length ? 'block' : 'none';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initVowelFilter();
   initPosFilters();
@@ -1649,6 +1983,23 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.lcb,.pcb').forEach(cb => cb.addEventListener('change', onFilter));
   document.getElementById('eraBib').addEventListener('change', onFilter);
   document.getElementById('eraMod').addEventListener('change', onFilter);
+
+  // Restore emoji-mode settings
+  try {
+    const saved = loadEmojiSettings();
+    if (saved) {
+      if (saved.gender && ['all','masc','fem'].includes(saved.gender)) {
+        emojiGender = saved.gender;
+        document.querySelectorAll('.emoji-gender-btn').forEach(b =>
+          b.classList.toggle('active', b.dataset.gender === emojiGender));
+      }
+      if (saved.mode) {
+        const cb = document.getElementById('emojiModeCb');
+        if (cb) cb.checked = true;
+        toggleEmojiMode(true);
+      }
+    }
+  } catch(e) {}
 
   // Sync JS state with any browser-restored form values
   const restoredMode = document.querySelector('input[name="copyMode"]:checked');
