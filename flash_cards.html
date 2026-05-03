@@ -405,6 +405,11 @@ body.dark .panel-title {
 body.dark .slider::before { background: #d8dde9; }
 .switch input:checked + .slider { background: var(--gold); }
 .switch input:checked + .slider::before { transform: translateX(20px); }
+.switch.sm { width: 34px; height: 20px; }
+.switch.sm .slider::before { width: 14px; height: 14px; left: 3px; top: 3px; }
+.switch.sm input:checked + .slider::before { transform: translateX(14px); }
+.lock-pos-block { margin-top: 4px; }
+.lock-pos-block .lock-pos-grid { margin-top: 6px; padding-left: 10px; border-left: 2px solid var(--border); margin-left: 8px; }
 .has-tip { border-bottom: 1px dotted var(--muted); cursor: help; }
 
 /* ============== LETTER GRID ============== */
@@ -926,16 +931,7 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
             <span class="label has-tip" data-tip="Force a specific letter (or set of letters) to always appear at the chosen position.">Lock Letter</span>
           </div>
           <div id="lockOptions" class="hide">
-            <div class="row">
-              <span class="label">Position:</span>
-              <div class="pill-group" id="lockPosPills">
-                <button class="pill active" data-pos="1">1st</button>
-                <button class="pill" data-pos="2">2nd</button>
-                <button class="pill" data-pos="3">3rd</button>
-              </div>
-            </div>
-            <div class="sub">Tap the locked letter(s) below:</div>
-            <div class="letter-grid mini-letter-grid" id="lockGrid"></div>
+            <!-- per-position rows built by initLockPositionRows() -->
           </div>
         </div>
       </div><!-- /letterModeOpts -->
@@ -1067,12 +1063,7 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
         <span class="label">Vowel Lock</span>
       </div>
       <div id="vowelLockSection" class="hide">
-        <div class="row" style="margin-top:6px;align-items:center;gap:8px;">
-          <span class="label" style="flex-shrink:0;">Position:</span>
-          <div class="pill-group" id="vowelLockPosPills"></div>
-        </div>
-        <div class="sub" style="margin-top:8px;margin-bottom:4px;">Locked vowel:</div>
-        <div id="vowelLockGrid" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
+        <!-- per-position rows built by initVowelLockPositionRows() -->
       </div>
     </div>
   </div>
@@ -1516,9 +1507,12 @@ let selectedLetters = new Set();
 let selectedVowels = new Set();
 let dageshTavEnabled = false;
 let vavAsLetter = true;
-let lockEnabled = false;
-let lockPosition = 1;
-let lockLetters = new Set();
+let anyLetterLock = false;
+let letterLocks = {
+  1: { enabled: false, letters: new Set() },
+  2: { enabled: false, letters: new Set() },
+  3: { enabled: false, letters: new Set() },
+};
 let colorCodingEnabled = false;
 let colorCodingMode = 'letter';
 let nikudColorOverrides = {};
@@ -1545,9 +1539,12 @@ let timerInterval = null;
 let timerElapsed = 0;
 let timerRemaining = 0;
 let vowelPositions = new Set([2]);
-let vowelLockEnabled = false;
-let vowelLockPosition = 2;
-let lockedVowelKeys = new Set();
+let anyVowelLock = false;
+let vowelLocks = {
+  1: { enabled: false, vowels: new Set() },
+  2: { enabled: false, vowels: new Set() },
+  3: { enabled: false, vowels: new Set() },
+};
 
 let currentCards = [];
 let currentIndex = 0;
@@ -1849,21 +1846,54 @@ function initLetters() {
       saveSettings();
     });
   });
-  // Lock grid (mini)
-  initLockGrid();
+  // Lock grids (mini, per position)
+  if (anyLetterLock) initLockPositionRows();
 }
-function initLockGrid() {
-  const grid = document.getElementById('lockGrid');
+function initLockPositionRows() {
+  const container = document.getElementById('lockOptions');
+  if (!container) return;
+  container.innerHTML = '';
+  const labels = ['1st', '2nd', '3rd', '4th'];
+  for (let pos = 1; pos <= mode; pos++) {
+    if (!letterLocks[pos]) letterLocks[pos] = { enabled: false, letters: new Set() };
+    const lk = letterLocks[pos];
+    const block = document.createElement('div');
+    block.className = 'lock-pos-block';
+    block.innerHTML = `
+      <div class="row" style="align-items:center;gap:6px;">
+        <label class="switch sm"><input type="checkbox" class="lock-pos-chk" ${lk.enabled ? 'checked' : ''}><span class="slider"></span></label>
+        <span class="label" style="font-size:0.82rem;">${labels[pos - 1]} Position</span>
+      </div>
+      <div class="lock-pos-grid ${lk.enabled ? '' : 'hide'}">
+        <div class="sub" style="margin-bottom:4px;">Locked letter(s):</div>
+        <div class="letter-grid mini-letter-grid" id="lockGrid-${pos}"></div>
+      </div>
+    `;
+    container.appendChild(block);
+    buildLockLetterGrid(pos);
+    const chk = block.querySelector('.lock-pos-chk');
+    const grid = block.querySelector('.lock-pos-grid');
+    chk.addEventListener('change', () => {
+      letterLocks[pos].enabled = chk.checked;
+      grid.classList.toggle('hide', !chk.checked);
+      saveSettings();
+    });
+  }
+}
+
+function buildLockLetterGrid(pos) {
+  const grid = document.getElementById(`lockGrid-${pos}`);
   if (!grid) return;
+  const lk = letterLocks[pos];
   const display = getDisplayLetters();
-  grid.innerHTML = display.map(L => `
-    <div class="letter-tile ${lockLetters.has(L.heb) ? 'selected' : ''}" data-heb="${L.heb}"><span class="heb-char">${L.heb}</span></div>
-  `).join('');
+  grid.innerHTML = display.map(L =>
+    `<div class="letter-tile ${lk.letters.has(L.heb) ? 'selected' : ''}" data-heb="${L.heb}"><span class="heb-char">${L.heb}</span></div>`
+  ).join('');
   grid.querySelectorAll('.letter-tile').forEach(tile => {
     tile.addEventListener('click', () => {
       const heb = tile.dataset.heb;
-      if (lockLetters.has(heb)) lockLetters.delete(heb);
-      else lockLetters.add(heb);
+      if (lk.letters.has(heb)) lk.letters.delete(heb);
+      else lk.letters.add(heb);
       tile.classList.toggle('selected');
       saveSettings();
     });
@@ -1888,12 +1918,13 @@ function applyLetterButtons() {
     if (dageshTavEnabled) {
       // normalTav (ת) was selected → keep ת (becomes sav) and also add תּ (dagesh tav)
       if (selectedLetters.has('ת')) selectedLetters.add('תּ');
-      if (lockLetters.has('ת')) lockLetters.add('תּ');
+      Object.values(letterLocks).forEach(lk => { if (lk.letters.has('ת')) lk.letters.add('תּ'); });
     } else {
       // Remove dagesh tav; plain ת stays (becomes normalTav)
       selectedLetters.delete('תּ');
-      lockLetters.delete('תּ');
+      Object.values(letterLocks).forEach(lk => lk.letters.delete('תּ'));
     }
+    if (anyLetterLock) initLockPositionRows();
     initLetters();
     saveSettings();
   });
@@ -2012,13 +2043,7 @@ function setLetterMode(m) {
   mode = m;
   document.querySelectorAll('#modePills .pill[data-mode]').forEach(p => p.classList.toggle('active', +p.dataset.mode === m));
   document.getElementById('lockBlock').classList.toggle('hide', m < 2);
-  // Force lockPosition to be valid
-  if (lockPosition > m) lockPosition = m;
-  document.querySelectorAll('#lockPosPills .pill').forEach(p => {
-    p.classList.toggle('active', +p.dataset.pos === lockPosition);
-    p.style.display = (+p.dataset.pos > m) ? 'none' : '';
-  });
-  if (vowelLockPosition > m) vowelLockPosition = m;
+  if (anyLetterLock) initLockPositionRows();
   updateVowelPositionUI();
   updateVowelLockUI();
   document.getElementById('nameLetterRow').style.display = m === 1 ? '' : 'none';
@@ -2111,8 +2136,8 @@ function getSettings() {
     selectedLetters: [...selectedLetters],
     selectedVowels: [...selectedVowels],
     dageshTavEnabled, vavAsLetter,
-    lockEnabled, lockPosition,
-    lockLetters: [...lockLetters],
+    anyLetterLock,
+    letterLocks: Object.fromEntries(Object.entries(letterLocks).map(([k, v]) => [k, { enabled: v.enabled, letters: [...v.letters] }])),
     colorCodingEnabled, colorCodingMode,
     nikudColorOverrides: { ...nikudColorOverrides },
     hebFontId, audioEnabled, nameLetterMode, nameLetterShowLetter,
@@ -2121,9 +2146,8 @@ function getSettings() {
     timerMode, timerShowOnScreen, timeLimitSeconds,
     ttsRate: parseFloat(document.getElementById('ttsRateSlider')?.value || 0.85),
     vowelPositions: [...vowelPositions],
-    vowelLockEnabled,
-    vowelLockPosition,
-    lockedVowelKeys: [...lockedVowelKeys],
+    anyVowelLock,
+    vowelLocks: Object.fromEntries(Object.entries(vowelLocks).map(([k, v]) => [k, { enabled: v.enabled, vowels: [...v.vowels] }])),
     translitStyle,
   };
 }
@@ -2136,9 +2160,21 @@ function applySettings(s) {
   selectedVowels = new Set(s.selectedVowels || []);
   dageshTavEnabled = !!s.dageshTavEnabled;
   vavAsLetter = s.vavAsLetter !== false;
-  lockEnabled = !!s.lockEnabled;
-  lockPosition = s.lockPosition || 1;
-  lockLetters = new Set(s.lockLetters || []);
+  anyLetterLock = !!s.anyLetterLock;
+  letterLocks = {
+    1: { enabled: false, letters: new Set() },
+    2: { enabled: false, letters: new Set() },
+    3: { enabled: false, letters: new Set() },
+  };
+  if (s.letterLocks) {
+    for (const [k, v] of Object.entries(s.letterLocks)) {
+      letterLocks[+k] = { enabled: !!v.enabled, letters: new Set(v.letters || []) };
+    }
+  } else if (s.lockEnabled) {
+    anyLetterLock = true;
+    const pos = s.lockPosition || 1;
+    letterLocks[pos] = { enabled: true, letters: new Set(s.lockLetters || []) };
+  }
   colorCodingEnabled = !!s.colorCodingEnabled;
   colorCodingMode = s.colorCodingMode || 'letter';
   nikudColorOverrides = { ...(s.nikudColorOverrides || {}) };
@@ -2147,23 +2183,35 @@ function applySettings(s) {
   hebFontId = fontMigration[rawFont] || (HEB_FONTS.find(f => f.name === rawFont) ? rawFont : 'Frank Ruhl Libre');
   vowelPositions = new Set((s.vowelPositions || []).filter(p => p >= 1 && p <= (s.mode || 2)));
   if (vowelPositions.size === 0) vowelPositions.add(s.mode || 2);
-  vowelLockEnabled = !!s.vowelLockEnabled;
-  vowelLockPosition = s.vowelLockPosition || (s.mode || 2);
-  lockedVowelKeys = new Set(s.lockedVowelKeys || (s.lockedVowelKey ? [s.lockedVowelKey] : []));
+  anyVowelLock = !!s.anyVowelLock;
+  vowelLocks = {
+    1: { enabled: false, vowels: new Set() },
+    2: { enabled: false, vowels: new Set() },
+    3: { enabled: false, vowels: new Set() },
+  };
+  if (s.vowelLocks) {
+    for (const [k, v] of Object.entries(s.vowelLocks)) {
+      vowelLocks[+k] = { enabled: !!v.enabled, vowels: new Set(v.vowels || []) };
+    }
+  } else if (s.vowelLockEnabled) {
+    anyVowelLock = true;
+    const pos = s.vowelLockPosition || 2;
+    vowelLocks[pos] = { enabled: true, vowels: new Set(s.lockedVowelKeys || (s.lockedVowelKey ? [s.lockedVowelKey] : [])) };
+  }
 
   // Reflect in UI
   setLetterMode(mode);
-  document.getElementById('vowelLockToggle').checked = vowelLockEnabled;
+  document.getElementById('vowelLockToggle').checked = anyVowelLock;
   setCardCount(cardCount);
   document.getElementById('inverseToggle').checked = inverse;
   document.getElementById('dageshTavToggle').checked = dageshTavEnabled;
   document.getElementById('vavAsLetterToggle').checked = vavAsLetter;
-  document.getElementById('lockToggle').checked = lockEnabled;
-  document.getElementById('lockOptions').classList.toggle('hide', !lockEnabled);
+  document.getElementById('lockToggle').checked = anyLetterLock;
+  document.getElementById('lockOptions').classList.toggle('hide', !anyLetterLock);
+  if (anyLetterLock) initLockPositionRows();
   document.getElementById('colorCodeToggle').checked = colorCodingEnabled;
   document.getElementById('colorCodeOpts').classList.toggle('hide', !colorCodingEnabled);
   document.querySelectorAll('#colorModePills .pill').forEach(p => p.classList.toggle('active', p.dataset.cmode === colorCodingMode));
-  document.querySelectorAll('#lockPosPills .pill').forEach(p => p.classList.toggle('active', +p.dataset.pos === lockPosition));
   audioEnabled = !!s.audioEnabled;
   document.getElementById('audioToggle').checked = audioEnabled;
   timerMode = s.timerMode || 'off';
@@ -2436,38 +2484,55 @@ function updateVowelPositionUI() {
 
 function updateVowelLockUI() {
   const section = document.getElementById('vowelLockSection');
-  section.classList.toggle('hide', !vowelLockEnabled);
-  if (!vowelLockEnabled) return;
-  // Position pills
-  const posPills = document.getElementById('vowelLockPosPills');
-  posPills.innerHTML = '';
-  const labels = ['1st', '2nd', '3rd'];
-  for (let i = 1; i <= mode; i++) {
-    const btn = document.createElement('button');
-    btn.className = 'pill' + (vowelLockPosition === i ? ' active' : '');
-    btn.textContent = labels[i - 1];
-    btn.addEventListener('click', () => {
-      vowelLockPosition = i;
-      document.querySelectorAll('#vowelLockPosPills .pill').forEach(b => b.classList.toggle('active', b === btn));
-      saveSettings();
-    });
-    posPills.appendChild(btn);
-  }
-  renderVowelLockGrid();
+  section.classList.toggle('hide', !anyVowelLock);
+  if (anyVowelLock) initVowelLockPositionRows();
 }
 
-function renderVowelLockGrid() {
-  const grid = document.getElementById('vowelLockGrid');
+function initVowelLockPositionRows() {
+  const section = document.getElementById('vowelLockSection');
+  section.innerHTML = '';
+  const labels = ['1st', '2nd', '3rd', '4th'];
+  for (let pos = 1; pos <= mode; pos++) {
+    if (!vowelLocks[pos]) vowelLocks[pos] = { enabled: false, vowels: new Set() };
+    const lk = vowelLocks[pos];
+    const block = document.createElement('div');
+    block.className = 'lock-pos-block';
+    block.innerHTML = `
+      <div class="row" style="align-items:center;gap:6px;">
+        <label class="switch sm"><input type="checkbox" class="vowel-lock-pos-chk" ${lk.enabled ? 'checked' : ''}><span class="slider"></span></label>
+        <span class="label" style="font-size:0.82rem;">${labels[pos - 1]} Position</span>
+      </div>
+      <div class="vowel-lock-pos-content ${lk.enabled ? '' : 'hide'}" style="margin-top:6px;padding-left:10px;border-left:2px solid var(--border);margin-left:8px;">
+        <div class="sub" style="margin-bottom:4px;">Locked vowel(s):</div>
+        <div class="vowel-lock-grid-inner" id="vowelLockGrid-${pos}" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
+      </div>
+    `;
+    section.appendChild(block);
+    buildVowelLockGrid(pos);
+    const chk = block.querySelector('.vowel-lock-pos-chk');
+    const content = block.querySelector('.vowel-lock-pos-content');
+    chk.addEventListener('change', () => {
+      vowelLocks[pos].enabled = chk.checked;
+      content.classList.toggle('hide', !chk.checked);
+      saveSettings();
+    });
+  }
+}
+
+function buildVowelLockGrid(pos) {
+  const grid = document.getElementById(`vowelLockGrid-${pos}`);
+  if (!grid) return;
+  const lk = vowelLocks[pos];
   grid.innerHTML = '';
   VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => {
     const tile = document.createElement('div');
-    tile.className = 'vlk-tile' + (lockedVowelKeys.has(v.key) ? ' selected' : '');
+    tile.className = 'vlk-tile' + (lk.vowels.has(v.key) ? ' selected' : '');
     tile.title = v.label;
     tile.innerHTML = `<div class="vheb">${v.nikud}</div>`;
     tile.addEventListener('click', () => {
-      if (lockedVowelKeys.has(v.key)) lockedVowelKeys.delete(v.key);
-      else lockedVowelKeys.add(v.key);
-      renderVowelLockGrid();
+      if (lk.vowels.has(v.key)) lk.vowels.delete(v.key);
+      else lk.vowels.add(v.key);
+      tile.classList.toggle('selected');
       saveSettings();
     });
     grid.appendChild(tile);
@@ -2550,15 +2615,17 @@ function generateCard() {
 
   if (firstPool.length === 0) return null;
 
-  const lockObjs = [...lockLetters].map(getDisplayLetterByHeb).filter(Boolean);
-
   function getPoolForPosition(pos) {
     let pool;
     if (m === 1)          pool = firstPool;
     else if (pos === 1)   pool = firstPool;
     else if (pos === m)   pool = lastPool;
     else                  pool = midPool;
-    if (lockEnabled && lockPosition === pos && lockObjs.length > 0) pool = lockObjs;
+    const lk = letterLocks[pos];
+    if (lk?.enabled && lk.letters.size > 0) {
+      const locked = [...lk.letters].map(getDisplayLetterByHeb).filter(Boolean);
+      if (locked.length > 0) pool = locked;
+    }
     return pool;
   }
 
@@ -2580,8 +2647,9 @@ function generateCard() {
   // Pick vowel (locked or random)
   const allVowelsList = [];
   VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => allVowelsList.push(v)));
-  const isVowelLocked = vowelLockEnabled && vowelLockPosition === vowelPos && lockedVowelKeys.size > 0;
-  const lockedList = isVowelLocked ? allVowelsList.filter(v => lockedVowelKeys.has(v.key)) : [];
+  const vlk = vowelLocks[vowelPos];
+  const isVowelLocked = !!(vlk?.enabled && vlk.vowels.size > 0);
+  const lockedList = isVowelLocked ? allVowelsList.filter(v => vlk.vowels.has(v.key)) : [];
   let vowel;
   if (isVowelLocked) {
     if (lockedList.length === 0) return null;
@@ -2732,7 +2800,10 @@ function startPractice() {
   if (!otherModeActive) {
     if (selectedLetters.size === 0) issues.push('Select at least one letter.');
     if (selectedVowels.size === 0) issues.push('Select at least one vowel.');
-    if (lockEnabled && lockLetters.size === 0) issues.push('Lock is on but no lock letter is chosen.');
+    if (anyLetterLock) {
+      const hasEnabledEmpty = Object.entries(letterLocks).some(([pos, lk]) => +pos <= mode && lk.enabled && lk.letters.size === 0);
+      if (hasEnabledEmpty) issues.push('A locked position has no letter selected.');
+    }
   }
   if (otherModeActive && otherSubMode === 'numbers' && numberMin > numberMax) {
     issues.push('Range min must be ≤ max.');
@@ -3062,20 +3133,16 @@ function wireSetupScreen() {
   document.querySelectorAll('#modePills .pill[data-mode]').forEach(p => p.addEventListener('click', () => setLetterMode(+p.dataset.mode)));
   document.getElementById('inverseToggle').addEventListener('change', e => { inverse = e.target.checked; saveSettings(); });
   document.getElementById('lockToggle').addEventListener('change', e => {
-    lockEnabled = e.target.checked;
-    document.getElementById('lockOptions').classList.toggle('hide', !lockEnabled);
+    anyLetterLock = e.target.checked;
+    document.getElementById('lockOptions').classList.toggle('hide', !anyLetterLock);
+    if (anyLetterLock) initLockPositionRows();
     saveSettings();
   });
-  document.querySelectorAll('#lockPosPills .pill').forEach(p => p.addEventListener('click', () => {
-    lockPosition = +p.dataset.pos;
-    document.querySelectorAll('#lockPosPills .pill').forEach(x => x.classList.toggle('active', x === p));
-    saveSettings();
-  }));
   applyLetterButtons();
   applyVowelButtons();
 
   document.getElementById('vowelLockToggle').addEventListener('change', e => {
-    vowelLockEnabled = e.target.checked;
+    anyVowelLock = e.target.checked;
     updateVowelLockUI();
     saveSettings();
   });
@@ -3242,8 +3309,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('inverseToggle').checked = inverse;
   document.getElementById('dageshTavToggle').checked = dageshTavEnabled;
   document.getElementById('vavAsLetterToggle').checked = vavAsLetter;
-  document.getElementById('lockToggle').checked = lockEnabled;
-  document.getElementById('lockOptions').classList.toggle('hide', !lockEnabled);
+  document.getElementById('lockToggle').checked = anyLetterLock;
+  document.getElementById('lockOptions').classList.toggle('hide', !anyLetterLock);
   document.getElementById('colorCodeToggle').checked = colorCodingEnabled;
   document.getElementById('colorCodeOpts').classList.toggle('hide', !colorCodingEnabled);
   document.getElementById('audioToggle').checked = audioEnabled;
