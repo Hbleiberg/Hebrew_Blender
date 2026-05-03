@@ -1,0 +1,1582 @@
+emoji,english,category,subcategory,hebrew_masculine,translit_masculine,hebrew_feminine,translit_feminine
+🐱,Cat,Animal,Mammal,חָתוּל,chatul,חֲתוּלָה,chatula
+🐶,Dog,Animal,Mammal,כֶּלֶב,kelev,כַּלְבָּה,kalba
+🐭,Mouse,Animal,Mammal,עַכְבָּר,achbar,עַכְבָּרָה,achbara
+🐹,Hamster,Animal,Mammal,אוֹגֵר,oger,אוֹגֶרֶת,ogeret
+🐰,Rabbit,Animal,Mammal,אַרְנָב,arnav,אַרְנֶבֶת,arnevet
+🦊,Fox,Animal,Mammal,שׁוּעָל,shual,שׁוּעָלָה,shuala
+🐻,Bear,Animal,Mammal,דּוֹב,dov,דֻּבָּה,duba
+🐼,Panda,Animal,Mammal,,,פַּנְדָּה,panda
+🐨,Koala,Animal,Mammal,,,קוֹאָלָה,koala
+🐯,Tiger,Animal,Mammal,נָמֵר,namer,נְמֵרָה,nemera
+🦁,Lion,Animal,Mammal,אַרְיֵה,arye,לְבִיאָה,leviya
+🐮,Cow,Animal,Mammal,פָּר,par,פָּרָה,para
+🐷,Pig,Animal,Mammal,חֲזִיר,chazir,חֲזִירָה,chazira
+🐸,Frog,Animal,Reptile,,,צְפַרְדֵּעַ,tzefardea
+🐵,Monkey,Animal,Mammal,קוֹף,kof,קוֹפָה,kofa
+🐺,Wolf,Animal,Mammal,זְאֵב,zeev,זְאֵבָה,zeeva
+🐴,Horse,Animal,Mammal,סוּס,sus,סוּסָה,susa
+🦄,Unicorn,Animal,Mythical,,,חַד-קֶרֶן,chad-keren
+🦓,Zebra,Animal,Mammal,,,זֶבְּרָה,zebra
+🦍,Gorilla,Animal,Mammal,,,גּוֹרִילָּה,gorila
+🐘,Elephant,Animal,Mammal,פִּיל,pil,פִּילָה,pila
+🦏,Rhinoceros,Animal,Mammal,קַרְנַף,karnaf,,
+🦛,Hippopotamus,Animal,Mammal,הִיפּוֹפּוֹטָם,hipopotam,,
+🐪,Camel,Animal,Mammal,גָּמָל,gamal,גְּמַלָּה,gemala
+🦙,Llama,Animal,Mammal,,,לָאמָה,lama
+🦒,Giraffe,Animal,Mammal,,,גִּ'ירָפָה,jirafa
+🐂,Ox,Animal,Mammal,שׁוֹר,shor,,
+🐃,Water Buffalo,Animal,Mammal,תְּאוֹ,teo,,
+🐏,Ram,Animal,Mammal,אַיִל,ayil,,
+🐑,Sheep,Animal,Mammal,כֶּבֶשׂ,keves,כִּבְשָׂה,kivsa
+🐐,Goat,Animal,Mammal,תַּיִשׁ,tayish,עֵז,ez
+🦌,Deer,Animal,Mammal,אַיָּל,ayal,אַיָּלָה,ayala
+🦘,Kangaroo,Animal,Mammal,,,קֶנְגּוּרוּ,kenguru
+🦬,Bison,Animal,Mammal,בִּיזוֹן,bizon,,
+🐿️,Squirrel,Animal,Mammal,סְנָאִי,senai,,
+🦔,Hedgehog,Animal,Mammal,קִיפּוֹד,kipod,,
+🦇,Bat,Animal,Mammal,עֲטַלֵּף,atalef,,
+🐗,Boar,Animal,Mammal,חֲזִיר בָּר,chazir bar,,
+🐔,Rooster,Animal,Bird,תַּרְנְגוֹל,tarngol,,
+🐓,Hen,Animal,Bird,,,תַּרְנְגוֹלֶת,tarngolet
+🐤,Baby Chick,Animal,Bird,אֶפְרוֹחַ,efroach,,
+🐦,Bird,Animal,Bird,,,צִפּוֹר,tzipor
+🐧,Penguin,Animal,Bird,פִּינְגְּוִין,pingvin,,
+🦆,Duck,Animal,Bird,בַּרְוָז,barvaz,בַּרְוָזָה,barvaza
+🦢,Swan,Animal,Bird,בַּרְבּוּר,barbur,בַּרְבּוּרָה,barbura
+🦅,Eagle,Animal,Bird,נֶשֶׁר,nesher,,
+🦉,Owl,Animal,Bird,יַנְשׁוּף,yanshuf,,
+🦜,Parrot,Animal,Bird,תֻּכִּי,tuki,,
+🦃,Turkey,Animal,Bird,,,תַּרְנְגוֹל הוֹדוּ,tarngol hodu
+🐢,Turtle,Animal,Reptile,צָב,tzav,צָבָה,tzava
+🐍,Snake,Animal,Reptile,נָחָשׁ,nachash,,
+🦎,Lizard,Animal,Reptile,,,לְטָאָה,letaa
+🐊,Crocodile,Animal,Reptile,תַּנִּין,tanin,,
+🦖,T-Rex,Animal,Reptile,דִּינוֹזָאוּר,dinozaur,,
+🐟,Fish,Animal,Sea Creature,דָּג,dag,דָּגָה,daga
+🐠,Tropical Fish,Animal,Sea Creature,דָּג טְרוֹפִּי,dag teropi,,
+🐡,Pufferfish,Animal,Sea Creature,דָּג נָפוּחַ,dag nafuach,,
+🐬,Dolphin,Animal,Sea Creature,דּוֹלְפִין,dolfin,,
+🐳,Whale,Animal,Sea Creature,לִוְיָתָן,livyatan,,
+🦈,Shark,Animal,Sea Creature,כָּרִישׁ,karish,,
+🐙,Octopus,Animal,Sea Creature,תַּמְנוּן,tamnun,,
+🦑,Squid,Animal,Sea Creature,דְּיוֹנוּן,deyonun,,
+🦞,Lobster,Animal,Sea Creature,לוֹבְּסְטֵר,lobster,,
+🦀,Crab,Animal,Sea Creature,סַרְטָן,sartan,,
+🦭,Seal,Animal,Sea Creature,,,כֶּלֶב יָם,kelev yam
+🐝,Bee,Animal,Insect,,,דְּבוֹרָה,dvora
+🐛,Caterpillar,Animal,Insect,זַחַל,zachal,,
+🦋,Butterfly,Animal,Insect,פַּרְפַּר,parpar,,
+🐌,Snail,Animal,Insect,שַׁבְּלוּל,shablul,,
+🐞,Ladybug,Animal,Insect,,,פָּרַת מֹשֶׁה רַבֵּנוּ,parat moshe rabenu
+🐜,Ant,Animal,Insect,,,נְמָלָה,nemala
+🦗,Cricket,Animal,Insect,צְרָצַר,tzeratzar,,
+🦟,Mosquito,Animal,Insect,יַתּוּשׁ,yatush,,
+🪰,Fly,Animal,Insect,,,זְבוּב,zevuv
+🪱,Worm,Animal,Insect,,,תּוֹלַעַת,tolaat
+🕷️,Spider,Animal,Insect,עַכָּבִישׁ,akavish,,
+🦂,Scorpion,Animal,Insect,עַקְרָב,akrav,,
+🍎,Apple,Food,Fruit,תַּפּוּחַ,tapuach,,
+🍏,Green Apple,Food,Fruit,תַּפּוּחַ יָרוֹק,tapuach yarok,,
+🍐,Pear,Food,Fruit,אֲגָס,agas,,
+🍊,Orange,Food,Fruit,תַּפּוּז,tapuz,,
+🍋,Lemon,Food,Fruit,לִימוֹן,limon,,
+🍌,Banana,Food,Fruit,,,בָּנָנָה,banana
+🍉,Watermelon,Food,Fruit,אֲבַטִּיחַ,avatiyach,,
+🍇,Grapes,Food,Fruit,עֲנָבִים,anavim,,
+🍓,Strawberry,Food,Fruit,תּוּת,tut,,
+🫐,Blueberries,Food,Fruit,,,אֻכְמָנִיּוֹת,uchmaniyot
+🍈,Melon,Food,Fruit,מֵלוֹן,melon,,
+🍒,Cherries,Food,Fruit,דֻּבְדְּבָנִים,duvdvanim,,
+🍑,Peach,Food,Fruit,אֲפַרְסֵק,afarsek,,
+🥭,Mango,Food,Fruit,מַנְגּוֹ,mango,,
+🍍,Pineapple,Food,Fruit,אֲנָנָס,ananas,,
+🥥,Coconut,Food,Fruit,קוֹקוּס,kokus,,
+🥝,Kiwi,Food,Fruit,קִיוִוי,kivivy,,
+🍅,Tomato,Food,Vegetable,,,עַגְבָנִיָּה,agvaniya
+🫒,Olive,Food,Vegetable,זַיִת,zayit,,
+🥑,Avocado,Food,Vegetable,אֲבוֹקָדוֹ,avokado,,
+🍆,Eggplant,Food,Vegetable,חָצִיל,chatzil,,
+🥔,Potato,Food,Vegetable,תַּפּוּחַ אֲדָמָה,tapuach adama,,
+🥕,Carrot,Food,Vegetable,גֶּזֶר,gezer,,
+🌽,Corn,Food,Vegetable,תִּירָס,tiras,,
+🌶️,Hot Pepper,Food,Vegetable,פִּלְפֵּל חָרִיף,pilpel charif,,
+🫑,Bell Pepper,Food,Vegetable,פִּלְפֵּל,pilpel,,
+🥒,Cucumber,Food,Vegetable,מְלָפְפוֹן,melaffon,,
+🥬,Lettuce,Food,Vegetable,,,חַסָּה,chasa
+🥦,Broccoli,Food,Vegetable,בְּרוֹקוֹלִי,berokoli,,
+🧄,Garlic,Food,Vegetable,שׁוּם,shum,,
+🧅,Onion,Food,Vegetable,בָּצָל,batzal,,
+🍄,Mushroom,Food,Vegetable,,,פִּטְרִיָּה,pitriya
+🥜,Peanut,Food,Vegetable,בּוֹטֶן,boten,,
+🌰,Chestnut,Food,Vegetable,עַרְמוֹן,armon,,
+🍞,Bread,Food,Dish,לֶחֶם,lechem,,
+🥖,Baguette,Food,Dish,בָּגֵט,baget,,
+🥨,Pretzel,Food,Dish,בֵּיגֶלֶה,beigele,,
+🥯,Bagel,Food,Dish,בֵּיגֶל,beigel,,
+🥞,Pancakes,Food,Dish,,,חֲבִיתִיּוֹת,chavitiyot
+🧇,Waffle,Food,Dish,וָאפֶל,vafel,,
+🧀,Cheese,Food,Dish,,,גְּבִינָה,gevina
+🥚,Egg,Food,Other,,,בֵּיצָה,beytza
+🍳,Fried Egg,Food,Other,,,בֵּיצָה מְטֻגֶּנֶת,beytza metugenet
+🥓,Bacon,Food,Dish,בֵּקוֹן,bekon,,
+🍔,Hamburger,Food,Dish,הַמְבּוּרְגֶּר,hamburger,,
+🍟,Fries,Food,Dish,צִ'יפְּס,tzi'yps,,
+🍕,Pizza,Food,Dish,,,פִּיצָה,pitza
+🌭,Hot Dog,Food,Dish,,,נַקְנִיקִיָּה,naknikiya
+🥪,Sandwich,Food,Dish,כָּרִיךְ,karich,,
+🌮,Taco,Food,Dish,טָאקוֹ,tako,,
+🌯,Burrito,Food,Dish,בּוּרִיטוֹ,burito,,
+🥙,Pita,Food,Dish,,,פִּיתָה,pita
+🧆,Falafel,Food,Dish,פָלָאפֶל,palafel,,
+🍝,Pasta,Food,Dish,,,פַּסְטָה,pasta
+🍜,Ramen,Food,Dish,רָאמֶן,ramen,,
+🍲,Stew,Food,Dish,תַּבְשִׁיל,tavshil,,
+🍣,Sushi,Food,Dish,סוּשִׁי,sushi,,
+🥟,Dumpling,Food,Dish,כִּיסָן,kisan,,
+🦪,Oyster,Animal,Sea Creature,,,צִדְפָּה,tzidpa
+🍦,Ice Cream,Food,Sweet,,,גְּלִידָה,gelida
+🍰,Cake,Food,Sweet,,,עוּגָה,uga
+🎂,Birthday Cake,Food,Sweet,,,עוּגַת יוֹם הֻלֶּדֶת,ugat yom huledet
+🧁,Cupcake,Food,Sweet,,,קָאפְּקֵייק,kapkeyyk
+🍪,Cookie,Food,Sweet,,,עוּגִיָּה,ugiya
+🍫,Chocolate,Food,Sweet,שׁוֹקוֹלָד,shokolad,,
+🍬,Candy,Food,Sweet,,,סֻכָּרִיָּה,sukariya
+🍭,Lollipop,Food,Sweet,,,סֻכָּרִיָּה עַל מַקֵּל,sukariya al makel
+🍩,Donut,Food,Sweet,,,סֻפְגָּנִיָּה,sufganiya
+🍯,Honey,Food,Other,דְּבַשׁ,devash,,
+🍿,Popcorn,Food,Dish,פּוֹפְּקוֹרְן,popkorn,,
+🧈,Butter,Food,Other,,,חֶמְאָה,chema
+🧂,Salt,Food,Other,מֶלַח,melach,,
+🥛,Milk,Food,Drink,חָלָב,chalav,,
+☕,Coffee,Food,Drink,קָפֶה,kafe,,
+🍵,Tea,Food,Drink,תֵּה,te,,
+🧃,Juice Box,Food,Drink,מִיץ,mitz,,
+🥤,Soft Drink,Food,Drink,מַשְׁקֶה קַל,mashke kal,,
+🍷,Wine,Food,Drink,יַיִן,yayin,,
+🍺,Beer,Food,Drink,,,בִּירָה,bira
+🥂,Champagne,Food,Drink,,,שַׁמְפַּנְיָה,shampanya
+🧊,Ice,Nature,Weather,קֶרַח,kerach,,
+☀️,Sun,Nature,Astronomy,,,שֶׁמֶשׁ,shemesh
+🌙,Moon,Nature,Astronomy,יָרֵחַ,yareach,לְבָנָה,levana
+⭐,Star,Nature,Astronomy,כּוֹכָב,kochav,,
+☁️,Cloud,Nature,Weather,עָנָן,anan,,
+🌧️,Rain Cloud,Nature,Weather,גֶּשֶׁם,geshem,,
+⛈️,Thunderstorm,Nature,Weather,,,סְעָרָה,seara
+🌩️,Lightning,Nature,Weather,בָּרָק,barak,,
+⛄,Snowman,Nature,Weather,אִישׁ שֶׁלֶג,ish sheleg,,
+🌈,Rainbow,Nature,Weather,,,קֶשֶׁת,keshet
+💧,Drop,Nature,Weather,,,טִפָּה,tipa
+🌊,Wave,Nature,Landscape,גַּל,gal,,
+🌪️,Tornado,Nature,Weather,טוֹרְנָדוֹ,tornado,,
+🌫️,Fog,Nature,Weather,עֲרָפֶל,arafel,,
+🌬️,Wind,Nature,Weather,רוּחַ,ruach,,
+🌷,Tulip,Plant,Flower,צִבְעוֹנִי,tzivoni,,
+🌹,Rose,Plant,Flower,וֶרֶד,vered,,
+🌻,Sunflower,Plant,Flower,,,חַמָּנִית,chamanit
+🌼,Daisy,Plant,Flower,,,חִנָּנִית,chinanit
+🌸,Cherry Blossom,Plant,Flower,,,פְּרִיחַת הַדֻּבְדְּבָן,perichat haduvdvan
+🍀,Clover,Plant,Other,תִּלְתָּן,tiltan,,
+🌿,Herb,Plant,Other,עֵשֶׂב,esev,,
+🍃,Leaves,Plant,Other,עָלִים,alim,,
+🍂,Fallen Leaves,Plant,Other,עָלִים נוֹשְׁרִים,alim noshrim,,
+🌱,Seedling,Plant,Other,שְׁתִיל,shetil,,
+👁️,Eye,Person,Body,,,עַיִן,ayin
+👀,Eyes,Person,Body,,,עֵינַיִם,eynayim
+👃,Nose,Person,Body,אַף,af,,
+👄,Mouth,Person,Body,פֶּה,pe,,
+👂,Ear,Person,Body,,,אוֹזֶן,ozen
+🦷,Tooth,Person,Body,,,שֵׁן,shen
+👅,Tongue,Person,Body,,,לָשׁוֹן,lashon
+🧠,Brain,Person,Body,מוֹחַ,moach,,
+🦴,Bone,Person,Body,,,עֶצֶם,etzem
+🫀,Heart,Person,Body,לֵב,lev,,
+🫁,Lungs,Person,Body,,,רֵאוֹת,reot
+💪,Arm,Person,Body,,,זְרוֹעַ,zeroa
+✋,Hand,Person,Body,,,יָד,yad
+🦶,Foot,Person,Body,,,רֶגֶל,regel
+🦵,Leg,Person,Body,,,רֶגֶל,regel
+👨,Man,Person,Person,אִישׁ,ish,,
+👩,Woman,Person,Person,,,אִשָּׁה,isha
+👦,Boy,Person,Person,יֶלֶד,yeled,,
+👧,Girl,Person,Person,,,יַלְדָּה,yalda
+👶,Baby,Person,Person,תִּינוֹק,tinok,תִּינוֹקֶת,tinoket
+🧒,Child,Person,Person,יֶלֶד,yeled,יַלְדָּה,yalda
+🧑,Person,Person,Person,אָדָם,adam,,
+👴,Old Man,Person,Person,,,זָקֵן,zaken
+👵,Old Woman,Person,Person,,,זְקֵנָה,zekena
+👨‍🦰,Red-haired Man,Person,Person,גִּ'ינְגִ'י,jinji,,
+👩‍🦰,Red-haired Woman,Person,Person,,,גִּ'ינְגִ'ית,jinjit
+👨‍🦱,Curly-haired Man,Person,Person,מְתֻלְתָּל,metultal,,
+👩‍🦱,Curly-haired Woman,Person,Person,,,מְתֻלְתֶּלֶת,metultelet
+👨‍🦳,White-haired Man,Person,Person,שֵׂיבָה,seyva,,
+👨‍🦲,Bald Man,Person,Person,קֵרֵחַ,kereach,,
+🧔,Bearded Person,Person,Person,מְזֻקָּן,mezukan,,
+👮,Police Officer,Person,Profession,שׁוֹטֵר,shoter,שׁוֹטֶרֶת,shoteret
+👷,Construction Worker,Person,Profession,פּוֹעֵל בִּנְיָן,poel binyan,פּוֹעֶלֶת בִּנְיָן,poelet binyan
+💂,Guard,Person,Profession,שׁוֹמֵר,shomer,שׁוֹמֶרֶת,shomeret
+🕵️,Detective,Person,Profession,בַּלָּשׁ,balash,בַּלֶּשֶׁת,baleshet
+👨‍⚕️,Male Doctor,Person,Profession,רוֹפֵא,rofe,,
+👩‍⚕️,Female Doctor,Person,Profession,,,רוֹפְאָה,rofa
+👨‍🌾,Male Farmer,Person,Profession,חַקְלַאי,chaklay,,
+👩‍🌾,Female Farmer,Person,Profession,,,חַקְלָאִית,chaklait
+👨‍🍳,Male Chef,Person,Profession,טַבָּח,tabach,,
+👩‍🍳,Female Chef,Person,Profession,,,טַבָּחִית,tabachit
+👨‍🎓,Male Student,Person,Profession,סְטוּדֶנְט,setudent,,
+👩‍🎓,Female Student,Person,Profession,,,סְטוּדֶנְטִית,setudentit
+👨‍🏫,Male Teacher,Person,Profession,מוֹרֶה,more,,
+👩‍🏫,Female Teacher,Person,Profession,,,מוֹרָה,mora
+👨‍🔬,Male Scientist,Person,Profession,מַדְעָן,madan,,
+👩‍🔬,Female Scientist,Person,Profession,,,מַדְעָנִית,madanit
+👨‍💻,Male Programmer,Person,Profession,מִתְכַּנֵּת,mitkanet,,
+👩‍💻,Female Programmer,Person,Profession,,,מְתַכְנֶתֶת,metachnetet
+👨‍🎤,Male Singer,Person,Profession,זַמָּר,zamar,,
+👩‍🎤,Female Singer,Person,Profession,,,זַמֶּרֶת,zameret
+👨‍🎨,Male Artist,Person,Profession,צַיָּר,tzayar,,
+👩‍🎨,Female Artist,Person,Profession,,,צַיֶּרֶת,tzayeret
+👨‍✈️,Male Pilot,Person,Profession,טַיָּס,tayas,,
+👩‍✈️,Female Pilot,Person,Profession,,,טַיֶּסֶת,tayeset
+👨‍🚀,Male Astronaut,Person,Profession,אַסְטְרוֹנָאוּט,astronaut,,
+👩‍🚀,Female Astronaut,Person,Profession,,,אַסְטְרוֹנָאוּטִית,astronautit
+👨‍🚒,Male Firefighter,Person,Profession,כַּבַּאי,kabay,,
+👩‍🚒,Female Firefighter,Person,Profession,,,כַּבָּאִית,kabait
+🧑‍⚖️,Judge,Person,Profession,שׁוֹפֵט,shofet,שׁוֹפֶטֶת,shofetet
+👰,Bride,Person,Profession,,,כַּלָּה,kala
+🤵,Groom,Person,Profession,חָתָן,chatan,,
+🤴,Prince,Person,Profession,נָסִיךְ,nasich,,
+👸,Princess,Person,Profession,,,נְסִיכָה,nesicha
+🧙,Wizard,Person,Profession,קוֹסֵם,kosem,קוֹסֶמֶת,kosemet
+🧚,Fairy,Person,Profession,,,פֵיָה,peya
+👼,Angel,Person,Profession,מַלְאָךְ,malach,,
+👨‍👩‍👧,Family,Person,Family,,,מִשְׁפָּחָה,mishpacha
+👪,Family,Person,Family,,,מִשְׁפָּחָה,mishpacha
+🧑‍🤝‍🧑,Friends,Person,Family,חָבֵר,chaver,חֲבֵרָה,chavera
+👨‍👦,Father and Son,Person,Family,אַבָּא,aba,,
+👩‍👧,Mother and Daughter,Person,Family,,,אִמָּא,ima
+👕,T-Shirt,Object,Clothing,,,חֻלְצָה,chultza
+👖,Jeans,Object,Clothing,מִכְנְסֵי גִ'ינְס,michnsey gi'yns,,
+👗,Dress,Object,Clothing,,,שִׂמְלָה,simla
+👘,Kimono,Object,Clothing,,,קִימוֹנוֹ,kimono
+🧥,Coat,Object,Clothing,מְעִיל,meil,,
+🧦,Socks,Object,Clothing,גַּרְבַּיִם,garbayim,,
+🧤,Gloves,Object,Clothing,,,כְּפָפוֹת,kefafot
+🧣,Scarf,Object,Clothing,צָעִיף,tzaif,,
+🎩,Top Hat,Object,Clothing,,,מִגְבַּעַת,migbaat
+👑,Crown,Object,Jewelry,כֶּתֶר,keter,,
+👒,Sun Hat,Object,Clothing,כּוֹבַע,kova,,
+🧢,Cap,Object,Clothing,כּוֹבַע מָצְחִיָּה,kova matzchiya,,
+👞,Shoe,Object,Clothing,,,נַעַל,naal
+👟,Sneaker,Object,Clothing,,,נַעֲלֵי סְפּוֹרְט,naaley seport
+🥾,Boot,Object,Clothing,מַגָּף,magaf,,
+👠,High Heel,Object,Clothing,,,נַעֲלֵי עָקֵב,naaley akev
+👜,Handbag,Object,Clothing,תִּיק,tik,,
+🎒,Backpack,Object,Clothing,תִּיק גַּב,tik gav,,
+👓,Glasses,Object,Clothing,מִשְׁקָפַיִם,mishkafayim,,
+🕶️,Sunglasses,Object,Clothing,מִשְׁקְפֵי שֶׁמֶשׁ,mishkfey shemesh,,
+💍,Ring,Object,Jewelry,,,טַבַּעַת,tabaat
+☂️,Umbrella,Nature,Weather,,,מִטְרִיָּה,mitriya
+🚗,Car,Travel,Land Vehicle,,,מְכוֹנִית,mechonit
+🚕,Taxi,Travel,Land Vehicle,,,מוֹנִית,monit
+🚌,Bus,Travel,Land Vehicle,אוֹטוֹבּוּס,otobus,,
+🏎️,Race Car,Travel,Land Vehicle,,,מְכוֹנִית מֵרוֹץ,mechonit merotz
+🚓,Police Car,Travel,Land Vehicle,,,נַיֶּדֶת,nayedet
+🚑,Ambulance,Travel,Land Vehicle,אַמְבּוּלַנְס,ambulans,,
+🚒,Fire Truck,Travel,Land Vehicle,,,מְכוֹנִית כַּבָּאִים,mechonit kabaim
+🚚,Truck,Travel,Land Vehicle,,,מַשָּׂאִית,masait
+🚲,Bicycle,Travel,Land Vehicle,אוֹפַנַּיִם,ofanayim,,
+🛴,Scooter,Travel,Land Vehicle,קוֹרְקִינֶט,korkinet,,
+🏍️,Motorcycle,Travel,Land Vehicle,אוֹפַנּוֹעַ,ofanoa,,
+🚂,Train,Travel,Rail,,,רַכֶּבֶת,rakevet
+✈️,Airplane,Travel,Air,מָטוֹס,matos,,
+🚁,Helicopter,Travel,Air,מַסּוֹק,masok,,
+🚀,Rocket,Travel,Air,,,חֲלָלִית,chalalit
+🛸,UFO,Travel,Air,"עָב""ם",atzam,,
+⛵,Sailboat,Travel,Water,,,סִירַת מִפְרָשׂ,sirat mifras
+🚤,Speedboat,Travel,Water,,,סִירַת מָנוֹעַ,sirat manoa
+🚢,Ship,Travel,Water,,,אֳנִיָּה,oniya
+🏠,House,Place,Building,בַּיִת,bayit,,
+🏡,House with Garden,Place,Building,בַּיִת עִם גִּנָּה,bayit im gina,,
+🏢,Office Building,Place,Building,בִּנְיָן מִשְׂרָדִים,binyan misradim,,
+🏥,Hospital,Place,Building,בֵּית חוֹלִים,beit cholim,,
+🏫,School,Place,Building,בֵּית סֵפֶר,beit sefer,,
+🏪,Store,Place,Building,,,חֲנוּת,chanut
+🏰,Castle,Place,Building,,,טִירָה,tira
+🏛️,Classical Building,Place,Building,בִּנְיָן,binyan,,
+⛺,Tent,Place,Building,אוֹהֶל,ohel,,
+🏖️,Beach,Nature,Landscape,חוֹף,chof,,
+🏔️,Mountain,Nature,Landscape,הַר,har,,
+🌋,Volcano,Nature,Landscape,הַר גַּעַשׁ,har gaash,,
+🏞️,Park,Nature,Landscape,פַּארְק,park,,
+🏙️,City,Place,Landmark,,,עִיר,ir
+🛏️,Bed,Object,Household,,,מִטָּה,mita
+🛋️,Couch,Object,Household,,,סַפָּה,sapa
+🚪,Door,Object,Household,,,דֶּלֶת,delet
+🪟,Window,Object,Household,חַלּוֹן,chalon,,
+🪑,Chair,Object,Household,כִּסֵּא,kise,,
+🚽,Toilet,Object,Household,,,אַסְלָה,asla
+🚿,Shower,Object,Household,,,מִקְלַחַת,miklachat
+🛁,Bathtub,Object,Household,,,אַמְבָּטְיָה,ambatya
+🧹,Broom,Object,Household,מַטְאֲטֵא,matate,,
+🧺,Basket,Object,Household,סַל,sal,,
+🧻,Toilet Paper,Object,Household,נְיַר טוּאָלֶט,neyar tualet,,
+🧼,Soap,Object,Household,סַבּוֹן,sabon,,
+🪥,Toothbrush,Object,Household,,,מִבְרֶשֶׁת שִׁנַּיִם,mivreshet shinayim
+🧽,Sponge,Object,Household,סְפוֹג,sefog,,
+🛒,Shopping Cart,Object,Household,,,עֲגָלַת קְנִיּוֹת,agalat keniyot
+☎️,Telephone,Object,Tech,טֶלֶפוֹן,telefon,,
+📱,Mobile Phone,Object,Tech,טֶלֶפוֹן נַיָּד,telefon nayad,,
+💻,Laptop,Object,Tech,מַחְשֵׁב נַיָּד,machshev nayad,,
+🖥️,Desktop Computer,Object,Tech,מַחְשֵׁב,machshev,,
+🖨️,Printer,Object,Tech,,,מַדְפֶּסֶת,madpeset
+⌨️,Keyboard,Object,Tech,,,מִקְלֶדֶת,mikledet
+🖱️,Computer Mouse,Object,Tech,עַכְבָּר,achbar,,
+📷,Camera,Object,Tech,,,מַצְלֵמָה,matzlema
+📺,Television,Object,Tech,,,טֶלֶוִיזְיָה,televizya
+📻,Radio,Object,Tech,רַדְיוֹ,radyo,,
+🔦,Flashlight,Object,Light,פָּנָס,panas,,
+💡,Light Bulb,Object,Light,,,נוּרָה,nura
+🔋,Battery,Object,Tech,,,סוֹלְלָה,solla
+🔌,Plug,Object,Tech,תֶּקַע,teka,,
+🪞,Mirror,Object,Household,,,מַרְאָה,mara
+🧸,Teddy Bear,Activity,Game,,,בֻּבַּת דּוֹב,bubat dov
+🔨,Hammer,Object,Tool,פַּטִּישׁ,patish,,
+🪓,Axe,Object,Weapon,גַּרְזֶן,garzen,,
+🔧,Wrench,Object,Tool,מַפְתֵּחַ בְּרָגִים,mafteach beragim,,
+🪛,Screwdriver,Object,Tool,מַבְרֵג,mavreg,,
+🔩,Bolt,Object,Tool,בּוֹרֶג,boreg,,
+⚙️,Gear,Object,Tool,גַּלְגַּל שִׁנַּיִם,galgal shinayim,,
+🧰,Toolbox,Object,Tool,אַרְגַּז כֵּלִים,argaz kelim,,
+🧲,Magnet,Object,Tool,מַגְנֵט,magnet,,
+🔪,Knife,Object,Weapon,סַכִּין,sakin,,
+🥄,Spoon,Object,Household,,,כַּף,kaf
+🍴,Fork,Object,Clothing,מַזְלֵג,mazleg,,
+✏️,Pencil,Object,Writing,עִפָּרוֹן,iparon,,
+🖊️,Pen,Object,Writing,עֵט,et,,
+🖌️,Paintbrush,Object,Writing,מִכְחוֹל,michchol,,
+🖍️,Crayon,Object,Writing,צֶבַע,tzeva,,
+📝,Note,Object,Writing,פֶּתֶק,petek,,
+📚,Books,Object,Book,סְפָרִים,sefarim,,
+📖,Open Book,Object,Book,סֵפֶר פָּתוּחַ,sefer patuach,,
+📕,Closed Book,Object,Book,סֵפֶר,sefer,,
+🔖,Bookmark,Object,Book,,,סִימָנִיָּה,simaniya
+📰,Newspaper,Object,Paper,עִתּוֹן,iton,,
+📅,Calendar,Time,Calendar,לוּחַ שָׁנָה,luach shana,,
+📌,Pushpin,Object,Writing,נַעַץ,naatz,,
+📎,Paperclip,Object,Writing,מְהַדֵּק,mehadek,,
+📏,Ruler,Object,Writing,סַרְגֵּל,sargel,,
+✂️,Scissors,Object,Writing,מִסְפָּרַיִם,misparayim,,
+📋,Clipboard,Object,Writing,לוּחַ,luach,,
+📁,File Folder,Object,Paper,,,תִּיקִיָּה,tikiya
+🎵,Music Note,Activity,Music,,,תָּו,tav
+🎶,Music Notes,Activity,Music,תָּוִים,tavim,,
+🎤,Microphone,Activity,Music,מִיקְרוֹפוֹן,mikrofon,,
+🎧,Headphones,Activity,Music,,,אָזְנִיּוֹת,azniyot
+🎷,Saxophone,Activity,Music,סַקְסוֹפוֹן,saksofon,,
+🎸,Guitar,Activity,Music,,,גִּיטָרָה,gitara
+🎹,Piano,Activity,Music,,,פְּסַנְתֵּר,pesanter
+🎺,Trumpet,Activity,Music,,,חֲצוֹצְרָה,chatzotzra
+🎻,Violin,Activity,Music,כִּנּוֹר,kinor,,
+🥁,Drum,Activity,Music,תּוֹף,tof,,
+🪕,Banjo,Activity,Music,,,בַּנְג'וֹ,banjo
+⚽,Soccer Ball,Activity,Sport,כַּדּוּרֶגֶל,kaduregel,,
+🏀,Basketball,Activity,Sport,כַּדּוּרְסַל,kadursal,,
+🏈,Football,Activity,Sport,כַּדּוּרְגֶל אָמֶרִיקָאִי,kadurgel amerikai,,
+⚾,Baseball,Activity,Sport,בֵּיסְבּוֹל,beisbol,,
+🎾,Tennis,Activity,Sport,טֶנִיס,tenis,,
+🏐,Volleyball,Activity,Sport,כַּדּוּרְעָף,kaduraf,,
+🏓,Ping Pong,Activity,Sport,טֶנִיס שֻׁלְחָן,tenis shulchan,,
+🏸,Badminton,Activity,Sport,,,נוֹצִית,notzit
+⛳,Golf,Activity,Sport,גּוֹלְף,golf,,
+🎣,Fishing,Activity,Sport,דַּיִג,dayig,,
+🎿,Skiing,Activity,Sport,סְקִי,seki,,
+⛸️,Ice Skating,Activity,Sport,,,הַחְלָקָה עַל קֶרַח,hachlaka al kerach
+🏊,Swimming,Activity,Sport,,,שְׂחִיָּה,sechiya
+🏃,Running,Person,Person,רִיצָה,ritza,,
+🚴,Cycling,Activity,Sport,,,רְכִיבָה עַל אוֹפַנַּיִם,rechiva al ofanayim
+🎈,Balloon,Object,Party,בָּלּוֹן,balon,,
+🎁,Gift,Object,Party,,,מַתָּנָה,matana
+🎀,Ribbon,Object,Party,סֶרֶט,seret,,
+🎉,Party Popper,Object,Party,,,חֲגִיגָה,chagiga
+⏰,Alarm Clock,Time,Clock,שָׁעוֹן מְעוֹרֵר,shaon meorer,,
+⌚,Watch,Time,Clock,שָׁעוֹן,shaon,,
+🔑,Key,Object,Lock,,,מַפְתֵּחַ,mafteach
+🔒,Lock,Object,Lock,,,מַנְעוּל,manul
+🔓,Open Lock,Object,Lock,,,מַנְעוּל פָּתוּחַ,manul patuach
+🛡️,Shield,Object,Weapon,,,מָגֵן,magen
+⚔️,Crossed Swords,Object,Weapon,חֲרָבוֹת,charavot,,
+🔫,Pistol,Object,Weapon,,,אֶקְדָּח,ekdach
+🏹,Bow and Arrow,Object,Weapon,קֶשֶׁת וָחֵץ,keshet vachetz,,
+🕎,Menorah,Religion,Religion,,,חֲנֻכִּיָּה,chanukiya
+✡️,Star of David,Religion,Religion,,,מָגֵן דָּוִד,magen david
+🕯️,Candle,Object,Light,נֵר,ner,,
+📜,Scroll,Object,Paper,,,מְגִלָּה,megila
+✝️,Cross,Religion,Religion,צְלָב,tzelav,,
+☪️,Star and Crescent,Religion,Religion,,,סַהַר וְכוֹכָב,sahar vechochav
+☸️,Dharma Wheel,Religion,Religion,,,גַּלְגַּל הַדְהַרְמָה,galgal hadharma
+🛐,Place of Worship,Religion,Religion,,,מָקוֹם תְּפִלָּה,makom tefila
+🙏,Praying Hands,Religion,Religion,,,יָדַיִם מִתְפַּלְּלוֹת,yadayim mitpallot
+❤️,Red Heart,Emotion,Heart,לֵב אָדוֹם,lev adom,,
+🧡,Orange Heart,Emotion,Heart,לֵב כָּתוֹם,lev katom,,
+💛,Yellow Heart,Emotion,Heart,לֵב צָהוֹב,lev tzahov,,
+💚,Green Heart,Emotion,Heart,לֵב יָרוֹק,lev yarok,,
+💙,Blue Heart,Emotion,Heart,לֵב כָּחוֹל,lev kachol,,
+💜,Purple Heart,Emotion,Heart,לֵב סָגוֹל,lev sagol,,
+🖤,Black Heart,Emotion,Heart,לֵב שָׁחוֹר,lev shachor,,
+🤍,White Heart,Emotion,Heart,לֵב לָבָן,lev lavan,,
+🤎,Brown Heart,Emotion,Heart,לֵב חוּם,lev chum,,
+⭕,Hollow Circle,Symbol,Decorative,עִגּוּל,igul,,
+🔴,Red Circle,Symbol,Shape,עִגּוּל אָדוֹם,igul adom,,
+🟠,Orange Circle,Symbol,Shape,עִגּוּל כָּתוֹם,igul katom,,
+🟡,Yellow Circle,Symbol,Shape,עִגּוּל צָהוֹב,igul tzahov,,
+🟢,Green Circle,Symbol,Shape,עִגּוּל יָרוֹק,igul yarok,,
+🔵,Blue Circle,Symbol,Shape,עִגּוּל כָּחוֹל,igul kachol,,
+🟣,Purple Circle,Symbol,Shape,עִגּוּל סָגוֹל,igul sagol,,
+⚫,Black Circle,Symbol,Shape,עִגּוּל שָׁחוֹר,igul shachor,,
+⚪,White Circle,Symbol,Shape,עִגּוּל לָבָן,igul lavan,,
+🟤,Brown Circle,Symbol,Shape,עִגּוּל חוּם,igul chum,,
+🟥,Red Square,Symbol,Shape,מְרֻבָּע אָדוֹם,meruba adom,,
+🟧,Orange Square,Symbol,Shape,מְרֻבָּע כָּתוֹם,meruba katom,,
+🟨,Yellow Square,Symbol,Shape,מְרֻבָּע צָהוֹב,meruba tzahov,,
+🟩,Green Square,Symbol,Shape,מְרֻבָּע יָרוֹק,meruba yarok,,
+🟦,Blue Square,Symbol,Shape,מְרֻבָּע כָּחוֹל,meruba kachol,,
+🟪,Purple Square,Symbol,Shape,מְרֻבָּע סָגוֹל,meruba sagol,,
+⬛,Black Square,Symbol,Shape,מְרֻבָּע שָׁחוֹר,meruba shachor,,
+⬜,White Square,Symbol,Shape,מְרֻבָּע לָבָן,meruba lavan,,
+🟫,Brown Square,Symbol,Shape,מְרֻבָּע חוּם,meruba chum,,
+🔺,Red Triangle Up,Symbol,Shape,מְשֻׁלָּשׁ אָדוֹם,meshulash adom,,
+🔻,Red Triangle Down,Symbol,Shape,מְשֻׁלָּשׁ הָפוּךְ,meshulash hafuch,,
+🔶,Large Orange Diamond,Symbol,Shape,מְעֻיָּן כָּתוֹם,meuyan katom,,
+🔷,Large Blue Diamond,Symbol,Shape,מְעֻיָּן כָּחוֹל,meuyan kachol,,
+🔸,Small Orange Diamond,Symbol,Decorative,מְעֻיָּן קָטָן,meuyan katan,,
+🔹,Small Blue Diamond,Symbol,Decorative,מְעֻיָּן קָטָן,meuyan katan,,
+➕,Plus Sign,Symbol,Math,סִימָן חִבּוּר,siman chibur,,
+➖,Minus Sign,Symbol,Math,סִימָן חִסּוּר,siman chisur,,
+✖️,Multiplication Sign,Symbol,Math,סִימָן כֶּפֶל,siman kefel,,
+➗,Division Sign,Symbol,Math,סִימָן חִלּוּק,siman chiluk,,
+😀,Grinning Face,Emotion,Face,שָׂמֵחַ,sameach,שְׂמֵחָה,semecha
+😃,Grinning Face with Big Eyes,Emotion,Face,שָׂמֵחַ מְאוֹד,sameach meod,שְׂמֵחָה מְאוֹד,semecha meod
+😄,Grinning Face with Smiling Eyes,Emotion,Face,צוֹחֵק,tzochek,צוֹחֶקֶת,tzocheket
+😁,Beaming Face,Emotion,Face,מְחַיֵּךְ,mechayech,מְחַיֶּכֶת,mechayechet
+😆,Grinning Squinting Face,Emotion,Face,מִתְפַּקֵּעַ מִצְּחוֹק,mitpakea mitzchok,מִתְפַּקַּעַת מִצְּחוֹק,mitpakaat mitzchok
+😅,Grinning Face with Sweat,Emotion,Face,מַזִּיעַ,maziya,מַזִּיעָה,maziya
+🤣,Rolling on the Floor Laughing,Emotion,Face,מִתְגַּלְגֵּל מִצְּחוֹק,mitgalgel mitzchok,מִתְגַּלְגֶּלֶת מִצְּחוֹק,mitgalgelet mitzchok
+😂,Face with Tears of Joy,Emotion,Face,צוֹחֵק עַד דְּמָעוֹת,tzochek ad demaot,צוֹחֶקֶת עַד דְּמָעוֹת,tzocheket ad demaot
+🙂,Slightly Smiling Face,Emotion,Face,מְחַיֵּךְ,mechayech,מְחַיֶּכֶת,mechayechet
+🙃,Upside-Down Face,Emotion,Face,הָפוּךְ,hafuch,הֲפוּכָה,hafucha
+🫠,Melting Face,Emotion,Face,נָמֵס,names,נְמֵסָה,nemesa
+😉,Winking Face,Emotion,Face,קוֹרֵץ,koretz,קוֹרֶצֶת,koretzet
+😊,Smiling Face with Smiling Eyes,Emotion,Face,מְחַיֵּךְ,mechayech,מְחַיֶּכֶת,mechayechet
+😇,Smiling Face with Halo,Emotion,Face,מַלְאָךְ,malach,מַלְאָכִית,malachit
+🥰,Smiling Face with Hearts,Emotion,Face,מְאֹהָב,meohav,מְאֹהֶבֶת,meohevet
+😍,Smiling Face with Heart-Eyes,Emotion,Face,מְאֹהָב,meohav,מְאֹהֶבֶת,meohevet
+🤩,Star-Struck,Emotion,Face,נִדְהָם,nidham,נִדְהֶמֶת,nidhemet
+😘,Face Blowing a Kiss,Emotion,Face,שׁוֹלֵחַ נְשִׁיקָה,sholeach neshika,שׁוֹלַחַת נְשִׁיקָה,sholachat neshika
+😗,Kissing Face,Emotion,Face,מְנַשֵּׁק,menashek,מְנַשֶּׁקֶת,menasheket
+☺️,Smiling Face,Emotion,Face,מְחַיֵּךְ,mechayech,מְחַיֶּכֶת,mechayechet
+😚,Kissing Face with Closed Eyes,Emotion,Face,מְנַשֵּׁק בְּעֵינַיִם עֲצוּמוֹת,menashek beeynayim atzumot,מְנַשֶּׁקֶת בְּעֵינַיִם עֲצוּמוֹת,menasheket beeynayim atzumot
+😙,Kissing Face with Smiling Eyes,Emotion,Face,מְנַשֵּׁק בְּחִיּוּךְ,menashek bechiyuch,מְנַשֶּׁקֶת בְּחִיּוּךְ,menasheket bechiyuch
+🥲,Smiling Face with Tear,Emotion,Face,דּוֹמֵעַ מֵאֹשֶׁר,domea meosher,דּוֹמַעַת מֵאֹשֶׁר,domaat meosher
+😋,Face Savoring Food,Emotion,Face,נֶהֱנֶה,nehene,נֶהֱנֵית,neheneyt
+😛,Face with Tongue,Emotion,Face,מוֹצִיא לָשׁוֹן,motzi lashon,מוֹצִיאָה לָשׁוֹן,motziya lashon
+😜,Winking Face with Tongue,Emotion,Face,קוֹרֵץ עִם לָשׁוֹן,koretz im lashon,קוֹרֶצֶת עִם לָשׁוֹן,koretzet im lashon
+🤪,Zany Face,Emotion,Face,מְשֻׁגָּע,meshuga,מְשֻׁגַּעַת,meshugaat
+😝,Squinting Face with Tongue,Emotion,Face,מַעֲוֶה פָּנִים,maave panim,מַעֲוָה פָּנִים,maava panim
+🤑,Money-Mouth Face,Emotion,Face,תְּאֵב כֶּסֶף,teev kesef,תְּאֵבַת כֶּסֶף,teevat kesef
+🤗,Smiling Face with Open Hands,Emotion,Face,מְחַבֵּק,mechabek,מְחַבֶּקֶת,mechabeket
+🤭,Face with Hand Over Mouth,Emotion,Face,מְכַסֶּה פֶּה,mechase pe,מְכַסָּה פֶּה,mechasa pe
+🫢,Face with Open Eyes and Hand Over Mouth,Emotion,Face,מֻפְתָּע,mufta,מֻפְתַּעַת,muftaat
+🫣,Face with Peeking Eye,Emotion,Face,מְצִיץ,metzitz,מְצִיצָה,metzitza
+🤫,Shushing Face,Emotion,Face,מַשְׁתִּיק,mashtik,מַשְׁתִּיקָה,mashtika
+🤔,Thinking Face,Emotion,Face,חוֹשֵׁב,choshev,חוֹשֶׁבֶת,choshevet
+🫡,Saluting Face,Emotion,Face,מְצַדִּיעַ,metzadiya,מְצַדִּיעָה,metzadiya
+🤐,Zipper-Mouth Face,Emotion,Face,פֶּה סָגוּר,pe sagur,פֶּה סָגוּר,pe sagur
+🤨,Face with Raised Eyebrow,Emotion,Face,סַקְרָן,sakran,סַקְרָנִית,sakranit
+😐,Neutral Face,Emotion,Face,אָדִישׁ,adish,אֲדִישָׁה,adisha
+😑,Expressionless Face,Emotion,Face,חֲסַר הַבָּעָה,chasar habaa,חֲסַרַת הַבָּעָה,chasarat habaa
+😶,Face Without Mouth,Emotion,Face,שׁוֹתֵק,shotek,שׁוֹתֶקֶת,shoteket
+🫥,Dotted Line Face,Emotion,Face,נֶעְלָם,nelam,נֶעְלֶמֶת,nelemet
+😏,Smirking Face,Emotion,Face,מְלַגְלֵג,melagleg,מְלַגְלֶגֶת,melagleget
+😒,Unamused Face,Emotion,Face,לֹא מְעֻנְיָן,lo meunyan,לֹא מְעֻנְיֶנֶת,lo meunyenet
+🙄,Face with Rolling Eyes,Emotion,Face,מְגַלְגֵּל עֵינַיִם,megalgel eynayim,מְגַלְגֶּלֶת עֵינַיִם,megalgelet eynayim
+😬,Grimacing Face,Emotion,Face,מַעֲוֶה פָּנִים,maave panim,מַעֲוָה פָּנִים,maava panim
+😮‍💨,Face Exhaling,Emotion,Face,נוֹשֵׁף,noshef,נוֹשֶׁפֶת,noshefet
+🤥,Lying Face,Emotion,Face,שַׁקְרָן,shakran,שַׁקְרָנִית,shakranit
+🫨,Shaking Face,Emotion,Face,רוֹעֵד,roed,רוֹעֶדֶת,roedet
+😌,Relieved Face,Emotion,Face,רָגוּעַ,ragua,רְגוּעָה,regua
+😔,Pensive Face,Emotion,Face,עָצוּב,atzuv,עֲצוּבָה,atzuva
+😪,Sleepy Face,Emotion,Face,יָשְׁנוּנִי,yashnuni,יָשְׁנוּנִית,yashnunit
+🤤,Drooling Face,Emotion,Face,מְזִיל רִיר,mezil rir,מְזִילָה רִיר,mezila rir
+😴,Sleeping Face,Emotion,Face,יָשֵׁן,yashen,יְשֵׁנָה,yeshena
+😷,Face with Medical Mask,Emotion,Face,עִם מַסֵּכָה,im masecha,עִם מַסֵּכָה,im masecha
+🤒,Face with Thermometer,Emotion,Face,חוֹלֶה,chole,חוֹלָה,chola
+🤕,Face with Head-Bandage,Emotion,Face,פָּצוּעַ,patzua,פְּצוּעָה,petzua
+🤢,Nauseated Face,Emotion,Face,בְּחִילָה,bechila,בְּחִילָה,bechila
+🤮,Face Vomiting,Emotion,Face,מַקִּיא,maki,מְקִיאָה,mekiya
+🤧,Sneezing Face,Emotion,Face,מִתְעַטֵּשׁ,mitatesh,מִתְעַטֶּשֶׁת,mitateshet
+🥵,Hot Face,Emotion,Face,חַם לוֹ,cham lo,חַם לָהּ,cham la
+🥶,Cold Face,Emotion,Face,קַר לוֹ,kar lo,קַר לָהּ,kar la
+🥴,Woozy Face,Emotion,Face,מְבֻלְבָּל,mevulbal,מְבֻלְבֶּלֶת,mevulbelet
+😵,Face with Crossed-Out Eyes,Emotion,Face,סְחַרְחַר,secharchar,סְחַרְחֹרֶת,secharchoret
+😵‍💫,Face with Spiral Eyes,Emotion,Face,מְבֻלְבָּל,mevulbal,מְבֻלְבֶּלֶת,mevulbelet
+🤯,Exploding Head,Emotion,Face,הִתְפּוֹצְצוּת מֹחַ,hitpotztzut moach,הִתְפּוֹצְצוּת מֹחַ,hitpotztzut moach
+🤠,Cowboy Hat Face,Emotion,Face,בּוֹקֵר,boker,בּוֹקֶרֶת,bokeret
+🥳,Partying Face,Emotion,Face,חוֹגֵג,chogeg,חוֹגֶגֶת,chogeget
+🥸,Disguised Face,Emotion,Face,מְחֻפָּשׂ,mechupas,מְחֻפֶּשֶׂת,mechupeset
+😎,Smiling Face with Sunglasses,Emotion,Face,מְגֻנְדָּר,megundar,מְגֻנְדֶּרֶת,megunderet
+🤓,Nerd Face,Emotion,Face,חַנּוּן,chanun,חַנּוּנִית,chanunit
+🧐,Face with Monocle,Emotion,Face,חוֹקֵר,choker,חוֹקֶרֶת,chokeret
+😕,Confused Face,Emotion,Face,מְבֻלְבָּל,mevulbal,מְבֻלְבֶּלֶת,mevulbelet
+🫤,Face with Diagonal Mouth,Emotion,Face,לֹא בָּטוּחַ,lo batuach,לֹא בְּטוּחָה,lo betucha
+😟,Worried Face,Emotion,Face,מֻדְאָג,mudag,מֻדְאֶגֶת,mudeget
+🙁,Slightly Frowning Face,Emotion,Face,עָצוּב קְצָת,atzuv ketzat,עֲצוּבָה קְצָת,atzuva ketzat
+☹️,Frowning Face,Emotion,Face,עָצוּב,atzuv,עֲצוּבָה,atzuva
+😮,Face with Open Mouth,Emotion,Face,מֻפְתָּע,mufta,מֻפְתַּעַת,muftaat
+😯,Hushed Face,Emotion,Face,מֻפְתָּע,mufta,מֻפְתַּעַת,muftaat
+😲,Astonished Face,Emotion,Face,נִדְהָם,nidham,נִדְהֶמֶת,nidhemet
+😳,Flushed Face,Emotion,Face,נָבוֹךְ,navoch,נְבוֹכָה,nevocha
+🥺,Pleading Face,Emotion,Face,מִתְחַנֵּן,mitchanen,מִתְחַנֶּנֶת,mitchanenet
+🥹,Face Holding Back Tears,Emotion,Face,מִתְאַפֵּק לִבְכּוֹת,mitapek livkot,מִתְאַפֶּקֶת לִבְכּוֹת,mitapeket livkot
+😦,Frowning Face with Open Mouth,Emotion,Face,מֻפְחָד,mufchad,מֻפְחֶדֶת,mufchedet
+😧,Anguished Face,Emotion,Face,בְּמְצוּקָה,bemtzuka,בְּמְצוּקָה,bemtzuka
+😨,Fearful Face,Emotion,Face,מְפֻחָד,mefuchad,מְפֻחֶדֶת,mefuchedet
+😰,Anxious Face with Sweat,Emotion,Face,לָחוּץ,lachutz,לְחוּצָה,lechutza
+😥,Sad but Relieved Face,Emotion,Face,מָאוּכְזָב,mauchzav,מְאֻכְזֶבֶת,meuchzevet
+😢,Crying Face,Emotion,Face,בּוֹכֶה,boche,בּוֹכָה,bocha
+😭,Loudly Crying Face,Emotion,Face,בּוֹכֶה בְּקוֹל,boche bekol,בּוֹכָה בְּקוֹל,bocha bekol
+😱,Face Screaming in Fear,Emotion,Face,צוֹעֵק מִפַּחַד,tzoek mipachad,צוֹעֶקֶת מִפַּחַד,tzoeket mipachad
+😖,Confounded Face,Emotion,Face,מֻתְסָכָּל,mutsakal,מֻתְסְכֶּלֶת,mutskelet
+😣,Persevering Face,Emotion,Face,מִתְאַמֵּץ,mitametz,מִתְאַמֶּצֶת,mitametzet
+😞,Disappointed Face,Emotion,Face,מְאֻכְזָב,meuchzav,מְאֻכְזֶבֶת,meuchzevet
+😓,Downcast Face with Sweat,Emotion,Face,מֻתָּשׁ,mutash,מֻתֶּשֶׁת,muteshet
+😩,Weary Face,Emotion,Face,מֻתָּשׁ,mutash,מֻתֶּשֶׁת,muteshet
+😫,Tired Face,Emotion,Face,עָיֵף,ayef,עֲיֵפָה,ayefa
+🥱,Yawning Face,Emotion,Face,מְפַהֵק,mefahek,מְפַהֶקֶת,mefaheket
+😤,Face with Steam from Nose,Emotion,Face,נִרְגָּן,nirgan,נִרְגֶּנֶת,nirgenet
+😡,Pouting Face,Emotion,Face,כּוֹעֵס,koes,כּוֹעֶסֶת,koeset
+😠,Angry Face,Emotion,Face,כּוֹעֵס,koes,כּוֹעֶסֶת,koeset
+🤬,Face with Symbols on Mouth,Emotion,Face,מְקַלֵּל,mekalel,מְקַלֶּלֶת,mekalelet
+😈,Smiling Face with Horns,Emotion,Creature,שֵׁד,shed,,
+👿,Angry Face with Horns,Emotion,Creature,שֵׁד כּוֹעֵס,shed koes,,
+💩,Pile of Poo,Emotion,Creature,קָקִי,kaki,,
+🤡,Clown Face,Emotion,Creature,לֵיצָן,leytzan,לֵיצָנִית,leytzanit
+👹,Ogre,Emotion,Creature,מִפְלֶצֶת,mifletzet,מִפְלֶצֶת,mifletzet
+👺,Goblin,Emotion,Creature,שֵׁד יַפָּנִי,shed yapani,,
+👻,Ghost,Emotion,Creature,,,רוּחַ רְפָאִים,ruach refaim
+👽,Alien,Emotion,Creature,חַיְזָר,chayzar,חַיְזָרִית,chayzarit
+👾,Alien Monster,Emotion,Creature,מִפְלֶצֶת חַיְזָרִית,mifletzet chayzarit,,
+🤖,Robot,Emotion,Creature,רוֹבּוֹט,robot,,
+😺,Grinning Cat,Emotion,Cat Face,חָתוּל מְחַיֵּךְ,chatul mechayech,,
+😸,Grinning Cat with Smiling Eyes,Emotion,Cat Face,חָתוּל צוֹחֵק,chatul tzochek,,
+😹,Cat with Tears of Joy,Emotion,Cat Face,חָתוּל צוֹחֵק עַד דְּמָעוֹת,chatul tzochek ad demaot,,
+😻,Smiling Cat with Heart-Eyes,Emotion,Cat Face,חָתוּל מְאֹהָב,chatul meohav,,
+😼,Cat with Wry Smile,Emotion,Cat Face,חָתוּל מְלַגְלֵג,chatul melagleg,,
+😽,Kissing Cat,Emotion,Cat Face,חָתוּל מְנַשֵּׁק,chatul menashek,,
+🙀,Weary Cat,Emotion,Cat Face,חָתוּל מְבֹהָל,chatul mevohal,,
+😿,Crying Cat,Emotion,Cat Face,חָתוּל בּוֹכֶה,chatul boche,,
+😾,Pouting Cat,Emotion,Cat Face,חָתוּל כּוֹעֵס,chatul koes,,
+🙈,See-No-Evil Monkey,Emotion,Monkey,קוֹף לֹא רוֹאֶה,kof lo roe,,
+🙉,Hear-No-Evil Monkey,Emotion,Monkey,קוֹף לֹא שׁוֹמֵעַ,kof lo shomea,,
+🙊,Speak-No-Evil Monkey,Emotion,Monkey,קוֹף לֹא מְדַבֵּר,kof lo medaber,,
+💋,Kiss Mark,Emotion,Heart,,,נְשִׁיקָה,neshika
+💌,Love Letter,Emotion,Heart,מִכְתַּב אַהֲבָה,michtav ahava,,
+💘,Heart with Arrow,Emotion,Heart,לֵב עִם חֵץ,lev im chetz,,
+💝,Heart with Ribbon,Emotion,Heart,לֵב עִם סֶרֶט,lev im seret,,
+💖,Sparkling Heart,Emotion,Heart,לֵב נוֹצֵץ,lev notzetz,,
+💗,Growing Heart,Emotion,Heart,לֵב גָּדֵל,lev gadel,,
+💓,Beating Heart,Emotion,Heart,לֵב פּוֹעֵם,lev poem,,
+💞,Revolving Hearts,Emotion,Heart,לְבָבוֹת מִסְתּוֹבְבִים,levavot mistovvim,,
+💕,Two Hearts,Emotion,Heart,שְׁנֵי לְבָבוֹת,sheney levavot,,
+💟,Heart Decoration,Emotion,Heart,לֵב מְעֻטָּר,lev meutar,,
+❣️,Heart Exclamation,Emotion,Heart,סִימַן קְרִיאָה לֵב,siman keriya lev,,
+💔,Broken Heart,Emotion,Heart,לֵב שָׁבוּר,lev shavur,,
+❤️‍🔥,Heart on Fire,Emotion,Heart,לֵב בּוֹעֵר,lev boer,,
+❤️‍🩹,Mending Heart,Emotion,Heart,לֵב מַחְלִים,lev machlim,,
+💯,Hundred Points,Emotion,Symbol,מֵאָה נְקֻדּוֹת,mea nekudot,,
+💢,Anger Symbol,Emotion,Symbol,סִימַן כַּעַס,siman kaas,,
+💥,Collision,Emotion,Symbol,,,הִתְפּוֹצְצוּת,hitpotztzut
+💫,Dizzy,Emotion,Symbol,,,סְחַרְחֹרֶת,secharchoret
+💦,Sweat Droplets,Emotion,Symbol,טִפּוֹת זֵעָה,tipot zea,,
+💨,Dashing Away,Emotion,Symbol,מִתְרוֹצֵץ,mitrotzetz,מִתְרוֹצֶצֶת,mitrotzetzet
+🕳️,Hole,Emotion,Symbol,,,חוֹר,chor
+💣,Bomb,Emotion,Symbol,,,פְּצָצָה,petzatza
+💬,Speech Balloon,Emotion,Speech,בַּלוֹן דִּבּוּר,balon dibur,,
+👁️‍🗨️,Eye in Speech Bubble,Emotion,Speech,עַיִן בְּבַלוֹן דִּבּוּר,ayin bevalon dibur,,
+🗨️,Left Speech Bubble,Emotion,Speech,בַּלוֹן דִּבּוּר,balon dibur,,
+🗯️,Right Anger Bubble,Emotion,Speech,בַּלוֹן כַּעַס,balon kaas,,
+💭,Thought Balloon,Emotion,Speech,בַּלוֹן מַחְשָׁבָה,balon machshava,,
+💤,Zzz,Emotion,Speech,נַחֲרוֹת,nacharot,,
+👋,Waving Hand,Person,Hand Gesture,יָד מְנוֹפֶפֶת,yad menofefet,,
+🤚,Raised Back of Hand,Person,Hand Gesture,גַּב יָד מוּרָם,gav yad muram,,
+🖐️,Hand with Fingers Splayed,Person,Hand Gesture,יָד פְּתוּחָה,yad petucha,,
+🖖,Vulcan Salute,Person,Hand Gesture,בִּרְכַּת כֹּהֲנִים,birkat kohanim,,
+🫱,Rightwards Hand,Person,Hand Gesture,יָד יְמָנִית,yad yemanit,,
+🫲,Leftwards Hand,Person,Hand Gesture,יָד שְׂמָאלִית,yad semalit,,
+🫳,Palm Down Hand,Person,Hand Gesture,יָד עִם כַּף לְמַטָּה,yad im kaf lemata,,
+🫴,Palm Up Hand,Person,Hand Gesture,יָד עִם כַּף לְמַעְלָה,yad im kaf lemala,,
+🫷,Leftwards Pushing Hand,Person,Hand Gesture,יָד דּוֹחֶפֶת שְׂמֹאלָה,yad dochefet semola,,
+🫸,Rightwards Pushing Hand,Person,Hand Gesture,יָד דּוֹחֶפֶת יְמִינָה,yad dochefet yemina,,
+👌,OK Hand,Person,Hand Gesture,יָד אוֹ.קֵי.,yad o.key.,,
+🤌,Pinched Fingers,Person,Hand Gesture,אֶצְבָּעוֹת מְחֻבָּרוֹת,etzbaot mechubarot,,
+🤏,Pinching Hand,Person,Hand Gesture,יָד צוֹבֶטֶת,yad tzovetet,,
+✌️,Victory Hand,Person,Hand Gesture,יָד נִצָּחוֹן,yad nitzachon,,
+🤞,Crossed Fingers,Person,Hand Gesture,אֶצְבָּעוֹת מְשֻׁלָּבוֹת,etzbaot meshulavot,,
+🫰,Hand with Index Finger and Thumb Crossed,Person,Hand Gesture,יָד עִם אֶצְבַּע וּבֹהֶן מְשֻׁלָּבִים,yad im etzba uvohen meshulavim,,
+🤟,Love-You Gesture,Person,Hand Gesture,אֲנִי אוֹהֵב אוֹתְךָ,ani ohev otach,,
+🤘,Sign of the Horns,Person,Hand Gesture,יָד שֶׁל רוֹק,yad shel rok,,
+🤙,Call Me Hand,Person,Hand Gesture,תִּתְקַשֵּׁר אֵלַי,titkasher elay,,
+👈,Backhand Index Pointing Left,Person,Hand Gesture,יָד מַצְבִּיעָה שְׂמֹאלָה,yad matzbiya semola,,
+👉,Backhand Index Pointing Right,Person,Hand Gesture,יָד מַצְבִּיעָה יְמִינָה,yad matzbiya yemina,,
+👆,Backhand Index Pointing Up,Person,Hand Gesture,יָד מַצְבִּיעָה לְמַעְלָה,yad matzbiya lemala,,
+🖕,Middle Finger,Person,Hand Gesture,אֶצְבַּע מְשֻׁלֶּשֶׁת,etzba meshuleshet,,
+👇,Backhand Index Pointing Down,Person,Hand Gesture,יָד מַצְבִּיעָה לְמַטָּה,yad matzbiya lemata,,
+☝️,Index Pointing Up,Person,Hand Gesture,אֶצְבַּע מַצְבִּיעָה לְמַעְלָה,etzba matzbiya lemala,,
+🫵,Index Pointing at the Viewer,Person,Hand Gesture,אֶצְבַּע מַצְבִּיעָה אֵלֶיךָ,etzba matzbiya eleyach,,
+👍,Thumbs Up,Person,Hand Gesture,אֲגוּדָל לְמַעְלָה,agudal lemala,,
+👎,Thumbs Down,Person,Hand Gesture,אֲגוּדָל לְמַטָּה,agudal lemata,,
+✊,Raised Fist,Person,Hand Gesture,אֶגְרוֹף מוּרָם,egrof muram,,
+👊,Oncoming Fist,Person,Hand Gesture,אֶגְרוֹף,egrof,,
+🤛,Left-Facing Fist,Person,Hand Gesture,אֶגְרוֹף שְׂמָאלִי,egrof semali,,
+🤜,Right-Facing Fist,Person,Hand Gesture,אֶגְרוֹף יְמָנִי,egrof yemani,,
+👏,Clapping Hands,Person,Hand Gesture,יָדַיִם מוֹחֲאוֹת כַּף,yadayim mochaot kaf,,
+🙌,Raising Hands,Person,Hand Gesture,יָדַיִם מוּרָמוֹת,yadayim muramot,,
+🫶,Heart Hands,Person,Hand Gesture,יָדַיִם בְּצוּרַת לֵב,yadayim betzurat lev,,
+👐,Open Hands,Person,Hand Gesture,יָדַיִם פְּתוּחוֹת,yadayim petuchot,,
+🤲,Palms Up Together,Person,Hand Gesture,כַּפּוֹת יָדַיִם פְּתוּחוֹת,kapot yadayim petuchot,,
+🤝,Handshake,Person,Hand Gesture,לְחִיצַת יָד,lechitzat yad,,
+💅,Nail Polish,Person,Hand Gesture,,,לַכָּה לְצִפָּרְנַיִם,laka letziparnayim
+🦻,Ear with Hearing Aid,Person,Body,אֹזֶן עִם מַכְשִׁיר שְׁמִיעָה,ozen im machshir shemiya,,
+🫦,Biting Lip,Person,Body,,,נְשִׁיכַת שָׂפָה,neshichat safa
+👱,Person: Blond Hair,Person,Person,בְּלוֹנְדִּינִי,belondini,בְּלוֹנְדִּינִית,belondinit
+🧓,Older Person,Person,Person,מְבֻגָּר,mevugar,מְבֻגֶּרֶת,mevugeret
+🙍,Person Frowning,Person,Person,עָצוּב,atzuv,עֲצוּבָה,atzuva
+🙎,Person Pouting,Person,Person,זוֹעֵף,zoef,זוֹעֶפֶת,zoefet
+🙅,Person Gesturing No,Person,Person,מְסַמֵּן לֹא,mesamen lo,מְסַמֶּנֶת לֹא,mesamenet lo
+🙆,Person Gesturing OK,Person,Person,מְסַמֵּן בְּסֵדֶר,mesamen beseder,מְסַמֶּנֶת בְּסֵדֶר,mesamenet beseder
+💁,Person Tipping Hand,Person,Person,דַּיֶּלֶת מֵידָע,dayelet meyda,דַּיֶּלֶת מֵידָע,dayelet meyda
+🙋,Person Raising Hand,Person,Person,מֵרִים יָד,merim yad,מְרִימָה יָד,merima yad
+🧏,Deaf Person,Person,Person,חֵרֵשׁ,cheresh,חֵרֶשֶׁת,chereshet
+🙇,Person Bowing,Person,Person,מִשְׁתַּחֲוֶה,mishtachave,מִשְׁתַּחֲוָה,mishtachava
+🤦,Person Facepalming,Person,Person,יָד עַל פָּנִים,yad al panim,יָד עַל פָּנִים,yad al panim
+🤷,Person Shrugging,Person,Person,מוֹשֵׁךְ בִּכְתֵפַיִם,moshech bichtefayim,מוֹשֶׁכֶת בִּכְתֵפַיִם,moshechet bichtefayim
+🧑‍⚕️,Health Worker,Person,Profession,עוֹבֵד בְּרִיאוּת,oved beriyut,עוֹבֶדֶת בְּרִיאוּת,ovedet beriyut
+🧑‍🎓,Student,Person,Profession,סְטוּדֶנְט,setudent,סְטוּדֶנְטִית,setudentit
+🧑‍🏫,Teacher,Person,Profession,מוֹרֶה,more,מוֹרָה,mora
+🧑‍🌾,Farmer,Person,Profession,חַקְלַאי,chaklay,חַקְלָאִית,chaklait
+🧑‍🍳,Cook,Person,Profession,טַבָּח,tabach,טַבָּחִית,tabachit
+🧑‍🔧,Mechanic,Person,Profession,מְכוֹנַאי,mechonay,מְכוֹנָאִית,mechonait
+🧑‍🏭,Factory Worker,Person,Profession,פּוֹעֵל,poel,פּוֹעֶלֶת,poelet
+🧑‍💼,Office Worker,Person,Profession,פָּקִיד,pakid,פְּקִידָה,pekida
+🧑‍🔬,Scientist,Person,Profession,מַדְעָן,madan,מַדְעָנִית,madanit
+🧑‍💻,Technologist,Person,Profession,מְתַכְנֵת,metachnet,מְתַכְנֶתֶת,metachnetet
+🧑‍🎤,Singer,Person,Profession,זַמָּר,zamar,זַמֶּרֶת,zameret
+🧑‍🎨,Artist,Person,Profession,אָמָּן,aman,אָמָּנִית,amanit
+🧑‍✈️,Pilot,Person,Profession,טַיָּס,tayas,טַיֶּסֶת,tayeset
+🧑‍🚀,Astronaut,Person,Profession,אַסְטְרוֹנָאוּט,astronaut,אַסְטְרוֹנָאוּטִית,astronautit
+🧑‍🚒,Firefighter,Person,Profession,כַּבַּאי,kabay,כַּבָּאִית,kabait
+🥷,Ninja,Person,Profession,נִינְגָ'ה,ninga'h,,
+🤰,Pregnant Woman,Person,Profession,,,אִשָּׁה בְּהֵרָיוֹן,isha beherayon
+🫃,Pregnant Man,Person,Profession,גֶּבֶר בְּהֵרָיוֹן,gever beherayon,,
+🫄,Pregnant Person,Person,Profession,אָדָם בְּהֵרָיוֹן,adam beherayon,,
+🤱,Breast-Feeding,Person,Profession,,,מֵינִיקָה,meynika
+🧛,Vampire,Person,Profession,עֲרְפַד,arfad,עֲרְפַדָה,arfada
+🧜,Merperson,Person,Profession,בַּת יָם,bat yam,בַּת יָם,bat yam
+🧝,Elf,Person,Profession,שֵׁדוֹן,shedon,שֵׁדוֹנָה,shedona
+🧞,Genie,Person,Profession,שֵׁד,shed,שֵׁדָה,sheda
+🧟,Zombie,Person,Profession,זוֹמְבִּי,zombi,,
+🧌,Troll,Person,Profession,טְרוֹל,terol,,
+💆,Person Getting Massage,Person,Person,מְקַבֵּל עִסּוּי,mekabel isuy,מְקַבֶּלֶת עִסּוּי,mekabelet isuy
+💇,Person Getting Haircut,Person,Person,מִסְתַּפֵּר,mistaper,מִסְתַּפֶּרֶת,mistaperet
+🚶,Person Walking,Person,Person,הוֹלֵךְ,holech,הוֹלֶכֶת,holechet
+🧍,Person Standing,Person,Person,עוֹמֵד,omed,עוֹמֶדֶת,omedet
+🧎,Person Kneeling,Person,Person,כּוֹרֵעַ,korea,כּוֹרַעַת,koraat
+🏃‍♀️,Woman Running,Person,Person,,,רָצָה,ratza
+🏃‍♂️,Man Running,Person,Person,רָץ,ratz,,
+💃,Woman Dancing,Person,Person,,,רוֹקֶדֶת,rokedet
+🕺,Man Dancing,Person,Person,רוֹקֵד,roked,,
+🕴️,Person in Suit Levitating,Person,Person,אִישׁ עָסָקִים מְרַחֵף,ish asakim merachef,,
+👯,People with Bunny Ears,Person,Person,אֲנָשִׁים עִם אָזְנֵי אַרְנָב,anashim im azney arnav,,
+🧖,Person in Steamy Room,Person,Person,בְּסָאוּנָה,besauna,בְּסָאוּנָה,besauna
+🧗,Person Climbing,Person,Person,מְטַפֵּס,metapes,מְטַפֶּסֶת,metapeset
+👫,Woman and Man Holding Hands,Person,Family,זוּג מַחֲזִיק יָדַיִם,zug machazik yadayim,,
+👭,Women Holding Hands,Person,Family,,,נָשִׁים מַחֲזִיקוֹת יָדַיִם,nashim machazikot yadayim
+👬,Men Holding Hands,Person,Family,גְּבָרִים מַחֲזִיקִים יָדַיִם,gevarim machazikim yadayim,,
+💏,Kiss,Person,Family,,,נְשִׁיקָה,neshika
+💑,Couple with Heart,Person,Family,זוּג מְאֹהָב,zug meohav,,
+👨‍👩‍👦,"Family: Man, Woman, Boy",Person,Family,,,מִשְׁפָּחָה,mishpacha
+👨‍👩‍👧‍👦,"Family: Man, Woman, Girl, Boy",Person,Family,,,מִשְׁפָּחָה,mishpacha
+👨‍👨‍👦,"Family: Man, Man, Boy",Person,Family,,,מִשְׁפָּחָה שֶׁל שְׁנֵי גְּבָרִים,mishpacha shel sheney gevarim
+👩‍👩‍👦,"Family: Woman, Woman, Boy",Person,Family,,,מִשְׁפָּחָה שֶׁל שְׁתֵּי נָשִׁים,mishpacha shel shetey nashim
+👨‍👧,"Family: Man, Girl",Person,Family,אַבָּא וּבַת,aba uvat,,
+👩‍👦,"Family: Woman, Boy",Person,Family,,,אִמָּא וּבֵן,ima uven
+🗣️,Speaking Head,Person,Person,רֹאשׁ מְדַבֵּר,rosh medaber,,
+👤,Bust in Silhouette,Person,Person,דְּמוּת אָדָם,demut adam,,
+👥,Busts in Silhouette,Person,Person,דְּמֻיּוֹת אֲנָשִׁים,demuyot anashim,,
+🫂,People Hugging,Person,Person,אֲנָשִׁים מִתְחַבְּקִים,anashim mitchabkim,,
+👣,Footprints,Person,Person,עִקְבוֹת רַגְלַיִם,ikvot raglayim,,
+🐈,Cat (Full Body),Animal,Mammal,חָתוּל,chatul,חֲתוּלָה,chatula
+🐈‍⬛,Black Cat,Animal,Mammal,חָתוּל שָׁחוֹר,chatul shachor,חֲתוּלָה שְׁחוֹרָה,chatula shechora
+🐕,Dog (Full Body),Animal,Mammal,כֶּלֶב,kelev,כַּלְבָּה,kalba
+🐩,Poodle,Animal,Mammal,פּוּדֶל,pudel,,
+🦮,Guide Dog,Animal,Mammal,כֶּלֶב נְחִיָּה,kelev nechiya,כַּלְבַּת נְחִיָּה,kalbat nechiya
+🐕‍🦺,Service Dog,Animal,Mammal,כֶּלֶב שֵׁרוּת,kelev sherut,כַּלְבַּת שֵׁרוּת,kalbat sherut
+🦝,Raccoon,Animal,Mammal,דְּבִיבוֹן,devivon,,
+🐅,Tiger,Animal,Mammal,נָמֵר,namer,נְמֵרָה,nemera
+🐆,Leopard,Animal,Mammal,בַּרְדְּלָס,bardlas,בַּרְדְּלָסָה,bardlasa
+🐎,Horse (Full Body),Animal,Mammal,סוּס,sus,סוּסָה,susa
+🐄,Cow (Full Body),Animal,Mammal,,,פָּרָה,para
+🐖,Pig (Full Body),Animal,Mammal,חֲזִיר,chazir,חֲזִירָה,chazira
+🐽,Pig Nose,Animal,Mammal,חֹטֶם חֲזִיר,chotem chazir,,
+🐫,Two-Hump Camel,Animal,Mammal,גָּמָל דּוּ-דַּבַּשְׁתִּי,gamal du-dabashti,,
+🦣,Mammoth,Animal,Mammal,מַמּוּתָה,mamuta,,
+🐁,Mouse (Full Body),Animal,Mammal,עַכְבָּר,achbar,עַכְבָּרָה,achbara
+🐀,Rat,Animal,Mammal,חֻלְדָּה,chulda,חֻלְדָּה,chulda
+🐇,Rabbit (Full Body),Animal,Mammal,אַרְנָב,arnav,אַרְנֶבֶת,arnevet
+🦥,Sloth,Animal,Mammal,עַצְלָן,atzlan,,
+🦦,Otter,Animal,Mammal,,,לוּטְרָה,lutra
+🦨,Skunk,Animal,Mammal,בּוֹאֵשׁ,boesh,,
+🦡,Badger,Animal,Mammal,גִּירִית,girit,,
+🐾,Paw Prints,Animal,Mammal,עִקְבוֹת חַיּוֹת,ikvot chayot,,
+🐉,Dragon,Animal,Mythical,דְּרָקוֹן,derakon,,
+🐲,Dragon Face,Animal,Mythical,פְּנֵי דְּרָקוֹן,peney derakon,,
+🦚,Peacock,Animal,Bird,טַוָּס,tavas,,
+🦩,Flamingo,Animal,Bird,פְלָמִינְגּוֹ,pelamingo,,
+🦤,Dodo,Animal,Bird,דּוֹדוֹ,dodo,,
+🪶,Feather,Animal,Bird,,,נוֹצָה,notza
+🪿,Goose,Animal,Bird,,,אַוָּז,avaz
+🐣,Hatching Chick,Animal,Bird,אֶפְרוֹחַ בּוֹקֵעַ,efroach bokea,,
+🐥,Front-Facing Baby Chick,Animal,Bird,אֶפְרוֹחַ,efroach,,
+🦕,Sauropod,Animal,Reptile,דִּינוֹזָאוּר,dinozaur,,
+🐋,Whale,Animal,Sea Creature,,,לִוְיָתָן,livyatan
+🦐,Shrimp,Animal,Sea Creature,,,חָסִילוֹן,chasilon
+🐚,Spiral Shell,Animal,Sea Creature,,,קוֹנְכִיָּה,konchiya
+🪸,Coral,Animal,Sea Creature,אַלְמוֹג,almog,,
+🪼,Jellyfish,Animal,Sea Creature,,,מֵדוּזָה,meduza
+🪳,Cockroach,Animal,Insect,גַּ'וּק,ga'uk,,
+🪲,Beetle,Animal,Insect,,,חִפּוּשִׁית,chipushit
+🕸️,Spider Web,Animal,Insect,קוּרֵי עַכָּבִישׁ,kurey akavish,,
+🪴,Potted Plant,Plant,Other,,,עֲצִיץ,atzitz
+🍁,Maple Leaf,Plant,Other,עֲלֵה אֶדֶר,ale eder,,
+🪺,Nest with Eggs,Plant,Other,קֵן עִם בֵּיצִים,ken im beytzim,,
+🪹,Empty Nest,Plant,Other,קֵן רֵיק,ken reyk,,
+☘️,Shamrock,Plant,Other,תִּלְתָּן,tiltan,,
+🌺,Hibiscus,Plant,Flower,הִיבִּיסְקוּס,hibiskus,,
+🪵,Wood,Plant,Tree,עֵץ,etz,,
+💐,Bouquet,Plant,Flower,זֵר פְּרָחִים,zer perachim,,
+🥀,Wilted Flower,Plant,Flower,פֶּרַח קָמוּל,perach kamul,,
+🥗,Green Salad,Food,Dish,סָלָט יָרוֹק,salat yarok,,
+🍱,Bento Box,Food,Dish,קֻפְסַת בֶּנְטּוֹ,kufsat bento,,
+🍘,Rice Cracker,Food,Dish,קְרָקֶר אֹרֶז,keraker orez,,
+🍙,Rice Ball,Food,Dish,כַּדּוּר אֹרֶז,kadur orez,,
+🍚,Cooked Rice,Food,Dish,אֹרֶז מְבֻשָּׁל,orez mevushal,,
+🍛,Curry Rice,Food,Dish,קָארִי עִם אֹרֶז,kari im orez,,
+🍢,Oden,Food,Dish,אוֹדֶן,oden,,
+🍤,Fried Shrimp,Food,Dish,חָסִילוֹן מְטֻגָּן,chasilon metugan,,
+🍥,Fish Cake with Swirl,Food,Dish,עוּגַת דָּג,ugat dag,,
+🥮,Moon Cake,Food,Dish,עוּגַת יָרֵחַ,ugat yareach,,
+🍡,Dango,Food,Dish,דַּנְגּוֹ,dango,,
+🥠,Fortune Cookie,Food,Dish,עוּגִית מַזָּל,ugit mazal,,
+🥡,Takeout Box,Food,Dish,קֻפְסַת טֵייקאַוּט,kufsat teyykaut,,
+🍧,Shaved Ice,Food,Sweet,קֶרַח גָּרוּד,kerach garud,,
+🍨,Ice Cream,Food,Sweet,גְּלִידָה,gelida,,
+🥧,Pie,Food,Sweet,פַּאי,pay,,
+🍮,Custard,Food,Sweet,קַסְטָרְד,kastard,,
+🍠,Roasted Sweet Potato,Food,Dish,בָּטָטָה צְלוּיָה,batata tzeluya,,
+🍗,Poultry Leg,Food,Dish,שׁוֹק עוֹף,shok of,,
+🍖,Meat on Bone,Food,Dish,בָּשָׂר עַל עֶצֶם,basar al etzem,,
+🥩,Cut of Meat,Food,Dish,נֵתַח בָּשָׂר,netach basar,,
+🥘,Shallow Pan of Food,Food,Dish,תַּבְשִׁיל,tavshil,,
+🥣,Bowl with Spoon,Food,Dish,קְעָרָה עִם כַּף,keara im kaf,,
+🫕,Fondue,Food,Dish,פוֹנְדּוּ,pondu,,
+🫔,Tamale,Food,Dish,טָמָאלֶה,tamale,,
+🫘,Beans,Food,Dish,שְׁעוּעִית,sheuit,,
+🫓,Flatbread,Food,Dish,פִּיתָה,pita,,
+🍶,Sake,Food,Drink,סָאקֵי,sakey,,
+🍾,Bottle with Popping Cork,Food,Drink,בַּקְבּוּק שַׁמְפַּנְיָה,bakbuk shampanya,,
+🍸,Cocktail Glass,Food,Drink,כּוֹס קוֹקְטֵיל,kos kokteyl,,
+🍹,Tropical Drink,Food,Drink,מַשְׁקֶה טְרוֹפִּי,mashke teropi,,
+🍻,Clinking Beer Mugs,Food,Drink,קוֹסוֹת בִּירָה,kosot bira,,
+🥃,Tumbler Glass,Food,Drink,כּוֹס וִיסְקִי,kos viski,,
+🫗,Pouring Liquid,Food,Drink,יוֹצֵק,yotzek,,
+🧉,Mate,Food,Drink,מַאטֶה,mate,,
+🧋,Bubble Tea,Food,Drink,תֵּה בּוּעוֹת,te buot,,
+🍋‍🟩,Lime,Food,Fruit,,,לַיִם,layim
+🫛,Pea Pod,Food,Vegetable,,,תַּרְמִיל אֲפוּנָה,tarmil afuna
+🫚,Ginger Root,Food,Vegetable,זַנְגְּבִיל,zangvil,,
+🫜,Leafy Green,Food,Vegetable,יָרָק עָלִים,yarak alim,,
+🥎,Softball,Activity,Sport,סוֹפְטְבּוֹל,softbol,,
+🏉,Rugby Football,Activity,Sport,רַגְבִּי,ragbi,,
+🥏,Flying Disc,Activity,Sport,פְרִיזְבִּי,perizbi,,
+🎱,Pool 8 Ball,Activity,Sport,בִּילְיַארְד,bilyard,,
+🪀,Yo-Yo,Activity,Sport,יוֹ-יוֹ,yo-yo,,
+🥅,Goal Net,Activity,Sport,שַׁעַר,shaar,,
+🏒,Ice Hockey,Activity,Sport,הוֹקִי קֶרַח,hoki kerach,,
+🏑,Field Hockey,Activity,Sport,הוֹקִי שָׂדֶה,hoki sade,,
+🥍,Lacrosse,Activity,Sport,לָקְרוֹס,lakros,,
+🏏,Cricket Bat,Activity,Sport,קְרִיקֶט,keriket,,
+🪃,Boomerang,Activity,Sport,בּוּמֶרַנְג,bumerang,,
+🪁,Kite,Activity,Sport,,,עֲפִיפוֹן,afifon
+🤿,Diving Mask,Activity,Sport,מַסֵּכַת צְלִילָה,masechat tzelila,,
+🥊,Boxing Glove,Activity,Sport,כְּפָפַת אִגְרוּף,kefafat igruf,,
+🥋,Martial Arts Uniform,Activity,Sport,מַדֵּי קָרָטֶה,madey karate,,
+🎽,Running Shirt,Activity,Sport,חֻלְצַת רִיצָה,chultzat ritza,,
+🛹,Skateboard,Activity,Sport,סְקֵייטְבּוֹרְד,sekeyytbord,,
+🛼,Roller Skate,Activity,Sport,גַּלְגִּלִּיּוֹת,galgiliyot,,
+🛷,Sled,Activity,Sport,,,מִזְחֶלֶת,mizchelet
+🥌,Curling Stone,Activity,Sport,אֶבֶן קֶרְלִינְג,even kerling,,
+🏂,Snowboarder,Activity,Sport,גּוֹלֵשׁ סְנוֹבּוֹרְד,golesh senobord,גּוֹלֶשֶׁת סְנוֹבּוֹרְד,goleshet senobord
+🪂,Parachute,Activity,Sport,מַצְנֵחַ,matzneach,,
+🏋️,Person Lifting Weights,Activity,Sport,מֵרִים מִשְׁקוֹלוֹת,merim mishkolot,מְרִימָה מִשְׁקוֹלוֹת,merima mishkolot
+🤸,Person Cartwheeling,Activity,Sport,עוֹשֶׂה גַּלְגַּל,ose galgal,עוֹשָׂה גַּלְגַּל,osa galgal
+🤺,Person Fencing,Activity,Sport,סַיָּף,sayaf,סַיֶּפֶת,sayefet
+🤾,Person Playing Handball,Activity,Sport,שַׂחְקַן כַּדּוּרְיָד,sachkan kaduryad,שַׂחְקָנִית כַּדּוּרְיָד,sachkanit kaduryad
+🤽,Person Playing Water Polo,Activity,Sport,שַׂחְקַן פּוֹלוֹ מַיִם,sachkan polo mayim,שַׂחְקָנִית פּוֹלוֹ מַיִם,sachkanit polo mayim
+🚣,Person Rowing Boat,Activity,Sport,חוֹתֵר,choter,חוֹתֶרֶת,choteret
+🏇,Horse Racing,Activity,Sport,מֵרוֹץ סוּסִים,merotz susim,,
+⛷️,Skier,Activity,Sport,גּוֹלֵשׁ סְקִי,golesh seki,,
+🏌️,Person Golfing,Activity,Sport,שַׂחְקַן גּוֹלְף,sachkan golf,שַׂחְקָנִית גּוֹלְף,sachkanit golf
+🏄,Person Surfing,Activity,Sport,גּוֹלֵשׁ,golesh,גּוֹלֶשֶׁת,goleshet
+🚵,Person Mountain Biking,Activity,Sport,רוֹכֵב הָרִים,rochev harim,רוֹכֶבֶת הָרִים,rochevet harim
+🤹,Person Juggling,Activity,Sport,לַהֲטוּטָן,lahatutan,לַהֲטוּטָנִית,lahatutanit
+🧘,Person in Lotus Position,Activity,Sport,יוֹשֵׁב יוֹגָה,yoshev yoga,יוֹשֶׁבֶת יוֹגָה,yoshevet yoga
+🏆,Trophy,Activity,Sport,גָּבִיעַ,gaviya,,
+🥇,Gold Medal,Activity,Sport,מֵדַלְיַת זָהָב,medalyat zahav,,
+🥈,Silver Medal,Activity,Sport,מֵדַלְיַת כֶּסֶף,medalyat kesef,,
+🥉,Bronze Medal,Activity,Sport,מֵדַלְיַת אָרָד,medalyat arad,,
+🏅,Sports Medal,Activity,Sport,מֵדַלְיַת סְפּוֹרְט,medalyat seport,,
+🎖️,Military Medal,Activity,Sport,מֵדַלְיָה צְבָאִית,medalya tzevait,,
+🎗️,Reminder Ribbon,Activity,Sport,סֶרֶט תְּזכֹּרֶת,seret tezkoret,,
+🎟️,Admission Tickets,Activity,Sport,כַּרְטִיסֵי כְּנִיסָה,kartisey kenisa,,
+🎫,Ticket,Activity,Sport,כַּרְטִיס,kartis,,
+🎮,Video Game,Activity,Game,מִשְׂחַק וִידֵאוֹ,mischak video,,
+🕹️,Joystick,Activity,Game,גֵּ'יסְטִיק,ge'ystik,,
+🎰,Slot Machine,Activity,Game,מְכוֹנַת מַזָּל,mechonat mazal,,
+🎲,Game Die,Activity,Game,,,קֻבִּיָּה,kubiya
+🧩,Puzzle Piece,Activity,Game,חֵלֶק פָּזֶל,chelek pazel,,
+🪅,Piñata,Activity,Game,פִּינְיָאטָה,pinyata,,
+🪩,Mirror Ball,Activity,Game,כַּדּוּר מַרְאוֹת,kadur marot,,
+🪆,Nesting Dolls,Activity,Game,בֻּבּוֹת בְּתוֹךְ בֻּבּוֹת,bubot betoch bubot,,
+♟️,Chess Pawn,Activity,Game,חַיָּל שַׁחְמָט,chayal shachmat,,
+🎯,Bullseye,Activity,Game,מַטָּרָה,matara,,
+🎳,Bowling,Activity,Sport,בָּאוּלִינְג,bauling,,
+🎴,Flower Playing Cards,Activity,Game,קְלָפֵי פְּרָחִים,kelafey perachim,,
+🀄,Mahjong Red Dragon,Activity,Game,מָאהְגּ'וֹנְג,mahg'ong,,
+🃏,Joker,Activity,Game,גּ'וֹקֶר,g'oker,,
+🎭,Performing Arts,Activity,Craft,אָמָּנֻיּוֹת בִּמָּה,amanuyot bima,,
+🎨,Artist Palette,Activity,Craft,פָּלֵטָה,paleta,,
+🧵,Thread,Activity,Craft,חוּט,chut,,
+🪡,Sewing Needle,Activity,Craft,מַחַט,machat,,
+🧶,Yarn,Activity,Craft,צֶמֶר,tzemer,,
+🪢,Knot,Activity,Craft,קֶשֶׁר,kesher,,
+🪘,Long Drum,Activity,Music,תֹּף אָרֹךְ,tof aroch,,
+🪗,Accordion,Activity,Music,אָקוֹרְדִּיוֹן,akordiyon,,
+🪈,Flute,Activity,Music,חָלִיל,chalil,,
+📯,Postal Horn,Activity,Music,חֲצוֹצְרַת דֹּאַר,chatzotzrat doar,,
+🎙️,Studio Microphone,Activity,Music,מִיקְרוֹפוֹן אוּלְפָּן,mikrofon ulpan,,
+🎚️,Level Slider,Activity,Music,מַחְלִיק עָצְמָה,machlik atzma,,
+🎛️,Control Knobs,Activity,Music,כַּפְתּוֹרֵי בַּקָּרָה,kaftorey bakara,,
+🎼,Musical Score,Activity,Music,תָּוֵי מוּסִיקָה,tavey musika,,
+📢,Loudspeaker,Symbol,Audio,רַמְקוֹל,ramkol,,
+📣,Megaphone,Symbol,Audio,מֶגָפוֹן,megafon,,
+🚃,Railway Car,Travel,Rail,קְרוֹן רַכֶּבֶת,keron rakevet,,
+🚄,High-Speed Train,Travel,Rail,רַכֶּבֶת מְהִירָה,rakevet mehira,,
+🚅,Bullet Train,Travel,Rail,רַכֶּבֶת כַּדּוּר,rakevet kadur,,
+🚆,Train,Travel,Rail,,,רַכֶּבֶת,rakevet
+🚇,Metro,Travel,Rail,,,רַכֶּבֶת תַּחְתִּית,rakevet tachtit
+🚈,Light Rail,Travel,Rail,,,רַכֶּבֶת קַלָּה,rakevet kala
+🚉,Station,Travel,Rail,,,תַּחֲנַת רַכֶּבֶת,tachanat rakevet
+🚊,Tram,Travel,Rail,,,חַשְׁמַלִּית,chashmalit
+🚝,Monorail,Travel,Rail,,,מוֹנוֹרַיְל,monorayl
+🚞,Mountain Railway,Travel,Rail,,,רַכֶּבֶת הָרִים,rakevet harim
+🚋,Tram Car,Travel,Rail,,,קְרוֹן חַשְׁמַלִּית,keron chashmalit
+🚍,Oncoming Bus,Travel,Land Vehicle,אוֹטוֹבּוּס מִתְקָרֵב,otobus mitkarev,,
+🚎,Trolleybus,Travel,Land Vehicle,טְרוֹלֵיבּוּס,teroleybus,,
+🚐,Minibus,Travel,Land Vehicle,,,מִינִיבּוּס,minibus
+🚖,Oncoming Taxi,Travel,Land Vehicle,מוֹנִית מִתְקָרֶבֶת,monit mitkarevet,,
+🚘,Oncoming Automobile,Travel,Land Vehicle,,,מְכוֹנִית מִתְקָרֶבֶת,mechonit mitkarevet
+🚙,Sport Utility Vehicle,Travel,Land Vehicle,גִּ'יפ,gi'yf,,
+🛻,Pickup Truck,Travel,Land Vehicle,טֶנְדֶּר,tender,,
+🚛,Articulated Lorry,Travel,Land Vehicle,,,מַשָּׂאִית סְמִיטְרֵייְלֶר,masait semitreyyler
+🚜,Tractor,Travel,Land Vehicle,טְרַקְטוֹר,teraktor,,
+🛵,Motor Scooter,Travel,Land Vehicle,קָטְנוֹעַ,katnoa,,
+🦽,Manual Wheelchair,Travel,Land Vehicle,כִּסֵּא גַּלְגַּלִּים יָדָנִי,kise galgalim yadani,,
+🦼,Motorized Wheelchair,Travel,Land Vehicle,כִּסֵּא גַּלְגַּלִּים מְמֻנָּע,kise galgalim memuna,,
+🛺,Auto Rickshaw,Travel,Land Vehicle,רִיקְשָׁה,riksha,,
+🚏,Bus Stop,Travel,Sign,,,תַּחֲנַת אוֹטוֹבּוּס,tachanat otobus
+🛣️,Motorway,Travel,Sign,,,כְּבִישׁ מָהִיר,kevish mahir
+🛤️,Railway Track,Travel,Sign,,,מְסִלַּת רַכֶּבֶת,mesilat rakevet
+🛢️,Oil Drum,Travel,Sign,חָבִית נֵפְט,chavit neft,,
+⛽,Fuel Pump,Travel,Sign,מַשְׁאֵבַת דֶּלֶק,mashevat delek,,
+🛞,Wheel,Travel,Sign,גַּלְגַּל,galgal,,
+🚨,Police Car Light,Travel,Sign,,,נוֹרִית מִשְׁטָרָה,norit mishtara
+🚥,Horizontal Traffic Light,Travel,Sign,רַמְזוֹר אֲפֻקִּי,ramzor afuki,,
+🚦,Vertical Traffic Light,Travel,Sign,רַמְזוֹר,ramzor,,
+🛑,Stop Sign,Travel,Sign,תַּמְרוּר עֲצֹר,tamrur atzor,,
+🚧,Construction,Travel,Sign,בְּנִיָּה,beniya,,
+⚓,Anchor,Travel,Water,,,עֹגֶן,ogen
+🛟,Ring Buoy,Travel,Water,,,גַּלְגַּל הַצָּלָה,galgal hatzala
+🛶,Canoe,Travel,Water,קָנוֹ,kano,,
+🛳️,Passenger Ship,Travel,Water,אֳנִיַּת נוֹסְעִים,oniyat nosim,,
+⛴️,Ferry,Travel,Water,,,מַעְבֹּרֶת,maboret
+🛥️,Motor Boat,Travel,Water,סִירַת מָנוֹעַ,sirat manoa,,
+🛩️,Small Airplane,Travel,Air,מָטוֹס קָטָן,matos katan,,
+🛫,Airplane Departure,Travel,Air,מָטוֹס מַמְרִיא,matos mamri,,
+🛬,Airplane Arrival,Travel,Air,מָטוֹס נוֹחֵת,matos nochet,,
+💺,Seat,Travel,Air,מוֹשָׁב,moshav,,
+🚟,Suspension Railway,Travel,Cable,,,רַכֶּבֶל תָּלוּי,rakevel taluy
+🚠,Mountain Cableway,Travel,Cable,רַכֶּבֶל הָרִים,rakevel harim,,
+🚡,Aerial Tramway,Travel,Cable,רַכֶּבֶל אֲוִירִי,rakevel aviri,,
+🛰️,Satellite,Travel,Air,לַוְיָן,lavyan,,
+🛎️,Bellhop Bell,Travel,Other,פַּעֲמוֹן מָלוֹן,paamon malon,,
+🧳,Luggage,Travel,Other,,,מִזְוָדָה,mizvada
+🗺️,World Map,Travel,Other,,,מַפַּת עוֹלָם,mapat olam
+🗾,Map of Japan,Travel,Other,מַפַּת יָפָּן,mapat yapan,,
+🏗️,Construction Site,Place,Building,אֲתַר בְּנִיָּה,atar beniya,,
+🏘️,Houses,Place,Building,בָּתִּים,batim,,
+🏚️,Derelict House,Place,Building,בַּיִת נָטוּשׁ,bayit natush,,
+🏟️,Stadium,Place,Building,אִצְטַדְיוֹן,itztadyon,,
+🏤,Post Office,Place,Building,דֹּאַר אֵירוֹפִּי,doar eyropi,,
+🏣,Japanese Post Office,Place,Building,דֹּאַר יָפָּנִי,doar yapani,,
+🏨,Hotel,Place,Building,מָלוֹן,malon,,
+🏩,Love Hotel,Place,Building,מְלוֹן אַהֲבָה,melon ahava,,
+🏬,Department Store,Place,Building,כָּל-בּוֹ,kal-bo,,
+🏭,Factory,Place,Building,בֵּית חֲרֹשֶׁת,beyt charoshet,,
+🏯,Japanese Castle,Place,Building,טִירָה יָפָּנִית,tira yapanit,,
+🗼,Tokyo Tower,Place,Landmark,מִגְדַּל טוֹקְיוֹ,migdal tokyo,,
+🗽,Statue of Liberty,Place,Landmark,פֶּסֶל הַחֵרוּת,pesel hacherut,,
+⛲,Fountain,Place,Landmark,,,מִזְרָקָה,mizraka
+🌃,Night with Stars,Nature,Landscape,לַיְלָה עִם כּוֹכָבִים,layla im kochavim,,
+🌄,Sunrise Over Mountains,Nature,Landscape,זְרִיחָה מֵעַל הָרִים,zericha meal harim,,
+🌅,Sunrise,Nature,Landscape,,,זְרִיחָה,zericha
+🌆,Cityscape at Dusk,Nature,Landscape,עִיר בְּדִמְדּוּמִים,ir bedimdumim,,
+🌇,Sunset,Nature,Landscape,,,שְׁקִיעָה,shekiya
+🌉,Bridge at Night,Nature,Landscape,גֶּשֶׁר בַּלַּיְלָה,gesher balayla,,
+🌁,Foggy,Nature,Landscape,,,עֲרָפֶל,arafel
+🌌,Milky Way,Nature,Astronomy,שְׁבִיל הֶחָלָב,shevil hechalav,,
+🎠,Carousel Horse,Place,Landmark,קָרוּסֶלָה,karusela,,
+🎡,Ferris Wheel,Place,Landmark,גַּלְגַּל עֲנָק,galgal anak,,
+🎢,Roller Coaster,Place,Landmark,רַכֶּבֶת הָרִים,rakevet harim,,
+🎪,Circus Tent,Place,Landmark,אֹהֶל קִרְקָס,ohel kirkas,,
+🏕️,Camping,Nature,Landscape,קֶמְפִּינְג,kemping,,
+🏝️,Desert Island,Nature,Landscape,אִי בּוֹדֵד,i boded,,
+🏜️,Desert,Nature,Landscape,מִדְבָּר,midbar,,
+🌐,Globe with Meridians,Place,Landmark,גְּלוֹבּוּס,gelobus,,
+🌍,Globe Showing Europe-Africa,Nature,Landscape,כַּדּוּר הָאָרֶץ,kadur haaretz,,
+🌎,Globe Showing Americas,Nature,Landscape,כַּדּוּר הָאָרֶץ,kadur haaretz,,
+🌏,Globe Showing Asia-Australia,Nature,Landscape,כַּדּוּר הָאָרֶץ,kadur haaretz,,
+🧭,Compass,Object,Compass,,,מַצְפֵּן,matzpen
+🌑,New Moon,Nature,Astronomy,יָרֵחַ חָדָשׁ,yareach chadash,,
+🌒,Waxing Crescent Moon,Nature,Astronomy,סַהַר גָּדֵל,sahar gadel,,
+🌓,First Quarter Moon,Nature,Astronomy,יָרֵחַ רֶבַע רִאשׁוֹן,yareach reva rishon,,
+🌔,Waxing Gibbous Moon,Nature,Astronomy,יָרֵחַ גָּדֵל,yareach gadel,,
+🌕,Full Moon,Nature,Astronomy,יָרֵחַ מָלֵא,yareach male,,
+🌖,Waning Gibbous Moon,Nature,Astronomy,יָרֵחַ קָטֵן,yareach katen,,
+🌗,Last Quarter Moon,Nature,Astronomy,יָרֵחַ רֶבַע אַחֲרוֹן,yareach reva acharon,,
+🌘,Waning Crescent Moon,Nature,Astronomy,סַהַר קָטֵן,sahar katen,,
+🌚,New Moon Face,Nature,Astronomy,יָרֵחַ חָדָשׁ עִם פָּנִים,yareach chadash im panim,,
+🌛,First Quarter Moon Face,Nature,Astronomy,יָרֵחַ עִם פָּנִים,yareach im panim,,
+🌜,Last Quarter Moon Face,Nature,Astronomy,יָרֵחַ עִם פָּנִים,yareach im panim,,
+🌝,Full Moon Face,Nature,Astronomy,יָרֵחַ מָלֵא עִם פָּנִים,yareach male im panim,,
+🌞,Sun with Face,Nature,Astronomy,שֶׁמֶשׁ עִם פָּנִים,shemesh im panim,,
+🪐,Ringed Planet,Nature,Astronomy,כּוֹכָב לֶכֶת עִם טַבָּעוֹת,kochav lechet im tabaot,,
+☄️,Comet,Nature,Astronomy,,,שָׁבִיט,shavit
+🌠,Shooting Star,Nature,Astronomy,כּוֹכָב נוֹפֵל,kochav nofel,,
+🌡️,Thermometer,Nature,Weather,מַד-חֹם,mad-chom,,
+🌤️,Sun Behind Small Cloud,Nature,Weather,שֶׁמֶשׁ מֵאֲחוֹרֵי עָנָן,shemesh meachorey anan,,
+⛅,Sun Behind Cloud,Nature,Weather,שֶׁמֶשׁ עִם עֲנָנִים,shemesh im ananim,,
+🌥️,Sun Behind Large Cloud,Nature,Weather,שֶׁמֶשׁ מֵאֲחוֹרֵי עָנָן גָּדוֹל,shemesh meachorey anan gadol,,
+🌦️,Sun Behind Rain Cloud,Nature,Weather,שֶׁמֶשׁ עִם עֲנַן גֶּשֶׁם,shemesh im anan geshem,,
+☔,Umbrella with Rain Drops,Nature,Weather,מַטְרִיָּה בַּגֶּשֶׁם,matriya bageshem,,
+⛱️,Umbrella on Ground,Nature,Weather,שִׁמְשִׁיָּה,shimshiya,,
+☃️,Snowman,Nature,Weather,,,בֻּבַּת שֶׁלֶג,bubat sheleg
+⌛,Hourglass Done,Time,Clock,שְׁעוֹן חוֹל,sheon chol,,
+⏳,Hourglass Not Done,Time,Clock,שְׁעוֹן חוֹל זוֹרֵם,sheon chol zorem,,
+⏱️,Stopwatch,Time,Clock,שְׁעוֹן עֶצֶר,sheon etzer,,
+⏲️,Timer Clock,Time,Clock,טַיְמֵר,taymer,,
+🕰️,Mantelpiece Clock,Time,Clock,שְׁעוֹן מַדָּף,sheon madaf,,
+🕛,12 Oclock,Time,Clock,שְׁתֵּים-עֶשְׂרֵה,sheteym-esre,,
+🕧,12:30,Time,Clock,שְׁתֵּים-עֶשְׂרֵה וָחֵצִי,sheteym-esre vachetzi,,
+🕐,1 Oclock,Time,Clock,אַחַת,achat,,
+🕜,1:30,Time,Clock,אַחַת וָחֵצִי,achat vachetzi,,
+🕑,2 Oclock,Time,Clock,שְׁתַּיִם,shetayim,,
+🕝,2:30,Time,Clock,שְׁתַּיִם וָחֵצִי,shetayim vachetzi,,
+🕒,3 Oclock,Time,Clock,שָׁלוֹשׁ,shalosh,,
+🕞,3:30,Time,Clock,שָׁלוֹשׁ וָחֵצִי,shalosh vachetzi,,
+🕓,4 Oclock,Time,Clock,אַרְבַּע,arba,,
+🕟,4:30,Time,Clock,אַרְבַּע וָחֵצִי,arba vachetzi,,
+🕔,5 Oclock,Time,Clock,חָמֵשׁ,chamesh,,
+🕠,5:30,Time,Clock,חָמֵשׁ וָחֵצִי,chamesh vachetzi,,
+🕕,6 Oclock,Time,Clock,שֵׁשׁ,shesh,,
+🕡,6:30,Time,Clock,שֵׁשׁ וָחֵצִי,shesh vachetzi,,
+🕖,7 Oclock,Time,Clock,שֶׁבַע,sheva,,
+🕢,7:30,Time,Clock,שֶׁבַע וָחֵצִי,sheva vachetzi,,
+🕗,8 Oclock,Time,Clock,שְׁמוֹנֶה,shemone,,
+🕣,8:30,Time,Clock,שְׁמוֹנֶה וָחֵצִי,shemone vachetzi,,
+🕘,9 Oclock,Time,Clock,תֵּשַׁע,tesha,,
+🕤,9:30,Time,Clock,תֵּשַׁע וָחֵצִי,tesha vachetzi,,
+🕙,10 Oclock,Time,Clock,עֶשֶׂר,eser,,
+🕥,10:30,Time,Clock,עֶשֶׂר וָחֵצִי,eser vachetzi,,
+🕚,11 Oclock,Time,Clock,אַחַת-עֶשְׂרֵה,achat-esre,,
+🕦,11:30,Time,Clock,אַחַת-עֶשְׂרֵה וָחֵצִי,achat-esre vachetzi,,
+♈,Aries,Symbol,Zodiac,,,טָלֶה,tale
+♉,Taurus,Symbol,Zodiac,שׁוֹר,shor,,
+♊,Gemini,Symbol,Zodiac,תְּאוֹמִים,teomim,,
+♋,Cancer,Symbol,Zodiac,סַרְטָן,sartan,,
+♌,Leo,Symbol,Zodiac,אַרְיֵה,arye,,
+♍,Virgo,Symbol,Zodiac,,,בְּתוּלָה,betula
+♎,Libra,Symbol,Zodiac,מֹאזְנַיִם,moznayim,,
+♏,Scorpio,Symbol,Zodiac,עַקְרָב,akrav,,
+♐,Sagittarius,Symbol,Zodiac,קַשָּׁת,kashat,,
+♑,Capricorn,Symbol,Zodiac,גְּדִי,gedi,,
+♒,Aquarius,Symbol,Zodiac,דְּלִי,deli,,
+♓,Pisces,Symbol,Zodiac,דָּגִים,dagim,,
+⛎,Ophiuchus,Symbol,Zodiac,נוֹשֵׂא הַנָּחָשׁ,nose hanachash,,
+🥻,Sari,Object,Clothing,סָארִי,sari,,
+🩱,One-Piece Swimsuit,Object,Clothing,בֶּגֶד יָם שָׁלֵם,beged yam shalem,,
+🩲,Briefs,Object,Clothing,תַּחְתּוֹנִים,tachtonim,,
+🩳,Shorts,Object,Clothing,מִכְנְסֵי בֶּרְמוּדָה,michnsey bermuda,,
+👙,Bikini,Object,Clothing,בִּיקִינִי,bikini,,
+👚,Womans Clothes,Object,Clothing,,,חֻלְצַת אִשָּׁה,chultzat isha
+🩴,Thong Sandal,Object,Clothing,כַּפְכַּף,kafkaf,,
+🥿,Flat Shoe,Object,Clothing,,,נַעַל שְׁטוּחָה,naal shetucha
+🩰,Ballet Shoes,Object,Clothing,נַעֲלֵי בָּלֶט,naaley balet,,
+🪖,Military Helmet,Object,Clothing,קַסְדָּה צְבָאִית,kasda tzevait,,
+🎓,Graduation Cap,Object,Clothing,כּוֹבַע מַסְכֵּם,kova maskem,,
+⛑️,Rescue Helmet,Object,Clothing,קַסְדַּת הַצָּלָה,kasdat hatzala,,
+👝,Clutch Bag,Object,Clothing,אַרְנָק קָטָן,arnak katan,,
+💼,Briefcase,Object,Clothing,תִּיק עֲבוֹדָה,tik avoda,,
+👛,Purse,Object,Clothing,,,אַרְנָקִית,arnakit
+🛍️,Shopping Bags,Object,Clothing,שַׂקִּית קְנִיּוֹת,sakit keniyot,,
+📲,Mobile Phone with Arrow,Object,Tech,טֵלֵפוֹן עִם חֵץ,telefon im chetz,,
+📞,Telephone Receiver,Object,Tech,שְׁפוֹפֶרֶת,shefoferet,,
+📟,Pager,Object,Tech,בִּיפֶּר,biper,,
+📠,Fax Machine,Object,Tech,,,מְכוֹנַת פַקְס,mechonat paks
+🪫,Low Battery,Object,Tech,,,סוֹלְלָה חֲלָשָׁה,solla chalasha
+💽,Computer Disk,Object,Tech,תַּקְלִיטוֹן,takliton,,
+💾,Floppy Disk,Object,Tech,דִּיסְקֶט,disket,,
+💿,Optical Disk,Object,Tech,דִּיסְק,disk,,
+📀,DVD,Object,Tech,דִּי.וִי.דִי.,di.vi.di.,,
+🧮,Abacus,Object,Tech,חֶשְׁבּוֹנִיָּה,cheshboniya,,
+🎥,Movie Camera,Object,Tech,מַצְלֵמַת קוֹלְנוֹעַ,matzlemat kolnoa,,
+🎞️,Film Frames,Object,Tech,מִסְגְּרוֹת סֶרֶט,misgrot seret,,
+📽️,Film Projector,Object,Tech,מַקְרֵן,makren,,
+🎬,Clapper Board,Object,Tech,לוּחַ קוֹלְנוֹעַ,luach kolnoa,,
+📸,Camera with Flash,Object,Tech,,,מַצְלֵמָה עִם פְלָאשׁ,matzlema im pelash
+📹,Video Camera,Object,Tech,מַצְלֵמַת וִידֵאוֹ,matzlemat video,,
+📼,Videocassette,Object,Tech,,,קַסֶּטַת וִידֵאוֹ,kasetat video
+🔍,Magnifying Glass Tilted Left,Object,Magnifier,זְכוּכִית מַגְדֶּלֶת,zechuchit magdelet,,
+🔎,Magnifying Glass Tilted Right,Object,Magnifier,זְכוּכִית מַגְדֶּלֶת,zechuchit magdelet,,
+🪔,Diya Lamp,Object,Light,,,מְנוֹרַת שֶׁמֶן,menorat shemen
+🏮,Red Paper Lantern,Object,Light,פָּנַס נְיָר אָדוֹם,panas neyar adom,,
+📔,Notebook with Decorative Cover,Object,Book,,,מַחְבֶּרֶת מְעֻטֶּרֶת,machberet meuteret
+📓,Notebook,Object,Book,,,מַחְבֶּרֶת,machberet
+📒,Ledger,Object,Book,פִּנְקָס,pinkas,,
+📃,Page with Curl,Object,Paper,דַּף מִתְקָפֵּל,daf mitkapel,,
+📄,Page Facing Up,Object,Paper,דַּף,daf,,
+📊,Bar Chart,Object,Paper,תַּרְשִׁים עַמּוּדוֹת,tarshim amudot,,
+📈,Chart Increasing,Object,Paper,תַּרְשִׁים עוֹלֶה,tarshim ole,,
+📉,Chart Decreasing,Object,Paper,תַּרְשִׁים יוֹרֵד,tarshim yored,,
+📇,Card Index,Time,Calendar,קַרְטֶסֶת,karteset,,
+🗃️,Card File Box,Object,Paper,קֻפְסַת כַּרְטִיסִיּוֹת,kufsat kartisiyot,,
+🗄️,File Cabinet,Object,Paper,אֲרוֹן תִּיקִים,aron tikim,,
+🗑️,Wastebasket,Object,Paper,פַּח אַשְׁפָּה,pach ashpa,,
+📂,Open File Folder,Object,Paper,תִּיקִיָּה פְּתוּחָה,tikiya petucha,,
+🗂️,Card Index Dividers,Object,Paper,חוֹצְצֵי כַּרְטִיסִיָּה,chotztzey kartisiya,,
+🗞️,Rolled-Up Newspaper,Object,Paper,עִתּוֹן מְגֻלְגָּל,iton megulgal,,
+📑,Bookmark Tabs,Object,Paper,סִימָנִיּוֹת,simaniyot,,
+🔗,Link,Object,Paper,קִשּׁוּר,kishur,,
+📐,Triangular Ruler,Object,Writing,סַרְגֵּל מְשֻׁלָּשׁ,sargel meshulash,,
+📆,Tear-Off Calendar,Time,Calendar,לוּחַ קְרִיעָה,luach keriya,,
+🗓️,Spiral Calendar,Time,Calendar,לוּחַ שָׁנָה,luach shana,,
+🖇️,Linked Paperclips,Object,Writing,מְהַדְּקֵי נְיָר,mehadkey neyar,,
+📥,Inbox Tray,Object,Mail,מִגְדָּשׁ דּוֹאַר נִכְנָס,migdash doar nichnas,,
+📤,Outbox Tray,Object,Mail,מִגְדָּשׁ דּוֹאַר יוֹצֵא,migdash doar yotze,,
+📦,Package,Object,Mail,,,חֲבִילָה,chavila
+📫,Closed Mailbox with Raised Flag,Object,Mail,תֵּבַת דֹּאַר סְגוּרָה,tevat doar segura,,
+📪,Closed Mailbox with Lowered Flag,Object,Mail,תֵּבַת דֹּאַר רֵיקָה,tevat doar reyka,,
+📬,Open Mailbox with Raised Flag,Object,Mail,תֵּבַת דֹּאַר פְּתוּחָה,tevat doar petucha,,
+📭,Open Mailbox with Lowered Flag,Object,Mail,תֵּבַת דֹּאַר רֵיקָה,tevat doar reyka,,
+📮,Postbox,Object,Mail,,,תֵּבַת מִכְתָּבִים,tevat michtavim
+🗳️,Ballot Box with Ballot,Object,Mail,קַלְפִּי,kalpi,,
+🪚,Carpentry Saw,Object,Tool,מַסּוֹר,masor,,
+🪜,Ladder,Object,Tool,סֻלָּם,sulam,,
+⚒️,Hammer and Pick,Object,Tool,פַּטִּישׁ וּמַכּוֹשׁ,patish umakosh,,
+🛠️,Hammer and Wrench,Object,Tool,פַּטִּישׁ וּמַפְתֵּחַ,patish umafteach,,
+⛏️,Pick,Object,Tool,מַכּוֹשׁ,makosh,,
+🪝,Hook,Object,Tool,וָו,vav,,
+⚖️,Balance Scale,Object,Tool,מֹאזְנַיִם,moznayim,,
+🩺,Stethoscope,Object,Tool,סְטֵטוֹסְקוֹפּ,setetoskop,,
+🩻,X-Ray,Object,Tool,צִלּוּם רֶנְטְגֶן,tzilum rentgen,,
+🧬,DNA,Object,Tool,דִּי.אֶן.אֵיי.,di.en.eyy.,,
+🔬,Microscope,Object,Tool,מִיקְרוֹסְקוֹפּ,mikroskop,,
+🔭,Telescope,Object,Tool,טֵלֵסְקוֹפּ,teleskop,,
+📡,Satellite Antenna,Object,Tool,אַנְטֵנַת לַוְיָן,antenat lavyan,,
+💉,Syringe,Object,Tool,מַזְרֵק,mazrek,,
+🩸,Drop of Blood,Object,Tool,טִפַּת דָּם,tipat dam,,
+💊,Pill,Object,Tool,,,גְּלוּלָה,gelula
+🧴,Lotion Bottle,Object,Tool,בַּקְבּוּק קְרֵם,bakbuk kerem,,
+🧷,Safety Pin,Object,Tool,סִכַּת בִּטָּחוֹן,sikat bitachon,,
+🧯,Fire Extinguisher,Object,Tool,מַטְפֵּה,matpe,,
+🛌,Person in Bed,Object,Household,יָשֵׁן בְּמִטָּה,yashen bemita,יְשֵׁנָה בְּמִטָּה,yeshena bemita
+🛀,Person Taking Bath,Object,Household,מִתְרַחֵץ בְּאַמְבַּטְיָה,mitrachetz beambatya,מִתְרַחֶצֶת בְּאַמְבַּטְיָה,mitrachetzet beambatya
+🪠,Plunger,Object,Household,פּוֹמְפָּה,pompa,,
+🪤,Mouse Trap,Object,Household,מַלְכֹּדֶת עַכְבָּרִים,malkodet achbarim,,
+🪒,Razor,Object,Household,,,מְכוֹנַת גִּלּוּחַ,mechonat giluach
+🪣,Bucket,Object,Household,דְּלִי,deli,,
+🍽️,Fork and Knife with Plate,Object,Household,מַזְלֵג וְסַכִּין עִם צַלַּחַת,mazleg vesakin im tzalachat,,
+🫙,Jar,Object,Household,,,צִנְצֶנֶת,tzintzenet
+🕉️,Om,Religion,Religion,אוֹם,om,,
+🪯,Khanda,Religion,Religion,חַ'נְדָּה,cha'nda,,
+☦️,Orthodox Cross,Religion,Religion,צְלָב אוֹרְתּוֹדוֹקְסִי,tzelav ortodoksi,,
+🔯,Six-Pointed Star with Dot,Religion,Religion,מָגֵן דָּוִד,magen david,,
+☮️,Peace Symbol,Religion,Religion,סֵמֶל שָׁלוֹם,semel shalom,,
+☯️,Yin Yang,Religion,Religion,יִין-יָאנְג,yin-yang,,
+📿,Prayer Beads,Object,Clothing,חֲרוּזֵי תְּפִלָּה,charuzey tefila,,
+🧿,Nazar Amulet,Religion,Religion,עַיִן הָרָע,ayin hara,,
+🪪,Identification Card,Object,ID,,,תְּעוּדַת זֶהוּת,teudat zehut
+🪧,Placard,Object,ID,,,שֶׁלֶט,shelet
+🪙,Coin,Object,Money,מַטְבֵּעַ,matbea,,
+💴,Yen Banknote,Object,Money,שְׁטָר יֶן,shetar yen,,
+💶,Euro Banknote,Object,Money,שְׁטָר יוּרוֹ,shetar yuro,,
+💷,Pound Banknote,Object,Money,שְׁטָר לִירָה,shetar lira,,
+💸,Money with Wings,Object,Money,כֶּסֶף עִם כְּנָפַיִם,kesef im kenafayim,,
+🧾,Receipt,Object,Money,קַבָּלָה,kabala,,
+🟰,Heavy Equals Sign,Symbol,Math,סִימַן שִׁוְיוֹן,siman shivyon,,
+💱,Currency Exchange,Symbol,Currency,הֶמָרַת מַטְבֵּעַ,hemarat matbea,,
+💲,Heavy Dollar Sign,Symbol,Currency,סִימַן דּוֹלָר,siman dolar,,
+™️,Trade Mark,Symbol,Trademark,סִימָן מִסְחָרִי,siman mischari,,
+©️,Copyright,Symbol,Trademark,זְכוּת יוֹצְרִים,zechut yotzrim,,
+®️,Registered,Symbol,Trademark,רָשׁוּם,rashum,,
+〰️,Wavy Dash,Symbol,Punctuation,קַו גַּלִּי,kav gali,,
+〽️,Part Alternation Mark,Symbol,Punctuation,סִימַן הַחְלָפָה,siman hachlafa,,
+💠,Diamond with a Dot,Symbol,Decorative,יַהֲלוֹם עִם נְקֻדָּה,yahalom im nekuda,,
+❗,Exclamation Mark,Symbol,Punctuation,סִימַן קְרִיאָה,siman keriya,,
+❕,White Exclamation Mark,Symbol,Punctuation,סִימַן קְרִיאָה לָבָן,siman keriya lavan,,
+❓,Question Mark,Symbol,Punctuation,סִימַן שְׁאֵלָה,siman sheela,,
+❔,White Question Mark,Symbol,Punctuation,סִימַן שְׁאֵלָה לָבָן,siman sheela lavan,,
+‼️,Double Exclamation Mark,Symbol,Punctuation,סִימַן קְרִיאָה כָּפוּל,siman keriya kaful,,
+⁉️,Exclamation Question Mark,Symbol,Punctuation,סִימַן קְרִיאָה וּשְׁאֵלָה,siman keriya ushela,,
+⚛️,Atom Symbol,Religion,Religion,סֵמֶל אָטוֹם,semel atom,,
+♾️,Infinity,Symbol,Math,אֵינְסוֹף,eynsof,,
+⚠️,Warning,Symbol,Warning,,,אַזְהָרָה,azhara
+🚸,Children Crossing,Symbol,Warning,יְלָדִים חוֹצִים,yeladim chotzim,,
+⛔,No Entry,Symbol,Warning,אֵין כְּנִיסָה,eyn kenisa,,
+🚫,Prohibited,Symbol,Warning,אָסוּר,asur,,
+🚳,No Bicycles,Symbol,Warning,אֵין אוֹפַנַּיִם,eyn ofanayim,,
+🚭,No Smoking,Symbol,Warning,אָסוּר לְעַשֵּׁן,asur leashen,,
+🚯,No Littering,Symbol,Warning,אָסוּר לִזְרֹק אַשְׁפָּה,asur lizrok ashpa,,
+🚱,Non-Potable Water,Symbol,Warning,מַיִם לֹא לִשְׁתִיָּה,mayim lo lishtiya,,
+🚷,No Pedestrians,Symbol,Warning,אֵין הוֹלְכֵי רֶגֶל,eyn holchey regel,,
+📵,No Mobile Phones,Symbol,Warning,אָסוּר טֵלֵפוֹן,asur telefon,,
+🔞,No One Under 18,Symbol,Warning,אָסוּר מִתַּחַת לְ-18,asur mitachat le-18,,
+☢️,Radioactive,Symbol,Warning,,,קְרִינָה,kerina
+☣️,Biohazard,Symbol,Warning,סַכָּנָה בִּיוֹלוֹגִית,sakana biyologit,,
+⬆️,Up Arrow,Symbol,Arrow,חֵץ לְמַעְלָה,chetz lemala,,
+↗️,Up-Right Arrow,Symbol,Arrow,חֵץ לְמַעְלָה יְמִינָה,chetz lemala yemina,,
+➡️,Right Arrow,Symbol,Arrow,חֵץ יְמִינָה,chetz yemina,,
+↘️,Down-Right Arrow,Symbol,Arrow,חֵץ לְמַטָּה יְמִינָה,chetz lemata yemina,,
+⬇️,Down Arrow,Symbol,Arrow,חֵץ לְמַטָּה,chetz lemata,,
+↙️,Down-Left Arrow,Symbol,Arrow,חֵץ לְמַטָּה שְׂמֹאלָה,chetz lemata semola,,
+⬅️,Left Arrow,Symbol,Arrow,חֵץ שְׂמֹאלָה,chetz semola,,
+↖️,Up-Left Arrow,Symbol,Arrow,חֵץ לְמַעְלָה שְׂמֹאלָה,chetz lemala semola,,
+↕️,Up-Down Arrow,Symbol,Arrow,חֵץ לְמַעְלָה וּלְמַטָּה,chetz lemala ulmata,,
+↔️,Left-Right Arrow,Symbol,Arrow,חֵץ יְמִינָה וּשְׂמֹאלָה,chetz yemina usmola,,
+↩️,Right Arrow Curving Left,Symbol,Arrow,חֵץ פּוֹנֶה שְׂמֹאלָה,chetz pone semola,,
+↪️,Left Arrow Curving Right,Symbol,Arrow,חֵץ פּוֹנֶה יְמִינָה,chetz pone yemina,,
+⤴️,Arrow Curving Up,Symbol,Arrow,חֵץ עוֹלֶה,chetz ole,,
+⤵️,Arrow Curving Down,Symbol,Arrow,חֵץ יוֹרֵד,chetz yored,,
+🔃,Clockwise Vertical Arrows,Symbol,Arrow,חִצִּים מְסֻבָּבִים,chitzim mesubavim,,
+🔄,Counterclockwise Arrows,Symbol,Arrow,חִצִּים נֶגְדִּיִּים,chitzim negdiyim,,
+🔙,Back Arrow,Symbol,Arrow,חֵץ חֲזָרָה,chetz chazara,,
+🔚,End Arrow,Symbol,Arrow,חֵץ סִיּוּם,chetz siyum,,
+🔛,On! Arrow,Symbol,Arrow,חֵץ פָּעִיל,chetz pail,,
+🔜,Soon Arrow,Symbol,Arrow,חֵץ בְּקָרוֹב,chetz bekarov,,
+🔝,Top Arrow,Symbol,Arrow,חֵץ לְרֹאשׁ,chetz lerosh,,
+♻️,Recycling Symbol,Symbol,Decorative,סֵמֶל מִחְזוּר,semel michzur,,
+⚜️,Fleur-de-Lis,Symbol,Decorative,פְלֵר-דֶּה-לִיס,peler-de-lis,,
+🔱,Trident Emblem,Symbol,Decorative,קִלְשׁוֹן,kilshon,,
+📛,Name Badge,Object,ID,תַּג שֵׁם,tag shem,,
+🔰,Japanese Symbol for Beginner,Symbol,Decorative,סֵמֶל מַתְחִיל,semel matchil,,
+✅,Check Mark Button,Symbol,Button,,,וִי יָרֹק,vi yarok
+☑️,Check Box with Check,Symbol,Button,תֵּבָה מְסֻמֶּנֶת,teva mesumenet,,
+✔️,Check Mark,Symbol,Button,סִימַן וִי,siman vi,,
+❌,Cross Mark,Symbol,Button,סִימַן אֵקְס,siman eks,,
+❎,Cross Mark Button,Symbol,Button,כַּפְתּוֹר אֵקְס,kaftor eks,,
+🔟,Keycap 10,Symbol,Number,מַקָּשׁ 10,makash 10,,
+♀️,Female Sign,Symbol,Gender,סֵמֶל נְקֵבָה,semel nekeva,,
+♂️,Male Sign,Symbol,Gender,סֵמֶל זָכָר,semel zachar,,
+⚧️,Transgender Symbol,Symbol,Gender,סֵמֶל טְרָנְסְגֶּ'נְדֶּר,semel teransge'nder,,
+♿,Wheelchair Symbol,Symbol,Gender,סֵמֶל נָגִישׁוּת,semel nagishut,,
+🚹,Mens Room,Symbol,Restroom,שֵׁרוּתֵי גְּבָרִים,sherutey gevarim,,
+🚺,Womens Room,Symbol,Restroom,שֵׁרוּתֵי נָשִׁים,sherutey nashim,,
+🚻,Restroom,Symbol,Restroom,שֵׁרוּתִים,sherutim,,
+🚼,Baby Symbol,Symbol,Restroom,סֵמֶל תִּינוֹק,semel tinok,,
+🚾,Water Closet,Symbol,Restroom,בֵּית שִׁמּוּשׁ,beyt shimush,,
+🎌,Crossed Flags,Flag,Special,דְּגָלִים מְשֻׁלָּבִים,degalim meshulavim,,
+🏁,Chequered Flag,Flag,Special,דֶּגֶל מִשְׁבָּצוֹת,degel mishbatzot,,
+🚩,Triangular Flag,Flag,Special,דֶּגֶל מְשֻׁלָּשׁ,degel meshulash,,
+🏳️,White Flag,Flag,Special,דֶּגֶל לָבָן,degel lavan,,
+🏴,Black Flag,Flag,Special,דֶּגֶל שָׁחֹר,degel shachor,,
+🏳️‍🌈,Rainbow Flag,Flag,Special,דֶּגֶל גַּאֲוָה,degel gaava,,
+🏳️‍⚧️,Transgender Flag,Flag,Special,דֶּגֶל טְרָנְסְגֶּ'נְדֶּר,degel teransge'nder,,
+🏴‍☠️,Pirate Flag,Flag,Special,דֶּגֶל פִּירָטִים,degel piratim,,
+🆎,AB Button (Blood Type),Symbol,Button,סוּג דָּם AB,sug dam AB,,
+🆑,CL Button,Symbol,Button,כַּפְתּוֹר CL,kaftor CL,,
+🆒,COOL Button,Symbol,Button,כַּפְתּוֹר קוּל,kaftor kul,,
+🆓,FREE Button,Symbol,Button,כַּפְתּוֹר חִנָּם,kaftor chinam,,
+🆕,NEW Button,Symbol,Button,כַּפְתּוֹר חָדָשׁ,kaftor chadash,,
+🆖,NG Button,Symbol,Button,כַּפְתּוֹר NG,kaftor NG,,
+🆗,OK Button,Symbol,Button,כַּפְתּוֹר OK,kaftor OK,,
+🆘,SOS Button,Symbol,Button,כַּפְתּוֹר SOS,kaftor SOS,,
+🆙,UP Button,Symbol,Button,כַּפְתּוֹר UP,kaftor UP,,
+🆚,VS Button,Symbol,Button,כַּפְתּוֹר VS,kaftor VS,,
+🅰️,A Button (Blood Type),Symbol,Button,סוּג דָּם A,sug dam A,,
+🅱️,B Button (Blood Type),Symbol,Button,סוּג דָּם B,sug dam B,,
+🅾️,O Button (Blood Type),Symbol,Button,סוּג דָּם O,sug dam O,,
+🅿️,P Button,Symbol,Button,כַּפְתּוֹר חֲנָיָה,kaftor chanaya,,
+ℹ️,Information,Symbol,Button,מֵידָע,meyda,,
+Ⓜ️,Circled M,Symbol,Button,אוֹת M בְּעִגּוּל,ot M beigul,,
+🔤,Input Latin Letters,Symbol,Button,אוֹתִיּוֹת לָטִינִיּוֹת,otiyot latiniyot,,
+🔡,Input Latin Lowercase,Symbol,Button,אוֹתִיּוֹת קְטַנּוֹת,otiyot ketanot,,
+🔠,Input Latin Uppercase,Symbol,Button,אוֹתִיּוֹת גְּדוֹלוֹת,otiyot gedolot,,
+🔢,Input Numbers,Symbol,Button,מִסְפָּרִים,misparim,,
+🔣,Input Symbols,Symbol,Button,סְמָלִים,semalim,,
+🆔,ID Button,Symbol,Button,כַּפְתּוֹר זֶהוּת,kaftor zehut,,
+▶️,Play Button,Symbol,Audio,כַּפְתּוֹר נַגֵּן,kaftor nagen,,
+⏸️,Pause Button,Symbol,Audio,כַּפְתּוֹר הַשְׁהָיָה,kaftor hashhaya,,
+⏯️,Play or Pause,Symbol,Audio,כַּפְתּוֹר נַגֵּן וְהַשְׁהֵה,kaftor nagen vehashhe,,
+⏹️,Stop Button,Symbol,Audio,כַּפְתּוֹר עֲצֹר,kaftor atzor,,
+⏺️,Record Button,Symbol,Audio,כַּפְתּוֹר הַקְלָטָה,kaftor haklata,,
+⏭️,Next Track,Symbol,Audio,רְצוּעָה הַבָּאָה,retzua habaa,,
+⏮️,Previous Track,Symbol,Audio,רְצוּעָה קוֹדֶמֶת,retzua kodemet,,
+⏩,Fast Forward,Symbol,Audio,הָרְצָה מָהִירָה,hartza mahira,,
+⏪,Fast Reverse,Symbol,Audio,הַחֲזָרָה מְהִירָה,hachazara mehira,,
+⏫,Fast Up,Symbol,Audio,מָהִיר לְמַעְלָה,mahir lemala,,
+⏬,Fast Down,Symbol,Audio,מָהִיר לְמַטָּה,mahir lemata,,
+🔼,Upward Button,Symbol,Audio,כַּפְתּוֹר לְמַעְלָה,kaftor lemala,,
+🔽,Downward Button,Symbol,Audio,כַּפְתּוֹר לְמַטָּה,kaftor lemata,,
+🔀,Shuffle,Symbol,Audio,עִרְבּוּב,irbuv,,
+🔁,Repeat,Symbol,Audio,חֲזָרָה,chazara,,
+🔂,Repeat One,Symbol,Audio,חֲזָרָה אַחַת,chazara achat,,
+🔇,Muted Speaker,Symbol,Audio,רַמְקוֹל מֻשְׁתָּק,ramkol mushtak,,
+🔈,Speaker Low Volume,Symbol,Audio,רַמְקוֹל חַלָּשׁ,ramkol chalash,,
+🔉,Speaker Medium Volume,Symbol,Audio,רַמְקוֹל בֵּינוֹנִי,ramkol beynoni,,
+🔊,Speaker High Volume,Symbol,Audio,רַמְקוֹל חָזָק,ramkol chazak,,
+🔔,Bell,Symbol,Audio,פַּעֲמוֹן,paamon,,
+🔕,Bell with Slash,Symbol,Audio,פַּעֲמוֹן מֻשְׁתָּק,paamon mushtak,,
+0️⃣,Keycap 0,Symbol,Number,אֶפֶס,efes,,
+1️⃣,Keycap 1,Symbol,Number,אַחַת,achat,,
+2️⃣,Keycap 2,Symbol,Number,שְׁתַּיִם,shetayim,,
+3️⃣,Keycap 3,Symbol,Number,שָׁלוֹשׁ,shalosh,,
+4️⃣,Keycap 4,Symbol,Number,אַרְבַּע,arba,,
+5️⃣,Keycap 5,Symbol,Number,חָמֵשׁ,chamesh,,
+6️⃣,Keycap 6,Symbol,Number,שֵׁשׁ,shesh,,
+7️⃣,Keycap 7,Symbol,Number,שֶׁבַע,sheva,,
+8️⃣,Keycap 8,Symbol,Number,שְׁמוֹנֶה,shemone,,
+9️⃣,Keycap 9,Symbol,Number,תֵּשַׁע,tesha,,
+#️⃣,Keycap Hash,Symbol,Number,סִימָן הָאֶשׁ,siman haesh,,
+*️⃣,Keycap Asterisk,Symbol,Number,כּוֹכָבִית,kochavit,,
+🇦🇨,Flag: Ascension Island,Flag,Africa,אָסֶנְשֶׁן,asenshen,,
+🇦🇩,Flag: Andorra,Flag,Europe,אַנְדּוֹרָה,andora,,
+🇦🇪,Flag: United Arab Emirates,Flag,Asia,אִחוּד הָאֱמִירֻיּוֹת הָעַרְבִיּוֹת,ichud haemiruyot haarviyot,,
+🇦🇫,Flag: Afghanistan,Flag,Asia,אַפְגַּנִיסְטָן,afganistan,,
+🇦🇬,Flag: Antigua & Barbuda,Flag,North America,אַנְטִיגוּאָה וּבַרְבּוּדָה,antigua uvarbuda,,
+🇦🇮,Flag: Anguilla,Flag,North America,אַנְגִּילָה,angila,,
+🇦🇱,Flag: Albania,Flag,Europe,אַלְבַּנְיָה,albanya,,
+🇦🇲,Flag: Armenia,Flag,Asia,אַרְמֶנְיָה,armenya,,
+🇦🇴,Flag: Angola,Flag,Africa,אַנְגּוֹלָה,angola,,
+🇦🇶,Flag: Antarctica,Flag,Antarctica,אַנְטַרְקְטִיקָה,antarktika,,
+🇦🇷,Flag: Argentina,Flag,South America,אַרְגֶּנְטִינָה,argentina,,
+🇦🇸,Flag: American Samoa,Flag,Oceania,סָמוֹאָה הָאָמֵרִיקָאִית,samoa haamerikait,,
+🇦🇹,Flag: Austria,Flag,Europe,אוֹסְטְרִיָּה,ostriya,,
+🇦🇺,Flag: Australia,Flag,Oceania,אוֹסְטְרַלְיָה,ostralya,,
+🇦🇼,Flag: Aruba,Flag,North America,אָרוּבָּה,aruba,,
+🇦🇽,Flag: Aland Islands,Flag,Europe,אִיֵּי אוֹלַנְד,iyey oland,,
+🇦🇿,Flag: Azerbaijan,Flag,Asia,אָזֶרְבַּיְגָּ'ן,azerbayga'n,,
+🇧🇦,Flag: Bosnia & Herzegovina,Flag,Europe,בּוֹסְנִיָּה וְהֶרְצֶגוֹבִינָה,bosniya vehertzegovina,,
+🇧🇧,Flag: Barbados,Flag,North America,בַּרְבָּדוֹס,barbados,,
+🇧🇩,Flag: Bangladesh,Flag,Asia,בַּנְגְּלָדֶשׁ,bangladesh,,
+🇧🇪,Flag: Belgium,Flag,Europe,בֶּלְגְּיָה,belgya,,
+🇧🇫,Flag: Burkina Faso,Flag,Africa,בּוּרְקִינָה פָאסוֹ,burkina paso,,
+🇧🇬,Flag: Bulgaria,Flag,Europe,בּוּלְגַּרְיָה,bulgarya,,
+🇧🇭,Flag: Bahrain,Flag,Asia,בַּחְרֵיין,bachreyyn,,
+🇧🇮,Flag: Burundi,Flag,Africa,בּוּרוּנְדִי,burundi,,
+🇧🇯,Flag: Benin,Flag,Africa,בֶּנִין,benin,,
+🇧🇱,Flag: St. Barthélemy,Flag,North America,סֶן בַּרְטֶלֶמִי,sen bartelemi,,
+🇧🇲,Flag: Bermuda,Flag,North America,בֶּרְמוּדָה,bermuda,,
+🇧🇳,Flag: Brunei,Flag,Asia,בְּרוּנֵיי,beruneyy,,
+🇧🇴,Flag: Bolivia,Flag,South America,בּוֹלִיבְיָה,bolivya,,
+🇧🇶,Flag: Caribbean Netherlands,Flag,North America,הוֹלַנְד הַקָּרִיבִּית,holand hakaribit,,
+🇧🇷,Flag: Brazil,Flag,South America,בְּרָזִיל,berazil,,
+🇧🇸,Flag: Bahamas,Flag,North America,בָּהָאמָה,bahama,,
+🇧🇹,Flag: Bhutan,Flag,Asia,בּוּטָאן,butan,,
+🇧🇻,Flag: Bouvet Island,Flag,Antarctica,אִי בּוּבֵה,i buve,,
+🇧🇼,Flag: Botswana,Flag,Africa,בּוֹצְוָנָה,botzvana,,
+🇧🇾,Flag: Belarus,Flag,Europe,בֵּלָרוּס,belarus,,
+🇧🇿,Flag: Belize,Flag,North America,בֶּלִיז,beliz,,
+🇨🇦,Flag: Canada,Flag,North America,קָנָדָה,kanada,,
+🇨🇨,Flag: Cocos Islands,Flag,Oceania,אִיֵּי קוֹקוֹס,iyey kokos,,
+🇨🇩,Flag: Congo - Kinshasa,Flag,Africa,קוֹנְגוֹ קִינְשָׁאסָה,kongo kinshasa,,
+🇨🇫,Flag: Central African Republic,Flag,Africa,הָרֶפּוּבְּלִיקָה הָאַפְרִיקָאִית הַמֶּרְכָּזִית,harepublika haafrikait hamerkazit,,
+🇨🇬,Flag: Congo - Brazzaville,Flag,Africa,קוֹנְגוֹ בְּרָזָוִיל,kongo berazavil,,
+🇨🇭,Flag: Switzerland,Flag,Europe,שְׁוֵיץ,sheveytz,,
+🇨🇮,Flag: Côte d'Ivoire,Flag,Africa,חוֹף הַשֶּׁנְהָב,chof hashenhav,,
+🇨🇰,Flag: Cook Islands,Flag,Oceania,אִיֵּי קוּק,iyey kuk,,
+🇨🇱,Flag: Chile,Flag,South America,צִ'ילֶה,tzi'yle,,
+🇨🇲,Flag: Cameroon,Flag,Africa,קָמֵרוּן,kamerun,,
+🇨🇳,Flag: China,Flag,Asia,סִין,sin,,
+🇨🇴,Flag: Colombia,Flag,South America,קוֹלוֹמְבְּיָה,kolombya,,
+🇨🇵,Flag: Clipperton Island,Flag,North America,אִי קְלִיפֶּרְטוֹן,i keliperton,,
+🇨🇷,Flag: Costa Rica,Flag,North America,קוֹסְטָה רִיקָה,kosta rika,,
+🇨🇺,Flag: Cuba,Flag,North America,קוּבָּה,kuba,,
+🇨🇻,Flag: Cape Verde,Flag,Africa,כֵּף וֶרְדֶּה,kef verde,,
+🇨🇼,Flag: Curaçao,Flag,North America,קוּרָסָאוֹ,kurasao,,
+🇨🇽,Flag: Christmas Island,Flag,Oceania,אִי הַחַג,i hachag,,
+🇨🇾,Flag: Cyprus,Flag,Asia,קַפְרִיסִין,kafrisin,,
+🇨🇿,Flag: Czechia,Flag,Europe,צֶ'כְיָה,tze'chya,,
+🇩🇪,Flag: Germany,Flag,Europe,גֶּרְמַנְיָה,germanya,,
+🇩🇬,Flag: Diego Garcia,Flag,Asia,דְּיֵגוֹ גַּרְסִיָּה,deyego garsiya,,
+🇩🇯,Flag: Djibouti,Flag,Africa,גִּ'יבּוּטִי,gi'ybuti,,
+🇩🇰,Flag: Denmark,Flag,Europe,דֶּנְמַרְק,denmark,,
+🇩🇲,Flag: Dominica,Flag,North America,דּוֹמִינִיקָה,dominika,,
+🇩🇴,Flag: Dominican Republic,Flag,North America,הָרֶפּוּבְּלִיקָה הַדּוֹמִינִיקָנִית,harepublika hadominikanit,,
+🇩🇿,Flag: Algeria,Flag,Africa,אַלְגֶּ'רְיָה,alge'rya,,
+🇪🇦,Flag: Ceuta & Melilla,Flag,Africa,סֶאוּטָה וּמֵלִילָה,seuta umelila,,
+🇪🇨,Flag: Ecuador,Flag,South America,אֶקְוָדוֹר,ekvador,,
+🇪🇪,Flag: Estonia,Flag,Europe,אֶסְטוֹנְיָה,estonya,,
+🇪🇬,Flag: Egypt,Flag,Africa,מִצְרַיִם,mitzrayim,,
+🇪🇭,Flag: Western Sahara,Flag,Africa,סַהֲרָה הַמַּעֲרָבִית,sahara hamaaravit,,
+🇪🇷,Flag: Eritrea,Flag,Africa,אֶרִיתְרֵאָה,eritrea,,
+🇪🇸,Flag: Spain,Flag,Europe,סְפָרַד,sefarad,,
+🇪🇹,Flag: Ethiopia,Flag,Africa,אֶתְיוֹפְּיָה,etyopya,,
+🇪🇺,Flag: European Union,Flag,International,הָאִחוּד הָאֵירוֹפִּי,haichud haeyropi,,
+🇫🇮,Flag: Finland,Flag,Europe,פִינְלַנְד,pinland,,
+🇫🇯,Flag: Fiji,Flag,Oceania,פִיגִ'י,pigi'y,,
+🇫🇰,Flag: Falkland Islands,Flag,South America,אִיֵּי פוֹקְלַנְד,iyey pokland,,
+🇫🇲,Flag: Micronesia,Flag,Oceania,מִיקְרוֹנֶזְיָה,mikronezya,,
+🇫🇴,Flag: Faroe Islands,Flag,Europe,אִיֵּי פֵרוֹ,iyey pero,,
+🇫🇷,Flag: France,Flag,Europe,צָרְפַת,tzarfat,,
+🇬🇦,Flag: Gabon,Flag,Africa,גָּבּוֹן,gabon,,
+🇬🇧,Flag: United Kingdom,Flag,Europe,הַמַּמְלָכָה הַמְּאֻחֶדֶת,hamamlacha hamuchedet,,
+🇬🇩,Flag: Grenada,Flag,North America,גְּרֶנָדָה,gerenada,,
+🇬🇪,Flag: Georgia,Flag,Asia,גֵּאוֹרְגְּיָה,georgya,,
+🇬🇫,Flag: French Guiana,Flag,South America,גִּיאָנָה הַצָּרְפָתִית,giyana hatzarfatit,,
+🇬🇬,Flag: Guernsey,Flag,Europe,גֶּרְנְזִי,gernzi,,
+🇬🇭,Flag: Ghana,Flag,Africa,גָּאנָה,gana,,
+🇬🇮,Flag: Gibraltar,Flag,Europe,גִּיבְרַלְטָר,givraltar,,
+🇬🇱,Flag: Greenland,Flag,North America,גְּרִינְלַנְד,gerinland,,
+🇬🇲,Flag: Gambia,Flag,Africa,גַּמְבְּיָה,gambya,,
+🇬🇳,Flag: Guinea,Flag,Africa,גִּינֵאָה,ginea,,
+🇬🇵,Flag: Guadeloupe,Flag,North America,גוּאָדֵלוּפּ,guadelup,,
+🇬🇶,Flag: Equatorial Guinea,Flag,Africa,גִּינֵאָה הַמַּשְׁוָנִית,ginea hamashvanit,,
+🇬🇷,Flag: Greece,Flag,Europe,יָוָן,yavan,,
+🇬🇸,Flag: South Georgia & South Sandwich Islands,Flag,Antarctica,דְּרוֹם גֵּ'ורְגְּיָה,derom ge'vrgya,,
+🇬🇹,Flag: Guatemala,Flag,North America,גְּוָטֶמָלָה,gevatemala,,
+🇬🇺,Flag: Guam,Flag,Oceania,גוּאָם,guam,,
+🇬🇼,Flag: Guinea-Bissau,Flag,Africa,גִּינֵאָה בִּיסָאוּ,ginea bisau,,
+🇬🇾,Flag: Guyana,Flag,South America,גַּיָאנָה,gayana,,
+🇭🇰,Flag: Hong Kong,Flag,Asia,הוֹנְג קוֹנְג,hong kong,,
+🇭🇲,Flag: Heard & McDonald Islands,Flag,Antarctica,אִיֵּי הֶרְד,iyey herd,,
+🇭🇳,Flag: Honduras,Flag,North America,הוֹנְדּוּרַס,honduras,,
+🇭🇷,Flag: Croatia,Flag,Europe,קְרוֹאַטְיָה,keroatya,,
+🇭🇹,Flag: Haiti,Flag,North America,הָאִיטִי,haiti,,
+🇭🇺,Flag: Hungary,Flag,Europe,הוּנְגַּרְיָה,hungarya,,
+🇮🇨,Flag: Canary Islands,Flag,Africa,אִיֵּי קָנָרִי,iyey kanari,,
+🇮🇩,Flag: Indonesia,Flag,Asia,אִינְדּוֹנֵזְיָה,indonezya,,
+🇮🇪,Flag: Ireland,Flag,Europe,אִירְלַנְד,irland,,
+🇮🇱,Flag: Israel,Flag,Asia,יִשְׂרָאֵל,yisrael,,
+🇮🇲,Flag: Isle of Man,Flag,Europe,אִי מָאן,i man,,
+🇮🇳,Flag: India,Flag,Asia,הוֹדּוּ,hodu,,
+🇮🇴,Flag: British Indian Ocean Territory,Flag,Africa,הַטֶּרִיטוֹרְיָה הַבְּרִיטִית בְּאוֹקְיָנוֹס הוֹדּוּ,hateritorya habritit beokyanos hodu,,
+🇮🇶,Flag: Iraq,Flag,Asia,עִירָאק,irak,,
+🇮🇷,Flag: Iran,Flag,Asia,אִירָאן,iran,,
+🇮🇸,Flag: Iceland,Flag,Europe,אִיסְלַנְד,island,,
+🇮🇹,Flag: Italy,Flag,Europe,אִיטַלְיָה,italya,,
+🇯🇪,Flag: Jersey,Flag,Europe,גֶּ'רְזִי,ge'rzi,,
+🇯🇲,Flag: Jamaica,Flag,North America,גַּ'מַייקָה,ga'mayyka,,
+🇯🇴,Flag: Jordan,Flag,Asia,יַרְדֵּן,yarden,,
+🇯🇵,Flag: Japan,Flag,Asia,יָפָּן,yapan,,
+🇰🇪,Flag: Kenya,Flag,Africa,קֶנְיָה,kenya,,
+🇰🇬,Flag: Kyrgyzstan,Flag,Asia,קִירְגִּיזְסְטָן,kirgizstan,,
+🇰🇭,Flag: Cambodia,Flag,Asia,קָמְבּוֹדְיָה,kambodya,,
+🇰🇮,Flag: Kiribati,Flag,Oceania,קִירִיבָּטִי,kiribati,,
+🇰🇲,Flag: Comoros,Flag,Africa,אִיֵּי קוֹמוֹרוֹ,iyey komoro,,
+🇰🇳,Flag: St. Kitts & Nevis,Flag,North America,סֶנְט קִיטְס וְנֵוִיס,sent kits venevis,,
+🇰🇵,Flag: North Korea,Flag,Asia,צְפוֹן קוֹרֵיאָה,tzefon koreya,,
+🇰🇷,Flag: South Korea,Flag,Asia,דְּרוֹם קוֹרֵיאָה,derom koreya,,
+🇰🇼,Flag: Kuwait,Flag,Asia,כֻּוֵייט,kuveyyt,,
+🇰🇾,Flag: Cayman Islands,Flag,North America,אִיֵּי קַיְמָן,iyey kayman,,
+🇰🇿,Flag: Kazakhstan,Flag,Asia,קָזַחְסְטָן,kazachstan,,
+🇱🇦,Flag: Laos,Flag,Asia,לָאוֹס,laos,,
+🇱🇧,Flag: Lebanon,Flag,Asia,לְבָנוֹן,levanon,,
+🇱🇨,Flag: St. Lucia,Flag,North America,סֶנְט לוּסְיָה,sent lusya,,
+🇱🇮,Flag: Liechtenstein,Flag,Europe,לִיכְטֶנְשְׁטֵיין,lichtenshteyyn,,
+🇱🇰,Flag: Sri Lanka,Flag,Asia,סְרִי לַנְקָה,seri lanka,,
+🇱🇷,Flag: Liberia,Flag,Africa,לִיבֶּרְיָה,liberya,,
+🇱🇸,Flag: Lesotho,Flag,Africa,לֶסוֹטוֹ,lesoto,,
+🇱🇹,Flag: Lithuania,Flag,Europe,לִיטָא,lita,,
+🇱🇺,Flag: Luxembourg,Flag,Europe,לוּקְסֶמְבּוּרְג,luksemburg,,
+🇱🇻,Flag: Latvia,Flag,Europe,לַטְבְיָה,latvya,,
+🇱🇾,Flag: Libya,Flag,Africa,לוּב,luv,,
+🇲🇦,Flag: Morocco,Flag,Africa,מָרוֹקוֹ,maroko,,
+🇲🇨,Flag: Monaco,Flag,Europe,מוֹנָקוֹ,monako,,
+🇲🇩,Flag: Moldova,Flag,Europe,מוֹלְדּוֹבָה,moldova,,
+🇲🇪,Flag: Montenegro,Flag,Europe,מוֹנְטֶנֶגְרוֹ,montenegro,,
+🇲🇫,Flag: St. Martin,Flag,North America,סֶנְט מַרְטֶן,sent marten,,
+🇲🇬,Flag: Madagascar,Flag,Africa,מָדָגַסְקַר,madagaskar,,
+🇲🇭,Flag: Marshall Islands,Flag,Oceania,אִיֵּי מַרְשַׁל,iyey marshal,,
+🇲🇰,Flag: North Macedonia,Flag,Europe,צְפוֹן מָקֵדוֹנְיָה,tzefon makedonya,,
+🇲🇱,Flag: Mali,Flag,Africa,מָאלִי,mali,,
+🇲🇲,Flag: Myanmar,Flag,Asia,מְיָאנְמָר,meyanmar,,
+🇲🇳,Flag: Mongolia,Flag,Asia,מוֹנְגּוֹלְיָה,mongolya,,
+🇲🇴,Flag: Macao,Flag,Asia,מָקָאוֹ,makao,,
+🇲🇵,Flag: Northern Mariana Islands,Flag,Oceania,אִיֵּי מַרְיָאנָה הַצְּפוֹנִיִּים,iyey maryana hatzfoniyim,,
+🇲🇶,Flag: Martinique,Flag,North America,מַרְטִינִיק,martinik,,
+🇲🇷,Flag: Mauritania,Flag,Africa,מָאוּרִיטַנְיָה,mauritanya,,
+🇲🇸,Flag: Montserrat,Flag,North America,מוֹנְטְסֵרָאט,montserat,,
+🇲🇹,Flag: Malta,Flag,Europe,מַלְטָה,malta,,
+🇲🇺,Flag: Mauritius,Flag,Africa,מָאוּרִיציוּס,mauritzyus,,
+🇲🇻,Flag: Maldives,Flag,Asia,אִיֵּי מַלְדִּיב,iyey maldiv,,
+🇲🇼,Flag: Malawi,Flag,Africa,מָלָאוִי,malavi,,
+🇲🇽,Flag: Mexico,Flag,North America,מֶקְסִיקוֹ,meksiko,,
+🇲🇾,Flag: Malaysia,Flag,Asia,מָלֵזְיָה,malezya,,
+🇲🇿,Flag: Mozambique,Flag,Africa,מוֹזָמְבִּיק,mozambik,,
+🇳🇦,Flag: Namibia,Flag,Africa,נָמִיבְּיָה,namibya,,
+🇳🇨,Flag: New Caledonia,Flag,Oceania,קָלֵדוֹנְיָה הַחֲדָשָׁה,kaledonya hachadasha,,
+🇳🇪,Flag: Niger,Flag,Africa,נִיגֶ'ר,nige'r,,
+🇳🇫,Flag: Norfolk Island,Flag,Oceania,אִי נוֹרְפוֹלְק,i norfolk,,
+🇳🇬,Flag: Nigeria,Flag,Africa,נִיגֶּרְיָה,nigerya,,
+🇳🇮,Flag: Nicaragua,Flag,North America,נִיקָרָגְוָה,nikaragva,,
+🇳🇱,Flag: Netherlands,Flag,Europe,הוֹלַנְד,holand,,
+🇳🇴,Flag: Norway,Flag,Europe,נוֹרְוֵגְיָה,norvegya,,
+🇳🇵,Flag: Nepal,Flag,Asia,נֵפָּאל,nepal,,
+🇳🇷,Flag: Nauru,Flag,Oceania,נָאוּרוּ,nauru,,
+🇳🇺,Flag: Niue,Flag,Oceania,נִיאוּאֶה,niyue,,
+🇳🇿,Flag: New Zealand,Flag,Oceania,נְיוּ זִילַנְד,neyu ziland,,
+🇴🇲,Flag: Oman,Flag,Asia,עוּמָאן,uman,,
+🇵🇦,Flag: Panama,Flag,North America,פָּנָמָה,panama,,
+🇵🇪,Flag: Peru,Flag,South America,פֵּרוּ,peru,,
+🇵🇫,Flag: French Polynesia,Flag,Oceania,פּוֹלִינֵזְיָה הַצָּרְפָתִית,polinezya hatzarfatit,,
+🇵🇬,Flag: Papua New Guinea,Flag,Oceania,פַּפּוּאָה גִּינֵאָה הַחֲדָשָׁה,papua ginea hachadasha,,
+🇵🇭,Flag: Philippines,Flag,Asia,הַפִילִיפִּינִים,hafilipinim,,
+🇵🇰,Flag: Pakistan,Flag,Asia,פָּקִיסְטָן,pakistan,,
+🇵🇱,Flag: Poland,Flag,Europe,פּוֹלִין,polin,,
+🇵🇲,Flag: St. Pierre & Miquelon,Flag,North America,סֶן פְּיֵר וּמִיקְלוֹן,sen peyer umiklon,,
+🇵🇳,Flag: Pitcairn Islands,Flag,Oceania,אִיֵּי פִּיטְקֵרְן,iyey pitkern,,
+🇵🇷,Flag: Puerto Rico,Flag,North America,פּוּאֶרְטוֹ רִיקוֹ,puerto riko,,
+🇵🇸,Flag: Palestinian Territories,Flag,Asia,הָרָשׁוּת הַפָּלֶסְטִינִית,harashut hapalestinit,,
+🇵🇹,Flag: Portugal,Flag,Europe,פּוֹרְטוּגָל,portugal,,
+🇵🇼,Flag: Palau,Flag,Special,פַּלָאוּ,palau,,
+🇵🇾,Flag: Paraguay,Flag,South America,פָּרָגְוַאי,paragvay,,
+🇶🇦,Flag: Qatar,Flag,Asia,קָטָאר,katar,,
+🇷🇪,Flag: Réunion,Flag,Africa,רֵאוּנְיוֹן,reunyon,,
+🇷🇴,Flag: Romania,Flag,Europe,רוֹמַנְיָה,romanya,,
+🇷🇸,Flag: Serbia,Flag,Europe,סֶרְבְּיָה,serbya,,
+🇷🇺,Flag: Russia,Flag,Europe,רוּסְיָה,rusya,,
+🇷🇼,Flag: Rwanda,Flag,Africa,רְוַנְדָּה,revanda,,
+🇸🇦,Flag: Saudi Arabia,Flag,Asia,עֲרַב הַסְעוּדִית,arav hasudit,,
+🇸🇧,Flag: Solomon Islands,Flag,Oceania,אִיֵּי שְׁלֹמֹה,iyey shelomo,,
+🇸🇨,Flag: Seychelles,Flag,Africa,סֵיישֶׁל,seyyshel,,
+🇸🇩,Flag: Sudan,Flag,Africa,סוּדָן,sudan,,
+🇸🇪,Flag: Sweden,Flag,Europe,שְׁוֵדְיָה,shevedya,,
+🇸🇬,Flag: Singapore,Flag,Asia,סִינְגָּפּוּר,singapur,,
+🇸🇭,Flag: St. Helena,Flag,Africa,סֶנְט הֵלֵנָה,sent helena,,
+🇸🇮,Flag: Slovenia,Flag,Europe,סְלוֹבֶנְיָה,selovenya,,
+🇸🇯,Flag: Svalbard & Jan Mayen,Flag,Europe,סְוָאלְבָּארְד וְיָאן מָאיֶן,sevalbard veyan mayen,,
+🇸🇰,Flag: Slovakia,Flag,Europe,סְלוֹבַקְיָה,selovakya,,
+🇸🇱,Flag: Sierra Leone,Flag,Africa,סְיֵרָה לֵאוֹנֶה,seyera leone,,
+🇸🇲,Flag: San Marino,Flag,Europe,סָן מָרִינוֹ,san marino,,
+🇸🇳,Flag: Senegal,Flag,Africa,סֵנֵגָל,senegal,,
+🇸🇴,Flag: Somalia,Flag,Africa,סוֹמָלִיָּה,somaliya,,
+🇸🇷,Flag: Suriname,Flag,South America,סוּרִינָאם,surinam,,
+🇸🇸,Flag: South Sudan,Flag,Africa,דְּרוֹם סוּדָן,derom sudan,,
+🇸🇹,Flag: São Tomé & Príncipe,Flag,Africa,סָאוֹ טוֹמֶה וּפְּרִינְסִיפֶּה,sao tome uprinsipe,,
+🇸🇻,Flag: El Salvador,Flag,North America,אֶל סָלְוָדוֹר,el salvador,,
+🇸🇽,Flag: Sint Maarten,Flag,North America,סִינְט מַרְטֶן,sint marten,,
+🇸🇾,Flag: Syria,Flag,Asia,סוּרְיָה,surya,,
+🇸🇿,Flag: Eswatini,Flag,Africa,אֶסְוָאטִינִי,esvatini,,
+🇹🇦,Flag: Tristan da Cunha,Flag,Africa,טְרִיסְטָן דָּה קוּנְיָה,teristan da kunya,,
+🇹🇨,Flag: Turks & Caicos Islands,Flag,North America,אִיֵּי טוּרְקְס וְקֵייקוֹס,iyey turks vekeyykos,,
+🇹🇩,Flag: Chad,Flag,Africa,צָ'אד,tza'd,,
+🇹🇫,Flag: French Southern Territories,Flag,Antarctica,הַטֶּרִיטוֹרְיוֹת הַצָּרְפָתִיּוֹת הַדְּרוֹמִיּוֹת,hateritoryot hatzarfatiyot hadromiyot,,
+🇹🇬,Flag: Togo,Flag,Africa,טוֹגוֹ,togo,,
+🇹🇭,Flag: Thailand,Flag,Asia,תַּאיְלַנְד,tayland,,
+🇹🇯,Flag: Tajikistan,Flag,Asia,טַגִּ'יקִיסְטָן,tagi'ykistan,,
+🇹🇰,Flag: Tokelau,Flag,Oceania,טוֹקֶלָאוּ,tokelau,,
+🇹🇱,Flag: Timor-Leste,Flag,Asia,טִימוֹר הַמִּזְרָחִית,timor hamizrachit,,
+🇹🇲,Flag: Turkmenistan,Flag,Asia,טוּרְקְמֶנִיסְטָן,turkmenistan,,
+🇹🇳,Flag: Tunisia,Flag,Africa,תּוּנִיסְיָה,tunisya,,
+🇹🇴,Flag: Tonga,Flag,Oceania,טוֹנְגָּה,tonga,,
+🇹🇷,Flag: Turkey,Flag,Asia,טוּרְקִיָּה,turkiya,,
+🇹🇹,Flag: Trinidad & Tobago,Flag,North America,טְרִינִידָד וְטוֹבָּגוֹ,terinidad vetobago,,
+🇹🇻,Flag: Tuvalu,Flag,Oceania,טוּבָאלוּ,tuvalu,,
+🇹🇼,Flag: Taiwan,Flag,Asia,טַאיוָאן,tayvan,,
+🇹🇿,Flag: Tanzania,Flag,Africa,טַנְזַנְיָה,tanzanya,,
+🇺🇦,Flag: Ukraine,Flag,Europe,אוּקְרָאִינָה,ukraina,,
+🇺🇬,Flag: Uganda,Flag,Africa,אוּגַנְדָּה,uganda,,
+🇺🇲,Flag: U.S. Outlying Islands,Flag,Oceania,אִיֵּי הָאוֹקְיָנוֹסִים שֶׁל אַרְצוֹת הַבְּרִית,iyey haokyanosim shel artzot habrit,,
+🇺🇳,Flag: United Nations,Flag,International,הָאֻמּוֹת הַמְּאֻחָדוֹת,haumot hamuchadot,,
+🇺🇸,Flag: United States,Flag,North America,אַרְצוֹת הַבְּרִית,artzot habrit,,
+🇺🇾,Flag: Uruguay,Flag,South America,אוּרוּגְוַאי,urugvay,,
+🇺🇿,Flag: Uzbekistan,Flag,Asia,אוּזְבֶּקִיסְטָן,uzbekistan,,
+🇻🇦,Flag: Vatican City,Flag,Europe,הַוָּתִיקָן,havatikan,,
+🇻🇨,Flag: St. Vincent & Grenadines,Flag,North America,סֶנְט וִינְסֶנְט,sent vinsent,,
+🇻🇪,Flag: Venezuela,Flag,South America,וֵנֵצוּאֶלָה,venetzuela,,
+🇻🇬,Flag: British Virgin Islands,Flag,North America,אִיֵּי הַבְּתוּלָה הַבְּרִיטִיִּים,iyey habtula habritiyim,,
+🇻🇮,Flag: U.S. Virgin Islands,Flag,North America,אִיֵּי הַבְּתוּלָה הָאָמֵרִיקָאִיִּים,iyey habtula haamerikaiyim,,
+🇻🇳,Flag: Vietnam,Flag,Asia,וְיֵטְנָאם,veyetnam,,
+🇻🇺,Flag: Vanuatu,Flag,Oceania,וָנוּאָטוּ,vanuatu,,
+🇼🇫,Flag: Wallis & Futuna,Flag,Oceania,וָאלִיס וְפוּטוּנָה,valis vefutuna,,
+🇼🇸,Flag: Samoa,Flag,Oceania,סָמוֹאָה,samoa,,
+🇽🇰,Flag: Kosovo,Flag,Europe,קוֹסוֹבוֹ,kosovo,,
+🇾🇪,Flag: Yemen,Flag,Asia,תֵּימָן,teyman,,
+🇾🇹,Flag: Mayotte,Flag,Africa,מָיוֹט,mayot,,
+🇿🇦,Flag: South Africa,Flag,Africa,דְּרוֹם אַפְרִיקָה,derom afrika,,
+🇿🇲,Flag: Zambia,Flag,Africa,זַמְבְּיָה,zambya,,
+🇿🇼,Flag: Zimbabwe,Flag,Africa,זִימְבַּבְּוֵה,zimbabve,,
+🏴󠁧󠁢󠁥󠁮󠁧󠁿,Flag: England,Flag,Subdivision,אַנְגְּלִיָּה,angliya,,
+🏴󠁧󠁢󠁳󠁣󠁴󠁿,Flag: Scotland,Flag,Subdivision,סְקוֹטְלַנְד,sekotland,,
+🏴󠁧󠁢󠁷󠁬󠁳󠁿,Flag: Wales,Flag,Subdivision,וֵילְס,veyls,,
+❄️,Snow,Nature,Weather,שֶׁלֶג,sheleg,,
+❄️,Snowflake,Symbol,Decorative,,,פְּתִית שֶׁלֶג,petit sheleg
+🌟,Glowing Star,Nature,Astronomy,כּוֹכָב מַזְהִיר,kochav mazhir,,
+🌟,Sparkle,Symbol,Decorative,נִיצוֹץ,nitzotz,,
+🌳,Tree,Plant,Tree,עֵץ,etz,,
+🌳,Forest,Nature,Landscape,יַעַר,yaar,,
+🌲,Pine Tree,Plant,Tree,אוֹרֶן,oren,,
+🌲,Pine Forest,Nature,Landscape,יַעַר אוֹרְנִים,yaar ornim,,
+🌴,Palm Tree,Plant,Tree,דֶּקֶל,dekel,,
+🌴,Beach,Nature,Landscape,חוֹף,chof,,
+🌵,Cactus,Plant,Tree,קַקְטוּס,kaktus,,
+🌵,Desert,Nature,Landscape,מִדְבָּר,midbar,,
+🌾,Wheat Stalks,Plant,Other,,,שִׁבֳּלִים,shibolim
+🌾,Wheat,Food,Other,,,חִטָּה,chita
+🕊️,Dove,Animal,Bird,,,יוֹנָה,yona
+🕊️,Peace Dove,Symbol,Decorative,,,יוֹנַת שָׁלוֹם,yonat shalom
+💎,Diamond,Object,Jewelry,,,יַהֲלוֹם,yahalom
+💎,Gem,Symbol,Decorative,,,אֶבֶן יְקָרָה,even yekara
+💀,Skull,Emotion,Creature,,,גֻּלְגֹּלֶת,gulgolet
+💀,Danger,Symbol,Warning,,,סַכָּנָה,sakana
+☠️,Skull and Crossbones,Emotion,Creature,,,גֻּלְגֹּלֶת וַעֲצָמוֹת,gulgolet vaatzamot
+☠️,Poison,Symbol,Warning,רַעַל,raal,,
+🔥,Fire,Nature,Landscape,,,אֵשׁ,esh
+🔥,Hot,Symbol,Warning,חַם,cham,,
+🕍,Synagogue,Place,Building,בֵּית כְּנֶסֶת,beit knesset,,
+🕍,Judaism,Religion,Religion,,,יַהֲדוּת,yahadut
+⛪,Church,Place,Building,,,כְּנֵסִיָּה,kenesiya
+⛪,Christianity,Religion,Religion,,,נַצְרוּת,natzrut
+🕌,Mosque,Place,Building,מִסְגָּד,misgad,,
+🕌,Islam,Religion,Religion,אִסְלָאם,islam,,
+🕋,Kaaba,Place,Building,אַלכַּעבָּה,alkaba,,
+🕋,Pilgrimage,Religion,Religion,,,עֲלִיָּה לָרֶגֶל,aliya laregel
+⛩️,Shinto Shrine,Place,Building,מִקְדָּשׁ שִׁינְטּוֹ,mikdash shinto,,
+⛩️,Shinto,Religion,Religion,שִׁינְטּוֹאִיזְם,shintoizm,,
+🛕,Hindu Temple,Place,Building,מִקְדָּשׁ הִינְדִּי,mikdash hindi,,
+🛕,Hinduism,Religion,Religion,הִינְדּוּאִיזְם,hinduizm,,
+💒,Wedding Chapel,Place,Building,,,קָפֶּלָה,kapela
+💒,Marriage,Religion,Religion,נִשּׂוּאִין,nisuin,,
+💰,Money Bag,Object,Money,שַׂק כֶּסֶף,sak kesef,,
+💰,Money,Symbol,Currency,כֶּסֶף,kesef,,
+💵,Dollar Bill,Object,Money,,,שְׁטָר דּוֹלָר,shetar dolar
+💵,Dollar,Symbol,Currency,דּוֹלָר,dolar,,
+💳,Credit Card,Object,Money,,,כַּרְטִיס אַשְׁרַאי,kartis ashray
+💳,Payment,Symbol,Currency,תַּשְׁלוּם,tashlum,,
