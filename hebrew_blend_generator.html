@@ -1749,6 +1749,11 @@
               style="accent-color:var(--gold);width:13px;height:13px;">
             Include dageshim
           </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;cursor:pointer;margin-top:4px;">
+            <input type="checkbox" id="fillVowelsAnswerKey" onchange="renderWorksheet(false)"
+              style="accent-color:var(--gold);width:13px;height:13px;">
+            Show Answer Key
+          </label>
         </div>
         <div class="toggle-row" id="rowBingo" style="margin-top:4px;">
           <span>Bingo Mode
@@ -3405,6 +3410,7 @@ function getSettings() {
     inverse:       document.getElementById('inverseToggle').checked,
     fillVowels:    document.getElementById('fillVowelsToggle').checked,
     includeDageshim: document.getElementById('includeDageshimToggle')?.checked ?? false,
+    fillVowelsAnswerKey: document.getElementById('fillVowelsAnswerKey')?.checked ?? false,
     answerKey:     document.getElementById('answerKeyToggle').checked,
     selfCheck:     document.getElementById('selfCheckToggle').checked,
     timerOn:       document.getElementById('timerToggle').checked,
@@ -3564,6 +3570,7 @@ function applySettings(s) {
   if (s.inverse !== undefined)     document.getElementById('inverseToggle').checked = s.inverse;
   if (s.fillVowels !== undefined)  document.getElementById('fillVowelsToggle').checked = s.fillVowels;
   if (s.includeDageshim !== undefined) { const el = document.getElementById('includeDageshimToggle'); if (el) el.checked = s.includeDageshim; }
+  if (s.fillVowelsAnswerKey !== undefined) { const el = document.getElementById('fillVowelsAnswerKey'); if (el) el.checked = s.fillVowelsAnswerKey; }
   if (s.answerKey !== undefined)   document.getElementById('answerKeyToggle').checked = s.answerKey;
   if (s.timerOn !== undefined)   document.getElementById('timerToggle').checked = s.timerOn;
   if (s.timerDuration)           document.getElementById('timerDuration').value = s.timerDuration;
@@ -6527,7 +6534,11 @@ function renderWorksheet(animate = false) {
   if (translitStyle !== 'default') rebuildTranslitDisplay();
   const isInverse   = document.getElementById('inverseToggle').checked;
   const fillVowels  = document.getElementById('fillVowelsToggle').checked;
-  const showAnswers = document.getElementById('answerKeyToggle').checked;
+  // Fill-vowels has its own answer-key toggle (the global one is mutex-cleared
+  // when fillVowels is on, so it can't be used here).
+  const showAnswers = fillVowels
+    ? (document.getElementById('fillVowelsAnswerKey')?.checked ?? false)
+    : document.getElementById('answerKeyToggle').checked;
   const selfCheck   = document.getElementById('selfCheckToggle').checked;
   const bingo       = document.getElementById('bingoToggle').checked;
   const activeType  = document.querySelector('.blend-type-btn.active')?.dataset.type || 'two';
