@@ -3355,10 +3355,13 @@ function showResults() {
     const s = scores[i];
     const cls = s === true ? 'good' : s === false ? 'bad' : '';
     const mark = s === true ? '✓' : s === false ? '✗' : '–';
+    const middle = c.emoji
+      ? `<span class="rheb" style="display:flex;align-items:center;gap:10px;direction:ltr;"><span style="font-size:1.6rem;flex-shrink:0;line-height:1;">${c.emoji}</span><span style="direction:rtl;font-family:var(--heb-font);">${c.heb}</span></span>`
+      : `<span class="rheb">${c.heb}</span>`;
     return `
       <li class="result-item ${cls}">
         <span class="rmark">${mark}</span>
-        <span class="rheb">${c.heb}</span>
+        ${middle}
         <span class="rtr">${escapeHtml(c.translit)}</span>
       </li>
     `;
