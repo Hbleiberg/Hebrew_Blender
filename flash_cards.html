@@ -868,7 +868,7 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
 
 <!-- ============== HEADER ============== -->
 <header class="app-header">
-  <a href="index.html" class="h-btn" title="Home" aria-label="Home">←</a>
+  <a href="index.html" class="h-btn" id="homeBtn" title="Home" aria-label="Home">←</a>
   <h1>Flash Cards</h1>
   <div class="h-right">
     <button class="h-btn" id="darkToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
@@ -1161,8 +1161,12 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
 
       <hr class="soft" />
 
-      <!-- Hide Prev button -->
+      <!-- Hide buttons -->
       <div class="row">
+        <label class="switch"><input type="checkbox" id="hideHomeToggle"><span class="slider"></span></label>
+        <span class="label">Hide Home Arrow</span>
+      </div>
+      <div class="row" style="margin-top:8px;">
         <label class="switch"><input type="checkbox" id="hidePrevToggle"><span class="slider"></span></label>
         <span class="label">Hide Back Button</span>
       </div>
@@ -1511,6 +1515,7 @@ const HEB_FONTS = [
 let mode = 2;
 let inverse = false;
 let hidePrevBtn = false;
+let hideHomeBtn = false;
 let cardCount = 10;
 let selectedLetters = new Set();
 let selectedVowels = new Set();
@@ -2141,7 +2146,7 @@ const PRESET_KEY = 'hebrewFlashCards_presets';
 
 function getSettings() {
   return {
-    mode, inverse, hidePrevBtn, cardCount,
+    mode, inverse, hidePrevBtn, hideHomeBtn, cardCount,
     selectedLetters: [...selectedLetters],
     selectedVowels: [...selectedVowels],
     dageshTavEnabled, vavAsLetter,
@@ -2167,6 +2172,11 @@ function applySettings(s) {
   hidePrevBtn = !!s.hidePrevBtn;
   const hidePrevToggle = document.getElementById('hidePrevToggle');
   if (hidePrevToggle) hidePrevToggle.checked = hidePrevBtn;
+  hideHomeBtn = !!s.hideHomeBtn;
+  const hideHomeToggle = document.getElementById('hideHomeToggle');
+  if (hideHomeToggle) hideHomeToggle.checked = hideHomeBtn;
+  const homeBtn = document.getElementById('homeBtn');
+  if (homeBtn) homeBtn.style.visibility = hideHomeBtn ? 'hidden' : '';
   cardCount = s.cardCount || 10;
   selectedLetters = new Set(s.selectedLetters || []);
   selectedVowels = new Set(s.selectedVowels || []);
@@ -3150,6 +3160,12 @@ function wireSetupScreen() {
     hidePrevBtn = e.target.checked;
     const btn = document.getElementById('prevBtn');
     if (btn) btn.style.display = hidePrevBtn ? 'none' : '';
+    saveSettings();
+  });
+  document.getElementById('hideHomeToggle').addEventListener('change', e => {
+    hideHomeBtn = e.target.checked;
+    const btn = document.getElementById('homeBtn');
+    if (btn) btn.style.visibility = hideHomeBtn ? 'hidden' : '';
     saveSettings();
   });
   document.getElementById('lockToggle').addEventListener('change', e => {
