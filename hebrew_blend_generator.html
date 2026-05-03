@@ -1655,7 +1655,7 @@
     <h1>Hebrew Blend Worksheet Generator</h1>
     <p id="headerSub">Phonetic Hebrew decoding practice for emerging readers</p>
   </div>
-  <a id="backHomeBtn" href="index.html" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:0.8rem;font-family:'Source Sans 3',sans-serif;font-weight:600;text-decoration:none;flex-shrink:0;">← Home</a>
+  <a href="index.html" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:0.8rem;font-family:'Source Sans 3',sans-serif;font-weight:600;text-decoration:none;flex-shrink:0;">← Home</a>
   <button id="darkToggle" onclick="toggleDark()" title="Toggle dark mode" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:1rem;flex-shrink:0;">🌙</button>
 </header>
 
@@ -2684,14 +2684,6 @@
             <span style="font-size:0.85rem;">Hide Zoom Bar</span>
             <label class="toggle">
               <input type="checkbox" id="hideZoomBarToggle" onchange="setHideZoomBar(this.checked)">
-              <span class="slider"></span>
-            </label>
-          </div>
-
-          <div class="toggle-row" style="margin-bottom:8px;">
-            <span style="font-size:0.85rem;">Hide Back Button</span>
-            <label class="toggle">
-              <input type="checkbox" id="hideBackBtnToggle" onchange="setHideBackBtn(this.checked)">
               <span class="slider"></span>
             </label>
           </div>
@@ -4260,24 +4252,13 @@ function setHideZoomBar(hide) {
   localStorage.setItem('hebrewBlender_hideZoomBar', hide ? '1' : '0');
 }
 
-function setHideBackBtn(hide) {
-  const btn = document.getElementById('backHomeBtn');
-  if (btn) btn.style.display = hide ? 'none' : '';
-  localStorage.setItem('hebrewBlender_hideBackBtn', hide ? '1' : '0');
-}
-
-// Restore both on load (these toggles are per-machine UI preferences and
-// live outside the preset system).
+// Restore on load (the toggle's persisted state lives outside the preset
+// system since it's a per-machine UI preference).
 document.addEventListener('DOMContentLoaded', () => {
-  const zoomHidden = localStorage.getItem('hebrewBlender_hideZoomBar') === '1';
-  const zoomCb = document.getElementById('hideZoomBarToggle');
-  if (zoomCb) zoomCb.checked = zoomHidden;
-  setHideZoomBar(zoomHidden);
-
-  const backHidden = localStorage.getItem('hebrewBlender_hideBackBtn') === '1';
-  const backCb = document.getElementById('hideBackBtnToggle');
-  if (backCb) backCb.checked = backHidden;
-  setHideBackBtn(backHidden);
+  const stored = localStorage.getItem('hebrewBlender_hideZoomBar') === '1';
+  const cb = document.getElementById('hideZoomBarToggle');
+  if (cb) cb.checked = stored;
+  setHideZoomBar(stored);
 });
 const FS_ENTER_ICON = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg>`;
 const FS_EXIT_ICON  = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5,0.5 4.5,4.5 0.5,4.5"/><polyline points="13.5,4.5 9.5,4.5 9.5,0.5"/><polyline points="9.5,13.5 9.5,9.5 13.5,9.5"/><polyline points="0.5,9.5 4.5,9.5 4.5,13.5"/></svg>`;
