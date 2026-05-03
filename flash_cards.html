@@ -871,7 +871,6 @@ body.dark .emoji-gender-btn.active { background:#0a0f1c; color:#fff; }
 .emoji-cat-group.collapsed .emoji-cat-arrow { transform:rotate(-90deg); }
 .emoji-cat-group.collapsed .emoji-sub-list { display:none; }
 .emoji-cat-count { margin-left:auto; font-size:0.6rem; color:var(--muted); font-weight:400; flex-shrink:0; }
-@media(max-width:520px){ #emojiCatTree { grid-template-columns:1fr; } }
 .divider { height: 1px; background: var(--border); margin: 14px -16px; }
 .muted-row { font-size: 0.85rem; color: var(--muted); margin: 6px 0; }
 hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
@@ -1043,14 +1042,7 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
             <div id="emojiGenderPills" style="display:flex;flex:1;border:1px solid var(--border);border-radius:6px;overflow:hidden;">
               <button class="emoji-gender-btn" data-egender="masc">♂ Masc</button>
               <button class="emoji-gender-btn" data-egender="fem">♀ Fem</button>
-              <button class="emoji-gender-btn active" data-egender="both">Both</button>
-            </div>
-          </div>
-          <div class="row" id="emojiBothModeRow" style="margin-bottom:8px;">
-            <span class="label" style="flex-shrink:0;margin-right:8px;">Both:</span>
-            <div class="pill-group" id="emojiBothModePills">
-              <button class="pill active" data-ebmode="random">Random form</button>
-              <button class="pill" data-ebmode="separate">Separate cards</button>
+              <button class="emoji-gender-btn active has-tip" data-egender="both" data-tip="For emojis with both forms (e.g. cat → חָתוּל / חֲתוּלָה), each form appears as its own card.">Show M/F Form</button>
             </div>
           </div>
           <div class="row" style="margin-bottom:8px;">
@@ -1064,12 +1056,6 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
             <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;cursor:pointer;">
               <input type="checkbox" id="emojiTranslitToggle" style="accent-color:var(--gold);width:13px;height:13px;">
               Show transliteration
-            </label>
-          </div>
-          <div class="row" style="margin-top:6px;">
-            <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;cursor:pointer;">
-              <input type="checkbox" id="emojiEnglishToggle" style="accent-color:var(--gold);width:13px;height:13px;">
-              Show English name
             </label>
           </div>
           <div class="row" style="margin-top:6px;">
@@ -1613,11 +1599,9 @@ let colorShowTranslit = false;
 let selectedColors = new Set(COLOR_DATA.filter(c => c.isMain).map(c => c.key));
 const EMOJI_VISIBLE_CATEGORIES = ['Animal', 'Food'];
 let EMOJI_DATA = null;                  // { categories: [...], emojis: [...] } — filtered to visible categories
-let emojiGender = 'both';               // 'masc' | 'fem' | 'both'
-let emojiBothMode = 'random';           // 'random' | 'separate'  (only used when gender === 'both')
+let emojiGender = 'both';               // 'masc' | 'fem' | 'both' (Show M/F Form)
 let emojiFront = 'emoji';               // 'emoji' | 'hebrew'
 let emojiShowTranslit = false;
-let emojiShowEnglish = false;
 let emojiShowGender = false;
 let selectedEmojiSubs = new Set();      // "Category|Subcategory" strings; populated after fetch
 let timerMode = 'off';       // 'off' | 'track' | 'limit'
@@ -2139,7 +2123,7 @@ function renderEmojiCatTree() {
     const noneSelected = totalSelected === 0;
     const totalCount = subs.reduce((n, s) => n + (subCounts[c.name + '|' + s] || 0), 0);
     const group = document.createElement('div');
-    group.className = 'emoji-cat-group';
+    group.className = 'emoji-cat-group collapsed';
     const catRow = document.createElement('label');
     catRow.className = 'emoji-cat-row is-cat';
     const arrow = document.createElement('span');
@@ -2216,9 +2200,6 @@ function setAllEmojiSubs(checked) {
   saveSettings();
 }
 
-function syncEmojiBothModeRow() {
-  document.getElementById('emojiBothModeRow').style.display = (emojiGender === 'both') ? '' : 'none';
-}
 
 function initColorTiles() {
   const grid = document.getElementById('colorTileGrid');
@@ -2357,7 +2338,7 @@ function getSettings() {
     hebFontId, audioEnabled, nameLetterMode, nameLetterShowLetter,
     otherModeActive, otherSubMode, numberMin, numberMax, numberGender, numberFront, numberShowTranslit,
     colorGender, colorDisplayMode, colorFront, colorShowTranslit, selectedColors: [...selectedColors],
-    emojiGender, emojiBothMode, emojiFront, emojiShowTranslit, emojiShowEnglish, emojiShowGender,
+    emojiGender, emojiFront, emojiShowTranslit, emojiShowGender,
     selectedEmojiSubs: [...selectedEmojiSubs],
     timerMode, timerShowOnScreen, timeLimitSeconds,
     ttsRate: parseFloat(document.getElementById('ttsRateSlider')?.value || 0.85),
@@ -2469,10 +2450,8 @@ function applySettings(s) {
   colorShowTranslit = !!s.colorShowTranslit;
   selectedColors = s.selectedColors ? new Set(s.selectedColors) : new Set(COLOR_DATA.filter(c => c.isMain).map(c => c.key));
   emojiGender       = s.emojiGender || 'both';
-  emojiBothMode     = s.emojiBothMode || 'random';
   emojiFront        = s.emojiFront || 'emoji';
   emojiShowTranslit = !!s.emojiShowTranslit;
-  emojiShowEnglish  = !!s.emojiShowEnglish;
   emojiShowGender   = !!s.emojiShowGender;
   selectedEmojiSubs = new Set(s.selectedEmojiSubs || []);
   setOtherMode(otherModeActive);
@@ -2491,14 +2470,10 @@ function applySettings(s) {
   // Emoji UI sync
   document.querySelectorAll('#emojiGenderPills .emoji-gender-btn').forEach(p =>
     p.classList.toggle('active', p.dataset.egender === emojiGender));
-  document.querySelectorAll('#emojiBothModePills .pill').forEach(p =>
-    p.classList.toggle('active', p.dataset.ebmode === emojiBothMode));
   document.querySelectorAll('#emojiFrontPills .pill').forEach(p =>
     p.classList.toggle('active', p.dataset.efront === emojiFront));
   const eTr = document.getElementById('emojiTranslitToggle');     if (eTr) eTr.checked = emojiShowTranslit;
-  const eEn = document.getElementById('emojiEnglishToggle');      if (eEn) eEn.checked = emojiShowEnglish;
   const eGl = document.getElementById('emojiGenderLabelToggle');  if (eGl) eGl.checked = emojiShowGender;
-  syncEmojiBothModeRow();
   syncOtherSubUI();
   if (!otherModeActive) document.getElementById('panelVowels').style.display = nameLetterMode ? 'none' : '';
   document.querySelectorAll('#nameLetterFrontPills .pill').forEach(p =>
@@ -2854,26 +2829,15 @@ function generateCard() {
     EMOJI_DATA.emojis.forEach(e => {
       if (!selectedEmojiSubs.has(e.category + '|' + e.subcategory)) return;
       const hasM = !!e.hebrew_masculine, hasF = !!e.hebrew_feminine;
-      if (emojiGender === 'masc')      { if (hasM) pool.push({ e, form: 'm' }); }
-      else if (emojiGender === 'fem')  { if (hasF) pool.push({ e, form: 'f' }); }
-      else if (emojiBothMode === 'separate') { if (hasM) pool.push({ e, form: 'm' }); if (hasF) pool.push({ e, form: 'f' }); }
-      else { if (hasM || hasF) pool.push({ e, form: 'pick' }); }
+      if (emojiGender === 'masc')     { if (hasM) pool.push({ e, form: 'm' }); }
+      else if (emojiGender === 'fem') { if (hasF) pool.push({ e, form: 'f' }); }
+      else                            { if (hasM) pool.push({ e, form: 'm' }); if (hasF) pool.push({ e, form: 'f' }); }
     });
     if (pool.length === 0) return null;
     const pick = pool[Math.floor(Math.random() * pool.length)];
-    let heb, translit, form;
-    if (pick.form === 'pick') {
-      const e = pick.e;
-      const forms = [];
-      if (e.hebrew_masculine) forms.push({ h: e.hebrew_masculine, t: e.translit_masculine, g: 'm' });
-      if (e.hebrew_feminine)  forms.push({ h: e.hebrew_feminine,  t: e.translit_feminine,  g: 'f' });
-      const f = forms[Math.floor(Math.random() * forms.length)];
-      heb = f.h; translit = f.t; form = f.g;
-    } else if (pick.form === 'm') {
-      heb = pick.e.hebrew_masculine; translit = pick.e.translit_masculine; form = 'm';
-    } else {
-      heb = pick.e.hebrew_feminine; translit = pick.e.translit_feminine; form = 'f';
-    }
+    const heb      = pick.form === 'm' ? pick.e.hebrew_masculine    : pick.e.hebrew_feminine;
+    const translit = pick.form === 'm' ? pick.e.translit_masculine  : pick.e.translit_feminine;
+    const form     = pick.form;
     const HT = window.HebrewTransliterator;
     const style = getRomanizedStyle();
     const romanized = (style && typeof HT.apply === 'function') ? HT.apply(heb, '', style) : translit;
@@ -3214,10 +3178,10 @@ function renderCurrentCard() {
     }
   } else if (otherModeActive && otherSubMode === 'emoji') {
     function emojiSide(el) {
-      el.textContent = card.emoji;
-      el.style.fontFamily = '';
-      el.style.direction = '';
-      el.style.fontSize = 'clamp(4rem, 18vw, 8rem)';
+      const enLine = card.english
+        ? `<div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.75;text-align:center;margin-top:8px;">${card.english}</div>` : '';
+      el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:0;width:100%;"><div style="font-size:clamp(4rem,18vw,8rem);line-height:1;">${card.emoji}</div>${enLine}</div>`;
+      el.style.fontFamily = ''; el.style.direction = ''; el.style.fontSize = '';
     }
     function hebEmojiSide(el) {
       const genderGlyph = card.genderForm === 'm' ? '♂' : (card.genderForm === 'f' ? '♀' : '');
@@ -3226,10 +3190,8 @@ function renderCurrentCard() {
         (showGender ? ` <span style="font-family:var(--serif);font-size:0.55em;opacity:0.7;">${genderGlyph}</span>` : '');
       const trLine = (emojiShowTranslit && card.romanized)
         ? `<div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;text-align:center;">${card.romanized}</div>` : '';
-      const enLine = (emojiShowEnglish && card.english)
-        ? `<div style="font-family:var(--serif);direction:ltr;font-size:clamp(0.9rem,3.5vw,1.4rem);opacity:0.7;text-align:center;">${card.english}</div>` : '';
-      if (trLine || enLine) {
-        el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;"><div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(2rem,8vw,3.5rem);text-align:center;">${hebInner}</div>${trLine}${enLine}</div>`;
+      if (trLine) {
+        el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;"><div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(2rem,8vw,3.5rem);text-align:center;">${hebInner}</div>${trLine}</div>`;
         el.style.fontFamily = ''; el.style.direction = ''; el.style.fontSize = '';
       } else {
         el.innerHTML = hebInner;
@@ -3546,12 +3508,6 @@ function wireSetupScreen() {
   document.querySelectorAll('#emojiGenderPills .emoji-gender-btn').forEach(p => p.addEventListener('click', () => {
     emojiGender = p.dataset.egender;
     document.querySelectorAll('#emojiGenderPills .emoji-gender-btn').forEach(x => x.classList.toggle('active', x === p));
-    syncEmojiBothModeRow();
-    saveSettings();
-  }));
-  document.querySelectorAll('#emojiBothModePills .pill').forEach(p => p.addEventListener('click', () => {
-    emojiBothMode = p.dataset.ebmode;
-    document.querySelectorAll('#emojiBothModePills .pill').forEach(x => x.classList.toggle('active', x === p));
     saveSettings();
   }));
   document.querySelectorAll('#emojiFrontPills .pill').forEach(p => p.addEventListener('click', () => {
@@ -3561,11 +3517,6 @@ function wireSetupScreen() {
   }));
   document.getElementById('emojiTranslitToggle').addEventListener('change', e => {
     emojiShowTranslit = e.target.checked;
-    saveSettings();
-    if (document.getElementById('screenCard').classList.contains('active')) renderCurrentCard();
-  });
-  document.getElementById('emojiEnglishToggle').addEventListener('change', e => {
-    emojiShowEnglish = e.target.checked;
     saveSettings();
     if (document.getElementById('screenCard').classList.contains('active')) renderCurrentCard();
   });
