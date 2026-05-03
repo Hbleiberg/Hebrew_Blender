@@ -994,8 +994,8 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
           <div class="row" style="margin-bottom:8px;">
             <span class="label" style="flex-shrink:0;margin-right:8px;">Display:</span>
             <div class="pill-group" id="colorDisplayPills">
-              <button class="pill active" data-cdisplay="color">Color</button>
-              <button class="pill" data-cdisplay="color+name">Color + Name</button>
+              <button class="pill" data-cdisplay="color">Color</button>
+              <button class="pill active" data-cdisplay="color+name">Color + Name</button>
               <button class="pill" data-cdisplay="name">Name</button>
             </div>
           </div>
@@ -1534,7 +1534,7 @@ let numberGender = 'feminine';
 let numberFront = 'number';
 let numberShowTranslit = false;
 let colorGender = 'masculine';
-let colorDisplayMode = 'color';
+let colorDisplayMode = 'color+name';
 let colorFront = 'color';
 let colorShowTranslit = false;
 let selectedColors = new Set(COLOR_DATA.filter(c => c.isMain).map(c => c.key));
@@ -2195,7 +2195,7 @@ function applySettings(s) {
   }
   numberShowTranslit = !!s.numberShowTranslit;
   colorGender = s.colorGender || 'masculine';
-  colorDisplayMode = s.colorDisplayMode || 'color';
+  colorDisplayMode = s.colorDisplayMode || 'color+name';
   colorFront = s.colorFront || 'color';
   colorShowTranslit = !!s.colorShowTranslit;
   selectedColors = s.selectedColors ? new Set(s.selectedColors) : new Set(COLOR_DATA.filter(c => c.isMain).map(c => c.key));
