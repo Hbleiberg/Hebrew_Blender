@@ -187,6 +187,7 @@ function exportAllSettings() {
     flashCardPresets:    JSON.parse(localStorage.getItem('hebrewFlashCards_presets')   || '{}'),
     dictAudioEnabled:    localStorage.getItem('hebrewDictionary_audioEnabled') || '0',
     dictTranslitStyle:   localStorage.getItem('hebrewDictionary_translitStyle') || 'default',
+    dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate') || '0.85',
     dictEmojiSettings:   JSON.parse(localStorage.getItem('hebrewDictionary_emojiSettings') || '{}'),
   };
   document.getElementById('ieTextarea').value = JSON.stringify(blob, null, 2);
@@ -225,6 +226,9 @@ function importAllSettings() {
     if (parsed.dictTranslitStyle !== undefined) {
       localStorage.setItem('hebrewDictionary_translitStyle', parsed.dictTranslitStyle);
     }
+    if (parsed.dictTtsRate !== undefined) {
+      localStorage.setItem('hebrewDictionary_ttsRate', parsed.dictTtsRate);
+    }
     if (parsed.dictEmojiSettings) {
       const existing = JSON.parse(localStorage.getItem('hebrewDictionary_emojiSettings') || '{}');
       localStorage.setItem('hebrewDictionary_emojiSettings', JSON.stringify(Object.assign(existing, parsed.dictEmojiSettings)));
@@ -251,6 +255,7 @@ function eraseAllSettings() {
     'hebrewFlashCards_presets',
     'hebrewDictionary_audioEnabled',
     'hebrewDictionary_translitStyle',
+    'hebrewDictionary_ttsRate',
     'hebrewDictionary_emojiSettings',
   ];
   keys.forEach(k => localStorage.removeItem(k));
