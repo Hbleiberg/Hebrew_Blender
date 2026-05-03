@@ -1054,21 +1054,21 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
           </div>
           <div class="row" style="margin-top:8px;">
             <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;cursor:pointer;">
-              <input type="checkbox" id="emojiTranslitToggle" style="accent-color:var(--gold);width:13px;height:13px;">
+              <input type="checkbox" id="emojiTranslitToggle" checked style="accent-color:var(--gold);width:13px;height:13px;">
               Show transliteration
             </label>
           </div>
           <div class="row" style="margin-top:6px;">
             <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;cursor:pointer;">
-              <input type="checkbox" id="emojiGenderLabelToggle" style="accent-color:var(--gold);width:13px;height:13px;">
+              <input type="checkbox" id="emojiGenderLabelToggle" checked style="accent-color:var(--gold);width:13px;height:13px;">
               Show gender (♂/♀)
             </label>
           </div>
-          <div class="row hide" id="emojiGenderSideRow" style="margin-top:4px;margin-left:22px;">
+          <div class="row" id="emojiGenderSideRow" style="margin-top:4px;margin-left:22px;">
             <div class="pill-group" id="emojiGenderSidePills">
               <button class="pill" data-eside="emoji">Emoji side</button>
-              <button class="pill active" data-eside="hebrew">Hebrew side</button>
-              <button class="pill" data-eside="both">Both</button>
+              <button class="pill" data-eside="hebrew">Hebrew side</button>
+              <button class="pill active" data-eside="both">Both</button>
             </div>
           </div>
         </div>
@@ -1608,9 +1608,9 @@ const EMOJI_VISIBLE_CATEGORIES = ['Animal', 'Food'];
 let EMOJI_DATA = null;                  // { categories: [...], emojis: [...] } — filtered to visible categories
 let emojiGender = 'both';               // 'masc' | 'fem' | 'both' (Show M/F Form)
 let emojiFront = 'emoji';               // 'emoji' | 'hebrew'
-let emojiShowTranslit = false;
-let emojiShowGender = false;
-let emojiGenderSide = 'hebrew';         // 'emoji' | 'hebrew' | 'both' (where ♂/♀ glyph appears)
+let emojiShowTranslit = true;
+let emojiShowGender = true;
+let emojiGenderSide = 'both';           // 'emoji' | 'hebrew' | 'both' (where ♂/♀ glyph appears)
 let selectedEmojiSubs = new Set();      // "Category|Subcategory" strings; populated after fetch
 let timerMode = 'off';       // 'off' | 'track' | 'limit'
 let timerShowOnScreen = true;
@@ -2463,9 +2463,9 @@ function applySettings(s) {
   selectedColors = s.selectedColors ? new Set(s.selectedColors) : new Set(COLOR_DATA.filter(c => c.isMain).map(c => c.key));
   emojiGender       = s.emojiGender || 'both';
   emojiFront        = s.emojiFront || 'emoji';
-  emojiShowTranslit = !!s.emojiShowTranslit;
-  emojiShowGender   = !!s.emojiShowGender;
-  emojiGenderSide   = s.emojiGenderSide || 'hebrew';
+  emojiShowTranslit = s.emojiShowTranslit !== undefined ? !!s.emojiShowTranslit : true;
+  emojiShowGender   = s.emojiShowGender   !== undefined ? !!s.emojiShowGender   : true;
+  emojiGenderSide   = s.emojiGenderSide || 'both';
   selectedEmojiSubs = new Set(s.selectedEmojiSubs || []);
   setOtherMode(otherModeActive);
   document.querySelector('#numMinInput') && (document.getElementById('numMinInput').value = numberMin);
