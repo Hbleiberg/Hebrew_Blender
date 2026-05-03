@@ -292,14 +292,18 @@ body.emoji-mode .word-mode-panel{display:none;}
 .emoji-gender-btn:hover{background:var(--warm-gray);}
 .emoji-gender-btn.active{background:var(--navy);color:#fff;}
 body.dark .emoji-gender-btn.active{background:#0a0f1c;}
-.emoji-cat-row{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:0.78rem;cursor:pointer;user-select:none;}
-.emoji-cat-row input{accent-color:var(--gold);width:13px;height:13px;cursor:pointer;}
+#emojiCatTree{display:grid;grid-template-columns:1fr 1fr;column-gap:8px;align-items:start;}
+.emoji-cat-group{break-inside:avoid;}
+.emoji-cat-row{display:flex;align-items:center;gap:5px;padding:2px 0;font-size:0.74rem;cursor:pointer;user-select:none;}
+.emoji-cat-row input{accent-color:var(--gold);width:12px;height:12px;cursor:pointer;flex-shrink:0;}
 .emoji-cat-row.is-cat{font-weight:600;}
-.emoji-cat-row.is-sub{padding-left:18px;font-size:0.73rem;color:var(--muted);}
-.emoji-cat-arrow{display:inline-block;width:10px;font-size:0.7rem;color:var(--muted);transition:transform 0.15s;}
+.emoji-cat-row.is-sub{padding-left:14px;font-size:0.7rem;color:var(--muted);}
+.emoji-cat-row > span:not(.emoji-cat-arrow):not(.emoji-cat-count){overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
+.emoji-cat-arrow{display:inline-block;width:9px;font-size:0.65rem;color:var(--muted);transition:transform 0.15s;flex-shrink:0;}
 .emoji-cat-group.collapsed .emoji-cat-arrow{transform:rotate(-90deg);}
 .emoji-cat-group.collapsed .emoji-sub-list{display:none;}
-.emoji-cat-count{margin-left:auto;font-size:0.65rem;color:var(--muted);font-weight:400;}
+.emoji-cat-count{margin-left:auto;font-size:0.6rem;color:var(--muted);font-weight:400;flex-shrink:0;}
+@media(max-width:520px){#emojiCatTree{grid-template-columns:1fr;}}
 /* Emoji card */
 .emoji-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:14px 12px 10px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;transition:border-color 0.15s,box-shadow 0.15s;position:relative;}
 .emoji-card:hover{border-color:var(--gold);box-shadow:0 2px 8px rgba(0,0,0,0.08);}
@@ -312,8 +316,12 @@ body.dark .emoji-gender-btn.active{background:#0a0f1c;}
 .ec-gender.fem{color:#c9468f;}
 body.dark .ec-gender.masc{color:#7ab0e8;}
 body.dark .ec-gender.fem{color:#ec88bb;}
+.ec-heb-row{display:flex;align-items:center;gap:6px;justify-content:center;}
 .ec-heb{font-family:var(--heb-font);font-size:var(--heb-font-size);direction:rtl;line-height:1.2;}
 .ec-translit{font-size:0.76rem;color:var(--muted);font-style:italic;}
+.ec-speak{display:none;background:none;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:0.78rem;cursor:pointer;color:var(--muted);line-height:1;opacity:0.55;transition:opacity 0.15s,border-color 0.15s,color 0.15s;}
+.ec-speak:hover{border-color:var(--gold);color:var(--gold);opacity:1;}
+body.dict-audio-on .ec-speak{display:inline-flex;}
 .ec-tags{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
 .ec-tag{font-size:0.62rem;padding:2px 6px;border-radius:3px;background:var(--warm-gray);color:var(--muted);font-weight:600;letter-spacing:0.03em;text-transform:uppercase;}
 .ec-tag.cat{background:var(--navy);color:var(--gold-light);}
@@ -1825,7 +1833,7 @@ function renderEmojiCatTree() {
     const noneSelected = totalSelected === 0;
     const totalCount = subs.reduce((n,s) => n + (subCounts[c.name + '|' + s] || 0), 0);
     const group = document.createElement('div');
-    group.className = 'emoji-cat-group';
+    group.className = 'emoji-cat-group collapsed';
     const catRow = document.createElement('label');
     catRow.className = 'emoji-cat-row is-cat';
     const arrow = document.createElement('span');
@@ -1929,9 +1937,13 @@ function renderEmojiResults() {
     const fallbackFem  = (emojiGender === 'fem'  && !e.hebrew_feminine  && e.hebrew_masculine);
     let formsHtml = '';
     const addForm = (label, cls, heb, translit) => {
+      const escHeb = heb.replace(/"/g, '&quot;');
       formsHtml += `<div class="ec-form">
         <span class="ec-gender ${cls}">${label}</span>
-        <div class="ec-heb">${colorizeHebrew(heb)}</div>
+        <div class="ec-heb-row">
+          <div class="ec-heb">${colorizeHebrew(heb)}</div>
+          <button class="ec-speak" title="Hear pronunciation" onclick="speakWord('${escHeb}')">🔊</button>
+        </div>
         ${translit ? `<div class="ec-translit">${translit}</div>` : ''}
       </div>`;
     };
