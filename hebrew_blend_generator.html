@@ -7135,8 +7135,25 @@ function toggleCwBlendOpts() {
 
 function stripNikud(str, keepDagesh = false) {
   if (keepDagesh) {
-    // Remove all nikkud except dagesh/mapiq (U+05BC)
-    return str.replace(/[\u05B0-\u05BB\u05BD-\u05C7]/g, '');
+    // Strip all nikkud except true dagesh/mapiq (U+05BC).
+    // A dagesh sitting on a bare vav is a shuruk vowel marker, not a real
+    // dagesh \u2014 strip it so fill-vowels worksheets don't reveal the vowel.
+    let out = '';
+    let lastConsonant = '';
+    for (let i = 0; i < str.length; i++) {
+      const ch = str[i];
+      const code = ch.charCodeAt(0);
+      if (code >= 0x05B0 && code <= 0x05C7) {
+        // Nikkud range.
+        if (code === 0x05BC && lastConsonant !== '\u05D5') out += ch;
+        // else: drop it (other vowel marks, or shuruk's dagesh-on-vav)
+      } else {
+        out += ch;
+        // Track the most recent Hebrew consonant for the shuruk check.
+        if (code >= 0x05D0 && code <= 0x05EA) lastConsonant = ch;
+      }
+    }
+    return out;
   }
   return str.replace(/[\u05B0-\u05C7]/g, '');
 }
