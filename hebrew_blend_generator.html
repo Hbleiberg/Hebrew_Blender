@@ -4429,6 +4429,13 @@ function updateModeVisibility() {
     customWordlistOptions: s.source === 'customwordlist',
     numberPracticeOptions: s.source === 'numbers',
     fillVowelsDageshRow:   blends && s.drill === 'fillvowels',
+
+    // Print / Export PDF buttons are meaningless in self-check / gematria
+    // self-check (interactive on-screen drills, not printable worksheets).
+    printBtn:    !testMode,
+    pdfBtn:      !testMode,
+    printBtnMob: !testMode,
+    pdfBtnMob:   !testMode,
   };
 
   for (const id in v) {
@@ -5218,16 +5225,23 @@ function renderNumberPracticeSelfCheck(ws, items, title, subtitle, audioOn, show
   grid.style.gridTemplateColumns = `repeat(3, 1fr)`;
   ws.appendChild(grid);
 
+  // Audio plays the Hebrew word — put the speaker button on whichever side
+  // displays the Hebrew, so students can read along while listening.
+  const audioBtn = audioOn
+    ? `<button class="btn-xs" style="margin-top:6px;font-size:0.7rem;" onclick="event.stopPropagation();speakBlend(this.closest('.flip-card').dataset.heb)">🔊</button>`
+    : '';
+  const trlBack = (it) => showTrl ? `<span style="font-size:0.85rem;color:var(--gold-light);font-style:italic;margin-top:4px;">${it.tr}</span>` : '';
+
   items.forEach((it, idx) => {
     const card = document.createElement('div');
     card.className = 'flip-card';
     card.dataset.heb = it.heb;
     const front = display === 'number'
       ? `<span style="font-size:2.2rem;font-weight:700;">${it.n}</span>`
-      : `<span style="direction:rtl;font-family:var(--heb-font);font-size:2rem;line-height:1.4;">${it.heb}</span>`;
+      : `<span style="direction:rtl;font-family:var(--heb-font);font-size:2rem;line-height:1.4;">${it.heb}</span>${audioBtn}`;
     const back = display === 'number'
-      ? `<span style="direction:rtl;font-family:var(--heb-font);font-size:1.6rem;line-height:1.4;">${it.heb}</span>${showTrl ? `<span style="font-size:0.85rem;color:var(--gold-light);font-style:italic;margin-top:4px;">${it.tr}</span>` : ''}`
-      : `<span style="font-size:2rem;font-weight:700;">${it.n}</span>${showTrl ? `<span style="font-size:0.85rem;color:var(--gold-light);font-style:italic;margin-top:4px;">${it.tr}</span>` : ''}`;
+      ? `<span style="direction:rtl;font-family:var(--heb-font);font-size:1.6rem;line-height:1.4;">${it.heb}</span>${trlBack(it)}${audioBtn}`
+      : `<span style="font-size:2rem;font-weight:700;">${it.n}</span>${trlBack(it)}`;
     card.innerHTML = `
       <div class="flip-card-inner">
         <div class="flip-card-front">
@@ -5238,7 +5252,6 @@ function renderNumberPracticeSelfCheck(ws, items, title, subtitle, audioOn, show
         <div class="flip-card-back">
           <span class="flip-card-num" style="color:var(--gold-light);">${idx + 1}</span>
           ${back}
-          ${audioOn ? `<button class="btn-xs" style="margin-top:6px;font-size:0.7rem;" onclick="event.stopPropagation();speakBlend(this.closest('.flip-card').dataset.heb)">🔊</button>` : ''}
         </div>
       </div>`;
     card.querySelector('.flip-card-inner').addEventListener('click', () => card.classList.toggle('flipped'));
@@ -6446,6 +6459,7 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
       const val = calcGematria(b.hebrewDisplay);
       const card = document.createElement('div');
       card.className = 'flip-card';
+      const hebHtml = colorizeHebrew(b.hebrewDisplay, colorCodingMode);
       const trFront = (rwTrOnSheet && b.translit)    ? `<span style="font-size:0.75rem;color:var(--muted);font-style:italic;margin-top:4px;">${b.translit}</span>` : '';
       const trBack  = (rwTrOnKey   && b.translit)    ? `<span style="font-size:0.8rem;color:var(--gold-light);font-style:italic;margin-top:4px;">${b.translit}</span>`  : '';
       const tnFront = (rwTnOnSheet && b.translation) ? `<span style="font-size:0.78rem;color:var(--gold);font-weight:600;margin-top:2px;">${b.translation}</span>` : '';
@@ -6454,14 +6468,14 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
         ? `<span style="font-size:2.2rem;font-weight:700;color:var(--text);">${val}</span>
            ${trFront}${tnFront}
            <div class="gematria-blank" style="margin-top:8px;width:120px;"></div>`
-        : `<span style="direction:rtl;font-family:var(--heb-font);font-size:2rem;">${b.hebrewDisplay}</span>
+        : `<span style="direction:rtl;font-family:var(--heb-font);font-size:2rem;">${hebHtml}</span>
            ${trFront}${tnFront}
            <div class="gematria-blank" style="margin-top:8px;"></div>`;
       const back = inverse
         ? `<span style="font-size:1.4rem;font-weight:700;opacity:0.7;">${val}</span>
-           <span style="direction:rtl;font-family:var(--heb-font);font-size:1.8rem;color:var(--gold-light);margin-top:4px;">${b.hebrewDisplay}</span>
+           <span style="direction:rtl;font-family:var(--heb-font);font-size:1.8rem;color:var(--gold-light);margin-top:4px;">${hebHtml}</span>
            ${trBack}${tnBack}`
-        : `<span style="direction:rtl;font-family:var(--heb-font);font-size:1.4rem;opacity:0.7;">${b.hebrewDisplay}</span>
+        : `<span style="direction:rtl;font-family:var(--heb-font);font-size:1.4rem;opacity:0.7;">${hebHtml}</span>
            <span style="font-size:1.8rem;font-weight:700;color:var(--gold-light);margin-top:4px;">${val}</span>
            ${trBack}${tnBack}`;
       card.innerHTML = `
@@ -6514,7 +6528,7 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
       } else {
         cell.innerHTML = `
           <div style="font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;">${idx + 1}</div>
-          <div class="blend-hebrew">${b.hebrewDisplay}</div>
+          <div class="blend-hebrew">${colorizeHebrew(b.hebrewDisplay, colorCodingMode)}</div>
           ${trExtra}${tnExtra}
           <div class="gematria-blank"></div>`;
       }
@@ -6548,7 +6562,7 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
       const showTn = isRwGem ? rwTnOnKey : showTranslation;
       cell.innerHTML = `
         <div style="font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;">${idx + 1}</div>
-        <div class="blend-hebrew">${b.hebrewDisplay}</div>
+        <div class="blend-hebrew">${colorizeHebrew(b.hebrewDisplay, colorCodingMode)}</div>
         ${showTr && b.translit ? `<div style="font-size:0.7rem;color:var(--muted);font-style:italic;direction:ltr;margin-top:2px;">${b.translit}</div>` : ''}
         ${showTn && b.translation ? `<div style="font-size:0.72rem;color:var(--gold);font-weight:600;direction:ltr;margin-top:2px;">${b.translation}</div>` : ''}
         ${showGematriaVal ? `<div class="gematria-value">${val}</div>` : ''}`;
@@ -6817,11 +6831,12 @@ function renderSelfCheck(ws, cols, title, subtitle) {
     const card = document.createElement('div');
     card.className = 'flip-card';
     card.dataset.heb = b.hebrewDisplay;
+    const hebHtml = colorizeHebrew(b.hebrewDisplay, colorCodingMode);
     card.innerHTML = `
       <div class="flip-card-inner">
         <div class="flip-card-front">
           <span class="flip-card-num">${idx + 1}</span>
-          <span style="direction:rtl;font-family:var(--heb-font);font-size:2rem;">${b.hebrewDisplay}</span>
+          <span style="direction:rtl;font-family:var(--heb-font);font-size:2rem;">${hebHtml}</span>
           <span class="flip-card-hint">tap to reveal</span>
         </div>
         <div class="flip-card-back">
