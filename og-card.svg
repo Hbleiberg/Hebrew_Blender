@@ -15,17 +15,19 @@
   <rect x="0" y="0" width="1200" height="8" fill="#c9922a"/>
   <rect x="0" y="622" width="1200" height="8" fill="#c9922a"/>
 
-  <!-- Decorative Hebrew watermark on the right -->
+  <!-- Decorative Hebrew watermark on the right.
+       Pre-reversed from "אֶרֶץ" (eretz) because cairosvg does not apply
+       Unicode bidi to <text>; bytes are in visual LTR order. -->
   <text x="1140" y="430" text-anchor="end"
         font-family="FreeSerif, Liberation Serif, serif"
         font-size="320" font-weight="700"
-        fill="#c9922a" fill-opacity="0.14"
-        direction="rtl">אֶרֶץ</text>
+        fill="#c9922a" fill-opacity="0.14">ץרֶאֶ</text>
 
-  <!-- Star of David (geometric, font-independent) -->
+  <!-- Star of David: two equilateral triangles inscribed in a r=40 circle
+       centered at (40,40), forming a proper hexagram. -->
   <g transform="translate(80, 70)" stroke="#c9922a" stroke-width="6" fill="none" stroke-linejoin="round">
-    <polygon points="40,0 78,66 2,66"/>
-    <polygon points="40,72 2,6 78,6"/>
+    <polygon points="40,0 74.64,60 5.36,60"/>
+    <polygon points="40,80 5.36,20 74.64,20"/>
   </g>
 
   <!-- Brand mark label next to star -->
