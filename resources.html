@@ -67,6 +67,20 @@
   ]
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to find Hebrew teaching resources",
+  "description": "Browse a curated directory of Hebrew and Jewish education resources.",
+  "totalTime": "PT30S",
+  "step": [
+    { "@type": "HowToStep", "position": 1, "name": "Pick a category", "text": "Choose a category — Lesson Planning, Printables, Tanakh, Hebrew, Culture, or Miscellaneous." },
+    { "@type": "HowToStep", "position": 2, "name": "Pick an age group", "text": "Filter by age group — K-2, 3-5, 6-12, or Adult/Teacher." },
+    { "@type": "HowToStep", "position": 3, "name": "Open a resource", "text": "Click any resource card to open it in a new tab." }
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -199,14 +213,24 @@ footer a{color:var(--gold);text-decoration:none;}
 
 <footer style="margin-top:32px;text-align:left;padding:0;">
   <div style="max-width:1200px;margin:0 auto;padding:12px 16px;font-family:'Source Sans 3',sans-serif;color:var(--muted);display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;align-items:start;">
-    <details>
-      <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;">Frequently Asked Questions</summary>
-      <div style="padding:4px 0;">
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">What's in the directory?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">A curated set of websites, printables, lesson-planning tools, Tanakh references, Hebrew language sites, and Jewish culture resources.</p></details>
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Are the resources free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Most are free; some link to paid services. Each card notes when registration or payment is required.</p></details>
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Who is this for?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Hebrew and Jewish-studies teachers, day-school faculty, supplementary-school teachers, parents, and adult learners.</p></details>
-      </div>
-    </details>
+    <div>
+      <details>
+        <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;">Frequently Asked Questions</summary>
+        <div style="padding:4px 0;">
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">What's in the directory?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">A curated set of websites, printables, lesson-planning tools, Tanakh references, Hebrew language sites, and Jewish culture resources.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Are the resources free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Most are free; some link to paid services. Each card notes when registration or payment is required.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Who is this for?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Hebrew and Jewish-studies teachers, day-school faculty, supplementary-school teachers, parents, and adult learners.</p></details>
+        </div>
+      </details>
+      <details style="margin-top:6px;">
+        <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;">How To Use</summary>
+        <ol style="padding:6px 0 4px 20px;margin:0;font-size:0.78rem;line-height:1.55;">
+          <li>Pick a category (Lesson Planning, Printables, Tanakh, Hebrew, Culture, Misc).</li>
+          <li>Pick an age group (K–2, 3–5, 6–12, Adult/Teacher).</li>
+          <li>Click any resource card to open it in a new tab.</li>
+        </ol>
+      </details>
+    </div>
     <div style="font-size:0.72rem;line-height:1.5;text-align:center;">
       <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;">About</div>
       Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="font-weight:600;">Harrison Bleiberg</a><br>
