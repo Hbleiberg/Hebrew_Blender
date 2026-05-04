@@ -16,12 +16,15 @@
   <rect x="0" y="622" width="1200" height="8" fill="#c9922a"/>
 
   <!-- Decorative Hebrew watermark on the right.
-       Pre-reversed from "אֶרֶץ" (eretz) because cairosvg does not apply
-       Unicode bidi to <text>; bytes are in visual LTR order. -->
+       Pre-reversed from "ארץ" (eretz) because cairosvg does not apply
+       Unicode bidi to <text>; bytes are in visual LTR order.
+       Nikkud are intentionally omitted — cairo places combining marks
+       by cursor advance rather than under the base letter, which
+       misaligns them. -->
   <text x="1140" y="430" text-anchor="end"
         font-family="FreeSerif, Liberation Serif, serif"
         font-size="320" font-weight="700"
-        fill="#c9922a" fill-opacity="0.14">ץרֶאֶ</text>
+        fill="#c9922a" fill-opacity="0.14">ץרא</text>
 
   <!-- Star of David: two equilateral triangles inscribed in a r=40 circle
        centered at (40,40), forming a proper hexagram. -->
