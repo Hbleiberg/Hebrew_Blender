@@ -1846,6 +1846,12 @@ async function loadKaraoke(parshahEntry, suffix) {
     if (ttsState.readAllActive) stopReadAll();   // mutual exclusion with TTS
     speechSynthesis.cancel();
     updatePlayPauseIcon();
+    // If the user is resuming from at-or-past a verse-end stop point, the
+    // single-verse Chant has been "consumed" — clear the marker so playback
+    // doesn't pause again on the next timeupdate.
+    if (_verseEndStopAt !== null && currentAudio.currentTime >= _verseEndStopAt - 0.05) {
+      _verseEndStopAt = null;
+    }
   };
   currentAudio.onpause = () => updatePlayPauseIcon();
   currentAudio.onloadedmetadata = () => updatePlayPauseIcon();
@@ -1879,11 +1885,13 @@ function updateKaraokeWordRefs() {
 function onAudioTimeUpdate() {
   if (!currentAudio || !currentTimings || !karaokeWordSpans.length) return;
   const t = currentAudio.currentTime;
-  // Auto-pause at the end of a single-verse Chant. Clear the highlight so
-  // the tracker doesn't stick on the first word of the next verse.
+  // Auto-pause at the end of a single-verse Chant. The marker stays live
+  // until the user resumes playback (cleared in onplay) — pause() is async
+  // so subsequent timeupdates fire while the audio is winding down, and
+  // each one re-pauses + re-clears so the binary search below never runs
+  // past the verse boundary.
   if (_verseEndStopAt !== null && t >= _verseEndStopAt) {
-    currentAudio.pause();
-    _verseEndStopAt = null;
+    if (!currentAudio.paused) currentAudio.pause();
     clearKaraokeHighlight();
     return;
   }
