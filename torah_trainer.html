@@ -1,0 +1,2020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1a2744">
+<title>Torah Trainer — Parsha Reader with Karaoke & Translit | IvritSuite</title>
+<meta name="description" content="Read the weekly Torah portion in Hebrew with toggleable transliteration, translations, vowel color-coding, cantillation marks, chanted-audio karaoke, and TTS — for Hebrew learning.">
+<link rel="canonical" href="https://ivritsuite.com/torah_trainer.html">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Harrison Bleiberg">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IvritSuite">
+<meta property="og:title" content="Torah Trainer — Parsha Reader with Karaoke & Translit">
+<meta property="og:description" content="Read the weekly Torah portion in Hebrew with translit, translation, vowel color-coding, cantillation toggle, and chanted-audio karaoke.">
+<meta property="og:url" content="https://ivritsuite.com/torah_trainer.html">
+<meta property="og:image" content="https://ivritsuite.com/og-card.png?v=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Torah Trainer | IvritSuite">
+<meta name="twitter:description" content="Read the weekly parsha with translit, translation, vowel coloring, and chanted karaoke.">
+<meta name="twitter:image" content="https://ivritsuite.com/og-card.png?v=2">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Torah Trainer",
+  "url": "https://ivritsuite.com/torah_trainer.html",
+  "description": "Read the weekly Torah portion in Hebrew with toggleable transliteration, translations, vowel color-coding, cantillation marks, chanted-audio karaoke, and TTS.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any (web browser)",
+  "isAccessibleForFree": true,
+  "inLanguage": "en",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "publisher": { "@type": "Organization", "name": "IvritSuite", "url": "https://ivritsuite.com/" }
+}
+</script>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CMLC81Z0HC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CMLC81Z0HC');
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- Early dark mode (avoid flash) -->
+<script>(function(){try{if(localStorage.getItem('hebrewBlender_darkMode')==='1'){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<!-- Hebrew transliteration library loader (lazy via esm.sh).
+     Lifted verbatim from hebrew_dictionary.html — keep in sync. -->
+<script type="module">
+  const CDN_URLS = [
+    'https://esm.sh/hebrew-transliteration@2.9.1',
+    'https://cdn.jsdelivr.net/npm/hebrew-transliteration@2.9.1/+esm'
+  ];
+  const SCHEMAS_URLS = [
+    'https://esm.sh/hebrew-transliteration@2.9.1/schemas',
+    'https://cdn.jsdelivr.net/npm/hebrew-transliteration@2.9.1/dist/esm/schemas/index.js'
+  ];
+  function buildModernIsraeli(SBL) {
+    return new SBL({
+      ALEF:'',AYIN:'',BET:'v',BET_DAGESH:'b',VAV:'v',HET:'kh',TET:'t',
+      KAF:'kh',KAF_DAGESH:'k',FINAL_KAF:'kh',PE:'f',PE_DAGESH:'p',FINAL_PE:'f',
+      TSADI:'ts',FINAL_TSADI:'ts',QOF:'k',SHIN:'sh',SIN:'s',TAV:'t',TAV_DAGESH:'t',
+      PATAH:'a',QAMATS:'a',QAMATS_QATAN:'o',QAMATS_HE:'a',
+      HATAF_PATAH:'a',HATAF_QAMATS:'o',HATAF_SEGOL:'e',
+      SEGOL:'e',TSERE:'e',TSERE_YOD:'e',HIRIQ:'i',HIRIQ_YOD:'i',
+      HOLAM:'o',HOLAM_HASER:'o',HOLAM_VAV:'o',QUBUTS:'u',SHUREQ:'u',
+      VOCAL_SHEVA:'',FURTIVE_PATAH:'a',longVowels:false
+    });
+  }
+  function buildAshkenazi(SBL) {
+    return new SBL({
+      ALEF:'',AYIN:'',BET:'v',BET_DAGESH:'b',VAV:'v',HET:'ch',
+      KAF:'ch',FINAL_KAF:'ch',KAF_DAGESH:'k',PE:'f',PE_DAGESH:'p',FINAL_PE:'f',
+      TSADI:'ts',FINAL_TSADI:'ts',SHIN:'sh',SIN:'s',TAV:'s',TAV_DAGESH:'t',
+      PATAH:'a',QAMATS:'o',QAMATS_QATAN:'o',QAMATS_HE:'o',
+      HATAF_PATAH:'a',HATAF_QAMATS:'o',HATAF_SEGOL:'e',
+      SEGOL:'e',TSERE:'ey',TSERE_YOD:'ey',HIRIQ:'i',HIRIQ_YOD:'i',
+      HOLAM:'oy',HOLAM_HASER:'oy',HOLAM_VAV:'oy',QUBUTS:'u',SHUREQ:'u',
+      VOCAL_SHEVA:'',longVowels:false
+    });
+  }
+  function buildSimpleStressed(SBL) {
+    return new SBL({
+      ALEF:'',AYIN:'',BET:'v',BET_DAGESH:'b',VAV:'v',HET:'kh',TET:'t',
+      KAF:'kh',KAF_DAGESH:'k',FINAL_KAF:'kh',PE:'f',PE_DAGESH:'p',FINAL_PE:'f',
+      TSADI:'ts',FINAL_TSADI:'ts',QOF:'k',SHIN:'sh',SIN:'s',TAV:'t',TAV_DAGESH:'t',
+      PATAH:'a',QAMATS:'a',QAMATS_QATAN:'o',QAMATS_HE:'a',
+      HATAF_PATAH:'a',HATAF_QAMATS:'o',HATAF_SEGOL:'e',
+      SEGOL:'e',TSERE:'e',TSERE_YOD:'e',HIRIQ:'i',HIRIQ_YOD:'i',
+      HOLAM:'o',HOLAM_HASER:'o',HOLAM_VAV:'o',QUBUTS:'u',SHUREQ:'u',
+      VOCAL_SHEVA:'',FURTIVE_PATAH:'a',longVowels:false,SYLLABLE_SEPARATOR:'-'
+    });
+  }
+  async function tryImport(urls) {
+    for (const url of urls) {
+      try { return await import(url); }
+      catch (e) { console.warn('[hebrew-translit] Failed to load', url, e); }
+    }
+    return null;
+  }
+  window.HebrewTransliterator = {
+    ready: false, failed: false, loadPromise: null, lib: null, schemas: {},
+    apply(hebrewText, defaultTranslit, styleKey) {
+      if (!styleKey || styleKey === 'default') return defaultTranslit;
+      if (!this.ready || !this.lib) return defaultTranslit;
+      const schema = this.schemas[styleKey];
+      if (!schema) return defaultTranslit;
+      try {
+        let out = this.lib.transliterate(hebrewText, schema);
+        if (styleKey === 'simpleStressed' && out && out.includes('-')) {
+          out = out.split(/(\s+)/).map(tok => {
+            if (!tok.includes('-')) return tok;
+            const parts = tok.split('-');
+            parts[parts.length - 1] = parts[parts.length - 1].toUpperCase();
+            return parts.join('-');
+          }).join('');
+        }
+        return out;
+      } catch (e) { console.warn('[hebrew-translit]', e); return defaultTranslit; }
+    },
+    ensureLoaded() {
+      if (this.loadPromise) return this.loadPromise;
+      this.loadPromise = (async () => {
+        const main = await tryImport(CDN_URLS);
+        if (!main || !main.transliterate || !main.SBL) {
+          this.failed = true;
+          window.dispatchEvent(new Event('translitlibfailed'));
+          return false;
+        }
+        const schemasMod = await tryImport(SCHEMAS_URLS);
+        this.lib = main;
+        try { this.schemas.sbl = new main.SBL({}); } catch (e) {}
+        this.schemas.brill = schemasMod ? schemasMod.brillAcademic : null;
+        try { this.schemas.modernIsraeli = buildModernIsraeli(main.SBL); } catch (e) {}
+        try { this.schemas.ashkenazi    = buildAshkenazi(main.SBL); }    catch (e) {}
+        try { this.schemas.simpleStressed = buildSimpleStressed(main.SBL); } catch (e) {}
+        this.ready = true;
+        window.dispatchEvent(new Event('translitlibloaded'));
+        return true;
+      })();
+      return this.loadPromise;
+    }
+  };
+</script>
+<style>
+/* ───── Design tokens (lifted from classroom_dashboard.html:94-133) ───── */
+:root {
+  --navy:#1a2744; --navy-deep:#0d1220;
+  --gold:#c9922a; --gold-light:#f0d080;
+  --cream:#fdf8ef; --warm-gray:#e8e0d0;
+  --text:#1a2744; --muted:#6b6050;
+  --border:#c8bfa8; --white:#ffffff;
+  --heb-font:'Frank Ruhl Libre', serif;
+  --shadow-sm:0 2px 8px rgba(26,39,68,0.05);
+  --shadow-md:0 4px 16px rgba(26,39,68,0.08);
+  --shadow-lg:0 12px 32px rgba(26,39,68,0.12);
+}
+html.dark-early body, body.dark {
+  --navy:#1a2744; --gold:#e0a832; --gold-light:#f5d97a;
+  --cream:#161c2a; --warm-gray:#1e2535;
+  --text:#dde4f0; --muted:#8a94a8;
+  --border:#2a3349; --white:#1e2535;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  font-family:'Source Sans 3', sans-serif;
+  background:var(--cream); color:var(--text);
+  min-height:100vh; display:flex; flex-direction:column;
+  line-height:1.4;
+}
+
+/* ───── Header (matches classroom_dashboard.html:148-204) ───── */
+header {
+  background:var(--navy); color:#fff;
+  padding:14px 28px;
+  display:flex; align-items:center; gap:16px;
+  border-bottom:4px solid var(--gold); flex-shrink:0;
+}
+body.dark header { background:var(--navy-deep); }
+.star { font-size:28px; color:var(--gold); flex-shrink:0; }
+.htitle { flex:1; min-width:0; }
+header h1 { font-family:'Libre Baskerville',serif; font-size:1.35rem; color:#fff; line-height:1.2; }
+header p { font-size:0.78rem; color:var(--gold-light); margin-top:2px; }
+.beta-tag {
+  display:inline-block; background:var(--gold); color:var(--navy);
+  font-family:'Source Sans 3',sans-serif; font-size:0.55rem;
+  font-weight:700; letter-spacing:0.08em;
+  padding:2px 6px; border-radius:4px; vertical-align:middle;
+  margin-left:6px; text-transform:uppercase;
+}
+.hright { display:flex; gap:6px; align-items:center; flex-shrink:0; }
+.hbtn {
+  background:rgba(255,255,255,0.08); color:#fff;
+  border:1px solid rgba(255,255,255,0.18);
+  padding:7px 12px; border-radius:6px;
+  font-family:inherit; font-size:0.82rem; font-weight:600;
+  cursor:pointer; text-decoration:none;
+  display:inline-flex; align-items:center; gap:6px;
+  transition:all 0.15s;
+}
+.hbtn:hover { background:rgba(255,255,255,0.18); border-color:rgba(255,255,255,0.3); }
+.hbtn.icon-btn { padding:7px 10px; font-size:1rem; }
+
+/* ───── Top controls bar ───── */
+.tt-controls {
+  background:var(--white); border-bottom:1px solid var(--border);
+  padding:10px 18px; display:flex; flex-wrap:wrap;
+  gap:10px 16px; align-items:center;
+}
+body.dark .tt-controls { background:var(--navy-deep); }
+.tt-ctrl {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:0.82rem; color:var(--text);
+}
+.tt-ctrl label { font-weight:600; color:var(--text); white-space:nowrap; }
+.tt-ctrl select, .tt-ctrl input[type="number"] {
+  border:1px solid var(--border); background:var(--white); color:var(--text);
+  padding:5px 8px; border-radius:5px; font:inherit; font-size:0.82rem;
+}
+body.dark .tt-ctrl select, body.dark .tt-ctrl input[type="number"] {
+  background:var(--navy-deep); color:var(--text);
+}
+.tt-ctrl select { min-width:110px; }
+.tt-ctrl select:focus, .tt-ctrl input:focus { outline:2px solid var(--gold); outline-offset:0; }
+
+/* ───── Reading area ───── */
+.tt-page { flex:1; padding:20px 24px; max-width:1400px; width:100%; margin:0 auto; }
+.tt-status {
+  font-size:0.85rem; color:var(--muted); padding:6px 0; min-height:1.4em;
+}
+.tt-status.error { color:#cc3333; font-weight:600; }
+body.dark .tt-status.error { color:#ff6666; }
+.tt-reading { padding:8px 0; }
+
+.tt-ref-hdr {
+  font-family:'Libre Baskerville',serif; font-size:1.05rem;
+  color:var(--navy); border-bottom:2px solid var(--gold);
+  padding-bottom:6px; margin-bottom:14px;
+  display:flex; justify-content:space-between; align-items:center; gap:10px;
+}
+body.dark .tt-ref-hdr { color:var(--gold-light); }
+.tt-ref-hdr .tt-readall {
+  font-size:0.78rem; padding:4px 10px;
+  background:var(--gold); color:var(--navy); border:none; border-radius:5px;
+  cursor:pointer; font-weight:700; font-family:inherit;
+}
+.tt-ref-hdr .tt-readall:hover { background:var(--gold-light); }
+.tt-ref-hdr .tt-readall.active { background:#cc3333; color:#fff; }
+
+/* Interlinear: stacked rows per verse */
+.tt-verse {
+  border-bottom:1px solid var(--border); padding:10px 0;
+  display:flex; flex-direction:column; gap:4px;
+}
+.tt-verse:last-child { border-bottom:none; }
+.tt-verse-num {
+  font-size:0.7rem; color:var(--muted); font-weight:700;
+  letter-spacing:0.04em; min-width:48px;
+}
+.tt-verse-row {
+  display:flex; align-items:flex-start; gap:8px;
+}
+.tt-verse-row .tt-rowlabel {
+  font-size:0.62rem; color:var(--muted); text-transform:uppercase;
+  letter-spacing:0.08em; padding-top:6px; min-width:42px; flex-shrink:0;
+}
+.tt-heb {
+  flex:1; direction:rtl; text-align:right;
+  font-family:var(--heb-font); font-size:1.5rem; line-height:1.7;
+  color:var(--text); word-spacing:0.05em;
+}
+.tt-translit {
+  flex:1; direction:ltr; font-style:italic;
+  font-size:0.95rem; color:var(--muted); line-height:1.5;
+}
+.tt-translation {
+  flex:1; direction:ltr;
+  font-size:0.95rem; color:var(--text); line-height:1.5;
+}
+.tt-speak {
+  background:transparent; border:1px solid var(--border); border-radius:4px;
+  padding:2px 7px; font-size:0.8rem; cursor:pointer;
+  color:var(--muted); transition:all 0.15s; flex-shrink:0;
+  margin-top:2px;
+}
+.tt-speak:hover { border-color:var(--gold); color:var(--gold); }
+.tt-speak.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
+
+/* Side-by-side layout: 2 or 3 columns */
+.tt-grid {
+  display:grid; gap:20px; align-items:start;
+  grid-template-columns:1fr 1fr;
+}
+.tt-grid.has-translit { grid-template-columns:1fr 1fr 1fr; }
+.tt-grid-col h3 {
+  font-family:'Libre Baskerville',serif; font-size:0.78rem;
+  color:var(--muted); letter-spacing:0.08em; text-transform:uppercase;
+  margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid var(--border);
+}
+.tt-grid-col.tt-col-heb { direction:rtl; }
+.tt-grid-col.tt-col-heb h3 { direction:ltr; text-align:right; }
+.tt-grid-row {
+  padding:6px 0; border-bottom:1px solid var(--border);
+  display:flex; gap:6px;
+}
+.tt-grid-row:last-child { border-bottom:none; }
+.tt-grid-col.tt-col-heb .tt-grid-row .tt-vnum {
+  font-family:'Source Sans 3',sans-serif; direction:ltr;
+}
+.tt-vnum {
+  font-size:0.7rem; color:var(--muted); font-weight:700; flex-shrink:0;
+  min-width:36px; padding-top:6px;
+}
+.tt-cell {
+  flex:1;
+}
+.tt-cell.heb { font-family:var(--heb-font); font-size:1.5rem; line-height:1.7; }
+.tt-cell.translit { font-style:italic; color:var(--muted); }
+
+/* Per-word span used for karaoke + click-to-speak */
+.tt-word { transition:background 0.1s, color 0.1s; padding:1px 0; border-radius:3px; }
+.tt-word.active {
+  background:var(--gold); color:var(--navy);
+  box-shadow:0 0 0 2px var(--gold);
+}
+body.dark .tt-word.active { background:var(--gold-light); color:var(--navy-deep); }
+
+/* ───── Karaoke audio bar (sticky bottom) ───── */
+.tt-audio-bar {
+  position:sticky; bottom:0; left:0; right:0;
+  background:var(--navy); color:#fff;
+  border-top:3px solid var(--gold);
+  padding:10px 20px; z-index:50;
+  display:none; flex-wrap:wrap; align-items:center; gap:12px;
+  box-shadow:0 -4px 16px rgba(0,0,0,0.18);
+}
+.tt-audio-bar.open { display:flex; }
+body.dark .tt-audio-bar { background:var(--navy-deep); }
+.tt-audio-bar audio { flex:1; min-width:240px; max-width:520px; }
+.tt-audio-bar .tt-audio-label {
+  font-family:'Libre Baskerville',serif; font-size:0.78rem;
+  letter-spacing:0.06em; color:var(--gold-light);
+  white-space:nowrap;
+}
+.tt-audio-bar .tt-audio-rate {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:0.75rem; color:#fff;
+}
+.tt-audio-bar .tt-audio-rate input[type="range"] {
+  width:90px; accent-color:var(--gold); cursor:pointer;
+}
+.tt-audio-bar .tt-audio-credit {
+  font-size:0.68rem; color:var(--gold-light); flex-basis:100%;
+  text-align:right; padding-top:4px;
+}
+.tt-audio-bar .tt-audio-credit a { color:var(--gold-light); text-decoration:underline; }
+.tt-audio-bar .tt-audio-close {
+  background:rgba(255,255,255,0.12); color:#fff; border:none; border-radius:4px;
+  width:28px; height:28px; cursor:pointer; font-size:1rem;
+}
+.tt-audio-bar .tt-audio-close:hover { background:rgba(255,255,255,0.22); }
+
+/* ───── Settings drawer (lifted from classroom_dashboard.html:468-555) ───── */
+.settings-backdrop {
+  position:fixed; inset:0; background:rgba(13,18,32,0.45);
+  z-index:90; opacity:0; pointer-events:none; transition:opacity 0.25s;
+}
+.settings-backdrop.open { opacity:1; pointer-events:auto; }
+.settings-modal {
+  position:fixed; top:0; right:0;
+  width:380px; max-width:92vw; height:100vh;
+  background:var(--white); border-left:1px solid var(--border);
+  box-shadow:var(--shadow-lg); z-index:100;
+  transform:translateX(100%); transition:transform 0.3s ease;
+  display:flex; flex-direction:column;
+}
+.settings-modal.open { transform:translateX(0); }
+.settings-header {
+  padding:14px 20px; background:var(--navy); color:#fff;
+  display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+}
+body.dark .settings-header { background:var(--navy-deep); }
+.settings-header h2 {
+  font-family:'Libre Baskerville',serif; font-size:1rem;
+  letter-spacing:0.05em; color:#fff;
+}
+.settings-close {
+  background:rgba(255,255,255,0.12); color:#fff; border:none;
+  border-radius:4px; width:32px; height:32px;
+  cursor:pointer; font-size:1.2rem; line-height:1; transition:background 0.15s;
+}
+.settings-close:hover { background:rgba(255,255,255,0.22); }
+.settings-body { flex:1; overflow-y:auto; padding:16px; }
+
+/* ───── Panel ───── */
+.panel { background:var(--cream); border:1px solid var(--border); border-radius:8px; margin-bottom:14px; overflow:hidden; }
+body.dark .panel { background:var(--navy-deep); }
+.panel:last-child { margin-bottom:0; }
+.panel-title {
+  background:var(--navy); color:#fff;
+  font-family:'Libre Baskerville',serif; font-size:0.72rem;
+  letter-spacing:0.1em; text-transform:uppercase;
+  padding:9px 14px; cursor:pointer; user-select:none;
+  display:flex; justify-content:space-between; align-items:center;
+}
+body.dark .panel-title { background:#0a0f1c; }
+.panel-title::after { content:'▾'; color:var(--gold-light); font-size:1rem; transition:transform 0.2s; flex-shrink:0; }
+.panel.collapsed .panel-title::after { transform:rotate(-90deg); }
+.panel-body { padding:14px; }
+.panel.collapsed .panel-body { display:none; }
+
+/* ───── Form rows + toggle ───── */
+.form-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; gap:10px; }
+.form-row:last-child { margin-bottom:0; }
+.form-row label:not(.toggle) { font-size:0.85rem; font-weight:600; flex:1; color:var(--text); }
+.form-row select, .form-row input[type="text"], .form-row input[type="number"] {
+  border:1px solid var(--border); background:var(--white); color:var(--text);
+  padding:5px 8px; border-radius:4px; font:inherit; font-size:0.82rem;
+  max-width:170px;
+}
+body.dark .form-row select, body.dark .form-row input[type="text"], body.dark .form-row input[type="number"] {
+  background:var(--navy-deep); color:var(--text);
+}
+.toggle { position:relative; display:inline-block; width:38px; height:22px; flex-shrink:0; }
+.toggle input { opacity:0; width:0; height:0; }
+.slider {
+  position:absolute; inset:0; background:var(--border); border-radius:22px;
+  cursor:pointer; transition:0.2s;
+}
+.slider::before {
+  content:''; position:absolute; height:16px; width:16px; left:3px; top:3px;
+  background:white; border-radius:50%; transition:0.2s;
+}
+input:checked + .slider { background:var(--gold); }
+input:checked + .slider::before { transform:translateX(16px); }
+
+/* ───── Radio group (lifted from classroom_dashboard.html:680-705) ───── */
+.radio-group {
+  display:inline-flex; gap:3px; background:var(--warm-gray);
+  border-radius:5px; padding:3px;
+}
+body.dark .radio-group { background:#2a3349; }
+.radio-group input { display:none; }
+.radio-group label {
+  text-align:center; padding:4px 10px; border-radius:3px;
+  font-size:0.78rem; cursor:pointer; font-weight:600; color:var(--muted);
+  transition:0.15s; flex:none;
+}
+.radio-group input:checked + label {
+  background:var(--white); color:var(--gold); box-shadow:0 1px 3px rgba(0,0,0,0.08);
+}
+body.dark .radio-group input:checked + label { background:#1e2535; color:var(--gold-light); }
+
+/* ───── Buttons ───── */
+.btn {
+  background:var(--gold); color:var(--navy); border:1px solid var(--gold);
+  padding:7px 14px; border-radius:5px; font-family:inherit;
+  font-weight:700; cursor:pointer; font-size:0.82rem; transition:all 0.15s;
+}
+.btn:hover { background:var(--gold-light); border-color:var(--gold-light); }
+.btn-xs { padding:4px 9px; font-size:0.72rem; }
+.btn-secondary { background:transparent; color:var(--text); border-color:var(--border); }
+.btn-secondary:hover { background:var(--warm-gray); border-color:var(--muted); }
+body.dark .btn-secondary { color:var(--text); }
+body.dark .btn-secondary:hover { background:#2a3349; }
+
+/* ───── Slider row (TTS / karaoke speed) ───── */
+.slider-row { display:flex; align-items:center; gap:6px; margin-bottom:8px; }
+.slider-row label { font-size:0.78rem; color:var(--muted); font-weight:600; white-space:nowrap; flex-shrink:0; }
+.slider-row input[type="range"] { flex:1; accent-color:var(--gold); cursor:pointer; height:4px; }
+.slider-row .sval {
+  font-size:0.72rem; color:var(--muted); min-width:40px; text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+.slider-row .sreset {
+  background:none; border:1px solid var(--border); border-radius:4px;
+  padding:1px 6px; font-size:0.78rem; cursor:pointer;
+  color:var(--muted); line-height:1.4; font-family:inherit;
+}
+.slider-row .sreset:hover { border-color:var(--gold); color:var(--gold); }
+
+/* ───── Font selector (lifted from classroom_dashboard.html:874-910) ───── */
+.font-options { display:flex; flex-direction:column; gap:4px; }
+.font-section-hdr {
+  font-size:0.62rem; color:var(--muted); font-weight:700;
+  letter-spacing:0.08em; text-transform:uppercase;
+  padding-top:6px; border-top:1px solid var(--border); margin-top:4px;
+}
+.font-section-hdr.first { margin-top:0; padding-top:0; border-top:none; }
+.font-opt {
+  background:var(--white); border:1px solid var(--border); border-radius:5px;
+  padding:6px 10px; cursor:pointer; display:flex; align-items:center; gap:10px;
+  font:inherit; text-align:left; transition:all 0.15s;
+}
+body.dark .font-opt { background:var(--navy-deep); }
+.font-opt:hover { border-color:var(--gold); }
+.font-opt.active {
+  background:rgba(201,146,42,0.12); border-color:var(--gold);
+}
+body.dark .font-opt.active { background:rgba(224,168,50,0.16); }
+.font-opt-preview { font-size:1.4rem; direction:rtl; min-width:44px; text-align:center; color:var(--text); }
+.font-opt.active .font-opt-preview { color:var(--gold); }
+body.dark .font-opt.active .font-opt-preview { color:var(--gold-light); }
+.font-opt-name { font-size:0.78rem; font-weight:600; color:var(--text); }
+
+/* ───── Color pickers ───── */
+.color-pick-list { display:flex; flex-direction:column; gap:3px; margin-top:6px; }
+.color-pick-row { display:flex; align-items:center; gap:6px; padding:2px 0; }
+.color-pick-ex { font-family:var(--heb-font); font-size:1.15rem; direction:rtl; width:26px; text-align:center; }
+.color-pick-label { flex:1; font-size:0.78rem; color:var(--text); }
+.color-pick-input { width:28px; height:22px; border:1px solid var(--border); border-radius:3px; cursor:pointer; padding:0; }
+
+/* ───── Tooltip (lifted from classroom_dashboard.html:585-603) ───── */
+.tip-wrap { display:inline-flex; align-items:center; }
+.tip-icon {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:15px; height:15px; border-radius:50%;
+  background:var(--border); color:var(--muted);
+  font-size:0.65rem; font-weight:700; font-style:normal;
+  cursor:default; margin-left:5px; flex-shrink:0; line-height:1;
+}
+body.dark .tip-icon { background:var(--warm-gray); }
+#tipFloat {
+  display:none; position:fixed;
+  background:var(--navy); color:#fff;
+  font-size:0.72rem; font-weight:400; line-height:1.45;
+  padding:6px 9px; border-radius:6px; max-width:220px;
+  z-index:9999; box-shadow:0 2px 8px rgba(0,0,0,0.3);
+  pointer-events:none;
+}
+body.dark #tipFloat { background:#0a0f1c; }
+
+/* ───── Footer ───── */
+footer {
+  background:var(--white); border-top:1px solid var(--border);
+  padding:14px 24px; color:var(--muted);
+  font-size:0.78rem; text-align:center; flex-shrink:0;
+}
+body.dark footer { background:var(--navy-deep); }
+footer a { color:var(--gold); text-decoration:none; font-weight:600; }
+footer a:hover { text-decoration:underline; }
+footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-content:center; }
+
+/* ───── Mobile (matches existing tools' breakpoint) ───── */
+@media (max-width: 720px) {
+  header { padding:12px 16px; }
+  header h1 { font-size:1.1rem; }
+  header p { display:none; }
+  .hbtn { padding:6px 9px; font-size:0.78rem; }
+  .tt-page { padding:14px 12px; }
+  .tt-controls { padding:10px 12px; }
+  .tt-grid, .tt-grid.has-translit {
+    grid-template-columns:1fr;  /* collapse side-by-side to single column */
+  }
+  .tt-grid-col.tt-col-translation, .tt-grid-col.tt-col-translit { margin-top:14px; }
+  .tt-cell.heb, .tt-heb { font-size:1.35rem; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="star">✡</div>
+  <div class="htitle">
+    <h1>Torah Trainer<span class="beta-tag">BETA</span></h1>
+    <p>Read the weekly parsha with vowel coloring, transliteration, translations, and chanted-audio karaoke.</p>
+  </div>
+  <div class="hright">
+    <a class="hbtn" href="index.html"><span>←</span><span>Home</span></a>
+    <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
+    <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
+  </div>
+</header>
+
+<div class="tt-controls">
+  <span class="tt-ctrl">
+    <label for="parshaSelect">Parsha:</label>
+    <select id="parshaSelect"></select>
+  </span>
+  <span class="tt-ctrl">
+    <label for="scopeSelect">Reading:</label>
+    <select id="scopeSelect">
+      <option value="parsha-full">Full parsha</option>
+      <option value="parsha-aliyah-1">Aliyah 1</option>
+      <option value="parsha-aliyah-2">Aliyah 2</option>
+      <option value="parsha-aliyah-3">Aliyah 3</option>
+      <option value="parsha-aliyah-4">Aliyah 4</option>
+      <option value="parsha-aliyah-5">Aliyah 5</option>
+      <option value="parsha-aliyah-6">Aliyah 6</option>
+      <option value="parsha-aliyah-7">Aliyah 7</option>
+      <option value="parsha-haftarah">Haftarah</option>
+    </select>
+  </span>
+  <span class="tt-ctrl">
+    <label>Layout:</label>
+    <span class="radio-group">
+      <input type="radio" name="ttLayout" id="ttLayoutSide" value="sidebyside"><label for="ttLayoutSide">Side&nbsp;by&nbsp;side</label>
+      <input type="radio" name="ttLayout" id="ttLayoutInter" value="interlinear"><label for="ttLayoutInter">Interlinear</label>
+    </span>
+  </span>
+  <span class="tt-ctrl">
+    <label for="ttShowTranslit">Translit</label>
+    <label class="toggle"><input type="checkbox" id="ttShowTranslit"><span class="slider"></span></label>
+  </span>
+  <span class="tt-ctrl">
+    <label for="ttShowTranslation">Translation</label>
+    <label class="toggle"><input type="checkbox" id="ttShowTranslation"><span class="slider"></span></label>
+  </span>
+  <span class="tt-ctrl" id="ttVersionWrap" style="display:none;">
+    <label for="ttVersionSelect">Version:</label>
+    <select id="ttVersionSelect"><option value="">Loading…</option></select>
+  </span>
+  <span class="tt-ctrl">
+    <label for="ttCustomToggle">
+      <button class="btn btn-xs btn-secondary" onclick="toggleCustomPicker()" type="button">Custom range…</button>
+    </label>
+  </span>
+</div>
+
+<div id="ttCustomPicker" class="tt-controls" style="display:none;border-top:1px dashed var(--border);">
+  <span class="tt-ctrl">
+    <label for="ttCustomBook">Book:</label>
+    <select id="ttCustomBook">
+      <option value="Genesis">Genesis</option>
+      <option value="Exodus">Exodus</option>
+      <option value="Leviticus">Leviticus</option>
+      <option value="Numbers">Numbers</option>
+      <option value="Deuteronomy">Deuteronomy</option>
+    </select>
+  </span>
+  <span class="tt-ctrl">
+    <label for="ttCustomChapter">Chapter:</label>
+    <input type="number" id="ttCustomChapter" min="1" max="50" step="1" value="1" style="width:60px;">
+  </span>
+  <span class="tt-ctrl">
+    <label for="ttCustomVStart">Verses:</label>
+    <input type="number" id="ttCustomVStart" min="1" step="1" placeholder="from" style="width:60px;">
+    <span style="color:var(--muted);">–</span>
+    <input type="number" id="ttCustomVEnd" min="1" step="1" placeholder="to" style="width:60px;">
+  </span>
+  <button class="btn btn-xs" onclick="applyCustomRange()" type="button">Go</button>
+</div>
+
+<div class="tt-page">
+  <div class="tt-status" id="ttStatus" role="status" aria-live="polite"></div>
+  <div class="tt-reading" id="ttReading"></div>
+</div>
+
+<div class="tt-audio-bar" id="ttAudioBar" role="region" aria-label="Cantillation audio playback">
+  <span class="tt-audio-label" id="ttAudioLabel">Karaoke</span>
+  <audio id="ttAudio" controls preload="none" aria-label="Chanted Torah audio"></audio>
+  <span class="tt-audio-rate">
+    <label for="ttKaraokeRate">Speed</label>
+    <input type="range" id="ttKaraokeRate" min="0.5" max="1.5" step="0.05" value="1.0" aria-label="Audio playback speed">
+    <span id="ttKaraokeRateVal">1.00×</span>
+  </span>
+  <button class="tt-audio-close" onclick="closeKaraoke()" aria-label="Close karaoke">×</button>
+  <div class="tt-audio-credit">
+    Cantillation © Russel Neiss &amp; Rabbi Charlie Schwartz, <a href="https://pockettorah.com" target="_blank" rel="noopener">PocketTorah</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC&nbsp;BY-SA&nbsp;4.0</a>
+  </div>
+</div>
+
+<!-- ───── Settings drawer ───── -->
+<div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
+<div class="settings-modal" id="settingsModal">
+  <div class="settings-header">
+    <h2>⚙️&nbsp; Torah Trainer Settings</h2>
+    <button class="settings-close" onclick="closeSettings()" title="Close">×</button>
+  </div>
+  <div class="settings-body">
+
+    <div class="panel">
+      <div class="panel-title">Display</div>
+      <div class="panel-body">
+        <div class="form-row">
+          <label>Show cantillation marks (te'amim) <span class="tip-wrap" data-tip="Cantillation marks (above and below letters) indicate chanting melody. Toggle off to see only nikkud (vowels)."><i class="tip-icon">?</i></span></label>
+          <label class="toggle"><input type="checkbox" id="optShowCantillation"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label>Show nikkud (vowels)</label>
+          <label class="toggle"><input type="checkbox" id="optShowNikkud"><span class="slider"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel collapsed">
+      <div class="panel-title">Reading schedule</div>
+      <div class="panel-body">
+        <div class="form-row">
+          <label>Schedule <span class="tip-wrap" data-tip="Diaspora and Israel reading schedules diverge for several weeks per cycle (when a Yom Tov falls on Shabbat). Affects which parsha is selected as 'this week'."><i class="tip-icon">?</i></span></label>
+          <span class="radio-group">
+            <input type="radio" name="optSchedule" id="schedDiaspora" value="diaspora"><label for="schedDiaspora">Diaspora</label>
+            <input type="radio" name="optSchedule" id="schedIsrael" value="israel"><label for="schedIsrael">Israel</label>
+          </span>
+        </div>
+        <div class="form-row">
+          <button class="btn btn-xs btn-secondary" onclick="goToCurrentParshah()" type="button">Jump to this week's parsha</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel collapsed">
+      <div class="panel-title">Hebrew font</div>
+      <div class="panel-body">
+        <div class="font-options" id="fontOptions"></div>
+      </div>
+    </div>
+
+    <div class="panel collapsed">
+      <div class="panel-title">Vowel color coding</div>
+      <div class="panel-body">
+        <div class="form-row">
+          <label>Color-code nikkud</label>
+          <label class="toggle"><input type="checkbox" id="optColorCode"><span class="slider"></span></label>
+        </div>
+        <div class="form-row" id="colorModeRow" style="display:none;">
+          <label>Mode</label>
+          <span class="radio-group">
+            <input type="radio" name="optColorMode" id="cmLetter" value="letter"><label for="cmLetter">Letter</label>
+            <input type="radio" name="optColorMode" id="cmHighlight" value="highlight"><label for="cmHighlight">Hilite</label>
+            <input type="radio" name="optColorMode" id="cmUnderline" value="underline"><label for="cmUnderline">Underline</label>
+          </span>
+        </div>
+        <div class="color-pick-list" id="colorPickerList" style="display:none;"></div>
+        <div class="form-row" id="colorResetRow" style="display:none;">
+          <button class="btn btn-xs btn-secondary" onclick="resetNikudColors()" type="button">↺ Reset colors</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel collapsed">
+      <div class="panel-title">Transliteration scheme</div>
+      <div class="panel-body">
+        <div class="form-row">
+          <label for="optTranslitStyle">Style</label>
+          <select id="optTranslitStyle">
+            <option value="modernIsraeli">Modern Israeli</option>
+            <option value="ashkenazi">Ashkenazi</option>
+            <option value="sbl">SBL Academic</option>
+            <option value="brill">Brill Academic</option>
+            <option value="simpleStressed">Simple stressed</option>
+          </select>
+        </div>
+        <div id="optTranslitStatus" style="font-size:0.72rem;color:var(--muted);"></div>
+      </div>
+    </div>
+
+    <div class="panel collapsed">
+      <div class="panel-title">Speech (TTS)</div>
+      <div class="panel-body">
+        <div class="form-row">
+          <label>Enable TTS <span class="tip-wrap" data-tip="Uses the browser's Hebrew voice (he-IL) to read verses aloud as plain prose — separate from cantillation karaoke."><i class="tip-icon">?</i></span></label>
+          <label class="toggle"><input type="checkbox" id="optEnableTTS"><span class="slider"></span></label>
+        </div>
+        <div class="slider-row">
+          <label>Rate</label>
+          <input type="range" id="optTTSRate" min="0.5" max="1.5" step="0.05" value="0.85">
+          <span class="sval" id="optTTSRateVal">0.85×</span>
+          <button class="sreset" onclick="resetTTSRate()" type="button" title="Restore default">↺</button>
+        </div>
+        <div id="optTTSStatus" style="font-size:0.72rem;color:var(--muted);"></div>
+      </div>
+    </div>
+
+    <div class="panel collapsed">
+      <div class="panel-title">Chanting karaoke</div>
+      <div class="panel-body">
+        <div class="form-row">
+          <label>Enable karaoke <span class="tip-wrap" data-tip="Streams chanted audio from PocketTorah and highlights words in real time. Pick an aliyah from the Reading dropdown to align audio with text."><i class="tip-icon">?</i></span></label>
+          <label class="toggle"><input type="checkbox" id="optEnableKaraoke"><span class="slider"></span></label>
+        </div>
+        <div class="slider-row">
+          <label>Rate</label>
+          <input type="range" id="optKaraokeRate" min="0.5" max="1.5" step="0.05" value="1.0">
+          <span class="sval" id="optKaraokeRateVal">1.00×</span>
+          <button class="sreset" onclick="resetKaraokeRate()" type="button" title="Restore default">↺</button>
+        </div>
+        <div id="optKaraokeStatus" style="font-size:0.72rem;color:var(--muted);"></div>
+        <div style="font-size:0.68rem;color:var(--muted);margin-top:8px;line-height:1.4;">
+          Cantillation audio © Russel Neiss &amp; Rabbi Charlie Schwartz,
+          <a href="https://pockettorah.com" target="_blank" rel="noopener" style="color:var(--gold);">PocketTorah</a>,
+          <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" style="color:var(--gold);">CC&nbsp;BY-SA&nbsp;4.0</a>.
+        </div>
+      </div>
+    </div>
+
+    <div class="panel collapsed">
+      <div class="panel-title">Reset</div>
+      <div class="panel-body">
+        <button class="btn btn-xs btn-secondary" onclick="resetAllSettings()" type="button">↺ Reset all Torah Trainer settings</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="footer-credits">
+    <span>Texts: <a href="https://www.sefaria.org" target="_blank" rel="noopener">Sefaria</a> · CC BY-SA 3.0</span>
+    <span>Cantillation audio: <a href="https://pockettorah.com" target="_blank" rel="noopener">PocketTorah</a> · CC BY-SA 4.0</span>
+    <span>IvritSuite materials incorporating PocketTorah audio are CC BY-SA 4.0.</span>
+  </div>
+</footer>
+<script>
+'use strict';
+
+/* ══════════════════════════════════════════════════════
+   STATE + DEFAULTS
+   ══════════════════════════════════════════════════════ */
+const STORAGE_KEY = 'hebrewTorahTrainer_settings';
+const DARK_KEY    = 'hebrewBlender_darkMode';   // shared across all IvritSuite tools
+const SEFARIA_API = 'https://www.sefaria.org/api';
+const POCKET_AUDIO_BASE = 'https://raw.githubusercontent.com/rneiss/PocketTorah/master/data/audio/';
+const POCKET_TIMINGS_BASE = 'data/pockettorah/timings/';
+const TORAH_BOOK_CHAPTERS = { Genesis:50, Exodus:40, Leviticus:27, Numbers:36, Deuteronomy:34 };
+
+const DEFAULTS = {
+  parshahKey: null,
+  customRef: null,
+  scope: 'parsha-full',
+  schedule: 'diaspora',
+  translationVersion: '',
+  layout: 'sidebyside',
+  showTranslit: false,
+  showTranslation: false,
+  showCantillation: true,
+  hebFont: 'Frank Ruhl Libre',
+  showNikkud: true,
+  colorCodeNikkud: false,
+  colorCodingMode: 'letter',
+  nikudColorOverrides: {},
+  translitStyle: 'modernIsraeli',
+  enableKaraoke: false,
+  karaokeRate: 1.0,
+  enableTTS: false,
+  ttsRate: 0.85,
+};
+let settings = JSON.parse(JSON.stringify(DEFAULTS));
+
+let parshiyotData = [];     // from data/parshiyot.json
+let manifestData = {};      // from data/pockettorah/manifest.json
+let aliyahData = null;      // from data/pockettorah/aliyah.json (lazy)
+let currentVerses = [];     // last-rendered verse objects
+let currentRangeLabel = ''; // for header display
+let textCache = new Map();  // key: ref+version → verses array
+
+/* ══════════════════════════════════════════════════════
+   STORAGE (debounced save)
+   ══════════════════════════════════════════════════════ */
+let _saveTimer = null;
+function saveSettings() {
+  if (_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); }
+    catch (e) { console.warn('saveSettings', e); }
+  }, 300);
+}
+function loadSettings() {
+  try {
+    const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (s && typeof s === 'object') Object.assign(settings, s);
+  } catch (e) {}
+}
+function resetAllSettings() {
+  if (!confirm('Reset all Torah Trainer settings to defaults?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  settings = JSON.parse(JSON.stringify(DEFAULTS));
+  syncFormToSettings();
+  setHebFont(settings.hebFont);
+  initColorPickers();
+  applyDisplayClasses();
+  fetchAndRender();
+}
+
+/* ══════════════════════════════════════════════════════
+   DARK MODE
+   ══════════════════════════════════════════════════════ */
+function toggleDark() {
+  document.documentElement.classList.remove('dark-early');
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  localStorage.setItem(DARK_KEY, isDark ? '1' : '0');
+  document.getElementById('darkBtn').textContent = isDark ? '☀️' : '🌙';
+  if (settings.colorCodeNikkud) renderText();
+}
+function initDark() {
+  if (localStorage.getItem(DARK_KEY) === '1') {
+    document.body.classList.add('dark');
+    document.getElementById('darkBtn').textContent = '☀️';
+  }
+  document.documentElement.classList.remove('dark-early');
+}
+
+/* ══════════════════════════════════════════════════════
+   SEFARIA API
+   ══════════════════════════════════════════════════════ */
+function refToDot(ref) {
+  // "Genesis 1:1-6:8"  →  "Genesis.1.1-6.8"
+  return ref.replace(/[: ]/g, '.');
+}
+async function fetchSefariaText(ref, includeTranslation, version) {
+  const cacheKey = `${ref}|${includeTranslation ? (version || 'eng-default') : 'heb-only'}`;
+  if (textCache.has(cacheKey)) return textCache.get(cacheKey);
+  const url = new URL(`${SEFARIA_API}/v3/texts/${encodeURIComponent(refToDot(ref))}`);
+  url.searchParams.append('version', 'hebrew');
+  if (includeTranslation) {
+    url.searchParams.append('version', version ? `english|${version}` : 'english');
+  }
+  url.searchParams.set('return_format', 'text_only');
+  const r = await fetch(url.toString());
+  if (!r.ok) throw new Error(`Sefaria ${r.status}`);
+  const data = await r.json();
+  const verses = parseSefariaResponse(data);
+  textCache.set(cacheKey, verses);
+  return verses;
+}
+function parseSefariaResponse(data) {
+  const versions = data.versions || [];
+  const heb = versions.find(v => v.language === 'he' || v.language === 'hebrew' || /Hebrew/i.test(v.languageFamilyName||''));
+  const eng = versions.find(v => v.language === 'en' || v.language === 'english' || /English/i.test(v.languageFamilyName||''));
+  const sections = data.sections || [];
+  const startC = parseInt(sections[0], 10) || 1;
+  const startV = parseInt(sections[1], 10) || 1;
+  const out = [];
+  function walk(hebText, engText) {
+    if (!Array.isArray(hebText)) {
+      if (typeof hebText === 'string' && hebText.trim()) {
+        out.push({ chapter: startC, verse: startV, hebrew: hebText, translation: typeof engText === 'string' ? engText : '' });
+      }
+      return;
+    }
+    // Determine 1-D vs 2-D
+    const is2D = hebText.length && Array.isArray(hebText[0]);
+    if (!is2D) {
+      for (let i = 0; i < hebText.length; i++) {
+        if (hebText[i]) out.push({
+          chapter: startC, verse: startV + i,
+          hebrew: hebText[i],
+          translation: (engText && engText[i]) || ''
+        });
+      }
+      return;
+    }
+    let curC = startC, curV = startV;
+    for (let c = 0; c < hebText.length; c++) {
+      const sub = hebText[c] || [];
+      const engSub = (engText && engText[c]) || null;
+      for (let i = 0; i < sub.length; i++) {
+        if (sub[i]) out.push({
+          chapter: curC, verse: curV + i,
+          hebrew: sub[i],
+          translation: (engSub && engSub[i]) || ''
+        });
+      }
+      curC++; curV = 1;
+    }
+  }
+  walk(heb ? heb.text : data.text, eng ? eng.text : null);
+  return out;
+}
+async function fetchVersionsList(book) {
+  try {
+    const r = await fetch(`${SEFARIA_API}/texts/versions/${encodeURIComponent(book)}`);
+    if (!r.ok) return [];
+    const data = await r.json();
+    return Array.isArray(data) ? data : [];
+  } catch (e) { return []; }
+}
+async function fetchCurrentParshah(diaspora) {
+  try {
+    const url = new URL(`${SEFARIA_API}/calendars`);
+    url.searchParams.set('diaspora', diaspora ? '1' : '0');
+    const r = await fetch(url.toString());
+    if (!r.ok) return null;
+    const data = await r.json();
+    const items = data.calendar_items || [];
+    const item = items.find(it => {
+      const t = (it.title && it.title.en) || '';
+      return /Parashat\s*Hashavua/i.test(t) || /Parsha/i.test(t);
+    });
+    if (!item) return null;
+    const dv = (item.displayValue && item.displayValue.en) || '';
+    return dv.trim();
+  } catch (e) { return null; }
+}
+
+/* ══════════════════════════════════════════════════════
+   PARSHA / SCOPE → REF RESOLVER
+   ══════════════════════════════════════════════════════ */
+function resolveRef() {
+  // Returns { ref, label, parshahEntry, aliyahNum, isHaftarah }
+  if (settings.scope === 'custom' && settings.customRef) {
+    return { ref: settings.customRef, label: settings.customRef, parshahEntry: null, aliyahNum: null, isHaftarah: false };
+  }
+  const p = parshiyotData.find(x => x.en === settings.parshahKey);
+  if (!p) return null;
+  const scope = settings.scope || 'parsha-full';
+  if (scope === 'parsha-full') {
+    return { ref: p.ref, label: `${p.en} — ${p.ref}`, parshahEntry: p, aliyahNum: null, isHaftarah: false };
+  }
+  if (scope === 'parsha-haftarah') {
+    const haf = aliyahLookup(p.en);
+    if (haf && haf.haftarah) {
+      return { ref: haf.haftarah, label: `${p.en} (Haftarah) — ${haf.haftarah}`, parshahEntry: p, aliyahNum: 'H', isHaftarah: true };
+    }
+    return { ref: p.ref, label: `${p.en} — Haftarah unavailable`, parshahEntry: p, aliyahNum: 'H', isHaftarah: true };
+  }
+  const m = scope.match(/parsha-aliyah-(\d)/);
+  if (m) {
+    const n = parseInt(m[1], 10);
+    const al = aliyahLookup(p.en);
+    if (al && al.aliyot[n]) {
+      const range = al.aliyot[n];
+      const ref = `${p.book} ${range.startC}:${range.startV}-${range.endC}:${range.endV}`;
+      return { ref, label: `${p.en} — Aliyah ${n} (${ref})`, parshahEntry: p, aliyahNum: n, isHaftarah: false };
+    }
+    return { ref: p.ref, label: `${p.en} — Aliyah ${n} unavailable`, parshahEntry: p, aliyahNum: n, isHaftarah: false };
+  }
+  return { ref: p.ref, label: p.en, parshahEntry: p, aliyahNum: null, isHaftarah: false };
+}
+function aliyahLookup(parshahEn) {
+  if (!aliyahData || !aliyahData.parshiot) return null;
+  const list = aliyahData.parshiot.parsha || [];
+  const entry = list.find(e => e._id === parshahEn || e._id === parshahEn.replace(/\s+/g,''));
+  if (!entry) return null;
+  const aliyot = {};
+  const fk = entry.fullkriyah && entry.fullkriyah.aliyah;
+  if (Array.isArray(fk)) {
+    for (const a of fk) {
+      const num = a._num;
+      const begin = (a._begin || '').split(':');
+      const end = (a._end || '').split(':');
+      aliyot[num] = {
+        startC: parseInt(begin[0],10), startV: parseInt(begin[1],10),
+        endC: parseInt(end[0],10),   endV: parseInt(end[1],10),
+      };
+    }
+  }
+  return { aliyot, haftarah: entry._haftara || null };
+}
+
+/* ══════════════════════════════════════════════════════
+   HEBREW DISPLAY PIPELINE
+   (lifted from classroom_dashboard.html:1614-1904, with cantillation strip added)
+   ══════════════════════════════════════════════════════ */
+const NIKKUD_RE   = /[ְ-ׇ]/g;       // nikkud only (vowels + dagesh + meteg)
+const TEAMIM_RE   = /[֑-֯]/g;       // cantillation marks only
+const ALL_MARKS_RE = /[֑-ׇ]/g;
+const NIKUD_DEFAULTS_LIGHT = {
+  a:'#0099bb', patah:'#0099bb', hpatah:'#0099bb', hkamatz:'#0099bb',
+  e:'#cc3333', hsegol:'#cc3333',
+  tzere:'#7777aa',
+  i:'#228833',
+  o:'#bb8800', vcholam:'#bb8800',
+  u:'#3355cc', shuruk:'#3355cc',
+  sh:'#8833bb'
+};
+const NIKUD_DEFAULTS_DARK = {
+  a:'#33ccee', patah:'#33ccee', hpatah:'#33ccee', hkamatz:'#33ccee',
+  e:'#ee5555', hsegol:'#ee5555',
+  tzere:'#aaaadd',
+  i:'#44cc66',
+  o:'#ddaa00', vcholam:'#ddaa00',
+  u:'#6688ff', shuruk:'#6688ff',
+  sh:'#bb66ee'
+};
+const NIKUD_CHAR_TO_KEY = {
+  'ָ':'a','ַ':'patah','ֲ':'hpatah','ֳ':'hkamatz',
+  'ֶ':'e','ֱ':'hsegol','ֵ':'tzere','ִ':'i',
+  'ֹ':'o','ֻ':'u','ְ':'sh'
+};
+const VOWEL_COLOR_DEFS = [
+  { key:'a',       name:'Kamatz',      example:'אָ' },
+  { key:'patah',   name:'Patach',      example:'אַ' },
+  { key:'hpatah',  name:'H. Patach',   example:'אֲ' },
+  { key:'hkamatz', name:'H. Kamatz',   example:'אֳ' },
+  { key:'e',       name:'Segol',       example:'אֶ' },
+  { key:'hsegol',  name:'H. Segol',    example:'אֱ' },
+  { key:'tzere',   name:'Tzere',       example:'אֵ' },
+  { key:'i',       name:'Chirik',      example:'אִ' },
+  { key:'o',       name:'Holam',       example:'אֹ' },
+  { key:'vcholam', name:'Vav Holam',   example:'וֹ' },
+  { key:'u',       name:'Kubutz',      example:'אֻ' },
+  { key:'shuruk',  name:'Shuruk',      example:'וּ' },
+  { key:'sh',      name:'Shva',        example:'אְ' },
+];
+
+function stripTeamim(s)      { return s.replace(TEAMIM_RE, ''); }
+function stripNikkud(s)      { return s.replace(NIKKUD_RE, ''); }
+function stripAllMarks(s)    { return s.replace(ALL_MARKS_RE, ''); }
+function escapeHTML(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function getNikudColor(key) {
+  if (settings.nikudColorOverrides && settings.nikudColorOverrides[key] !== undefined) {
+    return settings.nikudColorOverrides[key];
+  }
+  return (document.body.classList.contains('dark') ? NIKUD_DEFAULTS_DARK : NIKUD_DEFAULTS_LIGHT)[key] || '#888';
+}
+
+function colorizeHebrew(text, mode) {
+  // walks letter-by-letter, collects following marks, wraps with span styled by vowel key
+  const DAGESH = 'ּ';
+  const chars = [...text];
+  const out = [];
+  let i = 0;
+  while (i < chars.length) {
+    const ch = chars[i];
+    const cp = ch.codePointAt(0);
+    const isHebLetter = cp >= 0x05D0 && cp <= 0x05EA;
+    const isMark      = cp >= 0x0591 && cp <= 0x05C7;
+    if (!isHebLetter && !isMark) { out.push(escapeHTML(ch)); i++; continue; }
+    if (isMark) { out.push(escapeHTML(ch)); i++; continue; }
+    let marks = '', j = i + 1;
+    while (j < chars.length) {
+      const c2 = chars[j].codePointAt(0);
+      if (c2 >= 0x0591 && c2 <= 0x05C7) { marks += chars[j++]; } else break;
+    }
+    if (!marks) { out.push(escapeHTML(ch)); i++; continue; }
+    const isVav = ch === 'ו';
+    let key = null;
+    for (const m of [...marks]) {
+      if (isVav && m === 'ֹ') { key = 'vcholam'; break; }
+      if (isVav && m === DAGESH)    { key = 'shuruk';  break; }
+      if (m === DAGESH) continue;
+      const k = NIKUD_CHAR_TO_KEY[m];
+      if (k) { key = k; break; }
+    }
+    const syl = escapeHTML(ch + marks);
+    if (!key) { out.push(syl); i = j; continue; }
+    const color = getNikudColor(key);
+    if (mode === 'highlight') {
+      out.push(`<span style="background-color:${color}50;border-radius:2px;">${syl}</span>`);
+    } else if (mode === 'underline') {
+      out.push(`<span style="text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${syl}</span>`);
+    } else {
+      out.push(`<span style="color:${color}">${syl}</span>`);
+    }
+    i = j;
+  }
+  return out.join('');
+}
+
+function processHebrewForDisplay(s) {
+  // 1. cantillation strip 2. nikkud strip 3. color coding
+  if (!s) return '';
+  let t = s;
+  if (!settings.showCantillation) t = stripTeamim(t);
+  if (!settings.showNikkud) t = stripNikkud(t);
+  if (settings.colorCodeNikkud && settings.showNikkud) return colorizeHebrew(t, settings.colorCodingMode);
+  return escapeHTML(t);
+}
+
+/* ══════════════════════════════════════════════════════
+   TOKENIZE: split Hebrew text into per-word spans
+   ══════════════════════════════════════════════════════ */
+function tokenizeHebrew(text, wordIdxStartRef) {
+  // returns HTML with <span class="tt-word" data-twi="N">...</span> per Hebrew word.
+  // wordIdxStartRef is a {value:N} object that we mutate so karaoke can assign sequential indices.
+  if (!text) return '';
+  const cleaned = settings.showCantillation ? text : stripTeamim(text);
+  const finalText = settings.showNikkud ? cleaned : stripNikkud(cleaned);
+  // split keeping whitespace as separate tokens so we don't merge words
+  const tokens = finalText.split(/(\s+)/);
+  const out = [];
+  for (const tok of tokens) {
+    if (!tok) continue;
+    if (/^\s+$/.test(tok)) { out.push(tok); continue; }
+    // if token contains any Hebrew letter, treat as karaoke-aligned word
+    if (/[א-ת]/.test(tok)) {
+      const idx = wordIdxStartRef.value++;
+      const inner = (settings.colorCodeNikkud && settings.showNikkud)
+        ? colorizeHebrew(tok, settings.colorCodingMode)
+        : escapeHTML(tok);
+      out.push(`<span class="tt-word" data-twi="${idx}">${inner}</span>`);
+    } else {
+      // punctuation / non-Hebrew chunk — skip word-index assignment
+      out.push(escapeHTML(tok));
+    }
+  }
+  return out.join('');
+}
+
+/* ══════════════════════════════════════════════════════
+   TRANSLITERATION
+   ══════════════════════════════════════════════════════ */
+function applyTranslit(hebrewText) {
+  // Strip cantillation marks before transliterating (library handles nikkud).
+  const stripped = stripTeamim(hebrewText || '');
+  if (!stripped) return '';
+  if (window.HebrewTransliterator && window.HebrewTransliterator.ready) {
+    return window.HebrewTransliterator.apply(stripped, '', settings.translitStyle) || '';
+  }
+  return '';  // library still loading; will re-render on translitlibloaded event
+}
+
+/* ══════════════════════════════════════════════════════
+   RENDERERS
+   ══════════════════════════════════════════════════════ */
+function renderText() {
+  if (!currentVerses || !currentVerses.length) {
+    document.getElementById('ttReading').innerHTML = '';
+    return;
+  }
+  const root = document.getElementById('ttReading');
+  const layout = settings.layout || 'sidebyside';
+  const includeTranslit = settings.showTranslit;
+  const includeTrans    = settings.showTranslation;
+  let html = `<div class="tt-ref-hdr"><span>${escapeHTML(currentRangeLabel)}</span><button class="tt-readall" id="ttReadAllBtn" onclick="toggleReadAll()" type="button">${ttsState.readAllActive ? '⏹ Stop' : '🔊 Read all'}</button></div>`;
+  const wordIdxRef = { value: 0 };
+  if (layout === 'interlinear') {
+    html += renderInterlinear(currentVerses, includeTranslit, includeTrans, wordIdxRef);
+  } else {
+    html += renderSideBySide(currentVerses, includeTranslit, includeTrans, wordIdxRef);
+  }
+  root.innerHTML = html;
+  // After DOM is built, if karaoke was loaded, re-link the word array
+  if (currentTimings && currentAudio) updateKaraokeWordRefs();
+}
+function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef) {
+  let html = '<div class="tt-interlinear">';
+  for (const v of verses) {
+    const numLabel = `${v.chapter}:${v.verse}`;
+    html += `<div class="tt-verse">`;
+    html += `  <div class="tt-verse-row" style="align-items:center;">`;
+    html += `    <span class="tt-verse-num">${escapeHTML(numLabel)}</span>`;
+    html += `    <button class="tt-speak" data-vk="${escapeHTML(numLabel)}" onclick="speakVerse('${cssEscape(numLabel)}')" type="button" aria-label="Speak verse ${numLabel}">🔊</button>`;
+    html += `  </div>`;
+    html += `  <div class="tt-verse-row"><span class="tt-rowlabel">Hebrew</span><span class="tt-heb">${tokenizeHebrew(v.hebrew, wordIdxRef)}</span></div>`;
+    if (withTranslit) {
+      const tr = applyTranslit(v.hebrew);
+      html += `  <div class="tt-verse-row"><span class="tt-rowlabel">Translit</span><span class="tt-translit">${escapeHTML(tr)}</span></div>`;
+    }
+    if (withTrans) {
+      html += `  <div class="tt-verse-row"><span class="tt-rowlabel">English</span><span class="tt-translation">${stripHTML(v.translation)}</span></div>`;
+    }
+    html += `</div>`;
+  }
+  html += '</div>';
+  return html;
+}
+function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef) {
+  const cls = withTranslit ? 'tt-grid has-translit' : 'tt-grid';
+  let html = `<div class="${cls}">`;
+  // Translation column (left)
+  if (withTrans) {
+    html += `<div class="tt-grid-col tt-col-translation"><h3>English</h3>`;
+    for (const v of verses) {
+      html += `<div class="tt-grid-row"><span class="tt-vnum">${v.chapter}:${v.verse}</span><span class="tt-cell">${stripHTML(v.translation)}</span></div>`;
+    }
+    html += `</div>`;
+  } else {
+    html += `<div class="tt-grid-col"></div>`;  // empty placeholder for layout
+  }
+  // Translit column (middle)
+  if (withTranslit) {
+    html += `<div class="tt-grid-col tt-col-translit"><h3>Transliteration</h3>`;
+    for (const v of verses) {
+      const tr = applyTranslit(v.hebrew);
+      html += `<div class="tt-grid-row"><span class="tt-vnum">${v.chapter}:${v.verse}</span><span class="tt-cell translit">${escapeHTML(tr)}</span></div>`;
+    }
+    html += `</div>`;
+  }
+  // Hebrew column (right)
+  html += `<div class="tt-grid-col tt-col-heb"><h3>עִבְרִית</h3>`;
+  for (const v of verses) {
+    const numLabel = `${v.chapter}:${v.verse}`;
+    html += `<div class="tt-grid-row">`;
+    html += `<span class="tt-vnum">${numLabel} <button class="tt-speak" onclick="speakVerse('${cssEscape(numLabel)}')" type="button" aria-label="Speak verse ${numLabel}">🔊</button></span>`;
+    html += `<span class="tt-cell heb">${tokenizeHebrew(v.hebrew, wordIdxRef)}</span>`;
+    html += `</div>`;
+  }
+  html += `</div>`;
+  html += `</div>`;
+  return html;
+}
+function stripHTML(s) {
+  // Sefaria translations sometimes contain HTML (italics for added words). Allow basic tags.
+  if (!s) return '';
+  // sanitize: keep <i>, <b>, <em>, <strong>, <sup>, <sub>; strip everything else
+  const tmp = document.createElement('div');
+  tmp.innerHTML = s;
+  walkAndSanitize(tmp);
+  return tmp.innerHTML;
+}
+function walkAndSanitize(node) {
+  const allowed = new Set(['I','B','EM','STRONG','SUP','SUB','SPAN','SMALL']);
+  for (const child of [...node.children]) {
+    if (!allowed.has(child.tagName)) {
+      child.replaceWith(document.createTextNode(child.textContent));
+    } else {
+      // strip attributes
+      [...child.attributes].forEach(a => child.removeAttribute(a.name));
+      walkAndSanitize(child);
+    }
+  }
+}
+function cssEscape(s) {
+  return String(s).replace(/'/g, "\\'");
+}
+
+/* ══════════════════════════════════════════════════════
+   FETCH + RENDER ORCHESTRATION
+   ══════════════════════════════════════════════════════ */
+async function fetchAndRender() {
+  const r = resolveRef();
+  if (!r) {
+    setStatus('Pick a parsha to start.', false);
+    return;
+  }
+  setStatus(`Loading ${r.label}…`, false);
+  try {
+    const verses = await fetchSefariaText(r.ref, settings.showTranslation, settings.translationVersion);
+    currentVerses = verses;
+    currentRangeLabel = r.label;
+    renderText();
+    setStatus('', false);
+    // If translation was just enabled, populate version dropdown for this book
+    if (r.parshahEntry || settings.scope === 'custom') {
+      const book = r.parshahEntry ? r.parshahEntry.book : (settings.customRef || '').split(/[ .]/)[0];
+      if (book && settings.showTranslation) populateVersionDropdown(book);
+    }
+    // If karaoke is enabled, also load the audio + timings for this scope
+    if (settings.enableKaraoke) maybeLoadKaraoke(r);
+  } catch (e) {
+    console.error(e);
+    setStatus(`Failed to load ${r.label}: ${e.message}. Sefaria API may be unreachable.`, true);
+  }
+}
+function setStatus(msg, isError) {
+  const el = document.getElementById('ttStatus');
+  el.textContent = msg;
+  el.classList.toggle('error', !!isError);
+}
+
+/* ══════════════════════════════════════════════════════
+   TTS  (per-verse + read all)
+   ══════════════════════════════════════════════════════ */
+const ttsState = { readAllActive: false, readAllIdx: 0, currentBtn: null };
+function speakVerse(numLabel) {
+  if (!settings.enableTTS) {
+    setStatus('Enable TTS in settings to use the speak button.', false);
+    return;
+  }
+  // stop karaoke if playing (mutual exclusion)
+  pauseKaraoke();
+  const v = currentVerses.find(x => `${x.chapter}:${x.verse}` === numLabel);
+  if (!v) return;
+  speakHebrew(v.hebrew);
+}
+function speakHebrew(text) {
+  if (!window.speechSynthesis) { setStatus('Speech synthesis not supported in this browser.', true); return; }
+  if (!text) return;
+  speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(stripTeamim(text));
+  utt.lang = 'he-IL';
+  utt.rate = parseFloat(settings.ttsRate) || 0.85;
+  speechSynthesis.speak(utt);
+}
+function toggleReadAll() {
+  if (ttsState.readAllActive) { stopReadAll(); return; }
+  if (!settings.enableTTS) {
+    settings.enableTTS = true;
+    document.getElementById('optEnableTTS').checked = true;
+    saveSettings();
+  }
+  pauseKaraoke();
+  ttsState.readAllActive = true;
+  ttsState.readAllIdx = 0;
+  document.getElementById('ttReadAllBtn').textContent = '⏹ Stop';
+  document.getElementById('ttReadAllBtn').classList.add('active');
+  readAllStep();
+}
+function readAllStep() {
+  if (!ttsState.readAllActive) return;
+  if (ttsState.readAllIdx >= currentVerses.length) { stopReadAll(); return; }
+  const v = currentVerses[ttsState.readAllIdx++];
+  if (!v || !v.hebrew) { setTimeout(readAllStep, 50); return; }
+  const utt = new SpeechSynthesisUtterance(stripTeamim(v.hebrew));
+  utt.lang = 'he-IL';
+  utt.rate = parseFloat(settings.ttsRate) || 0.85;
+  utt.onend = () => readAllStep();
+  utt.onerror = () => readAllStep();
+  speechSynthesis.speak(utt);
+}
+function stopReadAll() {
+  ttsState.readAllActive = false;
+  speechSynthesis.cancel();
+  const btn = document.getElementById('ttReadAllBtn');
+  if (btn) { btn.textContent = '🔊 Read all'; btn.classList.remove('active'); }
+}
+function checkTTSVoiceAvailability() {
+  if (!window.speechSynthesis) {
+    document.getElementById('optTTSStatus').textContent = 'Speech synthesis not supported.';
+    return;
+  }
+  function check() {
+    const voices = speechSynthesis.getVoices();
+    const has = voices.some(v => /^he/i.test(v.lang));
+    const el = document.getElementById('optTTSStatus');
+    if (!el) return;
+    el.textContent = has ? '' : 'No Hebrew voice detected on this device — TTS may fall back to a generic voice.';
+  }
+  check();
+  if (window.speechSynthesis.addEventListener) {
+    speechSynthesis.addEventListener('voiceschanged', check);
+  } else {
+    speechSynthesis.onvoiceschanged = check;
+  }
+}
+function resetTTSRate() {
+  settings.ttsRate = DEFAULTS.ttsRate;
+  document.getElementById('optTTSRate').value = settings.ttsRate;
+  document.getElementById('optTTSRateVal').textContent = settings.ttsRate.toFixed(2) + '×';
+  saveSettings();
+}
+
+/* ══════════════════════════════════════════════════════
+   KARAOKE ENGINE
+   ══════════════════════════════════════════════════════ */
+let currentTimings = null;   // Float array: start-time per Hebrew word
+let currentAudio = null;     // <audio> element
+let karaokeWordSpans = [];   // DOM refs to .tt-word spans, indexed by twi
+let karaokeRafId = null;
+let lastHighlightedIdx = -1;
+
+function maybeLoadKaraoke(rangeInfo) {
+  // rangeInfo: { ref, label, parshahEntry, aliyahNum, isHaftarah }
+  if (!settings.enableKaraoke) return;
+  if (!rangeInfo || !rangeInfo.parshahEntry) {
+    setKaraokeStatus('Karaoke is only available for canonical aliyot/haftarah within a parsha.');
+    closeKaraoke();
+    return;
+  }
+  if (rangeInfo.aliyahNum == null) {
+    setKaraokeStatus('Pick an aliyah (1–7) or Haftarah from the Reading dropdown to play chanted audio.');
+    closeKaraoke();
+    return;
+  }
+  const sfx = rangeInfo.aliyahNum === 'H' ? 'H' : String(rangeInfo.aliyahNum);
+  loadKaraoke(rangeInfo.parshahEntry, sfx);
+}
+
+async function loadKaraoke(parshahEntry, suffix) {
+  setKaraokeStatus(`Loading audio for ${parshahEntry.en}, ${suffix === 'H' ? 'Haftarah' : 'Aliyah ' + suffix}…`);
+  const m = manifestData[parshahEntry.pocket];
+  if (!m) { setKaraokeStatus('No PocketTorah manifest entry for this parsha.'); return; }
+  const labelFile = m.labels && m.labels[suffix];
+  if (!labelFile) { setKaraokeStatus(`Audio for aliyah ${suffix} is not available in PocketTorah.`); return; }
+  const audioBase = m.audioBase;
+  if (!audioBase) { setKaraokeStatus('Audio basename missing in manifest.'); return; }
+  // Fetch timing file
+  let timings;
+  try {
+    const r = await fetch(POCKET_TIMINGS_BASE + encodeURIComponent(labelFile));
+    if (!r.ok) throw new Error(`timings ${r.status}`);
+    const txt = await r.text();
+    timings = txt.trim().split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+  } catch (e) {
+    setKaraokeStatus(`Failed to load timings: ${e.message}.`);
+    return;
+  }
+  // Set up audio
+  const audioUrl = POCKET_AUDIO_BASE + encodeURIComponent(`${audioBase}-${suffix}.mp3`);
+  currentTimings = timings;
+  if (!currentAudio) currentAudio = document.getElementById('ttAudio');
+  currentAudio.src = audioUrl;
+  currentAudio.playbackRate = parseFloat(settings.karaokeRate) || 1.0;
+  currentAudio.onplay = () => {
+    if (ttsState.readAllActive) stopReadAll();   // mutual exclusion with TTS
+    speechSynthesis.cancel();
+  };
+  currentAudio.ontimeupdate = onAudioTimeUpdate;
+  currentAudio.onended = () => clearKaraokeHighlight();
+  document.getElementById('ttAudioBar').classList.add('open');
+  document.getElementById('ttAudioLabel').textContent = `${parshahEntry.en} · ${suffix === 'H' ? 'Haftarah' : 'Aliyah ' + suffix}`;
+  setKaraokeStatus(`Loaded ${timings.length} word timings.`);
+  // Word index alignment check: warn if mismatch
+  updateKaraokeWordRefs();
+  if (karaokeWordSpans.length && timings.length) {
+    if (Math.abs(karaokeWordSpans.length - timings.length) > 3) {
+      setKaraokeStatus(`Loaded — note: text has ${karaokeWordSpans.length} words but audio has ${timings.length} word timings; alignment may drift.`);
+    }
+  }
+}
+function updateKaraokeWordRefs() {
+  karaokeWordSpans = [...document.querySelectorAll('#ttReading .tt-word')];
+}
+function onAudioTimeUpdate() {
+  if (!currentAudio || !currentTimings || !karaokeWordSpans.length) return;
+  const t = currentAudio.currentTime;
+  // binary search for largest timing <= t
+  let lo = 0, hi = currentTimings.length - 1, idx = -1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (currentTimings[mid] <= t) { idx = mid; lo = mid + 1; }
+    else hi = mid - 1;
+  }
+  if (idx === lastHighlightedIdx) return;
+  if (lastHighlightedIdx >= 0 && karaokeWordSpans[lastHighlightedIdx]) {
+    karaokeWordSpans[lastHighlightedIdx].classList.remove('active');
+  }
+  if (idx >= 0 && karaokeWordSpans[idx]) {
+    karaokeWordSpans[idx].classList.add('active');
+    // scroll into view if offscreen
+    const r = karaokeWordSpans[idx].getBoundingClientRect();
+    if (r.top < 80 || r.bottom > window.innerHeight - 120) {
+      karaokeWordSpans[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+  lastHighlightedIdx = idx;
+}
+function clearKaraokeHighlight() {
+  if (lastHighlightedIdx >= 0 && karaokeWordSpans[lastHighlightedIdx]) {
+    karaokeWordSpans[lastHighlightedIdx].classList.remove('active');
+  }
+  lastHighlightedIdx = -1;
+}
+function pauseKaraoke() {
+  if (currentAudio && !currentAudio.paused) currentAudio.pause();
+}
+function closeKaraoke() {
+  pauseKaraoke();
+  clearKaraokeHighlight();
+  document.getElementById('ttAudioBar').classList.remove('open');
+  if (currentAudio) currentAudio.removeAttribute('src');
+  currentTimings = null;
+  // Auto-disable the karaoke toggle so the state is consistent
+  settings.enableKaraoke = false;
+  document.getElementById('optEnableKaraoke').checked = false;
+  saveSettings();
+}
+function setKaraokeStatus(msg) {
+  const el = document.getElementById('optKaraokeStatus');
+  if (el) el.textContent = msg || '';
+}
+function resetKaraokeRate() {
+  settings.karaokeRate = DEFAULTS.karaokeRate;
+  document.getElementById('optKaraokeRate').value = settings.karaokeRate;
+  document.getElementById('optKaraokeRateVal').textContent = settings.karaokeRate.toFixed(2) + '×';
+  document.getElementById('ttKaraokeRate').value = settings.karaokeRate;
+  document.getElementById('ttKaraokeRateVal').textContent = settings.karaokeRate.toFixed(2) + '×';
+  if (currentAudio) currentAudio.playbackRate = settings.karaokeRate;
+  saveSettings();
+}
+
+/* ══════════════════════════════════════════════════════
+   HEBREW FONT SELECTOR (lifted from classroom_dashboard.html:1587-1603, 3273-3320)
+   ══════════════════════════════════════════════════════ */
+const HEB_FONTS = [
+  { section:'Block',   name:'Frank Ruhl Libre',   family:"'Frank Ruhl Libre', serif",        load:null },
+  { section:'Block',   name:'David Libre',        family:"'David Libre', serif",             load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=David+Libre:wght@400;500;700&display=swap'} },
+  { section:'Block',   name:'Noto Serif Hebrew',  family:"'Noto Serif Hebrew', serif",       load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@400;700&display=swap'} },
+  { section:'Block',   name:'Noto Sans Hebrew',   family:"'Noto Sans Hebrew', sans-serif",   load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700&display=swap'} },
+  { section:'Block',   name:'Alef',               family:"'Alef', sans-serif",               load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap'} },
+  { section:'Block',   name:'Ezra SIL',           family:"'Ezra SIL', serif",                load:{type:'face',css:"@font-face{font-family:'Ezra SIL';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/SIL%20(OFL)/Ezra%20SIL/SILEOT.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+  { section:'Block',   name:'Shlomo',             family:"'Shlomo', serif",                  load:{type:'face',css:"@font-face{font-family:'Shlomo';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20(OFL)/Shlomo/Shlomo.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+  { section:'Cursive', name:'Noto Rashi Hebrew',  family:"'Noto Rashi Hebrew', serif",       load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Noto+Rashi+Hebrew:wght@400;700&display=swap'} },
+  { section:'Cursive', name:'Solitreo',           family:"'Solitreo', cursive",              load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Solitreo&display=swap'} },
+  { section:'Cursive', name:'Gveret Levin',       family:"'Gveret Levin', cursive",          load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Gveret+Levin&display=swap'} },
+  { section:'Cursive', name:'Playpen Sans Hebrew',family:"'Playpen Sans Hebrew', cursive",   load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Playpen+Sans+Hebrew&display=swap'} },
+];
+function loadHebFont(font) {
+  if (!font.load) return;
+  const id = 'font-' + font.name.replace(/\s+/g, '-');
+  if (document.getElementById(id)) return;
+  if (font.load.type === 'gfonts') {
+    const link = document.createElement('link');
+    link.id = id; link.rel = 'stylesheet'; link.href = font.load.url;
+    document.head.appendChild(link);
+  } else if (font.load.type === 'face') {
+    const style = document.createElement('style');
+    style.id = id; style.textContent = font.load.css;
+    document.head.appendChild(style);
+  }
+}
+function initFontSelector() {
+  const opts = document.getElementById('fontOptions');
+  if (!opts) return;
+  opts.innerHTML = '';
+  const sections = [...new Set(HEB_FONTS.map(f => f.section))];
+  let firstSection = true;
+  sections.forEach(sec => {
+    const hdr = document.createElement('div');
+    hdr.className = 'font-section-hdr' + (firstSection ? ' first' : '');
+    hdr.textContent = sec === 'Cursive' ? 'Cursive / Script' : sec + ' Fonts';
+    opts.appendChild(hdr);
+    firstSection = false;
+    HEB_FONTS.filter(f => f.section === sec).forEach(font => {
+      const btn = document.createElement('button');
+      btn.className = 'font-opt' + (font.name === settings.hebFont ? ' active' : '');
+      btn.dataset.fontName = font.name;
+      btn.type = 'button';
+      btn.innerHTML =
+        `<span class="font-opt-preview" style="font-family:${font.family};">אֶרֶץ</span>` +
+        `<span class="font-opt-name">${font.name}${font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}</span>`;
+      btn.onclick = () => setHebFont(font.name);
+      loadHebFont(font);
+      opts.appendChild(btn);
+    });
+  });
+}
+function setHebFont(name) {
+  const f = HEB_FONTS.find(x => x.name === name) || HEB_FONTS[0];
+  settings.hebFont = f.name;
+  loadHebFont(f);
+  document.documentElement.style.setProperty('--heb-font', f.family);
+  document.querySelectorAll('.font-opt').forEach(el =>
+    el.classList.toggle('active', el.dataset.fontName === f.name));
+  saveSettings();
+}
+
+/* ══════════════════════════════════════════════════════
+   NIKUD COLOR PICKERS
+   ══════════════════════════════════════════════════════ */
+function initColorPickers() {
+  const list = document.getElementById('colorPickerList');
+  if (!list) return;
+  list.innerHTML = '';
+  VOWEL_COLOR_DEFS.forEach(def => {
+    const row = document.createElement('div');
+    row.className = 'color-pick-row';
+    const ex = document.createElement('span');
+    ex.className = 'color-pick-ex'; ex.textContent = def.example;
+    const lbl = document.createElement('span');
+    lbl.className = 'color-pick-label'; lbl.textContent = def.name;
+    const inp = document.createElement('input');
+    inp.type = 'color'; inp.className = 'color-pick-input';
+    inp.value = getNikudColor(def.key);
+    inp.addEventListener('input', () => {
+      if (!settings.nikudColorOverrides) settings.nikudColorOverrides = {};
+      settings.nikudColorOverrides[def.key] = inp.value;
+      if (settings.colorCodeNikkud) renderText();
+      saveSettings();
+    });
+    row.appendChild(ex); row.appendChild(lbl); row.appendChild(inp);
+    list.appendChild(row);
+  });
+}
+function resetNikudColors() {
+  settings.nikudColorOverrides = {};
+  initColorPickers();
+  if (settings.colorCodeNikkud) renderText();
+  saveSettings();
+}
+
+/* ══════════════════════════════════════════════════════
+   TRANSLITERATION SCHEME WIRING
+   ══════════════════════════════════════════════════════ */
+function wireTranslit() {
+  const sel = document.getElementById('optTranslitStyle');
+  const status = document.getElementById('optTranslitStatus');
+  sel.value = settings.translitStyle;
+  sel.addEventListener('change', () => {
+    settings.translitStyle = sel.value;
+    saveSettings();
+    if (settings.showTranslit) {
+      window.HebrewTransliterator.ensureLoaded().then(() => renderText());
+    }
+  });
+  window.addEventListener('translitlibloaded', () => {
+    status.textContent = 'Library loaded.';
+    if (settings.showTranslit) renderText();
+  });
+  window.addEventListener('translitlibfailed', () => {
+    status.textContent = 'Transliteration library failed to load (offline?).';
+  });
+}
+function maybeEnsureTranslit() {
+  if (settings.showTranslit && window.HebrewTransliterator) {
+    window.HebrewTransliterator.ensureLoaded();
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   SETTINGS DRAWER + FORM SYNC
+   ══════════════════════════════════════════════════════ */
+function openSettings() {
+  document.getElementById('settingsBackdrop').classList.add('open');
+  document.getElementById('settingsModal').classList.add('open');
+  syncFormToSettings();
+}
+function closeSettings() {
+  document.getElementById('settingsBackdrop').classList.remove('open');
+  document.getElementById('settingsModal').classList.remove('open');
+  saveSettings();
+}
+function syncFormToSettings() {
+  document.getElementById('optShowCantillation').checked = !!settings.showCantillation;
+  document.getElementById('optShowNikkud').checked = !!settings.showNikkud;
+  // schedule radio
+  const sd = document.getElementById('schedDiaspora');
+  const si = document.getElementById('schedIsrael');
+  if (settings.schedule === 'israel') si.checked = true; else sd.checked = true;
+  // color
+  document.getElementById('optColorCode').checked = !!settings.colorCodeNikkud;
+  const cm = settings.colorCodingMode || 'letter';
+  document.getElementById('cmLetter').checked = cm === 'letter';
+  document.getElementById('cmHighlight').checked = cm === 'highlight';
+  document.getElementById('cmUnderline').checked = cm === 'underline';
+  toggleColorOptionsVisibility(settings.colorCodeNikkud);
+  // translit style
+  document.getElementById('optTranslitStyle').value = settings.translitStyle || 'modernIsraeli';
+  // tts
+  document.getElementById('optEnableTTS').checked = !!settings.enableTTS;
+  document.getElementById('optTTSRate').value = settings.ttsRate;
+  document.getElementById('optTTSRateVal').textContent = (parseFloat(settings.ttsRate) || 0.85).toFixed(2) + '×';
+  // karaoke
+  document.getElementById('optEnableKaraoke').checked = !!settings.enableKaraoke;
+  document.getElementById('optKaraokeRate').value = settings.karaokeRate;
+  document.getElementById('optKaraokeRateVal').textContent = (parseFloat(settings.karaokeRate) || 1.0).toFixed(2) + '×';
+  // top-bar controls
+  document.getElementById('ttShowTranslit').checked = !!settings.showTranslit;
+  document.getElementById('ttShowTranslation').checked = !!settings.showTranslation;
+  document.getElementById('ttLayoutSide').checked = settings.layout === 'sidebyside';
+  document.getElementById('ttLayoutInter').checked = settings.layout === 'interlinear';
+  document.getElementById('ttKaraokeRate').value = settings.karaokeRate;
+  document.getElementById('ttKaraokeRateVal').textContent = (parseFloat(settings.karaokeRate) || 1.0).toFixed(2) + '×';
+  document.getElementById('ttVersionWrap').style.display = settings.showTranslation ? '' : 'none';
+}
+function toggleColorOptionsVisibility(show) {
+  document.getElementById('colorModeRow').style.display = show ? '' : 'none';
+  document.getElementById('colorPickerList').style.display = show ? '' : 'none';
+  document.getElementById('colorResetRow').style.display = show ? '' : 'none';
+}
+
+function applyDisplayClasses() {
+  document.body.classList.toggle('show-translit', !!settings.showTranslit);
+  document.body.classList.toggle('show-translation', !!settings.showTranslation);
+}
+
+function wireSettingsForm() {
+  // Cantillation + nikkud
+  document.getElementById('optShowCantillation').addEventListener('change', e => {
+    settings.showCantillation = e.target.checked;
+    saveSettings(); renderText();
+  });
+  document.getElementById('optShowNikkud').addEventListener('change', e => {
+    settings.showNikkud = e.target.checked;
+    saveSettings(); renderText();
+  });
+  // Schedule
+  document.querySelectorAll('input[name="optSchedule"]').forEach(r => {
+    r.addEventListener('change', e => {
+      if (e.target.checked) { settings.schedule = e.target.value; saveSettings(); }
+    });
+  });
+  // Color coding
+  document.getElementById('optColorCode').addEventListener('change', e => {
+    settings.colorCodeNikkud = e.target.checked;
+    toggleColorOptionsVisibility(settings.colorCodeNikkud);
+    saveSettings(); renderText();
+  });
+  document.querySelectorAll('input[name="optColorMode"]').forEach(r => {
+    r.addEventListener('change', e => {
+      if (e.target.checked) { settings.colorCodingMode = e.target.value; saveSettings(); renderText(); }
+    });
+  });
+  // TTS
+  document.getElementById('optEnableTTS').addEventListener('change', e => {
+    settings.enableTTS = e.target.checked;
+    if (!settings.enableTTS) speechSynthesis.cancel();
+    saveSettings();
+  });
+  const ttsRate = document.getElementById('optTTSRate');
+  ttsRate.addEventListener('input', e => {
+    settings.ttsRate = parseFloat(e.target.value);
+    document.getElementById('optTTSRateVal').textContent = settings.ttsRate.toFixed(2) + '×';
+    saveSettings();
+  });
+  // Karaoke
+  document.getElementById('optEnableKaraoke').addEventListener('change', e => {
+    settings.enableKaraoke = e.target.checked;
+    saveSettings();
+    if (settings.enableKaraoke) {
+      const r = resolveRef();
+      if (r) maybeLoadKaraoke(r);
+    } else closeKaraoke();
+  });
+  const kRate = document.getElementById('optKaraokeRate');
+  kRate.addEventListener('input', e => {
+    settings.karaokeRate = parseFloat(e.target.value);
+    document.getElementById('optKaraokeRateVal').textContent = settings.karaokeRate.toFixed(2) + '×';
+    document.getElementById('ttKaraokeRate').value = settings.karaokeRate;
+    document.getElementById('ttKaraokeRateVal').textContent = settings.karaokeRate.toFixed(2) + '×';
+    if (currentAudio) currentAudio.playbackRate = settings.karaokeRate;
+    saveSettings();
+  });
+  // The audio bar's own rate slider
+  const kRate2 = document.getElementById('ttKaraokeRate');
+  kRate2.addEventListener('input', e => {
+    settings.karaokeRate = parseFloat(e.target.value);
+    document.getElementById('ttKaraokeRateVal').textContent = settings.karaokeRate.toFixed(2) + '×';
+    document.getElementById('optKaraokeRate').value = settings.karaokeRate;
+    document.getElementById('optKaraokeRateVal').textContent = settings.karaokeRate.toFixed(2) + '×';
+    if (currentAudio) currentAudio.playbackRate = settings.karaokeRate;
+    saveSettings();
+  });
+  // Top-bar controls
+  document.getElementById('ttShowTranslit').addEventListener('change', e => {
+    settings.showTranslit = e.target.checked;
+    saveSettings();
+    maybeEnsureTranslit();
+    renderText();
+  });
+  document.getElementById('ttShowTranslation').addEventListener('change', e => {
+    settings.showTranslation = e.target.checked;
+    document.getElementById('ttVersionWrap').style.display = settings.showTranslation ? '' : 'none';
+    saveSettings();
+    fetchAndRender();
+  });
+  document.querySelectorAll('input[name="ttLayout"]').forEach(r => {
+    r.addEventListener('change', e => {
+      if (e.target.checked) { settings.layout = e.target.value; saveSettings(); renderText(); }
+    });
+  });
+  // Version dropdown
+  document.getElementById('ttVersionSelect').addEventListener('change', e => {
+    settings.translationVersion = e.target.value;
+    textCache.clear();
+    saveSettings();
+    fetchAndRender();
+  });
+  // Parsha + scope
+  document.getElementById('parshaSelect').addEventListener('change', e => {
+    settings.parshahKey = e.target.value;
+    settings.scope = settings.scope.startsWith('parsha-') ? settings.scope : 'parsha-full';
+    saveSettings();
+    fetchAndRender();
+  });
+  document.getElementById('scopeSelect').addEventListener('change', e => {
+    settings.scope = e.target.value;
+    saveSettings();
+    fetchAndRender();
+  });
+  // Panel collapse
+  document.querySelectorAll('.panel-title').forEach(t => {
+    t.addEventListener('click', () => t.parentElement.classList.toggle('collapsed'));
+  });
+  // ESC closes drawer
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('settingsModal').classList.contains('open')) closeSettings();
+  });
+}
+
+/* ══════════════════════════════════════════════════════
+   PARSHA PICKER + CUSTOM RANGE
+   ══════════════════════════════════════════════════════ */
+function populateParshaPicker() {
+  const sel = document.getElementById('parshaSelect');
+  sel.innerHTML = '';
+  for (const p of parshiyotData) {
+    const opt = document.createElement('option');
+    opt.value = p.en;
+    opt.textContent = `${p.n}. ${p.en} (${p.he}) — ${p.ref}`;
+    sel.appendChild(opt);
+  }
+  if (settings.parshahKey) sel.value = settings.parshahKey;
+  document.getElementById('scopeSelect').value = settings.scope || 'parsha-full';
+}
+function toggleCustomPicker() {
+  const el = document.getElementById('ttCustomPicker');
+  el.style.display = el.style.display === 'none' ? '' : 'none';
+}
+function applyCustomRange() {
+  const book = document.getElementById('ttCustomBook').value;
+  const chap = parseInt(document.getElementById('ttCustomChapter').value, 10) || 1;
+  const vs = document.getElementById('ttCustomVStart').value;
+  const ve = document.getElementById('ttCustomVEnd').value;
+  let ref;
+  if (vs && ve)      ref = `${book} ${chap}:${vs}-${ve}`;
+  else if (vs)       ref = `${book} ${chap}:${vs}`;
+  else               ref = `${book} ${chap}`;
+  settings.customRef = ref;
+  settings.scope = 'custom';
+  saveSettings();
+  fetchAndRender();
+}
+
+/* ══════════════════════════════════════════════════════
+   TRANSLATION VERSION DROPDOWN
+   ══════════════════════════════════════════════════════ */
+async function populateVersionDropdown(book) {
+  const sel = document.getElementById('ttVersionSelect');
+  sel.innerHTML = '<option value="">Loading…</option>';
+  const versions = await fetchVersionsList(book);
+  const eng = versions.filter(v => v.language === 'en' || /english/i.test(v.languageFamilyName||v.language||''));
+  sel.innerHTML = '<option value="">Default English</option>';
+  eng.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v.versionTitle || v.title || '';
+    opt.textContent = (v.versionTitle || v.title || 'Untitled').slice(0, 64);
+    sel.appendChild(opt);
+  });
+  // Default to JPS 1985 if available
+  if (!settings.translationVersion) {
+    const jps = eng.find(v => /JPS\s*1985/i.test(v.versionTitle || ''));
+    if (jps) {
+      settings.translationVersion = jps.versionTitle;
+      saveSettings();
+      sel.value = jps.versionTitle;
+    }
+  } else {
+    sel.value = settings.translationVersion;
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   "JUMP TO THIS WEEK'S PARSHA"
+   ══════════════════════════════════════════════════════ */
+async function goToCurrentParshah() {
+  const name = await fetchCurrentParshah(settings.schedule !== 'israel');
+  if (!name) { setStatus('Could not determine the current parsha (Sefaria API unreachable).', true); return; }
+  // Match the returned name to our list (loose matching)
+  const norm = s => s.toLowerCase().replace(/[^a-z]/g, '');
+  const target = norm(name);
+  const match = parshiyotData.find(p => norm(p.en) === target || norm(p.en).startsWith(target));
+  if (!match) { setStatus(`Sefaria says this week is "${name}" but it doesn't match our list.`, true); return; }
+  settings.parshahKey = match.en;
+  settings.scope = 'parsha-full';
+  saveSettings();
+  document.getElementById('parshaSelect').value = match.en;
+  document.getElementById('scopeSelect').value = 'parsha-full';
+  fetchAndRender();
+}
+
+/* ══════════════════════════════════════════════════════
+   INIT
+   ══════════════════════════════════════════════════════ */
+async function init() {
+  initDark();
+  loadSettings();
+
+  // Fetch static data files
+  try {
+    const [pj, mj, aj] = await Promise.all([
+      fetch('data/parshiyot.json').then(r => r.json()),
+      fetch('data/pockettorah/manifest.json').then(r => r.json()),
+      fetch('data/pockettorah/aliyah.json').then(r => r.json()),
+    ]);
+    parshiyotData = pj;
+    manifestData = mj;
+    aliyahData = aj;
+  } catch (e) {
+    console.error('Failed to load data files', e);
+    setStatus('Failed to load static data files (data/parshiyot.json, data/pockettorah/*.json). The page may not work correctly.', true);
+  }
+
+  // Build UI
+  initFontSelector();
+  setHebFont(settings.hebFont);
+  initColorPickers();
+  populateParshaPicker();
+  syncFormToSettings();
+  wireSettingsForm();
+  wireTranslit();
+  checkTTSVoiceAvailability();
+
+  // Determine starting parsha
+  if (!settings.parshahKey) {
+    const cur = await fetchCurrentParshah(settings.schedule !== 'israel');
+    if (cur) {
+      const norm = s => s.toLowerCase().replace(/[^a-z]/g, '');
+      const target = norm(cur);
+      const match = parshiyotData.find(p => norm(p.en) === target || norm(p.en).startsWith(target));
+      if (match) settings.parshahKey = match.en;
+    }
+    if (!settings.parshahKey && parshiyotData.length) settings.parshahKey = parshiyotData[0].en;
+    document.getElementById('parshaSelect').value = settings.parshahKey;
+    saveSettings();
+  }
+
+  // Lazy-load the translit library if user has it on
+  maybeEnsureTranslit();
+
+  fetchAndRender();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+/* ══════════════════════════════════════════════════════
+   TOOLTIP (lifted from classroom_dashboard.html:3428-3453)
+   ══════════════════════════════════════════════════════ */
+(function() {
+  document.addEventListener('DOMContentLoaded', () => {
+    const tip = document.createElement('div');
+    tip.id = 'tipFloat';
+    document.body.appendChild(tip);
+    document.querySelectorAll('.tip-wrap').forEach(wrap => {
+      wrap.addEventListener('mouseenter', () => {
+        const text = wrap.dataset.tip;
+        if (!text) return;
+        tip.textContent = text;
+        tip.style.display = 'block';
+        const r = wrap.querySelector('.tip-icon').getBoundingClientRect();
+        const tw = tip.offsetWidth, th = tip.offsetHeight;
+        let left = r.left + r.width / 2 - tw / 2;
+        let top  = r.top - th - 6;
+        if (left < 6) left = 6;
+        if (left + tw > window.innerWidth - 6) left = window.innerWidth - tw - 6;
+        if (top < 6) top = r.bottom + 6;
+        tip.style.left = left + 'px';
+        tip.style.top  = top  + 'px';
+      });
+      wrap.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+    });
+  });
+})();
+</script>
+</body>
+</html>

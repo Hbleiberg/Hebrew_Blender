@@ -1,0 +1,758 @@
+{
+  "Bereshit": {
+    "audioBase": "Bereshit",
+    "labels": {
+      "1": "Bereshit-1.txt",
+      "2": "Bereshit-2.txt",
+      "3": "Bereshit-3.txt",
+      "4": "Bereshit-4.txt",
+      "5": "Bereshit-5.txt",
+      "6": "Bereshit-6.txt",
+      "7": "Bereshit-7.txt",
+      "H": "Bereshit-H.txt"
+    },
+    "missing": []
+  },
+  "Noach": {
+    "audioBase": "Noach",
+    "labels": {
+      "1": "noach-1.txt",
+      "2": "Noach-2.txt",
+      "3": "Noach-3.txt",
+      "4": "Noach-4.txt",
+      "5": "Noach-5.txt",
+      "6": "Noach-6.txt",
+      "7": "Noach-7.txt",
+      "H": "Noach-H.txt"
+    },
+    "missing": []
+  },
+  "Lech Lecha": {
+    "audioBase": "Lech-Lecha",
+    "labels": {
+      "1": "lech-lecha-1.txt",
+      "2": "lech-lecha-2.txt",
+      "3": "lech-lecha-3.txt",
+      "4": "Lech-lecha-4.txt",
+      "5": "lech-lecha-5.txt",
+      "6": "lech-lecha-6.txt",
+      "7": "lech-lecha-7.txt",
+      "H": "lech-lecha-h.txt"
+    },
+    "missing": []
+  },
+  "Vayera": {
+    "audioBase": "Vayera",
+    "labels": {
+      "1": "vayera-1.txt",
+      "2": "Vayera-2.txt",
+      "3": "Vayera-3.txt",
+      "4": "Vayera-4.txt",
+      "5": "Vayera-5.txt",
+      "6": "Vayera-6.txt",
+      "7": "Vayera-7.txt",
+      "H": "Vayera-h.txt"
+    },
+    "missing": []
+  },
+  "Chayei Sara": {
+    "audioBase": "ChayeiSara",
+    "labels": {
+      "1": "chayei sara-1.txt",
+      "2": "Chayei Sara-2.txt",
+      "3": "Chayei Sara-3.txt",
+      "4": "Chayei Sara-4.txt",
+      "5": "Chayei Sara-5.txt",
+      "6": "Chayei Sara-6.txt",
+      "7": "Chayei Sara-7.txt",
+      "H": "Chayei Sara-h.txt"
+    },
+    "missing": []
+  },
+  "Toldot": {
+    "audioBase": "Toldot",
+    "labels": {
+      "1": "toldot-1.txt",
+      "2": "toldot-2.txt",
+      "3": "toldot-3.txt",
+      "4": "toldot-4.txt",
+      "5": "toldot-5.txt",
+      "6": "toldot-6.txt",
+      "7": "toldot-7.txt",
+      "H": "toldot-h.txt"
+    },
+    "missing": []
+  },
+  "Vayetzei": {
+    "audioBase": "Vayetzei",
+    "labels": {
+      "1": "Vayetzei-1.txt",
+      "2": "Vayetzei-2.txt",
+      "3": "Vayetzei-3.txt",
+      "4": "Vayetzei-4.txt",
+      "5": "Vayetzei-5.txt",
+      "6": "Vayetzei-6.txt",
+      "7": "Vayetzei-7.txt",
+      "H": "Vayetzei-H.txt"
+    },
+    "missing": []
+  },
+  "Vayishlach": {
+    "audioBase": "Vayishlach",
+    "labels": {
+      "1": "Vayishlach-1.txt",
+      "2": "Vayishlach-2.txt",
+      "3": "Vayishlach-3.txt",
+      "4": "Vayishlach-4.txt",
+      "5": "Vayishlach-5.txt",
+      "6": "Vayishlach-6.txt",
+      "7": "Vayishlach-7.txt",
+      "H": "Vayishlach-H.txt"
+    },
+    "missing": []
+  },
+  "Vayeshev": {
+    "audioBase": "Vayeshev",
+    "labels": {
+      "1": "Vayeshev-1.txt",
+      "2": "Vayeshev-2.txt",
+      "3": "Vayeshev-3.txt",
+      "4": "Vayeshev-4.txt",
+      "5": "Vayeshev-5.txt",
+      "6": "Vayeshev-6.txt",
+      "7": "Vayeshev-7.txt",
+      "H": "Vayeshev-H.txt"
+    },
+    "missing": []
+  },
+  "Miketz": {
+    "audioBase": "Miketz",
+    "labels": {
+      "1": "Miketz-1.txt",
+      "2": "Miketz-2.txt",
+      "3": "Miketz-3.txt",
+      "4": "Miketz-4.txt",
+      "5": "Miketz-5.txt",
+      "6": "Miketz-6.txt",
+      "7": "Miketz-7.txt",
+      "H": "Miketz-H.txt"
+    },
+    "missing": []
+  },
+  "Vayigash": {
+    "audioBase": "Vayigash",
+    "labels": {
+      "1": "Vayigash-1.txt",
+      "2": "Vayigash-2.txt",
+      "3": "Vayigash-3.txt",
+      "4": "Vayigash-4.txt",
+      "5": "Vayigash-5.txt",
+      "6": "Vayigash-6.txt",
+      "7": "Vayigash-7.txt",
+      "H": "Vayigash-H.txt"
+    },
+    "missing": []
+  },
+  "Vayechi": {
+    "audioBase": "Vayechi",
+    "labels": {
+      "1": "Vayechi-1.txt",
+      "2": "Vayechi-2.txt",
+      "3": "Vayechi-3.txt",
+      "4": "Vayechi-4.txt",
+      "5": "Vayechi-5.txt",
+      "6": "Vayechi-6.txt",
+      "7": "Vayechi-7.txt",
+      "H": "Vayechi-H.txt"
+    },
+    "missing": []
+  },
+  "Shemot": {
+    "audioBase": "Shemot",
+    "labels": {
+      "1": "Shemot-1.txt",
+      "2": "Shemot-2.txt",
+      "3": "Shemot-3.txt",
+      "4": "Shemot-4.txt",
+      "5": "Shemot-5.txt",
+      "6": "Shemot-6.txt",
+      "7": "Shemot-7.txt",
+      "H": "Shemot-H.txt"
+    },
+    "missing": []
+  },
+  "Va'eira": {
+    "audioBase": "Vaera",
+    "labels": {
+      "1": "Vaera-1.txt",
+      "2": "Vaera-2.txt",
+      "3": "Vaera-3.txt",
+      "4": "Vaera-4.txt",
+      "5": "Vaera-5.txt",
+      "6": "Vaera-6.txt",
+      "7": "Vaera-7.txt",
+      "H": "Vaera-H.txt"
+    },
+    "missing": []
+  },
+  "Bo": {
+    "audioBase": "Bo",
+    "labels": {
+      "1": "Bo-1.txt",
+      "2": "Bo-2.txt",
+      "3": "Bo-3.txt",
+      "4": "Bo-4.txt",
+      "5": "Bo-5.txt",
+      "6": "Bo-6.txt",
+      "7": "Bo-7.txt",
+      "H": "Bo-H.txt"
+    },
+    "missing": []
+  },
+  "Beshalach": {
+    "audioBase": "Beshalach",
+    "labels": {
+      "1": "Beshalach-1.txt",
+      "2": "Beshalach-2.txt",
+      "3": "Beshalach-3.txt",
+      "4": "Beshalach-4.txt",
+      "5": "Beshalach-5.txt",
+      "6": "Beshalach-6.txt",
+      "7": "Beshalach-7.txt",
+      "H": "Beshalach-H.txt"
+    },
+    "missing": []
+  },
+  "Yitro": {
+    "audioBase": "Yitro",
+    "labels": {
+      "1": "yitro-1.txt",
+      "2": "yitro-2.txt",
+      "3": "yitro-3.txt",
+      "4": "yitro-4.txt",
+      "5": "yitro-5.txt",
+      "6": "yitro-6.txt",
+      "7": "yitro-7.txt",
+      "H": "yitro-h.txt"
+    },
+    "missing": []
+  },
+  "Mishpatim": {
+    "audioBase": "Mishpatim",
+    "labels": {
+      "1": "Mishpatim-1.txt",
+      "2": "Mishpatim-2.txt",
+      "3": "Mishpatim-3.txt",
+      "4": "Mishpatim-4.txt",
+      "5": "Mishpatim-5.txt",
+      "6": "Mishpatim-6.txt",
+      "7": "Mishpatim-7.txt",
+      "H": "mishpatim-H.txt"
+    },
+    "missing": []
+  },
+  "Terumah": {
+    "audioBase": "Terumah",
+    "labels": {
+      "1": "terumah-1.txt",
+      "2": "terumah-2.txt",
+      "3": "terumah-3.txt",
+      "4": "terumah-4.txt",
+      "5": "terumah-5.txt",
+      "6": "terumah-6.txt",
+      "7": "terumah-7.txt",
+      "H": "Terumah-H.txt"
+    },
+    "missing": []
+  },
+  "Tetzaveh": {
+    "audioBase": "Tetzaveh",
+    "labels": {
+      "1": "tetzaveh-1.txt",
+      "2": "tetzaveh-2.txt",
+      "3": "tetzaveh-3.txt",
+      "4": "tetzaveh-4.txt",
+      "5": "tetzaveh-5.txt",
+      "6": "tetzaveh-6.txt",
+      "7": "tetzaveh-7.txt",
+      "H": "tetzaveh-h.txt"
+    },
+    "missing": []
+  },
+  "Ki Tisa": {
+    "audioBase": "KiTisa",
+    "labels": {
+      "1": "ki tisa-1.txt",
+      "2": "ki tisa-2.txt",
+      "3": "Ki Tisa-3.txt",
+      "4": "Ki Tisa-4.txt",
+      "5": "ki tisa-5.txt",
+      "6": "ki tisa-6.txt",
+      "7": "ki tisa-7.txt",
+      "H": "ki tisa-h.txt"
+    },
+    "missing": []
+  },
+  "Vayakhel": {
+    "audioBase": "Vayakhel",
+    "labels": {
+      "1": "vayakhel-1.txt",
+      "2": "vayakhel-2.txt",
+      "3": "vayakhel-3.txt",
+      "4": "vayakhel-4.txt",
+      "5": "vayakhel-5.txt",
+      "6": "vayakhel-6.txt",
+      "7": "vayakhel-7.txt",
+      "H": "vayakhel-h.txt"
+    },
+    "missing": []
+  },
+  "Pekudei": {
+    "audioBase": "Pekudei",
+    "labels": {
+      "1": "pekudei-1.txt",
+      "2": "pekudei-2.txt",
+      "3": "pekudei-3.txt",
+      "4": "pekudei-4.txt",
+      "5": "pekudei-5.txt",
+      "6": "pekudei-6.txt",
+      "7": "pekudei-7.txt",
+      "H": "pekudei-h.txt"
+    },
+    "missing": []
+  },
+  "Vayikra": {
+    "audioBase": "Vayikra",
+    "labels": {
+      "1": "vayikra-1.txt",
+      "2": "vayikra-2.txt",
+      "3": "vayikra-3.txt",
+      "4": "vayikra-4.txt",
+      "5": "vayikra-5.txt",
+      "6": "vayikra-6.txt",
+      "7": "vayikra-7.txt",
+      "H": "Vayikra-H.txt"
+    },
+    "missing": []
+  },
+  "Tzav": {
+    "audioBase": "Tzav",
+    "labels": {
+      "1": "Tzav-1.txt",
+      "2": "Tzav-2.txt",
+      "3": "Tzav-3.txt",
+      "4": "Tzav-4.txt",
+      "5": "Tzav-5.txt",
+      "6": "Tzav-6.txt",
+      "7": "tzav-7.txt",
+      "H": "tzav-h.txt"
+    },
+    "missing": []
+  },
+  "Shemini": {
+    "audioBase": "Shmini",
+    "labels": {
+      "1": "shmini-1.txt",
+      "2": "shmini-2.txt",
+      "3": "shmini-3.txt",
+      "4": "shmini-4.txt",
+      "5": "shmini-5.txt",
+      "6": "shmini-6.txt",
+      "7": "shmini-7.txt",
+      "H": "shmini-h.txt"
+    },
+    "missing": []
+  },
+  "Tazria": {
+    "audioBase": "Tazria",
+    "labels": {
+      "1": "tazria-1.txt",
+      "2": "tazria-2.txt",
+      "3": "tazria-3.txt",
+      "4": "tazria-4.txt",
+      "5": "tazria-5.txt",
+      "6": "tazria-6.txt",
+      "7": "tazria-7.txt",
+      "H": "tazria-h.txt"
+    },
+    "missing": []
+  },
+  "Metzora": {
+    "audioBase": "Metzora",
+    "labels": {
+      "1": "metzora-1.txt",
+      "2": "metzora-2.txt",
+      "3": "metzora-3.txt",
+      "4": "metzora-4.txt",
+      "5": "metzora-5.txt",
+      "6": "metzora-6.txt",
+      "7": "metzora-7.txt",
+      "H": "metzora-h.txt"
+    },
+    "missing": []
+  },
+  "Achrei Mot": {
+    "audioBase": "AchreiMot",
+    "labels": {
+      "1": "Achrei Mot-1.txt",
+      "2": "Achrei Mot-2.txt",
+      "3": "Achrei Mot-3.txt",
+      "4": "Achrei Mot-4.txt",
+      "5": "Achrei Mot-5.txt",
+      "6": "Achrei Mot-6.txt",
+      "7": "Achrei Mot-7.txt",
+      "H": "Achrei Mot-h.txt"
+    },
+    "missing": []
+  },
+  "Kedoshim": {
+    "audioBase": "Kedoshim",
+    "labels": {
+      "1": "Kedoshim-1.txt",
+      "2": "Kedoshim-2.txt",
+      "3": "Kedoshim-3.txt",
+      "4": "Kedoshim-4.txt",
+      "5": "Kedoshim-5.txt",
+      "6": "Kedoshim-6.txt",
+      "7": "Kedoshim-7.txt",
+      "H": "Kedoshim-h.txt"
+    },
+    "missing": []
+  },
+  "Emor": {
+    "audioBase": "Emor",
+    "labels": {
+      "1": "emor-1.txt",
+      "2": "Emor-2.txt",
+      "3": "Emor-3.txt",
+      "4": "Emor-4.txt",
+      "5": "Emor-5.txt",
+      "6": "Emor-6.txt",
+      "7": "Emor-7.txt",
+      "H": "Emor-H.txt"
+    },
+    "missing": []
+  },
+  "Behar": {
+    "audioBase": "Behar",
+    "labels": {
+      "1": "Behar-1.txt",
+      "2": "Behar-2.txt",
+      "3": "Behar-3.txt",
+      "4": "Behar-4.txt",
+      "5": "Behar-5.txt",
+      "6": "Behar-6.txt",
+      "7": "Behar-7.txt",
+      "H": "Behar-H.txt"
+    },
+    "missing": []
+  },
+  "Bechukotai": {
+    "audioBase": "Bechukotai",
+    "labels": {
+      "1": "Bechukotai-1.txt",
+      "2": "Bechukotai-2.txt",
+      "3": "Bechukotai-3.txt",
+      "4": "Bechukotai-4.txt",
+      "5": "Bechukotai-5.txt",
+      "6": "Bechukotai-6.txt",
+      "7": "Bechukotai-7.txt",
+      "H": "Bechukotai-h.txt"
+    },
+    "missing": []
+  },
+  "Bamidbar": {
+    "audioBase": "Bamidbar",
+    "labels": {
+      "1": "Bamidbar-1.txt",
+      "2": "Bamidbar-2.txt",
+      "3": "Bamidbar-3.txt",
+      "4": "Bamidbar-4.txt",
+      "5": "Bamidbar-5.txt",
+      "6": "Bamidbar-6.txt",
+      "7": "Bamidbar-7.txt",
+      "H": "Bamidbar-H.txt"
+    },
+    "missing": []
+  },
+  "Nasso": {
+    "audioBase": "Nasso",
+    "labels": {
+      "1": "Nasso-1.txt",
+      "2": "Nasso-2.txt",
+      "3": "Nasso-3.txt",
+      "4": "Nasso-4.txt",
+      "5": "Nasso-5.txt",
+      "6": "Nasso-6.txt",
+      "7": "Nasso-7.txt",
+      "H": "nasso-h.txt"
+    },
+    "missing": []
+  },
+  "Beha'alotcha": {
+    "audioBase": "Behaalotcha",
+    "labels": {
+      "1": "Beha’alotcha-1.txt",
+      "2": "Beha’alotcha-2.txt",
+      "3": "Beha’alotcha-3.txt",
+      "4": "Beha’alotcha-4.txt",
+      "5": "Beha’alotcha-5.txt",
+      "6": "Beha’alotcha-6.txt",
+      "7": "Beha’alotcha-7.txt",
+      "H": "Beha’alotcha-H.txt"
+    },
+    "missing": []
+  },
+  "Sh'lach": {
+    "audioBase": "Shlach",
+    "labels": {
+      "1": "sh’lach-1.txt",
+      "2": "sh’lach-2.txt",
+      "3": "sh’lach-3.txt",
+      "4": "sh’lach-4.txt",
+      "5": "sh’lach-5.txt",
+      "6": "sh’lach-6.txt",
+      "7": "sh’lach-7.txt",
+      "H": "sh’lach-H.txt"
+    },
+    "missing": []
+  },
+  "Korach": {
+    "audioBase": "Korach",
+    "labels": {
+      "1": "korach-1.txt",
+      "2": "korach-2.txt",
+      "3": "Korach-3.txt",
+      "4": "Korach-4.txt",
+      "5": "Korach-5.txt",
+      "6": "Korach-6.txt",
+      "7": "Korach-7.txt",
+      "H": "Korach-h.txt"
+    },
+    "missing": []
+  },
+  "Chukat": {
+    "audioBase": "Chukat",
+    "labels": {
+      "1": "Chukat-1.txt",
+      "2": "Chukat-2.txt",
+      "3": "Chukat-3.txt",
+      "4": "Chukat-4.txt",
+      "5": "Chukat-5.txt",
+      "6": "Chukat-6.txt",
+      "7": "Chukat-7.txt",
+      "H": "Chukat-h.txt"
+    },
+    "missing": []
+  },
+  "Balak": {
+    "audioBase": "Balak",
+    "labels": {
+      "1": "Balak-1.txt",
+      "2": "Balak-2.txt",
+      "3": "Balak-3.txt",
+      "4": "balak-4.txt",
+      "5": "Balak-5.txt",
+      "6": "Balak-6.txt",
+      "7": "Balak-7.txt",
+      "H": "Balak-h.txt"
+    },
+    "missing": []
+  },
+  "Pinchas": {
+    "audioBase": "Pinchas",
+    "labels": {
+      "1": "Pinchas-1.txt",
+      "2": "Pinchas-2.txt",
+      "3": "Pinchas-3.txt",
+      "4": "Pinchas-4.txt",
+      "5": "Pinchas-5.txt",
+      "6": "Pinchas-6.txt",
+      "7": "Pinchas-7.txt",
+      "H": "Pinchas-H.txt"
+    },
+    "missing": []
+  },
+  "Matot": {
+    "audioBase": "Matot",
+    "labels": {
+      "1": "matot-1.txt",
+      "2": "matot-2.txt",
+      "3": "matot-3.txt",
+      "4": "matot-4.txt",
+      "5": "matot-5.txt",
+      "6": "matot-6.txt",
+      "7": "matot-7.txt",
+      "H": "matot-h.txt"
+    },
+    "missing": []
+  },
+  "Masei": {
+    "audioBase": "Masei",
+    "labels": {
+      "1": "masei-1.txt",
+      "2": "masei-2.txt",
+      "3": "masei-3.txt",
+      "4": "masei-4.txt",
+      "5": "masei-5.txt",
+      "6": "masei-6.txt",
+      "7": "masei-7.txt",
+      "H": "masei-h.txt"
+    },
+    "missing": []
+  },
+  "Devarim": {
+    "audioBase": "Devarim",
+    "labels": {
+      "1": "devarim-1.txt",
+      "2": "devarim-2.txt",
+      "3": "devarim-3.txt",
+      "4": "devarim-4.txt",
+      "5": "devarim-5.txt",
+      "6": "devarim-6.txt",
+      "7": "devarim-7.txt",
+      "H": "devarim-H.txt"
+    },
+    "missing": []
+  },
+  "Va'etchanan": {
+    "audioBase": "Vaethanan",
+    "labels": {
+      "1": "Va’ethanan-1.txt",
+      "2": "Va’ethanan-2.txt",
+      "3": "Va’ethanan-3.txt",
+      "4": "Va’ethanan-4.txt",
+      "5": "Va’ethanan-5.txt",
+      "6": "Va’ethanan-6.txt",
+      "7": "Va’ethanan-7.txt",
+      "H": "Va’ethanan-h.txt"
+    },
+    "missing": []
+  },
+  "Eikev": {
+    "audioBase": "Eikev",
+    "labels": {
+      "1": "eikev-1.txt",
+      "2": "eikev-2.txt",
+      "3": "eikev-3.txt",
+      "4": "eikev-4.txt",
+      "5": "eikev-5.txt",
+      "6": "eikev-6.txt",
+      "7": "eikev-7.txt",
+      "H": "eikev-H.txt"
+    },
+    "missing": []
+  },
+  "Re'eh": {
+    "audioBase": "Reeh",
+    "labels": {
+      "1": "re’eh-1.txt",
+      "2": "re’eh-2.txt",
+      "3": "re’eh-3.txt",
+      "4": "re’eh-4.txt",
+      "5": "re’eh-5.txt",
+      "6": "re’eh-6.txt",
+      "7": "re’eh-7.txt",
+      "H": "re’eh-h.txt"
+    },
+    "missing": []
+  },
+  "Shoftim": {
+    "audioBase": "Shoftim",
+    "labels": {
+      "1": "shoftim-1.txt",
+      "2": "shoftim-2.txt",
+      "3": "shoftim-3.txt",
+      "4": "shoftim-4.txt",
+      "5": "shoftim-5.txt",
+      "6": "shoftim-6.txt",
+      "7": "shoftim-7.txt",
+      "H": "shoftim-h.txt"
+    },
+    "missing": []
+  },
+  "Ki Teitzei": {
+    "audioBase": "KiTeitzei",
+    "labels": {
+      "1": "Ki Teitzei-1.txt",
+      "2": "Ki Teitzei-2.txt",
+      "3": "Ki Teitzei-3.txt",
+      "4": "Ki Teitzei-4.txt",
+      "5": "Ki Teitzei-5.txt",
+      "6": "Ki Teitzei-6.txt",
+      "7": "Ki Teitzei-7.txt",
+      "H": "Ki Teitzei-h.txt"
+    },
+    "missing": []
+  },
+  "Ki Tavo": {
+    "audioBase": "KiTavo",
+    "labels": {
+      "1": "Ki Tavo-1.txt",
+      "2": "Ki Tavo-2.txt",
+      "3": "Ki Tavo-3.txt",
+      "4": "Ki Tavo-4.txt",
+      "5": "Ki Tavo-5.txt",
+      "6": "Ki Tavo-6.txt",
+      "7": "Ki Tavo-7.txt",
+      "H": "Ki Tavo-H.txt"
+    },
+    "missing": []
+  },
+  "Nitzavim": {
+    "audioBase": "Nitzavim",
+    "labels": {
+      "1": "Nitzavim-1.txt",
+      "2": "Nitzavim-2.txt",
+      "3": "Nitzavim-3.txt",
+      "4": "Nitzavim-4.txt",
+      "5": "Nitzavim-5.txt",
+      "6": "Nitzavim-6.txt",
+      "7": "nitzavim-7.txt",
+      "H": "nitzavim-h.txt"
+    },
+    "missing": []
+  },
+  "Vayeilech": {
+    "audioBase": "Vayeilech",
+    "labels": {
+      "1": "vayeilech-1.txt",
+      "2": "vayeilech-2.txt",
+      "3": "vayeilech-3.txt",
+      "4": "vayeilech-4.txt",
+      "5": "vayeilech-5.txt",
+      "6": "vayeilech-6.txt",
+      "7": "vayeilech-7.txt",
+      "H": "vayeilech-h.txt"
+    },
+    "missing": []
+  },
+  "Ha'azinu": {
+    "audioBase": "Haazinu",
+    "labels": {
+      "1": "haazinu-1.txt",
+      "2": "haazinu-2.txt",
+      "3": "haazinu-3.txt",
+      "4": "haazinu-4.txt",
+      "5": "haazinu-5.txt",
+      "6": "haazinu-6.txt",
+      "7": "haazinu-7.txt",
+      "H": "haazinu-h.txt"
+    },
+    "missing": []
+  },
+  "V'Zot HaBerachah": {
+    "audioBase": "VezotHaberakhah",
+    "labels": {
+      "1": "Vezot Haberakhah-1.txt",
+      "2": "Vezot Haberakhah-2.txt",
+      "3": "Vezot Haberakhah-3.txt",
+      "4": "Vezot Haberakhah-4.txt",
+      "5": "Vezot Haberakhah-5.txt",
+      "6": "Vezot Haberakhah-6.txt",
+      "7": "Vezot Haberakhah-7.txt",
+      "H": "Vezot Haberakhah-h.txt"
+    },
+    "missing": []
+  }
+}

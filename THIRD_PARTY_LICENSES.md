@@ -21,3 +21,30 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
+
+---
+
+## PocketTorah (chanted Torah audio + word-level timings)
+
+- **Project:** https://pockettorah.com
+- **Source repo:** https://github.com/rneiss/PocketTorah
+- **Authors:** Russel Neiss & Rabbi Charlie Schwartz
+- **License:** Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) — https://creativecommons.org/licenses/by-sa/4.0/
+
+**Used by `torah_trainer.html`:**
+- Word-timing label files (`data/torah/labels/*.txt`) are mirrored into `/data/pockettorah/timings/` in this repository.
+- MP3 cantillation audio files (`data/audio/*.mp3`) are streamed on demand from `raw.githubusercontent.com/rneiss/PocketTorah/master/data/audio/`. They are not redistributed in this repository.
+- `data/pockettorah/aliyah.json` is mirrored from upstream `data/aliyah.json`.
+
+**Per the CC BY-SA 4.0 license:** any IvritSuite material that incorporates PocketTorah audio (the karaoke feature in `torah_trainer.html`) inherits the CC BY-SA 4.0 license. Visible attribution is shown in the karaoke audio bar and on the Torah Trainer page footer.
+
+---
+
+## Sefaria
+
+- **Project:** https://www.sefaria.org
+- **API:** https://www.sefaria.org/developers
+- **Texts license (Hebrew Tanakh):** Public domain.
+- **Translations license:** Generally Creative Commons Attribution-ShareAlike 3.0 (CC BY-SA 3.0) for community translations; some specific versions (e.g. JPS 1985) carry their own publisher licenses — see Sefaria's per-version metadata.
+
+**Used by `torah_trainer.html`:** Hebrew text and English translations are fetched at runtime via Sefaria's public REST API. Attribution is shown in the page footer.
