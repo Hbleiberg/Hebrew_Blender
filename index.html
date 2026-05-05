@@ -16,14 +16,14 @@
   gtag('config', 'G-CMLC81Z0HC');
 </script>
 <title>IvritSuite — Free Hebrew Literacy Tools</title>
-<meta name="description" content="Free Hebrew worksheets, flash cards, dictionary, and classroom tools for Hebrew learning and reading practice — for teachers and students.">
+<meta name="description" content="Free Hebrew worksheets, flash cards, dictionary, weekly parsha reader, and classroom tools for Hebrew learning and reading practice — for teachers and students.">
 <link rel="canonical" href="https://ivritsuite.com/">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Harrison Bleiberg">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="IvritSuite">
 <meta property="og:title" content="IvritSuite — Free Hebrew Literacy Tools">
-<meta property="og:description" content="A free collection of Hebrew literacy tools: worksheet generator, dictionary lookup, flash cards, classroom dashboard, and curated teaching resources.">
+<meta property="og:description" content="A free collection of Hebrew literacy tools: worksheet generator, dictionary lookup, flash cards, classroom dashboard, Torah Trainer parsha reader, and curated teaching resources.">
 <meta property="og:url" content="https://ivritsuite.com/">
 <meta property="og:image" content="https://ivritsuite.com/og-card.png?v=2">
 <meta property="og:image:width" content="1200">
@@ -32,7 +32,7 @@
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="IvritSuite — Free Hebrew Literacy Tools">
-<meta name="twitter:description" content="Free Hebrew literacy tools for teachers and students: worksheets, dictionary, flash cards, classroom dashboard, and resources.">
+<meta name="twitter:description" content="Free Hebrew literacy tools for teachers and students: worksheets, dictionary, flash cards, classroom dashboard, Torah Trainer, and resources.">
 <meta name="twitter:image" content="https://ivritsuite.com/og-card.png?v=2">
 <script type="application/ld+json">
 {
@@ -174,6 +174,13 @@ footer a{color:var(--gold);text-decoration:none;}
       <div class="go-btn">Hebrew Flash Cards →</div>
     </a>
 
+    <a class="page-card" href="torah_trainer.html">
+      <div class="icon">📜</div>
+      <h2>Torah Trainer <span class="beta-tag">Beta</span></h2>
+      <p>Read the weekly parsha with vowel coloring, transliteration, English translations, cantillation toggle, and chanted-audio karaoke (PocketTorah).</p>
+      <div class="go-btn">Torah Trainer →</div>
+    </a>
+
     <a class="page-card" href="resources.html">
       <div class="icon">📚</div>
       <h2>Hebrew Teaching Resources</h2>
@@ -196,7 +203,7 @@ footer a{color:var(--gold);text-decoration:none;}
       <button class="ie-modal-close" onclick="closeIEModal()">×</button>
     </div>
     <div class="ie-modal-body">
-      <p class="ie-note">Export bundles all presets, saved schedules, and dashboard settings from the Generator, Dashboard, and Flash Cards into one block of text. Paste a previously exported block to import everything back.</p>
+      <p class="ie-note">Export bundles all presets, saved schedules, and settings from the Generator, Dashboard, Flash Cards, Dictionary, and Torah Trainer into one block of text. Paste a previously exported block to import everything back.</p>
       <div class="btn-row">
         <button class="ie-action-btn primary" onclick="exportAllSettings()">⬇ Export All Settings</button>
         <button class="ie-action-btn primary" onclick="importAllSettings()">⬆ Import All Settings</button>
@@ -236,6 +243,7 @@ function exportAllSettings() {
     dictTranslitStyle:   localStorage.getItem('hebrewDictionary_translitStyle') || 'default',
     dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate') || '0.85',
     dictEmojiSettings:   JSON.parse(localStorage.getItem('hebrewDictionary_emojiSettings') || '{}'),
+    torahTrainerSettings: JSON.parse(localStorage.getItem('hebrewTorahTrainer_settings') || '{}'),
   };
   document.getElementById('ieTextarea').value = JSON.stringify(blob, null, 2);
 }
@@ -280,6 +288,10 @@ function importAllSettings() {
       const existing = JSON.parse(localStorage.getItem('hebrewDictionary_emojiSettings') || '{}');
       localStorage.setItem('hebrewDictionary_emojiSettings', JSON.stringify(Object.assign(existing, parsed.dictEmojiSettings)));
     }
+    if (parsed.torahTrainerSettings) {
+      const existing = JSON.parse(localStorage.getItem('hebrewTorahTrainer_settings') || '{}');
+      localStorage.setItem('hebrewTorahTrainer_settings', JSON.stringify(Object.assign(existing, parsed.torahTrainerSettings)));
+    }
     alert('Import successful! Reload the Dashboard to apply all settings.');
   } catch(e) { alert('Import failed: ' + e.message); }
 }
@@ -304,6 +316,7 @@ function eraseAllSettings() {
     'hebrewDictionary_translitStyle',
     'hebrewDictionary_ttsRate',
     'hebrewDictionary_emojiSettings',
+    'hebrewTorahTrainer_settings',
   ];
   keys.forEach(k => localStorage.removeItem(k));
   document.getElementById('ieTextarea').value = '';

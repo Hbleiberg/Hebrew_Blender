@@ -50,6 +50,21 @@ A live display board designed for classroom projectors and SmartBoards.
 - Dark mode (no-flash), fullscreen mode, ESC-to-close, presets save/load/export/import
 - SmartBoard compatible — responsive at any display resolution
 
+### Torah Trainer (`torah_trainer.html`) — Beta
+A reader for the weekly Torah portion (parsha) with toggleable translit, translations, vowel coloring, cantillation, TTS, and chanted-audio karaoke.
+
+- **54 parshiyot** + Haftarot, with current-week auto-detection via Sefaria's calendar (diaspora or Israel schedule)
+- **Layouts** — interlinear (Hebrew, translit, translation stacked per verse) or side-by-side columns; mobile collapses to single-column
+- **Translation versions** — dropdown populated from Sefaria's `/api/texts/versions/<book>`, defaults to JPS 1985 when available
+- **Cantillation toggle** — strip te'amim (U+0591–U+05AF) without touching nikkud
+- **Vowel color coding** with per-vowel color pickers and three modes (letter / highlight / underline)
+- **Hebrew font selector** (11 fonts; same picker as the dashboard)
+- **Transliteration** — Modern Israeli (default) / Ashkenazi / SBL Academic / Brill Academic / Simple Stressed; library is preloaded at init
+- **TTS** — `he-IL` Web Speech API, per-verse 🔊 button + Read-all sequencer, rate slider (0.5×–1.5×, default 0.85×)
+- **Chanted-audio karaoke** — streams [PocketTorah](https://pockettorah.com) MP3s on demand, highlights words in time with the audio (binary search on `audio.timeupdate`), playback rate slider, mutual exclusion with TTS
+- **Fullscreen mode** for SmartBoard projection
+- **Custom range picker** — read any chapter/verse range across the 5 books of the Torah
+
 ### Teaching Resources (`resources.html`)
 A curated, filterable directory of external Hebrew and Jewish-education resources.
 
@@ -72,6 +87,11 @@ Home page with navigation cards to all the tools above. Also hosts the global Im
 | `hebrew_dictionary.html` | Interactive word lookup and filter page |
 | `flash_cards.html` | Interactive syllable flash cards — Beta |
 | `classroom_dashboard.html` | Live classroom projector / SmartBoard dashboard — Beta |
+| `torah_trainer.html` | Weekly parsha reader with translit, vowel coloring, cantillation toggle, TTS, and PocketTorah karaoke — Beta |
+| `data/parshiyot.json` | All 54 parshiyot with Hebrew/English names, Sefaria refs, and PocketTorah keys |
+| `data/pockettorah/aliyah.json` | Mirrored from [PocketTorah](https://github.com/rneiss/PocketTorah) — full kriyah verse ranges per parsha |
+| `data/pockettorah/manifest.json` | Maps each parsha+aliyah to its actual upstream label filename |
+| `data/pockettorah/timings/*.txt` | Mirrored PocketTorah word-level timing files (~432 files, ~2 MB) |
 | `resources.html` | Curated directory of external Hebrew / Jewish-education resources |
 | `hebrew_words.json` | Structured word data (~2 MB, ~9,400 entries) loaded by both HTML pages via `fetch()` |
 | `hebrew_dictionary_4_19_2026.csv` | Source CSV used to build and update `hebrew_words.json`; includes Hebrew (nikkud), transliteration, translation, POS, and era fields |
