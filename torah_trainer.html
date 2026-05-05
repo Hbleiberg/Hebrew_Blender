@@ -1909,9 +1909,10 @@ function onAudioTimeUpdate() {
   lastHighlightedIdx = idx;
 }
 function clearKaraokeHighlight() {
-  if (lastHighlightedIdx >= 0 && karaokeWordSpans[lastHighlightedIdx]) {
-    karaokeWordSpans[lastHighlightedIdx].classList.remove('active');
-  }
+  // Clear every word that has .active — not just lastHighlightedIdx — so any
+  // race where the binary search paints ahead of the auto-pause still wipes
+  // cleanly. (Cheap: at most ~hundreds of nodes per aliyah.)
+  document.querySelectorAll('#ttReading .tt-word.active').forEach(el => el.classList.remove('active'));
   lastHighlightedIdx = -1;
 }
 function pauseKaraoke() {
