@@ -369,13 +369,23 @@ body.dark .tt-ref-hdr { color:var(--gold-light); }
 .tt-cell.heb { font-family:var(--heb-font); font-size:1.5rem; line-height:1.7; }
 .tt-cell.translit { font-style:italic; color:var(--muted); }
 
-/* Per-word span used for karaoke + click-to-speak */
+/* Per-word span used for karaoke highlighting + click-to-seek */
 .tt-word { transition:background 0.1s, color 0.1s; padding:1px 0; border-radius:3px; }
 .tt-word.active {
   background:var(--gold); color:var(--navy);
   box-shadow:0 0 0 2px var(--gold);
 }
 body.dark .tt-word.active { background:var(--gold-light); color:var(--navy-deep); }
+/* Click-to-seek affordance when the karaoke audio bar is open */
+body.tt-karaoke-active .tt-word { cursor:pointer; }
+body.tt-karaoke-active .tt-word:hover {
+  background:rgba(201,146,42,0.18);
+  box-shadow:0 0 0 2px rgba(201,146,42,0.45);
+}
+body.dark.tt-karaoke-active .tt-word:hover {
+  background:rgba(224,168,50,0.22);
+  box-shadow:0 0 0 2px rgba(224,168,50,0.55);
+}
 
 /* ───── Karaoke audio bar (sticky bottom) ───── */
 .tt-audio-bar {
@@ -1639,8 +1649,9 @@ async function loadKaraoke(parshahEntry, suffix) {
   currentAudio.ontimeupdate = onAudioTimeUpdate;
   currentAudio.onended = () => clearKaraokeHighlight();
   document.getElementById('ttAudioBar').classList.add('open');
+  document.body.classList.add('tt-karaoke-active');
   document.getElementById('ttAudioLabel').textContent = `${parshahEntry.en} · ${suffix === 'H' ? 'Haftarah' : 'Aliyah ' + suffix}`;
-  setKaraokeStatus(`Loaded ${timings.length} word timings.`);
+  setKaraokeStatus(`Loaded ${timings.length} word timings. Click any Hebrew word to jump to that part.`);
   // Word index alignment check: warn if mismatch
   updateKaraokeWordRefs();
   if (karaokeWordSpans.length && timings.length) {
@@ -1689,12 +1700,36 @@ function closeKaraoke() {
   pauseKaraoke();
   clearKaraokeHighlight();
   document.getElementById('ttAudioBar').classList.remove('open');
+  document.body.classList.remove('tt-karaoke-active');
   if (currentAudio) currentAudio.removeAttribute('src');
   currentTimings = null;
   // Auto-disable the karaoke toggle so the state is consistent
   settings.enableKaraoke = false;
   document.getElementById('optEnableKaraoke').checked = false;
   saveSettings();
+}
+
+// Click-to-seek: when karaoke audio is loaded, clicking a Hebrew word jumps
+// the audio to that word's start time. Delegated handler so it works for
+// every render without re-binding.
+function onReadingClick(e) {
+  if (!currentTimings || !currentAudio) return;
+  const wordEl = e.target.closest('.tt-word');
+  if (!wordEl) return;
+  const idx = parseInt(wordEl.dataset.twi, 10);
+  if (isNaN(idx) || idx < 0 || idx >= currentTimings.length) return;
+  const t = currentTimings[idx];
+  if (typeof t !== 'number' || isNaN(t)) return;
+  currentAudio.currentTime = t;
+  // Reset highlighter so the next timeupdate snaps cleanly to the new position.
+  if (lastHighlightedIdx >= 0 && karaokeWordSpans[lastHighlightedIdx]) {
+    karaokeWordSpans[lastHighlightedIdx].classList.remove('active');
+  }
+  lastHighlightedIdx = -1;
+  // If paused, start playing — feels natural after a click.
+  if (currentAudio.paused) {
+    currentAudio.play().catch(() => {/* autoplay restrictions; ignore */});
+  }
 }
 function setKaraokeStatus(msg) {
   const el = document.getElementById('optKaraokeStatus');
@@ -2162,6 +2197,7 @@ async function init() {
   wireSettingsForm();
   wireTranslit();
   checkTTSVoiceAvailability();
+  document.getElementById('ttReading').addEventListener('click', onReadingClick);
 
   // Determine starting parsha
   if (!settings.parshahKey) {
