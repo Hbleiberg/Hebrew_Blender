@@ -1075,22 +1075,23 @@ async function fetchSefariaText(ref, includeTranslation, version) {
   textCache.set(cacheKey, verses);
   return verses;
 }
-// Sefaria embeds paragraph markers like {פ} and {ס}, raw HTML entities (&nbsp;),
-// and an end-of-paragraph footnote anchor {S} or {P}. Strip them so they don't
-// pollute the rendered Hebrew or get fed into the transliterator.
+// Sefaria embeds paragraph markers like {פ} and {ס} and raw HTML entities
+// (&nbsp;, &thinsp;, &mdash;, etc.) even with return_format=text_only. Strip
+// the markers and decode all entities so they don't pollute the rendered
+// Hebrew or get fed into the transliterator.
+const _entityDecoder = (typeof document !== 'undefined') ? document.createElement('textarea') : null;
+function decodeHTMLEntities(s) {
+  if (!s || s.indexOf('&') === -1) return s || '';
+  if (_entityDecoder) { _entityDecoder.innerHTML = s; return _entityDecoder.value; }
+  return s;
+}
 function cleanSefariaText(s) {
   if (typeof s !== 'string' || !s) return '';
-  let out = s;
   // Drop curly-brace paragraph markers — Hebrew (פ ס) and Latin (P S F) variants.
-  out = out.replace(/\{[פסףפ׳ס׳PSFps]\}/g, '');
-  // Decode the HTML entities Sefaria leaves in even with return_format=text_only.
-  out = out.replace(/&nbsp;/g, ' ')
-           .replace(/&amp;/g, '&')
-           .replace(/&lt;/g, '<')
-           .replace(/&gt;/g, '>')
-           .replace(/&quot;/g, '"')
-           .replace(/&#39;|&apos;/g, "'");
-  // Collapse whitespace introduced by the strips.
+  let out = s.replace(/\{[פסףפ׳ס׳PSFps]\}/g, '');
+  // Decode every named/numeric HTML entity (&nbsp;, &thinsp;, &mdash;, &#8201;, …).
+  out = decodeHTMLEntities(out);
+  // Collapse whitespace introduced by stripping markers + replacing &nbsp;/&thinsp;.
   out = out.replace(/\s+/g, ' ').trim();
   return out;
 }
