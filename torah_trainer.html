@@ -2074,13 +2074,52 @@ async function populateVersionDropdown(book) {
 /* ══════════════════════════════════════════════════════
    "JUMP TO THIS WEEK'S PARSHA"
    ══════════════════════════════════════════════════════ */
+// Maps Sefaria spellings to our parshiyot.json `en` keys. Filled in only where
+// Sefaria's English spelling differs from ours (e.g. "Acharei" vs "Achrei").
+const SEFARIA_ALIASES = {
+  'achareimot': 'Achrei Mot',
+  'shelach':    "Sh'lach",
+  'shlach':     "Sh'lach",
+  'vaetchanan': "Va'etchanan",
+  'vaethanan':  "Va'etchanan",
+  'vaera':      "Va'eira",
+  'haazinu':    "Ha'azinu",
+  'reeh':       "Re'eh",
+  'behaalotcha':"Beha'alotcha",
+  'vezothaberachah': "V'Zot HaBerachah",
+  'vezothaberakhah': "V'Zot HaBerachah",
+};
+function normParshaName(s) { return s.toLowerCase().replace(/[^a-z]/g, ''); }
+function findParshaByName(sefariaName) {
+  if (!sefariaName) return null;
+  const target = normParshaName(sefariaName);
+  // 1. Exact match against our list
+  let m = parshiyotData.find(p => normParshaName(p.en) === target);
+  if (m) return m;
+  // 2. Sefaria-specific alias
+  if (SEFARIA_ALIASES[target]) {
+    m = parshiyotData.find(p => p.en === SEFARIA_ALIASES[target]);
+    if (m) return m;
+  }
+  // 3. Combined parsha (e.g. "Behar-Bechukotai"): try each segment
+  const parts = sefariaName.split(/[-–—\s]+/).map(s => s.trim()).filter(Boolean);
+  if (parts.length > 1) {
+    for (const part of parts) {
+      const np = normParshaName(part);
+      m = parshiyotData.find(p => normParshaName(p.en) === np);
+      if (m) return m;
+      if (SEFARIA_ALIASES[np]) {
+        m = parshiyotData.find(p => p.en === SEFARIA_ALIASES[np]);
+        if (m) return m;
+      }
+    }
+  }
+  return null;
+}
 async function goToCurrentParshah() {
   const name = await fetchCurrentParshah(settings.schedule !== 'israel');
   if (!name) { setStatus('Could not determine the current parsha (Sefaria API unreachable).', true); return; }
-  // Match the returned name to our list (loose matching)
-  const norm = s => s.toLowerCase().replace(/[^a-z]/g, '');
-  const target = norm(name);
-  const match = parshiyotData.find(p => norm(p.en) === target || norm(p.en).startsWith(target));
+  const match = findParshaByName(name);
   if (!match) { setStatus(`Sefaria says this week is "${name}" but it doesn't match our list.`, true); return; }
   settings.parshahKey = match.en;
   settings.scope = 'parsha-full';
@@ -2128,9 +2167,7 @@ async function init() {
   if (!settings.parshahKey) {
     const cur = await fetchCurrentParshah(settings.schedule !== 'israel');
     if (cur) {
-      const norm = s => s.toLowerCase().replace(/[^a-z]/g, '');
-      const target = norm(cur);
-      const match = parshiyotData.find(p => norm(p.en) === target || norm(p.en).startsWith(target));
+      const match = findParshaByName(cur);
       if (match) settings.parshahKey = match.en;
     }
     if (!settings.parshahKey && parshiyotData.length) settings.parshahKey = parshiyotData[0].en;
