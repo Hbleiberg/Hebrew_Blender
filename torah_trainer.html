@@ -829,7 +829,7 @@ body.fullscreen #fsExitBtn { display: flex; }
         <div class="form-row">
           <label for="optTranslitStyle">Style</label>
           <select id="optTranslitStyle">
-            <option value="modernIsraeli">Modern Israeli</option>
+            <option value="modernIsraeli">Modern Israeli [DEFAULT]</option>
             <option value="ashkenazi">Ashkenazi</option>
             <option value="sbl">SBL Academic</option>
             <option value="brill">Brill Academic</option>
@@ -2126,6 +2126,9 @@ async function init() {
 
   // Lazy-load the translit library if user has it on
   maybeEnsureTranslit();
+  // Also eagerly preload in the background so the default scheme is ready
+  // the moment the user toggles translit on (no flicker / empty rows).
+  if (window.HebrewTransliterator) window.HebrewTransliterator.ensureLoaded();
 
   fetchAndRender();
 }
