@@ -423,11 +423,21 @@ body.dark .tt-audio-bar { background:var(--navy-deep); }
 @media (max-width: 900px) {
   .tt-audio-bar .tt-audio-credit { flex-basis:100%; margin-left:0; padding-top:4px; max-width:none; }
 }
-.tt-audio-bar .tt-audio-close {
+.tt-audio-bar .tt-audio-close,
+.tt-audio-bar .tt-audio-collapse {
   background:rgba(255,255,255,0.12); color:#fff; border:none; border-radius:4px;
-  width:28px; height:28px; cursor:pointer; font-size:1rem;
+  width:28px; height:28px; cursor:pointer; font-size:1rem; line-height:1;
+  flex-shrink:0;
 }
-.tt-audio-bar .tt-audio-close:hover { background:rgba(255,255,255,0.22); }
+.tt-audio-bar .tt-audio-close:hover,
+.tt-audio-bar .tt-audio-collapse:hover { background:rgba(255,255,255,0.22); }
+.tt-audio-bar .tt-audio-collapse { transition:transform 0.2s; }
+.tt-audio-bar.collapsed .tt-audio-collapse { transform:rotate(180deg); }
+.tt-audio-bar.collapsed { padding:6px 14px; }
+.tt-audio-bar.collapsed audio,
+.tt-audio-bar.collapsed .tt-audio-rate,
+.tt-audio-bar.collapsed .tt-audio-credit { display:none; }
+.tt-audio-bar.collapsed .tt-audio-label { font-size:0.72rem; }
 
 /* ───── Settings drawer (lifted from classroom_dashboard.html:468-555) ───── */
 .settings-backdrop {
@@ -759,6 +769,7 @@ body.fullscreen #fsExitBtn { display: flex; }
 </div>
 
 <div class="tt-audio-bar" id="ttAudioBar" role="region" aria-label="Cantillation audio playback">
+  <button class="tt-audio-collapse" id="ttAudioCollapseBtn" onclick="toggleAudioBarCollapse()" aria-label="Collapse audio bar" title="Collapse / expand audio bar">▾</button>
   <span class="tt-audio-label" id="ttAudioLabel">Karaoke</span>
   <audio id="ttAudio" controls preload="none" aria-label="Chanted Torah audio"></audio>
   <span class="tt-audio-rate">
@@ -860,9 +871,8 @@ body.fullscreen #fsExitBtn { display: flex; }
     <div class="panel collapsed">
       <div class="panel-title">Speech (TTS)</div>
       <div class="panel-body">
-        <div class="form-row">
-          <label>Enable TTS <span class="tip-wrap" data-tip="Uses the browser's Hebrew voice (he-IL) to read verses aloud as plain prose — separate from cantillation karaoke."><i class="tip-icon">?</i></span></label>
-          <label class="toggle"><input type="checkbox" id="optEnableTTS"><span class="slider"></span></label>
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:8px;">
+          Click 🔊 Read on any verse to hear it spoken via the browser's Hebrew voice.
         </div>
         <div class="slider-row">
           <label>Rate</label>
@@ -877,9 +887,8 @@ body.fullscreen #fsExitBtn { display: flex; }
     <div class="panel collapsed">
       <div class="panel-title">Chanting karaoke</div>
       <div class="panel-body">
-        <div class="form-row">
-          <label>Enable karaoke <span class="tip-wrap" data-tip="Streams chanted audio from PocketTorah and highlights words in real time. Pick an aliyah from the Reading dropdown to align audio with text."><i class="tip-icon">?</i></span></label>
-          <label class="toggle"><input type="checkbox" id="optEnableKaraoke"><span class="slider"></span></label>
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:8px;">
+          Click 🎵 Chant on any verse to stream the PocketTorah recording and highlight words in real time. The audio bar at the bottom can be collapsed when you don't need it.
         </div>
         <div class="slider-row">
           <label>Rate</label>
@@ -979,10 +988,10 @@ const DEFAULTS = {
   colorCodingMode: 'letter',
   nikudColorOverrides: {},
   translitStyle: 'modernIsraeli',
-  enableKaraoke: false,
+  // TTS + Chanting are always available; rate sliders apply.
   karaokeRate: 1.0,
-  enableTTS: false,
   ttsRate: 0.75,
+  karaokeBarCollapsed: false,
 };
 let settings = JSON.parse(JSON.stringify(DEFAULTS));
 
@@ -1512,8 +1521,8 @@ async function fetchAndRender() {
       const book = r.parshahEntry ? r.parshahEntry.book : (settings.customRef || '').split(/[ .]/)[0];
       if (book && settings.showTranslation) populateVersionDropdown(book);
     }
-    // If karaoke is enabled, also load the audio + timings for this scope
-    if (settings.enableKaraoke) maybeLoadKaraoke(r);
+    // Auto-load karaoke audio + timings when the user picks an aliyah/haftarah.
+    maybeLoadKaraoke(r);
   } catch (e) {
     console.error(e);
     setStatus(`Failed to load ${r.label}: ${e.message}. Sefaria API may be unreachable.`, true);
@@ -1530,10 +1539,6 @@ function setStatus(msg, isError) {
    ══════════════════════════════════════════════════════ */
 const ttsState = { readAllActive: false, readAllIdx: 0, currentBtn: null };
 function speakVerse(numLabel) {
-  if (!settings.enableTTS) {
-    setStatus('Enable TTS in settings to use the Read button.', false);
-    return;
-  }
   // stop karaoke if playing (mutual exclusion)
   pauseKaraoke();
   const v = currentVerses.find(x => `${x.chapter}:${x.verse}` === numLabel);
@@ -1547,11 +1552,9 @@ function speakVerse(numLabel) {
 // is ready.
 let _pendingChantVerse = null;
 async function chantVerse(numLabel) {
-  // If audio is already loaded and this verse is in range, seek immediately.
   if (currentTimings && currentAudio && seekToVerseInLoadedAudio(numLabel, /*silent*/ true)) {
     return;
   }
-  // Otherwise resolve which aliyah contains this verse for the current parsha.
   const m = numLabel.match(/^(\d+):(\d+)$/);
   if (!m) return;
   const tc = parseInt(m[1], 10), tv = parseInt(m[2], 10);
@@ -1566,13 +1569,6 @@ async function chantVerse(numLabel) {
     if (verseInRange(tc, tv, r)) { aliyahNum = num; break; }
   }
   if (!aliyahNum) { setStatus(`Verse ${numLabel} is outside this parsha's aliyot — pick Haftarah from Reading if you want to chant it.`, true); return; }
-  // Auto-enable karaoke and switch scope, then fetchAndRender. The seek
-  // happens once timings + audio are wired up by loadKaraoke().
-  if (!settings.enableKaraoke) {
-    settings.enableKaraoke = true;
-    const tog = document.getElementById('optEnableKaraoke');
-    if (tog) tog.checked = true;
-  }
   const newScope = `parsha-aliyah-${aliyahNum}`;
   if (settings.scope !== newScope) {
     settings.scope = newScope;
@@ -1627,11 +1623,6 @@ function speakHebrew(text) {
 }
 function toggleReadAll() {
   if (ttsState.readAllActive) { stopReadAll(); return; }
-  if (!settings.enableTTS) {
-    settings.enableTTS = true;
-    document.getElementById('optEnableTTS').checked = true;
-    saveSettings();
-  }
   pauseKaraoke();
   ttsState.readAllActive = true;
   ttsState.readAllIdx = 0;
@@ -1694,19 +1685,10 @@ let lastHighlightedIdx = -1;
 
 function maybeLoadKaraoke(rangeInfo) {
   // rangeInfo: { ref, label, parshahEntry, aliyahNum, isHaftarah }
-  if (!settings.enableKaraoke) return;
-  // No parsha (custom ref) or no aliyah picked yet: keep karaoke enabled, hide
-  // the audio bar, surface a hint. Don't auto-disable the toggle — the user
-  // will pick an aliyah and we'll load then.
-  if (!rangeInfo || !rangeInfo.parshahEntry) {
-    setKaraokeStatus('Karaoke is only available within a parsha (not custom ranges). Pick a parsha to chant.');
-    setStatus('Karaoke ready — pick a parsha to chant.', false);
-    teardownKaraokeAudio();
-    return;
-  }
-  if (rangeInfo.aliyahNum == null) {
-    setKaraokeStatus('Pick an aliyah (1–7) or Haftarah from the Reading dropdown to play chanted audio.');
-    setStatus('Karaoke ready — pick an aliyah from the Reading dropdown to load the chant.', false);
+  // Karaoke is always available — only load audio when the user has picked an
+  // aliyah/haftarah scope. Otherwise just keep the audio bar hidden quietly;
+  // the per-verse 🎵 Chant button auto-switches scope on click.
+  if (!rangeInfo || !rangeInfo.parshahEntry || rangeInfo.aliyahNum == null) {
     teardownKaraokeAudio();
     return;
   }
@@ -1757,7 +1739,9 @@ async function loadKaraoke(parshahEntry, suffix) {
   };
   currentAudio.ontimeupdate = onAudioTimeUpdate;
   currentAudio.onended = () => clearKaraokeHighlight();
-  document.getElementById('ttAudioBar').classList.add('open');
+  const bar = document.getElementById('ttAudioBar');
+  bar.classList.add('open');
+  bar.classList.toggle('collapsed', !!settings.karaokeBarCollapsed);
   document.body.classList.add('tt-karaoke-active');
   document.getElementById('ttAudioLabel').textContent = `${parshahEntry.en} · ${suffix === 'H' ? 'Haftarah' : 'Aliyah ' + suffix}`;
   setKaraokeStatus(`Loaded ${timings.length} word timings. Click any Hebrew word to jump to that part.`);
@@ -1814,16 +1798,18 @@ function pauseKaraoke() {
   if (currentAudio && !currentAudio.paused) currentAudio.pause();
 }
 function closeKaraoke() {
-  pauseKaraoke();
-  clearKaraokeHighlight();
-  document.getElementById('ttAudioBar').classList.remove('open');
-  document.body.classList.remove('tt-karaoke-active');
-  if (currentAudio) currentAudio.removeAttribute('src');
-  currentTimings = null;
-  // Auto-disable the karaoke toggle so the state is consistent
-  settings.enableKaraoke = false;
-  document.getElementById('optEnableKaraoke').checked = false;
+  // Just tear down the audio + hide the bar; karaoke is always available so
+  // we don't need to flip a setting. Re-trigger by clicking 🎵 Chant.
+  teardownKaraokeAudio();
+}
+
+function toggleAudioBarCollapse() {
+  const bar = document.getElementById('ttAudioBar');
+  const collapsed = bar.classList.toggle('collapsed');
+  settings.karaokeBarCollapsed = collapsed;
   saveSettings();
+  const btn = document.getElementById('ttAudioCollapseBtn');
+  if (btn) btn.setAttribute('aria-label', collapsed ? 'Expand audio bar' : 'Collapse audio bar');
 }
 
 // Click-to-seek: when karaoke audio is loaded, clicking a Hebrew word jumps
@@ -2019,12 +2005,10 @@ function syncFormToSettings() {
   toggleColorOptionsVisibility(settings.colorCodeNikkud);
   // translit style
   document.getElementById('optTranslitStyle').value = settings.translitStyle || 'modernIsraeli';
-  // tts
-  document.getElementById('optEnableTTS').checked = !!settings.enableTTS;
+  // tts (always available, only the rate is configurable)
   document.getElementById('optTTSRate').value = settings.ttsRate;
   document.getElementById('optTTSRateVal').textContent = (parseFloat(settings.ttsRate) || 0.75).toFixed(2) + '×';
-  // karaoke
-  document.getElementById('optEnableKaraoke').checked = !!settings.enableKaraoke;
+  // karaoke (always available, only the rate is configurable)
   document.getElementById('optKaraokeRate').value = settings.karaokeRate;
   document.getElementById('optKaraokeRateVal').textContent = (parseFloat(settings.karaokeRate) || 1.0).toFixed(2) + '×';
   // top-bar controls
@@ -2074,27 +2058,14 @@ function wireSettingsForm() {
       if (e.target.checked) { settings.colorCodingMode = e.target.value; saveSettings(); renderText(); }
     });
   });
-  // TTS
-  document.getElementById('optEnableTTS').addEventListener('change', e => {
-    settings.enableTTS = e.target.checked;
-    if (!settings.enableTTS) speechSynthesis.cancel();
-    saveSettings();
-  });
+  // TTS rate slider (TTS itself is always available)
   const ttsRate = document.getElementById('optTTSRate');
   ttsRate.addEventListener('input', e => {
     settings.ttsRate = parseFloat(e.target.value);
     document.getElementById('optTTSRateVal').textContent = settings.ttsRate.toFixed(2) + '×';
     saveSettings();
   });
-  // Karaoke
-  document.getElementById('optEnableKaraoke').addEventListener('change', e => {
-    settings.enableKaraoke = e.target.checked;
-    saveSettings();
-    if (settings.enableKaraoke) {
-      const r = resolveRef();
-      if (r) maybeLoadKaraoke(r);
-    } else closeKaraoke();
-  });
+  // Karaoke rate slider (karaoke is always available; loads when an aliyah is picked)
   const kRate = document.getElementById('optKaraokeRate');
   kRate.addEventListener('input', e => {
     settings.karaokeRate = parseFloat(e.target.value);
