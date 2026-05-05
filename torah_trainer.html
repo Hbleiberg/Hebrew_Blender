@@ -431,19 +431,22 @@ body.dark .tt-audio-bar { background:var(--navy-deep); }
 @media (max-width: 900px) {
   .tt-audio-bar .tt-audio-credit { flex-basis:100%; margin-left:0; padding-top:4px; max-width:none; }
 }
-.tt-audio-bar .tt-audio-close,
-.tt-audio-bar .tt-audio-collapse {
+.tt-audio-bar .tt-audio-collapse,
+.tt-audio-bar .tt-audio-playpause {
   background:rgba(255,255,255,0.12); color:#fff; border:none; border-radius:4px;
   width:28px; height:28px; cursor:pointer; font-size:1rem; line-height:1;
-  flex-shrink:0;
+  flex-shrink:0; padding:0;
 }
-.tt-audio-bar .tt-audio-close:hover,
-.tt-audio-bar .tt-audio-collapse:hover { background:rgba(255,255,255,0.22); }
+.tt-audio-bar .tt-audio-collapse:hover,
+.tt-audio-bar .tt-audio-playpause:hover { background:rgba(255,255,255,0.22); }
 .tt-audio-bar .tt-audio-collapse { transition:transform 0.2s; }
 .tt-audio-bar.collapsed .tt-audio-collapse { transform:rotate(180deg); }
+/* Show the play/pause button only when the bar is collapsed; the native audio
+   element exposes the same control when expanded. */
+.tt-audio-bar:not(.collapsed) .tt-audio-playpause { display:none; }
 .tt-audio-bar.collapsed { padding:6px 14px; }
 .tt-audio-bar.collapsed audio,
-.tt-audio-bar.collapsed .tt-audio-rate,
+.tt-audio-bar.collapsed .tt-audio-rates,
 .tt-audio-bar.collapsed .tt-audio-credit { display:none; }
 .tt-audio-bar.collapsed .tt-audio-label { font-size:0.72rem; }
 
@@ -778,6 +781,7 @@ body.fullscreen #fsExitBtn { display: flex; }
 
 <div class="tt-audio-bar" id="ttAudioBar" role="region" aria-label="Cantillation audio playback">
   <button class="tt-audio-collapse" id="ttAudioCollapseBtn" onclick="toggleAudioBarCollapse()" aria-label="Collapse audio bar" title="Collapse / expand audio bar">▾</button>
+  <button class="tt-audio-playpause" id="ttAudioPlayPauseBtn" onclick="toggleAudioPlay()" aria-label="Play or pause" title="Play / pause">▶</button>
   <span class="tt-audio-label" id="ttAudioLabel">Karaoke</span>
   <audio id="ttAudio" controls preload="none" aria-label="Chanted Torah audio"></audio>
   <span class="tt-audio-rates">
@@ -1749,9 +1753,12 @@ async function loadKaraoke(parshahEntry, suffix) {
   currentAudio.onplay = () => {
     if (ttsState.readAllActive) stopReadAll();   // mutual exclusion with TTS
     speechSynthesis.cancel();
+    updatePlayPauseIcon();
   };
+  currentAudio.onpause = () => updatePlayPauseIcon();
+  currentAudio.onloadedmetadata = () => updatePlayPauseIcon();
   currentAudio.ontimeupdate = onAudioTimeUpdate;
-  currentAudio.onended = () => clearKaraokeHighlight();
+  currentAudio.onended = () => { clearKaraokeHighlight(); updatePlayPauseIcon(); };
   const bar = document.getElementById('ttAudioBar');
   bar.classList.add('open');
   bar.classList.toggle('collapsed', !!settings.karaokeBarCollapsed);
@@ -1823,6 +1830,18 @@ function toggleAudioBarCollapse() {
   saveSettings();
   const btn = document.getElementById('ttAudioCollapseBtn');
   if (btn) btn.setAttribute('aria-label', collapsed ? 'Expand audio bar' : 'Collapse audio bar');
+}
+
+function toggleAudioPlay() {
+  if (!currentAudio || !currentAudio.src) return;
+  if (currentAudio.paused) currentAudio.play().catch(() => {});
+  else currentAudio.pause();
+}
+function updatePlayPauseIcon() {
+  const btn = document.getElementById('ttAudioPlayPauseBtn');
+  if (!btn || !currentAudio) return;
+  btn.textContent = currentAudio.paused ? '▶' : '⏸';
+  btn.setAttribute('aria-label', currentAudio.paused ? 'Play' : 'Pause');
 }
 
 // Click-to-seek: when karaoke audio is loaded, clicking a Hebrew word jumps
