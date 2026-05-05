@@ -407,12 +407,20 @@ body.dark .tt-audio-bar { background:var(--navy-deep); }
   letter-spacing:0.06em; color:var(--gold-light);
   white-space:nowrap;
 }
-.tt-audio-bar .tt-audio-rate {
-  display:inline-flex; align-items:center; gap:6px;
-  font-size:0.75rem; color:#fff;
+.tt-audio-bar .tt-audio-rates {
+  display:inline-flex; flex-direction:column; gap:3px;
+  font-size:0.72rem; color:#fff;
 }
-.tt-audio-bar .tt-audio-rate input[type="range"] {
+.tt-audio-bar .tt-audio-rates .row { display:flex; align-items:center; gap:6px; }
+.tt-audio-bar .tt-audio-rates .row label {
+  color:var(--gold-light); font-weight:600; min-width:42px; letter-spacing:0.02em;
+}
+.tt-audio-bar .tt-audio-rates input[type="range"] {
   width:90px; accent-color:var(--gold); cursor:pointer;
+}
+.tt-audio-bar .tt-audio-rates .val {
+  color:#fff; min-width:44px; text-align:right;
+  font-variant-numeric:tabular-nums;
 }
 .tt-audio-bar .tt-audio-credit {
   font-size:0.65rem; color:var(--gold-light);
@@ -772,10 +780,17 @@ body.fullscreen #fsExitBtn { display: flex; }
   <button class="tt-audio-collapse" id="ttAudioCollapseBtn" onclick="toggleAudioBarCollapse()" aria-label="Collapse audio bar" title="Collapse / expand audio bar">▾</button>
   <span class="tt-audio-label" id="ttAudioLabel">Karaoke</span>
   <audio id="ttAudio" controls preload="none" aria-label="Chanted Torah audio"></audio>
-  <span class="tt-audio-rate">
-    <label for="ttKaraokeRate">Speed</label>
-    <input type="range" id="ttKaraokeRate" min="0.5" max="1.5" step="0.05" value="1.0" aria-label="Audio playback speed">
-    <span id="ttKaraokeRateVal">1.00×</span>
+  <span class="tt-audio-rates">
+    <span class="row">
+      <label for="ttKaraokeRate">Chant</label>
+      <input type="range" id="ttKaraokeRate" min="0.5" max="1.5" step="0.05" value="1.0" aria-label="Chanting playback speed">
+      <span class="val" id="ttKaraokeRateVal">1.00×</span>
+    </span>
+    <span class="row">
+      <label for="ttTTSRateBar">Read</label>
+      <input type="range" id="ttTTSRateBar" min="0.5" max="1.5" step="0.05" value="0.75" aria-label="TTS reading speed">
+      <span class="val" id="ttTTSRateBarVal">0.75×</span>
+    </span>
   </span>
   <span class="tt-audio-credit">
     Cantillation © Russel Neiss &amp; Rabbi Charlie Schwartz, <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC&nbsp;BY-SA&nbsp;4.0</a>
@@ -869,35 +884,26 @@ body.fullscreen #fsExitBtn { display: flex; }
     </div>
 
     <div class="panel collapsed">
-      <div class="panel-title">Speech (TTS)</div>
+      <div class="panel-title">Audio speeds</div>
       <div class="panel-body">
-        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:8px;">
-          Click 🔊 Read on any verse to hear it spoken via the browser's Hebrew voice.
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;line-height:1.45;">
+          Click <strong>🔊 Read</strong> on any verse for browser TTS in Hebrew, or <strong>🎵 Chant</strong> to stream PocketTorah's recording with real-time word highlighting. These sliders mirror the ones in the audio bar at the bottom of the page.
         </div>
         <div class="slider-row">
-          <label>Rate</label>
-          <input type="range" id="optTTSRate" min="0.5" max="1.5" step="0.05" value="0.75">
-          <span class="sval" id="optTTSRateVal">0.75×</span>
-          <button class="sreset" onclick="resetTTSRate()" type="button" title="Restore default">↺</button>
-        </div>
-        <div id="optTTSStatus" style="font-size:0.72rem;color:var(--muted);"></div>
-      </div>
-    </div>
-
-    <div class="panel collapsed">
-      <div class="panel-title">Chanting karaoke</div>
-      <div class="panel-body">
-        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:8px;">
-          Click 🎵 Chant on any verse to stream the PocketTorah recording and highlight words in real time. The audio bar at the bottom can be collapsed when you don't need it.
-        </div>
-        <div class="slider-row">
-          <label>Rate</label>
+          <label>Chant</label>
           <input type="range" id="optKaraokeRate" min="0.5" max="1.5" step="0.05" value="1.0">
           <span class="sval" id="optKaraokeRateVal">1.00×</span>
           <button class="sreset" onclick="resetKaraokeRate()" type="button" title="Restore default">↺</button>
         </div>
-        <div id="optKaraokeStatus" style="font-size:0.72rem;color:var(--muted);"></div>
-        <div style="font-size:0.68rem;color:var(--muted);margin-top:8px;line-height:1.4;">
+        <div class="slider-row">
+          <label>Read</label>
+          <input type="range" id="optTTSRate" min="0.5" max="1.5" step="0.05" value="0.75">
+          <span class="sval" id="optTTSRateVal">0.75×</span>
+          <button class="sreset" onclick="resetTTSRate()" type="button" title="Restore default">↺</button>
+        </div>
+        <div id="optTTSStatus" style="font-size:0.7rem;color:var(--muted);margin-top:6px;"></div>
+        <div id="optKaraokeStatus" style="font-size:0.7rem;color:var(--muted);margin-top:4px;"></div>
+        <div style="font-size:0.65rem;color:var(--muted);margin-top:10px;line-height:1.4;">
           Cantillation audio © Russel Neiss &amp; Rabbi Charlie Schwartz,
           <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener" style="color:var(--gold);">PocketTorah</a>,
           <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" style="color:var(--gold);">CC&nbsp;BY-SA&nbsp;4.0</a>.
@@ -1668,9 +1674,17 @@ function checkTTSVoiceAvailability() {
   }
 }
 function resetTTSRate() {
-  settings.ttsRate = DEFAULTS.ttsRate;
-  document.getElementById('optTTSRate').value = settings.ttsRate;
-  document.getElementById('optTTSRateVal').textContent = settings.ttsRate.toFixed(2) + '×';
+  const v = DEFAULTS.ttsRate;
+  settings.ttsRate = v;
+  const fmt = v.toFixed(2) + '×';
+  const drawer = document.getElementById('optTTSRate');
+  const drawerVal = document.getElementById('optTTSRateVal');
+  const bar = document.getElementById('ttTTSRateBar');
+  const barVal = document.getElementById('ttTTSRateBarVal');
+  if (drawer) drawer.value = v;
+  if (drawerVal) drawerVal.textContent = fmt;
+  if (bar) bar.value = v;
+  if (barVal) barVal.textContent = fmt;
   saveSettings();
 }
 
@@ -2005,12 +2019,18 @@ function syncFormToSettings() {
   toggleColorOptionsVisibility(settings.colorCodeNikkud);
   // translit style
   document.getElementById('optTranslitStyle').value = settings.translitStyle || 'modernIsraeli';
-  // tts (always available, only the rate is configurable)
-  document.getElementById('optTTSRate').value = settings.ttsRate;
-  document.getElementById('optTTSRateVal').textContent = (parseFloat(settings.ttsRate) || 0.75).toFixed(2) + '×';
-  // karaoke (always available, only the rate is configurable)
-  document.getElementById('optKaraokeRate').value = settings.karaokeRate;
-  document.getElementById('optKaraokeRateVal').textContent = (parseFloat(settings.karaokeRate) || 1.0).toFixed(2) + '×';
+  // TTS rate (drawer + audio-bar sliders mirror each other)
+  const ttsR = parseFloat(settings.ttsRate) || 0.75;
+  document.getElementById('optTTSRate').value = ttsR;
+  document.getElementById('optTTSRateVal').textContent = ttsR.toFixed(2) + '×';
+  const ttsBar = document.getElementById('ttTTSRateBar');
+  if (ttsBar) ttsBar.value = ttsR;
+  const ttsBarVal = document.getElementById('ttTTSRateBarVal');
+  if (ttsBarVal) ttsBarVal.textContent = ttsR.toFixed(2) + '×';
+  // Karaoke rate (drawer + audio-bar mirror)
+  const kR = parseFloat(settings.karaokeRate) || 1.0;
+  document.getElementById('optKaraokeRate').value = kR;
+  document.getElementById('optKaraokeRateVal').textContent = kR.toFixed(2) + '×';
   // top-bar controls
   document.getElementById('ttShowTranslit').checked = !!settings.showTranslit;
   document.getElementById('ttShowTranslation').checked = !!settings.showTranslation;
@@ -2058,13 +2078,22 @@ function wireSettingsForm() {
       if (e.target.checked) { settings.colorCodingMode = e.target.value; saveSettings(); renderText(); }
     });
   });
-  // TTS rate slider (TTS itself is always available)
-  const ttsRate = document.getElementById('optTTSRate');
-  ttsRate.addEventListener('input', e => {
-    settings.ttsRate = parseFloat(e.target.value);
-    document.getElementById('optTTSRateVal').textContent = settings.ttsRate.toFixed(2) + '×';
+  // TTS rate sliders — drawer + audio bar both write to settings.ttsRate and
+  // mirror each other so the user sees the same value wherever they adjust.
+  function applyTtsRate(v) {
+    settings.ttsRate = v;
+    const drawerVal = document.getElementById('optTTSRateVal');
+    const barVal    = document.getElementById('ttTTSRateBarVal');
+    const drawerSl  = document.getElementById('optTTSRate');
+    const barSl     = document.getElementById('ttTTSRateBar');
+    if (drawerSl && parseFloat(drawerSl.value) !== v) drawerSl.value = v;
+    if (barSl && parseFloat(barSl.value) !== v) barSl.value = v;
+    if (drawerVal) drawerVal.textContent = v.toFixed(2) + '×';
+    if (barVal) barVal.textContent = v.toFixed(2) + '×';
     saveSettings();
-  });
+  }
+  document.getElementById('optTTSRate').addEventListener('input', e => applyTtsRate(parseFloat(e.target.value)));
+  document.getElementById('ttTTSRateBar').addEventListener('input', e => applyTtsRate(parseFloat(e.target.value)));
   // Karaoke rate slider (karaoke is always available; loads when an aliyah is picked)
   const kRate = document.getElementById('optKaraokeRate');
   kRate.addEventListener('input', e => {
