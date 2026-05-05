@@ -298,6 +298,9 @@ body.dark .tt-ref-hdr { color:var(--gold-light); }
 }
 .tt-ref-hdr .tt-readall:hover { background:var(--gold-light); }
 .tt-ref-hdr .tt-readall.active { background:#cc3333; color:#fff; }
+.tt-ref-hdr .tt-chantall { background:var(--navy); color:var(--gold-light); }
+.tt-ref-hdr .tt-chantall:hover { background:#2a3a60; }
+body.dark .tt-ref-hdr .tt-chantall { background:#0a0f1c; }
 
 /* Interlinear: stacked rows per verse */
 .tt-verse {
@@ -1408,7 +1411,13 @@ function renderText() {
   const layout = settings.layout || 'sidebyside';
   const includeTranslit = settings.showTranslit;
   const includeTrans    = settings.showTranslation;
-  let html = `<div class="tt-ref-hdr"><span>${escapeHTML(currentRangeLabel)}</span><button class="tt-readall" id="ttReadAllBtn" onclick="toggleReadAll()" type="button">${ttsState.readAllActive ? '⏹ Stop' : '🔊 Read all'}</button></div>`;
+  let html = `<div class="tt-ref-hdr">
+    <span>${escapeHTML(currentRangeLabel)}</span>
+    <span style="display:flex;gap:6px;">
+      <button class="tt-readall" id="ttReadAllBtn" onclick="toggleReadAll()" type="button">${ttsState.readAllActive ? '⏹ Stop' : '🔊 Read all'}</button>
+      <button class="tt-readall tt-chantall" id="ttChantAllBtn" onclick="toggleChantAll()" type="button">${chantAllState.active ? '⏹ Stop chant' : '🎵 Chant all'}</button>
+    </span>
+  </div>`;
   const wordIdxRef = { value: 0 };
   if (layout === 'interlinear') {
     html += renderInterlinear(currentVerses, includeTranslit, includeTrans, wordIdxRef);
@@ -1416,7 +1425,6 @@ function renderText() {
     html += renderSideBySide(currentVerses, includeTranslit, includeTrans, wordIdxRef);
   }
   root.innerHTML = html;
-  // After DOM is built, if karaoke was loaded, re-link the word array
   if (currentTimings && currentAudio) updateKaraokeWordRefs();
 }
 function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef) {
@@ -1593,17 +1601,32 @@ async function chantVerse(numLabel) {
 }
 
 // Returns true if the seek succeeded (verse was in range), false if not.
+// When invoked from the per-verse Chant button we also set _verseEndStopAt
+// so playback pauses at the end of just that verse.
 function seekToVerseInLoadedAudio(numLabel, silent) {
   if (!currentTimings || !currentAudio) return false;
   const verseEl = document.querySelector(`#ttReading [data-vk="${numLabel}"]`);
   if (!verseEl) { if (!silent) setStatus(`Couldn't find verse ${numLabel} in the rendered text.`, true); return false; }
-  const firstWord = verseEl.querySelector('.tt-word');
-  if (!firstWord) { if (!silent) setStatus(`Verse ${numLabel} has no Hebrew words to chant.`, true); return false; }
-  const idx = parseInt(firstWord.dataset.twi, 10);
-  if (isNaN(idx) || idx < 0 || idx >= currentTimings.length) return false;
+  const verseWords = verseEl.querySelectorAll('.tt-word');
+  if (!verseWords.length) { if (!silent) setStatus(`Verse ${numLabel} has no Hebrew words to chant.`, true); return false; }
+  const startIdx = parseInt(verseWords[0].dataset.twi, 10);
+  const lastIdx  = parseInt(verseWords[verseWords.length - 1].dataset.twi, 10);
+  if (isNaN(startIdx) || startIdx < 0 || startIdx >= currentTimings.length) return false;
   if (ttsState.readAllActive) stopReadAll();
   speechSynthesis.cancel();
-  currentAudio.currentTime = currentTimings[idx];
+  // Pause at the start of the next word after this verse, or at the end of
+  // the audio if this is the last verse in the loaded aliyah. Skip the auto-
+  // pause when Chant all is running.
+  let stopAt = null;
+  if (!chantAllState.active) {
+    if (!isNaN(lastIdx) && lastIdx + 1 < currentTimings.length) {
+      stopAt = currentTimings[lastIdx + 1];
+    } else if (currentAudio.duration && isFinite(currentAudio.duration)) {
+      stopAt = currentAudio.duration;
+    }
+  }
+  _verseEndStopAt = stopAt;
+  currentAudio.currentTime = currentTimings[startIdx];
   if (lastHighlightedIdx >= 0 && karaokeWordSpans[lastHighlightedIdx]) {
     karaokeWordSpans[lastHighlightedIdx].classList.remove('active');
   }
@@ -1657,6 +1680,73 @@ function stopReadAll() {
   const btn = document.getElementById('ttReadAllBtn');
   if (btn) { btn.textContent = '🔊 Read all'; btn.classList.remove('active'); }
 }
+
+/* ══════════════════════════════════════════════════════
+   CHANT ALL  (chain through aliyot 1→7 in full-parsha mode,
+   or play the currently loaded aliyah/haftarah from start)
+   ══════════════════════════════════════════════════════ */
+async function toggleChantAll() {
+  if (chantAllState.active) { stopChantAll(); return; }
+  const p = parshiyotData.find(x => x.en === settings.parshahKey);
+  if (!p) { setStatus('Pick a parsha first to chant.', false); return; }
+  if (ttsState.readAllActive) stopReadAll();
+  speechSynthesis.cancel();
+  // Build the queue based on the current scope.
+  let queue;
+  if (settings.scope === 'parsha-haftarah') queue = ['H'];
+  else if (/^parsha-aliyah-(\d)$/.test(settings.scope)) {
+    queue = [settings.scope.match(/(\d)$/)[1]];
+  } else {
+    queue = ['1','2','3','4','5','6','7'];
+  }
+  chantAllState.active = true;
+  chantAllState.queue = queue;
+  chantAllState.parsha = p;
+  _verseEndStopAt = null;
+  const btn = document.getElementById('ttChantAllBtn');
+  if (btn) { btn.textContent = '⏹ Stop chant'; btn.classList.add('active'); }
+  await playNextChant();
+}
+
+async function playNextChant() {
+  if (!chantAllState.active || !chantAllState.queue || !chantAllState.queue.length) {
+    stopChantAll();
+    return;
+  }
+  const sfx = chantAllState.queue.shift();
+  const newScope = sfx === 'H' ? 'parsha-haftarah' : `parsha-aliyah-${sfx}`;
+  if (settings.scope !== newScope) {
+    settings.scope = newScope;
+    const sel = document.getElementById('scopeSelect');
+    if (sel) sel.value = newScope;
+    saveSettings();
+    await fetchAndRender();
+  } else if (!currentAudio || !currentAudio.src) {
+    // Same scope but audio not loaded yet — trigger render to pick it up.
+    await fetchAndRender();
+  }
+  if (!currentAudio || !chantAllState.active) return;
+  // Wire the chain: when this aliyah ends, hop to the next.
+  currentAudio.onended = () => {
+    clearKaraokeHighlight();
+    updatePlayPauseIcon();
+    if (chantAllState.active) playNextChant();
+  };
+  currentAudio.currentTime = 0;
+  currentAudio.play().catch(() => {});
+}
+
+function stopChantAll() {
+  chantAllState.active = false;
+  chantAllState.queue = null;
+  if (currentAudio) {
+    if (!currentAudio.paused) currentAudio.pause();
+    // Restore the default ended handler set by loadKaraoke().
+    currentAudio.onended = () => { clearKaraokeHighlight(); updatePlayPauseIcon(); };
+  }
+  const btn = document.getElementById('ttChantAllBtn');
+  if (btn) { btn.textContent = '🎵 Chant all'; btn.classList.remove('active'); }
+}
 function checkTTSVoiceAvailability() {
   if (!window.speechSynthesis) {
     document.getElementById('optTTSStatus').textContent = 'Speech synthesis not supported.';
@@ -1699,6 +1789,8 @@ let currentAudio = null;     // <audio> element
 let karaokeWordSpans = [];   // DOM refs to .tt-word spans, indexed by twi
 let karaokeRafId = null;
 let lastHighlightedIdx = -1;
+let _verseEndStopAt = null;  // when set, audio auto-pauses at this currentTime
+const chantAllState = { active: false, queue: null, parsha: null };
 
 function maybeLoadKaraoke(rangeInfo) {
   // rangeInfo: { ref, label, parshahEntry, aliyahNum, isHaftarah }
@@ -1787,6 +1879,11 @@ function updateKaraokeWordRefs() {
 function onAudioTimeUpdate() {
   if (!currentAudio || !currentTimings || !karaokeWordSpans.length) return;
   const t = currentAudio.currentTime;
+  // Auto-pause at the end of a single-verse Chant.
+  if (_verseEndStopAt !== null && t >= _verseEndStopAt) {
+    currentAudio.pause();
+    _verseEndStopAt = null;
+  }
   // binary search for largest timing <= t
   let lo = 0, hi = currentTimings.length - 1, idx = -1;
   while (lo <= hi) {
@@ -1855,6 +1952,8 @@ function onReadingClick(e) {
   if (isNaN(idx) || idx < 0 || idx >= currentTimings.length) return;
   const t = currentTimings[idx];
   if (typeof t !== 'number' || isNaN(t)) return;
+  // User is taking direct control — drop any single-verse stop point.
+  _verseEndStopAt = null;
   currentAudio.currentTime = t;
   // Reset highlighter so the next timeupdate snaps cleanly to the new position.
   if (lastHighlightedIdx >= 0 && karaokeWordSpans[lastHighlightedIdx]) {
