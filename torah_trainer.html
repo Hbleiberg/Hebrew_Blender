@@ -1065,6 +1065,26 @@ async function fetchSefariaText(ref, includeTranslation, version) {
   textCache.set(cacheKey, verses);
   return verses;
 }
+// Sefaria embeds paragraph markers like {פ} and {ס}, raw HTML entities (&nbsp;),
+// and an end-of-paragraph footnote anchor {S} or {P}. Strip them so they don't
+// pollute the rendered Hebrew or get fed into the transliterator.
+function cleanSefariaText(s) {
+  if (typeof s !== 'string' || !s) return '';
+  let out = s;
+  // Drop curly-brace paragraph markers — Hebrew (פ ס) and Latin (P S F) variants.
+  out = out.replace(/\{[פסףפ׳ס׳PSFps]\}/g, '');
+  // Decode the HTML entities Sefaria leaves in even with return_format=text_only.
+  out = out.replace(/&nbsp;/g, ' ')
+           .replace(/&amp;/g, '&')
+           .replace(/&lt;/g, '<')
+           .replace(/&gt;/g, '>')
+           .replace(/&quot;/g, '"')
+           .replace(/&#39;|&apos;/g, "'");
+  // Collapse whitespace introduced by the strips.
+  out = out.replace(/\s+/g, ' ').trim();
+  return out;
+}
+
 function parseSefariaResponse(data) {
   const versions = data.versions || [];
   const heb = versions.find(v => v.language === 'he' || v.language === 'hebrew' || /Hebrew/i.test(v.languageFamilyName||''));
@@ -1073,22 +1093,20 @@ function parseSefariaResponse(data) {
   const startC = parseInt(sections[0], 10) || 1;
   const startV = parseInt(sections[1], 10) || 1;
   const out = [];
+  function push(chapter, verse, hebRaw, engRaw) {
+    const cleanHeb = cleanSefariaText(hebRaw);
+    if (!cleanHeb) return;
+    out.push({ chapter, verse, hebrew: cleanHeb, translation: cleanSefariaText(engRaw) });
+  }
   function walk(hebText, engText) {
     if (!Array.isArray(hebText)) {
-      if (typeof hebText === 'string' && hebText.trim()) {
-        out.push({ chapter: startC, verse: startV, hebrew: hebText, translation: typeof engText === 'string' ? engText : '' });
-      }
+      if (typeof hebText === 'string') push(startC, startV, hebText, typeof engText === 'string' ? engText : '');
       return;
     }
-    // Determine 1-D vs 2-D
     const is2D = hebText.length && Array.isArray(hebText[0]);
     if (!is2D) {
       for (let i = 0; i < hebText.length; i++) {
-        if (hebText[i]) out.push({
-          chapter: startC, verse: startV + i,
-          hebrew: hebText[i],
-          translation: (engText && engText[i]) || ''
-        });
+        push(startC, startV + i, hebText[i], engText && engText[i]);
       }
       return;
     }
@@ -1097,11 +1115,7 @@ function parseSefariaResponse(data) {
       const sub = hebText[c] || [];
       const engSub = (engText && engText[c]) || null;
       for (let i = 0; i < sub.length; i++) {
-        if (sub[i]) out.push({
-          chapter: curC, verse: curV + i,
-          hebrew: sub[i],
-          translation: (engSub && engSub[i]) || ''
-        });
+        push(curC, curV + i, sub[i], engSub && engSub[i]);
       }
       curC++; curV = 1;
     }
