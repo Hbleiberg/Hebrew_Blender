@@ -1879,10 +1879,13 @@ function updateKaraokeWordRefs() {
 function onAudioTimeUpdate() {
   if (!currentAudio || !currentTimings || !karaokeWordSpans.length) return;
   const t = currentAudio.currentTime;
-  // Auto-pause at the end of a single-verse Chant.
+  // Auto-pause at the end of a single-verse Chant. Clear the highlight so
+  // the tracker doesn't stick on the first word of the next verse.
   if (_verseEndStopAt !== null && t >= _verseEndStopAt) {
     currentAudio.pause();
     _verseEndStopAt = null;
+    clearKaraokeHighlight();
+    return;
   }
   // binary search for largest timing <= t
   let lo = 0, hi = currentTimings.length - 1, idx = -1;
