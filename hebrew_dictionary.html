@@ -683,9 +683,9 @@ footer a{color:var(--gold);text-decoration:none;}
               </div>
               <div class="font-size-row">
                 <span class="fs-label">Slow</span>
-                <input type="range" id="ttsRateSlider" min="0.5" max="1.5" step="0.05" value="0.85"
+                <input type="range" id="ttsRateSlider" min="0.5" max="1.5" step="0.05" value="0.75"
                        oninput="onTtsRateChange(this.value)">
-                <span class="fs-val" id="ttsRateVal">0.85×</span>
+                <span class="fs-val" id="ttsRateVal">0.75×</span>
                 <button class="fs-reset" onclick="resetTtsRate()" title="Reset to default">↺</button>
               </div>
               <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:var(--muted);margin-top:1px;padding:0 2px;">
@@ -1344,7 +1344,7 @@ function speakWord(text) {
   if (!window.speechSynthesis) return;
   const utt = new SpeechSynthesisUtterance(text);
   utt.lang = 'he-IL';
-  utt.rate = parseFloat(document.getElementById('ttsRateSlider')?.value || 0.85);
+  utt.rate = parseFloat(document.getElementById('ttsRateSlider')?.value || 0.75);
   speechSynthesis.cancel();
   speechSynthesis.speak(utt);
 }
@@ -1355,7 +1355,7 @@ function onTtsRateChange(val) {
 }
 function resetTtsRate() {
   const sl = document.getElementById('ttsRateSlider');
-  if (sl) { sl.value = 0.85; onTtsRateChange(0.85); }
+  if (sl) { sl.value = 0.75; onTtsRateChange(0.75); }
 }
 
 function loadMore() {

@@ -862,8 +862,8 @@ body.fullscreen #fsExitBtn { display: flex; }
         </div>
         <div class="slider-row">
           <label>Rate</label>
-          <input type="range" id="optTTSRate" min="0.5" max="1.5" step="0.05" value="0.85">
-          <span class="sval" id="optTTSRateVal">0.85×</span>
+          <input type="range" id="optTTSRate" min="0.5" max="1.5" step="0.05" value="0.75">
+          <span class="sval" id="optTTSRateVal">0.75×</span>
           <button class="sreset" onclick="resetTTSRate()" type="button" title="Restore default">↺</button>
         </div>
         <div id="optTTSStatus" style="font-size:0.72rem;color:var(--muted);"></div>
@@ -978,7 +978,7 @@ const DEFAULTS = {
   enableKaraoke: false,
   karaokeRate: 1.0,
   enableTTS: false,
-  ttsRate: 0.85,
+  ttsRate: 0.75,
 };
 let settings = JSON.parse(JSON.stringify(DEFAULTS));
 
@@ -1570,7 +1570,7 @@ function speakHebrew(text) {
   speechSynthesis.cancel();
   const utt = new SpeechSynthesisUtterance(stripTeamim(text));
   utt.lang = 'he-IL';
-  utt.rate = parseFloat(settings.ttsRate) || 0.85;
+  utt.rate = parseFloat(settings.ttsRate) || 0.75;
   speechSynthesis.speak(utt);
 }
 function toggleReadAll() {
@@ -1594,7 +1594,7 @@ function readAllStep() {
   if (!v || !v.hebrew) { setTimeout(readAllStep, 50); return; }
   const utt = new SpeechSynthesisUtterance(stripTeamim(v.hebrew));
   utt.lang = 'he-IL';
-  utt.rate = parseFloat(settings.ttsRate) || 0.85;
+  utt.rate = parseFloat(settings.ttsRate) || 0.75;
   utt.onend = () => readAllStep();
   utt.onerror = () => readAllStep();
   speechSynthesis.speak(utt);
@@ -1945,7 +1945,7 @@ function syncFormToSettings() {
   // tts
   document.getElementById('optEnableTTS').checked = !!settings.enableTTS;
   document.getElementById('optTTSRate').value = settings.ttsRate;
-  document.getElementById('optTTSRateVal').textContent = (parseFloat(settings.ttsRate) || 0.85).toFixed(2) + '×';
+  document.getElementById('optTTSRateVal').textContent = (parseFloat(settings.ttsRate) || 0.75).toFixed(2) + '×';
   // karaoke
   document.getElementById('optEnableKaraoke').checked = !!settings.enableKaraoke;
   document.getElementById('optKaraokeRate').value = settings.karaokeRate;
