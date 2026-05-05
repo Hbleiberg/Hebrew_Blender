@@ -1541,22 +1541,61 @@ function speakVerse(numLabel) {
   speakHebrew(v.hebrew);
 }
 
-// Chant a single verse: seek the karaoke audio to this verse's first Hebrew
-// word and play. Requires karaoke to be loaded for the current aliyah.
-function chantVerse(numLabel) {
-  if (!currentTimings || !currentAudio) {
-    setStatus('Enable Karaoke in settings and pick an aliyah from the Reading dropdown to chant verses.', false);
+// Chant a single verse. If audio is already loaded for the right aliyah,
+// seek directly. Otherwise figure out which aliyah this verse belongs to,
+// auto-enable karaoke, switch scope, refetch + render, then seek when audio
+// is ready.
+let _pendingChantVerse = null;
+async function chantVerse(numLabel) {
+  // If audio is already loaded and this verse is in range, seek immediately.
+  if (currentTimings && currentAudio && seekToVerseInLoadedAudio(numLabel, /*silent*/ true)) {
     return;
   }
+  // Otherwise resolve which aliyah contains this verse for the current parsha.
+  const m = numLabel.match(/^(\d+):(\d+)$/);
+  if (!m) return;
+  const tc = parseInt(m[1], 10), tv = parseInt(m[2], 10);
+  const p = parshiyotData.find(x => x.en === settings.parshahKey);
+  if (!p) { setStatus('Pick a parsha first to chant verses.', false); return; }
+  const al = aliyahLookup(p.en);
+  if (!al || !al.aliyot) { setStatus('No aliyah data for this parsha.', true); return; }
+  let aliyahNum = null;
+  for (const num of ['1','2','3','4','5','6','7']) {
+    const r = al.aliyot[num];
+    if (!r) continue;
+    if (verseInRange(tc, tv, r)) { aliyahNum = num; break; }
+  }
+  if (!aliyahNum) { setStatus(`Verse ${numLabel} is outside this parsha's aliyot — pick Haftarah from Reading if you want to chant it.`, true); return; }
+  // Auto-enable karaoke and switch scope, then fetchAndRender. The seek
+  // happens once timings + audio are wired up by loadKaraoke().
+  if (!settings.enableKaraoke) {
+    settings.enableKaraoke = true;
+    const tog = document.getElementById('optEnableKaraoke');
+    if (tog) tog.checked = true;
+  }
+  const newScope = `parsha-aliyah-${aliyahNum}`;
+  if (settings.scope !== newScope) {
+    settings.scope = newScope;
+    const sel = document.getElementById('scopeSelect');
+    if (sel) sel.value = newScope;
+  }
+  _pendingChantVerse = numLabel;
+  saveSettings();
+  if (ttsState.readAllActive) stopReadAll();
+  speechSynthesis.cancel();
+  setStatus(`Loading aliyah ${aliyahNum} to chant verse ${numLabel}…`, false);
+  fetchAndRender();
+}
+
+// Returns true if the seek succeeded (verse was in range), false if not.
+function seekToVerseInLoadedAudio(numLabel, silent) {
+  if (!currentTimings || !currentAudio) return false;
   const verseEl = document.querySelector(`#ttReading [data-vk="${numLabel}"]`);
-  if (!verseEl) { setStatus(`Couldn't find verse ${numLabel} in the rendered text.`, true); return; }
+  if (!verseEl) { if (!silent) setStatus(`Couldn't find verse ${numLabel} in the rendered text.`, true); return false; }
   const firstWord = verseEl.querySelector('.tt-word');
-  if (!firstWord) { setStatus(`Verse ${numLabel} has no Hebrew words to chant.`, true); return; }
+  if (!firstWord) { if (!silent) setStatus(`Verse ${numLabel} has no Hebrew words to chant.`, true); return false; }
   const idx = parseInt(firstWord.dataset.twi, 10);
-  if (isNaN(idx) || idx < 0 || idx >= currentTimings.length) {
-    setStatus(`Verse ${numLabel} is outside the loaded aliyah's audio range — switch to its aliyah first.`, true);
-    return;
-  }
+  if (isNaN(idx) || idx < 0 || idx >= currentTimings.length) return false;
   if (ttsState.readAllActive) stopReadAll();
   speechSynthesis.cancel();
   currentAudio.currentTime = currentTimings[idx];
@@ -1567,6 +1606,15 @@ function chantVerse(numLabel) {
   if (currentAudio.paused) {
     currentAudio.play().catch(() => {});
   }
+  return true;
+}
+
+function verseInRange(c, v, range) {
+  if (!range) return false;
+  if (c < range.startC || c > range.endC) return false;
+  if (c === range.startC && v < range.startV) return false;
+  if (c === range.endC && v > range.endV) return false;
+  return true;
 }
 function speakHebrew(text) {
   if (!window.speechSynthesis) { setStatus('Speech synthesis not supported in this browser.', true); return; }
@@ -1713,12 +1761,20 @@ async function loadKaraoke(parshahEntry, suffix) {
   document.body.classList.add('tt-karaoke-active');
   document.getElementById('ttAudioLabel').textContent = `${parshahEntry.en} · ${suffix === 'H' ? 'Haftarah' : 'Aliyah ' + suffix}`;
   setKaraokeStatus(`Loaded ${timings.length} word timings. Click any Hebrew word to jump to that part.`);
-  // Word index alignment check: warn if mismatch
   updateKaraokeWordRefs();
   if (karaokeWordSpans.length && timings.length) {
     if (Math.abs(karaokeWordSpans.length - timings.length) > 3) {
       setKaraokeStatus(`Loaded — note: text has ${karaokeWordSpans.length} words but audio has ${timings.length} word timings; alignment may drift.`);
     }
+  }
+  // If chantVerse() asked us to jump to a specific verse once audio was ready,
+  // do it now. Setting currentTime before the audio is fully loaded is fine —
+  // the browser queues the seek and play() resolves once enough buffered.
+  if (_pendingChantVerse) {
+    const target = _pendingChantVerse;
+    _pendingChantVerse = null;
+    setStatus('', false);
+    requestAnimationFrame(() => seekToVerseInLoadedAudio(target));
   }
 }
 function updateKaraokeWordRefs() {
