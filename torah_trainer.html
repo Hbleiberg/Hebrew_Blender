@@ -1647,18 +1647,35 @@ let lastHighlightedIdx = -1;
 function maybeLoadKaraoke(rangeInfo) {
   // rangeInfo: { ref, label, parshahEntry, aliyahNum, isHaftarah }
   if (!settings.enableKaraoke) return;
+  // No parsha (custom ref) or no aliyah picked yet: keep karaoke enabled, hide
+  // the audio bar, surface a hint. Don't auto-disable the toggle — the user
+  // will pick an aliyah and we'll load then.
   if (!rangeInfo || !rangeInfo.parshahEntry) {
-    setKaraokeStatus('Karaoke is only available for canonical aliyot/haftarah within a parsha.');
-    closeKaraoke();
+    setKaraokeStatus('Karaoke is only available within a parsha (not custom ranges). Pick a parsha to chant.');
+    setStatus('Karaoke ready — pick a parsha to chant.', false);
+    teardownKaraokeAudio();
     return;
   }
   if (rangeInfo.aliyahNum == null) {
     setKaraokeStatus('Pick an aliyah (1–7) or Haftarah from the Reading dropdown to play chanted audio.');
-    closeKaraoke();
+    setStatus('Karaoke ready — pick an aliyah from the Reading dropdown to load the chant.', false);
+    teardownKaraokeAudio();
     return;
   }
   const sfx = rangeInfo.aliyahNum === 'H' ? 'H' : String(rangeInfo.aliyahNum);
   loadKaraoke(rangeInfo.parshahEntry, sfx);
+}
+
+// Hide the audio bar + drop the audio source without flipping the karaoke
+// toggle off. Used when the user has karaoke on but hasn't selected a loadable
+// scope yet, or when we switch scopes mid-playback.
+function teardownKaraokeAudio() {
+  pauseKaraoke();
+  clearKaraokeHighlight();
+  document.getElementById('ttAudioBar').classList.remove('open');
+  document.body.classList.remove('tt-karaoke-active');
+  if (currentAudio) currentAudio.removeAttribute('src');
+  currentTimings = null;
 }
 
 async function loadKaraoke(parshahEntry, suffix) {
