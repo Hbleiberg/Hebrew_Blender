@@ -550,6 +550,45 @@ footer a { color:var(--gold); text-decoration:none; font-weight:600; }
 footer a:hover { text-decoration:underline; }
 footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-content:center; }
 
+/* ───── Fullscreen (matches classroom_dashboard.html:925-958) ───── */
+body.fullscreen header,
+body.fullscreen .tt-controls,
+body.fullscreen #ttCustomPicker,
+body.fullscreen footer { display: none; }
+body.fullscreen .tt-page {
+  max-width: none; padding: 30px 48px;
+}
+body.fullscreen .tt-heb,
+body.fullscreen .tt-cell.heb { font-size: 2rem; line-height: 1.8; }
+body.fullscreen .tt-translit,
+body.fullscreen .tt-cell.translit,
+body.fullscreen .tt-translation { font-size: 1.15rem; line-height: 1.55; }
+body.fullscreen .tt-ref-hdr { font-size: 1.4rem; padding-bottom: 12px; margin-bottom: 22px; }
+body.fullscreen .tt-status { font-size: 1rem; }
+#fsExitBtn {
+  display: none;
+  position: fixed;
+  top: 14px; right: 16px;
+  z-index: 200;
+  background: rgba(13,18,32,0.55);
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  padding: 8px 10px 6px;
+  width: 60px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  opacity: 0.45;
+  transition: opacity 0.2s, background 0.2s;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+#fsExitBtn:hover { opacity: 1; background: rgba(13,18,32,0.82); }
+#fsExitBtn .fs-x { font-size: 1.5rem; line-height: 1; }
+#fsExitBtn .fs-label { font-size: 0.52rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
+body.fullscreen #fsExitBtn { display: flex; }
+
 /* ───── Mobile (matches existing tools' breakpoint) ───── */
 @media (max-width: 720px) {
   header { padding:12px 16px; }
@@ -577,8 +616,13 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
     <a class="hbtn" href="index.html"><span>←</span><span>Home</span></a>
     <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
     <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
+    <button id="fsBtn" class="hbtn icon-btn" onclick="toggleFullscreen()" title="Fullscreen" aria-label="Toggle fullscreen"></button>
   </div>
 </header>
+<button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen" aria-label="Exit fullscreen">
+  <span class="fs-x">✕</span>
+  <span class="fs-label">Exit Fullscreen</span>
+</button>
 
 <div class="tt-controls">
   <span class="tt-ctrl">
@@ -879,6 +923,25 @@ function resetAllSettings() {
   applyDisplayClasses();
   fetchAndRender();
 }
+
+/* ══════════════════════════════════════════════════════
+   FULLSCREEN  (matches classroom_dashboard.html pattern)
+   ══════════════════════════════════════════════════════ */
+const FS_ENTER = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>';
+const FS_EXIT  = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>';
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+  } else {
+    if (document.exitFullscreen) document.exitFullscreen();
+  }
+}
+document.addEventListener('fullscreenchange', () => {
+  const isFs = !!document.fullscreenElement;
+  document.body.classList.toggle('fullscreen', isFs);
+  const btn = document.getElementById('fsBtn');
+  if (btn) btn.innerHTML = isFs ? FS_EXIT : FS_ENTER;
+});
 
 /* ══════════════════════════════════════════════════════
    DARK MODE
@@ -1939,6 +2002,8 @@ async function goToCurrentParshah() {
 async function init() {
   initDark();
   loadSettings();
+  const fsBtn = document.getElementById('fsBtn');
+  if (fsBtn) fsBtn.innerHTML = FS_ENTER;
 
   // Fetch static data files
   try {
