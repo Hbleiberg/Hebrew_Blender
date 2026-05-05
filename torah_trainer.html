@@ -1331,18 +1331,19 @@ function processHebrewForDisplay(s) {
    TOKENIZE: split Hebrew text into per-word spans
    ══════════════════════════════════════════════════════ */
 function tokenizeHebrew(text, wordIdxStartRef) {
-  // returns HTML with <span class="tt-word" data-twi="N">...</span> per Hebrew word.
-  // wordIdxStartRef is a {value:N} object that we mutate so karaoke can assign sequential indices.
+  // Returns HTML with <span class="tt-word" data-twi="N">...</span> per Hebrew word.
+  // wordIdxStartRef is a {value:N} object so karaoke can assign sequential indices
+  // across consecutive verses. Split on whitespace AND maqaf (U+05BE "־") because
+  // PocketTorah counts each side of a maqaf-joined pair as a separate sung word.
   if (!text) return '';
   const cleaned = settings.showCantillation ? text : stripTeamim(text);
   const finalText = settings.showNikkud ? cleaned : stripNikkud(cleaned);
-  // split keeping whitespace as separate tokens so we don't merge words
-  const tokens = finalText.split(/(\s+)/);
+  const tokens = finalText.split(/(\s+|־)/);
   const out = [];
   for (const tok of tokens) {
     if (!tok) continue;
     if (/^\s+$/.test(tok)) { out.push(tok); continue; }
-    // if token contains any Hebrew letter, treat as karaoke-aligned word
+    if (tok === '־') { out.push(escapeHTML(tok)); continue; }   // maqaf separator, not a word
     if (/[א-ת]/.test(tok)) {
       const idx = wordIdxStartRef.value++;
       const inner = (settings.colorCodeNikkud && settings.showNikkud)
@@ -1350,7 +1351,6 @@ function tokenizeHebrew(text, wordIdxStartRef) {
         : escapeHTML(tok);
       out.push(`<span class="tt-word" data-twi="${idx}">${inner}</span>`);
     } else {
-      // punctuation / non-Hebrew chunk — skip word-index assignment
       out.push(escapeHTML(tok));
     }
   }
