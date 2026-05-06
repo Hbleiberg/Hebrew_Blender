@@ -632,7 +632,12 @@ footer {
 body.dark footer { background:var(--navy-deep); }
 footer a { color:var(--gold); text-decoration:none; font-weight:600; }
 footer a:hover { text-decoration:underline; }
-footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-content:center; }
+footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-content:center; align-items:center; }
+.sefaria-attr { display:inline-flex; align-items:center; vertical-align:middle; }
+.sefaria-attr img { height:18px; width:auto; vertical-align:middle; }
+.sefaria-attr .sefaria-dark { display:none; }
+body.dark .sefaria-attr .sefaria-light { display:none; }
+body.dark .sefaria-attr .sefaria-dark { display:inline-block; }
 
 /* ───── Fullscreen (matches classroom_dashboard.html:925-958) ───── */
 body.fullscreen header,
@@ -966,7 +971,7 @@ body.fullscreen #fsExitBtn { display: flex; }
 
 <footer>
   <div class="footer-credits">
-    <span>Texts: <a href="https://www.sefaria.org" target="_blank" rel="noopener">Sefaria</a> · CC BY-SA 3.0</span>
+    <span>Texts: <a href="https://www.sefaria.org" target="_blank" rel="noopener" class="sefaria-attr"><img src="https://files.readme.io/87c5652-image.png" alt="Sefaria" class="sefaria-light"><img src="https://files.readme.io/dcee0a8-image.png" alt="Sefaria" class="sefaria-dark"></a> · CC BY-SA 3.0</span>
     <span>Cantillation audio: <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> · CC BY-SA 4.0</span>
     <span>IvritSuite materials incorporating PocketTorah audio are CC BY-SA 4.0.</span>
   </div>
