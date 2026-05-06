@@ -126,11 +126,15 @@ body.dark .ie-modal-body textarea{background:#0d1220;}
 .ie-note{font-size:0.75rem;color:var(--muted);line-height:1.4;}
 footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
 footer a{color:var(--gold);text-decoration:none;}
-.sefaria-attr{display:inline-flex;align-items:center;vertical-align:middle;}
+.sefaria-attr{display:inline-flex;align-items:center;gap:6px;vertical-align:middle;cursor:pointer;}
 .sefaria-attr img{height:18px;width:auto;vertical-align:middle;}
 .sefaria-attr .sefaria-dark{display:none;}
 body.dark .sefaria-attr .sefaria-light{display:none;}
 body.dark .sefaria-attr .sefaria-dark{display:inline-block;}
+.card-attr{font-size:0.7rem;color:var(--muted);padding:4px 8px;border-radius:5px;transition:background 0.15s;}
+.card-attr:hover{background:var(--warm-gray);}
+.card-attr:focus{outline:2px solid var(--gold);outline-offset:2px;}
+.card-attr .sefaria-attr-label{font-size:0.7rem;color:var(--muted);}
 </style>
 </head>
 <body>
@@ -183,6 +187,13 @@ body.dark .sefaria-attr .sefaria-dark{display:inline-block;}
       <div class="icon">📜</div>
       <h2>Torah Trainer <span class="beta-tag">Beta</span></h2>
       <p>Read the weekly parsha with vowel coloring, transliteration, English translations, cantillation toggle, and chanted-audio karaoke (PocketTorah).</p>
+      <span class="sefaria-attr card-attr" role="link" tabindex="0" title="Texts from Sefaria"
+            onclick="event.stopPropagation();event.preventDefault();window.open('https://www.sefaria.org','_blank','noopener');"
+            onkeydown="if(event.key==='Enter'||event.key===' '){event.stopPropagation();event.preventDefault();window.open('https://www.sefaria.org','_blank','noopener');}">
+        <span class="sefaria-attr-label">Texts via</span>
+        <img src="https://files.readme.io/87c5652-image.png" alt="Sefaria" class="sefaria-light">
+        <img src="https://files.readme.io/dcee0a8-image.png" alt="Sefaria" class="sefaria-dark">
+      </span>
       <div class="go-btn">Torah Trainer →</div>
     </a>
 
@@ -223,7 +234,6 @@ body.dark .sefaria-attr .sefaria-dark{display:inline-block;}
 <footer>
   Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="font-weight:600;">Harrison Bleiberg</a><br>
   Word Data from <a href="https://kaikki.org/dictionary/Hebrew/index.html" target="_blank">Kaikki.org</a><br>
-  Torah texts: <a href="https://www.sefaria.org" target="_blank" rel="noopener" class="sefaria-attr"><img src="https://files.readme.io/87c5652-image.png" alt="Sefaria" class="sefaria-light"><img src="https://files.readme.io/dcee0a8-image.png" alt="Sefaria" class="sefaria-dark"></a><br>
   Free to use and adapt for non-commercial educational purposes with attribution &nbsp;·&nbsp;
   <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
   <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank">GitHub</a> &nbsp;·&nbsp;
