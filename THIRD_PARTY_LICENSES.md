@@ -43,8 +43,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ## Sefaria
 
 - **Project:** https://www.sefaria.org
-- **API:** https://www.sefaria.org/developers
-- **Texts license (Hebrew Tanakh):** Public domain.
-- **Translations license:** Generally Creative Commons Attribution-ShareAlike 3.0 (CC BY-SA 3.0) for community translations; some specific versions (e.g. JPS 1985) carry their own publisher licenses — see Sefaria's per-version metadata.
+- **API:** https://developers.sefaria.org
+- **Hebrew Tanakh text:** Public domain (Masoretic Text).
+- **English translations:** Each Sefaria version has its own license (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA, or proprietary "Copyright: …" for publisher-licensed editions like JPS 1985 and Robert Alter's translation).
 
-**Used by `torah_trainer.html`:** Hebrew text and English translations are fetched at runtime via Sefaria's public REST API. Attribution is shown in the page footer.
+**Used by `torah_trainer.html`:** Hebrew text and English translations are fetched at runtime via Sefaria's REST API (`/api/v3/texts/...` for text, `/api/texts/versions/...` for the per-book version list, and `/api/calendars` for the current parsha).
+
+**Translation filtering:** the page filters the version dropdown by the `license` field returned for each version. Only translations licensed Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, or CC BY-NC-SA are offered. Versions with a "Copyright: …" license (e.g. *Tanakh: The Holy Scriptures, JPS 1985*; Robert Alter's *The Hebrew Bible*; the JPS *Contemporary Torah, 2006*) are excluded so that copyrighted text is not republished on ivritsuite.com without permission. The default selection is *The Holy Scriptures: A New Translation (JPS 1917)* (Public Domain) when present.
+
+The active translation's title and license are displayed in the page footer per the attribution requirement of CC BY / CC BY-SA / CC BY-NC / CC BY-NC-SA.
+
+If you re-host or fork this page, double-check Sefaria's version metadata yourself before relaxing the license filter.

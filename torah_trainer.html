@@ -971,9 +971,10 @@ body.fullscreen #fsExitBtn { display: flex; }
 
 <footer>
   <div class="footer-credits">
-    <span>Texts: <a href="https://www.sefaria.org" target="_blank" rel="noopener" class="sefaria-attr"><img src="https://files.readme.io/87c5652-image.png" alt="Sefaria" class="sefaria-light"><img src="https://files.readme.io/dcee0a8-image.png" alt="Sefaria" class="sefaria-dark"></a> · CC BY-SA 3.0</span>
+    <span>Hebrew text via <a href="https://www.sefaria.org" target="_blank" rel="noopener" class="sefaria-attr"><img src="https://files.readme.io/87c5652-image.png" alt="Sefaria" class="sefaria-light"><img src="https://files.readme.io/dcee0a8-image.png" alt="Sefaria" class="sefaria-dark"></a> · public domain</span>
+    <span id="ttFooterTrans">Translation: (none selected)</span>
     <span>Cantillation audio: <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> · CC BY-SA 4.0</span>
-    <span>IvritSuite materials incorporating PocketTorah audio are CC BY-SA 4.0.</span>
+    <span>Only translations whose license permits redistribution are offered (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA).</span>
   </div>
 </footer>
 <script>
@@ -1097,8 +1098,12 @@ async function fetchSefariaText(ref, includeTranslation, version) {
   if (textCache.has(cacheKey)) return textCache.get(cacheKey);
   const url = new URL(`${SEFARIA_API}/v3/texts/${encodeURIComponent(refToDot(ref))}`);
   url.searchParams.append('version', 'hebrew');
-  if (includeTranslation) {
-    url.searchParams.append('version', version ? `english|${version}` : 'english');
+  // Always pass an explicit translation version when one is selected. Without
+  // a version param Sefaria picks "the default English", which can land on a
+  // copyrighted edition (JPS 1985, Robert Alter, etc.) we don't want to
+  // republish.
+  if (includeTranslation && version) {
+    url.searchParams.append('version', `english|${version}`);
   }
   url.searchParams.set('return_format', 'text_only');
   const r = await fetch(url.toString());
@@ -2283,6 +2288,7 @@ function wireSettingsForm() {
     settings.translationVersion = e.target.value;
     textCache.clear();
     saveSettings();
+    updateTransFooter();
     fetchAndRender();
   });
   // Parsha + scope
@@ -2343,30 +2349,76 @@ function applyCustomRange() {
 
 /* ══════════════════════════════════════════════════════
    TRANSLATION VERSION DROPDOWN
+   Sefaria hosts many English translations whose copyright varies. The Sefaria
+   API exposes a per-version `license` field (e.g. "Public Domain", "CC-BY-SA",
+   "Copyright: Jewish Publication Society"). To avoid republishing copyrighted
+   text from third-party publishers, we filter the dropdown to versions whose
+   license clearly permits redistribution.
    ══════════════════════════════════════════════════════ */
+function isPermissiveLicense(lic) {
+  if (!lic) return false;                  // unknown / missing → exclude (safer)
+  const s = String(lic).toLowerCase();
+  if (s.includes('public domain')) return true;
+  if (s.startsWith('cc0') || s === 'cc0') return true;
+  if (s.startsWith('cc-by') || s.startsWith('cc by')) return true;
+  return false;                            // "Copyright: …" and friends → exclude
+}
+function shortenLicense(lic) {
+  if (!lic) return '';
+  const s = String(lic).trim();
+  if (/public domain/i.test(s)) return 'Public Domain';
+  if (/^cc0/i.test(s))          return 'CC0';
+  if (/cc[-\s]?by[-\s]?sa[-\s]?nc|cc[-\s]?by[-\s]?nc[-\s]?sa/i.test(s)) return 'CC BY-NC-SA';
+  if (/cc[-\s]?by[-\s]?sa/i.test(s))    return 'CC BY-SA';
+  if (/cc[-\s]?by[-\s]?nc/i.test(s))    return 'CC BY-NC';
+  if (/cc[-\s]?by/i.test(s))            return 'CC BY';
+  return s.slice(0, 24);
+}
+
 async function populateVersionDropdown(book) {
   const sel = document.getElementById('ttVersionSelect');
   sel.innerHTML = '<option value="">Loading…</option>';
   const versions = await fetchVersionsList(book);
   const eng = versions.filter(v => v.language === 'en' || /english/i.test(v.languageFamilyName||v.language||''));
-  sel.innerHTML = '<option value="">Default English</option>';
-  eng.forEach(v => {
+  // Keep only versions whose license clearly permits redistribution.
+  const safe = eng.filter(v => isPermissiveLicense(v.license));
+  sel.innerHTML = '';
+  if (!safe.length) {
+    sel.innerHTML = '<option value="">(no openly licensed English versions available for this book)</option>';
+    return;
+  }
+  safe.forEach(v => {
     const opt = document.createElement('option');
-    opt.value = v.versionTitle || v.title || '';
-    opt.textContent = (v.versionTitle || v.title || 'Untitled').slice(0, 64);
+    const title = (v.versionTitle || v.title || 'Untitled').trim();
+    const lic = shortenLicense(v.license);
+    opt.value = title;
+    opt.textContent = `${title.slice(0, 56)} — ${lic}`;
+    opt.dataset.license = v.license || '';
     sel.appendChild(opt);
   });
-  // Default to JPS 1985 if available
-  if (!settings.translationVersion) {
-    const jps = eng.find(v => /JPS\s*1985/i.test(v.versionTitle || ''));
-    if (jps) {
-      settings.translationVersion = jps.versionTitle;
+  // Pick a default: JPS 1917 (Public Domain) if present, otherwise first safe version.
+  if (!settings.translationVersion || !safe.find(v => (v.versionTitle || '').trim() === settings.translationVersion)) {
+    const jps1917 = safe.find(v => /JPS\s*1917|1917.*JPS|Holy Scriptures.*1917|Holy Scriptures.*New Translation/i.test(v.versionTitle || ''));
+    const pick = jps1917 || safe[0];
+    if (pick) {
+      settings.translationVersion = (pick.versionTitle || pick.title || '').trim();
       saveSettings();
-      sel.value = jps.versionTitle;
     }
-  } else {
-    sel.value = settings.translationVersion;
   }
+  sel.value = settings.translationVersion;
+  updateTransFooter();
+}
+function updateTransFooter() {
+  const el = document.getElementById('ttFooterTrans');
+  if (!el) return;
+  const sel = document.getElementById('ttVersionSelect');
+  const opt = sel && sel.options[sel.selectedIndex];
+  if (!sel || !sel.value || !opt) {
+    el.textContent = 'Translation: (none selected — toggle Translation off or pick a version)';
+    return;
+  }
+  const lic = opt.dataset.license || 'unknown license';
+  el.innerHTML = `Translation: <em>${escapeHTML(sel.value)}</em> · ${escapeHTML(shortenLicense(lic))} (via <a href="https://www.sefaria.org" target="_blank" rel="noopener">Sefaria</a>)`;
 }
 
 /* ══════════════════════════════════════════════════════
