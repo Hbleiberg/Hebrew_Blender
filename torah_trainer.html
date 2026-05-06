@@ -1292,6 +1292,14 @@ const VOWEL_COLOR_DEFS = [
 function stripTeamim(s)      { return s.replace(TEAMIM_RE, ''); }
 function stripNikkud(s)      { return s.replace(NIKKUD_RE, ''); }
 function stripAllMarks(s)    { return s.replace(ALL_MARKS_RE, ''); }
+// Replace the Tetragrammaton (יהוה, with or without nikkud/te'amim) with
+// אֲדֹנָי so TTS pronounces it "Adonai" — the standard Jewish reading and
+// what the PocketTorah chant sings — instead of spelling the letters Y-H-V-H.
+// The display text itself (rendered Hebrew) is never substituted.
+const TETRAGRAMMATON_RE = /י[֑-ׇ]*ה[֑-ׇ]*ו[֑-ׇ]*ה/g;
+function replaceTetragrammaton(s) {
+  return s ? s.replace(TETRAGRAMMATON_RE, 'אֲדֹנָי') : s;
+}
 function escapeHTML(s) {
   return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -1391,7 +1399,9 @@ function tokenizeHebrew(text, wordIdxStartRef) {
    ══════════════════════════════════════════════════════ */
 function applyTranslit(hebrewText) {
   // Strip cantillation marks before transliterating (library handles nikkud).
-  const stripped = stripTeamim(hebrewText || '');
+  // Substitute the Tetragrammaton with אֲדֹנָי so the library outputs "Adonai"
+  // (or its scheme equivalent) instead of the consonants Y-H-V-H.
+  const stripped = replaceTetragrammaton(stripTeamim(hebrewText || ''));
   if (!stripped) return '';
   if (window.HebrewTransliterator && window.HebrewTransliterator.ready) {
     return window.HebrewTransliterator.apply(stripped, '', settings.translitStyle) || '';
@@ -1648,7 +1658,7 @@ function speakHebrew(text) {
   if (!window.speechSynthesis) { setStatus('Speech synthesis not supported in this browser.', true); return; }
   if (!text) return;
   speechSynthesis.cancel();
-  const utt = new SpeechSynthesisUtterance(stripTeamim(text));
+  const utt = new SpeechSynthesisUtterance(replaceTetragrammaton(stripTeamim(text)));
   utt.lang = 'he-IL';
   utt.rate = parseFloat(settings.ttsRate) || 0.75;
   speechSynthesis.speak(utt);
@@ -1667,7 +1677,7 @@ function readAllStep() {
   if (ttsState.readAllIdx >= currentVerses.length) { stopReadAll(); return; }
   const v = currentVerses[ttsState.readAllIdx++];
   if (!v || !v.hebrew) { setTimeout(readAllStep, 50); return; }
-  const utt = new SpeechSynthesisUtterance(stripTeamim(v.hebrew));
+  const utt = new SpeechSynthesisUtterance(replaceTetragrammaton(stripTeamim(v.hebrew)));
   utt.lang = 'he-IL';
   utt.rate = parseFloat(settings.ttsRate) || 0.75;
   utt.onend = () => readAllStep();
