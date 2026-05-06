@@ -321,16 +321,16 @@ body.dark .tt-ref-hdr .tt-chantall { background:#0a0f1c; }
 }
 .tt-heb {
   flex:1; direction:rtl; text-align:center;
-  font-family:var(--heb-font); font-size:1.5rem; line-height:1.7;
+  font-family:var(--heb-font); font-size:var(--tt-heb-size, 1.5rem); line-height:1.7;
   color:var(--text); word-spacing:0.05em;
 }
 .tt-translit {
   flex:1; direction:ltr; text-align:center; font-style:italic;
-  font-size:0.95rem; color:var(--muted); line-height:1.5;
+  font-size:var(--tt-translit-size, 0.95rem); color:var(--muted); line-height:1.5;
 }
 .tt-translation {
   flex:1; direction:ltr; text-align:center;
-  font-size:0.95rem; color:var(--text); line-height:1.5;
+  font-size:var(--tt-english-size, 0.95rem); color:var(--text); line-height:1.5;
 }
 .tt-speak, .tt-chant {
   background:transparent; border:1px solid var(--border); border-radius:4px;
@@ -370,10 +370,10 @@ body.dark .tt-ref-hdr .tt-chantall { background:#0a0f1c; }
   min-width:36px; padding-top:6px;
 }
 .tt-cell {
-  flex:1;
+  flex:1; font-size:var(--tt-english-size, 0.95rem); line-height:1.5;
 }
-.tt-cell.heb { font-family:var(--heb-font); font-size:1.5rem; line-height:1.7; }
-.tt-cell.translit { font-style:italic; color:var(--muted); }
+.tt-cell.heb { font-family:var(--heb-font); font-size:var(--tt-heb-size, 1.5rem); line-height:1.7; }
+.tt-cell.translit { font-style:italic; color:var(--muted); font-size:var(--tt-translit-size, 0.95rem); }
 
 /* Per-word span used for karaoke highlighting + click-to-seek */
 .tt-word { transition:background 0.1s, color 0.1s; padding:1px 0; border-radius:3px; }
@@ -572,29 +572,30 @@ body.dark .btn-secondary:hover { background:#2a3349; }
 }
 .slider-row .sreset:hover { border-color:var(--gold); color:var(--gold); }
 
-/* ───── Font selector (lifted from classroom_dashboard.html:874-910) ───── */
-.font-options { display:flex; flex-direction:column; gap:4px; }
+/* ───── Font selector (two-column grid, matches hebrew_blend_generator.html:1699-1721) ───── */
+.font-options { display:grid; grid-template-columns:1fr 1fr; gap:4px; }
 .font-section-hdr {
-  font-size:0.62rem; color:var(--muted); font-weight:700;
+  font-size:0.66rem; color:var(--muted); font-weight:700;
   letter-spacing:0.08em; text-transform:uppercase;
-  padding-top:6px; border-top:1px solid var(--border); margin-top:4px;
+  padding:6px 0 3px; border-bottom:1px solid var(--border);
+  margin-top:6px; grid-column:1 / -1;
 }
-.font-section-hdr.first { margin-top:0; padding-top:0; border-top:none; }
+.font-section-hdr.first { margin-top:0; }
 .font-opt {
   background:var(--white); border:1px solid var(--border); border-radius:5px;
-  padding:6px 10px; cursor:pointer; display:flex; align-items:center; gap:10px;
-  font:inherit; text-align:left; transition:all 0.15s;
+  padding:5px 4px 4px; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+  gap:1px; font:inherit; transition:border-color 0.15s, background 0.15s;
+  color:var(--text);
 }
-body.dark .font-opt { background:var(--navy-deep); }
+body.dark .font-opt { background:#1e2535; border-color:var(--border); }
 .font-opt:hover { border-color:var(--gold); }
-.font-opt.active {
-  background:rgba(201,146,42,0.12); border-color:var(--gold);
-}
-body.dark .font-opt.active { background:rgba(224,168,50,0.16); }
-.font-opt-preview { font-size:1.4rem; direction:rtl; min-width:44px; text-align:center; color:var(--text); }
+.font-opt.active { border-color:var(--gold); background:rgba(201,146,42,0.12); }
+body.dark .font-opt.active { background:rgba(224,168,50,0.16); border-color:var(--gold-light); }
+.font-opt-preview { font-size:1.35rem; direction:rtl; line-height:1.2; color:var(--text); margin-bottom:1px; }
 .font-opt.active .font-opt-preview { color:var(--gold); }
 body.dark .font-opt.active .font-opt-preview { color:var(--gold-light); }
-.font-opt-name { font-size:0.78rem; font-weight:600; color:var(--text); }
+.font-opt-name { font-size:0.66rem; font-weight:600; color:var(--text); line-height:1.15; word-break:break-word; }
 
 /* ───── Color pickers ───── */
 .color-pick-list { display:flex; flex-direction:column; gap:3px; margin-top:6px; }
@@ -829,6 +830,26 @@ body.fullscreen #fsExitBtn { display: flex; }
           <label>Show nikkud (vowels)</label>
           <label class="toggle"><input type="checkbox" id="optShowNikkud"><span class="slider"></span></label>
         </div>
+        <hr style="border:none; border-top:1px solid var(--border); margin:12px 0 8px;">
+        <div style="font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;">Font sizes</div>
+        <div class="slider-row">
+          <label>Hebrew</label>
+          <input type="range" id="optHebSize" min="0.7" max="3.5" step="0.05" value="1.5">
+          <span class="sval" id="optHebSizeVal">1.50rem</span>
+          <button class="sreset" onclick="resetFontSize('heb')" type="button" title="Restore default">↺</button>
+        </div>
+        <div class="slider-row">
+          <label>Translit</label>
+          <input type="range" id="optTranslitSize" min="0.5" max="2" step="0.05" value="0.95">
+          <span class="sval" id="optTranslitSizeVal">0.95rem</span>
+          <button class="sreset" onclick="resetFontSize('translit')" type="button" title="Restore default">↺</button>
+        </div>
+        <div class="slider-row">
+          <label>English</label>
+          <input type="range" id="optEnglishSize" min="0.5" max="2" step="0.05" value="0.95">
+          <span class="sval" id="optEnglishSizeVal">0.95rem</span>
+          <button class="sreset" onclick="resetFontSize('english')" type="button" title="Restore default">↺</button>
+        </div>
       </div>
     </div>
 
@@ -1001,6 +1022,9 @@ const DEFAULTS = {
   showTranslation: false,
   showCantillation: true,
   hebFont: 'Frank Ruhl Libre',
+  hebFontSize: 1.5,        // rem; applied via --tt-heb-size
+  translitFontSize: 0.95,  // rem; applied via --tt-translit-size
+  englishFontSize: 0.95,   // rem; applied via --tt-english-size
   showNikkud: true,
   colorCodeNikkud: false,
   colorCodingMode: 'letter',
@@ -2079,6 +2103,31 @@ function setHebFont(name) {
   saveSettings();
 }
 
+/* ──────────── Per-row font sizes (Hebrew / Translit / English) ──────────── */
+function applyFontSizes() {
+  const root = document.documentElement;
+  const heb = parseFloat(settings.hebFontSize);
+  const tr  = parseFloat(settings.translitFontSize);
+  const en  = parseFloat(settings.englishFontSize);
+  root.style.setProperty('--tt-heb-size',     (isFinite(heb) ? heb : DEFAULTS.hebFontSize)         + 'rem');
+  root.style.setProperty('--tt-translit-size',(isFinite(tr)  ? tr  : DEFAULTS.translitFontSize)    + 'rem');
+  root.style.setProperty('--tt-english-size', (isFinite(en)  ? en  : DEFAULTS.englishFontSize)     + 'rem');
+}
+function resetFontSize(which) {
+  const map = { heb: ['hebFontSize', 'optHebSize', 'optHebSizeVal'],
+                translit: ['translitFontSize', 'optTranslitSize', 'optTranslitSizeVal'],
+                english: ['englishFontSize', 'optEnglishSize', 'optEnglishSizeVal'] };
+  const [key, slId, valId] = map[which] || [];
+  if (!key) return;
+  settings[key] = DEFAULTS[key];
+  const sl  = document.getElementById(slId);
+  const val = document.getElementById(valId);
+  if (sl)  sl.value = settings[key];
+  if (val) val.textContent = settings[key].toFixed(2) + 'rem';
+  applyFontSizes();
+  saveSettings();
+}
+
 /* ══════════════════════════════════════════════════════
    NIKUD COLOR PICKERS
    ══════════════════════════════════════════════════════ */
@@ -2157,6 +2206,21 @@ function closeSettings() {
 function syncFormToSettings() {
   document.getElementById('optShowCantillation').checked = !!settings.showCantillation;
   document.getElementById('optShowNikkud').checked = !!settings.showNikkud;
+  // Per-row font sizes (sliders + value displays)
+  const sizeMap = [
+    ['hebFontSize',      'optHebSize',      'optHebSizeVal'],
+    ['translitFontSize', 'optTranslitSize', 'optTranslitSizeVal'],
+    ['englishFontSize',  'optEnglishSize',  'optEnglishSizeVal'],
+  ];
+  sizeMap.forEach(([key, slId, valId]) => {
+    const v = parseFloat(settings[key]);
+    const safe = isFinite(v) ? v : DEFAULTS[key];
+    const sl = document.getElementById(slId);
+    const val = document.getElementById(valId);
+    if (sl) sl.value = safe;
+    if (val) val.textContent = safe.toFixed(2) + 'rem';
+  });
+  applyFontSizes();
   // schedule radio
   const sd = document.getElementById('schedDiaspora');
   const si = document.getElementById('schedIsrael');
@@ -2212,6 +2276,22 @@ function wireSettingsForm() {
     settings.showNikkud = e.target.checked;
     saveSettings(); renderText();
   });
+  // Per-row font-size sliders (Hebrew / Translit / English)
+  function wireSize(slId, valId, key) {
+    const sl = document.getElementById(slId);
+    const val = document.getElementById(valId);
+    if (!sl) return;
+    sl.addEventListener('input', e => {
+      const v = parseFloat(e.target.value);
+      settings[key] = v;
+      val.textContent = v.toFixed(2) + 'rem';
+      applyFontSizes();
+      saveSettings();
+    });
+  }
+  wireSize('optHebSize',      'optHebSizeVal',      'hebFontSize');
+  wireSize('optTranslitSize', 'optTranslitSizeVal', 'translitFontSize');
+  wireSize('optEnglishSize',  'optEnglishSizeVal',  'englishFontSize');
   // Schedule
   document.querySelectorAll('input[name="optSchedule"]').forEach(r => {
     r.addEventListener('change', e => {
@@ -2504,6 +2584,7 @@ async function init() {
   }
 
   // Build UI
+  applyFontSizes();
   initFontSelector();
   setHebFont(settings.hebFont);
   initColorPickers();
