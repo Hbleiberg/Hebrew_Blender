@@ -131,10 +131,10 @@ footer a{color:var(--gold);text-decoration:none;}
 .sefaria-attr .sefaria-dark{display:none;}
 body.dark .sefaria-attr .sefaria-light{display:none;}
 body.dark .sefaria-attr .sefaria-dark{display:inline-block;}
-.card-attr{font-size:0.7rem;color:var(--muted);padding:4px 8px;border-radius:5px;transition:background 0.15s;}
+.card-attr{margin-top:6px;padding:4px 8px;border-radius:5px;transition:background 0.15s;}
+.card-attr img{height:28px;}
 .card-attr:hover{background:var(--warm-gray);}
 .card-attr:focus{outline:2px solid var(--gold);outline-offset:2px;}
-.card-attr .sefaria-attr-label{font-size:0.7rem;color:var(--muted);}
 </style>
 </head>
 <body>
@@ -187,14 +187,13 @@ body.dark .sefaria-attr .sefaria-dark{display:inline-block;}
       <div class="icon">📜</div>
       <h2>Torah Trainer <span class="beta-tag">Beta</span></h2>
       <p>Read the weekly parsha with vowel coloring, transliteration, English translations, cantillation toggle, and chanted-audio karaoke (PocketTorah).</p>
+      <div class="go-btn">Torah Trainer →</div>
       <span class="sefaria-attr card-attr" role="link" tabindex="0" title="Texts from Sefaria"
             onclick="event.stopPropagation();event.preventDefault();window.open('https://www.sefaria.org','_blank','noopener');"
             onkeydown="if(event.key==='Enter'||event.key===' '){event.stopPropagation();event.preventDefault();window.open('https://www.sefaria.org','_blank','noopener');}">
-        <span class="sefaria-attr-label">Texts via</span>
         <img src="https://files.readme.io/87c5652-image.png" alt="Sefaria" class="sefaria-light">
         <img src="https://files.readme.io/dcee0a8-image.png" alt="Sefaria" class="sefaria-dark">
       </span>
-      <div class="go-btn">Torah Trainer →</div>
     </a>
 
     <a class="page-card" href="resources.html">
