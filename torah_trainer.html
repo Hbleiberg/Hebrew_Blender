@@ -274,6 +274,9 @@ body.dark .tt-ctrl select, body.dark .tt-ctrl input[type="number"] {
 }
 .tt-ctrl select { min-width:110px; }
 .tt-ctrl select:focus, .tt-ctrl input:focus { outline:2px solid var(--gold); outline-offset:0; }
+.tt-stack-toggles { display:inline-flex; flex-direction:column; gap:4px; align-items:stretch; }
+.tt-stack-toggles .row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.tt-stack-toggles label:not(.toggle) { font-weight:600; font-size:0.78rem; }
 
 /* ───── Reading area ───── */
 .tt-page { flex:1; padding:20px 24px; max-width:1400px; width:100%; margin:0 auto; }
@@ -376,19 +379,39 @@ body.dark .tt-ref-hdr .tt-chantall { background:#0a0f1c; }
 .tt-cell.translit { font-style:italic; color:var(--muted); font-size:var(--tt-translit-size, 0.95rem); }
 
 /* Per-word span used for karaoke highlighting + click-to-seek */
-.tt-word { transition:background 0.1s, color 0.1s; padding:1px 0; border-radius:3px; }
-.tt-word.active {
+.tt-word { transition:background 0.1s, color 0.1s, outline 0.1s; padding:1px 0; border-radius:3px; }
+/* Default style (highlight). Body class kar-style-* picks the visual treatment. */
+body.kar-style-highlight .tt-word.active {
   background:var(--gold); color:var(--navy);
   box-shadow:0 0 0 2px var(--gold);
 }
-body.dark .tt-word.active { background:var(--gold-light); color:var(--navy-deep); }
-/* Click-to-seek affordance when the karaoke audio bar is open */
-body.tt-karaoke-active .tt-word { cursor:pointer; }
-body.tt-karaoke-active .tt-word:hover {
+body.dark.kar-style-highlight .tt-word.active { background:var(--gold-light); color:var(--navy-deep); }
+body.kar-style-outline .tt-word.active {
+  outline:2px solid var(--gold); outline-offset:1px; border-radius:3px;
+}
+body.kar-style-underline .tt-word.active {
+  text-decoration:underline solid var(--gold);
+  text-decoration-thickness:3px; text-underline-offset:0.2em;
+}
+body.kar-style-none .tt-word.active { /* no visual change */ }
+/* When follow=hebrew, only Hebrew .tt-word spans show the active treatment.
+   When follow=translit, only translit spans do. Click-to-seek still works on
+   either side regardless. */
+body.kar-follow-hebrew .tt-translit .tt-word.active,
+body.kar-follow-hebrew .tt-cell.translit .tt-word.active {
+  background:transparent; color:inherit; box-shadow:none; outline:none; text-decoration:none;
+}
+body.kar-follow-translit .tt-heb .tt-word.active,
+body.kar-follow-translit .tt-cell.heb .tt-word.active {
+  background:transparent; color:inherit; box-shadow:none; outline:none; text-decoration:none;
+}
+/* Words are always clickable — Chant or Read depending on the Display setting. */
+.tt-word { cursor:pointer; }
+.tt-word:hover {
   background:rgba(201,146,42,0.18);
   box-shadow:0 0 0 2px rgba(201,146,42,0.45);
 }
-body.dark.tt-karaoke-active .tt-word:hover {
+body.dark .tt-word:hover {
   background:rgba(224,168,50,0.22);
   box-shadow:0 0 0 2px rgba(224,168,50,0.55);
 }
@@ -740,13 +763,15 @@ body.fullscreen #fsExitBtn { display: flex; }
       <input type="radio" name="ttLayout" id="ttLayoutInter" value="interlinear"><label for="ttLayoutInter">Interlinear</label>
     </span>
   </span>
-  <span class="tt-ctrl">
-    <label for="ttShowTranslit">Translit</label>
-    <label class="toggle"><input type="checkbox" id="ttShowTranslit"><span class="slider"></span></label>
-  </span>
-  <span class="tt-ctrl">
-    <label for="ttShowTranslation">Translation</label>
-    <label class="toggle"><input type="checkbox" id="ttShowTranslation"><span class="slider"></span></label>
+  <span class="tt-ctrl tt-stack-toggles">
+    <span class="row">
+      <label for="ttShowTranslit">Translit</label>
+      <label class="toggle"><input type="checkbox" id="ttShowTranslit"><span class="slider"></span></label>
+    </span>
+    <span class="row">
+      <label for="ttShowTranslation">Translation</label>
+      <label class="toggle"><input type="checkbox" id="ttShowTranslation"><span class="slider"></span></label>
+    </span>
   </span>
   <span class="tt-ctrl" id="ttVersionWrap" style="display:none;">
     <label for="ttVersionSelect">Version:</label>
@@ -830,6 +855,13 @@ body.fullscreen #fsExitBtn { display: flex; }
           <label>Show nikkud (vowels)</label>
           <label class="toggle"><input type="checkbox" id="optShowNikkud"><span class="slider"></span></label>
         </div>
+        <div class="form-row">
+          <label>Click on word to <span class="tip-wrap" data-tip="Chant: jump the karaoke audio to that word (auto-loads the right aliyah). Read: speak the verse containing the word via Hebrew TTS."><i class="tip-icon">?</i></span></label>
+          <span class="radio-group">
+            <input type="radio" name="optClickAction" id="caChant" value="chant"><label for="caChant">Chant</label>
+            <input type="radio" name="optClickAction" id="caRead"  value="read"><label for="caRead">Read</label>
+          </span>
+        </div>
         <hr style="border:none; border-top:1px solid var(--border); margin:12px 0 8px;">
         <div style="font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;">Font sizes</div>
         <div class="slider-row">
@@ -849,6 +881,24 @@ body.fullscreen #fsExitBtn { display: flex; }
           <input type="range" id="optEnglishSize" min="0.5" max="2" step="0.05" value="0.95">
           <span class="sval" id="optEnglishSizeVal">0.95rem</span>
           <button class="sreset" onclick="resetFontSize('english')" type="button" title="Restore default">↺</button>
+        </div>
+        <hr style="border:none; border-top:1px solid var(--border); margin:12px 0 8px;">
+        <div style="font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;">Karaoke settings</div>
+        <div class="form-row">
+          <label>Style</label>
+          <span class="radio-group">
+            <input type="radio" name="optKarStyle" id="ksHighlight" value="highlight"><label for="ksHighlight">Highlight</label>
+            <input type="radio" name="optKarStyle" id="ksOutline"   value="outline"><label for="ksOutline">Outline</label>
+            <input type="radio" name="optKarStyle" id="ksUnderline" value="underline"><label for="ksUnderline">Under</label>
+            <input type="radio" name="optKarStyle" id="ksNone"      value="none"><label for="ksNone">None</label>
+          </span>
+        </div>
+        <div class="form-row">
+          <label>Follow</label>
+          <span class="radio-group">
+            <input type="radio" name="optKarFollow" id="kfHebrew"   value="hebrew"><label for="kfHebrew">Hebrew</label>
+            <input type="radio" name="optKarFollow" id="kfTranslit" value="translit"><label for="kfTranslit">Translit</label>
+          </span>
         </div>
       </div>
     </div>
@@ -1022,6 +1072,7 @@ const DEFAULTS = {
   showTranslation: false,
   showCantillation: true,
   hebFont: 'Frank Ruhl Libre',
+  clickAction: 'chant',    // 'chant' | 'read' — what tapping a word does
   hebFontSize: 1.5,        // rem; applied via --tt-heb-size
   translitFontSize: 0.95,  // rem; applied via --tt-translit-size
   englishFontSize: 0.95,   // rem; applied via --tt-english-size
@@ -1034,6 +1085,8 @@ const DEFAULTS = {
   karaokeRate: 1.0,
   ttsRate: 0.75,
   karaokeBarCollapsed: false,
+  karaokeStyle: 'highlight',   // 'highlight' | 'outline' | 'underline' | 'none'
+  karaokeFollow: 'hebrew',     // 'hebrew' | 'translit'
 };
 let settings = JSON.parse(JSON.stringify(DEFAULTS));
 
@@ -1443,6 +1496,32 @@ function applyTranslit(hebrewText) {
   return '';  // library still loading; will re-render on translitlibloaded event
 }
 
+// Tokenize translit text into per-word .tt-word spans, matching Hebrew word
+// indices when the counts line up. firstTwi is the data-twi of the first
+// Hebrew word in this verse — translit words map to firstTwi, firstTwi+1, ...
+function tokenizeTranslit(translitText, firstTwi, hebWordCount) {
+  if (!translitText) return '';
+  const tokens = translitText.split(/(\s+)/);
+  const out = [];
+  let twiOffset = 0;
+  for (const tok of tokens) {
+    if (!tok) continue;
+    if (/^\s+$/.test(tok)) { out.push(tok); continue; }
+    if (/[a-zA-Z]/.test(tok)) {
+      // Only stamp data-twi while we still have matching Hebrew words to point at.
+      if (firstTwi >= 0 && twiOffset < hebWordCount) {
+        out.push(`<span class="tt-word" data-twi="${firstTwi + twiOffset}">${escapeHTML(tok)}</span>`);
+        twiOffset++;
+      } else {
+        out.push(escapeHTML(tok));
+      }
+    } else {
+      out.push(escapeHTML(tok));
+    }
+  }
+  return out.join('');
+}
+
 /* ══════════════════════════════════════════════════════
    RENDERERS
    ══════════════════════════════════════════════════════ */
@@ -1484,10 +1563,13 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef) {
     html += `      <button class="tt-chant" onclick="chantVerse('${esc}')" type="button" aria-label="Chant verse ${numLabel} (PocketTorah audio)">🎵 Chant</button>`;
     html += `    </span>`;
     html += `  </div>`;
-    html += `  <div class="tt-verse-row"><span class="tt-rowlabel">Hebrew</span><span class="tt-heb">${tokenizeHebrew(v.hebrew, wordIdxRef)}</span></div>`;
+    const firstTwi = wordIdxRef.value;
+    const hebHtml = tokenizeHebrew(v.hebrew, wordIdxRef);
+    const hebCount = wordIdxRef.value - firstTwi;
+    html += `  <div class="tt-verse-row"><span class="tt-rowlabel">Hebrew</span><span class="tt-heb">${hebHtml}</span></div>`;
     if (withTranslit) {
       const tr = applyTranslit(v.hebrew);
-      html += `  <div class="tt-verse-row"><span class="tt-rowlabel">Translit</span><span class="tt-translit">${escapeHTML(tr)}</span></div>`;
+      html += `  <div class="tt-verse-row"><span class="tt-rowlabel">Translit</span><span class="tt-translit">${tokenizeTranslit(tr, firstTwi, hebCount)}</span></div>`;
     }
     if (withTrans) {
       html += `  <div class="tt-verse-row"><span class="tt-rowlabel">English</span><span class="tt-translation">${stripHTML(v.translation)}</span></div>`;
@@ -1498,30 +1580,38 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef) {
   return html;
 }
 function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef) {
+  // Pre-tokenize Hebrew for each verse so the translit column (rendered first
+  // visually but needing the Hebrew data-twi indices) can match up.
+  const perVerse = verses.map(v => {
+    const firstTwi = wordIdxRef.value;
+    const hebHtml = tokenizeHebrew(v.hebrew, wordIdxRef);
+    const hebCount = wordIdxRef.value - firstTwi;
+    return { v, firstTwi, hebHtml, hebCount };
+  });
   const cls = withTranslit ? 'tt-grid has-translit' : 'tt-grid';
   let html = `<div class="${cls}">`;
   // Translation column (left)
   if (withTrans) {
     html += `<div class="tt-grid-col tt-col-translation"><h3>English</h3>`;
-    for (const v of verses) {
+    for (const { v } of perVerse) {
       html += `<div class="tt-grid-row"><span class="tt-vnum">${v.chapter}:${v.verse}</span><span class="tt-cell">${stripHTML(v.translation)}</span></div>`;
     }
     html += `</div>`;
   } else {
-    html += `<div class="tt-grid-col"></div>`;  // empty placeholder for layout
+    html += `<div class="tt-grid-col"></div>`;
   }
-  // Translit column (middle)
+  // Translit column (middle) — uses pre-computed Hebrew indices
   if (withTranslit) {
     html += `<div class="tt-grid-col tt-col-translit"><h3>Transliteration</h3>`;
-    for (const v of verses) {
+    for (const { v, firstTwi, hebCount } of perVerse) {
       const tr = applyTranslit(v.hebrew);
-      html += `<div class="tt-grid-row"><span class="tt-vnum">${v.chapter}:${v.verse}</span><span class="tt-cell translit">${escapeHTML(tr)}</span></div>`;
+      html += `<div class="tt-grid-row"><span class="tt-vnum">${v.chapter}:${v.verse}</span><span class="tt-cell translit">${tokenizeTranslit(tr, firstTwi, hebCount)}</span></div>`;
     }
     html += `</div>`;
   }
   // Hebrew column (right)
   html += `<div class="tt-grid-col tt-col-heb"><h3>עִבְרִית</h3>`;
-  for (const v of verses) {
+  for (const { v, hebHtml } of perVerse) {
     const numLabel = `${v.chapter}:${v.verse}`;
     const esc = cssEscape(numLabel);
     html += `<div class="tt-grid-row" data-vk="${escapeHTML(numLabel)}">`;
@@ -1529,7 +1619,7 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef) {
     html += `<button class="tt-speak" onclick="speakVerse('${esc}')" type="button" aria-label="Read verse ${numLabel} aloud (TTS)">🔊 Read</button>`;
     html += `<button class="tt-chant" onclick="chantVerse('${esc}')" type="button" aria-label="Chant verse ${numLabel} (PocketTorah audio)">🎵 Chant</button>`;
     html += `</span></span>`;
-    html += `<span class="tt-cell heb">${tokenizeHebrew(v.hebrew, wordIdxRef)}</span>`;
+    html += `<span class="tt-cell heb">${hebHtml}</span>`;
     html += `</div>`;
   }
   html += `</div>`;
@@ -1651,7 +1741,10 @@ function seekToVerseInLoadedAudio(numLabel, silent) {
   if (!currentTimings || !currentAudio) return false;
   const verseEl = document.querySelector(`#ttReading [data-vk="${numLabel}"]`);
   if (!verseEl) { if (!silent) setStatus(`Couldn't find verse ${numLabel} in the rendered text.`, true); return false; }
-  const verseWords = verseEl.querySelectorAll('.tt-word');
+  // Only consider Hebrew word spans for the start/end indices; translit spans
+  // also carry .tt-word with matching data-twi, but counting them would
+  // confuse the first/last lookup.
+  const verseWords = verseEl.querySelectorAll('.tt-heb .tt-word, .tt-cell.heb .tt-word');
   if (!verseWords.length) { if (!silent) setStatus(`Verse ${numLabel} has no Hebrew words to chant.`, true); return false; }
   const startIdx = parseInt(verseWords[0].dataset.twi, 10);
   const lastIdx  = parseInt(verseWords[verseWords.length - 1].dataset.twi, 10);
@@ -1924,7 +2017,18 @@ async function loadKaraoke(parshahEntry, suffix) {
   }
 }
 function updateKaraokeWordRefs() {
-  karaokeWordSpans = [...document.querySelectorAll('#ttReading .tt-word')];
+  // Highlighter only paints the followed row. Click-to-seek still works on any
+  // .tt-word in any row (handled in onReadingClick by walking up to data-twi).
+  const sel = settings.karaokeFollow === 'translit'
+    ? '#ttReading .tt-translit .tt-word, #ttReading .tt-cell.translit .tt-word'
+    : '#ttReading .tt-heb .tt-word, #ttReading .tt-cell.heb .tt-word';
+  // Build a lookup keyed by data-twi so we can find by index regardless of DOM order.
+  const spans = [...document.querySelectorAll(sel)];
+  karaokeWordSpans = [];
+  spans.forEach(el => {
+    const i = parseInt(el.dataset.twi, 10);
+    if (!isNaN(i)) karaokeWordSpans[i] = el;
+  });
 }
 function onAudioTimeUpdate() {
   if (!currentAudio || !currentTimings || !karaokeWordSpans.length) return;
@@ -2001,25 +2105,34 @@ function updatePlayPauseIcon() {
 // the audio to that word's start time. Delegated handler so it works for
 // every render without re-binding.
 function onReadingClick(e) {
-  if (!currentTimings || !currentAudio) return;
   const wordEl = e.target.closest('.tt-word');
   if (!wordEl) return;
-  const idx = parseInt(wordEl.dataset.twi, 10);
-  if (isNaN(idx) || idx < 0 || idx >= currentTimings.length) return;
-  const t = currentTimings[idx];
-  if (typeof t !== 'number' || isNaN(t)) return;
-  // User is taking direct control — drop any single-verse stop point.
-  _verseEndStopAt = null;
-  currentAudio.currentTime = t;
-  // Reset highlighter so the next timeupdate snaps cleanly to the new position.
-  if (lastHighlightedIdx >= 0 && karaokeWordSpans[lastHighlightedIdx]) {
-    karaokeWordSpans[lastHighlightedIdx].classList.remove('active');
+  const verseEl = wordEl.closest('[data-vk]');
+  const numLabel = verseEl && verseEl.dataset.vk;
+  const action = settings.clickAction || 'chant';
+  if (action === 'read') {
+    if (numLabel) speakVerse(numLabel);
+    return;
   }
-  lastHighlightedIdx = -1;
-  // If paused, start playing — feels natural after a click.
-  if (currentAudio.paused) {
-    currentAudio.play().catch(() => {/* autoplay restrictions; ignore */});
+  // Chant: prefer in-loaded-audio seek; otherwise auto-load that verse's
+  // aliyah via chantVerse() and seek once it's ready.
+  if (currentTimings && currentAudio) {
+    const idx = parseInt(wordEl.dataset.twi, 10);
+    if (!isNaN(idx) && idx >= 0 && idx < currentTimings.length) {
+      const t = currentTimings[idx];
+      if (typeof t === 'number' && !isNaN(t)) {
+        _verseEndStopAt = null;
+        currentAudio.currentTime = t;
+        if (lastHighlightedIdx >= 0 && karaokeWordSpans[lastHighlightedIdx]) {
+          karaokeWordSpans[lastHighlightedIdx].classList.remove('active');
+        }
+        lastHighlightedIdx = -1;
+        if (currentAudio.paused) currentAudio.play().catch(() => {});
+        return;
+      }
+    }
   }
+  if (numLabel) chantVerse(numLabel);
 }
 function setKaraokeStatus(msg) {
   const el = document.getElementById('optKaraokeStatus');
@@ -2112,6 +2225,13 @@ function applyFontSizes() {
   root.style.setProperty('--tt-heb-size',     (isFinite(heb) ? heb : DEFAULTS.hebFontSize)         + 'rem');
   root.style.setProperty('--tt-translit-size',(isFinite(tr)  ? tr  : DEFAULTS.translitFontSize)    + 'rem');
   root.style.setProperty('--tt-english-size', (isFinite(en)  ? en  : DEFAULTS.englishFontSize)     + 'rem');
+}
+function applyKaraokeAppearance() {
+  const body = document.body;
+  ['highlight','outline','underline','none'].forEach(s =>
+    body.classList.toggle('kar-style-' + s, settings.karaokeStyle === s));
+  ['hebrew','translit'].forEach(s =>
+    body.classList.toggle('kar-follow-' + s, settings.karaokeFollow === s));
 }
 function resetFontSize(which) {
   const map = { heb: ['hebFontSize', 'optHebSize', 'optHebSizeVal'],
@@ -2206,6 +2326,10 @@ function closeSettings() {
 function syncFormToSettings() {
   document.getElementById('optShowCantillation').checked = !!settings.showCantillation;
   document.getElementById('optShowNikkud').checked = !!settings.showNikkud;
+  // Click-on-word action
+  const ca = settings.clickAction || 'chant';
+  document.getElementById('caChant').checked = ca === 'chant';
+  document.getElementById('caRead').checked  = ca === 'read';
   // Per-row font sizes (sliders + value displays)
   const sizeMap = [
     ['hebFontSize',      'optHebSize',      'optHebSizeVal'],
@@ -2221,6 +2345,16 @@ function syncFormToSettings() {
     if (val) val.textContent = safe.toFixed(2) + 'rem';
   });
   applyFontSizes();
+  // Karaoke style + follow radios
+  const ks = settings.karaokeStyle || 'highlight';
+  const kf = settings.karaokeFollow || 'hebrew';
+  document.getElementById('ksHighlight').checked = ks === 'highlight';
+  document.getElementById('ksOutline').checked   = ks === 'outline';
+  document.getElementById('ksUnderline').checked = ks === 'underline';
+  document.getElementById('ksNone').checked      = ks === 'none';
+  document.getElementById('kfHebrew').checked    = kf === 'hebrew';
+  document.getElementById('kfTranslit').checked  = kf === 'translit';
+  applyKaraokeAppearance();
   // schedule radio
   const sd = document.getElementById('schedDiaspora');
   const si = document.getElementById('schedIsrael');
@@ -2276,6 +2410,11 @@ function wireSettingsForm() {
     settings.showNikkud = e.target.checked;
     saveSettings(); renderText();
   });
+  document.querySelectorAll('input[name="optClickAction"]').forEach(r => {
+    r.addEventListener('change', e => {
+      if (e.target.checked) { settings.clickAction = e.target.value; saveSettings(); }
+    });
+  });
   // Per-row font-size sliders (Hebrew / Translit / English)
   function wireSize(slId, valId, key) {
     const sl = document.getElementById(slId);
@@ -2292,6 +2431,23 @@ function wireSettingsForm() {
   wireSize('optHebSize',      'optHebSizeVal',      'hebFontSize');
   wireSize('optTranslitSize', 'optTranslitSizeVal', 'translitFontSize');
   wireSize('optEnglishSize',  'optEnglishSizeVal',  'englishFontSize');
+  // Karaoke style + follow
+  document.querySelectorAll('input[name="optKarStyle"]').forEach(r => {
+    r.addEventListener('change', e => {
+      if (e.target.checked) { settings.karaokeStyle = e.target.value; applyKaraokeAppearance(); saveSettings(); }
+    });
+  });
+  document.querySelectorAll('input[name="optKarFollow"]').forEach(r => {
+    r.addEventListener('change', e => {
+      if (e.target.checked) {
+        settings.karaokeFollow = e.target.value;
+        applyKaraokeAppearance();
+        saveSettings();
+        // Re-collect the followed-row spans so the next timeupdate paints there.
+        if (currentTimings && currentAudio) updateKaraokeWordRefs();
+      }
+    });
+  });
   // Schedule
   document.querySelectorAll('input[name="optSchedule"]').forEach(r => {
     r.addEventListener('change', e => {
