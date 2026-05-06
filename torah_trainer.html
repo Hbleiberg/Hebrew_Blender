@@ -898,6 +898,7 @@ body.fullscreen #fsExitBtn { display: flex; }
           <span class="radio-group">
             <input type="radio" name="optKarFollow" id="kfHebrew"   value="hebrew"><label for="kfHebrew">Hebrew</label>
             <input type="radio" name="optKarFollow" id="kfTranslit" value="translit"><label for="kfTranslit">Translit</label>
+            <input type="radio" name="optKarFollow" id="kfBoth"     value="both"><label for="kfBoth">Both</label>
           </span>
         </div>
       </div>
@@ -1501,14 +1502,20 @@ function applyTranslit(hebrewText) {
 // Hebrew word in this verse — translit words map to firstTwi, firstTwi+1, ...
 function tokenizeTranslit(translitText, firstTwi, hebWordCount) {
   if (!translitText) return '';
-  const tokens = translitText.split(/(\s+)/);
+  // Split on whitespace AND hyphen so translit words match the Hebrew
+  // tokenizer's maqaf split (תֶּל־אָבִיב → "tel" + "aviv", same as the
+  // Hebrew side). The simpleStressed scheme uses hyphens as syllable
+  // separators inside a single word, so for that scheme keep words intact.
+  const useHyphenSplit = settings.translitStyle !== 'simpleStressed';
+  const splitter = useHyphenSplit ? /(\s+|-)/ : /(\s+)/;
+  const tokens = translitText.split(splitter);
   const out = [];
   let twiOffset = 0;
   for (const tok of tokens) {
     if (!tok) continue;
     if (/^\s+$/.test(tok)) { out.push(tok); continue; }
+    if (tok === '-') { out.push('-'); continue; }   // maqaf separator, not a word
     if (/[a-zA-Z]/.test(tok)) {
-      // Only stamp data-twi while we still have matching Hebrew words to point at.
       if (firstTwi >= 0 && twiOffset < hebWordCount) {
         out.push(`<span class="tt-word" data-twi="${firstTwi + twiOffset}">${escapeHTML(tok)}</span>`);
         twiOffset++;
@@ -1764,9 +1771,7 @@ function seekToVerseInLoadedAudio(numLabel, silent) {
   }
   _verseEndStopAt = stopAt;
   currentAudio.currentTime = currentTimings[startIdx];
-  if (lastHighlightedIdx >= 0 && karaokeWordSpans[lastHighlightedIdx]) {
-    karaokeWordSpans[lastHighlightedIdx].classList.remove('active');
-  }
+  if (lastHighlightedIdx >= 0) paintKaraokeIdx(lastHighlightedIdx, false);
   lastHighlightedIdx = -1;
   if (currentAudio.paused) {
     currentAudio.play().catch(() => {});
@@ -1923,7 +1928,16 @@ function resetTTSRate() {
    ══════════════════════════════════════════════════════ */
 let currentTimings = null;   // Float array: start-time per Hebrew word
 let currentAudio = null;     // <audio> element
-let karaokeWordSpans = [];   // DOM refs to .tt-word spans, indexed by twi
+let karaokeWordSpans = [];   // sparse array; karaokeWordSpans[twi] = array of spans
+function paintKaraokeIdx(idx, on) {
+  const els = karaokeWordSpans[idx];
+  if (!els) return;
+  els.forEach(el => el.classList.toggle('active', !!on));
+}
+function firstKaraokeSpan(idx) {
+  const els = karaokeWordSpans[idx];
+  return (els && els.length) ? els[0] : null;
+}
 let karaokeRafId = null;
 let lastHighlightedIdx = -1;
 let _verseEndStopAt = null;  // when set, audio auto-pauses at this currentTime
@@ -2017,17 +2031,21 @@ async function loadKaraoke(parshahEntry, suffix) {
   }
 }
 function updateKaraokeWordRefs() {
-  // Highlighter only paints the followed row. Click-to-seek still works on any
-  // .tt-word in any row (handled in onReadingClick by walking up to data-twi).
-  const sel = settings.karaokeFollow === 'translit'
-    ? '#ttReading .tt-translit .tt-word, #ttReading .tt-cell.translit .tt-word'
-    : '#ttReading .tt-heb .tt-word, #ttReading .tt-cell.heb .tt-word';
-  // Build a lookup keyed by data-twi so we can find by index regardless of DOM order.
-  const spans = [...document.querySelectorAll(sel)];
+  // Highlighter paints the row(s) named by settings.karaokeFollow. Each entry
+  // in karaokeWordSpans is an array — for follow=both, a single twi maps to
+  // both the Hebrew and the Translit span. Click-to-seek still works on any
+  // .tt-word in any row (handled in onReadingClick).
+  const f = settings.karaokeFollow || 'hebrew';
+  const selectors = [];
+  if (f === 'hebrew' || f === 'both') selectors.push('#ttReading .tt-heb .tt-word', '#ttReading .tt-cell.heb .tt-word');
+  if (f === 'translit' || f === 'both') selectors.push('#ttReading .tt-translit .tt-word', '#ttReading .tt-cell.translit .tt-word');
+  const spans = selectors.length ? [...document.querySelectorAll(selectors.join(','))] : [];
   karaokeWordSpans = [];
   spans.forEach(el => {
     const i = parseInt(el.dataset.twi, 10);
-    if (!isNaN(i)) karaokeWordSpans[i] = el;
+    if (isNaN(i)) return;
+    if (!karaokeWordSpans[i]) karaokeWordSpans[i] = [];
+    karaokeWordSpans[i].push(el);
   });
 }
 function onAudioTimeUpdate() {
@@ -2051,15 +2069,15 @@ function onAudioTimeUpdate() {
     else hi = mid - 1;
   }
   if (idx === lastHighlightedIdx) return;
-  if (lastHighlightedIdx >= 0 && karaokeWordSpans[lastHighlightedIdx]) {
-    karaokeWordSpans[lastHighlightedIdx].classList.remove('active');
-  }
-  if (idx >= 0 && karaokeWordSpans[idx]) {
-    karaokeWordSpans[idx].classList.add('active');
-    // scroll into view if offscreen
-    const r = karaokeWordSpans[idx].getBoundingClientRect();
-    if (r.top < 80 || r.bottom > window.innerHeight - 120) {
-      karaokeWordSpans[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (lastHighlightedIdx >= 0) paintKaraokeIdx(lastHighlightedIdx, false);
+  if (idx >= 0) {
+    paintKaraokeIdx(idx, true);
+    const lead = firstKaraokeSpan(idx);
+    if (lead) {
+      const r = lead.getBoundingClientRect();
+      if (r.top < 80 || r.bottom > window.innerHeight - 120) {
+        lead.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
   }
   lastHighlightedIdx = idx;
@@ -2123,9 +2141,7 @@ function onReadingClick(e) {
       if (typeof t === 'number' && !isNaN(t)) {
         _verseEndStopAt = null;
         currentAudio.currentTime = t;
-        if (lastHighlightedIdx >= 0 && karaokeWordSpans[lastHighlightedIdx]) {
-          karaokeWordSpans[lastHighlightedIdx].classList.remove('active');
-        }
+        if (lastHighlightedIdx >= 0) paintKaraokeIdx(lastHighlightedIdx, false);
         lastHighlightedIdx = -1;
         if (currentAudio.paused) currentAudio.play().catch(() => {});
         return;
@@ -2230,7 +2246,7 @@ function applyKaraokeAppearance() {
   const body = document.body;
   ['highlight','outline','underline','none'].forEach(s =>
     body.classList.toggle('kar-style-' + s, settings.karaokeStyle === s));
-  ['hebrew','translit'].forEach(s =>
+  ['hebrew','translit','both'].forEach(s =>
     body.classList.toggle('kar-follow-' + s, settings.karaokeFollow === s));
 }
 function resetFontSize(which) {
