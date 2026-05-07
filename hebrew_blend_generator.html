@@ -4518,7 +4518,7 @@ function updateModeVisibility() {
 
     // Worksheet-mode structural elements
     blendTypeWrapper:   !testMode,
-    modeDivider:        !testMode,
+    modeDivider:        !testMode && !inRealWordsBucket,
     worksheetTypeWrapper: !testMode && blends,
     threeLetterOptions: !testMode && blends && s.blendType === 'three' && !isNtl,
     focusOptions:       blends && s.focus && !testMode && !isNtl,
