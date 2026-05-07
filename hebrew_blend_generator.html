@@ -7982,7 +7982,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setRealWordDrill(rwDrillType);
 
   // Load Hebrew word dictionary from JSON
-  fetch('hebrew_words.json?v=4')
+  fetch('data/hebrew_words.json?v=4')
     .then(r => r.json())
     .then(data => {
       REAL_WORDS = Object.entries(data).flatMap(([count, words]) =>

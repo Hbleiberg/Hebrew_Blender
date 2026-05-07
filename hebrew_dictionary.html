@@ -1043,7 +1043,7 @@ const PAGE = 100;
 const posFilters = Array.from({length:6}, () => new Set());
 let dageshTavEnabled = false;
 
-fetch('hebrew_words.json?v=4')
+fetch('data/hebrew_words.json?v=4')
   .then(r => r.json())
   .then(data => {
     ALL_WORDS = Object.entries(data).flatMap(([cnt, words]) =>
@@ -1895,7 +1895,7 @@ function toggleEmojiMode(on) {
 }
 
 function fetchEmojiData() {
-  return fetch('hebrew_emojis.json?v=1')
+  return fetch('data/hebrew_emojis.json?v=1')
     .then(r => r.json())
     .then(data => {
       EMOJI_DATA = data;
