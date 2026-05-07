@@ -1194,9 +1194,18 @@
   .blend-type-btn:last-child { border-right: none; }
   .blend-type-btn:hover { background: var(--warm-gray); color: var(--text); }
   .blend-type-btn.active { background: var(--navy); color: var(--white); }
+  .blend-type-btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+  .blend-type-btn[disabled]:hover { background: var(--white); color: var(--muted); }
   body.dark .blend-type-btn { background: var(--white); color: var(--muted); }
   body.dark .blend-type-btn.active { background: #2a4070; color: #dde4f0; }
   body.dark .blend-type-btn:hover { background: var(--warm-gray); }
+  body.dark .blend-type-btn[disabled]:hover { background: var(--white); }
+  /* Multi-row grid layouts (Worksheet Type) need a grid gap so row 1 and
+     row 2 are visually separated; the per-button border-right pattern only
+     handles single-row layouts. */
+  #worksheetTypeSelector { gap: 1px; background: var(--border); }
+  #worksheetTypeSelector .blend-type-btn { border-right: none; }
+  body.dark #worksheetTypeSelector { background: var(--border); }
   .tooltip-wrap {
     position: relative;
     display: inline-flex;
@@ -1746,14 +1755,15 @@
       <div class="panel-title">Worksheet Mode</div>
       <div class="panel-body toggle-wrap">
 
-        <!-- Blend type selector -->
+        <!-- Practice Type selector -->
         <div id="blendTypeWrapper" style="margin-bottom:10px;">
           <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">Practice Type</div>
-          <div class="blend-type-selector" id="blendTypeSelector">
-            <button class="blend-type-btn" data-type="one" onclick="setBlendType('one')">1-Letter</button>
-            <button class="blend-type-btn active" data-type="two" onclick="setBlendType('two')">2-Letter</button>
-            <button class="blend-type-btn" data-type="three" onclick="setBlendType('three')">3-Letter <span style="font-size:0.55rem;background:var(--gold);color:var(--navy);padding:1px 4px;border-radius:3px;font-weight:700;">BETA</span></button>
-            <button class="blend-type-btn" data-type="nikud" onclick="setBlendType('nikud')">Vowels Only</button>
+          <div class="blend-type-selector" id="blendTypeSelector" style="grid-template-columns:repeat(5,1fr);">
+            <button class="blend-type-btn" data-type="one"   onclick="setPracticeType('one')">1-Letter</button>
+            <button class="blend-type-btn active" data-type="two"   onclick="setPracticeType('two')">2-Letter</button>
+            <button class="blend-type-btn" data-type="three" onclick="setPracticeType('three')">3-Letter <span style="font-size:0.5rem;background:var(--gold);color:var(--navy);padding:1px 3px;border-radius:3px;font-weight:700;">BETA</span></button>
+            <button class="blend-type-btn" data-type="nikud" onclick="setPracticeType('nikud')">Vowels<br>Only</button>
+            <button class="blend-type-btn" data-type="realwords" onclick="setPracticeType('realwords')">Real<br>Words</button>
           </div>
         </div>
 
@@ -1774,6 +1784,27 @@
 
         <!-- Divider -->
         <div id="modeDivider" style="border-top:1px solid var(--border);margin:4px 0 8px;"></div>
+
+        <!-- Worksheet Type selector -->
+        <div id="worksheetTypeWrapper" style="margin-bottom:10px;">
+          <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">Worksheet Type</div>
+          <div class="blend-type-selector" id="worksheetTypeSelector" style="grid-template-columns:repeat(3,1fr);">
+            <button class="blend-type-btn active" data-worksheet="reading"       onclick="setWorksheetType('reading')">Reading</button>
+            <button class="blend-type-btn"        data-worksheet="inverse"       onclick="setWorksheetType('inverse')">Inverse</button>
+            <button class="blend-type-btn"        data-worksheet="fillvowels"    onclick="setWorksheetType('fillvowels')">Fill<br>Vowels</button>
+            <button class="blend-type-btn"        data-worksheet="bingo"         onclick="setWorksheetType('bingo')">Bingo</button>
+            <button class="blend-type-btn"        data-worksheet="gematria"      onclick="setWorksheetType('gematria')">Gematria</button>
+            <button class="blend-type-btn"        data-worksheet="nametheletter" onclick="setWorksheetType('nametheletter')" id="wtNameTheLetter">Name the<br>Letter</button>
+          </div>
+          <div style="font-size:0.65rem;color:var(--muted);margin-top:4px;line-height:1.2;">
+            <span id="wtHelpReading"      class="wt-help">Hebrew shown — students read aloud.</span>
+            <span id="wtHelpInverse"      class="wt-help" style="display:none;">English shown — students write Hebrew.</span>
+            <span id="wtHelpFillvowels"   class="wt-help" style="display:none;">Hebrew with no nikkud — students add the vowel marks.</span>
+            <span id="wtHelpBingo"        class="wt-help" style="display:none;">Generates printable bingo cards from your blends.</span>
+            <span id="wtHelpGematria"     class="wt-help" style="display:none;">Students calculate the Gematria value of each word.</span>
+            <span id="wtHelpNametheletter" class="wt-help" style="display:none;">Drill Hebrew letter names. Only available with 1-Letter practice.</span>
+          </div>
+        </div>
 
         <!-- Name the Letter — visible only when 1-Letter is the active blend type -->
         <div class="toggle-row" id="rowNameTheLetter" style="display:none;">
@@ -2207,8 +2238,8 @@
         <div id="realWordsOptions" style="display:none;margin-top:4px;padding-left:16px;border-left:2px solid var(--border);flex-direction:column;gap:6px;">
 
           <!-- Drill Type -->
-          <div class="rw-section">
-            <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Drill Type <span class="tooltip-wrap" style="font-size:0.65rem;text-transform:none;letter-spacing:normal;font-weight:400;">?<span class="tooltip-box"><strong>Reading</strong> — Hebrew shown, students read aloud and flip to check.<br><br><strong>Self-Check</strong> — Flip cards: Hebrew front, English translation back.<br><br><strong>Reverse</strong> — English shown, students recall or write the Hebrew.<br><br><strong>ID Real Words</strong> — Mixed real words + nonsense blends; students circle the real ones. Includes a teacher answer key.<br><br><strong>ID Parts of Speech</strong> — Hebrew words shown; students write the part of speech. Answer key includes a small POS tag on each card.<br><br><strong>Bingo</strong> — Generates unique bingo cards with real Hebrew words. Teacher calls words aloud; students mark matches.<br><br><strong>Gematria</strong> — Each word is shown with a blank line. Students calculate and write the total Gematria value of the letters. An answer key is generated on a second page.<br><br><strong>Fill Vowels</strong> — Hebrew words shown with their nikkud stripped. Students write in the vowel marks. Optional Include Dageshim keeps the dot inside letters intact.<br><br><strong>Word Search</strong> — A printable Hebrew word search puzzle. Pick grid size (10×10–18×18), word count (5–10), and which directions are allowed. Optional word bank for the student page; the answer key highlights every placed word.</span></span></div>
+          <div class="rw-section" id="rwSectionDrillType">
+            <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Drill Type <span class="tooltip-wrap" style="font-size:0.65rem;text-transform:none;letter-spacing:normal;font-weight:400;">?<span class="tooltip-box"><strong>Reading</strong> — Hebrew shown, students read aloud and flip to check.<br><br><strong>Self-Check</strong> — Flip cards: Hebrew front, English translation back.<br><br><strong>Reverse</strong> — English shown, students recall or write the Hebrew.<br><br><strong>ID Real Words</strong> — Mixed real words + nonsense blends; students circle the real ones. Includes a teacher answer key.<br><br><strong>ID Parts of Speech</strong> — Hebrew words shown; students write the part of speech. Answer key includes a small POS tag on each card.<br><br><strong>Bingo</strong> — Generates unique bingo cards with real Hebrew words. Teacher calls words aloud; students mark matches.<br><br><strong>Gematria</strong> — Each word is shown with a blank line. Students calculate and write the total Gematria value of the letters. An answer key is generated on a second page.<br><br><strong>Fill Vowels</strong> — Hebrew words shown with their nikkud stripped. Students write in the vowel marks. Optional Include Dageshim keeps the dot inside letters intact.<br><br><strong>Word Search</strong> — A printable Hebrew word search puzzle. Pick grid size (10×10–18×18), word count (5–10), and which directions are allowed. Optional word bank for the student page; the answer key highlights every placed word.<br><br><strong>Number Practice</strong> — Hebrew number practice (0–9999). Includes its own options panel.</span></span></div>
             <div class="rw-section-body">
               <div class="blend-type-selector" style="grid-template-columns:repeat(3,1fr);margin-bottom:6px;">
                 <button class="rw-drill-btn active" data-drill="reading" onclick="setRealWordDrill('reading')">Reading</button>
@@ -2220,12 +2251,13 @@
                 <button class="rw-drill-btn" data-drill="gematria" onclick="setRealWordDrill('gematria')">Gematria</button>
                 <button class="rw-drill-btn" data-drill="fillvowels" onclick="setRealWordDrill('fillvowels')">Fill Vowels</button>
                 <button class="rw-drill-btn" data-drill="wordsearch" onclick="setRealWordDrill('wordsearch')">Word Search</button>
+                <button class="rw-drill-btn" data-drill="numpractice" onclick="setRealWordDrill('numpractice')">Number Practice</button>
               </div>
             </div>
           </div>
 
           <!-- Word Filters -->
-          <div class="rw-section">
+          <div class="rw-section" id="rwSectionWordFilters">
             <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Word Filters</div>
             <div class="rw-section-body">
               <div style="margin-bottom:6px;">
@@ -2267,7 +2299,7 @@
           </div>
 
           <!-- Letter Filter -->
-          <div class="rw-section">
+          <div class="rw-section" id="rwSectionLetterFilter">
             <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Letter Filter</div>
             <div class="rw-section-body">
               <div style="font-size:0.68rem;color:var(--muted);margin-bottom:5px;">Only show words using these letters</div>
@@ -2286,7 +2318,7 @@
           </div>
 
           <!-- Display options -->
-          <div class="rw-section">
+          <div class="rw-section" id="rwSectionDisplay">
             <div class="rw-section-header" id="rwDisplayHeader" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Drill Options</div>
             <div class="rw-section-body" id="rwDisplayBody">
               <!-- Number of Words is always the first option in Drill Options -->
@@ -3376,7 +3408,7 @@ function updateVavAsLetterVisibility() {
 function updateCombosCount() {
   const el = document.getElementById('combosCount');
   if (!el) return;
-  const type = document.querySelector('.blend-type-btn.active')?.dataset.type || 'two';
+  const type = document.querySelector('.blend-type-btn.active[data-type]')?.dataset.type || 'two';
   if (type === 'nikud') { el.textContent = ''; return; }
   const VAV_VARIANTS = new Set(['וֹ','וּ']);
   const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
@@ -3518,7 +3550,7 @@ function getSettings() {
     landscape:     document.getElementById('landscapeMode').checked,
     headerLang,
     // Blend type & mode
-    blendType:     document.querySelector('.blend-type-btn.active')?.dataset.type || 'two',
+    blendType:     document.querySelector('.blend-type-btn.active[data-type]')?.dataset.type || 'two',
     vowelPosition: getVowelPos(),
     inverse:       document.getElementById('inverseToggle').checked,
     fillVowels:    document.getElementById('fillVowelsToggle').checked,
@@ -3869,7 +3901,15 @@ function applySettings(s) {
   if (s.selfCheck !== undefined) document.getElementById('selfCheckToggle').checked = s.selfCheck;
 
   // Restore drill-type sub-states that affect visibility (no-mutex: pure data updates).
-  if (s.rwDrillType) setRealWordDrill(s.rwDrillType);
+  // Old presets (saved before Number Practice was reframed as a Real-Words
+  // drill) won't have rwDrillType:'numpractice'. If numberPractice was on
+  // and rwDrillType is missing or stale, force it to numpractice so the
+  // Drill Type row reflects the actual mode.
+  let drillToRestore = s.rwDrillType;
+  if (s.numberPractice && (!drillToRestore || drillToRestore === 'reading')) {
+    drillToRestore = 'numpractice';
+  }
+  if (drillToRestore) setRealWordDrill(drillToRestore);
 
   // Number Practice sub-row visibility (within the np options panel).
   onNpTranslitChange();
@@ -4423,7 +4463,7 @@ function computeModeState() {
 
   return {
     source, drill,
-    blendType: document.querySelector('.blend-type-btn.active')?.dataset.type || 'two',
+    blendType: document.querySelector('.blend-type-btn.active[data-type]')?.dataset.type || 'two',
     bingo:     document.getElementById('bingoToggle').checked,
     selfCheck: document.getElementById('selfCheckToggle').checked,
     answerKey: document.getElementById('answerKeyToggle').checked,
@@ -4456,6 +4496,10 @@ function updateModeVisibility() {
   const ntlSC  = isNtl && !!document.getElementById('ntlSelfCheck')?.checked;
   const testMode = gemSC || stdSC || ntlSC;
 
+  // The Real Words "bucket" includes both real-words drills and the number-
+  // practice drill (which lives inside the Real Words section as a drill type).
+  const inRealWordsBucket = (s.source === 'realwords' || s.source === 'numbers');
+
   const v = {
     // Major panels
     panelLetters:  blends && s.blendType !== 'nikud' && !testMode,
@@ -4465,32 +4509,38 @@ function updateModeVisibility() {
     panelPresets:  !testMode,
 
     // Worksheet-mode structural elements
-    blendTypeWrapper:   !testMode && blends && !isNtl,
-    modeDivider:        !testMode && blends && !isNtl,
+    blendTypeWrapper:   !testMode,
+    modeDivider:        !testMode,
+    worksheetTypeWrapper: !testMode && blends,
     threeLetterOptions: !testMode && blends && s.blendType === 'three' && !isNtl,
     focusOptions:       blends && s.focus && !testMode && !isNtl,
 
-    // Name the Letter rows
-    rowNameTheLetter:    blends && s.blendType === 'one' && !testMode,
+    // Name the Letter sub-options (the toggle row itself is replaced by the
+    // Worksheet Type button; the options panel still appears underneath).
+    rowNameTheLetter:    false,
     nameTheLetterOptions: isNtl && !testMode,
 
-    // Mode toggle rows (every standard worksheet-mode row hides under NTL)
-    rowInverse:        !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo && !isNtl,
-    rowFillVowels:     !testMode && blends && s.drill !== 'gematria' && s.drill !== 'inverse' && !s.bingo && !isNtl,
-    rowGematria:       !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'inverse' && !s.bingo && !isNtl,
-    rowBingo:          !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'inverse' && s.drill !== 'gematria' && !isNtl,
+    // Legacy slider rows — replaced by Worksheet Type buttons.
+    rowInverse:        false,
+    rowFillVowels:     false,
+    rowGematria:       false,
+    rowBingo:          false,
+    rowRealWords:      false,
+    rowNumberPractice: false,
+
+    // Surviving rows (still slider-driven for now)
     rowAnswerKey:      !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo && !isNtl,
     rowSelfCheck:      !gemSC    && !ntlSC && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo && !isNtl,
     rowBlendCount:     !testMode && blends && !s.bingo,
-    rowRealWords:      !testMode && s.source !== 'numbers' && !cwModeActive && !s.bingo && !(blends && s.drill === 'gematria') && !(blends && s.drill === 'fillvowels') && !(blends && s.drill === 'inverse') && !isNtl,
-    rowNumberPractice: !testMode && s.source !== 'realwords' && !cwModeActive && !s.bingo && !(blends && s.drill === 'gematria') && !(blends && s.drill === 'fillvowels') && !(blends && s.drill === 'inverse') && !isNtl,
 
     // Sub-option panels
     bingoOptions:          blends && s.bingo && !testMode,
     gematriaOptions:       blends && s.drill === 'gematria',
     selfCheckOptions:      blends && s.selfCheck && s.drill !== 'fillvowels'
                                   && s.drill !== 'gematria' && !s.bingo,
-    realWordsOptions:      s.source === 'realwords',
+    // Real Words options stay visible in number-practice-via-real-words mode
+    // so the Drill Type row (with the Number Practice button) remains accessible.
+    realWordsOptions:      inRealWordsBucket,
     customWordlistOptions: s.source === 'customwordlist',
     numberPracticeOptions: s.source === 'numbers',
     fillVowelsDageshRow:   blends && s.drill === 'fillvowels',
@@ -4516,6 +4566,54 @@ function updateModeVisibility() {
       el.style.display = '';
     }
   }
+
+  // ── Sync the Practice Type buttons ──
+  // When in the Real Words bucket, no blend-type button is highlighted; the
+  // Real Words button takes the active state.
+  document.querySelectorAll('.blend-type-btn[data-type]').forEach(btn => {
+    const t = btn.dataset.type;
+    if (t === 'realwords') {
+      btn.classList.toggle('active', inRealWordsBucket);
+    } else {
+      btn.classList.toggle('active', !inRealWordsBucket && !cwModeActive && s.blendType === t);
+    }
+  });
+
+  // ── Sync the Worksheet Type buttons ──
+  let wsType = 'reading';
+  if (s.bingo)                  wsType = 'bingo';
+  else if (s.drill === 'inverse')    wsType = 'inverse';
+  else if (s.drill === 'fillvowels') wsType = 'fillvowels';
+  else if (s.drill === 'gematria')   wsType = 'gematria';
+  if (isNtl)                    wsType = 'nametheletter';
+  document.querySelectorAll('[data-worksheet]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.worksheet === wsType);
+  });
+
+  // Help-text caption under the Worksheet Type row.
+  document.querySelectorAll('.wt-help').forEach(el => el.style.display = 'none');
+  const helpId = 'wtHelp' + wsType.charAt(0).toUpperCase() + wsType.slice(1);
+  const helpEl = document.getElementById(helpId);
+  if (helpEl) helpEl.style.display = '';
+
+  // Disable Name the Letter button when blend type is not 1-Letter.
+  const ntlBtn = document.getElementById('wtNameTheLetter');
+  if (ntlBtn) {
+    const enabled = (s.blendType === 'one') && blends;
+    ntlBtn.disabled = !enabled;
+    ntlBtn.style.opacity = enabled ? '' : '0.4';
+    ntlBtn.style.cursor  = enabled ? '' : 'not-allowed';
+    ntlBtn.title = enabled ? '' : 'Switch to 1-Letter practice to use Name the Letter';
+  }
+
+  // Inside the Real Words section, hide the non-drill-type sections when the
+  // user has picked the Number Practice drill (the number practice options
+  // panel takes over below).
+  const showRwSubSections = (s.source === 'realwords');
+  ['rwSectionWordFilters','rwSectionLetterFilter','rwSectionDisplay'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = showRwSubSections ? '' : 'none';
+  });
 }
 
 // Force-clear toggles that conflict with the chosen mode/drill.
@@ -4583,8 +4681,10 @@ function enforceMutex(opts) {
 
 // ── BLEND TYPE SELECTOR ──
 function setBlendType(type) {
-  // Update button active states
-  document.querySelectorAll('.blend-type-btn').forEach(btn => {
+  // Update button active states. Restrict to practice-type buttons so the
+  // Worksheet Type buttons (which share the .blend-type-btn class) are left
+  // alone — updateModeVisibility() drives those.
+  document.querySelectorAll('.blend-type-btn[data-type]').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.type === type);
   });
 
@@ -4638,6 +4738,88 @@ function setBlendType(type) {
 function toggleOneLetterMode() { setBlendType('one'); }
 function toggleNikudOnlyMode() { setBlendType('nikud'); }
 function toggleThreeLetterUI() { setBlendType('three'); }
+
+// ── PRACTICE TYPE SELECTOR (one/two/three/nikud/realwords) ──
+// Top-level dispatcher that knows about both blend types and the real-words
+// bucket. Real Words leaves the previously-chosen blend type untouched so the
+// user can return to it later without losing their letter/vowel filters.
+function setPracticeType(type) {
+  if (type === 'realwords') {
+    // If a number-practice drill was previously selected within Real Words,
+    // restore that combined state; otherwise default to source=realwords with
+    // whatever rwDrillType was last active.
+    if (rwDrillType === 'numpractice') {
+      enforceMutex({ source: 'numbers' });
+      const np = document.getElementById('numberPracticeToggle');
+      if (np) np.checked = true;
+    } else {
+      enforceMutex({ source: 'realwords' });
+      const rw = document.getElementById('realWordsToggle');
+      if (rw) rw.checked = true;
+    }
+    updateModeVisibility();
+    if (typeof updateRwPoolInfo === 'function') updateRwPoolInfo();
+    return;
+  }
+  // Plain blend type — make sure we're back in the blends bucket.
+  enforceMutex({ source: 'blends' });
+  setBlendType(type);
+}
+
+// ── WORKSHEET TYPE SELECTOR (reading/inverse/fillvowels/bingo/gematria/nametheletter) ──
+// Replaces the legacy slider toggles. Each button drives the same underlying
+// checkboxes (so presets keep working) and then runs the matching initializer
+// so visibility + worksheet rendering stay in sync with the rest of the state
+// machine.
+function setWorksheetType(type) {
+  // Name the Letter is 1-Letter only — auto-switch practice type if needed.
+  if (type === 'nametheletter') {
+    const blend = document.querySelector('.blend-type-btn.active[data-type]')?.dataset.type;
+    if (blend !== 'one') setPracticeType('one');
+  }
+
+  // Move out of any non-blends source.
+  enforceMutex({ source: 'blends' });
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.checked = val; };
+  set('realWordsToggle', false);
+  set('numberPracticeToggle', false);
+
+  // Reset every standard-drill flag, then turn on the chosen one.
+  ['inverseToggle','fillVowelsToggle','bingoToggle','gematriaToggle','nameTheLetterToggle']
+    .forEach(id => set(id, false));
+
+  let initFn = null;
+  switch (type) {
+    case 'inverse':
+      set('inverseToggle', true);
+      enforceMutex({ drill: 'inverse' });
+      break;
+    case 'fillvowels':
+      set('fillVowelsToggle', true);
+      initFn = onFillVowelsChange;
+      break;
+    case 'bingo':
+      set('bingoToggle', true);
+      initFn = toggleBingoUI;
+      break;
+    case 'gematria':
+      set('gematriaToggle', true);
+      initFn = toggleGematriaMode;
+      break;
+    case 'nametheletter':
+      set('nameTheLetterToggle', true);
+      initFn = toggleNameTheLetterUI;
+      break;
+    case 'reading':
+    default:
+      // No flags — straight reading drill. Fall through to update + re-render.
+      break;
+  }
+
+  if (initFn) initFn();
+  updateModeVisibility();
+  if (typeof renderWorksheet === 'function' && blends.length) renderWorksheet(false);
+}
 
 // ── ONE-LETTER GENERATION ──
 // ── Name the Letter generator + renderer ──
@@ -5680,7 +5862,7 @@ function makeBingoPhantom(gridSize, fourUp, twoUp) {
 function renderBingo(ws) {
   ws.innerHTML = '';
 
-  const activeType   = document.querySelector('.blend-type-btn.active')?.dataset.type || 'two';
+  const activeType   = document.querySelector('.blend-type-btn.active[data-type]')?.dataset.type || 'two';
   const oneLetter    = activeType === 'one';
   const threeLetter  = activeType === 'three';
   const vowelPos     = getVowelPos();
@@ -6258,7 +6440,7 @@ function generate(animate = false) {
   }
 
   const count = parseInt(document.getElementById('blendCount').value);
-  const activeType  = document.querySelector('.blend-type-btn.active')?.dataset.type || 'two';
+  const activeType  = document.querySelector('.blend-type-btn.active[data-type]')?.dataset.type || 'two';
   const threeLetter = activeType === 'three';
   const vowelPos = getVowelPos();
 
@@ -6668,7 +6850,7 @@ function renderWorksheet(animate = false) {
     : document.getElementById('answerKeyToggle').checked;
   const selfCheck   = document.getElementById('selfCheckToggle').checked;
   const bingo       = document.getElementById('bingoToggle').checked;
-  const activeType  = document.querySelector('.blend-type-btn.active')?.dataset.type || 'two';
+  const activeType  = document.querySelector('.blend-type-btn.active[data-type]')?.dataset.type || 'two';
   const oneLetter   = activeType === 'one';
   const nikudOnly   = activeType === 'nikud';
   const cols        = autoCols(blends.length);
@@ -7607,6 +7789,24 @@ function setRealWordDrill(type) {
   rwDrillType = type;
   document.querySelectorAll('.rw-drill-btn').forEach(b => b.classList.toggle('active', b.dataset.drill === type));
 
+  // Number Practice is a separate "source" — switch the underlying mutex
+  // toggles and let updateModeVisibility() do the rest. It still lives
+  // inside the Real Words section so the drill row stays accessible.
+  if (type === 'numpractice') {
+    enforceMutex({ source: 'numbers' });
+    const np = document.getElementById('numberPracticeToggle');
+    if (np) np.checked = true;
+    updateModeVisibility();
+    renderNumberPractice(document.getElementById('worksheet'));
+    return;
+  }
+  // Returning from numpractice to a real-words drill: flip the source back.
+  if (document.getElementById('numberPracticeToggle')?.checked) {
+    enforceMutex({ source: 'realwords' });
+    const rw = document.getElementById('realWordsToggle');
+    if (rw) rw.checked = true;
+  }
+
   // Mix-with-blends doesn't make sense for these drills. Identify auto-mixes;
   // bingo/gematria/fillvowels/wordsearch never mix.
   const mixedRow = document.getElementById('rwMixedRow');
@@ -7722,6 +7922,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if (realWordsOpts && drillTypeSec && drillOptsSec && drillOptsSec !== drillTypeSec) {
     realWordsOpts.insertBefore(drillOptsSec, drillTypeSec.nextElementSibling);
     if (bingoSec) realWordsOpts.insertBefore(bingoSec, drillOptsSec.nextElementSibling);
+  }
+
+  // Number Practice now lives as a drill type inside Real Words, so its
+  // options panel needs to render directly below the Drill Type row instead
+  // of in its original mid-panel location.
+  const npOpts = document.getElementById('numberPracticeOptions');
+  if (realWordsOpts && drillTypeSec && npOpts) {
+    realWordsOpts.insertBefore(npOpts, drillTypeSec.nextElementSibling);
   }
 
   // Sync the Drill Options panel to the initial drill (reading) so the
@@ -8784,7 +8992,7 @@ updateVavAsLetterVisibility();
 initLockGrids();
 initLockVowelGrids();
 initColorPickers();
-setBlendType(document.querySelector('.blend-type-btn.active')?.dataset.type || 'two');
+setBlendType(document.querySelector('.blend-type-btn.active[data-type]')?.dataset.type || 'two');
 initPanelCollapse();
 initDarkMode();
 initFontSelector();
