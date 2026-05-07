@@ -14,7 +14,7 @@ Creates printable Hebrew decoding worksheets, bingo cards, and vocabulary drills
 - **Blend mode** — generate CV / CVC / CVCVC syllable grids from a custom letter + vowel selection, with a live "X possible combinations" counter
 - **Real words mode** — draw from the full word list, filtered by consonant count (1–6), part of speech, era (Biblical / Modern / Both), and optional "include shorter words" toggle
 - **Nikud mode** — display words with full vowel pointing
-- Phonotactically valid output only — illegal sofit placements, mater lectionis conflicts, and shva-nucleus sequences are filtered out automatically (see `phonotactic_blending_filter_spec.md`)
+- Phonotactically valid output only — illegal sofit placements, mater lectionis conflicts, and shva-nucleus sequences are filtered out automatically (see `docs/phonotactic_blending_filter_spec.md`)
 - Dark mode, print stylesheet, sidebar that collapses on mobile
 
 ### Word Lookup (`hebrew_dictionary.html`)
@@ -93,13 +93,14 @@ Home page with navigation cards to all the tools above. Also hosts the global Im
 | `data/pockettorah/manifest.json` | Maps each parsha+aliyah to its actual upstream label filename |
 | `data/pockettorah/timings/*.txt` | Mirrored PocketTorah word-level timing files (~432 files, ~2 MB) |
 | `resources.html` | Curated directory of external Hebrew / Jewish-education resources |
-| `hebrew_words.json` | Structured word data (~2 MB, ~9,400 entries) loaded by both HTML pages via `fetch()` |
-| `hebrew_dictionary_4_19_2026.csv` | Source CSV used to build and update `hebrew_words.json`; includes Hebrew (nikkud), transliteration, translation, POS, and era fields |
-| `phonotactic_blending_filter_spec.md` | Detailed linguistic specification for the phonotactic validity filter used by the generator; cites Bolozky, Bat-El, Asherov & Bat-El, and the Academy of the Hebrew Language |
+| `data/hebrew_words.json` | Structured word data (~2 MB, ~9,400 entries) loaded by both HTML pages via `fetch()` |
+| `data/hebrew_emojis.json` / `data/hebrew_emojis.csv` | Hebrew word ↔ emoji mappings used by the dictionary and flash-card pages |
+| `data/hebrew_dictionary_4_19_2026.csv` | Source CSV used to build and update `data/hebrew_words.json`; includes Hebrew (nikkud), transliteration, translation, POS, and era fields |
+| `docs/phonotactic_blending_filter_spec.md` | Detailed linguistic specification for the phonotactic validity filter used by the generator; cites Bolozky, Bat-El, Asherov & Bat-El, and the Academy of the Hebrew Language |
 | `LICENSE` | CC BY-NC-SA 4.0 |
 | `CLAUDE.md` | Instructions for the AI coding assistant used during development |
 
-### `hebrew_words.json` structure
+### `data/hebrew_words.json` structure
 
 ```json
 {
@@ -134,7 +135,7 @@ Top-level keys are consonant counts (`"1"` through `"6"`). Each entry has:
 
 ## Word Data Attribution
 
-The word data in `hebrew_words.json` and `hebrew_dictionary_4_19_2026.csv` is derived from **[Kaikki.org](https://kaikki.org/dictionary/Hebrew/index.html)**, a freely available structured dictionary extracted from Wiktionary.
+The word data in `data/hebrew_words.json` and `data/hebrew_dictionary_4_19_2026.csv` is derived from **[Kaikki.org](https://kaikki.org/dictionary/Hebrew/index.html)**, a freely available structured dictionary extracted from Wiktionary.
 
 **If you adapt or redistribute this project**, please credit Kaikki.org alongside the project author:
 
@@ -159,7 +160,7 @@ Full license text: [creativecommons.org/licenses/by-nc-sa/4.0](https://creativec
 
 ## Running Locally
 
-No build step needed. Clone the repo and open `index.html` in a browser — **or** serve the folder over HTTP so that the `fetch()` call for `hebrew_words.json` works without CORS issues:
+No build step needed. Clone the repo and open `index.html` in a browser — **or** serve the folder over HTTP so that the `fetch()` call for `data/hebrew_words.json` works without CORS issues:
 
 ```bash
 # Python 3
@@ -176,11 +177,11 @@ npx serve .
 
 ## Updating the Word Data
 
-1. Edit `hebrew_dictionary_4_19_2026.csv` (or replace with a new export)
-2. Run whatever processing script converts the CSV to `hebrew_words.json`
+1. Edit `data/hebrew_dictionary_4_19_2026.csv` (or replace with a new export)
+2. Run whatever processing script converts the CSV to `data/hebrew_words.json`
 3. Bump the cache-busting version in both HTML files:
    ```js
-   fetch('hebrew_words.json?v=3')   // increment v= each time JSON changes
+   fetch('data/hebrew_words.json?v=3')   // increment v= each time JSON changes
    ```
 4. Commit both the new JSON and the HTML version bump together
 
