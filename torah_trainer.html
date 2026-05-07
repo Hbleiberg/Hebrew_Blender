@@ -1218,36 +1218,54 @@ function parseSefariaResponse(data) {
   const sections = data.sections || [];
   const startC = parseInt(sections[0], 10) || 1;
   const startV = parseInt(sections[1], 10) || 1;
+  // Walk each version's text independently into a "C:V" → string map. That way
+  // an English translation that comes back in a different shape from the
+  // Hebrew (1-D vs 2-D, partial coverage, etc.) still lines up by reference.
+  const hebMap = flattenVersionText(heb ? heb.text : data.text, startC, startV);
+  const engMap = eng ? flattenVersionText(eng.text, startC, startV) : new Map();
   const out = [];
-  function push(chapter, verse, hebRaw, engRaw) {
+  for (const [cv, hebRaw] of hebMap) {
     const cleanHeb = cleanSefariaText(hebRaw);
-    if (!cleanHeb) return;
-    out.push({ chapter, verse, hebrew: cleanHeb, translation: cleanSefariaText(engRaw) });
+    if (!cleanHeb) continue;
+    const [c, v] = cv.split(':').map(n => parseInt(n, 10));
+    out.push({
+      chapter: c, verse: v,
+      hebrew: cleanHeb,
+      translation: cleanSefariaText(engMap.get(cv) || ''),
+    });
   }
-  function walk(hebText, engText) {
-    if (!Array.isArray(hebText)) {
-      if (typeof hebText === 'string') push(startC, startV, hebText, typeof engText === 'string' ? engText : '');
-      return;
-    }
-    const is2D = hebText.length && Array.isArray(hebText[0]);
-    if (!is2D) {
-      for (let i = 0; i < hebText.length; i++) {
-        push(startC, startV + i, hebText[i], engText && engText[i]);
-      }
-      return;
-    }
-    let curC = startC, curV = startV;
-    for (let c = 0; c < hebText.length; c++) {
-      const sub = hebText[c] || [];
-      const engSub = (engText && engText[c]) || null;
-      for (let i = 0; i < sub.length; i++) {
-        push(curC, curV + i, sub[i], engSub && engSub[i]);
-      }
-      curC++; curV = 1;
-    }
-  }
-  walk(heb ? heb.text : data.text, eng ? eng.text : null);
+  // Stash whether the translation came through so fetchAndRender can warn the
+  // user if they asked for one but Sefaria returned nothing.
+  out._engCount = [...engMap.values()].filter(s => typeof s === 'string' && s.trim()).length;
+  out._engFound = !!eng;
   return out;
+}
+
+// Flatten Sefaria text (string | string[] | string[][]) into a Map keyed by
+// "chapter:verse" → text. Handles: single verse (string), single chapter (1-D
+// array starting at startV), multi-chapter (2-D array starting at startC/startV).
+function flattenVersionText(text, startC, startV) {
+  const map = new Map();
+  if (!Array.isArray(text)) {
+    if (typeof text === 'string' && text) map.set(`${startC}:${startV}`, text);
+    return map;
+  }
+  const is2D = text.length && Array.isArray(text[0]);
+  if (!is2D) {
+    for (let i = 0; i < text.length; i++) {
+      if (text[i]) map.set(`${startC}:${startV + i}`, text[i]);
+    }
+    return map;
+  }
+  let curC = startC, curV = startV;
+  for (let c = 0; c < text.length; c++) {
+    const sub = text[c] || [];
+    for (let i = 0; i < sub.length; i++) {
+      if (sub[i]) map.set(`${curC}:${curV + i}`, sub[i]);
+    }
+    curC++; curV = 1;
+  }
+  return map;
 }
 async function fetchVersionsList(book) {
   try {
@@ -1672,7 +1690,17 @@ async function fetchAndRender() {
     currentVerses = verses;
     currentRangeLabel = r.label;
     renderText();
-    setStatus('', false);
+    // Warn if translation was requested but Sefaria returned no English for
+    // this version + ref. Could mean: version doesn't cover this passage,
+    // version title mismatch, or API hiccup.
+    if (settings.showTranslation && settings.translationVersion && verses._engCount === 0) {
+      const reason = verses._engFound
+        ? `"${settings.translationVersion}" doesn't cover this passage.`
+        : `"${settings.translationVersion}" wasn't returned by Sefaria for this passage — pick a different version.`;
+      setStatus(reason, true);
+    } else {
+      setStatus('', false);
+    }
     // If translation was just enabled, populate version dropdown for this book
     if (r.parshahEntry || settings.scope === 'custom') {
       const book = r.parshahEntry ? r.parshahEntry.book : (settings.customRef || '').split(/[ .]/)[0];
