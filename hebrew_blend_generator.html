@@ -2536,7 +2536,7 @@
         </div>
 
         <!-- Output options (live at the bottom of every drill type) -->
-        <div style="border-top:1px solid var(--border);margin:10px 0 6px;"></div>
+        <div id="outputOptionsDivider" style="border-top:1px solid var(--border);margin:10px 0 6px;"></div>
         <div class="toggle-row" id="rowAnswerKey">
           <span>Show Answer Key</span>
           <label class="toggle">
@@ -4539,6 +4539,9 @@ function updateModeVisibility() {
     // Surviving rows (still slider-driven for now)
     rowAnswerKey:      !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo && !isNtl,
     rowSelfCheck:      !gemSC    && !ntlSC && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo && !isNtl,
+    // Trailing divider only renders when at least one of the rows above is shown.
+    outputOptionsDivider: (!testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo && !isNtl) ||
+                          (!gemSC && !ntlSC && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo && !isNtl),
     rowBlendCount:     !testMode && blends && !s.bingo,
 
     // Sub-option panels
