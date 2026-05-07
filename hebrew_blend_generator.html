@@ -2370,14 +2370,14 @@
                   <span class="slider"></span>
                 </label>
               </div>
-              <div class="toggle-row" id="rwStarRealRow" style="display:none;padding-left:16px;">
+              <div class="toggle-row" id="rwStarRealRow" style="display:none;">
                 <span style="font-size:0.82rem;">Star real words</span>
                 <label class="toggle" style="transform:scale(0.75);transform-origin:right;">
                   <input type="checkbox" id="rwStarReal" checked onchange="toggleRwStarPageRow()">
                   <span class="slider"></span>
                 </label>
               </div>
-              <div id="rwStarPageRow" style="display:none;padding-left:32px;">
+              <div id="rwStarPageRow" style="display:none;">
                 <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
                   <button class="rw-drill-btn active" data-star="same" onclick="setRwStarPage('same')">Same page</button>
                   <button class="rw-drill-btn" data-star="key" onclick="setRwStarPage('key')">Answer key</button>
@@ -2387,7 +2387,7 @@
                 <span style="font-size:0.8rem;">Show Transliteration</span>
                 <label class="toggle" style="transform:scale(0.75);transform-origin:right;"><input type="checkbox" id="rwShowTranslit" checked onchange="onRwTranslitChange()"><span class="slider"></span></label>
               </div>
-              <div id="rwTranslitPageRow" class="rw-display-only" style="display:none;padding-left:16px;">
+              <div id="rwTranslitPageRow" class="rw-display-only" style="display:none;">
                 <div class="rw-translit-page-reading blend-type-selector" style="grid-template-columns:repeat(3,1fr);margin-top:2px;">
                   <button class="rw-drill-btn active" data-translit="same" onclick="setRwTranslitPage('same')">Worksheet</button>
                   <button class="rw-drill-btn"        data-translit="key"  onclick="setRwTranslitPage('key')">Answer Key</button>
@@ -2408,7 +2408,7 @@
                 <span style="font-size:0.8rem;">Show Translation</span>
                 <label class="toggle" style="transform:scale(0.75);transform-origin:right;"><input type="checkbox" id="rwShowTranslation" onchange="onRwTranslChange()"><span class="slider"></span></label>
               </div>
-              <div id="rwTranslPageRow" class="rw-display-only" style="display:none;padding-left:16px;">
+              <div id="rwTranslPageRow" class="rw-display-only" style="display:none;">
                 <div class="rw-transl-page-reading blend-type-selector" style="grid-template-columns:repeat(3,1fr);margin-top:2px;">
                   <button class="rw-drill-btn active" data-transl="same" onclick="setRwTranslPage('same')">Worksheet</button>
                   <button class="rw-drill-btn"        data-transl="key"  onclick="setRwTranslPage('key')">Answer Key</button>
@@ -7794,8 +7794,8 @@ function _relocateStarRealRow(forIdentify) {
       display.insertBefore(star, after);
     }
     display.insertBefore(page, star.nextSibling);
-    star.style.paddingLeft = '0';
-    page.style.paddingLeft = '16px';
+    star.style.paddingLeft = '';
+    page.style.paddingLeft = '';
   } else if (_rwStarHomes.starParent) {
     if (star.parentNode !== _rwStarHomes.starParent || star.nextSibling !== _rwStarHomes.starNext) {
       _rwStarHomes.starParent.insertBefore(star, _rwStarHomes.starNext);
@@ -7803,8 +7803,8 @@ function _relocateStarRealRow(forIdentify) {
     if (page.parentNode !== _rwStarHomes.pageParent || page.nextSibling !== _rwStarHomes.pageNext) {
       _rwStarHomes.pageParent.insertBefore(page, _rwStarHomes.pageNext);
     }
-    star.style.paddingLeft = '16px';
-    page.style.paddingLeft = '32px';
+    star.style.paddingLeft = '';
+    page.style.paddingLeft = '';
   }
 }
 
