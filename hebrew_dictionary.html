@@ -485,6 +485,10 @@ footer a{color:var(--gold);text-decoration:none;}
     <div class="panel">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Word Length</div>
       <div class="panel-body">
+        <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:10px;">
+          <button class="emoji-gender-btn active" data-dict-mode="words" onclick="toggleEmojiMode(false)">Words</button>
+          <button class="emoji-gender-btn" data-dict-mode="emojis" onclick="toggleEmojiMode(true)">Emojis</button>
+        </div>
         <div class="word-length-controls">
           <label class="cb-label" style="margin-bottom:6px;font-weight:600;"><input type="checkbox" id="lenAllCb" checked onchange="toggleAllLengths(this)"> All Words</label>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 10px;margin-bottom:6px;">
@@ -497,9 +501,7 @@ footer a{color:var(--gold);text-decoration:none;}
             <label class="cb-label"><input type="checkbox" class="lcb" value="7" checked> 7-Letter</label>
             <label class="cb-label"><input type="checkbox" class="lcb" value="8plus" checked> 8+ Letter</label>
           </div>
-          <hr style="border:none;border-top:1px solid var(--border);margin:8px 0 6px;">
         </div>
-        <label class="cb-label"><input type="checkbox" id="emojiModeCb" style="accent-color:var(--gold);" onchange="toggleEmojiMode(this.checked)"> Emojis</label>
       </div>
     </div>
 
@@ -1880,6 +1882,8 @@ function toggleEmojiMode(on) {
   document.body.classList.toggle('emoji-mode', on);
   document.getElementById('emojiCatPanel').style.display = on ? '' : 'none';
   document.querySelectorAll('.emoji-sort-only').forEach(o => o.style.display = on ? '' : 'none');
+  document.querySelectorAll('[data-dict-mode]').forEach(b =>
+    b.classList.toggle('active', b.dataset.dictMode === (on ? 'emojis' : 'words')));
   // When entering emoji mode, force a sort that makes sense
   const sortSel = document.getElementById('sortSel');
   if (on) {
@@ -2221,11 +2225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.emoji-gender-btn').forEach(b =>
           b.classList.toggle('active', b.dataset.gender === emojiGender));
       }
-      if (saved.mode) {
-        const cb = document.getElementById('emojiModeCb');
-        if (cb) cb.checked = true;
-        toggleEmojiMode(true);
-      }
+      if (saved.mode) toggleEmojiMode(true);
     }
   } catch(e) {}
 
