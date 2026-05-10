@@ -362,6 +362,8 @@ body.dict-audio-on .wc-speak{display:flex;}
 /* Emoji mode */
 body.emoji-mode .word-mode-panel{display:none;}
 body.emoji-mode .word-length-controls{display:none;}
+body:not(.emoji-mode) .emoji-cat-controls{display:none;}
+.emoji-cat-controls > hr{border:none;border-top:1px solid var(--border);margin:10px 0;}
 .emoji-gender-btn{flex:1;padding:5px 8px;background:var(--white);color:var(--text);border:none;font-size:0.74rem;font-family:inherit;cursor:pointer;border-right:1px solid var(--border);transition:background 0.15s;}
 .emoji-gender-btn:last-child{border-right:none;}
 .emoji-gender-btn:hover{background:var(--warm-gray);}
@@ -378,7 +380,6 @@ body.dark .emoji-gender-btn.active{background:#0a0f1c;}
 .emoji-cat-group.collapsed .emoji-cat-arrow{transform:rotate(-90deg);}
 .emoji-cat-group.collapsed .emoji-sub-list{display:none;}
 .emoji-cat-count{margin-left:auto;font-size:0.6rem;color:var(--muted);font-weight:400;flex-shrink:0;}
-@media(max-width:520px){#emojiCatTree{grid-template-columns:1fr;}}
 /* Emoji card */
 .emoji-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:14px 12px 10px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;transition:border-color 0.15s,box-shadow 0.15s;position:relative;}
 .emoji-card:hover{border-color:var(--gold);box-shadow:0 2px 8px rgba(0,0,0,0.08);}
@@ -502,23 +503,19 @@ footer a{color:var(--gold);text-decoration:none;}
             <label class="cb-label"><input type="checkbox" class="lcb" value="8plus" checked> 8+ Letter</label>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Emoji Categories (only visible in emoji mode) -->
-    <div class="panel emoji-only-panel" id="emojiCatPanel" style="display:none;">
-      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Emoji Categories</div>
-      <div class="panel-body">
-        <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:10px;">
-          <button class="emoji-gender-btn active" data-gender="all" onclick="setEmojiGender('all')">All</button>
-          <button class="emoji-gender-btn" data-gender="masc" onclick="setEmojiGender('masc')">♂ Masc</button>
-          <button class="emoji-gender-btn" data-gender="fem" onclick="setEmojiGender('fem')">♀ Fem</button>
+        <div class="emoji-cat-controls">
+          <hr>
+          <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:10px;">
+            <button class="emoji-gender-btn active" data-gender="all" onclick="setEmojiGender('all')">All</button>
+            <button class="emoji-gender-btn" data-gender="masc" onclick="setEmojiGender('masc')">♂ Masc</button>
+            <button class="emoji-gender-btn" data-gender="fem" onclick="setEmojiGender('fem')">♀ Fem</button>
+          </div>
+          <div style="display:flex;gap:5px;margin-bottom:8px;">
+            <button class="pos-all-btn" onclick="setAllEmojiCats(true)">All</button>
+            <button class="pos-all-btn" onclick="setAllEmojiCats(false)">None</button>
+          </div>
+          <div id="emojiCatTree"></div>
         </div>
-        <div style="display:flex;gap:5px;margin-bottom:8px;">
-          <button class="pos-all-btn" onclick="setAllEmojiCats(true)">All</button>
-          <button class="pos-all-btn" onclick="setAllEmojiCats(false)">None</button>
-        </div>
-        <div id="emojiCatTree"></div>
       </div>
     </div>
 
@@ -1880,7 +1877,6 @@ function ensureAllSubsSelected() {
 function toggleEmojiMode(on) {
   emojiMode = on;
   document.body.classList.toggle('emoji-mode', on);
-  document.getElementById('emojiCatPanel').style.display = on ? '' : 'none';
   document.querySelectorAll('.emoji-sort-only').forEach(o => o.style.display = on ? '' : 'none');
   document.querySelectorAll('[data-dict-mode]').forEach(b =>
     b.classList.toggle('active', b.dataset.dictMode === (on ? 'emojis' : 'words')));
