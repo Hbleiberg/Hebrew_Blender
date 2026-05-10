@@ -1749,7 +1749,7 @@
 <body>
 
 <header>
-  <span class="star">✡</span>
+  <span class="star">✡︎</span>
   <div style="flex:1;">
     <h1>Hebrew Worksheet Generator</h1>
     <p id="headerSub">Free printable Hebrew worksheets, bingo cards, and decoding drills for Hebrew reading practice with nikkud.</p>
@@ -2986,7 +2986,7 @@
     <div class="worksheet-scaler" id="worksheetScaler">
       <div class="worksheet" id="worksheet">
         <div class="empty-state">
-          <div class="star">✡</div>
+          <div class="star">✡︎</div>
           <h2>Ready to Generate</h2>
           <p>Select your letters and vowels on the left, then click <strong>Generate Worksheet</strong>.</p>
         </div>
@@ -5688,7 +5688,7 @@ function renderNumberPracticeBingo(ws) {
         if (row === gridSize - 1) cls += ' last-row';
         if (cell.free) {
           cellEl.className = cls + ' free-space';
-          cellEl.innerHTML = '<span style="font-size:1rem;">✡</span><span>FREE</span>';
+          cellEl.innerHTML = '<span style="font-size:1rem;">✡︎</span><span>FREE</span>';
         } else {
           cellEl.className = cls;
           if (display === 'number') {
@@ -6073,7 +6073,7 @@ function renderBingo(ws) {
         if (row === gridSize - 1) cls += ' last-row';
         if (cell.free) {
           cellEl.className = cls + ' free-space';
-          cellEl.innerHTML = '<span style="font-size:1rem;">✡</span><span>FREE</span>';
+          cellEl.innerHTML = '<span style="font-size:1rem;">✡︎</span><span>FREE</span>';
         } else {
           cellEl.className = cls;
           cellEl.innerHTML = `<span class="heb">${cell.hebrewDisplay}</span>${showSounds ? `<span class="sound">${cell.translitDisplay ?? cell.combined}</span>` : ''}`;
@@ -8834,7 +8834,7 @@ function generateRealWordsBingo(pool) {
         if (row === gridSize - 1) cls += ' last-row';
         if (cell.free) {
           cellEl.className = cls + ' free-space';
-          cellEl.innerHTML = '<span style="font-size:1rem;">✡</span><span>FREE</span>';
+          cellEl.innerHTML = '<span style="font-size:1rem;">✡︎</span><span>FREE</span>';
         } else {
           cellEl.className = cls;
           cellEl.innerHTML = `<span class="heb" style="font-size:1.2rem;">${cell.heb}</span>${translitOnCard ? `<span class="sound">${cell.translit}</span>` : ''}${translOnCard && cell.translation ? `<span class="sound" style="font-size:0.6rem;">${cell.translation}</span>` : ''}`;
