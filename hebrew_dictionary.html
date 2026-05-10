@@ -295,6 +295,7 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .vowel-chip:hover{background:var(--warm-gray);}
 .vowel-chip input{accent-color:var(--gold);width:14px;height:14px;cursor:pointer;flex-shrink:0;}
 .era-body{display:flex;gap:16px;}
+.panel-subhead{font-family:'Libre Baskerville',serif;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
 .pos-all-btn{flex:1;padding:3px 0;font-size:0.72rem;font-family:'Source Sans 3',sans-serif;background:var(--warm-gray);color:var(--text);border:1px solid var(--border);border-radius:4px;cursor:pointer;}
 .pos-all-btn:hover{border-color:var(--gold);color:var(--gold);}
 .color-mode-btn{flex:1;padding:4px 6px;font-size:0.72rem;border:none;background:var(--warm-gray);color:var(--muted);cursor:pointer;border-right:1px solid var(--border);font-family:inherit;}
@@ -555,15 +556,12 @@ footer a{color:var(--gold);text-decoration:none;}
           <label class="cb-label"><input type="checkbox" class="pcb" value="article" checked> Article</label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="other" checked> Other</label>
         </div>
-      </div>
-    </div>
-
-    <!-- Era -->
-    <div class="panel word-mode-panel">
-      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Era</div>
-      <div class="panel-body era-body">
-        <label class="cb-label"><input type="checkbox" id="eraBib" checked> Biblical</label>
-        <label class="cb-label"><input type="checkbox" id="eraMod" checked> Modern</label>
+        <hr style="border:none;border-top:1px solid var(--border);margin:12px 0 8px;">
+        <div class="panel-subhead">Era</div>
+        <div class="era-body">
+          <label class="cb-label"><input type="checkbox" id="eraBib" checked> Biblical</label>
+          <label class="cb-label"><input type="checkbox" id="eraMod" checked> Modern</label>
+        </div>
       </div>
     </div>
 
