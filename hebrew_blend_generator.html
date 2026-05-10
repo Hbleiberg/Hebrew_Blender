@@ -1394,16 +1394,23 @@
     align-items: center;
     justify-content: center;
     padding: 6px 4px;
-    min-height: 72px;
+    /* Fixed height (not min-height) so every card is identical regardless of
+       blend content. This is what makes the horizontal cut line at top:50%
+       line up with the gap midpoint, and what makes card rows on every
+       printed page sit at the same Y so paper-cutter cuts go through the
+       whole stack at once. */
+    height: 72px;
+    box-sizing: border-box;
+    overflow: hidden;
     text-align: center;
     background: #ffffff;
   }
   .bingo-cell.last-col { border-right: none; }
   .bingo-cell.last-row { border-bottom: none; }
-  .bingo-card.two-up .bingo-cell { min-height: 60px; }
-  .bingo-cell .heb { font-family: var(--heb-font); font-size: var(--bingo-heb-size); direction: rtl; unicode-bidi: isolate; line-height: 1.4; color: #1a2744; }
+  .bingo-card.two-up .bingo-cell { height: 60px; }
+  .bingo-cell .heb { font-family: var(--heb-font); font-size: var(--bingo-heb-size); direction: rtl; unicode-bidi: isolate; line-height: 1.4; color: #1a2744; white-space: nowrap; }
   .bingo-card.two-up .bingo-cell .heb { font-size: calc(var(--bingo-heb-size) * 0.8); }
-  .bingo-cell .sound { font-size: 0.6rem; color: #6b6050; font-style: italic; margin-top: 1px; }
+  .bingo-cell .sound { font-size: 0.6rem; color: #6b6050; font-style: italic; margin-top: 1px; white-space: nowrap; }
   .bingo-card-num {
     background: #c9922a;
     color: #ffffff;
@@ -1421,16 +1428,18 @@
   .bingo-card.four-up {
     max-width: 100%;
     width: 100%;
+    height: 100%;
   }
   .bingo-card-header.four-up { font-size: 0.8rem; direction: rtl; }
   .bingo-card-header.two-up { direction: rtl; }
-  .bingo-card.four-up .bingo-cell { min-height: 64px; }
+  .bingo-card.four-up .bingo-cell { height: 64px; }
   .bingo-card.four-up .bingo-cell .heb { font-size: calc(var(--bingo-heb-size) * 0.8); }
   .bingo-page.four-up {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 40px 48px;
-    align-items: start;
+    gap: 32px 40px;
+    align-items: stretch;
+    justify-items: stretch;
   }
   /* Cut lines for multi-card pages */
   .bingo-page.two-up, .bingo-page.four-up { position: relative; }
@@ -1457,12 +1466,7 @@
   /* Horizontal cut between sequential pages */
   .bingo-page-break { border-top: 2px dashed #bbb; padding-top: 20px; margin-top: 8px; }
   @media print {
-    .bingo-page.four-up {
-      gap: 20px;
-      page-break-inside: avoid;
-      align-items: stretch;
-    }
-    .bingo-card.four-up .bingo-cell { min-height: 56px; }
+    .bingo-card.four-up .bingo-cell { height: 56px; }
   }
   .caller-sheet { page-break-before: always; }
   .caller-title {
@@ -1498,13 +1502,21 @@
   .caller-item.called { background: #e8e0d0; }
 
   @media print {
-    .bingo-card { page-break-inside: avoid; }
+    /* Whole bingo page must stay together; never break inside a card */
+    .bingo-page { padding: 0; margin: 0; page-break-inside: avoid; }
+    .bingo-card { page-break-inside: avoid; border-radius: 0; }
     .bingo-page-break { page-break-before: always; border-top: none; padding-top: 0; margin-top: 0; }
-    .bingo-page { padding: 0; margin: 0; }
-    .bingo-page.four-up { gap: 20px; padding: 0; align-items: stretch; }
-    .bingo-card.four-up { max-width: 100%; border-radius: 0; }
+    /* 4-up grid: identical layout on every page so cuts line up across the stack */
+    .bingo-page.four-up {
+      gap: 24px 32px;
+      padding: 0;
+      align-items: stretch;
+      justify-items: stretch;
+    }
+    .bingo-card.four-up { max-width: 100%; width: 100%; height: 100%; }
+    /* 2-up: cards flush so the single vertical cut goes through the centerline */
     .bingo-page.two-up { flex-direction: row; gap: 0; align-items: stretch; }
-    .bingo-card.two-up { max-width: 50%; width: 50%; flex: 1; border-radius: 0; }
+    .bingo-card.two-up { max-width: 50%; width: 50%; flex: 1; }
     /* Word Search: tinted cells don't always print on B/W; outline instead */
     .ws-cell.ws-word { background: transparent !important; outline: 2px solid #c9922a; outline-offset: -2px; }
   }
@@ -5874,11 +5886,20 @@ function makeBingoPhantom(gridSize, fourUp, twoUp) {
   cardEl.setAttribute('aria-hidden', 'true');
   const numBar = document.createElement('div');
   numBar.className = 'bingo-card-num';
+  // Placeholder content so the phantom's num/header rows have the same
+  // line-height as a real card. Without this, a last-page row made up of
+  // only phantoms would be shorter than other rows and the horizontal cut
+  // line wouldn't line up with the other pages.
+  numBar.textContent = 'CARD';
   cardEl.appendChild(numBar);
   const headerEl = document.createElement('div');
   headerEl.className = `bingo-card-header${twoUp ? ' two-up' : fourUp ? ' four-up' : ''}`;
   headerEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-  (BINGO_HEADERS[gridSize] || []).forEach(() => { headerEl.appendChild(document.createElement('span')); });
+  (BINGO_HEADERS[gridSize] || []).forEach(h => {
+    const span = document.createElement('span');
+    span.textContent = h;
+    headerEl.appendChild(span);
+  });
   cardEl.appendChild(headerEl);
   const gridEl = document.createElement('div');
   gridEl.className = 'bingo-grid';
