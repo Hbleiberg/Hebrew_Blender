@@ -1689,10 +1689,13 @@
     .sidebar-toggle-btn, .sidebar-show-btn, #fsBtn { display: none !important; }
     .app { display: block; min-height: unset; }
     .main { padding: 0; overflow: visible; }
-    .self-check-controls { display: none !important; }
-    .flip-card-hint { display: none; }
-    .flip-card-back { display: none; }
-    .worksheet-scaler { transform: none !important; }
+    /* The on-screen layout pads .main-content by 28px on top — without
+       resetting it in print the first bingo page sits 28px lower than
+       all subsequent pages (which start at the @page top margin via
+       page-break-before), so paper-cutter cuts don't line up across the
+       stack. */
+    .main-content { padding: 0 !important; }
+    .worksheet-scaler { transform: none !important; margin: 0 !important; padding: 0 !important; }
     .worksheet {
       border: none;
       box-shadow: none;
