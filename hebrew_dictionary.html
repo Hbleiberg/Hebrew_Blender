@@ -1047,6 +1047,7 @@ let shown = 0;
 const PAGE = 100;
 const posFilters = Array.from({length:6}, () => new Set());
 let anyLetterFilter = new Set();
+let anyLetterOnly = false;
 let dageshTavEnabled = false;
 
 fetch('data/hebrew_words.json?v=4')
@@ -1233,6 +1234,9 @@ function initPosFilters() {
       <span class="pos-arrow">▾</span>
     </div>
     <div class="pos-sec-body">
+      <label class="cb-label" style="margin-bottom:6px;">
+        <input type="checkbox" id="anyLetterOnlyCb" ${anyLetterOnly ? 'checked' : ''} onchange="setAnyLetterOnly(this.checked)" style="accent-color:var(--gold);"> No other letters?
+      </label>
       <div class="letter-pos-grid" id="pgAny"></div>
     </div>`;
   body.appendChild(anySec);
@@ -1264,6 +1268,11 @@ function clearAnyLetters() {
   anyLetterFilter.clear();
   document.querySelectorAll('#pgAny .lpt').forEach(t => t.classList.remove('selected'));
   updatePBAny();
+  onFilter();
+}
+
+function setAnyLetterOnly(on) {
+  anyLetterOnly = on;
   onFilter();
 }
 
@@ -1338,6 +1347,12 @@ function onFilter() {
     if (anyLetterFilter.size > 0) {
       for (const h of anyLetterFilter) {
         if (!w.cons.includes(h)) return false;
+      }
+      if (anyLetterOnly) {
+        for (let i = 0; i < w.cons.length; i++) {
+          const L = w.cons[i];
+          if (L && !anyLetterFilter.has(L)) return false;
+        }
       }
     }
 
