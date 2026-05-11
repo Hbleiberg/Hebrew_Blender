@@ -1508,6 +1508,8 @@
     .bingo-page { padding: 0; margin: 0; page-break-inside: avoid; }
     .bingo-card { page-break-inside: avoid; border-radius: 0; }
     .bingo-page-break { page-break-before: always; border-top: none; padding-top: 0; margin-top: 0; }
+    /* Caller-sheet items must not split across the page break */
+    .caller-item { page-break-inside: avoid; break-inside: avoid; }
     /* 4-up grid: identical layout on every page so cuts line up across the stack */
     .bingo-page.four-up {
       gap: 24px 32px;
