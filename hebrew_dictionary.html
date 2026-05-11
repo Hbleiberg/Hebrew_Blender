@@ -1046,6 +1046,7 @@ let filtered = [];
 let shown = 0;
 const PAGE = 100;
 const posFilters = Array.from({length:6}, () => new Set());
+let anyLetterFilter = new Set();
 let dageshTavEnabled = false;
 
 fetch('data/hebrew_words.json?v=4')
@@ -1215,6 +1216,60 @@ function initPosFilters() {
     body.appendChild(sec);
     buildPosFilterTiles(sec.querySelector(`#pg${i}`), i);
   });
+
+  const hr = document.createElement('hr');
+  hr.style.cssText = 'border:none;border-top:1px solid var(--border);margin:10px 0 6px;';
+  body.appendChild(hr);
+
+  const anySec = document.createElement('div');
+  anySec.className = 'pos-sec';
+  anySec.innerHTML = `
+    <div class="pos-sec-hdr" onclick="this.parentElement.classList.toggle('open')">
+      <div class="hdr-left">
+        <span class="lbl">Any of these letters</span>
+        <div class="pos-badges" id="pbAny"></div>
+      </div>
+      <button class="pos-clear" onclick="event.stopPropagation();clearAnyLetters()" title="Clear">✕</button>
+      <span class="pos-arrow">▾</span>
+    </div>
+    <div class="pos-sec-body">
+      <div class="letter-pos-grid" id="pgAny"></div>
+    </div>`;
+  body.appendChild(anySec);
+  buildAnyLetterTiles(anySec.querySelector('#pgAny'));
+  updatePBAny();
+}
+
+function buildAnyLetterTiles(grid) {
+  grid.innerHTML = '';
+  CONSONANTS.forEach(c => {
+    if (c.normalTav && dageshTavEnabled) return;
+    if (c.dageshTav && !dageshTavEnabled) return;
+    if (c.savVariant && !dageshTavEnabled) return;
+    const t = document.createElement('div');
+    t.className = 'lpt' + (anyLetterFilter.has(c.h) ? ' selected' : '');
+    t.dataset.h = c.h;
+    t.innerHTML = `<span class="h">${c.h}</span><span class="n">${c.n}</span>`;
+    t.onclick = () => {
+      anyLetterFilter.has(c.h) ? anyLetterFilter.delete(c.h) : anyLetterFilter.add(c.h);
+      t.classList.toggle('selected');
+      updatePBAny();
+      onFilter();
+    };
+    grid.appendChild(t);
+  });
+}
+
+function clearAnyLetters() {
+  anyLetterFilter.clear();
+  document.querySelectorAll('#pgAny .lpt').forEach(t => t.classList.remove('selected'));
+  updatePBAny();
+  onFilter();
+}
+
+function updatePBAny() {
+  const el = document.getElementById('pbAny');
+  if (el) el.innerHTML = [...anyLetterFilter].map(h => `<span class="pbadge">${h}</span>`).join('');
 }
 
 function setDictDageshTav(enabled) {
@@ -1223,6 +1278,8 @@ function setDictDageshTav(enabled) {
     if (enabled) { if (f.has('ת')) f.add('תּ'); }
     else { f.delete('תּ'); }
   });
+  if (enabled) { if (anyLetterFilter.has('ת')) anyLetterFilter.add('תּ'); }
+  else { anyLetterFilter.delete('תּ'); }
   initPosFilters();
   posFilters.forEach((f, i) => updatePB(i));
   onFilter();
@@ -1276,6 +1333,12 @@ function onFilter() {
     for (let i = 0; i < 6; i++) {
       if (posFilters[i].size === 0) continue;
       if (!w.cons[i] || !posFilters[i].has(w.cons[i])) return false;
+    }
+
+    if (anyLetterFilter.size > 0) {
+      for (const h of anyLetterFilter) {
+        if (!w.cons.includes(h)) return false;
+      }
     }
 
     if (vowelFilters.size < VOWEL_DEFS.length) {
