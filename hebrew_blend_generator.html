@@ -6378,6 +6378,12 @@ async function exportPDF() {
         onclone: (clonedDoc, el) => {
           clonedDoc.body.classList.remove('dark');
           clonedDoc.documentElement.classList.remove('dark-early');
+          // Strip the screen-only page-break decoration (dashed top border,
+          // extra padding-top, margin-top). Without this, page 1 is captured
+          // shorter than pages 2+ and the cards don't line up in the PDF.
+          el.classList.remove('bingo-page-break');
+          el.style.borderTop = 'none';
+          el.style.marginTop = '0';
           el.style.padding = '4px';
         },
       });
