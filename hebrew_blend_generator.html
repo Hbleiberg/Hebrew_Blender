@@ -6396,12 +6396,21 @@ async function exportPDF() {
     if (isBingoPDF) {
       const ref = ws.querySelector('.bingo-page:not(.bingo-page-break)') || bingoPages[0];
       const cs = getComputedStyle(ref);
-      const liveHP = parseFloat(cs.paddingLeft || 0) + parseFloat(cs.paddingRight || 0);
       const liveVP = parseFloat(cs.paddingTop || 0) + parseFloat(cs.paddingBottom || 0);
-      // Clone padding is 4px on all sides → 8 total per axis
-      const clonePad = 8;
-      bingoRefW = ref.scrollWidth - liveHP + clonePad;
-      bingoRefH = ref.scrollHeight - liveVP + clonePad;
+      // Width: a block-level element with `width: auto` takes its width from
+      // its parent, so the cloned bingo-page renders at the *same* width as
+      // the live one regardless of how onclone changes its padding. Canvas
+      // width must therefore equal scrollWidth exactly — adding any buffer
+      // (e.g. for the 4px clone padding) leaves dead space on the right of
+      // the captured image, which shifts the cards left of centre when the
+      // image is centred on the PDF page.
+      bingoRefW = ref.scrollWidth;
+      // Height is content-driven: live padding-top + bottom is 32px, the
+      // clone overrides padding to 4px on every side (8px vertical total),
+      // and the inner content height is identical between the two. So the
+      // clone is 24px shorter than the live element and the canvas height
+      // is scrollHeight - 24.
+      bingoRefH = ref.scrollHeight - liveVP + 8;
     }
 
     for (let i = 0; i < sheets.length; i++) {
