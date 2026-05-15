@@ -6356,25 +6356,51 @@ async function exportPDF() {
 
   try {
     let sheets = [...ws.querySelectorAll('.sheet')];
+    const bingoPages = [...ws.querySelectorAll('.bingo-page')];
     if (sheets.length === 0) {
       // Bingo mode: pages are .bingo-page + optional .caller-sheet
-      sheets = [...ws.querySelectorAll('.bingo-page, .caller-sheet')];
+      sheets = [...bingoPages, ...ws.querySelectorAll('.caller-sheet')];
     }
     if (sheets.length === 0) sheets = [ws];
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+
+    // Bingo PDFs render in landscape — 4-up cards use the paper better that
+    // way, and the wider page leaves more room for Hebrew cells.
+    const isBingoPDF = bingoPages.length > 0;
+    const pdf = new jsPDF({
+      orientation: isBingoPDF ? 'landscape' : 'portrait',
+      unit: 'mm',
+      format: 'letter'
+    });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
     const margin = 12;
+    const availW = pageW - margin * 2;
+    const availH = pageH - margin * 2;
+
+    // Capture every bingo-page at the same dimensions so the cards land at
+    // the same position on each PDF page → bulk paper-cuttable. Pick a
+    // reference page that doesn't carry the .bingo-page-break decoration
+    // (which adds 2px border-top + a different padding-top and would inflate
+    // its scrollHeight by a few pixels relative to page 1).
+    let bingoRefW = 0, bingoRefH = 0;
+    if (isBingoPDF) {
+      const ref = ws.querySelector('.bingo-page:not(.bingo-page-break)') || bingoPages[0];
+      bingoRefW = ref.scrollWidth + 8;
+      bingoRefH = ref.scrollHeight + 8;
+    }
 
     for (let i = 0; i < sheets.length; i++) {
       const sheet = sheets[i];
+      const isBingoPage = sheet.classList.contains('bingo-page');
+      const capW = isBingoPage && bingoRefW ? bingoRefW : sheet.scrollWidth + 8;
+      const capH = isBingoPage && bingoRefH ? bingoRefH : sheet.scrollHeight + 8;
       const canvas = await html2canvas(sheet, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
-        width: sheet.scrollWidth + 8,
-        height: sheet.scrollHeight + 8,
+        width: capW,
+        height: capH,
         onclone: (clonedDoc, el) => {
           clonedDoc.body.classList.remove('dark');
           clonedDoc.documentElement.classList.remove('dark-early');
@@ -6389,11 +6415,24 @@ async function exportPDF() {
       });
 
       const imgData = canvas.toDataURL('image/png');
-      const imgW = pageW - margin * 2;
-      const imgH = (canvas.height * imgW) / canvas.width;
+      // Aspect-preserving fit: scale by whichever dimension constrains, then
+      // center on the page. Every bingo image has the same canvas size, so
+      // every page ends up with cards at the same X/Y → bulk-cuttable.
+      const canvasAspect = canvas.width / canvas.height;
+      const availAspect = availW / availH;
+      let imgW, imgH;
+      if (canvasAspect > availAspect) {
+        imgW = availW;
+        imgH = imgW / canvasAspect;
+      } else {
+        imgH = availH;
+        imgW = imgH * canvasAspect;
+      }
+      const xOffset = margin + (availW - imgW) / 2;
+      const yOffset = margin + (availH - imgH) / 2;
 
       if (i > 0) pdf.addPage();
-      pdf.addImage(imgData, 'PNG', margin, margin, imgW, Math.min(imgH, pageH - margin * 2));
+      pdf.addImage(imgData, 'PNG', xOffset, yOffset, imgW, imgH);
     }
 
     const filename = `${title.replace(/\s+/g, '_')}_Hebrew_Blends.pdf`;
