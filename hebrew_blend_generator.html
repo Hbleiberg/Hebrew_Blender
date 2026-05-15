@@ -6407,6 +6407,9 @@ async function exportPDF() {
     for (let i = 0; i < sheets.length; i++) {
       const sheet = sheets[i];
       const isBingoPage = sheet.classList.contains('bingo-page');
+      const isFourUp = isBingoPage && sheet.classList.contains('four-up');
+      const isTwoUp = isBingoPage && sheet.classList.contains('two-up');
+      const hasTwoRows = isFourUp && sheet.classList.contains('has-two-rows');
       const capW = isBingoPage && bingoRefW ? bingoRefW : sheet.scrollWidth + 8;
       const capH = isBingoPage && bingoRefH ? bingoRefH : sheet.scrollHeight + 8;
       const canvas = await html2canvas(sheet, {
@@ -6426,6 +6429,16 @@ async function exportPDF() {
           el.style.borderTop = 'none';
           el.style.marginTop = '0';
           el.style.padding = '4px';
+          // Suppress the CSS cut lines in the captured image — they get
+          // baked in at whatever sub-pixel position html2canvas resolves
+          // top:50% / left:50% to, which can drift a few px off the actual
+          // gap midpoint. We redraw them as vector lines on the PDF below.
+          if (isBingoPage) {
+            const hideCuts = clonedDoc.createElement('style');
+            hideCuts.textContent =
+              '.bingo-page::before,.bingo-page::after{display:none !important;}';
+            clonedDoc.head.appendChild(hideCuts);
+          }
         },
       });
 
@@ -6448,6 +6461,26 @@ async function exportPDF() {
 
       if (i > 0) pdf.addPage();
       pdf.addImage(imgData, 'PNG', xOffset, yOffset, imgW, imgH);
+
+      // Draw the cut lines as vector PDF primitives at the exact page
+      // centre. Because the image is centred on the page and the cards
+      // inside are symmetric (equal padding, identical card sizes), the
+      // page centre coincides with the gap midpoint — but a PDF line is
+      // pixel-perfect whereas html2canvas's rasterised border can drift.
+      if (isTwoUp || isFourUp) {
+        pdf.saveGraphicsState();
+        pdf.setDrawColor(160, 160, 160);
+        pdf.setLineWidth(0.25);
+        pdf.setLineDashPattern([1.4, 1.4], 0);
+        const cx = pageW / 2;
+        pdf.line(cx, margin, cx, pageH - margin);
+        if (isFourUp && hasTwoRows) {
+          const cy = pageH / 2;
+          pdf.line(margin, cy, pageW - margin, cy);
+        }
+        pdf.setLineDashPattern([], 0);
+        pdf.restoreGraphicsState();
+      }
     }
 
     const filename = `${title.replace(/\s+/g, '_')}_Hebrew_Blends.pdf`;
