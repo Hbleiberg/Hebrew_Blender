@@ -6471,20 +6471,77 @@ async function exportPDF() {
       if (i > 0) pdf.addPage();
       pdf.addImage(imgData, 'PNG', xOffset, yOffset, imgW, imgH);
 
-      // Draw the cut lines as vector PDF primitives at the exact page
-      // centre. Because the image is centred on the page and the cards
-      // inside are symmetric (equal padding, identical card sizes), the
-      // page centre coincides with the gap midpoint — but a PDF line is
-      // pixel-perfect whereas html2canvas's rasterised border can drift.
+      // Draw the cut lines as vector PDF primitives. We *measure* the actual
+      // card-border positions in the captured canvas (rather than assuming
+      // geometric symmetry) so the line sits exactly on the gap regardless
+      // of any sub-pixel layout quirks html2canvas might produce.
       if (isTwoUp || isFourUp) {
+        const ctx2d = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height;
+        // Card outer border is `2px solid #1a2744` (navy). Look for that hue.
+        const isNavy = (i, d) => d[i] < 80 && d[i+1] < 80 && d[i+2] > 40 && d[i+2] < 130;
+        // Read one horizontal scan line halfway down the first card row.
+        // Row 1 spans roughly y = (top padding 4px scaled) to y = canvas.height/2 - row-gap-half.
+        // Just pick y = H * 0.3 — squarely inside the upper row of cards.
+        const yScan = Math.round(H * 0.3);
+        const xRow = ctx2d.getImageData(0, yScan, W, 1).data;
+        const navyRunsX = [];
+        let runStart = null;
+        for (let x = 0; x < W; x++) {
+          if (isNavy(x * 4, xRow)) {
+            if (runStart === null) runStart = x;
+          } else if (runStart !== null) {
+            navyRunsX.push({ start: runStart, end: x - 1, mid: (runStart + x - 1) / 2 });
+            runStart = null;
+          }
+        }
+        if (runStart !== null) navyRunsX.push({ start: runStart, end: W - 1, mid: (runStart + W - 1) / 2 });
+        // The card borders are short runs (≤ 6 px). Discard anything thicker
+        // (rare, but a stray navy band inside a card would be wider).
+        const cardEdges = navyRunsX.filter(r => r.end - r.start <= 6).map(r => r.mid);
+        // Expect: card1.left, card1.right, card2.left, card2.right
+        let vertCutCanvasX = null;
+        if (cardEdges.length >= 4) {
+          vertCutCanvasX = (cardEdges[1] + cardEdges[2]) / 2;
+        }
+        let horzCutCanvasY = null;
+        if (isFourUp && hasTwoRows) {
+          // Vertical scan at the column gap (between card 1 right and card 2 left).
+          // Use the rightmost edge of card 1 + a couple of px inside the gap so
+          // we only intersect the card top/bottom borders, not interior content.
+          if (cardEdges.length >= 4) {
+            const colScan = Math.round((cardEdges[1] + cardEdges[2]) / 2);
+            const yCol = ctx2d.getImageData(colScan, 0, 1, H).data;
+            const navyRunsY = [];
+            runStart = null;
+            for (let y = 0; y < H; y++) {
+              if (isNavy(y * 4, yCol)) {
+                if (runStart === null) runStart = y;
+              } else if (runStart !== null) {
+                navyRunsY.push({ start: runStart, end: y - 1, mid: (runStart + y - 1) / 2 });
+                runStart = null;
+              }
+            }
+            if (runStart !== null) navyRunsY.push({ start: runStart, end: H - 1, mid: (runStart + H - 1) / 2 });
+            // Card tops/bottoms are also short runs (≤ 6 px).
+            const rowEdges = navyRunsY.filter(r => r.end - r.start <= 6).map(r => r.mid);
+            if (rowEdges.length >= 4) {
+              // rowEdges: card1.top, card1.bottom, card3.top, card3.bottom
+              horzCutCanvasY = (rowEdges[1] + rowEdges[2]) / 2;
+            }
+          }
+        }
+
+        // Convert canvas pixel coords → PDF mm, then draw.
         pdf.saveGraphicsState();
         pdf.setDrawColor(160, 160, 160);
         pdf.setLineWidth(0.25);
         pdf.setLineDashPattern([1.4, 1.4], 0);
-        const cx = pageW / 2;
+        // Fallback: if scanning failed for some reason, use page centre.
+        const cx = vertCutCanvasX !== null ? xOffset + (vertCutCanvasX / W) * imgW : pageW / 2;
         pdf.line(cx, margin, cx, pageH - margin);
         if (isFourUp && hasTwoRows) {
-          const cy = pageH / 2;
+          const cy = horzCutCanvasY !== null ? yOffset + (horzCutCanvasY / H) * imgH : pageH / 2;
           pdf.line(margin, cy, pageW - margin, cy);
         }
         pdf.setLineDashPattern([], 0);
