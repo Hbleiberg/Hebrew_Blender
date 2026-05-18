@@ -3002,9 +3002,13 @@ function generateCard() {
     return pool;
   }
 
-  // Determine vowel position for this card
-  const eligibleVowelPos = m === 1 ? [1] : [...vowelPositions].filter(p => p >= 1 && p <= m);
-  const vowelPos = pickRandom(eligibleVowelPos.length ? eligibleVowelPos : [m]);
+  // Determine vowel positions for this card. Every position the user selected
+  // ("Vowel on letter:" pills) gets its own randomly-picked vowel; positions
+  // before the last vowel get a shva connector, positions after stay bare.
+  const vowelPosList = m === 1 ? [1] : [...vowelPositions].filter(p => p >= 1 && p <= m).sort((a, b) => a - b);
+  if (vowelPosList.length === 0) vowelPosList.push(m);
+  const vowelPosSet = new Set(vowelPosList);
+  const lastVowelPos = vowelPosList[vowelPosList.length - 1];
 
   // Build letter positions
   const positions = [];
@@ -3014,51 +3018,47 @@ function generateCard() {
     positions.push(pickRandom(pool));
   }
 
-  // Sofits never take nikkud
-  if (positions[vowelPos - 1].sofit) return null;
+  // Sofits never take nikkud — fail if any vowel position landed on a sofit
+  for (const p of vowelPosList) {
+    if (positions[p - 1].sofit) return null;
+  }
 
-  // Pick vowel (locked or random)
+  // Pick a vowel per vowel position (respecting per-position locks + per-letter guards)
   const allVowelsList = [];
   VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => allVowelsList.push(v)));
-  const vlk = vowelLocks[vowelPos];
-  const isVowelLocked = !!(vlk?.enabled && vlk.vowels.size > 0);
-  const lockedList = isVowelLocked ? allVowelsList.filter(v => vlk.vowels.has(v.key)) : [];
-  let vowel;
-  if (isVowelLocked) {
-    if (lockedList.length === 0) return null;
-    vowel = pickRandom(lockedList);
-  } else {
-    vowel = pickVowel();
-  }
-  if (!vowel) return null;
-
-  // Guards against impossible letter+vowel combos at the vowel position
-  const vowelLetter = positions[vowelPos - 1];
-  let guardTries = 0;
-  while (guardTries < 8) {
-    if (vowel.key === 'sh' && (GUTTURALS.has(vowelLetter.heb) || vowelLetter.heb === 'ו')) {
-      vowel = isVowelLocked ? pickRandom(lockedList) : pickVowel(); guardTries++; continue;
+  const chosenVowels = {};
+  for (const p of vowelPosList) {
+    const vlk = vowelLocks[p];
+    const isLocked = !!(vlk?.enabled && vlk.vowels.size > 0);
+    const lockedList = isLocked ? allVowelsList.filter(v => vlk.vowels.has(v.key)) : [];
+    if (isLocked && lockedList.length === 0) return null;
+    const pickFn = () => isLocked ? pickRandom(lockedList) : pickVowel();
+    let v = pickFn();
+    if (!v) return null;
+    const L = positions[p - 1];
+    let tries = 0;
+    while (tries < 8) {
+      if (v.key === 'sh' && (GUTTURALS.has(L.heb) || L.heb === 'ו')) { v = pickFn(); tries++; continue; }
+      if ((L.heb === 'שׁ' || L.heb === 'שׂ') && (v.key === 'o' || v.key === 'vcholam')) { v = pickFn(); tries++; continue; }
+      break;
     }
-    if ((vowelLetter.heb === 'שׁ' || vowelLetter.heb === 'שׂ') && (vowel.key === 'o' || vowel.key === 'vcholam')) {
-      vowel = isVowelLocked ? pickRandom(lockedList) : pickVowel(); guardTries++; continue;
-    }
-    break;
+    if (!v) return null;
+    if ((L.heb === 'שׁ' || L.heb === 'שׂ') && (v.key === 'o' || v.key === 'vcholam')) return null;
+    if (v.key === 'sh' && (GUTTURALS.has(L.heb) || L.heb === 'ו')) return null;
+    // Mater lectionis (vcholam/shuruk) can't occupy a consonant slot in multi-letter mode
+    if ((v.key === 'vcholam' || v.key === 'shuruk') && vavAsLetter && m > 1) return null;
+    chosenVowels[p] = v;
   }
-  if (!vowel) return null;
-  // Hard blocks: catch cases where guard loop exhausted retries on an impossible combo
-  if ((vowelLetter.heb === 'שׁ' || vowelLetter.heb === 'שׂ') && (vowel.key === 'o' || vowel.key === 'vcholam')) return null;
-  if (vowel.key === 'sh' && (GUTTURALS.has(vowelLetter.heb) || vowelLetter.heb === 'ו')) return null;
 
-  // Special: vcholam / shuruk (mater lectionis)
-  if (vowel.key === 'vcholam' || vowel.key === 'shuruk') {
-    if (vavAsLetter && m === 1) {
-      result.heb = vowel.nikud;
-      result.translit = (vowel.key === 'vcholam') ? 'Oh' : 'Oo';
+  // Special: 1-letter mater lectionis (a single vav carrying cholam/shuruk is the whole "word")
+  if (m === 1) {
+    const v = chosenVowels[1];
+    if ((v.key === 'vcholam' || v.key === 'shuruk') && vavAsLetter) {
+      result.heb = v.nikud;
+      result.translit = (v.key === 'vcholam') ? 'Oh' : 'Oo';
       result.translitDefault = result.translit;
       result.translit = window.HebrewTransliterator.apply(result.heb, result.translitDefault, translitStyle);
       return result;
-    } else if (vavAsLetter) {
-      return null; // N4: mater cannot occupy a C-slot
     }
   }
 
@@ -3068,17 +3068,18 @@ function generateCard() {
   for (let i = 0; i < m; i++) {
     const L = positions[i];
     const pos = i + 1;
-    if (pos === vowelPos) {
-      heb += L.heb + getNikudCombiningChar(vowel);
-      const sound = getSound(L, vowel.key);
+    if (vowelPosSet.has(pos)) {
+      const v = chosenVowels[pos];
+      heb += L.heb + getNikudCombiningChar(v);
+      const sound = getSound(L, v.key);
       translit += i === 0 ? sound : sound.toLowerCase();
-    } else if (pos < vowelPos) {
-      // Leading consonant \u2014 shva connector
+    } else if (pos < lastVowelPos) {
+      // Before/between vowel positions \u2014 shva connector
       heb += L.heb + '\u05B0';
       const sh = (L.sounds.sh || '').replace(/'/g, '');
       translit += i === 0 ? sh : sh.toLowerCase();
     } else {
-      // Trailing consonant \u2014 bare (no nikkud)
+      // After the last vowel position \u2014 bare consonant
       heb += L.heb;
       const sh = (L.sounds.sh || '').replace(/'/g, '');
       translit += sh.toLowerCase();
