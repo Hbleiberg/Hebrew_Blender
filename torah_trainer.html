@@ -1069,6 +1069,7 @@ const TORAH_BOOK_CHAPTERS = { Genesis:50, Exodus:40, Leviticus:27, Numbers:36, D
 const DEFAULTS = {
   parshahKey: null,
   customRef: null,
+  customLabel: null,       // optional pretty label for custom scope (e.g. "Shavuot II — Deut 14:22-16:17")
   scope: 'parsha-full',
   schedule: 'diaspora',
   translationVersion: '',
@@ -1281,6 +1282,10 @@ async function fetchVersionsList(book) {
   } catch (e) { return []; }
 }
 async function fetchCurrentParshah(diaspora) {
+  // Returns { name, ref } or null. `name` is Sefaria's displayValue (a parsha
+  // name on a normal Shabbat, or a holiday name like "Shavuot II", "Pesach I",
+  // "Sukkot Shabbat Chol HaMoed" when the upcoming Shabbat is a Yom Tov).
+  // `ref` is Sefaria's reading reference for that day.
   try {
     const url = new URL(`${SEFARIA_API}/calendars`);
     url.searchParams.set('diaspora', diaspora ? '1' : '0');
@@ -1293,8 +1298,10 @@ async function fetchCurrentParshah(diaspora) {
       return /Parashat\s*Hashavua/i.test(t) || /Parsha/i.test(t);
     });
     if (!item) return null;
-    const dv = (item.displayValue && item.displayValue.en) || '';
-    return dv.trim();
+    const name = ((item.displayValue && item.displayValue.en) || '').trim();
+    const ref  = (item.ref || '').trim();
+    if (!name) return null;
+    return { name, ref };
   } catch (e) { return null; }
 }
 
@@ -1304,7 +1311,8 @@ async function fetchCurrentParshah(diaspora) {
 function resolveRef() {
   // Returns { ref, label, parshahEntry, aliyahNum, isHaftarah }
   if (settings.scope === 'custom' && settings.customRef) {
-    return { ref: settings.customRef, label: settings.customRef, parshahEntry: null, aliyahNum: null, isHaftarah: false };
+    const label = settings.customLabel || settings.customRef;
+    return { ref: settings.customRef, label, parshahEntry: null, aliyahNum: null, isHaftarah: false };
   }
   const p = parshiyotData.find(x => x.en === settings.parshahKey);
   if (!p) return null;
@@ -2594,6 +2602,7 @@ function wireSettingsForm() {
   document.getElementById('parshaSelect').addEventListener('change', e => {
     settings.parshahKey = e.target.value;
     settings.scope = settings.scope.startsWith('parsha-') ? settings.scope : 'parsha-full';
+    settings.customLabel = null;
     saveSettings();
     fetchAndRender();
   });
@@ -2641,6 +2650,7 @@ function applyCustomRange() {
   else if (vs)       ref = `${book} ${chap}:${vs}`;
   else               ref = `${book} ${chap}`;
   settings.customRef = ref;
+  settings.customLabel = null;
   settings.scope = 'custom';
   saveSettings();
   fetchAndRender();
@@ -2766,16 +2776,32 @@ function findParshaByName(sefariaName) {
   return null;
 }
 async function goToCurrentParshah() {
-  const name = await fetchCurrentParshah(settings.schedule !== 'israel');
-  if (!name) { setStatus('Could not determine the current parsha (Sefaria API unreachable).', true); return; }
-  const match = findParshaByName(name);
-  if (!match) { setStatus(`Sefaria says this week is "${name}" but it doesn't match our list.`, true); return; }
-  settings.parshahKey = match.en;
-  settings.scope = 'parsha-full';
-  saveSettings();
-  document.getElementById('parshaSelect').value = match.en;
-  document.getElementById('scopeSelect').value = 'parsha-full';
-  fetchAndRender();
+  const cur = await fetchCurrentParshah(settings.schedule !== 'israel');
+  if (!cur) { setStatus('Could not determine the current parsha (Sefaria API unreachable).', true); return; }
+  const match = findParshaByName(cur.name);
+  if (match) {
+    settings.parshahKey = match.en;
+    settings.scope = 'parsha-full';
+    settings.customLabel = null;
+    saveSettings();
+    document.getElementById('parshaSelect').value = match.en;
+    document.getElementById('scopeSelect').value = 'parsha-full';
+    fetchAndRender();
+    return;
+  }
+  // Sefaria's Parashat Hashavua isn't a regular parsha — this Shabbat is a
+  // Yom Tov (Shavuot II, Pesach I/VII/VIII, Sukkot I/II/Shabbat Chol HaMoed,
+  // Shemini Atzeret, Simchat Torah, Rosh Hashana II, Yom Kippur, etc.).
+  // Load the holiday Torah reading directly via the ref Sefaria provided.
+  if (cur.ref) {
+    settings.customRef = cur.ref;
+    settings.customLabel = `${cur.name} — ${cur.ref}`;
+    settings.scope = 'custom';
+    saveSettings();
+    fetchAndRender();
+    return;
+  }
+  setStatus(`Sefaria says this week is "${cur.name}" but didn't return a Torah reference for it.`, true);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -2818,8 +2844,15 @@ async function init() {
   if (!settings.parshahKey) {
     const cur = await fetchCurrentParshah(settings.schedule !== 'israel');
     if (cur) {
-      const match = findParshaByName(cur);
-      if (match) settings.parshahKey = match.en;
+      const match = findParshaByName(cur.name);
+      if (match) {
+        settings.parshahKey = match.en;
+      } else if (cur.ref) {
+        // Holiday week — start on the holiday reading via custom scope.
+        settings.customRef = cur.ref;
+        settings.customLabel = `${cur.name} — ${cur.ref}`;
+        settings.scope = 'custom';
+      }
     }
     if (!settings.parshahKey && parshiyotData.length) settings.parshahKey = parshiyotData[0].en;
     document.getElementById('parshaSelect').value = settings.parshahKey;
