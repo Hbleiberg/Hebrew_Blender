@@ -2793,12 +2793,26 @@ function syncParshaSelect() {
     sel.value = settings.parshahKey;
   }
 }
-// Reading scope (full/aliyah/haftarah) only applies to weekly parshiyot, so
-// disable it while a holiday/custom reading is showing.
+// Reading scope (full/aliyah/haftarah) only applies to weekly parshiyot. While
+// a holiday/custom reading is showing, swap in a disabled "Full reading" entry
+// so the picker reads sensibly instead of going blank on the unlisted 'custom'.
 function updateScopeSelectState() {
   const scopeSel = document.getElementById('scopeSelect');
   if (!scopeSel) return;
   const isCustom = settings.scope === 'custom';
+  let customOpt = scopeSel.querySelector('option[value="custom"]');
+  if (isCustom) {
+    if (!customOpt) {
+      customOpt = document.createElement('option');
+      customOpt.value = 'custom';
+      customOpt.textContent = 'Full reading';
+      scopeSel.appendChild(customOpt);
+    }
+    scopeSel.value = 'custom';
+  } else {
+    if (customOpt) customOpt.remove();
+    scopeSel.value = settings.scope || 'parsha-full';
+  }
   scopeSel.disabled = isCustom;
   scopeSel.title = isCustom ? 'Reading scope applies to weekly parshiyot, not holiday readings.' : '';
 }
