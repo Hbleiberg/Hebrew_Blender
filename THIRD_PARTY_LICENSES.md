@@ -54,3 +54,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 The active translation's title and license are displayed in the page footer per the attribution requirement of CC BY / CC BY-SA / CC BY-NC / CC BY-NC-SA.
 
 If you re-host or fork this page, double-check Sefaria's version metadata yourself before relaxing the license filter.
+
+---
+
+## Libre Baskerville (font)
+
+- **Project:** https://github.com/impallari/Libre-Baskerville
+- **Authors:** Pablo Impallari, Rodrigo Fuenzalida
+- **License:** SIL Open Font License 1.1 — https://openfontlicense.org
+- **Copyright:** 2012 The Libre Baskerville Project Authors, with Reserved Font Name "Libre Baskerville".
+
+Pages load Libre Baskerville at runtime from Google Fonts. The TrueType files are also bundled in `splash/fonts/` so `splash/gen_splash.py` can render the app launch screens offline; the full OFL text is included at `splash/fonts/OFL.txt`.
