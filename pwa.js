@@ -85,7 +85,7 @@
     injectStyles();
 
     var text = mode === 'ios'
-      ? "Install: tap Share then 'Add to Home Screen'"
+      ? 'Install Web App: Tap Share → Add to Home Screen'
       : 'Install web app?';
 
     var banner = document.createElement('div');
