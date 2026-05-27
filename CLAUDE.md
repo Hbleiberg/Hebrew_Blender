@@ -744,3 +744,33 @@ Notes:
   controls offline-cache invalidation.
 - iOS caches the launch image, so an already-installed user sees the new
   version only after removing and re-adding the app to the Home Screen.
+
+---
+
+## Service Worker & Caching (`sw.js`)
+
+`sw.js` precaches the app shell into a cache named `ivritsuite-v<VERSION>`.
+
+- **Pages and scripts (`pwa.js`) are network-first:** when online the browser
+  always gets the fresh file, so a deploy is never hidden behind a stale cached
+  page. The cache is only the offline fallback for these.
+- **Static media (icons, splash images, manifest) is cache-first** for speed.
+- Cross-origin requests (Google Fonts, Analytics, Sefaria, PocketTorah) bypass
+  the worker, so those resources are **not** available offline.
+
+### Rule: bump the cache version when you change a precached asset
+
+After editing **any** file that the service worker serves — an HTML page, `pwa.js`,
+an icon, a splash image, the manifest, or `CORE_ASSETS` itself — bump `VERSION`
+in `sw.js`:
+
+```js
+const VERSION = 'v2';   // cache "ivritsuite-v2" — change to 'v3', etc.
+```
+
+Renaming the cache makes the new worker delete the old cache on activate and
+re-precache from scratch. Pages and `pwa.js` are network-first so they self-refresh
+online, but bumping `VERSION` is the safe catch-all (and the only way to refresh
+the **cache-first** static assets and the offline copy). This is the service-worker
+cache version — separate from the user-facing splash version (`VERSION` in
+`splash/gen_splash.py`).

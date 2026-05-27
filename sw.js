@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = 'ivritsuite-' + VERSION;
 
 /* Core app shell. Big media (og-card, the data/ corpus) is left to runtime caching. */
@@ -48,7 +48,25 @@ self.addEventListener('fetch', (event) => {
   // Let cross-origin requests (Google Fonts, analytics) go straight to the network.
   if (url.origin !== self.location.origin) return;
 
-  // Cache-first, falling back to network; runtime-cache successful same-origin GETs.
+  // Network-first for pages + scripts (pwa.js) so a fresh deploy is never hidden
+  // behind a stale cached copy; fall back to cache (then the home shell) offline.
+  if (req.mode === 'navigate' || req.destination === 'script') {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          if (res && res.ok && res.type === 'basic') {
+            const copy = res.clone();
+            caches.open(CACHE).then((cache) => cache.put(req, copy));
+          }
+          return res;
+        })
+        .catch(() => caches.match(req, { ignoreSearch: true }).then(
+          (cached) => cached || (req.mode === 'navigate' ? caches.match('/index.html') : Response.error())))
+    );
+    return;
+  }
+
+  // Cache-first for static media (icons, splash, manifest); runtime-cache misses.
   event.respondWith(
     caches.match(req, { ignoreSearch: true }).then((cached) => {
       if (cached) return cached;
@@ -60,11 +78,7 @@ self.addEventListener('fetch', (event) => {
           }
           return res;
         })
-        .catch(() => {
-          // Offline and uncached: fall back to the home shell for navigations.
-          if (req.mode === 'navigate') return caches.match('/index.html');
-          return Response.error();
-        });
+        .catch(() => Response.error());
     })
   );
 });
