@@ -769,14 +769,14 @@ body.dark .slider::before { background: #d8dde9; }
 }
 .fc-front { background: var(--white); }
 .fc-back  { background: var(--navy); transform: rotateY(180deg); border-color: var(--navy); }
-.fc-heb   { font-family: var(--heb-font); font-size: clamp(3rem, 12vw, 6rem); direction: rtl; line-height: 1.1; color: var(--ink); }
+.fc-heb   { font-family: var(--heb-font); font-size: clamp(3rem, 12vw, 6rem); direction: rtl; line-height: 1.1; color: var(--ink); text-align: center; }
 .fc-front .fc-heb { color: var(--navy); }
 
 /* Dark mode card overrides — prevent front/back from blending into the page bg */
 body.dark .fc-front { background: #1e2d4a; border-color: #3a5080; }
 body.dark .fc-front .fc-heb { color: var(--ink); }
 body.dark .fc-back  { background: #0e1e36; border-color: #2a4060; }
-.fc-translit { font-family: var(--serif); font-size: clamp(1.4rem, 6vw, 2.4rem); color: var(--gold-light); }
+.fc-translit { font-family: var(--serif); font-size: clamp(1.4rem, 6vw, 2.4rem); color: var(--gold-light); text-align: center; }
 .fc-hint { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
 .fc-back .fc-hint { color: rgba(255,255,255,0.55); }
 .fc-back-q { color: rgba(255,255,255,0.78); font-size: 0.85rem; margin-top: 6px; letter-spacing: 0.04em; }
@@ -1487,23 +1487,23 @@ const LETTERS = [
   { heb: 'ז', name: 'Zayin', sofit:false, hasSofit:false, isVav:false, sounds: { a:'Zah', e:'Zeh', i:'Zee', o:'Zo', u:'Zoo', sh:"Z'" } },
   { heb: 'ח', name: 'Chet',  sofit:false, hasSofit:false, isVav:false, sounds: { a:'Chah', e:'Cheh', i:'Chee', o:'Cho', u:'Choo', sh:"Ch'" } },
   { heb: 'ט', name: 'Tet',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Tah', e:'Teh', i:'Tee', o:'To', u:'Too', sh:"T'" } },
-  { heb: 'י', name: 'Yod',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Yah', e:'Yeh', i:'Yee', o:'Yo', u:'Yoo', sh:"Y'" } },
+  { heb: 'י', name: 'Yud',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Yah', e:'Yeh', i:'Yee', o:'Yo', u:'Yoo', sh:"Y'" } },
   { heb: 'כּ', name: 'Kaf',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Kah', e:'Keh', i:'Kee', o:'Ko', u:'Koo', sh:"K'" } },
-  { heb: 'כ', name: 'Khaf',  sofit:false, hasSofit:true,  isVav:false, sounds: { a:'Khah', e:'Kheh', i:'Khee', o:'Kho', u:'Khoo', sh:"Kh'" } },
-  { heb: 'ך', name: 'Khaf Sofit', sofit:true, hasSofit:false, isVav:false, sounds: { a:'Khah', e:'Kheh', i:'Khee', o:'Kho', u:'Khoo', sh:"Kh'" } },
+  { heb: 'כ', name: 'Chaf',  sofit:false, hasSofit:true,  isVav:false, sounds: { a:'Khah', e:'Kheh', i:'Khee', o:'Kho', u:'Khoo', sh:"Kh'" } },
+  { heb: 'ך', name: 'Chaf Sofit', sofit:true, hasSofit:false, isVav:false, sounds: { a:'Khah', e:'Kheh', i:'Khee', o:'Kho', u:'Khoo', sh:"Kh'" } },
   { heb: 'ל', name: 'Lamed', sofit:false, hasSofit:false, isVav:false, sounds: { a:'Lah', e:'Leh', i:'Lee', o:'Lo', u:'Loo', sh:"L'" } },
   { heb: 'מ', name: 'Mem',   sofit:false, hasSofit:true,  isVav:false, sounds: { a:'Mah', e:'Meh', i:'Mee', o:'Mo', u:'Moo', sh:"M'" } },
   { heb: 'ם', name: 'Mem Sofit', sofit:true, hasSofit:false, isVav:false, sounds: { a:'Mah', e:'Meh', i:'Mee', o:'Mo', u:'Moo', sh:"M'" } },
   { heb: 'נ', name: 'Nun',   sofit:false, hasSofit:true,  isVav:false, sounds: { a:'Nah', e:'Neh', i:'Nee', o:'No', u:'Noo', sh:"N'" } },
   { heb: 'ן', name: 'Nun Sofit', sofit:true, hasSofit:false, isVav:false, sounds: { a:'Nah', e:'Neh', i:'Nee', o:'No', u:'Noo', sh:"N'" } },
-  { heb: 'ס', name: 'Samekh',sofit:false, hasSofit:false, isVav:false, sounds: { a:'Sah', e:'Seh', i:'See', o:'So', u:'Soo', sh:"S'" } },
+  { heb: 'ס', name: 'Samech',sofit:false, hasSofit:false, isVav:false, sounds: { a:'Sah', e:'Seh', i:'See', o:'So', u:'Soo', sh:"S'" } },
   { heb: 'ע', name: 'Ayin',  sofit:false, hasSofit:false, isVav:false, sounds: { a:'Ah', e:'Eh', i:'Ee', o:'Oh', u:'Oo', sh:"'" } },
   { heb: 'פּ', name: 'Peh',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Pah', e:'Peh', i:'Pee', o:'Po', u:'Poo', sh:"P'" } },
   { heb: 'פ', name: 'Feh',   sofit:false, hasSofit:true,  isVav:false, sounds: { a:'Fah', e:'Feh', i:'Fee', o:'Fo', u:'Foo', sh:"F'" } },
   { heb: 'ף', name: 'Feh Sofit', sofit:true, hasSofit:false, isVav:false, sounds: { a:'Fah', e:'Feh', i:'Fee', o:'Fo', u:'Foo', sh:"F'" } },
   { heb: 'צ', name: 'Tzadi', sofit:false, hasSofit:true,  isVav:false, sounds: { a:'Tzah', e:'Tzeh', i:'Tzee', o:'Tzo', u:'Tzoo', sh:"Tz'" } },
   { heb: 'ץ', name: 'Tzadi Sofit', sofit:true, hasSofit:false, isVav:false, sounds: { a:'Tzah', e:'Tzeh', i:'Tzee', o:'Tzo', u:'Tzoo', sh:"Tz'" } },
-  { heb: 'ק', name: 'Kuf',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Kah', e:'Keh', i:'Kee', o:'Ko', u:'Koo', sh:"K'" } },
+  { heb: 'ק', name: 'Koof',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Kah', e:'Keh', i:'Kee', o:'Ko', u:'Koo', sh:"K'" } },
   { heb: 'ר', name: 'Resh',  sofit:false, hasSofit:false, isVav:false, sounds: { a:'Rah', e:'Reh', i:'Ree', o:'Ro', u:'Roo', sh:"R'" } },
   { heb: 'ש', name: 'Shin',  sofit:false, hasSofit:false, isVav:false, sounds: { a:'Shah', e:'Sheh', i:'Shee', o:'Sho', u:'Shoo', sh:"Sh'" } },
   { heb: 'שׂ', name: 'Sin',   sofit:false, hasSofit:false, isVav:false, sounds: { a:'Sah', e:'Seh', i:'See', o:'So', u:'Soo', sh:"S'" } },
