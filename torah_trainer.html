@@ -1063,6 +1063,7 @@ const DEFAULTS = {
   parshahKey: null,
   customRef: null,
   customLabel: null,       // optional pretty label for custom scope (e.g. "Shavuot II — Deut 14:22-16:17")
+  holidayKey: null,        // selected HOLIDAY_READINGS key when a holiday reading is showing
   scope: 'parsha-full',
   schedule: 'diaspora',
   translationVersion: '',
@@ -1094,6 +1095,7 @@ let manifestData = {};      // from data/pockettorah/manifest.json
 let aliyahData = null;      // from data/pockettorah/aliyah.json (lazy)
 let currentVerses = [];     // last-rendered verse objects
 let currentRangeLabel = ''; // for header display
+let currentReadingCtx = null; // last resolveRef() result (parshahEntry, custom flag, etc.)
 let textCache = new Map();  // key: ref+version → verses array
 
 /* ══════════════════════════════════════════════════════
@@ -1305,7 +1307,10 @@ function resolveRef() {
   // Returns { ref, label, parshahEntry, aliyahNum, isHaftarah }
   if (settings.scope === 'custom' && settings.customRef) {
     const label = settings.customLabel || settings.customRef;
-    return { ref: settings.customRef, label, parshahEntry: null, aliyahNum: null, isHaftarah: false };
+    // Holiday/custom ranges sit inside a weekly parsha; expose it so the reading
+    // stays chantable (PocketTorah audio is keyed by parsha + aliyah).
+    const pe = parshaContainingRef(settings.customRef);
+    return { ref: settings.customRef, label, parshahEntry: pe, aliyahNum: null, isHaftarah: false, custom: true };
   }
   const p = parshiyotData.find(x => x.en === settings.parshahKey);
   if (!p) return null;
@@ -1336,7 +1341,12 @@ function resolveRef() {
 function aliyahLookup(parshahEn) {
   if (!aliyahData || !aliyahData.parshiot) return null;
   const list = aliyahData.parshiot.parsha || [];
-  const entry = list.find(e => e._id === parshahEn || e._id === parshahEn.replace(/\s+/g,''));
+  // Match by parsha number first — it's stable across the apostrophe/spelling
+  // differences between parshiyot.json (`en`) and aliyah.json (`_id`), e.g.
+  // "Re'eh" vs "Re’eh", "Va'etchanan" vs "Va’ethanan". Fall back to name match.
+  const pEntry = parshiyotData.find(x => x.en === parshahEn);
+  let entry = pEntry ? list.find(e => String(e._num) === String(pEntry.n)) : null;
+  if (!entry) entry = list.find(e => e._id === parshahEn || e._id === parshahEn.replace(/\s+/g,''));
   if (!entry) return null;
   const aliyot = {};
   const fk = entry.fullkriyah && entry.fullkriyah.aliyah;
@@ -1352,6 +1362,70 @@ function aliyahLookup(parshahEn) {
     }
   }
   return { aliyot, haftarah: entry._haftara || null };
+}
+
+/* ══════════════════════════════════════════════════════
+   HOLIDAY TORAH READINGS
+   Each reading is a verse range that sits inside one weekly parsha, so it can
+   be displayed (custom scope) and chanted by mapping back to that parsha's
+   PocketTorah aliyot. Diaspora readings; the day-2 festival readings use the
+   weekday portion (the longer Shabbat variant is a superset).
+   ══════════════════════════════════════════════════════ */
+const HOLIDAY_READINGS = [
+  { key:'rosh-hashanah-1', name:'Rosh Hashanah — Day 1',          ref:'Genesis 21:1-34' },
+  { key:'rosh-hashanah-2', name:'Rosh Hashanah — Day 2',          ref:'Genesis 22:1-24' },
+  { key:'yom-kippur',      name:'Yom Kippur — Morning',           ref:'Leviticus 16:1-34' },
+  { key:'yom-kippur-mincha',name:'Yom Kippur — Afternoon',        ref:'Leviticus 18:1-30' },
+  { key:'sukkot-1',        name:'Sukkot — Day 1',                 ref:'Leviticus 22:26-23:44' },
+  { key:'sukkot-2',        name:'Sukkot — Day 2',                 ref:'Leviticus 22:26-23:44' },
+  { key:'shemini-atzeret', name:'Shemini Atzeret',                ref:'Deuteronomy 14:22-16:17' },
+  { key:'simchat-torah',   name:'Simchat Torah',                  ref:'Deuteronomy 33:1-34:12' },
+  { key:'pesach-1',        name:'Passover — Day 1',               ref:'Exodus 12:21-51' },
+  { key:'pesach-2',        name:'Passover — Day 2',               ref:'Leviticus 22:26-23:44' },
+  { key:'pesach-7',        name:'Passover — Day 7',               ref:'Exodus 13:17-15:26' },
+  { key:'pesach-8',        name:'Passover — Day 8',               ref:'Deuteronomy 15:19-16:17' },
+  { key:'shavuot-1',       name:'Shavuot — Day 1',                ref:'Exodus 19:1-20:23' },
+  { key:'shavuot-2',       name:'Shavuot — Day 2',                ref:'Deuteronomy 15:19-16:17' },
+  { key:'chanukah-1',      name:'Chanukah — Day 1',               ref:'Numbers 7:1-17' },
+  { key:'purim',           name:'Purim',                          ref:'Exodus 17:8-16' },
+  { key:'tisha-bav',       name:"Tisha B'Av — Morning",           ref:'Deuteronomy 4:25-40' },
+];
+function holidayByKey(key) { return HOLIDAY_READINGS.find(h => h.key === key) || null; }
+// "Exodus 19:1-20:23" → { book, startC, startV, endC, endV }
+function parseRefRange(ref) {
+  const m = (ref || '').match(/^([A-Za-z]+)\s+(\d+):(\d+)(?:-(?:(\d+):)?(\d+))?$/);
+  if (!m) return null;
+  const startC = +m[2], startV = +m[3];
+  const endC = m[4] !== undefined ? +m[4] : startC;
+  const endV = m[5] !== undefined ? +m[5] : startV;
+  return { book: m[1], startC, startV, endC, endV };
+}
+function vcmp(c1, v1, c2, v2) { return c1 !== c2 ? c1 - c2 : v1 - v2; }
+// The weekly parsha whose range contains the start of `ref` (holidays sit inside one parsha).
+function parshaContainingRef(ref) {
+  const r = parseRefRange(ref);
+  if (!r) return null;
+  for (const p of parshiyotData) {
+    if (p.book !== r.book) continue;
+    const pr = parseRefRange(p.ref);
+    if (!pr) continue;
+    if (vcmp(r.startC, r.startV, pr.startC, pr.startV) >= 0 &&
+        vcmp(r.startC, r.startV, pr.endC, pr.endV) <= 0) return p;
+  }
+  return null;
+}
+// Aliyah numbers (1–7) of `parshaEn` that intersect the given verse range.
+function overlappingAliyot(parshaEn, r) {
+  const al = aliyahLookup(parshaEn);
+  if (!al || !al.aliyot) return [];
+  const out = [];
+  for (const num of ['1','2','3','4','5','6','7']) {
+    const a = al.aliyot[num];
+    if (!a) continue;
+    if (vcmp(a.startC, a.startV, r.endC, r.endV) <= 0 &&
+        vcmp(a.endC, a.endV, r.startC, r.startV) >= 0) out.push(num);
+  }
+  return out;
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1564,9 +1638,10 @@ function renderText() {
   const layout = settings.layout || 'sidebyside';
   const includeTranslit = settings.showTranslit;
   const includeTrans    = settings.showTranslation;
-  // Chanting streams PocketTorah audio keyed by parsha/aliyah; custom ranges
-  // and holiday readings have no such mapping, so hide the chant controls there.
-  const canChant = settings.scope !== 'custom';
+  // Chanting streams PocketTorah audio keyed by parsha/aliyah. It's available
+  // whenever the current reading maps to a parsha with audio — including
+  // holiday/custom ranges that sit inside a parsha.
+  const canChant = currentReadingChantable();
   let html = `<div class="tt-ref-hdr">
     <span>${escapeHTML(currentRangeLabel)}</span>
     <span style="display:flex;gap:6px;">
@@ -1689,6 +1764,8 @@ function cssEscape(s) {
    ══════════════════════════════════════════════════════ */
 async function fetchAndRender() {
   const r = resolveRef();
+  currentReadingCtx = r;
+  updateScopeSelectState();
   if (!r) {
     setStatus('Pick a parsha to start.', false);
     return;
@@ -1727,6 +1804,11 @@ function setStatus(msg, isError) {
   el.textContent = msg;
   el.classList.toggle('error', !!isError);
 }
+// True when the current reading maps to a parsha that has PocketTorah audio.
+function currentReadingChantable() {
+  const pe = currentReadingCtx && currentReadingCtx.parshahEntry;
+  return !!(pe && manifestData[pe.pocket]);
+}
 
 /* ══════════════════════════════════════════════════════
    TTS  (per-verse + read all)
@@ -1752,7 +1834,9 @@ async function chantVerse(numLabel) {
   const m = numLabel.match(/^(\d+):(\d+)$/);
   if (!m) return;
   const tc = parseInt(m[1], 10), tv = parseInt(m[2], 10);
-  const p = parshiyotData.find(x => x.en === settings.parshahKey);
+  // For a holiday/custom reading, chant via the weekly parsha that contains it.
+  const p = (currentReadingCtx && currentReadingCtx.parshahEntry)
+            || parshiyotData.find(x => x.en === settings.parshahKey);
   if (!p) { setStatus('Pick a parsha first to chant verses.', false); return; }
   const al = aliyahLookup(p.en);
   if (!al || !al.aliyot) { setStatus('No aliyah data for this parsha.', true); return; }
@@ -1763,6 +1847,12 @@ async function chantVerse(numLabel) {
     if (verseInRange(tc, tv, r)) { aliyahNum = num; break; }
   }
   if (!aliyahNum) { setStatus(`Verse ${numLabel} is outside this parsha's aliyot — pick Haftarah from Reading if you want to chant it.`, true); return; }
+  // Lock onto the containing parsha and leave the holiday/custom framing so the
+  // aliyah renders correctly and the picker reflects what's playing.
+  settings.parshahKey = p.en;
+  settings.holidayKey = null;
+  settings.customLabel = null;
+  syncParshaSelect();
   const newScope = `parsha-aliyah-${aliyahNum}`;
   if (settings.scope !== newScope) {
     settings.scope = newScope;
@@ -1865,22 +1955,36 @@ function stopReadAll() {
    ══════════════════════════════════════════════════════ */
 async function toggleChantAll() {
   if (chantAllState.active) { stopChantAll(); return; }
-  const p = parshiyotData.find(x => x.en === settings.parshahKey);
-  if (!p) { setStatus('Pick a parsha first to chant.', false); return; }
   if (ttsState.readAllActive) stopReadAll();
   speechSynthesis.cancel();
   // Build the queue based on the current scope.
-  let queue;
-  if (settings.scope === 'parsha-haftarah') queue = ['H'];
-  else if (/^parsha-aliyah-(\d)$/.test(settings.scope)) {
-    queue = [settings.scope.match(/(\d)$/)[1]];
+  let p, queue, startVerse = null;
+  if (settings.scope === 'custom') {
+    // Holiday/custom range: chant the aliyot it spans, seeking into the first
+    // one so we start at the reading's opening verse rather than the aliyah's.
+    p = (currentReadingCtx && currentReadingCtx.parshahEntry) || parshaContainingRef(settings.customRef);
+    const rng = parseRefRange(settings.customRef);
+    if (!p || !manifestData[p.pocket] || !rng) { setStatus('Chanting isn\'t available for this reading.', true); return; }
+    queue = overlappingAliyot(p.en, rng);
+    if (!queue.length) { setStatus('No chantable audio for this reading.', true); return; }
+    startVerse = `${rng.startC}:${rng.startV}`;
+    // Leave the holiday framing — playback renders the parsha aliyot.
+    settings.parshahKey = p.en;
+    settings.holidayKey = null;
+    settings.customLabel = null;
+    syncParshaSelect();
   } else {
-    queue = ['1','2','3','4','5','6','7'];
+    p = parshiyotData.find(x => x.en === settings.parshahKey);
+    if (!p) { setStatus('Pick a parsha first to chant.', false); return; }
+    if (settings.scope === 'parsha-haftarah') queue = ['H'];
+    else if (/^parsha-aliyah-(\d)$/.test(settings.scope)) queue = [settings.scope.match(/(\d)$/)[1]];
+    else queue = ['1','2','3','4','5','6','7'];
   }
   chantAllState.active = true;
   chantAllState.queue = queue;
   chantAllState.parsha = p;
   _verseEndStopAt = null;
+  if (startVerse) _pendingChantVerse = startVerse;
   const btn = document.getElementById('ttChantAllBtn');
   if (btn) { btn.textContent = '⏹ Stop chant'; btn.classList.add('active'); }
   await playNextChant();
@@ -1910,6 +2014,11 @@ async function playNextChant() {
     updatePlayPauseIcon();
     if (chantAllState.active) playNextChant();
   };
+  if (_pendingChantVerse) {
+    // First aliyah of a holiday/custom chant — loadKaraoke seeks to the
+    // reading's opening verse and starts playback once its timings load.
+    return;
+  }
   currentAudio.currentTime = 0;
   currentAudio.play().catch(() => {});
 }
@@ -2043,7 +2152,13 @@ async function loadKaraoke(parshahEntry, suffix) {
   currentAudio.onpause = () => updatePlayPauseIcon();
   currentAudio.onloadedmetadata = () => updatePlayPauseIcon();
   currentAudio.ontimeupdate = onAudioTimeUpdate;
-  currentAudio.onended = () => { clearKaraokeHighlight(); updatePlayPauseIcon(); };
+  // Keep the chant-all chain alive: loadKaraoke runs after playNextChant has
+  // wired its handler, so it must also hop to the next aliyah when chaining.
+  currentAudio.onended = () => {
+    clearKaraokeHighlight();
+    updatePlayPauseIcon();
+    if (chantAllState.active) playNextChant();
+  };
   const bar = document.getElementById('ttAudioBar');
   bar.classList.add('open');
   bar.classList.toggle('collapsed', !!settings.karaokeBarCollapsed);
@@ -2163,9 +2278,10 @@ function onReadingClick(e) {
   if (!wordEl) return;
   const verseEl = wordEl.closest('[data-vk]');
   const numLabel = verseEl && verseEl.dataset.vk;
-  // Chanting needs a PocketTorah aliyah mapping; custom/holiday readings have
-  // none, so fall back to TTS there regardless of the click-action setting.
-  const action = settings.scope === 'custom' ? 'read' : (settings.clickAction || 'chant');
+  // Chant needs a PocketTorah aliyah mapping; if this reading has none, fall
+  // back to TTS regardless of the click-action setting.
+  let action = settings.clickAction || 'chant';
+  if (action === 'chant' && !currentReadingChantable()) action = 'read';
   if (action === 'read') {
     if (numLabel) speakVerse(numLabel);
     return;
@@ -2598,7 +2714,21 @@ function wireSettingsForm() {
   });
   // Parsha + scope
   document.getElementById('parshaSelect').addEventListener('change', e => {
-    settings.parshahKey = e.target.value;
+    const val = e.target.value;
+    if (val.startsWith('holiday:')) {
+      const h = holidayByKey(val.slice('holiday:'.length));
+      if (h) {
+        settings.holidayKey = h.key;
+        settings.customRef = h.ref;
+        settings.customLabel = `${h.name} — ${h.ref}`;
+        settings.scope = 'custom';
+        saveSettings();
+        fetchAndRender();
+        return;
+      }
+    }
+    settings.parshahKey = val;
+    settings.holidayKey = null;
     settings.scope = settings.scope.startsWith('parsha-') ? settings.scope : 'parsha-full';
     settings.customLabel = null;
     saveSettings();
@@ -2606,6 +2736,14 @@ function wireSettingsForm() {
   });
   document.getElementById('scopeSelect').addEventListener('change', e => {
     settings.scope = e.target.value;
+    // The scope picker only applies to weekly parshiyot — leaving a holiday/
+    // custom reading drops back to the selected parsha.
+    if (settings.holidayKey || settings.customRef) {
+      settings.holidayKey = null;
+      settings.customRef = null;
+      settings.customLabel = null;
+      syncParshaSelect();
+    }
     saveSettings();
     fetchAndRender();
   });
@@ -2631,8 +2769,38 @@ function populateParshaPicker() {
     opt.textContent = `${p.n}. ${p.en} (${p.he}) — ${p.ref}`;
     sel.appendChild(opt);
   }
-  if (settings.parshahKey) sel.value = settings.parshahKey;
+  const og = document.createElement('optgroup');
+  og.label = 'Holiday Torah Readings';
+  for (const h of HOLIDAY_READINGS) {
+    const opt = document.createElement('option');
+    opt.value = 'holiday:' + h.key;
+    opt.textContent = `${h.name} — ${h.ref}`;
+    og.appendChild(opt);
+  }
+  sel.appendChild(og);
+  syncParshaSelect();
   document.getElementById('scopeSelect').value = settings.scope || 'parsha-full';
+  updateScopeSelectState();
+}
+// Reflect the active reading in the picker: a holiday option when one is
+// selected, otherwise the weekly parsha.
+function syncParshaSelect() {
+  const sel = document.getElementById('parshaSelect');
+  if (!sel) return;
+  if (settings.scope === 'custom' && settings.holidayKey && holidayByKey(settings.holidayKey)) {
+    sel.value = 'holiday:' + settings.holidayKey;
+  } else if (settings.parshahKey) {
+    sel.value = settings.parshahKey;
+  }
+}
+// Reading scope (full/aliyah/haftarah) only applies to weekly parshiyot, so
+// disable it while a holiday/custom reading is showing.
+function updateScopeSelectState() {
+  const scopeSel = document.getElementById('scopeSelect');
+  if (!scopeSel) return;
+  const isCustom = settings.scope === 'custom';
+  scopeSel.disabled = isCustom;
+  scopeSel.title = isCustom ? 'Reading scope applies to weekly parshiyot, not holiday readings.' : '';
 }
 function toggleCustomPicker() {
   const el = document.getElementById('ttCustomPicker');
@@ -2649,8 +2817,10 @@ function applyCustomRange() {
   else               ref = `${book} ${chap}`;
   settings.customRef = ref;
   settings.customLabel = null;
+  settings.holidayKey = null;
   settings.scope = 'custom';
   saveSettings();
+  syncParshaSelect();
   fetchAndRender();
 }
 
@@ -2781,6 +2951,7 @@ async function goToCurrentParshah() {
     settings.parshahKey = match.en;
     settings.scope = 'parsha-full';
     settings.customLabel = null;
+    settings.holidayKey = null;
     saveSettings();
     document.getElementById('parshaSelect').value = match.en;
     document.getElementById('scopeSelect').value = 'parsha-full';
@@ -2794,8 +2965,10 @@ async function goToCurrentParshah() {
   if (cur.ref) {
     settings.customRef = cur.ref;
     settings.customLabel = `${cur.name} — ${cur.ref}`;
+    settings.holidayKey = null;
     settings.scope = 'custom';
     saveSettings();
+    syncParshaSelect();
     fetchAndRender();
     return;
   }
@@ -2853,7 +3026,7 @@ async function init() {
       }
     }
     if (!settings.parshahKey && parshiyotData.length) settings.parshahKey = parshiyotData[0].en;
-    document.getElementById('parshaSelect').value = settings.parshahKey;
+    syncParshaSelect();
     saveSettings();
   }
 
