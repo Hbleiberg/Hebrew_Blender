@@ -1564,23 +1564,26 @@ function renderText() {
   const layout = settings.layout || 'sidebyside';
   const includeTranslit = settings.showTranslit;
   const includeTrans    = settings.showTranslation;
+  // Chanting streams PocketTorah audio keyed by parsha/aliyah; custom ranges
+  // and holiday readings have no such mapping, so hide the chant controls there.
+  const canChant = settings.scope !== 'custom';
   let html = `<div class="tt-ref-hdr">
     <span>${escapeHTML(currentRangeLabel)}</span>
     <span style="display:flex;gap:6px;">
       <button class="tt-readall" id="ttReadAllBtn" onclick="toggleReadAll()" type="button">${ttsState.readAllActive ? '⏹ Stop' : '🔊 Read all'}</button>
-      <button class="tt-readall tt-chantall" id="ttChantAllBtn" onclick="toggleChantAll()" type="button">${chantAllState.active ? '⏹ Stop chant' : '🎵 Chant all'}</button>
+      ${canChant ? `<button class="tt-readall tt-chantall" id="ttChantAllBtn" onclick="toggleChantAll()" type="button">${chantAllState.active ? '⏹ Stop chant' : '🎵 Chant all'}</button>` : ''}
     </span>
   </div>`;
   const wordIdxRef = { value: 0 };
   if (layout === 'interlinear') {
-    html += renderInterlinear(currentVerses, includeTranslit, includeTrans, wordIdxRef);
+    html += renderInterlinear(currentVerses, includeTranslit, includeTrans, wordIdxRef, canChant);
   } else {
-    html += renderSideBySide(currentVerses, includeTranslit, includeTrans, wordIdxRef);
+    html += renderSideBySide(currentVerses, includeTranslit, includeTrans, wordIdxRef, canChant);
   }
   root.innerHTML = html;
   if (currentTimings && currentAudio) updateKaraokeWordRefs();
 }
-function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef) {
+function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant) {
   let html = '<div class="tt-interlinear">';
   for (const v of verses) {
     const numLabel = `${v.chapter}:${v.verse}`;
@@ -1590,7 +1593,7 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef) {
     html += `    <span class="tt-verse-num">${escapeHTML(numLabel)}</span>`;
     html += `    <span class="tt-verse-buttons">`;
     html += `      <button class="tt-speak" onclick="speakVerse('${esc}')" type="button" aria-label="Read verse ${numLabel} aloud (TTS)">🔊 Read</button>`;
-    html += `      <button class="tt-chant" onclick="chantVerse('${esc}')" type="button" aria-label="Chant verse ${numLabel} (PocketTorah audio)">🎵 Chant</button>`;
+    if (canChant) html += `      <button class="tt-chant" onclick="chantVerse('${esc}')" type="button" aria-label="Chant verse ${numLabel} (PocketTorah audio)">🎵 Chant</button>`;
     html += `    </span>`;
     html += `  </div>`;
     const firstTwi = wordIdxRef.value;
@@ -1609,7 +1612,7 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef) {
   html += '</div>';
   return html;
 }
-function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef) {
+function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant) {
   // Pre-tokenize Hebrew for each verse so the translit column (rendered first
   // visually but needing the Hebrew data-twi indices) can match up.
   const perVerse = verses.map(v => {
@@ -1647,7 +1650,7 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef) {
     html += `<div class="tt-grid-row" data-vk="${escapeHTML(numLabel)}">`;
     html += `<span class="tt-vnum">${numLabel}<span class="tt-verse-buttons" style="display:flex;flex-direction:column;gap:3px;margin-top:4px;margin-left:0;">`;
     html += `<button class="tt-speak" onclick="speakVerse('${esc}')" type="button" aria-label="Read verse ${numLabel} aloud (TTS)">🔊 Read</button>`;
-    html += `<button class="tt-chant" onclick="chantVerse('${esc}')" type="button" aria-label="Chant verse ${numLabel} (PocketTorah audio)">🎵 Chant</button>`;
+    if (canChant) html += `<button class="tt-chant" onclick="chantVerse('${esc}')" type="button" aria-label="Chant verse ${numLabel} (PocketTorah audio)">🎵 Chant</button>`;
     html += `</span></span>`;
     html += `<span class="tt-cell heb">${hebHtml}</span>`;
     html += `</div>`;
@@ -2160,7 +2163,9 @@ function onReadingClick(e) {
   if (!wordEl) return;
   const verseEl = wordEl.closest('[data-vk]');
   const numLabel = verseEl && verseEl.dataset.vk;
-  const action = settings.clickAction || 'chant';
+  // Chanting needs a PocketTorah aliyah mapping; custom/holiday readings have
+  // none, so fall back to TTS there regardless of the click-action setting.
+  const action = settings.scope === 'custom' ? 'read' : (settings.clickAction || 'chant');
   if (action === 'read') {
     if (numLabel) speakVerse(numLabel);
     return;
