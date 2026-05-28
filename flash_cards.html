@@ -750,6 +750,7 @@ body.dark .slider::before { background: #d8dde9; }
   margin-bottom: 18px;
 }
 .fc-perspective { perspective: 1200px; width: min(420px, 90vw); margin: 0 auto; }
+.fc-skip-header { text-align: center; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: var(--gold); border-radius: 999px; padding: 4px 14px; margin: 0 auto 10px; width: max-content; max-width: 90%; }
 .fc-card {
   position: relative; width: 100%;
   height: clamp(220px, 44vw, 340px);
@@ -1262,6 +1263,14 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
     <h3 class="panel-title">Advanced Settings</h3>
     <div class="panel-body">
 
+      <!-- Show skipped cards again -->
+      <div class="row">
+        <label class="switch"><input type="checkbox" id="skipReshowToggle" checked><span class="slider"></span></label>
+        <span class="label">Show skipped cards again</span>
+      </div>
+
+      <hr class="soft" />
+
       <!-- Color coding -->
       <div class="row">
         <label class="switch"><input type="checkbox" id="colorCodeToggle"><span class="slider"></span></label>
@@ -1351,6 +1360,7 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
 <section id="screenCard" class="screen">
   <div class="progress"><span id="progressBar" style="width:0%"></span></div>
   <p class="card-meta" id="cardMeta">Card 1 of 10</p>
+  <p id="skipReshowHeader" class="fc-skip-header" style="display:none;">↻ Skipped Card</p>
   <p id="timerDisplay" style="display:none;text-align:center;font-size:0.85rem;color:var(--muted);margin:0 0 4px;"></p>
 
   <div class="fc-perspective">
@@ -1770,6 +1780,8 @@ let scores = []; // null = unscored, true = correct, false = wrong
 let isFlipped = false;
 let savedCards = [];
 let mistakeIndices = [];
+let showSkippedAgain = true; // re-queue each skipped card once so the whole set gets seen
+let requeued = [];           // parallel to scores: true = slot was skipped & re-queued (excluded from results)
 
 let translitStyle = 'default';
 
@@ -2485,7 +2497,7 @@ function getSettings() {
     letterLocks: Object.fromEntries(Object.entries(letterLocks).map(([k, v]) => [k, { enabled: v.enabled, letters: [...v.letters] }])),
     colorCodingEnabled, colorCodingMode,
     nikudColorOverrides: { ...nikudColorOverrides },
-    hebFontId, audioEnabled, nameLetterMode, nameLetterShowLetter,
+    hebFontId, audioEnabled, showSkippedAgain, nameLetterMode, nameLetterShowLetter,
     otherModeActive, otherSubMode, numberMin, numberMax, numberGender, numberFront, numberShowTranslit,
     colorGender, colorDisplayMode, colorFront, colorShowTranslit, selectedColors: [...selectedColors],
     emojiGender, emojiFront, emojiShowTranslit, emojiShowGender, emojiGenderSide,
@@ -2566,6 +2578,9 @@ function applySettings(s) {
   document.querySelectorAll('#colorModePills .pill').forEach(p => p.classList.toggle('active', p.dataset.cmode === colorCodingMode));
   audioEnabled = !!s.audioEnabled;
   document.getElementById('audioToggle').checked = audioEnabled;
+  showSkippedAgain = s.showSkippedAgain !== undefined ? !!s.showSkippedAgain : true;
+  const skipReshowToggle = document.getElementById('skipReshowToggle');
+  if (skipReshowToggle) skipReshowToggle.checked = showSkippedAgain;
   timerMode = s.timerMode || 'off';
   timerShowOnScreen = s.timerShowOnScreen !== false;
   timeLimitSeconds = s.timeLimitSeconds || 60;
@@ -3221,6 +3236,7 @@ function startPractice() {
   savedCards = deck.slice();
   currentIndex = 0;
   scores = new Array(deck.length).fill(null);
+  requeued = new Array(deck.length).fill(false);
   isFlipped = false;
   renderCurrentCard();
   showScreen('screenCard');
@@ -3243,6 +3259,8 @@ function renderCurrentCard() {
   const meta = document.getElementById('cardMeta');
   meta.textContent = `Card ${currentIndex + 1} of ${total}`;
   document.getElementById('progressBar').style.width = `${((currentIndex + 1) / total) * 100}%`;
+  const skipHdr = document.getElementById('skipReshowHeader');
+  if (skipHdr) skipHdr.style.display = card.isSkippedReshow ? '' : 'none';
 
   const fcCard = document.getElementById('fcCard');
 
@@ -3454,6 +3472,15 @@ function autoAdvance() {
   }
 }
 function nextCard() {
+  // Pressing Next/→ on an ungraded card is a skip. With "Show skipped cards again"
+  // on, re-queue that card once (flagged) at the end so the whole set gets seen.
+  const card = currentCards[currentIndex];
+  if (showSkippedAgain && scores[currentIndex] === null && card && !card.isSkippedReshow && !requeued[currentIndex]) {
+    requeued[currentIndex] = true;
+    currentCards.push({ ...card, isSkippedReshow: true });
+    scores.push(null);
+    requeued.push(false);
+  }
   if (currentIndex < currentCards.length - 1) {
     currentIndex++;
     isFlipped = false;
@@ -3472,8 +3499,10 @@ function prevCard() {
 
 function showResults() {
   stopTimer();
-  const total = currentCards.length;
-  const correctCount = scores.filter(s => s === true).length;
+  // Exclude re-queued (skipped) originals; the re-shown copy represents them.
+  const idxs = currentCards.map((_, i) => i).filter(i => !requeued[i]);
+  const total = idxs.length;
+  const correctCount = idxs.filter(i => scores[i] === true).length;
   const pct = total ? Math.round((correctCount / total) * 100) : 0;
   document.getElementById('resultsPct').textContent = pct + '%';
   document.getElementById('resultsFrac').textContent = `${correctCount} / ${total} correct`;
@@ -3490,7 +3519,8 @@ function showResults() {
 
   // Build list
   const list = document.getElementById('resultsList');
-  list.innerHTML = currentCards.map((c, i) => {
+  list.innerHTML = idxs.map(i => {
+    const c = currentCards[i];
     const s = scores[i];
     const cls = s === true ? 'good' : s === false ? 'bad' : '';
     const mark = s === true ? '✓' : s === false ? '✗' : '–';
@@ -3506,7 +3536,7 @@ function showResults() {
     `;
   }).join('');
 
-  mistakeIndices = scores.map((s, i) => (s === false || s === null) ? i : -1).filter(i => i >= 0);
+  mistakeIndices = idxs.filter(i => scores[i] === false || scores[i] === null);
   document.getElementById('mistakesBtn').disabled = mistakeIndices.length === 0;
 
   showScreen('screenResults');
@@ -3516,6 +3546,7 @@ function redoSameSet() {
   currentCards = savedCards.slice();
   currentIndex = 0;
   scores = new Array(currentCards.length).fill(null);
+  requeued = new Array(currentCards.length).fill(false);
   isFlipped = false;
   renderCurrentCard();
   showScreen('screenCard');
@@ -3523,10 +3554,11 @@ function redoSameSet() {
 }
 function practiceMistakes() {
   if (mistakeIndices.length === 0) return;
-  currentCards = mistakeIndices.map(i => savedCards[i]);
+  currentCards = mistakeIndices.map(i => { const c = { ...currentCards[i] }; delete c.isSkippedReshow; return c; });
   savedCards = currentCards.slice();
   currentIndex = 0;
   scores = new Array(currentCards.length).fill(null);
+  requeued = new Array(currentCards.length).fill(false);
   isFlipped = false;
   renderCurrentCard();
   showScreen('screenCard');
@@ -3572,6 +3604,7 @@ function wireSetupScreen() {
     if (btn) btn.style.visibility = hideHomeBtn ? 'hidden' : '';
     saveSettings();
   });
+  document.getElementById('skipReshowToggle').addEventListener('change', e => { showSkippedAgain = e.target.checked; saveSettings(); });
   document.getElementById('lockToggle').addEventListener('change', e => {
     anyLetterLock = e.target.checked;
     document.getElementById('lockOptions').classList.toggle('hide', !anyLetterLock);
