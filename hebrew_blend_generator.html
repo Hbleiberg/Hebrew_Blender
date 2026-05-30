@@ -1794,7 +1794,7 @@
   </div>
   <a href="/" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:0.8rem;font-family:'Source Sans 3',sans-serif;font-weight:600;text-decoration:none;flex-shrink:0;">← Home</a>
   <button id="darkToggle" onclick="toggleDark()" title="Toggle dark mode" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:1rem;flex-shrink:0;">🌙</button>
-  <button id="fsBtn" onclick="toggleFullscreen()" title="Full screen" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:6px 10px;cursor:pointer;line-height:0;flex-shrink:0;display:inline-flex;align-items:center;"><svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg></button>
+  <button id="fsBtn" onclick="toggleFullscreen()" title="Full screen" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:4px 10px;cursor:pointer;flex-shrink:0;display:inline-flex;flex-direction:column;align-items:center;gap:1px;line-height:1;"><span class="fs-ico" style="display:inline-flex;line-height:0;"><svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg></span><span style="font-size:0.5rem;font-weight:600;letter-spacing:0.03em;">Full Screen</span></button>
 </header>
 
 <button class="sidebar-show-btn" id="sidebarShowBtn" onclick="toggleSidebar()" title="Show sidebar">›</button>
@@ -4639,8 +4639,10 @@ function toggleFullscreen() {
 document.addEventListener('fullscreenchange', () => {
   const on = !!document.fullscreenElement;
   document.body.classList.toggle('fullscreen', on);
+  const ico = document.querySelector('#fsBtn .fs-ico');
+  if (ico) ico.innerHTML = on ? FS_EXIT_ICON : FS_ENTER_ICON;
   const btn = document.getElementById('fsBtn');
-  if (btn) { btn.innerHTML = on ? FS_EXIT_ICON : FS_ENTER_ICON; btn.title = on ? 'Exit full screen' : 'Full screen'; }
+  if (btn) btn.title = on ? 'Exit full screen' : 'Full screen';
 });
 
 function initZoom() {

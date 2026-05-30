@@ -228,6 +228,9 @@
   .hbtn:hover { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.3); }
   .hbtn.icon-btn { padding: 7px 10px; font-size: 1rem; }
   .hbtn svg { width: 16px; height: 16px; }
+  .fs-btn { flex-direction: column; gap: 1px; padding: 4px 10px; line-height: 1; }
+  .fs-btn .fs-ico { display: inline-flex; }
+  .fs-btn .fs-cap { font-size: 0.5rem; font-weight: 600; letter-spacing: 0.03em; }
 
   /* ───── Dashboard grid ───── */
   .dashboard {
@@ -1007,7 +1010,7 @@
     <a class="hbtn" href="/"><span>←</span><span class="hbtn-label">Home</span></a>
     <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
     <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
-    <button id="fsBtn" class="hbtn icon-btn" onclick="toggleFullscreen()" title="Fullscreen"></button>
+    <button id="fsBtn" class="hbtn icon-btn fs-btn" onclick="toggleFullscreen()" title="Fullscreen"><span class="fs-ico"></span><span class="fs-cap">Fullscreen</span></button>
   </div>
 </header>
 <div id="zoomBar" style="background:var(--warm-gray);border-bottom:1px solid var(--border);padding:5px 20px;display:flex;align-items:center;gap:10px;font-size:0.78rem;color:var(--text);">
@@ -3520,7 +3523,7 @@
   document.addEventListener('fullscreenchange', () => {
     const isFs = !!document.fullscreenElement;
     document.body.classList.toggle('fullscreen', isFs);
-    document.getElementById('fsBtn').innerHTML = isFs ? FS_EXIT : FS_ENTER;
+    document.querySelector('#fsBtn .fs-ico').innerHTML = isFs ? FS_EXIT : FS_ENTER;
   });
 
   /* ────────── PANEL COLLAPSE ────────── */
@@ -3561,7 +3564,7 @@
       saveSettingsToStorage();
     });
     updateColTitles();
-    document.getElementById('fsBtn').innerHTML = FS_ENTER;
+    document.querySelector('#fsBtn .fs-ico').innerHTML = FS_ENTER;
     startClock();
     renderDaysList();
     scheduleWeatherRefresh();
