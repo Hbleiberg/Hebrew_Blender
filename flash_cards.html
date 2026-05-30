@@ -3615,9 +3615,11 @@ function wireProfilesPanel() {
 function initAdvSubCollapse() {
   document.querySelectorAll('.adv-subhead').forEach(head => {
     head.addEventListener('click', () => {
-      const body = head.nextElementSibling;
+      // Walk past any intervening nodes (e.g. an inline <style>) to the body.
+      let body = head.nextElementSibling;
+      while (body && !body.classList.contains('adv-subbody')) body = body.nextElementSibling;
       head.classList.toggle('collapsed');
-      if (body && body.classList.contains('adv-subbody')) body.classList.toggle('collapsed');
+      if (body) body.classList.toggle('collapsed');
     });
   });
 }
