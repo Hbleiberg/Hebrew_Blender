@@ -1111,26 +1111,6 @@
 </div>
 
 <div class="panel">
-  <div class="panel-title">Jewish Calendar</div>
-  <div class="panel-body">
-    <div class="form-row">
-      <label>Holiday countdown</label>
-      <label class="toggle"><input type="checkbox" id="showHolidayCountdown"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label>Shabbat times</label>
-      <label class="toggle"><input type="checkbox" id="showShabbatTimes"><span class="slider"></span></label>
-    </div>
-    <div class="form-row" style="margin-top:4px;">
-      <label for="candleZipInput">Shabbat zip code</label>
-      <input type="text" id="candleZipInput" placeholder="e.g. 10001" inputmode="numeric" maxlength="5" style="max-width:120px;">
-      <button class="btn btn-xs" onclick="updateCandleZip()">Update</button>
-    </div>
-    <p class="sub" style="margin:4px 0 0;font-size:0.72rem;color:var(--muted);">Candle-lighting &amp; Havdalah times for your location, via Hebcal.</p>
-  </div>
-</div>
-
-<div class="panel">
   <div class="panel-title">Display Options</div>
   <div class="panel-body">
     <div class="form-row">
@@ -1229,6 +1209,10 @@
         <div class="form-row">
           <label>Hide Hebrew date</label>
           <label class="toggle"><input type="checkbox" id="hideHebDate"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label>Show Countdown to Next Holiday</label>
+          <label class="toggle"><input type="checkbox" id="showHolidayCountdown"><span class="slider"></span></label>
         </div>
       </div>
     </div>
@@ -1397,6 +1381,16 @@
     <div class="form-row">
       <label>Tap to read <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></label>
       <label class="toggle"><input type="checkbox" id="tapToReadDow"><span class="slider"></span></label>
+    </div>
+    <hr>
+    <div class="form-row">
+      <label>Show Candle Lighting / Havdalah times</label>
+      <label class="toggle"><input type="checkbox" id="showShabbatTimes"><span class="slider"></span></label>
+    </div>
+    <div class="form-row" id="candleZipRow" style="margin-top:4px;">
+      <label for="candleZipInput">Shabbat zip code</label>
+      <input type="text" id="candleZipInput" placeholder="e.g. 10001" inputmode="numeric" maxlength="5" style="max-width:120px;">
+      <button class="btn btn-xs" onclick="updateCandleZip()">Update</button>
     </div>
     <hr>
     <div class="form-row">
