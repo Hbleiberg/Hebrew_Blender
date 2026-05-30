@@ -484,6 +484,64 @@ footer a{color:var(--gold);text-decoration:none;}
     text-transform: uppercase; color: var(--muted); margin: 8px 0 4px;
     padding-bottom: 3px; border-bottom: 1px solid var(--border);
     grid-column: 1 / -1; }
+
+  /* Export Selected Words */
+  .export-disabled { opacity: 0.5; }
+  .export-disabled #exportCount { color: var(--muted); }
+
+  /* Shoresh (Root) Explorer mode */
+  body.shoresh-mode .search-wrap { display: none; }
+  body.shoresh-mode .word-length-controls { display: none; }
+  body.shoresh-mode .shoresh-hide { display: none; }
+  body:not(.shoresh-mode) #shoreshControls,
+  body:not(.shoresh-mode) #shoreshHeader,
+  body:not(.shoresh-mode) #shoreshResults,
+  body:not(.shoresh-mode) #shoreshPatterns { display: none !important; }
+  body.shoresh-mode #resultsGrid,
+  body.shoresh-mode #loadMoreWrap { display: none !important; }
+  #shoreshControls { margin-bottom: 14px; }
+  .shoresh-input-row { display: flex; gap: 6px; margin-bottom: 10px; }
+  #shoreshInput { flex: 1; font-family: var(--heb-font); direction: rtl; font-size: 1.15rem;
+    padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;
+    background: var(--white); color: var(--text); outline: none; }
+  #shoreshInput:focus { border-color: var(--gold); }
+  .shoresh-lookup-btn { background: var(--navy); color: var(--gold-light); border: none;
+    border-radius: 8px; padding: 0 18px; font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.85rem; cursor: pointer; }
+  .shoresh-lookup-btn:hover { background: #0f1a33; }
+  .shoresh-chips { display: flex; flex-wrap: wrap; gap: 5px; max-height: 132px; overflow-y: auto;
+    padding: 3px; border: 1px solid var(--border); border-radius: 8px; background: var(--white); }
+  .shoresh-chip { font-family: var(--heb-font); direction: rtl; font-size: 1.05rem;
+    padding: 3px 11px; border: 1px solid var(--border); border-radius: 14px;
+    background: var(--white); color: var(--text); cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+  .shoresh-chip:hover { border-color: var(--gold); background: var(--warm-gray); }
+  .shoresh-header { text-align: center; padding: 16px 14px; margin-bottom: 16px;
+    border: 1px solid var(--border); border-radius: 10px; background: var(--white); }
+  .shoresh-root-big { font-family: var(--heb-font); direction: rtl; font-size: 2.7rem; line-height: 1.2; color: var(--text); }
+  .shoresh-root-translit { font-size: 0.95rem; color: var(--muted); font-style: italic; margin-top: 2px; }
+  .shoresh-root-def { font-size: 0.95rem; margin-top: 4px; }
+  .shoresh-group-hdr { font-family: 'Libre Baskerville', serif; font-size: 0.78rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted); margin: 18px 0 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+  .shoresh-group-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+  .shoresh-empty-note { text-align: center; color: var(--muted); font-style: italic; padding: 22px; }
+  .shoresh-patterns-wrap { margin-top: 22px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .shoresh-patterns-title { background: var(--navy); color: #fff; font-family: 'Libre Baskerville', serif;
+    font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 9px 14px; cursor: pointer;
+    user-select: none; display: flex; justify-content: space-between; align-items: center; }
+  .shoresh-patterns-title::after { content: '▾'; color: var(--gold-light); transition: transform 0.2s; }
+  .shoresh-patterns-wrap.collapsed .shoresh-patterns-title::after { transform: rotate(-90deg); }
+  .shoresh-patterns-body { padding: 12px; }
+  .shoresh-patterns-wrap.collapsed .shoresh-patterns-body { display: none; }
+  .shoresh-pat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .shoresh-pat { border-radius: 8px; padding: 8px 10px; text-align: center; }
+  .shoresh-pat .pat-name { font-family: var(--heb-font); direction: rtl; font-size: 1.25rem; }
+  .shoresh-pat .pat-sub { display: block; font-family: 'Source Sans 3', sans-serif; direction: ltr;
+    font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+  .shoresh-pat.empty { border: 1px dashed var(--border); color: var(--muted); opacity: 0.65; }
+  .shoresh-pat.filled { border: 1px solid var(--gold); background: color-mix(in srgb, var(--gold) 12%, var(--white)); cursor: pointer; }
+  .shoresh-pat.filled .pat-match { display: block; font-family: var(--heb-font); direction: rtl; font-size: 1.15rem; margin-top: 5px; color: var(--gold); }
+  .shoresh-flash { animation: shoreshFlash 1.2s ease; }
+  @keyframes shoreshFlash { 0%,100% { box-shadow: 0 0 0 0 transparent; } 30% { box-shadow: 0 0 0 3px var(--gold); } }
 </style>
 </head>
 <body>
@@ -518,8 +576,9 @@ footer a{color:var(--gold);text-decoration:none;}
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Word Length</div>
       <div class="panel-body">
         <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:10px;">
-          <button class="emoji-gender-btn active" data-dict-mode="words" onclick="toggleEmojiMode(false)">Words</button>
-          <button class="emoji-gender-btn" data-dict-mode="emojis" onclick="toggleEmojiMode(true)">Emojis</button>
+          <button class="emoji-gender-btn active" data-dict-mode="words" onclick="setDictMode('words')">Words</button>
+          <button class="emoji-gender-btn" data-dict-mode="emojis" onclick="setDictMode('emojis')">Emojis</button>
+          <button class="emoji-gender-btn" data-dict-mode="shoresh" onclick="setDictMode('shoresh')">Shoresh</button>
         </div>
         <div class="word-length-controls">
           <label class="cb-label" style="margin-bottom:6px;font-weight:600;"><input type="checkbox" id="lenAllCb" checked onchange="toggleAllLengths(this)"> All Words</label>
@@ -590,7 +649,7 @@ footer a{color:var(--gold);text-decoration:none;}
     </div>
 
     <!-- Filter by Vowel -->
-    <div class="panel collapsed word-mode-panel">
+    <div class="panel collapsed word-mode-panel shoresh-hide">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Filter by Vowel</div>
       <div class="panel-body">
         <div class="filter-note" style="margin-bottom:6px;">Show only words whose vowels are all in the selected set.</div>
@@ -601,7 +660,7 @@ footer a{color:var(--gold);text-decoration:none;}
     </div>
 
     <!-- Filter by Letter Position -->
-    <div class="panel word-mode-panel">
+    <div class="panel word-mode-panel shoresh-hide">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Filter by Letter</div>
       <div class="panel-body" id="posFilterBody"></div>
     </div>
@@ -670,6 +729,18 @@ footer a{color:var(--gold);text-decoration:none;}
               </div>
               <textarea id="bulkTextarea" readonly rows="6" style="width:100%;font-size:0.75rem;font-family:var(--heb-font);direction:ltr;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;"></textarea>
               <button class="pos-all-btn" style="width:100%;margin-top:5px;" onclick="copyBulkText()">Copy All</button>
+            </div>
+            <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
+            <div style="font-size:0.72rem;font-weight:600;margin-bottom:2px;color:var(--text);">Export Selected Words</div>
+            <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">Active when Bulk Copy Mode is on and at least one word is selected.</div>
+            <div id="exportBox" class="export-disabled">
+              <div style="display:flex;gap:5px;">
+                <button class="pos-all-btn" style="flex:1;" onclick="exportAnki()">⬇ Export for Anki</button>
+                <button class="pos-all-btn" style="flex:1;" onclick="exportQuizlet()">⬇ Export for Quizlet</button>
+              </div>
+              <div id="exportCount" style="font-size:0.7rem;color:var(--muted);margin-top:5px;">0 words selected for export.</div>
+              <div id="exportErr" style="font-size:0.72rem;color:#c0392b;margin-top:3px;min-height:1em;"></div>
+              <div style="font-size:0.65rem;color:var(--muted);margin-top:5px;line-height:1.4;">Anki: import via File → Import. Quizlet: use Import from Word/Excel on the study set creation page.</div>
             </div>
           </div>
         </div>
@@ -768,11 +839,23 @@ footer a{color:var(--gold);text-decoration:none;}
       </select>
     </div>
     <div class="content">
+      <div id="shoreshControls">
+        <label style="display:block;font-size:0.8rem;font-weight:600;color:var(--text);margin-bottom:6px;">Enter a שׁורש (root)</label>
+        <div class="shoresh-input-row">
+          <input type="text" id="shoreshInput" placeholder="e.g. כ-ת-ב" oninput="onShoreshInput()" onkeydown="onShoreshKey(event)">
+          <button class="shoresh-lookup-btn" onclick="runShoreshLookup(document.getElementById('shoreshInput').value)">Look up</button>
+        </div>
+        <div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px;">Browse roots (alef→tav) — click to look up:</div>
+        <div class="shoresh-chips" id="shoreshChips"></div>
+      </div>
+      <div class="shoresh-header" id="shoreshHeader" style="display:none;"></div>
       <div class="loading" id="loadingMsg">Loading dictionary…</div>
       <div class="results-grid" id="resultsGrid" style="display:none;"></div>
+      <div id="shoreshResults"></div>
       <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
         <button class="load-more-btn" onclick="loadMore()">Show more</button>
       </div>
+      <div id="shoreshPatterns" style="display:none;"></div>
     </div>
   </div>
 </div>
@@ -903,6 +986,9 @@ let ALL_WORDS = [];
 let copyMode = 'word';
 let showGematria = false;
 let bulkMode = false;
+let shoreshMode = false;
+let lastShoreshRoot = '';
+let ROOT_INDEX = null;
 
 let translitStyle = (() => {
   try { return localStorage.getItem('hebrewDictionary_translitStyle') || 'default'; }
@@ -1004,6 +1090,7 @@ function wordBulkText(w) { return getWordCopyText(w); }
 function updateBulkTextarea() {
   document.getElementById('bulkTextarea').value = [...bulkSelected.values()].map(e => e.text).join('\n');
   document.getElementById('bulkCount').textContent = `${bulkSelected.size} selected`;
+  updateExportState();
 }
 
 function onCopyModeChange(mode) {
@@ -1021,6 +1108,7 @@ function toggleBulkMode(on) {
   document.body.classList.toggle('bulk-mode', on);
   document.getElementById('bulkPanel').style.display = on ? 'block' : 'none';
   if (!on) { bulkSelected.clear(); updateBulkTextarea(); }
+  updateExportState();
   rerender();
 }
 
@@ -1058,6 +1146,64 @@ function copyBulkText() {
   const ta = document.getElementById('bulkTextarea');
   if (!ta.value) return;
   navigator.clipboard.writeText(ta.value).catch(() => { ta.select(); document.execCommand('copy'); });
+}
+
+/* ===== Export Selected Words (Anki / Quizlet) ===== */
+function updateExportState() {
+  const box = document.getElementById('exportBox');
+  if (!box) return;
+  const active = bulkMode && bulkSelected.size > 0;
+  box.classList.toggle('export-disabled', !active);
+  const c = document.getElementById('exportCount');
+  if (c) c.textContent = `${bulkSelected.size} word${bulkSelected.size !== 1 ? 's' : ''} selected for export.`;
+  if (active) { const e = document.getElementById('exportErr'); if (e) e.textContent = ''; }
+}
+function exportSelectedWords() {
+  return [...bulkSelected.values()].filter(en => en.w).map(en => en.w);
+}
+function exportDateStamp() {
+  const d = new Date(), p = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+function downloadTextFile(name, text, mime) {
+  const blob = new Blob([text], { type: mime + ';charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 120);
+}
+function exportTagify(s) { return (s || '').toLowerCase().trim().replace(/\s+/g, '_'); }
+function exportAnki() {
+  const err = document.getElementById('exportErr');
+  const words = exportSelectedWords();
+  if (!words.length) { if (err) err.textContent = 'Select words using Bulk Copy Mode first.'; return; }
+  if (err) err.textContent = '';
+  const lines = ['#separator:tab', '#html:false', '#tags column:6'];
+  words.forEach(w => {
+    const tr = w.translitDisplay ?? w.translit ?? '';
+    const tags = ['ivritsuite', 'hebrew', exportTagify(w.era), exportTagify(w.pos)].filter(Boolean).join(' ');
+    lines.push([w.word, w.translation || '', tr, w.pos || '', w.era || '', tags].join('\t'));
+  });
+  downloadTextFile(`ivrit-anki-export-${exportDateStamp()}.txt`, lines.join('\n'), 'text/plain');
+}
+function csvEscape(s) {
+  s = String(s == null ? '' : s);
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+function exportQuizlet() {
+  const err = document.getElementById('exportErr');
+  const words = exportSelectedWords();
+  if (!words.length) { if (err) err.textContent = 'Select words using Bulk Copy Mode first.'; return; }
+  if (err) err.textContent = '';
+  const rows = ['Term,Definition'];
+  words.forEach(w => {
+    const tr = w.translitDisplay ?? w.translit ?? '';
+    let def = w.translation || '';
+    if (tr) def = def ? `${def} (${tr})` : `(${tr})`;
+    rows.push(`${csvEscape(w.word)},${csvEscape(def)}`);
+  });
+  downloadTextFile(`ivrit-quizlet-export-${exportDateStamp()}.csv`, rows.join('\n'), 'text/csv');
 }
 
 const GEMATRIA = {'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,'כ':20,'ך':20,'ל':30,'מ':40,'ם':40,'נ':50,'ן':50,'ס':60,'ע':70,'פ':80,'ף':80,'צ':90,'ץ':90,'ק':100,'ר':200,'ש':300,'ת':400};
@@ -1331,6 +1477,7 @@ function updatePB(i) {
 }
 
 function onFilter() {
+  if (shoreshMode) { if (lastShoreshRoot) renderShoreshFamily(lastShoreshRoot); return; }
   if (emojiMode) {
     filterEmojis();
     shown = 0;
@@ -1434,6 +1581,7 @@ function onFilter() {
 }
 
 function rerender() {
+  if (shoreshMode) { if (lastShoreshRoot) renderShoreshFamily(lastShoreshRoot); return; }
   shown = 0;
   document.getElementById('resultsGrid').innerHTML = '';
   loadMore();
@@ -1465,68 +1613,311 @@ function resetTtsRate() {
   if (sl) { sl.value = 0.75; onTtsRateChange(0.75); }
 }
 
+function buildWordCard(w) {
+  const card = document.createElement('div');
+  card.className = 'word-card';
+  card.dataset.shword = w.word;
+  const ec = w.era === 'Biblical' ? 'b-bib' : w.era === 'Modern' ? 'b-mod' : 'b-both';
+  const el = w.era === 'Both' ? 'Bib + Mod' : w.era;
+  const bulkCb = document.createElement('input');
+  bulkCb.type = 'checkbox';
+  bulkCb.className = 'wc-bulk-cb';
+  bulkCb.checked = bulkSelected.has(w.word);
+  bulkCb.addEventListener('change', e => {
+    e.stopPropagation();
+    if (e.target.checked) { bulkSelected.set(w.word, {w, text: wordBulkText(w)}); } else { bulkSelected.delete(w.word); }
+    card.classList.toggle('bulk-selected', e.target.checked);
+    updateBulkTextarea();
+  });
+  card.appendChild(bulkCb);
+  if (bulkSelected.has(w.word)) card.classList.add('bulk-selected');
+  card.addEventListener('click', e => {
+    if (!bulkMode) return;
+    if (e.target === bulkCb) return;
+    bulkCb.checked = !bulkCb.checked;
+    bulkCb.dispatchEvent(new Event('change', {bubbles:true}));
+  });
+  const btn = document.createElement('button');
+  btn.className = 'wc-copy';
+  btn.innerHTML = COPY_ICON;
+  btn.title = 'Copy Hebrew';
+  btn.addEventListener('click', e => { e.stopPropagation(); copyWord(btn, getWordCopyText(w)); });
+  card.appendChild(btn);
+  const speakBtn = document.createElement('button');
+  speakBtn.className = 'wc-speak';
+  speakBtn.textContent = '🔊';
+  speakBtn.title = 'Hear pronunciation';
+  speakBtn.addEventListener('click', e => { e.stopPropagation(); speakWord(w.word); });
+  card.appendChild(speakBtn);
+  const srch = document.createElement('a');
+  srch.className = 'wc-search';
+  srch.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
+  srch.title = 'Look up on Google';
+  srch.href = 'https://www.google.com/search?q=' + encodeURIComponent(w.word);
+  srch.target = '_blank';
+  srch.rel = 'noopener';
+  card.appendChild(srch);
+  const inner = document.createElement('div');
+  inner.innerHTML = `
+    <div class="wc-heb">${colorizeHebrew(w.word)}</div>
+    ${w.translit ? `<div class="wc-translit">${w.translitDisplay ?? w.translit}</div>` : ''}
+    ${w.translation ? `<div class="wc-transl">${w.translation}</div>` : ''}
+    <div class="wc-badges">
+      ${w.pos ? `<span class="badge b-pos">${w.pos}</span>` : ''}
+      <span class="badge ${ec}">${el}</span>
+      <span class="badge b-len">${w.len}L</span>
+      ${showGematria ? `<span class="badge" style="background:var(--warm-gray);color:var(--muted);">&#x05D2; ${calcGematria(w.bare)}</span>` : ''}
+    </div>`;
+  while (inner.firstChild) card.appendChild(inner.firstChild);
+  return card;
+}
+
 function loadMore() {
   if (emojiMode) { renderEmojiResults(); return; }
   const grid = document.getElementById('resultsGrid');
-  filtered.slice(shown, shown + PAGE).forEach(w => {
-    const card = document.createElement('div');
-    card.className = 'word-card';
-    const ec = w.era === 'Biblical' ? 'b-bib' : w.era === 'Modern' ? 'b-mod' : 'b-both';
-    const el = w.era === 'Both' ? 'Bib + Mod' : w.era;
-    const bulkCb = document.createElement('input');
-    bulkCb.type = 'checkbox';
-    bulkCb.className = 'wc-bulk-cb';
-    bulkCb.checked = bulkSelected.has(w.word);
-    bulkCb.addEventListener('change', e => {
-      e.stopPropagation();
-      if (e.target.checked) { bulkSelected.set(w.word, {w, text: wordBulkText(w)}); } else { bulkSelected.delete(w.word); }
-      card.classList.toggle('bulk-selected', e.target.checked);
-      updateBulkTextarea();
-    });
-    card.appendChild(bulkCb);
-    if (bulkSelected.has(w.word)) card.classList.add('bulk-selected');
-    card.addEventListener('click', e => {
-      if (!bulkMode) return;
-      if (e.target === bulkCb) return;
-      bulkCb.checked = !bulkCb.checked;
-      bulkCb.dispatchEvent(new Event('change', {bubbles:true}));
-    });
-    const btn = document.createElement('button');
-    btn.className = 'wc-copy';
-    btn.innerHTML = COPY_ICON;
-    btn.title = 'Copy Hebrew';
-    btn.addEventListener('click', e => { e.stopPropagation(); copyWord(btn, getWordCopyText(w)); });
-    card.appendChild(btn);
-    const speakBtn = document.createElement('button');
-    speakBtn.className = 'wc-speak';
-    speakBtn.textContent = '🔊';
-    speakBtn.title = 'Hear pronunciation';
-    speakBtn.addEventListener('click', e => { e.stopPropagation(); speakWord(w.word); });
-    card.appendChild(speakBtn);
-    const srch = document.createElement('a');
-    srch.className = 'wc-search';
-    srch.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
-    srch.title = 'Look up on Google';
-    srch.href = 'https://www.google.com/search?q=' + encodeURIComponent(w.word);
-    srch.target = '_blank';
-    srch.rel = 'noopener';
-    card.appendChild(srch);
-    const inner = document.createElement('div');
-    inner.innerHTML = `
-      <div class="wc-heb">${colorizeHebrew(w.word)}</div>
-      ${w.translit ? `<div class="wc-translit">${w.translitDisplay ?? w.translit}</div>` : ''}
-      ${w.translation ? `<div class="wc-transl">${w.translation}</div>` : ''}
-      <div class="wc-badges">
-        ${w.pos ? `<span class="badge b-pos">${w.pos}</span>` : ''}
-        <span class="badge ${ec}">${el}</span>
-        <span class="badge b-len">${w.len}L</span>
-        ${showGematria ? `<span class="badge" style="background:var(--warm-gray);color:var(--muted);">&#x05D2; ${calcGematria(w.bare)}</span>` : ''}
-      </div>`;
-    while (inner.firstChild) card.appendChild(inner.firstChild);
-    grid.appendChild(card);
-  });
+  filtered.slice(shown, shown + PAGE).forEach(w => grid.appendChild(buildWordCard(w)));
   shown = Math.min(shown + PAGE, filtered.length);
   document.getElementById('loadMoreWrap').style.display = shown < filtered.length ? 'block' : 'none';
+}
+
+/* ===== Shoresh (Root) Explorer ===== */
+const SOFIT_MAP = { 'ך':'כ', 'ם':'מ', 'ן':'נ', 'ף':'פ', 'ץ':'צ' };
+function stripDictNikud(s) { return (s || '').replace(/[֑-ׇ]/g, ''); }
+function normHebLetters(s) {
+  const bare = stripDictNikud(s);
+  let out = '';
+  for (const ch of bare) {
+    const cp = ch.codePointAt(0);
+    if (cp >= 0x05D0 && cp <= 0x05EA) out += (SOFIT_MAP[ch] || ch);
+  }
+  return out;
+}
+// sofit-normalized, keeps vowel points but strips dagesh / sin-shin dots / cantillation
+// so pattern regexes can match on the consonant+vowel skeleton regardless of dagesh.
+function patternNorm(s) {
+  let out = '';
+  for (const ch of (s || '')) {
+    const cp = ch.codePointAt(0);
+    if (cp === 0x05BC || cp === 0x05C1 || cp === 0x05C2 || (cp >= 0x0591 && cp <= 0x05AF)) continue;
+    out += (SOFIT_MAP[ch] || ch);
+  }
+  return out;
+}
+function wordConsonants(w) { return normHebLetters(w.bare || w.word); }
+function consonantsContainRoot(wc, rc) {
+  let i = 0;
+  for (let k = 0; k < wc.length && i < rc.length; k++) { if (wc[k] === rc[i]) i++; }
+  return i === rc.length;
+}
+
+function setDictMode(mode) {
+  if (mode === 'shoresh') {
+    if (emojiMode) toggleEmojiMode(false);
+    shoreshMode = true;
+    document.body.classList.add('shoresh-mode');
+    document.querySelectorAll('[data-dict-mode]').forEach(b => b.classList.toggle('active', b.dataset.dictMode === 'shoresh'));
+    document.getElementById('loadingMsg').style.display = 'none';
+    enterShoresh();
+  } else {
+    shoreshMode = false;
+    document.body.classList.remove('shoresh-mode');
+    toggleEmojiMode(mode === 'emojis');
+  }
+}
+
+function enterShoresh() {
+  buildRootIndex();
+  if (lastShoreshRoot) {
+    document.getElementById('shoreshInput').value = lastShoreshRoot;
+    renderRootChips(lastShoreshRoot);
+    renderShoreshFamily(lastShoreshRoot);
+  } else {
+    renderRootChips('');
+    document.getElementById('shoreshHeader').style.display = 'none';
+    document.getElementById('shoreshResults').innerHTML = '';
+    document.getElementById('shoreshPatterns').style.display = 'none';
+    document.getElementById('resultCount').textContent = 'Enter a root';
+  }
+}
+
+function buildRootIndex() {
+  if (ROOT_INDEX) return;
+  const seen = new Set();
+  ALL_WORDS.forEach(w => {
+    if (w.pos !== 'root') return;
+    const cons = normHebLetters(w.bare || w.word);
+    if (cons.length === 3) seen.add(cons);
+  });
+  ROOT_INDEX = [...seen].sort((a, b) => a.localeCompare(b, 'he'));
+}
+
+function renderRootChips(filter) {
+  const box = document.getElementById('shoreshChips');
+  if (!box || !ROOT_INDEX) return;
+  const f = normHebLetters(filter);
+  const list = f ? ROOT_INDEX.filter(r => r.includes(f)) : ROOT_INDEX;
+  box.innerHTML = list.map(r => `<button type="button" class="shoresh-chip" onclick="shoreshChipClick('${r}')">${[...r].join('־')}</button>`).join('') ||
+    '<span style="font-size:0.75rem;color:var(--muted);padding:4px;">No matching roots.</span>';
+}
+
+function shoreshChipClick(r) {
+  document.getElementById('shoreshInput').value = [...r].join('־');
+  runShoreshLookup(r);
+}
+
+function onShoreshInput() {
+  renderRootChips(document.getElementById('shoreshInput').value);
+}
+function onShoreshKey(e) {
+  if (e.key === 'Enter') runShoreshLookup(document.getElementById('shoreshInput').value);
+}
+
+function runShoreshLookup(raw) {
+  const root = normHebLetters(raw);
+  if (root.length < 2) {
+    document.getElementById('shoreshHeader').style.display = 'none';
+    document.getElementById('shoreshResults').innerHTML = '<div class="shoresh-empty-note">Type at least 2 root letters (e.g. כתב).</div>';
+    document.getElementById('shoreshPatterns').style.display = 'none';
+    document.getElementById('resultCount').textContent = '';
+    return;
+  }
+  lastShoreshRoot = root;
+  document.getElementById('shoreshInput').value = [...root].join('־');
+  renderShoreshFamily(root);
+}
+
+function renderShoreshFamily(root) {
+  const rootCons = [...root];
+  const eraBib = document.getElementById('eraBib').checked;
+  const eraMod = document.getElementById('eraMod').checked;
+  const rootEntry = ALL_WORDS.find(w => w.pos === 'root' && normHebLetters(w.bare || w.word) === root);
+  renderShoreshHeader(rootEntry, rootCons);
+
+  const fam = ALL_WORDS.filter(w => {
+    const era = w.era;
+    if (era === 'Both') { if (!eraBib && !eraMod) return false; }
+    else if (era === 'Biblical' && !eraBib) return false;
+    else if (era === 'Modern' && !eraMod) return false;
+    return consonantsContainRoot(wordConsonants(w), rootCons);
+  });
+
+  renderShoreshGroups(fam);
+  renderShoreshPatterns(rootCons, fam);
+}
+
+function renderShoreshHeader(rootEntry, rootCons) {
+  const hdr = document.getElementById('shoreshHeader');
+  const bigHeb = rootEntry ? rootEntry.word : [...rootCons].join('־');
+  const tr = rootEntry ? (rootEntry.translitDisplay ?? rootEntry.translit) : '';
+  const def = rootEntry ? rootEntry.translation : '';
+  let badges = '';
+  if (rootEntry) {
+    const ec = rootEntry.era === 'Biblical' ? 'b-bib' : rootEntry.era === 'Modern' ? 'b-mod' : 'b-both';
+    const el = rootEntry.era === 'Both' ? 'Bib + Mod' : rootEntry.era;
+    badges += `<span class="badge ${ec}">${el}</span>`;
+  }
+  if (showGematria) badges += `<span class="badge" style="background:var(--warm-gray);color:var(--muted);">&#x05D2; ${calcGematria(rootCons.join(''))}</span>`;
+  hdr.innerHTML = `
+    <div class="shoresh-root-big">${colorizeHebrew(bigHeb)}</div>
+    ${tr ? `<div class="shoresh-root-translit">${tr}</div>` : ''}
+    ${def ? `<div class="shoresh-root-def">${def}</div>` : ''}
+    ${badges ? `<div class="wc-badges" style="justify-content:center;margin-top:8px;">${badges}</div>` : ''}`;
+  hdr.style.display = '';
+}
+
+function shoreshBucket(pos) {
+  if (pos === 'root') return 'root';
+  if (pos === 'verb') return 'verb';
+  if (pos === 'noun') return 'noun';
+  if (pos === 'adjective') return 'adjective';
+  if (pos === 'adverb') return 'adverb';
+  return 'other';
+}
+
+function renderShoreshGroups(fam) {
+  const box = document.getElementById('shoreshResults');
+  box.innerHTML = '';
+  const buckets = { root: [], verb: [], noun: [], adjective: [], adverb: [], other: [] };
+  fam.forEach(w => buckets[shoreshBucket(w.pos)].push(w));
+  Object.keys(buckets).forEach(k => buckets[k].sort((a, b) => a.len - b.len || a.bare.localeCompare(b.bare, 'he')));
+  const order = [['root', 'Root'], ['verb', 'Verb'], ['noun', 'Noun'], ['adjective', 'Adjective'], ['adverb', 'Adverb'], ['other', 'Other']];
+  const derivedCount = fam.length - buckets.root.length;
+  let any = false;
+  order.forEach(([key, label]) => {
+    const items = buckets[key];
+    if (!items.length) return;
+    any = true;
+    const hdr = document.createElement('div');
+    hdr.className = 'shoresh-group-hdr';
+    hdr.textContent = `${label} (${items.length})`;
+    box.appendChild(hdr);
+    const grid = document.createElement('div');
+    grid.className = 'shoresh-group-grid';
+    items.forEach(w => grid.appendChild(buildWordCard(w)));
+    box.appendChild(grid);
+  });
+  if (derivedCount <= 0) {
+    const note = document.createElement('div');
+    note.className = 'shoresh-empty-note';
+    note.textContent = 'No derived words found for this root in the current dictionary.';
+    box.appendChild(note);
+  }
+  if (!any) box.innerHTML = '<div class="shoresh-empty-note">No derived words found for this root in the current dictionary.</div>';
+  const n = derivedCount > 0 ? derivedCount : 0;
+  const countText = n === 0 ? 'No related words' : n === 1 ? '1 related word' : `${n.toLocaleString()} related words`;
+  document.getElementById('resultCount').textContent = countText;
+  document.getElementById('sidebarWordCount').textContent = countText;
+}
+
+// Approximate binyan/mishkal templates over root consonants (c1,c2,c3), matched on the
+// dagesh-stripped consonant+vowel skeleton (see patternNorm). Best-effort: an unmatched
+// slot is informative (dashed border). Vowels: ָ kamatz · ַ patach · ֵ tsere · ִ hiriq ·
+// ֹ holam · ֻ qubuts · ְ shva.
+const SHORESH_PATTERNS = [
+  { name: 'פָּעַל',   sub: 'verb',          build: (a,b,c) => a+'ָ'+b+'ַ'+c },
+  { name: 'פִּעֵל',   sub: 'verb',          build: (a,b,c) => a+'ִ'+b+'ֵ'+c },
+  { name: 'הִפְעִיל', sub: 'verb',          build: (a,b,c) => 'הִ'+a+'ְ'+b+'ִי'+c },
+  { name: 'נִפְעַל',  sub: 'verb',          build: (a,b,c) => 'נִ'+a+'ְ'+b+'ַ'+c },
+  { name: 'מִפְעָל',  sub: 'noun',          build: (a,b,c) => 'מִ'+a+'ְ'+b+'ָ'+c },
+  { name: 'פַּעְלָן', sub: 'agent noun',    build: (a,b,c) => a+'ַ'+b+'ְ'+c+'ָנ' },
+  { name: 'פְּעֻלָּה', sub: 'abstract noun', build: (a,b,c) => a+'ְ'+b+'ֻ'+c+'ָה' },
+  { name: 'פָּעוּל',  sub: 'adjective',     build: (a,b,c) => a+'ָ'+b+'ו'+c },
+];
+
+function renderShoreshPatterns(rootCons, fam) {
+  const wrap = document.getElementById('shoreshPatterns');
+  if (rootCons.length !== 3) {
+    wrap.innerHTML = '<div class="shoresh-patterns-wrap"><div class="shoresh-patterns-title" onclick="this.parentElement.classList.toggle(\'collapsed\')">Common patterns from this root</div><div class="shoresh-patterns-body"><div class="shoresh-empty-note" style="padding:10px;">Patterns are shown for 3-letter roots.</div></div></div>';
+    wrap.style.display = '';
+    return;
+  }
+  const [a, b, c] = rootCons;
+  const normFam = fam.map(w => ({ w, nk: patternNorm(w.word) }));
+  const cells = SHORESH_PATTERNS.map(p => {
+    let rx;
+    try { rx = new RegExp(p.build(a, b, c)); } catch (e) { rx = null; }
+    const hit = rx ? normFam.find(o => rx.test(o.nk)) : null;
+    if (hit) {
+      return `<div class="shoresh-pat filled" onclick="scrollToShoreshWord('${hit.w.word.replace(/'/g, "\\'")}')">
+        <span class="pat-name">${p.name}</span><span class="pat-sub">${p.sub}</span>
+        <span class="pat-match">${colorizeHebrew(hit.w.word)}</span></div>`;
+    }
+    return `<div class="shoresh-pat empty"><span class="pat-name">${p.name}</span><span class="pat-sub">${p.sub}</span></div>`;
+  }).join('');
+  wrap.innerHTML = `<div class="shoresh-patterns-wrap">
+    <div class="shoresh-patterns-title" onclick="this.parentElement.classList.toggle('collapsed')">Common patterns from this root</div>
+    <div class="shoresh-patterns-body"><div class="shoresh-pat-grid">${cells}</div></div>
+  </div>`;
+  wrap.style.display = '';
+}
+
+function scrollToShoreshWord(word) {
+  const card = [...document.querySelectorAll('#shoreshResults .word-card')].find(el => el.dataset.shword === word);
+  if (!card) return;
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  card.classList.remove('shoresh-flash');
+  void card.offsetWidth;
+  card.classList.add('shoresh-flash');
 }
 
 function setPosAll(checked) {
@@ -2348,6 +2739,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const bulkCb = document.getElementById('bulkModeCb');
   if (bulkCb && bulkCb.checked) toggleBulkMode(true);
+  updateExportState();
 
   // Fixed-position tooltip to escape sidebar overflow clipping
   const gTip = document.getElementById('globalTip');

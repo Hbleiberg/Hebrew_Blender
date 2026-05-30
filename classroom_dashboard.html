@@ -457,6 +457,38 @@
   }
   .shabbat-block .shabbat-line { margin: 2px 0; }
   .shabbat-block .shabbat-loading { color: var(--muted); font-size: 0.82rem; }
+
+  /* Timer panel */
+  #timerCol .col-body { display: flex; flex-direction: column; align-items: center; gap: 11px; padding: 16px 14px; }
+  .timer-display { font-family: 'Libre Baskerville', serif; font-weight: 700; font-size: var(--time-size);
+    color: var(--navy); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; line-height: 1; }
+  body.dark .timer-display { color: var(--gold-light); }
+  .timer-display.warn { color: #cc3333; }
+  body.dark .timer-display.warn { color: #ff6b6b; }
+  .timer-display.done { color: #cc3333; animation: timerFlash 0.5s steps(1, end) infinite; }
+  @keyframes timerFlash { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+  #timerCol.running { animation: timerPulse 2s ease-in-out infinite; }
+  #timerCol.running.urgent { animation: timerPulse 0.6s ease-in-out infinite; }
+  @keyframes timerPulse { 0%, 100% { box-shadow: var(--shadow-sm); } 50% { box-shadow: 0 0 0 4px rgba(201,146,42,0.32); } }
+  .timer-presets { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
+  .timer-preset-btn, .timer-ctrl-btn { font-family: 'Source Sans 3', sans-serif; font-size: 0.78rem;
+    padding: 4px 10px; border: 1px solid var(--border); border-radius: 5px; background: var(--white);
+    color: var(--text); cursor: pointer; transition: border-color 0.15s; }
+  .timer-preset-btn:hover, .timer-ctrl-btn:hover { border-color: var(--gold); }
+  .timer-controls { display: flex; gap: 6px; }
+  .timer-custom-row { display: flex; gap: 5px; align-items: center; }
+  .timer-custom-row input { width: 72px; padding: 4px 6px; border: 1px solid var(--border); border-radius: 5px;
+    font-family: inherit; text-align: center; background: var(--white); color: var(--text); }
+  body.fullscreen #timerCol .timer-display { font-size: 5.5rem; }
+
+  /* Omer panel */
+  .omer-block { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); text-align: center; }
+  .omer-block .omer-heb { font-family: var(--heb-font); direction: rtl; font-size: 1.25rem; line-height: 1.55; color: var(--text); }
+  body.dark .omer-block .omer-heb { color: var(--gold-light); }
+  .omer-block .omer-eng { font-family: 'Source Sans 3', sans-serif; font-size: 0.82rem; color: var(--muted); margin-top: 7px; }
+  .omer-block .omer-progress { margin-top: 9px; height: 8px; border-radius: 4px; background: var(--border); overflow: hidden; }
+  .omer-block .omer-progress-fill { height: 100%; background: var(--gold); border-radius: 4px; transition: width 0.4s; }
+  .omer-block .omer-chag { font-family: var(--heb-font); direction: rtl; font-size: 1.45rem; color: var(--gold); }
   .dash-text-display {
     margin-top: 28px;
     padding: 22px 18px 4px;
@@ -1051,6 +1083,7 @@
     <div class="col-body" id="dowBody">
       <div id="daysList"></div>
       <div class="shabbat-block" id="shabbatTimes" style="display:none;"></div>
+      <div class="omer-block" id="omerPanel" style="display:none;"></div>
     </div>
   </div><!-- CENTER: Date / Time / Custom Text --><div class="dash-col dash-center">
     <div id="dateTimeBlock" style="width:100%;">
@@ -1073,6 +1106,28 @@
         <div style="text-align:center;margin-top:6px;">
           <button onclick="renderWeather()" title="Refresh weather"
             style="font-size:0.68rem;padding:2px 8px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--muted);cursor:pointer;">↺ Refresh</button>
+        </div>
+      </div>
+    </div>
+    <div class="dash-col" id="timerCol" style="display:none;">
+      <div class="col-title" id="timerColTitle">Timer</div>
+      <div class="col-body" id="timerBody">
+        <div class="timer-display" id="timerDisplay">0:00</div>
+        <div class="timer-presets">
+          <button class="timer-preset-btn" onclick="timerPreset(60)">1 min</button>
+          <button class="timer-preset-btn" onclick="timerPreset(180)">3 min</button>
+          <button class="timer-preset-btn" onclick="timerPreset(300)">5 min</button>
+          <button class="timer-preset-btn" onclick="timerPreset(600)">10 min</button>
+          <button class="timer-preset-btn" onclick="timerToggleCustom()">Custom</button>
+        </div>
+        <div class="timer-custom-row" id="timerCustomRow" style="display:none;">
+          <input type="text" id="timerCustomInput" placeholder="MM:SS" inputmode="numeric" maxlength="5" onkeydown="if(event.key==='Enter')timerSetCustom()">
+          <button class="timer-ctrl-btn" onclick="timerSetCustom()">Set</button>
+        </div>
+        <div class="timer-controls">
+          <button class="timer-ctrl-btn" id="timerStartBtn" onclick="timerStart()">▶ Start</button>
+          <button class="timer-ctrl-btn" id="timerPauseBtn" onclick="timerPause()">⏸ Pause</button>
+          <button class="timer-ctrl-btn" id="timerResetBtn" onclick="timerReset()">↺ Reset</button>
         </div>
       </div>
     </div>
@@ -1321,6 +1376,20 @@
 </div>
 
 <div class="panel">
+  <div class="panel-title">Timer</div>
+  <div class="panel-body">
+    <div class="form-row">
+      <label>Show Timer panel</label>
+      <label class="toggle"><input type="checkbox" id="showTimer"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Show timer in fullscreen mode</label>
+      <label class="toggle"><input type="checkbox" id="showTimerFullscreen"><span class="slider"></span></label>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
   <div class="panel-title">Day of Week</div>
   <div class="panel-body">
     <div class="form-row">
@@ -1396,6 +1465,24 @@
     <div class="form-row">
       <label>Hide Day of Week panel</label>
       <label class="toggle"><input type="checkbox" id="hideDOW"><span class="slider"></span></label>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="omerSettingsPanel" style="display:none;">
+  <div class="panel-title">Omer</div>
+  <div class="panel-body">
+    <div class="form-row">
+      <label>Show Omer panel</label>
+      <label class="toggle"><input type="checkbox" id="showOmerCounter"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Show English day/week label</label>
+      <label class="toggle"><input type="checkbox" id="showOmerEnglish"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Show progress bar</label>
+      <label class="toggle"><input type="checkbox" id="showOmerProgress"><span class="slider"></span></label>
     </div>
   </div>
 </div>
@@ -1809,6 +1896,11 @@
     showHolidayCountdown: true,
     showShabbatTimes: true,
     candleZip: '10001',
+    showTimer: true,
+    showTimerFullscreen: true,
+    showOmerCounter: true,
+    showOmerEnglish: true,
+    showOmerProgress: true,
   };
   let presets = {};
   let savedSchedules = {};
@@ -2584,6 +2676,219 @@
     fetchShabbat(true);
   }
 
+  /* ────────── CLASSROOM TIMER ────────── */
+  let timerTotal = 0;        // last-used duration (seconds)
+  let timerRemaining = 0;
+  let timerInterval = null;
+  let timerRunning = false;
+  let timerAudioCtx = null;
+
+  function fmtTimer(s) { return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+
+  function renderTimerDisplay() {
+    const d = document.getElementById('timerDisplay');
+    const col = document.getElementById('timerCol');
+    if (!d || !col) return;
+    d.textContent = timerRemaining > 0 ? fmtTimer(timerRemaining)
+                  : (timerTotal > 0 && !timerRunning ? fmtTimer(timerTotal) : '0:00');
+    const urgent = timerRunning && timerRemaining <= 10 && timerRemaining > 0;
+    d.classList.toggle('warn', urgent);
+    col.classList.toggle('urgent', urgent);
+  }
+
+  function timerTick() {
+    if (timerRemaining > 0) {
+      timerRemaining--;
+      renderTimerDisplay();
+      if (timerRemaining === 0) timerFinish();
+    }
+  }
+
+  function timerStart() {
+    if (timerRemaining <= 0) { if (timerTotal > 0) timerRemaining = timerTotal; else return; }
+    if (timerRunning) return;
+    ensureTimerAudio();
+    timerRunning = true;
+    document.getElementById('timerCol').classList.add('running');
+    document.getElementById('timerDisplay').classList.remove('done');
+    clearInterval(timerInterval);
+    timerInterval = setInterval(timerTick, 1000);
+    renderTimerDisplay();
+  }
+
+  function timerPause() {
+    timerRunning = false;
+    clearInterval(timerInterval);
+    document.getElementById('timerCol').classList.remove('running', 'urgent');
+    renderTimerDisplay();
+  }
+
+  function timerReset() {
+    timerRunning = false;
+    clearInterval(timerInterval);
+    timerRemaining = timerTotal;
+    const col = document.getElementById('timerCol');
+    col.classList.remove('running', 'urgent');
+    const d = document.getElementById('timerDisplay');
+    d.classList.remove('warn', 'done');
+    renderTimerDisplay();
+  }
+
+  function timerPreset(sec) {
+    timerTotal = sec; timerRemaining = sec;
+    document.getElementById('timerCustomRow').style.display = 'none';
+    timerStart();
+  }
+
+  function timerToggleCustom() {
+    const r = document.getElementById('timerCustomRow');
+    r.style.display = r.style.display === 'none' ? 'flex' : 'none';
+    if (r.style.display === 'flex') document.getElementById('timerCustomInput').focus();
+  }
+
+  function timerSetCustom() {
+    const v = (document.getElementById('timerCustomInput').value || '').trim();
+    let sec = 0;
+    if (/^\d{1,3}:\d{1,2}$/.test(v)) { const [m, s] = v.split(':').map(Number); sec = m * 60 + s; }
+    else if (/^\d+$/.test(v)) { sec = parseInt(v) * 60; }
+    if (sec <= 0) { alert('Enter a duration as MM:SS (e.g. 2:30).'); return; }
+    timerTotal = sec; timerRemaining = sec;
+    document.getElementById('timerCustomRow').style.display = 'none';
+    timerStart();
+  }
+
+  function timerFinish() {
+    timerRunning = false;
+    clearInterval(timerInterval);
+    document.getElementById('timerCol').classList.remove('running', 'urgent');
+    timerBeep();
+    const d = document.getElementById('timerDisplay');
+    d.classList.remove('warn');
+    d.textContent = 'Time!';
+    d.classList.add('done');
+    setTimeout(() => {
+      d.classList.remove('done');
+      timerRemaining = timerTotal;
+      renderTimerDisplay();
+    }, 3000);
+  }
+
+  function ensureTimerAudio() {
+    try {
+      if (!timerAudioCtx) timerAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (timerAudioCtx.state === 'suspended') timerAudioCtx.resume();
+    } catch (e) {}
+  }
+
+  function timerBeep() {
+    try {
+      ensureTimerAudio();
+      if (!timerAudioCtx) return;
+      const o = timerAudioCtx.createOscillator();
+      const g = timerAudioCtx.createGain();
+      o.type = 'sine'; o.frequency.value = 440;
+      o.connect(g); g.connect(timerAudioCtx.destination);
+      g.gain.setValueAtTime(0.25, timerAudioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.0001, timerAudioCtx.currentTime + 0.3);
+      o.start();
+      o.stop(timerAudioCtx.currentTime + 0.3);
+    } catch (e) {}
+  }
+
+  function applyTimerVisibility() {
+    const col = document.getElementById('timerCol');
+    if (!col) return;
+    const fs = document.body.classList.contains('fullscreen');
+    const show = settings.showTimer !== false && !(fs && settings.showTimerFullscreen === false);
+    col.style.display = show ? '' : 'none';
+  }
+
+  function initTimer() {
+    timerTotal = 0; timerRemaining = 0;
+    renderTimerDisplay();
+    applyTimerVisibility();
+  }
+
+  /* ────────── OMER COUNTER ────────── */
+  const OMER_ONES  = ['', 'אֶחָד', 'שְׁנַיִם', 'שְׁלֹשָׁה', 'אַרְבָּעָה', 'חֲמִשָּׁה', 'שִׁשָּׁה', 'שִׁבְעָה', 'שְׁמֹנָה', 'תִּשְׁעָה', 'עֲשָׂרָה'];
+  const OMER_TEENS = ['', 'אַחַד עָשָׂר', 'שְׁנֵים עָשָׂר', 'שְׁלֹשָׁה עָשָׂר', 'אַרְבָּעָה עָשָׂר', 'חֲמִשָּׁה עָשָׂר', 'שִׁשָּׁה עָשָׂר', 'שִׁבְעָה עָשָׂר', 'שְׁמֹנָה עָשָׂר', 'תִּשְׁעָה עָשָׂר'];
+  const OMER_TENS  = { 20: 'עֶשְׂרִים', 30: 'שְׁלֹשִׁים', 40: 'אַרְבָּעִים' };
+  // Within-week days 1–6, with the traditional conjunction prefix.
+  const OMER_INWEEK = ['', 'וְיוֹם אֶחָד', 'וּשְׁנֵי יָמִים', 'וּשְׁלֹשָׁה יָמִים', 'וְאַרְבָּעָה יָמִים', 'וַחֲמִשָּׁה יָמִים', 'וְשִׁשָּׁה יָמִים'];
+
+  function omerDayWords(n) {
+    if (n <= 10) return OMER_ONES[n];
+    if (n < 20)  return OMER_TEENS[n - 10];
+    const tens = Math.floor(n / 10) * 10, ones = n % 10;
+    if (ones === 0) return OMER_TENS[tens];
+    const joiner = tens === 30 ? ' וּ' : ' וְ';   // וּ before שְׁלֹשִׁים, else וְ
+    return OMER_ONES[ones] + joiner + OMER_TENS[tens];
+  }
+  function omerDayPhrase(n) {
+    if (n === 1) return 'יוֹם אֶחָד';
+    if (n === 2) return 'שְׁנֵי יָמִים';
+    if (n <= 10) return OMER_ONES[n] + ' יָמִים';
+    return omerDayWords(n) + ' יוֹם';            // 11+ uses singular יוֹם
+  }
+  function omerWeeksPhrase(w) {
+    if (w === 1) return 'שָׁבוּעַ אֶחָד';
+    if (w === 2) return 'שְׁנֵי שָׁבוּעוֹת';
+    return OMER_ONES[w] + ' שָׁבוּעוֹת';
+  }
+  function omerHebrewFormula(n) {
+    let s = 'הַיּוֹם ' + omerDayPhrase(n);
+    if (n >= 7) {
+      const w = Math.floor(n / 7), d = n % 7;
+      s += ' שֶׁהֵם ' + omerWeeksPhrase(w);
+      if (d > 0) s += ' ' + OMER_INWEEK[d];
+    }
+    return s + ' לָעֹמֶר';
+  }
+
+  // Day of the Omer for today: 1–49 = counting, 50 = Shavuot, else not in season.
+  function omerDayNumber() {
+    const now = new Date();
+    const todayJDN = gregorianToJDN(now.getFullYear(), now.getMonth() + 1, now.getDate());
+    const heb = jdnToHebrew(todayJDN);
+    const nisan = hebrewLeapYear(heb.year) ? 8 : 7;   // Nisan = month 7 (8 in a leap year)
+    const pesachJDN = hebrewToJDN(heb.year, nisan, 16); // 16 Nisan = 1st day of the Omer
+    return todayJDN - pesachJDN + 1;
+  }
+
+  function updateOmerDisplay() {
+    const panel = document.getElementById('omerPanel');
+    const omerSettings = document.getElementById('omerSettingsPanel');
+    if (!panel) return;
+    const n = omerDayNumber();
+    const inSeason = n >= 1 && n <= 49;
+    const isShavuot = n === 50;
+    if (!inSeason && !isShavuot) {
+      panel.style.display = 'none';
+      if (omerSettings) omerSettings.style.display = 'none';
+      return;
+    }
+    if (omerSettings) omerSettings.style.display = '';
+    if (settings.showOmerCounter === false) { panel.style.display = 'none'; return; }
+    if (isShavuot) {
+      panel.innerHTML = `<div class="omer-chag">${hebDisplay('חַג שָׂמֵחַ')} 🌾</div><div class="omer-eng">Chag Sameach — Shavuot</div>`;
+      panel.style.display = '';
+      return;
+    }
+    const w = Math.floor(n / 7), d = n % 7;
+    let html = `<div class="omer-heb">${hebDisplay(omerHebrewFormula(n))}</div>`;
+    if (settings.showOmerEnglish !== false) {
+      const engLabel = n >= 7 ? `Day ${n} of the Omer · Week ${w}${d ? `, Day ${d}` : ''}` : `Day ${n} of the Omer`;
+      html += `<div class="omer-eng">${engLabel}</div>`;
+    }
+    if (settings.showOmerProgress !== false) {
+      html += `<div class="omer-progress"><div class="omer-progress-fill" style="width:${Math.round(n / 49 * 100)}%"></div></div>`;
+    }
+    panel.innerHTML = html;
+    panel.style.display = '';
+  }
+
+  function initOmer() { updateOmerDisplay(); }
+
   function updateLocation() {
     const v = document.getElementById('locationInput').value.trim();
     if (!v) return;
@@ -2683,7 +2988,9 @@
     const videoInSidebar = !!settings.showVideoEmbed &&
       settings.videoLayout === 'sidebar' &&
       document.getElementById('videoPanel')?.style.display !== 'none';
-    const rightHidden = !!settings.hideWeather && !videoInSidebar;
+    const timerVisible = settings.showTimer !== false &&
+      document.getElementById('timerCol')?.style.display !== 'none';
+    const rightHidden = !!settings.hideWeather && !videoInSidebar && !timerVisible;
     rightWrap.style.display = rightHidden ? 'none' : '';
     if (leftHidden && rightHidden) dashboard.style.gridTemplateColumns = '1fr';
     else if (leftHidden) dashboard.style.gridTemplateColumns = '1fr 290px';
@@ -2710,6 +3017,11 @@
     $('showHolidayCountdown').checked = settings.showHolidayCountdown !== false;
     $('showShabbatTimes').checked = settings.showShabbatTimes !== false;
     $('candleZipInput').value = settings.candleZip || '10001';
+    $('showTimer').checked = settings.showTimer !== false;
+    $('showTimerFullscreen').checked = settings.showTimerFullscreen !== false;
+    $('showOmerCounter').checked = settings.showOmerCounter !== false;
+    $('showOmerEnglish').checked = settings.showOmerEnglish !== false;
+    $('showOmerProgress').checked = settings.showOmerProgress !== false;
     document.querySelector(`input[name="engDateFmt"][value="${settings.engDateFmt}"]`).checked = true;
     $('showEngDOW').checked = settings.showEngDOW;
     $('hideEngDate').checked = settings.hideEngDate;
@@ -2800,6 +3112,32 @@
       else { const el = document.getElementById('shabbatTimes'); if (el) el.style.display = 'none'; }
     });
     document.getElementById('candleZipInput').addEventListener('keydown', e => { if (e.key === 'Enter') updateCandleZip(); });
+    document.getElementById('showTimer').addEventListener('change', e => {
+      settings.showTimer = e.target.checked;
+      applyTimerVisibility();
+      updateDashboardGrid();
+      saveSettingsToStorage();
+    });
+    document.getElementById('showTimerFullscreen').addEventListener('change', e => {
+      settings.showTimerFullscreen = e.target.checked;
+      applyTimerVisibility();
+      saveSettingsToStorage();
+    });
+    document.getElementById('showOmerCounter').addEventListener('change', e => {
+      settings.showOmerCounter = e.target.checked;
+      updateOmerDisplay();
+      saveSettingsToStorage();
+    });
+    document.getElementById('showOmerEnglish').addEventListener('change', e => {
+      settings.showOmerEnglish = e.target.checked;
+      updateOmerDisplay();
+      saveSettingsToStorage();
+    });
+    document.getElementById('showOmerProgress').addEventListener('change', e => {
+      settings.showOmerProgress = e.target.checked;
+      updateOmerDisplay();
+      saveSettingsToStorage();
+    });
     document.querySelectorAll('input[name="engDateFmt"]').forEach(r =>
       r.addEventListener('change', () => { settings.engDateFmt = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
     document.getElementById('showEngDOW').addEventListener('change', e => { settings.showEngDOW = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
@@ -3698,7 +4036,7 @@
     const isDark = document.body.classList.contains('dark');
     localStorage.setItem('hebrewBlender_darkMode', isDark ? '1' : '0');
     document.getElementById('darkBtn').textContent = isDark ? '☀️' : '🌙';
-    if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); }
+    if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); updateOmerDisplay(); }
   }
   function initDark() {
     if (localStorage.getItem('hebrewBlender_darkMode') === '1') {
@@ -3717,6 +4055,7 @@
     const isFs = !!document.fullscreenElement;
     document.body.classList.toggle('fullscreen', isFs);
     document.querySelector('#fsBtn .fs-ico').innerHTML = isFs ? FS_EXIT : FS_ENTER;
+    applyTimerVisibility();
   });
 
   /* ────────── PANEL COLLAPSE ────────── */
@@ -3763,6 +4102,8 @@
     scheduleWeatherRefresh();
     initHolidayCountdown();
     initShabbatWidget();
+    initTimer();
+    initOmer();
     renderPresets();
     checkSchedule();
     setInterval(checkSchedule, 30000);
@@ -3776,6 +4117,7 @@
       renderDaysList();
       fetchHolidays();
       fetchShabbat(false);
+      updateOmerDisplay();
       setTimeout(tick, 24 * 3600 * 1000);
     }, msToMidnight);
   });

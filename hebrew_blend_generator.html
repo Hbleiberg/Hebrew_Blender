@@ -1179,6 +1179,24 @@
   .ws-wordbank-tr  { font-size: 0.72rem; color: var(--muted); font-style: italic; }
   .ws-wordbank-tn  { font-size: 0.78rem; color: var(--gold); font-weight: 600; }
 
+  /* Class Set version label */
+  .ws-version-label { font-size: 0.85rem; font-weight: 700; color: var(--gold); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 2px; }
+
+  /* Crossword */
+  .cw-table { border-collapse: collapse; margin: 0 auto; background: var(--white); }
+  .cw-cell { width: 30px; height: 30px; border: 1px solid var(--text); position: relative;
+    text-align: center; vertical-align: middle; font-family: var(--heb-font); font-size: 1.05rem;
+    color: var(--text); padding: 0; direction: rtl; }
+  .cw-block { background: #1a1a1a; border-color: #1a1a1a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body.dark .cw-block { background: #05070d; border-color: #05070d; }
+  .cw-num { position: absolute; top: 0; right: 1px; font-family: 'Source Sans 3', sans-serif; font-size: 0.5rem; color: var(--muted); line-height: 1; }
+  .cw-letter { display: inline-block; line-height: 30px; }
+  .cw-clues { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+  .cw-clue-title { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); padding-bottom: 3px; margin-bottom: 5px; }
+  .cw-clue { font-size: 0.82rem; line-height: 1.5; }
+  .cw-clue-num { font-weight: 700; color: var(--gold); }
+  .cw-unplaced { margin-top: 12px; font-size: 0.78rem; color: var(--muted); font-style: italic; }
+
   /* Flip cards for vocab drill */
   .rw-flip { perspective: 600px; cursor: pointer; }
   .rw-flip-inner {
@@ -2314,6 +2332,7 @@
                 <button class="rw-drill-btn" data-drill="gematria" onclick="setRealWordDrill('gematria')">Gematria</button>
                 <button class="rw-drill-btn" data-drill="fillvowels" onclick="setRealWordDrill('fillvowels')">Fill Vowels</button>
                 <button class="rw-drill-btn" data-drill="wordsearch" onclick="setRealWordDrill('wordsearch')">Word Search</button>
+                <button class="rw-drill-btn" data-drill="crossword" onclick="setRealWordDrill('crossword')">Crossword</button>
                 <button class="rw-drill-btn" data-drill="numpractice" onclick="setRealWordDrill('numpractice')">Number Practice</button>
               </div>
               <div style="font-size:0.65rem;color:var(--muted);line-height:1.2;">
@@ -2326,6 +2345,7 @@
                 <span id="rwHelpGematria"   class="rw-help" style="display:none;">Each word is shown with a blank line. Students calculate the total Gematria value of the letters.</span>
                 <span id="rwHelpFillvowels" class="rw-help" style="display:none;">Hebrew words shown with nikkud stripped — students write in the vowel marks.</span>
                 <span id="rwHelpWordsearch" class="rw-help" style="display:none;">A printable Hebrew word search puzzle. Pick grid size, word count, and allowed directions.</span>
+                <span id="rwHelpCrossword" class="rw-help" style="display:none;">A printable Hebrew crossword. Words interlock on shared letters; clues are the English meaning or transliteration. Includes a word bank and answer key.</span>
                 <span id="rwHelpNumpractice" class="rw-help" style="display:none;">Hebrew number practice (0–9999). Includes its own options panel.</span>
               </div>
             </div>
@@ -2552,6 +2572,55 @@
                   <label style="display:flex;align-items:center;gap:3px;font-size:0.85rem;cursor:pointer;"><input type="checkbox" class="ws-dir" value="NW" style="accent-color:var(--gold);"> ↖</label>
                 </div>
               </div>
+              <!-- Crossword-only rows -->
+              <div class="rw-cw-only" id="rwCwWordCountRow" style="display:none;align-items:center;gap:8px;">
+                <span style="font-size:0.8rem;flex:1;">Number of Words</span>
+                <select id="cwWordCount" onchange="if(document.getElementById('worksheet').querySelector('.cw-table'))generateRealWords()" style="font-size:0.78rem;padding:3px 6px;">
+                  <option value="6">6</option>
+                  <option value="8">8</option>
+                  <option value="10" selected>10</option>
+                  <option value="12">12</option>
+                  <option value="15">15</option>
+                </select>
+              </div>
+              <div class="rw-cw-only" id="rwCwGridSizeRow" style="display:none;align-items:center;gap:8px;">
+                <span style="font-size:0.8rem;flex:1;">Grid Size</span>
+                <select id="cwGridSize" onchange="if(document.getElementById('worksheet').querySelector('.cw-table'))generateRealWords()" style="font-size:0.78rem;padding:3px 6px;">
+                  <option value="10">10 × 10</option>
+                  <option value="12" selected>12 × 12</option>
+                  <option value="15">15 × 15</option>
+                  <option value="18">18 × 18</option>
+                </select>
+              </div>
+              <div class="rw-cw-only" id="rwCwClueLangRow" style="display:none;flex-direction:column;gap:4px;margin-top:4px;">
+                <div style="font-size:0.72rem;font-weight:600;color:var(--text);">Clue Language</div>
+                <div class="blend-type-selector" style="grid-template-columns:repeat(3,1fr);">
+                  <button type="button" class="rw-drill-btn active" data-cwclue="english" onclick="setCwClueLang('english')">English</button>
+                  <button type="button" class="rw-drill-btn" data-cwclue="translit" onclick="setCwClueLang('translit')">Translit</button>
+                  <button type="button" class="rw-drill-btn" data-cwclue="both" onclick="setCwClueLang('both')">Both</button>
+                </div>
+              </div>
+              <div class="toggle-row rw-cw-only" style="display:none;font-size:0.82rem;">
+                <span>Show Nikkud</span>
+                <label class="toggle" style="transform:scale(0.75);transform-origin:right;">
+                  <input type="checkbox" id="cwShowNikkud" checked onchange="if(document.getElementById('worksheet').querySelector('.cw-table'))generateRealWords()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row rw-cw-only" style="display:none;font-size:0.82rem;">
+                <span>Show Word Bank</span>
+                <label class="toggle" style="transform:scale(0.75);transform-origin:right;">
+                  <input type="checkbox" id="cwShowWordBank" checked onchange="if(document.getElementById('worksheet').querySelector('.cw-table'))generateRealWords()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="toggle-row rw-cw-only" style="display:none;font-size:0.82rem;">
+                <span>Answer Key</span>
+                <label class="toggle" style="transform:scale(0.75);transform-origin:right;">
+                  <input type="checkbox" id="cwAnswerKey" checked onchange="if(document.getElementById('worksheet').querySelector('.cw-table'))generateRealWords()">
+                  <span class="slider"></span>
+                </label>
+              </div>
             </div>
           </div>
 
@@ -2667,6 +2736,13 @@
             <option value="90">90</option>
             <option value="100">100</option>
           </select>
+        </div>
+        <div class="option-row" id="rowClassSet">
+          <div class="option-label">Class Set <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box">Generates multiple unique worksheet versions from the same settings — each with a different random selection and order of blends. Print one per student for variety drills or low-stakes assessment. Each version is labeled 'Version A', 'Version B', etc. in the header.</span></span></div>
+          <div style="display:flex;align-items:center;gap:5px;">
+            <input type="number" id="classSetCount" value="1" min="1" max="40" oninput="onClassSetChange()" style="width:56px;padding:5px 6px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;background:var(--white);color:var(--text);">
+            <span style="font-size:0.78rem;color:var(--muted);">versions</span>
+          </div>
         </div>
         <div class="option-row">
           <div class="option-label">Title</div>
@@ -2834,7 +2910,7 @@
 
     <!-- Generate (desktop) -->
     <div class="desktop-buttons">
-      <button class="btn btn-primary" onclick="generate()">⬡ Generate Worksheet</button>
+      <button class="btn btn-primary" id="generateBtn" onclick="generate()">⬡ Generate Worksheet</button>
       <button class="btn btn-outline" id="regenBtn" onclick="regenerate()" disabled style="opacity:0.4;cursor:not-allowed;">↺ Regenerate</button>
       <button class="btn btn-secondary" id="printBtn" onclick="window.print()" disabled style="opacity:0.4;cursor:not-allowed;">🖨 Print</button>
       <button class="btn btn-outline" id="pdfBtn" onclick="exportPDF()" disabled style="opacity:0.4;cursor:not-allowed;margin-top:8px;">⬇ Export PDF</button>
@@ -3305,6 +3381,9 @@ let colorCodingEnabled = false;
 let colorCodingMode = 'letter'; // 'letter' | 'highlight' | 'underline'
 let nikudColorOverrides = {};
 let blends = [];
+// When Class Set > 1 (standard blends only), holds one independent blend array per
+// version; null = single worksheet. renderWorksheet reads this to lay out all versions.
+let classSetSheets = null;
 let lastShetefItems = null;
 let translitStyle = 'default';
 
@@ -3768,6 +3847,15 @@ function getSettings() {
     wsShowNikkud:          document.getElementById('wsShowNikkud')?.checked,
     wsShowWordBank:        document.getElementById('wsShowWordBank')?.checked,
     wsDirections:          [...document.querySelectorAll('.ws-dir:checked')].map(cb => cb.value),
+    // Class Set (standard blends multi-version)
+    classSetCount:         document.getElementById('classSetCount')?.value,
+    // Crossword
+    cwWordCount:           document.getElementById('cwWordCount')?.value,
+    cwGridSize:            document.getElementById('cwGridSize')?.value,
+    cwShowNikkud:          document.getElementById('cwShowNikkud')?.checked,
+    cwShowWordBank:        document.getElementById('cwShowWordBank')?.checked,
+    cwAnswerKey:           document.getElementById('cwAnswerKey')?.checked,
+    cwClueLang,
     // Font size
     hebFontSize:       document.getElementById('hebFontSizeSlider').value,
     vavAsLetter,
@@ -3963,6 +4051,18 @@ function applySettings(s) {
     const sel = new Set(s.wsDirections);
     document.querySelectorAll('.ws-dir').forEach(cb => { cb.checked = sel.has(cb.value); });
   }
+  // Class Set
+  if (s.classSetCount !== undefined && document.getElementById('classSetCount')) {
+    document.getElementById('classSetCount').value = s.classSetCount;
+    onClassSetChange();
+  }
+  // Crossword
+  if (s.cwWordCount && document.getElementById('cwWordCount'))   document.getElementById('cwWordCount').value = s.cwWordCount;
+  if (s.cwGridSize && document.getElementById('cwGridSize'))     document.getElementById('cwGridSize').value = s.cwGridSize;
+  if (s.cwShowNikkud !== undefined && document.getElementById('cwShowNikkud'))     document.getElementById('cwShowNikkud').checked = s.cwShowNikkud;
+  if (s.cwShowWordBank !== undefined && document.getElementById('cwShowWordBank')) document.getElementById('cwShowWordBank').checked = s.cwShowWordBank;
+  if (s.cwAnswerKey !== undefined && document.getElementById('cwAnswerKey'))       document.getElementById('cwAnswerKey').checked = s.cwAnswerKey;
+  if (s.cwClueLang) setCwClueLang(s.cwClueLang);
 
   // Font size
   if (s.hebFontSize !== undefined) { const sl = document.getElementById('hebFontSizeSlider'); if (sl) { sl.value = s.hebFontSize; setHebFontSize(s.hebFontSize); } }
@@ -6808,6 +6908,7 @@ function autoCols(count) {
 }
 
 function generate(animate = false) {
+  classSetSheets = null;  // reset; only the standard multi-version path sets it
   if (document.getElementById('nameTheLetterToggle')?.checked) {
     generateNameTheLetter();
     return;
@@ -6903,10 +7004,13 @@ function generate(animate = false) {
     return;
   }
 
-  blends = [];
   const excludeRepeats = document.getElementById('excludeRepeats').checked;
+  // One independent draw from the same letter/vowel pool. Called once normally,
+  // or N times for a Class Set so each version differs (Exclude Repeats is per-draw).
+  const drawBlends = () => {
+  const out = [];
   let safetyLimit = count * 50;
-  while (blends.length < count && safetyLimit-- > 0) {
+  while (out.length < count && safetyLimit-- > 0) {
     let vowel  = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
     let first, second, attempts = 0;
     do {
@@ -7014,7 +7118,7 @@ function generate(animate = false) {
       const combined     = effFirstSound + midSound + thirdConsonant;
       const hebrewDisplay = effFirstDisplay + midDisplay + thirdDisplay;
 
-      blends.push({ firstHeb: first, secondHeb: second, thirdHeb: third,
+      out.push({ firstHeb: first, secondHeb: second, thirdHeb: third,
         firstObj, secondObj, thirdObj, vowel, combined, hebrewDisplay, threeLetter: true });
     } else {
       // Silent yud rule: chirik (i) + yud as second letter → yud is silent, don't add its consonant
@@ -7022,14 +7126,26 @@ function generate(animate = false) {
       const effectiveSecondConsonant = (vowel === 'i' && secondIsYud) ? '' : secondConsonant;
       const combined      = firstSound + effectiveSecondConsonant;
       const hebrewDisplay = firstDisplay + secondDisplay;
-      blends.push({ firstHeb: first, secondHeb: second, firstObj, secondObj,
+      out.push({ firstHeb: first, secondHeb: second, firstObj, secondObj,
         vowel, combined, hebrewDisplay, threeLetter: false });
     }
   }
+  return out;
+  };
 
   if (rwOn) {
+    blends = drawBlends();
     generateRealWords();
     return;
+  }
+
+  const classSet = Math.max(1, Math.min(40, parseInt(document.getElementById('classSetCount')?.value) || 1));
+  if (classSet > 1) {
+    classSetSheets = [];
+    for (let v = 0; v < classSet; v++) classSetSheets.push(drawBlends());
+    blends = classSetSheets[0] || [];
+  } else {
+    blends = drawBlends();
   }
   lastShetefItems = { mode: 'blend', items: blends };
   renderWorksheet(animate);
@@ -7365,75 +7481,13 @@ function renderWorksheet(animate = false) {
 
   ws.innerHTML = '';
 
-  // ── PAGE 1: Student Sheet ──
-  const studentSheet = document.createElement('div');
-  studentSheet.className = 'sheet';
-
-  const header = document.createElement('div');
-  header.className = 'ws-header';
-  header.innerHTML = `
-    <div>
-      <div class="ws-title">${title}</div>
-      <div class="ws-subtitle">${subtitle || (fillVowels ? 'Add the nikkud to each blend.' : isInverse ? 'Write the Hebrew blend that matches each sound.' : 'Read each Hebrew blend aloud.')}</div>
-    </div>
-    ${wsMetaHTML()}
-  `;
-  studentSheet.appendChild(header);
-
-  const grid = document.createElement('div');
-  grid.className = 'blends-grid';
-  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-  grid.style.direction = 'rtl';
-  studentSheet.appendChild(grid);
-
-  blends.forEach((b, idx) => {
-    if (isInverse) renderInverseCell(grid, b, idx, false);
-    else renderHebrewCell(grid, b, idx, false, fillVowels);
+  // Standard blend worksheet(s). Class Set > 1 lays out Version A → Key A →
+  // Version B → Key B …; otherwise a single worksheet (+ optional answer key).
+  const versions = (classSetSheets && classSetSheets.length > 1) ? classSetSheets : [blends];
+  versions.forEach((arr, vi) => {
+    const label = versions.length > 1 ? versionLabelText(vi) : null;
+    appendStandardBlendSheets(ws, arr, { isInverse, fillVowels, showAnswers, title, subtitle }, label);
   });
-
-  const footer = document.createElement('div');
-  footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-  footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${blends.length} blends · Hebrew Blend Generator</span>`;
-  studentSheet.appendChild(footer);
-  ws.appendChild(studentSheet);
-
-  // ── PAGE 2: Answer Key ──
-  if (showAnswers) {
-    const answerSheet = document.createElement('div');
-    answerSheet.className = 'sheet answer-key-sheet';
-
-    const akBanner = document.createElement('div');
-    akBanner.className = 'answer-key-banner';
-    akBanner.textContent = '✦ Answer Key ✦';
-    answerSheet.appendChild(akBanner);
-
-    const akHeader = document.createElement('div');
-    akHeader.className = 'ws-header';
-    akHeader.innerHTML = `
-      <div>
-        <div class="ws-title">${title}</div>
-        <div class="ws-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div>
-      </div>
-    `;
-    answerSheet.appendChild(akHeader);
-
-    const akGrid = document.createElement('div');
-    akGrid.className = 'blends-grid';
-    akGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-    akGrid.style.direction = 'rtl';
-    answerSheet.appendChild(akGrid);
-
-    blends.forEach((b, idx) => {
-      if (isInverse) renderInverseCell(akGrid, b, idx, true);
-      else renderHebrewCell(akGrid, b, idx, true);
-    });
-
-    const akFooter = document.createElement('div');
-    akFooter.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-    akFooter.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${blends.length} blends · Hebrew Blend Generator — Answer Key</span>`;
-    answerSheet.appendChild(akFooter);
-    ws.appendChild(answerSheet);
-  }
 
   // Shuffle animation
   if (animate) {
@@ -7442,6 +7496,87 @@ function renderWorksheet(animate = false) {
       cell.classList.add('shuffling');
       cell.addEventListener('animationend', () => cell.classList.remove('shuffling'), { once: true });
     });
+  }
+}
+
+// "Version A" / "Version B" … or "גרסה א" / "גרסה ב" … under an עברית header.
+function versionLabelText(i) {
+  if (headerLang === 'he') {
+    const he = ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','כ','ל','מ','נ','ס','ע','פ','צ','ק','ר','ש','ת'];
+    return 'גרסה ' + (he[i] || (i + 1));
+  }
+  let s = '', n = i;
+  do { s = String.fromCharCode(65 + (n % 26)) + s; n = Math.floor(n / 26) - 1; } while (n >= 0);
+  return 'Version ' + s;
+}
+
+// Appends one standard blend student sheet (+ its answer key when enabled) for a
+// given blend array, with an optional version label in the header. Used for both the
+// single-worksheet path and each Class Set version.
+function appendStandardBlendSheets(ws, arr, ctx, versionLabel) {
+  const { isInverse, fillVowels, showAnswers, title, subtitle } = ctx;
+  const cols = autoCols(arr.length);
+  const verHtml = versionLabel ? `<div class="ws-version-label">${versionLabel}</div>` : '';
+
+  const studentSheet = document.createElement('div');
+  studentSheet.className = 'sheet';
+  const header = document.createElement('div');
+  header.className = 'ws-header';
+  header.innerHTML = `
+    <div>
+      ${verHtml}
+      <div class="ws-title">${title}</div>
+      <div class="ws-subtitle">${subtitle || (fillVowels ? 'Add the nikkud to each blend.' : isInverse ? 'Write the Hebrew blend that matches each sound.' : 'Read each Hebrew blend aloud.')}</div>
+    </div>
+    ${wsMetaHTML()}
+  `;
+  studentSheet.appendChild(header);
+  const grid = document.createElement('div');
+  grid.className = 'blends-grid';
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  grid.style.direction = 'rtl';
+  studentSheet.appendChild(grid);
+  arr.forEach((b, idx) => {
+    if (isInverse) renderInverseCell(grid, b, idx, false);
+    else renderHebrewCell(grid, b, idx, false, fillVowels);
+  });
+  const footer = document.createElement('div');
+  footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${arr.length} blends · Hebrew Blend Generator</span>`;
+  studentSheet.appendChild(footer);
+  ws.appendChild(studentSheet);
+
+  if (showAnswers) {
+    const answerSheet = document.createElement('div');
+    answerSheet.className = 'sheet answer-key-sheet';
+    const akBanner = document.createElement('div');
+    akBanner.className = 'answer-key-banner';
+    akBanner.textContent = versionLabel ? `✦ Answer Key — ${versionLabel} ✦` : '✦ Answer Key ✦';
+    answerSheet.appendChild(akBanner);
+    const akHeader = document.createElement('div');
+    akHeader.className = 'ws-header';
+    akHeader.innerHTML = `
+      <div>
+        ${verHtml}
+        <div class="ws-title">${title}</div>
+        <div class="ws-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div>
+      </div>
+    `;
+    answerSheet.appendChild(akHeader);
+    const akGrid = document.createElement('div');
+    akGrid.className = 'blends-grid';
+    akGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    akGrid.style.direction = 'rtl';
+    answerSheet.appendChild(akGrid);
+    arr.forEach((b, idx) => {
+      if (isInverse) renderInverseCell(akGrid, b, idx, true);
+      else renderHebrewCell(akGrid, b, idx, true);
+    });
+    const akFooter = document.createElement('div');
+    akFooter.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+    akFooter.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${arr.length} blends · Hebrew Blend Generator — Answer Key</span>`;
+    answerSheet.appendChild(akFooter);
+    ws.appendChild(answerSheet);
   }
 }
 
@@ -7710,6 +7845,20 @@ function isImpossibleCombo(first, second, third, vowel) {
 // ══════════════════════════════════════════════
 let REAL_WORDS = [];
 let rwDrillType = 'reading';
+let cwClueLang = 'english'; // Crossword clue language: 'english' | 'translit' | 'both'
+
+// Update the Generate button label when Class Set changes.
+function onClassSetChange() {
+  const n = Math.max(1, Math.min(40, parseInt(document.getElementById('classSetCount')?.value) || 1));
+  const btn = document.getElementById('generateBtn');
+  if (btn) btn.textContent = n > 1 ? `⬡ Generate Class Set (${n} versions)` : '⬡ Generate Worksheet';
+}
+
+function setCwClueLang(lang) {
+  cwClueLang = lang;
+  document.querySelectorAll('[data-cwclue]').forEach(b => b.classList.toggle('active', b.dataset.cwclue === lang));
+  if (document.getElementById('worksheet').querySelector('.cw-table')) generateRealWords();
+}
 
 // ── REAL WORDS UI TOGGLE ──
 // ── CUSTOM WORDLIST ──
@@ -8258,7 +8407,7 @@ function setRealWordDrill(type) {
   // Mix-with-blends doesn't make sense for these drills. Identify auto-mixes;
   // bingo/gematria/fillvowels/wordsearch never mix.
   const mixedRow = document.getElementById('rwMixedRow');
-  const mixedHidden = (type === 'identify' || type === 'bingo' || type === 'gematria' || type === 'fillvowels' || type === 'wordsearch');
+  const mixedHidden = (type === 'identify' || type === 'bingo' || type === 'gematria' || type === 'fillvowels' || type === 'wordsearch' || type === 'crossword');
   if (mixedRow) mixedRow.style.display = mixedHidden ? 'none' : '';
   const mixedCb = document.getElementById('rwMixed');
   if (mixedCb) {
@@ -8323,6 +8472,7 @@ function setRealWordDrill(type) {
   const isIdent = type === 'identify';
   const isIdpos = type === 'idpos';
   const isWs    = type === 'wordsearch';
+  const isCw    = type === 'crossword';
   document.querySelectorAll('.rw-gem-only').forEach(el => el.style.display = isGem ? '' : 'none');
   document.querySelectorAll('.rw-fv-only').forEach(el => el.style.display = isFv ? '' : 'none');
   document.querySelectorAll('.rw-idpos-only').forEach(el => el.style.display = isIdpos ? '' : 'none');
@@ -8331,10 +8481,14 @@ function setRealWordDrill(type) {
     const tag = el.tagName === 'DIV' && el.classList.contains('toggle-row') ? '' : (el.id === 'rwWsDirectionsRow' ? 'flex' : 'flex');
     el.style.display = isWs ? tag : 'none';
   });
+  document.querySelectorAll('.rw-cw-only').forEach(el => {
+    const tag = el.classList.contains('toggle-row') ? '' : 'flex';
+    el.style.display = isCw ? tag : 'none';
+  });
   document.querySelectorAll('.rw-display-only').forEach(el => { el.style.display = ''; });
-  // Word Search has its own word-count select — hide the standard one.
+  // Word Search and Crossword have their own word-count selects — hide the standard one.
   const countRow = document.getElementById('rwCountRow');
-  if (countRow) countRow.style.display = isWs ? 'none' : 'flex';
+  if (countRow) countRow.style.display = (isWs || isCw) ? 'none' : 'flex';
   toggleRwTranslitPageRow(); toggleRwTranslPageRow();
   _relocateStarRealRow(isIdent);
   _relocatePosFilter(isIdpos);
@@ -8605,6 +8759,12 @@ function generateRealWords() {
 
   if (drill === 'wordsearch') {
     generateWordSearch(pool);
+    enableButtons();
+    return;
+  }
+
+  if (drill === 'crossword') {
+    generateCrossword(pool);
     enableButtons();
     return;
   }
@@ -8978,6 +9138,270 @@ function generateWordSearch(pool) {
   ws.appendChild(ak);
 
   lastShetefItems = { mode: 'real', items: placedWords };
+}
+
+// ── CROSSWORD ──
+function generateCrossword(pool) {
+  const ws = document.getElementById('worksheet');
+  ws.innerHTML = '';
+  const gridSize   = parseInt(document.getElementById('cwGridSize').value) || 12;
+  const wantCount  = parseInt(document.getElementById('cwWordCount').value) || 10;
+  const showNikkud = document.getElementById('cwShowNikkud').checked;
+  const showBank   = document.getElementById('cwShowWordBank').checked;
+  const showKey    = document.getElementById('cwAnswerKey').checked;
+  const clueLang   = cwClueLang;
+
+  const clueFor = (w) => {
+    const tr = w.translitDisplay ?? w.translit ?? '';
+    if (clueLang === 'translit') return tr;
+    if (clueLang === 'both') return [w.translation, tr].filter(Boolean).join(' / ');
+    return w.translation || '';
+  };
+  const candidatesAll = rwShuffle(pool).map(w => {
+    const display = showNikkud ? w.heb : stripNikud(w.heb);
+    const cells = splitHebLetters(display);
+    const bases = cells.map(c => stripNikud(c));
+    return { ...w, display, cells, bases, clue: clueFor(w) };
+  }).filter(w => w.cells.length >= 2 && w.cells.length <= gridSize && w.clue);
+
+  // De-dupe by base skeleton, and gather a generous superset so short words have
+  // enough partners to interlock; we still place only up to wantCount.
+  const seen = new Set();
+  const candidates = [];
+  const poolCap = Math.max(wantCount * 6, 60);
+  for (const w of candidatesAll) {
+    const key = w.bases.join('');
+    if (seen.has(key)) continue;
+    seen.add(key);
+    candidates.push(w);
+    if (candidates.length >= poolCap) break;
+  }
+  candidates.sort((a, b) => b.cells.length - a.cells.length);
+
+  const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(null));
+  const placements = [];
+  const center = (gridSize - 1) / 2;
+  const inBounds = (r, c) => r >= 0 && r < gridSize && c >= 0 && c < gridSize;
+
+  function cellsFor(word, r, c, dir) {
+    const out = [];
+    for (let i = 0; i < word.cells.length; i++) {
+      out.push([dir === 'down' ? r + i : r, dir === 'across' ? c - i : c]); // across = RTL
+    }
+    return out;
+  }
+  function validPlacement(word, r, c, dir) {
+    const cells = cellsFor(word, r, c, dir);
+    let crossings = 0;
+    const [sr, sc] = cells[0], [er, ec] = cells[cells.length - 1];
+    const beforeR = dir === 'down' ? sr - 1 : sr, beforeC = dir === 'across' ? sc + 1 : sc;
+    const afterR  = dir === 'down' ? er + 1 : er, afterC  = dir === 'across' ? ec - 1 : ec;
+    if (inBounds(beforeR, beforeC) && grid[beforeR][beforeC]) return null;
+    if (inBounds(afterR, afterC)  && grid[afterR][afterC])  return null;
+    for (let i = 0; i < cells.length; i++) {
+      const [rr, cc] = cells[i];
+      if (!inBounds(rr, cc)) return null;
+      const existing = grid[rr][cc];
+      if (existing) {
+        if (existing.base !== word.bases[i]) return null;
+        crossings++;
+      } else {
+        if (dir === 'across') {
+          if (inBounds(rr - 1, cc) && grid[rr - 1][cc]) return null;
+          if (inBounds(rr + 1, cc) && grid[rr + 1][cc]) return null;
+        } else {
+          if (inBounds(rr, cc - 1) && grid[rr][cc - 1]) return null;
+          if (inBounds(rr, cc + 1) && grid[rr][cc + 1]) return null;
+        }
+      }
+    }
+    return { cells, crossings };
+  }
+  function commit(word, r, c, dir, cells) {
+    for (let i = 0; i < cells.length; i++) {
+      const [rr, cc] = cells[i];
+      grid[rr][cc] = { ch: word.cells[i], base: word.bases[i] };
+    }
+    placements.push({ word, r, c, dir, cells });
+  }
+  function scorePlacement(cells, crossings) {
+    let dist = 0;
+    for (const [rr, cc] of cells) dist += Math.abs(rr - center) + Math.abs(cc - center);
+    return crossings * 100 - dist / cells.length;
+  }
+  function tryPlaceWord(word) {
+    if (placements.length === 0) {
+      const r = Math.round(center);
+      const startC = Math.min(gridSize - 1, Math.round(center + (word.cells.length - 1) / 2));
+      let v = validPlacement(word, r, startC, 'across');
+      if (v) { commit(word, r, startC, 'across', v.cells); return true; }
+      for (let cc = word.cells.length - 1; cc < gridSize; cc++) {
+        v = validPlacement(word, r, cc, 'across');
+        if (v) { commit(word, r, cc, 'across', v.cells); return true; }
+      }
+      return false;
+    }
+    let best = null;
+    for (const p of placements) {
+      for (const [pr, pc] of p.cells) {
+        const pbase = grid[pr][pc].base;
+        for (let wi = 0; wi < word.bases.length; wi++) {
+          if (word.bases[wi] !== pbase) continue;
+          const dir = p.dir === 'across' ? 'down' : 'across';
+          const r = dir === 'down' ? pr - wi : pr;
+          const c = dir === 'across' ? pc + wi : pc;
+          const v = validPlacement(word, r, c, dir);
+          if (!v || v.crossings === 0) continue;
+          const sc = scorePlacement(v.cells, v.crossings);
+          if (!best || sc > best.sc) best = { r, c, dir, cells: v.cells, sc };
+        }
+      }
+    }
+    if (best) { commit(word, best.r, best.c, best.dir, best.cells); return true; }
+    return false;
+  }
+
+  const placedWords = [];
+  const setAside = [];
+  for (const w of candidates) {
+    if (placedWords.length >= wantCount) break;
+    if (tryPlaceWord(w)) placedWords.push(w); else setAside.push(w);
+  }
+  const unplaced = [];
+  for (const w of setAside) {
+    if (placedWords.length >= wantCount) break;
+    if (tryPlaceWord(w)) placedWords.push(w); else unplaced.push(w);
+  }
+
+  if (placedWords.length < 4) {
+    ws.innerHTML = '<div class="empty-state"><h2>Too few words intersect — try a larger grid or more words.</h2></div>';
+    return;
+  }
+
+  // Numbering: scan start cells row asc, then col desc (RTL = right first).
+  const startKeys = placements.map(p => p.cells[0][0] * 1000 + p.cells[0][1]);
+  const uniqStarts = [...new Set(startKeys)].sort((a, b) => {
+    const ra = Math.floor(a / 1000), ca = a % 1000, rb = Math.floor(b / 1000), cb = b % 1000;
+    return ra - rb || cb - ca;
+  });
+  const numFor = new Map();
+  uniqStarts.forEach((k, i) => numFor.set(k, i + 1));
+
+  const acrossClues = [], downClues = [];
+  placements.forEach(p => {
+    const num = numFor.get(p.cells[0][0] * 1000 + p.cells[0][1]);
+    const entry = { num, clue: p.word.clue, heb: p.word.heb };
+    (p.dir === 'across' ? acrossClues : downClues).push(entry);
+  });
+  acrossClues.sort((a, b) => a.num - b.num);
+  downClues.sort((a, b) => a.num - b.num);
+
+  renderCrossword({ grid, gridSize, numFor, acrossClues, downClues, placedWords, unplaced, showBank, showKey });
+}
+
+function renderCrossword(d) {
+  const ws = document.getElementById('worksheet');
+  const title = document.getElementById('wsTitle').value || 'Hebrew Crossword';
+  const subtitle = document.getElementById('wsSubtitle').value;
+
+  function buildTable(showLetters) {
+    const tbl = document.createElement('table');
+    tbl.className = 'cw-table';
+    for (let r = 0; r < d.gridSize; r++) {
+      const tr = document.createElement('tr');
+      for (let c = 0; c < d.gridSize; c++) {
+        const td = document.createElement('td');
+        const cell = d.grid[r][c];
+        if (!cell) { td.className = 'cw-cell cw-block'; }
+        else {
+          td.className = 'cw-cell';
+          const num = d.numFor.get(r * 1000 + c);
+          if (num) { const s = document.createElement('span'); s.className = 'cw-num'; s.textContent = num; td.appendChild(s); }
+          if (showLetters) { const l = document.createElement('span'); l.className = 'cw-letter'; l.textContent = cell.ch; td.appendChild(l); }
+        }
+        tr.appendChild(td);
+      }
+      tbl.appendChild(tr);
+    }
+    return tbl;
+  }
+  function clueList(name, arr) {
+    const box = document.createElement('div');
+    box.className = 'cw-cluelist';
+    let html = `<div class="cw-clue-title">${name}</div>`;
+    arr.forEach(e => { html += `<div class="cw-clue"><span class="cw-clue-num">${e.num}.</span> ${e.clue}</div>`; });
+    box.innerHTML = html;
+    return box;
+  }
+  function wordBank() {
+    const wb = document.createElement('div');
+    wb.className = 'ws-wordbank';
+    wb.innerHTML = '<div class="ws-wordbank-title">Word Bank</div>';
+    rwShuffle(d.placedWords).forEach(w => {
+      const item = document.createElement('div');
+      item.className = 'ws-wordbank-item';
+      item.innerHTML = `<span class="ws-wordbank-heb">${w.heb}</span>`;
+      wb.appendChild(item);
+    });
+    return wb;
+  }
+  function footer(text) {
+    const f = document.createElement('div');
+    f.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+    f.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${text}</span>`;
+    return f;
+  }
+
+  ws.innerHTML = '';
+  const sheet = document.createElement('div');
+  sheet.className = 'sheet';
+  const header = document.createElement('div');
+  header.className = 'ws-header';
+  header.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle">${subtitle || 'Fill in the Hebrew words using the clues.'}</div></div>${wsMetaHTML()}`;
+  sheet.appendChild(header);
+  const gridWrap = document.createElement('div');
+  gridWrap.style.cssText = 'display:flex;justify-content:center;margin:12px 0;';
+  gridWrap.appendChild(buildTable(false));
+  sheet.appendChild(gridWrap);
+  const clues = document.createElement('div');
+  clues.className = 'cw-clues';
+  clues.appendChild(clueList('Across', d.acrossClues));
+  clues.appendChild(clueList('Down', d.downClues));
+  sheet.appendChild(clues);
+  if (d.showBank) sheet.appendChild(wordBank());
+  if (d.unplaced.length) {
+    const np = document.createElement('div');
+    np.className = 'cw-unplaced';
+    np.textContent = 'Not placed: ' + d.unplaced.map(w => w.heb).join(' · ');
+    sheet.appendChild(np);
+  }
+  sheet.appendChild(footer(`${d.placedWords.length} words · Hebrew Blend Generator`));
+  ws.appendChild(sheet);
+
+  if (d.showKey) {
+    const ak = document.createElement('div');
+    ak.className = 'sheet answer-key-sheet';
+    const banner = document.createElement('div');
+    banner.className = 'answer-key-banner';
+    banner.textContent = '✦ Answer Key ✦';
+    ak.appendChild(banner);
+    const akHeader = document.createElement('div');
+    akHeader.className = 'ws-header';
+    akHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>`;
+    ak.appendChild(akHeader);
+    const akWrap = document.createElement('div');
+    akWrap.style.cssText = 'display:flex;justify-content:center;margin:12px 0;';
+    akWrap.appendChild(buildTable(true));
+    ak.appendChild(akWrap);
+    const akClues = document.createElement('div');
+    akClues.className = 'cw-clues';
+    akClues.appendChild(clueList('Across', d.acrossClues));
+    akClues.appendChild(clueList('Down', d.downClues));
+    ak.appendChild(akClues);
+    ak.appendChild(footer(`${d.placedWords.length} words · Hebrew Blend Generator — Crossword Answer Key`));
+    ws.appendChild(ak);
+  }
+  lastShetefItems = { mode: 'real', items: d.placedWords };
 }
 
 function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnOnKey) {
