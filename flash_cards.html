@@ -1392,8 +1392,8 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
         <button type="button" id="ivritModeManual" class="ivrit-mode-btn" onclick="setIvritMode('manual')">Manual Input</button>
       </div>
       <div id="ivritAuto">
-        <div class="sub" style="margin-bottom:8px;">Save all your presets and current settings to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it.</div>
-        <button class="btn sm" type="button" onclick="ivritSaveFile()" style="width:100%;margin-bottom:10px;">⬇ Save to .ivrit file</button>
+        <div class="sub" style="margin-bottom:8px;">Save your data to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it. Use the toggle below to choose what's included.</div>
+        <button class="btn sm" type="button" onclick="flashBackupSave()" style="width:100%;margin-bottom:10px;">⬇ Save to .ivrit file</button>
         <div id="ivritDrop" class="ivrit-drop">
           <div style="font-size:0.85rem;">Drop a <b>.ivrit</b> file here</div>
           <div class="sub" style="margin:4px 0;">— or —</div>
@@ -1410,20 +1410,13 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
           <button class="btn sm ghost" id="copyBtn">Copy</button>
         </div>
       </div>
+      <!-- What to include in the .ivrit backup -->
+      <div class="sub" style="margin:12px 0 4px;font-weight:600;">Include in backup:</div>
+      <div class="ivrit-mode-toggle" style="margin-bottom:0;">
+        <button type="button" id="backupScopePresets" class="ivrit-mode-btn" onclick="setBackupScope('presets')">Presets</button>
+        <button type="button" id="backupScopeProfiles" class="ivrit-mode-btn" onclick="setBackupScope('profiles')">Profiles</button>
+        <button type="button" id="backupScopeBoth" class="ivrit-mode-btn active" onclick="setBackupScope('both')">Both</button>
       </div>
-
-      <!-- Backup Results / Profiles -->
-      <div class="label adv-subhead" style="margin-top:18px;">Backup Results / Profiles</div>
-      <div class="adv-subbody" id="profilesAuto">
-        <div class="sub" style="margin-bottom:8px;">Save <b>all student profiles and their saved results</b> to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it.</div>
-        <button class="btn sm" type="button" onclick="profilesSaveFile()" style="width:100%;margin-bottom:10px;">⬇ Save profiles to .ivrit file</button>
-        <div id="profilesDrop" class="ivrit-drop">
-          <div style="font-size:0.85rem;">Drop a profiles <b>.ivrit</b> file here</div>
-          <div class="sub" style="margin:4px 0;">— or —</div>
-          <button class="btn sm" type="button" onclick="document.getElementById('profilesFileInput').click()">Browse…</button>
-          <input type="file" id="profilesFileInput" accept=".ivrit,application/json,text/plain" style="display:none;">
-        </div>
-        <div id="profilesStatus" class="sub" style="margin-top:8px;min-height:1em;text-align:center;"></div>
       </div>
     </div>
   </div>
@@ -3394,17 +3387,30 @@ function openWeaknessView(name) {
   ov.addEventListener('click', e => { if (e.target === ov) close(); });
 }
 
-/* ── Profiles .ivrit backup (all profiles in one file; reuses the shared engine helpers) ── */
-function profilesStatus(msg) { const el = document.getElementById('profilesStatus'); if (el) el.textContent = msg || ''; }
-function profilesSaveFile() {
-  const payload = { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: 'FlashCardsProfiles', savedAt: new Date().toISOString(), data: { flashCardProfiles: readProfiles() } };
+/* ── Unified .ivrit backup scope (Presets / Profiles / Both) ── */
+let backupScope = 'both';
+function setBackupScope(scope) {
+  backupScope = scope;
+  ['presets', 'profiles', 'both'].forEach(s => {
+    const btn = document.getElementById('backupScope' + s.charAt(0).toUpperCase() + s.slice(1));
+    if (btn) btn.classList.toggle('active', s === scope);
+  });
+}
+// Save a .ivrit file containing whatever the scope toggle selects. Reuses the
+// shared envelope/format and helpers without modifying the shared engine block.
+function flashBackupSave() {
+  const data = {};
+  if (backupScope === 'presets' || backupScope === 'both') { data.presets = readPresets(); data.liveState = getSettings(); }
+  if (backupScope === 'profiles' || backupScope === 'both') { data.flashCardProfiles = readProfiles(); }
+  const suffix = backupScope === 'profiles' ? '_Profiles' : backupScope === 'both' ? '_All' : '';
+  const payload = { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: IVRIT_CFG.tool, savedAt: new Date().toISOString(), data };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = ivritDateStamp() + '_Flashcards_Profiles.ivrit';
+  a.href = url; a.download = ivritDateStamp() + '_FlashCards' + suffix + '.ivrit';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 1500);
-  profilesStatus('Saved ' + a.download);
+  ivritStatus('Saved ' + a.download);
 }
 // Deep-merge an incoming {activeProfile, profiles} blob into the stored one
 function mergeProfilesBlob(incoming, mode) {
@@ -3426,43 +3432,6 @@ function mergeProfilesBlob(incoming, mode) {
   if (inc.activeProfile && base.profiles[inc.activeProfile]) base.activeProfile = inc.activeProfile;
   if (!base.activeProfile) base.activeProfile = Object.keys(base.profiles)[0] || null;
   writeProfiles(base);
-}
-async function profilesRestore(text, sourceName) {
-  let parsed;
-  try { parsed = JSON.parse(text); }
-  catch (e) { alert('That file could not be read as a .ivrit save file.'); return; }
-  // Accept a dedicated profiles file, an AllTools bundle, or a raw profiles blob
-  let incoming = null;
-  if (parsed && parsed.format === 'ivrit-save' && parsed.data) {
-    incoming = parsed.data.flashCardProfiles || (parsed.data.profiles ? parsed.data : null);
-  } else if (parsed && parsed.profiles) {
-    incoming = parsed;
-  }
-  if (!incoming || !incoming.profiles) { alert('That file has no Flash Cards profile data.'); return; }
-  const mode = await ivritAskMode();
-  if (!mode) return;
-  try { mergeProfilesBlob(incoming, mode); }
-  catch (e) { alert('Restore failed: ' + e.message); return; }
-  renderProfiles();
-  profilesStatus('Restored from ' + (sourceName || 'file'));
-  alert('Profiles restored successfully' + (sourceName ? ' from ' + sourceName : '') + '.');
-}
-function profilesReadFile(file) {
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = () => profilesRestore(reader.result, file.name);
-  reader.onerror = () => alert('Could not read that file.');
-  reader.readAsText(file);
-}
-function initProfilesBackup() {
-  const input = document.getElementById('profilesFileInput');
-  if (input) input.addEventListener('change', e => { profilesReadFile(e.target.files[0]); e.target.value = ''; });
-  const drop = document.getElementById('profilesDrop');
-  if (drop) {
-    ['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); drop.classList.add('ivrit-drag'); }));
-    ['dragleave','dragend'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); drop.classList.remove('ivrit-drag'); }));
-    drop.addEventListener('drop', e => { e.preventDefault(); e.stopPropagation(); drop.classList.remove('ivrit-drag'); profilesReadFile(e.dataTransfer.files[0]); });
-  }
 }
 
 function wireProfilesPanel() {
@@ -3513,6 +3482,11 @@ const IVRIT_CFG = {
       renderPresets();
     }
     if (data.liveState) { applySettings(data.liveState); saveSettings(); }
+    // Restore student profiles too, when the file includes them
+    if (data.flashCardProfiles && data.flashCardProfiles.profiles) {
+      mergeProfilesBlob(data.flashCardProfiles, mode);
+      renderProfiles();
+    }
   }
 };
 
@@ -4589,7 +4563,6 @@ document.addEventListener('DOMContentLoaded', () => {
   setCardCount(cardCount);
   renderPresets();
   renderProfiles();
-  initProfilesBackup();
   wireProfilesPanel();
   initAdvSubCollapse();
   initPanelCollapse();
