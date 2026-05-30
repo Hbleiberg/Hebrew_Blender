@@ -1032,7 +1032,10 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
         <div class="label" style="font-weight:600;margin:12px 0 4px;">Results History — <span id="profileDetailName"></span></div>
         <ul class="results-list" id="profileHistory" style="margin-top:0;"></ul>
         <p class="sub" id="profileHistoryEmpty" style="display:none;">No saved results yet for this profile.</p>
-        <button class="btn gold" id="weaknessesBtn" style="width:100%;margin-top:8px;">🎯 Practice My Weaknesses</button>
+        <div class="btn-row" style="margin-top:8px;">
+          <button class="btn gold" id="weaknessesBtn" style="flex:1;">🎯 Practice My Weaknesses</button>
+          <button class="btn" id="viewWeaknessesBtn" style="flex:1;">📊 View Weaknesses</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1334,26 +1337,30 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
       <hr class="soft" />
 
       <!-- Transliteration -->
-      <div class="label" style="font-weight:600; margin-bottom:4px">Transliteration</div>
-      <select id="translitStyleSelect" onchange="onTranslitStyleChange(this.value)"
-              style="width:100%;font-size:0.85rem;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;">
-        <option value="default">Default (built-in)</option>
-        <option value="sbl">SBL Academic</option>
-        <option value="brill">Brill Academic</option>
-        <option value="modernIsraeli">Modern Israeli</option>
-        <option value="ashkenazi">Ashkenazi</option>
-        <option value="simpleStressed">Simple Stressed</option>
-      </select>
-      <div id="translitLoadStatus" style="font-size:0.7rem;color:var(--muted);min-height:1em;text-align:center;margin-top:4px;"></div>
-      <div style="font-size:0.65rem;color:var(--muted);text-align:center;line-height:1.4;margin-top:4px;">
-        Powered by <a href="https://github.com/charlesLoder/hebrew-transliteration" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">hebrew-transliteration</a> by Charles Loder
+      <div class="label adv-subhead">Transliteration</div>
+      <div class="adv-subbody">
+        <select id="translitStyleSelect" onchange="onTranslitStyleChange(this.value)"
+                style="width:100%;font-size:0.85rem;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;">
+          <option value="default">Default (built-in)</option>
+          <option value="sbl">SBL Academic</option>
+          <option value="brill">Brill Academic</option>
+          <option value="modernIsraeli">Modern Israeli</option>
+          <option value="ashkenazi">Ashkenazi</option>
+          <option value="simpleStressed">Simple Stressed</option>
+        </select>
+        <div id="translitLoadStatus" style="font-size:0.7rem;color:var(--muted);min-height:1em;text-align:center;margin-top:4px;"></div>
+        <div style="font-size:0.65rem;color:var(--muted);text-align:center;line-height:1.4;margin-top:4px;">
+          Powered by <a href="https://github.com/charlesLoder/hebrew-transliteration" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">hebrew-transliteration</a> by Charles Loder
+        </div>
       </div>
 
       <hr class="soft" />
 
       <!-- Font selector -->
-      <div class="label" style="font-weight:600; margin-bottom:4px">Hebrew Font</div>
-      <div class="font-grid" id="fontGrid"></div>
+      <div class="label adv-subhead">Hebrew Font</div>
+      <div class="adv-subbody">
+        <div class="font-grid" id="fontGrid"></div>
+      </div>
 
       <hr class="soft" />
 
@@ -1366,14 +1373,20 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
       <hr class="soft" />
 
       <!-- Backup -->
-      <div class="label" style="font-weight:600; margin-bottom:4px">Backup Presets</div>
+      <div class="label adv-subhead">Backup Presets</div>
       <style>
         .ivrit-mode-toggle{display:flex;border:1px solid var(--border,#ccc);border-radius:6px;overflow:hidden;margin-bottom:10px;}
         .ivrit-mode-btn{flex:1;padding:6px 4px;border:none;background:var(--white,#fff);color:var(--text,#222);font-family:inherit;font-size:0.74rem;cursor:pointer;}
         .ivrit-mode-btn.active{background:var(--navy,#1a2744);color:#fff;}
         .ivrit-drop{border:2px dashed var(--border,#ccc);border-radius:8px;padding:14px 10px;text-align:center;transition:all 0.15s;}
         .ivrit-drop.ivrit-drag{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
+        /* Collapsible sub-section headings inside Advanced Settings */
+        .adv-subhead{display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;font-weight:600;margin-bottom:4px;}
+        .adv-subhead::after{content:'▾';color:var(--gold);font-size:0.9rem;transition:transform 0.2s;flex-shrink:0;}
+        .adv-subhead.collapsed::after{transform:rotate(-90deg);}
+        .adv-subbody.collapsed{display:none;}
       </style>
+      <div class="adv-subbody">
       <div class="ivrit-mode-toggle">
         <button type="button" id="ivritModeAuto" class="ivrit-mode-btn active" onclick="setIvritMode('auto')">Automatic Input</button>
         <button type="button" id="ivritModeManual" class="ivrit-mode-btn" onclick="setIvritMode('manual')">Manual Input</button>
@@ -1397,10 +1410,11 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
           <button class="btn sm ghost" id="copyBtn">Copy</button>
         </div>
       </div>
+      </div>
 
       <!-- Backup Results / Profiles -->
-      <div class="label" style="font-weight:600; margin:18px 0 4px">Backup Results / Profiles</div>
-      <div id="profilesAuto">
+      <div class="label adv-subhead" style="margin-top:18px;">Backup Results / Profiles</div>
+      <div class="adv-subbody" id="profilesAuto">
         <div class="sub" style="margin-bottom:8px;">Save <b>all student profiles and their saved results</b> to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it.</div>
         <button class="btn sm" type="button" onclick="profilesSaveFile()" style="width:100%;margin-bottom:10px;">⬇ Save profiles to .ivrit file</button>
         <div id="profilesDrop" class="ivrit-drop">
@@ -3178,9 +3192,12 @@ function renderProfileHistory(name) {
       histList.appendChild(li);
     });
   }
-  // Enable weakness practice only when there are missed cards
+  // Enable weakness practice only when there are missed cards; the view is
+  // available whenever there's any saved result to analyze.
   const missed = collectMissedCards(name);
   weakBtn.disabled = missed.length === 0;
+  const viewBtn = document.getElementById('viewWeaknessesBtn');
+  if (viewBtn) viewBtn.disabled = results.length === 0;
 }
 
 // Gather missed (score !== true) cards across a profile's results, ranked by miss frequency
@@ -3216,6 +3233,165 @@ function practiceWeaknesses(name) {
   renderCurrentCard();
   showScreen('screenCard');
   startTimer();
+}
+
+/* ── Weakness analysis (vowels / letters / letter+vowel) ── */
+const WEAK_DAGESH_MARKS = new Set(['ּ', 'ׁ', 'ׂ']); // dagesh, shin dot, sin dot
+const WEAK_VOWEL_INFO = Object.fromEntries(VOWEL_COLOR_DEFS.map(d => [d.key, { name: d.name, example: d.example }]));
+const WEAK_LETTER_BY_FORM = (() => { const m = {}; LETTERS.forEach(L => { if (!m[L.heb]) m[L.heb] = L.name; }); return m; })();
+const WEAK_VOWEL_MARK = (() => { const m = {}; Object.keys(NIKUD_CHAR_TO_KEY).forEach(ch => { m[NIKUD_CHAR_TO_KEY[ch]] = ch; }); return m; })();
+// Name for a consonant form; falls back to the bare base letter (strips dagesh/dots)
+function weakLetterName(form) {
+  if (WEAK_LETTER_BY_FORM[form]) return WEAK_LETTER_BY_FORM[form];
+  const base = [...form].find(c => { const cp = c.codePointAt(0); return cp >= 0x05D0 && cp <= 0x05EA; });
+  return (base && WEAK_LETTER_BY_FORM[base]) || '';
+}
+
+// Decompose a vowelized Hebrew string into [{consonant, vowelKey}] clusters.
+// consonant keeps dagesh / shin / sin dots (Bet vs Vet etc.); vcholam/shuruk are
+// treated as vowel-only (consonant=null) since the vav is a mater lectionis.
+function parseHebUnits(text) {
+  const chars = [...(text || '')];
+  const units = [];
+  let i = 0;
+  while (i < chars.length) {
+    const cp = chars[i].codePointAt(0);
+    if (cp >= 0x05D0 && cp <= 0x05EA) {
+      let consonant = chars[i];
+      let vowelKey = null;
+      let j = i + 1;
+      while (j < chars.length) {
+        const ncp = chars[j].codePointAt(0);
+        if (ncp >= 0x0591 && ncp <= 0x05CF) {
+          const c = chars[j];
+          if (WEAK_DAGESH_MARKS.has(c)) consonant += c;
+          else if (NIKUD_CHAR_TO_KEY[c] && !vowelKey) vowelKey = NIKUD_CHAR_TO_KEY[c];
+          j++;
+        } else break;
+      }
+      if (cp === 0x05D5) { // vav: holam→vav-holam, lone dagesh→shuruk
+        if (vowelKey === 'o') vowelKey = 'vcholam';
+        else if (!vowelKey && consonant.includes('ּ')) vowelKey = 'shuruk';
+      }
+      const vowelOnly = vowelKey === 'vcholam' || vowelKey === 'shuruk';
+      units.push({ consonant: vowelOnly ? null : consonant, vowelKey });
+      i = j;
+    } else i++;
+  }
+  return units;
+}
+
+// Tally seen/missed per vowel, per letter, and per letter+vowel across a profile's
+// results. A unit is "seen" once per card it appears in; "missed" if that card was wrong.
+function analyzeWeaknesses(name) {
+  const db = readProfiles();
+  const prof = db.profiles[name];
+  const stats = { vowels: {}, letters: {}, combos: {} };
+  const bump = (map, key, missed) => {
+    if (!map[key]) map[key] = { seen: 0, missed: 0 };
+    map[key].seen++; if (missed) map[key].missed++;
+  };
+  (prof && prof.results || []).forEach(r => {
+    (r.cards || []).forEach(c => {
+      const missed = c.score !== true;
+      const vSet = new Set(), lSet = new Set(), cSet = new Set();
+      parseHebUnits(c.heb).forEach(u => {
+        if (u.vowelKey) vSet.add(u.vowelKey);
+        if (u.consonant) lSet.add(u.consonant);
+        if (u.consonant && u.vowelKey) cSet.add(u.consonant + '|' + u.vowelKey);
+      });
+      vSet.forEach(k => bump(stats.vowels, k, missed));
+      lSet.forEach(k => bump(stats.letters, k, missed));
+      cSet.forEach(k => bump(stats.combos, k, missed));
+    });
+  });
+  return stats;
+}
+
+function weakRows(map, tab) {
+  return Object.keys(map).map(key => {
+    const { seen, missed } = map[key];
+    let glyph = '', label = '';
+    if (tab === 'vowels') {
+      const info = WEAK_VOWEL_INFO[key] || { name: key, example: '' };
+      glyph = info.example; label = info.name;
+    } else if (tab === 'letters') {
+      glyph = key; label = weakLetterName(key);
+    } else {
+      const [cons, vkey] = key.split('|');
+      glyph = cons + (WEAK_VOWEL_MARK[vkey] || '');
+      label = (weakLetterName(cons) || cons) + ' + ' + ((WEAK_VOWEL_INFO[vkey] || {}).name || vkey);
+    }
+    return { glyph, label, seen, missed, rate: seen ? missed / seen : 0 };
+  }).sort((a, b) => b.missed - a.missed || b.rate - a.rate || b.seen - a.seen);
+}
+
+function renderWeaknessTab(stats, tab, container) {
+  const rows = weakRows(tab === 'vowels' ? stats.vowels : tab === 'letters' ? stats.letters : stats.combos, tab);
+  if (rows.length === 0) {
+    container.innerHTML = '<p class="sub" style="text-align:center;padding:18px 0;">Not enough data yet — save more drill results.</p>';
+    return;
+  }
+  const anyMissed = rows.some(r => r.missed > 0);
+  let html = '';
+  if (!anyMissed) html += '<p class="sub" style="text-align:center;margin:0 0 10px;">No mistakes here — mastered! 🎉</p>';
+  html += rows.map(r => {
+    const pct = Math.round(r.rate * 100);
+    const barColor = pct >= 60 ? '#cc3333' : pct >= 30 ? '#c9922a' : '#3aa655';
+    return `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);">
+      <span style="font-family:var(--heb-font);font-size:1.7rem;direction:rtl;min-width:36px;text-align:center;line-height:1;">${escapeHtml(r.glyph)}</span>
+      <span style="flex:1;min-width:0;">
+        <div style="font-size:0.82rem;font-weight:600;">${escapeHtml(r.label)}</div>
+        <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:3px;">
+          <div style="height:100%;width:${pct}%;background:${barColor};"></div>
+        </div>
+      </span>
+      <span class="sub" style="font-size:0.72rem;white-space:nowrap;text-align:right;">missed ${r.missed}/${r.seen}<br>${pct}%</span>
+    </div>`;
+  }).join('');
+  container.innerHTML = html;
+}
+
+function openWeaknessView(name) {
+  name = name || getActiveProfile();
+  if (!name) { alert('No profile selected.'); return; }
+  const stats = analyzeWeaknesses(name);
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
+  const box = document.createElement('div');
+  box.style.cssText = 'background:var(--white,#fff);color:var(--text,#1a2744);max-width:460px;width:100%;border-radius:10px;padding:18px;font-family:inherit;box-shadow:0 10px 40px rgba(0,0,0,0.35);max-height:85vh;display:flex;flex-direction:column;';
+  box.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div style="font-weight:700;font-size:1rem;">Weaknesses — ${escapeHtml(name)}</div>
+      <button data-act="close" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:inherit;line-height:1;">×</button>
+    </div>
+    <div class="weak-tabs" style="display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:12px;">
+      <button class="weak-tab active" data-tab="vowels" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">Vowels</button>
+      <button class="weak-tab" data-tab="letters" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">Letters</button>
+      <button class="weak-tab" data-tab="combos" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">Letter + Vowel</button>
+    </div>
+    <div id="weakContent" style="overflow-y:auto;flex:1;"></div>`;
+  ov.appendChild(box); document.body.appendChild(ov);
+  const content = box.querySelector('#weakContent');
+  const tabs = [...box.querySelectorAll('.weak-tab')];
+  const navy = getComputedStyle(document.documentElement).getPropertyValue('--navy') || '#1a2744';
+  function paintTabs() {
+    tabs.forEach(t => {
+      const on = t.classList.contains('active');
+      t.style.background = on ? navy : 'transparent';
+      t.style.color = on ? '#fff' : 'inherit';
+    });
+  }
+  function selectTab(tab) {
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+    paintTabs();
+    renderWeaknessTab(stats, tab, content);
+  }
+  tabs.forEach(t => t.addEventListener('click', () => selectTab(t.dataset.tab)));
+  selectTab('vowels');
+  const close = () => { if (ov.parentNode) document.body.removeChild(ov); };
+  box.querySelector('[data-act=close]').addEventListener('click', close);
+  ov.addEventListener('click', e => { if (e.target === ov) close(); });
 }
 
 /* ── Profiles .ivrit backup (all profiles in one file; reuses the shared engine helpers) ── */
@@ -3307,6 +3483,18 @@ function wireProfilesPanel() {
     deleteProfile(cur);
   });
   document.getElementById('weaknessesBtn').addEventListener('click', () => practiceWeaknesses());
+  document.getElementById('viewWeaknessesBtn').addEventListener('click', () => openWeaknessView());
+}
+
+// Collapsible sub-section headings inside the Advanced Settings panel
+function initAdvSubCollapse() {
+  document.querySelectorAll('.adv-subhead').forEach(head => {
+    head.addEventListener('click', () => {
+      const body = head.nextElementSibling;
+      head.classList.toggle('collapsed');
+      if (body && body.classList.contains('adv-subbody')) body.classList.toggle('collapsed');
+    });
+  });
 }
 
 /* =========================================================================
@@ -4403,6 +4591,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderProfiles();
   initProfilesBackup();
   wireProfilesPanel();
+  initAdvSubCollapse();
   initPanelCollapse();
   initDrawer();
   wireSetupScreen();
