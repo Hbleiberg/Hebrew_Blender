@@ -2335,6 +2335,12 @@ async function loadKaraoke(parshahEntry, suffix) {
     if (!r.ok) throw new Error(`timings ${r.status}`);
     const txt = await r.text();
     timings = txt.trim().split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+    // Most PocketTorah label files (351 of 432) begin with a literal 0.0 that is
+    // a lead-in sentinel, not the first word's onset (the gap after it averages
+    // ~2.5s vs ~1.1s between real words). The karaoke engine maps timings[i] to
+    // rendered word i, so leaving the sentinel in place highlights/seeks one word
+    // ahead. Drop a single leading 0.0 so word 0 lines up with its real onset.
+    if (timings.length > 1 && timings[0] === 0) timings = timings.slice(1);
   } catch (e) {
     setKaraokeStatus(`Failed to load timings: ${e.message}.`);
     return;
