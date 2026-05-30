@@ -1852,6 +1852,12 @@ function speakVerse(numLabel) {
 // is ready.
 let _pendingChantVerse = null;
 async function chantVerse(numLabel) {
+  // Holiday/custom reading: chant in place (don't navigate to the parsha aliyah).
+  if (settings.scope === 'custom') {
+    const ok = await chantHolidayWord(numLabel, 0);
+    if (!ok) speakVerse(numLabel);
+    return;
+  }
   if (currentTimings && currentAudio && seekToVerseInLoadedAudio(numLabel, /*silent*/ true)) {
     return;
   }
@@ -1926,6 +1932,113 @@ function seekToVerseInLoadedAudio(numLabel, silent) {
   if (currentAudio.paused) {
     currentAudio.play().catch(() => {});
   }
+  return true;
+}
+
+/* ──────────────────────────────────────────────────────────
+   HOLIDAY / CUSTOM-READING CHANT (stay-in-place)
+   PocketTorah audio is keyed by parsha + aliyah, but a holiday reading is an
+   arbitrary verse range that can start mid-aliyah and span several. Rather than
+   navigating away to the parsha aliyah (which used to reset the picker AND seek
+   to the verse's first word), we load the containing aliyah's audio *underneath*
+   the holiday text and map each displayed word onto that aliyah's timing array.
+   ────────────────────────────────────────────────────────── */
+let _aliyahWordMaps = {};      // cache: "Parsha|n" -> { "c:v": firstWordIndexInAliyah }
+let _holidayKaraoke = null;    // { map } while holiday audio is loaded + index-mapped
+let _loadedChantKey = null;    // "Parsha|n" whose audio is currently loaded for a holiday chant
+let _pendingChantWordIdx = null; // exact timing index to seek once loadKaraoke finishes
+
+// Word count compatible with tokenizeHebrew: split on whitespace + maqaf,
+// count tokens that contain Hebrew letters. Invariant to nikkud/cantillation.
+function countHebrewWords(text) {
+  if (!text) return 0;
+  let n = 0;
+  for (const tok of text.split(/(\s+|־)/)) {
+    if (!tok || /^\s+$/.test(tok) || tok === '־') continue;
+    if (/[א-ת]/.test(tok)) n++;
+  }
+  return n;
+}
+
+// Build (and cache) a "c:v" -> first-word-index map for one aliyah, using the
+// same Sefaria text + tokenization the renderer uses, so indices line up with
+// the PocketTorah timing array exactly as parsha-aliyah chant already does.
+async function getAliyahVerseWordMap(p, n, range) {
+  const key = p.en + '|' + n;
+  if (_aliyahWordMaps[key]) return _aliyahWordMaps[key];
+  const ref = `${p.book} ${range.startC}:${range.startV}-${range.endC}:${range.endV}`;
+  let verses;
+  try { verses = await fetchSefariaText(ref, false, null); }
+  catch (e) { return null; }
+  const map = {};
+  let idx = 0;
+  for (const v of verses) {
+    map[`${v.chapter}:${v.verse}`] = idx;
+    idx += countHebrewWords(v.hebrew);
+  }
+  _aliyahWordMaps[key] = map;
+  return map;
+}
+
+// Seek the loaded audio to a specific word-timing index and play.
+function seekToTimingIndex(idx) {
+  if (!currentTimings || !currentAudio) return;
+  if (idx < 0 || idx >= currentTimings.length) return;
+  const t = currentTimings[idx];
+  if (typeof t !== 'number' || isNaN(t)) return;
+  _verseEndStopAt = null;
+  currentAudio.currentTime = t;
+  if (lastHighlightedIdx >= 0) paintKaraokeIdx(lastHighlightedIdx, false);
+  lastHighlightedIdx = -1;
+  if (currentAudio.paused) currentAudio.play().catch(() => {});
+}
+
+// Index of the clicked word within its verse, derived from data-twi (works for
+// clicks on either the Hebrew or the translit span — both carry aligned twi).
+function hebWordIndexInVerse(verseEl, wordEl) {
+  const heb = verseEl.querySelectorAll('.tt-heb .tt-word, .tt-cell.heb .tt-word');
+  if (!heb.length) return 0;
+  const first = parseInt(heb[0].dataset.twi, 10);
+  const clicked = parseInt(wordEl.dataset.twi, 10);
+  if (isNaN(first) || isNaN(clicked)) return 0;
+  return Math.max(0, clicked - first);
+}
+
+// Chant a word (wordInVerse, 0 = verse start) in a holiday/custom reading WITHOUT
+// leaving it. Returns true if handled, false if not chantable (caller → TTS).
+async function chantHolidayWord(numLabel, wordInVerse) {
+  const m = numLabel && numLabel.match(/^(\d+):(\d+)$/);
+  if (!m) return false;
+  const tc = +m[1], tv = +m[2];
+  const p = currentReadingCtx && currentReadingCtx.parshahEntry;
+  if (!p || !manifestData[p.pocket]) return false;
+  const al = aliyahLookup(p.en);
+  if (!al || !al.aliyot) return false;
+  let n = null;
+  for (const num of ['1','2','3','4','5','6','7']) {
+    const r = al.aliyot[num];
+    if (r && verseInRange(tc, tv, r)) { n = num; break; }
+  }
+  if (!n) { setStatus(`Verse ${numLabel} is outside this parsha's aliyot — can't chant it here.`, true); return false; }
+  const map = await getAliyahVerseWordMap(p, n, al.aliyot[n]);
+  if (!map || map[numLabel] == null) return false;
+  const idx = map[numLabel] + (wordInVerse || 0);
+  const key = p.en + '|' + n;
+  // Right aliyah already loaded → seek immediately.
+  if (_loadedChantKey === key && currentTimings && currentAudio && currentAudio.src) {
+    seekToTimingIndex(idx);
+    return true;
+  }
+  // Otherwise load that aliyah's audio under the holiday text, then seek.
+  if (ttsState.readAllActive) stopReadAll();
+  speechSynthesis.cancel();
+  _pendingChantVerse = null;
+  _loadedChantKey = key;
+  _holidayKaraoke = { map };
+  _pendingChantWordIdx = idx;
+  _verseEndStopAt = null;
+  setStatus(`Loading audio to chant ${numLabel}…`, false);
+  await loadKaraoke(p, String(n));
   return true;
 }
 
@@ -2121,6 +2234,11 @@ function maybeLoadKaraoke(rangeInfo) {
     teardownKaraokeAudio();
     return;
   }
+  // Parsha aliyah/haftarah: rendered text == loaded audio, so use direct
+  // data-twi mapping (not the holiday remap).
+  _holidayKaraoke = null;
+  _loadedChantKey = null;
+  _pendingChantWordIdx = null;
   const sfx = rangeInfo.aliyahNum === 'H' ? 'H' : String(rangeInfo.aliyahNum);
   loadKaraoke(rangeInfo.parshahEntry, sfx);
 }
@@ -2135,6 +2253,9 @@ function teardownKaraokeAudio() {
   document.body.classList.remove('tt-karaoke-active');
   if (currentAudio) currentAudio.removeAttribute('src');
   currentTimings = null;
+  _holidayKaraoke = null;
+  _loadedChantKey = null;
+  _pendingChantWordIdx = null;
 }
 
 async function loadKaraoke(parshahEntry, suffix) {
@@ -2198,7 +2319,12 @@ async function loadKaraoke(parshahEntry, suffix) {
   // If chantVerse() asked us to jump to a specific verse once audio was ready,
   // do it now. Setting currentTime before the audio is fully loaded is fine —
   // the browser queues the seek and play() resolves once enough buffered.
-  if (_pendingChantVerse) {
+  if (_pendingChantWordIdx != null) {
+    const wi = _pendingChantWordIdx;
+    _pendingChantWordIdx = null;
+    setStatus('', false);
+    requestAnimationFrame(() => seekToTimingIndex(wi));
+  } else if (_pendingChantVerse) {
     const target = _pendingChantVerse;
     _pendingChantVerse = null;
     setStatus('', false);
@@ -2211,11 +2337,30 @@ function updateKaraokeWordRefs() {
   // both the Hebrew and the Translit span. Click-to-seek still works on any
   // .tt-word in any row (handled in onReadingClick).
   const f = settings.karaokeFollow || 'hebrew';
+  karaokeWordSpans = [];
+  // Holiday/custom reading: the displayed range isn't the loaded aliyah, so map
+  // each rendered word to its aliyah timing index via the verse-start map.
+  if (_holidayKaraoke && _holidayKaraoke.map) {
+    const map = _holidayKaraoke.map;
+    document.querySelectorAll('#ttReading [data-vk]').forEach(verseEl => {
+      const startIdx = map[verseEl.dataset.vk];
+      if (startIdx == null) return; // verse not in the loaded aliyah
+      const heb = [...verseEl.querySelectorAll('.tt-heb .tt-word, .tt-cell.heb .tt-word')];
+      const tr  = [...verseEl.querySelectorAll('.tt-translit .tt-word, .tt-cell.translit .tt-word')];
+      const n = Math.max(heb.length, tr.length);
+      for (let i = 0; i < n; i++) {
+        const idx = startIdx + i;
+        if (!karaokeWordSpans[idx]) karaokeWordSpans[idx] = [];
+        if ((f === 'hebrew' || f === 'both') && heb[i]) karaokeWordSpans[idx].push(heb[i]);
+        if ((f === 'translit' || f === 'both') && tr[i]) karaokeWordSpans[idx].push(tr[i]);
+      }
+    });
+    return;
+  }
   const selectors = [];
   if (f === 'hebrew' || f === 'both') selectors.push('#ttReading .tt-heb .tt-word', '#ttReading .tt-cell.heb .tt-word');
   if (f === 'translit' || f === 'both') selectors.push('#ttReading .tt-translit .tt-word', '#ttReading .tt-cell.translit .tt-word');
   const spans = selectors.length ? [...document.querySelectorAll(selectors.join(','))] : [];
-  karaokeWordSpans = [];
   spans.forEach(el => {
     const i = parseInt(el.dataset.twi, 10);
     if (isNaN(i)) return;
@@ -2310,20 +2455,21 @@ function onReadingClick(e) {
     if (numLabel) speakVerse(numLabel);
     return;
   }
-  // Chant: prefer in-loaded-audio seek; otherwise auto-load that verse's
-  // aliyah via chantVerse() and seek once it's ready.
+  // Holiday/custom reading: stay on it and chant the exact clicked word by
+  // mapping it onto the containing aliyah's PocketTorah timings.
+  if (settings.scope === 'custom') {
+    if (!numLabel) return;
+    const wiv = hebWordIndexInVerse(verseEl, wordEl);
+    chantHolidayWord(numLabel, wiv).then(ok => { if (!ok) speakVerse(numLabel); });
+    return;
+  }
+  // Parsha aliyah/haftarah: the rendered text matches the loaded audio, so
+  // data-twi indexes the timing array directly.
   if (currentTimings && currentAudio) {
     const idx = parseInt(wordEl.dataset.twi, 10);
     if (!isNaN(idx) && idx >= 0 && idx < currentTimings.length) {
       const t = currentTimings[idx];
-      if (typeof t === 'number' && !isNaN(t)) {
-        _verseEndStopAt = null;
-        currentAudio.currentTime = t;
-        if (lastHighlightedIdx >= 0) paintKaraokeIdx(lastHighlightedIdx, false);
-        lastHighlightedIdx = -1;
-        if (currentAudio.paused) currentAudio.play().catch(() => {});
-        return;
-      }
+      if (typeof t === 'number' && !isNaN(t)) { seekToTimingIndex(idx); return; }
     }
   }
   if (numLabel) chantVerse(numLabel);
