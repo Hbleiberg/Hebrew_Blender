@@ -9461,17 +9461,21 @@ window.addEventListener('resize', positionSidebarTab);
 if (window.innerWidth <= 700) {
   document.querySelectorAll('.panel').forEach(p => p.classList.add('collapsed'));
 }
+</script>
 
-/* ══════════════════════════════════════════════════════
-   SHARE THIS SHEET — encode all settings into the URL
-   ──────────────────────────────────────────────────────
-   Rides on the existing getSettings()/applySettings() backbone so it stays
-   complete automatically as new controls are added. The URL carries a single
-   compact param: ?s=<base64url(JSON)> of only the settings that differ from a
-   pristine page (SHARE_DEFAULTS), keeping links short. State lives entirely in
-   the URL — no new localStorage key, so no AllTools/.ivrit registration needed.
-   ══════════════════════════════════════════════════════ */
-let SHARE_DEFAULTS = null;   // getSettings() snapshot of the pristine page
+<!-- ══════════════════════════════════════════════════════
+     SHARE THIS SHEET — encode all settings into the URL
+     ──────────────────────────────────────────────────────
+     In its OWN <script> so an exception in the big app script above can never
+     stop the share feature from registering. Rides on the existing
+     getSettings()/applySettings() backbone (defined above) so it stays complete
+     automatically as new controls are added. The URL carries one compact param:
+     ?s=<base64url(JSON)> of only the settings that differ from a pristine page
+     (SHARE_DEFAULTS), keeping links short. State lives entirely in the URL — no
+     new localStorage key, so no AllTools/.ivrit registration needed.
+     ══════════════════════════════════════════════════════ -->
+<script>
+let SHARE_DEFAULTS = null;    // getSettings() snapshot of the pristine page
 let _shareNeedsRegen = false; // defer auto-generate until the word dictionary loads
 
 // UTF-8-safe base64url (Hebrew round-trips cleanly).
@@ -9481,11 +9485,15 @@ function shareB64Decode(b){ b = b.replace(/-/g,'+').replace(/_/g,'/'); return de
 // Build the shareable URL for the current settings (only the diff vs defaults).
 function serializeSettings() {
   const base = location.origin + location.pathname;
-  if (!SHARE_DEFAULTS) return base;
-  const cur = getSettings();
+  let cur;
+  try { cur = getSettings(); } catch(e) { return base; }
+  // Diff against the pristine baseline. If it was never captured (e.g. restore
+  // didn't run), fall back to {} so we emit the FULL settings — a longer but
+  // still-working link — rather than silently returning the bare URL.
+  const baseline = SHARE_DEFAULTS || {};
   const diff = {};
   Object.keys(cur).forEach(k => {
-    if (JSON.stringify(cur[k]) !== JSON.stringify(SHARE_DEFAULTS[k])) diff[k] = cur[k];
+    if (JSON.stringify(cur[k]) !== JSON.stringify(baseline[k])) diff[k] = cur[k];
   });
   if (!Object.keys(diff).length) return base;             // unchanged → clean link
   return base + '?s=' + shareB64Encode(JSON.stringify(diff));
@@ -9493,7 +9501,7 @@ function serializeSettings() {
 
 // Read ?s= on load, restore controls, and auto-generate. Degrades silently.
 function restoreFromURL() {
-  SHARE_DEFAULTS = getSettings();                          // pristine baseline for diffing
+  try { SHARE_DEFAULTS = getSettings(); } catch(e) { return; } // pristine baseline for diffing
   let s;
   try { s = new URLSearchParams(location.search).get('s'); } catch(e) { return; }
   if (!s) return;                                          // no param → keep defaults
@@ -9503,9 +9511,11 @@ function restoreFromURL() {
   try { applySettings(Object.assign({}, SHARE_DEFAULTS, diff)); } catch(e) { return; }
   // Auto-generate. Real-words / word-search drills need REAL_WORDS, which loads
   // async — defer to the dictionary's fetch .then() in that case.
-  const needsWords = document.getElementById('realWordsToggle')?.checked;
-  if (needsWords && (!REAL_WORDS || !REAL_WORDS.length)) { _shareNeedsRegen = true; }
-  else { try { generate(); } catch(e) {} }
+  try {
+    const needsWords = document.getElementById('realWordsToggle')?.checked;
+    if (needsWords && (typeof REAL_WORDS === 'undefined' || !REAL_WORDS.length)) { _shareNeedsRegen = true; }
+    else { generate(); }
+  } catch(e) {}
 }
 
 // "📋 Copy shareable link" — sync the address bar, copy the URL, flash the button.
@@ -9532,9 +9542,14 @@ function copyShareLink(btnId) {
   }, 1500);
 }
 
-// Run last, after every init block (incl. the :8357 DOMContentLoaded handler
-// that builds the real-words grid and sets the initial drill).
-document.addEventListener('DOMContentLoaded', restoreFromURL);
+// Run after every init block (incl. the big script's DOMContentLoaded handler
+// that builds the real-words grid and sets the initial drill). Guard for the
+// case where the document has already finished parsing.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', restoreFromURL);
+} else {
+  restoreFromURL();
+}
 </script>
 </body>
 </html>
