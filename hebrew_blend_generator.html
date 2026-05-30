@@ -2825,18 +2825,6 @@
       </div>
     </div>
 
-    <!-- Presets -->
-    <div class="panel" id="panelPresets">
-      <div class="panel-title"><span style="display:inline-flex;align-items:center;">Saved Presets <span class="tooltip-wrap" style="font-size:0.65rem;font-weight:400;">?<span class="tooltip-box">Save your current letter, vowel, and layout settings as a named preset. Load it later to instantly restore everything — great for switching between class levels or drill types.</span></span></span></div>
-      <div class="panel-body">
-        <div class="preset-row">
-          <input type="text" id="presetName" placeholder="Preset name...">
-          <button class="btn-xs" onclick="savePreset()">💾 Save</button>
-        </div>
-        <div class="preset-list" id="presetList"></div>
-      </div>
-    </div>
-
     <!-- Generate (desktop) -->
     <div class="desktop-buttons">
       <button class="btn btn-primary" onclick="generate()">⬡ Generate Worksheet</button>
@@ -2845,6 +2833,18 @@
       <button class="btn btn-outline" id="pdfBtn" onclick="exportPDF()" disabled style="opacity:0.4;cursor:not-allowed;margin-top:8px;">⬇ Export PDF</button>
       <div class="print-tip" id="printTip" style="display:none;margin-top:8px;font-size:0.72rem;color:var(--muted);background:var(--warm-gray);border-radius:5px;padding:7px 9px;line-height:1.4;">
         💡 <strong>Print tip:</strong> In the print dialog, uncheck <em>Headers and footers</em> to remove the URL and date.
+      </div>
+    </div>
+
+    <!-- Presets -->
+    <div class="panel" id="panelPresets" style="margin-top:4px;">
+      <div class="panel-title"><span style="display:inline-flex;align-items:center;">Saved Presets <span class="tooltip-wrap" style="font-size:0.65rem;font-weight:400;">?<span class="tooltip-box">Save your current letter, vowel, and layout settings as a named preset. Load it later to instantly restore everything — great for switching between class levels or drill types.</span></span></span></div>
+      <div class="panel-body">
+        <div class="preset-row">
+          <input type="text" id="presetName" placeholder="Preset name...">
+          <button class="btn-xs" onclick="savePreset()">💾 Save</button>
+        </div>
+        <div class="preset-list" id="presetList"></div>
       </div>
     </div>
 
