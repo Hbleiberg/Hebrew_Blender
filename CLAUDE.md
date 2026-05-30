@@ -15,8 +15,9 @@
 | `generatorPresets` | `hebrewBlender_presets` | Hebrew Blend Generator saved presets |
 | `dashboardPresets` | `hebrewDashboard_presets` | Classroom Dashboard saved presets |
 | `dashboardSchedules` | `hebrewDashboard_schedules` | Classroom Dashboard saved schedules |
-| `dashboardSettings` | `hebrewDashboard_settings` | All Classroom Dashboard settings (zoom, video URL, header size, etc.) |
+| `dashboardSettings` | `hebrewDashboard_settings` | All Classroom Dashboard settings (zoom, video URL, header size, Jewish-calendar widget toggles `showHolidayCountdown`/`showShabbatTimes` + `candleZip`, etc.) |
 | `flashCardPresets` | `hebrewFlashCards_presets` | Flash Cards saved presets |
+| `flashCardPbStreak` | `hebrewFlashCards_pbStreak` | Flash Cards personal-best streak (scalar string; imported as the **max** of existing vs incoming) |
 | `dictAudioEnabled` / `dictTranslitStyle` / `dictTtsRate` / `dictEmojiSettings` | `hebrewDictionary_*` | Hebrew Dictionary settings |
 | `torahTrainerSettings` | `hebrewTorahTrainer_settings` | Torah Trainer settings |
 | `inputMode` | `hebrewBlender_inputMode` | Backup UI preference: `'auto'` (.ivrit file) or `'manual'` (text block) — see ".ivrit Save Files" below |

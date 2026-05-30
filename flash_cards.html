@@ -947,6 +947,21 @@ body.dark .drawer h2 { color: var(--gold-light); }
 .hide { display: none !important; }
 .btn-xs { font-size: 0.72rem; padding: 3px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--white); cursor: pointer; font-family: inherit; color: var(--ink); transition: background 0.15s; }
 .btn-xs:hover { background: var(--paper); }
+/* ===== Session stats bar (card screen) ===== */
+.stats-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+  background: var(--white); border: 1px solid var(--border); border-radius: 12px;
+  padding: 10px 8px; margin: 0 0 14px; box-shadow: var(--shadow-sm);
+}
+.stats-bar .stat { text-align: center; }
+.stats-bar .stat-value { font-weight: 800; color: var(--navy); font-size: 1.15rem; line-height: 1.1; }
+body.dark .stats-bar .stat-value { color: var(--gold-light); }
+.stats-bar .stat-label { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+.stats-bar .stat.streak .stat-value { color: var(--gold); }
+@media (max-width: 520px) { .stats-bar .stat-value { font-size: 1rem; } .stats-bar { gap: 4px; } }
+/* ===== Share-code panel ===== */
+.share-out { width: 100%; min-height: 56px; resize: vertical; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.74rem; padding: 8px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--paper); color: var(--ink); word-break: break-all; }
+.share-err { color: var(--bad); font-size: 0.82rem; margin: 6px 0 0; min-height: 1em; }
 .color-tile { border-radius: 6px; border: 2px solid transparent; cursor: pointer; overflow: hidden; transition: border-color 0.15s; user-select: none; }
 .color-tile:hover { border-color: var(--gold); }
 .color-tile.selected { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
@@ -1009,6 +1024,28 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
       </div>
       <ul class="preset-list" id="presetList"></ul>
       <p class="sub" id="presetEmpty">No presets yet — configure your settings, then save them here.</p>
+    </div>
+  </div>
+
+  <!-- TEACHER SHARE CODE -->
+  <div class="panel collapsed" id="panelShareCode">
+    <h3 class="panel-title">Teacher Share Code</h3>
+    <div class="panel-body">
+      <p class="sub" style="margin-top:0;">Generate a code that captures every current setting. Share it with students — when they paste it and tap <b>Load</b>, the deck opens with your exact setup.</p>
+      <div class="btn-row" style="margin-bottom:8px;">
+        <button class="btn primary sm" id="generateShareBtn">Generate Share Code</button>
+        <button class="btn sm ghost" id="copyShareBtn">📋 Copy Code</button>
+      </div>
+      <textarea class="share-out" id="shareCodeOutput" readonly placeholder="Tap “Generate Share Code” to create a code…"></textarea>
+
+      <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;">
+
+      <div class="label" style="font-weight:600;margin-bottom:4px;">Got a code from your teacher?</div>
+      <div class="preset-row">
+        <input type="text" class="preset-input" id="shareCodeInput" placeholder="Paste share code here…" />
+        <button class="btn gold sm" id="applyShareBtn">Load</button>
+      </div>
+      <p class="share-err" id="shareCodeError"></p>
     </div>
   </div>
 
@@ -1437,6 +1474,13 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
   <p id="skipReshowHeader" class="fc-skip-header" style="display:none;">↻ Skipped Card</p>
   <p id="timerDisplay" style="display:none;text-align:center;font-size:0.85rem;color:var(--muted);margin:0 0 4px;"></p>
 
+  <div class="stats-bar" id="statsBar">
+    <div class="stat streak"><div class="stat-value" id="statStreak">🔥 0</div><div class="stat-label">Streak</div></div>
+    <div class="stat"><div class="stat-value" id="statPb">🏆 0</div><div class="stat-label">PB</div></div>
+    <div class="stat"><div class="stat-value" id="statCorrect">0/0</div><div class="stat-label">Correct</div></div>
+    <div class="stat"><div class="stat-value" id="statAcc">0%</div><div class="stat-label">Accuracy</div></div>
+  </div>
+
   <div class="fc-perspective">
     <div class="fc-card" id="fcCard" tabindex="0" role="button" aria-label="Flash card. Tap or press space to flip.">
       <div class="fc-face fc-front">
@@ -1475,6 +1519,7 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
     <p class="pct" id="resultsPct">0%</p>
     <p class="frac" id="resultsFrac">0 / 0 correct</p>
     <p id="resultsTime" style="display:none;font-size:0.85rem;color:var(--muted);margin:4px 0 0;"></p>
+    <p id="resultsStreak" style="font-size:0.9rem;color:var(--ink-soft);margin:8px 0 0;font-weight:600;"></p>
   </div>
 
   <div class="panel collapsed" id="panelResults">
@@ -1863,6 +1908,12 @@ let lastDrillResult = null;  // snapshot of the just-finished drill, for "Save R
 let showSkippedAgain = true; // re-queue each skipped card once so the whole set gets seen
 let requeued = [];           // parallel to scores: true = slot was skipped & re-queued (excluded from results)
 let hasFlipped = [];         // parallel to scores: true once the user has flipped this card at least once
+
+/* ===== Session stats / streak (in-memory, except PB) ===== */
+const PB_STREAK_KEY = 'hebrewFlashCards_pbStreak';
+let streakCur = 0, streakBest = 0, sessCorrect = 0, sessAttempted = 0;
+let pbStreak = 0;                 // personal best, persisted
+let countedCards = new Set();     // card indices already tallied (avoid double-count on re-mark)
 
 let translitStyle = 'default';
 
@@ -2922,6 +2973,103 @@ function copyTextarea() {
 }
 
 /* =========================================================================
+   TEACHER SHARE CODE  (static, QR-ready base64 of the full settings)
+   ========================================================================= */
+// UTF-8-safe base64 codec. encode trims padding; decode tolerates url-safe
+// chars + missing padding so a pasted/QR-scanned code still works.
+function shareCodeEncode(obj) {
+  return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))).replace(/=+$/, '');
+}
+function shareCodeDecode(code) {
+  let b = String(code).trim().replace(/\s+/g, '').replace(/-/g, '+').replace(/_/g, '/');
+  while (b.length % 4) b += '=';
+  return JSON.parse(decodeURIComponent(escape(atob(b))));
+}
+function generateShareCode() {
+  const payload = { v: 1, tool: 'FlashCards', data: getSettings() };
+  const out = document.getElementById('shareCodeOutput');
+  if (out) out.value = shareCodeEncode(payload);
+  shareErr('');
+}
+function copyShareCode() {
+  const out = document.getElementById('shareCodeOutput');
+  if (!out || !out.value) { generateShareCode(); }
+  const text = out.value;
+  if (!text) return;
+  const done = () => {
+    const btn = document.getElementById('copyShareBtn');
+    if (!btn) return;
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = orig, 1500);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(() => { out.select(); document.execCommand('copy'); done(); });
+  } else {
+    out.select(); document.execCommand('copy'); done();
+  }
+}
+function shareErr(msg) {
+  const el = document.getElementById('shareCodeError');
+  if (el) el.textContent = msg || '';
+}
+function loadShareCode() {
+  const inp = document.getElementById('shareCodeInput');
+  const raw = inp ? inp.value : '';
+  if (!raw || !raw.trim()) { shareErr('Invalid code — please check and try again.'); return; }
+  let payload;
+  try { payload = shareCodeDecode(raw); } catch (e) { shareErr('Invalid code — please check and try again.'); return; }
+  const data = payload && typeof payload === 'object' ? (payload.data || (payload.tool ? null : payload)) : null;
+  if (!data || typeof data !== 'object') { shareErr('Invalid code — please check and try again.'); return; }
+  try {
+    applySettings(data);
+    saveSettings();
+    shareErr('');
+    startPractice();
+  } catch (e) {
+    shareErr('Invalid code — please check and try again.');
+  }
+}
+
+/* =========================================================================
+   SESSION STATS / STREAK
+   ========================================================================= */
+function loadPbStreak() {
+  pbStreak = parseInt(localStorage.getItem(PB_STREAK_KEY) || '0', 10) || 0;
+}
+function resetSessionStats() {
+  streakCur = 0; streakBest = 0; sessCorrect = 0; sessAttempted = 0;
+  countedCards.clear();
+  updateStatsBar();
+}
+function recordMark(correct) {
+  // Count each card index only once so navigating back & re-marking can't inflate stats.
+  if (countedCards.has(currentIndex)) return;
+  countedCards.add(currentIndex);
+  sessAttempted++;
+  if (correct) {
+    sessCorrect++;
+    streakCur++;
+    if (streakCur > streakBest) streakBest = streakCur;
+    if (streakCur > pbStreak) {
+      pbStreak = streakCur;
+      try { localStorage.setItem(PB_STREAK_KEY, String(pbStreak)); } catch (e) {}
+    }
+  } else {
+    streakCur = 0;
+  }
+  updateStatsBar();
+}
+function updateStatsBar() {
+  const acc = sessAttempted ? Math.round((sessCorrect / sessAttempted) * 100) : 0;
+  const el = id => document.getElementById(id);
+  if (el('statStreak'))  el('statStreak').textContent  = '🔥 ' + streakCur;
+  if (el('statPb'))      el('statPb').textContent      = '🏆 ' + Math.max(pbStreak, streakBest);
+  if (el('statCorrect')) el('statCorrect').textContent = sessCorrect + '/' + sessAttempted;
+  if (el('statAcc'))     el('statAcc').textContent     = acc + '%';
+}
+
+/* =========================================================================
    STUDENT PROFILES & SAVED RESULTS
    ========================================================================= */
 const PROFILES_KEY = 'hebrewFlashCards_profiles';
@@ -3230,6 +3378,7 @@ function practiceWeaknesses(name) {
   requeued = new Array(deck.length).fill(false);
   hasFlipped = new Array(deck.length).fill(false);
   isFlipped = false;
+  resetSessionStats();
   renderCurrentCard();
   showScreen('screenCard');
   startTimer();
@@ -3993,6 +4142,7 @@ function startPractice() {
   requeued = new Array(deck.length).fill(false);
   hasFlipped = new Array(deck.length).fill(false);
   isFlipped = false;
+  resetSessionStats();
   renderCurrentCard();
   showScreen('screenCard');
   startTimer();
@@ -4211,11 +4361,13 @@ function flipCard() {
 function markCorrect(e) {
   if (e) e.stopPropagation();
   scores[currentIndex] = true;
+  recordMark(true);
   setTimeout(autoAdvance, 220);
 }
 function markIncorrect(e) {
   if (e) e.stopPropagation();
   scores[currentIndex] = false;
+  recordMark(false);
   setTimeout(autoAdvance, 220);
 }
 function autoAdvance() {
@@ -4302,6 +4454,16 @@ function showResults() {
   const saveBtn = document.getElementById('saveResultsBtn');
   if (saveBtn) { saveBtn.disabled = !lastDrillResult; saveBtn.textContent = '💾 Save Results'; }
 
+  // End-of-session summary (uses the live session stats before they reset on the next start)
+  const streakEl = document.getElementById('resultsStreak');
+  if (streakEl) {
+    const acc = sessAttempted ? Math.round((sessCorrect / sessAttempted) * 100) : pct;
+    const answered = sessAttempted || total;
+    let summary = `Best streak: ${streakBest} 🔥 · Accuracy ${acc}% · ${answered} card${answered === 1 ? '' : 's'} answered`;
+    if (streakBest > 0 && streakBest >= pbStreak) summary += ' · 🏆 New personal best!';
+    streakEl.textContent = summary;
+  }
+
   showScreen('screenResults');
 }
 
@@ -4312,6 +4474,7 @@ function redoSameSet() {
   requeued = new Array(currentCards.length).fill(false);
   hasFlipped = new Array(currentCards.length).fill(false);
   isFlipped = false;
+  resetSessionStats();
   renderCurrentCard();
   showScreen('screenCard');
   startTimer();
@@ -4325,6 +4488,7 @@ function practiceMistakes() {
   requeued = new Array(currentCards.length).fill(false);
   hasFlipped = new Array(currentCards.length).fill(false);
   isFlipped = false;
+  resetSessionStats();
   renderCurrentCard();
   showScreen('screenCard');
   startTimer();
@@ -4540,6 +4704,13 @@ function wireSetupScreen() {
   document.getElementById('savePresetBtn').addEventListener('click', savePreset);
   document.getElementById('presetName').addEventListener('keydown', e => { if (e.key === 'Enter') savePreset(); });
 
+  // Teacher share code
+  document.getElementById('generateShareBtn').addEventListener('click', generateShareCode);
+  document.getElementById('copyShareBtn').addEventListener('click', copyShareCode);
+  document.getElementById('applyShareBtn').addEventListener('click', loadShareCode);
+  document.getElementById('shareCodeInput').addEventListener('keydown', e => { if (e.key === 'Enter') loadShareCode(); });
+  document.getElementById('shareCodeInput').addEventListener('input', () => shareErr(''));
+
   // Backup
   document.getElementById('exportBtn').addEventListener('click', exportPresets);
   document.getElementById('importBtn').addEventListener('click', importPresets);
@@ -4558,6 +4729,7 @@ function wireResultsScreen() {
 
 document.addEventListener('DOMContentLoaded', () => {
   initDarkMode();
+  loadPbStreak();
   loadSettings();
   initLetters();
   initVowels();
@@ -4589,6 +4761,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('colorCodeOpts').classList.toggle('hide', !colorCodingEnabled);
   document.getElementById('audioToggle').checked = audioEnabled;
   updateTtsRateVisibility();
+  updateStatsBar();
 });
 </script>
 </body>

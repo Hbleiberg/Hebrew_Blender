@@ -365,6 +365,7 @@ function exportAllSettings() {
     dashboardSettings:   JSON.parse(localStorage.getItem('hebrewDashboard_settings')   || '{}'),
     flashCardPresets:    JSON.parse(localStorage.getItem('hebrewFlashCards_presets')   || '{}'),
     flashCardProfiles:   JSON.parse(localStorage.getItem('hebrewFlashCards_profiles')  || '{}'),
+    flashCardPbStreak:   localStorage.getItem('hebrewFlashCards_pbStreak') || '0',
     dictAudioEnabled:    localStorage.getItem('hebrewDictionary_audioEnabled') || '0',
     dictTranslitStyle:   localStorage.getItem('hebrewDictionary_translitStyle') || 'default',
     dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate') || '0.75',
@@ -404,6 +405,11 @@ function importAllSettings() {
     }
     if (parsed.flashCardProfiles && parsed.flashCardProfiles.profiles) {
       mergeFlashCardProfiles(parsed.flashCardProfiles);
+    }
+    if (parsed.flashCardPbStreak !== undefined) {
+      const existing = parseInt(localStorage.getItem('hebrewFlashCards_pbStreak') || '0', 10) || 0;
+      const incoming = parseInt(parsed.flashCardPbStreak, 10) || 0;
+      localStorage.setItem('hebrewFlashCards_pbStreak', String(Math.max(existing, incoming)));
     }
     if (parsed.dictAudioEnabled !== undefined) {
       localStorage.setItem('hebrewDictionary_audioEnabled', parsed.dictAudioEnabled);
@@ -446,6 +452,7 @@ function eraseAllSettings() {
     'hebrewDashboard_settings',
     'hebrewFlashCards_presets',
     'hebrewFlashCards_profiles',
+    'hebrewFlashCards_pbStreak',
     'hebrewDictionary_audioEnabled',
     'hebrewDictionary_translitStyle',
     'hebrewDictionary_ttsRate',
@@ -469,6 +476,7 @@ const IVRIT_CFG = {
       dashboardSettings:   JSON.parse(localStorage.getItem('hebrewDashboard_settings')   || '{}'),
       flashCardPresets:    JSON.parse(localStorage.getItem('hebrewFlashCards_presets')   || '{}'),
       flashCardProfiles:   JSON.parse(localStorage.getItem('hebrewFlashCards_profiles')  || '{}'),
+      flashCardPbStreak:   localStorage.getItem('hebrewFlashCards_pbStreak') || '0',
       dictAudioEnabled:    localStorage.getItem('hebrewDictionary_audioEnabled')  || '0',
       dictTranslitStyle:   localStorage.getItem('hebrewDictionary_translitStyle') || 'default',
       dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate')       || '0.75',
@@ -490,6 +498,12 @@ const IVRIT_CFG = {
     if (data.dashboardSettings)   { mergeObj('hebrewDashboard_settings',      data.dashboardSettings);   touched = true; }
     if (data.flashCardPresets)    { mergeObj('hebrewFlashCards_presets',      data.flashCardPresets);    touched = true; }
     if (data.flashCardProfiles && data.flashCardProfiles.profiles) { mergeFlashCardProfiles(data.flashCardProfiles, mode === 'replace'); touched = true; }
+    if (data.flashCardPbStreak !== undefined) {
+      const existing = mode === 'replace' ? 0 : (parseInt(localStorage.getItem('hebrewFlashCards_pbStreak') || '0', 10) || 0);
+      const incoming = parseInt(data.flashCardPbStreak, 10) || 0;
+      localStorage.setItem('hebrewFlashCards_pbStreak', String(Math.max(existing, incoming)));
+      touched = true;
+    }
     if (data.dictEmojiSettings)   { mergeObj('hebrewDictionary_emojiSettings', data.dictEmojiSettings);  touched = true; }
     if (data.torahTrainerSettings){ mergeObj('hebrewTorahTrainer_settings',   data.torahTrainerSettings); touched = true; }
     if (data.dictAudioEnabled  !== undefined) { localStorage.setItem('hebrewDictionary_audioEnabled',  data.dictAudioEnabled);  touched = true; }

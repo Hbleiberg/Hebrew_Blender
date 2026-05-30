@@ -436,6 +436,27 @@
     margin-top: 6px;
   }
   body.dark .current-time { color: var(--gold-light); }
+  .heb-holiday-line {
+    font-family: 'Libre Baskerville', serif;
+    font-size: var(--holiday-size, 1.15rem);
+    color: var(--gold);
+    font-weight: 700;
+    margin-top: 10px;
+    line-height: 1.3;
+  }
+  body.dark .heb-holiday-line { color: var(--gold-light); }
+  .heb-holiday-line .heb-name { font-family: var(--heb-font); direction: rtl; }
+  .shabbat-block {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .shabbat-block .shabbat-line { margin: 2px 0; }
+  .shabbat-block .shabbat-loading { color: var(--muted); font-size: 0.82rem; }
   .dash-text-display {
     margin-top: 28px;
     padding: 22px 18px 4px;
@@ -1029,11 +1050,13 @@
     <div class="col-title" id="dowColTitle">Days of the Week</div>
     <div class="col-body" id="dowBody">
       <div id="daysList"></div>
+      <div class="shabbat-block" id="shabbatTimes" style="display:none;"></div>
     </div>
   </div><!-- CENTER: Date / Time / Custom Text --><div class="dash-col dash-center">
     <div id="dateTimeBlock" style="width:100%;">
       <div class="eng-date" id="engDate"></div>
       <div class="heb-date" id="hebDate"></div>
+      <div class="heb-holiday-line" id="holidayCountdown" style="display:none;"></div>
       <div class="current-time" id="currentTime"></div>
       <div id="scheduleCountdown"></div>
     </div>
@@ -1084,6 +1107,26 @@
     <div class="form-row" style="margin-top:4px;">
       <button class="btn btn-xs" id="currentLocBtn" onclick="useCurrentLocation()" style="width:100%;">📍 Current Location</button>
     </div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-title">Jewish Calendar</div>
+  <div class="panel-body">
+    <div class="form-row">
+      <label>Holiday countdown</label>
+      <label class="toggle"><input type="checkbox" id="showHolidayCountdown"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Shabbat times</label>
+      <label class="toggle"><input type="checkbox" id="showShabbatTimes"><span class="slider"></span></label>
+    </div>
+    <div class="form-row" style="margin-top:4px;">
+      <label for="candleZipInput">Shabbat zip code</label>
+      <input type="text" id="candleZipInput" placeholder="e.g. 10001" inputmode="numeric" maxlength="5" style="max-width:120px;">
+      <button class="btn btn-xs" onclick="updateCandleZip()">Update</button>
+    </div>
+    <p class="sub" style="margin:4px 0 0;font-size:0.72rem;color:var(--muted);">Candle-lighting &amp; Havdalah times for your location, via Hebcal.</p>
   </div>
 </div>
 
@@ -1769,6 +1812,9 @@
     dowDisplaySize: 1.35,
     dowYTTSize: 0.72,
     dowEmojiSize: 1.4,
+    showHolidayCountdown: true,
+    showShabbatTimes: true,
+    candleZip: '10001',
   };
   let presets = {};
   let savedSchedules = {};
@@ -2407,6 +2453,143 @@
     weatherTimer = setInterval(fetchWeather, 30 * 60 * 1000);
   }
 
+  /* ────────── HEBREW HOLIDAY COUNTDOWN (Hebcal) ────────── */
+  const HOLIDAY_CACHE_KEY = 'hebrewDashboard_holidayCache';
+  const HOLIDAY_MAX_AGE = 12 * 60 * 60 * 1000; // 12h
+
+  async function fetchHolidays() {
+    // Reuse cached items if fresh (<12h)
+    try {
+      const c = JSON.parse(sessionStorage.getItem(HOLIDAY_CACHE_KEY) || 'null');
+      if (c && c.items && (Date.now() - c.ts) < HOLIDAY_MAX_AGE) { renderHolidayCountdown(c.items); return; }
+    } catch (e) {}
+    try {
+      const res = await fetch('https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=off&nx=off&year=now&month=x&ss=off&mf=off&c=off&geo=none&M=on&s=off');
+      const data = await res.json();
+      const items = (data && data.items) || [];
+      try { sessionStorage.setItem(HOLIDAY_CACHE_KEY, JSON.stringify({ items, ts: Date.now() })); } catch (e) {}
+      renderHolidayCountdown(items);
+    } catch (e) {
+      // graceful fallback: try any stale cache, else hide
+      try {
+        const c = JSON.parse(sessionStorage.getItem(HOLIDAY_CACHE_KEY) || 'null');
+        if (c && c.items) { renderHolidayCountdown(c.items); return; }
+      } catch (e2) {}
+      const el = document.getElementById('holidayCountdown');
+      if (el) el.style.display = 'none';
+    }
+  }
+
+  function renderHolidayCountdown(items) {
+    const el = document.getElementById('holidayCountdown');
+    if (!el) return;
+    if (!settings.showHolidayCountdown) { el.style.display = 'none'; return; }
+    if (!items || !items.length) { el.style.display = 'none'; return; }
+    // Today at local midnight for a date-only comparison
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    // Hebcal item.date is "YYYY-MM-DD" (holidays). Parse as local date.
+    const parseDay = d => {
+      const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(d || '');
+      return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
+    };
+    let next = null, nextDate = null;
+    for (const it of items) {
+      if (it.category && it.category !== 'holiday') continue;
+      const dt = parseDay(it.date);
+      if (!dt) continue;
+      if (dt >= today) { next = it; nextDate = dt; break; }
+    }
+    if (!next) { el.style.display = 'none'; return; }
+    const days = Math.round((nextDate - today) / 86400000);
+    const heb = next.hebrew ? ` <span class="heb-name">(${hebDisplay(next.hebrew)})</span>` : '';
+    if (days === 0) {
+      el.innerHTML = `🎉 Today is ${escapeHtmlDash(next.title)}!`;
+    } else {
+      el.innerHTML = `${days} day${days === 1 ? '' : 's'} until ${escapeHtmlDash(next.title)}${heb}`;
+    }
+    el.style.display = '';
+  }
+
+  function escapeHtmlDash(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  }
+
+  function initHolidayCountdown() { fetchHolidays(); }
+
+  /* ────────── SHABBAT CANDLE-LIGHTING (Hebcal) ────────── */
+  const SHABBAT_CACHE_KEY = 'hebrewDashboard_shabbatCache';
+  const SHABBAT_MAX_AGE = 6 * 60 * 60 * 1000; // 6h
+
+  async function fetchShabbat(force) {
+    const zip = (settings.candleZip || '10001').trim();
+    if (!force) {
+      try {
+        const c = JSON.parse(localStorage.getItem(SHABBAT_CACHE_KEY) || 'null');
+        if (c && c.items && c.zip === zip && (Date.now() - c.ts) < SHABBAT_MAX_AGE && !havdalahPassed(c.items)) {
+          renderShabbat(c.items); return;
+        }
+      } catch (e) {}
+    }
+    try {
+      const res = await fetch(`https://www.hebcal.com/shabbat?cfg=json&zip=${encodeURIComponent(zip)}&M=on`);
+      const data = await res.json();
+      const items = (data && data.items) || [];
+      try { localStorage.setItem(SHABBAT_CACHE_KEY, JSON.stringify({ items, ts: Date.now(), zip })); } catch (e) {}
+      renderShabbat(items);
+    } catch (e) {
+      try {
+        const c = JSON.parse(localStorage.getItem(SHABBAT_CACHE_KEY) || 'null');
+        if (c && c.items) { renderShabbat(c.items); return; }
+      } catch (e2) {}
+      const el = document.getElementById('shabbatTimes');
+      if (el && settings.showShabbatTimes) { el.style.display = ''; el.innerHTML = '<div class="shabbat-loading">Shabbat times unavailable</div>'; }
+      else if (el) el.style.display = 'none';
+    }
+  }
+
+  function havdalahPassed(items) {
+    const h = (items || []).find(i => i.category === 'havdalah');
+    if (!h || !h.date) return false;
+    const d = new Date(h.date);
+    return !isNaN(d) && d.getTime() < Date.now();
+  }
+
+  function renderShabbat(items) {
+    const el = document.getElementById('shabbatTimes');
+    if (!el) return;
+    if (!settings.showShabbatTimes) { el.style.display = 'none'; return; }
+    if (!items || !items.length) { el.style.display = 'none'; return; }
+    // If this week's Havdalah is already past, advance to next week's times.
+    if (havdalahPassed(items)) { fetchShabbat(true); return; }
+    const candles = items.find(i => i.category === 'candles');
+    const havdalah = items.find(i => i.category === 'havdalah');
+    const timeOpts = { hour: 'numeric', minute: '2-digit', hour12: true };
+    const dayMonth = { weekday: 'long', month: 'long', day: 'numeric' };
+    let html = '';
+    if (candles && candles.date) {
+      const d = new Date(candles.date);
+      if (!isNaN(d)) html += `<div class="shabbat-line">🕯️ Candle lighting: ${d.toLocaleDateString('en-US', dayMonth)} at ${d.toLocaleTimeString('en-US', timeOpts)}</div>`;
+    }
+    if (havdalah && havdalah.date) {
+      const d = new Date(havdalah.date);
+      if (!isNaN(d)) html += `<div class="shabbat-line">✨ Havdalah: ${d.toLocaleDateString('en-US', { weekday: 'long' })} at ${d.toLocaleTimeString('en-US', timeOpts)}</div>`;
+    }
+    if (!html) { el.style.display = 'none'; return; }
+    el.innerHTML = html;
+    el.style.display = '';
+  }
+
+  function initShabbatWidget() { fetchShabbat(false); }
+
+  function updateCandleZip() {
+    const v = (document.getElementById('candleZipInput').value || '').trim();
+    if (!/^\d{5}$/.test(v)) { alert('Please enter a 5-digit US zip code.'); return; }
+    settings.candleZip = v;
+    saveSettingsToStorage();
+    fetchShabbat(true);
+  }
+
   function updateLocation() {
     const v = document.getElementById('locationInput').value.trim();
     if (!v) return;
@@ -2530,6 +2713,9 @@
   function syncFormToSettings() {
     const $ = id => document.getElementById(id);
     $('locationInput').value = settings.location;
+    $('showHolidayCountdown').checked = settings.showHolidayCountdown !== false;
+    $('showShabbatTimes').checked = settings.showShabbatTimes !== false;
+    $('candleZipInput').value = settings.candleZip || '10001';
     document.querySelector(`input[name="engDateFmt"][value="${settings.engDateFmt}"]`).checked = true;
     $('showEngDOW').checked = settings.showEngDOW;
     $('hideEngDate').checked = settings.hideEngDate;
@@ -2607,6 +2793,19 @@
 
   function wireFormListeners() {
     const refreshAll = () => { updateDateTimeDisplay(); renderDaysList(); renderWeather(); };
+    document.getElementById('showHolidayCountdown').addEventListener('change', e => {
+      settings.showHolidayCountdown = e.target.checked;
+      saveSettingsToStorage();
+      if (e.target.checked) fetchHolidays();
+      else { const el = document.getElementById('holidayCountdown'); if (el) el.style.display = 'none'; }
+    });
+    document.getElementById('showShabbatTimes').addEventListener('change', e => {
+      settings.showShabbatTimes = e.target.checked;
+      saveSettingsToStorage();
+      if (e.target.checked) fetchShabbat(false);
+      else { const el = document.getElementById('shabbatTimes'); if (el) el.style.display = 'none'; }
+    });
+    document.getElementById('candleZipInput').addEventListener('keydown', e => { if (e.key === 'Enter') updateCandleZip(); });
     document.querySelectorAll('input[name="engDateFmt"]').forEach(r =>
       r.addEventListener('change', () => { settings.engDateFmt = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
     document.getElementById('showEngDOW').addEventListener('change', e => { settings.showEngDOW = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
@@ -3568,6 +3767,8 @@
     startClock();
     renderDaysList();
     scheduleWeatherRefresh();
+    initHolidayCountdown();
+    initShabbatWidget();
     renderPresets();
     checkSchedule();
     setInterval(checkSchedule, 30000);
@@ -3579,6 +3780,8 @@
     })();
     setTimeout(function tick() {
       renderDaysList();
+      fetchHolidays();
+      fetchShabbat(false);
       setTimeout(tick, 24 * 3600 * 1000);
     }, msToMidnight);
   });
