@@ -1325,7 +1325,7 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
         <label class="switch"><input type="checkbox" id="audioToggle"><span class="slider"></span></label>
         <span class="label">Audio <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
       </div>
-      <div class="row" style="flex-direction:column;align-items:stretch;gap:4px;margin-top:6px;">
+      <div class="row" id="ttsRateRow" style="flex-direction:column;align-items:stretch;gap:4px;margin-top:6px;">
         <span class="label" style="font-size:0.75rem;">Hebrew TTS Reading Speed <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
         <div style="display:flex;align-items:center;gap:6px;">
           <span style="font-size:0.65rem;color:var(--muted);">Slow</span>
@@ -1813,6 +1813,10 @@ let colorCodingMode = 'letter';
 let nikudColorOverrides = {};
 let hebFontId = 'Frank Ruhl Libre';
 let audioEnabled = false;
+function updateTtsRateVisibility() {
+  const row = document.getElementById('ttsRateRow');
+  if (row) row.style.display = audioEnabled ? '' : 'none';
+}
 let nameLetterMode = false;
 let nameLetterShowLetter = true;
 let otherModeActive = false;
@@ -2655,6 +2659,7 @@ function applySettings(s) {
   document.querySelectorAll('#colorModePills .pill').forEach(p => p.classList.toggle('active', p.dataset.cmode === colorCodingMode));
   audioEnabled = !!s.audioEnabled;
   document.getElementById('audioToggle').checked = audioEnabled;
+  updateTtsRateVisibility();
   showSkippedAgain = s.showSkippedAgain !== undefined ? !!s.showSkippedAgain : true;
   const skipReshowToggle = document.getElementById('skipReshowToggle');
   if (skipReshowToggle) skipReshowToggle.checked = showSkippedAgain;
@@ -4490,6 +4495,7 @@ function wireSetupScreen() {
   // Audio
   document.getElementById('audioToggle').addEventListener('change', e => {
     audioEnabled = e.target.checked;
+    updateTtsRateVisibility();
     saveSettings();
   });
 
@@ -4582,6 +4588,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('colorCodeToggle').checked = colorCodingEnabled;
   document.getElementById('colorCodeOpts').classList.toggle('hide', !colorCodingEnabled);
   document.getElementById('audioToggle').checked = audioEnabled;
+  updateTtsRateVisibility();
 });
 </script>
 </body>
