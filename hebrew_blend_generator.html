@@ -2838,6 +2838,7 @@
       <button class="btn btn-outline" id="regenBtn" onclick="regenerate()" disabled style="opacity:0.4;cursor:not-allowed;">↺ Regenerate</button>
       <button class="btn btn-secondary" id="printBtn" onclick="window.print()" disabled style="opacity:0.4;cursor:not-allowed;">🖨 Print</button>
       <button class="btn btn-outline" id="pdfBtn" onclick="exportPDF()" disabled style="opacity:0.4;cursor:not-allowed;margin-top:8px;">⬇ Export PDF</button>
+      <button class="btn btn-outline" id="shareBtn" onclick="copyShareLink('shareBtn')" style="margin-top:8px;">📋 Copy shareable link</button>
       <div class="print-tip" id="printTip" style="display:none;margin-top:8px;font-size:0.72rem;color:var(--muted);background:var(--warm-gray);border-radius:5px;padding:7px 9px;line-height:1.4;">
         💡 <strong>Print tip:</strong> In the print dialog, uncheck <em>Headers and footers</em> to remove the URL and date.
       </div>
@@ -3034,6 +3035,7 @@
     <button class="btn btn-outline" id="regenBtnMob" onclick="regenerate()" disabled style="opacity:0.4;cursor:not-allowed;">↺</button>
     <button class="btn btn-secondary" id="printBtnMob" onclick="window.print()" disabled style="opacity:0.4;cursor:not-allowed;">🖨</button>
     <button class="btn btn-outline" id="pdfBtnMob" onclick="exportPDF()" disabled style="opacity:0.4;cursor:not-allowed;">⬇ PDF</button>
+    <button class="btn btn-outline" id="shareBtnMob" onclick="copyShareLink('shareBtnMob')" title="Copy shareable link">📋</button>
   </div>
 
   <!-- ══ MAIN ══ -->
@@ -8402,6 +8404,9 @@ document.addEventListener('DOMContentLoaded', () => {
       );
       rebuildTranslitDisplay();
       updateRwPoolInfo();
+      // A shared link restored a real-words/word-search drill before the
+      // dictionary was ready — regenerate now that REAL_WORDS is populated.
+      if (_shareNeedsRegen) { _shareNeedsRegen = false; generate(); }
     })
     .catch(err => console.warn('Failed to load hebrew_words.json:', err));
 
@@ -9456,6 +9461,80 @@ window.addEventListener('resize', positionSidebarTab);
 if (window.innerWidth <= 700) {
   document.querySelectorAll('.panel').forEach(p => p.classList.add('collapsed'));
 }
+
+/* ══════════════════════════════════════════════════════
+   SHARE THIS SHEET — encode all settings into the URL
+   ──────────────────────────────────────────────────────
+   Rides on the existing getSettings()/applySettings() backbone so it stays
+   complete automatically as new controls are added. The URL carries a single
+   compact param: ?s=<base64url(JSON)> of only the settings that differ from a
+   pristine page (SHARE_DEFAULTS), keeping links short. State lives entirely in
+   the URL — no new localStorage key, so no AllTools/.ivrit registration needed.
+   ══════════════════════════════════════════════════════ */
+let SHARE_DEFAULTS = null;   // getSettings() snapshot of the pristine page
+let _shareNeedsRegen = false; // defer auto-generate until the word dictionary loads
+
+// UTF-8-safe base64url (Hebrew round-trips cleanly).
+function shareB64Encode(str){ return btoa(unescape(encodeURIComponent(str))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function shareB64Decode(b){ b = b.replace(/-/g,'+').replace(/_/g,'/'); return decodeURIComponent(escape(atob(b))); }
+
+// Build the shareable URL for the current settings (only the diff vs defaults).
+function serializeSettings() {
+  const base = location.origin + location.pathname;
+  if (!SHARE_DEFAULTS) return base;
+  const cur = getSettings();
+  const diff = {};
+  Object.keys(cur).forEach(k => {
+    if (JSON.stringify(cur[k]) !== JSON.stringify(SHARE_DEFAULTS[k])) diff[k] = cur[k];
+  });
+  if (!Object.keys(diff).length) return base;             // unchanged → clean link
+  return base + '?s=' + shareB64Encode(JSON.stringify(diff));
+}
+
+// Read ?s= on load, restore controls, and auto-generate. Degrades silently.
+function restoreFromURL() {
+  SHARE_DEFAULTS = getSettings();                          // pristine baseline for diffing
+  let s;
+  try { s = new URLSearchParams(location.search).get('s'); } catch(e) { return; }
+  if (!s) return;                                          // no param → keep defaults
+  let diff;
+  try { diff = JSON.parse(shareB64Decode(s)); } catch(e) { return; } // garbage → ignore
+  if (!diff || typeof diff !== 'object') return;
+  try { applySettings(Object.assign({}, SHARE_DEFAULTS, diff)); } catch(e) { return; }
+  // Auto-generate. Real-words / word-search drills need REAL_WORDS, which loads
+  // async — defer to the dictionary's fetch .then() in that case.
+  const needsWords = document.getElementById('realWordsToggle')?.checked;
+  if (needsWords && (!REAL_WORDS || !REAL_WORDS.length)) { _shareNeedsRegen = true; }
+  else { try { generate(); } catch(e) {} }
+}
+
+// "📋 Copy shareable link" — sync the address bar, copy the URL, flash the button.
+function copyShareLink(btnId) {
+  const url = serializeSettings();
+  try { history.replaceState(null, '', url); } catch(e) {}
+  navigator.clipboard.writeText(url).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = url; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+  });
+  ['shareBtn','shareBtnMob'].forEach(id => {
+    const b = document.getElementById(id);
+    if (!b) return;
+    if (b.dataset.label === undefined) b.dataset.label = b.innerHTML;
+    b.innerHTML = (id === 'shareBtnMob') ? '✓' : '✓ Copied!';
+  });
+  setTimeout(() => {
+    ['shareBtn','shareBtnMob'].forEach(id => {
+      const b = document.getElementById(id);
+      if (b && b.dataset.label !== undefined) b.innerHTML = b.dataset.label;
+    });
+  }, 1500);
+}
+
+// Run last, after every init block (incl. the :8357 DOMContentLoaded handler
+// that builds the real-words grid and sets the initial drill).
+document.addEventListener('DOMContentLoaded', restoreFromURL);
 </script>
 </body>
 </html>
