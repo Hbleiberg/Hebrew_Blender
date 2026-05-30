@@ -1782,6 +1782,7 @@ let savedCards = [];
 let mistakeIndices = [];
 let showSkippedAgain = true; // re-queue each skipped card once so the whole set gets seen
 let requeued = [];           // parallel to scores: true = slot was skipped & re-queued (excluded from results)
+let hasFlipped = [];         // parallel to scores: true once the user has flipped this card at least once
 
 let translitStyle = 'default';
 
@@ -3237,6 +3238,7 @@ function startPractice() {
   currentIndex = 0;
   scores = new Array(deck.length).fill(null);
   requeued = new Array(deck.length).fill(false);
+  hasFlipped = new Array(deck.length).fill(false);
   isFlipped = false;
   renderCurrentCard();
   showScreen('screenCard');
@@ -3437,8 +3439,9 @@ function renderCurrentCard() {
     bb.classList.remove('hide'); bb.classList.add('bad'); bb.textContent = '✗';
   }
 
-  // Show yes/no buttons only on the back face
-  document.querySelector('.fc-mark-row').classList.toggle('hide', !isFlipped);
+  // Show yes/no buttons on the back face, and once a card has been flipped at
+  // least once (so you can grade without re-flipping).
+  document.querySelector('.fc-mark-row').classList.toggle('hide', !(isFlipped || hasFlipped[currentIndex]));
 
   // Disable nav at edges (visual only)
   document.getElementById('prevBtn').disabled = (currentIndex === 0);
@@ -3448,7 +3451,8 @@ function renderCurrentCard() {
 function flipCard() {
   isFlipped = !isFlipped;
   document.getElementById('fcCard').classList.toggle('flipped', isFlipped);
-  document.querySelector('.fc-mark-row').classList.toggle('hide', !isFlipped);
+  hasFlipped[currentIndex] = true;
+  document.querySelector('.fc-mark-row').classList.remove('hide');
 }
 
 function markCorrect(e) {
@@ -3480,6 +3484,7 @@ function nextCard() {
     currentCards.push({ ...card, isSkippedReshow: true });
     scores.push(null);
     requeued.push(false);
+    hasFlipped.push(false);
   }
   if (currentIndex < currentCards.length - 1) {
     currentIndex++;
@@ -3547,6 +3552,7 @@ function redoSameSet() {
   currentIndex = 0;
   scores = new Array(currentCards.length).fill(null);
   requeued = new Array(currentCards.length).fill(false);
+  hasFlipped = new Array(currentCards.length).fill(false);
   isFlipped = false;
   renderCurrentCard();
   showScreen('screenCard');
@@ -3559,6 +3565,7 @@ function practiceMistakes() {
   currentIndex = 0;
   scores = new Array(currentCards.length).fill(null);
   requeued = new Array(currentCards.length).fill(false);
+  hasFlipped = new Array(currentCards.length).fill(false);
   isFlipped = false;
   renderCurrentCard();
   showScreen('screenCard');
