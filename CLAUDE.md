@@ -16,6 +16,10 @@
 | `dashboardPresets` | `hebrewDashboard_presets` | Classroom Dashboard saved presets |
 | `dashboardSchedules` | `hebrewDashboard_schedules` | Classroom Dashboard saved schedules |
 | `dashboardSettings` | `hebrewDashboard_settings` | All Classroom Dashboard settings (zoom, video URL, header size, etc.) |
+| `flashCardPresets` | `hebrewFlashCards_presets` | Flash Cards saved presets |
+| `dictAudioEnabled` / `dictTranslitStyle` / `dictTtsRate` / `dictEmojiSettings` | `hebrewDictionary_*` | Hebrew Dictionary settings |
+| `torahTrainerSettings` | `hebrewTorahTrainer_settings` | Torah Trainer settings |
+| `inputMode` | `hebrewBlender_inputMode` | Backup UI preference: `'auto'` (.ivrit file) or `'manual'` (text block) — see ".ivrit Save Files" below |
 
 ### Rule: any new tool with persistent data must be added here
 
@@ -52,10 +56,85 @@ Examples:
 
 ---
 
+## .ivrit Save Files (Automatic Input) — **REQUIRED on every tool with presets/settings**
+
+Users back up and restore via a downloadable **`.ivrit` file** (a plain JSON text file with a custom extension) — a portable "save file" they keep on their own computer. This is the **default, preferred** backup mechanism going forward. Every tool's backup area has an **Automatic Input / Manual Input** toggle at the top:
+
+- **Automatic Input** (default) — a *Save to .ivrit file* button plus a drag-and-drop / browse zone for restoring. **This is the norm — build it into every new tool.**
+- **Manual Input** — the legacy copy-and-paste textarea (kept for users who already have text backups).
+
+The toggle choice is remembered site-wide in `localStorage['hebrewBlender_inputMode']` (`'auto'` | `'manual'`).
+
+Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_dashboard.html` (`Dashboard`), `flash_cards.html` (`FlashCards`), and `index.html` (`AllTools`). The Dictionary and Torah Trainer have no presets of their own — their settings are backed up **only** through the `AllTools` file on `index.html`.
+
+### File format
+
+```jsonc
+{
+  "_ivritSuite": 1,
+  "format": "ivrit-save",     // gate: anything else is rejected
+  "version": 1,
+  "tool": "Worksheet",        // tool identity — survives the user renaming the file
+  "savedAt": "2026-05-30T...",// ISO timestamp
+  "data": { /* presets + liveState, or the AllTools bundle */ }
+}
+```
+
+- **Filename**: `<Month>_<Day>_<Year>_<Tool>.ivrit` — e.g. `May_30_2026_Worksheet.ivrit`, `August_15_1994_Dashboard.ivrit`, `April_27_2008_AllTools.ivrit`. Built by `ivritDateStamp()` + `IVRIT_CFG.tool`.
+- **`tool` is the source of truth**, NOT the filename. On import, the embedded `tool` is compared to the page's `IVRIT_CFG.tool`; a mismatch warns the user before proceeding (an `AllTools` file is accepted on any page; single-tool files are accepted on the matching page). This is why the tool name lives *inside* the file.
+- A single-tool `data` holds **both** `presets` (the full named-preset collection) **and** `liveState` (the result of `getSettings()` — the current on-screen configuration). The `AllTools` `data` holds the same bundle object as `exportAllSettings`.
+
+### Import behavior — always **ask Merge vs Replace**
+
+`ivritRestore()` shows a small modal (`ivritAskMode()`) on every import:
+- **Merge** — keep current data, add the file's (matching keys overwritten via `Object.assign`).
+- **Replace** — clear current data first, then load only the file's.
+
+### Pattern: per-file `IVRIT_CFG` + shared engine
+
+Each file defines a small **`IVRIT_CFG`** object, then pastes the **shared engine** verbatim (the block between the `═══ IvritSuite .ivrit save-file engine ═══` comment markers — it is byte-for-byte identical across all files; copy it, don't rewrite it).
+
+```js
+const IVRIT_CFG = {
+  tool: 'MyTool',                 // also becomes the filename suffix + embedded tag
+  gather() {                      // what a Save writes
+    return {
+      presets: JSON.parse(localStorage.getItem('hebrewMyTool_presets') || '{}'),
+      liveState: getSettings()    // current controls — see Preset Save/Restore rule below
+    };
+  },
+  apply(data, mode) {             // what a Restore does; mode is 'merge' | 'replace'
+    const incoming = data.presets || data.myToolPresets; // also accept an AllTools bundle key
+    if (incoming) {
+      const base = mode === 'replace' ? {} : JSON.parse(localStorage.getItem('hebrewMyTool_presets') || '{}');
+      localStorage.setItem('hebrewMyTool_presets', JSON.stringify(Object.assign(base, incoming)));
+      renderPresets();
+    }
+    if (data.liveState) applySettings(data.liveState);
+  }
+  // needsReload: true  → set this if there is no clean live re-apply path; the engine then skips the success alert and you reload in apply()
+};
+```
+
+The shared engine provides: `ivritDateStamp`, `ivritStatus`, `setIvritMode`, `ivritSaveFile`, `ivritAskMode`, `ivritToolMismatch`, `ivritRestore`, `ivritReadFile`, `ivritInit` (auto-runs on DOM ready). It depends only on `IVRIT_CFG` and the standard UI element IDs.
+
+### Required UI markup (in the backup area)
+
+The shared `.ivrit-*` CSS block (with `var(..., fallback)` colors so it works on any page) + the toggle + `#ivritAuto` (Save button, `#ivritDrop`, `#ivritFileInput`, `#ivritStatus`) + `#ivritManual` (the legacy textarea, `display:none` by default). Copy an existing page's markup (e.g. the Generator's "Backup Presets" sub-panel).
+
+### Rules for new tools / new options
+
+1. **Every new tool that saves presets or settings MUST implement this** (toggle + `IVRIT_CFG` + shared engine + UI markup) and register its key(s) in the `index.html` AllTools functions (see section above).
+2. **Anything captured by `getSettings()` is automatically saved in the `.ivrit` file** via `liveState` — so the Preset Save/Restore rule below (add every new control to `getSettings()`/`applySettings()`) is also what keeps `.ivrit` files complete. New options need no extra `.ivrit` wiring beyond that.
+
+---
+
 ## Preset Save/Restore
 Whenever a new UI control is added to `hebrew_blend_generator.html`, it must be included in both:
 - `getSettings()` — serialize the control's current value
 - `applySettings()` — restore the value and call any related UI toggle functions (e.g. `toggleGematriaMode()`, `toggleCwBlendOpts()`) so dependent rows update correctly
+
+Because `.ivrit` save files store `liveState = getSettings()`, keeping `getSettings()`/`applySettings()` complete is what makes both presets **and** `.ivrit` files capture every control. No separate `.ivrit` step is needed per control.
 
 ---
 

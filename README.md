@@ -74,7 +74,25 @@ A curated, filterable directory of external Hebrew and Jewish-education resource
 - All entries live in a single `RESOURCES` array inside the file — easy to add to or curate
 
 ### Landing Page (`index.html`)
-Home page with navigation cards to all the tools above. Also hosts the global Import / Export / Erase All Settings modal (gear icon) that round-trips every tool's `localStorage` data as a single JSON blob.
+Home page with navigation cards to all the tools above. Also hosts the global Import / Export / Erase All Settings modal (gear icon) that round-trips every tool's `localStorage` data — either as a single **`.ivrit` save file** or as a copy-and-paste JSON blob.
+
+---
+
+## Backups & Save Files (`.ivrit`)
+
+Every tool that stores presets — the **Worksheet Generator**, **Classroom Dashboard**, and **Flash Cards** — plus the global modal on the **landing page**, lets you back up and restore your work as a portable **save file** with an `.ivrit` extension. (It's plain JSON text under the hood, so it's universally readable and safe to email or store anywhere.)
+
+In each tool's **Backup** area there's an **Automatic Input / Manual Input** toggle:
+
+- **Automatic Input** (the default) — click **Save to .ivrit file** to download a save file, or **drag-and-drop** (or browse for) an `.ivrit` file to restore. The download is named for today's date and the tool, e.g. `May_30_2026_Worksheet.ivrit`, `August_15_1994_Dashboard.ivrit`, or `April_27_2008_AllTools.ivrit`.
+- **Manual Input** — the classic copy-and-paste text box, for anyone who already keeps text backups.
+
+How it works:
+
+- A save file stores **both** your full collection of named presets **and** your current on-screen settings, so restoring brings everything back.
+- The landing-page **AllTools** save file bundles *every* tool at once (Generator, Dashboard, Flash Cards, Dictionary, and Torah Trainer settings).
+- Each file knows which tool it came from (recorded inside the file, so it still works even if you rename it). Dropping the wrong kind of file onto a tool warns you first.
+- On restore you choose **Merge** (add to what you have) or **Replace** (start fresh from the file).
 
 ---
 

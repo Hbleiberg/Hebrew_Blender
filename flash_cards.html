@@ -1340,11 +1340,35 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
 
       <!-- Backup -->
       <div class="label" style="font-weight:600; margin-bottom:4px">Backup Presets</div>
-      <textarea class="tx-area" id="backupArea" placeholder="Exported preset JSON appears here…"></textarea>
-      <div class="btn-row" style="margin-top:6px">
-        <button class="btn sm" id="exportBtn">Export</button>
-        <button class="btn sm" id="importBtn">Import</button>
-        <button class="btn sm ghost" id="copyBtn">Copy</button>
+      <style>
+        .ivrit-mode-toggle{display:flex;border:1px solid var(--border,#ccc);border-radius:6px;overflow:hidden;margin-bottom:10px;}
+        .ivrit-mode-btn{flex:1;padding:6px 4px;border:none;background:var(--white,#fff);color:var(--text,#222);font-family:inherit;font-size:0.74rem;cursor:pointer;}
+        .ivrit-mode-btn.active{background:var(--navy,#1a2744);color:#fff;}
+        .ivrit-drop{border:2px dashed var(--border,#ccc);border-radius:8px;padding:14px 10px;text-align:center;transition:all 0.15s;}
+        .ivrit-drop.ivrit-drag{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
+      </style>
+      <div class="ivrit-mode-toggle">
+        <button type="button" id="ivritModeAuto" class="ivrit-mode-btn active" onclick="setIvritMode('auto')">Automatic Input</button>
+        <button type="button" id="ivritModeManual" class="ivrit-mode-btn" onclick="setIvritMode('manual')">Manual Input</button>
+      </div>
+      <div id="ivritAuto">
+        <div class="sub" style="margin-bottom:8px;">Save all your presets and current settings to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it.</div>
+        <button class="btn sm" type="button" onclick="ivritSaveFile()" style="width:100%;margin-bottom:10px;">⬇ Save to .ivrit file</button>
+        <div id="ivritDrop" class="ivrit-drop">
+          <div style="font-size:0.85rem;">Drop a <b>.ivrit</b> file here</div>
+          <div class="sub" style="margin:4px 0;">— or —</div>
+          <button class="btn sm" type="button" onclick="document.getElementById('ivritFileInput').click()">Browse…</button>
+          <input type="file" id="ivritFileInput" accept=".ivrit,application/json,text/plain" style="display:none;">
+        </div>
+        <div id="ivritStatus" class="sub" style="margin-top:8px;min-height:1em;text-align:center;"></div>
+      </div>
+      <div id="ivritManual" style="display:none;">
+        <textarea class="tx-area" id="backupArea" placeholder="Exported preset JSON appears here…"></textarea>
+        <div class="btn-row" style="margin-top:6px">
+          <button class="btn sm" id="exportBtn">Export</button>
+          <button class="btn sm" id="importBtn">Import</button>
+          <button class="btn sm ghost" id="copyBtn">Copy</button>
+        </div>
       </div>
     </div>
   </div>
@@ -2839,6 +2863,121 @@ function copyTextarea() {
   btn.textContent = 'Copied!';
   setTimeout(() => btn.textContent = orig, 1200);
 }
+
+/* =========================================================================
+   .ivrit SAVE FILE
+   ========================================================================= */
+const IVRIT_CFG = {
+  tool: 'FlashCards',
+  gather() {
+    return { presets: readPresets(), liveState: getSettings() };
+  },
+  apply(data, mode) {
+    const incoming = data.presets || data.flashCardPresets;   // also accept an AllTools bundle
+    if (incoming) {
+      const base = mode === 'replace' ? {} : readPresets();
+      writePresets(Object.assign(base, incoming));
+      renderPresets();
+    }
+    if (data.liveState) { applySettings(data.liveState); saveSettings(); }
+  }
+};
+
+/* ═══════════ IvritSuite .ivrit save-file engine (shared, identical across pages) ═══════════ */
+function ivritDateStamp() {
+  const d = new Date();
+  const m = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  return m[d.getMonth()] + '_' + d.getDate() + '_' + d.getFullYear();
+}
+function ivritStatus(msg) { const el = document.getElementById('ivritStatus'); if (el) el.textContent = msg || ''; }
+function setIvritMode(mode) {
+  const a = document.getElementById('ivritAuto'), mn = document.getElementById('ivritManual');
+  const ba = document.getElementById('ivritModeAuto'), bm = document.getElementById('ivritModeManual');
+  if (ba) ba.classList.toggle('active', mode === 'auto');
+  if (bm) bm.classList.toggle('active', mode === 'manual');
+  if (a)  a.style.display  = mode === 'auto'   ? '' : 'none';
+  if (mn) mn.style.display = mode === 'manual' ? '' : 'none';
+  try { localStorage.setItem('hebrewBlender_inputMode', mode); } catch (e) {}
+}
+function ivritSaveFile() {
+  const payload = { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: IVRIT_CFG.tool, savedAt: new Date().toISOString(), data: IVRIT_CFG.gather() };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = ivritDateStamp() + '_' + IVRIT_CFG.tool + '.ivrit';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+  ivritStatus('Saved ' + a.download);
+}
+function ivritAskMode() {
+  return new Promise(resolve => {
+    const ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
+    const box = document.createElement('div');
+    box.style.cssText = 'background:var(--white,#fff);color:var(--text,#1a2744);max-width:360px;width:100%;border-radius:10px;padding:18px;font-family:inherit;box-shadow:0 10px 40px rgba(0,0,0,0.35);';
+    box.innerHTML = '<div style="font-weight:700;font-size:1rem;margin-bottom:8px;">Restore from .ivrit file</div>'
+      + '<div style="font-size:0.82rem;line-height:1.5;margin-bottom:16px;opacity:0.9;"><b>Merge</b> keeps what you have now and adds the file\'s data (matching names are overwritten).<br><b>Replace</b> clears your current data first and loads only what\'s in the file.</div>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+      + '<button data-act="merge" style="flex:1;min-width:96px;padding:9px;border:none;border-radius:6px;background:var(--navy,#1a2744);color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">Merge</button>'
+      + '<button data-act="replace" style="flex:1;min-width:96px;padding:9px;border:none;border-radius:6px;background:#a83232;color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">Replace</button>'
+      + '<button data-act="cancel" style="flex:1;min-width:96px;padding:9px;border:1px solid var(--border,#ccc);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:inherit;font-size:0.85rem;">Cancel</button>'
+      + '</div>';
+    ov.appendChild(box); document.body.appendChild(ov);
+    const done = v => { if (ov.parentNode) document.body.removeChild(ov); resolve(v); };
+    box.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { const act = b.dataset.act; done(act === 'cancel' ? null : act); }));
+    ov.addEventListener('click', e => { if (e.target === ov) done(null); });
+  });
+}
+function ivritToolMismatch(fileTool) {
+  if (!fileTool) return false;
+  if (fileTool === IVRIT_CFG.tool) return false;
+  if (fileTool === 'AllTools') return false;
+  if (IVRIT_CFG.tool === 'AllTools') return false;
+  return true;
+}
+async function ivritRestore(text, sourceName) {
+  let parsed;
+  try { parsed = JSON.parse(text); }
+  catch (e) { alert('That file could not be read as a .ivrit save file.'); return; }
+  let payload = parsed;
+  if (!(parsed && parsed.format === 'ivrit-save')) {
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      payload = { tool: null, data: { presets: parsed } };
+    } else { alert('That file is not a recognizable .ivrit save file.'); return; }
+  }
+  if (ivritToolMismatch(payload.tool)) {
+    if (!confirm('This looks like a "' + payload.tool + '" save file, but this is the ' + IVRIT_CFG.tool + ' page.\n\nImporting it here may not do anything useful. Import anyway?')) return;
+  }
+  const mode = await ivritAskMode();
+  if (!mode) return;
+  try { IVRIT_CFG.apply(payload.data || {}, mode); }
+  catch (e) { alert('Restore failed: ' + e.message); return; }
+  if (!IVRIT_CFG.needsReload) {
+    ivritStatus('Restored from ' + (sourceName || 'file'));
+    alert('Restored successfully' + (sourceName ? ' from ' + sourceName : '') + '.');
+  }
+}
+function ivritReadFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => ivritRestore(reader.result, file.name);
+  reader.onerror = () => alert('Could not read that file.');
+  reader.readAsText(file);
+}
+function ivritInit() {
+  setIvritMode(localStorage.getItem('hebrewBlender_inputMode') || 'auto');
+  const input = document.getElementById('ivritFileInput');
+  if (input) input.addEventListener('change', e => { ivritReadFile(e.target.files[0]); e.target.value = ''; });
+  const drop = document.getElementById('ivritDrop');
+  if (drop) {
+    ['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); drop.classList.add('ivrit-drag'); }));
+    ['dragleave','dragend'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); drop.classList.remove('ivrit-drag'); }));
+    drop.addEventListener('drop', e => { e.preventDefault(); e.stopPropagation(); drop.classList.remove('ivrit-drag'); ivritReadFile(e.dataTransfer.files[0]); });
+  }
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ivritInit);
+else ivritInit();
+/* ═══════════ end .ivrit engine ═══════════ */
 
 /* =========================================================================
    VOWEL POSITION & VOWEL LOCK UI
