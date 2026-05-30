@@ -1381,9 +1381,9 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
         .ivrit-drop{border:2px dashed var(--border,#ccc);border-radius:8px;padding:14px 10px;text-align:center;transition:all 0.15s;}
         .ivrit-drop.ivrit-drag{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
         /* Collapsible sub-section headings inside Advanced Settings */
-        .adv-subhead{display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;font-weight:600;margin-bottom:4px;}
-        .adv-subhead::after{content:'▾';color:var(--gold);font-size:0.9rem;transition:transform 0.2s;flex-shrink:0;}
-        .adv-subhead.collapsed::after{transform:rotate(-90deg);}
+        .adv-subhead{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-weight:600;margin-bottom:4px;}
+        .adv-subhead::before{content:'▾';color:var(--gold);font-size:0.9rem;transition:transform 0.2s;flex-shrink:0;}
+        .adv-subhead.collapsed::before{transform:rotate(-90deg);}
         .adv-subbody.collapsed{display:none;}
       </style>
       <div class="adv-subbody">

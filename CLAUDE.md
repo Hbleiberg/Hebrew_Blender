@@ -809,7 +809,15 @@ VERSION = "1.0"   # shown as "v{VERSION}" on the splash
 ```
 
 **When asked to update / bump the version number:**
-1. Edit `VERSION` in `splash/gen_splash.py`.
+1. Edit `VERSION` in `splash/gen_splash.py`. **This is all a plain version bump
+   does** — just the constant.
+2. **Do NOT regenerate the splash images unless the user explicitly asks.**
+   The `VERSION` constant is the source of truth; the rendered `splash/splash-*.png`
+   are only re-rendered on request. So the splash PNGs may lag the constant until
+   a regeneration is requested — that's expected.
+
+**When the user explicitly asks to regenerate the splash images:**
+1. Make sure `VERSION` is set as desired in `splash/gen_splash.py`.
 2. Run `python3 splash/gen_splash.py` — re-renders every `splash/splash-*.png`
    and rewrites `splash/apple-startup-links.html`.
 3. Only if `DEVICES` changed (NOT for a plain version bump): re-sync the
