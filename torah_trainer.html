@@ -1778,6 +1778,10 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant) 
   // Verse numbers are inline superscripts; the opening chapter shows as a drop-cap.
   // Per-verse Read/Chant buttons are omitted here (they don't fit running text) —
   // use the passage-level Read all / Chant all buttons, or click individual words.
+  // Each verse is wrapped in a [data-vk] span, and words reuse the same
+  // .tt-heb / .tt-translit classes the other layouts use, so the karaoke engine
+  // (updateKaraokeWordRefs, seekToVerseInLoadedAudio, click-to-seek) finds and
+  // highlights them with no engine-side changes.
   const perVerse = verses.map(v => {
     const firstTwi = wordIdxRef.value;
     const hebHtml = tokenizeHebrew(v.hebrew, wordIdxRef);
@@ -1790,15 +1794,17 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant) 
   html += '<p class="tt-bible-blk tt-bible-heb" dir="rtl">';
   html += `<span class="tt-bible-dropcap">${escapeHTML(String(startChapter))}</span>`;
   for (const { v, hebHtml } of perVerse) {
-    html += `<sup class="tt-bnum">${escapeHTML(`${v.chapter}:${v.verse}`)}</sup>${hebHtml} `;
+    const numLabel = `${v.chapter}:${v.verse}`;
+    html += `<span class="tt-bverse" data-vk="${escapeHTML(numLabel)}"><sup class="tt-bnum">${escapeHTML(numLabel)}</sup><span class="tt-heb">${hebHtml}</span></span> `;
   }
   html += '</p>';
   // Transliteration block (uses the Hebrew word indices captured above)
   if (withTranslit) {
     html += '<p class="tt-bible-blk tt-bible-translit" dir="ltr">';
     for (const { v, firstTwi, hebCount } of perVerse) {
+      const numLabel = `${v.chapter}:${v.verse}`;
       const tr = applyTranslit(v.hebrew);
-      html += `<sup class="tt-bnum">${escapeHTML(`${v.chapter}:${v.verse}`)}</sup>${tokenizeTranslit(tr, firstTwi, hebCount)} `;
+      html += `<sup class="tt-bnum">${escapeHTML(numLabel)}</sup><span class="tt-translit">${tokenizeTranslit(tr, firstTwi, hebCount)}</span> `;
     }
     html += '</p>';
   }
@@ -1806,7 +1812,8 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant) 
   if (withTrans) {
     html += '<p class="tt-bible-blk tt-bible-translation" dir="ltr">';
     for (const { v } of perVerse) {
-      html += `<sup class="tt-bnum">${escapeHTML(`${v.chapter}:${v.verse}`)}</sup>${stripHTML(v.translation)} `;
+      const numLabel = `${v.chapter}:${v.verse}`;
+      html += `<sup class="tt-bnum">${escapeHTML(numLabel)}</sup>${stripHTML(v.translation)} `;
     }
     html += '</p>';
   }
