@@ -335,6 +335,27 @@ function closeIEModal(e) {
   if (e && e.target !== document.getElementById('ieBackdrop')) return;
   document.getElementById('ieBackdrop').classList.remove('open');
 }
+// Deep-merge an incoming Flash Cards profiles blob ({activeProfile, profiles}) into storage.
+// replace=true clears existing profiles first. Result lists merge de-duped by savedAt (cap 50).
+function mergeFlashCardProfiles(incoming, replace) {
+  const KEY = 'hebrewFlashCards_profiles';
+  let base;
+  try { base = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { base = null; }
+  if (replace || !base || !base.profiles) base = { activeProfile: null, profiles: {} };
+  const inc = (incoming && incoming.profiles) ? incoming : { profiles: {} };
+  Object.keys(inc.profiles || {}).forEach(name => {
+    const src = inc.profiles[name];
+    if (!base.profiles[name]) { base.profiles[name] = src; return; }
+    const seen = new Set((base.profiles[name].results || []).map(r => r.savedAt));
+    (src.results || []).forEach(r => { if (!seen.has(r.savedAt)) base.profiles[name].results.push(r); });
+    base.profiles[name].results = (base.profiles[name].results || [])
+      .sort((a, b) => new Date(a.savedAt) - new Date(b.savedAt)).slice(-50);
+  });
+  if (inc.activeProfile && base.profiles[inc.activeProfile]) base.activeProfile = inc.activeProfile;
+  if (!base.activeProfile) base.activeProfile = Object.keys(base.profiles)[0] || null;
+  localStorage.setItem(KEY, JSON.stringify(base));
+}
+
 function exportAllSettings() {
   const blob = {
     _hebrewBlenderExport: 1,
@@ -343,6 +364,7 @@ function exportAllSettings() {
     dashboardSchedules:  JSON.parse(localStorage.getItem('hebrewDashboard_schedules')  || '{}'),
     dashboardSettings:   JSON.parse(localStorage.getItem('hebrewDashboard_settings')   || '{}'),
     flashCardPresets:    JSON.parse(localStorage.getItem('hebrewFlashCards_presets')   || '{}'),
+    flashCardProfiles:   JSON.parse(localStorage.getItem('hebrewFlashCards_profiles')  || '{}'),
     dictAudioEnabled:    localStorage.getItem('hebrewDictionary_audioEnabled') || '0',
     dictTranslitStyle:   localStorage.getItem('hebrewDictionary_translitStyle') || 'default',
     dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate') || '0.75',
@@ -379,6 +401,9 @@ function importAllSettings() {
     if (parsed.flashCardPresets) {
       const existing = JSON.parse(localStorage.getItem('hebrewFlashCards_presets') || '{}');
       localStorage.setItem('hebrewFlashCards_presets', JSON.stringify(Object.assign(existing, parsed.flashCardPresets)));
+    }
+    if (parsed.flashCardProfiles && parsed.flashCardProfiles.profiles) {
+      mergeFlashCardProfiles(parsed.flashCardProfiles);
     }
     if (parsed.dictAudioEnabled !== undefined) {
       localStorage.setItem('hebrewDictionary_audioEnabled', parsed.dictAudioEnabled);
@@ -420,6 +445,7 @@ function eraseAllSettings() {
     'hebrewDashboard_schedules',
     'hebrewDashboard_settings',
     'hebrewFlashCards_presets',
+    'hebrewFlashCards_profiles',
     'hebrewDictionary_audioEnabled',
     'hebrewDictionary_translitStyle',
     'hebrewDictionary_ttsRate',
@@ -442,6 +468,7 @@ const IVRIT_CFG = {
       dashboardSchedules:  JSON.parse(localStorage.getItem('hebrewDashboard_schedules')  || '{}'),
       dashboardSettings:   JSON.parse(localStorage.getItem('hebrewDashboard_settings')   || '{}'),
       flashCardPresets:    JSON.parse(localStorage.getItem('hebrewFlashCards_presets')   || '{}'),
+      flashCardProfiles:   JSON.parse(localStorage.getItem('hebrewFlashCards_profiles')  || '{}'),
       dictAudioEnabled:    localStorage.getItem('hebrewDictionary_audioEnabled')  || '0',
       dictTranslitStyle:   localStorage.getItem('hebrewDictionary_translitStyle') || 'default',
       dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate')       || '0.75',
@@ -462,6 +489,7 @@ const IVRIT_CFG = {
     if (data.dashboardSchedules)  { mergeObj('hebrewDashboard_schedules',     data.dashboardSchedules);  touched = true; }
     if (data.dashboardSettings)   { mergeObj('hebrewDashboard_settings',      data.dashboardSettings);   touched = true; }
     if (data.flashCardPresets)    { mergeObj('hebrewFlashCards_presets',      data.flashCardPresets);    touched = true; }
+    if (data.flashCardProfiles && data.flashCardProfiles.profiles) { mergeFlashCardProfiles(data.flashCardProfiles, mode === 'replace'); touched = true; }
     if (data.dictEmojiSettings)   { mergeObj('hebrewDictionary_emojiSettings', data.dictEmojiSettings);  touched = true; }
     if (data.torahTrainerSettings){ mergeObj('hebrewTorahTrainer_settings',   data.torahTrainerSettings); touched = true; }
     if (data.dictAudioEnabled  !== undefined) { localStorage.setItem('hebrewDictionary_audioEnabled',  data.dictAudioEnabled);  touched = true; }

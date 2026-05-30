@@ -1010,6 +1010,33 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
     </div>
   </div>
 
+  <!-- PROFILES & RESULTS -->
+  <div class="panel collapsed" id="panelProfiles">
+    <h3 class="panel-title">Profiles &amp; Results</h3>
+    <div class="panel-body">
+      <p class="sub" style="margin-top:0;">Save drill results to a named profile to track progress over time. After a drill, tap <b>Save Results</b> on the results screen.</p>
+
+      <div class="preset-row" style="margin-bottom:8px;">
+        <select id="activeProfileSelect" class="preset-input" style="flex:1;"></select>
+        <button class="btn sm" id="newProfileBtn" title="Create a new profile">＋ New</button>
+      </div>
+      <div class="btn-row" style="margin-bottom:8px;">
+        <button class="btn sm" id="renameProfileBtn">Rename</button>
+        <button class="btn sm danger" id="deleteProfileBtn">Delete</button>
+      </div>
+
+      <ul class="preset-list" id="profileList"></ul>
+      <p class="sub" id="profileEmpty">No profiles yet — finish a drill and tap <b>Save Results</b> to create one.</p>
+
+      <div id="profileDetail" style="display:none;">
+        <div class="label" style="font-weight:600;margin:12px 0 4px;">Results History — <span id="profileDetailName"></span></div>
+        <ul class="results-list" id="profileHistory" style="margin-top:0;"></ul>
+        <p class="sub" id="profileHistoryEmpty" style="display:none;">No saved results yet for this profile.</p>
+        <button class="btn gold" id="weaknessesBtn" style="width:100%;margin-top:8px;">🎯 Practice My Weaknesses</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODE -->
   <div class="panel" id="panelMode">
     <h3 class="panel-title">Mode</h3>
@@ -1370,6 +1397,20 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
           <button class="btn sm ghost" id="copyBtn">Copy</button>
         </div>
       </div>
+
+      <!-- Backup Results / Profiles -->
+      <div class="label" style="font-weight:600; margin:18px 0 4px">Backup Results / Profiles</div>
+      <div id="profilesAuto">
+        <div class="sub" style="margin-bottom:8px;">Save <b>all student profiles and their saved results</b> to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it.</div>
+        <button class="btn sm" type="button" onclick="profilesSaveFile()" style="width:100%;margin-bottom:10px;">⬇ Save profiles to .ivrit file</button>
+        <div id="profilesDrop" class="ivrit-drop">
+          <div style="font-size:0.85rem;">Drop a profiles <b>.ivrit</b> file here</div>
+          <div class="sub" style="margin:4px 0;">— or —</div>
+          <button class="btn sm" type="button" onclick="document.getElementById('profilesFileInput').click()">Browse…</button>
+          <input type="file" id="profilesFileInput" accept=".ivrit,application/json,text/plain" style="display:none;">
+        </div>
+        <div id="profilesStatus" class="sub" style="margin-top:8px;min-height:1em;text-align:center;"></div>
+      </div>
     </div>
   </div>
 
@@ -1435,6 +1476,7 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
   </div>
 
   <div class="results-actions">
+    <button class="btn gold" id="saveResultsBtn">💾 Save Results</button>
     <button class="btn primary" id="redoBtn">Redo This Card Set</button>
     <button class="btn gold" id="mistakesBtn">Practice My Mistakes</button>
     <button class="btn ghost" id="backToSetupBtn">Return to Options</button>
@@ -1804,6 +1846,7 @@ let scores = []; // null = unscored, true = correct, false = wrong
 let isFlipped = false;
 let savedCards = [];
 let mistakeIndices = [];
+let lastDrillResult = null;  // snapshot of the just-finished drill, for "Save Results"
 let showSkippedAgain = true; // re-queue each skipped card once so the whole set gets seen
 let requeued = [];           // parallel to scores: true = slot was skipped & re-queued (excluded from results)
 let hasFlipped = [];         // parallel to scores: true once the user has flipped this card at least once
@@ -2865,6 +2908,408 @@ function copyTextarea() {
 }
 
 /* =========================================================================
+   STUDENT PROFILES & SAVED RESULTS
+   ========================================================================= */
+const PROFILES_KEY = 'hebrewFlashCards_profiles';
+const MAX_RESULTS_PER_PROFILE = 50;
+
+function readProfiles() {
+  try {
+    const o = JSON.parse(localStorage.getItem(PROFILES_KEY) || 'null');
+    if (o && typeof o === 'object' && o.profiles) return o;
+  } catch (e) {}
+  return { activeProfile: null, profiles: {} };
+}
+function writeProfiles(o) {
+  try { localStorage.setItem(PROFILES_KEY, JSON.stringify(o)); } catch (e) {}
+}
+function getActiveProfile() {
+  const db = readProfiles();
+  if (db.activeProfile && db.profiles[db.activeProfile]) return db.activeProfile;
+  const names = Object.keys(db.profiles);
+  return names.length ? names[0] : null;
+}
+function setActiveProfile(name) {
+  const db = readProfiles();
+  if (db.profiles[name]) { db.activeProfile = name; writeProfiles(db); }
+  renderProfiles();
+}
+function createProfile(name) {
+  name = (name || '').trim();
+  if (!name) return null;
+  const db = readProfiles();
+  if (!db.profiles[name]) {
+    const now = Date.now();
+    db.profiles[name] = { created: now, order: now, results: [] };
+  }
+  db.activeProfile = name;
+  writeProfiles(db);
+  return name;
+}
+function deleteProfile(name) {
+  const db = readProfiles();
+  if (!db.profiles[name]) return;
+  if (!confirm(`Delete profile "${name}" and all of its saved results? This cannot be undone.`)) return;
+  delete db.profiles[name];
+  if (db.activeProfile === name) db.activeProfile = Object.keys(db.profiles)[0] || null;
+  writeProfiles(db);
+  renderProfiles();
+}
+function renameProfile(oldName, newName) {
+  newName = (newName || '').trim();
+  if (!newName || newName === oldName) return;
+  const db = readProfiles();
+  if (!db.profiles[oldName]) return;
+  if (db.profiles[newName] && !confirm(`Profile "${newName}" already exists — merge "${oldName}" into it?`)) return;
+  const dest = db.profiles[newName] || { created: db.profiles[oldName].created, order: db.profiles[oldName].order, results: [] };
+  dest.results = dest.results.concat(db.profiles[oldName].results || []).slice(-MAX_RESULTS_PER_PROFILE);
+  db.profiles[newName] = dest;
+  delete db.profiles[oldName];
+  if (db.activeProfile === oldName) db.activeProfile = newName;
+  writeProfiles(db);
+  renderProfiles();
+}
+
+// Short human label for a saved drill's mode (used in the history list)
+function describeResultMode(s) {
+  if (!s) return 'Drill';
+  if (s.otherModeActive) {
+    return { numbers: 'Numbers', colors: 'Colors', emoji: 'Emoji' }[s.otherSubMode] || 'Drill';
+  }
+  if (s.nameLetterMode) return 'Name Letters';
+  return `${s.mode}-letter`;
+}
+
+// Build a result snapshot from the just-finished drill (mirrors showResults' idxs filter)
+function buildResultObject() {
+  const idxs = currentCards.map((_, i) => i).filter(i => !requeued[i]);
+  const total = idxs.length;
+  if (total === 0) return null;
+  const correct = idxs.filter(i => scores[i] === true).length;
+  const cards = idxs.map(i => {
+    const c = { ...currentCards[i] };
+    delete c.isSkippedReshow;
+    c.score = scores[i] === true ? true : scores[i] === false ? false : null;
+    return c;
+  });
+  return {
+    savedAt: new Date().toISOString(),
+    pct: Math.round((correct / total) * 100),
+    correct, total,
+    timeSec: timerMode === 'track' ? timerElapsed : (timerMode === 'limit' ? timeLimitSeconds : null),
+    timerMode,
+    settings: getSettings(),
+    cards,
+  };
+}
+
+// Modal to pick an existing profile or create a new one. Resolves to a name or null.
+function chooseProfileModal() {
+  return new Promise(resolve => {
+    const db = readProfiles();
+    const names = Object.keys(db.profiles).sort((a, b) => (db.profiles[a].order || 0) - (db.profiles[b].order || 0));
+    const active = getActiveProfile();
+    const ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
+    const box = document.createElement('div');
+    box.style.cssText = 'background:var(--white,#fff);color:var(--text,#1a2744);max-width:380px;width:100%;border-radius:10px;padding:18px;font-family:inherit;box-shadow:0 10px 40px rgba(0,0,0,0.35);max-height:80vh;overflow:auto;';
+    let html = '<div style="font-weight:700;font-size:1rem;margin-bottom:10px;">Save results to…</div>';
+    if (names.length) {
+      html += '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">';
+      names.forEach(n => {
+        const isActive = n === active;
+        html += `<button data-name="${encodeURIComponent(n)}" style="text-align:left;padding:9px 11px;border:1px solid ${isActive ? 'var(--gold,#c9922a)' : 'var(--border,#ccc)'};border-radius:6px;background:${isActive ? 'rgba(201,146,42,0.12)' : 'transparent'};color:inherit;cursor:pointer;font-family:inherit;font-size:0.88rem;"></button>`;
+      });
+      html += '</div>';
+    }
+    html += '<div style="font-size:0.82rem;font-weight:600;margin-bottom:5px;">New profile</div>'
+      + '<div style="display:flex;gap:6px;">'
+      + '<input type="text" id="newProfileNameInput" maxlength="40" placeholder="Student name…" style="flex:1;padding:8px 10px;border:1px solid var(--border,#ccc);border-radius:6px;background:var(--white,#fff);color:inherit;font-family:inherit;font-size:0.88rem;">'
+      + '<button data-act="create" style="padding:8px 12px;border:none;border-radius:6px;background:var(--navy,#1a2744);color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">Save</button>'
+      + '</div>'
+      + '<button data-act="cancel" style="width:100%;margin-top:14px;padding:9px;border:1px solid var(--border,#ccc);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:inherit;font-size:0.85rem;">Cancel</button>';
+    box.innerHTML = html;
+    // fill profile button labels safely (avoid HTML injection from names)
+    names.forEach(n => {
+      const b = box.querySelector(`button[data-name="${encodeURIComponent(n)}"]`);
+      if (b) {
+        const count = (db.profiles[n].results || []).length;
+        b.textContent = `${n}  ·  ${count} saved`;
+      }
+    });
+    ov.appendChild(box); document.body.appendChild(ov);
+    const done = v => { if (ov.parentNode) document.body.removeChild(ov); resolve(v); };
+    box.querySelectorAll('button[data-name]').forEach(b => b.addEventListener('click', () => done(decodeURIComponent(b.dataset.name))));
+    box.querySelector('[data-act=create]').addEventListener('click', () => {
+      const v = (box.querySelector('#newProfileNameInput').value || '').trim();
+      if (!v) { box.querySelector('#newProfileNameInput').focus(); return; }
+      done(v);
+    });
+    box.querySelector('#newProfileNameInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); box.querySelector('[data-act=create]').click(); }
+    });
+    box.querySelector('[data-act=cancel]').addEventListener('click', () => done(null));
+    ov.addEventListener('click', e => { if (e.target === ov) done(null); });
+  });
+}
+
+async function saveCurrentResult() {
+  if (!lastDrillResult) { alert('No drill results to save.'); return; }
+  const name = await chooseProfileModal();
+  if (!name) return;
+  createProfile(name); // creates if new, sets active
+  const db = readProfiles();
+  const prof = db.profiles[name];
+  prof.results.push(lastDrillResult);
+  if (prof.results.length > MAX_RESULTS_PER_PROFILE) prof.results = prof.results.slice(-MAX_RESULTS_PER_PROFILE);
+  writeProfiles(db);
+  renderProfiles();
+  const btn = document.getElementById('saveResultsBtn');
+  if (btn) { btn.textContent = `✓ Saved to ${name}`; btn.disabled = true; }
+}
+
+function renderProfiles() {
+  const db = readProfiles();
+  const names = Object.keys(db.profiles).sort((a, b) => (db.profiles[a].order || 0) - (db.profiles[b].order || 0));
+  const active = getActiveProfile();
+  const sel = document.getElementById('activeProfileSelect');
+  const list = document.getElementById('profileList');
+  const empty = document.getElementById('profileEmpty');
+  const detail = document.getElementById('profileDetail');
+  if (!sel || !list) return;
+
+  // Active-profile dropdown
+  sel.innerHTML = '';
+  if (names.length === 0) {
+    const opt = document.createElement('option');
+    opt.textContent = '— no profiles —'; opt.value = '';
+    sel.appendChild(opt);
+    sel.disabled = true;
+  } else {
+    sel.disabled = false;
+    names.forEach(n => {
+      const opt = document.createElement('option');
+      opt.value = n; opt.textContent = n;
+      if (n === active) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+
+  // Profile list (drag-reorderable)
+  list.innerHTML = '';
+  if (names.length === 0) {
+    empty.style.display = '';
+    detail.style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+  names.forEach(name => {
+    const li = document.createElement('li');
+    li.className = 'preset-item';
+    li.draggable = true;
+    li.dataset.name = name;
+    const count = (db.profiles[name].results || []).length;
+    li.innerHTML = `
+      <span class="drag" aria-hidden="true">⋮⋮</span>
+      <span class="pname"></span>
+      <span class="sub" style="font-size:0.72rem;white-space:nowrap;"></span>
+      <button class="btn sm primary" data-act="active">Set Active</button>
+      <button class="btn sm danger" data-act="delete">✕</button>
+    `;
+    li.querySelector('.pname').textContent = name + (name === active ? ' ★' : '');
+    li.querySelector('.sub').textContent = `${count} saved`;
+    li.querySelector('[data-act=active]').addEventListener('click', () => setActiveProfile(name));
+    li.querySelector('[data-act=delete]').addEventListener('click', () => deleteProfile(name));
+    list.appendChild(li);
+  });
+  makeSortable(list, () => {
+    const db2 = readProfiles();
+    [...list.children].forEach((li, i) => {
+      const n = li.dataset.name;
+      if (db2.profiles[n]) db2.profiles[n].order = i;
+    });
+    writeProfiles(db2);
+  });
+
+  // Results history for active profile
+  renderProfileHistory(active);
+}
+
+function renderProfileHistory(name) {
+  const detail = document.getElementById('profileDetail');
+  const histList = document.getElementById('profileHistory');
+  const histEmpty = document.getElementById('profileHistoryEmpty');
+  const nameEl = document.getElementById('profileDetailName');
+  const weakBtn = document.getElementById('weaknessesBtn');
+  if (!detail) return;
+  const db = readProfiles();
+  if (!name || !db.profiles[name]) { detail.style.display = 'none'; return; }
+  detail.style.display = '';
+  nameEl.textContent = name;
+  const results = (db.profiles[name].results || []).slice().reverse(); // newest first
+  histList.innerHTML = '';
+  if (results.length === 0) {
+    histEmpty.style.display = '';
+  } else {
+    histEmpty.style.display = 'none';
+    results.forEach((r) => {
+      const realIdx = db.profiles[name].results.indexOf(r);
+      const li = document.createElement('li');
+      li.className = 'result-item';
+      const d = new Date(r.savedAt);
+      const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+      const timeStr = r.timeSec != null ? ` · ${formatTimerSecs(r.timeSec)}` : '';
+      li.style.cssText = 'display:flex;align-items:center;gap:8px;';
+      li.innerHTML = `
+        <span class="rmark">${r.pct >= 80 ? '✓' : r.pct >= 50 ? '–' : '✗'}</span>
+        <span style="flex:1;">
+          <b>${r.pct}%</b> <span class="sub">(${r.correct}/${r.total})</span><br>
+          <span class="sub" style="font-size:0.72rem;">${dateStr} · ${describeResultMode(r.settings)}${timeStr}</span>
+        </span>
+        <button class="btn sm danger" data-act="del">✕</button>
+      `;
+      li.querySelector('[data-act=del]').addEventListener('click', () => {
+        if (!confirm('Delete this saved result?')) return;
+        const db2 = readProfiles();
+        db2.profiles[name].results.splice(realIdx, 1);
+        writeProfiles(db2);
+        renderProfiles();
+      });
+      histList.appendChild(li);
+    });
+  }
+  // Enable weakness practice only when there are missed cards
+  const missed = collectMissedCards(name);
+  weakBtn.disabled = missed.length === 0;
+}
+
+// Gather missed (score !== true) cards across a profile's results, ranked by miss frequency
+function collectMissedCards(name) {
+  const db = readProfiles();
+  const prof = db.profiles[name];
+  if (!prof) return [];
+  const byHeb = new Map(); // heb -> { card, count }
+  (prof.results || []).forEach(r => {
+    (r.cards || []).forEach(c => {
+      if (c.score === true) return;
+      const key = c.heb;
+      if (!key) return;
+      if (byHeb.has(key)) byHeb.get(key).count++;
+      else { const card = { ...c }; delete card.score; byHeb.set(key, { card, count: 1 }); }
+    });
+  });
+  return [...byHeb.values()].sort((a, b) => b.count - a.count);
+}
+
+function practiceWeaknesses(name) {
+  name = name || getActiveProfile();
+  const ranked = collectMissedCards(name);
+  if (ranked.length === 0) { alert('No mistakes saved yet for this profile. Save some drill results first.'); return; }
+  const deck = ranked.slice(0, cardCount).map(r => ({ ...r.card }));
+  currentCards = deck;
+  savedCards = deck.slice();
+  currentIndex = 0;
+  scores = new Array(deck.length).fill(null);
+  requeued = new Array(deck.length).fill(false);
+  hasFlipped = new Array(deck.length).fill(false);
+  isFlipped = false;
+  renderCurrentCard();
+  showScreen('screenCard');
+  startTimer();
+}
+
+/* ── Profiles .ivrit backup (all profiles in one file; reuses the shared engine helpers) ── */
+function profilesStatus(msg) { const el = document.getElementById('profilesStatus'); if (el) el.textContent = msg || ''; }
+function profilesSaveFile() {
+  const payload = { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: 'FlashCardsProfiles', savedAt: new Date().toISOString(), data: { flashCardProfiles: readProfiles() } };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = ivritDateStamp() + '_Flashcards_Profiles.ivrit';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+  profilesStatus('Saved ' + a.download);
+}
+// Deep-merge an incoming {activeProfile, profiles} blob into the stored one
+function mergeProfilesBlob(incoming, mode) {
+  const base = mode === 'replace' ? { activeProfile: null, profiles: {} } : readProfiles();
+  const inc = (incoming && incoming.profiles) ? incoming : { profiles: {} };
+  Object.keys(inc.profiles || {}).forEach(name => {
+    const src = inc.profiles[name];
+    if (!base.profiles[name]) {
+      base.profiles[name] = src;
+    } else {
+      // merge result lists, de-duped by savedAt, capped
+      const seen = new Set(base.profiles[name].results.map(r => r.savedAt));
+      (src.results || []).forEach(r => { if (!seen.has(r.savedAt)) base.profiles[name].results.push(r); });
+      base.profiles[name].results = base.profiles[name].results
+        .sort((a, b) => new Date(a.savedAt) - new Date(b.savedAt))
+        .slice(-MAX_RESULTS_PER_PROFILE);
+    }
+  });
+  if (inc.activeProfile && base.profiles[inc.activeProfile]) base.activeProfile = inc.activeProfile;
+  if (!base.activeProfile) base.activeProfile = Object.keys(base.profiles)[0] || null;
+  writeProfiles(base);
+}
+async function profilesRestore(text, sourceName) {
+  let parsed;
+  try { parsed = JSON.parse(text); }
+  catch (e) { alert('That file could not be read as a .ivrit save file.'); return; }
+  // Accept a dedicated profiles file, an AllTools bundle, or a raw profiles blob
+  let incoming = null;
+  if (parsed && parsed.format === 'ivrit-save' && parsed.data) {
+    incoming = parsed.data.flashCardProfiles || (parsed.data.profiles ? parsed.data : null);
+  } else if (parsed && parsed.profiles) {
+    incoming = parsed;
+  }
+  if (!incoming || !incoming.profiles) { alert('That file has no Flash Cards profile data.'); return; }
+  const mode = await ivritAskMode();
+  if (!mode) return;
+  try { mergeProfilesBlob(incoming, mode); }
+  catch (e) { alert('Restore failed: ' + e.message); return; }
+  renderProfiles();
+  profilesStatus('Restored from ' + (sourceName || 'file'));
+  alert('Profiles restored successfully' + (sourceName ? ' from ' + sourceName : '') + '.');
+}
+function profilesReadFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => profilesRestore(reader.result, file.name);
+  reader.onerror = () => alert('Could not read that file.');
+  reader.readAsText(file);
+}
+function initProfilesBackup() {
+  const input = document.getElementById('profilesFileInput');
+  if (input) input.addEventListener('change', e => { profilesReadFile(e.target.files[0]); e.target.value = ''; });
+  const drop = document.getElementById('profilesDrop');
+  if (drop) {
+    ['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); drop.classList.add('ivrit-drag'); }));
+    ['dragleave','dragend'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); drop.classList.remove('ivrit-drag'); }));
+    drop.addEventListener('drop', e => { e.preventDefault(); e.stopPropagation(); drop.classList.remove('ivrit-drag'); profilesReadFile(e.dataTransfer.files[0]); });
+  }
+}
+
+function wireProfilesPanel() {
+  document.getElementById('activeProfileSelect').addEventListener('change', e => { if (e.target.value) setActiveProfile(e.target.value); });
+  document.getElementById('newProfileBtn').addEventListener('click', () => {
+    const n = (prompt('New profile name:') || '').trim();
+    if (n) { createProfile(n); renderProfiles(); }
+  });
+  document.getElementById('renameProfileBtn').addEventListener('click', () => {
+    const cur = getActiveProfile();
+    if (!cur) { alert('No profile selected.'); return; }
+    const n = (prompt('Rename profile to:', cur) || '').trim();
+    if (n) renameProfile(cur, n);
+  });
+  document.getElementById('deleteProfileBtn').addEventListener('click', () => {
+    const cur = getActiveProfile();
+    if (!cur) { alert('No profile selected.'); return; }
+    deleteProfile(cur);
+  });
+  document.getElementById('weaknessesBtn').addEventListener('click', () => practiceWeaknesses());
+}
+
+/* =========================================================================
    .ivrit SAVE FILE
    ========================================================================= */
 const IVRIT_CFG = {
@@ -3683,6 +4128,11 @@ function showResults() {
   mistakeIndices = idxs.filter(i => scores[i] === false || scores[i] === null);
   document.getElementById('mistakesBtn').disabled = mistakeIndices.length === 0;
 
+  // Snapshot the finished drill so "Save Results" can store it to a profile
+  lastDrillResult = buildResultObject();
+  const saveBtn = document.getElementById('saveResultsBtn');
+  if (saveBtn) { saveBtn.disabled = !lastDrillResult; saveBtn.textContent = '💾 Save Results'; }
+
   showScreen('screenResults');
 }
 
@@ -3930,6 +4380,7 @@ function wireSetupScreen() {
 }
 
 function wireResultsScreen() {
+  document.getElementById('saveResultsBtn').addEventListener('click', saveCurrentResult);
   document.getElementById('redoBtn').addEventListener('click', redoSameSet);
   document.getElementById('mistakesBtn').addEventListener('click', practiceMistakes);
   document.getElementById('backToSetupBtn').addEventListener('click', returnToSetup);
@@ -3949,6 +4400,9 @@ document.addEventListener('DOMContentLoaded', () => {
   setLetterMode(mode);
   setCardCount(cardCount);
   renderPresets();
+  renderProfiles();
+  initProfilesBackup();
+  wireProfilesPanel();
   initPanelCollapse();
   initDrawer();
   wireSetupScreen();
