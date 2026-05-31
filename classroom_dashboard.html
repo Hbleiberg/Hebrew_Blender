@@ -1457,9 +1457,7 @@
       <label class="toggle"><input type="checkbox" id="showShabbatTimes"><span class="slider"></span></label>
     </div>
     <div class="form-row" id="candleZipRow" style="margin-top:4px;">
-      <label for="candleZipInput">Shabbat zip code</label>
-      <input type="text" id="candleZipInput" placeholder="e.g. 10001" inputmode="numeric" maxlength="5" style="max-width:120px;">
-      <button class="btn btn-xs" onclick="updateCandleZip()">Update</button>
+      <span style="font-size:0.78rem;color:var(--muted);font-style:italic;">Uses the same location as the weather widget above.</span>
     </div>
     <hr>
     <div class="form-row">
@@ -1895,7 +1893,6 @@
     dowEmojiSize: 1.4,
     showHolidayCountdown: true,
     showShabbatTimes: true,
-    candleZip: '10001',
     showTimer: true,
     showTimerFullscreen: true,
     showOmerCounter: true,
@@ -2463,10 +2460,12 @@
         document.getElementById('locationInput').value = city;
         settings.location = city;
         await fetchWeather();
+        fetchShabbat(true);
         saveSettingsToStorage();
       } catch (e) {
         settings._geoCoords = { latitude, longitude, name: 'Current Location', country: '' };
         await fetchWeather();
+        fetchShabbat(true);
       } finally {
         btn.textContent = '📍 Current Location';
         btn.disabled = false;
@@ -2607,21 +2606,50 @@
   const SHABBAT_CACHE_KEY = 'hebrewDashboard_shabbatCache';
   const SHABBAT_MAX_AGE = 6 * 60 * 60 * 1000; // 6h
 
+  function browserTzid() {
+    try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York'; }
+    catch (e) { return 'America/New_York'; }
+  }
+
+  // Resolve { latitude, longitude, tzid } from the same location the weather widget uses.
+  async function resolveShabbatGeo() {
+    // Reuse the place the weather widget already geocoded (has lat/lon + timezone).
+    if (weatherCache && weatherCache.place && weatherCache.place.latitude != null) {
+      const p = weatherCache.place;
+      return { latitude: p.latitude, longitude: p.longitude, tzid: p.timezone || browserTzid() };
+    }
+    // Coordinates captured from the browser's "Current Location" button.
+    if (settings._geoCoords && settings._geoCoords.latitude != null) {
+      return { latitude: settings._geoCoords.latitude, longitude: settings._geoCoords.longitude, tzid: browserTzid() };
+    }
+    // Otherwise geocode the city name via the same Open-Meteo API the weather widget uses.
+    const geoRes = await fetch(
+      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(settings.location)}&count=1`
+    );
+    const geo = await geoRes.json();
+    if (!geo.results || !geo.results.length) return null;
+    const r = geo.results[0];
+    return { latitude: r.latitude, longitude: r.longitude, tzid: r.timezone || browserTzid() };
+  }
+
   async function fetchShabbat(force) {
-    const zip = (settings.candleZip || '10001').trim();
-    if (!force) {
+    let geo;
+    try { geo = await resolveShabbatGeo(); } catch (e) { geo = null; }
+    const key = geo ? `${geo.latitude.toFixed(3)},${geo.longitude.toFixed(3)}` : null;
+    if (!force && key) {
       try {
         const c = JSON.parse(localStorage.getItem(SHABBAT_CACHE_KEY) || 'null');
-        if (c && c.items && c.zip === zip && (Date.now() - c.ts) < SHABBAT_MAX_AGE && !havdalahPassed(c.items)) {
+        if (c && c.items && c.key === key && (Date.now() - c.ts) < SHABBAT_MAX_AGE && !havdalahPassed(c.items)) {
           renderShabbat(c.items); return;
         }
       } catch (e) {}
     }
     try {
-      const res = await fetch(`https://www.hebcal.com/shabbat?cfg=json&zip=${encodeURIComponent(zip)}&M=on`);
+      if (!geo) throw new Error('no-geo');
+      const res = await fetch(`https://www.hebcal.com/shabbat?cfg=json&geo=pos&latitude=${geo.latitude}&longitude=${geo.longitude}&tzid=${encodeURIComponent(geo.tzid)}&b=18&M=on`);
       const data = await res.json();
       const items = (data && data.items) || [];
-      try { localStorage.setItem(SHABBAT_CACHE_KEY, JSON.stringify({ items, ts: Date.now(), zip })); } catch (e) {}
+      try { localStorage.setItem(SHABBAT_CACHE_KEY, JSON.stringify({ items, ts: Date.now(), key })); } catch (e) {}
       renderShabbat(items);
     } catch (e) {
       try {
@@ -2668,13 +2696,6 @@
 
   function initShabbatWidget() { fetchShabbat(false); }
 
-  function updateCandleZip() {
-    const v = (document.getElementById('candleZipInput').value || '').trim();
-    if (!/^\d{5}$/.test(v)) { alert('Please enter a 5-digit US zip code.'); return; }
-    settings.candleZip = v;
-    saveSettingsToStorage();
-    fetchShabbat(true);
-  }
 
   /* ────────── CLASSROOM TIMER ────────── */
   let timerTotal = 0;        // last-used duration (seconds)
@@ -2896,6 +2917,7 @@
     delete settings._geoCoords;
     saveSettingsToStorage();
     fetchWeather();
+    fetchShabbat(true);
   }
 
   /* ────────── SETTINGS DRAWER ────────── */
@@ -3016,7 +3038,6 @@
     $('locationInput').value = settings.location;
     $('showHolidayCountdown').checked = settings.showHolidayCountdown !== false;
     $('showShabbatTimes').checked = settings.showShabbatTimes !== false;
-    $('candleZipInput').value = settings.candleZip || '10001';
     $('showTimer').checked = settings.showTimer !== false;
     $('showTimerFullscreen').checked = settings.showTimerFullscreen !== false;
     $('showOmerCounter').checked = settings.showOmerCounter !== false;
@@ -3111,7 +3132,6 @@
       if (e.target.checked) fetchShabbat(false);
       else { const el = document.getElementById('shabbatTimes'); if (el) el.style.display = 'none'; }
     });
-    document.getElementById('candleZipInput').addEventListener('keydown', e => { if (e.key === 'Enter') updateCandleZip(); });
     document.getElementById('showTimer').addEventListener('change', e => {
       settings.showTimer = e.target.checked;
       applyTimerVisibility();
