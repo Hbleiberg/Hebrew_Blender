@@ -660,6 +660,13 @@ body.dark .font-opt.active .font-opt-preview { color:var(--gold-light); }
 .color-pick-ex { font-family:var(--heb-font); font-size:1.15rem; direction:rtl; width:26px; text-align:center; }
 .color-pick-label { flex:1; font-size:0.78rem; color:var(--text); }
 .color-pick-input { width:28px; height:22px; border:1px solid var(--border); border-radius:3px; cursor:pointer; padding:0; }
+/* ───── Vowel color-scheme selector (Default · TaL AM · Reset) ───── */
+.vowel-scheme-row { display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:6px; }
+.vowel-scheme-btn { flex:1; padding:4px 8px; font-size:0.72rem; font-family:inherit; cursor:pointer;
+  border:1px solid var(--border); border-radius:5px; background:transparent; color:var(--text); transition:all 0.15s; }
+.vowel-scheme-btn:hover { background:var(--warm-gray); }
+.vowel-scheme-btn.active { background:var(--navy); color:#fff; border-color:var(--navy); }
+body.dark .vowel-scheme-btn.active { background:var(--gold); color:var(--navy-deep); border-color:var(--gold); }
 
 /* ───── Tooltip (lifted from classroom_dashboard.html:585-603) ───── */
 .tip-wrap { display:inline-flex; align-items:center; }
@@ -977,8 +984,10 @@ body.fullscreen #fsExitBtn { display: flex; }
           </span>
         </div>
         <div class="color-pick-list" id="colorPickerList" style="display:none;"></div>
-        <div class="form-row" id="colorResetRow" style="display:none;">
-          <button class="btn btn-xs btn-secondary" onclick="resetNikudColors()" type="button">↺ Reset colors</button>
+        <div class="form-row vowel-scheme-row" id="colorResetRow" style="display:none;">
+          <button class="vowel-scheme-btn active" id="vowelSchemeDefault" onclick="setVowelScheme('default')" type="button">Default</button>
+          <button class="vowel-scheme-btn" id="vowelSchemeTalAm" onclick="setVowelScheme('talam')" type="button">TaL AM</button>
+          <button class="vowel-scheme-btn" onclick="resetNikudColors()" type="button">Reset</button>
         </div>
       </div>
     </div>
@@ -1117,6 +1126,7 @@ const DEFAULTS = {
   colorCodeNikkud: false,
   colorCodingMode: 'letter',
   nikudColorOverrides: {},
+  vowelColorScheme: 'default',
   translitStyle: 'modernIsraeli',
   // TTS + Chanting are always available; rate sliders apply.
   karaokeRate: 1.0,
@@ -1514,6 +1524,47 @@ const VOWEL_COLOR_DEFS = [
   { key:'shuruk',  name:'Shuruk',      example:'וּ' },
   { key:'sh',      name:'Shva',        example:'אְ' },
 ];
+// ── TaL AM vowel color scheme (matches the TaL AM curriculum vowel poster) ──
+const TALAM_DEFAULTS_LIGHT = {
+  a:'#d12a1f', patah:'#d12a1f', hpatah:'#d12a1f', hkamatz:'#d12a1f', // Red / AH
+  tzere:'#c08a00', e:'#c08a00', hsegol:'#c08a00',                    // Gold / EH
+  i:'#2e9c34',                                                       // Green / EE
+  vcholam:'#1f3f8f', o:'#1f3f8f',                                    // Navy / OH
+  shuruk:'#d9791b', u:'#d9791b',                                     // Orange / OO
+  sh:'#6b6b6b'                                                       // Grey / Shva
+};
+const TALAM_DEFAULTS_DARK = {
+  a:'#f0625a', patah:'#f0625a', hpatah:'#f0625a', hkamatz:'#f0625a',
+  tzere:'#e6c24c', e:'#e6c24c', hsegol:'#e6c24c',
+  i:'#46cc52',
+  vcholam:'#6f8ce6', o:'#6f8ce6',
+  shuruk:'#f0a23e', u:'#f0a23e',
+  sh:'#9aa0ac'
+};
+// Color-picker-list order in TaL AM mode (poster top→bottom).
+const VOWEL_COLOR_DEFS_TALAM = [
+  { key:'a',       name:'Kamatz',      example:'אָ' },
+  { key:'patah',   name:'Patach',      example:'אַ' },
+  { key:'hpatah',  name:'H. Patach',   example:'אֲ' },
+  { key:'hkamatz', name:'H. Kamatz',   example:'אֳ' },
+  { key:'tzere',   name:'Tzere',       example:'אֵ' },
+  { key:'e',       name:'Segol',       example:'אֶ' },
+  { key:'hsegol',  name:'H. Segol',    example:'אֱ' },
+  { key:'i',       name:'Chirik',      example:'אִ' },
+  { key:'vcholam', name:'Vav Holam',   example:'וֹ' },
+  { key:'o',       name:'Holam',       example:'אֹ' },
+  { key:'shuruk',  name:'Shuruk',      example:'וּ' },
+  { key:'u',       name:'Kubutz',      example:'אֻ' },
+  { key:'sh',      name:'Shva',        example:'אְ' },
+];
+function activeNikudDefaults(dark){
+  return (settings.vowelColorScheme === 'talam')
+    ? (dark ? TALAM_DEFAULTS_DARK : TALAM_DEFAULTS_LIGHT)
+    : (dark ? NIKUD_DEFAULTS_DARK : NIKUD_DEFAULTS_LIGHT);
+}
+function activeColorDefs(){
+  return (settings.vowelColorScheme === 'talam') ? VOWEL_COLOR_DEFS_TALAM : VOWEL_COLOR_DEFS;
+}
 
 function stripTeamim(s)      { return s.replace(TEAMIM_RE, ''); }
 function stripNikkud(s)      { return s.replace(NIKKUD_RE, ''); }
@@ -1534,7 +1585,7 @@ function getNikudColor(key) {
   if (settings.nikudColorOverrides && settings.nikudColorOverrides[key] !== undefined) {
     return settings.nikudColorOverrides[key];
   }
-  return (document.body.classList.contains('dark') ? NIKUD_DEFAULTS_DARK : NIKUD_DEFAULTS_LIGHT)[key] || '#888';
+  return activeNikudDefaults(document.body.classList.contains('dark'))[key] || '#888';
 }
 
 function colorizeHebrew(text, mode) {
@@ -2718,7 +2769,7 @@ function initColorPickers() {
   const list = document.getElementById('colorPickerList');
   if (!list) return;
   list.innerHTML = '';
-  VOWEL_COLOR_DEFS.forEach(def => {
+  activeColorDefs().forEach(def => {
     const row = document.createElement('div');
     row.className = 'color-pick-row';
     const ex = document.createElement('span');
@@ -2739,8 +2790,23 @@ function initColorPickers() {
   });
 }
 function resetNikudColors() {
+  if (!confirm('Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.')) return;
   settings.nikudColorOverrides = {};
   initColorPickers();
+  if (settings.colorCodeNikkud) renderText();
+  saveSettings();
+}
+function syncSchemeButtons() {
+  const d = document.getElementById('vowelSchemeDefault');
+  const t = document.getElementById('vowelSchemeTalAm');
+  if (d) d.classList.toggle('active', settings.vowelColorScheme !== 'talam');
+  if (t) t.classList.toggle('active', settings.vowelColorScheme === 'talam');
+}
+function setVowelScheme(s) {
+  settings.vowelColorScheme = s;
+  settings.nikudColorOverrides = {};   // show the scheme's clean palette
+  initColorPickers();                  // re-order + re-seed colors
+  syncSchemeButtons();
   if (settings.colorCodeNikkud) renderText();
   saveSettings();
 }
@@ -2857,6 +2923,7 @@ function toggleColorOptionsVisibility(show) {
   document.getElementById('colorModeRow').style.display = show ? '' : 'none';
   document.getElementById('colorPickerList').style.display = show ? '' : 'none';
   document.getElementById('colorResetRow').style.display = show ? '' : 'none';
+  if (show) syncSchemeButtons();
 }
 
 function applyDisplayClasses() {

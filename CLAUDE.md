@@ -391,7 +391,8 @@ When toggling `colorCodeNikkud` on, always call `initColorPickers()` to populate
 
 There are **two selectable vowel color schemes**, chosen by a single setting
 `vowelColorScheme: 'default' | 'talam'` present on **`classroom_dashboard.html`**,
-**`hebrew_blend_generator.html`**, and **`flash_cards.html`**:
+**`hebrew_blend_generator.html`**, **`flash_cards.html`**, and **`torah_trainer.html`**
+(every tool that color-codes nikkud):
 
 - **`default`** — the original 7-group palette/arrangement (Aqua/AH, Red/EH, Grey/Tzere,
   Green/EE, Yellow/OH, Blue/OO, Purple/Shva).
@@ -410,7 +411,11 @@ TaL AM grouping & poster order (top→bottom):
 | Orange | OO | `shuruk`, `u` |
 | Grey | Shva | `sh` |
 
-### How it's wired (identical pattern in all three files)
+### How it's wired (identical pattern in all four files)
+
+`classroom_dashboard.html` and `torah_trainer.html` are **display-only** (no vowel picker), so they
+have `activeNikudDefaults` + `activeColorDefs` but **not** `activeVowelGroups`/`VOWEL_GROUPS_TALAM`.
+The generator and flash cards add the picker pieces on top.
 
 Three scheme-aware accessors sit next to the color constants and are the **only** lookups the
 rest of the code uses:
@@ -442,13 +447,15 @@ function activeVowelGroups(){      /* VOWEL_GROUPS_TALAM vs VOWEL_GROUPS — gen
 The three controls live in one row **below the color-picker list**, in the order
 **Default · TaL AM · Reset** (Default/TaL AM pick the scheme via `setVowelScheme`; Reset clears
 overrides via the confirm-gated `resetNikudColors`):
-- **Dashboard:** `#vowelSchemeRow` (three `.vowel-scheme-btn` buttons, incl. `#nikudResetBtn`).
+- **Dashboard:** `#vowelSchemeRow` (three `.vowel-scheme-btn` buttons).
+- **Torah Trainer:** `#colorResetRow` (reuses the `.vowel-scheme-row` / `.vowel-scheme-btn` styles;
+  shown via `toggleColorOptionsVisibility`, which calls `syncSchemeButtons()`).
 - **Generator / Flash Cards:** a three-button segmented control inside the
   **"Color Code Nikkud" / color-coding section of Advanced Settings**.
 
 The scheme is serialized in `getSettings()`/`applySettings()` (gen/cards → presets + `.ivrit`)
-and in the dashboard `settings` object (`hebrewDashboard_settings`), so it needs **no extra
-`index.html` AllTools wiring**.
+and in the dashboard / Torah Trainer `settings` objects (`hebrewDashboard_settings` /
+`hebrewTorahTrainer_settings`), so it needs **no extra `index.html` AllTools wiring**.
 
 ### Rule for any future vowel / color-coding option
 A new vowel key or color-coding control must be added to **both schemes**: the default **and**
