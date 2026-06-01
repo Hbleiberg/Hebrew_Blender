@@ -3428,12 +3428,27 @@ function parseHebUnits(text) {
   return units;
 }
 
-// Tally seen/missed per vowel, per letter, and per letter+vowel across a profile's
-// results. A unit is "seen" once per card it appears in; "missed" if that card was wrong.
+/* "Other" drill cards (emoji / numbers / colors) carry a distinguishing field
+   rather than a drilled letter+vowel blend, so they get their own bucket. */
+const OTHER_INFO = {
+  emoji:  { glyph: '😀', label: 'Emojis' },
+  number: { glyph: '#',  label: 'Numbers' },
+  color:  { glyph: '🎨', label: 'Colors' },
+};
+function cardOtherType(c) {
+  if (c.emoji) return 'emoji';
+  if (c.colorCss) return 'color';
+  if (c.skipTranslitRebuild) return 'number';
+  return null;
+}
+
+// Tally seen/missed per vowel, per letter, per letter+vowel, and per "Other" type
+// across a profile's results. A unit is "seen" once per card it appears in; "missed"
+// if that card was wrong.
 function analyzeWeaknesses(name) {
   const db = readProfiles();
   const prof = db.profiles[name];
-  const stats = { vowels: {}, letters: {}, combos: {} };
+  const stats = { vowels: {}, letters: {}, combos: {}, other: {} };
   const bump = (map, key, missed) => {
     if (!map[key]) map[key] = { seen: 0, missed: 0 };
     map[key].seen++; if (missed) map[key].missed++;
@@ -3441,6 +3456,10 @@ function analyzeWeaknesses(name) {
   (prof && prof.results || []).forEach(r => {
     (r.cards || []).forEach(c => {
       const missed = c.score !== true;
+      // Emoji / number / color cards aren't letter+vowel blends — tally them
+      // under "Other" instead of decomposing their Hebrew word into letters/vowels.
+      const ot = cardOtherType(c);
+      if (ot) { bump(stats.other, ot, missed); return; }
       const vSet = new Set(), lSet = new Set(), cSet = new Set();
       parseHebUnits(c.heb).forEach(u => {
         if (u.vowelKey) vSet.add(u.vowelKey);
@@ -3464,6 +3483,9 @@ function weakRows(map, tab) {
       glyph = info.example; label = info.name;
     } else if (tab === 'letters') {
       glyph = key; label = weakLetterName(key);
+    } else if (tab === 'other') {
+      const info = OTHER_INFO[key] || { glyph: '?', label: key };
+      glyph = info.glyph; label = info.label;
     } else {
       const [cons, vkey] = key.split('|');
       glyph = cons + (WEAK_VOWEL_MARK[vkey] || '');
@@ -3474,7 +3496,7 @@ function weakRows(map, tab) {
 }
 
 function renderWeaknessTab(stats, tab, container) {
-  const rows = weakRows(tab === 'vowels' ? stats.vowels : tab === 'letters' ? stats.letters : stats.combos, tab);
+  const rows = weakRows(tab === 'vowels' ? stats.vowels : tab === 'letters' ? stats.letters : tab === 'other' ? stats.other : stats.combos, tab);
   if (rows.length === 0) {
     container.innerHTML = '<p class="sub" style="text-align:center;padding:18px 0;">Not enough data yet — save more drill results.</p>';
     return;
@@ -3516,6 +3538,7 @@ function openWeaknessView(name) {
       <button class="weak-tab active" data-tab="vowels" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">Vowels</button>
       <button class="weak-tab" data-tab="letters" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">Letters</button>
       <button class="weak-tab" data-tab="combos" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">Letter + Vowel</button>
+      <button class="weak-tab" data-tab="other" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">Other</button>
     </div>
     <div id="weakContent" style="overflow-y:auto;flex:1;"></div>`;
   ov.appendChild(box); document.body.appendChild(ov);
