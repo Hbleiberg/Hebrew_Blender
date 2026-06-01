@@ -2038,6 +2038,10 @@ async function getAliyahVerseWordMap(p, n, range) {
     map[`${v.chapter}:${v.verse}`] = idx;
     idx += countHebrewWords(v.hebrew);
   }
+  // Total word count of the whole aliyah (non-enumerable so it never shows up as a
+  // "c:v" key) — lets loadKaraoke classify a leading 0.0 timing the same way the
+  // parsha path does.
+  Object.defineProperty(map, '_totalWords', { value: idx, enumerable: false });
   _aliyahWordMaps[key] = map;
   return map;
 }
@@ -2100,7 +2104,7 @@ async function chantHolidayWord(numLabel, wordInVerse) {
   _pendingChantWordIdx = idx;
   _verseEndStopAt = null;
   setStatus(`Loading audio to chant ${numLabel}…`, false);
-  await loadKaraoke(p, String(n));
+  await loadKaraoke(p, String(n), map._totalWords || null);
   return true;
 }
 
@@ -2302,7 +2306,10 @@ function maybeLoadKaraoke(rangeInfo) {
   _loadedChantKey = null;
   _pendingChantWordIdx = null;
   const sfx = rangeInfo.aliyahNum === 'H' ? 'H' : String(rangeInfo.aliyahNum);
-  loadKaraoke(rangeInfo.parshahEntry, sfx);
+  // The rendered text IS the full aliyah here, so its word count lets loadKaraoke
+  // decide whether a leading 0.0 timing is a real onset (keep) or a sentinel (drop).
+  const expectedWords = (currentVerses || []).reduce((s, v) => s + countHebrewWords(v.hebrew), 0);
+  loadKaraoke(rangeInfo.parshahEntry, sfx, expectedWords || null);
 }
 
 // Hide the audio bar + drop the audio source without flipping the karaoke
@@ -2320,7 +2327,7 @@ function teardownKaraokeAudio() {
   _pendingChantWordIdx = null;
 }
 
-async function loadKaraoke(parshahEntry, suffix) {
+async function loadKaraoke(parshahEntry, suffix, expectedWords) {
   setKaraokeStatus(`Loading audio for ${parshahEntry.en}, ${suffix === 'H' ? 'Haftarah' : 'Aliyah ' + suffix}…`);
   const m = manifestData[parshahEntry.pocket];
   if (!m) { setKaraokeStatus('No PocketTorah manifest entry for this parsha.'); return; }
@@ -2335,12 +2342,20 @@ async function loadKaraoke(parshahEntry, suffix) {
     if (!r.ok) throw new Error(`timings ${r.status}`);
     const txt = await r.text();
     timings = txt.trim().split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
-    // Most PocketTorah label files (351 of 432) begin with a literal 0.0 that is
-    // a lead-in sentinel, not the first word's onset (the gap after it averages
-    // ~2.5s vs ~1.1s between real words). The karaoke engine maps timings[i] to
-    // rendered word i, so leaving the sentinel in place highlights/seeks one word
-    // ahead. Drop a single leading 0.0 so word 0 lines up with its real onset.
-    if (timings.length > 1 && timings[0] === 0) timings = timings.slice(1);
+    // A leading 0.0 in a PocketTorah label file is almost always the real onset of
+    // word 0 — NOT a lead-in sentinel. An offline audit of all 432 files (timing
+    // count vs. the aliyah's Hebrew word count, same tokenization the renderer uses)
+    // found that of the 307 aliyah files starting with 0.0, 304 have exactly one
+    // timing per word (the 0.0 is word 0) and only 2 are true sentinels (one extra
+    // timing). Blindly slicing the 0.0 therefore shifted 304 aliyot one word late.
+    // Decide per file: only drop the leading 0.0 when the file has exactly one MORE
+    // timing than the aliyah has words (a genuine sentinel). When the count isn't
+    // known (expectedWords == null) keep every timing — never strip.
+    if (timings.length > 1 && timings[0] === 0 &&
+        typeof expectedWords === 'number' && expectedWords > 0 &&
+        timings.length === expectedWords + 1) {
+      timings = timings.slice(1);
+    }
   } catch (e) {
     setKaraokeStatus(`Failed to load timings: ${e.message}.`);
     return;
