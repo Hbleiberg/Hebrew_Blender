@@ -387,6 +387,69 @@ When toggling `colorCodeNikkud` on, always call `initColorPickers()` to populate
 
 ---
 
+## Vowel Color Scheme — Default / TaL AM (all three picker tools)
+
+There are **two selectable vowel color schemes**, chosen by a single setting
+`vowelColorScheme: 'default' | 'talam'` present on **`classroom_dashboard.html`**,
+**`hebrew_blend_generator.html`**, and **`flash_cards.html`**:
+
+- **`default`** — the original 7-group palette/arrangement (Aqua/AH, Red/EH, Grey/Tzere,
+  Green/EE, Yellow/OH, Blue/OO, Purple/Shva).
+- **`talam`** — matches the **TaL AM curriculum vowel poster**: 6 color families, a different
+  order, and a different grouping. Tzere **merges into the Eh/gold group**, Cholam is **navy**,
+  Shva is **grey** (deliberately *not* black — black is unreadable in highlight/underline modes).
+
+TaL AM grouping & poster order (top→bottom):
+
+| Group color | Sound | Vowel keys (in order) |
+|---|---|---|
+| Red | AH | `a`, `patah`, `hpatah`, `hkamatz` |
+| Gold/Yellow | EH | `tzere`, `e`, `hsegol` |
+| Green | EE | `i` |
+| Navy/Blue | OH | `vcholam`, `o` |
+| Orange | OO | `shuruk`, `u` |
+| Grey | Shva | `sh` |
+
+### How it's wired (identical pattern in all three files)
+
+Three scheme-aware accessors sit next to the color constants and are the **only** lookups the
+rest of the code uses:
+
+```js
+let vowelColorScheme = 'default';                 // dashboard uses settings.vowelColorScheme
+function activeNikudDefaults(dark){ /* TALAM_DEFAULTS_* vs NIKUD_DEFAULTS_* */ }
+function activeColorDefs(){        /* VOWEL_COLOR_DEFS_TALAM vs VOWEL_COLOR_DEFS */ }
+function activeVowelGroups(){      /* VOWEL_GROUPS_TALAM vs VOWEL_GROUPS — gen/cards only */ }
+```
+
+- **`getNikudColor`** reads `activeNikudDefaults(isDark)` (override check still first), so
+  **`colorizeHebrew` output recolors automatically** — no change to the colorizer itself.
+- **`initColorPickers`** iterates `activeColorDefs()` → the per-vowel picker **list re-orders**.
+- **`initVowels`** / `refreshVowelGroupColors` (generator + flash cards) iterate
+  `activeVowelGroups()` → the **vowel picker boxes re-group/recolor**.
+- **`setVowelScheme(s)`** sets the scheme, **clears `nikudColorOverrides`** (so the new palette
+  shows cleanly), re-runs the builders, calls `syncSchemeButtons()`, re-renders output, and saves.
+
+### Where the switch is surfaced
+- **Dashboard:** two buttons (**Default**, **TaL AM**) in `#vowelSchemeRow`, next to the existing
+  "↺ Reset vowel colors" button (Reset still just clears overrides within the current scheme).
+- **Generator / Flash Cards:** a small **Default | TaL AM** segmented control inside the
+  **"Color Code Nikkud" / color-coding section of Advanced Settings**, above the color-picker list.
+
+The scheme is serialized in `getSettings()`/`applySettings()` (gen/cards → presets + `.ivrit`)
+and in the dashboard `settings` object (`hebrewDashboard_settings`), so it needs **no extra
+`index.html` AllTools wiring**.
+
+### Rule for any future vowel / color-coding option
+A new vowel key or color-coding control must be added to **both schemes**: the default **and**
+TaL AM color maps (`NIKUD_DEFAULTS_*` + `TALAM_DEFAULTS_*`), **both** ordered picker-def arrays
+(`VOWEL_COLOR_DEFS` + `VOWEL_COLOR_DEFS_TALAM`), and **both** group arrays
+(`VOWEL_GROUPS` + `VOWEL_GROUPS_TALAM`, generator + flash cards) — then to
+`getSettings()`/`applySettings()`. Keep the vowel **keys** identical across both schemes so the
+key-based helpers (`getNikudColor`, All/Main/None) work under either scheme.
+
+---
+
 ## Settings Drawer & Panel Collapse (`classroom_dashboard.html`)
 
 ### Drawer structure

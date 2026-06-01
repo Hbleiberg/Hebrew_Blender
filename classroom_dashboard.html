@@ -730,6 +730,17 @@
   body.dark .btn-secondary { color: var(--text); }
   body.dark .btn-secondary:hover { background: #2a3349; }
 
+  /* ───── Vowel color-scheme selector ───── */
+  .vowel-scheme-row { display: flex; gap: 6px; margin-top: 4px; }
+  .vowel-scheme-btn {
+    flex: 1; padding: 4px 8px; font-size: 0.72rem; font-family: inherit; cursor: pointer;
+    border: 1px solid var(--border); border-radius: 5px;
+    background: transparent; color: var(--text); transition: all 0.15s;
+  }
+  .vowel-scheme-btn:hover { background: var(--warm-gray); }
+  .vowel-scheme-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  body.dark .vowel-scheme-btn.active { background: var(--gold); color: var(--navy-deep); border-color: var(--gold); }
+
   /* ───── Toggle switch ───── */
   .toggle {
     position: relative;
@@ -1633,6 +1644,10 @@
         <input type="radio" name="colorMode" id="cm-underline" value="underline"><label for="cm-underline">Underline</label>
       </div>
     </div>
+    <div class="vowel-scheme-row" id="vowelSchemeRow" style="display:none;">
+      <button class="vowel-scheme-btn active" id="vowelSchemeDefault" onclick="setVowelScheme('default')">Default</button>
+      <button class="vowel-scheme-btn" id="vowelSchemeTalAm" onclick="setVowelScheme('talam')">TaL AM</button>
+    </div>
     <div class="color-pick-list" id="colorPickerList" style="display:none;"></div>
     <button class="btn btn-xs btn-secondary" id="nikudResetBtn" onclick="resetNikudColors()" style="display:none;font-size:0.72rem;margin-top:4px;">↺ Reset vowel colors</button>
 
@@ -1826,6 +1841,48 @@
     { key:'sh',      name:'Shva',        example:'\u05D0\u05B0' },
   ];
 
+  // \u2500\u2500 TaL AM vowel color scheme (matches the TaL AM curriculum vowel poster) \u2500\u2500
+  const TALAM_DEFAULTS_LIGHT = {
+    a:'#d12a1f', patah:'#d12a1f', hpatah:'#d12a1f', hkamatz:'#d12a1f', // Red / AH
+    tzere:'#c08a00', e:'#c08a00', hsegol:'#c08a00',                    // Gold / EH
+    i:'#2e9c34',                                                       // Green / EE
+    vcholam:'#1f3f8f', o:'#1f3f8f',                                    // Navy / OH
+    shuruk:'#d9791b', u:'#d9791b',                                     // Orange / OO
+    sh:'#6b6b6b'                                                       // Grey / Shva
+  };
+  const TALAM_DEFAULTS_DARK = {
+    a:'#f0625a', patah:'#f0625a', hpatah:'#f0625a', hkamatz:'#f0625a',
+    tzere:'#e6c24c', e:'#e6c24c', hsegol:'#e6c24c',
+    i:'#46cc52',
+    vcholam:'#6f8ce6', o:'#6f8ce6',
+    shuruk:'#f0a23e', u:'#f0a23e',
+    sh:'#9aa0ac'
+  };
+  // Color-picker-list order in TaL AM mode (poster top\u2192bottom).
+  const VOWEL_COLOR_DEFS_TALAM = [
+    { key:'a',       name:'Kamatz',      example:'\u05D0\u05B8' },
+    { key:'patah',   name:'Patach',      example:'\u05D0\u05B7' },
+    { key:'hpatah',  name:'H. Patach',   example:'\u05D0\u05B2' },
+    { key:'hkamatz', name:'H. Kamatz',   example:'\u05D0\u05B3' },
+    { key:'tzere',   name:'Tzere',       example:'\u05D0\u05B5' },
+    { key:'e',       name:'Segol',       example:'\u05D0\u05B6' },
+    { key:'hsegol',  name:'H. Segol',    example:'\u05D0\u05B1' },
+    { key:'i',       name:'Chirik',      example:'\u05D0\u05B4' },
+    { key:'vcholam', name:'Vav Holam',   example:'\u05D5\u05B9' },
+    { key:'o',       name:'Holam',       example:'\u05D0\u05B9' },
+    { key:'shuruk',  name:'Shuruk',      example:'\u05D5\u05BC' },
+    { key:'u',       name:'Kubutz',      example:'\u05D0\u05BB' },
+    { key:'sh',      name:'Shva',        example:'\u05D0\u05B0' },
+  ];
+  function activeNikudDefaults(dark){
+    return (settings.vowelColorScheme === 'talam')
+      ? (dark ? TALAM_DEFAULTS_DARK : TALAM_DEFAULTS_LIGHT)
+      : (dark ? NIKUD_DEFAULTS_DARK : NIKUD_DEFAULTS_LIGHT);
+  }
+  function activeColorDefs(){
+    return (settings.vowelColorScheme === 'talam') ? VOWEL_COLOR_DEFS_TALAM : VOWEL_COLOR_DEFS;
+  }
+
   const FS_ENTER = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>';
   const FS_EXIT  = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>';
 
@@ -1864,6 +1921,7 @@
     colorCodeNikkud: false,
     colorCodingMode: 'letter',
     nikudColorOverrides: {},
+    vowelColorScheme: 'default',
     dashTextSize: 1.8,
     zoomLevel: 100,
     hideZoomBar: false,
@@ -2037,7 +2095,7 @@
     if (settings.nikudColorOverrides && settings.nikudColorOverrides[key] !== undefined) {
       return settings.nikudColorOverrides[key];
     }
-    return (document.body.classList.contains('dark') ? NIKUD_DEFAULTS_DARK : NIKUD_DEFAULTS_LIGHT)[key] || '#888';
+    return activeNikudDefaults(document.body.classList.contains('dark'))[key] || '#888';
   }
 
   function colorizeHebrew(text, mode) {
@@ -2092,7 +2150,7 @@
     const list = document.getElementById('colorPickerList');
     if (!list) return;
     list.innerHTML = '';
-    VOWEL_COLOR_DEFS.forEach(def => {
+    activeColorDefs().forEach(def => {
       const row = document.createElement('div');
       row.className = 'color-pick-row';
       const ex = document.createElement('span');
@@ -2119,6 +2177,20 @@
   function resetNikudColors() {
     settings.nikudColorOverrides = {};
     initColorPickers();
+    if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); }
+  }
+  function syncSchemeButtons() {
+    const scheme = settings.vowelColorScheme || 'default';
+    const d = document.getElementById('vowelSchemeDefault');
+    const t = document.getElementById('vowelSchemeTalAm');
+    if (d) d.classList.toggle('active', scheme !== 'talam');
+    if (t) t.classList.toggle('active', scheme === 'talam');
+  }
+  function setVowelScheme(s) {
+    settings.vowelColorScheme = s;
+    settings.nikudColorOverrides = {};   // show the scheme's clean palette
+    initColorPickers();                  // re-order + re-seed colors
+    syncSchemeButtons();
     if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); }
   }
 
@@ -3105,6 +3177,9 @@
     if (cpl) { cpl.style.display = settings.colorCodeNikkud ? 'flex' : 'none'; cpl.style.flexDirection = 'column'; }
     const nrb = $('nikudResetBtn');
     if (nrb) nrb.style.display = settings.colorCodeNikkud ? 'inline-block' : 'none';
+    const vsr = $('vowelSchemeRow');
+    if (vsr) vsr.style.display = settings.colorCodeNikkud ? 'flex' : 'none';
+    syncSchemeButtons();
     if (settings.colorCodeNikkud) initColorPickers();
     setDashTextSize(settings.dashTextSize || 1.8);
     const schedEnabled = !!settings.scheduleEnabled;
@@ -3225,7 +3300,8 @@
       document.getElementById('colorModeRow').style.display = on ? 'flex' : 'none';
       document.getElementById('colorPickerList').style.display = on ? 'flex' : 'none';
       document.getElementById('nikudResetBtn').style.display = on ? 'inline-block' : 'none';
-      if (on) initColorPickers();
+      document.getElementById('vowelSchemeRow').style.display = on ? 'flex' : 'none';
+      if (on) { syncSchemeButtons(); initColorPickers(); }
       refreshAll(); saveSettingsToStorage();
     });
     document.querySelectorAll('input[name="colorMode"]').forEach(r =>

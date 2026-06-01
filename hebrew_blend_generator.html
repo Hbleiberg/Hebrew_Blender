@@ -3004,6 +3004,11 @@
                     <button id="colorModeHighlight" class="color-mode-btn"        onclick="setColorMode('highlight')">Highlight</button>
                     <button id="colorModeUnderline" class="color-mode-btn"        onclick="setColorMode('underline')">Underline</button>
                   </div>
+                  <div style="font-size:0.68rem;color:var(--muted);margin:2px 0 -2px;">Color scheme</div>
+                  <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
+                    <button id="vowelSchemeDefault" class="color-mode-btn active" onclick="setVowelScheme('default')">Default</button>
+                    <button id="vowelSchemeTalAm"   class="color-mode-btn"        onclick="setVowelScheme('talam')">TaL AM</button>
+                  </div>
 <div id="colorPickerList"></div>
                   <button class="btn-xs" onclick="resetNikudColors()" style="font-size:0.68rem;width:100%;">↺ Reset to defaults</button>
                 </div>
@@ -3330,6 +3335,59 @@ const VOWEL_GROUPS = [
     ]
   },
 ];
+// TaL AM curriculum grouping/order (6 groups, poster top→bottom). Tzere merges into the
+// Eh/gold group; Cholam is navy; Shva is grey. Same object shape as VOWEL_GROUPS.
+const VOWEL_GROUPS_TALAM = [
+  {
+    key: 'red', sound: 'AH', colorName: 'Red', colorHtml: 'R<u>e</u>d', label: 'AH sound',
+    bg: 'rgba(209,42,31,0.15)', border: '#d12a1f', darkBg: 'rgba(240,98,90,0.22)', darkBorder: '#f0625a',
+    vowels: [
+      { key: 'a',       label: 'Kamatz',       sub: 'AH sound', nikud: 'אָ', isMain: true  },
+      { key: 'patah',   label: 'Patach',       sub: 'AH sound', nikud: 'אַ', isMain: true  },
+      { key: 'hpatah',  label: 'Hataf Patach', sub: 'short AH', nikud: 'אֲ', isMain: false },
+      { key: 'hkamatz', label: 'Hataf Kamatz', sub: 'short AH', nikud: 'אֳ', isMain: false },
+    ]
+  },
+  {
+    key: 'gold', sound: 'EH', colorName: 'Yellow', colorHtml: 'Y<u>e</u>llow', label: 'EH sound',
+    bg: 'rgba(200,150,0,0.18)', border: '#c08a00', darkBg: 'rgba(230,194,76,0.22)', darkBorder: '#e6c24c',
+    vowels: [
+      { key: 'tzere',  label: 'Tzere',       sub: 'EY sound', nikud: 'אֵ', isMain: true  },
+      { key: 'e',      label: 'Segol',       sub: 'EH sound', nikud: 'אֶ', isMain: true  },
+      { key: 'hsegol', label: 'Hataf Segol', sub: 'short EH', nikud: 'אֱ', isMain: false },
+    ]
+  },
+  {
+    key: 'green', sound: 'EE', colorName: 'Green', colorHtml: 'Gr<u>ee</u>n', label: 'EE sound',
+    bg: 'rgba(46,156,52,0.15)', border: '#2e9c34', darkBg: 'rgba(70,204,82,0.22)', darkBorder: '#46cc52',
+    vowels: [
+      { key: 'i', label: 'Chirik', sub: 'EE sound', nikud: 'אִ', isMain: true },
+    ]
+  },
+  {
+    key: 'navy', sound: 'OH', colorName: 'Blue', colorHtml: 'Bl<u>ue</u>', label: 'OH sound',
+    bg: 'rgba(31,63,143,0.15)', border: '#1f3f8f', darkBg: 'rgba(111,140,230,0.22)', darkBorder: '#6f8ce6',
+    vowels: [
+      { key: 'vcholam', label: 'Vav Holam', sub: 'OH sound', nikud: 'וֹ', isMain: true },
+      { key: 'o',       label: 'Holam',     sub: 'OH sound', nikud: 'אֹ', isMain: true },
+    ]
+  },
+  {
+    key: 'orange', sound: 'OO', colorName: 'Orange', colorHtml: 'Or<u>a</u>nge', label: 'OO sound',
+    bg: 'rgba(217,121,27,0.15)', border: '#d9791b', darkBg: 'rgba(240,162,62,0.22)', darkBorder: '#f0a23e',
+    vowels: [
+      { key: 'shuruk', label: 'Shuruk', sub: 'OO sound', nikud: 'וּ', isMain: true },
+      { key: 'u',      label: 'Kubutz', sub: 'OO sound', nikud: 'אֻ', isMain: true },
+    ]
+  },
+  {
+    key: 'grey', sound: 'UH', colorName: 'Grey', colorHtml: 'Gr<u>ey</u>', label: 'UH sound',
+    bg: 'rgba(107,107,107,0.15)', border: '#6b6b6b', darkBg: 'rgba(154,160,172,0.22)', darkBorder: '#9aa0ac',
+    vowels: [
+      { key: 'sh', label: 'Shva', sub: 'UH / silent', nikud: 'אְ', isMain: false },
+    ]
+  },
+];
 const VOWELS = VOWEL_GROUPS.flatMap(g => g.vowels);
 const MAIN_VOWEL_KEYS = new Set(VOWELS.filter(v => v.isMain).map(v => v.key));
 
@@ -3377,9 +3435,54 @@ const NIKUD_DEFAULTS_DARK = {
   u:'#6688ff', shuruk:'#6688ff',
   sh:'#bb66ee'
 };
+// ── TaL AM vowel color scheme (matches the TaL AM curriculum vowel poster) ──
+const TALAM_DEFAULTS_LIGHT = {
+  a:'#d12a1f', patah:'#d12a1f', hpatah:'#d12a1f', hkamatz:'#d12a1f', // Red / AH
+  tzere:'#c08a00', e:'#c08a00', hsegol:'#c08a00',                    // Gold / EH
+  i:'#2e9c34',                                                       // Green / EE
+  vcholam:'#1f3f8f', o:'#1f3f8f',                                    // Navy / OH
+  shuruk:'#d9791b', u:'#d9791b',                                     // Orange / OO
+  sh:'#6b6b6b'                                                       // Grey / Shva
+};
+const TALAM_DEFAULTS_DARK = {
+  a:'#f0625a', patah:'#f0625a', hpatah:'#f0625a', hkamatz:'#f0625a',
+  tzere:'#e6c24c', e:'#e6c24c', hsegol:'#e6c24c',
+  i:'#46cc52',
+  vcholam:'#6f8ce6', o:'#6f8ce6',
+  shuruk:'#f0a23e', u:'#f0a23e',
+  sh:'#9aa0ac'
+};
+// Color-picker-list order in TaL AM mode (poster top→bottom).
+const VOWEL_COLOR_DEFS_TALAM = [
+  { key: 'a',       name: 'Kamatz',       example: 'אָ' },
+  { key: 'patah',   name: 'Patach',       example: 'אַ' },
+  { key: 'hpatah',  name: 'Hataf Patach', example: 'אֲ' },
+  { key: 'hkamatz', name: 'Hataf Kamatz', example: 'אֳ' },
+  { key: 'tzere',   name: 'Tzere',        example: 'אֵ' },
+  { key: 'e',       name: 'Segol',        example: 'אֶ' },
+  { key: 'hsegol',  name: 'Hataf Segol',  example: 'אֱ' },
+  { key: 'i',       name: 'Chirik',       example: 'אִ' },
+  { key: 'vcholam', name: 'Vav Holam',    example: 'וֹ' },
+  { key: 'o',       name: 'Holam',        example: 'אֹ' },
+  { key: 'shuruk',  name: 'Shuruk',       example: 'וּ' },
+  { key: 'u',       name: 'Kubutz',       example: 'אֻ' },
+  { key: 'sh',      name: 'Shva',         example: 'אְ' },
+];
 let colorCodingEnabled = false;
 let colorCodingMode = 'letter'; // 'letter' | 'highlight' | 'underline'
 let nikudColorOverrides = {};
+let vowelColorScheme = 'default'; // 'default' | 'talam'
+function activeNikudDefaults(dark){
+  return (vowelColorScheme === 'talam')
+    ? (dark ? TALAM_DEFAULTS_DARK : TALAM_DEFAULTS_LIGHT)
+    : (dark ? NIKUD_DEFAULTS_DARK : NIKUD_DEFAULTS_LIGHT);
+}
+function activeColorDefs(){
+  return (vowelColorScheme === 'talam') ? VOWEL_COLOR_DEFS_TALAM : VOWEL_COLOR_DEFS;
+}
+function activeVowelGroups(){
+  return (vowelColorScheme === 'talam') ? VOWEL_GROUPS_TALAM : VOWEL_GROUPS;
+}
 let blends = [];
 // When Class Set > 1 (standard blends only), holds one independent blend array per
 // version; null = single worksheet. renderWorksheet reads this to lay out all versions.
@@ -3453,8 +3556,9 @@ window.addEventListener('translitlibloaded', () => {
 // ══════════════════════════════════════════════
 function initVowels() {
   const grid = document.getElementById('vowelGrid');
+  grid.innerHTML = '';
   const isDark = document.body.classList.contains('dark') || document.documentElement.classList.contains('dark-early');
-  VOWEL_GROUPS.forEach(group => {
+  activeVowelGroups().forEach(group => {
     const section = document.createElement('div');
     section.className = 'vowel-group-section';
     section.setAttribute('data-group', group.key);
@@ -3863,6 +3967,7 @@ function getSettings() {
     colorCoding:       colorCodingEnabled,
     colorCodingMode,
     nikudColorOverrides: { ...nikudColorOverrides },
+    vowelColorScheme,
     // Transliteration style
     translitStyle,
   };
@@ -3879,6 +3984,9 @@ function applySettings(s) {
   }
   selectedLetters = new Set(s.selectedLetters || []);
   selectedVowels  = new Set(s.selectedVowels  || []);
+  // Vowel color scheme governs the picker grouping/order — set before rebuilding the grid.
+  if (s.vowelColorScheme !== undefined) vowelColorScheme = s.vowelColorScheme || 'default';
+  initVowels(); // rebuild picker in the active scheme; reads selectedVowels for checked state
   document.querySelectorAll('.letter-tile').forEach(t => {
     t.classList.toggle('selected', selectedLetters.has(t.dataset.heb));
   });
@@ -4085,8 +4193,11 @@ function applySettings(s) {
   }
   if (s.nikudColorOverrides) {
     nikudColorOverrides = { ...s.nikudColorOverrides };
-    updateColorPickerValues();
   }
+  // Rebuild color-picker list in the active scheme order (seeded with any overrides) + sync buttons.
+  refreshVowelGroupColors();
+  initColorPickers();
+  syncSchemeButtons();
 
   // Transliteration style
   if (s.translitStyle) {
@@ -4496,7 +4607,7 @@ function speakBlend(text) {
 function refreshVowelGroupColors() {
   const isDark = document.body.classList.contains('dark');
   document.querySelectorAll('#vowelGrid .vowel-group-section[data-group]').forEach(sec => {
-    const group = VOWEL_GROUPS.find(g => g.key === sec.getAttribute('data-group'));
+    const group = activeVowelGroups().find(g => g.key === sec.getAttribute('data-group'));
     if (!group) return;
     const bg = isDark ? group.darkBg : group.bg;
     const border = isDark ? group.darkBorder : group.border;
@@ -4513,7 +4624,7 @@ function refreshVowelGroupColors() {
 
 function getNikudColor(key) {
   if (nikudColorOverrides[key] !== undefined) return nikudColorOverrides[key];
-  return (document.body.classList.contains('dark') ? NIKUD_DEFAULTS_DARK : NIKUD_DEFAULTS_LIGHT)[key] || '#888';
+  return activeNikudDefaults(document.body.classList.contains('dark'))[key] || '#888';
 }
 
 // Maps each nikud Unicode char to its vowel key (dagesh U+05BC excluded — it's not a vowel)
@@ -4610,7 +4721,7 @@ function applyColorExStyle(el, color) {
 }
 
 function refreshColorExPreviews() {
-  VOWEL_COLOR_DEFS.forEach(def => {
+  activeColorDefs().forEach(def => {
     const ex = document.getElementById(`colorEx_${def.key}`);
     if (ex) applyColorExStyle(ex, getNikudColor(def.key));
   });
@@ -4620,7 +4731,7 @@ function initColorPickers() {
   const list = document.getElementById('colorPickerList');
   if (!list) return;
   list.innerHTML = '';
-  VOWEL_COLOR_DEFS.forEach(def => {
+  activeColorDefs().forEach(def => {
     const row = document.createElement('div');
     row.style.cssText = 'display:flex;align-items:center;gap:6px;';
     const ex = document.createElement('div');
@@ -4649,7 +4760,7 @@ function initColorPickers() {
 }
 
 function updateColorPickerValues() {
-  VOWEL_COLOR_DEFS.forEach(def => {
+  activeColorDefs().forEach(def => {
     if (nikudColorOverrides[def.key] !== undefined) return; // user override — keep it
     const color = getNikudColor(def.key);
     const pick = document.getElementById(`colorPick_${def.key}`);
@@ -4663,6 +4774,23 @@ function updateColorPickerValues() {
 function resetNikudColors() {
   nikudColorOverrides = {};
   updateColorPickerValues();
+}
+
+function syncSchemeButtons() {
+  const d = document.getElementById('vowelSchemeDefault');
+  const t = document.getElementById('vowelSchemeTalAm');
+  if (d) d.classList.toggle('active', vowelColorScheme !== 'talam');
+  if (t) t.classList.toggle('active', vowelColorScheme === 'talam');
+}
+function setVowelScheme(s) {
+  vowelColorScheme = s;
+  nikudColorOverrides = {};      // show the scheme's clean palette
+  initVowels();                  // re-group/re-color the vowel picker
+  initColorPickers();            // re-order/re-seed the color-picker list
+  refreshVowelGroupColors();
+  syncSchemeButtons();
+  if (colorCodingEnabled) renderWorksheet(false);
+  if (typeof saveSettings === 'function') saveSettings();
 }
 
 function rgbToHex(color) {
