@@ -139,7 +139,58 @@ Because `.ivrit` save files store `liveState = getSettings()`, keeping `getSetti
 
 ---
 
-## Preset Lists — Drag-to-Reorder
+## Preset Lists — Nested Folders (file tree)
+
+All six saved-item lists are organized by a **nested folder tree** with drag-and-drop and a
+touch-friendly **"Move ▾"** menu, via one shared component:
+
+- Generator presets, Flash Cards presets, Flash Cards profiles, Dashboard presets, Dashboard
+  saved schedules. (Flash Cards' active-profile dropdown stays a flat list.)
+
+### Sidecar overlay model — never restructure the stores
+The item store stays a flat `{name:...}` object and is the **source of truth for which items
+exist**. Folders live in a SEPARATE per-list localStorage key as a tree that *references items by
+name*. This keeps existing presets, `.ivrit` files, Teacher Share Code, and `DEFAULT_PRESET`
+seeding working untouched. Tree shape:
+```jsonc
+{ "v":1, "root":[ {"t":"item","name":"X"},
+                  {"t":"folder","id":"f_ab12","name":"Unit 1","collapsed":false,"children":[ ... ]} ] }
+```
+Five folder keys (naming `hebrew<Tool>_<thing>Folders`): `hebrewBlender_presetsFolders`,
+`hebrewFlashCards_presetsFolders`, `hebrewFlashCards_profilesFolders`,
+`hebrewDashboard_presetsFolders`, `hebrewDashboard_schedulesFolders`.
+
+### Shared component (one byte-identical block per file, like the `.ivrit` engine)
+Marked `/* ═══ IvritSuite folder-tree component (shared, identical across pages) ═══ */` (JS) plus a
+matching `.ft-*` CSS block. Entry point:
+```js
+mountFolderTree({ treeKey, container, listItemNames(), buildItemRow(name)→actionButtonsDOM, noun, onAfterChange? })
+```
+- `syncTree(tree, names)` runs on every render: prunes item nodes whose name left the store, dedupes
+  (first occurrence wins), repairs folder ids/fields, appends new store names at root. Store↔tree
+  stays consistent automatically — so a renamed/deleted/imported preset just re-surfaces at root.
+- Items reuse the existing `.preset-item` styling; folders use `.ft-folder*`. All names render via
+  `textContent` (XSS-safe — no inline `onclick` interpolation).
+- DnD = reorder + drop-into-folder (modeled as pure tree transforms then full re-render; a folder
+  can't drop into itself/a descendant). The **Move ▾ menu** (`ftPaths` → Root + every folder
+  breadcrumb) is the authoritative path and the only one that works on touch (HTML5 DnD doesn't
+  fire on touch). The menu is appended to `<body>` with `position:fixed` so it escapes any
+  `overflow:hidden` panel (e.g. the dashboard settings drawer).
+- Folder CRUD: New folder / New subfolder / Rename (`prompt`) / Delete (`confirm`; children move up
+  — underlying items are NEVER deleted). Collapse state lives on the folder node (persists + backs up).
+
+### Rule for any new preset-bearing list
+1. Render it with `mountFolderTree(cfg)` (don't hand-roll rows; reuse the existing action functions
+   in `buildItemRow`). The old `makeSortable` is superseded for foldered lists (kept only for the
+   dashboard's live schedule-builder rows).
+2. Register its folder key in **`index.html`** all three functions (`exportAllSettings` +
+   `importAllSettings` via `ftImportTree(key, incoming, false)` + `eraseAllSettings`) AND the AllTools
+   `IVRIT_CFG.gather/apply`.
+3. Add the key to the tool's own `IVRIT_CFG.gather()`/`apply()` (gather via `ftRead`, apply via
+   `ftImportTree(key, incoming, mode==='replace')`) so folders travel with the tool's `.ivrit`.
+   **Never `Object.assign` a tree** — that clobbers `root`; always go through `ftImportTree`.
+
+## Preset Lists — Drag-to-Reorder (superseded for the six foldered lists above)
 
 Every preset list (`.preset-list` / `.saved-schedule-list`) must support drag-to-reorder. Use the shared `makeSortable` helper defined in each file.
 

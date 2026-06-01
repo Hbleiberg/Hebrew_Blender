@@ -996,6 +996,37 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
   .vtile .vheb { font-size: 1.3rem; }
   .count-grid { grid-template-columns: repeat(5, 1fr); }
 }
+/* ═══ IvritSuite folder-tree component (shared, identical across pages) ═══ */
+.ft-tree { display:flex; flex-direction:column; gap:4px; }
+.ft-folder { border:1px solid var(--border,#c8bfa8); border-radius:6px; background:var(--white,#fff); }
+.ft-folder-head { display:flex; align-items:center; gap:6px; padding:5px 7px; cursor:pointer; user-select:none; }
+.ft-twisty { transition:transform .2s; font-size:.8rem; flex:0 0 auto; width:11px; text-align:center; color:var(--muted,#6b6050); }
+.ft-folder.ft-collapsed > .ft-folder-head .ft-twisty { transform:rotate(-90deg); }
+.ft-folder.ft-collapsed > .ft-folder-body { display:none; }
+.ft-folder-name { font-weight:600; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ft-folder-count { font-size:.72rem; color:var(--muted,#6b6050); flex:0 0 auto; }
+.ft-folder-actions { display:flex; gap:1px; flex:0 0 auto; }
+.ft-mini { background:none; border:none; cursor:pointer; font-size:.82rem; padding:0 3px; color:var(--muted,#6b6050); font-family:inherit; line-height:1; }
+.ft-mini:hover { color:var(--gold,#c9922a); }
+.ft-folder-body { padding:3px 5px 5px 16px; display:flex; flex-direction:column; gap:4px; }
+.ft-empty-folder { font-size:.72rem; color:var(--muted,#6b6050); font-style:italic; padding:3px 4px; }
+.ft-folder.ft-drop > .ft-folder-head { outline:2px dashed var(--gold,#c9922a); outline-offset:-2px; border-radius:4px; }
+.ft-row-drop { box-shadow:inset 0 2px 0 0 var(--gold,#c9922a); }
+.ft-root-drop { min-height:8px; border-radius:4px; }
+.ft-move-wrap { position:relative; display:inline-flex; flex:0 0 auto; }
+.ft-move-btn { font-size:.7rem; cursor:pointer; font-family:inherit; background:transparent; border:1px solid var(--border,#c8bfa8); border-radius:3px; padding:2px 6px; color:var(--text,#1a2744); }
+.ft-move-btn:hover { background:var(--warm-gray,#e8e0d0); }
+.ft-move-menu { position:fixed; z-index:9999; background:var(--white,#fff); border:1px solid var(--border,#c8bfa8); border-radius:6px; box-shadow:0 2px 10px rgba(0,0,0,.22); min-width:150px; max-height:260px; overflow:auto; padding:4px; }
+.ft-move-menu button { display:block; width:100%; text-align:left; background:none; border:none; padding:5px 8px; cursor:pointer; font-size:.78rem; border-radius:4px; color:var(--text,#1a2744); font-family:inherit; white-space:nowrap; }
+.ft-move-menu button:hover { background:var(--warm-gray,#e8e0d0); }
+.ft-newfolder { margin-top:6px; font-size:.74rem; font-family:inherit; cursor:pointer; padding:3px 9px; border:1px solid var(--border,#c8bfa8); border-radius:5px; background:transparent; color:var(--text,#1a2744); }
+.ft-newfolder:hover { background:var(--warm-gray,#e8e0d0); }
+body.dark .ft-folder { background:#1e2535; }
+body.dark .ft-move-menu, body.dark .ft-move-btn, body.dark .ft-newfolder { background:#1e2535; color:#dde4f0; }
+body.dark .ft-move-menu button { color:#dde4f0; }
+body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .ft-newfolder:hover { background:#2a3349; }
+/* ═══ end folder-tree component CSS ═══ */
+
 </style>
 </head>
 <body>
@@ -2995,43 +3026,209 @@ function overwritePreset(name) {
 }
 
 function renderPresets() {
-  const presets = readPresets();
-  const names = Object.keys(presets).sort((a, b) => (presets[a].order || 0) - (presets[b].order || 0));
-  const list = document.getElementById('presetList');
   const empty = document.getElementById('presetEmpty');
-  list.innerHTML = '';
-  if (names.length === 0) { empty.style.display = ''; return; }
-  empty.style.display = 'none';
-  names.forEach(name => {
-    const li = document.createElement('li');
-    li.className = 'preset-item';
-    li.draggable = true;
-    li.dataset.name = name;
-    li.innerHTML = `
-      <span class="drag" aria-hidden="true">⋮⋮</span>
-      <span class="pname"></span>
-      <button class="btn sm play" data-act="play">▶ Play</button>
-      <button class="btn sm primary" data-act="load">Load</button>
-      <button class="btn sm" data-act="overwrite">Save</button>
-      <button class="btn sm danger" data-act="delete">✕</button>
-    `;
-    li.querySelector('.pname').textContent = name;
-    li.querySelector('[data-act=play]').addEventListener('click', () => playPreset(name));
-    li.querySelector('[data-act=load]').addEventListener('click', () => loadPreset(name));
-    li.querySelector('[data-act=overwrite]').addEventListener('click', () => overwritePreset(name));
-    li.querySelector('[data-act=delete]').addEventListener('click', () => deletePreset(name));
-    list.appendChild(li);
-  });
-  makeSortable(list, () => {
-    // Re-order order field based on new DOM order
-    const presets = readPresets();
-    [...list.children].forEach((li, i) => {
-      const n = li.dataset.name;
-      if (presets[n]) presets[n].order = i;
-    });
-    writePresets(presets);
+  if (empty) empty.style.display = 'none'; // folder tree shows its own empty state
+  mountFolderTree({
+    treeKey: 'hebrewFlashCards_presetsFolders',
+    container: document.getElementById('presetList'),
+    noun: 'preset',
+    listItemNames: () => Object.keys(readPresets()),
+    buildItemRow: (name) => {
+      const f = document.createDocumentFragment();
+      const mk = (txt, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.textContent = txt; b.addEventListener('click', fn); return b; };
+      f.appendChild(mk('▶ Play', 'btn sm play', () => playPreset(name)));
+      f.appendChild(mk('Load', 'btn sm primary', () => loadPreset(name)));
+      f.appendChild(mk('Save', 'btn sm', () => overwritePreset(name)));
+      f.appendChild(mk('✕', 'btn sm danger', () => deletePreset(name)));
+      return f;
+    }
   });
 }
+
+/* ═══ IvritSuite folder-tree component (shared, identical across pages) ═══ */
+/* Sidecar overlay: the preset/schedule/profile store stays a flat {name:...} object and is the
+   source of truth for which items EXIST. This tree only organizes them (references items by name).
+   Stored as JSON under a per-list key. mountFolderTree(cfg) renders + wires DnD and a Move menu. */
+function ftRead(key){ try { const o = JSON.parse(localStorage.getItem(key) || 'null'); if (o && Array.isArray(o.root)) return o; } catch(e){} return { v:1, root:[] }; }
+function ftWrite(key, tree){ try { localStorage.setItem(key, JSON.stringify(tree)); } catch(e){} }
+function ftGenId(){ return 'f_' + Math.random().toString(36).slice(2,9); }
+function syncTree(tree, names){
+  let changed = false;
+  if (!tree || !Array.isArray(tree.root)) { tree = { v:1, root:[] }; changed = true; }
+  const present = new Set(names), seen = new Set(), ids = new Set();
+  (function walk(arr){
+    for (let i = 0; i < arr.length; i++){
+      const n = arr[i];
+      if (!n || (n.t !== 'item' && n.t !== 'folder')) { arr.splice(i,1); changed = true; i--; continue; }
+      if (n.t === 'item'){
+        if (!present.has(n.name) || seen.has(n.name)) { arr.splice(i,1); changed = true; i--; }
+        else seen.add(n.name);
+      } else {
+        if (!n.id || ids.has(n.id)) { n.id = ftGenId(); changed = true; }
+        ids.add(n.id);
+        if (typeof n.collapsed !== 'boolean') { n.collapsed = !!n.collapsed; changed = true; }
+        if (typeof n.name !== 'string') { n.name = 'Folder'; changed = true; }
+        if (!Array.isArray(n.children)) { n.children = []; changed = true; }
+        walk(n.children);
+      }
+    }
+  })(tree.root);
+  names.forEach(nm => { if (!seen.has(nm)) { tree.root.push({ t:'item', name: nm }); seen.add(nm); changed = true; } });
+  return { tree, changed };
+}
+function ftLocate(tree, pred){
+  let res = null;
+  (function walk(arr){
+    for (let i=0;i<arr.length;i++){
+      const n = arr[i];
+      if (pred(n)) { res = { parent: arr, index: i, node: n }; return true; }
+      if (n.t === 'folder' && walk(n.children)) return true;
+    }
+    return false;
+  })(tree.root);
+  return res;
+}
+function ftRemove(tree, pred){ const loc = ftLocate(tree, pred); if (loc){ loc.parent.splice(loc.index,1); return loc.node; } return null; }
+function ftFolderArray(tree, folderId){ if (folderId == null) return tree.root; const loc = ftLocate(tree, n => n.t==='folder' && n.id===folderId); return loc ? loc.node.children : tree.root; }
+function ftIsDescendant(tree, folderId, candId){
+  if (folderId == null || candId == null) return false;
+  if (candId === folderId) return true;
+  const loc = ftLocate(tree, n => n.t==='folder' && n.id===folderId);
+  if (!loc) return false;
+  let found = false;
+  (function walk(arr){ for (const n of arr){ if (n.t==='folder'){ if (n.id===candId){ found = true; return; } walk(n.children); } } })(loc.node.children);
+  return found;
+}
+function ftPaths(tree, excludeId){
+  const out = [{ id:null, label:'⌂ Root' }];
+  (function walk(arr, prefix){
+    for (const n of arr){
+      if (n.t !== 'folder') continue;
+      if (excludeId && ftIsDescendant(tree, excludeId, n.id)) continue; // skip self + descendants
+      const path = prefix ? prefix + ' / ' + n.name : n.name;
+      out.push({ id:n.id, label:'📁 ' + path });
+      walk(n.children, path);
+    }
+  })(tree.root, '');
+  return out;
+}
+function ftImportTree(key, incoming, replace){
+  if (!incoming || !Array.isArray(incoming.root)) return;
+  if (replace) { ftWrite(key, { v:1, root: incoming.root }); return; }
+  const existing = ftRead(key), haveItem = new Set(), haveFolder = new Set();
+  (function walk(arr){ for (const n of arr){ if (n.t==='item') haveItem.add(n.name); else if (n.t==='folder'){ haveFolder.add(n.name); walk(n.children||[]); } } })(existing.root);
+  incoming.root.forEach(n => {
+    if (n.t==='item' && !haveItem.has(n.name)) existing.root.push(n);
+    else if (n.t==='folder' && !haveFolder.has(n.name)) existing.root.push(n);
+  });
+  ftWrite(key, existing);
+}
+function mountFolderTree(cfg){
+  const container = (typeof cfg.container === 'string') ? document.querySelector(cfg.container) : cfg.container;
+  if (!container) return;
+  let tree, dragNode = null, openMenu = null;
+  const r = syncTree(ftRead(cfg.treeKey), cfg.listItemNames());
+  tree = r.tree; if (r.changed) ftWrite(cfg.treeKey, tree);
+
+  function commit(){ ftWrite(cfg.treeKey, tree); render(); if (cfg.onAfterChange) cfg.onAfterChange(); }
+  function clearCues(){ container.querySelectorAll('.ft-drop,.ft-row-drop').forEach(x => x.classList.remove('ft-drop','ft-row-drop')); }
+  function canDrop(target){ if (!dragNode || dragNode === target) return false; if (dragNode.t==='folder' && target && target.t==='folder' && ftIsDescendant(tree, dragNode.id, target.id)) return false; return true; }
+
+  function closeMenu(){ if (openMenu){ openMenu.remove(); openMenu = null; document.removeEventListener('click', onDoc, true); window.removeEventListener('resize', closeMenu); window.removeEventListener('scroll', closeMenu, true); } }
+  function onDoc(e){ if (openMenu && !openMenu.contains(e.target)) closeMenu(); }
+  function openMoveMenu(btn, node){
+    closeMenu();
+    const menu = document.createElement('div'); menu.className = 'ft-move-menu';
+    ftPaths(tree, node.t==='folder' ? node.id : null).forEach(p => {
+      const b = document.createElement('button'); b.type='button'; b.textContent = p.label;
+      b.addEventListener('click', () => { const mv = ftRemove(tree, x => x===node); if (mv){ ftFolderArray(tree, p.id).push(mv); commit(); } closeMenu(); });
+      menu.appendChild(b);
+    });
+    document.body.appendChild(menu);
+    const rc = btn.getBoundingClientRect();
+    let left = Math.max(6, rc.right - menu.offsetWidth), top = rc.bottom + 4;
+    if (top + menu.offsetHeight > window.innerHeight - 6) top = Math.max(6, rc.top - menu.offsetHeight - 4);
+    if (left + menu.offsetWidth > window.innerWidth - 6) left = window.innerWidth - menu.offsetWidth - 6;
+    menu.style.left = left + 'px'; menu.style.top = top + 'px';
+    openMenu = menu;
+    setTimeout(() => { document.addEventListener('click', onDoc, true); window.addEventListener('resize', closeMenu); window.addEventListener('scroll', closeMenu, true); }, 0);
+  }
+
+  function makeDraggable(el, node){
+    el.draggable = true;
+    el.addEventListener('dragstart', e => { e.stopPropagation(); dragNode = node; el.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain',''); } catch(_){} });
+    el.addEventListener('dragend', e => { e.stopPropagation(); el.classList.remove('dragging'); clearCues(); dragNode = null; });
+  }
+  function insertRelative(target, after){
+    const dn = dragNode; if (!canDrop(target)) return;
+    ftRemove(tree, x => x===dn);
+    const loc = ftLocate(tree, x => x===target);
+    if (!loc){ tree.root.push(dn); commit(); return; }
+    loc.parent.splice(loc.index + (after?1:0), 0, dn); commit();
+  }
+  function dropInto(folderNode){ const dn = dragNode; if (!canDrop(folderNode)) return; ftRemove(tree, x => x===dn); folderNode.children.push(dn); commit(); }
+
+  function renderItem(node){
+    const row = document.createElement('div'); row.className = 'preset-item'; row.dataset.ftItem = node.name;
+    const h = document.createElement('span'); h.className='drag-handle'; h.title='Drag to move'; h.textContent='⠿'; h.style.flex='0 0 auto';
+    const nm = document.createElement('span'); nm.className='ft-item-name'; nm.style.flex='1'; nm.textContent = node.name;
+    row.appendChild(h); row.appendChild(nm);
+    const acts = cfg.buildItemRow(node.name); if (acts) row.appendChild(acts);
+    const mw = document.createElement('span'); mw.className='ft-move-wrap';
+    const mb = document.createElement('button'); mb.type='button'; mb.className='ft-move-btn'; mb.textContent='Move ▾';
+    mb.addEventListener('click', e => { e.stopPropagation(); openMoveMenu(mb, node); });
+    mw.appendChild(mb); row.appendChild(mw);
+    makeDraggable(row, node);
+    row.addEventListener('dragover', e => { if (!canDrop(node)) return; e.preventDefault(); e.dataTransfer.dropEffect='move'; clearCues(); row.classList.add('ft-row-drop'); });
+    row.addEventListener('drop', e => { if (!canDrop(node)) return; e.preventDefault(); e.stopPropagation(); const b = row.getBoundingClientRect(); insertRelative(node, (e.clientY - b.top) > b.height/2); });
+    return row;
+  }
+  function mkMini(label, title, fn){ const b=document.createElement('button'); b.type='button'; b.className='ft-mini'; b.textContent=label; b.title=title; b.addEventListener('click', e => { e.stopPropagation(); fn(b); }); return b; }
+  function renderFolder(node){
+    const fol = document.createElement('div'); fol.className = 'ft-folder' + (node.collapsed?' ft-collapsed':''); fol.dataset.ftFolder = node.id;
+    const head = document.createElement('div'); head.className='ft-folder-head';
+    const tw = document.createElement('span'); tw.className='ft-twisty'; tw.textContent='▾';
+    const h = document.createElement('span'); h.className='drag-handle'; h.title='Drag folder'; h.textContent='⠿'; h.style.flex='0 0 auto';
+    const nm = document.createElement('span'); nm.className='ft-folder-name'; nm.textContent = node.name;
+    const cnt = document.createElement('span'); cnt.className='ft-folder-count'; cnt.textContent = '(' + node.children.length + ')';
+    const acts = document.createElement('span'); acts.className='ft-folder-actions';
+    acts.appendChild(mkMini('＋','New subfolder', () => { const x=(prompt('New subfolder name:')||'').trim(); if(!x) return; node.children.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); }));
+    acts.appendChild(mkMini('✎','Rename folder', () => { const x=(prompt('Rename folder:', node.name)||'').trim(); if(!x) return; node.name=x; commit(); }));
+    acts.appendChild(mkMini('↗','Move folder', (b) => openMoveMenu(b, node)));
+    acts.appendChild(mkMini('🗑','Delete folder (keeps items)', () => { if(!confirm('Delete folder "'+node.name+'"? Its contents move out — nothing is deleted.')) return; const loc=ftLocate(tree, x=>x===node); if(loc){ loc.parent.splice(loc.index, 1, ...node.children); commit(); } }));
+    head.appendChild(tw); head.appendChild(h); head.appendChild(nm); head.appendChild(cnt); head.appendChild(acts);
+    head.addEventListener('click', e => { if (e.target.closest('.ft-folder-actions')) return; node.collapsed = !node.collapsed; commit(); });
+    makeDraggable(fol, node);
+    head.addEventListener('dragover', e => { if (!canDrop(node)) return; e.preventDefault(); e.dataTransfer.dropEffect='move'; clearCues(); fol.classList.add('ft-drop'); });
+    head.addEventListener('drop', e => { if (!canDrop(node)) return; e.preventDefault(); e.stopPropagation(); dropInto(node); });
+    const body = document.createElement('div'); body.className='ft-folder-body';
+    if (node.children.length === 0){
+      const em = document.createElement('div'); em.className='ft-empty-folder'; em.textContent='Empty — drop items here';
+      em.addEventListener('dragover', e => { if (!canDrop(node)) return; e.preventDefault(); clearCues(); fol.classList.add('ft-drop'); });
+      em.addEventListener('drop', e => { if (!canDrop(node)) return; e.preventDefault(); e.stopPropagation(); dropInto(node); });
+      body.appendChild(em);
+    } else renderInto(node.children, body);
+    fol.appendChild(head); fol.appendChild(body);
+    return fol;
+  }
+  function renderInto(arr, parentEl){ arr.forEach(n => parentEl.appendChild(n.t==='item' ? renderItem(n) : renderFolder(n))); }
+  function render(){
+    closeMenu(); container.innerHTML = '';
+    const wrap = document.createElement('div'); wrap.className='ft-tree';
+    renderInto(tree.root, wrap);
+    if (tree.root.length === 0){ const em=document.createElement('div'); em.className='ft-empty-folder'; em.textContent='No saved '+(cfg.noun||'item')+'s yet.'; wrap.appendChild(em); }
+    const rootDrop = document.createElement('div'); rootDrop.className='ft-root-drop';
+    rootDrop.addEventListener('dragover', e => { if (!dragNode) return; e.preventDefault(); clearCues(); rootDrop.classList.add('ft-row-drop'); });
+    rootDrop.addEventListener('drop', e => { if (!dragNode) return; e.preventDefault(); e.stopPropagation(); const dn=dragNode; ftRemove(tree, x=>x===dn); tree.root.push(dn); commit(); });
+    wrap.appendChild(rootDrop);
+    container.appendChild(wrap);
+    const add = document.createElement('button'); add.type='button'; add.className='ft-newfolder'; add.textContent='📁 New folder';
+    add.addEventListener('click', () => { const x=(prompt('New folder name:')||'').trim(); if(!x) return; tree.root.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); });
+    container.appendChild(add);
+  }
+  render();
+}
+/* ═══ end folder-tree component ═══ */
 
 function makeSortable(list, onChange) {
   let dragEl = null;
@@ -3369,7 +3566,7 @@ function renderProfiles() {
   const detail = document.getElementById('profileDetail');
   if (!sel || !list) return;
 
-  // Active-profile dropdown
+  // Active-profile dropdown stays a flat list of all profiles
   sel.innerHTML = '';
   if (names.length === 0) {
     const opt = document.createElement('option');
@@ -3385,41 +3582,27 @@ function renderProfiles() {
       sel.appendChild(opt);
     });
   }
+  if (empty) empty.style.display = 'none'; // folder tree shows its own empty state
+  if (detail) detail.style.display = names.length ? '' : 'none';
 
-  // Profile list (drag-reorderable)
-  list.innerHTML = '';
-  if (names.length === 0) {
-    empty.style.display = '';
-    detail.style.display = 'none';
-    return;
-  }
-  empty.style.display = 'none';
-  names.forEach(name => {
-    const li = document.createElement('li');
-    li.className = 'preset-item';
-    li.draggable = true;
-    li.dataset.name = name;
-    const count = (db.profiles[name].results || []).length;
-    li.innerHTML = `
-      <span class="drag" aria-hidden="true">⋮⋮</span>
-      <span class="pname"></span>
-      <span class="sub" style="font-size:0.72rem;white-space:nowrap;"></span>
-      <button class="btn sm primary" data-act="active">Set Active</button>
-      <button class="btn sm danger" data-act="delete">✕</button>
-    `;
-    li.querySelector('.pname').textContent = name + (name === active ? ' ★' : '');
-    li.querySelector('.sub').textContent = `${count} saved`;
-    li.querySelector('[data-act=active]').addEventListener('click', () => setActiveProfile(name));
-    li.querySelector('[data-act=delete]').addEventListener('click', () => deleteProfile(name));
-    list.appendChild(li);
-  });
-  makeSortable(list, () => {
-    const db2 = readProfiles();
-    [...list.children].forEach((li, i) => {
-      const n = li.dataset.name;
-      if (db2.profiles[n]) db2.profiles[n].order = i;
-    });
-    writeProfiles(db2);
+  // Profile list — foldered (the dropdown above stays flat)
+  mountFolderTree({
+    treeKey: 'hebrewFlashCards_profilesFolders',
+    container: list,
+    noun: 'profile',
+    listItemNames: () => Object.keys(readProfiles().profiles),
+    buildItemRow: (name) => {
+      const db2 = readProfiles(); const act = getActiveProfile();
+      const count = ((db2.profiles[name] && db2.profiles[name].results) || []).length;
+      const f = document.createDocumentFragment();
+      const sub = document.createElement('span'); sub.className = 'sub';
+      sub.style.cssText = 'font-size:0.72rem;white-space:nowrap;color:var(--muted);flex:0 0 auto;';
+      sub.textContent = (name === act ? '★ ' : '') + count + ' saved';
+      f.appendChild(sub);
+      const setb = document.createElement('button'); setb.type = 'button'; setb.className = 'btn sm primary'; setb.textContent = 'Set Active'; setb.addEventListener('click', () => setActiveProfile(name)); f.appendChild(setb);
+      const del = document.createElement('button'); del.type = 'button'; del.className = 'btn sm danger'; del.textContent = '✕'; del.addEventListener('click', () => deleteProfile(name)); f.appendChild(del);
+      return f;
+    }
   });
 
   // Results history for active profile
@@ -3909,19 +4092,28 @@ function initAdvSubCollapse() {
 const IVRIT_CFG = {
   tool: 'FlashCards',
   gather() {
-    return { presets: readPresets(), liveState: getSettings() };
+    return {
+      presets: readPresets(),
+      presetFolders: ftRead('hebrewFlashCards_presetsFolders'),
+      profileFolders: ftRead('hebrewFlashCards_profilesFolders'),
+      liveState: getSettings()
+    };
   },
   apply(data, mode) {
     const incoming = data.presets || data.flashCardPresets;   // also accept an AllTools bundle
     if (incoming) {
       const base = mode === 'replace' ? {} : readPresets();
       writePresets(Object.assign(base, incoming));
-      renderPresets();
     }
+    const inPF = data.presetFolders || data.flashCardPresetFolders;
+    if (inPF) ftImportTree('hebrewFlashCards_presetsFolders', inPF, mode === 'replace');
+    if (incoming || inPF) renderPresets();
     if (data.liveState) { applySettings(data.liveState); saveSettings(); }
     // Restore student profiles too, when the file includes them
-    if (data.flashCardProfiles && data.flashCardProfiles.profiles) {
-      mergeProfilesBlob(data.flashCardProfiles, mode);
+    const inProfF = data.profileFolders || data.flashCardProfileFolders;
+    if ((data.flashCardProfiles && data.flashCardProfiles.profiles) || inProfF) {
+      if (data.flashCardProfiles && data.flashCardProfiles.profiles) mergeProfilesBlob(data.flashCardProfiles, mode);
+      if (inProfF) ftImportTree('hebrewFlashCards_profilesFolders', inProfF, mode === 'replace');
       renderProfiles();
     }
   }
