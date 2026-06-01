@@ -1692,8 +1692,6 @@ function hebrewNumber(n, gender) {
 const SOFIT_BASE = { 'ך':'כ', 'ם':'מ', 'ן':'נ', 'ף':'פ', 'ץ':'צ' };
 const SOFIT_CHARS = new Set(['ך','ם','ן','ף','ץ']);
 const HAS_SOFIT_CHARS = new Set(['כ','מ','נ','פ','צ']);
-// N1 refined: gutturals take chataf vowels, not simple shva
-const GUTTURALS = new Set(['א','ה','ח','ע']);
 
 /* Vowel groups — 7 groups, each with display info.
    nikud field is the alef + combining vowel mark (display);
@@ -3982,13 +3980,16 @@ function generateCard() {
     const L = positions[p - 1];
     let tries = 0;
     while (tries < 8) {
-      if (v.key === 'sh' && (GUTTURALS.has(L.heb) || L.heb === 'ו')) { v = pickFn(); tries++; continue; }
-      if ((L.heb === 'שׁ' || L.heb === 'שׂ') && (v.key === 'o' || v.key === 'vcholam')) { v = pickFn(); tries++; continue; }
+      // Shva is never a syllable nucleus (mirrors the worksheet generator's Rule N1) — reroll.
+      // It still appears as an automatic connector between letters (see build loop below).
+      if (v.key === 'sh') { v = pickFn(); tries++; continue; }
+      // Shin/Sin + cholam collides with the shin/sin dot — guard bare ש too, not just שׁ
+      if ((L.heb === 'ש' || L.heb === 'שׁ' || L.heb === 'שׂ') && (v.key === 'o' || v.key === 'vcholam')) { v = pickFn(); tries++; continue; }
       break;
     }
     if (!v) return null;
-    if ((L.heb === 'שׁ' || L.heb === 'שׂ') && (v.key === 'o' || v.key === 'vcholam')) return null;
-    if (v.key === 'sh' && (GUTTURALS.has(L.heb) || L.heb === 'ו')) return null;
+    if ((L.heb === 'ש' || L.heb === 'שׁ' || L.heb === 'שׂ') && (v.key === 'o' || v.key === 'vcholam')) return null;
+    if (v.key === 'sh') return null;
     // Mater lectionis (vcholam/shuruk) can't occupy a consonant slot in multi-letter mode
     if ((v.key === 'vcholam' || v.key === 'shuruk') && vavAsLetter && m > 1) return null;
     chosenVowels[p] = v;
