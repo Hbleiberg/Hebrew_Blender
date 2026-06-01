@@ -1366,12 +1366,10 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
           <button class="pill" data-cmode="underline">Underline</button>
         </div>
         <div id="colorPickers"></div>
-        <div style="display:flex;gap:6px;align-items:center;margin-top:6px;">
-          <button class="btn sm ghost" id="colorReset" style="white-space:nowrap;">Reset colors</button>
-          <div class="pill-group" id="schemePills" style="flex:1;">
-            <button class="pill active" id="vowelSchemeDefault" onclick="setVowelScheme('default')">Default</button>
-            <button class="pill" id="vowelSchemeTalAm" onclick="setVowelScheme('talam')">TaL AM</button>
-          </div>
+        <div class="pill-group" id="schemePills" style="margin-top:6px;">
+          <button class="pill active" id="vowelSchemeDefault" onclick="setVowelScheme('default')">Default</button>
+          <button class="pill" id="vowelSchemeTalAm" onclick="setVowelScheme('talam')">TaL AM</button>
+          <button class="pill" id="colorReset">Reset</button>
         </div>
       </div>
 

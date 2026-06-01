@@ -3005,12 +3005,10 @@
                     <button id="colorModeUnderline" class="color-mode-btn"        onclick="setColorMode('underline')">Underline</button>
                   </div>
 <div id="colorPickerList"></div>
-                  <div style="display:flex;gap:6px;align-items:center;margin-top:2px;">
-                    <button class="btn-xs" onclick="resetNikudColors()" style="font-size:0.68rem;white-space:nowrap;">↺ Reset colors</button>
-                    <div style="display:flex;flex:1;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
-                      <button id="vowelSchemeDefault" class="color-mode-btn active" onclick="setVowelScheme('default')">Default</button>
-                      <button id="vowelSchemeTalAm"   class="color-mode-btn"        onclick="setVowelScheme('talam')">TaL AM</button>
-                    </div>
+                  <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-top:4px;">
+                    <button id="vowelSchemeDefault" class="color-mode-btn active" onclick="setVowelScheme('default')">Default</button>
+                    <button id="vowelSchemeTalAm"   class="color-mode-btn"        onclick="setVowelScheme('talam')">TaL AM</button>
+                    <button class="color-mode-btn" onclick="resetNikudColors()">Reset</button>
                   </div>
                 </div>
               </div>

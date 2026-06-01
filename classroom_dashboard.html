@@ -1646,9 +1646,9 @@
     </div>
     <div class="color-pick-list" id="colorPickerList" style="display:none;"></div>
     <div class="vowel-scheme-row" id="vowelSchemeRow" style="display:none;">
-      <button class="btn btn-xs btn-secondary" id="nikudResetBtn" onclick="resetNikudColors()" style="font-size:0.72rem;white-space:nowrap;">↺ Reset colors</button>
       <button class="vowel-scheme-btn active" id="vowelSchemeDefault" onclick="setVowelScheme('default')">Default</button>
       <button class="vowel-scheme-btn" id="vowelSchemeTalAm" onclick="setVowelScheme('talam')">TaL AM</button>
+      <button class="vowel-scheme-btn" id="nikudResetBtn" onclick="resetNikudColors()">Reset</button>
     </div>
 
     <div class="form-row" style="margin-top:12px;flex-direction:column;align-items:stretch;gap:4px;">
@@ -3175,8 +3175,6 @@
     if (cmRadio) cmRadio.checked = true;
     const cpl = $('colorPickerList');
     if (cpl) { cpl.style.display = settings.colorCodeNikkud ? 'flex' : 'none'; cpl.style.flexDirection = 'column'; }
-    const nrb = $('nikudResetBtn');
-    if (nrb) nrb.style.display = settings.colorCodeNikkud ? 'inline-block' : 'none';
     const vsr = $('vowelSchemeRow');
     if (vsr) vsr.style.display = settings.colorCodeNikkud ? 'flex' : 'none';
     syncSchemeButtons();
@@ -3299,7 +3297,6 @@
       const on = e.target.checked;
       document.getElementById('colorModeRow').style.display = on ? 'flex' : 'none';
       document.getElementById('colorPickerList').style.display = on ? 'flex' : 'none';
-      document.getElementById('nikudResetBtn').style.display = on ? 'inline-block' : 'none';
       document.getElementById('vowelSchemeRow').style.display = on ? 'flex' : 'none';
       if (on) { syncSchemeButtons(); initColorPickers(); }
       refreshAll(); saveSettingsToStorage();
