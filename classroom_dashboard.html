@@ -460,6 +460,8 @@
 
   /* Timer panel */
   #timerCol .col-body { display: flex; flex-direction: column; align-items: center; gap: 11px; padding: 16px 14px; }
+  /* ID-specificity override so collapse beats the flex rule above */
+  #timerCol.collapsed .col-body { display: none; }
   .timer-display { font-family: 'Libre Baskerville', serif; font-weight: 700; font-size: var(--time-size);
     color: var(--navy); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; line-height: 1; }
   body.dark .timer-display { color: var(--gold-light); }
