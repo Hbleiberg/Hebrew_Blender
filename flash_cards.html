@@ -3370,11 +3370,138 @@ function collectMissedCards(name) {
   return [...byHeb.values()].sort((a, b) => b.count - a.count);
 }
 
-function practiceWeaknesses(name) {
-  name = name || getActiveProfile();
+// Find the full vowel object (from VOWEL_GROUPS) for a vowel key like 'a' / 'patah'.
+function vowelByKey(key) {
+  for (const g of VOWEL_GROUPS) {
+    const v = g.vowels.find(x => x.key === key);
+    if (v) return v;
+  }
+  return null;
+}
+
+// Build a playable 1-letter card from a "consonant|vowelKey" weakness combo, even
+// if that exact pair never appeared on a card. Returns null if the consonant isn't
+// a known display letter or the vowel can't sit on it (sofit, shva, shin/sin+cholam,
+// mater lectionis) — the same guards generateCard() applies.
+function synthComboCard(comboKey) {
+  const sep = comboKey.indexOf('|');
+  if (sep < 0) return null;
+  const consHeb = comboKey.slice(0, sep);
+  const vowelKey = comboKey.slice(sep + 1);
+  const L = getDisplayLetterByHeb(consHeb);
+  const v = vowelByKey(vowelKey);
+  if (!L || !v) return null;
+  if (L.sofit) return null;                                  // sofits take no nikkud
+  if (vowelKey === 'sh') return null;                        // shva isn't a syllable nucleus
+  if ((L.heb === 'ש' || L.heb === 'שׁ' || L.heb === 'שׂ') && (vowelKey === 'o' || vowelKey === 'vcholam')) return null;
+  if (vowelKey === 'vcholam' || vowelKey === 'shuruk') return null; // mater lectionis, not a CV combo
+  const heb = consHeb + getNikudCombiningChar(v);
+  const translitDefault = capitalize(getSound(L, vowelKey));
+  const translit = window.HebrewTransliterator.apply(heb, translitDefault, translitStyle);
+  return { heb, translit, translitDefault };
+}
+
+// Build the "Practice My Weaknesses" deck of up to `count` cards. Priority:
+//   1. Cards the user actually missed (most-missed first).
+//   2. Synthesized letter+vowel combos for weak letters × weak vowels that never
+//      appeared on a card — so true weaknesses still get drilled.
+// A combo is "weak" if it was missed at least once (missed > 0) in that tab.
+function collectWeaknessDeck(name, count) {
   const ranked = collectMissedCards(name);
-  if (ranked.length === 0) { alert('No mistakes saved yet for this profile. Save some drill results first.'); return; }
-  const deck = ranked.slice(0, cardCount).map(r => ({ ...r.card }));
+  const deck = ranked.slice(0, count).map(r => ({ ...r.card }));
+  const seenHeb = new Set(deck.map(c => c.heb));
+  if (deck.length >= count) return deck;
+
+  // Weak letters and weak vowels from the analysis (missed at least once).
+  const stats = analyzeWeaknesses(name);
+  const weakLetters = Object.keys(stats.letters).filter(k => stats.letters[k].missed > 0);
+  const weakVowels  = Object.keys(stats.vowels).filter(k => stats.vowels[k].missed > 0);
+  // Rank an explicit weak combo (both already missed-as-a-pair) ahead of merely
+  // weak-letter × weak-vowel cross products.
+  const weakCombos = Object.keys(stats.combos)
+    .filter(k => stats.combos[k].missed > 0)
+    .sort((a, b) => stats.combos[b].missed - stats.combos[a].missed);
+
+  const candidates = [];
+  const pushCombo = key => { const c = synthComboCard(key); if (c && !seenHeb.has(c.heb)) { seenHeb.add(c.heb); candidates.push(c); } };
+  weakCombos.forEach(pushCombo);
+  weakLetters.forEach(l => weakVowels.forEach(vk => pushCombo(l + '|' + vk)));
+
+  for (const c of candidates) {
+    if (deck.length >= count) break;
+    deck.push(c);
+  }
+  return deck;
+}
+
+// Popup: choose how many cards to practice (quick-pick + custom). Resolves to a
+// positive integer, or null if cancelled. Mirrors the ivritAskMode overlay style.
+function askCardCount(defaultN, maxN) {
+  return new Promise(resolve => {
+    let def = Math.max(1, defaultN || cardCount || 10);
+    if (maxN) def = Math.min(def, maxN);
+    const picks = COUNT_OPTIONS.filter(n => !maxN || n <= maxN);
+    if (maxN && !picks.includes(maxN)) picks.push(maxN);
+    const ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
+    const box = document.createElement('div');
+    box.style.cssText = 'background:var(--white,#fff);color:var(--text,#1a2744);max-width:360px;width:100%;border-radius:10px;padding:18px;font-family:inherit;box-shadow:0 10px 40px rgba(0,0,0,0.35);';
+    const sub = maxN
+      ? `Up to <b>${maxN}</b> weakness cards available. How many do you want to practice?`
+      : 'How many cards do you want to practice?';
+    box.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-weight:700;font-size:1rem;">Practice My Weaknesses</div>
+        <button data-act="cancel" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:inherit;line-height:1;">×</button>
+      </div>
+      <div style="font-size:0.82rem;line-height:1.5;margin-bottom:12px;opacity:0.9;">${sub}</div>
+      <div id="acQuick" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+        ${picks.map(n => `<button data-n="${n}" style="flex:1 0 auto;min-width:48px;padding:8px 10px;border:1px solid var(--border,#ccc);border-radius:6px;background:${n===def?'var(--navy,#1a2744)':'transparent'};color:${n===def?'#fff':'inherit'};cursor:pointer;font-family:inherit;font-size:0.85rem;">${n}</button>`).join('')}
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+        <span style="font-size:0.82rem;opacity:0.9;">Custom:</span>
+        <input type="number" id="acCustom" min="1" ${maxN ? `max="${maxN}"` : ''} placeholder="#"
+          style="flex:1;padding:7px 8px;border:1px solid var(--border,#ccc);border-radius:6px;background:var(--white,#fff);color:inherit;font-family:inherit;font-size:0.85rem;">
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button data-act="start" style="flex:2;padding:9px;border:none;border-radius:6px;background:var(--gold,#c9922a);color:#1a2744;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.85rem;">Start</button>
+        <button data-act="cancel" style="flex:1;padding:9px;border:1px solid var(--border,#ccc);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:inherit;font-size:0.85rem;">Cancel</button>
+      </div>`;
+    ov.appendChild(box); document.body.appendChild(ov);
+    let chosen = def;
+    const custom = box.querySelector('#acCustom');
+    const quick = box.querySelector('#acQuick');
+    const paint = () => quick.querySelectorAll('button').forEach(b => {
+      const on = !custom.value && +b.dataset.n === chosen;
+      b.style.background = on ? 'var(--navy,#1a2744)' : 'transparent';
+      b.style.color = on ? '#fff' : 'inherit';
+    });
+    quick.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+      chosen = +b.dataset.n; custom.value = ''; paint();
+    }));
+    custom.addEventListener('input', paint);
+    const done = v => { if (ov.parentNode) document.body.removeChild(ov); resolve(v); };
+    box.querySelectorAll('[data-act=cancel]').forEach(b => b.addEventListener('click', () => done(null)));
+    box.querySelector('[data-act=start]').addEventListener('click', () => {
+      let n = custom.value ? parseInt(custom.value, 10) : chosen;
+      if (!n || n < 1 || isNaN(n)) n = def;
+      if (maxN) n = Math.min(n, maxN);
+      done(n);
+    });
+    ov.addEventListener('click', e => { if (e.target === ov) done(null); });
+    setTimeout(() => box.querySelector('[data-act=start]').focus(), 0);
+  });
+}
+
+async function practiceWeaknesses(name) {
+  name = name || getActiveProfile();
+  // Total weakness cards available = distinct missed cards + synthesizable weak combos.
+  const available = collectWeaknessDeck(name, Infinity);
+  if (available.length === 0) { alert('No mistakes saved yet for this profile. Save some drill results first.'); return; }
+  const n = await askCardCount(cardCount, available.length);
+  if (n == null) return; // cancelled
+  // Keep priority order: most-missed real cards first, then synthesized weak combos.
+  const deck = available.slice(0, n).map(c => ({ ...c }));
   currentCards = deck;
   savedCards = deck.slice();
   currentIndex = 0;
