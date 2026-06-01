@@ -3004,13 +3004,14 @@
                     <button id="colorModeHighlight" class="color-mode-btn"        onclick="setColorMode('highlight')">Highlight</button>
                     <button id="colorModeUnderline" class="color-mode-btn"        onclick="setColorMode('underline')">Underline</button>
                   </div>
-                  <div style="font-size:0.68rem;color:var(--muted);margin:2px 0 -2px;">Color scheme</div>
-                  <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
-                    <button id="vowelSchemeDefault" class="color-mode-btn active" onclick="setVowelScheme('default')">Default</button>
-                    <button id="vowelSchemeTalAm"   class="color-mode-btn"        onclick="setVowelScheme('talam')">TaL AM</button>
-                  </div>
 <div id="colorPickerList"></div>
-                  <button class="btn-xs" onclick="resetNikudColors()" style="font-size:0.68rem;width:100%;">↺ Reset to defaults</button>
+                  <div style="display:flex;gap:6px;align-items:center;margin-top:2px;">
+                    <button class="btn-xs" onclick="resetNikudColors()" style="font-size:0.68rem;white-space:nowrap;">↺ Reset colors</button>
+                    <div style="display:flex;flex:1;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
+                      <button id="vowelSchemeDefault" class="color-mode-btn active" onclick="setVowelScheme('default')">Default</button>
+                      <button id="vowelSchemeTalAm"   class="color-mode-btn"        onclick="setVowelScheme('talam')">TaL AM</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -3567,24 +3568,28 @@ function initVowels() {
     section.style.cssText = `background:${bg};border:1.5px solid ${border};border-radius:6px;padding:5px 7px;margin-bottom:4px;`;
     const chipsWrap = document.createElement('div');
     chipsWrap.className = 'vowel-group-chips';
-    const header = document.createElement('div');
-    header.style.cssText = 'font-size:0.68rem;font-weight:700;letter-spacing:0.04em;margin-bottom:0;opacity:0.75;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;';
-    const hdrText = document.createElement('span');
-    hdrText.innerHTML = `${group.sound} Sound – ${group.colorHtml}`;
-    const arrow = document.createElement('span');
-    arrow.className = 'vg-arrow';
-    arrow.textContent = '▾';
-    arrow.style.cssText = 'font-size:0.75rem;transition:transform 0.2s;';
-    header.appendChild(hdrText);
-    header.appendChild(arrow);
-    header.style.color = isDark ? group.darkBorder : group.border;
-    header.addEventListener('click', () => {
-      const collapsed = chipsWrap.style.display === 'none';
-      chipsWrap.style.display = collapsed ? '' : 'none';
-      arrow.style.transform = collapsed ? '' : 'rotate(-90deg)';
-      section.style.paddingBottom = collapsed ? '' : '2px';
-    });
-    section.appendChild(header);
+    // TaL AM mode hides the group headers (the colored boxes already convey the grouping).
+    if (vowelColorScheme !== 'talam') {
+      const header = document.createElement('div');
+      header.className = 'vowel-group-header';
+      header.style.cssText = 'font-size:0.68rem;font-weight:700;letter-spacing:0.04em;margin-bottom:0;opacity:0.75;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;';
+      const hdrText = document.createElement('span');
+      hdrText.innerHTML = `${group.sound} Sound – ${group.colorHtml}`;
+      const arrow = document.createElement('span');
+      arrow.className = 'vg-arrow';
+      arrow.textContent = '▾';
+      arrow.style.cssText = 'font-size:0.75rem;transition:transform 0.2s;';
+      header.appendChild(hdrText);
+      header.appendChild(arrow);
+      header.style.color = isDark ? group.darkBorder : group.border;
+      header.addEventListener('click', () => {
+        const collapsed = chipsWrap.style.display === 'none';
+        chipsWrap.style.display = collapsed ? '' : 'none';
+        arrow.style.transform = collapsed ? '' : 'rotate(-90deg)';
+        section.style.paddingBottom = collapsed ? '' : '2px';
+      });
+      section.appendChild(header);
+    }
     group.vowels.forEach(v => {
       const chip = document.createElement('label');
       chip.className = 'vowel-chip';
@@ -4613,7 +4618,7 @@ function refreshVowelGroupColors() {
     const border = isDark ? group.darkBorder : group.border;
     sec.style.background = bg;
     sec.style.borderColor = border;
-    const hdr = sec.firstElementChild;
+    const hdr = sec.querySelector('.vowel-group-header');
     if (hdr) {
       hdr.style.color = border;
       const span = hdr.firstElementChild;

@@ -1365,13 +1365,14 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
           <button class="pill" data-cmode="highlight">Highlight</button>
           <button class="pill" data-cmode="underline">Underline</button>
         </div>
-        <div class="label" style="font-size:0.72rem;margin:6px 0 2px;">Color scheme</div>
-        <div class="pill-group" id="schemePills" style="margin: 0 0 6px">
-          <button class="pill active" id="vowelSchemeDefault" onclick="setVowelScheme('default')">Default</button>
-          <button class="pill" id="vowelSchemeTalAm" onclick="setVowelScheme('talam')">TaL AM</button>
-        </div>
         <div id="colorPickers"></div>
-        <button class="btn sm ghost" id="colorReset" style="margin-top:6px">Reset Colors</button>
+        <div style="display:flex;gap:6px;align-items:center;margin-top:6px;">
+          <button class="btn sm ghost" id="colorReset" style="white-space:nowrap;">Reset colors</button>
+          <div class="pill-group" id="schemePills" style="flex:1;">
+            <button class="pill active" id="vowelSchemeDefault" onclick="setVowelScheme('default')">Default</button>
+            <button class="pill" id="vowelSchemeTalAm" onclick="setVowelScheme('talam')">TaL AM</button>
+          </div>
+        </div>
       </div>
 
       <hr class="soft" />
@@ -2430,12 +2431,15 @@ function initVowels() {
     group.style.background = isDark() ? g.darkBg : g.bg;
     group.style.borderColor = borderCol;
 
-    const head = document.createElement('div');
-    head.className = 'vgroup-head';
-    head.style.color = borderCol;
-    head.innerHTML = `<span>${g.sound} Sound – ${g.colorHtml}</span>`;
-    head.addEventListener('click', () => group.classList.toggle('collapsed'));
-    group.appendChild(head);
+    // TaL AM mode hides the group headers (the colored boxes already convey the grouping).
+    if (vowelColorScheme !== 'talam') {
+      const head = document.createElement('div');
+      head.className = 'vgroup-head';
+      head.style.color = borderCol;
+      head.innerHTML = `<span>${g.sound} Sound – ${g.colorHtml}</span>`;
+      head.addEventListener('click', () => group.classList.toggle('collapsed'));
+      group.appendChild(head);
+    }
 
     const body = document.createElement('div');
     body.className = 'vgroup-body';

@@ -426,7 +426,9 @@ function activeVowelGroups(){      /* VOWEL_GROUPS_TALAM vs VOWEL_GROUPS — gen
   **`colorizeHebrew` output recolors automatically** — no change to the colorizer itself.
 - **`initColorPickers`** iterates `activeColorDefs()` → the per-vowel picker **list re-orders**.
 - **`initVowels`** / `refreshVowelGroupColors` (generator + flash cards) iterate
-  `activeVowelGroups()` → the **vowel picker boxes re-group/recolor**.
+  `activeVowelGroups()` → the **vowel picker boxes re-group/recolor**. In TaL AM mode
+  `initVowels` **omits the group headers** (the colored boxes already convey the grouping);
+  `refreshVowelGroupColors` targets the header via `.vowel-group-header` so it's a no-op when absent.
 - **`setVowelScheme(s)`** sets the scheme, **clears `nikudColorOverrides`** (so the new palette
   shows cleanly), re-runs the builders, calls `syncSchemeButtons()`, re-renders output, and saves.
 
