@@ -1216,7 +1216,11 @@ function initDark() {
    ══════════════════════════════════════════════════════ */
 function refToDot(ref) {
   // "Genesis 1:1-6:8"  →  "Genesis.1.1-6.8"
-  return ref.replace(/[: ]/g, '.');
+  // Haftarah refs (from aliyah.json) put spaces around the range hyphen, e.g.
+  // "Zechariah 2:14 - 4:7" — collapse those first, otherwise the [: ]→. replace
+  // turns " - " into ".-." and Sefaria can't parse the range (it falls back to
+  // the start of the book). Also tolerate en/em dashes.
+  return ref.replace(/\s*[-–—]\s*/g, '-').replace(/[: ]/g, '.');
 }
 async function fetchSefariaText(ref, includeTranslation, version) {
   const cacheKey = `${ref}|${includeTranslation ? (version || 'eng-default') : 'heb-only'}`;
