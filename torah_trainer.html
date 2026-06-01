@@ -1305,12 +1305,16 @@ function flattenVersionText(text, startC, startV) {
   }
   return map;
 }
+const _versionsCache = new Map(); // book -> versions array (per session)
 async function fetchVersionsList(book) {
+  if (_versionsCache.has(book)) return _versionsCache.get(book);
   try {
     const r = await fetch(`${SEFARIA_API}/texts/versions/${encodeURIComponent(book)}`);
     if (!r.ok) return [];
     const data = await r.json();
-    return Array.isArray(data) ? data : [];
+    const arr = Array.isArray(data) ? data : [];
+    _versionsCache.set(book, arr);
+    return arr;
   } catch (e) { return []; }
 }
 async function fetchCurrentParshah(diaspora) {
@@ -1858,14 +1862,36 @@ async function fetchAndRender() {
   }
   setStatus(`Loading ${r.label}…`, false);
   try {
-    const verses = await fetchSefariaText(r.ref, settings.showTranslation, settings.translationVersion);
+    let verses = await fetchSefariaText(r.ref, settings.showTranslation, settings.translationVersion);
+    const book = r.parshahEntry ? r.parshahEntry.book : (settings.customRef || '').split(/[ .]/)[0];
+    // Requested a translation but Sefaria returned no English for this version +
+    // passage (the version doesn't cover it, or its title didn't match — e.g.
+    // "Sefaria Community Translation" has gaps and a globally-remembered choice
+    // can land on a book/range it doesn't cover). Rather than leave the English
+    // blank, fall back to an available openly-licensed English version for this
+    // book, preferring JPS 1917 (public domain, covers all of Tanach).
+    let fallbackNote = '';
+    if (settings.showTranslation && settings.translationVersion && verses._engCount === 0 && book) {
+      const fb = await pickFallbackVersion(book, settings.translationVersion);
+      if (fb) {
+        const alt = await fetchSefariaText(r.ref, true, fb);
+        if (alt._engCount > 0) {
+          fallbackNote = `"${settings.translationVersion}" isn't available here — showing "${fb}" instead.`;
+          settings.translationVersion = fb;
+          saveSettings();
+          verses = alt;
+        }
+      }
+    }
     currentVerses = verses;
     currentRangeLabel = r.label;
     renderText();
     // Warn if translation was requested but Sefaria returned no English for
     // this version + ref. Could mean: version doesn't cover this passage,
     // version title mismatch, or API hiccup.
-    if (settings.showTranslation && settings.translationVersion && verses._engCount === 0) {
+    if (fallbackNote) {
+      setStatus(fallbackNote, false);
+    } else if (settings.showTranslation && settings.translationVersion && verses._engCount === 0) {
       const reason = verses._engFound
         ? `"${settings.translationVersion}" doesn't cover this passage.`
         : `"${settings.translationVersion}" wasn't returned by Sefaria for this passage — pick a different version.`;
@@ -1875,7 +1901,6 @@ async function fetchAndRender() {
     }
     // If translation was just enabled, populate version dropdown for this book
     if (r.parshahEntry || settings.scope === 'custom') {
-      const book = r.parshahEntry ? r.parshahEntry.book : (settings.customRef || '').split(/[ .]/)[0];
       if (book && settings.showTranslation) populateVersionDropdown(book);
     }
     // Auto-load karaoke audio + timings when the user picks an aliyah/haftarah.
@@ -3152,6 +3177,22 @@ async function populateVersionDropdown(book) {
   }
   sel.value = settings.translationVersion;
   updateTransFooter();
+}
+
+// Choose a replacement English version for `book` when the currently-selected
+// `failedTitle` returned no text for the passage. Prefers JPS 1917 (public
+// domain, full Tanach coverage), else the first openly-licensed English version
+// that isn't the one that just failed. Returns a versionTitle string, or null.
+async function pickFallbackVersion(book, failedTitle) {
+  const versions = await fetchVersionsList(book);
+  const eng = versions.filter(v => v.language === 'en' || /english/i.test(v.languageFamilyName || v.language || ''));
+  const safe = eng
+    .filter(v => isPermissiveLicense(v.license))
+    .filter(v => (v.versionTitle || v.title || '').trim() !== (failedTitle || '').trim());
+  if (!safe.length) return null;
+  const jps1917 = safe.find(v => /JPS\s*1917|1917.*JPS|Holy Scriptures.*1917|Holy Scriptures.*New Translation/i.test(v.versionTitle || ''));
+  const pick = jps1917 || safe[0];
+  return pick ? (pick.versionTitle || pick.title || '').trim() : null;
 }
 function updateTransFooter() {
   const el = document.getElementById('ttFooterTrans');
