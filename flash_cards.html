@@ -1014,71 +1014,6 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
 <!-- ============== SETUP SCREEN ============== -->
 <section id="screenSetup" class="screen active">
 
-  <!-- PRESETS -->
-  <div class="panel collapsed" id="panelPresets">
-    <h3 class="panel-title">Presets</h3>
-    <div class="panel-body">
-      <div class="preset-row">
-        <input type="text" class="preset-input" id="presetName" placeholder="Preset name…" maxlength="40" />
-        <button class="btn primary sm" id="savePresetBtn">Save</button>
-      </div>
-      <ul class="preset-list" id="presetList"></ul>
-      <p class="sub" id="presetEmpty">No presets yet — configure your settings, then save them here.</p>
-    </div>
-  </div>
-
-  <!-- TEACHER SHARE CODE -->
-  <div class="panel collapsed" id="panelShareCode">
-    <h3 class="panel-title">Teacher Share Code</h3>
-    <div class="panel-body">
-      <p class="sub" style="margin-top:0;">Generate a code that captures every current setting. Share it with students — when they paste it and tap <b>Load</b>, the deck opens with your exact setup.</p>
-      <div class="btn-row" style="margin-bottom:8px;">
-        <button class="btn primary sm" id="generateShareBtn">Generate Share Code</button>
-        <button class="btn sm ghost" id="copyShareBtn">📋 Copy Code</button>
-      </div>
-      <textarea class="share-out" id="shareCodeOutput" readonly placeholder="Tap “Generate Share Code” to create a code…"></textarea>
-
-      <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;">
-
-      <div class="label" style="font-weight:600;margin-bottom:4px;">Got a code from your teacher?</div>
-      <div class="preset-row">
-        <input type="text" class="preset-input" id="shareCodeInput" placeholder="Paste share code here…" />
-        <button class="btn gold sm" id="applyShareBtn">Load</button>
-      </div>
-      <p class="share-err" id="shareCodeError"></p>
-    </div>
-  </div>
-
-  <!-- PROFILES & RESULTS -->
-  <div class="panel collapsed" id="panelProfiles">
-    <h3 class="panel-title">Profiles &amp; Results</h3>
-    <div class="panel-body">
-      <p class="sub" style="margin-top:0;">Save drill results to a named profile to track progress over time. After a drill, tap <b>Save Results</b> on the results screen.</p>
-
-      <div class="preset-row" style="margin-bottom:8px;">
-        <select id="activeProfileSelect" class="preset-input" style="flex:1;"></select>
-        <button class="btn sm" id="newProfileBtn" title="Create a new profile">＋ New</button>
-      </div>
-      <div class="btn-row" style="margin-bottom:8px;">
-        <button class="btn sm" id="renameProfileBtn">Rename</button>
-        <button class="btn sm danger" id="deleteProfileBtn">Delete</button>
-      </div>
-
-      <ul class="preset-list" id="profileList"></ul>
-      <p class="sub" id="profileEmpty">No profiles yet — finish a drill and tap <b>Save Results</b> to create one.</p>
-
-      <div id="profileDetail" style="display:none;">
-        <div class="label" style="font-weight:600;margin:12px 0 4px;">Results History — <span id="profileDetailName"></span></div>
-        <ul class="results-list" id="profileHistory" style="margin-top:0;"></ul>
-        <p class="sub" id="profileHistoryEmpty" style="display:none;">No saved results yet for this profile.</p>
-        <div class="btn-row" style="margin-top:8px;">
-          <button class="btn gold" id="weaknessesBtn" style="flex:1;">🎯 Practice My Weaknesses</button>
-          <button class="btn" id="viewWeaknessesBtn" style="flex:1;">📊 View Weaknesses</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- MODE -->
   <div class="panel" id="panelMode">
     <h3 class="panel-title">Mode</h3>
@@ -1328,6 +1263,77 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
   </div>
 
   <!-- ADVANCED -->
+  <!-- TEACHER TOOLS (Presets · Share Code · Profiles) -->
+  <div class="panel collapsed" id="panelTeacherTools">
+    <h3 class="panel-title">Teacher Tools</h3>
+    <div class="panel-body">
+
+      <!-- Presets -->
+      <div class="label adv-subhead">Presets</div>
+      <div class="adv-subbody">
+        <div class="preset-row">
+          <input type="text" class="preset-input" id="presetName" placeholder="Preset name…" maxlength="40" />
+          <button class="btn primary sm" id="savePresetBtn">Save</button>
+        </div>
+        <ul class="preset-list" id="presetList"></ul>
+        <p class="sub" id="presetEmpty">No presets yet — configure your settings, then save them here.</p>
+      </div>
+
+      <hr class="soft" />
+
+      <!-- Teacher Share Code -->
+      <div class="label adv-subhead">Teacher Share Code</div>
+      <div class="adv-subbody">
+        <p class="sub" style="margin-top:0;">Generate a code that captures every current setting. Share it with students — when they paste it and tap <b>Load</b>, the deck opens with your exact setup.</p>
+        <div class="btn-row" style="margin-bottom:8px;">
+          <button class="btn primary sm" id="generateShareBtn">Generate Share Code</button>
+          <button class="btn sm ghost" id="copyShareBtn">📋 Copy Code</button>
+        </div>
+        <textarea class="share-out" id="shareCodeOutput" readonly placeholder="Tap “Generate Share Code” to create a code…"></textarea>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;">
+
+        <div class="label" style="font-weight:600;margin-bottom:4px;">Got a code from your teacher?</div>
+        <div class="preset-row">
+          <input type="text" class="preset-input" id="shareCodeInput" placeholder="Paste share code here…" />
+          <button class="btn gold sm" id="applyShareBtn">Load</button>
+        </div>
+        <p class="share-err" id="shareCodeError"></p>
+      </div>
+
+      <hr class="soft" />
+
+      <!-- Profiles & Results -->
+      <div class="label adv-subhead">Profiles &amp; Results</div>
+      <div class="adv-subbody">
+        <p class="sub" style="margin-top:0;">Save drill results to a named profile to track progress over time. After a drill, tap <b>Save Results</b> on the results screen.</p>
+
+        <div class="preset-row" style="margin-bottom:8px;">
+          <select id="activeProfileSelect" class="preset-input" style="flex:1;"></select>
+          <button class="btn sm" id="newProfileBtn" title="Create a new profile">＋ New</button>
+        </div>
+        <div class="btn-row" style="margin-bottom:8px;">
+          <button class="btn sm" id="renameProfileBtn">Rename</button>
+          <button class="btn sm danger" id="deleteProfileBtn">Delete</button>
+        </div>
+
+        <ul class="preset-list" id="profileList"></ul>
+        <p class="sub" id="profileEmpty">No profiles yet — finish a drill and tap <b>Save Results</b> to create one.</p>
+
+        <div id="profileDetail" style="display:none;">
+          <div class="label" style="font-weight:600;margin:12px 0 4px;">Results History — <span id="profileDetailName"></span></div>
+          <ul class="results-list" id="profileHistory" style="margin-top:0;"></ul>
+          <p class="sub" id="profileHistoryEmpty" style="display:none;">No saved results yet for this profile.</p>
+          <div class="btn-row" style="margin-top:8px;">
+            <button class="btn gold" id="weaknessesBtn" style="flex:1;">🎯 Practice My Weaknesses</button>
+            <button class="btn" id="viewWeaknessesBtn" style="flex:1;">📊 View Weaknesses</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <div class="panel collapsed" id="panelAdvanced">
     <h3 class="panel-title">Advanced Settings</h3>
     <div class="panel-body">
