@@ -431,12 +431,20 @@ function activeVowelGroups(){      /* VOWEL_GROUPS_TALAM vs VOWEL_GROUPS — gen
   `refreshVowelGroupColors` targets the header via `.vowel-group-header` so it's a no-op when absent.
 - **`setVowelScheme(s)`** sets the scheme, **clears `nikudColorOverrides`** (so the new palette
   shows cleanly), re-runs the builders, calls `syncSchemeButtons()`, re-renders output, and saves.
+- **`resetNikudColors`** (the **Reset** button) **must first `confirm()`** — because
+  `nikudColorOverrides` is keyed by vowel and shared across schemes, resetting clears the user's
+  custom colors for **both** Default and TaL AM. Bail out if the user cancels:
+  ```js
+  if (!confirm('Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.')) return;
+  ```
 
 ### Where the switch is surfaced
-- **Dashboard:** two buttons (**Default**, **TaL AM**) in `#vowelSchemeRow`, next to the existing
-  "↺ Reset vowel colors" button (Reset still just clears overrides within the current scheme).
-- **Generator / Flash Cards:** a small **Default | TaL AM** segmented control inside the
-  **"Color Code Nikkud" / color-coding section of Advanced Settings**, above the color-picker list.
+The three controls live in one row **below the color-picker list**, in the order
+**Default · TaL AM · Reset** (Default/TaL AM pick the scheme via `setVowelScheme`; Reset clears
+overrides via the confirm-gated `resetNikudColors`):
+- **Dashboard:** `#vowelSchemeRow` (three `.vowel-scheme-btn` buttons, incl. `#nikudResetBtn`).
+- **Generator / Flash Cards:** a three-button segmented control inside the
+  **"Color Code Nikkud" / color-coding section of Advanced Settings**.
 
 The scheme is serialized in `getSettings()`/`applySettings()` (gen/cards → presets + `.ivrit`)
 and in the dashboard `settings` object (`hebrewDashboard_settings`), so it needs **no extra

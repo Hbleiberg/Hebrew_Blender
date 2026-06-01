@@ -2175,6 +2175,7 @@
     });
   }
   function resetNikudColors() {
+    if (!confirm('Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.')) return;
     settings.nikudColorOverrides = {};
     initColorPickers();
     if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); }

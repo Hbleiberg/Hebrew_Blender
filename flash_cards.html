@@ -4979,6 +4979,7 @@ function wireSetupScreen() {
     saveSettings();
   }));
   document.getElementById('colorReset').addEventListener('click', () => {
+    if (!confirm('Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.')) return;
     nikudColorOverrides = {};
     initColorPickers();
     saveSettings();
