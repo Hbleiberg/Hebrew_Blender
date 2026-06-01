@@ -1934,6 +1934,7 @@
     ttsRate: 0.75,
     dowCollapsed: false,
     weatherCollapsed: false,
+    timerCollapsed: false,
     scheduleEnabled: false,
     scheduleShowCountdown: false,
     countdownShowPresetName: true,
@@ -3393,6 +3394,7 @@
     applyVideoEmbed(settings.showVideoEmbed, settings.videoEmbedUrl);
     applyColCollapse('dowCol', !!settings.dowCollapsed);
     applyColCollapse('weatherCol', !!settings.weatherCollapsed);
+    applyColCollapse('timerCol', !!settings.timerCollapsed);
     updateDateTimeDisplay();
     renderDaysList();
     renderWeather();
@@ -4052,10 +4054,12 @@
     const lang = settings.headerLang || 'he';
     const dowTitle = document.getElementById('dowColTitle');
     const wxTitle = document.getElementById('weatherColTitle');
+    const tmTitle = document.getElementById('timerColTitle');
     if (!dowTitle || !wxTitle) return;
     if (lang === 'none') {
       dowTitle.style.display = 'none';
       wxTitle.style.display = 'none';
+      if (tmTitle) tmTitle.style.display = 'none';
     } else {
       dowTitle.style.display = '';
       wxTitle.style.display = '';
@@ -4064,6 +4068,11 @@
       wxTitle.style.direction = isHeb ? 'rtl' : '';
       dowTitle.innerHTML = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('אֵיזֶה יוֹם הַיוֹם?') : 'Days of the Week'}</span><span></span>`;
       wxTitle.innerHTML  = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('מַה יֵש בַּחוּץ?') : 'Weather'}</span><span></span>`;
+      if (tmTitle) {
+        tmTitle.style.display = '';
+        tmTitle.style.direction = isHeb ? 'rtl' : '';
+        tmTitle.innerHTML = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('כַּמָה זְמַן נִשְׁאַר?') : 'Timer'}</span><span></span>`;
+      }
     }
     const vLabel = document.getElementById('videoHeaderLabel');
     if (vLabel) {
@@ -4181,9 +4190,11 @@
     applyVideoEmbed(settings.showVideoEmbed, settings.videoEmbedUrl);
     applyColCollapse('dowCol', !!settings.dowCollapsed);
     applyColCollapse('weatherCol', !!settings.weatherCollapsed);
+    applyColCollapse('timerCol', !!settings.timerCollapsed);
     updateDashboardGrid();
     document.getElementById('dowColTitle').addEventListener('click', () => toggleColCollapse('dowCol', 'dowCollapsed'));
     document.getElementById('weatherColTitle').addEventListener('click', () => toggleColCollapse('weatherCol', 'weatherCollapsed'));
+    document.getElementById('timerColTitle').addEventListener('click', () => toggleColCollapse('timerCol', 'timerCollapsed'));
     document.getElementById('dashEditor').addEventListener('blur', () => {
       const sel = window.getSelection();
       if (sel && sel.rangeCount > 0) _savedEditorRange = sel.getRangeAt(0).cloneRange();
