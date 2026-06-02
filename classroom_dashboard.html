@@ -1196,6 +1196,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <button class="settings-close" onclick="closeSettings()" title="Close">×</button>
   </div>
   <div class="settings-body">
+<div style="display:flex; gap:6px; margin-bottom:14px;">
+  <button class="btn btn-xs" style="flex:1;" onclick="expandAllMenus()">Expand all menus</button>
+  <button class="btn btn-xs" style="flex:1;" onclick="collapseAllMenus()">Collapse all menus</button>
+</div>
 <div class="panel">
   <div class="panel-title">Location</div>
   <div class="panel-body">
@@ -4387,6 +4391,8 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
   });
 
   /* ────────── PANEL COLLAPSE ────────── */
+  function expandAllMenus()   { document.querySelectorAll('.panel, .sub-section').forEach(p => p.classList.remove('collapsed')); }
+  function collapseAllMenus() { document.querySelectorAll('.panel, .sub-section').forEach(p => p.classList.add('collapsed')); }
   function initPanelCollapse() {
     document.querySelectorAll('.panel-title').forEach(t => {
       t.addEventListener('click', () => t.parentElement.classList.toggle('collapsed'));

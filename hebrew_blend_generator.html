@@ -1854,6 +1854,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <!-- ══ SIDEBAR ══ -->
   <aside class="sidebar" id="appSidebar">
 
+    <div style="display:flex; gap:6px; margin-bottom:12px;">
+      <button class="btn btn-xs" style="flex:1;" onclick="expandAllMenus()">Expand all menus</button>
+      <button class="btn btn-xs" style="flex:1;" onclick="collapseAllMenus()">Collapse all menus</button>
+    </div>
+
     <!-- Mode -->
     <div class="panel">
       <div class="panel-title">Worksheet Mode</div>
@@ -6999,6 +7004,8 @@ function enableButtons() {
 }
 
 // Collapsible panels on mobile
+function expandAllMenus()   { document.querySelectorAll('.panel').forEach(p => p.classList.remove('collapsed')); }
+function collapseAllMenus() { document.querySelectorAll('.panel').forEach(p => p.classList.add('collapsed')); }
 function initPanelCollapse() {
   document.querySelectorAll('.panel-title').forEach(title => {
     title.addEventListener('click', () => {

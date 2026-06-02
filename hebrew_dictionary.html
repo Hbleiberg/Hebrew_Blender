@@ -571,6 +571,11 @@ footer a{color:var(--gold);text-decoration:none;}
       <input type="text" id="searchInput" placeholder="Search Hebrew, translit, or English…" oninput="onFilter()">
     </div>
 
+    <div style="display:flex; gap:6px; margin-bottom:10px;">
+      <button class="pos-all-btn" onclick="expandAllMenus()">Expand all menus</button>
+      <button class="pos-all-btn" onclick="collapseAllMenus()">Collapse all menus</button>
+    </div>
+
     <!-- Word Length -->
     <div class="panel">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Word Length</div>
@@ -1476,6 +1481,8 @@ function updatePB(i) {
   document.getElementById(`pb${i}`).innerHTML = [...posFilters[i]].map(h => `<span class="pbadge">${h}</span>`).join('');
 }
 
+function expandAllMenus()   { document.querySelectorAll('#appSidebar .panel, #appSidebar .adv-section').forEach(p => p.classList.remove('collapsed')); }
+function collapseAllMenus() { document.querySelectorAll('#appSidebar .panel, #appSidebar .adv-section').forEach(p => p.classList.add('collapsed')); }
 function onFilter() {
   if (shoreshMode) { if (lastShoreshRoot) renderShoreshFamily(lastShoreshRoot); return; }
   if (emojiMode) {
