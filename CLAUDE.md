@@ -189,6 +189,11 @@ mountFolderTree({ treeKey, container, listItemNames(), buildItemRow(name)→acti
 3. Add the key to the tool's own `IVRIT_CFG.gather()`/`apply()` (gather via `ftRead`, apply via
    `ftImportTree(key, incoming, mode==='replace')`) so folders travel with the tool's `.ivrit`.
    **Never `Object.assign` a tree** — that clobbers `root`; always go through `ftImportTree`.
+4. Give each item a **Duplicate (⧉)** button. The per-tool `duplicate<Thing>(name)` deep-copies the
+   stored value under `ftDuplicateName(name, existsFn)` (file-system style: "X" → "X 1" → "X 2"; the
+   trailing number is the base for the next free one), then places the copy right after the original
+   in the same folder via `ftInsertAfter(treeKey, name, newName)`, then re-renders. It's additive, so
+   no `confirm`. `ftDuplicateName`/`ftInsertAfter` live in the shared folder-tree block.
 
 ## Preset Lists — Drag-to-Reorder (superseded for the six foldered lists above)
 

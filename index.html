@@ -434,6 +434,18 @@ function ftImportTree(key, incoming, replace){
   });
   ftWrite(key, existing);
 }
+function ftDuplicateName(name, exists){
+  const m = String(name).match(/^(.*?)\s+(\d+)$/);
+  const base = m ? m[1] : name;
+  let n = m ? parseInt(m[2],10) : 0, cand;
+  do { n++; cand = base + ' ' + n; } while (exists(cand));
+  return cand;
+}
+function ftInsertAfter(treeKey, origName, newName){
+  const tree = ftRead(treeKey);
+  const loc = ftLocate(tree, x => x.t==='item' && x.name===origName);
+  if (loc){ loc.parent.splice(loc.index + 1, 0, { t:'item', name:newName }); ftWrite(treeKey, tree); }
+}
 function mountFolderTree(cfg){
   const container = (typeof cfg.container === 'string') ? document.querySelector(cfg.container) : cfg.container;
   if (!container) return;

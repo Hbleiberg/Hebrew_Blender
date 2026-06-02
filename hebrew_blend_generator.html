@@ -4293,6 +4293,15 @@ function deletePreset(name) {
   localStorage.setItem('hebrewBlender_presets', JSON.stringify(presets));
   renderPresets();
 }
+function duplicatePreset(name) {
+  const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+  if (!presets[name]) return;
+  const nn = ftDuplicateName(name, x => presets[x] !== undefined);
+  presets[nn] = JSON.parse(JSON.stringify(presets[name]));
+  localStorage.setItem('hebrewBlender_presets', JSON.stringify(presets));
+  ftInsertAfter('hebrewBlender_presetsFolders', name, nn);
+  renderPresets();
+}
 
 function loadPreset(name) {
   const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
@@ -4425,6 +4434,18 @@ function ftImportTree(key, incoming, replace){
     else if (n.t==='folder' && !haveFolder.has(n.name)) existing.root.push(n);
   });
   ftWrite(key, existing);
+}
+function ftDuplicateName(name, exists){
+  const m = String(name).match(/^(.*?)\s+(\d+)$/);
+  const base = m ? m[1] : name;
+  let n = m ? parseInt(m[2],10) : 0, cand;
+  do { n++; cand = base + ' ' + n; } while (exists(cand));
+  return cand;
+}
+function ftInsertAfter(treeKey, origName, newName){
+  const tree = ftRead(treeKey);
+  const loc = ftLocate(tree, x => x.t==='item' && x.name===origName);
+  if (loc){ loc.parent.splice(loc.index + 1, 0, { t:'item', name:newName }); ftWrite(treeKey, tree); }
 }
 function mountFolderTree(cfg){
   const container = (typeof cfg.container === 'string') ? document.querySelector(cfg.container) : cfg.container;
@@ -4575,6 +4596,7 @@ function renderPresets() {
       const mk = (txt, title, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = txt; if (title) b.title = title; if (cls) b.className = cls; b.addEventListener('click', fn); return b; };
       f.appendChild(mk('Load', '', '', () => loadPreset(name)));
       f.appendChild(mk('↺', 'Overwrite with current settings', '', () => overwritePreset(name)));
+      f.appendChild(mk('⧉', 'Duplicate', '', () => duplicatePreset(name)));
       f.appendChild(mk('✕', 'Delete', 'del-btn', () => deletePreset(name)));
       return f;
     }

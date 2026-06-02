@@ -3024,6 +3024,15 @@ function overwritePreset(name) {
   writePresets(presets);
   renderPresets();
 }
+function duplicatePreset(name) {
+  const presets = readPresets();
+  if (!presets[name]) return;
+  const nn = ftDuplicateName(name, x => presets[x] !== undefined);
+  presets[nn] = { settings: JSON.parse(JSON.stringify(presets[name].settings)), order: Date.now() };
+  writePresets(presets);
+  ftInsertAfter('hebrewFlashCards_presetsFolders', name, nn);
+  renderPresets();
+}
 
 function renderPresets() {
   const empty = document.getElementById('presetEmpty');
@@ -3039,6 +3048,7 @@ function renderPresets() {
       f.appendChild(mk('▶ Play', 'btn sm play', () => playPreset(name)));
       f.appendChild(mk('Load', 'btn sm primary', () => loadPreset(name)));
       f.appendChild(mk('Save', 'btn sm', () => overwritePreset(name)));
+      const dup = mk('⧉', 'btn sm', () => duplicatePreset(name)); dup.title = 'Duplicate'; f.appendChild(dup);
       f.appendChild(mk('✕', 'btn sm danger', () => deletePreset(name)));
       return f;
     }
@@ -3122,6 +3132,18 @@ function ftImportTree(key, incoming, replace){
     else if (n.t==='folder' && !haveFolder.has(n.name)) existing.root.push(n);
   });
   ftWrite(key, existing);
+}
+function ftDuplicateName(name, exists){
+  const m = String(name).match(/^(.*?)\s+(\d+)$/);
+  const base = m ? m[1] : name;
+  let n = m ? parseInt(m[2],10) : 0, cand;
+  do { n++; cand = base + ' ' + n; } while (exists(cand));
+  return cand;
+}
+function ftInsertAfter(treeKey, origName, newName){
+  const tree = ftRead(treeKey);
+  const loc = ftLocate(tree, x => x.t==='item' && x.name===origName);
+  if (loc){ loc.parent.splice(loc.index + 1, 0, { t:'item', name:newName }); ftWrite(treeKey, tree); }
 }
 function mountFolderTree(cfg){
   const container = (typeof cfg.container === 'string') ? document.querySelector(cfg.container) : cfg.container;
