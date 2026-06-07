@@ -4439,7 +4439,9 @@ function generateCard() {
     else if (pos === m)   pool = lastPool;
     else                  pool = midPool;
     const lk = letterLocks[pos];
-    if (lk?.enabled && lk.letters.size > 0) {
+    // Letter locks are a 2+ letter-mode feature (the lock UI is hidden for m < 2),
+    // so don't let a lock set in multi-letter mode silently filter 1-letter cards.
+    if (m >= 2 && lk?.enabled && lk.letters.size > 0) {
       const locked = [...lk.letters].map(getDisplayLetterByHeb).filter(Boolean);
       if (locked.length > 0) pool = locked;
     }
@@ -4621,7 +4623,7 @@ function startPractice() {
   if (!otherModeActive) {
     if (selectedLetters.size === 0) issues.push('Select at least one letter.');
     if (selectedVowels.size === 0) issues.push('Select at least one vowel.');
-    if (anyLetterLock) {
+    if (anyLetterLock && mode >= 2) {
       const hasEnabledEmpty = Object.entries(letterLocks).some(([pos, lk]) => +pos <= mode && lk.enabled && lk.letters.size === 0);
       if (hasEnabledEmpty) issues.push('A locked position has no letter selected.');
     }
