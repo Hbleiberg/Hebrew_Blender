@@ -288,16 +288,13 @@
             Drop the combined sheet here, or click to browse.
           </div>
           <input type="file" id="combinedFile" accept="image/*" style="display:none;">
-          <div class="hint">Then pick a letter and use <b>Align</b> to zoom/transform its region into the capture box.</div>
+          <div class="hint">Then pick a letter and drag a box around it to bring it into the editor.</div>
         </div>
         <label class="fld">Template font (tracing guide)
-          <select id="templateFont" onchange="onTemplateChange()">
-            <option value="'Noto Sans Hebrew', sans-serif">Noto Sans Hebrew</option>
-            <option value="'Frank Ruhl Libre', serif">Frank Ruhl Libre</option>
-            <option value="'David Libre', serif">David Libre</option>
-            <option value="'Noto Rashi Hebrew', serif">Noto Rashi Hebrew</option>
-          </select>
+          <select id="templateFont" onchange="onTemplateChange()"></select>
         </label>
+        <button class="ctl-btn" style="font-size:0.74rem;width:100%;" onclick="document.getElementById('ttfTemplateFile').click()">⬆ Upload your own font (TTF/OTF)</button>
+        <input type="file" id="ttfTemplateFile" accept=".ttf,.otf,font/ttf,font/otf,application/font-sfnt" style="display:none;">
         <label class="chk"><input type="checkbox" id="showTemplate" checked onchange="renderStage()"> Show template glyph behind</label>
         <div class="inline">Opacity <input type="range" id="templateOpacity" min="0" max="100" value="35" oninput="renderStage()"> <span id="opacityVal">35%</span></div>
       </div>
@@ -578,7 +575,82 @@ function onMetaChange() {
   project.font.reservedFontName = document.getElementById('reservedName').value;
   project.font.copyright = document.getElementById('copyright').value;
 }
-function onTemplateChange() { project.template.font = document.getElementById('templateFont').value; renderStage(); }
+/* ════════ Template fonts — ported from torah_trainer.html, same grouping ════════ */
+const HEB_FONTS = [
+  // ── Print ──
+  { section:'Print',   name:'Frank Ruhl Libre',   family:"'Frank Ruhl Libre', serif",        load:null },
+  { section:'Print',   name:'David Libre',        family:"'David Libre', serif",             load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=David+Libre:wght@400;500;700&display=swap'} },
+  { section:'Print',   name:'Noto Serif Hebrew',  family:"'Noto Serif Hebrew', serif",       load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@400;700&display=swap'} },
+  { section:'Print',   name:'Noto Sans Hebrew',   family:"'Noto Sans Hebrew', sans-serif",   load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700&display=swap'} },
+  { section:'Print',   name:'Alef',               family:"'Alef', sans-serif",               load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap'} },
+  { section:'Print',   name:'Ezra SIL',           family:"'Ezra SIL', serif",                load:{type:'face',css:"@font-face{font-family:'Ezra SIL';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/SIL%20(OFL)/Ezra%20SIL/SILEOT.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+  { section:'Print',   name:'Shlomo',             family:"'Shlomo', serif",                  load:{type:'face',css:"@font-face{font-family:'Shlomo';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20(OFL)/Shlomo/Shlomo.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+  { section:'Print',   name:'Dyslexia Hebrew',    family:"'DyslexiaHebrew', sans-serif",     load:{type:'face',css:"@font-face{font-family:'DyslexiaHebrew';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Shoag%2C%20Jake%20(OFL)/DyslexiaHebrew-Regular.otf') format('opentype');font-weight:normal;font-style:normal;}"} },
+  // ── Torah / STA"M ──
+  { section:'Torah',   name:'Shlomo SemiStam',    family:"'ShlomoSemiStam', serif",          load:{type:'face',css:"@font-face{font-family:'ShlomoSemiStam';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20(OFL)/ShlomoSemiStam.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+  { section:'Torah',   name:'Shlomo Stam',        family:"'ShlomoStam', serif",              load:{type:'face',css:"@font-face{font-family:'ShlomoStam';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20(OFL)/ShlomoStam.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+  { section:'Torah',   name:'Keter Aram Sova',    family:"'KeterAramTsova', serif",          load:{type:'face',css:"@font-face{font-family:'KeterAramTsova';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Culmus%20Project%20(GPL%2BFE)/Yoram%20Gnat%20(GPL%2BFE)/Taamey-Culmus/KeterAramTsova/KeterAramTsova.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+  { section:'Torah',   name:'Shofar',             family:"'ShofarRegular', serif",           load:{type:'face',css:"@font-face{font-family:'ShofarRegular';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Culmus%20Project%20(GPL%2BFE)/Yoram%20Gnat%20(GPL%2BFE)/Taamey-Culmus/Shofar/ShofarRegular.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+  // ── Cursive / Script ──
+  { section:'Cursive', name:'Noto Rashi Hebrew',  family:"'Noto Rashi Hebrew', serif",       load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Noto+Rashi+Hebrew:wght@400;700&display=swap'} },
+  { section:'Cursive', name:'Solitreo',           family:"'Solitreo', cursive",              load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Solitreo&display=swap'} },
+  { section:'Cursive', name:'Gveret Levin',       family:"'Gveret Levin', cursive",          load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Gveret+Levin&display=swap'} },
+  { section:'Cursive', name:'Playpen Sans Hebrew',family:"'Playpen Sans Hebrew', cursive",   load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Playpen+Sans+Hebrew&display=swap'} },
+  { section:'Cursive', name:'Shmulik CLM',        family:"'Shmulik CLM', cursive",           load:{type:'face',css:"@font-face{font-family:'Shmulik CLM';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Culmus%20Project%20(GPL%20and%20GPL%2BFE)/Yoram%20Gnat%20(GPL%2BFE)/Shmulik%20CLM/ShmulikCLM.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+];
+const TEMPLATE_SECTIONS = { Print:'Print Fonts', Torah:'Torah Fonts', Cursive:'Cursive / Script', Custom:'Your Uploads' };
+let customTemplateFonts = [];   // user-uploaded TTFs (session only)
+function loadHebFont(font) {
+  if (!font || !font.load) return;
+  const id = 'tplfont-' + font.name.replace(/\s+/g,'-');
+  if (document.getElementById(id)) return;
+  if (font.load.type === 'gfonts') {
+    const link = document.createElement('link'); link.id = id; link.rel = 'stylesheet'; link.href = font.load.url; document.head.appendChild(link);
+  } else if (font.load.type === 'face') {
+    const style = document.createElement('style'); style.id = id; style.textContent = font.load.css; document.head.appendChild(style);
+  }
+}
+function fontByFamily(fam) { return HEB_FONTS.concat(customTemplateFonts).find(f => f.family === fam); }
+function buildTemplateFontSelect() {
+  const sel = document.getElementById('templateFont'); if (!sel) return;
+  sel.innerHTML = '';
+  const groups = [...new Set(HEB_FONTS.map(f => f.section))];
+  if (customTemplateFonts.length) groups.push('Custom');
+  groups.forEach(sec => {
+    const list = (sec === 'Custom' ? customTemplateFonts : HEB_FONTS.filter(f => f.section === sec));
+    const og = document.createElement('optgroup'); og.label = TEMPLATE_SECTIONS[sec] || (sec + ' Fonts');
+    list.forEach(font => {
+      const o = document.createElement('option'); o.value = font.family; o.textContent = font.name; og.appendChild(o);
+      loadHebFont(font);   // register the link/@font-face (binary fetched lazily on use)
+    });
+    sel.appendChild(og);
+  });
+  if (project) sel.value = project.template.font;
+}
+function onTemplateChange() {
+  const sel = document.getElementById('templateFont');
+  project.template.font = sel.value;
+  const f = fontByFamily(sel.value); if (f) loadHebFont(f);
+  renderStage();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (project) renderStage(); });
+}
+async function uploadTemplateTTF(file) {
+  try {
+    const buf = await file.arrayBuffer();
+    const base = (file.name.replace(/\.[a-z0-9]+$/i,'') || 'CustomFont').replace(/[^a-z0-9]+/gi,'_');
+    const fam = 'TplUser_' + base + '_' + (customTemplateFonts.length + 1);
+    const ff = new FontFace(fam, buf);
+    await ff.load(); document.fonts.add(ff);
+    const family = `'${fam}', serif`;
+    customTemplateFonts.push({ section:'Custom', name: file.name.replace(/\.[a-z0-9]+$/i,''), family, load:null });
+    project.template.font = family; project.template.showOverlay = true;
+    buildTemplateFontSelect();
+    document.getElementById('templateFont').value = family;
+    document.getElementById('showTemplate').checked = true;
+    renderStage();
+    status('Template font “' + file.name + '” loaded.');
+  } catch (e) { console.error(e); status('Could not read that font file.'); }
+}
 function setInputMode(mode) {
   project.inputMode = mode; syncMetaToForm();
   localStorage.setItem('hebrewFontMaker_inputMode', mode);
@@ -1783,6 +1855,7 @@ function init() {
   sv.addEventListener('pointermove', onStagePointerMove);
   sv.addEventListener('pointerup', onStagePointerUp);
   sv.addEventListener('pointercancel', onStagePointerUp);
+  buildTemplateFontSelect();   // populate the grouped font menu before the project sets its value
   newProject();
   // restore input-mode pref
   const im = localStorage.getItem('hebrewFontMaker_inputMode');
@@ -1790,6 +1863,7 @@ function init() {
   // global file inputs
   document.getElementById('projFile').addEventListener('change', e => { if (e.target.files[0]) loadProjectFile(e.target.files[0]); e.target.value=''; });
   document.getElementById('combinedFile').addEventListener('change', e => { if (e.target.files[0]) uploadCombined(e.target.files[0]); e.target.value=''; });
+  document.getElementById('ttfTemplateFile').addEventListener('change', e => { if (e.target.files[0]) uploadTemplateTTF(e.target.files[0]); e.target.value=''; });
   wireDrop('combinedDrop', f => uploadCombined(f));
   if (!window.WebAssembly || !window.FontFace) {
     status('Heads up: this browser may not support font export (needs WASM + FontFace).', true);
