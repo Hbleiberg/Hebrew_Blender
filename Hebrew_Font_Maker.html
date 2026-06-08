@@ -591,7 +591,7 @@ function setInputMode(mode) {
 function letterStatus(l) {
   if (l.anchors) return 'anchored';
   if (l.contours) return 'traced';
-  if (l.source.dataUrl || (l.source.kind === 'combined' && project.combinedImage.dataUrl)) return 'img';
+  if (l.source.dataUrl) return 'img';   // single: upload; combined: cropped region
   return '';
 }
 function renderLetterGrid() {
@@ -637,16 +637,8 @@ async function uploadForCurrent(file) {
   const url = await readFileAsDataUrl(file);
   const l = curLetter();
   l.source.kind = 'single'; l.source.dataUrl = url; l.source.cropRect = null;
-  await loadImg(url);
-  // sensible default transform: fit image so its height ≈ letterTop, centered on baseline
-  const im = imgCache[url];
-  const targetH = (LETTER_TOP - BASELINE);             // font units
-  const s = targetH / im.height;
-  const scrPerFont = SC;
-  const k = s * scrPerFont;                            // image-px → stage-px scale
-  const imgWscr = im.width * k, imgHscr = im.height * k;
-  const cx = fx((DEF_LSB + im.width*s*0.5));           // rough center x
-  l.transform = [k, 0, 0, k, fx(40) , fy(LETTER_TOP)]; // top-left at (x=40,y=600)
+  const im = await loadImg(url);
+  l.transform = defaultFitTransform(im);   // fit height to letter-top, left at LSB
   l.contours = null; l.anchors = null;
   renderLetterGrid(); renderStage(); renderControls();
   status(`Loaded image for ${l.name}.`);
@@ -655,13 +647,73 @@ async function uploadCombined(file) {
   const url = await readFileAsDataUrl(file);
   project.combinedImage.dataUrl = url; await loadImg(url);
   project.inputMode = 'combined'; project.letters.forEach(l => l.source.kind = 'combined');
-  syncMetaToForm(); renderLetterGrid(); renderStage(); renderControls();
-  status('Combined sheet loaded. Pick a letter and align its region.');
+  syncMetaToForm(); setWorkMode('align'); renderLetterGrid();
+  status('Sheet loaded. Pick a letter, then drag a box around it.');
 }
-function curImageUrl() {
+/* The working image for a letter: single = the upload; combined = the cropped region. */
+function curImageUrl() { return curLetter().source.dataUrl; }
+function defaultFitTransform(im) {
+  // scale so the image height ≈ letter-top; place top-left at (LSB, letter-top)
+  const k = (LETTER_TOP*SC)/im.height;
+  return [k,0,0,k, fx(DEF_LSB), fy(LETTER_TOP)];
+}
+
+/* ════════ Combined-sheet marquee crop ════════
+   Combined mode shows the WHOLE sheet for the selected letter; the user drags a
+   box around the letter and that region is cropped into its own image, then runs
+   through the normal Align → Trace → Nikkud flow. */
+let cropDrag = null, cropFit = null;
+function isCropSelect(l) {
+  return workMode === 'align' && l.source.kind === 'combined' && project.combinedImage.dataUrl && !l.source.dataUrl;
+}
+function computeCropFit(im) {
+  const W = 600, H = 560, mg = 18;
+  const s = Math.min((W-2*mg)/im.width, (H-2*mg)/im.height);
+  const w = im.width*s, h = im.height*s;
+  return { s, ox:(W-w)/2, oy:(H-h)/2, w, h };
+}
+function imgRectToStage(r, f) { return { x:f.ox+r.x*f.s, y:f.oy+r.y*f.s, w:r.w*f.s, h:r.h*f.s }; }
+function cropSelectSVG(l) {
+  const im = imgCache[project.combinedImage.dataUrl];
+  if (!im) return `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="14">Loading sheet…</text>`;
+  cropFit = computeCropFit(im); const f = cropFit;
+  let h = `<rect x="0" y="0" width="600" height="560" fill="var(--cream)"/>`;
+  h += `<image id="cropImg" href="${project.combinedImage.dataUrl}" x="${f.ox}" y="${f.oy}" width="${f.w}" height="${f.h}" style="cursor:crosshair;"/>`;
+  const box = (cropDrag && cropDrag.box) || (l.source.cropRect ? imgRectToStage(l.source.cropRect, f) : null);
+  if (box && box.w > 0 && box.h > 0) {
+    h += `<path d="M0 0H600V560H0Z M${box.x} ${box.y}v${box.h}h${box.w}v${-box.h}Z" fill="rgba(13,18,32,0.45)" fill-rule="evenodd" pointer-events="none"/>`;
+    h += `<rect x="${box.x}" y="${box.y}" width="${box.w}" height="${box.h}" fill="none" stroke="var(--gold)" stroke-width="2" pointer-events="none"/>`;
+  }
+  const heb = String.fromCodePoint(parseInt(l.codepoint,16));
+  h += `<text x="300" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="var(--navy)" style="paint-order:stroke;stroke:#fff;stroke-width:4px;" pointer-events="none">Select area for ${l.name} ${heb} — drag a box around it</text>`;
+  return h;
+}
+function startCrop(e) {
+  const [sx,sy] = clientToStage(e);
+  cropDrag = { start:[sx,sy], box:{ x:sx, y:sy, w:0, h:0 } };
+  stage().setPointerCapture(e.pointerId); e.preventDefault();
+}
+async function finalizeCrop(l, stageBox) {
+  const im = imgCache[project.combinedImage.dataUrl]; const f = cropFit; if (!im || !f) { renderStage(); return; }
+  let ix = (stageBox.x - f.ox)/f.s, iy = (stageBox.y - f.oy)/f.s;
+  let iw = stageBox.w/f.s, ih = stageBox.h/f.s;
+  ix = Math.max(0, Math.min(ix, im.width)); iy = Math.max(0, Math.min(iy, im.height));
+  iw = Math.max(2, Math.min(iw, im.width-ix)); ih = Math.max(2, Math.min(ih, im.height-iy));
+  const rect = { x:Math.round(ix), y:Math.round(iy), w:Math.round(iw), h:Math.round(ih) };
+  const cv = document.createElement('canvas'); cv.width = rect.w; cv.height = rect.h;
+  cv.getContext('2d').drawImage(im, rect.x, rect.y, rect.w, rect.h, 0, 0, rect.w, rect.h);
+  const url = cv.toDataURL('image/png');
+  l.source.cropRect = rect; l.source.dataUrl = url;
+  const cim = await loadImg(url);
+  l.transform = defaultFitTransform(cim);
+  l.contours = null; l.anchors = null;
+  renderLetterGrid(); renderStage(); renderControls();
+  status(`${l.name}: area selected — align, then trace.`);
+}
+function reselectArea() {
   const l = curLetter();
-  if (l.source.kind === 'combined') return project.combinedImage.dataUrl;
-  return l.source.dataUrl;
+  l.source.dataUrl = null; l.contours = null; l.anchors = null;
+  renderLetterGrid(); renderStage(); renderControls();
 }
 
 /* ════════ Stage rendering ════════ */
@@ -714,6 +766,14 @@ async function renderStage() {
   document.getElementById('opacityVal').textContent = document.getElementById('templateOpacity').value + '%';
   project.template.showOverlay = document.getElementById('showTemplate').checked;
   project.template.opacity = (+document.getElementById('templateOpacity').value)/100;
+  // Combined-sheet crop selection: show the whole sheet + marquee instead of the em workspace
+  if (isCropSelect(l)) {
+    sv.innerHTML = cropSelectSVG(l);
+    const ci = sv.querySelector('#cropImg');
+    if (ci) ci.addEventListener('pointerdown', startCrop);
+    renderLegend();
+    return;
+  }
   let h = guideLinesSVG();
   // capture box
   if (workMode !== 'anchors') {
@@ -752,6 +812,10 @@ async function renderStage() {
 }
 function renderLegend() {
   const el = document.getElementById('stageLegend');
+  if (isCropSelect(curLetter())) {
+    el.innerHTML = `<span>Click and drag a box around the letter on the sheet, then release to bring it into the editor.</span>`;
+    return;
+  }
   if (workMode === 'anchors') {
     el.innerHTML = `<span><span class="dot" style="background:var(--below)"></span>below vowels</span>
       <span><span class="dot" style="background:var(--above)"></span>above (holam)</span>
@@ -811,6 +875,12 @@ function attachTransformDrag(l) {
   });
 }
 function onStagePointerMove(e) {
+  if (cropDrag) {
+    const [sx,sy] = clientToStage(e);
+    cropDrag.box = { x: Math.min(cropDrag.start[0],sx), y: Math.min(cropDrag.start[1],sy),
+                     w: Math.abs(sx-cropDrag.start[0]), h: Math.abs(sy-cropDrag.start[1]) };
+    renderStage(); return;
+  }
   if (!tDrag || workMode !== 'align') return;
   const l = curLetter(); const p = clientToStage(e); const m0 = tDrag.m0;
   if (tDrag.type === 'move') {
@@ -837,7 +907,14 @@ function onStagePointerMove(e) {
   l.contours = null; l.anchors = null;
   renderStage();
 }
-function onStagePointerUp() { if (tDrag) { tDrag = null; renderLetterGrid(); } }
+function onStagePointerUp() {
+  if (cropDrag) {
+    const box = cropDrag.box; cropDrag = null;
+    if (box && box.w > 8 && box.h > 8) finalizeCrop(curLetter(), box); else renderStage();
+    return;
+  }
+  if (tDrag) { tDrag = null; renderLetterGrid(); }
+}
 
 /* ════════ Vectorization: rasterize → binarize → marching squares → RDP → winding ════════ */
 function rasterizeCurrent(l) {
@@ -1073,12 +1150,21 @@ function renderControls() {
   const l = curLetter();
   if (workMode === 'align') {
     const hasImg = !!curImageUrl();
+    let intro;
+    if (l.source.kind === 'single') {
+      intro = `<div class="drop" id="letterDrop">Drop an image for <b>${l.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('letterFile').click()">browse</span>.</div>
+        <input type="file" id="letterFile" accept="image/*" style="display:none;">`;
+    } else if (!project.combinedImage.dataUrl) {
+      intro = `<div class="hint">Combined-sheet mode: upload one sheet of all your letters in the sidebar first.</div>`;
+    } else if (!l.source.dataUrl) {
+      intro = `<div class="hint">Drag a box around <b>${l.name}</b> on the sheet above to bring it into the editor.</div>`;
+    } else {
+      intro = `<div class="hint">Region selected for <b>${l.name}</b>. Fine-tune below, then trace.</div>
+        <div class="ctl-row"><button class="ctl-btn" onclick="reselectArea()">↺ Re-select area</button></div>`;
+    }
     c.innerHTML = `
       <div class="ctl-label">Align — ${l.name} (${l.codepoint})</div>
-      ${ l.source.kind==='single' ? `
-        <div class="drop" id="letterDrop">Drop an image for <b>${l.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('letterFile').click()">browse</span>.</div>
-        <input type="file" id="letterFile" accept="image/*" style="display:none;">`
-        : `<div class="hint">Combined-sheet mode: ${project.combinedImage.dataUrl ? 'zoom/transform the sheet so only <b>'+l.name+'</b> sits inside the gold capture box.' : 'upload a combined sheet in the sidebar first.'}</div>` }
+      ${intro}
       ${ hasImg ? `
       <div class="ctl-row">
         <button class="ctl-btn" onclick="nudgeScale(1.05,1.05)">Scale +</button>
@@ -1151,9 +1237,7 @@ function nudgeSkew(d) { const l=curLetter(); const c=imgCorners(l); if(!c)return
   l.transform = M.mul(K, l.transform); l.contours=null; l.anchors=null; renderStage(); }
 function snapFit() {
   const l = curLetter(); const im = imgCache[curImageUrl()]; if (!im) return;
-  // scale so image height → letterTop, place top-left at (LSB, letterTop)
-  const k = (LETTER_TOP*SC)/im.height;
-  l.transform = [k,0,0,k, fx(DEF_LSB), fy(LETTER_TOP)];
+  l.transform = defaultFitTransform(im);
   l.contours=null; l.anchors=null; renderStage();
 }
 function wireDrop(id, cb) {
