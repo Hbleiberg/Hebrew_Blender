@@ -1211,6 +1211,20 @@ function setGlyphOpacity(v){ project.view.glyphOpacity=Math.max(0,Math.min(1,(+v
 function setAnchorCoord(axis,v){ if(!project||workMode!=='anchors') return;
   const l=curLetter(); if(!l.anchors) return; const n=Math.round(+v); if(!Number.isFinite(n)) return;
   l.anchors[activeAnchorClass][axis]=n; noteAnchorMoved(l); renderStage(); }
+/* Quick-center the active anchor: ↔ halfway between the L/R margins, ↕ halfway between the top & bottom lines. */
+function centerAnchorH() {
+  if (!project || workMode !== 'anchors') return;
+  const l = curLetter(); const a = l.anchors && l.anchors[activeAnchorClass]; if (!a) return;
+  a.x = Math.round((letterLSB(l) + (letterAdvance(l) - letterRSB(l))) / 2);   // midpoint of the margin lines
+  noteAnchorMoved(l); renderStage(); renderControls();
+}
+function centerAnchorV() {
+  if (!project || workMode !== 'anchors') return;
+  const l = curLetter(); const a = l.anchors && l.anchors[activeAnchorClass]; if (!a) return;
+  const em = effMetrics();
+  a.y = Math.round((em.letterTop + em.descender) / 2);                         // midpoint of the top (cap) & bottom (descender) lines
+  noteAnchorMoved(l); renderStage(); renderControls();
+}
 
 /* ════════ Letter Metrics editor (type a value, or drag the guide dots on the canvas) ════════ */
 function _clampMetric(key, n) {
@@ -2720,7 +2734,8 @@ function guardPlacement(proceed) {
     askModal('Save new ' + label + ' placement?',
       `You moved the placement for <b>${l.name}</b> since it was last saved.`,
       [ {label:'Save', onClick: () => { savePlacement(); proceed(); }},
-        {label:'Discard', cls:'ghost', onClick: () => { l.anchors = JSON.parse(JSON.stringify(l.savedAnchors)); l.placementSaved = true; proceed(); }} ]);
+        {label:'Discard', cls:'ghost', onClick: () => { l.anchors = JSON.parse(JSON.stringify(l.savedAnchors)); l.placementSaved = true; proceed(); }},
+        {label:'Go back', cls:'ghost'} ]);   // close the dialog, stay on this letter, keep the unsaved move
     return;
   }
   proceed();
@@ -2924,6 +2939,10 @@ function renderAnchorLeft(L, l) {
     <div class="anc-xy">
       <label>X <input type="number" id="ancX" value="${a.x}" oninput="setAnchorCoord('x',this.value)"></label>
       <label>Y <input type="number" id="ancY" value="${a.y}" oninput="setAnchorCoord('y',this.value)"></label>
+    </div>
+    <div class="ctl-row" style="margin-top:6px;">
+      <button class="ctl-btn" onclick="centerAnchorH()" title="Center horizontally — halfway between the left and right margins">Center ↔</button>
+      <button class="ctl-btn" onclick="centerAnchorV()" title="Center vertically — halfway between the top and bottom lines">Center ↕</button>
     </div>`;
   L.innerHTML = `
     <div class="ws-side-title">${l.name}: place the…</div>
@@ -3562,7 +3581,10 @@ async function generatePreviewPDF() {
           const cell = c.cp ? ch + String.fromCodePoint(parseInt(c.cp, 16)) : ch;
           return `<td style="border:1px solid #eee;text-align:center;padding:6px 3px;">${cell}</td>`;
         }).join('');
-        return `<tr><td style="border:1px solid #ccc;font-family:'Source Sans 3';direction:ltr;font-size:8px;color:#888;text-align:center;padding:3px;">${escapeHtml(L.name)}</td>${cells}</tr>`;
+        const pl = project.letters.find(p => p.codepoint === L.cp);          // below-nikkud anchor coords for this letter
+        const ba = pl && pl.anchors && pl.anchors.below;
+        const coords = ba ? `<div style="font-family:'Source Sans 3';direction:ltr;font-size:7px;color:#999;font-weight:400;margin-top:2px;">X: ${ba.x} Y: ${ba.y}</div>` : '';
+        return `<tr><td style="border:1px solid #ccc;font-family:'Source Sans 3';direction:ltr;font-size:8px;color:#888;text-align:center;padding:3px;">${escapeHtml(L.name)}${coords}</td>${cells}</tr>`;
       }).join('');
       await addPage(
         `<div style="text-align:center;font-family:'Libre Baskerville',serif;font-size:14px;color:#1a2744;margin-bottom:16px;">Letter × Nikkud${i > 0 ? ' (continued)' : ''}</div>
