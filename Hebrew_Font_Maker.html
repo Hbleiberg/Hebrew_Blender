@@ -479,7 +479,7 @@ const MARK_GLYPHS = {
   '05B4': [ circlePts(0,-160,46) ],                                           // hiriq: 1 dot
   '05B5': [ circlePts(-95,-160,42), circlePts(95,-160,42) ],                  // tsere: 2 dots
   '05B6': [ circlePts(-105,-130,40), circlePts(105,-130,40), circlePts(0,-235,40) ], // segol: 3 dots
-  '05B1': [ circlePts(-105,-130,40), circlePts(105,-130,40), circlePts(0,-235,40), circlePts(165,-150,28), circlePts(165,-235,28) ],
+  '05B1': [ circlePts(-105,-130,40), circlePts(105,-130,40), circlePts(0,-235,40), circlePts(196,-150,26), circlePts(196,-238,26) ], // hataf segol (sheva dots clear of the segol)
   '05B0': [ circlePts(0,-120,40), circlePts(0,-235,40) ],                     // sheva: 2 vertical dots
   '05BB': [ circlePts(-130,-115,38), circlePts(0,-165,38), circlePts(130,-215,38) ], // qubuts: 3 diagonal
   // ABOVE (anchor at bottom-center; shapes extend upward)
@@ -494,6 +494,7 @@ const MARK_GLYPHS = {
 const UPM = 1000, BASELINE = 0, LETTER_TOP = 600, LAMED_TOP = 800, DESCENDER = -250;
 const DEF_LSB = 40, DEF_RSB = 40;
 const ANCHOR_Y = { below: -45, above: 640, center: 300 };
+function markScale() { return (project && project.font && project.font.markScale != null) ? project.font.markScale : 1; }
 
 /* ── Project state ── */
 let project = null;        // the full project object (schema in plan)
@@ -519,7 +520,7 @@ function newProject() {
     savedAt: new Date().toISOString(),
     font: {
       familyName: 'My Hebrew Hand', reservedFontName: 'My Hebrew Hand', copyright: '',
-      version: '1.000', unitsPerEm: UPM,
+      version: '1.000', unitsPerEm: UPM, markScale: 1.0,
       metrics: { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP, descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB }
     },
     template: { font: "'Noto Sans Hebrew', sans-serif", opacity: 0.35, showOverlay: true },
@@ -894,7 +895,7 @@ function guideLinesSVG() {
     h += `<text x="502" y="${y+3.5}" fill="${col}" font-size="10" font-family="monospace">${label}</text>`;
   });
   // vertical guides: a shaded "letter margin" zone on the left + a "letter width" line
-  const adv = curLetter().advance || Math.round(LETTER_TOP*0.7);
+  const adv = (curLetter().contours ? curLetter().advance : (_tplFit && _tplFit.advance)) || Math.round(LETTER_TOP*0.7);
   const vy1 = fy(LETTER_TOP + 80), vy2 = fy(DESCENDER - 30);
   const mx0 = fx(0), mx1 = fx(DEF_LSB), mcx = (mx0+mx1)/2, mcy = (vy1+vy2)/2;
   h += `<rect x="${mx0}" y="${vy1}" width="${mx1-mx0}" height="${vy2-vy1}" fill="#c99" fill-opacity="0.10" stroke="#c99" stroke-width="1" stroke-dasharray="3 4" opacity="0.8"/>`;
@@ -908,52 +909,52 @@ function captureBoxFont(l) {
   if (l.captureBox) return l.captureBox;
   return { x0: -40, y0: DESCENDER-20, x1: (LETTER_TOP*1.0)+80, y1: LETTER_TOP+120 };
 }
+let _tplFit = null;   // { fs, cx, advance } for the current letter's template glyph
 function templateGlyphSVG() {
   if (!project.template.showOverlay) return '';
   const op = (+document.getElementById('templateOpacity').value) / 100;
   if (op <= 0) return '';
   const ch = String.fromCodePoint(parseInt(curCp,16));
-  const adv = curLetter().advance || Math.round(LETTER_TOP*0.7);
-  // Anchored at the baseline: SVG's alphabetic text baseline sits exactly on the
-  // base-0 line. fitTemplateGlyph() then scales the font-size so the ink top reaches
-  // the top line (base stays exact regardless of font).
-  return `<text id="tplGlyphText" x="${fx(DEF_LSB + adv/2)}" y="${fy(BASELINE)}" text-anchor="middle" dominant-baseline="alphabetic"
-    font-family="${project.template.font}" font-size="300" fill="#9aa0aa" opacity="${op}">${ch}</text>`;
+  const f = _tplFit || computeTemplateFit(curLetter());
+  // baseline on base-0; ink-left seated at the margin; sized so the cap reaches the top line
+  return `<text id="tplGlyphText" x="${f.cx.toFixed(1)}" y="${fy(BASELINE)}" text-anchor="middle" dominant-baseline="alphabetic"
+    font-family="${project.template.font}" font-size="${f.fs.toFixed(1)}" fill="#9aa0aa" opacity="${op}">${ch}</text>`;
 }
-/* Measure a glyph's TRUE ink height above the baseline (as a fraction of font-size)
-   by rendering it to a canvas and scanning pixels. SVG getBBox can't be trusted here —
-   it returns the font's ascent-inclusive layout box, which made the glyph too small. */
-const _capRatioCache = {};
-function fontCapRatio(family, ch) {
-  const loaded = !window.document.fonts || document.fonts.check(`24px ${family}`);
+/* Measure a template glyph's true ink box (cap height, left edge, width) as fractions of
+   font-size by rendering to a canvas and scanning pixels — SVG getBBox returns the font's
+   ascent-inclusive layout box, which can't be trusted. Cached per font+glyph. */
+const _tplMetricsCache = {};
+function templateMetrics(family, ch) {
+  const loaded = !document.fonts || document.fonts.check(`24px ${family}`);
   const key = family + '|' + ch;
-  if (loaded && _capRatioCache[key] != null) return _capRatioCache[key];
-  let ratio = 0.7;
+  if (loaded && _tplMetricsCache[key]) return _tplMetricsCache[key];
+  let m = { capRatio: 0.7, leftRatio: -0.3, widthRatio: 0.62 };
   try {
-    const FP = 200, S = 480;
+    const FP = 200, S = 560, drawX = S/2, baseY = Math.round(S*0.7);
     const cv = document.createElement('canvas'); cv.width = S; cv.height = S;
     const ctx = cv.getContext('2d', { willReadFrequently: true });
-    ctx.font = `${FP}px ${family}`; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'center';
-    ctx.fillStyle = '#000';
-    const baseY = Math.round(S * 0.7);
-    ctx.fillText(ch, S / 2, baseY);
-    const d = ctx.getImageData(0, 0, S, S).data;
-    let top = -1;
-    for (let y = 0; y < S && top < 0; y++) {
-      for (let x = 0; x < S; x++) { if (d[(y * S + x) * 4 + 3] > 24) { top = y; break; } }
+    ctx.font = `${FP}px ${family}`; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'center'; ctx.fillStyle = '#000';
+    ctx.fillText(ch, drawX, baseY);
+    const d = ctx.getImageData(0,0,S,S).data;
+    let top=-1, left=S, right=-1;
+    for (let y=0; y<S; y++) { const row=y*S; for (let x=0; x<S; x++) { if (d[(row+x)*4+3] > 24) { if (top<0) top=y; if (x<left) left=x; if (x>right) right=x; } } }
+    if (top>=0 && right>=left) {
+      const cap=(baseY-top)/FP;
+      m = { capRatio: (cap>0.15 && cap<1.6)?cap:0.7, leftRatio: (left-drawX)/FP, widthRatio: (right-left+1)/FP };
     }
-    if (top >= 0) { const r = (baseY - top) / FP; if (r > 0.15 && r < 1.6) ratio = r; }
   } catch (e) {}
-  if (loaded) _capRatioCache[key] = ratio;
-  return ratio;
+  if (loaded) _tplMetricsCache[key] = m;
+  return m;
 }
-function fitTemplateGlyph() {
-  const t = stage().querySelector('#tplGlyphText'); if (!t) return;
-  const ch = String.fromCodePoint(parseInt(curCp, 16));
-  const ratio = fontCapRatio(project.template.font, ch);    // ink cap height ÷ font-size
-  const wantCap = fy(BASELINE) - fy(LETTER_TOP);            // viewBox units, baseline→top line
-  const fs = Math.max(40, Math.min(1400, wantCap / ratio)); // so the rendered cap == wantCap
-  t.setAttribute('font-size', fs.toFixed(1));
+function computeTemplateFit(l) {
+  const ch = String.fromCodePoint(parseInt(l.codepoint,16));
+  const m = templateMetrics(project.template.font, ch);
+  const wantCap = fy(BASELINE) - fy(LETTER_TOP);                 // viewBox units, baseline→top
+  const fs = Math.max(40, Math.min(1400, wantCap / (m.capRatio || 0.7)));
+  const inkWidthFont = (m.widthRatio * fs) / SC;                 // glyph ink width in font units
+  const advance = l.contours ? l.advance : Math.round(DEF_LSB + inkWidthFont + DEF_RSB);
+  const cx = fx(DEF_LSB) - m.leftRatio * fs;                     // seat the ink-left edge at the margin (x = LSB)
+  return { fs, cx, advance };
 }
 /* ── Stage zoom (scales the rendered SVG inside the scrollable wrapper; the viewBox
    and all hit-testing math are untouched, so editing still works at any zoom) ── */
@@ -979,6 +980,7 @@ async function renderStage() {
   document.getElementById('opacityVal').textContent = document.getElementById('templateOpacity').value + '%';
   project.template.showOverlay = document.getElementById('showTemplate').checked;
   project.template.opacity = (+document.getElementById('templateOpacity').value)/100;
+  _tplFit = project.template.showOverlay ? computeTemplateFit(l) : null;   // guides match the template glyph
   // Combined-sheet crop selection: show the whole sheet + marquee instead of the em workspace
   if (isCropSelect(l)) {
     sv.innerHTML = cropSelectSVG(l);
@@ -1025,7 +1027,6 @@ async function renderStage() {
     }
   }
   sv.innerHTML = h;
-  fitTemplateGlyph();
   if (workMode === 'align' && url) attachTransformDrag(l);
   if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) attachAnchorDrag(l);
   renderLegend();
@@ -1404,27 +1405,27 @@ let activeAnchorClass = 'below';
 let activeBelowVowel = '05B8';
 function activeVowelCp() { return activeAnchorClass === 'below' ? activeBelowVowel : (activeAnchorClass === 'above' ? '05B9' : '05BC'); }
 function markPreviewPath(cp, ax, ay) {
-  const contours = MARK_GLYPHS[cp] || [];
+  const s = markScale(); const contours = MARK_GLYPHS[cp] || [];
   let d = '';
-  contours.forEach(poly => { poly.forEach((p,i) => { const X=fx(ax+p[0]), Y=fy(ay+p[1]); d += (i===0?'M':'L')+X.toFixed(1)+' '+Y.toFixed(1)+' '; }); d+='Z '; });
+  contours.forEach(poly => { poly.forEach((p,i) => { const X=fx(ax+p[0]*s), Y=fy(ay+p[1]*s); d += (i===0?'M':'L')+X.toFixed(1)+' '+Y.toFixed(1)+' '; }); d+='Z '; });
   return d;
 }
 function markCenterLocal(cp) {
-  const polys = MARK_GLYPHS[cp] || [];
+  const s = markScale(); const polys = MARK_GLYPHS[cp] || [];
   let sx = 0, sy = 0, n = 0;
   polys.forEach(poly => poly.forEach(p => { sx += p[0]; sy += p[1]; n++; }));
-  return n ? [sx / n, sy / n] : [0, 0];
+  return n ? [sx / n * s, sy / n * s] : [0, 0];
 }
 function anchorHandlesSVG(l) {
-  // Active class only: its vowel drawn SOLID (so the letter previews with it),
-  // plus a draggable RING centred ON the vowel — clearly a control, not a dot.
+  // Active class only: its vowel drawn in the class colour (clearly visible even over the
+  // dark glyph), plus a draggable RING centred ON the vowel.
   const cls = activeAnchorClass; const a = l.anchors[cls];
   const cp = activeVowelCp();
   const col = cls==='below'?'var(--below)':(cls==='above'?'var(--above)':'var(--center)');
   const mc = markCenterLocal(cp);
   const hx = fx(a.x + mc[0]), hy = fy(a.y + mc[1]);
-  let h = `<path id="ancMark" d="${markPreviewPath(cp, a.x, a.y)}" fill="#3a4150"/>`;
-  h += `<circle class="anc" data-cls="${cls}" cx="${hx}" cy="${hy}" r="14" fill="${col}" fill-opacity="0.16" stroke="${col}" stroke-width="2.5" style="cursor:grab"/>`;
+  let h = `<path id="ancMark" d="${markPreviewPath(cp, a.x, a.y)}" fill="${col}"/>`;
+  h += `<circle class="anc" data-cls="${cls}" cx="${hx}" cy="${hy}" r="14" fill="${col}" fill-opacity="0.14" stroke="#fff" stroke-width="2.5" style="cursor:grab"/>`;
   return h;
 }
 function attachAnchorDrag(l) {
@@ -1467,6 +1468,11 @@ function showAncTip(cx, cy) {
 function hideAncTip() { const t = document.getElementById('ancTip'); if (t) t.style.display = 'none'; }
 function setAnchorClass(cls) { activeAnchorClass = cls; renderStage(); renderControls(); }
 function setBelowVowel(cp) { activeBelowVowel = cp; renderStage(); renderControls(); }
+function setMarkScale(v) {
+  project.font.markScale = Math.max(0.3, Math.min(2, (+v)/100));
+  const s = document.getElementById('markScaleV'); if (s) s.textContent = Math.round(project.font.markScale*100) + '%';
+  renderStage();   // live preview; don't rebuild controls (keep slider focus)
+}
 function savePlacement() {
   const l = curLetter();
   if (!l.anchors) { status('Set the nikkud anchors first.'); return; }
@@ -1567,6 +1573,7 @@ function renderControls() {
       <div class="ctl-row">${classBtns}</div>
       ${vowelBtns}
       <div class="readline" style="margin-top:8px;"><span>${ANCHOR_LABEL[cls]} anchor</span><span class="readout" id="ancReadout">x ${a.x}, y ${a.y}</span></div>
+      <div class="inline">Nikkud size <input type="range" min="40" max="160" step="5" value="${Math.round(markScale()*100)}" oninput="setMarkScale(this.value)"> <span id="markScaleV" class="readout">${Math.round(markScale()*100)}%</span></div>
       <div class="ctl-row">
         <button class="ctl-btn" onclick="seedAnchors(curLetter());renderStage();renderControls();renderLetterGrid();">Reset letter</button>
         <button class="ctl-btn" onclick="resetAllAnchors()">Reset all</button>
@@ -1668,10 +1675,11 @@ function buildFontSpec() {
     cmap[parseInt(L.cp,16)] = nm;
   });
 
-  // mark glyphs (zero width)
+  // mark glyphs (zero width) — scaled by the user's Nikkud size
+  const ms = markScale();
   MARK_CPS.forEach(cp => {
     const nm = gname(cp);
-    glyphs[nm] = { contours: (MARK_GLYPHS[cp]||[]).map(poly => poly.map(p => [Math.round(p[0]), Math.round(p[1])])), advance: 0 };
+    glyphs[nm] = { contours: (MARK_GLYPHS[cp]||[]).map(poly => poly.map(p => [Math.round(p[0]*ms), Math.round(p[1]*ms)])), advance: 0 };
     glyphOrder.push(nm); markGlyphNames.push(nm);
     cmap[parseInt(cp,16)] = nm;
   });
@@ -1683,7 +1691,7 @@ function buildFontSpec() {
     if (!baseL || !baseL.contours || !baseL.anchors) return;        // need a traced+anchored base
     const cls = MARK_CLASS[pc.mark];
     const anc = baseL.anchors[cls]; if (!anc) return;
-    const markPoly = (MARK_GLYPHS[pc.mark]||[]).map(poly => poly.map(([x,y]) => [Math.round(x+anc.x), Math.round(y+anc.y)]));
+    const markPoly = (MARK_GLYPHS[pc.mark]||[]).map(poly => poly.map(([x,y]) => [Math.round(x*ms+anc.x), Math.round(y*ms+anc.y)]));
     const nm = gname(pc.target);
     glyphs[nm] = { contours: baseL.contours.map(c => c.points).concat(markPoly), advance: baseL.advance };
     glyphOrder.push(nm); baseGlyphNames.push(nm);
@@ -2136,6 +2144,7 @@ function migrateProject(data) {
   data.combinedImage = data.combinedImage || { dataUrl: null };
   data.precomposed = data.precomposed || PRECOMPOSED.map(p => ({...p}));
   data.template = data.template || { font:"'Noto Sans Hebrew', sans-serif", opacity:0.35, showOverlay:true };
+  if (data.font && data.font.markScale == null) data.font.markScale = 1.0;
   return data;
 }
 
