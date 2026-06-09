@@ -1222,7 +1222,7 @@ function centerAnchorV() {
   if (!project || workMode !== 'anchors') return;
   const l = curLetter(); const a = l.anchors && l.anchors[activeAnchorClass]; if (!a) return;
   const em = effMetrics();
-  a.y = Math.round((em.letterTop + em.descender) / 2);                         // midpoint of the top (cap) & bottom (descender) lines
+  a.y = Math.round((em.letterTop + em.baseline) / 2);                          // midpoint of the top (cap) and base (baseline) lines
   noteAnchorMoved(l); renderStage(); renderControls();
 }
 
@@ -2796,6 +2796,7 @@ function maybeInheritAnchors(l) {
   l.placementSaved = true;                                   // a carried placement counts as saved (green ✓); adjusting it drops the ✓
   l.savedAnchors = JSON.parse(JSON.stringify(l.anchors));
   renderLetterGrid();
+  renderStage();   // redraw the canvas at the inherited coords so the mark doesn't "jump" on the first nudge
 }
 function _anchorCtx(l) {            // shared anchor-class computation (nik/trop fallback + clamp)
   seedAnchorsIfNeeded(l);
@@ -2940,9 +2941,9 @@ function renderAnchorLeft(L, l) {
       <label>X <input type="number" id="ancX" value="${a.x}" oninput="setAnchorCoord('x',this.value)"></label>
       <label>Y <input type="number" id="ancY" value="${a.y}" oninput="setAnchorCoord('y',this.value)"></label>
     </div>
-    <div class="ctl-row" style="margin-top:6px;">
+    <div class="ctl-row" style="margin-top:6px;justify-content:center;">
       <button class="ctl-btn" onclick="centerAnchorH()" title="Center horizontally — halfway between the left and right margins">Center ↔</button>
-      <button class="ctl-btn" onclick="centerAnchorV()" title="Center vertically — halfway between the top and bottom lines">Center ↕</button>
+      <button class="ctl-btn" onclick="centerAnchorV()" title="Center vertically — halfway between the top and base lines">Center ↕</button>
     </div>`;
   L.innerHTML = `
     <div class="ws-side-title">${l.name}: place the…</div>
