@@ -264,6 +264,15 @@
   .readout { font-family: ui-monospace, Menlo, monospace; font-size: 0.78rem; color: var(--text); }
   .readout .delta { color: var(--gold); }
   .readline { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--border); }
+  /* ── Letter Metrics editor ── */
+  .metric-group { border-top: 1px solid var(--border); padding-top: 8px; margin-bottom: 8px; }
+  .metric-cols { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start; }
+  .metric-col { display: flex; flex-direction: column; gap: 6px; min-width: 150px; }
+  .metric-actions { gap: 7px; }
+  .metric-sub { font-size: 0.68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .metric-fld { font-size: 0.72rem; }
+  .metric-num { width: 88px; padding: 4px 6px; border: 1px solid var(--border); border-radius: 5px; background: var(--white); color: var(--text); font-family: ui-monospace, Menlo, monospace; font-size: 0.78rem; box-sizing: border-box; }
+  .metric-toggle { flex: 0 0 auto; }
 
   /* ── Overlay / modal ── */
   .overlay { position: fixed; inset: 0; background: rgba(13,18,32,0.55); display: none; align-items: center; justify-content: center; z-index: 200; }
@@ -724,6 +733,22 @@ function tropScale() { return (project && project.font && project.font.tropScale
 function fontSpacing() { return (project && project.font && project.font.spacing) || { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם' }; }
 function effLetterAdvance(l) { const base = (l && l.advance) || Math.round(LETTER_TOP*0.7); return Math.max(50, base + fontSpacing().letterSpacing); }
 function wordAdvance() { return Math.max(0, fontSpacing().wordSpacing); }
+/* ── Glyph-metric accessors: project.font.metrics is the live source of truth; the consts above are the seed/defaults ── */
+function effMetrics() {
+  const m = (project && project.font && project.font.metrics) || {};
+  return {
+    baseline:      m.baseline      != null ? m.baseline      : BASELINE,
+    letterTop:     m.letterTop     != null ? m.letterTop     : LETTER_TOP,
+    lamedAscender: m.lamedAscender != null ? m.lamedAscender : LAMED_TOP,
+    descender:     m.descender     != null ? m.descender     : DESCENDER,
+    defaultLSB:    m.defaultLSB    != null ? m.defaultLSB     : DEF_LSB,
+    defaultRSB:    m.defaultRSB    != null ? m.defaultRSB     : DEF_RSB
+  };
+}
+function letterAdvance(l) { return (l && l.advance != null) ? l.advance : Math.round(effMetrics().letterTop * 0.7); }
+function letterLSB(l)     { return (l && l.lsb != null) ? l.lsb : effMetrics().defaultLSB; }
+function letterInkRight(l){ if (l && l.contours) { let mx=-1e9; l.contours.forEach(c=>c.points.forEach(p=>{ if(p[0]>mx) mx=p[0]; })); if (mx>-1e9) return Math.round(mx); } return Math.max(0, letterAdvance(l) - effMetrics().defaultRSB); }
+function letterRSB(l)     { return Math.max(0, letterAdvance(l) - letterInkRight(l)); }   // right side bearing = gap after the ink (derived)
 function catOfCp(cp) { return TROP_CLASS[cp] ? 'trop' : 'nikkud'; }
 const TROP_GAP_ABOVE = 200, TROP_GAP_BELOW = 200;   // how far trop clears the vowel band
 // mark-to-mark attach point on a nikkud mark (where a trop stacks): its far edge + a small gap.
@@ -743,6 +768,8 @@ let workMode = 'align';
 let anchorCat = 'nikkud';   // which anchor category the placement step shows: 'nikkud' | 'trop'
 let layoutMode = 'sidebar'; // 'sidebar' | 'tabbed' — Advanced Settings → Layout (site-wide pref)
 let catTab = 'letter';      // tabbed layout: which category picker is visible ('letter'|'nikkud'|'trop')
+let metricAdjust = false;   // Letter Metrics → "Adjust on canvas" drag toggle
+let metricDrag = null;      // active metric-guide drag: { key, axis, grab }
 
 function blankLetter(L) {
   return {
@@ -751,7 +778,7 @@ function blankLetter(L) {
     transform: [1,0,0,1,0,0],   // image-px → stage-px matrix
     captureBox: null,           // {x0,y0,x1,y1} in font units; null = default
     contours: null,             // [{winding:'cw'|'ccw', points:[[x,y]...]}] font units
-    advance: null,
+    advance: null, lsb: null,   // per-letter width + left side bearing (null = inherit metrics.defaultLSB; RSB is derived from advance−ink)
     anchors: null,              // {below:{x,y}, above:{x,y}, center:{x,y}}
     placementSaved: false,      // user confirmed the nikkud placement (green ✓)
     binThreshold: 128, invert: false, epsilon: 6
@@ -1142,6 +1169,111 @@ function setGlyphOpacity(v){ project.view.glyphOpacity=Math.max(0,Math.min(1,(+v
 function setAnchorCoord(axis,v){ if(!project||workMode!=='anchors') return;
   const l=curLetter(); if(!l.anchors) return; const n=Math.round(+v); if(!Number.isFinite(n)) return;
   l.anchors[activeAnchorClass][axis]=n; noteAnchorMoved(l); renderStage(); }
+
+/* ════════ Letter Metrics editor (type a value, or drag the guide dots on the canvas) ════════ */
+function _clampMetric(key, n) {
+  if (!Number.isFinite(n)) return null;
+  if (key==='advance' || key==='lsb' || key==='rsb') return Math.max(0, Math.round(n));
+  return Math.round(n);   // baseline / top / descender / lamed may be negative
+}
+function syncMetricInputs() {
+  const l = curLetter(), m = effMetrics();
+  const set = (id,v) => { const e = document.getElementById(id); if (e && document.activeElement !== e) e.value = v; };
+  set('mTop', m.letterTop); set('mBase', m.baseline); set('mDesc', m.descender); set('mLamed', m.lamedAscender);
+  set('mAdv', letterAdvance(l)); set('mLsb', letterLSB(l)); set('mRsb', letterRSB(l));
+}
+function setMetric(key, v, noRender) {            // font-wide metrics
+  const n = _clampMetric(key, +v); if (n==null) return;
+  project.font.metrics[key] = n; syncMetricInputs();
+  if (!noRender) renderStage();                   // NOT renderControls → keeps the number input focused while typing
+}
+function setLetterMetric(key, v, noRender) {       // per-letter (advance authoritative; lsb stored; rsb derived → adjusts advance)
+  const l = curLetter(); const n = _clampMetric(key, +v); if (n==null) return;
+  if (key==='advance') l.advance = n;
+  else if (key==='lsb') l.lsb = n;
+  else if (key==='rsb') l.advance = Math.max(50, Math.round(letterInkRight(l) + n));   // right margin = gap after the ink
+  syncMetricInputs();
+  if (!noRender) renderStage();
+}
+function curMetricVal(key) {
+  const l = curLetter();
+  if (key==='advance') return letterAdvance(l);
+  if (key==='lsb') return letterLSB(l);
+  if (key==='rsb') return letterRSB(l);
+  return effMetrics()[key];
+}
+function writeMetric(key, raw) {                   // dispatch used by the canvas drag
+  if (key==='advance' || key==='lsb' || key==='rsb') setLetterMetric(key, raw, true);
+  else setMetric(key, raw, true);
+}
+function toggleMetricAdjust() { metricAdjust = !metricAdjust; renderStage(); renderControls(); }
+function resetMetrics() {                          // restore template-font defaults
+  project.font.metrics = { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP,
+                           descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB };
+  const l = curLetter(); l.lsb = null;
+  if (l.contours) {
+    let minX=Infinity, maxX=-Infinity;
+    l.contours.forEach(c => c.points.forEach(p => { minX=Math.min(minX,p[0]); maxX=Math.max(maxX,p[0]); }));
+    if (isFinite(minX)) l.advance = Math.round(maxX + DEF_RSB + Math.max(0, DEF_LSB - minX));
+  } else { const fit = computeTemplateFit(l); if (fit) l.advance = fit.advance; }
+  renderStage(); renderControls();
+}
+function metricsPanel() {
+  const m = effMetrics(), l = curLetter(), meta = curMeta();
+  const f = (id,label,val,fn,key) =>
+    `<label class="fld metric-fld">${label}
+       <input type="number" id="${id}" class="metric-num" value="${val}" step="10" oninput="${fn}('${key}', this.value)"></label>`;
+  const lamed = (meta && meta.asc) ? f('mLamed','Lamed asc.', m.lamedAscender, 'setMetric','lamedAscender') : '';
+  return `
+  <div class="metric-group" id="metricGroup">
+    <div class="ws-side-title">Letter Metrics</div>
+    <div class="metric-cols">
+      <div class="metric-col">
+        <div class="metric-sub">Whole font</div>
+        ${f('mTop','Top (cap)',  m.letterTop, 'setMetric','letterTop')}
+        ${f('mBase','Baseline',  m.baseline,  'setMetric','baseline')}
+        ${f('mDesc','Descender', m.descender, 'setMetric','descender')}
+        ${lamed}
+      </div>
+      <div class="metric-col">
+        <div class="metric-sub">${l ? l.name : ''} (this letter)</div>
+        ${f('mAdv','Width',        letterAdvance(l), 'setLetterMetric','advance')}
+        ${f('mLsb','Left margin',  letterLSB(l),     'setLetterMetric','lsb')}
+        ${f('mRsb','Right margin', letterRSB(l),     'setLetterMetric','rsb')}
+      </div>
+      <div class="metric-col metric-actions">
+        <button class="mode-btn metric-toggle ${metricAdjust?'active':''}" id="metAdj" type="button" onclick="toggleMetricAdjust()">${metricAdjust?'✓ ':''}Adjust on canvas</button>
+        <button class="ctl-btn" type="button" onclick="resetMetrics()">Reset to defaults</button>
+        <div class="hint" style="font-size:0.66rem;line-height:1.35;">Right margin sets the gap after the ink (adjusts Width). Turn on <b>Adjust on canvas</b> to drag the guide dots.</div>
+      </div>
+    </div>
+  </div>`;
+}
+function metricHandlesSVG() {
+  const m = effMetrics(), L = curLetter(), meta = curMeta(), C = stageColors();
+  const adv = (L.contours ? letterAdvance(L) : (_tplFit && _tplFit.advance)) || Math.round(m.letterTop*0.7);
+  const vy1 = fy(m.letterTop + 80), vy2 = fy(m.descender - 30), mid = (vy1+vy2)/2;
+  const dot = (key,axis,cx,cy,col) =>
+    `<circle class="metric-h" data-metric="${key}" data-axis="${axis}" cx="${(+cx).toFixed(1)}" cy="${(+cy).toFixed(1)}" r="7" fill="${col}" fill-opacity="0.4" stroke="#fff" stroke-width="2" style="cursor:${axis==='y'?'ns-resize':'ew-resize'}"/>`;
+  let h = dot('letterTop','y', 488, fy(m.letterTop), C.top)
+        + dot('baseline','y', 488, fy(m.baseline), C.base);
+  if (meta && meta.desc) h += dot('descender','y', 488, fy(m.descender), C.desc);
+  if (meta && meta.asc)  h += dot('lamedAscender','y', 488, fy(m.lamedAscender), C.top);
+  h += dot('advance','x', fx(adv), vy1+12, C.margin);
+  h += dot('lsb','x', fx(letterLSB(L)), mid, C.margin);
+  return h;
+}
+function attachMetricDrag() {
+  const sv = stage();
+  sv.querySelectorAll('.metric-h').forEach(el => {
+    el.addEventListener('pointerdown', e => {
+      const key = el.dataset.metric, axis = el.dataset.axis;
+      const [fxp,fyp] = clientToFont(e);
+      metricDrag = { key, axis, grab: curMetricVal(key) - (axis==='y' ? fyp : fxp) };
+      sv.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault();
+    });
+  });
+}
 async function uploadTemplateTTF(file) {
   try {
     const buf = await file.arrayBuffer();
@@ -1554,7 +1686,7 @@ async function uploadSourceFont(file) {
       l.contours = contours;
       const scale = 1000 / font.unitsPerEm;
       let adv = Math.round((glyph.advanceWidth || 0) * scale);
-      if (!adv) { let mx=0, mn=1e9; contours.forEach(c=>c.points.forEach(p=>{mx=Math.max(mx,p[0]);mn=Math.min(mn,p[0]);})); adv = Math.round(mx + DEF_RSB + Math.max(0, DEF_LSB - mn)); }
+      if (!adv) { const em=effMetrics(); let mx=0, mn=1e9; contours.forEach(c=>c.points.forEach(p=>{mx=Math.max(mx,p[0]);mn=Math.min(mn,p[0]);})); adv = Math.round(mx + em.defaultRSB + Math.max(0, em.defaultLSB - mn)); }
       l.advance = adv;
       l.anchors = null; seedAnchors(l); n++;
     });
@@ -1581,9 +1713,11 @@ function stageColors() {
 function guideLinesSVG() {
   const meta = curMeta();
   const C = stageColors();
-  // baseline + letter-top always; descender only for letters that actually drop below.
-  const lines = [ [LETTER_TOP, 'top 600', C.top], [BASELINE, 'base 0', C.base] ];
-  if (meta && meta.desc) lines.push([DESCENDER, 'desc −250', C.desc]);
+  const m = effMetrics();
+  // baseline + letter-top always; descender / lamed-ascender only for letters that use them.
+  const lines = [ [m.letterTop, 'top ' + m.letterTop, C.top], [m.baseline, 'base ' + m.baseline, C.base] ];
+  if (meta && meta.desc) lines.push([m.descender, 'desc ' + m.descender, C.desc]);
+  if (meta && meta.asc)  lines.push([m.lamedAscender, 'lamed ' + m.lamedAscender, C.top]);
   let h = '';
   lines.forEach(([yv, label, col]) => {
     const y = fy(yv);
@@ -1595,16 +1729,17 @@ function guideLinesSVG() {
 /* Vertical side-bearing "margin" zones on BOTH sides + the advance-width line. Drawn ON TOP of the
    glyph image (pointer-events:none) so the right margin stays visible even when ink covers it. */
 function marginGuidesSVG() {
-  const adv = (curLetter().contours ? curLetter().advance : (_tplFit && _tplFit.advance)) || Math.round(LETTER_TOP*0.7);
-  const vy1 = fy(LETTER_TOP + 80), vy2 = fy(DESCENDER - 30), mcy = (vy1+vy2)/2;
+  const m = effMetrics(), L = curLetter();
+  const adv = (L.contours ? letterAdvance(L) : (_tplFit && _tplFit.advance)) || Math.round(m.letterTop*0.7);
+  const vy1 = fy(m.letterTop + 80), vy2 = fy(m.descender - 30), mcy = (vy1+vy2)/2;
   const C = stageColors();
   const marginZone = (x0f, x1f, side) => {
     const a = fx(x0f), b = fx(x1f), cx = (a+b)/2;
     return `<rect x="${a}" y="${vy1}" width="${b-a}" height="${vy2-vy1}" fill="${C.margin}" fill-opacity="0.12" stroke="${C.margin}" stroke-width="1" stroke-dasharray="3 4" opacity="0.9" pointer-events="none"/>`
       + `<text x="${cx}" y="${mcy}" transform="rotate(-90 ${cx} ${mcy})" text-anchor="middle" fill="${C.marginTxt}" font-size="12" font-family="'Source Sans 3',sans-serif" opacity="0.5" style="dominant-baseline:central;" pointer-events="none">${side} margin</text>`;
   };
-  let h = marginZone(0, DEF_LSB, 'left');             // left side bearing
-  h += marginZone(adv - DEF_RSB, adv, 'right');       // right side bearing
+  let h = marginZone(0, letterLSB(L), 'left');             // left side bearing
+  h += marginZone(adv - letterRSB(L), adv, 'right');       // right side bearing
   const wx = fx(adv);
   h += `<line x1="${wx}" y1="${vy1}" x2="${wx}" y2="${vy2}" stroke="${C.margin}" stroke-width="1" stroke-dasharray="3 5" pointer-events="none"/>`;
   h += `<text x="${wx}" y="${vy2+13}" text-anchor="middle" fill="${C.margin}" font-size="9" font-family="monospace" pointer-events="none">letter width</text>`;
@@ -1612,7 +1747,8 @@ function marginGuidesSVG() {
 }
 function captureBoxFont(l) {
   if (l.captureBox) return l.captureBox;
-  return { x0: -40, y0: DESCENDER-20, x1: (LETTER_TOP*1.0)+80, y1: LETTER_TOP+120 };
+  const m = effMetrics();
+  return { x0: -40, y0: m.descender-20, x1: (m.letterTop*1.0)+80, y1: m.letterTop+120 };
 }
 
 /* ════════ Mark (nikkud / trop) workspace ════════ */
@@ -1791,7 +1927,7 @@ function templateGlyphSVG() {
   }
   const f = _tplFit || computeTemplateFit(curLetter());
   // baseline on base-0; ink-left seated at the margin; sized so the cap reaches the top line
-  return `<text id="tplGlyphText" x="${f.cx.toFixed(1)}" y="${fy(BASELINE)}" text-anchor="middle" dominant-baseline="alphabetic"
+  return `<text id="tplGlyphText" x="${f.cx.toFixed(1)}" y="${fy(effMetrics().baseline)}" text-anchor="middle" dominant-baseline="alphabetic"
     font-family="${project.template.font}" font-size="${f.fs.toFixed(1)}" fill="#9aa0aa" opacity="${op}">${ch}</text>`;
 }
 /* Measure a template glyph's true ink box (cap height, left edge, width) as fractions of
@@ -1823,11 +1959,12 @@ function templateMetrics(family, ch) {
 function computeTemplateFit(l) {
   const ch = String.fromCodePoint(parseInt(l.codepoint,16));
   const m = templateMetrics(project.template.font, ch);
-  const wantCap = fy(BASELINE) - fy(LETTER_TOP);                 // viewBox units, baseline→top
+  const em = effMetrics();
+  const wantCap = fy(em.baseline) - fy(em.letterTop);            // viewBox units, baseline→top
   const fs = Math.max(40, Math.min(1400, wantCap / (m.capRatio || 0.7)));
   const inkWidthFont = (m.widthRatio * fs) / SC;                 // glyph ink width in font units
-  const advance = l.contours ? l.advance : Math.round(DEF_LSB + inkWidthFont + DEF_RSB);
-  const cx = fx(DEF_LSB) - m.leftRatio * fs;                     // seat the ink-left edge at the margin (x = LSB)
+  const advance = l.contours ? l.advance : Math.round(em.defaultLSB + inkWidthFont + em.defaultRSB);
+  const cx = fx(em.defaultLSB) - m.leftRatio * fs;              // seat the ink-left edge at the margin (x = LSB)
   return { fs, cx, advance };
 }
 /* ── Stage zoom (scales the rendered SVG inside the scrollable wrapper; the viewBox
@@ -1869,8 +2006,8 @@ async function renderStage() {
     if (url) {
       const m = l.transform;
       h += `<image href="${url}" x="0" y="0" transform="matrix(${m.join(' ')})" style="image-rendering:auto;" opacity="${project.view.imgOpacityAlign}"/>`;
-      // transform handles drawn after image (corners + rotate)
-      h += transformHandlesSVG(l);
+      // transform handles drawn after image (corners + rotate); hidden while adjusting metrics on canvas
+      if (!metricAdjust) h += transformHandlesSVG(l);
     } else if (l.contours) {
       // font-source mode: outline already loaded, nothing to align
       h += `<path d="${contoursToPath(l.contours)}" fill="${stageColors().ink}" fill-rule="nonzero"/>`;
@@ -1901,8 +2038,10 @@ async function renderStage() {
     h += `<rect x="${x}" y="${y}" width="${w}" height="${ht}" fill="none" stroke="var(--gold)" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.8" pointer-events="none"/>`;
   }
   h += marginGuidesSVG();   // margins/width on top so the right side bearing shows over the glyph
+  if (workMode === 'align' && metricAdjust) h += metricHandlesSVG();   // draggable metric guide dots
   sv.innerHTML = h;
-  if (workMode === 'align' && url) attachTransformDrag(l);
+  if (workMode === 'align' && url && !metricAdjust) attachTransformDrag(l);
+  if (workMode === 'align' && metricAdjust) attachMetricDrag();
   if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) attachAnchorDrag(l);
   renderLegend();
 }
@@ -2010,6 +2149,11 @@ function onStagePointerMove(e) {
                      w: Math.abs(sx-cropDrag.start[0]), h: Math.abs(sy-cropDrag.start[1]) };
     renderStage(); return;
   }
+  if (metricDrag) {
+    const [fxp,fyp] = clientToFont(e);
+    const raw = (metricDrag.axis==='y' ? fyp : fxp) + metricDrag.grab;
+    writeMetric(metricDrag.key, raw); renderStage(); return;
+  }
   if (!tDrag || workMode !== 'align') return;
   const l = curLetter(); const p = clientToStage(e); const m0 = tDrag.m0;
   if (tDrag.type === 'move') {
@@ -2038,6 +2182,7 @@ function onStagePointerMove(e) {
   renderStage();
 }
 function onStagePointerUp() {
+  if (metricDrag) { metricDrag = null; renderControls(); return; }
   if (eDrag) { eDrag = null; renderGrids(); renderControls(); return; }
   if (cropDrag) {
     const box = cropDrag.box; cropDrag = null;
@@ -2211,8 +2356,9 @@ function finalizeFromRaw(l, rawLoops) {
   if (out.length) {
     let minX=Infinity, maxX=-Infinity;
     out.forEach(c => c.points.forEach(p => { minX=Math.min(minX,p[0]); maxX=Math.max(maxX,p[0]); }));
-    if (!isFinite(minX)) { minX = 0; maxX = LETTER_TOP*0.6; }
-    l.advance = Math.round(maxX + DEF_RSB + Math.max(0, DEF_LSB - minX));
+    const em = effMetrics();
+    if (!isFinite(minX)) { minX = 0; maxX = em.letterTop*0.6; }
+    l.advance = Math.round(maxX + em.defaultRSB + Math.max(0, em.defaultLSB - minX));
     if (!l.anchors && curKind === 'letter') seedAnchors(l);   // marks attach at origin, no base anchors
   }
   return out.length;
@@ -2425,7 +2571,7 @@ function glyphPathAt(cs, dx, yo) {
 }
 function renderSpacingPreview() {
   const svg = document.getElementById('spacingPreviewSvg'); if (!svg || !project) return;
-  const sp = fontSpacing(), ascender = LAMED_TOP + 100, descender = DESCENDER - 50;
+  const em = effMetrics(), sp = fontSpacing(), ascender = em.lamedAscender + 100, descender = em.descender - 50;
   const lineH = (ascender - descender) + sp.lineSpacing;
   // base letters only — combining marks (U+0591–U+05C7) have no advance, so strip them for spacing layout
   const chars = [...(sp.sample || '')].filter(ch => { const c = ch.codePointAt(0); return !(c >= 0x0591 && c <= 0x05C7); });
@@ -2610,7 +2756,7 @@ function renderAlignUnder(U, l) {
     : (curImageUrl() ? `<button class="ctl-btn primary" onclick="setWorkMode('trace')">Next: Trace →</button>` : '');
   U.innerHTML = `
     <div class="ws-under-row" style="align-items:center;">
-      <div class="ws-under-grow">${hint}</div>
+      <div class="ws-under-grow">${metricsPanel()}${hint}</div>
       <div class="under-spacer"></div>
       <div>${nextBtn}</div>
     </div>`;
@@ -2846,7 +2992,7 @@ function buildFontSpec() {
     const nm = gname(L.cp);
     const contours = (l.contours||[]).map(c => c.points);
     const adv = effLetterAdvance(l);
-    glyphs[nm] = { contours, advance: adv };
+    glyphs[nm] = { contours, advance: adv, lsb: (l.lsb != null ? l.lsb : null) };
     glyphOrder.push(nm); baseGlyphNames.push(nm);
     cmap[parseInt(L.cp,16)] = nm;
   });
@@ -2903,7 +3049,7 @@ function buildFontSpec() {
   const versionFloat = parseFloat(fnt.version) || 1.0;
   return {
     unitsPerEm: UPM, glyphOrder, glyphs, cmap, fea, names,
-    ascent: LAMED_TOP + 100, descent: DESCENDER - 50, lineGap: fontSpacing().lineSpacing, version: versionFloat,
+    ascent: effMetrics().lamedAscender + 100, descent: effMetrics().descender - 50, lineGap: fontSpacing().lineSpacing, version: versionFloat,
     baseGlyphNames, markGlyphNames
   };
 }
@@ -3002,7 +3148,7 @@ def hfm_build(spec_json):
                 if minx is None or x < minx: minx = x
         glyphs[name] = pen.glyph()
         advances[name] = int(gd.get("advance", 0))
-        lsbs[name] = 0 if minx is None else int(minx)
+        lsbs[name] = int(gd["lsb"]) if gd.get("lsb") is not None else (0 if minx is None else int(minx))
 
     fb = FontBuilder(upm, isTTF=True)
     fb.setupGlyphOrder(order)
@@ -3440,6 +3586,7 @@ function migrateProject(data) {
     if (ex.epsilon == null) ex.epsilon = 6;
     if (ex.placementSaved == null) ex.placementSaved = false;
     if (ex.invert == null) ex.invert = false;
+    if (ex.lsb === undefined) ex.lsb = null;   // per-letter left side bearing (Letter Metrics)
     return ex;
   });
   data.combinedImage = data.combinedImage || { dataUrl: null };
@@ -3449,6 +3596,8 @@ function migrateProject(data) {
   ['imgOpacityAlign','imgOpacityTrace','glyphOpacity'].forEach((k,i)=>{ if(data.view[k]==null) data.view[k]=[0.92,0.28,1.0][i]; });
   if (data.font && data.font.markScale == null) data.font.markScale = 1.0;
   if (data.font) {
+    if (!data.font.metrics) data.font.metrics = { baseline:BASELINE, letterTop:LETTER_TOP, lamedAscender:LAMED_TOP, descender:DESCENDER, defaultLSB:DEF_LSB, defaultRSB:DEF_RSB };
+    else ['baseline','letterTop','lamedAscender','descender','defaultLSB','defaultRSB'].forEach((k,i)=>{ if(data.font.metrics[k]==null) data.font.metrics[k]=[BASELINE,LETTER_TOP,LAMED_TOP,DESCENDER,DEF_LSB,DEF_RSB][i]; });
     if (data.font.tropScale == null) data.font.tropScale = 1.0;
     if (!data.font.nikkud) data.font.nikkud = { enabled: true, mode: 'default', custom: {} };
     if (!data.font.nikkud.custom) data.font.nikkud.custom = {};
