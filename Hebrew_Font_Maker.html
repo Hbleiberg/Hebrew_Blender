@@ -753,7 +753,8 @@ function effMetrics() {
   };
 }
 function letterAdvance(l) { return (l && l.advance != null) ? l.advance : Math.round(effMetrics().letterTop * 0.7); }
-function letterLSB(l)     { return (l && l.lsb != null) ? l.lsb : effMetrics().defaultLSB; }
+function letterInkLeft(l) { if (l && l.contours) { let mn=1e9; l.contours.forEach(c=>c.points.forEach(p=>{ if(p[0]<mn) mn=p[0]; })); if (mn<1e9) return Math.round(mn); } return effMetrics().defaultLSB; }   // ink left edge (min x)
+function letterLSB(l)     { return (l && l.lsb != null) ? l.lsb : letterInkLeft(l); }   // explicit override, else the real ink left edge (so the left margin guide tracks the ink, like the right one)
 function letterInkRight(l){ if (l && l.contours) { let mx=-1e9; l.contours.forEach(c=>c.points.forEach(p=>{ if(p[0]>mx) mx=p[0]; })); if (mx>-1e9) return Math.round(mx); } return Math.max(0, letterAdvance(l) - effMetrics().defaultRSB); }
 function letterRSB(l)     { return Math.max(0, letterAdvance(l) - letterInkRight(l)); }   // right side bearing = gap after the ink (derived)
 function catOfCp(cp) { return TROP_CLASS[cp] ? 'trop' : 'nikkud'; }
