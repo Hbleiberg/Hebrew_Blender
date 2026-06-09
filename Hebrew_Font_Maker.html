@@ -508,15 +508,64 @@ const MARK_NAMES = {
 // ordered list driving the custom-nikkud grid
 const NIKKUD_MARKS = ['05B8','05B7','05B6','05B5','05B4','05BB','05B0','05B2','05B1','05B3','05B9','05C1','05C2','05BC']
   .map(cp => ({ cp, name: MARK_NAMES[cp], cls: MARK_CLASS[cp] }));
-// Trop (cantillation) tables — populated in Phase 2; empty stubs so the mark machinery is generic.
-const TROP_CLASS = {}, TROP_GLYPHS = {}, TROP_NAMES = {};
-const TROP_MARKS = [];
+// Trop (cantillation) — built-in geometric placeholders (above:y>0, below:y<0; origin 0,0 at the attach edge).
+const _tvb = (x,y0,y1,w=18) => rectPts(x-w,y0,x+w,y1);                      // vertical bar
+const _thb = (x0,x1,y,h=18) => rectPts(x0,y-h,x1,y+h);                      // horizontal bar
+const _tdia = (x0,y0,x1,y1,w=16) => [[x0-w,y0],[x1-w,y1],[x1+w,y1],[x0+w,y0]];  // slanted bar
+const TROP_DEFS = [
+  ['0591','Etnahta','below', [ _tdia(-60,-40,-10,-140), _tdia(60,-40,10,-140) ]],
+  ['0592','Segol','above', [ circlePts(-70,90,26), circlePts(70,90,26), circlePts(0,150,26) ]],
+  ['0593','Shalshelet','above', [ _tdia(-50,40,50,90,12), _tdia(50,90,-50,140,12), _tdia(-50,140,50,180,12) ]],
+  ['0594','Zaqef Qatan','above', [ circlePts(0,60,26), circlePts(0,135,26) ]],
+  ['0595','Zaqef Gadol','above', [ circlePts(40,60,26), circlePts(40,135,26), _tvb(-55,40,150,14) ]],
+  ['0596','Tipeha','below', [ _tdia(60,-40,-40,-150) ]],
+  ['0597','Revia','above', [ circlePts(0,100,40) ]],
+  ['0598','Zarqa','above', [ _tdia(-60,60,0,120,12), _tdia(0,120,60,60,12), _tdia(60,60,90,150,12) ]],
+  ['0599','Pashta','above', [ _tdia(-40,40,40,160,16) ]],
+  ['059A','Yetiv','below', [ _tdia(40,-40,-40,-150,16) ]],
+  ['059B','Tevir','below', [ _tvb(0,-40,-150,14), circlePts(0,-110,24) ]],
+  ['059C','Geresh','above', [ _tdia(-25,40,25,160,15) ]],
+  ['059D','Geresh Muqdam','above', [ _tdia(-15,40,35,160,15) ]],
+  ['059E','Gershayim','above', [ _tdia(-55,40,-5,160,14), _tdia(15,40,65,160,14) ]],
+  ['059F','Qarney Para','above', [ _tdia(-70,40,-20,150,12), _tdia(70,40,20,150,12), circlePts(0,170,22) ]],
+  ['05A0','Telisha Gedola','above', [ circlePts(40,110,34), _thb(-70,10,110,10) ]],
+  ['05A1','Pazer','above', [ _tdia(-60,40,-20,150,12), _tvb(0,40,160,12), _tdia(60,40,20,150,12) ]],
+  ['05A2','Atnah Hafukh','below', [ _tdia(-60,-140,-10,-40), _tdia(60,-140,10,-40) ]],
+  ['05A3','Munach','below', [ _tvb(0,-40,-150,16), _thb(0,70,-150,16) ]],
+  ['05A4','Mahapakh','below', [ _tdia(50,-40,-30,-95,16), _tdia(-30,-95,50,-150,16) ]],
+  ['05A5','Merkha','below', [ _tdia(40,-40,-40,-150,16) ]],
+  ['05A6','Merkha Kefula','below', [ _tdia(10,-40,-60,-150,14), _tdia(60,-40,-10,-150,14) ]],
+  ['05A7','Darga','below', [ _tdia(-50,-40,10,-90,12), _tdia(10,-90,-50,-140,12) ]],
+  ['05A8','Qadma','above', [ _tdia(-40,60,40,150,16) ]],
+  ['05A9','Telisha Qetana','above', [ circlePts(-40,110,30), _thb(-10,70,110,9) ]],
+  ['05AA','Yerah Ben Yomo','below', [ _tdia(-60,-90,0,-140,12), _tdia(0,-140,60,-90,12) ]],
+  ['05AB','Ole','above', [ _tdia(-50,40,0,150,14), _tdia(0,150,50,40,14) ]],
+  ['05AC','Iluy','above', [ circlePts(0,120,30), _tvb(0,40,90,10) ]],
+  ['05AD','Dehi','below', [ _tdia(-40,-40,40,-150,16) ]],
+  ['05AE','Zinor','above', [ _tdia(-60,60,0,120,12), _tdia(0,120,60,60,12) ]],
+  ['05BD','Meteg','below', [ _tvb(0,-30,-160,14) ]],
+];
+const TROP_GLYPHS = {}, TROP_CLASS = {}, TROP_NAMES = {};
+TROP_DEFS.forEach(([cp,name,cls,polys]) => { TROP_GLYPHS[cp]=polys; TROP_CLASS[cp]=cls; TROP_NAMES[cp]=name; });
+const TROP_MARKS = TROP_DEFS.map(([cp,name,cls]) => ({ cp, name, cls }));
+const TROP_CPS = TROP_DEFS.map(d => d[0]);
 
 /* ── Font-unit metrics ── */
 const UPM = 1000, BASELINE = 0, LETTER_TOP = 600, LAMED_TOP = 800, DESCENDER = -250;
 const DEF_LSB = 40, DEF_RSB = 40;
 const ANCHOR_Y = { below: -45, above: 640, center: 300 };
 function markScale() { return (project && project.font && project.font.markScale != null) ? project.font.markScale : 1; }
+function tropScale() { return (project && project.font && project.font.tropScale != null) ? project.font.tropScale : 1; }
+function catOfCp(cp) { return TROP_CLASS[cp] ? 'trop' : 'nikkud'; }
+const TROP_GAP_ABOVE = 200, TROP_GAP_BELOW = 200;   // how far trop clears the vowel band
+// mark-to-mark attach point on a nikkud mark (where a trop stacks): its far edge + a small gap.
+function markMkmkAnchor(cp) {
+  const polys = markGlyphContours('nikkud', cp); const ms = markScale();
+  let minY=1e9, maxY=-1e9;
+  polys.forEach(poly => poly.forEach(([x,y]) => { minY=Math.min(minY,y*ms); maxY=Math.max(maxY,y*ms); }));
+  if (minY>maxY) return { above:{x:0,y:120}, below:{x:0,y:-120} };
+  return { above:{x:0,y:Math.round(maxY)+70}, below:{x:0,y:Math.round(minY)-70} };
+}
 
 /* ── Project state ── */
 let project = null;        // the full project object (schema in plan)
@@ -847,7 +896,7 @@ function renderMarkPanel(cat) {
         <button class="mode-btn ${f.mode==='default'?'active':''}" onclick="setMarkMode('${cat}','default')">Default</button>
         <button class="mode-btn ${f.mode==='custom'?'active':''}" onclick="setMarkMode('${cat}','custom')">Custom</button>
       </div>`;
-    if (cat === 'trop') h += `<div class="hint" style="margin-top:9px;color:#a05a5a;">Full cantillation support — the built-in trop set, custom marks, and export — is being built; this toggle has no effect on the font yet.</div>`;
+    if (cat === 'trop') h += `<div class="hint" style="margin-top:9px;color:var(--muted);">Trop attaches to the typed letter (and stacks above/below a vowel). Word-edge accents like pashta, segolta &amp; zarqa can't auto-jump to the word edge — a font limitation.</div>`;
     if (f.mode === 'custom') {
       if (marks.length) h += `<div class="hint" style="margin-top:9px;">Click a mark to design it (draw or upload). Undesigned marks use the default shape.</div>
         <div class="letter-grid" id="${cat}Grid"></div>`;
@@ -894,8 +943,8 @@ function setWorkMode(mode) {
   if (curKind !== 'letter') {                 // marks have no Nikkud step; editor has no Trace step
     if (mode === 'anchors') mode = 'align';
     if (curItem().designMode === 'editor') mode = 'align';
-  } else if (mode === 'anchors' && !project.font.nikkud.enabled) {
-    mode = 'align';                            // letters-only font: no Nikkud step
+  } else if (mode === 'anchors' && !(project.font.nikkud.enabled || project.font.trop.enabled)) {
+    mode = 'align';                            // letters-only font: no marks step
   }
   workMode = mode;
   document.getElementById('tabAlign').classList.toggle('active', mode === 'align');
@@ -1181,7 +1230,10 @@ function updateTabs() {
   const editor = isMark && curItem().designMode === 'editor';
   document.getElementById('tabAlign').textContent = editor ? 'Design' : '1 · Align';
   document.getElementById('tabTrace').style.display = editor ? 'none' : '';
-  document.getElementById('tabAnchors').style.display = (isMark || !project.font.nikkud.enabled) ? 'none' : '';
+  const showAnchors = !isMark && (project.font.nikkud.enabled || project.font.trop.enabled);
+  const ta = document.getElementById('tabAnchors');
+  ta.style.display = showAnchors ? '' : 'none';
+  ta.textContent = project.font.trop.enabled ? '3 · Marks' : '3 · Nikkud';
 }
 function renderMarkControls(c, it) {
   const cat = curKind, label = cat==='nikkud' ? 'Nikkud' : 'Trop';
@@ -1337,7 +1389,7 @@ async function renderStage() {
     if (l.contours) h += `<path d="${contoursToPath(l.contours)}" fill="#3a4150" fill-rule="nonzero"/>`;
     if (l.contours || project.template.showOverlay) {
       // preview the vowel on the traced glyph, or on the reference template glyph
-      if (!l.anchors) seedAnchors(l);
+      seedAnchorsIfNeeded(l);
       h += anchorHandlesSVG(l);
     } else {
       h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="13">Trace this letter (step 2), or turn on “Show template glyph” to place nikkud on the reference.</text>`;
@@ -1717,16 +1769,28 @@ function seedAnchors(l) {
     : { midX: Math.round((l.advance || Math.round(LETTER_TOP*0.7)) / 2), minY: 0, maxY: LETTER_TOP };
   const mid = Math.round(bb.midX);
   const center = Math.round((bb.minY + bb.maxY)/2 * 0.6 + 150); // body-ish center
+  const aboveY = Math.max(ANCHOR_Y.above, Math.round(bb.maxY)+40);
   l.anchors = {
     below:  { x: mid, y: ANCHOR_Y.below },
-    above:  { x: mid, y: Math.max(ANCHOR_Y.above, Math.round(bb.maxY)+40) },
-    center: { x: mid, y: Math.min(Math.max(center, 120), 380) }
+    above:  { x: mid, y: aboveY },
+    center: { x: mid, y: Math.min(Math.max(center, 120), 380) },
+    tropAbove: { x: mid, y: aboveY + TROP_GAP_ABOVE },
+    tropBelow: { x: mid, y: ANCHOR_Y.below - TROP_GAP_BELOW }
   };
 }
+function ensureTropAnchors(l) {   // back-fill trop anchors on letters seeded before trop existed
+  if (!l.anchors) return;
+  const mid = l.anchors.above ? l.anchors.above.x : Math.round((l.advance||Math.round(LETTER_TOP*0.7))/2);
+  const aboveY = l.anchors.above ? l.anchors.above.y : ANCHOR_Y.above;
+  if (!l.anchors.tropAbove) l.anchors.tropAbove = { x: mid, y: aboveY + TROP_GAP_ABOVE };
+  if (!l.anchors.tropBelow) l.anchors.tropBelow = { x: mid, y: ANCHOR_Y.below - TROP_GAP_BELOW };
+}
+function seedAnchorsIfNeeded(l) { if (!l.anchors) seedAnchors(l); else ensureTropAnchors(l); }
 
-/* ════════ Anchor editor (nikkud) ════════ */
-const ANCHOR_CLASSES = [['below','var(--below)'],['above','var(--above)'],['center','var(--center)']];
-const ANCHOR_LABEL = { below:'Below', above:'Above (Holam)', center:'Dagesh (Center)' };
+/* ════════ Anchor editor (nikkud + trop) ════════ */
+const ANCHOR_CLASSES = [['below','var(--below)'],['above','var(--above)'],['center','var(--center)'],['tropAbove','#8b5cf6'],['tropBelow','#0ea5e9']];
+const ANCHOR_LABEL = { below:'Below', above:'Above (Holam)', center:'Dagesh (Center)', tropAbove:'Trop above', tropBelow:'Trop below' };
+const ANCHOR_COL = { below:'var(--below)', above:'var(--above)', center:'var(--center)', tropAbove:'#8b5cf6', tropBelow:'#0ea5e9' };
 const BELOW_VOWELS = [
   { cp:'05B8', name:'Qamats' }, { cp:'05B7', name:'Patach' }, { cp:'05B6', name:'Segol' },
   { cp:'05B5', name:'Tsere' }, { cp:'05B4', name:'Hiriq' }, { cp:'05BB', name:'Qubuts' },
@@ -1734,15 +1798,25 @@ const BELOW_VOWELS = [
 ];
 let activeAnchorClass = 'below';
 let activeBelowVowel = '05B8';
-function activeVowelCp() { return activeAnchorClass === 'below' ? activeBelowVowel : (activeAnchorClass === 'above' ? '05B9' : '05BC'); }
+let activeTropCp = '0597';
+function activeVowelCp() {
+  switch (activeAnchorClass) {
+    case 'above': return '05B9';        // holam
+    case 'center': return '05BC';       // dagesh
+    case 'tropAbove': case 'tropBelow': return activeTropCp;
+    default: return activeBelowVowel;
+  }
+}
 function markPreviewPath(cp, ax, ay) {
-  const s = markScale(); const contours = markGlyphContours('nikkud', cp);
+  const cat = catOfCp(cp), s = cat==='trop'?tropScale():markScale();
+  const contours = markGlyphContours(cat, cp);
   let d = '';
   contours.forEach(poly => { poly.forEach((p,i) => { const X=fx(ax+p[0]*s), Y=fy(ay+p[1]*s); d += (i===0?'M':'L')+X.toFixed(1)+' '+Y.toFixed(1)+' '; }); d+='Z '; });
   return d;
 }
 function markCenterLocal(cp) {
-  const s = markScale(); const polys = MARK_GLYPHS[cp] || [];
+  const cat = catOfCp(cp), s = cat==='trop'?tropScale():markScale();
+  const polys = markGlyphContours(cat, cp);
   let sx = 0, sy = 0, n = 0;
   polys.forEach(poly => poly.forEach(p => { sx += p[0]; sy += p[1]; n++; }));
   return n ? [sx / n * s, sy / n * s] : [0, 0];
@@ -1752,7 +1826,7 @@ function anchorHandlesSVG(l) {
   // dark glyph), plus a draggable RING centred ON the vowel.
   const cls = activeAnchorClass; const a = l.anchors[cls];
   const cp = activeVowelCp();
-  const col = cls==='below'?'var(--below)':(cls==='above'?'var(--above)':'var(--center)');
+  const col = ANCHOR_COL[cls] || 'var(--below)';
   const mc = markCenterLocal(cp);
   const hx = fx(a.x + mc[0]), hy = fy(a.y + mc[1]);
   let h = `<path id="ancMark" d="${markPreviewPath(cp, a.x, a.y)}" fill="${col}"/>`;
@@ -1797,12 +1871,23 @@ function showAncTip(cx, cy) {
   clearTimeout(showAncTip._t); showAncTip._t = setTimeout(hideAncTip, 2600);
 }
 function hideAncTip() { const t = document.getElementById('ancTip'); if (t) t.style.display = 'none'; }
-function setAnchorClass(cls) { activeAnchorClass = cls; renderStage(); renderControls(); }
+function setAnchorClass(cls) {
+  activeAnchorClass = cls;
+  if (cls === 'tropAbove' && TROP_CLASS[activeTropCp] !== 'above') activeTropCp = (TROP_MARKS.find(m=>m.cls==='above')||{}).cp || activeTropCp;
+  if (cls === 'tropBelow' && TROP_CLASS[activeTropCp] !== 'below') activeTropCp = (TROP_MARKS.find(m=>m.cls==='below')||{}).cp || activeTropCp;
+  renderStage(); renderControls();
+}
 function setBelowVowel(cp) { activeBelowVowel = cp; renderStage(); renderControls(); }
+function setTropCp(cp) { activeTropCp = cp; renderStage(); renderControls(); }
 function setMarkScale(v) {
   project.font.markScale = Math.max(0.3, Math.min(2, (+v)/100));
   const s = document.getElementById('markScaleV'); if (s) s.textContent = Math.round(project.font.markScale*100) + '%';
   renderStage();   // live preview; don't rebuild controls (keep slider focus)
+}
+function setTropScale(v) {
+  project.font.tropScale = Math.max(0.3, Math.min(2, (+v)/100));
+  const s = document.getElementById('markScaleV'); if (s) s.textContent = Math.round(project.font.tropScale*100) + '%';
+  renderStage();
 }
 function savePlacement() {
   const l = curLetter();
@@ -1888,29 +1973,42 @@ function renderControls() {
       <div class="hint">Drag the sliders to refine the trace live. Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). Corners stay crisp and counters (ס, ם, ע) punch out automatically.</div>`;
   } else {
     if (!l.contours && !project.template.showOverlay) { c.innerHTML = `<div class="ctl-label">Nikkud — ${l.name}</div><div class="hint">Trace this letter first (step 2), or turn on “Show template glyph behind” to place nikkud on the reference.</div>`; return; }
-    if (!l.anchors) seedAnchors(l);
-    const cls = activeAnchorClass, a = l.anchors[cls];
-    const classBtns = ANCHOR_CLASSES.map(([k]) =>
-      `<button class="ctl-btn ${cls===k?'primary':''}" onclick="setAnchorClass('${k}')">${ANCHOR_LABEL[k]}</button>`).join('');
-    const vowelBtns = cls === 'below'
-      ? `<div class="ctl-label" style="margin-top:8px;">Preview under-vowel</div>
+    seedAnchorsIfNeeded(l);
+    const nikOn = project.font.nikkud.enabled, tropOn = project.font.trop.enabled;
+    const visCls = [];
+    if (nikOn) visCls.push('below','above','center');
+    if (tropOn) visCls.push('tropAbove','tropBelow');
+    if (!visCls.length) visCls.push('below');
+    if (!visCls.includes(activeAnchorClass)) activeAnchorClass = visCls[0];
+    const cls = activeAnchorClass, a = l.anchors[cls], isTrop = cls.indexOf('trop') === 0;
+    const want = cls === 'tropAbove' ? 'above' : 'below';
+    const classBtns = visCls.map(k =>
+      `<button class="ctl-btn ${cls===k?'primary':''}" style="${cls===k?`background:${ANCHOR_COL[k]};color:#fff;border-color:${ANCHOR_COL[k]};`:''}" onclick="setAnchorClass('${k}')">${ANCHOR_LABEL[k]}</button>`).join('');
+    let previewBtns = '';
+    if (cls === 'below') {
+      previewBtns = `<div class="ctl-label" style="margin-top:8px;">Preview under-vowel</div>
          <div class="ctl-row" style="flex-wrap:wrap;gap:5px;">` +
-         BELOW_VOWELS.map(v => `<button class="ctl-btn ${activeBelowVowel===v.cp?'primary':''}" style="padding:4px 8px;font-size:0.73rem;" onclick="setBelowVowel('${v.cp}')">${v.name}</button>`).join('') +
-         `</div>` : '';
+         BELOW_VOWELS.map(v => `<button class="ctl-btn ${activeBelowVowel===v.cp?'primary':''}" style="padding:4px 8px;font-size:0.73rem;" onclick="setBelowVowel('${v.cp}')">${v.name}</button>`).join('') + `</div>`;
+    } else if (isTrop) {
+      previewBtns = `<div class="ctl-label" style="margin-top:8px;">Preview trop</div>
+         <div class="ctl-row" style="flex-wrap:wrap;gap:4px;">` +
+         TROP_MARKS.filter(m => m.cls === want).map(m => `<button class="ctl-btn ${activeTropCp===m.cp?'primary':''}" style="padding:3px 6px;font-size:0.68rem;" onclick="setTropCp('${m.cp}')">${m.name}</button>`).join('') + `</div>`;
+    }
+    const sizePct = Math.round((isTrop ? tropScale() : markScale())*100), sizeFn = isTrop ? 'setTropScale' : 'setMarkScale';
     c.innerHTML = `
       <div class="ctl-row">
         <button class="ctl-btn ${l.placementSaved?'':'primary'}" style="font-weight:700;${l.placementSaved?'background:#10b981;color:#fff;border-color:#10b981;':''}" onclick="savePlacement()">${l.placementSaved?'✓ Placement saved':'Save Placement'}</button>
       </div>
-      <div class="ctl-label" style="margin-top:8px;">Nikkud — ${l.name}: place the…</div>
+      <div class="ctl-label" style="margin-top:8px;">${l.name}: place the…</div>
       <div class="ctl-row">${classBtns}</div>
-      ${vowelBtns}
+      ${previewBtns}
       <div class="readline" style="margin-top:8px;"><span>${ANCHOR_LABEL[cls]} anchor</span><span class="readout" id="ancReadout">x ${a.x}, y ${a.y}</span></div>
-      <div class="inline">Nikkud size <input type="range" min="40" max="160" step="5" value="${Math.round(markScale()*100)}" oninput="setMarkScale(this.value)"> <span id="markScaleV" class="readout">${Math.round(markScale()*100)}%</span></div>
+      <div class="inline">${isTrop?'Trop':'Nikkud'} size <input type="range" min="40" max="180" step="5" value="${sizePct}" oninput="${sizeFn}(this.value)"> <span id="markScaleV" class="readout">${sizePct}%</span></div>
       <div class="ctl-row">
         <button class="ctl-btn" onclick="seedAnchors(curLetter());renderStage();renderControls();renderLetterGrid();">Reset letter</button>
         <button class="ctl-btn" onclick="resetAllAnchors()">Reset all</button>
       </div>
-      <div class="hint">Drag the handle on the letter (or use the arrow keys) to position the ${ANCHOR_LABEL[cls].toLowerCase()} vowel.${cls==='below'?' All under-vowels share this one anchor — the buttons above just preview each shape.':''}</div>`;
+      <div class="hint">Drag the handle (or arrow keys) to position the ${ANCHOR_LABEL[cls].toLowerCase()} mark.${cls==='below'?' All under-vowels share this anchor.':isTrop?` All ${want}-trop share this anchor; with a vowel present, trop stacks on the vowel.`:''}</div>`;
   }
 }
 function renderAncReadouts(l) {
@@ -2032,8 +2130,17 @@ function buildFontSpec() {
     built.push(pc);
   });
 
+  // trop (cantillation) glyphs — when the font is Trop-compatible; default or custom, scaled by Trop size
+  const tropOn = project.font.trop.enabled, tms = tropScale();
+  if (tropOn) TROP_CPS.forEach(cp => {
+    const nm = gname(cp);
+    glyphs[nm] = { contours: markGlyphContours('trop', cp).map(poly => poly.map(p => [Math.round(p[0]*tms), Math.round(p[1]*tms)])), advance: 0 };
+    glyphOrder.push(nm); markGlyphNames.push(nm);
+    cmap[parseInt(cp,16)] = nm;
+  });
+
   // FEA
-  const fea = buildFEA(baseGlyphNames, built, nikOn);
+  const fea = buildFEA(baseGlyphNames, built, nikOn, tropOn);
 
   // name table
   const fam = fnt.familyName || 'My Hebrew Hand';
@@ -2054,20 +2161,29 @@ function buildFontSpec() {
     baseGlyphNames, markGlyphNames
   };
 }
-/* Generate the Adobe .fea — `languagesystem hebr dflt;`, markClass, ccmp, mark-to-base, GDEF.
-   Nikkud blocks are emitted only when nikOn (a letters-only font skips them entirely). */
-function buildFEA(baseGlyphNames, builtPrecomposed, nikOn) {
+/* Generate the Adobe .fea — `languagesystem hebr dflt;`, markClass, ccmp, mark-to-base, mkmk, GDEF.
+   Nikkud blocks emit only when nikOn; trop blocks only when tropOn. A letters-only font skips both. */
+function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn) {
   let f = '';
   f += 'languagesystem DFLT dflt;\n';
   f += 'languagesystem hebr dflt;\n\n';
+  // ── nikkud mark classes (each mark's attach anchor is at origin 0,0) ──
   const byClass = { below: [], above: [], center: [] };
   if (nikOn) MARK_CPS.forEach(cp => byClass[MARK_CLASS[cp]].push(gname(cp)));
-  const allMarks = [...byClass.below, ...byClass.above, ...byClass.center];
-  if (allMarks.length) {
-    // mark classes — every mark's own attach anchor is at origin (0,0)
+  const nikMarks = [...byClass.below, ...byClass.above, ...byClass.center];
+  if (nikMarks.length) {
     if (byClass.below.length)  f += `markClass [${byClass.below.join(' ')}] <anchor 0 0> @MC_BELOW;\n`;
     if (byClass.above.length)  f += `markClass [${byClass.above.join(' ')}] <anchor 0 0> @MC_ABOVE;\n`;
     if (byClass.center.length) f += `markClass [${byClass.center.join(' ')}] <anchor 0 0> @MC_CENTER;\n`;
+    f += '\n';
+  }
+  // ── trop mark classes (above / below; attach anchor at origin 0,0) ──
+  const tropByClass = { above: [], below: [] };
+  if (tropOn) TROP_CPS.forEach(cp => tropByClass[TROP_CLASS[cp]].push(gname(cp)));
+  const tropMarks = [...tropByClass.above, ...tropByClass.below];
+  if (tropMarks.length) {
+    if (tropByClass.above.length) f += `markClass [${tropByClass.above.join(' ')}] <anchor 0 0> @MC_TROP_ABOVE;\n`;
+    if (tropByClass.below.length) f += `markClass [${tropByClass.below.join(' ')}] <anchor 0 0> @MC_TROP_BELOW;\n`;
     f += '\n';
   }
   if (builtPrecomposed.length) {
@@ -2075,20 +2191,37 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn) {
     builtPrecomposed.forEach(pc => { f += `  sub ${gname(pc.base)} ${gname(pc.mark)} by ${gname(pc.target)};\n`; });
     f += '} ccmp;\n\n';
   }
-  if (allMarks.length) {
-    // mark-to-base — per letter base anchors (skip the feature if no anchors; feaLib rejects empty blocks)
-    let markLines = '';
-    LETTERS.forEach(L => {
-      const l = project.letters.find(x => x.codepoint === L.cp);
-      if (!l.anchors) return;
-      const nm = gname(L.cp);
-      if (byClass.below.length)  markLines += `  pos base ${nm} <anchor ${l.anchors.below.x} ${l.anchors.below.y}> mark @MC_BELOW;\n`;
-      if (byClass.above.length)  markLines += `  pos base ${nm} <anchor ${l.anchors.above.x} ${l.anchors.above.y}> mark @MC_ABOVE;\n`;
-      if (byClass.center.length) markLines += `  pos base ${nm} <anchor ${l.anchors.center.x} ${l.anchors.center.y}> mark @MC_CENTER;\n`;
+  // ── mark-to-base — nikkud + trop, per-letter base anchors (skip if none; feaLib rejects empty blocks) ──
+  let markLines = '';
+  LETTERS.forEach(L => {
+    const l = project.letters.find(x => x.codepoint === L.cp);
+    if (!l || !l.anchors) return;
+    const nm = gname(L.cp);
+    if (byClass.below.length)  markLines += `  pos base ${nm} <anchor ${l.anchors.below.x} ${l.anchors.below.y}> mark @MC_BELOW;\n`;
+    if (byClass.above.length)  markLines += `  pos base ${nm} <anchor ${l.anchors.above.x} ${l.anchors.above.y}> mark @MC_ABOVE;\n`;
+    if (byClass.center.length) markLines += `  pos base ${nm} <anchor ${l.anchors.center.x} ${l.anchors.center.y}> mark @MC_CENTER;\n`;
+    if (tropMarks.length) {
+      ensureTropAnchors(l);
+      if (tropByClass.above.length) markLines += `  pos base ${nm} <anchor ${l.anchors.tropAbove.x} ${l.anchors.tropAbove.y}> mark @MC_TROP_ABOVE;\n`;
+      if (tropByClass.below.length) markLines += `  pos base ${nm} <anchor ${l.anchors.tropBelow.x} ${l.anchors.tropBelow.y}> mark @MC_TROP_BELOW;\n`;
+    }
+  });
+  if (markLines) f += 'feature mark {\n' + markLines + '} mark;\n\n';
+  // ── mark-to-mark — stack trop above/below a nikkud vowel (only when both categories are on) ──
+  if (nikOn && tropMarks.length) {
+    let mkmkLines = '';
+    MARK_CPS.forEach(cp => {
+      const cls = MARK_CLASS[cp], a = markMkmkAnchor(cp), nm = gname(cp);
+      if (cls === 'above' && tropByClass.above.length)
+        mkmkLines += `  pos mark ${nm} <anchor ${a.above.x} ${a.above.y}> mark @MC_TROP_ABOVE;\n`;
+      else if (cls === 'below' && tropByClass.below.length)
+        mkmkLines += `  pos mark ${nm} <anchor ${a.below.x} ${a.below.y}> mark @MC_TROP_BELOW;\n`;
+      // center marks (dagesh/shin/sin dot) carry no trop — trop stacks on the base letter instead
     });
-    if (markLines) f += 'feature mark {\n' + markLines + '} mark;\n\n';
+    if (mkmkLines) f += 'feature mkmk {\n' + mkmkLines + '} mkmk;\n\n';
   }
   // explicit GDEF (base=1, mark=3); empty mark slot when letters-only
+  const allMarks = [...nikMarks, ...tropMarks];
   f += 'table GDEF {\n';
   f += `  GlyphClassDef [${baseGlyphNames.join(' ')}], , ${allMarks.length ? `[${allMarks.join(' ')}]` : ''}, ;\n`;
   f += '} GDEF;\n';
@@ -2188,12 +2321,12 @@ async function doExport() {
     if (res.error) { status(''); askModal('Build failed', '<span class="warn">'+res.error+'</span>', [{label:'OK'}]); return; }
     const bytes = b64ToBytes(res.ttf_b64);
 
-    // harfbuzz shaping gate (only meaningful when the font has nikkud marks to position)
+    // harfbuzz shaping gate (only meaningful when the font has marks to position)
     status('Validating shaping…', true);
-    const gate = project.font.nikkud.enabled ? await harfbuzzGate(bytes) : { skipped: true };
+    const gate = (project.font.nikkud.enabled || project.font.trop.enabled) ? await harfbuzzGate(bytes) : { skipped: true };
     if (gate && gate.fail) {
       askModal('Shaping check failed',
-        `<span class="warn">${gate.msg}</span><br><br>This usually means the nikkud anchors didn't take. You can still download, but vowels may be misplaced.`,
+        `<span class="warn">${gate.msg}</span><br><br>This usually means the mark anchors didn't take. You can still download, but vowels/trop may be misplaced.`,
         [ {label:'Cancel', cls:'ghost'}, {label:'Download anyway', onClick: () => finishDownload(bytes) } ]);
       return;
     }
@@ -2336,10 +2469,12 @@ async function harfbuzzGate(bytes) {
     const blob = H.createBlob(bytes);
     const face = H.createFace(blob, 0);
     const font = H.createFont(face);
-    const probes = [
-      { text: 'דּ', desc: 'dalet + dagesh' },   // base + center mark must keep an offset
-      { text: 'בָ', desc: 'bet + qamats' }
-    ];
+    const probes = [];
+    if (project.font.nikkud.enabled) {
+      probes.push({ text: 'דּ', desc: 'dalet + dagesh' });   // base + center mark must keep an offset
+      probes.push({ text: 'בָ', desc: 'bet + qamats' });
+    }
+    if (project.font.trop.enabled) probes.push({ text: 'ב֗', desc: 'bet + revia (trop)' }); // base + trop mark
     let anyMarkOffset = false, sawTwoGlyphs = false;
     for (const pr of probes) {
       const buf = H.createBuffer();
@@ -2358,7 +2493,7 @@ async function harfbuzzGate(bytes) {
       }
     }
     font.destroy(); face.destroy(); blob.destroy();
-    if (sawTwoGlyphs && !anyMarkOffset) return { fail: true, msg: 'Nikkud marks shaped with zero offset (fallback). The hebr script / anchors may be missing.' };
+    if (sawTwoGlyphs && !anyMarkOffset) return { fail: true, msg: 'Marks shaped with zero offset (fallback). The hebr script / anchors may be missing.' };
     return { ok: true };
   } catch (e) { console.warn('harfbuzz gate error', e); return { skipped: true }; }
 }
