@@ -3293,6 +3293,12 @@ def hfm_build(spec_json):
                 sTypoLineGap=int(spec.get("lineGap", 0)),
                 usWinAscent=int(spec["ascent"]), usWinDescent=abs(int(spec["descent"])),
                 achVendID="IVST")
+    # Declare Hebrew (cp1255) + Latin-1 (cp1252) code pages so Office/Word recognizes the font for
+    # Hebrew. Without this, Word substitutes a fallback (e.g. Aptos) and won't apply it to Hebrew text.
+    _os2 = fb.font["OS/2"]
+    _os2.ulCodePageRange1 = (1 << 0) | (1 << 5)
+    _os2.ulCodePageRange2 = 0
+    _os2.fsSelection = (_os2.fsSelection & ~0x21) | 0x40   # REGULAR (bit 6); clear italic/bold
     fb.setupPost()
     try:
         addOpenTypeFeaturesFromString(fb.font, spec["fea"])
