@@ -662,7 +662,7 @@ const MARK_GLYPHS = {
   '05B4': [ circlePts(0,-160,46) ],                                           // hiriq: 1 dot
   '05B5': [ circlePts(-95,-160,42), circlePts(95,-160,42) ],                  // tsere: 2 dots
   '05B6': [ circlePts(-105,-130,40), circlePts(105,-130,40), circlePts(0,-235,40) ], // segol: 3 dots
-  '05B1': [ circlePts(-115,-135,40), circlePts(0,-135,40), circlePts(115,-135,40), circlePts(-58,-238,40), circlePts(58,-238,40) ], // hataf segol: row of 3 dots over a centered row of 2
+  '05B1': [ circlePts(-105,-125,38), circlePts(0,-125,38), circlePts(105,-125,38), circlePts(-52,-212,38), circlePts(52,-212,38) ], // hataf segol: a row of 3 dots over a centered row of 2
   '05B0': [ circlePts(0,-120,40), circlePts(0,-235,40) ],                     // sheva: 2 vertical dots
   '05BB': [ circlePts(-130,-115,38), circlePts(0,-165,38), circlePts(130,-215,38) ], // qubuts: 3 diagonal
   // ABOVE (anchor at bottom-center; shapes extend upward)
@@ -2716,6 +2716,7 @@ function renderAlignLeft(L, l) {
       <button class="ctl-btn" onclick="snapFit()">Snap-fit baseline↔top</button>
     </div>`;
   }
+  html += metricsPanel();   // Letter Metrics lives in the left column
   L.innerHTML = html;
   wireInputModeBlock();
   if (project.inputMode === 'single' && curKind === 'letter') {
@@ -2745,7 +2746,7 @@ function renderAlignUnder(U, l) {
     : (curImageUrl() ? `<button class="ctl-btn primary" onclick="setWorkMode('trace')">Next: Trace →</button>` : '');
   U.innerHTML = `
     <div class="ws-under-row" style="align-items:center;">
-      <div class="ws-under-grow">${metricsPanel()}${hint}</div>
+      <div class="ws-under-grow">${hint}</div>
       <div class="under-spacer"></div>
       <div>${nextBtn}</div>
     </div>`;
