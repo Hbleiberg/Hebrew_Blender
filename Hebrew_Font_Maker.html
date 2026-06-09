@@ -249,6 +249,12 @@
   .zoom-val { font-family: ui-monospace, Menlo, monospace; min-width: 44px; text-align: right; }
   .zoom-reset { padding: 3px 9px; font-size: 0.72rem; }
   .legend { display: flex; gap: 16px; padding: 8px 4px 2px; font-size: 0.74rem; color: var(--muted); flex-wrap: wrap; }
+  .combined-nav { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  .combined-counter { border: 1px solid var(--border); border-radius: 7px; padding: 3px 16px; text-align: center; background: var(--white); line-height: 1.15; }
+  .combined-counter .cn-name { font-size: 0.7rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+  .combined-counter .cn-count { font-weight: 700; font-size: 0.84rem; color: var(--text); }
+  .combined-nav .cn-remove { padding: 3px 9px; line-height: 1; }
+  .ctl-btn:disabled { opacity: 0.4; cursor: default; }
   .legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
 
   .controls { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
@@ -777,7 +783,7 @@ let metricDrag = null;      // active metric-guide drag: { key, axis, grab }
 function blankLetter(L) {
   return {
     codepoint: L.cp, name: L.name,
-    source: { kind: 'single', dataUrl: null, cropRect: null },
+    source: { kind: 'single', dataUrl: null, cropRect: null, sheetId: null },
     transform: [1,0,0,1,0,0],   // image-px → stage-px matrix
     captureBox: null,           // {x0,y0,x1,y1} in font units; null = default
     contours: null,             // [{winding:'cw'|'ccw', points:[[x,y]...]}] font units
@@ -802,7 +808,7 @@ function newProject() {
     template: { font: "'Noto Sans Hebrew', sans-serif", opacity: 0.35, showOverlay: true },
     view: { imgOpacityAlign: 0.92, imgOpacityTrace: 0.28, glyphOpacity: 1.0 },
     inputMode: 'single',
-    combinedImage: { dataUrl: null },
+    combinedSheets: [], combinedIndex: 0,
     letters: LETTERS.map(blankLetter),
     precomposed: PRECOMPOSED.map(p => ({ target: p.target, base: p.base, mark: p.mark }))
   };
@@ -824,7 +830,7 @@ function markClassOf(kind, cp) { return kind === 'trop' ? TROP_CLASS[cp] : MARK_
 function markItem(kind, cp) {
   return {
     codepoint: cp, name: markName(cp), cls: markClassOf(kind, cp) || 'above',
-    source: { kind: 'single', dataUrl: null, cropRect: null },
+    source: { kind: 'single', dataUrl: null, cropRect: null, sheetId: null },
     transform: [1,0,0,1,0,0], captureBox: null,
     contours: null, advance: 0, anchors: null, placementSaved: false,
     binThreshold: 128, invert: false, epsilon: 6,
@@ -1594,12 +1600,24 @@ async function uploadForCurrent(file) {
   renderLetterGrid(); renderStage(); renderControls();
   status(`Loaded image for ${l.name}.`);
 }
-async function uploadCombined(file) {
-  const url = await readFileAsDataUrl(file);
-  project.combinedImage.dataUrl = url; await loadImg(url);
+async function uploadCombined(files) {
+  const list = files == null ? [] : (files.length !== undefined ? Array.from(files) : [files]);
+  if (!list.length) return;
+  for (const file of list) {
+    try {
+      const url = await readFileAsDataUrl(file);
+      await loadImg(url);
+      project.combinedSheets.push({
+        id: 's_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+        name: file.name || ('Sheet ' + (project.combinedSheets.length + 1)),
+        dataUrl: url });
+    } catch (e) { /* skip an unreadable file, keep the rest */ }
+  }
+  project.combinedIndex = project.combinedSheets.length - 1;   // show the sheet just added
   project.inputMode = 'combined'; project.letters.forEach(l => l.source.kind = 'combined');
-  syncMetaToForm(); setWorkMode('align'); renderLetterGrid();
-  status('Sheet loaded. Pick a letter, then drag a box around it.');
+  syncMetaToForm(); setWorkMode('align'); renderLetterGrid(); renderStage(); renderControls();
+  status(list.length > 1 ? (list.length + ' sheets added — pick a letter, then drag a box around it.')
+                         : 'Sheet loaded. Pick a letter, then drag a box around it.');
 }
 /* The working image for a letter: single = the upload; combined = the cropped region. */
 function curImageUrl() { return curLetter().source.dataUrl; }
@@ -1616,7 +1634,10 @@ function defaultFitTransform(im) {
 let cropDrag = null, cropFit = null;
 /* The combined sheet for the current kind: the project sheet for letters, or the
    per-category sheet for nikkud/trop marks. */
-function curCombinedSheet() { return curKind === 'letter' ? project.combinedImage : project.font[curKind].combinedImage; }
+function curCombinedSheet() {
+  if (curKind === 'letter') return project.combinedSheets[project.combinedIndex] || null;
+  return project.font[curKind].combinedImage;
+}
 function isCropSelect(l) {
   if (workMode !== 'align' || l.source.dataUrl) return false;
   const sheet = curCombinedSheet();
@@ -1631,14 +1652,16 @@ function computeCropFit(im) {
 }
 function imgRectToStage(r, f) { return { x:f.ox+r.x*f.s, y:f.oy+r.y*f.s, w:r.w*f.s, h:r.h*f.s }; }
 function cropSelectSVG(l) {
-  const sheetUrl = curCombinedSheet().dataUrl;
+  const sh = curCombinedSheet();
+  const sheetUrl = sh && sh.dataUrl;
   const im = imgCache[sheetUrl];
   if (!im) return `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="14">Loading sheet…</text>`;
   cropFit = computeCropFit(im); const f = cropFit;
   const V = STAGE_VB;
   let h = `<rect x="${V.x}" y="${V.y}" width="${V.w}" height="${V.h}" fill="var(--cream)"/>`;
   h += `<image id="cropImg" href="${sheetUrl}" x="${f.ox}" y="${f.oy}" width="${f.w}" height="${f.h}" style="cursor:crosshair;"/>`;
-  const box = (cropDrag && cropDrag.box) || (l.source.cropRect ? imgRectToStage(l.source.cropRect, f) : null);
+  const sameSheet = curKind !== 'letter' || !l.source.sheetId || (sh && l.source.sheetId === sh.id);
+  const box = (cropDrag && cropDrag.box) || (sameSheet && l.source.cropRect ? imgRectToStage(l.source.cropRect, f) : null);
   if (box && box.w > 0 && box.h > 0) {
     h += `<path d="M${V.x} ${V.y}H${V.x+V.w}V${V.y+V.h}H${V.x}Z M${box.x} ${box.y}v${box.h}h${box.w}v${-box.h}Z" fill="rgba(13,18,32,0.45)" fill-rule="evenodd" pointer-events="none"/>`;
     h += `<rect x="${box.x}" y="${box.y}" width="${box.w}" height="${box.h}" fill="none" stroke="var(--gold)" stroke-width="2" pointer-events="none"/>`;
@@ -1662,7 +1685,8 @@ async function finalizeCrop(l, stageBox) {
   const cv = document.createElement('canvas'); cv.width = rect.w; cv.height = rect.h;
   cv.getContext('2d').drawImage(im, rect.x, rect.y, rect.w, rect.h, 0, 0, rect.w, rect.h);
   const url = cv.toDataURL('image/png');
-  l.source.cropRect = rect; l.source.dataUrl = url;
+  const csh = curCombinedSheet();
+  l.source.cropRect = rect; l.source.dataUrl = url; l.source.sheetId = (csh && csh.id) || null;
   if (curKind !== 'letter') l.designMode = 'upload';   // a cropped mark behaves like an uploaded one (coherent if its category later switches to Per Symbol)
   const cim = await loadImg(url);
   l.transform = defaultFitTransform(cim);
@@ -1672,8 +1696,43 @@ async function finalizeCrop(l, stageBox) {
 }
 function reselectArea() {
   const l = curLetter();
+  if (curKind === 'letter' && l.source.sheetId) {   // jump back to the sheet this letter was boxed from
+    const i = project.combinedSheets.findIndex(s => s.id === l.source.sheetId);
+    if (i >= 0) project.combinedIndex = i;
+  }
   l.source.dataUrl = null; l.contours = null; l.anchors = null;
   renderGrids(); renderStage(); renderControls();
+}
+/* ── Combined multi-sheet navigator (Previous / counter / Next + remove), letters only ── */
+function combinedNavHTML() {
+  if (curKind !== 'letter') return '';
+  const n = project.combinedSheets.length; if (n < 1) return '';
+  const i = project.combinedIndex, sh = project.combinedSheets[i] || {};
+  const name = escapeHtml(sh.name || ('Sheet ' + (i + 1)));
+  const counter = `<div class="combined-counter"><div class="cn-name" title="${name}">${name}</div><div class="cn-count">${i + 1} of ${n}</div></div>`;
+  const prev = n > 1 ? `<button class="ctl-btn" ${i <= 0 ? 'disabled' : ''} onclick="combinedNav(-1)">‹ Previous</button>` : '';
+  const next = n > 1 ? `<button class="ctl-btn" ${i >= n - 1 ? 'disabled' : ''} onclick="combinedNav(1)">Next ›</button>` : '';
+  const rm = `<button class="ctl-btn ghost cn-remove" title="Remove this sheet from the set" onclick="removeCombinedSheet()">✕</button>`;
+  return `<div class="combined-nav">${prev}${counter}${next}${rm}</div>`;
+}
+async function combinedNav(delta) {
+  const n = project.combinedSheets.length; if (!n) return;
+  project.combinedIndex = Math.max(0, Math.min(n - 1, project.combinedIndex + delta));
+  const sh = project.combinedSheets[project.combinedIndex];
+  if (sh && !imgCache[sh.dataUrl]) await loadImg(sh.dataUrl).catch(() => {});   // ensure the sheet is decoded before drawing
+  renderStage();
+}
+function removeCombinedSheet() {
+  const n = project.combinedSheets.length; if (!n) return;
+  const sh = project.combinedSheets[project.combinedIndex] || {};
+  askModal('Remove this sheet?',
+    `Remove <b>${escapeHtml(sh.name || 'this sheet')}</b> from the set? Letters you already boxed from it keep their cropped image — you just can't re-crop from it unless you add it again.`,
+    [ { label:'Cancel', cls:'ghost' },
+      { label:'Remove', onClick: () => {
+          project.combinedSheets.splice(project.combinedIndex, 1);
+          if (project.combinedIndex >= project.combinedSheets.length) project.combinedIndex = Math.max(0, project.combinedSheets.length - 1);
+          renderStage(); renderControls(); status('Sheet removed.');
+      } } ]);
 }
 
 /* ════════ Input mode: extract letters from an uploaded font (TTF/OTF) ════════
@@ -2084,7 +2143,7 @@ async function renderStage() {
 function renderLegend() {
   const el = document.getElementById('stageLegend');
   if (isCropSelect(curLetter())) {
-    el.innerHTML = `<span>Click and drag a box around the letter on the sheet, then release to bring it into the editor.</span>`;
+    el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;">${combinedNavHTML()}<span>Click and drag a box around the letter on the sheet, then release to bring it into the editor.</span></div>`;
     return;
   }
   if (workMode === 'anchors') {
@@ -2744,7 +2803,7 @@ function renderAlignLeft(L, l) {
     html += `<div class="drop" id="letterDrop">Drop an image for <b>${l.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('letterFile').click()">browse</span>.</div>
       <div class="allowed">Allowed: any image file — PNG, JPG, GIF, WebP.</div>
       <input type="file" id="letterFile" accept="image/*" style="display:none;">`;
-  } else if (project.inputMode === 'combined' && project.combinedImage.dataUrl && curKind === 'letter') {
+  } else if (project.inputMode === 'combined' && project.combinedSheets.length && curKind === 'letter') {
     html += (!l.source.dataUrl)
       ? `<div class="hint">Pick a letter, then drag a box around it on the sheet to bring it into the editor.</div>`
       : `<div class="hint">Region selected for <b>${l.name}</b>.</div>
@@ -2913,9 +2972,9 @@ function inputModeBlock() {
       <button class="mode-btn ${project.inputMode==='font'?'active':''}" id="modeFont" onclick="setInputMode('font')">Existing font file</button>
     </div>
     <div id="combinedUploadRow" style="display:${project.inputMode==='combined'?'':'none'};">
-      <div class="drop" id="combinedDrop">Drop the combined sheet here, or click to browse.</div>
-      <div class="allowed">Allowed: any image file — PNG, JPG, GIF, WebP.</div>
-      <input type="file" id="combinedFile" accept="image/*" style="display:none;">
+      <div class="drop" id="combinedDrop">Drop your sheet(s) here, or click to browse — add more than one for multi-page templates.</div>
+      <div class="allowed">Allowed: any image file — PNG, JPG, GIF, WebP. You can add several sheets and flip between them.</div>
+      <input type="file" id="combinedFile" accept="image/*" multiple style="display:none;">
     </div>
     <div id="fontUploadRow" style="display:${project.inputMode==='font'?'':'none'};">
       <div class="drop" id="fontDrop">Drop a font (TTF/OTF) here, or click to browse.</div>
@@ -2925,9 +2984,12 @@ function inputModeBlock() {
 }
 function wireInputModeBlock() {
   const cf = document.getElementById('combinedFile');
-  if (cf) { const cd = document.getElementById('combinedDrop'); if (cd) cd.onclick = () => cf.click();
-    cf.addEventListener('change', e => { if (e.target.files[0]) uploadCombined(e.target.files[0]); e.target.value=''; });
-    wireDrop('combinedDrop', f => uploadCombined(f)); }
+  if (cf) { const cd = document.getElementById('combinedDrop');
+    if (cd) { cd.onclick = () => cf.click();
+      cd.addEventListener('dragover', e => { e.preventDefault(); cd.classList.add('drag'); });
+      cd.addEventListener('dragleave', () => cd.classList.remove('drag'));
+      cd.addEventListener('drop', e => { e.preventDefault(); cd.classList.remove('drag'); if (e.dataTransfer.files.length) uploadCombined(e.dataTransfer.files); }); }
+    cf.addEventListener('change', e => { if (e.target.files.length) uploadCombined(e.target.files); e.target.value=''; }); }
   const sf = document.getElementById('sourceFontFile');
   if (sf) { const fd = document.getElementById('fontDrop'); if (fd) fd.onclick = () => sf.click();
     sf.addEventListener('change', e => { if (e.target.files[0]) uploadSourceFont(e.target.files[0]); e.target.value=''; });
@@ -3636,7 +3698,7 @@ async function saveProject() {
 function stripImagesForAutosave(p) {
   // size-guard: keep structure, drop big data URLs for the autosave slot
   const c = JSON.parse(JSON.stringify(p));
-  c.combinedImage.dataUrl = c.combinedImage.dataUrl ? '[omitted]' : null;
+  if (Array.isArray(c.combinedSheets)) c.combinedSheets.forEach(s => { if (s.dataUrl) s.dataUrl = '[omitted]'; });
   c.letters.forEach(l => { if (l.source.dataUrl) l.source.dataUrl = '[omitted]'; });
   ['nikkud','trop'].forEach(cat => {
     const cm = c.font[cat] && c.font[cat].custom;
@@ -3665,7 +3727,7 @@ async function applyProjectData(data) {           // shared by file-load and "Lo
   project = migrateProject(data);
   // preload images
   const urls = [];
-  if (project.combinedImage.dataUrl) urls.push(project.combinedImage.dataUrl);
+  (project.combinedSheets || []).forEach(s => { if (s.dataUrl) urls.push(s.dataUrl); });
   project.letters.forEach(l => { if (l.source.dataUrl) urls.push(l.source.dataUrl); });
   ['nikkud','trop'].forEach(cat => {                    // preload mark sheets + cropped mark images too
     const f = project.font[cat];
@@ -3724,7 +3786,8 @@ function migrateProject(data) {
   const byCp = {}; (data.letters||[]).forEach(l => byCp[l.codepoint] = l);
   data.letters = LETTERS.map(L => {
     const ex = byCp[L.cp] || blankLetter(L);
-    ex.source = ex.source || { kind:data.inputMode||'single', dataUrl:null, cropRect:null };
+    ex.source = ex.source || { kind:data.inputMode||'single', dataUrl:null, cropRect:null, sheetId:null };
+    if (ex.source.sheetId === undefined) ex.source.sheetId = null;
     if (!ex.transform) ex.transform = [1,0,0,1,0,0];
     if (ex.binThreshold == null) ex.binThreshold = 128;
     if (ex.epsilon == null) ex.epsilon = 6;
@@ -3733,7 +3796,13 @@ function migrateProject(data) {
     if (ex.lsb === undefined) ex.lsb = null;   // per-letter left side bearing (Letter Metrics)
     return ex;
   });
-  data.combinedImage = data.combinedImage || { dataUrl: null };
+  if (!Array.isArray(data.combinedSheets)) {                          // migrate the old single sheet → multi-sheet set
+    data.combinedSheets = (data.combinedImage && data.combinedImage.dataUrl)
+      ? [{ id: 's_legacy', name: 'Sheet 1', dataUrl: data.combinedImage.dataUrl }] : [];
+  }
+  if (typeof data.combinedIndex !== 'number') data.combinedIndex = 0;
+  data.combinedIndex = Math.max(0, Math.min(data.combinedIndex, Math.max(0, data.combinedSheets.length - 1)));
+  delete data.combinedImage;
   data.precomposed = data.precomposed || PRECOMPOSED.map(p => ({...p}));
   data.template = data.template || { font:"'Noto Sans Hebrew', sans-serif", opacity:0.35, showOverlay:true };
   data.view = data.view || { imgOpacityAlign:0.92, imgOpacityTrace:0.28, glyphOpacity:1.0 };
