@@ -364,11 +364,6 @@
     </div>
 
     <div class="panel">
-      <div class="panel-title">Add Letters</div>
-      <div class="panel-body" id="inputPanelBody"></div>
-    </div>
-
-    <div class="panel">
       <div class="panel-title">Letters <span id="letterProgress" style="font-size:0.7rem;color:var(--gold-light);"></span></div>
       <div class="panel-body">
         <div class="letter-grid" id="letterGrid"></div>
@@ -708,6 +703,11 @@ function customMark(kind, cp) {
   return store[cp];
 }
 function selectItem(kind, cp) {
+  // Switching to a different letter/mark from the placement screen with an unsaved move? Offer to save.
+  if (workMode === 'anchors' && !(kind === curKind && cp === curCp)) { guardPlacement(() => _selectItem(kind, cp)); return; }
+  _selectItem(kind, cp);
+}
+function _selectItem(kind, cp) {
   curKind = kind; curCp = cp; workMode = 'align';
   renderGrids(); renderStage(); renderControls();
 }
@@ -1003,10 +1003,20 @@ function buildTemplateFontSelect() {
     });
     sel.appendChild(og);
   });
+  // divider + "upload your own" action at the very bottom of the menu
+  const sep = document.createElement('option'); sep.disabled = true; sep.textContent = '──────────'; sel.appendChild(sep);
+  const up = document.createElement('option'); up.value = '__uploadRef__'; up.textContent = '⬆ Upload your own reference font…'; sel.appendChild(up);
   if (project) sel.value = project.template.font;
 }
 function onTemplateChange() {
   const sel = document.getElementById('templateFont');
+  const wrap = document.getElementById('refUploadWrap');
+  if (sel.value === '__uploadRef__') {        // chose the action row → reveal the upload button, snap the menu back
+    if (wrap) wrap.style.display = '';
+    sel.value = project.template.font;
+    return;
+  }
+  if (wrap) wrap.style.display = 'none';       // a real font chosen → hide the upload button again
   project.template.font = sel.value;
   const f = fontByFamily(sel.value); if (f) loadHebFont(f);
   renderStage();
@@ -1025,7 +1035,7 @@ function setGlyphOpacity(v){ project.view.glyphOpacity=Math.max(0,Math.min(1,(+v
   const r=document.getElementById('glyphOpVal'); if(r) r.textContent=Math.round(project.view.glyphOpacity*100)+'%'; renderStage(); }
 function setAnchorCoord(axis,v){ if(!project||workMode!=='anchors') return;
   const l=curLetter(); if(!l.anchors) return; const n=Math.round(+v); if(!Number.isFinite(n)) return;
-  l.anchors[activeAnchorClass][axis]=n; renderStage(); }
+  l.anchors[activeAnchorClass][axis]=n; noteAnchorMoved(l); renderStage(); }
 async function uploadTemplateTTF(file) {
   try {
     const buf = await file.arrayBuffer();
@@ -1204,6 +1214,11 @@ async function uploadMarkSheet(cat, file) {
 
 /* ════════ Work mode (Align / Trace / Nikkud) ════════ */
 function setWorkMode(mode) {
+  // Leaving the Nikkud/Trop placement screen with an unsaved move? Offer to save first.
+  if (workMode === 'anchors' && mode !== 'anchors') { guardPlacement(() => _setWorkMode(mode)); return; }
+  _setWorkMode(mode);
+}
+function _setWorkMode(mode) {
   if (curKind !== 'letter') {                 // marks have no Nikkud step; editor has no Trace step
     if (mode === 'anchors') mode = 'align';
     if (curItem().designMode === 'editor') mode = 'align';
@@ -2191,6 +2206,7 @@ function attachAnchorDrag(l) {
       el.setAttribute('cx', fx(a.x+mc[0])); el.setAttribute('cy', fy(a.y+mc[1]));
       const rx = document.getElementById('ancX'); if (rx) rx.value = a.x;
       const ry = document.getElementById('ancY'); if (ry) ry.value = a.y;
+      if (l.placementSaved) l.placementSaved = false;   // moved → unsaved (✓ refreshes on pointerup)
     });
     el.addEventListener('pointerup', () => { grab = null; hideAncTip(); renderStage(); renderControls(); renderLetterGrid(); });
     el.addEventListener('pointercancel', () => { grab = null; hideAncTip(); });
@@ -2285,8 +2301,33 @@ function renderSpacingPreview() {
 function savePlacement() {
   const l = curLetter();
   if (!l.anchors) { status('Set the nikkud anchors first.'); return; }
-  l.placementSaved = true; renderLetterGrid(); renderControls();
+  l.placementSaved = true;
+  l.savedAnchors = JSON.parse(JSON.stringify(l.anchors));   // snapshot for dirty-detection + Discard
+  renderLetterGrid(); renderControls();
   status('Placement saved for ' + l.name + ' ✓');
+}
+function noteAnchorMoved(l) {
+  // Moving an anchor invalidates a saved placement → drop the green ✓. Update in place so live
+  // X/Y typing keeps focus (no full renderControls).
+  l = l || curLetter();
+  if (!l || !l.placementSaved) return;
+  l.placementSaved = false;
+  renderLetterGrid();
+  const b = document.getElementById('savePlacementBtn');
+  if (b) { b.className = 'ctl-btn primary'; b.setAttribute('style', 'font-weight:700;'); b.textContent = 'Save Placement'; }
+}
+function guardPlacement(proceed) {
+  // Before leaving the placement screen with a move made since the last save, ask to keep it.
+  const l = (project && curKind === 'letter') ? curLetter() : null;
+  if (workMode === 'anchors' && l && l.savedAnchors && !l.placementSaved) {
+    const label = anchorCat === 'trop' ? 'Trop' : 'Nikkud';
+    askModal('Save new ' + label + ' placement?',
+      `You moved the placement for <b>${l.name}</b> since it was last saved.`,
+      [ {label:'Save', onClick: () => { savePlacement(); proceed(); }},
+        {label:'Discard', cls:'ghost', onClick: () => { l.anchors = JSON.parse(JSON.stringify(l.savedAnchors)); l.placementSaved = true; proceed(); }} ]);
+    return;
+  }
+  proceed();
 }
 
 /* ════════ Per-mode controls panel ════════ */
@@ -2296,7 +2337,6 @@ function renderControls() {
   if (!L || !R || !U) return;
   L.innerHTML = R.innerHTML = U.innerHTML = '';
   if (!project) return;
-  renderInputPanel();   // sidebar "Add Letters" panel (input mode + upload zones) — shown in every mode
   const l = curLetter();
   if (curKind !== 'letter') { renderMarkControls(U, l); return; }   // mark editor keeps its single-panel UI → Under
   if (workMode === 'align') { renderAlignLeft(L, l); renderAlignRight(R, l); renderAlignUnder(U, l); }
@@ -2311,9 +2351,11 @@ function referencePanelR() {
     <label class="fld" style="font-size:0.74rem;">Reference font (tracing guide)
       <select id="templateFont" onchange="onTemplateChange()"></select>
     </label>
-    <button class="ctl-btn" style="font-size:0.72rem;width:100%;" onclick="document.getElementById('ttfTemplateFile').click()">⬆ Upload your own reference font</button>
-    <div class="allowed">Allowed: TTF or OTF font files.</div>
-    <input type="file" id="ttfTemplateFile" accept=".ttf,.otf,font/ttf,font/otf,application/font-sfnt" style="display:none;">
+    <div id="refUploadWrap" style="display:none;">
+      <button class="ctl-btn" style="font-size:0.72rem;width:100%;" onclick="document.getElementById('ttfTemplateFile').click()">⬆ Upload your own reference font</button>
+      <div class="allowed">Allowed: TTF or OTF font files.</div>
+      <input type="file" id="ttfTemplateFile" accept=".ttf,.otf,font/ttf,font/otf,application/font-sfnt" style="display:none;">
+    </div>
     <label class="chk"><input type="checkbox" id="showTemplate" ${project.template.showOverlay?'checked':''} onchange="setTemplateShow(this.checked)"> Show reference glyph behind</label>`;
 }
 function wireReferencePanel() {
@@ -2343,8 +2385,22 @@ function _anchorCtx(l) {            // shared anchor-class computation (nik/trop
 
 /* ── ALIGN ── */
 function renderAlignLeft(L, l) {
-  if (project.inputMode === 'font' || !curImageUrl()) { L.innerHTML = ''; return; }
-  L.innerHTML = `
+  // "Add Letters" — input mode + the upload zone for the current mode/letter, in the left column
+  let html = `<div class="ws-side-title">Add Letters</div>` + inputModeBlock();
+  if (project.inputMode === 'single' && curKind === 'letter') {
+    html += `<div class="drop" id="letterDrop">Drop an image for <b>${l.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('letterFile').click()">browse</span>.</div>
+      <div class="allowed">Allowed: any image file — PNG, JPG, GIF, WebP.</div>
+      <input type="file" id="letterFile" accept="image/*" style="display:none;">`;
+  } else if (project.inputMode === 'combined' && project.combinedImage.dataUrl && curKind === 'letter') {
+    html += (!l.source.dataUrl)
+      ? `<div class="hint">Pick a letter, then drag a box around it on the sheet to bring it into the editor.</div>`
+      : `<div class="hint">Region selected for <b>${l.name}</b>.</div>
+         <div class="ctl-row"><button class="ctl-btn" onclick="reselectArea()">↺ Re-select area</button></div>`;
+  }
+  // Adjust tools appear once there's an image to move
+  if (project.inputMode !== 'font' && curImageUrl()) {
+    html += `
+    <hr class="ctl-divider">
     <div class="ws-side-title">Adjust — ${l.name}</div>
     <div class="scale-pairs">
       <div class="sp-col">
@@ -2371,6 +2427,14 @@ function renderAlignLeft(L, l) {
     <div class="ctl-row" style="margin-top:6px;">
       <button class="ctl-btn" onclick="snapFit()">Snap-fit baseline↔top</button>
     </div>`;
+  }
+  L.innerHTML = html;
+  wireInputModeBlock();
+  if (project.inputMode === 'single' && curKind === 'letter') {
+    const lf = document.getElementById('letterFile');
+    if (lf) lf.addEventListener('change', e => { if (e.target.files[0]) uploadForCurrent(e.target.files[0]); });
+    wireDrop('letterDrop', f => uploadForCurrent(f));
+  }
 }
 function renderAlignRight(R, l) {
   const imgPct = Math.round(project.view.imgOpacityAlign*100), tplPct = Math.round(project.template.opacity*100);
@@ -2386,9 +2450,7 @@ function renderAlignUnder(U, l) {
   if (project.inputMode === 'font') {
     hint = `<div class="hint">${ l.contours
       ? 'Outline loaded from your font file — no alignment needed. Go to <b>Nikkud</b> to place the vowels.'
-      : 'No glyph for this letter was found in the uploaded font. Try another font, or pick a different input mode in the <b>Add Letters</b> panel on the left.' }</div>`;
-  } else if (!curImageUrl()) {
-    hint = `<div class="hint">Add an image for <b>${l.name}</b> in the <b>Add Letters</b> panel on the left to start aligning.</div>`;
+      : 'No glyph for this letter was found in the uploaded font. Try another font, or pick a different input mode under <b>Add Letters</b> on the left.' }</div>`;
   }
   const nextBtn = (project.inputMode === 'font')
     ? (l.contours ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">Next: Nikkud →</button>` : '')
@@ -2481,7 +2543,7 @@ function renderAnchorUnder(U, l) {
   }
   const { cls, isTrop, want } = _anchorCtx(l);
   const sizePct = Math.round((isTrop ? tropScale() : markScale())*100), sizeFn = isTrop ? 'setTropScale' : 'setMarkScale';
-  const saveBtn = `<button class="ctl-btn ${l.placementSaved?'':'primary'}" style="font-weight:700;${l.placementSaved?'background:#10b981;color:#fff;border-color:#10b981;':''}" onclick="savePlacement()">${l.placementSaved?'✓ Placement saved':'Save Placement'}</button>`;
+  const saveBtn = `<button id="savePlacementBtn" class="ctl-btn ${l.placementSaved?'':'primary'}" style="font-weight:700;${l.placementSaved?'background:#10b981;color:#fff;border-color:#10b981;':''}" onclick="savePlacement()">${l.placementSaved?'✓ Placement saved':'Save Placement'}</button>`;
   U.innerHTML = `
     <div class="ws-under-row" style="align-items:flex-end;">
       <div style="flex:1;min-width:0;"></div>
@@ -2525,30 +2587,6 @@ function wireInputModeBlock() {
   if (sf) { const fd = document.getElementById('fontDrop'); if (fd) fd.onclick = () => sf.click();
     sf.addEventListener('change', e => { if (e.target.files[0]) uploadSourceFont(e.target.files[0]); e.target.value=''; });
     wireDrop('fontDrop', f => uploadSourceFont(f)); }
-}
-/* Sidebar "Add Letters" panel — input-mode toggle + the upload zone for the current mode/letter. */
-function renderInputPanel() {
-  const b = document.getElementById('inputPanelBody');
-  if (!b || !project) return;
-  const l = curLetter();
-  let intro = '';
-  if (project.inputMode === 'single' && curKind === 'letter') {
-    intro = `<div class="drop" id="letterDrop">Drop an image for <b>${l.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('letterFile').click()">browse</span>.</div>
-      <div class="allowed">Allowed: any image file — PNG, JPG, GIF, WebP.</div>
-      <input type="file" id="letterFile" accept="image/*" style="display:none;">`;
-  } else if (project.inputMode === 'combined' && project.combinedImage.dataUrl && curKind === 'letter') {
-    intro = (!l.source.dataUrl)
-      ? `<div class="hint">Pick a letter, then drag a box around it on the sheet to bring it into the editor.</div>`
-      : `<div class="hint">Region selected for <b>${l.name}</b>.</div>
-         <div class="ctl-row"><button class="ctl-btn" onclick="reselectArea()">↺ Re-select area</button></div>`;
-  }
-  b.innerHTML = inputModeBlock() + intro;
-  wireInputModeBlock();
-  if (project.inputMode === 'single' && curKind === 'letter') {
-    const lf = document.getElementById('letterFile');
-    if (lf) lf.addEventListener('change', e => { if (e.target.files[0]) uploadForCurrent(e.target.files[0]); });
-    wireDrop('letterDrop', f => uploadForCurrent(f));
-  }
 }
 function renderAncReadouts(l) {
   if (!l.anchors) return;
@@ -2603,7 +2641,8 @@ document.addEventListener('keydown', e => {
   else if (e.key==='ArrowUp') dy=step; else if (e.key==='ArrowDown') dy=-step; else return;
   e.preventDefault();
   const a = l.anchors[activeAnchorClass]; a.x += dx; a.y += dy;
-  renderStage(); renderControls();
+  if (l.placementSaved) l.placementSaved = false;
+  renderStage(); renderControls(); renderLetterGrid();
 });
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -3185,7 +3224,7 @@ async function loadProjectFile(file) {
   });
   await Promise.all(urls.map(u => loadImg(u).catch(()=>{})));
   curKind = 'letter'; curCp = LETTER_ORDER[0];
-  syncMetaToForm(); renderGrids(); setWorkMode('align');
+  syncMetaToForm(); renderGrids(); _setWorkMode('align');
   status('Project loaded.');
 }
 function migrateProject(data) {
