@@ -269,7 +269,7 @@
   <button class="tbtn ghost" onclick="newProject()">New</button>
   <button class="tbtn ghost" onclick="document.getElementById('projFile').click()">Load Project</button>
   <button class="tbtn ghost" onclick="saveProject()">Save Project</button>
-  <input type="file" id="projFile" accept=".json,application/json" style="display:none;">
+  <input type="file" id="projFile" accept=".hebrewfont,.json,application/json,application/gzip" style="display:none;">
   <div class="tspace"></div>
   <span id="statusMsg"></span>
   <button class="tbtn ghost" onclick="generatePreviewPDF()">Preview PDF</button>
@@ -2580,6 +2580,12 @@ function downloadBlob(blob, name) {
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
   document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
 }
+async function gzipBlob(str) {                       // string → gzip Blob (native, no libs)
+  return new Response(new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'))).blob();
+}
+async function gunzipText(buf) {                     // gzip ArrayBuffer → string
+  return new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+}
 function oflText() {
   const fam = project.font.familyName || 'My Hebrew Font';
   const reserved = project.font.reservedFontName || fam;
@@ -2805,13 +2811,19 @@ function escapeHtml(s) { return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<
 /* ════════════════════════════════════════════════════════════════════════
    PROJECT SAVE / LOAD
    ════════════════════════════════════════════════════════════════════════ */
-function saveProject() {
+async function saveProject() {
   project.savedAt = new Date().toISOString();
   onMetaChange();
-  const blob = new Blob([JSON.stringify(project)], { type: 'application/json' });
+  const json = JSON.stringify(project);
   const d = new Date(), mon = d.toLocaleString('en-US',{month:'long'});
-  downloadBlob(blob, `${mon}_${d.getDate()}_${d.getFullYear()}_FontMaker.json`);
-  status('Project saved.');
+  const stamp = `${mon}_${d.getDate()}_${d.getFullYear()}_FontMaker`;
+  if (typeof CompressionStream !== 'undefined') {
+    downloadBlob(await gzipBlob(json), `${stamp}.hebrewfont`);   // single compressed self-contained file
+    status('Project saved (compressed).');
+  } else {
+    downloadBlob(new Blob([json], { type: 'application/json' }), `${stamp}.json`);  // old-browser fallback
+    status('Project saved.');
+  }
   try { localStorage.setItem('hebrewFontMaker_autosave', JSON.stringify(stripImagesForAutosave(project))); } catch(e){}
 }
 function stripImagesForAutosave(p) {
@@ -2826,7 +2838,19 @@ function stripImagesForAutosave(p) {
   return c;
 }
 async function loadProjectFile(file) {
-  let data; try { data = JSON.parse(await file.text()); } catch { status('Not valid JSON.'); return; }
+  let data;
+  try {
+    const buf = await file.arrayBuffer();
+    const u8 = new Uint8Array(buf);
+    let text;
+    if (u8[0] === 0x1f && u8[1] === 0x8b) {                     // gzip magic → .hebrewfont
+      if (typeof DecompressionStream === 'undefined') { status('This browser can’t open compressed projects.'); return; }
+      text = await gunzipText(buf);
+    } else {
+      text = new TextDecoder().decode(buf);                     // legacy plain-JSON .json
+    }
+    data = JSON.parse(text);
+  } catch { status('Not a valid project file.'); return; }
   if (data.format !== 'hebrew-font-maker-project') { status('Not a Font Maker project file.'); return; }
   project = migrateProject(data);
   // preload images
