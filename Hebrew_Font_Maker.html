@@ -230,6 +230,20 @@
   .modal p { font-size: 0.86rem; line-height: 1.5; }
   .modal .mbtns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap; }
 
+  /* ── Help guide modal ── */
+  .help-modal { max-width: 640px; width: 94%; max-height: 86vh; display: flex; flex-direction: column; }
+  .help-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 14px; }
+  .help-tab { padding: 6px 11px; border: 1px solid var(--border); border-radius: 6px; background: var(--cream); color: var(--muted); font-size: 0.76rem; font-weight: 700; font-family: inherit; cursor: pointer; }
+  .help-tab:hover { border-color: var(--gold); }
+  .help-tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .help-body { flex: 1 1 auto; overflow-y: auto; font-size: 0.86rem; line-height: 1.55; color: var(--text); padding-right: 4px; }
+  .help-body h4 { font-family: 'Libre Baskerville', serif; font-size: 0.98rem; margin: 2px 0 8px; color: var(--text); }
+  .help-body p { margin: 0 0 10px; }
+  .help-body ol, .help-body ul { margin: 0 0 10px; padding-inline-start: 20px; }
+  .help-body li { margin-bottom: 6px; }
+  .help-body .ui { background: rgba(127,127,127,0.18); border-radius: 4px; padding: 1px 6px; font-weight: 600; white-space: nowrap; }
+  .help-tip { background: var(--cream); border-inline-start: 3px solid var(--gold); border-radius: 6px; padding: 8px 11px; margin: 0 0 10px; font-size: 0.82rem; }
+
   .drop {
     border: 2px dashed var(--border); border-radius: 8px; padding: 16px 10px; text-align: center;
     transition: all 0.15s; font-size: 0.8rem; cursor: pointer;
@@ -270,6 +284,7 @@
   <button class="tbtn ghost" onclick="document.getElementById('projFile').click()">Load Project</button>
   <button class="tbtn ghost" onclick="saveProject()">Save Project</button>
   <input type="file" id="projFile" accept=".hebrewfont,.json,application/json,application/gzip" style="display:none;">
+  <button class="tbtn ghost" onclick="openHelp()" title="A plain-language guide to the whole tool">❓ How does this work?</button>
   <div class="tspace"></div>
   <span id="statusMsg"></span>
   <button class="tbtn ghost" onclick="generatePreviewPDF()">Preview PDF</button>
@@ -406,6 +421,16 @@
     <h3 id="askTitle">Notice</h3>
     <p id="askBody"></p>
     <div class="mbtns" id="askBtns"></div>
+  </div>
+</div>
+
+<!-- "How does this work?" help guide -->
+<div class="overlay" id="helpOverlay" onclick="if(event.target===this)closeHelp()">
+  <div class="modal help-modal">
+    <h3>How does this work?</h3>
+    <div class="help-tabs" id="helpTabs"></div>
+    <div class="help-body" id="helpBody"></div>
+    <div class="mbtns"><button class="tbtn" onclick="closeHelp()">Close</button></div>
   </div>
 </div>
 
@@ -774,6 +799,126 @@ function askModal(title, bodyHtml, buttons) {
   document.getElementById('askOverlay').classList.add('open');
 }
 function closeModal() { document.getElementById('askOverlay').classList.remove('open'); }
+
+/* ════════ "How does this work?" help guide ════════ */
+const HELP_TABS = [
+  ['start','Getting Started'], ['upload','Uploading'], ['trace','Tracing'], ['anchor','Anchoring'],
+  ['spacing','Spacing'], ['saving','Saving Your Project'], ['export','Exporting & Installing'],
+];
+const HELP_CONTENT = {
+  start: `
+    <h4>Welcome 👋</h4>
+    <p>Hebrew Font Maker turns your hand-drawn Hebrew letters into a <strong>real font</strong> you can install on your computer and type with — vowels (nikkud) and cantillation marks (trop) included.</p>
+    <p>Here's the whole journey, start to finish:</p>
+    <ol>
+      <li><strong>Upload</strong> a clear picture of each letter.</li>
+      <li><strong>Trace</strong> — the tool turns each picture into a clean outline.</li>
+      <li><strong>Anchor</strong> — show where the vowel dots sit on each letter.</li>
+      <li><strong>Spacing</strong> — fine-tune the gaps between letters and words.</li>
+      <li><strong>Export &amp; install</strong> — download your finished font and use it anywhere.</li>
+    </ol>
+    <p>Use the tabs above to read about each step. You can work through them roughly in order, one letter at a time.</p>
+    <p>Before you start, give your font a name in the <span class="ui">Font Details</span> box (top-left). The <span class="ui">Family name</span> is what you'll see in font menus later. The version number takes care of itself.</p>
+    <div class="help-tip">💡 Works best on a desktop or laptop. Your work is auto-saved in this browser as you go, but use <span class="ui">Save Project</span> for a real backup you can keep (see the Saving tab).</div>
+  `,
+  upload: `
+    <h4>Uploading your letters</h4>
+    <p>You'll bring in a picture of each of the 27 Hebrew letters. Clear <strong>dark ink on white paper</strong> works best. Pick how you want to add them using <span class="ui">Input mode</span> (top-left):</p>
+    <ul>
+      <li><span class="ui">Per letter</span> — upload one photo per letter. Simplest if you're scanning or photographing letters one at a time.</li>
+      <li><span class="ui">Combined</span> — upload <em>one</em> photo of a whole sheet of letters, then pick a letter and drag a box around it to cut it out.</li>
+      <li><span class="ui">Font (TTF)</span> — already have a font file? Import it and the letters come in ready-made, so you can skip tracing entirely.</li>
+    </ul>
+    <p><strong>Allowed files:</strong> any image — PNG, JPG, GIF or WebP. (For the <span class="ui">Font (TTF)</span> option, a TTF or OTF font file.)</p>
+    <p><strong>Tracing guide:</strong> a faint reference letter shows behind yours so you can line things up. Adjust it with the <span class="ui">Opacity</span> slider, or hide it with <span class="ui">Show template glyph behind</span>.</p>
+    <p><strong>Position it</strong> (the <span class="ui">1 · Align</span> tab): click a letter in the grid on the left, then use the move, scale and rotate buttons to sit your letter neatly on the guide lines. The little dot on that letter turns <strong style="color:#d08c2a;">orange</strong> once it has an image.</p>
+  `,
+  trace: `
+    <h4>Tracing</h4>
+    <p>Tracing turns your photo into a smooth outline the font can actually use. Open the <span class="ui">2 · Trace</span> tab — the first time, it traces automatically.</p>
+    <p>If it doesn't look right, nudge these:</p>
+    <ul>
+      <li><span class="ui">Ink threshold</span> — how dark a spot has to be to count as ink. Slide it <em>down</em> if light strokes are being missed, or <em>up</em> if the paper/background is bleeding in.</li>
+      <li><span class="ui">Detail (less ↔ more)</span> — slide <em>left</em> for a smoother, cleaner outline; <em>right</em> to hug every little bump of your handwriting.</li>
+      <li><span class="ui">Invert (light ink on dark)</span> — turn this on if you wrote in white or light ink on a dark background.</li>
+    </ul>
+    <p>Click <span class="ui">Re-trace</span> to redo it with your new settings, or <span class="ui">Clear</span> to start the letter over. The dot turns <strong style="color:#3b82f6;">blue</strong> once a letter is traced.</p>
+    <div class="help-tip">💡 The holes inside letters like ס, ם and ע are found and punched out for you automatically.</div>
+  `,
+  anchor: `
+    <h4>Anchoring — where the vowels go</h4>
+    <p>"Anchoring" means showing the font <strong>where the vowel dots (nikkud) sit</strong> on each letter — and, if you want them, the cantillation marks (trop).</p>
+    <p><strong>Turn it on first:</strong> in the <span class="ui">Nikkud (vowels)</span> box on the left, tick <span class="ui">Make my font Nikkud-compatible</span> (and the same for Trop if you'd like). The <span class="ui">3 · Nikkud</span> and <span class="ui">4 · Trop</span> tabs then appear.</p>
+    <p><strong>Place the anchor:</strong> a handle appears on the letter — drag it to where the mark should sit. Choose which spot you're setting:</p>
+    <ul>
+      <li><span class="ui">Below</span> — for most vowels, which sit under the letter.</li>
+      <li><span class="ui">Above (Holam)</span> — for the dot that sits on top.</li>
+      <li><span class="ui">Dagesh (Center)</span> — for the dot inside the letter.</li>
+    </ul>
+    <p>Tap the vowel buttons to preview different vowels in place, and use <span class="ui">Nikkud size</span> to scale all the marks up or down. When a letter looks right, click <span class="ui">Save Placement</span> — its dot becomes a green check ✓. <span class="ui">Reset letter</span> or <span class="ui">Reset all</span> let you start over.</p>
+    <div class="help-tip">💡 For tiny adjustments, click the handle and use your arrow keys (hold <strong>Shift</strong> for extra-fine moves). Do this for every letter so vowels line up neatly when people type.</div>
+  `,
+  spacing: `
+    <h4>Spacing</h4>
+    <p>Open the <span class="ui">Spacing</span> panel on the left to control the gaps in your finished font. A live preview updates as you slide:</p>
+    <ul>
+      <li><span class="ui">Letter spacing</span> — the gap between letters.</li>
+      <li><span class="ui">Word spacing</span> — the width of the space between words.</li>
+      <li><span class="ui">Line spacing</span> — the gap between lines of text.</li>
+      <li><span class="ui">Sample text</span> — type any Hebrew here to see how it looks.</li>
+    </ul>
+    <p><span class="ui">Reset spacing</span> puts everything back to the defaults.</p>
+    <div class="help-tip">💡 The preview uses your traced letters. Any letter you haven't traced yet shows up as a dashed box — that's just a placeholder, not part of your font.</div>
+  `,
+  saving: `
+    <h4>Saving your project</h4>
+    <p>Your <strong>project</strong> is your work-in-progress — all your images, outlines, anchors and settings. Save it so you can come back and keep editing later.</p>
+    <ul>
+      <li><span class="ui">Save Project</span> (top bar) downloads a single <span class="ui">.hebrewfont</span> file with <em>everything</em> packed inside.</li>
+      <li><span class="ui">Load Project</span> reopens a saved <span class="ui">.hebrewfont</span> file (older <span class="ui">.json</span> saves still open too) so you can pick up where you left off.</li>
+    </ul>
+    <div class="help-tip">⚠️ This is your <strong>editable project</strong>, <em>not</em> the font itself. To get a font you can install and type with, see the <strong>Exporting &amp; Installing</strong> tab.</div>
+    <p>The tool also auto-saves in this browser as a safety net — but if you clear your browser or switch computers, that copy is gone. Keep a <span class="ui">Save Project</span> file as your real backup.</p>
+  `,
+  export: `
+    <h4>Exporting &amp; installing your font</h4>
+    <p>When you're happy with your letters, click <span class="ui">⬇ Export Font (TTF)</span> (top-right). This builds the real, installable font.</p>
+    <p>You'll get two files:</p>
+    <ul>
+      <li><strong>YourFont.ttf</strong> — the font itself.</li>
+      <li><strong>OFL.txt</strong> — a free open-source license that travels with it.</li>
+    </ul>
+    <p><strong>Install it:</strong></p>
+    <ul>
+      <li><strong>Mac:</strong> double-click the <span class="ui">.ttf</span> file, then click <span class="ui">Install Font</span>.</li>
+      <li><strong>Windows:</strong> right-click the <span class="ui">.ttf</span> file and choose <span class="ui">Install</span>.</li>
+    </ul>
+    <p>Then pick your font by name in Word, Google Docs, Canva — anywhere you choose fonts.</p>
+    <div class="help-tip">💡 The very first export downloads a one-time font engine (about 8&nbsp;MB), so give it a moment. Want to check your work first? <span class="ui">Preview PDF</span> makes a printable sheet of every letter with each vowel.</div>
+    <p><strong>Made changes and re-exporting?</strong> The version number ticks up automatically each time. If you'd already installed an older copy, delete it first so your computer picks up the new one. (If some letters aren't traced or anchored yet, the tool warns you — those letters would come out blank.)</p>
+  `,
+};
+function openHelp(tab) {
+  const bar = document.getElementById('helpTabs');
+  if (!bar.children.length) HELP_TABS.forEach(([id, label]) => {
+    const b = document.createElement('button');
+    b.className = 'help-tab'; b.textContent = label; b.dataset.tab = id;
+    b.onclick = () => showHelpTab(id);
+    bar.appendChild(b);
+  });
+  showHelpTab(tab || 'start');
+  document.getElementById('helpOverlay').classList.add('open');
+}
+function showHelpTab(id) {
+  document.querySelectorAll('#helpTabs .help-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
+  const body = document.getElementById('helpBody');
+  body.innerHTML = HELP_CONTENT[id] || '';
+  body.scrollTop = 0;
+}
+function closeHelp() { document.getElementById('helpOverlay').classList.remove('open'); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('helpOverlay').classList.contains('open')) closeHelp();
+});
 
 /* ════════ Meta form sync ════════ */
 function syncMetaToForm() {
