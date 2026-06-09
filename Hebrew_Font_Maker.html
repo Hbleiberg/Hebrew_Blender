@@ -224,6 +224,12 @@
   body.layout-tabbed #catHost .cat-panel.cat-active .panel-body { display: flex !important; flex-direction: column; gap: 9px; max-height: 320px; overflow: auto; }
   /* keep letter tiles compact & square instead of stretching across the wide workspace */
   body.layout-tabbed #catHost .letter-grid { grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); }
+  /* Tabbed: the work-mode steps (Align/Trace/Nikkud/Trop) drop below the picker, just above the stage */
+  body.layout-tabbed .workspace { display: flex; flex-direction: column; }
+  body.layout-tabbed #catTabs   { order: 1; }
+  body.layout-tabbed #catHost   { order: 2; }
+  body.layout-tabbed .work-tabs { order: 3; margin-top: 4px; }
+  body.layout-tabbed .ws-grid   { order: 4; }
   .stage-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 8px; max-width: 720px; margin: 0 auto; overflow: auto; max-height: 74vh; }
   #stage { width: 100%; height: auto; display: block; touch-action: none; background: var(--white); border-radius: 6px; }
   .zoom-bar { display: flex; align-items: center; gap: 8px; max-width: 720px; margin: 0 auto 8px; font-size: 0.82rem; color: var(--muted); }
