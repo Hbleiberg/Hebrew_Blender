@@ -956,6 +956,7 @@ function closeModal() { document.getElementById('askOverlay').classList.remove('
 const HELP_TABS = [
   ['start','Getting Started'], ['upload','Uploading'], ['trace','Tracing'], ['anchor','Anchoring'],
   ['spacing','Spacing'], ['saving','Saving Your Project'], ['export','Exporting & Installing'],
+  ['templates','Download Templates'],
 ];
 const HELP_CONTENT = {
   start: `
@@ -1049,6 +1050,38 @@ const HELP_CONTENT = {
     <div class="help-tip">💡 The very first export downloads a one-time font engine (about 8&nbsp;MB), so give it a moment — after that it's quick.</div>
     <p><strong>Preview PDF.</strong> Once you've exported, the <span class="ui">Preview PDF</span> button (top bar) makes a printable specimen sheet — a cover page plus a chart of every letter paired with each vowel. It's a great way to proofread your whole font on one page before you install it.</p>
     <p><strong>Made changes and re-exporting?</strong> The version number ticks up automatically each time. If you'd already installed an older copy, delete it first so your computer picks up the new one. (If some letters aren't traced or anchored yet, the tool warns you — those letters would come out blank.)</p>
+  `,
+  templates: `
+    <h4>Printable handwriting templates</h4>
+    <p>Prefer to write on paper? Print one of these worksheets, fill the boxes with your own Hebrew, then scan or photograph the page and bring it back in here to build your font.</p>
+    <p><strong>How it works:</strong></p>
+    <ol>
+      <li><strong>Print</strong> a template below at <em>actual size</em> (100% — turn "Fit to page" off), on plain white paper.</li>
+      <li><strong>Write</strong> one glyph or mark per box, in <strong>dark ink</strong>. The small blue label in each corner shows what goes there — a reference glyph, its name, and its <span class="ui">U+</span> code. For vowels and trop it also says <span class="ui">below</span> / <span class="ui">above</span> / <span class="ui">center</span> so you know where the mark sits on the letter.</li>
+      <li><strong>Scan</strong> at <strong>300 DPI or higher</strong> (or take a straight-on, evenly-lit photo with no shadows). Save it as a <strong>PNG</strong> or a high-quality <strong>JPG</strong>.</li>
+      <li><strong>Import</strong> it on the <span class="ui">Uploading</span> step: choose <span class="ui">One image with all letters</span>, then drag a box around each glyph to cut it out.</li>
+    </ol>
+    <div class="help-tip">💡 The grid prints in light blue on purpose: the tracer only keeps <strong>dark</strong> ink, so the blue boxes and labels disappear by themselves — just keep your writing dark and inside each box. (Keep the <span class="ui">Ink threshold</span> near its default; pushing it much higher can start to pick up the light grid.)</div>
+    <div class="help-tip">✍️ A black or dark-blue felt-tip or fineliner reads far better than pencil or a light ballpoint. Write boldly and fill the box.</div>
+    <p><strong>Download a template</strong> — <span class="ui">PDF</span> to print, or <span class="ui">Picture</span> for an image file:</p>
+    <div style="display:flex;flex-direction:column;gap:9px;margin:8px 0 4px;">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span style="flex:1 1 150px;font-weight:600;">Letters <span style="font-weight:400;color:var(--muted);">· 27 letters · 2 pages</span></span>
+        <button class="tbtn" onclick="downloadTemplate('letters','pdf')">PDF</button>
+        <button class="tbtn ghost" onclick="downloadTemplate('letters','png')">Picture (PNG)</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span style="flex:1 1 150px;font-weight:600;">Vowels (Nikkud) <span style="font-weight:400;color:var(--muted);">· 16 marks · 1 page</span></span>
+        <button class="tbtn" onclick="downloadTemplate('nikkud','pdf')">PDF</button>
+        <button class="tbtn ghost" onclick="downloadTemplate('nikkud','png')">Picture (PNG)</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span style="flex:1 1 150px;font-weight:600;">Trop (Cantillation) <span style="font-weight:400;color:var(--muted);">· 31 marks · 1 page</span></span>
+        <button class="tbtn" onclick="downloadTemplate('trop','pdf')">PDF</button>
+        <button class="tbtn ghost" onclick="downloadTemplate('trop','png')">Picture (PNG)</button>
+      </div>
+    </div>
+    <div class="help-tip">⚠️ The Letters sheet is two pages — it downloads as a 2-page PDF, or as two numbered images (…_1.png, …_2.png) when you choose Picture.</div>
   `,
 };
 function openHelp(tab) {
@@ -3459,6 +3492,104 @@ async function generatePreviewPDF() {
     status('Preview PDF saved.');
   } catch (e) { console.error(e); status(''); askModal('PDF error', '<span class="warn">'+(e.message||e)+'</span>', [{label:'OK'}]); }
 }
+/* ════════════════════════════════════════════════════════════════════════
+   DOWNLOAD TEMPLATES — printable blank worksheets (Letters / Nikkud / Trop)
+   Same engine as Preview PDF: offscreen DOM → html2canvas → jsPDF (or PNG).
+   Grid prints in a light non-black blue so the dark-ink tracer ignores it.
+   ════════════════════════════════════════════════════════════════════════ */
+const TPL_PAGE = { w: 850, h: 1100, pad: 46 };   // US-Letter portrait (8.5:11 ratio), px
+const TPL_INK  = '#5aa9de';                       // light blue — prints visibly, ignored by the default ink tracer (luminance ≈151 > threshold 128)
+const TEMPLATE_SPECS = {
+  letters: { kind:'letters', title:'Hebrew Letters',      cols:4, rowsPerPage:5,
+             items: LETTERS.map(L => ({ cp:L.cp, name:L.name, cls:null })) },        // 27 → 2 pages (roomy boxes)
+  nikkud:  { kind:'nikkud',  title:'Vowels (Nikkud)',     cols:4, rowsPerPage:4,
+             items: NIKKUD_MARKS.map(m => ({ cp:m.cp, name:m.name, cls:m.cls })) },   // 16 → 1 page
+  trop:    { kind:'trop',    title:'Trop (Cantillation)', cols:5, rowsPerPage:7,
+             items: TROP_DEFS.map(t => ({ cp:t[0], name:t[1], cls:t[2] })) },         // 31 → 1 page
+};
+// One write-in box: colored border + a small corner label (ref glyph + name + U+code + class). Interior left blank.
+function templateCellHTML(item, kind) {
+  const fontFam = (project.template && project.template.font) || "'Frank Ruhl Libre', serif";
+  const base  = String.fromCodePoint(parseInt(item.cp, 16));
+  const glyph = (kind === 'letters') ? base : ('◌' + base);   // dotted circle ◌ carries an isolated combining mark
+  const code  = 'U+' + item.cp.toUpperCase();
+  const cls   = item.cls ? (' · ' + item.cls) : '';
+  const label =
+    '<div style="position:absolute;top:5px;left:7px;display:flex;align-items:center;gap:6px;'
+      + 'color:' + TPL_INK + ';font-family:\'Source Sans 3\',sans-serif;line-height:1.05;pointer-events:none;">'
+      + '<span style="font-family:' + fontFam + ';font-size:22px;direction:rtl;">' + glyph + '</span>'
+      + '<span style="font-size:10px;"><strong>' + escapeHtml(item.name) + '</strong><br>'
+      + '<span style="font-size:8.5px;opacity:.9;">' + code + escapeHtml(cls) + '</span></span>'
+    + '</div>';
+  return '<div style="position:relative;box-sizing:border-box;width:100%;height:100%;'
+    + 'border:1.5px solid ' + TPL_INK + ';border-radius:8px;background:#fff;overflow:hidden;">' + label + '</div>';
+}
+// One US-Letter page DOM: heading + a grid that fills the page (no shrink-to-fit) so the boxes stay maximal.
+function buildTemplatePageHTML(spec, pageItems, idx, count) {
+  const head =
+    '<div style="text-align:center;font-family:\'Libre Baskerville\',serif;font-size:19px;color:' + TPL_INK + ';margin:0 0 3px;">'
+      + escapeHtml(spec.title) + (count > 1 ? ' · page ' + (idx + 1) + ' of ' + count : '') + '</div>'
+    + '<div style="text-align:center;font-family:\'Source Sans 3\',sans-serif;font-size:10.5px;color:' + TPL_INK + ';margin:0 0 12px;">'
+      + 'Write one glyph per box in DARK ink, kept inside the box — the light blue grid will not scan.</div>';
+  const cells = pageItems.map(it => templateCellHTML(it, spec.kind)).join('');
+  const grid =
+    '<div style="display:grid;grid-template-columns:repeat(' + spec.cols + ',1fr);grid-auto-rows:1fr;gap:14px;'
+      + 'height:calc(100% - 56px);">' + cells + '</div>';
+  return head + grid;
+}
+// Render each page of a template to a canvas (one per page). Waits for the Hebrew web font so glyphs aren't tofu.
+async function renderTemplateCanvases(kind) {
+  const spec = TEMPLATE_SPECS[kind];
+  await document.fonts.ready;
+  const per = spec.cols * spec.rowsPerPage, pages = [];
+  for (let i = 0; i < spec.items.length; i += per) pages.push(spec.items.slice(i, i + per));
+  const canvases = [];
+  for (let p = 0; p < pages.length; p++) {
+    const sheet = document.createElement('div');
+    sheet.style.cssText = 'position:fixed;left:-5000px;top:0;box-sizing:border-box;'
+      + 'width:' + TPL_PAGE.w + 'px;height:' + TPL_PAGE.h + 'px;padding:' + TPL_PAGE.pad + 'px;'
+      + 'background:#fff;font-family:\'Source Sans 3\',sans-serif;overflow:hidden;';
+    sheet.innerHTML = buildTemplatePageHTML(spec, pages[p], p, pages.length);
+    document.body.appendChild(sheet);
+    await new Promise(r => setTimeout(r, 60));
+    const cv = await html2canvas(sheet, { scale: 2, backgroundColor: '#ffffff' });
+    sheet.remove();
+    canvases.push(cv);
+  }
+  return canvases;
+}
+// Build + download a template. fmt 'pdf' → one multi-page US-Letter PDF; 'png' → one image per page.
+async function downloadTemplate(kind, fmt) {
+  const spec = TEMPLATE_SPECS[kind];
+  if (!spec) return;
+  status('Building ' + spec.title + ' template…', true);
+  try {
+    const canvases = await renderTemplateCanvases(kind);
+    const stem = spec.title.replace(/[^a-z0-9]+/gi, '_').replace(/^_|_$/g, '') + '_template';
+    if (fmt === 'pdf') {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ unit:'pt', format:'letter' });
+      const pw = pdf.internal.pageSize.getWidth(), ph = pdf.internal.pageSize.getHeight();
+      canvases.forEach((cv, i) => {
+        if (i) pdf.addPage();
+        pdf.addImage(cv.toDataURL('image/png'), 'PNG', 0, 0, pw, ph);   // full-bleed: the DOM is already Letter-shaped
+      });
+      pdf.save(stem + '.pdf');
+    } else {
+      for (let i = 0; i < canvases.length; i++) {
+        const suffix = canvases.length > 1 ? ('_' + (i + 1)) : '';
+        const blob = await new Promise(res => canvases[i].toBlob(res, 'image/png'));
+        downloadBlob(blob, stem + suffix + '.png');
+        if (i < canvases.length - 1) await new Promise(r => setTimeout(r, 300));   // stagger so the browser keeps every file
+      }
+    }
+    status(spec.title + ' template saved.');
+  } catch (e) {
+    console.error(e); status('');
+    askModal('Template error', '<span class="warn">' + escapeHtml(e.message || String(e)) + '</span>', [{ label:'OK' }]);
+  }
+}
+
 function escapeHtml(s) { return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
 /* ════════════════════════════════════════════════════════════════════════
