@@ -224,9 +224,12 @@
   body.layout-tabbed #catHost .cat-panel.cat-active .panel-body { display: flex !important; flex-direction: column; gap: 9px; max-height: 320px; overflow: auto; }
   /* keep letter tiles compact & square instead of stretching across the wide workspace */
   body.layout-tabbed #catHost .letter-grid { grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); }
-  /* Tabbed: mark grids in tidy rows of legible tiles — nikkud (14) → 2×7, trop (31) → 3×11 */
-  body.layout-tabbed #catHost #nikkudGrid { grid-template-columns: repeat(7, minmax(50px, 90px)); }
-  body.layout-tabbed #catHost #tropGrid   { grid-template-columns: repeat(11, minmax(50px, 90px)); }
+  /* Tabbed: mark grids — compact legible tiles in rows of 7, packed left (no awkward right-side gap) */
+  body.layout-tabbed #catHost #nikkudGrid,
+  body.layout-tabbed #catHost #tropGrid {
+    grid-template-columns: repeat(7, minmax(50px, 90px));
+    justify-content: left;
+  }
   /* Tabbed: the work-mode steps (Align/Trace/Nikkud/Trop) drop below the picker, just above the stage */
   body.layout-tabbed .workspace { display: flex; flex-direction: column; }
   body.layout-tabbed #catTabs   { order: 1; }
