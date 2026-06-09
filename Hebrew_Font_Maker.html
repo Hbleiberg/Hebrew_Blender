@@ -1396,8 +1396,8 @@ function guideLinesSVG() {
   let h = '';
   lines.forEach(([yv, label, col]) => {
     const y = fy(yv);
-    h += `<line x1="35" y1="${y}" x2="498" y2="${y}" stroke="${col}" stroke-width="1" stroke-dasharray="${yv===0?'':'5 4'}"/>`;
-    h += `<text x="502" y="${y+3.5}" fill="${col}" font-size="10" font-family="monospace">${label}</text>`;
+    h += `<line x1="35" y1="${y}" x2="498" y2="${y}" stroke="${col}" stroke-width="1" stroke-dasharray="${yv===0?'':'5 4'}" pointer-events="none"/>`;
+    h += `<text x="502" y="${y+3.5}" fill="${col}" font-size="10" font-family="monospace" pointer-events="none">${label}</text>`;
   });
   return h;
 }
@@ -1668,14 +1668,7 @@ async function renderStage() {
     renderLegend();
     return;
   }
-  let h = guideLinesSVG();
-  // capture box
-  if (workMode !== 'anchors') {
-    const cb = captureBoxFont(l);
-    const x = fx(cb.x0), y = fy(cb.y1), w = fx(cb.x1)-fx(cb.x0), ht = fy(cb.y0)-fy(cb.y1);
-    h += `<rect x="${x}" y="${y}" width="${w}" height="${ht}" fill="none" stroke="var(--gold)" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.8"/>`;
-  }
-  h += templateGlyphSVG();
+  let h = templateGlyphSVG();   // faint reference glyph sits behind the image
 
   const url = curImageUrl();
   if (workMode === 'align') {
@@ -1704,6 +1697,14 @@ async function renderStage() {
     } else {
       h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="13">Trace this letter (step 2), or turn on “Show template glyph” to place nikkud on the reference.</text>`;
     }
+  }
+  // Guide overlays draw on top of the image (all pointer-events:none) so the dashed
+  // lines, capture box and margins stay visible even where dark ink covers them.
+  h += guideLinesSVG();
+  if (workMode !== 'anchors') {
+    const cb = captureBoxFont(l);
+    const x = fx(cb.x0), y = fy(cb.y1), w = fx(cb.x1)-fx(cb.x0), ht = fy(cb.y0)-fy(cb.y1);
+    h += `<rect x="${x}" y="${y}" width="${w}" height="${ht}" fill="none" stroke="var(--gold)" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.8" pointer-events="none"/>`;
   }
   h += marginGuidesSVG();   // margins/width on top so the right side bearing shows over the glyph
   sv.innerHTML = h;
