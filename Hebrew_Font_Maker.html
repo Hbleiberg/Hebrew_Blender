@@ -867,7 +867,7 @@ function renderMarkGrid(cat) {
     const tile = document.createElement('div');
     tile.className = 'ltile' + (curKind === cat && M.cp === curCp ? ' sel' : '');
     tile.innerHTML = `<span class="lt-dot ${st}"></span>
-      <span class="lt-heb" style="font-size:1.15rem;">${String.fromCodePoint(0x25CC)}${String.fromCodePoint(parseInt(M.cp,16))}</span>
+      <span class="lt-heb" style="font-size:1.95rem;line-height:1.1;">${String.fromCodePoint(0x25CC)}${String.fromCodePoint(parseInt(M.cp,16))}</span>
       <span class="lt-name">${M.name}</span>`;
     tile.onclick = () => selectItem(cat, M.cp);
     grid.appendChild(tile);
