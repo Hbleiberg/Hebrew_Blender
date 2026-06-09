@@ -2794,7 +2794,7 @@ function renderTraceUnder(U, l) {
 /* ── ANCHORS (Nikkud / Trop) ── */
 function renderAnchorLeft(L, l) {
   if (!l.contours && !project.template.showOverlay) { L.innerHTML = ''; return; }
-  const { visCls, cls, isTrop, want } = _anchorCtx(l);
+  const { visCls, cls, isTrop, want, a } = _anchorCtx(l);
   const classBtns = visCls.map(k =>
     `<button class="ctl-btn ${cls===k?'primary':''}" style="${cls===k?`background:${ANCHOR_COL[k]};color:#fff;border-color:${ANCHOR_COL[k]};`:''}" onclick="setAnchorClass('${k}')">${ANCHOR_LABEL[k]}</button>`).join('');
   let grid = '';
@@ -2805,23 +2805,21 @@ function renderAnchorLeft(L, l) {
     grid = `<div class="ws-side-title">Preview trop</div>
       <div class="mark-grid2">` + TROP_MARKS.filter(m => m.cls === want).map(m => squareMarkBtn('trop', m.cp, m.name, activeTropCp, 'setTropCp')).join('') + `</div>`;
   }
+  const xy = `<hr class="ctl-divider">
+    <div class="ws-side-title">${ANCHOR_LABEL[cls]} position</div>
+    <div class="anc-xy">
+      <label>X <input type="number" id="ancX" value="${a.x}" oninput="setAnchorCoord('x',this.value)"></label>
+      <label>Y <input type="number" id="ancY" value="${a.y}" oninput="setAnchorCoord('y',this.value)"></label>
+    </div>`;
   L.innerHTML = `
     <div class="ws-side-title">${l.name}: place the…</div>
     <div class="ctl-row">${classBtns}</div>
-    ${ grid ? `<hr class="ctl-divider">${grid}` : '' }`;
+    ${ grid ? `<hr class="ctl-divider">${grid}` : '' }
+    ${xy}`;
 }
 function renderAnchorRight(R, l) {
-  let xy = '';
-  if (l.contours || project.template.showOverlay) {
-    const { cls, a } = _anchorCtx(l);
-    xy = `<div class="ws-side-title">${ANCHOR_LABEL[cls]} position</div>
-      <div class="anc-xy">
-        <label>X <input type="number" id="ancX" value="${a.x}" oninput="setAnchorCoord('x',this.value)"></label>
-        <label>Y <input type="number" id="ancY" value="${a.y}" oninput="setAnchorCoord('y',this.value)"></label>
-      </div><hr class="ctl-divider">`;
-  }
   const tplPct = Math.round(project.template.opacity*100), glyPct = Math.round(project.view.glyphOpacity*100);
-  R.innerHTML = xy + referencePanelR() + `
+  R.innerHTML = referencePanelR() + `
     <div class="vslider-pair">
       ${vSlider('tplOpacity','tplOpacityVal','Reference letter opacity', tplPct, 'setTemplateOpacity')}
       ${vSlider('glyphOp','glyphOpVal','Letter opacity', glyPct, 'setGlyphOpacity')}
@@ -2848,7 +2846,7 @@ function renderAnchorUnder(U, l) {
       </div>
       <div style="flex:1;min-width:0;display:flex;justify-content:flex-end;">${saveBtn}</div>
     </div>
-    <div class="hint" style="margin-top:8px;">Drag the handle (or arrow keys; Shift = 1 unit), or edit X/Y on the right, to position the ${ANCHOR_LABEL[cls].toLowerCase()} mark.${cls==='below'?' All under-vowels share this anchor.':isTrop?` All ${want}-trop share this anchor; with a vowel present, trop stacks on the vowel.`:''}</div>`;
+    <div class="hint" style="margin-top:8px;">Drag the handle (or arrow keys; Shift = 1 unit), or edit X/Y on the left, to position the ${ANCHOR_LABEL[cls].toLowerCase()} mark.${cls==='below'?' All under-vowels share this anchor.':isTrop?` All ${want}-trop share this anchor; with a vowel present, trop stacks on the vowel.`:''}</div>`;
 }
 
 /* ── Input mode + upload zones (relocated from the old sidebar panel into Align-Under) ── */
