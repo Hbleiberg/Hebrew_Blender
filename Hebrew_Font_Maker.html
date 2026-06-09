@@ -334,6 +334,16 @@
         </div>
       </div>
     </div>
+
+    <div class="panel">
+      <div class="panel-title">Nikkud (vowels)</div>
+      <div class="panel-body" id="nikkudPanelBody"></div>
+    </div>
+
+    <div class="panel collapsed">
+      <div class="panel-title">Trop (cantillation)</div>
+      <div class="panel-body" id="tropPanelBody"></div>
+    </div>
   </aside>
 
   <main class="workspace">
@@ -544,8 +554,8 @@ function newProject() {
     letters: LETTERS.map(blankLetter),
     precomposed: PRECOMPOSED.map(p => ({ target: p.target, base: p.base, mark: p.mark }))
   };
-  curCp = LETTER_ORDER[0]; workMode = 'align';
-  syncMetaToForm(); renderLetterGrid(); setWorkMode('align'); status('New project.');
+  curKind = 'letter'; curCp = LETTER_ORDER[0]; workMode = 'align';
+  syncMetaToForm(); renderGrids(); setWorkMode('align'); status('New project.');
 }
 /* ── Item indirection: the Align/Trace workspace operates on a generic "item" =
    a letter OR a nikkud/trop mark. curLetter() stays as an alias so existing
@@ -580,8 +590,8 @@ function selectItem(kind, cp) {
 }
 function renderGrids() {
   renderLetterGrid();
-  if (typeof renderNikkudGrid === 'function') renderNikkudGrid();
-  if (typeof renderTropGrid === 'function') renderTropGrid();
+  renderNikkudPanel();
+  renderTropPanel();
 }
 /* ── Custom-mark geometry helpers ──
    Custom mark contours are stored in workspace coords (natural for the editor); the
@@ -635,6 +645,10 @@ const fx = x => PADX + x * SC;
 const fy = y => BY - y * SC;
 const ifx = px => (px - PADX) / SC;       // stage px → font x
 const ify = py => (BY - py) / SC;         // stage px → font y
+// Mark editor coords: x=0 (mark centre) maps to the horizontal middle of the stage.
+const EDX = 300;
+const ex = x => EDX + x * SC;
+const iex = px => (px - EDX) / SC;
 const stage = () => document.getElementById('stage');
 function clientToStage(evt) {
   const sv = stage(); const pt = sv.createSVGPoint();
@@ -800,18 +814,89 @@ function renderLetterGrid() {
     const st = letterStatus(l); if (st === 'anchored') done++;
     const saved = l.placementSaved && l.anchors;
     const tile = document.createElement('div');
-    tile.className = 'ltile' + (L.cp === curCp ? ' sel' : '');
+    tile.className = 'ltile' + (curKind === 'letter' && L.cp === curCp ? ' sel' : '');
     tile.innerHTML = `<span class="lt-dot ${saved?'saved':st}">${saved?'✓':''}</span>
       <span class="lt-heb">${String.fromCodePoint(parseInt(L.cp,16))}</span>
       <span class="lt-name">${L.name}</span>`;
-    tile.onclick = () => { curCp = L.cp; renderLetterGrid(); renderStage(); renderControls(); };
+    tile.onclick = () => selectItem('letter', L.cp);
     grid.appendChild(tile);
   });
   document.getElementById('letterProgress').textContent = `(${done}/27)`;
+  if (document.getElementById('nikkudGrid')) renderNikkudGrid();   // keep mark tile states in sync
+  if (document.getElementById('tropGrid')) renderTropGrid();
+}
+/* ── Nikkud / Trop sidebar panels (shared, parametrised by category) ── */
+function markStatusOf(m) {
+  if (!m) return '';
+  if (m.designMode === 'editor') return (m.pieces && m.pieces.length) ? 'traced' : '';
+  return m.contours ? 'traced' : (m.source && m.source.dataUrl ? 'img' : '');
+}
+function renderMarkPanel(cat) {
+  const f = project.font[cat];
+  const el = document.getElementById(cat + 'PanelBody'); if (!el) return;
+  const label = cat === 'nikkud' ? 'Nikkud' : 'Trop';
+  const marks = cat === 'nikkud' ? NIKKUD_MARKS : TROP_MARKS;
+  let h = `<div class="hint" style="margin-bottom:3px;">Make your font ${label}-compatible?</div>
+    <div class="mode-toggle">
+      <button class="mode-btn ${f.enabled?'active':''}" onclick="setMarkEnabled('${cat}',true)">Yes</button>
+      <button class="mode-btn ${!f.enabled?'active':''}" onclick="setMarkEnabled('${cat}',false)">No</button>
+    </div>`;
+  if (f.enabled) {
+    h += `<div class="hint" style="margin-top:9px;">Mark shapes</div>
+      <div class="mode-toggle">
+        <button class="mode-btn ${f.mode==='default'?'active':''}" onclick="setMarkMode('${cat}','default')">Default</button>
+        <button class="mode-btn ${f.mode==='custom'?'active':''}" onclick="setMarkMode('${cat}','custom')">Custom</button>
+      </div>`;
+    if (cat === 'trop') h += `<div class="hint" style="margin-top:9px;color:#a05a5a;">Full cantillation support — the built-in trop set, custom marks, and export — is being built; this toggle has no effect on the font yet.</div>`;
+    if (f.mode === 'custom') {
+      if (marks.length) h += `<div class="hint" style="margin-top:9px;">Click a mark to design it (draw or upload). Undesigned marks use the default shape.</div>
+        <div class="letter-grid" id="${cat}Grid"></div>`;
+      else h += `<div class="hint" style="margin-top:9px;">Custom ${label} marks &amp; the built-in set are coming in the next update.</div>`;
+    }
+  }
+  el.innerHTML = h;
+  if (f.enabled && f.mode === 'custom' && marks.length) renderMarkGrid(cat);
+}
+function renderMarkGrid(cat) {
+  const grid = document.getElementById(cat + 'Grid'); if (!grid) return;
+  grid.innerHTML = '';
+  const marks = cat === 'nikkud' ? NIKKUD_MARKS : TROP_MARKS;
+  marks.forEach(M => {
+    const m = project.font[cat].custom[M.cp];
+    const st = markStatusOf(m);
+    const tile = document.createElement('div');
+    tile.className = 'ltile' + (curKind === cat && M.cp === curCp ? ' sel' : '');
+    tile.innerHTML = `<span class="lt-dot ${st}"></span>
+      <span class="lt-heb" style="font-size:1.15rem;">${String.fromCodePoint(0x25CC)}${String.fromCodePoint(parseInt(M.cp,16))}</span>
+      <span class="lt-name">${M.name}</span>`;
+    tile.onclick = () => selectItem(cat, M.cp);
+    grid.appendChild(tile);
+  });
+}
+function renderNikkudPanel() { renderMarkPanel('nikkud'); }
+function renderTropPanel()   { renderMarkPanel('trop'); }
+function renderNikkudGrid()  { renderMarkGrid('nikkud'); }
+function renderTropGrid()    { renderMarkGrid('trop'); }
+function setMarkEnabled(cat, on) {
+  project.font[cat].enabled = on;
+  if (!on && curKind === cat) { selectItem('letter', LETTER_ORDER[0]); return; }
+  if (cat === 'nikkud' && !on && curKind === 'letter' && workMode === 'anchors') { setWorkMode('align'); }
+  renderGrids();
+}
+function setMarkMode(cat, mode) {
+  project.font[cat].mode = mode;
+  if (mode !== 'custom' && curKind === cat) { selectItem('letter', LETTER_ORDER[0]); return; }
+  renderGrids();
 }
 
 /* ════════ Work mode (Align / Trace / Nikkud) ════════ */
 function setWorkMode(mode) {
+  if (curKind !== 'letter') {                 // marks have no Nikkud step; editor has no Trace step
+    if (mode === 'anchors') mode = 'align';
+    if (curItem().designMode === 'editor') mode = 'align';
+  } else if (mode === 'anchors' && !project.font.nikkud.enabled) {
+    mode = 'align';                            // letters-only font: no Nikkud step
+  }
   workMode = mode;
   document.getElementById('tabAlign').classList.toggle('active', mode === 'align');
   document.getElementById('tabTrace').classList.toggle('active', mode === 'trace');
@@ -1006,6 +1091,139 @@ function captureBoxFont(l) {
   if (l.captureBox) return l.captureBox;
   return { x0: -40, y0: DESCENDER-20, x1: (LETTER_TOP*1.0)+80, y1: LETTER_TOP+120 };
 }
+
+/* ════════ Mark (nikkud / trop) workspace ════════ */
+let editorSel = 0, eDrag = null;
+function markGuidesSVG() {
+  const cls = curItem().cls;
+  const ay = fy(0);   // attach line = letter baseline level
+  let h = `<line x1="35" y1="${ay}" x2="498" y2="${ay}" stroke="#888" stroke-width="1" stroke-dasharray="5 4"/>`;
+  h += `<text x="502" y="${ay+3.5}" fill="#888" font-size="10" font-family="monospace">baseline</text>`;
+  const note = cls==='above' ? 'Above-vowel — draw it ABOVE the line (sits over the letter).'
+             : cls==='center' ? 'Centre mark — draw it ON the line (sits in the letter body).'
+             : 'Under-vowel — draw it BELOW the line (sits under the letter).';
+  h += `<text x="300" y="${cls==='above'?ay+22:ay-12}" text-anchor="middle" fill="#9aa0aa" font-size="11">${note}</text>`;
+  return h;
+}
+function renderMarkStage(it) {
+  const sv = stage(); _tplFit = null;
+  if (it.designMode === 'editor') {
+    if (!it.pieces) it.pieces = defaultPieces(curKind, it.codepoint);
+    sv.innerHTML = markGuidesSVG() + editorStageSVG(it);
+    attachEditorDrag(it); renderLegend(); return;
+  }
+  // upload path — reuse the image align/trace rendering
+  let h = markGuidesSVG();
+  const cb = captureBoxFont(it);
+  h += `<rect x="${fx(cb.x0)}" y="${fy(cb.y1)}" width="${fx(cb.x1)-fx(cb.x0)}" height="${fy(cb.y0)-fy(cb.y1)}" fill="none" stroke="var(--gold)" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.7"/>`;
+  const url = curImageUrl();
+  if (workMode === 'trace') {
+    if (url) h += `<image href="${url}" x="0" y="0" transform="matrix(${it.transform.join(' ')})" opacity="0.28"/>`;
+    if (it.contours) h += `<path d="${contoursToPath(it.contours)}" fill="rgba(26,39,68,0.85)" fill-rule="nonzero" stroke="#1a2744" stroke-width="0.6"/>`;
+    else h += `<text x="300" y="520" text-anchor="middle" fill="#9aa0aa" font-size="12">Not traced yet.</text>`;
+  } else {
+    if (url) { h += `<image href="${url}" x="0" y="0" transform="matrix(${it.transform.join(' ')})" opacity="0.92"/>`; h += transformHandlesSVG(it); }
+    else h += `<text x="300" y="300" text-anchor="middle" fill="#9aa0aa" font-size="14">Upload an image of this mark below.</text>`;
+  }
+  sv.innerHTML = h;
+  if (workMode === 'align' && url) attachTransformDrag(it);
+  renderLegend();
+}
+function editorStageSVG(it) {
+  const pieces = it.pieces || [];
+  if (editorSel >= pieces.length) editorSel = pieces.length - 1;
+  if (editorSel < 0) editorSel = 0;
+  let h = `<line x1="${ex(0)}" y1="40" x2="${ex(0)}" y2="540" stroke="#c8bfa8" stroke-width="1" stroke-dasharray="2 6"/>`;
+  pieces.forEach((p, i) => {
+    const stroke = (i === editorSel) ? 'var(--gold)' : 'none';
+    if (p.type === 'dot') {
+      h += `<circle class="epiece" data-i="${i}" cx="${ex(p.cx)}" cy="${fy(p.cy)}" r="${Math.max(2, p.r*SC)}" fill="#3a4150" stroke="${stroke}" stroke-width="2"/>`;
+    } else {
+      const x0=Math.min(p.x0,p.x1), x1=Math.max(p.x0,p.x1), y0=Math.min(p.y0,p.y1), y1=Math.max(p.y0,p.y1);
+      h += `<rect class="epiece" data-i="${i}" x="${ex(x0)}" y="${fy(y1)}" width="${(x1-x0)*SC}" height="${(y1-y0)*SC}" fill="#3a4150" stroke="${stroke}" stroke-width="2"/>`;
+    }
+  });
+  const p = pieces[editorSel];
+  if (p) {
+    const hx = p.type==='dot' ? ex(p.cx + p.r) : ex(Math.max(p.x0,p.x1));
+    const hy = p.type==='dot' ? fy(p.cy - p.r) : fy(Math.min(p.y0,p.y1));
+    h += `<rect class="ehandle" x="${hx-6}" y="${hy-6}" width="12" height="12" fill="#fff" stroke="var(--navy)" stroke-width="1.4" style="cursor:nwse-resize"/>`;
+  }
+  return h;
+}
+function attachEditorDrag(it) {
+  const sv = stage();
+  sv.querySelectorAll('.epiece').forEach(el => el.addEventListener('pointerdown', e => {
+    editorSel = +el.dataset.i;
+    eDrag = { mode:'move', start: clientToStage(e), p0: JSON.parse(JSON.stringify(it.pieces[editorSel])) };
+    sv.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault(); renderStage();
+  }));
+  const hnd = sv.querySelector('.ehandle');
+  if (hnd) hnd.addEventListener('pointerdown', e => {
+    eDrag = { mode:'resize', start: clientToStage(e), p0: JSON.parse(JSON.stringify(it.pieces[editorSel])) };
+    sv.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault();
+  });
+}
+function editorAddPiece(type) {
+  const it = curItem(); if (!it.pieces) it.pieces = [];
+  const cy = it.cls==='above' ? 120 : it.cls==='center' ? 0 : -150;
+  it.pieces.push(type==='dot' ? { type:'dot', cx:0, cy, r:45 } : { type:'bar', x0:-90, y0:cy-25, x1:90, y1:cy+25 });
+  editorSel = it.pieces.length - 1; renderStage(); renderControls();
+}
+function editorDeletePiece() {
+  const it = curItem(); if (!it.pieces || !it.pieces.length) return;
+  it.pieces.splice(editorSel, 1); editorSel = Math.max(0, editorSel-1);
+  renderGrids(); renderStage(); renderControls();
+}
+function setMarkDesignMode(mode) { curItem().designMode = mode; renderGrids(); renderStage(); renderControls(); }
+function updateTabs() {
+  const isMark = curKind !== 'letter';
+  const editor = isMark && curItem().designMode === 'editor';
+  document.getElementById('tabAlign').textContent = editor ? 'Design' : '1 · Align';
+  document.getElementById('tabTrace').style.display = editor ? 'none' : '';
+  document.getElementById('tabAnchors').style.display = (isMark || !project.font.nikkud.enabled) ? 'none' : '';
+}
+function renderMarkControls(c, it) {
+  const cat = curKind, label = cat==='nikkud' ? 'Nikkud' : 'Trop';
+  const heb = String.fromCodePoint(0x25CC) + String.fromCodePoint(parseInt(it.codepoint,16));
+  let h = `<div class="ctl-row" style="justify-content:space-between;">
+      <div class="ctl-label">${label}: ${it.name} <span style="font-size:1.15rem;">${heb}</span></div>
+      <button class="ctl-btn" onclick="selectItem('letter', LETTER_ORDER[0])">← Letters</button>
+    </div>
+    <div class="mode-toggle" style="margin:6px 0;">
+      <button class="mode-btn ${it.designMode==='editor'?'active':''}" onclick="setMarkDesignMode('editor')">Simple editor</button>
+      <button class="mode-btn ${it.designMode==='upload'?'active':''}" onclick="setMarkDesignMode('upload')">Upload image</button>
+    </div>`;
+  if (it.designMode === 'editor') {
+    h += `<div class="ctl-row">
+        <button class="ctl-btn" onclick="editorAddPiece('dot')">+ Dot</button>
+        <button class="ctl-btn" onclick="editorAddPiece('bar')">+ Bar</button>
+        <button class="ctl-btn" onclick="editorDeletePiece()">Delete selected</button>
+      </div>
+      <div class="hint">Click a piece to select; drag to move, drag the ◻ corner to resize. Build the mark from dots &amp; bars — it's seeded from the default shape.</div>`;
+  } else if (workMode === 'trace') {
+    h += `<div class="inline">Ink threshold <input type="range" min="1" max="254" value="${it.binThreshold}" oninput="liveThreshold(this.value)"> <span id="thV" class="readout">${it.binThreshold}</span></div>
+      <label class="chk"><input type="checkbox" ${it.invert?'checked':''} onchange="liveInvert(this.checked)"> Invert (light ink on dark)</label>
+      <div class="inline">Detail (less ↔ more) <input type="range" min="0" max="100" step="1" value="${Math.round(100 - it.epsilon*2.5)}" oninput="liveDetail(this.value)"> <span id="epV" class="readout">${Math.round(100 - it.epsilon*2.5)}</span></div>
+      <div class="ctl-row">
+        <button class="ctl-btn primary" onclick="traceCurrent()">Re-trace</button>
+        <button class="ctl-btn" onclick="curItem().contours=null;_rawTrace=null;renderGrids();renderStage();renderControls();">Clear</button>
+        <span id="traceInfo" class="readout">${it.contours?`${it.contours.length} contour(s)`:''}</span>
+      </div>`;
+  } else {
+    h += `<div class="drop" id="markDrop">Drop an image of <b>${it.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('markFile').click()">browse</span>.</div>
+      <input type="file" id="markFile" accept="image/*" style="display:none;">`;
+    if (curImageUrl()) h += `<div class="ctl-row">
+        <button class="ctl-btn" onclick="nudgeScale(1.06,1.06)">Scale +</button><button class="ctl-btn" onclick="nudgeScale(0.94,0.94)">Scale −</button>
+        <button class="ctl-btn primary" onclick="setWorkMode('trace')">Next: Trace →</button></div>`;
+  }
+  c.innerHTML = h;
+  if (it.designMode === 'upload' && workMode === 'align') {
+    const mf = document.getElementById('markFile');
+    if (mf) mf.addEventListener('change', e => { if (e.target.files[0]) uploadForCurrent(e.target.files[0]); });
+    wireDrop('markDrop', f => uploadForCurrent(f));
+  }
+}
 let _tplFit = null;   // { fs, cx, advance } for the current letter's template glyph
 function templateGlyphSVG() {
   if (!project.template.showOverlay) return '';
@@ -1077,6 +1295,8 @@ async function renderStage() {
   document.getElementById('opacityVal').textContent = document.getElementById('templateOpacity').value + '%';
   project.template.showOverlay = document.getElementById('showTemplate').checked;
   project.template.opacity = (+document.getElementById('templateOpacity').value)/100;
+  updateTabs();
+  if (curKind !== 'letter') { renderMarkStage(l); return; }   // marks have their own workspace
   _tplFit = project.template.showOverlay ? computeTemplateFit(l) : null;   // guides match the template glyph
   // Combined-sheet crop selection: show the whole sheet + marquee instead of the em workspace
   if (isCropSelect(l)) {
@@ -1213,6 +1433,19 @@ function attachTransformDrag(l) {
   });
 }
 function onStagePointerMove(e) {
+  if (eDrag && curKind !== 'letter') {
+    const it = curItem(); const p = it.pieces && it.pieces[editorSel]; if (!p) return;
+    const [sx,sy] = clientToStage(e), p0 = eDrag.p0;
+    const dxF = iex(sx) - iex(eDrag.start[0]), dyF = ify(sy) - ify(eDrag.start[1]);
+    if (eDrag.mode === 'move') {
+      if (p.type === 'dot') { p.cx = Math.round(p0.cx + dxF); p.cy = Math.round(p0.cy + dyF); }
+      else { p.x0=Math.round(p0.x0+dxF); p.x1=Math.round(p0.x1+dxF); p.y0=Math.round(p0.y0+dyF); p.y1=Math.round(p0.y1+dyF); }
+    } else {  // resize
+      if (p.type === 'dot') p.r = Math.max(8, Math.round(Math.hypot(iex(sx)-p.cx, ify(sy)-p.cy)));
+      else { p.x1 = Math.round(iex(sx)); p.y0 = Math.round(ify(sy)); }
+    }
+    renderStage(); return;
+  }
   if (cropDrag) {
     const [sx,sy] = clientToStage(e);
     cropDrag.box = { x: Math.min(cropDrag.start[0],sx), y: Math.min(cropDrag.start[1],sy),
@@ -1247,6 +1480,7 @@ function onStagePointerMove(e) {
   renderStage();
 }
 function onStagePointerUp() {
+  if (eDrag) { eDrag = null; renderGrids(); renderControls(); return; }
   if (cropDrag) {
     const box = cropDrag.box; cropDrag = null;
     if (box && box.w > 8 && box.h > 8) finalizeCrop(curLetter(), box); else renderStage();
@@ -1581,6 +1815,7 @@ function savePlacement() {
 function renderControls() {
   const c = document.getElementById('controls'); if (!project) { c.innerHTML=''; return; }
   const l = curLetter();
+  if (curKind !== 'letter') { renderMarkControls(c, l); return; }
   if (workMode === 'align') {
     if (project.inputMode === 'font') {
       c.innerHTML = `
@@ -1772,23 +2007,24 @@ function buildFontSpec() {
     cmap[parseInt(L.cp,16)] = nm;
   });
 
-  // mark glyphs (zero width) — scaled by the user's Nikkud size
+  // mark glyphs (zero width) — only when the font is Nikkud-compatible; default or custom shapes, scaled by Nikkud size
   const ms = markScale();
-  MARK_CPS.forEach(cp => {
+  const nikOn = project.font.nikkud.enabled;
+  if (nikOn) MARK_CPS.forEach(cp => {
     const nm = gname(cp);
-    glyphs[nm] = { contours: (MARK_GLYPHS[cp]||[]).map(poly => poly.map(p => [Math.round(p[0]*ms), Math.round(p[1]*ms)])), advance: 0 };
+    glyphs[nm] = { contours: markGlyphContours('nikkud', cp).map(poly => poly.map(p => [Math.round(p[0]*ms), Math.round(p[1]*ms)])), advance: 0 };
     glyphOrder.push(nm); markGlyphNames.push(nm);
     cmap[parseInt(cp,16)] = nm;
   });
 
-  // precomposed glyphs: base contours + mark contours at base's matching anchor
+  // precomposed glyphs (Nikkud only): base contours + mark contours at base's matching anchor
   const built = [];
-  project.precomposed.forEach(pc => {
+  if (nikOn) project.precomposed.forEach(pc => {
     const baseL = project.letters.find(x => x.codepoint === pc.base);
     if (!baseL || !baseL.contours || !baseL.anchors) return;        // need a traced+anchored base
     const cls = MARK_CLASS[pc.mark];
     const anc = baseL.anchors[cls]; if (!anc) return;
-    const markPoly = (MARK_GLYPHS[pc.mark]||[]).map(poly => poly.map(([x,y]) => [Math.round(x*ms+anc.x), Math.round(y*ms+anc.y)]));
+    const markPoly = markGlyphContours('nikkud', pc.mark).map(poly => poly.map(([x,y]) => [Math.round(x*ms+anc.x), Math.round(y*ms+anc.y)]));
     const nm = gname(pc.target);
     glyphs[nm] = { contours: baseL.contours.map(c => c.points).concat(markPoly), advance: baseL.advance };
     glyphOrder.push(nm); baseGlyphNames.push(nm);
@@ -1797,7 +2033,7 @@ function buildFontSpec() {
   });
 
   // FEA
-  const fea = buildFEA(baseGlyphNames, built);
+  const fea = buildFEA(baseGlyphNames, built, nikOn);
 
   // name table
   const fam = fnt.familyName || 'My Hebrew Hand';
@@ -1818,40 +2054,43 @@ function buildFontSpec() {
     baseGlyphNames, markGlyphNames
   };
 }
-/* Generate the Adobe .fea — the home of `languagesystem hebr dflt;`, markClass, ccmp, GDEF. */
-function buildFEA(baseGlyphNames, builtPrecomposed) {
-  const byClass = { below: [], above: [], center: [] };
-  MARK_CPS.forEach(cp => byClass[MARK_CLASS[cp]].push(gname(cp)));
+/* Generate the Adobe .fea — `languagesystem hebr dflt;`, markClass, ccmp, mark-to-base, GDEF.
+   Nikkud blocks are emitted only when nikOn (a letters-only font skips them entirely). */
+function buildFEA(baseGlyphNames, builtPrecomposed, nikOn) {
   let f = '';
   f += 'languagesystem DFLT dflt;\n';
   f += 'languagesystem hebr dflt;\n\n';
-  // mark classes — every mark's own attach anchor is at origin (0,0)
-  if (byClass.below.length)  f += `markClass [${byClass.below.join(' ')}] <anchor 0 0> @MC_BELOW;\n`;
-  if (byClass.above.length)  f += `markClass [${byClass.above.join(' ')}] <anchor 0 0> @MC_ABOVE;\n`;
-  if (byClass.center.length) f += `markClass [${byClass.center.join(' ')}] <anchor 0 0> @MC_CENTER;\n`;
-  f += '\n';
-  // ccmp
+  const byClass = { below: [], above: [], center: [] };
+  if (nikOn) MARK_CPS.forEach(cp => byClass[MARK_CLASS[cp]].push(gname(cp)));
+  const allMarks = [...byClass.below, ...byClass.above, ...byClass.center];
+  if (allMarks.length) {
+    // mark classes — every mark's own attach anchor is at origin (0,0)
+    if (byClass.below.length)  f += `markClass [${byClass.below.join(' ')}] <anchor 0 0> @MC_BELOW;\n`;
+    if (byClass.above.length)  f += `markClass [${byClass.above.join(' ')}] <anchor 0 0> @MC_ABOVE;\n`;
+    if (byClass.center.length) f += `markClass [${byClass.center.join(' ')}] <anchor 0 0> @MC_CENTER;\n`;
+    f += '\n';
+  }
   if (builtPrecomposed.length) {
     f += 'feature ccmp {\n';
     builtPrecomposed.forEach(pc => { f += `  sub ${gname(pc.base)} ${gname(pc.mark)} by ${gname(pc.target)};\n`; });
     f += '} ccmp;\n\n';
   }
-  // mark-to-base — per letter base anchors (skip the feature entirely if no anchors,
-  // since feaLib rejects an empty feature block)
-  let markLines = '';
-  LETTERS.forEach(L => {
-    const l = project.letters.find(x => x.codepoint === L.cp);
-    if (!l.anchors) return;
-    const nm = gname(L.cp);
-    if (byClass.below.length)  markLines += `  pos base ${nm} <anchor ${l.anchors.below.x} ${l.anchors.below.y}> mark @MC_BELOW;\n`;
-    if (byClass.above.length)  markLines += `  pos base ${nm} <anchor ${l.anchors.above.x} ${l.anchors.above.y}> mark @MC_ABOVE;\n`;
-    if (byClass.center.length) markLines += `  pos base ${nm} <anchor ${l.anchors.center.x} ${l.anchors.center.y}> mark @MC_CENTER;\n`;
-  });
-  if (markLines) f += 'feature mark {\n' + markLines + '} mark;\n\n';
-  // explicit GDEF (base=1, mark=3)
-  const allMarks = [...byClass.below, ...byClass.above, ...byClass.center];
+  if (allMarks.length) {
+    // mark-to-base — per letter base anchors (skip the feature if no anchors; feaLib rejects empty blocks)
+    let markLines = '';
+    LETTERS.forEach(L => {
+      const l = project.letters.find(x => x.codepoint === L.cp);
+      if (!l.anchors) return;
+      const nm = gname(L.cp);
+      if (byClass.below.length)  markLines += `  pos base ${nm} <anchor ${l.anchors.below.x} ${l.anchors.below.y}> mark @MC_BELOW;\n`;
+      if (byClass.above.length)  markLines += `  pos base ${nm} <anchor ${l.anchors.above.x} ${l.anchors.above.y}> mark @MC_ABOVE;\n`;
+      if (byClass.center.length) markLines += `  pos base ${nm} <anchor ${l.anchors.center.x} ${l.anchors.center.y}> mark @MC_CENTER;\n`;
+    });
+    if (markLines) f += 'feature mark {\n' + markLines + '} mark;\n\n';
+  }
+  // explicit GDEF (base=1, mark=3); empty mark slot when letters-only
   f += 'table GDEF {\n';
-  f += `  GlyphClassDef [${baseGlyphNames.join(' ')}], , [${allMarks.join(' ')}], ;\n`;
+  f += `  GlyphClassDef [${baseGlyphNames.join(' ')}], , ${allMarks.length ? `[${allMarks.join(' ')}]` : ''}, ;\n`;
   f += '} GDEF;\n';
   return f;
 }
@@ -1918,12 +2157,14 @@ function b64ToBytes(b64) { const bin = atob(b64); const arr = new Uint8Array(bin
 
 async function exportFont() {
   if (!project) return;
+  const nikOn = project.font.nikkud.enabled;
   const anchored = project.letters.filter(l => l.anchors).length;
   const traced = project.letters.filter(l => l.contours).length;
   if (traced === 0) { status('Trace at least one letter first.'); return; }
-  if (traced < 27 || anchored < 27) {
+  const incomplete = traced < 27 || (nikOn && anchored < 27);
+  if (incomplete) {
     askModal('Some letters are incomplete',
-      `Traced ${traced}/27, anchored ${anchored}/27. Missing letters export as blanks. Continue?`,
+      `Traced ${traced}/27${nikOn ? `, nikkud-placed ${anchored}/27` : ''}. Missing letters export as blanks. Continue?`,
       [ {label:'Cancel', cls:'ghost'}, {label:'Export anyway', onClick: () => doExport()} ]);
     return;
   }
@@ -1947,9 +2188,9 @@ async function doExport() {
     if (res.error) { status(''); askModal('Build failed', '<span class="warn">'+res.error+'</span>', [{label:'OK'}]); return; }
     const bytes = b64ToBytes(res.ttf_b64);
 
-    // harfbuzz shaping gate
+    // harfbuzz shaping gate (only meaningful when the font has nikkud marks to position)
     status('Validating shaping…', true);
-    const gate = await harfbuzzGate(bytes);
+    const gate = project.font.nikkud.enabled ? await harfbuzzGate(bytes) : { skipped: true };
     if (gate && gate.fail) {
       askModal('Shaping check failed',
         `<span class="warn">${gate.msg}</span><br><br>This usually means the nikkud anchors didn't take. You can still download, but vowels may be misplaced.`,
@@ -2210,6 +2451,10 @@ function stripImagesForAutosave(p) {
   const c = JSON.parse(JSON.stringify(p));
   c.combinedImage.dataUrl = c.combinedImage.dataUrl ? '[omitted]' : null;
   c.letters.forEach(l => { if (l.source.dataUrl) l.source.dataUrl = '[omitted]'; });
+  ['nikkud','trop'].forEach(cat => {
+    const cm = c.font[cat] && c.font[cat].custom;
+    if (cm) Object.values(cm).forEach(m => { if (m.source && m.source.dataUrl) m.source.dataUrl = '[omitted]'; });
+  });
   return c;
 }
 async function loadProjectFile(file) {
@@ -2221,8 +2466,8 @@ async function loadProjectFile(file) {
   if (project.combinedImage.dataUrl) urls.push(project.combinedImage.dataUrl);
   project.letters.forEach(l => { if (l.source.dataUrl) urls.push(l.source.dataUrl); });
   await Promise.all(urls.map(u => loadImg(u).catch(()=>{})));
-  curCp = LETTER_ORDER[0];
-  syncMetaToForm(); renderLetterGrid(); setWorkMode('align');
+  curKind = 'letter'; curCp = LETTER_ORDER[0];
+  syncMetaToForm(); renderGrids(); setWorkMode('align');
   status('Project loaded.');
 }
 function migrateProject(data) {
