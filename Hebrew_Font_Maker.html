@@ -191,7 +191,7 @@
   .wtab { padding: 7px 16px; border: 1px solid var(--border); border-radius: 7px 7px 0 0; background: var(--cream); cursor: pointer; font-size: 0.84rem; font-weight: 700; color: var(--muted); }
   .wtab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
   .stage-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 8px; }
-  #stage { width: 100%; height: auto; display: block; touch-action: none; background: var(--white); border-radius: 6px; }
+  #stage { width: 100%; max-width: 460px; height: auto; display: block; margin: 0 auto; touch-action: none; background: var(--white); border-radius: 6px; }
   .legend { display: flex; gap: 16px; padding: 8px 4px 2px; font-size: 0.74rem; color: var(--muted); flex-wrap: wrap; }
   .legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
 
@@ -329,7 +329,7 @@
     </div>
 
     <div class="stage-wrap">
-      <svg id="stage" viewBox="0 0 600 560"></svg>
+      <svg id="stage" viewBox="0 110 600 450"></svg>
     </div>
     <div class="legend" id="stageLegend"></div>
 
@@ -514,7 +514,8 @@ function curLetter() { return project.letters.find(l => l.codepoint === curCp); 
 function letterMeta(cp) { return LETTERS.find(l => l.cp === cp); }
 
 /* ════════ Coordinate system (font units y-up ↔ stage px, mirrors nikkud_positioner) ════════ */
-const SC = 0.32, PADX = 175, BY = 445;   // stage 600×560
+const SC = 0.32, PADX = 175, BY = 445;
+const STAGE_VB = { x: 0, y: 110, w: 600, h: 450 };   // visible viewBox window
 const fx = x => PADX + x * SC;
 const fy = y => BY - y * SC;
 const ifx = px => (px - PADX) / SC;       // stage px → font x
@@ -749,25 +750,26 @@ function isCropSelect(l) {
   return workMode === 'align' && l.source.kind === 'combined' && project.combinedImage.dataUrl && !l.source.dataUrl;
 }
 function computeCropFit(im) {
-  const W = 600, H = 560, mg = 18;
-  const s = Math.min((W-2*mg)/im.width, (H-2*mg)/im.height);
+  const mg = 16, VW = STAGE_VB.w, VH = STAGE_VB.h;
+  const s = Math.min((VW-2*mg)/im.width, (VH-2*mg)/im.height);
   const w = im.width*s, h = im.height*s;
-  return { s, ox:(W-w)/2, oy:(H-h)/2, w, h };
+  return { s, ox: STAGE_VB.x + (VW-w)/2, oy: STAGE_VB.y + (VH-h)/2, w, h };
 }
 function imgRectToStage(r, f) { return { x:f.ox+r.x*f.s, y:f.oy+r.y*f.s, w:r.w*f.s, h:r.h*f.s }; }
 function cropSelectSVG(l) {
   const im = imgCache[project.combinedImage.dataUrl];
   if (!im) return `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="14">Loading sheet…</text>`;
   cropFit = computeCropFit(im); const f = cropFit;
-  let h = `<rect x="0" y="0" width="600" height="560" fill="var(--cream)"/>`;
+  const V = STAGE_VB;
+  let h = `<rect x="${V.x}" y="${V.y}" width="${V.w}" height="${V.h}" fill="var(--cream)"/>`;
   h += `<image id="cropImg" href="${project.combinedImage.dataUrl}" x="${f.ox}" y="${f.oy}" width="${f.w}" height="${f.h}" style="cursor:crosshair;"/>`;
   const box = (cropDrag && cropDrag.box) || (l.source.cropRect ? imgRectToStage(l.source.cropRect, f) : null);
   if (box && box.w > 0 && box.h > 0) {
-    h += `<path d="M0 0H600V560H0Z M${box.x} ${box.y}v${box.h}h${box.w}v${-box.h}Z" fill="rgba(13,18,32,0.45)" fill-rule="evenodd" pointer-events="none"/>`;
+    h += `<path d="M${V.x} ${V.y}H${V.x+V.w}V${V.y+V.h}H${V.x}Z M${box.x} ${box.y}v${box.h}h${box.w}v${-box.h}Z" fill="rgba(13,18,32,0.45)" fill-rule="evenodd" pointer-events="none"/>`;
     h += `<rect x="${box.x}" y="${box.y}" width="${box.w}" height="${box.h}" fill="none" stroke="var(--gold)" stroke-width="2" pointer-events="none"/>`;
   }
   const heb = String.fromCodePoint(parseInt(l.codepoint,16));
-  h += `<text x="300" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="var(--navy)" style="paint-order:stroke;stroke:#fff;stroke-width:4px;" pointer-events="none">Select area for ${l.name} ${heb} — drag a box around it</text>`;
+  h += `<text x="300" y="${V.y+20}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--navy)" style="paint-order:stroke;stroke:#fff;stroke-width:4px;" pointer-events="none">Select area for ${l.name} ${heb} — drag a box around it</text>`;
   return h;
 }
 function startCrop(e) {
@@ -857,39 +859,50 @@ async function uploadSourceFont(file) {
 
 /* ════════ Stage rendering ════════ */
 function guideLinesSVG() {
-  const lines = [
-    [LAMED_TOP, 'lamed 800', '#2f7a2f'], [LETTER_TOP, 'top 600', '#3b6ea5'],
-    [BASELINE, 'baseline 0', '#888'], [DESCENDER, 'desc −250', '#a55']
-  ];
+  const meta = letterMeta(curCp);
+  // baseline + letter-top always; descender only for letters that actually drop below.
+  const lines = [ [LETTER_TOP, 'top 600', '#3b6ea5'], [BASELINE, 'base 0', '#888'] ];
+  if (meta && meta.desc) lines.push([DESCENDER, 'desc −250', '#a55']);
   let h = '';
   lines.forEach(([yv, label, col]) => {
     const y = fy(yv);
-    h += `<line x1="20" y1="${y}" x2="540" y2="${y}" stroke="${col}" stroke-width="1" stroke-dasharray="${yv===0?'':'5 4'}"/>`;
-    h += `<text x="545" y="${y+4}" fill="${col}" font-size="10" font-family="monospace">${label}</text>`;
+    h += `<line x1="35" y1="${y}" x2="498" y2="${y}" stroke="${col}" stroke-width="1" stroke-dasharray="${yv===0?'':'5 4'}"/>`;
+    h += `<text x="502" y="${y+3.5}" fill="${col}" font-size="10" font-family="monospace">${label}</text>`;
   });
-  // side-bearing guides (LSB & a nominal advance)
-  const adv = (curLetter().advance) || (LETTER_TOP*0.9);
-  [[0,'#c8bfa8'],[DEF_LSB,'#c99'],[adv,'#c99']].forEach(([xv,col]) => {
+  // vertical side-bearing guides — labelled (left side bearing + advance width)
+  const adv = curLetter().advance || Math.round(LETTER_TOP*0.7);
+  const vy1 = fy(LETTER_TOP + 80), vy2 = fy(DESCENDER - 30);
+  [[DEF_LSB,'LSB'], [adv,'advance']].forEach(([xv,label]) => {
     const x = fx(xv);
-    h += `<line x1="${x}" y1="20" x2="${x}" y2="540" stroke="${col}" stroke-width="1" stroke-dasharray="3 5"/>`;
+    h += `<line x1="${x}" y1="${vy1}" x2="${x}" y2="${vy2}" stroke="#c99" stroke-width="1" stroke-dasharray="3 5"/>`;
+    h += `<text x="${x}" y="${vy2+13}" text-anchor="middle" fill="#c99" font-size="9" font-family="monospace">${label}</text>`;
   });
   return h;
 }
 function captureBoxFont(l) {
   if (l.captureBox) return l.captureBox;
-  return { x0: -40, y0: DESCENDER-20, x1: (LETTER_TOP*1.0)+80, y1: LAMED_TOP+30 };
+  return { x0: -40, y0: DESCENDER-20, x1: (LETTER_TOP*1.0)+80, y1: LETTER_TOP+120 };
 }
 function templateGlyphSVG() {
   if (!project.template.showOverlay) return '';
   const op = (+document.getElementById('templateOpacity').value) / 100;
   if (op <= 0) return '';
   const ch = String.fromCodePoint(parseInt(curCp,16));
-  // font-size in stage px so the glyph roughly spans baseline..top
-  const fontPx = (LETTER_TOP) * SC * 1.38;
-  const adv = curLetter().advance || 420;
-  const x = fx(DEF_LSB + adv/2), y = fy(BASELINE);
-  return `<text x="${x}" y="${y}" text-anchor="middle" font-family="${project.template.font}" font-size="${fontPx}"
-    fill="#9aa0aa" opacity="${op}" direction="rtl" style="dominant-baseline:alphabetic;">${ch}</text>`;
+  // Rendered at a nominal size; fitTemplateGlyph() measures and rescales it after
+  // layout so its actual top sits on the letter-top line and its bottom on the baseline.
+  return `<g id="tplGlyph" opacity="${op}"><text font-family="${project.template.font}" font-size="300" fill="#9aa0aa">${ch}</text></g>`;
+}
+function fitTemplateGlyph() {
+  const sv = stage(); const tg = sv.querySelector('#tplGlyph'); if (!tg) return;
+  let bb; try { bb = tg.getBBox(); } catch (e) { return; }
+  if (!bb || !bb.height) return;
+  const adv = curLetter().advance || Math.round(LETTER_TOP*0.7);
+  const targetTop = fy(LETTER_TOP), targetBottom = fy(BASELINE);
+  const scale = (targetBottom - targetTop) / bb.height;   // glyph ink height → baseline..top
+  const cx = fx(DEF_LSB + adv/2);
+  const tx = cx - (bb.x + bb.width/2) * scale;
+  const ty = targetBottom - (bb.y + bb.height) * scale;
+  tg.setAttribute('transform', `translate(${tx} ${ty}) scale(${scale})`);
 }
 function contoursToPath(contours) {
   let d = '';
@@ -949,6 +962,7 @@ async function renderStage() {
     }
   }
   sv.innerHTML = h;
+  fitTemplateGlyph();
   if (workMode === 'align' && url) attachTransformDrag(l);
   if (workMode === 'anchors' && l.contours) attachAnchorDrag(l);
   renderLegend();
@@ -1954,6 +1968,8 @@ function init() {
   document.getElementById('sourceFontFile').addEventListener('change', e => { if (e.target.files[0]) uploadSourceFont(e.target.files[0]); e.target.value=''; });
   wireDrop('combinedDrop', f => uploadCombined(f));
   wireDrop('fontDrop', f => uploadSourceFont(f));
+  // re-measure the template glyph once web fonts settle (getBBox needs the real font)
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (project) renderStage(); });
   if (!window.WebAssembly || !window.FontFace) {
     status('Heads up: this browser may not support font export (needs WASM + FontFace).', true);
   }
