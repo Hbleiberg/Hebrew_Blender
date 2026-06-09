@@ -314,6 +314,20 @@
   .load-menu-empty { font-size: 0.78rem; color: var(--muted); padding: 6px 10px; }
   .load-menu-date { font-size: 0.7rem; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
 
+  /* Fullscreen (matches torah_trainer.html / classroom_dashboard.html) */
+  body.fullscreen header, body.fullscreen footer { display: none; }
+  #fsExitBtn {
+    display: none; position: fixed; top: 14px; right: 16px; z-index: 200;
+    background: rgba(13,18,32,0.55); color: #fff; border: 1.5px solid rgba(255,255,255,0.2);
+    border-radius: 10px; padding: 8px 10px 6px; width: 60px; cursor: pointer;
+    backdrop-filter: blur(6px); opacity: 0.45; transition: opacity 0.2s, background 0.2s;
+    flex-direction: column; align-items: center; gap: 2px;
+  }
+  #fsExitBtn:hover { opacity: 1; background: rgba(13,18,32,0.82); }
+  #fsExitBtn .fs-x { font-size: 1.5rem; line-height: 1; }
+  #fsExitBtn .fs-label { font-size: 0.52rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
+  body.fullscreen #fsExitBtn { display: flex; }
+
   @media (max-width: 820px) {
     .app { flex-direction: column; }
     .sidebar { width: 100%; max-height: none; border-right: none; border-bottom: 1px solid var(--border); }
@@ -335,7 +349,15 @@
   </div>
   <a href="/" class="hbtn">← Home</a>
   <button id="darkToggle" class="hbtn" onclick="toggleDark()" title="Toggle dark mode">🌙 Dark</button>
+  <button id="fsBtn" class="hbtn" onclick="toggleFullscreen()" title="Fullscreen" aria-label="Toggle fullscreen" style="display:inline-flex;align-items:center;gap:5px;">
+    <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px;"><path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>
+    <span>Fullscreen</span>
+  </button>
 </header>
+<button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen" aria-label="Exit fullscreen">
+  <span class="fs-x">✕</span>
+  <span class="fs-label">Exit Fullscreen</span>
+</button>
 
 <div class="toolbar">
   <button class="tbtn ghost" onclick="newProject()">New</button>
@@ -477,6 +499,17 @@ function toggleDark() {
   renderStage();
   renderSpacingPreview();   // recolor the spacing preview ink for the new theme
 }
+/* ── Fullscreen (matches torah_trainer.html / classroom_dashboard.html) ── */
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+  } else {
+    if (document.exitFullscreen) document.exitFullscreen();
+  }
+}
+document.addEventListener('fullscreenchange', () => {
+  document.body.classList.toggle('fullscreen', !!document.fullscreenElement);
+});
 function initDark() {
   const saved = localStorage.getItem('hebrewBlender_darkMode');
   if (saved === '1') { document.body.classList.add('dark'); document.getElementById('darkToggle').textContent = '☀️ Light'; }
