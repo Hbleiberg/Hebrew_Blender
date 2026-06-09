@@ -302,6 +302,18 @@
   .anc-xy input:hover { border-color: var(--border); }
   .anc-xy input:focus { border-color: var(--gold); background: var(--white); outline: none; }
 
+  /* "Load Project ▾" dropdown menu */
+  .load-menu { position: fixed; z-index: 300; background: var(--white); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,0.25); padding: 5px; min-width: 230px; max-width: 320px; }
+  .load-menu-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; text-align: left;
+    background: none; border: none; border-radius: 6px; padding: 7px 10px; font-family: inherit; font-size: 0.82rem; color: var(--text); cursor: pointer; }
+  .load-menu-item:hover { background: var(--warm-gray); }
+  .load-menu-item span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .load-menu-sep { height: 1px; background: var(--border); margin: 4px 2px; }
+  .load-menu-head { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 4px 10px 2px; }
+  .load-menu-empty { font-size: 0.78rem; color: var(--muted); padding: 6px 10px; }
+  .load-menu-date { font-size: 0.7rem; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+
   @media (max-width: 820px) {
     .app { flex-direction: column; }
     .sidebar { width: 100%; max-height: none; border-right: none; border-bottom: 1px solid var(--border); }
@@ -327,7 +339,7 @@
 
 <div class="toolbar">
   <button class="tbtn ghost" onclick="newProject()">New</button>
-  <button class="tbtn ghost" onclick="document.getElementById('projFile').click()">Load Project</button>
+  <button class="tbtn ghost" onclick="toggleLoadMenu(event)">Load Project ▾</button>
   <button class="tbtn ghost" onclick="saveProject()">Save Project</button>
   <input type="file" id="projFile" accept=".hebrewfont,.json,application/json,application/gzip" style="display:none;">
   <button class="tbtn ghost" onclick="openHelp()" title="A plain-language guide to the whole tool">❓ How does this work?</button>
@@ -1022,8 +1034,8 @@ function onTemplateChange() {
   if (wrap) wrap.style.display = 'none';       // a real font chosen → hide the upload button again
   project.template.font = sel.value;
   const f = fontByFamily(sel.value); if (f) loadHebFont(f);
-  renderStage();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (project) renderStage(); });
+  renderStage(); renderLetterGrid();   // letter-grid tiles preview in the chosen reference font
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (project) { renderStage(); renderLetterGrid(); } });
 }
 /* ── View setters: R-panel opacity sliders + editable anchor X/Y. All read/write project state
    (NOT the DOM), so renderStage()/templateGlyphSVG() never depend on a control existing. ── */
@@ -1049,7 +1061,7 @@ async function uploadTemplateTTF(file) {
     const family = `'${fam}', serif`;
     customTemplateFonts.push({ section:'Custom', name: file.name.replace(/\.[a-z0-9]+$/i,''), family, load:null });
     project.template.font = family; project.template.showOverlay = true;
-    renderStage(); renderControls();   // rebuilds the R-panel select (set to `family`) + show-template checkbox
+    renderStage(); renderControls(); renderLetterGrid();   // rebuilds R-panel select + retints the letter tiles
     const sel = document.getElementById('templateFont'); if (sel) sel.value = family;
     status('Template font “' + file.name + '” loaded.');
   } catch (e) { console.error(e); status('Could not read that font file.'); }
@@ -1079,7 +1091,7 @@ function renderLetterGrid() {
     const tile = document.createElement('div');
     tile.className = 'ltile' + (curKind === 'letter' && L.cp === curCp ? ' sel' : '');
     tile.innerHTML = `<span class="lt-dot ${saved?'saved':st}">${saved?'✓':''}</span>
-      <span class="lt-heb">${String.fromCodePoint(parseInt(L.cp,16))}</span>
+      <span class="lt-heb" style="font-family:${project.template.font};">${String.fromCodePoint(parseInt(L.cp,16))}</span>
       <span class="lt-name">${L.name}</span>`;
     tile.onclick = () => selectItem('letter', L.cp);
     grid.appendChild(tile);
@@ -3190,6 +3202,7 @@ async function saveProject() {
     downloadBlob(new Blob([json], { type: 'application/json' }), `${stamp}.json`);  // old-browser fallback
     status('Project saved.');
   }
+  pushRecentProject(project);   // local cache for the Load Project ▾ "Recent" list
   try { localStorage.setItem('hebrewFontMaker_autosave', JSON.stringify(stripImagesForAutosave(project))); } catch(e){}
 }
 function stripImagesForAutosave(p) {
@@ -3217,7 +3230,10 @@ async function loadProjectFile(file) {
     }
     data = JSON.parse(text);
   } catch { status('Not a valid project file.'); return; }
-  if (data.format !== 'hebrew-font-maker-project') { status('Not a Font Maker project file.'); return; }
+  if (await applyProjectData(data)) status('Project loaded.');
+}
+async function applyProjectData(data) {           // shared by file-load and "Load recent"
+  if (!data || data.format !== 'hebrew-font-maker-project') { status('Not a Font Maker project file.'); return false; }
   project = migrateProject(data);
   // preload images
   const urls = [];
@@ -3231,7 +3247,47 @@ async function loadProjectFile(file) {
   await Promise.all(urls.map(u => loadImg(u).catch(()=>{})));
   curKind = 'letter'; curCp = LETTER_ORDER[0];
   syncMetaToForm(); renderGrids(); _setWorkMode('align');
-  status('Project loaded.');
+  return true;
+}
+/* ── Recent projects: a local-only localStorage cache powering the "Load Project ▾" menu.
+   Full projects are large, so keep a small rolling list and evict oldest on quota overflow.
+   Like the autosave breadcrumb, this is NOT part of the portable .ivrit/AllTools backup. ── */
+const RECENT_KEY = 'hebrewFontMaker_recentProjects', MAX_RECENT = 6;
+function getRecentProjects() { try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch (e) { return []; } }
+function pushRecentProject(p) {
+  let list = getRecentProjects();
+  const name = (p.font && p.font.familyName) || 'Untitled';
+  list = list.filter(r => r.name !== name);                       // newest copy of a name wins
+  list.unshift({ name, savedAt: p.savedAt || new Date().toISOString(), data: p });
+  if (list.length > MAX_RECENT) list = list.slice(0, MAX_RECENT);
+  while (list.length) {                                           // quota-safe: drop oldest until it fits
+    try { localStorage.setItem(RECENT_KEY, JSON.stringify(list)); return; } catch (e) { list.pop(); }
+  }
+  try { localStorage.removeItem(RECENT_KEY); } catch (e) {}
+}
+async function loadRecentProject(idx) {
+  const r = getRecentProjects()[idx]; if (!r) return;
+  if (await applyProjectData(JSON.parse(JSON.stringify(r.data)))) status('Loaded “' + r.name + '”.');
+}
+/* "Load Project ▾" split menu: From computer… + the recent list */
+function recentDate(iso) { try { return new Date(iso).toLocaleDateString(undefined, { month:'short', day:'numeric' }); } catch (e) { return ''; } }
+function closeLoadMenu() { const m = document.getElementById('loadMenu'); if (m) m.remove(); document.removeEventListener('click', closeLoadMenu); }
+function toggleLoadMenu(ev) {
+  ev.stopPropagation();
+  if (document.getElementById('loadMenu')) { closeLoadMenu(); return; }
+  const recents = getRecentProjects();
+  const menu = document.createElement('div'); menu.id = 'loadMenu'; menu.className = 'load-menu';
+  let h = `<button class="load-menu-item" onclick="closeLoadMenu();document.getElementById('projFile').click()">📂 Load from computer…</button>
+    <div class="load-menu-sep"></div><div class="load-menu-head">Recent</div>`;
+  h += recents.length
+    ? recents.map((r,i) => `<button class="load-menu-item" onclick="closeLoadMenu();loadRecentProject(${i})"><span>${escapeHtml(r.name)}</span><span class="load-menu-date">${recentDate(r.savedAt)}</span></button>`).join('')
+    : `<div class="load-menu-empty">No recent projects yet — save one first.</div>`;
+  menu.innerHTML = h;
+  document.body.appendChild(menu);
+  const rect = ev.currentTarget.getBoundingClientRect();
+  menu.style.left = Math.max(6, Math.min(rect.left, window.innerWidth - menu.offsetWidth - 8)) + 'px';
+  menu.style.top = (rect.bottom + 4) + 'px';
+  setTimeout(() => document.addEventListener('click', closeLoadMenu), 0);
 }
 function migrateProject(data) {
   // ensure all 27 letters exist & fields present (forward-compatible)
