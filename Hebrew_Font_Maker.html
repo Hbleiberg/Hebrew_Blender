@@ -1341,8 +1341,8 @@ function traceCurrent() {
   status(n ? `${l.name}: traced ${n} contour(s).` : 'No usable contours — adjust threshold.');
 }
 /* ε change — instant: re-simplify the cached loops (or recompute if the cache is stale). */
-function liveDetail(v) {   // slider reads as "detail"; ε is the inverse (0 = closest trace)
-  const l = curLetter(); l.epsilon = Math.max(0, 40 - (+v));
+function liveDetail(v) {   // slider 0–100 reads as "detail"; ε is the inverse (100 = closest trace)
+  const l = curLetter(); l.epsilon = Math.max(0, (100 - (+v)) * 0.4);
   const ep = document.getElementById('epV'); if (ep) ep.textContent = Math.round(+v);
   if (_rawTrace && _rawTrace.sig === traceSig(l)) { finalizeFromRaw(l, _rawTrace.loops); renderStage(); updateTraceInfo(l); }
   else scheduleRetrace();
@@ -1540,7 +1540,7 @@ function renderControls() {
       <div class="ctl-label">Trace — ${l.name}</div>
       <div class="inline">Ink threshold <input type="range" min="1" max="254" value="${l.binThreshold}" oninput="liveThreshold(this.value)"> <span id="thV" class="readout">${l.binThreshold}</span></div>
       <label class="chk"><input type="checkbox" ${l.invert?'checked':''} onchange="liveInvert(this.checked)"> Invert (light ink on dark)</label>
-      <div class="inline">Detail (less ↔ more) <input type="range" min="0" max="40" step="0.5" value="${(40 - l.epsilon).toFixed(1)}" oninput="liveDetail(this.value)"> <span id="epV" class="readout">${Math.round(40 - l.epsilon)}</span></div>
+      <div class="inline">Detail (less ↔ more) <input type="range" min="0" max="100" step="1" value="${Math.round(100 - l.epsilon*2.5)}" oninput="liveDetail(this.value)"> <span id="epV" class="readout">${Math.round(100 - l.epsilon*2.5)}</span></div>
       <div class="ctl-row">
         <button class="ctl-btn primary" onclick="traceCurrent()">Re-trace</button>
         <button class="ctl-btn" onclick="curLetter().contours=null;_rawTrace=null;renderStage();renderControls();renderLetterGrid();">Clear</button>
