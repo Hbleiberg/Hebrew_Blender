@@ -179,6 +179,10 @@
   .mode-toggle-stack { flex-direction: column; }
   .mode-toggle-stack .mode-btn { padding: 9px 8px; line-height: 1.25; }
   .mode-toggle-stack .mode-btn + .mode-btn { border-top: 1px solid var(--border); }
+  /* "Mark shapes" + "Upload mode" option groups — side by side (compact) in Tabbed layout */
+  .mark-opts { display: flex; flex-wrap: wrap; gap: 9px 14px; }
+  .mark-opt { display: flex; flex-direction: column; gap: 4px; flex: 1 1 100%; min-width: 0; }
+  body.layout-tabbed #catHost .mark-opt { flex: 0 1 220px; }
 
   /* ── Letter grid ── */
   .letter-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; direction: rtl; }
@@ -217,7 +221,7 @@
   body.layout-tabbed #catHost .cat-panel { display: none; }
   body.layout-tabbed #catHost .cat-panel.cat-active { display: block; }
   body.layout-tabbed #catHost .cat-panel .panel-title { display: none; }
-  body.layout-tabbed #catHost .cat-panel.cat-active .panel-body { display: block !important; max-height: 320px; overflow: auto; }
+  body.layout-tabbed #catHost .cat-panel.cat-active .panel-body { display: flex !important; flex-direction: column; gap: 9px; max-height: 320px; overflow: auto; }
   /* keep letter tiles compact & square instead of stretching across the wide workspace */
   body.layout-tabbed #catHost .letter-grid { grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); }
   .stage-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 8px; max-width: 720px; margin: 0 auto; overflow: auto; max-height: 74vh; }
@@ -1182,20 +1186,25 @@ function renderMarkPanel(cat) {
   const marks = cat === 'nikkud' ? NIKKUD_MARKS : TROP_MARKS;
   let h = `<label class="chk"><input type="checkbox" ${f.enabled?'checked':''} onchange="setMarkEnabled('${cat}', this.checked)"> Make my font ${label}-compatible</label>`;
   if (f.enabled) {
-    h += `<div class="hint" style="margin-top:9px;">Mark shapes</div>
+    const customWithMarks = (f.mode === 'custom' && marks.length);
+    const um = f.uploadMode || 'perSymbol';
+    // "Mark shapes" + "Upload mode" groups sit side by side (compact) to save vertical space
+    let opts = `<div class="mark-opt"><div class="hint">Mark shapes</div>
       <div class="mode-toggle">
         <button class="mode-btn ${f.mode==='default'?'active':''}" onclick="setMarkMode('${cat}','default')">Default</button>
         <button class="mode-btn ${f.mode==='custom'?'active':''}" onclick="setMarkMode('${cat}','custom')">Custom</button>
-      </div>`;
+      </div></div>`;
+    if (customWithMarks) {
+      opts += `<div class="mark-opt"><div class="hint">Upload mode</div>
+        <div class="mode-toggle">
+          <button class="mode-btn ${um==='perSymbol'?'active':''}" onclick="setMarkUploadMode('${cat}','perSymbol')">Per Symbol</button>
+          <button class="mode-btn ${um==='combined'?'active':''}" onclick="setMarkUploadMode('${cat}','combined')">Combined</button>
+        </div></div>`;
+    }
+    h += `<div class="mark-opts">${opts}</div>`;
     if (cat === 'trop') h += `<div class="hint" style="margin-top:9px;color:var(--muted);">Trop attaches to the typed letter (and stacks above/below a vowel). Word-edge accents like pashta, segolta &amp; zarqa can't auto-jump to the word edge — a font limitation.</div>`;
     if (f.mode === 'custom') {
       if (marks.length) {
-        const um = f.uploadMode || 'perSymbol';
-        h += `<div class="hint" style="margin-top:9px;">Upload mode</div>
-          <div class="mode-toggle">
-            <button class="mode-btn ${um==='perSymbol'?'active':''}" onclick="setMarkUploadMode('${cat}','perSymbol')">Per Symbol</button>
-            <button class="mode-btn ${um==='combined'?'active':''}" onclick="setMarkUploadMode('${cat}','combined')">Combined</button>
-          </div>`;
         if (um === 'combined') {
           const has = f.combinedImage && f.combinedImage.dataUrl;
           h += `<div class="drop" id="${cat}SheetDrop">Drop a sheet of ${label} symbols, or click to browse.</div>
