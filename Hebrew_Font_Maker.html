@@ -229,9 +229,16 @@
   .warn { color: #c0392b; font-weight: 600; }
   body.dark .warn { color: #ff8a7a; }
 
+  /* sidebar collapse tabs (like the generator) */
+  .sb-tab { position: fixed; top: 50vh; transform: translateY(-50%); width: 16px; height: 54px; border: none; background: var(--navy); color: var(--gold-light); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 60; box-shadow: 2px 0 6px rgba(0,0,0,0.18); border-radius: 0 6px 6px 0; line-height: 1; padding: 0; }
+  .sb-tab:hover { background: #0d1220; }
+  #sbHide { left: 320px; }
+  #sbShow { left: 0; display: none; }
+  .sidebar.hidden { display: none; }
   @media (max-width: 820px) {
     .app { flex-direction: column; }
     .sidebar { width: 100%; max-height: none; border-right: none; border-bottom: 1px solid var(--border); }
+    #sbHide, #sbShow { display: none !important; }
   }
 </style>
 </head>
@@ -257,6 +264,8 @@
   <button class="tbtn" id="exportBtn" onclick="exportFont()">⬇ Export Font (TTF)</button>
 </div>
 
+<button class="sb-tab" id="sbHide" onclick="toggleSidebar()" title="Hide sidebar">‹</button>
+<button class="sb-tab" id="sbShow" onclick="toggleSidebar()" title="Show sidebar">›</button>
 <div class="app">
   <aside class="sidebar">
     <div class="panel">
@@ -340,7 +349,7 @@
       <button class="ctl-btn zoom-reset" onclick="setZoom(1)">Reset</button>
     </div>
     <div class="stage-wrap">
-      <svg id="stage" viewBox="0 110 600 450"></svg>
+      <svg id="stage" viewBox="0 150 600 410"></svg>
     </div>
     <div class="legend" id="stageLegend"></div>
 
@@ -527,7 +536,7 @@ function letterMeta(cp) { return LETTERS.find(l => l.cp === cp); }
 
 /* ════════ Coordinate system (font units y-up ↔ stage px, mirrors nikkud_positioner) ════════ */
 const SC = 0.32, PADX = 175, BY = 445;
-const STAGE_VB = { x: 0, y: 110, w: 600, h: 450 };   // visible viewBox window
+const STAGE_VB = { x: 0, y: 150, w: 600, h: 410 };   // visible viewBox window
 const fx = x => PADX + x * SC;
 const fy = y => BY - y * SC;
 const ifx = px => (px - PADX) / SC;       // stage px → font x
@@ -905,16 +914,43 @@ function templateGlyphSVG() {
   // Anchored at the baseline: SVG's alphabetic text baseline sits exactly on the
   // base-0 line. fitTemplateGlyph() then scales the font-size so the ink top reaches
   // the top line (base stays exact regardless of font).
-  return `<text id="tplGlyphText" x="${fx(DEF_LSB + adv/2)}" y="${fy(BASELINE)}" text-anchor="middle"
+  return `<text id="tplGlyphText" x="${fx(DEF_LSB + adv/2)}" y="${fy(BASELINE)}" text-anchor="middle" dominant-baseline="alphabetic"
     font-family="${project.template.font}" font-size="300" fill="#9aa0aa" opacity="${op}">${ch}</text>`;
+}
+/* Measure a glyph's TRUE ink height above the baseline (as a fraction of font-size)
+   by rendering it to a canvas and scanning pixels. SVG getBBox can't be trusted here —
+   it returns the font's ascent-inclusive layout box, which made the glyph too small. */
+const _capRatioCache = {};
+function fontCapRatio(family, ch) {
+  const loaded = !window.document.fonts || document.fonts.check(`24px ${family}`);
+  const key = family + '|' + ch;
+  if (loaded && _capRatioCache[key] != null) return _capRatioCache[key];
+  let ratio = 0.7;
+  try {
+    const FP = 200, S = 480;
+    const cv = document.createElement('canvas'); cv.width = S; cv.height = S;
+    const ctx = cv.getContext('2d', { willReadFrequently: true });
+    ctx.font = `${FP}px ${family}`; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'center';
+    ctx.fillStyle = '#000';
+    const baseY = Math.round(S * 0.7);
+    ctx.fillText(ch, S / 2, baseY);
+    const d = ctx.getImageData(0, 0, S, S).data;
+    let top = -1;
+    for (let y = 0; y < S && top < 0; y++) {
+      for (let x = 0; x < S; x++) { if (d[(y * S + x) * 4 + 3] > 24) { top = y; break; } }
+    }
+    if (top >= 0) { const r = (baseY - top) / FP; if (r > 0.15 && r < 1.6) ratio = r; }
+  } catch (e) {}
+  if (loaded) _capRatioCache[key] = ratio;
+  return ratio;
 }
 function fitTemplateGlyph() {
   const t = stage().querySelector('#tplGlyphText'); if (!t) return;
-  let bb; try { bb = t.getBBox(); } catch (e) { return; }
-  if (!bb || !bb.height) return;
-  const wantCap = fy(BASELINE) - fy(LETTER_TOP);   // px from baseline up to the top line
-  const haveCap = fy(BASELINE) - bb.y;             // current ink height above the baseline
-  if (haveCap > 1) t.setAttribute('font-size', (300 * wantCap / haveCap).toFixed(1));
+  const ch = String.fromCodePoint(parseInt(curCp, 16));
+  const ratio = fontCapRatio(project.template.font, ch);    // ink cap height ÷ font-size
+  const wantCap = fy(BASELINE) - fy(LETTER_TOP);            // viewBox units, baseline→top line
+  const fs = Math.max(40, Math.min(1400, wantCap / ratio)); // so the rendered cap == wantCap
+  t.setAttribute('font-size', fs.toFixed(1));
 }
 /* ── Stage zoom (scales the rendered SVG inside the scrollable wrapper; the viewBox
    and all hit-testing math are untouched, so editing still works at any zoom) ── */
@@ -976,17 +1012,19 @@ async function renderStage() {
     if (l.contours) h += `<path d="${contoursToPath(l.contours)}" fill="rgba(26,39,68,0.85)" fill-rule="nonzero" stroke="#1a2744" stroke-width="0.6"/>`;
     else h += `<text x="300" y="520" text-anchor="middle" fill="#9aa0aa" font-size="12">Not traced yet.</text>`;
   } else if (workMode === 'anchors') {
-    if (l.contours) {
-      h += `<path d="${contoursToPath(l.contours)}" fill="#3a4150" fill-rule="nonzero"/>`;
+    if (l.contours) h += `<path d="${contoursToPath(l.contours)}" fill="#3a4150" fill-rule="nonzero"/>`;
+    if (l.contours || project.template.showOverlay) {
+      // preview the vowel on the traced glyph, or on the reference template glyph
+      if (!l.anchors) seedAnchors(l);
       h += anchorHandlesSVG(l);
     } else {
-      h += `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="14">Trace this letter first (step 2).</text>`;
+      h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="13">Trace this letter (step 2), or turn on “Show template glyph” to place nikkud on the reference.</text>`;
     }
   }
   sv.innerHTML = h;
   fitTemplateGlyph();
   if (workMode === 'align' && url) attachTransformDrag(l);
-  if (workMode === 'anchors' && l.contours) attachAnchorDrag(l);
+  if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) attachAnchorDrag(l);
   renderLegend();
 }
 function renderLegend() {
@@ -1272,9 +1310,10 @@ function glyphBBox(contours, topBandOnly, meta) {
   return { midX:(minX+maxX)/2, minY, maxY };
 }
 function seedAnchors(l) {
-  if (!l.contours) return;
   const meta = letterMeta(l.codepoint);
-  const bb = glyphBBox(l.contours, true, meta);
+  // works even before tracing (so nikkud can be previewed on the reference glyph)
+  const bb = l.contours ? glyphBBox(l.contours, true, meta)
+    : { midX: Math.round((l.advance || Math.round(LETTER_TOP*0.7)) / 2), minY: 0, maxY: LETTER_TOP };
   const mid = Math.round(bb.midX);
   const center = Math.round((bb.minY + bb.maxY)/2 * 0.6 + 150); // body-ish center
   l.anchors = {
@@ -1301,32 +1340,62 @@ function markPreviewPath(cp, ax, ay) {
   contours.forEach(poly => { poly.forEach((p,i) => { const X=fx(ax+p[0]), Y=fy(ay+p[1]); d += (i===0?'M':'L')+X.toFixed(1)+' '+Y.toFixed(1)+' '; }); d+='Z '; });
   return d;
 }
+function markCenterLocal(cp) {
+  const polys = MARK_GLYPHS[cp] || [];
+  let sx = 0, sy = 0, n = 0;
+  polys.forEach(poly => poly.forEach(p => { sx += p[0]; sy += p[1]; n++; }));
+  return n ? [sx / n, sy / n] : [0, 0];
+}
 function anchorHandlesSVG(l) {
-  // Only the active class is shown — its mark drawn SOLID so the letter previews
-  // with that vowel, plus a draggable handle at the anchor.
+  // Active class only: its vowel drawn SOLID (so the letter previews with it),
+  // plus a draggable RING centred ON the vowel — clearly a control, not a dot.
   const cls = activeAnchorClass; const a = l.anchors[cls];
+  const cp = activeVowelCp();
   const col = cls==='below'?'var(--below)':(cls==='above'?'var(--above)':'var(--center)');
-  let h = `<path d="${markPreviewPath(activeVowelCp(), a.x, a.y)}" fill="#3a4150"/>`;
-  h += `<circle class="anc" data-cls="${cls}" cx="${fx(a.x)}" cy="${fy(a.y)}" r="9" fill="${col}" stroke="#fff" stroke-width="2" opacity="0.9" style="cursor:grab"/>`;
+  const mc = markCenterLocal(cp);
+  const hx = fx(a.x + mc[0]), hy = fy(a.y + mc[1]);
+  let h = `<path id="ancMark" d="${markPreviewPath(cp, a.x, a.y)}" fill="#3a4150"/>`;
+  h += `<circle class="anc" data-cls="${cls}" cx="${hx}" cy="${hy}" r="14" fill="${col}" fill-opacity="0.16" stroke="${col}" stroke-width="2.5" style="cursor:grab"/>`;
   return h;
 }
 function attachAnchorDrag(l) {
-  const sv = stage();
-  sv.querySelectorAll('.anc').forEach(el => {
+  stage().querySelectorAll('.anc').forEach(el => {
     const cls = el.dataset.cls; let grab = null;
     el.addEventListener('pointerdown', e => {
       el.setPointerCapture(e.pointerId);
       const [fxp,fyp] = clientToFont(e); const a = l.anchors[cls]; grab = [a.x-fxp, a.y-fyp];
+      showAncTip(e.clientX, e.clientY);
       e.preventDefault();
     });
     el.addEventListener('pointermove', e => {
-      if (!grab) return; const [fxp,fyp] = clientToFont(e);
-      l.anchors[cls] = { x: Math.round(fxp+grab[0]), y: Math.round(fyp+grab[1]) };
-      renderStage(); renderControls();
+      if (!grab) return;
+      const [fxp,fyp] = clientToFont(e);
+      const a = l.anchors[cls] = { x: Math.round(fxp+grab[0]), y: Math.round(fyp+grab[1]) };
+      // Update the mark + handle IN PLACE — a full renderStage() here would replace
+      // this element and drop the pointer capture, ending the drag after one move.
+      const mark = stage().querySelector('#ancMark'); if (mark) mark.setAttribute('d', markPreviewPath(activeVowelCp(), a.x, a.y));
+      const mc = markCenterLocal(activeVowelCp());
+      el.setAttribute('cx', fx(a.x+mc[0])); el.setAttribute('cy', fy(a.y+mc[1]));
+      const ro = document.getElementById('ancReadout'); if (ro) ro.textContent = `x ${a.x}, y ${a.y}`;
     });
-    el.addEventListener('pointerup', () => { grab = null; renderLetterGrid(); });
+    el.addEventListener('pointerup', () => { grab = null; hideAncTip(); renderStage(); renderControls(); renderLetterGrid(); });
+    el.addEventListener('pointercancel', () => { grab = null; hideAncTip(); });
   });
 }
+function showAncTip(cx, cy) {
+  let t = document.getElementById('ancTip');
+  if (!t) {
+    t = document.createElement('div'); t.id = 'ancTip';
+    t.style.cssText = 'position:fixed;z-index:9999;background:var(--navy);color:#fff;font-size:0.72rem;line-height:1.3;padding:5px 9px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.3);pointer-events:none;max-width:200px;';
+    document.body.appendChild(t);
+  }
+  t.textContent = 'Tip: use the arrow keys for finer, exact movement.';
+  t.style.display = 'block';
+  t.style.left = Math.min(cx + 14, window.innerWidth - 210) + 'px';
+  t.style.top = Math.max(8, cy - 40) + 'px';
+  clearTimeout(showAncTip._t); showAncTip._t = setTimeout(hideAncTip, 2600);
+}
+function hideAncTip() { const t = document.getElementById('ancTip'); if (t) t.style.display = 'none'; }
 function setAnchorClass(cls) { activeAnchorClass = cls; renderStage(); renderControls(); }
 function setBelowVowel(cp) { activeBelowVowel = cp; renderStage(); renderControls(); }
 function savePlacement() {
@@ -1411,7 +1480,7 @@ function renderControls() {
       ${ l.contours ? `<div class="ctl-row"><button class="ctl-btn primary" onclick="setWorkMode('anchors')">Next: Nikkud →</button></div>` : '' }
       <div class="hint">Marching-squares + Douglas–Peucker keeps block-letter corners crisp; counters (ס, ם, ע) punch out automatically.</div>`;
   } else {
-    if (!l.contours) { c.innerHTML = `<div class="ctl-label">Nikkud — ${l.name}</div><div class="hint">Trace this letter first (step 2).</div>`; return; }
+    if (!l.contours && !project.template.showOverlay) { c.innerHTML = `<div class="ctl-label">Nikkud — ${l.name}</div><div class="hint">Trace this letter first (step 2), or turn on “Show template glyph behind” to place nikkud on the reference.</div>`; return; }
     if (!l.anchors) seedAnchors(l);
     const cls = activeAnchorClass, a = l.anchors[cls];
     const classBtns = ANCHOR_CLASSES.map(([k]) =>
@@ -1428,7 +1497,7 @@ function renderControls() {
       <div class="ctl-label" style="margin-top:8px;">Nikkud — ${l.name}: place the…</div>
       <div class="ctl-row">${classBtns}</div>
       ${vowelBtns}
-      <div class="readline" style="margin-top:8px;"><span>${ANCHOR_LABEL[cls]} anchor</span><span class="readout">x ${a.x}, y ${a.y}</span></div>
+      <div class="readline" style="margin-top:8px;"><span>${ANCHOR_LABEL[cls]} anchor</span><span class="readout" id="ancReadout">x ${a.x}, y ${a.y}</span></div>
       <div class="ctl-row">
         <button class="ctl-btn" onclick="seedAnchors(curLetter());renderStage();renderControls();renderLetterGrid();">Reset letter</button>
         <button class="ctl-btn" onclick="resetAllAnchors()">Reset all</button>
@@ -2004,6 +2073,13 @@ function migrateProject(data) {
 /* ════════════════════════════════════════════════════════════════════════
    INIT
    ════════════════════════════════════════════════════════════════════════ */
+function toggleSidebar() {
+  const sb = document.querySelector('.sidebar');
+  const collapsed = sb.classList.toggle('hidden');
+  document.getElementById('sbShow').style.display = collapsed ? 'flex' : 'none';
+  document.getElementById('sbHide').style.display = collapsed ? 'none' : 'flex';
+  try { localStorage.setItem('hebrewFontMaker_sbHidden', collapsed ? '1' : '0'); } catch (e) {}
+}
 function initPanels() {
   document.querySelectorAll('.panel-title').forEach(t => t.addEventListener('click', () => t.parentElement.classList.toggle('collapsed')));
 }
@@ -2027,7 +2103,8 @@ function init() {
   wireDrop('combinedDrop', f => uploadCombined(f));
   wireDrop('fontDrop', f => uploadSourceFont(f));
   applyZoom();
-  // re-measure the template glyph once web fonts settle (getBBox needs the real font)
+  if (localStorage.getItem('hebrewFontMaker_sbHidden') === '1') toggleSidebar();
+  // re-measure the template glyph once web fonts settle
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (project) renderStage(); });
   if (!window.WebAssembly || !window.FontFace) {
     status('Heads up: this browser may not support font export (needs WASM + FontFace).', true);
