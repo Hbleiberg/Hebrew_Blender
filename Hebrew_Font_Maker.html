@@ -166,6 +166,7 @@
   .chk { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; cursor: pointer; }
   .chk input { accent-color: var(--gold); width: 15px; height: 15px; }
   .hint { font-size: 0.7rem; color: var(--muted); line-height: 1.4; }
+  .allowed { font-size: 0.65rem; color: var(--muted); opacity: 0.8; margin-top: 4px; text-align: center; line-height: 1.35; }
 
   /* ── Input mode toggle ── */
   .mode-toggle { display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
@@ -317,6 +318,7 @@
           <div class="drop" id="combinedDrop" onclick="document.getElementById('combinedFile').click()">
             Drop the combined sheet here, or click to browse.
           </div>
+          <div class="allowed">Allowed: any image file — PNG, JPG, GIF, WebP.</div>
           <input type="file" id="combinedFile" accept="image/*" style="display:none;">
           <div class="hint">Then pick a letter and drag a box around it to bring it into the editor.</div>
         </div>
@@ -324,6 +326,7 @@
           <div class="drop" id="fontDrop" onclick="document.getElementById('sourceFontFile').click()">
             Drop a font (TTF/OTF) here, or click to browse.
           </div>
+          <div class="allowed">Allowed: TTF or OTF font files.</div>
           <input type="file" id="sourceFontFile" accept=".ttf,.otf,font/ttf,font/otf,application/font-sfnt" style="display:none;">
           <div class="hint">Each Hebrew letter's outline is pulled straight from the font — then just set the nikkud anchors and export.</div>
         </div>
@@ -331,6 +334,7 @@
           <select id="templateFont" onchange="onTemplateChange()"></select>
         </label>
         <button class="ctl-btn" style="font-size:0.74rem;width:100%;" onclick="document.getElementById('ttfTemplateFile').click()">⬆ Upload your own reference font</button>
+        <div class="allowed">Allowed: TTF or OTF font files.</div>
         <input type="file" id="ttfTemplateFile" accept=".ttf,.otf,font/ttf,font/otf,application/font-sfnt" style="display:none;">
         <label class="chk"><input type="checkbox" id="showTemplate" checked onchange="renderStage()"> Show template glyph behind</label>
         <div class="inline">Opacity <input type="range" id="templateOpacity" min="0" max="100" value="35" oninput="renderStage()"> <span id="opacityVal">35%</span></div>
@@ -932,6 +936,7 @@ function renderMarkPanel(cat) {
         if (um === 'combined') {
           const has = f.combinedImage && f.combinedImage.dataUrl;
           h += `<div class="drop" id="${cat}SheetDrop">Drop a sheet of ${label} symbols, or click to browse.</div>
+            <div class="allowed">Allowed: any image file — PNG, JPG, GIF, WebP.</div>
             <input type="file" id="${cat}SheetFile" accept="image/*" style="display:none;">
             <div class="hint">${ has ? 'Sheet loaded ✓ — pick a symbol below, then drag a box around it on the canvas.' : 'Then pick a symbol below and drag a box around it on the canvas.' }</div>`;
         }
@@ -1421,6 +1426,7 @@ function renderMarkControls(c, it) {
       }
     } else {
       h += `<div class="drop" id="markDrop">Drop an image of <b>${it.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('markFile').click()">browse</span>.</div>
+        <div class="allowed">Allowed: any image file — PNG, JPG, GIF, WebP.</div>
         <input type="file" id="markFile" accept="image/*" style="display:none;">`;
     }
     if (curImageUrl()) h += `<div class="ctl-row">
@@ -2128,6 +2134,7 @@ function renderControls() {
     let intro;
     if (l.source.kind === 'single') {
       intro = `<div class="drop" id="letterDrop">Drop an image for <b>${l.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('letterFile').click()">browse</span>.</div>
+        <div class="allowed">Allowed: any image file — PNG, JPG, GIF, WebP.</div>
         <input type="file" id="letterFile" accept="image/*" style="display:none;">`;
     } else if (!project.combinedImage.dataUrl) {
       intro = `<div class="hint">Combined-sheet mode: upload one sheet of all your letters in the sidebar first.</div>`;
