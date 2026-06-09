@@ -965,9 +965,11 @@ function renderNikkudGrid()  { renderMarkGrid('nikkud'); }
 function renderTropGrid()    { renderMarkGrid('trop'); }
 function setMarkEnabled(cat, on) {
   project.font[cat].enabled = on;
-  if (!on && curKind === cat) { selectItem('letter', LETTER_ORDER[0]); return; }
-  if (cat === 'nikkud' && !on && curKind === 'letter' && workMode === 'anchors') { setWorkMode('align'); }
+  if (!on && curKind === cat) { selectItem('letter', LETTER_ORDER[0]); return; }   // leave the now-disabled mark editor
+  // if the placement (anchors) step is no longer available, drop back to Align
+  if (workMode === 'anchors' && !(project.font.nikkud.enabled || project.font.trop.enabled)) setWorkMode('align');
   renderGrids();
+  updateTabs();   // show/hide + relabel the "3 · Nikkud / Marks" placement tab right away
 }
 function setMarkMode(cat, mode) {
   project.font[cat].mode = mode;
