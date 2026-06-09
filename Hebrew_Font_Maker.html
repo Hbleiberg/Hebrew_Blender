@@ -230,6 +230,12 @@
     grid-template-columns: repeat(7, minmax(50px, 90px));
     justify-content: left;
   }
+  /* Tabbed: controls (toggles + hint) and the mark grid sit side by side; Sidebar keeps them stacked */
+  .mark-split { display: flex; flex-direction: column; gap: 9px; }
+  .mark-side  { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
+  body.layout-tabbed #catHost .mark-split    { flex-direction: row; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+  body.layout-tabbed #catHost .mark-side     { flex: 0 1 460px; }
+  body.layout-tabbed #catHost .mark-gridside { flex: 0 1 auto; min-width: 0; }
   /* Tabbed: the work-mode steps (Align/Trace/Nikkud/Trop) drop below the picker, just above the stage */
   body.layout-tabbed .workspace { display: flex; flex-direction: column; }
   body.layout-tabbed #catTabs   { order: 1; }
@@ -1213,23 +1219,27 @@ function renderMarkPanel(cat) {
           <button class="mode-btn ${um==='combined'?'active':''}" onclick="setMarkUploadMode('${cat}','combined')">Combined</button>
         </div></div>`;
     }
-    h += `<div class="mark-opts">${opts}</div>`;
-    if (cat === 'trop') h += `<div class="hint" style="margin-top:9px;color:var(--muted);">Trop attaches to the typed letter (and stacks above/below a vowel). Word-edge accents like pashta, segolta &amp; zarqa can't auto-jump to the word edge — a font limitation.</div>`;
+    let controls = `<div class="mark-opts">${opts}</div>`;
+    if (cat === 'trop') controls += `<div class="hint" style="margin-top:9px;color:var(--muted);">Trop attaches to the typed letter (and stacks above/below a vowel). Word-edge accents like pashta, segolta &amp; zarqa can't auto-jump to the word edge — a font limitation.</div>`;
+    let grid = '';
     if (f.mode === 'custom') {
       if (marks.length) {
         if (um === 'combined') {
           const has = f.combinedImage && f.combinedImage.dataUrl;
-          h += `<div class="drop" id="${cat}SheetDrop">Drop a sheet of ${label} symbols, or click to browse.</div>
+          controls += `<div class="drop" id="${cat}SheetDrop">Drop a sheet of ${label} symbols, or click to browse.</div>
             <div class="allowed">Allowed: any image file — PNG, JPG, GIF, WebP.</div>
             <input type="file" id="${cat}SheetFile" accept="image/*" style="display:none;">
             <div class="hint">${ has ? 'Sheet loaded ✓ — pick a symbol below, then drag a box around it on the canvas.' : 'Then pick a symbol below and drag a box around it on the canvas.' }</div>`;
         }
-        h += `<div class="hint" style="margin-top:9px;">${ um==='combined'
+        controls += `<div class="hint" style="margin-top:9px;">${ um==='combined'
           ? 'Click a mark, then drag a box around it on the sheet. Undesigned marks use the default shape.'
-          : 'Click a mark to design it (draw or upload). Undesigned marks use the default shape.' }</div>
-          <div class="letter-grid" id="${cat}Grid"></div>`;
-      } else h += `<div class="hint" style="margin-top:9px;">Custom ${label} marks &amp; the built-in set are coming in the next update.</div>`;
+          : 'Click a mark to design it (draw or upload). Undesigned marks use the default shape.' }</div>`;
+        grid = `<div class="letter-grid" id="${cat}Grid"></div>`;
+      } else controls += `<div class="hint" style="margin-top:9px;">Custom ${label} marks &amp; the built-in set are coming in the next update.</div>`;
     }
+    // In Tabbed layout the controls + grid sit side by side; in Sidebar they stack (.mark-split goes column)
+    if (grid) h += `<div class="mark-split"><div class="mark-side">${controls}</div><div class="mark-gridside">${grid}</div></div>`;
+    else h += controls;
   }
   el.innerHTML = h;
   if (f.enabled && f.mode === 'custom' && marks.length) renderMarkGrid(cat);
