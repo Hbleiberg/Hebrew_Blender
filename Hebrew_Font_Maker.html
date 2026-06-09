@@ -257,9 +257,8 @@
   .ctl-btn:hover { background: var(--warm-gray); }
   .ctl-btn.primary { background: var(--navy); color: #fff; border-color: var(--navy); }
   /* Align tools: each opposing pair stacked vertically, pairs sit side by side (wrap on narrow) */
-  .scale-pairs { display: flex; gap: 6px; flex-wrap: wrap; }
-  .scale-pairs .sp-col { display: flex; flex-direction: column; gap: 5px; flex: 1 1 88px; min-width: 0; }
-  .scale-pairs .sp-col .ctl-btn { width: 100%; text-align: center; padding: 6px 4px; box-sizing: border-box; }
+  .scale-pairs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .scale-pairs .ctl-btn { width: 100%; text-align: center; padding: 6px 4px; box-sizing: border-box; min-width: 0; }
   .ctl-label { font-size: 0.74rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
   .readout { font-family: ui-monospace, Menlo, monospace; font-size: 0.78rem; color: var(--text); }
   .readout .delta { color: var(--gold); }
@@ -338,7 +337,7 @@
   .mark-sq.active { border-color: var(--navy); box-shadow: inset 0 0 0 2px var(--navy); }
   .mark-sq .mark-prev { height: 30px; margin: 0; }
   .ctl-divider { height: 1px; background: var(--border); margin: 8px 0; border: none; }
-  .sp-col .ctl-btn .arrows { font-weight: 400; opacity: 0.7; margin-left: 4px; }
+  .ctl-btn .arrows { font-weight: 400; opacity: 0.7; margin-left: 4px; }
   /* editable X/Y anchor fields — read like a chip, become editable on click/focus */
   .anc-xy { display: flex; gap: 12px; justify-content: center; align-items: center; margin-bottom: 4px; }
   .anc-xy label { font-size: 0.74rem; font-weight: 700; color: var(--muted); display: flex; align-items: center; gap: 5px; }
@@ -2702,26 +2701,16 @@ function renderAlignLeft(L, l) {
     <hr class="ctl-divider">
     <div class="ws-side-title">Adjust — ${l.name}</div>
     <div class="scale-pairs">
-      <div class="sp-col">
-        <button class="ctl-btn" onclick="nudgeScale(1.05,1.05)">Scale +</button>
-        <button class="ctl-btn" onclick="nudgeScale(0.95,0.95)">Scale −</button>
-      </div>
-      <div class="sp-col">
-        <button class="ctl-btn" onclick="nudgeScale(1.05,1)">Wider <span class="arrows">← →</span></button>
-        <button class="ctl-btn" onclick="nudgeScale(0.95,1)">Narrower <span class="arrows">→ ←</span></button>
-      </div>
-      <div class="sp-col">
-        <button class="ctl-btn" onclick="nudgeScale(1,1.05)">Taller <span class="arrows">↑ ↓</span></button>
-        <button class="ctl-btn" onclick="nudgeScale(1,0.95)">Shorter <span class="arrows">↓ ↑</span></button>
-      </div>
-      <div class="sp-col">
-        <button class="ctl-btn" onclick="nudgeRotate(-2)">⟲ Rotate</button>
-        <button class="ctl-btn" onclick="nudgeRotate(2)">⟳ Rotate</button>
-      </div>
-      <div class="sp-col">
-        <button class="ctl-btn" onclick="nudgeSkew(-2)">Skew ⟍</button>
-        <button class="ctl-btn" onclick="nudgeSkew(2)">Skew ⟋</button>
-      </div>
+      <button class="ctl-btn" onclick="nudgeScale(1.05,1.05)">Scale +</button>
+      <button class="ctl-btn" onclick="nudgeScale(1.05,1)">Wider <span class="arrows">← →</span></button>
+      <button class="ctl-btn" onclick="nudgeScale(0.95,0.95)">Scale −</button>
+      <button class="ctl-btn" onclick="nudgeScale(0.95,1)">Narrower <span class="arrows">→ ←</span></button>
+      <button class="ctl-btn" onclick="nudgeScale(1,1.05)">Taller <span class="arrows">↑ ↓</span></button>
+      <button class="ctl-btn" onclick="nudgeRotate(-2)">⟲ Rotate</button>
+      <button class="ctl-btn" onclick="nudgeScale(1,0.95)">Shorter <span class="arrows">↓ ↑</span></button>
+      <button class="ctl-btn" onclick="nudgeRotate(2)">⟳ Rotate</button>
+      <button class="ctl-btn" onclick="nudgeSkew(-2)">Skew ⟍</button>
+      <button class="ctl-btn" onclick="nudgeSkew(2)">Skew ⟋</button>
     </div>
     <div class="ctl-row" style="margin-top:6px;">
       <button class="ctl-btn" onclick="snapFit()">Snap-fit baseline↔top</button>
