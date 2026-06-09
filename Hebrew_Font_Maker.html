@@ -893,11 +893,7 @@ function renderMarkPanel(cat) {
   const el = document.getElementById(cat + 'PanelBody'); if (!el) return;
   const label = cat === 'nikkud' ? 'Nikkud' : 'Trop';
   const marks = cat === 'nikkud' ? NIKKUD_MARKS : TROP_MARKS;
-  let h = `<div class="hint" style="margin-bottom:3px;">Make your font ${label}-compatible?</div>
-    <div class="mode-toggle">
-      <button class="mode-btn ${f.enabled?'active':''}" onclick="setMarkEnabled('${cat}',true)">Yes</button>
-      <button class="mode-btn ${!f.enabled?'active':''}" onclick="setMarkEnabled('${cat}',false)">No</button>
-    </div>`;
+  let h = `<label class="chk"><input type="checkbox" ${f.enabled?'checked':''} onchange="setMarkEnabled('${cat}', this.checked)"> Make my font ${label}-compatible</label>`;
   if (f.enabled) {
     h += `<div class="hint" style="margin-top:9px;">Mark shapes</div>
       <div class="mode-toggle">
