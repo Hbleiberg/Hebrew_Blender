@@ -206,6 +206,10 @@
   .ctl-btn { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 6px 11px; font-size: 0.78rem; cursor: pointer; font-family: inherit; color: var(--text); font-weight: 600; }
   .ctl-btn:hover { background: var(--warm-gray); }
   .ctl-btn.primary { background: var(--navy); color: #fff; border-color: var(--navy); }
+  /* Align tools: each opposing pair stacked vertically, pairs sit side by side (wrap on narrow) */
+  .scale-pairs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .scale-pairs .sp-col { display: flex; flex-direction: column; gap: 5px; flex: 1 1 88px; min-width: 0; }
+  .scale-pairs .sp-col .ctl-btn { width: 100%; text-align: center; padding: 6px 4px; box-sizing: border-box; }
   .ctl-label { font-size: 0.74rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
   .readout { font-family: ui-monospace, Menlo, monospace; font-size: 0.78rem; color: var(--text); }
   .readout .delta { color: var(--gold); }
@@ -1121,19 +1125,23 @@ function guideLinesSVG() {
     h += `<line x1="35" y1="${y}" x2="498" y2="${y}" stroke="${col}" stroke-width="1" stroke-dasharray="${yv===0?'':'5 4'}"/>`;
     h += `<text x="502" y="${y+3.5}" fill="${col}" font-size="10" font-family="monospace">${label}</text>`;
   });
-  // vertical guides: shaded "letter margin" zones on BOTH sides + a "letter width" line
+  return h;
+}
+/* Vertical side-bearing "margin" zones on BOTH sides + the advance-width line. Drawn ON TOP of the
+   glyph image (pointer-events:none) so the right margin stays visible even when ink covers it. */
+function marginGuidesSVG() {
   const adv = (curLetter().contours ? curLetter().advance : (_tplFit && _tplFit.advance)) || Math.round(LETTER_TOP*0.7);
   const vy1 = fy(LETTER_TOP + 80), vy2 = fy(DESCENDER - 30), mcy = (vy1+vy2)/2;
-  const marginZone = (x0f, x1f) => {
+  const marginZone = (x0f, x1f, side) => {
     const a = fx(x0f), b = fx(x1f), cx = (a+b)/2;
-    return `<rect x="${a}" y="${vy1}" width="${b-a}" height="${vy2-vy1}" fill="#c99" fill-opacity="0.10" stroke="#c99" stroke-width="1" stroke-dasharray="3 4" opacity="0.8"/>`
-      + `<text x="${cx}" y="${mcy}" transform="rotate(-90 ${cx} ${mcy})" text-anchor="middle" fill="#a05a5a" font-size="12" font-family="'Source Sans 3',sans-serif" opacity="0.35" style="dominant-baseline:central;">letter margin</text>`;
+    return `<rect x="${a}" y="${vy1}" width="${b-a}" height="${vy2-vy1}" fill="#c99" fill-opacity="0.12" stroke="#c99" stroke-width="1" stroke-dasharray="3 4" opacity="0.9" pointer-events="none"/>`
+      + `<text x="${cx}" y="${mcy}" transform="rotate(-90 ${cx} ${mcy})" text-anchor="middle" fill="#a05a5a" font-size="12" font-family="'Source Sans 3',sans-serif" opacity="0.5" style="dominant-baseline:central;" pointer-events="none">${side} margin</text>`;
   };
-  h += marginZone(0, DEF_LSB);             // left side bearing
-  h += marginZone(adv - DEF_RSB, adv);     // right side bearing
+  let h = marginZone(0, DEF_LSB, 'left');             // left side bearing
+  h += marginZone(adv - DEF_RSB, adv, 'right');       // right side bearing
   const wx = fx(adv);
-  h += `<line x1="${wx}" y1="${vy1}" x2="${wx}" y2="${vy2}" stroke="#c99" stroke-width="1" stroke-dasharray="3 5"/>`;
-  h += `<text x="${wx}" y="${vy2+13}" text-anchor="middle" fill="#c99" font-size="9" font-family="monospace">letter width</text>`;
+  h += `<line x1="${wx}" y1="${vy1}" x2="${wx}" y2="${vy2}" stroke="#c99" stroke-width="1" stroke-dasharray="3 5" pointer-events="none"/>`;
+  h += `<text x="${wx}" y="${vy2+13}" text-anchor="middle" fill="#c99" font-size="9" font-family="monospace" pointer-events="none">letter width</text>`;
   return h;
 }
 function captureBoxFont(l) {
@@ -1395,6 +1403,7 @@ async function renderStage() {
       h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="13">Trace this letter (step 2), or turn on “Show template glyph” to place nikkud on the reference.</text>`;
     }
   }
+  h += marginGuidesSVG();   // margins/width on top so the right side bearing shows over the glyph
   sv.innerHTML = h;
   if (workMode === 'align' && url) attachTransformDrag(l);
   if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) attachAnchorDrag(l);
@@ -1928,19 +1937,29 @@ function renderControls() {
       <div class="ctl-label">Align — ${l.name} (${l.codepoint})</div>
       ${intro}
       ${ hasImg ? `
-      <div class="ctl-row">
-        <button class="ctl-btn" onclick="nudgeScale(1.05,1.05)">Scale +</button>
-        <button class="ctl-btn" onclick="nudgeScale(0.95,0.95)">Scale −</button>
-        <button class="ctl-btn" onclick="nudgeScale(1.05,1)">Wider</button>
-        <button class="ctl-btn" onclick="nudgeScale(0.95,1)">Narrower</button>
-        <button class="ctl-btn" onclick="nudgeScale(1,1.05)">Taller</button>
-        <button class="ctl-btn" onclick="nudgeScale(1,0.95)">Shorter</button>
+      <div class="scale-pairs">
+        <div class="sp-col">
+          <button class="ctl-btn" onclick="nudgeScale(1.05,1.05)">Scale +</button>
+          <button class="ctl-btn" onclick="nudgeScale(0.95,0.95)">Scale −</button>
+        </div>
+        <div class="sp-col">
+          <button class="ctl-btn" onclick="nudgeScale(1.05,1)">Wider</button>
+          <button class="ctl-btn" onclick="nudgeScale(0.95,1)">Narrower</button>
+        </div>
+        <div class="sp-col">
+          <button class="ctl-btn" onclick="nudgeScale(1,1.05)">Taller</button>
+          <button class="ctl-btn" onclick="nudgeScale(1,0.95)">Shorter</button>
+        </div>
+        <div class="sp-col">
+          <button class="ctl-btn" onclick="nudgeRotate(-2)">⟲ Rotate</button>
+          <button class="ctl-btn" onclick="nudgeRotate(2)">⟳ Rotate</button>
+        </div>
+        <div class="sp-col">
+          <button class="ctl-btn" onclick="nudgeSkew(-2)">Skew ⟍</button>
+          <button class="ctl-btn" onclick="nudgeSkew(2)">Skew ⟋</button>
+        </div>
       </div>
-      <div class="ctl-row">
-        <button class="ctl-btn" onclick="nudgeRotate(-2)">⟲ Rotate</button>
-        <button class="ctl-btn" onclick="nudgeRotate(2)">⟳ Rotate</button>
-        <button class="ctl-btn" onclick="nudgeSkew(-2)">Skew ⟍</button>
-        <button class="ctl-btn" onclick="nudgeSkew(2)">Skew ⟋</button>
+      <div class="ctl-row" style="margin-top:8px;">
         <button class="ctl-btn" onclick="snapFit()">Snap-fit baseline↔top</button>
       </div>
       <div class="ctl-row">
@@ -2355,6 +2374,8 @@ function oflText() {
   const yr = new Date().getFullYear();
   const copyr = project.font.copyright || ('Copyright (c) ' + yr + ' ' + fam);
   return `${copyr}, with Reserved Font Name "${reserved}".
+
+This font was made with the IvritSuite Hebrew Font Maker (https://ivritsuite.com).
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:
