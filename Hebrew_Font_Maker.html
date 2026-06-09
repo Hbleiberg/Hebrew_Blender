@@ -662,7 +662,7 @@ const MARK_GLYPHS = {
   '05B4': [ circlePts(0,-160,46) ],                                           // hiriq: 1 dot
   '05B5': [ circlePts(-95,-160,42), circlePts(95,-160,42) ],                  // tsere: 2 dots
   '05B6': [ circlePts(-105,-130,40), circlePts(105,-130,40), circlePts(0,-235,40) ], // segol: 3 dots
-  '05B1': [ circlePts(-118,-125,28), circlePts(0,-125,28), circlePts(118,-125,28), circlePts(-59,-225,28), circlePts(59,-225,28) ], // hataf segol: 3 dots over a centered row of 2 — smaller & well-spaced (gap > radius both axes) so the dots stay separate instead of fusing into a cluster
+  '05B1': [ circlePts(-118,-125,28), circlePts(0,-125,28), circlePts(118,-125,28), circlePts(-59,-225,28), circlePts(118,-225,28) ], // hataf segol: top row of 3; bottom row = left dot nestled (x=-59), right dot directly under the top-right dot (x=118). Small/well-spaced so dots stay separate.
   '05B0': [ circlePts(0,-120,40), circlePts(0,-235,40) ],                     // sheva: 2 vertical dots
   '05BB': [ circlePts(-130,-115,38), circlePts(0,-165,38), circlePts(130,-215,38) ], // qubuts: 3 diagonal
   // ABOVE (anchor at bottom-center; shapes extend upward)
@@ -2481,7 +2481,7 @@ function anchorHandlesSVG(l) {
   const mc = markCenterLocal(cp);
   const hx = fx(a.x + mc[0]), hy = fy(a.y + mc[1]);
   let h = `<path id="ancMark" d="${markPreviewPath(cp, a.x, a.y)}" fill="${col}"/>`;
-  h += `<circle class="anc" data-cls="${cls}" cx="${hx}" cy="${hy}" r="14" fill="${col}" fill-opacity="0.14" stroke="#fff" stroke-width="2.5" style="cursor:grab"/>`;
+  h += `<circle class="anc" data-cls="${cls}" cx="${hx}" cy="${hy}" r="11" fill="${col}" fill-opacity="0" stroke="#fff" stroke-width="2" pointer-events="all" style="cursor:grab"/>`;
   return h;
 }
 function attachAnchorDrag(l) {
