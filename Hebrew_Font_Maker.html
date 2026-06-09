@@ -155,9 +155,10 @@
   label.fld input[type=text], label.fld input[type=number], label.fld select {
     border: 1px solid var(--border); border-radius: 5px; padding: 5px 7px;
     font-size: 0.82rem; font-family: inherit; background: var(--white); color: var(--text); font-weight: 400;
+    width: 100%; min-width: 0; box-sizing: border-box;
   }
   .row2 { display: flex; gap: 8px; }
-  .row2 > * { flex: 1; }
+  .row2 > * { flex: 1; min-width: 0; }
   .inline { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; font-weight: 600; }
   .inline input[type=range] { flex: 1; accent-color: var(--gold); }
   .chk { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; cursor: pointer; }
@@ -489,6 +490,17 @@ const MARK_GLYPHS = {
   // CENTER (anchor centered)
   '05BC': [ circlePts(0,0,58) ],                                             // dagesh: dot in body
 };
+const MARK_NAMES = {
+  '05B0':'Sheva','05B1':'Hataf Segol','05B2':'Hataf Patach','05B3':'Hataf Qamats',
+  '05B4':'Hiriq','05B5':'Tsere','05B6':'Segol','05B7':'Patach','05B8':'Qamats','05BB':'Qubuts',
+  '05B9':'Holam','05C1':'Shin dot','05C2':'Sin dot','05BC':'Dagesh'
+};
+// ordered list driving the custom-nikkud grid
+const NIKKUD_MARKS = ['05B8','05B7','05B6','05B5','05B4','05BB','05B0','05B2','05B1','05B3','05B9','05C1','05C2','05BC']
+  .map(cp => ({ cp, name: MARK_NAMES[cp], cls: MARK_CLASS[cp] }));
+// Trop (cantillation) tables — populated in Phase 2; empty stubs so the mark machinery is generic.
+const TROP_CLASS = {}, TROP_GLYPHS = {}, TROP_NAMES = {};
+const TROP_MARKS = [];
 
 /* ── Font-unit metrics ── */
 const UPM = 1000, BASELINE = 0, LETTER_TOP = 600, LAMED_TOP = 800, DESCENDER = -250;
@@ -498,6 +510,7 @@ function markScale() { return (project && project.font && project.font.markScale
 
 /* ── Project state ── */
 let project = null;        // the full project object (schema in plan)
+let curKind = 'letter';    // 'letter' | 'nikkud' | 'trop' — what the workspace is editing
 let curCp = LETTER_ORDER[0];
 let workMode = 'align';
 
@@ -520,7 +533,9 @@ function newProject() {
     savedAt: new Date().toISOString(),
     font: {
       familyName: 'My Hebrew Hand', reservedFontName: 'My Hebrew Hand', copyright: '',
-      version: '1.000', unitsPerEm: UPM, markScale: 1.0,
+      version: '1.000', unitsPerEm: UPM, markScale: 1.0, tropScale: 1.0,
+      nikkud: { enabled: true,  mode: 'default', custom: {} },   // mode: 'default' | 'custom'
+      trop:   { enabled: false, mode: 'default', custom: {} },
       metrics: { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP, descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB }
     },
     template: { font: "'Noto Sans Hebrew', sans-serif", opacity: 0.35, showOverlay: true },
@@ -532,8 +547,86 @@ function newProject() {
   curCp = LETTER_ORDER[0]; workMode = 'align';
   syncMetaToForm(); renderLetterGrid(); setWorkMode('align'); status('New project.');
 }
-function curLetter() { return project.letters.find(l => l.codepoint === curCp); }
+/* ── Item indirection: the Align/Trace workspace operates on a generic "item" =
+   a letter OR a nikkud/trop mark. curLetter() stays as an alias so existing
+   letter call sites are untouched. ── */
+function curItem() {
+  if (curKind === 'letter') return project.letters.find(l => l.codepoint === curCp);
+  return customMark(curKind, curCp);
+}
+function curLetter() { return curItem(); }
 function letterMeta(cp) { return LETTERS.find(l => l.cp === cp); }
+function curMeta() { return curKind === 'letter' ? letterMeta(curCp) : null; }
+function markName(cp) { return MARK_NAMES[cp] || TROP_NAMES[cp] || cp; }
+function markClassOf(kind, cp) { return kind === 'trop' ? TROP_CLASS[cp] : MARK_CLASS[cp]; }
+function markItem(kind, cp) {
+  return {
+    codepoint: cp, name: markName(cp), cls: markClassOf(kind, cp) || 'above',
+    source: { kind: 'single', dataUrl: null, cropRect: null },
+    transform: [1,0,0,1,0,0], captureBox: null,
+    contours: null, advance: 0, anchors: null, placementSaved: false,
+    binThreshold: 128, invert: false, epsilon: 6,
+    designMode: 'editor', pieces: null
+  };
+}
+function customMark(kind, cp) {
+  const store = project.font[kind].custom;
+  if (!store[cp]) store[cp] = markItem(kind, cp);
+  return store[cp];
+}
+function selectItem(kind, cp) {
+  curKind = kind; curCp = cp; workMode = 'align';
+  renderGrids(); renderStage(); renderControls();
+}
+function renderGrids() {
+  renderLetterGrid();
+  if (typeof renderNikkudGrid === 'function') renderNikkudGrid();
+  if (typeof renderTropGrid === 'function') renderTropGrid();
+}
+/* ── Custom-mark geometry helpers ──
+   Custom mark contours are stored in workspace coords (natural for the editor); the
+   ATTACH origin is derived from the bbox + class. markGlyphContours() returns the
+   mark-local polygon list (origin at the attach point) for preview + export. */
+function markAttachOrigin(m) {
+  let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
+  (m.contours||[]).forEach(c => c.points.forEach(([x,y]) => { minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y); }));
+  if (minX>maxX) return { x:0, y:0 };
+  const midX=(minX+maxX)/2;
+  if (m.cls==='below') return { x:midX, y:maxY };   // attach at top-centre
+  if (m.cls==='above') return { x:midX, y:minY };   // attach at bottom-centre
+  return { x:midX, y:(minY+maxY)/2 };                // centre
+}
+function markGlyphContours(kind, cp) {
+  const f = project.font[kind];
+  if (f && f.mode === 'custom') {
+    const m = f.custom && f.custom[cp];
+    const cs = m && (m.designMode === 'editor' ? piecesToContours(m.pieces) : (m.contours||[]).map(c => c.points));
+    if (cs && cs.length) {
+      if (m.designMode === 'editor') return cs;                 // editor pieces are already mark-local
+      const o = markAttachOrigin(m);
+      return cs.map(pts => pts.map(([x,y]) => [x - o.x, y - o.y]));
+    }
+  }
+  return (kind === 'trop' ? TROP_GLYPHS[cp] : MARK_GLYPHS[cp]) || [];   // built-in default / fallback
+}
+function piecesToContours(pieces) {
+  if (!pieces || !pieces.length) return [];
+  return pieces.map(p => p.type === 'dot'
+    ? circlePts(p.cx, p.cy, p.r)
+    : rectPts(p.x0, p.y0, p.x1, p.y1));
+}
+function defaultPieces(kind, cp) {
+  // recover editable dots/bars from the built-in default polygons (circle→dot, rect→bar)
+  const polys = (kind === 'trop' ? TROP_GLYPHS[cp] : MARK_GLYPHS[cp]) || [];
+  return polys.map(poly => {
+    let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
+    poly.forEach(([x,y]) => { minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y); });
+    const w=maxX-minX, h=maxY-minY;
+    if (poly.length >= 10 && Math.abs(w-h) < Math.max(w,h)*0.35)   // round-ish → dot
+      return { type:'dot', cx:Math.round((minX+maxX)/2), cy:Math.round((minY+maxY)/2), r:Math.round((w+h)/4) };
+    return { type:'bar', x0:Math.round(minX), y0:Math.round(minY), x1:Math.round(maxX), y1:Math.round(maxY) };
+  });
+}
 
 /* ════════ Coordinate system (font units y-up ↔ stage px, mirrors nikkud_positioner) ════════ */
 const SC = 0.32, PADX = 175, BY = 445;
@@ -884,7 +977,7 @@ async function uploadSourceFont(file) {
 
 /* ════════ Stage rendering ════════ */
 function guideLinesSVG() {
-  const meta = letterMeta(curCp);
+  const meta = curMeta();
   // baseline + letter-top always; descender only for letters that actually drop below.
   const lines = [ [LETTER_TOP, 'top 600', '#3b6ea5'], [BASELINE, 'base 0', '#888'] ];
   if (meta && meta.desc) lines.push([DESCENDER, 'desc −250', '#a55']);
@@ -894,12 +987,16 @@ function guideLinesSVG() {
     h += `<line x1="35" y1="${y}" x2="498" y2="${y}" stroke="${col}" stroke-width="1" stroke-dasharray="${yv===0?'':'5 4'}"/>`;
     h += `<text x="502" y="${y+3.5}" fill="${col}" font-size="10" font-family="monospace">${label}</text>`;
   });
-  // vertical guides: a shaded "letter margin" zone on the left + a "letter width" line
+  // vertical guides: shaded "letter margin" zones on BOTH sides + a "letter width" line
   const adv = (curLetter().contours ? curLetter().advance : (_tplFit && _tplFit.advance)) || Math.round(LETTER_TOP*0.7);
-  const vy1 = fy(LETTER_TOP + 80), vy2 = fy(DESCENDER - 30);
-  const mx0 = fx(0), mx1 = fx(DEF_LSB), mcx = (mx0+mx1)/2, mcy = (vy1+vy2)/2;
-  h += `<rect x="${mx0}" y="${vy1}" width="${mx1-mx0}" height="${vy2-vy1}" fill="#c99" fill-opacity="0.10" stroke="#c99" stroke-width="1" stroke-dasharray="3 4" opacity="0.8"/>`;
-  h += `<text x="${mcx}" y="${mcy}" transform="rotate(-90 ${mcx} ${mcy})" text-anchor="middle" fill="#a05a5a" font-size="12" font-family="'Source Sans 3',sans-serif" opacity="0.35" style="dominant-baseline:central;">letter margin</text>`;
+  const vy1 = fy(LETTER_TOP + 80), vy2 = fy(DESCENDER - 30), mcy = (vy1+vy2)/2;
+  const marginZone = (x0f, x1f) => {
+    const a = fx(x0f), b = fx(x1f), cx = (a+b)/2;
+    return `<rect x="${a}" y="${vy1}" width="${b-a}" height="${vy2-vy1}" fill="#c99" fill-opacity="0.10" stroke="#c99" stroke-width="1" stroke-dasharray="3 4" opacity="0.8"/>`
+      + `<text x="${cx}" y="${mcy}" transform="rotate(-90 ${cx} ${mcy})" text-anchor="middle" fill="#a05a5a" font-size="12" font-family="'Source Sans 3',sans-serif" opacity="0.35" style="dominant-baseline:central;">letter margin</text>`;
+  };
+  h += marginZone(0, DEF_LSB);             // left side bearing
+  h += marginZone(adv - DEF_RSB, adv);     // right side bearing
   const wx = fx(adv);
   h += `<line x1="${wx}" y1="${vy1}" x2="${wx}" y2="${vy2}" stroke="#c99" stroke-width="1" stroke-dasharray="3 5"/>`;
   h += `<text x="${wx}" y="${vy2+13}" text-anchor="middle" fill="#c99" font-size="9" font-family="monospace">letter width</text>`;
@@ -1324,7 +1421,7 @@ function finalizeFromRaw(l, rawLoops) {
     out.forEach(c => c.points.forEach(p => { minX=Math.min(minX,p[0]); maxX=Math.max(maxX,p[0]); }));
     if (!isFinite(minX)) { minX = 0; maxX = LETTER_TOP*0.6; }
     l.advance = Math.round(maxX + DEF_RSB + Math.max(0, DEF_LSB - minX));
-    if (!l.anchors) seedAnchors(l);
+    if (!l.anchors && curKind === 'letter') seedAnchors(l);   // marks attach at origin, no base anchors
   }
   return out.length;
 }
@@ -1405,7 +1502,7 @@ let activeAnchorClass = 'below';
 let activeBelowVowel = '05B8';
 function activeVowelCp() { return activeAnchorClass === 'below' ? activeBelowVowel : (activeAnchorClass === 'above' ? '05B9' : '05BC'); }
 function markPreviewPath(cp, ax, ay) {
-  const s = markScale(); const contours = MARK_GLYPHS[cp] || [];
+  const s = markScale(); const contours = markGlyphContours('nikkud', cp);
   let d = '';
   contours.forEach(poly => { poly.forEach((p,i) => { const X=fx(ax+p[0]*s), Y=fy(ay+p[1]*s); d += (i===0?'M':'L')+X.toFixed(1)+' '+Y.toFixed(1)+' '; }); d+='Z '; });
   return d;
@@ -2145,6 +2242,13 @@ function migrateProject(data) {
   data.precomposed = data.precomposed || PRECOMPOSED.map(p => ({...p}));
   data.template = data.template || { font:"'Noto Sans Hebrew', sans-serif", opacity:0.35, showOverlay:true };
   if (data.font && data.font.markScale == null) data.font.markScale = 1.0;
+  if (data.font) {
+    if (data.font.tropScale == null) data.font.tropScale = 1.0;
+    if (!data.font.nikkud) data.font.nikkud = { enabled: true, mode: 'default', custom: {} };
+    if (!data.font.nikkud.custom) data.font.nikkud.custom = {};
+    if (!data.font.trop) data.font.trop = { enabled: false, mode: 'default', custom: {} };
+    if (!data.font.trop.custom) data.font.trop.custom = {};
+  }
   return data;
 }
 
