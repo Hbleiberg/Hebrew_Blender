@@ -722,6 +722,8 @@ function setWorkMode(mode) {
   document.getElementById('tabAlign').classList.toggle('active', mode === 'align');
   document.getElementById('tabTrace').classList.toggle('active', mode === 'trace');
   document.getElementById('tabAnchors').classList.toggle('active', mode === 'anchors');
+  // entering Trace with an image but no contours yet → trace once so the live preview shows
+  if (mode === 'trace' && curImageUrl() && !curLetter().contours) { traceCurrent(); return; }
   renderStage(); renderControls();
 }
 
@@ -1260,18 +1262,25 @@ function pointInPoly(pt, poly) {
   }
   return inside;
 }
-function traceCurrent() {
-  const l = curLetter(); const ras = rasterizeCurrent(l);
-  if (!ras) { status('No image to trace.'); return; }
+/* Trace is split so dragging the sliders can update live:
+   - rawLoopsFontUnits(): the expensive part (rasterize + marching-squares), cached.
+   - finalizeFromRaw():    the cheap part (RDP simplify + winding) — re-run on ε change.
+   threshold/invert/transform changes invalidate the cache (signature mismatch). */
+let _rawTrace = null;     // { sig, loops:[[ [x,y]... ] ...] } in font units, pre-RDP
+let _traceRAF = 0;
+function traceSig(l) {
+  return l.codepoint + '|' + (l.transform||[]).join(',') + '|' + l.binThreshold + '|' + l.invert
+       + '|' + JSON.stringify(l.captureBox || captureBoxFont(l)) + '|' + (curImageUrl()||'');
+}
+function rawLoopsFontUnits(l) {
+  const ras = rasterizeCurrent(l); if (!ras) return null;
   const loopsPx = marchingSquares(ras.grid, ras.gw, ras.gh);
-  if (!loopsPx.length) { status('No ink detected — adjust threshold / invert.'); l.contours = null; renderStage(); return; }
-  // map canvas px → font units (canvas was RES× the stage px)
   const RES = ras.RES;
-  let contours = loopsPx.map(loop => {
-    const fontPts = loop.map(([x,y]) => [ ifx(x/RES), ify(y/RES) ]);
-    return rdpClosed(fontPts, l.epsilon);
-  }).filter(c => c.length >= 3 && Math.abs(signedArea(c)) > 80);
-  // determine nesting depth → winding (outer CW = negative area in y-up)
+  return loopsPx.map(loop => loop.map(([x,y]) => [ ifx(x/RES), ify(y/RES) ]));
+}
+function finalizeFromRaw(l, rawLoops) {
+  let contours = rawLoops.map(loop => rdpClosed(loop, l.epsilon))
+    .filter(c => c.length >= 3 && Math.abs(signedArea(c)) > 80);
   contours.forEach(c => { c._depth = 0; });
   for (let i=0;i<contours.length;i++) for (let j=0;j<contours.length;j++) {
     if (i===j) continue;
@@ -1285,16 +1294,53 @@ function traceCurrent() {
     if (!wantOuter && area < 0) pts = pts.reverse();
     return { winding: wantOuter ? 'cw' : 'ccw', points: pts.map(p => [Math.round(p[0]), Math.round(p[1])]) };
   });
-  l.contours = out;
-  // advance width from ink bounds
-  let minX=Infinity, maxX=-Infinity;
-  out.forEach(c => c.points.forEach(p => { minX=Math.min(minX,p[0]); maxX=Math.max(maxX,p[0]); }));
-  if (!isFinite(minX)) { minX = 0; maxX = LETTER_TOP*0.6; }
-  l.advance = Math.round((maxX) + DEF_RSB + Math.max(0, DEF_LSB - minX));
-  l.anchors = null;
-  seedAnchors(l);
+  l.contours = out.length ? out : null;
+  if (out.length) {
+    let minX=Infinity, maxX=-Infinity;
+    out.forEach(c => c.points.forEach(p => { minX=Math.min(minX,p[0]); maxX=Math.max(maxX,p[0]); }));
+    if (!isFinite(minX)) { minX = 0; maxX = LETTER_TOP*0.6; }
+    l.advance = Math.round(maxX + DEF_RSB + Math.max(0, DEF_LSB - minX));
+    if (!l.anchors) seedAnchors(l);
+  }
+  return out.length;
+}
+function updateTraceInfo(l) {
+  const ti = document.getElementById('traceInfo');
+  if (ti) ti.textContent = l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : 'no ink detected';
+}
+function traceCurrent() {
+  const l = curLetter();
+  const raw = rawLoopsFontUnits(l);
+  if (!raw || !raw.length) { _rawTrace = null; l.contours = null; status('No ink detected — adjust threshold / invert.'); renderStage(); renderControls(); renderLetterGrid(); return; }
+  _rawTrace = { sig: traceSig(l), loops: raw };
+  const n = finalizeFromRaw(l, raw);
   renderLetterGrid(); renderStage(); renderControls();
-  status(`${l.name}: traced ${out.length} contour(s).`);
+  status(n ? `${l.name}: traced ${n} contour(s).` : 'No usable contours — adjust threshold.');
+}
+/* ε change — instant: re-simplify the cached loops (or recompute if the cache is stale). */
+function liveDetail(v) {   // slider reads as "detail"; ε is the inverse (0 = closest trace)
+  const l = curLetter(); l.epsilon = Math.max(0, 40 - (+v));
+  const ep = document.getElementById('epV'); if (ep) ep.textContent = Math.round(+v);
+  if (_rawTrace && _rawTrace.sig === traceSig(l)) { finalizeFromRaw(l, _rawTrace.loops); renderStage(); updateTraceInfo(l); }
+  else scheduleRetrace();
+}
+/* threshold/invert change — re-trace, throttled to one run per animation frame. */
+function liveThreshold(v) {
+  const l = curLetter(); l.binThreshold = +v;
+  const th = document.getElementById('thV'); if (th) th.textContent = v;
+  scheduleRetrace();
+}
+function liveInvert(checked) { curLetter().invert = checked; scheduleRetrace(); }
+function scheduleRetrace() {
+  if (_traceRAF) cancelAnimationFrame(_traceRAF);
+  _traceRAF = requestAnimationFrame(() => {
+    _traceRAF = 0;
+    const l = curLetter();
+    const raw = rawLoopsFontUnits(l);
+    _rawTrace = (raw && raw.length) ? { sig: traceSig(l), loops: raw } : null;
+    if (_rawTrace) finalizeFromRaw(l, raw); else l.contours = null;
+    renderStage(); updateTraceInfo(l);   // not renderControls — keep slider focus during drag
+  });
 }
 /* anchor X = bbox horizontal midpoint; for descender letters use the top ~52% band. */
 function glyphBBox(contours, topBandOnly, meta) {
@@ -1469,16 +1515,16 @@ function renderControls() {
     }
     c.innerHTML = `
       <div class="ctl-label">Trace — ${l.name}</div>
-      <div class="inline">Ink threshold <input type="range" min="20" max="240" value="${l.binThreshold}" oninput="curLetter().binThreshold=+this.value;document.getElementById('thV').textContent=this.value"> <span id="thV" class="readout">${l.binThreshold}</span></div>
-      <label class="chk"><input type="checkbox" ${l.invert?'checked':''} onchange="curLetter().invert=this.checked"> Invert (light ink on dark)</label>
-      <div class="inline">Smoothing (ε) <input type="range" min="1" max="20" value="${l.epsilon}" oninput="curLetter().epsilon=+this.value;document.getElementById('epV').textContent=this.value"> <span id="epV" class="readout">${l.epsilon}</span></div>
+      <div class="inline">Ink threshold <input type="range" min="1" max="254" value="${l.binThreshold}" oninput="liveThreshold(this.value)"> <span id="thV" class="readout">${l.binThreshold}</span></div>
+      <label class="chk"><input type="checkbox" ${l.invert?'checked':''} onchange="liveInvert(this.checked)"> Invert (light ink on dark)</label>
+      <div class="inline">Detail (less ↔ more) <input type="range" min="0" max="40" step="0.5" value="${(40 - l.epsilon).toFixed(1)}" oninput="liveDetail(this.value)"> <span id="epV" class="readout">${Math.round(40 - l.epsilon)}</span></div>
       <div class="ctl-row">
-        <button class="ctl-btn primary" onclick="traceCurrent()">Trace letter</button>
-        <button class="ctl-btn" onclick="curLetter().contours=null;renderStage();renderLetterGrid();">Clear</button>
-        ${ l.contours ? `<span class="readout">${l.contours.length} contour(s) · adv ${l.advance}</span>` : '' }
+        <button class="ctl-btn primary" onclick="traceCurrent()">Re-trace</button>
+        <button class="ctl-btn" onclick="curLetter().contours=null;_rawTrace=null;renderStage();renderControls();renderLetterGrid();">Clear</button>
+        <span id="traceInfo" class="readout">${ l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : '' }</span>
       </div>
       ${ l.contours ? `<div class="ctl-row"><button class="ctl-btn primary" onclick="setWorkMode('anchors')">Next: Nikkud →</button></div>` : '' }
-      <div class="hint">Marching-squares + Douglas–Peucker keeps block-letter corners crisp; counters (ס, ם, ע) punch out automatically.</div>`;
+      <div class="hint">Drag the sliders to refine the trace live. Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). Corners stay crisp and counters (ס, ם, ע) punch out automatically.</div>`;
   } else {
     if (!l.contours && !project.template.showOverlay) { c.innerHTML = `<div class="ctl-label">Nikkud — ${l.name}</div><div class="hint">Trace this letter first (step 2), or turn on “Show template glyph behind” to place nikkud on the reference.</div>`; return; }
     if (!l.anchors) seedAnchors(l);
