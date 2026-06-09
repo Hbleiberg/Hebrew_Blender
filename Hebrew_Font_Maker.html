@@ -615,8 +615,8 @@ const LETTER_ORDER = LETTERS.map(l => l.cp);
 /* Nikkud → mark class. below = under the letter; above = holam; center = dagesh. */
 const MARK_CLASS = {
   '05B0':'below', '05B1':'below', '05B2':'below', '05B3':'below', '05B4':'below',
-  '05B5':'below', '05B6':'below', '05B7':'below', '05B8':'below', '05BB':'below',
-  '05B9':'above', '05C1':'above', '05C2':'above',
+  '05B5':'below', '05B6':'below', '05B7':'below', '05B8':'below', '05BB':'below', '05C7':'below',
+  '05B9':'above', '05C1':'above', '05C2':'above', '05BF':'above',
   '05BC':'center'
 };
 /* Nikkud chart columns for the preview PDF (bare first, then the 9 marks). */
@@ -665,20 +665,22 @@ const MARK_GLYPHS = {
   '05B1': [ circlePts(-118,-125,28), circlePts(0,-125,28), circlePts(118,-125,28), circlePts(-59,-225,28), circlePts(118,-225,28) ], // hataf segol: top row of 3; bottom row = left dot nestled (x=-59), right dot directly under the top-right dot (x=118). Small/well-spaced so dots stay separate.
   '05B0': [ circlePts(0,-120,40), circlePts(0,-235,40) ],                     // sheva: 2 vertical dots
   '05BB': [ circlePts(-130,-115,38), circlePts(0,-165,38), circlePts(130,-215,38) ], // qubuts: 3 diagonal
+  '05C7': [ rectPts(-115,-150,115,-110), rectPts(-18,-250,18,-150) ],         // qamats qatan: same shape as qamats (distinct codepoint)
   // ABOVE (anchor at bottom-center; shapes extend upward)
   '05B9': [ circlePts(0,95,50) ],                                             // holam: dot above
   '05C1': [ circlePts(120,150,46) ],                                          // shin dot (upper right)
   '05C2': [ circlePts(-120,150,46) ],                                         // sin dot (upper left)
+  '05BF': [ rectPts(-115,95,115,130) ],                                       // rafe: thin horizontal bar above the letter
   // CENTER (anchor centered)
   '05BC': [ circlePts(0,0,58) ],                                             // dagesh: dot in body
 };
 const MARK_NAMES = {
   '05B0':'Sheva','05B1':'Hataf Segol','05B2':'Hataf Patach','05B3':'Hataf Qamats',
   '05B4':'Hiriq','05B5':'Tsere','05B6':'Segol','05B7':'Patach','05B8':'Qamats','05BB':'Qubuts',
-  '05B9':'Holam','05C1':'Shin dot','05C2':'Sin dot','05BC':'Dagesh'
+  '05B9':'Holam','05C1':'Shin dot','05C2':'Sin dot','05BC':'Dagesh','05C7':'Qamats Qatan','05BF':'Rafe'
 };
 // ordered list driving the custom-nikkud grid
-const NIKKUD_MARKS = ['05B8','05B7','05B6','05B5','05B4','05BB','05B0','05B2','05B1','05B3','05B9','05C1','05C2','05BC']
+const NIKKUD_MARKS = ['05B8','05B7','05B6','05B5','05B4','05BB','05B0','05B2','05B1','05B3','05B9','05C1','05C2','05BC','05C7','05BF']
   .map(cp => ({ cp, name: MARK_NAMES[cp], cls: MARK_CLASS[cp] }));
 // Trop (cantillation) — built-in geometric placeholders (above:y>0, below:y<0; origin 0,0 at the attach edge).
 const _tvb = (x,y0,y1,w=18) => rectPts(x-w,y0,x+w,y1);                      // vertical bar
@@ -2445,7 +2447,8 @@ const ANCHOR_COL = { below:'var(--below)', above:'var(--above)', center:'var(--c
 const BELOW_VOWELS = [
   { cp:'05B8', name:'Qamats' }, { cp:'05B7', name:'Patach' }, { cp:'05B6', name:'Segol' },
   { cp:'05B5', name:'Tsere' }, { cp:'05B4', name:'Hiriq' }, { cp:'05BB', name:'Qubuts' },
-  { cp:'05B0', name:'Sheva' }, { cp:'05B2', name:'Hataf Patach' }, { cp:'05B1', name:'Hataf Segol' }, { cp:'05B3', name:'Hataf Qamats' }
+  { cp:'05B0', name:'Sheva' }, { cp:'05B2', name:'Hataf Patach' }, { cp:'05B1', name:'Hataf Segol' }, { cp:'05B3', name:'Hataf Qamats' },
+  { cp:'05C7', name:'Qamats Qatan' }
 ];
 let activeAnchorClass = 'below';
 let activeBelowVowel = '05B8';
