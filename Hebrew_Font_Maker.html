@@ -3256,7 +3256,9 @@ const RECENT_KEY = 'hebrewFontMaker_recentProjects', MAX_RECENT = 6;
 function getRecentProjects() { try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch (e) { return []; } }
 function pushRecentProject(p) {
   let list = getRecentProjects();
-  const name = (p.font && p.font.familyName) || 'Untitled';
+  const fam = (p.font && p.font.familyName) || 'Untitled';
+  const res = (p.font && p.font.reservedFontName) || '';
+  const name = res ? `${fam} - ${res}` : fam;
   list = list.filter(r => r.name !== name);                       // newest copy of a name wins
   list.unshift({ name, savedAt: p.savedAt || new Date().toISOString(), data: p });
   if (list.length > MAX_RECENT) list = list.slice(0, MAX_RECENT);
