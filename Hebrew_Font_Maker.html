@@ -132,8 +132,8 @@
   .app { display: flex; align-items: flex-start; gap: 0; min-height: calc(100vh - 150px); }
   .sidebar {
     width: 320px; flex-shrink: 0; background: var(--white);
-    border-right: 1px solid var(--border); padding: 16px; overflow-y: auto;
-    display: flex; flex-direction: column; gap: 14px; max-height: calc(100vh - 150px);
+    border-right: 1px solid var(--border); padding: 16px;
+    display: flex; flex-direction: column; gap: 14px;
   }
   .workspace { flex: 1; padding: 16px 20px; min-width: 0; }
 
@@ -280,8 +280,9 @@
       <div class="panel-body">
         <div class="ctl-label">Input mode</div>
         <div class="mode-toggle">
-          <button class="mode-btn active" id="modeSingle" onclick="setInputMode('single')">One image / letter</button>
-          <button class="mode-btn" id="modeCombined" onclick="setInputMode('combined')">One combined sheet</button>
+          <button class="mode-btn active" id="modeSingle" onclick="setInputMode('single')">Per letter</button>
+          <button class="mode-btn" id="modeCombined" onclick="setInputMode('combined')">Combined</button>
+          <button class="mode-btn" id="modeFont" onclick="setInputMode('font')">Font (TTF)</button>
         </div>
         <div id="combinedUploadRow" style="display:none;">
           <div class="drop" id="combinedDrop" onclick="document.getElementById('combinedFile').click()">
@@ -290,10 +291,17 @@
           <input type="file" id="combinedFile" accept="image/*" style="display:none;">
           <div class="hint">Then pick a letter and drag a box around it to bring it into the editor.</div>
         </div>
+        <div id="fontUploadRow" style="display:none;">
+          <div class="drop" id="fontDrop" onclick="document.getElementById('sourceFontFile').click()">
+            Drop a font (TTF/OTF) here, or click to browse.
+          </div>
+          <input type="file" id="sourceFontFile" accept=".ttf,.otf,font/ttf,font/otf,application/font-sfnt" style="display:none;">
+          <div class="hint">Each Hebrew letter's outline is pulled straight from the font — then just set the nikkud anchors and export.</div>
+        </div>
         <label class="fld">Template font (tracing guide)
           <select id="templateFont" onchange="onTemplateChange()"></select>
         </label>
-        <button class="ctl-btn" style="font-size:0.74rem;width:100%;" onclick="document.getElementById('ttfTemplateFile').click()">⬆ Upload your own font (TTF/OTF)</button>
+        <button class="ctl-btn" style="font-size:0.74rem;width:100%;" onclick="document.getElementById('ttfTemplateFile').click()">⬆ Upload your own reference font</button>
         <input type="file" id="ttfTemplateFile" accept=".ttf,.otf,font/ttf,font/otf,application/font-sfnt" style="display:none;">
         <label class="chk"><input type="checkbox" id="showTemplate" checked onchange="renderStage()"> Show template glyph behind</label>
         <div class="inline">Opacity <input type="range" id="templateOpacity" min="0" max="100" value="35" oninput="renderStage()"> <span id="opacityVal">35%</span></div>
@@ -568,7 +576,9 @@ function syncMetaToForm() {
   document.getElementById('opacityVal').textContent = Math.round(project.template.opacity * 100) + '%';
   document.getElementById('modeSingle').classList.toggle('active', project.inputMode === 'single');
   document.getElementById('modeCombined').classList.toggle('active', project.inputMode === 'combined');
+  document.getElementById('modeFont').classList.toggle('active', project.inputMode === 'font');
   document.getElementById('combinedUploadRow').style.display = project.inputMode === 'combined' ? '' : 'none';
+  document.getElementById('fontUploadRow').style.display = project.inputMode === 'font' ? '' : 'none';
 }
 function onMetaChange() {
   project.font.familyName = document.getElementById('familyName').value;
@@ -788,6 +798,63 @@ function reselectArea() {
   renderLetterGrid(); renderStage(); renderControls();
 }
 
+/* ════════ Input mode: extract letters from an uploaded font (TTF/OTF) ════════
+   opentype.js reads the font; each Hebrew glyph's outline becomes that letter's
+   contours directly (curves flattened to straight segments), in 1000-UPM y-up
+   units. No scanning/tracing — go straight to nikkud. */
+let opentypeLoading = null;
+async function ensureOpentype() {
+  if (window.opentype) return window.opentype;
+  if (!opentypeLoading) opentypeLoading = loadScript('https://cdn.jsdelivr.net/npm/opentype.js@1.3.4/dist/opentype.min.js');
+  await opentypeLoading;
+  return window.opentype;
+}
+function flattenQuad(p0,p1,p2,n) { const o=[]; for (let i=1;i<=n;i++){ const t=i/n,u=1-t; o.push([u*u*p0[0]+2*u*t*p1[0]+t*t*p2[0], u*u*p0[1]+2*u*t*p1[1]+t*t*p2[1]]); } return o; }
+function flattenCubic(p0,p1,p2,p3,n) { const o=[]; for (let i=1;i<=n;i++){ const t=i/n,u=1-t; o.push([u*u*u*p0[0]+3*u*u*t*p1[0]+3*u*t*t*p2[0]+t*t*t*p3[0], u*u*u*p0[1]+3*u*u*t*p1[1]+3*u*t*t*p2[1]+t*t*t*p3[1]]); } return o; }
+function pathToContours(path) {
+  // path from glyph.getPath(0,0,1000): coords are 1000-UPM but y is screen-down,
+  // so negate y to restore the font's native y-up (preserves TrueType winding).
+  const contours = []; let cur = null, pen = [0,0];
+  path.commands.forEach(c => {
+    if (c.type === 'M') { if (cur && cur.length>=3) contours.push(cur); cur=[]; pen=[c.x,-c.y]; cur.push(pen.slice()); }
+    else if (c.type === 'L') { pen=[c.x,-c.y]; cur.push(pen.slice()); }
+    else if (c.type === 'Q') { const p1=[c.x1,-c.y1], p2=[c.x,-c.y]; flattenQuad(pen,p1,p2,8).forEach(p=>cur.push(p)); pen=p2; }
+    else if (c.type === 'C') { const p1=[c.x1,-c.y1], p2=[c.x2,-c.y2], p3=[c.x,-c.y]; flattenCubic(pen,p1,p2,p3,10).forEach(p=>cur.push(p)); pen=p3; }
+    else if (c.type === 'Z') { if (cur && cur.length>=3) contours.push(cur); cur=null; }
+  });
+  if (cur && cur.length>=3) contours.push(cur);
+  return contours
+    .map(pts => rdpClosed(pts, 1.2))
+    .filter(pts => pts.length>=3 && Math.abs(signedArea(pts))>40)
+    .map(pts => ({ winding: signedArea(pts) < 0 ? 'cw' : 'ccw', points: pts.map(p => [Math.round(p[0]), Math.round(p[1])]) }));
+}
+async function uploadSourceFont(file) {
+  status('Reading font…', true);
+  try {
+    const ot = await ensureOpentype();
+    const font = ot.parse(await file.arrayBuffer());
+    let n = 0;
+    LETTERS.forEach(L => {
+      const l = project.letters.find(x => x.codepoint === L.cp);
+      l.source = { kind:'font', dataUrl:null, cropRect:null };
+      const glyph = font.charToGlyph(String.fromCodePoint(parseInt(L.cp,16)));
+      if (!glyph || glyph.index === 0) { l.contours = null; l.anchors = null; return; }
+      const contours = pathToContours(glyph.getPath(0, 0, 1000));
+      if (!contours.length) { l.contours = null; l.anchors = null; return; }
+      l.contours = contours;
+      const scale = 1000 / font.unitsPerEm;
+      let adv = Math.round((glyph.advanceWidth || 0) * scale);
+      if (!adv) { let mx=0, mn=1e9; contours.forEach(c=>c.points.forEach(p=>{mx=Math.max(mx,p[0]);mn=Math.min(mn,p[0]);})); adv = Math.round(mx + DEF_RSB + Math.max(0, DEF_LSB - mn)); }
+      l.advance = adv;
+      l.anchors = null; seedAnchors(l); n++;
+    });
+    project.inputMode = 'font';
+    syncMetaToForm(); renderLetterGrid(); setWorkMode('anchors');
+    status(`Loaded ${n}/27 letters from ${file.name}. Set nikkud, then export.`);
+    if (!n) askModal('No Hebrew glyphs found', 'That font has no outlines for the Hebrew base letters (U+05D0–05EA). Try a Hebrew font.', [{label:'OK'}]);
+  } catch (e) { console.error(e); status(''); askModal('Font read failed', '<span class="warn">'+(e.message||e)+'</span>', [{label:'OK'}]); }
+}
+
 /* ════════ Stage rendering ════════ */
 function guideLinesSVG() {
   const lines = [
@@ -862,6 +929,10 @@ async function renderStage() {
       h += `<image href="${url}" x="0" y="0" transform="matrix(${m.join(' ')})" style="image-rendering:auto;" opacity="0.92"/>`;
       // transform handles drawn after image (corners + rotate)
       h += transformHandlesSVG(l);
+    } else if (l.contours) {
+      // font-source mode: outline already loaded, nothing to align
+      h += `<path d="${contoursToPath(l.contours)}" fill="#3a4150" fill-rule="nonzero"/>`;
+      h += `<text x="300" y="540" text-anchor="middle" fill="#9aa0aa" font-size="12">Loaded from font — set nikkud in step 3.</text>`;
     } else {
       h += `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="14">No image yet — upload below.</text>`;
     }
@@ -1221,6 +1292,15 @@ function renderControls() {
   const c = document.getElementById('controls'); if (!project) { c.innerHTML=''; return; }
   const l = curLetter();
   if (workMode === 'align') {
+    if (project.inputMode === 'font') {
+      c.innerHTML = `
+        <div class="ctl-label">Align — ${l.name} (${l.codepoint})</div>
+        <div class="hint">${ l.contours
+          ? 'Outline loaded from your font file — no alignment needed. Go to <b>Nikkud</b> to place the vowels.'
+          : 'No glyph for this letter was found in the uploaded font. Try another font, or switch input mode to add it from an image.' }</div>
+        ${ l.contours ? `<div class="ctl-row"><button class="ctl-btn primary" onclick="setWorkMode('anchors')">Next: Nikkud →</button></div>` : '' }`;
+      return;
+    }
     const hasImg = !!curImageUrl();
     let intro;
     if (l.source.kind === 'single') {
@@ -1262,6 +1342,13 @@ function renderControls() {
       wireDrop('letterDrop', f => uploadForCurrent(f));
     }
   } else if (workMode === 'trace') {
+    if (project.inputMode === 'font') {
+      c.innerHTML = `
+        <div class="ctl-label">Trace — ${l.name}</div>
+        <div class="hint">This letter came from a font file, so it's already vectorized — no tracing needed. Go to <b>Nikkud</b>.</div>
+        ${ l.contours ? `<div class="ctl-row"><button class="ctl-btn primary" onclick="setWorkMode('anchors')">Next: Nikkud →</button></div>` : '' }`;
+      return;
+    }
     c.innerHTML = `
       <div class="ctl-label">Trace — ${l.name}</div>
       <div class="inline">Ink threshold <input type="range" min="20" max="240" value="${l.binThreshold}" oninput="curLetter().binThreshold=+this.value;document.getElementById('thV').textContent=this.value"> <span id="thV" class="readout">${l.binThreshold}</span></div>
@@ -1859,12 +1946,14 @@ function init() {
   newProject();
   // restore input-mode pref
   const im = localStorage.getItem('hebrewFontMaker_inputMode');
-  if (im === 'combined') setInputMode('combined');
+  if (im === 'combined' || im === 'font') setInputMode(im);
   // global file inputs
   document.getElementById('projFile').addEventListener('change', e => { if (e.target.files[0]) loadProjectFile(e.target.files[0]); e.target.value=''; });
   document.getElementById('combinedFile').addEventListener('change', e => { if (e.target.files[0]) uploadCombined(e.target.files[0]); e.target.value=''; });
   document.getElementById('ttfTemplateFile').addEventListener('change', e => { if (e.target.files[0]) uploadTemplateTTF(e.target.files[0]); e.target.value=''; });
+  document.getElementById('sourceFontFile').addEventListener('change', e => { if (e.target.files[0]) uploadSourceFont(e.target.files[0]); e.target.value=''; });
   wireDrop('combinedDrop', f => uploadCombined(f));
+  wireDrop('fontDrop', f => uploadSourceFont(f));
   if (!window.WebAssembly || !window.FontFace) {
     status('Heads up: this browser may not support font export (needs WASM + FontFace).', true);
   }
