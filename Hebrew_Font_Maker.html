@@ -893,14 +893,15 @@ function guideLinesSVG() {
     h += `<line x1="35" y1="${y}" x2="498" y2="${y}" stroke="${col}" stroke-width="1" stroke-dasharray="${yv===0?'':'5 4'}"/>`;
     h += `<text x="502" y="${y+3.5}" fill="${col}" font-size="10" font-family="monospace">${label}</text>`;
   });
-  // vertical side-bearing guides — labelled (left side bearing + advance width)
+  // vertical guides: a shaded "letter margin" zone on the left + a "letter width" line
   const adv = curLetter().advance || Math.round(LETTER_TOP*0.7);
   const vy1 = fy(LETTER_TOP + 80), vy2 = fy(DESCENDER - 30);
-  [[DEF_LSB,'LSB'], [adv,'advance']].forEach(([xv,label]) => {
-    const x = fx(xv);
-    h += `<line x1="${x}" y1="${vy1}" x2="${x}" y2="${vy2}" stroke="#c99" stroke-width="1" stroke-dasharray="3 5"/>`;
-    h += `<text x="${x}" y="${vy2+13}" text-anchor="middle" fill="#c99" font-size="9" font-family="monospace">${label}</text>`;
-  });
+  const mx0 = fx(0), mx1 = fx(DEF_LSB), mcx = (mx0+mx1)/2, mcy = (vy1+vy2)/2;
+  h += `<rect x="${mx0}" y="${vy1}" width="${mx1-mx0}" height="${vy2-vy1}" fill="#c99" fill-opacity="0.10" stroke="#c99" stroke-width="1" stroke-dasharray="3 4" opacity="0.8"/>`;
+  h += `<text x="${mcx}" y="${mcy}" transform="rotate(-90 ${mcx} ${mcy})" text-anchor="middle" fill="#a05a5a" font-size="12" font-family="'Source Sans 3',sans-serif" opacity="0.35" style="dominant-baseline:central;">letter margin</text>`;
+  const wx = fx(adv);
+  h += `<line x1="${wx}" y1="${vy1}" x2="${wx}" y2="${vy2}" stroke="#c99" stroke-width="1" stroke-dasharray="3 5"/>`;
+  h += `<text x="${wx}" y="${vy2+13}" text-anchor="middle" fill="#c99" font-size="9" font-family="monospace">letter width</text>`;
   return h;
 }
 function captureBoxFont(l) {
@@ -1040,7 +1041,7 @@ function renderLegend() {
     const col = c==='below'?'var(--below)':(c==='above'?'var(--above)':'var(--center)');
     el.innerHTML = `<span><span class="dot" style="background:${col}"></span>Previewing the <b>${ANCHOR_LABEL[c]}</b> vowel — drag the handle, or use arrow keys (Shift = 1 unit).</span>`;
   } else if (workMode === 'align') {
-    el.innerHTML = `<span>Drag the letter to move · drag a corner ◻ to scale (Shift = uniform) · ● to rotate.</span>`;
+    el.innerHTML = `<span>Drag the letter to move · corner ◻ scales (keeps shape) · side ▭ squishes that direction · ● rotates.</span>`;
   } else {
     el.innerHTML = `<span>Adjust threshold &amp; smoothing, then Trace. Corners stay crisp; counters punch out.</span>`;
   }
@@ -1059,16 +1060,37 @@ function transformHandlesSVG(l) {
   const c = imgCorners(l); if (!c) return '';
   let h = `<polygon points="${c.tl.join(',')} ${c.tr.join(',')} ${c.br.join(',')} ${c.bl.join(',')}" fill="none" stroke="var(--gold)" stroke-width="1" opacity="0.7"/>`;
   const hs = 6;
-  [['tl',c.tl],['tr',c.tr],['br',c.br],['bl',c.bl]].forEach(([k,p]) => {
-    h += `<rect class="th-corner" data-c="${k}" x="${p[0]-hs}" y="${p[1]-hs}" width="${hs*2}" height="${hs*2}" fill="#fff" stroke="var(--navy)" stroke-width="1.4" style="cursor:nwse-resize"/>`;
+  // corner handles → proportional (fixed-aspect) scale
+  [['tl',c.tl,'nwse-resize'],['tr',c.tr,'nesw-resize'],['br',c.br,'nwse-resize'],['bl',c.bl,'nesw-resize']].forEach(([k,p,cur]) => {
+    h += `<rect class="th-corner" data-c="${k}" x="${p[0]-hs}" y="${p[1]-hs}" width="${hs*2}" height="${hs*2}" fill="#fff" stroke="var(--navy)" stroke-width="1.4" style="cursor:${cur}"/>`;
+  });
+  // edge-midpoint handles → squish / stretch one axis
+  const mid = (a,b) => [(a[0]+b[0])/2, (a[1]+b[1])/2];
+  [['t', mid(c.tl,c.tr), 'ns-resize'], ['b', mid(c.bl,c.br), 'ns-resize'],
+   ['l', mid(c.tl,c.bl), 'ew-resize'], ['r', mid(c.tr,c.br), 'ew-resize']].forEach(([k,p,cur]) => {
+    const horiz = (k==='t'||k==='b'); const ew = horiz ? 9 : 5, eh = horiz ? 5 : 9;
+    h += `<rect class="th-edge" data-c="${k}" x="${p[0]-ew}" y="${p[1]-eh}" width="${ew*2}" height="${eh*2}" rx="2" fill="var(--gold)" stroke="#fff" stroke-width="1.2" style="cursor:${cur}"/>`;
   });
   // rotate handle above top-center
   const tcx = (c.tl[0]+c.tr[0])/2, tcy = (c.tl[1]+c.tr[1])/2;
   const dx = tcx - c.center[0], dy = tcy - c.center[1], len = Math.hypot(dx,dy)||1;
-  const rh = [tcx + dx/len*26, tcy + dy/len*26];
+  const rh = [tcx + dx/len*30, tcy + dy/len*30];
   h += `<line x1="${tcx}" y1="${tcy}" x2="${rh[0]}" y2="${rh[1]}" stroke="var(--gold)" stroke-width="1"/>`;
   h += `<circle class="th-rotate" cx="${rh[0]}" cy="${rh[1]}" r="6" fill="var(--gold)" stroke="#fff" stroke-width="1.4" style="cursor:grab"/>`;
   return h;
+}
+function scaleHandleSpec(handle, w, h) {
+  switch (handle) {
+    case 'tl': return { fixed:[w,h],   grab:[0,0], axes:'xy' };
+    case 'tr': return { fixed:[0,h],   grab:[w,0], axes:'xy' };
+    case 'br': return { fixed:[0,0],   grab:[w,h], axes:'xy' };
+    case 'bl': return { fixed:[w,0],   grab:[0,h], axes:'xy' };
+    case 'l':  return { fixed:[w,h/2], grab:[0,h/2], axes:'x' };
+    case 'r':  return { fixed:[0,h/2], grab:[w,h/2], axes:'x' };
+    case 't':  return { fixed:[w/2,h], grab:[w/2,0], axes:'y' };
+    case 'b':  return { fixed:[w/2,0], grab:[w/2,h], axes:'y' };
+    default:   return { fixed:[w,h],   grab:[0,0], axes:'xy' };
+  }
 }
 /* Global transform-drag controller: pointerdown is wired per-render on the
    handle elements; pointermove/up live once on the <svg> (see init) so they
@@ -1081,8 +1103,8 @@ function attachTransformDrag(l) {
     tDrag = { type:'move', start: clientToStage(e), m0: l.transform.slice() };
     sv.setPointerCapture(e.pointerId); e.preventDefault();
   });
-  sv.querySelectorAll('.th-corner').forEach(el => el.addEventListener('pointerdown', e => {
-    tDrag = { type:'scale', corner: el.dataset.c, start: clientToStage(e), m0: l.transform.slice() };
+  sv.querySelectorAll('.th-corner, .th-edge').forEach(el => el.addEventListener('pointerdown', e => {
+    tDrag = { type:'scale', handle: el.dataset.c, start: clientToStage(e), m0: l.transform.slice() };
     sv.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault();
   }));
   const rot = sv.querySelector('.th-rotate');
@@ -1106,11 +1128,12 @@ function onStagePointerMove(e) {
   } else if (tDrag.type === 'scale') {
     const minv = M.inv(m0); const pl = M.apply(minv, p[0], p[1]);
     const im = imgCache[curImageUrl()]; if (!im) return; const w = im.width, ht = im.height;
-    const fixed = { tl:[w,ht], tr:[0,ht], br:[0,0], bl:[w,0] }[tDrag.corner];
-    const grabL = { tl:[0,0], tr:[w,0], br:[w,ht], bl:[0,ht] }[tDrag.corner];
-    let sx = (pl[0]-fixed[0])/((grabL[0]-fixed[0])||1);
-    let sy = (pl[1]-fixed[1])/((grabL[1]-fixed[1])||1);
-    if (e.shiftKey) { const s = (Math.abs(sx)+Math.abs(sy))/2; sx = Math.sign(sx||1)*s; sy = Math.sign(sy||1)*s; }
+    const spec = scaleHandleSpec(tDrag.handle, w, ht);
+    const fixed = spec.fixed, grabL = spec.grab;
+    let sx = 1, sy = 1;
+    if (spec.axes.indexOf('x') >= 0) sx = (pl[0]-fixed[0])/((grabL[0]-fixed[0])||1);
+    if (spec.axes.indexOf('y') >= 0) sy = (pl[1]-fixed[1])/((grabL[1]-fixed[1])||1);
+    if (spec.axes === 'xy') { const s = (Math.abs(sx)+Math.abs(sy))/2; sx = Math.sign(sx||1)*s; sy = Math.sign(sy||1)*s; }  // corners keep aspect
     sx = Math.max(0.02, Math.abs(sx)); sy = Math.max(0.02, Math.abs(sy));
     const Sadj = M.mul(M.translate(fixed[0],fixed[1]), M.mul(M.scale(sx,sy), M.translate(-fixed[0],-fixed[1])));
     l.transform = M.mul(m0, Sadj);
