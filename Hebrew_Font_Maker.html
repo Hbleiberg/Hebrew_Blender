@@ -185,14 +185,15 @@
   .lt-dot.img { background: #d08c2a; }
   .lt-dot.traced { background: #3b82f6; }
   .lt-dot.anchored { background: #10b981; }
+  .lt-dot.saved { background: #10b981; color: #fff; width: 13px; height: 13px; top: 2px; left: 2px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; line-height: 1; }
 
   /* ── Workspace stage ── */
   .work-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
   .wtab { padding: 7px 16px; border: 1px solid var(--border); border-radius: 7px 7px 0 0; background: var(--cream); cursor: pointer; font-size: 0.84rem; font-weight: 700; color: var(--muted); }
   .wtab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
-  .stage-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 8px; max-width: 560px; margin: 0 auto; overflow: auto; max-height: 74vh; }
+  .stage-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 8px; max-width: 720px; margin: 0 auto; overflow: auto; max-height: 74vh; }
   #stage { width: 100%; height: auto; display: block; touch-action: none; background: var(--white); border-radius: 6px; }
-  .zoom-bar { display: flex; align-items: center; gap: 8px; max-width: 560px; margin: 0 auto 8px; font-size: 0.82rem; color: var(--muted); }
+  .zoom-bar { display: flex; align-items: center; gap: 8px; max-width: 720px; margin: 0 auto 8px; font-size: 0.82rem; color: var(--muted); }
   .zoom-bar input[type=range] { flex: 1; accent-color: var(--gold); }
   .zoom-val { font-family: ui-monospace, Menlo, monospace; min-width: 44px; text-align: right; }
   .zoom-reset { padding: 3px 9px; font-size: 0.72rem; }
@@ -275,7 +276,7 @@
         <label class="fld">Copyright
           <input type="text" id="copyright" value="" placeholder="Copyright (c) 2026 Your Name" oninput="onMetaChange()">
         </label>
-        <div class="hint">Each export bumps the version so re-installs don't load a stale cached copy. Delete the old install first if your editor caches by family name.</div>
+        <div class="hint">Every time you export, the version number ticks up automatically. If you already installed an earlier copy of this font, delete it first so your computer picks up the new one.</div>
       </div>
     </div>
 
@@ -499,6 +500,7 @@ function blankLetter(L) {
     contours: null,             // [{winding:'cw'|'ccw', points:[[x,y]...]}] font units
     advance: null,
     anchors: null,              // {below:{x,y}, above:{x,y}, center:{x,y}}
+    placementSaved: false,      // user confirmed the nikkud placement (green ✓)
     binThreshold: 128, invert: false, epsilon: 6
   };
 }
@@ -693,9 +695,10 @@ function renderLetterGrid() {
   LETTERS.forEach(L => {
     const l = project.letters.find(x => x.codepoint === L.cp);
     const st = letterStatus(l); if (st === 'anchored') done++;
+    const saved = l.placementSaved && l.anchors;
     const tile = document.createElement('div');
     tile.className = 'ltile' + (L.cp === curCp ? ' sel' : '');
-    tile.innerHTML = `<span class="lt-dot ${st}"></span>
+    tile.innerHTML = `<span class="lt-dot ${saved?'saved':st}">${saved?'✓':''}</span>
       <span class="lt-heb">${String.fromCodePoint(parseInt(L.cp,16))}</span>
       <span class="lt-name">${L.name}</span>`;
     tile.onclick = () => { curCp = L.cp; renderLetterGrid(); renderStage(); renderControls(); };
@@ -993,10 +996,9 @@ function renderLegend() {
     return;
   }
   if (workMode === 'anchors') {
-    el.innerHTML = `<span><span class="dot" style="background:var(--below)"></span>below vowels</span>
-      <span><span class="dot" style="background:var(--above)"></span>above (holam)</span>
-      <span><span class="dot" style="background:var(--center)"></span>dagesh / center</span>
-      <span>Drag a handle; arrow keys nudge (Shift = 1).</span>`;
+    const c = activeAnchorClass;
+    const col = c==='below'?'var(--below)':(c==='above'?'var(--above)':'var(--center)');
+    el.innerHTML = `<span><span class="dot" style="background:${col}"></span>Previewing the <b>${ANCHOR_LABEL[c]}</b> vowel — drag the handle, or use arrow keys (Shift = 1 unit).</span>`;
   } else if (workMode === 'align') {
     el.innerHTML = `<span>Drag the letter to move · drag a corner ◻ to scale (Shift = uniform) · ● to rotate.</span>`;
   } else {
@@ -1284,22 +1286,28 @@ function seedAnchors(l) {
 
 /* ════════ Anchor editor (nikkud) ════════ */
 const ANCHOR_CLASSES = [['below','var(--below)'],['above','var(--above)'],['center','var(--center)']];
-let lastAnchorClass = 'below';
-function markPreviewPath(cls, ax, ay) {
-  // pick a representative mark glyph for the class
-  const rep = cls==='below' ? '05B8' : (cls==='above' ? '05B9' : '05BC');
-  const contours = MARK_GLYPHS[rep];
+const ANCHOR_LABEL = { below:'Below', above:'Above (Holam)', center:'Dagesh (Center)' };
+const BELOW_VOWELS = [
+  { cp:'05B8', name:'Qamats' }, { cp:'05B7', name:'Patach' }, { cp:'05B6', name:'Segol' },
+  { cp:'05B5', name:'Tsere' }, { cp:'05B4', name:'Hiriq' }, { cp:'05BB', name:'Qubuts' },
+  { cp:'05B0', name:'Sheva' }, { cp:'05B2', name:'Hataf Patach' }, { cp:'05B1', name:'Hataf Segol' }, { cp:'05B3', name:'Hataf Qamats' }
+];
+let activeAnchorClass = 'below';
+let activeBelowVowel = '05B8';
+function activeVowelCp() { return activeAnchorClass === 'below' ? activeBelowVowel : (activeAnchorClass === 'above' ? '05B9' : '05BC'); }
+function markPreviewPath(cp, ax, ay) {
+  const contours = MARK_GLYPHS[cp] || [];
   let d = '';
   contours.forEach(poly => { poly.forEach((p,i) => { const X=fx(ax+p[0]), Y=fy(ay+p[1]); d += (i===0?'M':'L')+X.toFixed(1)+' '+Y.toFixed(1)+' '; }); d+='Z '; });
   return d;
 }
 function anchorHandlesSVG(l) {
-  let h = '';
-  ANCHOR_CLASSES.forEach(([cls,col]) => {
-    const a = l.anchors[cls];
-    h += `<path d="${markPreviewPath(cls,a.x,a.y)}" fill="${col}" opacity="0.35"/>`;
-    h += `<circle class="anc" data-cls="${cls}" cx="${fx(a.x)}" cy="${fy(a.y)}" r="9" fill="${col}" stroke="#fff" stroke-width="2" style="cursor:grab"/>`;
-  });
+  // Only the active class is shown — its mark drawn SOLID so the letter previews
+  // with that vowel, plus a draggable handle at the anchor.
+  const cls = activeAnchorClass; const a = l.anchors[cls];
+  const col = cls==='below'?'var(--below)':(cls==='above'?'var(--above)':'var(--center)');
+  let h = `<path d="${markPreviewPath(activeVowelCp(), a.x, a.y)}" fill="#3a4150"/>`;
+  h += `<circle class="anc" data-cls="${cls}" cx="${fx(a.x)}" cy="${fy(a.y)}" r="9" fill="${col}" stroke="#fff" stroke-width="2" opacity="0.9" style="cursor:grab"/>`;
   return h;
 }
 function attachAnchorDrag(l) {
@@ -1307,7 +1315,7 @@ function attachAnchorDrag(l) {
   sv.querySelectorAll('.anc').forEach(el => {
     const cls = el.dataset.cls; let grab = null;
     el.addEventListener('pointerdown', e => {
-      lastAnchorClass = cls; el.setPointerCapture(e.pointerId);
+      el.setPointerCapture(e.pointerId);
       const [fxp,fyp] = clientToFont(e); const a = l.anchors[cls]; grab = [a.x-fxp, a.y-fyp];
       e.preventDefault();
     });
@@ -1318,6 +1326,14 @@ function attachAnchorDrag(l) {
     });
     el.addEventListener('pointerup', () => { grab = null; renderLetterGrid(); });
   });
+}
+function setAnchorClass(cls) { activeAnchorClass = cls; renderStage(); renderControls(); }
+function setBelowVowel(cp) { activeBelowVowel = cp; renderStage(); renderControls(); }
+function savePlacement() {
+  const l = curLetter();
+  if (!l.anchors) { status('Set the nikkud anchors first.'); return; }
+  l.placementSaved = true; renderLetterGrid(); renderControls();
+  status('Placement saved for ' + l.name + ' ✓');
 }
 
 /* ════════ Per-mode controls panel ════════ */
@@ -1395,16 +1411,29 @@ function renderControls() {
       ${ l.contours ? `<div class="ctl-row"><button class="ctl-btn primary" onclick="setWorkMode('anchors')">Next: Nikkud →</button></div>` : '' }
       <div class="hint">Marching-squares + Douglas–Peucker keeps block-letter corners crisp; counters (ס, ם, ע) punch out automatically.</div>`;
   } else {
-    if (!l.anchors && l.contours) seedAnchors(l);
+    if (!l.contours) { c.innerHTML = `<div class="ctl-label">Nikkud — ${l.name}</div><div class="hint">Trace this letter first (step 2).</div>`; return; }
+    if (!l.anchors) seedAnchors(l);
+    const cls = activeAnchorClass, a = l.anchors[cls];
+    const classBtns = ANCHOR_CLASSES.map(([k]) =>
+      `<button class="ctl-btn ${cls===k?'primary':''}" onclick="setAnchorClass('${k}')">${ANCHOR_LABEL[k]}</button>`).join('');
+    const vowelBtns = cls === 'below'
+      ? `<div class="ctl-label" style="margin-top:8px;">Preview under-vowel</div>
+         <div class="ctl-row" style="flex-wrap:wrap;gap:5px;">` +
+         BELOW_VOWELS.map(v => `<button class="ctl-btn ${activeBelowVowel===v.cp?'primary':''}" style="padding:4px 8px;font-size:0.73rem;" onclick="setBelowVowel('${v.cp}')">${v.name}</button>`).join('') +
+         `</div>` : '';
     c.innerHTML = `
-      <div class="ctl-label">Nikkud anchors — ${l.name}</div>
-      <div id="ancReadouts"></div>
+      <div class="ctl-row">
+        <button class="ctl-btn ${l.placementSaved?'':'primary'}" style="font-weight:700;${l.placementSaved?'background:#10b981;color:#fff;border-color:#10b981;':''}" onclick="savePlacement()">${l.placementSaved?'✓ Placement saved':'Save Placement'}</button>
+      </div>
+      <div class="ctl-label" style="margin-top:8px;">Nikkud — ${l.name}: place the…</div>
+      <div class="ctl-row">${classBtns}</div>
+      ${vowelBtns}
+      <div class="readline" style="margin-top:8px;"><span>${ANCHOR_LABEL[cls]} anchor</span><span class="readout">x ${a.x}, y ${a.y}</span></div>
       <div class="ctl-row">
         <button class="ctl-btn" onclick="seedAnchors(curLetter());renderStage();renderControls();renderLetterGrid();">Reset letter</button>
         <button class="ctl-btn" onclick="resetAllAnchors()">Reset all</button>
       </div>
-      <div class="hint">The “below” anchor moves <b>all</b> below-vowels together (anchor model). X defaults to the body midpoint (top band for descenders).</div>`;
-    renderAncReadouts(l);
+      <div class="hint">Drag the handle on the letter (or use the arrow keys) to position the ${ANCHOR_LABEL[cls].toLowerCase()} vowel.${cls==='below'?' All under-vowels share this one anchor — the buttons above just preview each shape.':''}</div>`;
   }
 }
 function renderAncReadouts(l) {
@@ -1447,7 +1476,7 @@ document.addEventListener('keydown', e => {
   if (e.key==='ArrowLeft') dx=-step; else if (e.key==='ArrowRight') dx=step;
   else if (e.key==='ArrowUp') dy=step; else if (e.key==='ArrowDown') dy=-step; else return;
   e.preventDefault();
-  const a = l.anchors[lastAnchorClass]; a.x += dx; a.y += dy;
+  const a = l.anchors[activeAnchorClass]; a.x += dx; a.y += dy;
   renderStage(); renderControls();
 });
 
@@ -1486,6 +1515,9 @@ function buildFontSpec() {
 
   // .notdef: simple box
   glyphs['.notdef'] = { contours: [ rectPts(60,0,460,700) ], advance: 540 };
+  // space (U+0020) — without a real space glyph, words render with no gaps
+  glyphs['space'] = { contours: [], advance: 260 };
+  glyphOrder.push('space'); cmap[0x20] = 'space';
 
   // base letters
   LETTERS.forEach(L => {
@@ -1655,7 +1687,9 @@ async function exportFont() {
   doExport();
 }
 async function doExport() {
-  document.getElementById('exportBtn').disabled = true;
+  const btn = document.getElementById('exportBtn');
+  btn.disabled = true;
+  status('Starting export…', true);
   try {
     // bump version
     const v = (parseFloat(project.font.version)||1.0) + 0.001;
@@ -1667,7 +1701,7 @@ async function doExport() {
     const spec = buildFontSpec();
     pyodide.globals.set('hfm_spec_json', JSON.stringify(spec));
     const res = JSON.parse(pyodide.runPython('hfm_build(hfm_spec_json)'));
-    if (res.error) { status(''); askModal('Build failed', '<span class="warn">'+res.error+'</span>', [{label:'OK'}]); document.getElementById('exportBtn').disabled=false; return; }
+    if (res.error) { status(''); askModal('Build failed', '<span class="warn">'+res.error+'</span>', [{label:'OK'}]); return; }
     const bytes = b64ToBytes(res.ttf_b64);
 
     // harfbuzz shaping gate
@@ -1676,24 +1710,23 @@ async function doExport() {
     if (gate && gate.fail) {
       askModal('Shaping check failed',
         `<span class="warn">${gate.msg}</span><br><br>This usually means the nikkud anchors didn't take. You can still download, but vowels may be misplaced.`,
-        [ {label:'Cancel', cls:'ghost', onClick:()=>{document.getElementById('exportBtn').disabled=false;}},
-          {label:'Download anyway', onClick: ()=>{ finishDownload(bytes); }} ]);
+        [ {label:'Cancel', cls:'ghost'}, {label:'Download anyway', onClick: () => finishDownload(bytes) } ]);
       return;
     }
     finishDownload(bytes, gate && gate.skipped);
   } catch (err) {
     console.error(err); status('');
     askModal('Export error', '<span class="warn">'+(err && err.message || err)+'</span>', [{label:'OK'}]);
-    document.getElementById('exportBtn').disabled = false;
+  } finally {
+    btn.disabled = false;   // never leave the button stuck disabled
   }
 }
 function finishDownload(bytes, gateSkipped) {
   const fam = (project.font.familyName||'MyHebrewFont').replace(/\s+/g,'');
   downloadBlob(new Blob([bytes], {type:'font/ttf'}), fam + '.ttf');
-  downloadBlob(new Blob([oflText()], {type:'text/plain'}), 'OFL.txt');
+  setTimeout(() => downloadBlob(new Blob([oflText()], {type:'text/plain'}), 'OFL.txt'), 400);
   window._lastFontBytes = bytes;   // for preview PDF
-  status('Exported ' + fam + '.ttf' + (gateSkipped ? ' (shaping check skipped)' : ' ✓'));
-  document.getElementById('exportBtn').disabled = false;
+  status('Exported ' + fam + '.ttf' + (gateSkipped ? ' (shaping check skipped)' : ' ✓ — also saved OFL.txt'));
 }
 function downloadBlob(blob, name) {
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
@@ -1856,55 +1889,60 @@ async function generatePreviewPDF() {
     const fam = 'HFMPreview_' + Date.now();
     const ff = new FontFace(fam, window._lastFontBytes.buffer.slice(0));
     await ff.load(); document.fonts.add(ff);
-
-    const sheet = document.createElement('div');
-    sheet.style.cssText = 'position:fixed;left:-3000px;top:0;width:794px;background:#fff;color:#111;padding:40px;font-family:'+"'Source Sans 3',sans-serif"+';';
     const HF = `font-family:'${fam}';direction:rtl;`;
-    // cover
-    let html = `<div style="text-align:center;border-bottom:3px solid #1a2744;padding-bottom:14px;margin-bottom:18px;">
-        <div style="font-family:'Libre Baskerville',serif;font-size:26px;color:#1a2744;">${escapeHtml(project.font.familyName)}</div>
-        <div style="color:#666;font-size:12px;">Hebrew Font Maker specimen · v${project.font.version}</div>
-      </div>`;
-    html += `<div style="${HF}font-size:54px;text-align:center;line-height:1.5;margin:10px 0 6px;">שָׁלוֹם עוֹלָם</div>`;
-    html += `<div style="${HF}font-size:30px;text-align:center;line-height:1.7;margin:6px 0 14px;">בְּרֵאשִׁית בָּרָא אֱלֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָרֶץ</div>`;
-    html += `<div style="text-align:center;color:#666;font-size:12px;margin-bottom:8px;">special &amp; precomposed forms</div>`;
-    html += `<div style="${HF}font-size:40px;text-align:center;letter-spacing:6px;margin-bottom:18px;">שׁ שׂ וֹ וּ בּ כּ פּ תּ</div>`;
-    // chart
-    html += `<table style="width:100%;border-collapse:collapse;${HF}font-size:22px;">`;
-    html += `<tr><td style="border:1px solid #ccc;"></td>`;
-    CHART_COLS.forEach(col => { html += `<td style="border:1px solid #ccc;font-family:'Source Sans 3';direction:ltr;font-size:9px;color:#666;text-align:center;padding:2px;">${col.label}</td>`; });
-    html += `</tr>`;
-    LETTERS.forEach(L => {
-      const ch = String.fromCodePoint(parseInt(L.cp,16));
-      html += `<tr><td style="border:1px solid #ccc;font-family:'Source Sans 3';direction:ltr;font-size:8px;color:#888;text-align:center;">${L.name}</td>`;
-      CHART_COLS.forEach(col => {
-        const cell = col.cp ? ch + String.fromCodePoint(parseInt(col.cp,16)) : ch;
-        html += `<td style="border:1px solid #eee;text-align:center;padding:3px 2px;">${cell}</td>`;
-      });
-      html += `</tr>`;
-    });
-    html += `</table>`;
-    sheet.innerHTML = html;
-    document.body.appendChild(sheet);
-    await new Promise(r => setTimeout(r, 150));   // let the font apply
-
-    const canvas = await html2canvas(sheet, { scale: 2, backgroundColor: '#ffffff' });
-    sheet.remove();
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ unit:'pt', format:'a4' });
     const pw = pdf.internal.pageSize.getWidth(), ph = pdf.internal.pageSize.getHeight();
-    const iw = pw - 40, ih = iw * canvas.height / canvas.width;
-    let y = 20, remaining = ih, sy = 0;
-    // paginate the tall canvas
-    const pageImgH = ph - 40;
-    while (remaining > 0) {
-      const sliceH = Math.min(pageImgH, remaining);
-      const part = document.createElement('canvas');
-      part.width = canvas.width; part.height = sliceH * canvas.width / iw;
-      part.getContext('2d').drawImage(canvas, 0, sy * canvas.width / iw, canvas.width, part.height, 0, 0, canvas.width, part.height);
-      pdf.addImage(part.toDataURL('image/png'), 'PNG', 20, 20, iw, sliceH);
-      remaining -= sliceH; sy += sliceH;
-      if (remaining > 0) pdf.addPage();
+    const margin = 28, availW = pw - margin*2, availH = ph - margin*2;
+    let first = true;
+
+    // Render one self-contained DOM as exactly one PDF page (scaled to fit — so
+    // cells never split across a page boundary and the page count stays small).
+    async function addPage(inner) {
+      const sheet = document.createElement('div');
+      sheet.style.cssText = 'position:fixed;left:-5000px;top:0;width:794px;box-sizing:border-box;'
+        + 'background:#fff;color:#111;padding:34px;overflow:hidden;font-family:' + "'Source Sans 3',sans-serif" + ';';
+      sheet.innerHTML = inner;
+      document.body.appendChild(sheet);
+      await new Promise(r => setTimeout(r, 60));
+      const canvas = await html2canvas(sheet, { scale: 2, backgroundColor: '#ffffff' });
+      sheet.remove();
+      let w = availW, h = availW * canvas.height / canvas.width;
+      if (h > availH) { h = availH; w = availH * canvas.width / canvas.height; }   // fit within one page
+      if (!first) pdf.addPage();
+      first = false;
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', (pw - w) / 2, margin, w, h);
+    }
+
+    // Cover page
+    await addPage(
+      `<div style="text-align:center;border-bottom:3px solid #1a2744;padding-bottom:14px;margin-bottom:24px;">
+         <div style="font-family:'Libre Baskerville',serif;font-size:27px;color:#1a2744;">${escapeHtml(project.font.familyName)}</div>
+         <div style="color:#666;font-size:12px;">Hebrew Font Maker specimen · v${escapeHtml(project.font.version)}</div>
+       </div>
+       <div style="${HF}font-size:52px;text-align:center;line-height:1.7;margin:20px 0;">שָׁלוֹם עוֹלָם</div>
+       <div style="${HF}font-size:27px;text-align:center;line-height:1.95;margin:20px 0;">בְּרֵאשִׁית בָּרָא אֱלֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָרֶץ</div>
+       <div style="text-align:center;color:#666;font-size:12px;margin:26px 0 8px;">special &amp; precomposed forms</div>
+       <div style="${HF}font-size:40px;text-align:center;letter-spacing:12px;line-height:1.6;">שׁ שׂ וֹ וּ בּ כּ פּ תּ</div>`
+    );
+
+    // Letter × Nikkud chart — split into row chunks so a cell never spans pages
+    const headRow = `<tr><td style="border:1px solid #ccc;"></td>` +
+      CHART_COLS.map(c => `<td style="border:1px solid #ccc;font-family:'Source Sans 3';direction:ltr;font-size:9px;color:#666;text-align:center;padding:3px;">${c.label}</td>`).join('') + `</tr>`;
+    const PER = 14;
+    for (let i = 0; i < LETTERS.length; i += PER) {
+      const rows = LETTERS.slice(i, i + PER).map(L => {
+        const ch = String.fromCodePoint(parseInt(L.cp, 16));
+        const cells = CHART_COLS.map(c => {
+          const cell = c.cp ? ch + String.fromCodePoint(parseInt(c.cp, 16)) : ch;
+          return `<td style="border:1px solid #eee;text-align:center;padding:6px 3px;">${cell}</td>`;
+        }).join('');
+        return `<tr><td style="border:1px solid #ccc;font-family:'Source Sans 3';direction:ltr;font-size:8px;color:#888;text-align:center;padding:3px;">${escapeHtml(L.name)}</td>${cells}</tr>`;
+      }).join('');
+      await addPage(
+        `<div style="text-align:center;font-family:'Libre Baskerville',serif;font-size:14px;color:#1a2744;margin-bottom:16px;">Letter × Nikkud${i > 0 ? ' (continued)' : ''}</div>
+         <table style="width:100%;border-collapse:collapse;table-layout:fixed;line-height:1.2;${HF}font-size:25px;">${headRow}${rows}</table>`
+      );
     }
     pdf.save((project.font.familyName||'font').replace(/\s+/g,'_') + '_specimen.pdf');
     status('Preview PDF saved.');
@@ -1953,6 +1991,7 @@ function migrateProject(data) {
     if (!ex.transform) ex.transform = [1,0,0,1,0,0];
     if (ex.binThreshold == null) ex.binThreshold = 128;
     if (ex.epsilon == null) ex.epsilon = 6;
+    if (ex.placementSaved == null) ex.placementSaved = false;
     if (ex.invert == null) ex.invert = false;
     return ex;
   });
