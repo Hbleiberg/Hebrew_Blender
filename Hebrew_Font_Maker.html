@@ -150,6 +150,8 @@
   .panel.collapsed .panel-title::after { transform: rotate(-90deg); }
   .panel.collapsed .panel-body { display: none; }
   .panel-body { padding: 12px; display: flex; flex-direction: column; gap: 9px; }
+  .menu-allbtns { display: flex; gap: 6px; }
+  .menu-allbtns .ctl-btn { flex: 1; text-align: center; }
 
   label.fld { display: flex; flex-direction: column; gap: 3px; font-size: 0.76rem; font-weight: 600; color: var(--text); }
   label.fld input[type=text], label.fld input[type=number], label.fld select {
@@ -277,6 +279,10 @@
 <button class="sb-tab" id="sbShow" onclick="toggleSidebar()" title="Show sidebar">›</button>
 <div class="app">
   <aside class="sidebar">
+    <div class="menu-allbtns">
+      <button class="ctl-btn" onclick="expandAllMenus()">Expand all</button>
+      <button class="ctl-btn" onclick="collapseAllMenus()">Collapse all</button>
+    </div>
     <div class="panel">
       <div class="panel-title">Font Details</div>
       <div class="panel-body">
@@ -363,7 +369,8 @@
     <div class="work-tabs">
       <div class="wtab active" id="tabAlign" onclick="setWorkMode('align')">1 · Align</div>
       <div class="wtab" id="tabTrace" onclick="setWorkMode('trace')">2 · Trace</div>
-      <div class="wtab" id="tabAnchors" onclick="setWorkMode('anchors')">3 · Nikkud</div>
+      <div class="wtab" id="tabAnchors" onclick="gotoAnchors('nikkud')">3 · Nikkud</div>
+      <div class="wtab" id="tabTrop" onclick="gotoAnchors('trop')" style="display:none;">4 · Trop</div>
     </div>
 
     <div class="zoom-bar">
@@ -590,6 +597,7 @@ let project = null;        // the full project object (schema in plan)
 let curKind = 'letter';    // 'letter' | 'nikkud' | 'trop' — what the workspace is editing
 let curCp = LETTER_ORDER[0];
 let workMode = 'align';
+let anchorCat = 'nikkud';   // which anchor category the placement step shows: 'nikkud' | 'trop'
 
 function blankLetter(L) {
   return {
@@ -611,8 +619,8 @@ function newProject() {
     font: {
       familyName: 'My Hebrew Hand', reservedFontName: 'My Hebrew Hand', copyright: '',
       version: '1.000', unitsPerEm: UPM, markScale: 1.0, tropScale: 1.0,
-      nikkud: { enabled: true,  mode: 'default', custom: {} },   // mode: 'default' | 'custom'
-      trop:   { enabled: false, mode: 'default', custom: {} },
+      nikkud: { enabled: true,  mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },   // mode: 'default' | 'custom'; uploadMode: 'perSymbol' | 'combined'
+      trop:   { enabled: false, mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },
       metrics: { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP, descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB },
       spacing: { letterSpacing: 0, wordSpacing: 260, lineSpacing: 0, sample: 'שלום עולם' }
     },
@@ -914,13 +922,36 @@ function renderMarkPanel(cat) {
       </div>`;
     if (cat === 'trop') h += `<div class="hint" style="margin-top:9px;color:var(--muted);">Trop attaches to the typed letter (and stacks above/below a vowel). Word-edge accents like pashta, segolta &amp; zarqa can't auto-jump to the word edge — a font limitation.</div>`;
     if (f.mode === 'custom') {
-      if (marks.length) h += `<div class="hint" style="margin-top:9px;">Click a mark to design it (draw or upload). Undesigned marks use the default shape.</div>
-        <div class="letter-grid" id="${cat}Grid"></div>`;
-      else h += `<div class="hint" style="margin-top:9px;">Custom ${label} marks &amp; the built-in set are coming in the next update.</div>`;
+      if (marks.length) {
+        const um = f.uploadMode || 'perSymbol';
+        h += `<div class="hint" style="margin-top:9px;">Upload mode</div>
+          <div class="mode-toggle">
+            <button class="mode-btn ${um==='perSymbol'?'active':''}" onclick="setMarkUploadMode('${cat}','perSymbol')">Per Symbol</button>
+            <button class="mode-btn ${um==='combined'?'active':''}" onclick="setMarkUploadMode('${cat}','combined')">Combined</button>
+          </div>`;
+        if (um === 'combined') {
+          const has = f.combinedImage && f.combinedImage.dataUrl;
+          h += `<div class="drop" id="${cat}SheetDrop">Drop a sheet of ${label} symbols, or click to browse.</div>
+            <input type="file" id="${cat}SheetFile" accept="image/*" style="display:none;">
+            <div class="hint">${ has ? 'Sheet loaded ✓ — pick a symbol below, then drag a box around it on the canvas.' : 'Then pick a symbol below and drag a box around it on the canvas.' }</div>`;
+        }
+        h += `<div class="hint" style="margin-top:9px;">${ um==='combined'
+          ? 'Click a mark, then drag a box around it on the sheet. Undesigned marks use the default shape.'
+          : 'Click a mark to design it (draw or upload). Undesigned marks use the default shape.' }</div>
+          <div class="letter-grid" id="${cat}Grid"></div>`;
+      } else h += `<div class="hint" style="margin-top:9px;">Custom ${label} marks &amp; the built-in set are coming in the next update.</div>`;
     }
   }
   el.innerHTML = h;
   if (f.enabled && f.mode === 'custom' && marks.length) renderMarkGrid(cat);
+  if (f.enabled && f.mode === 'custom' && marks.length && (f.uploadMode||'perSymbol') === 'combined') {
+    const fi = document.getElementById(cat + 'SheetFile'), dz = document.getElementById(cat + 'SheetDrop');
+    if (dz && fi) {
+      dz.onclick = () => fi.click();
+      fi.addEventListener('change', e => { if (e.target.files[0]) uploadMarkSheet(cat, e.target.files[0]); e.target.value=''; });
+      wireDrop(cat + 'SheetDrop', f2 => uploadMarkSheet(cat, f2));
+    }
+  }
 }
 /* Mark preview drawn from our OWN glyph outlines (default or the user's custom design),
    not the system font — a dotted "letter" circle with the actual mark shape attached
@@ -966,15 +997,35 @@ function renderTropGrid()    { renderMarkGrid('trop'); }
 function setMarkEnabled(cat, on) {
   project.font[cat].enabled = on;
   if (!on && curKind === cat) { selectItem('letter', LETTER_ORDER[0]); return; }   // leave the now-disabled mark editor
-  // if the placement (anchors) step is no longer available, drop back to Align
-  if (workMode === 'anchors' && !(project.font.nikkud.enabled || project.font.trop.enabled)) setWorkMode('align');
+  // keep the placement step on a valid category (or drop back to Align if neither is on)
+  if (workMode === 'anchors' && curKind === 'letter') {
+    if (!project.font.nikkud.enabled && !project.font.trop.enabled) setWorkMode('align');
+    else if (!on && anchorCat === cat) gotoAnchors(cat === 'nikkud' ? 'trop' : 'nikkud');
+    else setWorkMode('anchors');
+  }
   renderGrids();
-  updateTabs();   // show/hide + relabel the "3 · Nikkud / Marks" placement tab right away
+  updateTabs();   // show/hide the Nikkud / Trop placement tabs right away
 }
 function setMarkMode(cat, mode) {
   project.font[cat].mode = mode;
   if (mode !== 'custom' && curKind === cat) { selectItem('letter', LETTER_ORDER[0]); return; }
   renderGrids();
+}
+/* Per-symbol vs. Combined-sheet upload for a whole mark category. Combined shows the
+   crop-from-sheet workspace (like the letters' Combined mode); Per Symbol keeps the
+   Simple editor / single-image upload per mark. */
+function setMarkUploadMode(cat, mode) {
+  project.font[cat].uploadMode = mode;
+  renderMarkPanel(cat);
+  if (curKind === cat) setWorkMode('align');   // re-show the workspace as crop-select or per-symbol
+}
+async function uploadMarkSheet(cat, file) {
+  const url = await readFileAsDataUrl(file);
+  project.font[cat].combinedImage.dataUrl = url;
+  await loadImg(url);
+  renderMarkPanel(cat);
+  if (curKind === cat) setWorkMode('align');
+  status(`${cat === 'nikkud' ? 'Nikkud' : 'Trop'} sheet loaded. Pick a symbol, then drag a box around it.`);
 }
 
 /* ════════ Work mode (Align / Trace / Nikkud) ════════ */
@@ -986,13 +1037,29 @@ function setWorkMode(mode) {
     mode = 'align';                            // letters-only font: no marks step
   }
   workMode = mode;
+  if (mode === 'anchors') {   // keep anchorCat on an enabled category
+    if (anchorCat === 'trop' && !project.font.trop.enabled) anchorCat = 'nikkud';
+    if (anchorCat === 'nikkud' && !project.font.nikkud.enabled && project.font.trop.enabled) anchorCat = 'trop';
+  }
+  const onAnch = mode === 'anchors';
   document.getElementById('tabAlign').classList.toggle('active', mode === 'align');
   document.getElementById('tabTrace').classList.toggle('active', mode === 'trace');
-  document.getElementById('tabAnchors').classList.toggle('active', mode === 'anchors');
+  document.getElementById('tabAnchors').classList.toggle('active', onAnch && anchorCat === 'nikkud');
+  document.getElementById('tabTrop').classList.toggle('active', onAnch && anchorCat === 'trop');
   // entering Trace with an image but no contours yet → trace once so the live preview shows
   if (mode === 'trace' && curImageUrl() && !curLetter().contours) { traceCurrent(); return; }
   renderStage(); renderControls();
 }
+/* Go to the placement step for a specific category (Nikkud or Trop tab). */
+function gotoAnchors(cat) {
+  if (cat === 'trop' && !project.font.trop.enabled) cat = 'nikkud';
+  if (cat === 'nikkud' && !project.font.nikkud.enabled && project.font.trop.enabled) cat = 'trop';
+  anchorCat = cat;
+  activeAnchorClass = cat === 'trop' ? 'tropAbove' : 'below';
+  setWorkMode('anchors');
+}
+function expandAllMenus()   { document.querySelectorAll('.sidebar .panel').forEach(p => p.classList.remove('collapsed')); }
+function collapseAllMenus() { document.querySelectorAll('.sidebar .panel').forEach(p => p.classList.add('collapsed')); }
 
 /* ════════ Image upload ════════ */
 const imgCache = {};   // dataUrl → HTMLImageElement
@@ -1037,8 +1104,14 @@ function defaultFitTransform(im) {
    box around the letter and that region is cropped into its own image, then runs
    through the normal Align → Trace → Nikkud flow. */
 let cropDrag = null, cropFit = null;
+/* The combined sheet for the current kind: the project sheet for letters, or the
+   per-category sheet for nikkud/trop marks. */
+function curCombinedSheet() { return curKind === 'letter' ? project.combinedImage : project.font[curKind].combinedImage; }
 function isCropSelect(l) {
-  return workMode === 'align' && l.source.kind === 'combined' && project.combinedImage.dataUrl && !l.source.dataUrl;
+  if (workMode !== 'align' || l.source.dataUrl) return false;
+  const sheet = curCombinedSheet();
+  if (!sheet || !sheet.dataUrl) return false;
+  return curKind === 'letter' ? (l.source.kind === 'combined') : (project.font[curKind].uploadMode === 'combined');
 }
 function computeCropFit(im) {
   const mg = 16, VW = STAGE_VB.w, VH = STAGE_VB.h;
@@ -1048,18 +1121,19 @@ function computeCropFit(im) {
 }
 function imgRectToStage(r, f) { return { x:f.ox+r.x*f.s, y:f.oy+r.y*f.s, w:r.w*f.s, h:r.h*f.s }; }
 function cropSelectSVG(l) {
-  const im = imgCache[project.combinedImage.dataUrl];
+  const sheetUrl = curCombinedSheet().dataUrl;
+  const im = imgCache[sheetUrl];
   if (!im) return `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="14">Loading sheet…</text>`;
   cropFit = computeCropFit(im); const f = cropFit;
   const V = STAGE_VB;
   let h = `<rect x="${V.x}" y="${V.y}" width="${V.w}" height="${V.h}" fill="var(--cream)"/>`;
-  h += `<image id="cropImg" href="${project.combinedImage.dataUrl}" x="${f.ox}" y="${f.oy}" width="${f.w}" height="${f.h}" style="cursor:crosshair;"/>`;
+  h += `<image id="cropImg" href="${sheetUrl}" x="${f.ox}" y="${f.oy}" width="${f.w}" height="${f.h}" style="cursor:crosshair;"/>`;
   const box = (cropDrag && cropDrag.box) || (l.source.cropRect ? imgRectToStage(l.source.cropRect, f) : null);
   if (box && box.w > 0 && box.h > 0) {
     h += `<path d="M${V.x} ${V.y}H${V.x+V.w}V${V.y+V.h}H${V.x}Z M${box.x} ${box.y}v${box.h}h${box.w}v${-box.h}Z" fill="rgba(13,18,32,0.45)" fill-rule="evenodd" pointer-events="none"/>`;
     h += `<rect x="${box.x}" y="${box.y}" width="${box.w}" height="${box.h}" fill="none" stroke="var(--gold)" stroke-width="2" pointer-events="none"/>`;
   }
-  const heb = String.fromCodePoint(parseInt(l.codepoint,16));
+  const heb = (curKind === 'letter' ? '' : String.fromCodePoint(0x25CC)) + String.fromCodePoint(parseInt(l.codepoint,16));
   h += `<text x="300" y="${V.y+20}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--navy)" style="paint-order:stroke;stroke:#fff;stroke-width:4px;" pointer-events="none">Select area for ${l.name} ${heb} — drag a box around it</text>`;
   return h;
 }
@@ -1069,7 +1143,7 @@ function startCrop(e) {
   stage().setPointerCapture(e.pointerId); e.preventDefault();
 }
 async function finalizeCrop(l, stageBox) {
-  const im = imgCache[project.combinedImage.dataUrl]; const f = cropFit; if (!im || !f) { renderStage(); return; }
+  const im = imgCache[curCombinedSheet().dataUrl]; const f = cropFit; if (!im || !f) { renderStage(); return; }
   let ix = (stageBox.x - f.ox)/f.s, iy = (stageBox.y - f.oy)/f.s;
   let iw = stageBox.w/f.s, ih = stageBox.h/f.s;
   ix = Math.max(0, Math.min(ix, im.width)); iy = Math.max(0, Math.min(iy, im.height));
@@ -1079,16 +1153,17 @@ async function finalizeCrop(l, stageBox) {
   cv.getContext('2d').drawImage(im, rect.x, rect.y, rect.w, rect.h, 0, 0, rect.w, rect.h);
   const url = cv.toDataURL('image/png');
   l.source.cropRect = rect; l.source.dataUrl = url;
+  if (curKind !== 'letter') l.designMode = 'upload';   // a cropped mark behaves like an uploaded one (coherent if its category later switches to Per Symbol)
   const cim = await loadImg(url);
   l.transform = defaultFitTransform(cim);
   l.contours = null; l.anchors = null;
-  renderLetterGrid(); renderStage(); renderControls();
+  renderGrids(); renderStage(); renderControls();
   status(`${l.name}: area selected — align, then trace.`);
 }
 function reselectArea() {
   const l = curLetter();
   l.source.dataUrl = null; l.contours = null; l.anchors = null;
-  renderLetterGrid(); renderStage(); renderControls();
+  renderGrids(); renderStage(); renderControls();
 }
 
 /* ════════ Input mode: extract letters from an uploaded font (TTF/OTF) ════════
@@ -1214,12 +1289,20 @@ function markGuidesSVG() {
 }
 function renderMarkStage(it) {
   const sv = stage(); _tplFit = null;
-  if (it.designMode === 'editor') {
+  const combined = project.font[curKind].uploadMode === 'combined';
+  // Combined-sheet crop selection takes precedence over the per-symbol editor/upload
+  if (isCropSelect(it)) {
+    sv.innerHTML = cropSelectSVG(it);
+    const ci = sv.querySelector('#cropImg');
+    if (ci) ci.addEventListener('pointerdown', startCrop);
+    renderLegend(); return;
+  }
+  if (!combined && it.designMode === 'editor') {
     if (!it.pieces) it.pieces = defaultPieces(curKind, it.codepoint);
     sv.innerHTML = markGuidesSVG() + editorStageSVG(it);
     attachEditorDrag(it); renderLegend(); return;
   }
-  // upload path — reuse the image align/trace rendering
+  // upload path — reuse the image align/trace rendering (also used by combined after cropping)
   let h = markGuidesSVG();
   const cb = captureBoxFont(it);
   h += `<rect x="${fx(cb.x0)}" y="${fy(cb.y1)}" width="${fx(cb.x1)-fx(cb.x0)}" height="${fy(cb.y0)-fy(cb.y1)}" fill="none" stroke="var(--gold)" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.7"/>`;
@@ -1286,26 +1369,30 @@ function editorDeletePiece() {
 function setMarkDesignMode(mode) { curItem().designMode = mode; renderGrids(); renderStage(); renderControls(); }
 function updateTabs() {
   const isMark = curKind !== 'letter';
-  const editor = isMark && curItem().designMode === 'editor';
+  const combined = isMark && project.font[curKind].uploadMode === 'combined';
+  const editor = isMark && !combined && curItem().designMode === 'editor';
   document.getElementById('tabAlign').textContent = editor ? 'Design' : '1 · Align';
   document.getElementById('tabTrace').style.display = editor ? 'none' : '';
-  const showAnchors = !isMark && (project.font.nikkud.enabled || project.font.trop.enabled);
   const ta = document.getElementById('tabAnchors');
-  ta.style.display = showAnchors ? '' : 'none';
-  ta.textContent = project.font.trop.enabled ? '3 · Marks' : '3 · Nikkud';
+  ta.style.display = (!isMark && project.font.nikkud.enabled) ? '' : 'none';
+  ta.textContent = '3 · Nikkud';
+  const tt = document.getElementById('tabTrop');
+  tt.style.display = (!isMark && project.font.trop.enabled) ? '' : 'none';
+  tt.textContent = '4 · Trop';
 }
 function renderMarkControls(c, it) {
   const cat = curKind, label = cat==='nikkud' ? 'Nikkud' : 'Trop';
+  const combined = project.font[cat].uploadMode === 'combined';
   const heb = String.fromCodePoint(0x25CC) + String.fromCodePoint(parseInt(it.codepoint,16));
   let h = `<div class="ctl-row" style="justify-content:space-between;">
       <div class="ctl-label">${label}: ${it.name} <span style="font-size:1.15rem;">${heb}</span></div>
       <button class="ctl-btn" onclick="selectItem('letter', LETTER_ORDER[0])">← Letters</button>
-    </div>
-    <div class="mode-toggle" style="margin:6px 0;">
+    </div>`;
+  if (!combined) h += `<div class="mode-toggle" style="margin:6px 0;">
       <button class="mode-btn ${it.designMode==='editor'?'active':''}" onclick="setMarkDesignMode('editor')">Simple editor</button>
       <button class="mode-btn ${it.designMode==='upload'?'active':''}" onclick="setMarkDesignMode('upload')">Upload image</button>
     </div>`;
-  if (it.designMode === 'editor') {
+  if (!combined && it.designMode === 'editor') {
     h += `<div class="ctl-row">
         <button class="ctl-btn" onclick="editorAddPiece('dot')">+ Dot</button>
         <button class="ctl-btn" onclick="editorAddPiece('bar')">+ Bar</button>
@@ -1322,14 +1409,26 @@ function renderMarkControls(c, it) {
         <span id="traceInfo" class="readout">${it.contours?`${it.contours.length} contour(s)`:''}</span>
       </div>`;
   } else {
-    h += `<div class="drop" id="markDrop">Drop an image of <b>${it.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('markFile').click()">browse</span>.</div>
-      <input type="file" id="markFile" accept="image/*" style="display:none;">`;
+    if (combined) {
+      const hasSheet = project.font[cat].combinedImage && project.font[cat].combinedImage.dataUrl;
+      if (!curImageUrl()) {
+        h += `<div class="hint">${ hasSheet
+          ? `Drag a box around <b>${it.name}</b> on the sheet above to bring it into the editor.`
+          : `Combined mode: upload a sheet of ${label} symbols in the sidebar first, then drag a box around <b>${it.name}</b>.` }</div>`;
+      } else {
+        h += `<div class="hint">Region selected for <b>${it.name}</b>. Fine-tune below, then trace.</div>
+          <div class="ctl-row"><button class="ctl-btn" onclick="reselectArea()">↺ Re-select area</button></div>`;
+      }
+    } else {
+      h += `<div class="drop" id="markDrop">Drop an image of <b>${it.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('markFile').click()">browse</span>.</div>
+        <input type="file" id="markFile" accept="image/*" style="display:none;">`;
+    }
     if (curImageUrl()) h += `<div class="ctl-row">
         <button class="ctl-btn" onclick="nudgeScale(1.06,1.06)">Scale +</button><button class="ctl-btn" onclick="nudgeScale(0.94,0.94)">Scale −</button>
         <button class="ctl-btn primary" onclick="setWorkMode('trace')">Next: Trace →</button></div>`;
   }
   c.innerHTML = h;
-  if (it.designMode === 'upload' && workMode === 'align') {
+  if (!combined && it.designMode === 'upload' && workMode === 'align') {
     const mf = document.getElementById('markFile');
     if (mf) mf.addEventListener('change', e => { if (e.target.files[0]) uploadForCurrent(e.target.files[0]); });
     wireDrop('markDrop', f => uploadForCurrent(f));
@@ -2022,7 +2121,7 @@ function renderControls() {
         <div class="hint">${ l.contours
           ? 'Outline loaded from your font file — no alignment needed. Go to <b>Nikkud</b> to place the vowels.'
           : 'No glyph for this letter was found in the uploaded font. Try another font, or switch input mode to add it from an image.' }</div>
-        ${ l.contours ? `<div class="ctl-row"><button class="ctl-btn primary" onclick="setWorkMode('anchors')">Next: Nikkud →</button></div>` : '' }`;
+        ${ l.contours ? `<div class="ctl-row"><button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">Next: Nikkud →</button></div>` : '' }`;
       return;
     }
     const hasImg = !!curImageUrl();
@@ -2080,7 +2179,7 @@ function renderControls() {
       c.innerHTML = `
         <div class="ctl-label">Trace — ${l.name}</div>
         <div class="hint">This letter came from a font file, so it's already vectorized — no tracing needed. Go to <b>Nikkud</b>.</div>
-        ${ l.contours ? `<div class="ctl-row"><button class="ctl-btn primary" onclick="setWorkMode('anchors')">Next: Nikkud →</button></div>` : '' }`;
+        ${ l.contours ? `<div class="ctl-row"><button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">Next: Nikkud →</button></div>` : '' }`;
       return;
     }
     c.innerHTML = `
@@ -2093,16 +2192,16 @@ function renderControls() {
         <button class="ctl-btn" onclick="curLetter().contours=null;_rawTrace=null;renderStage();renderControls();renderLetterGrid();">Clear</button>
         <span id="traceInfo" class="readout">${ l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : '' }</span>
       </div>
-      ${ l.contours ? `<div class="ctl-row"><button class="ctl-btn primary" onclick="setWorkMode('anchors')">Next: Nikkud →</button></div>` : '' }
+      ${ l.contours ? `<div class="ctl-row"><button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">Next: Nikkud →</button></div>` : '' }
       <div class="hint">Drag the sliders to refine the trace live. Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). Corners stay crisp and counters (ס, ם, ע) punch out automatically.</div>`;
   } else {
     if (!l.contours && !project.template.showOverlay) { c.innerHTML = `<div class="ctl-label">Nikkud — ${l.name}</div><div class="hint">Trace this letter first (step 2), or turn on “Show template glyph behind” to place nikkud on the reference.</div>`; return; }
     seedAnchorsIfNeeded(l);
     const nikOn = project.font.nikkud.enabled, tropOn = project.font.trop.enabled;
-    const visCls = [];
-    if (nikOn) visCls.push('below','above','center');
-    if (tropOn) visCls.push('tropAbove','tropBelow');
-    if (!visCls.length) visCls.push('below');
+    let acat = anchorCat;
+    if (acat === 'trop' && !tropOn) acat = 'nikkud';
+    if (acat === 'nikkud' && !nikOn && tropOn) acat = 'trop';
+    const visCls = acat === 'trop' ? ['tropAbove','tropBelow'] : ['below','above','center'];
     if (!visCls.includes(activeAnchorClass)) activeAnchorClass = visCls[0];
     const cls = activeAnchorClass, a = l.anchors[cls], isTrop = cls.indexOf('trop') === 0;
     const want = cls === 'tropAbove' ? 'above' : 'below';
@@ -2727,6 +2826,11 @@ async function loadProjectFile(file) {
   const urls = [];
   if (project.combinedImage.dataUrl) urls.push(project.combinedImage.dataUrl);
   project.letters.forEach(l => { if (l.source.dataUrl) urls.push(l.source.dataUrl); });
+  ['nikkud','trop'].forEach(cat => {                    // preload mark sheets + cropped mark images too
+    const f = project.font[cat];
+    if (f.combinedImage && f.combinedImage.dataUrl) urls.push(f.combinedImage.dataUrl);
+    Object.values(f.custom || {}).forEach(it => { if (it.source && it.source.dataUrl) urls.push(it.source.dataUrl); });
+  });
   await Promise.all(urls.map(u => loadImg(u).catch(()=>{})));
   curKind = 'letter'; curCp = LETTER_ORDER[0];
   syncMetaToForm(); renderGrids(); setWorkMode('align');
@@ -2753,8 +2857,12 @@ function migrateProject(data) {
     if (data.font.tropScale == null) data.font.tropScale = 1.0;
     if (!data.font.nikkud) data.font.nikkud = { enabled: true, mode: 'default', custom: {} };
     if (!data.font.nikkud.custom) data.font.nikkud.custom = {};
+    if (!data.font.nikkud.uploadMode) data.font.nikkud.uploadMode = 'perSymbol';
+    if (!data.font.nikkud.combinedImage) data.font.nikkud.combinedImage = { dataUrl: null };
     if (!data.font.trop) data.font.trop = { enabled: false, mode: 'default', custom: {} };
     if (!data.font.trop.custom) data.font.trop.custom = {};
+    if (!data.font.trop.uploadMode) data.font.trop.uploadMode = 'perSymbol';
+    if (!data.font.trop.combinedImage) data.font.trop.combinedImage = { dataUrl: null };
     if (!data.font.spacing) data.font.spacing = { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם' };
     else { const sp = data.font.spacing; if (sp.letterSpacing==null) sp.letterSpacing=0; if (sp.wordSpacing==null) sp.wordSpacing=260; if (sp.lineSpacing==null) sp.lineSpacing=0; if (!sp.sample) sp.sample='שלום עולם'; }
   }
