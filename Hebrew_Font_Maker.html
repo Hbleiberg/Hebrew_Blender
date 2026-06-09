@@ -767,6 +767,8 @@ let curKind = 'letter';    // 'letter' | 'nikkud' | 'trop' — what the workspac
 let curCp = LETTER_ORDER[0];
 let workMode = 'align';
 let anchorCat = 'nikkud';   // which anchor category the placement step shows: 'nikkud' | 'trop'
+let lastSavedAnchors = null;                 // most recently SAVED placement — carried onto the next fresh letter
+const anchorInheritedFrom = new WeakMap();   // letter → the saved snapshot already carried onto it (once per save, clobber-safe)
 let layoutMode = 'sidebar'; // 'sidebar' | 'tabbed' — Advanced Settings → Layout (site-wide pref)
 let catTab = 'letter';      // tabbed layout: which category picker is visible ('letter'|'nikkud'|'trop')
 let metricAdjust = false;   // Letter Metrics → "Adjust on canvas" drag toggle
@@ -2637,6 +2639,7 @@ function savePlacement() {
   if (!l.anchors) { status('Set the nikkud anchors first.'); return; }
   l.placementSaved = true;
   l.savedAnchors = JSON.parse(JSON.stringify(l.anchors));   // snapshot for dirty-detection + Discard
+  lastSavedAnchors = JSON.parse(JSON.stringify(l.anchors)); // carry these coordinates onto the next fresh letter
   renderLetterGrid(); renderControls();
   status('Placement saved for ' + l.name + ' ✓');
 }
@@ -2705,8 +2708,24 @@ function vSlider(id, valId, label, pct, fn) {
 function squareMarkBtn(cat, cp, name, activeCp, fn) {
   return `<button type="button" class="mark-sq ${activeCp===cp?'active':''}" onclick="${fn}('${cp}')">${markTilePreviewSVG(cat,cp)}<span>${name}</span></button>`;
 }
+function maybeInheritAnchors(l) {
+  // After one letter's placement is saved, the next letter opened in the placement step starts from
+  // those same coordinates so consecutive letters needn't be positioned from scratch. Applied once
+  // per save and only to a not-yet-saved letter (WeakMap guard), so in-progress moves are never clobbered.
+  if (!lastSavedAnchors || curKind !== 'letter' || l.placementSaved) return;
+  if (anchorInheritedFrom.get(l) === lastSavedAnchors) return;
+  ['below','above','center','tropAbove','tropBelow'].forEach(k => {
+    const s = lastSavedAnchors[k];
+    if (s && l.anchors[k]) { l.anchors[k].x = s.x; l.anchors[k].y = s.y; }
+  });
+  anchorInheritedFrom.set(l, lastSavedAnchors);
+  l.placementSaved = true;                                   // a carried placement counts as saved (green ✓); adjusting it drops the ✓
+  l.savedAnchors = JSON.parse(JSON.stringify(l.anchors));
+  renderLetterGrid();
+}
 function _anchorCtx(l) {            // shared anchor-class computation (nik/trop fallback + clamp)
   seedAnchorsIfNeeded(l);
+  maybeInheritAnchors(l);
   const nikOn = project.font.nikkud.enabled, tropOn = project.font.trop.enabled;
   let acat = anchorCat;
   if (acat === 'trop' && !tropOn) acat = 'nikkud';
@@ -2935,7 +2954,7 @@ function resetAllAnchors() {
   askModal('Reset every letter?',
     `Put the nikkud/trop anchors for <strong>all letters</strong> back to their starting positions? This can't be undone.`,
     [ {label:'Cancel', cls:'ghost'},
-      {label:'Reset all', onClick: () => { project.letters.forEach(l => { if (l.contours) seedAnchors(l); }); renderStage(); renderControls(); renderLetterGrid(); }} ]);
+      {label:'Reset all', onClick: () => { lastSavedAnchors = null; project.letters.forEach(l => { if (l.contours) seedAnchors(l); }); renderStage(); renderControls(); renderLetterGrid(); }} ]);
 }
 function nudgeScale(sx,sy) { const l=curLetter(); const c=imgCorners(l); if(!c)return; const cen=c.center;
   const S = M.mul(M.translate(cen[0],cen[1]), M.mul(M.scale(sx,sy), M.translate(-cen[0],-cen[1])));
