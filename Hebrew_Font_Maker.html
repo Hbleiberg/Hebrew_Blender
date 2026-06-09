@@ -265,12 +265,12 @@
   .readline { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--border); }
   /* ── Letter Metrics editor ── */
   .metric-group { border-top: 1px solid var(--border); padding-top: 8px; margin-bottom: 8px; }
-  .metric-cols { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start; }
-  .metric-col { display: flex; flex-direction: column; gap: 6px; min-width: 150px; }
-  .metric-actions { gap: 7px; }
-  .metric-sub { font-size: 0.68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
-  .metric-fld { font-size: 0.72rem; }
-  .metric-num { width: 88px; padding: 4px 6px; border: 1px solid var(--border); border-radius: 5px; background: var(--white); color: var(--text); font-family: ui-monospace, Menlo, monospace; font-size: 0.78rem; box-sizing: border-box; }
+  .metric-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 12px; align-items: start; }
+  .metric-col { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .metric-sub { font-size: 0.65rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
+  .metric-fld { font-size: 0.68rem; gap: 2px; }
+  .metric-num { width: 100%; max-width: 150px; padding: 3px 5px; border: 1px solid var(--border); border-radius: 5px; background: var(--white); color: var(--text); font-family: ui-monospace, Menlo, monospace; font-size: 0.76rem; box-sizing: border-box; }
+  .metric-actions { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
   .metric-toggle { flex: 0 0 auto; }
 
   /* ── Overlay / modal ── */
@@ -1240,11 +1240,11 @@ function metricsPanel() {
         ${f('mLsb','Left margin',  letterLSB(l),     'setLetterMetric','lsb')}
         ${f('mRsb','Right margin', letterRSB(l),     'setLetterMetric','rsb')}
       </div>
-      <div class="metric-col metric-actions">
-        <button class="mode-btn metric-toggle ${metricAdjust?'active':''}" id="metAdj" type="button" onclick="toggleMetricAdjust()">${metricAdjust?'✓ ':''}Adjust on canvas</button>
-        <button class="ctl-btn" type="button" onclick="resetMetrics()">Reset to defaults</button>
-        <div class="hint" style="font-size:0.66rem;line-height:1.35;">Right margin sets the gap after the ink (adjusts Width). Turn on <b>Adjust on canvas</b> to drag the guide dots.</div>
-      </div>
+    </div>
+    <div class="metric-actions">
+      <button class="mode-btn metric-toggle ${metricAdjust?'active':''}" id="metAdj" type="button" onclick="toggleMetricAdjust()">${metricAdjust?'✓ ':''}Adjust on canvas</button>
+      <button class="ctl-btn" type="button" onclick="resetMetrics()">Reset to defaults</button>
+      <div class="hint" style="font-size:0.64rem;line-height:1.3;">Right margin sets the gap after the ink (adjusts Width). Turn on <b>Adjust on canvas</b> to drag the guide dots.</div>
     </div>
   </div>`;
 }
