@@ -206,6 +206,18 @@
   .work-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
   .wtab { padding: 7px 16px; border: 1px solid var(--border); border-radius: 7px 7px 0 0; background: var(--cream); cursor: pointer; font-size: 0.84rem; font-weight: 700; color: var(--muted); }
   .wtab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  /* ── Tabbed layout: Letters/Nikkud/Trop pickers as top tabs (Advanced Settings → Layout) ── */
+  #catTabs, #catHost { display: none; }
+  .cat-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+  .ctab { padding: 7px 16px; border: 1px solid var(--border); border-radius: 7px 7px 0 0; background: var(--cream); cursor: pointer; font-size: 0.84rem; font-weight: 700; color: var(--muted); }
+  .ctab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  #catPanelGroup { display: flex; flex-direction: column; gap: 14px; }
+  body.layout-tabbed #catTabs { display: flex; }
+  body.layout-tabbed #catHost { display: block; }
+  body.layout-tabbed #catHost .cat-panel { display: none; }
+  body.layout-tabbed #catHost .cat-panel.cat-active { display: block; }
+  body.layout-tabbed #catHost .cat-panel .panel-title { display: none; }
+  body.layout-tabbed #catHost .cat-panel.cat-active .panel-body { display: block !important; max-height: 320px; overflow: auto; }
   .stage-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 8px; max-width: 720px; margin: 0 auto; overflow: auto; max-height: 74vh; }
   #stage { width: 100%; height: auto; display: block; touch-action: none; background: var(--white); border-radius: 6px; }
   .zoom-bar { display: flex; align-items: center; gap: 8px; max-width: 720px; margin: 0 auto 8px; font-size: 0.82rem; color: var(--muted); }
@@ -400,7 +412,9 @@
       </div>
     </div>
 
-    <div class="panel">
+    <div id="catGroupSlot" style="display:none"></div>
+    <div id="catPanelGroup">
+    <div class="panel cat-panel" data-cat="letter">
       <div class="panel-title">Letters <span id="letterProgress" style="font-size:0.7rem;color:var(--gold-light);"></span></div>
       <div class="panel-body">
         <div class="letter-grid" id="letterGrid"></div>
@@ -412,19 +426,32 @@
       </div>
     </div>
 
-    <div class="panel">
+    <div class="panel cat-panel" data-cat="nikkud">
       <div class="panel-title">Nikkud (vowels)</div>
       <div class="panel-body" id="nikkudPanelBody"></div>
     </div>
 
-    <div class="panel collapsed">
+    <div class="panel collapsed cat-panel" data-cat="trop">
       <div class="panel-title">Trop (cantillation)</div>
       <div class="panel-body" id="tropPanelBody"></div>
+    </div>
     </div>
 
     <div class="panel collapsed">
       <div class="panel-title">Spacing</div>
       <div class="panel-body" id="spacingBody"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Advanced Settings</div>
+      <div class="panel-body">
+        <label class="fld">Layout</label>
+        <div class="mode-toggle">
+          <button class="mode-btn" id="layoutBtnSidebar" onclick="setLayout('sidebar')">Sidebar</button>
+          <button class="mode-btn" id="layoutBtnTabbed" onclick="setLayout('tabbed')">Tabbed</button>
+        </div>
+        <div class="hint"><strong>Sidebar</strong> keeps the Letters, Nikkud &amp; Trop pickers in this side panel. <strong>Tabbed</strong> moves them to a row of tabs across the top of the workspace, giving each picker more room. Your choice is remembered on this device.</div>
+      </div>
     </div>
   </aside>
 
@@ -435,6 +462,9 @@
       <div class="wtab" id="tabAnchors" onclick="gotoAnchors('nikkud')">3 · Nikkud</div>
       <div class="wtab" id="tabTrop" onclick="gotoAnchors('trop')" style="display:none;">4 · Trop</div>
     </div>
+
+    <div class="cat-tabs" id="catTabs"></div>
+    <div id="catHost"></div>
 
     <div class="ws-grid">
       <div class="ws-left" id="ctlLeft"></div>
@@ -687,6 +717,8 @@ let curKind = 'letter';    // 'letter' | 'nikkud' | 'trop' — what the workspac
 let curCp = LETTER_ORDER[0];
 let workMode = 'align';
 let anchorCat = 'nikkud';   // which anchor category the placement step shows: 'nikkud' | 'trop'
+let layoutMode = 'sidebar'; // 'sidebar' | 'tabbed' — Advanced Settings → Layout (site-wide pref)
+let catTab = 'letter';      // tabbed layout: which category picker is visible ('letter'|'nikkud'|'trop')
 
 function blankLetter(L) {
   return {
@@ -757,6 +789,7 @@ function selectItem(kind, cp) {
 }
 function _selectItem(kind, cp) {
   curKind = kind; curCp = cp; workMode = 'align';
+  catTab = kind;             // tabbed layout: keep the visible picker on the edited item's category
   renderGrids(); renderStage(); renderControls();
 }
 function renderGrids() {
@@ -764,6 +797,7 @@ function renderGrids() {
   renderNikkudPanel();
   renderTropPanel();
   renderSpacingPanel();
+  if (document.getElementById('catTabs')) syncCatTabs();
 }
 /* ── Custom-mark geometry helpers ──
    Custom mark contours are stored in workspace coords (natural for the editor); the
@@ -1297,6 +1331,44 @@ function gotoAnchors(cat) {
 }
 function expandAllMenus()   { document.querySelectorAll('.sidebar .panel').forEach(p => p.classList.remove('collapsed')); }
 function collapseAllMenus() { document.querySelectorAll('.sidebar .panel').forEach(p => p.classList.add('collapsed')); }
+
+/* ════════ Layout (Sidebar / Tabbed) — Advanced Settings ════════ */
+function setCatTab(cat) {            // tabbed layout: choose which category picker is shown (view-only)
+  catTab = cat;
+  syncCatTabs();
+}
+function syncCatTabs() {
+  document.querySelectorAll('#catPanelGroup .cat-panel').forEach(p =>
+    p.classList.toggle('cat-active', p.dataset.cat === catTab));
+  document.querySelectorAll('#catTabs .ctab').forEach(b =>
+    b.classList.toggle('active', b.dataset.cat === catTab));
+}
+function renderCatTabs() {
+  const t = document.getElementById('catTabs');
+  if (!t) return;
+  const NAMES = { letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop' };
+  t.innerHTML = ['letter', 'nikkud', 'trop'].map(c =>
+    `<div class="ctab" data-cat="${c}" onclick="setCatTab('${c}')">${NAMES[c]}</div>`).join('');
+  syncCatTabs();
+}
+function setLayout(mode) {
+  layoutMode = (mode === 'tabbed') ? 'tabbed' : 'sidebar';
+  try { localStorage.setItem('hebrewFontMaker_layout', layoutMode); } catch (e) {}
+  applyLayout();
+}
+function applyLayout() {
+  const tabbed = layoutMode === 'tabbed';
+  document.body.classList.toggle('layout-tabbed', tabbed);
+  const grp = document.getElementById('catPanelGroup');
+  if (grp) {
+    if (tabbed) document.getElementById('catHost').appendChild(grp);
+    else document.getElementById('catGroupSlot').after(grp);
+  }
+  renderCatTabs();
+  const sb = document.getElementById('layoutBtnSidebar'), tb = document.getElementById('layoutBtnTabbed');
+  if (sb) sb.classList.toggle('active', !tabbed);
+  if (tb) tb.classList.toggle('active', tabbed);
+}
 
 /* ════════ Image upload ════════ */
 const imgCache = {};   // dataUrl → HTMLImageElement
@@ -3390,6 +3462,9 @@ function init() {
   // per-render inside the workspace and wired by wireInputModeBlock() / wireReferencePanel().
   applyZoom();
   if (localStorage.getItem('hebrewFontMaker_sbHidden') === '1') toggleSidebar();
+  // restore layout pref (Sidebar / Tabbed)
+  layoutMode = (localStorage.getItem('hebrewFontMaker_layout') === 'tabbed') ? 'tabbed' : 'sidebar';
+  applyLayout();
   // re-measure the template glyph once web fonts settle
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (project) renderStage(); });
   if (!window.WebAssembly || !window.FontFace) {
