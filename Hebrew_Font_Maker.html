@@ -162,7 +162,10 @@
   .row2 { display: flex; gap: 8px; }
   .row2 > * { flex: 1; min-width: 0; }
   .inline { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; font-weight: 600; }
-  .inline input[type=range] { flex: 1; accent-color: var(--gold); }
+  .inline input[type=range] { flex: 1; accent-color: var(--gold); min-width: 0; }
+  /* stacked slider for narrow side columns: label + value on one line, full-width track below */
+  .side-slider-label { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; font-weight: 600; gap: 8px; }
+  .side-slider { width: 100%; min-width: 0; box-sizing: border-box; accent-color: var(--gold); margin: 2px 0 2px; }
   .chk { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; cursor: pointer; }
   .chk input { accent-color: var(--gold); width: 15px; height: 15px; }
   .hint { font-size: 0.7rem; color: var(--muted); line-height: 1.4; }
@@ -2475,11 +2478,14 @@ function renderTraceRight(R, l) {
 }
 function renderTraceLeft(L, l) {
   if (project.inputMode === 'font') { L.innerHTML = ''; return; }
+  const detail = Math.round(100 - l.epsilon*2.5);
   L.innerHTML = `
     <div class="ws-side-title">Trace — ${l.name}</div>
-    <div class="inline">Ink threshold <input type="range" min="1" max="254" value="${l.binThreshold}" oninput="liveThreshold(this.value)"> <span id="thV" class="readout">${l.binThreshold}</span></div>
+    <div class="side-slider-label">Ink threshold <span id="thV" class="readout">${l.binThreshold}</span></div>
+    <input type="range" class="side-slider" min="1" max="254" value="${l.binThreshold}" oninput="liveThreshold(this.value)">
     <label class="chk"><input type="checkbox" ${l.invert?'checked':''} onchange="liveInvert(this.checked)"> Invert (light ink on dark)</label>
-    <div class="inline">Detail (less ↔ more) <input type="range" min="0" max="100" step="1" value="${Math.round(100 - l.epsilon*2.5)}" oninput="liveDetail(this.value)"> <span id="epV" class="readout">${Math.round(100 - l.epsilon*2.5)}</span></div>
+    <div class="side-slider-label">Detail (less ↔ more) <span id="epV" class="readout">${detail}</span></div>
+    <input type="range" class="side-slider" min="0" max="100" step="1" value="${detail}" oninput="liveDetail(this.value)">
     <div class="ctl-row">
       <button class="ctl-btn primary" onclick="traceCurrent()">Re-trace</button>
       <button class="ctl-btn" onclick="curLetter().contours=null;_rawTrace=null;renderStage();renderControls();renderLetterGrid();">Clear</button>
