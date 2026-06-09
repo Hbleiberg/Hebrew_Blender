@@ -829,7 +829,7 @@ const HELP_CONTENT = {
       <li><span class="ui">Combined</span> — upload <em>one</em> photo of a whole sheet of letters, then pick a letter and drag a box around it to cut it out.</li>
       <li><span class="ui">Font (TTF)</span> — already have a font file? Import it and the letters come in ready-made, so you can skip tracing entirely.</li>
     </ul>
-    <p><strong>Allowed files:</strong> any image — PNG, JPG, GIF or WebP. (For the <span class="ui">Font (TTF)</span> option, a TTF or OTF font file.)</p>
+    <p><strong>Allowed files:</strong> any image — PNG, JPG, GIF or WebP. Transparent PNGs and letters drawn on a plain white background also work great. (For the <span class="ui">Font (TTF)</span> option, a TTF or OTF font file.)</p>
     <p><strong>Tracing guide:</strong> a faint reference letter shows behind yours so you can line things up. Adjust it with the <span class="ui">Opacity</span> slider, or hide it with <span class="ui">Show template glyph behind</span>.</p>
     <p><strong>Position it</strong> (the <span class="ui">1 · Align</span> tab): click a letter in the grid on the left, then use the move, scale and rotate buttons to sit your letter neatly on the guide lines. The little dot on that letter turns <strong style="color:#d08c2a;">orange</strong> once it has an image.</p>
   `,
@@ -894,7 +894,8 @@ const HELP_CONTENT = {
       <li><strong>Windows:</strong> right-click the <span class="ui">.ttf</span> file and choose <span class="ui">Install</span>.</li>
     </ul>
     <p>Then pick your font by name in Word, Google Docs, Canva — anywhere you choose fonts.</p>
-    <div class="help-tip">💡 The very first export downloads a one-time font engine (about 8&nbsp;MB), so give it a moment. Want to check your work first? <span class="ui">Preview PDF</span> makes a printable sheet of every letter with each vowel.</div>
+    <div class="help-tip">💡 The very first export downloads a one-time font engine (about 8&nbsp;MB), so give it a moment — after that it's quick.</div>
+    <p><strong>Preview PDF.</strong> Once you've exported, the <span class="ui">Preview PDF</span> button (top bar) makes a printable specimen sheet — a cover page plus a chart of every letter paired with each vowel. It's a great way to proofread your whole font on one page before you install it.</p>
     <p><strong>Made changes and re-exporting?</strong> The version number ticks up automatically each time. If you'd already installed an older copy, delete it first so your computer picks up the new one. (If some letters aren't traced or anchored yet, the tool warns you — those letters would come out blank.)</p>
   `,
 };
@@ -2380,7 +2381,7 @@ function renderControls() {
       <div class="readline" style="margin-top:8px;"><span>${ANCHOR_LABEL[cls]} anchor</span><span class="readout" id="ancReadout">x ${a.x}, y ${a.y}</span></div>
       <div class="inline">${isTrop?'Trop':'Nikkud'} size <input type="range" min="40" max="180" step="5" value="${sizePct}" oninput="${sizeFn}(this.value)"> <span id="markScaleV" class="readout">${sizePct}%</span></div>
       <div class="ctl-row">
-        <button class="ctl-btn" onclick="seedAnchors(curLetter());renderStage();renderControls();renderLetterGrid();">Reset letter</button>
+        <button class="ctl-btn" onclick="resetLetterAnchors()">Reset letter</button>
         <button class="ctl-btn" onclick="resetAllAnchors()">Reset all</button>
       </div>
       <div class="hint">Drag the handle (or arrow keys) to position the ${ANCHOR_LABEL[cls].toLowerCase()} mark.${cls==='below'?' All under-vowels share this anchor.':isTrop?` All ${want}-trop share this anchor; with a vowel present, trop stacks on the vowel.`:''}</div>`;
@@ -2396,7 +2397,19 @@ function renderAncReadouts(l) {
   });
   el.innerHTML = h;
 }
-function resetAllAnchors() { project.letters.forEach(l => { if (l.contours) seedAnchors(l); }); renderStage(); renderControls(); renderLetterGrid(); }
+function resetLetterAnchors() {
+  const l = curLetter();
+  askModal('Reset this letter?',
+    `Put the nikkud/trop anchors for <strong>${l.name}</strong> back to their starting positions? This can't be undone.`,
+    [ {label:'Cancel', cls:'ghost'},
+      {label:'Reset letter', onClick: () => { seedAnchors(l); renderStage(); renderControls(); renderLetterGrid(); }} ]);
+}
+function resetAllAnchors() {
+  askModal('Reset every letter?',
+    `Put the nikkud/trop anchors for <strong>all letters</strong> back to their starting positions? This can't be undone.`,
+    [ {label:'Cancel', cls:'ghost'},
+      {label:'Reset all', onClick: () => { project.letters.forEach(l => { if (l.contours) seedAnchors(l); }); renderStage(); renderControls(); renderLetterGrid(); }} ]);
+}
 function nudgeScale(sx,sy) { const l=curLetter(); const c=imgCorners(l); if(!c)return; const cen=c.center;
   const S = M.mul(M.translate(cen[0],cen[1]), M.mul(M.scale(sx,sy), M.translate(-cen[0],-cen[1])));
   l.transform = M.mul(S, l.transform); l.contours=null; l.anchors=null; renderStage(); }
