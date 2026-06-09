@@ -182,6 +182,10 @@
   .ltile.sel .lt-heb, .ltile.sel .lt-name { color: #fff; }
   .lt-heb { font-family: var(--heb-font); font-size: 1.3rem; direction: rtl; line-height: 1; }
   .lt-name { font-size: 0.5rem; color: var(--muted); direction: ltr; text-align: center; }
+  /* mark-tile preview: drawn from the tool's own glyph shapes (NOT the system font, which
+     fails to render a bare combining nikkud on a dotted circle) so the vowel always shows */
+  .mark-prev { display: block; height: 34px; width: auto; max-width: 50px; margin: 1px auto 0; overflow: visible; color: var(--navy); }
+  .ltile.sel .mark-prev { color: #fff; }
   .lt-dot { position: absolute; top: 3px; left: 3px; width: 7px; height: 7px; border-radius: 50%; background: var(--border); }
   .lt-dot.img { background: #d08c2a; }
   .lt-dot.traced { background: #3b82f6; }
@@ -910,6 +914,27 @@ function renderMarkPanel(cat) {
   el.innerHTML = h;
   if (f.enabled && f.mode === 'custom' && marks.length) renderMarkGrid(cat);
 }
+/* Mark preview drawn from our OWN glyph outlines (default or the user's custom design),
+   not the system font — a dotted "letter" circle with the actual mark shape attached
+   above/below/centre per its class, mirroring how the placement screen previews it. */
+function markTilePreviewSVG(cat, cp) {
+  const cls = (cat === 'nikkud' ? MARK_CLASS[cp] : TROP_CLASS[cp]) || 'below';
+  const polys = markGlyphContours(cat, cp);            // font units; origin = attach anchor
+  const R = 90;                                         // base "letter" circle radius
+  const ax = 0, ay = cls === 'below' ? -R : (cls === 'above' ? R : 0);   // where the mark seats on the circle
+  let minX = -R, maxX = R, minY = -R, maxY = R;
+  polys.forEach(poly => poly.forEach(([x, y]) => {
+    const X = ax + x, Y = ay + y;
+    if (X < minX) minX = X; if (X > maxX) maxX = X; if (Y < minY) minY = Y; if (Y > maxY) maxY = Y;
+  }));
+  const pad = 24; minX -= pad; maxX += pad; minY -= pad; maxY += pad;
+  const vbW = (maxX - minX) || 1, vbH = (maxY - minY) || 1;
+  let d = '';                                           // SVG is y-down → map font (x,y) → (x,-y)
+  polys.forEach(poly => { poly.forEach((p, i) => { d += (i === 0 ? 'M' : 'L') + (ax + p[0]).toFixed(0) + ' ' + (-(ay + p[1])).toFixed(0) + ' '; }); d += 'Z '; });
+  return `<svg class="mark-prev" viewBox="${minX.toFixed(0)} ${(-maxY).toFixed(0)} ${vbW.toFixed(0)} ${vbH.toFixed(0)}" preserveAspectRatio="xMidYMid meet" aria-hidden="true">`
+    + `<circle cx="0" cy="0" r="${R}" fill="none" stroke="currentColor" stroke-opacity="0.32" stroke-width="1.4" stroke-dasharray="3.4 2.6" vector-effect="non-scaling-stroke"/>`
+    + (d.trim() ? `<path d="${d.trim()}" fill="currentColor"/>` : '') + `</svg>`;
+}
 function renderMarkGrid(cat) {
   const grid = document.getElementById(cat + 'Grid'); if (!grid) return;
   grid.innerHTML = '';
@@ -920,7 +945,7 @@ function renderMarkGrid(cat) {
     const tile = document.createElement('div');
     tile.className = 'ltile' + (curKind === cat && M.cp === curCp ? ' sel' : '');
     tile.innerHTML = `<span class="lt-dot ${st}"></span>
-      <span class="lt-heb" style="font-size:1.95rem;line-height:1.1;">${String.fromCodePoint(0x25CC)}${String.fromCodePoint(parseInt(M.cp,16))}</span>
+      ${markTilePreviewSVG(cat, M.cp)}
       <span class="lt-name">${M.name}</span>`;
     tile.onclick = () => selectItem(cat, M.cp);
     grid.appendChild(tile);
