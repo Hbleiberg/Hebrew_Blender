@@ -1149,11 +1149,24 @@ async function uploadSourceFont(file) {
 }
 
 /* ════════ Stage rendering ════════ */
+/* Stage ink + guide colors adapt to the theme: on the dark canvas the traced glyph renders in
+   light "ink" (instead of near-black) and the guides brighten, so everything stays legible.
+   Light mode is unchanged. */
+function stageColors() {
+  return document.body.classList.contains('dark') ? {
+    ink:'#d6deec', inkFill:'rgba(214,222,236,0.92)', inkStroke:'#aeb9d0',
+    top:'#6aa6dd', base:'#9aa4b4', desc:'#d68a8a', margin:'#cf9d9d', marginTxt:'#dcaeae'
+  } : {
+    ink:'#3a4150', inkFill:'rgba(26,39,68,0.85)', inkStroke:'#1a2744',
+    top:'#3b6ea5', base:'#888', desc:'#a55', margin:'#c99', marginTxt:'#a05a5a'
+  };
+}
 function guideLinesSVG() {
   const meta = curMeta();
+  const C = stageColors();
   // baseline + letter-top always; descender only for letters that actually drop below.
-  const lines = [ [LETTER_TOP, 'top 600', '#3b6ea5'], [BASELINE, 'base 0', '#888'] ];
-  if (meta && meta.desc) lines.push([DESCENDER, 'desc −250', '#a55']);
+  const lines = [ [LETTER_TOP, 'top 600', C.top], [BASELINE, 'base 0', C.base] ];
+  if (meta && meta.desc) lines.push([DESCENDER, 'desc −250', C.desc]);
   let h = '';
   lines.forEach(([yv, label, col]) => {
     const y = fy(yv);
@@ -1167,16 +1180,17 @@ function guideLinesSVG() {
 function marginGuidesSVG() {
   const adv = (curLetter().contours ? curLetter().advance : (_tplFit && _tplFit.advance)) || Math.round(LETTER_TOP*0.7);
   const vy1 = fy(LETTER_TOP + 80), vy2 = fy(DESCENDER - 30), mcy = (vy1+vy2)/2;
+  const C = stageColors();
   const marginZone = (x0f, x1f, side) => {
     const a = fx(x0f), b = fx(x1f), cx = (a+b)/2;
-    return `<rect x="${a}" y="${vy1}" width="${b-a}" height="${vy2-vy1}" fill="#c99" fill-opacity="0.12" stroke="#c99" stroke-width="1" stroke-dasharray="3 4" opacity="0.9" pointer-events="none"/>`
-      + `<text x="${cx}" y="${mcy}" transform="rotate(-90 ${cx} ${mcy})" text-anchor="middle" fill="#a05a5a" font-size="12" font-family="'Source Sans 3',sans-serif" opacity="0.5" style="dominant-baseline:central;" pointer-events="none">${side} margin</text>`;
+    return `<rect x="${a}" y="${vy1}" width="${b-a}" height="${vy2-vy1}" fill="${C.margin}" fill-opacity="0.12" stroke="${C.margin}" stroke-width="1" stroke-dasharray="3 4" opacity="0.9" pointer-events="none"/>`
+      + `<text x="${cx}" y="${mcy}" transform="rotate(-90 ${cx} ${mcy})" text-anchor="middle" fill="${C.marginTxt}" font-size="12" font-family="'Source Sans 3',sans-serif" opacity="0.5" style="dominant-baseline:central;" pointer-events="none">${side} margin</text>`;
   };
   let h = marginZone(0, DEF_LSB, 'left');             // left side bearing
   h += marginZone(adv - DEF_RSB, adv, 'right');       // right side bearing
   const wx = fx(adv);
-  h += `<line x1="${wx}" y1="${vy1}" x2="${wx}" y2="${vy2}" stroke="#c99" stroke-width="1" stroke-dasharray="3 5" pointer-events="none"/>`;
-  h += `<text x="${wx}" y="${vy2+13}" text-anchor="middle" fill="#c99" font-size="9" font-family="monospace" pointer-events="none">letter width</text>`;
+  h += `<line x1="${wx}" y1="${vy1}" x2="${wx}" y2="${vy2}" stroke="${C.margin}" stroke-width="1" stroke-dasharray="3 5" pointer-events="none"/>`;
+  h += `<text x="${wx}" y="${vy2+13}" text-anchor="middle" fill="${C.margin}" font-size="9" font-family="monospace" pointer-events="none">letter width</text>`;
   return h;
 }
 function captureBoxFont(l) {
@@ -1189,8 +1203,9 @@ let editorSel = 0, eDrag = null;
 function markGuidesSVG() {
   const cls = curItem().cls;
   const ay = fy(0);   // attach line = letter baseline level
-  let h = `<line x1="35" y1="${ay}" x2="498" y2="${ay}" stroke="#888" stroke-width="1" stroke-dasharray="5 4"/>`;
-  h += `<text x="502" y="${ay+3.5}" fill="#888" font-size="10" font-family="monospace">baseline</text>`;
+  const C = stageColors();
+  let h = `<line x1="35" y1="${ay}" x2="498" y2="${ay}" stroke="${C.base}" stroke-width="1" stroke-dasharray="5 4"/>`;
+  h += `<text x="502" y="${ay+3.5}" fill="${C.base}" font-size="10" font-family="monospace">baseline</text>`;
   const note = cls==='above' ? 'Above-vowel — draw it ABOVE the line (sits over the letter).'
              : cls==='center' ? 'Centre mark — draw it ON the line (sits in the letter body).'
              : 'Under-vowel — draw it BELOW the line (sits under the letter).';
@@ -1211,7 +1226,7 @@ function renderMarkStage(it) {
   const url = curImageUrl();
   if (workMode === 'trace') {
     if (url) h += `<image href="${url}" x="0" y="0" transform="matrix(${it.transform.join(' ')})" opacity="0.28"/>`;
-    if (it.contours) h += `<path d="${contoursToPath(it.contours)}" fill="rgba(26,39,68,0.85)" fill-rule="nonzero" stroke="#1a2744" stroke-width="0.6"/>`;
+    if (it.contours) { const C = stageColors(); h += `<path d="${contoursToPath(it.contours)}" fill="${C.inkFill}" fill-rule="nonzero" stroke="${C.inkStroke}" stroke-width="0.6"/>`; }
     else h += `<text x="300" y="520" text-anchor="middle" fill="#9aa0aa" font-size="12">Not traced yet.</text>`;
   } else {
     if (url) { h += `<image href="${url}" x="0" y="0" transform="matrix(${it.transform.join(' ')})" opacity="0.92"/>`; h += transformHandlesSVG(it); }
@@ -1225,14 +1240,15 @@ function editorStageSVG(it) {
   const pieces = it.pieces || [];
   if (editorSel >= pieces.length) editorSel = pieces.length - 1;
   if (editorSel < 0) editorSel = 0;
+  const ink = stageColors().ink;
   let h = `<line x1="${ex(0)}" y1="40" x2="${ex(0)}" y2="540" stroke="#c8bfa8" stroke-width="1" stroke-dasharray="2 6"/>`;
   pieces.forEach((p, i) => {
     const stroke = (i === editorSel) ? 'var(--gold)' : 'none';
     if (p.type === 'dot') {
-      h += `<circle class="epiece" data-i="${i}" cx="${ex(p.cx)}" cy="${fy(p.cy)}" r="${Math.max(2, p.r*SC)}" fill="#3a4150" stroke="${stroke}" stroke-width="2"/>`;
+      h += `<circle class="epiece" data-i="${i}" cx="${ex(p.cx)}" cy="${fy(p.cy)}" r="${Math.max(2, p.r*SC)}" fill="${ink}" stroke="${stroke}" stroke-width="2"/>`;
     } else {
       const x0=Math.min(p.x0,p.x1), x1=Math.max(p.x0,p.x1), y0=Math.min(p.y0,p.y1), y1=Math.max(p.y0,p.y1);
-      h += `<rect class="epiece" data-i="${i}" x="${ex(x0)}" y="${fy(y1)}" width="${(x1-x0)*SC}" height="${(y1-y0)*SC}" fill="#3a4150" stroke="${stroke}" stroke-width="2"/>`;
+      h += `<rect class="epiece" data-i="${i}" x="${ex(x0)}" y="${fy(y1)}" width="${(x1-x0)*SC}" height="${(y1-y0)*SC}" fill="${ink}" stroke="${stroke}" stroke-width="2"/>`;
     }
   });
   const p = pieces[editorSel];
@@ -1419,17 +1435,17 @@ async function renderStage() {
       h += transformHandlesSVG(l);
     } else if (l.contours) {
       // font-source mode: outline already loaded, nothing to align
-      h += `<path d="${contoursToPath(l.contours)}" fill="#3a4150" fill-rule="nonzero"/>`;
+      h += `<path d="${contoursToPath(l.contours)}" fill="${stageColors().ink}" fill-rule="nonzero"/>`;
       h += `<text x="300" y="540" text-anchor="middle" fill="#9aa0aa" font-size="12">Loaded from font — set nikkud in step 3.</text>`;
     } else {
       h += `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="14">No image yet — upload below.</text>`;
     }
   } else if (workMode === 'trace') {
     if (url) h += `<image href="${url}" x="0" y="0" transform="matrix(${l.transform.join(' ')})" opacity="0.28"/>`;
-    if (l.contours) h += `<path d="${contoursToPath(l.contours)}" fill="rgba(26,39,68,0.85)" fill-rule="nonzero" stroke="#1a2744" stroke-width="0.6"/>`;
+    if (l.contours) { const C = stageColors(); h += `<path d="${contoursToPath(l.contours)}" fill="${C.inkFill}" fill-rule="nonzero" stroke="${C.inkStroke}" stroke-width="0.6"/>`; }
     else h += `<text x="300" y="520" text-anchor="middle" fill="#9aa0aa" font-size="12">Not traced yet.</text>`;
   } else if (workMode === 'anchors') {
-    if (l.contours) h += `<path d="${contoursToPath(l.contours)}" fill="#3a4150" fill-rule="nonzero"/>`;
+    if (l.contours) h += `<path d="${contoursToPath(l.contours)}" fill="${stageColors().ink}" fill-rule="nonzero"/>`;
     if (l.contours || project.template.showOverlay) {
       // preview the vowel on the traced glyph, or on the reference template glyph
       seedAnchorsIfNeeded(l);
