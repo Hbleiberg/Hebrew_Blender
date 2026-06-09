@@ -184,7 +184,7 @@
   .lt-name { font-size: 0.5rem; color: var(--muted); direction: ltr; text-align: center; }
   /* mark-tile preview: drawn from the tool's own glyph shapes (NOT the system font, which
      fails to render a bare combining nikkud on a dotted circle) so the vowel always shows */
-  .mark-prev { display: block; height: 34px; width: auto; max-width: 50px; margin: 1px auto 0; overflow: visible; color: var(--navy); }
+  .mark-prev { display: block; height: 34px; width: auto; max-width: 50px; margin: 1px auto 0; overflow: visible; color: var(--text); }
   .ltile.sel .mark-prev { color: #fff; }
   .lt-dot { position: absolute; top: 3px; left: 3px; width: 7px; height: 7px; border-radius: 50%; background: var(--border); }
   .lt-dot.img { background: #d08c2a; }
@@ -352,6 +352,11 @@
       <div class="panel-title">Trop (cantillation)</div>
       <div class="panel-body" id="tropPanelBody"></div>
     </div>
+
+    <div class="panel collapsed">
+      <div class="panel-title">Spacing</div>
+      <div class="panel-body" id="spacingBody"></div>
+    </div>
   </aside>
 
   <main class="workspace">
@@ -407,6 +412,7 @@ function toggleDark() {
   document.getElementById('darkToggle').textContent = isDark ? '☀️ Light' : '🌙 Dark';
   localStorage.setItem('hebrewBlender_darkMode', isDark ? '1' : '0');
   renderStage();
+  renderSpacingPreview();   // recolor the spacing preview ink for the new theme
 }
 function initDark() {
   const saved = localStorage.getItem('hebrewBlender_darkMode');
@@ -564,6 +570,10 @@ const DEF_LSB = 40, DEF_RSB = 40;
 const ANCHOR_Y = { below: -45, above: 640, center: 300 };
 function markScale() { return (project && project.font && project.font.markScale != null) ? project.font.markScale : 1; }
 function tropScale() { return (project && project.font && project.font.tropScale != null) ? project.font.tropScale : 1; }
+/* Spacing — single source of truth so the live preview matches the exported font exactly */
+function fontSpacing() { return (project && project.font && project.font.spacing) || { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם' }; }
+function effLetterAdvance(l) { const base = (l && l.advance) || Math.round(LETTER_TOP*0.7); return Math.max(50, base + fontSpacing().letterSpacing); }
+function wordAdvance() { return Math.max(0, fontSpacing().wordSpacing); }
 function catOfCp(cp) { return TROP_CLASS[cp] ? 'trop' : 'nikkud'; }
 const TROP_GAP_ABOVE = 200, TROP_GAP_BELOW = 200;   // how far trop clears the vowel band
 // mark-to-mark attach point on a nikkud mark (where a trop stacks): its far edge + a small gap.
@@ -603,7 +613,8 @@ function newProject() {
       version: '1.000', unitsPerEm: UPM, markScale: 1.0, tropScale: 1.0,
       nikkud: { enabled: true,  mode: 'default', custom: {} },   // mode: 'default' | 'custom'
       trop:   { enabled: false, mode: 'default', custom: {} },
-      metrics: { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP, descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB }
+      metrics: { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP, descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB },
+      spacing: { letterSpacing: 0, wordSpacing: 260, lineSpacing: 0, sample: 'שלום עולם' }
     },
     template: { font: "'Noto Sans Hebrew', sans-serif", opacity: 0.35, showOverlay: true },
     inputMode: 'single',
@@ -649,6 +660,7 @@ function renderGrids() {
   renderLetterGrid();
   renderNikkudPanel();
   renderTropPanel();
+  renderSpacingPanel();
 }
 /* ── Custom-mark geometry helpers ──
    Custom mark contours are stored in workspace coords (natural for the editor); the
@@ -1919,6 +1931,60 @@ function setTropScale(v) {
   const s = document.getElementById('markScaleV'); if (s) s.textContent = Math.round(project.font.tropScale*100) + '%';
   renderStage();
 }
+
+/* ════════ Spacing panel + live preview ════════ */
+function renderSpacingPanel() {
+  const body = document.getElementById('spacingBody'); if (!body) return;
+  const sp = fontSpacing();
+  body.innerHTML = `
+    <div class="inline">Letter spacing <input type="range" min="-40" max="200" step="5" value="${sp.letterSpacing}" oninput="setLetterSpacing(this.value)"> <span id="lsV" class="readout">${sp.letterSpacing}</span></div>
+    <div class="inline">Word spacing <input type="range" min="80" max="600" step="10" value="${sp.wordSpacing}" oninput="setWordSpacing(this.value)"> <span id="wsV" class="readout">${sp.wordSpacing}</span></div>
+    <div class="inline">Line spacing <input type="range" min="0" max="500" step="10" value="${sp.lineSpacing}" oninput="setLineSpacing(this.value)"> <span id="lnV" class="readout">${sp.lineSpacing}</span></div>
+    <label class="fld">Sample text <input type="text" id="spacingSample" dir="rtl" value="${escapeHtml(sp.sample)}" oninput="setSpacingSample(this.value)"></label>
+    <div class="hint">Adjusts the exported font's spacing (letter &amp; word advance widths + line gap). The preview uses your traced letters — untraced letters show as dashed boxes.</div>
+    <svg id="spacingPreviewSvg" style="width:100%;height:auto;max-height:170px;margin-top:4px;"></svg>
+    <div class="ctl-row" style="margin-top:4px;"><button class="ctl-btn" onclick="resetSpacing()">Reset spacing</button></div>`;
+  renderSpacingPreview();
+}
+function setLetterSpacing(v) { fontSpacing().letterSpacing = Math.max(-40, Math.min(200, +v||0)); const s = document.getElementById('lsV'); if (s) s.textContent = fontSpacing().letterSpacing; renderSpacingPreview(); }
+function setWordSpacing(v)   { fontSpacing().wordSpacing   = Math.max(80,  Math.min(600, +v||0)); const s = document.getElementById('wsV'); if (s) s.textContent = fontSpacing().wordSpacing;   renderSpacingPreview(); }
+function setLineSpacing(v)   { fontSpacing().lineSpacing   = Math.max(0,   Math.min(500, +v||0)); const s = document.getElementById('lnV'); if (s) s.textContent = fontSpacing().lineSpacing;   renderSpacingPreview(); }
+function setSpacingSample(v) { fontSpacing().sample = v; renderSpacingPreview(); }   // preview-only re-render → caret stays put
+function resetSpacing() { Object.assign(fontSpacing(), { letterSpacing:0, wordSpacing:260, lineSpacing:0 }); renderSpacingPanel(); }   // keeps the sample text
+/* Lay out a glyph's contours in raw font units, offset by pen-x (dx) and the line baseline (yo), Y negated (y-up → SVG y-down). */
+function glyphPathAt(cs, dx, yo) {
+  let d = '';
+  cs.forEach(c => { c.points.forEach((p,i) => { d += (i===0?'M':'L') + (p[0]+dx).toFixed(1) + ' ' + (yo-p[1]).toFixed(1) + ' '; }); d += 'Z '; });
+  return d;
+}
+function renderSpacingPreview() {
+  const svg = document.getElementById('spacingPreviewSvg'); if (!svg || !project) return;
+  const sp = fontSpacing(), ascender = LAMED_TOP + 100, descender = DESCENDER - 50;
+  const lineH = (ascender - descender) + sp.lineSpacing;
+  // base letters only — combining marks (U+0591–U+05C7) have no advance, so strip them for spacing layout
+  const chars = [...(sp.sample || '')].filter(ch => { const c = ch.codePointAt(0); return !(c >= 0x0591 && c <= 0x05C7); });
+  let total = 0;
+  const cells = chars.map(ch => {
+    if (ch === ' ') { const w = wordAdvance(); total += w; return { type:'space', w }; }
+    const cp = ch.codePointAt(0).toString(16).toUpperCase().padStart(4,'0');
+    const l = project.letters.find(x => x.codepoint === cp);
+    const w = l ? effLetterAdvance(l) : effLetterAdvance(null);
+    total += w; return { type:'glyph', w, contours: l && l.contours };
+  });
+  let pen = total, body = '';   // RTL: pen starts at the right edge and walks left
+  cells.forEach(c => {
+    pen -= c.w; if (c.type !== 'glyph') return;
+    for (let line = 0; line < 2; line++) {
+      const yo = line * lineH;
+      if (c.contours) body += `<path d="${glyphPathAt(c.contours, pen, yo)}" fill="currentColor"/>`;
+      else body += `<rect x="${(pen+40).toFixed(0)}" y="${(yo-ascender+60).toFixed(0)}" width="${Math.max(20,c.w-80).toFixed(0)}" height="${(ascender-60).toFixed(0)}" rx="10" fill="none" stroke="currentColor" stroke-dasharray="7 6" opacity="0.3"/>`;
+    }
+  });
+  const pad = 24;
+  svg.setAttribute('viewBox', `${-pad} ${(-ascender-pad).toFixed(0)} ${(total+2*pad).toFixed(0)} ${(lineH+(ascender-descender)+2*pad).toFixed(0)}`);
+  svg.style.color = (getComputedStyle(document.body).getPropertyValue('--text')||'').trim() || (document.body.classList.contains('dark') ? '#dde4f0' : '#1a2744');
+  svg.innerHTML = body;
+}
 function savePlacement() {
   const l = curLetter();
   if (!l.anchors) { status('Set the nikkud anchors first.'); return; }
@@ -2131,7 +2197,7 @@ function buildFontSpec() {
   // .notdef: simple box
   glyphs['.notdef'] = { contours: [ rectPts(60,0,460,700) ], advance: 540 };
   // space (U+0020) — without a real space glyph, words render with no gaps
-  glyphs['space'] = { contours: [], advance: 260 };
+  glyphs['space'] = { contours: [], advance: wordAdvance() };
   glyphOrder.push('space'); cmap[0x20] = 'space';
 
   // base letters
@@ -2139,7 +2205,7 @@ function buildFontSpec() {
     const l = project.letters.find(x => x.codepoint === L.cp);
     const nm = gname(L.cp);
     const contours = (l.contours||[]).map(c => c.points);
-    const adv = l.advance || Math.round(LETTER_TOP*0.7);
+    const adv = effLetterAdvance(l);
     glyphs[nm] = { contours, advance: adv };
     glyphOrder.push(nm); baseGlyphNames.push(nm);
     cmap[parseInt(L.cp,16)] = nm;
@@ -2164,7 +2230,7 @@ function buildFontSpec() {
     const anc = baseL.anchors[cls]; if (!anc) return;
     const markPoly = markGlyphContours('nikkud', pc.mark).map(poly => poly.map(([x,y]) => [Math.round(x*ms+anc.x), Math.round(y*ms+anc.y)]));
     const nm = gname(pc.target);
-    glyphs[nm] = { contours: baseL.contours.map(c => c.points).concat(markPoly), advance: baseL.advance };
+    glyphs[nm] = { contours: baseL.contours.map(c => c.points).concat(markPoly), advance: effLetterAdvance(baseL) };
     glyphOrder.push(nm); baseGlyphNames.push(nm);
     cmap[parseInt(pc.target,16)] = nm;
     built.push(pc);
@@ -2197,7 +2263,7 @@ function buildFontSpec() {
   const versionFloat = parseFloat(fnt.version) || 1.0;
   return {
     unitsPerEm: UPM, glyphOrder, glyphs, cmap, fea, names,
-    ascent: LAMED_TOP + 100, descent: DESCENDER - 50, version: versionFloat,
+    ascent: LAMED_TOP + 100, descent: DESCENDER - 50, lineGap: fontSpacing().lineSpacing, version: versionFloat,
     baseGlyphNames, markGlyphNames
   };
 }
@@ -2309,9 +2375,10 @@ def hfm_build(spec_json):
     for name in order:
         metrics[name] = (advances[name], lsbs[name])
     fb.setupHorizontalMetrics(metrics)
-    fb.setupHorizontalHeader(ascent=int(spec["ascent"]), descent=int(spec["descent"]))
+    fb.setupHorizontalHeader(ascent=int(spec["ascent"]), descent=int(spec["descent"]), lineGap=int(spec.get("lineGap", 0)))
     fb.setupNameTable(spec["names"])
     fb.setupOS2(sTypoAscender=int(spec["ascent"]), sTypoDescender=int(spec["descent"]),
+                sTypoLineGap=int(spec.get("lineGap", 0)),
                 usWinAscent=int(spec["ascent"]), usWinDescent=abs(int(spec["descent"])),
                 achVendID="IVST")
     fb.setupPost()
@@ -2670,6 +2737,8 @@ function migrateProject(data) {
     if (!data.font.nikkud.custom) data.font.nikkud.custom = {};
     if (!data.font.trop) data.font.trop = { enabled: false, mode: 'default', custom: {} };
     if (!data.font.trop.custom) data.font.trop.custom = {};
+    if (!data.font.spacing) data.font.spacing = { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם' };
+    else { const sp = data.font.spacing; if (sp.letterSpacing==null) sp.letterSpacing=0; if (sp.wordSpacing==null) sp.wordSpacing=260; if (sp.lineSpacing==null) sp.lineSpacing=0; if (!sp.sample) sp.sample='שלום עולם'; }
   }
   return data;
 }
