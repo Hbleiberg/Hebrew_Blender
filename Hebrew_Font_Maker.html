@@ -4209,7 +4209,6 @@ const MARK_CPS = Object.keys(MARK_CLASS);
 let qaTab = 'nikkud';
 let qaResult = null;
 const QA_OVERLAP_TOL = 10;   // font units a mark vertex is inset toward its centre before counting as "inside" (kissing contacts are fine)
-const QA_CROWD_TOL   = 18;   // units a mark may spill past 0 / the advance before it's flagged as crowding a neighbour
 const QA_SIDE_COLOR  = { below:'var(--below)', above:'var(--above)', center:'var(--center)', tropAbove:'#8b5cf6', tropBelow:'#0ea5e9' };
 
 function qaLetters() { return LETTERS.filter(L => L.cat !== 'punct'); }   // the 27 letters (finals included; punct/digits excluded)
@@ -4264,42 +4263,34 @@ function qaCentroid(poly) { let sx=0, sy=0; poly.forEach(([x,y]) => { sx+=x; sy+
 function qaInsetToward(poly, c, d) {   // pull each vertex d units toward the centroid (overlap tolerance)
   return poly.map(([x,y]) => { const dx=c[0]-x, dy=c[1]-y, len=Math.hypot(dx,dy)||1, t=Math.min(d,len)/len; return [x+dx*t, y+dy*t]; });
 }
-/* The four collision checks for one cell's placed mark ink (union of all layers). `side` is the
-   placement class: below/above/center for nikkud, above/below for trop & stacks. */
+/* The collision checks for one cell's placed mark ink (union of all layers). A red cell means the
+   mark actually sits on the letter's INK — (a) on the letter body, or (b) on a descender tail.
+   `side` is the placement class: below/above/center for nikkud, above/below for trop & stacks.
+   Metric "tall artwork" is reported once at the font level (qaBuild) — NOT per cell — because the
+   export auto-expands the clip box to cover it, so a deep below-vowel isn't a collision; likewise a
+   mark overhanging a narrow letter's advance is normal Hebrew side-bearing overhang, not a hit. */
 function qaReasons(L, meta, markPolys, side) {
   const reasons = [];
-  if (!markPolys.length) return reasons;
+  if (!markPolys.length || !L.contours || !L.contours.length) return reasons;   // both checks need traced base ink
   const mb = polysBounds(markPolys);
-  const adv = effLetterAdvance(L);
-  const top = effMetrics().lamedAscender + 100, bottom = effMetrics().descender - 50;   // the live export metrics — same predicate as the clip-box expansion
-  // (d) exceeds the vertical metrics → clips in Word (and triggers the export clip-box expansion)
-  if (mb.maxY > top)    reasons.push('Mark exceeds the top metric (clips in Word)');
-  if (mb.minY < bottom) reasons.push('Mark exceeds the bottom metric (clips in Word)');
-  // (c) spills past the advance into a neighbour (RTL: maxX>adv = next letter, minX<0 = previous)
-  if (mb.maxX > adv + QA_CROWD_TOL) reasons.push('Mark spills past the advance (crowds the next letter)');
-  if (mb.minX < -QA_CROWD_TOL)      reasons.push('Mark spills before the origin (crowds the previous letter)');
-  // (a)/(b) need traced base ink
-  if (L.contours && L.contours.length) {
-    const bb = polysBounds(L.contours.map(c => c.points));
-    const boxesOverlap = !(mb.maxX < bb.minX || mb.minX > bb.maxX || mb.maxY < bb.minY || mb.minY > bb.maxY);
-    if (boxesOverlap) {
-      // (a) mark ink sitting on the letter body — inset mark vertices in base ink, OR a base vertex inside the mark
-      // (thin stem threaded through). Skip CENTRE marks: a dagesh is MEANT to sit inside the letter.
-      let hit = false;
-      if (side !== 'center') for (const poly of markPolys) {
-        const inset = qaInsetToward(poly, qaCentroid(poly), QA_OVERLAP_TOL);
-        if (inset.some(p => pointInInk(p, L.contours))) { hit = true; break; }
-        if (L.contours.some(ct => ct.points.some(p => pointInPoly(p, poly)))) { hit = true; break; }
-      }
-      if (hit) reasons.push('Mark overlaps the letter ink');
-      // (b) below-mark colliding with a descender tail (the ink below the baseline on desc letters)
-      if (meta.desc && side === 'below') {
-        let tminX=1e9, tmaxX=-1e9, tminY=1e9, tmaxY=-1e9;
-        L.contours.forEach(ct => ct.points.forEach(([x,y]) => { if (y < 0) { if (x<tminX)tminX=x; if (x>tmaxX)tmaxX=x; if (y<tminY)tminY=y; if (y>tmaxY)tmaxY=y; } }));
-        if (tmaxX > -1e9 && !(mb.maxX < tminX || mb.minX > tmaxX || mb.maxY < tminY || mb.minY > tmaxY))
-          reasons.push('Below-mark collides with the descender tail');
+  const bb = polysBounds(L.contours.map(c => c.points));
+  if (mb.maxX < bb.minX || mb.minX > bb.maxX || mb.maxY < bb.minY || mb.minY > bb.maxY) return reasons;   // bboxes disjoint → no collision
+  // (a) mark ink sitting on the letter body — inset mark vertices in base ink, OR a base vertex inside the mark
+  // (a thin stem threaded through). Skip CENTRE marks: a dagesh is MEANT to sit inside the letter.
+  if (side !== 'center') {
+    for (const poly of markPolys) {
+      const inset = qaInsetToward(poly, qaCentroid(poly), QA_OVERLAP_TOL);
+      if (inset.some(p => pointInInk(p, L.contours)) || L.contours.some(ct => ct.points.some(p => pointInPoly(p, poly)))) {
+        reasons.push('Mark overlaps the letter ink'); break;
       }
     }
+  }
+  // (b) below-mark colliding with a descender tail (the ink below the baseline on desc letters)
+  if (meta.desc && side === 'below') {
+    let tminX=1e9, tmaxX=-1e9, tminY=1e9, tmaxY=-1e9;
+    L.contours.forEach(ct => ct.points.forEach(([x,y]) => { if (y < 0) { if (x<tminX)tminX=x; if (x>tmaxX)tmaxX=x; if (y<tminY)tminY=y; if (y>tmaxY)tmaxY=y; } }));
+    if (tmaxX > -1e9 && !(mb.maxX < tminX || mb.minX > tmaxX || mb.maxY < tminY || mb.minY > tmaxY))
+      reasons.push('Below-mark collides with the descender tail');
   }
   return reasons;
 }
