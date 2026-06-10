@@ -756,7 +756,7 @@ function letterAdvance(l) { return (l && l.advance != null) ? l.advance : Math.r
 function letterInkLeft(l) { if (l && l.contours) { let mn=1e9; l.contours.forEach(c=>c.points.forEach(p=>{ if(p[0]<mn) mn=p[0]; })); if (mn<1e9) return Math.round(mn); } return effMetrics().defaultLSB; }   // ink left edge (min x)
 function letterLSB(l)     { return (l && l.lsb != null) ? l.lsb : letterInkLeft(l); }   // explicit override, else the real ink left edge (so the left margin guide tracks the ink, like the right one)
 function letterInkRight(l){ if (l && l.contours) { let mx=-1e9; l.contours.forEach(c=>c.points.forEach(p=>{ if(p[0]>mx) mx=p[0]; })); if (mx>-1e9) return Math.round(mx); } return Math.max(0, letterAdvance(l) - effMetrics().defaultRSB); }
-function letterRSB(l)     { return Math.max(0, letterAdvance(l) - letterInkRight(l)); }   // right side bearing = gap after the ink (derived)
+function letterRSB(l)     { return (l && l.rsb != null) ? l.rsb : Math.max(0, letterAdvance(l) - letterInkRight(l)); }   // explicit right margin, else derived (gap after the ink)
 function catOfCp(cp) { return TROP_CLASS[cp] ? 'trop' : 'nikkud'; }
 const TROP_GAP_ABOVE = 200, TROP_GAP_BELOW = 200;   // how far trop clears the vowel band
 // mark-to-mark attach point on a nikkud mark (where a trop stacks): its far edge + a small gap.
@@ -788,7 +788,7 @@ function blankLetter(L) {
     transform: [1,0,0,1,0,0],   // image-px → stage-px matrix
     captureBox: null,           // {x0,y0,x1,y1} in font units; null = default
     contours: null,             // [{winding:'cw'|'ccw', points:[[x,y]...]}] font units
-    advance: null, lsb: null,   // per-letter width + left side bearing (null = inherit metrics.defaultLSB; RSB is derived from advance−ink)
+    advance: null, lsb: null, rsb: null,   // per-letter width + left side bearing (null = inherit metrics.defaultLSB; RSB is derived from advance−ink)
     anchors: null,              // {below:{x,y}, above:{x,y}, center:{x,y}}
     placementSaved: false,      // user confirmed the nikkud placement (green ✓)
     binThreshold: 128, invert: false, epsilon: 6
@@ -1244,11 +1244,14 @@ function setMetric(key, v, noRender) {            // font-wide metrics
   project.font.metrics[key] = n; syncMetricInputs();
   if (!noRender) renderStage();                   // NOT renderControls → keeps the number input focused while typing
 }
-function setLetterMetric(key, v, noRender) {       // per-letter (advance authoritative; lsb stored; rsb derived → adjusts advance)
+function setLetterMetric(key, v, noRender) {       // per-letter — Width / Left margin / Right margin are independent (editing one never changes another)
   const l = curLetter(); const n = _clampMetric(key, +v); if (n==null) return;
-  if (key==='advance') l.advance = n;
+  if (key==='advance') {
+    if (l.rsb == null) l.rsb = Math.max(0, letterAdvance(l) - letterInkRight(l));   // pin the current right margin so it doesn't shift when Width changes
+    l.advance = n;
+  }
   else if (key==='lsb') l.lsb = n;
-  else if (key==='rsb') l.advance = Math.max(50, Math.round(letterInkRight(l) + n));   // right margin = gap after the ink
+  else if (key==='rsb') l.rsb = n;                 // right margin is its own value (a guide; doesn't move Width)
   syncMetricInputs();
   if (!noRender) renderStage();
 }
@@ -1267,7 +1270,7 @@ function toggleMetricAdjust() { metricAdjust = !metricAdjust; renderStage(); ren
 function resetMetrics() {                          // restore template-font defaults
   project.font.metrics = { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP,
                            descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB };
-  const l = curLetter(); l.lsb = null;
+  const l = curLetter(); l.lsb = null; l.rsb = null;
   if (l.contours) {
     let minX=Infinity, maxX=-Infinity;
     l.contours.forEach(c => c.points.forEach(p => { minX=Math.min(minX,p[0]); maxX=Math.max(maxX,p[0]); }));
@@ -1302,7 +1305,7 @@ function metricsPanel() {
     <div class="metric-actions">
       <button class="mode-btn metric-toggle ${metricAdjust?'active':''}" id="metAdj" type="button" onclick="toggleMetricAdjust()">${metricAdjust?'✓ ':''}Adjust on canvas</button>
       <button class="ctl-btn" type="button" onclick="resetMetrics()">Reset to defaults</button>
-      <div class="hint" style="font-size:0.64rem;line-height:1.3;">Right margin sets the gap after the ink (adjusts Width). Turn on <b>Adjust on canvas</b> to drag the guide dots.</div>
+      <div class="hint" style="font-size:0.64rem;line-height:1.3;">Width, Left margin &amp; Right margin are independent — changing one won't move the others. Turn on <b>Adjust on canvas</b> to drag the guide dots.</div>
     </div>
   </div>`;
 }
@@ -3853,6 +3856,7 @@ function migrateProject(data) {
     if (ex.placementSaved == null) ex.placementSaved = false;
     if (ex.invert == null) ex.invert = false;
     if (ex.lsb === undefined) ex.lsb = null;   // per-letter left side bearing (Letter Metrics)
+    if (ex.rsb === undefined) ex.rsb = null;   // per-letter right margin (independent of Width)
     return ex;
   });
   if (!Array.isArray(data.combinedSheets)) {                          // migrate the old single sheet → multi-sheet set
