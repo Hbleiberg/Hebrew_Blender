@@ -838,6 +838,9 @@ function tropScale() { return (project && project.font && project.font.tropScale
 function fontSpacing() { return (project && project.font && project.font.spacing) || { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם' }; }
 function effLetterAdvance(l) { const base = (l && l.advance) || Math.round(LETTER_TOP*0.7); return Math.max(50, base + fontSpacing().letterSpacing); }
 function wordAdvance() { return Math.max(0, fontSpacing().wordSpacing); }
+function fontKerning() { return (project && project.font && Array.isArray(project.font.kerning)) ? project.font.kerning : []; }
+const KERN_CLASS_FINALS = ['05DA','05DD','05DF','05E3','05E5'];        // final kaf/mem/nun/pe/tsadi
+const KERN_CLASS_DESC   = LETTERS.filter(l => l.desc).map(l => l.cp);  // descenders → 05DA 05DF 05E3 05E5 05E7
 /* ── Glyph-metric accessors: project.font.metrics is the live source of truth; the consts above are the seed/defaults ── */
 function effMetrics() {
   const m = (project && project.font && project.font.metrics) || {};
@@ -881,7 +884,7 @@ let metricDrag = null;      // active metric-guide drag: { key, axis, grab }
 
 /* ════════ Undo / redo (per-project, in-memory; max 100 entries). Each entry snapshots only the
    touched item/slice — never the image (source) and never savedAnchors (dirty-detection state).
-   Scopes: {t:'item',kind,cp} | {t:'spacing'} | {t:'metrics'} | {t:'precomp',target}. ════════ */
+   Scopes: {t:'item',kind,cp} | {t:'spacing'} | {t:'kerning'} | {t:'metrics'} | {t:'precomp',target}. ════════ */
 let undoStack = [], redoStack = [];
 const UNDO_MAX = 100;
 const ITEM_SKIP = { source: 1, savedAnchors: 1 };       // excluded from snapshots; preserved live on restore
@@ -894,6 +897,7 @@ function udSnap(s) {
   if (s.t === 'item') { const it = udItem(s); if (!it) return null;
     const o = {}; for (const k in it) if (!ITEM_SKIP[k]) o[k] = JSON.parse(JSON.stringify(it[k])); return o; }
   if (s.t === 'spacing') return JSON.parse(JSON.stringify(project.font.spacing));
+  if (s.t === 'kerning') return JSON.parse(JSON.stringify(project.font.kerning || []));
   if (s.t === 'metrics') return JSON.parse(JSON.stringify(project.font.metrics));
   if (s.t === 'precomp') { const pc = getPrecomp(s.target); return pc && pc.anchor ? JSON.parse(JSON.stringify(pc.anchor)) : null; }
   return null;
@@ -905,6 +909,7 @@ function udRestore(s, snap) {
     Object.assign(it, JSON.parse(JSON.stringify(snap)));
     it.source = keepSrc; if (keepSaved !== undefined) it.savedAnchors = keepSaved; }
   else if (s.t === 'spacing') Object.assign(project.font.spacing, JSON.parse(JSON.stringify(snap || {})));
+  else if (s.t === 'kerning') project.font.kerning = JSON.parse(JSON.stringify(snap || []));
   else if (s.t === 'metrics') Object.assign(project.font.metrics, JSON.parse(JSON.stringify(snap || {})));
   else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) pc.anchor = snap ? JSON.parse(JSON.stringify(snap)) : null; }
 }
@@ -975,7 +980,8 @@ function newProject() {
       trop:   { enabled: false, mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },
       metrics: { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP, descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB },
       spacing: { letterSpacing: 0, wordSpacing: 260, lineSpacing: 0, sample: 'שלום עולם' },
-      includeDigitsPunct: true
+      includeDigitsPunct: true,
+      kerning: []
     },
     template: { font: "'Noto Sans Hebrew', sans-serif", opacity: 0.35, showOverlay: true },
     view: { imgOpacityAlign: 0.92, imgOpacityTrace: 0.28, glyphOpacity: 1.0 },
@@ -3499,8 +3505,10 @@ function renderSpacingPanel() {
     <label class="fld">Sample text <input type="text" id="spacingSample" dir="rtl" value="${escapeHtml(sp.sample)}" oninput="setSpacingSample(this.value)" onchange="udBurstCommit()"></label>
     <div class="hint">Adjusts the exported font's spacing (letter &amp; word advance widths + line gap). The preview uses your traced letters — untraced letters show as dashed boxes.</div>
     <svg id="spacingPreviewSvg" style="width:100%;height:auto;max-height:170px;margin-top:4px;"></svg>
-    <div class="ctl-row" style="margin-top:4px;"><button class="ctl-btn" onclick="resetSpacing()">Reset spacing</button></div>`;
+    <div class="ctl-row" style="margin-top:4px;"><button class="ctl-btn" onclick="resetSpacing()">Reset spacing</button></div>
+    <div id="kerningBody" style="margin-top:14px;border-top:1px solid var(--border);padding-top:10px;"></div>`;
   renderSpacingPreview();
+  renderKerningSection();
 }
 function setLetterSpacing(v) { udBurstBegin([{t:'spacing'}], 'letter spacing'); fontSpacing().letterSpacing = Math.max(-40, Math.min(200, +v||0)); const s = document.getElementById('lsV'); if (s) s.textContent = fontSpacing().letterSpacing; renderSpacingPreview(); }
 function setWordSpacing(v)   { udBurstBegin([{t:'spacing'}], 'word spacing'); fontSpacing().wordSpacing   = Math.max(80,  Math.min(600, +v||0)); const s = document.getElementById('wsV'); if (s) s.textContent = fontSpacing().wordSpacing;   renderSpacingPreview(); }
@@ -3555,6 +3563,141 @@ function renderSpacingPreview() {
   svg.setAttribute('viewBox', `${-pad} ${(-ascender-pad).toFixed(0)} ${(total+2*pad).toFixed(0)} ${(lineH+(ascender-descender)+2*pad).toFixed(0)}`);
   svg.style.color = (getComputedStyle(document.body).getPropertyValue('--text')||'').trim() || (document.body.classList.contains('dark') ? '#dde4f0' : '#1a2744');
   svg.innerHTML = body;
+}
+/* ════════ Kerning (per-pair spacing) ════════
+   project.font.kerning = [{left:[cp…], right:[cp…], value}] in logical (reading) order — a singleton
+   side is a plain pair, 2+ is class kerning. The live preview reuses glyphPathAt so it matches the
+   exported `kern` feature exactly; real HarfBuzz validates it in Preview PDF / export. */
+let kernEdit = null;
+function kernEnsureEdit() { if (!kernEdit) kernEdit = { left:{cp:'05D5',cls:''}, right:{cp:'05D5',cls:''}, value:0 }; return kernEdit; }
+function sameSet(a, b) { return !!a && !!b && a.length === b.length && a.every(x => b.includes(x)); }
+function kernClassCps(cls) { return cls === 'finals' ? KERN_CLASS_FINALS : cls === 'desc' ? KERN_CLASS_DESC : null; }
+function kernSideCps(s) { return (kernClassCps(s.cls) || [s.cp]).slice(); }                  // the class array, or the single glyph
+function kernSideLabel(cps) {
+  if (sameSet(cps, KERN_CLASS_FINALS)) return 'Finals';
+  if (sameSet(cps, KERN_CLASS_DESC))   return 'Descenders';
+  return (cps || []).map(cp => String.fromCodePoint(parseInt(cp, 16))).join(' ');
+}
+function kernPairIndex(left, right) { return fontKerning().findIndex(k => sameSet(k.left, left) && sameSet(k.right, right)); }
+
+function renderKerningSection() {
+  const box = document.getElementById('kerningBody'); if (!box) return;
+  const e = kernEnsureEdit(), pairs = fontKerning();
+  const sideUI = (which, s) => `
+    <div style="flex:1;min-width:0;">
+      <div class="metric-sub" style="margin-bottom:3px;">${which === 'left' ? 'First (right)' : 'Second (left)'}</div>
+      <input type="text" dir="rtl" maxlength="2" ${s.cls ? 'disabled' : ''} value="${s.cls ? '' : escapeHtml(String.fromCodePoint(parseInt(s.cp, 16)))}"
+        oninput="setKernGlyph('${which}', this.value)" placeholder="–"
+        style="width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:5px;padding:5px;font-size:1.2rem;text-align:center;background:var(--white);color:var(--text);font-family:var(--heb-font);">
+      <select onchange="setKernClass('${which}', this.value)" style="width:100%;box-sizing:border-box;margin-top:4px;border:1px solid var(--border);border-radius:5px;padding:4px;font-size:0.72rem;background:var(--white);color:var(--text);">
+        <option value=""       ${s.cls===''       ? 'selected' : ''}>Single glyph</option>
+        <option value="finals" ${s.cls==='finals' ? 'selected' : ''}>Finals (ך ם ן ף ץ)</option>
+        <option value="desc"   ${s.cls==='desc'   ? 'selected' : ''}>Descenders</option>
+      </select>
+    </div>`;
+  const isUpdate = kernPairIndex(kernSideCps(e.left), kernSideCps(e.right)) >= 0;
+  let rows = '';
+  pairs.forEach((k, i) => {
+    rows += `<div class="readline" style="cursor:pointer;gap:8px;align-items:center;" onclick="loadKernPair(${i})" title="Click to edit">
+      <span style="font-family:var(--heb-font);font-size:1.05rem;">${escapeHtml(kernSideLabel(k.left||[]))}<span style="color:var(--muted);font-size:0.7rem;font-family:inherit;"> · </span>${escapeHtml(kernSideLabel(k.right||[]))}</span>
+      <span style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <span class="readout">${k.value>0?'+':''}${k.value|0}</span>
+        <button class="ctl-btn" style="padding:2px 8px;" title="Delete" onclick="event.stopPropagation();deleteKernPair(${i})">✕</button>
+      </span></div>`;
+  });
+  box.innerHTML = `
+    <div class="ctl-label" style="margin-bottom:6px;">Kerning</div>
+    <div class="row2" style="gap:10px;align-items:flex-start;">${sideUI('left', e.left)}${sideUI('right', e.right)}</div>
+    <svg id="kernPreviewSvg" style="width:100%;height:auto;max-height:120px;margin-top:8px;"></svg>
+    <div class="inline" style="margin-top:2px;">Gap <input type="range" min="-200" max="200" step="5" value="${e.value}" oninput="setKernValue(this.value)"> <span id="kernV" class="readout">${e.value>0?'+':''}${e.value|0}</span></div>
+    <div class="ctl-row" style="margin-top:6px;">
+      <button id="kernAddBtn" class="ctl-btn primary" onclick="addOrUpdateKernPair()">${isUpdate?'Update pair':'Add pair'}</button>
+      <button class="ctl-btn" onclick="suggestKernPairs()">Suggest pairs</button>
+    </div>
+    <div class="hint" style="margin-top:4px;">Negative = tighter, positive = looser (font units). Preview &amp; exported font use the same value; Preview PDF shows it shaped in full.</div>
+    ${pairs.length ? `<div style="margin-top:8px;">${rows}</div>` : '<div class="hint" style="margin-top:8px;">No pairs yet — pick two glyphs (or a class on either side) and Add.</div>'}`;
+  renderKernPreview();
+}
+
+function renderKernPreview() {
+  const svg = document.getElementById('kernPreviewSvg'); if (!svg || !project) return;
+  const e = kernEnsureEdit(), em = effMetrics(), ascender = em.lamedAscender + 100, descender = em.descender - 50;
+  const la = project.letters.find(x => x.codepoint === kernSideCps(e.left)[0]);      // representative member for a class
+  const lb = project.letters.find(x => x.codepoint === kernSideCps(e.right)[0]);
+  const wa = la ? effLetterAdvance(la) : effLetterAdvance(null);
+  const wb = lb ? effLetterAdvance(lb) : effLetterAdvance(null);
+  const gap = Math.max(-200, Math.min(200, e.value|0));
+  const total = wa + gap + wb;
+  const cell = (l, w, pen) => (l && l.contours)
+    ? `<path d="${glyphPathAt(l.contours, pen, 0, l.curves)}" fill="currentColor"/>`
+    : `<rect x="${(pen+40).toFixed(0)}" y="${(-ascender+60).toFixed(0)}" width="${Math.max(20,w-80).toFixed(0)}" height="${(ascender-60).toFixed(0)}" rx="10" fill="none" stroke="currentColor" stroke-dasharray="7 6" opacity="0.3"/>`;
+  let pen = total, body = '';        // RTL: pen starts at the right edge and walks left; the first glyph sits rightmost
+  pen -= wa; body += cell(la, wa, pen);
+  pen -= gap;                        // ← the kern: + opens the gap, − closes it (same value the FEA emits)
+  pen -= wb; body += cell(lb, wb, pen);
+  const pad = 30, vw = Math.max(total, 200);
+  svg.setAttribute('viewBox', `${-pad} ${(-ascender-pad).toFixed(0)} ${(vw+2*pad).toFixed(0)} ${(ascender-descender+2*pad).toFixed(0)}`);
+  svg.style.color = (getComputedStyle(document.body).getPropertyValue('--text')||'').trim() || (document.body.classList.contains('dark') ? '#dde4f0' : '#1a2744');
+  svg.innerHTML = body;
+}
+
+function setKernGlyph(which, v) {
+  const e = kernEnsureEdit(), ch = [...(v||'')].pop();      // last typed char (handles surrogate pairs)
+  if (ch) { e[which].cp = ch.codePointAt(0).toString(16).toUpperCase().padStart(4,'0'); e[which].cls = ''; }
+  renderKernPreview();
+  const btn = document.getElementById('kernAddBtn');        // refresh label without re-rendering (keeps input focus)
+  if (btn) btn.textContent = kernPairIndex(kernSideCps(e.left), kernSideCps(e.right)) >= 0 ? 'Update pair' : 'Add pair';
+}
+function setKernClass(which, cls) { kernEnsureEdit()[which].cls = cls; renderKerningSection(); }
+function setKernValue(v) {
+  const e = kernEnsureEdit();
+  e.value = Math.max(-200, Math.min(200, +v||0));
+  const s = document.getElementById('kernV'); if (s) s.textContent = (e.value>0?'+':'') + e.value;
+  renderKernPreview();
+}
+function addOrUpdateKernPair() {
+  const e = kernEnsureEdit(), left = kernSideCps(e.left), right = kernSideCps(e.right);
+  if (!left.length || !right.length) { status('Pick a glyph or class for each side.'); return; }
+  udDo([{t:'kerning'}], 'kerning pair', () => {
+    if (!Array.isArray(project.font.kerning)) project.font.kerning = [];
+    const idx = kernPairIndex(left, right);
+    if (idx >= 0) project.font.kerning[idx].value = e.value;
+    else project.font.kerning.push({ left, right, value: e.value });
+  });
+  renderKerningSection();
+  status(e.value ? 'Kerning pair saved.' : 'Pair saved at 0 — set a non-zero gap to apply it.');
+}
+function deleteKernPair(i) { udDo([{t:'kerning'}], 'delete kerning pair', () => { (project.font.kerning||[]).splice(i, 1); }); renderKerningSection(); }
+function loadKernPair(i) {
+  const k = fontKerning()[i]; if (!k) return;
+  const side = cps => sameSet(cps, KERN_CLASS_FINALS) ? {cp:'05D5',cls:'finals'}
+                    : sameSet(cps, KERN_CLASS_DESC)   ? {cp:'05D5',cls:'desc'}
+                    : {cp:(cps && cps[0]) || '05D5', cls:''};
+  kernEdit = { left: side(k.left), right: side(k.right), value: k.value|0 };
+  renderKerningSection();
+}
+function suggestKernPairs() {
+  const cps = [...(fontSpacing().sample || '')]
+    .map(ch => ch.codePointAt(0)).filter(c => !(c>=0x0591 && c<=0x05C7) && c!==0x20)        // base letters only (drop marks + space)
+    .map(c => c.toString(16).toUpperCase().padStart(4,'0'));
+  const seen = new Set(), cand = [];
+  for (let i = 0; i < cps.length - 1; i++) {
+    const a = cps[i], b = cps[i+1], key = a + '|' + b;       // reading order: a first (right), b second (left)
+    if (seen.has(key)) continue; seen.add(key);
+    if (kernPairIndex([a],[b]) >= 0) continue;               // already defined
+    const la = project.letters.find(x=>x.codepoint===a), lb = project.letters.find(x=>x.codepoint===b);
+    if (!la || !lb || !la.contours || !lb.contours) continue;
+    cand.push({ a, b, gap: (effLetterAdvance(la) - letterInkRight(la)) + letterInkLeft(lb) });   // whitespace between the ink edges
+  }
+  cand.sort((x,y) => y.gap - x.gap);
+  const pick = cand.slice(0, 15);
+  if (!pick.length) { status('No new traced pairs in the sample text — trace more letters or lengthen the sample.'); return; }
+  udDo([{t:'kerning'}], 'suggest kerning pairs', () => {
+    if (!Array.isArray(project.font.kerning)) project.font.kerning = [];
+    pick.forEach(p => project.font.kerning.push({ left:[p.a], right:[p.b], value:0 }));
+  });
+  renderKerningSection();
+  status(`Added ${pick.length} candidate pair${pick.length>1?'s':''} at gap 0 — drag each to tune.`);
 }
 function savePlacement() {
   const l = curLetter();
@@ -4173,6 +4316,29 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn) {
       // center marks (dagesh/shin/sin dot) carry no trop — trop stacks on the base letter instead
     });
     if (mkmkLines) f += 'feature mkmk {\n' + mkmkLines + '} mkmk;\n\n';
+  }
+  // ── kerning (GPOS pair adjustment). RTL convention (confirmed visually via the live preview +
+  //    Preview PDF): the pair is stored/emitted in logical (reading) order — the order it is typed,
+  //    which for Hebrew is right-to-left visually. A single value adjusts the FIRST glyph's
+  //    x-advance, and advance = pen movement in the writing direction, so − tightens / + loosens in
+  //    both LTR and RTL (HarfBuzz applies advances in logical order for the RTL run). baseGlyphNames
+  //    is the set of glyphs actually built, so a pair on a punct/digit glyph can't break the build
+  //    when "Include digits & punctuation" is off (its side just drops out). ──
+  const builtSet = new Set(baseGlyphNames);
+  const kernSide = cps => (cps || []).map(gname).filter(n => builtSet.has(n));
+  const kernMap = new Map();   // key → emitted line; a later duplicate overwrites the value, position stable (last wins)
+  (project.font.kerning || []).forEach(k => {
+    if (!k || !k.value) return;                                  // value 0 (incl. un-tuned "Suggest" seeds) → omit
+    const L = kernSide(k.left), R = kernSide(k.right);
+    if (!L.length || !R.length) return;                          // a side resolved to no built glyph → skip
+    const lhs = L.length > 1 ? `[${L.join(' ')}]` : L[0];
+    const rhs = R.length > 1 ? `[${R.join(' ')}]` : R[0];
+    kernMap.set(lhs + '\t' + rhs, `  pos ${lhs} ${rhs} ${k.value};\n`);
+  });
+  if (kernMap.size) {
+    let kernLines = ''; kernMap.forEach(line => { kernLines += line; });
+    f += '# kern: pair in logical (reading) order; value = first-glyph x-advance (− tightens, + loosens)\n';
+    f += 'feature kern {\n' + kernLines + '} kern;\n\n';
   }
   // explicit GDEF (base=1, mark=3); empty mark slot when letters-only
   const allMarks = [...nikMarks, ...tropMarks];
@@ -4985,6 +5151,7 @@ function migrateProject(data) {
     if (!data.font.trop.combinedImage) data.font.trop.combinedImage = { dataUrl: null };
     if (!data.font.spacing) data.font.spacing = { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם' };
     else { const sp = data.font.spacing; if (sp.letterSpacing==null) sp.letterSpacing=0; if (sp.wordSpacing==null) sp.wordSpacing=260; if (sp.lineSpacing==null) sp.lineSpacing=0; if (!sp.sample) sp.sample='שלום עולם'; }
+    if (!Array.isArray(data.font.kerning)) data.font.kerning = [];
   }
   return data;
 }
