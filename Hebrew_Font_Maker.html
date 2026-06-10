@@ -161,6 +161,8 @@
     font-size: 0.82rem; font-family: inherit; background: var(--white); color: var(--text); font-weight: 400;
     width: 100%; min-width: 0; box-sizing: border-box;
   }
+  .fld-help { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border-radius: 50%; background: var(--border); color: var(--muted); font-size: 0.66rem; font-weight: 700; cursor: pointer; text-decoration: none; vertical-align: middle; }
+  .fld-help:hover { background: var(--gold); color: #fff; }
   .row2 { display: flex; gap: 8px; }
   .row2 > * { flex: 1; min-width: 0; }
   .inline { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; font-weight: 600; }
@@ -442,13 +444,22 @@
             <input type="text" id="reservedName" value="My Hebrew Hand" oninput="onMetaChange()">
           </label>
           <label class="fld">Version
-            <input type="text" id="fontVersion" value="1.000" readonly title="Auto-bumped on each export">
+            <input type="text" id="fontVersion" value="1.000" oninput="onMetaChange()" title="Edit it freely — also ticks up on each export.">
           </label>
         </div>
-        <label class="fld">Copyright
-          <input type="text" id="copyright" value="" placeholder="Copyright (c) 2026 Your Name" oninput="onMetaChange()">
+        <label class="fld">Author
+          <input type="text" id="author" value="" placeholder="Your name" oninput="onMetaChange()">
         </label>
-        <div class="hint">Every time you export, the version number ticks up automatically. If you already installed an earlier copy of this font, delete it first so your computer picks up the new one.</div>
+        <label class="fld"><span>License <a class="fld-help" onclick="openHelp('licenses')" title="About these licenses">?</a></span>
+          <select id="license" onchange="onMetaChange()">
+            <option value="cc0">Public Domain (CC0) — most open</option>
+            <option value="ofl" selected>SIL Open Font License 1.1 (recommended)</option>
+            <option value="mit">MIT License</option>
+            <option value="ccby">Creative Commons BY 4.0</option>
+            <option value="arr">All Rights Reserved — most strict</option>
+          </select>
+        </label>
+        <div class="hint">Pick how others may use your font. Every export's <b>LICENSE.txt</b> lists your name as author and includes a required <b>Made with IvritSuite.com</b> line. The version ticks up each export — edit it anytime.</div>
       </div>
     </div>
 
@@ -801,7 +812,7 @@ function newProject() {
     _ivritSuite: 1, format: 'hebrew-font-maker-project', schemaVersion: 1, tool: 'FontMaker',
     savedAt: new Date().toISOString(),
     font: {
-      familyName: 'My Hebrew Hand', reservedFontName: 'My Hebrew Hand', copyright: '',
+      familyName: 'My Hebrew Hand', reservedFontName: 'My Hebrew Hand', author: '', license: 'ofl',
       version: '1.000', unitsPerEm: UPM, markScale: 1.0, tropScale: 1.0,
       nikkud: { enabled: true,  mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },   // mode: 'default' | 'custom'; uploadMode: 'perSymbol' | 'combined'
       trop:   { enabled: false, mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },
@@ -968,6 +979,7 @@ const HELP_TABS = [
   ['start','Getting Started'], ['upload','Uploading'], ['trace','Tracing'], ['anchor','Anchoring'],
   ['spacing','Spacing'], ['saving','Saving Your Project'], ['export','Exporting & Installing'],
   ['templates','Download Templates'],
+  ['licenses','Licenses'],
 ];
 const HELP_CONTENT = {
   start: `
@@ -1050,7 +1062,7 @@ const HELP_CONTENT = {
     <p>You'll get two files:</p>
     <ul>
       <li><strong>YourFont.ttf</strong> — the font itself.</li>
-      <li><strong>OFL.txt</strong> — a free open-source license that travels with it.</li>
+      <li><strong>LICENSE.txt</strong> — the license you picked (in <span class="ui">Font Details</span>), with your name as author.</li>
     </ul>
     <p><strong>Install it:</strong></p>
     <ul>
@@ -1094,6 +1106,19 @@ const HELP_CONTENT = {
     </div>
     <div class="help-tip">⚠️ The Letters sheet is two pages — it downloads as a 2-page PDF, or as two numbered images (…_1.png, …_2.png) when you choose Picture.</div>
   `,
+  licenses: `
+    <h4>Choosing a license</h4>
+    <p>Your license tells the world what others may do with your font. Pick one in the <span class="ui">Font Details</span> box — it's written into the font and into the <span class="ui">LICENSE.txt</span> that downloads with your export. They're listed from <strong>most open</strong> to <strong>most strict</strong>:</p>
+    <ul>
+      <li><strong>Public Domain (CC0)</strong> — you give up all rights; anyone can use, change, sell, or share it freely, no credit needed. The most generous option. <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener">details</a></li>
+      <li><strong>SIL Open Font License 1.1 (OFL)</strong> — the standard for free fonts: anyone may use, study, modify, and share it (even bundled in paid software), but it can't be sold on its own and must stay under the OFL. <a href="https://openfontlicense.org" target="_blank" rel="noopener">details</a></li>
+      <li><strong>MIT</strong> — very permissive: do almost anything, just keep the copyright + permission notice. <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">details</a></li>
+      <li><strong>Creative Commons BY 4.0</strong> — free to use and adapt for any purpose, <em>including commercially</em>, as long as people credit you and link the license. <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">details</a></li>
+      <li><strong>All Rights Reserved</strong> — fully proprietary: nobody may use, copy, or modify it without your written permission. The most restrictive.</li>
+    </ul>
+    <div class="help-tip">💛 If you can, choose a more open license (CC0, OFL, or MIT). Open Hebrew fonts are a real gift for students, teachers, and anyone learning to read — they make your work usable in classrooms, siddurim, and projects you'll never even see.</div>
+    <div class="help-tip">⚠️ Every license generated here includes a <strong>Made with IvritSuite.com</strong> attribution line. This line must stay in the LICENSE file — it's what keeps the tool free for everyone.</div>
+  `,
 };
 function openHelp(tab) {
   const bar = document.getElementById('helpTabs');
@@ -1122,14 +1147,17 @@ function syncMetaToForm() {
   document.getElementById('familyName').value = project.font.familyName;
   document.getElementById('reservedName').value = project.font.reservedFontName;
   document.getElementById('fontVersion').value = project.font.version;
-  document.getElementById('copyright').value = project.font.copyright;
+  document.getElementById('author').value = project.font.author || '';
+  document.getElementById('license').value = project.font.license || 'ofl';
   // Reference-font / input-mode controls now live in the dynamically-rendered workspace
   // (renderControls), driven by project state — nothing to sync here.
 }
 function onMetaChange() {
   project.font.familyName = document.getElementById('familyName').value;
   project.font.reservedFontName = document.getElementById('reservedName').value;
-  project.font.copyright = document.getElementById('copyright').value;
+  project.font.version = document.getElementById('fontVersion').value;
+  project.font.author = document.getElementById('author').value;
+  project.font.license = document.getElementById('license').value;
 }
 /* ════════ Template fonts — ported from torah_trainer.html, same grouping ════════ */
 const HEB_FONTS = [
@@ -3271,9 +3299,9 @@ function buildFontSpec() {
     familyName: fam, styleName: 'Regular',
     uniqueFontIdentifier: fam + '-' + fnt.version,
     fullName: fam, version: 'Version ' + fnt.version, psName: fam.replace(/\s+/g,'') + '-Regular',
-    copyright: fnt.copyright || ('Copyright (c) ' + new Date().getFullYear() + ' ' + fam),
-    licenseDescription: 'This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at https://openfontlicense.org',
-    licenseInfoURL: 'https://openfontlicense.org',
+    copyright: 'Copyright (c) ' + new Date().getFullYear() + ' ' + ((fnt.author||'').trim() || fam),
+    licenseDescription: (LICENSES[fnt.license] || LICENSES.ofl).desc,
+    licenseInfoURL: (LICENSES[fnt.license] || LICENSES.ofl).url,
     designer: 'Made with IvritSuite Hebrew Font Maker'
   };
   const versionFloat = parseFloat(fnt.version) || 1.0;
@@ -3480,9 +3508,9 @@ async function doExport() {
 function finishDownload(bytes, gateSkipped) {
   const fam = (project.font.familyName||'MyHebrewFont').replace(/\s+/g,'');
   downloadBlob(new Blob([bytes], {type:'font/ttf'}), fam + '.ttf');
-  setTimeout(() => downloadBlob(new Blob([oflText()], {type:'text/plain'}), 'OFL.txt'), 400);
+  setTimeout(() => downloadBlob(new Blob([licenseText()], {type:'text/plain'}), 'LICENSE.txt'), 400);
   window._lastFontBytes = bytes;   // for preview PDF
-  status('Exported ' + fam + '.ttf' + (gateSkipped ? ' (shaping check skipped)' : ' ✓ — also saved OFL.txt'));
+  status('Exported ' + fam + '.ttf' + (gateSkipped ? ' (shaping check skipped)' : ' ✓ — also saved LICENSE.txt'));
 }
 function downloadBlob(blob, name) {
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
@@ -3494,11 +3522,98 @@ async function gzipBlob(str) {                       // string → gzip Blob (na
 async function gunzipText(buf) {                     // gzip ArrayBuffer → string
   return new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
 }
+/* ════════ Licenses — every generated LICENSE.txt embeds the author + the required IvritSuite line ════════ */
+const IVRIT_LINE = 'Made with IvritSuite.com (https://ivritsuite.com).';
+const LICENSES = {
+  cc0:  { name: 'Public Domain (CC0 1.0)',          desc: 'This font is dedicated to the public domain under CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/).', url: 'https://creativecommons.org/publicdomain/zero/1.0/' },
+  ofl:  { name: 'SIL Open Font License 1.1',        desc: 'This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at https://openfontlicense.org', url: 'https://openfontlicense.org' },
+  mit:  { name: 'MIT License',                      desc: 'This font is licensed under the MIT License (https://opensource.org/licenses/MIT).', url: 'https://opensource.org/licenses/MIT' },
+  ccby: { name: 'Creative Commons Attribution 4.0', desc: 'This font is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).', url: 'https://creativecommons.org/licenses/by/4.0/' },
+  arr:  { name: 'All Rights Reserved',              desc: 'All rights reserved. This font is proprietary and may not be used without permission.', url: '' }
+};
+function licenseCtx() {
+  const family = project.font.familyName || 'My Hebrew Font';
+  const author = (project.font.author || '').trim() || family;
+  const reserved = project.font.reservedFontName || family;
+  return { family, author, reserved, year: new Date().getFullYear() };
+}
+function licenseText() {            // the LICENSE.txt body for the chosen license
+  switch (project.font.license) {
+    case 'cc0':  return cc0Text();
+    case 'mit':  return mitText();
+    case 'ccby': return ccbyText();
+    case 'arr':  return arrText();
+    default:     return oflText();   // 'ofl'
+  }
+}
+function cc0Text() {
+  const c = licenseCtx();
+  return `${c.family} — Public Domain Dedication (CC0 1.0)
+
+To the extent possible under law, ${c.author} has waived all copyright and related or
+neighboring rights to this font. You may copy, modify, distribute, and use it, including
+for commercial purposes, all without asking permission.
+
+Full dedication: https://creativecommons.org/publicdomain/zero/1.0/
+
+${IVRIT_LINE}
+`;
+}
+function mitText() {
+  const c = licenseCtx();
+  return `MIT License
+
+Copyright (c) ${c.year} ${c.author}
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this font
+and associated files (the "Font"), to deal in the Font without restriction, including
+without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Font, and to permit persons to whom the Font is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or
+substantial portions of the Font.
+
+THE FONT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE FONT OR THE USE OR OTHER DEALINGS IN THE FONT.
+
+${IVRIT_LINE}
+`;
+}
+function ccbyText() {
+  const c = licenseCtx();
+  return `${c.family}
+Copyright (c) ${c.year} ${c.author}
+
+This font is licensed under the Creative Commons Attribution 4.0 International License
+(CC BY 4.0). You are free to share and adapt it for any purpose, even commercially, as long
+as you give appropriate credit to ${c.author}, provide a link to the license, and indicate
+if changes were made.
+
+Full license: https://creativecommons.org/licenses/by/4.0/
+
+${IVRIT_LINE}
+`;
+}
+function arrText() {
+  const c = licenseCtx();
+  return `${c.family}
+Copyright (c) ${c.year} ${c.author}. All rights reserved.
+
+This font is proprietary. No part of it may be reproduced, modified, distributed, or used to
+create derivative works without the prior written permission of ${c.author}.
+
+${IVRIT_LINE}
+`;
+}
 function oflText() {
   const fam = project.font.familyName || 'My Hebrew Font';
   const reserved = project.font.reservedFontName || fam;
   const yr = new Date().getFullYear();
-  const copyr = project.font.copyright || ('Copyright (c) ' + yr + ' ' + fam);
+  const copyr = 'Copyright (c) ' + yr + ' ' + ((project.font.author||'').trim() || fam);
   return `${copyr}, with Reserved Font Name "${reserved}".
 
 This font was made with the IvritSuite Hebrew Font Maker (https://ivritsuite.com).
@@ -4011,6 +4126,9 @@ function migrateProject(data) {
   ['imgOpacityAlign','imgOpacityTrace','glyphOpacity'].forEach((k,i)=>{ if(data.view[k]==null) data.view[k]=[0.92,0.28,1.0][i]; });
   if (data.font && data.font.markScale == null) data.font.markScale = 1.0;
   if (data.font) {
+    if (data.font.author === undefined) data.font.author = data.font.copyright || '';   // Copyright field → Author
+    delete data.font.copyright;
+    if (!data.font.license) data.font.license = 'ofl';
     if (!data.font.metrics) data.font.metrics = { baseline:BASELINE, letterTop:LETTER_TOP, lamedAscender:LAMED_TOP, descender:DESCENDER, defaultLSB:DEF_LSB, defaultRSB:DEF_RSB };
     else ['baseline','letterTop','lamedAscender','descender','defaultLSB','defaultRSB'].forEach((k,i)=>{ if(data.font.metrics[k]==null) data.font.metrics[k]=[BASELINE,LETTER_TOP,LAMED_TOP,DESCENDER,DEF_LSB,DEF_RSB][i]; });
     if (data.font.tropScale == null) data.font.tropScale = 1.0;
