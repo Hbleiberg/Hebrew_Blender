@@ -462,14 +462,15 @@
   <span id="statusMsg"></span>
   <button class="tbtn ghost" onclick="openQA()" title="Review every letter × mark placement for collisions">🔍 QA Check</button>
   <button class="tbtn ghost" onclick="generatePreviewPDF()">Preview PDF</button>
-  <select class="tbtn-select" id="exportFormat" onchange="onExportFormatChange()" title="Choose the export format">
+  <select class="tbtn-select" id="exportFormat" onchange="onExportFormatChange()" title="Choose an export format — or save the font for use in IvritSuite">
     <option value="ttf" selected>TTF (recommended)</option>
     <option value="woff2">WOFF2 (web)</option>
     <option value="ttfwoff2">TTF + WOFF2 (zip)</option>
     <option value="ufo">UFO source (zip)</option>
+    <option disabled>──────────────</option>
+    <option value="ivritsuite">★ Use this Font in IvritSuite</option>
   </select>
   <button class="tbtn" id="exportBtn" onclick="exportFont()">⬇ Export TTF</button>
-  <button class="tbtn ghost" id="myFontsBtn" onclick="openMyFonts()" title="Save this font for use in Torah Trainer and other IvritSuite tools on this browser">★ My Fonts</button>
 </div>
 
 <button class="sb-tab" id="sbHide" onclick="toggleSidebar()" title="Hide sidebar">‹</button>
@@ -4999,12 +5000,13 @@ async function buildFontBytes() {                 // build the TTF in memory (no
 
 function onExportFormatChange() {
   const fmt = (document.getElementById('exportFormat') || {}).value || 'ttf';
-  const label = { ttf:'⬇ Export TTF', woff2:'⬇ Export WOFF2', ttfwoff2:'⬇ Export TTF + WOFF2', ufo:'⬇ Export UFO' }[fmt] || '⬇ Export';
+  const label = { ttf:'⬇ Export TTF', woff2:'⬇ Export WOFF2', ttfwoff2:'⬇ Export TTF + WOFF2', ufo:'⬇ Export UFO', ivritsuite:'★ Use in IvritSuite' }[fmt] || '⬇ Export';
   const btn = document.getElementById('exportBtn'); if (btn) btn.textContent = label;
 }
 async function exportFont() {
   if (!project) return;
   const fmt = (document.getElementById('exportFormat') || {}).value || 'ttf';
+  if (fmt === 'ivritsuite') { openMyFonts(); return; }   // not a file format — open the My Fonts hub (save / manage / delete)
   const nikOn = project.font.nikkud.enabled;
   const anchored = project.letters.filter(l => l.anchors).length;
   const traced = project.letters.filter(l => l.contours).length;
