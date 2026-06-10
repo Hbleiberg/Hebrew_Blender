@@ -2388,8 +2388,12 @@ function rasterizeCurrent(l) {
   const cb = captureBoxFont(l);
   const cx0 = fx(cb.x0)*RES, cx1 = fx(cb.x1)*RES, cy0 = fy(cb.y1)*RES, cy1 = fy(cb.y0)*RES;
   const gw = cv.width, gh = cv.height;
-  const grid = new Uint8Array(gw*gh);
   const th = l.binThreshold, inv = l.invert;
+  // Signed "ink field": f > 0 = ink, f < 0 = paper; the threshold edge is f = 0. marchingSquares
+  // interpolates the f = 0 crossing along each cell edge → sub-pixel (anti-aliased) outlines instead
+  // of pixel stair-steps. (Same ink test as before: f > 0  ⟺  lum < th, or lum > th when inverted.)
+  const blankF = inv ? (0 - th) : (th - 255);     // transparent / outside the capture box = background
+  const field = new Float32Array(gw*gh).fill(blankF);
   const d = data.data;
   for (let y=0; y<gh; y++) {
     if (y < cy0 || y > cy1) continue;
@@ -2397,28 +2401,33 @@ function rasterizeCurrent(l) {
       if (x < cx0 || x > cx1) continue;
       const i = (y*gw+x)*4;
       const a = d[i+3];
-      let ink;
-      if (a < 24) ink = false;
-      else { const lum = 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2]; ink = inv ? (lum > th) : (lum < th); }
-      if (ink) grid[y*gw+x] = 1;
+      const lum = (a < 24) ? (inv ? 0 : 255)        // transparent → treat as background color
+        : (0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2]);
+      field[y*gw+x] = inv ? (lum - th) : (th - lum);
     }
   }
-  return { grid, gw, gh, RES };
+  return { field, gw, gh, RES, blankF };
 }
 /* Marching squares → closed loops (stage px), then map to font units. */
-function marchingSquares(grid, gw, gh) {
-  // sample corner grid value at (x,y) where cell uses corners (x,y),(x+1,y),(x+1,y+1),(x,y+1)
-  const at = (x,y) => (x<0||y<0||x>=gw||y>=gh) ? 0 : grid[y*gw+x];
-  // collect edge segments via 16-case table using midpoints of cell edges
-  // edges: T=(x+0.5,y) B=(x+0.5,y+1) L=(x,y+0.5) R=(x+1,y+0.5)
+function marchingSquares(field, gw, gh, blankF) {
+  // corner field value; out of bounds = background (non-ink)
+  const fv = (x,y) => (x<0||y<0||x>=gw||y>=gh) ? blankF : field[y*gw+x];
+  const ink = (x,y) => fv(x,y) > 0 ? 1 : 0;
+  // sub-pixel crossing: the point along edge A→B where the field reaches 0 (the threshold)
+  const cross = (ax,ay,bx,by) => {
+    const va = fv(ax,ay), vb = fv(bx,by), den = va - vb;
+    let t = den ? va / den : 0.5;
+    t = t < 0 ? 0 : t > 1 ? 1 : t;
+    return [ ax + t*(bx-ax), ay + t*(by-ay) ];
+  };
   const segs = [];
-  const key = (x,y) => x.toFixed(1)+','+y.toFixed(1);
+  const key = (x,y) => x.toFixed(3)+','+y.toFixed(3);   // finer than the old midpoints → keeps interpolated points distinct
   for (let y=-1; y<gh; y++) {
     for (let x=-1; x<gw; x++) {
-      const tl=at(x,y), tr=at(x+1,y), br=at(x+1,y+1), bl=at(x,y+1);
+      const tl=ink(x,y), tr=ink(x+1,y), br=ink(x+1,y+1), bl=ink(x,y+1);
       const code = (tl<<3)|(tr<<2)|(br<<1)|bl;
       if (code===0 || code===15) continue;
-      const T=[x+0.5,y], B=[x+0.5,y+1], L=[x,y+0.5], R=[x+1,y+0.5];
+      const T=cross(x,y, x+1,y), B=cross(x,y+1, x+1,y+1), L=cross(x,y, x,y+1), R=cross(x+1,y, x+1,y+1);
       const add = (a,b) => segs.push([a,b]);
       switch(code) {
         case 1: add(L,B); break;            case 2: add(B,R); break;
@@ -2642,7 +2651,7 @@ function traceSig(l) {
 }
 function rawLoopsFontUnits(l) {
   const ras = rasterizeCurrent(l); if (!ras) return null;
-  const loopsPx = marchingSquares(ras.grid, ras.gw, ras.gh);
+  const loopsPx = marchingSquares(ras.field, ras.gw, ras.gh, ras.blankF);
   const RES = ras.RES;
   return loopsPx.map(loop => loop.map(([x,y]) => [ ifx(x/RES), ify(y/RES) ]));
 }
