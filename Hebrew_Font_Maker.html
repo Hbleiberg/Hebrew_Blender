@@ -3500,7 +3500,8 @@ function renderSpacingPanel() {
   const sp = fontSpacing();
   body.innerHTML = `
     <div class="inline">Letter spacing <input type="range" min="-40" max="200" step="5" value="${sp.letterSpacing}" oninput="setLetterSpacing(this.value)" onchange="udBurstCommit()"> <span id="lsV" class="readout">${sp.letterSpacing}</span></div>
-    <div class="inline">Word spacing <input type="range" min="80" max="600" step="10" value="${sp.wordSpacing}" oninput="setWordSpacing(this.value)" onchange="udBurstCommit()"> <span id="wsV" class="readout">${sp.wordSpacing}</span> <span style="color:var(--muted);font-size:0.78rem;">= Space (U+0020) width</span></div>
+    <div class="inline">Word spacing <input type="range" min="80" max="600" step="10" value="${sp.wordSpacing}" oninput="setWordSpacing(this.value)" onchange="udBurstCommit()"> <span id="wsV" class="readout">${sp.wordSpacing}</span></div>
+    <div class="hint" style="margin-top:-4px;">Word spacing is also the width of the Space (U+0020) glyph.</div>
     <div class="inline">Line spacing <input type="range" min="0" max="500" step="10" value="${sp.lineSpacing}" oninput="setLineSpacing(this.value)" onchange="udBurstCommit()"> <span id="lnV" class="readout">${sp.lineSpacing}</span></div>
     <label class="fld">Sample text <input type="text" id="spacingSample" dir="rtl" value="${escapeHtml(sp.sample)}" oninput="setSpacingSample(this.value)" onchange="udBurstCommit()"></label>
     <div class="hint">Adjusts the exported font's spacing (letter &amp; word advance widths + line gap). The preview uses your traced letters — untraced letters show as dashed boxes.</div>
