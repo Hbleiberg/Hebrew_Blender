@@ -801,15 +801,16 @@ function blankLetter(L) {
     transform: [1,0,0,1,0,0],   // image-px → stage-px matrix
     captureBox: null,           // {x0,y0,x1,y1} in font units; null = default
     contours: null,             // [{winding:'cw'|'ccw', points:[[x,y]...]}] font units
+    curves: null,               // [{winding, start:[x,y], segments:[{type,pts}]}] fitted Béziers, 1:1 with contours (entry null = polygon)
     advance: null, lsb: null, rsb: null,   // per-letter width + left side bearing (null = inherit metrics.defaultLSB; RSB is derived from advance−ink)
     anchors: null,              // {below:{x,y}, above:{x,y}, center:{x,y}}
     placementSaved: false,      // user confirmed the nikkud placement (green ✓)
-    binThreshold: 128, invert: false, epsilon: 6
+    binThreshold: 128, invert: false, epsilon: 6, cornerAngle: 32
   };
 }
 function newProject() {
   project = {
-    _ivritSuite: 1, format: 'hebrew-font-maker-project', schemaVersion: 1, tool: 'FontMaker',
+    _ivritSuite: 1, format: 'hebrew-font-maker-project', schemaVersion: 2, tool: 'FontMaker',
     savedAt: new Date().toISOString(),
     font: {
       familyName: 'My Hebrew Hand', reservedFontName: 'My Hebrew Hand', author: '', license: 'ofl',
@@ -846,8 +847,8 @@ function markItem(kind, cp) {
     codepoint: cp, name: markName(cp), cls: markClassOf(kind, cp) || 'above',
     source: { kind: 'single', dataUrl: null, cropRect: null, sheetId: null },
     transform: [1,0,0,1,0,0], captureBox: null,
-    contours: null, advance: 0, anchors: null, placementSaved: false,
-    binThreshold: 128, invert: false, epsilon: 6,
+    contours: null, curves: null, advance: 0, anchors: null, placementSaved: false,
+    binThreshold: 128, invert: false, epsilon: 6, cornerAngle: 32,
     designMode: 'editor', pieces: null
   };
 }
@@ -898,6 +899,28 @@ function markGlyphContours(kind, cp) {
     }
   }
   return (kind === 'trop' ? TROP_GLYPHS[cp] : MARK_GLYPHS[cp]) || [];   // built-in default / fallback
+}
+/* Fitted curves for a custom UPLOADED mark, translated to mark-local (attach origin at 0,0), 1:1 with
+   markGlyphContours(). editor pieces & built-in default polygons have no curves → returns null (polygon). */
+function markGlyphCurves(kind, cp) {
+  const f = project.font[kind];
+  if (f && f.mode === 'custom') {
+    const m = f.custom && f.custom[cp];
+    if (m && m.designMode !== 'editor' && m.contours && m.contours.length && m.curves && m.curves.length === m.contours.length) {
+      const o = markAttachOrigin(m);
+      return m.curves.map(cv => cv ? {
+        winding: cv.winding,
+        start: [cv.start[0]-o.x, cv.start[1]-o.y],
+        segments: cv.segments.map(s => ({ type: s.type, pts: s.pts.map(([x,y]) => [x-o.x, y-o.y]) }))
+      } : null);
+    }
+  }
+  return null;
+}
+/* Scale + round a curve's points (same transform markGlyphContours points get for marks). */
+function scaleRoundCurve(cv, s) {
+  const r = p => [Math.round(p[0]*s), Math.round(p[1]*s)];
+  return { winding: cv.winding, start: r(cv.start), segments: cv.segments.map(seg => ({ type: seg.type, pts: seg.pts.map(r) })) };
 }
 function piecesToContours(pieces) {
   if (!pieces || !pieces.length) return [];
@@ -1824,10 +1847,10 @@ async function uploadSourceFont(file) {
       const l = project.letters.find(x => x.codepoint === L.cp);
       l.source = { kind:'font', dataUrl:null, cropRect:null };
       const glyph = font.charToGlyph(String.fromCodePoint(parseInt(L.cp,16)));
-      if (!glyph || glyph.index === 0) { l.contours = null; l.anchors = null; return; }
+      if (!glyph || glyph.index === 0) { l.contours = null; l.curves = null; l.anchors = null; return; }
       const contours = pathToContours(glyph.getPath(0, 0, 1000));
-      if (!contours.length) { l.contours = null; l.anchors = null; return; }
-      l.contours = contours;
+      if (!contours.length) { l.contours = null; l.curves = null; l.anchors = null; return; }
+      l.contours = contours; l.curves = null;   // font glyphs are already vector polygons — no Bézier fit (and clears any stale traced curves)
       const scale = 1000 / font.unitsPerEm;
       let adv = Math.round((glyph.advanceWidth || 0) * scale);
       if (!adv) { const em=effMetrics(); let mx=0, mn=1e9; contours.forEach(c=>c.points.forEach(p=>{mx=Math.max(mx,p[0]);mn=Math.min(mn,p[0]);})); adv = Math.round(mx + em.defaultRSB + Math.max(0, em.defaultLSB - mn)); }
@@ -1931,7 +1954,7 @@ function renderMarkStage(it) {
   const url = curImageUrl();
   if (workMode === 'trace') {
     if (url) h += `<image href="${url}" x="0" y="0" transform="matrix(${it.transform.join(' ')})" opacity="0.28"/>`;
-    if (it.contours) { const C = stageColors(); h += `<path d="${contoursToPath(it.contours)}" fill="${C.inkFill}" fill-rule="nonzero" stroke="${C.inkStroke}" stroke-width="0.6"/>`; }
+    if (it.contours) { const C = stageColors(); h += `<path d="${contoursToPath(it.contours, it.curves)}" fill="${C.inkFill}" fill-rule="nonzero" stroke="${C.inkStroke}" stroke-width="0.6"/>`; }
     else h += `<text x="300" y="520" text-anchor="middle" fill="#9aa0aa" font-size="12">Not traced yet.</text>`;
   } else {
     if (url) { h += `<image href="${url}" x="0" y="0" transform="matrix(${it.transform.join(' ')})" opacity="0.92"/>`; h += transformHandlesSVG(it); }
@@ -2025,9 +2048,10 @@ function renderMarkControls(c, it) {
     h += `<div class="inline">Ink threshold <input type="range" min="1" max="254" value="${it.binThreshold}" oninput="liveThreshold(this.value)"> <span id="thV" class="readout">${it.binThreshold}</span></div>
       <label class="chk"><input type="checkbox" ${it.invert?'checked':''} onchange="liveInvert(this.checked)"> Invert (light ink on dark)</label>
       <div class="inline">Detail (less ↔ more) <input type="range" min="0" max="100" step="1" value="${Math.round(100 - it.epsilon*2.5)}" oninput="liveDetail(this.value)"> <span id="epV" class="readout">${Math.round(100 - it.epsilon*2.5)}</span></div>
+      <div class="inline">Corners (sharp ↔ round) <input type="range" min="0" max="90" step="1" value="${it.cornerAngle != null ? it.cornerAngle : 32}" oninput="liveCorners(this.value)"> <span id="cnV" class="readout">${it.cornerAngle != null ? it.cornerAngle : 32}</span></div>
       <div class="ctl-row">
         <button class="ctl-btn primary" onclick="traceCurrent()">Re-trace</button>
-        <button class="ctl-btn" onclick="curItem().contours=null;_rawTrace=null;renderGrids();renderStage();renderControls();">Clear</button>
+        <button class="ctl-btn" onclick="curItem().contours=null;curItem().curves=null;_rawTrace=null;renderGrids();renderStage();renderControls();">Clear</button>
         <span id="traceInfo" class="readout">${it.contours?`${it.contours.length} contour(s)`:''}</span>
       </div>`;
   } else {
@@ -2121,11 +2145,23 @@ function applyZoom() {
   const r = document.getElementById('zoomRange'); if (r) r.value = pct;
   const v = document.getElementById('zoomVal'); if (v) v.textContent = pct + '%';
 }
-function contoursToPath(contours) {
+function contoursToPath(contours, curves) {
+  const useCurves = curves && curves.length === contours.length;   // per-contour: curves[i] (or null → polygon)
   let d = '';
-  contours.forEach(c => {
-    c.points.forEach((p,i) => { const [X,Y] = [fx(p[0]), fy(p[1])]; d += (i===0?'M':'L') + X.toFixed(1) + ' ' + Y.toFixed(1) + ' '; });
-    d += 'Z ';
+  contours.forEach((c, i) => {
+    const cv = useCurves ? curves[i] : null;
+    if (cv) {
+      d += 'M' + fx(cv.start[0]).toFixed(1) + ' ' + fy(cv.start[1]).toFixed(1) + ' ';
+      cv.segments.forEach(seg => {
+        if (seg.type === 'cubic') { const [a,b,e] = seg.pts;
+          d += 'C' + fx(a[0]).toFixed(1)+' '+fy(a[1]).toFixed(1)+' '+fx(b[0]).toFixed(1)+' '+fy(b[1]).toFixed(1)+' '+fx(e[0]).toFixed(1)+' '+fy(e[1]).toFixed(1)+' ';
+        } else { const e = seg.pts[0]; d += 'L' + fx(e[0]).toFixed(1)+' '+fy(e[1]).toFixed(1)+' '; }
+      });
+      d += 'Z ';
+    } else {
+      c.points.forEach((p,j) => { const [X,Y] = [fx(p[0]), fy(p[1])]; d += (j===0?'M':'L') + X.toFixed(1) + ' ' + Y.toFixed(1) + ' '; });
+      d += 'Z ';
+    }
   });
   return d;
 }
@@ -2154,17 +2190,17 @@ async function renderStage() {
       if (!metricAdjust) h += transformHandlesSVG(l);
     } else if (l.contours) {
       // font-source mode: outline already loaded, nothing to align
-      h += `<path d="${contoursToPath(l.contours)}" fill="${stageColors().ink}" fill-rule="nonzero"/>`;
+      h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${stageColors().ink}" fill-rule="nonzero"/>`;
       h += `<text x="300" y="540" text-anchor="middle" fill="#9aa0aa" font-size="12">Loaded from font — set nikkud in step 3.</text>`;
     } else {
       h += `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="14">No image yet — upload below.</text>`;
     }
   } else if (workMode === 'trace') {
     if (url) h += `<image href="${url}" x="0" y="0" transform="matrix(${l.transform.join(' ')})" opacity="${project.view.imgOpacityTrace}"/>`;
-    if (l.contours) { const C = stageColors(); h += `<path d="${contoursToPath(l.contours)}" fill="${C.inkFill}" fill-rule="nonzero" stroke="${C.inkStroke}" stroke-width="0.6"/>`; }
+    if (l.contours) { const C = stageColors(); h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${C.inkFill}" fill-rule="nonzero" stroke="${C.inkStroke}" stroke-width="0.6"/>`; }
     else h += `<text x="300" y="520" text-anchor="middle" fill="#9aa0aa" font-size="12">Not traced yet.</text>`;
   } else if (workMode === 'anchors') {
-    if (l.contours) h += `<path d="${contoursToPath(l.contours)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
+    if (l.contours) h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
     if (l.contours || project.template.showOverlay) {
       // preview the vowel (or, in precomposed-form mode, that form's mark) on the glyph
       if (precompTarget) { h += precompHandlesSVG(); }
@@ -2464,6 +2500,136 @@ function pointInPoly(pt, poly) {
   }
   return inside;
 }
+/* ════════ Bézier curve fitting (Schneider 1990, "An Algorithm for Automatically Fitting Digitized
+   Curves", Graphics Gems). Pure JS, no dependency. Turns the RDP-simplified polygon of a traced
+   contour into cubic Béziers between detected corners; exported as TrueType quadratics via Cu2QuPen.
+   All points are [x,y] in font units. ════════ */
+const _vSub = (a,b)=>[a[0]-b[0],a[1]-b[1]];
+const _vAdd = (a,b)=>[a[0]+b[0],a[1]+b[1]];
+const _vScale = (a,s)=>[a[0]*s,a[1]*s];
+const _vDot = (a,b)=>a[0]*b[0]+a[1]*b[1];
+function _vNorm(a){ const L=Math.hypot(a[0],a[1]); return L<1e-12?[0,0]:[a[0]/L,a[1]/L]; }
+const _bz0=u=>(1-u)*(1-u)*(1-u), _bz1=u=>3*u*(1-u)*(1-u), _bz2=u=>3*u*u*(1-u), _bz3=u=>u*u*u;
+function _bezEval(b,t){
+  const b0=_bz0(t),b1=_bz1(t),b2=_bz2(t),b3=_bz3(t);
+  return [ b0*b[0][0]+b1*b[1][0]+b2*b[2][0]+b3*b[3][0],
+           b0*b[0][1]+b1*b[1][1]+b2*b[2][1]+b3*b[3][1] ];
+}
+/* Fit an OPEN polyline with cubics → array of [p0,c1,c2,p3]. error = max deviation (font units). */
+function fitCurve(points, error){
+  if (points.length < 2) return [];
+  const tHat1 = _vNorm(_vSub(points[1], points[0]));
+  const tHat2 = _vNorm(_vSub(points[points.length-2], points[points.length-1]));
+  return fitCubic(points, 0, points.length-1, tHat1, tHat2, error);
+}
+function fitCubic(pts, first, last, tHat1, tHat2, error){
+  if (last - first + 1 === 2){
+    const dist = (Math.hypot(pts[last][0]-pts[first][0], pts[last][1]-pts[first][1]) / 3) || 1;
+    return [[ pts[first], _vAdd(pts[first], _vScale(tHat1,dist)),
+              _vAdd(pts[last], _vScale(tHat2,dist)), pts[last] ]];
+  }
+  let u = _chordParam(pts, first, last);
+  let bez = _genBezier(pts, first, last, u, tHat1, tHat2);
+  let r = _maxError(pts, first, last, bez, u);
+  if (r.maxError < error) return [bez];
+  if (r.maxError < error*4){                       // close — reparameterize before splitting
+    for (let i=0;i<4;i++){
+      const uP = u.map((ui,k)=>_newton(bez, pts[first+k], ui));
+      bez = _genBezier(pts, first, last, uP, tHat1, tHat2);
+      r = _maxError(pts, first, last, bez, uP);
+      if (r.maxError < error) return [bez];
+      u = uP;
+    }
+  }
+  let tc = _vNorm(_vAdd(_vSub(pts[r.splitPoint-1],pts[r.splitPoint]), _vSub(pts[r.splitPoint],pts[r.splitPoint+1])));   // ≈ +tHatCenter (points backward)
+  if (tc[0]===0 && tc[1]===0) tc = _vNorm(_vSub(pts[r.splitPoint-1], pts[r.splitPoint+1]));
+  return fitCubic(pts, first, r.splitPoint, tHat1, tc, error)              // left child: end tangent = +tHatCenter
+    .concat(fitCubic(pts, r.splitPoint, last, _vScale(tc,-1), tHat2, error));   // right child: start tangent = −tHatCenter
+}
+function _genBezier(pts, first, last, uP, tHat1, tHat2){
+  const n = last-first+1, p0=pts[first], p3=pts[last];
+  let C00=0,C01=0,C11=0,X0=0,X1=0;
+  for (let i=0;i<n;i++){
+    const u=uP[i];
+    const a0=_vScale(tHat1,_bz1(u)), a1=_vScale(tHat2,_bz2(u));
+    C00 += a0[0]*a0[0]+a0[1]*a0[1];
+    C01 += a0[0]*a1[0]+a0[1]*a1[1];
+    C11 += a1[0]*a1[0]+a1[1]*a1[1];
+    const b0=_bz0(u),b1=_bz1(u),b2=_bz2(u),b3=_bz3(u);
+    const tx = pts[first+i][0]-((b0+b1)*p0[0]+(b2+b3)*p3[0]);
+    const ty = pts[first+i][1]-((b0+b1)*p0[1]+(b2+b3)*p3[1]);
+    X0 += a0[0]*tx+a0[1]*ty;
+    X1 += a1[0]*tx+a1[1]*ty;
+  }
+  const det = C00*C11 - C01*C01;
+  let alpha1 = det===0 ? 0 : (X0*C11 - C01*X1)/det;
+  let alpha2 = det===0 ? 0 : (C00*X1 - X0*C01)/det;
+  const segLen = Math.hypot(p3[0]-p0[0], p3[1]-p0[1]) || 1;
+  if (alpha1 < 1e-6*segLen || alpha2 < 1e-6*segLen){ alpha1 = alpha2 = segLen/3; }
+  return [ p0, _vAdd(p0,_vScale(tHat1,alpha1)), _vAdd(p3,_vScale(tHat2,alpha2)), p3 ];
+}
+function _chordParam(pts, first, last){
+  const u=[0];
+  for (let i=first+1;i<=last;i++) u[i-first] = u[i-1-first] + Math.hypot(pts[i][0]-pts[i-1][0], pts[i][1]-pts[i-1][1]);
+  const total = u[last-first] || 1;
+  for (let i=0;i<u.length;i++) u[i] /= total;
+  return u;
+}
+function _maxError(pts, first, last, bez, u){            // LINEAR distance — one convention everywhere
+  let maxError=0, splitPoint=first + Math.floor((last-first)/2);
+  for (let i=first+1;i<last;i++){
+    const P=_bezEval(bez, u[i-first]);
+    const dist=Math.hypot(P[0]-pts[i][0], P[1]-pts[i][1]);
+    if (dist >= maxError){ maxError=dist; splitPoint=i; }
+  }
+  return { maxError, splitPoint };
+}
+function _newton(Q, P, u){
+  const Q1=[ _vScale(_vSub(Q[1],Q[0]),3), _vScale(_vSub(Q[2],Q[1]),3), _vScale(_vSub(Q[3],Q[2]),3) ];
+  const Q2=[ _vScale(_vSub(Q1[1],Q1[0]),2), _vScale(_vSub(Q1[2],Q1[1]),2) ];
+  const Qu=_bezEval(Q,u), mu=1-u;
+  const q1=[ mu*mu*Q1[0][0]+2*mu*u*Q1[1][0]+u*u*Q1[2][0], mu*mu*Q1[0][1]+2*mu*u*Q1[1][1]+u*u*Q1[2][1] ];
+  const q2=[ mu*Q2[0][0]+u*Q2[1][0], mu*Q2[0][1]+u*Q2[1][1] ];
+  const num=(Qu[0]-P[0])*q1[0]+(Qu[1]-P[1])*q1[1];
+  const den=q1[0]*q1[0]+q1[1]*q1[1] + (Qu[0]-P[0])*q2[0]+(Qu[1]-P[1])*q2[1];
+  if (den===0) return u;
+  const r=u-num/den;
+  return r<0?0:(r>1?1:r);
+}
+/* One CLOSED, oriented, rounded ring → {winding,start,segments} (cubic + line), or null if degenerate.
+   Splits the ring at detected corners (turn > cornerAngleDeg) and fits each open chain with cubics. */
+function fitContourCurves(ring, winding, error, cornerAngleDeg){
+  const pts = rdpClosed(ring, Math.max(error*0.4, 0.75));   // light pre-simplify for fitting: don't chase sub-pixel noise (keeps corners; bounds density so dense contours don't over-fit)
+  const n=pts.length;
+  if (n < 3) return null;
+  const cosThresh = Math.cos(cornerAngleDeg*Math.PI/180);   // corner when the turn exceeds cornerAngleDeg, i.e. dot(t1,t2) < cos(angle)
+  const corners=[];
+  for (let i=0;i<n;i++){
+    const t1=_vNorm(_vSub(pts[i], pts[(i-1+n)%n])), t2=_vNorm(_vSub(pts[(i+1)%n], pts[i]));
+    if ((t1[0]||t1[1]) && (t2[0]||t2[1]) && _vDot(t1,t2) < cosThresh) corners.push(i);
+  }
+  if (!corners.length) corners.push(0);                  // smooth loop: seed a seam at points[0]
+  if (corners.length === 1) {                            // one seam ⇒ a single chain with coincident ends (degenerate fit);
+    const c0 = corners[0]; let far = (c0 + (n>>1)) % n, fd = -1;   // add a 2nd seam at the farthest vertex → two well-conditioned arcs
+    for (let i=0;i<n;i++){ const dx=pts[i][0]-pts[c0][0], dy=pts[i][1]-pts[c0][1], d=dx*dx+dy*dy; if (d>fd){ fd=d; far=i; } }
+    if (far !== c0) corners.push(far);
+  }
+  corners.sort((a,b)=>a-b);
+  const rnd = p => [Math.round(p[0]), Math.round(p[1])];
+  const segments=[];
+  for (let k=0;k<corners.length;k++){
+    const i0=corners[k], i1=corners[(k+1)%corners.length];
+    const chain=[pts[i0]]; let j=i0; do { j=(j+1)%n; chain.push(pts[j]); } while (j!==i1);   // i0===i1 (one seam) → full ring
+    if (chain.length <= 1) continue;
+    if (chain.length === 2){ segments.push({ type:'line', pts:[ rnd(chain[1]) ] }); continue; }
+    let cubics=null;
+    try { cubics = fitCurve(chain, error); } catch(e){ cubics = null; }
+    if (!cubics || !cubics.length){ segments.push({ type:'line', pts:[ rnd(chain[chain.length-1]) ] }); continue; }
+    cubics.forEach(bz => segments.push({ type:'cubic', pts:[ rnd(bz[1]), rnd(bz[2]), rnd(bz[3]) ] }));
+  }
+  if (!segments.length) return null;
+  return { winding, start: rnd(pts[corners[0]]), segments };
+}
 /* Trace is split so dragging the sliders can update live:
    - rawLoopsFontUnits(): the expensive part (rasterize + marching-squares), cached.
    - finalizeFromRaw():    the cheap part (RDP simplify + winding) — re-run on ε change.
@@ -2498,12 +2664,17 @@ function finalizeFromRaw(l, rawLoops) {
   });
   l.contours = out.length ? out : null;
   if (out.length) {
+    const fitErr = Math.max(l.epsilon || 0, 1.5);                 // tie fit tightness to the Detail (ε) slider, with a floor
+    const cornerDeg = (l.cornerAngle != null ? l.cornerAngle : 32);
+    l.curves = out.map(c => fitContourCurves(c.points, c.winding, fitErr, cornerDeg));   // 1:1 with l.contours; entries may be null → polygon
     let minX=Infinity, maxX=-Infinity;
     out.forEach(c => c.points.forEach(p => { minX=Math.min(minX,p[0]); maxX=Math.max(maxX,p[0]); }));
     const em = effMetrics();
     if (!isFinite(minX)) { minX = 0; maxX = em.letterTop*0.6; }
     l.advance = Math.round(maxX + em.defaultRSB + Math.max(0, em.defaultLSB - minX));
     if (!l.anchors && curKind === 'letter') seedAnchors(l);   // marks attach at origin, no base anchors
+  } else {
+    l.curves = null;                                            // no ink → drop any stale curves (mirror l.contours)
   }
   return out.length;
 }
@@ -2524,6 +2695,13 @@ function traceCurrent() {
 function liveDetail(v) {   // slider 0–100 reads as "detail"; ε is the inverse (100 = closest trace)
   const l = curLetter(); l.epsilon = Math.max(0, (100 - (+v)) * 0.4);
   const ep = document.getElementById('epV'); if (ep) ep.textContent = Math.round(+v);
+  if (_rawTrace && _rawTrace.sig === traceSig(l)) { finalizeFromRaw(l, _rawTrace.loops); renderStage(); updateTraceInfo(l); }
+  else scheduleRetrace();
+}
+/* corner threshold change — same fast path as Detail (cornerAngle is NOT in traceSig, so the raw cache stays valid). */
+function liveCorners(v) {
+  const l = curLetter(); l.cornerAngle = Math.max(0, Math.min(90, +v));
+  const cn = document.getElementById('cnV'); if (cn) cn.textContent = Math.round(l.cornerAngle);
   if (_rawTrace && _rawTrace.sig === traceSig(l)) { finalizeFromRaw(l, _rawTrace.loops); renderStage(); updateTraceInfo(l); }
   else scheduleRetrace();
 }
@@ -2791,9 +2969,24 @@ function setLineSpacing(v)   { fontSpacing().lineSpacing   = Math.max(0,   Math.
 function setSpacingSample(v) { fontSpacing().sample = v; renderSpacingPreview(); }   // preview-only re-render → caret stays put
 function resetSpacing() { Object.assign(fontSpacing(), { letterSpacing:0, wordSpacing:260, lineSpacing:0 }); renderSpacingPanel(); }   // keeps the sample text
 /* Lay out a glyph's contours in raw font units, offset by pen-x (dx) and the line baseline (yo), Y negated (y-up → SVG y-down). */
-function glyphPathAt(cs, dx, yo) {
+function glyphPathAt(cs, dx, yo, curves) {
+  const useCurves = curves && curves.length === cs.length;
   let d = '';
-  cs.forEach(c => { c.points.forEach((p,i) => { d += (i===0?'M':'L') + (p[0]+dx).toFixed(1) + ' ' + (yo-p[1]).toFixed(1) + ' '; }); d += 'Z '; });
+  cs.forEach((c, i) => {
+    const cv = useCurves ? curves[i] : null;
+    if (cv) {
+      d += 'M' + (cv.start[0]+dx).toFixed(1) + ' ' + (yo-cv.start[1]).toFixed(1) + ' ';
+      cv.segments.forEach(seg => {
+        if (seg.type === 'cubic') { const [a,b,e] = seg.pts;
+          d += 'C' + (a[0]+dx).toFixed(1)+' '+(yo-a[1]).toFixed(1)+' '+(b[0]+dx).toFixed(1)+' '+(yo-b[1]).toFixed(1)+' '+(e[0]+dx).toFixed(1)+' '+(yo-e[1]).toFixed(1)+' ';
+        } else { const e = seg.pts[0]; d += 'L' + (e[0]+dx).toFixed(1)+' '+(yo-e[1]).toFixed(1)+' '; }
+      });
+      d += 'Z ';
+    } else {
+      c.points.forEach((p,j) => { d += (j===0?'M':'L') + (p[0]+dx).toFixed(1) + ' ' + (yo-p[1]).toFixed(1) + ' '; });
+      d += 'Z ';
+    }
+  });
   return d;
 }
 function renderSpacingPreview() {
@@ -2808,14 +3001,14 @@ function renderSpacingPreview() {
     const cp = ch.codePointAt(0).toString(16).toUpperCase().padStart(4,'0');
     const l = project.letters.find(x => x.codepoint === cp);
     const w = l ? effLetterAdvance(l) : effLetterAdvance(null);
-    total += w; return { type:'glyph', w, contours: l && l.contours };
+    total += w; return { type:'glyph', w, contours: l && l.contours, curves: l && l.curves };
   });
   let pen = total, body = '';   // RTL: pen starts at the right edge and walks left
   cells.forEach(c => {
     pen -= c.w; if (c.type !== 'glyph') return;
     for (let line = 0; line < 2; line++) {
       const yo = line * lineH;
-      if (c.contours) body += `<path d="${glyphPathAt(c.contours, pen, yo)}" fill="currentColor"/>`;
+      if (c.contours) body += `<path d="${glyphPathAt(c.contours, pen, yo, c.curves)}" fill="currentColor"/>`;
       else body += `<rect x="${(pen+40).toFixed(0)}" y="${(yo-ascender+60).toFixed(0)}" width="${Math.max(20,c.w-80).toFixed(0)}" height="${(ascender-60).toFixed(0)}" rx="10" fill="none" stroke="currentColor" stroke-dasharray="7 6" opacity="0.3"/>`;
     }
   });
@@ -3012,6 +3205,7 @@ function renderTraceRight(R, l) {
 function renderTraceLeft(L, l) {
   if (project.inputMode === 'font') { L.innerHTML = ''; return; }
   const detail = Math.round(100 - l.epsilon*2.5);
+  const corner = (l.cornerAngle != null ? l.cornerAngle : 32);
   L.innerHTML = `
     <div class="ws-side-title">Trace — ${l.name}</div>
     <div class="side-slider-label">Ink threshold <span id="thV" class="readout">${l.binThreshold}</span></div>
@@ -3019,12 +3213,14 @@ function renderTraceLeft(L, l) {
     <label class="chk"><input type="checkbox" ${l.invert?'checked':''} onchange="liveInvert(this.checked)"> Invert (light ink on dark)</label>
     <div class="side-slider-label">Detail (less ↔ more) <span id="epV" class="readout">${detail}</span></div>
     <input type="range" class="side-slider" min="0" max="100" step="1" value="${detail}" oninput="liveDetail(this.value)">
+    <div class="side-slider-label">Corners (sharp ↔ round) <span id="cnV" class="readout">${corner}</span></div>
+    <input type="range" class="side-slider" min="0" max="90" step="1" value="${corner}" oninput="liveCorners(this.value)">
     <div class="ctl-row">
       <button class="ctl-btn primary" onclick="traceCurrent()">Re-trace</button>
-      <button class="ctl-btn" onclick="curLetter().contours=null;_rawTrace=null;renderStage();renderControls();renderLetterGrid();">Clear</button>
+      <button class="ctl-btn" onclick="curLetter().contours=null;curLetter().curves=null;_rawTrace=null;renderStage();renderControls();renderLetterGrid();">Clear</button>
       <span id="traceInfo" class="readout">${ l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : '' }</span>
     </div>
-    <div class="hint">Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). Corners stay crisp and counters (ס, ם, ע) punch out automatically.</div>`;
+    <div class="hint">Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically.</div>`;
 }
 function renderTraceUnder(U, l) {
   const hint = (project.inputMode === 'font')
@@ -3251,6 +3447,7 @@ function buildFontSpec() {
     const contours = (l.contours||[]).map(c => c.points);
     const adv = effLetterAdvance(l);
     glyphs[nm] = { contours, advance: adv, lsb: (l.lsb != null ? l.lsb : null) };
+    if (l.curves && l.curves.length === contours.length) glyphs[nm].curves = l.curves;   // fitted Béziers (index-aligned; entries may be null)
     glyphOrder.push(nm); baseGlyphNames.push(nm);
     cmap[parseInt(L.cp,16)] = nm;
   });
@@ -3260,7 +3457,10 @@ function buildFontSpec() {
   const nikOn = project.font.nikkud.enabled;
   if (nikOn) MARK_CPS.forEach(cp => {
     const nm = gname(cp);
-    glyphs[nm] = { contours: markGlyphContours('nikkud', cp).map(poly => poly.map(p => [Math.round(p[0]*ms), Math.round(p[1]*ms)])), advance: 0 };
+    const mc = markGlyphContours('nikkud', cp);
+    glyphs[nm] = { contours: mc.map(poly => poly.map(p => [Math.round(p[0]*ms), Math.round(p[1]*ms)])), advance: 0 };
+    const mcv = markGlyphCurves('nikkud', cp);
+    if (mcv && mcv.length === mc.length) glyphs[nm].curves = mcv.map(cv => cv ? scaleRoundCurve(cv, ms) : null);
     glyphOrder.push(nm); markGlyphNames.push(nm);
     cmap[parseInt(cp,16)] = nm;
   });
@@ -3273,8 +3473,11 @@ function buildFontSpec() {
     const cls = MARK_CLASS[pc.mark];
     const anc = (pc.anchor && pc.anchor.x != null) ? pc.anchor : (baseL.anchors && baseL.anchors[cls]); if (!anc) return;
     const markPoly = markGlyphContours('nikkud', pc.mark).map(poly => poly.map(([x,y]) => [Math.round(x*ms+anc.x), Math.round(y*ms+anc.y)]));
+    const baseContours = baseL.contours.map(c => c.points);
     const nm = gname(pc.target);
-    glyphs[nm] = { contours: baseL.contours.map(c => c.points).concat(markPoly), advance: effLetterAdvance(baseL) };
+    glyphs[nm] = { contours: baseContours.concat(markPoly), advance: effLetterAdvance(baseL) };
+    if (baseL.curves && baseL.curves.length === baseContours.length)
+      glyphs[nm].curves = baseL.curves.concat(markPoly.map(() => null));   // base uses curves; appended mark contours stay polygon
     glyphOrder.push(nm); baseGlyphNames.push(nm);
     cmap[parseInt(pc.target,16)] = nm;
     built.push(pc);
@@ -3284,7 +3487,10 @@ function buildFontSpec() {
   const tropOn = project.font.trop.enabled, tms = tropScale();
   if (tropOn) TROP_CPS.forEach(cp => {
     const nm = gname(cp);
-    glyphs[nm] = { contours: markGlyphContours('trop', cp).map(poly => poly.map(p => [Math.round(p[0]*tms), Math.round(p[1]*tms)])), advance: 0 };
+    const tc = markGlyphContours('trop', cp);
+    glyphs[nm] = { contours: tc.map(poly => poly.map(p => [Math.round(p[0]*tms), Math.round(p[1]*tms)])), advance: 0 };
+    const tcv = markGlyphCurves('trop', cp);
+    if (tcv && tcv.length === tc.length) glyphs[nm].curves = tcv.map(cv => cv ? scaleRoundCurve(cv, tms) : null);
     glyphOrder.push(nm); markGlyphNames.push(nm);
     cmap[parseInt(cp,16)] = nm;
   });
@@ -3393,17 +3599,50 @@ def hfm_build(spec_json):
     lsbs = {}
     for name in order:
         gd = spec["glyphs"][name]
-        pen = TTGlyphPen(None)
+        contours = gd["contours"]
+        curves = gd.get("curves")
+        # lsb's minx is ALWAYS from the on-curve polygon points (never curve control points), so bearings don't shift
         minx = None
-        for contour in gd["contours"]:
-            if not contour: continue
-            pts = [(int(p[0]), int(p[1])) for p in contour]
-            pen.moveTo(pts[0])
-            for p in pts[1:]:
-                pen.lineTo(p)
-            pen.closePath()
-            for (x, y) in pts:
-                if minx is None or x < minx: minx = x
+        for contour in contours:
+            for (x, y) in contour:
+                if minx is None or x < minx: minx = int(x)
+        pen = TTGlyphPen(None)
+        built = False
+        if curves:
+            try:
+                from fontTools.pens.cu2quPen import Cu2QuPen
+                qpen = Cu2QuPen(pen, 1.0, reverse_direction=False)   # cubic curveTo → TrueType quadratic qCurveTo; lines pass through
+                for i, contour in enumerate(contours):
+                    if not contour: continue
+                    cv = curves[i] if i < len(curves) else None
+                    if cv:
+                        st = cv["start"]
+                        qpen.moveTo((float(st[0]), float(st[1])))
+                        for seg in cv["segments"]:
+                            p = seg["pts"]
+                            if seg["type"] == "cubic":
+                                qpen.curveTo((float(p[0][0]), float(p[0][1])), (float(p[1][0]), float(p[1][1])), (float(p[2][0]), float(p[2][1])))
+                            else:
+                                qpen.lineTo((float(p[0][0]), float(p[0][1])))
+                        qpen.closePath()
+                    else:
+                        poly = [(float(p[0]), float(p[1])) for p in contour]
+                        qpen.moveTo(poly[0])
+                        for p in poly[1:]:
+                            qpen.lineTo(p)
+                        qpen.closePath()
+                built = True
+            except Exception:
+                built = False
+        if not built:                                                 # no curves, or any failure → all-polygon (unchanged behavior)
+            pen = TTGlyphPen(None)
+            for contour in contours:
+                if not contour: continue
+                pts = [(int(p[0]), int(p[1])) for p in contour]
+                pen.moveTo(pts[0])
+                for p in pts[1:]:
+                    pen.lineTo(p)
+                pen.closePath()
         glyphs[name] = pen.glyph()
         advances[name] = int(gd.get("advance", 0))
         lsbs[name] = int(gd["lsb"]) if gd.get("lsb") is not None else (0 if minx is None else int(minx))
@@ -4106,6 +4345,7 @@ function migrateProject(data) {
     if (!ex.transform) ex.transform = [1,0,0,1,0,0];
     if (ex.binThreshold == null) ex.binThreshold = 128;
     if (ex.epsilon == null) ex.epsilon = 6;
+    if (ex.cornerAngle == null) ex.cornerAngle = 32;   // Bézier corner threshold (curves regenerate on next trace)
     if (ex.placementSaved == null) ex.placementSaved = false;
     if (ex.invert == null) ex.invert = false;
     if (ex.lsb === undefined) ex.lsb = null;   // per-letter left side bearing (Letter Metrics)
