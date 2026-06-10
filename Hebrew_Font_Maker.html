@@ -318,6 +318,25 @@
   .help-body .ui { background: rgba(127,127,127,0.18); border-radius: 4px; padding: 1px 6px; font-weight: 600; white-space: nowrap; }
   .help-tip { background: var(--cream); border-inline-start: 3px solid var(--gold); border-radius: 6px; padding: 8px 11px; margin: 0 0 10px; font-size: 0.82rem; }
 
+  /* ── QA Check grid (collision review) ── */
+  .qa-modal { max-width: 96vw; width: 96vw; max-height: 92vh; }
+  #qaGrid { overflow: auto; }
+  #qaSummary { font-size: 0.84rem; color: var(--muted); margin: 0 0 12px; line-height: 1.5; flex: 0 0 auto; }
+  #qaSummary b { color: var(--text); }
+  #qaSummary .qa-ok { color: var(--center); font-weight: 700; }
+  #qaSummary .qa-tall { display: block; margin-top: 5px; color: #c0392b; font-weight: 600; }
+  .qa-table { border-collapse: separate; border-spacing: 5px; }
+  .qa-table th { font-size: 0.62rem; font-weight: 700; color: var(--muted); padding: 2px 1px; text-align: center; }
+  .qa-table thead th { position: sticky; top: 0; background: var(--white); z-index: 1; }
+  .qa-table thead th:first-child { inset-inline-start: 0; z-index: 2; }
+  .qa-colhead { font-size: 1.1rem; line-height: 1; color: var(--text); }
+  .qa-table td.qa-rowlabel { font-size: 0.68rem; font-weight: 600; color: var(--text); white-space: nowrap; text-align: end; padding-inline-end: 7px; position: sticky; inset-inline-start: 0; background: var(--white); z-index: 1; }
+  .qa-cell { width: 56px; height: 64px; border: 1px solid var(--border); border-radius: 6px; background: var(--white); cursor: pointer; padding: 0; }
+  .qa-cell:hover { border-color: var(--gold); }
+  .qa-cell.flag { border-color: #c0392b; box-shadow: inset 0 0 0 2px #c0392b; }
+  .qa-cell.empty { opacity: 0.4; cursor: default; }
+  .qa-cell svg { width: 54px; height: 62px; display: block; }
+
   .drop {
     border: 2px dashed var(--border); border-radius: 8px; padding: 16px 10px; text-align: center;
     transition: all 0.15s; font-size: 0.8rem; cursor: pointer;
@@ -436,6 +455,7 @@
   <button class="tbtn ghost" onclick="openHelp()" title="A plain-language guide to the whole tool">❓ How does this work?</button>
   <div class="tspace"></div>
   <span id="statusMsg"></span>
+  <button class="tbtn ghost" onclick="openQA()" title="Review every letter × mark placement for collisions">🔍 QA Check</button>
   <button class="tbtn ghost" onclick="generatePreviewPDF()">Preview PDF</button>
   <button class="tbtn" id="exportBtn" onclick="exportFont()">⬇ Export Font (TTF)</button>
 </div>
@@ -581,6 +601,17 @@
     <div class="help-tabs" id="helpTabs"></div>
     <div class="help-body" id="helpBody"></div>
     <div class="mbtns"><button class="tbtn" onclick="closeHelp()">Close</button></div>
+  </div>
+</div>
+
+<!-- QA Check — live collision grid of every letter × mark placement -->
+<div class="overlay" id="qaOverlay" onclick="if(event.target===this)closeQA()">
+  <div class="modal help-modal qa-modal">
+    <h3>QA Check — placement collisions</h3>
+    <div id="qaSummary"></div>
+    <div class="help-tabs" id="qaTabs"></div>
+    <div class="help-body" id="qaGrid"></div>
+    <div class="mbtns"><button class="tbtn" onclick="closeQA()">Close</button></div>
   </div>
 </div>
 
@@ -4082,6 +4113,7 @@ function udShortcutBlocked() {
   if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return true;
   if (document.getElementById('askOverlay')?.classList.contains('open')) return true;
   if (document.getElementById('helpOverlay')?.classList.contains('open')) return true;
+  if (document.getElementById('qaOverlay')?.classList.contains('open')) return true;
   return false;
 }
 /* Ctrl/Cmd+Z = undo · Ctrl/Cmd+Shift+Z or Ctrl+Y = redo */
@@ -4166,6 +4198,290 @@ async function ensurePyodide() {
 /* glyph name helpers */
 const gname = cp => 'uni' + cp.toUpperCase();
 const MARK_CPS = Object.keys(MARK_CLASS);
+
+/* ════════════════════════════════════════════════════════════════════════
+   QA Check — a live SVG grid of every letter × mark placement, flagging collisions, plus
+   fontInkBounds() (the true tallest/lowest ink) which drives the export clip-box expansion.
+   The cell layout reuses the EXACT placement math the exporter uses (markGlyphContours scaled by
+   markScale/tropScale, translated by the base anchor; stacks via markMkmkAnchor) so the grid, the
+   live spacing preview, and the exported font all agree. Pure read — never mutates `project`.
+   ════════════════════════════════════════════════════════════════════════ */
+let qaTab = 'nikkud';
+let qaResult = null;
+const QA_OVERLAP_TOL = 10;   // font units a mark vertex is inset toward its centre before counting as "inside" (kissing contacts are fine)
+const QA_CROWD_TOL   = 18;   // units a mark may spill past 0 / the advance before it's flagged as crowding a neighbour
+const QA_SIDE_COLOR  = { below:'var(--below)', above:'var(--above)', center:'var(--center)', tropAbove:'#8b5cf6', tropBelow:'#0ea5e9' };
+
+function qaLetters() { return LETTERS.filter(L => L.cat !== 'punct'); }   // the 27 letters (finals included; punct/digits excluded)
+function qaCh(cp) { try { return String.fromCodePoint(parseInt(cp, 16)); } catch (e) { return ''; } }
+function polysBounds(polys) {   // bounds over an array of [x,y]-point arrays (font units)
+  let minX=1e9, maxX=-1e9, minY=1e9, maxY=-1e9;
+  polys.forEach(poly => poly.forEach(([x,y]) => { if (x<minX)minX=x; if (x>maxX)maxX=x; if (y<minY)minY=y; if (y>maxY)maxY=y; }));
+  return { minX, maxX, minY, maxY };
+}
+/* Place a mark on a base: scale by ms/tms then translate by the base anchor — rounded EXACTLY like
+   the exporter (4203/4217/4233), so QA geometry == built-glyph geometry. */
+function qaPlace(anc, kind, cp, scale) {
+  return markGlyphContours(kind, cp).map(poly => poly.map(([x,y]) => [Math.round(x*scale + anc.x), Math.round(y*scale + anc.y)]));
+}
+/* A trop stacked on a nikkud (mkmk): trop attach-origin lands at the nikkud's mark-to-mark anchor,
+   which sits at nikAnc + markMkmkAnchor(nik).<side> (already scaled) — the exact mkmk geometry (4308-4320). */
+function qaPlaceStackTrop(nikAnc, nik, tropCp) {
+  const a = markMkmkAnchor(nik), side = MARK_CLASS[nik];           // 'above' | 'below'
+  const ox = nikAnc.x + (side === 'above' ? a.above.x : a.below.x);
+  const oy = nikAnc.y + (side === 'above' ? a.above.y : a.below.y);
+  const tms = tropScale();
+  return markGlyphContours('trop', tropCp).map(poly => poly.map(([x,y]) => [Math.round(x*tms + ox), Math.round(y*tms + oy)]));
+}
+/* Display anchors for the grid WITHOUT mutating the letter (mirrors seedAnchors at the top of the
+   file). Letters that already have anchors use them verbatim (grid == export); only letters never
+   opened in the anchor editor get computed defaults, purely for preview. */
+function qaAnchors(L) {
+  const a = L.anchors;
+  if (a && a.below && a.above && a.center) {
+    const mid = a.above.x, aboveY = a.above.y;
+    return { below:a.below, above:a.above, center:a.center,
+             tropAbove: a.tropAbove || { x:mid, y:aboveY + TROP_GAP_ABOVE },
+             tropBelow: a.tropBelow || { x:mid, y:ANCHOR_Y.below - TROP_GAP_BELOW } };
+  }
+  const meta = letterMeta(L.codepoint);
+  const bb = L.contours ? glyphBBox(L.contours, true, meta) : { midX: Math.round((L.advance || Math.round(LETTER_TOP*0.7))/2), minY:0, maxY:LETTER_TOP };
+  const mid = Math.round(bb.midX);
+  const center = Math.round((bb.minY + bb.maxY)/2 * 0.6 + 150);
+  const aboveY = Math.max(ANCHOR_Y.above, Math.round(bb.maxY)+40);
+  return { below:{ x:mid, y:ANCHOR_Y.below }, above:{ x:mid, y:aboveY },
+           center:{ x:mid, y:Math.min(Math.max(center,120),380) },
+           tropAbove:{ x:mid, y:aboveY + TROP_GAP_ABOVE }, tropBelow:{ x:mid, y:ANCHOR_Y.below - TROP_GAP_BELOW } };
+}
+/* Even-odd point-in-ink across all base contours, so letter counters/holes count as outside (same
+   rule as the contour-depth logic at 3174-3177). */
+function pointInInk(pt, baseContours) {
+  let c = 0;
+  baseContours.forEach(ct => { if (pointInPoly(pt, ct.points)) c++; });
+  return (c % 2) === 1;
+}
+function qaCentroid(poly) { let sx=0, sy=0; poly.forEach(([x,y]) => { sx+=x; sy+=y; }); return [sx/poly.length, sy/poly.length]; }
+function qaInsetToward(poly, c, d) {   // pull each vertex d units toward the centroid (overlap tolerance)
+  return poly.map(([x,y]) => { const dx=c[0]-x, dy=c[1]-y, len=Math.hypot(dx,dy)||1, t=Math.min(d,len)/len; return [x+dx*t, y+dy*t]; });
+}
+/* The four collision checks for one cell's placed mark ink (union of all layers). `side` is the
+   placement class: below/above/center for nikkud, above/below for trop & stacks. */
+function qaReasons(L, meta, markPolys, side) {
+  const reasons = [];
+  if (!markPolys.length) return reasons;
+  const mb = polysBounds(markPolys);
+  const adv = effLetterAdvance(L);
+  const top = effMetrics().lamedAscender + 100, bottom = effMetrics().descender - 50;   // the live export metrics — same predicate as the clip-box expansion
+  // (d) exceeds the vertical metrics → clips in Word (and triggers the export clip-box expansion)
+  if (mb.maxY > top)    reasons.push('Mark exceeds the top metric (clips in Word)');
+  if (mb.minY < bottom) reasons.push('Mark exceeds the bottom metric (clips in Word)');
+  // (c) spills past the advance into a neighbour (RTL: maxX>adv = next letter, minX<0 = previous)
+  if (mb.maxX > adv + QA_CROWD_TOL) reasons.push('Mark spills past the advance (crowds the next letter)');
+  if (mb.minX < -QA_CROWD_TOL)      reasons.push('Mark spills before the origin (crowds the previous letter)');
+  // (a)/(b) need traced base ink
+  if (L.contours && L.contours.length) {
+    const bb = polysBounds(L.contours.map(c => c.points));
+    const boxesOverlap = !(mb.maxX < bb.minX || mb.minX > bb.maxX || mb.maxY < bb.minY || mb.minY > bb.maxY);
+    if (boxesOverlap) {
+      // (a) mark ink sitting on the letter body — inset mark vertices in base ink, OR a base vertex inside the mark
+      // (thin stem threaded through). Skip CENTRE marks: a dagesh is MEANT to sit inside the letter.
+      let hit = false;
+      if (side !== 'center') for (const poly of markPolys) {
+        const inset = qaInsetToward(poly, qaCentroid(poly), QA_OVERLAP_TOL);
+        if (inset.some(p => pointInInk(p, L.contours))) { hit = true; break; }
+        if (L.contours.some(ct => ct.points.some(p => pointInPoly(p, poly)))) { hit = true; break; }
+      }
+      if (hit) reasons.push('Mark overlaps the letter ink');
+      // (b) below-mark colliding with a descender tail (the ink below the baseline on desc letters)
+      if (meta.desc && side === 'below') {
+        let tminX=1e9, tmaxX=-1e9, tminY=1e9, tmaxY=-1e9;
+        L.contours.forEach(ct => ct.points.forEach(([x,y]) => { if (y < 0) { if (x<tminX)tminX=x; if (x>tmaxX)tmaxX=x; if (y<tminY)tminY=y; if (y>tmaxY)tmaxY=y; } }));
+        if (tmaxX > -1e9 && !(mb.maxX < tminX || mb.minX > tmaxX || mb.maxY < tminY || mb.minY > tmaxY))
+          reasons.push('Below-mark collides with the descender tail');
+      }
+    }
+  }
+  return reasons;
+}
+/* The enabled trop of a class whose ink reaches FURTHEST (tallest above / lowest below) — the
+   worst case to stack for the Stacked tab + the metric bounds. */
+function qaWorstTrop(side) {
+  if (!project.font.trop.enabled) return null;
+  const tms = tropScale(); let best = null, ext = side === 'above' ? -1e9 : 1e9;
+  TROP_CPS.forEach(cp => {
+    if (TROP_CLASS[cp] !== side) return;
+    const b = polysBounds(markGlyphContours('trop', cp).map(poly => poly.map(([x,y]) => [x*tms, y*tms])));
+    if (!isFinite(b.maxY)) return;
+    if (side === 'above' ? b.maxY > ext : b.minY < ext) { ext = side === 'above' ? b.maxY : b.minY; best = cp; }
+  });
+  return best;
+}
+/* Columns for a tab: nikkud / trop = one per enabled mark; stacked = each stackable nikkud (above or
+   below) paired with the worst-case trop of the matching class (centre/dagesh never stacks). */
+function qaColumns(tab) {
+  if (tab === 'nikkud') return (project.font.nikkud.enabled ? MARK_CPS : []).map(cp => ({ kind:'nikkud', cp, side: MARK_CLASS[cp], name: markName(cp), head: '◌' + qaCh(cp) }));
+  if (tab === 'trop')   return (project.font.trop.enabled   ? TROP_CPS : []).map(cp => ({ kind:'trop',   cp, side: TROP_CLASS[cp], name: markName(cp), head: '◌' + qaCh(cp) }));
+  if (!(project.font.nikkud.enabled && project.font.trop.enabled)) return [];
+  const wa = qaWorstTrop('above'), wb = qaWorstTrop('below');
+  return MARK_CPS.filter(cp => MARK_CLASS[cp] !== 'center').map(cp => {
+    const side = MARK_CLASS[cp], trop = side === 'above' ? wa : wb;
+    if (!trop) return null;
+    return { kind:'stack', cp, trop, side, name: markName(cp) + ' + ' + markName(trop), head: '◌' + qaCh(cp) + qaCh(trop) };
+  }).filter(Boolean);
+}
+/* The colored mark layer(s) to draw + test for one cell. */
+function qaCellLayers(L, anc, col) {
+  const ms = markScale(), tms = tropScale();
+  if (col.kind === 'nikkud') return [{ polys: qaPlace(anc[col.side], 'nikkud', col.cp, ms), color: QA_SIDE_COLOR[col.side] }];
+  if (col.kind === 'trop')   { const k = col.side === 'above' ? 'tropAbove' : 'tropBelow'; return [{ polys: qaPlace(anc[k], 'trop', col.cp, tms), color: QA_SIDE_COLOR[k] }]; }
+  const nikAnc = anc[col.side];
+  return [ { polys: qaPlace(nikAnc, 'nikkud', col.cp, ms), color: QA_SIDE_COLOR[col.side] },
+           { polys: qaPlaceStackTrop(nikAnc, col.cp, col.trop), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] } ];
+}
+function qaCellSvg(L, layers) {
+  const adv = effLetterAdvance(L);
+  const top = effMetrics().lamedAscender + 100, bottom = effMetrics().descender - 50, pad = 70;
+  const vb = `${-pad} ${(-top-pad).toFixed(0)} ${(adv+2*pad).toFixed(0)} ${((top-bottom)+2*pad).toFixed(0)}`;   // y-up → SVG via glyphPathAt's yo-y flip
+  let body = '';
+  if (L.contours && L.contours.length) body += `<path d="${glyphPathAt(L.contours, 0, 0, L.curves)}" fill="currentColor" opacity="0.82"/>`;
+  layers.forEach(ly => { if (ly.polys.length) body += `<path d="${glyphPathAt(ly.polys.map(p => ({ points:p })), 0, 0, null)}" fill="${ly.color}"/>`; });   // marks: wrap bare polys as {points}, polygon render
+  return `<svg viewBox="${vb}" preserveAspectRatio="xMidYMid meet">${body}</svg>`;
+}
+/* True tallest/lowest ink across every glyph the exporter builds (base, placed nikkud, stacked trop,
+   standalone trop, precomposed incl. per-form anchor overrides). Mirrors buildFontSpec's gating —
+   uses real L.anchors and skips anchor-less letters (which get no mark-to-base rule). Pure read. */
+function fontInkBounds() {
+  let top = -1e9, bottom = 1e9;
+  const updTop = y => { if (y > top) top = y; }, updBot = y => { if (y < bottom) bottom = y; };
+  const upd = b => { if (isFinite(b.maxY)) { updTop(b.maxY); updBot(b.minY); } };
+  const ms = markScale(), tms = tropScale();
+  const nikOn = project.font.nikkud.enabled, tropOn = project.font.trop.enabled;
+  const letters = qaLetters().map(meta => project.letters.find(x => x.codepoint === meta.cp)).filter(Boolean);
+  letters.forEach(L => { if (L.contours && L.contours.length) upd(polysBounds(L.contours.map(c => c.points))); });
+  let tropTop = null, tropBot = null;   // worst-case trop extents for the stack contribution
+  if (tropOn) TROP_CPS.forEach(cp => {
+    const b = polysBounds(markGlyphContours('trop', cp).map(poly => poly.map(([x,y]) => [x*tms, y*tms])));
+    if (!isFinite(b.maxY)) return;
+    if (TROP_CLASS[cp] === 'above') tropTop = (tropTop == null) ? b.maxY : Math.max(tropTop, b.maxY);
+    else                            tropBot = (tropBot == null) ? b.minY : Math.min(tropBot, b.minY);
+  });
+  letters.forEach(L => {
+    if (!L.anchors) return;
+    if (nikOn) MARK_CPS.forEach(cp => {
+      const cls = MARK_CLASS[cp], anc = L.anchors[cls]; if (!anc) return;
+      upd(polysBounds(qaPlace(anc, 'nikkud', cp, ms)));
+      if (tropOn && cls !== 'center') { const a = markMkmkAnchor(cp);
+        if (cls === 'above' && tropTop != null) updTop(anc.y + a.above.y + tropTop);
+        if (cls === 'below' && tropBot != null) updBot(anc.y + a.below.y + tropBot);
+      }
+    });
+    if (tropOn) TROP_CPS.forEach(cp => {
+      const anc = L.anchors[TROP_CLASS[cp] === 'above' ? 'tropAbove' : 'tropBelow']; if (!anc) return;
+      upd(polysBounds(qaPlace(anc, 'trop', cp, tms)));
+    });
+  });
+  if (nikOn) (project.precomposed || []).forEach(pc => {
+    const baseL = project.letters.find(x => x.codepoint === pc.base);
+    if (!baseL || !baseL.contours) return;
+    const anc = (pc.anchor && pc.anchor.x != null) ? pc.anchor : (baseL.anchors && baseL.anchors[MARK_CLASS[pc.mark]]);
+    if (!anc) return;
+    upd(polysBounds(qaPlace(anc, 'nikkud', pc.mark, ms)));
+  });
+  if (top < bottom) { top = effMetrics().letterTop; bottom = 0; }   // no ink → nominal box
+  return { top, bottom };
+}
+/* Count flagged cells across all three tabs + compute the tall-artwork expansion, cached in qaResult. */
+function qaBuild() {
+  const counts = {}; let total = 0;
+  ['nikkud','trop','stacked'].forEach(t => {
+    let n = 0; const cols = qaColumns(t);
+    if (cols.length) qaLetters().forEach(meta => {
+      const L = project.letters.find(x => x.codepoint === meta.cp); if (!L) return;
+      const anc = qaAnchors(L);
+      cols.forEach(col => { const layers = qaCellLayers(L, anc, col); if (qaReasons(L, meta, layers.reduce((a,ly)=>a.concat(ly.polys),[]), col.side).length) n++; });
+    });
+    counts[t] = n; total += n;
+  });
+  const aAsc = effMetrics().lamedAscender + 100, aDesc = effMetrics().descender - 50, ink = fontInkBounds();
+  const winAscent = Math.max(aAsc, Math.ceil(ink.top)), winDescent = Math.max(-aDesc, Math.ceil(-ink.bottom));
+  qaResult = { counts, total, winAscent, winDescent, tall: (ink.top > aAsc || ink.bottom < aDesc) };
+}
+function qaRenderTabs() {
+  const bar = document.getElementById('qaTabs');
+  const have = { nikkud: project.font.nikkud.enabled, trop: project.font.trop.enabled, stacked: project.font.nikkud.enabled && project.font.trop.enabled };
+  bar.innerHTML = [['nikkud','Nikkud'],['trop','Trop'],['stacked','Stacked']].map(([id,label]) => {
+    const n = qaResult ? qaResult.counts[id] : 0, badge = (have[id] && n) ? ` (${n})` : '';
+    return have[id]
+      ? `<button class="help-tab${qaTab===id?' active':''}" onclick="setQaTab('${id}')">${label}${badge}</button>`
+      : `<button class="help-tab" disabled style="opacity:0.4;cursor:default;">${label}</button>`;
+  }).join('');
+}
+function qaRenderSummary() {
+  const el = document.getElementById('qaSummary'); if (!el) return;
+  if (!qaResult) { el.innerHTML = ''; return; }
+  let h = qaResult.total === 0
+    ? `<span class="qa-ok">✓ All placements clear.</span> Hover a cell for details; click any cell to jump to its anchor editor.`
+    : `<b>${qaResult.total}</b> placement${qaResult.total === 1 ? '' : 's'} need attention (red cells). Hover for the reason; click a cell to jump to its anchor editor.`;
+  if (qaResult.tall) h += `<span class="qa-tall">⚠ Tall artwork — export will expand the clip box to ${qaResult.winAscent} / ${qaResult.winDescent} (asc/desc) so Word won't clip it.</span>`;
+  el.innerHTML = h;
+}
+function qaRenderGrid() {
+  const grid = document.getElementById('qaGrid'); if (!grid) return;
+  grid.style.color = (getComputedStyle(document.body).getPropertyValue('--text') || '').trim() || (document.body.classList.contains('dark') ? '#dde4f0' : '#1a2744');   // one set → every child SVG's currentColor inherits it
+  const cols = qaColumns(qaTab);
+  if (!cols.length) { grid.innerHTML = `<p style="color:var(--muted);font-size:0.85rem;">No ${qaTab === 'stacked' ? 'stacking' : qaTab} marks are enabled for this font.</p>`; return; }
+  let html = '<table class="qa-table"><thead><tr><th></th>';
+  cols.forEach(col => { html += `<th title="${escapeHtml(col.name)}"><span class="qa-colhead">${escapeHtml(col.head)}</span></th>`; });
+  html += '</tr></thead><tbody>';
+  qaLetters().forEach(meta => {
+    const L = project.letters.find(x => x.codepoint === meta.cp); if (!L) return;
+    const anc = qaAnchors(L);
+    html += `<tr><td class="qa-rowlabel" title="${escapeHtml(meta.name)}">${escapeHtml(qaCh(meta.cp))} <span style="color:var(--muted);">${escapeHtml(meta.name)}</span></td>`;
+    cols.forEach(col => {
+      const layers = qaCellLayers(L, anc, col);
+      const reasons = qaReasons(L, meta, layers.reduce((a,ly)=>a.concat(ly.polys),[]), col.side);
+      const flagged = reasons.length > 0;
+      html += `<td class="qa-cell${flagged ? ' flag' : ''}" data-cp="${meta.cp}" data-kind="${col.kind}" data-mark="${col.cp}" data-side="${col.side}"${col.trop ? ` data-trop="${col.trop}"` : ''}${flagged ? ` title="${escapeHtml(reasons.join(' · '))}"` : ''}>${qaCellSvg(L, layers)}</td>`;
+    });
+    html += '</tr>';
+  });
+  grid.innerHTML = html + '</tbody></table>';
+}
+function qaGridClick(e) {
+  const td = e.target.closest && e.target.closest('.qa-cell');
+  if (!td || !td.dataset.cp) return;
+  const d = td.dataset;
+  qaJump(d.cp, d.mark, d.kind, d.side, d.trop);
+}
+/* Click-through: close QA, select the letter (bypassing the unsaved-placement guard since QA is
+   read-only), open the matching anchor editor with the offending class/mark selected. */
+function qaJump(cp, markCp, kind, side, tropCp) {
+  closeQA();
+  _selectItem('letter', cp);
+  if (kind === 'nikkud') {
+    gotoAnchors('nikkud');
+    const cls = MARK_CLASS[markCp];
+    setAnchorClass(cls);
+    if (cls === 'below') setBelowVowel(markCp);                     // above = holam / center = dagesh share one anchor → the class is the fix target
+  } else {                                                           // trop or stack → the trop base anchor (the mkmk stack offset is computed, not editable)
+    gotoAnchors('trop');
+    setAnchorClass(side === 'above' ? 'tropAbove' : 'tropBelow');
+    const t = (kind === 'stack') ? tropCp : markCp;
+    if (t) setTropCp(t);
+  }
+}
+function setQaTab(t) { qaTab = t; qaRenderTabs(); qaRenderGrid(); }
+function closeQA() { document.getElementById('qaOverlay').classList.remove('open'); }
+function openQA() {
+  if (!project) { status('Open or create a project first.'); return; }
+  const have = { nikkud: project.font.nikkud.enabled, trop: project.font.trop.enabled, stacked: project.font.nikkud.enabled && project.font.trop.enabled };
+  if (!have[qaTab]) qaTab = have.nikkud ? 'nikkud' : (have.trop ? 'trop' : 'nikkud');   // fall back to a tab that has columns
+  qaBuild(); qaRenderTabs(); qaRenderSummary(); qaRenderGrid();
+  const ov = document.getElementById('qaOverlay');
+  if (!ov._wired) { document.getElementById('qaGrid').addEventListener('click', qaGridClick); ov._wired = true; }   // one delegated listener
+  ov.classList.add('open');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.getElementById('qaOverlay')?.classList.contains('open')) closeQA(); });
 
 /* Build the compact spec handed to Python. */
 function buildFontSpec() {
@@ -4253,9 +4569,16 @@ function buildFontSpec() {
     designer: 'Made with IvritSuite Hebrew Font Maker'
   };
   const versionFloat = parseFloat(fnt.version) || 1.0;
+  // Vertical metrics. sTypo (ascent/descent) stays at the nominal design box → stable line spacing.
+  // The clip box (OS/2 usWin + hhea) expands to cover the TRUE tallest/lowest ink so tall stacked
+  // marks don't clip in Word. Floor on the live nominal box (not literals) → when the ink already
+  // fits, winAscent/winDescent equal the nominal values → byte-identical metrics for normal fonts.
+  const aAsc = effMetrics().lamedAscender + 100, aDesc = effMetrics().descender - 50, ink = fontInkBounds();
+  const winAscent = Math.max(aAsc, Math.ceil(ink.top)), winDescent = Math.max(-aDesc, Math.ceil(-ink.bottom));
   return {
     unitsPerEm: UPM, glyphOrder, glyphs, cmap, fea, names,
-    ascent: effMetrics().lamedAscender + 100, descent: effMetrics().descender - 50, lineGap: fontSpacing().lineSpacing, version: versionFloat,
+    ascent: aAsc, descent: aDesc, lineGap: fontSpacing().lineSpacing, version: versionFloat,
+    winAscent, winDescent,
     baseGlyphNames, markGlyphNames
   };
 }
@@ -4423,18 +4746,25 @@ def hfm_build(spec_json):
     for name in order:
         metrics[name] = (advances[name], lsbs[name])
     fb.setupHorizontalMetrics(metrics)
-    fb.setupHorizontalHeader(ascent=int(spec["ascent"]), descent=int(spec["descent"]), lineGap=int(spec.get("lineGap", 0)))
+    # Clip box (hhea + OS/2 usWin) covers the TRUE tallest/lowest ink (winAscent/winDescent) so tall
+    # stacked marks aren't chopped in Word; sTypo stays at the nominal design box for stable line
+    # spacing. winAscent/winDescent fall back to the nominal box for older specs.
+    _winAsc = int(spec.get("winAscent", spec["ascent"]))
+    _winDesc = int(spec.get("winDescent", abs(int(spec["descent"]))))
+    fb.setupHorizontalHeader(ascent=_winAsc, descent=-_winDesc, lineGap=int(spec.get("lineGap", 0)))
     fb.setupNameTable(spec["names"])
     fb.setupOS2(sTypoAscender=int(spec["ascent"]), sTypoDescender=int(spec["descent"]),
                 sTypoLineGap=int(spec.get("lineGap", 0)),
-                usWinAscent=int(spec["ascent"]), usWinDescent=abs(int(spec["descent"])),
+                usWinAscent=_winAsc, usWinDescent=_winDesc,
                 achVendID="IVST")
     # Declare Hebrew (cp1255) + Latin-1 (cp1252) code pages so Office/Word recognizes the font for
     # Hebrew. Without this, Word substitutes a fallback (e.g. Aptos) and won't apply it to Hebrew text.
     _os2 = fb.font["OS/2"]
     _os2.ulCodePageRange1 = (1 << 0) | (1 << 5)
     _os2.ulCodePageRange2 = 0
-    _os2.fsSelection = (_os2.fsSelection & ~0x21) | 0x40   # REGULAR (bit 6); clear italic/bold
+    # REGULAR (bit 6); clear italic/bold; set USE_TYPO_METRICS (bit 7) so line height follows the
+    # stable sTypo metrics (+ the Line-spacing control) instead of the enlarged clip box.
+    _os2.fsSelection = (_os2.fsSelection & ~0x21) | 0x40 | 0x80
     fb.setupPost()
     try:
         addOpenTypeFeaturesFromString(fb.font, spec["fea"])
