@@ -136,6 +136,8 @@
     display: flex; flex-direction: column; gap: 14px;
   }
   .workspace { flex: 1; padding: 16px 20px; min-width: 0; }
+  /* Sidebar collapsed → drop the big left gap so the tabs/content sit against the window edge. */
+  body:has(.sidebar.hidden) .workspace { padding-left: 6px; }
 
   /* ── Panels ── */
   .panel { background: var(--cream); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; flex-shrink: 0; }
