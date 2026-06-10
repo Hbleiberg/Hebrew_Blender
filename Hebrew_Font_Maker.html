@@ -251,6 +251,13 @@
   body.layout-tabbed #catHost   { order: 2; }
   body.layout-tabbed .work-tabs { order: 3; margin-top: 4px; }
   body.layout-tabbed .ws-grid   { order: 4; }
+  /* Tabbed = no sidebar: everything lives in the tabs */
+  body.layout-tabbed .sidebar { display: none; }
+  body.layout-tabbed .sb-tab  { display: none !important; }   /* override toggleSidebar's inline display */
+  /* Settings tabs (Font Details / Spacing / Advanced) have no glyph to edit — hide the canvas, free the height */
+  body.layout-tabbed.cat-settings .work-tabs,
+  body.layout-tabbed.cat-settings .ws-grid { display: none; }
+  body.layout-tabbed.cat-settings #catHost .cat-panel.cat-active .panel-body { max-height: none; }
   .stage-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 8px; max-width: 720px; margin: 0 auto; overflow: auto; max-height: 74vh; }
   #stage { width: 100%; height: auto; display: block; touch-action: none; background: var(--white); border-radius: 6px; }
   /* Node editor (Edit-points mode) overlay */
@@ -481,7 +488,9 @@
       <button class="ctl-btn" onclick="expandAllMenus()">Expand all</button>
       <button class="ctl-btn" onclick="collapseAllMenus()">Collapse all</button>
     </div>
-    <div class="panel">
+    <div id="catGroupSlot" style="display:none"></div>
+    <div id="catPanelGroup">
+    <div class="panel cat-panel" data-cat="fontdetails">
       <div class="panel-title">Font Details</div>
       <div class="panel-body">
         <label class="fld">Family name
@@ -510,9 +519,6 @@
         <div class="hint">Pick how others may use your font. Every export's <b>LICENSE.txt</b> lists your name as author and includes a required <b>Made with IvritSuite.com</b> line. The version ticks up each export — edit it anytime.</div>
       </div>
     </div>
-
-    <div id="catGroupSlot" style="display:none"></div>
-    <div id="catPanelGroup">
     <div class="panel cat-panel" data-cat="letter">
       <div class="panel-title">Letters <span id="letterProgress" style="font-size:0.7rem;color:var(--gold-light);"></span></div>
       <div class="panel-body">
@@ -539,14 +545,12 @@
       <div class="panel-title">Punctuation &amp; More</div>
       <div class="panel-body" id="punctPanelBody"></div>
     </div>
-    </div>
-
-    <div class="panel collapsed">
+    <div class="panel cat-panel" data-cat="spacing">
       <div class="panel-title">Spacing</div>
       <div class="panel-body" id="spacingBody"></div>
     </div>
 
-    <div class="panel">
+    <div class="panel cat-panel" data-cat="advanced">
       <div class="panel-title">Advanced Settings</div>
       <div class="panel-body">
         <label class="fld">Layout</label>
@@ -554,8 +558,9 @@
           <button class="mode-btn" id="layoutBtnSidebar" onclick="setLayout('sidebar')">Sidebar</button>
           <button class="mode-btn" id="layoutBtnTabbed" onclick="setLayout('tabbed')">Tabbed</button>
         </div>
-        <div class="hint"><strong>Sidebar</strong> keeps the Letters, Nikkud &amp; Trop pickers in this side panel. <strong>Tabbed</strong> moves them to a row of tabs across the top of the workspace, giving each picker more room. Your choice is remembered on this device.</div>
+        <div class="hint"><strong>Sidebar</strong> stacks every tab's panel in one scrolling column on the left. <strong>Tabbed</strong> (the default) puts each one on its own tab across the top. Your choice is remembered on this device.</div>
       </div>
+    </div>
     </div>
   </aside>
 
@@ -938,7 +943,7 @@ let workMode = 'align';
 let anchorCat = 'nikkud';   // which anchor category the placement step shows: 'nikkud' | 'trop'
 let lastSavedAnchors = null;                 // most recently SAVED placement — carried onto the next fresh letter
 const anchorInheritedFrom = new WeakMap();   // letter → the saved snapshot already carried onto it (once per save, clobber-safe)
-let layoutMode = 'sidebar'; // 'sidebar' | 'tabbed' — Advanced Settings → Layout (site-wide pref)
+let layoutMode = 'tabbed'; // 'sidebar' | 'tabbed' — Advanced Settings → Layout (site-wide pref; tabbed is default)
 let catTab = 'letter';      // tabbed layout: which category picker is visible ('letter'|'nikkud'|'trop')
 let metricAdjust = false;   // Letter Metrics → "Adjust on canvas" drag toggle
 let metricDrag = null;      // active metric-guide drag: { key, axis, grab }
@@ -1929,12 +1934,14 @@ function syncCatTabs() {
     p.classList.toggle('cat-active', p.dataset.cat === catTab));
   document.querySelectorAll('#catTabs .ctab').forEach(b =>
     b.classList.toggle('active', b.dataset.cat === catTab));
+  // Settings tabs (Font Details / Spacing / Advanced) have no glyph to edit → hide the editing canvas.
+  document.body.classList.toggle('cat-settings', catTab === 'fontdetails' || catTab === 'spacing' || catTab === 'advanced');
 }
 function renderCatTabs() {
   const t = document.getElementById('catTabs');
   if (!t) return;
-  const NAMES = { letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop', punct: 'Punctuation' };
-  t.innerHTML = ['letter', 'nikkud', 'trop', 'punct'].map(c =>
+  const NAMES = { fontdetails: 'Font Details', letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop', punct: 'Punctuation', spacing: 'Spacing', advanced: 'Advanced Settings' };
+  t.innerHTML = ['fontdetails', 'letter', 'nikkud', 'trop', 'punct', 'spacing', 'advanced'].map(c =>
     `<div class="ctab" data-cat="${c}" onclick="setCatTab('${c}')">${NAMES[c]}</div>`).join('');
   syncCatTabs();
 }
@@ -5944,7 +5951,7 @@ function init() {
   applyZoom();
   if (localStorage.getItem('hebrewFontMaker_sbHidden') === '1') toggleSidebar();
   // restore layout pref (Sidebar / Tabbed)
-  layoutMode = (localStorage.getItem('hebrewFontMaker_layout') === 'tabbed') ? 'tabbed' : 'sidebar';
+  layoutMode = (localStorage.getItem('hebrewFontMaker_layout') === 'sidebar') ? 'sidebar' : 'tabbed';
   applyLayout();
   onExportFormatChange();   // sync the Export button label to the format picker (browsers may restore its value on reload)
   // re-measure the template glyph once web fonts settle
