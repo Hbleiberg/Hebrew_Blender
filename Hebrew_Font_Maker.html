@@ -418,6 +418,8 @@
   <button class="tbtn ghost" onclick="toggleLoadMenu(event)">Load Project ▾</button>
   <button class="tbtn ghost" onclick="saveProject()">Save Project</button>
   <input type="file" id="projFile" accept=".hebrewfont,.json,application/json,application/gzip" style="display:none;">
+  <button class="tbtn ghost" id="undoBtn" onclick="undo()" title="Undo (Ctrl+Z)" disabled>↶</button>
+  <button class="tbtn ghost" id="redoBtn" onclick="redo()" title="Redo (Ctrl+Shift+Z)" disabled>↷</button>
   <button class="tbtn ghost" onclick="openHelp()" title="A plain-language guide to the whole tool">❓ How does this work?</button>
   <div class="tspace"></div>
   <span id="statusMsg"></span>
@@ -794,6 +796,73 @@ let catTab = 'letter';      // tabbed layout: which category picker is visible (
 let metricAdjust = false;   // Letter Metrics → "Adjust on canvas" drag toggle
 let metricDrag = null;      // active metric-guide drag: { key, axis, grab }
 
+/* ════════ Undo / redo (per-project, in-memory; max 100 entries). Each entry snapshots only the
+   touched item/slice — never the image (source) and never savedAnchors (dirty-detection state).
+   Scopes: {t:'item',kind,cp} | {t:'spacing'} | {t:'metrics'} | {t:'precomp',target}. ════════ */
+let undoStack = [], redoStack = [];
+const UNDO_MAX = 100;
+const ITEM_SKIP = { source: 1, savedAnchors: 1 };       // excluded from snapshots; preserved live on restore
+function itemScope() { return { t:'item', kind: curKind, cp: curCp }; }
+function udItem(s) {                                     // resolve by (kind,cp) WITHOUT creating (never customMark())
+  if (s.kind === 'letter') return project.letters.find(x => x.codepoint === s.cp);
+  const f = project.font[s.kind]; return f && f.custom ? f.custom[s.cp] : null;
+}
+function udSnap(s) {
+  if (s.t === 'item') { const it = udItem(s); if (!it) return null;
+    const o = {}; for (const k in it) if (!ITEM_SKIP[k]) o[k] = JSON.parse(JSON.stringify(it[k])); return o; }
+  if (s.t === 'spacing') return JSON.parse(JSON.stringify(project.font.spacing));
+  if (s.t === 'metrics') return JSON.parse(JSON.stringify(project.font.metrics));
+  if (s.t === 'precomp') { const pc = getPrecomp(s.target); return pc && pc.anchor ? JSON.parse(JSON.stringify(pc.anchor)) : null; }
+  return null;
+}
+function udRestore(s, snap) {
+  if (s.t === 'item') { const it = udItem(s); if (!it || !snap) return;
+    const keepSrc = it.source, keepSaved = it.savedAnchors;
+    for (const k in it) if (!ITEM_SKIP[k]) delete it[k];
+    Object.assign(it, JSON.parse(JSON.stringify(snap)));
+    it.source = keepSrc; if (keepSaved !== undefined) it.savedAnchors = keepSaved; }
+  else if (s.t === 'spacing') Object.assign(project.font.spacing, JSON.parse(JSON.stringify(snap || {})));
+  else if (s.t === 'metrics') Object.assign(project.font.metrics, JSON.parse(JSON.stringify(snap || {})));
+  else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) pc.anchor = snap ? JSON.parse(JSON.stringify(snap)) : null; }
+}
+function udNavTo(s) {                                    // show the affected item (no side effects — not selectItem)
+  if (s.t !== 'item') return;
+  if (curKind === s.kind && curCp === s.cp) return;
+  curKind = s.kind; curCp = s.cp; catTab = s.kind;
+}
+function udCapture(scopes, label) { return { label, slices: scopes.map(s => ({ scope: s, before: udSnap(s) })) }; }
+function udPush(p) {
+  if (!p) return;
+  const slices = p.slices.map(sl => ({ scope: sl.scope, before: sl.before, after: udSnap(sl.scope) }))
+                         .filter(sl => JSON.stringify(sl.before) !== JSON.stringify(sl.after));   // drop no-op slices
+  if (!slices.length) return;
+  undoStack.push({ label: p.label, slices }); if (undoStack.length > UNDO_MAX) undoStack.shift();
+  redoStack = []; updateUndoButtons();
+}
+function udDo(scopes, label, fn) { const p = udCapture(scopes, label); fn(); udPush(p); }
+/* input burst — one entry per slider/number-field interaction: begin on first `input`, commit on `change`.
+   Commit flushes any deferred re-trace (flushTrace no-ops when none pending) so `after` is the settled state. */
+let _burst = null;
+function udBurstBegin(scopes, label) { if (!_burst && project) _burst = udCapture(scopes, label); }
+function udBurstCommit() { if (_burst) { flushTrace(); const p = _burst; _burst = null; udPush(p); } }
+/* debounced arrow-key nudge burst — collapses a flurry of taps into one entry (triggers wired in commit 2) */
+let _udNudge = null, _udNudgeTimer = 0;
+function udNudgeTick(scopes, label) {
+  if (!_udNudge) _udNudge = udCapture(scopes, label);
+  clearTimeout(_udNudgeTimer); _udNudgeTimer = setTimeout(udNudgeCommit, 500);
+}
+function udNudgeCommit() { if (_udNudge) { clearTimeout(_udNudgeTimer); const p = _udNudge; _udNudge = null; udPush(p); } }
+function udFlushPending() { udBurstCommit(); udNudgeCommit(); }   // settle any open burst/nudge before undo/redo/nav
+function udApply(entry, useAfter) {
+  const oneItem = entry.slices.filter(sl => sl.scope.t === 'item').length === 1;   // navigate only for single-item entries
+  entry.slices.forEach(sl => { udRestore(sl.scope, useAfter ? sl.after : sl.before); if (oneItem) udNavTo(sl.scope); });
+}
+function undo() { udFlushPending(); const e = undoStack.pop(); if (!e) return; udApply(e, false); redoStack.push(e); afterUndo('Undo: ' + e.label); }
+function redo() { udFlushPending(); const e = redoStack.pop(); if (!e) return; udApply(e, true); undoStack.push(e); afterUndo('Redo: ' + e.label); }
+function afterUndo(msg) { updateUndoButtons(); renderGrids(); renderStage(); renderControls(); status(msg); }
+function updateUndoButtons() { const u = document.getElementById('undoBtn'), r = document.getElementById('redoBtn'); if (u) u.disabled = !undoStack.length; if (r) r.disabled = !redoStack.length; }
+function udClear() { undoStack = []; redoStack = []; _udNudge = null; _burst = null; updateUndoButtons(); }
+
 function blankLetter(L) {
   return {
     codepoint: L.cp, name: L.name,
@@ -827,6 +896,7 @@ function newProject() {
     letters: LETTERS.map(blankLetter),
     precomposed: PRECOMPOSED.map(p => ({ target: p.target, base: p.base, mark: p.mark, anchor: null }))
   };
+  udClear();                 // fresh project → drop any prior undo history / open bursts
   curKind = 'letter'; curCp = LETTER_ORDER[0]; workMode = 'align';
   syncMetaToForm(); renderGrids(); setWorkMode('align'); status('New project.');
 }
@@ -863,6 +933,7 @@ function selectItem(kind, cp) {
   _selectItem(kind, cp);
 }
 function _selectItem(kind, cp) {
+  udFlushPending();          // commit any open slider burst / pending nudge before navigating away
   curKind = kind; curCp = cp; workMode = 'align'; precompTarget = null;
   catTab = kind;             // tabbed layout: keep the visible picker on the edited item's category
   renderGrids(); renderStage(); renderControls();
@@ -1264,20 +1335,25 @@ function setGlyphOpacity(v){ project.view.glyphOpacity=Math.max(0,Math.min(1,(+v
   const r=document.getElementById('glyphOpVal'); if(r) r.textContent=Math.round(project.view.glyphOpacity*100)+'%'; renderStage(); }
 function setAnchorCoord(axis,v){ if(!project||workMode!=='anchors') return;
   const l=curLetter(); if(!l.anchors) return; const n=Math.round(+v); if(!Number.isFinite(n)) return;
+  udBurstBegin([itemScope()], 'anchor ' + axis + ' — ' + l.name);
   l.anchors[activeAnchorClass][axis]=n; noteAnchorMoved(l); renderStage(); }
 /* Quick-center the active anchor: ↔ halfway between the L/R margins, ↕ halfway between the top & bottom lines. */
 function centerAnchorH() {
   if (!project || workMode !== 'anchors') return;
   const l = curLetter(); const a = l.anchors && l.anchors[activeAnchorClass]; if (!a) return;
-  a.x = Math.round((letterLSB(l) + (letterAdvance(l) - letterRSB(l))) / 2);   // midpoint of the margin lines
-  noteAnchorMoved(l); renderStage(); renderControls();
+  udDo([itemScope()], 'center anchor — ' + l.name, () => {
+    a.x = Math.round((letterLSB(l) + (letterAdvance(l) - letterRSB(l))) / 2);   // midpoint of the margin lines
+    noteAnchorMoved(l); renderStage(); renderControls();
+  });
 }
 function centerAnchorV() {
   if (!project || workMode !== 'anchors') return;
   const l = curLetter(); const a = l.anchors && l.anchors[activeAnchorClass]; if (!a) return;
-  const em = effMetrics();
-  a.y = Math.round((em.letterTop + em.baseline) / 2);                          // midpoint of the top (cap) and base (baseline) lines
-  noteAnchorMoved(l); renderStage(); renderControls();
+  udDo([itemScope()], 'center anchor — ' + l.name, () => {
+    const em = effMetrics();
+    a.y = Math.round((em.letterTop + em.baseline) / 2);                          // midpoint of the top (cap) and base (baseline) lines
+    noteAnchorMoved(l); renderStage(); renderControls();
+  });
 }
 
 /* ════════ Letter Metrics editor (type a value, or drag the guide dots on the canvas) ════════ */
@@ -1293,11 +1369,13 @@ function syncMetricInputs() {
   set('mAdv', letterAdvance(l)); set('mLsb', letterLSB(l)); set('mRsb', letterRSB(l));
 }
 function setMetric(key, v, noRender) {            // font-wide metrics
+  if (!noRender) udBurstBegin([{ t:'metrics' }], 'metric — ' + key);   // typed edits group into one entry (drag passes noRender)
   const n = _clampMetric(key, +v); if (n==null) return;
   project.font.metrics[key] = n; syncMetricInputs();
   if (!noRender) renderStage();                   // NOT renderControls → keeps the number input focused while typing
 }
 function setLetterMetric(key, v, noRender) {       // per-letter — Width / Left margin / Right margin are independent (editing one never changes another)
+  if (!noRender) udBurstBegin([itemScope()], 'metric — ' + key);
   const l = curLetter(); const n = _clampMetric(key, +v); if (n==null) return;
   if (key==='advance') {
     if (l.rsb == null) l.rsb = Math.max(0, letterAdvance(l) - letterInkRight(l));   // pin the current right margin so it doesn't shift when Width changes
@@ -1321,21 +1399,23 @@ function writeMetric(key, raw) {                   // dispatch used by the canva
 }
 function toggleMetricAdjust() { metricAdjust = !metricAdjust; renderStage(); renderControls(); }
 function resetMetrics() {                          // restore template-font defaults
-  project.font.metrics = { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP,
-                           descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB };
-  const l = curLetter(); l.lsb = null; l.rsb = null;
-  if (l.contours) {
-    let minX=Infinity, maxX=-Infinity;
-    l.contours.forEach(c => c.points.forEach(p => { minX=Math.min(minX,p[0]); maxX=Math.max(maxX,p[0]); }));
-    if (isFinite(minX)) l.advance = Math.round(maxX + DEF_RSB + Math.max(0, DEF_LSB - minX));
-  } else { const fit = computeTemplateFit(l); if (fit) l.advance = fit.advance; }
-  renderStage(); renderControls();
+  udDo([{ t:'metrics' }, itemScope()], 'reset metrics', () => {
+    project.font.metrics = { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP,
+                             descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB };
+    const l = curLetter(); l.lsb = null; l.rsb = null;
+    if (l.contours) {
+      let minX=Infinity, maxX=-Infinity;
+      l.contours.forEach(c => c.points.forEach(p => { minX=Math.min(minX,p[0]); maxX=Math.max(maxX,p[0]); }));
+      if (isFinite(minX)) l.advance = Math.round(maxX + DEF_RSB + Math.max(0, DEF_LSB - minX));
+    } else { const fit = computeTemplateFit(l); if (fit) l.advance = fit.advance; }
+    renderStage(); renderControls();
+  });
 }
 function metricsPanel() {
   const m = effMetrics(), l = curLetter(), meta = curMeta();
   const f = (id,label,val,fn,key) =>
     `<label class="fld metric-fld">${label}
-       <input type="number" id="${id}" class="metric-num" value="${val}" step="10" oninput="${fn}('${key}', this.value)"></label>`;
+       <input type="number" id="${id}" class="metric-num" value="${val}" step="10" oninput="${fn}('${key}', this.value)" onchange="udBurstCommit()"></label>`;
   const lamed = (meta && meta.asc) ? f('mLamed','Lamed asc.', m.lamedAscender, 'setMetric','lamedAscender') : '';
   return `
   <div class="metric-group" id="metricGroup">
@@ -1382,7 +1462,8 @@ function attachMetricDrag() {
     el.addEventListener('pointerdown', e => {
       const key = el.dataset.metric, axis = el.dataset.axis;
       const [fxp,fyp] = clientToFont(e);
-      metricDrag = { key, axis, grab: curMetricVal(key) - (axis==='y' ? fyp : fxp) };
+      const mScope = (key==='advance'||key==='lsb'||key==='rsb') ? itemScope() : { t:'metrics' };
+      metricDrag = { key, axis, grab: curMetricVal(key) - (axis==='y' ? fyp : fxp), ud: udCapture([mScope], 'metric — ' + key) };
       sv.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault();
     });
   });
@@ -1579,6 +1660,7 @@ function setWorkMode(mode) {
   _setWorkMode(mode);
 }
 function _setWorkMode(mode) {
+  udFlushPending();          // commit any open burst/nudge before switching modes
   if (curKind !== 'letter') {                 // marks have no Nikkud step; editor has no Trace step
     if (mode === 'anchors') mode = 'align';
     if (curItem().designMode === 'editor') mode = 'align';
@@ -1991,27 +2073,32 @@ function attachEditorDrag(it) {
   const sv = stage();
   sv.querySelectorAll('.epiece').forEach(el => el.addEventListener('pointerdown', e => {
     editorSel = +el.dataset.i;
-    eDrag = { mode:'move', start: clientToStage(e), p0: JSON.parse(JSON.stringify(it.pieces[editorSel])) };
+    eDrag = { mode:'move', start: clientToStage(e), p0: JSON.parse(JSON.stringify(it.pieces[editorSel])), ud: udCapture([itemScope()], 'edit mark — ' + it.name) };
     sv.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault(); renderStage();
   }));
   const hnd = sv.querySelector('.ehandle');
   if (hnd) hnd.addEventListener('pointerdown', e => {
-    eDrag = { mode:'resize', start: clientToStage(e), p0: JSON.parse(JSON.stringify(it.pieces[editorSel])) };
+    eDrag = { mode:'resize', start: clientToStage(e), p0: JSON.parse(JSON.stringify(it.pieces[editorSel])), ud: udCapture([itemScope()], 'edit mark — ' + it.name) };
     sv.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault();
   });
 }
 function editorAddPiece(type) {
-  const it = curItem(); if (!it.pieces) it.pieces = [];
-  const cy = it.cls==='above' ? 120 : it.cls==='center' ? 0 : -150;
-  it.pieces.push(type==='dot' ? { type:'dot', cx:0, cy, r:45 } : { type:'bar', x0:-90, y0:cy-25, x1:90, y1:cy+25 });
-  editorSel = it.pieces.length - 1; renderStage(); renderControls();
+  const it = curItem();
+  udDo([itemScope()], (type==='dot'?'add dot — ':'add bar — ') + it.name, () => {
+    if (!it.pieces) it.pieces = [];
+    const cy = it.cls==='above' ? 120 : it.cls==='center' ? 0 : -150;
+    it.pieces.push(type==='dot' ? { type:'dot', cx:0, cy, r:45 } : { type:'bar', x0:-90, y0:cy-25, x1:90, y1:cy+25 });
+    editorSel = it.pieces.length - 1; renderStage(); renderControls();
+  });
 }
 function editorDeletePiece() {
   const it = curItem(); if (!it.pieces || !it.pieces.length) return;
-  it.pieces.splice(editorSel, 1); editorSel = Math.max(0, editorSel-1);
-  renderGrids(); renderStage(); renderControls();
+  udDo([itemScope()], 'delete piece — ' + it.name, () => {
+    it.pieces.splice(editorSel, 1); editorSel = Math.max(0, editorSel-1);
+    renderGrids(); renderStage(); renderControls();
+  });
 }
-function setMarkDesignMode(mode) { curItem().designMode = mode; renderGrids(); renderStage(); renderControls(); }
+function setMarkDesignMode(mode) { const it = curItem(); udDo([itemScope()], 'mark mode — ' + it.name, () => { it.designMode = mode; renderGrids(); renderStage(); renderControls(); }); }
 function updateTabs() {
   const isMark = curKind !== 'letter';
   const combined = isMark && project.font[curKind].uploadMode === 'combined';
@@ -2045,13 +2132,13 @@ function renderMarkControls(c, it) {
       </div>
       <div class="hint">Click a piece to select; drag to move, drag the ◻ corner to resize. Build the mark from dots &amp; bars — it's seeded from the default shape.</div>`;
   } else if (workMode === 'trace') {
-    h += `<div class="inline">Ink threshold <input type="range" min="1" max="254" value="${it.binThreshold}" oninput="liveThreshold(this.value)"> <span id="thV" class="readout">${it.binThreshold}</span></div>
+    h += `<div class="inline">Ink threshold <input type="range" min="1" max="254" value="${it.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()"> <span id="thV" class="readout">${it.binThreshold}</span></div>
       <label class="chk"><input type="checkbox" ${it.invert?'checked':''} onchange="liveInvert(this.checked)"> Invert (light ink on dark)</label>
-      <div class="inline">Detail (less ↔ more) <input type="range" min="0" max="100" step="1" value="${Math.round(100 - it.epsilon*2.5)}" oninput="liveDetail(this.value)"> <span id="epV" class="readout">${Math.round(100 - it.epsilon*2.5)}</span></div>
-      <div class="inline">Corners (sharp ↔ round) <input type="range" min="0" max="90" step="1" value="${it.cornerAngle != null ? it.cornerAngle : 32}" oninput="liveCorners(this.value)"> <span id="cnV" class="readout">${it.cornerAngle != null ? it.cornerAngle : 32}</span></div>
+      <div class="inline">Detail (less ↔ more) <input type="range" min="0" max="100" step="1" value="${Math.round(100 - it.epsilon*2.5)}" oninput="liveDetail(this.value)" onchange="udBurstCommit()"> <span id="epV" class="readout">${Math.round(100 - it.epsilon*2.5)}</span></div>
+      <div class="inline">Corners (sharp ↔ round) <input type="range" min="0" max="90" step="1" value="${it.cornerAngle != null ? it.cornerAngle : 32}" oninput="liveCorners(this.value)" onchange="udBurstCommit()"> <span id="cnV" class="readout">${it.cornerAngle != null ? it.cornerAngle : 32}</span></div>
       <div class="ctl-row">
         <button class="ctl-btn primary" onclick="traceCurrent()">Re-trace</button>
-        <button class="ctl-btn" onclick="curItem().contours=null;curItem().curves=null;_rawTrace=null;renderGrids();renderStage();renderControls();">Clear</button>
+        <button class="ctl-btn" onclick="clearTrace()">Clear</button>
         <span id="traceInfo" class="readout">${it.contours?`${it.contours.length} contour(s)`:''}</span>
       </div>`;
   } else {
@@ -2295,17 +2382,17 @@ function attachTransformDrag(l) {
   const sv = stage();
   const img = sv.querySelector('image');
   if (img) img.addEventListener('pointerdown', e => {
-    tDrag = { type:'move', start: clientToStage(e), m0: l.transform.slice() };
+    tDrag = { type:'move', start: clientToStage(e), m0: l.transform.slice(), ud: udCapture([itemScope()], 'move image — ' + l.name) };
     sv.setPointerCapture(e.pointerId); e.preventDefault();
   });
   sv.querySelectorAll('.th-corner, .th-edge').forEach(el => el.addEventListener('pointerdown', e => {
-    tDrag = { type:'scale', handle: el.dataset.c, start: clientToStage(e), m0: l.transform.slice() };
+    tDrag = { type:'scale', handle: el.dataset.c, start: clientToStage(e), m0: l.transform.slice(), ud: udCapture([itemScope()], 'scale image — ' + l.name) };
     sv.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault();
   }));
   const rot = sv.querySelector('.th-rotate');
   if (rot) rot.addEventListener('pointerdown', e => {
     const c = imgCorners(l);
-    tDrag = { type:'rotate', center: c.center, start: clientToStage(e), m0: l.transform.slice() };
+    tDrag = { type:'rotate', center: c.center, start: clientToStage(e), m0: l.transform.slice(), ud: udCapture([itemScope()], 'rotate image — ' + l.name) };
     sv.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault();
   });
 }
@@ -2358,18 +2445,18 @@ function onStagePointerMove(e) {
     const R = M.mul(M.translate(cen[0],cen[1]), M.mul(M.rotate(d), M.translate(-cen[0],-cen[1])));
     l.transform = M.mul(R, m0);
   }
-  l.contours = null; l.anchors = null;
+  l.contours = null; l.curves = null; l.anchors = null;
   renderStage();
 }
 function onStagePointerUp() {
-  if (metricDrag) { metricDrag = null; renderControls(); return; }
-  if (eDrag) { eDrag = null; renderGrids(); renderControls(); return; }
+  if (metricDrag) { udPush(metricDrag.ud); metricDrag = null; renderControls(); return; }
+  if (eDrag) { udPush(eDrag.ud); eDrag = null; renderGrids(); renderControls(); return; }
   if (cropDrag) {
     const box = cropDrag.box; cropDrag = null;
     if (box && box.w > 8 && box.h > 8) finalizeCrop(curLetter(), box); else renderStage();
     return;
   }
-  if (tDrag) { tDrag = null; renderLetterGrid(); }
+  if (tDrag) { udPush(tDrag.ud); tDrag = null; renderLetterGrid(); }
 }
 
 /* ════════ Vectorization: rasterize → binarize → marching squares → RDP → winding ════════ */
@@ -2692,16 +2779,23 @@ function updateTraceInfo(l) {
   if (ti) ti.textContent = l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : 'no ink detected';
 }
 function traceCurrent() {
-  const l = curLetter();
-  const raw = rawLoopsFontUnits(l);
-  if (!raw || !raw.length) { _rawTrace = null; l.contours = null; status('No ink detected — adjust threshold / invert.'); renderStage(); renderControls(); renderLetterGrid(); return; }
-  _rawTrace = { sig: traceSig(l), loops: raw };
-  const n = finalizeFromRaw(l, raw);
-  renderLetterGrid(); renderStage(); renderControls();
-  status(n ? `${l.name}: traced ${n} contour(s).` : 'No usable contours — adjust threshold.');
+  udDo([itemScope()], 're-trace — ' + curLetter().name, () => {
+    const l = curLetter();
+    const raw = rawLoopsFontUnits(l);
+    if (!raw || !raw.length) { _rawTrace = null; l.contours = null; l.curves = null; status('No ink detected — adjust threshold / invert.'); renderStage(); renderControls(); renderLetterGrid(); return; }
+    _rawTrace = { sig: traceSig(l), loops: raw };
+    const n = finalizeFromRaw(l, raw);
+    renderLetterGrid(); renderStage(); renderControls();
+    status(n ? `${l.name}: traced ${n} contour(s).` : 'No usable contours — adjust threshold.');
+  });
+}
+function clearTrace() {
+  const it = curItem();
+  udDo([itemScope()], 'clear trace — ' + it.name, () => { it.contours = null; it.curves = null; _rawTrace = null; renderGrids(); renderStage(); renderControls(); });
 }
 /* ε change — instant: re-simplify the cached loops (or recompute if the cache is stale). */
 function liveDetail(v) {   // slider 0–100 reads as "detail"; ε is the inverse (100 = closest trace)
+  udBurstBegin([itemScope()], 'trace — ' + curLetter().name);
   const l = curLetter(); l.epsilon = Math.max(0, (100 - (+v)) * 0.4);
   const ep = document.getElementById('epV'); if (ep) ep.textContent = Math.round(+v);
   if (_rawTrace && _rawTrace.sig === traceSig(l)) { finalizeFromRaw(l, _rawTrace.loops); renderStage(); updateTraceInfo(l); }
@@ -2709,6 +2803,7 @@ function liveDetail(v) {   // slider 0–100 reads as "detail"; ε is the invers
 }
 /* corner threshold change — same fast path as Detail (cornerAngle is NOT in traceSig, so the raw cache stays valid). */
 function liveCorners(v) {
+  udBurstBegin([itemScope()], 'trace — ' + curLetter().name);
   const l = curLetter(); l.cornerAngle = Math.max(0, Math.min(90, +v));
   const cn = document.getElementById('cnV'); if (cn) cn.textContent = Math.round(l.cornerAngle);
   if (_rawTrace && _rawTrace.sig === traceSig(l)) { finalizeFromRaw(l, _rawTrace.loops); renderStage(); updateTraceInfo(l); }
@@ -2716,22 +2811,24 @@ function liveCorners(v) {
 }
 /* threshold/invert change — re-trace, throttled to one run per animation frame. */
 function liveThreshold(v) {
+  udBurstBegin([itemScope()], 'trace — ' + curLetter().name);
   const l = curLetter(); l.binThreshold = +v;
   const th = document.getElementById('thV'); if (th) th.textContent = v;
   scheduleRetrace();
 }
-function liveInvert(checked) { curLetter().invert = checked; scheduleRetrace(); }
+function liveInvert(checked) { udBurstBegin([itemScope()], 'trace — ' + curLetter().name); curLetter().invert = checked; scheduleRetrace(); udBurstCommit(); }
+function doRetrace() {        // the actual rebuild — shared by the RAF and by flushTrace()
+  const l = curLetter();
+  const raw = rawLoopsFontUnits(l);
+  _rawTrace = (raw && raw.length) ? { sig: traceSig(l), loops: raw } : null;
+  if (_rawTrace) finalizeFromRaw(l, raw); else { l.contours = null; l.curves = null; }
+  renderStage(); updateTraceInfo(l);   // not renderControls — keep slider focus during drag
+}
 function scheduleRetrace() {
   if (_traceRAF) cancelAnimationFrame(_traceRAF);
-  _traceRAF = requestAnimationFrame(() => {
-    _traceRAF = 0;
-    const l = curLetter();
-    const raw = rawLoopsFontUnits(l);
-    _rawTrace = (raw && raw.length) ? { sig: traceSig(l), loops: raw } : null;
-    if (_rawTrace) finalizeFromRaw(l, raw); else l.contours = null;
-    renderStage(); updateTraceInfo(l);   // not renderControls — keep slider focus during drag
-  });
+  _traceRAF = requestAnimationFrame(() => { _traceRAF = 0; doRetrace(); });
 }
+function flushTrace() { if (_traceRAF) { cancelAnimationFrame(_traceRAF); _traceRAF = 0; doRetrace(); } }   // settle a pending RAF synchronously (used by udBurstCommit)
 /* anchor X = bbox horizontal midpoint; for descender letters use the top ~52% band. */
 function glyphBBox(contours, topBandOnly, meta) {
   let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
@@ -2819,10 +2916,11 @@ function anchorHandlesSVG(l) {
 }
 function attachAnchorDrag(l) {
   stage().querySelectorAll('.anc').forEach(el => {
-    const cls = el.dataset.cls; let grab = null;
+    const cls = el.dataset.cls; let grab = null, pend = null;
     el.addEventListener('pointerdown', e => {
       el.setPointerCapture(e.pointerId);
       const [fxp,fyp] = clientToFont(e); const a = l.anchors[cls]; grab = [a.x-fxp, a.y-fyp];
+      pend = udCapture([itemScope()], 'anchor move — ' + l.name + ', ' + cls);
       showAncTip(e.clientX, e.clientY);
       e.preventDefault();
     });
@@ -2839,8 +2937,8 @@ function attachAnchorDrag(l) {
       const ry = document.getElementById('ancY'); if (ry) ry.value = a.y;
       if (l.placementSaved) l.placementSaved = false;   // moved → unsaved (✓ refreshes on pointerup)
     });
-    el.addEventListener('pointerup', () => { grab = null; hideAncTip(); renderStage(); renderControls(); renderLetterGrid(); });
-    el.addEventListener('pointercancel', () => { grab = null; hideAncTip(); });
+    el.addEventListener('pointerup', () => { grab = null; udPush(pend); pend = null; hideAncTip(); renderStage(); renderControls(); renderLetterGrid(); });
+    el.addEventListener('pointercancel', () => { grab = null; udPush(pend); pend = null; hideAncTip(); });
   });
 }
 function showAncTip(cx, cy) {
@@ -2892,13 +2990,16 @@ function clearPrecompTarget() { precompTarget = null; renderStage(); renderContr
 function setPrecompCoord(axis, v) {
   const pc = getPrecomp(precompTarget); if (!pc) return;
   const n = Math.round(+v); if (!Number.isFinite(n)) return;
+  udBurstBegin([{ t:'precomp', target: precompTarget }], 'mark anchor ' + axis);
   const a = precompAnchor(pc);
   pc.anchor = { x: axis==='x'?n:a.x, y: axis==='y'?n:a.y };
   renderStage();   // not renderControls → keep the number input focused while typing
 }
 function resetPrecompAnchor() {
-  const pc = getPrecomp(precompTarget); if (pc) pc.anchor = null;
-  renderStage(); renderControls();
+  udDo([{ t:'precomp', target: precompTarget }], 'reset mark anchor', () => {
+    const pc = getPrecomp(precompTarget); if (pc) pc.anchor = null;
+    renderStage(); renderControls();
+  });
 }
 function precompHandlesSVG() {
   const pc = getPrecomp(precompTarget); if (!pc) return '';
@@ -2909,10 +3010,11 @@ function precompHandlesSVG() {
 function attachPrecompDrag() {
   const pc = getPrecomp(precompTarget); if (!pc) return;
   stage().querySelectorAll('.pcanc').forEach(el => {
-    let grab = null;
+    let grab = null, pend = null;
     el.addEventListener('pointerdown', e => {
       el.setPointerCapture(e.pointerId);
       const [fxp,fyp] = clientToFont(e); const a = precompAnchor(pc); grab = [a.x-fxp, a.y-fyp];
+      pend = udCapture([{ t:'precomp', target: precompTarget }], 'mark anchor move');
       showAncTip(e.clientX, e.clientY); e.preventDefault();
     });
     el.addEventListener('pointermove', e => {
@@ -2925,8 +3027,8 @@ function attachPrecompDrag() {
       const rx = document.getElementById('pcX'); if (rx) rx.value = pc.anchor.x;
       const ry = document.getElementById('pcY'); if (ry) ry.value = pc.anchor.y;
     });
-    el.addEventListener('pointerup', () => { grab = null; hideAncTip(); renderStage(); renderControls(); });
-    el.addEventListener('pointercancel', () => { grab = null; hideAncTip(); });
+    el.addEventListener('pointerup', () => { grab = null; udPush(pend); pend = null; hideAncTip(); renderStage(); renderControls(); });
+    el.addEventListener('pointercancel', () => { grab = null; udPush(pend); pend = null; hideAncTip(); });
   });
 }
 function renderPrecompControls(l) {
@@ -2937,8 +3039,8 @@ function renderPrecompControls(l) {
     <div class="hint" style="font-size:0.66rem;">Where the mark sits in the combined glyph. Drag the orange dot on the canvas, or type X / Y. Affects this precomposed form only — saved automatically.</div>
     <hr class="ctl-divider">
     <div class="anc-xy">
-      <label>X <input type="number" id="pcX" value="${a.x}" oninput="setPrecompCoord('x',this.value)"></label>
-      <label>Y <input type="number" id="pcY" value="${a.y}" oninput="setPrecompCoord('y',this.value)"></label>
+      <label>X <input type="number" id="pcX" value="${a.x}" oninput="setPrecompCoord('x',this.value)" onchange="udBurstCommit()"></label>
+      <label>Y <input type="number" id="pcY" value="${a.y}" oninput="setPrecompCoord('y',this.value)" onchange="udBurstCommit()"></label>
     </div>
     <div class="ctl-row" style="margin-top:8px;justify-content:center;">
       ${isOverride ? `<button class="ctl-btn" onclick="resetPrecompAnchor()">Reset to auto</button>` : `<span class="hint" style="font-size:0.62rem;">Auto position — drag to customize.</span>`}
@@ -2963,20 +3065,20 @@ function renderSpacingPanel() {
   const body = document.getElementById('spacingBody'); if (!body) return;
   const sp = fontSpacing();
   body.innerHTML = `
-    <div class="inline">Letter spacing <input type="range" min="-40" max="200" step="5" value="${sp.letterSpacing}" oninput="setLetterSpacing(this.value)"> <span id="lsV" class="readout">${sp.letterSpacing}</span></div>
-    <div class="inline">Word spacing <input type="range" min="80" max="600" step="10" value="${sp.wordSpacing}" oninput="setWordSpacing(this.value)"> <span id="wsV" class="readout">${sp.wordSpacing}</span></div>
-    <div class="inline">Line spacing <input type="range" min="0" max="500" step="10" value="${sp.lineSpacing}" oninput="setLineSpacing(this.value)"> <span id="lnV" class="readout">${sp.lineSpacing}</span></div>
-    <label class="fld">Sample text <input type="text" id="spacingSample" dir="rtl" value="${escapeHtml(sp.sample)}" oninput="setSpacingSample(this.value)"></label>
+    <div class="inline">Letter spacing <input type="range" min="-40" max="200" step="5" value="${sp.letterSpacing}" oninput="setLetterSpacing(this.value)" onchange="udBurstCommit()"> <span id="lsV" class="readout">${sp.letterSpacing}</span></div>
+    <div class="inline">Word spacing <input type="range" min="80" max="600" step="10" value="${sp.wordSpacing}" oninput="setWordSpacing(this.value)" onchange="udBurstCommit()"> <span id="wsV" class="readout">${sp.wordSpacing}</span></div>
+    <div class="inline">Line spacing <input type="range" min="0" max="500" step="10" value="${sp.lineSpacing}" oninput="setLineSpacing(this.value)" onchange="udBurstCommit()"> <span id="lnV" class="readout">${sp.lineSpacing}</span></div>
+    <label class="fld">Sample text <input type="text" id="spacingSample" dir="rtl" value="${escapeHtml(sp.sample)}" oninput="setSpacingSample(this.value)" onchange="udBurstCommit()"></label>
     <div class="hint">Adjusts the exported font's spacing (letter &amp; word advance widths + line gap). The preview uses your traced letters — untraced letters show as dashed boxes.</div>
     <svg id="spacingPreviewSvg" style="width:100%;height:auto;max-height:170px;margin-top:4px;"></svg>
     <div class="ctl-row" style="margin-top:4px;"><button class="ctl-btn" onclick="resetSpacing()">Reset spacing</button></div>`;
   renderSpacingPreview();
 }
-function setLetterSpacing(v) { fontSpacing().letterSpacing = Math.max(-40, Math.min(200, +v||0)); const s = document.getElementById('lsV'); if (s) s.textContent = fontSpacing().letterSpacing; renderSpacingPreview(); }
-function setWordSpacing(v)   { fontSpacing().wordSpacing   = Math.max(80,  Math.min(600, +v||0)); const s = document.getElementById('wsV'); if (s) s.textContent = fontSpacing().wordSpacing;   renderSpacingPreview(); }
-function setLineSpacing(v)   { fontSpacing().lineSpacing   = Math.max(0,   Math.min(500, +v||0)); const s = document.getElementById('lnV'); if (s) s.textContent = fontSpacing().lineSpacing;   renderSpacingPreview(); }
-function setSpacingSample(v) { fontSpacing().sample = v; renderSpacingPreview(); }   // preview-only re-render → caret stays put
-function resetSpacing() { Object.assign(fontSpacing(), { letterSpacing:0, wordSpacing:260, lineSpacing:0 }); renderSpacingPanel(); }   // keeps the sample text
+function setLetterSpacing(v) { udBurstBegin([{t:'spacing'}], 'letter spacing'); fontSpacing().letterSpacing = Math.max(-40, Math.min(200, +v||0)); const s = document.getElementById('lsV'); if (s) s.textContent = fontSpacing().letterSpacing; renderSpacingPreview(); }
+function setWordSpacing(v)   { udBurstBegin([{t:'spacing'}], 'word spacing'); fontSpacing().wordSpacing   = Math.max(80,  Math.min(600, +v||0)); const s = document.getElementById('wsV'); if (s) s.textContent = fontSpacing().wordSpacing;   renderSpacingPreview(); }
+function setLineSpacing(v)   { udBurstBegin([{t:'spacing'}], 'line spacing'); fontSpacing().lineSpacing   = Math.max(0,   Math.min(500, +v||0)); const s = document.getElementById('lnV'); if (s) s.textContent = fontSpacing().lineSpacing;   renderSpacingPreview(); }
+function setSpacingSample(v) { udBurstBegin([{t:'spacing'}], 'sample text'); fontSpacing().sample = v; renderSpacingPreview(); }   // preview-only re-render → caret stays put
+function resetSpacing() { udDo([{t:'spacing'}], 'reset spacing', () => { Object.assign(fontSpacing(), { letterSpacing:0, wordSpacing:260, lineSpacing:0 }); renderSpacingPanel(); }); }   // keeps the sample text
 /* Lay out a glyph's contours in raw font units, offset by pen-x (dx) and the line baseline (yo), Y negated (y-up → SVG y-down). */
 function glyphPathAt(cs, dx, yo, curves) {
   const useCurves = curves && curves.length === cs.length;
@@ -3053,7 +3155,7 @@ function guardPlacement(proceed) {
     askModal('Save new ' + label + ' placement?',
       `You moved the placement for <b>${l.name}</b> since it was last saved.`,
       [ {label:'Save', onClick: () => { savePlacement(); proceed(); }},
-        {label:'Discard', cls:'ghost', onClick: () => { l.anchors = JSON.parse(JSON.stringify(l.savedAnchors)); l.placementSaved = true; proceed(); }},
+        {label:'Discard', cls:'ghost', onClick: () => { udDo([itemScope()], 'discard placement — ' + l.name, () => { l.anchors = JSON.parse(JSON.stringify(l.savedAnchors)); l.placementSaved = true; }); proceed(); }},
         {label:'Go back', cls:'ghost'} ]);   // close the dialog, stay on this letter, keep the unsaved move
     return;
   }
@@ -3218,15 +3320,15 @@ function renderTraceLeft(L, l) {
   L.innerHTML = `
     <div class="ws-side-title">Trace — ${l.name}</div>
     <div class="side-slider-label">Ink threshold <span id="thV" class="readout">${l.binThreshold}</span></div>
-    <input type="range" class="side-slider" min="1" max="254" value="${l.binThreshold}" oninput="liveThreshold(this.value)">
+    <input type="range" class="side-slider" min="1" max="254" value="${l.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()">
     <label class="chk"><input type="checkbox" ${l.invert?'checked':''} onchange="liveInvert(this.checked)"> Invert (light ink on dark)</label>
     <div class="side-slider-label">Detail (less ↔ more) <span id="epV" class="readout">${detail}</span></div>
-    <input type="range" class="side-slider" min="0" max="100" step="1" value="${detail}" oninput="liveDetail(this.value)">
+    <input type="range" class="side-slider" min="0" max="100" step="1" value="${detail}" oninput="liveDetail(this.value)" onchange="udBurstCommit()">
     <div class="side-slider-label">Corners (sharp ↔ round) <span id="cnV" class="readout">${corner}</span></div>
-    <input type="range" class="side-slider" min="0" max="90" step="1" value="${corner}" oninput="liveCorners(this.value)">
+    <input type="range" class="side-slider" min="0" max="90" step="1" value="${corner}" oninput="liveCorners(this.value)" onchange="udBurstCommit()">
     <div class="ctl-row">
       <button class="ctl-btn primary" onclick="traceCurrent()">Re-trace</button>
-      <button class="ctl-btn" onclick="curLetter().contours=null;curLetter().curves=null;_rawTrace=null;renderStage();renderControls();renderLetterGrid();">Clear</button>
+      <button class="ctl-btn" onclick="clearTrace()">Clear</button>
       <span id="traceInfo" class="readout">${ l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : '' }</span>
     </div>
     <div class="hint">Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically.</div>`;
@@ -3261,8 +3363,8 @@ function renderAnchorLeft(L, l) {
   const xy = `<hr class="ctl-divider">
     <div class="ws-side-title">${ANCHOR_LABEL[cls]} position</div>
     <div class="anc-xy">
-      <label>X <input type="number" id="ancX" value="${a.x}" oninput="setAnchorCoord('x',this.value)"></label>
-      <label>Y <input type="number" id="ancY" value="${a.y}" oninput="setAnchorCoord('y',this.value)"></label>
+      <label>X <input type="number" id="ancX" value="${a.x}" oninput="setAnchorCoord('x',this.value)" onchange="udBurstCommit()"></label>
+      <label>Y <input type="number" id="ancY" value="${a.y}" oninput="setAnchorCoord('y',this.value)" onchange="udBurstCommit()"></label>
     </div>
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
       <button class="ctl-btn" onclick="centerAnchorH()" title="Center horizontally — halfway between the left and right margins">Center ↔</button>
@@ -3360,30 +3462,34 @@ function renderAncReadouts(l) {
 }
 function resetLetterAnchors() {
   const l = curLetter();
-  askModal('Reset this letter?',
-    `Put the nikkud/trop anchors for <strong>${l.name}</strong> back to their starting positions? This can't be undone.`,
-    [ {label:'Cancel', cls:'ghost'},
-      {label:'Reset letter', onClick: () => { seedAnchors(l); renderStage(); renderControls(); renderLetterGrid(); }} ]);
+  udDo([itemScope()], 'reset anchors — ' + l.name, () => { seedAnchors(l); renderStage(); renderControls(); renderLetterGrid(); });   // undoable → no confirm
 }
 function resetAllAnchors() {
   askModal('Reset every letter?',
-    `Put the nikkud/trop anchors for <strong>all letters</strong> back to their starting positions? This can't be undone.`,
+    `Put the nikkud/trop anchors for <strong>all letters</strong> back to their starting positions? (You can undo this.)`,
     [ {label:'Cancel', cls:'ghost'},
-      {label:'Reset all', onClick: () => { lastSavedAnchors = null; project.letters.forEach(l => { if (l.contours) seedAnchors(l); }); renderStage(); renderControls(); renderLetterGrid(); }} ]);
+      {label:'Reset all', onClick: () => {
+        const scopes = project.letters.filter(l => l.contours).map(l => ({ t:'item', kind:'letter', cp:l.codepoint }));
+        udDo(scopes, 'reset all anchors', () => { lastSavedAnchors = null; project.letters.forEach(l => { if (l.contours) seedAnchors(l); }); renderStage(); renderControls(); renderLetterGrid(); });
+      }} ]);
 }
 function nudgeScale(sx,sy) { const l=curLetter(); const c=imgCorners(l); if(!c)return; const cen=c.center;
-  const S = M.mul(M.translate(cen[0],cen[1]), M.mul(M.scale(sx,sy), M.translate(-cen[0],-cen[1])));
-  l.transform = M.mul(S, l.transform); l.contours=null; l.anchors=null; renderStage(); }
+  udDo([itemScope()], 'scale image — ' + l.name, () => {
+    const S = M.mul(M.translate(cen[0],cen[1]), M.mul(M.scale(sx,sy), M.translate(-cen[0],-cen[1])));
+    l.transform = M.mul(S, l.transform); l.contours=null; l.curves=null; l.anchors=null; renderStage(); }); }
 function nudgeRotate(d) { const l=curLetter(); const c=imgCorners(l); if(!c)return; const cen=c.center;
-  const R = M.mul(M.translate(cen[0],cen[1]), M.mul(M.rotate(d), M.translate(-cen[0],-cen[1])));
-  l.transform = M.mul(R, l.transform); l.contours=null; l.anchors=null; renderStage(); }
+  udDo([itemScope()], 'rotate image — ' + l.name, () => {
+    const R = M.mul(M.translate(cen[0],cen[1]), M.mul(M.rotate(d), M.translate(-cen[0],-cen[1])));
+    l.transform = M.mul(R, l.transform); l.contours=null; l.curves=null; l.anchors=null; renderStage(); }); }
 function nudgeSkew(d) { const l=curLetter(); const c=imgCorners(l); if(!c)return; const cen=c.center;
-  const K = M.mul(M.translate(cen[0],cen[1]), M.mul(M.skewX(d), M.translate(-cen[0],-cen[1])));
-  l.transform = M.mul(K, l.transform); l.contours=null; l.anchors=null; renderStage(); }
+  udDo([itemScope()], 'skew image — ' + l.name, () => {
+    const K = M.mul(M.translate(cen[0],cen[1]), M.mul(M.skewX(d), M.translate(-cen[0],-cen[1])));
+    l.transform = M.mul(K, l.transform); l.contours=null; l.curves=null; l.anchors=null; renderStage(); }); }
 function snapFit() {
   const l = curLetter(); const im = imgCache[curImageUrl()]; if (!im) return;
-  l.transform = defaultFitTransform(im);
-  l.contours=null; l.anchors=null; renderStage();
+  udDo([itemScope()], 'fit image — ' + l.name, () => {
+    l.transform = defaultFitTransform(im);
+    l.contours=null; l.curves=null; l.anchors=null; renderStage(); });
 }
 function wireDrop(id, cb) {
   const el = document.getElementById(id); if (!el) return;
@@ -3392,6 +3498,25 @@ function wireDrop(id, cb) {
   el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('drag'); const f = e.dataTransfer.files[0]; if (f) cb(f); });
 }
 
+/* shared guard for global shortcuts: ignore while typing, a modal is open, or no project */
+function udShortcutBlocked() {
+  if (!project) return true;
+  const ae = document.activeElement;
+  if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return true;
+  if (document.getElementById('askOverlay')?.classList.contains('open')) return true;
+  if (document.getElementById('helpOverlay')?.classList.contains('open')) return true;
+  return false;
+}
+/* Ctrl/Cmd+Z = undo · Ctrl/Cmd+Shift+Z or Ctrl+Y = redo */
+document.addEventListener('keydown', e => {
+  if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (k !== 'z' && k !== 'y') return;
+  if (udShortcutBlocked()) return;
+  if (tDrag || eDrag || metricDrag || _burst || _udNudge) return;   // don't undo mid-interaction
+  e.preventDefault();
+  if (k === 'y' || e.shiftKey) redo(); else undo();
+});
 /* arrow-key nudge of last-grabbed anchor */
 document.addEventListener('keydown', e => {
   if (workMode !== 'anchors' || !project) return;
@@ -4288,6 +4413,7 @@ async function loadProjectFile(file) {
 async function applyProjectData(data) {           // shared by file-load and "Load recent"
   if (!data || data.format !== 'hebrew-font-maker-project') { status('Not a Font Maker project file.'); return false; }
   project = migrateProject(data);
+  udClear();                 // loaded project → reset undo history
   // preload images
   const urls = [];
   (project.combinedSheets || []).forEach(s => { if (s.dataUrl) urls.push(s.dataUrl); });
