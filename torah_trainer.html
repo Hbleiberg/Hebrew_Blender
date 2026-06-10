@@ -2681,6 +2681,69 @@ const HEB_FONTS = [
   { section:'Cursive', name:'Playpen Sans Hebrew',family:"'Playpen Sans Hebrew', cursive",   link:'https://fonts.google.com/specimen/Playpen+Sans+Hebrew', attr:'Google Fonts · OFL', load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Playpen+Sans+Hebrew&display=swap'} },
   { section:'Cursive', name:'Shmulik CLM',        family:"'Shmulik CLM', cursive",           link:'https://opensiddur.org/help/fonts/',                 attr:'Yoram Gnat · GPL+FE',     load:{type:'face',css:"@font-face{font-family:'Shmulik CLM';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Culmus%20Project%20(GPL%20and%20GPL%2BFE)/Yoram%20Gnat%20(GPL%2BFE)/Shmulik%20CLM/ShmulikCLM.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
 ];
+
+/* ═══ shared: ivritsuite-fonts ═══════════════════════════════════════════════
+   User-made fonts: saved here by Hebrew_Font_Maker, consumed by Torah Trainer
+   (and, later, other IvritSuite tools). TTFs are too big for localStorage, so
+   they live in IndexedDB. This works ACROSS tools because every IvritSuite page
+   is served from the same origin (ivritsuite.com) and IndexedDB is partitioned
+   per-origin — so one DB ("ivritsuite-fonts") is automatically shared by all of
+   them. Keep this block byte-identical in every consuming page. No library is
+   needed (indexedDB + FontFace are built in), so it loads nothing at page load. */
+const IV_FONTS_DB = 'ivritsuite-fonts', IV_FONTS_STORE = 'fonts', IV_FONTS_CAP = 10;
+function _ivOpenFontsDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IV_FONTS_DB, 1);
+    req.onupgradeneeded = () => { const db = req.result;
+      if (!db.objectStoreNames.contains(IV_FONTS_STORE)) db.createObjectStore(IV_FONTS_STORE, { keyPath: 'name' }); };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+function _ivTx(mode, fn) {
+  return _ivOpenFontsDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(IV_FONTS_STORE, mode), req = fn(tx.objectStore(IV_FONTS_STORE));
+    tx.oncomplete = () => resolve(req && req.result);
+    tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
+  }));
+}
+function listUserFonts() {   // → [{name, family, created, size}] newest-first; no bytes
+  return _ivTx('readonly', os => os.getAll()).then(rows => (rows || [])
+    .map(r => ({ name: r.name, family: r.family, created: r.created || 0, size: (r.bytes && r.bytes.byteLength) || 0 }))
+    .sort((a, b) => b.created - a.created));
+}
+function getUserFont(name) { return _ivTx('readonly', os => os.get(name)); }
+function deleteUserFont(name) { return _ivTx('readwrite', os => os.delete(name)); }
+function saveUserFont(name, bytes, family) {   // bytes: Uint8Array | ArrayBuffer
+  const buf = bytes.buffer ? bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) : bytes;
+  return listUserFonts().then(list => {
+    const stale = list.filter(f => f.name !== name).slice(IV_FONTS_CAP - 1);   // keep newest CAP-1 others + this one
+    return Promise.all(stale.map(f => deleteUserFont(f.name)))
+      .then(() => _ivTx('readwrite', os => os.put({ name: name, family: family || name, bytes: buf, created: Date.now() })));
+  });
+}
+function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontFace named `name`
+  return getUserFont(name).then(rec => {
+    if (!rec) throw new Error('Font not found: ' + name);
+    return new FontFace(name, rec.bytes).load().then(f => { document.fonts.add(f); return f; });
+  });
+}
+/* ═══ end shared: ivritsuite-fonts ═══════════════════════════════════════════ */
+
+/* My Fonts shown in the picker — populated from the shared store at init (async). */
+let MY_FONTS = []; const _loadedUserFonts = new Set();
+function allFonts() { return MY_FONTS.concat(HEB_FONTS); }
+async function refreshMyFonts() {
+  try {
+    MY_FONTS = (await listUserFonts()).map(f => ({
+      section: 'My Fonts', name: f.name,
+      family: "'" + String(f.name).replace(/['"\\<>]/g, '') + "', serif",
+      link: null, attr: 'made with IvritSuite Font Maker', load: { type: 'userfont' } }));
+  } catch (e) { MY_FONTS = []; }
+  initFontSelector();   // rebuild the picker so the My Fonts section appears
+  if (MY_FONTS.some(f => f.name === settings.hebFont)) setHebFont(settings.hebFont);   // re-apply a persisted user font (now loadable via FontFace)
+}
+
 function loadHebFont(font) {
   if (!font.load) return;
   const id = 'font-' + font.name.replace(/\s+/g, '-');
@@ -2693,14 +2756,19 @@ function loadHebFont(font) {
     const style = document.createElement('style');
     style.id = id; style.textContent = font.load.css;
     document.head.appendChild(style);
+  } else if (font.load.type === 'userfont') {
+    // A user-made font from the shared IndexedDB store — register it via the FontFace API.
+    if (_loadedUserFonts.has(font.name)) return;
+    _loadedUserFonts.add(font.name);
+    loadUserFont(font.name).catch(e => { _loadedUserFonts.delete(font.name); console.warn('user font load failed', font.name, e); });
   }
 }
 function initFontSelector() {
   const opts = document.getElementById('fontOptions');
   if (!opts) return;
   opts.innerHTML = '';
-  const sectionLabels = { Print: 'Print Fonts', Torah: 'Torah Fonts', Cursive: 'Cursive / Script' };
-  const sections = [...new Set(HEB_FONTS.map(f => f.section))];
+  const sectionLabels = { 'My Fonts': 'My Fonts', Print: 'Print Fonts', Torah: 'Torah Fonts', Cursive: 'Cursive / Script' };
+  const sections = [...new Set(allFonts().map(f => f.section))];
   let firstSection = true;
   sections.forEach(sec => {
     const hdr = document.createElement('div');
@@ -2708,14 +2776,16 @@ function initFontSelector() {
     hdr.textContent = sectionLabels[sec] || (sec + ' Fonts');
     opts.appendChild(hdr);
     firstSection = false;
-    HEB_FONTS.filter(f => f.section === sec).forEach(font => {
+    allFonts().filter(f => f.section === sec).forEach(font => {
       const btn = document.createElement('button');
       btn.className = 'font-opt' + (font.name === settings.hebFont ? ' active' : '');
       btn.dataset.fontName = font.name;
       btn.type = 'button';
       const isDefault = font.name === 'Frank Ruhl Libre';
-      const attrHTML = font.link && font.attr
-        ? `<a class="font-opt-attr" href="${font.link}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${escapeHTML(font.attr)}</a>`
+      const attrHTML = font.attr
+        ? (font.link
+            ? `<a class="font-opt-attr" href="${font.link}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${escapeHTML(font.attr)}</a>`
+            : `<span class="font-opt-attr">${escapeHTML(font.attr)}</span>`)
         : '';
       btn.innerHTML =
         `<span class="font-opt-preview" style="font-family:${font.family};">אֶרֶץ</span>` +
@@ -2730,7 +2800,7 @@ function initFontSelector() {
   });
 }
 function setHebFont(name) {
-  const f = HEB_FONTS.find(x => x.name === name) || HEB_FONTS[0];
+  const f = allFonts().find(x => x.name === name) || HEB_FONTS[0];
   settings.hebFont = f.name;
   loadHebFont(f);
   document.documentElement.style.setProperty('--heb-font', f.family);
@@ -3390,6 +3460,7 @@ async function init() {
   applyFontSizes();
   initFontSelector();
   setHebFont(settings.hebFont);
+  refreshMyFonts();   // async: adds a "My Fonts" section from the shared IndexedDB store + re-applies a saved user font
   initColorPickers();
   populateParshaPicker();
   syncFormToSettings();

@@ -469,6 +469,7 @@
     <option value="ufo">UFO source (zip)</option>
   </select>
   <button class="tbtn" id="exportBtn" onclick="exportFont()">⬇ Export TTF</button>
+  <button class="tbtn ghost" id="myFontsBtn" onclick="openMyFonts()" title="Save this font for use in Torah Trainer and other IvritSuite tools on this browser">★ My Fonts</button>
 </div>
 
 <button class="sb-tab" id="sbHide" onclick="toggleSidebar()" title="Hide sidebar">‹</button>
@@ -602,6 +603,20 @@
     <h3 id="askTitle">Notice</h3>
     <p id="askBody"></p>
     <div class="mbtns" id="askBtns"></div>
+  </div>
+</div>
+
+<!-- My IvritSuite Fonts — save the current font for reuse in other tools + manage saved ones -->
+<div class="overlay" id="myFontsOverlay" onclick="if(event.target===this)closeMyFonts()">
+  <div class="modal" style="max-width:520px;">
+    <h3>My IvritSuite Fonts</h3>
+    <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;">Saved in this browser only. Pick them in Torah Trainer (and, soon, other IvritSuite tools). Up to 10 — saving an 11th drops the oldest.</p>
+    <div style="display:flex;align-items:center;gap:10px;margin:12px 0 4px;">
+      <button class="tbtn" onclick="saveCurrentToMyFonts(null)">★ Save current font</button>
+      <span id="myFontsCount" style="font-size:0.78rem;color:var(--muted);"></span>
+    </div>
+    <div id="myFontsList"></div>
+    <div class="mbtns"><button class="tbtn ghost" onclick="closeMyFonts()">Close</button></div>
   </div>
 </div>
 
@@ -5025,6 +5040,7 @@ async function doExport(fmt) {
       if (ures.error) { status(''); askModal('UFO build failed', '<span class="warn">'+ures.error+'</span>', [{label:'OK'}]); return; }
       downloadBlob(new Blob([b64ToBytes(ures.zip_b64)], {type:'application/zip'}), spec.ufoName + '.ufo.zip');
       status('Exported ' + spec.ufoName + '.ufo.zip ✓ (UFO source — cubic curves, anchors & features.fea)');
+      offerSaveToMyFonts(null);   // builds a TTF on demand if the user opts in
       return;
     }
 
@@ -5060,6 +5076,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {
     downloadBlob(new Blob([bytes], {type:'font/ttf'}), fam + '.ttf');
     setTimeout(() => downloadBlob(new Blob([licenseText()], {type:'text/plain'}), 'LICENSE.txt'), 400);
     status('Exported ' + fam + '.ttf' + (gateSkipped ? ' (shaping check skipped)' : ' ✓ — also saved LICENSE.txt'));
+    offerSaveToMyFonts(bytes);
     return;
   }
   // WOFF2 / TTF+WOFF2 zip — re-flavour the just-built TTF through fontTools (brotli loaded on demand)
@@ -5074,6 +5091,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {
       downloadBlob(new Blob([woff2], {type:'font/woff2'}), fam + '.woff2');
       setTimeout(() => downloadBlob(new Blob([licenseText()], {type:'text/plain'}), 'LICENSE.txt'), 400);
       status('Exported ' + fam + '.woff2 ✓ — also saved LICENSE.txt');
+      offerSaveToMyFonts(bytes);   // store the TTF bytes (what other tools embed)
       return;
     }
     // ttfwoff2 → one zip: both fonts + a paste-ready @font-face + the licence
@@ -5087,6 +5105,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {
     const zb64 = pyodide.runPython('hfm_zip(hfm_zip_json)');
     downloadBlob(new Blob([b64ToBytes(zb64)], {type:'application/zip'}), fam + '.zip');
     status('Exported ' + fam + '.zip ✓ (TTF + WOFF2 + @font-face CSS + LICENSE)');
+    offerSaveToMyFonts(bytes);   // store the TTF bytes (what other tools embed)
   } catch (err) {
     console.error(err); status('');
     askModal('Export error', '<span class="warn">'+(err && err.message || err)+'</span>', [{label:'OK'}]);
@@ -5095,6 +5114,134 @@ async function finishDownload(bytes, gateSkipped, fmt) {
 function downloadBlob(blob, name) {
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
   document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+
+/* ═══ shared: ivritsuite-fonts ═══════════════════════════════════════════════
+   User-made fonts: saved here by Hebrew_Font_Maker, consumed by Torah Trainer
+   (and, later, other IvritSuite tools). TTFs are too big for localStorage, so
+   they live in IndexedDB. This works ACROSS tools because every IvritSuite page
+   is served from the same origin (ivritsuite.com) and IndexedDB is partitioned
+   per-origin — so one DB ("ivritsuite-fonts") is automatically shared by all of
+   them. Keep this block byte-identical in every consuming page. No library is
+   needed (indexedDB + FontFace are built in), so it loads nothing at page load. */
+const IV_FONTS_DB = 'ivritsuite-fonts', IV_FONTS_STORE = 'fonts', IV_FONTS_CAP = 10;
+function _ivOpenFontsDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IV_FONTS_DB, 1);
+    req.onupgradeneeded = () => { const db = req.result;
+      if (!db.objectStoreNames.contains(IV_FONTS_STORE)) db.createObjectStore(IV_FONTS_STORE, { keyPath: 'name' }); };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+function _ivTx(mode, fn) {
+  return _ivOpenFontsDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(IV_FONTS_STORE, mode), req = fn(tx.objectStore(IV_FONTS_STORE));
+    tx.oncomplete = () => resolve(req && req.result);
+    tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
+  }));
+}
+function listUserFonts() {   // → [{name, family, created, size}] newest-first; no bytes
+  return _ivTx('readonly', os => os.getAll()).then(rows => (rows || [])
+    .map(r => ({ name: r.name, family: r.family, created: r.created || 0, size: (r.bytes && r.bytes.byteLength) || 0 }))
+    .sort((a, b) => b.created - a.created));
+}
+function getUserFont(name) { return _ivTx('readonly', os => os.get(name)); }
+function deleteUserFont(name) { return _ivTx('readwrite', os => os.delete(name)); }
+function saveUserFont(name, bytes, family) {   // bytes: Uint8Array | ArrayBuffer
+  const buf = bytes.buffer ? bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) : bytes;
+  return listUserFonts().then(list => {
+    const stale = list.filter(f => f.name !== name).slice(IV_FONTS_CAP - 1);   // keep newest CAP-1 others + this one
+    return Promise.all(stale.map(f => deleteUserFont(f.name)))
+      .then(() => _ivTx('readwrite', os => os.put({ name: name, family: family || name, bytes: buf, created: Date.now() })));
+  });
+}
+function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontFace named `name`
+  return getUserFont(name).then(rec => {
+    if (!rec) throw new Error('Font not found: ' + name);
+    return new FontFace(name, rec.bytes).load().then(f => { document.fonts.add(f); return f; });
+  });
+}
+/* ═══ end shared: ivritsuite-fonts ═══════════════════════════════════════════ */
+
+/* ── My Fonts: save the current font to the shared store + a manage/delete UI ── */
+let _myFontsOpen = false;
+function myFontsDate(ts) {
+  if (!ts) return '';
+  try { return new Date(ts).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); }
+  catch (e) { return ''; }
+}
+function openMyFonts() {
+  if (!window.indexedDB) { askModal('Not supported', 'This browser has no IndexedDB, so fonts can’t be saved for reuse in IvritSuite.', [{ label: 'OK' }]); return; }
+  _myFontsOpen = true;
+  document.getElementById('myFontsOverlay').classList.add('open');
+  renderMyFontsList();
+}
+function closeMyFonts() { _myFontsOpen = false; document.getElementById('myFontsOverlay').classList.remove('open'); }
+async function renderMyFontsList() {
+  const host = document.getElementById('myFontsList');
+  const countEl = document.getElementById('myFontsCount');
+  let list = [];
+  try { list = await listUserFonts(); } catch (e) { console.error(e); }
+  if (countEl) countEl.textContent = list.length + ' / ' + IV_FONTS_CAP;
+  host.innerHTML = '';
+  if (!list.length) {
+    const p = document.createElement('p');
+    p.style.cssText = 'font-size:0.82rem;color:var(--muted);margin:8px 0 0;';
+    p.textContent = 'No saved fonts yet. Build a font, then “★ Save current font”.';
+    host.appendChild(p);
+    return;
+  }
+  list.forEach(f => {   // rows built via DOM (not interpolated onclick) so names with quotes stay safe
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--border);';
+    const nm = document.createElement('span');
+    nm.style.cssText = 'flex:1 1 auto;min-width:0;font-weight:600;font-size:0.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+    nm.textContent = f.name; nm.title = f.name;
+    const meta = document.createElement('span');
+    meta.style.cssText = 'flex:0 0 auto;font-size:0.72rem;color:var(--muted);';
+    meta.textContent = myFontsDate(f.created) + ' · ' + Math.max(1, Math.round((f.size || 0) / 1024)) + ' KB';
+    const dl = document.createElement('button');
+    dl.className = 'tbtn ghost'; dl.textContent = '⬇'; dl.title = 'Download this font'; dl.style.padding = '4px 8px';
+    dl.onclick = () => downloadMyFont(f.name);
+    const del = document.createElement('button');
+    del.className = 'tbtn ghost'; del.textContent = '🗑'; del.title = 'Remove from My Fonts'; del.style.padding = '4px 8px';
+    del.onclick = () => deleteMyFontUI(f.name);
+    row.append(nm, meta, dl, del);
+    host.appendChild(row);
+  });
+}
+async function downloadMyFont(name) {
+  try {
+    const rec = await getUserFont(name);
+    if (!rec) return;
+    downloadBlob(new Blob([rec.bytes], { type: 'font/ttf' }), (name || 'font').replace(/\s+/g, '') + '.ttf');
+  } catch (e) { console.error(e); }
+}
+function deleteMyFontUI(name) {
+  askModal('Remove font?',
+    'Remove <b>' + escapeHtml(name) + '</b> from My Fonts? Tools using it will fall back to their default font. (This doesn’t delete any file you already downloaded.)',
+    [{ label: 'Cancel', cls: 'ghost' }, { label: 'Remove', onClick: async () => { try { await deleteUserFont(name); } catch (e) { console.error(e); } if (_myFontsOpen) renderMyFontsList(); } }]);
+}
+async function saveCurrentToMyFonts(bytes) {
+  if (!project || project.letters.filter(l => l.contours).length === 0) { status('Trace at least one letter first.'); return; }
+  const fam = (project.font.familyName || 'My Hebrew Font').trim();
+  try {
+    if (!bytes) { status('Building font…', true); bytes = await buildFontBytes(); }
+    await saveUserFont(fam, bytes, fam);
+    status('Saved “' + fam + '” to My Fonts ✓');
+    if (_myFontsOpen) renderMyFontsList();
+  } catch (e) {
+    console.error(e); status('');
+    askModal('Couldn’t save', '<span class="warn">' + escapeHtml(e && e.message || String(e)) + '</span>', [{ label: 'OK' }]);
+  }
+}
+function offerSaveToMyFonts(bytes) {   // called after every successful export (any format)
+  if (!window.indexedDB || !window.FontFace) return;
+  const fam = (project.font.familyName || 'My Hebrew Font').trim();
+  askModal('Save to My Fonts?',
+    'Save <b>' + escapeHtml(fam) + '</b> to <b>My IvritSuite Fonts</b> so you can pick it in Torah Trainer (and other IvritSuite tools) on this browser?',
+    [{ label: 'Not now', cls: 'ghost' }, { label: '★ Save to My Fonts', onClick: () => saveCurrentToMyFonts(bytes) }]);
 }
 async function gzipBlob(str) {                       // string → gzip Blob (native, no libs)
   return new Response(new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'))).blob();
