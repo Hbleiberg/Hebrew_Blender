@@ -185,7 +185,7 @@
   .mode-btn { flex: 1; padding: 6px 4px; border: none; background: var(--white); color: var(--text); font-family: inherit; font-size: 0.76rem; cursor: pointer; font-weight: 600; }
   .mode-btn.active { background: var(--navy); color: #fff; }
   /* vertical stack variant — used when the option labels are long (e.g. the sidebar "Add Letters" panel) */
-  .mode-toggle-stack { flex-direction: column; }
+  .mode-toggle-stack { flex-direction: column; margin-bottom: 10px; }
   .mode-toggle-stack .mode-btn { padding: 9px 8px; line-height: 1.25; }
   .mode-toggle-stack .mode-btn + .mode-btn { border-top: 1px solid var(--border); }
   /* "Mark shapes" + "Upload mode" option groups — side by side (compact) in Tabbed layout */
@@ -216,12 +216,12 @@
   .lt-dot.saved { background: #10b981; color: #fff; width: 13px; height: 13px; top: 2px; left: 2px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; line-height: 1; }
 
   /* ── Workspace stage ── */
-  .work-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
-  .wtab { padding: 7px 16px; border: 1px solid var(--border); border-radius: 7px 7px 0 0; background: var(--cream); cursor: pointer; font-size: 0.84rem; font-weight: 700; color: var(--muted); }
+  .work-tabs { display: flex; gap: 6px; margin-bottom: 10px; justify-content: center; }
+  .wtab { padding: 7px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--white); cursor: pointer; font-size: 0.84rem; font-weight: 700; color: var(--muted); }
   .wtab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
   /* ── Tabbed layout: Letters/Nikkud/Trop pickers as top tabs (Advanced Settings → Layout) ── */
   #catTabs, #catHost { display: none; }
-  .cat-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+  .cat-tabs { display: flex; gap: 6px; margin-bottom: 0; }
   .ctab { padding: 7px 16px; border: 1px solid var(--border); border-radius: 7px 7px 0 0; background: var(--cream); cursor: pointer; font-size: 0.84rem; font-weight: 700; color: var(--muted); }
   .ctab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
   #catPanelGroup { display: flex; flex-direction: column; gap: 14px; }
@@ -3934,7 +3934,7 @@ function renderAlignLeft(L, l) {
       <button class="ctl-btn" onclick="nudgeSkew(2)">Skew ⟋</button>
     </div>
     <div class="ctl-row" style="margin-top:6px;">
-      <button class="ctl-btn" onclick="snapFit()">Snap-fit baseline↔top</button>
+      <button class="ctl-btn" onclick="snapFit()">Center</button>
     </div>`;
   }
   html += metricsPanel();   // Letter Metrics lives in the left column
@@ -4156,10 +4156,13 @@ function nudgeSkew(d) { const l=curLetter(); const c=imgCorners(l); if(!c)return
   udDo([itemScope()], 'skew image — ' + l.name, () => {
     const K = M.mul(M.translate(cen[0],cen[1]), M.mul(M.skewX(d), M.translate(-cen[0],-cen[1])));
     l.transform = M.mul(K, l.transform); l.contours=null; l.curves=null; l.anchors=null; renderStage(); }); }
-function snapFit() {
+function snapFit() {   // "Center" button — fit to the glyph height, then centre left-right in the advance
   const l = curLetter(); const im = imgCache[curImageUrl()]; if (!im) return;
-  udDo([itemScope()], 'fit image — ' + l.name, () => {
-    l.transform = defaultFitTransform(im);
+  udDo([itemScope()], 'center image — ' + l.name, () => {
+    const k = (LETTER_TOP*SC)/im.height;              // scale image height ≈ letter top (as in defaultFitTransform)
+    const wFont = LETTER_TOP * im.width / im.height;  // scaled width, in font units
+    const cx = (effLetterAdvance(l) - wFont) / 2;     // centre that width within the glyph's advance
+    l.transform = [k,0,0,k, fx(cx), fy(LETTER_TOP)];
     l.contours=null; l.curves=null; l.anchors=null; renderStage(); });
 }
 function wireDrop(id, cb) {
