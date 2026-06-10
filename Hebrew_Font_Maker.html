@@ -1036,11 +1036,11 @@ const HELP_CONTENT = {
     <h4>Saving your project</h4>
     <p>Your <strong>project</strong> is your work-in-progress — all your images, outlines, anchors and settings. Save it so you can come back and keep editing later.</p>
     <ul>
-      <li><span class="ui">Save Project</span> (top bar) downloads a single <span class="ui">.hebrewfont</span> file with <em>everything</em> packed inside.</li>
-      <li><span class="ui">Load Project</span> reopens a saved <span class="ui">.hebrewfont</span> file so you can pick up where you left off.</li>
+      <li><span class="ui">Save Project</span> (top bar) gives you two choices. <strong>To computer</strong> downloads a single <span class="ui">.hebrewfont</span> file with <em>everything</em> packed inside — your permanent backup. <strong>In this browser</strong> keeps a quick copy on this device that you can reopen any time from <span class="ui">Load Project ▾ → Recent</span>.</li>
+      <li><span class="ui">Load Project ▾</span> reopens a saved <span class="ui">.hebrewfont</span> file from your computer, or a recent in-browser save.</li>
     </ul>
     <div class="help-tip">⚠️ This is your <strong>editable project</strong>, <em>not</em> the font itself. To get a font you can install and type with, see the <strong>Exporting &amp; Installing</strong> tab.</div>
-    <p>The tool also auto-saves in this browser as a safety net — but if you clear your browser or switch computers, that copy is gone. Keep a <span class="ui">Save Project</span> file as your real backup.</p>
+    <p>The browser copy (and the automatic safety-net save) is handy, but it is <strong>not a real backup</strong> — if you clear your browser data or switch computers, it's gone. <strong>Save “To computer” regularly</strong> to keep a file you can't lose.</p>
   `,
   export: `
     <h4>Exporting &amp; installing your font</h4>
@@ -3709,7 +3709,15 @@ function escapeHtml(s) { return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<
 /* ════════════════════════════════════════════════════════════════════════
    PROJECT SAVE / LOAD
    ════════════════════════════════════════════════════════════════════════ */
-async function saveProject() {
+function saveProject() {
+  // Two ways to save: a permanent file on the computer, or a quick copy kept in this browser.
+  askModal('Save Project',
+    'Where would you like to save?<br><span style="color:var(--muted);">“To computer” is a permanent backup file you keep. “In this browser” is a quick save that stays on this device only.</span>',
+    [ {label:'💾 To computer', onClick: () => saveToComputer()},
+      {label:'🌐 In this browser', onClick: () => saveToBrowser()},
+      {label:'Cancel', cls:'ghost'} ]);
+}
+async function saveToComputer() {
   project.savedAt = new Date().toISOString();
   onMetaChange();
   const json = JSON.stringify(project);
@@ -3717,13 +3725,34 @@ async function saveProject() {
   const stamp = `${mon}_${d.getDate()}_${d.getFullYear()}_FontMaker`;
   if (typeof CompressionStream !== 'undefined') {
     downloadBlob(await gzipBlob(json), `${stamp}.hebrewfont`);   // single compressed self-contained file
-    status('Project saved (compressed).');
+    status('Project saved to your computer (.hebrewfont).');
   } else {
     downloadBlob(new Blob([json], { type: 'application/json' }), `${stamp}.json`);  // old-browser fallback
-    status('Project saved.');
+    status('Project saved to your computer.');
   }
-  pushRecentProject(project);   // local cache for the Load Project ▾ "Recent" list
+  pushRecentProject(project);   // also refresh the in-browser Recent list
   try { localStorage.setItem('hebrewFontMaker_autosave', JSON.stringify(stripImagesForAutosave(project))); } catch(e){}
+}
+let _lastBrowserReminder = 0;
+function saveToBrowser() {
+  project.savedAt = new Date().toISOString();
+  onMetaChange();
+  const ok = pushRecentProject(project);   // full project → this browser (reopen via Load Project ▾ → Recent)
+  try { localStorage.setItem('hebrewFontMaker_autosave', JSON.stringify(stripImagesForAutosave(project))); } catch(e){}
+  if (!ok) {
+    askModal('Couldn’t save in the browser',
+      'This project is too large for the browser’s limited storage (photos add up fast). Please use <b>💾 To computer</b> instead — that always works.',
+      [{label:'OK'}]);
+    return;
+  }
+  status('Saved in this browser ✓  ·  reopen from Load Project ▾ → Recent');
+  // Periodic nudge — the browser copy is NOT a real backup.
+  if (Date.now() - _lastBrowserReminder > 10*60*1000) {
+    _lastBrowserReminder = Date.now();
+    askModal('Saved in this browser ✓',
+      'Heads-up: this copy lives only in <b>this browser, on this device</b>. If you clear your browsing data or move to another computer, it’s gone.<br><br>⚠️ Use <b>Save Project → 💾 To computer</b> every so often so you always have a backup you can’t lose.',
+      [{label:'Got it'}]);
+  }
 }
 function stripImagesForAutosave(p) {
   // size-guard: keep structure, drop big data URLs for the autosave slot
@@ -3783,9 +3812,9 @@ function pushRecentProject(p) {
   list.unshift({ name, savedAt: p.savedAt || new Date().toISOString(), data: p });
   if (list.length > MAX_RECENT) list = list.slice(0, MAX_RECENT);
   while (list.length) {                                           // quota-safe: drop oldest until it fits
-    try { localStorage.setItem(RECENT_KEY, JSON.stringify(list)); return; } catch (e) { list.pop(); }
+    try { localStorage.setItem(RECENT_KEY, JSON.stringify(list)); return true; } catch (e) { list.pop(); }
   }
-  try { localStorage.removeItem(RECENT_KEY); } catch (e) {}
+  return false;                                                   // couldn't fit even on its own → leave any prior saves intact
 }
 async function loadRecentProject(idx) {
   const r = getRecentProjects()[idx]; if (!r) return;
