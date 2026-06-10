@@ -126,6 +126,11 @@
   .tbtn.ghost { background: transparent; color: var(--gold-light); border: 1.5px solid var(--gold-light); }
   .tbtn:hover { filter: brightness(1.06); }
   .tbtn:disabled { opacity: 0.45; cursor: default; filter: none; }
+  .tbtn-select {
+    background: transparent; color: var(--gold-light); border: 1.5px solid var(--gold-light);
+    border-radius: 6px; padding: 7px 9px; cursor: pointer; font-size: 0.82rem; font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+  }
   #statusMsg { color: var(--gold-light); font-size: 0.76rem; min-width: 90px; }
 
   /* ── App layout ── */
@@ -457,7 +462,13 @@
   <span id="statusMsg"></span>
   <button class="tbtn ghost" onclick="openQA()" title="Review every letter × mark placement for collisions">🔍 QA Check</button>
   <button class="tbtn ghost" onclick="generatePreviewPDF()">Preview PDF</button>
-  <button class="tbtn" id="exportBtn" onclick="exportFont()">⬇ Export Font (TTF)</button>
+  <select class="tbtn-select" id="exportFormat" onchange="onExportFormatChange()" title="Choose the export format">
+    <option value="ttf" selected>TTF</option>
+    <option value="woff2">WOFF2 (web)</option>
+    <option value="ttfwoff2">TTF + WOFF2 (zip)</option>
+    <option value="ufo">UFO source (zip)</option>
+  </select>
+  <button class="tbtn" id="exportBtn" onclick="exportFont()">⬇ Export TTF</button>
 </div>
 
 <button class="sb-tab" id="sbHide" onclick="toggleSidebar()" title="Hide sidebar">‹</button>
@@ -4663,6 +4674,83 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn) {
   return f;
 }
 
+/* ── UFO3 export (source format for Glyphs / RoboFont / FontForge) ───────────────────────────────
+   Wraps buildFontSpec() — its cubic `curves` go straight in (no Cu2Qu) — and adds what a UFO needs
+   that the TTF spec doesn't: named anchors per glyph, a fontinfo dict, the package name, and the
+   licence text (bundled into the .ufo.zip). buildFontSpec returns a fresh object so the TTF/preview
+   path is untouched, and it has already run buildFEA → ensureTropAnchors, so every letter's trop
+   anchors are present below. */
+function buildUfoSpec() {
+  const spec = buildFontSpec();
+  spec.anchors     = buildUfoAnchors();
+  spec.fontinfo    = buildUfoFontInfo(spec);
+  spec.ufoName     = (project.font.familyName || 'MyHebrewFont').replace(/\s+/g, '');
+  spec.licenseText = licenseText();
+  return spec;
+}
+/* Named anchors mirroring buildFEA exactly: bases carry below/above/center (+ tropAbove/tropBelow);
+   each mark carries its `_class` attach anchor at the origin (0,0); a nikkud above/below mark also
+   carries the tropAbove/tropBelow base anchor (mkmk) at markMkmkAnchor()'s offset so trop stacks. */
+function buildUfoAnchors() {
+  const nikOn = project.font.nikkud.enabled, tropOn = project.font.trop.enabled, out = {};
+  const push = (nm, name, x, y) => { (out[nm] || (out[nm] = [])).push({ name, x: Math.round(x), y: Math.round(y) }); };
+  LETTERS.forEach(L => {
+    const l = project.letters.find(x => x.codepoint === L.cp);
+    if (!l || !l.anchors) return;
+    const nm = gname(L.cp), a = l.anchors;
+    if (nikOn) { if (a.below) push(nm, 'below', a.below.x, a.below.y);
+                 if (a.above) push(nm, 'above', a.above.x, a.above.y);
+                 if (a.center) push(nm, 'center', a.center.x, a.center.y); }
+    if (tropOn) { if (a.tropAbove) push(nm, 'tropAbove', a.tropAbove.x, a.tropAbove.y);
+                  if (a.tropBelow) push(nm, 'tropBelow', a.tropBelow.x, a.tropBelow.y); }
+  });
+  if (nikOn) MARK_CPS.forEach(cp => {
+    const nm = gname(cp), cls = MARK_CLASS[cp];
+    push(nm, '_' + cls, 0, 0);
+    if (tropOn && cls !== 'center') { const a = markMkmkAnchor(cp);
+      if (cls === 'above') push(nm, 'tropAbove', a.above.x, a.above.y);
+      else                 push(nm, 'tropBelow', a.below.x, a.below.y);
+    }
+  });
+  if (tropOn) TROP_CPS.forEach(cp => push(gname(cp), '_' + (TROP_CLASS[cp] === 'above' ? 'tropAbove' : 'tropBelow'), 0, 0));
+  return out;
+}
+/* UFO fontinfo.plist. UFO ascender/descender + sTypo stay at the nominal design box (stable line
+   spacing); the OS/2 win + hhea fields carry the expanded clip box; bit 7 = USE_TYPO_METRICS — all
+   matching the exported TTF (PY_BUILDER). No null values (plist can't store them). */
+function buildUfoFontInfo(spec) {
+  const n = spec.names, vf = spec.version || 1.0;
+  const major = Math.floor(vf), minor = Math.round((vf - major) * 1000);
+  const lic = LICENSES[project.font.license] || LICENSES.ofl, top = Math.round(effMetrics().letterTop);
+  const asc = Math.round(spec.ascent), desc = Math.round(spec.descent), gap = Math.round(spec.lineGap || 0);
+  return {
+    familyName: n.familyName, styleName: 'Regular',
+    styleMapFamilyName: n.familyName, styleMapStyleName: 'regular',
+    versionMajor: major, versionMinor: minor, unitsPerEm: spec.unitsPerEm,
+    ascender: asc, descender: desc, capHeight: top, xHeight: top,
+    openTypeOS2TypoAscender: asc, openTypeOS2TypoDescender: desc, openTypeOS2TypoLineGap: gap,
+    openTypeOS2WinAscent: spec.winAscent, openTypeOS2WinDescent: spec.winDescent,
+    openTypeHheaAscender: spec.winAscent, openTypeHheaDescender: -spec.winDescent, openTypeHheaLineGap: gap,
+    openTypeOS2Selection: [7], openTypeOS2VendorID: 'IVST', openTypeOS2CodePageRanges: [0, 5],
+    copyright: n.copyright,
+    openTypeNameDesigner: n.designer || 'Made with IvritSuite Hebrew Font Maker',
+    openTypeNameLicense: lic.desc, openTypeNameLicenseURL: lic.url,
+    openTypeNameUniqueID: n.uniqueFontIdentifier, postscriptFontName: n.psName
+  };
+}
+/* Paste-ready @font-face for the TTF + WOFF2 zip. `fam` = display family, `file` = the file stem. */
+function fontFaceCss(fam, file) {
+  return `/* Paste into your CSS. Keep ${file}.woff2 (and ${file}.ttf) next to this stylesheet. */
+@font-face {
+  font-family: ${JSON.stringify(fam)};
+  src: url('${file}.woff2') format('woff2'),
+       url('${file}.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+`;
+}
+
 const PY_BUILDER = `
 import json, io
 from fontTools.fontBuilder import FontBuilder
@@ -4766,9 +4854,123 @@ def hfm_build(spec_json):
     data = buf.getvalue()
     import base64
     return json.dumps({"ok": True, "ttf_b64": base64.b64encode(data).decode("ascii")})
+
+
+def hfm_ttf_to_woff2(ttf_b64):
+    # Re-flavour the already-built TTF as WOFF2 (brotli is loaded on demand from JS first).
+    try:
+        import io, base64
+        from fontTools.ttLib import TTFont
+        f = TTFont(io.BytesIO(base64.b64decode(ttf_b64)))
+        f.flavor = "woff2"
+        buf = io.BytesIO()
+        f.save(buf)
+        return json.dumps({"ok": True, "woff2_b64": base64.b64encode(buf.getvalue()).decode("ascii")})
+    except Exception as e:
+        return json.dumps({"error": "WOFF2 conversion failed: " + str(e)})
+
+
+def hfm_zip(entries_json):
+    # Store-only zip of [{name, b64|text}] -> base64. Text entries are UTF-8 so non-ASCII survives.
+    import io, zipfile, base64
+    entries = json.loads(entries_json)
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_STORED) as z:
+        for e in entries:
+            data = base64.b64decode(e["b64"]) if "b64" in e else e["text"].encode("utf-8")
+            z.writestr(e["name"], data)
+    return base64.b64encode(buf.getvalue()).decode("ascii")
+
+
+def hfm_build_ufo(spec_json):
+    # UFO3 source package: cubic curves straight from the spec (no Cu2Qu), named anchors, features.fea,
+    # fontinfo.plist; zipped store-only. ufoLib (glifLib) ships with fontTools (already loaded).
+    try:
+        import os, io, shutil, zipfile, base64, plistlib
+        from fontTools.ufoLib.glifLib import GlyphSet
+        from fontTools.pens.pointPen import SegmentToPointPen
+        spec = json.loads(spec_json)
+        order = spec["glyphOrder"]
+        glyphs = spec["glyphs"]
+        anchors_map = spec.get("anchors", {})
+        uni = {}
+        for k, v in spec["cmap"].items():
+            uni.setdefault(v, []).append(int(k))
+        name = spec.get("ufoName") or "Font"
+        path = "/tmp/" + name + ".ufo"
+        if os.path.exists(path):
+            shutil.rmtree(path)
+        os.makedirs(path + "/glyphs")
+        with open(path + "/metainfo.plist", "wb") as fp:
+            plistlib.dump({"creator": "com.ivritsuite.hebrewfontmaker", "formatVersion": 3}, fp)
+        with open(path + "/fontinfo.plist", "wb") as fp:
+            plistlib.dump(spec["fontinfo"], fp)
+        with open(path + "/features.fea", "w") as fp:
+            fp.write(spec.get("fea", ""))
+        with open(path + "/lib.plist", "wb") as fp:
+            plistlib.dump({"public.glyphOrder": order}, fp)
+        with open(path + "/layercontents.plist", "wb") as fp:
+            plistlib.dump([["public.default", "glyphs"]], fp)
+
+        def make_draw(contours, curves):
+            def draw(point_pen):
+                sp = SegmentToPointPen(point_pen)
+                for i, contour in enumerate(contours):
+                    if not contour:
+                        continue
+                    cv = curves[i] if (curves and i < len(curves)) else None
+                    if cv:
+                        st = cv["start"]
+                        sp.moveTo((float(st[0]), float(st[1])))
+                        for seg in cv["segments"]:
+                            p = seg["pts"]
+                            if seg["type"] == "cubic":
+                                sp.curveTo((float(p[0][0]), float(p[0][1])), (float(p[1][0]), float(p[1][1])), (float(p[2][0]), float(p[2][1])))
+                            else:
+                                sp.lineTo((float(p[0][0]), float(p[0][1])))
+                        sp.closePath()
+                    else:
+                        pts = [(float(p[0]), float(p[1])) for p in contour]
+                        sp.moveTo(pts[0])
+                        for q in pts[1:]:
+                            sp.lineTo(q)
+                        sp.closePath()
+            return draw
+
+        class _G:
+            pass
+        gs = GlyphSet(path + "/glyphs", ufoFormatVersion=3)
+        for gn in order:
+            gd = glyphs[gn]
+            g = _G()
+            g.width = int(gd.get("advance", 0))
+            g.height = 0
+            g.unicodes = uni.get(gn, [])
+            g.anchors = [{"x": float(a["x"]), "y": float(a["y"]), "name": a["name"]} for a in anchors_map.get(gn, [])]
+            g.lib = None
+            g.note = None
+            g.image = None
+            g.guidelines = []
+            gs.writeGlyph(gn, g, make_draw(gd["contours"], gd.get("curves")))
+        gs.writeContents()
+
+        buf = io.BytesIO()
+        base = os.path.dirname(path)
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_STORED) as z:
+            for root, _dirs, files in os.walk(path):
+                for fn in files:
+                    full = os.path.join(root, fn)
+                    z.write(full, os.path.relpath(full, base))
+            lic = spec.get("licenseText")
+            if lic:
+                z.writestr("LICENSE.txt", lic.encode("utf-8"))
+        return json.dumps({"ok": True, "zip_b64": base64.b64encode(buf.getvalue()).decode("ascii")})
+    except Exception as e:
+        return json.dumps({"error": "UFO build failed: " + str(e)})
 `;
 
 function b64ToBytes(b64) { const bin = atob(b64); const arr = new Uint8Array(bin.length); for (let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i); return arr; }
+function bytesToB64(arr) { let s = ''; const C = 0x8000; for (let i = 0; i < arr.length; i += C) s += String.fromCharCode.apply(null, arr.subarray(i, i + C)); return btoa(s); }
 async function buildFontBytes() {                 // build the TTF in memory (no download) — shared by Preview PDF
   await ensurePyodide();
   const spec = buildFontSpec();
@@ -4780,8 +4982,14 @@ async function buildFontBytes() {                 // build the TTF in memory (no
   return bytes;
 }
 
+function onExportFormatChange() {
+  const fmt = (document.getElementById('exportFormat') || {}).value || 'ttf';
+  const label = { ttf:'⬇ Export TTF', woff2:'⬇ Export WOFF2', ttfwoff2:'⬇ Export TTF + WOFF2', ufo:'⬇ Export UFO' }[fmt] || '⬇ Export';
+  const btn = document.getElementById('exportBtn'); if (btn) btn.textContent = label;
+}
 async function exportFont() {
   if (!project) return;
+  const fmt = (document.getElementById('exportFormat') || {}).value || 'ttf';
   const nikOn = project.font.nikkud.enabled;
   const anchored = project.letters.filter(l => l.anchors).length;
   const traced = project.letters.filter(l => l.contours).length;
@@ -4790,22 +4998,36 @@ async function exportFont() {
   if (incomplete) {
     askModal('Some letters are incomplete',
       `Traced ${traced}/27${nikOn ? `, nikkud-placed ${anchored}/27` : ''}. Missing letters export as blanks. Continue?`,
-      [ {label:'Cancel', cls:'ghost'}, {label:'Export anyway', onClick: () => doExport()} ]);
+      [ {label:'Cancel', cls:'ghost'}, {label:'Export anyway', onClick: () => doExport(fmt)} ]);
     return;
   }
-  doExport();
+  doExport(fmt);
 }
-async function doExport() {
+async function doExport(fmt) {
+  fmt = fmt || 'ttf';
   const btn = document.getElementById('exportBtn');
   btn.disabled = true;
   status('Starting export…', true);
   try {
-    // bump version
+    // bump version (every export ticks it up, all formats)
     const v = (parseFloat(project.font.version)||1.0) + 0.001;
     project.font.version = v.toFixed(3);
     document.getElementById('fontVersion').value = project.font.version;
 
     await ensurePyodide();
+
+    // UFO is a source format — built straight from the spec (cubic curves + anchors); no TTF/shaping gate.
+    if (fmt === 'ufo') {
+      status('Building UFO…', true);
+      const spec = buildUfoSpec();
+      pyodide.globals.set('hfm_spec_json', JSON.stringify(spec));
+      const ures = JSON.parse(pyodide.runPython('hfm_build_ufo(hfm_spec_json)'));
+      if (ures.error) { status(''); askModal('UFO build failed', '<span class="warn">'+ures.error+'</span>', [{label:'OK'}]); return; }
+      downloadBlob(new Blob([b64ToBytes(ures.zip_b64)], {type:'application/zip'}), spec.ufoName + '.ufo.zip');
+      status('Exported ' + spec.ufoName + '.ufo.zip ✓ (UFO source — cubic curves, anchors & features.fea)');
+      return;
+    }
+
     status('Building font…', true);
     const spec = buildFontSpec();
     pyodide.globals.set('hfm_spec_json', JSON.stringify(spec));
@@ -4819,10 +5041,10 @@ async function doExport() {
     if (gate && gate.fail) {
       askModal('Shaping check failed',
         `<span class="warn">${gate.msg}</span><br><br>This usually means the mark anchors didn't take. You can still download, but vowels/trop may be misplaced.`,
-        [ {label:'Cancel', cls:'ghost'}, {label:'Download anyway', onClick: () => finishDownload(bytes) } ]);
+        [ {label:'Cancel', cls:'ghost'}, {label:'Download anyway', onClick: () => finishDownload(bytes, gate && gate.skipped, fmt) } ]);
       return;
     }
-    finishDownload(bytes, gate && gate.skipped);
+    await finishDownload(bytes, gate && gate.skipped, fmt);
   } catch (err) {
     console.error(err); status('');
     askModal('Export error', '<span class="warn">'+(err && err.message || err)+'</span>', [{label:'OK'}]);
@@ -4830,12 +5052,45 @@ async function doExport() {
     btn.disabled = false;   // never leave the button stuck disabled
   }
 }
-function finishDownload(bytes, gateSkipped) {
+async function finishDownload(bytes, gateSkipped, fmt) {
+  fmt = fmt || 'ttf';
   const fam = (project.font.familyName||'MyHebrewFont').replace(/\s+/g,'');
-  downloadBlob(new Blob([bytes], {type:'font/ttf'}), fam + '.ttf');
-  setTimeout(() => downloadBlob(new Blob([licenseText()], {type:'text/plain'}), 'LICENSE.txt'), 400);
   window._lastFontBytes = bytes;   // for preview PDF
-  status('Exported ' + fam + '.ttf' + (gateSkipped ? ' (shaping check skipped)' : ' ✓ — also saved LICENSE.txt'));
+  if (fmt === 'ttf') {
+    downloadBlob(new Blob([bytes], {type:'font/ttf'}), fam + '.ttf');
+    setTimeout(() => downloadBlob(new Blob([licenseText()], {type:'text/plain'}), 'LICENSE.txt'), 400);
+    status('Exported ' + fam + '.ttf' + (gateSkipped ? ' (shaping check skipped)' : ' ✓ — also saved LICENSE.txt'));
+    return;
+  }
+  // WOFF2 / TTF+WOFF2 zip — re-flavour the just-built TTF through fontTools (brotli loaded on demand)
+  try {
+    status('Compressing WOFF2…', true);
+    await pyodide.loadPackage(['brotli']);
+    pyodide.globals.set('hfm_ttf_b64', bytesToB64(bytes));
+    const wr = JSON.parse(pyodide.runPython('hfm_ttf_to_woff2(hfm_ttf_b64)'));
+    if (wr.error) { status(''); askModal('WOFF2 failed', '<span class="warn">'+wr.error+'</span>', [{label:'OK'}]); return; }
+    const woff2 = b64ToBytes(wr.woff2_b64);
+    if (fmt === 'woff2') {
+      downloadBlob(new Blob([woff2], {type:'font/woff2'}), fam + '.woff2');
+      setTimeout(() => downloadBlob(new Blob([licenseText()], {type:'text/plain'}), 'LICENSE.txt'), 400);
+      status('Exported ' + fam + '.woff2 ✓ — also saved LICENSE.txt');
+      return;
+    }
+    // ttfwoff2 → one zip: both fonts + a paste-ready @font-face + the licence
+    const entries = [
+      { name: fam + '.ttf',   b64: bytesToB64(bytes) },
+      { name: fam + '.woff2', b64: wr.woff2_b64 },
+      { name: fam + '.css',   text: fontFaceCss(project.font.familyName || fam, fam) },
+      { name: 'LICENSE.txt',  text: licenseText() }
+    ];
+    pyodide.globals.set('hfm_zip_json', JSON.stringify(entries));
+    const zb64 = pyodide.runPython('hfm_zip(hfm_zip_json)');
+    downloadBlob(new Blob([b64ToBytes(zb64)], {type:'application/zip'}), fam + '.zip');
+    status('Exported ' + fam + '.zip ✓ (TTF + WOFF2 + @font-face CSS + LICENSE)');
+  } catch (err) {
+    console.error(err); status('');
+    askModal('Export error', '<span class="warn">'+(err && err.message || err)+'</span>', [{label:'OK'}]);
+  }
 }
 function downloadBlob(blob, name) {
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
@@ -5513,6 +5768,7 @@ function init() {
   // restore layout pref (Sidebar / Tabbed)
   layoutMode = (localStorage.getItem('hebrewFontMaker_layout') === 'tabbed') ? 'tabbed' : 'sidebar';
   applyLayout();
+  onExportFormatChange();   // sync the Export button label to the format picker (browsers may restore its value on reload)
   // re-measure the template glyph once web fonts settle
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (project) renderStage(); });
   if (!window.WebAssembly || !window.FontFace) {
