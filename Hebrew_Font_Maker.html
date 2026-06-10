@@ -3517,19 +3517,30 @@ document.addEventListener('keydown', e => {
   e.preventDefault();
   if (k === 'y' || e.shiftKey) redo(); else undo();
 });
-/* arrow-key nudge of last-grabbed anchor */
+/* arrow-key nudge — Anchors mode: move the active anchor (font units); Align mode: move the image box
+   (stage px). Shift = fine. A run of taps groups into one undo entry (debounced). */
 document.addEventListener('keydown', e => {
-  if (workMode !== 'anchors' || !project) return;
+  if (udShortcutBlocked()) return;                       // typing in a field / modal open / no project
+  if (workMode !== 'anchors' && workMode !== 'align') return;
   const step = e.shiftKey ? 1 : 5; let dx=0,dy=0;
   if (e.key==='ArrowLeft') dx=-step; else if (e.key==='ArrowRight') dx=step;
   else if (e.key==='ArrowUp') dy=step; else if (e.key==='ArrowDown') dy=-step; else return;
   e.preventDefault();
-  if (precompTarget) {                                  // nudge the precomposed form's mark
+  if (workMode === 'align') {                            // move the uploaded image box
+    const l = curLetter(); if (!l || !curImageUrl()) return;
+    udNudgeTick([itemScope()], 'move image — ' + l.name);
+    l.transform[4] += dx; l.transform[5] -= dy;          // dx → +stage-x (right); ArrowUp(dy>0) → −stage-y (up)
+    l.contours = null; l.curves = null; l.anchors = null; // moving the image invalidates the trace (same as a drag)
+    renderStage(); return;
+  }
+  if (precompTarget) {                                   // nudge the precomposed form's mark
     const pc = getPrecomp(precompTarget); if (!pc) return;
+    udNudgeTick([{ t:'precomp', target: precompTarget }], 'nudge mark anchor');
     const pa = precompAnchor(pc); pc.anchor = { x: pa.x + dx, y: pa.y + dy };
     renderStage(); renderControls(); return;
   }
   const l = curLetter(); if (!l.anchors) return;
+  udNudgeTick([itemScope()], 'nudge anchor — ' + l.name + ', ' + activeAnchorClass);
   const a = l.anchors[activeAnchorClass]; a.x += dx; a.y += dy;
   if (l.placementSaved) l.placementSaved = false;
   renderStage(); renderControls(); renderLetterGrid();
