@@ -501,6 +501,11 @@
       <div class="panel-title">Trop (cantillation)</div>
       <div class="panel-body" id="tropPanelBody"></div>
     </div>
+
+    <div class="panel collapsed cat-panel" data-cat="punct">
+      <div class="panel-title">Punctuation &amp; More</div>
+      <div class="panel-body" id="punctPanelBody"></div>
+    </div>
     </div>
 
     <div class="panel collapsed">
@@ -643,6 +648,36 @@ const LETTERS = [
   { cp:'05E8', name:'Resh',        desc:false },
   { cp:'05E9', name:'Shin',        desc:false },
   { cp:'05EA', name:'Tav',         desc:false, dotted:'FB4A' },
+  /* ── Punctuation & More (cat:'punct') — letter-flow glyphs: traced/edited exactly like
+     letters but anchor-free (no nikkud step). Default outlines come from PUNCT_DEFAULTS;
+     digits are intentionally left blank (traced like letters). ── */
+  { cp:'05BE', name:'Maqaf',       cat:'punct' },
+  { cp:'05C0', name:'Paseq',       cat:'punct' },
+  { cp:'05C3', name:'Sof Pasuq',   cat:'punct' },
+  { cp:'05F3', name:'Geresh',      cat:'punct' },
+  { cp:'05F4', name:'Gershayim',   cat:'punct' },
+  { cp:'002E', name:'Period',      cat:'punct' },
+  { cp:'002C', name:'Comma',       cat:'punct' },
+  { cp:'003A', name:'Colon',       cat:'punct' },
+  { cp:'003B', name:'Semicolon',   cat:'punct' },
+  { cp:'0021', name:'Exclamation', cat:'punct' },
+  { cp:'003F', name:'Question',    cat:'punct' },
+  { cp:'0027', name:'Apostrophe',  cat:'punct' },
+  { cp:'0022', name:'Quote',       cat:'punct' },
+  { cp:'0028', name:'Left Paren',  cat:'punct' },
+  { cp:'0029', name:'Right Paren', cat:'punct' },
+  { cp:'002D', name:'Hyphen',      cat:'punct' },
+  { cp:'2014', name:'Em Dash',     cat:'punct' },
+  { cp:'0030', name:'Digit 0',     cat:'punct' },
+  { cp:'0031', name:'Digit 1',     cat:'punct' },
+  { cp:'0032', name:'Digit 2',     cat:'punct' },
+  { cp:'0033', name:'Digit 3',     cat:'punct' },
+  { cp:'0034', name:'Digit 4',     cat:'punct' },
+  { cp:'0035', name:'Digit 5',     cat:'punct' },
+  { cp:'0036', name:'Digit 6',     cat:'punct' },
+  { cp:'0037', name:'Digit 7',     cat:'punct' },
+  { cp:'0038', name:'Digit 8',     cat:'punct' },
+  { cp:'0039', name:'Digit 9',     cat:'punct' },
 ];
 const LETTER_ORDER = LETTERS.map(l => l.cp);
 
@@ -650,7 +685,7 @@ const LETTER_ORDER = LETTERS.map(l => l.cp);
 const MARK_CLASS = {
   '05B0':'below', '05B1':'below', '05B2':'below', '05B3':'below', '05B4':'below',
   '05B5':'below', '05B6':'below', '05B7':'below', '05B8':'below', '05BB':'below', '05C7':'below',
-  '05B9':'above', '05C1':'above', '05C2':'above', '05BF':'above',
+  '05B9':'above', '05BA':'above', '05C1':'above', '05C2':'above', '05BF':'above',
   '05BC':'center'
 };
 /* Nikkud chart columns for the preview PDF (bare first, then the 9 marks). */
@@ -702,6 +737,7 @@ const MARK_GLYPHS = {
   '05C7': [ rectPts(-115,-150,115,-110), rectPts(-18,-250,18,-150) ],         // qamats qatan: same shape as qamats (distinct codepoint)
   // ABOVE (anchor at bottom-center; shapes extend upward)
   '05B9': [ circlePts(0,95,50) ],                                             // holam: dot above
+  '05BA': [ circlePts(-95,95,50) ],                                           // holam haser for vav: holam dot, shifted left
   '05C1': [ circlePts(120,150,46) ],                                          // shin dot (upper right)
   '05C2': [ circlePts(-120,150,46) ],                                         // sin dot (upper left)
   '05BF': [ rectPts(-115,95,115,130) ],                                       // rafe: thin horizontal bar above the letter
@@ -711,10 +747,10 @@ const MARK_GLYPHS = {
 const MARK_NAMES = {
   '05B0':'Sheva','05B1':'Hataf Segol','05B2':'Hataf Patach','05B3':'Hataf Qamats',
   '05B4':'Hiriq','05B5':'Tsere','05B6':'Segol','05B7':'Patach','05B8':'Qamats','05BB':'Qubuts',
-  '05B9':'Holam','05C1':'Shin dot','05C2':'Sin dot','05BC':'Dagesh','05C7':'Qamats Qatan','05BF':'Rafe'
+  '05B9':'Holam','05BA':'Holam Haser','05C1':'Shin dot','05C2':'Sin dot','05BC':'Dagesh','05C7':'Qamats Qatan','05BF':'Rafe'
 };
 // ordered list driving the custom-nikkud grid
-const NIKKUD_MARKS = ['05B8','05B7','05B6','05B5','05B4','05BB','05B0','05B2','05B1','05B3','05B9','05C1','05C2','05BC','05C7','05BF']
+const NIKKUD_MARKS = ['05B8','05B7','05B6','05B5','05B4','05BB','05B0','05B2','05B1','05B3','05B9','05BA','05C1','05C2','05BC','05C7','05BF']
   .map(cp => ({ cp, name: MARK_NAMES[cp], cls: MARK_CLASS[cp] }));
 // Trop (cantillation) — built-in geometric placeholders (above:y>0, below:y<0; origin 0,0 at the attach edge).
 const _tvb = (x,y0,y1,w=18) => rectPts(x-w,y0,x+w,y1);                      // vertical bar
@@ -757,6 +793,40 @@ const TROP_GLYPHS = {}, TROP_CLASS = {}, TROP_NAMES = {};
 TROP_DEFS.forEach(([cp,name,cls,polys]) => { TROP_GLYPHS[cp]=polys; TROP_CLASS[cp]=cls; TROP_NAMES[cp]=name; });
 const TROP_MARKS = TROP_DEFS.map(([cp,name,cls]) => ({ cp, name, cls }));
 const TROP_CPS = TROP_DEFS.map(d => d[0]);
+
+/* ── Punctuation & More: default outlines (font units; baseline 0, letter-top 600).
+   Each factory returns { contours:[{winding,points}], advance }. Digits 0–9 are ABSENT →
+   seeded blank (traced like letters). Shapes are deliberately simple — the user re-traces. */
+function _arcBand(cx, cy, rOut, rIn, a0, a1, n=12) {   // closed ring-segment polygon (for parens / question hook)
+  const p = [], D = Math.PI/180;
+  for (let i=0;i<=n;i++){ const a=(a0+(a1-a0)*i/n)*D; p.push([cx+rOut*Math.cos(a), cy+rOut*Math.sin(a)]); }
+  for (let i=n;i>=0;i--){ const a=(a0+(a1-a0)*i/n)*D; p.push([cx+rIn*Math.cos(a),  cy+rIn*Math.sin(a)]);  }
+  return p;
+}
+const PUNCT_DEFAULTS = (() => {
+  const C = (polys, advance) => () => ({ contours: polys.map(pts => ({ winding:'cw', points: pts.map(p => p.slice()) })), advance });
+  return {
+    // Hebrew punctuation
+    '05BE': C([ rectPts(45,520,315,600) ], 360),                                       // maqaf: high horizontal bar
+    '05C0': C([ rectPts(70,0,110,600) ], 180),                                         // paseq: thin full-height bar
+    '05C3': C([ circlePts(110,300,42), circlePts(110,90,42) ], 220),                   // sof pasuq: two stacked dots
+    '05F3': C([ _tdia(120,430,165,600,20) ], 250),                                     // geresh: one tick near top
+    '05F4': C([ _tdia(80,430,125,600,20), _tdia(175,430,220,600,20) ], 320),           // gershayim: two ticks
+    // Latin punctuation
+    '002E': C([ circlePts(85,55,44) ], 200),                                           // period
+    '002C': C([ circlePts(85,70,44), _tdia(85,40,40,-110,26) ], 200),                  // comma: dot + tail
+    '003A': C([ circlePts(85,55,42), circlePts(85,320,42) ], 200),                     // colon
+    '003B': C([ circlePts(85,320,42), circlePts(85,70,42), _tdia(85,40,40,-110,24) ], 200), // semicolon
+    '0021': C([ rectPts(62,150,112,600), circlePts(87,55,46) ], 200),                  // exclamation
+    '003F': C([ _arcBand(150,470,150,100,160,-20,12), rectPts(125,160,205,330), circlePts(165,55,46) ], 300), // question
+    '0027': C([ _tdia(75,430,110,600,20) ], 170),                                      // apostrophe
+    '0022': C([ _tdia(45,430,80,600,20), _tdia(125,430,160,600,20) ], 250),            // quotation
+    '0028': C([ _arcBand(300,300,260,210,118,242,12) ], 240),                          // left paren
+    '0029': C([ _arcBand(-60,300,260,210,-62,62,12) ], 240),                           // right paren
+    '002D': C([ rectPts(40,250,200,310) ], 240),                                       // hyphen-minus
+    '2014': C([ rectPts(20,250,460,310) ], 480),                                       // em dash
+  };
+})();
 
 /* ── Font-unit metrics ── */
 const UPM = 1000, BASELINE = 0, LETTER_TOP = 600, LAMED_TOP = 800, DESCENDER = -250;
@@ -877,7 +947,7 @@ function updateUndoButtons() { const u = document.getElementById('undoBtn'), r =
 function udClear() { undoStack = []; redoStack = []; _udNudge = null; _burst = null; updateUndoButtons(); }
 
 function blankLetter(L) {
-  return {
+  const it = {
     codepoint: L.cp, name: L.name,
     source: { kind: 'single', dataUrl: null, cropRect: null, sheetId: null },
     transform: [1,0,0,1,0,0],   // image-px → stage-px matrix
@@ -890,6 +960,9 @@ function blankLetter(L) {
     binThreshold: 128, invert: false, epsilon: 6, cornerAngle: 32,
     handEdited: false           // node editor touched this outline → warn before a destructive re-trace
   };
+  const def = PUNCT_DEFAULTS[L.cp];                          // punctuation gets a geometric default outline; digits stay blank
+  if (def) { const o = def(); it.contours = o.contours; it.advance = o.advance; }
+  return it;
 }
 function newProject() {
   project = {
@@ -901,7 +974,8 @@ function newProject() {
       nikkud: { enabled: true,  mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },   // mode: 'default' | 'custom'; uploadMode: 'perSymbol' | 'combined'
       trop:   { enabled: false, mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },
       metrics: { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP, descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB },
-      spacing: { letterSpacing: 0, wordSpacing: 260, lineSpacing: 0, sample: 'שלום עולם' }
+      spacing: { letterSpacing: 0, wordSpacing: 260, lineSpacing: 0, sample: 'שלום עולם' },
+      includeDigitsPunct: true
     },
     template: { font: "'Noto Sans Hebrew', sans-serif", opacity: 0.35, showOverlay: true },
     view: { imgOpacityAlign: 0.92, imgOpacityTrace: 0.28, glyphOpacity: 1.0 },
@@ -950,13 +1024,14 @@ function selectItem(kind, cp) {
 function _selectItem(kind, cp) {
   udFlushPending();          // commit any open slider burst / pending nudge before navigating away
   curKind = kind; curCp = cp; workMode = 'align'; precompTarget = null;
-  catTab = kind;             // tabbed layout: keep the visible picker on the edited item's category
+  catTab = (kind === 'letter' && letterMeta(cp) && letterMeta(cp).cat === 'punct') ? 'punct' : kind;   // keep the visible picker on the edited item's category (punct letters → Punctuation tab)
   renderGrids(); renderStage(); renderControls();
 }
 function renderGrids() {
   renderLetterGrid();
   renderNikkudPanel();
   renderTropPanel();
+  renderPunctPanel();
   renderSpacingPanel();
   if (document.getElementById('catTabs')) syncCatTabs();
 }
@@ -1211,6 +1286,11 @@ const HELP_CONTENT = {
         <span style="flex:1 1 150px;font-weight:600;">Trop (Cantillation) <span style="font-weight:400;color:var(--muted);">· 31 marks · 1 page</span></span>
         <button class="tbtn" onclick="downloadTemplate('trop','pdf')">PDF</button>
         <button class="tbtn ghost" onclick="downloadTemplate('trop','png')">Picture (PNG)</button>
+      </div>
+      <div id="punctTplRow" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span style="flex:1 1 150px;font-weight:600;">Punctuation &amp; More <span style="font-weight:400;color:var(--muted);">· digits &amp; punctuation · 1 page</span></span>
+        <button class="tbtn" onclick="downloadTemplate('punct','pdf')">PDF</button>
+        <button class="tbtn ghost" onclick="downloadTemplate('punct','png')">Picture (PNG)</button>
       </div>
     </div>
     <div class="help-tip">⚠️ The Letters sheet is two pages — it downloads as a 2-page PDF, or as two numbered images (…_1.png, …_2.png) when you choose Picture.</div>
@@ -1516,7 +1596,7 @@ function letterStatus(l) {
 function renderLetterGrid() {
   const grid = document.getElementById('letterGrid'); grid.innerHTML = '';
   let done = 0;
-  LETTERS.forEach(L => {
+  LETTERS.filter(L => L.cat !== 'punct').forEach(L => {
     const l = project.letters.find(x => x.codepoint === L.cp);
     const st = letterStatus(l); if (st === 'anchored') done++;
     const saved = l.placementSaved && l.anchors;
@@ -1531,6 +1611,7 @@ function renderLetterGrid() {
   document.getElementById('letterProgress').textContent = `(${done}/27)`;
   if (document.getElementById('nikkudGrid')) renderNikkudGrid();   // keep mark tile states in sync
   if (document.getElementById('tropGrid')) renderTropGrid();
+  if (document.getElementById('punctGrid')) renderPunctGrid();
 }
 /* ── Nikkud / Trop sidebar panels (shared, parametrised by category) ── */
 function markStatusOf(m) {
@@ -1634,6 +1715,41 @@ function renderNikkudPanel() { renderMarkPanel('nikkud'); }
 function renderTropPanel()   { renderMarkPanel('trop'); }
 function renderNikkudGrid()  { renderMarkGrid('nikkud'); }
 function renderTropGrid()    { renderMarkGrid('trop'); }
+/* ── Punctuation & More: digits + punctuation, edited through the letter flow (anchor-free).
+   One toggle (project.font.includeDigitsPunct, default on) gates their export + practice page. ── */
+function includePunct() { return !(project && project.font && project.font.includeDigitsPunct === false); }
+function isPunctItem()  { return curKind === 'letter' && curMeta() && curMeta().cat === 'punct'; }
+function renderPunctPanel() {
+  const on = includePunct();
+  const row = document.getElementById('punctTplRow'); if (row) row.style.display = on ? '' : 'none';   // keep the practice-template row in sync
+  const el = document.getElementById('punctPanelBody'); if (!el) return;
+  el.innerHTML = `<label class="chk"><input type="checkbox" ${on?'checked':''} onchange="setIncludePunct(this.checked)"> Include digits &amp; punctuation in my font</label>
+    <div class="hint" style="margin:6px 0 9px;">${ on
+      ? 'Included in the exported font &amp; the Punctuation practice template. Trace each one like a letter — digits start blank; punctuation comes pre-shaped.'
+      : 'Currently <strong>off</strong>: these glyphs are skipped on export and have no practice page. Turn it on to include them.' }</div>
+    <div class="letter-grid" id="punctGrid"></div>`;
+  renderPunctGrid();
+}
+function renderPunctGrid() {
+  const grid = document.getElementById('punctGrid'); if (!grid) return;
+  grid.innerHTML = '';
+  LETTERS.filter(L => L.cat === 'punct').forEach(L => {
+    const l = project.letters.find(x => x.codepoint === L.cp);
+    const st = letterStatus(l);
+    const tile = document.createElement('div');
+    tile.className = 'ltile' + (curKind === 'letter' && L.cp === curCp ? ' sel' : '');
+    tile.innerHTML = `<span class="lt-dot ${st}"></span>
+      <span class="lt-heb" style="font-family:${project.template.font};">${String.fromCodePoint(parseInt(L.cp,16))}</span>
+      <span class="lt-name">${L.name}</span>`;
+    tile.onclick = () => selectItem('letter', L.cp);
+    grid.appendChild(tile);
+  });
+}
+function setIncludePunct(on) {
+  project.font.includeDigitsPunct = !!on;
+  renderPunctPanel();
+  if (isPunctItem()) renderStage();
+}
 function setMarkEnabled(cat, on) {
   project.font[cat].enabled = on;
   if (!on && curKind === cat) { selectItem('letter', LETTER_ORDER[0]); return; }   // leave the now-disabled mark editor
@@ -1680,8 +1796,8 @@ function _setWorkMode(mode) {
     if (mode === 'anchors') mode = 'align';
     if (mode === 'nodes') mode = 'align';     // node editor is letters-only
     if (curItem().designMode === 'editor') mode = 'align';
-  } else if (mode === 'anchors' && !(project.font.nikkud.enabled || project.font.trop.enabled)) {
-    mode = 'align';                            // letters-only font: no marks step
+  } else if (mode === 'anchors' && (isPunctItem() || !(project.font.nikkud.enabled || project.font.trop.enabled))) {
+    mode = 'align';                            // punctuation is anchor-free; letters-only font has no marks step
   }
   workMode = mode;
   nodeModel = null; nodeSel.clear(); nodeDrag = null;   // node-editor state is per-entry — rebuilt by renderStage when mode==='nodes'
@@ -1724,8 +1840,8 @@ function syncCatTabs() {
 function renderCatTabs() {
   const t = document.getElementById('catTabs');
   if (!t) return;
-  const NAMES = { letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop' };
-  t.innerHTML = ['letter', 'nikkud', 'trop'].map(c =>
+  const NAMES = { letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop', punct: 'Punctuation' };
+  t.innerHTML = ['letter', 'nikkud', 'trop', 'punct'].map(c =>
     `<div class="ctab" data-cat="${c}" onclick="setCatTab('${c}')">${NAMES[c]}</div>`).join('');
   syncCatTabs();
 }
@@ -2118,15 +2234,16 @@ function editorDeletePiece() {
 function setMarkDesignMode(mode) { const it = curItem(); udDo([itemScope()], 'mark mode — ' + it.name, () => { it.designMode = mode; renderGrids(); renderStage(); renderControls(); }); }
 function updateTabs() {
   const isMark = curKind !== 'letter';
+  const isPunct = isPunctItem();   // punctuation/digits trace like letters but take no nikkud/trop
   const combined = isMark && project.font[curKind].uploadMode === 'combined';
   const editor = isMark && !combined && curItem().designMode === 'editor';
   document.getElementById('tabAlign').textContent = editor ? 'Design' : '1 · Align';
   document.getElementById('tabTrace').style.display = editor ? 'none' : '';
   const ta = document.getElementById('tabAnchors');
-  ta.style.display = (!isMark && project.font.nikkud.enabled) ? '' : 'none';
+  ta.style.display = (!isMark && !isPunct && project.font.nikkud.enabled) ? '' : 'none';
   ta.textContent = '3 · Nikkud';
   const tt = document.getElementById('tabTrop');
-  tt.style.display = (!isMark && project.font.trop.enabled) ? '' : 'none';
+  tt.style.display = (!isMark && !isPunct && project.font.trop.enabled) ? '' : 'none';
   tt.textContent = '4 · Trop';
 }
 function renderMarkControls(c, it) {
@@ -3377,7 +3494,7 @@ function renderSpacingPanel() {
   const sp = fontSpacing();
   body.innerHTML = `
     <div class="inline">Letter spacing <input type="range" min="-40" max="200" step="5" value="${sp.letterSpacing}" oninput="setLetterSpacing(this.value)" onchange="udBurstCommit()"> <span id="lsV" class="readout">${sp.letterSpacing}</span></div>
-    <div class="inline">Word spacing <input type="range" min="80" max="600" step="10" value="${sp.wordSpacing}" oninput="setWordSpacing(this.value)" onchange="udBurstCommit()"> <span id="wsV" class="readout">${sp.wordSpacing}</span></div>
+    <div class="inline">Word spacing <input type="range" min="80" max="600" step="10" value="${sp.wordSpacing}" oninput="setWordSpacing(this.value)" onchange="udBurstCommit()"> <span id="wsV" class="readout">${sp.wordSpacing}</span> <span style="color:var(--muted);font-size:0.78rem;">= Space (U+0020) width</span></div>
     <div class="inline">Line spacing <input type="range" min="0" max="500" step="10" value="${sp.lineSpacing}" oninput="setLineSpacing(this.value)" onchange="udBurstCommit()"> <span id="lnV" class="readout">${sp.lineSpacing}</span></div>
     <label class="fld">Sample text <input type="text" id="spacingSample" dir="rtl" value="${escapeHtml(sp.sample)}" oninput="setSpacingSample(this.value)" onchange="udBurstCommit()"></label>
     <div class="hint">Adjusts the exported font's spacing (letter &amp; word advance widths + line gap). The preview uses your traced letters — untraced letters show as dashed boxes.</div>
@@ -3922,6 +4039,7 @@ function buildFontSpec() {
 
   // base letters
   LETTERS.forEach(L => {
+    if (L.cat === 'punct' && !includePunct()) return;   // digits & punctuation excluded when the toggle is off
     const l = project.letters.find(x => x.codepoint === L.cp);
     const nm = gname(L.cp);
     const contours = (l.contours||[]).map(c => c.points);
@@ -4537,8 +4655,9 @@ async function generatePreviewPDF() {
 
     // ── Letter × Nikkud chart ──
     const PER = 14;
-    for (let i = 0; i < LETTERS.length; i += PER) {
-      const chunk = LETTERS.slice(i, i + PER);
+    const chartLetters = LETTERS.filter(L => L.cat !== 'punct');   // punctuation/digits don't take nikkud
+    for (let i = 0; i < chartLetters.length; i += PER) {
+      const chunk = chartLetters.slice(i, i + PER);
       const W = 794, titleH = 38, headH = 24, rowH = 66, H = titleH + headH + chunk.length*rowH + 24;
       const { ctx, cv } = page(W, H);
       ctx.textBaseline = 'middle';
@@ -4587,17 +4706,19 @@ const TPL_PAGE = { w: 850, h: 1100, pad: 46 };   // US-Letter portrait (8.5:11 r
 const TPL_INK  = '#5aa9de';                       // light blue — prints visibly, ignored by the default ink tracer (luminance ≈151 > threshold 128)
 const TEMPLATE_SPECS = {
   letters: { kind:'letters', title:'Hebrew Letters',      cols:4, rowsPerPage:5,
-             items: LETTERS.map(L => ({ cp:L.cp, name:L.name, cls:null })) },        // 27 → 2 pages (roomy boxes)
+             items: LETTERS.filter(L => L.cat !== 'punct').map(L => ({ cp:L.cp, name:L.name, cls:null })) },  // 27 → 2 pages (roomy boxes)
   nikkud:  { kind:'nikkud',  title:'Vowels (Nikkud)',     cols:4, rowsPerPage:4,
              items: NIKKUD_MARKS.map(m => ({ cp:m.cp, name:m.name, cls:m.cls })) },   // 16 → 1 page
   trop:    { kind:'trop',    title:'Trop (Cantillation)', cols:5, rowsPerPage:7,
              items: TROP_DEFS.map(t => ({ cp:t[0], name:t[1], cls:t[2] })) },         // 31 → 1 page
+  punct:   { kind:'punct',   title:'Punctuation & More',  cols:5, rowsPerPage:5,
+             items: LETTERS.filter(L => L.cat === 'punct').map(L => ({ cp:L.cp, name:L.name, cls:null })) },
 };
 // One write-in box: colored border + a small corner label (ref glyph + name + U+code + class). Interior left blank.
 function templateCellHTML(item, kind) {
   const fontFam = (project.template && project.template.font) || "'Frank Ruhl Libre', serif";
   const base  = String.fromCodePoint(parseInt(item.cp, 16));
-  const glyph = (kind === 'letters') ? base : ('◌' + base);   // dotted circle ◌ carries an isolated combining mark
+  const glyph = (kind === 'letters' || kind === 'punct') ? base : ('◌' + base);   // dotted circle ◌ carries an isolated combining mark (punctuation is standalone)
   const code  = 'U+' + item.cp.toUpperCase();
   const cls   = item.cls ? (' · ' + item.cls) : '';
   const label =
@@ -4853,6 +4974,7 @@ function migrateProject(data) {
     if (!data.font.metrics) data.font.metrics = { baseline:BASELINE, letterTop:LETTER_TOP, lamedAscender:LAMED_TOP, descender:DESCENDER, defaultLSB:DEF_LSB, defaultRSB:DEF_RSB };
     else ['baseline','letterTop','lamedAscender','descender','defaultLSB','defaultRSB'].forEach((k,i)=>{ if(data.font.metrics[k]==null) data.font.metrics[k]=[BASELINE,LETTER_TOP,LAMED_TOP,DESCENDER,DEF_LSB,DEF_RSB][i]; });
     if (data.font.tropScale == null) data.font.tropScale = 1.0;
+    if (data.font.includeDigitsPunct == null) data.font.includeDigitsPunct = true;
     if (!data.font.nikkud) data.font.nikkud = { enabled: true, mode: 'default', custom: {} };
     if (!data.font.nikkud.custom) data.font.nikkud.custom = {};
     if (!data.font.nikkud.uploadMode) data.font.nikkud.uploadMode = 'perSymbol';
