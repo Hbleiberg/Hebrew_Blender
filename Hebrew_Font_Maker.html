@@ -813,7 +813,7 @@ function newProject() {
     inputMode: 'single',
     combinedSheets: [], combinedIndex: 0,
     letters: LETTERS.map(blankLetter),
-    precomposed: PRECOMPOSED.map(p => ({ target: p.target, base: p.base, mark: p.mark }))
+    precomposed: PRECOMPOSED.map(p => ({ target: p.target, base: p.base, mark: p.mark, anchor: null }))
   };
   curKind = 'letter'; curCp = LETTER_ORDER[0]; workMode = 'align';
   syncMetaToForm(); renderGrids(); setWorkMode('align'); status('New project.');
@@ -851,7 +851,7 @@ function selectItem(kind, cp) {
   _selectItem(kind, cp);
 }
 function _selectItem(kind, cp) {
-  curKind = kind; curCp = cp; workMode = 'align';
+  curKind = kind; curCp = cp; workMode = 'align'; precompTarget = null;
   catTab = kind;             // tabbed layout: keep the visible picker on the edited item's category
   renderGrids(); renderStage(); renderControls();
 }
@@ -1535,6 +1535,7 @@ function _setWorkMode(mode) {
     mode = 'align';                            // letters-only font: no marks step
   }
   workMode = mode;
+  if (mode !== 'anchors') precompTarget = null;   // leaving the placement step ends any precomposed-form edit
   if (mode === 'anchors') {   // keep anchorCat on an enabled category
     if (anchorCat === 'trop' && !project.font.trop.enabled) anchorCat = 'nikkud';
     if (anchorCat === 'nikkud' && !project.font.nikkud.enabled && project.font.trop.enabled) anchorCat = 'trop';
@@ -2137,9 +2138,9 @@ async function renderStage() {
   } else if (workMode === 'anchors') {
     if (l.contours) h += `<path d="${contoursToPath(l.contours)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
     if (l.contours || project.template.showOverlay) {
-      // preview the vowel on the traced glyph, or on the reference template glyph
-      seedAnchorsIfNeeded(l);
-      h += anchorHandlesSVG(l);
+      // preview the vowel (or, in precomposed-form mode, that form's mark) on the glyph
+      if (precompTarget) { h += precompHandlesSVG(); }
+      else { seedAnchorsIfNeeded(l); h += anchorHandlesSVG(l); }
     } else {
       h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="13">Trace this letter (step 2), or turn on “Show template glyph” to place nikkud on the reference.</text>`;
     }
@@ -2157,7 +2158,7 @@ async function renderStage() {
   sv.innerHTML = h;
   if (workMode === 'align' && url && !metricAdjust) attachTransformDrag(l);
   if (workMode === 'align' && metricAdjust) attachMetricDrag();
-  if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) attachAnchorDrag(l);
+  if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) { if (precompTarget) attachPrecompDrag(); else attachAnchorDrag(l); }
   renderLegend();
 }
 function renderLegend() {
@@ -2648,6 +2649,88 @@ function setAnchorClass(cls) {
   renderStage(); renderControls();
 }
 function setBelowVowel(cp) { activeBelowVowel = cp; renderStage(); renderControls(); }
+
+/* ════════ Special / precomposed forms — place each form's mark (שׁ שׂ בּ כּ פּ תּ וֹ וּ) on its base ════════
+   These render as single glyphs (via ccmp), so the dot position is baked in. By default it sits at the base's
+   matching anchor (shared with the live vowels); a per-form override lets the user place it exactly. */
+let precompTarget = null;   // active precomposed form's target codepoint (e.g. 'FB2A'), or null
+function getPrecomp(t) { return project.precomposed.find(p => p.target === t); }
+function precompName(pc) { return MARK_NAMES[pc.mark] || 'mark'; }
+function precompComposed(pc) { return String.fromCodePoint(parseInt(pc.base,16)) + String.fromCodePoint(parseInt(pc.mark,16)); }
+function precompAnchor(pc) {
+  if (pc.anchor && pc.anchor.x != null) return pc.anchor;                 // user override
+  const b = project.letters.find(x => x.codepoint === pc.base);          // else the base's class anchor
+  if (b) { seedAnchorsIfNeeded(b); const a = b.anchors && b.anchors[MARK_CLASS[pc.mark]]; if (a) return { x: a.x, y: a.y }; }
+  return { x: 0, y: 0 };
+}
+function precompFormBtn(pc) {
+  const custom = (pc.anchor && pc.anchor.x != null) ? ' <span style="color:var(--gold);">✎</span>' : '';
+  return `<button class="ctl-btn ${precompTarget===pc.target?'primary':''}" onclick="setPrecompTarget('${pc.target}')" title="Place the ${escapeHtml(precompName(pc))} for ${escapeHtml(precompComposed(pc))}">`
+    + `<span style="font-family:var(--heb-font);direction:rtl;font-size:1.15rem;">${precompComposed(pc)}</span>${custom}</button>`;
+}
+function setPrecompTarget(t) {
+  const pc = getPrecomp(t); if (!pc) return;
+  precompTarget = t; curKind = 'letter'; curCp = pc.base;
+  renderGrids(); renderStage(); renderControls();
+}
+function clearPrecompTarget() { precompTarget = null; renderStage(); renderControls(); }
+function setPrecompCoord(axis, v) {
+  const pc = getPrecomp(precompTarget); if (!pc) return;
+  const n = Math.round(+v); if (!Number.isFinite(n)) return;
+  const a = precompAnchor(pc);
+  pc.anchor = { x: axis==='x'?n:a.x, y: axis==='y'?n:a.y };
+  renderStage();   // not renderControls → keep the number input focused while typing
+}
+function resetPrecompAnchor() {
+  const pc = getPrecomp(precompTarget); if (pc) pc.anchor = null;
+  renderStage(); renderControls();
+}
+function precompHandlesSVG() {
+  const pc = getPrecomp(precompTarget); if (!pc) return '';
+  const a = precompAnchor(pc), col = '#e0731f', mc = markCenterLocal(pc.mark);
+  return `<path id="pcMark" d="${markPreviewPath(pc.mark, a.x, a.y)}" fill="${col}"/>`
+    + `<circle class="pcanc" cx="${fx(a.x+mc[0])}" cy="${fy(a.y+mc[1])}" r="11" fill="${col}" fill-opacity="0" stroke="#fff" stroke-width="2" pointer-events="all" style="cursor:grab"/>`;
+}
+function attachPrecompDrag() {
+  const pc = getPrecomp(precompTarget); if (!pc) return;
+  stage().querySelectorAll('.pcanc').forEach(el => {
+    let grab = null;
+    el.addEventListener('pointerdown', e => {
+      el.setPointerCapture(e.pointerId);
+      const [fxp,fyp] = clientToFont(e); const a = precompAnchor(pc); grab = [a.x-fxp, a.y-fyp];
+      showAncTip(e.clientX, e.clientY); e.preventDefault();
+    });
+    el.addEventListener('pointermove', e => {
+      if (!grab) return;
+      const [fxp,fyp] = clientToFont(e);
+      pc.anchor = { x: Math.round(fxp+grab[0]), y: Math.round(fyp+grab[1]) };
+      const mark = stage().querySelector('#pcMark'); if (mark) mark.setAttribute('d', markPreviewPath(pc.mark, pc.anchor.x, pc.anchor.y));
+      const mc = markCenterLocal(pc.mark);
+      el.setAttribute('cx', fx(pc.anchor.x+mc[0])); el.setAttribute('cy', fy(pc.anchor.y+mc[1]));
+      const rx = document.getElementById('pcX'); if (rx) rx.value = pc.anchor.x;
+      const ry = document.getElementById('pcY'); if (ry) ry.value = pc.anchor.y;
+    });
+    el.addEventListener('pointerup', () => { grab = null; hideAncTip(); renderStage(); renderControls(); });
+    el.addEventListener('pointercancel', () => { grab = null; hideAncTip(); });
+  });
+}
+function renderPrecompControls(l) {
+  const pc = getPrecomp(precompTarget);
+  if (!pc || pc.base !== l.codepoint) { precompTarget = null; return ''; }
+  const a = precompAnchor(pc), isOverride = !!(pc.anchor && pc.anchor.x != null);
+  return `<div class="ws-side-title">Place <span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">${precompComposed(pc)}</span> — ${escapeHtml(precompName(pc))}</div>
+    <div class="hint" style="font-size:0.66rem;">Where the mark sits in the combined glyph. Drag the orange dot on the canvas, or type X / Y. Affects this precomposed form only — saved automatically.</div>
+    <hr class="ctl-divider">
+    <div class="anc-xy">
+      <label>X <input type="number" id="pcX" value="${a.x}" oninput="setPrecompCoord('x',this.value)"></label>
+      <label>Y <input type="number" id="pcY" value="${a.y}" oninput="setPrecompCoord('y',this.value)"></label>
+    </div>
+    <div class="ctl-row" style="margin-top:8px;justify-content:center;">
+      ${isOverride ? `<button class="ctl-btn" onclick="resetPrecompAnchor()">Reset to auto</button>` : `<span class="hint" style="font-size:0.62rem;">Auto position — drag to customize.</span>`}
+    </div>
+    <hr class="ctl-divider">
+    <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">← Back to vowels</button>`;
+}
 function setTropCp(cp) { activeTropCp = cp; renderStage(); renderControls(); }
 function setMarkScale(v) {
   project.font.markScale = Math.max(0.3, Math.min(2, (+v)/100));
@@ -2930,6 +3013,7 @@ function renderTraceUnder(U, l) {
 /* ── ANCHORS (Nikkud / Trop) ── */
 function renderAnchorLeft(L, l) {
   if (!l.contours && !project.template.showOverlay) { L.innerHTML = ''; return; }
+  if (precompTarget) { L.innerHTML = renderPrecompControls(l); return; }   // placing a precomposed form's mark
   const { visCls, cls, isTrop, want, a } = _anchorCtx(l);
   const classBtns = visCls.map(k =>
     `<button class="ctl-btn ${cls===k?'primary':''}" style="${cls===k?`background:${ANCHOR_COL[k]};color:#fff;border-color:${ANCHOR_COL[k]};`:''}" onclick="setAnchorClass('${k}')">${ANCHOR_LABEL[k]}</button>`).join('');
@@ -2951,11 +3035,17 @@ function renderAnchorLeft(L, l) {
       <button class="ctl-btn" onclick="centerAnchorH()" title="Center horizontally — halfway between the left and right margins">Center ↔</button>
       <button class="ctl-btn" onclick="centerAnchorV()" title="Center vertically — halfway between the top and base lines">Center ↕</button>
     </div>`;
+  const forms = project.precomposed.filter(pc => pc.base === l.codepoint);
+  const formsSection = forms.length ? `<hr class="ctl-divider">
+    <div class="ws-side-title">Special &amp; precomposed forms</div>
+    <div class="hint" style="font-size:0.66rem;">Set where the dot sits in the combined glyph (e.g. שׁ / שׂ).</div>
+    <div class="ctl-row" style="flex-wrap:wrap;gap:5px;">${forms.map(precompFormBtn).join('')}</div>` : '';
   L.innerHTML = `
     <div class="ws-side-title">${l.name}: place the…</div>
     <div class="ctl-row">${classBtns}</div>
     ${ grid ? `<hr class="ctl-divider">${grid}` : '' }
-    ${xy}`;
+    ${xy}
+    ${formsSection}`;
 }
 function renderAnchorRight(R, l) {
   const tplPct = Math.round(project.template.opacity*100), glyPct = Math.round(project.view.glyphOpacity*100);
@@ -2969,6 +3059,10 @@ function renderAnchorRight(R, l) {
 function renderAnchorUnder(U, l) {
   if (!l.contours && !project.template.showOverlay) {
     U.innerHTML = `<div class="hint">Trace this letter first (step 2), or turn on “Show reference glyph behind” (right) to place nikkud on the reference.</div>`;
+    return;
+  }
+  if (precompTarget) {
+    U.innerHTML = `<div class="hint">Placing a precomposed form — drag the orange dot on the canvas, or type X / Y on the left. Your change is saved automatically.</div>`;
     return;
   }
   const { cls, isTrop, want } = _anchorCtx(l);
@@ -3068,11 +3162,16 @@ function wireDrop(id, cb) {
 /* arrow-key nudge of last-grabbed anchor */
 document.addEventListener('keydown', e => {
   if (workMode !== 'anchors' || !project) return;
-  const l = curLetter(); if (!l.anchors) return;
   const step = e.shiftKey ? 1 : 5; let dx=0,dy=0;
   if (e.key==='ArrowLeft') dx=-step; else if (e.key==='ArrowRight') dx=step;
   else if (e.key==='ArrowUp') dy=step; else if (e.key==='ArrowDown') dy=-step; else return;
   e.preventDefault();
+  if (precompTarget) {                                  // nudge the precomposed form's mark
+    const pc = getPrecomp(precompTarget); if (!pc) return;
+    const pa = precompAnchor(pc); pc.anchor = { x: pa.x + dx, y: pa.y + dy };
+    renderStage(); renderControls(); return;
+  }
+  const l = curLetter(); if (!l.anchors) return;
   const a = l.anchors[activeAnchorClass]; a.x += dx; a.y += dy;
   if (l.placementSaved) l.placementSaved = false;
   renderStage(); renderControls(); renderLetterGrid();
@@ -3142,9 +3241,9 @@ function buildFontSpec() {
   const built = [];
   if (nikOn) project.precomposed.forEach(pc => {
     const baseL = project.letters.find(x => x.codepoint === pc.base);
-    if (!baseL || !baseL.contours || !baseL.anchors) return;        // need a traced+anchored base
+    if (!baseL || !baseL.contours) return;                          // need a traced base (anchor may be a per-form override)
     const cls = MARK_CLASS[pc.mark];
-    const anc = baseL.anchors[cls]; if (!anc) return;
+    const anc = (pc.anchor && pc.anchor.x != null) ? pc.anchor : (baseL.anchors && baseL.anchors[cls]); if (!anc) return;
     const markPoly = markGlyphContours('nikkud', pc.mark).map(poly => poly.map(([x,y]) => [Math.round(x*ms+anc.x), Math.round(y*ms+anc.y)]));
     const nm = gname(pc.target);
     glyphs[nm] = { contours: baseL.contours.map(c => c.points).concat(markPoly), advance: effLetterAdvance(baseL) };
@@ -3869,6 +3968,7 @@ function migrateProject(data) {
   data.combinedIndex = Math.max(0, Math.min(data.combinedIndex, Math.max(0, data.combinedSheets.length - 1)));
   delete data.combinedImage;
   data.precomposed = data.precomposed || PRECOMPOSED.map(p => ({...p}));
+  data.precomposed.forEach(pc => { if (pc.anchor === undefined) pc.anchor = null; });   // per-form mark anchor override
   data.template = data.template || { font:"'Noto Sans Hebrew', sans-serif", opacity:0.35, showOverlay:true };
   data.view = data.view || { imgOpacityAlign:0.92, imgOpacityTrace:0.28, glyphOpacity:1.0 };
   ['imgOpacityAlign','imgOpacityTrace','glyphOpacity'].forEach((k,i)=>{ if(data.view[k]==null) data.view[k]=[0.92,0.28,1.0][i]; });
