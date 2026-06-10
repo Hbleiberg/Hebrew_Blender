@@ -591,10 +591,13 @@
 </div>
 
 <footer>
-  <strong>Hebrew Font Maker</strong> — an experimental IvritSuite tool. Builds a real TrueType font with
-  GPOS mark-to-base nikkud positioning entirely client-side (font engine loads on first export).
+  <strong>Hebrew Font Maker</strong> — an experimental IvritSuite tool. Builds real fonts entirely
+  client-side (the font engine loads on first export), with GPOS mark positioning for nikkud (mark-to-base)
+  and cantillation/trop (mark-to-mark). Exports TrueType (TTF), WOFF2 and editable UFO source, and your
+  finished font can be used in other IvritSuite tools such as <a href="torah_trainer.html">Torah Trainer</a>.
   Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank">Harrison Bleiberg</a>.
-  Generated fonts are yours; the tool emits an <a href="https://openfontlicense.org/" target="_blank">SIL Open Font License</a> alongside.
+  Generated fonts are yours; the tool ships a matching <strong>LICENSE.txt</strong> in the license you choose
+  (CC0, SIL&nbsp;OFL, MIT, CC-BY&nbsp;4.0, or All&nbsp;Rights&nbsp;Reserved).
   Desktop browser recommended.
 </footer>
 
@@ -1225,7 +1228,8 @@ function closeModal() { document.getElementById('askOverlay').classList.remove('
 /* ════════ "How does this work?" help guide ════════ */
 const HELP_TABS = [
   ['start','Getting Started'], ['upload','Uploading'], ['trace','Tracing'], ['anchor','Anchoring'],
-  ['spacing','Spacing'], ['saving','Saving Your Project'], ['export','Exporting & Installing'],
+  ['spacing','Spacing'], ['saving','Saving Your Project'], ['qa','QA Check'], ['export','Exporting & Installing'],
+  ['ivritsuite','Use in IvritSuite'],
   ['templates','Download Templates'],
   ['licenses','Licenses'],
 ];
@@ -1243,7 +1247,7 @@ const HELP_CONTENT = {
     </ol>
     <p>Use the tabs above to read about each step. You can work through them roughly in order, one letter at a time.</p>
     <p>Before you start, give your font a name in the <span class="ui">Font Details</span> box (top-left). The <span class="ui">Family name</span> is what you'll see in font menus later. The version number takes care of itself.</p>
-    <div class="help-tip">💡 Works best on a desktop or laptop. Your work is auto-saved in this browser as you go, but use <span class="ui">Save Project</span> for a real backup you can keep (see the Saving tab).</div>
+    <div class="help-tip">💡 Works best on a desktop or laptop. Your work is auto-saved in this browser as you go, but use <span class="ui">Save Project</span> for a real backup you can keep (see the Saving tab). Made a mistake? <span class="ui">Undo</span> / <span class="ui">Redo</span> — the <strong>↶ ↷</strong> buttons in the top bar, or <strong>Ctrl/⌘-Z</strong> and <strong>Ctrl/⌘-Shift-Z</strong> — step back and forth through your edits.</div>
   `,
   upload: `
     <h4>Uploading your letters</h4>
@@ -1267,6 +1271,7 @@ const HELP_CONTENT = {
       <li><span class="ui">Invert (light ink on dark)</span> — turn this on if you wrote in white or light ink on a dark background.</li>
     </ul>
     <p>Click <span class="ui">Re-trace</span> to redo it with your new settings, or <span class="ui">Clear</span> to start the letter over. The dot turns <strong style="color:#3b82f6;">blue</strong> once a letter is traced.</p>
+    <p><strong>Fine-tune the outline by hand.</strong> Once a letter is traced, click <span class="ui">✎ Edit points</span> to tidy the shape: drag any point to move it, nudge the selected point with the <strong>arrow keys</strong> (hold <strong>Shift</strong> for bigger steps), or press <span class="ui">Delete</span> to remove it. Click <span class="ui">Done editing</span> when it looks right.</p>
     <div class="help-tip">💡 The holes inside letters like ס, ם and ע are found and punched out for you automatically.</div>
   `,
   anchor: `
@@ -1289,6 +1294,7 @@ const HELP_CONTENT = {
       <li><span class="ui">Letter spacing</span> — the gap between letters.</li>
       <li><span class="ui">Word spacing</span> — the width of the space between words.</li>
       <li><span class="ui">Line spacing</span> — the gap between lines of text.</li>
+      <li><span class="ui">Kerning</span> — fine-tune the gap for specific letter <strong>pairs</strong> that need it (some combinations look too tight or too loose at the default spacing). Pick the two sides, set the gap, and click <span class="ui">Add pair</span> — it's saved as real OpenType kerning and shows in the preview.</li>
       <li><span class="ui">Sample text</span> — type any Hebrew here to see how it looks.</li>
     </ul>
     <p><span class="ui">Reset spacing</span> puts everything back to the defaults.</p>
@@ -1304,23 +1310,46 @@ const HELP_CONTENT = {
     <div class="help-tip">⚠️ This is your <strong>editable project</strong>, <em>not</em> the font itself. To get a font you can install and type with, see the <strong>Exporting &amp; Installing</strong> tab.</div>
     <p>The browser copy (and the automatic safety-net save) is handy, but it is <strong>not a real backup</strong> — if you clear your browser data or switch computers, it's gone. <strong>Save “To computer” regularly</strong> to keep a file you can't lose.</p>
   `,
+  qa: `
+    <h4>QA Check — catch collisions before you export</h4>
+    <p>Click <span class="ui">🔍 QA Check</span> (top bar) to open a grid showing <strong>every letter paired with every vowel and trop mark</strong>. It reads your font silently — it never changes anything.</p>
+    <p><strong>Red cells</strong> flag a real <strong>ink collision</strong> worth a look:</p>
+    <ul>
+      <li>a mark sitting <strong>on top of the letter's ink</strong> (overlapping it), or</li>
+      <li>a <span class="ui">below</span> mark running into a letter's <strong>descender tail</strong> — the part that hangs below the line, like ך or ק.</li>
+    </ul>
+    <p>To fix one, go back to the <span class="ui">3 · Nikkud</span> or <span class="ui">4 · Trop</span> step for that letter and nudge its anchor (or shrink <span class="ui">Nikkud size</span>), then re-check.</p>
+    <div class="help-tip">💡 A note at the top warns when a tall mark or letter will <strong>expand the font's vertical box</strong> — that's expected and exports fine; it just means the font grew a little taller. And not every red cell is a disaster: glance at each and trust your eye.</div>
+  `,
   export: `
     <h4>Exporting &amp; installing your font</h4>
-    <p>When you're happy with your letters, click <span class="ui">⬇ Export Font (TTF)</span> (top-right). This builds the real, installable font.</p>
-    <p>You'll get two files:</p>
+    <p>When your letters are ready, choose a format in the picker next to <span class="ui">⬇ Export TTF</span> (top-right), then click the button. It builds a real font from your work.</p>
+    <p><strong>Which format?</strong></p>
     <ul>
-      <li><strong>YourFont.ttf</strong> — the font itself.</li>
-      <li><strong>LICENSE.txt</strong> — the license you picked (in <span class="ui">Font Details</span>), with your name as author.</li>
+      <li><span class="ui">TTF (recommended)</span> — a normal font file to <strong>install and type with</strong> in Word, Google Docs, Canva — anywhere you choose fonts. Start here.</li>
+      <li><span class="ui">WOFF2 (web)</span> — a compressed font for <strong>embedding on a website</strong>.</li>
+      <li><span class="ui">TTF + WOFF2 (zip)</span> — both files <em>plus</em> a ready-to-paste <span class="ui">@font-face</span> CSS snippet.</li>
+      <li><span class="ui">UFO source (zip)</span> — an <strong>editable source</strong> for font editors (FontForge, Glyphs, RoboFont), with real curves, anchors and a <span class="ui">features.fea</span>.</li>
     </ul>
-    <p><strong>Install it:</strong></p>
+    <p>Every file format also downloads a <strong>LICENSE.txt</strong> — the license you picked in <span class="ui">Font Details</span>, with your name as author.</p>
+    <p><strong>Install the TTF:</strong></p>
     <ul>
       <li><strong>Mac:</strong> double-click the <span class="ui">.ttf</span> file, then click <span class="ui">Install Font</span>.</li>
       <li><strong>Windows:</strong> right-click the <span class="ui">.ttf</span> file and choose <span class="ui">Install</span>.</li>
     </ul>
-    <p>Then pick your font by name in Word, Google Docs, Canva — anywhere you choose fonts.</p>
+    <p>Then pick your font by name wherever you choose fonts.</p>
     <div class="help-tip">💡 The very first export downloads a one-time font engine (about 8&nbsp;MB), so give it a moment — after that it's quick.</div>
-    <p><strong>Preview PDF.</strong> Once you've exported, the <span class="ui">Preview PDF</span> button (top bar) makes a printable specimen sheet — a cover page plus a chart of every letter paired with each vowel. It's a great way to proofread your whole font on one page before you install it.</p>
+    <p><strong>Check it &amp; share it.</strong> The <span class="ui">🔍 QA Check</span> button scans every letter–mark pair for collisions (see the <strong>QA Check</strong> tab), and <span class="ui">★ Use this Font in IvritSuite</span> — the last item in the format picker — lets you read with your font right inside Torah Trainer (see the <strong>Use in IvritSuite</strong> tab).</p>
+    <p><strong>Preview PDF.</strong> The <span class="ui">Preview PDF</span> button (top bar) makes a printable specimen sheet — a cover page plus a chart of every letter paired with each vowel. A great way to proofread your whole font on one page before you install it.</p>
     <p><strong>Made changes and re-exporting?</strong> The version number ticks up automatically each time. If you'd already installed an older copy, delete it first so your computer picks up the new one. (If some letters aren't traced or anchored yet, the tool warns you — those letters would come out blank.)</p>
+  `,
+  ivritsuite: `
+    <h4>Use this font in IvritSuite</h4>
+    <p>You can read with your own font right inside <strong>Torah Trainer</strong> (and, soon, other IvritSuite tools) — without installing anything on your computer.</p>
+    <p><strong>Save it:</strong> choose <span class="ui">★ Use this Font in IvritSuite</span> at the bottom of the export format picker and click the button — or, after any normal export, say <strong>yes</strong> to the “Save to My Fonts?” prompt. Your font is stored <strong>in this browser</strong>.</p>
+    <p><strong>Manage them:</strong> the <span class="ui">My IvritSuite Fonts</span> window lists everything you've saved, each with buttons to download or remove it. Keep up to <strong>10</strong> — saving an 11th drops the oldest.</p>
+    <p><strong>Use it:</strong> open <a href="torah_trainer.html" target="_blank">Torah Trainer</a> in this same browser, open its font picker, and pick your font under <span class="ui">My Fonts</span>. Your letters, vowels <em>and</em> trop all render using the anchors you set here.</p>
+    <div class="help-tip">⚠️ Saved fonts live <strong>on this browser, on this device</strong> — this isn't a cloud account. To use a font on another computer, export the <span class="ui">TTF</span> and save it there too. Clearing your browser data removes saved fonts.</div>
   `,
   templates: `
     <h4>Printable handwriting templates</h4>
