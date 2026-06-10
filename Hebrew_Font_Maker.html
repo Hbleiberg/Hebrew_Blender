@@ -3416,6 +3416,16 @@ def hfm_build(spec_json):
 `;
 
 function b64ToBytes(b64) { const bin = atob(b64); const arr = new Uint8Array(bin.length); for (let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i); return arr; }
+async function buildFontBytes() {                 // build the TTF in memory (no download) — shared by Preview PDF
+  await ensurePyodide();
+  const spec = buildFontSpec();
+  pyodide.globals.set('hfm_spec_json', JSON.stringify(spec));
+  const res = JSON.parse(pyodide.runPython('hfm_build(hfm_spec_json)'));
+  if (res.error) throw new Error(res.error);
+  const bytes = b64ToBytes(res.ttf_b64);
+  window._lastFontBytes = bytes;
+  return bytes;
+}
 
 async function exportFont() {
   if (!project) return;
@@ -3639,11 +3649,16 @@ async function harfbuzzGate(bytes) {
    PREVIEW PDF — FontFace(generated TTF) → specimen DOM → html2canvas → jsPDF
    ════════════════════════════════════════════════════════════════════════ */
 async function generatePreviewPDF() {
-  if (!window._lastFontBytes) { status('Export the font first, then Preview PDF.'); return; }
+  if (!project) return;
+  if (!project.letters.some(l => l.contours)) { status('Trace at least one letter first, then Preview PDF.'); return; }
+  status('Building font for preview…', true);
+  let fontBytes;
+  try { fontBytes = await buildFontBytes(); }            // build the TTF on demand — no separate Export needed
+  catch (e) { console.error(e); status(''); askModal('Preview error', '<span class="warn">'+(e.message||e)+'</span>', [{label:'OK'}]); return; }
   status('Building preview PDF…', true);
   try {
     const fam = 'HFMPreview_' + Date.now();
-    const ff = new FontFace(fam, window._lastFontBytes.buffer.slice(0));
+    const ff = new FontFace(fam, fontBytes.buffer.slice(0));
     await ff.load(); document.fonts.add(ff); await document.fonts.ready;
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ unit:'pt', format:'a4' });
@@ -3690,7 +3705,7 @@ async function generatePreviewPDF() {
     const PER = 14;
     for (let i = 0; i < LETTERS.length; i += PER) {
       const chunk = LETTERS.slice(i, i + PER);
-      const W = 794, titleH = 38, headH = 24, rowH = 62, H = titleH + headH + chunk.length*rowH + 24;
+      const W = 794, titleH = 38, headH = 24, rowH = 66, H = titleH + headH + chunk.length*rowH + 24;
       const { ctx, cv } = page(W, H);
       ctx.textBaseline = 'middle';
       ctx.fillStyle = '#1a2744'; ctx.direction = 'ltr'; ctx.font = "14px 'Libre Baskerville', serif";
@@ -3706,10 +3721,17 @@ async function generatePreviewPDF() {
       CHART_COLS.forEach((c, ci) => ctx.fillText(c.label, x0 + labelW + ci*cellW + cellW/2, top + headH/2));
       chunk.forEach((L, ri) => {
         const ry = top + headH + ri*rowH, cy = ry + rowH/2, ch = String.fromCodePoint(parseInt(L.cp,16));
+        const lx = x0 + labelW/2, pl = project.letters.find(q => q.codepoint === L.cp), an = pl && pl.anchors;
         ctx.direction = 'ltr'; ctx.fillStyle = '#888'; ctx.font = "9px 'Source Sans 3', sans-serif";
-        ctx.fillText(L.name, x0 + labelW/2, cy - 6);
-        const pl = project.letters.find(q => q.codepoint === L.cp), ba = pl && pl.anchors && pl.anchors.below;
-        if (ba) { ctx.fillStyle = '#aaa'; ctx.font = "7px 'Source Sans 3', sans-serif"; ctx.fillText('X:'+ba.x+' Y:'+ba.y, x0 + labelW/2, cy + 8); }
+        if (an && an.below && an.above && an.center) {
+          ctx.fillText(L.name, lx, ry + 13);
+          ctx.font = "7px 'Source Sans 3', sans-serif"; ctx.fillStyle = '#999';
+          ctx.fillText('below '  + an.below.x  + ',' + an.below.y,  lx, ry + 28);
+          ctx.fillText('above '  + an.above.x  + ',' + an.above.y,  lx, ry + 40);
+          ctx.fillText('center ' + an.center.x + ',' + an.center.y, lx, ry + 52);
+        } else {
+          ctx.fillText(L.name, lx, cy);
+        }
         ctx.fillStyle = '#111'; ctx.direction = 'rtl'; ctx.font = HEB(26);
         CHART_COLS.forEach((c, ci) => {
           const cell = c.cp ? ch + String.fromCodePoint(parseInt(c.cp,16)) : ch;
