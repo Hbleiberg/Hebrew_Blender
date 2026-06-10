@@ -248,6 +248,19 @@
   body.layout-tabbed .ws-grid   { order: 4; }
   .stage-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 8px; max-width: 720px; margin: 0 auto; overflow: auto; max-height: 74vh; }
   #stage { width: 100%; height: auto; display: block; touch-action: none; background: var(--white); border-radius: 6px; }
+  /* Node editor (Edit-points mode) overlay */
+  .node-glyph { cursor: crosshair; }
+  .node-pt { fill: var(--white); stroke: var(--navy); stroke-width: 1.4; cursor: grab; }
+  .node-pt.sel { fill: var(--gold); stroke: var(--navy); }
+  .node-pt:hover { stroke: var(--gold); stroke-width: 2; }
+  .node-h { fill: #fff; stroke: #2a4070; stroke-width: 1.2; cursor: grab; }
+  .node-h:hover { stroke: var(--gold); stroke-width: 1.8; }
+  .node-hline { stroke: #7d93bd; stroke-width: 1; stroke-dasharray: 2 2; pointer-events: none; }
+  .node-marquee { fill: rgba(201,146,42,0.12); stroke: var(--gold); stroke-width: 1; stroke-dasharray: 4 3; pointer-events: none; }
+  body.dark .node-pt { fill: #1e2535; stroke: #aeb9d0; }
+  body.dark .node-pt.sel { fill: var(--gold); stroke: #fff; }
+  body.dark .node-h { fill: #1e2535; stroke: #8aa0c8; }
+  body.dark .node-hline { stroke: #5b6e94; }
   .zoom-bar { display: flex; align-items: center; gap: 8px; max-width: 720px; margin: 0 auto 8px; font-size: 0.82rem; color: var(--muted); }
   .zoom-bar input[type=range] { flex: 1; accent-color: var(--gold); }
   .zoom-val { font-family: ui-monospace, Menlo, monospace; min-width: 44px; text-align: right; }
@@ -859,7 +872,7 @@ function udApply(entry, useAfter) {
 }
 function undo() { udFlushPending(); const e = undoStack.pop(); if (!e) return; udApply(e, false); redoStack.push(e); afterUndo('Undo: ' + e.label); }
 function redo() { udFlushPending(); const e = redoStack.pop(); if (!e) return; udApply(e, true); undoStack.push(e); afterUndo('Redo: ' + e.label); }
-function afterUndo(msg) { updateUndoButtons(); renderGrids(); renderStage(); renderControls(); status(msg); }
+function afterUndo(msg) { updateUndoButtons(); if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }   /* rebuild node model from restored curves */ renderGrids(); renderStage(); renderControls(); status(msg); }
 function updateUndoButtons() { const u = document.getElementById('undoBtn'), r = document.getElementById('redoBtn'); if (u) u.disabled = !undoStack.length; if (r) r.disabled = !redoStack.length; }
 function udClear() { undoStack = []; redoStack = []; _udNudge = null; _burst = null; updateUndoButtons(); }
 
@@ -874,7 +887,8 @@ function blankLetter(L) {
     advance: null, lsb: null, rsb: null,   // per-letter width + left side bearing (null = inherit metrics.defaultLSB; RSB is derived from advance−ink)
     anchors: null,              // {below:{x,y}, above:{x,y}, center:{x,y}}
     placementSaved: false,      // user confirmed the nikkud placement (green ✓)
-    binThreshold: 128, invert: false, epsilon: 6, cornerAngle: 32
+    binThreshold: 128, invert: false, epsilon: 6, cornerAngle: 32,
+    handEdited: false           // node editor touched this outline → warn before a destructive re-trace
   };
 }
 function newProject() {
@@ -919,6 +933,7 @@ function markItem(kind, cp) {
     transform: [1,0,0,1,0,0], captureBox: null,
     contours: null, curves: null, advance: 0, anchors: null, placementSaved: false,
     binThreshold: 128, invert: false, epsilon: 6, cornerAngle: 32,
+    handEdited: false,
     designMode: 'editor', pieces: null
   };
 }
@@ -1663,11 +1678,13 @@ function _setWorkMode(mode) {
   udFlushPending();          // commit any open burst/nudge before switching modes
   if (curKind !== 'letter') {                 // marks have no Nikkud step; editor has no Trace step
     if (mode === 'anchors') mode = 'align';
+    if (mode === 'nodes') mode = 'align';     // node editor is letters-only
     if (curItem().designMode === 'editor') mode = 'align';
   } else if (mode === 'anchors' && !(project.font.nikkud.enabled || project.font.trop.enabled)) {
     mode = 'align';                            // letters-only font: no marks step
   }
   workMode = mode;
+  nodeModel = null; nodeSel.clear(); nodeDrag = null;   // node-editor state is per-entry — rebuilt by renderStage when mode==='nodes'
   if (mode !== 'anchors') precompTarget = null;   // leaving the placement step ends any precomposed-form edit
   if (mode === 'anchors') {   // keep anchorCat on an enabled category
     if (anchorCat === 'trop' && !project.font.trop.enabled) anchorCat = 'nikkud';
@@ -1675,7 +1692,7 @@ function _setWorkMode(mode) {
   }
   const onAnch = mode === 'anchors';
   document.getElementById('tabAlign').classList.toggle('active', mode === 'align');
-  document.getElementById('tabTrace').classList.toggle('active', mode === 'trace');
+  document.getElementById('tabTrace').classList.toggle('active', mode === 'trace' || mode === 'nodes');   // node editing is a sub-state of Trace
   document.getElementById('tabAnchors').classList.toggle('active', onAnch && anchorCat === 'nikkud');
   document.getElementById('tabTrop').classList.toggle('active', onAnch && anchorCat === 'trop');
   // entering Trace with an image but no contours yet → trace once so the live preview shows
@@ -2295,6 +2312,17 @@ async function renderStage() {
     } else {
       h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="13">Trace this letter (step 2), or turn on “Show template glyph” to place nikkud on the reference.</text>`;
     }
+  } else if (workMode === 'nodes') {
+    if (!l.contours) { setWorkMode('trace'); return; }   // nothing to edit (e.g. landed here via undo) → bail to trace
+    if (!nodeModel) buildNodeModel(l);
+    if (url) h += `<image href="${url}" x="0" y="0" transform="matrix(${l.transform.join(' ')})" opacity="${project.view.imgOpacityTrace}"/>`;
+    const C = stageColors();
+    h += `<path class="node-glyph" d="${contoursToPath(l.contours, l.curves)}" fill="${C.inkFill}" fill-opacity="0.45" fill-rule="nonzero" stroke="${C.inkStroke}" stroke-width="0.6"/>`;
+    h += nodeOverlaySVG();
+    if (nodeDrag && nodeDrag.type === 'marquee' && nodeDrag.cur) {
+      const s = nodeDrag.start, c = nodeDrag.cur;
+      h += `<rect class="node-marquee" x="${Math.min(s[0],c[0]).toFixed(1)}" y="${Math.min(s[1],c[1]).toFixed(1)}" width="${Math.abs(c[0]-s[0]).toFixed(1)}" height="${Math.abs(c[1]-s[1]).toFixed(1)}"/>`;
+    }
   }
   // Guide overlays draw on top of the image (all pointer-events:none) so the dashed
   // lines, capture box and margins stay visible even where dark ink covers them.
@@ -2310,6 +2338,7 @@ async function renderStage() {
   if (workMode === 'align' && url && !metricAdjust) attachTransformDrag(l);
   if (workMode === 'align' && metricAdjust) attachMetricDrag();
   if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) { if (precompTarget) attachPrecompDrag(); else attachAnchorDrag(l); }
+  if (workMode === 'nodes') attachNodeEditor(l);
   renderLegend();
 }
 function renderLegend() {
@@ -2324,6 +2353,8 @@ function renderLegend() {
     el.innerHTML = `<span><span class="dot" style="background:${col}"></span>Previewing the <b>${ANCHOR_LABEL[c]}</b> vowel — drag the handle, or use arrow keys (Shift = 1 unit).</span>`;
   } else if (workMode === 'align') {
     el.innerHTML = `<span>Drag the letter to move · corner ◻ scales (keeps shape) · side ▭ squishes that direction · ● rotates.</span>`;
+  } else if (workMode === 'nodes') {
+    el.innerHTML = `<span>Editing points — drag ○/□ to reshape · double-click toggles smooth/corner · Alt-click the outline adds a point · Delete removes · arrows nudge.</span>`;
   } else {
     el.innerHTML = `<span>Adjust threshold &amp; smoothing, then Trace. Corners stay crisp; counters punch out.</span>`;
   }
@@ -2397,6 +2428,30 @@ function attachTransformDrag(l) {
   });
 }
 function onStagePointerMove(e) {
+  if (nodeDrag) {
+    const l = curLetter();
+    if (nodeDrag.type === 'nodes') {
+      const [fxp,fyp] = clientToFont(e), dx = fxp - nodeDrag.startFont[0], dy = fyp - nodeDrag.startFont[1];
+      nodeDrag.orig.forEach((o, key) => {                  // mutate from captured originals → no per-move rounding drift
+        const [ci,ni] = key.split(':').map(Number), nd = nodeModel.contours[ci]?.nodes[ni]; if (!nd) return;
+        nd.x = o.x + dx; nd.y = o.y + dy;
+        nd.in  = o.in  ? [o.in[0]+dx,  o.in[1]+dy]  : null;
+        nd.out = o.out ? [o.out[0]+dx, o.out[1]+dy] : null;
+      });
+      writeThrough(l); renderStage(); return;
+    }
+    if (nodeDrag.type === 'handle') {
+      const [fxp,fyp] = clientToFont(e), nd = nodeModel.contours[nodeDrag.ci]?.nodes[nodeDrag.ni]; if (!nd) return;
+      const which = nodeDrag.which, other = which === 'out' ? 'in' : 'out';
+      nd[which] = [fxp, fyp];
+      if (nd.type === 'smooth' && nd[other]) {             // keep opposite handle collinear (preserve its length)
+        const dir = _vNorm([fxp-nd.x, fyp-nd.y]), L = Math.hypot(nd[other][0]-nd.x, nd[other][1]-nd.y) || 1;
+        if (dir[0] || dir[1]) nd[other] = [nd.x - dir[0]*L, nd.y - dir[1]*L];
+      }
+      writeThrough(l); renderStage(); return;
+    }
+    if (nodeDrag.type === 'marquee') { nodeDrag.cur = clientToStage(e); renderStage(); return; }
+  }
   if (eDrag && curKind !== 'letter') {
     const it = curItem(); const p = it.pieces && it.pieces[editorSel]; if (!p) return;
     const [sx,sy] = clientToStage(e), p0 = eDrag.p0;
@@ -2449,6 +2504,17 @@ function onStagePointerMove(e) {
   renderStage();
 }
 function onStagePointerUp() {
+  if (nodeDrag) {
+    if (nodeDrag.type === 'nodes' || nodeDrag.type === 'handle') { udPush(nodeDrag.ud); nodeDrag = null; renderStage(); renderControls(); return; }
+    if (nodeDrag.type === 'marquee') {
+      const s = nodeDrag.start, c = nodeDrag.cur || s;
+      const x0=Math.min(s[0],c[0]), x1=Math.max(s[0],c[0]), y0=Math.min(s[1],c[1]), y1=Math.max(s[1],c[1]);
+      if (!nodeDrag.add) nodeSel.clear();
+      if (nodeModel) nodeModel.contours.forEach((ct,ci) => ct.nodes.forEach((nd,ni) => { const sx=fx(nd.x), sy=fy(nd.y); if (sx>=x0&&sx<=x1&&sy>=y0&&sy<=y1) nodeSel.add(nodeKey(ci,ni)); }));
+      nodeDrag = null; renderStage(); renderControls(); return;
+    }
+    nodeDrag = null;
+  }
   if (metricDrag) { udPush(metricDrag.ud); metricDrag = null; renderControls(); return; }
   if (eDrag) { udPush(eDrag.ud); eDrag = null; renderGrids(); renderControls(); return; }
   if (cropDrag) {
@@ -2726,6 +2792,242 @@ function fitContourCurves(ring, winding, error, cornerAngleDeg){
   if (!segments.length) return null;
   return { winding, start: rnd(pts[corners[0]]), segments };
 }
+
+/* ════════ Node editor (Edit-points mode) — letters only ════════
+   A draggable on-curve-node + Bézier-handle editor over the traced outline.
+   The canonical store stays `l.curves` (+ flattened `l.contours[i].points`); we build a
+   float working model from it on entry/undo, write edits straight back through writeThrough(),
+   and never persist the model. Capture is on the <svg> (like tDrag) so renderStage() can run
+   live during a drag. Every edit is one undo entry. */
+let nodeModel = null;            // { contours:[ { winding, nodes:[ {x,y, in:[x,y]|null, out:[x,y]|null, type:'corner'|'smooth'} ] } ] }
+let nodeSel = new Set();         // selected node keys "ci:ni"
+let nodeDrag = null;             // active drag state (parallel to tDrag) — {type:'nodes'|'handle'|'marquee', ...}
+let _lastNodeClick = { key: null, t: 0 };   // manual double-click detection (survives mid-drag re-renders)
+function nodeKey(ci, ni) { return ci + ':' + ni; }
+function nodeIsSmooth(nd) {
+  if (!nd.in || !nd.out) return false;
+  const di = _vNorm([nd.in[0]-nd.x, nd.in[1]-nd.y]), dou = _vNorm([nd.out[0]-nd.x, nd.out[1]-nd.y]);
+  if ((!di[0]&&!di[1]) || (!dou[0]&&!dou[1])) return false;
+  return _vDot(di, dou) < -Math.cos(8*Math.PI/180);   // in/out nearly antiparallel → collinear → smooth
+}
+function buildNodeModel(l) {
+  const model = { contours: [] };
+  if (l && l.contours) {
+    const useCurves = l.curves && l.curves.length === l.contours.length;
+    l.contours.forEach((c, ci) => {
+      const cv = useCurves ? l.curves[ci] : null;
+      const nodes = [];
+      if (cv && cv.segments && cv.segments.length) {
+        const segs = cv.segments, n = segs.length;
+        for (let i=0;i<n;i++) nodes.push({ x:0, y:0, in:null, out:null, type:'corner' });
+        nodes[0].x = cv.start[0]; nodes[0].y = cv.start[1];
+        for (let k=0;k<n;k++) {                       // segment k endpoint → node[(k+1)%n]
+          const seg = segs[k], nx = (k+1)%n, end = seg.pts[seg.pts.length-1];
+          nodes[nx].x = end[0]; nodes[nx].y = end[1];
+          if (seg.type === 'cubic') { nodes[k].out = [seg.pts[0][0], seg.pts[0][1]]; nodes[nx].in = [seg.pts[1][0], seg.pts[1][1]]; }
+        }
+      } else {                                        // null-curve (polygon) → all-corner nodes from points
+        (c.points||[]).forEach(p => nodes.push({ x:p[0], y:p[1], in:null, out:null, type:'corner' }));
+      }
+      nodes.forEach(nd => { nd.type = nodeIsSmooth(nd) ? 'smooth' : 'corner'; });
+      model.contours.push({ winding: c.winding, nodes });
+    });
+  }
+  nodeModel = model;
+}
+function modelToCurves() {
+  const rnd = p => [Math.round(p[0]), Math.round(p[1])];
+  return nodeModel.contours.map(ct => {
+    const nodes = ct.nodes, n = nodes.length, segments = [];
+    for (let k=0;k<n;k++) {
+      const a = nodes[k], b = nodes[(k+1)%n];
+      if (a.out && b.in) segments.push({ type:'cubic', pts:[ rnd(a.out), rnd(b.in), rnd([b.x,b.y]) ] });   // type from handle presence, NOT the smooth flag
+      else segments.push({ type:'line', pts:[ rnd([b.x,b.y]) ] });
+    }
+    return { winding: ct.winding, start: rnd([nodes[0].x, nodes[0].y]), segments };
+  });
+}
+function nodeContourToPoints(ct) {                    // flatten a contour's nodes → integer polygon ring (for bbox/advance/anchors + polygon fallback)
+  const nodes = ct.nodes, n = nodes.length, pts = [[nodes[0].x, nodes[0].y]];
+  for (let k=0;k<n;k++) {
+    const a = nodes[k], b = nodes[(k+1)%n];
+    if (a.out && b.in) flattenCubic([a.x,a.y], a.out, b.in, [b.x,b.y], 10).forEach(p => pts.push(p));
+    else pts.push([b.x, b.y]);
+  }
+  if (pts.length > 1) {                               // last sample == node[0] (closed) → drop the duplicate
+    const f = pts[0], lp = pts[pts.length-1];
+    if (Math.round(f[0])===Math.round(lp[0]) && Math.round(f[1])===Math.round(lp[1])) pts.pop();
+  }
+  return pts.map(p => [Math.round(p[0]), Math.round(p[1])]);
+}
+function writeThrough(l) {                            // model → canonical curves + points; rounds only here (model stays float)
+  l.curves = modelToCurves();
+  if (l.contours) nodeModel.contours.forEach((ct, ci) => { if (l.contours[ci]) l.contours[ci].points = nodeContourToPoints(ct); });
+  l.handEdited = true;
+}
+function makeNodeSmooth(ct, ni) {                     // force the node's handles collinear (a side that's a line aligns to its neighbour)
+  const nodes = ct.nodes, n = nodes.length, nd = nodes[ni];
+  const prev = nodes[(ni-1+n)%n], next = nodes[(ni+1)%n];
+  if (!nd.in && !nd.out) return;                      // corner between two lines — nothing to smooth
+  let dir;
+  if (nd.in && nd.out) {
+    const dOut = _vNorm([nd.out[0]-nd.x, nd.out[1]-nd.y]), dInOpp = _vNorm([nd.x-nd.in[0], nd.y-nd.in[1]]);
+    dir = _vNorm([dOut[0]+dInOpp[0], dOut[1]+dInOpp[1]]); if (!dir[0] && !dir[1]) dir = dOut;
+  } else if (nd.out) dir = _vNorm([nd.x-prev.x, nd.y-prev.y]);   // line in, curve out → tangent along prev→nd
+  else dir = _vNorm([next.x-nd.x, next.y-nd.y]);                 // curve in, line out → tangent along nd→next
+  if (!dir[0] && !dir[1]) return;
+  if (nd.out) { const L = Math.hypot(nd.out[0]-nd.x, nd.out[1]-nd.y) || 1; nd.out = [nd.x+dir[0]*L, nd.y+dir[1]*L]; }
+  if (nd.in)  { const L = Math.hypot(nd.in[0]-nd.x,  nd.in[1]-nd.y)  || 1; nd.in  = [nd.x-dir[0]*L, nd.y-dir[1]*L]; }
+}
+function toggleNodeSmooth(ci, ni) {
+  const ct = nodeModel.contours[ci]; if (!ct) return; const nd = ct.nodes[ni]; if (!nd) return;
+  if (nd.type === 'smooth') nd.type = 'corner';
+  else { makeNodeSmooth(ct, ni); nd.type = 'smooth'; }
+}
+function _lerp(a, b, t) { return [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t]; }
+function insertNodeAt(fxp, fyp) {                     // Alt-click: split the nearest segment (De Casteljau for cubics, lerp for lines)
+  if (!nodeModel) return false;
+  let best = null;
+  nodeModel.contours.forEach((ct, ci) => {
+    const nodes = ct.nodes, n = nodes.length;
+    for (let k=0;k<n;k++) {
+      const a = nodes[k], b = nodes[(k+1)%n], cubic = !!(a.out && b.in);
+      const p0=[a.x,a.y], p3=[b.x,b.y], p1 = cubic ? a.out : p0, p2 = cubic ? b.in : p3, B=[p0,p1,p2,p3];
+      for (let s=1;s<30;s++) { const t=s/30, pt=_bezEval(B,t), d=(pt[0]-fxp)**2+(pt[1]-fyp)**2; if (!best || d<best.d) best={d,ci,k,t,cubic,p0,p1,p2,p3}; }
+    }
+  });
+  if (!best || best.d > 6400) return false;           // ignore clicks > 80 font units from any segment
+  const ct = nodeModel.contours[best.ci], nodes = ct.nodes, nx = (best.k+1)%nodes.length, a = nodes[best.k], b = nodes[nx], t = best.t;
+  if (best.cubic) {
+    const A=_lerp(best.p0,best.p1,t), Bc=_lerp(best.p1,best.p2,t), Cc=_lerp(best.p2,best.p3,t), D=_lerp(A,Bc,t), E=_lerp(Bc,Cc,t), F=_lerp(D,E,t);
+    a.out = [A[0],A[1]]; b.in = [Cc[0],Cc[1]];
+    nodes.splice(nx, 0, { x:F[0], y:F[1], in:[D[0],D[1]], out:[E[0],E[1]], type:'smooth' });
+  } else {
+    const F = _lerp(best.p0, best.p3, t);
+    nodes.splice(nx, 0, { x:F[0], y:F[1], in:null, out:null, type:'corner' });
+  }
+  nodeSel.clear(); nodeSel.add(nodeKey(best.ci, nx));   // select the new node (also avoids stale indices after the splice)
+  return best.ci;
+}
+function _sampleSeg(a, b) {                            // dense points a..b (inclusive) for re-fitting
+  const out = [[a.x,a.y]];
+  if (a.out && b.in) flattenCubic([a.x,a.y], a.out, b.in, [b.x,b.y], 12).forEach(p => out.push(p));
+  else out.push([b.x,b.y]);
+  return out;
+}
+function rejoinDelete(ct, ni, err) {                  // remove node ni; re-fit prev→next (fitCurve derives its own tangents)
+  const nodes = ct.nodes, n = nodes.length;
+  const prev = nodes[(ni-1+n)%n], del = nodes[ni], next = nodes[(ni+1)%n];
+  const prevWasLine = !(prev.out && del.in), nextWasLine = !(del.out && next.in);
+  let intermediate = [];
+  if (prevWasLine && nextWasLine) { prev.out = null; next.in = null; }   // straight prev→next
+  else {
+    const chain = _sampleSeg(prev, del).concat(_sampleSeg(del, next).slice(1));
+    let cubics = null; try { cubics = fitCurve(chain, err); } catch(e) { cubics = null; }
+    if (cubics && cubics.length) {
+      prev.out = [cubics[0][1][0], cubics[0][1][1]];
+      const last = cubics[cubics.length-1]; next.in = [last[2][0], last[2][1]];
+      for (let i=0;i<cubics.length-1;i++) intermediate.push({ x:cubics[i][3][0], y:cubics[i][3][1], in:[cubics[i][2][0],cubics[i][2][1]], out:[cubics[i+1][1][0],cubics[i+1][1][1]], type:'smooth' });
+    } else { prev.out = null; next.in = null; }
+  }
+  nodes.splice(ni, 1, ...intermediate);
+}
+function nudgeSelectedNodes(dx, dy) {
+  nodeSel.forEach(key => {
+    const [ci,ni] = key.split(':').map(Number), ct = nodeModel.contours[ci]; if (!ct) return;
+    const nd = ct.nodes[ni]; if (!nd) return;
+    nd.x += dx; nd.y += dy;
+    if (nd.in) { nd.in[0]+=dx; nd.in[1]+=dy; }
+    if (nd.out) { nd.out[0]+=dx; nd.out[1]+=dy; }
+  });
+}
+function nodeOverlaySVG() {
+  if (!nodeModel) return '';
+  let h = '';
+  nodeModel.contours.forEach((ct, ci) => ct.nodes.forEach((nd, ni) => {   // handles (under markers) for selected nodes
+    if (!nodeSel.has(nodeKey(ci,ni))) return;
+    [['in',nd.in],['out',nd.out]].forEach(([which,hp]) => {
+      if (!hp) return;
+      h += `<line class="node-hline" x1="${fx(nd.x).toFixed(1)}" y1="${fy(nd.y).toFixed(1)}" x2="${fx(hp[0]).toFixed(1)}" y2="${fy(hp[1]).toFixed(1)}"/>`;
+      h += `<circle class="node-h" data-ci="${ci}" data-ni="${ni}" data-which="${which}" cx="${fx(hp[0]).toFixed(1)}" cy="${fy(hp[1]).toFixed(1)}" r="4"/>`;
+    });
+  }));
+  nodeModel.contours.forEach((ct, ci) => ct.nodes.forEach((nd, ni) => {   // node markers on top (□ corner, ○ smooth)
+    const sel = nodeSel.has(nodeKey(ci,ni)) ? ' sel' : '', x = fx(nd.x), y = fy(nd.y);
+    if (nd.type === 'smooth') h += `<circle class="node-pt${sel}" data-ci="${ci}" data-ni="${ni}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4.5"/>`;
+    else h += `<rect class="node-pt${sel}" data-ci="${ci}" data-ni="${ni}" x="${(x-4).toFixed(1)}" y="${(y-4).toFixed(1)}" width="8" height="8"/>`;
+  }));
+  return h;
+}
+function attachNodeEditor(l) {
+  const sv = stage();
+  sv.querySelectorAll('.node-pt').forEach(el => el.addEventListener('pointerdown', e => {
+    e.stopPropagation();
+    const ci=+el.dataset.ci, ni=+el.dataset.ni, key=nodeKey(ci,ni), now=Date.now();
+    if (_lastNodeClick.key === key && now - _lastNodeClick.t < 350) {   // manual double-click → toggle smooth/corner
+      _lastNodeClick = { key:null, t:0 };
+      udDo([itemScope()], 'smooth/corner — ' + l.name, () => { toggleNodeSmooth(ci, ni); writeThrough(l); });
+      renderStage(); renderControls(); return;
+    }
+    _lastNodeClick = { key, t: now };
+    if (e.shiftKey) { if (nodeSel.has(key)) nodeSel.delete(key); else nodeSel.add(key); renderStage(); renderControls(); return; }
+    if (!nodeSel.has(key)) { nodeSel.clear(); nodeSel.add(key); }
+    const orig = new Map();
+    nodeSel.forEach(k => { const [c,i]=k.split(':').map(Number), nd=nodeModel.contours[c]?.nodes[i]; if (nd) orig.set(k, { x:nd.x, y:nd.y, in: nd.in?nd.in.slice():null, out: nd.out?nd.out.slice():null }); });
+    nodeDrag = { type:'nodes', startFont: clientToFont(e), orig, ud: udCapture([itemScope()], 'move points — ' + l.name) };
+    sv.setPointerCapture(e.pointerId); e.preventDefault();
+  }));
+  sv.querySelectorAll('.node-h').forEach(el => el.addEventListener('pointerdown', e => {
+    e.stopPropagation();
+    nodeDrag = { type:'handle', ci:+el.dataset.ci, ni:+el.dataset.ni, which: el.dataset.which, ud: udCapture([itemScope()], 'move handle — ' + l.name) };
+    sv.setPointerCapture(e.pointerId); e.preventDefault();
+  }));
+}
+function onStageBgPointerDown(e) {                    // marquee / Alt-insert (markers & handles stopPropagation, so this only fires for empty/image/glyph)
+  if (workMode !== 'nodes' || curKind !== 'letter' || !nodeModel) return;
+  const sv = stage();
+  if (e.altKey) {
+    const [fxp,fyp] = clientToFont(e);
+    udDo([itemScope()], 'insert point — ' + curLetter().name, () => { if (insertNodeAt(fxp,fyp) !== false) writeThrough(curLetter()); });
+    renderStage(); renderControls(); return;
+  }
+  nodeDrag = { type:'marquee', start: clientToStage(e), add: e.shiftKey };
+  sv.setPointerCapture(e.pointerId); e.preventDefault();
+}
+function toggleNodeEdit() {
+  if (curKind !== 'letter' || !curLetter().contours) return;
+  setWorkMode(workMode === 'nodes' ? 'trace' : 'nodes');
+}
+function setSelectedNodeType(type) {
+  if (!nodeModel || !nodeSel.size) return;
+  const l = curLetter();
+  udDo([itemScope()], type + ' points — ' + l.name, () => {
+    nodeSel.forEach(key => { const [ci,ni]=key.split(':').map(Number), ct=nodeModel.contours[ci]; if (!ct) return; const nd=ct.nodes[ni]; if (!nd) return; if (type==='smooth') { makeNodeSmooth(ct, ni); nd.type='smooth'; } else nd.type='corner'; });
+    writeThrough(l);
+  });
+  renderStage(); renderControls();
+}
+function doNodeDelete() {
+  if (!nodeModel || !nodeSel.size) return;
+  const l = curLetter(), err = Math.max(l.epsilon || 0, 1.5), byC = {};
+  nodeSel.forEach(key => { const [ci,ni]=key.split(':').map(Number); (byC[ci]=byC[ci]||[]).push(ni); });
+  udDo([itemScope()], 'delete points — ' + l.name, () => {
+    Object.keys(byC).forEach(ciStr => { const ci=+ciStr, ct=nodeModel.contours[ci]; if (!ct) return; byC[ci].sort((a,b)=>b-a).forEach(ni => { if (ct.nodes.length > 3) rejoinDelete(ct, ni, err); }); });   // descending so splices stay valid
+    writeThrough(l);
+  });
+  nodeSel.clear(); renderStage(); renderControls();
+}
+function nodeEditPanelHTML() {
+  const cnt = nodeSel.size, dis = cnt ? '' : 'disabled';
+  return `<div class="ctl-row" style="flex-wrap:wrap;gap:6px;">
+    <button class="ctl-btn primary" onclick="toggleNodeEdit()">Done editing</button>
+    <button class="ctl-btn" onclick="setSelectedNodeType('smooth')" ${dis}>Smooth</button>
+    <button class="ctl-btn" onclick="setSelectedNodeType('corner')" ${dis}>Corner</button>
+    <button class="ctl-btn" onclick="doNodeDelete()" ${dis}>Delete</button>
+    <span class="readout">${cnt} selected</span>
+  </div>
+  <div class="hint">Drag a <b>point</b> to reshape · click to select, drag a box to multi-select (Shift adds) · <b>double-click</b> a point toggles □ corner / ○ smooth · <b>Alt-click</b> the outline adds a point · <b>Delete</b> removes one · arrows nudge (Shift = 25). Every edit exports and undoes (Ctrl+Z).</div>`;
+}
 /* Trace is split so dragging the sliders can update live:
    - rawLoopsFontUnits(): the expensive part (rasterize + marching-squares), cached.
    - finalizeFromRaw():    the cheap part (RDP simplify + winding) — re-run on ε change.
@@ -2772,13 +3074,18 @@ function finalizeFromRaw(l, rawLoops) {
   } else {
     l.curves = null;                                            // no ink → drop any stale curves (mirror l.contours)
   }
+  l.handEdited = false;                                         // a fresh trace replaces any hand-edited points
   return out.length;
 }
 function updateTraceInfo(l) {
   const ti = document.getElementById('traceInfo');
   if (ti) ti.textContent = l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : 'no ink detected';
 }
-function traceCurrent() {
+function traceCurrent() {   // warn-first wraps udDo (never nests an async confirm inside it)
+  if (curItem().handEdited) { askModal('Re-trace this letter?', 'This letter has hand-edited points. Re-tracing rebuilds the outline from the image and <b>discards your point edits</b> (you can still undo with Ctrl+Z afterward).', [{ label:'Re-trace', onClick: _traceCurrentNow }, { label:'Cancel', cls:'ghost' }]); return; }
+  _traceCurrentNow();
+}
+function _traceCurrentNow() {
   udDo([itemScope()], 're-trace — ' + curLetter().name, () => {
     const l = curLetter();
     const raw = rawLoopsFontUnits(l);
@@ -2790,6 +3097,10 @@ function traceCurrent() {
   });
 }
 function clearTrace() {
+  if (curItem().handEdited) { askModal('Clear this outline?', 'This letter has hand-edited points. Clearing <b>discards the outline and your point edits</b> (you can still undo with Ctrl+Z afterward).', [{ label:'Clear', onClick: _clearTraceNow }, { label:'Cancel', cls:'ghost' }]); return; }
+  _clearTraceNow();
+}
+function _clearTraceNow() {
   const it = curItem();
   udDo([itemScope()], 'clear trace — ' + it.name, () => { it.contours = null; it.curves = null; _rawTrace = null; renderGrids(); renderStage(); renderControls(); });
 }
@@ -3173,7 +3484,11 @@ function renderControls() {
   if (curKind !== 'letter') { renderMarkControls(U, l); return; }   // mark editor keeps its single-panel UI → Under
   if (workMode === 'align') { renderAlignLeft(L, l); renderAlignRight(R, l); renderAlignUnder(U, l); }
   else if (workMode === 'trace') { renderTraceLeft(L, l); renderTraceRight(R, l); renderTraceUnder(U, l); }
+  else if (workMode === 'nodes') { renderNodeLeft(L, l); renderTraceRight(R, l); renderTraceUnder(U, l); }
   else { renderAnchorLeft(L, l); renderAnchorRight(R, l); renderAnchorUnder(U, l); }
+}
+function renderNodeLeft(L, l) {
+  L.innerHTML = `<div class="ws-side-title">Edit points — ${l.name}</div>` + nodeEditPanelHTML();
 }
 
 /* ── Shared right-panel pieces (reference font + opacity sliders) ── */
@@ -3329,6 +3644,7 @@ function renderTraceLeft(L, l) {
     <div class="ctl-row">
       <button class="ctl-btn primary" onclick="traceCurrent()">Re-trace</button>
       <button class="ctl-btn" onclick="clearTrace()">Clear</button>
+      ${ l.contours ? `<button class="ctl-btn" onclick="toggleNodeEdit()">✎ Edit points</button>` : '' }
       <span id="traceInfo" class="readout">${ l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : '' }</span>
     </div>
     <div class="hint">Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically.</div>`;
@@ -3513,7 +3829,7 @@ document.addEventListener('keydown', e => {
   const k = e.key.toLowerCase();
   if (k !== 'z' && k !== 'y') return;
   if (udShortcutBlocked()) return;
-  if (tDrag || eDrag || metricDrag || _burst || _udNudge) return;   // don't undo mid-interaction
+  if (tDrag || eDrag || metricDrag || nodeDrag || _burst || _udNudge) return;   // don't undo mid-interaction
   e.preventDefault();
   if (k === 'y' || e.shiftKey) redo(); else undo();
 });
@@ -3544,6 +3860,25 @@ document.addEventListener('keydown', e => {
   const a = l.anchors[activeAnchorClass]; a.x += dx; a.y += dy;
   if (l.placementSaved) l.placementSaved = false;
   renderStage(); renderControls(); renderLetterGrid();
+});
+/* arrow-key nudge / Delete / Esc — node editor (Edit-points mode). Arrows = 5 units, Shift = 25
+   (node editing favors coarse jumps; the anchor/align nudges above use Shift = fine). A run of taps groups into one undo entry. */
+document.addEventListener('keydown', e => {
+  if (workMode !== 'nodes') return;
+  if (udShortcutBlocked()) return;                       // typing in a field / modal open / no project
+  if (e.ctrlKey || e.metaKey) return;                    // let Ctrl/Cmd+Z (undo/redo) fall through
+  const l = curLetter();
+  const step = e.shiftKey ? 25 : 5; let dx=0, dy=0;
+  if (e.key==='ArrowLeft') dx=-step; else if (e.key==='ArrowRight') dx=step;
+  else if (e.key==='ArrowUp') dy=step; else if (e.key==='ArrowDown') dy=-step;
+  if (dx || dy) {
+    if (!nodeSel.size || !nodeModel) return;
+    e.preventDefault();
+    udNudgeTick([itemScope()], 'move points — ' + l.name);
+    nudgeSelectedNodes(dx, dy); writeThrough(l); renderStage(); return;   // font units are y-up → +dy moves up
+  }
+  if (e.key === 'Delete' || e.key === 'Backspace') { if (!nodeSel.size) return; e.preventDefault(); doNodeDelete(); return; }
+  if (e.key === 'Escape') { e.preventDefault(); if (nodeSel.size) { nodeSel.clear(); renderStage(); renderControls(); } else setWorkMode('trace'); return; }
 });
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -4549,6 +4884,7 @@ function init() {
   initDark(); initPanels();
   // stage drag move/up live once on the persistent <svg> (handles transform drag)
   const sv = stage();
+  sv.addEventListener('pointerdown', onStageBgPointerDown);   // node-mode marquee / Alt-insert (early-returns in other modes)
   sv.addEventListener('pointermove', onStagePointerMove);
   sv.addEventListener('pointerup', onStagePointerUp);
   sv.addEventListener('pointercancel', onStagePointerUp);
