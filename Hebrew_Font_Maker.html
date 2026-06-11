@@ -899,6 +899,13 @@ const PUNCT_DEFAULTS = (() => {
 const UPM = 1000, BASELINE = 0, LETTER_TOP = 600, LAMED_TOP = 800, DESCENDER = -250;
 const DEF_LSB = 40, DEF_RSB = 40;
 const ANCHOR_Y = { below: -45, above: 640, center: 300 };
+// Default Y for a BELOW vowel anchor. Most letters sit on the baseline, so the vowel hangs just
+// below it (ANCHOR_Y.below). But a letter whose whole body FLOATS well above the baseline — yod is
+// the classic case — needs the vowel tucked just under THAT body; left at the baseline default its
+// nikkud detaches and drops way down. Mirrors the ink-relative ABOVE anchor (bb.maxY + 40).
+function defaultBelowY(bb) {
+  return (bb && Math.round(bb.minY) > 120) ? Math.round(bb.minY) - 40 : ANCHOR_Y.below;
+}
 function markScale() { return (project && project.font && project.font.markScale != null) ? project.font.markScale : 1; }
 function tropScale() { return (project && project.font && project.font.tropScale != null) ? project.font.tropScale : 1; }
 /* Spacing — single source of truth so the live preview matches the exported font exactly */
@@ -1266,6 +1273,7 @@ const HELP_CONTENT = {
     <p><strong>Allowed files:</strong> any image — PNG, JPG, GIF or WebP. Transparent PNGs and letters drawn on a plain white background also work great. (For the <span class="ui">Existing font file</span> option, a TTF or OTF font file.)</p>
     <p><strong>Tracing guide:</strong> a faint reference letter shows behind yours so you can line things up. On the <strong>right</strong> of the canvas, dial the <span class="ui">Reference letter opacity</span> slider (or untick <span class="ui">Show reference glyph behind</span> to hide it), and use <span class="ui">Imported image opacity</span> to fade your own photo in or out.</p>
     <p><strong>Position it</strong> (the <span class="ui">1 · Align</span> step): click a letter in the grid on the left, then use the adjustment buttons on the <strong>left</strong> of the canvas — Wider, Taller, Rotate, Skew — to sit your letter neatly on the guide lines. The little dot on that letter turns <strong style="color:#d08c2a;">orange</strong> once it has an image.</p>
+    <div class="help-tip">🖨️ Don't have letters to scan yet? The <a href="#" onclick="openHelp('templates');return false;" style="color:var(--gold);font-weight:700;">Download Templates</a> tab gives you printable sheets — handwrite each letter in the boxes, scan or photograph the page, then bring it in here with <span class="ui">One image with all letters</span>.</div>
   `,
   trace: `
     <h4>Tracing</h4>
@@ -3379,12 +3387,13 @@ function seedAnchors(l) {
   const mid = Math.round(bb.midX);
   const center = Math.round((bb.minY + bb.maxY)/2 * 0.6 + 150); // body-ish center
   const aboveY = Math.max(ANCHOR_Y.above, Math.round(bb.maxY)+40);
+  const belowY = defaultBelowY(bb);
   l.anchors = {
-    below:  { x: mid, y: ANCHOR_Y.below },
+    below:  { x: mid, y: belowY },
     above:  { x: mid, y: aboveY },
     center: { x: mid, y: Math.min(Math.max(center, 120), 380) },
     tropAbove: { x: mid, y: aboveY + TROP_GAP_ABOVE },
-    tropBelow: { x: mid, y: ANCHOR_Y.below - TROP_GAP_BELOW }
+    tropBelow: { x: mid, y: belowY - TROP_GAP_BELOW }
   };
 }
 function ensureTropAnchors(l) {   // back-fill trop anchors on letters seeded before trop existed
@@ -3880,9 +3889,16 @@ function maybeInheritAnchors(l) {
   // per save and only to a not-yet-saved letter (WeakMap guard), so in-progress moves are never clobbered.
   if (!lastSavedAnchors || curKind !== 'letter' || l.placementSaved) return;
   if (anchorInheritedFrom.get(l) === lastSavedAnchors) return;
+  const ibb = l.contours ? glyphBBox(l.contours, true, letterMeta(l.codepoint)) : null;
+  const floatUp = !!(ibb && Math.round(ibb.minY) > 120);   // yod-like: body floats well above the baseline
   ['below','above','center','tropAbove','tropBelow'].forEach(k => {
     const s = lastSavedAnchors[k];
-    if (s && l.anchors[k]) { l.anchors[k].x = s.x; l.anchors[k].y = s.y; }
+    if (s && l.anchors[k]) {
+      l.anchors[k].x = s.x;
+      // Carry the source letter's vertical level — but a floating letter keeps its own ink-relative
+      // below/tropBelow so its nikkud stays tucked under the body instead of dropping to the baseline.
+      if (!(floatUp && (k === 'below' || k === 'tropBelow'))) l.anchors[k].y = s.y;
+    }
   });
   anchorInheritedFrom.set(l, lastSavedAnchors);
   l.placementSaved = true;                                   // a carried placement counts as saved (green ✓); adjusting it drops the ✓
@@ -4315,9 +4331,10 @@ function qaAnchors(L) {
   const mid = Math.round(bb.midX);
   const center = Math.round((bb.minY + bb.maxY)/2 * 0.6 + 150);
   const aboveY = Math.max(ANCHOR_Y.above, Math.round(bb.maxY)+40);
-  return { below:{ x:mid, y:ANCHOR_Y.below }, above:{ x:mid, y:aboveY },
+  const belowY = defaultBelowY(bb);
+  return { below:{ x:mid, y:belowY }, above:{ x:mid, y:aboveY },
            center:{ x:mid, y:Math.min(Math.max(center,120),380) },
-           tropAbove:{ x:mid, y:aboveY + TROP_GAP_ABOVE }, tropBelow:{ x:mid, y:ANCHOR_Y.below - TROP_GAP_BELOW } };
+           tropAbove:{ x:mid, y:aboveY + TROP_GAP_ABOVE }, tropBelow:{ x:mid, y:belowY - TROP_GAP_BELOW } };
 }
 /* Even-odd point-in-ink across all base contours, so letter counters/holes count as outside (same
    rule as the contour-depth logic at 3174-3177). */
