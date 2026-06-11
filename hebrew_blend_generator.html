@@ -10159,6 +10159,69 @@ const HEB_FONTS = [
   },
 ];
 
+/* ═══ shared: ivritsuite-fonts ═══════════════════════════════════════════════
+   User-made fonts: saved here by Hebrew_Font_Maker, consumed by Torah Trainer
+   (and, later, other IvritSuite tools). TTFs are too big for localStorage, so
+   they live in IndexedDB. This works ACROSS tools because every IvritSuite page
+   is served from the same origin (ivritsuite.com) and IndexedDB is partitioned
+   per-origin — so one DB ("ivritsuite-fonts") is automatically shared by all of
+   them. Keep this block byte-identical in every consuming page. No library is
+   needed (indexedDB + FontFace are built in), so it loads nothing at page load. */
+const IV_FONTS_DB = 'ivritsuite-fonts', IV_FONTS_STORE = 'fonts', IV_FONTS_CAP = 10;
+function _ivOpenFontsDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IV_FONTS_DB, 1);
+    req.onupgradeneeded = () => { const db = req.result;
+      if (!db.objectStoreNames.contains(IV_FONTS_STORE)) db.createObjectStore(IV_FONTS_STORE, { keyPath: 'name' }); };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+function _ivTx(mode, fn) {
+  return _ivOpenFontsDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(IV_FONTS_STORE, mode), req = fn(tx.objectStore(IV_FONTS_STORE));
+    tx.oncomplete = () => resolve(req && req.result);
+    tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
+  }));
+}
+function listUserFonts() {   // → [{name, family, created, size}] newest-first; no bytes
+  return _ivTx('readonly', os => os.getAll()).then(rows => (rows || [])
+    .map(r => ({ name: r.name, family: r.family, created: r.created || 0, size: (r.bytes && r.bytes.byteLength) || 0 }))
+    .sort((a, b) => b.created - a.created));
+}
+function getUserFont(name) { return _ivTx('readonly', os => os.get(name)); }
+function deleteUserFont(name) { return _ivTx('readwrite', os => os.delete(name)); }
+function saveUserFont(name, bytes, family) {   // bytes: Uint8Array | ArrayBuffer
+  const buf = bytes.buffer ? bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) : bytes;
+  return listUserFonts().then(list => {
+    const stale = list.filter(f => f.name !== name).slice(IV_FONTS_CAP - 1);   // keep newest CAP-1 others + this one
+    return Promise.all(stale.map(f => deleteUserFont(f.name)))
+      .then(() => _ivTx('readwrite', os => os.put({ name: name, family: family || name, bytes: buf, created: Date.now() })));
+  });
+}
+function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontFace named `name`
+  return getUserFont(name).then(rec => {
+    if (!rec) throw new Error('Font not found: ' + name);
+    return new FontFace(name, rec.bytes).load().then(f => { document.fonts.add(f); return f; });
+  });
+}
+/* ═══ end shared: ivritsuite-fonts ═══════════════════════════════════════════ */
+
+/* ── My Fonts: user-made fonts from the shared store, shown in the picker (loaded via FontFace) ── */
+let MY_FONTS = []; const _loadedUserFonts = new Set();
+function ivEsc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
+function allFonts() { return MY_FONTS.concat(HEB_FONTS); }
+async function refreshMyFonts() {
+  try {
+    MY_FONTS = (await listUserFonts()).map(f => ({
+      section: 'My Fonts', name: f.name,
+      stack: "'" + String(f.name).replace(/['"\\<>]/g, '') + "', serif",
+      attr: 'made with IvritSuite Font Maker', link: null, load: { type: 'userfont' } }));
+  } catch (e) { MY_FONTS = []; }
+  initFontSelector();
+  const saved = localStorage.getItem('hebrewBlender_hebFont');
+  if (saved && MY_FONTS.some(f => f.name === saved)) setHebFont(saved, false);
+}
 function loadHebFont(font) {
   if (!font.load) return;
   const id = 'font-' + font.name.replace(/\s+/g, '-');
@@ -10171,11 +10234,15 @@ function loadHebFont(font) {
     const style = document.createElement('style');
     style.id = id; style.textContent = font.load.css;
     document.head.appendChild(style);
+  } else if (font.load.type === 'userfont') {
+    if (_loadedUserFonts.has(font.name)) return;
+    _loadedUserFonts.add(font.name);
+    loadUserFont(font.name).catch(e => { _loadedUserFonts.delete(font.name); console.warn('user font load failed', font.name, e); });
   }
 }
 
 function setHebFont(name, save = true) {
-  const font = HEB_FONTS.find(f => f.name === name);
+  const font = allFonts().find(f => f.name === name);
   if (!font) return;
   loadHebFont(font);
   document.documentElement.style.setProperty('--heb-font', font.stack);
@@ -10203,21 +10270,22 @@ function initFontSelector() {
   if (saved) setHebFont(saved, false);
 
   document.querySelectorAll('.font-selector-grid').forEach(grid => {
-    const sections = [...new Set(HEB_FONTS.map(f => f.section))];
+    grid.innerHTML = '';
+    const sections = [...new Set(allFonts().map(f => f.section))];
     sections.forEach(sec => {
       const hdr = document.createElement('div');
       hdr.className = 'font-section-hdr';
-      hdr.textContent = sec === 'Cursive' ? 'Cursive / Script' : sec + ' Fonts';
+      hdr.textContent = sec === 'My Fonts' ? 'My Fonts' : sec === 'Cursive' ? 'Cursive / Script' : sec + ' Fonts';
       grid.appendChild(hdr);
-      HEB_FONTS.filter(f => f.section === sec).forEach(font => {
+      allFonts().filter(f => f.section === sec).forEach(font => {
         const btn = document.createElement('button');
         btn.className = 'font-opt' + (font.name === active ? ' active' : '');
         btn.dataset.font = font.name;
         btn.innerHTML =
           '<span class="font-opt-preview" style="font-family:' + font.stack + ';">אֶרֶץ</span>' +
           '<span class="font-opt-info">' +
-            '<span class="font-opt-label">' + font.name + (font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : '') + '</span>' +
-            '<a class="font-opt-attr" href="' + font.link + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + font.attr + '</a>' +
+            '<span class="font-opt-label">' + ivEsc(font.name) + (font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : '') + '</span>' +
+            (font.link ? '<a class="font-opt-attr" href="' + font.link + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + ivEsc(font.attr) + '</a>' : '<span class="font-opt-attr">' + ivEsc(font.attr) + '</span>') +
           '</span>';
         btn.onclick = () => setHebFont(font.name);
         loadHebFont(font);
@@ -10239,6 +10307,7 @@ setBlendType(document.querySelector('.blend-type-btn.active[data-type]')?.datase
 initPanelCollapse();
 initDarkMode();
 initFontSelector();
+refreshMyFonts();
 try {
   const fv = localStorage.getItem('hebrewBlender_hebFontSize');
   if (fv !== null) { const sl = document.getElementById('hebFontSizeSlider'); if (sl) { sl.value = fv; setHebFontSize(fv); } }
