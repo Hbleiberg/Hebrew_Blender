@@ -314,6 +314,11 @@
   body.layout-tabbed #catHost .mark-split    { flex-direction: row; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
   body.layout-tabbed #catHost .mark-side     { flex: 0 1 460px; }
   body.layout-tabbed #catHost .mark-gridside { flex: 0 1 auto; min-width: 0; }
+  /* Spacing tab: Spacing + Kerning side by side when wide (saves vertical space), stacked when narrow */
+  .spacing-split { display: flex; flex-direction: column; gap: 16px; }
+  .spacing-split > div { min-width: 0; }
+  body.layout-tabbed #catHost .spacing-split { flex-direction: row; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+  body.layout-tabbed #catHost .spacing-split > div { flex: 1 1 320px; }
   /* Tabbed: the work-mode steps (Align/Trace/Nikkud/Trop) drop below the picker, just above the stage */
   body.layout-tabbed .workspace { display: flex; flex-direction: column; }
   body.layout-tabbed #catTabs   { order: 1; }
@@ -3857,6 +3862,9 @@ function renderSpacingPanel() {
   const body = document.getElementById('spacingBody'); if (!body) return;
   const sp = fontSpacing();
   body.innerHTML = `
+    <div class="spacing-split">
+    <div>
+    <div class="ctl-label" style="margin-bottom:6px;">Spacing</div>
     <div class="inline">Letter spacing <input type="range" min="-40" max="200" step="5" value="${sp.letterSpacing}" oninput="setLetterSpacing(this.value)" onchange="udBurstCommit()"> <span id="lsV" class="readout">${sp.letterSpacing}</span></div>
     <div class="inline">Word spacing <input type="range" min="80" max="600" step="10" value="${sp.wordSpacing}" oninput="setWordSpacing(this.value)" onchange="udBurstCommit()"> <span id="wsV" class="readout">${sp.wordSpacing}</span></div>
     <div class="hint" style="margin-top:-4px;">Word spacing is also the width of the Space (U+0020) glyph.</div>
@@ -3865,7 +3873,9 @@ function renderSpacingPanel() {
     <div class="hint">Adjusts the exported font's spacing (letter &amp; word advance widths + line gap). The preview uses your traced letters — untraced letters show as dashed boxes.</div>
     <svg id="spacingPreviewSvg" style="width:100%;height:auto;max-height:170px;margin-top:4px;"></svg>
     <div class="ctl-row" style="margin-top:4px;"><button class="ctl-btn" onclick="resetSpacing()">Reset spacing</button></div>
-    <div id="kerningBody" style="margin-top:14px;border-top:1px solid var(--border);padding-top:10px;"></div>`;
+    </div>
+    <div id="kerningBody"></div>
+    </div>`;
   renderSpacingPreview();
   renderKerningSection();
 }
