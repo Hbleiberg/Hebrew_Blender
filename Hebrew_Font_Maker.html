@@ -314,11 +314,15 @@
   body.layout-tabbed #catHost .mark-split    { flex-direction: row; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
   body.layout-tabbed #catHost .mark-side     { flex: 0 1 460px; }
   body.layout-tabbed #catHost .mark-gridside { flex: 0 1 auto; min-width: 0; }
-  /* Spacing tab: Spacing + Kerning side by side when wide (saves vertical space), stacked when narrow */
-  .spacing-split { display: flex; flex-direction: column; gap: 16px; }
-  .spacing-split > div { min-width: 0; }
-  body.layout-tabbed #catHost .spacing-split { flex-direction: row; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
-  body.layout-tabbed #catHost .spacing-split > div { flex: 1 1 320px; }
+  /* Settings tabs (Spacing, Advanced): split into side-by-side panels when wide (saves vertical space),
+     stacked when narrow — with a visible divider line between panels (vertical side-by-side, horizontal stacked). */
+  .col-split { display: flex; flex-direction: column; gap: 16px; }
+  .col-split > div { min-width: 0; }
+  .col-split > div + div { border-top: 1px solid var(--border); padding-top: 16px; }
+  body.layout-tabbed #catHost .col-split { flex-direction: row; align-items: stretch; gap: 0; flex-wrap: wrap; }
+  body.layout-tabbed #catHost .col-split > div { flex: 1 1 320px; padding-right: 24px; }
+  body.layout-tabbed #catHost .col-split > div:last-child { padding-right: 0; }
+  body.layout-tabbed #catHost .col-split > div + div { border-top: none; padding-top: 0; border-left: 1px solid var(--border); padding-left: 24px; }
   /* Tabbed: the work-mode steps (Align/Trace/Nikkud/Trop) drop below the picker, just above the stage */
   body.layout-tabbed .workspace { display: flex; flex-direction: column; }
   body.layout-tabbed #catTabs   { order: 1; }
@@ -632,14 +636,21 @@
     <div class="panel cat-panel" data-cat="advanced">
       <div class="panel-title">Advanced Settings</div>
       <div class="panel-body">
-        <label class="fld">Layout</label>
-        <div class="mode-toggle">
-          <button class="mode-btn" id="layoutBtnSidebar" onclick="setLayout('sidebar')">Sidebar</button>
-          <button class="mode-btn" id="layoutBtnTabbed" onclick="setLayout('tabbed')">Tabbed</button>
+        <div class="col-split">
+          <div>
+            <div class="ctl-label" style="margin-bottom:6px;">Layout</div>
+            <div class="mode-toggle">
+              <button class="mode-btn" id="layoutBtnSidebar" onclick="setLayout('sidebar')">Sidebar</button>
+              <button class="mode-btn" id="layoutBtnTabbed" onclick="setLayout('tabbed')">Tabbed</button>
+            </div>
+            <div class="hint"><strong>Sidebar</strong> stacks every tab's panel in one scrolling column on the left. <strong>Tabbed</strong> (the default) puts each one on its own tab across the top. Your choice is remembered on this device.</div>
+          </div>
+          <div>
+            <div class="ctl-label" style="margin-bottom:6px;">Custom glyphs</div>
+            <label class="chk"><input type="checkbox" id="addCustomGlyphsChk" onchange="setAddCustomGlyphs(this.checked)"> Add custom glyphs</label>
+            <div class="hint">Adds a <strong>Custom glyphs</strong> tab (after Punctuation) where you can define glyphs at any Unicode code point — a main letter or a nikkud mark. Tip: for brand-new shapes use the Private-Use range <b>U+E000–U+F8FF</b> so they don't collide with standard characters.</div>
+          </div>
         </div>
-        <div class="hint"><strong>Sidebar</strong> stacks every tab's panel in one scrolling column on the left. <strong>Tabbed</strong> (the default) puts each one on its own tab across the top. Your choice is remembered on this device.</div>
-        <label class="chk" style="margin-top:14px;"><input type="checkbox" id="addCustomGlyphsChk" onchange="setAddCustomGlyphs(this.checked)"> Add custom glyphs</label>
-        <div class="hint">Adds a <strong>Custom glyphs</strong> tab (after Punctuation) where you can define glyphs at any Unicode code point — a main letter or a nikkud mark. Tip: for brand-new shapes use the Private-Use range <b>U+E000–U+F8FF</b> so they don't collide with standard characters.</div>
       </div>
     </div>
     </div>
@@ -3862,7 +3873,7 @@ function renderSpacingPanel() {
   const body = document.getElementById('spacingBody'); if (!body) return;
   const sp = fontSpacing();
   body.innerHTML = `
-    <div class="spacing-split">
+    <div class="col-split">
     <div>
     <div class="ctl-label" style="margin-bottom:6px;">Spacing</div>
     <div class="inline">Letter spacing <input type="range" min="-40" max="200" step="5" value="${sp.letterSpacing}" oninput="setLetterSpacing(this.value)" onchange="udBurstCommit()"> <span id="lsV" class="readout">${sp.letterSpacing}</span></div>
