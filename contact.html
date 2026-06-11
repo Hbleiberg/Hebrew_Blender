@@ -85,7 +85,7 @@ header .hright{margin-left:auto;display:flex;gap:10px;align-items:center;}
 .dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;}
 .dark-btn:hover{background:rgba(255,255,255,0.1);}
 
-main{flex:1;width:100%;max-width:820px;margin:0 auto;padding:48px 24px 64px;}
+main{flex:1;width:100%;max-width:1060px;margin:0 auto;padding:48px 24px 64px;}
 main h1.page-title{font-family:'Libre Baskerville',serif;font-size:2rem;color:var(--text);margin-bottom:6px;}
 main .lede{font-size:0.95rem;color:var(--muted);margin-bottom:28px;}
 main h2{font-family:'Libre Baskerville',serif;font-size:1.25rem;color:var(--text);margin:36px 0 12px;border-bottom:1px solid var(--border);padding-bottom:6px;}
@@ -94,8 +94,12 @@ main a{color:var(--gold);text-decoration:underline;}
 main a:hover{color:var(--gold-light);}
 main strong{font-weight:700;}
 
+/* Side-by-side tiles */
+.cs-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start;margin-top:10px;}
+.cs-tile{background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);border-radius:12px;padding:22px 24px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+.cs-tile h2{margin:0 0 8px;border-bottom:none;padding:0;font-size:1.2rem;}
+
 /* Contact form */
-.card{border-left:4px solid var(--gold);background:var(--white);padding:22px 24px;border-radius:8px;margin:18px 0 8px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
 .field{margin-bottom:14px;}
 .field label{display:block;font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:5px;}
 .field input,.field textarea{width:100%;border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text);padding:10px;font-family:inherit;font-size:0.95rem;}
@@ -119,8 +123,8 @@ body.dark .btn-primary:hover{background:#345090;}
 .pill-group .pill:hover{color:var(--text);}
 .pill-group .pill.active{background:var(--navy);color:var(--gold-light);}
 body.dark .pill-group .pill.active{background:#2a4070;color:var(--gold-light);}
-.donate-panel{display:none;background:var(--white);border:1px solid var(--border);border-radius:10px;padding:26px 24px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
-.donate-panel.active{display:block;}
+.donate-panel{display:none;text-align:center;padding:14px 4px 6px;min-height:250px;}
+.donate-panel.active{display:flex;flex-direction:column;align-items:center;justify-content:center;}
 .donate-handle{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:var(--text);margin:2px 0 2px;}
 .donate-sub{font-size:0.82rem;letter-spacing:0.04em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;}
 .donate-btn{display:inline-block;background:var(--gold);color:var(--navy);font-weight:700;text-decoration:none;padding:11px 26px;border-radius:8px;font-size:0.95rem;transition:background 0.15s;}
@@ -130,6 +134,9 @@ body.dark .pill-group .pill.active{background:#2a4070;color:var(--gold-light);}
 footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
 footer a{color:var(--gold);text-decoration:none;}
 
+@media (max-width:760px){
+  .cs-grid{grid-template-columns:1fr;}
+}
 @media (max-width:640px){
   header{padding:16px 20px;}
   header h1{font-size:1.2rem;}
@@ -157,11 +164,11 @@ footer a{color:var(--gold);text-decoration:none;}
   <h1 class="page-title">Contact &amp; Support</h1>
   <div class="lede">Have a question, found a bug, or have an idea for a new feature? I'd love to hear from you.</div>
 
-  <h2>Get in touch</h2>
-  <p>Send a message below and it will go straight to my inbox. Please include your email so I can write back.</p>
-
-  <div class="card">
-    <form id="contactForm">
+  <div class="cs-grid">
+    <section class="cs-tile">
+      <h2>Get in touch</h2>
+      <p>Send a message below and it will go straight to my inbox. Please include your email so I can write back.</p>
+      <form id="contactForm">
       <div class="field">
         <label for="cfName">Your name</label>
         <input type="text" id="cfName" required autocomplete="name">
@@ -182,12 +189,12 @@ footer a{color:var(--gold);text-decoration:none;}
       <input type="text" id="cfHoney" class="honey" tabindex="-1" autocomplete="off" aria-hidden="true">
       <button type="submit" class="btn-primary">Send message</button>
       <div id="formStatus" role="status" aria-live="polite"></div>
-    </form>
-  </div>
+      </form>
+      <p class="email-line">Prefer your own email app? Write to <a href="mailto:Harrison@IvritSuite.com">Harrison@IvritSuite.com</a>.</p>
+    </section>
 
-  <p class="email-line">Prefer your own email app? Write to <a href="mailto:Harrison@IvritSuite.com">Harrison@IvritSuite.com</a>.</p>
-
-  <h2>Support IvritSuite</h2>
+    <section class="cs-tile">
+      <h2>Support IvritSuite</h2>
   <p>IvritSuite is free, and it always will be — no accounts, no ads, no paywalls. If these tools have been useful in your classroom or learning, a small donation helps cover the development and upkeep that keep them running and growing. It's entirely optional, and deeply appreciated. Thank you.</p>
 
   <div class="pill-wrap">
@@ -211,6 +218,8 @@ footer a{color:var(--gold);text-decoration:none;}
   <div class="donate-panel" data-pay="zelle">
     <img class="zelle-qr" src="zelle-qr.jpg?v=1" alt="Zelle QR code for donating to IvritSuite" loading="lazy">
     <div class="donate-sub" style="margin-top:14px;margin-bottom:0;">Scan with your bank's Zelle feature</div>
+  </div>
+    </section>
   </div>
 </main>
 
