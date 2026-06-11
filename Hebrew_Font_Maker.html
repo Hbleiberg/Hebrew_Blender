@@ -614,6 +614,11 @@
       <div class="panel-title">Punctuation &amp; More</div>
       <div class="panel-body" id="punctPanelBody"></div>
     </div>
+
+    <div class="panel collapsed cat-panel" data-cat="customglyphs">
+      <div class="panel-title">Custom glyphs</div>
+      <div class="panel-body" id="customGlyphsPanelBody"></div>
+    </div>
     <div class="panel cat-panel" data-cat="spacing">
       <div class="panel-title">Spacing</div>
       <div class="panel-body" id="spacingBody"></div>
@@ -628,6 +633,8 @@
           <button class="mode-btn" id="layoutBtnTabbed" onclick="setLayout('tabbed')">Tabbed</button>
         </div>
         <div class="hint"><strong>Sidebar</strong> stacks every tab's panel in one scrolling column on the left. <strong>Tabbed</strong> (the default) puts each one on its own tab across the top. Your choice is remembered on this device.</div>
+        <label class="chk" style="margin-top:14px;"><input type="checkbox" id="addCustomGlyphsChk" onchange="setAddCustomGlyphs(this.checked)"> Add custom glyphs</label>
+        <div class="hint">Adds a <strong>Custom glyphs</strong> tab (after Punctuation) where you can define glyphs at any Unicode code point — a main letter or a nikkud mark. Tip: for brand-new shapes use the Private-Use range <b>U+E000–U+F8FF</b> so they don't collide with standard characters.</div>
       </div>
     </div>
     </div>
@@ -1124,9 +1131,11 @@ function newProject() {
       version: '1.000', unitsPerEm: UPM, markScale: 1.0, tropScale: 1.0,
       nikkud: { enabled: true,  mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, shevaNa: false },   // mode: 'default' | 'custom'; uploadMode: 'perSymbol' | 'combined'; shevaNa: bold sheva-na alternate
       trop:   { enabled: false, mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },
+      customMarks: { enabled: true, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },   // user-defined nikkud marks added via the Custom glyphs tab
       metrics: { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP, descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB },
       spacing: { letterSpacing: 0, wordSpacing: 260, lineSpacing: 0, sample: 'שלום עולם' },
       includeDigitsPunct: true,
+      addCustomGlyphs: false,
       kerning: []
     },
     template: { font: "'Noto Sans Hebrew', sans-serif", opacity: 0.35, showOverlay: true },
@@ -1176,7 +1185,8 @@ function selectItem(kind, cp) {
 function _selectItem(kind, cp) {
   udFlushPending();          // commit any open slider burst / pending nudge before navigating away
   curKind = kind; curCp = cp; workMode = 'align'; precompTarget = null;
-  catTab = (kind === 'letter' && letterMeta(cp) && letterMeta(cp).cat === 'punct') ? 'punct' : kind;   // keep the visible picker on the edited item's category (punct letters → Punctuation tab)
+  catTab = isCustomCp(cp) ? 'customglyphs'
+         : (kind === 'letter' && letterMeta(cp) && letterMeta(cp).cat === 'punct') ? 'punct' : kind;   // keep the picker on the edited item's category (custom glyphs → Custom glyphs tab; punct letters → Punctuation tab)
   renderGrids(); renderStage(); renderControls();
 }
 function renderGrids() {
@@ -1185,7 +1195,11 @@ function renderGrids() {
   renderTropPanel();
   renderPunctPanel();
   renderSpacingPanel();
-  if (document.getElementById('catTabs')) syncCatTabs();
+  if (document.getElementById('customGlyphsPanelBody')) {
+    if (document.getElementById('customGlyphsGrid')) renderCustomGlyphsGrid();   // keep tile selection/status in sync
+    else renderCustomGlyphsPanel();                                              // first build of the panel + add form
+  }
+  renderCatTabs();   // also (re)builds the tab bar so the Custom glyphs tab appears/disappears with the toggle
 }
 /* ── Custom-mark geometry helpers ──
    Custom mark contours are stored in workspace coords (natural for the editor); the
@@ -1858,7 +1872,8 @@ function renderMarkPanel(cat) {
    not the system font — a dotted "letter" circle with the actual mark shape attached
    above/below/centre per its class, mirroring how the placement screen previews it. */
 function markTilePreviewSVG(cat, cp) {
-  const cls = (cat === 'nikkud' ? MARK_CLASS[cp] : TROP_CLASS[cp]) || 'below';
+  const cls = (cat === 'customMarks' ? ((project.font.customMarks.custom[cp] || {}).cls || 'below')
+            : cat === 'nikkud' ? MARK_CLASS[cp] : TROP_CLASS[cp]) || 'below';
   const polys = markGlyphContours(cat, cp);            // font units; origin = attach anchor
   const R = 90;                                         // base "letter" circle radius
   const ax = 0, ay = cls === 'below' ? -R : (cls === 'above' ? R : 0);   // where the mark seats on the circle
@@ -1968,6 +1983,164 @@ async function uploadMarkSheet(cat, file) {
   status(`${cat === 'nikkud' ? 'Nikkud' : 'Trop'} sheet loaded. Pick a symbol, then drag a box around it.`);
 }
 
+/* ════════ Custom glyphs (Advanced → "Add custom glyphs") ════════
+   Reuses the two existing editor modes: a MAIN glyph is a project.letters entry flagged .custom
+   (full letter pipeline, curKind='letter'); a NIKKUD MARK lives in project.font.customMarks.custom
+   (mark pipeline, curKind='customMarks'). The toggle + tab are wired in renderCatTabs(). */
+let cgType = 'base', cgShape = 'trace';
+function customBaseLetters() { return (project.letters || []).filter(l => l.custom); }
+function customMarkCps() { return Object.keys((project.font.customMarks && project.font.customMarks.custom) || {}); }
+function isCustomCp(cp) {
+  return customBaseLetters().some(l => l.codepoint === cp)
+      || !!(((project.font.customMarks && project.font.customMarks.custom) || {})[cp]);
+}
+function whoHasCp(cp) {            // label of the existing glyph occupying cp, or '' if free
+  const L = LETTERS.find(x => x.cp === cp); if (L) return L.name;
+  if (MARK_NAMES[cp]) return MARK_NAMES[cp];
+  if (TROP_NAMES[cp]) return TROP_NAMES[cp];
+  if (PRECOMPOSED.some(p => p.target === cp)) return 'a precomposed form';
+  if (cp === '0020') return 'the space';
+  if (cp === 'E0B0') return 'the Sheva Na slot';
+  return '';
+}
+function normalizeCp(raw) {        // "U+05D0" | "0x05D0" | "05D0" | a pasted char → 4-digit UPPER hex (BMP), or null
+  let s = (raw == null ? '' : String(raw)).trim();
+  if (!s) return null;
+  let n;
+  if (/^(u\+|0x)/i.test(s)) n = parseInt(s.replace(/^(u\+|0x)/i, ''), 16);
+  else if (/^[0-9a-f]{1,6}$/i.test(s)) n = parseInt(s, 16);
+  else n = s.codePointAt(0);       // a single pasted character
+  if (!Number.isFinite(n) || n < 0x20 || n > 0xFFFF) return null;   // BMP only (glyph name is 'uni'+hex)
+  return n.toString(16).toUpperCase().padStart(4, '0');
+}
+function setAddCustomGlyphs(on) {
+  project.font.addCustomGlyphs = !!on;
+  if (!on && isCustomCp(curCp)) selectItem('letter', LETTER_ORDER[0]);   // leave the custom editor if it was open
+  renderGrids();   // rebuilds the tab bar (renderCatTabs) → shows/hides the Custom glyphs tab
+}
+function cgSetType(t) {
+  cgType = t;
+  document.getElementById('cgTypeBase').classList.toggle('active', t === 'base');
+  document.getElementById('cgTypeMark').classList.toggle('active', t === 'mark');
+  document.getElementById('cgMarkClsRow').style.display = t === 'mark' ? '' : 'none';
+  document.getElementById('cgShapeRow').style.display   = t === 'base' ? '' : 'none';   // duplicate is offered for main glyphs; marks trace/draw in the editor
+  if (t === 'mark') cgShape = 'trace';
+}
+function cgSetShape(s) {
+  cgShape = s;
+  document.getElementById('cgShapeTrace').classList.toggle('active', s === 'trace');
+  document.getElementById('cgShapeDup').classList.toggle('active', s === 'dup');
+  document.getElementById('cgDup').style.display = s === 'dup' ? '' : 'none';
+}
+function renderCustomGlyphsPanel() {
+  const el = document.getElementById('customGlyphsPanelBody'); if (!el) return;
+  const dupOpts = LETTERS.filter(L => L.cat !== 'punct')
+    .map(L => `<option value="${L.cp}">${escapeHtml(L.name)} (${String.fromCodePoint(parseInt(L.cp, 16))})</option>`).join('');
+  el.innerHTML = `
+    <div class="hint" style="margin-bottom:8px;">Define a glyph at any Unicode code point. Brand-new shapes work best in the Private-Use range <b>U+E000–U+F8FF</b>. Trace each glyph like a letter, or duplicate an existing letter and tweak it.</div>
+    <div class="letter-grid" id="customGlyphsGrid"></div>
+    <div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">
+      <div style="font-weight:700;font-size:0.82rem;margin-bottom:6px;">+ Add a new glyph</div>
+      <div class="row2">
+        <label class="fld">Code point <input type="text" id="cgCp" placeholder="E000 or U+05D0"></label>
+        <label class="fld">Name <input type="text" id="cgName" placeholder="My glyph"></label>
+      </div>
+      <div class="mode-toggle" style="margin-top:6px;">
+        <button class="mode-btn active" id="cgTypeBase" onclick="cgSetType('base')">Main glyph</button>
+        <button class="mode-btn" id="cgTypeMark" onclick="cgSetType('mark')">Nikkud mark</button>
+      </div>
+      <div id="cgMarkClsRow" style="display:none;margin-top:6px;">
+        <label class="fld">Attaches
+          <select id="cgCls"><option value="below">Below the letter</option><option value="above">Above the letter</option><option value="center">Centre (dagesh-style)</option></select>
+        </label>
+      </div>
+      <div id="cgShapeRow" style="margin-top:6px;">
+        <div class="hint">Shape</div>
+        <div class="mode-toggle">
+          <button class="mode-btn active" id="cgShapeTrace" onclick="cgSetShape('trace')">Trace new image</button>
+          <button class="mode-btn" id="cgShapeDup" onclick="cgSetShape('dup')">Duplicate a letter</button>
+        </div>
+        <select id="cgDup" style="display:none;margin-top:6px;">${dupOpts}</select>
+      </div>
+      <button class="ctl-btn" style="margin-top:8px;" onclick="addCustomGlyph()">Add glyph</button>
+    </div>`;
+  cgType = 'base'; cgShape = 'trace';
+  renderCustomGlyphsGrid();
+}
+function renderCustomGlyphsGrid() {
+  const grid = document.getElementById('customGlyphsGrid'); if (!grid) return;
+  grid.innerHTML = '';
+  const bases = customBaseLetters(), marks = customMarkCps();
+  if (!bases.length && !marks.length) {
+    grid.innerHTML = `<div class="hint" style="grid-column:1/-1;">No custom glyphs yet — add one below.</div>`;
+    return;
+  }
+  const delBtn = (cp, type) => `<button title="Delete glyph" onclick="event.stopPropagation();deleteCustomGlyph('${cp}','${type}')" style="position:absolute;top:1px;right:1px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:0.78rem;line-height:1;padding:2px;">✕</button>`;
+  bases.forEach(l => {
+    const st = l.anchors ? 'anchored' : (l.contours ? 'traced' : (l.source && l.source.dataUrl ? 'img' : ''));
+    const tile = document.createElement('div');
+    tile.className = 'ltile' + (curKind === 'letter' && l.codepoint === curCp ? ' sel' : '');
+    tile.style.position = 'relative';
+    tile.innerHTML = `<span class="lt-dot ${st}"></span>
+      <span class="lt-heb" style="font-family:${project.template.font};">${String.fromCodePoint(parseInt(l.codepoint, 16))}</span>
+      <span class="lt-name">${escapeHtml(l.name || ('U+' + l.codepoint))}</span>${delBtn(l.codepoint, 'base')}`;
+    tile.onclick = () => selectItem('letter', l.codepoint);
+    grid.appendChild(tile);
+  });
+  marks.forEach(cp => {
+    const m = project.font.customMarks.custom[cp];
+    const tile = document.createElement('div');
+    tile.className = 'ltile' + (curKind === 'customMarks' && cp === curCp ? ' sel' : '');
+    tile.style.position = 'relative';
+    tile.innerHTML = `<span class="lt-dot ${markStatusOf(m)}"></span>
+      ${markTilePreviewSVG('customMarks', cp)}
+      <span class="lt-name">${escapeHtml(m.name || ('U+' + cp))}</span>${delBtn(cp, 'mark')}`;
+    tile.onclick = () => selectItem('customMarks', cp);
+    grid.appendChild(tile);
+  });
+}
+function addCustomGlyph() {
+  const cp = normalizeCp(document.getElementById('cgCp').value);
+  if (!cp) { alert('Enter a valid Unicode code point — e.g. E000, U+05D0, or paste a character. (Basic Multilingual Plane only.)'); return; }
+  if (isCustomCp(cp)) { alert('You already have a custom glyph at U+' + cp + '.'); return; }
+  const who = whoHasCp(cp);
+  if (who && !confirm('U+' + cp + ' is already ' + who + '. Adding this will REPLACE it in your exported font. Continue?')) return;
+  const name = (document.getElementById('cgName').value || '').trim();
+  if (cgType === 'mark') {
+    const cls = document.getElementById('cgCls').value || 'below';
+    const m = customMark('customMarks', cp);          // creates it under project.font.customMarks.custom
+    m.name = name || ('Custom mark U+' + cp);
+    m.cls = cls;
+    m.designMode = 'upload';                          // trace/upload path (custom cps have no default editor pieces)
+    selectItem('customMarks', cp);
+  } else {
+    const it = blankLetter({ cp, name: name || ('Custom U+' + cp) });
+    it.custom = true; it.name = name || ('Custom U+' + cp);
+    if (cgShape === 'dup') {
+      const src = project.letters.find(l => l.codepoint === document.getElementById('cgDup').value);
+      if (src) {
+        it.contours = src.contours ? JSON.parse(JSON.stringify(src.contours)) : null;
+        it.curves   = src.curves   ? JSON.parse(JSON.stringify(src.curves))   : null;
+        it.advance  = src.advance; it.lsb = src.lsb; it.rsb = src.rsb;
+        it.anchors  = src.anchors  ? JSON.parse(JSON.stringify(src.anchors))  : null;
+      }
+    }
+    project.letters.push(it);
+    selectItem('letter', cp);
+  }
+  renderCustomGlyphsPanel();                          // reset the add form + refresh the list
+  status('Added custom glyph U+' + cp + '.');
+}
+function deleteCustomGlyph(cp, type) {
+  if (!confirm('Delete this custom glyph (U+' + cp + ')? This cannot be undone.')) return;
+  if (type === 'mark') delete project.font.customMarks.custom[cp];
+  else project.letters = project.letters.filter(l => !(l.custom && l.codepoint === cp));
+  if (curCp === cp) selectItem('letter', LETTER_ORDER[0]);
+  renderCustomGlyphsPanel();
+  renderGrids();
+  status('Deleted custom glyph U+' + cp + '.');
+}
+
 /* ════════ Work mode (Align / Trace / Nikkud) ════════ */
 function setWorkMode(mode) {
   // Leaving the Nikkud/Trop placement screen with an unsaved move? Offer to save first.
@@ -2026,8 +2199,12 @@ function syncCatTabs() {
 function renderCatTabs() {
   const t = document.getElementById('catTabs');
   if (!t) return;
-  const NAMES = { fontdetails: 'Font Details', letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop', punct: 'Punctuation', spacing: 'Spacing', advanced: 'Advanced Settings' };
-  t.innerHTML = ['fontdetails', 'letter', 'nikkud', 'trop', 'punct', 'spacing', 'advanced'].map(c =>
+  const cb = document.getElementById('addCustomGlyphsChk');
+  if (cb && project && project.font) cb.checked = !!project.font.addCustomGlyphs;
+  const NAMES = { fontdetails: 'Font Details', letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop', punct: 'Punctuation', customglyphs: 'Custom glyphs', spacing: 'Spacing', advanced: 'Advanced Settings' };
+  const cats = ['fontdetails', 'letter', 'nikkud', 'trop', 'punct', 'spacing', 'advanced'];
+  if (project && project.font && project.font.addCustomGlyphs) cats.splice(cats.indexOf('punct') + 1, 0, 'customglyphs');   // appears right after Punctuation
+  t.innerHTML = cats.map(c =>
     `<div class="ctab" data-cat="${c}" onclick="setCatTab('${c}')">${NAMES[c]}</div>`).join('');
   syncCatTabs();
 }
@@ -2433,7 +2610,7 @@ function updateTabs() {
   tt.textContent = '4 · Trop';
 }
 function renderMarkControls(c, it) {
-  const cat = curKind, label = cat==='nikkud' ? 'Nikkud' : 'Trop';
+  const cat = curKind, label = cat==='nikkud' ? 'Nikkud' : (cat==='customMarks' ? 'Custom mark' : 'Trop');
   const combined = project.font[cat].uploadMode === 'combined';
   const heb = String.fromCodePoint(0x25CC) + String.fromCodePoint(parseInt(it.codepoint,16));
   let h = `<div class="ctl-row" style="justify-content:space-between;">
@@ -4662,6 +4839,16 @@ function buildFontSpec() {
     cmap[parseInt(L.cp,16)] = nm;
   });
 
+  // custom MAIN glyphs (Custom glyphs tab; only when the feature is enabled) — flagged entries in project.letters; on a codepoint clash they replace the standard slot
+  if (project.font.addCustomGlyphs) (project.letters || []).filter(l => l.custom).forEach(l => {
+    const nm = gname(l.codepoint);
+    const contours = (l.contours || []).map(c => c.points);
+    const exists = !!glyphs[nm];
+    glyphs[nm] = { contours, advance: effLetterAdvance(l), lsb: (l.lsb != null ? l.lsb : null) };
+    if (l.curves && l.curves.length === contours.length) glyphs[nm].curves = l.curves;
+    if (!exists) { glyphOrder.push(nm); baseGlyphNames.push(nm); cmap[parseInt(l.codepoint,16)] = nm; }
+  });
+
   // mark glyphs (zero width) — only when the font is Nikkud-compatible; default or custom shapes, scaled by Nikkud size
   const ms = markScale();
   const nikOn = project.font.nikkud.enabled;
@@ -4673,6 +4860,18 @@ function buildFontSpec() {
     if (mcv && mcv.length === mc.length) glyphs[nm].curves = mcv.map(cv => cv ? scaleRoundCurve(cv, ms) : null);
     glyphOrder.push(nm); markGlyphNames.push(nm);
     cmap[parseInt(cp,16)] = nm;
+  });
+
+  // custom NIKKUD marks (Custom glyphs tab) — their own category; always included, scaled like nikkud; replace on clash
+  const cmStore = (project.font.addCustomGlyphs && project.font.customMarks && project.font.customMarks.custom) || {};
+  Object.keys(cmStore).forEach(cp => {
+    const nm = gname(cp);
+    const exists = !!glyphs[nm];
+    const mc = markGlyphContours('customMarks', cp);
+    glyphs[nm] = { contours: mc.map(poly => poly.map(p => [Math.round(p[0]*ms), Math.round(p[1]*ms)])), advance: 0 };
+    const mcv = markGlyphCurves('customMarks', cp);
+    if (mcv && mcv.length === mc.length) glyphs[nm].curves = mcv.map(cv => cv ? scaleRoundCurve(cv, ms) : null);
+    if (!exists) { glyphOrder.push(nm); markGlyphNames.push(nm); cmap[parseInt(cp,16)] = nm; }
   });
 
   // Optional "Sheva Na": a heavier sheva so mobile (na) vs. silent (nach) sheva can be told apart.
@@ -4754,6 +4953,10 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn) {
   // ── nikkud mark classes (each mark's attach anchor is at origin 0,0) ──
   const byClass = { below: [], above: [], center: [] };
   if (nikOn) MARK_CPS.forEach(cp => byClass[MARK_CLASS[cp]].push(gname(cp)));
+  // custom nikkud marks (Custom glyphs tab) — grouped by their stored class so they attach to letters
+  // and appear in GDEF, independent of whether built-in nikkud is enabled.
+  const cgMarkStore = (project.font.addCustomGlyphs && project.font.customMarks && project.font.customMarks.custom) || {};
+  Object.keys(cgMarkStore).forEach(cp => { const c = (cgMarkStore[cp] || {}).cls || 'below'; if (byClass[c]) byClass[c].push(gname(cp)); });
   const shevaNaOn = nikOn && project.font.nikkud.shevaNa;
   if (shevaNaOn) byClass.below.push(SHEVA_NA_GLYPH);   // the bold sheva attaches like any below mark
   const nikMarks = [...byClass.below, ...byClass.above, ...byClass.center];
@@ -4794,6 +4997,7 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn) {
     }
   };
   LETTERS.forEach(L => emitBaseAnchors(gname(L.cp), project.letters.find(x => x.codepoint === L.cp)));
+  if (project.font.addCustomGlyphs) (project.letters || []).filter(l => l.custom).forEach(l => emitBaseAnchors(gname(l.codepoint), l));   // custom MAIN glyphs accept nikkud/custom marks too
   // Ligature/precomposed targets (e.g. שׁ = shin+shin-dot → FB2A, בּ = bet+dagesh → FB31) are NEW base
   // glyphs. A vowel typed after the composed pair attaches to the TARGET, not the original letter — so
   // the target needs the base letter's anchors too, or the vowel falls back to x=0 and hugs the left
@@ -5931,7 +6135,7 @@ async function applyProjectData(data) {           // shared by file-load and "Lo
   const urls = [];
   (project.combinedSheets || []).forEach(s => { if (s.dataUrl) urls.push(s.dataUrl); });
   project.letters.forEach(l => { if (l.source.dataUrl) urls.push(l.source.dataUrl); });
-  ['nikkud','trop'].forEach(cat => {                    // preload mark sheets + cropped mark images too
+  ['nikkud','trop','customMarks'].forEach(cat => {      // preload mark sheets + cropped mark images too
     const f = project.font[cat];
     if (f.combinedImage && f.combinedImage.dataUrl) urls.push(f.combinedImage.dataUrl);
     Object.values(f.custom || {}).forEach(it => { if (it.source && it.source.dataUrl) urls.push(it.source.dataUrl); });
@@ -6000,6 +6204,23 @@ function migrateProject(data) {
     if (ex.rsb === undefined) ex.rsb = null;   // per-letter right margin (independent of Width)
     return ex;
   });
+  // custom MAIN glyphs (Custom glyphs tab) live in project.letters flagged .custom — preserve any beyond the standard 27
+  { const stdCps = new Set(LETTERS.map(L => L.cp));
+    Object.values(byCp).forEach(l => {
+      if (!l || !l.custom || stdCps.has(l.codepoint)) return;
+      l.source = l.source || { kind: data.inputMode || 'single', dataUrl: null, cropRect: null, sheetId: null };
+      if (l.source.sheetId === undefined) l.source.sheetId = null;
+      if (!l.transform) l.transform = [1,0,0,1,0,0];
+      if (l.binThreshold == null) l.binThreshold = 128;
+      if (l.epsilon == null) l.epsilon = 6;
+      if (l.cornerAngle == null) l.cornerAngle = 32;
+      if (l.placementSaved == null) l.placementSaved = false;
+      if (l.invert == null) l.invert = false;
+      if (l.lsb === undefined) l.lsb = null;
+      if (l.rsb === undefined) l.rsb = null;
+      data.letters.push(l);
+    });
+  }
   if (!Array.isArray(data.combinedSheets)) {                          // migrate the old single sheet → multi-sheet set
     data.combinedSheets = (data.combinedImage && data.combinedImage.dataUrl)
       ? [{ id: 's_legacy', name: 'Sheet 1', dataUrl: data.combinedImage.dataUrl }] : [];
@@ -6029,6 +6250,11 @@ function migrateProject(data) {
     if (!data.font.trop.custom) data.font.trop.custom = {};
     if (!data.font.trop.uploadMode) data.font.trop.uploadMode = 'perSymbol';
     if (!data.font.trop.combinedImage) data.font.trop.combinedImage = { dataUrl: null };
+    if (data.font.addCustomGlyphs == null) data.font.addCustomGlyphs = false;
+    if (!data.font.customMarks) data.font.customMarks = { enabled: true, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } };
+    if (!data.font.customMarks.custom) data.font.customMarks.custom = {};
+    if (!data.font.customMarks.combinedImage) data.font.customMarks.combinedImage = { dataUrl: null };
+    data.font.customMarks.mode = 'custom';
     if (!data.font.spacing) data.font.spacing = { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם' };
     else { const sp = data.font.spacing; if (sp.letterSpacing==null) sp.letterSpacing=0; if (sp.wordSpacing==null) sp.wordSpacing=260; if (sp.lineSpacing==null) sp.lineSpacing=0; if (!sp.sample) sp.sample='שלום עולם'; }
     if (!Array.isArray(data.font.kerning)) data.font.kerning = [];
