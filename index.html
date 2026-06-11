@@ -291,7 +291,7 @@ body.dark .sefaria-attr .sefaria-dark{display:inline-block;}
       <button class="ie-modal-close" onclick="closeIEModal()">×</button>
     </div>
     <div class="ie-modal-body">
-      <p class="ie-note">Back up <b>all</b> presets, saved schedules, and settings from the Generator, Dashboard, Flash Cards, Dictionary, and Torah Trainer together. <b>Automatic Input</b> saves and restores a single <b>.ivrit</b> file; <b>Manual Input</b> uses a copy-and-paste text block.</p>
+      <p class="ie-note">Back up <b>all</b> presets, saved schedules, settings, and saved fonts from the Generator, Dashboard, Flash Cards, Dictionary, Torah Trainer, and Font Maker together. <b>Automatic Input</b> saves and restores a single <b>.ivrit</b> file; <b>Manual Input</b> uses a copy-and-paste text block.</p>
       <style>
         .ivrit-mode-toggle{display:flex;border:1px solid var(--border,#ccc);border-radius:6px;overflow:hidden;margin-bottom:12px;}
         .ivrit-mode-btn{flex:1;padding:8px 4px;border:none;background:var(--white,#fff);color:var(--text,#222);font-family:inherit;font-size:0.85rem;cursor:pointer;}
@@ -391,6 +391,21 @@ function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontF
 }
 /* ═══ end shared: ivritsuite-fonts ═══════════════════════════════════════════ */
 
+/* Font backup: a cache of saved fonts (with bytes, base64) kept ready so the SYNC
+   All-Settings export / AllTools .ivrit gather can include them without going async.
+   Refreshed at page load and whenever the gear modal opens. */
+let _fontsBackupCache = [];
+function _ivBytesToB64(buf) { const a = new Uint8Array(buf); let s = ''; const C = 0x8000; for (let i = 0; i < a.length; i += C) s += String.fromCharCode.apply(null, a.subarray(i, i + C)); return btoa(s); }
+function _ivB64ToBytes(b64) { const bin = atob(b64); const a = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return a; }
+async function refreshFontsBackupCache() {
+  try {
+    const metas = await listUserFonts(); const out = [];
+    for (const m of metas) { const rec = await getUserFont(m.name); if (rec && rec.bytes) out.push({ name: rec.name, family: rec.family, created: rec.created || 0, b64: _ivBytesToB64(rec.bytes) }); }
+    _fontsBackupCache = out;
+  } catch (e) { _fontsBackupCache = []; }
+}
+if (window.indexedDB) refreshFontsBackupCache();
+
 /* ── My IvritSuite Fonts manager (homepage gear modal) ── */
 function _ivFmt(ts) { if (!ts) return ''; try { return new Date(ts).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' }); } catch (e) { return ''; } }
 async function renderMyFontsManager() {
@@ -446,7 +461,7 @@ function useFontEverywhere(name) {
 
 function openIEModal() {
   document.getElementById('ieBackdrop').classList.add('open');
-  if (window.indexedDB) renderMyFontsManager();
+  if (window.indexedDB) { renderMyFontsManager(); refreshFontsBackupCache(); }
 }
 function closeIEModal(e) {
   if (e && e.target !== document.getElementById('ieBackdrop')) return;
@@ -691,10 +706,11 @@ function exportAllSettings() {
     dictEmojiSettings:   JSON.parse(localStorage.getItem('hebrewDictionary_emojiSettings') || '{}'),
     torahTrainerSettings: JSON.parse(localStorage.getItem('hebrewTorahTrainer_settings') || '{}'),
     inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
+    userFonts:           _fontsBackupCache || [],
   };
   document.getElementById('ieTextarea').value = JSON.stringify(blob, null, 2);
 }
-function importAllSettings() {
+async function importAllSettings() {
   const raw = document.getElementById('ieTextarea').value.trim();
   if (!raw) { alert('Paste an exported settings block first.'); return; }
   let parsed;
@@ -755,6 +771,10 @@ function importAllSettings() {
     if (parsed.inputMode !== undefined) {
       localStorage.setItem('hebrewBlender_inputMode', parsed.inputMode);
     }
+    if (parsed.userFonts && Array.isArray(parsed.userFonts) && window.indexedDB) {
+      for (const uf of parsed.userFonts) { try { await saveUserFont(uf.name, _ivB64ToBytes(uf.b64), uf.family); } catch (e) {} }
+      refreshFontsBackupCache();
+    }
     alert('Import successful! Reload the Dashboard to apply all settings.');
   } catch(e) { alert('Import failed: ' + e.message); }
 }
@@ -767,7 +787,7 @@ function copyIEText() {
 }
 
 function eraseAllSettings() {
-  if (!confirm('⚠️ WARNING: This will permanently erase ALL presets, saved schedules, and settings for both the Generator and the Dashboard.\n\nThis cannot be undone. Export a backup first if you want to keep your data.\n\nAre you sure you want to erase everything?')) return;
+  if (!confirm('⚠️ WARNING: This will permanently erase ALL presets, saved schedules, settings, and saved fonts for every IvritSuite tool.\n\nThis cannot be undone. Export a backup first if you want to keep your data.\n\nAre you sure you want to erase everything?')) return;
   if (!confirm('Final confirmation: erase all Hebrew Blender data on this device?')) return;
   const keys = [
     'hebrewBlender_presets',
@@ -790,6 +810,7 @@ function eraseAllSettings() {
     'hebrewBlender_inputMode',
   ];
   keys.forEach(k => localStorage.removeItem(k));
+  if (window.indexedDB) { listUserFonts().then(l => l.forEach(f => deleteUserFont(f.name))).catch(() => {}); _fontsBackupCache = []; renderMyFontsManager(); }
   document.getElementById('ieTextarea').value = '';
   alert('All settings and presets have been erased.');
 }
@@ -816,7 +837,8 @@ const IVRIT_CFG = {
       dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate')       || '0.75',
       dictEmojiSettings:   JSON.parse(localStorage.getItem('hebrewDictionary_emojiSettings') || '{}'),
       torahTrainerSettings:JSON.parse(localStorage.getItem('hebrewTorahTrainer_settings')    || '{}'),
-      inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto'
+      inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
+      userFonts:           _fontsBackupCache || []
     };
   },
   apply(data, mode) {
@@ -850,6 +872,10 @@ const IVRIT_CFG = {
     if (data.dictTranslitStyle !== undefined) { localStorage.setItem('hebrewDictionary_translitStyle', data.dictTranslitStyle); touched = true; }
     if (data.dictTtsRate       !== undefined) { localStorage.setItem('hebrewDictionary_ttsRate',       data.dictTtsRate);       touched = true; }
     if (data.inputMode         !== undefined) { localStorage.setItem('hebrewBlender_inputMode',        data.inputMode); }
+    if (data.userFonts && Array.isArray(data.userFonts) && window.indexedDB) {
+      data.userFonts.forEach(uf => { try { saveUserFont(uf.name, _ivB64ToBytes(uf.b64), uf.family); } catch (e) {} });
+      refreshFontsBackupCache(); touched = true;
+    }
     if (!touched) { alert('This file has no all-tools data. Try importing it on its own tool\'s page instead.'); }
   }
 };

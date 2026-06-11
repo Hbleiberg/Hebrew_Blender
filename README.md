@@ -101,7 +101,7 @@ In each tool's **Backup** area there's an **Automatic Input / Manual Input** tog
 How it works:
 
 - A save file stores **both** your full collection of named presets **and** your current on-screen settings, so restoring brings everything back.
-- The landing-page **AllTools** save file bundles *every* tool at once (Generator, Dashboard, Flash Cards, Dictionary, and Torah Trainer settings).
+- The landing-page **AllTools** save file bundles *every* tool at once (Generator, Dashboard, Flash Cards, Dictionary, and Torah Trainer settings — plus any fonts you built in the Hebrew Font Maker).
 - Each file knows which tool it came from (recorded inside the file, so it still works even if you rename it). Dropping the wrong kind of file onto a tool warns you first.
 - On restore you choose **Merge** (add to what you have) or **Replace** (start fresh from the file).
 
