@@ -187,6 +187,43 @@ footer a{color:var(--gold);text-decoration:none;}
   .filter-label{min-width:72px;}
   .resource-grid{grid-template-columns:1fr;}
 }
+
+/* ── Suggest a Resource: CTA button + modal ── */
+.filter-bar{position:relative;}
+.suggest-btn{position:absolute;right:18px;bottom:12px;display:inline-flex;align-items:center;gap:6px;background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:8px 16px;font-size:0.88rem;font-weight:700;font-family:'Source Sans 3',sans-serif;cursor:pointer;transition:background 0.15s,transform 0.05s;}
+.suggest-btn:hover{background:var(--gold-light);}
+.suggest-btn:active{transform:scale(0.98);}
+@media(max-width:860px){.suggest-btn{position:static;margin-top:6px;align-self:flex-start;}}
+
+.sg-backdrop{display:none;position:fixed;inset:0;background:rgba(13,18,32,0.5);z-index:200;align-items:center;justify-content:center;}
+.sg-backdrop.open{display:flex;}
+.sg-modal{background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.25);width:560px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;}
+.sg-modal-hdr{background:var(--navy);color:#fff;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.sg-modal-hdr h3{font-family:'Libre Baskerville',serif;font-size:0.95rem;letter-spacing:0.04em;color:#fff;}
+body.dark .sg-modal-hdr{background:var(--navy-deep);}
+.sg-modal-close{background:rgba(255,255,255,0.12);color:#fff;border:none;border-radius:4px;width:28px;height:28px;cursor:pointer;font-size:1.1rem;line-height:1;flex-shrink:0;}
+.sg-modal-close:hover{background:rgba(255,255,255,0.22);}
+.sg-modal-body{padding:18px;overflow-y:auto;flex:1;}
+#suggestForm{display:flex;flex-direction:column;gap:14px;}
+.sg-intro{font-size:0.86rem;color:var(--muted);margin:0 0 4px;}
+.sg-field{display:flex;flex-direction:column;gap:5px;}
+.sg-field > label{font-size:0.8rem;font-weight:700;color:var(--text);}
+.sg-field input[type=text],.sg-field input[type=email],.sg-field input[type=url],.sg-field textarea{width:100%;border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text);padding:9px 10px;font-family:inherit;font-size:0.9rem;}
+.sg-field input:focus,.sg-field textarea:focus{outline:2px solid var(--gold);outline-offset:1px;}
+.sg-field textarea{min-height:80px;resize:vertical;}
+.sg-hint{font-size:0.72rem;color:var(--muted);font-weight:400;}
+.sg-pillrow{display:flex;flex-wrap:wrap;gap:6px;}
+.sg-pill{font-size:0.76rem;padding:4px 13px;border:1.5px solid var(--border);border-radius:20px;background:transparent;color:var(--text);cursor:pointer;font-family:'Source Sans 3',sans-serif;transition:all 0.15s;white-space:nowrap;}
+.sg-pill:hover{border-color:var(--gold);color:var(--gold);}
+.sg-pill.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+body.dark .sg-pill.active{background:#2a3f6a;border-color:#4a6aaa;}
+.sg-btn-primary{align-self:flex-start;background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 22px;font-family:inherit;font-size:0.92rem;font-weight:600;cursor:pointer;transition:background 0.15s;}
+.sg-btn-primary:hover{background:#24345c;}
+.sg-btn-primary:disabled{opacity:0.55;cursor:default;}
+body.dark .sg-btn-primary{background:#2a4070;}
+.honey{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden;}
+#sgStatus{font-size:0.88rem;color:var(--muted);min-height:1.2em;}
+#sgStatus a{color:var(--gold);}
 </style>
 </head>
 <body>
@@ -226,6 +263,7 @@ footer a{color:var(--gold);text-decoration:none;}
       <button class="filter-btn" data-filter="age" data-value="middle">Middle / High (6–12)</button>
       <button class="filter-btn" data-filter="age" data-value="adult">Adult / Teacher</button>
     </div>
+    <button class="suggest-btn" onclick="openSuggestModal()">✚ Suggest a Resource</button>
   </div>
 
   <p class="results-count" id="resultsCount"></p>
@@ -715,6 +753,176 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch(e) {}
   render();
 });
+</script>
+
+<!-- Suggest a Resource modal -->
+<div class="sg-backdrop" id="sgBackdrop" onclick="closeSuggestModal(event)">
+  <div class="sg-modal" onclick="event.stopPropagation()">
+    <div class="sg-modal-hdr">
+      <h3>✚ Suggest a Resource</h3>
+      <button class="sg-modal-close" onclick="closeSuggestModal()" aria-label="Close">×</button>
+    </div>
+    <div class="sg-modal-body">
+      <p class="sg-intro">Know a great Hebrew or Jewish-education resource? Share it and I'll consider adding it to the directory.</p>
+      <form id="suggestForm">
+        <input type="hidden" name="access_key" value="8c041c46-1e9f-41ac-9066-f42b21040a5a">
+        <div class="sg-field">
+          <label for="sgName">Your name</label>
+          <input type="text" id="sgName" name="name" required autocomplete="name">
+        </div>
+        <div class="sg-field">
+          <label for="sgEmail">Your email</label>
+          <input type="email" id="sgEmail" name="email" required autocomplete="email">
+        </div>
+        <div class="sg-field">
+          <label for="sgResName">Resource name</label>
+          <input type="text" id="sgResName" name="Resource Name" required>
+        </div>
+        <div class="sg-field">
+          <label for="sgResUrl">Resource URL</label>
+          <input type="url" id="sgResUrl" name="Resource URL" placeholder="https://…" required>
+        </div>
+        <div class="sg-field">
+          <label>Category <span class="sg-hint">— pick one</span></label>
+          <div class="sg-pillrow" id="sgCatPills">
+            <button type="button" class="sg-pill" data-val="Lesson Planning">📘 Lesson Planning</button>
+            <button type="button" class="sg-pill" data-val="Printables">🖨️ Printables</button>
+            <button type="button" class="sg-pill" data-val="Tanakh">📖 Tanakh</button>
+            <button type="button" class="sg-pill" data-val="Hebrew">🇮🇱 Hebrew</button>
+            <button type="button" class="sg-pill" data-val="Culture">🎭 Culture</button>
+            <button type="button" class="sg-pill" data-val="Miscellaneous">🧩 Miscellaneous</button>
+          </div>
+          <input type="hidden" name="Category" id="sgCat">
+        </div>
+        <div class="sg-field">
+          <label>Format <span class="sg-hint">— pick one</span></label>
+          <div class="sg-pillrow" id="sgFormatPills">
+            <button type="button" class="sg-pill" data-val="Worksheet / Printable">Worksheet / Printable</button>
+            <button type="button" class="sg-pill" data-val="Website / App">Website / App</button>
+            <button type="button" class="sg-pill" data-val="Video">Video</button>
+            <button type="button" class="sg-pill" data-val="Book">Book</button>
+            <button type="button" class="sg-pill" data-val="Song / Audio">Song / Audio</button>
+            <button type="button" class="sg-pill" data-val="Game">Game</button>
+            <button type="button" class="sg-pill" data-val="Other">Other</button>
+          </div>
+          <input type="hidden" name="Format" id="sgFormat">
+        </div>
+        <div class="sg-field">
+          <label>Intended age group <span class="sg-hint">— pick any that apply</span></label>
+          <div class="sg-pillrow" id="sgAgePills">
+            <button type="button" class="sg-pill" data-val="Early Learners (K–2)">Early Learners (K–2)</button>
+            <button type="button" class="sg-pill" data-val="Elementary (3–5)">Elementary (3–5)</button>
+            <button type="button" class="sg-pill" data-val="Middle / High (6–12)">Middle / High (6–12)</button>
+            <button type="button" class="sg-pill" data-val="Adult / Teacher">Adult / Teacher</button>
+            <button type="button" class="sg-pill" data-val="All Ages">All Ages</button>
+          </div>
+          <input type="hidden" name="Intended Age Group" id="sgAge">
+        </div>
+        <div class="sg-field">
+          <label for="sgDesc">Brief description</label>
+          <textarea id="sgDesc" name="Description" required placeholder="What is it, and why is it useful?"></textarea>
+        </div>
+        <div class="sg-field">
+          <label for="sgNotes">Additional notes <span class="sg-hint">(optional)</span></label>
+          <textarea id="sgNotes" name="Additional Notes"></textarea>
+        </div>
+        <!-- honeypot: hidden from humans, catches bots -->
+        <input type="checkbox" name="botcheck" class="honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <!-- hCaptcha (free, server-verified by Web3Forms via its shared site key); rendered on modal open -->
+        <div id="sgHcaptcha" style="min-height:78px;"></div>
+        <button type="submit" class="sg-btn-primary">Send suggestion</button>
+        <div id="sgStatus" role="status" aria-live="polite"></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- hCaptcha (explicit render so it works inside the popup) -->
+<script src="https://js.hcaptcha.com/1/api.js?render=explicit" async defer></script>
+<script>
+(function(){
+  const HCAPTCHA_SITEKEY = '50b2fe65-b00b-4b9e-ad62-3ba471098be2'; // Web3Forms shared free key
+  const backdrop = document.getElementById('sgBackdrop');
+  const form = document.getElementById('suggestForm');
+  const statusEl = document.getElementById('sgStatus');
+  let hcId = null;
+
+  // Pill rows → hidden input. single-select (Category/Format) or multi-select (Age).
+  function wirePills(rowId, hiddenId, multi){
+    const row = document.getElementById(rowId), hidden = document.getElementById(hiddenId);
+    row.querySelectorAll('.sg-pill').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if (multi){ btn.classList.toggle('active'); }
+        else { row.querySelectorAll('.sg-pill').forEach(function(b){ b.classList.remove('active'); }); btn.classList.add('active'); }
+        hidden.value = [].slice.call(row.querySelectorAll('.sg-pill.active')).map(function(b){ return b.dataset.val; }).join(', ');
+      });
+    });
+  }
+  wirePills('sgCatPills', 'sgCat', false);
+  wirePills('sgFormatPills', 'sgFormat', false);
+  wirePills('sgAgePills', 'sgAge', true);
+
+  // hCaptcha renders unreliably inside a display:none modal — render it (once) when the modal opens.
+  function ensureCaptcha(){
+    const box = document.getElementById('sgHcaptcha');
+    if (hcId !== null || !box || box.querySelector('iframe')) return;
+    if (window.hcaptcha && window.hcaptcha.render){
+      try { hcId = window.hcaptcha.render(box, { sitekey: HCAPTCHA_SITEKEY }); } catch (_) {}
+    } else {
+      setTimeout(ensureCaptcha, 300); // hCaptcha API not loaded yet
+    }
+  }
+
+  window.openSuggestModal = function(){ backdrop.classList.add('open'); ensureCaptcha(); };
+  window.closeSuggestModal = function(e){ if (e && e.target !== backdrop) return; backdrop.classList.remove('open'); };
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && backdrop.classList.contains('open')) backdrop.classList.remove('open');
+  });
+
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    const btn = form.querySelector('button[type="submit"]');
+    const token = (window.hcaptcha && hcId !== null) ? window.hcaptcha.getResponse(hcId) : '';
+    if (!token){
+      statusEl.style.color = 'var(--muted)';
+      statusEl.textContent = 'Please complete the “I’m human” check before sending.';
+      return;
+    }
+    btn.disabled = true;
+    statusEl.style.color = 'var(--muted)';
+    statusEl.textContent = 'Sending…';
+    const formData = new FormData(form);
+    formData.set('subject', 'New Resource Suggestion: ' + (formData.get('Resource Name') || '').trim());
+    formData.set('from_name', formData.get('name') || 'IvritSuite resource suggestion');
+    const payload = Object.fromEntries(formData);
+    payload['h-captcha-response'] = token;
+    try {
+      const r = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await r.json().catch(function(){ return {}; });
+      if (r.ok && data.success){
+        form.reset();
+        form.querySelectorAll('.sg-pill.active').forEach(function(b){ b.classList.remove('active'); });
+        ['sgCat','sgFormat','sgAge'].forEach(function(id){ document.getElementById(id).value = ''; });
+        if (window.hcaptcha && hcId !== null){ try { window.hcaptcha.reset(hcId); } catch (_) {} }
+        statusEl.style.color = 'var(--gold)';
+        statusEl.textContent = '✓ Thank you — your suggestion was sent!';
+      } else {
+        statusEl.style.color = 'var(--muted)';
+        statusEl.innerHTML = (data && data.message ? data.message : 'Sorry — that didn’t go through.') +
+          ' You can also email <a href="mailto:Harrison@IvritSuite.com">Harrison@IvritSuite.com</a>.';
+      }
+    } catch (err){
+      statusEl.style.color = 'var(--muted)';
+      statusEl.innerHTML = 'Sorry — that didn’t go through. Please email <a href="mailto:Harrison@IvritSuite.com">Harrison@IvritSuite.com</a> directly.';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+})();
 </script>
 </body>
 </html>
