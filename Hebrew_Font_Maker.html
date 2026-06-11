@@ -2066,7 +2066,7 @@ function openSvgGuide() {
     <p><b>Box the rest by hand.</b> Anything unnamed can still be selected: drag a box around a letter on the sheet and the shapes inside it become that glyph.</p>
     <p><b>Auto-fit.</b> Each imported outline is scaled to the cap height and seated on the baseline (descenders dip below). Use <b>Edit points</b> and the <b>Width / side-bearing</b> controls to fine-tune.</p>
     <p><b>New shapes / PUA.</b> For glyphs that aren't standard characters, turn on <b>Add custom glyphs</b> and import the SVG at a Private-Use code point (<b>U+E000–U+F8FF</b>).</p>
-    <p><b>Tips:</b> group transforms are honoured, so flatten/ungroup freely; convert <i>strokes to fills</i> first (open strokes don't fill); clipped, masked, hidden, and <code>&lt;use&gt;</code>-referenced elements are skipped.</p>
+    <p><b>Tips:</b> group transforms are honored, so flatten/ungroup freely; convert <i>strokes to fills</i> first (open strokes don't fill); clipped, masked, hidden, and <code>&lt;use&gt;</code>-referenced elements are skipped.</p>
   </div>`, [{ label: 'Got it' }]);
 }
 function cgSetType(t) {
@@ -2589,7 +2589,7 @@ function elementToLoops(el, rootScreenCTM) {            // one renderable elemen
   else if (tag === 'polygon' || tag === 'polyline') dList = [polyToD(el, tag === 'polygon')];
   else return [];
   let ctm = null;
-  try { ctm = rootScreenCTM.inverse().multiply(el.getScreenCTM()); } catch (e) { ctm = null; }   // el-local → root user space (honours group transforms)
+  try { ctm = rootScreenCTM.inverse().multiply(el.getScreenCTM()); } catch (e) { ctm = null; }   // el-local → root user space (honors group transforms)
   const parent = el.parentNode, loops = [];
   dList.forEach(d => {
     if (!d) return;
