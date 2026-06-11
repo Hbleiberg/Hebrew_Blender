@@ -2067,7 +2067,7 @@ function renderCustomGlyphsPanel() {
       </div>
       <div id="cgMarkClsRow" style="display:none;margin-top:6px;">
         <label class="fld">Attaches
-          <select id="cgCls"><option value="below">Below the letter</option><option value="above">Above the letter</option><option value="center">Centre (dagesh-style)</option></select>
+          <select id="cgCls"><option value="below">Below the letter</option><option value="above">Above the letter</option><option value="center">Center (dagesh-style)</option></select>
         </label>
       </div>
       <div id="cgShapeRow" style="margin-top:6px;">
@@ -2088,7 +2088,7 @@ function renderCustomGlyphsGrid() {
   grid.innerHTML = '';
   const bases = customBaseLetters(), marks = customMarkCps();
   if (!bases.length && !marks.length) {
-    grid.innerHTML = `<div class="hint" style="grid-column:1/-1;">No custom glyphs yet — add one below.</div>`;
+    grid.innerHTML = `<div class="hint" style="grid-column:1/-1;direction:ltr;text-align:left;">No custom glyphs yet — add one below</div>`;
     return;
   }
   const delBtn = (cp, type) => `<button title="Delete glyph" onclick="event.stopPropagation();deleteCustomGlyph('${cp}','${type}')" style="position:absolute;top:1px;right:1px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:0.78rem;line-height:1;padding:2px;">✕</button>`;
