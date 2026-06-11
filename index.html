@@ -321,6 +321,11 @@ body.dark .sefaria-attr .sefaria-dark{display:inline-block;}
         <textarea id="ieTextarea" placeholder="Click 'Export All Settings' to generate a backup, or paste a backup here and click 'Import All Settings'…" spellcheck="false"></textarea>
         <div><button class="ie-action-btn secondary" onclick="copyIEText()" id="ieCopyBtn">Copy to Clipboard</button></div>
       </div>
+      <div id="myFontsSection" style="margin-top:14px;border-top:1px solid rgba(0,0,0,0.12);padding-top:12px;">
+        <h4 style="margin:0 0 4px;font-size:0.95rem;">★ My IvritSuite Fonts <span id="myFontsCount" style="font-weight:400;font-size:0.8rem;opacity:0.7;"></span></h4>
+        <p class="ie-note" style="margin:0 0 8px;">Fonts you built in the <a href="Hebrew_Font_Maker.html">Hebrew Font Maker</a> are saved in this browser. Use one across every tool, download it, or remove it.</p>
+        <div id="myFontsList"></div>
+      </div>
       <div style="margin-top:14px;border-top:1px solid rgba(0,0,0,0.12);padding-top:12px;">
         <button class="ie-action-btn" style="background:#a83232;color:#fff;" onclick="eraseAllSettings()">🗑 Erase All Settings</button>
       </div>
@@ -338,8 +343,110 @@ body.dark .sefaria-attr .sefaria-dark{display:inline-block;}
 </footer>
 
 <script>
+/* ═══ shared: ivritsuite-fonts ═══════════════════════════════════════════════
+   User-made fonts: saved here by Hebrew_Font_Maker, consumed by Torah Trainer
+   (and, later, other IvritSuite tools). TTFs are too big for localStorage, so
+   they live in IndexedDB. This works ACROSS tools because every IvritSuite page
+   is served from the same origin (ivritsuite.com) and IndexedDB is partitioned
+   per-origin — so one DB ("ivritsuite-fonts") is automatically shared by all of
+   them. Keep this block byte-identical in every consuming page. No library is
+   needed (indexedDB + FontFace are built in), so it loads nothing at page load. */
+const IV_FONTS_DB = 'ivritsuite-fonts', IV_FONTS_STORE = 'fonts', IV_FONTS_CAP = 10;
+function _ivOpenFontsDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IV_FONTS_DB, 1);
+    req.onupgradeneeded = () => { const db = req.result;
+      if (!db.objectStoreNames.contains(IV_FONTS_STORE)) db.createObjectStore(IV_FONTS_STORE, { keyPath: 'name' }); };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+function _ivTx(mode, fn) {
+  return _ivOpenFontsDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(IV_FONTS_STORE, mode), req = fn(tx.objectStore(IV_FONTS_STORE));
+    tx.oncomplete = () => resolve(req && req.result);
+    tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
+  }));
+}
+function listUserFonts() {   // → [{name, family, created, size}] newest-first; no bytes
+  return _ivTx('readonly', os => os.getAll()).then(rows => (rows || [])
+    .map(r => ({ name: r.name, family: r.family, created: r.created || 0, size: (r.bytes && r.bytes.byteLength) || 0 }))
+    .sort((a, b) => b.created - a.created));
+}
+function getUserFont(name) { return _ivTx('readonly', os => os.get(name)); }
+function deleteUserFont(name) { return _ivTx('readwrite', os => os.delete(name)); }
+function saveUserFont(name, bytes, family) {   // bytes: Uint8Array | ArrayBuffer
+  const buf = bytes.buffer ? bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) : bytes;
+  return listUserFonts().then(list => {
+    const stale = list.filter(f => f.name !== name).slice(IV_FONTS_CAP - 1);   // keep newest CAP-1 others + this one
+    return Promise.all(stale.map(f => deleteUserFont(f.name)))
+      .then(() => _ivTx('readwrite', os => os.put({ name: name, family: family || name, bytes: buf, created: Date.now() })));
+  });
+}
+function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontFace named `name`
+  return getUserFont(name).then(rec => {
+    if (!rec) throw new Error('Font not found: ' + name);
+    return new FontFace(name, rec.bytes).load().then(f => { document.fonts.add(f); return f; });
+  });
+}
+/* ═══ end shared: ivritsuite-fonts ═══════════════════════════════════════════ */
+
+/* ── My IvritSuite Fonts manager (homepage gear modal) ── */
+function _ivFmt(ts) { if (!ts) return ''; try { return new Date(ts).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' }); } catch (e) { return ''; } }
+async function renderMyFontsManager() {
+  const host = document.getElementById('myFontsList'); if (!host) return;
+  let list = [];
+  try { list = await listUserFonts(); } catch (e) { console.error(e); }
+  const cnt = document.getElementById('myFontsCount'); if (cnt) cnt.textContent = list.length ? '(' + list.length + ' / ' + IV_FONTS_CAP + ')' : '';
+  host.innerHTML = '';
+  if (!list.length) {
+    const p = document.createElement('p'); p.className = 'ie-note'; p.style.margin = '0';
+    p.textContent = 'No saved fonts yet. Build one in the Hebrew Font Maker, then “Save to My Fonts”.';
+    host.appendChild(p); return;
+  }
+  list.forEach(f => {   // rows via DOM (names are user-controlled → no innerHTML)
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid rgba(0,0,0,0.08);flex-wrap:wrap;';
+    const nm = document.createElement('span');
+    nm.style.cssText = 'flex:1 1 120px;min-width:0;font-weight:600;font-size:0.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+    nm.textContent = f.name; nm.title = f.name;
+    const meta = document.createElement('span');
+    meta.style.cssText = 'flex:0 0 auto;font-size:0.72rem;opacity:0.65;';
+    meta.textContent = _ivFmt(f.created) + ' · ' + Math.max(1, Math.round((f.size || 0) / 1024)) + ' KB';
+    const mk = (txt, title, fn) => { const b = document.createElement('button'); b.className = 'ie-action-btn secondary'; b.textContent = txt; if (title) b.title = title; b.style.cssText = 'padding:4px 8px;font-size:0.78rem;'; b.onclick = fn; return b; };
+    row.append(nm, meta,
+      mk('Use in all tools', '', () => useFontEverywhere(f.name)),
+      mk('⬇', 'Download', () => downloadMyFontFile(f.name)),
+      mk('🗑', 'Remove', () => deleteMyFontFile(f.name)));
+    host.appendChild(row);
+  });
+}
+async function downloadMyFontFile(name) {
+  try { const rec = await getUserFont(name); if (!rec) return;
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([rec.bytes], { type:'font/ttf' }));
+    a.download = (name || 'font').replace(/\s+/g, '') + '.ttf';
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  } catch (e) { console.error(e); }
+}
+function deleteMyFontFile(name) {
+  if (!confirm('Remove “' + name + '” from My Fonts? Tools using it will fall back to their default font.')) return;
+  deleteUserFont(name).then(renderMyFontsManager).catch(e => console.error(e));
+}
+function useFontEverywhere(name) {
+  // Write the chosen font into every tool's own setting so they all adopt it on next load
+  // (they register the actual TTF via the FontFace API when they next open).
+  try { localStorage.setItem('hebrewBlender_hebFont', name); } catch (e) {}   // Generator + Dictionary (shared key)
+  const setIn = (key, field) => { try { const o = JSON.parse(localStorage.getItem(key) || '{}'); o[field] = name; localStorage.setItem(key, JSON.stringify(o)); } catch (e) {} };
+  setIn('hebrewDashboard_settings', 'hebFont');
+  setIn('hebrewTorahTrainer_settings', 'hebFont');
+  setIn('hebrewFlashCards_settings', 'hebFontId');
+  const s = document.getElementById('ivritStatus'); if (s) s.textContent = '“' + name + '” is now the font in every tool — reload any open tool to see it.';
+  alert('“' + name + '” will be used in every IvritSuite tool. Reload any open tool pages to see it.');
+}
+
 function openIEModal() {
   document.getElementById('ieBackdrop').classList.add('open');
+  if (window.indexedDB) renderMyFontsManager();
 }
 function closeIEModal(e) {
   if (e && e.target !== document.getElementById('ieBackdrop')) return;
