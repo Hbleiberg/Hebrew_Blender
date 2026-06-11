@@ -755,6 +755,10 @@ const MARK_CLASS = {
   '05B9':'above', '05BA':'above', '05C1':'above', '05C2':'above', '05BF':'above',
   '05BC':'center'
 };
+// "Sheva Na" — an OPTIONAL heavier sheva, exported as a stylistic-set alternate (ss01) + a private
+// code point so a mobile (na) sheva can be shown distinctly from a silent (nach) one. It's not a
+// separate editor mark; it's scaled from the user's own sheva at export (see buildFont / buildFEA).
+const SHEVA_NA_GLYPH = 'shevana', SHEVA_NA_CP = 0xE0B0, SHEVA_NA_SCALE = 1.35;
 /* Nikkud chart columns for the preview PDF (bare first, then the 9 marks). */
 const CHART_COLS = [
   { key:'bare',  cp:null,   label:'bare'   },
@@ -1050,7 +1054,7 @@ function newProject() {
     font: {
       familyName: 'My Hebrew Hand', reservedFontName: 'My Hebrew Hand', author: '', license: 'ofl',
       version: '1.000', unitsPerEm: UPM, markScale: 1.0, tropScale: 1.0,
-      nikkud: { enabled: true,  mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },   // mode: 'default' | 'custom'; uploadMode: 'perSymbol' | 'combined'
+      nikkud: { enabled: true,  mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, shevaNa: false },   // mode: 'default' | 'custom'; uploadMode: 'perSymbol' | 'combined'; shevaNa: bold sheva-na alternate
       trop:   { enabled: false, mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },
       metrics: { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP, descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB },
       spacing: { letterSpacing: 0, wordSpacing: 260, lineSpacing: 0, sample: 'שלום עולם' },
@@ -1750,6 +1754,7 @@ function renderMarkPanel(cat) {
     }
     let controls = `<div class="mark-opts">${opts}</div>`;
     if (cat === 'trop') controls += `<div class="hint" style="margin-top:9px;color:var(--muted);">Trop attaches to the typed letter (and stacks above/below a vowel). Word-edge accents like pashta, segolta &amp; zarqa can't auto-jump to the word edge — a font limitation.</div>`;
+    if (cat === 'nikkud') controls += `<label class="chk" style="margin-top:10px;"><input type="checkbox" ${f.shevaNa?'checked':''} onchange="setShevaNa(this.checked)"> Add a bold <b>Sheva&nbsp;Na</b> (so na &amp; nach stand apart)</label><div class="hint">Exports a heavier sheva alongside the normal one. To make a sheva bold in Word, select the letter and turn on <b>Stylistic&nbsp;Set&nbsp;1</b>; or insert the character <b>U+E0B0</b> in its place. Children can then see which sheva is mobile (na) vs. silent (nach).</div>`;
     let grid = '';
     if (f.mode === 'custom') {
       if (marks.length) {
@@ -1868,6 +1873,10 @@ function setMarkEnabled(cat, on) {
   }
   renderGrids();
   updateTabs();   // show/hide the Nikkud / Trop placement tabs right away
+}
+function setShevaNa(on) {   // optional heavier sheva for Sheva Na (export-only alternate, no editor mark)
+  project.font.nikkud.shevaNa = !!on;
+  renderNikkudPanel();
 }
 function setMarkMode(cat, mode) {
   project.font[cat].mode = mode;
@@ -4598,6 +4607,17 @@ function buildFontSpec() {
     cmap[parseInt(cp,16)] = nm;
   });
 
+  // Optional "Sheva Na": a heavier sheva so mobile (na) vs. silent (nach) sheva can be told apart.
+  // Reached via the ss01 stylistic set + a private code point (wired in buildFEA). Scaled from the
+  // user's OWN sheva, anchored at its top edge so it grows downward instead of drifting off the letter.
+  if (nikOn && project.font.nikkud.shevaNa) {
+    const smc = markGlyphContours('nikkud', '05B0'), k = SHEVA_NA_SCALE;
+    let top = -1e9; smc.forEach(poly => poly.forEach(p => { if (p[1] > top) top = p[1]; }));
+    glyphs[SHEVA_NA_GLYPH] = { contours: smc.map(poly => poly.map(p => [Math.round(p[0]*k*ms), Math.round((top + (p[1]-top)*k)*ms)])), advance: 0 };
+    glyphOrder.push(SHEVA_NA_GLYPH); markGlyphNames.push(SHEVA_NA_GLYPH);
+    cmap[SHEVA_NA_CP] = SHEVA_NA_GLYPH;
+  }
+
   // precomposed glyphs (Nikkud only): base contours + mark contours at base's matching anchor
   const built = [];
   if (nikOn) project.precomposed.forEach(pc => {
@@ -4666,6 +4686,8 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn) {
   // ── nikkud mark classes (each mark's attach anchor is at origin 0,0) ──
   const byClass = { below: [], above: [], center: [] };
   if (nikOn) MARK_CPS.forEach(cp => byClass[MARK_CLASS[cp]].push(gname(cp)));
+  const shevaNaOn = nikOn && project.font.nikkud.shevaNa;
+  if (shevaNaOn) byClass.below.push(SHEVA_NA_GLYPH);   // the bold sheva attaches like any below mark
   const nikMarks = [...byClass.below, ...byClass.above, ...byClass.center];
   if (nikMarks.length) {
     if (byClass.below.length)  f += `markClass [${byClass.below.join(' ')}] <anchor 0 0> @MC_BELOW;\n`;
@@ -4686,6 +4708,9 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn) {
     f += 'feature ccmp {\n';
     builtPrecomposed.forEach(pc => { f += `  sub ${gname(pc.base)} ${gname(pc.mark)} by ${gname(pc.target)};\n`; });
     f += '} ccmp;\n\n';
+  }
+  if (shevaNaOn) {   // "Sheva Na" stylistic set — turn any sheva into the bold sheva to mark it mobile
+    f += `feature ss01 {\n  featureNames { name "Sheva Na (mobile sheva)"; };\n  sub ${gname('05B0')} by ${SHEVA_NA_GLYPH};\n} ss01;\n\n`;
   }
   // ── mark-to-base — nikkud + trop, per-letter base anchors (skip if none; feaLib rejects empty blocks) ──
   let markLines = '';
