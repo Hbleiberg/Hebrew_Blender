@@ -5648,7 +5648,7 @@ const TEMPLATE_SPECS = {
 };
 // One write-in box: colored border + a small corner label (ref glyph + name + U+code + class). Interior left blank.
 function templateCellHTML(item, kind) {
-  const fontFam = (project.template && project.template.font) || "'Frank Ruhl Libre', serif";
+  const fontFam = (project.template && project.template.font) || "'Noto Sans Hebrew', sans-serif";
   const base  = String.fromCodePoint(parseInt(item.cp, 16));
   const glyph = (kind === 'letters' || kind === 'punct') ? base : ('◌' + base);   // dotted circle ◌ carries an isolated combining mark (punctuation is standalone)
   const code  = 'U+' + item.cp.toUpperCase();
