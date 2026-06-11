@@ -650,6 +650,11 @@
             <label class="chk"><input type="checkbox" id="addCustomGlyphsChk" onchange="setAddCustomGlyphs(this.checked)"> Add custom glyphs</label>
             <div class="hint">Adds a <strong>Custom glyphs</strong> tab (after Punctuation) where you can define glyphs at any Unicode code point — a main letter or a nikkud mark. Tip: for brand-new shapes use the Private-Use range <b>U+E000–U+F8FF</b> so they don't collide with standard characters.</div>
           </div>
+          <div>
+            <div class="ctl-label" style="margin-bottom:6px;">SVG uploading</div>
+            <label class="chk"><input type="checkbox" id="svgUploadChk" onchange="setSvgUpload(this.checked)"> Enable SVG uploading</label>
+            <div class="hint">Upload <strong>SVG</strong> files instead of images — vector paths become the glyph outlines <strong>directly, with no tracing</strong>. In this mode the upload zones accept SVG only. <a href="#" onclick="openSvgGuide();return false;">SVG Upload Guide →</a></div>
+          </div>
         </div>
       </div>
     </div>
@@ -1003,6 +1008,10 @@ function defaultBelowY(bb) {
 }
 function markScale() { return (project && project.font && project.font.markScale != null) ? project.font.markScale : 1; }
 function tropScale() { return (project && project.font && project.font.tropScale != null) ? project.font.tropScale : 1; }
+/* SVG upload mode (Advanced Settings): uploads are SVG-only and import directly as vectors (no trace). */
+function svgUploadOn() { return !!(project && project.font && project.font.svgUpload); }
+/* A glyph whose outline is already vector (from a font file OR an imported SVG) — skips Align/Trace. */
+function isVectorGlyph(l) { return project.inputMode === 'font' || !!(l && l.source && l.source.kind === 'svg'); }
 /* Spacing — single source of truth so the live preview matches the exported font exactly */
 function fontSpacing() { return (project && project.font && project.font.spacing) || { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם' }; }
 function effLetterAdvance(l) { const base = (l && l.advance) || Math.round(LETTER_TOP*0.7); return Math.max(50, base + fontSpacing().letterSpacing); }
@@ -1152,6 +1161,7 @@ function newProject() {
       spacing: { letterSpacing: 0, wordSpacing: 260, lineSpacing: 0, sample: 'שלום עולם' },
       includeDigitsPunct: true,
       addCustomGlyphs: false,
+      svgUpload: false,
       kerning: []
     },
     template: { font: "'Noto Sans Hebrew', sans-serif", opacity: 0.35, showOverlay: true },
@@ -1790,8 +1800,8 @@ async function uploadTemplateTTF(file) {
 function setInputMode(mode) {
   project.inputMode = mode; syncMetaToForm();
   localStorage.setItem('hebrewFontMaker_inputMode', mode);
-  // letters reference the shared sheet in combined mode
-  project.letters.forEach(l => { l.source.kind = mode; });
+  // letters reference the shared sheet in combined mode; leave already-imported SVG vectors untouched
+  project.letters.forEach(l => { if (!(l.source && l.source.kind === 'svg')) l.source.kind = mode; });
   renderControls(); renderStage();
 }
 
@@ -1858,9 +1868,9 @@ function renderMarkPanel(cat) {
       if (marks.length) {
         if (um === 'combined') {
           const has = f.combinedImage && f.combinedImage.dataUrl;
-          controls += `<div class="drop" id="${cat}SheetDrop">Drop a sheet of ${label} symbols, or click to browse.</div>
-            <div class="allowed">Allowed: any image file — PNG, JPG, GIF, WebP.</div>
-            <input type="file" id="${cat}SheetFile" accept="image/*" style="display:none;">
+          controls += `<div class="drop" id="${cat}SheetDrop">Drop a ${svgUploadOn()?'<b>SVG</b> ':''}sheet of ${label} symbols, or click to browse.</div>
+            <div class="allowed">${svgUploadOn()?'Allowed: SVG only.':'Allowed: any image file — PNG, JPG, GIF, WebP.'}</div>
+            <input type="file" id="${cat}SheetFile" accept="${svgUploadOn()?'.svg,image/svg+xml':'image/*'}" style="display:none;">
             <div class="hint">${ has ? 'Sheet loaded ✓ — pick a symbol below, then drag a box around it on the canvas.' : 'Then pick a symbol below and drag a box around it on the canvas.' }</div>`;
         }
         controls += `<div class="hint" style="margin-top:9px;">${ um==='combined'
@@ -1991,8 +2001,14 @@ function setMarkUploadMode(cat, mode) {
   if (curKind === cat) setWorkMode('align');   // re-show the workspace as crop-select or per-symbol
 }
 async function uploadMarkSheet(cat, file) {
+  let svgText = null;
+  if (svgUploadOn()) {
+    try { svgText = await file.text(); } catch (e) {}
+    if (!isProbablySvg(file, svgText)) { askSvgError('Only SVG files can be uploaded while SVG mode is on.'); return; }
+  }
   const url = await readFileAsDataUrl(file);
   project.font[cat].combinedImage.dataUrl = url;
+  if (svgUploadOn()) cacheSvgSheet(url, svgText);
   await loadImg(url);
   renderMarkPanel(cat);
   if (curKind === cat) setWorkMode('align');
@@ -2033,6 +2049,25 @@ function setAddCustomGlyphs(on) {
   project.font.addCustomGlyphs = !!on;
   if (!on && isCustomCp(curCp)) selectItem('letter', LETTER_ORDER[0]);   // leave the custom editor if it was open
   renderGrids();   // rebuilds the tab bar (renderCatTabs) → shows/hides the Custom glyphs tab
+}
+function setSvgUpload(on) {
+  project.font.svgUpload = !!on;
+  renderGrids(); renderStage(); renderControls();   // re-render the upload zones (SVG-only accept + text), tabs, and stage
+}
+function openSvgGuide() {
+  askModal('SVG Upload Guide', `<div class="hint" style="text-align:left;line-height:1.6;">
+    <p><b>SVG only.</b> With this mode on, every upload zone accepts only <code>.svg</code> files. The vector paths become your glyph outlines <b>directly — there is no tracing step</b>, so the shapes stay exact.</p>
+    <p><b>One letter per file.</b> Choose <b>One letter per image</b>, pick a letter, and drop its SVG. It opens straight on the <b>Nikkud</b> step with the outline already in place.</p>
+    <p><b>Auto-split one big sheet.</b> Put every letter in a single SVG and name each element so it maps to a glyph — set the element's <code>id</code> (or Inkscape <i>label</i>) to one of:
+      <br>• <code>uni05D0</code> / <code>u05D0</code> / <code>glyph05D0</code> (the Unicode hex)
+      <br>• the literal Hebrew letter, e.g. <code>א</code>
+      <br>• the English name, e.g. <code>Alef</code>, <code>Kaf-sofit</code>.
+      <br>Then choose <b>One image with all letters</b>, drop the SVG, and matches assign automatically (or click <b>Auto-split by name</b>).</p>
+    <p><b>Box the rest by hand.</b> Anything unnamed can still be selected: drag a box around a letter on the sheet and the shapes inside it become that glyph.</p>
+    <p><b>Auto-fit.</b> Each imported outline is scaled to the cap height and seated on the baseline (descenders dip below). Use <b>Edit points</b> and the <b>Width / side-bearing</b> controls to fine-tune.</p>
+    <p><b>New shapes / PUA.</b> For glyphs that aren't standard characters, turn on <b>Add custom glyphs</b> and import the SVG at a Private-Use code point (<b>U+E000–U+F8FF</b>).</p>
+    <p><b>Tips:</b> group transforms are honoured, so flatten/ungroup freely; convert <i>strokes to fills</i> first (open strokes don't fill); clipped, masked, hidden, and <code>&lt;use&gt;</code>-referenced elements are skipped.</p>
+  </div>`, [{ label: 'Got it' }]);
 }
 function cgSetType(t) {
   cgType = t;
@@ -2217,6 +2252,8 @@ function renderCatTabs() {
   if (!t) return;
   const cb = document.getElementById('addCustomGlyphsChk');
   if (cb && project && project.font) cb.checked = !!project.font.addCustomGlyphs;
+  const sv = document.getElementById('svgUploadChk');
+  if (sv && project && project.font) sv.checked = !!project.font.svgUpload;
   const NAMES = { fontdetails: 'Font Details', letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop', punct: 'Punctuation', customglyphs: 'Custom glyphs', spacing: 'Spacing', advanced: 'Advanced Settings' };
   const cats = ['fontdetails', 'letter', 'nikkud', 'trop', 'punct', 'spacing', 'advanced'];
   if (project && project.font && project.font.addCustomGlyphs) cats.splice(cats.indexOf('punct') + 1, 0, 'customglyphs');   // appears right after Punctuation
@@ -2257,6 +2294,7 @@ function readFileAsDataUrl(file) {
   return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(file); });
 }
 async function uploadForCurrent(file) {
+  if (svgUploadOn()) return uploadSvgForCurrent(file);
   const url = await readFileAsDataUrl(file);
   const l = curLetter();
   l.source.kind = 'single'; l.source.dataUrl = url; l.source.cropRect = null;
@@ -2269,19 +2307,32 @@ async function uploadForCurrent(file) {
 async function uploadCombined(files) {
   const list = files == null ? [] : (files.length !== undefined ? Array.from(files) : [files]);
   if (!list.length) return;
+  const svg = svgUploadOn();
   for (const file of list) {
     try {
+      let svgText = null;
+      if (svg) {
+        try { svgText = await file.text(); } catch (e) {}
+        if (!isProbablySvg(file, svgText)) { askSvgError('Only SVG files can be uploaded while SVG mode is on.'); continue; }
+      }
       const url = await readFileAsDataUrl(file);
       await loadImg(url);
+      if (svg) cacheSvgSheet(url, svgText);                  // parse once; runtime-only cache (keyed by dataUrl)
       project.combinedSheets.push({
         id: 's_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6),
         name: file.name || ('Sheet ' + (project.combinedSheets.length + 1)),
         dataUrl: url });
     } catch (e) { /* skip an unreadable file, keep the rest */ }
   }
+  if (!project.combinedSheets.length) return;
   project.combinedIndex = project.combinedSheets.length - 1;   // show the sheet just added
-  project.inputMode = 'combined'; project.letters.forEach(l => l.source.kind = 'combined');
+  project.inputMode = 'combined'; project.letters.forEach(l => { if (!(l.source && l.source.kind === 'svg')) l.source.kind = 'combined'; });
   syncMetaToForm(); setWorkMode('align'); renderLetterGrid(); renderStage(); renderControls();
+  if (svg) {
+    const n = autoSplitCombinedSvg();   // auto-assign any named elements; sets its own status
+    if (!n) status('SVG sheet loaded. Drag a box around a letter, or name elements like id="uni05D0" and click Auto-split by name.');
+    return;
+  }
   status(list.length > 1 ? (list.length + ' sheets added — pick a letter, then drag a box around it.')
                          : 'Sheet loaded. Pick a letter, then drag a box around it.');
 }
@@ -2348,6 +2399,8 @@ async function finalizeCrop(l, stageBox) {
   ix = Math.max(0, Math.min(ix, im.width)); iy = Math.max(0, Math.min(iy, im.height));
   iw = Math.max(2, Math.min(iw, im.width-ix)); ih = Math.max(2, Math.min(ih, im.height-iy));
   const rect = { x:Math.round(ix), y:Math.round(iy), w:Math.round(iw), h:Math.round(ih) };
+  const _svgParsed = combinedSvgParsed();
+  if (svgUploadOn() && _svgParsed) { return finalizeCropSvg(l, _svgParsed, im, rect, curCombinedSheet()); }   // SVG sheet → pull vectors, no trace
   const cv = document.createElement('canvas'); cv.width = rect.w; cv.height = rect.h;
   cv.getContext('2d').drawImage(im, rect.x, rect.y, rect.w, rect.h, 0, 0, rect.w, rect.h);
   const url = cv.toDataURL('image/png');
@@ -2456,6 +2509,260 @@ async function uploadSourceFont(file) {
     status(`Loaded ${n}/27 letters from ${file.name}. Set nikkud, then export.`);
     if (!n) askModal('No Hebrew glyphs found', 'That font has no outlines for the Hebrew base letters (U+05D0–05EA). Try a Hebrew font.', [{label:'OK'}]);
   } catch (e) { console.error(e); status(''); askModal('Font read failed', '<span class="warn">'+(e.message||e)+'</span>', [{label:'OK'}]); }
+}
+
+/* ════════ SVG import (Advanced → "Enable SVG uploading") ════════
+   Mirrors the Font-Source path: uploaded SVG vector paths become the glyph outline DIRECTLY — no
+   raster trace. We let the browser's own SVG engine do the hard math (relative cmds, smooth-reflection,
+   elliptical arcs, group transforms) by sampling each subpath/shape via getTotalLength/getPointAtLength,
+   then fit the polylines into font units. Curves are flattened to polygons (curves=null), exactly like
+   font-source — a proven, TrueType-friendly representation; buildFontSpec needs no changes. */
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const SVG_SAMPLE_PX = 2.5;                 // ~1 sample per 2.5 user-units of perimeter (clamped 12..600 / contour)
+const svgParseCache = {};                  // dataUrl → { entries, viewBox } (runtime only — rebuilt on load, never persisted)
+function isProbablySvg(file, text) {
+  return /\.svg$/i.test((file && file.name) || '') || /image\/svg/i.test((file && file.type) || '') || /<svg[\s>]/i.test(text || '');
+}
+function askSvgError(msg) { askModal('SVG import failed', '<span class="warn">' + escapeHtml(msg) + '</span>', [{ label: 'OK' }]); }
+function numList(s) { return (s || '').trim().split(/[\s,]+/).filter(x => x !== '').map(Number); }
+function svgTextFromDataUrl(u) {            // decode a data:image/svg+xml URL back to text (to rebuild the cache on load)
+  if (!u || !/^data:image\/svg\+xml/i.test(u)) return null;
+  const comma = u.indexOf(','); if (comma < 0) return null;
+  const meta = u.slice(5, comma), data = u.slice(comma + 1);
+  try { return /;base64/i.test(meta) ? decodeURIComponent(escape(atob(data))) : decodeURIComponent(data); }
+  catch (e) { try { return atob(data); } catch (e2) { return null; } }
+}
+function withSvgHost(svgEl, fn) {           // render an off-screen clone so getScreenCTM/getTotalLength work
+  // Position off-screen only — do NOT use visibility:hidden/display:none: the former inherits into
+  // getComputedStyle (would hide every child from the filter below), the latter zeroes geometry.
+  const host = document.createElement('div');
+  host.style.cssText = 'position:absolute;left:-99999px;top:0;width:2000px;height:2000px;overflow:hidden;pointer-events:none;opacity:0;';
+  const svg = svgEl.cloneNode(true);
+  const vb = numList(svg.getAttribute('viewBox'));
+  if (vb.length === 4) { svg.setAttribute('width', vb[2]); svg.setAttribute('height', vb[3]); }   // concrete layout size = viewBox → CTM scale 1:1 (coords come out in viewBox units)
+  else { if (!svg.getAttribute('width')) svg.setAttribute('width', '1000'); if (!svg.getAttribute('height')) svg.setAttribute('height', '1000'); }
+  host.appendChild(svg); document.body.appendChild(host);
+  try { return fn(svg); } finally { host.remove(); }
+}
+function parseSvgText(text) {
+  const doc = new DOMParser().parseFromString(text || '', 'image/svg+xml');
+  if (doc.getElementsByTagName('parsererror').length) throw new Error('That file is not valid SVG.');
+  const root = doc.documentElement;
+  if (!root || root.localName !== 'svg') throw new Error('No <svg> root element found in that file.');
+  return root;
+}
+function splitSubpaths(d) {                 // split a path's d at each M/m so holes stay separate closed contours
+  if (!d) return [];
+  const out = []; const re = /[Mm][^Mm]*/g; let m;
+  while ((m = re.exec(d))) out.push(m[0]);
+  return out.length ? out : [d];
+}
+function rectToD(el) {
+  const x = +el.getAttribute('x') || 0, y = +el.getAttribute('y') || 0, w = +el.getAttribute('width') || 0, h = +el.getAttribute('height') || 0;
+  if (w <= 0 || h <= 0) return '';
+  return `M${x} ${y}H${x + w}V${y + h}H${x}Z`;
+}
+function ellipseToD(el) {
+  const isC = el.localName === 'circle';
+  const cx = +el.getAttribute('cx') || 0, cy = +el.getAttribute('cy') || 0;
+  const rx = isC ? (+el.getAttribute('r') || 0) : (+el.getAttribute('rx') || 0);
+  const ry = isC ? (+el.getAttribute('r') || 0) : (+el.getAttribute('ry') || 0);
+  if (rx <= 0 || ry <= 0) return '';
+  return `M${cx - rx} ${cy}a${rx} ${ry} 0 1 0 ${rx * 2} 0a${rx} ${ry} 0 1 0 ${-rx * 2} 0Z`;
+}
+function lineToD(el) {
+  const x1 = +el.getAttribute('x1') || 0, y1 = +el.getAttribute('y1') || 0, x2 = +el.getAttribute('x2') || 0, y2 = +el.getAttribute('y2') || 0;
+  return `M${x1} ${y1}L${x2} ${y2}`;
+}
+function polyToD(el, close) {
+  const n = numList(el.getAttribute('points')); if (n.length < 4) return '';
+  let d = `M${n[0]} ${n[1]}`; for (let i = 2; i + 1 < n.length; i += 2) d += `L${n[i]} ${n[i + 1]}`;
+  return d + (close ? 'Z' : '');
+}
+function elementToLoops(el, rootScreenCTM) {            // one renderable element → contours [[ [x,y]... ]] in root (viewBox) user units, y-down
+  const tag = el.localName;
+  let dList;
+  if (tag === 'path') dList = splitSubpaths(el.getAttribute('d') || '');
+  else if (tag === 'rect') dList = [rectToD(el)];
+  else if (tag === 'circle' || tag === 'ellipse') dList = [ellipseToD(el)];
+  else if (tag === 'line') dList = [lineToD(el)];
+  else if (tag === 'polygon' || tag === 'polyline') dList = [polyToD(el, tag === 'polygon')];
+  else return [];
+  let ctm = null;
+  try { ctm = rootScreenCTM.inverse().multiply(el.getScreenCTM()); } catch (e) { ctm = null; }   // el-local → root user space (honours group transforms)
+  const parent = el.parentNode, loops = [];
+  dList.forEach(d => {
+    if (!d) return;
+    const p = document.createElementNS(SVG_NS, 'path'); p.setAttribute('d', d);
+    parent.appendChild(p);
+    let len = 0; try { len = p.getTotalLength(); } catch (e) {}
+    if (len > 0.5) {
+      const n = Math.max(12, Math.min(600, Math.round(len / SVG_SAMPLE_PX))), pts = [];
+      for (let i = 0; i < n; i++) {
+        let pt = null; try { pt = p.getPointAtLength(len * i / n); } catch (e) {}
+        if (pt) pts.push(ctm ? [ctm.a * pt.x + ctm.c * pt.y + ctm.e, ctm.b * pt.x + ctm.d * pt.y + ctm.f] : [pt.x, pt.y]);
+      }
+      if (pts.length >= 3) loops.push(pts);
+    }
+    p.remove();
+  });
+  return loops;
+}
+function loopsBBox(loops) {
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  loops.forEach(L => L.forEach(([x, y]) => { if (x < minX) minX = x; if (y < minY) minY = y; if (x > maxX) maxX = x; if (y > maxY) maxY = y; }));
+  return { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
+}
+function parseSvgEntries(text) {            // { entries:[{id,label,loops,bbox}], viewBox } — the source of truth for import
+  const root = parseSvgText(text);
+  return withSvgHost(root, svg => {
+    const rootCTM = svg.getScreenCTM() || svg.getCTM();
+    const entries = [];
+    svg.querySelectorAll('path,rect,circle,ellipse,line,polygon,polyline').forEach(el => {
+      if (el.closest('defs,clipPath,mask,marker,symbol,pattern')) return;        // non-rendering definitions
+      let cs = null; try { cs = getComputedStyle(el); } catch (e) {}
+      if (cs && (cs.display === 'none' || cs.visibility === 'hidden')) return;
+      const loops = elementToLoops(el, rootCTM);
+      if (!loops.length) return;
+      entries.push({
+        id: el.id || '',
+        label: el.getAttributeNS('http://www.inkscape.org/namespaces/inkscape', 'label') || el.id || '',
+        loops, bbox: loopsBBox(loops)
+      });
+    });
+    const vb = numList(svg.getAttribute('viewBox'));
+    return { entries, viewBox: vb.length === 4 ? { x: vb[0], y: vb[1], w: vb[2], h: vb[3] } : null };
+  });
+}
+function cacheSvgSheet(dataUrl, text) {     // parse + cache a combined SVG sheet (runtime only)
+  const t = (text != null) ? text : svgTextFromDataUrl(dataUrl);
+  try { svgParseCache[dataUrl] = t ? parseSvgEntries(t) : null; } catch (e) { svgParseCache[dataUrl] = null; }
+  return svgParseCache[dataUrl];
+}
+function combinedSvgParsed() { const sh = curCombinedSheet(); return (sh && sh.dataUrl && svgParseCache[sh.dataUrl]) || null; }
+
+/* Assign cw/ccw winding by even/odd nesting depth (outer=cw, hole=ccw). Shared by the raster tracer
+   (finalizeFromRaw) and the SVG importer — more robust than a signed-area sign for holes-in-holes. */
+function assignWindingByNesting(rings) {
+  rings.forEach(c => { c._depth = 0; });
+  for (let i = 0; i < rings.length; i++) for (let j = 0; j < rings.length; j++) {
+    if (i === j) continue;
+    if (pointInPoly(rings[i][0], rings[j])) rings[i]._depth++;
+  }
+  return rings.map(c => {
+    const area = signedArea(c), wantOuter = (c._depth % 2 === 0);
+    let pts = c.slice();
+    if (wantOuter && area > 0) pts = pts.reverse();
+    if (!wantOuter && area < 0) pts = pts.reverse();
+    return { winding: wantOuter ? 'cw' : 'ccw', points: pts.map(p => [Math.round(p[0]), Math.round(p[1])]) };
+  });
+}
+/* Fit y-down user-unit loops into the font's y-up em: scale so content height fills [span.bottom, span.top],
+   seat the bottom on the baseline (descenders dip below), left at lsb. Returns [{winding,points}] or null. */
+function svgLoopsToContours(loops, opts) {
+  const o = opts || {};
+  const bb = loopsBBox(loops);
+  if (!isFinite(bb.x) || bb.h <= 0) return null;
+  const span = o.span || { bottom: 0, top: effMetrics().letterTop };
+  const s = (span.top - span.bottom) / bb.h;
+  const lsb = (o.lsb != null) ? o.lsb : effMetrics().defaultLSB;
+  let rings = loops.map(L => L.map(([x, y]) => [(x - bb.x) * s + lsb, (bb.y + bb.h - y) * s + span.bottom]));
+  rings = rings.map(r => rdpClosed(r, 1.2)).filter(r => r.length >= 3 && Math.abs(signedArea(r)) > 40);
+  if (!rings.length) return null;
+  return assignWindingByNesting(rings);
+}
+function svgSpanFor(cp, kind) {             // vertical target band for the fit, by glyph type
+  const em = effMetrics();
+  if (kind !== 'letter') return { bottom: 0, top: Math.round(em.letterTop * 0.4) };   // marks: small; markAttachOrigin re-centres them
+  const meta = letterMeta(cp);
+  const top = (meta && meta.asc) ? em.lamedAscender : em.letterTop;
+  const bottom = (meta && meta.desc) ? -Math.round(em.letterTop * 0.30) : 0;           // descenders dip below the baseline
+  return { bottom, top };
+}
+function assignSvgContours(it, kind, contours, sheetId, cropRect) {   // commit prebuilt contours onto an item (runs INSIDE udDo)
+  it.source = { kind: 'svg', dataUrl: null, cropRect: cropRect || null, sheetId: sheetId || null };
+  it.contours = contours; it.curves = null; it.transform = [1, 0, 0, 1, 0, 0];
+  if (kind === 'letter') {
+    const em = effMetrics(); let mx = 0; contours.forEach(c => c.points.forEach(p => { if (p[0] > mx) mx = p[0]; }));
+    it.advance = Math.round(mx + em.defaultRSB);
+    it.anchors = null; seedAnchors(it);
+  } else { it.advance = 0; it.anchors = null; it.designMode = 'upload'; }
+  it.handEdited = false;
+}
+async function uploadSvgForCurrent(file) {  // single-letter / per-mark SVG upload (replaces trace)
+  let text;
+  try { text = await file.text(); } catch (e) { return askSvgError('Could not read that file.'); }
+  if (!isProbablySvg(file, text)) return askSvgError('Only SVG files can be uploaded while SVG mode is on.');
+  const it = curItem(), kind = curKind;
+  let contours;
+  try { contours = svgLoopsToContours(parseSvgEntries(text).entries.reduce((a, e) => a.concat(e.loops), []), { span: svgSpanFor(it.codepoint, kind) }); }
+  catch (e) { return askSvgError(e.message || String(e)); }
+  if (!contours) return askSvgError('No usable vector paths were found in that SVG.');
+  udDo([itemScope()], 'import SVG — ' + it.name, () => { assignSvgContours(it, kind, contours, null, null); });
+  renderGrids(); renderStage(); renderControls();
+  if (kind === 'letter') setWorkMode('anchors');   // land on Nikkud, bypassing Align/Trace
+  status(`Imported SVG for ${it.name}.`);
+}
+/* Auto-split a single combined SVG by element id / inkscape:label → glyph. */
+function buildSvgNameMap() {
+  const map = {};
+  const add = (key, cp) => { if (key) { const k = String(key).toLowerCase().trim(); if (k && !(k in map)) map[k] = cp; } };
+  LETTERS.forEach(L => {
+    add('uni' + L.cp, L.cp); add('u' + L.cp, L.cp); add('glyph' + L.cp, L.cp); add('char' + L.cp, L.cp);
+    add(String.fromCodePoint(parseInt(L.cp, 16)), L.cp);
+    add(L.name.replace(/\s+/g, ''), L.cp); add(L.name.replace(/\s+/g, '-'), L.cp); add(L.name.replace(/\s+/g, '_'), L.cp);
+  });
+  return map;
+}
+function matchSvgEntryToCp(entry, nameMap) {
+  for (const raw of [entry.id, entry.label].filter(Boolean)) {
+    const k = String(raw).toLowerCase().trim();
+    if (nameMap[k]) return nameMap[k];
+    const hex = k.match(/^(?:uni|u|glyph|char|cp|0x|u\+)?([0-9a-f]{4,6})$/);
+    if (hex) { const cp = hex[1].toUpperCase().padStart(4, '0'); if (LETTER_ORDER.includes(cp)) return cp; }
+  }
+  return null;
+}
+function autoSplitCombinedSvg() {
+  const parsed = combinedSvgParsed();
+  if (!parsed) { status('Load an SVG sheet first.'); return 0; }
+  const sh = curCombinedSheet(), nameMap = buildSvgNameMap(), byCp = {};
+  parsed.entries.forEach(entry => {
+    const cp = matchSvgEntryToCp(entry, nameMap); if (!cp) return;
+    if (!byCp[cp]) byCp[cp] = [];
+    byCp[cp].push.apply(byCp[cp], entry.loops);                     // merge multiple named elements for one glyph
+  });
+  const built = [];
+  Object.keys(byCp).forEach(cp => {
+    const l = project.letters.find(x => x.codepoint === cp); if (!l) return;
+    const contours = svgLoopsToContours(byCp[cp], { span: svgSpanFor(cp, 'letter') });
+    if (contours) built.push({ l, cp, contours });
+  });
+  if (!built.length) { status('No SVG elements matched a letter name. Box each letter by hand, or name elements like id="uni05D0".'); return 0; }
+  udDo(built.map(b => ({ t: 'item', kind: 'letter', cp: b.cp })), 'auto-split SVG (' + built.length + ')', () => {
+    built.forEach(b => assignSvgContours(b.l, 'letter', b.contours, sh && sh.id, null));
+  });
+  renderGrids(); renderStage(); renderControls();
+  status(`Auto-assigned ${built.length} letter(s) from named SVG elements.` + (built.length < 27 ? ' Box any others by hand.' : ''));
+  return built.length;
+}
+/* Marquee fallback: select the parsed subpaths whose bbox centre is inside the dragged box → that glyph. */
+function finalizeCropSvg(l, parsed, im, rect, csh) {
+  const ext = parsed.viewBox || { x: 0, y: 0, w: im.width, h: im.height };
+  const sx = ext.w / im.width, sy = ext.h / im.height;
+  const u = { x: ext.x + rect.x * sx, y: ext.y + rect.y * sy, w: rect.w * sx, h: rect.h * sy };
+  const loops = [];
+  parsed.entries.forEach(e => {
+    const cx = e.bbox.x + e.bbox.w / 2, cy = e.bbox.y + e.bbox.h / 2;
+    if (cx >= u.x && cx <= u.x + u.w && cy >= u.y && cy <= u.y + u.h) loops.push.apply(loops, e.loops);
+  });
+  const kind = curKind;
+  const contours = loops.length ? svgLoopsToContours(loops, { span: svgSpanFor(l.codepoint, kind) }) : null;
+  if (!contours) { status('No vector shapes inside that box — drag around a letter.'); renderStage(); return; }
+  udDo([itemScope()], 'crop SVG — ' + l.name, () => { assignSvgContours(l, kind, contours, csh && csh.id, rect); });
+  renderGrids(); renderStage(); renderControls();
+  if (kind === 'letter') setWorkMode('anchors');
+  status(`${l.name}: vector selected from the SVG sheet.`);
 }
 
 /* ════════ Stage rendering ════════ */
@@ -2666,9 +2973,11 @@ function renderMarkControls(c, it) {
           <div class="ctl-row"><button class="ctl-btn" onclick="reselectArea()">↺ Re-select area</button></div>`;
       }
     } else {
-      h += `<div class="drop" id="markDrop">Drop an image of <b>${it.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('markFile').click()">browse</span>.</div>
-        <div class="allowed">Allowed: any image file — PNG, JPG, GIF, WebP.</div>
-        <input type="file" id="markFile" accept="image/*" style="display:none;">`;
+      if (svgUploadOn() && it.source && it.source.kind === 'svg' && it.contours)
+        h += `<div class="ctl-row" style="align-items:center;"><span class="hint" style="flex:1;">Imported from SVG ✓ — re-drop to replace.</span><button class="ctl-btn" onclick="clearTrace()">Clear</button></div>`;
+      h += `<div class="drop" id="markDrop">Drop ${svgUploadOn()?'an <b>SVG</b>':'an image'} of <b>${it.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('markFile').click()">browse</span>.</div>
+        <div class="allowed">${svgUploadOn()?'Allowed: SVG only.':'Allowed: any image file — PNG, JPG, GIF, WebP.'}</div>
+        <input type="file" id="markFile" accept="${svgUploadOn()?'.svg,image/svg+xml':'image/*'}" style="display:none;">`;
     }
     if (curImageUrl()) h += `<div class="ctl-row">
         <button class="ctl-btn" onclick="nudgeScale(1.06,1.06)">Scale +</button><button class="ctl-btn" onclick="nudgeScale(0.94,0.94)">Scale −</button>
@@ -2789,9 +3098,10 @@ async function renderStage() {
       // transform handles drawn after image (corners + rotate); hidden while adjusting metrics on canvas
       if (!metricAdjust) h += transformHandlesSVG(l);
     } else if (l.contours) {
-      // font-source mode: outline already loaded, nothing to align
+      // vector glyph (font file OR imported SVG): outline already loaded, nothing to align
+      const cap = (l.source && l.source.kind === 'svg') ? 'Imported from SVG — set nikkud in step 3.' : 'Loaded from font — set nikkud in step 3.';
       h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${stageColors().ink}" fill-rule="nonzero"/>`;
-      h += `<text x="300" y="540" text-anchor="middle" fill="#9aa0aa" font-size="12">Loaded from font — set nikkud in step 3.</text>`;
+      h += `<text x="300" y="540" text-anchor="middle" fill="#9aa0aa" font-size="12">${cap}</text>`;
     } else {
       h += `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="14">No image yet — upload below.</text>`;
     }
@@ -3543,19 +3853,7 @@ function rawLoopsFontUnits(l) {
 function finalizeFromRaw(l, rawLoops) {
   let contours = rawLoops.map(loop => rdpClosed(loop, l.epsilon))
     .filter(c => c.length >= 3 && Math.abs(signedArea(c)) > 80);
-  contours.forEach(c => { c._depth = 0; });
-  for (let i=0;i<contours.length;i++) for (let j=0;j<contours.length;j++) {
-    if (i===j) continue;
-    if (pointInPoly(contours[i][0], contours[j])) contours[i]._depth++;
-  }
-  const out = contours.map(c => {
-    const area = signedArea(c);
-    const wantOuter = (c._depth % 2 === 0);   // even depth = outer → CW (area<0)
-    let pts = c.slice();
-    if (wantOuter && area > 0) pts = pts.reverse();
-    if (!wantOuter && area < 0) pts = pts.reverse();
-    return { winding: wantOuter ? 'cw' : 'ccw', points: pts.map(p => [Math.round(p[0]), Math.round(p[1])]) };
-  });
+  const out = assignWindingByNesting(contours);   // even nesting depth = outer (cw), odd = hole (ccw)
   l.contours = out.length ? out : null;
   if (out.length) {
     const fitErr = Math.max(l.epsilon || 0, 1.5);                 // tie fit tightness to the Detail (ε) slider, with a floor
@@ -4199,17 +4497,18 @@ function renderAlignLeft(L, l) {
   // "Add Letters" — input mode + the upload zone for the current mode/letter, in the left column
   let html = `<div class="ws-side-title">Add Letters</div>` + inputModeBlock();
   if (project.inputMode === 'single' && curKind === 'letter') {
-    html += `<div class="drop" id="letterDrop">Drop an image for <b>${l.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('letterFile').click()">browse</span>.</div>
-      <div class="allowed">Allowed: any image file — PNG, JPG, GIF, WebP.</div>
-      <input type="file" id="letterFile" accept="image/*" style="display:none;">`;
+    const svg = svgUploadOn();
+    html += `<div class="drop" id="letterDrop">Drop ${svg?'an <b>SVG</b>':'an image'} for <b>${l.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('letterFile').click()">browse</span>.</div>
+      <div class="allowed">${svg?'Allowed: SVG only — vectors import directly (no tracing).':'Allowed: any image file — PNG, JPG, GIF, WebP.'}</div>
+      <input type="file" id="letterFile" accept="${svg?'.svg,image/svg+xml':'image/*'}" style="display:none;">`;
   } else if (project.inputMode === 'combined' && project.combinedSheets.length && curKind === 'letter') {
     html += (!l.source.dataUrl)
       ? `<div class="hint">Pick a letter, then drag a box around it on the sheet to bring it into the editor.</div>`
       : `<div class="hint">Region selected for <b>${l.name}</b>.</div>
          <div class="ctl-row"><button class="ctl-btn" onclick="reselectArea()">↺ Re-select area</button></div>`;
   }
-  // Adjust tools appear once there's an image to move
-  if (project.inputMode !== 'font' && curImageUrl()) {
+  // Adjust tools appear once there's an image to move (never for already-vector glyphs: font / SVG)
+  if (!isVectorGlyph(l) && curImageUrl()) {
     html += `
     <hr class="ctl-divider">
     <div class="ws-side-title">Adjust — ${l.name}</div>
@@ -4249,13 +4548,18 @@ function renderAlignRight(R, l) {
 }
 function renderAlignUnder(U, l) {
   let hint = '';
+  const isSvg = !!(l.source && l.source.kind === 'svg');
   if (project.inputMode === 'font') {
     hint = `<div class="hint">${ l.contours
       ? 'Outline loaded from your font file — no alignment needed. Go to <b>Nikkud</b> to place the vowels.'
       : 'No glyph for this letter was found in the uploaded font. Try another font, or pick a different input mode under <b>Add Letters</b> on the left.' }</div>`;
+  } else if (isSvg) {
+    hint = `<div class="hint">${ l.contours
+      ? 'Imported from SVG — no alignment needed. Go to <b>Nikkud</b> to place the vowels.'
+      : 'Upload an SVG for this glyph under <b>Add Letters</b> on the left.' }</div>`;
   }
-  const nextBtn = (project.inputMode === 'font')
-    ? (l.contours ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">Next: Nikkud →</button>` : '')
+  const nextBtn = isVectorGlyph(l)
+    ? (l.contours && !isPunctItem() ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">Next: Nikkud →</button>` : '')
     : (curImageUrl() ? `<button class="ctl-btn primary" onclick="setWorkMode('trace')">Next: Trace →</button>` : '');
   U.innerHTML = `
     <div class="ws-under-row" style="align-items:center;">
@@ -4277,6 +4581,17 @@ function renderTraceRight(R, l) {
 }
 function renderTraceLeft(L, l) {
   if (project.inputMode === 'font') { L.innerHTML = ''; return; }
+  if (l.source && l.source.kind === 'svg') {   // imported vector — no raster trace controls, but allow point editing
+    L.innerHTML = `
+      <div class="ws-side-title">Outline — ${l.name}</div>
+      <div class="hint">Imported from SVG — no tracing needed. Fine-tune the shape with <b>Edit points</b>, or re-upload under <b>Add Letters</b> to replace it.</div>
+      <div class="ctl-row">
+        ${ l.contours ? `<button class="ctl-btn primary" onclick="toggleNodeEdit()">✎ Edit points</button>` : '' }
+        <button class="ctl-btn" onclick="clearTrace()">Clear</button>
+        <span id="traceInfo" class="readout">${ l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : '' }</span>
+      </div>`;
+    return;
+  }
   const detail = Math.round(100 - l.epsilon*2.5);
   const corner = (l.cornerAngle != null ? l.cornerAngle : 32);
   L.innerHTML = `
@@ -4298,8 +4613,10 @@ function renderTraceLeft(L, l) {
 }
 function renderTraceUnder(U, l) {
   const hint = (project.inputMode === 'font')
-    ? `<div class="hint">This letter came from a font file, so it's already vectorized — no tracing needed. Go to <b>Nikkud</b>.</div>` : '';
-  const nextBtn = l.contours ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">Next: Nikkud →</button>` : '';
+    ? `<div class="hint">This letter came from a font file, so it's already vectorized — no tracing needed. Go to <b>Nikkud</b>.</div>`
+    : (l.source && l.source.kind === 'svg')
+    ? `<div class="hint">Imported from SVG — already vectorized. Fine-tune points if you like, then go to <b>Nikkud</b>.</div>` : '';
+  const nextBtn = (l.contours && !isPunctItem()) ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">Next: Nikkud →</button>` : '';
   U.innerHTML = `
     <div class="ws-under-row" style="align-items:center;">
       <div class="ws-under-grow">${hint}</div>
@@ -4383,18 +4700,22 @@ function renderAnchorUnder(U, l) {
 
 /* ── Input mode + upload zones (relocated from the old sidebar panel into Align-Under) ── */
 function inputModeBlock() {
+  const svg = svgUploadOn();
   return `
     <div class="mode-toggle mode-toggle-stack">
       <button class="mode-btn ${project.inputMode==='single'?'active':''}" id="modeSingle" onclick="setInputMode('single')">One letter per image</button>
       <button class="mode-btn ${project.inputMode==='combined'?'active':''}" id="modeCombined" onclick="setInputMode('combined')">One image with all letters</button>
-      <button class="mode-btn ${project.inputMode==='font'?'active':''}" id="modeFont" onclick="setInputMode('font')">Existing font file</button>
+      ${ svg ? '' : `<button class="mode-btn ${project.inputMode==='font'?'active':''}" id="modeFont" onclick="setInputMode('font')">Existing font file</button>` }
     </div>
     <div id="combinedUploadRow" style="display:${project.inputMode==='combined'?'':'none'};">
-      <div class="drop" id="combinedDrop">Drop your sheet(s) here, or click to browse — add more than one for multi-page templates.</div>
-      <div class="allowed">Allowed: any image file — PNG, JPG, GIF, WebP. You can add several sheets and flip between them.</div>
-      <input type="file" id="combinedFile" accept="image/*" multiple style="display:none;">
+      <div class="drop" id="combinedDrop">${ svg
+        ? 'Drop your <b>SVG</b> sheet(s) here, or click to browse — name elements like <code>id="uni05D0"</code> for auto-split, or box each letter.'
+        : 'Drop your sheet(s) here, or click to browse — add more than one for multi-page templates.' }</div>
+      <div class="allowed">${ svg ? 'Allowed: SVG only.' : 'Allowed: any image file — PNG, JPG, GIF, WebP. You can add several sheets and flip between them.' }</div>
+      <input type="file" id="combinedFile" accept="${svg?'.svg,image/svg+xml':'image/*'}" multiple style="display:none;">
+      ${ svg && project.combinedSheets.length ? `<div class="ctl-row" style="margin-top:6px;"><button class="ctl-btn" onclick="autoSplitCombinedSvg()">Auto-split by name</button></div>` : '' }
     </div>
-    <div id="fontUploadRow" style="display:${project.inputMode==='font'?'':'none'};">
+    <div id="fontUploadRow" style="display:${(!svg && project.inputMode==='font')?'':'none'};">
       <div class="drop" id="fontDrop">Drop a font (TTF/OTF) here, or click to browse.</div>
       <div class="allowed">Allowed: TTF or OTF font files.</div>
       <input type="file" id="sourceFontFile" accept=".ttf,.otf,font/ttf,font/otf,application/font-sfnt" style="display:none;">
@@ -6162,6 +6483,9 @@ async function applyProjectData(data) {           // shared by file-load and "Lo
     Object.values(f.custom || {}).forEach(it => { if (it.source && it.source.dataUrl) urls.push(it.source.dataUrl); });
   });
   await Promise.all(urls.map(u => loadImg(u).catch(()=>{})));
+  // rebuild the runtime SVG-sheet cache (combined SVG sheets are re-parsed from their data URL — never persisted)
+  (project.combinedSheets || []).forEach(s => { if (s.dataUrl && /^data:image\/svg/i.test(s.dataUrl)) cacheSvgSheet(s.dataUrl); });
+  ['nikkud','trop','customMarks'].forEach(cat => { const u = project.font[cat].combinedImage && project.font[cat].combinedImage.dataUrl; if (u && /^data:image\/svg/i.test(u)) cacheSvgSheet(u); });
   curKind = 'letter'; curCp = LETTER_ORDER[0];
   syncMetaToForm(); renderGrids(); _setWorkMode('align');
   return true;
@@ -6272,6 +6596,7 @@ function migrateProject(data) {
     if (!data.font.trop.uploadMode) data.font.trop.uploadMode = 'perSymbol';
     if (!data.font.trop.combinedImage) data.font.trop.combinedImage = { dataUrl: null };
     if (data.font.addCustomGlyphs == null) data.font.addCustomGlyphs = false;
+    if (data.font.svgUpload == null) data.font.svgUpload = false;
     if (!data.font.customMarks) data.font.customMarks = { enabled: true, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } };
     if (!data.font.customMarks.custom) data.font.customMarks.custom = {};
     if (!data.font.customMarks.combinedImage) data.font.customMarks.combinedImage = { dataUrl: null };
