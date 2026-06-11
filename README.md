@@ -65,6 +65,17 @@ A reader for the weekly Torah portion (parsha) with toggleable translit, transla
 - **Fullscreen mode** for SmartBoard projection
 - **Custom range picker** — read any chapter/verse range across the 5 books of the Torah
 
+### Hebrew Font Maker (`Hebrew_Font_Maker.html`) — Beta
+Turn your own handwritten Hebrew letters into a real, installable pointed font — entirely in the browser.
+
+- **Trace from images** — upload one letter per image, one sheet of all letters (marquee-crop each), or import an existing TTF/OTF; sub-pixel marching-squares tracing with cubic-Bézier fitting and a point editor
+- **Nikkud & trop anchors** — place vowel and cantillation marks per letter; exports real GPOS mark-to-base (nikkud) and mark-to-mark (trop) positioning, plus pair kerning
+- **Printable handwriting templates** — letters, vowels, trop, and punctuation/digit worksheets to fill in and scan back
+- **QA Check** — a collision grid flags any letter × mark overlaps before you export
+- **Export** — TrueType (TTF), WOFF2, or editable UFO source, each with a license of your choice (CC0 / OFL / MIT / CC-BY / All Rights Reserved)
+- **Use in IvritSuite** — save a finished font in the browser and pick it from any other tool's font picker
+- Built client-side with Pyodide + fontTools (loaded on first export); printable Preview PDF specimen sheet
+
 ### Teaching Resources (`resources.html`)
 A curated, filterable directory of external Hebrew and Jewish-education resources.
 
@@ -106,6 +117,7 @@ How it works:
 | `flash_cards.html` | Interactive syllable flash cards — Beta |
 | `classroom_dashboard.html` | Live classroom projector / SmartBoard dashboard — Beta |
 | `torah_trainer.html` | Weekly parsha reader with translit, vowel coloring, cantillation toggle, TTS, and PocketTorah karaoke — Beta |
+| `Hebrew_Font_Maker.html` | Make a real installable Hebrew font from your handwriting — trace, anchor nikkud/trop, export TTF/WOFF2/UFO — Beta |
 | `data/parshiyot.json` | All 54 parshiyot with Hebrew/English names, Sefaria refs, and PocketTorah keys |
 | `data/pockettorah/aliyah.json` | Mirrored from [PocketTorah](https://github.com/rneiss/PocketTorah) — full kriyah verse ranges per parsha |
 | `data/pockettorah/manifest.json` | Maps each parsha+aliyah to its actual upstream label filename |

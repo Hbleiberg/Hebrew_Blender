@@ -1,7 +1,7 @@
 {
   "name": "IvritSuite — Hebrew Literacy Tools",
   "short_name": "IvritSuite",
-  "description": "Free Hebrew literacy tools for teachers and students: worksheet generator, dictionary, flash cards, classroom dashboard, and Torah Trainer.",
+  "description": "Free Hebrew literacy tools for teachers and students: worksheet generator, dictionary, flash cards, classroom dashboard, Torah Trainer, and a Hebrew font maker.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
