@@ -21,6 +21,8 @@
 | `dictAudioEnabled` / `dictTranslitStyle` / `dictTtsRate` / `dictEmojiSettings` | `hebrewDictionary_*` | Hebrew Dictionary settings |
 | `torahTrainerSettings` | `hebrewTorahTrainer_settings` | Torah Trainer settings |
 | `inputMode` | `hebrewBlender_inputMode` | Backup UI preference: `'auto'` (.ivrit file) or `'manual'` (text block) — see ".ivrit Save Files" below |
+| `impactStats` | `ivritsuite-impact-v1` | Community-impact personal counters (`{ first, events }`; merged on import as per-event **max** + earliest first-use date via `mergeImpactStats`) |
+| `impactOptOut` | `ivritsuite-impact-optout` | Community-impact opt-out flag (`'1'` = skip all anonymous metric beacons; personal counters still update) |
 
 ### Rule: any new tool with persistent data must be added here
 

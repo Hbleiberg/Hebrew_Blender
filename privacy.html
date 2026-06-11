@@ -10,6 +10,7 @@
 <link rel="manifest" href="manifest.webmanifest?v=3">
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
+<script src="/impact.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -141,11 +142,11 @@ footer a{color:var(--gold);text-decoration:none;}
   <p>IvritSuite (the "site") is a free collection of Hebrew literacy tools for teachers and students, operated by Harrison Bleiberg. This Privacy Policy explains what information the site collects (and, more importantly, what it does <em>not</em>), how that information is used, and the choices you have. By using the site you agree to the practices described here.</p>
 
   <h2>2. Information We Collect</h2>
-  <p>IvritSuite is a fully client-side site. There are no accounts, no logins, no submissions, and no server-side database operated by the site. Specifically:</p>
+  <p>IvritSuite is almost entirely client-side. There are no accounts, no logins, and no submissions, and the site stores no personal data on a server. (The one exception is a set of anonymous, aggregate usage counters described in Section&nbsp;3 — they record actions, never people.) Specifically:</p>
   <ul>
     <li><strong>No personal information.</strong> The site does not ask for, transmit, or store your name, email address, school, classroom roster, or any other personally identifiable information.</li>
     <li><strong>Tool content stays in your browser.</strong> Anything you create with the tools — worksheet presets, classroom-dashboard schedules and settings, flash-card preferences, dictionary filters, Torah Trainer settings — is stored locally in your browser using the standard <code>localStorage</code> API. It never leaves your device through any channel operated by the site.</li>
-    <li><strong>No tracking pixels or fingerprinting.</strong> The site uses only Google Analytics 4 for aggregate usage statistics (see Section 3).</li>
+    <li><strong>No tracking pixels or fingerprinting.</strong> For aggregate usage statistics the site uses only Google Analytics 4 and its own anonymous action counters — both described in Section&nbsp;3.</li>
   </ul>
 
   <h2>3. Cookies &amp; Analytics</h2>
@@ -157,6 +158,10 @@ footer a{color:var(--gold);text-decoration:none;}
     <li>Block third-party scripts via your preferred ad/tracker blocker.</li>
   </ul>
   <p>For details on Google's data handling, see Google's <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy</a>.</p>
+
+  <h3>Anonymous usage counts (community impact)</h3>
+  <p>Separately from Google Analytics, IvritSuite keeps a small set of <strong>anonymous, aggregate counters</strong> of how often the tools are used — for example, how many worksheets are generated or how many flash cards are practiced — so the community's collective impact can be shown on the <a href="impact.html">Community Impact</a> page. <strong>We count actions, never people.</strong> Each time something is counted, the only data ever sent is: the name of the action (such as &ldquo;worksheet&rdquo;), the date, and a 2-letter country code supplied by our content-delivery network (Cloudflare). We never send or store your IP address, your name, your device or browser details, or anything you create. No cookies or identifiers are involved, and no count is ever tied to an individual.</p>
+  <p>Your own per-device totals — shown under <strong>📊 Community impact → My stats</strong> on the home page — live only in your browser and are never transmitted. You can stop contributing to the community totals at any time using the <strong>&ldquo;Don't include my activity in community totals&rdquo;</strong> toggle there; your private on-device totals keep working either way.</p>
 
   <h2>4. Third-Party Resources</h2>
   <p>Some tools fetch or link to third-party content. Visiting or interacting with these resources is governed by their own privacy policies, not by IvritSuite:</p>
@@ -211,7 +216,8 @@ footer a{color:var(--gold);text-decoration:none;}
   Free to use and adapt for non-commercial educational purposes with attribution &nbsp;·&nbsp;
   <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
   <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank">GitHub</a> &nbsp;·&nbsp;
-  <a href="privacy.html">Privacy Policy</a>
+  <a href="privacy.html">Privacy Policy</a> &nbsp;·&nbsp;
+  <a href="impact.html">Community Impact</a>
 </footer>
 
 <script>

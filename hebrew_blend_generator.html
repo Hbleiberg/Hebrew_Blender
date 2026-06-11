@@ -10,6 +10,7 @@
 <link rel="manifest" href="manifest.webmanifest?v=3">
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
+<script src="/impact.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2948,7 +2949,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <div class="desktop-buttons">
       <button class="btn btn-primary" id="generateBtn" onclick="generate()">⬡ Generate Worksheet</button>
       <button class="btn btn-outline" id="regenBtn" onclick="regenerate()" disabled style="opacity:0.4;cursor:not-allowed;">↺ Regenerate</button>
-      <button class="btn btn-secondary" id="printBtn" onclick="window.print()" disabled style="opacity:0.4;cursor:not-allowed;">🖨 Print</button>
+      <button class="btn btn-secondary" id="printBtn" onclick="if(window.IvritImpact)IvritImpact.count('worksheets');window.print()" disabled style="opacity:0.4;cursor:not-allowed;">🖨 Print</button>
       <button class="btn btn-outline" id="pdfBtn" onclick="exportPDF()" disabled style="opacity:0.4;cursor:not-allowed;margin-top:8px;">⬇ Export PDF</button>
       <button class="btn btn-outline" id="shareBtn" onclick="copyShareLink('shareBtn')" style="margin-top:8px;">📋 Copy shareable link</button>
       <div class="print-tip" id="printTip" style="display:none;margin-top:8px;font-size:0.72rem;color:var(--muted);background:var(--warm-gray);border-radius:5px;padding:7px 9px;line-height:1.4;">
@@ -3149,7 +3150,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <div class="mobile-fab">
     <button class="btn btn-primary" onclick="generate()">⬡ Generate</button>
     <button class="btn btn-outline" id="regenBtnMob" onclick="regenerate()" disabled style="opacity:0.4;cursor:not-allowed;">↺</button>
-    <button class="btn btn-secondary" id="printBtnMob" onclick="window.print()" disabled style="opacity:0.4;cursor:not-allowed;">🖨</button>
+    <button class="btn btn-secondary" id="printBtnMob" onclick="if(window.IvritImpact)IvritImpact.count('worksheets');window.print()" disabled style="opacity:0.4;cursor:not-allowed;">🖨</button>
     <button class="btn btn-outline" id="pdfBtnMob" onclick="exportPDF()" disabled style="opacity:0.4;cursor:not-allowed;">⬇ PDF</button>
     <button class="btn btn-outline" id="shareBtnMob" onclick="copyShareLink('shareBtnMob')" title="Copy shareable link">📋</button>
   </div>
@@ -7234,6 +7235,7 @@ async function exportPDF() {
 
     const filename = `${title.replace(/\s+/g, '_')}_Hebrew_Blends.pdf`;
     pdf.save(filename);
+    if (window.IvritImpact) IvritImpact.count('worksheets');
   } catch (err) {
     alert('PDF export failed. Try using Print → Save as PDF instead.');
     console.error(err);

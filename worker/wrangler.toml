@@ -1,0 +1,20 @@
+# IvritSuite anonymous metrics Worker. Deploy steps: see README.md.
+# The ONLY value you must edit by hand is database_id (printed by
+# `wrangler d1 create ivritsuite-metrics`).
+
+name = "ivritsuite-metrics"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# Serve the Worker at https://api.ivritsuite.com. Requires the ivritsuite.com
+# zone to be on this Cloudflare account; `wrangler deploy` then provisions the
+# certificate + DNS for the custom domain automatically.
+routes = [
+  { pattern = "api.ivritsuite.com", custom_domain = true }
+]
+
+# D1 binding — reachable in the Worker as env.DB.
+[[d1_databases]]
+binding = "DB"
+database_name = "ivritsuite-metrics"
+database_id = "PASTE_DATABASE_ID_FROM_d1_create"
