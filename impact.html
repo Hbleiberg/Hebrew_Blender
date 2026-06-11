@@ -108,7 +108,7 @@ footer a{color:var(--gold);text-decoration:none;}
 
 <main>
   <h1 class="page-title">Community Impact</h1>
-  <p class="lede">A live look at how IvritSuite is used around the world. Every number here is an <strong>anonymous, aggregate count of actions</strong> — never a record of people.</p>
+  <p class="lede">A live look at how IvritSuite is used around the world — anonymous counts of what the tools create, alongside overall site traffic.</p>
   <div class="stamp" id="impGeneratedAt"></div>
 
   <h2>The numbers</h2>
@@ -117,9 +117,13 @@ footer a{color:var(--gold);text-decoration:none;}
   <h2>Growth over time</h2>
   <div id="impGrowth"><p class="imp-muted">Loading…</p></div>
 
+  <h2>Site traffic</h2>
+  <div id="impGA"><p class="imp-muted">Loading…</p></div>
+
   <section class="promise">
     <h2>Our privacy promise</h2>
-    <p>All numbers on this page are anonymous event counts — <strong>IvritSuite never tracks people</strong>. When an action is counted, the only things sent are the name of the action, the date, and a 2-letter country code from our content-delivery network. No IP addresses, no names, no accounts, no cookies, and nothing you create. See the <a href="privacy.html">Privacy Policy</a> for the full details, including how to opt out.</p>
+    <p>The <strong>action counts</strong> above are anonymous event counts — IvritSuite never ties them to a person. When an action is counted, the only things sent are the name of the action, the date, and a 2-letter country code from our content-delivery network: no IP addresses, no names, no accounts, no cookies, nothing you create.</p>
+    <p>The <strong>Site traffic</strong> figures come from <strong>Google Analytics</strong>, the standard web-analytics service the site already uses — it measures visits and devices in aggregate, not identities. See the <a href="privacy.html">Privacy Policy</a> for the full details, including how to opt out of the anonymous counts.</p>
   </section>
 </main>
 
@@ -169,6 +173,17 @@ function toggleDark() {
       document.getElementById('impTotals').innerHTML = '<p class="imp-muted">Community totals are temporarily unavailable. Please check back soon.</p>';
       document.getElementById('impGrowth').innerHTML = '';
     });
+
+  function renderGa(ga){
+    if (!window.IvritImpactUI) { setTimeout(function(){ renderGa(ga); }, 60); return; }
+    var el = document.getElementById('impGA');
+    if (!ga || ga.error || !ga.totals) { el.innerHTML = '<p class="imp-muted">Site-traffic numbers are temporarily unavailable.</p>'; return; }
+    IvritImpactUI.renderGA(el, ga);
+  }
+  fetch('https://api.ivritsuite.com/ga', { cache: 'no-store' })
+    .then(function(r){ return r.json(); })
+    .then(renderGa)
+    .catch(function(){ document.getElementById('impGA').innerHTML = '<p class="imp-muted">Site-traffic numbers are temporarily unavailable.</p>'; });
 })();
 </script>
 </body>

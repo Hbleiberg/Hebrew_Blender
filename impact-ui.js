@@ -268,13 +268,49 @@
       '.imp-range-btn.active{background:var(--navy);color:#fff;}' +
       '.imp-charts{display:flex;flex-direction:column;gap:18px;}' +
       '.imp-chart-h{font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:4px;}' +
-      '.imp-axisnote{font-size:0.72rem;color:var(--muted);margin-top:12px;text-align:center;}';
+      '.imp-axisnote{font-size:0.72rem;color:var(--muted);margin-top:12px;text-align:center;}' +
+      '.imp-ga{margin-top:18px;border-top:1px solid var(--border);padding-top:14px;}' +
+      '.imp-ga-h{font-size:0.9rem;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px;}' +
+      '.imp-ga-note{font-size:0.72rem;color:var(--muted);margin-top:10px;line-height:1.45;}' +
+      '.imp-toplist{margin-top:12px;display:flex;flex-direction:column;gap:4px;}' +
+      '.imp-toprow{display:flex;align-items:center;gap:8px;font-size:0.82rem;}' +
+      '.imp-toptitle{flex:1;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
+      '.imp-topviews{color:var(--muted);font-variant-numeric:tabular-nums;flex-shrink:0;}';
     var s = document.createElement('style');
     s.id = 'imp-ui-css';
     s.textContent = css;
     (document.head || document.documentElement).appendChild(s);
   }
   injectCSS();
+
+  /* ── Site traffic (Google Analytics) ──────────────────────────────────────*/
+  function renderGA(el, ga) {
+    if (!ga || ga.error || !ga.totals) { el.innerHTML = ''; return; }
+    var t = ga.totals;
+    var html = '<div class="imp-ga">';
+    html += '<div class="imp-ga-h">🌐 Site traffic <span style="font-weight:400;color:var(--muted);font-size:0.78rem;">(Google Analytics)</span></div>';
+    html += '<div class="imp-grid">';
+    html += '<div class="imp-card"><div class="imp-ico">👁️</div><div class="imp-num">' + fmtNum(t.pageviews) + '</div><div class="imp-lab">Page views</div></div>';
+    html += '<div class="imp-card"><div class="imp-ico">👥</div><div class="imp-num">' + fmtNum(t.users) + '</div><div class="imp-lab">Visitors</div></div>';
+    html += '<div class="imp-card"><div class="imp-ico">🔁</div><div class="imp-num">' + fmtNum(t.sessions) + '</div><div class="imp-lab">Sessions</div></div>';
+    html += '</div>';
+    if (ga.daily && ga.daily.length) {
+      var series = ga.daily.map(function (d) { return { day: d.day, n: d.pageviews }; });
+      html += '<div style="margin-top:14px;"><div class="imp-chart-h">📈 Page views (last 365 days)</div>' +
+              sparkline(series, { days: 365, label: 'page views', color: 'var(--gold)' }) + '</div>';
+    }
+    if (ga.topPages && ga.topPages.length) {
+      html += '<div style="margin-top:14px;"><div class="imp-chart-h">Top pages</div><div class="imp-toplist">';
+      ga.topPages.forEach(function (p) {
+        html += '<div class="imp-toprow"><span class="imp-toptitle">' + esc(p.title || '(untitled)') + '</span>' +
+                '<span class="imp-topviews">' + fmtNum(p.views) + '</span></div>';
+      });
+      html += '</div></div>';
+    }
+    html += '<div class="imp-ga-note">From Google Analytics — standard web analytics (aggregate visits and devices), separate from the anonymous action counts above.</div>';
+    html += '</div>';
+    el.innerHTML = html;
+  }
 
   window.IvritImpactUI = {
     EVENT_DISPLAY: EVENT_DISPLAY,
@@ -284,6 +320,7 @@
     countryName: countryName,
     sparkline: sparkline,
     renderTotals: renderTotals,
-    renderGrowth: renderGrowth
+    renderGrowth: renderGrowth,
+    renderGA: renderGA
   };
 })();

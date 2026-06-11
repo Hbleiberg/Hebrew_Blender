@@ -362,6 +362,7 @@ body.dark .sefaria-attr .sefaria-dark{display:inline-block;}
       </div>
       <div class="imp-tabpane active" id="impTabCommunity">
         <div id="impTotals"><div class="imp-muted" style="text-align:center;padding:20px 0;">Loading community totals…</div></div>
+        <div id="impGA"></div>
       </div>
       <div class="imp-tabpane" id="impTabGrowth">
         <div id="impGrowth"></div>
@@ -537,6 +538,11 @@ function loadImpactStats() {
       document.getElementById('impTotals').innerHTML = msg;
       document.getElementById('impGrowth').innerHTML = msg;
     });
+  // Site traffic (Google Analytics) — independent of /stats; hides itself on any error.
+  fetch('https://api.ivritsuite.com/ga', { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (ga) { if (window.IvritImpactUI) IvritImpactUI.renderGA(document.getElementById('impGA'), ga); })
+    .catch(function () {});
 }
 function renderImpactPanes() {
   if (!_impactStats || !window.IvritImpactUI) return;
