@@ -41,10 +41,78 @@
   gtag('js', new Date());
   gtag('config', 'G-CMLC81Z0HC');
 </script>
-<title>Hebrew Font Maker — Build a Hebrew Font | IvritSuite</title>
-<meta name="description" content="Turn your hand-drawn Hebrew letters into a real, installable TrueType font with correctly-positioned nikkud — entirely in your browser.">
-<meta name="robots" content="noindex, nofollow">
+<title>Free Hebrew Font Maker — Create Your Own Hebrew Fonts | IvritSuite</title>
+<meta name="description" content="Free Hebrew Font Maker — turn your handwriting into real, installable Hebrew fonts with nikkud and trop, right in your browser. Make and download free Hebrew fonts.">
+<link rel="canonical" href="https://ivritsuite.com/Hebrew_Font_Maker.html">
+<meta name="robots" content="index, follow">
 <meta name="author" content="Harrison Bleiberg">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IvritSuite">
+<meta property="og:title" content="Free Hebrew Font Maker — Create Your Own Hebrew Fonts">
+<meta property="og:description" content="Turn your handwriting into real, installable Hebrew fonts with nikkud — free, in your browser. The free Hebrew Font Maker from IvritSuite.">
+<meta property="og:url" content="https://ivritsuite.com/Hebrew_Font_Maker.html">
+<meta property="og:image" content="https://ivritsuite.com/og-card.png?v=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="IvritSuite — Free Hebrew Literacy Tools">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Free Hebrew Font Maker | IvritSuite">
+<meta name="twitter:description" content="Make your own free Hebrew fonts from your handwriting — nikkud included, right in your browser.">
+<meta name="twitter:image" content="https://ivritsuite.com/og-card.png?v=2">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Hebrew Font Maker",
+  "url": "https://ivritsuite.com/Hebrew_Font_Maker.html",
+  "description": "Make your own Hebrew fonts from your handwriting — trace letters, place nikkud and trop, and export TrueType, WOFF2, or UFO.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any (web browser)",
+  "isAccessibleForFree": true,
+  "inLanguage": "en",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "publisher": { "@type": "Organization", "name": "IvritSuite", "url": "https://ivritsuite.com/" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "IvritSuite", "item": "https://ivritsuite.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Hebrew Font Maker", "item": "https://ivritsuite.com/Hebrew_Font_Maker.html" }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Is the Hebrew Font Maker free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Hebrew Font Maker is completely free — make and download as many Hebrew fonts as you like, with no account or sign-up." } },
+    { "@type": "Question", "name": "How do I make my own Hebrew font?", "acceptedAnswer": { "@type": "Answer", "text": "Upload or scan a picture of each Hebrew letter, trace it into an outline, place the nikkud and trop anchors, then export a real font you can install." } },
+    { "@type": "Question", "name": "Can I make free Hebrew fonts with nikkud and trop?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The free Hebrew Font Maker positions nikkud (vowels) and cantillation (trop) automatically using OpenType mark positioning." } },
+    { "@type": "Question", "name": "What font formats can I export?", "acceptedAnswer": { "@type": "Answer", "text": "TrueType (TTF), WOFF2 for the web, and editable UFO source — each with a license you choose (CC0, OFL, MIT, CC-BY, or All Rights Reserved)." } },
+    { "@type": "Question", "name": "Do I need to install any software?", "acceptedAnswer": { "@type": "Answer", "text": "No. The Hebrew Font Maker runs entirely in your browser; the font engine loads only when you export." } }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to make a Hebrew font",
+  "description": "Turn your handwritten Hebrew letters into a real, installable font with nikkud and trop.",
+  "totalTime": "PT20M",
+  "step": [
+    { "@type": "HowToStep", "position": 1, "name": "Upload your letters", "text": "Add a clear picture of each Hebrew letter — one per image, a full sheet, or an existing font file." },
+    { "@type": "HowToStep", "position": 2, "name": "Trace", "text": "The tool turns each picture into a clean outline; adjust the threshold and detail if needed." },
+    { "@type": "HowToStep", "position": 3, "name": "Anchor nikkud and trop", "text": "Show where the vowel and cantillation marks sit on each letter." },
+    { "@type": "HowToStep", "position": 4, "name": "Export", "text": "Download your finished font as TrueType (TTF), WOFF2, or UFO and install it." }
+  ]
+}
+</script>
 <!-- PDF + canvas libs (reused from the worksheet generator) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -444,7 +512,7 @@
   <span class="star">✡︎</span>
   <div style="flex:1;">
     <h1>Hebrew Font Maker <span class="beta-tag">Beta</span></h1>
-    <p>Turn your hand-drawn Hebrew letters into a real, installable font — in your browser.</p>
+    <p>Make your own free Hebrew font — turn your handwriting into a real, installable font with nikkud, right in your browser.</p>
   </div>
   <a href="/" class="hbtn">← Home</a>
   <button id="darkToggle" class="hbtn" onclick="toggleDark()" title="Toggle dark mode">🌙 Dark</button>
@@ -597,7 +665,7 @@
 </div>
 
 <footer>
-  <strong>Hebrew Font Maker</strong> — an experimental IvritSuite tool. Builds real fonts entirely
+  <strong>Hebrew Font Maker</strong> — a free, experimental IvritSuite tool. Builds real fonts entirely
   client-side (the font engine loads on first export), with GPOS mark positioning for nikkud (mark-to-base)
   and cantillation/trop (mark-to-mark). Exports TrueType (TTF), WOFF2 and editable UFO source, and your
   finished font can be used in other IvritSuite tools such as <a href="torah_trainer.html">Torah Trainer</a>.
