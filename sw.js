@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v69';
+const VERSION = 'v70';
 const CACHE = 'ivritsuite-' + VERSION;
 
 /* Core app shell. Big media (og-card, the data/ corpus) is left to runtime caching. */
@@ -14,6 +14,8 @@ const CORE_ASSETS = [
   '/Hebrew_Font_Maker.html',
   '/resources.html',
   '/privacy.html',
+  '/contact.html',
+  '/zelle-qr.jpg',
   '/manifest.webmanifest',
   '/pwa.js',
   '/favicon.svg',
