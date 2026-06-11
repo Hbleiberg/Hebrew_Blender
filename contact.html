@@ -275,10 +275,12 @@ form.addEventListener('submit', async function(e){
   if (!formData.get('subject')) formData.set('subject', 'IvritSuite contact form');
   formData.set('from_name', formData.get('name') || 'IvritSuite contact form');
   try {
+    const payload = Object.fromEntries(formData);
+    delete payload['g-recaptcha-response']; // hCaptcha's reCAPTCHA-compat field — its presence makes Web3Forms reject as (Pro) reCaptcha
     const r = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(Object.fromEntries(formData))
+      body: JSON.stringify(payload)
     });
     const data = await r.json().catch(function(){ return {}; });
     if (r.ok && data.success) {

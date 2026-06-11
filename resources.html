@@ -837,8 +837,8 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
 </div>
 
-<!-- hCaptcha (explicit render so it works inside the popup) -->
-<script src="https://js.hcaptcha.com/1/api.js?render=explicit" async defer></script>
+<!-- hCaptcha (explicit render so it works inside the popup; recaptchacompat off so Web3Forms treats it as free hCaptcha, not Pro reCaptcha) -->
+<script src="https://js.hcaptcha.com/1/api.js?render=explicit&recaptchacompat=off" async defer></script>
 <script>
 (function(){
   const HCAPTCHA_SITEKEY = '50b2fe65-b00b-4b9e-ad62-3ba471098be2'; // Web3Forms shared free key
@@ -895,6 +895,7 @@ document.addEventListener('DOMContentLoaded', () => {
     formData.set('subject', 'New Resource Suggestion: ' + (formData.get('Resource Name') || '').trim());
     formData.set('from_name', formData.get('name') || 'IvritSuite resource suggestion');
     const payload = Object.fromEntries(formData);
+    delete payload['g-recaptcha-response']; // hCaptcha's reCAPTCHA-compat field — its presence makes Web3Forms reject as (Pro) reCaptcha
     payload['h-captcha-response'] = token;
     try {
       const r = await fetch('https://api.web3forms.com/submit', {
