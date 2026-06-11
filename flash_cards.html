@@ -10,7 +10,6 @@
 <link rel="manifest" href="manifest.webmanifest?v=3">
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
-<script src="/impact.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -4945,7 +4944,6 @@ function markIncorrect(e) {
   setTimeout(autoAdvance, 220);
 }
 function autoAdvance() {
-  if (window.IvritImpact) IvritImpact.count('cards');
   if (currentIndex < currentCards.length - 1) {
     currentIndex++;
     isFlipped = false;

@@ -10,7 +10,6 @@
 <link rel="manifest" href="manifest.webmanifest?v=3">
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
-<script src="/impact.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2375,7 +2374,6 @@ function firstKaraokeSpan(idx) {
 let karaokeRafId = null;
 let lastHighlightedIdx = -1;
 let _verseEndStopAt = null;  // when set, audio auto-pauses at this currentTime
-let _ttWordsCredited = 0;    // high-water mark of words credited to impact metrics this load
 const chantAllState = { active: false, queue: null, parsha: null };
 
 function maybeLoadKaraoke(rangeInfo) {
@@ -2409,7 +2407,6 @@ function teardownKaraokeAudio() {
   document.body.classList.remove('tt-karaoke-active');
   if (currentAudio) currentAudio.removeAttribute('src');
   currentTimings = null;
-  _ttWordsCredited = 0;
   _holidayKaraoke = null;
   _loadedChantKey = null;
   _pendingChantWordIdx = null;
@@ -2451,7 +2448,6 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
   // Set up audio
   const audioUrl = POCKET_AUDIO_BASE + encodeURIComponent(`${audioBase}-${suffix}.mp3`);
   currentTimings = timings;
-  _ttWordsCredited = 0;
   if (!currentAudio) currentAudio = document.getElementById('ttAudio');
   currentAudio.src = audioUrl;
   currentAudio.playbackRate = parseFloat(settings.karaokeRate) || 1.0;
@@ -2571,12 +2567,6 @@ function onAudioTimeUpdate() {
         lead.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
-  }
-  // Credit words of Torah as karaoke reaches them — high-water mark so seeks /
-  // replays never double-count, and impact.js batches the beacon (never per-word).
-  if (idx >= 0 && idx + 1 > _ttWordsCredited) {
-    if (window.IvritImpact) IvritImpact.count('torah_words', (idx + 1) - _ttWordsCredited);
-    _ttWordsCredited = idx + 1;
   }
   lastHighlightedIdx = idx;
 }

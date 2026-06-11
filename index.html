@@ -10,8 +10,6 @@
 <link rel="manifest" href="manifest.webmanifest?v=3">
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
-<script src="/impact.js" defer></script>
-<script src="/impact-ui.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -192,17 +190,6 @@ body.dark .ie-modal-body textarea{background:#0d1220;}
 .ie-action-btn.secondary{background:var(--warm-gray);color:var(--text);border:1px solid var(--border);}
 .ie-action-btn.secondary:hover{border-color:var(--gold);color:var(--gold);}
 .ie-note{font-size:0.75rem;color:var(--muted);line-height:1.4;}
-/* Community impact modal */
-.imp-tabs{display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:14px;}
-.imp-tab{flex:1;padding:8px 4px;border:none;background:var(--white);color:var(--text);font-family:inherit;font-size:0.82rem;cursor:pointer;border-right:1px solid var(--border);}
-.imp-tab:last-child{border-right:none;}
-.imp-tab.active{background:var(--navy);color:#fff;}
-.imp-tabpane{display:none;}
-.imp-tabpane.active{display:block;}
-.imp-mystat-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.88rem;}
-.imp-mystat-row:last-child{border-bottom:none;}
-.imp-optout{display:flex;align-items:flex-start;gap:8px;margin-top:14px;font-size:0.82rem;color:var(--text);cursor:pointer;line-height:1.4;}
-.imp-since{font-size:0.78rem;color:var(--muted);margin-bottom:8px;}
 footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
 footer a{color:var(--gold);text-decoration:none;}
 .sefaria-attr{display:inline-flex;align-items:center;gap:6px;vertical-align:middle;cursor:pointer;}
@@ -294,7 +281,6 @@ body.dark .sefaria-attr .sefaria-dark{display:inline-block;}
   <button class="bookmark-btn" onclick="showBookmarkTip()">🔖 Bookmark this page</button>
   <div class="bookmark-tip" id="bookmarkTip"></div>
   <button class="ie-btn" onclick="openIEModal()">⚙ Import / Export All Settings</button>
-  <button class="ie-btn" onclick="openImpactModal()">📊 Community impact</button>
 </div>
 
 <!-- Import/Export modal -->
@@ -347,41 +333,13 @@ body.dark .sefaria-attr .sefaria-dark{display:inline-block;}
   </div>
 </div>
 
-<!-- Community impact modal -->
-<div class="ie-backdrop" id="impactBackdrop" onclick="closeImpactModal(event)">
-  <div class="ie-modal" onclick="event.stopPropagation()">
-    <div class="ie-modal-hdr">
-      <h3>📊 Community Impact</h3>
-      <button class="ie-modal-close" onclick="closeImpactModal()">×</button>
-    </div>
-    <div class="ie-modal-body">
-      <div class="imp-tabs">
-        <button type="button" class="imp-tab active" data-imptab="community" onclick="showImpactTab('community')">Community</button>
-        <button type="button" class="imp-tab" data-imptab="growth" onclick="showImpactTab('growth')">Growth</button>
-        <button type="button" class="imp-tab" data-imptab="mine" onclick="showImpactTab('mine')">My stats</button>
-      </div>
-      <div class="imp-tabpane active" id="impTabCommunity">
-        <div id="impTotals"><div class="imp-muted" style="text-align:center;padding:20px 0;">Loading community totals…</div></div>
-        <div id="impGA"></div>
-      </div>
-      <div class="imp-tabpane" id="impTabGrowth">
-        <div id="impGrowth"></div>
-      </div>
-      <div class="imp-tabpane" id="impTabMine">
-        <div id="impMine"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <footer>
   Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="font-weight:600;">Harrison Bleiberg</a><br>
   Word Data from <a href="https://kaikki.org/dictionary/Hebrew/index.html" target="_blank">Kaikki.org</a><br>
   Free to use and adapt for non-commercial educational purposes with attribution &nbsp;·&nbsp;
   <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
   <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank">GitHub</a> &nbsp;·&nbsp;
-  <a href="privacy.html">Privacy Policy</a> &nbsp;·&nbsp;
-  <a href="impact.html">Community Impact</a>
+  <a href="privacy.html">Privacy Policy</a>
 </footer>
 
 <script>
@@ -510,81 +468,6 @@ function closeIEModal(e) {
   document.getElementById('ieBackdrop').classList.remove('open');
 }
 
-/* ── Community impact popup ─────────────────────────────────────────────── */
-var _impactStats = null, _impactLoaded = false;
-function openImpactModal() {
-  document.getElementById('impactBackdrop').classList.add('open');
-  showImpactTab('community');
-  renderMyImpactStats();
-  loadImpactStats();
-}
-function closeImpactModal(e) {
-  if (e && e.target !== document.getElementById('impactBackdrop')) return;
-  document.getElementById('impactBackdrop').classList.remove('open');
-}
-function showImpactTab(name) {
-  document.querySelectorAll('.imp-tab').forEach(function (b) { b.classList.toggle('active', b.dataset.imptab === name); });
-  document.getElementById('impTabCommunity').classList.toggle('active', name === 'community');
-  document.getElementById('impTabGrowth').classList.toggle('active', name === 'growth');
-  document.getElementById('impTabMine').classList.toggle('active', name === 'mine');
-}
-function loadImpactStats() {
-  if (_impactLoaded) { renderImpactPanes(); return; }
-  fetch('https://api.ivritsuite.com/stats', { cache: 'no-store' })
-    .then(function (r) { if (!r.ok) throw 0; return r.json(); })
-    .then(function (d) { _impactStats = d; _impactLoaded = true; renderImpactPanes(); })
-    .catch(function () {
-      var msg = '<div class="imp-muted" style="text-align:center;padding:20px 0;">Community totals are temporarily unavailable.</div>';
-      document.getElementById('impTotals').innerHTML = msg;
-      document.getElementById('impGrowth').innerHTML = msg;
-    });
-  // Site traffic (Google Analytics) — independent of /stats; hides itself on any error.
-  fetch('https://api.ivritsuite.com/ga', { cache: 'no-store' })
-    .then(function (r) { return r.json(); })
-    .then(function (ga) { if (window.IvritImpactUI) IvritImpactUI.renderGA(document.getElementById('impGA'), ga); })
-    .catch(function () {});
-}
-function renderImpactPanes() {
-  if (!_impactStats || !window.IvritImpactUI) return;
-  IvritImpactUI.renderTotals(document.getElementById('impTotals'), _impactStats);
-  IvritImpactUI.renderGrowth(document.getElementById('impGrowth'), _impactStats, 90);
-}
-function renderMyImpactStats() {
-  var el = document.getElementById('impMine');
-  var blob;
-  try { blob = JSON.parse(localStorage.getItem('ivritsuite-impact-v1')) || {}; } catch (e) { blob = {}; }
-  var events = blob.events || {};
-  var cfg = (window.IvritImpactUI && IvritImpactUI.EVENT_DISPLAY) || {};
-  var fmt = (window.IvritImpactUI && IvritImpactUI.fmtNum) || function (x) { return x; };
-  var html = '';
-  if (blob.first) {
-    var since = new Date(blob.first).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    html += '<div class="imp-since">Your activity on this device, since ' + since + '.</div>';
-  } else {
-    html += '<div class="imp-since">No activity recorded on this device yet.</div>';
-  }
-  Object.keys(events).filter(function (k) { return events[k] > 0; }).forEach(function (k) {
-    var label = (cfg[k] && cfg[k].label) || k;
-    var icon = (cfg[k] && cfg[k].icon) || '⭐';
-    html += '<div class="imp-mystat-row"><span>' + icon + ' ' + label + '</span><span>' + fmt(events[k]) + '</span></div>';
-  });
-  var optedOut = false;
-  try { optedOut = localStorage.getItem('ivritsuite-impact-optout') === '1'; } catch (e) {}
-  html += '<label class="imp-optout"><input type="checkbox" id="impOptOut"' + (optedOut ? ' checked' : '') +
-    ' onchange="setImpactOptOut(this.checked)" style="margin-top:2px;"> Don\'t include my activity in community totals ' +
-    '<span style="color:var(--muted);">(your on-device numbers above still update)</span></label>';
-  html += '<div style="margin-top:14px;"><button class="ie-action-btn secondary" onclick="resetMyImpactStats()">Reset my stats</button></div>';
-  html += '<div class="imp-since" style="margin-top:10px;">These numbers live only in this browser — they\'re never sent anywhere.</div>';
-  el.innerHTML = html;
-}
-function setImpactOptOut(on) {
-  try { if (on) localStorage.setItem('ivritsuite-impact-optout', '1'); else localStorage.removeItem('ivritsuite-impact-optout'); } catch (e) {}
-}
-function resetMyImpactStats() {
-  if (!confirm('Reset your on-device impact stats? This clears only your personal numbers in this browser.')) return;
-  try { localStorage.removeItem('ivritsuite-impact-v1'); } catch (e) {}
-  renderMyImpactStats();
-}
 // Deep-merge an incoming Flash Cards profiles blob ({activeProfile, profiles}) into storage.
 // replace=true clears existing profiles first. Result lists merge de-duped by savedAt (cap 50).
 function mergeFlashCardProfiles(incoming, replace) {
@@ -803,22 +686,6 @@ function mountFolderTree(cfg){
 }
 /* ═══ end folder-tree component ═══ */
 
-// Merge anonymous impact stats: idempotent per-event max (re-importing a backup
-// never inflates) + earliest first-use date. replace=true ignores existing first.
-function mergeImpactStats(incoming, replace) {
-  if (!incoming || typeof incoming !== 'object') return;
-  const KEY = 'ivritsuite-impact-v1';
-  let base;
-  try { base = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { base = null; }
-  if (replace || !base || typeof base !== 'object') base = {};
-  const events = Object.assign({}, base.events || {});
-  const inc = incoming.events || {};
-  Object.keys(inc).forEach(k => { events[k] = Math.max(events[k] || 0, inc[k] || 0); });
-  const out = { events };
-  const dates = [base.first, incoming.first].filter(Boolean);
-  if (dates.length) out.first = dates.sort()[0];
-  localStorage.setItem(KEY, JSON.stringify(out));
-}
 function exportAllSettings() {
   const blob = {
     _hebrewBlenderExport: 1,
@@ -841,8 +708,6 @@ function exportAllSettings() {
     torahTrainerSettings: JSON.parse(localStorage.getItem('hebrewTorahTrainer_settings') || '{}'),
     inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
     userFonts:           _fontsBackupCache || [],
-    impactStats:         JSON.parse(localStorage.getItem('ivritsuite-impact-v1') || 'null'),
-    impactOptOut:        localStorage.getItem('ivritsuite-impact-optout') || null,
   };
   document.getElementById('ieTextarea').value = JSON.stringify(blob, null, 2);
 }
@@ -911,10 +776,6 @@ async function importAllSettings() {
       for (const uf of parsed.userFonts) { try { await saveUserFont(uf.name, _ivB64ToBytes(uf.b64), uf.family); } catch (e) {} }
       refreshFontsBackupCache();
     }
-    if (parsed.impactStats) mergeImpactStats(parsed.impactStats, false);
-    if (parsed.impactOptOut !== undefined && parsed.impactOptOut !== null) {
-      localStorage.setItem('ivritsuite-impact-optout', parsed.impactOptOut);
-    }
     alert('Import successful! Reload the Dashboard to apply all settings.');
   } catch(e) { alert('Import failed: ' + e.message); }
 }
@@ -948,6 +809,7 @@ function eraseAllSettings() {
     'hebrewDictionary_emojiSettings',
     'hebrewTorahTrainer_settings',
     'hebrewBlender_inputMode',
+    // legacy cleanup: purge orphaned data from the removed community-impact feature
     'ivritsuite-impact-v1',
     'ivritsuite-impact-optout',
   ];
@@ -980,9 +842,7 @@ const IVRIT_CFG = {
       dictEmojiSettings:   JSON.parse(localStorage.getItem('hebrewDictionary_emojiSettings') || '{}'),
       torahTrainerSettings:JSON.parse(localStorage.getItem('hebrewTorahTrainer_settings')    || '{}'),
       inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
-      userFonts:           _fontsBackupCache || [],
-      impactStats:         JSON.parse(localStorage.getItem('ivritsuite-impact-v1') || 'null'),
-      impactOptOut:        localStorage.getItem('ivritsuite-impact-optout') || null
+      userFonts:           _fontsBackupCache || []
     };
   },
   apply(data, mode) {
@@ -1020,8 +880,6 @@ const IVRIT_CFG = {
       data.userFonts.forEach(uf => { try { saveUserFont(uf.name, _ivB64ToBytes(uf.b64), uf.family); } catch (e) {} });
       refreshFontsBackupCache(); touched = true;
     }
-    if (data.impactStats) { mergeImpactStats(data.impactStats, mode === 'replace'); touched = true; }
-    if (data.impactOptOut !== undefined && data.impactOptOut !== null) { localStorage.setItem('ivritsuite-impact-optout', data.impactOptOut); touched = true; }
     if (!touched) { alert('This file has no all-tools data. Try importing it on its own tool\'s page instead.'); }
   }
 };

@@ -1,12 +1,11 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v62';
+const VERSION = 'v63';
 const CACHE = 'ivritsuite-' + VERSION;
 
 /* Core app shell. Big media (og-card, the data/ corpus) is left to runtime caching. */
 const CORE_ASSETS = [
   '/',
   '/index.html',
-  '/impact.html',
   '/hebrew_blend_generator.html',
   '/hebrew_dictionary.html',
   '/classroom_dashboard.html',
@@ -17,8 +16,6 @@ const CORE_ASSETS = [
   '/privacy.html',
   '/manifest.webmanifest',
   '/pwa.js',
-  '/impact.js',
-  '/impact-ui.js',
   '/favicon.svg',
   '/apple-touch-icon.png',
   '/icon-192.png',
