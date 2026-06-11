@@ -169,24 +169,27 @@ footer a{color:var(--gold);text-decoration:none;}
       <h2>Get in touch</h2>
       <p>Send a message below and it will go straight to my inbox. Please include your email so I can write back.</p>
       <form id="contactForm">
+      <input type="hidden" name="access_key" value="236416bf-9bf9-459c-9bf2-e31303467db4">
       <div class="field">
         <label for="cfName">Your name</label>
-        <input type="text" id="cfName" required autocomplete="name">
+        <input type="text" id="cfName" name="name" required autocomplete="name">
       </div>
       <div class="field">
         <label for="cfEmail">Your email</label>
-        <input type="email" id="cfEmail" required autocomplete="email">
+        <input type="email" id="cfEmail" name="email" required autocomplete="email">
       </div>
       <div class="field">
         <label for="cfSubject">Subject <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
-        <input type="text" id="cfSubject">
+        <input type="text" id="cfSubject" name="subject">
       </div>
       <div class="field">
         <label for="cfMessage">Message</label>
-        <textarea id="cfMessage" required></textarea>
+        <textarea id="cfMessage" name="message" required></textarea>
       </div>
-      <!-- honeypot: hidden from humans, catches bots -->
-      <input type="text" id="cfHoney" class="honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <!-- honeypot (Web3Forms): hidden from humans, catches bots -->
+      <input type="checkbox" name="botcheck" class="honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <!-- hCaptcha: free, server-verified by Web3Forms via its shared site key -->
+      <div class="h-captcha" data-captcha="true" style="margin:4px 0 14px;"></div>
       <button type="submit" class="btn-primary">Send message</button>
       <div id="formStatus" role="status" aria-live="polite"></div>
       </form>
@@ -254,37 +257,39 @@ function showPay(which){
   document.querySelectorAll('.donate-panel').forEach(p => p.classList.toggle('active', p.dataset.pay === which));
 }
 
-// Contact form → FormSubmit.co (AJAX, JSON). Sends to Harrison@IvritSuite.com.
+// Contact form → Web3Forms (AJAX, JSON) with hCaptcha. Delivers to Harrison@IvritSuite.com.
 const form = document.getElementById('contactForm');
 const statusEl = document.getElementById('formStatus');
 form.addEventListener('submit', async function(e){
   e.preventDefault();
-  if (document.getElementById('cfHoney').value) return; // bot trap
   const btn = form.querySelector('button[type="submit"]');
+  const formData = new FormData(form);
+  if (!formData.get('h-captcha-response')) {
+    statusEl.style.color = 'var(--muted)';
+    statusEl.textContent = 'Please complete the “I’m human” check below before sending.';
+    return;
+  }
   btn.disabled = true;
   statusEl.style.color = 'var(--muted)';
   statusEl.textContent = 'Sending…';
+  if (!formData.get('subject')) formData.set('subject', 'IvritSuite contact form');
+  formData.set('from_name', formData.get('name') || 'IvritSuite contact form');
   try {
-    const r = await fetch('https://formsubmit.co/ajax/Harrison@IvritSuite.com', {
+    const r = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        name: document.getElementById('cfName').value,
-        email: document.getElementById('cfEmail').value,
-        _replyto: document.getElementById('cfEmail').value,
-        _subject: document.getElementById('cfSubject').value || 'IvritSuite contact form',
-        message: document.getElementById('cfMessage').value,
-        _template: 'table',
-        _captcha: 'false'
-      })
+      body: JSON.stringify(Object.fromEntries(formData))
     });
     const data = await r.json().catch(function(){ return {}; });
-    if (r.ok && (data.success === 'true' || data.success === true)) {
+    if (r.ok && data.success) {
       form.reset();
+      if (window.hcaptcha) { try { window.hcaptcha.reset(); } catch (_) {} }
       statusEl.style.color = 'var(--gold)';
       statusEl.textContent = 'Message sent ✓ — thank you! I’ll get back to you soon.';
     } else {
-      throw new Error(data.message || 'send failed');
+      statusEl.style.color = 'var(--muted)';
+      statusEl.innerHTML = (data && data.message ? data.message : 'Sorry — that didn’t go through.') +
+        ' You can also email <a href="mailto:Harrison@IvritSuite.com">Harrison@IvritSuite.com</a>.';
     }
   } catch (err) {
     statusEl.style.color = 'var(--muted)';
@@ -294,5 +299,7 @@ form.addEventListener('submit', async function(e){
   }
 });
 </script>
+<!-- Web3Forms helper: renders the free hCaptcha widget (Web3Forms' shared site key) -->
+<script src="https://web3forms.com/client/script.js" async defer></script>
 </body>
 </html>
