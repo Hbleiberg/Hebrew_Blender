@@ -4689,19 +4689,23 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn) {
   }
   // ── mark-to-base — nikkud + trop, per-letter base anchors (skip if none; feaLib rejects empty blocks) ──
   let markLines = '';
-  LETTERS.forEach(L => {
-    const l = project.letters.find(x => x.codepoint === L.cp);
+  const emitBaseAnchors = (nm, l, skipCls) => {   // skipCls: a class the baked-in precomposed mark already occupies
     if (!l || !l.anchors) return;
-    const nm = gname(L.cp);
-    if (byClass.below.length)  markLines += `  pos base ${nm} <anchor ${l.anchors.below.x} ${l.anchors.below.y}> mark @MC_BELOW;\n`;
-    if (byClass.above.length)  markLines += `  pos base ${nm} <anchor ${l.anchors.above.x} ${l.anchors.above.y}> mark @MC_ABOVE;\n`;
-    if (byClass.center.length) markLines += `  pos base ${nm} <anchor ${l.anchors.center.x} ${l.anchors.center.y}> mark @MC_CENTER;\n`;
+    if (byClass.below.length  && skipCls !== 'below')  markLines += `  pos base ${nm} <anchor ${l.anchors.below.x} ${l.anchors.below.y}> mark @MC_BELOW;\n`;
+    if (byClass.above.length  && skipCls !== 'above')  markLines += `  pos base ${nm} <anchor ${l.anchors.above.x} ${l.anchors.above.y}> mark @MC_ABOVE;\n`;
+    if (byClass.center.length && skipCls !== 'center') markLines += `  pos base ${nm} <anchor ${l.anchors.center.x} ${l.anchors.center.y}> mark @MC_CENTER;\n`;
     if (tropMarks.length) {
       ensureTropAnchors(l);
       if (tropByClass.above.length) markLines += `  pos base ${nm} <anchor ${l.anchors.tropAbove.x} ${l.anchors.tropAbove.y}> mark @MC_TROP_ABOVE;\n`;
       if (tropByClass.below.length) markLines += `  pos base ${nm} <anchor ${l.anchors.tropBelow.x} ${l.anchors.tropBelow.y}> mark @MC_TROP_BELOW;\n`;
     }
-  });
+  };
+  LETTERS.forEach(L => emitBaseAnchors(gname(L.cp), project.letters.find(x => x.codepoint === L.cp)));
+  // Ligature/precomposed targets (e.g. שׁ = shin+shin-dot → FB2A, בּ = bet+dagesh → FB31) are NEW base
+  // glyphs. A vowel typed after the composed pair attaches to the TARGET, not the original letter — so
+  // the target needs the base letter's anchors too, or the vowel falls back to x=0 and hugs the left
+  // edge. Skip the class the baked-in mark already occupies so a second mark doesn't double-stack on it.
+  builtPrecomposed.forEach(pc => emitBaseAnchors(gname(pc.target), project.letters.find(x => x.codepoint === pc.base), MARK_CLASS[pc.mark]));
   if (markLines) f += 'feature mark {\n' + markLines + '} mark;\n\n';
   // ── mark-to-mark — stack trop above/below a nikkud vowel (only when both categories are on) ──
   if (nikOn && tropMarks.length) {
