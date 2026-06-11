@@ -24,6 +24,44 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ---
 
+## JavaScript & Python Libraries
+
+The tools load these at runtime from public CDNs (jsDelivr, cdnjs, esm.sh); none are bundled or redistributed in this repository. Each is credited below with its copyright holder, license, and project home. (*hebrew-transliteration* is the same library whose full MIT text appears in the section above; it is repeated here for a complete inventory.)
+
+| Library | Used by | Copyright | License | Project |
+|---|---|---|---|---|
+| html2canvas 1.4.1 | Worksheet, Font Maker (PNG / PDF capture) | © 2012 Niklas von Hertzen | MIT | https://github.com/niklasvh/html2canvas |
+| jsPDF 2.5.1 | Worksheet, Font Maker (PDF export) | © 2010–2021 James Hall; © 2015–2021 yWorks GmbH | MIT | https://github.com/parallax/jsPDF |
+| opentype.js 1.3.4 | Font Maker (reading an existing font) | © Frederik De Bleser | MIT | https://github.com/opentypejs/opentype.js |
+| Pyodide 0.26.2 | Font Maker (in-browser Python runtime) | © Pyodide contributors | Mozilla Public License 2.0 | https://github.com/pyodide/pyodide |
+| fontTools | Font Maker (builds the TTF / UFO / WOFF2 via Pyodide) | © Just van Rossum & the fontTools Authors | MIT | https://github.com/fonttools/fonttools |
+| Brotli | Font Maker (WOFF2 compression via Pyodide) | © the Brotli Authors (Google) | MIT | https://github.com/google/brotli |
+| HarfBuzz / harfbuzzjs 0.4.6 | Font Maker (QA shaping check) | © the HarfBuzz Project authors | "Old MIT" (permissive) | https://github.com/harfbuzz/harfbuzzjs |
+| hebrew-transliteration 2.9.1 | Worksheet, Dictionary, Flash Cards, Torah Trainer | © 2022 Charles Loder | MIT | https://github.com/charlesLoder/hebrew-transliteration |
+
+**The MIT-licensed libraries above** (html2canvas, jsPDF, opentype.js, fontTools, Brotli, hebrew-transliteration) are governed by the MIT License below — each project's own copyright notice, as listed in the table, applies:
+
+```
+MIT License
+
+Copyright (c) <the respective holder listed above, per library>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
+- **Pyodide** is licensed under the **Mozilla Public License 2.0** — full text at https://www.mozilla.org/MPL/2.0/. The Pyodide distribution it loads from the CDN also bundles CPython (Python Software Foundation License) and assorted packages; their notices ship within that distribution.
+- **HarfBuzz / harfbuzzjs** use the permissive "Old MIT" license — full text at https://github.com/harfbuzz/harfbuzz/blob/main/COPYING.
+
+### Analytics
+
+The site loads **Google Analytics 4** (`gtag.js`) from `googletagmanager.com` on each page. This is a proprietary Google service governed by the [Google Analytics Terms of Service](https://marketingplatform.google.com/about/analytics/terms/us/) — not an open-source library — and the data it collects is described in `privacy.html`.
+
+---
+
 ## PocketTorah (chanted Torah audio + word-level timings)
 
 - **Project:** https://pockettorah.com
