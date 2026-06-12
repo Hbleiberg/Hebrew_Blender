@@ -373,6 +373,54 @@ The active font is applied via the CSS custom property `--heb-font` on `:root`. 
 
 ---
 
+## My Fonts — shared font store, picker integration & upload (**every font-selector tool**)
+
+Custom fonts built in the **Hebrew Font Maker** (and fonts users upload) live in a single
+**IndexedDB** database that is automatically shared by every page because all tools are served from the
+same origin. So a font saved in one tool appears in **every** tool's picker — no per-tool key needed.
+
+### Shared store — byte-identical block
+The store + helpers are delivered as one copy-identical block (like the `.ivrit` engine), marked
+`/* ═══ shared: ivritsuite-fonts ═══ */ … /* ═══ end shared: ivritsuite-fonts ═══ */`. It defines:
+- Constants: `IV_FONTS_DB = 'ivritsuite-fonts'`, `IV_FONTS_STORE = 'fonts'`, `IV_FONTS_CAP = 10`
+  (keyPath `name`; record `{ name, family, bytes:ArrayBuffer, created }`).
+- `listUserFonts()` → `[{name,family,created,size}]` newest-first (no bytes); `getUserFont(name)`;
+  `saveUserFont(name, bytes, family)` (upsert; auto-prunes to the newest 10); `deleteUserFont(name)`;
+  `loadUserFont(name)` → registers the stored bytes as a CSS-usable `FontFace` named exactly `name`.
+
+Present (verbatim) in `index.html`, `Hebrew_Font_Maker.html`, and all five font-selector tools.
+
+### Consumer pattern (in the picker)
+Each font-selector tool keeps the block plus: `let MY_FONTS = []` + `const _loadedUserFonts = new Set()`,
+`allFonts() { return MY_FONTS.concat(HEB_FONTS); }`, and `async function refreshMyFonts()` which maps
+`listUserFonts()` into font objects `{ section:'My Fonts', name, family-or-stack:"'<name>', serif",
+load:{type:'userfont'} }`, then calls `initFontSelector()` and re-applies a persisted user font.
+`loadHebFont` gains a `userfont` branch (`loadUserFont(font.name)` via FontFace, deduped by
+`_loadedUserFonts`); `initFontSelector` renders a **"My Fonts"** section header. Call `refreshMyFonts()`
+at init. (Use `family` or `stack` to match whatever property that tool's `setHebFont` reads.)
+
+### "Upload your own font?" — byte-identical block
+A second shared block `/* ═══ My Fonts uploader (shared, identical across pages) ═══ */` defines
+`ivUploadFontFromFile(file)` (validates via `new FontFace(name, bytes).load()`, de-dupes the name,
+`saveUserFont`s it) and a thin `onUploadFontPick(input)` that does `refreshMyFonts()` + `setHebFont(name)`.
+Each picker has a small **"⬆ Upload your own font?"** `<label>` (hidden `<input type="file"
+accept=".ttf,.otf,.woff,.woff2">`) directly **below the font grid**. `index.html`'s gear-modal My Fonts
+manager has the same uploader (its handler instead calls `renderMyFontsManager()` + `refreshFontsBackupCache()`).
+
+### Backup (no extra wiring)
+User fonts ride along in the `index.html` AllTools export as `userFonts` (base64 via
+`refreshFontsBackupCache` / `_fontsBackupCache`) and are restored with `saveUserFont(... _ivB64ToBytes ...)`.
+Because they live in IndexedDB (not `localStorage`), they need **no** per-tool key in the
+export/import/erase functions beyond that already-present `userFonts` handling.
+
+### Rule for any new tool with a Hebrew font selector
+It **must**: (1) paste the shared `ivritsuite-fonts` block, (2) implement the consumer pattern above so a
+**"My Fonts"** group appears and `refreshMyFonts()` runs at init, and (3) paste the **My Fonts uploader**
+block + the "Upload your own font?" control below its picker. Custom fonts then work and upload everywhere
+automatically.
+
+---
+
 ## Nikkud Color Coding UI (`classroom_dashboard.html`)
 
 ### Constants
