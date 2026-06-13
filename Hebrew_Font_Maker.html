@@ -163,7 +163,7 @@
 
   /* ── Header ── */
   header {
-    display: flex; align-items: center; gap: 14px;
+    display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap;
     background: var(--navy); color: #fff;
     border-bottom: 2px solid var(--gold);
     padding: 10px 18px;
@@ -179,6 +179,15 @@
     font-family: 'Source Sans 3', sans-serif; font-weight: 600; text-decoration: none; flex-shrink: 0;
   }
   .hbtn:hover { background: rgba(240,208,128,0.12); }
+  .hdr-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  /* Header fixes — mobile only (desktop layout unchanged) */
+  @media (max-width: 560px) {
+    header { padding: 10px 14px; gap: 8px 10px; }
+    header h1 { font-size: 1.05rem; }
+    header p { display: none; }            /* long description made the mobile header too tall */
+    .hdr-actions { width: 100%; flex-wrap: wrap; }   /* buttons drop to their own row instead of overflowing */
+    .hbtn { padding: 6px 9px; font-size: 0.78rem; }
+  }
 
   /* ── Toolbar ── */
   .toolbar {
@@ -519,16 +528,18 @@
 <body>
 <header>
   <span class="star">✡︎</span>
-  <div style="flex:1;">
+  <div style="flex:1;min-width:0;">
     <h1>Hebrew Font Maker <span class="beta-tag">Beta</span></h1>
     <p>Make your own free Hebrew font — turn your handwriting into a real, installable font with nikkud, right in your browser.</p>
   </div>
-  <a href="/" class="hbtn">← Home</a>
-  <button id="darkToggle" class="hbtn" onclick="toggleDark()" title="Toggle dark mode">🌙 Dark</button>
-  <button id="fsBtn" class="hbtn" onclick="toggleFullscreen()" title="Fullscreen" aria-label="Toggle fullscreen" style="display:inline-flex;align-items:center;gap:5px;">
-    <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px;"><path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>
-    <span>Fullscreen</span>
-  </button>
+  <div class="hdr-actions">
+    <a href="/" class="hbtn">← Home</a>
+    <button id="darkToggle" class="hbtn" onclick="toggleDark()" title="Toggle dark mode">🌙 Dark</button>
+    <button id="fsBtn" class="hbtn" onclick="toggleFullscreen()" title="Fullscreen" aria-label="Toggle fullscreen" style="display:inline-flex;align-items:center;gap:5px;">
+      <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px;"><path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>
+      <span>Fullscreen</span>
+    </button>
+  </div>
 </header>
 <button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen" aria-label="Exit fullscreen">
   <span class="fs-x">✕</span>
