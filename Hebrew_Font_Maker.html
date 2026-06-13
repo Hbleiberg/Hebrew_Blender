@@ -1357,6 +1357,7 @@ const HELP_TABS = [
   ['ivritsuite','Use in IvritSuite'],
   ['templates','Download Templates'],
   ['licenses','Licenses'],
+  ['share','Share my font'],
 ];
 const HELP_CONTENT = {
   start: `
@@ -1526,6 +1527,21 @@ const HELP_CONTENT = {
     </ul>
     <div class="help-tip">💛 If you can, choose a more open license (CC0, OFL, or MIT). Open Hebrew fonts are a real gift for students, teachers, and anyone learning to read — they make your work usable in classrooms, siddurim, and projects you'll never even see.</div>
     <div class="help-tip">⚠️ Every license generated here includes a <strong>Made with IvritSuite.com</strong> attribution line. This line must stay in the LICENSE file — it's what keeps the tool free for everyone.</div>
+  `,
+  share: `
+    <h4>Share your font</h4>
+    <p>Made a font you're proud of? Open Hebrew fonts are a real gift to teachers, students, and siddur-makers. Here are good places to share yours.</p>
+    <div class="help-tip">⚠️ Wherever you share, include your <span class="ui">LICENSE.txt</span> (it downloads with every export). Most platforms below require an <strong>open</strong> license such as the <strong>SIL Open Font License (OFL)</strong> — set one in the <span class="ui">Font Details</span> box and re-export if needed.</div>
+    <ul>
+      <li><strong>Google Fonts</strong> — the largest home for free fonts; once accepted, anyone can use yours on the web (OFL required). See the <a href="https://github.com/google/fonts/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">submission guide</a> and <a href="https://googlefonts.github.io/gf-guide/onboarding.html" target="_blank" rel="noopener">onboarding docs</a>.</li>
+      <li><strong>Open Siddur — Hebrew font pack</strong> — a curated, open-source Unicode Hebrew font collection for liturgical and educational use: <a href="https://opensiddur.org/help/fonts/" target="_blank" rel="noopener">opensiddur.org/help/fonts</a>.</li>
+      <li><strong>The Open Font Library</strong> — upload and share libre fonts directly: <a href="https://fontlibrary.org/" target="_blank" rel="noopener">fontlibrary.org</a>.</li>
+      <li><strong>The Culmus Project</strong> — the long-running home of free Hebrew fonts: <a href="https://github.com/Culmus" target="_blank" rel="noopener">github.com/Culmus</a>.</li>
+      <li><strong>GitHub</strong> — publish your font and its license in a public repo so others can find and improve it (also the usual first step toward Google Fonts).</li>
+    </ul>
+    <h4>Add it to IvritSuite</h4>
+    <p>I'd love to feature your font on the IvritSuite <a href="resources.html" target="_blank" rel="noopener">Resources</a> page. Email me at <a href="mailto:Harrison@IvritSuite.com">Harrison@IvritSuite.com</a> — or use the <span class="ui">Suggest a Resource</span> button on the Resources page — with a link to your font and, please, its <strong>license</strong>.</p>
+    <div class="help-tip">💛 Open licenses (CC0, OFL, MIT) let your font reach classrooms, siddurim, and projects you'll never even see. If you can, share it freely.</div>
   `,
 };
 function openHelp(tab) {
