@@ -3074,15 +3074,21 @@ function setMarkDesignMode(mode) { const it = curItem(); udDo([itemScope()], 'ma
 function updateTabs() {
   const isMark = curKind !== 'letter';
   const isPunct = isPunctItem();   // punctuation/digits trace like letters but take no nikkud/trop
+  const eng = !isMark && isEng(curCp);   // English letters: the placement step is for accents, not nikkud
   const combined = isMark && project.font[curKind].uploadMode === 'combined';
   const editor = isMark && !combined && curItem().designMode === 'editor';
   document.getElementById('tabAlign').textContent = editor ? 'Design' : '1 · Align';
   document.getElementById('tabTrace').style.display = editor ? 'none' : '';
   const ta = document.getElementById('tabAnchors');
-  ta.style.display = (!isMark && !isPunct && project.font.nikkud.enabled) ? '' : 'none';
-  ta.textContent = '3 · Nikkud';
+  if (eng) {
+    ta.style.display = engSupportsAccents(curCp) ? '' : 'none';   // only the English letters that take accents
+    ta.textContent = '3 · Accent Marks';
+  } else {
+    ta.style.display = (!isMark && !isPunct && project.font.nikkud.enabled) ? '' : 'none';
+    ta.textContent = '3 · Nikkud';
+  }
   const tt = document.getElementById('tabTrop');
-  tt.style.display = (!isMark && !isPunct && project.font.trop.enabled) ? '' : 'none';
+  tt.style.display = (!isMark && !isPunct && !eng && project.font.trop.enabled) ? '' : 'none';
   tt.textContent = '4 · Trop';
 }
 function renderMarkControls(c, it) {
