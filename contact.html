@@ -193,7 +193,7 @@ footer a{color:var(--gold);text-decoration:none;}
       <button type="submit" class="btn-primary">Send message</button>
       <div id="formStatus" role="status" aria-live="polite"></div>
       </form>
-      <p class="email-line">Prefer your own email app? Write to <a href="mailto:Harrison@IvritSuite.com">Harrison@IvritSuite.com</a>.</p>
+      <p class="email-line">Prefer your own email app? Write to <a class="eml"></a>.</p>
     </section>
 
     <section class="cs-tile">
@@ -257,7 +257,20 @@ function showPay(which){
   document.querySelectorAll('.donate-panel').forEach(p => p.classList.toggle('active', p.dataset.pay === which));
 }
 
-// Contact form → Web3Forms (AJAX, JSON) with hCaptcha. Delivers to Harrison@IvritSuite.com.
+// Fallback email assembled at runtime (kept out of static source to deter scrapers).
+const EMAIL_USER = 'Harrison', EMAIL_DOMAIN = 'IvritSuite.com';
+function emailAddr() { return EMAIL_USER + '@' + EMAIL_DOMAIN; }
+function emailLink(text, subject) {
+  const q = subject ? ('?subject=' + encodeURIComponent(subject)) : '';
+  return '<a href="mailto:' + emailAddr() + q + '">' + (text || emailAddr()) + '</a>';
+}
+// Wire any placeholder fallback links (no literal address in the static HTML).
+document.querySelectorAll('a.eml').forEach(function(a){
+  a.href = 'mailto:' + emailAddr() + (a.dataset.subject ? ('?subject=' + encodeURIComponent(a.dataset.subject)) : '');
+  if (!a.textContent.trim()) a.textContent = emailAddr();
+});
+
+// Contact form → Web3Forms (AJAX, JSON) with hCaptcha. Delivers to the contact address (assembled at runtime).
 const form = document.getElementById('contactForm');
 const statusEl = document.getElementById('formStatus');
 form.addEventListener('submit', async function(e){
@@ -291,11 +304,11 @@ form.addEventListener('submit', async function(e){
     } else {
       statusEl.style.color = 'var(--muted)';
       statusEl.innerHTML = (data && data.message ? data.message : 'Sorry — that didn’t go through.') +
-        ' You can also email <a href="mailto:Harrison@IvritSuite.com">Harrison@IvritSuite.com</a>.';
+        ' You can also email ' + emailLink() + '.';
     }
   } catch (err) {
     statusEl.style.color = 'var(--muted)';
-    statusEl.innerHTML = 'Sorry — that didn’t go through. Please email <a href="mailto:Harrison@IvritSuite.com">Harrison@IvritSuite.com</a> directly.';
+    statusEl.innerHTML = 'Sorry — that didn’t go through. Please email ' + emailLink() + ' directly.';
   } finally {
     btn.disabled = false;
   }

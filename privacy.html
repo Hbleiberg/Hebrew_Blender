@@ -203,7 +203,7 @@ footer a{color:var(--gold);text-decoration:none;}
   <p>If this policy is updated, the "Effective date" at the top of the page will change. Material changes will be reflected on this page; there is no mailing list or account to notify because the site does not collect contact information.</p>
 
   <h2>10. Contact</h2>
-  <p>Questions or concerns about this policy can be directed to Harrison Bleiberg via the <a href="contact.html">contact page</a>, or by email at <a href="mailto:Harrison@IvritSuite.com">Harrison@IvritSuite.com</a>.</p>
+  <p>Questions or concerns about this policy can be directed to Harrison Bleiberg via the <a href="contact.html">contact page</a>, or by email at <a class="eml"></a>.</p>
 </main>
 
 <footer>
@@ -230,6 +230,19 @@ function toggleDark() {
   }
   document.documentElement.classList.remove('dark-early');
 })();
+
+// Fallback email assembled at runtime (kept out of static source to deter scrapers).
+const EMAIL_USER = 'Harrison', EMAIL_DOMAIN = 'IvritSuite.com';
+function emailAddr() { return EMAIL_USER + '@' + EMAIL_DOMAIN; }
+function emailLink(text, subject) {
+  const q = subject ? ('?subject=' + encodeURIComponent(subject)) : '';
+  return '<a href="mailto:' + emailAddr() + q + '">' + (text || emailAddr()) + '</a>';
+}
+// Wire any placeholder fallback links (no literal address in the static HTML).
+document.querySelectorAll('a.eml').forEach(function(a){
+  a.href = 'mailto:' + emailAddr() + (a.dataset.subject ? ('?subject=' + encodeURIComponent(a.dataset.subject)) : '');
+  if (!a.textContent.trim()) a.textContent = emailAddr();
+});
 </script>
 </body>
 </html>
