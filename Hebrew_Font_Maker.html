@@ -1181,7 +1181,7 @@ function udRestore(s, snap) {
 function udNavTo(s) {                                    // show the affected item (no side effects — not selectItem)
   if (s.t !== 'item') return;
   if (curKind === s.kind && curCp === s.cp) return;
-  curKind = s.kind; curCp = s.cp; catTab = s.kind;
+  curKind = s.kind; curCp = s.cp; catTab = (s.kind === 'letter' && isEng(s.cp)) ? 'english' : s.kind;
 }
 function udCapture(scopes, label) { return { label, slices: scopes.map(s => ({ scope: s, before: udSnap(s) })) }; }
 function udPush(p) {
@@ -1299,8 +1299,9 @@ function selectItem(kind, cp) {
 function _selectItem(kind, cp) {
   udFlushPending();          // commit any open slider burst / pending nudge before navigating away
   curKind = kind; curCp = cp; workMode = 'align'; precompTarget = null;
-  catTab = isCustomCp(cp) ? 'customglyphs'
-         : (kind === 'letter' && letterMeta(cp) && letterMeta(cp).cat === 'punct') ? 'punct' : kind;   // keep the picker on the edited item's category (custom glyphs → Custom glyphs tab; punct letters → Punctuation tab)
+  catTab = (kind === 'letter' && isEng(cp)) ? 'english'
+         : isCustomCp(cp) ? 'customglyphs'
+         : (kind === 'letter' && letterMeta(cp) && letterMeta(cp).cat === 'punct') ? 'punct' : kind;   // keep the picker on the edited item's category (English → English tab; custom → Custom glyphs; punct → Punctuation)
   renderGrids(); renderStage(); renderControls();
 }
 function renderGrids() {
