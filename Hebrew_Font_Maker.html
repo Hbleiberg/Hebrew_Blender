@@ -213,14 +213,7 @@
 
   /* ── App layout ── */
   .app { display: flex; align-items: flex-start; gap: 0; min-height: calc(100vh - 150px); }
-  .sidebar {
-    width: 320px; flex-shrink: 0; background: var(--white);
-    border-right: 1px solid var(--border); padding: 16px;
-    display: flex; flex-direction: column; gap: 14px;
-  }
   .workspace { flex: 1; padding: 16px 20px; min-width: 0; }
-  /* Sidebar collapsed → drop the big left gap so the tabs/content sit against the window edge. */
-  body:has(.sidebar.hidden) .workspace { padding-left: 6px; }
 
   /* ── Panels ── */
   .panel { background: var(--cream); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; flex-shrink: 0; }
@@ -340,7 +333,6 @@
   body.layout-tabbed .ws-grid   { order: 4; }
   /* Tabbed = no sidebar: everything lives in the tabs */
   body.layout-tabbed .sidebar { display: none; }
-  body.layout-tabbed .sb-tab  { display: none !important; }   /* override toggleSidebar's inline display */
   /* Settings tabs (Font Details / Spacing / Advanced) have no glyph to edit — hide the canvas, free the height */
   body.layout-tabbed.cat-settings .work-tabs,
   body.layout-tabbed.cat-settings .ws-grid { display: none; }
@@ -447,12 +439,7 @@
   .warn { color: #c0392b; font-weight: 600; }
   body.dark .warn { color: #ff8a7a; }
 
-  /* sidebar collapse tabs (like the generator) */
-  .sb-tab { position: fixed; top: 50vh; transform: translateY(-50%); width: 16px; height: 54px; border: none; background: var(--navy); color: var(--gold-light); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 60; box-shadow: 2px 0 6px rgba(0,0,0,0.18); border-radius: 0 6px 6px 0; line-height: 1; padding: 0; }
-  .sb-tab:hover { background: #0d1220; }
-  #sbHide { left: 320px; }
-  #sbShow { left: 0; display: none; }
-  .sidebar.hidden { display: none; }
+  /* (sidebar collapse chrome removed — Tabbed is the only layout) */
 
   /* ── Workspace 3-region layout (L | center | R) + Under spanning full width ── */
   .ws-grid { display: grid; grid-template-columns: minmax(180px,1fr) minmax(0,736px) minmax(180px,1fr);
@@ -515,8 +502,6 @@
 
   @media (max-width: 820px) {
     .app { flex-direction: column; }
-    .sidebar { width: 100%; max-height: none; border-right: none; border-bottom: 1px solid var(--border); }
-    #sbHide, #sbShow { display: none !important; }
   }
   @media (max-width: 1180px) {
     .ws-grid { grid-template-columns: 1fr; grid-template-areas: "center" "left" "right" "under"; }
@@ -558,26 +543,19 @@
   <span id="statusMsg"></span>
   <button class="tbtn ghost" onclick="openQA()" title="Review every letter × mark placement for collisions">🔍 QA Check</button>
   <button class="tbtn ghost" onclick="generatePreviewPDF()">Preview PDF</button>
+  <span id="tracedReadout" style="font-size:0.8rem;font-weight:700;white-space:nowrap;color:var(--muted);" title="Core Hebrew letters with an outline traced"></span>
   <select class="tbtn-select" id="exportFormat" onchange="onExportFormatChange()" title="Choose an export format — or save the font for use in IvritSuite">
     <option value="ttf" selected>TTF (recommended)</option>
     <option value="woff2">WOFF2 (web)</option>
     <option value="ttfwoff2">TTF + WOFF2 (zip)</option>
     <option value="ufo">UFO source (zip)</option>
-    <option disabled>──────────────</option>
-    <option value="ivritsuite">★ Use this Font in IvritSuite</option>
   </select>
+  <button class="tbtn ghost" onclick="openMyFonts()" title="Saved fonts you can use in any IvritSuite tool">★ My IvritSuite Fonts</button>
   <button class="tbtn" id="exportBtn" onclick="exportFont()">⬇ Export TTF</button>
 </div>
 
-<button class="sb-tab" id="sbHide" onclick="toggleSidebar()" title="Hide sidebar">‹</button>
-<button class="sb-tab" id="sbShow" onclick="toggleSidebar()" title="Show sidebar">›</button>
 <div class="app">
   <aside class="sidebar">
-    <div class="menu-allbtns">
-      <button class="ctl-btn" onclick="expandAllMenus()">Expand all</button>
-      <button class="ctl-btn" onclick="collapseAllMenus()">Collapse all</button>
-    </div>
-    <div id="catGroupSlot" style="display:none"></div>
     <div id="catPanelGroup">
     <div class="panel cat-panel" data-cat="fontdetails">
       <div class="panel-title">Font Details</div>
@@ -658,14 +636,6 @@
       <div class="panel-title">Advanced Settings</div>
       <div class="panel-body">
         <div class="col-split">
-          <div>
-            <div class="ctl-label" style="margin-bottom:6px;">Layout</div>
-            <div class="mode-toggle">
-              <button class="mode-btn" id="layoutBtnSidebar" onclick="setLayout('sidebar')">Sidebar</button>
-              <button class="mode-btn" id="layoutBtnTabbed" onclick="setLayout('tabbed')">Tabbed</button>
-            </div>
-            <div class="hint"><strong>Sidebar</strong> stacks every tab's panel in one scrolling column on the left. <strong>Tabbed</strong> (the default) puts each one on its own tab across the top. Your choice is remembered on this device.</div>
-          </div>
           <div>
             <div class="ctl-label" style="margin-bottom:6px;">English letters</div>
             <label class="chk"><input type="checkbox" id="addEnglishLettersChk" onchange="setAddEnglishLetters(this.checked)"> Add English letters</label>
@@ -784,6 +754,33 @@
       <button class="tbtn ghost" onclick="dismissMobileWarn(true)">← Go back</button>
       <button class="tbtn" onclick="dismissMobileWarn(false)">View anyway</button>
     </div>
+  </div>
+</div>
+
+<div class="overlay" id="welcomeOverlay" onclick="if(event.target===this)dismissWelcome(false)">
+  <div class="modal" style="max-width:460px;text-align:center;">
+    <h3>✍️ Welcome to the Hebrew Font Maker</h3>
+    <p>Turn your own handwriting into a real, installable Hebrew font — trace each letter, place the nikkud &amp; trop, then export TTF/WOFF2 (or save it straight into your other IvritSuite tools). New here? The guide walks through every step.</p>
+    <label class="chk" style="justify-content:center;margin:14px 0 0;">
+      <input type="checkbox" id="welcomeDontShow"> Don't show this again
+    </label>
+    <div class="mbtns" style="justify-content:center;">
+      <button class="tbtn" onclick="dismissWelcome(true)">Show me how it works →</button>
+      <button class="tbtn ghost" onclick="dismissWelcome(false)">Start tracing</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="applyAlignOverlay" onclick="if(event.target===this)closeApplyAlign()">
+  <div class="modal" style="max-width:480px;">
+    <h3>Apply this alignment to other letters</h3>
+    <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;">Copies the current letter's position &amp; scale (its image transform — <b>not</b> its traced outline) onto the letters you pick, overwriting their current alignment. You can undo it.</p>
+    <div style="display:flex;gap:8px;margin:6px 0 8px;">
+      <button class="ctl-btn" onclick="applyAlignCheckAll(true)">Select all</button>
+      <button class="ctl-btn" onclick="applyAlignCheckAll(false)">None</button>
+    </div>
+    <div id="applyAlignList" style="display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;max-height:46vh;overflow:auto;"></div>
+    <div class="mbtns"><button class="tbtn ghost" onclick="closeApplyAlign()">Cancel</button><button class="tbtn" onclick="applyAlignDo()">Apply</button></div>
   </div>
 </div>
 
@@ -1142,7 +1139,7 @@ let workMode = 'align';
 let anchorCat = 'nikkud';   // which anchor category the placement step shows: 'nikkud' | 'trop'
 let lastSavedAnchors = null;                 // most recently SAVED placement — carried onto the next fresh letter
 const anchorInheritedFrom = new WeakMap();   // letter → the saved snapshot already carried onto it (once per save, clobber-safe)
-let layoutMode = 'tabbed'; // 'sidebar' | 'tabbed' — Advanced Settings → Layout (site-wide pref; tabbed is default)
+// Layout is always "Tabbed" now (the Sidebar option was removed).
 let catTab = 'letter';      // tabbed layout: which category picker is visible ('letter'|'nikkud'|'trop')
 let metricAdjust = false;   // Letter Metrics → "Adjust on canvas" drag toggle
 let metricDrag = null;      // active metric-guide drag: { key, axis, grab }
@@ -1936,10 +1933,28 @@ function renderLetterGrid() {
     grid.appendChild(tile);
   });
   document.getElementById('letterProgress').textContent = `(${done}/27)`;
+  updateTracedReadout();
   if (document.getElementById('nikkudGrid')) renderNikkudGrid();   // keep mark tile states in sync
   if (document.getElementById('tropGrid')) renderTropGrid();
   if (document.getElementById('punctGrid')) renderPunctGrid();
   if (document.getElementById('englishGrid')) renderEnglishGrid();
+}
+// Core (27) Hebrew letters — tracing / anchor status, for the readout + the export guardrail.
+function coreLetterStats() {
+  const core = LETTERS.filter(L => L.cat !== 'punct');
+  const blanks = [], unanchored = [];
+  core.forEach(L => {
+    const l = project.letters.find(x => x.codepoint === L.cp);
+    if (!l || !l.contours) blanks.push(L.name);
+    else if (!l.anchors) unanchored.push(L.name);
+  });
+  return { total: core.length, traced: core.length - blanks.length, blanks, unanchored };
+}
+function updateTracedReadout() {
+  const el = document.getElementById('tracedReadout'); if (!el || !project) return;
+  const s = coreLetterStats();
+  el.textContent = s.traced + ' / ' + s.total + ' letters traced';
+  el.style.color = (s.traced === s.total) ? 'var(--gold)' : 'var(--muted)';
 }
 let englishCase = 'upper';
 function setEnglishCase(c) { englishCase = (c === 'lower') ? 'lower' : 'upper'; renderEnglishGrid(); }
@@ -2381,8 +2396,7 @@ function gotoAnchors(cat) {
   activeAnchorClass = cat === 'trop' ? 'tropAbove' : 'below';
   setWorkMode('anchors');
 }
-function expandAllMenus()   { document.querySelectorAll('.sidebar .panel').forEach(p => p.classList.remove('collapsed')); }
-function collapseAllMenus() { document.querySelectorAll('.sidebar .panel').forEach(p => p.classList.add('collapsed')); }
+/* expand/collapse-all menus removed with the Sidebar layout */
 
 /* ════════ Layout (Sidebar / Tabbed) — Advanced Settings ════════ */
 function setCatTab(cat) {            // tabbed layout: choose which category picker is shown (view-only)
@@ -2414,23 +2428,11 @@ function renderCatTabs() {
     `<div class="ctab" data-cat="${c}" onclick="setCatTab('${c}')">${NAMES[c]}</div>`).join('');
   syncCatTabs();
 }
-function setLayout(mode) {
-  layoutMode = (mode === 'tabbed') ? 'tabbed' : 'sidebar';
-  try { localStorage.setItem('hebrewFontMaker_layout', layoutMode); } catch (e) {}
-  applyLayout();
-}
-function applyLayout() {
-  const tabbed = layoutMode === 'tabbed';
-  document.body.classList.toggle('layout-tabbed', tabbed);
+function applyLayout() {   // Tabbed is the only layout: panels live in #catHost, surfaced via the tab bar.
+  document.body.classList.add('layout-tabbed');
   const grp = document.getElementById('catPanelGroup');
-  if (grp) {
-    if (tabbed) document.getElementById('catHost').appendChild(grp);
-    else document.getElementById('catGroupSlot').after(grp);
-  }
+  if (grp) document.getElementById('catHost').appendChild(grp);
   renderCatTabs();
-  const sb = document.getElementById('layoutBtnSidebar'), tb = document.getElementById('layoutBtnTabbed');
-  if (sb) sb.classList.toggle('active', !tabbed);
-  if (tb) tb.classList.toggle('active', tabbed);
 }
 
 /* ════════ Image upload ════════ */
@@ -4722,11 +4724,13 @@ function renderAlignUnder(U, l) {
   const nextBtn = isVectorGlyph(l)
     ? (l.contours && !isPunctItem() ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">Next: Nikkud →</button>` : '')
     : (curImageUrl() ? `<button class="ctl-btn primary" onclick="setWorkMode('trace')">Next: Trace →</button>` : '');
+  const applyBtn = (curKind === 'letter' && !isVectorGlyph(l) && curImageUrl())
+    ? `<button class="ctl-btn" onclick="openApplyAlign()" title="Copy this letter's position & scale onto other letters">Apply alignment to other letters…</button>` : '';
   U.innerHTML = `
     <div class="ws-under-row" style="align-items:center;">
       <div class="ws-under-grow">${hint}</div>
       <div class="under-spacer"></div>
-      <div>${nextBtn}</div>
+      <div>${applyBtn}${applyBtn && nextBtn ? ' ' : ''}${nextBtn}</div>
     </div>`;
 }
 
@@ -5903,21 +5907,26 @@ async function buildFontBytes() {                 // build the TTF in memory (no
 
 function onExportFormatChange() {
   const fmt = (document.getElementById('exportFormat') || {}).value || 'ttf';
-  const label = { ttf:'⬇ Export TTF', woff2:'⬇ Export WOFF2', ttfwoff2:'⬇ Export TTF + WOFF2', ufo:'⬇ Export UFO', ivritsuite:'★ Use in IvritSuite' }[fmt] || '⬇ Export';
+  const label = { ttf:'⬇ Export TTF', woff2:'⬇ Export WOFF2', ttfwoff2:'⬇ Export TTF + WOFF2', ufo:'⬇ Export UFO' }[fmt] || '⬇ Export';
   const btn = document.getElementById('exportBtn'); if (btn) btn.textContent = label;
 }
 async function exportFont() {
   if (!project) return;
   const fmt = (document.getElementById('exportFormat') || {}).value || 'ttf';
-  if (fmt === 'ivritsuite') { openMyFonts(); return; }   // not a file format — open the My Fonts hub (save / manage / delete)
   const nikOn = project.font.nikkud.enabled;
-  const anchored = project.letters.filter(l => l.anchors).length;
-  const traced = project.letters.filter(l => l.contours).length;
-  if (traced === 0) { status('Trace at least one letter first.'); return; }
-  const incomplete = traced < 27 || (nikOn && anchored < 27);
-  if (incomplete) {
-    askModal('Some letters are incomplete',
-      `Traced ${traced}/27${nikOn ? `, nikkud-placed ${anchored}/27` : ''}. Missing letters export as blanks. Continue?`,
+  const s = coreLetterStats();
+  if (s.traced === 0) { status('Trace at least one letter first.'); return; }
+  if (s.blanks.length) {
+    const anchorNote = (nikOn && s.unanchored.length)
+      ? ` Also, ${s.unanchored.length} traced letter${s.unanchored.length === 1 ? '' : 's'} ${s.unanchored.length === 1 ? 'has' : 'have'} no nikkud anchors yet, so vowels may sit wrong.` : '';
+    askModal("Some letters aren't traced",
+      `These ${s.blanks.length} core letter${s.blanks.length === 1 ? '' : 's'} have no outline and will export <b>blank</b>: <b>${s.blanks.join(', ')}</b>.${anchorNote}`,
+      [ {label:'Cancel', cls:'ghost'}, {label:'Export anyway', onClick: () => doExport(fmt)} ]);
+    return;
+  }
+  if (nikOn && s.unanchored.length) {
+    askModal('Nikkud not placed on every letter',
+      `${s.unanchored.length} traced letter${s.unanchored.length === 1 ? '' : 's'} (${s.unanchored.join(', ')}) ${s.unanchored.length === 1 ? 'has' : 'have'} no nikkud anchors yet — vowels may sit wrong. Export anyway?`,
       [ {label:'Cancel', cls:'ghost'}, {label:'Export anyway', onClick: () => doExport(fmt)} ]);
     return;
   }
@@ -6141,12 +6150,12 @@ async function saveCurrentToMyFonts(bytes) {
     askModal('Couldn’t save', '<span class="warn">' + escapeHtml(e && e.message || String(e)) + '</span>', [{ label: 'OK' }]);
   }
 }
-function offerSaveToMyFonts(bytes) {   // called after every successful export (any format)
+function offerSaveToMyFonts(bytes) {   // post-export success state (called after every successful export, any format)
   if (!window.indexedDB || !window.FontFace) return;
   const fam = (project.font.familyName || 'My Hebrew Font').trim();
-  askModal('Save to My Fonts?',
-    'Save <b>' + escapeHtml(fam) + '</b> to <b>My IvritSuite Fonts</b> so you can pick it in any IvritSuite tool on this browser?',
-    [{ label: 'Not now', cls: 'ghost' }, { label: '★ Save to My Fonts', onClick: () => saveCurrentToMyFonts(bytes) }]);
+  askModal('Exported ✓',
+    'Your font <b>' + escapeHtml(fam) + '</b> downloaded. Use it across IvritSuite too? Saving it to <b>My IvritSuite Fonts</b> (this browser) makes it pick-able in every tool’s font selector.',
+    [{ label: 'Done', cls: 'ghost' }, { label: '★ Use this font in IvritSuite', onClick: () => saveCurrentToMyFonts(bytes) }]);
 }
 async function gzipBlob(str) {                       // string → gzip Blob (native, no libs)
   return new Response(new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'))).blob();
@@ -6818,13 +6827,6 @@ function migrateProject(data) {
 /* ════════════════════════════════════════════════════════════════════════
    INIT
    ════════════════════════════════════════════════════════════════════════ */
-function toggleSidebar() {
-  const sb = document.querySelector('.sidebar');
-  const collapsed = sb.classList.toggle('hidden');
-  document.getElementById('sbShow').style.display = collapsed ? 'flex' : 'none';
-  document.getElementById('sbHide').style.display = collapsed ? 'none' : 'flex';
-  try { localStorage.setItem('hebrewFontMaker_sbHidden', collapsed ? '1' : '0'); } catch (e) {}
-}
 function initPanels() {
   document.querySelectorAll('.panel-title').forEach(t => t.addEventListener('click', () => t.parentElement.classList.toggle('collapsed')));
 }
@@ -6839,10 +6841,47 @@ function dismissMobileWarn(goBack){
   }
   if (goBack){ if (history.length > 1) history.back(); else location.href = '/'; return; }
   document.getElementById('mobileWarnOverlay').classList.remove('open');
+  maybeShowWelcome();   // on mobile the welcome was deferred behind this warning — show it now
+}
+function maybeShowWelcome(){
+  try { if (localStorage.getItem('hebrewBlender_welcomeSeen') === '1') return; } catch(e){}
+  if (document.getElementById('mobileWarnOverlay').classList.contains('open')) return;   // don't stack — deferred until the mobile warning is dismissed
+  document.getElementById('welcomeOverlay').classList.add('open');
+}
+function dismissWelcome(openGuide){
+  if (document.getElementById('welcomeDontShow').checked) { try { localStorage.setItem('hebrewBlender_welcomeSeen', '1'); } catch(e){} }
+  document.getElementById('welcomeOverlay').classList.remove('open');
+  if (openGuide) openHelp();
+}
+// Apply the current letter's alignment transform to other letters (one undoable batch).
+function openApplyAlign(){
+  const src = curLetter(); if (!src) return;
+  const host = document.getElementById('applyAlignList'); host.innerHTML = '';
+  LETTERS.filter(L => L.cat !== 'punct' && L.cp !== src.codepoint).forEach(L => {
+    const lab = document.createElement('label'); lab.className = 'chk'; lab.style.cssText = 'font-size:0.84rem;';
+    lab.innerHTML = `<input type="checkbox" class="aa-cp" value="${L.cp}"> <span style="font-family:${project.template.font};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${escapeHtml(L.name)}`;
+    host.appendChild(lab);
+  });
+  document.getElementById('applyAlignOverlay').classList.add('open');
+}
+function closeApplyAlign(){ document.getElementById('applyAlignOverlay').classList.remove('open'); }
+function applyAlignCheckAll(on){ document.querySelectorAll('#applyAlignList .aa-cp').forEach(c => c.checked = on); }
+function applyAlignDo(){
+  const src = curLetter(); if (!src) { closeApplyAlign(); return; }
+  const cps = [...document.querySelectorAll('#applyAlignList .aa-cp:checked')].map(c => c.value);
+  const targets = cps.map(cp => project.letters.find(l => l.codepoint === cp)).filter(Boolean);
+  if (!targets.length) { closeApplyAlign(); return; }
+  udDo(targets.map(l => ({ t:'item', kind:'letter', cp:l.codepoint })), 'apply alignment to ' + targets.length + ' letters', () => {
+    targets.forEach(l => { l.transform = src.transform.slice(); });
+    renderGrids(); renderStage(); renderControls();
+  });
+  closeApplyAlign();
+  status('Applied alignment to ' + targets.length + ' letter' + (targets.length === 1 ? '' : 's') + '.');
 }
 function init() {
   initDark(); initPanels();
   maybeShowMobileWarn();   // small-screen "best on desktop" splash (once, unless dismissed)
+  maybeShowWelcome();      // first-launch welcome (bails if the mobile warning is showing; re-fires when that's dismissed)
   // stage drag move/up live once on the persistent <svg> (handles transform drag)
   const sv = stage();
   sv.addEventListener('pointerdown', onStageBgPointerDown);   // node-mode marquee / Alt-insert (early-returns in other modes)
@@ -6859,10 +6898,7 @@ function init() {
   // The combined-sheet, source-font and reference-font inputs (+ their drop zones) are now created
   // per-render inside the workspace and wired by wireInputModeBlock() / wireReferencePanel().
   applyZoom();
-  if (localStorage.getItem('hebrewFontMaker_sbHidden') === '1') toggleSidebar();
-  // restore layout pref (Sidebar / Tabbed)
-  layoutMode = (localStorage.getItem('hebrewFontMaker_layout') === 'sidebar') ? 'sidebar' : 'tabbed';
-  applyLayout();
+  applyLayout();   // Tabbed-only layout: move the panels into the tab host
   onExportFormatChange();   // sync the Export button label to the format picker (browsers may restore its value on reload)
   // re-measure the template glyph once web fonts settle
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (project) renderStage(); });
