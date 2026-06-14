@@ -639,6 +639,16 @@
       <div class="panel-title">Custom glyphs</div>
       <div class="panel-body" id="customGlyphsPanelBody"></div>
     </div>
+    <div class="panel collapsed cat-panel" data-cat="english">
+      <div class="panel-title">English <span id="englishProgress" style="font-size:0.7rem;color:var(--gold-light);"></span></div>
+      <div class="panel-body">
+        <div class="mode-toggle" style="margin-bottom:10px;">
+          <button class="mode-btn" id="engCaseUpper" onclick="setEnglishCase('upper')">Uppercase A–Z</button>
+          <button class="mode-btn" id="engCaseLower" onclick="setEnglishCase('lower')">Lowercase a–z</button>
+        </div>
+        <div class="letter-grid" id="englishGrid"></div>
+      </div>
+    </div>
     <div class="panel cat-panel" data-cat="spacing">
       <div class="panel-title">Spacing</div>
       <div class="panel-body" id="spacingBody"></div>
@@ -655,6 +665,11 @@
               <button class="mode-btn" id="layoutBtnTabbed" onclick="setLayout('tabbed')">Tabbed</button>
             </div>
             <div class="hint"><strong>Sidebar</strong> stacks every tab's panel in one scrolling column on the left. <strong>Tabbed</strong> (the default) puts each one on its own tab across the top. Your choice is remembered on this device.</div>
+          </div>
+          <div>
+            <div class="ctl-label" style="margin-bottom:6px;">English letters</div>
+            <label class="chk"><input type="checkbox" id="addEnglishLettersChk" onchange="setAddEnglishLetters(this.checked)"> Add English letters</label>
+            <div class="hint">Adds an <strong>English</strong> tab to design <strong>A–Z and a–z</strong> (with an uppercase/lowercase switch). Accent-supporting letters can carry accents (á, é, ñ, ç…). Template: <a href="#" onclick="downloadTemplate('englishletters','pdf');return false;">PDF</a> · <a href="#" onclick="downloadTemplate('englishletters','png');return false;">PNG</a></div>
           </div>
           <div>
             <div class="ctl-label" style="margin-bottom:6px;">Custom glyphs</div>
@@ -905,6 +920,53 @@ const PRECOMPOSED = [
   { target:'FB4A', base:'05EA', mark:'05BC' }, // dotted tav
 ];
 
+/* ── English (Latin) letters — A–Z and a–z, added on demand via the "Add English letters" advanced toggle.
+   Kept out of LETTERS (which is Hebrew-specific: RTL, kerning classes, the 27-letter count); seeded into
+   project.letters tagged {eng:true} when enabled. Traced/anchored through the normal per-glyph workflow. */
+const ENGLISH_LETTERS = (() => {
+  const out = [];
+  for (let c = 0x41; c <= 0x5A; c++) out.push({ cp: c.toString(16).toUpperCase().padStart(4,'0'), name: String.fromCharCode(c) + ' (uppercase)', case: 'upper' });
+  for (let c = 0x61; c <= 0x7A; c++) out.push({ cp: c.toString(16).toUpperCase().padStart(4,'0'), name: String.fromCharCode(c) + ' (lowercase)', case: 'lower' });
+  return out;
+})();
+const ENGLISH_CPS = ENGLISH_LETTERS.map(l => l.cp);
+function isEng(cp) { return ENGLISH_CPS.indexOf(cp) >= 0; }
+function engMeta(cp) { return ENGLISH_LETTERS.find(l => l.cp === cp); }
+
+/* ── Latin accent marks (default shapes, font units, attach-anchor at origin 0,0; 'above' sits up,
+   'below' hangs down). Positioned on the supporting base letter via the precomposed-forms UI, then
+   BAKED into precomposed accented glyphs (á, é, ñ, ç…) at export. circlePts/rectPts are hoisted. */
+const LATIN_ACCENTS = {
+  '0301': { name:'Acute',      cls:'above', glyph:[ [[-55,5],[5,95],[55,80],[-5,-10]] ] },
+  '0300': { name:'Grave',      cls:'above', glyph:[ [[55,5],[-5,95],[-55,80],[5,-10]] ] },
+  '0302': { name:'Circumflex', cls:'above', glyph:[ [[-78,5],[0,92],[78,5],[42,5],[0,54],[-42,5]] ] },
+  '0303': { name:'Tilde',      cls:'above', glyph:[ [[-82,30],[-34,60],[18,32],[72,60],[72,32],[18,4],[-34,32],[-82,2]] ] },
+  '0308': { name:'Diaeresis',  cls:'above', glyph:[ circlePts(-46,48,26), circlePts(46,48,26) ] },
+  '0327': { name:'Cedilla',    cls:'below', glyph:[ [[-12,0],[20,0],[22,-40],[-6,-54],[-24,-42],[-12,-34],[4,-40],[8,-22],[-12,-22]] ] }
+};
+/* base + accent → precomposed accented codepoint (ISO-8859-1 set, both cases). */
+const LATIN_PRECOMPOSED = [
+  {target:'00E0',base:'0061',mark:'0300'},{target:'00E1',base:'0061',mark:'0301'},{target:'00E2',base:'0061',mark:'0302'},{target:'00E3',base:'0061',mark:'0303'},{target:'00E4',base:'0061',mark:'0308'},
+  {target:'00E7',base:'0063',mark:'0327'},
+  {target:'00E8',base:'0065',mark:'0300'},{target:'00E9',base:'0065',mark:'0301'},{target:'00EA',base:'0065',mark:'0302'},{target:'00EB',base:'0065',mark:'0308'},
+  {target:'00EC',base:'0069',mark:'0300'},{target:'00ED',base:'0069',mark:'0301'},{target:'00EE',base:'0069',mark:'0302'},{target:'00EF',base:'0069',mark:'0308'},
+  {target:'00F1',base:'006E',mark:'0303'},
+  {target:'00F2',base:'006F',mark:'0300'},{target:'00F3',base:'006F',mark:'0301'},{target:'00F4',base:'006F',mark:'0302'},{target:'00F5',base:'006F',mark:'0303'},{target:'00F6',base:'006F',mark:'0308'},
+  {target:'00F9',base:'0075',mark:'0300'},{target:'00FA',base:'0075',mark:'0301'},{target:'00FB',base:'0075',mark:'0302'},{target:'00FC',base:'0075',mark:'0308'},
+  {target:'00FD',base:'0079',mark:'0301'},{target:'00FF',base:'0079',mark:'0308'},
+  {target:'00C0',base:'0041',mark:'0300'},{target:'00C1',base:'0041',mark:'0301'},{target:'00C2',base:'0041',mark:'0302'},{target:'00C3',base:'0041',mark:'0303'},{target:'00C4',base:'0041',mark:'0308'},
+  {target:'00C7',base:'0043',mark:'0327'},
+  {target:'00C8',base:'0045',mark:'0300'},{target:'00C9',base:'0045',mark:'0301'},{target:'00CA',base:'0045',mark:'0302'},{target:'00CB',base:'0045',mark:'0308'},
+  {target:'00CC',base:'0049',mark:'0300'},{target:'00CD',base:'0049',mark:'0301'},{target:'00CE',base:'0049',mark:'0302'},{target:'00CF',base:'0049',mark:'0308'},
+  {target:'00D1',base:'004E',mark:'0303'},
+  {target:'00D2',base:'004F',mark:'0300'},{target:'00D3',base:'004F',mark:'0301'},{target:'00D4',base:'004F',mark:'0302'},{target:'00D5',base:'004F',mark:'0303'},{target:'00D6',base:'004F',mark:'0308'},
+  {target:'00D9',base:'0055',mark:'0300'},{target:'00DA',base:'0055',mark:'0301'},{target:'00DB',base:'0055',mark:'0302'},{target:'00DC',base:'0055',mark:'0308'},
+  {target:'00DD',base:'0059',mark:'0301'},{target:'0178',base:'0059',mark:'0308'}
+];
+const _ENG_ACCENT_BASES = new Set(LATIN_PRECOMPOSED.map(p => p.base));
+function engSupportsAccents(cp) { return _ENG_ACCENT_BASES.has(cp); }
+function markClassFor(cp) { return (LATIN_ACCENTS[cp] && LATIN_ACCENTS[cp].cls) || MARK_CLASS[cp] || TROP_CLASS[cp]; }
+
 /* ── Default mark glyph outlines (font units, attach-anchor at origin 0,0) ──
    below marks hang downward from the anchor; above sit up; center centered.
    Polygons only (all on-curve, TrueType-friendly). */
@@ -1061,7 +1123,7 @@ function letterInkLeft(l) { if (l && l.contours) { let mn=1e9; l.contours.forEac
 function letterLSB(l)     { return (l && l.lsb != null) ? l.lsb : letterInkLeft(l); }   // explicit override, else the real ink left edge (so the left margin guide tracks the ink, like the right one)
 function letterInkRight(l){ if (l && l.contours) { let mx=-1e9; l.contours.forEach(c=>c.points.forEach(p=>{ if(p[0]>mx) mx=p[0]; })); if (mx>-1e9) return Math.round(mx); } return Math.max(0, letterAdvance(l) - effMetrics().defaultRSB); }
 function letterRSB(l)     { return (l && l.rsb != null) ? l.rsb : Math.max(0, letterAdvance(l) - letterInkRight(l)); }   // explicit right margin, else derived (gap after the ink)
-function catOfCp(cp) { return TROP_CLASS[cp] ? 'trop' : 'nikkud'; }
+function catOfCp(cp) { return LATIN_ACCENTS[cp] ? 'accent' : (TROP_CLASS[cp] ? 'trop' : 'nikkud'); }
 const TROP_GAP_ABOVE = 200, TROP_GAP_BELOW = 200;   // how far trop clears the vowel band
 // mark-to-mark attach point on a nikkud mark (where a trop stacks): its far edge + a small gap.
 function markMkmkAnchor(cp) {
@@ -1187,6 +1249,7 @@ function newProject() {
       includeDigitsPunct: true,
       addCustomGlyphs: false,
       svgUpload: false,
+      addEnglishLetters: false,
       kerning: []
     },
     template: { font: "'Noto Sans Hebrew', sans-serif", opacity: 0.35, showOverlay: true },
@@ -1208,7 +1271,7 @@ function curItem() {
   return customMark(curKind, curCp);
 }
 function curLetter() { return curItem(); }
-function letterMeta(cp) { return LETTERS.find(l => l.cp === cp); }
+function letterMeta(cp) { return LETTERS.find(l => l.cp === cp) || engMeta(cp); }
 function curMeta() { return curKind === 'letter' ? letterMeta(curCp) : null; }
 function markName(cp) { return MARK_NAMES[cp] || TROP_NAMES[cp] || cp; }
 function markClassOf(kind, cp) { return kind === 'trop' ? TROP_CLASS[cp] : MARK_CLASS[cp]; }
@@ -1250,7 +1313,8 @@ function renderGrids() {
     if (document.getElementById('customGlyphsGrid')) renderCustomGlyphsGrid();   // keep tile selection/status in sync
     else renderCustomGlyphsPanel();                                              // first build of the panel + add form
   }
-  renderCatTabs();   // also (re)builds the tab bar so the Custom glyphs tab appears/disappears with the toggle
+  if (document.getElementById('englishGrid')) renderEnglishGrid();
+  renderCatTabs();   // also (re)builds the tab bar so the Custom glyphs / English tabs appear/disappear with their toggles
 }
 /* ── Custom-mark geometry helpers ──
    Custom mark contours are stored in workspace coords (natural for the editor); the
@@ -1266,6 +1330,7 @@ function markAttachOrigin(m) {
   return { x:midX, y:(minY+maxY)/2 };                // centre
 }
 function markGlyphContours(kind, cp) {
+  if (kind === 'accent') return (LATIN_ACCENTS[cp] && LATIN_ACCENTS[cp].glyph) || [];
   const f = project.font[kind];
   if (f && f.mode === 'custom') {
     const m = f.custom && f.custom[cp];
@@ -1281,6 +1346,7 @@ function markGlyphContours(kind, cp) {
 /* Fitted curves for a custom UPLOADED mark, translated to mark-local (attach origin at 0,0), 1:1 with
    markGlyphContours(). editor pieces & built-in default polygons have no curves → returns null (polygon). */
 function markGlyphCurves(kind, cp) {
+  if (kind === 'accent') return null;
   const f = project.font[kind];
   if (f && f.mode === 'custom') {
     const m = f.custom && f.custom[cp];
@@ -1872,6 +1938,30 @@ function renderLetterGrid() {
   if (document.getElementById('nikkudGrid')) renderNikkudGrid();   // keep mark tile states in sync
   if (document.getElementById('tropGrid')) renderTropGrid();
   if (document.getElementById('punctGrid')) renderPunctGrid();
+  if (document.getElementById('englishGrid')) renderEnglishGrid();
+}
+let englishCase = 'upper';
+function setEnglishCase(c) { englishCase = (c === 'lower') ? 'lower' : 'upper'; renderEnglishGrid(); }
+function renderEnglishGrid() {
+  const grid = document.getElementById('englishGrid'); if (!grid) return;
+  const up = document.getElementById('engCaseUpper'), lo = document.getElementById('engCaseLower');
+  if (up) up.classList.toggle('active', englishCase === 'upper');
+  if (lo) lo.classList.toggle('active', englishCase === 'lower');
+  grid.innerHTML = ''; let done = 0, total = 0;
+  ENGLISH_LETTERS.filter(E => E.case === englishCase).forEach(E => {
+    const l = project.letters.find(x => x.codepoint === E.cp && x.eng); if (!l) return;
+    total++;
+    const st = letterStatus(l); if (st === 'traced' || st === 'anchored') done++;
+    const ch = String.fromCodePoint(parseInt(E.cp, 16));
+    const tile = document.createElement('div');
+    tile.className = 'ltile' + (curKind === 'letter' && E.cp === curCp ? ' sel' : '');
+    tile.innerHTML = `<span class="lt-dot ${st}"></span>
+      <span class="lt-heb" style="font-family:${project.template.font};direction:ltr;">${ch}</span>
+      <span class="lt-name">${ch}</span>`;
+    tile.onclick = () => selectItem('letter', E.cp);
+    grid.appendChild(tile);
+  });
+  const prog = document.getElementById('englishProgress'); if (prog) prog.textContent = total ? `(${done}/${total})` : '';
 }
 /* ── Nikkud / Trop sidebar panels (shared, parametrised by category) ── */
 function markStatusOf(m) {
@@ -2091,6 +2181,24 @@ function setAddCustomGlyphs(on) {
   if (!on && isCustomCp(curCp)) selectItem('letter', LETTER_ORDER[0]);   // leave the custom editor if it was open
   renderGrids();   // rebuilds the tab bar (renderCatTabs) → shows/hides the Custom glyphs tab
 }
+function setAddEnglishLetters(on) {
+  project.font.addEnglishLetters = !!on;
+  if (on) ensureEnglishSeeded();
+  else if (isEng(curCp)) selectItem('letter', LETTER_ORDER[0]);   // leave the English editor if it was open
+  renderGrids();   // rebuilds the tab bar (renderCatTabs) → shows/hides the English tab
+}
+function ensureEnglishSeeded(p) {
+  p = p || project;
+  ENGLISH_LETTERS.forEach(E => {
+    if (!p.letters.some(l => l.codepoint === E.cp && l.eng)) {
+      const it = blankLetter(E); it.eng = true; it.case = E.case; p.letters.push(it);
+    }
+  });
+  p.precomposed = p.precomposed || [];
+  LATIN_PRECOMPOSED.forEach(pc => {
+    if (!p.precomposed.some(x => x.target === pc.target)) p.precomposed.push({ target: pc.target, base: pc.base, mark: pc.mark, anchor: null });
+  });
+}
 function setSvgUpload(on) {
   project.font.svgUpload = !!on;
   renderGrids(); renderStage(); renderControls();   // re-render the upload zones (SVG-only accept + text), tabs, and stage
@@ -2295,9 +2403,12 @@ function renderCatTabs() {
   if (cb && project && project.font) cb.checked = !!project.font.addCustomGlyphs;
   const sv = document.getElementById('svgUploadChk');
   if (sv && project && project.font) sv.checked = !!project.font.svgUpload;
-  const NAMES = { fontdetails: 'Font Details', letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop', punct: 'Punctuation', customglyphs: 'Custom glyphs', spacing: 'Spacing', advanced: 'Advanced Settings' };
+  const en = document.getElementById('addEnglishLettersChk');
+  if (en && project && project.font) en.checked = !!project.font.addEnglishLetters;
+  const NAMES = { fontdetails: 'Font Details', letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop', punct: 'Punctuation', english: 'English', customglyphs: 'Custom glyphs', spacing: 'Spacing', advanced: 'Advanced Settings' };
   const cats = ['fontdetails', 'letter', 'nikkud', 'trop', 'punct', 'spacing', 'advanced'];
   if (project && project.font && project.font.addCustomGlyphs) cats.splice(cats.indexOf('punct') + 1, 0, 'customglyphs');   // appears right after Punctuation
+  if (project && project.font && project.font.addEnglishLetters) cats.splice(cats.indexOf('punct') + 1, 0, 'english');   // English tab right after Punctuation (before Custom glyphs)
   t.innerHTML = cats.map(c =>
     `<div class="ctab" data-cat="${c}" onclick="setCatTab('${c}')">${NAMES[c]}</div>`).join('');
   syncCatTabs();
@@ -3039,7 +3150,7 @@ function templateGlyphSVG() {
   let ch = String.fromCodePoint(parseInt(curCp,16));
   // In Nikkud/Trop mode, show the reference letter WITH the mark you're placing (e.g. אָ),
   // so the reference font models where that vowel/trop actually sits.
-  if (workMode === 'anchors' && curKind === 'letter') {
+  if (workMode === 'anchors' && curKind === 'letter' && !isEng(curCp)) {
     const vcp = activeVowelCp();
     if (vcp) ch += String.fromCodePoint(parseInt(vcp, 16));
   }
@@ -3155,6 +3266,7 @@ async function renderStage() {
     if (l.contours || project.template.showOverlay) {
       // preview the vowel (or, in precomposed-form mode, that form's mark) on the glyph
       if (precompTarget) { h += precompHandlesSVG(); }
+      else if (isEng(l.codepoint)) { h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="12">${engSupportsAccents(l.codepoint) ? 'Pick an accented form on the left to place its accent.' : 'No accents for this letter.'}</text>`; }
       else { seedAnchorsIfNeeded(l); h += anchorHandlesSVG(l); }
     } else {
       h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="13">Trace this letter (step 2), or turn on “Show template glyph” to place nikkud on the reference.</text>`;
@@ -3184,7 +3296,7 @@ async function renderStage() {
   sv.innerHTML = h;
   if (workMode === 'align' && url && !metricAdjust) attachTransformDrag(l);
   if (workMode === 'align' && metricAdjust) attachMetricDrag();
-  if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) { if (precompTarget) attachPrecompDrag(); else attachAnchorDrag(l); }
+  if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) { if (precompTarget) attachPrecompDrag(); else if (!isEng(l.codepoint)) attachAnchorDrag(l); }
   if (workMode === 'nodes') attachNodeEditor(l);
   renderLegend();
 }
@@ -4036,14 +4148,14 @@ function activeVowelCp() {
   }
 }
 function markPreviewPath(cp, ax, ay) {
-  const cat = catOfCp(cp), s = cat==='trop'?tropScale():markScale();
+  const cat = catOfCp(cp), s = cat==='trop'?tropScale():(cat==='accent'?1:markScale());
   const contours = markGlyphContours(cat, cp);
   let d = '';
   contours.forEach(poly => { poly.forEach((p,i) => { const X=fx(ax+p[0]*s), Y=fy(ay+p[1]*s); d += (i===0?'M':'L')+X.toFixed(1)+' '+Y.toFixed(1)+' '; }); d+='Z '; });
   return d;
 }
 function markCenterLocal(cp) {
-  const cat = catOfCp(cp), s = cat==='trop'?tropScale():markScale();
+  const cat = catOfCp(cp), s = cat==='trop'?tropScale():(cat==='accent'?1:markScale());
   const polys = markGlyphContours(cat, cp);
   let sx = 0, sy = 0, n = 0;
   polys.forEach(poly => poly.forEach(p => { sx += p[0]; sy += p[1]; n++; }));
@@ -4115,12 +4227,12 @@ function setBelowVowel(cp) { activeBelowVowel = cp; renderStage(); renderControl
    matching anchor (shared with the live vowels); a per-form override lets the user place it exactly. */
 let precompTarget = null;   // active precomposed form's target codepoint (e.g. 'FB2A'), or null
 function getPrecomp(t) { return project.precomposed.find(p => p.target === t); }
-function precompName(pc) { return MARK_NAMES[pc.mark] || 'mark'; }
+function precompName(pc) { return MARK_NAMES[pc.mark] || (LATIN_ACCENTS[pc.mark] && LATIN_ACCENTS[pc.mark].name) || 'mark'; }
 function precompComposed(pc) { return String.fromCodePoint(parseInt(pc.base,16)) + String.fromCodePoint(parseInt(pc.mark,16)); }
 function precompAnchor(pc) {
   if (pc.anchor && pc.anchor.x != null) return pc.anchor;                 // user override
   const b = project.letters.find(x => x.codepoint === pc.base);          // else the base's class anchor
-  if (b) { seedAnchorsIfNeeded(b); const a = b.anchors && b.anchors[MARK_CLASS[pc.mark]]; if (a) return { x: a.x, y: a.y }; }
+  if (b) { seedAnchorsIfNeeded(b); const a = b.anchors && b.anchors[markClassFor(pc.mark)]; if (a) return { x: a.x, y: a.y }; }
   return { x: 0, y: 0 };
 }
 function precompFormBtn(pc) {
@@ -4667,9 +4779,17 @@ function renderTraceUnder(U, l) {
 }
 
 /* ── ANCHORS (Nikkud / Trop) ── */
+function renderEngAccentLeft(l) {   // English letters: accent placement = pick a precomposed accented form, then drag its accent
+  const forms = project.precomposed.filter(pc => pc.base === l.codepoint);
+  if (!forms.length) return `<div class="ws-side-title">${escapeHtml(l.name)}</div><div class="hint">This letter has no accented forms — it's ready once traced.</div>`;
+  return `<div class="ws-side-title">${escapeHtml(l.name)}: place accents</div>
+    <div class="hint" style="font-size:0.66rem;">Pick an accented form, then drag the accent into place on the canvas (or type X / Y). Each is baked into the exported font.</div>
+    <div class="ctl-row" style="flex-wrap:wrap;gap:5px;margin-top:6px;">${forms.map(precompFormBtn).join('')}</div>`;
+}
 function renderAnchorLeft(L, l) {
   if (!l.contours && !project.template.showOverlay) { L.innerHTML = ''; return; }
   if (precompTarget) { L.innerHTML = renderPrecompControls(l); return; }   // placing a precomposed form's mark
+  if (isEng(l.codepoint)) { L.innerHTML = renderEngAccentLeft(l); return; }   // English letters: place accents (precomposed forms)
   const { visCls, cls, isTrop, want, a } = _anchorCtx(l);
   const classBtns = visCls.map(k =>
     `<button class="ctl-btn ${cls===k?'primary':''}" style="${cls===k?`background:${ANCHOR_COL[k]};color:#fff;border-color:${ANCHOR_COL[k]};`:''}" onclick="setAnchorClass('${k}')">${ANCHOR_LABEL[k]}</button>`).join('');
@@ -4719,6 +4839,12 @@ function renderAnchorUnder(U, l) {
   }
   if (precompTarget) {
     U.innerHTML = `<div class="hint">Placing a precomposed form — drag the orange dot on the canvas, or type X / Y on the left. Your change is saved automatically.</div>`;
+    return;
+  }
+  if (isEng(l.codepoint)) {
+    U.innerHTML = engSupportsAccents(l.codepoint)
+      ? `<div class="hint">Pick an accented form on the left, then drag the orange dot to position the accent. Accents are baked into precomposed letters (á, é, ñ, ç…) when you export.</div>`
+      : `<div class="hint">No accents for this letter — it's done once traced.</div>`;
     return;
   }
   const { cls, isTrop, want } = _anchorCtx(l);
@@ -5232,6 +5358,16 @@ function buildFontSpec() {
     if (!exists) { glyphOrder.push(nm); baseGlyphNames.push(nm); cmap[parseInt(l.codepoint,16)] = nm; }
   });
 
+  // English (Latin) base letters (A–Z, a–z) — flagged entries in project.letters; only when enabled, only traced ones
+  if (project.font.addEnglishLetters) (project.letters || []).filter(l => l.eng && l.contours && l.contours.length).forEach(l => {
+    const nm = gname(l.codepoint);
+    const contours = l.contours.map(c => c.points);
+    const exists = !!glyphs[nm];
+    glyphs[nm] = { contours, advance: effLetterAdvance(l), lsb: (l.lsb != null ? l.lsb : null) };
+    if (l.curves && l.curves.length === contours.length) glyphs[nm].curves = l.curves;
+    if (!exists) { glyphOrder.push(nm); baseGlyphNames.push(nm); cmap[parseInt(l.codepoint,16)] = nm; }
+  });
+
   // mark glyphs (zero width) — only when the font is Nikkud-compatible; default or custom shapes, scaled by Nikkud size
   const ms = markScale();
   const nikOn = project.font.nikkud.enabled;
@@ -5271,6 +5407,7 @@ function buildFontSpec() {
   // precomposed glyphs (Nikkud only): base contours + mark contours at base's matching anchor
   const built = [];
   if (nikOn) project.precomposed.forEach(pc => {
+    if (catOfCp(pc.mark) === 'accent') return;                      // Latin accents are baked in their own pass below
     const baseL = project.letters.find(x => x.codepoint === pc.base);
     if (!baseL || !baseL.contours) return;                          // need a traced base (anchor may be a per-form override)
     const cls = MARK_CLASS[pc.mark];
@@ -5284,6 +5421,23 @@ function buildFontSpec() {
     glyphOrder.push(nm); baseGlyphNames.push(nm);
     cmap[parseInt(pc.target,16)] = nm;
     built.push(pc);
+  });
+
+  // precomposed accented Latin letters (á, é, ñ, ç…): bake base + accent at the placed anchor — glyphs + cmap only (no ccmp/GPOS)
+  if (project.font.addEnglishLetters) project.precomposed.forEach(pc => {
+    if (catOfCp(pc.mark) !== 'accent') return;
+    const baseL = project.letters.find(x => x.codepoint === pc.base);
+    if (!baseL || !baseL.contours || !baseL.contours.length) return;   // need a traced base letter
+    seedAnchorsIfNeeded(baseL);
+    const cls = markClassFor(pc.mark);
+    const anc = (pc.anchor && pc.anchor.x != null) ? pc.anchor : (baseL.anchors && baseL.anchors[cls]); if (!anc) return;
+    const accPoly = markGlyphContours('accent', pc.mark).map(poly => poly.map(([x,y]) => [Math.round(x + anc.x), Math.round(y + anc.y)]));   // accents are pre-sized (scale 1)
+    const baseContours = baseL.contours.map(c => c.points);
+    const nm = gname(pc.target);
+    glyphs[nm] = { contours: baseContours.concat(accPoly), advance: effLetterAdvance(baseL) };
+    if (baseL.curves && baseL.curves.length === baseContours.length) glyphs[nm].curves = baseL.curves.concat(accPoly.map(() => null));
+    if (!glyphOrder.includes(nm)) { glyphOrder.push(nm); baseGlyphNames.push(nm); }
+    cmap[parseInt(pc.target,16)] = nm;
   });
 
   // trop (cantillation) glyphs — when the font is Trop-compatible; default or custom, scaled by Trop size
@@ -6346,12 +6500,14 @@ const TEMPLATE_SPECS = {
              items: TROP_DEFS.map(t => ({ cp:t[0], name:t[1], cls:t[2] })) },         // 31 → 1 page
   punct:   { kind:'punct',   title:'Punctuation & More',  cols:5, rowsPerPage:5,
              items: LETTERS.filter(L => L.cat === 'punct').map(L => ({ cp:L.cp, name:L.name, cls:null })) },
+  englishletters: { kind:'latin', title:'English Letters', cols:6, rowsPerPage:5,
+             items: ENGLISH_LETTERS.map(E => ({ cp:E.cp, name:String.fromCodePoint(parseInt(E.cp,16)), cls:null })) },   // 52 → 2 pages
 };
 // One write-in box: colored border + a small corner label (ref glyph + name + U+code + class). Interior left blank.
 function templateCellHTML(item, kind) {
   const fontFam = (project.template && project.template.font) || "'Noto Sans Hebrew', sans-serif";
   const base  = String.fromCodePoint(parseInt(item.cp, 16));
-  const glyph = (kind === 'letters' || kind === 'punct') ? base : ('◌' + base);   // dotted circle ◌ carries an isolated combining mark (punctuation is standalone)
+  const glyph = (kind === 'letters' || kind === 'punct' || kind === 'latin') ? base : ('◌' + base);   // dotted circle ◌ carries an isolated combining mark (punctuation is standalone)
   const code  = 'U+' + item.cp.toUpperCase();
   const cls   = item.cls ? (' · ' + item.cls) : '';
   const label =
@@ -6638,6 +6794,8 @@ function migrateProject(data) {
     if (!data.font.trop.combinedImage) data.font.trop.combinedImage = { dataUrl: null };
     if (data.font.addCustomGlyphs == null) data.font.addCustomGlyphs = false;
     if (data.font.svgUpload == null) data.font.svgUpload = false;
+    if (data.font.addEnglishLetters == null) data.font.addEnglishLetters = false;
+    if (data.font.addEnglishLetters) ensureEnglishSeeded(data);
     if (!data.font.customMarks) data.font.customMarks = { enabled: true, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } };
     if (!data.font.customMarks.custom) data.font.customMarks.custom = {};
     if (!data.font.customMarks.combinedImage) data.font.customMarks.combinedImage = { dataUrl: null };
