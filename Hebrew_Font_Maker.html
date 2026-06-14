@@ -3171,7 +3171,8 @@ function templateGlyphSVG() {
    ascent-inclusive layout box, which can't be trusted. Cached per font+glyph. */
 const _tplMetricsCache = {};
 function templateMetrics(family, ch) {
-  const loaded = !document.fonts || document.fonts.check(`24px ${family}`);
+  const primary = String(family).split(',')[0].trim();   // test the real font, not the always-available generic fallback (which makes check() spuriously true)
+  const loaded = !document.fonts || document.fonts.check('24px ' + primary);
   const key = family + '|' + ch;
   if (loaded && _tplMetricsCache[key]) return _tplMetricsCache[key];
   let m = { capRatio: 0.7, leftRatio: -0.3, widthRatio: 0.62 };
