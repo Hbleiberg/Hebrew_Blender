@@ -830,6 +830,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   } catch(e) {}
   render();
+  // Deep link from the Font Maker's "Share this font": open the Fonts view + a pre-filled submission email.
+  try {
+    const q = new URLSearchParams(location.search);
+    if (q.get('view') === 'fonts' || q.has('submit')) {
+      setView('fonts');
+      if (q.has('submit')) {
+        _fontSubmitPrefill = { name:q.get('name'), author:q.get('author'), license:q.get('license'),
+          version:q.get('version'), nikkud:q.get('nikkud'), trop:q.get('trop') };
+        openSubmitFont();
+      }
+      history.replaceState({}, '', location.pathname);   // clean the URL so a refresh doesn't re-fire
+    }
+  } catch(e) {}
 });
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -1034,17 +1047,20 @@ async function useFontInIvritSuite(i) {
 /* ── Submit a font — scraper-obscured mailto (address assembled at runtime) ── */
 const EMAIL_USER = 'Harrison', EMAIL_DOMAIN = 'IvritSuite.com';
 function emailAddr() { return EMAIL_USER + '@' + EMAIL_DOMAIN; }
-function openSubmitFont() {
-  const subject = 'IvritSuite Font Submission';
+let _fontSubmitPrefill = null;   // set from a Font Maker "Share this font" deep link
+function openSubmitFont(pf) {
+  pf = pf || _fontSubmitPrefill || {};
+  const ln = (label, val) => label + (val ? ' ' + val : '');
+  const subject = 'IvritSuite Font Submission' + (pf.name ? ': ' + pf.name : '');
   const body = [
-    'Font name:',
+    ln('Font name:', pf.name),
     'Type of font (Block / Cursive / Torah / Other):',
-    'Nikkud supported? (Yes / No):',
-    'Trop supported? (Yes / No):',
-    'License (CC0 / OFL / Other — please specify):',
-    'Version number (if applicable):',
+    ln('Nikkud supported? (Yes / No):', pf.nikkud),
+    ln('Trop supported? (Yes / No):', pf.trop),
+    ln('License (CC0 / OFL / Other — please specify):', pf.license),
+    ln('Version number (if applicable):', pf.version),
     '',
-    'Your name:',
+    ln('Your name:', pf.author),
     'Your website (if applicable):',
     '',
     '*** Please ATTACH your font file(s) (TTF / OTF / WOFF) and the license file to this email. ***',

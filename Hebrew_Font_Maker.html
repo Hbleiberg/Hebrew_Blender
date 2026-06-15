@@ -552,6 +552,7 @@
   </select>
   <button class="tbtn ghost" onclick="openMyFonts()" title="Saved fonts you can use in any IvritSuite tool">★ My IvritSuite Fonts</button>
   <button class="tbtn" id="exportBtn" onclick="exportFont()">⬇ Export TTF</button>
+  <button class="tbtn ghost" id="shareBtn" onclick="shareThisFont()" title="Post your font to the IvritSuite font library">📤 Share this font</button>
 </div>
 
 <div class="app">
@@ -1156,7 +1157,7 @@ let lastSavedAnchors = null;                 // most recently SAVED placement �
 const anchorInheritedFrom = new WeakMap();   // letter → the saved snapshot already carried onto it (once per save, clobber-safe)
 // Layout is always "Tabbed" now (the Sidebar option was removed).
 let catTab = 'letter';      // tabbed layout: which category picker is visible ('letter'|'nikkud'|'trop')
-let metricAdjust = false;   // Letter Metrics → "Adjust on canvas" drag toggle
+let metricAdjust = true;    // Letter Metrics → "Adjust on canvas" drag toggle (default on; metric dots + image both draggable)
 let metricDrag = null;      // active metric-guide drag: { key, axis, grab }
 
 /* ════════ Undo / redo (per-project, in-memory; max 100 entries). Each entry snapshots only the
@@ -1826,11 +1827,12 @@ function curMetricVal(key) {
   const l = curLetter();
   if (key==='advance') return letterAdvance(l);
   if (key==='lsb') return letterLSB(l);
-  if (key==='rsb') return letterRSB(l);
+  if (key==='rsb') return letterAdvance(l) - letterRSB(l);   // X of the right-margin line, so the canvas drag tracks the cursor
   return effMetrics()[key];
 }
 function writeMetric(key, raw) {                   // dispatch used by the canvas drag
-  if (key==='advance' || key==='lsb' || key==='rsb') setLetterMetric(key, raw, true);
+  if (key==='rsb') { setLetterMetric('rsb', letterAdvance(curLetter()) - raw, true); return; }   // dragged X → right-margin gap
+  if (key==='advance' || key==='lsb') setLetterMetric(key, raw, true);
   else setMetric(key, raw, true);
 }
 function toggleMetricAdjust() { metricAdjust = !metricAdjust; renderStage(); renderControls(); }
@@ -1874,7 +1876,7 @@ function metricsPanel() {
     <div class="metric-actions">
       <button class="mode-btn metric-toggle ${metricAdjust?'active':''}" id="metAdj" type="button" onclick="toggleMetricAdjust()">${metricAdjust?'✓ ':''}Adjust on canvas</button>
       <button class="ctl-btn" type="button" onclick="resetMetrics()">Reset to defaults</button>
-      <div class="hint" style="font-size:0.64rem;line-height:1.3;">Width, Left margin &amp; Right margin are independent — changing one won't move the others. Turn on <b>Adjust on canvas</b> to drag the guide dots.</div>
+      <div class="hint" style="font-size:0.64rem;line-height:1.3;">Width, Left margin &amp; Right margin are independent — changing one won't move the others. Drag the guide dots right on the canvas; <b>Adjust on canvas</b> hides/shows them (the reference image stays draggable either way).</div>
     </div>
   </div>`;
 }
@@ -1890,6 +1892,7 @@ function metricHandlesSVG() {
   if (meta && meta.asc)  h += dot('lamedAscender','y', 488, fy(m.lamedAscender), C.top);
   h += dot('advance','x', fx(adv), vy1+12, C.margin);
   h += dot('lsb','x', fx(letterLSB(L)), mid, C.margin);
+  h += dot('rsb','x', fx(letterAdvance(L) - letterRSB(L)), mid, C.margin);   // right-margin guide (drag mapped in curMetricVal/writeMetric)
   return h;
 }
 function attachMetricDrag() {
@@ -3324,7 +3327,7 @@ async function renderStage() {
   h += marginGuidesSVG();   // margins/width on top so the right side bearing shows over the glyph
   if (workMode === 'align' && metricAdjust) h += metricHandlesSVG();   // draggable metric guide dots
   sv.innerHTML = h;
-  if (workMode === 'align' && url && !metricAdjust) attachTransformDrag(l);
+  if (workMode === 'align' && url) attachTransformDrag(l);   // image drag always available; metric dots (drawn on top) capture their own grabs
   if (workMode === 'align' && metricAdjust) attachMetricDrag();
   if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) { if (precompTarget) attachPrecompDrag(); else if (!isEng(l.codepoint)) attachAnchorDrag(l); }
   if (workMode === 'nodes') attachNodeEditor(l);
@@ -6027,6 +6030,25 @@ function onExportFormatChange() {
   const fmt = (document.getElementById('exportFormat') || {}).value || 'ttf';
   const label = { ttf:'⬇ Export TTF', woff2:'⬇ Export WOFF2', ttfwoff2:'⬇ Export TTF + WOFF2', ufo:'⬇ Export UFO' }[fmt] || '⬇ Export';
   const btn = document.getElementById('exportBtn'); if (btn) btn.textContent = label;
+}
+function shareThisFont() {   // open the font library (Fonts view) + a pre-filled submission email
+  if (!project) return;
+  const f = project.font;
+  const licMap = { cc0:'CC0 (Public Domain)', ofl:'OFL (SIL Open Font License 1.1)', mit:'MIT License', ccby:'CC BY 4.0', arr:'All Rights Reserved' };
+  const params = new URLSearchParams({
+    view: 'fonts', submit: '1',
+    name: (f.familyName || '').trim(),
+    author: (f.author || '').trim(),
+    license: licMap[f.license] || f.license || '',
+    version: (f.version || '').trim(),
+    nikkud: (f.nikkud && f.nikkud.enabled) ? 'Yes' : 'No',
+    trop: (f.trop && f.trop.enabled) ? 'Yes' : 'No'
+  });
+  const url = 'resources.html?' + params.toString();
+  askModal('Share your font',
+    'Post <b>' + escapeHtml(f.familyName || 'your font') + '</b> to the IvritSuite font library. This opens the library and starts a <b>pre-filled submission email</b>.<br><br>You\'ll <b>attach your exported font file</b> (.ttf) and license — use <b>⬇ Export TTF</b> first if you haven\'t.',
+    [ { label: 'Open library →', onClick: () => window.open(url, '_blank', 'noopener') },
+      { label: 'Cancel', cls: 'ghost' } ]);
 }
 async function exportFont() {
   if (!project) return;
