@@ -784,6 +784,21 @@
   </div>
 </div>
 
+<div class="overlay" id="applyNikkudOverlay" onclick="if(event.target===this)closeApplyNikkud()">
+  <div class="modal" style="max-width:480px;">
+    <h3>Apply this positioning to other letters</h3>
+    <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;">Copies where this letter's nikkud &amp; trop marks sit (the anchor positions) onto the letters you pick, overwriting theirs. You can undo it.</p>
+    <label class="chk" style="font-size:0.84rem;"><input type="checkbox" id="applyNikkudCenter" checked> Keep each letter horizontally centered (recommended)</label>
+    <div class="hint" style="font-size:0.66rem;margin:2px 0 4px;">On: copies the vertical positions and keeps each mark centered on the target letter's own width (best when letters differ in width). Off: copies the exact X positions too.</div>
+    <div style="display:flex;gap:8px;margin:6px 0 8px;">
+      <button class="ctl-btn" onclick="applyNikkudCheckAll(true)">Select all</button>
+      <button class="ctl-btn" onclick="applyNikkudCheckAll(false)">None</button>
+    </div>
+    <div id="applyNikkudList" style="display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;max-height:46vh;overflow:auto;"></div>
+    <div class="mbtns"><button class="tbtn ghost" onclick="closeApplyNikkud()">Cancel</button><button class="tbtn" onclick="applyNikkudDo()">Apply</button></div>
+  </div>
+</div>
+
 <script>
 /* ════════════════════════════════════════════════════════════════════════
    Hebrew Font Maker — single-file client-side font foundry
@@ -4862,9 +4877,10 @@ function renderAnchorUnder(U, l) {
   const { cls, isTrop, want } = _anchorCtx(l);
   const sizePct = Math.round((isTrop ? tropScale() : markScale())*100), sizeFn = isTrop ? 'setTropScale' : 'setMarkScale';
   const saveBtn = `<button id="savePlacementBtn" class="ctl-btn ${l.placementSaved?'':'primary'}" style="font-weight:700;${l.placementSaved?'background:#10b981;color:#fff;border-color:#10b981;':''}" onclick="savePlacement()">${l.placementSaved?'✓ Placement saved':'Save Placement'}</button>`;
+  const applyBtn = `<button class="ctl-btn" onclick="openApplyNikkud()" title="Copy this letter's nikkud & trop anchor positions onto other letters">Apply positioning to other letters…</button>`;
   U.innerHTML = `
     <div class="ws-under-row" style="align-items:flex-end;">
-      <div style="flex:1;min-width:0;"></div>
+      <div style="flex:1;min-width:0;">${applyBtn}</div>
       <div style="flex:0 1 360px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:9px;">
         <div class="inline" style="width:100%;">${isTrop?'Trop':'Nikkud'} size <input type="range" min="40" max="180" step="5" value="${sizePct}" oninput="${sizeFn}(this.value)"> <span id="markScaleV" class="readout">${sizePct}%</span></div>
         <div class="ctl-row" style="justify-content:center;">
@@ -6877,6 +6893,49 @@ function applyAlignDo(){
   });
   closeApplyAlign();
   status('Applied alignment to ' + targets.length + ' letter' + (targets.length === 1 ? '' : 's') + '.');
+}
+// Apply the current letter's nikkud/trop anchor positions to other letters (one undoable batch).
+function openApplyNikkud(){
+  const src = curLetter(); if (!src) return;
+  seedAnchorsIfNeeded(src);
+  const host = document.getElementById('applyNikkudList'); host.innerHTML = '';
+  LETTERS.filter(L => L.cat !== 'punct' && L.cp !== src.codepoint).forEach(L => {
+    const lab = document.createElement('label'); lab.className = 'chk'; lab.style.cssText = 'font-size:0.84rem;';
+    lab.innerHTML = `<input type="checkbox" class="an-cp" value="${L.cp}"> <span style="font-family:${project.template.font};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${escapeHtml(L.name)}`;
+    host.appendChild(lab);
+  });
+  document.getElementById('applyNikkudOverlay').classList.add('open');
+}
+function closeApplyNikkud(){ document.getElementById('applyNikkudOverlay').classList.remove('open'); }
+function applyNikkudCheckAll(on){ document.querySelectorAll('#applyNikkudList .an-cp').forEach(c => c.checked = on); }
+// horizontal center used to seed a letter's anchors: traced → top-band midX; else advance-based (same as seedAnchors).
+function anchorMidX(l){
+  const meta = letterMeta(l.codepoint);
+  return l.contours ? glyphBBox(l.contours, true, meta).midX
+                    : Math.round((l.advance || Math.round(LETTER_TOP*0.7)) / 2);
+}
+function applyNikkudDo(){
+  const src = curLetter(); if (!src) { closeApplyNikkud(); return; }
+  seedAnchorsIfNeeded(src);
+  const keepCentered = document.getElementById('applyNikkudCenter').checked;
+  const srcMid = anchorMidX(src);
+  const cps = [...document.querySelectorAll('#applyNikkudList .an-cp:checked')].map(c => c.value);
+  const targets = cps.map(cp => project.letters.find(l => l.codepoint === cp)).filter(Boolean);
+  if (!targets.length) { closeApplyNikkud(); return; }
+  udDo(targets.map(l => ({ t:'item', kind:'letter', cp:l.codepoint })), 'apply nikkud positioning to ' + targets.length + ' letters', () => {
+    targets.forEach(l => {
+      seedAnchorsIfNeeded(l);
+      const tMid = anchorMidX(l);
+      ANCHOR_CLASSES.forEach(([cls]) => {
+        const sa = src.anchors[cls]; if (!sa) return;
+        l.anchors[cls] = keepCentered ? { x: Math.round(tMid + (sa.x - srcMid)), y: sa.y }
+                                      : { x: sa.x, y: sa.y };
+      });
+    });
+    renderGrids(); renderStage(); renderControls();
+  });
+  closeApplyNikkud();
+  status('Applied nikkud positioning to ' + targets.length + ' letter' + (targets.length === 1 ? '' : 's') + '.');
 }
 function init() {
   initDark(); initPanels();
