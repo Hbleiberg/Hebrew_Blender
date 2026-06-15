@@ -1136,7 +1136,6 @@ function letterInkLeft(l) { if (l && l.contours) { let mn=1e9; l.contours.forEac
 function letterLSB(l)     { return (l && l.lsb != null) ? l.lsb : letterInkLeft(l); }   // explicit override, else the real ink left edge (so the left margin guide tracks the ink, like the right one)
 function letterInkRight(l){ if (l && l.contours) { let mx=-1e9; l.contours.forEach(c=>c.points.forEach(p=>{ if(p[0]>mx) mx=p[0]; })); if (mx>-1e9) return Math.round(mx); } return Math.max(0, letterAdvance(l) - effMetrics().defaultRSB); }
 function letterRSB(l)     { return (l && l.rsb != null) ? l.rsb : Math.max(0, letterAdvance(l) - letterInkRight(l)); }   // explicit right margin, else derived (gap after the ink)
-function effAdvance(l)    { return (l && l.contours ? letterAdvance(l) : (_tplFit && _tplFit.advance)) || Math.round(effMetrics().letterTop * 0.7); }   // advance the on-canvas guides use (template-fit before tracing, real advance after) — keeps the dots aligned with the margin/width zones
 function catOfCp(cp) { return LATIN_ACCENTS[cp] ? 'accent' : (TROP_CLASS[cp] ? 'trop' : 'nikkud'); }
 const TROP_GAP_ABOVE = 200, TROP_GAP_BELOW = 200;   // how far trop clears the vowel band
 // mark-to-mark attach point on a nikkud mark (where a trop stacks): its far edge + a small gap.
@@ -1828,11 +1827,11 @@ function curMetricVal(key) {
   const l = curLetter();
   if (key==='advance') return letterAdvance(l);
   if (key==='lsb') return letterLSB(l);
-  if (key==='rsb') return effAdvance(l) - letterRSB(l);   // X of the right-margin line (same advance as the zone), so the drag tracks the cursor
+  if (key==='rsb') return letterAdvance(l) - letterRSB(l);   // X of the right-margin line, so the drag tracks the cursor
   return effMetrics()[key];
 }
 function writeMetric(key, raw) {                   // dispatch used by the canvas drag
-  if (key==='rsb') { setLetterMetric('rsb', effAdvance(curLetter()) - raw, true); return; }   // dragged X → right-margin gap (same advance as the zone)
+  if (key==='rsb') { setLetterMetric('rsb', letterAdvance(curLetter()) - raw, true); return; }   // dragged X → right-margin gap
   if (key==='advance' || key==='lsb') setLetterMetric(key, raw, true);
   else setMetric(key, raw, true);
 }
@@ -1883,7 +1882,7 @@ function metricsPanel() {
 }
 function metricHandlesSVG() {
   const m = effMetrics(), L = curLetter(), meta = curMeta(), C = stageColors();
-  const adv = effAdvance(L);
+  const adv = letterAdvance(L);   // dots + zones share the letter's OWN advance (the editable value), so every dot sits on its guide and Width/margins all drag correctly
   const vy1 = fy(m.letterTop + 80), vy2 = fy(m.descender - 30), mid = (vy1+vy2)/2;
   const dot = (key,axis,cx,cy,col,label,title) =>
     `<circle class="metric-h" data-metric="${key}" data-axis="${axis}" cx="${(+cx).toFixed(1)}" cy="${(+cy).toFixed(1)}" r="7" fill="${col}" fill-opacity="0.45" stroke="#fff" stroke-width="2" style="cursor:${axis==='y'?'ns-resize':'ew-resize'}"><title>${title}</title></circle>`
@@ -2975,7 +2974,7 @@ function guideLinesSVG() {
    glyph image (pointer-events:none) so the right margin stays visible even when ink covers it. */
 function marginGuidesSVG() {
   const m = effMetrics(), L = curLetter();
-  const adv = effAdvance(L);
+  const adv = letterAdvance(L);   // the letter's own advance, so the margin/width zones line up with the draggable dots
   const vy1 = fy(m.letterTop + 80), vy2 = fy(m.descender - 30), mcy = (vy1+vy2)/2;
   const C = stageColors();
   const marginZone = (x0f, x1f, side) => {
