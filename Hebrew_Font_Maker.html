@@ -5235,6 +5235,35 @@ const QA_SIDE_COLOR  = { below:'var(--below)', above:'var(--above)', center:'var
 
 function qaLetters() { return LETTERS.filter(L => L.cat !== 'punct'); }   // the 27 letters (finals included; punct/digits excluded)
 function qaCh(cp) { try { return String.fromCodePoint(parseInt(cp, 16)); } catch (e) { return ''; } }
+/* A synthetic QA "letter" for a dotted shin/sin form: the real shin with its own dot (05C1/05C2) baked
+   into the base ink, placed EXACTLY like the exporter bakes FB2A/FB2B (buildFontSpec ~5564). Lets the
+   grid's cell/collision/render helpers treat the dot as base ink with no changes to them. */
+function qaSynthShinRow(markCp, label) {
+  const shin = project.letters.find(x => x.codepoint === '05E9');
+  if (!shin || !shin.contours || !shin.contours.length) return null;   // need a traced shin
+  const anc = qaAnchors(shin);
+  const pc  = (project.precomposed || []).find(p => p.base === '05E9' && p.mark === markCp);
+  const dotAnc = (pc && pc.anchor && pc.anchor.x != null) ? pc.anchor : anc[MARK_CLASS[markCp]];   // 'above'
+  const dotPolys = qaPlace(dotAnc, 'nikkud', markCp, markScale());      // same scale+translate as export
+  const L = Object.assign({}, shin, {
+    anchors: anc,                                                       // freeze shin's anchors (vowels sit here)
+    curves: null,                                                       // mixed bezier+polygon → render all as polygons
+    contours: shin.contours.concat(dotPolys.map(p => ({ points: p })))  // dot becomes part of the base ink
+  });
+  return { cp:'05E9', name: label, labelCh: qaCh('05E9') + qaCh(markCp), desc:false, L };
+}
+/* The grid's row list: every consonant, with שׁ (Shin) and שׂ (Sin) injected right after plain shin. */
+function qaRows() {
+  const rows = [];
+  qaLetters().forEach(meta => {
+    const L = project.letters.find(x => x.codepoint === meta.cp); if (!L) return;
+    rows.push({ cp: meta.cp, name: meta.name, labelCh: qaCh(meta.cp), desc: meta.desc, L });
+    if (meta.cp === '05E9' && project.font.nikkud.enabled) {            // FB2A/FB2B only exist when nikkud is on
+      [['05C1','Shin'], ['05C2','Sin']].forEach(([cp, lbl]) => { const r = qaSynthShinRow(cp, lbl); if (r) rows.push(r); });
+    }
+  });
+  return rows;
+}
 function polysBounds(polys) {   // bounds over an array of [x,y]-point arrays (font units)
   let minX=1e9, maxX=-1e9, minY=1e9, maxY=-1e9;
   polys.forEach(poly => poly.forEach(([x,y]) => { if (x<minX)minX=x; if (x>maxX)maxX=x; if (y<minY)minY=y; if (y>maxY)maxY=y; }));
@@ -5407,12 +5436,12 @@ function fontInkBounds() {
 /* Count flagged cells across all three tabs + compute the tall-artwork expansion, cached in qaResult. */
 function qaBuild() {
   const counts = {}; let total = 0;
+  const rows = qaRows();
   ['nikkud','trop','stacked'].forEach(t => {
     let n = 0; const cols = qaColumns(t);
-    if (cols.length) qaLetters().forEach(meta => {
-      const L = project.letters.find(x => x.codepoint === meta.cp); if (!L) return;
-      const anc = qaAnchors(L);
-      cols.forEach(col => { const layers = qaCellLayers(L, anc, col); if (qaReasons(L, meta, layers.reduce((a,ly)=>a.concat(ly.polys),[]), col.side).length) n++; });
+    if (cols.length) rows.forEach(row => {
+      const L = row.L, anc = qaAnchors(L);
+      cols.forEach(col => { const layers = qaCellLayers(L, anc, col); if (qaReasons(L, row, layers.reduce((a,ly)=>a.concat(ly.polys),[]), col.side).length) n++; });
     });
     counts[t] = n; total += n;
   });
@@ -5447,15 +5476,14 @@ function qaRenderGrid() {
   let html = '<table class="qa-table"><thead><tr><th></th>';
   cols.forEach(col => { html += `<th title="${escapeHtml(col.name)}"><span class="qa-colhead">${escapeHtml(col.head)}</span></th>`; });
   html += '</tr></thead><tbody>';
-  qaLetters().forEach(meta => {
-    const L = project.letters.find(x => x.codepoint === meta.cp); if (!L) return;
-    const anc = qaAnchors(L);
-    html += `<tr><td class="qa-rowlabel" title="${escapeHtml(meta.name)}">${escapeHtml(qaCh(meta.cp))} <span style="color:var(--muted);">${escapeHtml(meta.name)}</span></td>`;
+  qaRows().forEach(row => {
+    const L = row.L, anc = qaAnchors(L);
+    html += `<tr><td class="qa-rowlabel" title="${escapeHtml(row.name)}">${escapeHtml(row.labelCh)} <span style="color:var(--muted);">${escapeHtml(row.name)}</span></td>`;
     cols.forEach(col => {
       const layers = qaCellLayers(L, anc, col);
-      const reasons = qaReasons(L, meta, layers.reduce((a,ly)=>a.concat(ly.polys),[]), col.side);
+      const reasons = qaReasons(L, row, layers.reduce((a,ly)=>a.concat(ly.polys),[]), col.side);
       const flagged = reasons.length > 0;
-      html += `<td class="qa-cell${flagged ? ' flag' : ''}" data-cp="${meta.cp}" data-kind="${col.kind}" data-mark="${col.cp}" data-side="${col.side}"${col.trop ? ` data-trop="${col.trop}"` : ''}${flagged ? ` title="${escapeHtml(reasons.join(' · '))}"` : ''}>${qaCellSvg(L, layers)}</td>`;
+      html += `<td class="qa-cell${flagged ? ' flag' : ''}" data-cp="${row.cp}" data-kind="${col.kind}" data-mark="${col.cp}" data-side="${col.side}"${col.trop ? ` data-trop="${col.trop}"` : ''}${flagged ? ` title="${escapeHtml(reasons.join(' · '))}"` : ''}>${qaCellSvg(L, layers)}</td>`;
     });
     html += '</tr>';
   });
