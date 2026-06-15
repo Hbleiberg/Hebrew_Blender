@@ -895,7 +895,7 @@ const FONTS = [
     file: 'fonts/FrankRuhlLibre-Regular.ttf', preloaded: true
   }
 ];
-const FONT_SAMPLE = 'שלום עולם';
+const FONT_SAMPLE = 'שָׁלוֹם עוֹלָם';
 const FTYPE_LABEL = { block: 'Block', cursive: 'Cursive', torah: 'Torah', other: 'Other' };
 const _loadedGalleryFonts = new Set();
 function ensureGalleryFont(f) {
@@ -1145,7 +1145,7 @@ function openSubmitFont() {
     </div>
     <div class="sg-modal-body">
       <label for="fontPreviewInput" class="sg-hint" style="display:block;margin-bottom:6px;">Type Hebrew (or anything) to preview in this font:</label>
-      <input type="text" id="fontPreviewInput" dir="rtl" oninput="updateFontPreview()" value="שלום עולם">
+      <input type="text" id="fontPreviewInput" dir="rtl" oninput="updateFontPreview()" value="שָׁלוֹם עוֹלָם">
       <div class="fp-render" id="fontPreviewRender"></div>
       <div class="fp-sizes" id="fontPreviewSizes"></div>
       <button class="sg-btn-primary" style="margin-top:16px;" onclick="closeFontPreview()">‹ Back</button>
