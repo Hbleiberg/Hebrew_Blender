@@ -3155,11 +3155,13 @@ function renderMarkControls(c, it) {
       </div>`;
     if (selP && selP.type === 'dot') {
       const sh = selP.shape === 'square' ? 'square' : 'circle';
-      h += `<div class="inline" style="margin-top:6px;">Dot size <input type="range" min="8" max="200" step="1" value="${selP.r}" oninput="setDotSize(this.value)" onchange="udBurstCommit()"> <span id="dotSizeV" class="readout">${selP.r}</span></div>
-        <div class="mode-toggle" style="margin:6px 0;">
+      h += `<div class="ctl-row" style="margin-top:6px;">
+        <div class="inline" style="flex:1;min-width:0;">Dot size <input type="range" min="8" max="200" step="1" value="${selP.r}" oninput="setDotSize(this.value)" onchange="udBurstCommit()" style="flex:1;min-width:0;"> <span id="dotSizeV" class="readout">${selP.r}</span></div>
+        <div class="mode-toggle" style="flex:1;min-width:0;">
           <button class="mode-btn ${sh==='circle'?'active':''}" onclick="setDotShape('circle')">● Circle</button>
           <button class="mode-btn ${sh==='square'?'active':''}" onclick="setDotShape('square')">■ Square</button>
-        </div>`;
+        </div>
+      </div>`;
     }
     h += `<div class="hint">Click a piece to select; drag to move, drag the ◻ corner (or the <b>Dot size</b> slider) to resize. Build the mark from dots &amp; bars — it's seeded from the default shape.</div>`;
   } else if (workMode === 'trace') {
