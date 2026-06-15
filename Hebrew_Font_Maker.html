@@ -1393,7 +1393,7 @@ function scaleRoundCurve(cv, s) {
 function piecesToContours(pieces) {
   if (!pieces || !pieces.length) return [];
   return pieces.map(p => p.type === 'dot'
-    ? circlePts(p.cx, p.cy, p.r)
+    ? (p.shape === 'square' ? rectPts(p.cx - p.r, p.cy - p.r, p.cx + p.r, p.cy + p.r) : circlePts(p.cx, p.cy, p.r))
     : rectPts(p.x0, p.y0, p.x1, p.y1));
 }
 function defaultPieces(kind, cp) {
@@ -1408,6 +1408,7 @@ function defaultPieces(kind, cp) {
     return { type:'bar', x0:Math.round(minX), y0:Math.round(minY), x1:Math.round(maxX), y1:Math.round(maxY) };
   });
 }
+function ensureMarkPieces(it) { if (it && !it.pieces) it.pieces = defaultPieces(curKind, it.codepoint); return it && it.pieces; }
 
 /* ════════ Coordinate system (font units y-up ↔ stage px, mirrors nikkud_positioner) ════════ */
 const SC = 0.32, PADX = 175, BY = 445;
@@ -3035,7 +3036,7 @@ function renderMarkStage(it) {
     renderLegend(); return;
   }
   if (!combined && it.designMode === 'editor') {
-    if (!it.pieces) it.pieces = defaultPieces(curKind, it.codepoint);
+    ensureMarkPieces(it);
     sv.innerHTML = markGuidesSVG() + editorStageSVG(it);
     attachEditorDrag(it); renderLegend(); return;
   }
@@ -3064,7 +3065,10 @@ function editorStageSVG(it) {
   let h = `<line x1="${ex(0)}" y1="40" x2="${ex(0)}" y2="540" stroke="#c8bfa8" stroke-width="1" stroke-dasharray="2 6"/>`;
   pieces.forEach((p, i) => {
     const stroke = (i === editorSel) ? 'var(--gold)' : 'none';
-    if (p.type === 'dot') {
+    if (p.type === 'dot' && p.shape === 'square') {
+      const s = Math.max(2, p.r*SC);
+      h += `<rect class="epiece" data-i="${i}" x="${ex(p.cx) - s}" y="${fy(p.cy) - s}" width="${2*s}" height="${2*s}" fill="${ink}" stroke="${stroke}" stroke-width="2"/>`;
+    } else if (p.type === 'dot') {
       h += `<circle class="epiece" data-i="${i}" cx="${ex(p.cx)}" cy="${fy(p.cy)}" r="${Math.max(2, p.r*SC)}" fill="${ink}" stroke="${stroke}" stroke-width="2"/>`;
     } else {
       const x0=Math.min(p.x0,p.x1), x1=Math.max(p.x0,p.x1), y0=Math.min(p.y0,p.y1), y1=Math.max(p.y0,p.y1);
@@ -3084,7 +3088,7 @@ function attachEditorDrag(it) {
   sv.querySelectorAll('.epiece').forEach(el => el.addEventListener('pointerdown', e => {
     editorSel = +el.dataset.i;
     eDrag = { mode:'move', start: clientToStage(e), p0: JSON.parse(JSON.stringify(it.pieces[editorSel])), ud: udCapture([itemScope()], 'edit mark — ' + it.name) };
-    sv.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault(); renderStage();
+    sv.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault(); renderStage(); renderControls();
   }));
   const hnd = sv.querySelector('.ehandle');
   if (hnd) hnd.addEventListener('pointerdown', e => {
@@ -3142,12 +3146,22 @@ function renderMarkControls(c, it) {
       <button class="mode-btn ${it.designMode==='upload'?'active':''}" onclick="setMarkDesignMode('upload')">Upload image</button>
     </div>`;
   if (!combined && it.designMode === 'editor') {
+    ensureMarkPieces(it);
+    const selP = it.pieces && it.pieces[editorSel];
     h += `<div class="ctl-row">
         <button class="ctl-btn" onclick="editorAddPiece('dot')">+ Dot</button>
         <button class="ctl-btn" onclick="editorAddPiece('bar')">+ Bar</button>
         <button class="ctl-btn" onclick="editorDeletePiece()">Delete selected</button>
-      </div>
-      <div class="hint">Click a piece to select; drag to move, drag the ◻ corner to resize. Build the mark from dots &amp; bars — it's seeded from the default shape.</div>`;
+      </div>`;
+    if (selP && selP.type === 'dot') {
+      const sh = selP.shape === 'square' ? 'square' : 'circle';
+      h += `<div class="inline" style="margin-top:6px;">Dot size <input type="range" min="8" max="200" step="1" value="${selP.r}" oninput="setDotSize(this.value)" onchange="udBurstCommit()"> <span id="dotSizeV" class="readout">${selP.r}</span></div>
+        <div class="mode-toggle" style="margin:6px 0;">
+          <button class="mode-btn ${sh==='circle'?'active':''}" onclick="setDotShape('circle')">● Circle</button>
+          <button class="mode-btn ${sh==='square'?'active':''}" onclick="setDotShape('square')">■ Square</button>
+        </div>`;
+    }
+    h += `<div class="hint">Click a piece to select; drag to move, drag the ◻ corner (or the <b>Dot size</b> slider) to resize. Build the mark from dots &amp; bars — it's seeded from the default shape.</div>`;
   } else if (workMode === 'trace') {
     h += `<div class="inline">Ink threshold <input type="range" min="1" max="254" value="${it.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()"> <span id="thV" class="readout">${it.binThreshold}</span></div>
       <label class="chk"><input type="checkbox" ${it.invert?'checked':''} onchange="liveInvert(this.checked)"> Invert (light ink on dark)</label>
@@ -4454,6 +4468,17 @@ function setMarkScale(v) {
   project.font.markScale = Math.max(0.3, Math.min(2, (+v)/100));
   const s = document.getElementById('markScaleV'); if (s) s.textContent = Math.round(project.font.markScale*100) + '%';
   renderStage();   // live preview; don't rebuild controls (keep slider focus)
+}
+function setDotSize(v) {   // per-dot radius of the selected Simple-editor piece (live; don't rebuild controls so the slider keeps focus)
+  const it = curItem(); const p = it && it.pieces && it.pieces[editorSel]; if (!p || p.type !== 'dot') return;
+  udBurstBegin([itemScope()], 'dot size — ' + it.name);
+  p.r = Math.max(8, Math.min(200, Math.round(+v)));
+  const s = document.getElementById('dotSizeV'); if (s) s.textContent = p.r;
+  renderStage();
+}
+function setDotShape(shape) {   // circle ↔ square for the selected dot piece
+  const it = curItem(); const p = it && it.pieces && it.pieces[editorSel]; if (!p || p.type !== 'dot') return;
+  udDo([itemScope()], 'dot shape — ' + it.name, () => { p.shape = (shape === 'square' ? 'square' : 'circle'); renderStage(); renderControls(); });
 }
 function setTropScale(v) {
   project.font.tropScale = Math.max(0.3, Math.min(2, (+v)/100));
