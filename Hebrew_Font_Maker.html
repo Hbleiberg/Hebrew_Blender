@@ -1240,6 +1240,7 @@ function blankLetter(L) {
     anchors: null,              // {below:{x,y}, above:{x,y}, center:{x,y}}
     placementSaved: false,      // user confirmed the nikkud placement (green ✓)
     binThreshold: 128, invert: false, epsilon: 6, cornerAngle: 32,
+    outlineOnly: false, lineWeight: 70,   // "Outline only" (hollow bubble) trace + ring thickness in font units
     handEdited: false           // node editor touched this outline → warn before a destructive re-trace
   };
   const def = PUNCT_DEFAULTS[L.cp];                          // punctuation gets a geometric default outline; digits stay blank
@@ -1294,6 +1295,7 @@ function markItem(kind, cp) {
     transform: [1,0,0,1,0,0], captureBox: null,
     contours: null, curves: null, advance: 0, anchors: null, placementSaved: false,
     binThreshold: 128, invert: false, epsilon: 6, cornerAngle: 32,
+    outlineOnly: false, lineWeight: 70,   // "Outline only" (hollow bubble) trace + ring thickness in font units
     handEdited: false,
     designMode: 'editor', pieces: null
   };
@@ -3132,6 +3134,9 @@ function renderMarkControls(c, it) {
       <label class="chk"><input type="checkbox" ${it.invert?'checked':''} onchange="liveInvert(this.checked)"> Invert (light ink on dark)</label>
       <div class="inline">Detail (less ↔ more) <input type="range" min="0" max="100" step="1" value="${Math.round(100 - it.epsilon*2.5)}" oninput="liveDetail(this.value)" onchange="udBurstCommit()"> <span id="epV" class="readout">${Math.round(100 - it.epsilon*2.5)}</span></div>
       <div class="inline">Corners (sharp ↔ round) <input type="range" min="0" max="90" step="1" value="${it.cornerAngle != null ? it.cornerAngle : 32}" oninput="liveCorners(this.value)" onchange="udBurstCommit()"> <span id="cnV" class="readout">${it.cornerAngle != null ? it.cornerAngle : 32}</span></div>
+      ${ (it.source && it.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${it.outlineOnly?'checked':''} onchange="liveOutlineOnly(this.checked)"> Outline only? (hollow “bubble” letter)</label>` : '' }
+      ${ (it.source && it.source.dataUrl && it.outlineOnly) ? `<div class="inline">Line weight <input type="range" min="10" max="250" step="1" value="${Math.round(it.lineWeight!=null?it.lineWeight:70)}" oninput="liveLineWeight(this.value)" onchange="udBurstCommit()"> <span id="lwV" class="readout">${Math.round(it.lineWeight!=null?it.lineWeight:70)}</span></div>
+      <div class="ctl-row"><button class="ctl-btn" onclick="applyOutlineToAll()">Apply outline to all letters</button></div>` : '' }
       <div class="ctl-row">
         <button class="ctl-btn primary" onclick="traceCurrent()">Re-trace</button>
         <button class="ctl-btn" onclick="clearTrace()">Clear</button>
@@ -3605,6 +3610,40 @@ function marchingSquares(field, gw, gh, blankF) {
   });
   return loops;
 }
+/* ── "Outline only" (bubble letters): inward raster offset, then reuse the tracer ──
+   interiorDistField: 3-4 chamfer distance transform of the ink mask (field>0), result in field px.
+   erodedInnerField: ink eroded inward by w_px; its f=0 crossing is the inner wall. Paper/counter
+   pixels keep their original negative field so no spurious contour hugs the OUTER edge. */
+function interiorDistField(field, gw, gh) {
+  const INF = 1e9, D1 = 3, D2 = 4;
+  const dist = new Float32Array(gw*gh);
+  for (let i=0;i<gw*gh;i++) dist[i] = field[i] > 0 ? INF : 0;   // ink = far, paper/counter/outside = 0
+  const at = (x,y) => dist[y*gw+x];
+  for (let y=0;y<gh;y++) for (let x=0;x<gw;x++) {
+    const i=y*gw+x; if (dist[i]===0) continue; let m=dist[i];
+    if (x>0)          m=Math.min(m, at(x-1,y)+D1);
+    if (y>0)          m=Math.min(m, at(x,y-1)+D1);
+    if (x>0&&y>0)     m=Math.min(m, at(x-1,y-1)+D2);
+    if (x<gw-1&&y>0)  m=Math.min(m, at(x+1,y-1)+D2);
+    dist[i]=m;
+  }
+  for (let y=gh-1;y>=0;y--) for (let x=gw-1;x>=0;x--) {
+    const i=y*gw+x; if (dist[i]===0) continue; let m=dist[i];
+    if (x<gw-1)            m=Math.min(m, at(x+1,y)+D1);
+    if (y<gh-1)            m=Math.min(m, at(x,y+1)+D1);
+    if (x<gw-1&&y<gh-1)    m=Math.min(m, at(x+1,y+1)+D2);
+    if (x>0&&y<gh-1)       m=Math.min(m, at(x-1,y+1)+D2);
+    dist[i]=m;
+  }
+  for (let i=0;i<gw*gh;i++) dist[i] /= D1;   // chamfer units → px
+  return dist;
+}
+function erodedInnerField(field, gw, gh, w_px) {
+  const dist = interiorDistField(field, gw, gh);
+  const g = new Float32Array(gw*gh);
+  for (let i=0;i<gw*gh;i++) g[i] = (field[i] > 0) ? (dist[i] - w_px) : field[i];
+  return g;
+}
 function rdp(points, eps) {
   if (points.length < 3) return points.slice();
   const keep = new Array(points.length).fill(false);
@@ -4049,6 +4088,24 @@ function finalizeFromRaw(l, rawLoops) {
   l.handEdited = false;                                         // a fresh trace replaces any hand-edited points
   return out.length;
 }
+/* Outline-only inner wall: trace the ink eroded inward by lineWeight (font units → field px). */
+function innerLoopsFontUnits(l, ras) {
+  ras = ras || rasterizeCurrent(l); if (!ras) return [];
+  const w_px = (l.lineWeight != null ? l.lineWeight : 70) * SC * ras.RES;   // font units → field px (SC: stage scale, RES: raster oversample)
+  if (!(w_px > 0.25)) return [];
+  const wpx = Math.min(w_px, 0.45 * Math.max(ras.gw, ras.gh));              // defensive clamp
+  const g = erodedInnerField(ras.field, ras.gw, ras.gh, wpx);
+  return marchingSquares(g, ras.gw, ras.gh, ras.blankF)
+    .map(loop => loop.map(([x,y]) => [ ifx(x/ras.RES), ify(y/ras.RES) ]));
+}
+/* Finalize, optionally unioning the eroded inner wall. Nesting (assignWindingByNesting) turns the
+   nested inner loops into holes → the fill becomes a ring. outlineOnly off ⇒ identical to
+   finalizeFromRaw (zero extra raster work). */
+function finalizeWithOutline(l, outerRaw, ras) {
+  let loops = outerRaw;
+  if (l.outlineOnly) { const inner = innerLoopsFontUnits(l, ras); if (inner.length) loops = outerRaw.concat(inner); }
+  return finalizeFromRaw(l, loops);
+}
 function updateTraceInfo(l) {
   const ti = document.getElementById('traceInfo');
   if (ti) ti.textContent = l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : 'no ink detected';
@@ -4063,7 +4120,7 @@ function _traceCurrentNow() {
     const raw = rawLoopsFontUnits(l);
     if (!raw || !raw.length) { _rawTrace = null; l.contours = null; l.curves = null; status('No ink detected — adjust threshold / invert.'); renderStage(); renderControls(); renderLetterGrid(); return; }
     _rawTrace = { sig: traceSig(l), loops: raw };
-    const n = finalizeFromRaw(l, raw);
+    const n = finalizeWithOutline(l, raw);
     renderLetterGrid(); renderStage(); renderControls();
     status(n ? `${l.name}: traced ${n} contour(s).` : 'No usable contours — adjust threshold.');
   });
@@ -4081,16 +4138,16 @@ function liveDetail(v) {   // slider 0–100 reads as "detail"; ε is the invers
   udBurstBegin([itemScope()], 'trace — ' + curLetter().name);
   const l = curLetter(); l.epsilon = Math.max(0, (100 - (+v)) * 0.4);
   const ep = document.getElementById('epV'); if (ep) ep.textContent = Math.round(+v);
-  if (_rawTrace && _rawTrace.sig === traceSig(l)) { finalizeFromRaw(l, _rawTrace.loops); renderStage(); updateTraceInfo(l); }
-  else scheduleRetrace();
+  if (!l.outlineOnly && _rawTrace && _rawTrace.sig === traceSig(l)) { finalizeFromRaw(l, _rawTrace.loops); renderStage(); updateTraceInfo(l); }
+  else scheduleRetrace();   // outline-only: route through the RAF-throttled doRetrace (rebuilds the inner wall)
 }
 /* corner threshold change — same fast path as Detail (cornerAngle is NOT in traceSig, so the raw cache stays valid). */
 function liveCorners(v) {
   udBurstBegin([itemScope()], 'trace — ' + curLetter().name);
   const l = curLetter(); l.cornerAngle = Math.max(0, Math.min(90, +v));
   const cn = document.getElementById('cnV'); if (cn) cn.textContent = Math.round(l.cornerAngle);
-  if (_rawTrace && _rawTrace.sig === traceSig(l)) { finalizeFromRaw(l, _rawTrace.loops); renderStage(); updateTraceInfo(l); }
-  else scheduleRetrace();
+  if (!l.outlineOnly && _rawTrace && _rawTrace.sig === traceSig(l)) { finalizeFromRaw(l, _rawTrace.loops); renderStage(); updateTraceInfo(l); }
+  else scheduleRetrace();   // outline-only: route through the RAF-throttled doRetrace (rebuilds the inner wall)
 }
 /* threshold/invert change — re-trace, throttled to one run per animation frame. */
 function liveThreshold(v) {
@@ -4100,11 +4157,52 @@ function liveThreshold(v) {
   scheduleRetrace();
 }
 function liveInvert(checked) { udBurstBegin([itemScope()], 'trace — ' + curLetter().name); curLetter().invert = checked; scheduleRetrace(); udBurstCommit(); }
+/* Outline only ("bubble" letter): hollow the glyph into a ring of `lineWeight`. */
+function liveOutlineOnly(checked) {
+  udBurstBegin([itemScope()], 'trace — ' + curLetter().name);
+  curLetter().outlineOnly = checked;
+  scheduleRetrace();        // rebuild (with / without the inner wall)
+  renderControls();         // show/hide the line-weight slider (checkbox change, never mid-drag)
+  udBurstCommit();
+}
+function liveLineWeight(v) {
+  udBurstBegin([itemScope()], 'trace — ' + curLetter().name);
+  const l = curLetter(); l.lineWeight = Math.max(10, Math.min(250, +v));
+  const lw = document.getElementById('lwV'); if (lw) lw.textContent = Math.round(l.lineWeight);
+  if (l.outlineOnly) scheduleRetrace();   // RAF-throttled; rebuilds the eroded inner wall
+}
+/* Copy the current item's outline settings to every letter, re-deriving the traced ones.
+   rasterizeCurrent() reads the CURRENT item's image, so we briefly retarget curKind/curCp. */
+function applyOutlineToAll() {
+  const src = curLetter(); if (!src) return;
+  const on = src.outlineOnly, w = src.lineWeight;
+  const savedKind = curKind, savedCp = curCp;
+  const scopes = project.letters.map(l => ({ t:'item', kind:'letter', cp:l.codepoint }));
+  try {
+    udDo(scopes, 'apply outline to all letters', () => {
+      project.letters.forEach(l => {
+        l.outlineOnly = on; l.lineWeight = w;
+        if (!l.contours || !l.source || !l.source.dataUrl) return;   // only re-derive already-traced letters with an image
+        curKind = 'letter'; curCp = l.codepoint;                     // point rasterizeCurrent/curImageUrl at this letter
+        const ras = rasterizeCurrent(l); if (!ras) return;
+        const raw = marchingSquares(ras.field, ras.gw, ras.gh, ras.blankF)
+          .map(lp => lp.map(([x,y]) => [ ifx(x/ras.RES), ify(y/ras.RES) ]));
+        if (raw.length) finalizeWithOutline(l, raw, ras);
+      });
+    });
+  } finally {
+    curKind = savedKind; curCp = savedCp; _rawTrace = null;          // restore current item; drop stale raw cache
+  }
+  renderGrids(); renderStage(); renderControls();
+  status(on ? 'Applied outline to all traced letters.' : 'Removed outline from all letters.');
+}
 function doRetrace() {        // the actual rebuild — shared by the RAF and by flushTrace()
   const l = curLetter();
-  const raw = rawLoopsFontUnits(l);
+  const ras = rasterizeCurrent(l);     // rasterize once; reuse for the outline-only inner wall
+  const raw = ras ? marchingSquares(ras.field, ras.gw, ras.gh, ras.blankF)
+                      .map(lp => lp.map(([x,y]) => [ ifx(x/ras.RES), ify(y/ras.RES) ])) : null;
   _rawTrace = (raw && raw.length) ? { sig: traceSig(l), loops: raw } : null;
-  if (_rawTrace) finalizeFromRaw(l, raw); else { l.contours = null; l.curves = null; }
+  if (_rawTrace) finalizeWithOutline(l, raw, ras); else { l.contours = null; l.curves = null; }
   renderStage(); updateTraceInfo(l);   // not renderControls — keep slider focus during drag
 }
 function scheduleRetrace() {
@@ -4783,13 +4881,17 @@ function renderTraceLeft(L, l) {
     <input type="range" class="side-slider" min="0" max="100" step="1" value="${detail}" oninput="liveDetail(this.value)" onchange="udBurstCommit()">
     <div class="side-slider-label">Corners (sharp ↔ round) <span id="cnV" class="readout">${corner}</span></div>
     <input type="range" class="side-slider" min="0" max="90" step="1" value="${corner}" oninput="liveCorners(this.value)" onchange="udBurstCommit()">
+    ${ (l.source && l.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${l.outlineOnly?'checked':''} onchange="liveOutlineOnly(this.checked)"> Outline only? (hollow “bubble” letter)</label>` : '' }
+    ${ (l.source && l.source.dataUrl && l.outlineOnly) ? `<div class="side-slider-label">Line weight <span id="lwV" class="readout">${Math.round(l.lineWeight!=null?l.lineWeight:70)}</span></div>
+    <input type="range" class="side-slider" min="10" max="250" step="1" value="${Math.round(l.lineWeight!=null?l.lineWeight:70)}" oninput="liveLineWeight(this.value)" onchange="udBurstCommit()">
+    <div class="ctl-row"><button class="ctl-btn" onclick="applyOutlineToAll()">Apply outline to all letters</button></div>` : '' }
     <div class="ctl-row">
       <button class="ctl-btn primary" onclick="traceCurrent()">Re-trace</button>
       <button class="ctl-btn" onclick="clearTrace()">Clear</button>
       ${ l.contours ? `<button class="ctl-btn" onclick="toggleNodeEdit()">✎ Edit points</button>` : '' }
       <span id="traceInfo" class="readout">${ l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : '' }</span>
     </div>
-    <div class="hint">Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically.</div>`;
+    <div class="hint">Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically. Turn on <b>Outline only</b> for hollow “bubble” letters — <b>line weight</b> sets the ring thickness.</div>`;
 }
 function renderTraceUnder(U, l) {
   const hint = (project.inputMode === 'font')
@@ -6775,6 +6877,8 @@ function migrateProject(data) {
     if (ex.cornerAngle == null) ex.cornerAngle = 32;   // Bézier corner threshold (curves regenerate on next trace)
     if (ex.placementSaved == null) ex.placementSaved = false;
     if (ex.invert == null) ex.invert = false;
+    if (ex.outlineOnly == null) ex.outlineOnly = false;   // backfilled OFF → old saves render identically (no re-trace)
+    if (ex.lineWeight == null) ex.lineWeight = 70;
     if (ex.lsb === undefined) ex.lsb = null;   // per-letter left side bearing (Letter Metrics)
     if (ex.rsb === undefined) ex.rsb = null;   // per-letter right margin (independent of Width)
     return ex;
@@ -6791,6 +6895,8 @@ function migrateProject(data) {
       if (l.cornerAngle == null) l.cornerAngle = 32;
       if (l.placementSaved == null) l.placementSaved = false;
       if (l.invert == null) l.invert = false;
+      if (l.outlineOnly == null) l.outlineOnly = false;
+      if (l.lineWeight == null) l.lineWeight = 70;
       if (l.lsb === undefined) l.lsb = null;
       if (l.rsb === undefined) l.rsb = null;
       data.letters.push(l);
