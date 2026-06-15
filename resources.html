@@ -224,6 +224,42 @@ body.dark .sg-btn-primary{background:#2a4070;}
 .honey{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden;}
 #sgStatus{font-size:0.88rem;color:var(--muted);min-height:1.2em;}
 #sgStatus a{color:var(--gold);}
+
+/* ── Links / Fonts view toggle ── */
+.view-toggle{display:flex;justify-content:center;gap:8px;margin:0 auto 24px;}
+.view-toggle button{display:inline-flex;align-items:center;gap:6px;font-family:'Libre Baskerville',serif;font-size:0.95rem;letter-spacing:0.03em;padding:9px 28px;border:1.5px solid var(--border);border-radius:24px;background:var(--white);color:var(--text);cursor:pointer;transition:all 0.15s;}
+.view-toggle button:hover{border-color:var(--gold);color:var(--gold);}
+.view-toggle button.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+body.dark .view-toggle button.active{background:#2a3f6a;border-color:#4a6aaa;}
+
+/* ── Font gallery card extras (reuses .resource-card) ── */
+.font-preview-line{font-size:2rem;line-height:1.35;direction:rtl;text-align:center;padding:8px 4px;color:var(--text);min-height:1.35em;overflow:hidden;}
+.font-by{font-size:0.82rem;color:var(--muted);}
+.font-by a{color:var(--gold);text-decoration:none;}
+.font-by a:hover{text-decoration:underline;}
+.font-actions{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin-top:2px;}
+.font-actions a{font-size:0.8rem;font-weight:600;color:var(--navy);cursor:pointer;text-decoration:none;white-space:nowrap;}
+body.dark .font-actions a{color:#aab8d8;}
+.font-actions a:hover{color:var(--gold);text-decoration:underline;}
+.font-meta-row{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-size:0.74rem;color:var(--muted);margin-top:2px;}
+.font-badge{font-size:0.62rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:2px 9px;border-radius:10px;background:rgba(26,39,68,0.09);color:var(--navy);white-space:nowrap;}
+body.dark .font-badge{background:rgba(221,228,240,0.1);color:#aab8d8;}
+.fp-yes{color:#2e9e5b;font-weight:700;}
+.fp-no{color:#c0392b;font-weight:700;}
+body.dark .fp-yes{color:#46c178;}
+body.dark .fp-no{color:#e06b5b;}
+
+/* ── Font preview modal extras (reuses .sg-backdrop/.sg-modal) ── */
+#fontPreviewInput{width:100%;border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text);padding:10px 12px;font-size:1.4rem;direction:rtl;text-align:right;font-family:inherit;}
+#fontPreviewInput:focus{outline:2px solid var(--gold);outline-offset:1px;}
+.fp-render{margin-top:16px;font-size:2.6rem;line-height:1.45;direction:rtl;text-align:center;color:var(--text);word-break:break-word;min-height:1.45em;padding:8px 4px;}
+.fp-sizes{margin-top:12px;display:flex;flex-direction:column;gap:8px;direction:rtl;text-align:right;color:var(--text);border-top:1px solid var(--border);padding-top:12px;}
+.fp-sizes div{line-height:1.3;word-break:break-word;}
+
+/* ── Toast (Use-in-IvritSuite feedback) ── */
+#fontToast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 20px;border-radius:8px;font-size:0.86rem;box-shadow:0 6px 24px rgba(0,0,0,0.32);z-index:300;opacity:0;pointer-events:none;transition:opacity 0.25s;max-width:90vw;text-align:center;}
+#fontToast.show{opacity:1;}
+body.dark #fontToast{background:#2a4070;}
 </style>
 </head>
 <body>
@@ -244,6 +280,12 @@ body.dark .sg-btn-primary{background:#2a4070;}
   <h2 class="page-heading">Resources</h2>
   <p class="page-sub">A curated directory of free Hebrew learning resources, worksheets, dictionaries, and Jewish education tools for teachers and students.</p>
 
+  <div class="view-toggle">
+    <button data-view="links" class="active" onclick="setView('links')">📚 Links</button>
+    <button data-view="fonts" onclick="setView('fonts')">🔤 Fonts</button>
+  </div>
+
+  <div id="linksRegion">
   <div class="filter-bar">
     <div class="filter-row">
       <span class="filter-label">Category</span>
@@ -271,6 +313,42 @@ body.dark .sg-btn-primary{background:#2a4070;}
   <div class="empty-state" id="emptyState" style="display:none;">
     <div class="emoji">🔍</div>
     <p>No resources match the selected filters.</p>
+  </div>
+  </div>
+
+  <div id="fontsRegion" style="display:none;">
+  <div class="filter-bar">
+    <div class="filter-row">
+      <span class="filter-label">Type</span>
+      <button class="filter-btn active" data-filter="ftype" data-value="all">All fonts</button>
+      <button class="filter-btn" data-filter="ftype" data-value="block">Block (Print)</button>
+      <button class="filter-btn" data-filter="ftype" data-value="cursive">Cursive (כתב)</button>
+      <button class="filter-btn" data-filter="ftype" data-value="torah">Torah</button>
+      <button class="filter-btn" data-filter="ftype" data-value="other">Other</button>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Features</span>
+      <button class="filter-btn active" data-filter="ffeat" data-value="all">All</button>
+      <button class="filter-btn" data-filter="ffeat" data-value="nikkud">Nikkud Supported</button>
+      <button class="filter-btn" data-filter="ffeat" data-value="trop">Trop Supported</button>
+      <button class="filter-btn" data-filter="ffeat" data-value="letters">Letters Only</button>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">License</span>
+      <button class="filter-btn active" data-filter="flic" data-value="all">All Licenses</button>
+      <button class="filter-btn" data-filter="flic" data-value="cc0">CC0</button>
+      <button class="filter-btn" data-filter="flic" data-value="ofl">OFL</button>
+      <button class="filter-btn" data-filter="flic" data-value="other">Other</button>
+    </div>
+    <button class="suggest-btn" onclick="openSubmitFont()">✚ Submit a font</button>
+  </div>
+
+  <p class="results-count" id="fontCount"></p>
+  <div class="resource-grid" id="fontGrid"></div>
+  <div class="empty-state" id="fontEmpty" style="display:none;">
+    <div class="emoji">🔤</div>
+    <p>No fonts match the selected filters.</p>
+  </div>
   </div>
 
 </main>
@@ -723,12 +801,12 @@ function render() {
   }).join('');
 }
 
-/* ── Filter buttons ── */
-document.querySelectorAll('.filter-btn').forEach(btn => {
+/* ── Filter buttons (Links view) ── */
+document.querySelectorAll('#linksRegion .filter-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const type  = btn.dataset.filter;
     const value = btn.dataset.value;
-    document.querySelectorAll(`.filter-btn[data-filter="${type}"]`).forEach(b => b.classList.remove('active'));
+    document.querySelectorAll(`#linksRegion .filter-btn[data-filter="${type}"]`).forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     if (type === 'cat') activeCat = value;
     else activeAge = value;
@@ -753,6 +831,227 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch(e) {}
   render();
 });
+
+/* ════════════════════════════════════════════════════════════════════════
+   FONTS VIEW — Links / Fonts toggle + curated font gallery
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ═══ shared: ivritsuite-fonts ═══════════════════════════════════════════════
+   User-made fonts: saved here by Hebrew_Font_Maker, consumed by Torah Trainer
+   (and, later, other IvritSuite tools). TTFs are too big for localStorage, so
+   they live in IndexedDB. This works ACROSS tools because every IvritSuite page
+   is served from the same origin (ivritsuite.com) and IndexedDB is partitioned
+   per-origin — so one DB ("ivritsuite-fonts") is automatically shared by all of
+   them. Keep this block byte-identical in every consuming page. No library is
+   needed (indexedDB + FontFace are built in), so it loads nothing at page load. */
+const IV_FONTS_DB = 'ivritsuite-fonts', IV_FONTS_STORE = 'fonts', IV_FONTS_CAP = 10;
+function _ivOpenFontsDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IV_FONTS_DB, 1);
+    req.onupgradeneeded = () => { const db = req.result;
+      if (!db.objectStoreNames.contains(IV_FONTS_STORE)) db.createObjectStore(IV_FONTS_STORE, { keyPath: 'name' }); };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+function _ivTx(mode, fn) {
+  return _ivOpenFontsDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(IV_FONTS_STORE, mode), req = fn(tx.objectStore(IV_FONTS_STORE));
+    tx.oncomplete = () => resolve(req && req.result);
+    tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
+  }));
+}
+function listUserFonts() {   // → [{name, family, created, size}] newest-first; no bytes
+  return _ivTx('readonly', os => os.getAll()).then(rows => (rows || [])
+    .map(r => ({ name: r.name, family: r.family, created: r.created || 0, size: (r.bytes && r.bytes.byteLength) || 0 }))
+    .sort((a, b) => b.created - a.created));
+}
+function getUserFont(name) { return _ivTx('readonly', os => os.get(name)); }
+function deleteUserFont(name) { return _ivTx('readwrite', os => os.delete(name)); }
+function saveUserFont(name, bytes, family) {   // bytes: Uint8Array | ArrayBuffer
+  const buf = bytes.buffer ? bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) : bytes;
+  return listUserFonts().then(list => {
+    const stale = list.filter(f => f.name !== name).slice(IV_FONTS_CAP - 1);   // keep newest CAP-1 others + this one
+    return Promise.all(stale.map(f => deleteUserFont(f.name)))
+      .then(() => _ivTx('readwrite', os => os.put({ name: name, family: family || name, bytes: buf, created: Date.now() })));
+  });
+}
+function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontFace named `name`
+  return getUserFont(name).then(rec => {
+    if (!rec) throw new Error('Font not found: ' + name);
+    return new FontFace(name, rec.bytes).load().then(f => { document.fonts.add(f); return f; });
+  });
+}
+/* ═══ end shared: ivritsuite-fonts ═══════════════════════════════════════════ */
+
+/* ── Curated font gallery (hand-maintained). Add a font: commit its file to
+   /fonts and append an entry here. `preloaded:true` = the family is already on
+   the page (no FontFace needed for preview); `file` backs Download + Use. ── */
+const FONTS = [
+  {
+    name: 'Frank Ruhl Libre', family: 'Frank Ruhl Libre',
+    author: 'Yanek Iontef (Google Fonts)', authorUrl: 'https://fonts.google.com/specimen/Frank+Ruhl+Libre',
+    type: 'block', nikkud: true, trop: false, license: 'OFL',
+    file: 'fonts/FrankRuhlLibre-Regular.ttf', preloaded: true
+  }
+];
+const FONT_SAMPLE = 'שלום עולם';
+const FTYPE_LABEL = { block: 'Block', cursive: 'Cursive', torah: 'Torah', other: 'Other' };
+const _loadedGalleryFonts = new Set();
+function ensureGalleryFont(f) {
+  if (!f || f.preloaded || _loadedGalleryFonts.has(f.family)) return;
+  _loadedGalleryFonts.add(f.family);
+  try { new FontFace(f.family, "url('" + f.file + "')").load().then(ff => document.fonts.add(ff)).catch(() => {}); } catch (e) {}
+}
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+/* ── Fonts filter state + buttons ── */
+let activeFType = 'all', activeFFeat = 'all', activeFLic = 'all';
+function fontFeatureOk(f) {
+  if (activeFFeat === 'all') return true;
+  if (activeFFeat === 'nikkud') return !!f.nikkud;
+  if (activeFFeat === 'trop') return !!f.trop;
+  if (activeFFeat === 'letters') return !f.nikkud && !f.trop;
+  return true;
+}
+document.querySelectorAll('#fontsRegion .filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const type = btn.dataset.filter, value = btn.dataset.value;
+    document.querySelectorAll(`#fontsRegion .filter-btn[data-filter="${type}"]`).forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (type === 'ftype') activeFType = value;
+    else if (type === 'ffeat') activeFFeat = value;
+    else if (type === 'flic') activeFLic = value;
+    renderFonts();
+  });
+});
+
+function renderFonts() {
+  const grid = document.getElementById('fontGrid'), empty = document.getElementById('fontEmpty'), count = document.getElementById('fontCount');
+  const filtered = FONTS.filter(f =>
+    (activeFType === 'all' || f.type === activeFType) &&
+    fontFeatureOk(f) &&
+    (activeFLic === 'all' || String(f.license).toLowerCase() === activeFLic));
+  if (!filtered.length) {
+    grid.innerHTML = ''; empty.style.display = ''; count.textContent = '';
+    return;
+  }
+  empty.style.display = 'none';
+  count.textContent = 'Showing ' + filtered.length + ' of ' + FONTS.length + ' fonts';
+  grid.innerHTML = filtered.map(f => {
+    const i = FONTS.indexOf(f);
+    ensureGalleryFont(f);
+    const yn = b => b ? '<span class="fp-yes">✓</span>' : '<span class="fp-no">✗</span>';
+    const by = f.authorUrl
+      ? 'By <a href="' + esc(f.authorUrl) + '" target="_blank" rel="noopener">' + esc(f.author) + '</a>'
+      : 'By ' + esc(f.author);
+    return '<div class="resource-card font-card">' +
+      '<div class="card-top"><div class="card-title">' + esc(f.name) + '</div>' +
+      '<span class="card-cat-badge">' + esc(FTYPE_LABEL[f.type] || f.type) + '</span></div>' +
+      '<div class="font-preview-line" style="font-family:\'' + f.family + '\',serif;">' + esc(FONT_SAMPLE) + '</div>' +
+      '<div class="font-by">' + by + '</div>' +
+      '<div class="font-actions">' +
+        '<a onclick="openFontPreview(' + i + ')">🔍 Preview</a>' +
+        '<a onclick="downloadFont(' + i + ')">⬇ Download</a>' +
+        '<a onclick="useFontInIvritSuite(' + i + ')">★ Use in IvritSuite</a>' +
+      '</div>' +
+      '<div class="font-meta-row"><span>Nikkud ' + yn(f.nikkud) + '</span>' +
+        '<span>Trop ' + yn(f.trop) + '</span>' +
+        '<span class="font-badge">' + esc(f.license) + '</span></div>' +
+      '</div>';
+  }).join('');
+}
+
+/* ── Links / Fonts view toggle ── */
+let activeView = 'links';
+function setView(v) {
+  activeView = v;
+  document.querySelectorAll('.view-toggle button').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+  document.getElementById('linksRegion').style.display = (v === 'fonts') ? 'none' : '';
+  document.getElementById('fontsRegion').style.display = (v === 'fonts') ? '' : 'none';
+  if (v === 'fonts') renderFonts();
+}
+
+/* ── Font preview modal ── */
+let _fpFamily = 'serif';
+function openFontPreview(i) {
+  const f = FONTS[i]; if (!f) return;
+  ensureGalleryFont(f);
+  _fpFamily = "'" + f.family + "', serif";
+  document.getElementById('fontPreviewTitle').textContent = f.name;
+  const inp = document.getElementById('fontPreviewInput');
+  inp.style.fontFamily = _fpFamily;
+  if (!inp.value) inp.value = FONT_SAMPLE;
+  updateFontPreview();
+  document.getElementById('fontPreviewBackdrop').classList.add('open');
+  setTimeout(() => { inp.focus(); inp.select(); }, 60);
+}
+function updateFontPreview() {
+  const txt = document.getElementById('fontPreviewInput').value || FONT_SAMPLE;
+  const render = document.getElementById('fontPreviewRender');
+  render.style.fontFamily = _fpFamily; render.textContent = txt;
+  const sizes = document.getElementById('fontPreviewSizes');
+  sizes.style.fontFamily = _fpFamily; sizes.innerHTML = '';
+  [20, 30, 44].forEach(px => { const d = document.createElement('div'); d.style.fontSize = px + 'px'; d.textContent = txt; sizes.appendChild(d); });
+}
+function closeFontPreview(e) {
+  const bd = document.getElementById('fontPreviewBackdrop');
+  if (e && e.target !== bd) return;
+  bd.classList.remove('open');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const bd = document.getElementById('fontPreviewBackdrop');
+    if (bd && bd.classList.contains('open')) bd.classList.remove('open');
+  }
+});
+
+/* ── Download + Use-in-IvritSuite ── */
+let _toastTimer = null;
+function fontToast(msg) {
+  const t = document.getElementById('fontToast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(_toastTimer); _toastTimer = setTimeout(() => t.classList.remove('show'), 3400);
+}
+function downloadFont(i) {
+  const f = FONTS[i]; if (!f) return;
+  const a = document.createElement('a');
+  a.href = f.file; a.download = f.name.replace(/\s+/g, '') + '.ttf';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+async function useFontInIvritSuite(i) {
+  const f = FONTS[i]; if (!f) return;
+  if (!window.indexedDB || !window.FontFace) { fontToast('This browser can’t save fonts for reuse.'); return; }
+  try {
+    fontToast('Adding “' + f.name + '” …');
+    const buf = await (await fetch(f.file)).arrayBuffer();
+    await saveUserFont(f.name, new Uint8Array(buf), f.family);
+    try { await loadUserFont(f.name); } catch (_) {}
+    fontToast('✓ “' + f.name + '” added — pick it under “My Fonts” in any tool’s font selector.');
+  } catch (e) { console.error(e); fontToast('Sorry — couldn’t add that font. Try Download instead.'); }
+}
+
+/* ── Submit a font — scraper-obscured mailto (address assembled at runtime) ── */
+const EMAIL_USER = 'Harrison', EMAIL_DOMAIN = 'IvritSuite.com';
+function emailAddr() { return EMAIL_USER + '@' + EMAIL_DOMAIN; }
+function openSubmitFont() {
+  const subject = 'IvritSuite Font Submission';
+  const body = [
+    'Font name:',
+    'Type of font (Block / Cursive / Torah / Other):',
+    'Nikkud supported? (Yes / No):',
+    'Trop supported? (Yes / No):',
+    'License (CC0 / OFL / Other — please specify):',
+    '',
+    'Your name:',
+    'Your website (if applicable):',
+    '',
+    '*** Please ATTACH your font file(s) (TTF / OTF / WOFF) and the license file to this email. ***',
+    '',
+    'Anything else we should know:'
+  ].join('\r\n');
+  window.location.href = 'mailto:' + emailAddr() + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+}
 </script>
 
 <!-- Suggest a Resource modal -->
@@ -837,6 +1136,25 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
 </div>
 
+<!-- Font preview modal -->
+<div class="sg-backdrop" id="fontPreviewBackdrop" onclick="closeFontPreview(event)">
+  <div class="sg-modal" onclick="event.stopPropagation()">
+    <div class="sg-modal-hdr">
+      <h3 id="fontPreviewTitle">Preview</h3>
+      <button class="sg-modal-close" onclick="closeFontPreview()" aria-label="Close">×</button>
+    </div>
+    <div class="sg-modal-body">
+      <label for="fontPreviewInput" class="sg-hint" style="display:block;margin-bottom:6px;">Type Hebrew (or anything) to preview in this font:</label>
+      <input type="text" id="fontPreviewInput" dir="rtl" oninput="updateFontPreview()" value="שלום עולם">
+      <div class="fp-render" id="fontPreviewRender"></div>
+      <div class="fp-sizes" id="fontPreviewSizes"></div>
+      <button class="sg-btn-primary" style="margin-top:16px;" onclick="closeFontPreview()">‹ Back</button>
+    </div>
+  </div>
+</div>
+
+<div id="fontToast" role="status" aria-live="polite"></div>
+
 <!-- hCaptcha (explicit render so it works inside the popup; recaptchacompat off so Web3Forms treats it as free hCaptcha, not Pro reCaptcha) -->
 <script src="https://js.hcaptcha.com/1/api.js?render=explicit&recaptchacompat=off" async defer></script>
 <script>
@@ -914,11 +1232,11 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         statusEl.style.color = 'var(--muted)';
         statusEl.innerHTML = (data && data.message ? data.message : 'Sorry — that didn’t go through.') +
-          ' You can also email <a href="mailto:Harrison@IvritSuite.com">Harrison@IvritSuite.com</a>.';
+          ' You can also email <a href="mailto:' + emailAddr() + '">' + emailAddr() + '</a>.';
       }
     } catch (err){
       statusEl.style.color = 'var(--muted)';
-      statusEl.innerHTML = 'Sorry — that didn’t go through. Please email <a href="mailto:Harrison@IvritSuite.com">Harrison@IvritSuite.com</a> directly.';
+      statusEl.innerHTML = 'Sorry — that didn’t go through. Please email <a href="mailto:' + emailAddr() + '">' + emailAddr() + '</a> directly.';
     } finally {
       btn.disabled = false;
     }
