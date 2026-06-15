@@ -1896,7 +1896,7 @@ function metricHandlesSVG() {
   const adv = dispAdvance(L);   // a user-set Width wins (so the dot drags); otherwise frame the reference glyph
   const vy1 = fy(m.letterTop + 80), vy2 = fy(m.descender - 30), mid = (vy1+vy2)/2;
   const dot = (key,axis,cx,cy,col,label,title) =>
-    `<circle class="metric-h" data-metric="${key}" data-axis="${axis}" cx="${(+cx).toFixed(1)}" cy="${(+cy).toFixed(1)}" r="7" fill="${col}" fill-opacity="0.45" stroke="#fff" stroke-width="2" style="cursor:${axis==='y'?'ns-resize':'ew-resize'}"><title>${title}</title></circle>`
+    `<circle class="metric-h" data-metric="${key}" data-axis="${axis}" cx="${(+cx).toFixed(1)}" cy="${(+cy).toFixed(1)}" r="7" fill="${col}" stroke="#fff" stroke-width="3" paint-order="stroke" style="cursor:${axis==='y'?'ns-resize':'ew-resize'};filter:drop-shadow(0 0 1px rgba(0,0,0,0.55));"><title>${title}</title></circle>`
     + (label ? `<text x="${(+cx).toFixed(1)}" y="${(+cy-12).toFixed(1)}" text-anchor="middle" fill="${col}" font-size="9" font-weight="700" font-family="'Source Sans 3',sans-serif" pointer-events="none">${label}</text>` : '');
   let h = dot('letterTop','y', 488, fy(m.letterTop), C.top, '', 'Top (cap height) — drag to set')
         + dot('baseline','y', 488, fy(m.baseline), C.base, '', 'Baseline — drag to set');
