@@ -1819,11 +1819,15 @@ function setMetric(key, v, noRender) {            // font-wide metrics
   project.font.metrics[key] = n; syncMetricInputs();
   if (!noRender) renderStage();                   // NOT renderControls → keeps the number input focused while typing
 }
-function setLetterMetric(key, v, noRender) {       // per-letter — Width sets the advance, Right margin sets its gap; Left margin SLIDES the whole letter (so it also shifts the right gap when that's auto)
+function setLetterMetric(key, v, noRender) {       // per-letter — Width sets the advance (keeping the right-margin LINE put; the gap absorbs it); Right margin sets its gap; Left margin SLIDES the whole letter (so it also shifts the right gap when that's auto)
   if (!noRender) udBurstBegin([itemScope()], 'metric — ' + key);
   const l = curLetter(); const n = _clampMetric(key, +v); if (n==null) return;
   if (key==='advance') {
-    if (l.rsb == null) l.rsb = Math.max(0, letterAdvance(l) - letterInkRight(l));   // pin the current right margin so it doesn't shift when Width changes
+    // keep the right-margin LINE where it is; the gap (rsb) absorbs the width change
+    if (l.rsb != null) {                          // explicit margin: shift the gap so the line stays put
+      const lineX = letterAdvance(l) - l.rsb;
+      l.rsb = Math.max(0, n - lineX);
+    }                                             // auto margin: leave null → the line tracks ink-right automatically
     l.advance = n;
   }
   else if (key==='lsb') {
