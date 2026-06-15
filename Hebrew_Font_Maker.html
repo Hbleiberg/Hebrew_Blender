@@ -195,7 +195,6 @@
     background: var(--navy); padding: 8px 18px; border-bottom: 1px solid var(--gold);
   }
   body.dark .toolbar { background: #0d1220; }
-  .toolbar .tspace { flex: 1; }
   .tbtn {
     background: var(--gold); color: #1a1a1a; border: none; border-radius: 6px;
     padding: 7px 13px; cursor: pointer; font-size: 0.82rem; font-weight: 700;
@@ -209,7 +208,10 @@
     border-radius: 6px; padding: 7px 9px; cursor: pointer; font-size: 0.82rem; font-weight: 700;
     font-family: 'Source Sans 3', sans-serif;
   }
-  #statusMsg { color: var(--gold-light); font-size: 0.76rem; min-width: 90px; }
+  /* Status line (export/save messages) — its own row below the toolbar, present only when there's a message. */
+  #statusMsg { color: var(--gold-light); font-size: 0.78rem; padding: 5px 18px; background: var(--navy); }
+  body.dark #statusMsg { background: #0d1220; }
+  #statusMsg:empty { display: none; }
 
   /* ── App layout ── */
   .app { display: flex; align-items: flex-start; gap: 0; min-height: calc(100vh - 150px); }
@@ -539,8 +541,6 @@
   <button class="tbtn ghost" id="undoBtn" onclick="undo()" title="Undo (Ctrl+Z)" disabled>↶</button>
   <button class="tbtn ghost" id="redoBtn" onclick="redo()" title="Redo (Ctrl+Shift+Z)" disabled>↷</button>
   <button class="tbtn ghost" onclick="openHelp()" title="A plain-language guide to the whole tool">❓ How does this work?</button>
-  <div class="tspace"></div>
-  <span id="statusMsg"></span>
   <button class="tbtn ghost" onclick="openQA()" title="Review every letter × mark placement for collisions">🔍 QA Check</button>
   <button class="tbtn ghost" onclick="generatePreviewPDF()">Preview PDF</button>
   <span id="tracedReadout" style="font-size:0.8rem;font-weight:700;white-space:nowrap;color:var(--muted);" title="Core Hebrew letters with an outline traced"></span>
@@ -554,6 +554,7 @@
   <button class="tbtn" id="exportBtn" onclick="exportFont()">⬇ Export TTF</button>
   <button class="tbtn ghost" id="shareBtn" onclick="shareThisFont()" title="Post your font to the IvritSuite font library">📤 Share this font</button>
 </div>
+<div id="statusMsg"></div>
 
 <div class="app">
   <aside class="sidebar">
@@ -1136,6 +1137,7 @@ function letterInkLeft(l) { if (l && l.contours) { let mn=1e9; l.contours.forEac
 function letterLSB(l)     { return (l && l.lsb != null) ? l.lsb : letterInkLeft(l); }   // explicit override, else the real ink left edge (so the left margin guide tracks the ink, like the right one)
 function letterInkRight(l){ if (l && l.contours) { let mx=-1e9; l.contours.forEach(c=>c.points.forEach(p=>{ if(p[0]>mx) mx=p[0]; })); if (mx>-1e9) return Math.round(mx); } return Math.max(0, letterAdvance(l) - effMetrics().defaultRSB); }
 function letterRSB(l)     { return (l && l.rsb != null) ? l.rsb : Math.max(0, letterAdvance(l) - letterInkRight(l)); }   // explicit right margin, else derived (gap after the ink)
+function dispAdvance(l)   { if (l && l.advance != null) return l.advance; if (!(l && l.contours) && _tplFit && _tplFit.advance) return _tplFit.advance; return Math.round(effMetrics().letterTop * 0.7); }   // advance the on-canvas guides + dots use: a user-set Width wins (so the dot drags), else frame the reference glyph while untraced, else the default
 function catOfCp(cp) { return LATIN_ACCENTS[cp] ? 'accent' : (TROP_CLASS[cp] ? 'trop' : 'nikkud'); }
 const TROP_GAP_ABOVE = 200, TROP_GAP_BELOW = 200;   // how far trop clears the vowel band
 // mark-to-mark attach point on a nikkud mark (where a trop stacks): its far edge + a small gap.
@@ -1825,13 +1827,13 @@ function setLetterMetric(key, v, noRender) {       // per-letter — Width / Lef
 }
 function curMetricVal(key) {
   const l = curLetter();
-  if (key==='advance') return letterAdvance(l);
+  if (key==='advance') return dispAdvance(l);
   if (key==='lsb') return letterLSB(l);
-  if (key==='rsb') return letterAdvance(l) - letterRSB(l);   // X of the right-margin line, so the drag tracks the cursor
+  if (key==='rsb') return dispAdvance(l) - letterRSB(l);   // X of the right-margin line, so the drag tracks the cursor
   return effMetrics()[key];
 }
 function writeMetric(key, raw) {                   // dispatch used by the canvas drag
-  if (key==='rsb') { setLetterMetric('rsb', letterAdvance(curLetter()) - raw, true); return; }   // dragged X → right-margin gap
+  if (key==='rsb') { setLetterMetric('rsb', dispAdvance(curLetter()) - raw, true); return; }   // dragged X → right-margin gap
   if (key==='advance' || key==='lsb') setLetterMetric(key, raw, true);
   else setMetric(key, raw, true);
 }
@@ -1882,7 +1884,7 @@ function metricsPanel() {
 }
 function metricHandlesSVG() {
   const m = effMetrics(), L = curLetter(), meta = curMeta(), C = stageColors();
-  const adv = letterAdvance(L);   // dots + zones share the letter's OWN advance (the editable value), so every dot sits on its guide and Width/margins all drag correctly
+  const adv = dispAdvance(L);   // a user-set Width wins (so the dot drags); otherwise frame the reference glyph
   const vy1 = fy(m.letterTop + 80), vy2 = fy(m.descender - 30), mid = (vy1+vy2)/2;
   const dot = (key,axis,cx,cy,col,label,title) =>
     `<circle class="metric-h" data-metric="${key}" data-axis="${axis}" cx="${(+cx).toFixed(1)}" cy="${(+cy).toFixed(1)}" r="7" fill="${col}" fill-opacity="0.45" stroke="#fff" stroke-width="2" style="cursor:${axis==='y'?'ns-resize':'ew-resize'}"><title>${title}</title></circle>`
@@ -2974,7 +2976,7 @@ function guideLinesSVG() {
    glyph image (pointer-events:none) so the right margin stays visible even when ink covers it. */
 function marginGuidesSVG() {
   const m = effMetrics(), L = curLetter();
-  const adv = letterAdvance(L);   // the letter's own advance, so the margin/width zones line up with the draggable dots
+  const adv = dispAdvance(L);   // frame the reference glyph until a Width is set; dots stay aligned with these zones
   const vy1 = fy(m.letterTop + 80), vy2 = fy(m.descender - 30), mcy = (vy1+vy2)/2;
   const C = stageColors();
   const marginZone = (x0f, x1f, side) => {
