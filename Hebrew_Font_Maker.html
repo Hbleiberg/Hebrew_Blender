@@ -555,9 +555,7 @@
     <option value="ttfwoff2">TTF + WOFF2 (zip)</option>
     <option value="ufo">UFO source (zip)</option>
   </select>
-  <button class="tbtn ghost" onclick="openMyFonts()" title="Saved fonts you can use in any IvritSuite tool">★ My IvritSuite Fonts</button>
   <button class="tbtn" id="exportBtn" onclick="exportFont()">⬇ Export TTF</button>
-  <button class="tbtn ghost" id="shareBtn" onclick="shareThisFont()" title="Post your font to the IvritSuite font library">📤 Share this font</button>
 </div>
 <div id="statusMsg"></div>
 
@@ -6499,7 +6497,7 @@ async function doExport(fmt) {
       if (ures.error) { status(''); askModal('UFO build failed', '<span class="warn">'+ures.error+'</span>', [{label:'OK'}]); return; }
       downloadBlob(new Blob([b64ToBytes(ures.zip_b64)], {type:'application/zip'}), spec.ufoName + '.ufo.zip');
       status('Exported ' + spec.ufoName + '.ufo.zip ✓ (UFO source — cubic curves, anchors & features.fea)');
-      offerSaveToMyFonts(null);   // builds a TTF on demand if the user opts in
+      offerSaveToMyFonts();
       return;
     }
 
@@ -6535,7 +6533,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {
     downloadBlob(new Blob([bytes], {type:'font/ttf'}), fam + '.ttf');
     setTimeout(() => downloadBlob(new Blob([licenseText()], {type:'text/plain'}), 'LICENSE.txt'), 400);
     status('Exported ' + fam + '.ttf' + (gateSkipped ? ' (shaping check skipped)' : ' ✓ — also saved LICENSE.txt'));
-    offerSaveToMyFonts(bytes);
+    offerSaveToMyFonts();
     return;
   }
   // WOFF2 / TTF+WOFF2 zip — re-flavour the just-built TTF through fontTools (brotli loaded on demand)
@@ -6550,7 +6548,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {
       downloadBlob(new Blob([woff2], {type:'font/woff2'}), fam + '.woff2');
       setTimeout(() => downloadBlob(new Blob([licenseText()], {type:'text/plain'}), 'LICENSE.txt'), 400);
       status('Exported ' + fam + '.woff2 ✓ — also saved LICENSE.txt');
-      offerSaveToMyFonts(bytes);   // store the TTF bytes (what other tools embed)
+      offerSaveToMyFonts();
       return;
     }
     // ttfwoff2 → one zip: both fonts + a paste-ready @font-face + the licence
@@ -6564,7 +6562,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {
     const zb64 = pyodide.runPython('hfm_zip(hfm_zip_json)');
     downloadBlob(new Blob([b64ToBytes(zb64)], {type:'application/zip'}), fam + '.zip');
     status('Exported ' + fam + '.zip ✓ (TTF + WOFF2 + @font-face CSS + LICENSE)');
-    offerSaveToMyFonts(bytes);   // store the TTF bytes (what other tools embed)
+    offerSaveToMyFonts();
   } catch (err) {
     console.error(err); status('');
     askModal('Export error', '<span class="warn">'+(err && err.message || err)+'</span>', [{label:'OK'}]);
@@ -6695,12 +6693,17 @@ async function saveCurrentToMyFonts(bytes) {
     askModal('Couldn’t save', '<span class="warn">' + escapeHtml(e && e.message || String(e)) + '</span>', [{ label: 'OK' }]);
   }
 }
-function offerSaveToMyFonts(bytes) {   // post-export success state (called after every successful export, any format)
-  if (!window.indexedDB || !window.FontFace) return;
+function offerSaveToMyFonts() {   // post-export success screen (called after every successful export, any format)
   const fam = (project.font.familyName || 'My Hebrew Font').trim();
+  const canSave = !!(window.indexedDB && window.FontFace);
+  const btns = [{ label: 'Done', cls: 'ghost' },
+                { label: '📤 Share this font', cls: 'ghost', onClick: () => shareThisFont() }];
+  if (canSave) btns.push({ label: '★ My IvritSuite Fonts', onClick: () => openMyFonts() });
   askModal('Exported ✓',
-    'Your font <b>' + escapeHtml(fam) + '</b> downloaded. Use it across IvritSuite too? Saving it to <b>My IvritSuite Fonts</b> (this browser) makes it pick-able in every tool’s font selector.',
-    [{ label: 'Done', cls: 'ghost' }, { label: '★ Use this font in IvritSuite', onClick: () => saveCurrentToMyFonts(bytes) }]);
+    'Your font <b>' + escapeHtml(fam) + '</b> downloaded.'
+    + (canSave ? ' Save it to <b>★ My IvritSuite Fonts</b> (this browser) to pick it in every IvritSuite tool’s font selector.' : '')
+    + ' Or <b>📤 Share this font</b> to post it to the IvritSuite font library.',
+    btns);
 }
 async function gzipBlob(str) {                       // string → gzip Blob (native, no libs)
   return new Response(new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'))).blob();
