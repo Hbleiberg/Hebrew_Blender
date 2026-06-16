@@ -1610,7 +1610,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '1.0';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '1.1';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -1812,6 +1812,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v1.1</strong> — Import an existing TTF's letter outlines, its own nikkud &amp; trop mark shapes, and its real anchor positions — so you can fix or build on existing fonts. Exported fonts now embed the license name and a Made-with-IvritSuite attribution in their metadata. Bigger editing workspace on wide monitors. Removed the CC&nbsp;BY&nbsp;4.0 license option. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.0</strong> — Initial release. <span style="color:var(--muted);">(June 2026)</span></li>
     </ul>
   `,
