@@ -899,13 +899,16 @@ function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontF
 
 /* ── Curated font gallery (hand-maintained). Add a font: commit its file to
    /fonts and append an entry here. `preloaded:true` = the family is already on
-   the page (no FontFace needed for preview); `file` backs Download + Use. ── */
+   the page (no FontFace needed for preview); `file` backs Download + Use.
+   Download ships a .zip bundling the font + a LICENSE.txt generated from the
+   entry's `license` (CC0 fully supported); add `madeWithIvritSuite:true` to
+   include the "Made with IvritSuite.com" attribution line in that notice. ── */
 const FONTS = [
   {
     name: 'Reuben', family: 'Reuben',
     author: 'Baruch Sienna', authorUrl: 'https://alephtechnology.com',
     type: 'block', nikkud: true, trop: false, license: 'CC0',
-    file: 'fonts/Reuben.ttf'
+    file: 'fonts/Reuben.ttf', madeWithIvritSuite: true
   }
 ];
 const FONT_SAMPLE = 'שָׁלוֹם עוֹלָם';
@@ -1026,11 +1029,101 @@ function fontToast(msg) {
   t.textContent = msg; t.classList.add('show');
   clearTimeout(_toastTimer); _toastTimer = setTimeout(() => t.classList.remove('show'), 3400);
 }
-function downloadFont(i) {
-  const f = FONTS[i]; if (!f) return;
+/* Build the LICENSE.txt notice that ships inside the download zip, from the
+   font entry's metadata. CC0 is spelled out in full; other licenses get a
+   short pointer. CRLF line-endings so it reads cleanly in Notepad. */
+function buildLicenseNotice(f) {
+  const lic = String(f.license || '').toUpperCase();
+  const L = [f.name];
+  if (f.author)    L.push('Author: ' + f.author);
+  if (f.authorUrl) L.push(f.authorUrl);
+  if (f.madeWithIvritSuite) L.push('Made with IvritSuite.com (Hebrew Font Maker)');
+  L.push('');
+  if (lic === 'CC0') {
+    L.push('License: CC0 1.0 Universal — Public Domain Dedication',
+      'https://creativecommons.org/publicdomain/zero/1.0/', '',
+      'To the extent possible under law, ' + (f.author || 'the author') + ' has dedicated all',
+      'copyright and related and neighboring rights to the "' + f.name + '" font to the',
+      'public domain worldwide.', '',
+      'You may copy, modify, distribute, and use the font, including for',
+      'commercial purposes, all without asking permission. Attribution is',
+      'not required, but is appreciated.');
+  } else if (f.license) {
+    L.push('License: ' + f.license,
+      'See the font author or the IvritSuite resources page for the full license text.');
+  } else {
+    return null;
+  }
+  return L.join('\r\n') + '\r\n';
+}
+
+/* Minimal dependency-free ZIP writer (store / no compression — fine for a font
+   + a text notice). Layout: local file headers, central directory, EOCD. */
+function _crc32(bytes) {
+  let c = ~0 >>> 0;
+  for (let i = 0; i < bytes.length; i++) {
+    c ^= bytes[i];
+    for (let k = 0; k < 8; k++) c = (c >>> 1) ^ (0xEDB88320 & -(c & 1));
+  }
+  return (~c) >>> 0;
+}
+function makeZip(files) {
+  const enc = new TextEncoder();
+  const u16 = n => [n & 0xff, (n >>> 8) & 0xff];
+  const u32 = n => [n & 0xff, (n >>> 8) & 0xff, (n >>> 16) & 0xff, (n >>> 24) & 0xff];
+  const parts = [], central = [];
+  let offset = 0;
+  for (const f of files) {
+    const name = enc.encode(f.name), data = f.bytes, crc = _crc32(data);
+    const lfh = new Uint8Array([].concat(
+      u32(0x04034b50), u16(20), u16(0), u16(0), u16(0), u16(0),
+      u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0)));
+    parts.push(lfh, name, data);
+    central.push(new Uint8Array([].concat(
+      u32(0x02014b50), u16(20), u16(20), u16(0), u16(0), u16(0), u16(0),
+      u32(crc), u32(data.length), u32(data.length),
+      u16(name.length), u16(0), u16(0), u16(0), u16(0), u32(0), u32(offset))), name);
+    offset += lfh.length + name.length + data.length;
+  }
+  const cdStart = offset;
+  let cdSize = 0; central.forEach(c => cdSize += c.length);
+  const eocd = new Uint8Array([].concat(
+    u32(0x06054b50), u16(0), u16(0), u16(files.length), u16(files.length),
+    u32(cdSize), u32(cdStart), u16(0)));
+  const all = [...parts, ...central, eocd];
+  let total = 0; all.forEach(a => total += a.length);
+  const out = new Uint8Array(total);
+  let p = 0; all.forEach(a => { out.set(a, p); p += a.length; });
+  return out;
+}
+function _saveBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = f.file; a.download = f.name.replace(/\s+/g, '') + '.ttf';
+  a.href = url; a.download = filename;
   document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+async function downloadFont(i) {
+  const f = FONTS[i]; if (!f) return;
+  const base = f.name.replace(/\s+/g, '');
+  const notice = buildLicenseNotice(f);
+  try {
+    const ttf = new Uint8Array(await (await fetch(f.file)).arrayBuffer());
+    if (notice) {
+      const zip = makeZip([
+        { name: base + '.ttf', bytes: ttf },
+        { name: 'LICENSE.txt', bytes: new TextEncoder().encode(notice) }
+      ]);
+      _saveBlob(new Blob([zip], { type: 'application/zip' }), base + '.zip');
+    } else {
+      _saveBlob(new Blob([ttf], { type: 'font/ttf' }), base + '.ttf');
+    }
+  } catch (e) {
+    // Network/zip failure — fall back to a plain link to the .ttf.
+    const a = document.createElement('a');
+    a.href = f.file; a.download = base + '.ttf';
+    document.body.appendChild(a); a.click(); a.remove();
+  }
 }
 async function useFontInIvritSuite(i) {
   const f = FONTS[i]; if (!f) return;
