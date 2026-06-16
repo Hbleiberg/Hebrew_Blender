@@ -1438,7 +1438,12 @@ function _selectItem(kind, cp) {
          : isCustomCp(cp) ? 'customglyphs'
          : (kind === 'letter' && letterMeta(cp) && letterMeta(cp).cat === 'punct') ? 'punct' : kind;   // keep the picker on the edited item's category (English → English tab; custom → Custom glyphs; punct → Punctuation)
   renderGrids();
-  _setWorkMode('align');     // reset to Align AND refresh the step-tab highlight (internal version — selectItem already ran the placement guard); also clears precompTarget + renders stage/controls
+  // Cycling letter→letter while placing nikkud should STAY on the Nikkud/Trop page (final adjustments
+  // shouldn't re-open the step every click). _setWorkMode('anchors') auto-falls back to Align for
+  // punctuation / a letters-only font; for any other selection we reset to Align as before. Either path
+  // re-renders the stage + controls, so the view refreshes in a single click.
+  if (workMode === 'anchors') { precompTarget = null; _setWorkMode('anchors'); }
+  else _setWorkMode('align');
 }
 function renderGrids() {
   renderLetterGrid();
@@ -4591,17 +4596,22 @@ function precompComposed(pc) {
   return b + m;
 }
 function precompAnchor(pc) {
-  if (pc.anchor && pc.anchor.x != null) return pc.anchor;                 // user override
-  const b = project.letters.find(x => x.codepoint === pc.base);          // else the base's class anchor
-  if (b) { seedAnchorsIfNeeded(b); const a = b.anchors && b.anchors[markClassFor(pc.mark)]; if (a) return { x: a.x, y: a.y }; }
+  const cls = markClassFor(pc.mark);
+  // A centered dagesh has one natural home — the letter's own Dagesh (Center) anchor — so the direct
+  // dotted form (e.g. בּ) always matches a dagesh placed on the plain letter. Center forms follow the
+  // base's center anchor and ignore any per-form override; shin/sin dot, holam & accents keep theirs.
+  if (cls !== 'center' && pc.anchor && pc.anchor.x != null) return pc.anchor;   // user override
+  const b = project.letters.find(x => x.codepoint === pc.base);                 // else the base's class anchor
+  if (b) { seedAnchorsIfNeeded(b); const a = b.anchors && b.anchors[cls]; if (a) return { x: a.x, y: a.y }; }
   return { x: 0, y: 0 };
 }
 function precompMarkScale(pc) {
   if (catOfCp(pc.mark) === 'accent') return 1;                           // Latin accents are pre-sized — no per-form scaling
+  if (markClassFor(pc.mark) === 'center') return markScale();            // dagesh forms track the global dot size (unified with the live dagesh)
   return (pc.markScale != null) ? pc.markScale : markScale();            // else this form's own dot size, or inherit the global mark size
 }
 function precompFormBtn(pc) {
-  const custom = (pc.anchor && pc.anchor.x != null) ? ' <span style="color:var(--gold);">✎</span>' : '';
+  const custom = (markClassFor(pc.mark) !== 'center' && pc.anchor && pc.anchor.x != null) ? ' <span style="color:var(--gold);">✎</span>' : '';
   return `<button class="ctl-btn ${precompTarget===pc.target?'primary':''}" onclick="setPrecompTarget('${pc.target}')" title="Place the ${escapeHtml(precompName(pc))} for ${escapeHtml(precompComposed(pc))}">`
     + `<span style="font-family:var(--heb-font);direction:rtl;font-size:1.15rem;">${precompComposed(pc)}</span>${custom}</button>`;
 }
@@ -4669,7 +4679,9 @@ function precompHandlesSVG() {
   const pc = getPrecomp(precompTarget); if (!pc) return '';
   const sc = precompMarkScale(pc);
   const a = precompAnchor(pc), col = '#e0731f', mc = markCenterLocal(pc.mark, sc);
-  return `<path id="pcMark" d="${markPreviewPath(pc.mark, a.x, a.y, sc)}" fill="${col}"/>`
+  const mark = `<path id="pcMark" d="${markPreviewPath(pc.mark, a.x, a.y, sc)}" fill="${col}"/>`;
+  if (markClassFor(pc.mark) === 'center') return mark;   // dagesh follows the letter's center anchor — static preview, not draggable here
+  return mark
     + `<circle class="pcanc" cx="${fx(a.x+mc[0])}" cy="${fy(a.y+mc[1])}" r="11" fill="${col}" fill-opacity="0" stroke="#fff" stroke-width="2" pointer-events="all" style="cursor:grab"/>`;
 }
 function attachPrecompDrag() {
@@ -4701,6 +4713,13 @@ function renderPrecompControls(l) {
   const pc = getPrecomp(precompTarget);
   if (!pc || precompBaseCp(pc) !== l.codepoint) { precompTarget = null; return ''; }
   if (isWideForm(pc)) return renderWideFormControls(pc);   // wide letterforms / digraphs → Width slider
+  if (markClassFor(pc.mark) === 'center') {   // dagesh: unified with the letter's own Dagesh (Center) — no separate placement here
+    const g = `<span style="font-family:var(--heb-font);direction:rtl;">${precompComposed(pc)}</span>`;
+    return `<div class="ws-side-title">Place <span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">${precompComposed(pc)}</span> — ${escapeHtml(precompName(pc))}</div>
+    <div class="hint" style="font-size:0.68rem;">The dagesh on this form follows the letter's own <b>Dagesh (Center)</b> position and size, so ${g} always matches a dagesh you place on the plain letter. To move or resize it, edit the letter's <b>Dagesh (Center)</b> on its Nikkud step.</div>
+    <hr class="ctl-divider">
+    <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">← Back to vowels</button>`;
+  }
   const a = precompAnchor(pc), isOverride = !!(pc.anchor && pc.anchor.x != null);
   const scPct = Math.round(precompMarkScale(pc) * 100), isScaleOverride = (pc.markScale != null);
   return `<div class="ws-side-title">Place <span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">${precompComposed(pc)}</span> — ${escapeHtml(precompName(pc))}</div>
@@ -5039,7 +5058,7 @@ function maybeInheritAnchors(l) {
   // After one letter's placement is saved, the next letter opened in the placement step starts from
   // those same coordinates so consecutive letters needn't be positioned from scratch. Applied once
   // per save and only to a not-yet-saved letter (WeakMap guard), so in-progress moves are never clobbered.
-  if (!lastSavedAnchors || curKind !== 'letter' || l.placementSaved) return;
+  if (!lastSavedAnchors || curKind !== 'letter' || l.placementSaved || l.savedAnchors) return;
   if (anchorInheritedFrom.get(l) === lastSavedAnchors) return;
   const ibb = l.contours ? glyphBBox(l.contours, true, letterMeta(l.codepoint)) : null;
   const floatUp = !!(ibb && Math.round(ibb.minY) > 120);   // yod-like: body floats well above the baseline
@@ -5218,6 +5237,20 @@ function renderEngAccentLeft(l) {   // English letters: accent placement = pick 
     <div class="hint" style="font-size:0.66rem;">Pick an accented form, then drag the accent into place on the canvas (or type X / Y). Each is baked into the exported font.</div>
     <div class="ctl-row" style="flex-wrap:wrap;gap:5px;margin-top:6px;">${forms.map(precompFormBtn).join('')}</div>`;
 }
+/* The ordered code points to cycle with ◀/▶ (or [ / ]) on the placement page — letters in the CURRENT
+   category, skipping anchor-free punctuation, so "go over every letter" is one key/click per letter. */
+function _placementCycleCps() {
+  if (isEng(curCp)) return (project.letters || []).filter(x => x.eng && x.contours && x.contours.length).map(x => x.codepoint);
+  if (isCustomCp(curCp)) return (project.letters || []).filter(x => x.custom).map(x => x.codepoint);
+  return LETTER_ORDER.filter(cp => { const m = letterMeta(cp); return !(m && m.cat === 'punct'); });
+}
+function stepLetter(dir) {   // dir = -1 (prev) | +1 (next); selectItem keeps us on the placement page + guards unsaved moves
+  if (curKind !== 'letter') return;
+  const order = _placementCycleCps(); if (!order.length) return;
+  let i = order.indexOf(curCp); if (i < 0) i = 0;
+  const next = order[(i + dir + order.length) % order.length];
+  if (next !== curCp) selectItem('letter', next);
+}
 function renderAnchorLeft(L, l) {
   if (!l.contours && !project.template.showOverlay) { L.innerHTML = ''; return; }
   if (precompTarget) { L.innerHTML = renderPrecompControls(l); return; }   // placing a precomposed form's mark
@@ -5248,7 +5281,12 @@ function renderAnchorLeft(L, l) {
     <div class="ws-side-title">Special &amp; precomposed forms</div>
     <div class="hint" style="font-size:0.66rem;">Set where the dot sits in the combined glyph (e.g. שׁ / שׂ).</div>
     <div class="ctl-row" style="flex-wrap:wrap;gap:5px;">${forms.map(precompFormBtn).join('')}</div>` : '';
+  const navRow = `<div class="ctl-row" style="margin-bottom:6px;">
+      <button class="ctl-btn" onclick="stepLetter(-1)" title="Previous letter ( [ ) — stays on this step">◀ Prev</button>
+      <button class="ctl-btn" onclick="stepLetter(1)" title="Next letter ( ] ) — stays on this step">Next ▶</button>
+    </div>`;
   L.innerHTML = `
+    ${navRow}
     <div class="ws-side-title">${l.name}: place the…</div>
     <div class="ctl-row">${classBtns}</div>
     ${ grid ? `<hr class="ctl-divider">${grid}` : '' }
@@ -5423,6 +5461,7 @@ document.addEventListener('keydown', e => {
   }
   if (precompTarget) {                                   // nudge the precomposed form's mark
     const pc = getPrecomp(precompTarget); if (!pc) return;
+    if (markClassFor(pc.mark) === 'center') return;      // dagesh follows the letter's center anchor — adjust it on the letter, not here
     udNudgeTick([{ t:'precomp', target: precompTarget }], 'nudge mark anchor');
     const pa = precompAnchor(pc); pc.anchor = { x: pa.x + dx, y: pa.y + dy };
     renderStage(); renderControls(); return;
@@ -5432,6 +5471,15 @@ document.addEventListener('keydown', e => {
   const a = l.anchors[activeAnchorClass]; a.x += dx; a.y += dy;
   if (l.placementSaved) l.placementSaved = false;
   renderStage(); renderControls(); renderLetterGrid();
+});
+/* [ / ] — previous / next letter while on the placement (Nikkud/Trop) step, so you can cycle through
+   every letter's final adjustments without leaving the page. (Arrows stay reserved for nudging the anchor.) */
+document.addEventListener('keydown', e => {
+  if (workMode !== 'anchors') return;
+  if (udShortcutBlocked()) return;                       // typing in a field / modal open / no project
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === '[') { e.preventDefault(); stepLetter(-1); }
+  else if (e.key === ']') { e.preventDefault(); stepLetter(1); }
 });
 /* arrow-key nudge / Delete / Esc — node editor (Edit-points mode). Arrows = 5 units, Shift = 25
    (node editing favors coarse jumps; the anchor/align nudges above use Shift = fine). A run of taps groups into one undo entry. */
@@ -5502,7 +5550,7 @@ function qaSynthPrecompRow(pc, baseMeta, label) {
   const base = project.letters.find(x => x.codepoint === pc.base);
   if (!base || !base.contours || !base.contours.length) return null;   // need a traced base letter
   const anc = qaAnchors(base);
-  const dotAnc = (pc.anchor && pc.anchor.x != null) ? pc.anchor : anc[MARK_CLASS[pc.mark]];
+  const dotAnc = (MARK_CLASS[pc.mark] !== 'center' && pc.anchor && pc.anchor.x != null) ? pc.anchor : anc[MARK_CLASS[pc.mark]];   // dagesh follows the base's center anchor (unified)
   if (!dotAnc) return null;                                            // unknown anchor class → skip (shouldn't happen for nikkud)
   const dotPolys = qaPlace(dotAnc, 'nikkud', pc.mark, precompMarkScale(pc));   // per-form dot size, same translate as export
   const L = Object.assign({}, base, {
@@ -5691,7 +5739,7 @@ function fontInkBounds() {
   if (nikOn) (project.precomposed || []).forEach(pc => {
     const baseL = project.letters.find(x => x.codepoint === pc.base);
     if (!baseL || !baseL.contours) return;
-    const anc = (pc.anchor && pc.anchor.x != null) ? pc.anchor : (baseL.anchors && baseL.anchors[MARK_CLASS[pc.mark]]);
+    const anc = (MARK_CLASS[pc.mark] !== 'center' && pc.anchor && pc.anchor.x != null) ? pc.anchor : (baseL.anchors && baseL.anchors[MARK_CLASS[pc.mark]]);   // dagesh follows the base's center anchor (unified)
     if (!anc) return;
     upd(polysBounds(qaPlace(anc, 'nikkud', pc.mark, ms)));
   });
@@ -5881,7 +5929,7 @@ function buildFontSpec() {
     const baseL = project.letters.find(x => x.codepoint === pc.base);
     if (!baseL || !baseL.contours) return;                          // need a traced base (anchor may be a per-form override)
     const cls = MARK_CLASS[pc.mark];
-    const anc = (pc.anchor && pc.anchor.x != null) ? pc.anchor : (baseL.anchors && baseL.anchors[cls]); if (!anc) return;
+    const anc = (cls !== 'center' && pc.anchor && pc.anchor.x != null) ? pc.anchor : (baseL.anchors && baseL.anchors[cls]); if (!anc) return;   // dagesh follows the letter's center anchor (unified with the live dagesh)
     const mscale = precompMarkScale(pc);                            // per-form dot size, or inherit the global mark scale
     const markPoly = markGlyphContours('nikkud', pc.mark).map(poly => poly.map(([x,y]) => [Math.round(x*mscale+anc.x), Math.round(y*mscale+anc.y)]));
     const baseContours = baseL.contours.map(c => c.points);
@@ -6005,7 +6053,9 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn) {
   // ── mark-to-base — nikkud + trop, per-letter base anchors (skip if none; feaLib rejects empty blocks) ──
   let markLines = '';
   const emitBaseAnchors = (nm, l, skipCls) => {   // skipCls: a class the baked-in precomposed mark already occupies
-    if (!l || !l.anchors) return;
+    if (!l) return;
+    if (!l.anchors) seedAnchorsIfNeeded(l);   // never ship a base with no mark-to-base rule, or its nikkud drops to the baseline
+    if (!l.anchors) return;
     if (byClass.below.length  && skipCls !== 'below')  markLines += `  pos base ${nm} <anchor ${l.anchors.below.x} ${l.anchors.below.y}> mark @MC_BELOW;\n`;
     if (byClass.above.length  && skipCls !== 'above')  markLines += `  pos base ${nm} <anchor ${l.anchors.above.x} ${l.anchors.above.y}> mark @MC_ABOVE;\n`;
     if (byClass.center.length && skipCls !== 'center') markLines += `  pos base ${nm} <anchor ${l.anchors.center.x} ${l.anchors.center.y}> mark @MC_CENTER;\n`;
@@ -7247,6 +7297,9 @@ function migrateProject(data) {
     if (ex.epsilon == null) ex.epsilon = 6;
     if (ex.cornerAngle == null) ex.cornerAngle = 32;   // Bézier corner threshold (curves regenerate on next trace)
     if (ex.placementSaved == null) ex.placementSaved = false;
+    // A reopened project's already-positioned letters are "placed": their saved anchors must never be
+    // overwritten by the carry-onto-next-letter convenience, and Discard must not revert to a stale snapshot.
+    if (ex.anchors) { ex.placementSaved = true; if (!ex.savedAnchors) ex.savedAnchors = JSON.parse(JSON.stringify(ex.anchors)); }
     if (ex.invert == null) ex.invert = false;
     if (ex.outlineOnly == null) ex.outlineOnly = false;   // backfilled OFF → old saves render identically (no re-trace)
     if (ex.lineWeight == null) ex.lineWeight = 70;
@@ -7265,6 +7318,7 @@ function migrateProject(data) {
       if (l.epsilon == null) l.epsilon = 6;
       if (l.cornerAngle == null) l.cornerAngle = 32;
       if (l.placementSaved == null) l.placementSaved = false;
+      if (l.anchors) { l.placementSaved = true; if (!l.savedAnchors) l.savedAnchors = JSON.parse(JSON.stringify(l.anchors)); }
       if (l.invert == null) l.invert = false;
       if (l.outlineOnly == null) l.outlineOnly = false;
       if (l.lineWeight == null) l.lineWeight = 70;
