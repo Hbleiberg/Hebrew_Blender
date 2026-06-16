@@ -516,6 +516,16 @@
     .ws-left, .ws-right { max-width: 736px; margin: 0 auto; width: 100%; }
     .vslider-pair { justify-content: flex-start; }
   }
+  @media (min-width: 1181px) {
+    /* Large screens: keep the sidebars comfortable and let the center fill the available height.
+       The stage SVG is width-driven over a ~600:410 (≈1.46:1) viewBox, so the CENTER column's width
+       is capped at (viewport height − page chrome) × 1.46 — the glyph grows to ~fill the vertical
+       space without scrolling the page. The 380/350px offsets approximate the chrome around the
+       stage and are easy to nudge; .stage-wrap's overflow:auto stays as the safety net. */
+    .ws-grid { grid-template-columns: minmax(260px,360px) minmax(0, calc((100vh - 380px) * 1.46)) minmax(260px,360px); }
+    .ws-center .stage-wrap { max-width: 100%; max-height: calc(100vh - 350px); }
+    .ws-center .zoom-bar   { max-width: 100%; }
+  }
 </style>
 </head>
 <body>
