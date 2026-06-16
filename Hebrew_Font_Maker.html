@@ -93,7 +93,7 @@
     { "@type": "Question", "name": "Is the Hebrew Font Maker free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Hebrew Font Maker is completely free — make and download as many Hebrew fonts as you like, with no account or sign-up." } },
     { "@type": "Question", "name": "How do I make my own Hebrew font?", "acceptedAnswer": { "@type": "Answer", "text": "Upload or scan a picture of each Hebrew letter, trace it into an outline, place the nikkud and trop anchors, then export a real font you can install." } },
     { "@type": "Question", "name": "Can I make free Hebrew fonts with nikkud and trop?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The free Hebrew Font Maker positions nikkud (vowels) and cantillation (trop) automatically using OpenType mark positioning." } },
-    { "@type": "Question", "name": "What font formats can I export?", "acceptedAnswer": { "@type": "Answer", "text": "TrueType (TTF), WOFF2 for the web, and editable UFO source — each with a license you choose (CC0, OFL, MIT, CC-BY, or All Rights Reserved)." } },
+    { "@type": "Question", "name": "What font formats can I export?", "acceptedAnswer": { "@type": "Answer", "text": "TrueType (TTF), WOFF2 for the web, and editable UFO source — each with a license you choose (CC0, OFL, MIT, or All Rights Reserved)." } },
     { "@type": "Question", "name": "Do I need to install any software?", "acceptedAnswer": { "@type": "Answer", "text": "No. The Hebrew Font Maker runs entirely in your browser; the font engine loads only when you export." } }
   ]
 }
@@ -584,7 +584,6 @@
             <option value="cc0">Public Domain (CC0) — most open</option>
             <option value="ofl" selected>SIL Open Font License 1.1 (recommended)</option>
             <option value="mit">MIT License</option>
-            <option value="ccby">Creative Commons BY 4.0</option>
             <option value="arr">All Rights Reserved — most strict</option>
           </select>
         </label>
@@ -728,7 +727,7 @@
   finished font can be used in other IvritSuite tools such as <a href="torah_trainer.html">Torah Trainer</a>.
   Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank">Harrison Bleiberg</a>.
   Generated fonts are yours; the tool ships a matching <strong>LICENSE.txt</strong> in the license you choose
-  (CC0, SIL&nbsp;OFL, MIT, CC-BY&nbsp;4.0, or All&nbsp;Rights&nbsp;Reserved).
+  (CC0, SIL&nbsp;OFL, MIT, or All&nbsp;Rights&nbsp;Reserved).
   Desktop browser recommended.
 </footer>
 
@@ -1765,7 +1764,6 @@ const HELP_CONTENT = {
       <li><strong>Public Domain (CC0)</strong> — you give up all rights; anyone can use, change, sell, or share it freely, no credit needed. The most generous option. <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener">details</a></li>
       <li><strong>SIL Open Font License 1.1 (OFL)</strong> — the standard for free fonts: anyone may use, study, modify, and share it (even bundled in paid software), but it can't be sold on its own and must stay under the OFL. <a href="https://openfontlicense.org" target="_blank" rel="noopener">details</a></li>
       <li><strong>MIT</strong> — very permissive: do almost anything, just keep the copyright + permission notice. <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">details</a></li>
-      <li><strong>Creative Commons BY 4.0</strong> — free to use and adapt for any purpose, <em>including commercially</em>, as long as people credit you and link the license. <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">details</a></li>
       <li><strong>All Rights Reserved</strong> — fully proprietary: nobody may use, copy, or modify it without your written permission. The most restrictive.</li>
     </ul>
     <div class="help-tip">💛 If you can, choose a more open license (CC0, OFL, or MIT). Open Hebrew fonts are a real gift for students, teachers, and anyone learning to read — they make your work usable in classrooms, siddurim, and projects you'll never even see.</div>
@@ -2899,31 +2897,108 @@ function pathToContours(path) {
     .filter(pts => pts.length>=3 && Math.abs(signedArea(pts))>40)
     .map(pts => ({ winding: signedArea(pts) < 0 ? 'cw' : 'ccw', points: pts.map(p => [Math.round(p[0]), Math.round(p[1])]) }));
 }
+/* Unicode(int) -> our anchor key, for the Python GPOS reader (below/above/center + trop). */
+function anchorClassMapForImport() {
+  const m = {};
+  Object.keys(MARK_CLASS).forEach(cp => { m[parseInt(cp,16)] = MARK_CLASS[cp]; });
+  Object.keys(TROP_CLASS).forEach(cp => { m[parseInt(cp,16)] = TROP_CLASS[cp] === 'above' ? 'tropAbove' : 'tropBelow'; });
+  return m;
+}
+/* Merge imported anchor coords onto a freshly seeded base so any classes the font omits keep sane defaults. */
+function applyImportedAnchors(l, imp) {
+  l.anchors = null; seedAnchors(l);
+  ['below','above','center','tropAbove','tropBelow'].forEach(k => {
+    if (imp[k] && Number.isFinite(imp[k].x) && Number.isFinite(imp[k].y))
+      l.anchors[k] = { x: Math.round(imp[k].x), y: Math.round(imp[k].y) };
+  });
+}
 async function uploadSourceFont(file) {
   status('Reading font…', true);
+  let font, bytes;
   try {
     const ot = await ensureOpentype();
-    const font = ot.parse(await file.arrayBuffer());
-    let n = 0;
+    const buf = await file.arrayBuffer();
+    font = ot.parse(buf);
+    bytes = new Uint8Array(buf);
+  } catch (e) { console.error(e); status(''); askModal('Font read failed', '<span class="warn">'+(e.message||e)+'</span>', [{label:'OK'}]); return; }
+  askFontImportOptions(file, font, bytes);
+}
+/* Ask what to pull from the dropped font: outlines and/or its real nikkud anchor positions. */
+function askFontImportOptions(file, font, bytes) {
+  status('');
+  const body =
+    '<p style="margin:0 0 10px;">What should I take from <b>' + escapeHtml(file.name) + '</b>?</p>' +
+    '<label style="display:block;margin:7px 0;cursor:pointer;"><input type="checkbox" id="impOutlines" checked style="margin-right:7px;vertical-align:middle;">' +
+      '<b>Replace letter outlines</b> — use this font’s glyph shapes for the Hebrew letters.</label>' +
+    '<label style="display:block;margin:7px 0;cursor:pointer;"><input type="checkbox" id="impAnchors" checked style="margin-right:7px;vertical-align:middle;">' +
+      '<b>Import nikkud anchor positions</b> — read where the vowels &amp; trop attach so you can inspect and fix them. ' +
+      '<span style="color:var(--muted);">If the font has none, I’ll place them automatically.</span></label>' +
+    '<p style="margin:11px 0 0;color:var(--muted);font-size:.85rem;">Fixing a broken font? Keep both on, then drag the misplaced anchors in the Nikkud step.</p>';
+  askModal('Import font', body, [
+    { label: 'Cancel', cls: 'ghost' },
+    { label: 'Import', onClick: () => {
+        const oEl = document.getElementById('impOutlines'), aEl = document.getElementById('impAnchors');
+        const outlines = oEl ? oEl.checked : true, anchors = aEl ? aEl.checked : true;
+        if (!outlines && !anchors) { status('Nothing selected — import cancelled.'); return; }
+        // Confirm before overwriting letters the user has already drawn (only when replacing outlines).
+        const existing = outlines ? project.letters.filter(x => x.contours && x.contours.length).length : 0;
+        if (existing > 0) {
+          askModal('Replace your letters?',
+            'Replacing outlines will overwrite the <b>' + existing + '</b> letter' + (existing===1?'':'s') + ' you’ve already drawn in this project. Continue?',
+            [{ label: 'Cancel', cls: 'ghost' },
+             { label: 'Replace & import', onClick: () => applyFontImport(file, font, bytes, { outlines, anchors }) }]);
+        } else {
+          applyFontImport(file, font, bytes, { outlines, anchors });
+        }
+    } }
+  ]);
+}
+async function applyFontImport(file, font, bytes, opts) {
+  status('Importing font…', true);
+  try {
+    let imported = null, hadGpos = false, anchorErr = false;
+    if (opts.anchors) {
+      try {
+        await ensurePyodide();
+        status('Reading anchor positions…', true);
+        pyodide.globals.set('hfm_anchor_b64', bytesToB64(bytes));
+        pyodide.globals.set('hfm_anchor_classmap', JSON.stringify(anchorClassMapForImport()));
+        const r = JSON.parse(pyodide.runPython('hfm_read_anchors(hfm_anchor_b64, hfm_anchor_classmap)'));
+        if (r.error) { console.warn(r.error); anchorErr = true; }
+        else { imported = r.anchors || {}; hadGpos = !!r.hadGpos; }
+      } catch (e) { console.warn('anchor import failed, will seed', e); anchorErr = true; }
+    }
+    const scale = 1000 / font.unitsPerEm;
+    let n = 0, anchorHits = 0;
     LETTERS.forEach(L => {
       const l = project.letters.find(x => x.codepoint === L.cp);
-      l.source = { kind:'font', dataUrl:null, cropRect:null };
       const glyph = font.charToGlyph(String.fromCodePoint(parseInt(L.cp,16)));
-      if (!glyph || glyph.index === 0) { l.contours = null; l.curves = null; l.anchors = null; return; }
-      const contours = pathToContours(glyph.getPath(0, 0, 1000));
-      if (!contours.length) { l.contours = null; l.curves = null; l.anchors = null; return; }
-      l.contours = contours; l.curves = null;   // font glyphs are already vector polygons — no Bézier fit (and clears any stale traced curves)
-      const scale = 1000 / font.unitsPerEm;
-      let adv = Math.round((glyph.advanceWidth || 0) * scale);
-      if (!adv) { const em=effMetrics(); let mx=0, mn=1e9; contours.forEach(c=>c.points.forEach(p=>{mx=Math.max(mx,p[0]);mn=Math.min(mn,p[0]);})); adv = Math.round(mx + em.defaultRSB + Math.max(0, em.defaultLSB - mn)); }
-      l.advance = adv;
-      l.anchors = null; seedAnchors(l); n++;
+      const hasGlyph = glyph && glyph.index !== 0;
+      if (opts.outlines) {
+        l.source = { kind:'font', dataUrl:null, cropRect:null };
+        if (!hasGlyph) { l.contours = null; l.curves = null; l.anchors = null; return; }
+        const contours = pathToContours(glyph.getPath(0, 0, 1000));
+        if (!contours.length) { l.contours = null; l.curves = null; l.anchors = null; return; }
+        l.contours = contours; l.curves = null;   // font glyphs are already vector polygons — no Bézier fit
+        let adv = Math.round((glyph.advanceWidth || 0) * scale);
+        if (!adv) { const em=effMetrics(); let mx=0, mn=1e9; contours.forEach(c=>c.points.forEach(p=>{mx=Math.max(mx,p[0]);mn=Math.min(mn,p[0]);})); adv = Math.round(mx + em.defaultRSB + Math.max(0, em.defaultLSB - mn)); }
+        l.advance = adv;
+        n++;
+      }
+      const imp = (opts.anchors && imported) ? imported[L.cp] : null;
+      if (imp) { applyImportedAnchors(l, imp); anchorHits++; }
+      else if (opts.outlines) { l.anchors = null; seedAnchors(l); }
     });
-    project.inputMode = 'font';
+    if (opts.outlines) project.inputMode = 'font';
     syncMetaToForm(); renderLetterGrid(); setWorkMode('anchors');
-    status(`Loaded ${n}/27 letters from ${file.name}. Set nikkud, then export.`);
-    if (!n) askModal('No Hebrew glyphs found', 'That font has no outlines for the Hebrew base letters (U+05D0–05EA). Try a Hebrew font.', [{label:'OK'}]);
-  } catch (e) { console.error(e); status(''); askModal('Font read failed', '<span class="warn">'+(e.message||e)+'</span>', [{label:'OK'}]); }
+    if (opts.outlines && !n) { status(''); askModal('No Hebrew glyphs found', 'That font has no outlines for the Hebrew base letters (U+05D0–05EA). Try a Hebrew font.', [{label:'OK'}]); return; }
+    let msg = opts.outlines ? `Loaded ${n}/27 letters from ${file.name}.` : 'Kept your current outlines.';
+    if (opts.anchors) {
+      msg += hadGpos ? ` Imported anchor positions for ${anchorHits} letter${anchorHits===1?'':'s'} — fix any that look off, then export.`
+           : (anchorErr ? ' (Could not read its anchors, so I placed them automatically.)' : ' This font had no anchor data, so I placed nikkud anchors automatically.');
+    } else { msg += ' Set nikkud, then export.'; }
+    status(msg);
+  } catch (e) { console.error(e); status(''); askModal('Font import failed', '<span class="warn">'+(e.message||e)+'</span>', [{label:'OK'}]); }
 }
 
 /* ════════ SVG import (Advanced → "Enable SVG uploading") ════════
@@ -6015,14 +6090,17 @@ function buildFontSpec() {
   // name table
   const fam = fnt.familyName || 'My Hebrew Hand';
   const reserved = fnt.reservedFontName || fam;
+  const lic = LICENSES[fnt.license] || LICENSES.ofl;
   const names = {
     familyName: fam, styleName: 'Regular',
     uniqueFontIdentifier: fam + '-' + fnt.version,
     fullName: fam, version: 'Version ' + fnt.version, psName: fam.replace(/\s+/g,'') + '-Regular',
     copyright: 'Copyright (c) ' + new Date().getFullYear() + ' ' + ((fnt.author||'').trim() || fam),
-    licenseDescription: (LICENSES[fnt.license] || LICENSES.ofl).desc,
-    licenseInfoURL: (LICENSES[fnt.license] || LICENSES.ofl).url,
-    designer: 'Made with IvritSuite Hebrew Font Maker'
+    manufacturer: 'IvritSuite Hebrew Font Maker',        // nameID 8  — attribution in the standard field
+    designer: 'Made with IvritSuite Hebrew Font Maker',  // nameID 9
+    vendorURL: 'https://ivritsuite.com',                 // nameID 11
+    licenseDescription: lic.name + ' — ' + lic.desc,     // nameID 13 — leads with the license name
+    licenseInfoURL: lic.url                              // nameID 14
   };
   const versionFloat = parseFloat(fnt.version) || 1.0;
   // Vertical metrics. sTypo (ascent/descent) stays at the nominal design box → stable line spacing.
@@ -6340,6 +6418,66 @@ def hfm_ttf_to_woff2(ttf_b64):
         return json.dumps({"error": "WOFF2 conversion failed: " + str(e)})
 
 
+def hfm_read_anchors(ttf_b64, class_map_json):
+    # Read GPOS mark-to-base anchors from an existing font so the editor can show & fix them.
+    # class_map_json maps "<unicode_int>" -> "below"|"above"|"center"|"tropAbove"|"tropBelow".
+    import io, base64, json
+    from fontTools.ttLib import TTFont
+    try:
+        f = TTFont(io.BytesIO(base64.b64decode(ttf_b64)))
+        upm = f["head"].unitsPerEm or 1000
+        scale = 1000.0 / upm
+        cmap = (f.getBestCmap() if "cmap" in f else None) or {}
+        g2u = {}
+        for uni, gname in cmap.items():
+            g2u.setdefault(gname, uni)
+        class_map = {}
+        for k, v in json.loads(class_map_json).items():
+            class_map[int(k)] = v
+        if "GPOS" not in f or f["GPOS"].table is None or f["GPOS"].table.LookupList is None:
+            return json.dumps({"ok": True, "hadGpos": False, "anchors": {}})
+        out = {}
+        for lk in f["GPOS"].table.LookupList.Lookup:
+            subs = []
+            for st in (lk.SubTable or []):
+                ext = getattr(st, "ExtSubTable", None)
+                subs.append(ext if ext is not None else st)
+            for st in subs:
+                if not hasattr(st, "MarkArray") or not hasattr(st, "BaseArray"):
+                    continue
+                mark_glyphs = st.MarkCoverage.glyphs
+                base_glyphs = st.BaseCoverage.glyphs
+                cls_to_key = {}
+                for mi, mg in enumerate(mark_glyphs):
+                    ci = st.MarkArray.MarkRecord[mi].Class
+                    uni = g2u.get(mg)
+                    if uni is None:
+                        continue
+                    key = class_map.get(uni)
+                    if key and ci not in cls_to_key:
+                        cls_to_key[ci] = key
+                for bi, bg in enumerate(base_glyphs):
+                    uni = g2u.get(bg)
+                    if uni is None:
+                        continue
+                    hexcp = format(uni, "04X")
+                    rec = st.BaseArray.BaseRecord[bi]
+                    for ci, anchor in enumerate(rec.BaseAnchor):
+                        if anchor is None:
+                            continue
+                        key = cls_to_key.get(ci)
+                        if not key:
+                            continue
+                        slot = out.setdefault(hexcp, {})
+                        if key in slot:
+                            continue
+                        slot[key] = {"x": round(anchor.XCoordinate * scale),
+                                     "y": round(anchor.YCoordinate * scale)}
+        return json.dumps({"ok": True, "hadGpos": True, "anchors": out})
+    except Exception as e:
+        return json.dumps({"error": "anchor read failed: " + str(e)})
+
+
 def hfm_zip(entries_json):
     # Store-only zip of [{name, b64|text}] -> base64. Text entries are UTF-8 so non-ASCII survives.
     import io, zipfile, base64
@@ -6460,7 +6598,7 @@ function onExportFormatChange() {
 function shareThisFont() {   // open the font library (Fonts view) + a pre-filled submission email
   if (!project) return;
   const f = project.font;
-  const licMap = { cc0:'CC0 (Public Domain)', ofl:'OFL (SIL Open Font License 1.1)', mit:'MIT License', ccby:'CC BY 4.0', arr:'All Rights Reserved' };
+  const licMap = { cc0:'CC0 (Public Domain)', ofl:'OFL (SIL Open Font License 1.1)', mit:'MIT License', arr:'All Rights Reserved' };
   const params = new URLSearchParams({
     view: 'fonts', submit: '1',
     name: (f.familyName || '').trim(),
@@ -6740,7 +6878,6 @@ const LICENSES = {
   cc0:  { name: 'Public Domain (CC0 1.0)',          desc: 'This font is dedicated to the public domain under CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/).', url: 'https://creativecommons.org/publicdomain/zero/1.0/' },
   ofl:  { name: 'SIL Open Font License 1.1',        desc: 'This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at https://openfontlicense.org', url: 'https://openfontlicense.org' },
   mit:  { name: 'MIT License',                      desc: 'This font is licensed under the MIT License (https://opensource.org/licenses/MIT).', url: 'https://opensource.org/licenses/MIT' },
-  ccby: { name: 'Creative Commons Attribution 4.0', desc: 'This font is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).', url: 'https://creativecommons.org/licenses/by/4.0/' },
   arr:  { name: 'All Rights Reserved',              desc: 'All rights reserved. This font is proprietary and may not be used without permission.', url: '' }
 };
 function licenseCtx() {
@@ -6753,7 +6890,6 @@ function licenseText() {            // the LICENSE.txt body for the chosen licen
   switch (project.font.license) {
     case 'cc0':  return cc0Text();
     case 'mit':  return mitText();
-    case 'ccby': return ccbyText();
     case 'arr':  return arrText();
     default:     return oflText();   // 'ofl'
   }
@@ -6791,21 +6927,6 @@ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR P
 NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE FONT OR THE USE OR OTHER DEALINGS IN THE FONT.
-
-${IVRIT_LINE}
-`;
-}
-function ccbyText() {
-  const c = licenseCtx();
-  return `${c.family}
-Copyright (c) ${c.year} ${c.author}
-
-This font is licensed under the Creative Commons Attribution 4.0 International License
-(CC BY 4.0). You are free to share and adapt it for any purpose, even commercially, as long
-as you give appropriate credit to ${c.author}, provide a link to the license, and indicate
-if changes were made.
-
-Full license: https://creativecommons.org/licenses/by/4.0/
 
 ${IVRIT_LINE}
 `;
