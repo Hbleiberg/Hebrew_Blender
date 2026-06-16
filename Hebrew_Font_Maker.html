@@ -1185,7 +1185,7 @@ function udSnap(s) {
   if (s.t === 'spacing') return JSON.parse(JSON.stringify(project.font.spacing));
   if (s.t === 'kerning') return JSON.parse(JSON.stringify(project.font.kerning || []));
   if (s.t === 'metrics') return JSON.parse(JSON.stringify(project.font.metrics));
-  if (s.t === 'precomp') { const pc = getPrecomp(s.target); return pc && pc.anchor ? JSON.parse(JSON.stringify(pc.anchor)) : null; }
+  if (s.t === 'precomp') { const pc = getPrecomp(s.target); return pc ? { anchor: pc.anchor ? JSON.parse(JSON.stringify(pc.anchor)) : null, markScale: (pc.markScale != null ? pc.markScale : null) } : null; }
   return null;
 }
 function udRestore(s, snap) {
@@ -1197,7 +1197,7 @@ function udRestore(s, snap) {
   else if (s.t === 'spacing') Object.assign(project.font.spacing, JSON.parse(JSON.stringify(snap || {})));
   else if (s.t === 'kerning') project.font.kerning = JSON.parse(JSON.stringify(snap || []));
   else if (s.t === 'metrics') Object.assign(project.font.metrics, JSON.parse(JSON.stringify(snap || {})));
-  else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) pc.anchor = snap ? JSON.parse(JSON.stringify(snap)) : null; }
+  else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) { pc.anchor = (snap && snap.anchor) ? JSON.parse(JSON.stringify(snap.anchor)) : null; pc.markScale = (snap && snap.markScale != null) ? snap.markScale : null; } }
 }
 function udNavTo(s) {                                    // show the affected item (no side effects — not selectItem)
   if (s.t !== 'item') return;
@@ -1320,12 +1320,13 @@ function selectItem(kind, cp) {
   _selectItem(kind, cp);
 }
 function _selectItem(kind, cp) {
-  udFlushPending();          // commit any open slider burst / pending nudge before navigating away
-  curKind = kind; curCp = cp; workMode = 'align'; precompTarget = null;
+  udFlushPending();          // commit any open slider burst / pending nudge before navigating away (while identity is still the OUTGOING item)
+  curKind = kind; curCp = cp;
   catTab = (kind === 'letter' && isEng(cp)) ? 'english'
          : isCustomCp(cp) ? 'customglyphs'
          : (kind === 'letter' && letterMeta(cp) && letterMeta(cp).cat === 'punct') ? 'punct' : kind;   // keep the picker on the edited item's category (English → English tab; custom → Custom glyphs; punct → Punctuation)
-  renderGrids(); renderStage(); renderControls();
+  renderGrids();
+  _setWorkMode('align');     // reset to Align AND refresh the step-tab highlight (internal version — selectItem already ran the placement guard); also clears precompTarget + renders stage/controls
 }
 function renderGrids() {
   renderLetterGrid();
@@ -4305,15 +4306,15 @@ function activeVowelCp() {
     default: return activeBelowVowel;
   }
 }
-function markPreviewPath(cp, ax, ay) {
-  const cat = catOfCp(cp), s = cat==='trop'?tropScale():(cat==='accent'?1:markScale());
+function markPreviewPath(cp, ax, ay, scaleOverride) {
+  const cat = catOfCp(cp), s = scaleOverride != null ? scaleOverride : (cat==='trop'?tropScale():(cat==='accent'?1:markScale()));
   const contours = markGlyphContours(cat, cp);
   let d = '';
   contours.forEach(poly => { poly.forEach((p,i) => { const X=fx(ax+p[0]*s), Y=fy(ay+p[1]*s); d += (i===0?'M':'L')+X.toFixed(1)+' '+Y.toFixed(1)+' '; }); d+='Z '; });
   return d;
 }
-function markCenterLocal(cp) {
-  const cat = catOfCp(cp), s = cat==='trop'?tropScale():(cat==='accent'?1:markScale());
+function markCenterLocal(cp, scaleOverride) {
+  const cat = catOfCp(cp), s = scaleOverride != null ? scaleOverride : (cat==='trop'?tropScale():(cat==='accent'?1:markScale()));
   const polys = markGlyphContours(cat, cp);
   let sx = 0, sy = 0, n = 0;
   polys.forEach(poly => poly.forEach(p => { sx += p[0]; sy += p[1]; n++; }));
@@ -4393,6 +4394,10 @@ function precompAnchor(pc) {
   if (b) { seedAnchorsIfNeeded(b); const a = b.anchors && b.anchors[markClassFor(pc.mark)]; if (a) return { x: a.x, y: a.y }; }
   return { x: 0, y: 0 };
 }
+function precompMarkScale(pc) {
+  if (catOfCp(pc.mark) === 'accent') return 1;                           // Latin accents are pre-sized — no per-form scaling
+  return (pc.markScale != null) ? pc.markScale : markScale();            // else this form's own dot size, or inherit the global mark size
+}
 function precompFormBtn(pc) {
   const custom = (pc.anchor && pc.anchor.x != null) ? ' <span style="color:var(--gold);">✎</span>' : '';
   return `<button class="ctl-btn ${precompTarget===pc.target?'primary':''}" onclick="setPrecompTarget('${pc.target}')" title="Place the ${escapeHtml(precompName(pc))} for ${escapeHtml(precompComposed(pc))}">`
@@ -4418,14 +4423,29 @@ function resetPrecompAnchor() {
     renderStage(); renderControls();
   });
 }
+function setPrecompMarkScale(v) {
+  const pc = getPrecomp(precompTarget); if (!pc) return;
+  udBurstBegin([{ t:'precomp', target: precompTarget }], 'mark size');
+  pc.markScale = Math.max(0.3, Math.min(2, (+v)/100));
+  const s = document.getElementById('pcScaleV'); if (s) s.textContent = Math.round(pc.markScale*100) + '%';
+  renderStage();   // live preview; don't rebuild controls (keep slider focus)
+}
+function resetPrecompMarkScale() {
+  udDo([{ t:'precomp', target: precompTarget }], 'reset mark size', () => {
+    const pc = getPrecomp(precompTarget); if (pc) pc.markScale = null;
+    renderStage(); renderControls();
+  });
+}
 function precompHandlesSVG() {
   const pc = getPrecomp(precompTarget); if (!pc) return '';
-  const a = precompAnchor(pc), col = '#e0731f', mc = markCenterLocal(pc.mark);
-  return `<path id="pcMark" d="${markPreviewPath(pc.mark, a.x, a.y)}" fill="${col}"/>`
+  const sc = precompMarkScale(pc);
+  const a = precompAnchor(pc), col = '#e0731f', mc = markCenterLocal(pc.mark, sc);
+  return `<path id="pcMark" d="${markPreviewPath(pc.mark, a.x, a.y, sc)}" fill="${col}"/>`
     + `<circle class="pcanc" cx="${fx(a.x+mc[0])}" cy="${fy(a.y+mc[1])}" r="11" fill="${col}" fill-opacity="0" stroke="#fff" stroke-width="2" pointer-events="all" style="cursor:grab"/>`;
 }
 function attachPrecompDrag() {
   const pc = getPrecomp(precompTarget); if (!pc) return;
+  const sc = precompMarkScale(pc);
   stage().querySelectorAll('.pcanc').forEach(el => {
     let grab = null, pend = null;
     el.addEventListener('pointerdown', e => {
@@ -4438,8 +4458,8 @@ function attachPrecompDrag() {
       if (!grab) return;
       const [fxp,fyp] = clientToFont(e);
       pc.anchor = { x: Math.round(fxp+grab[0]), y: Math.round(fyp+grab[1]) };
-      const mark = stage().querySelector('#pcMark'); if (mark) mark.setAttribute('d', markPreviewPath(pc.mark, pc.anchor.x, pc.anchor.y));
-      const mc = markCenterLocal(pc.mark);
+      const mark = stage().querySelector('#pcMark'); if (mark) mark.setAttribute('d', markPreviewPath(pc.mark, pc.anchor.x, pc.anchor.y, sc));
+      const mc = markCenterLocal(pc.mark, sc);
       el.setAttribute('cx', fx(pc.anchor.x+mc[0])); el.setAttribute('cy', fy(pc.anchor.y+mc[1]));
       const rx = document.getElementById('pcX'); if (rx) rx.value = pc.anchor.x;
       const ry = document.getElementById('pcY'); if (ry) ry.value = pc.anchor.y;
@@ -4452,6 +4472,7 @@ function renderPrecompControls(l) {
   const pc = getPrecomp(precompTarget);
   if (!pc || pc.base !== l.codepoint) { precompTarget = null; return ''; }
   const a = precompAnchor(pc), isOverride = !!(pc.anchor && pc.anchor.x != null);
+  const scPct = Math.round(precompMarkScale(pc) * 100), isScaleOverride = (pc.markScale != null);
   return `<div class="ws-side-title">Place <span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">${precompComposed(pc)}</span> — ${escapeHtml(precompName(pc))}</div>
     <div class="hint" style="font-size:0.66rem;">Where the mark sits in the combined glyph. Drag the orange dot on the canvas, or type X / Y. Affects this precomposed form only — saved automatically.</div>
     <hr class="ctl-divider">
@@ -4461,6 +4482,12 @@ function renderPrecompControls(l) {
     </div>
     <div class="ctl-row" style="margin-top:8px;justify-content:center;">
       ${isOverride ? `<button class="ctl-btn" onclick="resetPrecompAnchor()">Reset to auto</button>` : `<span class="hint" style="font-size:0.62rem;">Auto position — drag to customize.</span>`}
+    </div>
+    <hr class="ctl-divider">
+    <div class="inline">Dot size <input type="range" min="30" max="200" step="1" value="${scPct}" oninput="setPrecompMarkScale(this.value)" onchange="udBurstCommit();renderControls()"> <span id="pcScaleV" class="readout">${scPct}%</span></div>
+    <div class="hint" style="font-size:0.62rem;">Sizes the dot for this form only — the regular vowel dot on other letters stays the same.</div>
+    <div class="ctl-row" style="margin-top:6px;justify-content:center;">
+      ${isScaleOverride ? `<button class="ctl-btn" onclick="resetPrecompMarkScale()">Reset to auto size</button>` : `<span class="hint" style="font-size:0.62rem;">Auto size — drag the slider to customize.</span>`}
     </div>
     <hr class="ctl-divider">
     <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">← Back to vowels</button>`;
@@ -5616,7 +5643,8 @@ function buildFontSpec() {
     if (!baseL || !baseL.contours) return;                          // need a traced base (anchor may be a per-form override)
     const cls = MARK_CLASS[pc.mark];
     const anc = (pc.anchor && pc.anchor.x != null) ? pc.anchor : (baseL.anchors && baseL.anchors[cls]); if (!anc) return;
-    const markPoly = markGlyphContours('nikkud', pc.mark).map(poly => poly.map(([x,y]) => [Math.round(x*ms+anc.x), Math.round(y*ms+anc.y)]));
+    const mscale = precompMarkScale(pc);                            // per-form dot size, or inherit the global mark scale
+    const markPoly = markGlyphContours('nikkud', pc.mark).map(poly => poly.map(([x,y]) => [Math.round(x*mscale+anc.x), Math.round(y*mscale+anc.y)]));
     const baseContours = baseL.contours.map(c => c.points);
     const nm = gname(pc.target);
     glyphs[nm] = { contours: baseContours.concat(markPoly), advance: effLetterAdvance(baseL) };
