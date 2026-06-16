@@ -327,6 +327,12 @@
   body.layout-tabbed #catHost .col-split > div { flex: 1 1 320px; padding-right: 24px; }
   body.layout-tabbed #catHost .col-split > div:last-child { padding-right: 0; }
   body.layout-tabbed #catHost .col-split > div + div { border-top: none; padding-top: 0; border-left: 1px solid var(--border); padding-left: 24px; }
+  /* Advanced Settings grid: even columns separated by gaps (not per-item dividers),
+     so wrapped rows don't leave a stray vertical line at the left edge. */
+  body.layout-tabbed #catHost .col-split.adv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 30px; align-items: start; }
+  body.layout-tabbed #catHost .col-split.adv-grid > div { flex: none; border: none; padding: 0; }
+  @media (max-width: 1024px) { body.layout-tabbed #catHost .col-split.adv-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 640px)  { body.layout-tabbed #catHost .col-split.adv-grid { grid-template-columns: 1fr; } }
   /* Tabbed: the work-mode steps (Align/Trace/Nikkud/Trop) drop below the picker, just above the stage */
   body.layout-tabbed .workspace { display: flex; flex-direction: column; }
   body.layout-tabbed #catTabs   { order: 1; }
@@ -543,7 +549,6 @@
   <button class="tbtn ghost" onclick="openHelp()" title="A plain-language guide to the whole tool">❓ How does this work?</button>
   <button class="tbtn ghost" onclick="openQA()" title="Review every letter × mark placement for collisions">🔍 QA Check</button>
   <button class="tbtn ghost" onclick="generatePreviewPDF()">Preview PDF</button>
-  <span id="tracedReadout" style="font-size:0.8rem;font-weight:700;white-space:nowrap;color:var(--muted);" title="Core Hebrew letters with an outline traced"></span>
   <select class="tbtn-select" id="exportFormat" onchange="onExportFormatChange()" title="Choose an export format — or save the font for use in IvritSuite">
     <option value="ttf" selected>TTF (recommended)</option>
     <option value="woff2">WOFF2 (web)</option>
@@ -596,6 +601,7 @@
           <span><span class="dot" style="background:#d08c2a;"></span>image</span>
           <span><span class="dot" style="background:#3b82f6;"></span>traced</span>
           <span><span class="dot" style="background:#10b981;"></span>anchored</span>
+          <span id="tracedReadout" style="margin-left:auto;font-weight:700;white-space:nowrap;color:var(--muted);" title="Core Hebrew letters with an outline traced"></span>
         </div>
       </div>
     </div>
@@ -649,7 +655,7 @@
     <div class="panel cat-panel" data-cat="advanced">
       <div class="panel-title">Advanced Settings</div>
       <div class="panel-body">
-        <div class="col-split">
+        <div class="col-split adv-grid">
           <div>
             <div class="ctl-label" style="margin-bottom:6px;">English letters</div>
             <label class="chk"><input type="checkbox" id="addEnglishLettersChk" onchange="setAddEnglishLetters(this.checked)"> Add English letters</label>
