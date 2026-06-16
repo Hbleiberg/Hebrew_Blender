@@ -629,6 +629,18 @@
         <div class="letter-grid" id="englishGrid"></div>
       </div>
     </div>
+    <div class="panel collapsed cat-panel" data-cat="specialforms">
+      <div class="panel-title">Specialized letters</div>
+      <div class="panel-body" id="specialFormsPanelBody"></div>
+    </div>
+    <div class="panel collapsed cat-panel" data-cat="yiddish">
+      <div class="panel-title">Yiddish</div>
+      <div class="panel-body" id="yiddishPanelBody"></div>
+    </div>
+    <div class="panel collapsed cat-panel" data-cat="ladino">
+      <div class="panel-title">Ladino</div>
+      <div class="panel-body" id="ladinoPanelBody"></div>
+    </div>
     <div class="panel cat-panel" data-cat="spacing">
       <div class="panel-title">Spacing</div>
       <div class="panel-body" id="spacingBody"></div>
@@ -652,6 +664,21 @@
             <div class="ctl-label" style="margin-bottom:6px;">SVG uploading</div>
             <label class="chk"><input type="checkbox" id="svgUploadChk" onchange="setSvgUpload(this.checked)"> Enable SVG uploading</label>
             <div class="hint">Upload <strong>SVG</strong> files instead of images — vector paths become the glyph outlines <strong>directly, with no tracing</strong>. In this mode the upload zones accept SVG only. <a href="#" onclick="openSvgGuide();return false;">SVG Upload Guide →</a></div>
+          </div>
+          <div>
+            <div class="ctl-label" style="margin-bottom:6px;">Specialized letters</div>
+            <label class="chk"><input type="checkbox" id="addSpecialFormsChk" onchange="setAddSpecialForms(this.checked)"> Add specialized letters</label>
+            <div class="hint">Adds a <strong>Specialized letters</strong> tab with the <strong>wide letterforms</strong> (wide alef, dalet, he, kaf, lamed, final mem, resh, tav) — <strong>auto-composed from your traced letters</strong>, each with a <strong>Width</strong> slider that adds space &amp; stretches.</div>
+          </div>
+          <div>
+            <div class="ctl-label" style="margin-bottom:6px;">Yiddish</div>
+            <label class="chk"><input type="checkbox" id="addYiddishChk" onchange="setAddYiddish(this.checked)"> Add Yiddish glyphs</label>
+            <div class="hint">Adds a <strong>Yiddish</strong> tab: pasekh/komets alef (אַ אָ), the rafe letters (בֿ כֿ פֿ), and the digraphs tsvey vovn / vov-yud / tsvey yudn (װ ױ ײ) — all composed from your traced letters.</div>
+          </div>
+          <div>
+            <div class="ctl-label" style="margin-bottom:6px;">Ladino</div>
+            <label class="chk"><input type="checkbox" id="addLadinoChk" onchange="setAddLadino(this.checked)"> Add Ladino glyphs</label>
+            <div class="hint">Adds a <strong>Ladino</strong> (Judeo-Spanish) tab: the rafe / varika letters (בֿ גֿ דֿ זֿ טֿ פֿ קֿ) plus שׁ / שׂ — composed from your traced letters.</div>
           </div>
         </div>
       </div>
@@ -934,6 +961,90 @@ const PRECOMPOSED = [
   { target:'FB4A', base:'05EA', mark:'05BC' }, // dotted tav
 ];
 
+/* ── Opt-in extra forms (Advanced toggles): Specialized letters / Yiddish / Ladino.
+   Every form AUTO-COMPOSES from the user's already-traced base letter(s) — nothing is redrawn.
+   Three shapes of entry:
+     • base+mark   {target, base, mark}            → reuses the precomposed bake (cmap + ccmp + QA)
+     • wide letter {target, base, wide:true}        → one base, widened, + a Width slider (new bake)
+     • digraph     {target, bases:[…], wide:true}   → bases laid side-by-side, + a Width slider (new bake)
+   Targets use the real Unicode code point where one exists; Private-Use (E0Cx) for the Ladino
+   rafe letters that have none. `tab` marks the owning tab (a target may be surfaced by more than one). */
+const WIDE_LETTERS = [   // Specialized tab — the 8 Unicode wide letterforms (the "wide ligatures")
+  { target:'FB21', base:'05D0', wide:true, tab:'special', name:'Wide Alef' },
+  { target:'FB22', base:'05D3', wide:true, tab:'special', name:'Wide Dalet' },
+  { target:'FB23', base:'05D4', wide:true, tab:'special', name:'Wide He' },
+  { target:'FB24', base:'05DB', wide:true, tab:'special', name:'Wide Kaf' },
+  { target:'FB25', base:'05DC', wide:true, tab:'special', name:'Wide Lamed' },
+  { target:'FB26', base:'05DD', wide:true, tab:'special', name:'Wide Final Mem' },
+  { target:'FB27', base:'05E8', wide:true, tab:'special', name:'Wide Resh' },
+  { target:'FB28', base:'05EA', wide:true, tab:'special', name:'Wide Tav' },
+];
+const YIDDISH_FORMS = [
+  { target:'FB2E', base:'05D0', mark:'05B7', tab:'yiddish', name:'Pasekh Alef (אַ)' },
+  { target:'FB2F', base:'05D0', mark:'05B8', tab:'yiddish', name:'Komets Alef (אָ)' },
+  { target:'FB4C', base:'05D1', mark:'05BF', tab:'yiddish', name:'Veys (בֿ)' },
+  { target:'FB4D', base:'05DB', mark:'05BF', tab:'yiddish', name:'Khof (כֿ)' },
+  { target:'FB4E', base:'05E4', mark:'05BF', tab:'yiddish', name:'Fey (פֿ)' },
+  { target:'05F0', bases:['05D5','05D5'], wide:true, tab:'yiddish', name:'Tsvey Vovn (װ)' },
+  { target:'05F1', bases:['05D5','05D9'], wide:true, tab:'yiddish', name:'Vov Yud (ױ)' },
+  { target:'05F2', bases:['05D9','05D9'], wide:true, tab:'yiddish', name:'Tsvey Yudn (ײ)' },
+];
+const LADINO_FORMS = [   // base + rafe/"varika" bar; PUA where Unicode has no precomposed form
+  { target:'FB4C', base:'05D1', mark:'05BF', tab:'ladino', name:'Bet + rafe (בֿ)' },
+  { target:'E0C1', base:'05D2', mark:'05BF', tab:'ladino', name:'Gimel + rafe (גֿ)' },
+  { target:'E0C2', base:'05D3', mark:'05BF', tab:'ladino', name:'Dalet + rafe (דֿ)' },
+  { target:'E0C3', base:'05D6', mark:'05BF', tab:'ladino', name:'Zayin + rafe (זֿ)' },
+  { target:'E0C4', base:'05D8', mark:'05BF', tab:'ladino', name:'Tet + rafe (טֿ)' },
+  { target:'FB4E', base:'05E4', mark:'05BF', tab:'ladino', name:'Pe + rafe (פֿ)' },
+  { target:'E0C5', base:'05E7', mark:'05BF', tab:'ladino', name:'Qof + rafe (קֿ)' },
+  { target:'FB2A', base:'05E9', mark:'05C1', tab:'ladino', name:'Shin (שׁ)' },
+  { target:'FB2B', base:'05E9', mark:'05C2', tab:'ladino', name:'Sin (שׂ)' },
+];
+const EXTRA_FORMS    = [].concat(WIDE_LETTERS, YIDDISH_FORMS, LADINO_FORMS);
+const SPECIAL_TARGETS = WIDE_LETTERS.map(f => f.target);
+const YIDDISH_TARGETS = YIDDISH_FORMS.map(f => f.target);
+const LADINO_TARGETS  = LADINO_FORMS.map(f => f.target);
+const EXTRA_TAB_FLAG  = { special:'addSpecialForms', yiddish:'addYiddish', ladino:'addLadino' };
+const ORIG_PRECOMP_TARGETS = new Set(PRECOMPOSED.map(p => p.target));   // always-baked core forms (never gated)
+function extraTargetsFor(tab) {   // this tab's targets, minus any that are core PRECOMPOSED (those bake regardless)
+  return EXTRA_FORMS.filter(f => f.tab === tab && !ORIG_PRECOMP_TARGETS.has(f.target)).map(f => f.target);
+}
+const ALL_EXTRA_TARGETS = new Set([].concat(extraTargetsFor('special'), extraTargetsFor('yiddish'), extraTargetsFor('ladino')));
+function activeExtraTargets() {   // union of the target sets for the tabs currently switched on
+  const s = new Set();
+  ['special','yiddish','ladino'].forEach(tab => {
+    if (project && project.font && project.font[EXTRA_TAB_FLAG[tab]]) extraTargetsFor(tab).forEach(t => s.add(t));
+  });
+  return s;
+}
+function precompExportable(pc) {   // core forms always; opt-in forms only while an owning tab is on
+  return !ALL_EXTRA_TARGETS.has(pc.target) || activeExtraTargets().has(pc.target);
+}
+function isWideForm(pc) { return !!(pc && pc.wide); }
+function precompBaseCp(pc) { return pc.base || (pc.bases && pc.bases[0]); }
+function precompWidthScale(pc) { return (pc && pc.widthScale != null) ? pc.widthScale : 1; }
+/* Compose a wide letterform or digraph from the traced base letter(s): lay the bases left-to-right,
+   then scale X about the left edge by widthScale AND scale the advance by the same factor — i.e. the
+   single Width slider both stretches the outline and adds side space. Returns {contours:[[x,y]…], advance}
+   or null if any base isn't traced. Shared by the live canvas preview and the export bake. */
+function buildWideGlyph(pc) {
+  const bases = pc.bases || [pc.base];
+  const Ls = bases.map(cp => project.letters.find(x => x.codepoint === cp));
+  if (Ls.some(L => !L || !L.contours)) return null;
+  const advs = Ls.map(effLetterAdvance);
+  const total = advs.reduce((a, b) => a + b, 0);
+  let polys = [], x = total;               // RTL: the first (logical) base sits on the RIGHT, e.g. vav-yud ױ = yud · vav
+  Ls.forEach((L, i) => {
+    x -= advs[i];
+    L.contours.forEach(c => polys.push(c.points.map(([px, py]) => [px + x, py])));
+  });
+  const w = precompWidthScale(pc);
+  let minX = 1e9; polys.forEach(poly => poly.forEach(p => { if (p[0] < minX) minX = p[0]; }));
+  if (minX === 1e9) minX = 0;
+  const contours = polys.map(poly => poly.map(([px, py]) => [Math.round(minX + (px - minX) * w), py]));
+  return { contours, advance: Math.round(total * w) };
+}
+
 /* ── English (Latin) letters — A–Z and a–z, added on demand via the "Add English letters" advanced toggle.
    Kept out of LETTERS (which is Hebrew-specific: RTL, kerning classes, the 27-letter count); seeded into
    project.letters tagged {eng:true} when enabled. Traced/anchored through the normal per-glyph workflow. */
@@ -1185,7 +1296,7 @@ function udSnap(s) {
   if (s.t === 'spacing') return JSON.parse(JSON.stringify(project.font.spacing));
   if (s.t === 'kerning') return JSON.parse(JSON.stringify(project.font.kerning || []));
   if (s.t === 'metrics') return JSON.parse(JSON.stringify(project.font.metrics));
-  if (s.t === 'precomp') { const pc = getPrecomp(s.target); return pc ? { anchor: pc.anchor ? JSON.parse(JSON.stringify(pc.anchor)) : null, markScale: (pc.markScale != null ? pc.markScale : null) } : null; }
+  if (s.t === 'precomp') { const pc = getPrecomp(s.target); return pc ? { anchor: pc.anchor ? JSON.parse(JSON.stringify(pc.anchor)) : null, markScale: (pc.markScale != null ? pc.markScale : null), widthScale: (pc.widthScale != null ? pc.widthScale : null) } : null; }
   return null;
 }
 function udRestore(s, snap) {
@@ -1197,7 +1308,7 @@ function udRestore(s, snap) {
   else if (s.t === 'spacing') Object.assign(project.font.spacing, JSON.parse(JSON.stringify(snap || {})));
   else if (s.t === 'kerning') project.font.kerning = JSON.parse(JSON.stringify(snap || []));
   else if (s.t === 'metrics') Object.assign(project.font.metrics, JSON.parse(JSON.stringify(snap || {})));
-  else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) { pc.anchor = (snap && snap.anchor) ? JSON.parse(JSON.stringify(snap.anchor)) : null; pc.markScale = (snap && snap.markScale != null) ? snap.markScale : null; } }
+  else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) { pc.anchor = (snap && snap.anchor) ? JSON.parse(JSON.stringify(snap.anchor)) : null; pc.markScale = (snap && snap.markScale != null) ? snap.markScale : null; pc.widthScale = (snap && snap.widthScale != null) ? snap.widthScale : null; } }
 }
 function udNavTo(s) {                                    // show the affected item (no side effects — not selectItem)
   if (s.t !== 'item') return;
@@ -1272,6 +1383,7 @@ function newProject() {
       addCustomGlyphs: false,
       svgUpload: false,
       addEnglishLetters: false,
+      addSpecialForms: false, addYiddish: false, addLadino: false,   // opt-in extra glyph tabs
       kerning: []
     },
     template: { font: "'Noto Sans Hebrew', sans-serif", opacity: 0.35, showOverlay: true },
@@ -1339,7 +1451,10 @@ function renderGrids() {
     else renderCustomGlyphsPanel();                                              // first build of the panel + add form
   }
   if (document.getElementById('englishGrid')) renderEnglishGrid();
-  renderCatTabs();   // also (re)builds the tab bar so the Custom glyphs / English tabs appear/disappear with their toggles
+  if (document.getElementById('specialFormsPanelBody')) renderSpecialFormsPanel();
+  if (document.getElementById('yiddishPanelBody')) renderYiddishPanel();
+  if (document.getElementById('ladinoPanelBody')) renderLadinoPanel();
+  renderCatTabs();   // also (re)builds the tab bar so the Custom glyphs / English / Specialized / Yiddish / Ladino tabs appear/disappear with their toggles
 }
 /* ── Custom-mark geometry helpers ──
    Custom mark contours are stored in workspace coords (natural for the editor); the
@@ -2253,6 +2368,42 @@ function ensureEnglishSeeded(p) {
     if (!p.precomposed.some(x => x.target === pc.target)) p.precomposed.push({ target: pc.target, base: pc.base, mark: pc.mark, anchor: null });
   });
 }
+/* Seed an opt-in tab's forms into project.precomposed (auto-compose targets). Existing targets
+   (incl. core PRECOMPOSED like שׁ/שׂ that Ladino also surfaces) are left untouched, so their
+   placement/size tweaks survive. Disabling a tab keeps the seeded forms but precompExportable()
+   excludes them from the font + QA, so re-enabling restores the user's per-form tweaks. */
+function ensurePrecompSeeded(forms, p) {
+  p = p || project;
+  p.precomposed = p.precomposed || [];
+  forms.forEach(f => {
+    if (p.precomposed.some(x => x.target === f.target)) return;
+    const e = { target: f.target, anchor: null };
+    if (f.base)  e.base  = f.base;
+    if (f.bases) e.bases = f.bases.slice();
+    if (f.mark)  e.mark  = f.mark;
+    if (f.wide)  e.wide  = true;
+    if (f.name)  e.name  = f.name;
+    p.precomposed.push(e);
+  });
+}
+function setAddSpecialForms(on) {
+  project.font.addSpecialForms = !!on;
+  if (on) ensurePrecompSeeded(WIDE_LETTERS);
+  else if (precompTarget && SPECIAL_TARGETS.indexOf(precompTarget) >= 0) clearPrecompTarget();
+  renderGrids();
+}
+function setAddYiddish(on) {
+  project.font.addYiddish = !!on;
+  if (on) ensurePrecompSeeded(YIDDISH_FORMS);
+  else if (precompTarget && YIDDISH_TARGETS.indexOf(precompTarget) >= 0) clearPrecompTarget();
+  renderGrids();
+}
+function setAddLadino(on) {
+  project.font.addLadino = !!on;
+  if (on) ensurePrecompSeeded(LADINO_FORMS);
+  else if (precompTarget && LADINO_TARGETS.indexOf(precompTarget) >= 0) clearPrecompTarget();
+  renderGrids();
+}
 function setSvgUpload(on) {
   project.font.svgUpload = !!on;
   renderGrids(); renderStage(); renderControls();   // re-render the upload zones (SVG-only accept + text), tabs, and stage
@@ -2353,6 +2504,39 @@ function renderCustomGlyphsGrid() {
     grid.appendChild(tile);
   });
 }
+/* ── Opt-in form tabs (Specialized / Yiddish / Ladino): a grid of auto-composed forms. Clicking a
+   tile opens the form on the canvas below — the existing mark-placement editor for base+mark forms,
+   the Width slider for wide letterforms / digraphs. ── */
+function renderFormPanel(panelId, targets, intro) {
+  const el = document.getElementById(panelId); if (!el) return;
+  el.innerHTML = `<div class="hint" style="margin-bottom:8px;">${intro}</div><div class="letter-grid" id="${panelId}Grid"></div>`;
+  const grid = document.getElementById(panelId + 'Grid'); if (!grid) return;
+  let any = false;
+  targets.forEach(t => {
+    const pc = getPrecomp(t); if (!pc) return;
+    any = true;
+    const bases = pc.bases || [pc.base];
+    const traced = bases.every(cp => { const L = project.letters.find(x => x.codepoint === cp); return L && L.contours; });
+    const tile = document.createElement('div');
+    tile.className = 'ltile' + (precompTarget === t ? ' sel' : '');
+    tile.innerHTML = `<span class="lt-dot ${traced ? 'traced' : ''}"></span>
+      <span class="lt-heb" style="font-family:${project.template.font};direction:rtl;">${precompComposed(pc)}</span>
+      <span class="lt-name">${escapeHtml(precompName(pc))}</span>`;
+    tile.onclick = () => pickPrecompForm(t);
+    grid.appendChild(tile);
+  });
+  if (!any) grid.innerHTML = `<div class="hint" style="grid-column:1/-1;direction:ltr;text-align:left;">Enable this tab to add its forms.</div>`;
+}
+function renderSpecialFormsPanel() { renderFormPanel('specialFormsPanelBody', SPECIAL_TARGETS, 'Wide letterforms — <b>auto-composed from your traced letters</b>. Pick one, then use the <b>Width</b> slider (it both adds side space and stretches). Insert them by their Unicode code point.'); }
+function renderYiddishPanel()      { renderFormPanel('yiddishPanelBody', YIDDISH_TARGETS, 'Yiddish forms, composed from your traced letters: pasekh / komets alef, the rafe letters (בֿ כֿ פֿ), and the vov/yud digraphs (װ ױ ײ).'); }
+function renderLadinoPanel()       { renderFormPanel('ladinoPanelBody', LADINO_TARGETS, 'Ladino (Judeo-Spanish) forms: each base letter with the rafe / varika bar, composed from your traced letters.'); }
+function pickPrecompForm(target) {
+  const pc = getPrecomp(target); if (!pc) return;
+  curKind = 'letter'; curCp = precompBaseCp(pc); precompTarget = target;
+  if (workMode !== 'anchors') { anchorCat = 'nikkud'; activeAnchorClass = 'below'; }
+  _setWorkMode('anchors');     // shows the canvas + form editor; 'anchors' keeps precompTarget set
+  renderGrids();               // refresh the picker tile selection
+}
 function addCustomGlyph() {
   const cp = normalizeCp(document.getElementById('cgCp').value);
   if (!cp) { alert('Enter a valid Unicode code point — e.g. E000, U+05D0, or paste a character. (Basic Multilingual Plane only.)'); return; }
@@ -2407,8 +2591,8 @@ function _setWorkMode(mode) {
     if (mode === 'anchors') mode = 'align';
     if (mode === 'nodes') mode = 'align';     // node editor is letters-only
     if (curItem().designMode === 'editor') mode = 'align';
-  } else if (mode === 'anchors' && (isPunctItem() || !(project.font.nikkud.enabled || project.font.trop.enabled))) {
-    mode = 'align';                            // punctuation is anchor-free; letters-only font has no marks step
+  } else if (mode === 'anchors' && !precompTarget && (isPunctItem() || !(project.font.nikkud.enabled || project.font.trop.enabled))) {
+    mode = 'align';                            // punctuation is anchor-free; letters-only font has no marks step (but a precomposed/wide form being placed stays in anchors)
   }
   workMode = mode;
   nodeModel = null; nodeSel.clear(); nodeDrag = null;   // node-editor state is per-entry — rebuilt by renderStage when mode==='nodes'
@@ -2458,10 +2642,16 @@ function renderCatTabs() {
   if (sv && project && project.font) sv.checked = !!project.font.svgUpload;
   const en = document.getElementById('addEnglishLettersChk');
   if (en && project && project.font) en.checked = !!project.font.addEnglishLetters;
-  const NAMES = { fontdetails: 'Font Details', letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop', punct: 'Punctuation', english: 'English', customglyphs: 'Custom glyphs', spacing: 'Spacing', advanced: 'Advanced Settings' };
+  const sf = document.getElementById('addSpecialFormsChk'); if (sf && project && project.font) sf.checked = !!project.font.addSpecialForms;
+  const yi = document.getElementById('addYiddishChk');      if (yi && project && project.font) yi.checked = !!project.font.addYiddish;
+  const la = document.getElementById('addLadinoChk');       if (la && project && project.font) la.checked = !!project.font.addLadino;
+  const NAMES = { fontdetails: 'Font Details', letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop', punct: 'Punctuation', english: 'English', customglyphs: 'Custom glyphs', specialforms: 'Specialized letters', yiddish: 'Yiddish', ladino: 'Ladino', spacing: 'Spacing', advanced: 'Advanced Settings' };
   const cats = ['fontdetails', 'letter', 'nikkud', 'trop', 'punct', 'spacing', 'advanced'];
   if (project && project.font && project.font.addCustomGlyphs) cats.splice(cats.indexOf('punct') + 1, 0, 'customglyphs');   // appears right after Punctuation
   if (project && project.font && project.font.addEnglishLetters) cats.splice(cats.indexOf('punct') + 1, 0, 'english');   // English tab right after Punctuation (before Custom glyphs)
+  if (project && project.font && project.font.addLadino)       cats.splice(cats.indexOf('punct') + 1, 0, 'ladino');        // Specialized / Yiddish / Ladino sit right after Punctuation
+  if (project && project.font && project.font.addYiddish)      cats.splice(cats.indexOf('punct') + 1, 0, 'yiddish');
+  if (project && project.font && project.font.addSpecialForms) cats.splice(cats.indexOf('punct') + 1, 0, 'specialforms');
   t.innerHTML = cats.map(c =>
     `<div class="ctab" data-cat="${c}" onclick="setCatTab('${c}')">${NAMES[c]}</div>`).join('');
   syncCatTabs();
@@ -3328,10 +3518,17 @@ async function renderStage() {
     if (l.contours) { const C = stageColors(); h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${C.inkFill}" fill-rule="nonzero" stroke="${C.inkStroke}" stroke-width="0.6"/>`; }
     else h += `<text x="300" y="520" text-anchor="middle" fill="#9aa0aa" font-size="12">Not traced yet.</text>`;
   } else if (workMode === 'anchors') {
-    if (l.contours) h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
+    const pcW = precompTarget ? getPrecomp(precompTarget) : null;
+    const wideMode = isWideForm(pcW);
+    if (wideMode) {
+      const g = buildWideGlyph(pcW);   // live: shows the widened/combined outline as the slider moves
+      if (g) h += `<path d="${contoursToPath(g.contours.map(pts => ({ points: pts })))}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
+      else h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="12">Trace the base letter(s) first to preview this form.</text>`;
+    } else if (l.contours) h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
     if (l.contours || project.template.showOverlay) {
       // preview the vowel (or, in precomposed-form mode, that form's mark) on the glyph
-      if (precompTarget) { h += precompHandlesSVG(); }
+      if (precompTarget && !wideMode) { h += precompHandlesSVG(); }
+      else if (wideMode) { /* wide form: outline drawn above; sized via the Width slider */ }
       else if (isEng(l.codepoint)) { h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="12">${engSupportsAccents(l.codepoint) ? 'Pick an accented form on the left to place its accent.' : 'No accents for this letter.'}</text>`; }
       else { seedAnchorsIfNeeded(l); h += anchorHandlesSVG(l); }
     } else {
@@ -3362,7 +3559,7 @@ async function renderStage() {
   sv.innerHTML = h;
   if (workMode === 'align' && url) attachTransformDrag(l);   // image drag always available; metric dots (drawn on top) capture their own grabs
   if (workMode === 'align' && metricAdjust) attachMetricDrag();
-  if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) { if (precompTarget) attachPrecompDrag(); else if (!isEng(l.codepoint)) attachAnchorDrag(l); }
+  if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) { if (precompTarget) { if (!isWideForm(getPrecomp(precompTarget))) attachPrecompDrag(); } else if (!isEng(l.codepoint)) attachAnchorDrag(l); }
   if (workMode === 'nodes') attachNodeEditor(l);
   renderLegend();
 }
@@ -4386,8 +4583,13 @@ function setBelowVowel(cp) { activeBelowVowel = cp; renderStage(); renderControl
    matching anchor (shared with the live vowels); a per-form override lets the user place it exactly. */
 let precompTarget = null;   // active precomposed form's target codepoint (e.g. 'FB2A'), or null
 function getPrecomp(t) { return project.precomposed.find(p => p.target === t); }
-function precompName(pc) { return MARK_NAMES[pc.mark] || (LATIN_ACCENTS[pc.mark] && LATIN_ACCENTS[pc.mark].name) || 'mark'; }
-function precompComposed(pc) { return String.fromCodePoint(parseInt(pc.base,16)) + String.fromCodePoint(parseInt(pc.mark,16)); }
+function precompName(pc) { return pc.name || MARK_NAMES[pc.mark] || (LATIN_ACCENTS[pc.mark] && LATIN_ACCENTS[pc.mark].name) || 'mark'; }
+function precompComposed(pc) {
+  if (pc.bases) return pc.bases.map(c => String.fromCodePoint(parseInt(c,16))).join('');   // digraph: show both bases
+  const b = pc.base ? String.fromCodePoint(parseInt(pc.base,16)) : '';
+  const m = pc.mark ? String.fromCodePoint(parseInt(pc.mark,16)) : '';                     // wide letters have no mark
+  return b + m;
+}
 function precompAnchor(pc) {
   if (pc.anchor && pc.anchor.x != null) return pc.anchor;                 // user override
   const b = project.letters.find(x => x.codepoint === pc.base);          // else the base's class anchor
@@ -4405,7 +4607,7 @@ function precompFormBtn(pc) {
 }
 function setPrecompTarget(t) {
   const pc = getPrecomp(t); if (!pc) return;
-  precompTarget = t; curKind = 'letter'; curCp = pc.base;
+  precompTarget = t; curKind = 'letter'; curCp = precompBaseCp(pc);
   renderGrids(); renderStage(); renderControls();
 }
 function clearPrecompTarget() { precompTarget = null; renderStage(); renderControls(); }
@@ -4435,6 +4637,33 @@ function resetPrecompMarkScale() {
     const pc = getPrecomp(precompTarget); if (pc) pc.markScale = null;
     renderStage(); renderControls();
   });
+}
+/* Wide letterforms & digraphs: one Width slider that both adds side space and stretches the outline. */
+function setPrecompWidth(v) {
+  const pc = getPrecomp(precompTarget); if (!pc) return;
+  udBurstBegin([{ t:'precomp', target: precompTarget }], 'width');
+  pc.widthScale = Math.max(1, Math.min(2.5, (+v)/100));
+  const s = document.getElementById('pcWidthV'); if (s) s.textContent = Math.round(pc.widthScale*100) + '%';
+  renderStage();   // live preview; don't rebuild controls (keep slider focus)
+}
+function resetPrecompWidth() {
+  udDo([{ t:'precomp', target: precompTarget }], 'reset width', () => {
+    const pc = getPrecomp(precompTarget); if (pc) pc.widthScale = null;
+    renderStage(); renderControls();
+  });
+}
+function renderWideFormControls(pc) {
+  const wPct = Math.round(precompWidthScale(pc) * 100), isOver = (pc.widthScale != null);
+  const bases = (pc.bases || [pc.base]).map(cp => { const L = project.letters.find(x => x.codepoint === cp); return L ? (L.name || cp) : cp; });
+  return `<div class="ws-side-title">${escapeHtml(precompName(pc))}</div>
+    <div class="hint" style="font-size:0.66rem;">Auto-composed from your traced ${bases.map(escapeHtml).join(' + ')}. The <b>Width</b> slider both adds side space and stretches the outline — saved automatically.</div>
+    <hr class="ctl-divider">
+    <div class="inline">Width <input type="range" min="100" max="250" step="1" value="${wPct}" oninput="setPrecompWidth(this.value)" onchange="udBurstCommit();renderControls()"> <span id="pcWidthV" class="readout">${wPct}%</span></div>
+    <div class="ctl-row" style="margin-top:6px;justify-content:center;">
+      ${isOver ? `<button class="ctl-btn" onclick="resetPrecompWidth()">Reset width</button>` : `<span class="hint" style="font-size:0.62rem;">Default width — drag the slider to customize.</span>`}
+    </div>
+    <hr class="ctl-divider">
+    <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">← Back</button>`;
 }
 function precompHandlesSVG() {
   const pc = getPrecomp(precompTarget); if (!pc) return '';
@@ -4470,7 +4699,8 @@ function attachPrecompDrag() {
 }
 function renderPrecompControls(l) {
   const pc = getPrecomp(precompTarget);
-  if (!pc || pc.base !== l.codepoint) { precompTarget = null; return ''; }
+  if (!pc || precompBaseCp(pc) !== l.codepoint) { precompTarget = null; return ''; }
+  if (isWideForm(pc)) return renderWideFormControls(pc);   // wide letterforms / digraphs → Width slider
   const a = precompAnchor(pc), isOverride = !!(pc.anchor && pc.anchor.x != null);
   const scPct = Math.round(precompMarkScale(pc) * 100), isScaleOverride = (pc.markScale != null);
   return `<div class="ws-side-title">Place <span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">${precompComposed(pc)}</span> — ${escapeHtml(precompName(pc))}</div>
@@ -5292,7 +5522,7 @@ function qaRows() {
     rows.push({ cp: meta.cp, name: meta.name, labelCh: qaCh(meta.cp), desc: meta.desc, L });
     if (!nikOn) return;                                                // precomposed nikkud forms only exist when Nikkud is on
     (project.precomposed || []).forEach(pc => {
-      if (pc.base !== meta.cp || catOfCp(pc.mark) === 'accent') return;
+      if (pc.base !== meta.cp || !pc.mark || catOfCp(pc.mark) === 'accent' || !precompExportable(pc)) return;
       const r = qaSynthPrecompRow(pc, meta, QA_PRECOMP_LABELS[pc.target] || precompName(pc));
       if (r) rows.push(r);
     });
@@ -5647,6 +5877,7 @@ function buildFontSpec() {
   const built = [];
   if (nikOn) project.precomposed.forEach(pc => {
     if (catOfCp(pc.mark) === 'accent') return;                      // Latin accents are baked in their own pass below
+    if (isWideForm(pc) || !precompExportable(pc)) return;           // wide forms bake below; opt-in forms only while their tab is on
     const baseL = project.letters.find(x => x.codepoint === pc.base);
     if (!baseL || !baseL.contours) return;                          // need a traced base (anchor may be a per-form override)
     const cls = MARK_CLASS[pc.mark];
@@ -5661,6 +5892,17 @@ function buildFontSpec() {
     glyphOrder.push(nm); baseGlyphNames.push(nm);
     cmap[parseInt(pc.target,16)] = nm;
     built.push(pc);
+  });
+
+  // wide letterforms & digraphs (Specialized / Yiddish tabs): widen / lay out the traced base(s), no mark.
+  // cmap-only (no ccmp) — these are inserted by their own code point, not auto-substituted from a sequence.
+  (project.precomposed || []).forEach(pc => {
+    if (!isWideForm(pc) || !precompExportable(pc)) return;
+    const g = buildWideGlyph(pc); if (!g) return;                   // skip until the base letter(s) are traced
+    const nm = gname(pc.target);
+    glyphs[nm] = { contours: g.contours, advance: g.advance };
+    if (!glyphOrder.includes(nm)) { glyphOrder.push(nm); baseGlyphNames.push(nm); }
+    cmap[parseInt(pc.target,16)] = nm;
   });
 
   // precomposed accented Latin letters (á, é, ñ, ç…): bake base + accent at the placed anchor — glyphs + cmap only (no ccmp/GPOS)
