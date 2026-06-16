@@ -1165,7 +1165,7 @@ let lastSavedAnchors = null;                 // most recently SAVED placement �
 const anchorInheritedFrom = new WeakMap();   // letter → the saved snapshot already carried onto it (once per save, clobber-safe)
 // Layout is always "Tabbed" now (the Sidebar option was removed).
 let catTab = 'letter';      // tabbed layout: which category picker is visible ('letter'|'nikkud'|'trop')
-let metricAdjust = true;    // Letter Metrics → "Adjust on canvas" drag toggle (default on; metric dots + image both draggable)
+let metricAdjust = false;   // Letter Metrics → "Adjust margins manually?" drag toggle (default OFF, opt-in; shows the metric dots — the reference image stays draggable either way)
 let metricDrag = null;      // active metric-guide drag: { key, axis, grab }
 
 /* ════════ Undo / redo (per-project, in-memory; max 100 entries). Each entry snapshots only the
@@ -1891,9 +1891,9 @@ function metricsPanel() {
       </div>
     </div>
     <div class="metric-actions">
-      <button class="mode-btn metric-toggle ${metricAdjust?'active':''}" id="metAdj" type="button" onclick="toggleMetricAdjust()">${metricAdjust?'✓ ':''}Adjust on canvas</button>
+      <label class="ctl-btn metric-toggle" id="metAdj" style="display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none;"><input type="checkbox" ${metricAdjust?'checked':''} onchange="toggleMetricAdjust()" style="accent-color:var(--gold);width:14px;height:14px;cursor:pointer;flex-shrink:0;margin:0;">Adjust margins manually?</label>
       <button class="ctl-btn" type="button" onclick="resetMetrics()">Reset to defaults</button>
-      <div class="hint" style="font-size:0.64rem;line-height:1.3;">Drag the <b>left</b> dot to slide the whole letter, the <b>right</b> dot to set the right margin, and <b>width</b> to set the advance. <b>Adjust on canvas</b> hides/shows the dots (the reference image stays draggable either way).</div>
+      <div class="hint" style="font-size:0.64rem;line-height:1.3;">Check <b>Adjust margins manually?</b> to show draggable dots: drag the <b>left</b> dot to slide the whole letter, the <b>right</b> dot to set the right margin, and <b>width</b> to set the advance. (The reference image stays draggable either way.)</div>
     </div>
   </div>`;
 }
@@ -5262,32 +5262,40 @@ const QA_SIDE_COLOR  = { below:'var(--below)', above:'var(--above)', center:'var
 
 function qaLetters() { return LETTERS.filter(L => L.cat !== 'punct'); }   // the 27 letters (finals included; punct/digits excluded)
 function qaCh(cp) { try { return String.fromCodePoint(parseInt(cp, 16)); } catch (e) { return ''; } }
-/* A synthetic QA "letter" for a dotted shin/sin form: the real shin with its own dot (05C1/05C2) baked
-   into the base ink, placed EXACTLY like the exporter bakes FB2A/FB2B (buildFontSpec ~5564). Lets the
-   grid's cell/collision/render helpers treat the dot as base ink with no changes to them. */
-function qaSynthShinRow(markCp, label) {
-  const shin = project.letters.find(x => x.codepoint === '05E9');
-  if (!shin || !shin.contours || !shin.contours.length) return null;   // need a traced shin
-  const anc = qaAnchors(shin);
-  const pc  = (project.precomposed || []).find(p => p.base === '05E9' && p.mark === markCp);
-  const dotAnc = (pc && pc.anchor && pc.anchor.x != null) ? pc.anchor : anc[MARK_CLASS[markCp]];   // 'above'
-  const dotPolys = qaPlace(dotAnc, 'nikkud', markCp, markScale());      // same scale+translate as export
-  const L = Object.assign({}, shin, {
-    anchors: anc,                                                       // freeze shin's anchors (vowels sit here)
+/* Friendly names for the well-known reading forms; other dotted forms fall back to the mark name. */
+const QA_PRECOMP_LABELS = { FB2A:'Shin', FB2B:'Sin', FB4B:'Holam', FB35:'Shuruk' };
+/* A synthetic QA "letter" for a dotted precomposed form (שׁ שׂ וֹ וּ בּ כּ פּ תּ …): the real base letter
+   with its own mark baked into the base ink at the form's PER-FORM dot size, placed EXACTLY like the
+   exporter bakes the precomposed glyph (buildFontSpec). Lets the grid's cell/collision/render helpers
+   treat the dot as base ink with no changes to them. */
+function qaSynthPrecompRow(pc, baseMeta, label) {
+  const base = project.letters.find(x => x.codepoint === pc.base);
+  if (!base || !base.contours || !base.contours.length) return null;   // need a traced base letter
+  const anc = qaAnchors(base);
+  const dotAnc = (pc.anchor && pc.anchor.x != null) ? pc.anchor : anc[MARK_CLASS[pc.mark]];
+  if (!dotAnc) return null;                                            // unknown anchor class → skip (shouldn't happen for nikkud)
+  const dotPolys = qaPlace(dotAnc, 'nikkud', pc.mark, precompMarkScale(pc));   // per-form dot size, same translate as export
+  const L = Object.assign({}, base, {
+    anchors: anc,                                                       // freeze the base's anchors (vowels sit here)
     curves: null,                                                       // mixed bezier+polygon → render all as polygons
-    contours: shin.contours.concat(dotPolys.map(p => ({ points: p })))  // dot becomes part of the base ink
+    contours: base.contours.concat(dotPolys.map(p => ({ points: p })))  // dot becomes part of the base ink
   });
-  return { cp:'05E9', name: label, labelCh: qaCh('05E9') + qaCh(markCp), desc:false, L };
+  return { cp: pc.base, name: label, labelCh: qaCh(pc.base) + qaCh(pc.mark), desc: baseMeta.desc, L };
 }
-/* The grid's row list: every consonant, with שׁ (Shin) and שׂ (Sin) injected right after plain shin. */
+/* The grid's row list: every consonant, with each dotted precomposed form injected right after its
+   base letter (data-driven, so שׁ/שׂ, וֹ/וּ and dotted bet/kaf/pe/tav all appear at their per-form size). */
 function qaRows() {
   const rows = [];
+  const nikOn = project.font.nikkud.enabled;
   qaLetters().forEach(meta => {
     const L = project.letters.find(x => x.codepoint === meta.cp); if (!L) return;
     rows.push({ cp: meta.cp, name: meta.name, labelCh: qaCh(meta.cp), desc: meta.desc, L });
-    if (meta.cp === '05E9' && project.font.nikkud.enabled) {            // FB2A/FB2B only exist when nikkud is on
-      [['05C1','Shin'], ['05C2','Sin']].forEach(([cp, lbl]) => { const r = qaSynthShinRow(cp, lbl); if (r) rows.push(r); });
-    }
+    if (!nikOn) return;                                                // precomposed nikkud forms only exist when Nikkud is on
+    (project.precomposed || []).forEach(pc => {
+      if (pc.base !== meta.cp || catOfCp(pc.mark) === 'accent') return;
+      const r = qaSynthPrecompRow(pc, meta, QA_PRECOMP_LABELS[pc.target] || precompName(pc));
+      if (r) rows.push(r);
+    });
   });
   return rows;
 }
