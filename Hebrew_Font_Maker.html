@@ -450,10 +450,16 @@
   /* (sidebar collapse chrome removed — Tabbed is the only layout) */
 
   /* ── Workspace 3-region layout (L | center | R) + Under spanning full width ── */
-  .ws-grid { display: grid; grid-template-columns: minmax(180px,1fr) minmax(0,736px) minmax(180px,1fr);
-    grid-template-areas: "left center right" "under under under"; gap: 14px; align-items: start; justify-content: center; }
+  .ws-grid { display: grid;
+    grid-template-columns: var(--ws-left, 300px) 10px minmax(0, 1fr) 10px var(--ws-right, 300px);
+    grid-template-areas: "left hl center hr right" "under under under under under"; gap: 0; align-items: start; }
   .ws-left { grid-area: left; min-width: 0; } .ws-center { grid-area: center; min-width: 0; } .ws-right { grid-area: right; min-width: 0; }
-  .ws-under { grid-area: under; min-width: 0; margin-top: 4px; }
+  .ws-under { grid-area: under; min-width: 0; margin-top: 12px; }
+  /* draggable column splitters: 10px grab track, 2px visible divider (gold on hover/drag) */
+  .ws-split { align-self: stretch; cursor: col-resize; position: relative; box-sizing: border-box; touch-action: none; -webkit-user-select: none; user-select: none; }
+  .ws-split.l { grid-area: hl; } .ws-split.r { grid-area: hr; }
+  .ws-split::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; transform: translateX(-50%); background: var(--border); border-radius: 2px; transition: background .12s, width .12s; }
+  .ws-split:hover::before, .ws-split.dragging::before { width: 4px; background: var(--gold); }
   .ws-side-title { font-size: 0.74rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
   .ws-under-row { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
   .ws-under-row .under-spacer { flex: 1 1 auto; }
@@ -513,17 +519,14 @@
   }
   @media (max-width: 1180px) {
     .ws-grid { grid-template-columns: 1fr; grid-template-areas: "center" "left" "right" "under"; }
+    .ws-split { display: none; }                 /* stacked layout: no splitters */
     .ws-left, .ws-right { max-width: 736px; margin: 0 auto; width: 100%; }
     .vslider-pair { justify-content: flex-start; }
   }
   @media (min-width: 1181px) {
-    /* Large screens: keep the sidebars comfortable and let the center fill the available height.
-       The stage SVG is width-driven over a ~600:410 (≈1.46:1) viewBox, so the CENTER column's width
-       is capped at (viewport height − page chrome) × 1.46 — the glyph grows to ~fill the vertical
-       space without scrolling the page. The 380/350px offsets approximate the chrome around the
-       stage and are easy to nudge; .stage-wrap's overflow:auto stays as the safety net. */
-    .ws-grid { grid-template-columns: minmax(260px,360px) minmax(0, calc((100vh - 380px) * 1.46)) minmax(260px,360px); }
-    .ws-center .stage-wrap { max-width: 100%; max-height: calc(100vh - 350px); }
+    /* Sidebar widths are user-draggable (CSS vars on .ws-grid); the center column fills the rest.
+       The stage fills the center column; overflow:auto on .stage-wrap stays as the vertical safety net. */
+    .ws-center .stage-wrap { max-width: 100%; max-height: 80vh; }
     .ws-center .zoom-bar   { max-width: 100%; }
   }
 </style>
@@ -712,6 +715,7 @@
 
     <div class="ws-grid">
       <div class="ws-left" id="ctlLeft"></div>
+      <div class="ws-split l" data-side="left" role="separator" aria-orientation="vertical" aria-label="Resize left panel"></div>
       <div class="ws-center">
         <div class="zoom-bar">
           <span title="Zoom the view">🔍</span>
@@ -724,6 +728,7 @@
         </div>
         <div class="legend" id="stageLegend"></div>
       </div>
+      <div class="ws-split r" data-side="right" role="separator" aria-orientation="vertical" aria-label="Resize right panel"></div>
       <div class="ws-right" id="ctlRight"></div>
       <div class="ws-under" id="ctlUnder"></div>
     </div>
@@ -3609,6 +3614,76 @@ function applyZoom() {
   const r = document.getElementById('zoomRange'); if (r) r.value = pct;
   const v = document.getElementById('zoomVal'); if (v) v.textContent = pct + '%';
 }
+/* ════════ Resizable workspace side columns (CSS-var driven; center is a fluid 1fr) ════════ */
+const WS_PREFS_KEY = 'hebrewFontMaker_uiPrefs';
+const WS_MIN = 220, WS_MAX = 460, WS_CENTER_MIN = 360, WS_HANDLE_W = 10, WS_DEFAULT = 300;
+function wsGrid() { return document.querySelector('.ws-grid'); }
+function wsClampN(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+function wsReadPrefs() { try { return JSON.parse(localStorage.getItem(WS_PREFS_KEY) || '{}') || {}; } catch (e) { return {}; } }
+function saveColWidths(left, right) {
+  try { const p = wsReadPrefs();
+    if (left  != null) p.wsLeft  = Math.round(left);
+    if (right != null) p.wsRight = Math.round(right);
+    localStorage.setItem(WS_PREFS_KEY, JSON.stringify(p));
+  } catch (e) { /* private mode / quota — non-fatal */ }
+}
+/* current px width of a side var (falls back to default if unset/invalid) */
+function wsCurWidth(grid, side) {
+  const v = parseFloat(getComputedStyle(grid).getPropertyValue(side === 'left' ? '--ws-left' : '--ws-right'));
+  return Number.isFinite(v) && v > 0 ? v : WS_DEFAULT;
+}
+/* dynamic max for the dragged side, so the center never drops below WS_CENTER_MIN */
+function wsMaxFor(grid, side) {
+  const total = grid.getBoundingClientRect().width;
+  const other = wsCurWidth(grid, side === 'left' ? 'right' : 'left');
+  return wsClampN(total - other - (2 * WS_HANDLE_W) - WS_CENTER_MIN, WS_MIN, WS_MAX);
+}
+function loadColWidths() {
+  const grid = wsGrid(); if (!grid) return;
+  const p = wsReadPrefs();
+  if (p.wsLeft  != null) grid.style.setProperty('--ws-left',  wsClampN(p.wsLeft,  WS_MIN, wsMaxFor(grid, 'left'))  + 'px');
+  if (p.wsRight != null) grid.style.setProperty('--ws-right', wsClampN(p.wsRight, WS_MIN, wsMaxFor(grid, 'right')) + 'px');
+}
+function attachColResizers() {
+  const grid = wsGrid(); if (!grid) return;
+  grid.querySelectorAll('.ws-split').forEach(handle => {
+    const side = handle.dataset.side;                       // 'left' | 'right'
+    const prop = side === 'left' ? '--ws-left' : '--ws-right';
+    let startX = 0, startW = 0, active = false;
+    const onMove = (e) => {
+      if (!active) return;
+      const dx = e.clientX - startX;
+      const raw = startW + (side === 'left' ? dx : -dx);    // right handle inverts
+      grid.style.setProperty(prop, wsClampN(raw, WS_MIN, wsMaxFor(grid, side)) + 'px');
+      if (e.cancelable) e.preventDefault();
+    };
+    const onUp = () => {
+      if (!active) return;
+      active = false; handle.classList.remove('dragging');
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+      const w = wsCurWidth(grid, side);
+      saveColWidths(side === 'left' ? w : null, side === 'right' ? w : null);
+    };
+    handle.addEventListener('pointerdown', (e) => {
+      if (e.button != null && e.button !== 0) return;
+      if (getComputedStyle(handle).display === 'none') return;   // stacked-mode guard
+      active = true; startX = e.clientX; startW = wsCurWidth(grid, side);
+      handle.classList.add('dragging');
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+      window.addEventListener('pointercancel', onUp);
+      if (e.cancelable) e.preventDefault();
+    });
+    handle.addEventListener('dblclick', () => {                  // double-click resets this side
+      grid.style.setProperty(prop, WS_DEFAULT + 'px');
+      saveColWidths(side === 'left' ? WS_DEFAULT : null, side === 'right' ? WS_DEFAULT : null);
+    });
+  });
+}
+let _wsResizeT = null;
+function wsOnWindowResize() { clearTimeout(_wsResizeT); _wsResizeT = setTimeout(loadColWidths, 150); }
 function contoursToPath(contours, curves) {
   const useCurves = curves && curves.length === contours.length;   // per-contour: curves[i] (or null → polygon)
   let d = '';
@@ -7682,6 +7757,9 @@ function init() {
   // per-render inside the workspace and wired by wireInputModeBlock() / wireReferencePanel().
   applyZoom();
   applyLayout();   // Tabbed-only layout: move the panels into the tab host
+  loadColWidths();        // restore saved side-column widths (clamped to this viewport)
+  attachColResizers();    // wire the two splitter drag handles (once; they survive renderControls)
+  window.addEventListener('resize', wsOnWindowResize);   // re-clamp widths if the window shrinks
   onExportFormatChange();   // sync the Export button label to the format picker (browsers may restore its value on reload)
   // re-measure the template glyph once web fonts settle
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (project) renderStage(); });
