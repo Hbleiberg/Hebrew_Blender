@@ -2923,32 +2923,47 @@ async function uploadSourceFont(file) {
   } catch (e) { console.error(e); status(''); askModal('Font read failed', '<span class="warn">'+(e.message||e)+'</span>', [{label:'OK'}]); return; }
   askFontImportOptions(file, font, bytes);
 }
-/* Ask what to pull from the dropped font: outlines and/or its real nikkud anchor positions. */
+/* Pull one mark glyph's outline from an imported font into project.font[kind].custom — like an uploaded mark. */
+function importMarkGlyph(kind, cp, font) {
+  const glyph = font.charToGlyph(String.fromCodePoint(parseInt(cp,16)));
+  if (!glyph || glyph.index === 0) return false;
+  const contours = pathToContours(glyph.getPath(0, 0, 1000));   // 1000-UPM, y-up — same space as the built-in marks
+  if (!contours.length) return false;
+  const m = customMark(kind, cp);
+  m.contours = contours; m.curves = null;
+  m.designMode = 'upload';     // uses contours + bbox-derived attach origin, exactly like a traced mark
+  m.cls = markClassOf(kind, cp) || m.cls;
+  m.placementSaved = false;
+  return true;
+}
+/* Ask what to pull from the dropped font: outlines, mark shapes, and/or its real nikkud anchor positions. */
 function askFontImportOptions(file, font, bytes) {
   status('');
   const body =
     '<p style="margin:0 0 10px;">What should I take from <b>' + escapeHtml(file.name) + '</b>?</p>' +
     '<label style="display:block;margin:7px 0;cursor:pointer;"><input type="checkbox" id="impOutlines" checked style="margin-right:7px;vertical-align:middle;">' +
       '<b>Replace letter outlines</b> — use this font’s glyph shapes for the Hebrew letters.</label>' +
+    '<label style="display:block;margin:7px 0;cursor:pointer;"><input type="checkbox" id="impMarks" checked style="margin-right:7px;vertical-align:middle;">' +
+      '<b>Replace nikkud &amp; trop shapes</b> — use this font’s own vowel &amp; cantillation marks instead of the built-in ones.</label>' +
     '<label style="display:block;margin:7px 0;cursor:pointer;"><input type="checkbox" id="impAnchors" checked style="margin-right:7px;vertical-align:middle;">' +
       '<b>Import nikkud anchor positions</b> — read where the vowels &amp; trop attach so you can inspect and fix them. ' +
       '<span style="color:var(--muted);">If the font has none, I’ll place them automatically.</span></label>' +
-    '<p style="margin:11px 0 0;color:var(--muted);font-size:.85rem;">Fixing a broken font? Keep both on, then drag the misplaced anchors in the Nikkud step.</p>';
+    '<p style="margin:11px 0 0;color:var(--muted);font-size:.85rem;">Fixing a broken font? Keep these on, then drag any misplaced anchors in the Nikkud step.</p>';
   askModal('Import font', body, [
     { label: 'Cancel', cls: 'ghost' },
     { label: 'Import', onClick: () => {
-        const oEl = document.getElementById('impOutlines'), aEl = document.getElementById('impAnchors');
-        const outlines = oEl ? oEl.checked : true, anchors = aEl ? aEl.checked : true;
-        if (!outlines && !anchors) { status('Nothing selected — import cancelled.'); return; }
+        const gv = id => { const el = document.getElementById(id); return el ? el.checked : true; };
+        const opts = { outlines: gv('impOutlines'), marks: gv('impMarks'), anchors: gv('impAnchors') };
+        if (!opts.outlines && !opts.marks && !opts.anchors) { status('Nothing selected — import cancelled.'); return; }
         // Confirm before overwriting letters the user has already drawn (only when replacing outlines).
-        const existing = outlines ? project.letters.filter(x => x.contours && x.contours.length).length : 0;
+        const existing = opts.outlines ? project.letters.filter(x => x.contours && x.contours.length).length : 0;
         if (existing > 0) {
           askModal('Replace your letters?',
             'Replacing outlines will overwrite the <b>' + existing + '</b> letter' + (existing===1?'':'s') + ' you’ve already drawn in this project. Continue?',
             [{ label: 'Cancel', cls: 'ghost' },
-             { label: 'Replace & import', onClick: () => applyFontImport(file, font, bytes, { outlines, anchors }) }]);
+             { label: 'Replace & import', onClick: () => applyFontImport(file, font, bytes, opts) }]);
         } else {
-          applyFontImport(file, font, bytes, { outlines, anchors });
+          applyFontImport(file, font, bytes, opts);
         }
     } }
   ]);
@@ -2989,14 +3004,28 @@ async function applyFontImport(file, font, bytes, opts) {
       if (imp) { applyImportedAnchors(l, imp); anchorHits++; }
       else if (opts.outlines) { l.anchors = null; seedAnchors(l); }
     });
+    // Mark shapes (nikkud + trop): replace the built-in shapes with the font's own, like uploaded marks.
+    let markHits = 0, tropImported = 0;
+    if (opts.marks) {
+      let nik = 0, trp = 0;
+      NIKKUD_MARKS.forEach(cp => { if (importMarkGlyph('nikkud', cp, font)) nik++; });
+      TROP_MARKS.forEach(t => { if (importMarkGlyph('trop', t.cp, font)) trp++; });
+      if (nik) project.font.nikkud.mode = 'custom';
+      if (trp) project.font.trop.mode = 'custom';
+      markHits = nik + trp; tropImported = trp;
+    }
     if (opts.outlines) project.inputMode = 'font';
-    syncMetaToForm(); renderLetterGrid(); setWorkMode('anchors');
-    if (opts.outlines && !n) { status(''); askModal('No Hebrew glyphs found', 'That font has no outlines for the Hebrew base letters (U+05D0–05EA). Try a Hebrew font.', [{label:'OK'}]); return; }
+    syncMetaToForm(); renderGrids(); setWorkMode('anchors');
+    if (opts.outlines && !n && !markHits) { status(''); askModal('No Hebrew glyphs found', 'That font has no outlines for the Hebrew base letters (U+05D0–05EA). Try a Hebrew font.', [{label:'OK'}]); return; }
     let msg = opts.outlines ? `Loaded ${n}/27 letters from ${file.name}.` : 'Kept your current outlines.';
+    if (opts.marks) {
+      msg += markHits ? ` Replaced ${markHits} nikkud/trop mark shape${markHits===1?'':'s'}.` : ' (No mark glyphs found to import.)';
+      if (tropImported && !project.font.trop.enabled) msg += ' Turn on Trop to use its cantillation marks.';
+    }
     if (opts.anchors) {
-      msg += hadGpos ? ` Imported anchor positions for ${anchorHits} letter${anchorHits===1?'':'s'} — fix any that look off, then export.`
-           : (anchorErr ? ' (Could not read its anchors, so I placed them automatically.)' : ' This font had no anchor data, so I placed nikkud anchors automatically.');
-    } else { msg += ' Set nikkud, then export.'; }
+      msg += hadGpos ? ` Anchors imported for ${anchorHits} letter${anchorHits===1?'':'s'} — fix any that look off, then export.`
+           : (anchorErr ? ' Anchors placed automatically (couldn’t read the font’s).' : ' No anchor data in the font — anchors placed automatically.');
+    } else if (!opts.marks) { msg += ' Set nikkud, then export.'; }
     status(msg);
   } catch (e) { console.error(e); status(''); askModal('Font import failed', '<span class="warn">'+(e.message||e)+'</span>', [{label:'OK'}]); }
 }
