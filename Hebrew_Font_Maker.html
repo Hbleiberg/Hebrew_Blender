@@ -287,6 +287,12 @@
   .lt-dot.traced { background: #3b82f6; }
   .lt-dot.anchored { background: #10b981; }
   .lt-dot.saved { background: #10b981; color: #fff; width: 13px; height: 13px; top: 2px; left: 2px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; line-height: 1; }
+  /* Composed-tab tiles whose source base letter(s) aren't traced yet (display-only gating) */
+  .ltile.locked { opacity: 0.55; }
+  .lt-need { font-size: 0.5rem; color: var(--gold); direction: rtl; text-align: center; line-height: 1.1; }
+  .form-need { font-size: 0.72rem; color: var(--muted); margin-bottom: 8px; padding: 5px 7px; background: rgba(201,146,42,0.08); border: 1px solid var(--border); border-radius: 5px; }
+  .form-need-chars { font-family: var(--heb-font); direction: rtl; color: var(--gold); font-weight: 700; }
+  .form-ready { font-size: 0.72rem; color: #10b981; margin-bottom: 8px; }
 
   /* ── Workspace stage ── */
   .work-tabs { display: flex; gap: 6px; margin-bottom: 10px; justify-content: center; }
@@ -333,6 +339,9 @@
   body.layout-tabbed #catHost .col-split.adv-grid > div { flex: none; border: none; padding: 0; }
   @media (max-width: 1024px) { body.layout-tabbed #catHost .col-split.adv-grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 640px)  { body.layout-tabbed #catHost .col-split.adv-grid { grid-template-columns: 1fr; } }
+  /* Advanced Settings group headings — a level above the per-toggle .ctl-label */
+  .adv-group-title { font-family: 'Libre Baskerville', serif; font-size: 0.8rem; color: var(--text); padding-bottom: 4px; border-bottom: 1px solid var(--border); margin-bottom: 2px; }
+  .adv-group-gap { margin-top: 12px; }
   /* Tabbed: the work-mode steps (Align/Trace/Nikkud/Trop) drop below the picker, just above the stage */
   body.layout-tabbed .workspace { display: flex; flex-direction: column; }
   body.layout-tabbed #catTabs   { order: 1; }
@@ -435,6 +444,16 @@
   .qa-cell.flag { border-color: #c0392b; box-shadow: inset 0 0 0 2px #c0392b; }
   .qa-cell.empty { opacity: 0.4; cursor: default; }
   .qa-cell svg { width: 54px; height: 62px; display: block; }
+  /* QA add-on sections: Specialized section header (in-table) + Yiddish/Ladino build-check block */
+  .qa-table td.qa-section-h { text-align: start; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.03em; text-transform: uppercase; color: var(--muted); padding: 12px 4px 4px; border: none; }
+  .qa-bc { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .qa-bc-title { font-size: 0.78rem; font-weight: 800; color: var(--text); margin-bottom: 9px; }
+  .qa-bc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .qa-bc-item { display: flex; align-items: center; gap: 8px; padding: 6px 9px; border: 1px solid var(--border); border-radius: 7px; background: var(--white); font-size: 0.74rem; }
+  .qa-bc-glyph { font-size: 1.4rem; line-height: 1; color: var(--text); min-width: 1.6em; text-align: center; }
+  .qa-bc-name { flex: 1; color: var(--muted); }
+  .qa-bc-ok { color: #10b981; font-weight: 700; white-space: nowrap; }
+  .qa-bc-warn { color: #c0392b; font-weight: 700; white-space: nowrap; }
 
   .drop {
     border: 2px dashed var(--border); border-radius: 8px; padding: 16px 10px; text-align: center;
@@ -665,21 +684,12 @@
     <div class="panel cat-panel" data-cat="advanced">
       <div class="panel-title">Advanced Settings</div>
       <div class="panel-body">
+        <div class="adv-group-title">Add glyphs &amp; languages</div>
         <div class="col-split adv-grid">
           <div>
             <div class="ctl-label" style="margin-bottom:6px;">English letters</div>
             <label class="chk"><input type="checkbox" id="addEnglishLettersChk" onchange="setAddEnglishLetters(this.checked)"> Add English letters</label>
             <div class="hint">Adds an <strong>English</strong> tab to design <strong>A–Z and a–z</strong> (with an uppercase/lowercase switch). Accent-supporting letters can carry accents (á, é, ñ, ç…). Template: <a href="#" onclick="downloadTemplate('englishletters','pdf');return false;">PDF</a> · <a href="#" onclick="downloadTemplate('englishletters','png');return false;">PNG</a></div>
-          </div>
-          <div>
-            <div class="ctl-label" style="margin-bottom:6px;">Custom glyphs</div>
-            <label class="chk"><input type="checkbox" id="addCustomGlyphsChk" onchange="setAddCustomGlyphs(this.checked)"> Add custom glyphs</label>
-            <div class="hint">Adds a <strong>Custom glyphs</strong> tab (after Punctuation) where you can define glyphs at any Unicode code point — a main letter or a nikkud mark. Tip: for brand-new shapes use the Private-Use range <b>U+E000–U+F8FF</b> so they don't collide with standard characters.</div>
-          </div>
-          <div>
-            <div class="ctl-label" style="margin-bottom:6px;">SVG uploading</div>
-            <label class="chk"><input type="checkbox" id="svgUploadChk" onchange="setSvgUpload(this.checked)"> Enable SVG uploading</label>
-            <div class="hint">Upload <strong>SVG</strong> files instead of images — vector paths become the glyph outlines <strong>directly, with no tracing</strong>. In this mode the upload zones accept SVG only. <a href="#" onclick="openSvgGuide();return false;">SVG Upload Guide →</a></div>
           </div>
           <div>
             <div class="ctl-label" style="margin-bottom:6px;">Specialized letters</div>
@@ -695,6 +705,19 @@
             <div class="ctl-label" style="margin-bottom:6px;">Ladino</div>
             <label class="chk"><input type="checkbox" id="addLadinoChk" onchange="setAddLadino(this.checked)"> Add Ladino glyphs</label>
             <div class="hint">Adds a <strong>Ladino</strong> (Judeo-Spanish) tab: the rafe / varika letters (בֿ גֿ דֿ זֿ טֿ פֿ קֿ) plus שׁ / שׂ — composed from your traced letters.</div>
+          </div>
+          <div>
+            <div class="ctl-label" style="margin-bottom:6px;">Custom glyphs</div>
+            <label class="chk"><input type="checkbox" id="addCustomGlyphsChk" onchange="setAddCustomGlyphs(this.checked)"> Add custom glyphs</label>
+            <div class="hint">Adds a <strong>Custom glyphs</strong> tab (after Punctuation) where you can define glyphs at any Unicode code point — a main letter or a nikkud mark. Tip: for brand-new shapes use the Private-Use range <b>U+E000–U+F8FF</b> so they don't collide with standard characters.</div>
+          </div>
+        </div>
+        <div class="adv-group-title adv-group-gap">Input mode</div>
+        <div class="col-split adv-grid">
+          <div>
+            <div class="ctl-label" style="margin-bottom:6px;">SVG uploading</div>
+            <label class="chk"><input type="checkbox" id="svgUploadChk" onchange="setSvgUpload(this.checked)"> Enable SVG uploading</label>
+            <div class="hint">Upload <strong>SVG</strong> files instead of images — vector paths become the glyph outlines <strong>directly, with no tracing</strong>. In this mode the upload zones accept SVG only. <a href="#" onclick="openSvgGuide();return false;">SVG Upload Guide →</a></div>
           </div>
         </div>
       </div>
@@ -1041,6 +1064,7 @@ function precompExportable(pc) {   // core forms always; opt-in forms only while
 function isWideForm(pc) { return !!(pc && pc.wide); }
 function precompBaseCp(pc) { return pc.base || (pc.bases && pc.bases[0]); }
 function precompWidthScale(pc) { return (pc && pc.widthScale != null) ? pc.widthScale : 1; }
+function wideX(x, minX, w) { return Math.round(minX + (x - minX) * w); }   // shared X-scale-about-left-edge: buildWideGlyph + QA wide rows
 /* Compose a wide letterform or digraph from the traced base letter(s): lay the bases left-to-right,
    then scale X about the left edge by widthScale AND scale the advance by the same factor — i.e. the
    single Width slider both stretches the outline and adds side space. Returns {contours:[[x,y]…], advance}
@@ -1059,8 +1083,8 @@ function buildWideGlyph(pc) {
   const w = precompWidthScale(pc);
   let minX = 1e9; polys.forEach(poly => poly.forEach(p => { if (p[0] < minX) minX = p[0]; }));
   if (minX === 1e9) minX = 0;
-  const contours = polys.map(poly => poly.map(([px, py]) => [Math.round(minX + (px - minX) * w), py]));
-  return { contours, advance: Math.round(total * w) };
+  const contours = polys.map(poly => poly.map(([px, py]) => [wideX(px, minX, w), py]));
+  return { contours, advance: Math.round(total * w), minX, widthScale: w };
 }
 
 /* ── English (Latin) letters — A–Z and a–z, added on demand via the "Add English letters" advanced toggle.
@@ -2555,19 +2579,28 @@ function renderCustomGlyphsGrid() {
    the Width slider for wide letterforms / digraphs. ── */
 function renderFormPanel(panelId, targets, intro) {
   const el = document.getElementById(panelId); if (!el) return;
-  el.innerHTML = `<div class="hint" style="margin-bottom:8px;">${intro}</div><div class="letter-grid" id="${panelId}Grid"></div>`;
+  const isTraced = cp => { const L = project.letters.find(x => x.codepoint === cp); return !!(L && L.contours); };
+  const chOf = cp => { try { return String.fromCodePoint(parseInt(cp, 16)); } catch (e) { return ''; } };
+  // Summary of the base letters still needed to fill in this composed tab (display-only gating).
+  const missing = new Set();
+  targets.forEach(t => { const pc = getPrecomp(t); if (pc) (pc.bases || [pc.base]).forEach(cp => { if (!isTraced(cp)) missing.add(cp); }); });
+  const summary = missing.size
+    ? `<div class="form-need">Trace these base letters to fill in this tab: <span class="form-need-chars">${[...missing].map(chOf).join(' ')}</span></div>`
+    : `<div class="form-ready">✓ All base letters traced — ready.</div>`;
+  el.innerHTML = `<div class="hint" style="margin-bottom:8px;">${intro}</div>${summary}<div class="letter-grid" id="${panelId}Grid"></div>`;
   const grid = document.getElementById(panelId + 'Grid'); if (!grid) return;
   let any = false;
   targets.forEach(t => {
     const pc = getPrecomp(t); if (!pc) return;
     any = true;
     const bases = pc.bases || [pc.base];
-    const traced = bases.every(cp => { const L = project.letters.find(x => x.codepoint === cp); return L && L.contours; });
+    const need = bases.filter(cp => !isTraced(cp));
+    const traced = need.length === 0;
     const tile = document.createElement('div');
-    tile.className = 'ltile' + (precompTarget === t ? ' sel' : '');
+    tile.className = 'ltile' + (precompTarget === t ? ' sel' : '') + (traced ? '' : ' locked');
     tile.innerHTML = `<span class="lt-dot ${traced ? 'traced' : ''}"></span>
       <span class="lt-heb" style="font-family:${project.template.font};direction:rtl;">${precompComposed(pc)}</span>
-      <span class="lt-name">${escapeHtml(precompName(pc))}</span>`;
+      <span class="lt-name">${escapeHtml(precompName(pc))}</span>${traced ? '' : `<span class="lt-need" title="Trace ${escapeHtml(need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">needs ${escapeHtml(need.map(chOf).join(' '))}</span>`}`;
     tile.onclick = () => pickPrecompForm(t);
     grid.appendChild(tile);
   });
@@ -5777,6 +5810,50 @@ function qaSynthPrecompRow(pc, baseMeta, label) {
   });
   return { cp: pc.base, name: label, labelCh: qaCh(pc.base) + qaCh(pc.mark), desc: baseMeta.desc, L };
 }
+/* A synthetic QA row for a single-base Specialized wide letter (FB21–FB28): the base letter's ink
+   widened EXACTLY as buildWideGlyph bakes it, with the base's anchors mapped through the same X-scale
+   so nikkud/trop land on the stretched glyph. Returns null until the base is traced. data-cp stays the
+   BASE cp so a cell click opens the base letter's anchor editor (wide forms have no anchors of their own). */
+function qaSynthWideRow(pc) {
+  const g = buildWideGlyph(pc); if (!g) return null;                  // base untraced → skip
+  const baseCp = precompBaseCp(pc);
+  const base = project.letters.find(x => x.codepoint === baseCp); if (!base) return null;
+  const baseAnc = qaAnchors(base);
+  const mapPt = a => a ? { x: wideX(a.x, g.minX, g.widthScale), y: a.y } : a;   // same transform as the ink
+  const anchors = { below: mapPt(baseAnc.below), above: mapPt(baseAnc.above), center: mapPt(baseAnc.center),
+                    tropAbove: mapPt(baseAnc.tropAbove), tropBelow: mapPt(baseAnc.tropBelow) };
+  const meta = letterMeta(baseCp);
+  const L = Object.assign({}, base, { anchors, curves: null, advance: g.advance, contours: g.contours.map(p => ({ points: p })) });
+  return { cp: baseCp, name: pc.name || precompName(pc), labelCh: qaCh(pc.target), desc: meta ? meta.desc : false, L };
+}
+/* Will a composed form bake? base(s) traced, and (base+mark) the mark anchor resolves — mirrors
+   qaSynthPrecompRow / the picker-tile readiness. */
+function qaFormReady(pc) {
+  const bases = pc.bases || [pc.base];
+  if (!bases.every(cp => { const L = project.letters.find(x => x.codepoint === cp); return L && L.contours; })) return false;
+  if (pc.mark && !pc.bases) {
+    const base = project.letters.find(x => x.codepoint === pc.base);
+    const dotAnc = (MARK_CLASS[pc.mark] !== 'center' && pc.anchor && pc.anchor.x != null) ? pc.anchor : qaAnchors(base)[MARK_CLASS[pc.mark]];
+    if (!dotAnc) return false;
+  }
+  return true;
+}
+/* The composed forms shown in the build-check section: enabled Yiddish/Ladino base+mark forms PLUS the
+   Yiddish wide DIGRAPHS (multi-base, no marks). Specialized single-base wide letters are NOT here — they
+   are full collision rows. Excludes core PRECOMPOSED (e.g. shin/sin surfaced by Ladino), which the matrix covers. */
+function qaBuildCheckForms() {
+  const out = [];
+  [['yiddish', YIDDISH_TARGETS], ['ladino', LADINO_TARGETS]].forEach(([tab, targets]) => {
+    if (!project.font[EXTRA_TAB_FLAG[tab]]) return;
+    targets.forEach(t => {
+      if (ORIG_PRECOMP_TARGETS.has(t)) return;                        // core forms handled by the matrix
+      if (out.some(x => x.target === t)) return;                      // dedupe (FB4C/FB4E appear in both Yiddish & Ladino)
+      const pc = (project.precomposed || []).find(p => p.target === t);
+      if (pc) out.push(pc);
+    });
+  });
+  return out;
+}
 /* The grid's row list: every consonant, with each dotted precomposed form injected right after its
    base letter (data-driven, so שׁ/שׂ, וֹ/וּ and dotted bet/kaf/pe/tav all appear at their per-form size). */
 function qaRows() {
@@ -5788,10 +5865,19 @@ function qaRows() {
     if (!nikOn) return;                                                // precomposed nikkud forms only exist when Nikkud is on
     (project.precomposed || []).forEach(pc => {
       if (pc.base !== meta.cp || !pc.mark || catOfCp(pc.mark) === 'accent' || !precompExportable(pc)) return;
+      if (ALL_EXTRA_TARGETS.has(pc.target)) return;                    // Yiddish/Ladino composed forms are presence-checked below, never stacked
       const r = qaSynthPrecompRow(pc, meta, QA_PRECOMP_LABELS[pc.target] || precompName(pc));
       if (r) rows.push(r);
     });
   });
+  if (project.font.addSpecialForms) {                                  // Specialized single-base wide letters → full collision rows
+    SPECIAL_TARGETS.forEach(t => {
+      const pc = (project.precomposed || []).find(p => p.target === t);
+      if (!pc || !precompExportable(pc)) return;
+      const r = qaSynthWideRow(pc);
+      if (r) { r.section = 'special'; rows.push(r); }
+    });
+  }
   return rows;
 }
 function polysBounds(polys) {   // bounds over an array of [x,y]-point arrays (font units)
@@ -5996,17 +6082,21 @@ function qaRenderSummary() {
     ? `<span class="qa-ok">✓ All placements clear.</span> Hover a cell for details; click any cell to jump to its anchor editor.`
     : `<b>${qaResult.total}</b> placement${qaResult.total === 1 ? '' : 's'} need attention (red cells). Hover for the reason; click a cell to jump to its anchor editor.`;
   if (qaResult.tall) h += `<span class="qa-tall">⚠ Tall artwork — export will expand the clip box to ${qaResult.winAscent} / ${qaResult.winDescent} (asc/desc) so Word won't clip it.</span>`;
+  const notReady = qaBuildCheckForms().filter(pc => !qaFormReady(pc)).length;
+  if (notReady) h += `<span class="qa-tall" style="color:var(--muted);">${notReady} composed form${notReady === 1 ? '' : 's'} not yet ready — see the build check below.</span>`;
   el.innerHTML = h;
 }
 function qaRenderGrid() {
   const grid = document.getElementById('qaGrid'); if (!grid) return;
   grid.style.color = (getComputedStyle(document.body).getPropertyValue('--text') || '').trim() || (document.body.classList.contains('dark') ? '#dde4f0' : '#1a2744');   // one set → every child SVG's currentColor inherits it
   const cols = qaColumns(qaTab);
-  if (!cols.length) { grid.innerHTML = `<p style="color:var(--muted);font-size:0.85rem;">No ${qaTab === 'stacked' ? 'stacking' : qaTab} marks are enabled for this font.</p>`; return; }
+  if (!cols.length) { grid.innerHTML = `<p style="color:var(--muted);font-size:0.85rem;">No ${qaTab === 'stacked' ? 'stacking' : qaTab} marks are enabled for this font.</p>` + qaBuildCheckHtml(); return; }
   let html = '<table class="qa-table"><thead><tr><th></th>';
   cols.forEach(col => { html += `<th title="${escapeHtml(col.name)}"><span class="qa-colhead">${escapeHtml(col.head)}</span></th>`; });
   html += '</tr></thead><tbody>';
+  let sectionShown = false;
   qaRows().forEach(row => {
+    if (row.section === 'special' && !sectionShown) { sectionShown = true; html += `<tr class="qa-section"><td class="qa-section-h" colspan="${cols.length + 1}">Specialized (wide letters)</td></tr>`; }
     const L = row.L, anc = qaAnchors(L);
     html += `<tr><td class="qa-rowlabel" title="${escapeHtml(row.name)}">${escapeHtml(row.labelCh)} <span style="color:var(--muted);">${escapeHtml(row.name)}</span></td>`;
     cols.forEach(col => {
@@ -6017,7 +6107,24 @@ function qaRenderGrid() {
     });
     html += '</tr>';
   });
-  grid.innerHTML = html + '</tbody></table>';
+  grid.innerHTML = html + '</tbody></table>' + qaBuildCheckHtml();
+}
+/* Presence/build check for the enabled Yiddish/Ladino composed forms (incl. Yiddish digraphs):
+   each composed glyph with a ✓ ready / ⚠ needs <base char> status. Tab-independent — appended under
+   whatever table the active QA tab shows. Plain divs (not .qa-cell), so qaGridClick ignores them. */
+function qaBuildCheckHtml() {
+  const forms = qaBuildCheckForms();
+  if (!forms.length) return '';
+  const tplFont = (project.template && project.template.font) || 'serif';
+  let h = '<div class="qa-bc"><div class="qa-bc-title">Yiddish / Ladino composed forms — build check</div><div class="qa-bc-grid">';
+  forms.forEach(pc => {
+    const ready = qaFormReady(pc);
+    const need = (pc.bases || [pc.base]).filter(cp => { const L = project.letters.find(x => x.codepoint === cp); return !(L && L.contours); }).map(cp => qaCh(cp)).join(' ');
+    const status = ready ? '<span class="qa-bc-ok">✓ ready</span>' : `<span class="qa-bc-warn">⚠ needs ${escapeHtml(need || qaCh(precompBaseCp(pc)))}</span>`;
+    h += `<div class="qa-bc-item"><span class="qa-bc-glyph" style="font-family:${tplFont};direction:rtl;">${escapeHtml(precompComposed(pc))}</span>`
+       + `<span class="qa-bc-name">${escapeHtml(pc.name || precompName(pc))}</span>${status}</div>`;
+  });
+  return h + '</div></div>';
 }
 function qaGridClick(e) {
   const td = e.target.closest && e.target.closest('.qa-cell');
@@ -7243,6 +7350,26 @@ async function generatePreviewPDF() {
       if (!first) pdf.addPage(); first = false;
       pdf.addImage(cv.toDataURL('image/png'), 'PNG', (pw - w)/2, margin, w, h);
     }
+    // A titled grid of glyphs for an add-on specimen section. `chars` = display strings; rtl flips
+    // text direction (Hebrew sets) vs LTR (English). Paginates to as many pages as needed.
+    function specimenPage(title, chars, opts) {
+      opts = opts || {};
+      const rtl = opts.rtl !== false;
+      const glyphPx = opts.glyphPx || 40, cols = opts.cols || 8;
+      const W = 794, cellW = (W - 48) / cols, cellH = 78, PER_PAGE = cols * 12;
+      for (let p = 0; p < chars.length; p += PER_PAGE) {
+        const slice = chars.slice(p, p + PER_PAGE), rows = Math.ceil(slice.length / cols);
+        const titleH = 40, H = titleH + rows * cellH + 24;
+        const { ctx, cv } = page(W, H);
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#1a2744'; ctx.direction = 'ltr'; ctx.font = "14px 'Libre Baskerville', serif";
+        ctx.fillText(title + (p > 0 ? ' (continued)' : ''), W / 2, 20);
+        ctx.fillStyle = '#111'; ctx.direction = rtl ? 'rtl' : 'ltr'; ctx.font = HEB(glyphPx);
+        slice.forEach((s, i) => { const r = Math.floor(i / cols), c = i % cols; ctx.fillText(s, 24 + c * cellW + cellW / 2, titleH + r * cellH + cellH / 2); });
+        addPageCanvas(cv);
+      }
+    }
+    const cpChar = cp => { try { return String.fromCodePoint(parseInt(cp, 16)); } catch (e) { return ''; } };
 
     // ── Cover ──
     {
@@ -7303,6 +7430,31 @@ async function generatePreviewPDF() {
         });
       });
       addPageCanvas(cv);
+    }
+    // ── Add-on specimen sections (each only when its set is enabled; recomputed at call time) ──
+    const pf = project.font;
+    if (pf.addEnglishLetters) {
+      const traced = ENGLISH_LETTERS.filter(e => { const L = project.letters.find(x => x.codepoint === e.cp); return L && L.contours && L.contours.length; });
+      if (traced.length) specimenPage('English letters', traced.map(e => cpChar(e.cp)), { rtl: false, cols: 9, glyphPx: 38 });
+    }
+    if (pf.addSpecialForms) {
+      const chars = SPECIAL_TARGETS.map(t => cpChar(t)).filter(Boolean);
+      if (chars.length) specimenPage('Specialized — wide letterforms', chars, { rtl: true, cols: 8, glyphPx: 44 });
+    }
+    if (pf.addYiddish) {
+      const chars = YIDDISH_TARGETS.map(t => cpChar(t)).filter(Boolean);
+      if (chars.length) specimenPage('Yiddish forms', chars, { rtl: true, cols: 8, glyphPx: 42 });
+    }
+    if (pf.addLadino) {
+      const chars = LADINO_TARGETS.map(t => cpChar(t)).filter(Boolean);
+      if (chars.length) specimenPage('Ladino forms', chars, { rtl: true, cols: 8, glyphPx: 42 });
+    }
+    if (pf.addCustomGlyphs) {
+      const mains = (project.letters || []).filter(l => l.custom && l.contours && l.contours.length).map(l => cpChar(l.codepoint));
+      const cmStore = (pf.customMarks && pf.customMarks.custom) || {};
+      const marks = Object.keys(cmStore).map(cp => cpChar(cp));
+      const chars = mains.concat(marks).filter(Boolean);
+      if (chars.length) specimenPage('Custom glyphs', chars, { rtl: true, cols: 8, glyphPx: 42 });
     }
     pdf.save((project.font.familyName||'font').replace(/\s+/g,'_') + '_specimen.pdf');
     status('Preview PDF saved.');
