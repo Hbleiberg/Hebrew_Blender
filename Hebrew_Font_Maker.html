@@ -1262,6 +1262,7 @@ function defaultBelowY(bb) {
 }
 function markScale() { return (project && project.font && project.font.markScale != null) ? project.font.markScale : 1; }
 function tropScale() { return (project && project.font && project.font.tropScale != null) ? project.font.tropScale : 1; }
+function dageshScale() { return (project && project.font && project.font.dageshScale != null) ? project.font.dageshScale : 1; }   // dagesh (center) dot, sized independently of the vowels
 /* SVG upload mode (Advanced Settings): uploads are SVG-only and import directly as vectors (no trace). */
 function svgUploadOn() { return !!(project && project.font && project.font.svgUpload); }
 /* A glyph whose outline is already vector (from a font file OR an imported SVG) — skips Align/Trace. */
@@ -1415,7 +1416,7 @@ function newProject() {
     savedAt: new Date().toISOString(),
     font: {
       familyName: 'My Hebrew Hand', reservedFontName: 'My Hebrew Hand', author: '', license: 'ofl',
-      version: '1.000', unitsPerEm: UPM, markScale: 1.0, tropScale: 1.0,
+      version: '1.000', unitsPerEm: UPM, markScale: 1.0, tropScale: 1.0, dageshScale: 1.0,
       nikkud: { enabled: true,  mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, shevaNa: false },   // mode: 'default' | 'custom'; uploadMode: 'perSymbol' | 'combined'; shevaNa: bold sheva-na alternate
       trop:   { enabled: false, mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },
       customMarks: { enabled: true, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },   // user-defined nikkud marks added via the Custom glyphs tab
@@ -4759,14 +4760,14 @@ function activeVowelCp() {
   }
 }
 function markPreviewPath(cp, ax, ay, scaleOverride) {
-  const cat = catOfCp(cp), s = scaleOverride != null ? scaleOverride : (cat==='trop'?tropScale():(cat==='accent'?1:markScale()));
+  const cat = catOfCp(cp), s = scaleOverride != null ? scaleOverride : (cat==='trop'?tropScale():(cat==='accent'?1:(MARK_CLASS[cp]==='center'?dageshScale():markScale())));
   const contours = markGlyphContours(cat, cp);
   let d = '';
   contours.forEach(poly => { poly.forEach((p,i) => { const X=fx(ax+p[0]*s), Y=fy(ay+p[1]*s); d += (i===0?'M':'L')+X.toFixed(1)+' '+Y.toFixed(1)+' '; }); d+='Z '; });
   return d;
 }
 function markCenterLocal(cp, scaleOverride) {
-  const cat = catOfCp(cp), s = scaleOverride != null ? scaleOverride : (cat==='trop'?tropScale():(cat==='accent'?1:markScale()));
+  const cat = catOfCp(cp), s = scaleOverride != null ? scaleOverride : (cat==='trop'?tropScale():(cat==='accent'?1:(MARK_CLASS[cp]==='center'?dageshScale():markScale())));
   const polys = markGlyphContours(cat, cp);
   let sx = 0, sy = 0, n = 0;
   polys.forEach(poly => poly.forEach(p => { sx += p[0]; sy += p[1]; n++; }));
@@ -4857,7 +4858,7 @@ function precompAnchor(pc) {
 }
 function precompMarkScale(pc) {
   if (catOfCp(pc.mark) === 'accent') return 1;                           // Latin accents are pre-sized — no per-form scaling
-  if (markClassFor(pc.mark) === 'center') return markScale();            // dagesh forms track the global dot size (unified with the live dagesh)
+  if (markClassFor(pc.mark) === 'center') return dageshScale();          // dagesh forms track the global DAGESH size, independent of the vowel size
   return (pc.markScale != null) ? pc.markScale : markScale();            // else this form's own dot size, or inherit the global mark size
 }
 function precompFormBtn(pc) {
@@ -4995,6 +4996,11 @@ function setTropCp(cp) { activeTropCp = cp; renderStage(); renderControls(); }
 function setMarkScale(v) {
   project.font.markScale = Math.max(0.3, Math.min(2, (+v)/100));
   const s = document.getElementById('markScaleV'); if (s) s.textContent = Math.round(project.font.markScale*100) + '%';
+  renderStage();   // live preview; don't rebuild controls (keep slider focus)
+}
+function setDageshScale(v) {
+  project.font.dageshScale = Math.max(0.3, Math.min(2, (+v)/100));
+  const s = document.getElementById('dageshScaleV'); if (s) s.textContent = Math.round(project.font.dageshScale*100) + '%';
   renderStage();   // live preview; don't rebuild controls (keep slider focus)
 }
 function setDotSize(v) {   // per-dot radius of the selected Simple-editor piece (live; don't rebuild controls so the slider keeps focus)
@@ -5569,6 +5575,7 @@ function renderAnchorUnder(U, l) {
   }
   const { cls, isTrop, want } = _anchorCtx(l);
   const sizePct = Math.round((isTrop ? tropScale() : markScale())*100), sizeFn = isTrop ? 'setTropScale' : 'setMarkScale';
+  const dagPct = Math.round(dageshScale()*100);
   const saveBtn = `<button id="savePlacementBtn" class="ctl-btn ${l.placementSaved?'':'primary'}" style="font-weight:700;${l.placementSaved?'background:#10b981;color:#fff;border-color:#10b981;':''}" onclick="savePlacement()">${l.placementSaved?'✓ Placement saved':'Save Placement'}</button>`;
   const applyBtn = `<button class="ctl-btn" onclick="openApplyNikkud()" title="Copy this letter's nikkud & trop anchor positions onto other letters">Apply positioning to other letters…</button>`;
   U.innerHTML = `
@@ -5576,6 +5583,8 @@ function renderAnchorUnder(U, l) {
       <div style="flex:1;min-width:0;">${applyBtn}</div>
       <div style="flex:0 1 360px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:9px;">
         <div class="inline" style="width:100%;">${isTrop?'Trop':'Nikkud'} size <input type="range" min="40" max="180" step="5" value="${sizePct}" oninput="${sizeFn}(this.value)"> <span id="markScaleV" class="readout">${sizePct}%</span></div>
+        ${isTrop?'':`<div class="inline" style="width:100%;">Dagesh size <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
+        <div class="hint" style="font-size:0.62rem;width:100%;text-align:center;">Nikkud size covers the vowels (and shin/sin dot); Dagesh size controls just the dagesh dot — so you can enlarge the vowels without growing the dagesh.</div>`}
         <div class="ctl-row" style="justify-content:center;">
           <button class="ctl-btn" onclick="resetLetterAnchors()">Reset letter</button>
           <button class="ctl-btn" onclick="resetAllAnchors()">Reset all</button>
@@ -5990,8 +5999,8 @@ function qaColumns(tab) {
 }
 /* The colored mark layer(s) to draw + test for one cell. */
 function qaCellLayers(L, anc, col) {
-  const ms = markScale(), tms = tropScale();
-  if (col.kind === 'nikkud') return [{ polys: qaPlace(anc[col.side], 'nikkud', col.cp, ms), color: QA_SIDE_COLOR[col.side] }];
+  const ms = markScale(), tms = tropScale(), ds = dageshScale();
+  if (col.kind === 'nikkud') return [{ polys: qaPlace(anc[col.side], 'nikkud', col.cp, col.side==='center'?ds:ms), color: QA_SIDE_COLOR[col.side] }];
   if (col.kind === 'trop')   { const k = col.side === 'above' ? 'tropAbove' : 'tropBelow'; return [{ polys: qaPlace(anc[k], 'trop', col.cp, tms), color: QA_SIDE_COLOR[k] }]; }
   const nikAnc = anc[col.side];
   return [ { polys: qaPlace(nikAnc, 'nikkud', col.cp, ms), color: QA_SIDE_COLOR[col.side] },
@@ -6013,7 +6022,7 @@ function fontInkBounds() {
   let top = -1e9, bottom = 1e9;
   const updTop = y => { if (y > top) top = y; }, updBot = y => { if (y < bottom) bottom = y; };
   const upd = b => { if (isFinite(b.maxY)) { updTop(b.maxY); updBot(b.minY); } };
-  const ms = markScale(), tms = tropScale();
+  const ms = markScale(), tms = tropScale(), ds = dageshScale();
   const nikOn = project.font.nikkud.enabled, tropOn = project.font.trop.enabled;
   const letters = qaLetters().map(meta => project.letters.find(x => x.codepoint === meta.cp)).filter(Boolean);
   letters.forEach(L => { if (L.contours && L.contours.length) upd(polysBounds(L.contours.map(c => c.points))); });
@@ -6028,7 +6037,7 @@ function fontInkBounds() {
     if (!L.anchors) return;
     if (nikOn) MARK_CPS.forEach(cp => {
       const cls = MARK_CLASS[cp], anc = L.anchors[cls]; if (!anc) return;
-      upd(polysBounds(qaPlace(anc, 'nikkud', cp, ms)));
+      upd(polysBounds(qaPlace(anc, 'nikkud', cp, cls==='center'?ds:ms)));
       if (tropOn && cls !== 'center') { const a = markMkmkAnchor(cp);
         if (cls === 'above' && tropTop != null) updTop(anc.y + a.above.y + tropTop);
         if (cls === 'below' && tropBot != null) updBot(anc.y + a.below.y + tropBot);
@@ -6210,14 +6219,15 @@ function buildFontSpec() {
   });
 
   // mark glyphs (zero width) — only when the font is Nikkud-compatible; default or custom shapes, scaled by Nikkud size
-  const ms = markScale();
+  const ms = markScale(), ds = dageshScale();
   const nikOn = project.font.nikkud.enabled;
   if (nikOn) MARK_CPS.forEach(cp => {
     const nm = gname(cp);
+    const cpMs = (MARK_CLASS[cp] === 'center') ? ds : ms;   // dagesh sized independently of the vowels
     const mc = markGlyphContours('nikkud', cp);
-    glyphs[nm] = { contours: mc.map(poly => poly.map(p => [Math.round(p[0]*ms), Math.round(p[1]*ms)])), advance: 0 };
+    glyphs[nm] = { contours: mc.map(poly => poly.map(p => [Math.round(p[0]*cpMs), Math.round(p[1]*cpMs)])), advance: 0 };
     const mcv = markGlyphCurves('nikkud', cp);
-    if (mcv && mcv.length === mc.length) glyphs[nm].curves = mcv.map(cv => cv ? scaleRoundCurve(cv, ms) : null);
+    if (mcv && mcv.length === mc.length) glyphs[nm].curves = mcv.map(cv => cv ? scaleRoundCurve(cv, cpMs) : null);
     glyphOrder.push(nm); markGlyphNames.push(nm);
     cmap[parseInt(cp,16)] = nm;
   });
@@ -6227,10 +6237,11 @@ function buildFontSpec() {
   Object.keys(cmStore).forEach(cp => {
     const nm = gname(cp);
     const exists = !!glyphs[nm];
+    const cpMs = (cmStore[cp] && cmStore[cp].cls === 'center') ? ds : ms;   // a custom center mark follows the Dagesh size
     const mc = markGlyphContours('customMarks', cp);
-    glyphs[nm] = { contours: mc.map(poly => poly.map(p => [Math.round(p[0]*ms), Math.round(p[1]*ms)])), advance: 0 };
+    glyphs[nm] = { contours: mc.map(poly => poly.map(p => [Math.round(p[0]*cpMs), Math.round(p[1]*cpMs)])), advance: 0 };
     const mcv = markGlyphCurves('customMarks', cp);
-    if (mcv && mcv.length === mc.length) glyphs[nm].curves = mcv.map(cv => cv ? scaleRoundCurve(cv, ms) : null);
+    if (mcv && mcv.length === mc.length) glyphs[nm].curves = mcv.map(cv => cv ? scaleRoundCurve(cv, cpMs) : null);
     if (!exists) { glyphOrder.push(nm); markGlyphNames.push(nm); cmap[parseInt(cp,16)] = nm; }
   });
 
@@ -7767,6 +7778,7 @@ function migrateProject(data) {
     if (!data.font.metrics) data.font.metrics = { baseline:BASELINE, letterTop:LETTER_TOP, lamedAscender:LAMED_TOP, descender:DESCENDER, defaultLSB:DEF_LSB, defaultRSB:DEF_RSB };
     else ['baseline','letterTop','lamedAscender','descender','defaultLSB','defaultRSB'].forEach((k,i)=>{ if(data.font.metrics[k]==null) data.font.metrics[k]=[BASELINE,LETTER_TOP,LAMED_TOP,DESCENDER,DEF_LSB,DEF_RSB][i]; });
     if (data.font.tropScale == null) data.font.tropScale = 1.0;
+    if (data.font.dageshScale == null) data.font.dageshScale = (data.font.markScale != null ? data.font.markScale : 1.0);   // seed to the old unified size so existing saves look unchanged
     if (data.font.includeDigitsPunct == null) data.font.includeDigitsPunct = true;
     if (!data.font.nikkud) data.font.nikkud = { enabled: true, mode: 'default', custom: {} };
     if (!data.font.nikkud.custom) data.font.nikkud.custom = {};
