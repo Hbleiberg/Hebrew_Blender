@@ -120,10 +120,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=Noto+Sans+Hebrew:wght@400;700&family=David+Libre:wght@400;700&family=Noto+Rashi+Hebrew:wght@400;700&display=swap" rel="stylesheet">
 <script>
-  // Apply dark mode BEFORE first paint to prevent flash (site-wide key)
-  if (localStorage.getItem('hebrewBlender_darkMode') === '1') {
-    document.documentElement.classList.add('dark-early');
-  }
+  // Apply dark mode BEFORE first paint to prevent flash (site-wide key). With no saved preference,
+  // honour the OS setting (prefers-color-scheme); an explicit choice always overrides it.
+  (function(){ try {
+    var p = localStorage.getItem('hebrewBlender_darkMode');
+    if (p === '1' || (p === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark-early');
+    }
+  } catch(e){} })();
 </script>
 <style>
   :root {
@@ -151,6 +155,9 @@
     --muted: #8a94a8;
     --border: #2a3349;
     --white: #1e2535;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; scroll-behavior: auto !important; }
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
@@ -282,11 +289,13 @@
      fails to render a bare combining nikkud on a dotted circle) so the vowel always shows */
   .mark-prev { display: block; height: 34px; width: auto; max-width: 50px; margin: 1px auto 0; overflow: visible; color: var(--text); }
   .ltile.sel .mark-prev { color: #fff; }
-  .lt-dot { position: absolute; top: 3px; left: 3px; width: 7px; height: 7px; border-radius: 50%; background: var(--border); }
-  .lt-dot.img { background: #d08c2a; }
-  .lt-dot.traced { background: #3b82f6; }
-  .lt-dot.anchored { background: #10b981; }
-  .lt-dot.saved { background: #10b981; color: #fff; width: 13px; height: 13px; top: 2px; left: 2px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; line-height: 1; }
+  /* Status dot. Colour PLUS a distinct glyph (I/T/A/✓) so state is never conveyed by colour alone.
+     Empty (not started) stays a small grey dot; any real status grows to a 13px badge with its letter. */
+  .lt-dot { position: absolute; top: 3px; left: 3px; width: 7px; height: 7px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 8px; font-weight: 700; line-height: 1; }
+  .lt-dot.img { background: #d08c2a; width: 13px; height: 13px; top: 2px; left: 2px; }
+  .lt-dot.traced { background: #3b82f6; width: 13px; height: 13px; top: 2px; left: 2px; }
+  .lt-dot.anchored { background: #10b981; width: 13px; height: 13px; top: 2px; left: 2px; }
+  .lt-dot.saved { background: #10b981; color: #fff; width: 13px; height: 13px; top: 2px; left: 2px; font-size: 9px; }
   /* Composed-tab tiles whose source base letter(s) aren't traced yet (display-only gating) */
   .ltile.locked { opacity: 0.55; }
   .lt-need { font-size: 0.5rem; color: var(--gold); direction: rtl; text-align: center; line-height: 1.1; }
@@ -576,8 +585,8 @@
   <button class="tbtn ghost" onclick="toggleLoadMenu(event)">Load Project ▾</button>
   <button class="tbtn ghost" onclick="saveProject()">Save Project</button>
   <input type="file" id="projFile" accept=".hebrewfont,.json,application/json,application/gzip" style="display:none;">
-  <button class="tbtn ghost" id="undoBtn" onclick="undo()" title="Undo (Ctrl+Z)" disabled>↶</button>
-  <button class="tbtn ghost" id="redoBtn" onclick="redo()" title="Redo (Ctrl+Shift+Z)" disabled>↷</button>
+  <button class="tbtn ghost" id="undoBtn" onclick="undo()" title="Undo (Ctrl+Z)" aria-label="Undo" disabled>↶</button>
+  <button class="tbtn ghost" id="redoBtn" onclick="redo()" title="Redo (Ctrl+Shift+Z)" aria-label="Redo" disabled>↷</button>
   <button class="tbtn ghost" onclick="openHelp()" title="A plain-language guide to the whole tool">❓ How does this work?</button>
   <button class="tbtn ghost" onclick="openQA()" title="Review every letter × mark placement for collisions">🔍 QA Check</button>
   <button class="tbtn ghost" onclick="generatePreviewPDF()">Preview PDF</button>
@@ -726,14 +735,14 @@
   </aside>
 
   <main class="workspace">
-    <div class="work-tabs">
-      <div class="wtab active" id="tabAlign" onclick="setWorkMode('align')">1 · Align</div>
-      <div class="wtab" id="tabTrace" onclick="setWorkMode('trace')">2 · Trace</div>
-      <div class="wtab" id="tabAnchors" onclick="gotoAnchors('nikkud')">3 · Nikkud</div>
-      <div class="wtab" id="tabTrop" onclick="gotoAnchors('trop')" style="display:none;">4 · Trop</div>
+    <div class="work-tabs" role="tablist" aria-label="Workspace step">
+      <div class="wtab active" id="tabAlign" role="tab" aria-selected="true" tabindex="0" onclick="setWorkMode('align')">1 · Align</div>
+      <div class="wtab" id="tabTrace" role="tab" aria-selected="false" tabindex="-1" onclick="setWorkMode('trace')">2 · Trace</div>
+      <div class="wtab" id="tabAnchors" role="tab" aria-selected="false" tabindex="-1" onclick="gotoAnchors('nikkud')">3 · Nikkud</div>
+      <div class="wtab" id="tabTrop" role="tab" aria-selected="false" tabindex="-1" onclick="gotoAnchors('trop')" style="display:none;">4 · Trop</div>
     </div>
 
-    <div class="cat-tabs" id="catTabs"></div>
+    <div class="cat-tabs" id="catTabs" role="tablist" aria-label="Glyph category"></div>
     <div id="catHost"></div>
 
     <div class="ws-grid">
@@ -771,7 +780,7 @@
 
 <!-- Generic ask-mode / message modal -->
 <div class="overlay" id="askOverlay">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="askTitle">
     <h3 id="askTitle">Notice</h3>
     <p id="askBody"></p>
     <div class="mbtns" id="askBtns"></div>
@@ -780,8 +789,8 @@
 
 <!-- My IvritSuite Fonts — save the current font for reuse in other tools + manage saved ones -->
 <div class="overlay" id="myFontsOverlay" onclick="if(event.target===this)closeMyFonts()">
-  <div class="modal" style="max-width:520px;">
-    <h3>My IvritSuite Fonts</h3>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="myFontsTitle" style="max-width:520px;">
+    <h3 id="myFontsTitle">My IvritSuite Fonts</h3>
     <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;">Saved in this browser only. Pick them in any IvritSuite tool's font selector. Up to 10 — saving an 11th drops the oldest.</p>
     <div style="display:flex;align-items:center;gap:10px;margin:12px 0 4px;">
       <button class="tbtn" onclick="saveCurrentToMyFonts(null)">★ Save current font</button>
@@ -794,8 +803,8 @@
 
 <!-- "How does this work?" help guide -->
 <div class="overlay" id="helpOverlay" onclick="if(event.target===this)closeHelp()">
-  <div class="modal help-modal">
-    <h3>How does this work?</h3>
+  <div class="modal help-modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <h3 id="helpTitle">How does this work?</h3>
     <div class="help-tabs" id="helpTabs"></div>
     <div class="help-body" id="helpBody"></div>
     <div class="mbtns"><button class="tbtn" onclick="closeHelp()">Close</button></div>
@@ -804,8 +813,8 @@
 
 <!-- QA Check — live collision grid of every letter × mark placement -->
 <div class="overlay" id="qaOverlay" onclick="if(event.target===this)closeQA()">
-  <div class="modal help-modal qa-modal">
-    <h3>QA Check — placement collisions</h3>
+  <div class="modal help-modal qa-modal" role="dialog" aria-modal="true" aria-labelledby="qaTitle">
+    <h3 id="qaTitle">QA Check — placement collisions</h3>
     <div id="qaSummary"></div>
     <div class="help-tabs" id="qaTabs"></div>
     <div class="help-body" id="qaGrid"></div>
@@ -814,8 +823,8 @@
 </div>
 
 <div class="overlay" id="mobileWarnOverlay">
-  <div class="modal" style="max-width:430px;text-align:center;">
-    <h3>📱 Best on a computer</h3>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mobileWarnTitle" style="max-width:430px;text-align:center;">
+    <h3 id="mobileWarnTitle">📱 Best on a computer</h3>
     <p>The Hebrew Font Maker uses precise tracing and a lot of fine controls — it's much easier on a <strong>desktop or laptop</strong>. You're welcome to keep going on this device, but it may feel cramped.</p>
     <label class="chk" style="justify-content:center;margin:14px 0 0;">
       <input type="checkbox" id="mobileWarnDontShow"> Don't show this warning again
@@ -828,8 +837,8 @@
 </div>
 
 <div class="overlay" id="welcomeOverlay" onclick="if(event.target===this)dismissWelcome(false)">
-  <div class="modal" style="max-width:460px;text-align:center;">
-    <h3>✍️ Welcome to the Hebrew Font Maker</h3>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle" style="max-width:460px;text-align:center;">
+    <h3 id="welcomeTitle">✍️ Welcome to the Hebrew Font Maker</h3>
     <p>Turn your own handwriting into a real, installable Hebrew font — trace each letter, place the nikkud &amp; trop, then export TTF/WOFF2 (or save it straight into your other IvritSuite tools). New here? The guide walks through every step.</p>
     <label class="chk" style="justify-content:center;margin:14px 0 0;">
       <input type="checkbox" id="welcomeDontShow"> Don't show this again
@@ -842,8 +851,8 @@
 </div>
 
 <div class="overlay" id="applyAlignOverlay" onclick="if(event.target===this)closeApplyAlign()">
-  <div class="modal" style="max-width:480px;">
-    <h3>Apply this alignment to other letters</h3>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="applyAlignTitle" style="max-width:480px;">
+    <h3 id="applyAlignTitle">Apply this alignment to other letters</h3>
     <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;">Copies the current letter's position &amp; scale (its image transform — <b>not</b> its traced outline) onto the letters you pick, overwriting their current alignment. You can undo it.</p>
     <div style="display:flex;gap:8px;margin:6px 0 8px;">
       <button class="ctl-btn" onclick="applyAlignCheckAll(true)">Select all</button>
@@ -855,8 +864,8 @@
 </div>
 
 <div class="overlay" id="applyNikkudOverlay" onclick="if(event.target===this)closeApplyNikkud()">
-  <div class="modal" style="max-width:480px;">
-    <h3>Apply this positioning to other letters</h3>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="applyNikkudTitle" style="max-width:480px;">
+    <h3 id="applyNikkudTitle">Apply this positioning to other letters</h3>
     <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;">Copies where this letter's nikkud &amp; trop marks sit (the anchor positions) onto the letters you pick, overwriting theirs. You can undo it.</p>
     <label class="chk" style="font-size:0.84rem;"><input type="checkbox" id="applyNikkudCenter" checked> Keep each letter horizontally centered (recommended)</label>
     <div class="hint" style="font-size:0.66rem;margin:2px 0 4px;">On: copies the vertical positions and keeps each mark centered on the target letter's own width (best when letters differ in width). Off: copies the exact X positions too.</div>
@@ -898,7 +907,8 @@ document.addEventListener('fullscreenchange', () => {
 });
 function initDark() {
   const saved = localStorage.getItem('hebrewBlender_darkMode');
-  if (saved === '1') { document.body.classList.add('dark'); document.getElementById('darkToggle').textContent = '☀️ Light'; }
+  const dark = saved === '1' || (saved === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);   // OS default when unset; explicit choice wins
+  if (dark) { document.body.classList.add('dark'); document.getElementById('darkToggle').textContent = '☀️ Light'; }
   document.documentElement.classList.remove('dark-early');
 }
 
@@ -1628,9 +1638,99 @@ function askModal(title, bodyHtml, buttons) {
     el.onclick = () => { closeModal(); if (b.onClick) b.onClick(); };
     wrap.appendChild(el);
   });
-  document.getElementById('askOverlay').classList.add('open');
+  aOpenModal('askOverlay', closeModal);
 }
-function closeModal() { document.getElementById('askOverlay').classList.remove('open'); }
+function closeModal() { aCloseModal('askOverlay'); }
+
+/* ════════ Accessibility: keyboard + ARIA for glyph tiles, tablists, and modal dialogs ════════ */
+/* Tile status badge: colour PLUS a distinct letter, so state is never conveyed by colour alone. */
+const LT_STATUS = {
+  img:      { glyph: 'I', word: 'image uploaded, not traced' },
+  traced:   { glyph: 'T', word: 'traced' },
+  anchored: { glyph: 'A', word: 'anchors placed' },
+  saved:    { glyph: '✓', word: 'placement saved' },
+};
+function ltStatusWord(status) { return (LT_STATUS[status] && LT_STATUS[status].word) || 'not started'; }
+function _a11yDecorateTile(tile) {
+  const dot = tile.querySelector('.lt-dot');
+  let status = '';
+  if (dot) {
+    ['saved', 'anchored', 'traced', 'img'].some(s => dot.classList.contains(s) && (status = s));
+    dot.setAttribute('aria-hidden', 'true');
+    const g = LT_STATUS[status] && LT_STATUS[status].glyph;
+    if (g && !dot.textContent) dot.textContent = g;   // inject the non-colour cue (keep the letter grid's own ✓)
+  }
+  const nameEl = tile.querySelector('.lt-name');
+  const name = (nameEl ? nameEl.textContent : tile.textContent || '').trim();
+  tile.setAttribute('role', 'button');
+  if (!tile.hasAttribute('tabindex')) tile.tabIndex = tile.classList.contains('locked') ? -1 : 0;
+  tile.setAttribute('aria-label', (name || 'item') + ' — ' + ltStatusWord(status));
+}
+function a11yTiles(grid) { if (grid) grid.querySelectorAll('.ltile').forEach(_a11yDecorateTile); }
+
+/* Roving tabindex + aria-selected for a tablist, derived from each tab's existing .active class. */
+function _syncTablist(listEl) {
+  if (!listEl) return;
+  listEl.querySelectorAll('[role=tab]').forEach(tab => {
+    const sel = tab.classList.contains('active');
+    tab.setAttribute('aria-selected', sel ? 'true' : 'false');
+    tab.tabIndex = sel ? 0 : -1;
+  });
+}
+function _tabKeydown(e, tab) {
+  const list = tab.closest('[role=tablist]'); if (!list) return;
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tab.click(); return; }
+  const tabs = [...list.querySelectorAll('[role=tab]')].filter(t => t.offsetParent !== null);   // visible tabs only
+  const i = tabs.indexOf(tab); if (i < 0) return;
+  let j = -1;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % tabs.length;
+  else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + tabs.length) % tabs.length;
+  else if (e.key === 'Home') j = 0;
+  else if (e.key === 'End') j = tabs.length - 1;
+  else return;
+  e.preventDefault(); tabs[j].focus(); tabs[j].click();   // automatic activation (allowed for tabs)
+}
+
+/* Modal dialogs: focus the first control, trap Tab inside, Escape to close, return focus to opener. */
+let _activeModal = null;   // { id, close, opener }
+function _focusables(el) {
+  return [...el.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')]
+    .filter(n => !n.disabled && n.offsetParent !== null);
+}
+function aOpenModal(id, closeFn) {
+  const ov = document.getElementById(id); if (!ov) return;
+  _activeModal = { id, close: closeFn || (() => aCloseModal(id)), opener: document.activeElement };
+  ov.classList.add('open');
+  const f = _focusables(ov); if (f.length) setTimeout(() => f[0].focus(), 0);
+}
+function aCloseModal(id) {
+  const ov = document.getElementById(id); if (ov) ov.classList.remove('open');
+  const ret = (_activeModal && _activeModal.id === id) ? _activeModal.opener : null;
+  if (_activeModal && _activeModal.id === id) _activeModal = null;
+  if (ret && ret.focus) { try { ret.focus(); } catch (e) {} }
+}
+document.addEventListener('keydown', e => {
+  // Active modal takes priority: trap Tab + Escape-to-close.
+  const am = _activeModal && document.getElementById(_activeModal.id);
+  if (am && am.classList.contains('open')) {
+    if (e.key === 'Escape') { e.preventDefault(); _activeModal.close(); return; }
+    if (e.key === 'Tab') {
+      const f = _focusables(am); if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (!am.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+    return;
+  }
+  // Otherwise: keyboard-activate a focused glyph tile, or arrow-navigate a tablist.
+  const t = e.target;
+  if (t && t.classList && t.classList.contains('ltile')) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); t.click(); }
+  } else if (t && t.getAttribute && t.getAttribute('role') === 'tab') {
+    _tabKeydown(e, t);
+  }
+});
 
 /* ════════ "How does this work?" help guide ════════ */
 const HELP_TABS = [
@@ -1858,7 +1958,7 @@ function openHelp(tab) {
     bar.appendChild(b);
   });
   showHelpTab(tab || 'start');
-  document.getElementById('helpOverlay').classList.add('open');
+  aOpenModal('helpOverlay', closeHelp);
 }
 function showHelpTab(id) {
   document.querySelectorAll('#helpTabs .help-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
@@ -1866,7 +1966,7 @@ function showHelpTab(id) {
   body.innerHTML = HELP_CONTENT[id] || '';
   body.scrollTop = 0;
 }
-function closeHelp() { document.getElementById('helpOverlay').classList.remove('open'); }
+function closeHelp() { aCloseModal('helpOverlay'); }
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.getElementById('helpOverlay').classList.contains('open')) closeHelp();
 });
@@ -2158,6 +2258,7 @@ function renderLetterGrid() {
     tile.onclick = () => selectItem('letter', L.cp);
     grid.appendChild(tile);
   });
+  a11yTiles(grid);
   document.getElementById('letterProgress').textContent = `(${done}/27)`;
   updateTracedReadout();
   if (document.getElementById('nikkudGrid')) renderNikkudGrid();   // keep mark tile states in sync
@@ -2203,6 +2304,7 @@ function renderEnglishGrid() {
     tile.onclick = () => selectItem('letter', E.cp);
     grid.appendChild(tile);
   });
+  a11yTiles(grid);
   const prog = document.getElementById('englishProgress'); if (prog) prog.textContent = total ? `(${done}/${total})` : '';
 }
 /* ── Nikkud / Trop sidebar panels (shared, parametrised by category) ── */
@@ -2304,6 +2406,7 @@ function renderMarkGrid(cat) {
     tile.onclick = () => selectItem(cat, M.cp);
     grid.appendChild(tile);
   });
+  a11yTiles(grid);
 }
 function renderNikkudPanel() { renderMarkPanel('nikkud'); }
 function renderTropPanel()   { renderMarkPanel('trop'); }
@@ -2338,6 +2441,7 @@ function renderPunctGrid() {
     tile.onclick = () => selectItem('letter', L.cp);
     grid.appendChild(tile);
   });
+  a11yTiles(grid);
 }
 function setIncludePunct(on) {
   project.font.includeDigitsPunct = !!on;
@@ -2576,6 +2680,7 @@ function renderCustomGlyphsGrid() {
     tile.onclick = () => selectItem('customMarks', cp);
     grid.appendChild(tile);
   });
+  a11yTiles(grid);
 }
 /* ── Opt-in form tabs (Specialized / Yiddish / Ladino): a grid of auto-composed forms. Clicking a
    tile opens the form on the canvas below — the existing mark-placement editor for base+mark forms,
@@ -2608,6 +2713,7 @@ function renderFormPanel(panelId, targets, intro) {
     grid.appendChild(tile);
   });
   if (!any) grid.innerHTML = `<div class="hint" style="grid-column:1/-1;direction:ltr;text-align:left;">Enable this tab to add its forms.</div>`;
+  a11yTiles(grid);
 }
 function renderSpecialFormsPanel() { renderFormPanel('specialFormsPanelBody', SPECIAL_TARGETS, 'Wide letterforms — <b>auto-composed from your traced letters</b>. Pick one, then use the <b>Width</b> slider (it both adds side space and stretches). Insert them by their Unicode code point.'); }
 function renderYiddishPanel()      { renderFormPanel('yiddishPanelBody', YIDDISH_TARGETS, 'Yiddish forms, composed from your traced letters: pasekh / komets alef, the rafe letters (בֿ כֿ פֿ), and the vov/yud digraphs (װ ױ ײ).'); }
@@ -2688,6 +2794,7 @@ function _setWorkMode(mode) {
   document.getElementById('tabTrace').classList.toggle('active', mode === 'trace' || mode === 'nodes');   // node editing is a sub-state of Trace
   document.getElementById('tabAnchors').classList.toggle('active', onAnch && anchorCat === 'nikkud');
   document.getElementById('tabTrop').classList.toggle('active', onAnch && anchorCat === 'trop');
+  _syncTablist(document.querySelector('.work-tabs'));   // mirror .active → aria-selected + roving tabindex
   // entering Trace with an image but no contours yet → trace once so the live preview shows
   if (mode === 'trace' && curImageUrl() && !curLetter().contours) { traceCurrent(); return; }
   renderStage(); renderControls();
@@ -2714,6 +2821,7 @@ function syncCatTabs() {
     b.classList.toggle('active', b.dataset.cat === catTab));
   // Settings tabs (Font Details / Spacing / Advanced) have no glyph to edit → hide the editing canvas.
   document.body.classList.toggle('cat-settings', catTab === 'fontdetails' || catTab === 'spacing' || catTab === 'advanced');
+  _syncTablist(document.getElementById('catTabs'));   // mirror .active → aria-selected + roving tabindex
 }
 function renderCatTabs() {
   const t = document.getElementById('catTabs');
@@ -2735,7 +2843,7 @@ function renderCatTabs() {
   if (project && project.font && project.font.addYiddish)      cats.splice(cats.indexOf('punct') + 1, 0, 'yiddish');
   if (project && project.font && project.font.addSpecialForms) cats.splice(cats.indexOf('punct') + 1, 0, 'specialforms');
   t.innerHTML = cats.map(c =>
-    `<div class="ctab" data-cat="${c}" onclick="setCatTab('${c}')">${NAMES[c]}</div>`).join('');
+    `<div class="ctab" data-cat="${c}" role="tab" aria-selected="false" tabindex="-1" onclick="setCatTab('${c}')">${NAMES[c]}</div>`).join('');
   syncCatTabs();
 }
 function applyLayout() {   // Tabbed is the only layout: panels live in #catHost, surfaced via the tab bar.
@@ -6174,7 +6282,7 @@ function qaJump(cp, markCp, kind, side, tropCp) {
   }
 }
 function setQaTab(t) { qaTab = t; qaRenderTabs(); qaRenderGrid(); }
-function closeQA() { document.getElementById('qaOverlay').classList.remove('open'); }
+function closeQA() { aCloseModal('qaOverlay'); }
 function openQA() {
   if (!project) { status('Open or create a project first.'); return; }
   const have = { nikkud: project.font.nikkud.enabled, trop: project.font.trop.enabled, stacked: project.font.nikkud.enabled && project.font.trop.enabled };
@@ -6182,7 +6290,7 @@ function openQA() {
   qaBuild(); qaRenderTabs(); qaRenderSummary(); qaRenderGrid();
   const ov = document.getElementById('qaOverlay');
   if (!ov._wired) { document.getElementById('qaGrid').addEventListener('click', qaGridClick); ov._wired = true; }   // one delegated listener
-  ov.classList.add('open');
+  aOpenModal('qaOverlay', closeQA);
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.getElementById('qaOverlay')?.classList.contains('open')) closeQA(); });
 
@@ -7040,10 +7148,10 @@ function myFontsDate(ts) {
 function openMyFonts() {
   if (!window.indexedDB) { askModal('Not supported', 'This browser has no IndexedDB, so fonts can’t be saved for reuse in IvritSuite.', [{ label: 'OK' }]); return; }
   _myFontsOpen = true;
-  document.getElementById('myFontsOverlay').classList.add('open');
+  aOpenModal('myFontsOverlay', closeMyFonts);
   renderMyFontsList();
 }
-function closeMyFonts() { _myFontsOpen = false; document.getElementById('myFontsOverlay').classList.remove('open'); }
+function closeMyFonts() { _myFontsOpen = false; aCloseModal('myFontsOverlay'); }
 async function renderMyFontsList() {
   const host = document.getElementById('myFontsList');
   const countEl = document.getElementById('myFontsCount');
@@ -7901,24 +8009,24 @@ function initPanels() {
 function maybeShowMobileWarn(){
   try { if (localStorage.getItem('hebrewFontMaker_mobileWarnDismissed') === '1') return; } catch(e){}
   if (window.matchMedia && window.matchMedia('(max-width: 820px)').matches)
-    document.getElementById('mobileWarnOverlay').classList.add('open');
+    aOpenModal('mobileWarnOverlay', () => dismissMobileWarn(false));
 }
 function dismissMobileWarn(goBack){
   if (document.getElementById('mobileWarnDontShow').checked) {
     try { localStorage.setItem('hebrewFontMaker_mobileWarnDismissed', '1'); } catch(e){}
   }
   if (goBack){ if (history.length > 1) history.back(); else location.href = '/'; return; }
-  document.getElementById('mobileWarnOverlay').classList.remove('open');
+  aCloseModal('mobileWarnOverlay');
   maybeShowWelcome();   // on mobile the welcome was deferred behind this warning — show it now
 }
 function maybeShowWelcome(){
   try { if (localStorage.getItem('hebrewBlender_welcomeSeen') === '1') return; } catch(e){}
   if (document.getElementById('mobileWarnOverlay').classList.contains('open')) return;   // don't stack — deferred until the mobile warning is dismissed
-  document.getElementById('welcomeOverlay').classList.add('open');
+  aOpenModal('welcomeOverlay', () => dismissWelcome(false));
 }
 function dismissWelcome(openGuide){
   if (document.getElementById('welcomeDontShow').checked) { try { localStorage.setItem('hebrewBlender_welcomeSeen', '1'); } catch(e){} }
-  document.getElementById('welcomeOverlay').classList.remove('open');
+  aCloseModal('welcomeOverlay');
   if (openGuide) openHelp();
 }
 // Apply the current letter's alignment transform to other letters (one undoable batch).
@@ -7930,9 +8038,9 @@ function openApplyAlign(){
     lab.innerHTML = `<input type="checkbox" class="aa-cp" value="${L.cp}"> <span style="font-family:${project.template.font};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${escapeHtml(L.name)}`;
     host.appendChild(lab);
   });
-  document.getElementById('applyAlignOverlay').classList.add('open');
+  aOpenModal('applyAlignOverlay', closeApplyAlign);
 }
-function closeApplyAlign(){ document.getElementById('applyAlignOverlay').classList.remove('open'); }
+function closeApplyAlign(){ aCloseModal('applyAlignOverlay'); }
 function applyAlignCheckAll(on){ document.querySelectorAll('#applyAlignList .aa-cp').forEach(c => c.checked = on); }
 function applyAlignDo(){
   const src = curLetter(); if (!src) { closeApplyAlign(); return; }
@@ -7956,9 +8064,9 @@ function openApplyNikkud(){
     lab.innerHTML = `<input type="checkbox" class="an-cp" value="${L.cp}"> <span style="font-family:${project.template.font};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${escapeHtml(L.name)}`;
     host.appendChild(lab);
   });
-  document.getElementById('applyNikkudOverlay').classList.add('open');
+  aOpenModal('applyNikkudOverlay', closeApplyNikkud);
 }
-function closeApplyNikkud(){ document.getElementById('applyNikkudOverlay').classList.remove('open'); }
+function closeApplyNikkud(){ aCloseModal('applyNikkudOverlay'); }
 function applyNikkudCheckAll(on){ document.querySelectorAll('#applyNikkudList .an-cp').forEach(c => c.checked = on); }
 // horizontal center used to seed a letter's anchors: traced → top-band midX; else advance-based (same as seedAnchors).
 function anchorMidX(l){
