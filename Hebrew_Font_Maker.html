@@ -3643,10 +3643,22 @@ function computeTemplateFit(l) {
 let stageZoom = 1;
 function setZoom(z) { stageZoom = Math.max(1, Math.min(4, +z || 1)); applyZoom(); }
 function applyZoom() {
+  const wrap = stage() && stage().closest('.stage-wrap');
+  // Focal-point zoom: remember what's at the centre of the view, then keep it centred after the
+  // SVG grows/shrinks — otherwise the scroll box stays pinned at the top-left corner.
+  let fx = 0.5, fy = 0.5;
+  if (wrap && wrap.scrollWidth > 0 && wrap.scrollHeight > 0) {
+    fx = (wrap.scrollLeft + wrap.clientWidth / 2) / wrap.scrollWidth;
+    fy = (wrap.scrollTop + wrap.clientHeight / 2) / wrap.scrollHeight;
+  }
   const pct = Math.round(stageZoom * 100);
   stage().style.width = pct + '%';
   const r = document.getElementById('zoomRange'); if (r) r.value = pct;
   const v = document.getElementById('zoomVal'); if (v) v.textContent = pct + '%';
+  if (wrap) {   // reading scrollWidth above forced a reflow, so these reflect the new size; the browser clamps out-of-range scroll
+    wrap.scrollLeft = fx * wrap.scrollWidth - wrap.clientWidth / 2;
+    wrap.scrollTop  = fy * wrap.scrollHeight - wrap.clientHeight / 2;
+  }
 }
 /* ════════ Resizable workspace side columns (CSS-var driven; center is a fluid 1fr) ════════ */
 const WS_PREFS_KEY = 'hebrewFontMaker_uiPrefs';
