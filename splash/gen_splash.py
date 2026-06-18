@@ -19,7 +19,7 @@ import os
 from PIL import Image, ImageDraw, ImageFont, ImageChops
 
 # ---------------------------------------------------------------------------
-VERSION = "1.1"          # <<< shown as "v{VERSION}" at the bottom of the splash
+VERSION = "1.2"          # <<< shown as "v{VERSION}" at the bottom of the splash
 # ---------------------------------------------------------------------------
 
 HERE = os.path.dirname(os.path.abspath(__file__))
