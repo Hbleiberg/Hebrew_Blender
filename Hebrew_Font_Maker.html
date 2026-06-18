@@ -5233,18 +5233,23 @@ function renderPrecompControls(l) {
   const pc = getPrecomp(precompTarget);
   if (!pc || precompBaseCp(pc) !== l.codepoint) { precompTarget = null; return ''; }
   if (isWideForm(pc)) return renderWideFormControls(pc);   // wide letterforms / digraphs → Width slider
-  if (markClassFor(pc.mark) === 'center') {   // dagesh: unified with the letter's own Dagesh (Center) — no separate placement here
+  if (markClassFor(pc.mark) === 'center') {   // dagesh: unified with the letter's own Dagesh (Center) — size adjustable here, position follows the letter
     const g = `<span style="font-family:var(--heb-font);direction:rtl;">${precompComposed(pc)}</span>`;
+    const dagPct = Math.round(dageshScale() * 100);
     return `<div class="ws-side-title">Place <span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">${precompComposed(pc)}</span> — ${escapeHtml(precompName(pc))}</div>
-    <div class="hint" style="font-size:0.68rem;">The dagesh on this form follows the letter's own <b>Dagesh (Center)</b> position and size, so ${g} always matches a dagesh you place on the plain letter. To move or resize it, edit the letter's <b>Dagesh (Center)</b> on its Nikkud step.</div>
+    <div class="hint" style="font-size:0.68rem;">The dagesh's <b>position</b> follows the letter's own <b>Dagesh (Center)</b>, so ${g} always matches a dagesh you place on the plain letter — to move it, edit the letter's <b>Dagesh (Center)</b> on its Nikkud step. Its <b>size</b> you can set right here:</div>
+    <hr class="ctl-divider">
+    <div class="inline">Dagesh size <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
     <hr class="ctl-divider">
     <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">← Back to vowels</button>`;
   }
   const a = precompAnchor(pc), isOverride = !!(pc.anchor && pc.anchor.x != null);
   const scPct = Math.round(precompMarkScale(pc) * 100), isScaleOverride = (pc.markScale != null);
-  const isCholamVav = (pc.base === '05D5' && pc.mark === '05B9');   // וֹ size lives on the Nikkud step (Holam (vav) size), not per-form
+  const isCholamVav = (pc.base === '05D5' && pc.mark === '05B9');   // וֹ size: surfaced here (next to the live preview) using the same control as the Nikkud-step Holam (vav) size
+  const cholPct = Math.round(cholamScale() * 100);
   const sizeBlock = isCholamVav
-    ? `<div class="hint" style="font-size:0.66rem;">The dot's <b>size</b> follows <b>Holam (vav) size</b> on this letter's Nikkud step, so every וֹ stays consistent. (The standalone holam on other letters is sized by <b>Nikkud size</b>.)</div>`
+    ? `<div class="inline">Holam (vav) size <input type="range" min="40" max="180" step="5" value="${cholPct}" oninput="setCholamScale(this.value)"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>
+    <div class="hint" style="font-size:0.62rem;">Sizes the dot on every וֹ — the same <b>Holam (vav) size</b> control as the vav's Nikkud step. (The standalone holam on other letters is sized by <b>Nikkud size</b>.)</div>`
     : `<div class="inline">Dot size <input type="range" min="30" max="200" step="1" value="${scPct}" oninput="setPrecompMarkScale(this.value)" onchange="udBurstCommit();renderControls()"> <span id="pcScaleV" class="readout">${scPct}%</span></div>
     <div class="hint" style="font-size:0.62rem;">Sizes the dot for this form only — the regular vowel dot on other letters stays the same.</div>
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
@@ -5358,6 +5363,11 @@ function glyphPathAt(cs, dx, yo, curves) {
   });
   return d;
 }
+function kernBetween(firstCp, secondCp) {   // saved pair kern in logical/reading order (first then second); 0 if none
+  for (const k of (project.font.kerning || []))
+    if (k && k.value && (k.left||[]).includes(firstCp) && (k.right||[]).includes(secondCp)) return k.value;
+  return 0;
+}
 function renderSpacingPreview() {
   const svg = document.getElementById('spacingPreviewSvg'); if (!svg || !project) return;
   const em = effMetrics(), sp = fontSpacing(), ascender = em.lamedAscender + 100, descender = em.descender - 50;
@@ -5370,16 +5380,22 @@ function renderSpacingPreview() {
     const cp = ch.codePointAt(0).toString(16).toUpperCase().padStart(4,'0');
     const l = project.letters.find(x => x.codepoint === cp);
     const w = l ? effLetterAdvance(l) : effLetterAdvance(null);
-    total += w; return { type:'glyph', w, contours: l && l.contours, curves: l && l.curves };
+    total += w; return { type:'glyph', cp, w, contours: l && l.contours, curves: l && l.curves };
   });
+  // pair kerning between adjacent glyphs (reading order) — matches the exported `kern` feature & the kern-panel preview
+  const gaps = cells.map((c, i) => { const n = cells[i+1]; return (c.type === 'glyph' && n && n.type === 'glyph') ? kernBetween(c.cp, n.cp) : 0; });
+  gaps.forEach(g => total += g);
   let pen = total, body = '';   // RTL: pen starts at the right edge and walks left
-  cells.forEach(c => {
-    pen -= c.w; if (c.type !== 'glyph') return;
-    for (let line = 0; line < 2; line++) {
-      const yo = line * lineH;
-      if (c.contours) body += `<path d="${glyphPathAt(c.contours, pen, yo, c.curves)}" fill="currentColor"/>`;
-      else body += `<rect x="${(pen+40).toFixed(0)}" y="${(yo-ascender+60).toFixed(0)}" width="${Math.max(20,c.w-80).toFixed(0)}" height="${(ascender-60).toFixed(0)}" rx="10" fill="none" stroke="currentColor" stroke-dasharray="7 6" opacity="0.3"/>`;
+  cells.forEach((c, i) => {
+    pen -= c.w;
+    if (c.type === 'glyph') {
+      for (let line = 0; line < 2; line++) {
+        const yo = line * lineH;
+        if (c.contours) body += `<path d="${glyphPathAt(c.contours, pen, yo, c.curves)}" fill="currentColor"/>`;
+        else body += `<rect x="${(pen+40).toFixed(0)}" y="${(yo-ascender+60).toFixed(0)}" width="${Math.max(20,c.w-80).toFixed(0)}" height="${(ascender-60).toFixed(0)}" rx="10" fill="none" stroke="currentColor" stroke-dasharray="7 6" opacity="0.3"/>`;
+      }
     }
+    pen -= gaps[i];   // open/close the kern before the next glyph (− tightens, + loosens)
   });
   const pad = 24;
   svg.setAttribute('viewBox', `${-pad} ${(-ascender-pad).toFixed(0)} ${(total+2*pad).toFixed(0)} ${(lineH+(ascender-descender)+2*pad).toFixed(0)}`);
@@ -8123,6 +8139,9 @@ async function autosaveNow() {
     try { localStorage.setItem('hebrewFontMaker_autosave', JSON.stringify(stripImagesForAutosave(project))); } catch (_) {}
   } finally { _autosaveInFlight = false; }
 }
+// Flush a pending debounced autosave while the page is still alive (tab hidden / closing) so the last
+// edit isn't lost in the 3s debounce window and "Continue where you left off" stays current.
+function flushAutosave() { if (project && _projectDirty) { clearTimeout(_autosaveTimer); autosaveNow(); } }
 function _autosaveRelTime(iso) {
   const t = Date.parse(iso); if (!isFinite(t)) return 'earlier';
   const s = Math.max(0, Math.round((Date.now() - t) / 1000));
@@ -8361,6 +8380,8 @@ function init() {
   loadColWidths();        // restore saved side-column widths (clamped to this viewport)
   attachColResizers();    // wire the two splitter drag handles (once; they survive renderControls)
   window.addEventListener('beforeunload', e => { if (_projectDirty) { e.preventDefault(); e.returnValue = ''; } });   // warn before losing unsaved work
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushAutosave(); });   // tab hidden → flush the debounced autosave now
+  window.addEventListener('pagehide', flushAutosave);   // closing/navigating away → last-chance flush
   maybeRestoreAutosave();   // offer to restore work from a prior session that was never saved to a file
   window.addEventListener('resize', wsOnWindowResize);   // re-clamp widths if the window shrinks
   onExportFormatChange();   // sync the Export button label to the format picker (browsers may restore its value on reload)
