@@ -202,6 +202,10 @@
     background: var(--navy); padding: 8px 18px; border-bottom: 1px solid var(--gold);
   }
   body.dark .toolbar { background: #0d1220; }
+  /* Toolbar clusters: Project · History · Review · Export. Each group wraps as a whole unit; the
+     divider is a left-border on adjacent groups, so it never orphans when the row wraps. */
+  .tb-group { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
+  .tb-group + .tb-group { border-left: 1px solid rgba(240,208,128,0.3); padding-left: 10px; }
   .tbtn {
     background: var(--gold); color: #1a1a1a; border: none; border-radius: 6px;
     padding: 7px 13px; cursor: pointer; font-size: 0.82rem; font-weight: 700;
@@ -296,6 +300,14 @@
   .lt-dot.traced { background: #3b82f6; width: 13px; height: 13px; top: 2px; left: 2px; }
   .lt-dot.anchored { background: #10b981; width: 13px; height: 13px; top: 2px; left: 2px; }
   .lt-dot.saved { background: #10b981; color: #fff; width: 13px; height: 13px; top: 2px; left: 2px; font-size: 9px; }
+  /* Placement review states: confirmed = solid green ✓ (.saved); carried-over = hollow amber ✓; unconfirmed = solid amber !. Glyph + fill differ so it's never colour-only. */
+  .lt-dot.inherited { background: var(--white); border: 2px solid #d08c2a; color: #d08c2a; width: 13px; height: 13px; top: 2px; left: 2px; font-size: 8px; }
+  .lt-dot.unconfirmed { background: #d08c2a; color: #fff; width: 13px; height: 13px; top: 2px; left: 2px; font-size: 10px; }
+  /* "Unconfirmed" / "carried over — review" pill shown next to the Confirm button on the placement step */
+  .placement-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 0.68rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .placement-pill.unconfirmed { background: rgba(208,140,42,0.16); color: #9a6612; border: 1px solid #d08c2a; }
+  .placement-pill.inherited { background: rgba(208,140,42,0.10); color: #9a6612; border: 1px dashed #d08c2a; }
+  body.dark .placement-pill.unconfirmed, body.dark .placement-pill.inherited { color: #f0c060; }
   /* Composed-tab tiles whose source base letter(s) aren't traced yet (display-only gating) */
   .ltile.locked { opacity: 0.55; }
   .lt-need { font-size: 0.5rem; color: var(--gold); direction: rtl; text-align: center; line-height: 1.1; }
@@ -311,6 +323,14 @@
   .work-current .wc-glyph { font-family: var(--heb-font); font-size: 1.05rem; line-height: 1; color: var(--text); direction: rtl; }
   .wtab { padding: 7px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--white); cursor: pointer; font-size: 0.84rem; font-weight: 700; color: var(--muted); }
   .wtab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  /* Per-glyph step completion mark (Task: step checklist). Glyph + colour, set via data-tick so it survives updateTabs' textContent. */
+  .wtab[data-tick]::after { margin-left: 7px; font-size: 0.82rem; font-weight: 700; line-height: 1; }
+  .wtab[data-tick="done"]::after { content: '✓'; color: #10b981; }
+  .wtab[data-tick="todo"]::after { content: '✗'; color: var(--muted); opacity: 0.8; }
+  .wtab[data-tick="na"]::after   { content: '–'; color: var(--muted); opacity: 0.7; }
+  .wtab.active[data-tick="done"]::after { color: #5fe0a8; }
+  .wtab.active[data-tick="todo"]::after { color: #f0d080; opacity: 1; }
+  .wtab.active[data-tick="na"]::after   { color: rgba(255,255,255,0.75); }
   /* ── Tabbed layout: Letters/Nikkud/Trop pickers as top tabs (Advanced Settings → Layout) ── */
   #catTabs, #catHost { display: none; }
   .cat-tabs { display: flex; gap: 6px; margin-bottom: 0; }
@@ -572,6 +592,7 @@
   </div>
   <div class="hdr-actions">
     <a href="/" class="hbtn">← Home</a>
+    <button class="hbtn" onclick="openHelp()" title="A plain-language guide to the whole tool" aria-label="Help">❓ Help</button>
     <button id="darkToggle" class="hbtn" onclick="toggleDark()" title="Toggle dark mode">🌙 Dark</button>
     <button id="fsBtn" class="hbtn" onclick="toggleFullscreen()" title="Fullscreen" aria-label="Toggle fullscreen" style="display:inline-flex;align-items:center;gap:5px;">
       <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px;"><path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>
@@ -585,22 +606,29 @@
 </button>
 
 <div class="toolbar">
-  <button class="tbtn ghost" onclick="newProjectFresh()">New</button>
-  <button class="tbtn ghost" onclick="toggleLoadMenu(event)">Load Project ▾</button>
-  <button class="tbtn ghost" onclick="saveProject()">Save Project</button>
-  <input type="file" id="projFile" accept=".hebrewfont,.json,application/json,application/gzip" style="display:none;">
-  <button class="tbtn ghost" id="undoBtn" onclick="undo()" title="Undo (Ctrl+Z)" aria-label="Undo" disabled>↶</button>
-  <button class="tbtn ghost" id="redoBtn" onclick="redo()" title="Redo (Ctrl+Shift+Z)" aria-label="Redo" disabled>↷</button>
-  <button class="tbtn ghost" onclick="openHelp()" title="A plain-language guide to the whole tool">❓ How does this work?</button>
-  <button class="tbtn ghost" onclick="openQA()" title="Review every letter × mark placement for collisions">🔍 QA Check</button>
-  <button class="tbtn ghost" onclick="generatePreviewPDF()">Preview PDF</button>
-  <select class="tbtn-select" id="exportFormat" onchange="onExportFormatChange()" title="Choose an export format — or save the font for use in IvritSuite">
-    <option value="ttf" selected>TTF (recommended)</option>
-    <option value="woff2">WOFF2 (web)</option>
-    <option value="ttfwoff2">TTF + WOFF2 (zip)</option>
-    <option value="ufo">UFO source (zip)</option>
-  </select>
-  <button class="tbtn" id="exportBtn" onclick="exportFont()">⬇ Export TTF</button>
+  <div class="tb-group">
+    <button class="tbtn ghost" onclick="newProjectFresh()">New</button>
+    <button class="tbtn ghost" onclick="toggleLoadMenu(event)">Load Project ▾</button>
+    <button class="tbtn ghost" onclick="saveProject()">Save Project</button>
+    <input type="file" id="projFile" accept=".hebrewfont,.json,application/json,application/gzip" style="display:none;">
+  </div>
+  <div class="tb-group">
+    <button class="tbtn ghost" id="undoBtn" onclick="undo()" title="Undo (Ctrl+Z)" aria-label="Undo" disabled>↶</button>
+    <button class="tbtn ghost" id="redoBtn" onclick="redo()" title="Redo (Ctrl+Shift+Z)" aria-label="Redo" disabled>↷</button>
+  </div>
+  <div class="tb-group">
+    <button class="tbtn ghost" onclick="openQA()" title="Review every letter × mark placement for collisions">🔍 QA Check</button>
+    <button class="tbtn ghost" onclick="generatePreviewPDF()">Preview PDF</button>
+  </div>
+  <div class="tb-group">
+    <select class="tbtn-select" id="exportFormat" onchange="onExportFormatChange()" title="Choose an export format — or save the font for use in IvritSuite">
+      <option value="ttf" selected>TTF (recommended)</option>
+      <option value="woff2">WOFF2 (web)</option>
+      <option value="ttfwoff2">TTF + WOFF2 (zip)</option>
+      <option value="ufo">UFO source (zip)</option>
+    </select>
+    <button class="tbtn" id="exportBtn" onclick="exportFont()">⬇ Export TTF</button>
+  </div>
 </div>
 <div id="statusMsg"></div>
 
@@ -1428,7 +1456,8 @@ function blankLetter(L) {
     curves: null,               // [{winding, start:[x,y], segments:[{type,pts}]}] fitted Béziers, 1:1 with contours (entry null = polygon)
     advance: null, lsb: null, rsb: null,   // per-letter width + left side bearing (null = inherit metrics.defaultLSB; RSB is derived from advance−ink)
     anchors: null,              // {below:{x,y}, above:{x,y}, center:{x,y}}
-    placementSaved: false,      // user confirmed the nikkud placement (green ✓)
+    placementSaved: false,      // user hand-confirmed the nikkud placement (solid green ✓)
+    placementInherited: false,  // positions carried over from the previous letter — review state, distinct from confirmed
     binThreshold: 128, invert: false, epsilon: 6, cornerAngle: 32,
     outlineOnly: false, lineWeight: 70,   // "Outline only" (hollow bubble) trace + ring thickness in font units
     handEdited: false           // node editor touched this outline → warn before a destructive re-trace
@@ -1489,7 +1518,7 @@ function markItem(kind, cp) {
     codepoint: cp, name: markName(cp), cls: markClassOf(kind, cp) || 'above',
     source: { kind: 'single', dataUrl: null, cropRect: null, sheetId: null },
     transform: [1,0,0,1,0,0], captureBox: null,
-    contours: null, curves: null, advance: 0, anchors: null, placementSaved: false,
+    contours: null, curves: null, advance: 0, anchors: null, placementSaved: false, placementInherited: false,
     binThreshold: 128, invert: false, epsilon: 6, cornerAngle: 32,
     outlineOnly: false, lineWeight: 70,   // "Outline only" (hollow bubble) trace + ring thickness in font units
     handEdited: false,
@@ -1670,17 +1699,19 @@ function closeModal() { aCloseModal('askOverlay'); }
 /* ════════ Accessibility: keyboard + ARIA for glyph tiles, tablists, and modal dialogs ════════ */
 /* Tile status badge: colour PLUS a distinct letter, so state is never conveyed by colour alone. */
 const LT_STATUS = {
-  img:      { glyph: 'I', word: 'image uploaded, not traced' },
-  traced:   { glyph: 'T', word: 'traced' },
-  anchored: { glyph: 'A', word: 'anchors placed' },
-  saved:    { glyph: '✓', word: 'placement saved' },
+  img:         { glyph: 'I', word: 'image uploaded, not traced' },
+  traced:      { glyph: 'T', word: 'traced' },
+  anchored:    { glyph: 'A', word: 'anchors placed' },
+  saved:       { glyph: '✓', word: 'placement confirmed' },
+  inherited:   { glyph: '✓', word: 'placement carried over — review & confirm' },
+  unconfirmed: { glyph: '!', word: 'placement unconfirmed — review & confirm' },
 };
 function ltStatusWord(status) { return (LT_STATUS[status] && LT_STATUS[status].word) || 'not started'; }
 function _a11yDecorateTile(tile) {
   const dot = tile.querySelector('.lt-dot');
   let status = '';
   if (dot) {
-    ['saved', 'anchored', 'traced', 'img'].some(s => dot.classList.contains(s) && (status = s));
+    ['saved', 'inherited', 'unconfirmed', 'anchored', 'traced', 'img'].some(s => dot.classList.contains(s) && (status = s));
     dot.setAttribute('aria-hidden', 'true');
     const g = LT_STATUS[status] && LT_STATUS[status].glyph;
     if (g && !dot.textContent) dot.textContent = g;   // inject the non-colour cue (keep the letter grid's own ✓)
@@ -1767,7 +1798,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '1.2';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '1.3';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -1820,7 +1851,7 @@ const HELP_CONTENT = {
       <li><span class="ui">Above (Holam)</span> — for the dot that sits on top.</li>
       <li><span class="ui">Dagesh (Center)</span> — for the dot inside the letter.</li>
     </ul>
-    <p>Tap the vowel buttons to preview different vowels in place, and use <span class="ui">Nikkud size</span> to scale all the marks up or down. When a letter looks right, click <span class="ui">Save Placement</span> — its dot becomes a green check ✓. <span class="ui">Reset letter</span> or <span class="ui">Reset all</span> let you start over.</p>
+    <p>Tap the vowel buttons to preview different vowels in place, and use <span class="ui">Nikkud size</span> to scale all the marks up or down. Your moves apply live and travel with you to the next letter — when one looks right, click <span class="ui">✓ Confirm placement</span> to mark it reviewed (its dot turns a solid green ✓). Confirming is optional; undo always works. <span class="ui">Reset letter</span> or <span class="ui">Reset all</span> let you start over.</p>
     <div class="help-tip">💡 For tiny adjustments, drag the handle and use your arrow keys (hold <strong>Shift</strong> for extra-fine moves), or type exact <span class="ui">X</span> / <span class="ui">Y</span> values on the right. Do this for every letter so vowels line up neatly when people type.</div>
   `,
   spacing: `
@@ -1969,6 +2000,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v1.3</strong> — Placing nikkud &amp; trop now works like the rest of the tool: your moves apply <strong>live</strong> and you can leave a letter freely — no save dialog — with <strong>undo</strong> as the safety net. The grid now tells confirmed placements apart from ones <strong>carried over</strong> from the previous letter: a solid green ✓ means you reviewed it, a hollow amber ✓ means "carried over — review &amp; confirm", and amber <strong>!</strong> means unconfirmed. "Save Placement" is now an optional <strong>✓ Confirm placement</strong> review marker. The step tabs show a <strong>per-letter checklist</strong> (✓ done / ✗ to-do / – not needed) for the letter you're on. The <strong>toolbar</strong> is now grouped — Project · History · Review · Export — with Export the clear primary action and <strong>Help</strong> moved up to the top corner. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.2</strong> — Size the <strong>dagesh</strong> dot and the <strong>holam on the vav (וֹ)</strong> each on their own, separate from the vowels — the standalone holam now matches the hiriq — and <strong>fine-tune any single vowel's height</strong> to line it up with the rest. Prepositive &amp; postpositive <strong>trop</strong> (telisha gedola, yetiv, pashta, zarqa, zinor, telisha qetana) now sit toward the leading or trailing <strong>edge</strong> of their letter, the way the tradition places them. Your work is <strong>auto-saved in this browser</strong> — reopen and <strong>continue right where you left off</strong>, with a warning before you close unsaved changes. A new <strong>quality check</strong> flags outlines that cross or overlap themselves. <strong>Accessibility</strong>: full keyboard navigation, screen-reader labels, status badges that don't rely on color alone, reduced-motion support, and dark mode that follows your device. Zoom now centers on the middle of the workspace. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.1</strong> — Import an existing TTF's letter outlines, its own nikkud &amp; trop mark shapes, and its real anchor positions — so you can fix or build on existing fonts. Exported fonts now embed the license name and a Made-with-IvritSuite attribution in their metadata. Bigger editing workspace on wide monitors. Removed the CC&nbsp;BY&nbsp;4.0 license option. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.0</strong> — Initial release. <span style="color:var(--muted);">(June 2026)</span></li>
@@ -2269,16 +2301,23 @@ function letterStatus(l) {
   if (l.source.dataUrl) return 'img';   // single: upload; combined: cropped region
   return '';
 }
+// Placement review marker for the letter grid: confirmed (solid green ✓) vs carried-over (hollow amber ✓)
+// vs unconfirmed (amber !) — the real "done" signal, not raw 'anchored'. Falls back to trace/img status.
+function placementDot(l) {
+  if (l.anchors && l.placementSaved)     return { cls: 'saved',       glyph: '✓' };
+  if (l.anchors && l.placementInherited) return { cls: 'inherited',   glyph: '✓' };
+  if (l.anchors)                         return { cls: 'unconfirmed', glyph: '!' };
+  return { cls: letterStatus(l), glyph: '' };   // 'traced'/'img'/'' — a11yTiles injects the T/I cue
+}
 function renderLetterGrid() {
   const grid = document.getElementById('letterGrid'); grid.innerHTML = '';
   let done = 0;
   LETTERS.filter(L => L.cat !== 'punct').forEach(L => {
     const l = project.letters.find(x => x.codepoint === L.cp);
-    const st = letterStatus(l); if (st === 'anchored') done++;
-    const saved = l.placementSaved && l.anchors;
+    const d = placementDot(l); if (d.cls === 'saved' || d.cls === 'inherited') done++;   // count placed letters (confirmed or carried over)
     const tile = document.createElement('div');
     tile.className = 'ltile' + (curKind === 'letter' && L.cp === curCp ? ' sel' : '');
-    tile.innerHTML = `<span class="lt-dot ${saved?'saved':st}">${saved?'✓':''}</span>
+    tile.innerHTML = `<span class="lt-dot ${d.cls}">${d.glyph}</span>
       <span class="lt-heb" style="font-family:${project.template.font};">${String.fromCodePoint(parseInt(L.cp,16))}</span>
       <span class="lt-name">${L.name}</span>`;
     tile.onclick = () => selectItem('letter', L.cp);
@@ -3645,6 +3684,31 @@ function updateTabs() {
   const tt = document.getElementById('tabTrop');
   tt.style.display = (!isMark && !isPunct && !eng && project.font.trop.enabled) ? '' : 'none';
   tt.textContent = '4 · Place Trop';
+  updateStepTicks();   // refresh per-glyph completion marks after labels/visibility are set
+}
+// Per-glyph checklist on the step tabs: ✓ done / ✗ not-done / – N/A for the CURRENT glyph. Attribute-
+// based (data-tick + aria-label) so it survives updateTabs' textContent reset; rendered via CSS ::after.
+function updateStepTicks() {
+  const setTick = (id, state) => {
+    const t = document.getElementById(id); if (!t) return;
+    if (!state || t.style.display === 'none') { delete t.dataset.tick; t.removeAttribute('aria-label'); t.removeAttribute('title'); return; }
+    t.dataset.tick = state;
+    const word = state === 'done' ? 'done' : state === 'na' ? 'not needed for this glyph' : 'not done yet';
+    t.setAttribute('aria-label', t.textContent.trim() + ' — ' + word);
+    t.setAttribute('title', word);
+  };
+  if (!project || curKind !== 'letter') {   // mark editor / no project → no ticks
+    ['tabAlign','tabTrace','tabAnchors','tabTrop'].forEach(id => setTick(id, null));
+    return;
+  }
+  const l = curLetter();
+  setTick('tabAlign', isVectorGlyph(l) ? 'na' : (l.source && l.source.dataUrl ? 'done' : 'todo'));   // vector glyphs skip alignment
+  setTick('tabTrace', l.contours ? 'done' : 'todo');
+  // Placement: the CONFIRMED flag is the done signal (carried-over + unconfirmed read as not-done).
+  // English accents have no confirm flow → no tick.
+  const placeState = isEng(l.codepoint) ? null : (l.placementSaved ? 'done' : 'todo');
+  setTick('tabAnchors', placeState);
+  setTick('tabTrop', placeState);
 }
 function renderMarkControls(c, it) {
   const cat = curKind, label = cat==='nikkud' ? 'Nikkud' : (cat==='customMarks' ? 'Custom mark' : 'Trop');
@@ -5006,7 +5070,7 @@ function attachAnchorDrag(l) {
       el.setAttribute('cx', fx(a.x+mc[0])); el.setAttribute('cy', fy(a.y+mc[1]));
       const rx = document.getElementById('ancX'); if (rx) rx.value = a.x;
       const ry = document.getElementById('ancY'); if (ry) ry.value = a.y;
-      if (l.placementSaved) l.placementSaved = false;   // moved → unsaved (✓ refreshes on pointerup)
+      dropPlacementConfirm(l);   // moved → unconfirmed (✓ refreshes on pointerup)
     });
     el.addEventListener('pointerup', () => { grab = null; udPush(pend); pend = null; hideAncTip(); renderStage(); renderControls(); renderLetterGrid(); });
     el.addEventListener('pointercancel', () => { grab = null; udPush(pend); pend = null; hideAncTip(); });
@@ -5457,34 +5521,33 @@ function savePlacement() {
   const l = curLetter();
   if (!l.anchors) { status('Set the nikkud anchors first.'); return; }
   l.placementSaved = true;
-  l.savedAnchors = JSON.parse(JSON.stringify(l.anchors));   // snapshot for dirty-detection + Discard
+  l.placementInherited = false;   // a hand-confirm supersedes a carried-over placement
+  l.savedAnchors = JSON.parse(JSON.stringify(l.anchors));   // snapshot for dirty-detection baseline
   lastSavedAnchors = JSON.parse(JSON.stringify(l.anchors)); // carry these coordinates onto the next fresh letter
   renderLetterGrid(); renderControls();
-  status('Placement saved for ' + l.name + ' ✓');
-  markDirty();   // placement saved into the project, but the project itself is now unsaved
+  status('Placement confirmed for ' + l.name + ' ✓');
+  markDirty();   // placement confirmed into the project, but the project itself is now unsaved
+}
+function dropPlacementConfirm(l) {   // an anchor move makes a confirmed/carried-over placement "unconfirmed" again
+  if (!l || (!l.placementSaved && !l.placementInherited)) return false;
+  l.placementSaved = false; l.placementInherited = false;
+  return true;
 }
 function noteAnchorMoved(l) {
-  // Moving an anchor invalidates a saved placement → drop the green ✓. Update in place so live
+  // Moving an anchor invalidates a confirmed/carried placement → drop the ✓. Update in place so live
   // X/Y typing keeps focus (no full renderControls).
   l = l || curLetter();
-  if (!l || !l.placementSaved) return;
-  l.placementSaved = false;
+  if (!dropPlacementConfirm(l)) return;
   renderLetterGrid();
   const b = document.getElementById('savePlacementBtn');
-  if (b) { b.className = 'ctl-btn primary'; b.setAttribute('style', 'font-weight:700;'); b.textContent = 'Save Placement'; }
+  if (b) { b.className = 'ctl-btn primary'; b.setAttribute('style', 'font-weight:700;'); b.textContent = '✓ Confirm placement'; }
 }
 function guardPlacement(proceed) {
-  // Before leaving the placement screen with a move made since the last save, ask to keep it.
+  // Placement moves are live + undoable, so leaving never prompts (like Align/Trace). On the way out,
+  // snapshot the current letter's anchors as the carry-forward source so the next fresh letter inherits
+  // them — even if this letter was never explicitly confirmed.
   const l = (project && curKind === 'letter') ? curLetter() : null;
-  if (workMode === 'anchors' && l && l.savedAnchors && !l.placementSaved) {
-    const label = anchorCat === 'trop' ? 'Trop' : 'Nikkud';
-    askModal('Save new ' + label + ' placement?',
-      `You moved the placement for <b>${l.name}</b> since it was last saved.`,
-      [ {label:'Save', onClick: () => { savePlacement(); proceed(); }},
-        {label:'Discard', cls:'ghost', onClick: () => { udDo([itemScope()], 'discard placement — ' + l.name, () => { l.anchors = JSON.parse(JSON.stringify(l.savedAnchors)); l.placementSaved = true; }); proceed(); }},
-        {label:'Go back', cls:'ghost'} ]);   // close the dialog, stay on this letter, keep the unsaved move
-    return;
-  }
+  if (workMode === 'anchors' && l && l.anchors) lastSavedAnchors = JSON.parse(JSON.stringify(l.anchors));
   proceed();
 }
 
@@ -5504,6 +5567,7 @@ function updateCurrentGlyphLabel() {   // persistent "Editing: <glyph> — <name
 }
 function renderControls() {
   updateCurrentGlyphLabel();
+  updateStepTicks();   // keep the per-glyph step checklist current on every render (trace/confirm route through here)
   const L = document.getElementById('ctlLeft'), R = document.getElementById('ctlRight'), U = document.getElementById('ctlUnder');
   if (!L || !R || !U) return;
   L.innerHTML = R.innerHTML = U.innerHTML = '';
@@ -5547,10 +5611,10 @@ function squareMarkBtn(cat, cp, name, activeCp, fn) {
   return `<button type="button" class="mark-sq ${activeCp===cp?'active':''}" onclick="${fn}('${cp}')">${markTilePreviewSVG(cat,cp)}<span>${name}</span></button>`;
 }
 function maybeInheritAnchors(l) {
-  // After one letter's placement is saved, the next letter opened in the placement step starts from
-  // those same coordinates so consecutive letters needn't be positioned from scratch. Applied once
-  // per save and only to a not-yet-saved letter (WeakMap guard), so in-progress moves are never clobbered.
-  if (!lastSavedAnchors || curKind !== 'letter' || l.placementSaved || l.savedAnchors) return;
+  // After one letter is left, the next letter opened in the placement step starts from those same
+  // coordinates so consecutive letters needn't be positioned from scratch. Applied once per source
+  // (WeakMap guard) and only to a not-yet-placed letter, so in-progress moves are never clobbered.
+  if (!lastSavedAnchors || curKind !== 'letter' || l.placementSaved || l.placementInherited || l.savedAnchors) return;
   if (anchorInheritedFrom.get(l) === lastSavedAnchors) return;
   const ibb = l.contours ? glyphBBox(l.contours, true, letterMeta(l.codepoint)) : null;
   const floatUp = !!(ibb && Math.round(ibb.minY) > 120);   // yod-like: body floats well above the baseline
@@ -5564,7 +5628,7 @@ function maybeInheritAnchors(l) {
     }
   });
   anchorInheritedFrom.set(l, lastSavedAnchors);
-  l.placementSaved = true;                                   // a carried placement counts as saved (green ✓); adjusting it drops the ✓
+  l.placementInherited = true;                               // carried over from the previous letter — distinct from a hand-confirmed ✓; review & confirm (or adjust) to clear it
   l.savedAnchors = JSON.parse(JSON.stringify(l.anchors));
   renderLetterGrid();
   renderStage();   // redraw the canvas at the inherited coords so the mark doesn't "jump" on the first nudge
@@ -5831,7 +5895,11 @@ function renderAnchorUnder(U, l) {
   const { cls, isTrop, want } = _anchorCtx(l);
   const sizePct = Math.round((isTrop ? tropScale() : markScale())*100), sizeFn = isTrop ? 'setTropScale' : 'setMarkScale';
   const dagPct = Math.round(dageshScale()*100), cholPct = Math.round(cholamScale()*100), isVav = (l.codepoint === '05D5');
-  const saveBtn = `<button id="savePlacementBtn" class="ctl-btn ${l.placementSaved?'':'primary'}" style="font-weight:700;${l.placementSaved?'background:#10b981;color:#fff;border-color:#10b981;':''}" onclick="savePlacement()">${l.placementSaved?'✓ Placement saved':'Save Placement'}</button>`;
+  const saveBtn = `<button id="savePlacementBtn" class="ctl-btn ${l.placementSaved?'':'primary'}" style="font-weight:700;${l.placementSaved?'background:#10b981;color:#fff;border-color:#10b981;':''}" onclick="savePlacement()" title="Marks this letter's placement as reviewed. Undo (Ctrl+Z) always works — confirming isn't required to keep your changes.">${l.placementSaved?'✓ Placement confirmed':'✓ Confirm placement'}</button>`;
+  const placementPill = l.placementSaved ? ''
+    : l.placementInherited
+    ? `<span class="placement-pill inherited" title="These positions were carried from the previous letter. Review them, then Confirm.">↩ Carried over — review</span>`
+    : `<span class="placement-pill unconfirmed" title="This letter's placement hasn't been confirmed yet. Adjust if needed, then Confirm — undo always works.">! Unconfirmed</span>`;
   const applyBtn = `<button class="ctl-btn" onclick="openApplyNikkud()" title="Copy this letter's nikkud & trop anchor positions onto other letters">Apply positioning to other letters…</button>`;
   U.innerHTML = `
     <div class="ws-under-row" style="align-items:flex-end;">
@@ -5846,7 +5914,7 @@ function renderAnchorUnder(U, l) {
           <button class="ctl-btn" onclick="resetAllAnchors()">Reset all</button>
         </div>
       </div>
-      <div style="flex:1;min-width:0;display:flex;justify-content:flex-end;">${saveBtn}</div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px;">${placementPill}${saveBtn}</div>
     </div>
     <div class="hint" style="margin-top:8px;">Drag the handle (or arrow keys; Shift = 1 unit), or edit X/Y on the left, to position the ${ANCHOR_LABEL[cls].toLowerCase()} mark.${cls==='below'?' All under-vowels share this anchor.':isTrop?` All ${want}-trop share this anchor; with a vowel present, trop stacks on the vowel.`:''}</div>`;
 }
@@ -5984,7 +6052,7 @@ document.addEventListener('keydown', e => {
   const l = curLetter(); if (!l.anchors) return;
   udNudgeTick([itemScope()], 'nudge anchor — ' + l.name + ', ' + activeAnchorClass);
   const a = l.anchors[activeAnchorClass]; a.x += dx; a.y += dy;
-  if (l.placementSaved) l.placementSaved = false;
+  dropPlacementConfirm(l);
   renderStage(); renderControls(); renderLetterGrid();
 });
 /* [ / ] — previous / next letter while on the placement (Nikkud/Trop) step, so you can cycle through
@@ -8086,6 +8154,7 @@ function migrateProject(data) {
     if (ex.epsilon == null) ex.epsilon = 6;
     if (ex.cornerAngle == null) ex.cornerAngle = 32;   // Bézier corner threshold (curves regenerate on next trace)
     if (ex.placementSaved == null) ex.placementSaved = false;
+    if (ex.placementInherited == null) ex.placementInherited = false;   // carried-over (not hand-confirmed) review state
     // A reopened project's already-positioned letters are "placed": their saved anchors must never be
     // overwritten by the carry-onto-next-letter convenience, and Discard must not revert to a stale snapshot.
     if (ex.anchors) { ex.placementSaved = true; if (!ex.savedAnchors) ex.savedAnchors = JSON.parse(JSON.stringify(ex.anchors)); }
@@ -8107,6 +8176,7 @@ function migrateProject(data) {
       if (l.epsilon == null) l.epsilon = 6;
       if (l.cornerAngle == null) l.cornerAngle = 32;
       if (l.placementSaved == null) l.placementSaved = false;
+      if (l.placementInherited == null) l.placementInherited = false;   // carried-over (not hand-confirmed) review state
       if (l.anchors) { l.placementSaved = true; if (!l.savedAnchors) l.savedAnchors = JSON.parse(JSON.stringify(l.anchors)); }
       if (l.invert == null) l.invert = false;
       if (l.outlineOnly == null) l.outlineOnly = false;
