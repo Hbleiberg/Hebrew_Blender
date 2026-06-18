@@ -1366,6 +1366,7 @@ function udPush(p) {
   if (!slices.length) return;
   undoStack.push({ label: p.label, slices }); if (undoStack.length > UNDO_MAX) undoStack.shift();
   redoStack = []; updateUndoButtons();
+  markDirty();   // a committed edit → flag the project unsaved + schedule an autosave
 }
 function udDo(scopes, label, fn) { const p = udCapture(scopes, label); fn(); udPush(p); }
 /* input burst — one entry per slider/number-field interaction: begin on first `input`, commit on `change`.
@@ -1387,7 +1388,7 @@ function udApply(entry, useAfter) {
 }
 function undo() { udFlushPending(); const e = undoStack.pop(); if (!e) return; udApply(e, false); redoStack.push(e); afterUndo('Undo: ' + e.label); }
 function redo() { udFlushPending(); const e = redoStack.pop(); if (!e) return; udApply(e, true); undoStack.push(e); afterUndo('Redo: ' + e.label); }
-function afterUndo(msg) { updateUndoButtons(); if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }   /* rebuild node model from restored curves */ renderGrids(); renderStage(); renderControls(); status(msg); }
+function afterUndo(msg) { updateUndoButtons(); if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }   /* rebuild node model from restored curves */ renderGrids(); renderStage(); renderControls(); status(msg); markDirty(); }
 function updateUndoButtons() { const u = document.getElementById('undoBtn'), r = document.getElementById('redoBtn'); if (u) u.disabled = !undoStack.length; if (r) r.disabled = !redoStack.length; }
 function udClear() { undoStack = []; redoStack = []; _udNudge = null; _burst = null; updateUndoButtons(); }
 
@@ -1439,6 +1440,7 @@ function newProject() {
   udClear();                 // fresh project → drop any prior undo history / open bursts
   curKind = 'letter'; curCp = LETTER_ORDER[0]; workMode = 'align';
   syncMetaToForm(); renderGrids(); setWorkMode('align'); status('New project.');
+  _projectDirty = false; clearTimeout(_autosaveTimer);   // fresh project: not dirty (keep any slot so a boot restore can still offer prior work)
 }
 /* ── Item indirection: the Align/Trace workspace operates on a generic "item" =
    a letter OR a nikkud/trop mark. curLetter() stays as an alias so existing
@@ -5251,6 +5253,7 @@ function savePlacement() {
   lastSavedAnchors = JSON.parse(JSON.stringify(l.anchors)); // carry these coordinates onto the next fresh letter
   renderLetterGrid(); renderControls();
   status('Placement saved for ' + l.name + ' ✓');
+  markDirty();   // placement saved into the project, but the project itself is now unsaved
 }
 function noteAnchorMoved(l) {
   // Moving an anchor invalidates a saved placement → drop the green ✓. Update in place so live
@@ -7100,6 +7103,7 @@ async function saveCurrentToMyFonts(bytes) {
   }
 }
 function offerSaveToMyFonts() {   // post-export success screen (called after every successful export, any format)
+  markClean();   // a successful export is a safe checkpoint → drop the unsaved-work breadcrumb
   const fam = (project.font.familyName || 'My Hebrew Font').trim();
   const canSave = !!(window.indexedDB && window.FontFace);
   const btns = [{ label: 'Done', cls: 'ghost' },
@@ -7615,20 +7619,20 @@ async function saveToComputer() {
     status('Project saved to your computer.');
   }
   pushRecentProject(project);   // also refresh the in-browser Recent list
-  try { localStorage.setItem('hebrewFontMaker_autosave', JSON.stringify(stripImagesForAutosave(project))); } catch(e){}
+  markClean();   // saved to a file → drop the unsaved-work breadcrumb
 }
 let _lastBrowserReminder = 0;
 function saveToBrowser() {
   project.savedAt = new Date().toISOString();
   onMetaChange();
   const ok = pushRecentProject(project);   // full project → this browser (reopen via Load Project ▾ → Recent)
-  try { localStorage.setItem('hebrewFontMaker_autosave', JSON.stringify(stripImagesForAutosave(project))); } catch(e){}
   if (!ok) {
     askModal('Couldn’t save in the browser',
       'This project is too large for the browser’s limited storage (photos add up fast). Please use <b>💾 To computer</b> instead — that always works.',
       [{label:'OK'}]);
     return;
   }
+  markClean();   // saved in this browser → drop the unsaved-work breadcrumb (Recent keeps the full copy)
   status('Saved in this browser ✓  ·  reopen from Load Project ▾ → Recent');
   // Periodic nudge — the browser copy is NOT a real backup.
   if (Date.now() - _lastBrowserReminder > 10*60*1000) {
@@ -7684,6 +7688,7 @@ async function applyProjectData(data) {           // shared by file-load and "Lo
   ['nikkud','trop','customMarks'].forEach(cat => { const u = project.font[cat].combinedImage && project.font[cat].combinedImage.dataUrl; if (u && /^data:image\/svg/i.test(u)) cacheSvgSheet(u); });
   curKind = 'letter'; curCp = LETTER_ORDER[0];
   syncMetaToForm(); renderGrids(); _setWorkMode('align');
+  markClean();   // a freshly loaded project is a known-good state — no unsaved breadcrumb
   return true;
 }
 /* ── Recent projects: a local-only localStorage cache powering the "Load Project ▾" menu.
@@ -7727,6 +7732,78 @@ function toggleLoadMenu(ev) {
   menu.style.left = Math.max(6, Math.min(rect.left, window.innerWidth - menu.offsetWidth - 8)) + 'px';
   menu.style.top = (rect.bottom + 4) + 'px';
   setTimeout(() => document.addEventListener('click', closeLoadMenu), 0);
+}
+/* ── Autosave: a single-slot safety net kept in its OWN IndexedDB database. Deliberately NOT the
+   shared 'ivritsuite-fonts' DB — bumping that DB's version here would make every other tool's
+   indexedDB.open(IV_FONTS_DB, 1) throw VersionError and break My Fonts site-wide. The full project
+   (incl. source images) is gzipped and stored, so a reload before saving doesn't lose scans; it is
+   offered back on the next visit via a prompt. Local-only; NOT part of the portable .hebrewfont. ── */
+const FM_DB = 'hebrewFontMaker', FM_AUTOSAVE_STORE = 'autosave';
+function _fmOpenDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(FM_DB, 1);
+    req.onupgradeneeded = () => { const db = req.result;
+      if (!db.objectStoreNames.contains(FM_AUTOSAVE_STORE)) db.createObjectStore(FM_AUTOSAVE_STORE, { keyPath: 'id' }); };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+function _fmTx(mode, fn) {
+  return _fmOpenDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(FM_AUTOSAVE_STORE, mode), req = fn(tx.objectStore(FM_AUTOSAVE_STORE));
+    tx.oncomplete = () => resolve(req && req.result);
+    tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
+  }));
+}
+function autosavePut(rec) { return _fmTx('readwrite', os => os.put(rec)); }
+function autosaveGet()    { return _fmTx('readonly',  os => os.get('current')); }
+function autosaveClear()  { return _fmTx('readwrite', os => os.delete('current')).catch(() => {}); }
+
+let _projectDirty = false, _autosaveTimer = 0, _autosaveInFlight = false;
+function markDirty() {   // a real edit happened → flag unsaved + schedule a debounced autosave
+  _projectDirty = true;
+  clearTimeout(_autosaveTimer);
+  _autosaveTimer = setTimeout(autosaveNow, 3000);
+}
+function markClean() {   // work is now safe elsewhere (saved / exported / loaded) → drop the breadcrumb
+  _projectDirty = false;
+  clearTimeout(_autosaveTimer);
+  autosaveClear();
+  try { localStorage.removeItem('hebrewFontMaker_autosave'); } catch (e) {}
+}
+async function autosaveNow() {
+  if (!project || _autosaveInFlight) return;
+  _autosaveInFlight = true;
+  try {
+    const json = JSON.stringify(project);
+    if (typeof indexedDB === 'undefined' || typeof CompressionStream === 'undefined') throw new Error('no IDB/gzip');
+    const blob = await gzipBlob(json);                       // full project incl. images, gzipped
+    await autosavePut({ id: 'current', savedAt: new Date().toISOString(), gz: await blob.arrayBuffer() });
+  } catch (e) {   // private mode / no IndexedDB → stripped localStorage slot (outlines survive, images don't)
+    try { localStorage.setItem('hebrewFontMaker_autosave', JSON.stringify(stripImagesForAutosave(project))); } catch (_) {}
+  } finally { _autosaveInFlight = false; }
+}
+function _autosaveRelTime(iso) {
+  const t = Date.parse(iso); if (!isFinite(t)) return 'earlier';
+  const s = Math.max(0, Math.round((Date.now() - t) / 1000));
+  if (s < 60) return 'just now';
+  const m = Math.round(s / 60); if (m < 60) return m + (m === 1 ? ' minute' : ' minutes') + ' ago';
+  const h = Math.round(m / 60); if (h < 24) return h + (h === 1 ? ' hour' : ' hours') + ' ago';
+  const d = Math.round(h / 24); return d + (d === 1 ? ' day' : ' days') + ' ago';
+}
+async function maybeRestoreAutosave() {
+  let rec = null, data = null, stripped = false;
+  try { rec = await autosaveGet(); } catch (e) {}
+  if (rec && rec.gz) { try { data = JSON.parse(await gunzipText(rec.gz)); } catch (e) { data = null; } }
+  if (!data) {   // IndexedDB miss → try the stripped localStorage fallback
+    try { const raw = localStorage.getItem('hebrewFontMaker_autosave'); if (raw) { data = JSON.parse(raw); stripped = true; } } catch (e) {}
+  }
+  if (!data || data.format !== 'hebrew-font-maker-project') return;
+  askModal('Restore unsaved work?',
+    `We found work from <b>${_autosaveRelTime((rec && rec.savedAt) || data.savedAt)}</b> that was never saved to a file.`
+    + (stripped ? '<br><span class="warn">Your browser couldn’t keep the source photos this time — traced outlines remain, but uploaded scans may be missing.</span>' : ''),
+    [ { label: 'Restore it', onClick: async () => { if (await applyProjectData(data)) { _projectDirty = true; autosaveNow(); status('Restored your unsaved work.'); } } },
+      { label: 'Start fresh', cls: 'ghost', onClick: () => markClean() } ]);
 }
 function migrateProject(data) {
   // ensure all 27 letters exist & fields present (forward-compatible)
@@ -7935,6 +8012,8 @@ function init() {
   applyLayout();   // Tabbed-only layout: move the panels into the tab host
   loadColWidths();        // restore saved side-column widths (clamped to this viewport)
   attachColResizers();    // wire the two splitter drag handles (once; they survive renderControls)
+  window.addEventListener('beforeunload', e => { if (_projectDirty) { e.preventDefault(); e.returnValue = ''; } });   // warn before losing unsaved work
+  maybeRestoreAutosave();   // offer to restore work from a prior session that was never saved to a file
   window.addEventListener('resize', wsOnWindowResize);   // re-clamp widths if the window shrinks
   onExportFormatChange();   // sync the Export button label to the format picker (browsers may restore its value on reload)
   // re-measure the template glyph once web fonts settle
