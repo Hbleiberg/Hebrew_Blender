@@ -304,7 +304,10 @@
   .form-ready { font-size: 0.72rem; color: #10b981; margin-bottom: 8px; }
 
   /* ── Workspace stage ── */
-  .work-tabs { display: flex; gap: 6px; margin-bottom: 10px; justify-content: center; }
+  .work-tabs { display: flex; gap: 6px; margin-bottom: 10px; justify-content: center; align-items: center; }
+  .work-current { margin-right: auto; display: flex; align-items: center; gap: 6px; min-width: 0; max-width: 50%; overflow: hidden; white-space: nowrap; font-size: 0.82rem; font-weight: 600; color: var(--muted); }
+  .work-current:empty { display: none; }
+  .work-current .wc-glyph { font-family: var(--heb-font); font-size: 1.05rem; line-height: 1; color: var(--text); direction: rtl; }
   .wtab { padding: 7px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--white); cursor: pointer; font-size: 0.84rem; font-weight: 700; color: var(--muted); }
   .wtab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
   /* ── Tabbed layout: Letters/Nikkud/Trop pickers as top tabs (Advanced Settings → Layout) ── */
@@ -736,10 +739,11 @@
 
   <main class="workspace">
     <div class="work-tabs" role="tablist" aria-label="Workspace step">
+      <div class="work-current" id="workCurrent" aria-hidden="true"></div>
       <div class="wtab active" id="tabAlign" role="tab" aria-selected="true" tabindex="0" onclick="setWorkMode('align')">1 · Align</div>
       <div class="wtab" id="tabTrace" role="tab" aria-selected="false" tabindex="-1" onclick="setWorkMode('trace')">2 · Trace</div>
-      <div class="wtab" id="tabAnchors" role="tab" aria-selected="false" tabindex="-1" onclick="gotoAnchors('nikkud')">3 · Nikkud</div>
-      <div class="wtab" id="tabTrop" role="tab" aria-selected="false" tabindex="-1" onclick="gotoAnchors('trop')" style="display:none;">4 · Trop</div>
+      <div class="wtab" id="tabAnchors" role="tab" aria-selected="false" tabindex="-1" onclick="gotoAnchors('nikkud')">3 · Place Nikkud</div>
+      <div class="wtab" id="tabTrop" role="tab" aria-selected="false" tabindex="-1" onclick="gotoAnchors('trop')" style="display:none;">4 · Place Trop</div>
     </div>
 
     <div class="cat-tabs" id="catTabs" role="tablist" aria-label="Glyph category"></div>
@@ -3629,14 +3633,14 @@ function updateTabs() {
   const ta = document.getElementById('tabAnchors');
   if (eng) {
     ta.style.display = engSupportsAccents(curCp) ? '' : 'none';   // only the English letters that take accents
-    ta.textContent = '3 · Accent Marks';
+    ta.textContent = '3 · Place Accent Marks';
   } else {
     ta.style.display = (!isMark && !isPunct && project.font.nikkud.enabled) ? '' : 'none';
-    ta.textContent = '3 · Nikkud';
+    ta.textContent = '3 · Place Nikkud';
   }
   const tt = document.getElementById('tabTrop');
   tt.style.display = (!isMark && !isPunct && !eng && project.font.trop.enabled) ? '' : 'none';
-  tt.textContent = '4 · Trop';
+  tt.textContent = '4 · Place Trop';
 }
 function renderMarkControls(c, it) {
   const cat = curKind, label = cat==='nikkud' ? 'Nikkud' : (cat==='customMarks' ? 'Custom mark' : 'Trop');
@@ -5482,7 +5486,20 @@ function guardPlacement(proceed) {
 
 /* ════════ Per-mode controls panel ════════ */
 /* ═══ Workspace controls — L / center / R + Under dispatcher (per work mode) ═══ */
+function updateCurrentGlyphLabel() {   // persistent "Editing: <glyph> — <name>" indicator at the left of the work-tabs row
+  const el = document.getElementById('workCurrent');
+  if (!el) return;
+  const it = project && curItem();
+  if (!it) { el.innerHTML = ''; return; }
+  const name = escapeHtml(it.name || '');
+  // Only real letters get a glyph preview: a custom Private-Use codepoint renders a tofu box, and a
+  // lone combining mark (nikkud/trop) renders as a floating diacritic — show the name only for those.
+  if (curKind !== 'letter' || isCustomCp(curCp)) { el.innerHTML = `Editing: ${name}`; return; }
+  const glyph = `<span class="wc-glyph" style="font-family:${project.template.font};">${String.fromCodePoint(parseInt(curCp,16))}</span>`;
+  el.innerHTML = `Editing: ${glyph} — ${name}`;
+}
 function renderControls() {
+  updateCurrentGlyphLabel();
   const L = document.getElementById('ctlLeft'), R = document.getElementById('ctlRight'), U = document.getElementById('ctlUnder');
   if (!L || !R || !U) return;
   L.innerHTML = R.innerHTML = U.innerHTML = '';
@@ -5761,9 +5778,19 @@ function renderAnchorLeft(L, l) {
     <div class="ws-side-title">Special &amp; precomposed forms</div>
     <div class="hint" style="font-size:0.66rem;">Set where the dot sits in the combined glyph (e.g. שׁ / שׂ).</div>
     <div class="ctl-row" style="flex-wrap:wrap;gap:5px;">${forms.map(precompFormBtn).join('')}</div>` : '';
+  // Label Prev/Next with the actual neighbor glyph, computed from the SAME source stepLetter uses so they can't drift.
+  const _cyc = _placementCycleCps();
+  let _ci = _cyc.indexOf(curCp); if (_ci < 0) _ci = 0;
+  const _clen = _cyc.length, _single = _clen <= 1;
+  const _navChar = cp => {
+    if (isCustomCp(cp)) { const it = (project.letters || []).find(x => x.codepoint === cp); return escapeHtml(((it && it.name) ? it.name[0] : '') || '?'); }
+    return `<span style="font-family:${project.template.font};direction:rtl;">${String.fromCodePoint(parseInt(cp,16))}</span>`;
+  };
+  const _prevLbl = _single ? '◀ Prev' : `◀ Prev (${_navChar(_cyc[(_ci - 1 + _clen) % _clen])})`;
+  const _nextLbl = _single ? 'Next ▶' : `Next (${_navChar(_cyc[(_ci + 1) % _clen])}) ▶`;
   const navRow = `<div class="ctl-row" style="margin-bottom:6px;">
-      <button class="ctl-btn" onclick="stepLetter(-1)" title="Previous letter ( [ ) — stays on this step">◀ Prev</button>
-      <button class="ctl-btn" onclick="stepLetter(1)" title="Next letter ( ] ) — stays on this step">Next ▶</button>
+      <button class="ctl-btn" onclick="stepLetter(-1)" title="Previous letter ( [ ) — stays on this step">${_prevLbl}</button>
+      <button class="ctl-btn" onclick="stepLetter(1)" title="Next letter ( ] ) — stays on this step">${_nextLbl}</button>
     </div>`;
   L.innerHTML = `
     ${navRow}
