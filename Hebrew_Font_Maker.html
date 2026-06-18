@@ -304,9 +304,10 @@
   .form-ready { font-size: 0.72rem; color: #10b981; margin-bottom: 8px; }
 
   /* ── Workspace stage ── */
-  .work-tabs { display: flex; gap: 6px; margin-bottom: 10px; justify-content: center; align-items: center; }
-  .work-current { margin-right: auto; display: flex; align-items: center; gap: 6px; min-width: 0; max-width: 50%; overflow: hidden; white-space: nowrap; font-size: 0.82rem; font-weight: 600; color: var(--muted); }
-  .work-current:empty { display: none; }
+  .work-tabs { display: flex; gap: 6px; margin-bottom: 10px; align-items: center; }
+  .wtab-group { display: flex; gap: 6px; flex: 0 0 auto; }   /* the step tabs, kept together + centered */
+  .work-current, .work-tabs-spacer { flex: 1 1 0; min-width: 0; }   /* equal side rails keep the tab group centered, with or without a label */
+  .work-current { display: flex; align-items: center; gap: 6px; overflow: hidden; white-space: nowrap; font-size: 0.82rem; font-weight: 600; color: var(--muted); }
   .work-current .wc-glyph { font-family: var(--heb-font); font-size: 1.05rem; line-height: 1; color: var(--text); direction: rtl; }
   .wtab { padding: 7px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--white); cursor: pointer; font-size: 0.84rem; font-weight: 700; color: var(--muted); }
   .wtab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
@@ -740,10 +741,13 @@
   <main class="workspace">
     <div class="work-tabs" role="tablist" aria-label="Workspace step">
       <div class="work-current" id="workCurrent" aria-hidden="true"></div>
-      <div class="wtab active" id="tabAlign" role="tab" aria-selected="true" tabindex="0" onclick="setWorkMode('align')">1 · Align</div>
-      <div class="wtab" id="tabTrace" role="tab" aria-selected="false" tabindex="-1" onclick="setWorkMode('trace')">2 · Trace</div>
-      <div class="wtab" id="tabAnchors" role="tab" aria-selected="false" tabindex="-1" onclick="gotoAnchors('nikkud')">3 · Place Nikkud</div>
-      <div class="wtab" id="tabTrop" role="tab" aria-selected="false" tabindex="-1" onclick="gotoAnchors('trop')" style="display:none;">4 · Place Trop</div>
+      <div class="wtab-group">
+        <div class="wtab active" id="tabAlign" role="tab" aria-selected="true" tabindex="0" onclick="setWorkMode('align')">1 · Align</div>
+        <div class="wtab" id="tabTrace" role="tab" aria-selected="false" tabindex="-1" onclick="setWorkMode('trace')">2 · Trace</div>
+        <div class="wtab" id="tabAnchors" role="tab" aria-selected="false" tabindex="-1" onclick="gotoAnchors('nikkud')">3 · Place Nikkud</div>
+        <div class="wtab" id="tabTrop" role="tab" aria-selected="false" tabindex="-1" onclick="gotoAnchors('trop')" style="display:none;">4 · Place Trop</div>
+      </div>
+      <div class="work-tabs-spacer" aria-hidden="true"></div>
     </div>
 
     <div class="cat-tabs" id="catTabs" role="tablist" aria-label="Glyph category"></div>
