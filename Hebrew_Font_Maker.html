@@ -1195,15 +1195,15 @@ const TROP_DEFS = [
   ['0595','Zaqef Gadol','above', [ circlePts(40,60,26), circlePts(40,135,26), _tvb(-55,40,150,14) ]],
   ['0596','Tipeha','below', [ _tdia(60,-40,-40,-150) ]],
   ['0597','Revia','above', [ circlePts(0,100,40) ]],
-  ['0598','Zarqa','above', [ _tdia(-60,60,0,120,12), _tdia(0,120,60,60,12), _tdia(60,60,90,150,12) ]],
-  ['0599','Pashta','above', [ _tdia(-40,40,40,160,16) ]],
-  ['059A','Yetiv','below', [ _tdia(40,-40,-40,-150,16) ]],
+  ['0598','Zarqa','above', [ _tdia(-60,60,0,120,12), _tdia(0,120,60,60,12), _tdia(60,60,90,150,12) ], 'postpositive'],
+  ['0599','Pashta','above', [ _tdia(-40,40,40,160,16) ], 'postpositive'],
+  ['059A','Yetiv','below', [ _tdia(40,-40,-40,-150,16) ], 'prepositive'],
   ['059B','Tevir','below', [ _tvb(0,-40,-150,14), circlePts(0,-110,24) ]],
   ['059C','Geresh','above', [ _tdia(-25,40,25,160,15) ]],
   ['059D','Geresh Muqdam','above', [ _tdia(-15,40,35,160,15) ]],
   ['059E','Gershayim','above', [ _tdia(-55,40,-5,160,14), _tdia(15,40,65,160,14) ]],
   ['059F','Qarney Para','above', [ _tdia(-70,40,-20,150,12), _tdia(70,40,20,150,12), circlePts(0,170,22) ]],
-  ['05A0','Telisha Gedola','above', [ circlePts(40,110,34), _thb(-70,10,110,10) ]],
+  ['05A0','Telisha Gedola','above', [ circlePts(40,110,34), _thb(-70,10,110,10) ], 'prepositive'],
   ['05A1','Pazer','above', [ _tdia(-60,40,-20,150,12), _tvb(0,40,160,12), _tdia(60,40,20,150,12) ]],
   ['05A2','Atnah Hafukh','below', [ _tdia(-60,-140,-10,-40), _tdia(60,-140,10,-40) ]],
   ['05A3','Munach','below', [ _tvb(0,-40,-150,16), _thb(0,70,-150,16) ]],
@@ -1212,18 +1212,25 @@ const TROP_DEFS = [
   ['05A6','Merkha Kefula','below', [ _tdia(10,-40,-60,-150,14), _tdia(60,-40,-10,-150,14) ]],
   ['05A7','Darga','below', [ _tdia(-50,-40,10,-90,12), _tdia(10,-90,-50,-140,12) ]],
   ['05A8','Qadma','above', [ _tdia(-40,60,40,150,16) ]],
-  ['05A9','Telisha Qetana','above', [ circlePts(-40,110,30), _thb(-10,70,110,9) ]],
+  ['05A9','Telisha Qetana','above', [ circlePts(-40,110,30), _thb(-10,70,110,9) ], 'postpositive'],
   ['05AA','Yerah Ben Yomo','below', [ _tdia(-60,-90,0,-140,12), _tdia(0,-140,60,-90,12) ]],
   ['05AB','Ole','above', [ _tdia(-50,40,0,150,14), _tdia(0,150,50,40,14) ]],
   ['05AC','Iluy','above', [ circlePts(0,120,30), _tvb(0,40,90,10) ]],
   ['05AD','Dehi','below', [ _tdia(-40,-40,40,-150,16) ]],
-  ['05AE','Zinor','above', [ _tdia(-60,60,0,120,12), _tdia(0,120,60,60,12) ]],
+  ['05AE','Zinor','above', [ _tdia(-60,60,0,120,12), _tdia(0,120,60,60,12) ], 'postpositive'],
   ['05BD','Meteg','below', [ _tvb(0,-30,-160,14) ]],
 ];
-const TROP_GLYPHS = {}, TROP_CLASS = {}, TROP_NAMES = {};
-TROP_DEFS.forEach(([cp,name,cls,polys]) => { TROP_GLYPHS[cp]=polys; TROP_CLASS[cp]=cls; TROP_NAMES[cp]=name; });
+const TROP_GLYPHS = {}, TROP_CLASS = {}, TROP_NAMES = {}, TROP_POS = {};
+TROP_DEFS.forEach(([cp,name,cls,polys,pos]) => { TROP_GLYPHS[cp]=polys; TROP_CLASS[cp]=cls; TROP_NAMES[cp]=name; TROP_POS[cp]=pos||'normal'; });
 const TROP_MARKS = TROP_DEFS.map(([cp,name,cls]) => ({ cp, name, cls }));
 const TROP_CPS = TROP_DEFS.map(d => d[0]);
+/* Prepositive (word-initial / right) and postpositive (word-final / left) trop are nudged to the
+   leading / trailing EDGE of their own base letter. This is a per-letter-edge approximation — correct
+   at word boundaries / single letters, approximate mid-word (true word-position GPOS is not done).
+   The shift is a constant in font units applied via the mark anchor, so the live preview matches the
+   exported font exactly. */
+const TROP_POS_SHIFT = 250;
+function tropPosDX(cp) { const p = TROP_POS[cp]; return p === 'prepositive' ? TROP_POS_SHIFT : (p === 'postpositive' ? -TROP_POS_SHIFT : 0); }
 
 /* ── Punctuation & More: default outlines (font units; baseline 0, letter-top 600).
    Each factory returns { contours:[{winding,points}], advance }. Digits 0–9 are ABSENT →
@@ -2336,7 +2343,7 @@ function renderMarkPanel(cat) {
         </div></div>`;
     }
     let controls = `<div class="mark-opts">${opts}</div>`;
-    if (cat === 'trop') controls += `<div class="hint" style="margin-top:9px;color:var(--muted);">Trop attaches to the typed letter (and stacks above/below a vowel). Word-edge accents like pashta, segolta &amp; zarqa can't auto-jump to the word edge — a font limitation.</div>`;
+    if (cat === 'trop') controls += `<div class="hint" style="margin-top:9px;color:var(--muted);">Trop attaches to the typed letter (and stacks above/below a vowel). Prepositive (telisha gedola, yetiv) &amp; postpositive (pashta, zarqa, zinor, telisha qetana) accents are nudged to the leading / trailing edge of their own letter — right at a word's edge, approximate mid-word (true word-position placement isn't done).</div>`;
     if (cat === 'nikkud') controls += `<label class="chk" style="margin-top:10px;"><input type="checkbox" ${f.shevaNa?'checked':''} onchange="setShevaNa(this.checked)"> Add a bold <b>Sheva&nbsp;Na</b> (so na &amp; nach stand apart)</label><div class="hint">Exports a heavier sheva alongside the normal one. To make a sheva bold in Word, select the letter and turn on <b>Stylistic&nbsp;Set&nbsp;1</b>; or insert the character <b>U+E0B0</b> in its place. Readers can then see which sheva is mobile (na) vs. silent (nach).</div>`;
     let grid = '';
     if (f.mode === 'custom') {
@@ -6121,7 +6128,7 @@ function qaInsetToward(poly, c, d) {   // pull each vertex d units toward the ce
    Metric "tall artwork" is reported once at the font level (qaBuild) — NOT per cell — because the
    export auto-expands the clip box to cover it, so a deep below-vowel isn't a collision; likewise a
    mark overhanging a narrow letter's advance is normal Hebrew side-bearing overhang, not a hit. */
-function qaReasons(L, meta, markPolys, side) {
+function qaReasons(L, meta, markPolys, side, positional) {
   const reasons = [];
   if (!markPolys.length || !L.contours || !L.contours.length) return reasons;   // both checks need traced base ink
   const mb = polysBounds(markPolys);
@@ -6129,7 +6136,7 @@ function qaReasons(L, meta, markPolys, side) {
   if (mb.maxX < bb.minX || mb.minX > bb.maxX || mb.maxY < bb.minY || mb.minY > bb.maxY) return reasons;   // bboxes disjoint → no collision
   // (a) mark ink sitting on the letter body — inset mark vertices in base ink, OR a base vertex inside the mark
   // (a thin stem threaded through). Skip CENTRE marks: a dagesh is MEANT to sit inside the letter.
-  if (side !== 'center') {
+  if (side !== 'center' && !positional) {   // positional (pre/postpositive) trop is MEANT to sit at the letter's edge — don't flag the overhang
     for (const poly of markPolys) {
       const inset = qaInsetToward(poly, qaCentroid(poly), QA_OVERLAP_TOL);
       if (inset.some(p => pointInInk(p, L.contours)) || L.contours.some(ct => ct.points.some(p => pointInPoly(p, poly)))) {
@@ -6176,7 +6183,7 @@ function qaColumns(tab) {
 function qaCellLayers(L, anc, col) {
   const ms = markScale(), tms = tropScale(), ds = dageshScale();
   if (col.kind === 'nikkud') return [{ polys: qaPlace(anc[col.side], 'nikkud', col.cp, col.side==='center'?ds:ms), color: QA_SIDE_COLOR[col.side] }];
-  if (col.kind === 'trop')   { const k = col.side === 'above' ? 'tropAbove' : 'tropBelow'; return [{ polys: qaPlace(anc[k], 'trop', col.cp, tms), color: QA_SIDE_COLOR[k] }]; }
+  if (col.kind === 'trop')   { const k = col.side === 'above' ? 'tropAbove' : 'tropBelow'; const dx = tropPosDX(col.cp); return [{ polys: qaPlace({ x: anc[k].x + dx, y: anc[k].y }, 'trop', col.cp, tms), color: QA_SIDE_COLOR[k] }]; }
   const nikAnc = anc[col.side];
   return [ { polys: qaPlace(nikAnc, 'nikkud', col.cp, ms), color: QA_SIDE_COLOR[col.side] },
            { polys: qaPlaceStackTrop(nikAnc, col.cp, col.trop), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] } ];
@@ -6241,7 +6248,7 @@ function qaBuild() {
     let n = 0; const cols = qaColumns(t);
     if (cols.length) rows.forEach(row => {
       const L = row.L, anc = qaAnchors(L);
-      cols.forEach(col => { const layers = qaCellLayers(L, anc, col); if (qaReasons(L, row, layers.reduce((a,ly)=>a.concat(ly.polys),[]), col.side).length) n++; });
+      cols.forEach(col => { const layers = qaCellLayers(L, anc, col); if (qaReasons(L, row, layers.reduce((a,ly)=>a.concat(ly.polys),[]), col.side, col.kind === 'trop' && TROP_POS[col.cp] !== 'normal').length) n++; });
     });
     counts[t] = n; total += n;
   });
@@ -6289,7 +6296,7 @@ function qaRenderGrid() {
     html += `<tr><td class="qa-rowlabel" title="${escapeHtml(row.name)}">${escapeHtml(row.labelCh)} <span style="color:var(--muted);">${escapeHtml(row.name)}</span></td>`;
     cols.forEach(col => {
       const layers = qaCellLayers(L, anc, col);
-      const reasons = qaReasons(L, row, layers.reduce((a,ly)=>a.concat(ly.polys),[]), col.side);
+      const reasons = qaReasons(L, row, layers.reduce((a,ly)=>a.concat(ly.polys),[]), col.side, col.kind === 'trop' && TROP_POS[col.cp] !== 'normal');
       const flagged = reasons.length > 0;
       html += `<td class="qa-cell${flagged ? ' flag' : ''}" data-cp="${row.cp}" data-kind="${col.kind}" data-mark="${col.cp}" data-side="${col.side}"${col.trop ? ` data-trop="${col.trop}"` : ''}${flagged ? ` title="${escapeHtml(reasons.join(' · '))}"` : ''}>${qaCellSvg(L, layers)}</td>`;
     });
@@ -6550,13 +6557,26 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn) {
     if (byClass.center.length) f += `markClass [${byClass.center.join(' ')}] <anchor 0 0> @MC_CENTER;\n`;
     f += '\n';
   }
-  // ── trop mark classes (above / below; attach anchor at origin 0,0) ──
-  const tropByClass = { above: [], below: [] };
-  if (tropOn) TROP_CPS.forEach(cp => tropByClass[TROP_CLASS[cp]].push(gname(cp)));
+  // ── trop mark classes — split by attachment class (above/below) AND positional behaviour
+  //    (normal / prepositive / postpositive). Pre/postpositive marks carry a constant horizontal
+  //    mark-anchor shift so they land at the leading (right) / trailing (left) edge of their base
+  //    letter. markClass anchor x = -(desired origin shift): a mark whose anchor is at x=-Δ has its
+  //    ink sitting Δ to the RIGHT of the base anchor. Per-letter-edge approximation; preview==export. ──
+  const tropGroups = { above: { normal:[], prepositive:[], postpositive:[] }, below: { normal:[], prepositive:[], postpositive:[] } };
+  if (tropOn) TROP_CPS.forEach(cp => tropGroups[TROP_CLASS[cp]][TROP_POS[cp] || 'normal'].push(gname(cp)));
+  const tropByClass = {
+    above: [...tropGroups.above.normal, ...tropGroups.above.prepositive, ...tropGroups.above.postpositive],
+    below: [...tropGroups.below.normal, ...tropGroups.below.prepositive, ...tropGroups.below.postpositive]
+  };
   const tropMarks = [...tropByClass.above, ...tropByClass.below];
+  const TROP_MC = { above: 'MC_TROP_ABOVE', below: 'MC_TROP_BELOW' };
+  const TROP_POS_SUFFIX = { normal: '', prepositive: '_PRE', postpositive: '_POST' };
   if (tropMarks.length) {
-    if (tropByClass.above.length) f += `markClass [${tropByClass.above.join(' ')}] <anchor 0 0> @MC_TROP_ABOVE;\n`;
-    if (tropByClass.below.length) f += `markClass [${tropByClass.below.join(' ')}] <anchor 0 0> @MC_TROP_BELOW;\n`;
+    ['above','below'].forEach(cls => ['normal','prepositive','postpositive'].forEach(pos => {
+      const g = tropGroups[cls][pos]; if (!g.length) return;
+      const dx = pos === 'prepositive' ? TROP_POS_SHIFT : (pos === 'postpositive' ? -TROP_POS_SHIFT : 0);
+      f += `markClass [${g.join(' ')}] <anchor ${-dx} 0> @${TROP_MC[cls]}${TROP_POS_SUFFIX[pos]};\n`;
+    }));
     f += '\n';
   }
   if (builtPrecomposed.length) {
@@ -6578,8 +6598,13 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn) {
     if (byClass.center.length && skipCls !== 'center') markLines += `  pos base ${nm} <anchor ${l.anchors.center.x} ${l.anchors.center.y}> mark @MC_CENTER;\n`;
     if (tropMarks.length) {
       ensureTropAnchors(l);
-      if (tropByClass.above.length) markLines += `  pos base ${nm} <anchor ${l.anchors.tropAbove.x} ${l.anchors.tropAbove.y}> mark @MC_TROP_ABOVE;\n`;
-      if (tropByClass.below.length) markLines += `  pos base ${nm} <anchor ${l.anchors.tropBelow.x} ${l.anchors.tropBelow.y}> mark @MC_TROP_BELOW;\n`;
+      ['above','below'].forEach(cls => {                                    // one base-anchor line per non-empty positional subclass (same anchor; the horizontal nudge lives on the mark)
+        const a = cls === 'above' ? l.anchors.tropAbove : l.anchors.tropBelow;
+        ['normal','prepositive','postpositive'].forEach(pos => {
+          if (!tropGroups[cls][pos].length) return;
+          markLines += `  pos base ${nm} <anchor ${a.x} ${a.y}> mark @${TROP_MC[cls]}${TROP_POS_SUFFIX[pos]};\n`;
+        });
+      });
     }
   };
   LETTERS.forEach(L => emitBaseAnchors(gname(L.cp), project.letters.find(x => x.codepoint === L.cp)));
@@ -6595,9 +6620,9 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn) {
     let mkmkLines = '';
     MARK_CPS.forEach(cp => {
       const cls = MARK_CLASS[cp], a = markMkmkAnchor(cp), nm = gname(cp);
-      if (cls === 'above' && tropByClass.above.length)
+      if (cls === 'above' && tropGroups.above.normal.length)              // only NORMAL trop stacks on a vowel; pre/postpositive edge-marks don't
         mkmkLines += `  pos mark ${nm} <anchor ${a.above.x} ${a.above.y}> mark @MC_TROP_ABOVE;\n`;
-      else if (cls === 'below' && tropByClass.below.length)
+      else if (cls === 'below' && tropGroups.below.normal.length)
         mkmkLines += `  pos mark ${nm} <anchor ${a.below.x} ${a.below.y}> mark @MC_TROP_BELOW;\n`;
       // center marks (dagesh/shin/sin dot) carry no trop — trop stacks on the base letter instead
     });
