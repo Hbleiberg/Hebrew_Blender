@@ -592,7 +592,6 @@
   </div>
   <div class="hdr-actions">
     <a href="/" class="hbtn">← Home</a>
-    <button class="hbtn" onclick="openHelp()" title="A plain-language guide to the whole tool" aria-label="Help">❓ Help</button>
     <button id="darkToggle" class="hbtn" onclick="toggleDark()" title="Toggle dark mode">🌙 Dark</button>
     <button id="fsBtn" class="hbtn" onclick="toggleFullscreen()" title="Fullscreen" aria-label="Toggle fullscreen" style="display:inline-flex;align-items:center;gap:5px;">
       <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px;"><path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>
@@ -629,6 +628,7 @@
     </select>
     <button class="tbtn" id="exportBtn" onclick="exportFont()">⬇ Export TTF</button>
   </div>
+  <button class="tbtn ghost" style="margin-left:auto;" onclick="openHelp()" title="A plain-language guide to the whole tool" aria-label="Help">❓ Help</button>
 </div>
 <div id="statusMsg"></div>
 
