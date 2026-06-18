@@ -4296,6 +4296,58 @@ function pointInPoly(pt, poly) {
   }
   return inside;
 }
+/* ── Outline-health geometry (QA self-intersection / overlap flag) ──
+   _orient: signed area ×2 of triangle abc (>0 ccw). segIntersect: PROPER crossing of two segments
+   — shared endpoints / collinear touches don't count, so a closed contour's adjacent edges and a
+   counter nested inside its outer ring are NOT flagged. */
+function _orient(a, b, c) { return (b[0]-a[0])*(c[1]-a[1]) - (b[1]-a[1])*(c[0]-a[0]); }
+function segIntersect(p1, p2, p3, p4) {
+  const d1 = _orient(p3,p4,p1), d2 = _orient(p3,p4,p2), d3 = _orient(p1,p2,p3), d4 = _orient(p1,p2,p4);
+  return ((d1>0)!==(d2>0)) && ((d3>0)!==(d4>0));
+}
+function contourSelfIntersects(poly) {   // any two NON-adjacent edges of one closed ring cross
+  const n = poly.length; if (n < 4) return false;
+  for (let i = 0; i < n; i++) {
+    const a1 = poly[i], a2 = poly[(i+1)%n];
+    for (let j = i + 2; j < n; j++) {
+      if (i === 0 && j === n - 1) continue;          // first & last edges share a vertex (closed) → adjacent
+      if (segIntersect(a1, a2, poly[j], poly[(j+1)%n])) return true;
+    }
+  }
+  return false;
+}
+function contoursOverlap(a, b) {   // edges of two separate contours cross (containment alone = a normal counter, not flagged)
+  const ba = polysBounds([a]), bb = polysBounds([b]);
+  if (ba.maxX < bb.minX || bb.maxX < ba.minX || ba.maxY < bb.minY || bb.maxY < ba.minY) return false;   // disjoint bboxes
+  const na = a.length, nb = b.length;
+  for (let i = 0; i < na; i++) {
+    const a1 = a[i], a2 = a[(i+1)%na];
+    for (let j = 0; j < nb; j++) if (segIntersect(a1, a2, b[j], b[(j+1)%nb])) return true;
+  }
+  return false;
+}
+/* Scan every traced glyph (letters + custom marks) for outline problems that can render with inverted
+   fills in some engines. Detection only — no auto-repair. Runs on QA open, never live. */
+function glyphOutlineScan() {
+  const out = [];
+  const check = (name, contours) => {
+    const polys = (contours || []).map(c => c.points).filter(p => p && p.length >= 3);
+    if (polys.length < 1) return;
+    const reasons = [];
+    if (polys.some(contourSelfIntersects)) reasons.push('outline crosses itself');
+    overlap:
+    for (let i = 0; i < polys.length; i++)
+      for (let j = i + 1; j < polys.length; j++)
+        if (contoursOverlap(polys[i], polys[j])) { reasons.push('two outlines overlap'); break overlap; }
+    if (reasons.length) out.push({ name: name || 'glyph', reasons });
+  };
+  (project.letters || []).forEach(l => { if (l.contours) check(l.name || ('U+' + l.codepoint), l.contours); });
+  ['nikkud','trop','customMarks'].forEach(cat => {
+    const store = project.font[cat] && project.font[cat].custom;
+    if (store) Object.keys(store).forEach(cp => { const m = store[cp]; if (m && m.contours) check(m.name || ('U+' + cp), m.contours); });
+  });
+  return out;
+}
 /* ════════ Bézier curve fitting (Schneider 1990, "An Algorithm for Automatically Fitting Digitized
    Curves", Graphics Gems). Pure JS, no dependency. Turns the RDP-simplified polygon of a traced
    contour into cubic Béziers between detected corners; exported as TrueType quadratics via Cu2QuPen.
@@ -6195,7 +6247,7 @@ function qaBuild() {
   });
   const aAsc = effMetrics().lamedAscender + 100, aDesc = effMetrics().descender - 50, ink = fontInkBounds();
   const winAscent = Math.max(aAsc, Math.ceil(ink.top)), winDescent = Math.max(-aDesc, Math.ceil(-ink.bottom));
-  qaResult = { counts, total, winAscent, winDescent, tall: (ink.top > aAsc || ink.bottom < aDesc) };
+  qaResult = { counts, total, outline: glyphOutlineScan(), winAscent, winDescent, tall: (ink.top > aAsc || ink.bottom < aDesc) };
 }
 function qaRenderTabs() {
   const bar = document.getElementById('qaTabs');
@@ -6213,6 +6265,10 @@ function qaRenderSummary() {
   let h = qaResult.total === 0
     ? `<span class="qa-ok">✓ All placements clear.</span> Hover a cell for details; click any cell to jump to its anchor editor.`
     : `<b>${qaResult.total}</b> placement${qaResult.total === 1 ? '' : 's'} need attention (red cells). Hover for the reason; click a cell to jump to its anchor editor.`;
+  if (qaResult.outline && qaResult.outline.length) {   // outline-health flag (self-intersection / overlap) — separate from placement collisions
+    const names = qaResult.outline.map(o => escapeHtml(o.name)).join(', ');
+    h += `<span class="qa-tall">⚠ ${qaResult.outline.length} glyph${qaResult.outline.length === 1 ? '' : 's'} with self-intersecting or overlapping outlines: ${names}. These can fill incorrectly (inverted) in some apps — edit the nodes or re-trace to fix.</span>`;
+  }
   if (qaResult.tall) h += `<span class="qa-tall">⚠ Tall artwork — export will expand the clip box to ${qaResult.winAscent} / ${qaResult.winDescent} (asc/desc) so Word won't clip it.</span>`;
   const notReady = qaBuildCheckForms().filter(pc => !qaFormReady(pc)).length;
   if (notReady) h += `<span class="qa-tall" style="color:var(--muted);">${notReady} composed form${notReady === 1 ? '' : 's'} not yet ready — see the build check below.</span>`;
