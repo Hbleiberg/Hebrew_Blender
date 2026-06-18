@@ -581,7 +581,7 @@
 </button>
 
 <div class="toolbar">
-  <button class="tbtn ghost" onclick="newProject()">New</button>
+  <button class="tbtn ghost" onclick="newProjectFresh()">New</button>
   <button class="tbtn ghost" onclick="toggleLoadMenu(event)">Load Project ▾</button>
   <button class="tbtn ghost" onclick="saveProject()">Save Project</button>
   <input type="file" id="projFile" accept=".hebrewfont,.json,application/json,application/gzip" style="display:none;">
@@ -1434,7 +1434,7 @@ function newProject() {
     savedAt: new Date().toISOString(),
     font: {
       familyName: 'My Hebrew Hand', reservedFontName: 'My Hebrew Hand', author: '', license: 'ofl',
-      version: '1.000', unitsPerEm: UPM, markScale: 1.0, tropScale: 1.0, dageshScale: 1.0,
+      version: '1.000', unitsPerEm: UPM, markScale: 1.0, tropScale: 1.0, dageshScale: 1.0, markNudge: {},
       nikkud: { enabled: true,  mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, shevaNa: false },   // mode: 'default' | 'custom'; uploadMode: 'perSymbol' | 'combined'; shevaNa: bold sheva-na alternate
       trop:   { enabled: false, mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },
       customMarks: { enabled: true, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },   // user-defined nikkud marks added via the Custom glyphs tab
@@ -1457,7 +1457,11 @@ function newProject() {
   udClear();                 // fresh project → drop any prior undo history / open bursts
   curKind = 'letter'; curCp = LETTER_ORDER[0]; workMode = 'align';
   syncMetaToForm(); renderGrids(); setWorkMode('align'); status('New project.');
-  _projectDirty = false; clearTimeout(_autosaveTimer);   // fresh project: not dirty (keep any slot so a boot restore can still offer prior work)
+  _projectDirty = false; clearTimeout(_autosaveTimer);   // fresh project: not dirty (boot keeps any snapshot so the prompt can still offer prior work)
+}
+function newProjectFresh() {   // toolbar "New" → user explicitly starts over: also drop the continuity snapshot
+  autosaveDiscard();
+  newProject();
 }
 /* ── Item indirection: the Align/Trace workspace operates on a generic "item" =
    a letter OR a nikkud/trop mark. curLetter() stays as an alias so existing
@@ -1536,24 +1540,29 @@ function markAttachOrigin(m) {
   if (m.cls==='above') return { x:midX, y:minY };   // attach at bottom-centre
   return { x:midX, y:(minY+maxY)/2 };                // centre
 }
+function markNudgeDy(cp) {   // per-mark vertical fine-tune (font units, + = up); applied wherever the mark is drawn so preview == QA == export
+  return (project.font && project.font.markNudge && project.font.markNudge[cp]) || 0;
+}
 function markGlyphContours(kind, cp) {
   if (kind === 'accent') return (LATIN_ACCENTS[cp] && LATIN_ACCENTS[cp].glyph) || [];
+  const dy = markNudgeDy(cp), sh = ps => dy ? ps.map(([x,y]) => [x, y + dy]) : ps;
   const f = project.font[kind];
   if (f && f.mode === 'custom') {
     const m = f.custom && f.custom[cp];
     const cs = m && (m.designMode === 'editor' ? piecesToContours(m.pieces) : (m.contours||[]).map(c => c.points));
     if (cs && cs.length) {
-      if (m.designMode === 'editor') return cs;                 // editor pieces are already mark-local
+      if (m.designMode === 'editor') return cs.map(sh);          // editor pieces are already mark-local
       const o = markAttachOrigin(m);
-      return cs.map(pts => pts.map(([x,y]) => [x - o.x, y - o.y]));
+      return cs.map(pts => pts.map(([x,y]) => [x - o.x, y - o.y + dy]));
     }
   }
-  return (kind === 'trop' ? TROP_GLYPHS[cp] : MARK_GLYPHS[cp]) || [];   // built-in default / fallback
+  return ((kind === 'trop' ? TROP_GLYPHS[cp] : MARK_GLYPHS[cp]) || []).map(sh);   // built-in default / fallback
 }
 /* Fitted curves for a custom UPLOADED mark, translated to mark-local (attach origin at 0,0), 1:1 with
    markGlyphContours(). editor pieces & built-in default polygons have no curves → returns null (polygon). */
 function markGlyphCurves(kind, cp) {
   if (kind === 'accent') return null;
+  const dy = markNudgeDy(cp);
   const f = project.font[kind];
   if (f && f.mode === 'custom') {
     const m = f.custom && f.custom[cp];
@@ -1561,8 +1570,8 @@ function markGlyphCurves(kind, cp) {
       const o = markAttachOrigin(m);
       return m.curves.map(cv => cv ? {
         winding: cv.winding,
-        start: [cv.start[0]-o.x, cv.start[1]-o.y],
-        segments: cv.segments.map(s => ({ type: s.type, pts: s.pts.map(([x,y]) => [x-o.x, y-o.y]) }))
+        start: [cv.start[0]-o.x, cv.start[1]-o.y+dy],
+        segments: cv.segments.map(s => ({ type: s.type, pts: s.pts.map(([x,y]) => [x-o.x, y-o.y+dy]) }))
       } : null);
     }
   }
@@ -5174,15 +5183,25 @@ function renderPrecompControls(l) {
     <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">← Back to vowels</button>`;
 }
 function setTropCp(cp) { activeTropCp = cp; renderStage(); renderControls(); }
+function setMarkNudge(cp, dy) {
+  if (!project.font.markNudge) project.font.markNudge = {};
+  const v = Math.max(-200, Math.min(200, Math.round(dy)));
+  if (v) project.font.markNudge[cp] = v; else delete project.font.markNudge[cp];   // 0 → drop the key (keeps saves clean)
+  const el = document.getElementById('vowelNudgeV'); if (el) el.textContent = (v > 0 ? '+' : '') + v;
+  renderStage(); markDirty();   // live; don't rebuild controls (keep the row stable)
+}
+function nudgeActiveVowel(delta) { const cp = activeVowelCp(); setMarkNudge(cp, markNudgeDy(cp) + delta); }
 function setMarkScale(v) {
   project.font.markScale = Math.max(0.3, Math.min(2, (+v)/100));
   const s = document.getElementById('markScaleV'); if (s) s.textContent = Math.round(project.font.markScale*100) + '%';
   renderStage();   // live preview; don't rebuild controls (keep slider focus)
+  markDirty();
 }
 function setDageshScale(v) {
   project.font.dageshScale = Math.max(0.3, Math.min(2, (+v)/100));
   const s = document.getElementById('dageshScaleV'); if (s) s.textContent = Math.round(project.font.dageshScale*100) + '%';
   renderStage();   // live preview; don't rebuild controls (keep slider focus)
+  markDirty();
 }
 function setDotSize(v) {   // per-dot radius of the selected Simple-editor piece (live; don't rebuild controls so the slider keeps focus)
   const it = curItem(); const p = it && it.pieces && it.pieces[editorSel]; if (!p || p.type !== 'dot') return;
@@ -5199,6 +5218,7 @@ function setTropScale(v) {
   project.font.tropScale = Math.max(0.3, Math.min(2, (+v)/100));
   const s = document.getElementById('markScaleV'); if (s) s.textContent = Math.round(project.font.tropScale*100) + '%';
   renderStage();
+  markDirty();
 }
 
 /* ════════ Spacing panel + live preview ════════ */
@@ -5698,8 +5718,17 @@ function renderAnchorLeft(L, l) {
     `<button class="ctl-btn ${cls===k?'primary':''}" style="${cls===k?`background:${ANCHOR_COL[k]};color:#fff;border-color:${ANCHOR_COL[k]};`:''}" onclick="setAnchorClass('${k}')">${ANCHOR_LABEL[k]}</button>`).join('');
   let grid = '';
   if (cls === 'below') {
+    const ndy = markNudgeDy(activeBelowVowel);
     grid = `<div class="ws-side-title">Preview under-vowel</div>
-      <div class="mark-grid2">` + BELOW_VOWELS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeBelowVowel, 'setBelowVowel')).join('') + `</div>`;
+      <div class="mark-grid2">` + BELOW_VOWELS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeBelowVowel, 'setBelowVowel')).join('') + `</div>
+      <div class="ctl-row" style="margin-top:6px;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;">
+        <span style="font-size:0.72rem;color:var(--muted);">Height</span>
+        <button class="ctl-btn" title="Raise this vowel" onclick="nudgeActiveVowel(10)">▲</button>
+        <button class="ctl-btn" title="Lower this vowel" onclick="nudgeActiveVowel(-10)">▼</button>
+        <span id="vowelNudgeV" class="readout">${ndy>0?'+':''}${ndy}</span>
+        <button class="ctl-btn" title="Reset this vowel's height" onclick="setMarkNudge(activeBelowVowel,0)">⟲</button>
+      </div>
+      <div class="hint" style="font-size:0.6rem;text-align:center;">Nudges just this vowel up/down everywhere to line it up with the others — the shared anchor doesn't move.</div>`;
   } else if (isTrop) {
     grid = `<div class="ws-side-title">Preview trop</div>
       <div class="mark-grid2">` + TROP_MARKS.filter(m => m.cls === want).map(m => squareMarkBtn('trop', m.cp, m.name, activeTropCp, 'setTropCp')).join('') + `</div>`;
@@ -5766,7 +5795,7 @@ function renderAnchorUnder(U, l) {
       <div style="flex:0 1 360px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:9px;">
         <div class="inline" style="width:100%;">${isTrop?'Trop':'Nikkud'} size <input type="range" min="40" max="180" step="5" value="${sizePct}" oninput="${sizeFn}(this.value)"> <span id="markScaleV" class="readout">${sizePct}%</span></div>
         ${isTrop?'':`<div class="inline" style="width:100%;">Dagesh size <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
-        <div class="hint" style="font-size:0.62rem;width:100%;text-align:center;">Nikkud size covers the vowels (and shin/sin dot); Dagesh size controls just the dagesh dot — so you can enlarge the vowels without growing the dagesh.</div>`}
+        <div class="hint" style="font-size:0.62rem;width:100%;text-align:center;">Nikkud size scales the vowels and the shin/sin dot — unless a שׁ/שׂ form has its own Dot size set, which wins. Dagesh size controls just the dagesh dot, so you can enlarge the vowels without growing it.</div>`}
         <div class="ctl-row" style="justify-content:center;">
           <button class="ctl-btn" onclick="resetLetterAnchors()">Reset letter</button>
           <button class="ctl-btn" onclick="resetAllAnchors()">Reset all</button>
@@ -7877,7 +7906,8 @@ async function applyProjectData(data) {           // shared by file-load and "Lo
   ['nikkud','trop','customMarks'].forEach(cat => { const u = project.font[cat].combinedImage && project.font[cat].combinedImage.dataUrl; if (u && /^data:image\/svg/i.test(u)) cacheSvgSheet(u); });
   curKind = 'letter'; curCp = LETTER_ORDER[0];
   syncMetaToForm(); renderGrids(); _setWorkMode('align');
-  markClean();   // a freshly loaded project is a known-good state — no unsaved breadcrumb
+  markClean();          // a freshly loaded project is a known-good state — clear the dirty flag
+  autosaveNow();        // …and make the continuity snapshot reflect what was just loaded
   return true;
 }
 /* ── Recent projects: a local-only localStorage cache powering the "Load Project ▾" menu.
@@ -7954,8 +7984,12 @@ function markDirty() {   // a real edit happened → flag unsaved + schedule a d
   clearTimeout(_autosaveTimer);
   _autosaveTimer = setTimeout(autosaveNow, 3000);
 }
-function markClean() {   // work is now safe elsewhere (saved / exported / loaded) → drop the breadcrumb
+function markClean() {   // work is now safe in a file/Recent → clear the unsaved-changes flag…
   _projectDirty = false;
+  clearTimeout(_autosaveTimer);
+  // …but KEEP the autosave snapshot, so a later page refresh can still offer "continue where you left off".
+}
+function autosaveDiscard() {   // user explicitly starts over → drop the continuity snapshot
   clearTimeout(_autosaveTimer);
   autosaveClear();
   try { localStorage.removeItem('hebrewFontMaker_autosave'); } catch (e) {}
@@ -7988,11 +8022,12 @@ async function maybeRestoreAutosave() {
     try { const raw = localStorage.getItem('hebrewFontMaker_autosave'); if (raw) { data = JSON.parse(raw); stripped = true; } } catch (e) {}
   }
   if (!data || data.format !== 'hebrew-font-maker-project') return;
-  askModal('Restore unsaved work?',
-    `We found work from <b>${_autosaveRelTime((rec && rec.savedAt) || data.savedAt)}</b> that was never saved to a file.`
-    + (stripped ? '<br><span class="warn">Your browser couldn’t keep the source photos this time — traced outlines remain, but uploaded scans may be missing.</span>' : ''),
-    [ { label: 'Restore it', onClick: async () => { if (await applyProjectData(data)) { _projectDirty = true; autosaveNow(); status('Restored your unsaved work.'); } } },
-      { label: 'Start fresh', cls: 'ghost', onClick: () => markClean() } ]);
+  askModal('Continue where you left off?',
+    `Reopen your most recent work from <b>${_autosaveRelTime((rec && rec.savedAt) || data.savedAt)}</b>?`
+    + (stripped ? '<br><span class="warn">Your browser couldn’t keep the source photos this time — traced outlines remain, but uploaded scans may be missing.</span>' : '')
+    + '<br><span style="color:var(--muted);font-size:0.82rem;">Your saved files are untouched either way.</span>',
+    [ { label: 'Continue', onClick: async () => { if (await applyProjectData(data)) status('Reopened your most recent work.'); } },
+      { label: 'Start fresh', cls: 'ghost', onClick: () => autosaveDiscard() } ]);
 }
 function migrateProject(data) {
   // ensure all 27 letters exist & fields present (forward-compatible)
@@ -8057,6 +8092,7 @@ function migrateProject(data) {
     else ['baseline','letterTop','lamedAscender','descender','defaultLSB','defaultRSB'].forEach((k,i)=>{ if(data.font.metrics[k]==null) data.font.metrics[k]=[BASELINE,LETTER_TOP,LAMED_TOP,DESCENDER,DEF_LSB,DEF_RSB][i]; });
     if (data.font.tropScale == null) data.font.tropScale = 1.0;
     if (data.font.dageshScale == null) data.font.dageshScale = (data.font.markScale != null ? data.font.markScale : 1.0);   // seed to the old unified size so existing saves look unchanged
+    if (!data.font.markNudge) data.font.markNudge = {};   // per-mark vertical fine-tune offsets (cp → dy)
     if (data.font.includeDigitsPunct == null) data.font.includeDigitsPunct = true;
     if (!data.font.nikkud) data.font.nikkud = { enabled: true, mode: 'default', custom: {} };
     if (!data.font.nikkud.custom) data.font.nikkud.custom = {};
