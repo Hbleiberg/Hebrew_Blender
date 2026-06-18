@@ -5741,7 +5741,7 @@ function renderAnchorLeft(L, l) {
         <span id="vowelNudgeV" class="readout">${ndy>0?'+':''}${ndy}</span>
         <button class="ctl-btn" title="Reset this vowel's height" onclick="setMarkNudge(activeBelowVowel,0)">⟲</button>
       </div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">Nudges just this vowel up/down everywhere to line it up with the others — the shared anchor doesn't move.</div>`;
+      <div class="hint" style="font-size:0.6rem;text-align:center;">Fine-tunes just the selected vowel (e.g. only the Hiriq), raising or lowering it on every letter — for when one vowel sits higher or lower than the rest. The <b>Below position</b> X / Y just below moves <i>all</i> the under-vowels on this letter at once; this moves only this one.</div>`;
   } else if (isTrop) {
     grid = `<div class="ws-side-title">Preview trop</div>
       <div class="mark-grid2">` + TROP_MARKS.filter(m => m.cls === want).map(m => squareMarkBtn('trop', m.cp, m.name, activeTropCp, 'setTropCp')).join('') + `</div>`;
