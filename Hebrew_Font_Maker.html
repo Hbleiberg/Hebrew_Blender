@@ -1822,6 +1822,7 @@ const HELP_CONTENT = {
       <li><span class="ui">Existing font file</span> — already have a font file? Import it and the letters come in ready-made, so you can skip tracing entirely.</li>
     </ul>
     <p><strong>Allowed files:</strong> any image — PNG, JPG, GIF or WebP. Transparent PNGs and letters drawn on a plain white background also work great. (For the <span class="ui">Existing font file</span> option, a TTF or OTF font file.)</p>
+    <div class="help-tip">✒️ <strong>Have vector artwork?</strong> Turn on <span class="ui">Enable SVG uploading</span> under <span class="ui">Advanced Settings → Input mode</span> to drop in <strong>SVG</strong> files — their vector paths become the glyph outlines <strong>directly, with no tracing</strong>. See the <span class="ui">SVG Upload Guide</span> there for naming one sheet so its letters auto-split.</div>
     <p><strong>Tracing guide:</strong> a faint reference letter shows behind yours so you can line things up. On the <strong>right</strong> of the canvas, dial the <span class="ui">Reference letter opacity</span> slider (or untick <span class="ui">Show reference glyph behind</span> to hide it), and use <span class="ui">Imported image opacity</span> to fade your own photo in or out.</p>
     <p><strong>Position it</strong> (the <span class="ui">1 · Align</span> step): click a letter in the grid on the left, then use the adjustment buttons on the <strong>left</strong> of the canvas — Wider, Taller, Rotate, Skew — to sit your letter neatly on the guide lines. The little dot on that letter turns <strong style="color:#d08c2a;">orange</strong> once it has an image.</p>
     <div class="help-tip">🖨️ Don't have letters to scan yet? The <a href="#" onclick="openHelp('templates');return false;" style="color:var(--gold);font-weight:700;">Download Templates</a> tab gives you printable sheets — handwrite each letter in the boxes, scan or photograph the page, then bring it in here with <span class="ui">One image with all letters</span>.</div>
@@ -1936,6 +1937,11 @@ const HELP_CONTENT = {
         <button class="tbtn ghost" onclick="downloadTemplate('letters','png')">Picture (PNG)</button>
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span style="flex:1 1 150px;font-weight:600;">English Letters <span style="font-weight:400;color:var(--muted);">· A–Z &amp; a–z · 2 pages</span></span>
+        <button class="tbtn" onclick="downloadTemplate('englishletters','pdf')">PDF</button>
+        <button class="tbtn ghost" onclick="downloadTemplate('englishletters','png')">Picture (PNG)</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
         <span style="flex:1 1 150px;font-weight:600;">Vowels (Nikkud) <span style="font-weight:400;color:var(--muted);">· 16 marks · 1 page</span></span>
         <button class="tbtn" onclick="downloadTemplate('nikkud','pdf')">PDF</button>
         <button class="tbtn ghost" onclick="downloadTemplate('nikkud','png')">Picture (PNG)</button>
@@ -1951,7 +1957,7 @@ const HELP_CONTENT = {
         <button class="tbtn ghost" onclick="downloadTemplate('punct','png')">Picture (PNG)</button>
       </div>
     </div>
-    <div class="help-tip">⚠️ The Letters sheet is two pages — it downloads as a 2-page PDF, or as two numbered images (…_1.png, …_2.png) when you choose Picture.</div>
+    <div class="help-tip">⚠️ The Letters and English Letters sheets are two pages each — each downloads as a 2-page PDF, or as two numbered images (…_1.png, …_2.png) when you choose Picture.</div>
   `,
   licenses: `
     <h4>Choosing a license</h4>
