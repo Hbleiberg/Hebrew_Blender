@@ -453,7 +453,7 @@
   .me-piece-row .me-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; line-height: 1; padding: 0 2px; }
   .me-piece-row .me-del:hover { color: #c0392b; }
   .me-piece-row .me-name { flex-shrink: 0; }
-  .me-piece-row .me-xy { display: flex; align-items: center; gap: 8px; }
+  .me-piece-row .me-xy { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; row-gap: 5px; }
   .me-piece-row .me-coord { display: inline-flex; align-items: center; gap: 3px; padding: 3px 8px; border: 1px solid var(--border); border-radius: 5px; background: #fff; color: #1a2744; font-size: 0.76rem; font-weight: 700; cursor: text; }
   .me-piece-row .me-coord:focus-within { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(201,146,42,0.25); }
   .me-piece-row .me-coord input { width: 38px; border: none; background: transparent; color: #1a2744; font: inherit; font-weight: 700; text-align: left; padding: 0; -moz-appearance: textfield; }
@@ -2102,7 +2102,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v1.4</strong> — A new <strong>Edit shape</strong> editor lets you redesign any nikkud, dagesh, or trop mark from simple <strong>dots and bars</strong> — round or <strong>square</strong> dots, square or rounded bars — then apply your shape to the <strong>current letter</strong> or to <strong>all letters</strong>. Position each dot or bar by <strong>dragging</strong> it or by typing exact <strong>X / Y coordinates</strong> for pixel-perfect placement, and the on-stage <strong>selection box now hugs the mark's actual shape</strong> so a small or square mark is never hidden under the handle. <span style="color:var(--muted);">(June 2026)</span></li>
+      <li><strong>v1.4</strong> — A new <strong>Edit shape</strong> editor lets you redesign any nikkud, dagesh, or trop mark from simple <strong>dots and bars</strong> — round or <strong>square</strong> dots, square or rounded bars — then apply your shape to the <strong>current letter</strong> or to <strong>all letters</strong>. Position each dot or bar by <strong>dragging</strong> it or by typing exact <strong>X / Y coordinates</strong> — and set a dot's <strong>radius</strong> or a bar's <strong>width &amp; height</strong> — for pixel-perfect placement, and the on-stage <strong>selection box now hugs the mark's actual shape</strong> so a small or square mark is never hidden under the handle. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.3</strong> — Placing nikkud &amp; trop now works like the rest of the tool: your moves apply <strong>live</strong> and you can leave a letter freely — no save dialog — with <strong>undo</strong> as the safety net. The grid now tells confirmed placements apart from ones <strong>carried over</strong> from the previous letter: a solid green ✓ means you reviewed it, a hollow amber ✓ means "carried over — review &amp; confirm", and amber <strong>!</strong> means unconfirmed. "Save Placement" is now an optional <strong>✓ Confirm placement</strong> review marker. The step tabs show a <strong>per-letter checklist</strong> (✓ done / ✗ to-do / – not needed) for the letter you're on. The <strong>toolbar</strong> is now grouped — Project · History · Review · Export — with Export the clear primary action and <strong>Help</strong> moved up to the top corner. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.2</strong> — Size the <strong>dagesh</strong> dot and the <strong>holam on the vav (וֹ)</strong> each on their own, separate from the vowels — the standalone holam now matches the hiriq — and <strong>fine-tune any single vowel's height</strong> to line it up with the rest. Prepositive &amp; postpositive <strong>trop</strong> (telisha gedola, yetiv, pashta, zarqa, zinor, telisha qetana) now sit toward the leading or trailing <strong>edge</strong> of their letter, the way the tradition places them. Your work is <strong>auto-saved in this browser</strong> — reopen and <strong>continue right where you left off</strong>, with a warning before you close unsaved changes. A new <strong>quality check</strong> flags outlines that cross or overlap themselves. <strong>Accessibility</strong>: full keyboard navigation, screen-reader labels, status badges that don't rely on color alone, reduced-motion support, and dark mode that follows your device. Zoom now centers on the middle of the workspace. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.1</strong> — Import an existing TTF's letter outlines, its own nikkud &amp; trop mark shapes, and its real anchor positions — so you can fix or build on existing fonts. Exported fonts now embed the license name and a Made-with-IvritSuite attribution in their metadata. Bigger editing workspace on wide monitors. Removed the CC&nbsp;BY&nbsp;4.0 license option. <span style="color:var(--muted);">(June 2026)</span></li>
@@ -5520,12 +5520,17 @@ function meRenderList() {
   let dN = 0, bN = 0;
   wrap.innerHTML = (meItem.pieces || []).map((p, i) => {
     const label = p.type === 'dot' ? ('Dot ' + (++dN)) : ('Bar ' + (++bN));
-    const c = meCenterOf(p);
+    const c = meCenterOf(p), sz = meSizeOf(p);
+    const size = p.type === 'dot'
+      ? `<label class="me-coord">R:<input type="number" step="1" value="${sz.r}" onchange="meSetPieceR(${i}, this.value)"></label>`
+      : `<label class="me-coord">W:<input type="number" step="1" value="${sz.w}" onchange="meSetPieceW(${i}, this.value)"></label>`
+        + `<label class="me-coord">H:<input type="number" step="1" value="${sz.h}" onchange="meSetPieceH(${i}, this.value)"></label>`;
     return `<div class="me-piece-row ${i===editorSel?'active':''}" onclick="meSelectPiece(${i})">`
       + `<span class="me-name">${label}</span>`
       + `<span class="me-xy" onclick="event.stopPropagation()">`
       +   `<label class="me-coord">X:<input type="number" step="1" value="${c.x}" onchange="meSetPieceX(${i}, this.value)"></label>`
       +   `<label class="me-coord">Y:<input type="number" step="1" value="${c.y}" onchange="meSetPieceY(${i}, this.value)"></label>`
+      +   size
       + `</span>`
       + `<button class="me-del" title="Delete this piece" onclick="event.stopPropagation();meDeletePiece(${i})">✕</button></div>`;
   }).join('') || `<div class="hint">No pieces yet — add a dot or bar above.</div>`;
@@ -5565,7 +5570,7 @@ function meSetDotSize(v) {
   const p = meItem.pieces && meItem.pieces[editorSel]; if (!p || p.type !== 'dot') return;
   p.r = Math.max(8, Math.min(200, Math.round(+v)));
   const s = document.getElementById('meDotSizeV'); if (s) s.textContent = p.r;
-  meRenderStage();
+  meRenderStage(); meRenderList();
 }
 function meSetDotShape(shape) { const p = meItem.pieces && meItem.pieces[editorSel]; if (!p || p.type !== 'dot') return; p.shape = (shape==='square'?'square':'circle'); meRender(); }
 function meSetBarRounded(b) { const p = meItem.pieces && meItem.pieces[editorSel]; if (!p || p.type !== 'bar') return; p.rounded = !!b; meRender(); }
@@ -5591,6 +5596,36 @@ function meSetPieceY(i, v) {
   const p = meItem && meItem.pieces && meItem.pieces[i]; if (!p) return;
   const n = parseInt(v, 10); if (isNaN(n)) { meRenderList(); return; }
   if (p.type === 'dot') p.cy = n; else { const d = n - Math.round((p.y0 + p.y1) / 2); p.y0 += d; p.y1 += d; }
+  meRenderStage();
+}
+function meSizeOf(p) {
+  if (!p) return {};
+  return p.type === 'dot'
+    ? { r: Math.round(p.r) }
+    : { w: Math.round(Math.abs(p.x1 - p.x0)), h: Math.round(Math.abs(p.y1 - p.y0)) };
+}
+// Editable size in the piece list: a dot's Radius, or a bar's Width / Height (resized about the piece's
+// centre, so it stays put). Same focus-preserving pattern as X/Y — re-render the stage, not the list. For
+// a dot we also refresh the controls panel so its size slider tracks the typed radius. Clamp parity: a
+// dot reuses the slider's 8–200, a bar gets a sane ≥2 floor. Blank/NaN just restores the current value.
+function meSetPieceR(i, v) {
+  const p = meItem && meItem.pieces && meItem.pieces[i]; if (!p || p.type !== 'dot') return;
+  const n = parseInt(v, 10); if (isNaN(n)) { meRenderList(); return; }
+  p.r = Math.max(8, Math.min(200, n));
+  meRenderStage(); meRenderControls();
+}
+function meSetPieceW(i, v) {
+  const p = meItem && meItem.pieces && meItem.pieces[i]; if (!p || p.type !== 'bar') return;
+  const n = parseInt(v, 10); if (isNaN(n)) { meRenderList(); return; }
+  const w = Math.max(2, n), cx = (p.x0 + p.x1) / 2;
+  p.x0 = Math.round(cx - w / 2); p.x1 = p.x0 + w;
+  meRenderStage();
+}
+function meSetPieceH(i, v) {
+  const p = meItem && meItem.pieces && meItem.pieces[i]; if (!p || p.type !== 'bar') return;
+  const n = parseInt(v, 10); if (isNaN(n)) { meRenderList(); return; }
+  const h = Math.max(2, n), cy = (p.y0 + p.y1) / 2;
+  p.y0 = Math.round(cy - h / 2); p.y1 = p.y0 + h;
   meRenderStage();
 }
 function meOpenUploadEditor() {                 // hand off to the existing per-symbol/combined upload editor (global shape)
