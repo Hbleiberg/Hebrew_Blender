@@ -5340,6 +5340,9 @@ function renderPrecompControls(l) {
     <hr class="ctl-divider">
     <div class="inline">Dagesh size <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
     <hr class="ctl-divider">
+    <button class="ctl-btn" style="width:100%;" onclick="openMarkEdit('nikkud','${pc.mark}')">✎ Edit shape (square, dots &amp; bars)</button>
+    <div class="hint" style="font-size:0.62rem;">Make the dot a square or redesign it. Applies to this form (via its base letter); choose “all letters” in the editor to change it everywhere.</div>
+    <hr class="ctl-divider">
     <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">← Back to vowels</button>`;
   }
   const a = precompAnchor(pc), isOverride = !!(pc.anchor && pc.anchor.x != null);
@@ -5366,6 +5369,9 @@ function renderPrecompControls(l) {
     </div>
     <hr class="ctl-divider">
     ${sizeBlock}
+    <hr class="ctl-divider">
+    <button class="ctl-btn" style="width:100%;" onclick="openMarkEdit('nikkud','${pc.mark}')">✎ Edit shape (square, dots &amp; bars)</button>
+    <div class="hint" style="font-size:0.62rem;">Make the dot a square or redesign it. Applies to this form (via its base letter); choose “all letters” in the editor to change it everywhere.</div>
     <hr class="ctl-divider">
     <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">← Back to vowels</button>`;
 }
