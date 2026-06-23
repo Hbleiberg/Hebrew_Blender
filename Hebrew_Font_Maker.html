@@ -445,6 +445,14 @@
   .modal p { font-size: 0.86rem; line-height: 1.5; }
   .modal .mbtns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap; }
 
+  /* ── "Edit shape" mark editor modal ── */
+  .me-modal { max-width: 560px; width: 94%; max-height: 90vh; overflow-y: auto; }
+  .me-piece-list { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; }
+  .me-piece-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--white); cursor: pointer; font-size: 0.82rem; font-weight: 600; color: var(--text); }
+  .me-piece-row.active { border-color: var(--gold); background: rgba(201,146,42,0.10); }
+  .me-piece-row .me-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; line-height: 1; padding: 0 2px; }
+  .me-piece-row .me-del:hover { color: #c0392b; }
+
   /* ── Help guide modal ── */
   .help-modal { max-width: 640px; width: 94%; max-height: 86vh; display: flex; flex-direction: column; }
   .help-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 14px; }
@@ -811,6 +819,40 @@
   Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank">Harrison Bleiberg</a>.
   Desktop browser recommended.
 </footer>
+
+<!-- "Edit shape" — build a nikkud/mark from dots & bars (or upload), apply to this letter or all -->
+<div class="overlay" id="markEditOverlay" onclick="if(event.target===this)closeMarkEdit()">
+  <div class="modal me-modal" role="dialog" aria-modal="true" aria-labelledby="meTitle">
+    <h3 id="meTitle">Edit mark shape</h3>
+    <div class="mode-toggle" style="margin-bottom:10px;">
+      <button class="mode-btn" id="meModeEditor" onclick="meSetMode('editor')">Simple editor</button>
+      <button class="mode-btn" id="meModeUpload" onclick="meSetMode('upload')">Upload image</button>
+    </div>
+    <div id="meEditorSection">
+      <div class="ctl-row" style="margin-bottom:8px;">
+        <button class="ctl-btn" onclick="meAddPiece('dot')">+ Add dot</button>
+        <button class="ctl-btn" onclick="meAddPiece('bar')">+ Add bar</button>
+        <button class="ctl-btn" onclick="meDeletePiece()">Delete selected</button>
+      </div>
+      <svg id="meStage" viewBox="0 150 600 410" style="width:100%;height:280px;background:var(--cream);border:1px solid var(--border);border-radius:8px;touch-action:none;"></svg>
+      <div id="mePieceList" class="me-piece-list"></div>
+      <div id="mePieceCtl"></div>
+      <div class="hint">Click a piece (here or in the list) to select; drag it to move, drag the ◻ corner to resize. Bars can be any width/thickness. Build the mark from dots &amp; bars — it's seeded from the default shape.</div>
+    </div>
+    <div id="meUploadSection" style="display:none;">
+      <p style="font-size:0.84rem;color:var(--muted);line-height:1.5;">Design this mark from an uploaded image (per-symbol or from a combined sheet) on its own editing tab — the full align &amp; trace tools live there. Uploaded mark shapes apply to <b>all letters</b>.</p>
+      <div class="ctl-row"><button class="ctl-btn primary" onclick="meOpenUploadEditor()">Open image editor for this mark →</button></div>
+    </div>
+    <div class="hint" id="meScopeNote" style="margin-top:8px;"></div>
+    <div class="mbtns" style="justify-content:space-between;">
+      <button class="tbtn ghost" onclick="closeMarkEdit()">‹ Back</button>
+      <span style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="tbtn" id="meApplyCur" onclick="meConfirmApply('current')">Apply to current letter</button>
+        <button class="tbtn" id="meApplyAll" onclick="meConfirmApply('all')">Apply to all letters</button>
+      </span>
+    </div>
+  </div>
+</div>
 
 <!-- Generic ask-mode / message modal -->
 <div class="overlay" id="askOverlay">
@@ -1624,11 +1666,25 @@ function scaleRoundCurve(cv, s) {
   const r = p => [Math.round(p[0]*s), Math.round(p[1]*s)];
   return { winding: cv.winding, start: r(cv.start), segments: cv.segments.map(seg => ({ type: seg.type, pts: seg.pts.map(r) })) };
 }
+/* CCW rounded-rectangle polygon (same winding as rectPts/circlePts). r is clamped to half the
+   shorter side, so passing min(w,h)/2 gives a pill (fully rounded ends) — the handwriting look. */
+function roundRectPts(x0, y0, x1, y1, r) {
+  const xa=Math.min(x0,x1), xb=Math.max(x0,x1), ya=Math.min(y0,y1), yb=Math.max(y0,y1);
+  const rad = Math.max(0, Math.min(r, (xb-xa)/2, (yb-ya)/2));
+  if (rad <= 0) return rectPts(x0, y0, x1, y1);
+  const K = 4, pts = [];
+  const arc = (cx, cy, a0) => { for (let i=0;i<=K;i++){ const a=a0+(i/K)*(Math.PI/2); pts.push([cx+rad*Math.cos(a), cy+rad*Math.sin(a)]); } };
+  arc(xb-rad, yb-rad, 0);              // TR : 0→90
+  arc(xa+rad, yb-rad, Math.PI/2);      // TL : 90→180
+  arc(xa+rad, ya+rad, Math.PI);        // BL : 180→270
+  arc(xb-rad, ya+rad, 3*Math.PI/2);    // BR : 270→360
+  return pts;
+}
 function piecesToContours(pieces) {
   if (!pieces || !pieces.length) return [];
   return pieces.map(p => p.type === 'dot'
     ? (p.shape === 'square' ? rectPts(p.cx - p.r, p.cy - p.r, p.cx + p.r, p.cy + p.r) : circlePts(p.cx, p.cy, p.r))
-    : rectPts(p.x0, p.y0, p.x1, p.y1));
+    : (p.rounded ? roundRectPts(p.x0, p.y0, p.x1, p.y1, Math.min(Math.abs(p.x1-p.x0), Math.abs(p.y1-p.y0))/2) : rectPts(p.x0, p.y0, p.x1, p.y1)));
 }
 function defaultPieces(kind, cp) {
   // recover editable dots/bars from the built-in default polygons (circle→dot, rect→bar)
@@ -1643,6 +1699,22 @@ function defaultPieces(kind, cp) {
   });
 }
 function ensureMarkPieces(it) { if (it && !it.pieces) it.pieces = defaultPieces(curKind, it.codepoint); return it && it.pieces; }
+/* Per-letter aware mark contours: if this letter has its own shape override for `cp`
+   (set via "Apply to current letter"), use it; otherwise fall back to the global mark
+   shape from markGlyphContours(). Mark-local coords + per-mark nudge, exactly like
+   markGlyphContours() — a drop-in used by preview, QA, and the precomposed export bake. */
+function markContoursFor(letter, kind, cp) {
+  const m = letter && letter.markShapes && letter.markShapes[cp];
+  if (m) {
+    const dy = markNudgeDy(cp), sh = ps => dy ? ps.map(([x,y]) => [x, y + dy]) : ps;
+    if (m.designMode === 'editor') { const cs = piecesToContours(m.pieces); if (cs && cs.length) return cs.map(sh); }
+    else if (m.contours && m.contours.length) {
+      const cs = m.contours.map(c => c.points), o = markAttachOrigin(m);
+      return cs.map(pts => pts.map(([x,y]) => [x - o.x, y - o.y + dy]));
+    }
+  }
+  return markGlyphContours(kind, cp);
+}
 
 /* ════════ Coordinate system (font units y-up ↔ stage px, mirrors nikkud_positioner) ════════ */
 const SC = 0.32, PADX = 175, BY = 445;
@@ -1656,13 +1728,26 @@ const EDX = 300;
 const ex = x => EDX + x * SC;
 const iex = px => (px - EDX) / SC;
 const stage = () => document.getElementById('stage');
-function clientToStage(evt) {
-  const sv = stage(); const pt = sv.createSVGPoint();
+function clientToSvg(sv, evt) {
+  const pt = sv.createSVGPoint();
   pt.x = evt.clientX; pt.y = evt.clientY;
   const p = pt.matrixTransform(sv.getScreenCTM().inverse());
   return [p.x, p.y];
 }
+function clientToStage(evt) { return clientToSvg(stage(), evt); }
 function clientToFont(evt) { const [sx,sy] = clientToStage(evt); return [ifx(sx), ify(sy)]; }
+/* Apply a move/resize drag to a Simple-editor piece (shared by the inline #stage editor and the
+   "Edit shape" modal). sx,sy = current stage coords; startSx,startSy = drag-start stage coords. */
+function applyPieceDrag(p, p0, mode, sx, sy, startSx, startSy) {
+  const dxF = iex(sx) - iex(startSx), dyF = ify(sy) - ify(startSy);
+  if (mode === 'move') {
+    if (p.type === 'dot') { p.cx = Math.round(p0.cx + dxF); p.cy = Math.round(p0.cy + dyF); }
+    else { p.x0=Math.round(p0.x0+dxF); p.x1=Math.round(p0.x1+dxF); p.y0=Math.round(p0.y0+dyF); p.y1=Math.round(p0.y1+dyF); }
+  } else {  // resize
+    if (p.type === 'dot') p.r = Math.max(8, Math.round(Math.hypot(iex(sx)-p.cx, ify(sy)-p.cy)));
+    else { p.x1 = Math.round(iex(sx)); p.y0 = Math.round(ify(sy)); }
+  }
+}
 
 /* ════════ 2×3 affine matrix helpers (a,b,c,d,e,f): px' = a*x+c*y+e, py'=b*x+d*y+f ════════ */
 const M = {
@@ -2447,10 +2532,10 @@ function renderMarkPanel(cat) {
 /* Mark preview drawn from our OWN glyph outlines (default or the user's custom design),
    not the system font — a dotted "letter" circle with the actual mark shape attached
    above/below/centre per its class, mirroring how the placement screen previews it. */
-function markTilePreviewSVG(cat, cp) {
+function markTilePreviewSVG(cat, cp, forLetter) {
   const cls = (cat === 'customMarks' ? ((project.font.customMarks.custom[cp] || {}).cls || 'below')
             : cat === 'nikkud' ? MARK_CLASS[cp] : TROP_CLASS[cp]) || 'below';
-  const polys = markGlyphContours(cat, cp);            // font units; origin = attach anchor
+  const polys = forLetter ? markContoursFor(forLetter, cat, cp) : markGlyphContours(cat, cp);   // font units; origin = attach anchor
   const R = 90;                                         // base "letter" circle radius
   const ax = 0, ay = cls === 'below' ? -R : (cls === 'above' ? R : 0);   // where the mark seats on the circle
   let minX = -R, maxX = R, minY = -R, maxY = R;
@@ -3634,7 +3719,8 @@ function editorStageSVG(it) {
       h += `<circle class="epiece" data-i="${i}" cx="${ex(p.cx)}" cy="${fy(p.cy)}" r="${Math.max(2, p.r*SC)}" fill="${ink}" stroke="${stroke}" stroke-width="2"/>`;
     } else {
       const x0=Math.min(p.x0,p.x1), x1=Math.max(p.x0,p.x1), y0=Math.min(p.y0,p.y1), y1=Math.max(p.y0,p.y1);
-      h += `<rect class="epiece" data-i="${i}" x="${ex(x0)}" y="${fy(y1)}" width="${(x1-x0)*SC}" height="${(y1-y0)*SC}" fill="${ink}" stroke="${stroke}" stroke-width="2"/>`;
+      const rr = p.rounded ? Math.min(x1-x0, y1-y0)/2*SC : 0;
+      h += `<rect class="epiece" data-i="${i}" x="${ex(x0)}" y="${fy(y1)}" width="${(x1-x0)*SC}" height="${(y1-y0)*SC}" rx="${rr.toFixed(1)}" ry="${rr.toFixed(1)}" fill="${ink}" stroke="${stroke}" stroke-width="2"/>`;
     }
   });
   const p = pieces[editorSel];
@@ -3749,8 +3835,15 @@ function renderMarkControls(c, it) {
           <button class="mode-btn ${sh==='square'?'active':''}" onclick="setDotShape('square')">■ Square</button>
         </div>
       </div>`;
+    } else if (selP && selP.type === 'bar') {
+      h += `<div class="ctl-row" style="margin-top:6px;">
+        <div class="mode-toggle" style="flex:1;min-width:0;">
+          <button class="mode-btn ${!selP.rounded?'active':''}" onclick="setBarRounded(false)">▭ Square</button>
+          <button class="mode-btn ${selP.rounded?'active':''}" onclick="setBarRounded(true)">▢ Rounded</button>
+        </div>
+      </div>`;
     }
-    h += `<div class="hint">Click a piece to select; drag to move, drag the ◻ corner (or the <b>Dot size</b> slider) to resize. Build the mark from dots &amp; bars — it's seeded from the default shape.</div>`;
+    h += `<div class="hint">Click a piece to select; drag to move, drag the ◻ corner to resize. A bar's corner can be dragged for any width/thickness. Build the mark from dots &amp; bars — it's seeded from the default shape.</div>`;
   } else if (workMode === 'trace') {
     h += `<div class="inline">Ink threshold <input type="range" min="1" max="254" value="${it.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()"> <span id="thV" class="readout">${it.binThreshold}</span></div>
       <label class="chk"><input type="checkbox" ${it.invert?'checked':''} onchange="liveInvert(this.checked)"> Invert (light ink on dark)</label>
@@ -4154,15 +4247,8 @@ function onStagePointerMove(e) {
   }
   if (eDrag && curKind !== 'letter') {
     const it = curItem(); const p = it.pieces && it.pieces[editorSel]; if (!p) return;
-    const [sx,sy] = clientToStage(e), p0 = eDrag.p0;
-    const dxF = iex(sx) - iex(eDrag.start[0]), dyF = ify(sy) - ify(eDrag.start[1]);
-    if (eDrag.mode === 'move') {
-      if (p.type === 'dot') { p.cx = Math.round(p0.cx + dxF); p.cy = Math.round(p0.cy + dyF); }
-      else { p.x0=Math.round(p0.x0+dxF); p.x1=Math.round(p0.x1+dxF); p.y0=Math.round(p0.y0+dyF); p.y1=Math.round(p0.y1+dyF); }
-    } else {  // resize
-      if (p.type === 'dot') p.r = Math.max(8, Math.round(Math.hypot(iex(sx)-p.cx, ify(sy)-p.cy)));
-      else { p.x1 = Math.round(iex(sx)); p.y0 = Math.round(ify(sy)); }
-    }
+    const [sx,sy] = clientToStage(e);
+    applyPieceDrag(p, eDrag.p0, eDrag.mode, sx, sy, eDrag.start[0], eDrag.start[1]);
     renderStage(); return;
   }
   if (cropDrag) {
@@ -5022,8 +5108,12 @@ const BELOW_VOWELS = [
   { cp:'05B0', name:'Sheva' }, { cp:'05B2', name:'Hataf Patach' }, { cp:'05B1', name:'Hataf Segol' }, { cp:'05B3', name:'Hataf Qamats' },
   { cp:'05C7', name:'Qamats Qatan' }
 ];
+const ABOVE_MARKS = [ { cp:'05B9', name:'Holam' }, { cp:'05C1', name:'Shin dot' }, { cp:'05C2', name:'Sin dot' } ];
+const CENTER_MARKS = [ { cp:'05BC', name:'Dagesh' } ];
 let activeAnchorClass = 'below';
 let activeBelowVowel = '05B8';
+let activeAboveMark = '05B9';
+let activeCenterMark = '05BC';
 let activeTropCp = '0597';
 function activeVowelCp() {
   switch (activeAnchorClass) {
@@ -5035,14 +5125,14 @@ function activeVowelCp() {
 }
 function markPreviewPath(cp, ax, ay, scaleOverride) {
   const cat = catOfCp(cp), s = scaleOverride != null ? scaleOverride : (cat==='trop'?tropScale():(cat==='accent'?1:nikScale(cp)));
-  const contours = markGlyphContours(cat, cp);
+  const contours = markContoursFor(curLetter(), cat, cp);
   let d = '';
   contours.forEach(poly => { poly.forEach((p,i) => { const X=fx(ax+p[0]*s), Y=fy(ay+p[1]*s); d += (i===0?'M':'L')+X.toFixed(1)+' '+Y.toFixed(1)+' '; }); d+='Z '; });
   return d;
 }
 function markCenterLocal(cp, scaleOverride) {
   const cat = catOfCp(cp), s = scaleOverride != null ? scaleOverride : (cat==='trop'?tropScale():(cat==='accent'?1:nikScale(cp)));
-  const polys = markGlyphContours(cat, cp);
+  const polys = markContoursFor(curLetter(), cat, cp);
   let sx = 0, sy = 0, n = 0;
   polys.forEach(poly => poly.forEach(p => { sx += p[0]; sy += p[1]; n++; }));
   return n ? [sx / n * s, sy / n * s] : [0, 0];
@@ -5107,6 +5197,8 @@ function setAnchorClass(cls) {
   renderStage(); renderControls();
 }
 function setBelowVowel(cp) { activeBelowVowel = cp; renderStage(); renderControls(); }
+function setAboveMark(cp) { activeAboveMark = cp; renderStage(); renderControls(); }
+function setCenterMark(cp) { activeCenterMark = cp; renderStage(); renderControls(); }
 
 /* ════════ Special / precomposed forms — place each form's mark (שׁ שׂ בּ כּ פּ תּ וֹ וּ) on its base ════════
    These render as single glyphs (via ccmp), so the dot position is baked in. By default it sits at the base's
@@ -5320,6 +5412,167 @@ function setDotSize(v) {   // per-dot radius of the selected Simple-editor piece
 function setDotShape(shape) {   // circle ↔ square for the selected dot piece
   const it = curItem(); const p = it && it.pieces && it.pieces[editorSel]; if (!p || p.type !== 'dot') return;
   udDo([itemScope()], 'dot shape — ' + it.name, () => { p.shape = (shape === 'square' ? 'square' : 'circle'); renderStage(); renderControls(); });
+}
+function setBarRounded(b) {   // square ↔ rounded ends for the selected bar piece
+  const it = curItem(); const p = it && it.pieces && it.pieces[editorSel]; if (!p || p.type !== 'bar') return;
+  udDo([itemScope()], 'bar shape — ' + it.name, () => { p.rounded = !!b; renderStage(); renderControls(); });
+}
+
+/* ════════ "Edit shape" modal — dots/bars editor, apply to current letter or all ════════
+   Edits a WORKING COPY (meItem); nothing is written to the project until Apply, so Back is a clean
+   cancel and per-letter vs all-letters stays separate. Reuses the inline editor's pure helpers
+   (editorStageSVG, piecesToContours, applyPieceDrag) on its own #meStage. */
+let meActive = false, meItem = null, meKind = null, meCp = null, meDrag = null;
+function meStageEl() { return document.getElementById('meStage'); }
+function openMarkEdit(kind, cp) {
+  if (!project) return;
+  meActive = true; meKind = kind; meCp = cp;
+  const cls = markClassOf(kind, cp) || 'above';
+  const L = curLetter();
+  let src = (L && L.markShapes && L.markShapes[cp]) || null;          // seed from this letter's override first
+  if (!src) { const g = project.font[kind].custom && project.font[kind].custom[cp];
+    if (g && (g.designMode === 'editor' ? (g.pieces && g.pieces.length) : (g.contours && g.contours.length))) src = g; }
+  const clone = v => v ? JSON.parse(JSON.stringify(v)) : null;
+  meItem = {
+    kind, codepoint: cp, name: markName(cp), cls,
+    designMode: (src && src.designMode === 'upload') ? 'upload' : 'editor',
+    pieces: (src && src.pieces && src.pieces.length) ? clone(src.pieces) : defaultPieces(kind, cp),
+    contours: clone(src && src.contours), curves: clone(src && src.curves),
+    source: clone(src && src.source) || { kind: 'single', dataUrl: null }
+  };
+  if (!meItem.pieces || !meItem.pieces.length) meItem.pieces = defaultPieces(kind, cp);
+  editorSel = 0;
+  document.getElementById('meTitle').textContent = 'Edit shape — ' + meItem.name;
+  const lname = L ? L.name : 'this letter';
+  document.getElementById('meApplyCur').textContent = 'Apply to current letter (' + lname + ')';
+  document.getElementById('meScopeNote').innerHTML = '<b>Apply to current letter</b> changes this mark only for <b>' + escapeHtml(lname) + '</b>; <b>Apply to all letters</b> changes it everywhere. Neither affects positioning. (A per-letter shape bakes into the font for that letter+mark pair; when another mark such as a dagesh sits between them, that combination falls back to the all-letters shape.)';
+  meRender();
+  aOpenModal('markEditOverlay', closeMarkEdit);
+}
+function closeMarkEdit() { meActive = false; meItem = null; meDrag = null; aCloseModal('markEditOverlay'); }
+function meSyncMode() {
+  const mode = meItem.designMode;
+  document.getElementById('meModeEditor').classList.toggle('active', mode === 'editor');
+  document.getElementById('meModeUpload').classList.toggle('active', mode === 'upload');
+  document.getElementById('meEditorSection').style.display = mode === 'editor' ? '' : 'none';
+  document.getElementById('meUploadSection').style.display = mode === 'upload' ? '' : 'none';
+}
+function meSetMode(mode) { meItem.designMode = mode; meRender(); }
+function meRender() {
+  if (!meActive) return;
+  meSyncMode();
+  if (meItem.designMode !== 'editor') return;
+  meRenderStage(); meRenderList(); meRenderControls();
+}
+function meRenderStage() {
+  const sv = meStageEl(); if (!sv) return;
+  const ay = fy(0);
+  const guide = `<line x1="35" y1="${ay}" x2="565" y2="${ay}" stroke="#c8bfa8" stroke-width="1" stroke-dasharray="5 4"/>`
+    + `<text x="300" y="${meItem.cls==='above'?ay+20:ay-10}" text-anchor="middle" fill="#9aa0aa" font-size="11">letter baseline</text>`;
+  sv.innerHTML = guide + editorStageSVG(meItem);
+  sv.querySelectorAll('.epiece').forEach(el => el.addEventListener('pointerdown', e => {
+    editorSel = +el.dataset.i;
+    meDrag = { mode:'move', start: clientToSvg(sv, e), p0: JSON.parse(JSON.stringify(meItem.pieces[editorSel])) };
+    sv.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault(); meRender();
+  }));
+  const hnd = sv.querySelector('.ehandle');
+  if (hnd) hnd.addEventListener('pointerdown', e => {
+    meDrag = { mode:'resize', start: clientToSvg(sv, e), p0: JSON.parse(JSON.stringify(meItem.pieces[editorSel])) };
+    sv.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault();
+  });
+}
+function meRenderList() {
+  const wrap = document.getElementById('mePieceList'); if (!wrap) return;
+  let dN = 0, bN = 0;
+  wrap.innerHTML = (meItem.pieces || []).map((p, i) => {
+    const label = p.type === 'dot' ? ('Dot ' + (++dN)) : ('Bar ' + (++bN));
+    return `<div class="me-piece-row ${i===editorSel?'active':''}" onclick="meSelectPiece(${i})">`
+      + `<span>${label}</span><button class="me-del" title="Delete this piece" onclick="event.stopPropagation();meDeletePiece(${i})">✕</button></div>`;
+  }).join('') || `<div class="hint">No pieces yet — add a dot or bar above.</div>`;
+}
+function meRenderControls() {
+  const wrap = document.getElementById('mePieceCtl'); if (!wrap) return;
+  const p = meItem.pieces && meItem.pieces[editorSel];
+  if (p && p.type === 'dot') {
+    const sh = p.shape === 'square' ? 'square' : 'circle';
+    wrap.innerHTML = `<div class="ctl-row" style="margin-top:6px;">
+      <div class="inline" style="flex:1;min-width:0;">Dot size <input type="range" min="8" max="200" step="1" value="${p.r}" oninput="meSetDotSize(this.value)" style="flex:1;min-width:0;"> <span id="meDotSizeV" class="readout">${p.r}</span></div>
+      <div class="mode-toggle" style="flex:1;min-width:0;">
+        <button class="mode-btn ${sh==='circle'?'active':''}" onclick="meSetDotShape('circle')">● Circle</button>
+        <button class="mode-btn ${sh==='square'?'active':''}" onclick="meSetDotShape('square')">■ Square</button>
+      </div></div>`;
+  } else if (p && p.type === 'bar') {
+    wrap.innerHTML = `<div class="ctl-row" style="margin-top:6px;">
+      <div class="mode-toggle" style="flex:1;min-width:0;">
+        <button class="mode-btn ${!p.rounded?'active':''}" onclick="meSetBarRounded(false)">▭ Square ends</button>
+        <button class="mode-btn ${p.rounded?'active':''}" onclick="meSetBarRounded(true)">▢ Rounded ends</button>
+      </div></div>`;
+  } else wrap.innerHTML = '';
+}
+function meSelectPiece(i) { editorSel = i; meRender(); }
+function meAddPiece(type) {
+  if (!meItem.pieces) meItem.pieces = [];
+  const cy = meItem.cls==='above' ? 120 : meItem.cls==='center' ? 0 : -150;
+  meItem.pieces.push(type==='dot' ? { type:'dot', cx:0, cy, r:45 } : { type:'bar', x0:-90, y0:cy-25, x1:90, y1:cy+25 });
+  editorSel = meItem.pieces.length - 1; meRender();
+}
+function meDeletePiece(i) {
+  if (!meItem.pieces || !meItem.pieces.length) return;
+  if (i == null) i = editorSel;
+  meItem.pieces.splice(i, 1); editorSel = Math.max(0, Math.min(editorSel, meItem.pieces.length - 1)); meRender();
+}
+function meSetDotSize(v) {
+  const p = meItem.pieces && meItem.pieces[editorSel]; if (!p || p.type !== 'dot') return;
+  p.r = Math.max(8, Math.min(200, Math.round(+v)));
+  const s = document.getElementById('meDotSizeV'); if (s) s.textContent = p.r;
+  meRenderStage();
+}
+function meSetDotShape(shape) { const p = meItem.pieces && meItem.pieces[editorSel]; if (!p || p.type !== 'dot') return; p.shape = (shape==='square'?'square':'circle'); meRender(); }
+function meSetBarRounded(b) { const p = meItem.pieces && meItem.pieces[editorSel]; if (!p || p.type !== 'bar') return; p.rounded = !!b; meRender(); }
+function meOpenUploadEditor() {                 // hand off to the existing per-symbol/combined upload editor (global shape)
+  const kind = meKind, cp = meCp;
+  closeMarkEdit();
+  selectItem(kind, cp);
+  setMarkDesignMode('upload');
+  status('Design this mark from an image here, then return to placing nikkud.');
+}
+function meConfirmApply(scope) {
+  const L = curLetter(), lname = L ? L.name : 'this letter';
+  const msg = scope === 'all'
+    ? 'Are you sure? This changes how <b>' + escapeHtml(meItem.name) + '</b> looks for <b>ALL letters</b> in your font. It will not affect positioning.'
+    : 'Are you sure? This changes how <b>' + escapeHtml(meItem.name) + '</b> looks for <b>only ' + escapeHtml(lname) + '</b>. It will not affect positioning.';
+  askModal('Apply mark shape', msg, [
+    { label: 'Cancel', cls: 'ghost' },
+    { label: scope === 'all' ? 'Apply to all letters' : 'Apply to ' + lname, onClick: () => meApply(scope) }
+  ]);
+}
+function meApply(scope) {
+  const kind = meKind, cp = meCp, isEd = meItem.designMode === 'editor';
+  const payload = {
+    designMode: meItem.designMode,
+    pieces: isEd ? JSON.parse(JSON.stringify(meItem.pieces)) : null,
+    contours: isEd ? null : (meItem.contours || null),
+    curves: isEd ? null : (meItem.curves || null),
+    source: meItem.source || null, cls: meItem.cls
+  };
+  if (scope === 'all') {
+    udDo([{ t:'item', kind, cp }], 'edit shape — ' + meItem.name, () => {
+      const store = project.font[kind].custom; if (!store[cp]) store[cp] = markItem(kind, cp);
+      const it = store[cp];
+      it.designMode = payload.designMode; it.pieces = payload.pieces;
+      it.contours = payload.contours; it.curves = payload.curves; if (payload.source) it.source = payload.source;
+      project.font[kind].mode = 'custom';
+    });
+  } else {
+    const L = curLetter(); if (!L) { closeMarkEdit(); return; }
+    udDo([{ t:'item', kind:'letter', cp: L.codepoint }], 'edit shape on ' + L.name, () => {
+      if (!L.markShapes) L.markShapes = {};
+      L.markShapes[cp] = { designMode: payload.designMode, pieces: payload.pieces, contours: payload.contours, curves: payload.curves, source: payload.source, cls: payload.cls };
+    });
+  }
+  closeMarkEdit();
+  renderGrids(); renderStage(); renderControls(); markDirty();
+  status(scope === 'all' ? 'Shape applied to all letters.' : 'Shape applied to this letter.');
 }
 function setTropScale(v) {
   project.font.tropScale = Math.max(0.3, Math.min(2, (+v)/100));
@@ -5640,8 +5893,8 @@ function vSlider(id, valId, label, pct, fn) {
     <input type="range" id="${id}" min="0" max="100" step="1" value="${pct}" oninput="${fn}(this.value)">
     <span class="vsval" id="${valId}">${pct}%</span></div>`;
 }
-function squareMarkBtn(cat, cp, name, activeCp, fn) {
-  return `<button type="button" class="mark-sq ${activeCp===cp?'active':''}" onclick="${fn}('${cp}')">${markTilePreviewSVG(cat,cp)}<span>${name}</span></button>`;
+function squareMarkBtn(cat, cp, name, activeCp, fn, forLetter) {
+  return `<button type="button" class="mark-sq ${activeCp===cp?'active':''}" onclick="${fn}('${cp}')">${markTilePreviewSVG(cat,cp,forLetter)}<span>${name}</span></button>`;
 }
 function maybeInheritAnchors(l) {
   // After one letter is left, the next letter opened in the placement step starts from those same
@@ -5848,10 +6101,11 @@ function renderAnchorLeft(L, l) {
   const classBtns = visCls.map(k =>
     `<button class="ctl-btn ${cls===k?'primary':''}" style="${cls===k?`background:${ANCHOR_COL[k]};color:#fff;border-color:${ANCHOR_COL[k]};`:''}" onclick="setAnchorClass('${k}')">${ANCHOR_LABEL[k]}</button>`).join('');
   let grid = '';
+  const editBtn = cp => `<button class="ctl-btn" title="Redesign this mark's shape from dots & bars (or an image), then apply it to this letter or all letters" onclick="openMarkEdit('nikkud','${cp}')">✎ Edit shape</button>`;
   if (cls === 'below') {
     const ndy = markNudgeDy(activeBelowVowel);
     grid = `<div class="ws-side-title">Preview under-vowel</div>
-      <div class="mark-grid2">` + BELOW_VOWELS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeBelowVowel, 'setBelowVowel')).join('') + `</div>
+      <div class="mark-grid2">` + BELOW_VOWELS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeBelowVowel, 'setBelowVowel', l)).join('') + `</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;">
         <span style="font-size:0.72rem;color:var(--muted);">Height</span>
         <button class="ctl-btn" title="Raise this vowel" onclick="nudgeActiveVowel(10)">▲</button>
@@ -5859,7 +6113,18 @@ function renderAnchorLeft(L, l) {
         <span id="vowelNudgeV" class="readout">${ndy>0?'+':''}${ndy}</span>
         <button class="ctl-btn" title="Reset this vowel's height" onclick="setMarkNudge(activeBelowVowel,0)">⟲</button>
       </div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">Fine-tunes just the selected vowel (e.g. only the Hiriq), raising or lowering it on every letter — for when one vowel sits higher or lower than the rest. The <b>Below position</b> X / Y just below moves <i>all</i> the under-vowels on this letter at once; this moves only this one.</div>`;
+      <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(activeBelowVowel)}</div>
+      <div class="hint" style="font-size:0.6rem;text-align:center;">Height fine-tunes just the selected vowel on every letter; the <b>Below position</b> X / Y below moves <i>all</i> under-vowels at once. <b>Edit shape</b> redesigns the selected vowel's dots &amp; bars.</div>`;
+  } else if (cls === 'above') {
+    grid = `<div class="ws-side-title">Preview above-mark</div>
+      <div class="mark-grid2">` + ABOVE_MARKS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeAboveMark, 'setAboveMark', l)).join('') + `</div>
+      <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(activeAboveMark)}</div>
+      <div class="hint" style="font-size:0.6rem;text-align:center;">The holam dot and the shin/sin dots sit above the letter. <b>Edit shape</b> redesigns the selected mark.</div>`;
+  } else if (cls === 'center') {
+    grid = `<div class="ws-side-title">Preview center mark</div>
+      <div class="mark-grid2">` + CENTER_MARKS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeCenterMark, 'setCenterMark', l)).join('') + `</div>
+      <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(activeCenterMark)}</div>
+      <div class="hint" style="font-size:0.6rem;text-align:center;">The dagesh sits inside the letter body. <b>Edit shape</b> redesigns it.</div>`;
   } else if (isTrop) {
     grid = `<div class="ws-side-title">Preview trop</div>
       <div class="mark-grid2">` + TROP_MARKS.filter(m => m.cls === want).map(m => squareMarkBtn('trop', m.cp, m.name, activeTropCp, 'setTropCp')).join('') + `</div>`;
@@ -6254,8 +6519,8 @@ function polysBounds(polys) {   // bounds over an array of [x,y]-point arrays (f
 }
 /* Place a mark on a base: scale by ms/tms then translate by the base anchor — rounded EXACTLY like
    the exporter (4203/4217/4233), so QA geometry == built-glyph geometry. */
-function qaPlace(anc, kind, cp, scale) {
-  return markGlyphContours(kind, cp).map(poly => poly.map(([x,y]) => [Math.round(x*scale + anc.x), Math.round(y*scale + anc.y)]));
+function qaPlace(anc, kind, cp, scale, L) {
+  return (L ? markContoursFor(L, kind, cp) : markGlyphContours(kind, cp)).map(poly => poly.map(([x,y]) => [Math.round(x*scale + anc.x), Math.round(y*scale + anc.y)]));
 }
 /* A trop stacked on a nikkud (mkmk): trop attach-origin lands at the nikkud's mark-to-mark anchor,
    which sits at nikAnc + markMkmkAnchor(nik).<side> (already scaled) — the exact mkmk geometry (4308-4320). */
@@ -6358,10 +6623,10 @@ function qaColumns(tab) {
 /* The colored mark layer(s) to draw + test for one cell. */
 function qaCellLayers(L, anc, col) {
   const ms = markScale(), tms = tropScale(), ds = dageshScale();
-  if (col.kind === 'nikkud') return [{ polys: qaPlace(anc[col.side], 'nikkud', col.cp, nikScale(col.cp)), color: QA_SIDE_COLOR[col.side] }];
+  if (col.kind === 'nikkud') return [{ polys: qaPlace(anc[col.side], 'nikkud', col.cp, nikScale(col.cp), L), color: QA_SIDE_COLOR[col.side] }];
   if (col.kind === 'trop')   { const k = col.side === 'above' ? 'tropAbove' : 'tropBelow'; const dx = tropPosDX(col.cp); return [{ polys: qaPlace({ x: anc[k].x + dx, y: anc[k].y }, 'trop', col.cp, tms), color: QA_SIDE_COLOR[k] }]; }
   const nikAnc = anc[col.side];
-  return [ { polys: qaPlace(nikAnc, 'nikkud', col.cp, ms), color: QA_SIDE_COLOR[col.side] },
+  return [ { polys: qaPlace(nikAnc, 'nikkud', col.cp, ms, L), color: QA_SIDE_COLOR[col.side] },
            { polys: qaPlaceStackTrop(nikAnc, col.cp, col.trop), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] } ];
 }
 function qaCellSvg(L, layers) {
@@ -6395,7 +6660,7 @@ function fontInkBounds() {
     if (!L.anchors) return;
     if (nikOn) MARK_CPS.forEach(cp => {
       const cls = MARK_CLASS[cp], anc = L.anchors[cls]; if (!anc) return;
-      upd(polysBounds(qaPlace(anc, 'nikkud', cp, nikScale(cp))));
+      upd(polysBounds(qaPlace(anc, 'nikkud', cp, nikScale(cp), L)));
       if (tropOn && cls !== 'center') { const a = markMkmkAnchor(cp);
         if (cls === 'above' && tropTop != null) updTop(anc.y + a.above.y + tropTop);
         if (cls === 'below' && tropBot != null) updBot(anc.y + a.below.y + tropBot);
@@ -6411,7 +6676,7 @@ function fontInkBounds() {
     if (!baseL || !baseL.contours) return;
     const anc = (MARK_CLASS[pc.mark] !== 'center' && pc.anchor && pc.anchor.x != null) ? pc.anchor : (baseL.anchors && baseL.anchors[MARK_CLASS[pc.mark]]);   // dagesh follows the base's center anchor (unified)
     if (!anc) return;
-    upd(polysBounds(qaPlace(anc, 'nikkud', pc.mark, ms)));
+    upd(polysBounds(qaPlace(anc, 'nikkud', pc.mark, ms, baseL)));
   });
   if (top < bottom) { top = effMetrics().letterTop; bottom = 0; }   // no ink → nominal box
   return { top, bottom };
@@ -6628,7 +6893,7 @@ function buildFontSpec() {
     const cls = MARK_CLASS[pc.mark];
     const anc = (cls !== 'center' && pc.anchor && pc.anchor.x != null) ? pc.anchor : (baseL.anchors && baseL.anchors[cls]); if (!anc) return;   // dagesh follows the letter's center anchor (unified with the live dagesh)
     const mscale = precompMarkScale(pc);                            // per-form dot size, or inherit the global mark scale
-    const markPoly = markGlyphContours('nikkud', pc.mark).map(poly => poly.map(([x,y]) => [Math.round(x*mscale+anc.x), Math.round(y*mscale+anc.y)]));
+    const markPoly = markContoursFor(baseL, 'nikkud', pc.mark).map(poly => poly.map(([x,y]) => [Math.round(x*mscale+anc.x), Math.round(y*mscale+anc.y)]));   // honor a per-letter / global custom shape for this mark
     const baseContours = baseL.contours.map(c => c.points);
     const nm = gname(pc.target);
     glyphs[nm] = { contours: baseContours.concat(markPoly), advance: effLetterAdvance(baseL) };
@@ -6638,6 +6903,32 @@ function buildFontSpec() {
     cmap[parseInt(pc.target,16)] = nm;
     built.push(pc);
   });
+
+  // per-letter custom mark shapes (Nikkud only): "Apply to current letter" → bake a base+mark glyph,
+  // substituted via ccmp (no cmap — reached only by typing the sequence). Skip (base,mark) pairs already
+  // baked as a precomposed form (e.g. שׁ, וֹ) — that bake already honors the override, so no duplicate rule.
+  const builtPerLetter = [];
+  if (nikOn) {
+    const builtPairs = new Set(built.map(pc => pc.base + '|' + pc.mark));
+    (project.letters || []).forEach(L => {
+      if (!L.markShapes || !L.contours || !L.contours.length) return;
+      Object.keys(L.markShapes).forEach(cp => {
+        const cls = MARK_CLASS[cp]; if (!cls) return;                  // nikkud marks only (MARK_CLASS is the nikkud set)
+        if (builtPairs.has(L.codepoint + '|' + cp)) return;            // already covered by a precomposed form's bake
+        const anc = L.anchors && L.anchors[cls]; if (!anc) return;
+        const mc = markContoursFor(L, 'nikkud', cp); if (!mc || !mc.length) return;
+        const mscale = nikScale(cp);
+        const markPoly = mc.map(poly => poly.map(([x,y]) => [Math.round(x*mscale+anc.x), Math.round(y*mscale+anc.y)]));
+        const baseContours = L.contours.map(c => c.points);
+        const nm = 'pl_' + gname(L.codepoint) + '_' + gname(cp);
+        glyphs[nm] = { contours: baseContours.concat(markPoly), advance: effLetterAdvance(L) };
+        if (L.curves && L.curves.length === baseContours.length)
+          glyphs[nm].curves = L.curves.concat(markPoly.map(() => null));
+        glyphOrder.push(nm); baseGlyphNames.push(nm);
+        builtPerLetter.push({ base: L.codepoint, mark: cp, glyphName: nm, cls });
+      });
+    });
+  }
 
   // wide letterforms & digraphs (Specialized / Yiddish tabs): widen / lay out the traced base(s), no mark.
   // cmap-only (no ccmp) — these are inserted by their own code point, not auto-substituted from a sequence.
@@ -6680,7 +6971,7 @@ function buildFontSpec() {
   });
 
   // FEA
-  const fea = buildFEA(baseGlyphNames, built, nikOn, tropOn);
+  const fea = buildFEA(baseGlyphNames, built, nikOn, tropOn, builtPerLetter);
 
   // name table
   const fam = fnt.familyName || 'My Hebrew Hand';
@@ -6713,7 +7004,8 @@ function buildFontSpec() {
 }
 /* Generate the Adobe .fea — `languagesystem hebr dflt;`, markClass, ccmp, mark-to-base, mkmk, GDEF.
    Nikkud blocks emit only when nikOn; trop blocks only when tropOn. A letters-only font skips both. */
-function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn) {
+function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLetter) {
+  builtPerLetter = builtPerLetter || [];
   let f = '';
   f += 'languagesystem DFLT dflt;\n';
   f += 'languagesystem hebr dflt;\n\n';
@@ -6755,9 +7047,10 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn) {
     }));
     f += '\n';
   }
-  if (builtPrecomposed.length) {
+  if (builtPrecomposed.length || builtPerLetter.length) {
     f += 'feature ccmp {\n';
     builtPrecomposed.forEach(pc => { f += `  sub ${gname(pc.base)} ${gname(pc.mark)} by ${gname(pc.target)};\n`; });
+    builtPerLetter.forEach(pc => { f += `  sub ${gname(pc.base)} ${gname(pc.mark)} by ${pc.glyphName};\n`; });   // per-letter custom shapes
     f += '} ccmp;\n\n';
   }
   if (shevaNaOn) {   // "Sheva Na" stylistic set — turn any sheva into the bold sheva to mark it mobile
@@ -6790,6 +7083,8 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn) {
   // the target needs the base letter's anchors too, or the vowel falls back to x=0 and hugs the left
   // edge. Skip the class the baked-in mark already occupies so a second mark doesn't double-stack on it.
   builtPrecomposed.forEach(pc => emitBaseAnchors(gname(pc.target), project.letters.find(x => x.codepoint === pc.base), MARK_CLASS[pc.mark]));
+  // per-letter baked glyphs are new bases too — a vowel/trop typed after one must still attach (skip the mark's own class)
+  builtPerLetter.forEach(pc => emitBaseAnchors(pc.glyphName, project.letters.find(x => x.codepoint === pc.base), pc.cls));
   if (markLines) f += 'feature mark {\n' + markLines + '} mark;\n\n';
   // ── mark-to-mark — stack trop above/below a nikkud vowel (only when both categories are on) ──
   if (nikOn && tropMarks.length) {
@@ -8198,6 +8493,7 @@ function migrateProject(data) {
     if (ex.invert == null) ex.invert = false;
     if (ex.outlineOnly == null) ex.outlineOnly = false;   // backfilled OFF → old saves render identically (no re-trace)
     if (ex.lineWeight == null) ex.lineWeight = 70;
+    if (ex.markShapes == null) ex.markShapes = {};   // per-letter custom mark shapes ("Apply to current letter"); empty = use global/default
     if (ex.lsb === undefined) ex.lsb = null;   // per-letter left side bearing (Letter Metrics)
     if (ex.rsb === undefined) ex.rsb = null;   // per-letter right margin (independent of Width)
     return ex;
@@ -8381,6 +8677,20 @@ function init() {
   sv.addEventListener('pointermove', onStagePointerMove);
   sv.addEventListener('pointerup', onStagePointerUp);
   sv.addEventListener('pointercancel', onStagePointerUp);
+  // "Edit shape" modal stage — its own persistent drag move/up (mirrors the inline editor, on #meStage)
+  const meSv = document.getElementById('meStage');
+  if (meSv) {
+    meSv.addEventListener('pointermove', e => {
+      if (!meDrag || !meActive) return;
+      const p = meItem.pieces && meItem.pieces[editorSel]; if (!p) return;
+      const [sx,sy] = clientToSvg(meSv, e);
+      applyPieceDrag(p, meDrag.p0, meDrag.mode, sx, sy, meDrag.start[0], meDrag.start[1]);
+      meRenderStage();
+    });
+    const meUp = () => { if (meDrag) { meDrag = null; meRender(); } };
+    meSv.addEventListener('pointerup', meUp);
+    meSv.addEventListener('pointercancel', meUp);
+  }
   buildTemplateFontSelect();   // populate the grouped font menu before the project sets its value
   newProject();
   // restore input-mode pref
