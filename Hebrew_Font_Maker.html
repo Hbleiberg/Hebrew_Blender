@@ -853,6 +853,7 @@
     <div class="hint" id="meScopeNote" style="margin-top:8px;"></div>
     <div class="mbtns" style="justify-content:space-between;">
       <button class="tbtn ghost" onclick="closeMarkEdit()">‹ Back</button>
+      <button class="tbtn ghost" onclick="meConfirmReset()" title="Discard your edits and restore this mark's default shape">↺ Reset</button>
       <span style="display:flex;gap:10px;flex-wrap:wrap;">
         <button class="tbtn" id="meApplyCur" onclick="meConfirmApply('current')">Apply to current letter</button>
         <button class="tbtn" id="meApplyAll" onclick="meConfirmApply('all')">Apply to all letters</button>
@@ -2102,7 +2103,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v1.4</strong> — A new <strong>Edit shape</strong> editor lets you redesign any nikkud, dagesh, or trop mark from simple <strong>dots and bars</strong> — round or <strong>square</strong> dots, square or rounded bars — then apply your shape to the <strong>current letter</strong> or to <strong>all letters</strong>. Position each dot or bar by <strong>dragging</strong> it or by typing exact <strong>X / Y coordinates</strong> — and set a dot's <strong>radius</strong> or a bar's <strong>width &amp; height</strong> — for pixel-perfect placement, and the on-stage <strong>selection box now hugs the mark's actual shape</strong> so a small or square mark is never hidden under the handle. <span style="color:var(--muted);">(June 2026)</span></li>
+      <li><strong>v1.4</strong> — A new <strong>Edit shape</strong> editor lets you redesign any nikkud, dagesh, or trop mark from simple <strong>dots and bars</strong> — round or <strong>square</strong> dots, square or rounded bars — then apply your shape to the <strong>current letter</strong> or to <strong>all letters</strong>. Position each dot or bar by <strong>dragging</strong> it, <strong>nudging with the arrow keys</strong>, or typing exact <strong>X / Y coordinates</strong> — and set a dot's <strong>radius</strong> or a bar's <strong>width &amp; height</strong> — for pixel-perfect placement; <strong>Reset</strong> restores a mark's default shape. The on-stage <strong>selection box hugs the mark's actual shape</strong> so a small or square mark is never hidden under the handle. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.3</strong> — Placing nikkud &amp; trop now works like the rest of the tool: your moves apply <strong>live</strong> and you can leave a letter freely — no save dialog — with <strong>undo</strong> as the safety net. The grid now tells confirmed placements apart from ones <strong>carried over</strong> from the previous letter: a solid green ✓ means you reviewed it, a hollow amber ✓ means "carried over — review &amp; confirm", and amber <strong>!</strong> means unconfirmed. "Save Placement" is now an optional <strong>✓ Confirm placement</strong> review marker. The step tabs show a <strong>per-letter checklist</strong> (✓ done / ✗ to-do / – not needed) for the letter you're on. The <strong>toolbar</strong> is now grouped — Project · History · Review · Export — with Export the clear primary action and <strong>Help</strong> moved up to the top corner. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.2</strong> — Size the <strong>dagesh</strong> dot and the <strong>holam on the vav (וֹ)</strong> each on their own, separate from the vowels — the standalone holam now matches the hiriq — and <strong>fine-tune any single vowel's height</strong> to line it up with the rest. Prepositive &amp; postpositive <strong>trop</strong> (telisha gedola, yetiv, pashta, zarqa, zinor, telisha qetana) now sit toward the leading or trailing <strong>edge</strong> of their letter, the way the tradition places them. Your work is <strong>auto-saved in this browser</strong> — reopen and <strong>continue right where you left off</strong>, with a warning before you close unsaved changes. A new <strong>quality check</strong> flags outlines that cross or overlap themselves. <strong>Accessibility</strong>: full keyboard navigation, screen-reader labels, status badges that don't rely on color alone, reduced-motion support, and dark mode that follows your device. Zoom now centers on the middle of the workspace. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.1</strong> — Import an existing TTF's letter outlines, its own nikkud &amp; trop mark shapes, and its real anchor positions — so you can fix or build on existing fonts. Exported fonts now embed the license name and a Made-with-IvritSuite attribution in their metadata. Bigger editing workspace on wide monitors. Removed the CC&nbsp;BY&nbsp;4.0 license option. <span style="color:var(--muted);">(June 2026)</span></li>
@@ -5645,6 +5646,22 @@ function meConfirmApply(scope) {
     { label: scope === 'all' ? 'Apply to all letters' : 'Apply to ' + lname, onClick: () => meApply(scope) }
   ]);
 }
+function meConfirmReset() {
+  if (!meActive || !meItem) return;
+  askModal('Reset shape',
+    'Are you sure? This discards your dots &amp; bars and restores the <b>default shape</b> for <b>' + escapeHtml(meItem.name) + '</b>. Nothing is saved to your font until you Apply.',
+    [
+      { label: 'Cancel', cls: 'ghost' },
+      { label: 'Reset to default', onClick: () => meResetShape() }
+    ]);
+}
+function meResetShape() {
+  if (!meActive || !meItem) return;
+  meItem.designMode = 'editor';
+  meItem.pieces = defaultPieces(meKind, meCp);
+  editorSel = 0;
+  meRender();
+}
 function meApply(scope) {
   const kind = meKind, cp = meCp, isEd = meItem.designMode === 'editor';
   const payload = {
@@ -8790,6 +8807,24 @@ function init() {
     meSv.addEventListener('pointerup', meUp);
     meSv.addEventListener('pointercancel', meUp);
   }
+  // Arrow keys nudge the selected piece in the "Edit shape" editor (Shift = ×10). Ignored while a
+  // number field is focused, so the X/Y/R/W/H inputs keep their native step behaviour. Up = +Y to match
+  // the on-screen direction and the X/Y fields; bars translate, dots move their centre — like a drag.
+  document.addEventListener('keydown', e => {
+    if (!meActive || !meItem || meItem.designMode !== 'editor') return;
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
+    let dx = 0, dy = 0;
+    if (e.key === 'ArrowLeft') dx = -1; else if (e.key === 'ArrowRight') dx = 1;
+    else if (e.key === 'ArrowUp') dy = 1; else if (e.key === 'ArrowDown') dy = -1;
+    else return;
+    const p = meItem.pieces && meItem.pieces[editorSel]; if (!p) return;
+    const s = e.shiftKey ? 10 : 1; dx *= s; dy *= s;
+    if (p.type === 'dot') { p.cx += dx; p.cy += dy; }
+    else { p.x0 += dx; p.x1 += dx; p.y0 += dy; p.y1 += dy; }
+    e.preventDefault();
+    meRenderStage(); meRenderList();
+  });
   buildTemplateFontSelect();   // populate the grouped font menu before the project sets its value
   newProject();
   // restore input-mode pref
