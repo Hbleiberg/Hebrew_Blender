@@ -840,6 +840,8 @@
         <button class="ctl-btn" onclick="meAddPiece('dot')">+ Add dot</button>
         <button class="ctl-btn" onclick="meAddPiece('bar')">+ Add bar</button>
         <button class="ctl-btn" onclick="meDeletePiece()">Delete selected</button>
+        <button class="ctl-btn" id="meUndoBtn" onclick="meDoUndo()" title="Undo (Ctrl/Cmd+Z)" disabled>↶ Undo</button>
+        <button class="ctl-btn" id="meRedoBtn" onclick="meDoRedo()" title="Redo (Ctrl/Cmd+Shift+Z)" disabled>↷ Redo</button>
       </div>
       <svg id="meStage" viewBox="0 150 600 410" style="width:100%;height:280px;background:var(--cream);border:1px solid var(--border);border-radius:8px;touch-action:none;"></svg>
       <div id="mePieceList" class="me-piece-list"></div>
@@ -2103,7 +2105,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v1.4</strong> — A new <strong>Edit shape</strong> editor lets you redesign any nikkud, dagesh, or trop mark from simple <strong>dots and bars</strong> — round or <strong>square</strong> dots, square or rounded bars — then apply your shape to the <strong>current letter</strong> or to <strong>all letters</strong>. Position each dot or bar by <strong>dragging</strong> it, <strong>nudging with the arrow keys</strong>, or typing exact <strong>X / Y coordinates</strong> — and set a dot's <strong>radius</strong> or a bar's <strong>width &amp; height</strong> — for pixel-perfect placement; <strong>Reset</strong> restores a mark's default shape. The on-stage <strong>selection box hugs the mark's actual shape</strong> so a small or square mark is never hidden under the handle. <span style="color:var(--muted);">(June 2026)</span></li>
+      <li><strong>v1.4</strong> — A new <strong>Edit shape</strong> editor lets you redesign any nikkud, dagesh, or trop mark from simple <strong>dots and bars</strong> — round or <strong>square</strong> dots, square or rounded bars — then apply your shape to the <strong>current letter</strong> or to <strong>all letters</strong>. Position each dot or bar by <strong>dragging</strong> it, <strong>nudging with the arrow keys</strong>, or typing exact <strong>X / Y coordinates</strong> — and set a dot's <strong>radius</strong> or a bar's <strong>width &amp; height</strong> — for pixel-perfect placement; <strong>Reset</strong> restores a mark's default shape, and <strong>undo / redo</strong> (Ctrl/Cmd+Z) covers every change in the editor. The on-stage <strong>selection box hugs the mark's actual shape</strong> so a small or square mark is never hidden under the handle. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.3</strong> — Placing nikkud &amp; trop now works like the rest of the tool: your moves apply <strong>live</strong> and you can leave a letter freely — no save dialog — with <strong>undo</strong> as the safety net. The grid now tells confirmed placements apart from ones <strong>carried over</strong> from the previous letter: a solid green ✓ means you reviewed it, a hollow amber ✓ means "carried over — review &amp; confirm", and amber <strong>!</strong> means unconfirmed. "Save Placement" is now an optional <strong>✓ Confirm placement</strong> review marker. The step tabs show a <strong>per-letter checklist</strong> (✓ done / ✗ to-do / – not needed) for the letter you're on. The <strong>toolbar</strong> is now grouped — Project · History · Review · Export — with Export the clear primary action and <strong>Help</strong> moved up to the top corner. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.2</strong> — Size the <strong>dagesh</strong> dot and the <strong>holam on the vav (וֹ)</strong> each on their own, separate from the vowels — the standalone holam now matches the hiriq — and <strong>fine-tune any single vowel's height</strong> to line it up with the rest. Prepositive &amp; postpositive <strong>trop</strong> (telisha gedola, yetiv, pashta, zarqa, zinor, telisha qetana) now sit toward the leading or trailing <strong>edge</strong> of their letter, the way the tradition places them. Your work is <strong>auto-saved in this browser</strong> — reopen and <strong>continue right where you left off</strong>, with a warning before you close unsaved changes. A new <strong>quality check</strong> flags outlines that cross or overlap themselves. <strong>Accessibility</strong>: full keyboard navigation, screen-reader labels, status badges that don't rely on color alone, reduced-motion support, and dark mode that follows your device. Zoom now centers on the middle of the workspace. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.1</strong> — Import an existing TTF's letter outlines, its own nikkud &amp; trop mark shapes, and its real anchor positions — so you can fix or build on existing fonts. Exported fonts now embed the license name and a Made-with-IvritSuite attribution in their metadata. Bigger editing workspace on wide monitors. Removed the CC&nbsp;BY&nbsp;4.0 license option. <span style="color:var(--muted);">(June 2026)</span></li>
@@ -5481,10 +5483,35 @@ function openMarkEdit(kind, cp) {
   const lname = L ? L.name : 'this letter';
   document.getElementById('meApplyCur').textContent = 'Apply to current letter (' + lname + ')';
   document.getElementById('meScopeNote').innerHTML = '<b>Apply to current letter</b> changes this mark only for <b>' + escapeHtml(lname) + '</b>; <b>Apply to all letters</b> changes it everywhere. Neither affects positioning. (A per-letter shape bakes into the font for that letter+mark pair; when another mark such as a dagesh sits between them, that combination falls back to the all-letters shape.)';
+  meUndoReset();
   meRender();
   aOpenModal('markEditOverlay', closeMarkEdit);
 }
-function closeMarkEdit() { meActive = false; meItem = null; meDrag = null; aCloseModal('markEditOverlay'); }
+function closeMarkEdit() { meActive = false; meItem = null; meDrag = null; meUndoReset(); aCloseModal('markEditOverlay'); }
+/* ── "Edit shape" working-copy undo/redo — separate from the project undo stack, because the modal edits a
+   throwaway meItem and nothing reaches the font until Apply. Snapshots {pieces, designMode} and coalesces a
+   drag, a slider sweep, or a run of arrow-nudges into ONE step (begin on the first change, commit at the end).
+   No markDirty(): the project isn't touched until Apply. ── */
+let meUndo = [], meRedo = [], _mePending = null, _meNudgeTimer = 0;
+function meState() { return { pieces: JSON.parse(JSON.stringify(meItem.pieces || [])), designMode: meItem.designMode }; }
+function meUndoReset() { meUndo = []; meRedo = []; _mePending = null; clearTimeout(_meNudgeTimer); meUpdateUndoBtns(); }
+function meBeginEdit() { if (meActive && meItem && !_mePending) _mePending = meState(); }   // capture the before-state once
+function meCommitEdit() {                                                                    // push it if something changed
+  clearTimeout(_meNudgeTimer);
+  if (!_mePending) return;
+  const before = _mePending; _mePending = null;
+  if (JSON.stringify(before) !== JSON.stringify(meState())) { meUndo.push(before); meRedo = []; meUpdateUndoBtns(); }   // drop no-ops, like udPush
+}
+function meNudgeTick() { meBeginEdit(); clearTimeout(_meNudgeTimer); _meNudgeTimer = setTimeout(meCommitEdit, 500); }   // debounced burst
+function meApplyState(s) {
+  meItem.pieces = JSON.parse(JSON.stringify(s.pieces || []));
+  meItem.designMode = s.designMode;
+  editorSel = Math.max(0, Math.min(editorSel, (meItem.pieces.length || 1) - 1));
+  meRender(); meUpdateUndoBtns();
+}
+function meDoUndo() { meCommitEdit(); if (!meUndo.length) return; meRedo.push(meState()); meApplyState(meUndo.pop()); }
+function meDoRedo() { meCommitEdit(); if (!meRedo.length) return; meUndo.push(meState()); meApplyState(meRedo.pop()); }
+function meUpdateUndoBtns() { const u = document.getElementById('meUndoBtn'), r = document.getElementById('meRedoBtn'); if (u) u.disabled = !meUndo.length; if (r) r.disabled = !meRedo.length; }
 function meSyncMode() {
   const mode = meItem.designMode;
   document.getElementById('meModeEditor').classList.toggle('active', mode === 'editor');
@@ -5492,7 +5519,7 @@ function meSyncMode() {
   document.getElementById('meEditorSection').style.display = mode === 'editor' ? '' : 'none';
   document.getElementById('meUploadSection').style.display = mode === 'upload' ? '' : 'none';
 }
-function meSetMode(mode) { meItem.designMode = mode; meRender(); }
+function meSetMode(mode) { meBeginEdit(); meItem.designMode = mode; meRender(); meCommitEdit(); }
 function meRender() {
   if (!meActive) return;
   meSyncMode();
@@ -5507,11 +5534,13 @@ function meRenderStage() {
   sv.innerHTML = guide + editorStageSVG(meItem);
   sv.querySelectorAll('.epiece').forEach(el => el.addEventListener('pointerdown', e => {
     editorSel = +el.dataset.i;
+    meBeginEdit();
     meDrag = { mode:'move', start: clientToSvg(sv, e), p0: JSON.parse(JSON.stringify(meItem.pieces[editorSel])) };
     sv.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault(); meRender();
   }));
   const hnd = sv.querySelector('.ehandle');
   if (hnd) hnd.addEventListener('pointerdown', e => {
+    meBeginEdit();
     meDrag = { mode:'resize', start: clientToSvg(sv, e), p0: JSON.parse(JSON.stringify(meItem.pieces[editorSel])) };
     sv.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault();
   });
@@ -5542,7 +5571,7 @@ function meRenderControls() {
   if (p && p.type === 'dot') {
     const sh = p.shape === 'square' ? 'square' : 'circle';
     wrap.innerHTML = `<div class="ctl-row" style="margin-top:6px;">
-      <div class="inline" style="flex:1;min-width:0;">Dot size <input type="range" min="8" max="200" step="1" value="${p.r}" oninput="meSetDotSize(this.value)" style="flex:1;min-width:0;"> <span id="meDotSizeV" class="readout">${p.r}</span></div>
+      <div class="inline" style="flex:1;min-width:0;">Dot size <input type="range" min="8" max="200" step="1" value="${p.r}" oninput="meSetDotSize(this.value)" onchange="meCommitEdit()" style="flex:1;min-width:0;"> <span id="meDotSizeV" class="readout">${p.r}</span></div>
       <div class="mode-toggle" style="flex:1;min-width:0;">
         <button class="mode-btn ${sh==='circle'?'active':''}" onclick="meSetDotShape('circle')">● Circle</button>
         <button class="mode-btn ${sh==='square'?'active':''}" onclick="meSetDotShape('square')">■ Square</button>
@@ -5557,24 +5586,27 @@ function meRenderControls() {
 }
 function meSelectPiece(i) { editorSel = i; meRender(); }
 function meAddPiece(type) {
+  meBeginEdit();
   if (!meItem.pieces) meItem.pieces = [];
   const cy = meItem.cls==='above' ? 120 : meItem.cls==='center' ? 0 : -150;
   meItem.pieces.push(type==='dot' ? { type:'dot', cx:0, cy, r:45 } : { type:'bar', x0:-90, y0:cy-25, x1:90, y1:cy+25 });
-  editorSel = meItem.pieces.length - 1; meRender();
+  editorSel = meItem.pieces.length - 1; meRender(); meCommitEdit();
 }
 function meDeletePiece(i) {
   if (!meItem.pieces || !meItem.pieces.length) return;
   if (i == null) i = editorSel;
-  meItem.pieces.splice(i, 1); editorSel = Math.max(0, Math.min(editorSel, meItem.pieces.length - 1)); meRender();
+  meBeginEdit();
+  meItem.pieces.splice(i, 1); editorSel = Math.max(0, Math.min(editorSel, meItem.pieces.length - 1)); meRender(); meCommitEdit();
 }
 function meSetDotSize(v) {
   const p = meItem.pieces && meItem.pieces[editorSel]; if (!p || p.type !== 'dot') return;
+  meBeginEdit();
   p.r = Math.max(8, Math.min(200, Math.round(+v)));
   const s = document.getElementById('meDotSizeV'); if (s) s.textContent = p.r;
   meRenderStage(); meRenderList();
 }
-function meSetDotShape(shape) { const p = meItem.pieces && meItem.pieces[editorSel]; if (!p || p.type !== 'dot') return; p.shape = (shape==='square'?'square':'circle'); meRender(); }
-function meSetBarRounded(b) { const p = meItem.pieces && meItem.pieces[editorSel]; if (!p || p.type !== 'bar') return; p.rounded = !!b; meRender(); }
+function meSetDotShape(shape) { const p = meItem.pieces && meItem.pieces[editorSel]; if (!p || p.type !== 'dot') return; meBeginEdit(); p.shape = (shape==='square'?'square':'circle'); meRender(); meCommitEdit(); }
+function meSetBarRounded(b) { const p = meItem.pieces && meItem.pieces[editorSel]; if (!p || p.type !== 'bar') return; meBeginEdit(); p.rounded = !!b; meRender(); meCommitEdit(); }
 // A piece's position = the centre of its shape (a dot's centre, or a bar's midpoint), in font units —
 // the same space the drag uses, so typed coordinates and dragging agree.
 function meCenterOf(p) {
@@ -5590,14 +5622,16 @@ function meCenterOf(p) {
 function meSetPieceX(i, v) {
   const p = meItem && meItem.pieces && meItem.pieces[i]; if (!p) return;
   const n = parseInt(v, 10); if (isNaN(n)) { meRenderList(); return; }
+  meBeginEdit();
   if (p.type === 'dot') p.cx = n; else { const d = n - Math.round((p.x0 + p.x1) / 2); p.x0 += d; p.x1 += d; }
-  meRenderStage();
+  meRenderStage(); meCommitEdit();
 }
 function meSetPieceY(i, v) {
   const p = meItem && meItem.pieces && meItem.pieces[i]; if (!p) return;
   const n = parseInt(v, 10); if (isNaN(n)) { meRenderList(); return; }
+  meBeginEdit();
   if (p.type === 'dot') p.cy = n; else { const d = n - Math.round((p.y0 + p.y1) / 2); p.y0 += d; p.y1 += d; }
-  meRenderStage();
+  meRenderStage(); meCommitEdit();
 }
 function meSizeOf(p) {
   if (!p) return {};
@@ -5612,22 +5646,25 @@ function meSizeOf(p) {
 function meSetPieceR(i, v) {
   const p = meItem && meItem.pieces && meItem.pieces[i]; if (!p || p.type !== 'dot') return;
   const n = parseInt(v, 10); if (isNaN(n)) { meRenderList(); return; }
+  meBeginEdit();
   p.r = Math.max(8, Math.min(200, n));
-  meRenderStage(); meRenderControls();
+  meRenderStage(); meRenderControls(); meCommitEdit();
 }
 function meSetPieceW(i, v) {
   const p = meItem && meItem.pieces && meItem.pieces[i]; if (!p || p.type !== 'bar') return;
   const n = parseInt(v, 10); if (isNaN(n)) { meRenderList(); return; }
+  meBeginEdit();
   const w = Math.max(2, n), cx = (p.x0 + p.x1) / 2;
   p.x0 = Math.round(cx - w / 2); p.x1 = p.x0 + w;
-  meRenderStage();
+  meRenderStage(); meCommitEdit();
 }
 function meSetPieceH(i, v) {
   const p = meItem && meItem.pieces && meItem.pieces[i]; if (!p || p.type !== 'bar') return;
   const n = parseInt(v, 10); if (isNaN(n)) { meRenderList(); return; }
+  meBeginEdit();
   const h = Math.max(2, n), cy = (p.y0 + p.y1) / 2;
   p.y0 = Math.round(cy - h / 2); p.y1 = p.y0 + h;
-  meRenderStage();
+  meRenderStage(); meCommitEdit();
 }
 function meOpenUploadEditor() {                 // hand off to the existing per-symbol/combined upload editor (global shape)
   const kind = meKind, cp = meCp;
@@ -5657,10 +5694,11 @@ function meConfirmReset() {
 }
 function meResetShape() {
   if (!meActive || !meItem) return;
+  meBeginEdit();
   meItem.designMode = 'editor';
   meItem.pieces = defaultPieces(meKind, meCp);
   editorSel = 0;
-  meRender();
+  meRender(); meCommitEdit();
 }
 function meApply(scope) {
   const kind = meKind, cp = meCp, isEd = meItem.designMode === 'editor';
@@ -6437,6 +6475,12 @@ document.addEventListener('keydown', e => {
   const k = e.key.toLowerCase();
   if (k !== 'z' && k !== 'y') return;
   if (udShortcutBlocked()) return;
+  if (meActive) {                                                                // the "Edit shape" modal has its own working-copy undo
+    if (meDrag) return;                                                          // not mid-drag
+    e.preventDefault();
+    if (k === 'y' || e.shiftKey) meDoRedo(); else meDoUndo();
+    return;
+  }
   if (tDrag || eDrag || metricDrag || nodeDrag || _burst || _udNudge) return;   // don't undo mid-interaction
   e.preventDefault();
   if (k === 'y' || e.shiftKey) redo(); else undo();
@@ -6445,6 +6489,23 @@ document.addEventListener('keydown', e => {
    (stage px). Shift = fine. A run of taps groups into one undo entry (debounced). */
 document.addEventListener('keydown', e => {
   if (udShortcutBlocked()) return;                       // typing in a field / modal open / no project
+  if (meActive) return;                                  // the "Edit shape" modal owns arrow keys while open
+  // Simple editor (Design tab): arrow keys nudge the selected dot/bar (Shift = ×10), matching the modal.
+  // Up = +Y (font units are y-up); a dot moves its centre, a bar translates — like a drag. Coalesced undo.
+  if (curKind !== 'letter') {
+    const it = curItem();
+    if (it && it.designMode === 'editor' && project.font[curKind].uploadMode !== 'combined' && !isCropSelect(it)) {
+      const ps = e.shiftKey ? 10 : 1; let pdx=0, pdy=0;
+      if (e.key==='ArrowLeft') pdx=-ps; else if (e.key==='ArrowRight') pdx=ps;
+      else if (e.key==='ArrowUp') pdy=ps; else if (e.key==='ArrowDown') pdy=-ps; else return;
+      const p = it.pieces && it.pieces[editorSel]; if (!p) return;
+      e.preventDefault();
+      udNudgeTick([itemScope()], 'nudge piece — ' + it.name);
+      if (p.type === 'dot') { p.cx += pdx; p.cy += pdy; }
+      else { p.x0 += pdx; p.x1 += pdx; p.y0 += pdy; p.y1 += pdy; }
+      renderStage(); return;
+    }
+  }
   if (workMode !== 'anchors' && workMode !== 'align') return;
   const step = e.shiftKey ? 1 : 5; let dx=0,dy=0;
   if (e.key==='ArrowLeft') dx=-step; else if (e.key==='ArrowRight') dx=step;
@@ -8803,7 +8864,7 @@ function init() {
       applyPieceDrag(p, meDrag.p0, meDrag.mode, sx, sy, meDrag.start[0], meDrag.start[1]);
       meRenderStage();
     });
-    const meUp = () => { if (meDrag) { meDrag = null; meRender(); } };
+    const meUp = () => { if (meDrag) { meDrag = null; meCommitEdit(); meRender(); } };
     meSv.addEventListener('pointerup', meUp);
     meSv.addEventListener('pointercancel', meUp);
   }
@@ -8820,6 +8881,7 @@ function init() {
     else return;
     const p = meItem.pieces && meItem.pieces[editorSel]; if (!p) return;
     const s = e.shiftKey ? 10 : 1; dx *= s; dy *= s;
+    meNudgeTick();
     if (p.type === 'dot') { p.cx += dx; p.cy += dy; }
     else { p.x0 += dx; p.x1 += dx; p.y0 += dy; p.y1 += dy; }
     e.preventDefault();
