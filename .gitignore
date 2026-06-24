@@ -3,3 +3,6 @@ package-lock.json
 package.json
 __pycache__/
 *.pyc
+
+# Claude Code personal settings (project-local, not shared)
+.claude/settings.local.json
