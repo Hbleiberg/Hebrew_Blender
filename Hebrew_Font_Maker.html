@@ -1330,7 +1330,7 @@ function tropHalign(cp) {   // project override → curated default → center
   const o = project.font && project.font.trop && project.font.trop.halign;
   return (o && o[cp]) || TROP_HALIGN_DEFAULT[cp] || 'center';
 }
-function tropColKey(cls, halign) {   // cls: 'above'|'below' → per-letter anchor key (legacy names are the centre column)
+function tropColKey(cls, halign) {   // cls: 'above'|'below' → per-letter anchor key (legacy names are the center column)
   const base = cls === 'above' ? 'tropAbove' : 'tropBelow';
   return halign === 'center' ? base : base + (halign === 'left' ? 'L' : 'R');
 }
@@ -1647,9 +1647,9 @@ function markAttachOrigin(m) {
   (m.contours||[]).forEach(c => c.points.forEach(([x,y]) => { minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y); }));
   if (minX>maxX) return { x:0, y:0 };
   const midX=(minX+maxX)/2;
-  if (m.cls==='below') return { x:midX, y:maxY };   // attach at top-centre
-  if (m.cls==='above') return { x:midX, y:minY };   // attach at bottom-centre
-  return { x:midX, y:(minY+maxY)/2 };                // centre
+  if (m.cls==='below') return { x:midX, y:maxY };   // attach at top-center
+  if (m.cls==='above') return { x:midX, y:minY };   // attach at bottom-center
+  return { x:midX, y:(minY+maxY)/2 };                // center
 }
 function markNudgeDy(cp) {   // per-mark vertical fine-tune (font units, + = up); applied wherever the mark is drawn so preview == QA == export
   return (project.font && project.font.markNudge && project.font.markNudge[cp]) || 0;
@@ -1750,7 +1750,7 @@ const fx = x => PADX + x * SC;
 const fy = y => BY - y * SC;
 const ifx = px => (px - PADX) / SC;       // stage px → font x
 const ify = py => (BY - py) / SC;         // stage px → font y
-// Mark editor coords: x=0 (mark centre) maps to the horizontal middle of the stage.
+// Mark editor coords: x=0 (mark center) maps to the horizontal middle of the stage.
 const EDX = 300;
 const ex = x => EDX + x * SC;
 const iex = px => (px - EDX) / SC;
@@ -2561,7 +2561,7 @@ function renderMarkPanel(cat) {
 }
 /* Mark preview drawn from our OWN glyph outlines (default or the user's custom design),
    not the system font — a dotted "letter" circle with the actual mark shape attached
-   above/below/centre per its class, mirroring how the placement screen previews it. */
+   above/below/center per its class, mirroring how the placement screen previews it. */
 function markTilePreviewSVG(cat, cp, forLetter) {
   const cls = (cat === 'customMarks' ? ((project.font.customMarks.custom[cp] || {}).cls || 'below')
             : cat === 'nikkud' ? MARK_CLASS[cp] : TROP_CLASS[cp]) || 'below';
@@ -3542,7 +3542,7 @@ function svgLoopsToContours(loops, opts) {
 }
 function svgSpanFor(cp, kind) {             // vertical target band for the fit, by glyph type
   const em = effMetrics();
-  if (kind !== 'letter') return { bottom: 0, top: Math.round(em.letterTop * 0.4) };   // marks: small; markAttachOrigin re-centres them
+  if (kind !== 'letter') return { bottom: 0, top: Math.round(em.letterTop * 0.4) };   // marks: small; markAttachOrigin re-centers them
   const meta = letterMeta(cp);
   const top = (meta && meta.asc) ? em.lamedAscender : em.letterTop;
   const bottom = (meta && meta.desc) ? -Math.round(em.letterTop * 0.30) : 0;           // descenders dip below the baseline
@@ -3615,7 +3615,7 @@ function autoSplitCombinedSvg() {
   status(`Auto-assigned ${built.length} letter(s) from named SVG elements.` + (built.length < 27 ? ' Box any others by hand.' : ''));
   return built.length;
 }
-/* Marquee fallback: select the parsed subpaths whose bbox centre is inside the dragged box → that glyph. */
+/* Marquee fallback: select the parsed subpaths whose bbox center is inside the dragged box → that glyph. */
 function finalizeCropSvg(l, parsed, im, rect, csh) {
   const ext = parsed.viewBox || { x: 0, y: 0, w: im.width, h: im.height };
   const sx = ext.w / im.width, sy = ext.h / im.height;
@@ -3697,7 +3697,7 @@ function markGuidesSVG() {
   let h = `<line x1="35" y1="${ay}" x2="498" y2="${ay}" stroke="${C.base}" stroke-width="1" stroke-dasharray="5 4"/>`;
   h += `<text x="502" y="${ay+3.5}" fill="${C.base}" font-size="10" font-family="monospace">baseline</text>`;
   const note = cls==='above' ? 'Above-vowel — draw it ABOVE the line (sits over the letter).'
-             : cls==='center' ? 'Centre mark — draw it ON the line (sits in the letter body).'
+             : cls==='center' ? 'Center mark — draw it ON the line (sits in the letter body).'
              : 'Under-vowel — draw it BELOW the line (sits under the letter).';
   h += `<text x="300" y="${cls==='above'?ay+22:ay-12}" text-anchor="middle" fill="#9aa0aa" font-size="11">${note}</text>`;
   return h;
@@ -3977,7 +3977,7 @@ let stageZoom = 1;
 function setZoom(z) { stageZoom = Math.max(1, Math.min(4, +z || 1)); applyZoom(); }
 function applyZoom() {
   const wrap = stage() && stage().closest('.stage-wrap');
-  // Focal-point zoom: remember what's at the centre of the view, then keep it centred after the
+  // Focal-point zoom: remember what's at the center of the view, then keep it centered after the
   // SVG grows/shrinks — otherwise the scroll box stays pinned at the top-left corner.
   let fx = 0.5, fy = 0.5;
   if (wrap && wrap.scrollWidth > 0 && wrap.scrollHeight > 0) {
@@ -5117,7 +5117,7 @@ function seedAnchors(l) {
     below:  { x: mid, y: belowY },
     above:  { x: mid, y: aboveY },
     center: { x: mid, y: Math.min(Math.max(center, 120), 380) },
-    tropAbove: { x: mid, y: tAboveY },                                  // centre column (legacy name)
+    tropAbove: { x: mid, y: tAboveY },                                  // center column (legacy name)
     tropBelow: { x: mid, y: tBelowY },
     tropAboveL: { x: mid - tOff, y: tAboveY }, tropAboveR: { x: mid + tOff, y: tAboveY },
     tropBelowL: { x: mid - tOff, y: tBelowY }, tropBelowR: { x: mid + tOff, y: tBelowY }
@@ -5165,7 +5165,7 @@ function activeVowelCp() {
 }
 /* The per-letter anchor key currently being edited. For trop the visible above/below selector picks the
    vertical class, while the active mark's halign (Left/Center/Right) picks the column — so every anchor
-   read/write (X-Y fields, drag, nudge, centre buttons, stage preview) targets the resolved L/C/R column. */
+   read/write (X-Y fields, drag, nudge, center buttons, stage preview) targets the resolved L/C/R column. */
 function activeAnchorKey() {
   if (activeAnchorClass === 'tropAbove' || activeAnchorClass === 'tropBelow')
     return tropColKey(activeAnchorClass === 'tropAbove' ? 'above' : 'below', tropHalign(activeTropCp));
@@ -5210,7 +5210,7 @@ function markSelectRect(cp, ax, ay, scaleOverride, cls, col, extra) {
 }
 function anchorHandlesSVG(l) {
   // Active class only: its vowel drawn in the class colour (clearly visible even over the
-  // dark glyph), plus a draggable RING centred ON the vowel.
+  // dark glyph), plus a draggable RING centered ON the vowel.
   const cls = activeAnchorClass, key = activeAnchorKey(); const a = l.anchors[key];
   const cp = activeVowelCp();
   const col = ANCHOR_COL[cls] || 'var(--below)';
@@ -5459,7 +5459,7 @@ function setTropHalign(h) {
   else project.font.trop.halign[activeTropCp] = h;
   markDirty(); renderStage(); renderControls();
 }
-/* Global default Left/Right spread — re-seeds every letter's side columns from its own centre column, so
+/* Global default Left/Right spread — re-seeds every letter's side columns from its own center column, so
    the default distance is consistent. Per-letter fine-tuning (drag / X-Y) is done after setting this. */
 function setTropSideOffset(v) {
   const off = Math.max(0, Math.min(600, Math.round(+v || 0)));
@@ -5674,7 +5674,7 @@ function meSetDotSize(v) {
 }
 function meSetDotShape(shape) { const p = meItem.pieces && meItem.pieces[editorSel]; if (!p || p.type !== 'dot') return; meBeginEdit(); p.shape = (shape==='square'?'square':'circle'); meRender(); meCommitEdit(); }
 function meSetBarRounded(b) { const p = meItem.pieces && meItem.pieces[editorSel]; if (!p || p.type !== 'bar') return; meBeginEdit(); p.rounded = !!b; meRender(); meCommitEdit(); }
-// A piece's position = the centre of its shape (a dot's centre, or a bar's midpoint), in font units —
+// A piece's position = the center of its shape (a dot's center, or a bar's midpoint), in font units —
 // the same space the drag uses, so typed coordinates and dragging agree.
 function meCenterOf(p) {
   if (!p) return { x: 0, y: 0 };
@@ -5683,7 +5683,7 @@ function meCenterOf(p) {
     : { x: Math.round((p.x0 + p.x1) / 2), y: Math.round((p.y0 + p.y1) / 2) };
 }
 // Editable X/Y in the piece list — type exact coordinates for precise placement (mirrors a drag-move:
-// a dot moves its centre; a bar translates both endpoints). Re-render only the stage so the number
+// a dot moves its center; a bar translates both endpoints). Re-render only the stage so the number
 // field keeps focus while typing; the list read-outs refresh on drag-end via meRender(). A blank/NaN
 // entry just restores the current value.
 function meSetPieceX(i, v) {
@@ -5707,7 +5707,7 @@ function meSizeOf(p) {
     : { w: Math.round(Math.abs(p.x1 - p.x0)), h: Math.round(Math.abs(p.y1 - p.y0)) };
 }
 // Editable size in the piece list: a dot's Radius, or a bar's Width / Height (resized about the piece's
-// centre, so it stays put). Same focus-preserving pattern as X/Y — re-render the stage, not the list. For
+// center, so it stays put). Same focus-preserving pattern as X/Y — re-render the stage, not the list. For
 // a dot we also refresh the controls panel so its size slider tracks the typed radius. Clamp parity: a
 // dot reuses the slider's 8–200, a bar gets a sane ≥2 floor. Blank/NaN just restores the current value.
 function meSetPieceR(i, v) {
@@ -6362,7 +6362,7 @@ function renderAnchorLeft(L, l) {
         <input type="range" id="tropSpread" min="0" max="500" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" style="flex:1;">
         <span id="tropSpreadV" class="readout">${tOff}</span>
       </div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">Default distance Left/Right marks shift from centre, on all letters (per-letter tweaks come after).</div>`;
+      <div class="hint" style="font-size:0.6rem;text-align:center;">Default distance Left/Right marks shift from center, on all letters (per-letter tweaks come after).</div>`;
   }
   const xy = `<hr class="ctl-divider">
     <div class="ws-side-title">${ANCHOR_LABEL[cls]} position</div>
@@ -6544,12 +6544,12 @@ function nudgeSkew(d) { const l=curLetter(); const c=imgCorners(l); if(!c)return
   udDo([itemScope()], 'skew image — ' + l.name, () => {
     const K = M.mul(M.translate(cen[0],cen[1]), M.mul(M.skewX(d), M.translate(-cen[0],-cen[1])));
     l.transform = M.mul(K, l.transform); l.contours=null; l.curves=null; l.anchors=null; renderStage(); }); }
-function snapFit() {   // "Center" button — fit to the glyph height, then centre left-right in the advance
+function snapFit() {   // "Center" button — fit to the glyph height, then center left-right in the advance
   const l = curLetter(); const im = imgCache[curImageUrl()]; if (!im) return;
   udDo([itemScope()], 'center image — ' + l.name, () => {
     const k = (LETTER_TOP*SC)/im.height;              // scale image height ≈ letter top (as in defaultFitTransform)
     const wFont = LETTER_TOP * im.width / im.height;  // scaled width, in font units
-    const cx = (effLetterAdvance(l) - wFont) / 2;     // centre that width within the glyph's advance
+    const cx = (effLetterAdvance(l) - wFont) / 2;     // center that width within the glyph's advance
     l.transform = [k,0,0,k, fx(cx), fy(LETTER_TOP)];
     l.contours=null; l.curves=null; l.anchors=null; renderStage(); });
 }
@@ -6592,7 +6592,7 @@ document.addEventListener('keydown', e => {
   if (udShortcutBlocked()) return;                       // typing in a field / modal open / no project
   if (meActive) return;                                  // the "Edit shape" modal owns arrow keys while open
   // Simple editor (Design tab): arrow keys nudge the selected dot/bar (Shift = ×10), matching the modal.
-  // Up = +Y (font units are y-up); a dot moves its centre, a bar translates — like a drag. Coalesced undo.
+  // Up = +Y (font units are y-up); a dot moves its center, a bar translates — like a drag. Coalesced undo.
   if (curKind !== 'letter') {
     const it = curItem();
     if (it && it.designMode === 'editor' && project.font[curKind].uploadMode !== 'combined' && !isCropSelect(it)) {
@@ -6696,7 +6696,7 @@ const MARK_CPS = Object.keys(MARK_CLASS);
 let qaTab = 'nikkud';
 let qaResult = null;
 let qaPairA = '05BC';   // "Two marks" tab: the fixed mark A compared against every other mark (default = dagesh)
-const QA_OVERLAP_TOL = 10;   // font units a mark vertex is inset toward its centre before counting as "inside" (kissing contacts are fine)
+const QA_OVERLAP_TOL = 10;   // font units a mark vertex is inset toward its center before counting as "inside" (kissing contacts are fine)
 const QA_SIDE_COLOR  = { below:'var(--below)', above:'var(--above)', center:'var(--center)', tropAbove:'#8b5cf6', tropBelow:'#0ea5e9' };
 
 function qaLetters() { return LETTERS.filter(L => L.cat !== 'punct'); }   // the 27 letters (finals included; punct/digits excluded)
@@ -6818,7 +6818,7 @@ function qaPlaceStackTrop(nikAnc, nik, tropCp) {
 function qaAnchors(L) {
   const a = L.anchors;
   const tOff = (project.font && project.font.tropSideOffset) || TROP_POS_SHIFT;
-  const withCols = o => {   // add the Left/Right trop columns (prefer the letter's own, else centre ± spread)
+  const withCols = o => {   // add the Left/Right trop columns (prefer the letter's own, else center ± spread)
     o.tropAboveL = (a && a.tropAboveL) || { x: o.tropAbove.x - tOff, y: o.tropAbove.y };
     o.tropAboveR = (a && a.tropAboveR) || { x: o.tropAbove.x + tOff, y: o.tropAbove.y };
     o.tropBelowL = (a && a.tropBelowL) || { x: o.tropBelow.x - tOff, y: o.tropBelow.y };
@@ -6887,7 +6887,7 @@ function qaReasons(L, meta, markPolys, side, positional) {
   const bb = polysBounds(L.contours.map(c => c.points));
   if (mb.maxX < bb.minX || mb.minX > bb.maxX || mb.maxY < bb.minY || mb.minY > bb.maxY) return reasons;   // bboxes disjoint → no collision
   // (a) mark ink sitting on the letter body — inset mark vertices in base ink, OR a base vertex inside the mark
-  // (a thin stem threaded through). Skip CENTRE marks: a dagesh is MEANT to sit inside the letter.
+  // (a thin stem threaded through). Skip CENTER marks: a dagesh is MEANT to sit inside the letter.
   if (side !== 'center' && !positional) {   // positional (Left/Right) trop is MEANT to sit at the letter's edge — don't flag the overhang
     for (const poly of markPolys) {
       const inset = qaInsetToward(poly, qaCentroid(poly), QA_OVERLAP_TOL);
@@ -6911,7 +6911,7 @@ function qaWorstTrop(side) {
   if (!project.font.trop.enabled) return null;
   const tms = tropScale(); let best = null, ext = side === 'above' ? -1e9 : 1e9;
   TROP_CPS.forEach(cp => {
-    if (TROP_CLASS[cp] !== side || tropHalign(cp) !== 'center') return;   // only centre trop stacks on a vowel
+    if (TROP_CLASS[cp] !== side || tropHalign(cp) !== 'center') return;   // only center trop stacks on a vowel
     const b = polysBounds(markGlyphContours('trop', cp).map(poly => poly.map(([x,y]) => [x*tms, y*tms])));
     if (!isFinite(b.maxY)) return;
     if (side === 'above' ? b.maxY > ext : b.minY < ext) { ext = side === 'above' ? b.maxY : b.minY; best = cp; }
@@ -6919,7 +6919,7 @@ function qaWorstTrop(side) {
   return best;
 }
 /* Columns for a tab: nikkud / trop = one per enabled mark; stacked = each stackable nikkud (above or
-   below) paired with the worst-case trop of the matching class (centre/dagesh never stacks). */
+   below) paired with the worst-case trop of the matching class (center/dagesh never stacks). */
 function qaColumns(tab) {
   if (tab === 'nikkud') return (project.font.nikkud.enabled ? MARK_CPS : []).map(cp => ({ kind:'nikkud', cp, side: MARK_CLASS[cp], name: markName(cp), head: '◌' + qaCh(cp) }));
   if (tab === 'trop')   return (project.font.trop.enabled   ? TROP_CPS : []).map(cp => ({ kind:'trop',   cp, side: TROP_CLASS[cp], name: markName(cp), head: '◌' + qaCh(cp) }));
@@ -6948,7 +6948,7 @@ function qaCellLayers(L, anc, col) {
            { polys: qaPlaceStackTrop(nikAnc, col.cp, col.trop), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] } ];
 }
 /* Reasons a cell is flagged. 'pair' cells test mark-vs-mark only (letter-ink is already covered by the
-   Nikkud tab, and a centred dagesh sitting inside the body must NOT be flagged here). Every other kind
+   Nikkud tab, and a centered dagesh sitting inside the body must NOT be flagged here). Every other kind
    keeps the letter-ink / descender checks AND now also flags any two of its layers overlapping. */
 function qaCellReasons(L, row, col, layers) {
   if (col.kind === 'pair') return qaLayerClash(layers);
@@ -9025,7 +9025,7 @@ function init() {
   }
   // Arrow keys nudge the selected piece in the "Edit shape" editor (Shift = ×10). Ignored while a
   // number field is focused, so the X/Y/R/W/H inputs keep their native step behaviour. Up = +Y to match
-  // the on-screen direction and the X/Y fields; bars translate, dots move their centre — like a drag.
+  // the on-screen direction and the X/Y fields; bars translate, dots move their center — like a drag.
   document.addEventListener('keydown', e => {
     if (!meActive || !meItem || meItem.designMode !== 'editor') return;
     const t = e.target;

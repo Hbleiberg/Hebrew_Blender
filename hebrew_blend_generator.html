@@ -7059,8 +7059,8 @@ async function exportPDF() {
     // If we passed the live scrollHeight to html2canvas the canvas would be
     // ~24px taller than the cloned content, leaving whitespace at the
     // bottom of the capture. That whitespace shifts the dashed cut line
-    // (positioned at top:50% of the bingo-page) above the geometric centre
-    // of the captured image, so when the image is centred on the PDF page
+    // (positioned at top:50% of the bingo-page) above the geometric center
+    // of the captured image, so when the image is centered on the PDF page
     // the cut line doesn't sit at the row gap midpoint.
     let bingoRefW = 0, bingoRefH = 0;
     if (isBingoPDF) {
@@ -7072,8 +7072,8 @@ async function exportPDF() {
       // the live one regardless of how onclone changes its padding. Canvas
       // width must therefore equal scrollWidth exactly — adding any buffer
       // (e.g. for the 4px clone padding) leaves dead space on the right of
-      // the captured image, which shifts the cards left of centre when the
-      // image is centred on the PDF page.
+      // the captured image, which shifts the cards left of center when the
+      // image is centered on the PDF page.
       bingoRefW = ref.scrollWidth;
       // Height is content-driven: live padding-top + bottom is 32px, the
       // clone overrides padding to 4px on every side (8px vertical total),
@@ -7185,7 +7185,7 @@ async function exportPDF() {
         // Expect: card1.left, card1.right, card2.left, card2.right.
         // The OUTER EDGE of card 1's right border is one pixel past the run
         // end; the OUTER EDGE of card 2's left border is the run start. The
-        // visual centre of the gap is the midpoint between those outer
+        // visual center of the gap is the midpoint between those outer
         // edges — NOT between the pixel-midpoints of the borders, which
         // would be half a pixel too far left.
         let vertCutCanvasX = null;
@@ -7221,7 +7221,7 @@ async function exportPDF() {
         pdf.setDrawColor(160, 160, 160);
         pdf.setLineWidth(0.25);
         pdf.setLineDashPattern([1.4, 1.4], 0);
-        // Fallback: if scanning failed for some reason, use page centre.
+        // Fallback: if scanning failed for some reason, use page center.
         const cx = vertCutCanvasX !== null ? xOffset + (vertCutCanvasX / W) * imgW : pageW / 2;
         pdf.line(cx, margin, cx, pageH - margin);
         if (isFourUp && hasTwoRows) {
