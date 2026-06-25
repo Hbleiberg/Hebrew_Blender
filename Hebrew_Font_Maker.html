@@ -802,7 +802,7 @@
       <div class="ws-center">
         <div class="zoom-bar">
           <span title="Zoom the view">🔍</span>
-          <input type="range" id="zoomRange" min="100" max="400" step="10" value="100" oninput="setZoom(this.value/100)">
+          <input type="range" id="zoomRange" min="1" max="400" step="1" value="100" oninput="setZoom(this.value/100)">
           <span id="zoomVal" class="zoom-val">100%</span>
           <button class="ctl-btn zoom-reset" onclick="setZoom(1)">Reset</button>
         </div>
@@ -3974,7 +3974,7 @@ function computeTemplateFit(l) {
 /* ── Stage zoom (scales the rendered SVG inside the scrollable wrapper; the viewBox
    and all hit-testing math are untouched, so editing still works at any zoom) ── */
 let stageZoom = 1;
-function setZoom(z) { stageZoom = Math.max(1, Math.min(4, +z || 1)); applyZoom(); }
+function setZoom(z) { stageZoom = Math.max(0.01, Math.min(4, +z || 1)); applyZoom(); }   // 1% … 400% (Reset → 100%)
 function applyZoom() {
   const wrap = stage() && stage().closest('.stage-wrap');
   // Focal-point zoom: remember what's at the center of the view, then keep it centered after the
