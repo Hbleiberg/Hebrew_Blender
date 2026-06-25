@@ -1315,8 +1315,25 @@ const TROP_CPS = TROP_DEFS.map(d => d[0]);
    at word boundaries / single letters, approximate mid-word (true word-position GPOS is not done).
    The shift is a constant in font units applied via the mark anchor, so the live preview matches the
    exported font exactly. */
-const TROP_POS_SHIFT = 250;
-function tropPosDX(cp) { const p = TROP_POS[cp]; return p === 'prepositive' ? TROP_POS_SHIFT : (p === 'postpositive' ? -TROP_POS_SHIFT : 0); }
+const TROP_POS_SHIFT = 250;   // default horizontal spread (font units) for the Left/Right trop columns
+/* Horizontal placement of a trop mark: 'left' | 'center' | 'right'. Every mark has a sensible default
+   (seeded from the old prepositive→right / postpositive→left hints, plus a few curated marks); the user
+   can override any mark via project.font.trop.halign. The chosen side selects which per-letter base-anchor
+   column the mark attaches to (tropColKey), so the live preview equals the exported font. */
+const TROP_HALIGN_DEFAULT = (() => {
+  const m = {};
+  TROP_CPS.forEach(cp => { const p = TROP_POS[cp]; m[cp] = p === 'prepositive' ? 'right' : (p === 'postpositive' ? 'left' : 'center'); });
+  Object.assign(m, { '0592':'left', '059D':'right', '05AD':'right' });   // Segol→left; Geresh Muqdam, Deḥi→right
+  return m;
+})();
+function tropHalign(cp) {   // project override → curated default → center
+  const o = project.font && project.font.trop && project.font.trop.halign;
+  return (o && o[cp]) || TROP_HALIGN_DEFAULT[cp] || 'center';
+}
+function tropColKey(cls, halign) {   // cls: 'above'|'below' → per-letter anchor key (legacy names are the centre column)
+  const base = cls === 'above' ? 'tropAbove' : 'tropBelow';
+  return halign === 'center' ? base : base + (halign === 'left' ? 'L' : 'R');
+}
 
 /* ── Punctuation & More: default outlines (font units; baseline 0, letter-top 600).
    Each factory returns { contours:[{winding,points}], advance }. Digits 0–9 are ABSENT →
@@ -1524,13 +1541,13 @@ function blankLetter(L) {
 }
 function newProject() {
   project = {
-    _ivritSuite: 1, format: 'hebrew-font-maker-project', schemaVersion: 2, tool: 'FontMaker',
+    _ivritSuite: 1, format: 'hebrew-font-maker-project', schemaVersion: 3, tool: 'FontMaker',
     savedAt: new Date().toISOString(),
     font: {
       familyName: 'My Hebrew Hand', reservedFontName: 'My Hebrew Hand', author: '', license: 'ofl',
-      version: '1.000', unitsPerEm: UPM, markScale: 1.0, tropScale: 1.0, dageshScale: 1.0, cholamScale: 1.0, holamScale: 1.0, markNudge: {},
+      version: '1.000', unitsPerEm: UPM, markScale: 1.0, tropScale: 1.0, dageshScale: 1.0, cholamScale: 1.0, holamScale: 1.0, markNudge: {}, tropSideOffset: TROP_POS_SHIFT,
       nikkud: { enabled: true,  mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, shevaNa: false },   // mode: 'default' | 'custom'; uploadMode: 'perSymbol' | 'combined'; shevaNa: bold sheva-na alternate
-      trop:   { enabled: false, mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },
+      trop:   { enabled: false, mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, halign: {} },
       customMarks: { enabled: true, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },   // user-defined nikkud marks added via the Custom glyphs tab
       metrics: { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP, descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB },
       spacing: { letterSpacing: 0, wordSpacing: 260, lineSpacing: 0, sample: 'שלום עולם' },
@@ -1897,7 +1914,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '1.4';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '1.5';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2105,6 +2122,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v1.5</strong> — Trop marks can now sit <strong>Left, Center, or Right</strong> of a letter, not just above or below — so each cantillation mark lands on the correct part of the glyph and look-alikes (e.g. Yetiv vs. Mahpakh, Geresh vs. Geresh Muqdam) read correctly. Every mark has a sensible <strong>default side</strong> (Segol, Zarqa, Pashta &amp; Telisha Qetana go left; Geresh Muqdam, Deḥi, Yetiv &amp; Telisha Gedola go right; the rest stay centered) that you can change per mark in <strong>Place Trop</strong>, with a <strong>Default spread</strong> slider for how far the side marks shift. Need a custom position on one letter? Just <strong>drag the mark</strong> (or type exact X / Y) to override that letter alone. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.4</strong> — A new <strong>Edit shape</strong> editor lets you redesign any nikkud, dagesh, or trop mark from simple <strong>dots and bars</strong> — round or <strong>square</strong> dots, square or rounded bars — then apply your shape to the <strong>current letter</strong> or to <strong>all letters</strong>. Position each dot or bar by <strong>dragging</strong> it, <strong>nudging with the arrow keys</strong>, or typing exact <strong>X / Y coordinates</strong> — and set a dot's <strong>radius</strong> or a bar's <strong>width &amp; height</strong> — for pixel-perfect placement; <strong>Reset</strong> restores a mark's default shape, and <strong>undo / redo</strong> (Ctrl/Cmd+Z) covers every change in the editor. The on-stage <strong>selection box hugs the mark's actual shape</strong> so a small or square mark is never hidden under the handle. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.3</strong> — Placing nikkud &amp; trop now works like the rest of the tool: your moves apply <strong>live</strong> and you can leave a letter freely — no save dialog — with <strong>undo</strong> as the safety net. The grid now tells confirmed placements apart from ones <strong>carried over</strong> from the previous letter: a solid green ✓ means you reviewed it, a hollow amber ✓ means "carried over — review &amp; confirm", and amber <strong>!</strong> means unconfirmed. "Save Placement" is now an optional <strong>✓ Confirm placement</strong> review marker. The step tabs show a <strong>per-letter checklist</strong> (✓ done / ✗ to-do / – not needed) for the letter you're on. The <strong>toolbar</strong> is now grouped — Project · History · Review · Export — with Export the clear primary action and <strong>Help</strong> moved up to the top corner. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.2</strong> — Size the <strong>dagesh</strong> dot and the <strong>holam on the vav (וֹ)</strong> each on their own, separate from the vowels — the standalone holam now matches the hiriq — and <strong>fine-tune any single vowel's height</strong> to line it up with the rest. Prepositive &amp; postpositive <strong>trop</strong> (telisha gedola, yetiv, pashta, zarqa, zinor, telisha qetana) now sit toward the leading or trailing <strong>edge</strong> of their letter, the way the tradition places them. Your work is <strong>auto-saved in this browser</strong> — reopen and <strong>continue right where you left off</strong>, with a warning before you close unsaved changes. A new <strong>quality check</strong> flags outlines that cross or overlap themselves. <strong>Accessibility</strong>: full keyboard navigation, screen-reader labels, status badges that don't rely on color alone, reduced-motion support, and dark mode that follows your device. Zoom now centers on the middle of the workspace. <span style="color:var(--muted);">(June 2026)</span></li>
@@ -2235,11 +2253,11 @@ function setGlyphOpacity(v){ project.view.glyphOpacity=Math.max(0,Math.min(1,(+v
 function setAnchorCoord(axis,v){ if(!project||workMode!=='anchors') return;
   const l=curLetter(); if(!l.anchors) return; const n=Math.round(+v); if(!Number.isFinite(n)) return;
   udBurstBegin([itemScope()], 'anchor ' + axis + ' — ' + l.name);
-  l.anchors[activeAnchorClass][axis]=n; noteAnchorMoved(l); renderStage(); }
+  l.anchors[activeAnchorKey()][axis]=n; noteAnchorMoved(l); renderStage(); }
 /* Quick-center the active anchor: ↔ halfway between the L/R margins, ↕ halfway between the top & bottom lines. */
 function centerAnchorH() {
   if (!project || workMode !== 'anchors') return;
-  const l = curLetter(); const a = l.anchors && l.anchors[activeAnchorClass]; if (!a) return;
+  const l = curLetter(); const a = l.anchors && l.anchors[activeAnchorKey()]; if (!a) return;
   udDo([itemScope()], 'center anchor — ' + l.name, () => {
     a.x = Math.round((letterLSB(l) + (letterAdvance(l) - letterRSB(l))) / 2);   // midpoint of the margin lines
     noteAnchorMoved(l); renderStage(); renderControls();
@@ -2247,7 +2265,7 @@ function centerAnchorH() {
 }
 function centerAnchorV() {
   if (!project || workMode !== 'anchors') return;
-  const l = curLetter(); const a = l.anchors && l.anchors[activeAnchorClass]; if (!a) return;
+  const l = curLetter(); const a = l.anchors && l.anchors[activeAnchorKey()]; if (!a) return;
   udDo([itemScope()], 'center anchor — ' + l.name, () => {
     const em = effMetrics();
     a.y = Math.round((em.letterTop + em.baseline) / 2);                          // midpoint of the top (cap) and base (baseline) lines
@@ -2507,7 +2525,7 @@ function renderMarkPanel(cat) {
         </div></div>`;
     }
     let controls = `<div class="mark-opts">${opts}</div>`;
-    if (cat === 'trop') controls += `<div class="hint" style="margin-top:9px;color:var(--muted);">Trop attaches to the typed letter (and stacks above/below a vowel). Prepositive (telisha gedola, yetiv) &amp; postpositive (pashta, zarqa, zinor, telisha qetana) accents are nudged to the leading / trailing edge of their own letter — right at a word's edge, approximate mid-word (true word-position placement isn't done).</div>`;
+    if (cat === 'trop') controls += `<div class="hint" style="margin-top:9px;color:var(--muted);">Trop attaches to the typed letter (and stacks above/below a vowel). In <b>Place&nbsp;Trop</b> each mark can sit <b>Left, Center, or Right</b> of the letter — sensible defaults are set (Segol, Zarqa, Pashta &amp; Telisha&nbsp;Qetana go left; Geresh&nbsp;Muqdam, Deḥi, Yetiv &amp; Telisha&nbsp;Gedola go right) and you can change any of them. Left / Right marks land at the leading / trailing edge of their own letter — exact at a word's edge, approximate mid-word (true word-position placement isn't done).</div>`;
     if (cat === 'nikkud') controls += `<label class="chk" style="margin-top:10px;"><input type="checkbox" ${f.shevaNa?'checked':''} onchange="setShevaNa(this.checked)"> Add a bold <b>Sheva&nbsp;Na</b> (so na &amp; nach stand apart)</label><div class="hint">Exports a heavier sheva alongside the normal one. To make a sheva bold in Word, select the letter and turn on <b>Stylistic&nbsp;Set&nbsp;1</b>; or insert the character <b>U+E0B0</b> in its place. Readers can then see which sheva is mobile (na) vs. silent (nach).</div>`;
     let grid = '';
     if (f.mode === 'custom') {
@@ -5092,20 +5110,29 @@ function seedAnchors(l) {
   const center = Math.round((bb.minY + bb.maxY)/2 * 0.6 + 150); // body-ish center
   const aboveY = Math.max(ANCHOR_Y.above, Math.round(bb.maxY)+40);
   const belowY = defaultBelowY(bb);
+  const tAboveY = aboveY + TROP_GAP_ABOVE, tBelowY = belowY - TROP_GAP_BELOW;
+  const tOff = (project.font && project.font.tropSideOffset) || TROP_POS_SHIFT;   // Left/Right spread
   l.anchors = {
     below:  { x: mid, y: belowY },
     above:  { x: mid, y: aboveY },
     center: { x: mid, y: Math.min(Math.max(center, 120), 380) },
-    tropAbove: { x: mid, y: aboveY + TROP_GAP_ABOVE },
-    tropBelow: { x: mid, y: belowY - TROP_GAP_BELOW }
+    tropAbove: { x: mid, y: tAboveY },                                  // centre column (legacy name)
+    tropBelow: { x: mid, y: tBelowY },
+    tropAboveL: { x: mid - tOff, y: tAboveY }, tropAboveR: { x: mid + tOff, y: tAboveY },
+    tropBelowL: { x: mid - tOff, y: tBelowY }, tropBelowR: { x: mid + tOff, y: tBelowY }
   };
 }
-function ensureTropAnchors(l) {   // back-fill trop anchors on letters seeded before trop existed
+function ensureTropAnchors(l) {   // back-fill trop anchors on letters seeded before trop / the L/R columns existed
   if (!l.anchors) return;
   const mid = l.anchors.above ? l.anchors.above.x : Math.round((l.advance||Math.round(LETTER_TOP*0.7))/2);
   const aboveY = l.anchors.above ? l.anchors.above.y : ANCHOR_Y.above;
   if (!l.anchors.tropAbove) l.anchors.tropAbove = { x: mid, y: aboveY + TROP_GAP_ABOVE };
   if (!l.anchors.tropBelow) l.anchors.tropBelow = { x: mid, y: ANCHOR_Y.below - TROP_GAP_BELOW };
+  const tOff = (project.font && project.font.tropSideOffset) || TROP_POS_SHIFT, ta = l.anchors.tropAbove, tb = l.anchors.tropBelow;
+  if (!l.anchors.tropAboveL) l.anchors.tropAboveL = { x: ta.x - tOff, y: ta.y };
+  if (!l.anchors.tropAboveR) l.anchors.tropAboveR = { x: ta.x + tOff, y: ta.y };
+  if (!l.anchors.tropBelowL) l.anchors.tropBelowL = { x: tb.x - tOff, y: tb.y };
+  if (!l.anchors.tropBelowR) l.anchors.tropBelowR = { x: tb.x + tOff, y: tb.y };
 }
 function seedAnchorsIfNeeded(l) { if (!l.anchors) seedAnchors(l); else ensureTropAnchors(l); }
 
@@ -5133,6 +5160,14 @@ function activeVowelCp() {
     case 'tropAbove': case 'tropBelow': return activeTropCp;
     default: return activeBelowVowel;
   }
+}
+/* The per-letter anchor key currently being edited. For trop the visible above/below selector picks the
+   vertical class, while the active mark's halign (Left/Center/Right) picks the column — so every anchor
+   read/write (X-Y fields, drag, nudge, centre buttons, stage preview) targets the resolved L/C/R column. */
+function activeAnchorKey() {
+  if (activeAnchorClass === 'tropAbove' || activeAnchorClass === 'tropBelow')
+    return tropColKey(activeAnchorClass === 'tropAbove' ? 'above' : 'below', tropHalign(activeTropCp));
+  return activeAnchorClass;
 }
 function markPreviewPath(cp, ax, ay, scaleOverride) {
   const cat = catOfCp(cp), s = scaleOverride != null ? scaleOverride : (cat==='trop'?tropScale():(cat==='accent'?1:nikScale(cp)));
@@ -5174,11 +5209,11 @@ function markSelectRect(cp, ax, ay, scaleOverride, cls, col, extra) {
 function anchorHandlesSVG(l) {
   // Active class only: its vowel drawn in the class colour (clearly visible even over the
   // dark glyph), plus a draggable RING centred ON the vowel.
-  const cls = activeAnchorClass; const a = l.anchors[cls];
+  const cls = activeAnchorClass, key = activeAnchorKey(); const a = l.anchors[key];
   const cp = activeVowelCp();
   const col = ANCHOR_COL[cls] || 'var(--below)';
   let h = `<path id="ancMark" d="${markPreviewPath(cp, a.x, a.y)}" fill="${col}"/>`;
-  h += markSelectRect(cp, a.x, a.y, undefined, 'anc', col, `data-cls="${cls}"`);
+  h += markSelectRect(cp, a.x, a.y, undefined, 'anc', col, `data-cls="${key}"`);
   return h;
 }
 function attachAnchorDrag(l) {
@@ -5407,6 +5442,29 @@ function renderPrecompControls(l) {
     <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">← Back to vowels</button>`;
 }
 function setTropCp(cp) { activeTropCp = cp; renderStage(); renderControls(); }
+/* Per-mark horizontal placement (Left / Center / Right) — applies on every letter by selecting which
+   base-anchor column the mark attaches to. Only non-default values are stored (keeps saves clean). It's
+   an easily-reversed config toggle, so it isn't pushed onto the geometry undo stack (no matching scope). */
+function setTropHalign(h) {
+  if (!project.font.trop.halign) project.font.trop.halign = {};
+  if (h === (TROP_HALIGN_DEFAULT[activeTropCp] || 'center')) delete project.font.trop.halign[activeTropCp];
+  else project.font.trop.halign[activeTropCp] = h;
+  markDirty(); renderStage(); renderControls();
+}
+/* Global default Left/Right spread — re-seeds every letter's side columns from its own centre column, so
+   the default distance is consistent. Per-letter fine-tuning (drag / X-Y) is done after setting this. */
+function setTropSideOffset(v) {
+  const off = Math.max(0, Math.min(600, Math.round(+v || 0)));
+  project.font.tropSideOffset = off;
+  (project.letters || []).forEach(l => {
+    if (!l.anchors) return;
+    const ta = l.anchors.tropAbove, tb = l.anchors.tropBelow;
+    if (ta) { l.anchors.tropAboveL = { x: ta.x - off, y: ta.y }; l.anchors.tropAboveR = { x: ta.x + off, y: ta.y }; }
+    if (tb) { l.anchors.tropBelowL = { x: tb.x - off, y: tb.y }; l.anchors.tropBelowR = { x: tb.x + off, y: tb.y }; }
+  });
+  const el = document.getElementById('tropSpreadV'); if (el) el.textContent = off;
+  markDirty(); renderStage();
+}
 function setMarkNudge(cp, dy) {
   if (!project.font.markNudge) project.font.markNudge = {};
   const v = Math.max(-200, Math.min(200, Math.round(dy)));
@@ -6058,13 +6116,13 @@ function maybeInheritAnchors(l) {
   if (anchorInheritedFrom.get(l) === lastSavedAnchors) return;
   const ibb = l.contours ? glyphBBox(l.contours, true, letterMeta(l.codepoint)) : null;
   const floatUp = !!(ibb && Math.round(ibb.minY) > 120);   // yod-like: body floats well above the baseline
-  ['below','above','center','tropAbove','tropBelow'].forEach(k => {
+  ['below','above','center','tropAbove','tropBelow','tropAboveL','tropAboveR','tropBelowL','tropBelowR'].forEach(k => {
     const s = lastSavedAnchors[k];
     if (s && l.anchors[k]) {
       l.anchors[k].x = s.x;
       // Carry the source letter's vertical level — but a floating letter keeps its own ink-relative
       // below/tropBelow so its nikkud stays tucked under the body instead of dropping to the baseline.
-      if (!(floatUp && (k === 'below' || k === 'tropBelow'))) l.anchors[k].y = s.y;
+      if (!(floatUp && (k === 'below' || k === 'tropBelow' || k === 'tropBelowL' || k === 'tropBelowR'))) l.anchors[k].y = s.y;
     }
   });
   anchorInheritedFrom.set(l, lastSavedAnchors);
@@ -6083,7 +6141,7 @@ function _anchorCtx(l) {            // shared anchor-class computation (nik/trop
   const visCls = acat === 'trop' ? ['tropAbove','tropBelow'] : ['below','above','center'];
   if (!visCls.includes(activeAnchorClass)) activeAnchorClass = visCls[0];
   const cls = activeAnchorClass, isTrop = cls.indexOf('trop') === 0;
-  return { acat, visCls, cls, isTrop, want: cls === 'tropAbove' ? 'above' : 'below', a: l.anchors[cls] };
+  return { acat, visCls, cls, isTrop, want: cls === 'tropAbove' ? 'above' : 'below', a: l.anchors[activeAnchorKey()] };
 }
 
 /* ── ALIGN ── */
@@ -6280,8 +6338,22 @@ function renderAnchorLeft(L, l) {
       <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(activeCenterMark)}</div>
       <div class="hint" style="font-size:0.6rem;text-align:center;">The dagesh sits inside the letter body. <b>Edit shape</b> redesigns it.</div>`;
   } else if (isTrop) {
+    const ha = tropHalign(activeTropCp), tName = TROP_NAMES[activeTropCp] || 'this mark';
+    const halignBtns = [['left','◀ Left'],['center','Center'],['right','Right ▶']].map(([h,lbl]) =>
+      `<button class="ctl-btn ${ha===h?'primary':''}" onclick="setTropHalign('${h}')">${lbl}</button>`).join('');
+    const tOff = project.font.tropSideOffset != null ? project.font.tropSideOffset : TROP_POS_SHIFT;
     grid = `<div class="ws-side-title">Preview trop</div>
-      <div class="mark-grid2">` + TROP_MARKS.filter(m => m.cls === want).map(m => squareMarkBtn('trop', m.cp, m.name, activeTropCp, 'setTropCp')).join('') + `</div>`;
+      <div class="mark-grid2">` + TROP_MARKS.filter(m => m.cls === want).map(m => squareMarkBtn('trop', m.cp, m.name, activeTropCp, 'setTropCp')).join('') + `</div>
+      <hr class="ctl-divider">
+      <div class="ws-side-title">Horizontal — ${tName}</div>
+      <div class="ctl-row">${halignBtns}</div>
+      <div class="hint" style="font-size:0.6rem;text-align:center;">Sets where <b>${tName}</b> sits across <i>every</i> letter. Drag the mark (or edit X / Y below) to fine-tune just this letter.</div>
+      <div class="ctl-row" style="margin-top:6px;align-items:center;gap:6px;">
+        <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">Default spread</span>
+        <input type="range" id="tropSpread" min="0" max="500" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" style="flex:1;">
+        <span id="tropSpreadV" class="readout">${tOff}</span>
+      </div>
+      <div class="hint" style="font-size:0.6rem;text-align:center;">Default distance Left/Right marks shift from centre, on all letters (per-letter tweaks come after).</div>`;
   }
   const xy = `<hr class="ctl-divider">
     <div class="ws-side-title">${ANCHOR_LABEL[cls]} position</div>
@@ -6527,7 +6599,7 @@ document.addEventListener('keydown', e => {
   }
   const l = curLetter(); if (!l.anchors) return;
   udNudgeTick([itemScope()], 'nudge anchor — ' + l.name + ', ' + activeAnchorClass);
-  const a = l.anchors[activeAnchorClass]; a.x += dx; a.y += dy;
+  const a = l.anchors[activeAnchorKey()]; a.x += dx; a.y += dy;
   dropPlacementConfirm(l);
   renderStage(); renderControls(); renderLetterGrid();
 });
@@ -6630,7 +6702,9 @@ function qaSynthWideRow(pc) {
   const baseAnc = qaAnchors(base);
   const mapPt = a => a ? { x: wideX(a.x, g.minX, g.widthScale), y: a.y } : a;   // same transform as the ink
   const anchors = { below: mapPt(baseAnc.below), above: mapPt(baseAnc.above), center: mapPt(baseAnc.center),
-                    tropAbove: mapPt(baseAnc.tropAbove), tropBelow: mapPt(baseAnc.tropBelow) };
+                    tropAbove: mapPt(baseAnc.tropAbove), tropBelow: mapPt(baseAnc.tropBelow),
+                    tropAboveL: mapPt(baseAnc.tropAboveL), tropAboveR: mapPt(baseAnc.tropAboveR),
+                    tropBelowL: mapPt(baseAnc.tropBelowL), tropBelowR: mapPt(baseAnc.tropBelowR) };
   const meta = letterMeta(baseCp);
   const L = Object.assign({}, base, { anchors, curves: null, advance: g.advance, contours: g.contours.map(p => ({ points: p })) });
   return { cp: baseCp, name: pc.name || precompName(pc), labelCh: qaCh(pc.target), desc: meta ? meta.desc : false, L };
@@ -6713,11 +6787,19 @@ function qaPlaceStackTrop(nikAnc, nik, tropCp) {
    opened in the anchor editor get computed defaults, purely for preview. */
 function qaAnchors(L) {
   const a = L.anchors;
+  const tOff = (project.font && project.font.tropSideOffset) || TROP_POS_SHIFT;
+  const withCols = o => {   // add the Left/Right trop columns (prefer the letter's own, else centre ± spread)
+    o.tropAboveL = (a && a.tropAboveL) || { x: o.tropAbove.x - tOff, y: o.tropAbove.y };
+    o.tropAboveR = (a && a.tropAboveR) || { x: o.tropAbove.x + tOff, y: o.tropAbove.y };
+    o.tropBelowL = (a && a.tropBelowL) || { x: o.tropBelow.x - tOff, y: o.tropBelow.y };
+    o.tropBelowR = (a && a.tropBelowR) || { x: o.tropBelow.x + tOff, y: o.tropBelow.y };
+    return o;
+  };
   if (a && a.below && a.above && a.center) {
     const mid = a.above.x, aboveY = a.above.y;
-    return { below:a.below, above:a.above, center:a.center,
+    return withCols({ below:a.below, above:a.above, center:a.center,
              tropAbove: a.tropAbove || { x:mid, y:aboveY + TROP_GAP_ABOVE },
-             tropBelow: a.tropBelow || { x:mid, y:ANCHOR_Y.below - TROP_GAP_BELOW } };
+             tropBelow: a.tropBelow || { x:mid, y:ANCHOR_Y.below - TROP_GAP_BELOW } });
   }
   const meta = letterMeta(L.codepoint);
   const bb = L.contours ? glyphBBox(L.contours, true, meta) : { midX: Math.round((L.advance || Math.round(LETTER_TOP*0.7))/2), minY:0, maxY:LETTER_TOP };
@@ -6725,9 +6807,9 @@ function qaAnchors(L) {
   const center = Math.round((bb.minY + bb.maxY)/2 * 0.6 + 150);
   const aboveY = Math.max(ANCHOR_Y.above, Math.round(bb.maxY)+40);
   const belowY = defaultBelowY(bb);
-  return { below:{ x:mid, y:belowY }, above:{ x:mid, y:aboveY },
+  return withCols({ below:{ x:mid, y:belowY }, above:{ x:mid, y:aboveY },
            center:{ x:mid, y:Math.min(Math.max(center,120),380) },
-           tropAbove:{ x:mid, y:aboveY + TROP_GAP_ABOVE }, tropBelow:{ x:mid, y:belowY - TROP_GAP_BELOW } };
+           tropAbove:{ x:mid, y:aboveY + TROP_GAP_ABOVE }, tropBelow:{ x:mid, y:belowY - TROP_GAP_BELOW } });
 }
 /* Even-odd point-in-ink across all base contours, so letter counters/holes count as outside (same
    rule as the contour-depth logic at 3174-3177). */
@@ -6754,7 +6836,7 @@ function qaReasons(L, meta, markPolys, side, positional) {
   if (mb.maxX < bb.minX || mb.minX > bb.maxX || mb.maxY < bb.minY || mb.minY > bb.maxY) return reasons;   // bboxes disjoint → no collision
   // (a) mark ink sitting on the letter body — inset mark vertices in base ink, OR a base vertex inside the mark
   // (a thin stem threaded through). Skip CENTRE marks: a dagesh is MEANT to sit inside the letter.
-  if (side !== 'center' && !positional) {   // positional (pre/postpositive) trop is MEANT to sit at the letter's edge — don't flag the overhang
+  if (side !== 'center' && !positional) {   // positional (Left/Right) trop is MEANT to sit at the letter's edge — don't flag the overhang
     for (const poly of markPolys) {
       const inset = qaInsetToward(poly, qaCentroid(poly), QA_OVERLAP_TOL);
       if (inset.some(p => pointInInk(p, L.contours)) || L.contours.some(ct => ct.points.some(p => pointInPoly(p, poly)))) {
@@ -6777,7 +6859,7 @@ function qaWorstTrop(side) {
   if (!project.font.trop.enabled) return null;
   const tms = tropScale(); let best = null, ext = side === 'above' ? -1e9 : 1e9;
   TROP_CPS.forEach(cp => {
-    if (TROP_CLASS[cp] !== side) return;
+    if (TROP_CLASS[cp] !== side || tropHalign(cp) !== 'center') return;   // only centre trop stacks on a vowel
     const b = polysBounds(markGlyphContours('trop', cp).map(poly => poly.map(([x,y]) => [x*tms, y*tms])));
     if (!isFinite(b.maxY)) return;
     if (side === 'above' ? b.maxY > ext : b.minY < ext) { ext = side === 'above' ? b.maxY : b.minY; best = cp; }
@@ -6801,7 +6883,7 @@ function qaColumns(tab) {
 function qaCellLayers(L, anc, col) {
   const ms = markScale(), tms = tropScale(), ds = dageshScale();
   if (col.kind === 'nikkud') return [{ polys: qaPlace(anc[col.side], 'nikkud', col.cp, nikScale(col.cp), L), color: QA_SIDE_COLOR[col.side] }];
-  if (col.kind === 'trop')   { const k = col.side === 'above' ? 'tropAbove' : 'tropBelow'; const dx = tropPosDX(col.cp); return [{ polys: qaPlace({ x: anc[k].x + dx, y: anc[k].y }, 'trop', col.cp, tms), color: QA_SIDE_COLOR[k] }]; }
+  if (col.kind === 'trop')   { const k = tropColKey(col.side, tropHalign(col.cp)); return [{ polys: qaPlace(anc[k], 'trop', col.cp, tms), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] }]; }
   const nikAnc = anc[col.side];
   return [ { polys: qaPlace(nikAnc, 'nikkud', col.cp, ms, L), color: QA_SIDE_COLOR[col.side] },
            { polys: qaPlaceStackTrop(nikAnc, col.cp, col.trop), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] } ];
@@ -6866,7 +6948,7 @@ function qaBuild() {
     let n = 0; const cols = qaColumns(t);
     if (cols.length) rows.forEach(row => {
       const L = row.L, anc = qaAnchors(L);
-      cols.forEach(col => { const layers = qaCellLayers(L, anc, col); if (qaReasons(L, row, layers.reduce((a,ly)=>a.concat(ly.polys),[]), col.side, col.kind === 'trop' && TROP_POS[col.cp] !== 'normal').length) n++; });
+      cols.forEach(col => { const layers = qaCellLayers(L, anc, col); if (qaReasons(L, row, layers.reduce((a,ly)=>a.concat(ly.polys),[]), col.side, col.kind === 'trop' && tropHalign(col.cp) !== 'center').length) n++; });
     });
     counts[t] = n; total += n;
   });
@@ -6914,7 +6996,7 @@ function qaRenderGrid() {
     html += `<tr><td class="qa-rowlabel" title="${escapeHtml(row.name)}">${escapeHtml(row.labelCh)} <span style="color:var(--muted);">${escapeHtml(row.name)}</span></td>`;
     cols.forEach(col => {
       const layers = qaCellLayers(L, anc, col);
-      const reasons = qaReasons(L, row, layers.reduce((a,ly)=>a.concat(ly.polys),[]), col.side, col.kind === 'trop' && TROP_POS[col.cp] !== 'normal');
+      const reasons = qaReasons(L, row, layers.reduce((a,ly)=>a.concat(ly.polys),[]), col.side, col.kind === 'trop' && tropHalign(col.cp) !== 'center');
       const flagged = reasons.length > 0;
       html += `<td class="qa-cell${flagged ? ' flag' : ''}" data-cp="${row.cp}" data-kind="${col.kind}" data-mark="${col.cp}" data-side="${col.side}"${col.trop ? ` data-trop="${col.trop}"` : ''}${flagged ? ` title="${escapeHtml(reasons.join(' · '))}"` : ''}>${qaCellSvg(L, layers)}</td>`;
     });
@@ -7202,25 +7284,21 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     if (byClass.center.length) f += `markClass [${byClass.center.join(' ')}] <anchor 0 0> @MC_CENTER;\n`;
     f += '\n';
   }
-  // ── trop mark classes — split by attachment class (above/below) AND positional behaviour
-  //    (normal / prepositive / postpositive). Pre/postpositive marks carry a constant horizontal
-  //    mark-anchor shift so they land at the leading (right) / trailing (left) edge of their base
-  //    letter. markClass anchor x = -(desired origin shift): a mark whose anchor is at x=-Δ has its
-  //    ink sitting Δ to the RIGHT of the base anchor. Per-letter-edge approximation; preview==export. ──
-  const tropGroups = { above: { normal:[], prepositive:[], postpositive:[] }, below: { normal:[], prepositive:[], postpositive:[] } };
-  if (tropOn) TROP_CPS.forEach(cp => tropGroups[TROP_CLASS[cp]][TROP_POS[cp] || 'normal'].push(gname(cp)));
-  const tropByClass = {
-    above: [...tropGroups.above.normal, ...tropGroups.above.prepositive, ...tropGroups.above.postpositive],
-    below: [...tropGroups.below.normal, ...tropGroups.below.prepositive, ...tropGroups.below.postpositive]
-  };
-  const tropMarks = [...tropByClass.above, ...tropByClass.below];
+  // ── trop mark classes — split by attachment class (above/below) AND horizontal placement
+  //    (center / left / right; tropHalign(cp), user-overridable). The horizontal position lives
+  //    entirely in the per-letter base anchor (the tropColKey column), so the mark anchor is a plain
+  //    <anchor 0 0> and the live preview equals the exported font. Left/Right land at the leading /
+  //    trailing edge of their own letter — exact at a word's edge, approximate mid-word. ──
+  const HALIGNS = ['center','left','right'];
+  const tropGroups = { above: { center:[], left:[], right:[] }, below: { center:[], left:[], right:[] } };
+  if (tropOn) TROP_CPS.forEach(cp => tropGroups[TROP_CLASS[cp]][tropHalign(cp)].push(gname(cp)));
+  const tropMarks = ['above','below'].flatMap(cls => HALIGNS.flatMap(h => tropGroups[cls][h]));
   const TROP_MC = { above: 'MC_TROP_ABOVE', below: 'MC_TROP_BELOW' };
-  const TROP_POS_SUFFIX = { normal: '', prepositive: '_PRE', postpositive: '_POST' };
+  const HALIGN_SUFFIX = { center: '', left: '_L', right: '_R' };
   if (tropMarks.length) {
-    ['above','below'].forEach(cls => ['normal','prepositive','postpositive'].forEach(pos => {
-      const g = tropGroups[cls][pos]; if (!g.length) return;
-      const dx = pos === 'prepositive' ? TROP_POS_SHIFT : (pos === 'postpositive' ? -TROP_POS_SHIFT : 0);
-      f += `markClass [${g.join(' ')}] <anchor ${-dx} 0> @${TROP_MC[cls]}${TROP_POS_SUFFIX[pos]};\n`;
+    ['above','below'].forEach(cls => HALIGNS.forEach(h => {
+      const g = tropGroups[cls][h]; if (!g.length) return;
+      f += `markClass [${g.join(' ')}] <anchor 0 0> @${TROP_MC[cls]}${HALIGN_SUFFIX[h]};\n`;   // horizontal lives in the per-letter base anchor (tropColKey column)
     }));
     f += '\n';
   }
@@ -7244,13 +7322,11 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     if (byClass.center.length && skipCls !== 'center') markLines += `  pos base ${nm} <anchor ${l.anchors.center.x} ${l.anchors.center.y}> mark @MC_CENTER;\n`;
     if (tropMarks.length) {
       ensureTropAnchors(l);
-      ['above','below'].forEach(cls => {                                    // one base-anchor line per non-empty positional subclass (same anchor; the horizontal nudge lives on the mark)
-        const a = cls === 'above' ? l.anchors.tropAbove : l.anchors.tropBelow;
-        ['normal','prepositive','postpositive'].forEach(pos => {
-          if (!tropGroups[cls][pos].length) return;
-          markLines += `  pos base ${nm} <anchor ${a.x} ${a.y}> mark @${TROP_MC[cls]}${TROP_POS_SUFFIX[pos]};\n`;
-        });
-      });
+      ['above','below'].forEach(cls => HALIGNS.forEach(h => {               // one base-anchor line per non-empty L/C/R column (horizontal now lives in the per-letter anchor)
+        if (!tropGroups[cls][h].length) return;
+        const a = l.anchors[tropColKey(cls, h)];
+        markLines += `  pos base ${nm} <anchor ${a.x} ${a.y}> mark @${TROP_MC[cls]}${HALIGN_SUFFIX[h]};\n`;
+      }));
     }
   };
   LETTERS.forEach(L => emitBaseAnchors(gname(L.cp), project.letters.find(x => x.codepoint === L.cp)));
@@ -7268,9 +7344,9 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     let mkmkLines = '';
     MARK_CPS.forEach(cp => {
       const cls = MARK_CLASS[cp], a = markMkmkAnchor(cp), nm = gname(cp);
-      if (cls === 'above' && tropGroups.above.normal.length)              // only NORMAL trop stacks on a vowel; pre/postpositive edge-marks don't
+      if (cls === 'above' && tropGroups.above.center.length)              // only CENTER trop stacks on a vowel; edge (Left/Right) marks attach to the letter edge instead
         mkmkLines += `  pos mark ${nm} <anchor ${a.above.x} ${a.above.y}> mark @MC_TROP_ABOVE;\n`;
-      else if (cls === 'below' && tropGroups.below.normal.length)
+      else if (cls === 'below' && tropGroups.below.center.length)
         mkmkLines += `  pos mark ${nm} <anchor ${a.below.x} ${a.below.y}> mark @MC_TROP_BELOW;\n`;
       // center marks (dagesh/shin/sin dot) carry no trop — trop stacks on the base letter instead
     });
@@ -7334,8 +7410,7 @@ function buildUfoAnchors() {
     if (nikOn) { if (a.below) push(nm, 'below', a.below.x, a.below.y);
                  if (a.above) push(nm, 'above', a.above.x, a.above.y);
                  if (a.center) push(nm, 'center', a.center.x, a.center.y); }
-    if (tropOn) { if (a.tropAbove) push(nm, 'tropAbove', a.tropAbove.x, a.tropAbove.y);
-                  if (a.tropBelow) push(nm, 'tropBelow', a.tropBelow.x, a.tropBelow.y); }
+    if (tropOn) ['tropAbove','tropAboveL','tropAboveR','tropBelow','tropBelowL','tropBelowR'].forEach(k => { if (a[k]) push(nm, k, a[k].x, a[k].y); });
   });
   if (nikOn) MARK_CPS.forEach(cp => {
     const nm = gname(cp), cls = MARK_CLASS[cp];
@@ -7345,7 +7420,7 @@ function buildUfoAnchors() {
       else                 push(nm, 'tropBelow', a.below.x, a.below.y);
     }
   });
-  if (tropOn) TROP_CPS.forEach(cp => push(gname(cp), '_' + (TROP_CLASS[cp] === 'above' ? 'tropAbove' : 'tropBelow'), 0, 0));
+  if (tropOn) TROP_CPS.forEach(cp => push(gname(cp), '_' + tropColKey(TROP_CLASS[cp], tropHalign(cp)), 0, 0));
   return out;
 }
 /* UFO fontinfo.plist. UFO ascender/descender + sTypo stay at the nominal design box (stable line
@@ -8716,6 +8791,7 @@ function migrateProject(data) {
     if (!data.font.metrics) data.font.metrics = { baseline:BASELINE, letterTop:LETTER_TOP, lamedAscender:LAMED_TOP, descender:DESCENDER, defaultLSB:DEF_LSB, defaultRSB:DEF_RSB };
     else ['baseline','letterTop','lamedAscender','descender','defaultLSB','defaultRSB'].forEach((k,i)=>{ if(data.font.metrics[k]==null) data.font.metrics[k]=[BASELINE,LETTER_TOP,LAMED_TOP,DESCENDER,DEF_LSB,DEF_RSB][i]; });
     if (data.font.tropScale == null) data.font.tropScale = 1.0;
+    if (data.font.tropSideOffset == null) data.font.tropSideOffset = TROP_POS_SHIFT;   // default Left/Right trop spread
     if (data.font.dageshScale == null) data.font.dageshScale = (data.font.markScale != null ? data.font.markScale : 1.0);   // seed to the old unified size so existing saves look unchanged
     if (data.font.cholamScale == null) {   // holam-on-vav (וֹ) now sized on its own — seed from a prior per-form FB4B dot size, else the old unified size so existing saves look unchanged
       const _fb4b = (data.precomposed || []).find(p => p.target === 'FB4B');
@@ -8732,6 +8808,7 @@ function migrateProject(data) {
     if (!data.font.trop.custom) data.font.trop.custom = {};
     if (!data.font.trop.uploadMode) data.font.trop.uploadMode = 'perSymbol';
     if (!data.font.trop.combinedImage) data.font.trop.combinedImage = { dataUrl: null };
+    if (!data.font.trop.halign) data.font.trop.halign = {};   // per-mark Left/Center/Right (back-filled; L/R anchor columns added lazily by ensureTropAnchors)
     if (data.font.addCustomGlyphs == null) data.font.addCustomGlyphs = false;
     if (data.font.svgUpload == null) data.font.svgUpload = false;
     if (data.font.addEnglishLetters == null) data.font.addEnglishLetters = false;
