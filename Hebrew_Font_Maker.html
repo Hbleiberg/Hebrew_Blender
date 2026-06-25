@@ -1930,7 +1930,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '1.7';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '1.8';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2138,6 +2138,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v1.8</strong> — <strong>Kerning</strong> is easier to dial in. The big <strong>sample preview now updates live</strong> as you drag a pair's gap or add/remove pairs — not just the little two-glyph preview — so you see the effect in real words. The pair list now flags anything that <strong>won't export</strong> — <strong>⚠ untraced</strong> glyphs or pairs still at <strong>0</strong> — with an "<em>N of M pairs will be exported</em>" summary, and highlights the pair you're editing. A reading-order hint clarifies that in Hebrew the <strong>first letter sits on the right</strong>, and class sides (Finals / Descenders) now show what they cover. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.7</strong> — Drawing aids for consistency. New <strong>guides</strong>: drop adjustable <strong>horizontal &amp; vertical lines</strong> on the canvas — drag them or type an exact position — that <strong>stay put across every letter</strong>, perfect for matching stroke thicknesses &amp; heights. <strong>Copy outline from another letter</strong> seeds the current letter from one you've already drawn (copy <strong>Tav</strong>, delete the toe → <strong>Het</strong>, <strong>He</strong>, <strong>Resh</strong>), then reshape with <strong>✎ Edit points</strong>. And the built-in <strong>ḥataf-patach &amp; ḥataf-kamatz</strong> now have their sh'va dots <strong>aligned</strong>. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.6</strong> — New tools for spotting <strong>stacked-mark clashes</strong>. A <strong>Two marks</strong> tab in the Quality-check pairs any mark you pick (e.g. dagesh) with every other mark on every letter and flags where they overlap — handy for <strong>Babylonian</strong> pointing (vowels, dagesh &amp; raphe all sit above) and two-vowel letters like יְרוּשָׁלִַם; the <strong>Stacked</strong> tab now also flags a vowel that collides with its trop. While placing nikkud you can <strong>preview a 2nd mark</strong> on the current letter and get a live overlap warning. <strong>Raphe</strong> now appears in the above-letter picker. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.5</strong> — Trop marks can now sit <strong>Left, Center, or Right</strong> of a letter, not just above or below — so each cantillation mark lands on the correct part of the glyph and look-alikes (e.g. Yetiv vs. Mahpakh, Geresh vs. Geresh Muqdam) read correctly. Every mark has a sensible <strong>default side</strong> (Segol, Zarqa, Pashta &amp; Telisha Qetana go left; Geresh Muqdam, Deḥi, Yetiv &amp; Telisha Gedola go right; the rest stay centered) that you can change per mark in <strong>Place Trop</strong>, with a <strong>Default spread</strong> slider for how far the side marks shift. Need a custom position on one letter? Just <strong>drag the mark</strong> (or type exact X / Y) to override that letter alone. <span style="color:var(--muted);">(June 2026)</span></li>
@@ -5957,6 +5958,12 @@ function kernBetween(firstCp, secondCp) {   // saved pair kern in logical/readin
     if (k && k.value && (k.left||[]).includes(firstCp) && (k.right||[]).includes(secondCp)) return k.value;
   return 0;
 }
+function kernPreviewValue(firstCp, secondCp) {   // big-sample preview: the in-progress edit wins (live), else saved pairs
+  const e = kernEdit;
+  if (e) { const L = kernSideCps(e.left), R = kernSideCps(e.right);
+    if (L.includes(firstCp) && R.includes(secondCp)) return e.value|0; }
+  return kernBetween(firstCp, secondCp);
+}
 function renderSpacingPreview() {
   const svg = document.getElementById('spacingPreviewSvg'); if (!svg || !project) return;
   const em = effMetrics(), sp = fontSpacing(), ascender = em.lamedAscender + 100, descender = em.descender - 50;
@@ -5972,7 +5979,7 @@ function renderSpacingPreview() {
     total += w; return { type:'glyph', cp, w, contours: l && l.contours, curves: l && l.curves };
   });
   // pair kerning between adjacent glyphs (reading order) — matches the exported `kern` feature & the kern-panel preview
-  const gaps = cells.map((c, i) => { const n = cells[i+1]; return (c.type === 'glyph' && n && n.type === 'glyph') ? kernBetween(c.cp, n.cp) : 0; });
+  const gaps = cells.map((c, i) => { const n = cells[i+1]; return (c.type === 'glyph' && n && n.type === 'glyph') ? kernPreviewValue(c.cp, n.cp) : 0; });
   gaps.forEach(g => total += g);
   let pen = total, body = '';   // RTL: pen starts at the right edge and walks left
   cells.forEach((c, i) => {
@@ -6006,6 +6013,13 @@ function kernSideLabel(cps) {
   return (cps || []).map(cp => String.fromCodePoint(parseInt(cp, 16))).join(' ');
 }
 function kernPairIndex(left, right) { return fontKerning().findIndex(k => sameSet(k.left, left) && sameSet(k.right, right)); }
+function kernCpTraced(cp){ const l = project.letters.find(x => x.codepoint === cp); return !!(l && l.contours && l.contours.length); }
+function kernSideBuilt(cps){ return (cps||[]).some(kernCpTraced); }                 // ≥1 member traced (mirrors the export filter)
+function kernPairReason(k){                                                         // '' = will export; else why it won't
+  if (!k || !k.value) return 'set a gap';
+  if (!kernSideBuilt(k.left) || !kernSideBuilt(k.right)) return 'untraced glyph';
+  return '';
+}
 
 function renderKerningSection() {
   const box = document.getElementById('kerningBody'); if (!box) return;
@@ -6013,7 +6027,7 @@ function renderKerningSection() {
   const sideUI = (which, s) => `
     <div style="flex:1;min-width:0;">
       <div class="metric-sub" style="margin-bottom:3px;">${which === 'left' ? 'First (right)' : 'Second (left)'}</div>
-      <input type="text" dir="rtl" maxlength="2" ${s.cls ? 'disabled' : ''} value="${s.cls ? '' : escapeHtml(String.fromCodePoint(parseInt(s.cp, 16)))}"
+      <input type="text" dir="rtl" maxlength="2" ${s.cls ? 'disabled' : ''} value="${s.cls ? (s.cls==='finals' ? 'ך ם ן ף ץ' : 'Descenders') : escapeHtml(String.fromCodePoint(parseInt(s.cp, 16)))}"
         oninput="setKernGlyph('${which}', this.value)" placeholder="–"
         style="width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:5px;padding:5px;font-size:1.2rem;text-align:center;background:var(--white);color:var(--text);font-family:var(--heb-font);">
       <select onchange="setKernClass('${which}', this.value)" style="width:100%;box-sizing:border-box;margin-top:4px;border:1px solid var(--border);border-radius:5px;padding:4px;font-size:0.72rem;background:var(--white);color:var(--text);">
@@ -6023,11 +6037,17 @@ function renderKerningSection() {
       </select>
     </div>`;
   const isUpdate = kernPairIndex(kernSideCps(e.left), kernSideCps(e.right)) >= 0;
-  let rows = '';
+  let rows = '', nReady = 0;
   pairs.forEach((k, i) => {
-    rows += `<div class="readline" style="cursor:pointer;gap:8px;align-items:center;" onclick="loadKernPair(${i})" title="Click to edit">
+    const reason = kernPairReason(k); if (!reason) nReady++;
+    const active = sameSet(kernSideCps(e.left), k.left||[]) && sameSet(kernSideCps(e.right), k.right||[]);
+    const badge = reason
+      ? `<span style="font-size:0.62rem;padding:1px 5px;border-radius:4px;white-space:nowrap;background:${reason==='untraced glyph'?'rgba(190,90,90,0.18)':'rgba(150,150,150,0.18)'};color:${reason==='untraced glyph'?'#c0392b':'var(--muted)'};" title="${reason==='untraced glyph'?'A glyph in this pair has no traced outline — it will be skipped on export.':'Pairs at 0 do nothing — drag the gap to apply.'}">${reason==='untraced glyph'?'⚠ untraced':'set a gap'}</span>`
+      : '';
+    rows += `<div class="readline" style="cursor:pointer;gap:8px;align-items:center;${active?'background:rgba(201,146,42,0.14);border-radius:5px;':''}" onclick="loadKernPair(${i})" title="Click to edit">
       <span style="font-family:var(--heb-font);font-size:1.05rem;">${escapeHtml(kernSideLabel(k.left||[]))}<span style="color:var(--muted);font-size:0.7rem;font-family:inherit;"> · </span>${escapeHtml(kernSideLabel(k.right||[]))}</span>
       <span style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        ${badge}
         <span class="readout">${k.value>0?'+':''}${k.value|0}</span>
         <button class="ctl-btn" style="padding:2px 8px;" title="Delete" onclick="event.stopPropagation();deleteKernPair(${i})">✕</button>
       </span></div>`;
@@ -6035,6 +6055,7 @@ function renderKerningSection() {
   box.innerHTML = `
     <div class="ctl-label" style="margin-bottom:6px;">Kerning</div>
     <div class="row2" style="gap:10px;align-items:flex-start;">${sideUI('left', e.left)}${sideUI('right', e.right)}</div>
+    <div class="hint" style="margin-top:3px;">Type the pair in reading order — in Hebrew the first letter sits on the <b>right</b>.</div>
     <svg id="kernPreviewSvg" style="width:100%;height:auto;max-height:120px;margin-top:8px;"></svg>
     <div class="inline" style="margin-top:2px;">Gap <input type="range" min="-200" max="200" step="5" value="${e.value}" oninput="setKernValue(this.value)"> <span id="kernV" class="readout">${e.value>0?'+':''}${e.value|0}</span></div>
     <div class="ctl-row" style="margin-top:6px;">
@@ -6042,8 +6063,9 @@ function renderKerningSection() {
       <button class="ctl-btn" onclick="suggestKernPairs()">Suggest pairs</button>
     </div>
     <div class="hint" style="margin-top:4px;">Negative = tighter, positive = looser (font units). Preview &amp; exported font use the same value; Preview PDF shows it shaped in full.</div>
-    ${pairs.length ? `<div style="margin-top:8px;">${rows}</div>` : '<div class="hint" style="margin-top:8px;">No pairs yet — pick two glyphs (or a class on either side) and Add.</div>'}`;
+    ${pairs.length ? `<div class="hint" style="margin-top:8px;">${nReady} of ${pairs.length} pair${pairs.length>1?'s':''} will be exported.${nReady<pairs.length?' Pairs marked “⚠ untraced” or “set a gap” are skipped.':''}</div><div style="margin-top:4px;">${rows}</div>` : '<div class="hint" style="margin-top:8px;">No pairs yet — pick two glyphs (or a class on either side) and Add.</div>'}`;
   renderKernPreview();
+  renderSpacingPreview();   // keep the big multi-line sample in sync with every kerning add/update/delete
 }
 
 function renderKernPreview() {
@@ -6072,6 +6094,7 @@ function setKernGlyph(which, v) {
   const e = kernEnsureEdit(), ch = [...(v||'')].pop();      // last typed char (handles surrogate pairs)
   if (ch) { e[which].cp = ch.codePointAt(0).toString(16).toUpperCase().padStart(4,'0'); e[which].cls = ''; }
   renderKernPreview();
+  renderSpacingPreview();   // live: typing a glyph also updates the big sample preview
   const btn = document.getElementById('kernAddBtn');        // refresh label without re-rendering (keeps input focus)
   if (btn) btn.textContent = kernPairIndex(kernSideCps(e.left), kernSideCps(e.right)) >= 0 ? 'Update pair' : 'Add pair';
 }
@@ -6081,6 +6104,7 @@ function setKernValue(v) {
   e.value = Math.max(-200, Math.min(200, +v||0));
   const s = document.getElementById('kernV'); if (s) s.textContent = (e.value>0?'+':'') + e.value;
   renderKernPreview();
+  renderSpacingPreview();   // live: dragging the gap also moves the pair in the big sample preview
 }
 function addOrUpdateKernPair() {
   const e = kernEnsureEdit(), left = kernSideCps(e.left), right = kernSideCps(e.right);
