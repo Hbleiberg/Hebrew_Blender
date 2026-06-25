@@ -1914,7 +1914,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '1.5';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '1.6';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2122,6 +2122,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v1.6</strong> — New tools for spotting <strong>stacked-mark clashes</strong>. A <strong>Two marks</strong> tab in the Quality-check pairs any mark you pick (e.g. dagesh) with every other mark on every letter and flags where they overlap — handy for <strong>Babylonian</strong> pointing (vowels, dagesh &amp; raphe all sit above) and two-vowel letters like יְרוּשָׁלִַם; the <strong>Stacked</strong> tab now also flags a vowel that collides with its trop. While placing nikkud you can <strong>preview a 2nd mark</strong> on the current letter and get a live overlap warning. <strong>Raphe</strong> now appears in the above-letter picker. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.5</strong> — Trop marks can now sit <strong>Left, Center, or Right</strong> of a letter, not just above or below — so each cantillation mark lands on the correct part of the glyph and look-alikes (e.g. Yetiv vs. Mahpakh, Geresh vs. Geresh Muqdam) read correctly. Every mark has a sensible <strong>default side</strong> (Segol, Zarqa, Pashta &amp; Telisha Qetana go left; Geresh Muqdam, Deḥi, Yetiv &amp; Telisha Gedola go right; the rest stay centered) that you can change per mark in <strong>Place Trop</strong>, with a <strong>Default spread</strong> slider for how far the side marks shift. Need a custom position on one letter? Just <strong>drag the mark</strong> (or type exact X / Y) to override that letter alone. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.4</strong> — A new <strong>Edit shape</strong> editor lets you redesign any nikkud, dagesh, or trop mark from simple <strong>dots and bars</strong> — round or <strong>square</strong> dots, square or rounded bars — then apply your shape to the <strong>current letter</strong> or to <strong>all letters</strong>. Position each dot or bar by <strong>dragging</strong> it, <strong>nudging with the arrow keys</strong>, or typing exact <strong>X / Y coordinates</strong> — and set a dot's <strong>radius</strong> or a bar's <strong>width &amp; height</strong> — for pixel-perfect placement; <strong>Reset</strong> restores a mark's default shape, and <strong>undo / redo</strong> (Ctrl/Cmd+Z) covers every change in the editor. The on-stage <strong>selection box hugs the mark's actual shape</strong> so a small or square mark is never hidden under the handle. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.3</strong> — Placing nikkud &amp; trop now works like the rest of the tool: your moves apply <strong>live</strong> and you can leave a letter freely — no save dialog — with <strong>undo</strong> as the safety net. The grid now tells confirmed placements apart from ones <strong>carried over</strong> from the previous letter: a solid green ✓ means you reviewed it, a hollow amber ✓ means "carried over — review &amp; confirm", and amber <strong>!</strong> means unconfirmed. "Save Placement" is now an optional <strong>✓ Confirm placement</strong> review marker. The step tabs show a <strong>per-letter checklist</strong> (✓ done / ✗ to-do / – not needed) for the letter you're on. The <strong>toolbar</strong> is now grouped — Project · History · Review · Export — with Export the clear primary action and <strong>Help</strong> moved up to the top corner. <span style="color:var(--muted);">(June 2026)</span></li>
@@ -5146,13 +5147,14 @@ const BELOW_VOWELS = [
   { cp:'05B0', name:'Sheva' }, { cp:'05B2', name:'Hataf Patach' }, { cp:'05B1', name:'Hataf Segol' }, { cp:'05B3', name:'Hataf Qamats' },
   { cp:'05C7', name:'Qamats Qatan' }
 ];
-const ABOVE_MARKS = [ { cp:'05B9', name:'Holam' }, { cp:'05C1', name:'Shin dot' }, { cp:'05C2', name:'Sin dot' } ];
+const ABOVE_MARKS = [ { cp:'05B9', name:'Holam' }, { cp:'05C1', name:'Shin dot' }, { cp:'05C2', name:'Sin dot' }, { cp:'05BF', name:'Rafe' } ];
 const CENTER_MARKS = [ { cp:'05BC', name:'Dagesh' } ];
 let activeAnchorClass = 'below';
 let activeBelowVowel = '05B8';
 let activeAboveMark = '05B9';
 let activeCenterMark = '05BC';
 let activeTropCp = '0597';
+let coPreviewCp = null;   // Place-Nikkud "check stacking" — a 2nd mark previewed (grey ghost) on the current letter
 function activeVowelCp() {
   switch (activeAnchorClass) {
     case 'above': return '05B9';        // holam
@@ -5212,7 +5214,13 @@ function anchorHandlesSVG(l) {
   const cls = activeAnchorClass, key = activeAnchorKey(); const a = l.anchors[key];
   const cp = activeVowelCp();
   const col = ANCHOR_COL[cls] || 'var(--below)';
-  let h = `<path id="ancMark" d="${markPreviewPath(cp, a.x, a.y)}" fill="${col}"/>`;
+  let h = '';
+  const isTropCls = cls === 'tropAbove' || cls === 'tropBelow';
+  if (coPreviewCp && !isTropCls && l.anchors[MARK_CLASS[coPreviewCp]]) {   // grey ghost of the 2nd mark for the stacking-clash check (non-interactive)
+    const ga = l.anchors[MARK_CLASS[coPreviewCp]];
+    h += `<path d="${markPreviewPath(coPreviewCp, ga.x, ga.y)}" fill="#888" fill-opacity="0.55"/>`;
+  }
+  h += `<path id="ancMark" d="${markPreviewPath(cp, a.x, a.y)}" fill="${col}"/>`;
   h += markSelectRect(cp, a.x, a.y, undefined, 'anc', col, `data-cls="${key}"`);
   return h;
 }
@@ -5465,6 +5473,7 @@ function setTropSideOffset(v) {
   const el = document.getElementById('tropSpreadV'); if (el) el.textContent = off;
   markDirty(); renderStage();
 }
+function setCoPreview(v) { coPreviewCp = v || null; renderStage(); renderControls(); }   // 2nd-mark stacking check (preview only — never saved)
 function setMarkNudge(cp, dy) {
   if (!project.font.markNudge) project.font.markNudge = {};
   const v = Math.max(-200, Math.min(200, Math.round(dy)));
@@ -6365,6 +6374,25 @@ function renderAnchorLeft(L, l) {
       <button class="ctl-btn" onclick="centerAnchorH()" title="Center horizontally — halfway between the left and right margins">Center ↔</button>
       <button class="ctl-btn" onclick="centerAnchorV()" title="Center vertically — halfway between the top and base lines">Center ↕</button>
     </div>`;
+  let coRow = '';
+  if (!isTrop && l.anchors) {   // "Check stacking" — preview a 2nd mark on this letter + warn on overlap (Babylonian all-above / two-vowel letters)
+    const acp = activeVowelCp();
+    const opts = `<option value="">(none)</option>` + MARK_CPS.filter(cp => cp !== acp).map(cp => `<option value="${cp}"${cp===coPreviewCp?' selected':''}>${escapeHtml(markName(cp))}</option>`).join('');
+    let warn = '';
+    if (coPreviewCp && l.anchors[MARK_CLASS[coPreviewCp]]) {
+      const pa = qaPlace(l.anchors[activeAnchorKey()], 'nikkud', acp, nikScale(acp), l);
+      const pc = qaPlace(l.anchors[MARK_CLASS[coPreviewCp]], 'nikkud', coPreviewCp, nikScale(coPreviewCp), l);
+      warn = markPolysOverlap(pa, pc, QA_OVERLAP_TOL)
+        ? `<div class="hint" style="font-size:0.64rem;color:#c0392b;font-weight:600;">⚠ ${escapeHtml(markName(coPreviewCp))} overlaps ${escapeHtml(markName(acp))} on this letter.</div>`
+        : `<div class="hint" style="font-size:0.64rem;color:#1a8a4a;">✓ No overlap with ${escapeHtml(markName(acp))}.</div>`;
+    }
+    coRow = `<hr class="ctl-divider">
+      <div class="ws-side-title">Check stacking</div>
+      <label class="fld" style="font-size:0.72rem;">Preview a 2nd mark on this letter
+        <select onchange="setCoPreview(this.value)">${opts}</select>
+      </label>${warn}
+      <div class="hint" style="font-size:0.6rem;">Shows the chosen mark in grey beside the one you're placing and warns if they collide — handy for Babylonian (all-above) and two-vowel letters. The QA <b>Two marks</b> tab sweeps every letter.</div>`;
+  }
   const forms = project.precomposed.filter(pc => pc.base === l.codepoint);
   const formsSection = forms.length ? `<hr class="ctl-divider">
     <div class="ws-side-title">Special &amp; precomposed forms</div>
@@ -6390,6 +6418,7 @@ function renderAnchorLeft(L, l) {
     <div class="ctl-row">${classBtns}</div>
     ${ grid ? `<hr class="ctl-divider">${grid}` : '' }
     ${xy}
+    ${coRow}
     ${formsSection}`;
 }
 function renderAnchorRight(R, l) {
@@ -6666,6 +6695,7 @@ const MARK_CPS = Object.keys(MARK_CLASS);
    ════════════════════════════════════════════════════════════════════════ */
 let qaTab = 'nikkud';
 let qaResult = null;
+let qaPairA = '05BC';   // "Two marks" tab: the fixed mark A compared against every other mark (default = dagesh)
 const QA_OVERLAP_TOL = 10;   // font units a mark vertex is inset toward its centre before counting as "inside" (kissing contacts are fine)
 const QA_SIDE_COLOR  = { below:'var(--below)', above:'var(--above)', center:'var(--center)', tropAbove:'#8b5cf6', tropBelow:'#0ea5e9' };
 
@@ -6822,6 +6852,28 @@ function qaCentroid(poly) { let sx=0, sy=0; poly.forEach(([x,y]) => { sx+=x; sy+
 function qaInsetToward(poly, c, d) {   // pull each vertex d units toward the centroid (overlap tolerance)
   return poly.map(([x,y]) => { const dx=c[0]-x, dy=c[1]-y, len=Math.hypot(dx,dy)||1, t=Math.min(d,len)/len; return [x+dx*t, y+dy*t]; });
 }
+/* Do two placed mark shapes (each an array of [x,y]-point polygons, font units) overlap each other?
+   Edges cross OR one sits inside the other. Each polygon is first shrunk toward its centroid by `tol`
+   so marks that merely kiss aren't flagged (same tolerance as the letter-ink check). Reuses
+   polysBounds / contoursOverlap / pointInPoly / qaInsetToward / qaCentroid — all defined above. */
+function markPolysOverlap(A, B, tol) {
+  if (!A.length || !B.length) return false;
+  const ba = polysBounds(A), bb = polysBounds(B);
+  if (ba.maxX < bb.minX || bb.maxX < ba.minX || ba.maxY < bb.minY || bb.maxY < ba.minY) return false;   // disjoint bboxes
+  const shrink = polys => polys.map(p => (tol ? qaInsetToward(p, qaCentroid(p), tol) : p));
+  const PA = shrink(A), PB = shrink(B);
+  for (const a of PA) for (const b of PB) {
+    if (!a.length || !b.length) continue;
+    if (contoursOverlap(a, b) || pointInPoly(a[0], b) || pointInPoly(b[0], a)) return true;
+  }
+  return false;
+}
+/* Reason(s) for a multi-layer cell: any two layers whose placed ink overlaps (mark-vs-mark clash). */
+function qaLayerClash(layers) {
+  for (let i = 0; i < layers.length; i++) for (let j = i + 1; j < layers.length; j++)
+    if (markPolysOverlap(layers[i].polys, layers[j].polys, QA_OVERLAP_TOL)) return ['Marks overlap each other'];
+  return [];
+}
 /* The collision checks for one cell's placed mark ink (union of all layers). A red cell means the
    mark actually sits on the letter's INK — (a) on the letter body, or (b) on a descender tail.
    `side` is the placement class: below/above/center for nikkud, above/below for trop & stacks.
@@ -6871,6 +6923,10 @@ function qaWorstTrop(side) {
 function qaColumns(tab) {
   if (tab === 'nikkud') return (project.font.nikkud.enabled ? MARK_CPS : []).map(cp => ({ kind:'nikkud', cp, side: MARK_CLASS[cp], name: markName(cp), head: '◌' + qaCh(cp) }));
   if (tab === 'trop')   return (project.font.trop.enabled   ? TROP_CPS : []).map(cp => ({ kind:'trop',   cp, side: TROP_CLASS[cp], name: markName(cp), head: '◌' + qaCh(cp) }));
+  if (tab === 'pairs') {   // each enabled nikkud mark B paired with the fixed mark A (qaPairA) — to spot two-mark stacking clashes on one letter
+    if (!project.font.nikkud.enabled) return [];
+    return MARK_CPS.filter(cp => cp !== qaPairA).map(cp => ({ kind:'pair', cp, a: qaPairA, side: MARK_CLASS[cp], name: markName(qaPairA) + ' + ' + markName(cp), head: '◌' + qaCh(qaPairA) + qaCh(cp) }));
+  }
   if (!(project.font.nikkud.enabled && project.font.trop.enabled)) return [];
   const wa = qaWorstTrop('above'), wb = qaWorstTrop('below');
   return MARK_CPS.filter(cp => MARK_CLASS[cp] !== 'center').map(cp => {
@@ -6884,9 +6940,21 @@ function qaCellLayers(L, anc, col) {
   const ms = markScale(), tms = tropScale(), ds = dageshScale();
   if (col.kind === 'nikkud') return [{ polys: qaPlace(anc[col.side], 'nikkud', col.cp, nikScale(col.cp), L), color: QA_SIDE_COLOR[col.side] }];
   if (col.kind === 'trop')   { const k = tropColKey(col.side, tropHalign(col.cp)); return [{ polys: qaPlace(anc[k], 'trop', col.cp, tms), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] }]; }
+  if (col.kind === 'pair')   return [                                   // two nikkud marks on one letter, each at its own class anchor
+    { polys: qaPlace(anc[MARK_CLASS[col.a]],  'nikkud', col.a,  nikScale(col.a),  L), color: QA_SIDE_COLOR[MARK_CLASS[col.a]] },
+    { polys: qaPlace(anc[MARK_CLASS[col.cp]], 'nikkud', col.cp, nikScale(col.cp), L), color: QA_SIDE_COLOR[MARK_CLASS[col.cp]] } ];
   const nikAnc = anc[col.side];
   return [ { polys: qaPlace(nikAnc, 'nikkud', col.cp, ms, L), color: QA_SIDE_COLOR[col.side] },
            { polys: qaPlaceStackTrop(nikAnc, col.cp, col.trop), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] } ];
+}
+/* Reasons a cell is flagged. 'pair' cells test mark-vs-mark only (letter-ink is already covered by the
+   Nikkud tab, and a centred dagesh sitting inside the body must NOT be flagged here). Every other kind
+   keeps the letter-ink / descender checks AND now also flags any two of its layers overlapping. */
+function qaCellReasons(L, row, col, layers) {
+  if (col.kind === 'pair') return qaLayerClash(layers);
+  const allPolys = layers.reduce((a, ly) => a.concat(ly.polys), []);
+  const positional = col.kind === 'trop' && tropHalign(col.cp) !== 'center';
+  return qaReasons(L, row, allPolys, col.side, positional).concat(qaLayerClash(layers));
 }
 function qaCellSvg(L, layers) {
   const adv = effLetterAdvance(L);
@@ -6944,11 +7012,11 @@ function fontInkBounds() {
 function qaBuild() {
   const counts = {}; let total = 0;
   const rows = qaRows();
-  ['nikkud','trop','stacked'].forEach(t => {
+  ['nikkud','trop','stacked','pairs'].forEach(t => {
     let n = 0; const cols = qaColumns(t);
     if (cols.length) rows.forEach(row => {
       const L = row.L, anc = qaAnchors(L);
-      cols.forEach(col => { const layers = qaCellLayers(L, anc, col); if (qaReasons(L, row, layers.reduce((a,ly)=>a.concat(ly.polys),[]), col.side, col.kind === 'trop' && tropHalign(col.cp) !== 'center').length) n++; });
+      cols.forEach(col => { if (qaCellReasons(L, row, col, qaCellLayers(L, anc, col)).length) n++; });
     });
     counts[t] = n; total += n;
   });
@@ -6958,8 +7026,8 @@ function qaBuild() {
 }
 function qaRenderTabs() {
   const bar = document.getElementById('qaTabs');
-  const have = { nikkud: project.font.nikkud.enabled, trop: project.font.trop.enabled, stacked: project.font.nikkud.enabled && project.font.trop.enabled };
-  bar.innerHTML = [['nikkud','Nikkud'],['trop','Trop'],['stacked','Stacked']].map(([id,label]) => {
+  const have = { nikkud: project.font.nikkud.enabled, trop: project.font.trop.enabled, stacked: project.font.nikkud.enabled && project.font.trop.enabled, pairs: project.font.nikkud.enabled };
+  bar.innerHTML = [['nikkud','Nikkud'],['trop','Trop'],['stacked','Stacked'],['pairs','Two marks']].map(([id,label]) => {
     const n = qaResult ? qaResult.counts[id] : 0, badge = (have[id] && n) ? ` (${n})` : '';
     return have[id]
       ? `<button class="help-tab${qaTab===id?' active':''}" onclick="setQaTab('${id}')">${label}${badge}</button>`
@@ -6985,8 +7053,9 @@ function qaRenderGrid() {
   const grid = document.getElementById('qaGrid'); if (!grid) return;
   grid.style.color = (getComputedStyle(document.body).getPropertyValue('--text') || '').trim() || (document.body.classList.contains('dark') ? '#dde4f0' : '#1a2744');   // one set → every child SVG's currentColor inherits it
   const cols = qaColumns(qaTab);
-  if (!cols.length) { grid.innerHTML = `<p style="color:var(--muted);font-size:0.85rem;">No ${qaTab === 'stacked' ? 'stacking' : qaTab} marks are enabled for this font.</p>` + qaBuildCheckHtml(); return; }
-  let html = '<table class="qa-table"><thead><tr><th></th>';
+  const pairCtrl = qaTab === 'pairs' ? qaPairControlHtml() : '';
+  if (!cols.length) { grid.innerHTML = pairCtrl + `<p style="color:var(--muted);font-size:0.85rem;">No ${qaTab === 'stacked' ? 'stacking' : (qaTab === 'pairs' ? 'nikkud' : qaTab)} marks are enabled for this font.</p>` + qaBuildCheckHtml(); return; }
+  let html = pairCtrl + '<table class="qa-table"><thead><tr><th></th>';
   cols.forEach(col => { html += `<th title="${escapeHtml(col.name)}"><span class="qa-colhead">${escapeHtml(col.head)}</span></th>`; });
   html += '</tr></thead><tbody>';
   let sectionShown = false;
@@ -6996,7 +7065,7 @@ function qaRenderGrid() {
     html += `<tr><td class="qa-rowlabel" title="${escapeHtml(row.name)}">${escapeHtml(row.labelCh)} <span style="color:var(--muted);">${escapeHtml(row.name)}</span></td>`;
     cols.forEach(col => {
       const layers = qaCellLayers(L, anc, col);
-      const reasons = qaReasons(L, row, layers.reduce((a,ly)=>a.concat(ly.polys),[]), col.side, col.kind === 'trop' && tropHalign(col.cp) !== 'center');
+      const reasons = qaCellReasons(L, row, col, layers);
       const flagged = reasons.length > 0;
       html += `<td class="qa-cell${flagged ? ' flag' : ''}" data-cp="${row.cp}" data-kind="${col.kind}" data-mark="${col.cp}" data-side="${col.side}"${col.trop ? ` data-trop="${col.trop}"` : ''}${flagged ? ` title="${escapeHtml(reasons.join(' · '))}"` : ''}>${qaCellSvg(L, layers)}</td>`;
     });
@@ -7032,7 +7101,7 @@ function qaGridClick(e) {
 function qaJump(cp, markCp, kind, side, tropCp) {
   closeQA();
   _selectItem('letter', cp);
-  if (kind === 'nikkud') {
+  if (kind === 'nikkud' || kind === 'pair') {                        // pair → jump to mark B's nikkud anchor (data-mark = the column mark)
     gotoAnchors('nikkud');
     const cls = MARK_CLASS[markCp];
     setAnchorClass(cls);
@@ -7045,6 +7114,15 @@ function qaJump(cp, markCp, kind, side, tropCp) {
   }
 }
 function setQaTab(t) { qaTab = t; qaRenderTabs(); qaRenderGrid(); }
+function setQaPairA(cp) { qaPairA = cp; qaBuild(); qaRenderTabs(); qaRenderGrid(); }   // recount + redraw the Two-marks tab for the new fixed mark
+function qaPairControlHtml() {
+  const marks = project.font.nikkud.enabled ? MARK_CPS : [];
+  const opts = marks.map(cp => `<option value="${cp}"${cp === qaPairA ? ' selected' : ''}>${escapeHtml(markName(cp))}</option>`).join('');
+  return `<div style="margin-bottom:10px;font-size:0.82rem;display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;">
+    <label>Stack <select onchange="setQaPairA(this.value)" style="font-size:0.82rem;">${opts}</select> with every other mark, on each letter.</label>
+    <span style="color:var(--muted);flex:1;min-width:220px;">Red = the two marks' ink overlaps. Same-class pairs (e.g. two below-vowels) share one anchor, so they always overlap — that's expected. Cross-class clashes (e.g. a raised dagesh meeting an above-vowel) are real and fixable by moving an anchor.</span>
+  </div>`;
+}
 function closeQA() { aCloseModal('qaOverlay'); }
 function openQA() {
   if (!project) { status('Open or create a project first.'); return; }
