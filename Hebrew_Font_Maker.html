@@ -964,6 +964,16 @@
   </div>
 </div>
 
+<div class="overlay" id="copyOutlineOverlay" onclick="if(event.target===this)closeCopyOutline()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="copyOutlineTitle" style="max-width:480px;">
+    <h3 id="copyOutlineTitle">Copy outline from another letter</h3>
+    <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;">Drops a letter's traced outline into <b id="copyOutlineTarget">this letter</b> as a starting point — then reshape it (e.g. copy <b>Tav</b> and delete the toe to make <b>Het</b>, <b>He</b> or <b>Resh</b>) with <b>✎ Edit points</b>. The current letter's width &amp; spacing stay as they are. You can undo it.</p>
+    <label class="chk" style="font-size:0.84rem;"><input type="checkbox" id="copyOutlineWidth"> Also copy width &amp; side bearings</label>
+    <div id="copyOutlineList" style="display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;max-height:46vh;overflow:auto;margin-top:8px;"></div>
+    <div class="mbtns"><button class="tbtn ghost" onclick="closeCopyOutline()">Cancel</button><button class="tbtn" onclick="copyOutlineDo()">Copy outline</button></div>
+  </div>
+</div>
+
 <script>
 /* ════════════════════════════════════════════════════════════════════════
    Hebrew Font Maker — single-file client-side font foundry
@@ -1239,12 +1249,14 @@ function circlePts(cx, cy, r, n=14) {
   return p;
 }
 function rectPts(x0, y0, x1, y1) { return [[x0,y0],[x1,y0],[x1,y1],[x0,y1]]; }
+// sh'va dots beside a hataf vowel — defined once so ḥataf-patach & ḥataf-kamatz stay aligned
+const _hatafSheva = x => [ circlePts(x,-150,30), circlePts(x,-235,30) ];
 const MARK_GLYPHS = {
   // BELOW (anchor at top-center; shapes extend downward)
   '05B7': [ rectPts(-115,-150,115,-105) ],                                   // patach: bar
   '05B8': [ rectPts(-115,-150,115,-110), rectPts(-18,-250,18,-150) ],         // qamats: bar + tick
-  '05B2': [ rectPts(-115,-150,115,-105), circlePts(150,-150,30), circlePts(150,-235,30) ], // hataf patach
-  '05B3': [ rectPts(-115,-150,115,-110), rectPts(-18,-250,18,-150), circlePts(160,-150,28), circlePts(160,-235,28) ],
+  '05B2': [ rectPts(-115,-150,115,-105), ..._hatafSheva(150) ],                              // hataf patach
+  '05B3': [ rectPts(-115,-150,115,-110), rectPts(-18,-250,18,-150), ..._hatafSheva(150) ],   // hataf qamats — sh'va dots match patach
   '05B4': [ circlePts(0,-160,46) ],                                           // hiriq: 1 dot
   '05B5': [ circlePts(-95,-160,42), circlePts(95,-160,42) ],                  // tsere: 2 dots
   '05B6': [ circlePts(-105,-130,40), circlePts(105,-130,40), circlePts(0,-235,40) ], // segol: 3 dots
@@ -1448,6 +1460,7 @@ const anchorInheritedFrom = new WeakMap();   // letter → the saved snapshot al
 let catTab = 'letter';      // tabbed layout: which category picker is visible ('letter'|'nikkud'|'trop')
 let metricAdjust = false;   // Letter Metrics → "Adjust margins manually?" drag toggle (default OFF, opt-in; shows the metric dots — the reference image stays draggable either way)
 let metricDrag = null;      // active metric-guide drag: { key, axis, grab }
+let guideDrag  = null;      // active user-guide drag: { id, dragAxis:'x'|'y', grab, ud }
 
 /* ════════ Undo / redo (per-project, in-memory; max 100 entries). Each entry snapshots only the
    touched item/slice — never the image (source) and never savedAnchors (dirty-detection state).
@@ -1466,6 +1479,7 @@ function udSnap(s) {
   if (s.t === 'spacing') return JSON.parse(JSON.stringify(project.font.spacing));
   if (s.t === 'kerning') return JSON.parse(JSON.stringify(project.font.kerning || []));
   if (s.t === 'metrics') return JSON.parse(JSON.stringify(project.font.metrics));
+  if (s.t === 'guides') return JSON.parse(JSON.stringify(project.guides || { show:true, items:[] }));
   if (s.t === 'precomp') { const pc = getPrecomp(s.target); return pc ? { anchor: pc.anchor ? JSON.parse(JSON.stringify(pc.anchor)) : null, markScale: (pc.markScale != null ? pc.markScale : null), widthScale: (pc.widthScale != null ? pc.widthScale : null) } : null; }
   return null;
 }
@@ -1478,6 +1492,7 @@ function udRestore(s, snap) {
   else if (s.t === 'spacing') Object.assign(project.font.spacing, JSON.parse(JSON.stringify(snap || {})));
   else if (s.t === 'kerning') project.font.kerning = JSON.parse(JSON.stringify(snap || []));
   else if (s.t === 'metrics') Object.assign(project.font.metrics, JSON.parse(JSON.stringify(snap || {})));
+  else if (s.t === 'guides') project.guides = JSON.parse(JSON.stringify(snap || { show:true, items:[] }));
   else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) { pc.anchor = (snap && snap.anchor) ? JSON.parse(JSON.stringify(snap.anchor)) : null; pc.markScale = (snap && snap.markScale != null) ? snap.markScale : null; pc.widthScale = (snap && snap.widthScale != null) ? snap.widthScale : null; } }
 }
 function udNavTo(s) {                                    // show the affected item (no side effects — not selectItem)
@@ -1541,7 +1556,7 @@ function blankLetter(L) {
 }
 function newProject() {
   project = {
-    _ivritSuite: 1, format: 'hebrew-font-maker-project', schemaVersion: 3, tool: 'FontMaker',
+    _ivritSuite: 1, format: 'hebrew-font-maker-project', schemaVersion: 4, tool: 'FontMaker',
     savedAt: new Date().toISOString(),
     font: {
       familyName: 'My Hebrew Hand', reservedFontName: 'My Hebrew Hand', author: '', license: 'ofl',
@@ -1560,6 +1575,7 @@ function newProject() {
     },
     template: { font: "'Noto Sans Hebrew', sans-serif", opacity: 0.35, showOverlay: true },
     view: { imgOpacityAlign: 0.92, imgOpacityTrace: 0.28, glyphOpacity: 1.0 },
+    guides: { show: true, items: [] },   // project-wide drawing guides that persist across every letter: { id, axis:'h'|'v', pos (font units), color }
     inputMode: 'single',
     combinedSheets: [], combinedIndex: 0,
     letters: LETTERS.map(blankLetter),
@@ -1914,7 +1930,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '1.6';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '1.7';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2122,6 +2138,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v1.7</strong> — Drawing aids for consistency. New <strong>guides</strong>: drop adjustable <strong>horizontal &amp; vertical lines</strong> on the canvas — drag them or type an exact position — that <strong>stay put across every letter</strong>, perfect for matching stroke thicknesses &amp; heights. <strong>Copy outline from another letter</strong> seeds the current letter from one you've already drawn (copy <strong>Tav</strong>, delete the toe → <strong>Het</strong>, <strong>He</strong>, <strong>Resh</strong>), then reshape with <strong>✎ Edit points</strong>. And the built-in <strong>ḥataf-patach &amp; ḥataf-kamatz</strong> now have their sh'va dots <strong>aligned</strong>. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.6</strong> — New tools for spotting <strong>stacked-mark clashes</strong>. A <strong>Two marks</strong> tab in the Quality-check pairs any mark you pick (e.g. dagesh) with every other mark on every letter and flags where they overlap — handy for <strong>Babylonian</strong> pointing (vowels, dagesh &amp; raphe all sit above) and two-vowel letters like יְרוּשָׁלִַם; the <strong>Stacked</strong> tab now also flags a vowel that collides with its trop. While placing nikkud you can <strong>preview a 2nd mark</strong> on the current letter and get a live overlap warning. <strong>Raphe</strong> now appears in the above-letter picker. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.5</strong> — Trop marks can now sit <strong>Left, Center, or Right</strong> of a letter, not just above or below — so each cantillation mark lands on the correct part of the glyph and look-alikes (e.g. Yetiv vs. Mahpakh, Geresh vs. Geresh Muqdam) read correctly. Every mark has a sensible <strong>default side</strong> (Segol, Zarqa, Pashta &amp; Telisha Qetana go left; Geresh Muqdam, Deḥi, Yetiv &amp; Telisha Gedola go right; the rest stay centered) that you can change per mark in <strong>Place Trop</strong>, with a <strong>Default spread</strong> slider for how far the side marks shift. Need a custom position on one letter? Just <strong>drag the mark</strong> (or type exact X / Y) to override that letter alone. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.4</strong> — A new <strong>Edit shape</strong> editor lets you redesign any nikkud, dagesh, or trop mark from simple <strong>dots and bars</strong> — round or <strong>square</strong> dots, square or rounded bars — then apply your shape to the <strong>current letter</strong> or to <strong>all letters</strong>. Position each dot or bar by <strong>dragging</strong> it, <strong>nudging with the arrow keys</strong>, or typing exact <strong>X / Y coordinates</strong> — and set a dot's <strong>radius</strong> or a bar's <strong>width &amp; height</strong> — for pixel-perfect placement; <strong>Reset</strong> restores a mark's default shape, and <strong>undo / redo</strong> (Ctrl/Cmd+Z) covers every change in the editor. The on-stage <strong>selection box hugs the mark's actual shape</strong> so a small or square mark is never hidden under the handle. <span style="color:var(--muted);">(June 2026)</span></li>
@@ -2395,6 +2412,82 @@ function attachMetricDrag() {
       sv.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault();
     });
   });
+}
+
+/* ════════ User guides — adjustable H/V lines that persist across every letter (project.guides) ════════ */
+let _guideSeq = 1;
+function newGuideId(){ return 'g' + Date.now().toString(36) + '_' + (_guideSeq++); }
+function ensureGuides(){
+  if (!project.guides || typeof project.guides !== 'object') project.guides = { show:true, items:[] };
+  if (!Array.isArray(project.guides.items)) project.guides.items = [];
+  return project.guides;
+}
+function guideById(id){ return ensureGuides().items.find(g => g.id === id); }
+function userGuidesSVG(){
+  const g = project.guides;
+  if (!g || !g.show || !g.items || !g.items.length) return '';
+  let h = '';
+  g.items.forEach(it => {
+    const col = it.color || '#19b3c6';
+    if (it.axis === 'v') {                       // vertical line — drag left/right (font X)
+      const x = fx(it.pos);
+      h += `<line x1="${x.toFixed(1)}" y1="152" x2="${x.toFixed(1)}" y2="556" stroke="${col}" stroke-width="1" stroke-dasharray="2 4" opacity="0.85" pointer-events="none"/>`;
+      h += `<circle class="guide-h" data-guide-id="${it.id}" cx="${x.toFixed(1)}" cy="162" r="6" fill="${col}" stroke="#fff" stroke-width="2.5" paint-order="stroke" style="cursor:ew-resize;filter:drop-shadow(0 0 1px rgba(0,0,0,0.5));"><title>Guide x=${Math.round(it.pos)} — drag</title></circle>`;
+      h += `<text x="${(x+8).toFixed(1)}" y="166" fill="${col}" font-size="9" font-family="monospace" pointer-events="none">${Math.round(it.pos)}</text>`;
+    } else {                                     // horizontal line — drag up/down (font Y)
+      const y = fy(it.pos);
+      h += `<line x1="8" y1="${y.toFixed(1)}" x2="592" y2="${y.toFixed(1)}" stroke="${col}" stroke-width="1" stroke-dasharray="2 4" opacity="0.85" pointer-events="none"/>`;
+      h += `<circle class="guide-h" data-guide-id="${it.id}" cx="18" cy="${y.toFixed(1)}" r="6" fill="${col}" stroke="#fff" stroke-width="2.5" paint-order="stroke" style="cursor:ns-resize;filter:drop-shadow(0 0 1px rgba(0,0,0,0.5));"><title>Guide y=${Math.round(it.pos)} — drag</title></circle>`;
+      h += `<text x="30" y="${(y-5).toFixed(1)}" fill="${col}" font-size="9" font-family="monospace" pointer-events="none">${Math.round(it.pos)}</text>`;
+    }
+  });
+  return h;
+}
+function attachGuideDrag(){
+  const sv = stage();
+  sv.querySelectorAll('.guide-h').forEach(el => {
+    el.addEventListener('pointerdown', e => {
+      const it = guideById(el.dataset.guideId); if (!it) return;
+      const dragAxis = it.axis === 'v' ? 'x' : 'y';
+      const [fxp,fyp] = clientToFont(e);
+      guideDrag = { id: it.id, dragAxis, grab: it.pos - (dragAxis==='y' ? fyp : fxp), ud: udCapture([{t:'guides'}], 'move guide') };
+      sv.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault();
+    });
+  });
+}
+function addGuide(axis){
+  const g = ensureGuides();
+  const pos = axis === 'v'
+    ? Math.round((dispAdvance(curLetter()) || effMetrics().letterTop*0.7) / 2)   // mid-width
+    : Math.round(effMetrics().letterTop / 2);                                    // mid cap-height
+  udDo([{t:'guides'}], 'add guide', () => { g.show = true; g.items.push({ id: newGuideId(), axis, pos, color: '#19b3c6' }); renderStage(); renderControls(); });
+}
+function setGuidePos(id, v){ const it = guideById(id); if (!it) return; udDo([{t:'guides'}], 'guide position', () => { it.pos = Math.round(+v || 0); renderStage(); renderControls(); }); }
+function setGuideColor(id, c){ const it = guideById(id); if (!it) return; udDo([{t:'guides'}], 'guide color', () => { it.color = c; renderStage(); }); }
+function deleteGuide(id){ const g = ensureGuides(); udDo([{t:'guides'}], 'delete guide', () => { g.items = g.items.filter(x => x.id !== id); renderStage(); renderControls(); }); }
+function clearGuides(){ const g = ensureGuides(); if (!g.items.length) return; if (!confirm('Remove all guides?')) return; udDo([{t:'guides'}], 'clear guides', () => { g.items = []; renderStage(); renderControls(); }); }
+function toggleGuides(on){ const g = ensureGuides(); g.show = on; markDirty(); renderStage(); renderControls(); }
+function guidesPanelHTML(){
+  const g = ensureGuides();
+  const rows = g.items.map(it => `
+    <div style="display:flex;align-items:center;gap:5px;margin:3px 0;">
+      <span style="width:12px;text-align:center;color:var(--muted);font-weight:700;">${it.axis==='v'?'│':'─'}</span>
+      <input type="color" value="${it.color||'#19b3c6'}" oninput="setGuideColor('${it.id}',this.value)" title="Guide color" style="width:22px;height:20px;padding:0;border:1px solid var(--border);background:none;cursor:pointer;border-radius:3px;">
+      <input type="number" value="${Math.round(it.pos)}" step="1" onchange="setGuidePos('${it.id}',this.value)" title="${it.axis==='v'?'X':'Y'} position (font units)" style="width:66px;">
+      <span style="color:var(--muted);font-size:0.68rem;">${it.axis==='v'?'X':'Y'}</span>
+      <button class="ctl-btn" style="padding:1px 7px;margin-left:auto;" onclick="deleteGuide('${it.id}')" title="Delete this guide">×</button>
+    </div>`).join('');
+  return `
+    <div class="ws-side-title" style="margin-top:12px;">Guides</div>
+    <label class="chk"><input type="checkbox" ${g.show?'checked':''} onchange="toggleGuides(this.checked)"> Show guides</label>
+    <div class="ctl-row" style="margin-top:5px;">
+      <button class="ctl-btn" onclick="addGuide('h')">+ Horizontal</button>
+      <button class="ctl-btn" onclick="addGuide('v')">+ Vertical</button>
+      ${g.items.length ? `<button class="ctl-btn" onclick="clearGuides()">Clear</button>` : ''}
+    </div>
+    ${g.items.length
+      ? `<div style="margin-top:4px;">${rows}</div>`
+      : `<div class="hint" style="margin-top:4px;">Add a guide, then drag it on the canvas or type an exact position (font units). Guides stay put across every letter — handy for matching stroke thicknesses &amp; heights.</div>`}`;
 }
 async function uploadTemplateTTF(file) {
   try {
@@ -4156,8 +4249,10 @@ async function renderStage() {
     h += `<rect x="${x}" y="${y}" width="${w}" height="${ht}" fill="none" stroke="var(--gold)" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.8" pointer-events="none"/>`;
   }
   h += marginGuidesSVG();   // margins/width on top so the right side bearing shows over the glyph
+  h += userGuidesSVG();     // user-defined persistent guides (drawn on top; their handles are draggable)
   if (workMode === 'align' && metricAdjust) h += metricHandlesSVG();   // draggable metric guide dots
   sv.innerHTML = h;
+  attachGuideDrag();   // user guides are draggable in every letter-editing mode (no-op when none)
   if (workMode === 'align' && url) attachTransformDrag(l);   // image drag always available; metric dots (drawn on top) capture their own grabs
   if (workMode === 'align' && metricAdjust) attachMetricDrag();
   if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) { if (precompTarget) { if (!isWideForm(getPrecomp(precompTarget))) attachPrecompDrag(); } else if (!isEng(l.codepoint)) attachAnchorDrag(l); }
@@ -4292,6 +4387,12 @@ function onStagePointerMove(e) {
     const raw = (metricDrag.axis==='y' ? fyp : fxp) + metricDrag.grab;
     writeMetric(metricDrag.key, raw); renderStage(); return;
   }
+  if (guideDrag) {
+    const it = guideById(guideDrag.id); if (!it) { guideDrag = null; return; }
+    const [fxp,fyp] = clientToFont(e);
+    it.pos = Math.round((guideDrag.dragAxis==='y' ? fyp : fxp) + guideDrag.grab);
+    renderStage(); return;
+  }
   if (!tDrag || workMode !== 'align') return;
   const l = curLetter(); const p = clientToStage(e); const m0 = tDrag.m0;
   if (tDrag.type === 'move') {
@@ -4332,6 +4433,7 @@ function onStagePointerUp() {
     nodeDrag = null;
   }
   if (metricDrag) { udPush(metricDrag.ud); metricDrag = null; renderControls(); return; }
+  if (guideDrag) { udPush(guideDrag.ud); guideDrag = null; renderControls(); return; }
   if (eDrag) { udPush(eDrag.ud); eDrag = null; renderGrids(); renderControls(); return; }
   if (cropDrag) {
     const box = cropDrag.box; cropDrag = null;
@@ -6085,6 +6187,7 @@ function renderControls() {
   else if (workMode === 'trace') { renderTraceLeft(L, l); renderTraceRight(R, l); renderTraceUnder(U, l); }
   else if (workMode === 'nodes') { renderNodeLeft(L, l); renderTraceRight(R, l); renderTraceUnder(U, l); }
   else { renderAnchorLeft(L, l); renderAnchorRight(R, l); renderAnchorUnder(U, l); }
+  R.insertAdjacentHTML('beforeend', guidesPanelHTML());   // persistent guides control, present in every letter-editing mode
 }
 function renderNodeLeft(L, l) {
   L.innerHTML = `<div class="ws-side-title">Edit points — ${l.name}</div>` + nodeEditPanelHTML();
@@ -6251,6 +6354,7 @@ function renderTraceLeft(L, l) {
       <div class="ctl-row">
         ${ l.contours ? `<button class="ctl-btn primary" onclick="toggleNodeEdit()">✎ Edit points</button>` : '' }
         <button class="ctl-btn" onclick="clearTrace()">Clear</button>
+        <button class="ctl-btn" onclick="openCopyOutline()" title="Start this letter from another letter's outline">⎘ Copy outline…</button>
         <span id="traceInfo" class="readout">${ l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : '' }</span>
       </div>`;
     return;
@@ -6274,6 +6378,7 @@ function renderTraceLeft(L, l) {
       <button class="ctl-btn primary" onclick="traceCurrent()">Re-trace</button>
       <button class="ctl-btn" onclick="clearTrace()">Clear</button>
       ${ l.contours ? `<button class="ctl-btn" onclick="toggleNodeEdit()">✎ Edit points</button>` : '' }
+      <button class="ctl-btn" onclick="openCopyOutline()" title="Start this letter from another letter's outline">⎘ Copy outline…</button>
       <span id="traceInfo" class="readout">${ l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : '' }</span>
     </div>
     <div class="hint">Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically. Turn on <b>Outline only</b> for hollow “bubble” letters — <b>line weight</b> sets the ring thickness.</div>`;
@@ -6582,7 +6687,7 @@ document.addEventListener('keydown', e => {
     if (k === 'y' || e.shiftKey) meDoRedo(); else meDoUndo();
     return;
   }
-  if (tDrag || eDrag || metricDrag || nodeDrag || _burst || _udNudge) return;   // don't undo mid-interaction
+  if (tDrag || eDrag || metricDrag || guideDrag || nodeDrag || _burst || _udNudge) return;   // don't undo mid-interaction
   e.preventDefault();
   if (k === 'y' || e.shiftKey) redo(); else undo();
 });
@@ -8861,6 +8966,9 @@ function migrateProject(data) {
   data.template = data.template || { font:"'Noto Sans Hebrew', sans-serif", opacity:0.35, showOverlay:true };
   data.view = data.view || { imgOpacityAlign:0.92, imgOpacityTrace:0.28, glyphOpacity:1.0 };
   ['imgOpacityAlign','imgOpacityTrace','glyphOpacity'].forEach((k,i)=>{ if(data.view[k]==null) data.view[k]=[0.92,0.28,1.0][i]; });
+  if (!data.guides || typeof data.guides !== 'object') data.guides = { show: true, items: [] };   // project-wide drawing guides
+  if (!Array.isArray(data.guides.items)) data.guides.items = [];
+  if (data.guides.show == null) data.guides.show = true;
   if (data.font && data.font.markScale == null) data.font.markScale = 1.0;
   if (data.font) {
     if (data.font.author === undefined) data.font.author = data.font.copyright || '';   // Copyright field → Author
@@ -8998,6 +9106,41 @@ function applyNikkudDo(){
   });
   closeApplyNikkud();
   status('Applied nikkud positioning to ' + targets.length + ' letter' + (targets.length === 1 ? '' : 's') + '.');
+}
+// Copy another letter's traced outline into the current letter as a starting point (one undoable step).
+function openCopyOutline(){
+  const t = curLetter(); if (!t) return;
+  const tgt = document.getElementById('copyOutlineTarget'); if (tgt) tgt.textContent = t.name;
+  const host = document.getElementById('copyOutlineList'); host.innerHTML = '';
+  const sources = project.letters.filter(L => L.codepoint !== t.codepoint && L.contours && L.contours.length);
+  if (!sources.length) { status('No other letters have a traced outline to copy yet.'); return; }
+  let first = true;
+  sources.forEach(L => {
+    const lab = document.createElement('label'); lab.className = 'chk'; lab.style.cssText = 'font-size:0.84rem;';
+    lab.innerHTML = `<input type="radio" name="copyOutlineSrc" class="co-cp" value="${L.codepoint}"${first?' checked':''}> <span style="font-family:${project.template.font};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.codepoint,16))}</span> ${escapeHtml(L.name)}`;
+    host.appendChild(lab); first = false;
+  });
+  const w = document.getElementById('copyOutlineWidth'); if (w) w.checked = false;
+  aOpenModal('copyOutlineOverlay', closeCopyOutline);
+}
+function closeCopyOutline(){ aCloseModal('copyOutlineOverlay'); }
+function copyOutlineDo(){
+  const t = curLetter(); if (!t) { closeCopyOutline(); return; }
+  const cp = (document.querySelector('#copyOutlineList .co-cp:checked')||{}).value;
+  const src = cp && project.letters.find(l => l.codepoint === cp);
+  if (!src || !src.contours) { status('Pick a letter that has a traced outline.'); return; }
+  const alsoWidth = !!(document.getElementById('copyOutlineWidth') && document.getElementById('copyOutlineWidth').checked);
+  const clone = v => v ? JSON.parse(JSON.stringify(v)) : null;
+  udDo([itemScope()], 'copy outline from ' + src.name, () => {
+    t.contours = clone(src.contours);
+    t.curves   = clone(src.curves);
+    t.handEdited = false;                          // a fresh copy → node-edit/re-trace warnings reset
+    if (alsoWidth) { t.advance = src.advance; t.lsb = src.lsb; t.rsb = src.rsb; }   // otherwise keep the target's own metrics
+    if (!t.anchors) seedAnchors(t);                // keep existing placement if any; else seed from the new shape
+    renderGrids(); renderStage(); renderControls();
+  });
+  closeCopyOutline();
+  status('Copied outline from ' + src.name + ' — reshape it with “✎ Edit points”.');
 }
 function init() {
   initDark(); initPanels();
