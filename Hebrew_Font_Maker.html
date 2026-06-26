@@ -1407,10 +1407,11 @@ function svgUploadOn() { return !!(project && project.font && project.font.svgUp
 /* A glyph whose outline is already vector (from a font file OR an imported SVG) — skips Align/Trace. */
 function isVectorGlyph(l) { return project.inputMode === 'font' || !!(l && l.source && l.source.kind === 'svg'); }
 /* Spacing — single source of truth so the live preview matches the exported font exactly */
-function fontSpacing() { return (project && project.font && project.font.spacing) || { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם' }; }
+function fontSpacing() { return (project && project.font && project.font.spacing) || { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם', kernTarget:40 }; }
 function effLetterAdvance(l) { const base = (l && l.advance) || Math.round(LETTER_TOP*0.7); return Math.max(50, base + fontSpacing().letterSpacing); }
 function wordAdvance() { return Math.max(0, fontSpacing().wordSpacing); }
 function fontKerning() { return (project && project.font && Array.isArray(project.font.kerning)) ? project.font.kerning : []; }
+function kernTargetGap() { const t = fontSpacing().kernTarget; return t != null ? t : 40; }   // target whitespace "Suggest pairs" aims for
 const KERN_CLASS_FINALS = ['05DA','05DD','05DF','05E3','05E5'];        // final kaf/mem/nun/pe/tsadi
 const KERN_CLASS_DESC   = LETTERS.filter(l => l.desc).map(l => l.cp);  // descenders → 05DA 05DF 05E3 05E5 05E7
 /* ── Glyph-metric accessors: project.font.metrics is the live source of truth; the consts above are the seed/defaults ── */
@@ -1565,7 +1566,7 @@ function newProject() {
       trop:   { enabled: false, mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, halign: {} },
       customMarks: { enabled: true, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },   // user-defined nikkud marks added via the Custom glyphs tab
       metrics: { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP, descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB },
-      spacing: { letterSpacing: 0, wordSpacing: 260, lineSpacing: 0, sample: 'שלום עולם' },
+      spacing: { letterSpacing: 0, wordSpacing: 260, lineSpacing: 0, sample: 'שלום עולם', kernTarget: 40 },
       includeDigitsPunct: true,
       addCustomGlyphs: false,
       svgUpload: false,
@@ -6062,7 +6063,8 @@ function renderKerningSection() {
       <button id="kernAddBtn" class="ctl-btn primary" onclick="addOrUpdateKernPair()">${isUpdate?'Update pair':'Add pair'}</button>
       <button class="ctl-btn" onclick="suggestKernPairs()">Suggest pairs</button>
     </div>
-    <div class="hint" style="margin-top:4px;">Negative = tighter, positive = looser (font units). Preview &amp; exported font use the same value; Preview PDF shows it shaped in full.</div>
+    <div class="inline" style="margin-top:6px;">Auto-tightness <input type="range" min="-40" max="160" step="5" value="${kernTargetGap()}" oninput="setKernTarget(this.value)" onchange="udBurstCommit()"> <span id="kernTgtV" class="readout">${kernTargetGap()}</span></div>
+    <div class="hint" style="margin-top:4px;">Negative = tighter, positive = looser (font units). “Suggest pairs” seeds an even starting gap toward <b>Auto-tightness</b> (lower = tighter); Preview PDF shows it shaped in full.</div>
     ${pairs.length ? `<div class="hint" style="margin-top:8px;">${nReady} of ${pairs.length} pair${pairs.length>1?'s':''} will be exported.${nReady<pairs.length?' Pairs marked “⚠ untraced” or “set a gap” are skipped.':''}</div><div style="margin-top:4px;">${rows}</div>` : '<div class="hint" style="margin-top:8px;">No pairs yet — pick two glyphs (or a class on either side) and Add.</div>'}`;
   renderKernPreview();
   renderSpacingPreview();   // keep the big multi-line sample in sync with every kerning add/update/delete
@@ -6127,10 +6129,12 @@ function loadKernPair(i) {
   kernEdit = { left: side(k.left), right: side(k.right), value: k.value|0 };
   renderKerningSection();
 }
+function setKernTarget(v) { udBurstBegin([{t:'spacing'}], 'kern tightness'); fontSpacing().kernTarget = Math.max(-40, Math.min(160, +v||0)); const s = document.getElementById('kernTgtV'); if (s) s.textContent = fontSpacing().kernTarget; }
 function suggestKernPairs() {
   const cps = [...(fontSpacing().sample || '')]
     .map(ch => ch.codePointAt(0)).filter(c => !(c>=0x0591 && c<=0x05C7) && c!==0x20)        // base letters only (drop marks + space)
     .map(c => c.toString(16).toUpperCase().padStart(4,'0'));
+  const target = kernTargetGap(), MIN_CLEAR = 10, EPS = 6;
   const seen = new Set(), cand = [];
   for (let i = 0; i < cps.length - 1; i++) {
     const a = cps[i], b = cps[i+1], key = a + '|' + b;       // reading order: a first (right), b second (left)
@@ -6138,17 +6142,20 @@ function suggestKernPairs() {
     if (kernPairIndex([a],[b]) >= 0) continue;               // already defined
     const la = project.letters.find(x=>x.codepoint===a), lb = project.letters.find(x=>x.codepoint===b);
     if (!la || !lb || !la.contours || !lb.contours) continue;
-    cand.push({ a, b, gap: (effLetterAdvance(la) - letterInkRight(la)) + letterInkLeft(lb) });   // whitespace between the ink edges
+    // facing whitespace at kern 0 — RTL: a sits right, b left, so it's a's LEFT sidebearing + b's RIGHT sidebearing
+    const inkGap = letterInkLeft(la) + (effLetterAdvance(lb) - letterInkRight(lb));
+    let v = Math.max(-200, Math.min(200, Math.round(target - inkGap)));   // pull toward the target gap, within slider range
+    v = Math.max(v, -Math.max(0, inkGap - MIN_CLEAR));                     // never tighten past the ink (keep ≥ MIN_CLEAR clearance)
+    cand.push({ a, b, v });
   }
-  cand.sort((x,y) => y.gap - x.gap);
-  const pick = cand.slice(0, 15);
-  if (!pick.length) { status('No new traced pairs in the sample text — trace more letters or lengthen the sample.'); return; }
+  const pick = cand.filter(p => Math.abs(p.v) >= EPS).sort((x,y) => Math.abs(y.v) - Math.abs(x.v)).slice(0, 15);
+  if (!pick.length) { status('No new pairs need adjusting — trace more letters, lengthen the sample, or change Auto-tightness.'); return; }
   udDo([{t:'kerning'}], 'suggest kerning pairs', () => {
     if (!Array.isArray(project.font.kerning)) project.font.kerning = [];
-    pick.forEach(p => project.font.kerning.push({ left:[p.a], right:[p.b], value:0 }));
+    pick.forEach(p => project.font.kerning.push({ left:[p.a], right:[p.b], value:p.v }));
   });
   renderKerningSection();
-  status(`Added ${pick.length} candidate pair${pick.length>1?'s':''} at gap 0 — drag each to tune.`);
+  status(`Added ${pick.length} pair${pick.length>1?'s':''} at an even starting gap — fine-tune any.`);
 }
 function savePlacement() {
   const l = curLetter();
@@ -9027,8 +9034,8 @@ function migrateProject(data) {
     if (!data.font.customMarks.custom) data.font.customMarks.custom = {};
     if (!data.font.customMarks.combinedImage) data.font.customMarks.combinedImage = { dataUrl: null };
     data.font.customMarks.mode = 'custom';
-    if (!data.font.spacing) data.font.spacing = { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם' };
-    else { const sp = data.font.spacing; if (sp.letterSpacing==null) sp.letterSpacing=0; if (sp.wordSpacing==null) sp.wordSpacing=260; if (sp.lineSpacing==null) sp.lineSpacing=0; if (!sp.sample) sp.sample='שלום עולם'; }
+    if (!data.font.spacing) data.font.spacing = { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם', kernTarget:40 };
+    else { const sp = data.font.spacing; if (sp.letterSpacing==null) sp.letterSpacing=0; if (sp.wordSpacing==null) sp.wordSpacing=260; if (sp.lineSpacing==null) sp.lineSpacing=0; if (!sp.sample) sp.sample='שלום עולם'; if (sp.kernTarget==null) sp.kernTarget=40; }
     if (!Array.isArray(data.font.kerning)) data.font.kerning = [];
   }
   return data;
