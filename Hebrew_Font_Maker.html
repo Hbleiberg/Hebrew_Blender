@@ -974,6 +974,16 @@
   </div>
 </div>
 
+<div class="overlay" id="kernClassOverlay" onclick="if(event.target===this)closeKernClass()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="kernClassTitle" style="max-width:480px;">
+    <h3 id="kernClassTitle">New kern class</h3>
+    <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;">A named group of letters you can kern as a unit (e.g. all wide-top letters). Use it on either side of a pair; editing the class later updates every pair that uses it.</p>
+    <label class="fld" style="font-size:0.84rem;">Class name <input type="text" id="kernClassName" placeholder="e.g. Wide tops" style="width:100%;box-sizing:border-box;"></label>
+    <div id="kernClassList" style="display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;max-height:42vh;overflow:auto;margin-top:8px;"></div>
+    <div class="mbtns"><button class="tbtn ghost" onclick="closeKernClass()">Cancel</button><button class="tbtn" onclick="saveKernClass()">Save class</button></div>
+  </div>
+</div>
+
 <script>
 /* ════════════════════════════════════════════════════════════════════════
    Hebrew Font Maker — single-file client-side font foundry
@@ -1479,6 +1489,7 @@ function udSnap(s) {
     const o = {}; for (const k in it) if (!ITEM_SKIP[k]) o[k] = JSON.parse(JSON.stringify(it[k])); return o; }
   if (s.t === 'spacing') return JSON.parse(JSON.stringify(project.font.spacing));
   if (s.t === 'kerning') return JSON.parse(JSON.stringify(project.font.kerning || []));
+  if (s.t === 'kernClasses') return JSON.parse(JSON.stringify(project.font.kernClasses || []));
   if (s.t === 'metrics') return JSON.parse(JSON.stringify(project.font.metrics));
   if (s.t === 'guides') return JSON.parse(JSON.stringify(project.guides || { show:true, items:[] }));
   if (s.t === 'precomp') { const pc = getPrecomp(s.target); return pc ? { anchor: pc.anchor ? JSON.parse(JSON.stringify(pc.anchor)) : null, markScale: (pc.markScale != null ? pc.markScale : null), widthScale: (pc.widthScale != null ? pc.widthScale : null) } : null; }
@@ -1492,6 +1503,7 @@ function udRestore(s, snap) {
     it.source = keepSrc; if (keepSaved !== undefined) it.savedAnchors = keepSaved; }
   else if (s.t === 'spacing') Object.assign(project.font.spacing, JSON.parse(JSON.stringify(snap || {})));
   else if (s.t === 'kerning') project.font.kerning = JSON.parse(JSON.stringify(snap || []));
+  else if (s.t === 'kernClasses') project.font.kernClasses = JSON.parse(JSON.stringify(snap || []));
   else if (s.t === 'metrics') Object.assign(project.font.metrics, JSON.parse(JSON.stringify(snap || {})));
   else if (s.t === 'guides') project.guides = JSON.parse(JSON.stringify(snap || { show:true, items:[] }));
   else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) { pc.anchor = (snap && snap.anchor) ? JSON.parse(JSON.stringify(snap.anchor)) : null; pc.markScale = (snap && snap.markScale != null) ? snap.markScale : null; pc.widthScale = (snap && snap.widthScale != null) ? snap.widthScale : null; } }
@@ -1557,7 +1569,7 @@ function blankLetter(L) {
 }
 function newProject() {
   project = {
-    _ivritSuite: 1, format: 'hebrew-font-maker-project', schemaVersion: 4, tool: 'FontMaker',
+    _ivritSuite: 1, format: 'hebrew-font-maker-project', schemaVersion: 5, tool: 'FontMaker',
     savedAt: new Date().toISOString(),
     font: {
       familyName: 'My Hebrew Hand', reservedFontName: 'My Hebrew Hand', author: '', license: 'ofl',
@@ -1572,7 +1584,8 @@ function newProject() {
       svgUpload: false,
       addEnglishLetters: false,
       addSpecialForms: false, addYiddish: false, addLadino: false,   // opt-in extra glyph tabs
-      kerning: []
+      kerning: [],
+      kernClasses: []
     },
     template: { font: "'Noto Sans Hebrew', sans-serif", opacity: 0.35, showOverlay: true },
     view: { imgOpacityAlign: 0.92, imgOpacityTrace: 0.28, glyphOpacity: 1.0 },
@@ -1931,7 +1944,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '1.8';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '1.9';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2139,6 +2152,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v1.9</strong> — More kerning power. <strong>Suggest pairs</strong> now proposes an <strong>even starting gap</strong> — set by a new <strong>Auto-tightness</strong> slider — instead of seeding zeros, so one click gets you most of the way (it also measures the correct RTL facing edges). And you can define your own <strong>kern classes</strong>: reusable named letter groups (alongside the built-in Finals &amp; Descenders) that you kern as a unit on either side of a pair — edit a class and every pair using it updates. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.8</strong> — <strong>Kerning</strong> is easier to dial in. The big <strong>sample preview now updates live</strong> as you drag a pair's gap or add/remove pairs — not just the little two-glyph preview — so you see the effect in real words. The pair list now flags anything that <strong>won't export</strong> — <strong>⚠ untraced</strong> glyphs or pairs still at <strong>0</strong> — with an "<em>N of M pairs will be exported</em>" summary, and highlights the pair you're editing. A reading-order hint clarifies that in Hebrew the <strong>first letter sits on the right</strong>, and class sides (Finals / Descenders) now show what they cover. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.7</strong> — Drawing aids for consistency. New <strong>guides</strong>: drop adjustable <strong>horizontal &amp; vertical lines</strong> on the canvas — drag them or type an exact position — that <strong>stay put across every letter</strong>, perfect for matching stroke thicknesses &amp; heights. <strong>Copy outline from another letter</strong> seeds the current letter from one you've already drawn (copy <strong>Tav</strong>, delete the toe → <strong>Het</strong>, <strong>He</strong>, <strong>Resh</strong>), then reshape with <strong>✎ Edit points</strong>. And the built-in <strong>ḥataf-patach &amp; ḥataf-kamatz</strong> now have their sh'va dots <strong>aligned</strong>. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.6</strong> — New tools for spotting <strong>stacked-mark clashes</strong>. A <strong>Two marks</strong> tab in the Quality-check pairs any mark you pick (e.g. dagesh) with every other mark on every letter and flags where they overlap — handy for <strong>Babylonian</strong> pointing (vowels, dagesh &amp; raphe all sit above) and two-vowel letters like יְרוּשָׁלִַם; the <strong>Stacked</strong> tab now also flags a vowel that collides with its trop. While placing nikkud you can <strong>preview a 2nd mark</strong> on the current letter and get a live overlap warning. <strong>Raphe</strong> now appears in the above-letter picker. <span style="color:var(--muted);">(June 2026)</span></li>
@@ -6003,14 +6017,27 @@ function renderSpacingPreview() {
    project.font.kerning = [{left:[cp…], right:[cp…], value}] in logical (reading) order — a singleton
    side is a plain pair, 2+ is class kerning. The live preview reuses glyphPathAt so it matches the
    exported `kern` feature exactly; real HarfBuzz validates it in Preview PDF / export. */
-let kernEdit = null;
+let kernEdit = null, kernClassEditId = null, _kernClassSeq = 1;
 function kernEnsureEdit() { if (!kernEdit) kernEdit = { left:{cp:'05D5',cls:''}, right:{cp:'05D5',cls:''}, value:0 }; return kernEdit; }
 function sameSet(a, b) { return !!a && !!b && a.length === b.length && a.every(x => b.includes(x)); }
-function kernClassCps(cls) { return cls === 'finals' ? KERN_CLASS_FINALS : cls === 'desc' ? KERN_CLASS_DESC : null; }
+function userKernClasses() { return (project && project.font && Array.isArray(project.font.kernClasses)) ? project.font.kernClasses : []; }
+function kernClassCps(cls) {
+  if (cls === 'finals') return KERN_CLASS_FINALS;
+  if (cls === 'desc')   return KERN_CLASS_DESC;
+  if (cls && cls.indexOf('c_') === 0) { const c = userKernClasses().find(x => x.id === cls); return (c && c.members && c.members.length) ? c.members : null; }
+  return null;
+}
+function kernSideDisplay(s) {   // text for the side input: a single glyph, or the class' glyphs/name
+  if (!s.cls) return String.fromCodePoint(parseInt(s.cp, 16));
+  if (s.cls === 'finals') return 'ך ם ן ף ץ';
+  if (s.cls === 'desc')   return 'Descenders';
+  const c = userKernClasses().find(x => x.id === s.cls); return c ? c.name : '?';
+}
 function kernSideCps(s) { return (kernClassCps(s.cls) || [s.cp]).slice(); }                  // the class array, or the single glyph
 function kernSideLabel(cps) {
   if (sameSet(cps, KERN_CLASS_FINALS)) return 'Finals';
   if (sameSet(cps, KERN_CLASS_DESC))   return 'Descenders';
+  const uc = userKernClasses().find(c => sameSet(cps, c.members)); if (uc) return uc.name;
   return (cps || []).map(cp => String.fromCodePoint(parseInt(cp, 16))).join(' ');
 }
 function kernPairIndex(left, right) { return fontKerning().findIndex(k => sameSet(k.left, left) && sameSet(k.right, right)); }
@@ -6028,13 +6055,14 @@ function renderKerningSection() {
   const sideUI = (which, s) => `
     <div style="flex:1;min-width:0;">
       <div class="metric-sub" style="margin-bottom:3px;">${which === 'left' ? 'First (right)' : 'Second (left)'}</div>
-      <input type="text" dir="rtl" maxlength="2" ${s.cls ? 'disabled' : ''} value="${s.cls ? (s.cls==='finals' ? 'ך ם ן ף ץ' : 'Descenders') : escapeHtml(String.fromCodePoint(parseInt(s.cp, 16)))}"
+      <input type="text" dir="rtl" maxlength="2" ${s.cls ? 'disabled' : ''} value="${escapeHtml(kernSideDisplay(s))}"
         oninput="setKernGlyph('${which}', this.value)" placeholder="–"
         style="width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:5px;padding:5px;font-size:1.2rem;text-align:center;background:var(--white);color:var(--text);font-family:var(--heb-font);">
       <select onchange="setKernClass('${which}', this.value)" style="width:100%;box-sizing:border-box;margin-top:4px;border:1px solid var(--border);border-radius:5px;padding:4px;font-size:0.72rem;background:var(--white);color:var(--text);">
         <option value=""       ${s.cls===''       ? 'selected' : ''}>Single glyph</option>
         <option value="finals" ${s.cls==='finals' ? 'selected' : ''}>Finals (ך ם ן ף ץ)</option>
         <option value="desc"   ${s.cls==='desc'   ? 'selected' : ''}>Descenders</option>
+        ${userKernClasses().map(c => `<option value="${c.id}" ${s.cls===c.id?'selected':''}>${escapeHtml(c.name)}</option>`).join('')}
       </select>
     </div>`;
   const isUpdate = kernPairIndex(kernSideCps(e.left), kernSideCps(e.right)) >= 0;
@@ -6058,6 +6086,7 @@ function renderKerningSection() {
     <div class="row2" style="gap:10px;align-items:flex-start;">${sideUI('left', e.left)}${sideUI('right', e.right)}</div>
     <div class="hint" style="margin-top:3px;">Type the pair in reading order — in Hebrew the first letter sits on the <b>right</b>.</div>
     <svg id="kernPreviewSvg" style="width:100%;height:auto;max-height:120px;margin-top:8px;"></svg>
+    ${(e.left.cls||e.right.cls) ? `<div class="hint" style="margin-top:-2px;font-size:0.62rem;">Preview shows one member of each class.</div>` : ''}
     <div class="inline" style="margin-top:2px;">Gap <input type="range" min="-200" max="200" step="5" value="${e.value}" oninput="setKernValue(this.value)"> <span id="kernV" class="readout">${e.value>0?'+':''}${e.value|0}</span></div>
     <div class="ctl-row" style="margin-top:6px;">
       <button id="kernAddBtn" class="ctl-btn primary" onclick="addOrUpdateKernPair()">${isUpdate?'Update pair':'Add pair'}</button>
@@ -6065,7 +6094,8 @@ function renderKerningSection() {
     </div>
     <div class="inline" style="margin-top:6px;">Auto-tightness <input type="range" min="-40" max="160" step="5" value="${kernTargetGap()}" oninput="setKernTarget(this.value)" onchange="udBurstCommit()"> <span id="kernTgtV" class="readout">${kernTargetGap()}</span></div>
     <div class="hint" style="margin-top:4px;">Negative = tighter, positive = looser (font units). “Suggest pairs” seeds an even starting gap toward <b>Auto-tightness</b> (lower = tighter); Preview PDF shows it shaped in full.</div>
-    ${pairs.length ? `<div class="hint" style="margin-top:8px;">${nReady} of ${pairs.length} pair${pairs.length>1?'s':''} will be exported.${nReady<pairs.length?' Pairs marked “⚠ untraced” or “set a gap” are skipped.':''}</div><div style="margin-top:4px;">${rows}</div>` : '<div class="hint" style="margin-top:8px;">No pairs yet — pick two glyphs (or a class on either side) and Add.</div>'}`;
+    ${pairs.length ? `<div class="hint" style="margin-top:8px;">${nReady} of ${pairs.length} pair${pairs.length>1?'s':''} will be exported.${nReady<pairs.length?' Pairs marked “⚠ untraced” or “set a gap” are skipped.':''}</div><div style="margin-top:4px;">${rows}</div>` : '<div class="hint" style="margin-top:8px;">No pairs yet — pick two glyphs (or a class on either side) and Add.</div>'}
+    ${kernClassManagerHTML()}`;
   renderKernPreview();
   renderSpacingPreview();   // keep the big multi-line sample in sync with every kerning add/update/delete
 }
@@ -6123,9 +6153,13 @@ function addOrUpdateKernPair() {
 function deleteKernPair(i) { udDo([{t:'kerning'}], 'delete kerning pair', () => { (project.font.kerning||[]).splice(i, 1); }); renderKerningSection(); }
 function loadKernPair(i) {
   const k = fontKerning()[i]; if (!k) return;
-  const side = cps => sameSet(cps, KERN_CLASS_FINALS) ? {cp:'05D5',cls:'finals'}
-                    : sameSet(cps, KERN_CLASS_DESC)   ? {cp:'05D5',cls:'desc'}
-                    : {cp:(cps && cps[0]) || '05D5', cls:''};
+  const side = cps => {
+    if (sameSet(cps, KERN_CLASS_FINALS)) return {cp:'05D5', cls:'finals'};
+    if (sameSet(cps, KERN_CLASS_DESC))   return {cp:'05D5', cls:'desc'};
+    const uc = userKernClasses().find(c => sameSet(cps, c.members));
+    if (uc) return {cp:'05D5', cls: uc.id};
+    return {cp:(cps && cps[0]) || '05D5', cls:''};
+  };
   kernEdit = { left: side(k.left), right: side(k.right), value: k.value|0 };
   renderKerningSection();
 }
@@ -6156,6 +6190,71 @@ function suggestKernPairs() {
   });
   renderKerningSection();
   status(`Added ${pick.length} pair${pick.length>1?'s':''} at an even starting gap — fine-tune any.`);
+}
+/* ── Kern classes — reusable named letter groups (project.font.kernClasses); pair sides stay arrays,
+   so editing a class propagates to pairs built from its old member set. ── */
+function kernClassManagerHTML() {
+  const builtins = [
+    `<div class="readline" style="gap:8px;align-items:center;"><span>Finals <span style="font-family:var(--heb-font);color:var(--muted);">ך ם ן ף ץ</span></span><span style="color:var(--muted);font-size:0.6rem;flex-shrink:0;">built-in</span></div>`,
+    `<div class="readline" style="gap:8px;align-items:center;"><span>Descenders</span><span style="color:var(--muted);font-size:0.6rem;flex-shrink:0;">built-in</span></div>`
+  ];
+  const user = userKernClasses().map(c => `<div class="readline" style="gap:8px;align-items:center;">
+      <span style="min-width:0;">${escapeHtml(c.name)} <span style="font-family:var(--heb-font);color:var(--muted);font-size:0.92rem;">${escapeHtml((c.members||[]).map(cp=>String.fromCodePoint(parseInt(cp,16))).join(' '))}</span></span>
+      <span style="display:flex;gap:6px;flex-shrink:0;">
+        <button class="ctl-btn" style="padding:2px 8px;" onclick="openKernClass('${c.id}')">Edit</button>
+        <button class="ctl-btn" style="padding:2px 8px;" onclick="deleteKernClass('${c.id}')" title="Delete class">✕</button>
+      </span></div>`);
+  return `
+    <div class="ctl-label" style="margin-top:14px;">Kern classes</div>
+    <div class="hint" style="margin-top:-2px;">Reusable letter groups — pick one on either side of a pair. Editing a class updates every pair that uses it.</div>
+    <div style="margin-top:4px;">${builtins.concat(user).join('')}</div>
+    <div class="ctl-row" style="margin-top:4px;"><button class="ctl-btn" onclick="openKernClass()">+ New class</button></div>`;
+}
+function openKernClass(id) {
+  kernClassEditId = id || null;
+  const c = id ? userKernClasses().find(x => x.id === id) : null;
+  const sel = new Set(c ? c.members : []);
+  document.getElementById('kernClassTitle').textContent = c ? 'Edit kern class' : 'New kern class';
+  document.getElementById('kernClassName').value = c ? c.name : '';
+  const host = document.getElementById('kernClassList'); host.innerHTML = '';
+  LETTERS.filter(L => L.cat !== 'punct').forEach(L => {
+    const lab = document.createElement('label'); lab.className = 'chk'; lab.style.cssText = 'font-size:0.84rem;';
+    lab.innerHTML = `<input type="checkbox" class="kc-cp" value="${L.cp}" ${sel.has(L.cp)?'checked':''}> <span style="font-family:${project.template.font};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${escapeHtml(L.name)}`;
+    host.appendChild(lab);
+  });
+  aOpenModal('kernClassOverlay', closeKernClass);
+}
+function closeKernClass(){ aCloseModal('kernClassOverlay'); }
+function deleteKernClass(id) {
+  const c = userKernClasses().find(x => x.id === id); if (!c) return;
+  if (!confirm(`Delete kern class “${c.name}”? Pairs that use it keep their current letters.`)) return;
+  udDo([{t:'kernClasses'}], 'delete kern class', () => { project.font.kernClasses = userKernClasses().filter(x => x.id !== id); });
+  renderKerningSection();
+}
+function saveKernClass() {
+  const name = (document.getElementById('kernClassName').value || '').trim();
+  const members = [...document.querySelectorAll('#kernClassList .kc-cp:checked')].map(c => c.value);
+  if (!name) { status('Give the class a name.'); return; }
+  if (!members.length) { status('Pick at least one letter for the class.'); return; }
+  udDo([{t:'kerning'},{t:'kernClasses'}], 'kern class', () => {
+    if (!Array.isArray(project.font.kernClasses)) project.font.kernClasses = [];
+    if (kernClassEditId) {
+      const c = project.font.kernClasses.find(x => x.id === kernClassEditId);
+      if (c) {
+        const old = (c.members || []).slice();
+        c.name = name; c.members = members;
+        (project.font.kerning || []).forEach(k => {          // propagate to pairs built from the old member set
+          if (sameSet(k.left, old))  k.left  = members.slice();
+          if (sameSet(k.right, old)) k.right = members.slice();
+        });
+      }
+    } else {
+      project.font.kernClasses.push({ id: 'c_' + Date.now().toString(36) + '_' + (_kernClassSeq++), name, members });
+    }
+  });
+  closeKernClass();
+  renderKerningSection();
+  status('Kern class saved.');
 }
 function savePlacement() {
   const l = curLetter();
@@ -7576,14 +7675,17 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
   const builtSet = new Set(baseGlyphNames);
   const kernSide = cps => (cps || []).map(gname).filter(n => builtSet.has(n));
   const kernMap = new Map();   // key → emitted line; a later duplicate overwrites the value, position stable (last wins)
-  (project.font.kerning || []).forEach(k => {
+  const emitKern = k => {
     if (!k || !k.value) return;                                  // value 0 (incl. un-tuned "Suggest" seeds) → omit
     const L = kernSide(k.left), R = kernSide(k.right);
     if (!L.length || !R.length) return;                          // a side resolved to no built glyph → skip
     const lhs = L.length > 1 ? `[${L.join(' ')}]` : L[0];
     const rhs = R.length > 1 ? `[${R.join(' ')}]` : R[0];
     kernMap.set(lhs + '\t' + rhs, `  pos ${lhs} ${rhs} ${k.value};\n`);
-  });
+  };
+  const kernSingle = k => (k.left||[]).length === 1 && (k.right||[]).length === 1;
+  (project.font.kerning || []).filter(k => k && kernSingle(k)).forEach(emitKern);    // specific glyph pairs first…
+  (project.font.kerning || []).filter(k => k && !kernSingle(k)).forEach(emitKern);   // …then class pairs, so a specific pair wins on overlap
   if (kernMap.size) {
     let kernLines = ''; kernMap.forEach(line => { kernLines += line; });
     f += '# kern: pair in logical (reading) order; value = first-glyph x-advance (− tightens, + loosens)\n';
@@ -9037,6 +9139,7 @@ function migrateProject(data) {
     if (!data.font.spacing) data.font.spacing = { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם', kernTarget:40 };
     else { const sp = data.font.spacing; if (sp.letterSpacing==null) sp.letterSpacing=0; if (sp.wordSpacing==null) sp.wordSpacing=260; if (sp.lineSpacing==null) sp.lineSpacing=0; if (!sp.sample) sp.sample='שלום עולם'; if (sp.kernTarget==null) sp.kernTarget=40; }
     if (!Array.isArray(data.font.kerning)) data.font.kerning = [];
+    if (!Array.isArray(data.font.kernClasses)) data.font.kernClasses = [];   // user-defined kern classes
   }
   return data;
 }
