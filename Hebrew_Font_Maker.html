@@ -2152,7 +2152,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v1.9</strong> — More kerning power. <strong>Suggest pairs</strong> now proposes an <strong>even starting gap</strong> — set by a new <strong>Auto-tightness</strong> slider — instead of seeding zeros, so one click gets you most of the way (it also measures the correct RTL facing edges). And you can define your own <strong>kern classes</strong>: reusable named letter groups (alongside the built-in Finals &amp; Descenders) that you kern as a unit on either side of a pair — edit a class and every pair using it updates. <span style="color:var(--muted);">(June 2026)</span></li>
+      <li><strong>v1.9</strong> — More kerning power. <strong>Suggest pairs</strong> now proposes an <strong>even starting gap</strong> — set by a new <strong>Auto-tightness</strong> slider — instead of seeding zeros, so one click gets you most of the way — measured <strong>optically</strong> from the real outlines (with the correct RTL facing edges), so overhanging letters like ר &amp; ד tuck under the next one. And you can define your own <strong>kern classes</strong>: reusable named letter groups (alongside the built-in Finals &amp; Descenders) that you kern as a unit on either side of a pair — edit a class and every pair using it updates. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.8</strong> — <strong>Kerning</strong> is easier to dial in. The big <strong>sample preview now updates live</strong> as you drag a pair's gap or add/remove pairs — not just the little two-glyph preview — so you see the effect in real words. The pair list now flags anything that <strong>won't export</strong> — <strong>⚠ untraced</strong> glyphs or pairs still at <strong>0</strong> — with an "<em>N of M pairs will be exported</em>" summary, and highlights the pair you're editing. A reading-order hint clarifies that in Hebrew the <strong>first letter sits on the right</strong>, and class sides (Finals / Descenders) now show what they cover. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.7</strong> — Drawing aids for consistency. New <strong>guides</strong>: drop adjustable <strong>horizontal &amp; vertical lines</strong> on the canvas — drag them or type an exact position — that <strong>stay put across every letter</strong>, perfect for matching stroke thicknesses &amp; heights. <strong>Copy outline from another letter</strong> seeds the current letter from one you've already drawn (copy <strong>Tav</strong>, delete the toe → <strong>Het</strong>, <strong>He</strong>, <strong>Resh</strong>), then reshape with <strong>✎ Edit points</strong>. And the built-in <strong>ḥataf-patach &amp; ḥataf-kamatz</strong> now have their sh'va dots <strong>aligned</strong>. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.6</strong> — New tools for spotting <strong>stacked-mark clashes</strong>. A <strong>Two marks</strong> tab in the Quality-check pairs any mark you pick (e.g. dagesh) with every other mark on every letter and flags where they overlap — handy for <strong>Babylonian</strong> pointing (vowels, dagesh &amp; raphe all sit above) and two-vowel letters like יְרוּשָׁלִַם; the <strong>Stacked</strong> tab now also flags a vowel that collides with its trop. While placing nikkud you can <strong>preview a 2nd mark</strong> on the current letter and get a live overlap warning. <strong>Raphe</strong> now appears in the above-letter picker. <span style="color:var(--muted);">(June 2026)</span></li>
@@ -6093,7 +6093,7 @@ function renderKerningSection() {
       <button class="ctl-btn" onclick="suggestKernPairs()">Suggest pairs</button>
     </div>
     <div class="inline" style="margin-top:6px;">Auto-tightness <input type="range" min="-40" max="160" step="5" value="${kernTargetGap()}" oninput="setKernTarget(this.value)" onchange="udBurstCommit()"> <span id="kernTgtV" class="readout">${kernTargetGap()}</span></div>
-    <div class="hint" style="margin-top:4px;">Negative = tighter, positive = looser (font units). “Suggest pairs” seeds an even starting gap toward <b>Auto-tightness</b> (lower = tighter); Preview PDF shows it shaped in full.</div>
+    <div class="hint" style="margin-top:4px;">Negative = tighter, positive = looser (font units). “Suggest pairs” seeds an even starting gap toward <b>Auto-tightness</b> (lower = tighter), measured <b>optically</b> so overhanging letters tuck in; Preview PDF shows it shaped in full.</div>
     ${pairs.length ? `<div class="hint" style="margin-top:8px;">${nReady} of ${pairs.length} pair${pairs.length>1?'s':''} will be exported.${nReady<pairs.length?' Pairs marked “⚠ untraced” or “set a gap” are skipped.':''}</div><div style="margin-top:4px;">${rows}</div>` : '<div class="hint" style="margin-top:8px;">No pairs yet — pick two glyphs (or a class on either side) and Add.</div>'}
     ${kernClassManagerHTML()}`;
   renderKernPreview();
@@ -6163,6 +6163,47 @@ function loadKernPair(i) {
   kernEdit = { left: side(k.left), right: side(k.right), value: k.value|0 };
   renderKerningSection();
 }
+/* Optical inter-letter clearance (font units) for Suggest: sample the real outlines on scanlines and take
+   the smallest gap between the right letter's left edge and the left letter's right edge across the heights
+   where BOTH have ink — so an overhang (ר, ד) can tuck under the next letter. Falls back to the box
+   (sidebearing) estimate when the two letters don't vertically overlap. */
+function contoursYRange(contours) {
+  let mn = 1e9, mx = -1e9;
+  (contours || []).forEach(c => (c.points || []).forEach(p => { if (p[1] < mn) mn = p[1]; if (p[1] > mx) mx = p[1]; }));
+  return mn <= mx ? { minY: mn, maxY: mx } : null;
+}
+function kernEdgeXAtY(contours, y, which) {   // leftmost ('min') / rightmost ('max') ink x where the outline crosses height y; null if none
+  let best = null;
+  (contours || []).forEach(c => {
+    const pts = c.points; if (!pts || pts.length < 2) return;
+    for (let i = 0; i < pts.length; i++) {
+      const a = pts[i], b = pts[(i + 1) % pts.length], y0 = a[1], y1 = b[1];
+      if (y0 === y1) continue;
+      if ((y >= y0 && y <= y1) || (y >= y1 && y <= y0)) {
+        const x = a[0] + (b[0] - a[0]) * ((y - y0) / (y1 - y0));
+        best = (best === null) ? x : (which === 'min' ? Math.min(best, x) : Math.max(best, x));
+      }
+    }
+  });
+  return best;
+}
+function kernOpticalGap(la, lb) {
+  const advB = effLetterAdvance(lb);
+  const boxGap = letterInkLeft(la) + (advB - letterInkRight(lb));   // box fallback
+  if (!la.contours || !lb.contours) return boxGap;
+  const ra = contoursYRange(la.contours), rb = contoursYRange(lb.contours);
+  if (!ra || !rb) return boxGap;
+  const yLo = Math.max(ra.minY, rb.minY), yHi = Math.min(ra.maxY, rb.maxY);
+  if (!(yHi > yLo)) return boxGap;                                  // no shared height → box estimate
+  let minClear = Infinity;
+  for (let y = yLo; y <= yHi; y += 20) {                            // right letter's left edge vs left letter's right edge, at this height
+    const laL = kernEdgeXAtY(la.contours, y, 'min'), lbR = kernEdgeXAtY(lb.contours, y, 'max');
+    if (laL === null || lbR === null) continue;
+    const clear = advB + laL - lbR;
+    if (clear < minClear) minClear = clear;
+  }
+  return isFinite(minClear) ? Math.round(minClear) : boxGap;
+}
 function setKernTarget(v) { udBurstBegin([{t:'spacing'}], 'kern tightness'); fontSpacing().kernTarget = Math.max(-40, Math.min(160, +v||0)); const s = document.getElementById('kernTgtV'); if (s) s.textContent = fontSpacing().kernTarget; }
 function suggestKernPairs() {
   const cps = [...(fontSpacing().sample || '')]
@@ -6176,8 +6217,7 @@ function suggestKernPairs() {
     if (kernPairIndex([a],[b]) >= 0) continue;               // already defined
     const la = project.letters.find(x=>x.codepoint===a), lb = project.letters.find(x=>x.codepoint===b);
     if (!la || !lb || !la.contours || !lb.contours) continue;
-    // facing whitespace at kern 0 — RTL: a sits right, b left, so it's a's LEFT sidebearing + b's RIGHT sidebearing
-    const inkGap = letterInkLeft(la) + (effLetterAdvance(lb) - letterInkRight(lb));
+    const inkGap = kernOpticalGap(la, lb);   // optical clearance from the real outlines (per-height; falls back to box geometry)
     let v = Math.max(-200, Math.min(200, Math.round(target - inkGap)));   // pull toward the target gap, within slider range
     v = Math.max(v, -Math.max(0, inkGap - MIN_CLEAR));                     // never tighten past the ink (keep ≥ MIN_CLEAR clearance)
     cand.push({ a, b, v });
