@@ -2445,14 +2445,19 @@ function userGuidesSVG(){
   let h = '';
   g.items.forEach(it => {
     const col = it.color || '#19b3c6';
+    const w = Math.max(1, Math.min(4, +it.weight || 1));
+    const gstyle = it.style || 'dashed';
+    const dash = gstyle === 'solid'  ? ''
+               : gstyle === 'dotted' ? ` stroke-dasharray="${w} ${w*2}" stroke-linecap="round"`
+               : ` stroke-dasharray="${w*2} ${w*2}"`;   // dashed
     if (it.axis === 'v') {                       // vertical line — drag left/right (font X)
       const x = fx(it.pos);
-      h += `<line x1="${x.toFixed(1)}" y1="152" x2="${x.toFixed(1)}" y2="556" stroke="${col}" stroke-width="1" stroke-dasharray="2 4" opacity="0.85" pointer-events="none"/>`;
+      h += `<line x1="${x.toFixed(1)}" y1="152" x2="${x.toFixed(1)}" y2="556" stroke="${col}" stroke-width="${w}"${dash} opacity="0.85" pointer-events="none"/>`;
       h += `<circle class="guide-h" data-guide-id="${it.id}" cx="${x.toFixed(1)}" cy="162" r="6" fill="${col}" stroke="#fff" stroke-width="2.5" paint-order="stroke" style="cursor:ew-resize;filter:drop-shadow(0 0 1px rgba(0,0,0,0.5));"><title>Guide x=${Math.round(it.pos)} — drag</title></circle>`;
       h += `<text x="${(x+8).toFixed(1)}" y="166" fill="${col}" font-size="9" font-family="monospace" pointer-events="none">${Math.round(it.pos)}</text>`;
     } else {                                     // horizontal line — drag up/down (font Y)
       const y = fy(it.pos);
-      h += `<line x1="8" y1="${y.toFixed(1)}" x2="592" y2="${y.toFixed(1)}" stroke="${col}" stroke-width="1" stroke-dasharray="2 4" opacity="0.85" pointer-events="none"/>`;
+      h += `<line x1="8" y1="${y.toFixed(1)}" x2="592" y2="${y.toFixed(1)}" stroke="${col}" stroke-width="${w}"${dash} opacity="0.85" pointer-events="none"/>`;
       h += `<circle class="guide-h" data-guide-id="${it.id}" cx="18" cy="${y.toFixed(1)}" r="6" fill="${col}" stroke="#fff" stroke-width="2.5" paint-order="stroke" style="cursor:ns-resize;filter:drop-shadow(0 0 1px rgba(0,0,0,0.5));"><title>Guide y=${Math.round(it.pos)} — drag</title></circle>`;
       h += `<text x="30" y="${(y-5).toFixed(1)}" fill="${col}" font-size="9" font-family="monospace" pointer-events="none">${Math.round(it.pos)}</text>`;
     }
@@ -2476,10 +2481,12 @@ function addGuide(axis){
   const pos = axis === 'v'
     ? Math.round((dispAdvance(curLetter()) || effMetrics().letterTop*0.7) / 2)   // mid-width
     : Math.round(effMetrics().letterTop / 2);                                    // mid cap-height
-  udDo([{t:'guides'}], 'add guide', () => { g.show = true; g.items.push({ id: newGuideId(), axis, pos, color: '#19b3c6' }); renderStage(); renderControls(); });
+  udDo([{t:'guides'}], 'add guide', () => { g.show = true; g.items.push({ id: newGuideId(), axis, pos, color: '#19b3c6', style: 'dashed', weight: 1 }); renderStage(); renderControls(); });
 }
 function setGuidePos(id, v){ const it = guideById(id); if (!it) return; udDo([{t:'guides'}], 'guide position', () => { it.pos = Math.round(+v || 0); renderStage(); renderControls(); }); }
 function setGuideColor(id, c){ const it = guideById(id); if (!it) return; udDo([{t:'guides'}], 'guide color', () => { it.color = c; renderStage(); }); }
+function setGuideStyle(id, s){ const it = guideById(id); if (!it) return; udDo([{t:'guides'}], 'guide style', () => { it.style = s; renderStage(); }); }
+function setGuideWeight(id, w){ const it = guideById(id); if (!it) return; udDo([{t:'guides'}], 'guide weight', () => { it.weight = Math.max(1, Math.min(4, +w || 1)); renderStage(); }); }
 function deleteGuide(id){ const g = ensureGuides(); udDo([{t:'guides'}], 'delete guide', () => { g.items = g.items.filter(x => x.id !== id); renderStage(); renderControls(); }); }
 function clearGuides(){ const g = ensureGuides(); if (!g.items.length) return; if (!confirm('Remove all guides?')) return; udDo([{t:'guides'}], 'clear guides', () => { g.items = []; renderStage(); renderControls(); }); }
 function toggleGuides(on){ const g = ensureGuides(); g.show = on; markDirty(); renderStage(); renderControls(); }
@@ -2489,7 +2496,14 @@ function guidesPanelHTML(){
     <div style="display:flex;align-items:center;gap:5px;margin:3px 0;">
       <span style="width:12px;text-align:center;color:var(--muted);font-weight:700;">${it.axis==='v'?'│':'─'}</span>
       <input type="color" value="${it.color||'#19b3c6'}" oninput="setGuideColor('${it.id}',this.value)" title="Guide color" style="width:22px;height:20px;padding:0;border:1px solid var(--border);background:none;cursor:pointer;border-radius:3px;">
-      <input type="number" value="${Math.round(it.pos)}" step="1" onchange="setGuidePos('${it.id}',this.value)" title="${it.axis==='v'?'X':'Y'} position (font units)" style="width:66px;">
+      <select onchange="setGuideStyle('${it.id}',this.value)" title="Line style" style="width:62px;font-size:0.68rem;padding:1px 2px;border:1px solid var(--border);border-radius:3px;">
+        <option value="solid" ${(it.style||'dashed')==='solid'?'selected':''}>Solid</option>
+        <option value="dotted" ${(it.style||'dashed')==='dotted'?'selected':''}>Dotted</option>
+        <option value="dashed" ${(it.style||'dashed')==='dashed'?'selected':''}>Dashed</option>
+      </select>
+      <input type="number" value="${+it.weight||1}" min="1" max="4" step="0.5" onchange="setGuideWeight('${it.id}',this.value)" title="Line weight (px)" style="width:42px;">
+      <span style="color:var(--muted);font-size:0.62rem;">px</span>
+      <input type="number" value="${Math.round(it.pos)}" step="1" onchange="setGuidePos('${it.id}',this.value)" title="${it.axis==='v'?'X':'Y'} position (font units)" style="width:58px;">
       <span style="color:var(--muted);font-size:0.68rem;">${it.axis==='v'?'X':'Y'}</span>
       <button class="ctl-btn" style="padding:1px 7px;margin-left:auto;" onclick="deleteGuide('${it.id}')" title="Delete this guide">×</button>
     </div>`).join('');
