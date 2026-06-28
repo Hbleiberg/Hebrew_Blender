@@ -528,6 +528,35 @@
   .ws-split::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; transform: translateX(-50%); background: var(--border); border-radius: 2px; transition: background .12s, width .12s; }
   .ws-split:hover::before, .ws-split.dragging::before { width: 4px; background: var(--gold); }
   .ws-side-title { font-size: 0.74rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  /* ── Guide cards ── */
+  .guide-card { border: 1px solid var(--border); border-radius: 7px; background: var(--white); margin: 5px 0; overflow: visible; }
+  .guide-card.dragging { opacity: 0.45; }
+  .guide-card.drag-over { border-color: var(--gold, #c9922a); box-shadow: 0 0 0 2px rgba(201,146,42,0.18); }
+  .guide-card-head { display: flex; align-items: center; gap: 5px; padding: 4px 6px; }
+  .guide-handle { cursor: grab; font-weight: 700; color: var(--muted); width: 16px; text-align: center; flex-shrink: 0; user-select: none; line-height: 1; font-size: 0.95rem; }
+  .guide-handle:active { cursor: grabbing; }
+  .guide-orient { width: 11px; text-align: center; color: var(--muted); font-weight: 700; flex-shrink: 0; }
+  .guide-color { width: 22px; height: 20px; padding: 0; border: 1px solid var(--border); background: none; cursor: pointer; border-radius: 3px; flex-shrink: 0; }
+  .guide-name { flex: 1 1 auto; min-width: 0; font-family: inherit; font-size: 0.82rem; font-weight: 600; color: var(--text); background: transparent; border: 1px solid transparent; border-radius: 4px; padding: 2px 5px; }
+  .guide-name:hover { border-color: var(--border); }
+  .guide-name:focus { border-color: var(--gold, #c9922a); background: var(--cream, #fdf8ef); outline: none; }
+  .guide-rename { background: none; border: none; color: var(--muted); font-size: 0.66rem; font-family: inherit; cursor: pointer; padding: 1px 3px; flex-shrink: 0; text-decoration: underline; }
+  .guide-rename:hover { color: var(--text); }
+  .guide-del { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 4px; width: 22px; height: 22px; cursor: pointer; font-size: 0.8rem; line-height: 1; flex-shrink: 0; }
+  .guide-del:hover { color: #c0392b; border-color: #c0392b; }
+  .guide-card-body { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; padding: 2px 8px 8px 8px; }
+  .guide-lbl { font-size: 0.7rem; color: var(--muted); }
+  .guide-size { width: 84px; accent-color: var(--gold, #c9922a); }
+  .guide-pos { width: 58px; }
+  /* visual line-style dropdown */
+  .guide-style-dd { position: relative; flex-shrink: 0; }
+  .guide-style-trig { display: flex; align-items: center; gap: 3px; background: var(--white); border: 1px solid var(--border); border-radius: 4px; padding: 2px 5px; cursor: pointer; }
+  .guide-style-caret { font-size: 0.6rem; color: var(--muted); }
+  .guide-style-menu { display: none; position: absolute; top: calc(100% + 3px); left: 0; z-index: 50; background: var(--white); border: 1px solid var(--border); border-radius: 5px; box-shadow: 0 3px 10px rgba(0,0,0,0.18); padding: 3px; }
+  .guide-style-dd.open .guide-style-menu { display: block; }
+  .guide-style-opt { padding: 4px 8px; border-radius: 4px; cursor: pointer; }
+  .guide-style-opt:hover { background: var(--cream, #fdf8ef); }
+  .guide-style-opt.sel { background: rgba(201,146,42,0.14); }
   .ws-under-row { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
   .ws-under-row .under-spacer { flex: 1 1 auto; }
   .ws-under-grow { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 9px; }
@@ -2481,32 +2510,99 @@ function addGuide(axis){
   const pos = axis === 'v'
     ? Math.round((dispAdvance(curLetter()) || effMetrics().letterTop*0.7) / 2)   // mid-width
     : Math.round(effMetrics().letterTop / 2);                                    // mid cap-height
-  udDo([{t:'guides'}], 'add guide', () => { g.show = true; g.items.push({ id: newGuideId(), axis, pos, color: '#19b3c6', style: 'dashed', weight: 1 }); renderStage(); renderControls(); });
+  const n = g.items.filter(x => x.axis === axis).length + 1;   // per-axis numbering for the default name
+  udDo([{t:'guides'}], 'add guide', () => { g.show = true; g.items.push({ id: newGuideId(), axis, pos, color: '#19b3c6', style: 'dashed', weight: 1, name: `${axis==='v'?'Vertical':'Horizontal'} ${n}`, collapsed: false }); renderStage(); renderControls(); });
 }
 function setGuidePos(id, v){ const it = guideById(id); if (!it) return; udDo([{t:'guides'}], 'guide position', () => { it.pos = Math.round(+v || 0); renderStage(); renderControls(); }); }
 function setGuideColor(id, c){ const it = guideById(id); if (!it) return; udDo([{t:'guides'}], 'guide color', () => { it.color = c; renderStage(); }); }
-function setGuideStyle(id, s){ const it = guideById(id); if (!it) return; udDo([{t:'guides'}], 'guide style', () => { it.style = s; renderStage(); }); }
-function setGuideWeight(id, w){ const it = guideById(id); if (!it) return; udDo([{t:'guides'}], 'guide weight', () => { it.weight = Math.max(1, Math.min(4, +w || 1)); renderStage(); }); }
-function deleteGuide(id){ const g = ensureGuides(); udDo([{t:'guides'}], 'delete guide', () => { g.items = g.items.filter(x => x.id !== id); renderStage(); renderControls(); }); }
+function setGuideStyle(id, s){ const it = guideById(id); if (!it) return; udDo([{t:'guides'}], 'guide style', () => { it.style = s; renderStage(); renderControls(); }); }
+function setGuideWeight(id, w){ const it = guideById(id); if (!it) return; udBurstBegin([{t:'guides'}], 'guide weight'); it.weight = Math.max(1, Math.min(4, +w || 1)); renderStage(); }   // slider drag → one undo entry (committed on change)
+function setGuideName(id, name){ const it = guideById(id); if (!it) return; const v = (name||'').trim(); if (!v || v === it.name) return; udDo([{t:'guides'}], 'rename guide', () => { it.name = v; renderStage(); }); }
+function toggleGuideCollapse(id){ const it = guideById(id); if (!it) return; it.collapsed = !it.collapsed; markDirty(); renderControls(); }   // pure UI — not an undo step
+function reorderGuides(orderedIds){ const g = ensureGuides(); udDo([{t:'guides'}], 'reorder guides', () => { const byId = Object.fromEntries(g.items.map(i => [i.id, i])); g.items = orderedIds.map(id => byId[id]).filter(Boolean); renderStage(); renderControls(); }); }
+function deleteGuide(id){ const g = ensureGuides(); const it = guideById(id); if (!it) return; if (!confirm(`Delete "${it.name || 'this guide'}"?`)) return; udDo([{t:'guides'}], 'delete guide', () => { g.items = g.items.filter(x => x.id !== id); renderStage(); renderControls(); }); }
 function clearGuides(){ const g = ensureGuides(); if (!g.items.length) return; if (!confirm('Remove all guides?')) return; udDo([{t:'guides'}], 'clear guides', () => { g.items = []; renderStage(); renderControls(); }); }
 function toggleGuides(on){ const g = ensureGuides(); g.show = on; markDirty(); renderStage(); renderControls(); }
+const GUIDE_STYLES = ['solid','dotted','dashed'];   // shared order for the visual dropdown
+function guideStylePreviewSVG(style, color, w){     // one dash definition shared by trigger, menu rows & canvas
+  const sw = Math.max(1, Math.min(4, +w || 1));
+  const dash = style === 'solid'  ? ''
+             : style === 'dotted' ? ` stroke-dasharray="${sw} ${sw*2}" stroke-linecap="round"`
+             : ` stroke-dasharray="${sw*2} ${sw*2}"`;
+  return `<svg width="46" height="12" viewBox="0 0 46 12" style="display:block;"><line x1="2" y1="6" x2="44" y2="6" stroke="${color}" stroke-width="${sw}"${dash}/></svg>`;
+}
+function toggleGuideStyleMenu(id){
+  const wrap = document.querySelector(`.guide-style-dd[data-guide-id="${id}"]`);
+  if (!wrap) return;
+  const open = wrap.classList.contains('open');
+  document.querySelectorAll('.guide-style-dd.open').forEach(w => w.classList.remove('open'));
+  if (!open) wrap.classList.add('open');
+}
+function pickGuideStyle(id, style){
+  const wrap = document.querySelector(`.guide-style-dd[data-guide-id="${id}"]`);
+  if (wrap) wrap.classList.remove('open');
+  setGuideStyle(id, style);
+}
+document.addEventListener('click', e => {     // outside-click closes any open style menu
+  if (!document.querySelector('.guide-style-dd.open')) return;
+  if (e.target.closest('.guide-style-dd')) return;
+  document.querySelectorAll('.guide-style-dd.open').forEach(w => w.classList.remove('open'));
+});
+function attachGuideSortable(){
+  const list = document.getElementById('guideCardList');
+  if (!list) return;
+  let dragSrc = null;
+  list.querySelectorAll('.guide-card').forEach(card => {
+    const handle = card.querySelector('.guide-handle');
+    if (!handle) return;
+    handle.addEventListener('dragstart', e => { dragSrc = card; card.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; });
+    handle.addEventListener('dragend', () => { card.classList.remove('dragging'); list.querySelectorAll('.guide-card').forEach(c => c.classList.remove('drag-over')); });
+    card.addEventListener('dragover', e => {
+      e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+      list.querySelectorAll('.guide-card').forEach(c => c.classList.remove('drag-over'));
+      if (card !== dragSrc) card.classList.add('drag-over');
+    });
+    card.addEventListener('drop', e => {
+      e.preventDefault();
+      if (!dragSrc || dragSrc === card) return;
+      const cards = [...list.querySelectorAll('.guide-card')];
+      const fromIdx = cards.indexOf(dragSrc), toIdx = cards.indexOf(card);
+      const ids = cards.map(c => c.dataset.guideId);
+      ids.splice(toIdx, 0, ids.splice(fromIdx, 1)[0]);
+      reorderGuides(ids);
+    });
+  });
+}
 function guidesPanelHTML(){
   const g = ensureGuides();
-  const rows = g.items.map(it => `
-    <div style="display:flex;align-items:center;gap:5px;margin:3px 0;">
-      <span style="width:12px;text-align:center;color:var(--muted);font-weight:700;">${it.axis==='v'?'│':'─'}</span>
-      <input type="color" value="${it.color||'#19b3c6'}" oninput="setGuideColor('${it.id}',this.value)" title="Guide color" style="width:22px;height:20px;padding:0;border:1px solid var(--border);background:none;cursor:pointer;border-radius:3px;">
-      <select onchange="setGuideStyle('${it.id}',this.value)" title="Line style" style="width:62px;font-size:0.68rem;padding:1px 2px;border:1px solid var(--border);border-radius:3px;">
-        <option value="solid" ${(it.style||'dashed')==='solid'?'selected':''}>Solid</option>
-        <option value="dotted" ${(it.style||'dashed')==='dotted'?'selected':''}>Dotted</option>
-        <option value="dashed" ${(it.style||'dashed')==='dashed'?'selected':''}>Dashed</option>
-      </select>
-      <input type="number" value="${+it.weight||1}" min="1" max="4" step="0.5" onchange="setGuideWeight('${it.id}',this.value)" title="Line weight (px)" style="width:42px;">
-      <span style="color:var(--muted);font-size:0.62rem;">px</span>
-      <input type="number" value="${Math.round(it.pos)}" step="1" onchange="setGuidePos('${it.id}',this.value)" title="${it.axis==='v'?'X':'Y'} position (font units)" style="width:58px;">
-      <span style="color:var(--muted);font-size:0.68rem;">${it.axis==='v'?'X':'Y'}</span>
-      <button class="ctl-btn" style="padding:1px 7px;margin-left:auto;" onclick="deleteGuide('${it.id}')" title="Delete this guide">×</button>
-    </div>`).join('');
+  const rows = g.items.map(it => {
+    const col = it.color || '#19b3c6';
+    const st = it.style || 'dashed';
+    const nm = it.name || (it.axis==='v' ? 'Vertical' : 'Horizontal');
+    const menu = GUIDE_STYLES.map(s => `
+        <div class="guide-style-opt${s===st?' sel':''}" onclick="pickGuideStyle('${it.id}','${s}')" title="${s.charAt(0).toUpperCase()+s.slice(1)}">${guideStylePreviewSVG(s, col, it.weight)}</div>`).join('');
+    return `
+    <div class="guide-card" data-guide-id="${it.id}">
+      <div class="guide-card-head">
+        <span class="guide-handle" draggable="true" onclick="toggleGuideCollapse('${it.id}')" title="Collapse / drag to reorder">${it.collapsed?'＋':'－'}</span>
+        <span class="guide-orient" title="${it.axis==='v'?'Vertical':'Horizontal'} guide">${it.axis==='v'?'│':'─'}</span>
+        <input type="color" value="${col}" oninput="setGuideColor('${it.id}',this.value)" title="Guide color" class="guide-color">
+        <input class="guide-name" type="text" value="${nm.replace(/"/g,'&quot;')}" onchange="setGuideName('${it.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()" title="Guide name" spellcheck="false">
+        <button class="guide-rename" onclick="this.closest('.guide-card-head').querySelector('.guide-name').focus()" title="Rename">Rename</button>
+        <button class="guide-del" onclick="deleteGuide('${it.id}')" title="Delete this guide">✕</button>
+      </div>
+      <div class="guide-card-body"${it.collapsed?' style="display:none;"':''}>
+        <div class="guide-style-dd" data-guide-id="${it.id}">
+          <button class="guide-style-trig" onclick="toggleGuideStyleMenu('${it.id}')" title="Line style">${guideStylePreviewSVG(st, col, it.weight)}<span class="guide-style-caret">▾</span></button>
+          <div class="guide-style-menu">${menu}</div>
+        </div>
+        <span class="guide-lbl">Size</span>
+        <input class="guide-size" type="range" min="1" max="4" step="0.5" value="${+it.weight||1}" oninput="setGuideWeight('${it.id}',this.value)" onchange="udBurstCommit()" title="Line weight (px)">
+        <span class="guide-lbl">Pos (${it.axis==='v'?'X':'Y'})</span>
+        <input class="guide-pos" type="number" value="${Math.round(it.pos)}" step="1" onchange="setGuidePos('${it.id}',this.value)" title="${it.axis==='v'?'X':'Y'} position (font units)">
+      </div>
+    </div>`;
+  }).join('');
   return `
     <div class="ws-side-title" style="margin-top:12px;">Guides</div>
     <label class="chk"><input type="checkbox" ${g.show?'checked':''} onchange="toggleGuides(this.checked)"> Show guides</label>
@@ -2516,7 +2612,7 @@ function guidesPanelHTML(){
       ${g.items.length ? `<button class="ctl-btn" onclick="clearGuides()">Clear</button>` : ''}
     </div>
     ${g.items.length
-      ? `<div style="margin-top:4px;">${rows}</div>`
+      ? `<div id="guideCardList" style="margin-top:6px;">${rows}</div>`
       : `<div class="hint" style="margin-top:4px;">Add a guide, then drag it on the canvas or type an exact position (font units). Guides stay put across every letter — handy for matching stroke thicknesses &amp; heights.</div>`}`;
 }
 async function uploadTemplateTTF(file) {
@@ -6372,6 +6468,7 @@ function renderControls() {
   else if (workMode === 'nodes') { renderNodeLeft(L, l); renderTraceRight(R, l); renderTraceUnder(U, l); }
   else { renderAnchorLeft(L, l); renderAnchorRight(R, l); renderAnchorUnder(U, l); }
   R.insertAdjacentHTML('beforeend', guidesPanelHTML());   // persistent guides control, present in every letter-editing mode
+  attachGuideSortable();                                   // re-bind drag-to-reorder on the guide cards each render
 }
 function renderNodeLeft(L, l) {
   L.innerHTML = `<div class="ws-side-title">Edit points — ${l.name}</div>` + nodeEditPanelHTML();
