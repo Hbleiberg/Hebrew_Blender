@@ -259,6 +259,8 @@ function showPay(which){
 
 // Fallback email assembled at runtime (kept out of static source to deter scrapers).
 const EMAIL_USER = 'Harrison', EMAIL_DOMAIN = 'IvritSuite.com';
+// Canonical HTML-escaper for user/remote strings interpolated into innerHTML (escapes all 5 metachars incl. ').
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 function emailAddr() { return EMAIL_USER + '@' + EMAIL_DOMAIN; }
 function emailLink(text, subject) {
   const q = subject ? ('?subject=' + encodeURIComponent(subject)) : '';
@@ -303,7 +305,7 @@ form.addEventListener('submit', async function(e){
       statusEl.textContent = 'Message sent ✓ — thank you! I’ll get back to you soon.';
     } else {
       statusEl.style.color = 'var(--muted)';
-      statusEl.innerHTML = (data && data.message ? data.message : 'Sorry — that didn’t go through.') +
+      statusEl.innerHTML = (data && data.message ? esc(data.message) : 'Sorry — that didn’t go through.') +
         ' You can also email ' + emailLink() + '.';
     }
   } catch (err) {

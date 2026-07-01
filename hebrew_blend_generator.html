@@ -5573,8 +5573,8 @@ function renderNameTheLetter(ws) {
   const inverse  = document.getElementById('ntlInverse').checked;
   const showAk   = document.getElementById('ntlAnswerKey').checked;
   const selfCh   = document.getElementById('ntlSelfCheck').checked;
-  const title    = document.getElementById('wsTitle').value || 'Name the Letter';
-  const subtitle = document.getElementById('wsSubtitle').value;
+  const title    = esc(document.getElementById('wsTitle').value || 'Name the Letter');
+  const subtitle = esc(document.getElementById('wsSubtitle').value);
   const cols     = autoCols(blends.length);
 
   // ── Self-check flip cards ──
@@ -6028,8 +6028,8 @@ function renderNumberPractice(ws) {
     return;
   }
 
-  const title    = document.getElementById('wsTitle').value || 'Hebrew Number Practice';
-  const subtitle = document.getElementById('wsSubtitle').value;
+  const title    = esc(document.getElementById('wsTitle').value || 'Hebrew Number Practice');
+  const subtitle = esc(document.getElementById('wsSubtitle').value);
   const display  = npDisplay;
   const showTrl  = document.getElementById('npShowTranslit').checked;
   const trlOnPg  = npTranslitPage === 'same';
@@ -7595,8 +7595,8 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
   const rwTrOnKey   = isRwGem && document.getElementById('rwShowTranslit')?.checked    && (rwTrPlace === 'key'  || rwTrPlace === 'both');
   const rwTnOnSheet = isRwGem && document.getElementById('rwShowTranslation')?.checked && (rwTnPlace === 'same' || rwTnPlace === 'both');
   const rwTnOnKey   = isRwGem && document.getElementById('rwShowTranslation')?.checked && (rwTnPlace === 'key'  || rwTnPlace === 'both');
-  const title    = document.getElementById('wsTitle').value || 'Hebrew Blends';
-  const subtitle = document.getElementById('wsSubtitle').value;
+  const title    = esc(document.getElementById('wsTitle').value || 'Hebrew Blends');
+  const subtitle = esc(document.getElementById('wsSubtitle').value);
   const cols     = autoCols(items.length);
   ws.innerHTML   = '';
 
@@ -7794,8 +7794,8 @@ function renderWorksheet(animate = false) {
   const oneLetter   = activeType === 'one';
   const nikudOnly   = activeType === 'nikud';
   const cols        = autoCols(blends.length);
-  const title       = document.getElementById('wsTitle').value || 'Hebrew Blends';
-  const subtitle    = document.getElementById('wsSubtitle').value;
+  const title       = esc(document.getElementById('wsTitle').value || 'Hebrew Blends');
+  const subtitle    = esc(document.getElementById('wsSubtitle').value);
 
   const ws = document.getElementById('worksheet');
 
@@ -9481,8 +9481,8 @@ function generateWordSearch(pool) {
     return wb;
   }
 
-  const title    = document.getElementById('wsTitle').value || 'Hebrew Word Search';
-  const subtitle = document.getElementById('wsSubtitle').value;
+  const title    = esc(document.getElementById('wsTitle').value || 'Hebrew Word Search');
+  const subtitle = esc(document.getElementById('wsSubtitle').value);
 
   // ── Student sheet ──
   const sheet = document.createElement('div');
@@ -9682,8 +9682,8 @@ function generateCrossword(pool) {
 
 function renderCrossword(d) {
   const ws = document.getElementById('worksheet');
-  const title = document.getElementById('wsTitle').value || 'Hebrew Crossword';
-  const subtitle = document.getElementById('wsSubtitle').value;
+  const title = esc(document.getElementById('wsTitle').value || 'Hebrew Crossword');
+  const subtitle = esc(document.getElementById('wsSubtitle').value);
 
   function buildTable(showLetters) {
     const tbl = document.createElement('table');
@@ -9787,8 +9787,8 @@ function renderCrossword(d) {
 
 function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnOnKey) {
   const keepDagesh = document.getElementById('rwFillVowelsDagesh')?.checked ?? false;
-  const title    = document.getElementById('wsTitle').value || 'Hebrew Words';
-  const subtitle = document.getElementById('wsSubtitle').value;
+  const title    = esc(document.getElementById('wsTitle').value || 'Hebrew Words');
+  const subtitle = esc(document.getElementById('wsSubtitle').value);
   const cols     = autoCols(words.length);
 
   const sheet = document.createElement('div');
@@ -10224,6 +10224,8 @@ function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontF
 /* ── My Fonts: user-made fonts from the shared store, shown in the picker (loaded via FontFace) ── */
 let MY_FONTS = []; const _loadedUserFonts = new Set();
 function ivEsc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
+// Canonical HTML-escaper for user/remote strings interpolated into innerHTML (escapes all 5 metachars incl. ').
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
 function allFonts() { return MY_FONTS.concat(HEB_FONTS); }
 async function refreshMyFonts() {
   try {

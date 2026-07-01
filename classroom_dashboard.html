@@ -2535,7 +2535,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         );
         const geo = await geoRes.json();
         if (!geo.results || !geo.results.length) {
-          block.innerHTML = `<div class="weather-loading">Location "${settings.location}" not found.</div>`;
+          block.innerHTML = `<div class="weather-loading">Location "${esc(settings.location)}" not found.</div>`;
           return;
         }
         place = geo.results[0];
@@ -2634,7 +2634,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       ${hlHtml}
       ${settings.hideWeatherDesc ? '' : `<div class="weather-label ${isHe ? '' : 'ltr'}">${label}</div>`}
       <div class="weather-descriptor ${isHe ? '' : 'ltr'}">${descriptor}</div>
-      <div class="weather-city">${place.name}${place.country ? ', ' + place.country : ''}</div>
+      <div class="weather-city">${esc(place.name)}${place.country ? ', ' + esc(place.country) : ''}</div>
     `;
     if (ttsOn) {
       const labelEl = block.querySelector('.weather-label');
@@ -2711,6 +2711,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function escapeHtmlDash(s) {
     return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   }
+  // Canonical HTML-escaper for user/remote strings interpolated into innerHTML (escapes all 5 metachars incl. ').
+  function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
   function initHolidayCountdown() { fetchHolidays(); }
 
@@ -3943,7 +3945,7 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
 
   function getPresetOptions(selectedName) {
     return Object.keys(presets).map(name =>
-      `<option value="${name.replace(/"/g, '&quot;')}"${name === selectedName ? ' selected' : ''}>${name}</option>`
+      `<option value="${esc(name)}"${name === selectedName ? ' selected' : ''}>${esc(name)}</option>`
     ).join('');
   }
 
