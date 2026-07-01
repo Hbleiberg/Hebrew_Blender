@@ -9317,7 +9317,10 @@ function initPanels() {
 }
 function maybeShowMobileWarn(){
   try { if (localStorage.getItem('hebrewFontMaker_mobileWarnDismissed') === '1') return; } catch(e){}
-  if (window.matchMedia && window.matchMedia('(max-width: 820px)').matches)
+  // Only warn on actual touch devices (phones/tablets). A narrow desktop window — non-maximized,
+  // split-screen, side panel open, or zoomed — is NOT mobile, so require a coarse pointer too.
+  if (window.matchMedia && window.matchMedia('(max-width: 820px)').matches
+      && window.matchMedia('(pointer: coarse)').matches)
     aOpenModal('mobileWarnOverlay', () => dismissMobileWarn(false));
 }
 function dismissMobileWarn(goBack){
