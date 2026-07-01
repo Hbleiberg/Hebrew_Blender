@@ -1162,10 +1162,21 @@ function saveSettings() {
     catch (e) { console.warn('saveSettings', e); }
   }, 300);
 }
+// Parse JSON from possibly-imported input, dropping keys that could pollute Object.prototype.
+function ivritSafeParse(str) {
+  return JSON.parse(str, (k, v) =>
+    (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v);
+}
+function ivritSafeAssign(target, src) {
+  if (src && typeof src === 'object')
+    for (const k in src) if (Object.prototype.hasOwnProperty.call(src, k) &&
+        k !== '__proto__' && k !== 'constructor' && k !== 'prototype') target[k] = src[k];
+  return target;
+}
 function loadSettings() {
   try {
-    const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (s && typeof s === 'object') Object.assign(settings, s);
+    const s = ivritSafeParse(localStorage.getItem(STORAGE_KEY));
+    if (s && typeof s === 'object') ivritSafeAssign(settings, s);
   } catch (e) {}
 }
 function resetAllSettings() {

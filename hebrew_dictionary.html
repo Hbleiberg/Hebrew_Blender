@@ -2438,11 +2438,16 @@ let emojiGender = 'all';        // 'all' | 'masc' | 'fem'
 let emojiSelectedSubs = null;   // Set of "Category|Subcategory" — null = all selected
 let emojiFiltered = [];
 
+// Parse JSON from possibly-imported input, dropping keys that could pollute Object.prototype.
+function ivritSafeParse(str) {
+  return JSON.parse(str, (k, v) =>
+    (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v);
+}
 function loadEmojiSettings() {
   try {
     const raw = localStorage.getItem(EMOJI_SETTINGS_KEY);
     if (!raw) return null;
-    return JSON.parse(raw);
+    return ivritSafeParse(raw);
   } catch(e) { return null; }
 }
 function saveEmojiSettings() {

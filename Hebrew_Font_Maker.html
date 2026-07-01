@@ -8972,6 +8972,11 @@ async function downloadTemplate(kind, fmt) {
 }
 
 function escapeHtml(s) { return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+// Parse JSON from untrusted input (imported project files), dropping keys that could pollute Object.prototype.
+function ivritSafeParse(str) {
+  return JSON.parse(str, (k, v) =>
+    (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v);
+}
 
 /* ════════════════════════════════════════════════════════════════════════
    PROJECT SAVE / LOAD
@@ -9044,7 +9049,7 @@ async function loadProjectFile(file) {
     } else {
       text = new TextDecoder().decode(buf);                     // legacy plain-JSON .json
     }
-    data = JSON.parse(text);
+    data = ivritSafeParse(text);
   } catch { status('Not a valid project file.'); return; }
   if (await applyProjectData(data)) status('Project loaded.');
 }
@@ -9181,9 +9186,9 @@ function _autosaveRelTime(iso) {
 async function maybeRestoreAutosave() {
   let rec = null, data = null, stripped = false;
   try { rec = await autosaveGet(); } catch (e) {}
-  if (rec && rec.gz) { try { data = JSON.parse(await gunzipText(rec.gz)); } catch (e) { data = null; } }
+  if (rec && rec.gz) { try { data = ivritSafeParse(await gunzipText(rec.gz)); } catch (e) { data = null; } }
   if (!data) {   // IndexedDB miss → try the stripped localStorage fallback
-    try { const raw = localStorage.getItem('hebrewFontMaker_autosave'); if (raw) { data = JSON.parse(raw); stripped = true; } } catch (e) {}
+    try { const raw = localStorage.getItem('hebrewFontMaker_autosave'); if (raw) { data = ivritSafeParse(raw); stripped = true; } } catch (e) {}
   }
   if (!data || data.format !== 'hebrew-font-maker-project') return;
   askModal('Continue where you left off?',

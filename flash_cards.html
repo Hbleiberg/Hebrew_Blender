@@ -3060,7 +3060,7 @@ function saveSettings() {
 }
 function loadSettings() {
   try {
-    const s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || 'null');
+    const s = ivritSafeParse(localStorage.getItem(SETTINGS_KEY) || 'null');
     if (s) applySettings(s);
     else {
       // sensible defaults: all letters except sofit, main vowels
@@ -3076,7 +3076,7 @@ function loadSettings() {
 }
 
 function readPresets() {
-  try { return JSON.parse(localStorage.getItem(PRESET_KEY) || '{}'); } catch(e) { return {}; }
+  try { return ivritSafeParse(localStorage.getItem(PRESET_KEY) || '{}'); } catch(e) { return {}; }
 }
 function writePresets(obj) {
   try { localStorage.setItem(PRESET_KEY, JSON.stringify(obj)); } catch(e){}
@@ -3392,10 +3392,10 @@ function exportPresets() {
 function importPresets() {
   try {
     const text = document.getElementById('backupArea').value;
-    const data = JSON.parse(text);
+    const data = ivritSafeParse(text);
     if (data.presets) {
       const existing = readPresets();
-      writePresets(Object.assign(existing, data.presets));
+      writePresets(ivritSafeAssign(existing, data.presets));
       renderPresets();
       alert('Imported successfully.');
     } else {
@@ -3426,7 +3426,7 @@ function shareCodeEncode(obj) {
 function shareCodeDecode(code) {
   let b = String(code).trim().replace(/\s+/g, '').replace(/-/g, '+').replace(/_/g, '/');
   while (b.length % 4) b += '=';
-  return JSON.parse(decodeURIComponent(escape(atob(b))));
+  return ivritSafeParse(decodeURIComponent(escape(atob(b))));
 }
 function generateShareCode() {
   const payload = { v: 1, tool: 'FlashCards', data: getSettings() };
@@ -3520,7 +3520,7 @@ const MAX_RESULTS_PER_PROFILE = 50;
 
 function readProfiles() {
   try {
-    const o = JSON.parse(localStorage.getItem(PROFILES_KEY) || 'null');
+    const o = ivritSafeParse(localStorage.getItem(PROFILES_KEY) || 'null');
     if (o && typeof o === 'object' && o.profiles) return o;
   } catch (e) {}
   return { activeProfile: null, profiles: {} };
@@ -4237,6 +4237,19 @@ const IVRIT_CFG = {
 };
 
 /* ═══════════ IvritSuite .ivrit save-file engine (shared, identical across pages) ═══════════ */
+function ivritSafeParse(str) {
+  // Parse JSON from untrusted input (files, share codes, URL params),
+  // dropping keys that could pollute Object.prototype.
+  return JSON.parse(str, (k, v) =>
+    (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v);
+}
+function ivritSafeAssign(target, src) {
+  // Object.assign that never copies the three prototype-pollution keys.
+  if (src && typeof src === 'object')
+    for (const k in src) if (Object.prototype.hasOwnProperty.call(src, k) &&
+        k !== '__proto__' && k !== 'constructor' && k !== 'prototype') target[k] = src[k];
+  return target;
+}
 function ivritDateStamp() {
   const d = new Date();
   const m = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -4290,7 +4303,7 @@ function ivritToolMismatch(fileTool) {
 }
 async function ivritRestore(text, sourceName) {
   let parsed;
-  try { parsed = JSON.parse(text); }
+  try { parsed = ivritSafeParse(text); }
   catch (e) { alert('That file could not be read as a .ivrit save file.'); return; }
   let payload = parsed;
   if (!(parsed && parsed.format === 'ivrit-save')) {

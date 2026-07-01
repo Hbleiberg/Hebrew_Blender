@@ -3408,7 +3408,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       countdownShowPresetName: settings.countdownShowPresetName,
       currentSchedule:        settings.currentSchedule,
     };
-    Object.assign(settings, s);
+    ivritSafeAssign(settings, s);
     Object.assign(settings, savedSchedule);
     setHebFont(settings.hebFont);
     syncFormToSettings();
@@ -3450,9 +3450,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   }
   function loadSettingsFromStorage() {
     try {
-      const saved = JSON.parse(localStorage.getItem('hebrewDashboard_settings'));
+      const saved = ivritSafeParse(localStorage.getItem('hebrewDashboard_settings'));
       if (saved) {
-        Object.assign(settings, saved);
+        ivritSafeAssign(settings, saved);
         if (saved.showDOWEmojis === false) settings.dowEmojiSet = 'none';
         delete settings.showDOWEmojis;
       } else {
@@ -3465,7 +3465,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   const DEFAULT_PRESET = {"Default":{"location":"New York","engDateFmt":"MDY","showEngDOW":true,"hideEngDate":false,"hebDateScript":"translit","hideHebDate":false,"timeFmt":"12","hideTime":false,"tempUnit":"F","weatherLabelLang":"he","simpleWeatherDesc":false,"hideWeatherEmoji":false,"hideWeatherDesc":false,"hideWeather":false,"dowLang":"he","showYesterday":true,"showToday":true,"showTomorrow":true,"dowEmojiSet":"chick","colorDays":true,"headerLang":"he","hideDOW":false,"enableDashText":true,"dashTextHTML":"<div>This dashboard has support for <b>bold</b>, <i>italics</i>, <u>underline</u> and <strike>strikethrough</strike>. You can insert <a href=\"https://google.com\" target=\"_blank\" rel=\"noopener noreferrer\">links</a>.</div><div><br></div><div style=\"text-align: center;\">You can center text.</div><div>Change the <font size=\"6\">size</font>.</div><div>And you can also <span class=\"spoiler\">hide spoilers</span>. (Click the box.)</div><div><br></div><div>Click the gear icon at the top to edit this text and change how this dashboard works!</div>","hebFont":"Frank Ruhl Libre","showNikkud":true,"colorCodeNikkud":false,"colorCodingMode":"letter","nikudColorOverrides":{},"dashTextSize":1.8,"showTimer":true,"showTimerFullscreen":true,"showYestTomorrow":true}};
 
   function loadPresets() {
-    try { presets = JSON.parse(localStorage.getItem('hebrewDashboard_presets')) || {}; }
+    try { presets = ivritSafeParse(localStorage.getItem('hebrewDashboard_presets')) || {}; }
     catch (e) { presets = {}; }
     if (Object.keys(presets).length === 0) {
       Object.assign(presets, DEFAULT_PRESET);
@@ -3766,12 +3766,12 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
   function importPresets() {
     try {
       const v = document.getElementById('presetBackupBox').value;
-      const parsed = JSON.parse(v);
+      const parsed = ivritSafeParse(v);
       if (parsed.presets) {
-        Object.assign(presets, parsed.presets);
-        if (parsed.savedSchedules) Object.assign(savedSchedules, parsed.savedSchedules);
+        ivritSafeAssign(presets, parsed.presets);
+        if (parsed.savedSchedules) ivritSafeAssign(savedSchedules, parsed.savedSchedules);
       } else {
-        Object.assign(presets, parsed);
+        ivritSafeAssign(presets, parsed);
       }
       savePresetsStorage();
       saveSchedulesStorage();
@@ -3800,14 +3800,14 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
       const sf = data.scheduleFolders || data.dashboardScheduleFolders;
       if (p) {
         if (mode === 'replace') Object.keys(presets).forEach(k => delete presets[k]);
-        Object.assign(presets, p);
+        ivritSafeAssign(presets, p);
         savePresetsStorage();
       }
       if (pf) ftImportTree('hebrewDashboard_presetsFolders', pf, mode === 'replace');
       if (p || pf) renderPresets();
       if (sch && typeof savedSchedules !== 'undefined') {
         if (mode === 'replace') Object.keys(savedSchedules).forEach(k => delete savedSchedules[k]);
-        Object.assign(savedSchedules, sch);
+        ivritSafeAssign(savedSchedules, sch);
         saveSchedulesStorage();
       }
       if (sf) ftImportTree('hebrewDashboard_schedulesFolders', sf, mode === 'replace');
@@ -3818,6 +3818,19 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
   };
 
   /* ═══════════ IvritSuite .ivrit save-file engine (shared, identical across pages) ═══════════ */
+  function ivritSafeParse(str) {
+    // Parse JSON from untrusted input (files, share codes, URL params),
+    // dropping keys that could pollute Object.prototype.
+    return JSON.parse(str, (k, v) =>
+      (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v);
+  }
+  function ivritSafeAssign(target, src) {
+    // Object.assign that never copies the three prototype-pollution keys.
+    if (src && typeof src === 'object')
+      for (const k in src) if (Object.prototype.hasOwnProperty.call(src, k) &&
+          k !== '__proto__' && k !== 'constructor' && k !== 'prototype') target[k] = src[k];
+    return target;
+  }
   function ivritDateStamp() {
     const d = new Date();
     const m = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -3871,7 +3884,7 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
   }
   async function ivritRestore(text, sourceName) {
     let parsed;
-    try { parsed = JSON.parse(text); }
+    try { parsed = ivritSafeParse(text); }
     catch (e) { alert('That file could not be read as a .ivrit save file.'); return; }
     let payload = parsed;
     if (!(parsed && parsed.format === 'ivrit-save')) {
@@ -3918,7 +3931,7 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
     localStorage.setItem('hebrewDashboard_schedules', JSON.stringify(savedSchedules));
   }
   function loadSchedulesStorage() {
-    try { savedSchedules = JSON.parse(localStorage.getItem('hebrewDashboard_schedules')) || {}; }
+    try { savedSchedules = ivritSafeParse(localStorage.getItem('hebrewDashboard_schedules')) || {}; }
     catch (e) { savedSchedules = {}; }
   }
 

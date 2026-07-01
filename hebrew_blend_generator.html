@@ -4279,7 +4279,7 @@ function applySettings(s) {
 function savePreset() {
   const name = document.getElementById('presetName').value.trim();
   if (!name) { alert('Please enter a preset name.'); return; }
-  const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+  const presets = ivritSafeParse(localStorage.getItem('hebrewBlender_presets') || '{}');
   presets[name] = getSettings();
   localStorage.setItem('hebrewBlender_presets', JSON.stringify(presets));
   document.getElementById('presetName').value = '';
@@ -4288,19 +4288,19 @@ function savePreset() {
 
 function overwritePreset(name) {
   if (!confirm(`Overwrite preset "${name}" with current settings?`)) return;
-  const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+  const presets = ivritSafeParse(localStorage.getItem('hebrewBlender_presets') || '{}');
   presets[name] = getSettings();
   localStorage.setItem('hebrewBlender_presets', JSON.stringify(presets));
 }
 function deletePreset(name) {
   if (!confirm(`Are you sure you want to delete the preset "${name}"?`)) return;
-  const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+  const presets = ivritSafeParse(localStorage.getItem('hebrewBlender_presets') || '{}');
   delete presets[name];
   localStorage.setItem('hebrewBlender_presets', JSON.stringify(presets));
   renderPresets();
 }
 function duplicatePreset(name) {
-  const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+  const presets = ivritSafeParse(localStorage.getItem('hebrewBlender_presets') || '{}');
   if (!presets[name]) return;
   const nn = ftDuplicateName(name, x => presets[x] !== undefined);
   presets[nn] = JSON.parse(JSON.stringify(presets[name]));
@@ -4310,7 +4310,7 @@ function duplicatePreset(name) {
 }
 
 function loadPreset(name) {
-  const presets = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
+  const presets = ivritSafeParse(localStorage.getItem('hebrewBlender_presets') || '{}');
   if (presets[name]) applySettings(presets[name]);
 }
 
@@ -4350,10 +4350,10 @@ function importPresets() {
   const text = box.value.trim();
   if (!text) { alert('Paste a backup into the text box first.'); return; }
   try {
-    const parsed = JSON.parse(text);
+    const parsed = ivritSafeParse(text);
     if (typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error();
-    const existing = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
-    const merged = Object.assign({}, existing, parsed);
+    const existing = ivritSafeParse(localStorage.getItem('hebrewBlender_presets') || '{}');
+    const merged = ivritSafeAssign(ivritSafeAssign({}, existing), parsed);
     localStorage.setItem('hebrewBlender_presets', JSON.stringify(merged));
     box.value = '';
     renderPresets();
@@ -4596,7 +4596,7 @@ function renderPresets() {
     treeKey: 'hebrewBlender_presetsFolders',
     container: document.getElementById('presetList'),
     noun: 'preset',
-    listItemNames: () => Object.keys(JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}')),
+    listItemNames: () => Object.keys(ivritSafeParse(localStorage.getItem('hebrewBlender_presets') || '{}')),
     buildItemRow: (name) => {
       const f = document.createDocumentFragment();
       const mk = (txt, title, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = txt; if (title) b.title = title; if (cls) b.className = cls; b.addEventListener('click', fn); return b; };
@@ -4616,7 +4616,7 @@ const IVRIT_CFG = {
   tool: 'Worksheet',
   gather() {
     return {
-      presets: JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}'),
+      presets: ivritSafeParse(localStorage.getItem('hebrewBlender_presets') || '{}'),
       presetFolders: ftRead('hebrewBlender_presetsFolders'),
       liveState: getSettings()
     };
@@ -4624,8 +4624,8 @@ const IVRIT_CFG = {
   apply(data, mode) {
     const incoming = data.presets || data.generatorPresets;   // also accept an AllTools bundle
     if (incoming) {
-      const base = mode === 'replace' ? {} : JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
-      localStorage.setItem('hebrewBlender_presets', JSON.stringify(Object.assign(base, incoming)));
+      const base = mode === 'replace' ? {} : ivritSafeParse(localStorage.getItem('hebrewBlender_presets') || '{}');
+      localStorage.setItem('hebrewBlender_presets', JSON.stringify(ivritSafeAssign(base, incoming)));
     }
     const inFolders = data.presetFolders || data.generatorPresetFolders;
     if (inFolders) ftImportTree('hebrewBlender_presetsFolders', inFolders, mode === 'replace');
@@ -4635,6 +4635,19 @@ const IVRIT_CFG = {
 };
 
 /* ═══════════ IvritSuite .ivrit save-file engine (shared, identical across pages) ═══════════ */
+function ivritSafeParse(str) {
+  // Parse JSON from untrusted input (files, share codes, URL params),
+  // dropping keys that could pollute Object.prototype.
+  return JSON.parse(str, (k, v) =>
+    (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v);
+}
+function ivritSafeAssign(target, src) {
+  // Object.assign that never copies the three prototype-pollution keys.
+  if (src && typeof src === 'object')
+    for (const k in src) if (Object.prototype.hasOwnProperty.call(src, k) &&
+        k !== '__proto__' && k !== 'constructor' && k !== 'prototype') target[k] = src[k];
+  return target;
+}
 function ivritDateStamp() {
   const d = new Date();
   const m = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -4688,7 +4701,7 @@ function ivritToolMismatch(fileTool) {
 }
 async function ivritRestore(text, sourceName) {
   let parsed;
-  try { parsed = JSON.parse(text); }
+  try { parsed = ivritSafeParse(text); }
   catch (e) { alert('That file could not be read as a .ivrit save file.'); return; }
   let payload = parsed;
   if (!(parsed && parsed.format === 'ivrit-save')) {
@@ -10388,9 +10401,9 @@ function restoreFromURL() {
   try { s = new URLSearchParams(location.search).get('s'); } catch(e) { return; }
   if (!s) return;                                          // no param → keep defaults
   let diff;
-  try { diff = JSON.parse(shareB64Decode(s)); } catch(e) { return; } // garbage → ignore
+  try { diff = ivritSafeParse(shareB64Decode(s)); } catch(e) { return; } // garbage → ignore
   if (!diff || typeof diff !== 'object') return;
-  try { applySettings(Object.assign({}, SHARE_DEFAULTS, diff)); } catch(e) { return; }
+  try { applySettings(ivritSafeAssign(Object.assign({}, SHARE_DEFAULTS), diff)); } catch(e) { return; }
   // Auto-generate. Real-words / word-search drills need REAL_WORDS, which loads
   // async — defer to the dictionary's fetch .then() in that case.
   try {

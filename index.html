@@ -500,7 +500,7 @@ function closeIEModal(e) {
 function mergeFlashCardProfiles(incoming, replace) {
   const KEY = 'hebrewFlashCards_profiles';
   let base;
-  try { base = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { base = null; }
+  try { base = ivritSafeParse(localStorage.getItem(KEY) || 'null'); } catch (e) { base = null; }
   if (replace || !base || !base.profiles) base = { activeProfile: null, profiles: {} };
   const inc = (incoming && incoming.profiles) ? incoming : { profiles: {} };
   Object.keys(inc.profiles || {}).forEach(name => {
@@ -742,29 +742,29 @@ async function importAllSettings() {
   const raw = document.getElementById('ieTextarea').value.trim();
   if (!raw) { alert('Paste an exported settings block first.'); return; }
   let parsed;
-  try { parsed = JSON.parse(raw); } catch(e) { alert('Invalid JSON — please paste the full export block.'); return; }
+  try { parsed = ivritSafeParse(raw); } catch(e) { alert('Invalid JSON — please paste the full export block.'); return; }
   if (!parsed._hebrewBlenderExport) { alert('This doesn\'t look like a Hebrew Blender export. Make sure you copied the full block.'); return; }
   if (!confirm('This will overwrite your current dashboard settings and merge all imported presets and schedules. Continue?')) return;
   try {
     if (parsed.generatorPresets) {
-      const existing = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}');
-      localStorage.setItem('hebrewBlender_presets', JSON.stringify(Object.assign(existing, parsed.generatorPresets)));
+      const existing = ivritSafeParse(localStorage.getItem('hebrewBlender_presets') || '{}');
+      localStorage.setItem('hebrewBlender_presets', JSON.stringify(ivritSafeAssign(existing, parsed.generatorPresets)));
     }
     if (parsed.dashboardPresets) {
-      const existing = JSON.parse(localStorage.getItem('hebrewDashboard_presets') || '{}');
-      localStorage.setItem('hebrewDashboard_presets', JSON.stringify(Object.assign(existing, parsed.dashboardPresets)));
+      const existing = ivritSafeParse(localStorage.getItem('hebrewDashboard_presets') || '{}');
+      localStorage.setItem('hebrewDashboard_presets', JSON.stringify(ivritSafeAssign(existing, parsed.dashboardPresets)));
     }
     if (parsed.dashboardSchedules) {
-      const existing = JSON.parse(localStorage.getItem('hebrewDashboard_schedules') || '{}');
-      localStorage.setItem('hebrewDashboard_schedules', JSON.stringify(Object.assign(existing, parsed.dashboardSchedules)));
+      const existing = ivritSafeParse(localStorage.getItem('hebrewDashboard_schedules') || '{}');
+      localStorage.setItem('hebrewDashboard_schedules', JSON.stringify(ivritSafeAssign(existing, parsed.dashboardSchedules)));
     }
     if (parsed.dashboardSettings) {
-      const existing = JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}');
-      localStorage.setItem('hebrewDashboard_settings', JSON.stringify(Object.assign(existing, parsed.dashboardSettings)));
+      const existing = ivritSafeParse(localStorage.getItem('hebrewDashboard_settings') || '{}');
+      localStorage.setItem('hebrewDashboard_settings', JSON.stringify(ivritSafeAssign(existing, parsed.dashboardSettings)));
     }
     if (parsed.flashCardPresets) {
-      const existing = JSON.parse(localStorage.getItem('hebrewFlashCards_presets') || '{}');
-      localStorage.setItem('hebrewFlashCards_presets', JSON.stringify(Object.assign(existing, parsed.flashCardPresets)));
+      const existing = ivritSafeParse(localStorage.getItem('hebrewFlashCards_presets') || '{}');
+      localStorage.setItem('hebrewFlashCards_presets', JSON.stringify(ivritSafeAssign(existing, parsed.flashCardPresets)));
     }
     if (parsed.flashCardProfiles && parsed.flashCardProfiles.profiles) {
       mergeFlashCardProfiles(parsed.flashCardProfiles);
@@ -789,12 +789,12 @@ async function importAllSettings() {
       localStorage.setItem('hebrewDictionary_ttsRate', parsed.dictTtsRate);
     }
     if (parsed.dictEmojiSettings) {
-      const existing = JSON.parse(localStorage.getItem('hebrewDictionary_emojiSettings') || '{}');
-      localStorage.setItem('hebrewDictionary_emojiSettings', JSON.stringify(Object.assign(existing, parsed.dictEmojiSettings)));
+      const existing = ivritSafeParse(localStorage.getItem('hebrewDictionary_emojiSettings') || '{}');
+      localStorage.setItem('hebrewDictionary_emojiSettings', JSON.stringify(ivritSafeAssign(existing, parsed.dictEmojiSettings)));
     }
     if (parsed.torahTrainerSettings) {
-      const existing = JSON.parse(localStorage.getItem('hebrewTorahTrainer_settings') || '{}');
-      localStorage.setItem('hebrewTorahTrainer_settings', JSON.stringify(Object.assign(existing, parsed.torahTrainerSettings)));
+      const existing = ivritSafeParse(localStorage.getItem('hebrewTorahTrainer_settings') || '{}');
+      localStorage.setItem('hebrewTorahTrainer_settings', JSON.stringify(ivritSafeAssign(existing, parsed.torahTrainerSettings)));
     }
     if (parsed.inputMode !== undefined) {
       localStorage.setItem('hebrewBlender_inputMode', parsed.inputMode);
@@ -875,8 +875,8 @@ const IVRIT_CFG = {
   apply(data, mode) {
     const mergeObj = (key, val) => {
       if (val === undefined) return;
-      const base = mode === 'replace' ? {} : JSON.parse(localStorage.getItem(key) || '{}');
-      localStorage.setItem(key, JSON.stringify(Object.assign(base, val)));
+      const base = mode === 'replace' ? {} : ivritSafeParse(localStorage.getItem(key) || '{}');
+      localStorage.setItem(key, JSON.stringify(ivritSafeAssign(base, val)));
     };
     let touched = false;
     if (data.generatorPresets)    { mergeObj('hebrewBlender_presets',         data.generatorPresets);    touched = true; }
@@ -912,6 +912,19 @@ const IVRIT_CFG = {
 };
 
 /* ═══════════ IvritSuite .ivrit save-file engine (shared, identical across pages) ═══════════ */
+function ivritSafeParse(str) {
+  // Parse JSON from untrusted input (files, share codes, URL params),
+  // dropping keys that could pollute Object.prototype.
+  return JSON.parse(str, (k, v) =>
+    (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v);
+}
+function ivritSafeAssign(target, src) {
+  // Object.assign that never copies the three prototype-pollution keys.
+  if (src && typeof src === 'object')
+    for (const k in src) if (Object.prototype.hasOwnProperty.call(src, k) &&
+        k !== '__proto__' && k !== 'constructor' && k !== 'prototype') target[k] = src[k];
+  return target;
+}
 function ivritDateStamp() {
   const d = new Date();
   const m = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -965,7 +978,7 @@ function ivritToolMismatch(fileTool) {
 }
 async function ivritRestore(text, sourceName) {
   let parsed;
-  try { parsed = JSON.parse(text); }
+  try { parsed = ivritSafeParse(text); }
   catch (e) { alert('That file could not be read as a .ivrit save file.'); return; }
   let payload = parsed;
   if (!(parsed && parsed.format === 'ivrit-save')) {
