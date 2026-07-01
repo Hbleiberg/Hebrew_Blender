@@ -4,6 +4,49 @@
 - Always commit and push directly to `main`
 - Do not create feature branches
 
+## Security — REQUIRED patterns (safe JSON parse, `esc()`, CSP)
+
+These three rules are binding for every tool. They exist because the suite's sharing surface
+(`.ivrit` files, share codes, `?s=` URL params, the AllTools blob) carries untrusted data between
+teachers.
+
+### 1. Never bare-`JSON.parse` untrusted or import-target data — use `ivritSafeParse`
+Any JSON that originates from a **file, share code, URL param, or a localStorage key that an import
+writes** must go through `ivritSafeParse(str)` (a `JSON.parse` reviver that drops `__proto__`,
+`constructor`, and `prototype` keys at every depth) — never bare `JSON.parse`. It lives in the shared
+`.ivrit` engine block (so it's identical in the four engine files); the three non-engine tools
+(Font Maker, Dictionary, Torah Trainer) carry a small local copy. Import-side **merges** must use
+`ivritSafeAssign(target, src)` (an `Object.assign` that skips those three keys), never bare
+`Object.assign`, so a future missed parse-site still can't pollute `Object.prototype`. Leave
+`JSON.parse(JSON.stringify(...))` clones, Pyodide/HarfBuzz return-value parses, and `res.json()` on
+same-origin `data/*.json` alone — those are trusted.
+
+### 2. Any user- or network-supplied string in HTML must pass through `esc()` (or `textContent`)
+Every tool defines a canonical `esc(s)` that escapes all five HTML metacharacters
+(`& < > " '`). Any value that comes from a user input, localStorage/`.ivrit`/share code, or a remote
+API (Hebcal, Sefaria, Open-Meteo/Nominatim, PocketTorah, web3forms) and is interpolated into
+`innerHTML`/`insertAdjacentHTML`/`outerHTML` must be wrapped in `esc()` — or, preferably, assigned via
+`textContent`/`createElement`. Example: `el.innerHTML = '<div>' + esc(place.name) + '</div>';`. Static
+markup is fine as-is. For a value going into an inline event handler or a `javascript:`-capable
+attribute, `esc()` is **not** sufficient — rebuild that spot with `addEventListener`.
+
+### 3. Adding an external script/font/fetch/iframe requires updating that page's CSP meta tag
+Every page has a `<meta http-equiv="Content-Security-Policy">` right after `<meta charset>` (before any
+script/style). It uses `script-src 'unsafe-inline'` (all app JS is inline by design); its job is
+blocking remote script injection, `object-src`, `base-uri` hijacks, and unexpected `connect-src`/
+`frame-src` origins. When you add any **loaded** resource (`<script src>`, stylesheet, `@font-face`
+`url()`, `fetch`/`import()`, `new Worker`, `<iframe src>`, `<img>`/`<audio>` src, a `.wasm` fetch), add
+its origin to the correct directive on that page. Reference allowlist by page: Google Fonts + gtag
+baseline everywhere (flash_cards has **no** gtag); `esm.sh`/`cdn.jsdelivr.net` for the transliteration
+ESM + Ezra SIL font (generator, flash cards, dictionary, torah); `cdnjs.cloudflare.com` for
+html2canvas/jspdf (generator, Font Maker); `'wasm-unsafe-eval'` + `cdn.jsdelivr.net` for Font Maker's
+HarfBuzz WASM; `hebcal.com`/`api.open-meteo.com`/`geocoding-api.open-meteo.com`/
+`nominatim.openstreetmap.org` + `youtube.com` frame for the dashboard; `sefaria.org` +
+`raw.githubusercontent.com` media for Torah Trainer; `web3forms.com`/`api.web3forms.com` +
+`*.hcaptcha.com` for contact/resources. `data:`/`blob:` stay in `img-src` (and `media-src`) for
+PDF/PNG/`.ivrit` export. Meta CSP can't express `frame-ancestors` or `report-uri` and doesn't cover
+content parsed before the tag — hence the placement right after `<meta charset>`.
+
 ## Import / Export All Settings (`index.html`)
 
 `index.html` has a gear button that opens a modal with **Export All Settings**, **Import All Settings**, and **Erase All Settings**. These functions bundle every tool's localStorage data into a single JSON blob so users can back up and restore everything in one step.
