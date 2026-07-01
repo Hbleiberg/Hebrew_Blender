@@ -2386,8 +2386,34 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   }
 
   /* ────────── DATE / TIME DISPLAY ────────── */
+  // The clock ticks once a second, but the English/Hebrew date only changes at civil
+  // midnight. tickClock() updates just the (cheap) time + countdown each second and
+  // only runs the full date render on a day rollover. Settings/dark-mode changes still
+  // call updateDateTimeDisplay() directly (a full render), so those are unaffected.
+  let _lastDayKey = '';
+  function updateTimeOnly(now) {
+    const timeEl = document.getElementById('currentTime');
+    if (settings.hideTime) {
+      timeEl.style.display = 'none';
+    } else {
+      timeEl.style.display = '';
+      const opts = settings.timeFmt === '24'
+        ? { hour: '2-digit', minute: '2-digit', hour12: false }
+        : { hour: 'numeric', minute: '2-digit', hour12: true };
+      if (settings.showSeconds) opts.second = '2-digit';
+      timeEl.textContent = now.toLocaleTimeString('en-US', opts);
+    }
+  }
+  function tickClock() {
+    const now = new Date();
+    const key = now.toDateString();
+    if (key !== _lastDayKey) { updateDateTimeDisplay(); return; }
+    updateTimeOnly(now);
+    updateCountdown();
+  }
   function updateDateTimeDisplay() {
     const now = new Date();
+    _lastDayKey = now.toDateString();
 
     const engEl = document.getElementById('engDate');
     if (settings.hideEngDate) {
@@ -2429,24 +2455,14 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       }
     }
 
-    const timeEl = document.getElementById('currentTime');
-    if (settings.hideTime) {
-      timeEl.style.display = 'none';
-    } else {
-      timeEl.style.display = '';
-      const opts = settings.timeFmt === '24'
-        ? { hour: '2-digit', minute: '2-digit', hour12: false }
-        : { hour: 'numeric', minute: '2-digit', hour12: true };
-      if (settings.showSeconds) opts.second = '2-digit';
-      timeEl.textContent = now.toLocaleTimeString('en-US', opts);
-    }
+    updateTimeOnly(now);
     updateCountdown();
   }
 
   function startClock() {
     updateDateTimeDisplay();
     if (clockInterval) clearInterval(clockInterval);
-    clockInterval = setInterval(updateDateTimeDisplay, 1000);
+    clockInterval = setInterval(tickClock, 1000);
   }
 
   /* ────────── DAYS LIST ────────── */

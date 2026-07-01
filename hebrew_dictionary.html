@@ -574,7 +574,7 @@ footer a{color:var(--gold);text-decoration:none;}
   <aside class="sidebar" id="appSidebar">
 
     <div class="search-wrap">
-      <input type="text" id="searchInput" placeholder="Search Hebrew, translit, or English…" oninput="onFilter()">
+      <input type="text" id="searchInput" placeholder="Search Hebrew, translit, or English…" oninput="filterDebounced()">
     </div>
 
     <div style="display:flex; gap:6px; margin-bottom:10px;">
@@ -772,8 +772,8 @@ footer a{color:var(--gold);text-decoration:none;}
                 <option value="range">Range</option>
               </select>
               <div id="gematriaFilterInputs" style="display:none;flex-direction:column;gap:3px;">
-                <input type="number" id="gematriaVal1" min="1" placeholder="Value" oninput="onFilter()" style="font-size:0.75rem;width:100%;box-sizing:border-box;padding:3px 5px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
-                <input type="number" id="gematriaVal2" min="1" placeholder="To" oninput="onFilter()" style="display:none;font-size:0.75rem;width:100%;box-sizing:border-box;padding:3px 5px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
+                <input type="number" id="gematriaVal1" min="1" placeholder="Value" oninput="filterDebounced()" style="font-size:0.75rem;width:100%;box-sizing:border-box;padding:3px 5px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
+                <input type="number" id="gematriaVal2" min="1" placeholder="To" oninput="filterDebounced()" style="display:none;font-size:0.75rem;width:100%;box-sizing:border-box;padding:3px 5px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
               </div>
             </div>
             <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
@@ -1232,6 +1232,15 @@ let anyLetterFilter = new Set();
 let anyLetterOnly = false;
 let dageshTavEnabled = false;
 
+// Debounce hot text inputs (search + gematria range) so a full re-filter/sort of
+// ~13k words fires once the user pauses typing, not on every keystroke. Non-text
+// controls (checkboxes/selects/buttons) keep calling onFilter() immediately.
+function debounce(fn, ms) {
+  let t;
+  return function(...args) { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), ms); };
+}
+const filterDebounced = debounce(onFilter, 150);
+
 fetch('data/hebrew_words.json?v=4')
   .then(r => r.json())
   .then(data => {
@@ -1239,6 +1248,7 @@ fetch('data/hebrew_words.json?v=4')
       words.map(w => ({
         word: w.word,
         bare: w.bare || '',
+        gem: calcGematria(w.bare || ''),
         cons: Array.isArray(w.letters) ? w.letters : [],
         translit: w.translit || '',
         translitDisplay: w.translit || '',
@@ -1563,7 +1573,7 @@ function onFilter() {
     const v1 = parseInt(document.getElementById('gematriaVal1').value) || 0;
     const v2 = parseInt(document.getElementById('gematriaVal2').value) || 0;
     filtered = filtered.filter(w => {
-      const g = calcGematria(w.bare);
+      const g = w.gem;
       if (gft === 'exact') return g === v1;
       if (gft === 'gte')   return g >= v1;
       if (gft === 'lte')   return g <= v1;
@@ -1578,8 +1588,8 @@ function onFilter() {
     if (sort === 'len-asc')  return a.len - b.len || a.bare.localeCompare(b.bare,'he');
     if (sort === 'len-desc') return b.len - a.len || a.bare.localeCompare(b.bare,'he');
     if (sort === 'transl')   return a.translation.localeCompare(b.translation);
-    if (sort === 'gem-asc')  return calcGematria(a.bare) - calcGematria(b.bare) || a.bare.localeCompare(b.bare,'he');
-    if (sort === 'gem-desc') return calcGematria(b.bare) - calcGematria(a.bare) || a.bare.localeCompare(b.bare,'he');
+    if (sort === 'gem-asc')  return a.gem - b.gem || a.bare.localeCompare(b.bare,'he');
+    if (sort === 'gem-desc') return b.gem - a.gem || a.bare.localeCompare(b.bare,'he');
     return 0;
   });
 
