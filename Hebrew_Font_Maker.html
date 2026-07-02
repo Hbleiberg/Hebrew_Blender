@@ -479,6 +479,12 @@
   .tour-card .tbtn.ghost { color: var(--text); border-color: var(--border); }
   .tour-card .tbtn:disabled { opacity: 0.4; cursor: default; }
 
+  /* ── Font-engine background-load badge (next to Export) ── */
+  .engine-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 0.72rem; color: var(--muted); font-weight: 600; white-space: nowrap; }
+  .engine-badge[hidden] { display: none; }
+  .engine-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); animation: enginePulse 1.1s ease-in-out infinite; }
+  @keyframes enginePulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+
   /* ── "Edit shape" mark editor modal ── */
   .me-modal { max-width: 560px; width: 94%; max-height: 90vh; overflow-y: auto; }
   .me-piece-list { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; }
@@ -705,6 +711,7 @@
       <option value="ufo">UFO source (zip)</option>
     </select>
     <button class="tbtn" id="exportBtn" onclick="exportFont()">⬇ Export TTF</button>
+    <span id="engineBadge" class="engine-badge" title="Getting the font engine ready so your first export is fast" hidden><span class="engine-dot" aria-hidden="true"></span>engine loading…</span>
   </div>
   <button class="tbtn ghost" style="margin-left:auto;" onclick="openHelp()" title="A plain-language guide to the whole tool" aria-label="Help">❓ Help</button>
 </div>
@@ -2870,6 +2877,7 @@ function updateTracedReadout() {
   const s = coreLetterStats();
   el.textContent = s.traced + ' / ' + s.total + ' letters traced';
   el.style.color = (s.traced === s.total) ? 'var(--gold)' : 'var(--muted)';
+  if (s.traced >= 1) maybePrefetchEngine();   // user has committed — warm the export engine in the background
 }
 let englishCase = 'upper';
 function setEnglishCase(c) { englishCase = (c === 'lower') ? 'lower' : 'upper'; renderEnglishGrid(); }
@@ -7230,21 +7238,51 @@ document.addEventListener('keydown', e => {
    FONT BUILD — Pyodide + fontTools (feaLib), validated by harfbuzzjs
    ════════════════════════════════════════════════════════════════════════ */
 let pyodide = null, pyodideLoading = null;
+let _pyoPhase = 'idle';        // 'idle' | 'download' | 'install' | 'ready'
+let _exportPreparing = false;  // true while a click-to-export is waiting on the engine
+let _pyoPrefetched = false;
+const PYO_PHASE_LABEL = { download: '⬇ Downloading engine…', install: '⬇ Installing fontTools…' };
+// Reflect the current engine-load phase: on the Export button while a cold export waits, or on the
+// subtle background badge during idle prefetch. Never both at once.
+function _setPyoPhase(phase) {
+  _pyoPhase = phase;
+  const btn = document.getElementById('exportBtn');
+  if (_exportPreparing && btn) {
+    if (phase === 'ready') onExportFormatChange();                       // restore the format label
+    else btn.textContent = PYO_PHASE_LABEL[phase] || '⬇ Preparing engine…';
+  }
+  const badge = document.getElementById('engineBadge');
+  if (badge) badge.hidden = _exportPreparing || (phase !== 'download' && phase !== 'install');
+}
 function loadScript(src) { return new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej; document.head.appendChild(s); }); }
-async function ensurePyodide() {
+async function ensurePyodide(opts) {
+  const background = !!(opts && opts.background);
   if (pyodide) return pyodide;
   if (pyodideLoading) return pyodideLoading;
   pyodideLoading = (async () => {
-    status('Loading font engine (one-time ~8 MB)…', true);
+    if (!background) status('Loading font engine (one-time ~8 MB)…', true);
+    _setPyoPhase('download');
     if (!window.loadPyodide) await loadScript('https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js');
     pyodide = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/' });
-    status('Installing fontTools…', true);
+    if (!background) status('Installing fontTools…', true);
+    _setPyoPhase('install');
     await pyodide.loadPackage('fonttools');
     pyodide.runPython(PY_BUILDER);
-    status('Font engine ready.', true);
+    if (!background) status('Font engine ready.', true);
+    _setPyoPhase('ready');
     return pyodide;
   })();
   return pyodideLoading;
+}
+// Once the user commits (first traced letter), warm the ~8 MB engine during idle time so the first
+// export is near-instant. Runs at most once; silent on failure; skipped for data-saver users.
+function maybePrefetchEngine() {
+  if (_pyoPrefetched || pyodide || pyodideLoading) return;
+  try { if (navigator.connection && navigator.connection.saveData) return; } catch (e) {}
+  _pyoPrefetched = true;
+  const run = () => { try { ensurePyodide({ background: true }); } catch (e) {} };
+  if (window.requestIdleCallback) requestIdleCallback(run, { timeout: 5000 });
+  else setTimeout(run, 3000);
 }
 
 /* glyph name helpers */
@@ -8453,7 +8491,18 @@ async function doExport(fmt) {
     project.font.version = v.toFixed(3);
     document.getElementById('fontVersion').value = project.font.version;
 
-    await ensurePyodide();
+    // If the engine isn't ready yet, show phased progress on the button itself.
+    if (!pyodide) { _exportPreparing = true; _setPyoPhase(_pyoPhase === 'idle' ? 'download' : _pyoPhase); }
+    try {
+      await ensurePyodide();
+    } catch (e) {
+      _exportPreparing = false; onExportFormatChange(); status('');
+      askModal('Font engine didn’t load',
+        '<span class="warn">Couldn’t download the font engine. Check your internet connection, then click Export to try again.</span>',
+        [{label:'OK'}]);
+      return;   // outer finally re-enables the button
+    }
+    _exportPreparing = false; onExportFormatChange();
 
     // UFO is a source format — built straight from the spec (cubic curves + anchors); no TTF/shaping gate.
     if (fmt === 'ufo') {
@@ -8490,6 +8539,7 @@ async function doExport(fmt) {
     askModal('Export error', '<span class="warn">'+(err && err.message || err)+'</span>', [{label:'OK'}]);
   } finally {
     btn.disabled = false;   // never leave the button stuck disabled
+    if (_exportPreparing) { _exportPreparing = false; onExportFormatChange(); }
   }
 }
 async function finishDownload(bytes, gateSkipped, fmt) {
