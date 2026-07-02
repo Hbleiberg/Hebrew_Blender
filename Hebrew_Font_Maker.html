@@ -500,6 +500,16 @@
   .lchip-glyph { font-size: 1.3rem; line-height: 1; min-width: 22px; text-align: center; direction: rtl; }
   .lchip-name { color: var(--muted); }
 
+  /* ── Keyboard-shortcut cheat sheet ── */
+  kbd { display: inline-block; font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-size: 0.72rem; line-height: 1; padding: 3px 6px; min-width: 1.1em; text-align: center; background: var(--cream); color: var(--text); border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; white-space: nowrap; }
+  .sc-group { margin: 0 0 16px; }
+  .sc-group h4 { font-family: 'Libre Baskerville', serif; font-size: 0.82rem; margin: 0 0 8px; color: var(--gold); }
+  .sc-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 1px dashed var(--border); }
+  .sc-row:last-child { border-bottom: none; }
+  .sc-keys { flex-shrink: 0; display: flex; gap: 4px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+  .sc-desc { color: var(--text); font-size: 0.82rem; }
+  .sc-sep { color: var(--muted); font-size: 0.72rem; }
+
   /* ── "Edit shape" mark editor modal ── */
   .me-modal { max-width: 560px; width: 94%; max-height: 90vh; overflow-y: auto; }
   .me-piece-list { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; }
@@ -977,10 +987,22 @@
 <div class="overlay" id="helpOverlay" onclick="if(event.target===this)closeHelp()">
   <div class="modal help-modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h3 id="helpTitle">How does this work?</h3>
-    <button class="tbtn" style="margin:0 0 12px;" onclick="closeHelp(); tourStart();">▶ Take a tour</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px;">
+      <button class="tbtn" onclick="closeHelp(); tourStart();">▶ Take a tour</button>
+      <button class="tbtn ghost" onclick="closeHelp(); openShortcuts();">⌨ Shortcuts</button>
+    </div>
     <div class="help-tabs" id="helpTabs"></div>
     <div class="help-body" id="helpBody"></div>
     <div class="mbtns"><button class="tbtn" onclick="closeHelp()">Close</button></div>
+  </div>
+</div>
+
+<!-- Keyboard-shortcut cheat sheet (opened with ? or from the Help modal) -->
+<div class="overlay" id="shortcutsOverlay" onclick="if(event.target===this)closeShortcuts()">
+  <div class="modal help-modal" role="dialog" aria-modal="true" aria-labelledby="shortcutsTitle" style="max-width:560px;">
+    <h3 id="shortcutsTitle">⌨ Keyboard shortcuts</h3>
+    <div class="help-body" id="shortcutsBody"></div>
+    <div class="mbtns"><button class="tbtn" onclick="closeShortcuts()">Close</button></div>
   </div>
 </div>
 
@@ -2051,6 +2073,10 @@ const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
     <p>Hebrew Font Maker turns your hand-drawn Hebrew letters into a <strong>real font</strong> you can install on your computer and type with — vowels (nikkud) and cantillation marks (trop) included.</p>
+    <p style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="tbtn" onclick="closeHelp(); tourStart();">▶ Take a tour</button>
+      <button class="tbtn ghost" onclick="closeHelp(); openShortcuts();">⌨ Keyboard shortcuts</button>
+    </p>
     <p>Here's the whole journey, start to finish:</p>
     <ol>
       <li><strong>Upload</strong> a clear picture of each letter.</li>
@@ -2061,7 +2087,7 @@ const HELP_CONTENT = {
     </ol>
     <p>Use the tabs above to read about each step. You can work through them roughly in order, one letter at a time.</p>
     <p>Before you start, give your font a name in the <span class="ui">Font Details</span> box (top-left). The <span class="ui">Family name</span> is what you'll see in font menus later. The version number takes care of itself.</p>
-    <div class="help-tip">💡 Works best on a desktop or laptop. Your work is auto-saved in this browser as you go, but use <span class="ui">Save Project</span> for a real backup you can keep (see the Saving tab). Made a mistake? <span class="ui">Undo</span> / <span class="ui">Redo</span> — the <strong>↶ ↷</strong> buttons in the top bar, or <strong>Ctrl/⌘-Z</strong> and <strong>Ctrl/⌘-Shift-Z</strong> — step back and forth through your edits.</div>
+    <div class="help-tip">💡 Works best on a desktop or laptop. Your work is auto-saved in this browser as you go, but use <span class="ui">Save Project</span> for a real backup you can keep (see the Saving tab). Made a mistake? <span class="ui">Undo</span> / <span class="ui">Redo</span> — the <strong>↶ ↷</strong> buttons in the top bar, or <strong>Ctrl/⌘-Z</strong> and <strong>Ctrl/⌘-Shift-Z</strong> — step back and forth through your edits. Press <span class="ui">?</span> anytime for the full list of keyboard shortcuts.</div>
   `,
   upload: `
     <h4>Uploading your letters</h4>
@@ -2417,6 +2443,67 @@ function _tourKey(e) {
   else if (e.key === 'ArrowRight') { e.preventDefault(); e.stopPropagation(); tourNext(); }
   else if (e.key === 'ArrowLeft') { e.preventDefault(); e.stopPropagation(); tourPrev(); }
 }
+
+/* ═══ Keyboard-shortcut cheat sheet (opened with ? or from the Help modal) ═══ */
+const IS_MAC = /Mac|iPhone|iPad|iPod/.test((navigator.platform || '') + ' ' + (navigator.userAgent || ''));
+function modKey() { return IS_MAC ? '⌘' : 'Ctrl'; }
+// Each row is [keySpec, description]. In keySpec, whitespace-separated tokens render as <kbd> caps,
+// except the literal separators '+', '/', and 'or', which render muted — a tiny readable mini-syntax.
+function shortcutGroups() {
+  const M = modKey();
+  return [
+    ['Everywhere', [
+      ['?', 'Open this shortcuts sheet'],
+      [`${M} + Z`, 'Undo'],
+      [`${M} + Shift + Z  or  ${M} + Y`, 'Redo'],
+      ['Esc', 'Close a dialog, or exit the current step'],
+    ]],
+    ['Letter navigation', [
+      ['[', 'Previous letter — on the Place Nikkud / Trop step'],
+      [']', 'Next letter — on the Place Nikkud / Trop step'],
+      ['Enter  or  Space', 'Open the focused letter tile'],
+      ['←  /  →  /  Home  /  End', 'Move between the step tabs when one is focused'],
+    ]],
+    ['Point editing — Edit points', [
+      ['←  ↑  →  ↓', 'Nudge the selected point'],
+      ['Shift + arrows', 'Nudge in bigger steps'],
+      ['Delete  or  Backspace', 'Remove the selected point'],
+      ['Esc', 'Clear the selection, or leave point editing'],
+    ]],
+    ['Nikkud / Trop & Align placement', [
+      ['←  ↑  →  ↓', 'Nudge the anchor, or the aligned image'],
+      ['Shift + arrows', 'Fine (1-unit) nudge'],
+    ]],
+  ];
+}
+function scKeysHtml(spec) {
+  return spec.trim().split(/\s+/).map(tok =>
+    (tok === '+' || tok === '/' || tok === 'or') ? `<span class="sc-sep">${tok}</span>` : `<kbd>${esc(tok)}</kbd>`
+  ).join(' ');
+}
+function openShortcuts() {
+  const body = document.getElementById('shortcutsBody');
+  body.innerHTML = shortcutGroups().map(([title, rows]) =>
+    `<div class="sc-group"><h4>${esc(title)}</h4>` +
+    rows.map(([keys, desc]) =>
+      `<div class="sc-row"><span class="sc-desc">${esc(desc)}</span><span class="sc-keys">${scKeysHtml(keys)}</span></div>`
+    ).join('') + `</div>`
+  ).join('') +
+    `<p style="font-size:0.76rem;color:var(--muted);margin:2px 0 0;">The “Edit shape” mark editor has its own undo and arrow-nudge, matching the main editor.</p>`;
+  aOpenModal('shortcutsOverlay', closeShortcuts);
+}
+function closeShortcuts() { aCloseModal('shortcutsOverlay'); }
+// Press ? (Shift+/) anywhere — except while typing or with a modal already open — to open the sheet.
+document.addEventListener('keydown', e => {
+  if (e.key !== '?') return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const ae = document.activeElement;
+  if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT' || ae.isContentEditable)) return;
+  if (document.querySelector('.overlay.open')) return;   // a modal is already open
+  if (_tourActive) return;
+  e.preventDefault();
+  openShortcuts();
+});
 
 /* ════════ Meta form sync ════════ */
 function syncMetaToForm() {
@@ -5391,7 +5478,7 @@ function nodeEditPanelHTML() {
     <button class="ctl-btn primary" onclick="toggleNodeEdit()">Done editing</button>
     <button class="ctl-btn" onclick="setSelectedNodeType('smooth')" ${dis}>Smooth</button>
     <button class="ctl-btn" onclick="setSelectedNodeType('corner')" ${dis}>Corner</button>
-    <button class="ctl-btn" onclick="doNodeDelete()" ${dis}>Delete</button>
+    <button class="ctl-btn" onclick="doNodeDelete()" title="Remove the selected point (Delete or Backspace)" ${dis}>Delete</button>
     <span class="readout">${cnt} selected</span>
   </div>
   <div class="hint">Drag a <b>point</b> to reshape · click to select, drag a box to multi-select (Shift adds) · <b>double-click</b> a point toggles □ corner / ○ smooth · <b>Alt-click</b> the outline adds a point · <b>Delete</b> removes one · arrows nudge (Shift = 25). Every edit exports and undoes (Ctrl+Z).</div>`;
