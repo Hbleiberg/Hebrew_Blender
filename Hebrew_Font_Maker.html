@@ -485,6 +485,21 @@
   .engine-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); animation: enginePulse 1.1s ease-in-out infinite; }
   @keyframes enginePulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
 
+  /* ── "Next step" hint under the letter grid ── */
+  .next-hint { min-height: 1.2em; margin-top: 8px; font-size: 0.75rem; line-height: 1.4; color: var(--muted); }
+  .next-hint:empty { display: none; }
+  .hint-link { background: none; border: none; padding: 0; margin: 0; font: inherit; color: var(--gold); font-weight: 700; cursor: pointer; text-decoration: underline; }
+  .hint-link:hover { filter: brightness(1.1); }
+  .hint-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 3px; }
+
+  /* ── Clickable letter chips in the export-warning modals ── */
+  .lchip-wrap { max-height: 46vh; overflow: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 5px 8px; margin-top: 12px; }
+  .lchip { display: flex; align-items: center; gap: 8px; padding: 5px 9px; border: 1px solid var(--border); border-radius: 6px; background: var(--cream); color: var(--text); cursor: pointer; font: inherit; font-size: 0.82rem; text-align: start; }
+  .lchip:hover { border-color: var(--gold); background: var(--warm-gray); }
+  .lchip:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .lchip-glyph { font-size: 1.3rem; line-height: 1; min-width: 22px; text-align: center; direction: rtl; }
+  .lchip-name { color: var(--muted); }
+
   /* ── "Edit shape" mark editor modal ── */
   .me-modal { max-width: 560px; width: 94%; max-height: 90vh; overflow-y: auto; }
   .me-piece-list { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; }
@@ -758,6 +773,7 @@
           <span><span class="dot" style="background:#10b981;"></span>anchored</span>
           <span id="tracedReadout" style="margin-left:auto;font-weight:700;white-space:nowrap;color:var(--muted);" title="Core Hebrew letters with an outline traced"></span>
         </div>
+        <div id="nextStepHint" class="next-hint" aria-live="polite"></div>
       </div>
     </div>
 
@@ -2856,10 +2872,33 @@ function renderLetterGrid() {
   a11yTiles(grid);
   document.getElementById('letterProgress').textContent = `(${done}/27)`;
   updateTracedReadout();
+  renderNextStepHint();
   if (document.getElementById('nikkudGrid')) renderNikkudGrid();   // keep mark tile states in sync
   if (document.getElementById('tropGrid')) renderTropGrid();
   if (document.getElementById('punctGrid')) renderPunctGrid();
   if (document.getElementById('englishGrid')) renderEnglishGrid();
+}
+// One dynamic "what should I do next?" line under the letter grid. Names are focusable links that
+// jump to the letter in the right work mode (shares the guard-free navigation used by the QA grid).
+function renderNextStepHint() {
+  const host = document.getElementById('nextStepHint'); if (!host || !project) return;
+  host.textContent = '';
+  const s = coreLetterStats(), lists = coreLetterLists();
+  const nikOn = project.font.nikkud.enabled;
+  const link = (label, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'hint-link'; b.textContent = label; b.onclick = fn; return b; };
+  if (s.traced === 0) {
+    host.textContent = 'Start by uploading and tracing your first letter.';
+  } else if (lists.blanks.length) {
+    const b0 = lists.blanks[0];
+    host.append('Next up: ', link(b0.name, () => exportJumpToLetter(b0.cp, 'align')),
+      ` — ${lists.blanks.length} to go.`);
+  } else if (nikOn && lists.unanchored.length) {
+    const u0 = lists.unanchored[0];
+    host.append('Letters done! Place nikkud on ', link(u0.name, () => exportJumpToLetter(u0.cp, 'nikkud')),
+      ` — ${lists.unanchored.length} to go.`);
+  } else {
+    host.append('All 27 letters ready — run ', link('QA Check', () => openQA()), ', then Export.');
+  }
 }
 // Core (27) Hebrew letters — tracing / anchor status, for the readout + the export guardrail.
 function coreLetterStats() {
@@ -2871,6 +2910,18 @@ function coreLetterStats() {
     else if (!l.anchors) unanchored.push(L.name);
   });
   return { total: core.length, traced: core.length - blanks.length, blanks, unanchored };
+}
+// Same classification as coreLetterStats, but carrying each letter's codepoint so the export
+// warnings and the next-step hint can navigate to it.
+function coreLetterLists() {
+  const core = LETTERS.filter(L => L.cat !== 'punct');
+  const blanks = [], unanchored = [];
+  core.forEach(L => {
+    const l = project.letters.find(x => x.codepoint === L.cp);
+    if (!l || !l.contours) blanks.push({ cp: L.cp, name: L.name });
+    else if (!l.anchors) unanchored.push({ cp: L.cp, name: L.name });
+  });
+  return { blanks, unanchored };
 }
 function updateTracedReadout() {
   const el = document.getElementById('tracedReadout'); if (!el || !project) return;
@@ -7260,17 +7311,25 @@ async function ensurePyodide(opts) {
   if (pyodide) return pyodide;
   if (pyodideLoading) return pyodideLoading;
   pyodideLoading = (async () => {
-    if (!background) status('Loading font engine (one-time ~8 MB)…', true);
-    _setPyoPhase('download');
-    if (!window.loadPyodide) await loadScript('https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js');
-    pyodide = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/' });
-    if (!background) status('Installing fontTools…', true);
-    _setPyoPhase('install');
-    await pyodide.loadPackage('fonttools');
-    pyodide.runPython(PY_BUILDER);
-    if (!background) status('Font engine ready.', true);
-    _setPyoPhase('ready');
-    return pyodide;
+    try {
+      if (!background) status('Loading font engine (one-time ~8 MB)…', true);
+      _setPyoPhase('download');
+      if (!window.loadPyodide) await loadScript('https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js');
+      pyodide = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/' });
+      if (!background) status('Installing fontTools…', true);
+      _setPyoPhase('install');
+      await pyodide.loadPackage('fonttools');
+      pyodide.runPython(PY_BUILDER);
+      if (!background) status('Font engine ready.', true);
+      _setPyoPhase('ready');
+      return pyodide;
+    } catch (err) {
+      // Reset so a later attempt (e.g. explicit Export after connectivity returns) can retry cleanly
+      // instead of re-returning this rejected promise.
+      pyodide = null; pyodideLoading = null; _pyoPhase = 'idle';
+      const badge = document.getElementById('engineBadge'); if (badge) badge.hidden = true;
+      throw err;
+    }
   })();
   return pyodideLoading;
 }
@@ -7280,7 +7339,9 @@ function maybePrefetchEngine() {
   if (_pyoPrefetched || pyodide || pyodideLoading) return;
   try { if (navigator.connection && navigator.connection.saveData) return; } catch (e) {}
   _pyoPrefetched = true;
-  const run = () => { try { ensurePyodide({ background: true }); } catch (e) {} };
+  // Swallow the async rejection too — a failed prefetch must be completely silent (ensurePyodide
+  // resets its own state so a later explicit export still retries).
+  const run = () => { try { ensurePyodide({ background: true }).catch(() => {}); } catch (e) {} };
   if (window.requestIdleCallback) requestIdleCallback(run, { timeout: 5000 });
   else setTimeout(run, 3000);
 }
@@ -8458,6 +8519,25 @@ function shareThisFont() {   // open the font library (Fonts view) + a pre-fille
     [ { label: 'Open library →', onClick: () => window.open(url, '_blank', 'noopener') },
       { label: 'Cancel', cls: 'ghost' } ]);
 }
+// Close any export-warning modal and jump to a letter to fix it — guard-free navigation shared
+// with the QA grid (_selectItem bypasses the unsaved-placement guard; QA/warnings are read-only).
+function exportJumpToLetter(cp, mode) {
+  _selectItem('letter', cp);
+  if (mode === 'nikkud') gotoAnchors('nikkud');
+  else setWorkMode('align');
+}
+// A scrollable grid of clickable letter chips for the export-warning modals.
+function letterChipsHtml(list, mode) {
+  return `<div class="lchip-wrap">` + list.map(o =>
+    `<button type="button" class="lchip" data-cp="${o.cp}" data-mode="${mode}">` +
+    `<span class="lchip-glyph" style="font-family:${esc(project.template.font)};">${String.fromCodePoint(parseInt(o.cp,16))}</span>` +
+    `<span class="lchip-name">${esc(o.name)}</span></button>`).join('') + `</div>`;
+}
+function wireLetterChips() {
+  document.querySelectorAll('#askBody .lchip').forEach(btn => {
+    btn.addEventListener('click', () => { closeModal(); exportJumpToLetter(btn.dataset.cp, btn.dataset.mode); });
+  });
+}
 async function exportFont() {
   if (!project) return;
   const fmt = (document.getElementById('exportFormat') || {}).value || 'ttf';
@@ -8468,14 +8548,18 @@ async function exportFont() {
     const anchorNote = (nikOn && s.unanchored.length)
       ? ` Also, ${s.unanchored.length} traced letter${s.unanchored.length === 1 ? '' : 's'} ${s.unanchored.length === 1 ? 'has' : 'have'} no nikkud anchors yet, so vowels may sit wrong.` : '';
     askModal("Some letters aren't traced",
-      `These ${s.blanks.length} core letter${s.blanks.length === 1 ? '' : 's'} have no outline and will export <b>blank</b>: <b>${s.blanks.join(', ')}</b>.${anchorNote}`,
+      `These ${s.blanks.length} core letter${s.blanks.length === 1 ? '' : 's'} have no outline and will export <b>blank</b>.${anchorNote} <span style="color:var(--muted);">Click a letter to go trace it:</span>`
+      + letterChipsHtml(coreLetterLists().blanks, 'align'),
       [ {label:'Cancel', cls:'ghost'}, {label:'Export anyway', onClick: () => doExport(fmt)} ]);
+    wireLetterChips();
     return;
   }
   if (nikOn && s.unanchored.length) {
     askModal('Nikkud not placed on every letter',
-      `${s.unanchored.length} traced letter${s.unanchored.length === 1 ? '' : 's'} (${s.unanchored.join(', ')}) ${s.unanchored.length === 1 ? 'has' : 'have'} no nikkud anchors yet — vowels may sit wrong. Export anyway?`,
+      `${s.unanchored.length} traced letter${s.unanchored.length === 1 ? '' : 's'} ${s.unanchored.length === 1 ? 'has' : 'have'} no nikkud anchors yet — vowels may sit wrong. <span style="color:var(--muted);">Click a letter to place its nikkud, or export anyway:</span>`
+      + letterChipsHtml(coreLetterLists().unanchored, 'nikkud'),
       [ {label:'Cancel', cls:'ghost'}, {label:'Export anyway', onClick: () => doExport(fmt)} ]);
+    wireLetterChips();
     return;
   }
   doExport(fmt);
