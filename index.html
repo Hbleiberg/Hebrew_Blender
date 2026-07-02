@@ -719,15 +719,21 @@ function mountFolderTree(cfg){
 }
 /* ═══ end folder-tree component ═══ */
 
+// Corruption-robust localStorage JSON read: a single bad/truncated value must not
+// abort the whole Export-All / AllTools backup (the recovery path itself).
+function lsJSON(key, fallback) {
+  try { const v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); }
+  catch (e) { return fallback; }
+}
 function exportAllSettings() {
   const blob = {
     _hebrewBlenderExport: 1,
-    generatorPresets:    JSON.parse(localStorage.getItem('hebrewBlender_presets')      || '{}'),
-    dashboardPresets:    JSON.parse(localStorage.getItem('hebrewDashboard_presets')    || '{}'),
-    dashboardSchedules:  JSON.parse(localStorage.getItem('hebrewDashboard_schedules')  || '{}'),
-    dashboardSettings:   JSON.parse(localStorage.getItem('hebrewDashboard_settings')   || '{}'),
-    flashCardPresets:    JSON.parse(localStorage.getItem('hebrewFlashCards_presets')   || '{}'),
-    flashCardProfiles:   JSON.parse(localStorage.getItem('hebrewFlashCards_profiles')  || '{}'),
+    generatorPresets:    lsJSON('hebrewBlender_presets',      {}),
+    dashboardPresets:    lsJSON('hebrewDashboard_presets',    {}),
+    dashboardSchedules:  lsJSON('hebrewDashboard_schedules',  {}),
+    dashboardSettings:   lsJSON('hebrewDashboard_settings',   {}),
+    flashCardPresets:    lsJSON('hebrewFlashCards_presets',   {}),
+    flashCardProfiles:   lsJSON('hebrewFlashCards_profiles',  {}),
     flashCardPbStreak:   localStorage.getItem('hebrewFlashCards_pbStreak') || '0',
     generatorPresetFolders:   ftRead('hebrewBlender_presetsFolders'),
     dashboardPresetFolders:   ftRead('hebrewDashboard_presetsFolders'),
@@ -737,8 +743,8 @@ function exportAllSettings() {
     dictAudioEnabled:    localStorage.getItem('hebrewDictionary_audioEnabled') || '0',
     dictTranslitStyle:   localStorage.getItem('hebrewDictionary_translitStyle') || 'default',
     dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate') || '0.75',
-    dictEmojiSettings:   JSON.parse(localStorage.getItem('hebrewDictionary_emojiSettings') || '{}'),
-    torahTrainerSettings: JSON.parse(localStorage.getItem('hebrewTorahTrainer_settings') || '{}'),
+    dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
+    torahTrainerSettings: lsJSON('hebrewTorahTrainer_settings', {}),
     inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
     userFonts:           _fontsBackupCache || [],
   };
@@ -857,12 +863,12 @@ const IVRIT_CFG = {
   tool: 'AllTools',
   gather() {
     return {
-      generatorPresets:    JSON.parse(localStorage.getItem('hebrewBlender_presets')      || '{}'),
-      dashboardPresets:    JSON.parse(localStorage.getItem('hebrewDashboard_presets')    || '{}'),
-      dashboardSchedules:  JSON.parse(localStorage.getItem('hebrewDashboard_schedules')  || '{}'),
-      dashboardSettings:   JSON.parse(localStorage.getItem('hebrewDashboard_settings')   || '{}'),
-      flashCardPresets:    JSON.parse(localStorage.getItem('hebrewFlashCards_presets')   || '{}'),
-      flashCardProfiles:   JSON.parse(localStorage.getItem('hebrewFlashCards_profiles')  || '{}'),
+      generatorPresets:    lsJSON('hebrewBlender_presets',      {}),
+      dashboardPresets:    lsJSON('hebrewDashboard_presets',    {}),
+      dashboardSchedules:  lsJSON('hebrewDashboard_schedules',  {}),
+      dashboardSettings:   lsJSON('hebrewDashboard_settings',   {}),
+      flashCardPresets:    lsJSON('hebrewFlashCards_presets',   {}),
+      flashCardProfiles:   lsJSON('hebrewFlashCards_profiles',  {}),
       flashCardPbStreak:   localStorage.getItem('hebrewFlashCards_pbStreak') || '0',
       generatorPresetFolders:   ftRead('hebrewBlender_presetsFolders'),
       dashboardPresetFolders:   ftRead('hebrewDashboard_presetsFolders'),
@@ -872,8 +878,8 @@ const IVRIT_CFG = {
       dictAudioEnabled:    localStorage.getItem('hebrewDictionary_audioEnabled')  || '0',
       dictTranslitStyle:   localStorage.getItem('hebrewDictionary_translitStyle') || 'default',
       dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate')       || '0.75',
-      dictEmojiSettings:   JSON.parse(localStorage.getItem('hebrewDictionary_emojiSettings') || '{}'),
-      torahTrainerSettings:JSON.parse(localStorage.getItem('hebrewTorahTrainer_settings')    || '{}'),
+      dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
+      torahTrainerSettings:lsJSON('hebrewTorahTrainer_settings',    {}),
       inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
       userFonts:           _fontsBackupCache || []
     };

@@ -2565,7 +2565,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       const wRes = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,weathercode&daily=temperature_2m_max,temperature_2m_min&timezone=auto`
       );
+      if (!wRes.ok) throw new Error('weather ' + wRes.status);
       const wData = await wRes.json();
+      // Open-Meteo returns an error JSON with a non-200 status; validate before
+      // caching so a bad response can't poison weatherCache and later throw in renderWeather.
+      if (!wData || !wData.current) throw new Error('weather: no current data');
       weatherCache = { data: wData, place };
       renderWeather();
     } catch (e) {
@@ -2614,7 +2618,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function renderWeather() {
     const block = document.getElementById('weatherBlock');
     if (settings.hideWeather) { block.innerHTML = ''; return; }
-    if (!weatherCache) return;
+    if (!weatherCache || !weatherCache.data || !weatherCache.data.current) return;
 
     const { data, place } = weatherCache;
     const tempC = data.current.temperature_2m;
@@ -3436,7 +3440,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     Object.assign(settings, savedSchedule);
     setHebFont(settings.hebFont);
     syncFormToSettings();
-    document.getElementById('dashEditor').innerHTML = settings.dashTextHTML || '';
+    document.getElementById('dashEditor').innerHTML = sanitizeDashHTML(settings.dashTextHTML || '');
     syncDashText();
     toggleDashText(settings.enableDashText);
     setDashTextSize(settings.dashTextSize || 1.8);
@@ -3988,7 +3992,7 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
         `<span class="drag-handle" title="Drag to reorder">⠿</span>` +
         `<select class="schedule-preset-sel" onchange="updateScheduleEntry(${i},'preset',this.value)">${getPresetOptions(entry.preset)}</select>` +
         `<span class="schedule-until-lbl">until</span>` +
-        `<input type="time" class="schedule-time-input" value="${entry.until || ''}" onchange="updateScheduleEntry(${i},'until',this.value)">` +
+        `<input type="time" class="schedule-time-input" value="${esc(entry.until || '')}" onchange="updateScheduleEntry(${i},'until',this.value)">` +
         `<button class="schedule-del-btn" title="Remove" onclick="removeScheduleRow(${i})">×</button>`;
       container.appendChild(row);
     });
@@ -4160,6 +4164,38 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
   }
 
   /* ────────── EDITOR ────────── */
+  // Sanitize board rich-text HTML before it re-enters the DOM. The editor's own
+  // output (b/i/u, font color/size, div text-align, links, span.spoiler) passes
+  // through unchanged; a maliciously crafted *imported* dashTextHTML can't inject
+  // script (event handlers, javascript:/data: URLs, <script>/<iframe>/<img>/…, and
+  // dangerous CSS are stripped). Parsed into an inert <template> so no img onerror
+  // fires and no resource loads during sanitization.
+  function sanitizeDashHTML(html) {
+    const tpl = document.createElement('template');
+    tpl.innerHTML = String(html || '');
+    const ALLOWED = new Set(['B','STRONG','I','EM','U','S','STRIKE','SPAN','DIV','P','BR','FONT','A',
+      'SUB','SUP','SMALL','BIG','UL','OL','LI','BLOCKQUOTE','H1','H2','H3','H4','H5','H6','HR']);
+    const KILL = new Set(['SCRIPT','STYLE','IFRAME','OBJECT','EMBED','LINK','META','IMG','SVG','MATH',
+      'FORM','INPUT','BUTTON','TEXTAREA','SELECT','BASE','TITLE','NOSCRIPT']);
+    const keepAttr = new Set(['class','color','face','size','target','rel','align','dir','lang']);
+    (function walk(node) {
+      for (const el of [...node.children]) {
+        const tag = el.tagName;
+        if (KILL.has(tag)) { el.remove(); continue; }
+        walk(el);
+        if (!ALLOWED.has(tag)) { el.replaceWith(...el.childNodes); continue; }
+        for (const a of [...el.attributes]) {
+          const name = a.name.toLowerCase();
+          if (name.startsWith('on')) { el.removeAttribute(a.name); continue; }
+          if (name === 'style') { if (/url\s*\(|expression|javascript:|@import/i.test(a.value)) el.removeAttribute(a.name); continue; }
+          if (name === 'href' || name === 'src') { if (/^\s*(javascript|vbscript|data):/i.test(a.value)) el.removeAttribute(a.name); continue; }
+          if (!keepAttr.has(name)) el.removeAttribute(a.name);
+        }
+        if (tag === 'A' && el.hasAttribute('href')) { el.setAttribute('target', '_blank'); el.setAttribute('rel', 'noopener noreferrer'); }
+      }
+    })(tpl.content);
+    return tpl.innerHTML;
+  }
   function restoreEditorFocus() {
     const ed = document.getElementById('dashEditor');
     ed.focus();
@@ -4540,7 +4576,7 @@ async function onUploadFontPick(input){
     refreshMyFonts();
     syncFormToSettings();
     wireFormListeners();
-    document.getElementById('dashEditor').innerHTML = settings.dashTextHTML || '';
+    document.getElementById('dashEditor').innerHTML = sanitizeDashHTML(settings.dashTextHTML || '');
     syncDashText();
     toggleDashText(settings.enableDashText);
     applyZoom(settings.zoomLevel || 100);
