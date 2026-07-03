@@ -1093,6 +1093,34 @@
   .wake-dot-fs { position: fixed; bottom: 12px; left: 14px; z-index: 180; opacity: 0.4; pointer-events: none; }
   body.wake-held.fullscreen .wake-dot-fs { display: inline-flex; }
 
+  /* ── First-run setup card ── */
+  .fr-backdrop { position: fixed; inset: 0; background: rgba(13,18,32,0.6); z-index: 600; display: none; }
+  .fr-backdrop.open { display: block; }
+  .fr-modal { position: fixed; z-index: 601; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: min(560px, 92vw); max-height: 88vh; overflow: auto; background: var(--white); color: var(--text);
+    border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-lg); padding: 24px 26px; display: none; }
+  .fr-modal.open { display: block; }
+  body.dark .fr-modal { background: var(--navy-deep); }
+  .fr-close { position: absolute; top: 12px; right: 12px; width: 30px; height: 30px; border: none;
+    background: transparent; color: var(--muted); font-size: 1.1rem; cursor: pointer; border-radius: 6px; line-height: 1; }
+  .fr-close:hover { background: var(--warm-gray); color: var(--text); }
+  .fr-h { font-family: 'Libre Baskerville', serif; font-size: 1.25rem; margin: 0 24px 6px 0; color: var(--text); }
+  .fr-sub { font-size: 0.85rem; color: var(--muted); margin: 0 0 16px; line-height: 1.5; }
+  .fr-loc-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .fr-loc-row input { flex: 1; min-width: 140px; }
+  .fr-starters { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 0 0 18px; }
+  .fr-starter { text-align: left; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px;
+    cursor: pointer; background: var(--white); color: var(--text); transition: border-color 0.15s, background 0.15s; font-family: inherit; }
+  body.dark .fr-starter { background: var(--navy); }
+  .fr-starter:hover { border-color: var(--gold); background: rgba(201,146,42,0.08); }
+  .fr-starter b { display: block; font-size: 0.85rem; margin-bottom: 4px; color: var(--text); }
+  .fr-starter span { font-size: 0.72rem; color: var(--muted); line-height: 1.4; display: block; }
+  .fr-actions { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .fr-skip, .fr-tour { font-size: 0.8rem; color: var(--muted); text-decoration: none; cursor: pointer; }
+  .fr-tour { color: var(--gold); font-weight: 600; }
+  .fr-skip:hover, .fr-tour:hover { text-decoration: underline; }
+  @media (max-width: 560px) { .fr-starters { grid-template-columns: 1fr; } }
+
   /* ───── Responsive ───── */
   @media (max-width: 980px) {
     .dashboard { grid-template-columns: 1fr; gap: 16px; padding: 18px; }
@@ -1233,7 +1261,25 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <iframe id="videoIframe" src="" allowfullscreen
       style="width:100%;aspect-ratio:16/9;border:none;border-radius:8px;display:block;background:#000;"></iframe>
   </div>
-</div><!-- ───── Settings drawer ───── --><div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
+</div>
+<!-- ───── First-run setup card ───── -->
+<div class="fr-backdrop" id="frBackdrop" onclick="frSkip()"></div>
+<div class="fr-modal" id="frModal" role="dialog" aria-modal="true" aria-labelledby="frTitle">
+  <button class="fr-close" onclick="frSkip()" aria-label="Close">✕</button>
+  <h2 class="fr-h" id="frTitle">Welcome! Let's set up your dashboard</h2>
+  <p class="fr-sub">Set your location for accurate weather and Shabbat times, then pick a starting layout. You can change anything later in Settings.</p>
+  <div class="fr-loc-row">
+    <input type="text" id="frLocationInput" placeholder="City, e.g. New York">
+    <button class="btn btn-xs" onclick="frUpdateLocation()">Update</button>
+    <button class="btn btn-xs btn-secondary" onclick="frUseCurrentLocation()">📍 Current Location</button>
+  </div>
+  <div class="fr-starters" id="frStarters"></div>
+  <div class="fr-actions">
+    <a href="#" class="fr-skip" onclick="frSkip();return false;">Skip — use New York for now</a>
+    <a href="#" class="fr-tour" id="frTourLink" style="display:none;" onclick="frDismiss();tourStart();return false;">Take a tour →</a>
+  </div>
+</div>
+<!-- ───── Settings drawer ───── --><div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
 <div class="settings-modal" id="settingsModal">
   <div class="settings-header">
     <h2>⚙️  Dashboard Settings</h2>
@@ -1622,6 +1668,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 <div class="panel">
   <div class="panel-title">Presets</div>
   <div class="panel-body">
+    <button class="btn btn-xs btn-secondary" id="starterLayoutsBtn" onclick="openFirstRun()" style="width:100%;margin-bottom:8px;">✨ Quick-start layouts…</button>
+    <p style="font-size:0.72rem;color:var(--muted);margin:0 0 10px;line-height:1.4;">Apply a ready-made setup — including a general-classroom layout — then tweak it and Save it as your own preset.</p>
     <div class="form-row">
       <input type="text" id="presetName" placeholder="Preset name" style="max-width:200px;">
       <button class="btn btn-xs" onclick="savePreset()">Save</button>
@@ -2061,6 +2109,64 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   let weatherTimer = null;
   let clockInterval = null;
   let _wakeLock = null;
+
+  /* ────────── FIRST-RUN SETUP + STARTER LAYOUTS ────────── */
+  // Pristine copy of the shipped defaults, captured before any load mutates `settings`.
+  const PRISTINE_DEFAULTS = JSON.parse(JSON.stringify(settings));
+  // Starter layouts (shared by the first-run card and the Presets panel). Each is a settings-diff
+  // applied on tap over the pristine defaults — never injected into the user's preset store.
+  const STARTERS = [
+    { key:'hebrew', label:'Hebrew classroom', desc:'Everything on — Hebrew headers & date, Shabbat, Omer, holidays, weather.',
+      diff:{ headerLang:'he', hebDateScript:'both', hideHebDate:false, hideDOW:false, hideWeather:false,
+             showShabbatTimes:true, showOmerCounter:true, showHolidayCountdown:true, showTimer:true } },
+    { key:'morning', label:'Morning routine', desc:'Days, both dates, a big clock, weather and a timer — minimal chrome.',
+      diff:{ hideDOW:false, hideEngDate:false, hideHebDate:false, hideTime:false, timeSize:4.5, hideWeather:false,
+             showTimer:true, showOmerCounter:false, showShabbatTimes:false, hideZoomBar:true } },
+    { key:'general', label:'General classroom', desc:'Secular layout — English date, big clock, weather, timer. No Hebrew calendar.',
+      diff:{ headerLang:'en', hideEngDate:false, showEngDOW:true, hideTime:false, timeSize:4.5, hideWeather:false,
+             showTimer:true, hideHebDate:true, showShabbatTimes:false, showOmerCounter:false, showHolidayCountdown:false } },
+  ];
+  function applyStarter(key) {
+    const s = STARTERS.find(x => x.key === key);
+    if (!s) return;
+    applySettings(Object.assign({}, PRISTINE_DEFAULTS, s.diff));   // reset display config to a known baseline + diff (schedule preserved)
+    saveSettingsToStorage();
+  }
+  function openFirstRun() {
+    document.getElementById('frStarters').innerHTML = STARTERS.map(s =>
+      `<button class="fr-starter" onclick="frApplyStarter('${esc(s.key)}')"><b>${esc(s.label)}</b><span>${esc(s.desc)}</span></button>`
+    ).join('');
+    document.getElementById('frLocationInput').value = settings.location || '';
+    const tl = document.getElementById('frTourLink');
+    if (tl) tl.style.display = (typeof tourStart === 'function') ? '' : 'none';
+    document.getElementById('frBackdrop').classList.add('open');
+    document.getElementById('frModal').classList.add('open');
+    document.getElementById('frLocationInput').focus();
+  }
+  function frCaptureLocation() {
+    const loc = document.getElementById('frLocationInput').value.trim();
+    if (loc) { settings.location = loc; delete settings._geoCoords; }
+  }
+  function frDismiss() {
+    try { localStorage.setItem('hebrewDashboard_setupSeen', '1'); } catch (e) {}
+    saveSettingsToStorage();                                        // makes the settings key non-null → never re-shown
+    document.getElementById('frBackdrop').classList.remove('open');
+    document.getElementById('frModal').classList.remove('open');
+  }
+  function frApplyStarter(key) {
+    applyStarter(key);                                             // resets settings (incl. location) to pristine + diff
+    frCaptureLocation();                                           // re-apply the user's typed location on top
+    frDismiss();
+    fetchWeather(); fetchShabbat(true);
+  }
+  function frSkip() { frCaptureLocation(); frDismiss(); fetchWeather(); fetchShabbat(true); }
+  function frUpdateLocation() {
+    const v = document.getElementById('frLocationInput').value.trim();
+    if (!v) return;
+    document.getElementById('locationInput').value = v;
+    updateLocation();                                             // reuse the real handler (sets location + refetches)
+  }
+  function frUseCurrentLocation() { useCurrentLocation(); }        // reuse the real geolocation handler
 
   /* ────────── HEBREW CALENDAR (Reingold-Dershowitz) ────────── */
   function gregorianToJDN(y, m, d) {
@@ -2648,6 +2754,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         const country = d.address?.country || '';
         settings._geoCoords = { latitude, longitude, name: city, country };
         document.getElementById('locationInput').value = city;
+        { const frI = document.getElementById('frLocationInput'); if (frI) frI.value = city; }
         settings.location = city;
         await fetchWeather();
         fetchShabbat(true);
@@ -4744,6 +4851,7 @@ async function onUploadFontPick(input){
 
   /* ────────── INIT ────────── */
   document.addEventListener('DOMContentLoaded', () => {
+    const isFirstVisit = localStorage.getItem('hebrewDashboard_settings') === null;
     loadSettingsFromStorage();
     loadPresets();
     loadSchedulesStorage();
@@ -4800,13 +4908,14 @@ async function onUploadFontPick(input){
       updateOmerDisplay();
       setTimeout(tick, 24 * 3600 * 1000);
     }, msToMidnight);
+    if (isFirstVisit && !localStorage.getItem('hebrewDashboard_setupSeen')) openFirstRun();
   });
 
-  // ESC closes settings
+  // ESC closes settings / the first-run card
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && document.getElementById('settingsModal').classList.contains('open')) {
-      closeSettings();
-    }
+    if (e.key !== 'Escape') return;
+    if (document.getElementById('frModal').classList.contains('open')) { frSkip(); return; }
+    if (document.getElementById('settingsModal').classList.contains('open')) closeSettings();
   });
 
   // Prevent toolbar buttons from stealing focus/selection from the editor
