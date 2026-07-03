@@ -403,6 +403,36 @@ body.dark .fchip-reset{background:var(--navy-deep);}
 .empty .empty-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px;}
 .empty .empty-btn{padding:6px 14px;border:1px solid var(--gold);border-radius:6px;background:var(--white);color:var(--text);font-size:0.82rem;font-family:inherit;cursor:pointer;transition:background 0.15s;}
 .empty .empty-btn:hover{background:var(--gold);color:#fff;}
+/* Section 3: word / emoji detail modal */
+.wm-overlay{display:none;position:fixed;inset:0;background:rgba(13,18,32,0.55);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+.wm-overlay.open{display:flex;}
+.wm-dialog{background:var(--white);border:1px solid var(--border);border-radius:12px;max-width:440px;width:100%;max-height:88vh;overflow-y:auto;position:relative;box-shadow:0 12px 40px rgba(0,0,0,0.35);padding:26px 22px 20px;}
+body.dark .wm-dialog{background:var(--cream);}
+.wm-close{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:6px;border:none;background:var(--warm-gray);color:var(--muted);font-size:1rem;cursor:pointer;line-height:1;}
+.wm-close:hover{background:var(--gold);color:#fff;}
+.wm-heb{font-family:var(--heb-font);font-size:2.6rem;direction:rtl;text-align:center;color:var(--text);line-height:1.2;margin:4px 24px 4px;}
+.wm-emoji{font-size:3.2rem;text-align:center;margin-bottom:4px;}
+.wm-translit{text-align:center;color:var(--muted);font-size:1rem;margin-bottom:2px;}
+.wm-transl{text-align:center;color:var(--text);font-size:1.05rem;font-weight:600;margin-bottom:10px;}
+.wm-badges{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:14px;}
+.wm-emoji-forms{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.wm-form{display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--cream);border:1px solid var(--border);border-radius:6px;}
+body.dark .wm-form{background:var(--white);}
+.wm-form-label{font-size:0.72rem;color:var(--muted);min-width:82px;}
+.wm-heb-sm{font-family:var(--heb-font);font-size:1.3rem;direction:rtl;flex:1;}
+.wm-form-tr{font-size:0.8rem;color:var(--muted);}
+.wm-mini{border:none;background:transparent;cursor:pointer;font-size:1rem;}
+.wm-actions{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.wm-act{padding:7px 12px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-size:0.82rem;font-family:inherit;cursor:pointer;text-align:left;transition:background 0.15s,border-color 0.15s;}
+body.dark .wm-act{background:var(--white);}
+.wm-act:hover{border-color:var(--gold);background:var(--warm-gray);}
+.wm-act.copied{background:var(--gold);color:#fff;border-color:var(--gold);}
+.wm-root-row{margin-bottom:12px;}
+.wm-root-btn{width:100%;padding:9px 12px;border:1px solid var(--gold);border-radius:6px;background:var(--gold);color:#fff;font-size:0.85rem;font-family:inherit;font-weight:600;cursor:pointer;}
+.wm-root-btn:hover{background:var(--gold-light);color:var(--navy);}
+.wm-footer{border-top:1px solid var(--border);padding-top:10px;text-align:center;}
+.wm-google{color:var(--muted);font-size:0.8rem;text-decoration:none;}
+.wm-google:hover{color:var(--gold);text-decoration:underline;}
 .content{flex:1;overflow-y:auto;padding:18px 20px;}
 .results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:16px;}
 .word-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:3px;cursor:default;transition:border-color 0.15s,box-shadow 0.15s;position:relative;}
@@ -774,6 +804,7 @@ footer a{color:var(--gold);text-decoration:none;}
             <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
             <label class="cb-label" title="Select multiple words from the results. Each selected word is added to a text box below — one per line — in whatever Copy Mode is active."><input type="checkbox" id="bulkModeCb" style="accent-color:var(--gold);" onchange="toggleBulkMode(this.checked)"> Bulk Copy Mode</label>
             <div id="bulkPanel" style="display:none;margin-top:8px;">
+              <div style="font-size:0.68rem;color:var(--muted);margin-bottom:6px;line-height:1.4;">While Bulk Copy is on, clicking a card selects it (instead of opening its details).</div>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
                 <span style="font-size:0.72rem;color:var(--muted);" id="bulkCount">0 selected</span>
                 <button class="pos-all-btn" onclick="clearBulkSelection()">Clear</button>
@@ -919,6 +950,14 @@ footer a{color:var(--gold);text-decoration:none;}
       </div>
       <div id="shoreshPatterns" style="display:none;"></div>
     </div>
+  </div>
+</div>
+
+<!-- Section 3: word / emoji detail modal (single reusable overlay) -->
+<div class="wm-overlay" id="wordModal" role="dialog" aria-modal="true" aria-labelledby="wmTitle">
+  <div class="wm-dialog" id="wmDialog">
+    <button class="wm-close" id="wmClose" aria-label="Close details" onclick="closeWordModal()">✕</button>
+    <div class="wm-body" id="wmBody"></div>
   </div>
 </div>
 
@@ -1128,16 +1167,17 @@ function toggleGematriaSort(on) {
 }
 const bulkSelected = new Map(); // bare -> {w, text}
 
-function getWordCopyText(w) {
+// Pure copy-text builder (mode is a parameter). The detail modal (Section 3) renders
+// one button per mode without ever mutating the global copyMode.
+function computeCopyText(w, mode) {
   const tr = w.translitDisplay ?? w.translit;
-  const parts = [w.word];
-  if (copyMode === 'definition') return w.translation ? `${w.word} — ${w.translation}` : w.word;
-  if (copyMode === 'defonly') return w.translation || w.word;
-  if (copyMode === 'transdef') {
+  if (mode === 'definition') return w.translation ? `${w.word} — ${w.translation}` : w.word;
+  if (mode === 'defonly') return w.translation || w.word;
+  if (mode === 'transdef') {
     const mid = [tr, w.translation].filter(Boolean).join(' — ');
     return mid ? `${w.word} — ${mid}` : w.word;
   }
-  if (copyMode === 'allinfo') {
+  if (mode === 'allinfo') {
     const segs = [w.word];
     if (tr) segs.push(tr);
     if (w.translation) segs.push(w.translation);
@@ -1148,6 +1188,7 @@ function getWordCopyText(w) {
   }
   return w.word;
 }
+function getWordCopyText(w) { return computeCopyText(w, copyMode); }
 function wordBulkText(w) { return getWordCopyText(w); }
 
 function updateBulkTextarea() {
@@ -1751,11 +1792,22 @@ function buildWordCard(w) {
   });
   card.appendChild(bulkCb);
   if (bulkSelected.has(w.word)) card.classList.add('bulk-selected');
+  // Section 3: click opens the detail modal (bulk mode keeps select-on-click).
+  card.setAttribute('role', 'button');
+  card.tabIndex = 0;
+  card.setAttribute('aria-label', 'View details for ' + w.word + (w.translation ? ' (' + w.translation + ')' : ''));
   card.addEventListener('click', e => {
-    if (!bulkMode) return;
     if (e.target === bulkCb) return;
-    bulkCb.checked = !bulkCb.checked;
-    bulkCb.dispatchEvent(new Event('change', {bubbles:true}));
+    if (bulkMode) { bulkCb.checked = !bulkCb.checked; bulkCb.dispatchEvent(new Event('change', {bubbles:true})); }
+    else openWordModal(w);
+  });
+  card.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      if (e.target !== card) return;
+      e.preventDefault();
+      if (bulkMode) { bulkCb.checked = !bulkCb.checked; bulkCb.dispatchEvent(new Event('change', {bubbles:true})); }
+      else openWordModal(w);
+    }
   });
   const btn = document.createElement('button');
   btn.className = 'wc-copy';
@@ -2758,16 +2810,16 @@ function emojiVisibleForms(e) {
   return out;
 }
 
-function emojiBulkText(e) {
+function computeEmojiCopyText(e, mode) {
   const forms = emojiVisibleForms(e);
   const lineFor = f => {
-    if (copyMode === 'definition') return f.heb && e.english ? `${f.heb} — ${e.english}` : (f.heb || e.english);
-    if (copyMode === 'defonly')    return e.english || f.heb;
-    if (copyMode === 'transdef') {
+    if (mode === 'definition') return f.heb && e.english ? `${f.heb} — ${e.english}` : (f.heb || e.english);
+    if (mode === 'defonly')    return e.english || f.heb;
+    if (mode === 'transdef') {
       const mid = [f.translit, e.english].filter(Boolean).join(' — ');
       return mid ? `${f.heb} — ${mid}` : f.heb;
     }
-    if (copyMode === 'allinfo') {
+    if (mode === 'allinfo') {
       const segs = [f.heb];
       if (f.translit) segs.push(f.translit);
       if (e.english)  segs.push(e.english);
@@ -2778,6 +2830,7 @@ function emojiBulkText(e) {
   };
   return forms.map(lineFor).join('\n');
 }
+function emojiBulkText(e) { return computeEmojiCopyText(e, copyMode); }
 
 function emojiMatchesSearch(e, q) {
   if (!q) return true;
@@ -2865,11 +2918,22 @@ function renderEmojiResults() {
     });
     card.appendChild(bulkCb);
     if (bulkSelected.has(key)) card.classList.add('bulk-selected');
+    // Section 3: click opens the emoji detail modal (bulk mode keeps select-on-click).
+    card.setAttribute('role', 'button');
+    card.tabIndex = 0;
+    card.setAttribute('aria-label', 'View details for ' + e.english);
     card.addEventListener('click', ev => {
-      if (!bulkMode) return;
       if (ev.target === bulkCb || ev.target.closest('.ec-speak')) return;
-      bulkCb.checked = !bulkCb.checked;
-      bulkCb.dispatchEvent(new Event('change', { bubbles: true }));
+      if (bulkMode) { bulkCb.checked = !bulkCb.checked; bulkCb.dispatchEvent(new Event('change', { bubbles: true })); }
+      else openEmojiModal(e);
+    });
+    card.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter' || ev.key === ' ') {
+        if (ev.target !== card) return;
+        ev.preventDefault();
+        if (bulkMode) { bulkCb.checked = !bulkCb.checked; bulkCb.dispatchEvent(new Event('change', { bubbles: true })); }
+        else openEmojiModal(e);
+      }
     });
     const inner = document.createElement('div');
     inner.innerHTML = `
@@ -3386,6 +3450,164 @@ function renderDictEmptyState(isEmoji) {
   wrap.appendChild(actions);
   grid.appendChild(wrap);
 }
+
+/* ===== Section 3: word / emoji detail modal ===== */
+
+let _modalOpener = null, _modalKeyHandler = null;
+function _wmFocusables() {
+  const ov = document.getElementById('wordModal');
+  return [...ov.querySelectorAll('button,a[href],input,select,textarea,[tabindex]')].filter(el => !el.disabled && el.offsetParent !== null);
+}
+function _openWordModal(bodyEl) {
+  const ov = document.getElementById('wordModal');
+  const body = document.getElementById('wmBody');
+  body.innerHTML = '';
+  body.appendChild(bodyEl);
+  _modalOpener = document.activeElement;
+  ov.classList.add('open');
+  document.body.classList.add('wm-open');
+  const close = document.getElementById('wmClose');
+  if (close) close.focus();
+  _modalKeyHandler = e => {
+    if (e.key === 'Escape') { e.preventDefault(); closeWordModal(); return; }
+    if (e.key === 'Tab') {
+      const f = _wmFocusables();
+      if (!f.length) return;
+      const i = f.indexOf(document.activeElement);
+      if (e.shiftKey) { if (i <= 0) { e.preventDefault(); f[f.length - 1].focus(); } }
+      else { if (i === -1 || i === f.length - 1) { e.preventDefault(); f[0].focus(); } }
+    }
+  };
+  ov.addEventListener('keydown', _modalKeyHandler, true);
+}
+function closeWordModal() {
+  const ov = document.getElementById('wordModal');
+  if (!ov.classList.contains('open')) return;
+  ov.classList.remove('open');
+  document.body.classList.remove('wm-open');
+  if (_modalKeyHandler) { ov.removeEventListener('keydown', _modalKeyHandler, true); _modalKeyHandler = null; }
+  if (_modalOpener && _modalOpener.focus) { try { _modalOpener.focus(); } catch (e) {} }
+  _modalOpener = null;
+}
+function _wmCopyFlash(btn, text, label) {
+  const done = () => { btn.textContent = '✓ Copied!'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = label; btn.classList.remove('copied'); }, 1400); };
+  if (navigator.clipboard) navigator.clipboard.writeText(text).then(done).catch(done);
+  else { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(ta); done(); }
+}
+function _wmBadge(cls, text) { const s = document.createElement('span'); s.className = 'badge ' + cls; s.textContent = text; return s; }
+function _wmCopyButtons(container, textFor) {
+  [['word', 'Copy word'], ['definition', 'Copy word — definition'], ['transdef', 'Copy word — translit — definition'], ['defonly', 'Copy definition'], ['allinfo', 'Copy all info']]
+    .forEach(([m, label]) => {
+      const b = document.createElement('button');
+      b.className = 'wm-act'; b.textContent = label;
+      b.addEventListener('click', () => _wmCopyFlash(b, textFor(m), label));
+      container.appendChild(b);
+    });
+}
+
+function openWordModal(w) {
+  const b = document.createElement('div');
+  const ec = w.era === 'Biblical' ? 'b-bib' : w.era === 'Modern' ? 'b-mod' : 'b-both';
+  const el = w.era === 'Both' ? 'Bib + Mod' : w.era;
+
+  const big = document.createElement('div'); big.className = 'wm-heb'; big.id = 'wmTitle'; big.innerHTML = colorizeHebrew(w.word); b.appendChild(big);
+  const trStr = w.translitDisplay ?? w.translit;
+  if (trStr) { const t = document.createElement('div'); t.className = 'wm-translit'; t.textContent = trStr; b.appendChild(t); }
+  if (w.translation) { const t = document.createElement('div'); t.className = 'wm-transl'; t.textContent = w.translation; b.appendChild(t); }
+
+  const badges = document.createElement('div'); badges.className = 'wm-badges';
+  if (w.pos) badges.appendChild(_wmBadge('b-pos', w.pos));
+  badges.appendChild(_wmBadge(ec, el));
+  badges.appendChild(_wmBadge('b-len', w.len + 'L'));
+  const gb = _wmBadge('', 'ג ' + calcGematria(w.bare)); gb.style.background = 'var(--warm-gray)'; gb.style.color = 'var(--muted)'; badges.appendChild(gb);
+  b.appendChild(badges);
+
+  const actions = document.createElement('div'); actions.className = 'wm-actions';
+  const spk = document.createElement('button'); spk.className = 'wm-act'; spk.textContent = '🔊 Pronounce'; spk.addEventListener('click', () => speakWord(w.word)); actions.appendChild(spk);
+  _wmCopyButtons(actions, m => computeCopyText(w, m));
+  const bulkBtn = document.createElement('button'); bulkBtn.className = 'wm-act';
+  bulkBtn.textContent = bulkSelected.has(w.word) ? '✓ In bulk list' : '➕ Add to bulk list';
+  bulkBtn.addEventListener('click', () => toggleWordBulk(w, bulkBtn));
+  actions.appendChild(bulkBtn);
+  b.appendChild(actions);
+
+  const rc = wordConsonants(w);
+  if (rc && rc.length >= 2) {
+    const row = document.createElement('div'); row.className = 'wm-root-row';
+    const rb = document.createElement('button'); rb.className = 'wm-root-btn';
+    rb.textContent = 'Words from this root  ' + [...rc].join('־') + '  →';
+    rb.addEventListener('click', () => { closeWordModal(); setDictMode('shoresh'); runShoreshLookup(rc); });
+    row.appendChild(rb); b.appendChild(row);
+  }
+
+  const footer = document.createElement('div'); footer.className = 'wm-footer';
+  const g = document.createElement('a'); g.className = 'wm-google'; g.href = 'https://www.google.com/search?q=' + encodeURIComponent(w.word); g.target = '_blank'; g.rel = 'noopener'; g.textContent = 'Look up on Google ↗';
+  footer.appendChild(g); b.appendChild(footer);
+
+  _openWordModal(b);
+}
+
+function toggleWordBulk(w, btn) {
+  if (!bulkMode) { const cb = document.getElementById('bulkModeCb'); if (cb) cb.checked = true; toggleBulkMode(true); }
+  if (bulkSelected.has(w.word)) bulkSelected.delete(w.word);
+  else bulkSelected.set(w.word, { w, text: wordBulkText(w) });
+  updateBulkTextarea();
+  document.querySelectorAll('.word-card').forEach(c => {
+    if (c.dataset.shword === w.word) { const cb = c.querySelector('.wc-bulk-cb'); if (cb) cb.checked = bulkSelected.has(w.word); c.classList.toggle('bulk-selected', bulkSelected.has(w.word)); }
+  });
+  if (btn) btn.textContent = bulkSelected.has(w.word) ? '✓ In bulk list' : '➕ Add to bulk list';
+}
+
+function openEmojiModal(e) {
+  const b = document.createElement('div');
+  const big = document.createElement('div'); big.className = 'wm-emoji'; big.id = 'wmTitle'; big.textContent = e.emoji; b.appendChild(big);
+  const eng = document.createElement('div'); eng.className = 'wm-transl'; eng.textContent = e.english; b.appendChild(eng);
+
+  const forms = document.createElement('div'); forms.className = 'wm-emoji-forms';
+  [['♂ Masculine', e.hebrew_masculine, e.translit_masculine], ['♀ Feminine', e.hebrew_feminine, e.translit_feminine]].forEach(([lbl, heb, tr]) => {
+    if (!heb) return;
+    const row = document.createElement('div'); row.className = 'wm-form';
+    const l = document.createElement('span'); l.className = 'wm-form-label'; l.textContent = lbl; row.appendChild(l);
+    const h = document.createElement('span'); h.className = 'wm-heb-sm'; h.innerHTML = colorizeHebrew(heb); row.appendChild(h);
+    const sp = document.createElement('button'); sp.className = 'wm-mini'; sp.setAttribute('aria-label', 'Hear ' + lbl); sp.textContent = '🔊'; sp.addEventListener('click', () => speakWord(heb)); row.appendChild(sp);
+    if (tr) { const t = document.createElement('span'); t.className = 'wm-form-tr'; t.textContent = tr; row.appendChild(t); }
+    forms.appendChild(row);
+  });
+  b.appendChild(forms);
+
+  const badges = document.createElement('div'); badges.className = 'wm-badges';
+  badges.appendChild(_wmBadge('b-pos', e.category));
+  badges.appendChild(_wmBadge('b-both', e.subcategory));
+  b.appendChild(badges);
+
+  const actions = document.createElement('div'); actions.className = 'wm-actions';
+  [['word', 'Copy Hebrew'], ['definition', 'Copy Hebrew — English'], ['transdef', 'Copy Hebrew — translit — English'], ['defonly', 'Copy English'], ['allinfo', 'Copy all info']]
+    .forEach(([m, label]) => { const btn = document.createElement('button'); btn.className = 'wm-act'; btn.textContent = label; btn.addEventListener('click', () => _wmCopyFlash(btn, computeEmojiCopyText(e, m), label)); actions.appendChild(btn); });
+  const key = emojiKey(e);
+  const bulkBtn = document.createElement('button'); bulkBtn.className = 'wm-act';
+  bulkBtn.textContent = bulkSelected.has(key) ? '✓ In bulk list' : '➕ Add to bulk list';
+  bulkBtn.addEventListener('click', () => toggleEmojiBulk(e, bulkBtn));
+  actions.appendChild(bulkBtn);
+  b.appendChild(actions);
+
+  _openWordModal(b);
+}
+
+function toggleEmojiBulk(e, btn) {
+  if (!bulkMode) { const cb = document.getElementById('bulkModeCb'); if (cb) cb.checked = true; toggleBulkMode(true); }
+  const key = emojiKey(e);
+  if (bulkSelected.has(key)) bulkSelected.delete(key);
+  else bulkSelected.set(key, { e, text: emojiBulkText(e) });
+  updateBulkTextarea();
+  if (btn) btn.textContent = bulkSelected.has(key) ? '✓ In bulk list' : '➕ Add to bulk list';
+  rerender();
+}
+
+// Backdrop click closes the modal.
+(function () {
+  const ov = document.getElementById('wordModal');
+  if (ov) ov.addEventListener('click', e => { if (e.target === ov) closeWordModal(); });
+})();
 
 /* ===== Section 4: search clear + mobile sticky bar ===== */
 
