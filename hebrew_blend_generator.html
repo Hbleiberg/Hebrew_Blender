@@ -774,7 +774,7 @@
     --trace-baseline: 68%;        /* letter bodies sit here; nikkud/descenders hang below */
     --trace-topline: 8%;          /* only drawn in Top + bottom mode */
     --trace-rule-color: #9aa0a6;  /* light-but-printable gray */
-    --trace-gap: 0.55rem;
+    --trace-gap: 0.5rem;          /* space between copies — driven by the Spacing slider (default 25) */
   }
   .trace-row {
     position: relative;
@@ -2322,6 +2322,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         </div>
         <div id="tracingOptions" style="display:none;flex-direction:column;gap:6px;">
           <div style="border-top:1px solid var(--border);margin:10px 0 6px;"></div>
+          <div class="font-size-row">
+            <span class="fs-label">Spacing</span>
+            <input type="range" id="traceSpacing" min="0" max="100" value="25" step="1"
+                   oninput="setTraceSpacing(this.value)" ondblclick="resetTraceSpacing()">
+            <span class="fs-val" id="traceSpacingVal">0.50rem</span>
+            <button class="fs-reset" onclick="resetTraceSpacing()" title="Reset to default">↺</button>
+          </div>
           <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
             <span class="sub-label" style="font-size:0.78rem;min-width:96px;">Line style</span>
             <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);flex:1;">
@@ -4152,6 +4159,7 @@ function getSettings() {
     traceLinesPerItem:  document.getElementById('traceLinesPerItem')?.value,
     traceRepeatModels:  document.getElementById('traceRepeatModels')?.checked ?? true,
     traceFillLine:      document.getElementById('traceFillLine')?.checked ?? false,
+    traceSpacing:       document.getElementById('traceSpacing')?.value,
   };
 }
 
@@ -4320,6 +4328,10 @@ function applySettings(s) {
   if (s.traceLinesPerItem)              document.getElementById('traceLinesPerItem').value = s.traceLinesPerItem;
   if (s.traceRepeatModels !== undefined) document.getElementById('traceRepeatModels').checked = s.traceRepeatModels;
   if (s.traceFillLine !== undefined)    document.getElementById('traceFillLine').checked = s.traceFillLine;
+  if (s.traceSpacing !== undefined) {
+    const sl = document.getElementById('traceSpacing');
+    if (sl) { sl.value = s.traceSpacing; setTraceSpacing(s.traceSpacing); }
+  }
   // Keep dependent tracing UI (button active states + fill-line-disables-models) in sync.
   syncTraceButtons();
   syncTraceFillDisabled();
@@ -8182,6 +8194,20 @@ function measureTraceRowsPerSheet(ws, title, traceDir) {
 
 function setTraceLineStyle(v) { traceLineStyle = v; syncTraceButtons(); renderTracingIfActive(); }
 function setTraceDarkness(v)  { traceDarkness  = v; syncTraceButtons(); renderTracingIfActive(); }
+
+// Spacing slider — sets the gap between trace copies (drives --trace-gap).
+// Live: re-renders so fill-line copy counts recompute for the new gap.
+function setTraceSpacing(val) {
+  const gap = (Number(val) * 0.02).toFixed(2);
+  document.documentElement.style.setProperty('--trace-gap', gap + 'rem');
+  const el = document.getElementById('traceSpacingVal');
+  if (el) el.textContent = gap + 'rem';
+  renderTracingIfActive();
+}
+function resetTraceSpacing() {
+  const sl = document.getElementById('traceSpacing');
+  if (sl) { sl.value = 25; setTraceSpacing(25); }
+}
 
 function syncTraceButtons() {
   document.querySelectorAll('[data-trace-lines]').forEach(b =>
