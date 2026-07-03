@@ -897,6 +897,33 @@
     text-align: center; margin-top: 3px;
     letter-spacing: 0.02em;
   }
+  /* ── Schedule Now/Next + preview + validation ── */
+  .now-next { display: flex; justify-content: center; gap: 22px; margin-top: 8px; flex-wrap: wrap; }
+  .now-next .nn-item { display: flex; flex-direction: column; align-items: center; line-height: 1.25; }
+  .now-next .nn-lbl { font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .now-next .nn-val { font-family: 'Libre Baskerville', serif; font-weight: 700; color: var(--navy); font-size: 1.05rem; }
+  body.dark .now-next .nn-val { color: var(--gold-light); }
+  .now-next .nn-in { font-size: 0.72rem; color: var(--muted); }
+  .now-next .nn-morrow { font-weight: 400; }
+  .sched-explain { font-size: 0.75rem; color: var(--muted); line-height: 1.5; margin: 0 0 12px; }
+  .sched-explain .sched-eg { display: block; margin-top: 4px; color: var(--text); }
+  .sched-preview { font-size: 0.72rem; color: var(--muted); margin-top: 8px; padding: 7px 9px; background: var(--cream); border: 1px solid var(--border); border-radius: 6px; line-height: 1.9; }
+  body.dark .sched-preview { background: var(--navy-deep); }
+  .sched-preview .sched-seg { white-space: nowrap; }
+  .sched-preview .sched-seg-active { background: rgba(201,146,42,0.18); color: var(--text); border-radius: 4px; padding: 1px 5px; font-weight: 600; }
+  .sched-preview .sched-arrow { color: var(--gold); margin: 0 5px; }
+  .sched-preview-hint { font-style: italic; }
+  .schedule-validation { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+  .schedule-validation .sched-warn { font-size: 0.72rem; color: #b4521f; line-height: 1.4; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  body.dark .schedule-validation .sched-warn { color: #e0a060; }
+  .sched-hdr-row { display: flex; align-items: center; gap: 5px; margin-bottom: 2px; }
+  .sched-hdr { flex: 1; min-width: 0; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
+  .sched-hdr-until { flex: none; width: 82px; }
+  body.fullscreen #scheduleCountdown { font-size: 1.4rem; margin-top: 10px; }
+  body.fullscreen .now-next { gap: 44px; margin-top: 16px; }
+  body.fullscreen .now-next .nn-val { font-size: 2.1rem; }
+  body.fullscreen .now-next .nn-lbl { font-size: 0.9rem; }
+  body.fullscreen .now-next .nn-in { font-size: 1.15rem; }
 
   /* ───── Editor toolbar ───── */
   .editor-toolbar {
@@ -1058,6 +1085,14 @@
   body.fullscreen .weather-emoji { font-size: 4.2rem; }
   body.fullscreen .weather-temp { font-size: 2.4rem; }
 
+  /* ── Screen Wake Lock indicator ── */
+  .wake-dot { display: none; align-items: center; margin-left: 2px; }
+  .wake-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--gold); box-shadow: 0 0 4px var(--gold); display: inline-block; }
+  body.wake-held .wake-dot.zoom-wake-dot { display: inline-flex; }
+  .wake-dot-fs { position: fixed; bottom: 12px; left: 14px; z-index: 180; opacity: 0.4; pointer-events: none; }
+  body.wake-held.fullscreen .wake-dot-fs { display: inline-flex; }
+
   /* ───── Responsive ───── */
   @media (max-width: 980px) {
     .dashboard { grid-template-columns: 1fr; gap: 16px; padding: 18px; }
@@ -1121,11 +1156,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <input type="range" id="zoomSlider" min="50" max="200" step="5" value="100" style="flex:1;accent-color:var(--gold);cursor:pointer;">
   <span id="zoomLabel" style="white-space:nowrap;min-width:36px;">100%</span>
   <button onclick="applyZoom(100)" style="font-size:0.7rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);cursor:pointer;">Reset</button>
+  <span class="wake-dot zoom-wake-dot" role="img" title="Screen will stay awake" aria-label="Screen will stay awake"></span>
 </div>
 <button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen">
   <span class="fs-x">✕</span>
   <span class="fs-label">Exit Fullscreen</span>
 </button>
+<span class="wake-dot wake-dot-fs" role="img" title="Screen will stay awake" aria-label="Screen will stay awake"></span>
 <div class="dashboard">
   <!-- LEFT: Days -->
   <div class="dash-col" id="dowCol">
@@ -1142,6 +1179,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div class="heb-holiday-line" id="holidayCountdown" style="display:none;"></div>
       <div class="current-time" id="currentTime"></div>
       <div id="scheduleCountdown"></div>
+      <div id="nowNextBlock" class="now-next" style="display:none;"></div>
     </div>
     <div id="dashTextWrap" style="display:none;width:100%;">
       <div id="dashTextDisplay" class="dash-text-display"></div>
@@ -1246,6 +1284,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <div class="form-row">
       <label>Hide zoom bar</label>
       <label class="toggle"><input type="checkbox" id="hideZoomBar"><span class="slider"></span></label>
+    </div>
+    <div class="form-row" id="keepAwakeRow">
+      <label>Keep screen awake <span class="tip-wrap" data-tip="Prevents the display from dimming or sleeping while the dashboard is open (Screen Wake Lock). Fullscreen keeps the screen awake automatically."><i class="tip-icon">?</i></span></label>
+      <label class="toggle"><input type="checkbox" id="keepAwake"><span class="slider"></span></label>
     </div>
     <div class="form-row">
       <label>Show video embed</label>
@@ -1624,6 +1666,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 <div class="panel">
   <div class="panel-title">Schedule Sync</div>
   <div class="panel-body">
+    <p class="sched-explain">Each row shows a chosen preset <b>until</b> a set time — as the day moves on, the dashboard reconfigures itself to the next preset automatically, and the countdown shows how long is left in the current block.<span class="sched-eg">e.g. <b>Morning</b> until 8:45 → <b>Ivrit</b> until 9:30 → <b>Recess</b> until 9:45</span></p>
     <div class="form-row" style="margin-bottom:12px;">
       <label>Enable Schedule Sync</label>
       <label class="toggle"><input type="checkbox" id="scheduleEnabled" onchange="toggleScheduleSync(this.checked)"><span class="slider"></span></label>
@@ -1633,10 +1676,12 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <div class="sub-section-hdr">Schedule Input</div>
         <div class="sub-section-body">
           <div id="scheduleRows"></div>
-          <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;">
+          <div id="scheduleValidation" class="schedule-validation" style="display:none;"></div>
+          <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
             <button class="btn-xs" onclick="addScheduleRow()">+ Add</button>
             <button class="btn-xs btn-secondary" onclick="saveScheduleAs()">Save Schedule As…</button>
           </div>
+          <div id="schedulePreview" class="sched-preview"></div>
         </div>
       </div>
       <div class="sub-section">
@@ -1655,6 +1700,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <div class="form-row" id="countdownPresetNameRow" style="display:none;padding-left:16px;">
             <label style="font-size:0.8rem;font-weight:500;color:var(--muted);">Show preset name</label>
             <label class="toggle"><input type="checkbox" id="countdownShowPresetName" onchange="settings.countdownShowPresetName=this.checked;updateCountdown();saveSettingsToStorage();"><span class="slider"></span></label>
+          </div>
+          <div class="form-row">
+            <label>Show Now / Next on dashboard <span class="tip-wrap" data-tip="Shows the current period and the upcoming one (with preset names) in the center of the dashboard."><i class="tip-icon">?</i></span></label>
+            <label class="toggle"><input type="checkbox" id="scheduleShowPeriods" onchange="setScheduleShowPeriods(this.checked)"><span class="slider"></span></label>
           </div>
         </div>
       </div>
@@ -1969,6 +2018,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     dashTextSize: 1.8,
     zoomLevel: 100,
     hideZoomBar: false,
+    keepAwake: false,
     showVideoEmbed: false,
     videoEmbedUrl: '',
     videoCollapsed: false,
@@ -1981,6 +2031,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     timerCollapsed: false,
     scheduleEnabled: false,
     scheduleShowCountdown: false,
+    scheduleShowPeriods: true,
     countdownShowPresetName: true,
     currentSchedule: [],
     showTextSizeOptions: false,
@@ -2009,6 +2060,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   let weatherCache = null;
   let weatherTimer = null;
   let clockInterval = null;
+  let _wakeLock = null;
 
   /* ────────── HEBREW CALENDAR (Reingold-Dershowitz) ────────── */
   function gregorianToJDN(y, m, d) {
@@ -3230,6 +3282,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     $('hideDOW').checked = settings.hideDOW;
     $('hideDashText').checked = !settings.enableDashText;
     $('hideZoomBar').checked = settings.hideZoomBar;
+    $('keepAwake').checked = !!settings.keepAwake;
     $('showVideoEmbed').checked = !!settings.showVideoEmbed;
     $('videoUrlInput').value = settings.videoEmbedUrl || '';
     toggleVideoUrlRow(!!settings.showVideoEmbed);
@@ -3253,6 +3306,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     const ssBody = $('scheduleSyncBody');
     if (ssBody) ssBody.style.display = schedEnabled ? '' : 'none';
     $('scheduleShowCountdown').checked = !!settings.scheduleShowCountdown;
+    $('scheduleShowPeriods').checked = settings.scheduleShowPeriods !== false;
     $('countdownShowPresetName').checked = settings.countdownShowPresetName !== false;
     const cpnRow = $('countdownPresetNameRow');
     if (cpnRow) cpnRow.style.display = settings.scheduleShowCountdown ? '' : 'none';
@@ -3401,6 +3455,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       toggleZoomBar(!e.target.checked);
       saveSettingsToStorage();
     });
+    document.getElementById('keepAwake').addEventListener('change', e => {
+      settings.keepAwake = e.target.checked;
+      applyWakeLock();
+      saveSettingsToStorage();
+    });
     document.getElementById('showVideoEmbed').addEventListener('change', e => {
       settings.showVideoEmbed = e.target.checked;
       toggleVideoUrlRow(e.target.checked);
@@ -3433,6 +3492,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     const savedSchedule = {
       scheduleEnabled:        settings.scheduleEnabled,
       scheduleShowCountdown:  settings.scheduleShowCountdown,
+      scheduleShowPeriods:    settings.scheduleShowPeriods,
       countdownShowPresetName: settings.countdownShowPresetName,
       currentSchedule:        settings.currentSchedule,
     };
@@ -3465,6 +3525,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     renderDaysList();
     renderWeather();
     updateDashboardGrid();
+    applyWakeLock();
   }
 
   function getSettings() {
@@ -3970,12 +4031,44 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
   }
 
   function getPresetOptions(selectedName) {
-    return Object.keys(presets).map(name =>
+    const names = Object.keys(presets);
+    if (selectedName && !names.includes(selectedName)) names.unshift(selectedName);   // keep an unknown/typo'd value visible instead of silently switching
+    return names.map(name =>
       `<option value="${esc(name)}"${name === selectedName ? ' selected' : ''}>${esc(name)}</option>`
     ).join('');
   }
 
+  // Single source of truth for the active/next schedule period — shared by the
+  // countdown line, the on-dashboard Now/Next block, the settings preview, and checkSchedule.
+  function computeScheduleState(now) {
+    now = now || new Date();
+    const nowMins = now.getHours() * 60 + now.getMinutes();
+    const sorted = [...(settings.currentSchedule || [])]
+      .filter(e => e.preset && e.until)
+      .sort((a, b) => timeToMins(a.until) - timeToMins(b.until));
+    if (!sorted.length)
+      return { status:'empty', sorted, currentIdx:-1, currentEntry:null, targetEntry:null, diffMins:0, isTomorrow:false, timeStr:'' };
+    const currentIdx = sorted.findIndex(e => timeToMins(e.until) > nowMins);
+    let status, currentEntry = null, targetEntry, diffMins, isTomorrow = false;
+    if (currentIdx === -1) {
+      status = 'allpast';
+      targetEntry = sorted[0];
+      diffMins = (24 * 60 - nowMins) + timeToMins(targetEntry.until);
+      isTomorrow = true;
+    } else {
+      status = 'active';
+      currentEntry = sorted[currentIdx];
+      diffMins = timeToMins(currentEntry.until) - nowMins;
+      if (currentIdx + 1 < sorted.length) targetEntry = sorted[currentIdx + 1];
+      else { targetEntry = sorted[0]; isTomorrow = true; }
+    }
+    const h = Math.floor(diffMins / 60), m = diffMins % 60;
+    return { status, sorted, currentIdx, currentEntry, targetEntry, diffMins, isTomorrow, timeStr: h > 0 ? `${h}h ${m}m` : `${m}m` };
+  }
+
   function renderScheduleRows() {
+    renderScheduleValidation();
+    renderSchedulePreview();
     const container = document.getElementById('scheduleRows');
     if (!container) return;
     const rows = settings.currentSchedule || [];
@@ -3984,6 +4077,15 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
       return;
     }
     container.innerHTML = '';
+    const hdr = document.createElement('div');
+    hdr.className = 'sched-hdr-row';
+    hdr.innerHTML =
+      `<span class="drag-handle" style="visibility:hidden">⠿</span>` +
+      `<span class="sched-hdr">Preset</span>` +
+      `<span class="schedule-until-lbl" style="visibility:hidden">until</span>` +
+      `<span class="sched-hdr sched-hdr-until">Until</span>` +
+      `<span style="width:16px;flex-shrink:0;"></span>`;
+    container.appendChild(hdr);
     rows.forEach((entry, i) => {
       const row = document.createElement('div');
       row.className = 'schedule-row';
@@ -4023,6 +4125,8 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
     if (!settings.currentSchedule[i]) return;
     settings.currentSchedule[i][field] = value;
     _lastScheduleKey = null;
+    renderScheduleValidation();
+    renderScheduleUI();
     saveSettingsToStorage();
   }
 
@@ -4091,6 +4195,7 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
     if (body) body.style.display = enabled ? '' : 'none';
     if (enabled) { renderScheduleRows(); renderSavedSchedules(); }
     _lastScheduleKey = null;
+    renderScheduleUI();
     saveSettingsToStorage();
   }
 
@@ -4102,15 +4207,19 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
     saveSettingsToStorage();
   }
 
+  function setScheduleShowPeriods(on) {
+    settings.scheduleShowPeriods = on;
+    renderScheduleUI();
+    saveSettingsToStorage();
+  }
+
   function checkSchedule() {
     if (!settings.scheduleEnabled || !settings.currentSchedule?.length) return;
-    const now = new Date();
-    const nowMins = now.getHours() * 60 + now.getMinutes();
-    const sorted = [...settings.currentSchedule]
-      .filter(e => e.preset && e.until)
-      .sort((a, b) => timeToMins(a.until) - timeToMins(b.until));
-    const active = sorted.find(e => timeToMins(e.until) > nowMins);
-    if (!active) return;
+    const st = computeScheduleState();
+    // Apply only the currently-active block's preset. When every period is past (status 'allpast'),
+    // apply nothing — the last period's board persists overnight rather than jumping to tomorrow's first.
+    if (st.status !== 'active' || !st.currentEntry) return;
+    const active = st.currentEntry;
     const key = active.preset + '|' + active.until;
     if (key !== _lastScheduleKey && presets[active.preset]) {
       _lastScheduleKey = key;
@@ -4118,49 +4227,95 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
     }
   }
 
-  function updateCountdown() {
-    const el = document.getElementById('scheduleCountdown');
+  // Thin alias kept for the many existing call sites (clock tick, updateDateTimeDisplay, etc.)
+  function updateCountdown() { renderScheduleUI(); }
+
+  function renderScheduleUI() {
+    const st = settings.scheduleEnabled ? computeScheduleState() : { status:'off' };
+    const live = st.status === 'active' || st.status === 'allpast';
+    // (i) countdown line
+    const cd = document.getElementById('scheduleCountdown');
+    if (cd) {
+      if (settings.scheduleEnabled && settings.scheduleShowCountdown && live) {
+        const suffix = st.isTomorrow ? ' (tomorrow)' : '';
+        cd.textContent = settings.countdownShowPresetName !== false
+          ? `Next: ${st.targetEntry.preset}${suffix} in ${st.timeStr}`
+          : `Next class${suffix} in ${st.timeStr}`;
+        cd.style.display = 'block';
+      } else cd.style.display = 'none';
+    }
+    // (ii) on-dashboard Now / Next block
+    const nn = document.getElementById('nowNextBlock');
+    if (nn) {
+      if (settings.scheduleEnabled && settings.scheduleShowPeriods !== false && live) {
+        const nextName = esc(st.targetEntry ? st.targetEntry.preset : '—');
+        const at = st.targetEntry && st.targetEntry.until ? esc(st.targetEntry.until) : '';
+        const morrow = st.isTomorrow ? ' <span class="nn-morrow">(tomorrow)</span>' : '';
+        const nowCol = st.currentEntry
+          ? `<span class="nn-item"><span class="nn-lbl">Now</span><span class="nn-val">${esc(st.currentEntry.preset)}</span><span class="nn-in">${st.timeStr} left</span></span>`
+          : '';
+        nn.innerHTML = nowCol +
+          `<span class="nn-item"><span class="nn-lbl">Next</span><span class="nn-val">${nextName}</span><span class="nn-in">${at ? 'at ' + at : ''}${morrow}</span></span>`;
+        nn.style.display = '';
+      } else nn.style.display = 'none';
+    }
+    // (iii) settings-panel preview
+    renderSchedulePreview(st);
+  }
+
+  function renderSchedulePreview(st) {
+    const el = document.getElementById('schedulePreview');
     if (!el) return;
-    if (!settings.scheduleEnabled || !settings.scheduleShowCountdown || !settings.currentSchedule?.length) {
-      el.style.display = 'none'; return;
+    st = st || (settings.scheduleEnabled ? computeScheduleState() : { status:'off' });
+    const sorted = st.sorted || [];
+    if (!settings.scheduleEnabled || st.status === 'off' || !sorted.length) {
+      el.innerHTML = '<span class="sched-preview-hint">Add periods (a preset + an end time) to preview your day.</span>';
+      return;
     }
-    const now = new Date();
-    const nowMins = now.getHours() * 60 + now.getMinutes();
-    const sorted = [...settings.currentSchedule]
-      .filter(e => e.preset && e.until)
+    let prev = '';
+    const segs = sorted.map((e, i) => {
+      const start = prev || '⋯';
+      prev = e.until;
+      const active = (i === st.currentIdx);
+      return `<span class="sched-seg${active ? ' sched-seg-active' : ''}">${esc(start)}–${esc(e.until)} · <b>${esc(e.preset)}</b></span>`;
+    });
+    el.innerHTML = segs.join('<span class="sched-arrow">→</span>');
+  }
+
+  function renderScheduleValidation() {
+    const el = document.getElementById('scheduleValidation');
+    if (!el) return;
+    const rows = (settings.currentSchedule || []).filter(e => e.preset || e.until);
+    const msgs = [];
+    const unknown = [...new Set(rows.filter(e => e.preset && !presets[e.preset]).map(e => e.preset))];
+    unknown.forEach(name => msgs.push(`⚠ Preset “${esc(name)}” doesn't exist — create it in Presets.`));
+    if (rows.some(e => e.preset && !e.until)) msgs.push('⚠ A row is missing an “until” time.');
+    const times = rows.map(e => e.until).filter(Boolean);
+    [...new Set(times.filter((t, i) => times.indexOf(t) !== i))]
+      .forEach(t => msgs.push(`⚠ Two rows end at the same time (${esc(t)}).`));
+    const withTime = rows.filter(e => e.until);
+    let outOfOrder = false;
+    for (let i = 1; i < withTime.length; i++)
+      if (timeToMins(withTime[i].until) < timeToMins(withTime[i - 1].until)) { outOfOrder = true; break; }
+    el.innerHTML = '';
+    msgs.forEach(m => { const d = document.createElement('div'); d.className = 'sched-warn'; d.innerHTML = m; el.appendChild(d); });
+    if (outOfOrder) {
+      const d = document.createElement('div'); d.className = 'sched-warn';
+      d.appendChild(document.createTextNode('⚠ Rows are out of time order. '));
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'btn-xs'; b.textContent = 'Sort by time';
+      b.addEventListener('click', sortScheduleByTime);
+      d.appendChild(b); el.appendChild(d);
+    }
+    el.style.display = (msgs.length || outOfOrder) ? '' : 'none';
+  }
+
+  function sortScheduleByTime() {
+    settings.currentSchedule = [...(settings.currentSchedule || [])]
       .sort((a, b) => timeToMins(a.until) - timeToMins(b.until));
-    if (!sorted.length) { el.style.display = 'none'; return; }
-
-    // Find the current active period (first whose until > now)
-    const currentIdx = sorted.findIndex(e => timeToMins(e.until) > nowMins);
-
-    let targetEntry, diffMins, isTomorrow = false;
-    if (currentIdx === -1) {
-      // All periods done today — wrap to tomorrow's first entry
-      targetEntry = sorted[0];
-      diffMins = (24 * 60 - nowMins) + timeToMins(targetEntry.until);
-      isTomorrow = true;
-    } else {
-      // Time until current period ends = when next period begins
-      diffMins = timeToMins(sorted[currentIdx].until) - nowMins;
-      const nextIdx = currentIdx + 1;
-      if (nextIdx < sorted.length) {
-        targetEntry = sorted[nextIdx];
-      } else {
-        // Current period is the last one today — next is tomorrow's first
-        targetEntry = sorted[0];
-        isTomorrow = true;
-      }
-    }
-
-    const h = Math.floor(diffMins / 60), m = diffMins % 60;
-    const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
-    const suffix = isTomorrow ? ' (tomorrow)' : '';
-    const label = settings.countdownShowPresetName !== false
-      ? `Next: ${targetEntry.preset}${suffix} in ${timeStr}`
-      : `Next class${suffix} in ${timeStr}`;
-    el.textContent = label;
-    el.style.display = 'block';
+    _lastScheduleKey = null;
+    renderScheduleRows();
+    renderScheduleUI();
+    saveSettingsToStorage();
   }
 
   /* ────────── EDITOR ────────── */
@@ -4541,6 +4696,25 @@ async function onUploadFontPick(input){
   }
 
   /* ────────── FULLSCREEN ────────── */
+  /* ── Screen Wake Lock (keep SmartBoard awake) ── */
+  async function acquireWakeLock() {
+    const want = settings.keepAwake || document.fullscreenElement;
+    if (!want || !('wakeLock' in navigator) || document.visibilityState !== 'visible' || _wakeLock) return;
+    try {
+      _wakeLock = await navigator.wakeLock.request('screen');
+      _wakeLock.addEventListener('release', () => { _wakeLock = null; updateWakeDot(); });
+    } catch (e) { _wakeLock = null; }
+    updateWakeDot();
+  }
+  async function releaseWakeLock() {
+    try { if (_wakeLock) await _wakeLock.release(); } catch (e) {}
+    _wakeLock = null; updateWakeDot();
+  }
+  function applyWakeLock() {
+    (settings.keepAwake || document.fullscreenElement) ? acquireWakeLock() : releaseWakeLock();
+  }
+  function updateWakeDot() { document.body.classList.toggle('wake-held', !!_wakeLock); }
+
   function toggleFullscreen() {
     if (!document.fullscreenElement) document.documentElement.requestFullscreen();
     else document.exitFullscreen();
@@ -4550,6 +4724,10 @@ async function onUploadFontPick(input){
     document.body.classList.toggle('fullscreen', isFs);
     document.querySelector('#fsBtn .fs-ico').innerHTML = isFs ? FS_EXIT : FS_ENTER;
     applyTimerVisibility();
+    if (isFs) acquireWakeLock(); else applyWakeLock();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') acquireWakeLock();
   });
 
   /* ────────── PANEL COLLAPSE ────────── */
@@ -4586,6 +4764,8 @@ async function onUploadFontPick(input){
     applyColCollapse('weatherCol', !!settings.weatherCollapsed);
     applyColCollapse('timerCol', !!settings.timerCollapsed);
     updateDashboardGrid();
+    if (!('wakeLock' in navigator)) { const kr = document.getElementById('keepAwakeRow'); if (kr) kr.style.display = 'none'; }
+    applyWakeLock();
     document.getElementById('dowColTitle').addEventListener('click', () => toggleColCollapse('dowCol', 'dowCollapsed'));
     document.getElementById('weatherColTitle').addEventListener('click', () => toggleColCollapse('weatherCol', 'weatherCollapsed'));
     document.getElementById('timerColTitle').addEventListener('click', () => toggleColCollapse('timerCol', 'timerCollapsed'));
@@ -4605,6 +4785,7 @@ async function onUploadFontPick(input){
     initOmer();
     renderPresets();
     checkSchedule();
+    renderScheduleUI();
     setInterval(checkSchedule, 30000);
     // Re-render days at midnight
     const msToMidnight = (() => {
