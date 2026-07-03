@@ -4,6 +4,15 @@
 - Always commit and push directly to `main`
 - Do not create feature branches
 
+## Definition of done — check EVERY item before finishing a change
+
+- [ ] Edited a precached file (any root HTML page, `pwa.js`, an icon, the manifest)? → **bump `VERSION` in `sw.js`** (see Service Worker section). This is the most-missed step — the live site serves stale copies until it's done.
+- [ ] Shipped a Font Maker feature? → bump `FONT_MAKER_VERSION` + prepend a matching changelog `<li>` in the About tab (one **combined** bump/entry per release, not per sub-feature).
+- [ ] Added an external script/font/fetch/wasm/iframe? → update that page's **CSP meta tag** (Security rule 3).
+- [ ] New UI control in a preset-bearing tool? → wire `getSettings()`/`applySettings()` (+ AllTools export/import/erase keys if it's a new localStorage store).
+- [ ] Verified headless with the **Playwright recipe** (see "Verifying changes" section): light + dark mode, desktop + ~800px.
+- [ ] Committed + pushed directly to `main`, and the **Pages deploy run concluded `success`** (see Deploy section — code on `main` is not yet the live site).
+
 ## Security — REQUIRED patterns (safe JSON parse, `esc()`, CSP)
 
 These three rules are binding for every tool. They exist because the suite's sharing surface
@@ -61,8 +70,10 @@ content parsed before the tag — hence the placement right after `<meta charset
 | `dashboardSettings` | `hebrewDashboard_settings` | All Classroom Dashboard settings (zoom, video URL, header size, Jewish-calendar widget toggles `showHolidayCountdown`/`showShabbatTimes` (Shabbat times reuse the weather `location`), Timer toggles `showTimer`/`showTimerFullscreen`, Omer toggles `showOmerCounter`/`showOmerEnglish`/`showOmerProgress`, etc.) |
 | `flashCardPresets` | `hebrewFlashCards_presets` | Flash Cards saved presets |
 | `flashCardPbStreak` | `hebrewFlashCards_pbStreak` | Flash Cards personal-best streak (scalar string; imported as the **max** of existing vs incoming) |
+| `flashCardProfiles` | `hebrewFlashCards_profiles` | Flash Cards saved profiles (import merges via `mergeFlashCardProfiles`) |
 | `dictAudioEnabled` / `dictTranslitStyle` / `dictTtsRate` / `dictEmojiSettings` | `hebrewDictionary_*` | Hebrew Dictionary settings |
 | `torahTrainerSettings` | `hebrewTorahTrainer_settings` | Torah Trainer settings |
+| `userFonts` | *(IndexedDB `ivritsuite-fonts`, not localStorage)* | Custom fonts, base64-bundled at export — see "My Fonts" section |
 | `inputMode` | `hebrewBlender_inputMode` | Backup UI preference: `'auto'` (.ivrit file) or `'manual'` (text block) — see ".ivrit Save Files" below |
 
 ### Rule: any new tool with persistent data must be added here
@@ -87,6 +98,10 @@ Use `Object.assign` so importing merges with existing data rather than wiping it
 ```js
 'hebrewMyTool_presets',
 ```
+
+Note: `eraseAllSettings` also purges the orphaned `ivritsuite-impact-v1` / `ivritsuite-impact-optout`
+keys — leftovers of a removed community-impact feature. Leave that cleanup in place; don't "fix" or
+re-add those keys.
 
 ### Naming convention for localStorage keys
 
@@ -461,6 +476,79 @@ It **must**: (1) paste the shared `ivritsuite-fonts` block, (2) implement the co
 **"My Fonts"** group appears and `refreshMyFonts()` runs at init, and (3) paste the **My Fonts uploader**
 block + the "Upload your own font?" control below its picker. Custom fonts then work and upload everywhere
 automatically.
+
+---
+
+## Hebrew Font Maker (`Hebrew_Font_Maker.html`)
+
+The largest file in the repo (~9,900 lines, single-file app). **Line numbers drift constantly** —
+never trust remembered or previously-reported line numbers; locate everything by pattern
+(function names, marker comments, element ids).
+
+### Versioning + changelog (mirror of the sw.js/splash rules)
+`const FONT_MAKER_VERSION` — "bump on release; add a matching Changelog entry in the About tab."
+The changelog is the list of `<li><strong>vX.Y</strong> —…` entries inside `HELP_CONTENT.about`
+(prepend the new entry at the top, in the same friendly plain-language voice, with a `(Month Year)`
+suffix). For multi-feature work, batch **one** combined bump + entry at the end — not one per feature.
+
+### Backup exemption + localStorage keys
+The Font Maker is deliberately **NOT** in the index.html AllTools export/import/erase — its project
+data doesn't fit the presets model. Its keys are local-only: `hebrewFontMaker_uiPrefs` (workspace UI
+prefs JSON blob — read/modify/write via `wsReadPrefs()`; put new persistent UI prefs **here**, not in
+new bare keys), `hebrewFontMaker_tourDone`, `hebrewFontMaker_inputMode`, `hebrewFontMaker_recentProjects`,
+`hebrewFontMaker_mobileWarnDismissed`, `hebrewFontMaker_autosave` (image-stripped fallback). Primary
+autosave is **IndexedDB** db `hebrewFontMaker`, store `autosave` (gzip blob, id `'current'`). Shared
+site-wide keys it also reads: `hebrewBlender_darkMode`, `hebrewBlender_welcomeSeen`.
+
+### UI primitives — never hand-roll these
+- **Modals**: `.overlay`/`.modal` markup opened via `aOpenModal(id, closeFn)` / closed via
+  `aCloseModal(id)`. `_activeModal` + the global keydown provide the focus trap and Escape-to-close —
+  never add your own trap.
+- **Confirmations**: `askModal(title, bodyHtml, buttons)` with `[{label, cls:'ghost'?, onClick}]`.
+  It auto-closes before running `onClick`; to make elements inside the body interactive (like the
+  export-warning letter chips), wire listeners on `#askBody` **after** the `askModal(...)` call.
+- **Toasts**: `status(msg, sticky)` — auto-clears in 4s unless `sticky`.
+- **Escaping**: prefer `esc()` (all five metacharacters) over the older `escapeHtml()` (doesn't
+  escape `'`). Both exist in this file.
+- **Global keyboard shortcuts**: start the handler with the `udShortcutBlocked()` guard (blocks
+  while typing or when ask/help/QA overlays are open), and register the shortcut in BOTH the `?`
+  cheat sheet (`shortcutGroups()`) and the triggering button's `title=` tooltip.
+
+### Undo / dirty / autosave contract — the big one
+**Never mutate `project` directly.** Route every mutation through `udDo(scopes, label, fn)`
+(scopes: `{t:'item',kind,cp}`, `'spacing'`, `'kerning'`, `'kernClasses'`, `'metrics'`, `'guides'`,
+`{t:'precomp',target}`). Continuous inputs: slider drags use `udBurstBegin`/`udBurstCommit` (one
+undo entry per drag); arrow-key nudges use `udNudgeTick`/`udNudgeCommit`. `udPush` calls
+`markDirty()` automatically (debounced IndexedDB autosave), so going through `udDo`/burst/nudge
+covers undo + dirty + autosave in one. Pure-UI state (panel collapse, toggles) calls `markDirty()`
+directly with no undo entry. Read-only features (tour, QA grid, shortcuts sheet) must touch none of
+this — zero project-state changes.
+
+### Workspace model + render pipeline
+State: `curKind` (`letter|nikkud|trop`), `curCp`, `workMode` (`align|trace|anchors|nodes`).
+Guarded vs guard-bypass pairs: `selectItem` → `_selectItem`, `setWorkMode` → `_setWorkMode` (the
+guards protect unsaved anchor moves via `guardPlacement`). Read-only jump-to-letter flows (QA grid,
+export-warning chips) legitimately use the `_` versions plus `gotoAnchors('nikkud'|'trop')`.
+After mutating state, call `renderStage(); renderControls();` (+ `renderGrids()` if tile status or
+selection changed) — `afterUndo` shows the canonical full refresh.
+
+### v2.0 extension points
+- **Guided tour**: `TOUR_STEPS` array + `tourStart()`/`tourEnd()` — non-modal spotlight; steps have
+  `target()` (+ optional `reveal()`) and skip gracefully when hidden; must never change project state.
+- **Shortcuts sheet**: `shortcutGroups()` + `openShortcuts()`; global `?` handler (suppressed while
+  typing / modal open / tour active).
+- **Engine warm-up**: `ensurePyodide(opts)` — `opts.background: true` suppresses status toasts;
+  phases via `_setPyoPhase` (`download`→`install`→`ready`, resets to `idle` on failure so retry
+  works); `maybePrefetchEngine()` prefetches once at idle after the first traced letter, skipped for
+  `navigator.connection.saveData`.
+- **Next-step hint**: `renderNextStepHint()` (called from `renderLetterGrid()`) — the "what's next?"
+  line under the letter grid.
+
+### Lazy CDNs + CSP
+pyodide v0.26.2 (+ fontTools), harfbuzzjs 0.4.6 (`hb.wasm` fetch — needs `'wasm-unsafe-eval'` +
+`connect-src cdn.jsdelivr.net`), opentype.js 1.3.4 — all jsDelivr, all lazy-loaded via
+`loadScript()`. The page CSP already allowlists these; any **new** external resource requires
+editing this page's CSP meta (Security rule 3 above).
 
 ---
 
@@ -1033,7 +1121,7 @@ The PWA launch (splash) screens live in `splash/` and are generated by
 The version is a single constant at the top of `splash/gen_splash.py`:
 
 ```py
-VERSION = "1.0"   # shown as "v{VERSION}" on the splash
+VERSION = "1.2"   # shown as "v{VERSION}" on the splash — bump whatever value you find
 ```
 
 **When asked to update / bump the version number:**
@@ -1049,7 +1137,9 @@ VERSION = "1.0"   # shown as "v{VERSION}" on the splash
 2. Run `python3 splash/gen_splash.py` — re-renders every `splash/splash-*.png`
    and rewrites `splash/apple-startup-links.html`.
 3. Only if `DEVICES` changed (NOT for a plain version bump): re-sync the
-   `apple-touch-startup-image` block in **all 8 HTML pages** from
+   `apple-touch-startup-image` block in **all 11 HTML pages** (every root `*.html`: 404,
+   Hebrew_Font_Maker, classroom_dashboard, contact, flash_cards, hebrew_blend_generator,
+   hebrew_dictionary, index, privacy, resources, torah_trainer) from
    `splash/apple-startup-links.html` (the block is identical in each). A version
    bump alone keeps the same filenames, so the pages need no change.
 4. Commit & push.
@@ -1081,7 +1171,7 @@ an icon, a splash image, the manifest, or `CORE_ASSETS` itself — bump `VERSION
 in `sw.js`:
 
 ```js
-const VERSION = 'v3';   // cache "ivritsuite-v3" — bump to 'v4', etc.
+const VERSION = 'v154';   // cache "ivritsuite-v154" — bump whatever value you find (v154 → v155, etc.)
 ```
 
 Renaming the cache makes the new worker delete the old cache on activate and
@@ -1090,3 +1180,58 @@ online, but bumping `VERSION` is the safe catch-all (and the only way to refresh
 the **cache-first** static assets and the offline copy). This is the service-worker
 cache version — separate from the user-facing splash version (`VERSION` in
 `splash/gen_splash.py`).
+
+---
+
+## Verifying changes — headless Playwright recipe
+
+The repo has **no test infrastructure** (no package.json, no test files — hand-authored static
+HTML). Verify changes end-to-end by driving the real page headless. Proven recipe:
+
+- Playwright is preinstalled globally. Import in an `.mjs` script as:
+  ```js
+  import pkg from '/opt/node22/lib/node_modules/playwright/index.js';
+  const { chromium } = pkg;   // CJS module — a named import fails
+  ```
+  Chromium is preinstalled (`PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers`) — never run `playwright install`.
+- Load the page as `file://…/<page>.html` with `waitUntil: 'domcontentloaded'`, and **route-abort
+  every non-`file:`/`data:`/`blob:` request** — otherwise `page.goto` hangs on Google Fonts/gtag:
+  ```js
+  await page.route('**/*', r => { const u = r.request().url();
+    (u.startsWith('file:')||u.startsWith('data:')||u.startsWith('blob:')) ? r.continue() : r.abort(); });
+  ```
+  The aborted resources produce console "Failed to load" errors — expected noise. Assert on the
+  `pageerror` event count (should be 0) instead of console errors.
+- Dismiss auto-open modals before testing:
+  `document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open'))`.
+- Font Maker fixtures: a traced letter's contours are `[{points: [[x,y], …]}]` — renderers like
+  `glyphPathAt` read `.points`, and wrong shapes throw deep inside `renderSpacingPreview`. To test
+  export paths offline, stub `window.loadPyodide` with a fake returning
+  `{loadPackage: async()=>{}, runPython: ()=>{}, globals: {set: ()=>{}}}`.
+- Headless focus quirk: `el.focus()` on the page's real inputs may not stick (activeElement stays
+  BODY). When testing typing guards, inject a temporary `<input>` and use `page.focus()` on it.
+- Test matrix: light **and** dark (`toggleDark()`), desktop (~1280px) **and** stacked (~800px) viewports.
+
+---
+
+## Deploy — how changes reach ivritsuite.com (GitHub Pages)
+
+Static GitHub Pages, custom domain `ivritsuite.com` (`CNAME`), `.nojekyll`, **no CI/build step**.
+Every push to `main` auto-triggers a "pages build and deployment" Actions run — that run, not the
+push, is what updates the live site.
+
+- **Rapid successive pushes cancel in-flight deploys** — after a burst of commits only the last
+  deploy runs. Prefer batching; always confirm the final run concluded `success`.
+- **Transient Pages failures happen** (observed: the "Deploy to GitHub Pages" step hanging to a
+  10-minute timeout, fast "Deployment failed, try again later" errors, and job re-runs wedging in
+  `queued`). The build/artifact steps succeeding while deploy fails = GitHub-side issue. The
+  reliable re-trigger is an **empty commit pushed to `main`**; if it keeps failing, wait for the
+  incident to clear (githubstatus.com) rather than hammering.
+- **"I can't see the changes" debug order**: (1) confirm the file bytes on `main` (GitHub file
+  view/API); (2) check the latest pages-build-deployment run's conclusion; (3) was `sw.js`
+  `VERSION` bumped for the edited precached files?; (4) browser cache — hard refresh
+  (Cmd/Ctrl+Shift+R) or fully reopen the installed PWA.
+- **Pages must stay at repo root**: every tool fetches its data by relative path
+  (`fetch('data/…')`), and cross-page links/manifest/sw registrations assume root. Never move a
+  page into a subfolder (this is also why extensionless "clean URLs" via `foo/index.html`
+  restructuring was evaluated and rejected — it breaks every relative `data/` fetch).
