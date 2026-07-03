@@ -768,8 +768,9 @@
      nikkud stays legible where it crosses the baseline. Percentages live in these
      custom properties so the baseline/top-rule positions are adjustable in one place. */
   :root {
-    --trace-font-size: 2.4rem;
-    --trace-row-h: 4.7rem;        /* ~1.95× the font size — fits ascender + descender/nikkud bands */
+    /* Follows the sidebar Hebrew font-size slider (--heb-font-size); ~2.4rem at the default. */
+    --trace-font-size: calc(var(--heb-font-size) * 1.2);
+    --trace-row-h: calc(var(--trace-font-size) * 1.95); /* ascender + descender/nikkud bands */
     --trace-baseline: 68%;        /* letter bodies sit here; nikkud/descenders hang below */
     --trace-topline: 8%;          /* only drawn in Top + bottom mode */
     --trace-rule-color: #9aa0a6;  /* light-but-printable gray */
@@ -7216,10 +7217,14 @@ async function exportPDF() {
     if (sheets.length === 0) sheets = [ws];
 
     // Bingo PDFs render in landscape — 4-up cards use the paper better that
-    // way, and the wider page leaves more room for Hebrew cells.
+    // way, and the wider page leaves more room for Hebrew cells. Tracing follows
+    // the Landscape Print toggle (wider lines = more writing room); its rows
+    // already paginate to the chosen orientation's page height.
     const isBingoPDF = bingoPages.length > 0;
+    const isTracingPDF = document.getElementById('tracingToggle')?.checked;
+    const wantLandscape = isBingoPDF || (isTracingPDF && document.body.classList.contains('landscape-mode'));
     const pdf = new jsPDF({
-      orientation: isBingoPDF ? 'landscape' : 'portrait',
+      orientation: wantLandscape ? 'landscape' : 'portrait',
       unit: 'mm',
       format: 'letter'
     });
@@ -8140,7 +8145,40 @@ function appendStandardBlendSheets(ws, arr, ctx, versionLabel) {
 //  BEHIND the glyphs so below-baseline nikkud stays legible where it crosses.
 // ══════════════════════════════════════════════
 const TRACE_DARK_OPACITY = { light: 0.15, medium: 0.25, dark: 0.40 };
-const TRACE_ROWS_PER_SHEET = 10; // tuned so each .sheet fits one US-letter page in print + PDF
+
+// How many trace rows fit one printable page. Measured from the real row + header
+// height (which follow the font-size slider) and the target page orientation
+// (portrait vs Landscape mode), rather than a fixed constant, so print/PDF stay
+// one-page-per-sheet at any size. Uses the full-header height for every page (a
+// safe lower bound — slim continuation headers leave a little extra headroom).
+function measureTraceRowsPerSheet(ws, title, traceDir) {
+  const probeSheet = document.createElement('div');
+  probeSheet.className = 'sheet';
+  probeSheet.style.cssText = 'visibility:hidden;position:absolute;pointer-events:none;';
+  const probeHeader = document.createElement('div');
+  probeHeader.className = 'ws-header';
+  probeHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle">M</div></div>${wsMetaHTML()}`;
+  probeSheet.appendChild(probeHeader);
+  const probeRow = document.createElement('div');
+  probeRow.className = 'trace-row';
+  probeRow.style.direction = traceDir;
+  const rule = document.createElement('div');
+  rule.className = 'trace-rule trace-rule-base';
+  probeRow.appendChild(rule);
+  probeSheet.appendChild(probeRow);
+  ws.appendChild(probeSheet);
+
+  const headerH  = probeHeader.offsetHeight;
+  const rowMargin = parseFloat(getComputedStyle(probeRow).marginBottom) || 0;
+  const rowOuter = probeRow.offsetHeight + rowMargin;
+  ws.removeChild(probeSheet);
+
+  const landscape = document.body.classList.contains('landscape-mode');
+  // US-letter content height at 96dpi minus the @page 0.35in margins, less footer.
+  const usableH = ((landscape ? 8.5 : 11) - 0.7) * 96 - 46;
+  if (rowOuter <= 0) return 10;
+  return Math.max(1, Math.floor((usableH - headerH) / rowOuter));
+}
 
 function setTraceLineStyle(v) { traceLineStyle = v; syncTraceButtons(); renderTracingIfActive(); }
 function setTraceDarkness(v)  { traceDarkness  = v; syncTraceButtons(); renderTracingIfActive(); }
@@ -8219,7 +8257,10 @@ function renderTracingSheet(ws) {
 
   // Paginate across multiple .sheet elements so the PDF exporter captures one
   // page-sized sheet each (a single tall sheet would be scaled down instead).
-  const totalPages = Math.max(1, Math.ceil(rows.length / TRACE_ROWS_PER_SHEET));
+  // Rows-per-sheet is measured from the real row + header height and the target
+  // page orientation, so it stays correct across font sizes and Landscape mode.
+  const rowsPerSheet = measureTraceRowsPerSheet(ws, title, opts.traceDir);
+  const totalPages = Math.max(1, Math.ceil(rows.length / rowsPerSheet));
   let itemNum = 0;
   for (let p = 0; p < totalPages; p++) {
     const sheet = document.createElement('div');
@@ -8246,8 +8287,8 @@ function renderTracingSheet(ws) {
     // Append now so trace rows can measure their laid-out width (fill-line mode).
     ws.appendChild(sheet);
 
-    const startRow = p * TRACE_ROWS_PER_SHEET;
-    const endRow   = Math.min(startRow + TRACE_ROWS_PER_SHEET, rows.length);
+    const startRow = p * rowsPerSheet;
+    const endRow   = Math.min(startRow + rowsPerSheet, rows.length);
     for (let r = startRow; r < endRow; r++) {
       const desc = rows[r];
       if (desc.itemStart) itemNum++;
@@ -10658,6 +10699,9 @@ function setHebFontSize(val) {
   const el = document.getElementById('hebFontSizeVal');
   if (el) el.textContent = size + 'rem';
   try { localStorage.setItem('hebrewBlender_hebFontSize', val); } catch(e) {}
+  // Other worksheets restyle live via CSS; tracing must re-render so fill-line
+  // copy counts and height-based pagination recompute for the new glyph size.
+  if (typeof renderTracingIfActive === 'function') renderTracingIfActive();
 }
 
 function resetHebFontSize() {
