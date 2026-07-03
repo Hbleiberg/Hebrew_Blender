@@ -893,6 +893,70 @@
   .empty-state .star { font-size: 48px; opacity: 0.4; }
   .empty-state h2 { font-family: 'Libre Baskerville', serif; color: var(--navy); }
   .empty-state p { font-size: 0.88rem; max-width: 320px; }
+  body.dark .empty-state h2 { color: var(--gold-light); }
+
+  /* ── Quick Start recipes ── */
+  .quick-starts { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 4px; }
+  .quick-starts-label {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+    font-weight: 700; color: var(--muted);
+  }
+  .quick-starts-row {
+    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 440px;
+  }
+  .quick-start-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: inherit; font-size: 0.8rem; font-weight: 600;
+    color: var(--navy); background: var(--white);
+    border: 1.5px solid var(--border); border-radius: 999px;
+    padding: 6px 13px; cursor: pointer; transition: all 0.15s; line-height: 1.2;
+  }
+  .quick-start-chip:hover { border-color: var(--gold); background: var(--warm-gray); }
+  .quick-start-chip .qs-emoji { font-size: 0.95rem; }
+  body.dark .quick-start-chip { color: #dde4f0; background: #1e2535; border-color: var(--border); }
+  body.dark .quick-start-chip:hover { border-color: var(--gold); background: rgba(255,255,255,0.06); }
+
+  .quick-tour-link {
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    font-size: 0.82rem; font-weight: 600; color: var(--gold);
+    text-decoration: underline; padding: 2px 6px;
+  }
+  .quick-tour-link:hover { color: var(--gold-light); }
+
+  /* Sidebar Quick Start drawer */
+  .quick-start-drawer {
+    margin-bottom: 12px; border: 1.5px solid var(--gold);
+    border-radius: 8px; background: rgba(201,146,42,0.08); overflow: hidden;
+  }
+  .quick-start-drawer > summary {
+    cursor: pointer; user-select: none; list-style: none;
+    padding: 8px 12px; font-size: 0.8rem; font-weight: 700;
+    color: var(--navy); letter-spacing: 0.02em;
+  }
+  .quick-start-drawer > summary::-webkit-details-marker { display: none; }
+  .quick-start-drawer[open] > summary { border-bottom: 1px solid var(--border); }
+  .quick-start-drawer .quick-starts-row { padding: 10px; justify-content: flex-start; }
+  body.dark .quick-start-drawer { background: rgba(224,168,50,0.1); border-color: var(--gold); }
+  body.dark .quick-start-drawer > summary { color: var(--gold-light); }
+
+  /* ── Preview notice bar (recipe flash / live-preview messages) ── */
+  .preview-notice {
+    margin: 0 auto 12px; max-width: 640px;
+    font-size: 0.82rem; font-weight: 500; line-height: 1.4;
+    padding: 9px 14px; border-radius: 8px;
+    background: rgba(201,146,42,0.14); color: var(--navy);
+    border: 1px solid var(--gold);
+    display: flex; align-items: center; gap: 10px; justify-content: space-between;
+  }
+  .preview-notice.notice-wait { background: rgba(201,146,42,0.14); border-color: var(--gold); }
+  .preview-notice.notice-info { background: rgba(46,120,90,0.12); border-color: #3a8f66; color: var(--navy); }
+  .preview-notice .pn-close {
+    background: none; border: none; cursor: pointer; color: inherit;
+    font-size: 1rem; line-height: 1; padding: 0 2px; flex-shrink: 0; opacity: 0.7;
+  }
+  .preview-notice .pn-close:hover { opacity: 1; }
+  body.dark .preview-notice { color: #dde4f0; }
+  body.dark .preview-notice.notice-info { color: #dde4f0; }
 
   .sidebar-toggle-btn {
     position: fixed;
@@ -1365,12 +1429,19 @@
     content: '';
     position: absolute;
     bottom: 100%;
-    left: 50%;
+    left: var(--tip-arrow-left, 50%);
     transform: translateX(-50%);
     border: 5px solid transparent;
     border-bottom-color: #1a2744;
   }
-  .tooltip-wrap:hover .tooltip-box { display: block; }
+  .tooltip-wrap:hover .tooltip-box,
+  .tooltip-wrap.tooltip-open .tooltip-box { display: block; }
+  /* Tap/keyboard-opened tooltips are interactive & JS-positioned */
+  .tooltip-wrap.tooltip-open .tooltip-box { pointer-events: auto; }
+  .tooltip-wrap:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  /* When JS clamps the box to the viewport it sets a left-anchored position;
+     this class stops the default centering transform from fighting it. */
+  .tooltip-wrap.tooltip-box-clamped .tooltip-box { transform: none; }
 
   /* ── RW COLLAPSIBLE SECTIONS ── */
   .rw-section { border-top: 1px solid var(--border); padding-top: 6px; }
@@ -1788,6 +1859,9 @@
       box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
     }
     .mobile-fab .btn { margin-top: 0; flex: 1; }
+    /* Let taps on a disabled FAB button fall through to the container so we can
+       explain why it's off (title tooltips don't show on touch). */
+    .mobile-fab button[disabled] { pointer-events: none; }
 
     /* Hide desktop button group on mobile */
     .desktop-buttons { display: none; }
@@ -1798,11 +1872,82 @@
     .desktop-buttons { display: block; }
   }
 
+  /* Bottom toast (disabled-button explanation, etc.) */
+  #appToast {
+    position: fixed;
+    left: 50%;
+    bottom: 84px;
+    transform: translateX(-50%) translateY(8px);
+    background: var(--navy);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 9px 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.28);
+    z-index: 2000;
+    max-width: 88vw;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  #appToast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  body.dark #appToast { background: #0a0f1c; }
+
+  /* Attention pulse (Generate button when settings drift; Tour button first-visit nudge) */
+  @keyframes attnPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(201,146,42,0.55); }
+    50%      { box-shadow: 0 0 0 6px rgba(201,146,42,0); }
+  }
+  .pulse-attn { animation: attnPulse 1.4s ease-in-out infinite; }
+  body.dark .pulse-attn { animation-name: attnPulse; }
+  @media (prefers-reduced-motion: reduce) {
+    /* No motion: fall back to a steady ring so the cue is still visible. */
+    .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
+    #appToast { transition: none !important; }
+    .preview-notice { transition: none !important; }
+    .tour-spot { transition: none !important; }
+  }
+
+  /* ── Guided tour (ported from the Font Maker) ── */
+  .tbtn {
+    background: var(--gold); color: #1a1a1a; border: none; border-radius: 6px;
+    padding: 7px 13px; cursor: pointer; font-size: 0.82rem; font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+  }
+  .tbtn.ghost { background: transparent; color: var(--text); border: 1.5px solid var(--border); }
+  .tbtn:hover { filter: brightness(1.06); }
+  .tbtn:disabled { opacity: 0.4; cursor: default; filter: none; }
+  .tour-spot {
+    position: fixed; top: 0; left: 0; width: 0; height: 0;
+    border-radius: 8px; pointer-events: none; z-index: 400;
+    box-shadow: 0 0 0 9999px rgba(13,18,32,0.62), 0 0 0 3px var(--gold);
+    transition: top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease;
+  }
+  .tour-card {
+    position: fixed; z-index: 500; width: 300px; max-width: 92vw;
+    background: var(--white); color: var(--text);
+    border: 1px solid var(--border); border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4); padding: 16px 18px 14px;
+  }
+  .tour-card h4 { font-family: 'Libre Baskerville', serif; margin: 0 26px 8px 0; font-size: 0.98rem; color: var(--text); }
+  .tour-card p { font-size: 0.84rem; line-height: 1.5; margin: 0 0 12px; color: var(--text); }
+  .tour-x {
+    position: absolute; top: 8px; right: 8px; width: 26px; height: 26px;
+    background: transparent; border: none; border-radius: 6px;
+    color: var(--muted); font-size: 1rem; cursor: pointer; line-height: 1;
+  }
+  .tour-x:hover { background: var(--warm-gray); color: var(--text); }
+  .tour-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .tour-meta > span:first-child { font-size: 0.72rem; font-weight: 700; color: var(--muted); }
+  .tour-btns { display: flex; gap: 8px; }
+
   /* ── PRINT ── */
   @page { margin: 0.35in; }
   @media print {
     .sidebar, header, footer, .mobile-fab, .zoom-bar, .print-tip, .main-toolbar,
-    .sidebar-toggle-btn, .sidebar-show-btn, #fsBtn { display: none !important; }
+    .sidebar-toggle-btn, .sidebar-show-btn, #fsBtn, #previewNotice { display: none !important; }
     .app { display: block; min-height: unset; }
     .main { padding: 0; overflow: visible; }
     /* The on-screen layout pads .main-content by 28px on top — without
@@ -1914,6 +2059,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <p id="headerSub">Free printable Hebrew worksheets, bingo cards, and decoding drills for Hebrew reading practice with nikkud.</p>
   </div>
   <a href="/" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:0.8rem;font-family:'Source Sans 3',sans-serif;font-weight:600;text-decoration:none;flex-shrink:0;">← Home</a>
+  <button id="tourBtn" onclick="tourStart()" title="Take a quick tour" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:0.8rem;font-family:'Source Sans 3',sans-serif;font-weight:600;flex-shrink:0;">❓ Tour</button>
   <button id="darkToggle" onclick="toggleDark()" title="Toggle dark mode" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:1rem;flex-shrink:0;">🌙</button>
   <button id="fsBtn" onclick="toggleFullscreen()" title="Full screen" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:4px 10px;cursor:pointer;flex-shrink:0;display:inline-flex;flex-direction:column;align-items:center;gap:1px;line-height:1;"><span class="fs-ico" style="display:inline-flex;line-height:0;"><svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg></span><span style="font-size:0.5rem;font-weight:600;letter-spacing:0.03em;">Full Screen</span></button>
 </header>
@@ -1925,6 +2071,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
   <!-- ══ SIDEBAR ══ -->
   <aside class="sidebar" id="appSidebar">
+
+    <details class="quick-start-drawer" id="quickStartDrawer">
+      <summary>⚡ Quick start — ready-made worksheets</summary>
+      <div class="quick-starts-row" id="sidebarQuickStartsRow"></div>
+    </details>
 
     <div style="display:flex; gap:6px; margin-bottom:12px;">
       <button class="btn-xs" style="flex:1;" onclick="expandAllMenus()">Expand all menus</button>
@@ -3091,9 +3242,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <!-- Generate (desktop) -->
     <div class="desktop-buttons">
       <button class="btn btn-primary" id="generateBtn" onclick="generate()">⬡ Generate Worksheet</button>
-      <button class="btn btn-outline" id="regenBtn" onclick="regenerate()" disabled style="opacity:0.4;cursor:not-allowed;">↺ Regenerate</button>
-      <button class="btn btn-secondary" id="printBtn" onclick="window.print()" disabled style="opacity:0.4;cursor:not-allowed;">🖨 Print</button>
-      <button class="btn btn-outline" id="pdfBtn" onclick="exportPDF()" disabled style="opacity:0.4;cursor:not-allowed;margin-top:8px;">⬇ Export PDF</button>
+      <button class="btn btn-outline" id="regenBtn" onclick="regenerate()" disabled aria-disabled="true" title="Generate a worksheet first" style="opacity:0.4;cursor:not-allowed;">↺ Regenerate</button>
+      <button class="btn btn-secondary" id="printBtn" onclick="window.print()" disabled aria-disabled="true" title="Generate a worksheet first" style="opacity:0.4;cursor:not-allowed;">🖨 Print</button>
+      <button class="btn btn-outline" id="pdfBtn" onclick="exportPDF()" disabled aria-disabled="true" title="Generate a worksheet first" style="opacity:0.4;cursor:not-allowed;margin-top:8px;">⬇ Export PDF</button>
       <button class="btn btn-outline" id="shareBtn" onclick="copyShareLink('shareBtn')" style="margin-top:8px;">📋 Copy shareable link</button>
       <div class="print-tip" id="printTip" style="display:none;margin-top:8px;font-size:0.72rem;color:var(--muted);background:var(--warm-gray);border-radius:5px;padding:7px 9px;line-height:1.4;">
         💡 <strong>Print tip:</strong> In the print dialog, uncheck <em>Headers and footers</em> to remove the URL and date.
@@ -3117,6 +3268,16 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div class="panel-title">Advanced</div>
       <div class="panel-body">
         <div class="adv-body">
+
+          <div class="toggle-row" style="margin-bottom:8px;">
+            <span style="font-size:0.85rem;">Live update preview
+              <span class="tooltip-wrap">?<span class="tooltip-box">When on, the worksheet updates as you change settings (after your first Generate). Turn it off to update only when you click Generate.</span></span>
+            </span>
+            <label class="toggle">
+              <input type="checkbox" id="livePreviewToggle" checked onchange="setLivePreview(this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
 
           <div class="toggle-row" style="margin-bottom:8px;">
             <span style="font-size:0.85rem;">Hide Zoom Bar</span>
@@ -3236,20 +3397,6 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             </div>
           </div>
 
-          <!-- Shetef Code sub-panel -->
-          <div class="panel collapsed" style="border:1px solid var(--border);border-radius:6px;overflow:hidden;">
-            <div class="panel-title" style="font-size:0.72rem;padding:6px 10px;">Shetef Code</div>
-            <div class="panel-body">
-              <div class="adv-body-sm">
-                <button class="btn-xs" onclick="generateShetefCode()" style="width:100%;">Generate</button>
-                <div style="position:relative;">
-                  <textarea id="shetefCodeBox" rows="6" spellcheck="false" readonly placeholder="Click Generate after creating a worksheet…" style="width:100%;font-size:0.72rem;font-family:monospace;border:1px solid var(--border);border-radius:5px;background:var(--cream);color:var(--text);padding:6px;resize:vertical;outline:none;direction:rtl;unicode-bidi:plaintext;"></textarea>
-                  <button onclick="copyTextarea('shetefCodeBox')" title="Copy" style="position:absolute;top:5px;right:5px;background:none;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:0.65rem;color:var(--muted);cursor:pointer;" id="shetefCopyBtn">Copy</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <!-- Import Custom Wordlist sub-panel -->
           <div class="panel collapsed" style="border:1px solid var(--border);border-radius:6px;overflow:hidden;">
             <div class="panel-title" style="font-size:0.72rem;padding:6px 10px;">Import Custom Wordlist</div>
@@ -3293,10 +3440,25 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <!-- Mobile FAB -->
   <div class="mobile-fab">
     <button class="btn btn-primary" onclick="generate()">⬡ Generate</button>
-    <button class="btn btn-outline" id="regenBtnMob" onclick="regenerate()" disabled style="opacity:0.4;cursor:not-allowed;">↺</button>
-    <button class="btn btn-secondary" id="printBtnMob" onclick="window.print()" disabled style="opacity:0.4;cursor:not-allowed;">🖨</button>
-    <button class="btn btn-outline" id="pdfBtnMob" onclick="exportPDF()" disabled style="opacity:0.4;cursor:not-allowed;">⬇ PDF</button>
+    <button class="btn btn-outline" id="regenBtnMob" onclick="regenerate()" disabled aria-disabled="true" title="Generate a worksheet first" style="opacity:0.4;cursor:not-allowed;">↺</button>
+    <button class="btn btn-secondary" id="printBtnMob" onclick="window.print()" disabled aria-disabled="true" title="Generate a worksheet first" style="opacity:0.4;cursor:not-allowed;">🖨</button>
+    <button class="btn btn-outline" id="pdfBtnMob" onclick="exportPDF()" disabled aria-disabled="true" title="Generate a worksheet first" style="opacity:0.4;cursor:not-allowed;">⬇ PDF</button>
     <button class="btn btn-outline" id="shareBtnMob" onclick="copyShareLink('shareBtnMob')" title="Copy shareable link">📋</button>
+  </div>
+
+  <!-- Guided "Take a tour" coach-mark (non-modal spotlight; see tourStart) -->
+  <div class="tour-spot" id="tourSpot" hidden></div>
+  <div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
+    <button class="tour-x" id="tourClose" aria-label="End tour" onclick="tourEnd(false)">✕</button>
+    <h4 id="tourCardTitle"></h4>
+    <p id="tourCardBody"></p>
+    <div class="tour-meta">
+      <span id="tourStep"></span>
+      <span class="tour-btns">
+        <button class="tbtn ghost" id="tourBack" onclick="tourPrev()">Back</button>
+        <button class="tbtn" id="tourNext" onclick="tourNext()">Next</button>
+      </span>
+    </div>
   </div>
 
   <!-- ══ MAIN ══ -->
@@ -3309,12 +3471,18 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       </div>
     </div>
     <div class="main-content">
+    <div id="previewNotice" class="preview-notice" style="display:none;" role="status"></div>
     <div class="worksheet-scaler" id="worksheetScaler">
       <div class="worksheet" id="worksheet">
         <div class="empty-state">
           <div class="star">✡︎</div>
           <h2>Ready to Generate</h2>
           <p>Select your letters and vowels on the left, then click <strong>Generate Worksheet</strong>.</p>
+          <div class="quick-starts" id="emptyQuickStarts">
+            <div class="quick-starts-label">Or start with a ready-made worksheet</div>
+            <div class="quick-starts-row" id="emptyQuickStartsRow"></div>
+          </div>
+          <button type="button" class="quick-tour-link" onclick="if(typeof tourStart==='function')tourStart()">Take a quick tour →</button>
         </div>
       </div>
     </div>
@@ -3372,6 +3540,19 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 </footer>
 
 <script>
+// ══════════════════════════════════════════════
+//  UX upgrades (2026-07-03):
+//   1. "Take a tour" onboarding — spotlight coach-mark ported from the Font
+//      Maker (header ❓ Tour button, 7 steps, first-visit nudge on hebrewBlender_tourSeen).
+//   2. Live preview after the first Generate — a delegated #appSidebar listener
+//      re-renders presentation changes and debounce-regenerates content changes;
+//      heavy modes pulse Generate instead; invalid states keep the last worksheet.
+//      Opt-out toggle persisted as hebrewBlender_livePreview.
+//   3. Touch/keyboard-accessible "?" tooltips (tap + Enter/Space + Escape, viewport-clamped).
+//   4. Quick Start recipes in the empty state + a sidebar drawer (QUICK_START_RECIPES).
+//   5. Disabled Print/PDF/Regenerate explain themselves (title + mobile toast);
+//      the legacy fluency-code panel in Advanced was removed entirely.
+// ══════════════════════════════════════════════
 //  DATA
 // ══════════════════════════════════════════════
 // Unicode nikud (vowel diacritics) — applied AFTER the consonant character
@@ -3670,7 +3851,6 @@ let blends = [];
 // When Class Set > 1 (standard blends only), holds one independent blend array per
 // version; null = single worksheet. renderWorksheet reads this to lay out all versions.
 let classSetSheets = null;
-let lastShetefItems = null;
 let translitStyle = 'default';
 
 function rebuildTranslitDisplay() {
@@ -4488,30 +4668,12 @@ function loadPreset(name) {
   if (presets[name]) applySettings(presets[name]);
 }
 
-function generateShetefCode() {
-  const box = document.getElementById('shetefCodeBox');
-  if (!lastShetefItems) { box.value = '(Generate a worksheet first.)'; return; }
-  let lines = [];
-  if (lastShetefItems.mode === 'real') {
-    lastShetefItems.items.forEach(w => {
-      const right = w.translation || w.translitDisplay || w.translit || '';
-      lines.push(right ? `${w.heb} - ${right}` : w.heb);
-    });
-  } else {
-    lastShetefItems.items.forEach(b => {
-      lines.push(b.combined ? `${b.hebrewDisplay} - ${b.combined}` : b.hebrewDisplay);
-    });
-  }
-  box.value = lines.join('\n');
-}
-
 function copyTextarea(id) {
   const box = document.getElementById(id);
   if (!box.value) return;
-  const btnId = id === 'shetefCodeBox' ? 'shetefCopyBtn' : 'presetCopyBtn';
-  const btn = document.getElementById(btnId);
+  const btn = document.getElementById('presetCopyBtn');
   navigator.clipboard.writeText(box.value).catch(() => { box.select(); document.execCommand('copy'); });
-  btn.textContent = '✓'; setTimeout(() => btn.textContent = 'Copy', 1500);
+  if (btn) { btn.textContent = '✓'; setTimeout(() => btn.textContent = 'Copy', 1500); }
 }
 
 function exportPresets() {
@@ -5282,6 +5444,527 @@ document.addEventListener('DOMContentLoaded', () => {
   if (cb) cb.checked = stored;
   setHideZoomBar(stored);
 });
+
+/* ═══ Accessible tooltips (tap + keyboard, not just hover) ═══
+   All "?" tooltips are .tooltip-wrap > .tooltip-box. Hover still works via CSS;
+   here we add tap/click toggle, keyboard focus + Enter/Space, Escape/outside-close,
+   single-open-at-a-time, and viewport clamping so the box can't spill off-screen. */
+(function () {
+  let _openTip = null;
+  let _tipSeq = 0;
+
+  function ensureTipAttrs(wrap) {
+    if (wrap.dataset.tipReady) return;
+    wrap.dataset.tipReady = '1';
+    wrap.setAttribute('tabindex', '0');
+    wrap.setAttribute('role', 'button');
+    wrap.setAttribute('aria-expanded', 'false');
+    wrap.setAttribute('aria-label', 'Help');
+    const box = wrap.querySelector('.tooltip-box');
+    if (box) {
+      if (!box.id) box.id = 'tipbox_' + (++_tipSeq);
+      box.setAttribute('role', 'tooltip');
+      wrap.setAttribute('aria-describedby', box.id);
+    }
+  }
+
+  function positionTip(wrap) {
+    const box = wrap.querySelector('.tooltip-box');
+    if (!box) return;
+    // Reset any prior clamp so we measure from the centered default.
+    wrap.classList.remove('tooltip-box-clamped');
+    box.style.left = '';
+    box.style.removeProperty('--tip-arrow-left');
+    const rect = box.getBoundingClientRect();
+    const pad = 6;
+    const vw = document.documentElement.clientWidth;
+    if (rect.left < pad || rect.right > vw - pad) {
+      const wrapRect = wrap.getBoundingClientRect();
+      const wrapCenter = wrapRect.left + wrapRect.width / 2;
+      const bw = rect.width;
+      let desiredLeft = wrapCenter - bw / 2;
+      desiredLeft = Math.max(pad, Math.min(desiredLeft, vw - bw - pad));
+      box.style.left = (desiredLeft - wrapRect.left) + 'px';
+      // Keep the arrow pointing at the "?" icon.
+      const arrowLeft = Math.max(8, Math.min(bw - 8, wrapCenter - desiredLeft));
+      box.style.setProperty('--tip-arrow-left', arrowLeft + 'px');
+      wrap.classList.add('tooltip-box-clamped');
+    }
+  }
+
+  function closeTip() {
+    if (!_openTip) return;
+    _openTip.classList.remove('tooltip-open', 'tooltip-box-clamped');
+    _openTip.setAttribute('aria-expanded', 'false');
+    const box = _openTip.querySelector('.tooltip-box');
+    if (box) { box.style.left = ''; box.style.removeProperty('--tip-arrow-left'); }
+    _openTip = null;
+  }
+
+  function openTip(wrap) {
+    if (_openTip && _openTip !== wrap) closeTip();
+    ensureTipAttrs(wrap);
+    wrap.classList.add('tooltip-open');
+    wrap.setAttribute('aria-expanded', 'true');
+    _openTip = wrap;
+    positionTip(wrap);
+  }
+
+  function toggleTip(wrap) {
+    if (_openTip === wrap) closeTip();
+    else openTip(wrap);
+  }
+
+  // Prime attributes on all existing tooltips so Tab reaches them immediately.
+  function initTips() {
+    document.querySelectorAll('.tooltip-wrap').forEach(ensureTipAttrs);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initTips);
+  else initTips();
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest) return;
+    // A click inside the open box (e.g. to read/select text) leaves it open.
+    if (e.target.closest('.tooltip-box')) return;
+    const wrap = e.target.closest('.tooltip-wrap');
+    if (wrap) { e.preventDefault(); e.stopPropagation(); toggleTip(wrap); return; }
+    if (_openTip) closeTip();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { if (_openTip) { const w = _openTip; closeTip(); w.focus(); } return; }
+    const wrap = e.target.closest && e.target.closest('.tooltip-wrap');
+    if (wrap && (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar')) {
+      e.preventDefault();
+      toggleTip(wrap);
+    }
+  });
+
+  // Closing on focus loss (keyboard tab-away).
+  document.addEventListener('focusout', e => {
+    if (!_openTip) return;
+    // Defer so relatedTarget/activeElement settle.
+    setTimeout(() => {
+      if (_openTip && !_openTip.contains(document.activeElement)) closeTip();
+    }, 0);
+  });
+
+  window.addEventListener('resize', () => { if (_openTip) positionTip(_openTip); });
+})();
+
+/* ═══ Bottom toast + disabled-FAB explanation ═══ */
+let _appToastTimer = null;
+function showAppToast(msg, ms = 2600) {
+  let t = document.getElementById('appToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'appToast';
+    t.setAttribute('role', 'status');
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  // Force reflow so the transition runs even on rapid repeats.
+  void t.offsetWidth;
+  t.classList.add('show');
+  if (_appToastTimer) clearTimeout(_appToastTimer);
+  _appToastTimer = setTimeout(() => t.classList.remove('show'), ms);
+}
+(function () {
+  // Taps on a disabled FAB button fall through to the container (see CSS).
+  function wireFab() {
+    const fab = document.querySelector('.mobile-fab');
+    if (!fab) return;
+    fab.addEventListener('pointerdown', e => {
+      // An enabled button is the event target and handles itself.
+      if (e.target.closest('button:not([disabled])')) return;
+      if (fab.querySelector('button[disabled]')) showAppToast('Generate a worksheet first');
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wireFab);
+  else wireFab();
+})();
+
+/* ═══ Preview notice bar (recipe flash + live-preview messages) ═══ */
+let _previewNoticeTimer = null;
+function showPreviewNotice(text, opts = {}) {
+  const el = document.getElementById('previewNotice');
+  if (!el) return;
+  el.className = 'preview-notice notice-' + (opts.kind || 'wait');
+  el.textContent = '';
+  const span = document.createElement('span');
+  span.textContent = text;
+  el.appendChild(span);
+  if (opts.dismissible) {
+    const btn = document.createElement('button');
+    btn.className = 'pn-close';
+    btn.type = 'button';
+    btn.setAttribute('aria-label', 'Dismiss');
+    btn.textContent = '✕';
+    btn.addEventListener('click', hidePreviewNotice);
+    el.appendChild(btn);
+  }
+  el.style.display = 'flex';
+  if (_previewNoticeTimer) { clearTimeout(_previewNoticeTimer); _previewNoticeTimer = null; }
+  if (opts.autohide) _previewNoticeTimer = setTimeout(hidePreviewNotice, opts.autohide);
+}
+function hidePreviewNotice() {
+  const el = document.getElementById('previewNotice');
+  if (el) el.style.display = 'none';
+  if (_previewNoticeTimer) { clearTimeout(_previewNoticeTimer); _previewNoticeTimer = null; }
+}
+
+/* ═══ Quick Start recipes ═══
+   Each recipe is a settings-DIFF over SHARE_DEFAULTS (same model as share links),
+   applied then generated — a full reset to the recipe, never a merge of leftovers.
+   Keys verified against getSettings(). Surfaced in the empty state + a sidebar drawer. */
+const QUICK_START_RECIPES = [
+  { id: 'kamatzPatach', emoji: '🔤', label: 'Kamatz & Patach drill',
+    diff: { blendType: 'two', selectedVowels: ['a', 'patah'], blendCount: '40' } },
+  { id: 'classBingo', emoji: '🎲', label: 'Class Bingo (30 cards)',
+    diff: { bingo: true, bingoGrid: '5', bingoCards: '30', bingoPerPage: '4', bingoCallerSheet: true } },
+  { id: 'nameLetter', emoji: '✍️', label: 'Alef-Bet: Name the Letter',
+    diff: { blendType: 'one', nameTheLetter: true, ntlAnswerKey: true } },
+  { id: 'fillVowels', emoji: '⭕', label: 'Fill-in-the-Vowels quiz',
+    diff: { fillVowels: true, fillVowelsAnswerKey: true } },
+  { id: 'numbers', emoji: '🔢', label: 'Numbers 0–20',
+    diff: { numberPractice: true, npMin: '0', npMax: '20', npDisplay: 'word' } },
+];
+
+function renderQuickStarts() {
+  ['emptyQuickStartsRow', 'sidebarQuickStartsRow'].forEach(rowId => {
+    const row = document.getElementById(rowId);
+    if (!row) return;
+    row.innerHTML = '';
+    QUICK_START_RECIPES.forEach(r => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'quick-start-chip';
+      b.dataset.recipe = r.id;
+      const em = document.createElement('span');
+      em.className = 'qs-emoji';
+      em.textContent = r.emoji;
+      const tx = document.createElement('span');
+      tx.textContent = r.label;
+      b.append(em, tx);
+      b.addEventListener('click', () => runQuickStart(r.id));
+      row.appendChild(b);
+    });
+  });
+}
+
+function runQuickStart(id) {
+  const recipe = QUICK_START_RECIPES.find(r => r.id === id);
+  if (!recipe) return;
+  const base = (typeof SHARE_DEFAULTS !== 'undefined' && SHARE_DEFAULTS) ? SHARE_DEFAULTS : getSettings();
+  applySettings(Object.assign({}, base, recipe.diff));
+  generate();
+  const drawer = document.getElementById('quickStartDrawer');
+  if (drawer) drawer.open = false;
+  showPreviewNotice(`Loaded “${recipe.label}” — tweak anything on the left; the preview updates live.`,
+    { kind: 'info', autohide: 5000 });
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', renderQuickStarts);
+else renderQuickStarts();
+
+/* ═══ Live preview after first Generate ═══
+   Once a worksheet exists, changes to sidebar settings update the preview:
+   presentation tweaks re-render the same items; content changes redraw (debounced).
+   Heavy modes (crossword / word search / big bingo / big class sets) don't auto-redraw
+   — they pulse Generate instead. Invalid states keep the last worksheet on screen with
+   a small notice rather than wiping it. A "Live update preview" toggle opts out. */
+let liveArmed = false;
+let livePreviewEnabled = (localStorage.getItem('hebrewBlender_livePreview') !== '0');
+let lastGeneratedSnapshot = null;
+let _liveTimer = null;
+let _liveAlertMsg = null;
+
+// Keys whose change only re-renders the SAME drawn items (no reshuffle). Anything
+// not listed here is treated as content (needs a fresh draw). Conservative on purpose:
+// misclassifying content as presentation would show stale output, so when unsure → content.
+const LIVE_PRESENTATION_KEYS = new Set([
+  'wsTitle','wsSubtitle','headerLang','landscape',
+  'inverse','fillVowels','fillVowelsAnswerKey','answerKey','selfCheck','includeDageshim','audio',
+  'hebFontSize','colorCoding','colorCodingMode','nikudColorOverrides','vowelColorScheme','translitStyle',
+  'timerOn','timerDuration',
+  'gematriaSelfCheck','gematriaAnswerKey','gematriaInverse',
+  'ntlInverse','ntlAnswerKey','ntlSelfCheck',
+  'npShowTranslit','npTranslitPage','npAnswerKey','npSelfCheck','npAudio',
+  'rwShowTranslit','rwShowTranslation','rwTranslitPage','rwTranslPage','rwStarPage',
+  'bingoShowSounds','bingoCallerSheet',
+  'traceLineStyle','traceModels','traceSolidFirst','traceDarkness','traceLinesPerItem',
+  'traceRepeatModels','traceFillLine','traceSpacing',
+  'cwShowTranslit','cwShowTranslation','cwShowPos','cwTranslitPage','cwTranslPage',
+  'rwFillVowelsDagesh','rwGematriaInverse','rwGematriaSelfCheck',
+]);
+// Keys that should trigger no re-render at all (playback prefs, etc.).
+const LIVE_NEUTRAL_KEYS = new Set(['ttsRate']);
+
+function _stable(v) { return JSON.stringify(v); }
+function liveDiffKind(cur, prev) {
+  if (!prev) return 'none';
+  let content = false, presentation = false;
+  const keys = new Set([...Object.keys(cur), ...Object.keys(prev)]);
+  for (const k of keys) {
+    if (LIVE_NEUTRAL_KEYS.has(k)) continue;
+    if (_stable(cur[k]) === _stable(prev[k])) continue;
+    if (LIVE_PRESENTATION_KEYS.has(k)) presentation = true;
+    else content = true;
+  }
+  return content ? 'content' : (presentation ? 'presentation' : 'none');
+}
+
+// Heavy jobs we don't auto-regenerate on every keystroke — pulse Generate instead.
+function liveIsHeavyMode() {
+  const val = id => parseInt(document.getElementById(id)?.value || '0', 10) || 0;
+  const rwOn = document.getElementById('realWordsToggle')?.checked;
+  if (rwOn && (rwDrillType === 'wordsearch' || rwDrillType === 'crossword')) return true;
+  if (document.getElementById('bingoToggle')?.checked && val('bingoCards') > 40) return true;
+  if (document.getElementById('numberPracticeToggle')?.checked &&
+      document.getElementById('npBingo')?.checked && val('npBingoCards') > 40) return true;
+  if (rwOn && rwDrillType === 'bingo' && val('rwBingoCards') > 40) return true;
+  if (val('classSetCount') > 10) return true;
+  return false;
+}
+
+function livePulseGenerate(msg) {
+  ['generateBtn'].forEach(id => document.getElementById(id)?.classList.add('pulse-attn'));
+  document.querySelector('.mobile-fab .btn-primary')?.classList.add('pulse-attn');
+  if (msg) showPreviewNotice(msg, { kind: 'wait', dismissible: true });
+}
+function liveClearPulse() {
+  document.querySelectorAll('.pulse-attn').forEach(el => el.classList.remove('pulse-attn'));
+}
+
+// Regenerate without ever wiping the current worksheet on an invalid selection.
+function liveGenerate() {
+  const ws = document.getElementById('worksheet');
+  if (!ws) return;
+  const prevHTML = ws.innerHTML;
+  const prevBlends = blends;
+  const prevSnapshot = lastGeneratedSnapshot;
+  _liveAlertMsg = null;
+  const origAlert = window.alert;
+  window.alert = m => { _liveAlertMsg = m; };
+  try { generate(); }
+  catch (e) { _liveAlertMsg = _liveAlertMsg || 'Adjust your selection to continue.'; }
+  finally { window.alert = origAlert; }
+  const producedEmpty = !!ws.querySelector('.empty-state');
+  if (_liveAlertMsg || producedEmpty) {
+    // Roll back to the last good worksheet + baseline, and explain what's needed.
+    ws.innerHTML = prevHTML;
+    blends = prevBlends;
+    lastGeneratedSnapshot = prevSnapshot;
+    showPreviewNotice(_liveAlertMsg || 'Waiting for a valid selection…', { kind: 'wait', dismissible: true });
+  } else {
+    hidePreviewNotice();
+  }
+}
+
+function runLiveSync() {
+  if (!liveArmed || !lastGeneratedSnapshot) return;
+  const cur = getSettings();
+  const kind = liveDiffKind(cur, lastGeneratedSnapshot);
+  if (kind === 'none') return;
+  if (!livePreviewEnabled) {
+    // Opted out: don't auto-apply, but flag content drift so the teacher knows to Generate.
+    if (kind === 'content') livePulseGenerate('Settings changed — Generate to apply.');
+    return;
+  }
+  if (kind === 'presentation') { renderWorksheet(false); hidePreviewNotice(); return; }
+  // content, live on
+  if (liveIsHeavyMode()) { livePulseGenerate('Settings changed — Generate to apply.'); return; }
+  liveGenerate();
+}
+
+function scheduleLiveSync() {
+  if (!liveArmed) return;
+  if (_liveTimer) clearTimeout(_liveTimer);
+  _liveTimer = setTimeout(runLiveSync, liveIsHeavyMode() ? 1000 : 500);
+}
+
+function setLivePreview(on) {
+  livePreviewEnabled = !!on;
+  localStorage.setItem('hebrewBlender_livePreview', livePreviewEnabled ? '1' : '0');
+  const cb = document.getElementById('livePreviewToggle');
+  if (cb) cb.checked = livePreviewEnabled;
+  if (livePreviewEnabled) {
+    liveClearPulse();
+    // Catch up to any drift accumulated while off.
+    if (liveArmed) runLiveSync();
+  }
+}
+
+// Called from enableButtons() at the end of every successful generate.
+function onGenerateSettled() {
+  liveArmed = true;
+  lastGeneratedSnapshot = getSettings();
+  liveClearPulse();
+  hidePreviewNotice();
+}
+
+(function () {
+  function wireLive() {
+    const sb = document.getElementById('appSidebar');
+    if (!sb) return;
+    const handler = e => {
+      // Skip the tooltip "?" toggles and the live-preview switch itself.
+      if (e.target.closest && e.target.closest('.tooltip-wrap')) return;
+      scheduleLiveSync();
+    };
+    sb.addEventListener('change', handler);
+    sb.addEventListener('input', handler);
+    sb.addEventListener('click', handler);
+    // Reflect the persisted opt-out on the toggle at load.
+    const cb = document.getElementById('livePreviewToggle');
+    if (cb) cb.checked = livePreviewEnabled;
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wireLive);
+  else wireLive();
+})();
+
+/* ═══ Guided tour (ported from Hebrew_Font_Maker.html — keep the engines in sync) ═══ */
+function _tourVisible(el) { return !!(el && el.offsetParent !== null); }
+function _tourOpenSidebar() {
+  const sb = document.getElementById('appSidebar');
+  if (sb && sb.classList.contains('hidden') && typeof toggleSidebar === 'function') toggleSidebar();
+}
+function _tourExpandPanel(id) {
+  const p = document.getElementById(id);
+  if (p && p.classList.contains('collapsed')) { p.classList.remove('collapsed'); _tourUncollapsed.add(p); }
+}
+const TOUR_STEPS = [
+  { target: () => document.getElementById('blendTypeSelector'),
+    reveal: () => _tourOpenSidebar(),
+    title: 'Practice Type',
+    body: 'Choose what students practice: single letters, 2- or 3-letter blends, vowels alone, or real Hebrew words.' },
+  { target: () => document.getElementById('worksheetTypeSelector'),
+    reveal: () => _tourOpenSidebar(),
+    title: 'Worksheet Type',
+    body: 'Turn the same practice into a reading sheet, a fill-in-the-vowels quiz, bingo cards, and more.' },
+  { target: () => document.getElementById('letterGrid'),
+    reveal: () => { _tourOpenSidebar(); _tourExpandPanel('panelLetters'); },
+    title: 'Letters',
+    body: 'Tap letters to include or exclude them — match exactly what your class has learned.' },
+  { target: () => document.getElementById('panelVowels'),
+    reveal: () => { _tourOpenSidebar(); _tourExpandPanel('panelVowels'); },
+    title: 'Vowels',
+    body: "Same idea for nikkud: only the vowels you've taught." },
+  { target: () => { const g = document.getElementById('generateBtn');
+      return _tourVisible(g) ? g : document.querySelector('.mobile-fab .btn-primary'); },
+    reveal: () => _tourOpenSidebar(),
+    title: 'Generate',
+    body: 'Builds your worksheet instantly. Regenerate keeps your settings but reshuffles.' },
+  { target: () => { const s = document.getElementById('shareBtn');
+      return _tourVisible(s) ? s : document.getElementById('shareBtnMob'); },
+    reveal: () => _tourOpenSidebar(),
+    title: 'Share',
+    body: 'Copies a link with all your settings baked in — send it to a colleague and they get your exact setup.' },
+  { target: () => document.getElementById('panelPresets'),
+    reveal: () => { _tourOpenSidebar(); _tourExpandPanel('panelPresets'); },
+    title: 'Presets',
+    body: 'Save setups you reuse — one per class level — and reload them in a click.' },
+];
+
+let _tourIdx = -1, _tourActive = false, _tourOpener = null, _tourUncollapsed = new Set(), _tourRepoTimer = null;
+
+function tourStart() {
+  if (_tourActive) return;
+  // Opening the tour once retires the first-visit nudge.
+  try { localStorage.setItem('hebrewBlender_tourSeen', '1'); } catch (e) {}
+  document.getElementById('tourBtn')?.classList.remove('pulse-attn');
+  _tourActive = true; _tourIdx = -1; _tourUncollapsed = new Set();
+  _tourOpener = document.activeElement;
+  document.getElementById('tourSpot').hidden = false;
+  document.getElementById('tourCard').hidden = false;
+  document.addEventListener('keydown', _tourKey, true);
+  window.addEventListener('resize', _tourReposition);
+  window.addEventListener('scroll', _tourReposition, true);
+  tourNext();
+}
+// Resolve a step's target, running its reveal() first; returns null if it can't be shown.
+function _resolveStep(idx) {
+  const step = TOUR_STEPS[idx];
+  if (!step) return null;
+  if (step.reveal) { try { step.reveal(); } catch (e) {} }
+  const el = step.target();
+  return _tourVisible(el) ? el : null;
+}
+function _tourShow(idx, dir) {
+  // Skip any step whose target can't be shown, continuing in the current direction.
+  while (idx >= 0 && idx < TOUR_STEPS.length && !_resolveStep(idx)) idx += dir;
+  if (idx < 0 || idx >= TOUR_STEPS.length) { tourEnd(dir > 0); return; }
+  _tourIdx = idx;
+  const step = TOUR_STEPS[idx], el = step.target();
+  try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {}
+  document.getElementById('tourCardTitle').textContent = step.title;
+  document.getElementById('tourCardBody').textContent = step.body;
+  document.getElementById('tourStep').textContent = 'Step ' + (idx + 1) + ' of ' + TOUR_STEPS.length;
+  document.getElementById('tourBack').disabled = (idx === 0);
+  document.getElementById('tourNext').textContent = (idx === TOUR_STEPS.length - 1) ? 'Done' : 'Next';
+  _tourReposition();
+  if (_tourRepoTimer) clearTimeout(_tourRepoTimer);
+  _tourRepoTimer = setTimeout(_tourReposition, 350);   // re-measure after scroll settles
+  setTimeout(() => { const n = document.getElementById('tourNext'); if (n && _tourActive) n.focus(); }, 0);
+}
+function tourNext() { _tourShow(_tourIdx + 1, 1); }
+function tourPrev() { _tourShow(_tourIdx - 1, -1); }
+function tourEnd(completed) {
+  if (!_tourActive) return;
+  _tourActive = false;
+  document.removeEventListener('keydown', _tourKey, true);
+  window.removeEventListener('resize', _tourReposition);
+  window.removeEventListener('scroll', _tourReposition, true);
+  if (_tourRepoTimer) { clearTimeout(_tourRepoTimer); _tourRepoTimer = null; }
+  document.getElementById('tourSpot').hidden = true;
+  document.getElementById('tourCard').hidden = true;
+  // Restore any panels the tour expanded to their pre-tour state.
+  _tourUncollapsed.forEach(p => p.classList.add('collapsed'));
+  _tourUncollapsed = new Set();
+  const opener = _tourOpener; _tourOpener = null;
+  if (opener && opener.focus) { try { opener.focus(); } catch (e) {} }
+}
+function _tourReposition() {
+  if (!_tourActive) return;
+  const step = TOUR_STEPS[_tourIdx];
+  if (!step) return;
+  const el = step.target();
+  if (!_tourVisible(el)) return;
+  const r = el.getBoundingClientRect(), pad = 6;
+  const spot = document.getElementById('tourSpot');
+  spot.style.left = Math.max(0, r.left - pad) + 'px';
+  spot.style.top = Math.max(0, r.top - pad) + 'px';
+  spot.style.width = (r.width + pad * 2) + 'px';
+  spot.style.height = (r.height + pad * 2) + 'px';
+  // Card: below the target by default; flip above if it would overflow; clamp horizontally.
+  const card = document.getElementById('tourCard');
+  const cw = card.offsetWidth, ch = card.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
+  let top = r.bottom + 12;
+  if (top + ch > vh - 8) {
+    const above = r.top - ch - 12;
+    top = (above >= 8) ? above : Math.max(8, vh - ch - 8);
+  }
+  let left = r.left + r.width / 2 - cw / 2;
+  if (left < 8) left = 8;
+  if (left + cw > vw - 8) left = vw - cw - 8;
+  card.style.left = left + 'px';
+  card.style.top = top + 'px';
+}
+function _tourKey(e) {
+  if (!_tourActive) return;
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); tourEnd(false); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); e.stopPropagation(); tourNext(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); e.stopPropagation(); tourPrev(); }
+}
+// First-visit nudge: gently pulse the Tour button until the tour is opened once.
+(function () {
+  function nudge() {
+    try { if (localStorage.getItem('hebrewBlender_tourSeen')) return; } catch (e) { return; }
+    document.getElementById('tourBtn')?.classList.add('pulse-attn');
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', nudge);
+  else nudge();
+})();
 const FS_ENTER_ICON = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg>`;
 const FS_EXIT_ICON  = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5,0.5 4.5,4.5 0.5,4.5"/><polyline points="13.5,4.5 9.5,4.5 9.5,0.5"/><polyline points="9.5,13.5 9.5,9.5 13.5,9.5"/><polyline points="0.5,9.5 4.5,9.5 4.5,13.5"/></svg>`;
 function toggleFullscreen() {
@@ -7201,9 +7884,14 @@ function enableButtons() {
     btn.disabled = false;
     btn.style.opacity = '';
     btn.style.cursor = '';
+    btn.removeAttribute('aria-disabled');
+    // Give Regenerate its real tooltip; clear the "generate first" hint on the rest.
+    if (id === 'regenBtn' || id === 'regenBtnMob') btn.title = 'New random draw with the same settings';
+    else btn.removeAttribute('title');
   });
   const tip = document.getElementById('printTip');
   if (tip) tip.style.display = 'block';
+  if (typeof onGenerateSettled === 'function') onGenerateSettled();
 }
 
 // Collapsible panels on mobile
@@ -7721,7 +8409,6 @@ function generate(animate = false) {
   } else {
     blends = drawBlends();
   }
-  lastShetefItems = { mode: 'blend', items: blends };
   renderWorksheet(animate);
   enableButtons();
 }
@@ -8960,7 +9647,6 @@ function generateCustomWordlist() {
     items = rwShuffle([...items, ...blendItems]);
   }
   const starReal = starRealOn;
-  lastShetefItems = { mode: 'real', items };
 
   const ws = document.getElementById('worksheet');
   ws.innerHTML = '';
@@ -9598,7 +10284,6 @@ function generateRealWords() {
     }));
     items = rwShuffle([...items, ...blendItems]).slice(0, count * 2);
   }
-  lastShetefItems = { mode: 'real', items };
 
   const ws = document.getElementById('worksheet');
   ws.innerHTML = '';
@@ -9956,7 +10641,6 @@ function generateWordSearch(pool) {
   ak.appendChild(akFooter);
   ws.appendChild(ak);
 
-  lastShetefItems = { mode: 'real', items: placedWords };
 }
 
 // ── CROSSWORD ──
@@ -10220,7 +10904,6 @@ function renderCrossword(d) {
     ak.appendChild(footer(`${d.placedWords.length} words · Hebrew Blend Generator — Crossword Answer Key`));
     ws.appendChild(ak);
   }
-  lastShetefItems = { mode: 'real', items: d.placedWords };
 }
 
 function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnOnKey) {
