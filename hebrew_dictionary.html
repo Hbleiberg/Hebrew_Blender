@@ -1388,18 +1388,34 @@ async function fetchJsonWithProgress(url, onProgress) {
   const len = parseInt(res.headers.get('Content-Length') || '0', 10) || 0;
   if (!res.body || !res.body.getReader) { if (onProgress) onProgress(null, 0); return res.json(); }
   const reader = res.body.getReader();
-  const chunks = [];
-  let received = 0, indeterminate = (len <= 0);
+  // Decode incrementally as chunks arrive (during network-idle time) rather than
+  // buffering all ~2.9 MB and doing one synchronous TextDecoder.decode after the
+  // download — that one-shot decode + a per-chunk DOM reflow froze the UI on load.
+  const decoder = new TextDecoder('utf-8');
+  let str = '', received = 0, indeterminate = (len <= 0), lastPct = -1, lastKB = 0;
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
-    chunks.push(value); received += value.length;
+    received += value.length;
+    str += decoder.decode(value, { stream: true });
     if (!indeterminate && received > len) indeterminate = true;
-    if (onProgress) onProgress(indeterminate ? null : Math.min(100, Math.round(received / len * 100)), received);
+    // Throttle progress writes — one reflow per changed percent (or per ~256 KB
+    // when indeterminate), not one per network chunk.
+    if (onProgress) {
+      if (indeterminate) {
+        const kb = Math.round(received / 1024);
+        if (kb - lastKB >= 256) { lastKB = kb; onProgress(null, received); }
+      } else {
+        const pct = Math.min(100, Math.round(received / len * 100));
+        if (pct !== lastPct) { lastPct = pct; onProgress(pct, received); }
+      }
+    }
   }
-  let size = 0; chunks.forEach(c => size += c.length);
-  const all = new Uint8Array(size); let off = 0; chunks.forEach(c => { all.set(c, off); off += c.length; });
-  return JSON.parse(new TextDecoder('utf-8').decode(all));
+  str += decoder.decode();   // flush any trailing multibyte sequence
+  // Yield a task so the browser can paint the finished bar and drain queued input
+  // before the synchronous JSON.parse hitch.
+  await new Promise(r => setTimeout(r, 0));
+  return JSON.parse(str);
 }
 function updateDictLoadProgress(pct, received) {
   const txt = document.getElementById('loadingText');
