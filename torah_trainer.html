@@ -1438,7 +1438,13 @@ function initDark() {
    ══════════════════════════════════════════════════════ */
 function refToDot(ref) {
   // "Genesis 1:1-6:8"  →  "Genesis.1.1-6.8"
-  // Haftarah refs (from aliyah.json) put spaces around the range hyphen, e.g.
+  // Haftarah refs (from aliyah.json) name the numbered prophetic books with a
+  // trailing "_1"/"_2" ("Kings_1", "Samuel_2"); Sefaria expects the ordinal form
+  // ("I Kings", "II Samuel"). Map to the underscore URL form ("I_Kings") so the
+  // [: ]→. replace below leaves the two-word title intact — a 404 otherwise.
+  ref = ref.replace(/\b(Kings|Samuel|Chronicles)_([12])\b/g,
+    (_, book, n) => (n === '1' ? 'I_' : 'II_') + book);
+  // Haftarah refs also put spaces around the range hyphen, e.g.
   // "Zechariah 2:14 - 4:7" — collapse those first, otherwise the [: ]→. replace
   // turns " - " into ".-." and Sefaria can't parse the range (it falls back to
   // the start of the book). Also tolerate en/em dashes.
@@ -2314,6 +2320,10 @@ function buildJumpNav() {
       html += `<button type="button" class="tt-jump-chip" data-aliyah="${a.num}" aria-label="Jump to aliyah ${a.num} (${escapeHTML(a.label)})">${a.num}</button>`;
     }
     html += '</span>';
+  } else {
+    // No aliyah chips (single aliyah, haftarah, holiday/custom) — label the lone
+    // readout so it doesn't read as a stray, unlabeled "timecode" box.
+    html += '<span class="tt-jump-label">Current verse</span>';
   }
   html += '<span class="tt-jump-pos" id="ttJumpPos" aria-live="polite" title="Current verse"></span>';
   nav.innerHTML = html;
