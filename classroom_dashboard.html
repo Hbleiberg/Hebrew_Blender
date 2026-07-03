@@ -91,7 +91,10 @@
     { "@type": "Question", "name": "What is the Hebrew classroom dashboard for?", "acceptedAnswer": { "@type": "Answer", "text": "It displays the live Hebrew date, time, weather, and days of the week for use on classroom SmartBoards or projectors during morning routine and Hebrew instruction." } },
     { "@type": "Question", "name": "Does the Hebrew classroom dashboard work on SmartBoards?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The dashboard is designed for SmartBoards, projectors, and large displays. A built-in fullscreen mode and zoom control let you size content for any classroom screen." } },
     { "@type": "Question", "name": "Is the Hebrew classroom dashboard free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The dashboard is free to use under CC BY-NC-SA 4.0 for non-commercial educational purposes." } },
-    { "@type": "Question", "name": "Can I project the Hebrew date for my classroom?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Hebrew (Jewish) date and the corresponding Gregorian date are shown live and update automatically each day." } }
+    { "@type": "Question", "name": "Can I project the Hebrew date for my classroom?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Hebrew (Jewish) date and the corresponding Gregorian date are shown live and update automatically each day." } },
+    { "@type": "Question", "name": "Can the classroom dashboard switch layouts by time of day?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Schedule Sync lets you assign a preset and an end time to each period, and the dashboard reconfigures itself through the day with a live Now/Next display and a countdown." } },
+    { "@type": "Question", "name": "How do I keep the classroom display from going to sleep?", "acceptedAnswer": { "@type": "Answer", "text": "Fullscreen keeps the screen awake automatically, or turn on Keep screen awake in Display Options where the browser supports it." } },
+    { "@type": "Question", "name": "Is there a guided tour of the dashboard?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Click the Tour button in the top bar for a quick walkthrough, and first-time teachers get a setup card with one-tap starter layouts." } }
   ]
 }
 </script>
@@ -107,7 +110,9 @@
     { "@type": "HowToStep", "position": 2, "name": "Choose panels", "text": "Pick which panels to show under Display Options." },
     { "@type": "HowToStep", "position": 3, "name": "Customize Hebrew", "text": "Pick a Hebrew font and nikkud display style." },
     { "@type": "HowToStep", "position": 4, "name": "Project fullscreen", "text": "Click the fullscreen button to project to your SmartBoard." },
-    { "@type": "HowToStep", "position": 5, "name": "Save a preset", "text": "Save your setup as a preset for quick recall later." }
+    { "@type": "HowToStep", "position": 5, "name": "Save a preset", "text": "Save your setup as a preset, or start from a Quick-start layout in the Presets panel." },
+    { "@type": "HowToStep", "position": 6, "name": "Use fullscreen quick controls", "text": "In fullscreen, move the mouse to reveal quick controls for settings, timer, text, and video." },
+    { "@type": "HowToStep", "position": 7, "name": "Edit text on the board", "text": "Click the pencil on the dashboard message to edit it in place." }
   ]
 }
 </script><!-- Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=G-CMLC81Z0HC"></script><script>
@@ -1157,6 +1162,45 @@
   .fs-pop-btn:hover { background: var(--gold); color: var(--navy); border-color: var(--gold); }
   .fs-pop-hide { background: rgba(201,42,42,0.25); }
 
+  /* ── Guided tour coach-mark + tooltip a11y + reduced motion ── */
+  .tour-spot {
+    position: fixed; top: 0; left: 0; width: 0; height: 0;
+    border-radius: 8px; pointer-events: none; z-index: 400;
+    box-shadow: 0 0 0 9999px rgba(13,18,32,0.62), 0 0 0 3px var(--gold);
+    transition: top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease;
+  }
+  .tour-card {
+    position: fixed; z-index: 500; width: 300px; max-width: 92vw;
+    background: var(--white); color: var(--text);
+    border: 1px solid var(--border); border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4); padding: 16px 18px 14px;
+  }
+  .tour-card h4 { font-family: 'Libre Baskerville', serif; margin: 0 26px 8px 0; font-size: 0.98rem; color: var(--text); }
+  .tour-card p { font-size: 0.84rem; line-height: 1.5; margin: 0 0 12px; color: var(--text); }
+  .tour-x {
+    position: absolute; top: 8px; right: 8px; width: 26px; height: 26px;
+    background: transparent; border: none; border-radius: 6px;
+    color: var(--muted); font-size: 1rem; cursor: pointer; line-height: 1;
+  }
+  .tour-x:hover { background: var(--warm-gray); color: var(--text); }
+  .tour-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .tour-meta > span:first-child { font-size: 0.72rem; font-weight: 700; color: var(--muted); }
+  .tour-btns { display: flex; gap: 8px; }
+  .tbtn { background: var(--gold); color: #1a1a1a; border: none; border-radius: 6px;
+    padding: 7px 13px; cursor: pointer; font-size: 0.82rem; font-weight: 700; font-family: inherit; }
+  .tbtn.ghost { background: transparent; color: var(--text); border: 1.5px solid var(--border); }
+  .tbtn:hover { filter: brightness(1.06); }
+  .tbtn:disabled { opacity: 0.4; cursor: default; filter: none; }
+  .tip-wrap .tip-icon { cursor: pointer; }
+  #tourBtn.tour-pulse { animation: tourPulse 1.6s ease-in-out infinite; }
+  @keyframes tourPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(201,146,42,0.5); } 50% { box-shadow: 0 0 0 7px rgba(201,146,42,0); } }
+  @media (prefers-reduced-motion: reduce) {
+    .tour-spot, .tour-card, #fsStrip, .now-next, .dash-edit-pencil, #tipFloat,
+    .fr-modal, .settings-modal, .settings-backdrop, .panel-title::after { transition: none !important; }
+    #tourBtn.tour-pulse { animation: none !important; }
+    .timer-display.done, #timerCol.running, #timerCol.running.urgent { animation: none !important; }
+  }
+
   /* ───── Responsive ───── */
   @media (max-width: 980px) {
     .dashboard { grid-template-columns: 1fr; gap: 16px; padding: 18px; }
@@ -1212,6 +1256,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <a class="hbtn" href="/"><span>←</span><span class="hbtn-label">Home</span></a>
     <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
     <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
+    <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour"><span>❓</span><span class="hbtn-label">Tour</span></button>
     <button id="fsBtn" class="hbtn icon-btn fs-btn" onclick="toggleFullscreen()" title="Fullscreen"><span class="fs-ico"></span><span class="fs-cap">Fullscreen</span></button>
   </div>
 </header>
@@ -1329,6 +1374,20 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <div class="fr-actions">
     <a href="#" class="fr-skip" onclick="frSkip();return false;">Skip — use New York for now</a>
     <a href="#" class="fr-tour" id="frTourLink" style="display:none;" onclick="frDismiss();tourStart();return false;">Take a tour →</a>
+  </div>
+</div>
+<!-- ───── Guided tour coach-mark (non-modal spotlight) ───── -->
+<div class="tour-spot" id="tourSpot" hidden></div>
+<div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
+  <button class="tour-x" id="tourClose" aria-label="End tour" onclick="tourEnd(false)">✕</button>
+  <h4 id="tourCardTitle"></h4>
+  <p id="tourCardBody"></p>
+  <div class="tour-meta">
+    <span id="tourStep"></span>
+    <span class="tour-btns">
+      <button class="tbtn ghost" id="tourBack" onclick="tourPrev()">Back</button>
+      <button class="tbtn" id="tourNext" onclick="tourNext()">Next</button>
+    </span>
   </div>
 </div>
 <!-- ───── In-place editing toolbar (floats over #dashTextDisplay) ───── -->
@@ -1702,7 +1761,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   </div>
 </div>
 
-<div class="panel">
+<div class="panel" id="presetsPanel">
   <div class="panel-title">Presets</div>
   <div class="panel-body">
     <button class="btn btn-xs btn-secondary" id="starterLayoutsBtn" onclick="openFirstRun()" style="width:100%;margin-bottom:8px;">✨ Quick-start layouts…</button>
@@ -1748,7 +1807,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   </div>
 </div>
 
-<div class="panel">
+<div class="panel" id="schedulePanel">
   <div class="panel-title">Schedule Sync</div>
   <div class="panel-body">
     <p class="sched-explain">Each row shows a chosen preset <b>until</b> a set time — as the day moves on, the dashboard reconfigures itself to the next preset automatically, and the countdown shows how long is left in the current block.<span class="sched-eg">e.g. <b>Morning</b> until 8:45 → <b>Ivrit</b> until 9:30 → <b>Recess</b> until 9:45</span></p>
@@ -1856,6 +1915,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Does it work on SmartBoards?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. The dashboard is designed for SmartBoards, projectors, and large displays. A built-in fullscreen mode and zoom control let you size content for any classroom screen.</p></details>
         <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Is the dashboard free?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. The dashboard is free to use under CC BY-NC-SA 4.0 for non-commercial educational purposes.</p></details>
         <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Can I project the Hebrew date?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. The Hebrew (Jewish) date and the corresponding Gregorian date are shown live and update automatically each day.</p></details>
+        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Is there a guided tour, and how do I switch layouts?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Click <strong>❓ Tour</strong> in the top bar for a quick walkthrough. First-time teachers also get a setup card. To switch layouts, open Settings → Presets and tap a Quick-start layout — Hebrew classroom, Morning routine, or a General classroom layout for non-Judaics rooms — then tweak it and Save your own preset.</p></details>
+        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Can the dashboard switch between periods by itself?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. Settings → Schedule Sync lets you assign a preset and an end time to each period; the board reconfigures itself through the day and shows a live Now / Next display and a countdown.</p></details>
+        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">How do I keep the display from going to sleep?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Fullscreen keeps the screen awake automatically. Otherwise turn on <strong>Keep screen awake</strong> in Settings → Display Options, where the browser supports it.</p></details>
       </div>
     </details>
     <details style="margin:0 0 10px;">
@@ -1865,7 +1927,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <li>Pick which panels to show in <em>Display Options</em>.</li>
         <li>Customize the Hebrew font and nikkud display.</li>
         <li>Use the fullscreen button to project to your SmartBoard.</li>
-        <li>Save your setup as a preset for quick recall later.</li>
+        <li>Save your setup as a preset — or start from a Quick-start layout in the Presets panel.</li>
+        <li>In fullscreen, move the mouse to reveal quick controls (settings, timer, text, video).</li>
+        <li>Click the ✎ on the dashboard message to edit it right on the board.</li>
       </ol>
     </details>
     <div>
@@ -5136,6 +5200,9 @@ async function onUploadFontPick(input){
       updateOmerDisplay();
       setTimeout(tick, 24 * 3600 * 1000);
     }, msToMidnight);
+    if (!localStorage.getItem('hebrewDashboard_tourSeen') && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+      const tb = document.getElementById('tourBtn'); if (tb) tb.classList.add('tour-pulse');
+    }
     if (isFirstVisit && !localStorage.getItem('hebrewDashboard_setupSeen')) openFirstRun();
   });
 
@@ -5160,31 +5227,168 @@ async function onUploadFontPick(input){
     }
   });
 
-  /* ── Tooltip ── */
+  /* ────────── GUIDED TOUR (spotlight engine ported from Hebrew_Font_Maker.html) ────────── */
+  let _tourIdx = -1, _tourActive = false, _tourOpener = null, _tourUncollapsed = null, _tourRepoTimer = null;
+  let _tourDrawerWasOpen = null, _tourExpandedPanels = [];
+  function _tourOpenDrawer() {
+    if (_tourDrawerWasOpen === null) _tourDrawerWasOpen = document.getElementById('settingsModal').classList.contains('open');
+    if (!document.getElementById('settingsModal').classList.contains('open')) openSettings();
+  }
+  function _tourExpandPanel(id) {
+    const p = document.getElementById(id);
+    if (p && p.classList.contains('collapsed')) { p.classList.remove('collapsed'); _tourExpandedPanels.push(p); }
+  }
+  const TOUR_STEPS = [
+    { target: () => document.getElementById('dowCol'), title: 'Days of the week',
+      body: 'Yesterday, today and tomorrow in Hebrew — plus Shabbat times and the Omer count when they apply.' },
+    { target: () => document.getElementById('dateTimeBlock'), title: 'Date, Hebrew date & time',
+      body: "Today's English and Hebrew dates, the live clock, an optional holiday countdown — and, with Schedule Sync, a Now / Next line." },
+    { target: () => document.getElementById('weatherCol'), title: 'Live weather',
+      body: 'Local weather for your set location, refreshed automatically all day.' },
+    { target: () => document.getElementById('fsBtn'), title: 'Project to your SmartBoard',
+      body: 'Go fullscreen — it scales everything up, keeps the screen awake, and shows quick controls when you move the mouse.' },
+    { target: () => document.getElementById('gearBtn'), reveal: _tourOpenDrawer, title: 'Settings',
+      body: 'Everything is customizable here — location, panels, fonts, nikkud colors, and a classroom timer.' },
+    { target: () => document.getElementById('starterLayoutsBtn'),
+      reveal: () => { _tourOpenDrawer(); _tourExpandPanel('presetsPanel'); }, title: 'Quick-start layouts',
+      body: 'One-tap starter setups — including a general-classroom layout — and save your own presets.' },
+    { target: () => document.getElementById('schedulePanel'),
+      reveal: () => { _tourOpenDrawer(); _tourExpandPanel('schedulePanel'); }, title: 'Schedule Sync',
+      body: 'Load your daily schedule and the dashboard switches presets by itself, period by period.' },
+  ];
+
+  function tourStart() {
+    if (_tourActive) return;
+    if (document.fullscreenElement) { try { document.exitFullscreen(); } catch (e) {} }   // the header is hidden in fullscreen
+    try { localStorage.setItem('hebrewDashboard_tourSeen', '1'); } catch (e) {}
+    const tb = document.getElementById('tourBtn'); if (tb) tb.classList.remove('tour-pulse');
+    _tourActive = true; _tourIdx = -1; _tourUncollapsed = null;
+    _tourDrawerWasOpen = null; _tourExpandedPanels = [];
+    _tourOpener = document.activeElement;
+    document.getElementById('tourSpot').hidden = false;
+    document.getElementById('tourCard').hidden = false;
+    document.addEventListener('keydown', _tourKey, true);
+    window.addEventListener('resize', _tourReposition);
+    window.addEventListener('scroll', _tourReposition, true);
+    tourNext();
+  }
+  // Resolve a step's target, running its reveal() first; returns null if it can't be shown.
+  function _resolveStep(idx) {
+    const step = TOUR_STEPS[idx];
+    if (!step) return null;
+    if (step.reveal) { try { step.reveal(); } catch (e) {} }
+    const el = step.target();
+    return (el && el.offsetParent !== null) ? el : null;
+  }
+  function _tourShow(idx, dir) {
+    while (idx >= 0 && idx < TOUR_STEPS.length && !_resolveStep(idx)) idx += dir;   // skip unshowable steps
+    if (idx < 0 || idx >= TOUR_STEPS.length) { tourEnd(dir > 0); return; }
+    _tourIdx = idx;
+    const step = TOUR_STEPS[idx], el = step.target();
+    try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {}
+    document.getElementById('tourCardTitle').textContent = step.title;
+    document.getElementById('tourCardBody').textContent = step.body;
+    document.getElementById('tourStep').textContent = 'Step ' + (idx + 1) + ' of ' + TOUR_STEPS.length;
+    document.getElementById('tourBack').disabled = (idx === 0);
+    document.getElementById('tourNext').textContent = (idx === TOUR_STEPS.length - 1) ? 'Done' : 'Next';
+    _tourReposition();
+    if (_tourRepoTimer) clearTimeout(_tourRepoTimer);
+    _tourRepoTimer = setTimeout(_tourReposition, 350);   // re-measure after scroll settles
+    setTimeout(() => { const n = document.getElementById('tourNext'); if (n && _tourActive) n.focus(); }, 0);
+  }
+  function tourNext() { _tourShow(_tourIdx + 1, 1); }
+  function tourPrev() { _tourShow(_tourIdx - 1, -1); }
+  function tourEnd(completed) {
+    if (!_tourActive) return;
+    _tourActive = false;
+    document.removeEventListener('keydown', _tourKey, true);
+    window.removeEventListener('resize', _tourReposition);
+    window.removeEventListener('scroll', _tourReposition, true);
+    if (_tourRepoTimer) { clearTimeout(_tourRepoTimer); _tourRepoTimer = null; }
+    document.getElementById('tourSpot').hidden = true;
+    document.getElementById('tourCard').hidden = true;
+    if (_tourUncollapsed) { _tourUncollapsed.classList.add('collapsed'); _tourUncollapsed = null; }
+    // Restore the drawer + panel-collapse state we changed for the tour
+    _tourExpandedPanels.forEach(p => p.classList.add('collapsed')); _tourExpandedPanels = [];
+    if (_tourDrawerWasOpen === false) closeSettings();
+    _tourDrawerWasOpen = null;
+    if (completed) { try { localStorage.setItem('hebrewDashboard_tourSeen', '1'); } catch (e) {} }
+    const opener = _tourOpener; _tourOpener = null;
+    if (opener && opener.focus) { try { opener.focus(); } catch (e) {} }
+  }
+  function _tourReposition() {
+    if (!_tourActive) return;
+    const step = TOUR_STEPS[_tourIdx];
+    if (!step) return;
+    const el = step.target();
+    if (!el || el.offsetParent === null) return;
+    const r = el.getBoundingClientRect(), pad = 6;
+    const spot = document.getElementById('tourSpot');
+    spot.style.left = Math.max(0, r.left - pad) + 'px';
+    spot.style.top = Math.max(0, r.top - pad) + 'px';
+    spot.style.width = (r.width + pad * 2) + 'px';
+    spot.style.height = (r.height + pad * 2) + 'px';
+    const card = document.getElementById('tourCard');
+    const cw = card.offsetWidth, ch = card.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
+    let top = r.bottom + 12;
+    if (top + ch > vh - 8) {
+      const above = r.top - ch - 12;
+      top = (above >= 8) ? above : Math.max(8, vh - ch - 8);
+    }
+    let left = r.left + r.width / 2 - cw / 2;
+    if (left < 8) left = 8;
+    if (left + cw > vw - 8) left = vw - cw - 8;
+    card.style.left = left + 'px';
+    card.style.top = top + 'px';
+  }
+  function _tourKey(e) {
+    if (!_tourActive) return;
+    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); tourEnd(false); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); e.stopPropagation(); tourNext(); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); e.stopPropagation(); tourPrev(); }
+  }
+
+  /* ── Tooltip (hover + tap + keyboard, accessible) ── */
   (function() {
     const tip = document.createElement('div');
     tip.id = 'tipFloat';
+    tip.setAttribute('role', 'tooltip');
     document.body.appendChild(tip);
-    document.querySelectorAll('.tip-wrap').forEach(wrap => {
-      wrap.addEventListener('mouseenter', () => {
-        const text = wrap.dataset.tip;
-        if (!text) return;
-        tip.textContent = text;
-        tip.style.display = 'block';
-        const r = wrap.querySelector('.tip-icon').getBoundingClientRect();
-        const tw = tip.offsetWidth;
-        const th = tip.offsetHeight;
-        // Appear above the icon, centered; clamp to viewport
-        let left = r.left + r.width / 2 - tw / 2;
-        let top  = r.top - th - 6;
-        if (left < 6) left = 6;
-        if (left + tw > window.innerWidth - 6) left = window.innerWidth - tw - 6;
-        if (top < 6) top = r.bottom + 6; // flip below if no room above
-        tip.style.left = left + 'px';
-        tip.style.top  = top  + 'px';
+    let openWrap = null;
+    function place(wrap) {
+      const icon = wrap.querySelector('.tip-icon'); if (!icon) return;
+      tip.textContent = wrap.dataset.tip || '';
+      tip.style.display = 'block';
+      const r = icon.getBoundingClientRect();
+      const tw = tip.offsetWidth, th = tip.offsetHeight;
+      let left = r.left + r.width / 2 - tw / 2;
+      let top  = r.top - th - 6;
+      if (left < 6) left = 6;
+      if (left + tw > window.innerWidth - 6) left = window.innerWidth - tw - 6;
+      if (top < 6) top = r.bottom + 6;   // flip below if no room above
+      tip.style.left = left + 'px';
+      tip.style.top  = top  + 'px';
+    }
+    function show(wrap) { openWrap = wrap; place(wrap); }
+    function hide() { openWrap = null; tip.style.display = 'none'; }
+    function wire(wrap) {
+      const icon = wrap.querySelector('.tip-icon'); if (!icon) return;
+      icon.tabIndex = 0; icon.setAttribute('role', 'button');
+      icon.setAttribute('aria-label', wrap.dataset.tip || 'More info');
+      wrap.addEventListener('mouseenter', () => show(wrap));
+      wrap.addEventListener('mouseleave', () => { if (openWrap === wrap) hide(); });
+      icon.addEventListener('focus', () => show(wrap));
+      icon.addEventListener('blur', () => { if (openWrap === wrap) hide(); });
+      icon.addEventListener('click', e => { e.stopPropagation(); openWrap === wrap ? hide() : show(wrap); });
+      icon.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openWrap === wrap ? hide() : show(wrap); }
+        else if (e.key === 'Escape') { hide(); icon.blur(); }
       });
-      wrap.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
-    });
+    }
+    document.querySelectorAll('.tip-wrap').forEach(wire);
+    document.addEventListener('click', e => { if (openWrap && !e.target.closest('.tip-wrap')) hide(); });
+    window.addEventListener('scroll', () => { if (openWrap) place(openWrap); }, true);
+    window.addEventListener('resize', () => { if (openWrap) place(openWrap); });
   })();
 </script>
 </body>
