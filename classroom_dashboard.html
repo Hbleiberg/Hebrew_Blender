@@ -1136,6 +1136,27 @@
   .dash-text-display.editing { outline: 2px dashed var(--gold); outline-offset: 4px; border-radius: 6px; min-height: 1.4em; cursor: text; }
   .dash-text-display.editing .spoiler { background: #c0392b33; color: inherit; cursor: text; user-select: text; }
 
+  /* ── Fullscreen quick-controls strip ── */
+  #fsStrip { position: fixed; z-index: 205; left: 50%; bottom: 18px; transform: translateX(-50%) translateY(20px);
+    display: none; flex-direction: column; align-items: center; gap: 8px;
+    opacity: 0; transition: opacity 0.25s, transform 0.25s; pointer-events: none; }
+  body.fullscreen #fsStrip { display: flex; }
+  body.fullscreen #fsStrip.visible { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+  .fs-strip-inner { display: flex; gap: 8px; align-items: center;
+    background: rgba(13,18,32,0.72); backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.18); border-radius: 14px; padding: 8px 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+  .fs-strip-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 62px; min-height: 48px;
+    cursor: pointer; background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px; padding: 7px 12px; font-family: inherit; font-size: 0.6rem; letter-spacing: 0.03em; }
+  .fs-strip-btn .fss-ico { font-size: 1.2rem; line-height: 1; color: var(--gold-light); }
+  .fs-strip-btn:hover { background: rgba(255,255,255,0.18); border-color: var(--gold); }
+  .fs-pop { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; background: rgba(13,18,32,0.85); backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.18); border-radius: 12px; padding: 7px 9px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+  .fs-pop-btn { cursor: pointer; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px; padding: 8px 12px; font-family: inherit; font-size: 0.8rem; min-height: 40px; }
+  .fs-pop-btn:hover { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+  .fs-pop-hide { background: rgba(201,42,42,0.25); }
+
   /* ───── Responsive ───── */
   @media (max-width: 980px) {
     .dashboard { grid-template-columns: 1fr; gap: 16px; padding: 18px; }
@@ -1206,6 +1227,21 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <span class="fs-label">Exit Fullscreen</span>
 </button>
 <span class="wake-dot wake-dot-fs" role="img" title="Screen will stay awake" aria-label="Screen will stay awake"></span>
+<div id="fsStrip" role="toolbar" aria-label="Fullscreen controls">
+  <div id="fsTimerPop" class="fs-pop" style="display:none;">
+    <button class="fs-pop-btn" type="button" onclick="fsTimerStart(1)">1 min</button>
+    <button class="fs-pop-btn" type="button" onclick="fsTimerStart(3)">3 min</button>
+    <button class="fs-pop-btn" type="button" onclick="fsTimerStart(5)">5 min</button>
+    <button class="fs-pop-btn" type="button" onclick="fsTimerStart(10)">10 min</button>
+    <button class="fs-pop-btn fs-pop-hide" type="button" onclick="fsTimerHide()">Hide</button>
+  </div>
+  <div class="fs-strip-inner">
+    <button class="fs-strip-btn" type="button" onclick="openSettings()"><span class="fss-ico">⚙️</span>Settings</button>
+    <button class="fs-strip-btn" type="button" id="fsTimerBtn" onclick="fsStripTimerToggle()"><span class="fss-ico">⏱️</span>Timer</button>
+    <button class="fs-strip-btn" type="button" onclick="fsStripText()"><span class="fss-ico">✎</span>Text</button>
+    <button class="fs-strip-btn" type="button" onclick="fsStripVideo()"><span class="fss-ico">📺</span>Video</button>
+  </div>
+</div>
 <div class="dashboard">
   <!-- LEFT: Days -->
   <div class="dash-col" id="dowCol">
@@ -2112,6 +2148,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   let _wakeLock = null;
   let _activeEditable = null;
   let _inplacePrevFocus = null;
+  let _fsStripTimer = null;
 
   /* ────────── FIRST-RUN SETUP + STARTER LAYOUTS ────────── */
   // Pristine copy of the shipped defaults, captured before any load mutates `settings`.
@@ -4950,6 +4987,46 @@ async function onUploadFontPick(input){
   }
   function updateWakeDot() { document.body.classList.toggle('wake-held', !!_wakeLock); }
 
+  /* ── Fullscreen quick-controls strip (auto-hiding) ── */
+  function showFsStrip() {
+    if (!document.body.classList.contains('fullscreen')) return;
+    document.getElementById('fsStrip').classList.add('visible');
+    if (_fsStripTimer) clearTimeout(_fsStripTimer);
+    _fsStripTimer = setTimeout(hideFsStrip, 4000);
+  }
+  function hideFsStrip() {
+    if (document.getElementById('settingsModal').classList.contains('open')) return;   // stay while drawer open
+    if (_activeEditable) return;                                                        // stay while editing text
+    if (document.getElementById('fsTimerPop').style.display !== 'none') return;         // stay while timer popup open
+    document.getElementById('fsStrip').classList.remove('visible');
+  }
+  function fsStripTimerToggle() {
+    const p = document.getElementById('fsTimerPop');
+    p.style.display = (p.style.display === 'none' || !p.style.display) ? 'flex' : 'none';
+    showFsStrip();
+  }
+  function fsTimerStart(min) {
+    settings.showTimer = true; settings.showTimerFullscreen = true;   // ensure the timer is visible before starting it
+    applyTimerVisibility(); updateDashboardGrid();
+    timerPreset(min * 60);
+    document.getElementById('fsTimerPop').style.display = 'none';
+    saveSettingsToStorage(); showFsStrip();
+  }
+  function fsTimerHide() {
+    settings.showTimer = false; applyTimerVisibility(); updateDashboardGrid();
+    document.getElementById('fsTimerPop').style.display = 'none';
+    saveSettingsToStorage(); showFsStrip();
+  }
+  function fsStripVideo() {
+    settings.showVideoEmbed = !settings.showVideoEmbed;
+    applyVideoEmbed(settings.showVideoEmbed, settings.videoEmbedUrl);
+    updateDashboardGrid();
+    saveSettingsToStorage();
+    if (settings.showVideoEmbed && !settings.videoEmbedUrl) openSettings();   // no URL yet → let the teacher paste one
+    showFsStrip();
+  }
+  function fsStripText() { enterInPlaceEdit(); }
+
   function toggleFullscreen() {
     if (!document.fullscreenElement) document.documentElement.requestFullscreen();
     else document.exitFullscreen();
@@ -4959,11 +5036,25 @@ async function onUploadFontPick(input){
     document.body.classList.toggle('fullscreen', isFs);
     document.querySelector('#fsBtn .fs-ico').innerHTML = isFs ? FS_EXIT : FS_ENTER;
     applyTimerVisibility();
-    if (isFs) acquireWakeLock(); else applyWakeLock();
+    if (isFs) { acquireWakeLock(); showFsStrip(); }
+    else {
+      if (_fsStripTimer) clearTimeout(_fsStripTimer);
+      document.getElementById('fsStrip').classList.remove('visible');
+      document.getElementById('fsTimerPop').style.display = 'none';
+      if (_activeEditable) exitInPlaceEdit(true);
+      applyWakeLock();
+    }
   });
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') acquireWakeLock();
   });
+  // Reveal the strip on any pointer activity while fullscreen; keep it up while hovered
+  const _fsReveal = () => { if (document.body.classList.contains('fullscreen')) showFsStrip(); };
+  document.addEventListener('pointermove', _fsReveal, { passive: true });
+  document.addEventListener('pointerdown', _fsReveal, { passive: true });
+  document.getElementById('fsStrip').addEventListener('pointerenter', () => { if (_fsStripTimer) clearTimeout(_fsStripTimer); });
+  document.getElementById('fsStrip').addEventListener('pointerleave', showFsStrip);
+  document.getElementById('fsStrip').addEventListener('focusin', () => { if (_fsStripTimer) clearTimeout(_fsStripTimer); });
 
   /* ────────── PANEL COLLAPSE ────────── */
   function expandAllMenus()   { document.querySelectorAll('.panel, .sub-section').forEach(p => p.classList.remove('collapsed')); }
