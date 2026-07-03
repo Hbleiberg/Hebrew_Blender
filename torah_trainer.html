@@ -360,7 +360,7 @@ body.dark .tt-ref-hdr .tt-chantall { background:#0a0f1c; }
   flex:1; direction:ltr; text-align:center;
   font-size:var(--tt-english-size, 0.95rem); color:var(--text); line-height:1.5;
 }
-.tt-speak, .tt-chant {
+.tt-speak, .tt-chant, .tt-loop {
   background:transparent; border:1px solid var(--border); border-radius:4px;
   padding:2px 7px; font-size:0.7rem; font-weight:600; cursor:pointer;
   color:var(--muted); transition:all 0.15s; flex-shrink:0;
@@ -370,7 +370,145 @@ body.dark .tt-ref-hdr .tt-chantall { background:#0a0f1c; }
 .tt-speak.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
 .tt-chant:hover:not(:disabled) { border-color:var(--gold); color:var(--gold); }
 .tt-chant:disabled { opacity:0.45; cursor:not-allowed; }
+.tt-loop:hover:not(:disabled) { border-color:var(--gold); color:var(--gold); }
+.tt-loop.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
 .tt-verse-buttons { display:inline-flex; gap:4px; margin-left:6px; }
+
+/* Verse loop (practice mode): the looping verse row gets a tinted background and
+   a gently pulsing gold ring so it's obvious which verse is repeating. */
+@keyframes ttLoopPulse {
+  0%,100% { box-shadow: inset 0 0 0 2px rgba(201,146,42,0.55); }
+  50%     { box-shadow: inset 0 0 0 2px rgba(201,146,42,0.15); }
+}
+.tt-looping {
+  background: rgba(201,146,42,0.10);
+  border-radius: 6px;
+  animation: ttLoopPulse 1.6s ease-in-out infinite;
+}
+body.dark .tt-looping { background: rgba(224,168,50,0.14); }
+/* Audio-bar loop stop control (shown only while a loop is active). */
+.tt-audio-loopstop {
+  background:var(--gold); color:var(--navy); border:none; border-radius:6px;
+  padding:4px 9px; font-size:0.72rem; font-weight:700; cursor:pointer;
+  font-family:inherit; flex-shrink:0; letter-spacing:0.02em;
+}
+.tt-audio-loopstop:hover { filter:brightness(1.06); }
+
+/* Resume chip — one-tap jump back to where a long reading was left off. */
+.tt-resume-chip {
+  display:inline-flex; align-items:center; gap:4px; margin:0 0 14px;
+  background:var(--cream); border:1px solid var(--gold); border-radius:20px;
+  padding:3px 6px 3px 12px; box-shadow:var(--shadow-sm);
+}
+body.dark .tt-resume-chip { background:var(--navy-deep); }
+.tt-resume-go {
+  background:transparent; border:none; color:var(--gold); font-weight:700;
+  cursor:pointer; font-family:inherit; font-size:0.82rem; padding:2px 2px;
+}
+.tt-resume-go:hover { text-decoration:underline; }
+.tt-resume-x {
+  background:transparent; border:none; color:var(--muted); cursor:pointer;
+  font-size:0.82rem; line-height:1; padding:3px 5px; border-radius:50%;
+}
+.tt-resume-x:hover { background:var(--warm-gray); color:var(--text); }
+/* Brief highlight flash when jumping to a verse (resume / jump nav). */
+@keyframes ttFlash {
+  0%   { background:rgba(201,146,42,0.45); }
+  100% { background:transparent; }
+}
+.tt-flash { animation: ttFlash 1.5s ease-out; border-radius:6px; }
+
+/* In-page navigation bar — sticky aliyah jump chips + "you are here" readout. */
+.tt-jumpnav {
+  position:sticky; top:0; z-index:50;
+  display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px;
+  padding:6px 10px; margin:0 0 12px;
+  background:var(--white); border:1px solid var(--border); border-radius:8px;
+  box-shadow:var(--shadow-sm);
+}
+body.dark .tt-jumpnav { background:var(--navy-deep); }
+.tt-jumpnav[hidden] { display:none; }
+.tt-jump-label { font-size:0.68rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; }
+.tt-jump-chips { display:inline-flex; flex-wrap:wrap; gap:4px; }
+.tt-jump-chip {
+  min-width:26px; padding:3px 8px; font-size:0.78rem; font-weight:700;
+  border:1px solid var(--border); border-radius:5px; background:transparent;
+  color:var(--text); cursor:pointer; font-family:inherit; transition:all 0.15s;
+}
+.tt-jump-chip:hover { border-color:var(--gold); color:var(--gold); }
+.tt-jump-chip.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
+.tt-jump-pos { margin-left:auto; font-size:0.78rem; font-weight:600; color:var(--muted); font-variant-numeric:tabular-nums; }
+body.fullscreen .tt-jumpnav { padding-right:84px; }   /* clear the fullscreen exit button */
+
+/* Inline aliyah divider (block; full-parsha only). Muted, thin rules, RTL-safe. */
+.tt-aliyah-divider {
+  display:flex; align-items:center; gap:10px;
+  margin:20px 0 10px; color:var(--muted);
+  font-size:0.72rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
+}
+.tt-aliyah-divider::before, .tt-aliyah-divider::after {
+  content:''; flex:1; height:1px; background:var(--border);
+}
+.tt-aliyah-divider span { flex-shrink:0; }
+/* Page-view running text: an inline marker instead of a block divider. */
+.tt-aliyah-inline { font-size:0.7rem; font-weight:700; color:var(--gold); letter-spacing:0.03em; white-space:nowrap; }
+
+@media print {
+  .tt-jumpnav, .tt-resume-chip, .tt-audio-bar, .tt-verse-buttons { display:none !important; }
+  .tt-aliyah-divider { color:#555; }
+}
+
+/* ── Guided tour (ported from the generator) ── */
+.tbtn {
+  background:var(--gold); color:#1a1a1a; border:none; border-radius:6px;
+  padding:7px 13px; cursor:pointer; font-size:0.82rem; font-weight:700;
+  font-family:'Source Sans 3', sans-serif;
+}
+.tbtn.ghost { background:transparent; color:var(--text); border:1.5px solid var(--border); }
+.tbtn:hover { filter:brightness(1.06); }
+.tbtn:disabled { opacity:0.4; cursor:default; filter:none; }
+.tour-spot {
+  position:fixed; top:0; left:0; width:0; height:0;
+  border-radius:8px; pointer-events:none; z-index:400;
+  box-shadow:0 0 0 9999px rgba(13,18,32,0.62), 0 0 0 3px var(--gold);
+  transition:top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease;
+}
+.tour-card {
+  position:fixed; z-index:500; width:300px; max-width:92vw;
+  background:var(--white); color:var(--text);
+  border:1px solid var(--border); border-radius:12px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.4); padding:16px 18px 14px;
+}
+.tour-card h4 { font-family:'Libre Baskerville', serif; margin:0 26px 8px 0; font-size:0.98rem; color:var(--text); }
+.tour-card p { font-size:0.84rem; line-height:1.5; margin:0 0 12px; color:var(--text); }
+.tour-x {
+  position:absolute; top:8px; right:8px; width:26px; height:26px;
+  background:transparent; border:none; border-radius:6px;
+  color:var(--muted); font-size:1rem; cursor:pointer; line-height:1;
+}
+.tour-x:hover { background:var(--warm-gray); color:var(--text); }
+.tour-meta { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.tour-meta > span:first-child { font-size:0.72rem; font-weight:700; color:var(--muted); }
+.tour-btns { display:flex; gap:8px; }
+/* Attention pulse — Tour button first-visit nudge. */
+@keyframes attnPulse {
+  0%, 100% { box-shadow:0 0 0 0 rgba(201,146,42,0.55); }
+  50%      { box-shadow:0 0 0 6px rgba(201,146,42,0); }
+}
+.pulse-attn { animation:attnPulse 1.4s ease-in-out infinite; }
+
+/* Click-a-word hint toast (shown once). */
+.tt-hint-toast {
+  position:fixed; left:50%; bottom:96px; transform:translateX(-50%) translateY(8px);
+  background:var(--navy); color:#fff; font-size:0.84rem; font-weight:500;
+  padding:10px 16px; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.3);
+  z-index:2000; max-width:88vw; text-align:center; cursor:pointer;
+  opacity:0; pointer-events:none; transition:opacity 0.25s ease, transform 0.25s ease;
+}
+.tt-hint-toast.show { opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
+body.dark .tt-hint-toast { background:#0a0f1c; }
+/* Accessible tooltip trigger: focus ring for keyboard users. */
+.tip-wrap:focus-visible { outline:2px solid var(--gold); outline-offset:2px; border-radius:50%; }
 
 /* Side-by-side layout: 2 or 3 columns */
 .tt-grid {
@@ -763,6 +901,19 @@ body.fullscreen #fsExitBtn { display: flex; }
   .tt-grid-col.tt-col-translation, .tt-grid-col.tt-col-translit { margin-top:14px; }
   .tt-cell.heb, .tt-heb { font-size:1.35rem; }
 }
+
+/* ── Reduced motion: honor the OS "reduce motion" preference for everything this
+   tool animates (verse-loop pulse, resume/jump highlight flashes, tour spotlight,
+   hint toast). Shared block — extended as sections are added. ── */
+@media (prefers-reduced-motion: reduce) {
+  .tt-looping { animation: none; box-shadow: inset 0 0 0 2px rgba(201,146,42,0.5); }
+  /* No animated fade — a steady tint (removed by JS after ~1.6s) stands in. */
+  .tt-flash { animation: none; background: rgba(201,146,42,0.28); border-radius:6px; }
+  /* Tour + nudge + hint: no motion, but keep the cues visible. */
+  .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
+  .tour-spot { transition: none !important; }
+  .tt-hint-toast { transition: none !important; }
+}
 </style>
 </head>
 <body>
@@ -774,6 +925,7 @@ body.fullscreen #fsExitBtn { display: flex; }
   </div>
   <div class="hright">
     <a class="hbtn" href="/"><span>←</span><span>Home</span></a>
+    <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour">❓ Tour</button>
     <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
     <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
     <button id="fsBtn" class="hbtn icon-btn" onclick="toggleFullscreen()" title="Fullscreen" aria-label="Toggle fullscreen"></button>
@@ -783,6 +935,21 @@ body.fullscreen #fsExitBtn { display: flex; }
   <span class="fs-x">✕</span>
   <span class="fs-label">Exit Fullscreen</span>
 </button>
+
+<!-- Guided "Take a tour" coach-mark (non-modal spotlight; see tourStart) -->
+<div class="tour-spot" id="tourSpot" hidden></div>
+<div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
+  <button class="tour-x" id="tourClose" aria-label="End tour" onclick="tourEnd(false)">✕</button>
+  <h4 id="tourCardTitle"></h4>
+  <p id="tourCardBody"></p>
+  <div class="tour-meta">
+    <span id="tourStep"></span>
+    <span class="tour-btns">
+      <button class="tbtn ghost" id="tourBack" onclick="tourPrev()">Back</button>
+      <button class="tbtn" id="tourNext" onclick="tourNext()">Next</button>
+    </span>
+  </div>
+</div>
 
 <div class="tt-controls">
   <span class="tt-ctrl">
@@ -857,6 +1024,8 @@ body.fullscreen #fsExitBtn { display: flex; }
 
 <div class="tt-page">
   <div class="tt-status" id="ttStatus" role="status" aria-live="polite"></div>
+  <!-- In-page nav: aliyah jump chips + "you are here" readout (long readings). -->
+  <div class="tt-jumpnav" id="ttJumpNav" role="navigation" aria-label="Jump to aliyah" hidden></div>
   <div class="tt-reading" id="ttReading"></div>
 </div>
 
@@ -864,6 +1033,7 @@ body.fullscreen #fsExitBtn { display: flex; }
   <button class="tt-audio-collapse" id="ttAudioCollapseBtn" onclick="toggleAudioBarCollapse()" aria-label="Collapse audio bar" title="Collapse / expand audio bar">▾</button>
   <button class="tt-audio-playpause" id="ttAudioPlayPauseBtn" onclick="toggleAudioPlay()" aria-label="Play or pause" title="Play / pause">▶</button>
   <span class="tt-audio-label" id="ttAudioLabel">Karaoke</span>
+  <button class="tt-audio-loopstop" id="ttLoopStopBtn" onclick="stopLoop()" aria-label="Stop looping" title="Stop looping" style="display:none;">⏹ Stop loop</button>
   <audio id="ttAudio" controls preload="none" aria-label="Chanted Torah audio"></audio>
   <span class="tt-audio-rates">
     <span class="row">
@@ -1039,6 +1209,17 @@ body.fullscreen #fsExitBtn { display: flex; }
           <span class="sval" id="optTTSRateVal">0.75×</span>
           <button class="sreset" onclick="resetTTSRate()" type="button" title="Restore default">↺</button>
         </div>
+        <div class="form-row" style="margin-top:8px;">
+          <label for="optLoopPause">Pause between repeats
+            <span class="tip-wrap" data-tip="When you loop a verse (🔁), wait this long before repeating it — handy for practicing along."><i class="tip-icon">?</i></span>
+          </label>
+          <select id="optLoopPause">
+            <option value="0">None</option>
+            <option value="500">0.5 seconds</option>
+            <option value="1000">1 second</option>
+            <option value="2000">2 seconds</option>
+          </select>
+        </div>
         <div id="optTTSStatus" style="font-size:0.7rem;color:var(--muted);margin-top:6px;"></div>
         <div id="optKaraokeStatus" style="font-size:0.7rem;color:var(--muted);margin-top:4px;"></div>
         <div style="font-size:0.65rem;color:var(--muted);margin-top:10px;line-height:1.4;">
@@ -1066,11 +1247,13 @@ body.fullscreen #fsExitBtn { display: flex; }
         <details style="margin:0 0 10px;">
           <summary style="cursor:pointer;font-weight:600;font-size:0.85rem;padding:4px 0;">How To Use</summary>
           <ol style="padding:6px 0 4px 20px;margin:0;font-size:0.8rem;line-height:1.5;color:var(--muted);">
-            <li>Pick a parsha from the top dropdown (defaults to this week's).</li>
+            <li>Pick a parsha from the top dropdown (defaults to this week's). The Reading dropdown shows each aliyah's verse range, and 🎵 marks readings with chanted audio.</li>
             <li>Toggle Translit and Translation; choose Side-by-side or Interlinear layout.</li>
             <li>Customize the Hebrew font, vowel coloring, and translit scheme in this drawer.</li>
-            <li>Enable Karaoke and pick an aliyah from the Reading dropdown to chant along.</li>
+            <li>Enable Karaoke and pick an aliyah from the Reading dropdown to chant along. Use 🔁 Loop on any verse to repeat it hands-free for practice.</li>
+            <li>On a full parsha, use the aliyah jump chips at the top to skip around, and the Resume chip to pick up where you left off.</li>
             <li>Click the fullscreen button to project to a SmartBoard.</li>
+            <li>New here? Press <strong>❓ Tour</strong> in the header for a quick walkthrough.</li>
           </ol>
         </details>
         <div>
@@ -1107,6 +1290,20 @@ body.fullscreen #fsExitBtn { display: flex; }
 <script>
 'use strict';
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   Torah Trainer UX upgrades (2026-07-03):
+   1. Verse looping — per-verse 🔁 Loop repeats a verse's chant hands-free
+      (loopState + computeVerseAudioBounds; audio-bar Stop; optional pause between
+      repeats). Chant-only; hidden for holiday/custom readings.
+   2. Remember reading position — one IntersectionObserver tracks the current
+      verse; a dismissible "Resume at C:V →" chip returns to it on long readings.
+   3. Informative scope dropdown — aliyah/haftarah options show verse ranges (from
+      local aliyah.json) and a 🎵 marker when chant audio exists (refreshScopeLabels).
+   4. In-page navigation — inline aliyah dividers + a sticky jump-chip bar with a
+      "you are here" readout (full-parsha scope), driven by the same observer.
+   5. Guided tour, accessible tooltips, and a one-time click-a-word hint toast.
+   ───────────────────────────────────────────────────────────────────────────── */
+
 /* ══════════════════════════════════════════════════════
    STATE + DEFAULTS
    ══════════════════════════════════════════════════════ */
@@ -1120,6 +1317,7 @@ const TORAH_BOOK_CHAPTERS = { Genesis:50, Exodus:40, Leviticus:27, Numbers:36, D
 const DEFAULTS = {
   parshahKey: null,
   customRef: null,
+  lastPos: null,           // { readingKey, verse, ts } — one-tap resume for long readings
   customLabel: null,       // optional pretty label for custom scope (e.g. "Shavuot II — Deut 14:22-16:17")
   holidayKey: null,        // selected HOLIDAY_READINGS key when a holiday reading is showing
   scope: 'parsha-full',
@@ -1143,6 +1341,7 @@ const DEFAULTS = {
   // TTS + Chanting are always available; rate sliders apply.
   karaokeRate: 1.0,
   ttsRate: 0.75,
+  loopPauseMs: 0,            // silence between verse-loop repeats (0/500/1000/2000 ms)
   karaokeBarCollapsed: false,
   karaokeStyle: 'highlight',   // 'highlight' | 'outline' | 'underline' | 'none'
   karaokeFollow: 'hebrew',     // 'hebrew' | 'translit'
@@ -1761,6 +1960,9 @@ function renderText() {
   // whenever the current reading maps to a parsha with audio — including
   // holiday/custom ranges that sit inside a parsha.
   const canChant = currentReadingChantable();
+  // Verse looping is chant-only and not offered for holiday/custom readings
+  // (mapped-timings path has no cheap verse-end boundary — see loopVerse note).
+  const canLoop = canChant && settings.scope !== 'custom';
   let html = `<div class="tt-ref-hdr">
     <span>${escapeHTML(currentRangeLabel)}</span>
     <span style="display:flex;gap:6px;">
@@ -1768,28 +1970,42 @@ function renderText() {
       ${canChant ? `<button class="tt-readall tt-chantall" id="ttChantAllBtn" onclick="toggleChantAll()" type="button">${chantAllState.active ? '⏹ Stop chant' : '🎵 Chant all'}</button>` : ''}
     </span>
   </div>`;
+  // Aliyah landmarks (full-parsha only) — inline dividers + jump targets.
+  _aliyahStarts = computeAliyahStarts();
+  const aStartByLabel = {};
+  if (_aliyahStarts) for (const a of _aliyahStarts) aStartByLabel[a.label] = a.num;
   const wordIdxRef = { value: 0 };
   if (layout === 'biblepage') {
-    html += renderBiblePage(currentVerses, includeTranslit, includeTrans, wordIdxRef, canChant);
+    html += renderBiblePage(currentVerses, includeTranslit, includeTrans, wordIdxRef, canChant, aStartByLabel);
   } else if (layout === 'interlinear') {
-    html += renderInterlinear(currentVerses, includeTranslit, includeTrans, wordIdxRef, canChant);
+    html += renderInterlinear(currentVerses, includeTranslit, includeTrans, wordIdxRef, canChant, canLoop, aStartByLabel);
   } else {
-    html += renderSideBySide(currentVerses, includeTranslit, includeTrans, wordIdxRef, canChant);
+    html += renderSideBySide(currentVerses, includeTranslit, includeTrans, wordIdxRef, canChant, canLoop, aStartByLabel);
   }
   root.innerHTML = html;
   if (currentTimings && currentAudio) updateKaraokeWordRefs();
+  // Re-apply the loop marker/button state to the freshly-built DOM (survives a
+  // layout/font re-render of the same reading; the timing indices are unchanged).
+  renderLoopState();
+  // Track the current verse (resume + in-page nav) and refresh the jump bar.
+  setupVerseObserver();
+  buildJumpNav();
 }
-function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant) {
+function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant, canLoop, aStartByLabel) {
+  aStartByLabel = aStartByLabel || {};
   let html = '<div class="tt-interlinear">';
   for (const v of verses) {
     const numLabel = `${v.chapter}:${v.verse}`;
     const esc = cssEscape(numLabel);
-    html += `<div class="tt-verse" data-vk="${escapeHTML(numLabel)}">`;
+    const aNum = aStartByLabel[numLabel];
+    if (aNum > 1) html += aliyahDividerHTML(aNum, numLabel);
+    html += `<div class="tt-verse" data-vk="${escapeHTML(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}>`;
     html += `  <div class="tt-verse-row" style="align-items:center;">`;
     html += `    <span class="tt-verse-num">${escapeHTML(numLabel)}</span>`;
     html += `    <span class="tt-verse-buttons">`;
     html += `      <button class="tt-speak" onclick="speakVerse('${esc}')" type="button" aria-label="Read verse ${numLabel} aloud (TTS)">🔊 Read</button>`;
     if (canChant) html += `      <button class="tt-chant" onclick="chantVerse('${esc}')" type="button" aria-label="Chant verse ${numLabel} (PocketTorah audio)">🎵 Chant</button>`;
+    if (canLoop) html += `      <button class="tt-loop" onclick="loopVerse('${esc}')" type="button" aria-label="Loop verse ${numLabel} (repeat the chant)">🔁 Loop</button>`;
     html += `    </span>`;
     html += `  </div>`;
     const firstTwi = wordIdxRef.value;
@@ -1808,7 +2024,8 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant
   html += '</div>';
   return html;
 }
-function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant) {
+function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant, canLoop, aStartByLabel) {
+  aStartByLabel = aStartByLabel || {};
   // Pre-tokenize Hebrew for each verse so the translit column (rendered first
   // visually but needing the Hebrew data-twi indices) can match up.
   const perVerse = verses.map(v => {
@@ -1843,10 +2060,13 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant)
   for (const { v, hebHtml } of perVerse) {
     const numLabel = `${v.chapter}:${v.verse}`;
     const esc = cssEscape(numLabel);
-    html += `<div class="tt-grid-row" data-vk="${escapeHTML(numLabel)}">`;
+    const aNum = aStartByLabel[numLabel];
+    if (aNum > 1) html += aliyahDividerHTML(aNum, numLabel);
+    html += `<div class="tt-grid-row" data-vk="${escapeHTML(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}>`;
     html += `<span class="tt-vnum">${numLabel}<span class="tt-verse-buttons" style="display:flex;flex-direction:column;gap:3px;margin-top:4px;margin-left:0;">`;
     html += `<button class="tt-speak" onclick="speakVerse('${esc}')" type="button" aria-label="Read verse ${numLabel} aloud (TTS)">🔊 Read</button>`;
     if (canChant) html += `<button class="tt-chant" onclick="chantVerse('${esc}')" type="button" aria-label="Chant verse ${numLabel} (PocketTorah audio)">🎵 Chant</button>`;
+    if (canLoop) html += `<button class="tt-loop" onclick="loopVerse('${esc}')" type="button" aria-label="Loop verse ${numLabel} (repeat the chant)">🔁 Loop</button>`;
     html += `</span></span>`;
     html += `<span class="tt-cell heb">${hebHtml}</span>`;
     html += `</div>`;
@@ -1855,7 +2075,8 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant)
   html += `</div>`;
   return html;
 }
-function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant) {
+function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant, aStartByLabel) {
+  aStartByLabel = aStartByLabel || {};
   // "Page view": continuous, justified text like a printed Chumash/Bible page.
   // Verse numbers are inline superscripts; the opening chapter shows as a drop-cap.
   // Per-verse Read/Chant buttons are omitted here (they don't fit running text) —
@@ -1877,7 +2098,10 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant) 
   html += `<span class="tt-bible-dropcap">${escapeHTML(String(startChapter))}</span>`;
   for (const { v, hebHtml } of perVerse) {
     const numLabel = `${v.chapter}:${v.verse}`;
-    html += `<span class="tt-bverse" data-vk="${escapeHTML(numLabel)}"><sup class="tt-bnum">${escapeHTML(numLabel)}</sup><span class="tt-heb">${hebHtml}</span></span> `;
+    const aNum = aStartByLabel[numLabel];
+    // Inline aliyah marker keeps the running-text flow intact (no block break).
+    if (aNum > 1) html += `<span class="tt-aliyah-inline" id="tt-aliyah-${aNum}" dir="rtl">✦ Aliyah ${aNum}</span> `;
+    html += `<span class="tt-bverse" data-vk="${escapeHTML(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}><sup class="tt-bnum">${escapeHTML(numLabel)}</sup><span class="tt-heb">${hebHtml}</span></span> `;
   }
   html += '</p>';
   // Transliteration block (uses the Hebrew word indices captured above)
@@ -1983,6 +2207,10 @@ async function fetchAndRender() {
     }
     // Auto-load karaoke audio + timings when the user picks an aliyah/haftarah.
     maybeLoadKaraoke(r);
+    // Offer a one-tap resume if we have a saved deep position for this reading.
+    maybeShowResumeChip();
+    // First-ever chantable render: nudge the (undiscoverable) click-a-word feature.
+    maybeShowClickHint();
   } catch (e) {
     console.error(e);
     setStatus(`Failed to load ${r.label}: ${e.message}. Sefaria API may be unreachable.`, true);
@@ -2000,11 +2228,189 @@ function currentReadingChantable() {
 }
 
 /* ══════════════════════════════════════════════════════
+   READING POSITION — track the current verse (one IntersectionObserver, rebuilt
+   each render) and offer a one-tap resume chip for long readings. The current
+   verse is also the "you are here" source for the in-page nav (Section 4).
+   ══════════════════════════════════════════════════════ */
+let _verseObserver = null;
+let _currentVerseLabel = null;
+let _lastPosSaveTimer = null;
+let _resumeDismissedFor = null;   // readingKey dismissed this session
+const LASTPOS_MIN_VERSES = 12;    // resume is noise on short readings
+const LASTPOS_MAX_AGE = 30 * 24 * 60 * 60 * 1000;  // 30 days
+// Unique id for the loaded reading: parsha+scope, or the custom ref for holidays.
+function readingKey() {
+  if (settings.scope === 'custom') return 'custom:' + (settings.customRef || '');
+  return (settings.parshahKey || '') + '|' + (settings.scope || 'parsha-full');
+}
+function getCurrentVerseLabel() { return _currentVerseLabel; }
+// (Re)build the observer over the freshly-rendered verses. Cheap; skips work
+// while the tab is hidden. rootMargin defines a thin band near the top of the
+// reading so the "current" verse is the one crossing just below the controls.
+function setupVerseObserver() {
+  if (_verseObserver) { _verseObserver.disconnect(); _verseObserver = null; }
+  _currentVerseLabel = null;
+  const root = document.getElementById('ttReading');
+  const verseEls = root ? root.querySelectorAll('[data-vk]') : [];
+  if (!verseEls.length) return;
+  const visible = new Map();   // label -> boundingClientRect.top
+  _verseObserver = new IntersectionObserver(entries => {
+    if (document.hidden) return;
+    for (const e of entries) {
+      const vk = e.target.dataset.vk;
+      if (e.isIntersecting) visible.set(vk, e.boundingClientRect.top);
+      else visible.delete(vk);
+    }
+    let best = null, bestTop = Infinity;
+    visible.forEach((top, vk) => { if (top < bestTop) { bestTop = top; best = vk; } });
+    if (best && best !== _currentVerseLabel) {
+      _currentVerseLabel = best;
+      onCurrentVerseChanged();      // Section 4: active jump-chip + position readout
+      scheduleLastPosSave();
+    }
+  }, { rootMargin: '-70px 0px -75% 0px', threshold: 0 });
+  verseEls.forEach(el => _verseObserver.observe(el));
+}
+// Section 4 fills this in (jump-chip highlight + "you are here" readout). Defined
+// here so the observer can call it unconditionally.
+function onCurrentVerseChanged() { updateJumpNavState(); }
+/* ── In-page navigation (Section 4): inline aliyah dividers + a sticky jump bar
+   with a "you are here" readout, for long readings. Full-parsha scope drives the
+   aliyah chips; the current verse comes from the same observer as the resume chip. */
+let _aliyahStarts = null;   // [{ num, label:"C:V", range }] for the loaded full parsha
+// Aliyah start verses for the loaded reading — only meaningful for a full parsha.
+function computeAliyahStarts() {
+  if (settings.scope !== 'parsha-full') return null;
+  const p = (currentReadingCtx && currentReadingCtx.parshahEntry)
+            || parshiyotData.find(x => x.en === settings.parshahKey);
+  if (!p) return null;
+  const al = aliyahLookup(p.en);
+  if (!al || !al.aliyot) return null;
+  const starts = [];
+  for (let n = 1; n <= 7; n++) {
+    const r = al.aliyot[n];
+    if (r) starts.push({ num: n, label: `${r.startC}:${r.startV}`, range: r });
+  }
+  return starts.length ? starts : null;
+}
+// Slim, non-interactive divider row (block; contains no .tt-word so karaoke
+// indexing is untouched). Carries the jump anchor id.
+function aliyahDividerHTML(num, label) {
+  return `<div class="tt-aliyah-divider" id="tt-aliyah-${num}"><span>Aliyah ${num} · ${escapeHTML(label)}</span></div>`;
+}
+// Build the sticky jump bar for the freshly-rendered reading. Chips 1..7 show for
+// a full parsha; otherwise a lone position readout shows only for long readings.
+function buildJumpNav() {
+  const nav = document.getElementById('ttJumpNav');
+  if (!nav) return;
+  const total = (currentVerses && currentVerses.length) || 0;
+  const showChips = !!_aliyahStarts;
+  const showIndicator = showChips || total >= LASTPOS_MIN_VERSES;
+  if (!showIndicator) { nav.hidden = true; nav.innerHTML = ''; return; }
+  let html = '';
+  if (showChips) {
+    html += '<span class="tt-jump-label">Aliyah</span><span class="tt-jump-chips">';
+    for (const a of _aliyahStarts) {
+      html += `<button type="button" class="tt-jump-chip" data-aliyah="${a.num}" aria-label="Jump to aliyah ${a.num} (${escapeHTML(a.label)})">${a.num}</button>`;
+    }
+    html += '</span>';
+  }
+  html += '<span class="tt-jump-pos" id="ttJumpPos" aria-live="polite" title="Current verse"></span>';
+  nav.innerHTML = html;
+  nav.hidden = false;
+  nav.querySelectorAll('.tt-jump-chip').forEach(btn =>
+    btn.addEventListener('click', () => jumpToAliyah(parseInt(btn.dataset.aliyah, 10))));
+  updateJumpNavState();
+}
+function jumpToAliyah(n) {
+  // Aliyah 1 has no visible divider (it'd duplicate the header) — its id sits on
+  // the first verse element instead; flashVerse resolves the id either way.
+  flashVerse('tt-aliyah-' + n);
+}
+// Reflect the current verse: highlight the active aliyah chip + update the readout.
+function updateJumpNavState() {
+  const nav = document.getElementById('ttJumpNav');
+  if (!nav || nav.hidden) return;
+  const cur = _currentVerseLabel;
+  const pos = document.getElementById('ttJumpPos');
+  if (pos) pos.textContent = cur || '';
+  if (!_aliyahStarts) return;
+  let activeNum = null;
+  const m = cur && cur.match(/^(\d+):(\d+)$/);
+  if (m) {
+    const c = +m[1], v = +m[2];
+    for (const a of _aliyahStarts) { if (verseInRange(c, v, a.range)) { activeNum = a.num; break; } }
+  }
+  nav.querySelectorAll('.tt-jump-chip').forEach(btn =>
+    btn.classList.toggle('active', parseInt(btn.dataset.aliyah, 10) === activeNum));
+}
+function scheduleLastPosSave() {
+  if (_lastPosSaveTimer) clearTimeout(_lastPosSaveTimer);
+  _lastPosSaveTimer = setTimeout(saveLastPos, 1000);   // debounce ~1s
+}
+function verseIndexOf(label) {
+  if (!currentVerses) return -1;
+  return currentVerses.findIndex(v => `${v.chapter}:${v.verse}` === label);
+}
+function saveLastPos() {
+  _lastPosSaveTimer = null;
+  if (document.hidden || !_currentVerseLabel) return;
+  const total = (currentVerses && currentVerses.length) || 0;
+  if (total < LASTPOS_MIN_VERSES) return;          // short reading — don't record
+  if (verseIndexOf(_currentVerseLabel) < 3) return; // at the top — nothing worth resuming to
+  settings.lastPos = { readingKey: readingKey(), verse: _currentVerseLabel, ts: Date.now() };
+  saveSettings();
+}
+function removeResumeChip() { const c = document.getElementById('ttResumeChip'); if (c) c.remove(); }
+// Show the resume chip if we have a fresh, in-DOM, deep saved position for THIS
+// reading that the user hasn't dismissed. Never auto-scrolls.
+function maybeShowResumeChip() {
+  removeResumeChip();
+  const lp = settings.lastPos;
+  if (!lp || !lp.readingKey) return;
+  const key = readingKey();
+  if (lp.readingKey !== key || _resumeDismissedFor === key) return;
+  if (!lp.ts || (Date.now() - lp.ts) > LASTPOS_MAX_AGE) return;
+  const total = (currentVerses && currentVerses.length) || 0;
+  if (total < LASTPOS_MIN_VERSES) return;
+  if (verseIndexOf(lp.verse) < 3) return;          // too close to the top to bother
+  const verseEl = document.querySelector(`#ttReading [data-vk="${lp.verse}"]`);
+  if (!verseEl) return;
+  const root = document.getElementById('ttReading');
+  const chip = document.createElement('div');
+  chip.className = 'tt-resume-chip';
+  chip.id = 'ttResumeChip';
+  const go = document.createElement('button');
+  go.type = 'button'; go.className = 'tt-resume-go';
+  go.textContent = `Resume at ${lp.verse} →`;
+  go.addEventListener('click', () => { removeResumeChip(); flashVerse(lp.verse); });
+  const x = document.createElement('button');
+  x.type = 'button'; x.className = 'tt-resume-x';
+  x.setAttribute('aria-label', 'Dismiss resume'); x.textContent = '✕';
+  x.addEventListener('click', () => { _resumeDismissedFor = key; removeResumeChip(); });
+  chip.appendChild(go); chip.appendChild(x);
+  root.insertBefore(chip, root.firstChild);
+}
+// Scroll a verse into view and briefly flash it (instant + steady tint under
+// reduced motion). Shared by the resume chip and the jump nav (Section 4).
+function flashVerse(vk) {
+  const el = document.querySelector(`#ttReading [data-vk="${vk}"]`) || document.getElementById(vk);
+  if (!el) return;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  try { el.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' }); } catch (e) { el.scrollIntoView(); }
+  el.classList.remove('tt-flash');
+  void el.offsetWidth;   // restart the animation
+  el.classList.add('tt-flash');
+  setTimeout(() => el.classList.remove('tt-flash'), 1600);
+}
+
+/* ══════════════════════════════════════════════════════
    TTS  (per-verse + read all)
    ══════════════════════════════════════════════════════ */
 const ttsState = { readAllActive: false, readAllIdx: 0, currentBtn: null };
 function speakVerse(numLabel) {
   // stop karaoke if playing (mutual exclusion)
+  clearLoop();
   pauseKaraoke();
   const v = currentVerses.find(x => `${x.chapter}:${x.verse}` === numLabel);
   if (!v) return;
@@ -2023,27 +2429,150 @@ async function chantVerse(numLabel) {
     if (!ok) speakVerse(numLabel);
     return;
   }
+  // A plain single-verse Chant supersedes any active loop.
+  clearLoop();
   if (currentTimings && currentAudio && seekToVerseInLoadedAudio(numLabel, /*silent*/ true)) {
     return;
   }
+  // Not loaded yet — auto-load the containing aliyah, then chant the verse.
+  _navigateToVerseAliyahAndQueue(numLabel, 'chant');
+}
+
+// Compute a verse's audio boundaries in the currently loaded aliyah: the start
+// time (first Hebrew word) and the raw verse-end stop time (start of the next
+// word, or the audio duration for the last verse). Shared by the single-verse
+// Chant stop and the verse loop. Returns { startIdx, startTime, stopAt } or null.
+function computeVerseAudioBounds(numLabel) {
+  if (!currentTimings || !currentAudio) return null;
+  const verseEl = document.querySelector(`#ttReading [data-vk="${numLabel}"]`);
+  if (!verseEl) return null;
+  // Only Hebrew word spans carry the authoritative start/end indices; translit
+  // spans share the same data-twi but would confuse the first/last lookup.
+  const verseWords = verseEl.querySelectorAll('.tt-heb .tt-word, .tt-cell.heb .tt-word');
+  if (!verseWords.length) return null;
+  const startIdx = parseInt(verseWords[0].dataset.twi, 10);
+  const lastIdx  = parseInt(verseWords[verseWords.length - 1].dataset.twi, 10);
+  if (isNaN(startIdx) || startIdx < 0 || startIdx >= currentTimings.length) return null;
+  let stopAt = null;
+  if (!isNaN(lastIdx) && lastIdx + 1 < currentTimings.length) {
+    stopAt = currentTimings[lastIdx + 1];
+  } else if (currentAudio.duration && isFinite(currentAudio.duration)) {
+    stopAt = currentAudio.duration;   // last verse in the aliyah → end of audio
+  }
+  return { startIdx, startTime: currentTimings[startIdx], stopAt };
+}
+
+// Returns true if the seek succeeded (verse was in range), false if not.
+// When invoked from the per-verse Chant button we also set _verseEndStopAt
+// so playback pauses at the end of just that verse.
+function seekToVerseInLoadedAudio(numLabel, silent) {
+  if (!currentTimings || !currentAudio) return false;
+  const b = computeVerseAudioBounds(numLabel);
+  if (!b) { if (!silent) setStatus(`Couldn't find verse ${numLabel} in the rendered text.`, true); return false; }
+  if (ttsState.readAllActive) stopReadAll();
+  speechSynthesis.cancel();
+  // Pause at the verse end, unless Chant all is running (it chains straight through).
+  _verseEndStopAt = chantAllState.active ? null : b.stopAt;
+  currentAudio.currentTime = b.startTime;
+  if (lastHighlightedIdx >= 0) paintKaraokeIdx(lastHighlightedIdx, false);
+  lastHighlightedIdx = -1;
+  if (currentAudio.paused) {
+    currentAudio.play().catch(() => {});
+  }
+  return true;
+}
+
+/* ──────────────────────────────────────────────────────────
+   VERSE LOOP (practice mode) — repeat one verse's chant hands-free.
+   Chant-only (TTS looping is out of scope) and, per the design note, disabled
+   for holiday/custom readings (the mapped-timings path has no cheap verse-end
+   boundary and a reading can span several aliyot), so the Loop button is hidden
+   when settings.scope === 'custom'.
+   ────────────────────────────────────────────────────────── */
+async function loopVerse(numLabel) {
+  if (settings.scope === 'custom') return;   // Loop button is hidden here anyway
+  // Clicking the verse that's already looping stops it.
+  if (loopState.active && loopState.verseLabel === numLabel) { stopLoop(); return; }
+  // Fast path: audio for this verse's aliyah is already loaded.
+  if (currentTimings && currentAudio) {
+    const b = computeVerseAudioBounds(numLabel);
+    if (b) { startLoop(numLabel, b); return; }
+  }
+  // Otherwise auto-load the containing aliyah (same path as Chant), then loop.
+  _navigateToVerseAliyahAndQueue(numLabel, 'loop');
+}
+function startLoop(numLabel, bounds) {
+  if (ttsState.readAllActive) stopReadAll();
+  speechSynthesis.cancel();
+  if (_loopPauseTimer) { clearTimeout(_loopPauseTimer); _loopPauseTimer = null; }
+  _verseEndStopAt = null;   // loop supersedes the single-verse stop (mutually exclusive)
+  loopState = { active: true, verseLabel: numLabel, startTime: bounds.startTime, stopAt: bounds.stopAt };
+  currentAudio.currentTime = bounds.startTime;
+  if (lastHighlightedIdx >= 0) paintKaraokeIdx(lastHighlightedIdx, false);
+  lastHighlightedIdx = -1;
+  renderLoopState();
+  setKaraokeStatus(`Looping verse ${numLabel}. Click Loop again (or Stop in the audio bar) to end.`);
+  if (currentAudio.paused) currentAudio.play().catch(() => {});
+}
+// Stop the loop and pause playback (what the active Loop button and the audio-bar
+// Stop control both do).
+function stopLoop() {
+  clearLoop();
+  if (currentAudio && !currentAudio.paused) currentAudio.pause();
+}
+// Clear loop state + all its DOM markers without touching playback. Safe to call
+// when no loop is active. Wired into every path that supersedes a loop.
+function clearLoop() {
+  if (_loopPauseTimer) { clearTimeout(_loopPauseTimer); _loopPauseTimer = null; }
+  const was = loopState.active;
+  loopState = { active: false, verseLabel: null, startTime: null, stopAt: null };
+  renderLoopState();
+  if (was) setKaraokeStatus('');
+}
+// Apply the current loopState to the DOM: verse-row marker, every Loop button's
+// label/pressed state, and the audio-bar indicator. Idempotent — re-run after
+// each render so the loop survives a layout/font re-render of the same reading.
+function renderLoopState() {
+  const active = loopState.active ? loopState.verseLabel : null;
+  document.querySelectorAll('#ttReading .tt-looping').forEach(el => el.classList.remove('tt-looping'));
+  if (active) {
+    const verseEl = document.querySelector(`#ttReading [data-vk="${active}"]`);
+    if (verseEl) verseEl.classList.add('tt-looping');
+  }
+  document.querySelectorAll('#ttReading .tt-loop').forEach(btn => {
+    const holder = btn.closest('[data-vk]');
+    const vk = holder ? holder.dataset.vk : '';
+    const on = !!active && vk === active;
+    btn.classList.toggle('active', on);
+    btn.textContent = on ? '⏹ Stop loop' : '🔁 Loop';
+    btn.setAttribute('aria-label', on ? `Stop looping verse ${vk}` : `Loop verse ${vk} (repeat the chant)`);
+    if (on) btn.setAttribute('aria-pressed', 'true'); else btn.removeAttribute('aria-pressed');
+  });
+  updateAudioBarLoopUi();
+}
+function updateAudioBarLoopUi() {
+  const label = document.getElementById('ttAudioLabel');
+  const stopBtn = document.getElementById('ttLoopStopBtn');
+  if (label) label.textContent = loopState.active ? `🔁 Looping ${loopState.verseLabel}` : (_audioBaseLabel || 'Karaoke');
+  if (stopBtn) stopBtn.style.display = loopState.active ? '' : 'none';
+}
+// Shared auto-load tail: find the aliyah containing numLabel, switch scope, and
+// queue a chant or loop to run once its audio loads. mode: 'chant' | 'loop'.
+function _navigateToVerseAliyahAndQueue(numLabel, mode) {
   const m = numLabel.match(/^(\d+):(\d+)$/);
-  if (!m) return;
+  if (!m) return false;
   const tc = parseInt(m[1], 10), tv = parseInt(m[2], 10);
-  // For a holiday/custom reading, chant via the weekly parsha that contains it.
   const p = (currentReadingCtx && currentReadingCtx.parshahEntry)
             || parshiyotData.find(x => x.en === settings.parshahKey);
-  if (!p) { setStatus('Pick a parsha first to chant verses.', false); return; }
+  if (!p) { setStatus('Pick a parsha first to chant verses.', false); return false; }
   const al = aliyahLookup(p.en);
-  if (!al || !al.aliyot) { setStatus('No aliyah data for this parsha.', true); return; }
+  if (!al || !al.aliyot) { setStatus('No aliyah data for this parsha.', true); return false; }
   let aliyahNum = null;
   for (const num of ['1','2','3','4','5','6','7']) {
     const r = al.aliyot[num];
-    if (!r) continue;
-    if (verseInRange(tc, tv, r)) { aliyahNum = num; break; }
+    if (r && verseInRange(tc, tv, r)) { aliyahNum = num; break; }
   }
-  if (!aliyahNum) { setStatus(`Verse ${numLabel} is outside this parsha's aliyot — pick Haftarah from Reading if you want to chant it.`, true); return; }
-  // Lock onto the containing parsha and leave the holiday/custom framing so the
-  // aliyah renders correctly and the picker reflects what's playing.
+  if (!aliyahNum) { setStatus(`Verse ${numLabel} is outside this parsha's aliyot — pick Haftarah from Reading if you want to chant it.`, true); return false; }
   settings.parshahKey = p.en;
   settings.holidayKey = null;
   settings.customLabel = null;
@@ -2054,49 +2583,13 @@ async function chantVerse(numLabel) {
     const sel = document.getElementById('scopeSelect');
     if (sel) sel.value = newScope;
   }
-  _pendingChantVerse = numLabel;
+  if (mode === 'loop') { _pendingLoopVerse = numLabel; _pendingChantVerse = null; }
+  else { _pendingChantVerse = numLabel; _pendingLoopVerse = null; }
   saveSettings();
   if (ttsState.readAllActive) stopReadAll();
   speechSynthesis.cancel();
-  setStatus(`Loading aliyah ${aliyahNum} to chant verse ${numLabel}…`, false);
+  setStatus(`Loading aliyah ${aliyahNum} to ${mode === 'loop' ? 'loop' : 'chant'} verse ${numLabel}…`, false);
   fetchAndRender();
-}
-
-// Returns true if the seek succeeded (verse was in range), false if not.
-// When invoked from the per-verse Chant button we also set _verseEndStopAt
-// so playback pauses at the end of just that verse.
-function seekToVerseInLoadedAudio(numLabel, silent) {
-  if (!currentTimings || !currentAudio) return false;
-  const verseEl = document.querySelector(`#ttReading [data-vk="${numLabel}"]`);
-  if (!verseEl) { if (!silent) setStatus(`Couldn't find verse ${numLabel} in the rendered text.`, true); return false; }
-  // Only consider Hebrew word spans for the start/end indices; translit spans
-  // also carry .tt-word with matching data-twi, but counting them would
-  // confuse the first/last lookup.
-  const verseWords = verseEl.querySelectorAll('.tt-heb .tt-word, .tt-cell.heb .tt-word');
-  if (!verseWords.length) { if (!silent) setStatus(`Verse ${numLabel} has no Hebrew words to chant.`, true); return false; }
-  const startIdx = parseInt(verseWords[0].dataset.twi, 10);
-  const lastIdx  = parseInt(verseWords[verseWords.length - 1].dataset.twi, 10);
-  if (isNaN(startIdx) || startIdx < 0 || startIdx >= currentTimings.length) return false;
-  if (ttsState.readAllActive) stopReadAll();
-  speechSynthesis.cancel();
-  // Pause at the start of the next word after this verse, or at the end of
-  // the audio if this is the last verse in the loaded aliyah. Skip the auto-
-  // pause when Chant all is running.
-  let stopAt = null;
-  if (!chantAllState.active) {
-    if (!isNaN(lastIdx) && lastIdx + 1 < currentTimings.length) {
-      stopAt = currentTimings[lastIdx + 1];
-    } else if (currentAudio.duration && isFinite(currentAudio.duration)) {
-      stopAt = currentAudio.duration;
-    }
-  }
-  _verseEndStopAt = stopAt;
-  currentAudio.currentTime = currentTimings[startIdx];
-  if (lastHighlightedIdx >= 0) paintKaraokeIdx(lastHighlightedIdx, false);
-  lastHighlightedIdx = -1;
-  if (currentAudio.paused) {
-    currentAudio.play().catch(() => {});
-  }
   return true;
 }
 
@@ -2155,6 +2648,7 @@ function seekToTimingIndex(idx) {
   if (idx < 0 || idx >= currentTimings.length) return;
   const t = currentTimings[idx];
   if (typeof t !== 'number' || isNaN(t)) return;
+  clearLoop();   // a manual word seek supersedes any active verse loop
   _verseEndStopAt = null;
   currentAudio.currentTime = t;
   if (lastHighlightedIdx >= 0) paintKaraokeIdx(lastHighlightedIdx, false);
@@ -2202,6 +2696,7 @@ async function chantHolidayWord(numLabel, wordInVerse) {
   if (ttsState.readAllActive) stopReadAll();
   speechSynthesis.cancel();
   _pendingChantVerse = null;
+  _pendingLoopVerse = null;
   _loadedChantKey = key;
   _holidayKaraoke = { map };
   _pendingChantWordIdx = idx;
@@ -2229,6 +2724,7 @@ function speakHebrew(text) {
 }
 function toggleReadAll() {
   if (ttsState.readAllActive) { stopReadAll(); return; }
+  clearLoop();
   pauseKaraoke();
   ttsState.readAllActive = true;
   ttsState.readAllIdx = 0;
@@ -2261,6 +2757,7 @@ function stopReadAll() {
    ══════════════════════════════════════════════════════ */
 async function toggleChantAll() {
   if (chantAllState.active) { stopChantAll(); return; }
+  clearLoop();   // Chant all supersedes a single-verse loop
   if (ttsState.readAllActive) stopReadAll();
   speechSynthesis.cancel();
   // Build the queue based on the current scope.
@@ -2393,6 +2890,13 @@ let karaokeRafId = null;
 let lastHighlightedIdx = -1;
 let _verseEndStopAt = null;  // when set, audio auto-pauses at this currentTime
 const chantAllState = { active: false, queue: null, parsha: null };
+// Verse looping (practice mode): while active, the chant audio repeats one verse
+// hands-free. Mutually exclusive with the single-verse _verseEndStopAt stop.
+let loopState = { active: false, verseLabel: null, startTime: null, stopAt: null };
+let _pendingLoopVerse = null;   // verse to loop once loadKaraoke finishes (auto-load path)
+let _loopPauseTimer = null;     // pending "pause between repeats" resume
+let _audioBaseLabel = '';       // #ttAudioLabel text when not looping (aliyah name)
+const LOOP_EPS = 0.04;          // seconds of slack before the verse-end wrap
 
 function maybeLoadKaraoke(rangeInfo) {
   // rangeInfo: { ref, label, parshahEntry, aliyahNum, isHaftarah }
@@ -2419,6 +2923,7 @@ function maybeLoadKaraoke(rangeInfo) {
 // toggle off. Used when the user has karaoke on but hasn't selected a loadable
 // scope yet, or when we switch scopes mid-playback.
 function teardownKaraokeAudio() {
+  clearLoop();
   pauseKaraoke();
   clearKaraokeHighlight();
   document.getElementById('ttAudioBar').classList.remove('open');
@@ -2428,6 +2933,7 @@ function teardownKaraokeAudio() {
   _holidayKaraoke = null;
   _loadedChantKey = null;
   _pendingChantWordIdx = null;
+  _audioBaseLabel = '';
 }
 
 async function loadKaraoke(parshahEntry, suffix, expectedWords) {
@@ -2475,8 +2981,9 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
     updatePlayPauseIcon();
     // If the user is resuming from at-or-past a verse-end stop point, the
     // single-verse Chant has been "consumed" — clear the marker so playback
-    // doesn't pause again on the next timeupdate.
-    if (_verseEndStopAt !== null && currentAudio.currentTime >= _verseEndStopAt - 0.05) {
+    // doesn't pause again on the next timeupdate. (A live loop keeps
+    // _verseEndStopAt null already, so this never fights the loop.)
+    if (!loopState.active && _verseEndStopAt !== null && currentAudio.currentTime >= _verseEndStopAt - 0.05) {
       _verseEndStopAt = null;
     }
   };
@@ -2486,6 +2993,14 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
   // Keep the chant-all chain alive: loadKaraoke runs after playNextChant has
   // wired its handler, so it must also hop to the next aliyah when chaining.
   currentAudio.onended = () => {
+    // A verse loop can reach the very end (last verse of an aliyah) before a
+    // timeupdate wraps it — restart from the verse start instead of stopping.
+    if (loopState.active) {
+      currentAudio.currentTime = loopState.startTime;
+      lastHighlightedIdx = -1;
+      currentAudio.play().catch(() => {});
+      return;
+    }
     clearKaraokeHighlight();
     updatePlayPauseIcon();
     if (chantAllState.active) playNextChant();
@@ -2494,7 +3009,8 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
   bar.classList.add('open');
   bar.classList.toggle('collapsed', !!settings.karaokeBarCollapsed);
   document.body.classList.add('tt-karaoke-active');
-  document.getElementById('ttAudioLabel').textContent = `${parshahEntry.en} · ${suffix === 'H' ? 'Haftarah' : 'Aliyah ' + suffix}`;
+  _audioBaseLabel = `${parshahEntry.en} · ${suffix === 'H' ? 'Haftarah' : 'Aliyah ' + suffix}`;
+  document.getElementById('ttAudioLabel').textContent = loopState.active ? `🔁 Looping ${loopState.verseLabel}` : _audioBaseLabel;
   setKaraokeStatus(`Loaded ${timings.length} word timings. Click any Hebrew word to jump to that part.`);
   updateKaraokeWordRefs();
   if (karaokeWordSpans.length && timings.length) {
@@ -2510,6 +3026,15 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
     _pendingChantWordIdx = null;
     setStatus('', false);
     requestAnimationFrame(() => seekToTimingIndex(wi));
+  } else if (_pendingLoopVerse) {
+    const target = _pendingLoopVerse;
+    _pendingLoopVerse = null;
+    setStatus('', false);
+    requestAnimationFrame(() => {
+      const b = computeVerseAudioBounds(target);
+      if (b) startLoop(target, b);
+      else seekToVerseInLoadedAudio(target);   // fallback: at least chant it once
+    });
   } else if (_pendingChantVerse) {
     const target = _pendingChantVerse;
     _pendingChantVerse = null;
@@ -2557,6 +3082,34 @@ function updateKaraokeWordRefs() {
 function onAudioTimeUpdate() {
   if (!currentAudio || !currentTimings || !karaokeWordSpans.length) return;
   const t = currentAudio.currentTime;
+  // Verse loop: when we reach the verse end, jump back to the start and keep
+  // playing (never pause). Loop supersedes the single-verse _verseEndStopAt.
+  // For the last verse of an aliyah, stopAt may have been unknown at start time
+  // (duration not yet loaded) — fall back to the now-known duration.
+  if (loopState.active) {
+    const stop = (loopState.stopAt != null) ? loopState.stopAt
+               : (isFinite(currentAudio.duration) ? currentAudio.duration : null);
+    if (stop != null && t >= stop - LOOP_EPS) {
+      const pauseMs = parseInt(settings.loopPauseMs, 10) || 0;
+      currentAudio.currentTime = loopState.startTime;
+      if (lastHighlightedIdx >= 0) paintKaraokeIdx(lastHighlightedIdx, false);
+      lastHighlightedIdx = -1;
+      if (pauseMs > 0) {
+        // Brief silence between repeats. Paused audio fires no timeupdate, so
+        // this branch can't re-enter; the timer resumes (guarded on loopState).
+        currentAudio.pause();
+        if (_loopPauseTimer) clearTimeout(_loopPauseTimer);
+        _loopPauseTimer = setTimeout(() => {
+          _loopPauseTimer = null;
+          if (loopState.active && currentAudio) {
+            currentAudio.currentTime = loopState.startTime;
+            currentAudio.play().catch(() => {});
+          }
+        }, pauseMs);
+      }
+      return;
+    }
+  }
   // Auto-pause at the end of a single-verse Chant. The marker stays live
   // until the user resumes playback (cleared in onplay) — pause() is async
   // so subsequent timeupdates fire while the audio is winding down, and
@@ -3029,6 +3582,8 @@ function syncFormToSettings() {
   const kR = parseFloat(settings.karaokeRate) || 1.0;
   document.getElementById('optKaraokeRate').value = kR;
   document.getElementById('optKaraokeRateVal').textContent = kR.toFixed(2) + '×';
+  const loopPause = document.getElementById('optLoopPause');
+  if (loopPause) loopPause.value = String(parseInt(settings.loopPauseMs, 10) || 0);
   // top-bar controls
   document.getElementById('ttShowTranslit').checked = !!settings.showTranslit;
   document.getElementById('ttShowTranslation').checked = !!settings.showTranslation;
@@ -3152,6 +3707,12 @@ function wireSettingsForm() {
     if (currentAudio) currentAudio.playbackRate = settings.karaokeRate;
     saveSettings();
   });
+  // Pause between verse-loop repeats
+  const loopPause = document.getElementById('optLoopPause');
+  if (loopPause) loopPause.addEventListener('change', e => {
+    settings.loopPauseMs = parseInt(e.target.value, 10) || 0;
+    saveSettings();
+  });
   // Top-bar controls
   document.getElementById('ttShowTranslit').addEventListener('change', e => {
     settings.showTranslit = e.target.checked;
@@ -3181,6 +3742,7 @@ function wireSettingsForm() {
   // Parsha + scope
   document.getElementById('parshaSelect').addEventListener('change', e => {
     const val = e.target.value;
+    clearLoop();
     if (val.startsWith('holiday:')) {
       const h = holidayByKey(val.slice('holiday:'.length));
       if (h) {
@@ -3201,6 +3763,7 @@ function wireSettingsForm() {
     fetchAndRender();
   });
   document.getElementById('scopeSelect').addEventListener('change', e => {
+    clearLoop();
     settings.scope = e.target.value;
     // The scope picker only applies to weekly parshiyot — leaving a holiday/
     // custom reading drops back to the selected parsha.
@@ -3259,12 +3822,73 @@ function syncParshaSelect() {
     sel.value = settings.parshahKey;
   }
 }
+// Format a verse range compactly: same chapter → "18:1–14", cross-chapter →
+// "18:1–19:38". Returns '' if any bound is missing.
+function fmtRange(range) {
+  if (!range) return '';
+  const { startC, startV, endC, endV } = range;
+  if ([startC, startV, endC, endV].some(n => isNaN(n))) return '';
+  if (startC === endC) return `${startC}:${startV}–${endV}`;
+  return `${startC}:${startV}–${endC}:${endV}`;
+}
+// Enrich the scope dropdown labels with verse ranges (from local aliyah.json)
+// and a 🎵 marker when PocketTorah chant audio exists. LABELS ONLY — option
+// values never change (settings persistence + share codes depend on them).
+// Silent fallback to the plain base labels if data is missing.
+function refreshScopeLabels() {
+  const scopeSel = document.getElementById('scopeSelect');
+  if (!scopeSel) return;
+  // Holiday/custom scope: the disabled "Full reading" option is managed by
+  // updateScopeSelectState — leave the weekly-scope labels untouched.
+  if (settings.scope === 'custom') return;
+  const BASE = {
+    'parsha-full': 'Full parsha',
+    'parsha-aliyah-1': 'Aliyah 1', 'parsha-aliyah-2': 'Aliyah 2',
+    'parsha-aliyah-3': 'Aliyah 3', 'parsha-aliyah-4': 'Aliyah 4',
+    'parsha-aliyah-5': 'Aliyah 5', 'parsha-aliyah-6': 'Aliyah 6',
+    'parsha-aliyah-7': 'Aliyah 7', 'parsha-haftarah': 'Haftarah',
+  };
+  const setLabel = (val, txt) => {
+    const opt = scopeSel.querySelector(`option[value="${val}"]`);
+    if (opt) opt.textContent = txt;
+  };
+  const p = parshiyotData.find(x => x.en === settings.parshahKey);
+  const al = p ? aliyahLookup(p.en) : null;
+  const mark = (p && manifestData[p.pocket]) ? '🎵 ' : '';  // 🎵 when chantable
+  if (!al || !al.aliyot) {
+    // Data unavailable → plain labels (still marked if the parsha has audio).
+    for (const val in BASE) setLabel(val, mark + BASE[val]);
+    return;
+  }
+  const nums = Object.keys(al.aliyot).map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
+  if (nums.length) {
+    const first = al.aliyot[nums[0]], last = al.aliyot[nums[nums.length - 1]];
+    const span = fmtRange({ startC: first.startC, startV: first.startV, endC: last.endC, endV: last.endV });
+    setLabel('parsha-full', `${mark}Full parsha${span ? ' · ' + span : ''}`);
+  } else {
+    setLabel('parsha-full', `${mark}Full parsha`);
+  }
+  for (let n = 1; n <= 7; n++) {
+    const rng = al.aliyot[n] ? fmtRange(al.aliyot[n]) : '';
+    setLabel('parsha-aliyah-' + n, `${mark}Aliyah ${n}${rng ? ' · ' + rng : ''}`);
+  }
+  let hafLabel = `${mark}Haftarah`;
+  if (al.haftarah) {
+    // Haftarah refs (aliyah.json) space the range hyphen, e.g. "Zechariah 2:14 - 4:7",
+    // and use underscores in some book names ("Kings_1"). Collapse the hyphen to an
+    // en-dash and de-underscore; the haftarah is from another book, so keep its name.
+    const ref = al.haftarah.replace(/\s*[-–—]\s*/g, '–').replace(/_/g, ' ');
+    hafLabel = `${mark}Haftarah · ${ref}`;
+  }
+  setLabel('parsha-haftarah', hafLabel);
+}
 // Reading scope (full/aliyah/haftarah) only applies to weekly parshiyot. While
 // a holiday/custom reading is showing, swap in a disabled "Full reading" entry
 // so the picker reads sensibly instead of going blank on the unlisted 'custom'.
 function updateScopeSelectState() {
   const scopeSel = document.getElementById('scopeSelect');
   if (!scopeSel) return;
+  refreshScopeLabels();
   const isCustom = settings.scope === 'custom';
   let customOpt = scopeSel.querySelector('option[value="custom"]');
   if (isCustom) {
@@ -3539,33 +4163,222 @@ async function init() {
 document.addEventListener('DOMContentLoaded', init);
 
 /* ══════════════════════════════════════════════════════
-   TOOLTIP (lifted from classroom_dashboard.html:3428-3453)
+   TOOLTIP — accessible: hover (mouse), tap (touch), and keyboard (focus +
+   Enter/Space toggle, Escape closes). One open at a time; viewport-clamped.
+   Extends the shared #tipFloat mechanism; exposes bindTip() for dynamic nodes.
    ══════════════════════════════════════════════════════ */
 (function() {
-  document.addEventListener('DOMContentLoaded', () => {
-    const tip = document.createElement('div');
+  let tip = null, openWrap = null;
+  function ensureTip() {
+    if (tip) return tip;
+    tip = document.createElement('div');
     tip.id = 'tipFloat';
     document.body.appendChild(tip);
-    document.querySelectorAll('.tip-wrap').forEach(wrap => {
-      wrap.addEventListener('mouseenter', () => {
-        const text = wrap.dataset.tip;
-        if (!text) return;
-        tip.textContent = text;
-        tip.style.display = 'block';
-        const r = wrap.querySelector('.tip-icon').getBoundingClientRect();
-        const tw = tip.offsetWidth, th = tip.offsetHeight;
-        let left = r.left + r.width / 2 - tw / 2;
-        let top  = r.top - th - 6;
-        if (left < 6) left = 6;
-        if (left + tw > window.innerWidth - 6) left = window.innerWidth - tw - 6;
-        if (top < 6) top = r.bottom + 6;
-        tip.style.left = left + 'px';
-        tip.style.top  = top  + 'px';
-      });
-      wrap.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+    return tip;
+  }
+  function position(wrap) {
+    const t = ensureTip();
+    const iconEl = wrap.querySelector('.tip-icon') || wrap;
+    const r = iconEl.getBoundingClientRect();
+    const tw = t.offsetWidth, th = t.offsetHeight;
+    let left = r.left + r.width / 2 - tw / 2;
+    let top  = r.top - th - 6;
+    if (left < 6) left = 6;
+    if (left + tw > window.innerWidth - 6) left = window.innerWidth - tw - 6;
+    if (top < 6) top = r.bottom + 6;   // flip below if no room above
+    t.style.left = left + 'px';
+    t.style.top  = top  + 'px';
+  }
+  function isShown(wrap) { return openWrap === wrap && tip && tip.style.display === 'block'; }
+  function show(wrap) {
+    const text = wrap.dataset.tip;
+    if (!text) return;
+    const t = ensureTip();
+    t.textContent = text;
+    t.style.display = 'block';
+    position(wrap);
+    if (openWrap && openWrap !== wrap) openWrap.setAttribute('aria-expanded', 'false');
+    openWrap = wrap;
+    wrap.setAttribute('aria-expanded', 'true');
+  }
+  function hide(wrap) {
+    if (tip) tip.style.display = 'none';
+    if (openWrap) openWrap.setAttribute('aria-expanded', 'false');
+    openWrap = null;
+  }
+  function bindTip(wrap) {
+    if (wrap._tipBound) return;
+    wrap._tipBound = true;
+    wrap.setAttribute('tabindex', '0');
+    wrap.setAttribute('role', 'button');
+    wrap.setAttribute('aria-expanded', 'false');
+    wrap.setAttribute('aria-describedby', 'tipFloat');
+    if (!wrap.getAttribute('aria-label')) wrap.setAttribute('aria-label', 'More information');
+    // Hover only for a real mouse (touch synthesizes pointerenter+click and would
+    // otherwise show-then-toggle-off immediately).
+    wrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(wrap); });
+    wrap.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openWrap === wrap) hide(wrap); });
+    wrap.addEventListener('click', e => { e.stopPropagation(); isShown(wrap) ? hide(wrap) : show(wrap); });
+    wrap.addEventListener('focus', () => show(wrap));
+    wrap.addEventListener('blur', () => hide(wrap));
+    wrap.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); isShown(wrap) ? hide(wrap) : show(wrap); }
+      else if (e.key === 'Escape') { hide(wrap); wrap.blur(); }
     });
-  });
+  }
+  window.bindTip = bindTip;
+  document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('.tip-wrap').forEach(bindTip));
+  document.addEventListener('click', () => { if (openWrap) hide(openWrap); });       // tap outside closes
+  window.addEventListener('scroll', () => { if (openWrap) hide(openWrap); }, true);   // reposition-free: close on scroll
 })();
+
+/* ══════════════════════════════════════════════════════
+   GUIDED TOUR (ported from hebrew_blend_generator.html) — non-modal spotlight.
+   Read-only: never changes settings, playback, or scroll beyond bringing a
+   target into view. 6 steps; Escape ends; arrow keys navigate.
+   ══════════════════════════════════════════════════════ */
+function _tourVisible(el) { return !!(el && el.offsetParent !== null); }
+const TOUR_STEPS = [
+  { target: () => document.getElementById('parshaSelect'),
+    title: 'Pick a parsha',
+    body: "Pick any parsha — it starts on this week's automatically." },
+  { target: () => document.getElementById('scopeSelect'),
+    title: 'Reading scope',
+    body: 'Read the whole parsha, one aliyah, or the haftarah. 🎵 means chanted audio is available.' },
+  { target: () => (document.getElementById('ttLayoutSide') || {}).closest ? document.getElementById('ttLayoutSide').closest('.tt-ctrl') : null,
+    title: 'Layout & toggles',
+    body: 'Show transliteration and translation, side-by-side or line-by-line.' },
+  { target: () => document.querySelector('#ttReading .tt-verse-buttons'),
+    title: 'Read, chant, or loop',
+    body: 'Every verse can be read aloud, chanted with word-by-word highlighting, or looped for practice.' },
+  { target: () => document.querySelector('#ttReading .tt-heb, #ttReading .tt-cell.heb, #ttReading .tt-bverse'),
+    title: 'The text itself',
+    body: 'Click any Hebrew word to chant from exactly that spot.' },
+  { target: () => document.getElementById('gearBtn'),
+    title: 'Settings',
+    body: 'Fonts, vowel colors, transliteration styles, and speeds live here.' },
+];
+let _tourIdx = -1, _tourActive = false, _tourOpener = null, _tourRepoTimer = null;
+function tourStart() {
+  if (_tourActive) return;
+  try { localStorage.setItem('hebrewTorahTrainer_tourSeen', '1'); } catch (e) {}
+  document.getElementById('tourBtn')?.classList.remove('pulse-attn');
+  _tourActive = true; _tourIdx = -1;
+  _tourOpener = document.activeElement;
+  document.getElementById('tourSpot').hidden = false;
+  document.getElementById('tourCard').hidden = false;
+  document.addEventListener('keydown', _tourKey, true);
+  window.addEventListener('resize', _tourReposition);
+  window.addEventListener('scroll', _tourReposition, true);
+  tourNext();
+}
+function _resolveStep(idx) {
+  const step = TOUR_STEPS[idx];
+  if (!step) return null;
+  let el = null;
+  try { el = step.target(); } catch (e) {}
+  return _tourVisible(el) ? el : null;
+}
+function _tourShow(idx, dir) {
+  while (idx >= 0 && idx < TOUR_STEPS.length && !_resolveStep(idx)) idx += dir;
+  if (idx < 0 || idx >= TOUR_STEPS.length) { tourEnd(dir > 0); return; }
+  _tourIdx = idx;
+  const step = TOUR_STEPS[idx], el = step.target();
+  try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {}
+  document.getElementById('tourCardTitle').textContent = step.title;
+  document.getElementById('tourCardBody').textContent = step.body;
+  document.getElementById('tourStep').textContent = 'Step ' + (idx + 1) + ' of ' + TOUR_STEPS.length;
+  document.getElementById('tourBack').disabled = (idx === 0);
+  document.getElementById('tourNext').textContent = (idx === TOUR_STEPS.length - 1) ? 'Done' : 'Next';
+  _tourReposition();
+  if (_tourRepoTimer) clearTimeout(_tourRepoTimer);
+  _tourRepoTimer = setTimeout(_tourReposition, 350);   // re-measure after scroll settles
+  setTimeout(() => { const n = document.getElementById('tourNext'); if (n && _tourActive) n.focus(); }, 0);
+}
+function tourNext() { _tourShow(_tourIdx + 1, 1); }
+function tourPrev() { _tourShow(_tourIdx - 1, -1); }
+function tourEnd(completed) {
+  if (!_tourActive) return;
+  _tourActive = false;
+  document.removeEventListener('keydown', _tourKey, true);
+  window.removeEventListener('resize', _tourReposition);
+  window.removeEventListener('scroll', _tourReposition, true);
+  if (_tourRepoTimer) { clearTimeout(_tourRepoTimer); _tourRepoTimer = null; }
+  document.getElementById('tourSpot').hidden = true;
+  document.getElementById('tourCard').hidden = true;
+  const opener = _tourOpener; _tourOpener = null;
+  if (opener && opener.focus) { try { opener.focus(); } catch (e) {} }
+}
+function _tourReposition() {
+  if (!_tourActive) return;
+  const step = TOUR_STEPS[_tourIdx];
+  if (!step) return;
+  let el = null; try { el = step.target(); } catch (e) {}
+  if (!_tourVisible(el)) return;
+  const r = el.getBoundingClientRect(), pad = 6;
+  const spot = document.getElementById('tourSpot');
+  spot.style.left = Math.max(0, r.left - pad) + 'px';
+  spot.style.top = Math.max(0, r.top - pad) + 'px';
+  spot.style.width = (r.width + pad * 2) + 'px';
+  spot.style.height = (r.height + pad * 2) + 'px';
+  const card = document.getElementById('tourCard');
+  const cw = card.offsetWidth, ch = card.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
+  let top = r.bottom + 12;
+  if (top + ch > vh - 8) { const above = r.top - ch - 12; top = (above >= 8) ? above : Math.max(8, vh - ch - 8); }
+  let left = r.left + r.width / 2 - cw / 2;
+  if (left < 8) left = 8;
+  if (left + cw > vw - 8) left = vw - cw - 8;
+  card.style.left = left + 'px';
+  card.style.top = top + 'px';
+}
+function _tourKey(e) {
+  if (!_tourActive) return;
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); tourEnd(false); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); e.stopPropagation(); tourNext(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); e.stopPropagation(); tourPrev(); }
+}
+// First-visit nudge: gently pulse the Tour button until the tour is opened once.
+(function () {
+  function nudge() {
+    try { if (localStorage.getItem('hebrewTorahTrainer_tourSeen')) return; } catch (e) { return; }
+    document.getElementById('tourBtn')?.classList.add('pulse-attn');
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', nudge);
+  else nudge();
+})();
+
+/* ── Click-a-word hint toast — shown once, the first time a chantable reading
+   renders. Worded to match the current click action; suppressed during/after the tour. */
+let _hintTimer = null;
+function maybeShowClickHint() {
+  try {
+    if (localStorage.getItem('hebrewTorahTrainer_hintSeen')) return;
+    if (_tourActive || localStorage.getItem('hebrewTorahTrainer_tourSeen')) return;
+  } catch (e) { return; }
+  if (!currentReadingChantable()) return;
+  try { localStorage.setItem('hebrewTorahTrainer_hintSeen', '1'); } catch (e) {}
+  const action = (settings.clickAction === 'read') ? 'read it aloud' : 'chant from that spot';
+  showHintToast(`💡 Tip: click any Hebrew word to ${action}`);
+}
+function showHintToast(msg) {
+  let el = document.getElementById('ttHintToast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'ttHintToast'; el.className = 'tt-hint-toast';
+    el.setAttribute('role', 'status');
+    el.addEventListener('click', dismissHintToast);
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  requestAnimationFrame(() => el.classList.add('show'));
+  if (_hintTimer) clearTimeout(_hintTimer);
+  _hintTimer = setTimeout(dismissHintToast, 8000);
+}
+function dismissHintToast() {
+  const el = document.getElementById('ttHintToast');
+  if (el) el.classList.remove('show');
+  if (_hintTimer) { clearTimeout(_hintTimer); _hintTimer = null; }
+}
 </script>
 </body>
 </html>
