@@ -762,6 +762,64 @@
   .gematria-blank { width: 52px; height: 1px; background: var(--border); margin-top: 8px; align-self: center; }
   .gematria-value { font-size: 0.85rem; font-weight: 700; color: var(--gold); margin-top: 6px; }
 
+  /* ── Tracing worksheet ──
+     Tuned against Frank Ruhl Libre + uploaded My Fonts at --trace-font-size.
+     Rules are painted as DOM lines BEHIND the glyphs (z-index) so below-baseline
+     nikkud stays legible where it crosses the baseline. Percentages live in these
+     custom properties so the baseline/top-rule positions are adjustable in one place. */
+  :root {
+    --trace-font-size: 2.4rem;
+    --trace-row-h: 4.7rem;        /* ~1.95× the font size — fits ascender + descender/nikkud bands */
+    --trace-baseline: 68%;        /* letter bodies sit here; nikkud/descenders hang below */
+    --trace-topline: 8%;          /* only drawn in Top + bottom mode */
+    --trace-rule-color: #9aa0a6;  /* light-but-printable gray */
+    --trace-gap: 0.55rem;
+  }
+  .trace-row {
+    position: relative;
+    width: 100%;
+    height: var(--trace-row-h);
+    margin-bottom: 6px;
+    overflow: visible;            /* holam / lamed / shin-dot must not clip */
+    font-family: var(--heb-font);
+    font-size: var(--trace-font-size);
+    line-height: 1;
+  }
+  .trace-rule {
+    position: absolute;
+    left: 0; right: 0;
+    height: 0;
+    border-top: 1px solid var(--trace-rule-color);
+    z-index: 0;
+  }
+  .trace-rule-base { top: var(--trace-baseline); }
+  .trace-rule-top  { top: var(--trace-topline); }
+  .trace-models {
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+    display: flex;
+    align-items: baseline;        /* the zero-width strut pins the baseline to --trace-baseline */
+    gap: var(--trace-gap);
+    padding-inline-end: 30px;     /* reserve the LTR-end corner for the item number */
+    z-index: 1;
+    overflow: visible;            /* copy count is capped to fit, so nothing clips; keep tall glyphs whole */
+    white-space: nowrap;
+  }
+  .trace-strut { display: inline-block; width: 0; height: var(--trace-baseline); }
+  .trace-copy { display: inline-block; color: var(--navy); line-height: 1; }
+  .trace-num {
+    position: absolute;
+    top: 2px; left: 3px;
+    direction: ltr;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.6rem;
+    color: var(--muted);
+    z-index: 2;
+  }
+  body.dark .trace-copy { color: #dde4f0; }
+  /* Continuation sheets start on a fresh page in print; on screen they get a divider. */
+  .trace-page-break { border-top: 3px dashed var(--border); margin-top: 40px; padding-top: 24px; }
+
   /* Inverse mode cell */
   .blend-cell-inv {
     display: flex;
@@ -1774,6 +1832,13 @@
       border-top: none;
       page-break-before: always;
     }
+    .trace-page-break {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: none;
+      page-break-before: always;
+    }
+    .trace-row { page-break-inside: avoid; break-inside: avoid; }
   }
 
   /* Font selector */
@@ -1910,6 +1975,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <button class="blend-type-btn"        data-worksheet="bingo"         onclick="setWorksheetType('bingo')">Bingo</button>
             <button class="blend-type-btn"        data-worksheet="gematria"      onclick="setWorksheetType('gematria')">Gematria</button>
             <button class="blend-type-btn"        data-worksheet="nametheletter" onclick="setWorksheetType('nametheletter')" id="wtNameTheLetter">Name the<br>Letter</button>
+            <button class="blend-type-btn"        data-worksheet="tracing"       onclick="setWorksheetType('tracing')">Tracing</button>
           </div>
           <div style="font-size:0.65rem;color:var(--muted);margin-top:4px;line-height:1.2;">
             <span id="wtHelpReading"      class="wt-help">Hebrew shown — students read aloud.</span>
@@ -1918,6 +1984,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <span id="wtHelpBingo"        class="wt-help" style="display:none;">Generates printable bingo cards from your blends.</span>
             <span id="wtHelpGematria"     class="wt-help" style="display:none;">Students calculate the Gematria value of each word.</span>
             <span id="wtHelpNametheletter" class="wt-help" style="display:none;">Drill Hebrew letter names. Only available with 1-Letter practice.</span>
+            <span id="wtHelpTracing"      class="wt-help" style="display:none;">Ruled lines with faded models — students trace, then write on their own.</span>
           </div>
         </div>
 
@@ -2242,6 +2309,62 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
               <input type="checkbox" id="gematriaAnswerKey" checked onchange="document.getElementById('gematriaSelfCheck').checked=false;setGematriaSelfCheckMode(false);onGematriaOptionChange()">
               <span class="slider"></span>
             </label>
+          </div>
+        </div>
+        <!-- Tracing — hidden slider (driven by the Worksheet Type button); options panel below. -->
+        <div class="toggle-row" id="rowTracing" style="display:none;">
+          <span>Tracing</span>
+          <label class="toggle">
+            <input type="checkbox" id="tracingToggle" onchange="toggleTracingUI()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div id="tracingOptions" style="display:none;flex-direction:column;gap:6px;">
+          <div style="border-top:1px solid var(--border);margin:10px 0 6px;"></div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:96px;">Line style</span>
+            <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);flex:1;">
+              <button class="blend-type-btn active" data-trace-lines="bottom" onclick="setTraceLineStyle('bottom')">Bottom line</button>
+              <button class="blend-type-btn"        data-trace-lines="both"   onclick="setTraceLineStyle('both')">Top + bottom</button>
+            </div>
+          </div>
+          <div class="toggle-row" id="traceModelsRow" style="font-size:0.82rem;">
+            <span>Faded models per line
+              <span class="tooltip-wrap">?<span class="tooltip-box">How many faded copies print at the start of each line for the student to trace.</span></span>
+            </span>
+            <input type="number" id="traceModels" min="1" max="5" value="3" oninput="this.value=Math.max(1,Math.min(5,parseInt(this.value)||1));renderTracingIfActive()" style="width:56px;font-size:0.82rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);text-align:center;-moz-appearance:textfield;">
+          </div>
+          <div class="toggle-row" style="font-size:0.82rem;">
+            <span>Solid example first
+              <span class="tooltip-wrap">?<span class="tooltip-box">Print the first (rightmost) copy at full darkness as a model, followed by the faded copies to trace.</span></span>
+            </span>
+            <label class="toggle" style="transform:scale(0.75);transform-origin:right;"><input type="checkbox" id="traceSolidFirst" checked onchange="renderTracingIfActive()"><span class="slider"></span></label>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+            <span class="sub-label" style="font-size:0.78rem;min-width:96px;">Trace darkness</span>
+            <div class="blend-type-selector" style="grid-template-columns:repeat(3,1fr);flex:1;">
+              <button class="blend-type-btn"        data-trace-dark="light"  onclick="setTraceDarkness('light')">Light</button>
+              <button class="blend-type-btn active" data-trace-dark="medium" onclick="setTraceDarkness('medium')">Medium</button>
+              <button class="blend-type-btn"        data-trace-dark="dark"   onclick="setTraceDarkness('dark')">Dark</button>
+            </div>
+          </div>
+          <div class="toggle-row" style="font-size:0.82rem;">
+            <span>Lines per item
+              <span class="tooltip-wrap">?<span class="tooltip-box">Repeat each item on this many consecutive ruled lines.</span></span>
+            </span>
+            <input type="number" id="traceLinesPerItem" min="1" max="3" value="1" oninput="this.value=Math.max(1,Math.min(3,parseInt(this.value)||1));renderTracingIfActive()" style="width:56px;font-size:0.82rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);text-align:center;-moz-appearance:textfield;">
+          </div>
+          <div class="toggle-row" id="traceRepeatRow" style="font-size:0.82rem;">
+            <span>Repeat models on every line
+              <span class="tooltip-wrap">?<span class="tooltip-box">On: every ruled line for an item shows the faded models. Off: only the first line does; the rest are blank ruled lines.</span></span>
+            </span>
+            <label class="toggle" style="transform:scale(0.75);transform-origin:right;"><input type="checkbox" id="traceRepeatModels" checked onchange="renderTracingIfActive()"><span class="slider"></span></label>
+          </div>
+          <div class="toggle-row" style="font-size:0.82rem;">
+            <span>Fill the line
+              <span class="tooltip-wrap">?<span class="tooltip-box">Repeat faded copies across the whole line instead of leaving blank writing space — trace-only practice. Disables "Faded models per line".</span></span>
+            </span>
+            <label class="toggle" style="transform:scale(0.75);transform-origin:right;"><input type="checkbox" id="traceFillLine" onchange="onTraceFillLineChange()"><span class="slider"></span></label>
           </div>
         </div>
         <div class="toggle-row" id="rowRealWords" style="margin-top:4px;">
@@ -3512,6 +3635,9 @@ const VOWEL_COLOR_DEFS_TALAM = [
 ];
 let colorCodingEnabled = false;
 let colorCodingMode = 'letter'; // 'letter' | 'highlight' | 'underline'
+// Tracing worksheet — segmented-control state (numeric/checkbox controls read from the DOM).
+let traceLineStyle = 'bottom';  // 'bottom' | 'both'
+let traceDarkness  = 'medium';  // 'light' | 'medium' | 'dark'
 let nikudColorOverrides = {};
 let vowelColorScheme = 'default'; // 'default' | 'talam'
 function activeNikudDefaults(dark){
@@ -4016,6 +4142,15 @@ function getSettings() {
     vowelColorScheme,
     // Transliteration style
     translitStyle,
+    // Tracing
+    tracing:            document.getElementById('tracingToggle')?.checked ?? false,
+    traceLineStyle,
+    traceModels:        document.getElementById('traceModels')?.value,
+    traceSolidFirst:    document.getElementById('traceSolidFirst')?.checked ?? true,
+    traceDarkness,
+    traceLinesPerItem:  document.getElementById('traceLinesPerItem')?.value,
+    traceRepeatModels:  document.getElementById('traceRepeatModels')?.checked ?? true,
+    traceFillLine:      document.getElementById('traceFillLine')?.checked ?? false,
   };
 }
 
@@ -4174,6 +4309,19 @@ function applySettings(s) {
   if (s.gematriaSelfCheck !== undefined) document.getElementById('gematriaSelfCheck').checked = s.gematriaSelfCheck;
   if (s.gematriaAnswerKey !== undefined) document.getElementById('gematriaAnswerKey').checked = s.gematriaAnswerKey;
   if (s.gematriaInverse !== undefined)   document.getElementById('gematriaInverse').checked = s.gematriaInverse;
+
+  // Tracing — set values only; visibility flows through updateModeVisibility() at end.
+  if (s.tracing !== undefined)          document.getElementById('tracingToggle').checked = s.tracing;
+  if (s.traceLineStyle)                 traceLineStyle = s.traceLineStyle;
+  if (s.traceModels)                    document.getElementById('traceModels').value = s.traceModels;
+  if (s.traceSolidFirst !== undefined)  document.getElementById('traceSolidFirst').checked = s.traceSolidFirst;
+  if (s.traceDarkness)                  traceDarkness = s.traceDarkness;
+  if (s.traceLinesPerItem)              document.getElementById('traceLinesPerItem').value = s.traceLinesPerItem;
+  if (s.traceRepeatModels !== undefined) document.getElementById('traceRepeatModels').checked = s.traceRepeatModels;
+  if (s.traceFillLine !== undefined)    document.getElementById('traceFillLine').checked = s.traceFillLine;
+  // Keep dependent tracing UI (button active states + fill-line-disables-models) in sync.
+  syncTraceButtons();
+  syncTraceFillDisabled();
 
   // Custom Wordlist
   if (s.cwShowTranslit !== undefined)    document.getElementById('cwShowTranslit').checked = s.cwShowTranslit;
@@ -5168,6 +5316,7 @@ function computeModeState() {
     if      (document.getElementById('fillVowelsToggle').checked) drill = 'fillvowels';
     else if (document.getElementById('gematriaToggle').checked)   drill = 'gematria';
     else if (document.getElementById('inverseToggle').checked)    drill = 'inverse';
+    else if (document.getElementById('tracingToggle')?.checked)   drill = 'tracing';
   }
 
   return {
@@ -5186,7 +5335,7 @@ function computeModeState() {
 const _MODE_FLEX_IDS = new Set([
   'bingoOptions','gematriaOptions','selfCheckOptions','realWordsOptions',
   'customWordlistOptions','numberPracticeOptions','focusOptions',
-  'nameTheLetterOptions','fillVowelsDageshRow',
+  'nameTheLetterOptions','fillVowelsDageshRow','tracingOptions',
 ]);
 const _MODE_BLOCK_IDS = new Set(['threeLetterOptions']);
 
@@ -5236,13 +5385,16 @@ function updateModeVisibility() {
     rowBingo:          false,
     rowRealWords:      false,
     rowNumberPractice: false,
+    rowTracing:        false,
 
     // Surviving rows (still slider-driven for now)
-    rowAnswerKey:      !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo && !isNtl,
-    rowSelfCheck:      !gemSC    && !ntlSC && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo && !isNtl,
+    rowAnswerKey:      !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && s.drill !== 'tracing' && !s.bingo && !isNtl,
+    rowSelfCheck:      !gemSC    && !ntlSC && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && s.drill !== 'tracing' && !s.bingo && !isNtl,
     // Trailing divider only renders when at least one of the rows above is shown.
-    outputOptionsDivider: (!testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo && !isNtl) ||
-                          (!gemSC && !ntlSC && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && !s.bingo && !isNtl),
+    outputOptionsDivider: (!testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && s.drill !== 'tracing' && !s.bingo && !isNtl) ||
+                          (!gemSC && !ntlSC && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && s.drill !== 'tracing' && !s.bingo && !isNtl),
+    // Class Set (multi-version) makes no sense for tracing — hide it there.
+    rowClassSet:       !(blends && s.drill === 'tracing'),
     rowBlendCount:     !testMode && blends && !s.bingo,
 
     // Sub-option panels
@@ -5256,6 +5408,7 @@ function updateModeVisibility() {
     customWordlistOptions: s.source === 'customwordlist',
     numberPracticeOptions: s.source === 'numbers',
     fillVowelsDageshRow:   blends && s.drill === 'fillvowels',
+    tracingOptions:        blends && s.drill === 'tracing',
 
     // Print / Export PDF buttons are meaningless in self-check / gematria
     // self-check (interactive on-screen drills, not printable worksheets).
@@ -5310,6 +5463,7 @@ function updateModeVisibility() {
   else if (s.drill === 'inverse')    wsType = 'inverse';
   else if (s.drill === 'fillvowels') wsType = 'fillvowels';
   else if (s.drill === 'gematria')   wsType = 'gematria';
+  else if (s.drill === 'tracing')    wsType = 'tracing';
   if (isNtl)                    wsType = 'nametheletter';
   document.querySelectorAll('[data-worksheet]').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.worksheet === wsType);
@@ -5356,7 +5510,7 @@ function enforceMutex(opts) {
     // Switching to a non-blends source clears every blends-only flag.
     if (opts.source !== 'blends') {
       ['inverseToggle','fillVowelsToggle','gematriaToggle','bingoToggle',
-       'selfCheckToggle','answerKeyToggle'].forEach(id => set(id, false));
+       'tracingToggle','selfCheckToggle','answerKeyToggle'].forEach(id => set(id, false));
     }
   }
 
@@ -5365,17 +5519,18 @@ function enforceMutex(opts) {
     if (opts.drill !== 'inverse')    set('inverseToggle',    false);
     if (opts.drill !== 'fillvowels') set('fillVowelsToggle', false);
     if (opts.drill !== 'gematria')   set('gematriaToggle',   false);
-    // Bingo only layers on standard. Gematria has its own answer-key flow,
+    if (opts.drill !== 'tracing')    set('tracingToggle',    false);
+    // Bingo only layers on standard. Gematria/tracing have their own layouts,
     // and overlap with bingo cards makes no sense.
-    if (opts.drill === 'inverse' || opts.drill === 'fillvowels' || opts.drill === 'gematria') set('bingoToggle', false);
+    if (opts.drill === 'inverse' || opts.drill === 'fillvowels' || opts.drill === 'gematria' || opts.drill === 'tracing') set('bingoToggle', false);
     // Self-check only layers on standard, inverse.
-    // (Gematria has its own gematriaSelfCheck inside its options panel.)
-    if (opts.drill === 'fillvowels' || opts.drill === 'gematria') set('selfCheckToggle', false);
+    // (Gematria has its own gematriaSelfCheck inside its options panel; tracing has none.)
+    if (opts.drill === 'fillvowels' || opts.drill === 'gematria' || opts.drill === 'tracing') set('selfCheckToggle', false);
     // Answer key only layers on standard, inverse.
-    // (Gematria's answer-key sub-toggle lives in gematriaOptions.)
-    if (opts.drill === 'fillvowels' || opts.drill === 'gematria') set('answerKeyToggle', false);
-    // Gematria is a blends-source drill — clear conflicting non-blends sources.
-    if (opts.drill === 'gematria') {
+    // (Gematria's answer-key sub-toggle lives in gematriaOptions; tracing has no answer key.)
+    if (opts.drill === 'fillvowels' || opts.drill === 'gematria' || opts.drill === 'tracing') set('answerKeyToggle', false);
+    // Gematria/tracing are blends-source drills — clear conflicting non-blends sources.
+    if (opts.drill === 'gematria' || opts.drill === 'tracing') {
       set('numberPracticeToggle', false);
       set('realWordsToggle',      false);
       cwModeActive = false;
@@ -5386,6 +5541,7 @@ function enforceMutex(opts) {
   if (opts.bingoOn) {
     set('inverseToggle',    false);
     set('fillVowelsToggle', false);
+    set('tracingToggle',    false);
     set('selfCheckToggle',  false);
     set('answerKeyToggle',  false);
     set('numberPracticeToggle', false);
@@ -5393,14 +5549,16 @@ function enforceMutex(opts) {
     cwModeActive = false;
   }
 
-  // Layer 3 — Self-Check & Answer Key are mutex with each other and with bingo.
+  // Layer 3 — Self-Check & Answer Key are mutex with each other, with bingo, and with tracing.
   if (opts.selfCheckOn) {
     set('answerKeyToggle', false);
     set('bingoToggle',     false);
+    set('tracingToggle',   false);
   }
   if (opts.answerKeyOn) {
     set('selfCheckToggle', false);
     set('bingoToggle',     false);
+    set('tracingToggle',   false);
   }
 }
 
@@ -5510,7 +5668,7 @@ function setWorksheetType(type) {
   set('numberPracticeToggle', false);
 
   // Reset every standard-drill flag, then turn on the chosen one.
-  ['inverseToggle','fillVowelsToggle','bingoToggle','gematriaToggle','nameTheLetterToggle']
+  ['inverseToggle','fillVowelsToggle','bingoToggle','gematriaToggle','nameTheLetterToggle','tracingToggle']
     .forEach(id => set(id, false));
 
   let initFn = null;
@@ -5518,6 +5676,11 @@ function setWorksheetType(type) {
     case 'inverse':
       set('inverseToggle', true);
       enforceMutex({ drill: 'inverse' });
+      break;
+    case 'tracing':
+      set('tracingToggle', true);
+      enforceMutex({ drill: 'tracing' });
+      initFn = toggleTracingUI;
       break;
     case 'fillvowels':
       set('fillVowelsToggle', true);
@@ -7809,6 +7972,7 @@ function renderWorksheet(animate = false) {
   if (document.getElementById('numberPracticeToggle')?.checked) { renderNumberPractice(ws); return; }
   if (bingo) { renderBingo(ws); return; }
   if (document.getElementById('gematriaToggle').checked) { renderGematriaSheet(ws); return; }
+  if (document.getElementById('tracingToggle')?.checked) { renderTracingSheet(ws); return; }
 
   // One-letter and nikud-only: blends is already populated by generate()
   // selfCheck uses blends array directly so it works for all types
@@ -7964,6 +8128,200 @@ function appendStandardBlendSheets(ws, arr, ctx, versionLabel) {
     akFooter.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${arr.length} blends · Hebrew Blend Generator — Answer Key</span>`;
     answerSheet.appendChild(akFooter);
     ws.appendChild(answerSheet);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  TRACING WORKSHEET
+//  Handwriting-practice sheets. Each generated item (from the `blends` array)
+//  gets one or more full-width ruled writing lines. Each line begins (RTL — at
+//  the right edge) with faded, reduced-opacity copies to trace, then blank
+//  ruled space for independent writing. The ruling is painted as DOM lines
+//  BEHIND the glyphs so below-baseline nikkud stays legible where it crosses.
+// ══════════════════════════════════════════════
+const TRACE_DARK_OPACITY = { light: 0.15, medium: 0.25, dark: 0.40 };
+const TRACE_ROWS_PER_SHEET = 10; // tuned so each .sheet fits one US-letter page in print + PDF
+
+function setTraceLineStyle(v) { traceLineStyle = v; syncTraceButtons(); renderTracingIfActive(); }
+function setTraceDarkness(v)  { traceDarkness  = v; syncTraceButtons(); renderTracingIfActive(); }
+
+function syncTraceButtons() {
+  document.querySelectorAll('[data-trace-lines]').forEach(b =>
+    b.classList.toggle('active', b.dataset.traceLines === traceLineStyle));
+  document.querySelectorAll('[data-trace-dark]').forEach(b =>
+    b.classList.toggle('active', b.dataset.traceDark === traceDarkness));
+}
+
+// "Fill the line" makes the faded-models-per-line stepper meaningless — grey it out.
+function syncTraceFillDisabled() {
+  const fill  = document.getElementById('traceFillLine')?.checked;
+  const input = document.getElementById('traceModels');
+  const row   = document.getElementById('traceModelsRow');
+  if (input) input.disabled = !!fill;
+  if (row)   row.style.opacity = fill ? '0.45' : '';
+}
+function onTraceFillLineChange() { syncTraceFillDisabled(); renderTracingIfActive(); }
+function renderTracingIfActive() {
+  if (document.getElementById('tracingToggle')?.checked && blends.length) renderWorksheet(false);
+}
+
+// Init hook run when the Tracing worksheet type is (re)selected.
+function toggleTracingUI() {
+  syncTraceButtons();
+  syncTraceFillDisabled();
+  updateModeVisibility();
+  if (blends.length) renderWorksheet(false);
+}
+
+// Build one faded/solid trace copy for the given item text.
+function traceCopyEl(text, opacity) {
+  const copy = document.createElement('span');
+  copy.className = 'trace-copy';
+  copy.style.opacity = opacity;
+  // Color-coded nikkud shows faintly through the trace when color coding is on.
+  if (colorCodingEnabled) copy.innerHTML = colorizeHebrew(text, colorCodingMode);
+  else copy.textContent = text;
+  return copy;
+}
+
+function renderTracingSheet(ws) {
+  ws.innerHTML = '';
+  if (blends.length === 0) {
+    ws.innerHTML = '<div class="empty-state"><h2>Please select letters and vowels.</h2></div>';
+    return;
+  }
+
+  const title    = esc(document.getElementById('wsTitle').value || 'Hebrew Tracing');
+  const subtitle = esc(document.getElementById('wsSubtitle').value);
+  const opts = {
+    bothLines:    traceLineStyle === 'both',
+    modelsCount:  Math.max(1, Math.min(5, parseInt(document.getElementById('traceModels').value) || 3)),
+    solidFirst:   document.getElementById('traceSolidFirst').checked,
+    fillLine:     document.getElementById('traceFillLine').checked,
+    fadeOpacity:  TRACE_DARK_OPACITY[traceDarkness] ?? 0.25,
+    // One variable drives the row engine's writing direction (cheap Latin-script reuse).
+    traceDir:     'rtl',
+  };
+  const linesPerItem = Math.max(1, Math.min(3, parseInt(document.getElementById('traceLinesPerItem').value) || 1));
+  const repeatModels = document.getElementById('traceRepeatModels').checked;
+
+  // Expand blends into a flat list of ruled-line descriptors.
+  const rows = [];
+  blends.forEach(b => {
+    for (let li = 0; li < linesPerItem; li++) {
+      rows.push({
+        text: b.hebrewDisplay,
+        showModels: opts.fillLine ? true : (repeatModels || li === 0),
+        itemStart: li === 0,
+      });
+    }
+  });
+
+  // Paginate across multiple .sheet elements so the PDF exporter captures one
+  // page-sized sheet each (a single tall sheet would be scaled down instead).
+  const totalPages = Math.max(1, Math.ceil(rows.length / TRACE_ROWS_PER_SHEET));
+  let itemNum = 0;
+  for (let p = 0; p < totalPages; p++) {
+    const sheet = document.createElement('div');
+    sheet.className = 'sheet' + (p > 0 ? ' trace-page-break' : '');
+
+    const header = document.createElement('div');
+    header.className = 'ws-header';
+    if (p === 0) {
+      header.innerHTML = `
+        <div>
+          <div class="ws-title">${title}</div>
+          <div class="ws-subtitle">${subtitle || 'Trace each model, then keep writing on your own.'}</div>
+        </div>
+        ${wsMetaHTML()}`;
+    } else {
+      // Slim continuation header — title + page number only.
+      header.innerHTML = `
+        <div>
+          <div class="ws-title">${title}</div>
+          <div class="ws-subtitle">Page ${p + 1} of ${totalPages}</div>
+        </div>`;
+    }
+    sheet.appendChild(header);
+    // Append now so trace rows can measure their laid-out width (fill-line mode).
+    ws.appendChild(sheet);
+
+    const startRow = p * TRACE_ROWS_PER_SHEET;
+    const endRow   = Math.min(startRow + TRACE_ROWS_PER_SHEET, rows.length);
+    for (let r = startRow; r < endRow; r++) {
+      const desc = rows[r];
+      if (desc.itemStart) itemNum++;
+      buildTraceRow(sheet, desc, itemNum, opts);
+    }
+
+    const footer = document.createElement('div');
+    footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+    footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${blends.length} items · Hebrew Tracing</span>`;
+    sheet.appendChild(footer);
+  }
+}
+
+// Build one ruled line and append it to `sheet`. Must append before measuring so
+// the fill-line copy-count math sees a laid-out width.
+function buildTraceRow(sheet, desc, itemNum, opts) {
+  const row = document.createElement('div');
+  row.className = 'trace-row';
+  row.style.direction = opts.traceDir;
+
+  // Ruling — behind the glyphs (low z-index), so crossing nikkud stays legible.
+  const base = document.createElement('div');
+  base.className = 'trace-rule trace-rule-base';
+  row.appendChild(base);
+  if (opts.bothLines) {
+    const top = document.createElement('div');
+    top.className = 'trace-rule trace-rule-top';
+    row.appendChild(top);
+  }
+
+  // Item number — only on the item's first line, in the LTR-end corner.
+  if (desc.itemStart) {
+    const num = document.createElement('div');
+    num.className = 'trace-num';
+    num.textContent = itemNum;
+    row.appendChild(num);
+  }
+
+  let models = null;
+  if (desc.showModels) {
+    models = document.createElement('div');
+    models.className = 'trace-models';
+    // Zero-width strut pins the shared text baseline to --trace-baseline.
+    const strut = document.createElement('span');
+    strut.className = 'trace-strut';
+    models.appendChild(strut);
+    row.appendChild(models);
+  }
+
+  sheet.appendChild(row);
+
+  if (models) {
+    // Measure one probe copy, then fit as many WHOLE copies as the usable width
+    // allows — Hebrew glyph widths + My Fonts vary too much to estimate. The cap
+    // guarantees no copy is ever clipped mid-glyph in any mode.
+    const probe = traceCopyEl(desc.text, opts.solidFirst ? 1 : opts.fadeOpacity);
+    models.appendChild(probe);
+    const cs      = getComputedStyle(models);
+    const gapPx   = parseFloat(cs.columnGap) || 0;
+    const padS    = parseFloat(cs.paddingInlineStart) || 0;
+    const padE    = parseFloat(cs.paddingInlineEnd) || 0;
+    const copyW   = probe.getBoundingClientRect().width;
+    const avail   = models.clientWidth - padS - padE; // content-box width for copies
+    models.removeChild(probe);
+
+    // Items are: strut(0-width) + N copies ⇒ N gaps total ⇒ avail ≥ N·(copyW+gap).
+    const maxFit    = (copyW > 0) ? Math.floor(avail / (copyW + gapPx)) : 1;
+    const requested = opts.fillLine ? Infinity : (opts.modelsCount + (opts.solidFirst ? 1 : 0));
+    const count     = Math.max(1, Math.min(requested, maxFit));
+
+    for (let i = 0; i < count; i++) {
+      const solid = opts.solidFirst && i === 0;
+      models.appendChild(traceCopyEl(desc.text, solid ? 1 : opts.fadeOpacity));
+    }
   }
 }
 
