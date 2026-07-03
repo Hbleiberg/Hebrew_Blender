@@ -299,9 +299,27 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .sidebar-toggle-btn:hover{background:#0f1a33;}
 .sidebar-show-btn{position:fixed;left:0;top:50vh;transform:translateY(-50%);width:16px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:100;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
 .sidebar-show-btn:hover{background:#0f1a33;}
-.search-wrap input{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);outline:none;}
+.search-wrap{position:relative;}
+.search-wrap input{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);outline:none;box-sizing:border-box;}
 .search-wrap input:focus{border-color:var(--gold);}
 .search-wrap input::placeholder{color:var(--muted);}
+/* Section 4: clear-search button (all widths) */
+.search-clear{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;border:none;background:var(--warm-gray);color:var(--muted);font-size:0.72rem;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;}
+.search-clear:hover{background:var(--gold);color:#fff;}
+.search-clear.show{display:inline-flex;}
+.search-wrap input.has-clear{padding-right:30px;}
+/* Section 4: mobile sticky bar (populated by JS at ≤680px) */
+#mobileBar{display:none;}
+.mobile-bar-row{display:flex;gap:8px;align-items:stretch;}
+.mobile-bar-row #modeSwitcher{flex:1;margin-bottom:0!important;}
+.mobile-filters-btn{white-space:nowrap;border:1px solid var(--border);border-radius:4px;background:var(--navy);color:#fff;font-size:0.78rem;font-family:inherit;padding:0 12px;cursor:pointer;}
+.mobile-filters-btn:hover{background:#2a3a6a;}
+body.dark .mobile-filters-btn{background:var(--navy-deep);}
+/* Section 4: streaming load progress bar */
+.load-bar{max-width:240px;height:6px;margin:12px auto 0;background:var(--warm-gray);border-radius:3px;overflow:hidden;}
+.load-bar-fill{height:100%;width:0;background:var(--gold);border-radius:3px;transition:width 0.2s ease;}
+.load-bar.indeterminate .load-bar-fill{width:40%;animation:loadIndet 1.1s ease-in-out infinite;}
+@keyframes loadIndet{0%{margin-left:-40%;}100%{margin-left:100%;}}
 .panel{background:var(--cream);border:1px solid var(--border);border-radius:8px;}
 .panel-title{background:var(--navy);color:#fff;font-family:'Libre Baskerville',serif;font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;padding:8px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;border-radius:8px 8px 0 0;}
 .panel-title::after{content:'▾';font-size:1rem;color:var(--gold-light);transition:transform 0.2s;}
@@ -467,8 +485,11 @@ footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);borde
 footer a{color:var(--gold);text-decoration:none;}
 @media(max-width:680px){
   .app{flex-direction:column;overflow:visible;}
-  #appSidebar{display:flex!important;width:100%;overflow-y:visible;border-right:none;border-bottom:1px solid var(--border);}
-  .main{overflow:visible;}
+  /* Section 4: results (with the sticky search/mode bar) sit ABOVE the collapsed filter sidebar */
+  .main{overflow:visible;order:1;}
+  #appSidebar{display:flex!important;width:100%;overflow-y:visible;border-right:none;border-bottom:1px solid var(--border);order:2;}
+  #mobileBar{display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:var(--cream);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;}
+  #mobileBar .search-wrap{margin:0;}
   .content{overflow-y:visible;padding:14px 12px;}
   .sidebar-toggle-btn,.sidebar-show-btn,#fsBtn{display:none!important;}
   body{overflow-y:auto;}
@@ -595,7 +616,8 @@ footer a{color:var(--gold);text-decoration:none;}
   <aside class="sidebar" id="appSidebar">
 
     <div class="search-wrap">
-      <input type="text" id="searchInput" placeholder="Search Hebrew, translit, or English…" oninput="filterDebounced()">
+      <input type="text" id="searchInput" placeholder="Search Hebrew, translit, or English…" oninput="onSearchInput()" onkeydown="if(event.key==='Escape'){clearDictSearch();}">
+      <button class="search-clear" id="searchClear" onclick="clearDictSearch()" aria-label="Clear search" title="Clear search">✕</button>
     </div>
 
     <div style="display:flex; gap:6px; margin-bottom:10px;">
@@ -607,7 +629,7 @@ footer a{color:var(--gold);text-decoration:none;}
     <div class="panel" id="panelLength">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Word Length</div>
       <div class="panel-body">
-        <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:10px;">
+        <div id="modeSwitcher" style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:10px;">
           <button class="emoji-gender-btn active" data-dict-mode="words" onclick="setDictMode('words')">Words</button>
           <button class="emoji-gender-btn" data-dict-mode="emojis" onclick="setDictMode('emojis')">Emojis</button>
           <button class="emoji-gender-btn" data-dict-mode="shoresh" onclick="setDictMode('shoresh')">Shoresh</button>
@@ -859,6 +881,7 @@ footer a{color:var(--gold);text-decoration:none;}
   </aside>
 
   <div class="main">
+    <div id="mobileBar"></div>
     <div class="toolbar">
       <span class="result-count" id="resultCount">Loading…</span>
       <label style="font-size:0.8rem;color:var(--muted);">Sort:</label>
@@ -885,7 +908,10 @@ footer a{color:var(--gold);text-decoration:none;}
         <div class="shoresh-chips" id="shoreshChips"></div>
       </div>
       <div class="shoresh-header" id="shoreshHeader" style="display:none;"></div>
-      <div class="loading" id="loadingMsg">Loading dictionary…</div>
+      <div class="loading" id="loadingMsg">
+        <div id="loadingText">Loading dictionary…</div>
+        <div class="load-bar" id="loadBar"><div class="load-bar-fill" id="loadBarFill"></div></div>
+      </div>
       <div class="results-grid" id="resultsGrid" style="display:none;"></div>
       <div id="shoreshResults"></div>
       <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
@@ -1266,8 +1292,44 @@ function debounce(fn, ms) {
 }
 const filterDebounced = debounce(onFilter, 150);
 
-fetch('data/hebrew_words.json?v=4')
-  .then(r => r.json())
+// Section 4: stream a JSON fetch, reporting progress. onProgress(pct|null, receivedBytes).
+// Content-Length can be the gzip'd (compressed) size while the reader yields decompressed
+// bytes, so once received overshoots we flip to an indeterminate byte counter.
+async function fetchJsonWithProgress(url, onProgress) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  const len = parseInt(res.headers.get('Content-Length') || '0', 10) || 0;
+  if (!res.body || !res.body.getReader) { if (onProgress) onProgress(null, 0); return res.json(); }
+  const reader = res.body.getReader();
+  const chunks = [];
+  let received = 0, indeterminate = (len <= 0);
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value); received += value.length;
+    if (!indeterminate && received > len) indeterminate = true;
+    if (onProgress) onProgress(indeterminate ? null : Math.min(100, Math.round(received / len * 100)), received);
+  }
+  let size = 0; chunks.forEach(c => size += c.length);
+  const all = new Uint8Array(size); let off = 0; chunks.forEach(c => { all.set(c, off); off += c.length; });
+  return JSON.parse(new TextDecoder('utf-8').decode(all));
+}
+function updateDictLoadProgress(pct, received) {
+  const txt = document.getElementById('loadingText');
+  const bar = document.getElementById('loadBar');
+  const fill = document.getElementById('loadBarFill');
+  if (!txt) return;
+  if (pct === null || pct === undefined) {
+    if (bar) bar.classList.add('indeterminate');
+    txt.textContent = 'Loading dictionary…' + (received ? ' ' + Math.round(received / 1024).toLocaleString() + ' KB' : '');
+  } else {
+    if (bar) bar.classList.remove('indeterminate');
+    if (fill) fill.style.width = pct + '%';
+    txt.textContent = 'Loading dictionary… ' + pct + '%';
+  }
+}
+
+fetchJsonWithProgress('data/hebrew_words.json?v=4', updateDictLoadProgress)
   .then(data => {
     ALL_WORDS = Object.entries(data).flatMap(([cnt, words]) =>
       words.map(w => ({
@@ -1295,7 +1357,10 @@ fetch('data/hebrew_words.json?v=4')
     maybeBootstrap();
   })
   .catch(() => {
-    document.getElementById('loadingMsg').textContent = 'Failed to load. Open via a local server (not file://).';
+    const bar = document.getElementById('loadBar'); if (bar) bar.style.display = 'none';
+    const txt = document.getElementById('loadingText');
+    if (txt) txt.textContent = 'Failed to load. Open via a local server (not file://).';
+    else document.getElementById('loadingMsg').textContent = 'Failed to load. Open via a local server (not file://).';
   });
 
 function setAllVowels(checked) {
@@ -2543,8 +2608,10 @@ function toggleEmojiMode(on) {
 }
 
 function fetchEmojiData() {
-  return fetch('data/hebrew_emojis.json?v=1')
-    .then(r => r.json())
+  return fetchJsonWithProgress('data/hebrew_emojis.json?v=1', (pct) => {
+    const rc = document.getElementById('resultCount');
+    if (rc) rc.textContent = (pct === null || pct === undefined) ? 'Loading emojis…' : 'Loading emojis… ' + pct + '%';
+  })
     .then(data => {
       EMOJI_DATA = data;
       // Restore persisted exclusions, or default to "all selected"
@@ -3191,16 +3258,18 @@ function dictAfterFilter() {
   if (_applyingDictState) return;
   rebuildFilterChips();
   updateDictToolbar();
+  updateSearchClear();
+  if (window._updateMobileFiltersBtn) window._updateMobileFiltersBtn();
   scheduleDictSessionSave();
 }
 
 /* ===== Section 2: active-filter chips + empty state ===== */
 
-function rebuildFilterChips() {
-  const box = document.getElementById('filterChips');
-  if (!box) return;
-  if (shoreshMode) { box.innerHTML = ''; box.classList.remove('has-chips'); return; }
+// Compute the active (non-default) filter groups as chip descriptors. Shared by the
+// chip row and Section 4's "Filters (N)" badge. Empty in shoresh mode.
+function computeActiveChips() {
   const chips = [];
+  if (shoreshMode) return chips;
   const q = document.getElementById('searchInput').value.trim();
   if (q) chips.push({ key: 'search', label: 'Search: "' + q + '"', panel: '.search-wrap' });
 
@@ -3229,7 +3298,13 @@ function rebuildFilterChips() {
       if (emojiSelectedSubs.size !== total) chips.push({ key: 'ecats', label: 'Categories: ' + emojiSelectedSubs.size + '/' + total, panel: '#emojiCatTree' });
     }
   }
+  return chips;
+}
 
+function rebuildFilterChips() {
+  const box = document.getElementById('filterChips');
+  if (!box) return;
+  const chips = computeActiveChips();
   box.innerHTML = '';
   if (!chips.length) { box.classList.remove('has-chips'); return; }
   box.classList.add('has-chips');
@@ -3311,6 +3386,82 @@ function renderDictEmptyState(isEmoji) {
   wrap.appendChild(actions);
   grid.appendChild(wrap);
 }
+
+/* ===== Section 4: search clear + mobile sticky bar ===== */
+
+function onSearchInput() { filterDebounced(); updateSearchClear(); }
+function clearDictSearch() {
+  const si = document.getElementById('searchInput');
+  if (si) { si.value = ''; onFilter(); si.focus(); }
+  updateSearchClear();
+}
+function updateSearchClear() {
+  const si = document.getElementById('searchInput');
+  const btn = document.getElementById('searchClear');
+  if (!si || !btn) return;
+  const has = si.value.length > 0;
+  btn.classList.toggle('show', has);
+  si.classList.toggle('has-clear', has);
+}
+
+// Active filter-group count for the mobile "Filters (N)" badge (search lives in the bar itself).
+function dictActiveGroupCount() {
+  try { return computeActiveChips().filter(c => c.key !== 'search').length; } catch (e) { return 0; }
+}
+
+// Relocate the search box + mode switcher into a sticky top bar on mobile; move them back
+// on desktop. Node moves preserve inline handlers + listeners (no rewiring).
+(function () {
+  const mq = window.matchMedia('(max-width:680px)');
+  let moved = false, collapsedOnce = false, filtersBtn = null, rowWrap = null;
+  let searchHome = null, modeHome = null;
+  function enterMobile() {
+    const mobileBar = document.getElementById('mobileBar');
+    const searchWrap = document.querySelector('.search-wrap');
+    const modeSwitcher = document.getElementById('modeSwitcher');
+    if (!moved && mobileBar && searchWrap && modeSwitcher) {
+      searchHome = { parent: searchWrap.parentNode, next: searchWrap.nextSibling };
+      modeHome = { parent: modeSwitcher.parentNode, next: modeSwitcher.nextSibling };
+      if (!filtersBtn) {
+        filtersBtn = document.createElement('button');
+        filtersBtn.id = 'mobileFiltersBtn'; filtersBtn.className = 'mobile-filters-btn'; filtersBtn.type = 'button';
+        filtersBtn.addEventListener('click', () => {
+          const sb = document.getElementById('appSidebar');
+          if (typeof expandAllMenus === 'function') expandAllMenus();
+          if (sb) sb.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+      rowWrap = document.createElement('div'); rowWrap.className = 'mobile-bar-row';
+      mobileBar.appendChild(searchWrap);
+      rowWrap.appendChild(modeSwitcher);
+      rowWrap.appendChild(filtersBtn);
+      mobileBar.appendChild(rowWrap);
+      moved = true;
+    }
+    if (!collapsedOnce) {
+      document.querySelectorAll('#appSidebar .panel, #appSidebar .adv-section').forEach(p => p.classList.add('collapsed'));
+      collapsedOnce = true;
+    }
+    updateMobileFiltersBtn();
+  }
+  function exitMobile() {
+    if (moved && searchHome && modeHome) {
+      searchHome.parent.insertBefore(document.querySelector('.search-wrap'), searchHome.next);
+      modeHome.parent.insertBefore(document.getElementById('modeSwitcher'), modeHome.next);
+      if (rowWrap && rowWrap.parentNode) rowWrap.parentNode.removeChild(rowWrap);
+      moved = false;
+    }
+  }
+  function updateMobileFiltersBtn() {
+    if (!filtersBtn) return;
+    const n = dictActiveGroupCount();
+    filtersBtn.textContent = '⚙ Filters' + (n ? ' (' + n + ')' : '');
+  }
+  window._updateMobileFiltersBtn = updateMobileFiltersBtn;
+  const onChange = e => (e.matches ? enterMobile() : exitMobile());
+  if (mq.addEventListener) mq.addEventListener('change', onChange); else if (mq.addListener) mq.addListener(onChange);
+  if (mq.matches) enterMobile();
+})();
 </script>
 </body>
 </html>
