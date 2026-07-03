@@ -1946,6 +1946,20 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
 </div>
 </div><script>
+  /*
+   * Classroom Dashboard — UX upgrades (2026-07):
+   *   1. Screen Wake Lock — keep the projected display awake in fullscreen or via a
+   *      "Keep screen awake" toggle (support-gated; indicator dot).
+   *   2. First-run setup card + three starter layouts (Hebrew classroom / Morning
+   *      routine / General classroom), also reachable from the Presets panel.
+   *   3. Fullscreen auto-hiding quick-controls strip (Settings / Timer / Text / Video);
+   *      the corner button stays the single exit.
+   *   4. Schedule Sync clarity — shared computeScheduleState(), on-dashboard Now/Next,
+   *      settings preview, live validation + Sort-by-time.
+   *   5. Guided tour (ported spotlight engine) + accessible tooltip + reduced-motion.
+   *   6. Edit the dashboard text in place (shared toolbar builder, two-way sync,
+   *      sanitize on commit + paste).
+   */
   /* ────────── CONSTANTS ────────── */
   const DAYS = [
     {heb:'יוֹם רִאשוֹן',  eng:'Sunday',    bg:'#c62828'},
