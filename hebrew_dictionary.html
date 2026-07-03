@@ -99,7 +99,8 @@
     { "@type": "Question", "name": "How do I look up a Hebrew word?", "acceptedAnswer": { "@type": "Answer", "text": "Type the Hebrew word (with or without nikkud) into the search bar, or use the filters to browse by word length, part of speech, era, or letter position." } },
     { "@type": "Question", "name": "Can I filter the Hebrew dictionary by part of speech?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Filter by noun, verb, adjective, adverb, and other parts of speech, alone or in combination with length and era filters." } },
     { "@type": "Question", "name": "Is the Hebrew dictionary free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Hebrew word lookup is free under CC BY-NC-SA 4.0; word data is sourced from Kaikki.org." } },
-    { "@type": "Question", "name": "Does the dictionary include modern and biblical Hebrew?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Words can be filtered by era, including biblical, mishnaic, medieval, and modern Hebrew." } }
+    { "@type": "Question", "name": "Does the dictionary include modern and biblical Hebrew?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Words can be filtered by era, including biblical, mishnaic, medieval, and modern Hebrew." } },
+    { "@type": "Question", "name": "Can I share my filtered view or take a tour?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Click the Copy link button in the results toolbar to copy a shareable link that reopens your exact filtered view, and your last-used filters return automatically on your next visit. Click the Tour button in the header for a quick 7-step walkthrough." } }
   ]
 }
 </script>
@@ -501,11 +502,40 @@ body.dict-audio-on .ec-speak{display:inline-flex;}
 .ec-tags{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
 .ec-tag{font-size:0.62rem;padding:2px 6px;border-radius:3px;background:var(--warm-gray);color:var(--muted);font-weight:600;letter-spacing:0.03em;text-transform:uppercase;}
 .ec-tag.cat{background:var(--navy);color:var(--gold-light);}
-.tip-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:var(--muted);color:var(--white);font-size:0.58rem;font-weight:700;cursor:help;margin-left:4px;vertical-align:middle;flex-shrink:0;}
-.tip-wrap.tip-gold{background:var(--gold);color:var(--navy);}
-.tip-wrap .tip-box{display:none;}
-#globalTip{display:none;position:fixed;background:#1a2744;color:#f0e8d8;font-size:0.74rem;font-weight:400;line-height:1.5;padding:8px 11px;border-radius:6px;width:220px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:9999;pointer-events:none;white-space:normal;}
-#globalTip::after{content:'';position:absolute;top:100%;left:8px;border:5px solid transparent;border-top-color:#1a2744;}
+/* Section 5: accessible tooltips (hover + tap + keyboard), ported from torah_trainer.html */
+.tip-wrap{display:inline-flex;align-items:center;vertical-align:middle;}
+.tip-icon{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:var(--muted);color:#fff;font-size:0.62rem;font-weight:700;font-style:normal;cursor:help;margin-left:5px;flex-shrink:0;line-height:1;}
+.tip-wrap.tip-gold .tip-icon{background:var(--gold);color:var(--navy);}
+.tip-wrap:focus-visible{outline:none;}
+.tip-wrap:focus-visible .tip-icon{outline:2px solid var(--gold);outline-offset:1px;}
+#tipFloat{display:none;position:fixed;background:var(--navy);color:#fff;font-size:0.72rem;font-weight:400;line-height:1.45;padding:6px 9px;border-radius:6px;max-width:220px;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,0.3);pointer-events:none;}
+body.dark #tipFloat{background:#0a0f1c;}
+/* Section 5: guided tour (ported from hebrew_blend_generator.html) */
+.tbtn{background:var(--gold);color:#1a1a1a;border:none;border-radius:6px;padding:7px 13px;cursor:pointer;font-size:0.82rem;font-weight:700;font-family:'Source Sans 3',sans-serif;}
+.tbtn.ghost{background:transparent;color:var(--text);border:1.5px solid var(--border);}
+.tbtn:hover{filter:brightness(1.06);}
+.tbtn:disabled{opacity:0.4;cursor:default;filter:none;}
+.tour-spot{position:fixed;top:0;left:0;width:0;height:0;border-radius:8px;pointer-events:none;z-index:1400;box-shadow:0 0 0 9999px rgba(13,18,32,0.62),0 0 0 3px var(--gold);transition:top 0.25s ease,left 0.25s ease,width 0.25s ease,height 0.25s ease;}
+.tour-card{position:fixed;z-index:1500;width:300px;max-width:92vw;background:var(--white);color:var(--text);border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.4);padding:16px 18px 14px;}
+body.dark .tour-card{background:var(--cream);}
+.tour-card h4{font-family:'Libre Baskerville',serif;margin:0 26px 8px 0;font-size:0.98rem;color:var(--text);}
+.tour-card p{font-size:0.84rem;line-height:1.5;margin:0 0 12px;color:var(--text);}
+.tour-x{position:absolute;top:8px;right:8px;width:26px;height:26px;background:transparent;border:none;border-radius:6px;color:var(--muted);font-size:1rem;cursor:pointer;line-height:1;}
+.tour-x:hover{background:var(--warm-gray);color:var(--text);}
+.tour-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.tour-meta > span:first-child{font-size:0.72rem;font-weight:700;color:var(--muted);}
+.tour-btns{display:flex;gap:8px;}
+/* Section 5: first-visit nudge + reduced-motion */
+@keyframes attnPulse{0%,100%{box-shadow:0 0 0 0 rgba(201,146,42,0.55);}50%{box-shadow:0 0 0 6px rgba(201,146,42,0);}}
+.pulse-attn{animation:attnPulse 1.4s ease-in-out infinite;}
+@media (prefers-reduced-motion: reduce){
+  .pulse-attn{animation:none !important;box-shadow:0 0 0 3px rgba(201,146,42,0.6) !important;}
+  .tour-spot{transition:none !important;}
+  .load-bar.indeterminate .load-bar-fill{animation:none !important;}
+  .load-bar-fill{transition:none !important;}
+  .shoresh-flash{animation:none !important;}
+  *{scroll-behavior:auto !important;}
+}
 .load-more-btn{background:var(--navy);color:var(--gold-light);border:none;border-radius:6px;padding:8px 28px;font-size:0.85rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;}
 .load-more-btn:hover{background:#0f1a33;}
 .empty{text-align:center;padding:60px 20px;color:var(--muted);grid-column:1/-1;}
@@ -634,11 +664,11 @@ footer a{color:var(--gold);text-decoration:none;}
   </div>
   <div class="hright">
     <a class="nav-btn" href="/">← Home</a>
+    <button class="nav-btn" id="tourBtn" onclick="tourStart()" title="Take a quick tour">❓ Tour</button>
     <button class="dark-btn" id="darkBtn" onclick="toggleDark()">🌙 Dark</button>
   </div>
 </header>
 
-<div id="globalTip"></div>
 <button class="sidebar-show-btn" id="sidebarShowBtn" onclick="toggleSidebar()" title="Show sidebar">›</button>
 <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Hide sidebar">‹</button>
 
@@ -750,7 +780,7 @@ footer a{color:var(--gold);text-decoration:none;}
     </div>
 
     <!-- Advanced -->
-    <div class="panel collapsed">
+    <div class="panel collapsed" id="panelAdvanced">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Advanced</div>
       <div class="panel-body" style="display:flex;flex-direction:column;gap:0;">
 
@@ -792,15 +822,15 @@ footer a{color:var(--gold);text-decoration:none;}
         </div>
 
         <!-- Copy Options -->
-        <div class="adv-section collapsed">
+        <div class="adv-section collapsed" id="copyOptsSec">
           <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Copy Options</div>
           <div class="adv-section-body">
-            <div style="font-size:0.72rem;font-weight:600;margin-bottom:6px;color:var(--text);">Copy Mode <span class="tip-wrap" style="font-weight:400;text-transform:none;letter-spacing:normal;">?<span class="tip-box">Changes the format used when clicking the copy button on a word card.</span></span></div>
+            <div style="font-size:0.72rem;font-weight:600;margin-bottom:6px;color:var(--text);">Copy Mode <span class="tip-wrap" data-tip="Changes the format used when clicking the copy button on a word card."><i class="tip-icon">?</i></span></div>
             <label class="cb-label"><input type="radio" name="copyMode" value="word" checked onchange="onCopyModeChange('word')" style="accent-color:var(--gold);"> Word</label>
             <label class="cb-label"><input type="radio" name="copyMode" value="definition" onchange="onCopyModeChange('definition')" style="accent-color:var(--gold);"> Word — Definition</label>
             <label class="cb-label"><input type="radio" name="copyMode" value="transdef" onchange="onCopyModeChange('transdef')" style="accent-color:var(--gold);"> Word — Transliteration — Definition</label>
             <label class="cb-label"><input type="radio" name="copyMode" value="defonly" onchange="onCopyModeChange('defonly')" style="accent-color:var(--gold);"> Definition</label>
-            <label class="cb-label"><input type="radio" name="copyMode" value="allinfo" onchange="onCopyModeChange('allinfo')" style="accent-color:var(--gold);"> All info<span class="tip-wrap">?<span class="tip-box">Copies: Hebrew word — transliteration — translation — part of speech — era. Gematria value is appended if "Show Gematria Value" is enabled.</span></span><span class="tip-wrap tip-gold">!<span class="tip-box">Select this option when using Bulk Copy to generate a manual input list for the Worksheet Generator.</span></span></label>
+            <label class="cb-label"><input type="radio" name="copyMode" value="allinfo" onchange="onCopyModeChange('allinfo')" style="accent-color:var(--gold);"> All info<span class="tip-wrap" data-tip="Copies: Hebrew word — transliteration — translation — part of speech — era. Gematria value is appended if &quot;Show Gematria Value&quot; is enabled."><i class="tip-icon">?</i></span><span class="tip-wrap tip-gold" data-tip="Select this option when using Bulk Copy to generate a manual input list for the Worksheet Generator."><i class="tip-icon">!</i></span></label>
             <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
             <label class="cb-label" title="Select multiple words from the results. Each selected word is added to a text box below — one per line — in whatever Copy Mode is active."><input type="checkbox" id="bulkModeCb" style="accent-color:var(--gold);" onchange="toggleBulkMode(this.checked)"> Bulk Copy Mode</label>
             <div id="bulkPanel" style="display:none;margin-top:8px;">
@@ -851,7 +881,7 @@ footer a{color:var(--gold);text-decoration:none;}
               </div>
             </div>
             <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
-            <label class="cb-label"><input type="checkbox" id="enableSortGematriaCb" style="accent-color:var(--gold);" onchange="toggleGematriaSort(this.checked)"> Enable Sort By Gematria Value<span class="tip-wrap">?<span class="tip-box">Adds Gematria ↑ and Gematria ↓ options to the Sort menu, letting you order words by their total Gematria value.</span></span></label>
+            <label class="cb-label"><input type="checkbox" id="enableSortGematriaCb" style="accent-color:var(--gold);" onchange="toggleGematriaSort(this.checked)"> Enable Sort By Gematria Value<span class="tip-wrap" data-tip="Adds Gematria ↑ and Gematria ↓ options to the Sort menu, letting you order words by their total Gematria value."><i class="tip-icon">?</i></span></label>
           </div>
         </div>
 
@@ -953,6 +983,21 @@ footer a{color:var(--gold);text-decoration:none;}
   </div>
 </div>
 
+<!-- Section 5: guided tour spotlight + card -->
+<div class="tour-spot" id="tourSpot" hidden></div>
+<div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
+  <button class="tour-x" id="tourClose" aria-label="End tour" onclick="tourEnd(false)">✕</button>
+  <h4 id="tourCardTitle"></h4>
+  <p id="tourCardBody"></p>
+  <div class="tour-meta">
+    <span id="tourStep"></span>
+    <span class="tour-btns">
+      <button class="tbtn ghost" id="tourBack" onclick="tourPrev()">Back</button>
+      <button class="tbtn" id="tourNext" onclick="tourNext()">Next</button>
+    </span>
+  </div>
+</div>
+
 <!-- Section 3: word / emoji detail modal (single reusable overlay) -->
 <div class="wm-overlay" id="wordModal" role="dialog" aria-modal="true" aria-labelledby="wmTitle">
   <div class="wm-dialog" id="wmDialog">
@@ -971,6 +1016,7 @@ footer a{color:var(--gold);text-decoration:none;}
           <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Can I filter by part of speech?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Yes. Filter by noun, verb, adjective, adverb, and others, combined with length and era filters.</p></details>
           <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Is it free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Yes. Free under CC BY-NC-SA 4.0; word data sourced from Kaikki.org.</p></details>
           <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Modern and biblical Hebrew?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Yes. Filter by era — biblical, mishnaic, medieval, and modern Hebrew.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Can I share or save my filters?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Yes. Click <strong>🔗 Copy link</strong> in the results toolbar to copy a link that reopens this exact filtered view — send it to your class. Your last-used filters also come back automatically on your next visit. New here? Click <strong>❓ Tour</strong> in the header for a quick 7-step walkthrough.</p></details>
         </div>
       </details>
       <details style="margin-top:6px;">
@@ -3024,27 +3070,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const bulkCb = document.getElementById('bulkModeCb');
   if (bulkCb && bulkCb.checked) toggleBulkMode(true);
   updateExportState();
-
-  // Fixed-position tooltip to escape sidebar overflow clipping
-  const gTip = document.getElementById('globalTip');
-  document.querySelectorAll('.tip-wrap').forEach(wrap => {
-    wrap.addEventListener('mouseenter', () => {
-      const box = wrap.querySelector('.tip-box');
-      if (!box) return;
-      gTip.textContent = box.textContent;
-      gTip.style.top = '-9999px';
-      gTip.style.left = '0';
-      gTip.style.display = 'block';
-      const rect = wrap.getBoundingClientRect();
-      const tipH = gTip.offsetHeight;
-      let left = rect.left;
-      if (left + 220 > window.innerWidth - 8) left = window.innerWidth - 228;
-      if (left < 8) left = 8;
-      gTip.style.left = left + 'px';
-      gTip.style.top = (rect.top - tipH - 7) + 'px';
-    });
-    wrap.addEventListener('mouseleave', () => { gTip.style.display = 'none'; });
-  });
+  // (Tooltips are now wired by the accessible bindTip engine in the second script — Section 5.)
 
   _domReady = true;   // Section 1: DOM/UI built — restore may now proceed once words are ready too
   maybeBootstrap();
@@ -3683,6 +3709,186 @@ function dictActiveGroupCount() {
   const onChange = e => (e.matches ? enterMobile() : exitMobile());
   if (mq.addEventListener) mq.addEventListener('change', onChange); else if (mq.addListener) mq.addListener(onChange);
   if (mq.matches) enterMobile();
+})();
+
+/* ===== Section 5: accessible tooltips (ported from torah_trainer.html) ===== */
+(function () {
+  let tip = null, openWrap = null;
+  function ensureTip() { if (tip) return tip; tip = document.createElement('div'); tip.id = 'tipFloat'; document.body.appendChild(tip); return tip; }
+  function position(wrap) {
+    const t = ensureTip();
+    const iconEl = wrap.querySelector('.tip-icon') || wrap;
+    const r = iconEl.getBoundingClientRect();
+    const tw = t.offsetWidth, th = t.offsetHeight;
+    let left = r.left + r.width / 2 - tw / 2, top = r.top - th - 6;
+    if (left < 6) left = 6;
+    if (left + tw > window.innerWidth - 6) left = window.innerWidth - tw - 6;
+    if (top < 6) top = r.bottom + 6;
+    t.style.left = left + 'px'; t.style.top = top + 'px';
+  }
+  function isShown(wrap) { return openWrap === wrap && tip && tip.style.display === 'block'; }
+  function show(wrap) {
+    const text = wrap.dataset.tip; if (!text) return;
+    const t = ensureTip(); t.textContent = text; t.style.display = 'block'; position(wrap);
+    if (openWrap && openWrap !== wrap) openWrap.setAttribute('aria-expanded', 'false');
+    openWrap = wrap; wrap.setAttribute('aria-expanded', 'true');
+  }
+  function hide() { if (tip) tip.style.display = 'none'; if (openWrap) openWrap.setAttribute('aria-expanded', 'false'); openWrap = null; }
+  function bindTip(wrap) {
+    if (wrap._tipBound) return;
+    wrap._tipBound = true;
+    wrap.setAttribute('tabindex', '0');
+    wrap.setAttribute('role', 'button');
+    wrap.setAttribute('aria-expanded', 'false');
+    wrap.setAttribute('aria-describedby', 'tipFloat');
+    if (!wrap.getAttribute('aria-label')) wrap.setAttribute('aria-label', 'More information');
+    wrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(wrap); });
+    wrap.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openWrap === wrap) hide(); });
+    wrap.addEventListener('click', e => { e.stopPropagation(); isShown(wrap) ? hide() : show(wrap); });
+    wrap.addEventListener('focus', () => show(wrap));
+    wrap.addEventListener('blur', () => hide());
+    wrap.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); isShown(wrap) ? hide() : show(wrap); }
+      else if (e.key === 'Escape') { hide(); wrap.blur(); }
+    });
+  }
+  window.bindTip = bindTip;
+  document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('.tip-wrap').forEach(bindTip));
+  document.addEventListener('click', () => { if (openWrap) hide(); });
+  window.addEventListener('scroll', () => { if (openWrap) hide(); }, true);
+})();
+
+/* ===== Section 5: guided tour (ported from hebrew_blend_generator.html) ===== */
+function _tourVisible(el) { return !!(el && el.offsetParent !== null); }
+function _tourOpenSidebar() {
+  const sb = document.getElementById('appSidebar');
+  if (sb && sb.classList.contains('hidden') && typeof toggleSidebar === 'function') toggleSidebar();
+}
+function _tourExpandPanel(id) {
+  const p = document.getElementById(id);
+  if (p && p.classList.contains('collapsed')) { p.classList.remove('collapsed'); _tourUncollapsed.add(p); }
+}
+const TOUR_STEPS = [
+  { target: () => document.getElementById('searchInput'),
+    reveal: () => _tourOpenSidebar(),
+    title: 'Search',
+    body: 'Type Hebrew (with or without nikkud), transliteration, or English to find any word.' },
+  { target: () => document.getElementById('modeSwitcher'),
+    reveal: () => _tourOpenSidebar(),
+    title: 'Three tools in one',
+    body: 'Switch between the word dictionary, an emoji picture-vocabulary deck, and the Shoresh root explorer.' },
+  { target: () => document.getElementById('panelLength'),
+    reveal: () => { _tourOpenSidebar(); _tourExpandPanel('panelLength'); },
+    title: 'Filters',
+    body: 'Narrow by length, part of speech, era, vowels — even specific letters in specific positions.' },
+  { target: () => { const c = document.getElementById('filterChips'); return _tourVisible(c) ? c : document.querySelector('.toolbar'); },
+    reveal: () => _tourOpenSidebar(),
+    title: 'Active filters',
+    body: 'Everything you have turned on shows here as chips — tap ✕ to remove one, or reset them all.' },
+  { target: () => document.querySelector('#resultsGrid .word-card, #resultsGrid .emoji-card'),
+    reveal: () => _tourOpenSidebar(),
+    title: 'Word cards',
+    body: 'Tap any word for full details, pronunciation, copy options, and its root family.' },
+  { target: () => document.getElementById('copyOptsSec'),
+    reveal: () => { _tourOpenSidebar(); _tourExpandPanel('panelAdvanced'); _tourExpandPanel('copyOptsSec'); },
+    title: 'Bulk Copy & Export',
+    body: 'Select a batch of words and export straight to Anki or Quizlet — or into the Worksheet Generator.' },
+  { target: () => document.getElementById('dictShareBtn'),
+    reveal: () => _tourOpenSidebar(),
+    title: 'Share this view',
+    body: 'Copy a link to exactly this filtered view and post it for your class.' },
+];
+
+let _tourIdx = -1, _tourActive = false, _tourOpener = null, _tourUncollapsed = new Set(), _tourRepoTimer = null;
+
+function tourStart() {
+  if (_tourActive) return;
+  try { localStorage.setItem('hebrewDictionary_tourSeen', '1'); } catch (e) {}
+  const tb = document.getElementById('tourBtn'); if (tb) tb.classList.remove('pulse-attn');
+  _tourActive = true; _tourIdx = -1; _tourUncollapsed = new Set();
+  _tourOpener = document.activeElement;
+  document.getElementById('tourSpot').hidden = false;
+  document.getElementById('tourCard').hidden = false;
+  document.addEventListener('keydown', _tourKey, true);
+  window.addEventListener('resize', _tourReposition);
+  window.addEventListener('scroll', _tourReposition, true);
+  tourNext();
+}
+function _resolveStep(idx) {
+  const step = TOUR_STEPS[idx];
+  if (!step) return null;
+  if (step.reveal) { try { step.reveal(); } catch (e) {} }
+  const el = step.target();
+  return _tourVisible(el) ? el : null;
+}
+function _tourShow(idx, dir) {
+  while (idx >= 0 && idx < TOUR_STEPS.length && !_resolveStep(idx)) idx += dir;
+  if (idx < 0 || idx >= TOUR_STEPS.length) { tourEnd(dir > 0); return; }
+  _tourIdx = idx;
+  const step = TOUR_STEPS[idx], el = step.target();
+  try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {}
+  document.getElementById('tourCardTitle').textContent = step.title;
+  document.getElementById('tourCardBody').textContent = step.body;
+  document.getElementById('tourStep').textContent = 'Step ' + (idx + 1) + ' of ' + TOUR_STEPS.length;
+  document.getElementById('tourBack').disabled = (idx === 0);
+  document.getElementById('tourNext').textContent = (idx === TOUR_STEPS.length - 1) ? 'Done' : 'Next';
+  _tourReposition();
+  if (_tourRepoTimer) clearTimeout(_tourRepoTimer);
+  _tourRepoTimer = setTimeout(_tourReposition, 350);
+  setTimeout(() => { const n = document.getElementById('tourNext'); if (n && _tourActive) n.focus(); }, 0);
+}
+function tourNext() { _tourShow(_tourIdx + 1, 1); }
+function tourPrev() { _tourShow(_tourIdx - 1, -1); }
+function tourEnd(completed) {
+  if (!_tourActive) return;
+  _tourActive = false;
+  document.removeEventListener('keydown', _tourKey, true);
+  window.removeEventListener('resize', _tourReposition);
+  window.removeEventListener('scroll', _tourReposition, true);
+  if (_tourRepoTimer) { clearTimeout(_tourRepoTimer); _tourRepoTimer = null; }
+  document.getElementById('tourSpot').hidden = true;
+  document.getElementById('tourCard').hidden = true;
+  _tourUncollapsed.forEach(p => p.classList.add('collapsed'));
+  _tourUncollapsed = new Set();
+  const opener = _tourOpener; _tourOpener = null;
+  if (opener && opener.focus) { try { opener.focus(); } catch (e) {} }
+}
+function _tourReposition() {
+  if (!_tourActive) return;
+  const step = TOUR_STEPS[_tourIdx];
+  if (!step) return;
+  const el = step.target();
+  if (!_tourVisible(el)) return;
+  const r = el.getBoundingClientRect(), pad = 6;
+  const spot = document.getElementById('tourSpot');
+  spot.style.left = Math.max(0, r.left - pad) + 'px';
+  spot.style.top = Math.max(0, r.top - pad) + 'px';
+  spot.style.width = (r.width + pad * 2) + 'px';
+  spot.style.height = (r.height + pad * 2) + 'px';
+  const card = document.getElementById('tourCard');
+  const cw = card.offsetWidth, ch = card.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
+  let top = r.bottom + 12;
+  if (top + ch > vh - 8) { const above = r.top - ch - 12; top = (above >= 8) ? above : Math.max(8, vh - ch - 8); }
+  let left = r.left + r.width / 2 - cw / 2;
+  if (left < 8) left = 8;
+  if (left + cw > vw - 8) left = vw - cw - 8;
+  card.style.left = left + 'px';
+  card.style.top = top + 'px';
+}
+function _tourKey(e) {
+  if (!_tourActive) return;
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); tourEnd(false); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); e.stopPropagation(); tourNext(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); e.stopPropagation(); tourPrev(); }
+}
+// First-visit nudge: pulse the Tour button until the tour is opened once (suppressed under reduced motion by CSS).
+(function () {
+  function nudge() {
+    try { if (localStorage.getItem('hebrewDictionary_tourSeen')) return; } catch (e) { return; }
+    const tb = document.getElementById('tourBtn'); if (tb) tb.classList.add('pulse-attn');
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', nudge);
+  else nudge();
 })();
 </script>
 </body>
