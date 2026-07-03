@@ -364,6 +364,27 @@ body.fullscreen header{display:none !important;}
 body.fullscreen .app{height:100vh;min-height:unset;}
 .result-count{font-size:0.85rem;color:var(--muted);flex:1;}
 .sort-sel{padding:4px 8px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--text);font-size:0.8rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;outline:none;}
+/* Section 1: toolbar share/reset buttons */
+.dict-tool-btn{padding:4px 10px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--text);font-size:0.78rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;outline:none;transition:background 0.15s,border-color 0.15s;white-space:nowrap;}
+.dict-tool-btn:hover{background:var(--warm-gray);border-color:var(--gold);}
+.dict-tool-btn.copied{background:var(--gold);border-color:var(--gold);color:#fff;}
+/* Section 2: active-filter chip row */
+.filter-chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 20px;background:var(--cream);border-bottom:1px solid var(--border);align-items:center;overflow:hidden;}
+.filter-chips:empty{display:none;}
+.filter-chips.has-chips{padding:8px 20px;}
+.fchip{display:inline-flex;align-items:center;background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color 0.15s;}
+.fchip:hover{border-color:var(--gold);}
+.fchip-body{font-size:0.74rem;background:transparent;border:none;color:var(--text);cursor:pointer;font-family:inherit;padding:3px 6px 3px 10px;line-height:1.5;white-space:nowrap;}
+.fchip-x{display:inline-flex;align-items:center;justify-content:center;width:20px;height:22px;background:transparent;color:var(--muted);font-size:0.72rem;line-height:1;border:none;border-left:1px solid var(--border);cursor:pointer;flex-shrink:0;padding:0;}
+.fchip-x:hover{background:var(--gold);color:#fff;}
+.fchip-body:focus-visible,.fchip-x:focus-visible,.fchip-reset:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
+.fchip-reset{font-size:0.74rem;background:var(--navy);color:#fff;border:1px solid var(--navy);border-radius:14px;padding:4px 11px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;}
+.fchip-reset:hover{background:#2a3a6a;}
+body.dark .fchip-reset{background:var(--navy-deep);}
+/* Section 2: empty-state action buttons */
+.empty .empty-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px;}
+.empty .empty-btn{padding:6px 14px;border:1px solid var(--gold);border-radius:6px;background:var(--white);color:var(--text);font-size:0.82rem;font-family:inherit;cursor:pointer;transition:background 0.15s;}
+.empty .empty-btn:hover{background:var(--gold);color:#fff;}
 .content{flex:1;overflow-y:auto;padding:18px 20px;}
 .results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:16px;}
 .word-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:3px;cursor:default;transition:border-color 0.15s,box-shadow 0.15s;position:relative;}
@@ -439,7 +460,7 @@ body.dict-audio-on .ec-speak{display:inline-flex;}
 #globalTip::after{content:'';position:absolute;top:100%;left:8px;border:5px solid transparent;border-top-color:#1a2744;}
 .load-more-btn{background:var(--navy);color:var(--gold-light);border:none;border-radius:6px;padding:8px 28px;font-size:0.85rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;}
 .load-more-btn:hover{background:#0f1a33;}
-.empty{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty{text-align:center;padding:60px 20px;color:var(--muted);grid-column:1/-1;}
 .empty .big{font-size:2.5rem;margin-bottom:8px;}
 .loading{text-align:center;padding:60px 20px;color:var(--muted);font-style:italic;}
 footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);flex-shrink:0;}
@@ -583,7 +604,7 @@ footer a{color:var(--gold);text-decoration:none;}
     </div>
 
     <!-- Word Length -->
-    <div class="panel">
+    <div class="panel" id="panelLength">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Word Length</div>
       <div class="panel-body">
         <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:10px;">
@@ -621,7 +642,7 @@ footer a{color:var(--gold);text-decoration:none;}
     </div>
 
     <!-- Part of Speech -->
-    <div class="panel word-mode-panel">
+    <div class="panel word-mode-panel" id="panelPos">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Part of Speech</div>
       <div class="panel-body">
         <div style="display:flex;gap:6px;margin-bottom:8px;">
@@ -660,7 +681,7 @@ footer a{color:var(--gold);text-decoration:none;}
     </div>
 
     <!-- Filter by Vowel -->
-    <div class="panel collapsed word-mode-panel shoresh-hide">
+    <div class="panel collapsed word-mode-panel shoresh-hide" id="panelVowel">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Filter by Vowel</div>
       <div class="panel-body">
         <div class="filter-note" style="margin-bottom:6px;">Show only words whose vowels are all in the selected set.</div>
@@ -671,7 +692,7 @@ footer a{color:var(--gold);text-decoration:none;}
     </div>
 
     <!-- Filter by Letter Position -->
-    <div class="panel word-mode-panel shoresh-hide">
+    <div class="panel word-mode-panel shoresh-hide" id="panelLetter">
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Filter by Letter</div>
       <div class="panel-body" id="posFilterBody"></div>
     </div>
@@ -758,7 +779,7 @@ footer a{color:var(--gold);text-decoration:none;}
         </div>
 
         <!-- Gematria Options -->
-        <div class="adv-section collapsed">
+        <div class="adv-section collapsed" id="gematriaAdvSec">
           <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Gematria Options</div>
           <div class="adv-section-body">
             <label class="cb-label"><input type="checkbox" id="showGematriaCb" style="accent-color:var(--gold);" onchange="onShowGematriaChange()"> Show Gematria Value</label>
@@ -849,7 +870,10 @@ footer a{color:var(--gold);text-decoration:none;}
         <option value="cat" class="emoji-sort-only" style="display:none;">Category</option>
         <option value="english" class="emoji-sort-only" style="display:none;">English A→Z</option>
       </select>
+      <button class="dict-tool-btn" id="dictShareBtn" onclick="copyDictShareLink(this)" title="Copy a link to this exact filtered view">🔗 Copy link</button>
+      <button class="dict-tool-btn" id="dictResetBtn" onclick="resetDictFilters()" title="Reset all filters to their defaults" style="display:none;">↺ Reset filters</button>
     </div>
+    <div class="filter-chips" id="filterChips" aria-label="Active filters"></div>
     <div class="content">
       <div id="shoreshControls">
         <label style="display:block;font-size:0.8rem;font-weight:600;color:var(--text);margin-bottom:6px;">Enter a שׁורש (root)</label>
@@ -1001,6 +1025,7 @@ let bulkMode = false;
 let shoreshMode = false;
 let lastShoreshRoot = '';
 let ROOT_INDEX = null;
+let _applyingDictState = false;  // guard: suppresses onFilter storms while applyDictState() sets controls (Section 1)
 
 let translitStyle = (() => {
   try { return localStorage.getItem('hebrewDictionary_translitStyle') || 'default'; }
@@ -1266,7 +1291,8 @@ fetch('data/hebrew_words.json?v=4')
     }
     document.getElementById('loadingMsg').style.display = 'none';
     document.getElementById('resultsGrid').style.display = 'grid';
-    onFilter();
+    _wordsReady = true;           // Section 1: gate restore on both DOM + words being ready
+    maybeBootstrap();
   })
   .catch(() => {
     document.getElementById('loadingMsg').textContent = 'Failed to load. Open via a local server (not file://).';
@@ -1501,7 +1527,8 @@ function updatePB(i) {
 function expandAllMenus()   { document.querySelectorAll('#appSidebar .panel, #appSidebar .adv-section').forEach(p => p.classList.remove('collapsed')); }
 function collapseAllMenus() { document.querySelectorAll('#appSidebar .panel, #appSidebar .adv-section').forEach(p => p.classList.add('collapsed')); }
 function onFilter() {
-  if (shoreshMode) { if (lastShoreshRoot) renderShoreshFamily(lastShoreshRoot); return; }
+  if (_applyingDictState) return;  // Section 1: applyDictState() renders once itself at the end
+  if (shoreshMode) { if (lastShoreshRoot) renderShoreshFamily(lastShoreshRoot); dictAfterFilter(); return; }
   if (emojiMode) {
     filterEmojis();
     shown = 0;
@@ -1511,6 +1538,8 @@ function onFilter() {
     const countText = n === 0 ? 'No emojis found' : n === 1 ? '1 emoji' : `${n.toLocaleString()} emojis`;
     document.getElementById('resultCount').textContent = countText;
     document.getElementById('sidebarWordCount').textContent = countText;
+    if (n === 0) renderDictEmptyState(true);
+    dictAfterFilter();
     return;
   }
   const q = document.getElementById('searchInput').value.trim().toLowerCase();
@@ -1602,6 +1631,8 @@ function onFilter() {
   document.getElementById('resultCount').textContent = countText;
   document.getElementById('sidebarWordCount').textContent = countText;
   updateLenAll();
+  if (n === 0) renderDictEmptyState(false);
+  dictAfterFilter();
 }
 
 function rerender() {
@@ -2792,6 +2823,9 @@ function renderEmojiResults() {
 document.addEventListener('DOMContentLoaded', () => {
   initVowelFilter();
   initPosFilters();
+  // Section 1: capture the pristine filter baseline and parse restore sources NOW —
+  // before the localStorage pref/emoji restores below can mutate any control.
+  captureDictDefaultsAndRestore();
   initFontSelector();
   refreshMyFonts();
   initColorPickers();
@@ -2880,7 +2914,403 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     wrap.addEventListener('mouseleave', () => { gTip.style.display = 'none'; });
   });
+
+  _domReady = true;   // Section 1: DOM/UI built — restore may now proceed once words are ready too
+  maybeBootstrap();
 });
+</script>
+
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  Hebrew Dictionary UX upgrades — added 2026-07-03
+    1. Shareable ?s= links + last-session restore (getDictState/applyDictState).
+    2. Active-filter chip row, per-group reset, and a real empty state.
+    3. Word/emoji detail modal (opened by clicking a card when bulk mode is off).
+    4. Mobile reflow (sticky search/mode bar) + streaming load progress.
+    5. Guided 7-step tour + accessible tooltips.
+  This second classic <script> holds the share/session + chip engine so a fault
+  in the large main script can't disable it; both scripts share global scope.
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<script>
+/* ===== Section 1: shareable links + persistent filter state ===== */
+
+// Prototype-pollution-safe merge (copied from the blend generator, per CLAUDE.md rule 1).
+function ivritSafeAssign(target, src) {
+  if (src && typeof src === 'object') {
+    Object.keys(src).forEach(k => {
+      if (k === '__proto__' || k === 'constructor' || k === 'prototype') return;
+      target[k] = src[k];
+    });
+  }
+  return target;
+}
+function _dictClone(x) { return JSON.parse(JSON.stringify(x)); }
+// UTF-8-safe URL-friendly base64 (Hebrew round-trips).
+function _dictB64Encode(str) { return btoa(unescape(encodeURIComponent(str))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function _dictB64Decode(b) { b = b.replace(/-/g,'+').replace(/_/g,'/'); return decodeURIComponent(escape(atob(b))); }
+
+// Restore/bootstrap coordination state.
+let _domReady = false, _wordsReady = false, _bootstrapped = false;
+let _pendingShareState = null, _pendingSessionState = null;
+let DICT_SHARE_DEFAULTS = null;
+
+// Compute the list of emoji "Category|Subcategory" keys that are currently EXCLUDED
+// (mirrors saveEmojiSettings L2476-2479 so the share/session/emoji-settings never diverge).
+function _dictEmojiExcluded() {
+  const out = [];
+  if (EMOJI_DATA && emojiSelectedSubs) {
+    const all = [];
+    EMOJI_DATA.categories.forEach(c => c.subcategories.forEach(s => all.push(c.name + '|' + s)));
+    all.forEach(k => { if (!emojiSelectedSubs.has(k)) out.push(k); });
+  }
+  return out;
+}
+function _dictApplyEmojiSubs(em) {
+  if (!EMOJI_DATA) return;
+  const all = new Set();
+  EMOJI_DATA.categories.forEach(c => c.subcategories.forEach(s => all.add(c.name + '|' + s)));
+  const excluded = new Set((em && em.excludedSubs) || []);
+  emojiSelectedSubs = new Set([...all].filter(k => !excluded.has(k)));
+}
+
+function getDictState() {
+  const gt = document.getElementById('gematriaFilterType');
+  return {
+    mode: shoreshMode ? 'shoresh' : emojiMode ? 'emojis' : 'words',
+    q: document.getElementById('searchInput').value,
+    sort: document.getElementById('sortSel').value,
+    len: [...document.querySelectorAll('.lcb:checked')].map(c => c.value),
+    pos: [...document.querySelectorAll('.pcb:checked')].map(c => c.value),
+    era: { bib: document.getElementById('eraBib').checked, mod: document.getElementById('eraMod').checked },
+    vowels: [...vowelFilters],
+    hideNoVowels: hideNoVowels,
+    posLetters: posFilters.map(s => [...s]),
+    anyLetters: [...anyLetterFilter],
+    anyLetterOnly: anyLetterOnly,
+    dageshTav: dageshTavEnabled,
+    gem: {
+      show: showGematria,
+      type: gt ? gt.value : 'none',
+      v1: document.getElementById('gematriaVal1') ? document.getElementById('gematriaVal1').value : '',
+      v2: document.getElementById('gematriaVal2') ? document.getElementById('gematriaVal2').value : '',
+      sort: document.getElementById('enableSortGematriaCb') ? document.getElementById('enableSortGematriaCb').checked : false
+    },
+    emoji: { gender: emojiGender, excludedSubs: _dictEmojiExcluded() },
+    shoreshRoot: lastShoreshRoot,
+    copyMode: copyMode
+  };
+}
+
+function applyDictState(s) {
+  if (!s) return;
+  _applyingDictState = true;
+  try {
+    // 1. mode — replicate class toggles WITHOUT calling setDictMode/toggleEmojiMode (they call onFilter)
+    const mode = s.mode || 'words';
+    shoreshMode = (mode === 'shoresh');
+    emojiMode = (mode === 'emojis');
+    document.body.classList.toggle('shoresh-mode', shoreshMode);
+    document.body.classList.toggle('emoji-mode', emojiMode);
+    document.querySelectorAll('.emoji-sort-only').forEach(o => o.style.display = emojiMode ? '' : 'none');
+    document.querySelectorAll('[data-dict-mode]').forEach(b => b.classList.toggle('active', b.dataset.dictMode === mode));
+
+    // 2. dageshTav — rebuild tiles first so 'תּ' tiles exist before restoring letter Sets
+    if (typeof s.dageshTav === 'boolean' && s.dageshTav !== dageshTavEnabled) {
+      dageshTavEnabled = s.dageshTav;
+      const dt = document.getElementById('dageshTavToggle');
+      if (dt) dt.checked = dageshTavEnabled;
+      initPosFilters();
+    }
+
+    // 3. vowels
+    if (Array.isArray(s.vowels)) {
+      vowelFilters.clear();
+      s.vowels.forEach(u => vowelFilters.add(u));
+      document.querySelectorAll('#vowelFilterGrid input[data-u]').forEach(cb => { cb.checked = vowelFilters.has(cb.dataset.u); });
+    }
+
+    // 4. per-position letters
+    if (Array.isArray(s.posLetters)) {
+      for (let i = 0; i < 6; i++) {
+        posFilters[i] = new Set(s.posLetters[i] || []);
+        document.querySelectorAll('#pg' + i + ' .lpt').forEach(t => t.classList.toggle('selected', posFilters[i].has(t.dataset.h)));
+        updatePB(i);
+      }
+    }
+
+    // 5. any-letter
+    if (Array.isArray(s.anyLetters)) {
+      anyLetterFilter = new Set(s.anyLetters);
+      document.querySelectorAll('#pgAny .lpt').forEach(t => t.classList.toggle('selected', anyLetterFilter.has(t.dataset.h)));
+      updatePBAny();
+    }
+    if (typeof s.anyLetterOnly === 'boolean') {
+      anyLetterOnly = s.anyLetterOnly;
+      const alo = document.getElementById('anyLetterOnlyCb');
+      if (alo) alo.checked = anyLetterOnly;
+    }
+
+    // 6. length
+    if (Array.isArray(s.len)) {
+      const set = new Set(s.len);
+      document.querySelectorAll('.lcb').forEach(cb => { cb.checked = set.has(cb.value); });
+      updateLenAll();
+    }
+
+    // 7. part of speech
+    if (Array.isArray(s.pos)) {
+      const set = new Set(s.pos);
+      document.querySelectorAll('.pcb').forEach(cb => { cb.checked = set.has(cb.value); });
+    }
+
+    // 8. era
+    if (s.era) {
+      document.getElementById('eraBib').checked = !!s.era.bib;
+      document.getElementById('eraMod').checked = !!s.era.mod;
+    }
+
+    // 9. gematria (before sort — it mutates #sortSel options)
+    if (s.gem) {
+      showGematria = !!s.gem.show;
+      const gcb = document.getElementById('showGematriaCb');
+      if (gcb) gcb.checked = showGematria;
+      const gpanel = document.getElementById('gematriaFilterPanel');
+      if (gpanel) gpanel.style.display = showGematria ? 'block' : 'none';
+      const gtype = document.getElementById('gematriaFilterType');
+      if (gtype) { gtype.value = s.gem.type || 'none'; onGematriaFilterChange(false); }
+      const gv1 = document.getElementById('gematriaVal1'); if (gv1) gv1.value = s.gem.v1 || '';
+      const gv2 = document.getElementById('gematriaVal2'); if (gv2) gv2.value = s.gem.v2 || '';
+      const gsort = document.getElementById('enableSortGematriaCb');
+      if (gsort) { gsort.checked = !!s.gem.sort; toggleGematriaSort(!!s.gem.sort); }
+    }
+
+    // 10. sort (after gematria so gem-asc/gem-desc options exist)
+    if (s.sort) document.getElementById('sortSel').value = s.sort;
+
+    // 11. emoji gender + categories
+    emojiGender = (s.emoji && s.emoji.gender) || 'all';
+    document.querySelectorAll('.emoji-gender-btn[data-gender]').forEach(b => b.classList.toggle('active', b.dataset.gender === emojiGender));
+    if (EMOJI_DATA) { _dictApplyEmojiSubs(s.emoji); renderEmojiCatTree(); }
+
+    // 12. query
+    document.getElementById('searchInput').value = s.q || '';
+
+    // 13. copy mode
+    if (s.copyMode) {
+      copyMode = s.copyMode;
+      const r = document.querySelector('input[name="copyMode"][value="' + s.copyMode + '"]');
+      if (r) r.checked = true;
+      if (typeof bulkSelected !== 'undefined' && bulkSelected.size) onCopyModeChange(s.copyMode);
+    }
+
+    // 14. shoresh root
+    lastShoreshRoot = s.shoreshRoot || '';
+  } finally {
+    _applyingDictState = false;
+  }
+
+  // Single settle render.
+  if (shoreshMode) {
+    enterShoresh();
+    dictAfterFilter();
+  } else if (emojiMode && !EMOJI_DATA) {
+    fetchEmojiData().then(() => { _dictApplyEmojiSubs(s.emoji); renderEmojiCatTree(); onFilter(); });
+  } else {
+    onFilter();
+  }
+}
+
+function serializeDictState() {
+  const base = location.origin + location.pathname;
+  let cur; try { cur = getDictState(); } catch (e) { return base; }
+  const bl = DICT_SHARE_DEFAULTS || {};
+  const diff = {};
+  Object.keys(cur).forEach(k => { if (JSON.stringify(cur[k]) !== JSON.stringify(bl[k])) diff[k] = cur[k]; });
+  if (!Object.keys(diff).length) return base;
+  return base + '?s=' + _dictB64Encode(JSON.stringify(diff));
+}
+
+function copyDictShareLink(btn) {
+  const url = serializeDictState();
+  try { history.replaceState(null, '', url); } catch (e) {}
+  const done = () => {
+    if (!btn) return;
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
+  };
+  if (navigator.clipboard) { navigator.clipboard.writeText(url).then(done).catch(done); }
+  else { const ta = document.createElement('textarea'); ta.value = url; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(ta); done(); }
+}
+
+function resetDictFilters() {
+  if (!DICT_SHARE_DEFAULTS) return;
+  const curMode = getDictState().mode;
+  applyDictState(ivritSafeAssign(_dictClone(DICT_SHARE_DEFAULTS), { mode: curMode }));
+}
+
+function captureDictDefaultsAndRestore() {
+  try { DICT_SHARE_DEFAULTS = getDictState(); } catch (e) { DICT_SHARE_DEFAULTS = null; }
+  // ?s= share link takes priority
+  try {
+    const raw = new URLSearchParams(location.search).get('s');
+    if (raw) { const obj = ivritSafeParse(_dictB64Decode(raw)); if (obj && typeof obj === 'object') _pendingShareState = obj; }
+  } catch (e) {}
+  // else last-session restore (search query intentionally excluded when saved)
+  if (!_pendingShareState) {
+    try { const raw = localStorage.getItem('hebrewDictionary_lastState'); if (raw) { const obj = ivritSafeParse(raw); if (obj && typeof obj === 'object') _pendingSessionState = obj; } } catch (e) {}
+  }
+}
+
+function maybeBootstrap() {
+  if (!_domReady || !_wordsReady || _bootstrapped) return;
+  _bootstrapped = true;
+  if (_pendingShareState) applyDictState(ivritSafeAssign(_dictClone(DICT_SHARE_DEFAULTS || {}), _pendingShareState));
+  else if (_pendingSessionState) applyDictState(ivritSafeAssign(_dictClone(DICT_SHARE_DEFAULTS || {}), _pendingSessionState));
+  else onFilter();
+}
+
+// Debounced last-session persistence (excludes the search query).
+let _sessSaveTimer = null;
+function scheduleDictSessionSave() { if (_sessSaveTimer) clearTimeout(_sessSaveTimer); _sessSaveTimer = setTimeout(saveDictSession, 1000); }
+function saveDictSession() {
+  if (!_bootstrapped) return;
+  try { const st = getDictState(); delete st.q; localStorage.setItem('hebrewDictionary_lastState', JSON.stringify(st)); } catch (e) {}
+}
+
+// Toolbar sync: show the Reset button only when the view differs from defaults.
+function updateDictToolbar() {
+  const rb = document.getElementById('dictResetBtn');
+  if (rb) rb.style.display = (serializeDictState().indexOf('?s=') !== -1) ? '' : 'none';
+}
+
+// Called at every non-suppressed onFilter exit (words/emoji/shoresh).
+function dictAfterFilter() {
+  if (_applyingDictState) return;
+  rebuildFilterChips();
+  updateDictToolbar();
+  scheduleDictSessionSave();
+}
+
+/* ===== Section 2: active-filter chips + empty state ===== */
+
+function rebuildFilterChips() {
+  const box = document.getElementById('filterChips');
+  if (!box) return;
+  if (shoreshMode) { box.innerHTML = ''; box.classList.remove('has-chips'); return; }
+  const chips = [];
+  const q = document.getElementById('searchInput').value.trim();
+  if (q) chips.push({ key: 'search', label: 'Search: "' + q + '"', panel: '.search-wrap' });
+
+  if (!emojiMode) {
+    const lenAll = [...document.querySelectorAll('.lcb')], lenN = lenAll.filter(c => c.checked).length;
+    if (lenN !== lenAll.length) chips.push({ key: 'len', label: 'Length: ' + lenN + '/' + lenAll.length, panel: '#panelLength' });
+    const posAll = [...document.querySelectorAll('.pcb')], posN = posAll.filter(c => c.checked).length;
+    if (posN !== posAll.length) chips.push({ key: 'pos', label: 'POS: ' + posN + '/' + posAll.length, panel: '#panelPos' });
+    const bib = document.getElementById('eraBib').checked, mod = document.getElementById('eraMod').checked;
+    if (!bib || !mod) chips.push({ key: 'era', label: (!bib && !mod) ? 'Era: none' : (bib ? 'Era: Biblical only' : 'Era: Modern only'), panel: '#panelPos' });
+    if (vowelFilters.size !== VOWEL_DEFS.length) chips.push({ key: 'vowels', label: 'Vowels: ' + vowelFilters.size + '/' + VOWEL_DEFS.length, panel: '#panelVowel' });
+    if (hideNoVowels) chips.push({ key: 'noVowel', label: 'Hiding vowelless', panel: '#panelVowel' });
+    const ord = ['1st', '2nd', '3rd', '4th', '5th', '6th'];
+    for (let i = 0; i < 6; i++) if (posFilters[i].size) chips.push({ key: 'pos' + i, label: ord[i] + ' letter: ' + [...posFilters[i]].join(' '), panel: '#panelLetter' });
+    if (anyLetterFilter.size) chips.push({ key: 'any', label: 'Any: ' + [...anyLetterFilter].join(' ') + (anyLetterOnly ? ' (only)' : ''), panel: '#panelLetter' });
+    const gt = document.getElementById('gematriaFilterType');
+    if (gt && gt.value !== 'none') {
+      const v1 = document.getElementById('gematriaVal1').value, v2 = document.getElementById('gematriaVal2').value;
+      const op = { exact: '=', gte: '≥', lte: '≤', range: '∈' }[gt.value] || '';
+      chips.push({ key: 'gem', label: 'Gematria ' + op + ' ' + (gt.value === 'range' ? (v1 + '–' + v2) : v1), panel: '#gematriaAdvSec' });
+    }
+  } else {
+    if (emojiGender !== 'all') chips.push({ key: 'egender', label: emojiGender === 'masc' ? '♂ Masc only' : '♀ Fem only', panel: '#panelLength' });
+    if (EMOJI_DATA && emojiSelectedSubs) {
+      let total = 0; EMOJI_DATA.categories.forEach(c => total += c.subcategories.length);
+      if (emojiSelectedSubs.size !== total) chips.push({ key: 'ecats', label: 'Categories: ' + emojiSelectedSubs.size + '/' + total, panel: '#emojiCatTree' });
+    }
+  }
+
+  box.innerHTML = '';
+  if (!chips.length) { box.classList.remove('has-chips'); return; }
+  box.classList.add('has-chips');
+  chips.forEach(c => {
+    const chip = document.createElement('span');
+    chip.className = 'fchip';
+    const body = document.createElement('button');
+    body.type = 'button'; body.className = 'fchip-body'; body.dataset.chip = c.key; body.dataset.panel = c.panel || '';
+    body.textContent = c.label; body.setAttribute('aria-label', c.label + ' — show filter');
+    const x = document.createElement('button');
+    x.type = 'button'; x.className = 'fchip-x'; x.dataset.reset = c.key; x.textContent = '✕';
+    x.setAttribute('aria-label', 'Remove ' + c.label + ' filter');
+    chip.appendChild(body); chip.appendChild(x);
+    box.appendChild(chip);
+  });
+  const ra = document.createElement('button');
+  ra.type = 'button'; ra.className = 'fchip-reset'; ra.dataset.chip = 'resetAll'; ra.textContent = 'Reset all ✕';
+  ra.setAttribute('aria-label', 'Reset all filters');
+  box.appendChild(ra);
+}
+
+// Reset one filter group to its default (syncs its panel controls too).
+function resetChipGroup(key) {
+  if (key === 'search') { document.getElementById('searchInput').value = ''; onFilter(); return; }
+  if (key === 'len') { const cb = document.getElementById('lenAllCb'); cb.checked = true; toggleAllLengths(cb); return; }
+  if (key === 'pos') { setPosAll(true); return; }
+  if (key === 'era') { document.getElementById('eraBib').checked = true; document.getElementById('eraMod').checked = true; onFilter(); return; }
+  if (key === 'vowels') { setAllVowels(true); return; }
+  if (key === 'noVowel') { const cb = document.getElementById('hideNoVowelsCb'); if (cb) cb.checked = false; hideNoVowels = false; onFilter(); return; }
+  if (key.indexOf('pos') === 0 && key.length === 4) { clearPos(parseInt(key.slice(3))); return; }
+  if (key === 'any') { clearAnyLetters(); return; }
+  if (key === 'gem') { const gt = document.getElementById('gematriaFilterType'); if (gt) { gt.value = 'none'; onGematriaFilterChange(true); } return; }
+  if (key === 'egender') { setEmojiGender('all'); return; }
+  if (key === 'ecats') { setAllEmojiCats(true); return; }
+}
+
+// Delegated chip interactions (bound once; robust to full re-render).
+(function () {
+  const box = document.getElementById('filterChips');
+  if (!box) return;
+  box.addEventListener('click', e => {
+    const x = e.target.closest('[data-reset]');
+    if (x) { e.stopPropagation(); resetChipGroup(x.dataset.reset); return; }
+    const body = e.target.closest('[data-chip]');
+    if (!body) return;
+    if (body.dataset.chip === 'resetAll') { resetDictFilters(); return; }
+    const sel = body.dataset.panel;
+    if (sel) {
+      const el = document.querySelector(sel);
+      if (el) {
+        const panel = el.closest('.panel'); if (panel) panel.classList.remove('collapsed');
+        const adv = el.closest('.adv-section'); if (adv) { adv.classList.remove('collapsed'); const ap = adv.closest('.panel'); if (ap) ap.classList.remove('collapsed'); }
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  });
+})();
+
+// Friendly empty state rendered into the results grid on zero matches.
+function renderDictEmptyState(isEmoji) {
+  const grid = document.getElementById('resultsGrid');
+  if (!grid) return;
+  const q = document.getElementById('searchInput').value.trim();
+  const wrap = document.createElement('div');
+  wrap.className = 'empty';
+  const big = document.createElement('div'); big.className = 'big'; big.textContent = '🔍'; wrap.appendChild(big);
+  const msg = document.createElement('div');
+  msg.textContent = isEmoji ? 'No emojis match these filters' : 'No words match these filters';
+  wrap.appendChild(msg);
+  const actions = document.createElement('div'); actions.className = 'empty-actions';
+  if (q) {
+    const b = document.createElement('button'); b.className = 'empty-btn'; b.textContent = 'Clear search';
+    b.addEventListener('click', () => { document.getElementById('searchInput').value = ''; onFilter(); });
+    actions.appendChild(b);
+  }
+  const r = document.createElement('button'); r.className = 'empty-btn'; r.textContent = 'Reset all filters';
+  r.addEventListener('click', resetDictFilters);
+  actions.appendChild(r);
+  wrap.appendChild(actions);
+  grid.appendChild(wrap);
+}
 </script>
 </body>
 </html>
