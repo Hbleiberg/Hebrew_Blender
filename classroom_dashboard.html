@@ -1121,6 +1121,21 @@
   .fr-skip:hover, .fr-tour:hover { text-decoration: underline; }
   @media (max-width: 560px) { .fr-starters { grid-template-columns: 1fr; } }
 
+  /* ── In-place dashboard text editing ── */
+  #dashTextWrap { position: relative; }
+  .dash-edit-pencil { position: absolute; top: 4px; right: 4px; z-index: 5; width: 34px; height: 34px;
+    border-radius: 8px; border: 1px solid var(--border); background: var(--white); color: var(--muted);
+    cursor: pointer; font-size: 1rem; line-height: 1; opacity: 0; transition: opacity 0.15s; }
+  #dashTextWrap:hover .dash-edit-pencil, .dash-edit-pencil:focus { opacity: 0.9; }
+  .dash-edit-pencil:hover { border-color: var(--gold); color: var(--gold); }
+  body.dark .dash-edit-pencil { background: var(--navy-deep); }
+  body.fullscreen .dash-edit-pencil { display: none; }   /* in fullscreen the ✎ lives on the quick strip */
+  .inplace-toolbar { position: fixed; z-index: 210; width: auto; max-width: 96vw;
+    box-shadow: var(--shadow-lg); border: 1px solid var(--border); border-radius: 8px; background: var(--white); }
+  body.dark .inplace-toolbar { background: var(--navy-deep); }
+  .dash-text-display.editing { outline: 2px dashed var(--gold); outline-offset: 4px; border-radius: 6px; min-height: 1.4em; cursor: text; }
+  .dash-text-display.editing .spoiler { background: #c0392b33; color: inherit; cursor: text; user-select: text; }
+
   /* ───── Responsive ───── */
   @media (max-width: 980px) {
     .dashboard { grid-template-columns: 1fr; gap: 16px; padding: 18px; }
@@ -1211,6 +1226,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     </div>
     <div id="dashTextWrap" style="display:none;width:100%;">
       <div id="dashTextDisplay" class="dash-text-display"></div>
+      <button id="dashEditPencil" class="dash-edit-pencil" title="Edit text" aria-label="Edit dashboard text" onclick="enterInPlaceEdit()">✎</button>
     </div>
   </div><!-- RIGHT: Weather --><div class="right-col-wrap">
     <div class="dash-col" id="weatherCol">
@@ -1278,6 +1294,12 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <a href="#" class="fr-skip" onclick="frSkip();return false;">Skip — use New York for now</a>
     <a href="#" class="fr-tour" id="frTourLink" style="display:none;" onclick="frDismiss();tourStart();return false;">Take a tour →</a>
   </div>
+</div>
+<!-- ───── In-place editing toolbar (floats over #dashTextDisplay) ───── -->
+<div id="inplaceToolbar" class="editor-toolbar inplace-toolbar" style="display:none;">
+  <span id="inplaceToolbarCmds" style="display:contents;"></span>
+  <span class="ed-sep"></span>
+  <button class="ed-btn" type="button" title="Finish editing" onclick="exitInPlaceEdit(true)">✓ Done</button>
 </div>
 <!-- ───── Settings drawer ───── --><div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
 <div class="settings-modal" id="settingsModal">
@@ -1635,28 +1657,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <input type="range" id="dashTextSizeSlider" min="0.8" max="5" step="0.1" value="1.8" oninput="setDashTextSize(this.value)">
       <span class="size-val" id="dashTextSizeVal">1.8rem</span>
     </div>
-    <div class="editor-toolbar">
-      <button class="ed-btn" onclick="fmt('bold')" type="button"><b>B</b></button>
-      <button class="ed-btn" onclick="fmt('italic')" type="button"><i>I</i></button>
-      <button class="ed-btn" onclick="fmt('underline')" type="button"><u>U</u></button>
-      <button class="ed-btn" onclick="fmt('strikeThrough')" type="button"><s>S</s></button>
-      <span class="ed-sep"></span>
-      <button class="ed-btn" onclick="setAlign('Right')" type="button" title="Align right (RTL)"><svg width="14" height="11" viewBox="0 0 14 11" fill="currentColor"><rect x="0" y="0" width="14" height="1.5" rx="0.75"/><rect x="5" y="4" width="9" height="1.5" rx="0.75"/><rect x="2" y="8" width="12" height="1.5" rx="0.75"/></svg></button>
-      <button class="ed-btn" onclick="setAlign('Center')" type="button" title="Center"><svg width="14" height="11" viewBox="0 0 14 11" fill="currentColor"><rect x="0" y="0" width="14" height="1.5" rx="0.75"/><rect x="2.5" y="4" width="9" height="1.5" rx="0.75"/><rect x="1" y="8" width="12" height="1.5" rx="0.75"/></svg></button>
-      <button class="ed-btn" onclick="setAlign('Left')" type="button" title="Align left (LTR)"><svg width="14" height="11" viewBox="0 0 14 11" fill="currentColor"><rect x="0" y="0" width="14" height="1.5" rx="0.75"/><rect x="0" y="4" width="9" height="1.5" rx="0.75"/><rect x="0" y="8" width="12" height="1.5" rx="0.75"/></svg></button>
-      <span class="ed-sep"></span>
-      <button class="ed-btn" onclick="insertLink()" type="button" title="Insert link (or remove if cursor is inside one)">🔗</button>
-      <button class="ed-btn" onclick="insertSpoiler()" type="button" title="Wrap selection in spoiler (hidden until tapped)">Spoiler</button>
-      <span class="ed-sep"></span>
-      <input type="color" class="ed-color" onchange="fmt('foreColor', this.value)" title="Text color">
-      <select class="ed-select" onchange="fmt('fontSize', this.value)" title="Size">
-        <option value="2">Small</option>
-        <option value="3" selected>Normal</option>
-        <option value="5">Large</option>
-        <option value="6">XL</option>
-        <option value="7">XXL</option>
-      </select>
-    </div>
+    <div class="editor-toolbar" id="drawerToolbar"></div>
     <div id="dashEditor" class="editor" contenteditable="true" oninput="syncDashText()"></div>
     <div class="form-row" style="margin-top:10px;">
       <label>Hide dashboard text</label>
@@ -2109,6 +2110,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   let weatherTimer = null;
   let clockInterval = null;
   let _wakeLock = null;
+  let _activeEditable = null;
+  let _inplacePrevFocus = null;
 
   /* ────────── FIRST-RUN SETUP + STARTER LAYOUTS ────────── */
   // Pristine copy of the shipped defaults, captured before any load mutates `settings`.
@@ -3221,6 +3224,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
   /* ────────── SETTINGS DRAWER ────────── */
   function openSettings() {
+    if (_activeEditable) exitInPlaceEdit(true);   // one edit surface at a time — commit in-place first
     document.getElementById('settingsBackdrop').classList.add('open');
     document.getElementById('settingsModal').classList.add('open');
     syncFormToSettings();
@@ -3583,6 +3587,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       }));
     document.getElementById('zoomSlider').addEventListener('input', e => applyZoom(+e.target.value));
     document.getElementById('dashTextDisplay').addEventListener('click', e => {
+      if (e.currentTarget.classList.contains('editing')) return;   // spoilers stay revealed while editing
       const sp = e.target.closest('.spoiler');
       if (!sp) return;
       if (!sp.classList.contains('revealed')) {
@@ -4330,6 +4335,7 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
     const key = active.preset + '|' + active.until;
     if (key !== _lastScheduleKey && presets[active.preset]) {
       _lastScheduleKey = key;
+      if (_activeEditable) exitInPlaceEdit(true);   // commit any in-place edit before a scheduled preset switch
       applySettings(presets[active.preset]);
     }
   }
@@ -4459,21 +4465,21 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
     return tpl.innerHTML;
   }
   function restoreEditorFocus() {
-    const ed = document.getElementById('dashEditor');
+    const ed = activeEditor();
     ed.focus();
     if (_savedEditorRange) {
       const sel = window.getSelection();
-      if (sel) { sel.removeAllRanges(); sel.addRange(_savedEditorRange); }
+      if (sel) { sel.removeAllRanges(); try { sel.addRange(_savedEditorRange); } catch (e) {} }
     }
   }
   function fmt(cmd, val = null) {
     restoreEditorFocus();
     document.execCommand(cmd, false, val);
-    syncDashText();
+    syncActive();
   }
   function setAlign(dir) {
     restoreEditorFocus();
-    const ed = document.getElementById('dashEditor');
+    const ed = activeEditor();
     const alignVal = { Left: 'left', Center: 'center', Right: 'right' }[dir];
     if (!alignVal) return;
     const sel = window.getSelection();
@@ -4503,7 +4509,7 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
       div.style.textAlign = alignVal;
       while (ed.firstChild) div.appendChild(ed.firstChild);
       ed.appendChild(div);
-      syncDashText();
+      syncActive();
       return;
     }
 
@@ -4522,17 +4528,17 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
         div.appendChild(child);
       }
     }
-    syncDashText();
+    syncActive();
   }
   function insertLink() {
     restoreEditorFocus();
-    const ed = document.getElementById('dashEditor');
+    const ed = activeEditor();
     const sel = window.getSelection();
     if (!sel || !sel.rangeCount) return;
     const existingAnchor = sel.anchorNode?.parentElement?.closest('a');
     if (existingAnchor) {
       document.execCommand('unlink', false, null);
-      syncDashText();
+      syncActive();
       return;
     }
     const url = prompt('Enter URL:', 'https://');
@@ -4548,7 +4554,7 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
       try { range.surroundContents(a); }
       catch(e) { a.appendChild(range.extractContents()); range.insertNode(a); }
     }
-    syncDashText();
+    syncActive();
   }
   function insertSpoiler() {
     restoreEditorFocus();
@@ -4557,7 +4563,7 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
     const range = sel.getRangeAt(0);
     const nodeEl = n => n?.nodeType === 3 ? n.parentElement : n;
     // Collect all spoilers that overlap the selection
-    const ed = document.getElementById('dashEditor');
+    const ed = activeEditor();
     const overlappingSpoilers = [];
     ed.querySelectorAll('.spoiler').forEach(sp => {
       const r = document.createRange();
@@ -4579,7 +4585,7 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
         while (sp.firstChild) parent.insertBefore(sp.firstChild, sp);
         parent.removeChild(sp);
       });
-      syncDashText();
+      syncActive();
       return;
     }
     if (range.collapsed) return;
@@ -4591,12 +4597,134 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
       span.appendChild(range.extractContents());
       range.insertNode(span);
     }
-    syncDashText();
+    syncActive();
   }
-  function syncDashText() {
+
+  /* ── Shared editor toolbar (drawer editor + floating in-place toolbar) ── */
+  const SVG_ALIGN_R = '<svg width="14" height="11" viewBox="0 0 14 11" fill="currentColor"><rect x="0" y="0" width="14" height="1.5" rx="0.75"/><rect x="5" y="4" width="9" height="1.5" rx="0.75"/><rect x="2" y="8" width="12" height="1.5" rx="0.75"/></svg>';
+  const SVG_ALIGN_C = '<svg width="14" height="11" viewBox="0 0 14 11" fill="currentColor"><rect x="0" y="0" width="14" height="1.5" rx="0.75"/><rect x="2.5" y="4" width="9" height="1.5" rx="0.75"/><rect x="1" y="8" width="12" height="1.5" rx="0.75"/></svg>';
+  const SVG_ALIGN_L = '<svg width="14" height="11" viewBox="0 0 14 11" fill="currentColor"><rect x="0" y="0" width="14" height="1.5" rx="0.75"/><rect x="0" y="4" width="9" height="1.5" rx="0.75"/><rect x="0" y="8" width="12" height="1.5" rx="0.75"/></svg>';
+  const EDITOR_COMMANDS = [
+    { type:'btn', title:'Bold',          html:'<b>B</b>', run:() => fmt('bold') },
+    { type:'btn', title:'Italic',        html:'<i>I</i>', run:() => fmt('italic') },
+    { type:'btn', title:'Underline',     html:'<u>U</u>', run:() => fmt('underline') },
+    { type:'btn', title:'Strikethrough', html:'<s>S</s>', run:() => fmt('strikeThrough') },
+    { type:'sep' },
+    { type:'btn', title:'Align right (RTL)', html:SVG_ALIGN_R, run:() => setAlign('Right') },
+    { type:'btn', title:'Center',            html:SVG_ALIGN_C, run:() => setAlign('Center') },
+    { type:'btn', title:'Align left (LTR)',  html:SVG_ALIGN_L, run:() => setAlign('Left') },
+    { type:'sep' },
+    { type:'btn', title:'Insert link (or remove if cursor is inside one)', html:'🔗', run:() => insertLink() },
+    { type:'btn', title:'Wrap selection in spoiler (hidden until tapped)', html:'Spoiler', run:() => insertSpoiler() },
+    { type:'sep' },
+    { type:'color', title:'Text color', run:v => fmt('foreColor', v) },
+    { type:'size',  title:'Size', run:v => fmt('fontSize', v),
+      options:[['2','Small'],['3','Normal'],['5','Large'],['6','XL'],['7','XXL']] },
+  ];
+  function buildToolbar(container) {
+    if (!container) return;
+    container.innerHTML = '';
+    EDITOR_COMMANDS.forEach(c => {
+      let node;
+      if (c.type === 'sep') { node = document.createElement('span'); node.className = 'ed-sep'; }
+      else if (c.type === 'color') {
+        node = document.createElement('input'); node.type = 'color'; node.className = 'ed-color'; node.title = c.title;
+        node.addEventListener('change', e => c.run(e.target.value));
+      } else if (c.type === 'size') {
+        node = document.createElement('select'); node.className = 'ed-select'; node.title = c.title;
+        node.innerHTML = c.options.map(([v, l]) => `<option value="${v}"${v === '3' ? ' selected' : ''}>${l}</option>`).join('');
+        node.addEventListener('change', e => c.run(e.target.value));
+      } else {
+        node = document.createElement('button'); node.type = 'button'; node.className = 'ed-btn'; node.title = c.title;
+        node.innerHTML = c.html; node.addEventListener('click', c.run);
+      }
+      container.appendChild(node);
+    });
+  }
+
+  /* ── Two-way sync + in-place editing on the dashboard ── */
+  function activeEditor() { return _activeEditable || document.getElementById('dashEditor'); }
+  function commitEditorToDisplay() {                 // editor → display + settings (the classic direction)
     const ed = document.getElementById('dashEditor');
     document.getElementById('dashTextDisplay').innerHTML = ed.innerHTML;
     settings.dashTextHTML = ed.innerHTML;
+  }
+  function commitDisplayToEditor() {                 // display → editor + settings, through the sanitizer
+    const disp = document.getElementById('dashTextDisplay');
+    const clean = sanitizeDashHTML(disp.innerHTML);
+    disp.innerHTML = clean;
+    document.getElementById('dashEditor').innerHTML = clean;
+    settings.dashTextHTML = clean;
+  }
+  function syncActive() {                             // fast mirror of whichever surface is active (no re-sanitize)
+    const disp = document.getElementById('dashTextDisplay'), ed = document.getElementById('dashEditor');
+    if (_activeEditable === disp) { ed.innerHTML = disp.innerHTML; settings.dashTextHTML = disp.innerHTML; }
+    else { disp.innerHTML = ed.innerHTML; settings.dashTextHTML = ed.innerHTML; }
+  }
+  function syncDashText() { commitEditorToDisplay(); }   // alias kept for oninput / init / applySettings
+
+  function enterInPlaceEdit() {
+    if (document.getElementById('settingsModal').classList.contains('open')) return;   // drawer owns editing
+    if (!settings.enableDashText) toggleDashText(true);
+    const disp = document.getElementById('dashTextDisplay');
+    if (_activeEditable === disp) return;
+    _inplacePrevFocus = document.activeElement;
+    _activeEditable = disp;
+    disp.classList.add('editing');
+    disp.setAttribute('contenteditable', 'true');
+    const bar = document.getElementById('inplaceToolbar');
+    bar.style.display = 'flex';
+    positionInplaceToolbar();
+    disp.focus();
+    const sel = window.getSelection(), r = document.createRange();
+    r.selectNodeContents(disp); r.collapse(false);
+    sel.removeAllRanges(); sel.addRange(r);
+    document.addEventListener('keydown', _inplaceKey, true);
+    document.addEventListener('pointerdown', _inplaceOutside, true);
+    window.addEventListener('resize', positionInplaceToolbar);
+  }
+  function exitInPlaceEdit(commit) {
+    const disp = document.getElementById('dashTextDisplay');
+    if (_activeEditable !== disp) return;
+    document.removeEventListener('keydown', _inplaceKey, true);
+    document.removeEventListener('pointerdown', _inplaceOutside, true);
+    window.removeEventListener('resize', positionInplaceToolbar);
+    disp.removeAttribute('contenteditable');
+    disp.classList.remove('editing');
+    document.getElementById('inplaceToolbar').style.display = 'none';
+    _activeEditable = null;
+    if (commit) commitDisplayToEditor(); else commitEditorToDisplay();   // revert re-reads the untouched editor
+    saveSettingsToStorage();
+    if (_inplacePrevFocus && _inplacePrevFocus.focus) { try { _inplacePrevFocus.focus(); } catch (e) {} }
+    _inplacePrevFocus = null;
+  }
+  function _inplaceKey(e) {
+    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); exitInPlaceEdit(false); }
+  }
+  function _inplaceOutside(e) {
+    if (e.target.closest('#dashTextDisplay') || e.target.closest('#inplaceToolbar')) return;
+    exitInPlaceEdit(true);
+  }
+  function positionInplaceToolbar() {
+    const bar = document.getElementById('inplaceToolbar');
+    if (!bar || bar.style.display === 'none') return;
+    const r = document.getElementById('dashTextDisplay').getBoundingClientRect();
+    const bw = bar.offsetWidth || 320, bh = bar.offsetHeight || 40;
+    const fs = document.body.classList.contains('fullscreen');
+    let left = r.left + r.width / 2 - bw / 2;
+    let top = fs ? (window.innerHeight - bh - 90) : (r.top - bh - 8);
+    if (top < 8) top = r.bottom + 8;
+    bar.style.left = Math.max(8, Math.min(left, window.innerWidth - bw - 8)) + 'px';
+    bar.style.top = Math.max(8, top) + 'px';
+  }
+  function _pasteSanitized(e) {
+    e.preventDefault();
+    const cb = e.clipboardData || window.clipboardData;
+    const html = cb && cb.getData('text/html');
+    const text = cb ? cb.getData('text/plain') : '';
+    const clean = html ? sanitizeDashHTML(html) : esc(text).replace(/\n/g, '<br>');
+    document.execCommand('insertHTML', false, clean);
+    syncActive();
   }
   function toggleDashText(on) {
     settings.enableDashText = !!on;
@@ -4862,6 +4990,15 @@ async function onUploadFontPick(input){
     refreshMyFonts();
     syncFormToSettings();
     wireFormListeners();
+    buildToolbar(document.getElementById('drawerToolbar'));
+    buildToolbar(document.getElementById('inplaceToolbarCmds'));
+    document.getElementById('dashEditor').addEventListener('paste', _pasteSanitized);
+    document.getElementById('dashTextDisplay').addEventListener('paste', e => {
+      if (_activeEditable === document.getElementById('dashTextDisplay')) _pasteSanitized(e);
+    });
+    document.getElementById('dashTextDisplay').addEventListener('input', () => {
+      if (_activeEditable === document.getElementById('dashTextDisplay')) syncActive();
+    });
     document.getElementById('dashEditor').innerHTML = sanitizeDashHTML(settings.dashTextHTML || '');
     syncDashText();
     toggleDashText(settings.enableDashText);
@@ -4920,13 +5057,13 @@ async function onUploadFontPick(input){
 
   // Prevent toolbar buttons from stealing focus/selection from the editor
   // Don't preventDefault on select/input so they remain interactive
-  document.querySelector('.editor-toolbar').addEventListener('mousedown', e => {
+  document.querySelectorAll('.editor-toolbar').forEach(tb => tb.addEventListener('mousedown', e => {
     if (e.target.tagName === 'BUTTON' || e.target.closest('button')) e.preventDefault();
-  });
+  }));
 
-  // Always keep _savedEditorRange current while editor has focus
+  // Always keep _savedEditorRange current while the active editable has focus
   document.addEventListener('selectionchange', () => {
-    if (document.activeElement === document.getElementById('dashEditor')) {
+    if (document.activeElement === activeEditor()) {
       const sel = window.getSelection();
       if (sel && sel.rangeCount > 0) _savedEditorRange = sel.getRangeAt(0).cloneRange();
     }
