@@ -2329,6 +2329,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <span class="fs-val" id="traceSpacingVal">0.50rem</span>
             <button class="fs-reset" onclick="resetTraceSpacing()" title="Reset to default">↺</button>
           </div>
+          <div class="font-size-row">
+            <span class="fs-label">Size</span>
+            <input type="range" id="traceSize" min="0" max="100" value="50" step="1"
+                   oninput="setHebFontSize(this.value)" ondblclick="resetTraceSize()">
+            <span class="fs-val" id="traceSizeVal">2.00rem</span>
+            <button class="fs-reset" onclick="resetTraceSize()" title="Reset to default">↺</button>
+          </div>
           <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
             <span class="sub-label" style="font-size:0.78rem;min-width:96px;">Line style</span>
             <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);flex:1;">
@@ -10724,6 +10731,13 @@ function setHebFontSize(val) {
   document.documentElement.style.setProperty('--heb-font-size', size + 'rem');
   const el = document.getElementById('hebFontSizeVal');
   if (el) el.textContent = size + 'rem';
+  // Keep the mirror slider in the Tracing panel in lockstep (same global size).
+  const mainSl = document.getElementById('hebFontSizeSlider');
+  if (mainSl && mainSl.value != val) mainSl.value = val;
+  const trSl = document.getElementById('traceSize');
+  if (trSl && trSl.value != val) trSl.value = val;
+  const trVal = document.getElementById('traceSizeVal');
+  if (trVal) trVal.textContent = size + 'rem';
   try { localStorage.setItem('hebrewBlender_hebFontSize', val); } catch(e) {}
   // Other worksheets restyle live via CSS; tracing must re-render so fill-line
   // copy counts and height-based pagination recompute for the new glyph size.
@@ -10732,6 +10746,11 @@ function setHebFontSize(val) {
 
 function resetHebFontSize() {
   const sl = document.getElementById('hebFontSizeSlider');
+  if (sl) { sl.value = 50; setHebFontSize(50); }
+}
+// The Tracing panel's Size slider mirrors the Hebrew font-size slider.
+function resetTraceSize() {
+  const sl = document.getElementById('traceSize');
   if (sl) { sl.value = 50; setHebFontSize(50); }
 }
 
