@@ -2118,6 +2118,7 @@ let listeningChoices = 3;           // 3 | 4 answer tiles per round
 let speechSupported = !!window.speechSynthesis;  // hard capability gate (matches speakWord's guard)
 let listenHeard = false;            // per-card: has the current listening card been played (🔊) yet?
 let listenLocked = false;           // per-card double-answer guard
+let listenAdvanceTimer = null;      // pending post-answer auto-advance (cancellable on nav)
 let currentListenChoices = [];      // this round's choice cards, in render order (keyboard 1..N)
 function isListeningSupportedMode() { return !nameLetterMode; }  // bare-consonant TTS is ambiguous
 function isListeningActive() { return listeningEnabled && speechSupported && isListeningSupportedMode(); }
@@ -4285,7 +4286,7 @@ async function practiceWeaknesses(name) {
   requeued = new Array(deck.length).fill(false);
   hasFlipped = new Array(deck.length).fill(false);
   isFlipped = false;
-  listenLocked = false;   // 🎧 reset the per-card answer guard for a fresh session
+  listenLocked = false; clearTimeout(listenAdvanceTimer);   // 🎧 reset listening guards for a fresh session
   resetSessionStats();
   renderCurrentCard();
   showScreen('screenCard');
@@ -5127,7 +5128,7 @@ function startPractice() {
   requeued = new Array(deck.length).fill(false);
   hasFlipped = new Array(deck.length).fill(false);
   isFlipped = false;
-  listenLocked = false;   // 🎧 reset the per-card answer guard for a fresh session
+  listenLocked = false; clearTimeout(listenAdvanceTimer);   // 🎧 reset listening guards for a fresh session
   resetSessionStats();
   renderCurrentCard();
   showScreen('screenCard');
@@ -5485,9 +5486,14 @@ function chooseTile(chosen, answer, tileEl) {
     if (t.dataset.heb === answer.heb) t.classList.add('good');
   });
   if (!ok) tileEl.classList.add('bad');
-  setTimeout(autoAdvance, 700);   // the next card stays silent until its 🔊 is tapped
+  // Auto-advance after a beat — but only if the student hasn't navigated away meanwhile,
+  // so a stale timer can't jump them forward and resurface old feedback on another card.
+  const from = currentIndex;
+  clearTimeout(listenAdvanceTimer);
+  listenAdvanceTimer = setTimeout(() => { if (currentIndex === from) autoAdvance(); }, 700);
 }
 function nextCard() {
+  clearTimeout(listenAdvanceTimer);   // manual nav overrides any pending auto-advance
   // Pressing Next/→ on an ungraded card is a skip. With "Show skipped cards again"
   // on, re-queue that card once (flagged) at the end so the whole set gets seen.
   const card = currentCards[currentIndex];
@@ -5507,6 +5513,7 @@ function nextCard() {
   }
 }
 function prevCard() {
+  clearTimeout(listenAdvanceTimer);   // manual nav overrides any pending auto-advance
   if (currentIndex > 0) {
     currentIndex--;
     isFlipped = false;
@@ -5516,6 +5523,7 @@ function prevCard() {
 
 function showResults() {
   stopTimer();
+  clearTimeout(listenAdvanceTimer);
   // Exclude re-queued (skipped) originals; the re-shown copy represents them.
   const idxs = currentCards.map((_, i) => i).filter(i => !requeued[i]);
   const total = idxs.length;
@@ -5581,7 +5589,7 @@ function redoSameSet() {
   requeued = new Array(currentCards.length).fill(false);
   hasFlipped = new Array(currentCards.length).fill(false);
   isFlipped = false;
-  listenLocked = false;   // 🎧 reset the per-card answer guard for a fresh session
+  listenLocked = false; clearTimeout(listenAdvanceTimer);   // 🎧 reset listening guards for a fresh session
   resetSessionStats();
   renderCurrentCard();
   showScreen('screenCard');
@@ -5596,7 +5604,7 @@ function practiceMistakes() {
   requeued = new Array(currentCards.length).fill(false);
   hasFlipped = new Array(currentCards.length).fill(false);
   isFlipped = false;
-  listenLocked = false;   // 🎧 reset the per-card answer guard for a fresh session
+  listenLocked = false; clearTimeout(listenAdvanceTimer);   // 🎧 reset listening guards for a fresh session
   resetSessionStats();
   renderCurrentCard();
   showScreen('screenCard');
