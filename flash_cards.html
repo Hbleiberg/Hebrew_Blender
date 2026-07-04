@@ -885,6 +885,9 @@ body.dark .lc-replay { color: var(--gold-light); }
   width: 56px; height: 48px;
   padding: 0;
 }
+/* Listening view has no flip button — center the Prev/Next pair and scale them up a touch */
+.fc-nav.listen-nav { display: flex; justify-content: center; gap: 12px; }
+.fc-nav.listen-nav .nav-btn { flex: 0 1 150px; padding: 14px 20px; font-size: 1rem; }
 
 /* ============== RESULTS ============== */
 .results-hero {
@@ -5402,10 +5405,12 @@ function setListenChrome(on) {
   const listen = document.getElementById('fcListen');
   const markRow = document.querySelector('.fc-mark-row');
   const flipBtn = document.getElementById('flipBtn');
+  const nav = document.querySelector('.fc-nav');
   if (persp) persp.style.display = on ? 'none' : '';
   if (listen) listen.style.display = on ? '' : 'none';
   if (markRow) markRow.classList.toggle('hide', on);
   if (flipBtn) flipBtn.style.display = on ? 'none' : '';
+  if (nav) nav.classList.toggle('listen-nav', on);   // center Prev/Next (no flip button in this view)
 }
 function choiceFace(card) {
   // Numbers speak the Hebrew number-words; the identify face follows numberFront
