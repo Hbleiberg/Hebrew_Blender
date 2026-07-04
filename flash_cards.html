@@ -4714,6 +4714,15 @@ function generateCard() {
     };
   }
 
+  if (otherModeActive && otherSubMode === 'words') {
+    if (!WORDS_POOL || WORDS_POOL.length === 0) return null;
+    const w = pickRandom(WORDS_POOL);
+    return {
+      heb: w.word, translit: w.translit || '', translation: w.translation || '',
+      wordCard: true, skipTranslitRebuild: true,   // front-agnostic; wordsFront chosen in render
+    };
+  }
+
   const result = { heb: '', translit: '' };
 
   const firstPool = buildPool(L => !L.sofit && !L.isVav);
@@ -4928,6 +4937,13 @@ function startPractice() {
     if (!EMOJI_DATA) issues.push('Emoji data still loading — try again in a second.');
     else if (selectedEmojiSubs.size === 0) issues.push('Select at least one emoji subcategory.');
   }
+  if (otherModeActive && otherSubMode === 'words') {
+    WORDS_POOL = resolveWordsPool();
+    if (wordsSource === 'alldict' && !ALL_WORDS_DATA) issues.push('Dictionary still loading — try again in a second.');
+    else if (wordsSource === 'mylists' && selectedWordListIds.size === 0 && !(wordsInlinePool && wordsInlinePool.length))
+      issues.push('Select at least one word list.');
+    else if (!WORDS_POOL || WORDS_POOL.length === 0) issues.push('No words match the current selection.');
+  }
   if (issues.length) { alert(issues.join('\n')); return; }
 
   const deck = generateDeck(cardCount);
@@ -5080,6 +5096,32 @@ function renderCurrentCard() {
     }
     if (emojiFront === 'emoji') { emojiSide(front); hebEmojiSide(back); }
     else { hebEmojiSide(front); emojiSide(back); }
+  } else if (otherModeActive && otherSubMode === 'words') {
+    // Hebrew side: nikkud-colorized (colorizeHebrew escapes each char); optional translit line.
+    function hebWordSide(el) {
+      if (wordsShowTranslit && card.translit) {
+        const trLine = `<div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;text-align:center;">${escapeHtml(card.translit)}</div>`;
+        el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;"><div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(2rem,8vw,3.5rem);text-align:center;">${colorizeHebrew(card.heb)}</div>${trLine}</div>`;
+        el.style.fontFamily = ''; el.style.direction = ''; el.style.fontSize = '';
+      } else {
+        el.innerHTML = colorizeHebrew(card.heb);
+        el.style.fontFamily = 'var(--heb-font)';
+        el.style.direction = 'rtl';
+        el.style.fontSize = 'clamp(2rem, 8vw, 3.5rem)';
+      }
+    }
+    // English side: translation via textContent (auto-safe); wraps on narrow cards.
+    function enWordSide(el) {
+      el.textContent = card.translation || '—';
+      el.style.fontFamily = 'var(--serif)';
+      el.style.direction = 'ltr';
+      el.style.fontSize = 'clamp(1.2rem, 5vw, 2.2rem)';
+      el.style.textAlign = 'center';
+      el.style.overflowWrap = 'anywhere';
+      el.style.wordBreak = 'break-word';
+    }
+    if (wordsFront === 'hebrew') { hebWordSide(front); enWordSide(back); }
+    else { enWordSide(front); hebWordSide(back); }
   } else if (nameLetterMode) {
     if (nameLetterShowLetter) {
       front.textContent = card.heb;
