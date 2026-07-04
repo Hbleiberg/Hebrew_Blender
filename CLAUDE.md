@@ -43,6 +43,7 @@
 - [ ] Added an external script/font/fetch/wasm/iframe? → update that page's **CSP meta tag** (Security rule 3).
 - [ ] New UI control in a preset-bearing tool? → wire `getSettings()`/`applySettings()` (+ AllTools export/import/erase keys if it's a new localStorage store).
 - [ ] Verified headless with the **Playwright recipe** (see "Verifying changes" section): light + dark mode, desktop + ~800px.
+- [ ] Added or meaningfully changed a page's content? → run **`node scripts/update-sitemap.mjs`** as your last step so each `<lastmod>` reflects this change's commit date (see Deploy section). Idempotent; safe to run every session.
 - [ ] Committed + pushed directly to `main`, and the **Pages deploy run concluded `success`** (see Deploy section — code on `main` is not yet the live site).
 
 ## Security — REQUIRED patterns (safe JSON parse, `esc()`, CSP)
@@ -1387,3 +1388,10 @@ push, is what updates the live site.
   (`fetch('data/…')`), and cross-page links/manifest/sw registrations assume root. Never move a
   page into a subfolder (this is also why extensionless "clean URLs" via `foo/index.html`
   restructuring was evaluated and rejected — it breaks every relative `data/` fetch).
+- **Keep `sitemap.xml` `<lastmod>` fresh** with `node scripts/update-sitemap.mjs` (plain Node, no
+  deps). It maps each `<loc>` to its file, reads that file's last commit date via
+  `git log -1 --format=%cs`, and rewrites only the `<lastmod>` values (changefreq/priority/format
+  untouched). Run it as the **last step** of any session that changed page content, so dates reflect
+  that session's commit. It's idempotent (re-running with no new commits is a no-op) and produces
+  per-file dates. When you add a new page, add its `<url>` block to `sitemap.xml` first, then run
+  the script. Sits alongside the `sw.js VERSION` bump in the end-of-session checklist above.
