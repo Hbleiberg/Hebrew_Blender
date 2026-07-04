@@ -517,7 +517,7 @@
   /* Projector overlay (shared by the sidebar card and the fullscreen pop) */
   #pickOverlay { position: fixed; inset: 0; z-index: 400; display: none; flex-direction: column;
     align-items: center; justify-content: center; gap: 22px; padding: 4vmin;
-    background: rgba(10,15,28,0.95); }
+    background: rgba(9,13,24,0.985); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
   .pick-close { position: absolute; top: 18px; right: 20px; width: 44px; height: 44px;
     border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1);
     color: #fff; font-size: 1.3rem; cursor: pointer; line-height: 1; }
@@ -538,10 +538,10 @@
   @keyframes pickFlickerFade { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
   @keyframes pickLanded { 0% { transform: scale(0.55); opacity: 0; } 60% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
   /* Group Maker cards inside the projector overlay */
-  .pick-groups { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px;
+  .pick-groups { display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 16px;
     width: 100%; max-width: 1400px; max-height: 74vh; overflow-y: auto; padding: 4px; }
-  .pick-group-card { background: var(--white); border: 1px solid var(--border); border-top: 4px solid var(--gold);
-    border-radius: 12px; padding: 12px 14px; box-shadow: var(--shadow-md); }
+  .pick-group-card { flex: 0 1 210px; min-width: 150px; background: var(--white); border: 1px solid var(--border);
+    border-top: 4px solid var(--gold); border-radius: 12px; padding: 12px 14px; box-shadow: var(--shadow-md); }
   .pick-group-title { font-family: 'Libre Baskerville', serif; font-weight: 700; color: var(--navy);
     font-size: clamp(0.95rem, 2vw, 1.35rem); margin-bottom: 8px; text-align: center; letter-spacing: 0.03em; }
   body.dark .pick-group-title { color: var(--gold-light); }
