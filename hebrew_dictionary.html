@@ -2242,10 +2242,53 @@ function patternNorm(s) {
   return out;
 }
 function wordConsonants(w) { return normHebLetters(w.bare || w.word); }
+
+// Which non-root letters may legally sit where, relative to the root, in a word that belongs
+// to a shoresh. All letters here are already sofit-normalized by normHebLetters (final forms
+// mapped to base). Prefix = conjunctions / article / relative-ש / prepositions / binyan-tense
+// prefixes. Interior = matres lectionis ו/י (plus a spelled-out doubling of an adjacent
+// radical). Suffix = feminine / plural / pronominal endings.
+const SHORESH_PREFIX   = new Set([...'והשכלבמתאינ']);
+const SHORESH_INTERIOR = new Set([...'וי']);
+const SHORESH_SUFFIX   = new Set([...'הותימנכ']);   // sofit-normalized (ם→מ, ן→נ)
+
+// Positional root match: is there an in-order embedding of root `rc` (array of letters) into
+// the word consonant skeleton `wc` (string) such that the letters that fall BEFORE the first
+// radical are all prefix letters (≤3), the letters BETWEEN consecutive radicals are matres
+// ו/י or a doubling of an adjacent radical (≤2 per gap), and the letters AFTER the last radical
+// are all suffix letters (≤4)? Backtracks over embeddings (radicals may repeat) and accepts if
+// ANY embedding is legal. Words are short, so the search is trivial. This replaces the old
+// naive-subsequence test that let any scattered-in-order match through (root אכל → אֶשְׁכּוֹל).
+// Known false-NEGATIVE (intentional, do not loosen to chase): weak roots drop a radical in
+// conjugation (נפל → יִפֹּל has no נ), so those derived forms won't appear. Sin/shin also still
+// merge here, because normHebLetters strips the שׂ/שׁ dots — a separate, deeper change.
 function consonantsContainRoot(wc, rc) {
-  let i = 0;
-  for (let k = 0; k < wc.length && i < rc.length; k++) { if (wc[k] === rc[i]) i++; }
-  return i === rc.length;
+  const m = rc.length, n = wc.length;
+  if (m === 0) return false;
+  const allIn = (s, e, set) => { for (let k = s; k < e; k++) if (!set.has(wc[k])) return false; return true; };
+  function place(j, from, prev) {
+    for (let p = from; p < n; p++) {
+      if (wc[p] !== rc[j]) continue;
+      if (j === 0) {                                   // prefix run wc[0..p)
+        if (p > 3 || !allIn(0, p, SHORESH_PREFIX)) continue;
+      } else {                                         // interior run wc[prev+1..p)
+        if (p - prev - 1 > 2) continue;
+        let ok = true;
+        for (let k = prev + 1; k < p; k++) {
+          const c = wc[k];
+          if (!(SHORESH_INTERIOR.has(c) || c === rc[j - 1] || c === rc[j])) { ok = false; break; }
+        }
+        if (!ok) continue;
+      }
+      if (j === m - 1) {                               // suffix run wc[p+1..n)
+        if ((n - 1 - p) <= 4 && allIn(p + 1, n, SHORESH_SUFFIX)) return true;
+        continue;                                      // try a later occurrence to shrink the tail
+      }
+      if (place(j + 1, p + 1, p)) return true;
+    }
+    return false;
+  }
+  return place(0, 0, -1);
 }
 
 function setDictMode(mode) {
