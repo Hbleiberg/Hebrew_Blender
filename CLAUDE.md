@@ -1,5 +1,37 @@
 # Hebrew Blender — Claude Instructions
 
+## Contents
+
+**Binding rules (every change must comply)**
+- [Git](#git)
+- [Definition of done](#definition-of-done--check-every-item-before-finishing-a-change)
+- [Security — required patterns (`ivritSafeParse` / `esc()` / CSP)](#security--required-patterns-safe-json-parse-esc-csp)
+- [Import / Export All Settings — AllTools registration](#import--export-all-settings-indexhtml)
+- [localStorage flag guidance — what belongs in AllTools](#localstorage-flag-guidance--what-belongs-in-alltools)
+- [.ivrit save files](#ivrit-save-files-automatic-input--required-on-every-tool-with-presetssettings)
+- [Preset Save/Restore (`getSettings()`/`applySettings()`)](#preset-saverestore)
+- [Preset Lists — Nested Folders](#preset-lists--nested-folders-file-tree)
+- [My Fonts — shared font store](#my-fonts--shared-font-store-picker-integration--upload-every-font-selector-tool)
+- [Vowel Color Scheme — Default / TaL AM](#vowel-color-scheme--default--tal-am-all-three-picker-tools)
+- [Shared UX components](#shared-ux-components--the-conventions-all-tools-are-converging-on)
+- [App Version & Splash Screens](#app-version--splash-screens-splash)
+- [Service Worker & Caching](#service-worker--caching-swjs)
+- [Deploy — how changes reach ivritsuite.com](#deploy--how-changes-reach-ivritsuitecom-github-pages)
+
+**Component reference (how existing systems work)**
+- [Preset Lists — Drag-to-Reorder](#preset-lists--drag-to-reorder-superseded-for-the-six-foldered-lists-above)
+- [Dark Mode](#dark-mode-classroom_dashboardhtml)
+- [Hebrew Font UI](#hebrew-font-ui-classroom_dashboardhtml)
+- [Hebrew Font Maker](#hebrew-font-maker-hebrew_font_makerhtml)
+- [Nikkud Color Coding UI](#nikkud-color-coding-ui-classroom_dashboardhtml)
+- [Settings Drawer & Panel Collapse](#settings-drawer--panel-collapse-classroom_dashboardhtml)
+- [Tooltips](#tooltips-classroom_dashboardhtml)
+- [Letter Selector](#letter-selector-hebrew_blend_generatorhtml)
+- [Vowel Selector](#vowel-selector-hebrew_blend_generatorhtml)
+- [Verifying changes — headless Playwright recipe](#verifying-changes--headless-playwright-recipe)
+
+---
+
 ## Git
 - Always commit and push directly to `main`
 - Do not create feature branches
@@ -113,6 +145,28 @@ Examples:
 - `hebrewDashboard_settings` — Dashboard settings blob
 - `hebrewDashboard_schedules` — Dashboard schedules
 
+### localStorage flag guidance — what belongs in AllTools
+
+Not every key belongs in the three AllTools functions. Split them:
+
+- **Real cross-machine data → MUST register** (all three functions, per the rule above). Anything a
+  user would expect back on a new machine: settings blobs, presets, saved profiles/schedules, folder
+  trees, last-session state, and live-preview/display preferences. If a tool persists it and losing it
+  on a new device would upset the user, it's data.
+- **One-time UI flags → EXEMPT from export/import, but `eraseAllSettings` SHOULD clear them.** Flags
+  whose only job is "don't show this again" — `*_tourSeen` / `hebrewFontMaker_tourDone`, `*_setupSeen`,
+  `*_welcomeSeen`, `*_hintSeen`, `*_mobileWarnDismissed`, and similar dismissals. Backing these up would
+  just re-suppress first-run help on a fresh machine, so they stay out of export/import — but **erase
+  means fresh start**, so add them to `eraseAllSettings`. (Per-device UI prefs like `hebrewBlender_zoom`,
+  `hebrewBlender_hideZoomBar`, and transient caches like `hebrewDashboard_shabbatCache` are also legitimately
+  export-exempt.)
+
+Reconcile whenever you touch storage: every key a tool writes should be *either* registered in all three
+functions *or* consciously in the exempt set above. `hebrewDictionary_lastState` (the dictionary's last
+filter/session state) is currently only in `eraseAllSettings` — it is real session data, so it is a
+known gap (erased but never backed up/restored). Treat a key that is real data yet missing from
+export/import as a bug to fix, not a pattern to copy.
+
 ---
 
 ## .ivrit Save Files (Automatic Input) — **REQUIRED on every tool with presets/settings**
@@ -189,11 +243,17 @@ The shared `.ivrit-*` CSS block (with `var(..., fallback)` colors so it works on
 ---
 
 ## Preset Save/Restore
-Whenever a new UI control is added to `hebrew_blend_generator.html`, it must be included in both:
+This rule applies to **every tool that defines `getSettings()`/`applySettings()`** —
+currently `hebrew_blend_generator.html`, `flash_cards.html`, and `classroom_dashboard.html`.
+Whenever a new UI control is added to one of those tools, it must be included in both:
 - `getSettings()` — serialize the control's current value
 - `applySettings()` — restore the value and call any related UI toggle functions (e.g. `toggleGematriaMode()`, `toggleCwBlendOpts()`) so dependent rows update correctly
 
 Because `.ivrit` save files store `liveState = getSettings()`, keeping `getSettings()`/`applySettings()` complete is what makes both presets **and** `.ivrit` files capture every control. No separate `.ivrit` step is needed per control.
+
+(`torah_trainer.html` and `hebrew_dictionary.html` have no preset collection of their own — they
+persist a single `settings`/last-state object instead, so the equivalent obligation there is to add
+every new control to that object's save/restore path.)
 
 ---
 
@@ -476,6 +536,92 @@ It **must**: (1) paste the shared `ivritsuite-fonts` block, (2) implement the co
 **"My Fonts"** group appears and `refreshMyFonts()` runs at init, and (3) paste the **My Fonts uploader**
 block + the "Upload your own font?" control below its picker. Custom fonts then work and upload everywhere
 automatically.
+
+---
+
+## Shared UX components — the conventions all tools are converging on
+
+These are the cross-tool UX patterns the suite is standardizing, documented the same way as the
+`.ivrit` engine and folder-tree component: **canonical pattern, then a rule for new tools**, plus an
+**Implemented on:** line that states the *current* reality (which may be "not yet implemented anywhere").
+These lines are a snapshot — verify by grep before relying on them, and update them when a pattern spreads.
+
+### 1. Guided tour engine
+Non-modal spotlight: a dim full-page overlay with a spotlight cutout computed from the target's
+`getBoundingClientRect()`, a floating card (title, 1–2 sentences, "Step X of N", Back / Next / ✕ End),
+Escape to end, arrow keys to navigate, resize-safe, `scrollIntoView` the target first, and **zero project/
+settings mutations**. It **never auto-launches** — entry is a header **"❓ Tour"** button with a one-time
+first-visit pulse gated by a `hebrew<Tool>_tourSeen` flag (set once so the pulse never returns).
+- **Implemented on:** `hebrew_blend_generator.html`, `hebrew_dictionary.html`, `classroom_dashboard.html`,
+  `torah_trainer.html`, `Hebrew_Font_Maker.html` (**5 tools**) — but as **per-file engines**, not yet a
+  single shared block. Flags are `hebrew<Tool>_tourSeen` except Font Maker's legacy `hebrewFontMaker_tourDone`.
+  The generator's engine is a copy of Font Maker's ("keep the engines in sync"). **Not** on `index.html`,
+  `flash_cards.html`, or `resources.html`.
+- **Rule:** when you next touch a tour engine, extract it into a `═══`-marked shared block (house
+  convention, byte-identical across files) so the five copies stop drifting. Any **new** tool ships a tour.
+  A tour must touch none of the undo/dirty/state machinery — read-only overlay only.
+
+### 2. Accessible tooltips (tap + keyboard, not hover-only)
+Hover is preserved, **and** tap/click plus Enter/Space toggle the bubble; Escape, an outside click, or
+blur closes it; only one is open at a time; the bubble is viewport-clamped and has **no** fixed-duration
+auto-hide timer. The trigger carries `tabindex="0"`, `role="button"`, `aria-expanded`, and
+`aria-describedby` pointing at the bubble.
+- **Implemented on:** `hebrew_blend_generator.html` (via `.tooltip-wrap`/`.tooltip-box`), plus
+  `hebrew_dictionary.html`, `torah_trainer.html`, and `classroom_dashboard.html` (via `.tip-wrap`/`data-tip`
+  + `bindTip`, `aria-expanded`). **`flash_cards.html` is the laggard** — its `.has-tip` tooltips are
+  hover + click-to-pin only, with **no `aria-expanded` and no keyboard handler**; it is slated to adopt
+  this pattern.
+- **Rule:** no new hover-only tooltips anywhere. New `data-tip`s must inherit the page's accessible
+  handler automatically (don't hand-roll a one-off).
+
+### 3. Share links (`?s=` state in the URL)
+Serialize the tool's shareable state as a **diff against a pristine-defaults baseline** (so the URL stays
+short), URL-safe-encode it into a **`?s=`** param, and restore it on init with **silent failure on garbage**.
+Writing a link uses `history.replaceState` (never a navigation); loading a link **never clobbers** the
+user's saved presets/profiles — it only sets the live view.
+- **Implemented on:** `hebrew_dictionary.html` (`serializeDictState`/`applyDictState`, also persists
+  `hebrewDictionary_lastState`) and `hebrew_blend_generator.html` (`shareB64Encode`, auto-restores on load).
+  `flash_cards.html` ships a **paste-in teacher "share code"** (`shareCodeEncode`/`shareCodeDecode`) rather
+  than a URL param — the two mechanisms coexist and both are fine where they already are.
+- **Rule:** any tool that gains shareable state uses `?s=` (a paste code may coexist where one already does).
+
+### 4. Reduced motion
+Every page must carry a `@media (prefers-reduced-motion: reduce)` block, and **every** animation added
+anywhere — first-visit pulses, tour transitions, timer/omer pulsing, fades — must be neutralized inside it.
+- **Implemented on:** `torah_trainer.html`, `hebrew_blend_generator.html`, `hebrew_dictionary.html`,
+  `classroom_dashboard.html`, `Hebrew_Font_Maker.html`, `404.html` (**6 files**). **Missing** on
+  `index.html`, `flash_cards.html`, `resources.html`, `contact.html`, `privacy.html` — add the block when
+  you next touch any of those.
+- **Rule:** if you add an animation to a page, that page needs the reduced-motion block, and your
+  animation must honor it.
+
+### 5. Inline validation, never `alert()`
+Validation should surface as **inline notes in the owning panel** plus a short summary near the primary
+action; a primary action that can't run gets `aria-disabled` + a stated reason rather than a dead click or
+a modal `alert()`. (`confirm()` for genuinely destructive actions — erase, reset-both-schemes — stays.)
+- **Implemented on:** **not yet — this is a target, not current reality.** Blocking `alert()` is still the
+  norm across the suite (≈15–21 calls each in the generator, flash cards, index, and dashboard; a handful
+  in the others). Migrate call sites toward inline validation opportunistically as you touch each panel.
+- **Rule:** do not add **new** `alert()`-driven validation; wire new validation inline. Leave existing
+  `confirm()` destructive-action guards in place.
+
+### 6. First-run affordances
+One-time nudges / setup cards / starter layouts, each gated by a `hebrew<Tool>_<flag>` localStorage flag so
+they show **once** and never again; never a modal wall, never an auto-launching tour.
+- **Implemented on:** `classroom_dashboard.html` (`STARTERS` starter-layout card, `hebrewDashboard_setupSeen`),
+  `hebrew_blend_generator.html` (`QUICK_START_RECIPES` quick-start drawer/chips), and `Hebrew_Font_Maker.html`
+  (welcome modal via `hebrewBlender_welcomeSeen` + `hebrewFontMaker_mobileWarnDismissed`).
+- **Rule:** gate every first-run affordance behind its own `*_seen`/`*_dismissed` flag (which is
+  export-exempt but erase-cleared — see the localStorage flag guidance above).
+
+### 7. Keyboard / touch parity
+Documented keyboard shortcuts get visible `<kbd>` hint rows (surfaced on keyboard-capable devices);
+touch-primary tools get gesture equivalents; every new interactive element must be keyboard-operable.
+- **Implemented on:** only `Hebrew_Font_Maker.html` carries the full treatment (global shortcut handler +
+  `?` cheat sheet via `shortcutGroups()`/`openShortcuts()` + `<kbd>` hints). **No tool currently ships
+  touch-gesture equivalents** (no `touchstart`/swipe handlers anywhere — Flash Cards flips on plain tap).
+- **Rule:** any new shortcut is registered in the cheat sheet **and** the triggering control's `title`, and
+  shown as a `<kbd>` hint; any new interactive element is reachable and operable by keyboard.
 
 ---
 
@@ -820,6 +966,12 @@ Called once at `DOMContentLoaded`. Toggling `.collapsed` on the `.panel` element
 ---
 
 ## Tooltips (`classroom_dashboard.html`)
+
+> **Accessibility note:** the dashboard's `.tip-wrap`/`data-tip` tooltips have adopted the shared
+> **accessible tooltip** pattern (tap/click + Enter/Space toggle, `aria-expanded`, Escape/outside/blur
+> to close, one open at a time) — see [Shared UX components → Accessible tooltips](#shared-ux-components--the-conventions-all-tools-are-converging-on).
+> The `position: fixed` floating-div mechanics below are still the delivery vehicle; the JS now also
+> wires the keyboard/tap handlers, not hover alone.
 
 ### Why not pure CSS
 
