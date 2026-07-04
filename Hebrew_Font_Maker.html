@@ -101,7 +101,10 @@
     { "@type": "Question", "name": "How do I make my own Hebrew font?", "acceptedAnswer": { "@type": "Answer", "text": "Upload or scan a picture of each Hebrew letter, trace it into an outline, place the nikkud and trop anchors, then export a real font you can install." } },
     { "@type": "Question", "name": "Can I make free Hebrew fonts with nikkud and trop?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The free Hebrew Font Maker positions nikkud (vowels) and cantillation (trop) automatically using OpenType mark positioning." } },
     { "@type": "Question", "name": "What font formats can I export?", "acceptedAnswer": { "@type": "Answer", "text": "TrueType (TTF), WOFF2 for the web, and editable UFO source — each with a license you choose (CC0, OFL, MIT, or All Rights Reserved)." } },
-    { "@type": "Question", "name": "Do I need to install any software?", "acceptedAnswer": { "@type": "Answer", "text": "No. The Hebrew Font Maker runs entirely in your browser; the font engine loads only when you export." } }
+    { "@type": "Question", "name": "Do I need to install any software?", "acceptedAnswer": { "@type": "Answer", "text": "No. The Hebrew Font Maker runs entirely in your browser; the font engine loads only when you export." } },
+    { "@type": "Question", "name": "How do I install a Hebrew font on Windows, Mac, or Google Docs?", "acceptedAnswer": { "@type": "Answer", "text": "On Windows, double-click the downloaded .ttf file and choose Install. On Mac, double-click it and click Install Font in Font Book. Google Docs only uses fonts from its own catalog and cannot load a local font, so use a desktop word processor such as Word, Pages, or LibreOffice, or upload the file to a design tool like Canva instead." } },
+    { "@type": "Question", "name": "Are fonts I make here free to use commercially?", "acceptedAnswer": { "@type": "Answer", "text": "That depends on the license you pick when you export. CC0 places the font in the public domain — free for any use, including commercial, with no attribution required. OFL and MIT are also free for commercial use under their terms. All Rights Reserved keeps the font yours to license as you wish. You own what you create; IvritSuite claims no rights to your fonts." } },
+    { "@type": "Question", "name": "Do the fonts include nikkud (vowels) and cantillation (trop)?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. As you build each letter you can anchor its nikkud and trop marks, and the exported font uses OpenType GPOS mark positioning so the marks land in the right place automatically as you type. You can also make a letters-only font and skip the marks." } }
   ]
 }
 </script>
@@ -915,12 +918,41 @@
 </div>
 
 <footer>
-  <strong>Hebrew Font Maker</strong> — a free, experimental IvritSuite tool. Builds real fonts entirely
-  client-side (the font engine loads on first export), with GPOS mark positioning for nikkud (mark-to-base)
-  and cantillation/trop (mark-to-mark). Exports TrueType (TTF), WOFF2 and editable UFO source, and your
-  finished font can be used in other IvritSuite tools such as <a href="torah_trainer.html">Torah Trainer</a>.
-  Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank">Harrison Bleiberg</a>.
-  Desktop browser recommended.
+  <div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;align-items:start;">
+    <div>
+      <details>
+        <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;">Frequently Asked Questions</summary>
+        <div style="padding:4px 0;">
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Is the Hebrew Font Maker free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Yes. The Hebrew Font Maker is completely free — make and download as many Hebrew fonts as you like, with no account or sign-up.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">How do I make my own Hebrew font?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Upload or scan a picture of each Hebrew letter, trace it into an outline, place the nikkud and trop anchors, then export a real font you can install.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Can I make free Hebrew fonts with nikkud and trop?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Yes. The free Hebrew Font Maker positions nikkud (vowels) and cantillation (trop) automatically using OpenType mark positioning.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">What font formats can I export?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">TrueType (TTF), WOFF2 for the web, and editable UFO source — each with a license you choose (CC0, OFL, MIT, or All Rights Reserved).</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Do I need to install any software?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">No. The Hebrew Font Maker runs entirely in your browser; the font engine loads only when you export.</p></details>
+          <!-- DRAFT: pending author review -->
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">How do I install a Hebrew font on Windows, Mac, or Google Docs?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">On Windows, double-click the downloaded .ttf file and choose Install. On Mac, double-click it and click Install Font in Font Book. Google Docs only uses fonts from its own catalog and cannot load a local font, so use a desktop word processor such as Word, Pages, or LibreOffice, or upload the file to a design tool like Canva instead.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Are fonts I make here free to use commercially?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">That depends on the license you pick when you export. CC0 places the font in the public domain — free for any use, including commercial, with no attribution required. OFL and MIT are also free for commercial use under their terms. All Rights Reserved keeps the font yours to license as you wish. You own what you create; IvritSuite claims no rights to your fonts.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Do the fonts include nikkud (vowels) and cantillation (trop)?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Yes. As you build each letter you can anchor its nikkud and trop marks, and the exported font uses OpenType GPOS mark positioning so the marks land in the right place automatically as you type. You can also make a letters-only font and skip the marks.</p></details>
+        </div>
+      </details>
+    </div>
+    <div style="font-size:0.72rem;line-height:1.5;text-align:center;">
+      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;">About</div>
+      A free, experimental IvritSuite tool. Builds real fonts entirely client-side (the font engine loads on first export), with GPOS mark positioning for nikkud (mark-to-base) and cantillation/trop (mark-to-mark). Exports TrueType (TTF), WOFF2 and editable UFO source.<br>
+      Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="font-weight:600;">Harrison Bleiberg</a><br>
+      <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
+      <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank">GitHub</a><br>
+      Desktop browser recommended.
+    </div>
+    <nav aria-label="Related Hebrew Tools" style="text-align:right;">
+      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;">Related Hebrew Tools</div>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:2px 14px;">
+        <li><a href="hebrew_blend_generator.html" style="font-size:0.8rem;">printable Hebrew worksheets →</a></li>
+        <li><a href="flash_cards.html" style="font-size:0.8rem;">Hebrew alphabet flash cards →</a></li>
+        <li><a href="torah_trainer.html" style="font-size:0.8rem;">Torah reading practice →</a></li>
+        <li><a href="resources.html" style="font-size:0.8rem;">free Hebrew teaching resources →</a></li>
+      </ul>
+    </nav>
+  </div>
 </footer>
 
 <!-- "Edit shape" — build a nikkud/mark from dots & bars (or upload), apply to this letter or all -->
