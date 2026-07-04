@@ -1608,8 +1608,48 @@ function wlRenderManagerInto(root) {
       wlRefreshManager();
     }, 'color:#c0392b;');
     row.appendChild(acts);
+    if (list.words.length) {
+      const loadBtn = wlEl('button', { cls: 'wm-root-btn', type: 'button', style: 'margin-top:8px;font-size:0.8rem;padding:7px 12px;' }, 'Load as filter (view in results)');
+      loadBtn.addEventListener('click', () => wlLoadListAsFilter(id));
+      row.appendChild(loadBtn);
+    }
     root.appendChild(row);
   });
+}
+
+// Turn a stored (denormalized) word-list entry into an object buildWordCard can render.
+function wlToCardObj(sw) {
+  const word = sw.word || '';
+  const bare = word.replace(/[֑-ׇ]/g, '');
+  const tr = sw.translit || '';
+  return {
+    word, bare,
+    translit: tr, translitDisplay: tr,
+    translation: sw.translation || '',
+    pos: sw.pos || '', era: sw.era || '',
+    len: [...bare].length,
+    cons: [...bare],
+    gem: calcGematria(bare)
+  };
+}
+// Show exactly this list's words in the results view (in-memory override, not the real filter).
+function wlLoadListAsFilter(id) {
+  const list = wlGetList(id);
+  if (!list) return;
+  wlFilterOverride = list.words.map(wlToCardObj);
+  filtered = wlFilterOverride;
+  shown = 0;
+  const grid = document.getElementById('resultsGrid');
+  if (grid) grid.innerHTML = '';
+  loadMore();
+  const n = filtered.length;
+  const countText = n === 0 ? 'No words in this list' : n === 1 ? '1 word' : `${n.toLocaleString()} words`;
+  const rc = document.getElementById('resultCount');
+  const sc = document.getElementById('sidebarWordCount');
+  if (rc) rc.textContent = countText;
+  if (sc) sc.textContent = countText;
+  if (n === 0) renderDictEmptyState(false);
+  closeWordModal();
 }
 
 const GEMATRIA = {'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,'כ':20,'ך':20,'ל':30,'מ':40,'ם':40,'נ':50,'ן':50,'ס':60,'ע':70,'פ':80,'ף':80,'צ':90,'ץ':90,'ק':100,'ר':200,'ש':300,'ת':400};
@@ -1621,6 +1661,7 @@ function calcGematria(word) {
 let filtered = [];
 let shown = 0;
 const PAGE = 100;
+let wlFilterOverride = null; // when set, results show a fixed Word List instead of ALL_WORDS; cleared by any real filter change
 const posFilters = Array.from({length:6}, () => new Set());
 let anyLetterFilter = new Set();
 let anyLetterOnly = false;
@@ -1966,6 +2007,7 @@ function onFilter() {
     dictAfterFilter();
     return;
   }
+  wlFilterOverride = null;  // a genuine filter change discards any active "Load as filter" view
   const q = document.getElementById('searchInput').value.trim().toLowerCase();
   const checkedLen = new Set([...document.querySelectorAll('.lcb:checked')].map(c => c.value));
   const checkedPos = new Set([...document.querySelectorAll('.pcb:checked')].map(c => c.value));
