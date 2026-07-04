@@ -858,6 +858,13 @@ footer a{color:var(--gold);text-decoration:none;}
               <div id="exportErr" style="font-size:0.72rem;color:#c0392b;margin-top:3px;min-height:1em;"></div>
               <div style="font-size:0.65rem;color:var(--muted);margin-top:5px;line-height:1.4;">Anki: import via File → Import. Quizlet: use Import from Word/Excel on the study set creation page.</div>
             </div>
+            <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
+            <div style="font-size:0.72rem;font-weight:600;margin-bottom:2px;color:var(--text);">Word Lists <span class="tip-wrap" data-tip="Save selected words as a named list stored across the whole site, so you can reuse it in other tools."><i class="tip-icon">?</i></span></div>
+            <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">Save selected words as a named list you can reuse elsewhere on the site.</div>
+            <div style="display:flex;gap:5px;">
+              <button id="wlSaveBtn" class="pos-all-btn" style="flex:1;opacity:0.5;" onclick="wlOpenSaveModal()" disabled>⭑ Save as Word List…</button>
+              <button class="pos-all-btn" style="flex:1;" onclick="wlOpenManager()">📚 Word Lists</button>
+            </div>
           </div>
         </div>
 
@@ -1307,6 +1314,8 @@ function updateExportState() {
   const c = document.getElementById('exportCount');
   if (c) c.textContent = `${bulkSelected.size} word${bulkSelected.size !== 1 ? 's' : ''} selected for export.`;
   if (active) { const e = document.getElementById('exportErr'); if (e) e.textContent = ''; }
+  const sb = document.getElementById('wlSaveBtn');
+  if (sb) { sb.disabled = !active; sb.style.opacity = active ? '' : '0.5'; }
 }
 function exportSelectedWords() {
   return [...bulkSelected.values()].filter(en => en.w).map(en => en.w);
@@ -1447,6 +1456,160 @@ function wlRemoveWord(id, word) {
   list.words = list.words.filter(x => x.word !== word);
   list.updated = Date.now();
   return wlWriteStore(store);
+}
+
+/* ----- Word Lists UI (Save modal + Manager modal) ----- */
+function wlSelectedWords() { return exportSelectedWords().map(wlWordFromDict); }
+function wlEl(tag, props, txt) {
+  const e = document.createElement(tag);
+  if (props) Object.keys(props).forEach(k => {
+    if (k === 'style') e.setAttribute('style', props[k]);
+    else if (k === 'cls') e.className = props[k];
+    else e[k] = props[k];
+  });
+  if (txt != null) e.textContent = txt;
+  return e;
+}
+// Save-selection modal
+function wlOpenSaveModal() {
+  const sel = wlSelectedWords();
+  if (!sel.length) {
+    const err = document.getElementById('exportErr');
+    if (err) err.textContent = 'Select words using Bulk Copy Mode first.';
+    return;
+  }
+  const store = wlReadStore();
+  const listIds = Object.keys(store.lists);
+  const body = document.createElement('div');
+  body.appendChild(wlEl('div', { cls: 'wl-mtitle', style: 'font-family:var(--heb-font);font-size:1.3rem;font-weight:600;text-align:center;color:var(--text);margin:2px 24px 4px;' }, 'Save as Word List'));
+  body.appendChild(wlEl('div', { style: 'text-align:center;color:var(--muted);font-size:0.82rem;margin-bottom:14px;' }, `${sel.length} word${sel.length !== 1 ? 's' : ''} selected`));
+
+  // Create new
+  body.appendChild(wlEl('div', { style: 'font-size:0.72rem;font-weight:600;color:var(--text);margin-bottom:4px;' }, 'Create a new list'));
+  const nameIn = wlEl('input', { type: 'text', maxLength: 80, placeholder: 'e.g. Parashat Noach vocab', style: 'width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;font-size:0.85rem;margin-bottom:6px;' });
+  body.appendChild(nameIn);
+  const createBtn = wlEl('button', { cls: 'wm-root-btn', type: 'button' }, 'Save as new list');
+  body.appendChild(createBtn);
+
+  // Add to existing
+  if (listIds.length) {
+    body.appendChild(wlEl('div', { style: 'border-top:1px solid var(--border);margin:14px 0 10px;' }));
+    body.appendChild(wlEl('div', { style: 'font-size:0.72rem;font-weight:600;color:var(--text);margin-bottom:4px;' }, 'Or add to an existing list'));
+    const sel2 = document.createElement('select');
+    sel2.setAttribute('style', 'width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;font-size:0.85rem;margin-bottom:6px;');
+    listIds.sort((a, b) => (store.lists[b].updated || 0) - (store.lists[a].updated || 0)).forEach(id => {
+      const o = document.createElement('option');
+      o.value = id;
+      o.textContent = `${store.lists[id].name} (${store.lists[id].words.length})`;
+      sel2.appendChild(o);
+    });
+    body.appendChild(sel2);
+    const mergeBtn = wlEl('button', { cls: 'wm-act', type: 'button', style: 'text-align:center;font-weight:600;' }, 'Add to selected list');
+    body.appendChild(mergeBtn);
+    mergeBtn.addEventListener('click', () => {
+      const r = wlMergeIntoList(sel2.value, sel);
+      if (!r.ok) { wlSetStatus(status, r.err, true); return; }
+      let msg = r.added === 0 ? 'All selected words were already in that list.' : `Added ${r.added} word${r.added !== 1 ? 's' : ''}.`;
+      if (r.dropped > 0) msg += ` ${r.dropped} skipped (200-word limit).`;
+      wlSetStatus(status, msg, false);
+    });
+  }
+
+  const status = wlEl('div', { style: 'font-size:0.78rem;margin-top:12px;min-height:1.1em;text-align:center;' });
+  body.appendChild(status);
+
+  createBtn.addEventListener('click', () => {
+    const name = nameIn.value.trim();
+    if (!name) { wlSetStatus(status, 'Please enter a name for the list.', true); nameIn.focus(); return; }
+    const dup = Object.values(wlReadStore().lists).some(l => l.name === name);
+    const r = wlAddList(name, sel);
+    if (!r.ok) { wlSetStatus(status, r.err, true); return; }
+    let msg = `Saved "${name}" with ${wlGetList(r.id).words.length} word${wlGetList(r.id).words.length !== 1 ? 's' : ''}.`;
+    if (r.dropped > 0) msg += ` ${r.dropped} skipped (200-word limit).`;
+    if (dup) msg += ' (Another list already uses this name.)';
+    wlSetStatus(status, msg, false);
+    nameIn.value = '';
+  });
+
+  _openWordModal(body);
+  setTimeout(() => { try { nameIn.focus(); } catch (e) {} }, 0);
+}
+function wlSetStatus(el, msg, isErr) {
+  el.textContent = msg;
+  el.style.color = isErr ? '#c0392b' : 'var(--gold)';
+}
+
+// Word Lists manager modal
+function wlOpenManager() {
+  const b = document.createElement('div');
+  wlRenderManagerInto(b);
+  _openWordModal(b);
+}
+function wlRefreshManager() {
+  const body = document.getElementById('wmBody');
+  if (!body) return;
+  body.innerHTML = '';
+  const b = document.createElement('div');
+  wlRenderManagerInto(b);
+  body.appendChild(b);
+}
+function wlRenderManagerInto(root) {
+  root.appendChild(wlEl('div', { style: 'font-family:var(--heb-font);font-size:1.3rem;font-weight:600;text-align:center;color:var(--text);margin:2px 24px 12px;' }, 'Word Lists'));
+  const store = wlReadStore();
+  const ids = Object.keys(store.lists).sort((a, b) => (store.lists[b].updated || 0) - (store.lists[a].updated || 0));
+  if (!ids.length) {
+    root.appendChild(wlEl('div', { style: 'text-align:center;color:var(--muted);font-size:0.85rem;padding:16px 6px;line-height:1.5;' }, 'No word lists yet. Turn on Bulk Copy Mode, select words, and use “Save as Word List”.'));
+    return;
+  }
+  ids.forEach(id => {
+    const list = store.lists[id];
+    const row = wlEl('div', { style: 'border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:10px;background:var(--cream);' });
+    const head = wlEl('div', { style: 'display:flex;align-items:center;gap:8px;' });
+    const nm = wlEl('div', { style: 'flex:1;min-width:0;' });
+    nm.appendChild(wlEl('div', { style: 'font-weight:600;color:var(--text);font-size:0.9rem;word-break:break-word;' }, list.name));
+    nm.appendChild(wlEl('div', { style: 'color:var(--muted);font-size:0.72rem;' }, `${list.words.length} word${list.words.length !== 1 ? 's' : ''}`));
+    head.appendChild(nm);
+    row.appendChild(head);
+
+    const acts = wlEl('div', { style: 'display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;' });
+    const btn = (label, handler, extra) => {
+      const bb = wlEl('button', { cls: 'pos-all-btn', type: 'button', style: 'font-size:0.7rem;' + (extra || '') }, label);
+      bb.addEventListener('click', handler);
+      acts.appendChild(bb);
+      return bb;
+    };
+    btn('View words', () => {
+      const existing = row.querySelector('.wl-words');
+      if (existing) { existing.remove(); return; }
+      const wrap = wlEl('div', { cls: 'wl-words', style: 'margin-top:8px;border-top:1px solid var(--border);padding-top:8px;display:flex;flex-direction:column;gap:4px;max-height:240px;overflow-y:auto;' });
+      if (!list.words.length) wrap.appendChild(wlEl('div', { style: 'color:var(--muted);font-size:0.75rem;' }, 'This list is empty.'));
+      list.words.forEach(w => {
+        const wr = wlEl('div', { style: 'display:flex;align-items:center;gap:8px;font-size:0.78rem;' });
+        wr.appendChild(wlEl('span', { style: 'font-family:var(--heb-font);font-size:1.05rem;direction:rtl;min-width:60px;' }, w.word));
+        wr.appendChild(wlEl('span', { style: 'flex:1;color:var(--muted);word-break:break-word;' }, w.translation || ''));
+        const x = wlEl('button', { cls: 'wm-mini', type: 'button', title: 'Remove from list' }, '✕');
+        x.addEventListener('click', () => { wlRemoveWord(id, w.word); wlRefreshManager(); });
+        wr.appendChild(x);
+        wrap.appendChild(wr);
+      });
+      row.appendChild(wrap);
+    });
+    btn('Rename', () => {
+      const nn = prompt('Rename word list:', list.name);
+      if (nn == null) return;
+      const t = nn.trim();
+      if (!t) return;
+      wlRenameList(id, t);
+      wlRefreshManager();
+    });
+    btn('Delete', () => {
+      if (!confirm(`Delete the word list "${list.name}"? This can't be undone.`)) return;
+      wlDeleteList(id);
+      wlRefreshManager();
+    }, 'color:#c0392b;');
+    row.appendChild(acts);
+    root.appendChild(row);
+  });
 }
 
 const GEMATRIA = {'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,'כ':20,'ך':20,'ל':30,'מ':40,'ם':40,'נ':50,'ן':50,'ס':60,'ע':70,'פ':80,'ף':80,'צ':90,'ץ':90,'ק':100,'ר':200,'ש':300,'ת':400};
