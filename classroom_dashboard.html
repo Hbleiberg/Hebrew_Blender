@@ -1649,6 +1649,45 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 </div>
 
 <div class="panel">
+  <div class="panel-title">Student Picker</div>
+  <div class="panel-body">
+    <div class="form-row">
+      <label>Show Student Picker panel</label>
+      <label class="toggle"><input type="checkbox" id="showStudentPicker"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Show in fullscreen mode</label>
+      <label class="toggle"><input type="checkbox" id="showStudentPickerFullscreen"><span class="slider"></span></label>
+    </div>
+    <hr>
+    <div class="form-row" style="flex-direction:column;align-items:stretch;gap:4px;">
+      <label for="pickerRoster">Class roster — one name per line</label>
+      <textarea id="pickerRoster" rows="6" placeholder="Ava&#10;Noah&#10;&#1491;&#1464;&#1493;&#1460;&#1491;&#10;&#1502;&#1463;&#1497;&#1464;&#1492;" style="width:100%;resize:vertical;font-family:inherit;"></textarea>
+      <span id="pickerRosterCount" style="font-size:0.72rem;color:var(--muted);">0 names</span>
+    </div>
+    <div class="form-row" id="pickerRosterHint" style="margin-top:2px;">
+      <span style="font-size:0.78rem;color:var(--muted);font-style:italic;">Each preset stores its own roster, so Schedule Sync swaps the class list automatically as periods change.</span>
+    </div>
+    <hr>
+    <div class="form-row">
+      <label>Don't repeat until everyone's been picked</label>
+      <label class="toggle"><input type="checkbox" id="pickerFairCycle"><span class="slider"></span></label>
+    </div>
+    <div class="form-row">
+      <label>Group Maker mode</label>
+      <div class="radio-group">
+        <input type="radio" name="groupMode" id="gm-size" value="size"><label for="gm-size">Groups of N</label>
+        <input type="radio" name="groupMode" id="gm-count" value="count"><label for="gm-count">N groups</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <label for="groupN" id="groupNLabel">Group size (N)</label>
+      <input type="number" id="groupN" min="2" max="60" step="1" value="4" style="width:64px;text-align:center;">
+    </div>
+  </div>
+</div>
+
+<div class="panel">
   <div class="panel-title">Day of Week</div>
   <div class="panel-body">
     <div class="form-row">
@@ -2215,6 +2254,15 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     showOmerCounter: true,
     showOmerEnglish: true,
     showOmerProgress: true,
+    // Student Picker / Group Maker
+    roster: '',                       // newline-separated names; the roster string is the source of truth
+    showStudentPicker: false,         // opt-in feature-add (defaults off, like showVideoEmbed/scheduleEnabled)
+    showStudentPickerFullscreen: true,
+    pickerCollapsed: false,
+    pickerFairCycle: true,            // "don't repeat until everyone's been picked"
+    groupMode: 'size',                // 'size' = groups of N · 'count' = N groups
+    groupN: 4,
+    pickerSession: { picked: [], absent: [] },  // EPHEMERAL: persists across refresh, stripped from presets/.ivrit
   };
   let presets = {};
   let savedSchedules = {};
@@ -3462,6 +3510,15 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     $('showOmerCounter').checked = settings.showOmerCounter !== false;
     $('showOmerEnglish').checked = settings.showOmerEnglish !== false;
     $('showOmerProgress').checked = settings.showOmerProgress !== false;
+    $('showStudentPicker').checked = settings.showStudentPicker === true;
+    $('showStudentPickerFullscreen').checked = settings.showStudentPickerFullscreen !== false;
+    $('pickerFairCycle').checked = settings.pickerFairCycle !== false;
+    $('pickerRoster').value = settings.roster || '';
+    $('groupN').value = settings.groupN || 4;
+    const gmRadio = document.querySelector(`input[name="groupMode"][value="${settings.groupMode || 'size'}"]`);
+    if (gmRadio) gmRadio.checked = true;
+    updateGroupNLabel();
+    updatePickerRosterCount();
     document.querySelector(`input[name="engDateFmt"][value="${settings.engDateFmt}"]`).checked = true;
     $('showEngDOW').checked = settings.showEngDOW;
     $('hideEngDate').checked = settings.hideEngDate;
@@ -3580,6 +3637,35 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       updateOmerDisplay();
       saveSettingsToStorage();
     });
+    document.getElementById('showStudentPicker').addEventListener('change', e => {
+      settings.showStudentPicker = e.target.checked;
+      applyStudentPickerVisibility();
+      updateDashboardGrid();
+      renderStudentPicker();
+      saveSettingsToStorage();
+    });
+    document.getElementById('showStudentPickerFullscreen').addEventListener('change', e => {
+      settings.showStudentPickerFullscreen = e.target.checked;
+      applyStudentPickerVisibility();
+      saveSettingsToStorage();
+    });
+    document.getElementById('pickerFairCycle').addEventListener('change', e => {
+      settings.pickerFairCycle = e.target.checked;
+      renderStudentPicker();
+      saveSettingsToStorage();
+    });
+    document.querySelectorAll('input[name="groupMode"]').forEach(r =>
+      r.addEventListener('change', () => { settings.groupMode = r.value; updateGroupNLabel(); saveSettingsToStorage(); }));
+    document.getElementById('groupN').addEventListener('change', e => {
+      let n = parseInt(e.target.value, 10);
+      if (!Number.isFinite(n)) n = 4;
+      n = Math.max(2, Math.min(60, n));
+      settings.groupN = n;
+      e.target.value = n;
+      saveSettingsToStorage();
+    });
+    document.getElementById('pickerRoster').addEventListener('input', updatePickerRosterCount);
+    document.getElementById('pickerRoster').addEventListener('blur', commitRosterFromTextarea);
     document.querySelectorAll('input[name="engDateFmt"]').forEach(r =>
       r.addEventListener('change', () => { settings.engDateFmt = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
     document.getElementById('showEngDOW').addEventListener('change', e => { settings.showEngDOW = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
@@ -3716,6 +3802,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   }
 
   function applySettings(s) {
+    // Capture the roster BEFORE the merge: a preset load / scheduled period-swap that CHANGES the
+    // roster starts a fresh pick cycle, while an identical roster (e.g. a refresh re-applying the
+    // same period) keeps the picks. pickerSession is stripped from presets, so it survives the merge.
+    const prevRoster = settings.roster || '';
     // Preserve schedule configuration — it must never be overwritten by loading a display preset
     const savedSchedule = {
       scheduleEnabled:        settings.scheduleEnabled,
@@ -3726,6 +3816,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     };
     ivritSafeAssign(settings, s);
     Object.assign(settings, savedSchedule);
+    if ((settings.roster || '') !== prevRoster) settings.pickerSession = { picked: [], absent: [] };
+    normalizePickerSession();
     setHebFont(settings.hebFont);
     syncFormToSettings();
     document.getElementById('dashEditor').innerHTML = sanitizeDashHTML(settings.dashTextHTML || '');
@@ -3753,12 +3845,16 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     renderDaysList();
     renderWeather();
     updateDashboardGrid();
+    applyStudentPickerVisibility();
+    renderStudentPicker();
     applyWakeLock();
   }
 
   function getSettings() {
     settings.dashTextHTML = document.getElementById('dashEditor').innerHTML;
-    return JSON.parse(JSON.stringify(settings));
+    const out = JSON.parse(JSON.stringify(settings));
+    delete out.pickerSession;   // ephemeral pick/absent state never travels in presets, share codes, or .ivrit exports
+    return out;
   }
 
   function saveSettingsToStorage() {
@@ -3776,6 +3872,138 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         Object.assign(settings, DEFAULT_PRESET['Default']);
       }
     } catch (e) {}
+  }
+
+  /* ────────── STUDENT PICKER / GROUP MAKER ────────── */
+  const PICKER_MAX = 60;
+
+  // Canonical roster parse: trim, drop blanks, dedupe (first wins), cap at PICKER_MAX.
+  function parseRoster(str) {
+    const seen = new Set(), out = [];
+    String(str || '').split('\n').forEach(line => {
+      const n = line.trim();
+      if (n && !seen.has(n)) { seen.add(n); out.push(n); }
+    });
+    return out.slice(0, PICKER_MAX);
+  }
+  function rosterNames() { return parseRoster(settings.roster); }
+
+  function normalizePickerSession() {
+    let s = settings.pickerSession;
+    if (!s || typeof s !== 'object') s = settings.pickerSession = { picked: [], absent: [] };
+    if (!Array.isArray(s.picked)) s.picked = [];
+    if (!Array.isArray(s.absent)) s.absent = [];
+    return s;
+  }
+  function eligibleNames() {
+    normalizePickerSession();
+    const absent = settings.pickerSession.absent;
+    return rosterNames().filter(n => !absent.includes(n));
+  }
+
+  // XSS-safe + nikkud-aware name rendering: esc() neutralizes <b>/&/quotes, hebDisplay() then adds
+  // nikkud coloring for Hebrew and passes Latin/emoji through inertly. Always assigned to innerHTML.
+  function pickerNameHTML(name) { return hebDisplay(esc(name)); }
+
+  function updateGroupNLabel() {
+    const lbl = document.getElementById('groupNLabel');
+    if (lbl) lbl.textContent = (settings.groupMode === 'count') ? 'Number of groups (N)' : 'Group size (N)';
+  }
+  function updatePickerRosterCount() {
+    const el = document.getElementById('pickerRosterCount');
+    if (!el) return;
+    const ta = document.getElementById('pickerRoster');
+    const raw = ta ? ta.value : settings.roster;
+    const n = parseRoster(raw).length;
+    el.textContent = `${n} name${n === 1 ? '' : 's'}${n >= PICKER_MAX ? ` (max ${PICKER_MAX})` : ''}`;
+  }
+  // Commit the textarea to settings.roster on blur; reconcile (not reset) the session against the new roster.
+  function commitRosterFromTextarea() {
+    const ta = document.getElementById('pickerRoster');
+    if (!ta) return;
+    const names = parseRoster(ta.value);
+    settings.roster = names.join('\n');
+    ta.value = settings.roster;
+    const set = new Set(names);
+    const sess = normalizePickerSession();
+    sess.picked = sess.picked.filter(n => set.has(n));
+    sess.absent = sess.absent.filter(n => set.has(n));
+    updatePickerRosterCount();
+    renderStudentPicker();
+    saveSettingsToStorage();
+  }
+
+  function applyStudentPickerVisibility() {
+    const col = document.getElementById('pickerCol');
+    if (!col) return;
+    const fs = document.body.classList.contains('fullscreen');
+    const show = settings.showStudentPicker === true && !(fs && settings.showStudentPickerFullscreen === false);
+    col.style.display = show ? '' : 'none';
+  }
+
+  function toggleAbsent(name) {
+    const sess = normalizePickerSession();
+    const i = sess.absent.indexOf(name);
+    if (i >= 0) sess.absent.splice(i, 1); else sess.absent.push(name);
+    renderStudentPicker();
+    saveSettingsToStorage();
+  }
+  function resetPickerCycle() {
+    normalizePickerSession();
+    settings.pickerSession.picked = [];
+    renderStudentPicker();
+    saveSettingsToStorage();
+  }
+
+  function renderStudentPicker() {
+    const chips = document.getElementById('pickerChips');
+    if (!chips) return;   // card not mounted (e.g. settings-only build) — nothing to render
+    normalizePickerSession();
+    const names = rosterNames();
+    const actions = document.getElementById('pickerActions');
+    const progress = document.getElementById('pickerProgress');
+    chips.innerHTML = '';
+    if (!names.length) {
+      const hint = document.createElement('div');
+      hint.className = 'picker-empty';
+      hint.textContent = 'Add a class roster in Settings → Student Picker. Each preset keeps its own roster, so Schedule Sync swaps the class list per period.';
+      chips.appendChild(hint);
+      if (actions) actions.style.display = 'none';
+      if (progress) progress.innerHTML = '';
+      return;
+    }
+    if (actions) actions.style.display = '';
+    const absent = settings.pickerSession.absent;
+    const picked = settings.pickerSession.picked;
+    names.forEach(name => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'picker-chip' + (absent.includes(name) ? ' absent' : '') + (picked.includes(name) ? ' picked' : '');
+      chip.setAttribute('aria-pressed', absent.includes(name) ? 'true' : 'false');
+      chip.title = absent.includes(name) ? 'Absent today — tap to include' : 'Tap to mark absent for this session';
+      chip.innerHTML = pickerNameHTML(name);
+      chip.addEventListener('click', () => toggleAbsent(name));
+      chips.appendChild(chip);
+    });
+    if (progress) {
+      progress.innerHTML = '';
+      if (settings.pickerFairCycle !== false) {
+        const total = eligibleNames().length;
+        const done = picked.filter(n => !absent.includes(n) && names.includes(n)).length;
+        const label = document.createElement('span');
+        label.className = 'picker-progress-label';
+        label.textContent = `Picked ${done} / ${total}`;
+        progress.appendChild(label);
+        if (done > 0) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'btn-xs';
+          btn.textContent = '🔄 New round';
+          btn.addEventListener('click', resetPickerCycle);
+          progress.appendChild(btn);
+        }
+      }
+    }
   }
 
   /* ────────── PRESETS ────────── */
