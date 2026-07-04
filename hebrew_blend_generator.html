@@ -6195,7 +6195,11 @@ function updateModeVisibility() {
   const qrBlends  = blends && !s.bingo && s.drill !== 'tracing';
   const qrNumbers = s.source === 'numbers' && !document.getElementById('npBingo')?.checked
                                            && !document.getElementById('npSelfCheck')?.checked;
-  const qrDrill = !testMode && (qrBlends || qrNumbers);
+  // Real-words word-list drills (word search & crossword are wired in a later phase;
+  // bingo/vocab have no printable answer; numpractice flips source to 'numbers').
+  const qrRealwords = s.source === 'realwords' &&
+    !['bingo', 'vocab', 'numpractice', 'wordsearch', 'crossword'].includes(rwDrillType);
+  const qrDrill = !testMode && (qrBlends || qrNumbers || qrRealwords);
 
   const v = {
     // Major panels
@@ -8753,8 +8757,8 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
       grid.appendChild(cell);
     });
     sheet.appendChild(grid);
-    // Standard blends-gematria only (real-words gematria is a QR extension point).
-    if (!isRwGem && document.getElementById('qrAnswerKeyToggle')?.checked) {
+    // Gematria answer = the numeric value. Works for both standard blends and real-words gematria.
+    if (document.getElementById('qrAnswerKeyToggle')?.checked) {
       const qrHost = document.createElement('div');            // no parent yet → helper appends the QR inside it
       appendQrToFooter(qrHost, akPayload('gematria', document.getElementById('wsTitle').value || 'Hebrew Blends',
         items.map(b => [String(b.hebrewDisplay ?? ''), String(calcGematria(b.hebrewDisplay))])));
@@ -9543,6 +9547,10 @@ let REAL_WORDS = [];
 let rwDrillType = 'reading';
 let matchTarget = 'translation';   // Matching drill target: 'translation' | 'emoji' | 'translit'
 let EMOJI_MAP = null;              // lazy Map<bareHeb, emojiGlyph> for the Matching emoji target
+// generateRealWords() reshuffles on every call; this caches the last-rendered selection
+// so the QR Answer-Key toggle (and only it, via generateRealWords(true)) can re-render the
+// SAME words instead of reshuffling. Drill-scoped: a stale drill's data is never replayed.
+let rwRenderCache = null;
 let cwClueLang = 'english'; // Crossword clue language: 'english' | 'translit' | 'both'
 
 // Update the Generate button label when Class Set changes.
@@ -10402,7 +10410,8 @@ function rwShuffle(arr) {
   return a;
 }
 
-function generateRealWords() {
+function generateRealWords(reuse) {
+  reuse = (reuse === true);                                 // strictly boolean (defend against event args)
   const pool = getRwPool();
   const count = parseInt(document.getElementById('rwCount').value);
   const showTranslit = document.getElementById('rwShowTranslit').checked;
@@ -10433,12 +10442,15 @@ function generateRealWords() {
   }
 
   if (drill === 'identify') {
-    generateIdentifyDrill(pool, count, showTranslitInline, showTranslInline, translitOnKey, translOnKey);
+    generateIdentifyDrill(pool, count, showTranslitInline, showTranslInline, translitOnKey, translOnKey, reuse);
     return;
   }
 
   if (drill === 'gematria') {
-    const words = rwShuffle(pool).slice(0, Math.min(count, pool.length));
+    const words = (reuse && rwRenderCache?.drill === 'gematria')
+      ? rwRenderCache.words
+      : rwShuffle(pool).slice(0, Math.min(count, pool.length));
+    rwRenderCache = { drill: 'gematria', words };
     const ws = document.getElementById('worksheet');
     ws.innerHTML = '';
     // Display section's toggles are now the source of truth in real-words gematria.
@@ -10452,7 +10464,10 @@ function generateRealWords() {
   }
 
   if (drill === 'fillvowels') {
-    const words = rwShuffle(pool).slice(0, Math.min(count, pool.length));
+    const words = (reuse && rwRenderCache?.drill === 'fillvowels')
+      ? rwRenderCache.words
+      : rwShuffle(pool).slice(0, Math.min(count, pool.length));
+    rwRenderCache = { drill: 'fillvowels', words };
     const ws = document.getElementById('worksheet');
     ws.innerHTML = '';
     // Reuses the standard Display section translit/translation toggles +
@@ -10480,19 +10495,25 @@ function generateRealWords() {
   }
 
   if (drill === 'matching') {
-    generateRealWordsMatching(pool);
+    generateRealWordsMatching(pool, reuse);
     return;
   }
 
-  const words = rwShuffle(pool).slice(0, Math.min(count, pool.length));
-
-  // If mixed mode: interleave with generated blends
-  let items = words.map(w => ({ ...w, isReal: true }));
-  if (mixed && blends.length > 0) {
-    const blendItems = rwShuffle(blends).slice(0, count).map(b => ({
-      heb: b.hebrewDisplay, translit: b.translitDisplay ?? b.combined, translation: '', pos: 'blend', era: 'Both', isReal: false
-    }));
-    items = rwShuffle([...items, ...blendItems]).slice(0, count * 2);
+  // Word-list drills (reading / reverse / idpos / vocab). Cache the POST-mix `items`
+  // (mixed mode reshuffles blends, so caching the raw `words` alone is insufficient).
+  let items;
+  if (reuse && rwRenderCache?.drill === drill && rwRenderCache.items) {
+    items = rwRenderCache.items;
+  } else {
+    const words = rwShuffle(pool).slice(0, Math.min(count, pool.length));
+    items = words.map(w => ({ ...w, isReal: true }));
+    if (mixed && blends.length > 0) {
+      const blendItems = rwShuffle(blends).slice(0, count).map(b => ({
+        heb: b.hebrewDisplay, translit: b.translitDisplay ?? b.combined, translation: '', pos: 'blend', era: 'Both', isReal: false
+      }));
+      items = rwShuffle([...items, ...blendItems]).slice(0, count * 2);
+    }
+    rwRenderCache = { drill, items };
   }
 
   const ws = document.getElementById('worksheet');
@@ -10599,6 +10620,22 @@ function generateRealWords() {
   footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
   footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${items.length} words · Hebrew Blend Generator</span>`;
   sheet.appendChild(footer);
+  // Footer QR: reading answer = pronunciation; reverse answer = the Hebrew (checked
+  // against its meaning); idpos answer = the part of speech. vocab is flip-cards (no QR).
+  if (drill !== 'vocab' && document.getElementById('qrAnswerKeyToggle')?.checked) {
+    const rawTitle = document.getElementById('wsTitle').value || 'Hebrew Word Practice';
+    let akType, akItems;
+    if (drill === 'reverse') {
+      // Reverse: student writes the Hebrew for each numbered English prompt → the answer key
+      // is the flat, numbered list of correct Hebrew words (also keeps the URL short).
+      akType = 'rwreverse'; akItems = items.map(w => String(w.heb ?? ''));
+    } else if (drill === 'idpos') {
+      akType = 'idpos';     akItems = items.map(w => [String(w.heb ?? ''), String(w.pos ?? '')]);
+    } else {
+      akType = 'rwreading'; akItems = items.map(w => [String(w.heb ?? ''), String(w.translitDisplay ?? w.translit ?? '')]);
+    }
+    appendQrToFooter(footer, akPayload(akType, rawTitle, akItems));
+  }
   ws.appendChild(sheet);
 
   // Answer key sheet (stars and/or translations on separate page)
@@ -10727,7 +10764,7 @@ function updateMatchPoolNote() {
   note.textContent = n + (n === 1 ? ' word has' : ' words have') + ' a matching emoji.';
 }
 
-function generateRealWordsMatching(pool) {
+function generateRealWordsMatching(pool, reuse) {
   const ws = document.getElementById('worksheet');
   // Emoji target needs the lexicon; lazy-load, then re-run generate().
   if (matchTarget === 'emoji' && !EMOJI_MAP) {
@@ -10755,7 +10792,10 @@ function generateRealWordsMatching(pool) {
   const showKey = document.getElementById('matchAnswerKey').checked;
   const emoji = matchTarget === 'emoji';
   const toItem = w => ({ heb: w.heb, targetHTML: matchTargetHTML(w), targetText: matchTargetText(w), big: emoji });
-  const versionsItems = Array.from({ length: versions }, () => rwShuffle(usable).slice(0, N).map(toItem));
+  const versionsItems = (reuse === true && rwRenderCache?.drill === 'matching' && rwRenderCache.versionsItems)
+    ? rwRenderCache.versionsItems
+    : Array.from({ length: versions }, () => rwShuffle(usable).slice(0, N).map(toItem));
+  rwRenderCache = { drill: 'matching', versionsItems };
 
   renderMatchingSheets(ws, versionsItems, {
     title: 'Hebrew Word Matching',
@@ -10840,10 +10880,10 @@ function renderMatchingSheets(ws, versionsItems, opts) {
     footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
     footer.innerHTML = '<span class="ws-brand">IvritSuite.com</span><span>' + items.length + ' ' + pairsNoun + ' · Hebrew Blend Generator</span>';
     sheet.appendChild(footer);
-    // Standard blends-matching only (real-words matching is a QR extension point).
-    // One QR per version, built from that version's items + shuffle (perm): each answer
-    // is the target letter (matching this sheet's lettered column) plus the meaning.
-    if (!document.getElementById('realWordsToggle')?.checked && document.getElementById('qrAnswerKeyToggle')?.checked) {
+    // One QR per version, built from that version's items + shuffle (perm): each answer is
+    // the target letter (matching this sheet's lettered column) plus the meaning. Works for
+    // both standard-blends and real-words matching (identical item shape).
+    if (document.getElementById('qrAnswerKeyToggle')?.checked) {
       appendQrToFooter(footer, akPayload('matching', document.getElementById('wsTitle')?.value || 'Hebrew Matching',
         items.map((it, i) => [String(it.heb ?? ''), String.fromCharCode(65 + perm.indexOf(i)) + ' — ' + String(it.targetText ?? '')])));
     }
@@ -11394,8 +11434,6 @@ function renderCrossword(d) {
 }
 
 function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnOnKey) {
-  // QR extension point: real-words Fill Vowels is not yet wired for the footer QR
-  // answer key (v1 covers only the standard blends path in appendStandardBlendSheets).
   const keepDagesh = document.getElementById('rwFillVowelsDagesh')?.checked ?? false;
   const title    = esc(document.getElementById('wsTitle').value || 'Hebrew Words');
   const subtitle = esc(document.getElementById('wsSubtitle').value);
@@ -11429,6 +11467,11 @@ function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnO
   footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
   footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${words.length} words · Hebrew Blend Generator — Fill in the Vowels</span>`;
   sheet.appendChild(footer);
+  // Fill-vowels answer = the fully-voweled word (flat list).
+  if (document.getElementById('qrAnswerKeyToggle')?.checked) {
+    appendQrToFooter(footer, akPayload('rwfillvowels', document.getElementById('wsTitle').value || 'Hebrew Words',
+      words.map(w => String(w.heb ?? ''))));
+  }
   ws.appendChild(sheet);
 
   // Answer key page — full nikkud restored
@@ -11462,16 +11505,21 @@ function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnO
 }
 
 // ── IDENTIFY THE REAL WORD ──
-function generateIdentifyDrill(pool, count, trOnSheet, tnOnSheet, trOnKey, tnOnKey) {
-  const realWords = rwShuffle(pool).slice(0, Math.min(count, pool.length));
-  const blendItems = blends.length > 0
-    ? rwShuffle(blends).slice(0, count).map(b => ({
-        heb: b.hebrewDisplay, translit: b.translitDisplay ?? b.combined, translation: '', pos: 'blend', isReal: false
-      }))
-    : [];
-
-  const realItems = realWords.map(w => ({ ...w, isReal: true }));
-  const items = rwShuffle([...realItems, ...blendItems]).slice(0, count * 2);
+function generateIdentifyDrill(pool, count, trOnSheet, tnOnSheet, trOnKey, tnOnKey, reuse) {
+  let items;
+  if (reuse === true && rwRenderCache?.drill === 'identify' && rwRenderCache.items) {
+    items = rwRenderCache.items;
+  } else {
+    const realWords = rwShuffle(pool).slice(0, Math.min(count, pool.length));
+    const blendItems = blends.length > 0
+      ? rwShuffle(blends).slice(0, count).map(b => ({
+          heb: b.hebrewDisplay, translit: b.translitDisplay ?? b.combined, translation: '', pos: 'blend', isReal: false
+        }))
+      : [];
+    const realItems = realWords.map(w => ({ ...w, isReal: true }));
+    items = rwShuffle([...realItems, ...blendItems]).slice(0, count * 2);
+    rwRenderCache = { drill: 'identify', items };
+  }
 
   if (items.length === 0) { alert('No words available.'); return; }
 
@@ -11521,6 +11569,11 @@ function generateIdentifyDrill(pool, count, trOnSheet, tnOnSheet, trOnKey, tnOnK
   foot.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
   foot.textContent = `${items.length} items · Hebrew Blend Generator`;
   studentSheet.appendChild(foot);
+  // Identify answer = which cards are real words vs nonsense blends.
+  if (document.getElementById('qrAnswerKeyToggle')?.checked) {
+    appendQrToFooter(foot, akPayload('identify', document.getElementById('wsTitle').value || 'Identify the Real Word',
+      items.map(w => [String(w.heb ?? ''), w.isReal ? 'real' : 'not real'])));
+  }
   ws.appendChild(studentSheet);
 
   // ── Answer key sheet ──
@@ -12088,7 +12141,8 @@ function serializeSettings() {
 //   grid — {rows:[[cell,…],…], marks?:[[r,c],…]}  (word search / crossword; added in a later phase)
 const AK_SHAPE = {
   ntl: 'pair', reading: 'pair', inverse: 'pair', gematria: 'pair', matching: 'pair', numbers: 'pair',
-  fillvowels: 'flat',
+  rwreading: 'pair', idpos: 'pair', identify: 'pair',
+  fillvowels: 'flat', rwfillvowels: 'flat', rwreverse: 'flat',
 };
 function renderAnswerKeyView(akStr) {
   let p;
