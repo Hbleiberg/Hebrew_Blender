@@ -2116,7 +2116,7 @@ function updateTtsRateVisibility() {
 let listeningEnabled = false;       // the toggle
 let listeningChoices = 3;           // 3 | 4 answer tiles per round
 let speechSupported = !!window.speechSynthesis;  // hard capability gate (matches speakWord's guard)
-let speechUnlocked = false;         // iOS: a real user gesture has spoken this session (reset each startPractice)
+let listenHeard = false;            // per-card: has the current listening card been played (🔊) yet?
 let listenLocked = false;           // per-card double-answer guard
 let currentListenChoices = [];      // this round's choice cards, in render order (keyboard 1..N)
 function isListeningSupportedMode() { return !nameLetterMode; }  // bare-consonant TTS is ambiguous
@@ -4285,7 +4285,7 @@ async function practiceWeaknesses(name) {
   requeued = new Array(deck.length).fill(false);
   hasFlipped = new Array(deck.length).fill(false);
   isFlipped = false;
-  speechUnlocked = false; listenLocked = false;   // 🎧 each session re-requires the first-tap gesture
+  listenLocked = false;   // 🎧 reset the per-card answer guard for a fresh session
   resetSessionStats();
   renderCurrentCard();
   showScreen('screenCard');
@@ -5127,7 +5127,7 @@ function startPractice() {
   requeued = new Array(deck.length).fill(false);
   hasFlipped = new Array(deck.length).fill(false);
   isFlipped = false;
-  speechUnlocked = false; listenLocked = false;   // 🎧 each session re-requires the first-tap gesture
+  listenLocked = false;   // 🎧 reset the per-card answer guard for a fresh session
   resetSessionStats();
   renderCurrentCard();
   showScreen('screenCard');
@@ -5442,10 +5442,11 @@ function sampleChoices(answer, n) {
 function setListenHint() {
   const hint = document.getElementById('lcHint');
   if (!hint) return;
-  hint.textContent = speechUnlocked ? 'Which one did you hear?' : 'Tap 🔊 to hear the first card';
+  hint.textContent = listenHeard ? 'Which one did you hear?' : 'Tap 🔊 to hear';
 }
 function renderListeningCard(card) {
   listenLocked = false;
+  listenHeard = false;   // each card starts silent — the student taps 🔊 to hear it
   const grid = document.getElementById('lcChoices');
   const replay = document.getElementById('lcReplay');
   currentListenChoices = sampleChoices(card, listeningChoices);
@@ -5467,7 +5468,7 @@ function renderListeningCard(card) {
       if (t.dataset.heb === card.heb) t.classList.add('good');
     });
   }
-  replay.onclick = () => { speakWord(card.heb); speechUnlocked = true; setListenHint(); };
+  replay.onclick = () => { speakWord(card.heb); listenHeard = true; setListenHint(); };
   setListenHint();
   if (currentListenChoices.length < 2) {   // degenerate universe: only the answer exists
     document.getElementById('lcHint').textContent = 'Add more letters/vowels for multiple-choice options.';
@@ -5484,15 +5485,7 @@ function chooseTile(chosen, answer, tileEl) {
     if (t.dataset.heb === answer.heb) t.classList.add('good');
   });
   if (!ok) tileEl.classList.add('bad');
-  speechUnlocked = true;
-  // Pre-speak the NEXT card inside this gesture so iOS lets it play (no setTimeout-deferred speak).
-  const j = currentIndex + 1;
-  if (j < currentCards.length && isListeningActive()) speakWord(currentCards[j].heb);
-  setTimeout(autoAdvance, 700);
-}
-function speakCurrentIfListening() {
-  // Nav is gesture-driven (button / arrow key); auto-speak the destination once audio is unlocked.
-  if (isListeningActive() && speechUnlocked) speakWord(currentCards[currentIndex].heb);
+  setTimeout(autoAdvance, 700);   // the next card stays silent until its 🔊 is tapped
 }
 function nextCard() {
   // Pressing Next/→ on an ungraded card is a skip. With "Show skipped cards again"
@@ -5509,7 +5502,6 @@ function nextCard() {
     currentIndex++;
     isFlipped = false;
     renderCurrentCard();
-    speakCurrentIfListening();
   } else {
     showResults();
   }
@@ -5519,7 +5511,6 @@ function prevCard() {
     currentIndex--;
     isFlipped = false;
     renderCurrentCard();
-    speakCurrentIfListening();
   }
 }
 
@@ -5590,7 +5581,7 @@ function redoSameSet() {
   requeued = new Array(currentCards.length).fill(false);
   hasFlipped = new Array(currentCards.length).fill(false);
   isFlipped = false;
-  speechUnlocked = false; listenLocked = false;   // 🎧 each session re-requires the first-tap gesture
+  listenLocked = false;   // 🎧 reset the per-card answer guard for a fresh session
   resetSessionStats();
   renderCurrentCard();
   showScreen('screenCard');
@@ -5605,7 +5596,7 @@ function practiceMistakes() {
   requeued = new Array(currentCards.length).fill(false);
   hasFlipped = new Array(currentCards.length).fill(false);
   isFlipped = false;
-  speechUnlocked = false; listenLocked = false;   // 🎧 each session re-requires the first-tap gesture
+  listenLocked = false;   // 🎧 reset the per-card answer guard for a fresh session
   resetSessionStats();
   renderCurrentCard();
   showScreen('screenCard');
