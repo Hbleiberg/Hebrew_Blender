@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v165';
+const VERSION = 'v166';
 const CACHE = 'ivritsuite-' + VERSION;
 
 /* Core app shell. Big media (og-card, the data/ corpus) is left to runtime caching. */
