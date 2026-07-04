@@ -4272,6 +4272,7 @@ async function practiceWeaknesses(name) {
   requeued = new Array(deck.length).fill(false);
   hasFlipped = new Array(deck.length).fill(false);
   isFlipped = false;
+  speechUnlocked = false; listenLocked = false;   // 🎧 each session re-requires the first-tap gesture
   resetSessionStats();
   renderCurrentCard();
   showScreen('screenCard');
@@ -4794,6 +4795,13 @@ function buildPool(filterFn) {
 function pickRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 function pickVowel() {
   const keys = [...selectedVowels];
   if (keys.length === 0) return null;
@@ -5106,6 +5114,7 @@ function startPractice() {
   requeued = new Array(deck.length).fill(false);
   hasFlipped = new Array(deck.length).fill(false);
   isFlipped = false;
+  speechUnlocked = false; listenLocked = false;   // 🎧 each session re-requires the first-tap gesture
   resetSessionStats();
   renderCurrentCard();
   showScreen('screenCard');
@@ -5130,6 +5139,10 @@ function renderCurrentCard() {
   document.getElementById('progressBar').style.width = `${((currentIndex + 1) / total) * 100}%`;
   const skipHdr = document.getElementById('skipReshowHeader');
   if (skipHdr) skipHdr.style.display = card.isSkippedReshow ? '' : 'none';
+
+  // 🎧 Listening view takes over the card area when active; skip the normal face painting.
+  setListenChrome(isListeningActive());
+  if (isListeningActive()) { renderListeningCard(card); return; }
 
   const fcCard = document.getElementById('fcCard');
 
@@ -5348,16 +5361,18 @@ function flipCard() {
   document.querySelector('.fc-mark-row').classList.remove('hide');
 }
 
+function applyMark(ok) {
+  scores[currentIndex] = ok;   // graded against the current (prompt) card index
+  recordMark(ok);
+}
 function markCorrect(e) {
   if (e) e.stopPropagation();
-  scores[currentIndex] = true;
-  recordMark(true);
+  applyMark(true);
   setTimeout(autoAdvance, 220);
 }
 function markIncorrect(e) {
   if (e) e.stopPropagation();
-  scores[currentIndex] = false;
-  recordMark(false);
+  applyMark(false);
   setTimeout(autoAdvance, 220);
 }
 function autoAdvance() {
@@ -5369,6 +5384,93 @@ function autoAdvance() {
     // End of deck
     showResults();
   }
+}
+
+/* ---- 🎧 Listening mode round presenter (audio prompt + multiple choice) ---- */
+function setListenChrome(on) {
+  const persp = document.querySelector('.fc-perspective');
+  const listen = document.getElementById('fcListen');
+  const markRow = document.querySelector('.fc-mark-row');
+  const flipBtn = document.getElementById('flipBtn');
+  if (persp) persp.style.display = on ? 'none' : '';
+  if (listen) listen.style.display = on ? '' : 'none';
+  if (markRow) markRow.classList.toggle('hide', on);
+  if (flipBtn) flipBtn.style.display = on ? 'none' : '';
+}
+function choiceFace(card) {
+  // Numbers speak the Hebrew number-words; the identify face follows numberFront
+  // (digit when the front shows the numeral, Hebrew words otherwise).
+  if (otherModeActive && otherSubMode === 'numbers' && numberFront === 'number') {
+    return `<span class="lc-num">${escapeHtml(String(card.translit))}</span>`;
+  }
+  return `<span class="lc-heb">${colorizeHebrew(card.heb)}</span>`;
+}
+// Answer + up to n-1 distractors, deduped by spoken form (card.heb), topped up from the
+// full mode pool via generateCard() when the deck has too few distinct forms. Shuffled.
+function sampleChoices(answer, n) {
+  const used = new Set([answer.heb]);
+  const distractors = [];
+  const addFrom = (arr) => {
+    for (const c of arr) {
+      if (distractors.length >= n - 1) break;
+      if (c && c.heb && !used.has(c.heb)) { used.add(c.heb); distractors.push(c); }
+    }
+  };
+  addFrom(shuffle(currentCards.slice()));   // 1) reuse distinct cards already in the deck
+  let attempts = 0;
+  while (distractors.length < n - 1 && attempts < n * 25) {   // 2) top up from the mode pool
+    attempts++;
+    addFrom([generateCard()]);
+  }
+  return shuffle([answer, ...distractors]);
+}
+function setListenHint() {
+  const hint = document.getElementById('lcHint');
+  if (!hint) return;
+  hint.textContent = speechUnlocked ? 'Which one did you hear?' : 'Tap 🔊 to hear the first card';
+}
+function renderListeningCard(card) {
+  listenLocked = false;
+  const grid = document.getElementById('lcChoices');
+  const replay = document.getElementById('lcReplay');
+  currentListenChoices = sampleChoices(card, listeningChoices);
+  grid.innerHTML = '';
+  currentListenChoices.forEach(c => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'lc-tile';
+    b.dataset.heb = c.heb;
+    b.innerHTML = choiceFace(c);
+    b.addEventListener('click', () => chooseTile(c, card, b));
+    grid.appendChild(b);
+  });
+  // Revisiting an already-graded card (via Prev): lock and reveal the correct tile.
+  if (scores[currentIndex] === true || scores[currentIndex] === false) {
+    listenLocked = true;
+    grid.querySelectorAll('.lc-tile').forEach(t => {
+      t.disabled = true;
+      if (t.dataset.heb === card.heb) t.classList.add('good');
+    });
+  }
+  replay.onclick = () => { speakWord(card.heb); speechUnlocked = true; setListenHint(); };
+  setListenHint();
+  if (currentListenChoices.length < 2) {   // degenerate universe: only the answer exists
+    document.getElementById('lcHint').textContent = 'Add more letters/vowels for multiple-choice options.';
+  }
+}
+function chooseTile(chosen, answer, tileEl) {
+  if (listenLocked) return;
+  listenLocked = true;
+  const ok = (chosen.heb === answer.heb);   // graded against the PROMPT card, not the tapped tile
+  applyMark(ok);
+  const grid = document.getElementById('lcChoices');
+  grid.querySelectorAll('.lc-tile').forEach(t => {
+    t.disabled = true;
+    if (t.dataset.heb === answer.heb) t.classList.add('good');
+  });
+  if (!ok) tileEl.classList.add('bad');
+  speechUnlocked = true;
+  setTimeout(autoAdvance, 700);
 }
 function nextCard() {
   // Pressing Next/→ on an ungraded card is a skip. With "Show skipped cards again"
@@ -5464,6 +5566,7 @@ function redoSameSet() {
   requeued = new Array(currentCards.length).fill(false);
   hasFlipped = new Array(currentCards.length).fill(false);
   isFlipped = false;
+  speechUnlocked = false; listenLocked = false;   // 🎧 each session re-requires the first-tap gesture
   resetSessionStats();
   renderCurrentCard();
   showScreen('screenCard');
@@ -5478,6 +5581,7 @@ function practiceMistakes() {
   requeued = new Array(currentCards.length).fill(false);
   hasFlipped = new Array(currentCards.length).fill(false);
   isFlipped = false;
+  speechUnlocked = false; listenLocked = false;   // 🎧 each session re-requires the first-tap gesture
   resetSessionStats();
   renderCurrentCard();
   showScreen('screenCard');
@@ -5503,6 +5607,17 @@ function wireCardScreen() {
   });
   document.addEventListener('keydown', e => {
     if (!document.getElementById('screenCard').classList.contains('active')) return;
+    if (isListeningActive()) {
+      // Listening rounds: no flip / no y-n grading (would corrupt the round).
+      if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); document.getElementById('lcReplay').click(); }
+      else if (e.key === 'ArrowLeft') { prevCard(); }
+      else if (e.key === 'ArrowRight') { nextCard(); }
+      else if (/^[1-9]$/.test(e.key)) {
+        const tiles = document.querySelectorAll('#lcChoices .lc-tile');
+        if (tiles[+e.key - 1]) tiles[+e.key - 1].click();
+      }
+      return;
+    }
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipCard(); }
     else if (e.key === 'ArrowLeft') { prevCard(); }
     else if (e.key === 'ArrowRight') { nextCard(); }
