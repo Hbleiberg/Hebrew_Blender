@@ -851,6 +851,16 @@ body.dark .lc-replay { color: var(--gold-light); }
 .lc-heb { font-family: var(--heb-font); direction: rtl; font-size: clamp(1.8rem, 8vw, 3rem); line-height: 1.15; }
 .lc-num { font-family: var(--serif); direction: ltr; font-size: clamp(2rem, 9vw, 3.2rem); font-weight: 700; }
 
+/* Honor reduced-motion: neutralize all transitions/animations (page previously had no such block) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 .fc-nav {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -5470,7 +5480,14 @@ function chooseTile(chosen, answer, tileEl) {
   });
   if (!ok) tileEl.classList.add('bad');
   speechUnlocked = true;
+  // Pre-speak the NEXT card inside this gesture so iOS lets it play (no setTimeout-deferred speak).
+  const j = currentIndex + 1;
+  if (j < currentCards.length && isListeningActive()) speakWord(currentCards[j].heb);
   setTimeout(autoAdvance, 700);
+}
+function speakCurrentIfListening() {
+  // Nav is gesture-driven (button / arrow key); auto-speak the destination once audio is unlocked.
+  if (isListeningActive() && speechUnlocked) speakWord(currentCards[currentIndex].heb);
 }
 function nextCard() {
   // Pressing Next/→ on an ungraded card is a skip. With "Show skipped cards again"
@@ -5487,6 +5504,7 @@ function nextCard() {
     currentIndex++;
     isFlipped = false;
     renderCurrentCard();
+    speakCurrentIfListening();
   } else {
     showResults();
   }
@@ -5496,6 +5514,7 @@ function prevCard() {
     currentIndex--;
     isFlipped = false;
     renderCurrentCard();
+    speakCurrentIfListening();
   }
 }
 
