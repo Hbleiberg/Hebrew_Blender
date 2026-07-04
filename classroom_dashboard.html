@@ -1335,9 +1335,15 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <button class="fs-pop-btn" type="button" onclick="fsTimerStart(10)">10 min</button>
     <button class="fs-pop-btn fs-pop-hide" type="button" onclick="fsTimerHide()">Hide</button>
   </div>
+  <div id="fsPickPop" class="fs-pop" style="display:none;">
+    <button class="fs-pop-btn" type="button" onclick="fsPickOne()">🎲 Pick One</button>
+    <button class="fs-pop-btn" type="button" onclick="fsPickGroups()">👥 Make Groups</button>
+    <button class="fs-pop-btn fs-pop-hide" type="button" onclick="fsPickHide()">Hide</button>
+  </div>
   <div class="fs-strip-inner">
     <button class="fs-strip-btn" type="button" onclick="openSettings()"><span class="fss-ico">⚙️</span>Settings</button>
     <button class="fs-strip-btn" type="button" id="fsTimerBtn" onclick="fsStripTimerToggle()"><span class="fss-ico">⏱️</span>Timer</button>
+    <button class="fs-strip-btn" type="button" id="fsPickBtn" onclick="fsStripPickToggle()"><span class="fss-ico">🎲</span>Pick</button>
     <button class="fs-strip-btn" type="button" onclick="fsStripText()"><span class="fss-ico">✎</span>Text</button>
     <button class="fs-strip-btn" type="button" onclick="fsStripVideo()"><span class="fss-ico">📺</span>Video</button>
   </div>
@@ -5572,6 +5578,7 @@ async function onUploadFontPick(input){
     if (document.getElementById('settingsModal').classList.contains('open')) return;   // stay while drawer open
     if (_activeEditable) return;                                                        // stay while editing text
     if (document.getElementById('fsTimerPop').style.display !== 'none') return;         // stay while timer popup open
+    if (document.getElementById('fsPickPop').style.display !== 'none') return;          // stay while pick popup open
     document.getElementById('fsStrip').classList.remove('visible');
   }
   function fsStripTimerToggle() {
@@ -5579,6 +5586,14 @@ async function onUploadFontPick(input){
     p.style.display = (p.style.display === 'none' || !p.style.display) ? 'flex' : 'none';
     showFsStrip();
   }
+  function fsStripPickToggle() {
+    const p = document.getElementById('fsPickPop');
+    p.style.display = (p.style.display === 'none' || !p.style.display) ? 'flex' : 'none';
+    showFsStrip();
+  }
+  function fsPickOne() { document.getElementById('fsPickPop').style.display = 'none'; pickOne(); }
+  function fsPickGroups() { document.getElementById('fsPickPop').style.display = 'none'; makeGroups(); }
+  function fsPickHide() { document.getElementById('fsPickPop').style.display = 'none'; showFsStrip(); }
   function fsTimerStart(min) {
     settings.showTimer = true; settings.showTimerFullscreen = true;   // ensure the timer is visible before starting it
     applyTimerVisibility(); updateDashboardGrid();
@@ -5610,11 +5625,14 @@ async function onUploadFontPick(input){
     document.body.classList.toggle('fullscreen', isFs);
     document.querySelector('#fsBtn .fs-ico').innerHTML = isFs ? FS_EXIT : FS_ENTER;
     applyTimerVisibility();
+    applyStudentPickerVisibility();
     if (isFs) { acquireWakeLock(); showFsStrip(); }
     else {
       if (_fsStripTimer) clearTimeout(_fsStripTimer);
       document.getElementById('fsStrip').classList.remove('visible');
       document.getElementById('fsTimerPop').style.display = 'none';
+      document.getElementById('fsPickPop').style.display = 'none';
+      closePickOverlay();
       if (_activeEditable) exitInPlaceEdit(true);
       applyWakeLock();
     }
