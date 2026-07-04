@@ -2135,11 +2135,12 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant, 
 function stripHTML(s) {
   // Sefaria translations sometimes contain HTML (italics for added words). Allow basic tags.
   if (!s) return '';
-  // sanitize: keep <i>, <b>, <em>, <strong>, <sup>, <sub>; strip everything else
-  const tmp = document.createElement('div');
-  tmp.innerHTML = s;
-  walkAndSanitize(tmp);
-  return tmp.innerHTML;
+  // sanitize: keep <i>, <b>, <em>, <strong>, <sup>, <sub>; strip everything else.
+  // Parse in an inert DOMParser document so hostile markup (e.g. <img onerror>)
+  // can never start loading or fire handlers before sanitization runs.
+  const doc = new DOMParser().parseFromString(s, 'text/html');
+  walkAndSanitize(doc.body);
+  return doc.body.innerHTML;
 }
 function walkAndSanitize(node) {
   const allowed = new Set(['I','B','EM','STRONG','SUP','SUB','SPAN','SMALL']);
@@ -2160,8 +2161,10 @@ function cssEscape(s) {
 /* ══════════════════════════════════════════════════════
    FETCH + RENDER ORCHESTRATION
    ══════════════════════════════════════════════════════ */
+let _fetchSeq = 0;   // stale-response guard: only the latest fetchAndRender may render
 async function fetchAndRender() {
   const r = resolveRef();
+  const seq = ++_fetchSeq;
   currentReadingCtx = r;
   updateScopeSelectState();
   if (!r) {
@@ -2171,6 +2174,7 @@ async function fetchAndRender() {
   setStatus(`Loading ${r.label}…`, false);
   try {
     let verses = await fetchSefariaText(r.ref, settings.showTranslation, settings.translationVersion);
+    if (seq !== _fetchSeq) return;   // a newer selection superseded this fetch
     const book = r.parshahEntry ? r.parshahEntry.book : (settings.customRef || '').split(/[ .]/)[0];
     // Requested a translation but Sefaria returned no English for this version +
     // passage (the version doesn't cover it, or its title didn't match — e.g.
@@ -2181,8 +2185,10 @@ async function fetchAndRender() {
     let fallbackNote = '';
     if (settings.showTranslation && settings.translationVersion && verses._engCount === 0 && book) {
       const fb = await pickFallbackVersion(book, settings.translationVersion);
+      if (seq !== _fetchSeq) return;   // a newer selection superseded this fetch
       if (fb) {
         const alt = await fetchSefariaText(r.ref, true, fb);
+        if (seq !== _fetchSeq) return;   // a newer selection superseded this fetch
         if (alt._engCount > 0) {
           fallbackNote = `"${settings.translationVersion}" isn't available here — showing "${fb}" instead.`;
           settings.translationVersion = fb;
@@ -2218,6 +2224,7 @@ async function fetchAndRender() {
     // First-ever chantable render: nudge the (undiscoverable) click-a-word feature.
     maybeShowClickHint();
   } catch (e) {
+    if (seq !== _fetchSeq) return;   // a newer selection superseded this fetch; don't clobber it with an error
     console.error(e);
     setStatus(`Failed to load ${r.label}: ${e.message}. Sefaria API may be unreachable.`, true);
   }
