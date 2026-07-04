@@ -3631,11 +3631,22 @@ function shareCodeDecode(code) {
   while (b.length % 4) b += '=';
   return ivritSafeParse(decodeURIComponent(escape(atob(b))));
 }
+const WORDS_SHARE_CAP = 300;   // max words embedded in a share code (keeps the base64/QR usable)
 function generateShareCode() {
-  const payload = { v: 1, tool: 'FlashCards', data: getSettings() };
+  const data = getSettings();
+  // A "My Word Lists" code is meaningless on a device without the store, so embed the
+  // resolved words inline. "All Dictionary" needs no embedding (the student fetches it).
+  if (data.otherModeActive && data.otherSubMode === 'words' && data.wordsSource === 'mylists') {
+    const pool = resolveWordsPool();
+    data.wordsInline = pool.slice(0, WORDS_SHARE_CAP).map(w => ({ w: w.word, t: w.translit || '', e: w.translation || '' }));
+    shareErr(pool.length > WORDS_SHARE_CAP
+      ? `Only the first ${WORDS_SHARE_CAP} of ${pool.length} words were embedded in this code.` : '');
+  } else {
+    shareErr('');
+  }
+  const payload = { v: 1, tool: 'FlashCards', data };
   const out = document.getElementById('shareCodeOutput');
   if (out) out.value = shareCodeEncode(payload);
-  shareErr('');
 }
 function copyShareCode() {
   const out = document.getElementById('shareCodeOutput');
