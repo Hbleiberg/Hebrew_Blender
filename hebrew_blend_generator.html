@@ -2150,6 +2150,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <button class="blend-type-btn"        data-worksheet="gematria"      onclick="setWorksheetType('gematria')">Gematria</button>
             <button class="blend-type-btn"        data-worksheet="nametheletter" onclick="setWorksheetType('nametheletter')" id="wtNameTheLetter">Name the<br>Letter</button>
             <button class="blend-type-btn"        data-worksheet="tracing"       onclick="setWorksheetType('tracing')">Tracing</button>
+            <button class="blend-type-btn"        data-worksheet="matching"      onclick="setWorksheetType('matching')">Matching</button>
           </div>
           <div style="font-size:0.65rem;color:var(--muted);margin-top:4px;line-height:1.2;">
             <span id="wtHelpReading"      class="wt-help">Hebrew shown — students read aloud.</span>
@@ -2159,6 +2160,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <span id="wtHelpGematria"     class="wt-help" style="display:none;">Students calculate the Gematria value of each word.</span>
             <span id="wtHelpNametheletter" class="wt-help" style="display:none;">Drill Hebrew letter names. Only available with 1-Letter practice.</span>
             <span id="wtHelpTracing"      class="wt-help" style="display:none;">Ruled lines with faded models — students trace, then write on their own.</span>
+            <span id="wtHelpMatching"     class="wt-help" style="display:none;">Draw-a-line matching — blends in one column, their sounds shuffled in the other. Includes an optional answer key.</span>
           </div>
         </div>
 
@@ -2553,6 +2555,28 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
               <span class="tooltip-wrap">?<span class="tooltip-box">Repeat faded copies across the whole line instead of leaving blank writing space — trace-only practice. Disables "Faded models per line".</span></span>
             </span>
             <label class="toggle" style="transform:scale(0.75);transform-origin:right;"><input type="checkbox" id="traceFillLine" onchange="onTraceFillLineChange()"><span class="slider"></span></label>
+          </div>
+        </div>
+        <!-- Matching — hidden slider (driven by the Worksheet Type button); options panel below. -->
+        <div class="toggle-row" id="rowMatching" style="display:none;">
+          <span>Matching</span>
+          <label class="toggle">
+            <input type="checkbox" id="matchingToggle" onchange="updateModeVisibility()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div id="matchingOptions" style="display:none;flex-direction:column;gap:6px;">
+          <div style="border-top:1px solid var(--border);margin:10px 0 6px;"></div>
+          <div class="toggle-row" style="font-size:0.82rem;">
+            <span>Number of Pairs
+              <span class="tooltip-wrap">?<span class="tooltip-box">How many blend&#8596;sound pairs to put on the matching worksheet. Kept small so everything fits one printed page.</span></span>
+            </span>
+            <select id="matchBlendCount" onchange="if(document.getElementById('worksheet').querySelector('.match-item'))generate()" style="font-size:0.82rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
+              <option value="8">8</option>
+              <option value="10" selected>10</option>
+              <option value="12">12</option>
+              <option value="14">14</option>
+            </select>
           </div>
         </div>
         <div class="toggle-row" id="rowRealWords" style="margin-top:4px;">
@@ -4400,6 +4424,9 @@ function getSettings() {
     vowelColorScheme,
     // Transliteration style
     translitStyle,
+    // Matching (standard blends)
+    matchingMode:       document.getElementById('matchingToggle')?.checked ?? false,
+    matchBlendCount:    document.getElementById('matchBlendCount')?.value,
     // Tracing
     tracing:            document.getElementById('tracingToggle')?.checked ?? false,
     traceLineStyle,
@@ -4568,6 +4595,9 @@ function applySettings(s) {
   if (s.gematriaAnswerKey !== undefined) document.getElementById('gematriaAnswerKey').checked = s.gematriaAnswerKey;
   if (s.gematriaInverse !== undefined)   document.getElementById('gematriaInverse').checked = s.gematriaInverse;
 
+  // Matching (standard blends) — set values only; visibility flows through updateModeVisibility() at end.
+  if (s.matchingMode !== undefined && document.getElementById('matchingToggle')) document.getElementById('matchingToggle').checked = s.matchingMode;
+  if (s.matchBlendCount && document.getElementById('matchBlendCount')) document.getElementById('matchBlendCount').value = s.matchBlendCount;
   // Tracing — set values only; visibility flows through updateModeVisibility() at end.
   if (s.tracing !== undefined)          document.getElementById('tracingToggle').checked = s.tracing;
   if (s.traceLineStyle)                 traceLineStyle = s.traceLineStyle;
@@ -6088,6 +6118,7 @@ function computeModeState() {
     else if (document.getElementById('gematriaToggle').checked)   drill = 'gematria';
     else if (document.getElementById('inverseToggle').checked)    drill = 'inverse';
     else if (document.getElementById('tracingToggle')?.checked)   drill = 'tracing';
+    else if (document.getElementById('matchingToggle')?.checked)  drill = 'matching';
   }
 
   return {
@@ -6106,7 +6137,7 @@ function computeModeState() {
 const _MODE_FLEX_IDS = new Set([
   'bingoOptions','gematriaOptions','selfCheckOptions','realWordsOptions',
   'customWordlistOptions','numberPracticeOptions','focusOptions',
-  'nameTheLetterOptions','fillVowelsDageshRow','tracingOptions',
+  'nameTheLetterOptions','fillVowelsDageshRow','tracingOptions','matchingOptions',
 ]);
 const _MODE_BLOCK_IDS = new Set(['threeLetterOptions']);
 
@@ -6160,13 +6191,13 @@ function updateModeVisibility() {
 
     // Surviving rows (still slider-driven for now)
     rowAnswerKey:      !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && s.drill !== 'tracing' && !s.bingo && !isNtl,
-    rowSelfCheck:      !gemSC    && !ntlSC && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && s.drill !== 'tracing' && !s.bingo && !isNtl,
+    rowSelfCheck:      !gemSC    && !ntlSC && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && s.drill !== 'tracing' && s.drill !== 'matching' && !s.bingo && !isNtl,
     // Trailing divider only renders when at least one of the rows above is shown.
     outputOptionsDivider: (!testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && s.drill !== 'tracing' && !s.bingo && !isNtl) ||
                           (!gemSC && !ntlSC && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && s.drill !== 'tracing' && !s.bingo && !isNtl),
     // Class Set (multi-version) makes no sense for tracing — hide it there.
     rowClassSet:       !(blends && s.drill === 'tracing'),
-    rowBlendCount:     !testMode && blends && !s.bingo,
+    rowBlendCount:     !testMode && blends && !s.bingo && s.drill !== 'matching',
 
     // Sub-option panels
     bingoOptions:          blends && s.bingo && !testMode,
@@ -6180,6 +6211,7 @@ function updateModeVisibility() {
     numberPracticeOptions: s.source === 'numbers',
     fillVowelsDageshRow:   blends && s.drill === 'fillvowels',
     tracingOptions:        blends && s.drill === 'tracing',
+    matchingOptions:       blends && s.drill === 'matching',
 
     // Print / Export PDF buttons are meaningless in self-check / gematria
     // self-check (interactive on-screen drills, not printable worksheets).
@@ -6235,6 +6267,7 @@ function updateModeVisibility() {
   else if (s.drill === 'fillvowels') wsType = 'fillvowels';
   else if (s.drill === 'gematria')   wsType = 'gematria';
   else if (s.drill === 'tracing')    wsType = 'tracing';
+  else if (s.drill === 'matching')   wsType = 'matching';
   if (isNtl)                    wsType = 'nametheletter';
   document.querySelectorAll('[data-worksheet]').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.worksheet === wsType);
@@ -6281,7 +6314,7 @@ function enforceMutex(opts) {
     // Switching to a non-blends source clears every blends-only flag.
     if (opts.source !== 'blends') {
       ['inverseToggle','fillVowelsToggle','gematriaToggle','bingoToggle',
-       'tracingToggle','selfCheckToggle','answerKeyToggle'].forEach(id => set(id, false));
+       'tracingToggle','matchingToggle','selfCheckToggle','answerKeyToggle'].forEach(id => set(id, false));
     }
   }
 
@@ -6291,17 +6324,18 @@ function enforceMutex(opts) {
     if (opts.drill !== 'fillvowels') set('fillVowelsToggle', false);
     if (opts.drill !== 'gematria')   set('gematriaToggle',   false);
     if (opts.drill !== 'tracing')    set('tracingToggle',    false);
-    // Bingo only layers on standard. Gematria/tracing have their own layouts,
+    if (opts.drill !== 'matching')   set('matchingToggle',   false);
+    // Bingo only layers on standard. Gematria/tracing/matching have their own layouts,
     // and overlap with bingo cards makes no sense.
-    if (opts.drill === 'inverse' || opts.drill === 'fillvowels' || opts.drill === 'gematria' || opts.drill === 'tracing') set('bingoToggle', false);
+    if (opts.drill === 'inverse' || opts.drill === 'fillvowels' || opts.drill === 'gematria' || opts.drill === 'tracing' || opts.drill === 'matching') set('bingoToggle', false);
     // Self-check only layers on standard, inverse.
-    // (Gematria has its own gematriaSelfCheck inside its options panel; tracing has none.)
-    if (opts.drill === 'fillvowels' || opts.drill === 'gematria' || opts.drill === 'tracing') set('selfCheckToggle', false);
-    // Answer key only layers on standard, inverse.
+    // (Gematria has its own gematriaSelfCheck inside its options panel; tracing/matching have none.)
+    if (opts.drill === 'fillvowels' || opts.drill === 'gematria' || opts.drill === 'tracing' || opts.drill === 'matching') set('selfCheckToggle', false);
+    // Answer key only layers on standard, inverse, and matching (which prints its own key).
     // (Gematria's answer-key sub-toggle lives in gematriaOptions; tracing has no answer key.)
     if (opts.drill === 'fillvowels' || opts.drill === 'gematria' || opts.drill === 'tracing') set('answerKeyToggle', false);
-    // Gematria/tracing are blends-source drills — clear conflicting non-blends sources.
-    if (opts.drill === 'gematria' || opts.drill === 'tracing') {
+    // Gematria/tracing/matching are blends-source drills — clear conflicting non-blends sources.
+    if (opts.drill === 'gematria' || opts.drill === 'tracing' || opts.drill === 'matching') {
       set('numberPracticeToggle', false);
       set('realWordsToggle',      false);
       cwModeActive = false;
@@ -6439,7 +6473,7 @@ function setWorksheetType(type) {
   set('numberPracticeToggle', false);
 
   // Reset every standard-drill flag, then turn on the chosen one.
-  ['inverseToggle','fillVowelsToggle','bingoToggle','gematriaToggle','nameTheLetterToggle','tracingToggle']
+  ['inverseToggle','fillVowelsToggle','bingoToggle','gematriaToggle','nameTheLetterToggle','tracingToggle','matchingToggle']
     .forEach(id => set(id, false));
 
   let initFn = null;
@@ -6452,6 +6486,10 @@ function setWorksheetType(type) {
       set('tracingToggle', true);
       enforceMutex({ drill: 'tracing' });
       initFn = toggleTracingUI;
+      break;
+    case 'matching':
+      set('matchingToggle', true);
+      enforceMutex({ drill: 'matching' });
       break;
     case 'fillvowels':
       set('fillVowelsToggle', true);
@@ -8746,6 +8784,7 @@ function renderWorksheet(animate = false) {
   if (bingo) { renderBingo(ws); return; }
   if (document.getElementById('gematriaToggle').checked) { renderGematriaSheet(ws); return; }
   if (document.getElementById('tracingToggle')?.checked) { renderTracingSheet(ws); return; }
+  if (document.getElementById('matchingToggle')?.checked) { renderBlendMatching(ws); return; }
 
   // One-letter and nikud-only: blends is already populated by generate()
   // selfCheck uses blends array directly so it works for all types
@@ -10625,12 +10664,38 @@ function generateRealWordsMatching(pool) {
   const N = Math.min(parseInt(document.getElementById('matchCount').value) || 10, usable.length);
   const versions = Math.max(1, Math.min(40, parseInt(document.getElementById('matchVersions').value) || 1));
   const showKey = document.getElementById('matchAnswerKey').checked;
+  const emoji = matchTarget === 'emoji';
+  const toItem = w => ({ heb: w.heb, targetHTML: matchTargetHTML(w), targetText: matchTargetText(w), big: emoji });
+  const versionsItems = Array.from({ length: versions }, () => rwShuffle(usable).slice(0, N).map(toItem));
+
+  renderMatchingSheets(ws, versionsItems, {
+    title: 'Hebrew Word Matching',
+    subtitle: 'Draw a line from each Hebrew word to its match.',
+    showKey,
+  });
+
+  updateRwPoolInfo();
+  enableButtons();
+}
+
+// Shared two-column matching renderer, used by both the Real Words matching drill
+// and the standard-blends matching worksheet. Renders one student sheet per
+// version (+ an optional per-version answer key). Each item is
+// { heb, targetHTML, targetText, big? }; the caller resolves what the target is
+// (translation / emoji / translit / blend sound) so this core stays source-agnostic.
+function renderMatchingSheets(ws, versionsItems, opts) {
+  opts = opts || {};
+  const title     = opts.title || 'Hebrew Matching';
+  const subtitle  = opts.subtitle || 'Draw a line from each item to its match.';
+  const showKey   = !!opts.showKey;
+  const colorMode = opts.colorMode || colorCodingMode;
+  const pairsNoun = opts.pairsNoun || 'pairs';
+  const multi = versionsItems.length > 1;
   ws.innerHTML = '';
 
-  for (let v = 0; v < versions; v++) {
-    const words = rwShuffle(usable).slice(0, N);
-    const perm = derange(words.length);          // target row r shows words[perm[r]]
-    const verLabel = versions > 1 ? versionLabelText(v) : null;
+  versionsItems.forEach((items, v) => {
+    const perm = derange(items.length);          // target row r shows items[perm[r]]
+    const verLabel = multi ? versionLabelText(v) : null;
     const verHtml = verLabel ? '<div class="ws-version-label">' + verLabel + '</div>' : '';
 
     // ── Student sheet ──
@@ -10640,8 +10705,8 @@ function generateRealWordsMatching(pool) {
     header.className = 'ws-header';
     header.innerHTML =
       '<div>' + verHtml +
-      '<div class="ws-title">Hebrew Word Matching</div>' +
-      '<div class="ws-subtitle">Draw a line from each Hebrew word to its match.</div>' +
+      '<div class="ws-title">' + title + '</div>' +
+      '<div class="ws-subtitle">' + subtitle + '</div>' +
       '</div>' + wsMetaHTML();
     sheet.appendChild(header);
 
@@ -10651,25 +10716,25 @@ function generateRealWordsMatching(pool) {
     // Left column: shuffled targets, lettered A, B, C…
     const tCol = document.createElement('div');
     tCol.className = 'match-col match-col-target';
-    words.forEach((_, r) => {
-      const tw = words[perm[r]];
+    items.forEach((_, r) => {
+      const tw = items[perm[r]];
       const item = document.createElement('div');
       item.className = 'match-item';
       item.innerHTML = '<span class="match-label">' + String.fromCharCode(65 + r) + '</span>' +
-        matchTargetHTML(tw) + '<span class="match-dot"></span>';
+        tw.targetHTML + '<span class="match-dot"></span>';
       tCol.appendChild(item);
     });
 
-    // Right column: Hebrew words in order, numbered 1, 2, 3…
+    // Right column: Hebrew in order, numbered 1, 2, 3…
     const hCol = document.createElement('div');
     hCol.className = 'match-col match-col-heb';
-    words.forEach((w, r) => {
+    items.forEach((it, r) => {
       const item = document.createElement('div');
       item.className = 'match-item';
       item.innerHTML = '<span class="match-dot"></span>';
       const heb = document.createElement('span');
       heb.className = 'match-heb';
-      heb.innerHTML = colorizeHebrew(w.heb, colorCodingMode);   // plain text when color-coding is off
+      heb.innerHTML = colorizeHebrew(it.heb, colorMode);   // plain text when color-coding is off
       item.appendChild(heb);
       const num = document.createElement('span');
       num.className = 'match-num';
@@ -10684,7 +10749,7 @@ function generateRealWordsMatching(pool) {
 
     const footer = document.createElement('div');
     footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-    footer.innerHTML = '<span class="ws-brand">IvritSuite.com</span><span>' + words.length + ' pairs · Hebrew Blend Generator</span>';
+    footer.innerHTML = '<span class="ws-brand">IvritSuite.com</span><span>' + items.length + ' ' + pairsNoun + ' · Hebrew Blend Generator</span>';
     sheet.appendChild(footer);
     ws.appendChild(sheet);
 
@@ -10699,35 +10764,64 @@ function generateRealWordsMatching(pool) {
       const keyHdr = document.createElement('div');
       keyHdr.className = 'ws-header';
       keyHdr.innerHTML = '<div>' + verHtml +
-        '<div class="ws-title">Hebrew Word Matching</div>' +
+        '<div class="ws-title">' + title + '</div>' +
         '<div class="ws-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>';
       keySheet.appendChild(keyHdr);
       const list = document.createElement('div');
       list.className = 'match-ak-list';
-      words.forEach((w, i) => {
-        // Hebrew #(i+1) matches the target now sitting in target-row perm.indexOf(i).
+      items.forEach((it, i) => {
+        // Item #(i+1) matches the target now sitting in target-row perm.indexOf(i).
         const letter = String.fromCharCode(65 + perm.indexOf(i));
         const row = document.createElement('div');
         row.className = 'match-ak-row';
         const num = document.createElement('span'); num.className = 'match-num'; num.textContent = (i + 1) + '.';
-        const heb = document.createElement('span'); heb.className = 'match-ak-heb'; heb.innerHTML = colorizeHebrew(w.heb, colorCodingMode);
+        const heb = document.createElement('span'); heb.className = 'match-ak-heb'; heb.innerHTML = colorizeHebrew(it.heb, colorMode);
         const arrow = document.createElement('span'); arrow.textContent = '→'; arrow.style.color = 'var(--muted)';
         const let_ = document.createElement('span'); let_.className = 'match-ak-let'; let_.textContent = letter;
-        const tgt = document.createElement('span'); tgt.style.color = 'var(--muted)'; tgt.textContent = matchTargetText(w);
-        if (matchTarget === 'emoji') tgt.style.fontSize = '1.4rem';
+        const tgt = document.createElement('span'); tgt.style.color = 'var(--muted)'; tgt.textContent = it.targetText;
+        if (it.big) tgt.style.fontSize = '1.4rem';
         row.appendChild(num); row.appendChild(heb); row.appendChild(arrow); row.appendChild(let_); row.appendChild(tgt);
         list.appendChild(row);
       });
       keySheet.appendChild(list);
       const akFooter = document.createElement('div');
       akFooter.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
-      akFooter.innerHTML = '<span class="ws-brand">IvritSuite.com</span><span>' + words.length + ' pairs · Hebrew Blend Generator — Answer Key</span>';
+      akFooter.innerHTML = '<span class="ws-brand">IvritSuite.com</span><span>' + items.length + ' ' + pairsNoun + ' · Hebrew Blend Generator — Answer Key</span>';
       keySheet.appendChild(akFooter);
       ws.appendChild(keySheet);
     }
+  });
+}
+
+// Standard-blends matching worksheet: each blend's vocalized Hebrew (right,
+// numbered) matched to its transliteration (left, lettered). Reuses the shared
+// renderMatchingSheets core, honors Class Set (versions), the Answer Key toggle,
+// and the active nikkud color scheme. Works for 1/2/3-letter (and vowels-only).
+function renderBlendMatching(ws) {
+  const N = parseInt(document.getElementById('matchBlendCount')?.value) || 10;
+  const showKey = document.getElementById('answerKeyToggle').checked;
+  const title = esc(document.getElementById('wsTitle').value || 'Hebrew Blends');
+  const subtitle = esc(document.getElementById('wsSubtitle').value) || 'Draw a line from each blend to its sound.';
+  // Class Set already produced independent draws in classSetSheets; otherwise one sheet.
+  const sources = (classSetSheets && classSetSheets.length > 1) ? classSetSheets : [blends];
+  const toItem = b => {
+    const sound = b.translitDisplay ?? b.combined ?? '';
+    return { heb: b.hebrewDisplay, targetHTML: '<span class="match-target">' + esc(sound) + '</span>', targetText: sound };
+  };
+  const versionsItems = sources.map(arr =>
+    rwShuffle((arr || []).filter(b => b.hebrewDisplay && (b.translitDisplay ?? b.combined)))
+      .slice(0, N).map(toItem)
+  );
+
+  if (!versionsItems[0] || versionsItems[0].length < 2) {
+    ws.innerHTML = '<div class="empty-state"><h2>' +
+      ((blends && blends.length) ? 'Not enough blends to match.' : 'Please select letters and vowels.') +
+      '</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">Pick at least two letters and a vowel so there are blends to match.</p></div>';
+    enableButtons();
+    return;
   }
 
-  updateRwPoolInfo();
+  renderMatchingSheets(ws, versionsItems, { title, subtitle, showKey });
   enableButtons();
 }
 
