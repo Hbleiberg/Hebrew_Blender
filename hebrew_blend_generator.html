@@ -6195,10 +6195,10 @@ function updateModeVisibility() {
   const qrBlends  = blends && !s.bingo && s.drill !== 'tracing';
   const qrNumbers = s.source === 'numbers' && !document.getElementById('npBingo')?.checked
                                            && !document.getElementById('npSelfCheck')?.checked;
-  // Real-words word-list drills (word search & crossword are wired in a later phase;
-  // bingo/vocab have no printable answer; numpractice flips source to 'numbers').
+  // Real-words drills, incl. the spatial word search & crossword. Excluded:
+  // bingo/vocab (no printable answer) and numpractice (flips source to 'numbers').
   const qrRealwords = s.source === 'realwords' &&
-    !['bingo', 'vocab', 'numpractice', 'wordsearch', 'crossword'].includes(rwDrillType);
+    !['bingo', 'vocab', 'numpractice'].includes(rwDrillType);
   const qrDrill = !testMode && (qrBlends || qrNumbers || qrRealwords);
 
   const v = {
@@ -10483,13 +10483,13 @@ function generateRealWords(reuse) {
   }
 
   if (drill === 'wordsearch') {
-    generateWordSearch(pool);
+    generateWordSearch(pool, reuse);
     enableButtons();
     return;
   }
 
   if (drill === 'crossword') {
-    generateCrossword(pool);
+    generateCrossword(pool, reuse);
     enableButtons();
     return;
   }
@@ -10990,22 +10990,12 @@ const _WS_DIRS = {
   NE: [-1,  1], NW: [-1, -1],
 };
 
-function generateWordSearch(pool) {
+function generateWordSearch(pool, reuse) {
   const ws = document.getElementById('worksheet');
   ws.innerHTML = '';
 
-  const wantCount    = parseInt(document.getElementById('wsWordCount').value) || 8;
-  const gridSize     = parseInt(document.getElementById('wsGridSize').value)  || 12;
-  const showNikkud   = document.getElementById('wsShowNikkud').checked;
+  // Word-bank display prefs are safe to read fresh — they don't change the grid.
   const showWordBank = document.getElementById('wsShowWordBank').checked;
-  const dirKeys = [...document.querySelectorAll('.ws-dir:checked')].map(cb => cb.value);
-  if (dirKeys.length === 0) {
-    ws.innerHTML = '<div class="empty-state"><h2>Pick at least one direction.</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">Word Search needs somewhere to hide the words — enable at least one arrow under Drill Options → Directions.</p></div>';
-    return;
-  }
-  const dirs = dirKeys.map(k => _WS_DIRS[k]);
-
-  // Standard 3-way placement for the word bank's translit/translation.
   const showTranslit    = document.getElementById('rwShowTranslit').checked;
   const showTranslation = document.getElementById('rwShowTranslation').checked;
   const trOnSheet = showTranslit    && (rwTranslitPage === 'same' || rwTranslitPage === 'both');
@@ -11013,88 +11003,107 @@ function generateWordSearch(pool) {
   const tnOnSheet = showTranslation && (rwTranslPage   === 'same' || rwTranslPage   === 'both');
   const tnOnKey   = showTranslation && (rwTranslPage   === 'key'  || rwTranslPage   === 'both');
 
-  // Pick words: only those that fit in the grid in their grid form (with or
-  // without nikkud) and skip any whose split-length exceeds gridSize.
-  const candidates = rwShuffle(pool);
-  const chosen = [];
-  for (const w of candidates) {
-    if (chosen.length >= wantCount) break;
-    const gridText = showNikkud ? w.heb : stripNikud(w.heb);
-    const cells = splitHebLetters(gridText);
-    if (cells.length < 2 || cells.length > gridSize) continue;
-    chosen.push({ ...w, gridText, cells });
-  }
-  if (chosen.length === 0) {
-    ws.innerHTML = '<div class="empty-state"><h2>No words match.</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">Loosen your Word Filters or pick a larger grid size.</p></div>';
-    return;
-  }
-
-  // Place longest words first to maximize fit chance.
-  chosen.sort((a, b) => b.cells.length - a.cells.length);
-
-  const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(null));
-  const placements = [];                       // [{ word, cells: [[r,c], …] }]
-
-  function tryPlace(word) {
-    for (let attempt = 0; attempt < 250; attempt++) {
-      const [dr, dc] = dirs[Math.floor(Math.random() * dirs.length)];
-      const len = word.cells.length;
-      const startR = Math.floor(Math.random() * gridSize);
-      const startC = Math.floor(Math.random() * gridSize);
-      const endR = startR + dr * (len - 1);
-      const endC = startC + dc * (len - 1);
-      if (endR < 0 || endR >= gridSize || endC < 0 || endC >= gridSize) continue;
-      let ok = true;
-      for (let i = 0; i < len; i++) {
-        const r = startR + dr * i, c = startC + dc * i;
-        if (grid[r][c] !== null && grid[r][c] !== word.cells[i]) { ok = false; break; }
-      }
-      if (!ok) continue;
-      const cells = [];
-      for (let i = 0; i < len; i++) {
-        const r = startR + dr * i, c = startC + dc * i;
-        grid[r][c] = word.cells[i];
-        cells.push([r, c]);
-      }
-      return cells;
+  // The grid layout (word selection + random placement + fillers) is what must be
+  // preserved so the footer QR matches the printed sheet. Reuse it from the cache
+  // when the QR toggle re-renders; otherwise generate a fresh puzzle and cache it.
+  let gridSize, grid, marked, placedWords, chosen;
+  if (reuse === true && rwRenderCache?.drill === 'wordsearch' && rwRenderCache.snap) {
+    ({ gridSize, grid, marked, placedWords, chosen } = rwRenderCache.snap);
+  } else {
+    const wantCount    = parseInt(document.getElementById('wsWordCount').value) || 8;
+    gridSize           = parseInt(document.getElementById('wsGridSize').value)  || 12;
+    const showNikkud   = document.getElementById('wsShowNikkud').checked;
+    const dirKeys = [...document.querySelectorAll('.ws-dir:checked')].map(cb => cb.value);
+    if (dirKeys.length === 0) {
+      ws.innerHTML = '<div class="empty-state"><h2>Pick at least one direction.</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">Word Search needs somewhere to hide the words — enable at least one arrow under Drill Options → Directions.</p></div>';
+      return;
     }
-    return null;
-  }
+    const dirs = dirKeys.map(k => _WS_DIRS[k]);
 
-  const placedWords = [];
-  for (const w of chosen) {
-    const cells = tryPlace(w);
-    if (cells) {
-      placedWords.push(w);
-      placements.push({ word: w, cells });
+    // Pick words: only those that fit in the grid in their grid form (with or
+    // without nikkud) and skip any whose split-length exceeds gridSize.
+    const candidates = rwShuffle(pool);
+    chosen = [];
+    for (const w of candidates) {
+      if (chosen.length >= wantCount) break;
+      const gridText = showNikkud ? w.heb : stripNikud(w.heb);
+      const cells = splitHebLetters(gridText);
+      if (cells.length < 2 || cells.length > gridSize) continue;
+      chosen.push({ ...w, gridText, cells });
     }
-  }
-  if (placedWords.length === 0) {
-    ws.innerHTML = '<div class="empty-state"><h2>Could not place any words.</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">Try a larger grid or shorter words.</p></div>';
-    return;
-  }
+    if (chosen.length === 0) {
+      ws.innerHTML = '<div class="empty-state"><h2>No words match.</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">Loosen your Word Filters or pick a larger grid size.</p></div>';
+      return;
+    }
 
-  // Fill empty cells with random base consonants. When nikkud are shown we
-  // also drop a vowel mark on roughly one out of every two filler letters so
-  // the grid blends in with the placed words.
-  const NIKUD_FILLERS = ['ָ','ַ','ֶ','ֵ','ִ','ֹ','ֻ','ְ'];
-  const fillerPool = LETTERS
-    .filter(l => !SOFIT_CHARS.has(l.heb) && l.heb !== 'ו' && l.heb !== 'וֹ' && l.heb !== 'וּ')
-    .map(l => l.base);
-  for (let r = 0; r < gridSize; r++) {
-    for (let c = 0; c < gridSize; c++) {
-      if (grid[r][c] !== null) continue;
-      let ch = fillerPool[Math.floor(Math.random() * fillerPool.length)];
-      if (showNikkud && Math.random() < 0.5) {
-        ch += NIKUD_FILLERS[Math.floor(Math.random() * NIKUD_FILLERS.length)];
+    // Place longest words first to maximize fit chance.
+    chosen.sort((a, b) => b.cells.length - a.cells.length);
+
+    grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(null));
+    const placements = [];                       // [{ word, cells: [[r,c], …] }]
+
+    function tryPlace(word) {
+      for (let attempt = 0; attempt < 250; attempt++) {
+        const [dr, dc] = dirs[Math.floor(Math.random() * dirs.length)];
+        const len = word.cells.length;
+        const startR = Math.floor(Math.random() * gridSize);
+        const startC = Math.floor(Math.random() * gridSize);
+        const endR = startR + dr * (len - 1);
+        const endC = startC + dc * (len - 1);
+        if (endR < 0 || endR >= gridSize || endC < 0 || endC >= gridSize) continue;
+        let ok = true;
+        for (let i = 0; i < len; i++) {
+          const r = startR + dr * i, c = startC + dc * i;
+          if (grid[r][c] !== null && grid[r][c] !== word.cells[i]) { ok = false; break; }
+        }
+        if (!ok) continue;
+        const cells = [];
+        for (let i = 0; i < len; i++) {
+          const r = startR + dr * i, c = startC + dc * i;
+          grid[r][c] = word.cells[i];
+          cells.push([r, c]);
+        }
+        return cells;
       }
-      grid[r][c] = ch;
+      return null;
     }
-  }
 
-  // Mark which cells belong to a placed word so the answer key can highlight.
-  const marked = Array.from({ length: gridSize }, () => Array(gridSize).fill(false));
-  for (const p of placements) for (const [r, c] of p.cells) marked[r][c] = true;
+    placedWords = [];
+    for (const w of chosen) {
+      const cells = tryPlace(w);
+      if (cells) {
+        placedWords.push(w);
+        placements.push({ word: w, cells });
+      }
+    }
+    if (placedWords.length === 0) {
+      ws.innerHTML = '<div class="empty-state"><h2>Could not place any words.</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">Try a larger grid or shorter words.</p></div>';
+      return;
+    }
+
+    // Fill empty cells with random base consonants. When nikkud are shown we
+    // also drop a vowel mark on roughly one out of every two filler letters so
+    // the grid blends in with the placed words.
+    const NIKUD_FILLERS = ['ָ','ַ','ֶ','ֵ','ִ','ֹ','ֻ','ְ'];
+    const fillerPool = LETTERS
+      .filter(l => !SOFIT_CHARS.has(l.heb) && l.heb !== 'ו' && l.heb !== 'וֹ' && l.heb !== 'וּ')
+      .map(l => l.base);
+    for (let r = 0; r < gridSize; r++) {
+      for (let c = 0; c < gridSize; c++) {
+        if (grid[r][c] !== null) continue;
+        let ch = fillerPool[Math.floor(Math.random() * fillerPool.length)];
+        if (showNikkud && Math.random() < 0.5) {
+          ch += NIKUD_FILLERS[Math.floor(Math.random() * NIKUD_FILLERS.length)];
+        }
+        grid[r][c] = ch;
+      }
+    }
+
+    // Mark which cells belong to a placed word so the answer key can highlight.
+    marked = Array.from({ length: gridSize }, () => Array(gridSize).fill(false));
+    for (const p of placements) for (const [r, c] of p.cells) marked[r][c] = true;
+    rwRenderCache = { drill: 'wordsearch', snap: { gridSize, grid, marked, placedWords, chosen } };
+  }
 
   // ── Helpers to render one full sheet (student or answer key) ──
   function renderGrid(highlight) {
@@ -11147,6 +11156,15 @@ function generateWordSearch(pool) {
   footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
   footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${placedWords.length} of ${chosen.length} words placed · Hebrew Blend Generator</span>`;
   sheet.appendChild(footer);
+  // Spatial answer key: the full letter grid + the placed-word cells to highlight.
+  // (Big/nikkud grids exceed the QR size guard and fall back to the notice.)
+  if (document.getElementById('qrAnswerKeyToggle')?.checked) {
+    const marks = [];
+    for (let r = 0; r < gridSize; r++) for (let c = 0; c < gridSize; c++) if (marked[r][c]) marks.push([r, c]);
+    appendQrToFooter(footer, { v: 1, type: 'wordsearch',
+      title: (document.getElementById('wsTitle').value || 'Hebrew Word Search').slice(0, 120),
+      rows: grid.map(r => r.slice()), marks });
+  }
   ws.appendChild(sheet);
 
   // ── Answer key sheet (always rendered: the highlighted grid is the answer) ──
@@ -11171,9 +11189,14 @@ function generateWordSearch(pool) {
 }
 
 // ── CROSSWORD ──
-function generateCrossword(pool) {
+function generateCrossword(pool, reuse) {
   const ws = document.getElementById('worksheet');
   ws.innerHTML = '';
+  // QR toggle re-render: redraw the SAME puzzle from cache (no reshuffle/re-place).
+  if (reuse === true && rwRenderCache?.drill === 'crossword' && rwRenderCache.d) {
+    renderCrossword(rwRenderCache.d);
+    return;
+  }
   const gridSize   = parseInt(document.getElementById('cwGridSize').value) || 12;
   const wantCount  = parseInt(document.getElementById('cwWordCountSel').value) || 10;
   const showNikkud = document.getElementById('cwShowNikkud').checked;
@@ -11326,7 +11349,9 @@ function generateCrossword(pool) {
   acrossClues.sort((a, b) => a.num - b.num);
   downClues.sort((a, b) => a.num - b.num);
 
-  renderCrossword({ grid, gridSize, numFor, acrossClues, downClues, placedWords, unplaced, showBank, showKey });
+  const d = { grid, gridSize, numFor, acrossClues, downClues, placedWords, unplaced, showBank, showKey };
+  rwRenderCache = { drill: 'crossword', d };
+  renderCrossword(d);
 }
 
 function renderCrossword(d) {
@@ -11405,7 +11430,14 @@ function renderCrossword(d) {
     np.textContent = 'Not placed: ' + d.unplaced.map(w => w.heb).join(' · ');
     sheet.appendChild(np);
   }
-  sheet.appendChild(footer(`${d.placedWords.length} words · Hebrew Blend Generator`));
+  const cwFoot = footer(`${d.placedWords.length} words · Hebrew Blend Generator`);
+  sheet.appendChild(cwFoot);
+  // Spatial answer key: the solved grid (letters filled; '' = blocked cell).
+  if (document.getElementById('qrAnswerKeyToggle')?.checked) {
+    appendQrToFooter(cwFoot, { v: 1, type: 'crossword',
+      title: (document.getElementById('wsTitle').value || 'Hebrew Crossword').slice(0, 120),
+      rows: d.grid.map(r => r.map(c => c ? String(c.ch ?? '') : '')) });
+  }
   ws.appendChild(sheet);
 
   if (d.showKey) {
@@ -12138,11 +12170,12 @@ function serializeSettings() {
 // via textContent (never innerHTML). Any failure returns false → normal page load.
 // Each answer-key type maps to one of three render shapes:
 //   pair — items = [[hebrewBig, goldAnswer], …]   flat — items = [pointedHeb, …]
-//   grid — {rows:[[cell,…],…], marks?:[[r,c],…]}  (word search / crossword; added in a later phase)
+//   grid — {rows:[[cell,…],…], marks?:[[r,c],…]}  (word search highlights marks; crossword shades '')
 const AK_SHAPE = {
   ntl: 'pair', reading: 'pair', inverse: 'pair', gematria: 'pair', matching: 'pair', numbers: 'pair',
   rwreading: 'pair', idpos: 'pair', identify: 'pair',
   fillvowels: 'flat', rwfillvowels: 'flat', rwreverse: 'flat',
+  wordsearch: 'grid', crossword: 'grid',
 };
 function renderAnswerKeyView(akStr) {
   let p;
@@ -12153,14 +12186,29 @@ function renderAnswerKeyView(akStr) {
   if (!shape) return false;
   const okStr = s => typeof s === 'string' && s.length <= 200;
   const pairType = shape === 'pair';                        // pair = [heb, answer]; flat = strings
+  let count;
   if (shape === 'pair' || shape === 'flat') {
     if (!Array.isArray(p.items) || p.items.length < 1 || p.items.length > 200) return false;
     const valid = pairType
       ? p.items.every(it => Array.isArray(it) && it.length === 2 && okStr(it[0]) && okStr(it[1]))
       : p.items.every(okStr);
     if (!valid) return false;
-  } else {
-    return false;                                           // grid shape wired in a later phase
+    count = p.items.length;
+  } else {                                                  // grid: rows of cell strings (+ optional marks)
+    if (!Array.isArray(p.rows) || p.rows.length < 1 || p.rows.length > 40) return false;
+    const cols = Array.isArray(p.rows[0]) ? p.rows[0].length : -1;
+    if (!(cols >= 1 && cols <= 40)) return false;
+    const rowsOk = p.rows.every(r => Array.isArray(r) && r.length === cols &&
+      r.every(c => typeof c === 'string' && c.length <= 8));
+    if (!rowsOk) return false;
+    if (p.marks !== undefined) {
+      if (!Array.isArray(p.marks) || p.marks.length > 600) return false;
+      const marksOk = p.marks.every(m => Array.isArray(m) && m.length === 2 &&
+        Number.isInteger(m[0]) && Number.isInteger(m[1]) &&
+        m[0] >= 0 && m[0] < p.rows.length && m[1] >= 0 && m[1] < cols);
+      if (!marksOk) return false;
+    }
+    count = p.marks ? p.marks.length : p.rows.length;
   }
   const title = (typeof p.title === 'string') ? p.title.slice(0, 120) : '';
 
@@ -12186,36 +12234,63 @@ function renderAnswerKeyView(akStr) {
   const sub = document.createElement('div');
   sub.className = 'ws-subtitle';
   sub.style.color = 'var(--gold)';
-  sub.textContent = 'Scan-to-check answer key · ' + p.items.length + ' item' + (p.items.length === 1 ? '' : 's');
+  sub.textContent = 'Scan-to-check answer key' + (shape === 'grid' ? '' : ' · ' + count + ' item' + (count === 1 ? '' : 's'));
   hdrInner.appendChild(t); hdrInner.appendChild(sub);
   hdr.appendChild(hdrInner);
   sheet.appendChild(hdr);
 
-  const grid = document.createElement('div');
-  grid.className = 'blends-grid';
-  grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(120px, 1fr))';
-  grid.style.direction = 'rtl';
-  p.items.forEach((it, idx) => {
-    const cell = document.createElement('div');
-    cell.className = 'blend-cell';
-    cell.style.alignItems = 'center';
-    const num = document.createElement('div');
-    num.style.cssText = 'font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;';
-    num.textContent = String(idx + 1);
-    cell.appendChild(num);
-    const heb = document.createElement('div');
-    heb.style.cssText = 'font-family:var(--heb-font);font-size:2rem;direction:rtl;text-align:center;color:var(--text);line-height:1.1;';
-    heb.textContent = pairType ? it[0] : it;
-    cell.appendChild(heb);
-    if (pairType) {
-      const ans = document.createElement('div');
-      ans.style.cssText = 'font-size:0.95rem;font-weight:700;direction:ltr;text-align:center;color:var(--gold);margin-top:4px;';
-      ans.textContent = it[1];
-      cell.appendChild(ans);
-    }
-    grid.appendChild(cell);
-  });
-  sheet.appendChild(grid);
+  if (shape === 'grid') {
+    // Word search: full letter grid with the placed-word cells highlighted (marks).
+    // Crossword: solution letters; '' cells are shaded blocks. All text via textContent.
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;justify-content:center;margin:12px 0;';
+    const gridEl = document.createElement('div');
+    const cols = p.rows[0].length;
+    const cellPx = Math.max(16, Math.min(30, Math.floor(520 / cols)));   // shrink to fit wide grids
+    gridEl.style.cssText = `display:grid;grid-template-columns:repeat(${cols}, ${cellPx}px);direction:rtl;`;
+    const markSet = new Set((p.marks || []).map(m => m[0] + ':' + m[1]));
+    p.rows.forEach((row, r) => row.forEach((ch, c) => {
+      const d = document.createElement('div');
+      const isBlock = (p.type === 'crossword' && ch === '');
+      const isMark  = markSet.has(r + ':' + c);
+      d.style.cssText =
+        `width:${cellPx}px;height:${cellPx}px;display:flex;align-items:center;justify-content:center;` +
+        `font-family:var(--heb-font);font-size:${Math.round(cellPx * 0.55)}px;box-sizing:border-box;` +
+        (isBlock ? 'background:var(--border);border:1px solid var(--border);'
+                 : 'border:1px solid var(--border);color:var(--text);') +
+        (isMark ? 'background:rgba(201,146,42,0.28);font-weight:700;color:var(--gold);' : '');
+      d.textContent = isBlock ? '' : ch;                    // textContent — never innerHTML
+      gridEl.appendChild(d);
+    }));
+    wrap.appendChild(gridEl);
+    sheet.appendChild(wrap);
+  } else {
+    const grid = document.createElement('div');
+    grid.className = 'blends-grid';
+    grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(120px, 1fr))';
+    grid.style.direction = 'rtl';
+    p.items.forEach((it, idx) => {
+      const cell = document.createElement('div');
+      cell.className = 'blend-cell';
+      cell.style.alignItems = 'center';
+      const num = document.createElement('div');
+      num.style.cssText = 'font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;';
+      num.textContent = String(idx + 1);
+      cell.appendChild(num);
+      const heb = document.createElement('div');
+      heb.style.cssText = 'font-family:var(--heb-font);font-size:2rem;direction:rtl;text-align:center;color:var(--text);line-height:1.1;';
+      heb.textContent = pairType ? it[0] : it;
+      cell.appendChild(heb);
+      if (pairType) {
+        const ans = document.createElement('div');
+        ans.style.cssText = 'font-size:0.95rem;font-weight:700;direction:ltr;text-align:center;color:var(--gold);margin-top:4px;';
+        ans.textContent = it[1];
+        cell.appendChild(ans);
+      }
+      grid.appendChild(cell);
+    });
+    sheet.appendChild(grid);
+  }
 
   const foot = document.createElement('div');
   foot.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
