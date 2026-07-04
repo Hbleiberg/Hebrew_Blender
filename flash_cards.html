@@ -1105,6 +1105,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <button class="pill active" data-sub="numbers">Numbers</button>
           <button class="pill" data-sub="colors">Colors</button>
           <button class="pill" data-sub="emoji">Emoji</button>
+          <button class="pill" data-sub="words">Words</button>
         </div>
         <div id="numOpts">
           <div class="row" style="gap:8px;align-items:center;margin-bottom:8px;">
@@ -1215,6 +1216,46 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
               <button class="pill" data-eside="hebrew">Hebrew side</button>
               <button class="pill active" data-eside="both">Both</button>
             </div>
+          </div>
+        </div>
+        <div id="wordsOpts" class="hide">
+          <div class="row" style="margin-bottom:8px;">
+            <span class="label" style="flex-shrink:0;margin-right:8px;">Source:</span>
+            <div class="pill-group" id="wordsSourcePills">
+              <button class="pill active" data-wsource="mylists">My Word Lists</button>
+              <button class="pill" data-wsource="alldict">All Dictionary</button>
+            </div>
+          </div>
+          <div id="wordsMyListsOpts">
+            <div id="wordsListPicker" style="font-size:0.82rem;margin-bottom:8px;"></div>
+            <div id="wordsEmptyState" class="hide" style="font-size:0.82rem;color:var(--muted);background:var(--white);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:8px;line-height:1.5;">
+              No word lists yet. <a href="hebrew_dictionary.html" style="color:var(--gold);">Create word lists in the Dictionary</a>, then come back to drill them here.
+            </div>
+          </div>
+          <div id="wordsAllDictOpts" class="hide">
+            <div class="row" style="gap:8px;align-items:center;margin-bottom:8px;">
+              <span class="label" style="flex-shrink:0;">Word length:</span>
+              <input type="number" id="wordsMinInput" min="1" max="20" value="1"
+                     style="width:60px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-size:0.85rem;font-family:inherit;">
+              <span style="color:var(--muted);">–</span>
+              <input type="number" id="wordsMaxInput" min="1" max="20" value="20"
+                     style="width:60px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-size:0.85rem;font-family:inherit;">
+              <span style="color:var(--muted);font-size:0.78rem;">letters</span>
+            </div>
+          </div>
+          <div id="wordsCount" style="font-size:0.78rem;color:var(--muted);margin-bottom:8px;"></div>
+          <div class="row" style="margin-bottom:8px;">
+            <span class="label" style="flex-shrink:0;margin-right:8px;">Front:</span>
+            <div class="pill-group" id="wordsFrontPills">
+              <button class="pill active" data-wfront="hebrew">Hebrew</button>
+              <button class="pill" data-wfront="english">English</button>
+            </div>
+          </div>
+          <div class="row" style="margin-top:8px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;cursor:pointer;">
+              <input type="checkbox" id="wordsTranslitToggle" style="accent-color:var(--gold);width:13px;height:13px;">
+              Show transliteration
+            </label>
           </div>
         </div>
       </div><!-- /otherModeSection -->
@@ -2025,6 +2066,15 @@ let emojiShowTranslit = true;
 let emojiShowGender = true;
 let emojiGenderSide = 'both';           // 'emoji' | 'hebrew' | 'both' (where ♂/♀ glyph appears)
 let selectedEmojiSubs = new Set();      // "Category|Subcategory" strings; populated after fetch
+// ── Words sub-mode ──
+let wordsSource = 'mylists';            // 'mylists' | 'alldict'
+let selectedWordListIds = new Set();   // runtime, by store id (settings persists NAMES)
+let wordsFront = 'hebrew';             // 'hebrew' | 'english'
+let wordsShowTranslit = false;
+let wordsMinLen = 1, wordsMaxLen = 20; // Hebrew-letter length filter (all-dict source)
+let ALL_WORDS_DATA = null;             // lazy-fetched hebrew_words.json (keyed by letter count)
+let WORDS_POOL = null;                 // resolved deck pool [{word,translit,translation}]
+let wordsInlinePool = null;            // words embedded in a loaded share code (takes precedence)
 let timerMode = 'off';       // 'off' | 'track' | 'limit'
 let timerShowOnScreen = true;
 let timeLimitSeconds = 60;
@@ -2624,7 +2674,14 @@ function syncOtherSubUI() {
   document.getElementById('numOpts').classList.toggle('hide', otherSubMode !== 'numbers');
   document.getElementById('colorOpts').classList.toggle('hide', otherSubMode !== 'colors');
   document.getElementById('emojiOpts').classList.toggle('hide', otherSubMode !== 'emoji');
+  document.getElementById('wordsOpts').classList.toggle('hide', otherSubMode !== 'words');
   if (otherSubMode === 'emoji' && !EMOJI_DATA) fetchEmojiData();
+  if (otherSubMode === 'words') {
+    syncWordsSourceUI();
+    renderWordListPicker();
+    if (wordsSource === 'alldict' && !ALL_WORDS_DATA) fetchAllWordsData();
+    updateWordsCount();
+  }
 }
 
 function fetchEmojiData() {
@@ -2651,6 +2708,131 @@ function fetchEmojiData() {
       const tree = document.getElementById('emojiCatTree');
       if (tree) tree.innerHTML = '<div style="color:var(--muted);font-size:0.78rem;">Failed to load emoji data.</div>';
     });
+}
+
+/* ── Words sub-mode: word-list store reader + pool resolution ──
+   Reads the suite-wide ivritSuite_wordLists store (produced by the Dictionary).
+   Store shape: { v:1, lists:{ <id>:{name,created,updated,words:[{word,translation,translit,...}]} } } */
+function wlReadStoreLocal() {
+  let s;
+  try { s = ivritSafeParse(localStorage.getItem('ivritSuite_wordLists') || '{}'); } catch (e) { s = null; }
+  if (!s || typeof s !== 'object' || !s.lists || typeof s.lists !== 'object') return { v: 1, lists: {} };
+  return { v: 1, lists: s.lists };
+}
+function wlListsArray() {
+  const lists = wlReadStoreLocal().lists;
+  return Object.keys(lists).map(id => {
+    const l = lists[id] || {};
+    return { id, name: String(l.name || 'Untitled list'), words: Array.isArray(l.words) ? l.words : [] };
+  });
+}
+function wlNameIndex() {          // { name: id } — last occurrence wins on collision
+  const idx = {};
+  wlListsArray().forEach(l => { idx[l.name] = l.id; });
+  return idx;
+}
+function wlGetListName(id) {
+  const l = wlReadStoreLocal().lists[id];
+  return l ? String(l.name || 'Untitled list') : null;
+}
+
+function fetchAllWordsData() {
+  return fetch('data/hebrew_words.json?v=4')
+    .then(r => r.json())
+    .then(data => { ALL_WORDS_DATA = data; updateWordsCount(); })
+    .catch(() => {
+      ALL_WORDS_DATA = null;
+      const el = document.getElementById('wordsCount');
+      if (el) el.textContent = 'Failed to load dictionary words.';
+    });
+}
+
+// Resolve the current word pool: [{word, translit, translation}].
+// Precedence: an inline pool from a loaded share code > All-Dictionary (length-filtered) > My Word Lists (deduped union).
+function resolveWordsPool() {
+  if (wordsInlinePool && wordsInlinePool.length) return wordsInlinePool;
+  if (wordsSource === 'alldict') {
+    if (!ALL_WORDS_DATA) return [];
+    const lo = Math.min(wordsMinLen, wordsMaxLen), hi = Math.max(wordsMinLen, wordsMaxLen);
+    const out = [];
+    Object.keys(ALL_WORDS_DATA).forEach(k => {
+      const len = parseInt(k, 10);
+      if (isNaN(len) || len < lo || len > hi) return;
+      (ALL_WORDS_DATA[k] || []).forEach(w => {
+        if (w && w.word) out.push({ word: w.word, translit: w.translit || '', translation: w.translation || '' });
+      });
+    });
+    return out;
+  }
+  // My Word Lists — union of selected lists, deduped by the `word` string (first occurrence wins)
+  const seen = new Set(), out = [];
+  wlListsArray().forEach(l => {
+    if (!selectedWordListIds.has(l.id)) return;
+    l.words.forEach(w => {
+      if (!w || !w.word || seen.has(w.word)) return;
+      seen.add(w.word);
+      out.push({ word: w.word, translit: w.translit || '', translation: w.translation || '' });
+    });
+  });
+  return out;
+}
+
+function syncWordsSourceUI() {
+  document.querySelectorAll('#wordsSourcePills .pill').forEach(p =>
+    p.classList.toggle('active', p.dataset.wsource === wordsSource));
+  document.getElementById('wordsMyListsOpts').classList.toggle('hide', wordsSource !== 'mylists');
+  document.getElementById('wordsAllDictOpts').classList.toggle('hide', wordsSource !== 'alldict');
+  document.querySelectorAll('#wordsFrontPills .pill').forEach(p =>
+    p.classList.toggle('active', p.dataset.wfront === wordsFront));
+  const tt = document.getElementById('wordsTranslitToggle');
+  if (tt) tt.checked = wordsShowTranslit;
+  const mn = document.getElementById('wordsMinInput'), mx = document.getElementById('wordsMaxInput');
+  if (mn) mn.value = wordsMinLen;
+  if (mx) mx.value = wordsMaxLen;
+}
+
+function renderWordListPicker() {
+  const picker = document.getElementById('wordsListPicker');
+  const empty = document.getElementById('wordsEmptyState');
+  if (!picker) return;
+  const lists = wlListsArray();
+  // Prune selections whose lists no longer exist
+  const liveIds = new Set(lists.map(l => l.id));
+  [...selectedWordListIds].forEach(id => { if (!liveIds.has(id)) selectedWordListIds.delete(id); });
+  picker.innerHTML = '';
+  if (empty) empty.classList.toggle('hide', lists.length !== 0);
+  if (lists.length === 0) { picker.classList.add('hide'); return; }
+  picker.classList.remove('hide');
+  lists.forEach(l => {
+    const row = document.createElement('label');
+    row.style.cssText = 'display:flex;align-items:center;gap:7px;padding:5px 4px;cursor:pointer;border-bottom:1px solid var(--border);';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = selectedWordListIds.has(l.id);
+    cb.style.cssText = 'accent-color:var(--gold);width:14px;height:14px;flex-shrink:0;';
+    cb.addEventListener('change', () => {
+      if (cb.checked) selectedWordListIds.add(l.id); else selectedWordListIds.delete(l.id);
+      wordsInlinePool = null;            // any manual selection discards a loaded share pool
+      updateWordsCount();
+      saveSettings();
+    });
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = l.name;       // untrusted → textContent (XSS-safe)
+    nameSpan.style.cssText = 'flex:1;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+    const cnt = document.createElement('span');
+    cnt.textContent = l.words.length;
+    cnt.style.cssText = 'color:var(--muted);font-size:0.72rem;flex-shrink:0;';
+    row.appendChild(cb); row.appendChild(nameSpan); row.appendChild(cnt);
+    picker.appendChild(row);
+  });
+}
+
+function updateWordsCount() {
+  const el = document.getElementById('wordsCount');
+  if (!el) return;
+  if (wordsSource === 'alldict' && !ALL_WORDS_DATA) { el.textContent = 'Loading dictionary…'; return; }
+  const n = resolveWordsPool().length;
+  el.textContent = n === 1 ? '1 word in pool' : n + ' words in pool';
 }
 
 function renderEmojiCatTree() {
@@ -5270,6 +5452,41 @@ function wireSetupScreen() {
     saveSettings();
     if (document.getElementById('screenCard').classList.contains('active')) renderCurrentCard();
   }));
+
+  // Words sub-mode
+  document.querySelectorAll('#wordsSourcePills .pill').forEach(p => p.addEventListener('click', () => {
+    wordsSource = p.dataset.wsource;
+    wordsInlinePool = null;
+    syncWordsSourceUI();
+    if (wordsSource === 'alldict' && !ALL_WORDS_DATA) fetchAllWordsData();
+    updateWordsCount();
+    saveSettings();
+  }));
+  document.querySelectorAll('#wordsFrontPills .pill').forEach(p => p.addEventListener('click', () => {
+    wordsFront = p.dataset.wfront;
+    document.querySelectorAll('#wordsFrontPills .pill').forEach(x => x.classList.toggle('active', x === p));
+    saveSettings();
+    if (document.getElementById('screenCard').classList.contains('active')) renderCurrentCard();
+  }));
+  document.getElementById('wordsTranslitToggle').addEventListener('change', e => {
+    wordsShowTranslit = e.target.checked;
+    saveSettings();
+    if (document.getElementById('screenCard').classList.contains('active')) renderCurrentCard();
+  });
+  document.getElementById('wordsMinInput').addEventListener('change', e => {
+    wordsMinLen = Math.max(1, Math.min(20, parseInt(e.target.value) || 1));
+    e.target.value = wordsMinLen;
+    wordsInlinePool = null;
+    updateWordsCount();
+    saveSettings();
+  });
+  document.getElementById('wordsMaxInput').addEventListener('change', e => {
+    wordsMaxLen = Math.max(1, Math.min(20, parseInt(e.target.value) || 20));
+    e.target.value = wordsMaxLen;
+    wordsInlinePool = null;
+    updateWordsCount();
+    saveSettings();
+  });
 
   // Audio
   document.getElementById('audioToggle').addEventListener('change', e => {
