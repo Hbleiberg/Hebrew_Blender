@@ -1821,6 +1821,19 @@
     border-top: 3px dashed var(--border);
   }
 
+  /* Standalone scan-to-check answer-key view (?ak=): hide the app chrome, keep the branding header. */
+  body.ak-view #sidebarShowBtn,
+  body.ak-view #sidebarToggleBtn,
+  body.ak-view #appSidebar,
+  body.ak-view .main-toolbar,
+  body.ak-view #previewNotice,
+  body.ak-view #tourBtn,
+  body.ak-view #fsBtn,
+  body.ak-view #fsExitBtn,
+  body.ak-view footer { display: none !important; }
+  body.ak-view .main { width: 100%; }
+  body.ak-view .answer-key-sheet { margin-top: 0; border-top: none; }
+
   @page { margin: 0.5in; }
 
   /* ── MOBILE ── */
@@ -11923,8 +11936,103 @@ function serializeSettings() {
   return base + '?s=' + shareB64Encode(JSON.stringify(diff));
 }
 
+// ── Standalone answer-key view (?ak=) ───────────────────────────────────
+// A worksheet's footer QR encodes its own answers (see appendQrToFooter);
+// scanning it opens THIS view — a clean, chrome-free key mirroring the printed
+// sheet, so students self-check at centers without a paper key. The ?ak= payload
+// is fully attacker-controllable (anyone can craft the URL), so: prototype-safe
+// parse, strict validation with length caps, and EVERY payload string rendered
+// via textContent (never innerHTML). Any failure returns false → normal page load.
+const AK_TYPES = { ntl: 1, fillvowels: 1, gematria: 1, matching: 1 };
+function renderAnswerKeyView(akStr) {
+  let p;
+  try { p = ivritSafeParse(shareB64Decode(akStr)); } catch(e) { return false; }
+  if (!p || typeof p !== 'object' || Array.isArray(p)) return false;
+  if (p.v !== 1) return false;
+  if (typeof p.type !== 'string' || !AK_TYPES[p.type]) return false;
+  if (!Array.isArray(p.items) || p.items.length < 1 || p.items.length > 200) return false;
+  const okStr = s => typeof s === 'string' && s.length <= 200;
+  const pairType = p.type !== 'fillvowels';                 // fillvowels = flat strings; others = [heb, answer]
+  const valid = pairType
+    ? p.items.every(it => Array.isArray(it) && it.length === 2 && okStr(it[0]) && okStr(it[1]))
+    : p.items.every(okStr);
+  if (!valid) return false;
+  const title = (typeof p.title === 'string') ? p.title.slice(0, 120) : '';
+
+  const ws = document.getElementById('worksheet');
+  if (!ws) return false;
+  document.body.classList.add('ak-view');
+  ws.innerHTML = '';
+
+  const sheet = document.createElement('div');
+  sheet.className = 'sheet answer-key-sheet';
+
+  const banner = document.createElement('div');
+  banner.className = 'answer-key-banner';
+  banner.textContent = '✦ Answer Key ✦';
+  sheet.appendChild(banner);
+
+  const hdr = document.createElement('div');
+  hdr.className = 'ws-header';
+  const hdrInner = document.createElement('div');
+  const t = document.createElement('div');
+  t.className = 'ws-title';
+  t.textContent = title || 'Answer Key';
+  const sub = document.createElement('div');
+  sub.className = 'ws-subtitle';
+  sub.style.color = 'var(--gold)';
+  sub.textContent = 'Scan-to-check answer key · ' + p.items.length + ' item' + (p.items.length === 1 ? '' : 's');
+  hdrInner.appendChild(t); hdrInner.appendChild(sub);
+  hdr.appendChild(hdrInner);
+  sheet.appendChild(hdr);
+
+  const grid = document.createElement('div');
+  grid.className = 'blends-grid';
+  grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(120px, 1fr))';
+  grid.style.direction = 'rtl';
+  p.items.forEach((it, idx) => {
+    const cell = document.createElement('div');
+    cell.className = 'blend-cell';
+    cell.style.alignItems = 'center';
+    const num = document.createElement('div');
+    num.style.cssText = 'font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;';
+    num.textContent = String(idx + 1);
+    cell.appendChild(num);
+    const heb = document.createElement('div');
+    heb.style.cssText = 'font-family:var(--heb-font);font-size:2rem;direction:rtl;text-align:center;color:var(--text);line-height:1.1;';
+    heb.textContent = pairType ? it[0] : it;
+    cell.appendChild(heb);
+    if (pairType) {
+      const ans = document.createElement('div');
+      ans.style.cssText = 'font-size:0.95rem;font-weight:700;direction:ltr;text-align:center;color:var(--gold);margin-top:4px;';
+      ans.textContent = it[1];
+      cell.appendChild(ans);
+    }
+    grid.appendChild(cell);
+  });
+  sheet.appendChild(grid);
+
+  const foot = document.createElement('div');
+  foot.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+  const brand = document.createElement('span');
+  brand.className = 'ws-brand';
+  brand.textContent = 'IvritSuite.com';
+  const meta = document.createElement('span');
+  meta.textContent = 'Answer Key — scan to self-check';
+  foot.appendChild(brand); foot.appendChild(meta);
+  sheet.appendChild(foot);
+
+  ws.appendChild(sheet);
+  return true;
+}
+
 // Read ?s= on load, restore controls, and auto-generate. Degrades silently.
 function restoreFromURL() {
+  // Answer-key view (?ak=) takes precedence over ?s= — a scanned worksheet QR.
+  try {
+    const ak = new URLSearchParams(location.search).get('ak');
+    if (ak && renderAnswerKeyView(ak)) return;              // valid key view → stop normal init
+  } catch(e) {}                                             // any failure → fall through to ?s=
   try { SHARE_DEFAULTS = getSettings(); } catch(e) { return; } // pristine baseline for diffing
   let s;
   try { s = new URLSearchParams(location.search).get('s'); } catch(e) { return; }
