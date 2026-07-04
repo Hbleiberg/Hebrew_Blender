@@ -821,6 +821,36 @@ body.dark .fc-back  { background: #0e1e36; border-color: #2a4060; }
 .fc-mark-yes:hover { background: var(--good); color: white; }
 .fc-mark-no:hover  { background: var(--bad);  color: white; }
 
+/* ============== LISTENING MODE (audio prompt + multiple choice) ============== */
+#fcListen { width: min(520px, 94vw); margin: 4px auto 0; }
+.lc-prompt { display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 6px 0 18px; }
+.lc-replay {
+  width: 92px; height: 92px; border-radius: 50%;
+  border: 2px solid var(--gold); background: var(--white); color: var(--navy);
+  font-size: 2.5rem; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-md); transition: transform 0.12s, background 0.15s;
+}
+.lc-replay:hover  { background: var(--paper); }
+.lc-replay:active { transform: scale(0.93); }
+body.dark .lc-replay { color: var(--gold-light); }
+.lc-hint { font-size: 0.92rem; color: var(--ink-soft); text-align: center; min-height: 1.2em; }
+.lc-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lc-tile {
+  min-height: 82px; padding: 12px 10px;
+  border: 2px solid var(--border-strong); border-radius: 14px;
+  background: var(--white); color: var(--ink); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+}
+.lc-tile:hover  { border-color: var(--gold); }
+.lc-tile:active { transform: scale(0.97); }
+.lc-tile:disabled { cursor: default; }
+.lc-tile.good { background: var(--good-soft); border-color: var(--good); }
+.lc-tile.bad  { background: var(--bad-soft);  border-color: var(--bad); }
+.lc-heb { font-family: var(--heb-font); direction: rtl; font-size: clamp(1.8rem, 8vw, 3rem); line-height: 1.15; }
+.lc-num { font-family: var(--serif); direction: ltr; font-size: clamp(2rem, 9vw, 3.2rem); font-weight: 700; }
+
 .fc-nav {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -1070,6 +1100,22 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <button class="pill" id="otherModePill">Other</button>
         </div>
       </div>
+
+      <!-- 🎧 Listening mode (multiple choice) — presentation overlay across all modes -->
+      <div class="row" id="listeningRow">
+        <label class="switch"><input type="checkbox" id="listeningToggle"><span class="slider"></span></label>
+        <span class="label has-tip" data-tip="Instead of reading the card, hear it spoken and tap the matching answer. Trains listening (hear → identify) instead of decoding (see → say).">🎧 Listening <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
+      </div>
+      <div id="listeningOpts" class="hide">
+        <div class="row">
+          <span class="label" style="flex-shrink:0;margin-right:8px;">Choices:</span>
+          <div class="pill-group" id="listenChoicePills">
+            <button class="pill active" data-lc="3">3</button>
+            <button class="pill" data-lc="4">4</button>
+          </div>
+        </div>
+      </div>
+      <p id="listeningWarn" class="warn hide" style="margin:6px 0 0;"></p>
 
       <div id="letterModeOpts">
         <div class="row" id="inverseRow">
@@ -1592,6 +1638,15 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     </div>
   </div>
 
+  <!-- 🎧 Listening view (audio prompt + multiple choice); shown in place of the flip card -->
+  <div id="fcListen" style="display:none;">
+    <div class="lc-prompt">
+      <button id="lcReplay" class="lc-replay" type="button" aria-label="Play audio">🔊</button>
+      <div id="lcHint" class="lc-hint"></div>
+    </div>
+    <div id="lcChoices" class="lc-choices" role="group" aria-label="Answer choices"></div>
+  </div>
+
   <div class="fc-mark-row">
     <button class="fc-mark-no"  id="markNo">✗ No</button>
     <button class="fc-mark-yes" id="markYes">✓ Yes</button>
@@ -2043,6 +2098,61 @@ let audioEnabled = false;
 function updateTtsRateVisibility() {
   const row = document.getElementById('ttsRateRow');
   if (row) row.style.display = audioEnabled ? '' : 'none';
+}
+// 🎧 Listening (multiple choice) — a presentation overlay layered over any mode.
+let listeningEnabled = false;       // the toggle
+let listeningChoices = 3;           // 3 | 4 answer tiles per round
+let speechSupported = !!window.speechSynthesis;  // hard capability gate (matches speakWord's guard)
+let speechUnlocked = false;         // iOS: a real user gesture has spoken this session (reset each startPractice)
+let listenLocked = false;           // per-card double-answer guard
+let currentListenChoices = [];      // this round's choice cards, in render order (keyboard 1..N)
+function isListeningSupportedMode() { return !nameLetterMode; }  // bare-consonant TTS is ambiguous
+function isListeningActive() { return listeningEnabled && speechSupported && isListeningSupportedMode(); }
+function hasHebrewVoice() {
+  try { return (speechSynthesis.getVoices() || []).some(v => /^(he|iw)/i.test(v.lang || '')); }
+  catch (e) { return false; }
+}
+function enumeratedVoiceCount() {
+  try { return (speechSynthesis.getVoices() || []).length; }
+  catch (e) { return 0; }
+}
+// Hard-disable only when speech synthesis is entirely absent (iOS lists voices lazily, so a
+// missing he-IL voice is a soft advisory, not a block). Also disabled for Name-the-Letter.
+function updateListeningAvailability() {
+  const t = document.getElementById('listeningToggle');
+  if (!t) return;
+  const warn = document.getElementById('listeningWarn');
+  const opts = document.getElementById('listeningOpts');
+  let disabled = false, title = '', note = '';
+  if (!speechSupported) {
+    disabled = true;
+    title = 'Audio isn’t supported in this browser.';
+    note  = 'Audio isn’t supported in this browser, so Listening is unavailable.';
+  } else if (!isListeningSupportedMode()) {
+    disabled = true;
+    title = 'Listening isn’t available for “Name the Letter”.';
+  } else if (!hasHebrewVoice() && enumeratedVoiceCount() > 0) {
+    note = 'No Hebrew voice detected on this device — audio may be silent or read with a default voice.';
+  }
+  if (disabled && listeningEnabled) { listeningEnabled = false; t.checked = false; }
+  t.disabled = disabled;
+  t.title = title;
+  if (opts) opts.classList.toggle('hide', !(listeningEnabled && !disabled));
+  if (warn) {
+    const show = !!note && (!speechSupported || listeningEnabled);
+    warn.textContent = note;
+    warn.classList.toggle('hide', !show);
+  }
+}
+function initSpeechCapability() {
+  speechSupported = !!window.speechSynthesis;
+  if (speechSupported) {
+    try {
+      speechSynthesis.getVoices();  // prime iOS/Safari (voice list populates lazily)
+      speechSynthesis.addEventListener('voiceschanged', updateListeningAvailability);
+    } catch (e) {}
+  }
+  updateListeningAvailability();
 }
 let nameLetterMode = false;
 let nameLetterShowLetter = true;
@@ -2963,6 +3073,7 @@ function setOtherMode(on) {
   const vowelPanelOff = on || nameLetterMode;
   document.getElementById('panelVowels').style.display = vowelPanelOff ? 'none' : '';
   if (on && nameLetterMode) setNameLetterMode(false);
+  updateListeningAvailability();
   saveSettings();
 }
 
@@ -2976,6 +3087,7 @@ function setLetterMode(m) {
   updateVowelLockUI();
   document.getElementById('nameLetterRow').style.display = m === 1 ? '' : 'none';
   if (m > 1 && nameLetterMode) setNameLetterMode(false);
+  updateListeningAvailability();
   saveSettings();
 }
 function setNameLetterMode(on) {
@@ -2984,6 +3096,7 @@ function setNameLetterMode(on) {
   document.getElementById('nameLetterOpts').classList.toggle('hide', !on);
   document.getElementById('inverseRow').classList.toggle('hide', on);
   document.getElementById('panelVowels').style.display = on ? 'none' : '';
+  updateListeningAvailability();
   saveSettings();
 }
 
@@ -3072,6 +3185,7 @@ function getSettings() {
     nikudColorOverrides: { ...nikudColorOverrides },
     vowelColorScheme,
     hebFontId, audioEnabled, showSkippedAgain, nameLetterMode, nameLetterShowLetter,
+    listening: listeningEnabled, listeningChoices,
     otherModeActive, otherSubMode, numberMin, numberMax, numberGender, numberFront, numberShowTranslit,
     colorGender, colorDisplayMode, colorFront, colorShowTranslit, selectedColors: [...selectedColors],
     emojiGender, emojiFront, emojiShowTranslit, emojiShowGender, emojiGenderSide,
@@ -3157,6 +3271,8 @@ function applySettings(s) {
   audioEnabled = !!s.audioEnabled;
   document.getElementById('audioToggle').checked = audioEnabled;
   updateTtsRateVisibility();
+  listeningEnabled = !!s.listening;
+  listeningChoices = (s.listeningChoices === 4 ? 4 : 3);
   showSkippedAgain = s.showSkippedAgain !== undefined ? !!s.showSkippedAgain : true;
   const skipReshowToggle = document.getElementById('skipReshowToggle');
   if (skipReshowToggle) skipReshowToggle.checked = showSkippedAgain;
@@ -3235,6 +3351,10 @@ function applySettings(s) {
     p.classList.toggle('active', p.dataset.eside === emojiGenderSide));
   syncEmojiGenderSideRow();
   syncOtherSubUI();
+  // Listening UI (after mode flags are final so availability is computed correctly)
+  document.getElementById('listeningToggle').checked = listeningEnabled;
+  document.querySelectorAll('#listenChoicePills .pill').forEach(p => p.classList.toggle('active', +p.dataset.lc === listeningChoices));
+  updateListeningAvailability();
   if (!otherModeActive) document.getElementById('panelVowels').style.display = nameLetterMode ? 'none' : '';
   document.querySelectorAll('#nameLetterFrontPills .pill').forEach(p =>
     p.classList.toggle('active', p.dataset.nlf === (nameLetterShowLetter ? 'letter' : 'name')));
@@ -3792,11 +3912,15 @@ function renameProfile(oldName, newName) {
 // Short human label for a saved drill's mode (used in the history list)
 function describeResultMode(s) {
   if (!s) return 'Drill';
+  let label;
   if (s.otherModeActive) {
-    return { numbers: 'Numbers', colors: 'Colors', emoji: 'Emoji', words: 'Words' }[s.otherSubMode] || 'Drill';
+    label = { numbers: 'Numbers', colors: 'Colors', emoji: 'Emoji', words: 'Words' }[s.otherSubMode] || 'Drill';
+  } else if (s.nameLetterMode) {
+    label = 'Name Letters';
+  } else {
+    label = `${s.mode}-letter`;
   }
-  if (s.nameLetterMode) return 'Name Letters';
-  return `${s.mode}-letter`;
+  return label + (s.listening ? ' 🎧' : '');
 }
 
 // Build a result snapshot from the just-finished drill (mirrors showResults' idxs filter)
@@ -5392,6 +5516,17 @@ function wireCardScreen() {
    ========================================================================= */
 function wireSetupScreen() {
   document.querySelectorAll('#modePills .pill[data-mode]').forEach(p => p.addEventListener('click', () => setLetterMode(+p.dataset.mode)));
+  // 🎧 Listening toggle + choice count
+  document.getElementById('listeningToggle').addEventListener('change', e => {
+    listeningEnabled = e.target.checked;
+    updateListeningAvailability();
+    saveSettings();
+  });
+  document.querySelectorAll('#listenChoicePills .pill').forEach(p => p.addEventListener('click', () => {
+    listeningChoices = +p.dataset.lc;
+    document.querySelectorAll('#listenChoicePills .pill').forEach(x => x.classList.toggle('active', x === p));
+    saveSettings();
+  }));
   document.getElementById('inverseToggle').addEventListener('change', e => { inverse = e.target.checked; saveSettings(); });
   document.getElementById('hideHomeToggle').addEventListener('change', e => {
     hideHomeBtn = e.target.checked;
@@ -5665,6 +5800,9 @@ document.addEventListener('DOMContentLoaded', () => {
   syncSchemeButtons();
   document.getElementById('audioToggle').checked = audioEnabled;
   updateTtsRateVisibility();
+  document.getElementById('listeningToggle').checked = listeningEnabled;
+  document.querySelectorAll('#listenChoicePills .pill').forEach(p => p.classList.toggle('active', +p.dataset.lc === listeningChoices));
+  initSpeechCapability();
   updateStatsBar();
 });
 </script>
