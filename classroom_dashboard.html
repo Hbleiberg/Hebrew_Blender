@@ -3049,7 +3049,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     return { latitude: r.latitude, longitude: r.longitude, tzid: r.timezone || browserTzid() };
   }
 
-  async function fetchShabbat(force) {
+  async function fetchShabbat(force, isRetry = false) {
     let geo;
     try { geo = await resolveShabbatGeo(); } catch (e) { geo = null; }
     const key = geo ? `${geo.latitude.toFixed(3)},${geo.longitude.toFixed(3)}` : null;
@@ -3057,7 +3057,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       try {
         const c = JSON.parse(localStorage.getItem(SHABBAT_CACHE_KEY) || 'null');
         if (c && c.items && c.key === key && (Date.now() - c.ts) < SHABBAT_MAX_AGE && !havdalahPassed(c.items)) {
-          renderShabbat(c.items); return;
+          renderShabbat(c.items, false); return;
         }
       } catch (e) {}
     }
@@ -3067,11 +3067,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       const data = await res.json();
       const items = (data && data.items) || [];
       try { localStorage.setItem(SHABBAT_CACHE_KEY, JSON.stringify({ items, ts: Date.now(), key })); } catch (e) {}
-      renderShabbat(items);
+      renderShabbat(items, !force);
     } catch (e) {
       try {
         const c = JSON.parse(localStorage.getItem(SHABBAT_CACHE_KEY) || 'null');
-        if (c && c.items) { renderShabbat(c.items); return; }
+        if (c && c.items) { renderShabbat(c.items, false); return; }
       } catch (e2) {}
       const el = document.getElementById('shabbatTimes');
       if (el && settings.showShabbatTimes) { el.style.display = ''; el.innerHTML = '<div class="shabbat-loading">Shabbat times unavailable</div>'; }
@@ -3086,13 +3086,14 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     return !isNaN(d) && d.getTime() < Date.now();
   }
 
-  function renderShabbat(items) {
+  function renderShabbat(items, allowRefetch) {
     const el = document.getElementById('shabbatTimes');
     if (!el) return;
     if (!settings.showShabbatTimes) { el.style.display = 'none'; return; }
     if (!items || !items.length) { el.style.display = 'none'; return; }
-    // If this week's Havdalah is already past, advance to next week's times.
-    if (havdalahPassed(items)) { fetchShabbat(true); return; }
+    // If this week's Havdalah is already past, advance to next week's times — but only
+    // retry once (allowRefetch), so a stale-cache fallback can't loop forever offline.
+    if (allowRefetch && havdalahPassed(items)) { fetchShabbat(true, true); return; }
     const candles = items.find(i => i.category === 'candles');
     const havdalah = items.find(i => i.category === 'havdalah');
     const timeOpts = { hour: 'numeric', minute: '2-digit', hour12: true };

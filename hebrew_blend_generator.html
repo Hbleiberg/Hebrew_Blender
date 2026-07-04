@@ -2906,7 +2906,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
               <!-- Crossword-only rows -->
               <div class="rw-cw-only" id="rwCwWordCountRow" style="display:none;align-items:center;gap:8px;">
                 <span style="font-size:0.8rem;flex:1;">Number of Words</span>
-                <select id="cwWordCount" onchange="if(document.getElementById('worksheet').querySelector('.cw-table'))generateRealWords()" style="font-size:0.78rem;padding:3px 6px;">
+                <select id="cwWordCountSel" onchange="if(document.getElementById('worksheet').querySelector('.cw-table'))generateRealWords()" style="font-size:0.78rem;padding:3px 6px;">
                   <option value="6">6</option>
                   <option value="8">8</option>
                   <option value="10" selected>10</option>
@@ -4321,7 +4321,7 @@ function getSettings() {
     // Class Set (standard blends multi-version)
     classSetCount:         document.getElementById('classSetCount')?.value,
     // Crossword
-    cwWordCount:           document.getElementById('cwWordCount')?.value,
+    cwWordCount:           document.getElementById('cwWordCountSel')?.value,
     cwGridSize:            document.getElementById('cwGridSize')?.value,
     cwShowNikkud:          document.getElementById('cwShowNikkud')?.checked,
     cwShowWordBank:        document.getElementById('cwShowWordBank')?.checked,
@@ -4354,8 +4354,7 @@ function applySettings(s) {
   // Letters
   if (s.dageshTav !== undefined) {
     dageshTavEnabled = s.dageshTav;
-    const el = document.getElementById('dageshTavToggle');
-    if (el) el.checked = s.dageshTav;
+    document.querySelectorAll('#dageshTavToggle').forEach(el => el.checked = s.dageshTav);
     const grid = document.getElementById('letterGrid');
     if (grid) { grid.innerHTML = ''; initLetters(); }
   }
@@ -4559,7 +4558,7 @@ function applySettings(s) {
     onClassSetChange();
   }
   // Crossword
-  if (s.cwWordCount && document.getElementById('cwWordCount'))   document.getElementById('cwWordCount').value = s.cwWordCount;
+  if (s.cwWordCount && document.getElementById('cwWordCountSel'))   document.getElementById('cwWordCountSel').value = s.cwWordCount;
   if (s.cwGridSize && document.getElementById('cwGridSize'))     document.getElementById('cwGridSize').value = s.cwGridSize;
   if (s.cwShowNikkud !== undefined && document.getElementById('cwShowNikkud'))     document.getElementById('cwShowNikkud').checked = s.cwShowNikkud;
   if (s.cwShowWordBank !== undefined && document.getElementById('cwShowWordBank')) document.getElementById('cwShowWordBank').checked = s.cwShowWordBank;
@@ -7288,12 +7287,6 @@ function toggleBingoUI() {
   updateModeVisibility();
   if (blends.length) renderWorksheet(false);
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('bingoSharedBlends').addEventListener('change', function() {
-    document.getElementById('bingoSharedNote').style.display = this.checked ? 'block' : 'none';
-  });
-});
 
 // ── BINGO GENERATION ──
 function generateBingoBlend(firstPool, secondPool, vowelKeys, excludeRepeats) {
@@ -10648,7 +10641,7 @@ function generateCrossword(pool) {
   const ws = document.getElementById('worksheet');
   ws.innerHTML = '';
   const gridSize   = parseInt(document.getElementById('cwGridSize').value) || 12;
-  const wantCount  = parseInt(document.getElementById('cwWordCount').value) || 10;
+  const wantCount  = parseInt(document.getElementById('cwWordCountSel').value) || 10;
   const showNikkud = document.getElementById('cwShowNikkud').checked;
   const showBank   = document.getElementById('cwShowWordBank').checked;
   const showKey    = document.getElementById('cwAnswerKey').checked;

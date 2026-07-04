@@ -6044,13 +6044,13 @@ function setMarkScale(v) {
 }
 function setDageshScale(v) {
   project.font.dageshScale = Math.max(0.3, Math.min(2, (+v)/100));
-  const s = document.getElementById('dageshScaleV'); if (s) s.textContent = Math.round(project.font.dageshScale*100) + '%';
+  document.querySelectorAll('#dageshScaleV').forEach(s => s.textContent = Math.round(project.font.dageshScale*100) + '%');
   renderStage();   // live preview; don't rebuild controls (keep slider focus)
   markDirty();
 }
 function setCholamScale(v) {
   project.font.cholamScale = Math.max(0.3, Math.min(2, (+v)/100));
-  const s = document.getElementById('cholamScaleV'); if (s) s.textContent = Math.round(project.font.cholamScale*100) + '%';
+  document.querySelectorAll('#cholamScaleV').forEach(s => s.textContent = Math.round(project.font.cholamScale*100) + '%');
   renderStage();   // live preview; don't rebuild controls (keep slider focus)
   markDirty();
 }
@@ -7220,16 +7220,6 @@ function wireInputModeBlock() {
   if (sf) { const fd = document.getElementById('fontDrop'); if (fd) fd.onclick = () => sf.click();
     sf.addEventListener('change', e => { if (e.target.files[0]) uploadSourceFont(e.target.files[0]); e.target.value=''; });
     wireDrop('fontDrop', f => uploadSourceFont(f)); }
-}
-function renderAncReadouts(l) {
-  if (!l.anchors) return;
-  const el = document.getElementById('ancReadouts'); if (!el) return;
-  let h = '';
-  ANCHOR_CLASSES.forEach(([cls,col]) => {
-    const a = l.anchors[cls];
-    h += `<div class="readline"><span><span class="dot" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${col};margin-right:6px;"></span>${cls}</span><span class="readout">x ${a.x}, y ${a.y}</span></div>`;
-  });
-  el.innerHTML = h;
 }
 function resetLetterAnchors() {
   const l = curLetter();
