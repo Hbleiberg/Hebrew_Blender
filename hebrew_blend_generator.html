@@ -3113,9 +3113,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           </label>
         </div>
         <div class="toggle-row" id="rowQrAnswerKey" style="margin-top:4px;">
-          <span>QR Answer Key <span class="tooltip-wrap">?<span class="tooltip-box">Adds a small QR code to the worksheet footer. Students scan it with a phone to open a scan-to-check answer key that matches their sheet — handy for self-checking at centers. Works for Name the Letter, Fill Vowels, Gematria, and Matching.</span></span></span>
+          <span>QR Answer Key <span class="tooltip-wrap">?<span class="tooltip-box">Adds a small QR code to the worksheet footer. Students scan it with a phone to open a scan-to-check answer key that matches their sheet — handy for self-checking at centers. Works for reading, inverse, name-the-letter, fill-vowels, gematria, matching, number practice, and the real-words drills (including word search &amp; crossword).</span></span></span>
           <label class="toggle">
-            <input type="checkbox" id="qrAnswerKeyToggle" onchange="if(typeof blends!=='undefined'&&blends.length)renderWorksheet(false);">
+            <input type="checkbox" id="qrAnswerKeyToggle" onchange="onQrAnswerKeyToggle()">
             <span class="slider"></span>
           </label>
         </div>
@@ -6188,10 +6188,14 @@ function updateModeVisibility() {
   // practice drill (which lives inside the Real Words section as a drill type).
   const inRealWordsBucket = (s.source === 'realwords' || s.source === 'numbers');
 
-  // Drills eligible for a footer QR answer key (flat-list answers, redraw-free
-  // re-render via renderWorksheet(false)). `blends` already excludes real-words.
-  const qrDrill = !testMode && blends && !s.bingo &&
-                  (isNtl || s.drill === 'fillvowels' || s.drill === 'gematria' || s.drill === 'matching');
+  // Drills eligible for a footer QR answer key — every mode that prints a real answer.
+  // blends: reading/inverse/ntl/fillvowels/gematria/matching (not bingo/tracing).
+  // numbers: number practice (not its bingo/self-check sub-modes). (Real-words drills
+  // are added in a later phase.) Excluded everywhere: self-check / test-takeover modes.
+  const qrBlends  = blends && !s.bingo && s.drill !== 'tracing';
+  const qrNumbers = s.source === 'numbers' && !document.getElementById('npBingo')?.checked
+                                           && !document.getElementById('npSelfCheck')?.checked;
+  const qrDrill = !testMode && (qrBlends || qrNumbers);
 
   const v = {
     // Major panels
@@ -7123,6 +7127,11 @@ function renderNumberPractice(ws) {
   footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
   footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${items.length} items · Hebrew Number Practice</span>`;
   sheet.appendChild(footer);
+  // Number-practice answer = the pair [Hebrew word, numeral] (self-checks either direction).
+  if (document.getElementById('qrAnswerKeyToggle')?.checked) {
+    appendQrToFooter(footer, akPayload('numbers', document.getElementById('wsTitle').value || 'Hebrew Number Practice',
+      items.map(it => [String(it.heb ?? ''), String(it.n)])));
+  }
   ws.appendChild(sheet);
 
   // Answer key page (also used when transliteration is set to "Answer key")
@@ -8863,6 +8872,15 @@ function renderWorksheet(animate = false) {
     footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
     footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${blends.length} items · Hebrew Blend Generator</span>`;
     sheet.appendChild(footer);
+    if (document.getElementById('qrAnswerKeyToggle')?.checked) {
+      const rawTitle = document.getElementById('wsTitle').value || 'Hebrew Blends';
+      if (fillVowels) {
+        appendQrToFooter(footer, akPayload('fillvowels', rawTitle, blends.map(b => String(b.hebrewDisplay ?? ''))));
+      } else {
+        appendQrToFooter(footer, akPayload('reading', rawTitle,
+          blends.map(b => [String(b.hebrewDisplay ?? ''), String(b.translitDisplay ?? b.combined ?? '')])));
+      }
+    }
     ws.appendChild(sheet);
 
     if (showAnswers) {
@@ -8911,6 +8929,17 @@ function renderWorksheet(animate = false) {
   }
 }
 
+// QR Answer-Key toggle handler: re-render the CURRENT drill deterministically so the
+// footer QR is added/removed in place — WITHOUT reshuffling the items (else the QR's
+// encoded answers wouldn't match the printed sheet). blends[] and numberPracticeItems[]
+// are stable module caches; real words re-render from rwRenderCache via reuse=true.
+function onQrAnswerKeyToggle() {
+  const ws = document.getElementById('worksheet');
+  if (document.getElementById('numberPracticeToggle')?.checked) { renderNumberPractice(ws); return; }
+  if (document.getElementById('realWordsToggle')?.checked)      { generateRealWords(true); return; }
+  if (typeof blends !== 'undefined' && blends.length)           { renderWorksheet(false); }
+}
+
 // "Version A" / "Version B" … or "גרסה א" / "גרסה ב" … under an עברית header.
 function versionLabelText(i) {
   if (headerLang === 'he') {
@@ -8956,9 +8985,16 @@ function appendStandardBlendSheets(ws, arr, ctx, versionLabel) {
   footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
   footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${arr.length} blends · Hebrew Blend Generator</span>`;
   studentSheet.appendChild(footer);
-  // Fill-Vowels answer = the fully-voweled word. One QR per Class Set version (its own `arr`).
-  if (fillVowels && document.getElementById('qrAnswerKeyToggle')?.checked) {
-    appendQrToFooter(footer, akPayload('fillvowels', title, arr.map(b => String(b.hebrewDisplay ?? ''))));
+  // Footer QR (one per Class Set version, from that version's own `arr`). Use the RAW
+  // title, not the esc()'d ctx `title` (the reader re-escapes via textContent).
+  if (document.getElementById('qrAnswerKeyToggle')?.checked) {
+    const rawTitle = document.getElementById('wsTitle').value || 'Hebrew Blends';
+    if (fillVowels) {                                       // answer = the fully-voweled word
+      appendQrToFooter(footer, akPayload('fillvowels', rawTitle, arr.map(b => String(b.hebrewDisplay ?? ''))));
+    } else {                                                // reading / inverse: [Hebrew, sound]
+      appendQrToFooter(footer, akPayload(isInverse ? 'inverse' : 'reading', rawTitle,
+        arr.map(b => [String(b.hebrewDisplay ?? ''), String(b.translitDisplay ?? b.combined ?? '')])));
+    }
   }
   ws.appendChild(studentSheet);
 
@@ -12047,20 +12083,31 @@ function serializeSettings() {
 // is fully attacker-controllable (anyone can craft the URL), so: prototype-safe
 // parse, strict validation with length caps, and EVERY payload string rendered
 // via textContent (never innerHTML). Any failure returns false → normal page load.
-const AK_TYPES = { ntl: 1, fillvowels: 1, gematria: 1, matching: 1 };
+// Each answer-key type maps to one of three render shapes:
+//   pair — items = [[hebrewBig, goldAnswer], …]   flat — items = [pointedHeb, …]
+//   grid — {rows:[[cell,…],…], marks?:[[r,c],…]}  (word search / crossword; added in a later phase)
+const AK_SHAPE = {
+  ntl: 'pair', reading: 'pair', inverse: 'pair', gematria: 'pair', matching: 'pair', numbers: 'pair',
+  fillvowels: 'flat',
+};
 function renderAnswerKeyView(akStr) {
   let p;
   try { p = ivritSafeParse(shareB64Decode(akStr)); } catch(e) { return false; }
   if (!p || typeof p !== 'object' || Array.isArray(p)) return false;
   if (p.v !== 1) return false;
-  if (typeof p.type !== 'string' || !AK_TYPES[p.type]) return false;
-  if (!Array.isArray(p.items) || p.items.length < 1 || p.items.length > 200) return false;
+  const shape = (typeof p.type === 'string') ? AK_SHAPE[p.type] : undefined;
+  if (!shape) return false;
   const okStr = s => typeof s === 'string' && s.length <= 200;
-  const pairType = p.type !== 'fillvowels';                 // fillvowels = flat strings; others = [heb, answer]
-  const valid = pairType
-    ? p.items.every(it => Array.isArray(it) && it.length === 2 && okStr(it[0]) && okStr(it[1]))
-    : p.items.every(okStr);
-  if (!valid) return false;
+  const pairType = shape === 'pair';                        // pair = [heb, answer]; flat = strings
+  if (shape === 'pair' || shape === 'flat') {
+    if (!Array.isArray(p.items) || p.items.length < 1 || p.items.length > 200) return false;
+    const valid = pairType
+      ? p.items.every(it => Array.isArray(it) && it.length === 2 && okStr(it[0]) && okStr(it[1]))
+      : p.items.every(okStr);
+    if (!valid) return false;
+  } else {
+    return false;                                           // grid shape wired in a later phase
+  }
   const title = (typeof p.title === 'string') ? p.title.slice(0, 120) : '';
 
   const ws = document.getElementById('worksheet');
