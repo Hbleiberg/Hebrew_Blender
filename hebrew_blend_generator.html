@@ -1496,6 +1496,28 @@
   .rw-pos-tag { position: absolute; top: 4px; right: 6px; font-size: 0.58rem; color: var(--muted); text-transform: uppercase; }
   .rw-num { position: absolute; top: 4px; left: 6px; font-size: 0.6rem; color: var(--muted); }
   .rw-grid { display: grid; gap: 10px; direction: ltr; }
+  /* ── MATCHING DRILL (real words) ── */
+  .match-wrap { display: flex; justify-content: space-between; align-items: flex-start; gap: 36px; direction: ltr; margin-top: 10px; }
+  .match-col { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+  .match-item {
+    display: flex; align-items: center; gap: 10px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    padding: 5px 10px; min-height: 32px; background: var(--white);
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  .match-label, .match-num { font-weight: 700; color: var(--navy); font-size: 0.9rem; min-width: 22px; text-align: center; flex-shrink: 0; }
+  .match-heb { font-family: var(--heb-font); font-size: 1.45rem; direction: rtl; color: var(--navy); flex: 1; text-align: right; line-height: 1.15; min-width: 0; }
+  .match-target { flex: 1; font-size: 0.9rem; color: var(--text); min-width: 0; word-break: break-word; }
+  .match-target.emoji { font-size: 1.7rem; text-align: center; }
+  .match-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--navy); background: var(--white); flex-shrink: 0; }
+  .match-ak-list { display: flex; flex-direction: column; gap: 5px; margin-top: 12px; max-width: 520px; }
+  .match-ak-row { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
+  .match-ak-row .match-num { min-width: 30px; text-align: left; }
+  .match-ak-row .match-ak-let { font-weight: 700; color: var(--gold); min-width: 20px; }
+  .match-ak-row .match-ak-heb { font-family: var(--heb-font); font-size: 1.3rem; direction: rtl; color: var(--navy); }
+  body.dark .match-item { background: #252d3e; border-color: var(--border); }
+  body.dark .match-heb, body.dark .match-label, body.dark .match-num, body.dark .match-ak-heb { color: #dde4f0; }
+  body.dark .match-dot { border-color: #dde4f0; background: #252d3e; }
   .rw-flip { perspective: 600px; cursor: pointer; }
   .rw-flip-inner { position: relative; transition: transform 0.4s; transform-style: preserve-3d; min-height: 90px; }
   .rw-flip.flipped .rw-flip-inner { transform: rotateY(180deg); }
@@ -2664,6 +2686,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                 <button class="rw-drill-btn" data-drill="fillvowels" onclick="setRealWordDrill('fillvowels')">Fill Vowels</button>
                 <button class="rw-drill-btn" data-drill="wordsearch" onclick="setRealWordDrill('wordsearch')">Word Search</button>
                 <button class="rw-drill-btn" data-drill="crossword" onclick="setRealWordDrill('crossword')">Crossword</button>
+                <button class="rw-drill-btn" data-drill="matching" onclick="setRealWordDrill('matching')">Matching</button>
                 <button class="rw-drill-btn" data-drill="numpractice" onclick="setRealWordDrill('numpractice')">Number Practice</button>
               </div>
               <div style="font-size:0.65rem;color:var(--muted);line-height:1.2;">
@@ -2677,6 +2700,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                 <span id="rwHelpFillvowels" class="rw-help" style="display:none;">Hebrew words shown with nikkud stripped — students write in the vowel marks.</span>
                 <span id="rwHelpWordsearch" class="rw-help" style="display:none;">A printable Hebrew word search puzzle. Pick grid size, word count, and allowed directions.</span>
                 <span id="rwHelpCrossword" class="rw-help" style="display:none;">A printable Hebrew crossword. Words interlock on shared letters; clues are the English meaning or transliteration. Includes a word bank and answer key.</span>
+                <span id="rwHelpMatching" class="rw-help" style="display:none;">Draw-a-line matching: Hebrew words in one column, shuffled targets in the other. Match by English translation, emoji (picture matching), or transliteration. Includes an optional answer key.</span>
                 <span id="rwHelpNumpractice" class="rw-help" style="display:none;">Hebrew number practice (0–9999). Includes its own options panel.</span>
               </div>
             </div>
@@ -2949,6 +2973,40 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                 <span>Answer Key</span>
                 <label class="toggle" style="transform:scale(0.75);transform-origin:right;">
                   <input type="checkbox" id="cwAnswerKey" checked onchange="if(document.getElementById('worksheet').querySelector('.cw-table'))generateRealWords()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <!-- Matching-only rows -->
+              <div class="rw-match-only" id="rwMatchTargetRow" style="display:none;flex-direction:column;gap:4px;margin-top:4px;">
+                <div style="font-size:0.72rem;font-weight:600;color:var(--text);">Match Target
+                  <span class="tooltip-wrap" style="font-size:0.55rem;font-weight:400;">?<span class="tooltip-box">What students match each Hebrew word to. Emoji makes a picture-matching worksheet — only words that have an emoji are used.</span></span>
+                </div>
+                <div class="blend-type-selector" style="grid-template-columns:repeat(3,1fr);">
+                  <button type="button" class="rw-drill-btn active" data-matchtarget="translation" onclick="setMatchTarget('translation')">Translation</button>
+                  <button type="button" class="rw-drill-btn" data-matchtarget="emoji" onclick="setMatchTarget('emoji')">Emoji</button>
+                  <button type="button" class="rw-drill-btn" data-matchtarget="translit" onclick="setMatchTarget('translit')">Translit</button>
+                </div>
+                <div id="matchPoolNote" style="display:none;font-size:0.7rem;color:var(--muted);margin-top:2px;"></div>
+              </div>
+              <div class="rw-match-only" id="rwMatchCountRow" style="display:none;align-items:center;gap:8px;">
+                <span style="font-size:0.8rem;flex:1;">Number of Pairs</span>
+                <select id="matchCount" onchange="if(document.getElementById('worksheet').querySelector('.match-item'))generateRealWords()" style="font-size:0.78rem;padding:3px 6px;">
+                  <option value="8">8</option>
+                  <option value="10" selected>10</option>
+                  <option value="12">12</option>
+                  <option value="14">14</option>
+                </select>
+              </div>
+              <div class="rw-match-only" id="rwMatchVersionsRow" style="display:none;align-items:center;gap:8px;">
+                <span style="font-size:0.8rem;flex:1;">Versions
+                  <span class="tooltip-wrap" style="font-size:0.55rem;font-weight:400;">?<span class="tooltip-box">Generates multiple unique matching worksheets from the same settings — each with a different random selection and shuffle. Print one per student to prevent copying. Each is labeled 'Version A', 'Version B', etc.</span></span>
+                </span>
+                <input type="number" id="matchVersions" value="1" min="1" max="40" onchange="if(document.getElementById('worksheet').querySelector('.match-item'))generateRealWords()" style="width:56px;padding:3px 6px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.8rem;background:var(--white);color:var(--text);">
+              </div>
+              <div class="toggle-row rw-match-only" style="display:none;font-size:0.82rem;">
+                <span>Show Answer Key</span>
+                <label class="toggle" style="transform:scale(0.75);transform-origin:right;">
+                  <input type="checkbox" id="matchAnswerKey" checked onchange="if(document.getElementById('worksheet').querySelector('.match-item'))generateRealWords()">
                   <span class="slider"></span>
                 </label>
               </div>
@@ -4327,6 +4385,11 @@ function getSettings() {
     cwShowWordBank:        document.getElementById('cwShowWordBank')?.checked,
     cwAnswerKey:           document.getElementById('cwAnswerKey')?.checked,
     cwClueLang,
+    // Matching
+    matchTarget,
+    matchCount:            document.getElementById('matchCount')?.value,
+    matchVersions:         document.getElementById('matchVersions')?.value,
+    matchAnswerKey:        document.getElementById('matchAnswerKey')?.checked,
     // Font size
     hebFontSize:       document.getElementById('hebFontSizeSlider').value,
     vavAsLetter,
@@ -4564,6 +4627,12 @@ function applySettings(s) {
   if (s.cwShowWordBank !== undefined && document.getElementById('cwShowWordBank')) document.getElementById('cwShowWordBank').checked = s.cwShowWordBank;
   if (s.cwAnswerKey !== undefined && document.getElementById('cwAnswerKey'))       document.getElementById('cwAnswerKey').checked = s.cwAnswerKey;
   if (s.cwClueLang) setCwClueLang(s.cwClueLang);
+
+  // Matching
+  if (s.matchTarget) setMatchTarget(s.matchTarget);
+  if (s.matchCount && document.getElementById('matchCount'))       document.getElementById('matchCount').value = s.matchCount;
+  if (s.matchVersions && document.getElementById('matchVersions')) document.getElementById('matchVersions').value = s.matchVersions;
+  if (s.matchAnswerKey !== undefined && document.getElementById('matchAnswerKey')) document.getElementById('matchAnswerKey').checked = s.matchAnswerKey;
 
   // Font size
   if (s.hebFontSize !== undefined) { const sl = document.getElementById('hebFontSizeSlider'); if (sl) { sl.value = s.hebFontSize; setHebFontSize(s.hebFontSize); } }
@@ -9344,6 +9413,8 @@ function isImpossibleCombo(first, second, third, vowel) {
 // ══════════════════════════════════════════════
 let REAL_WORDS = [];
 let rwDrillType = 'reading';
+let matchTarget = 'translation';   // Matching drill target: 'translation' | 'emoji' | 'translit'
+let EMOJI_MAP = null;              // lazy Map<bareHeb, emojiGlyph> for the Matching emoji target
 let cwClueLang = 'english'; // Crossword clue language: 'english' | 'translit' | 'both'
 
 // Update the Generate button label when Class Set changes.
@@ -9905,7 +9976,7 @@ function setRealWordDrill(type) {
   // Mix-with-blends doesn't make sense for these drills. Identify auto-mixes;
   // bingo/gematria/fillvowels/wordsearch never mix.
   const mixedRow = document.getElementById('rwMixedRow');
-  const mixedHidden = (type === 'identify' || type === 'bingo' || type === 'gematria' || type === 'fillvowels' || type === 'wordsearch' || type === 'crossword');
+  const mixedHidden = (type === 'identify' || type === 'bingo' || type === 'gematria' || type === 'fillvowels' || type === 'wordsearch' || type === 'crossword' || type === 'matching');
   if (mixedRow) mixedRow.style.display = mixedHidden ? 'none' : '';
   const mixedCb = document.getElementById('rwMixed');
   if (mixedCb) {
@@ -9956,6 +10027,10 @@ function setRealWordDrill(type) {
       SET(showTranslit, true);  SET(showTranslation, true);
       rwTranslitPage = 'key';   rwTranslPage = 'key';
       break;
+    case 'matching':
+      // Matching has its own Match Target selector; the standard translit/translation
+      // rows are hidden for this drill (see .rw-display-only handling below).
+      break;
     // reverse/identify keep whatever the user set
   }
 
@@ -9971,6 +10046,7 @@ function setRealWordDrill(type) {
   const isIdpos = type === 'idpos';
   const isWs    = type === 'wordsearch';
   const isCw    = type === 'crossword';
+  const isMatch = type === 'matching';
   document.querySelectorAll('.rw-gem-only').forEach(el => el.style.display = isGem ? '' : 'none');
   document.querySelectorAll('.rw-fv-only').forEach(el => el.style.display = isFv ? '' : 'none');
   document.querySelectorAll('.rw-idpos-only').forEach(el => el.style.display = isIdpos ? '' : 'none');
@@ -9983,10 +10059,18 @@ function setRealWordDrill(type) {
     const tag = el.classList.contains('toggle-row') ? '' : 'flex';
     el.style.display = isCw ? tag : 'none';
   });
-  document.querySelectorAll('.rw-display-only').forEach(el => { el.style.display = ''; });
-  // Word Search and Crossword have their own word-count selects — hide the standard one.
+  document.querySelectorAll('.rw-match-only').forEach(el => {
+    const tag = el.classList.contains('toggle-row') ? '' : 'flex';
+    el.style.display = isMatch ? tag : 'none';
+  });
+  // Match-target buttons share the .rw-drill-btn class, so the drill-button
+  // re-sync above just cleared their .active — restore it from matchTarget.
+  document.querySelectorAll('[data-matchtarget]').forEach(b => b.classList.toggle('active', b.dataset.matchtarget === matchTarget));
+  // Matching hides the standard translit/translation display rows — it has its own Match Target selector.
+  document.querySelectorAll('.rw-display-only').forEach(el => { el.style.display = isMatch ? 'none' : ''; });
+  // Word Search, Crossword, and Matching have their own word-count selects — hide the standard one.
   const countRow = document.getElementById('rwCountRow');
-  if (countRow) countRow.style.display = (isWs || isCw) ? 'none' : 'flex';
+  if (countRow) countRow.style.display = (isWs || isCw || isMatch) ? 'none' : 'flex';
   toggleRwTranslitPageRow(); toggleRwTranslPageRow();
   _relocateStarRealRow(isIdent);
   _relocatePosFilter(isIdpos);
@@ -10267,6 +10351,11 @@ function generateRealWords() {
     return;
   }
 
+  if (drill === 'matching') {
+    generateRealWordsMatching(pool);
+    return;
+  }
+
   const words = rwShuffle(pool).slice(0, Math.min(count, pool.length));
 
   // If mixed mode: interleave with generated blends
@@ -10422,6 +10511,221 @@ function generateRealWords() {
     ws.appendChild(keySheet);
   }
 
+
+  updateRwPoolInfo();
+  enableButtons();
+}
+
+// ══════════════════════════════════════════════
+//  MATCHING (real words)
+//  Two columns — Hebrew words vs. shuffled targets (English / emoji / translit).
+//  Students draw connecting lines. Optional per-version answer key. Honors the
+//  Versions count for unique class sets and the active nikkud color scheme.
+// ══════════════════════════════════════════════
+
+// Lazy-load the emoji lexicon (only needed for the emoji match target). Maps a
+// word's bare (un-niqqud) Hebrew to its emoji glyph. Mirrors the hebrew_words fetch.
+function loadEmojiMap() {
+  if (EMOJI_MAP) return Promise.resolve(EMOJI_MAP);
+  return fetch('data/hebrew_emojis.json?v=1')
+    .then(r => r.json())
+    .then(data => {
+      const m = new Map();
+      (data.emojis || []).forEach(e => {
+        [e.hebrew_masculine, e.hebrew_feminine].forEach(h => {
+          const k = h && stripNikud(h);
+          if (k && !m.has(k)) m.set(k, e.emoji);
+        });
+      });
+      return (EMOJI_MAP = m);
+    });
+}
+
+// Words in `pool` that have an emoji, each tagged with `_emoji`.
+function matchEmojiPool(pool) {
+  if (!EMOJI_MAP) return [];
+  const out = [];
+  for (const w of pool) {
+    const g = EMOJI_MAP.get(stripNikud(w.heb));
+    if (g) out.push({ ...w, _emoji: g });
+  }
+  return out;
+}
+
+// Fisher–Yates index permutation of 0..n-1 with no fixed point (perm[i] !== i),
+// so no target row ends up aligned with its own Hebrew. Up to 20 tries, then accept.
+function derange(n) {
+  const base = Array.from({ length: n }, (_, i) => i);
+  if (n < 2) return base;
+  for (let attempt = 0; attempt < 20; attempt++) {
+    const perm = rwShuffle(base);
+    if (perm.every((v, i) => v !== i)) return perm;
+  }
+  return rwShuffle(base);
+}
+
+// The match-target cell for one word, as an HTML string (values esc()'d).
+function matchTargetHTML(w) {
+  if (matchTarget === 'emoji')    return '<span class="match-target emoji">' + (w._emoji || '') + '</span>';
+  if (matchTarget === 'translit') return '<span class="match-target">' + esc(w.translitDisplay ?? w.translit ?? '') + '</span>';
+  return '<span class="match-target">' + esc(w.translation || '') + '</span>';
+}
+
+// Plain-text target (answer-key rows use textContent).
+function matchTargetText(w) {
+  if (matchTarget === 'emoji')    return w._emoji || '';
+  if (matchTarget === 'translit') return w.translitDisplay ?? w.translit ?? '';
+  return w.translation || '';
+}
+
+function setMatchTarget(v) {
+  matchTarget = v;
+  document.querySelectorAll('[data-matchtarget]').forEach(b => b.classList.toggle('active', b.dataset.matchtarget === v));
+  updateMatchPoolNote();
+  if (document.getElementById('realWordsToggle')?.checked && rwDrillType === 'matching'
+      && document.getElementById('worksheet').querySelector('.match-item, .empty-state')) {
+    generateRealWords();
+  }
+}
+
+// Show how many pool words have an emoji (only relevant for the emoji target).
+function updateMatchPoolNote() {
+  const note = document.getElementById('matchPoolNote');
+  if (!note) return;
+  if (matchTarget !== 'emoji') { note.style.display = 'none'; return; }
+  note.style.display = '';
+  if (!EMOJI_MAP) { note.textContent = 'Loading emoji…'; loadEmojiMap().then(updateMatchPoolNote).catch(() => {}); return; }
+  const n = matchEmojiPool(getRwPool()).length;
+  note.textContent = n + (n === 1 ? ' word has' : ' words have') + ' a matching emoji.';
+}
+
+function generateRealWordsMatching(pool) {
+  const ws = document.getElementById('worksheet');
+  // Emoji target needs the lexicon; lazy-load, then re-run generate().
+  if (matchTarget === 'emoji' && !EMOJI_MAP) {
+    ws.innerHTML = '<div class="empty-state"><h2>Loading emoji…</h2></div>';
+    loadEmojiMap()
+      .then(() => generateRealWords())
+      .catch(() => { ws.innerHTML = '<div class="empty-state"><h2>Couldn\'t load emoji.</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">Check your connection and try again, or choose a different match target.</p></div>'; });
+    return;
+  }
+
+  const usable = (matchTarget === 'emoji') ? matchEmojiPool(pool) : pool;
+  updateMatchPoolNote();
+
+  if (usable.length < 2) {
+    ws.innerHTML = '<div class="empty-state"><h2>' +
+      (matchTarget === 'emoji' ? 'No emoji words match.' : 'Not enough words to match.') +
+      '</h2><p style="margin-top:8px;font-size:0.9rem;color:var(--muted);">Loosen your Word Filters' +
+      (matchTarget === 'emoji' ? ' — only words with a matching emoji can be used.' : ' or lower the number of pairs.') +
+      '</p></div>';
+    return;
+  }
+
+  const N = Math.min(parseInt(document.getElementById('matchCount').value) || 10, usable.length);
+  const versions = Math.max(1, Math.min(40, parseInt(document.getElementById('matchVersions').value) || 1));
+  const showKey = document.getElementById('matchAnswerKey').checked;
+  ws.innerHTML = '';
+
+  for (let v = 0; v < versions; v++) {
+    const words = rwShuffle(usable).slice(0, N);
+    const perm = derange(words.length);          // target row r shows words[perm[r]]
+    const verLabel = versions > 1 ? versionLabelText(v) : null;
+    const verHtml = verLabel ? '<div class="ws-version-label">' + verLabel + '</div>' : '';
+
+    // ── Student sheet ──
+    const sheet = document.createElement('div');
+    sheet.className = 'sheet' + (v > 0 ? ' trace-page-break' : '');
+    const header = document.createElement('div');
+    header.className = 'ws-header';
+    header.innerHTML =
+      '<div>' + verHtml +
+      '<div class="ws-title">Hebrew Word Matching</div>' +
+      '<div class="ws-subtitle">Draw a line from each Hebrew word to its match.</div>' +
+      '</div>' + wsMetaHTML();
+    sheet.appendChild(header);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'match-wrap';
+
+    // Left column: shuffled targets, lettered A, B, C…
+    const tCol = document.createElement('div');
+    tCol.className = 'match-col match-col-target';
+    words.forEach((_, r) => {
+      const tw = words[perm[r]];
+      const item = document.createElement('div');
+      item.className = 'match-item';
+      item.innerHTML = '<span class="match-label">' + String.fromCharCode(65 + r) + '</span>' +
+        matchTargetHTML(tw) + '<span class="match-dot"></span>';
+      tCol.appendChild(item);
+    });
+
+    // Right column: Hebrew words in order, numbered 1, 2, 3…
+    const hCol = document.createElement('div');
+    hCol.className = 'match-col match-col-heb';
+    words.forEach((w, r) => {
+      const item = document.createElement('div');
+      item.className = 'match-item';
+      item.innerHTML = '<span class="match-dot"></span>';
+      const heb = document.createElement('span');
+      heb.className = 'match-heb';
+      heb.innerHTML = colorizeHebrew(w.heb, colorCodingMode);   // plain text when color-coding is off
+      item.appendChild(heb);
+      const num = document.createElement('span');
+      num.className = 'match-num';
+      num.textContent = String(r + 1);
+      item.appendChild(num);
+      hCol.appendChild(item);
+    });
+
+    wrap.appendChild(tCol);
+    wrap.appendChild(hCol);
+    sheet.appendChild(wrap);
+
+    const footer = document.createElement('div');
+    footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+    footer.innerHTML = '<span class="ws-brand">IvritSuite.com</span><span>' + words.length + ' pairs · Hebrew Blend Generator</span>';
+    sheet.appendChild(footer);
+    ws.appendChild(sheet);
+
+    // ── Answer key (per version) ──
+    if (showKey) {
+      const keySheet = document.createElement('div');
+      keySheet.className = 'sheet answer-key-sheet';
+      const banner = document.createElement('div');
+      banner.className = 'answer-key-banner';
+      banner.textContent = verLabel ? ('✦ Answer Key — ' + verLabel + ' ✦') : '✦ Answer Key ✦';
+      keySheet.appendChild(banner);
+      const keyHdr = document.createElement('div');
+      keyHdr.className = 'ws-header';
+      keyHdr.innerHTML = '<div>' + verHtml +
+        '<div class="ws-title">Hebrew Word Matching</div>' +
+        '<div class="ws-subtitle" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>';
+      keySheet.appendChild(keyHdr);
+      const list = document.createElement('div');
+      list.className = 'match-ak-list';
+      words.forEach((w, i) => {
+        // Hebrew #(i+1) matches the target now sitting in target-row perm.indexOf(i).
+        const letter = String.fromCharCode(65 + perm.indexOf(i));
+        const row = document.createElement('div');
+        row.className = 'match-ak-row';
+        const num = document.createElement('span'); num.className = 'match-num'; num.textContent = (i + 1) + '.';
+        const heb = document.createElement('span'); heb.className = 'match-ak-heb'; heb.innerHTML = colorizeHebrew(w.heb, colorCodingMode);
+        const arrow = document.createElement('span'); arrow.textContent = '→'; arrow.style.color = 'var(--muted)';
+        const let_ = document.createElement('span'); let_.className = 'match-ak-let'; let_.textContent = letter;
+        const tgt = document.createElement('span'); tgt.style.color = 'var(--muted)'; tgt.textContent = matchTargetText(w);
+        if (matchTarget === 'emoji') tgt.style.fontSize = '1.4rem';
+        row.appendChild(num); row.appendChild(heb); row.appendChild(arrow); row.appendChild(let_); row.appendChild(tgt);
+        list.appendChild(row);
+      });
+      keySheet.appendChild(list);
+      const akFooter = document.createElement('div');
+      akFooter.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
+      akFooter.innerHTML = '<span class="ws-brand">IvritSuite.com</span><span>' + words.length + ' pairs · Hebrew Blend Generator — Answer Key</span>';
+      keySheet.appendChild(akFooter);
+      ws.appendChild(keySheet);
+    }
+  }
 
   updateRwPoolInfo();
   enableButtons();
