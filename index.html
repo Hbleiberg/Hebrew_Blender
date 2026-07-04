@@ -746,6 +746,7 @@ function exportAllSettings() {
     dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
     torahTrainerSettings: lsJSON('hebrewTorahTrainer_settings', {}),
     inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
+    wordLists:           lsJSON('ivritSuite_wordLists', { v: 1, lists: {} }),
     userFonts:           _fontsBackupCache || [],
   };
   document.getElementById('ieTextarea').value = JSON.stringify(blob, null, 2);
@@ -811,6 +812,9 @@ async function importAllSettings() {
     if (parsed.inputMode !== undefined) {
       localStorage.setItem('hebrewBlender_inputMode', parsed.inputMode);
     }
+    if (parsed.wordLists) {
+      wlMergeIntoStorage(parsed.wordLists, false);
+    }
     if (parsed.userFonts && Array.isArray(parsed.userFonts) && window.indexedDB) {
       for (const uf of parsed.userFonts) { try { await saveUserFont(uf.name, _ivB64ToBytes(uf.b64), uf.family); } catch (e) {} }
       refreshFontsBackupCache();
@@ -850,6 +854,7 @@ function eraseAllSettings() {
     'hebrewDictionary_tourSeen',
     'hebrewTorahTrainer_settings',
     'hebrewBlender_inputMode',
+    'ivritSuite_wordLists',
     // legacy cleanup: purge orphaned data from the removed community-impact feature
     'ivritsuite-impact-v1',
     'ivritsuite-impact-optout',
@@ -883,6 +888,7 @@ const IVRIT_CFG = {
       dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
       torahTrainerSettings:lsJSON('hebrewTorahTrainer_settings',    {}),
       inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
+      wordLists:           lsJSON('ivritSuite_wordLists', { v: 1, lists: {} }),
       userFonts:           _fontsBackupCache || []
     };
   },
@@ -913,6 +919,7 @@ const IVRIT_CFG = {
     }
     if (data.dictEmojiSettings)   { mergeObj('hebrewDictionary_emojiSettings', data.dictEmojiSettings);  touched = true; }
     if (data.torahTrainerSettings){ mergeObj('hebrewTorahTrainer_settings',   data.torahTrainerSettings); touched = true; }
+    if (data.wordLists)           { wlMergeIntoStorage(data.wordLists, mode === 'replace'); touched = true; }
     if (data.dictAudioEnabled  !== undefined) { localStorage.setItem('hebrewDictionary_audioEnabled',  data.dictAudioEnabled);  touched = true; }
     if (data.dictTranslitStyle !== undefined) { localStorage.setItem('hebrewDictionary_translitStyle', data.dictTranslitStyle); touched = true; }
     if (data.dictTtsRate       !== undefined) { localStorage.setItem('hebrewDictionary_ttsRate',       data.dictTtsRate);       touched = true; }
@@ -938,6 +945,15 @@ function ivritSafeAssign(target, src) {
     for (const k in src) if (Object.prototype.hasOwnProperty.call(src, k) &&
         k !== '__proto__' && k !== 'constructor' && k !== 'prototype') target[k] = src[k];
   return target;
+}
+// Merge a suite-wide Word Lists blob ({v:1,lists:{}}) into localStorage, one level deep
+// (a shallow top-level assign would clobber `lists`). Returns true if anything applied.
+function wlMergeIntoStorage(incoming, replace) {
+  if (!incoming || !incoming.lists || typeof incoming.lists !== 'object') return false;
+  const cur = replace ? { v: 1, lists: {} } : ivritSafeParse(localStorage.getItem('ivritSuite_wordLists') || '{}');
+  const base = (cur && cur.lists && typeof cur.lists === 'object') ? cur.lists : {};
+  localStorage.setItem('ivritSuite_wordLists', JSON.stringify({ v: 1, lists: ivritSafeAssign(base, incoming.lists) }));
+  return true;
 }
 function ivritDateStamp() {
   const d = new Date();
