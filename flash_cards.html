@@ -3076,6 +3076,8 @@ function getSettings() {
     colorGender, colorDisplayMode, colorFront, colorShowTranslit, selectedColors: [...selectedColors],
     emojiGender, emojiFront, emojiShowTranslit, emojiShowGender, emojiGenderSide,
     selectedEmojiSubs: [...selectedEmojiSubs],
+    wordsSource, wordsFront, wordsShowTranslit, wordsMinLen, wordsMaxLen,
+    selectedWordListNames: [...selectedWordListIds].map(wlGetListName).filter(Boolean),
     timerMode, timerShowOnScreen, timeLimitSeconds,
     ttsRate: parseFloat(document.getElementById('ttsRateSlider')?.value || 0.75),
     vowelPositions: [...vowelPositions],
@@ -3197,6 +3199,18 @@ function applySettings(s) {
   emojiShowGender   = s.emojiShowGender   !== undefined ? !!s.emojiShowGender   : true;
   emojiGenderSide   = s.emojiGenderSide || 'both';
   selectedEmojiSubs = new Set(s.selectedEmojiSubs || []);
+  // Words sub-mode
+  wordsSource       = s.wordsSource || 'mylists';
+  wordsFront        = s.wordsFront  || 'hebrew';
+  wordsShowTranslit = !!s.wordsShowTranslit;
+  wordsMinLen       = s.wordsMinLen || 1;
+  wordsMaxLen       = s.wordsMaxLen || 20;
+  const _wlIdx = wlNameIndex();
+  selectedWordListIds = new Set((s.selectedWordListNames || []).map(n => _wlIdx[n]).filter(Boolean));
+  // Inline words embedded in a loaded share code take precedence over the local store.
+  wordsInlinePool = Array.isArray(s.wordsInline)
+    ? s.wordsInline.map(o => ({ word: String(o.w || ''), translit: String(o.t || ''), translation: String(o.e || '') })).filter(o => o.word)
+    : null;
   setOtherMode(otherModeActive);
   document.querySelector('#numMinInput') && (document.getElementById('numMinInput').value = numberMin);
   document.querySelector('#numMaxInput') && (document.getElementById('numMaxInput').value = numberMax);
@@ -3768,7 +3782,7 @@ function renameProfile(oldName, newName) {
 function describeResultMode(s) {
   if (!s) return 'Drill';
   if (s.otherModeActive) {
-    return { numbers: 'Numbers', colors: 'Colors', emoji: 'Emoji' }[s.otherSubMode] || 'Drill';
+    return { numbers: 'Numbers', colors: 'Colors', emoji: 'Emoji', words: 'Words' }[s.otherSubMode] || 'Drill';
   }
   if (s.nameLetterMode) return 'Name Letters';
   return `${s.mode}-letter`;
@@ -4181,8 +4195,10 @@ const OTHER_INFO = {
   emoji:  { glyph: '😀', label: 'Emojis' },
   number: { glyph: '#',  label: 'Numbers' },
   color:  { glyph: '🎨', label: 'Colors' },
+  words:  { glyph: '📖', label: 'Words' },
 };
 function cardOtherType(c) {
+  if (c.wordCard) return 'words';   // must precede skipTranslitRebuild (word cards set both)
   if (c.emoji) return 'emoji';
   if (c.colorCss) return 'color';
   if (c.skipTranslitRebuild) return 'number';
