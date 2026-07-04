@@ -3112,6 +3112,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <span class="slider"></span>
           </label>
         </div>
+        <div class="toggle-row" id="rowQrAnswerKey" style="margin-top:4px;">
+          <span>QR Answer Key <span class="tooltip-wrap">?<span class="tooltip-box">Adds a small QR code to the worksheet footer. Students scan it with a phone to open a scan-to-check answer key that matches their sheet — handy for self-checking at centers. Works for Name the Letter, Fill Vowels, Gematria, and Matching.</span></span></span>
+          <label class="toggle">
+            <input type="checkbox" id="qrAnswerKeyToggle" onchange="if(typeof blends!=='undefined'&&blends.length)renderWorksheet(false);">
+            <span class="slider"></span>
+          </label>
+        </div>
         <div class="toggle-row" id="rowSelfCheck" style="margin-top:4px;">
           <span>Student Self-Check Mode</span>
           <label class="toggle">
@@ -4312,6 +4319,7 @@ function getSettings() {
     includeDageshim: document.getElementById('includeDageshimToggle')?.checked ?? false,
     fillVowelsAnswerKey: document.getElementById('fillVowelsAnswerKey')?.checked ?? false,
     answerKey:     document.getElementById('answerKeyToggle').checked,
+    qrAnswerKey:   document.getElementById('qrAnswerKeyToggle')?.checked ?? false,
     selfCheck:     document.getElementById('selfCheckToggle').checked,
     timerOn:       document.getElementById('timerToggle').checked,
     timerDuration: document.getElementById('timerDuration').value,
@@ -4502,6 +4510,7 @@ function applySettings(s) {
   if (s.includeDageshim !== undefined) { const el = document.getElementById('includeDageshimToggle'); if (el) el.checked = s.includeDageshim; }
   if (s.fillVowelsAnswerKey !== undefined) { const el = document.getElementById('fillVowelsAnswerKey'); if (el) el.checked = s.fillVowelsAnswerKey; }
   if (s.answerKey !== undefined)   document.getElementById('answerKeyToggle').checked = s.answerKey;
+  if (s.qrAnswerKey !== undefined) { const el = document.getElementById('qrAnswerKeyToggle'); if (el) el.checked = s.qrAnswerKey; }
   if (s.timerOn !== undefined)   document.getElementById('timerToggle').checked = s.timerOn;
   if (s.timerDuration)           document.getElementById('timerDuration').value = s.timerDuration;
   if (s.audio !== undefined)     document.getElementById('audioToggle').checked = s.audio;
@@ -5801,7 +5810,7 @@ let _liveAlertMsg = null;
 // misclassifying content as presentation would show stale output, so when unsure → content.
 const LIVE_PRESENTATION_KEYS = new Set([
   'wsTitle','wsSubtitle','headerLang','landscape',
-  'inverse','fillVowels','fillVowelsAnswerKey','answerKey','selfCheck','includeDageshim','audio',
+  'inverse','fillVowels','fillVowelsAnswerKey','answerKey','qrAnswerKey','selfCheck','includeDageshim','audio',
   'hebFontSize','colorCoding','colorCodingMode','nikudColorOverrides','vowelColorScheme','translitStyle',
   'timerOn','timerDuration',
   'gematriaSelfCheck','gematriaAnswerKey','gematriaInverse',
@@ -6179,6 +6188,11 @@ function updateModeVisibility() {
   // practice drill (which lives inside the Real Words section as a drill type).
   const inRealWordsBucket = (s.source === 'realwords' || s.source === 'numbers');
 
+  // Drills eligible for a footer QR answer key (flat-list answers, redraw-free
+  // re-render via renderWorksheet(false)). `blends` already excludes real-words.
+  const qrDrill = !testMode && blends && !s.bingo &&
+                  (isNtl || s.drill === 'fillvowels' || s.drill === 'gematria' || s.drill === 'matching');
+
   const v = {
     // Major panels
     panelLetters:  blends && s.blendType !== 'nikud' && !testMode,
@@ -6210,9 +6224,14 @@ function updateModeVisibility() {
 
     // Surviving rows (still slider-driven for now)
     rowAnswerKey:      !testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && s.drill !== 'tracing' && !s.bingo && !isNtl,
+    // QR answer key: only the flat-list drills with a redraw-free re-render via
+    // renderWorksheet(false). Hidden for real-words variants (source !== blends),
+    // Word Search / Crossword (spatial keys), and self-check test modes.
+    rowQrAnswerKey:    qrDrill,
     rowSelfCheck:      !gemSC    && !ntlSC && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && s.drill !== 'tracing' && s.drill !== 'matching' && !s.bingo && !isNtl,
     // Trailing divider only renders when at least one of the rows above is shown.
-    outputOptionsDivider: (!testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && s.drill !== 'tracing' && !s.bingo && !isNtl) ||
+    outputOptionsDivider: qrDrill ||
+                          (!testMode && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && s.drill !== 'tracing' && !s.bingo && !isNtl) ||
                           (!gemSC && !ntlSC && blends && s.drill !== 'fillvowels' && s.drill !== 'gematria' && s.drill !== 'tracing' && !s.bingo && !isNtl),
     // Class Set (multi-version) makes no sense for tracing — hide it there.
     rowClassSet:       !(blends && s.drill === 'tracing'),
@@ -6658,6 +6677,10 @@ function renderNameTheLetter(ws) {
   footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
   footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${blends.length} letters · Hebrew Blend Generator — Name the Letter</span>`;
   sheet.appendChild(footer);
+  if (document.getElementById('qrAnswerKeyToggle')?.checked) {
+    appendQrToFooter(footer, akPayload('ntl', document.getElementById('wsTitle').value || 'Name the Letter',
+      blends.map(b => [String(b.hebrewDisplay ?? ''), String(b.combined ?? '')])));
+  }
   ws.appendChild(sheet);
 
   // ── Answer key ──
@@ -8721,6 +8744,13 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
       grid.appendChild(cell);
     });
     sheet.appendChild(grid);
+    // Standard blends-gematria only (real-words gematria is a QR extension point).
+    if (!isRwGem && document.getElementById('qrAnswerKeyToggle')?.checked) {
+      const qrHost = document.createElement('div');            // no parent yet → helper appends the QR inside it
+      appendQrToFooter(qrHost, akPayload('gematria', document.getElementById('wsTitle').value || 'Hebrew Blends',
+        items.map(b => [String(b.hebrewDisplay ?? ''), String(calcGematria(b.hebrewDisplay))])));
+      sheet.appendChild(qrHost);
+    }
     ws.appendChild(sheet);
   }
 
@@ -8926,6 +8956,10 @@ function appendStandardBlendSheets(ws, arr, ctx, versionLabel) {
   footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
   footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${arr.length} blends · Hebrew Blend Generator</span>`;
   studentSheet.appendChild(footer);
+  // Fill-Vowels answer = the fully-voweled word. One QR per Class Set version (its own `arr`).
+  if (fillVowels && document.getElementById('qrAnswerKeyToggle')?.checked) {
+    appendQrToFooter(footer, akPayload('fillvowels', title, arr.map(b => String(b.hebrewDisplay ?? ''))));
+  }
   ws.appendChild(studentSheet);
 
   if (showAnswers) {
@@ -10770,6 +10804,13 @@ function renderMatchingSheets(ws, versionsItems, opts) {
     footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
     footer.innerHTML = '<span class="ws-brand">IvritSuite.com</span><span>' + items.length + ' ' + pairsNoun + ' · Hebrew Blend Generator</span>';
     sheet.appendChild(footer);
+    // Standard blends-matching only (real-words matching is a QR extension point).
+    // One QR per version, built from that version's items + shuffle (perm): each answer
+    // is the target letter (matching this sheet's lettered column) plus the meaning.
+    if (!document.getElementById('realWordsToggle')?.checked && document.getElementById('qrAnswerKeyToggle')?.checked) {
+      appendQrToFooter(footer, akPayload('matching', document.getElementById('wsTitle')?.value || 'Hebrew Matching',
+        items.map((it, i) => [String(it.heb ?? ''), String.fromCharCode(65 + perm.indexOf(i)) + ' — ' + String(it.targetText ?? '')])));
+    }
     ws.appendChild(sheet);
 
     // ── Answer key (per version) ──
@@ -11317,6 +11358,8 @@ function renderCrossword(d) {
 }
 
 function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnOnKey) {
+  // QR extension point: real-words Fill Vowels is not yet wired for the footer QR
+  // answer key (v1 covers only the standard blends path in appendStandardBlendSheets).
   const keepDagesh = document.getElementById('rwFillVowelsDagesh')?.checked ?? false;
   const title    = esc(document.getElementById('wsTitle').value || 'Hebrew Words');
   const subtitle = esc(document.getElementById('wsSubtitle').value);
