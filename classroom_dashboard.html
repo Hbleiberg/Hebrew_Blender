@@ -494,6 +494,50 @@
     font-family: inherit; text-align: center; background: var(--white); color: var(--text); }
   body.fullscreen #timerCol .timer-display { font-size: 5.5rem; }
 
+  /* Student Picker panel */
+  #pickerCol .col-body { display: flex; flex-direction: column; gap: 10px; padding: 14px; }
+  #pickerCol.collapsed .col-body { display: none; }
+  .picker-chips { display: flex; flex-wrap: wrap; gap: 5px; max-height: 220px; overflow-y: auto; }
+  .picker-chip { font-family: var(--heb-font); direction: rtl; unicode-bidi: plaintext;
+    font-size: 0.92rem; line-height: 1.1; padding: 4px 9px; border: 1px solid var(--border);
+    border-radius: 999px; background: var(--white); color: var(--text); cursor: pointer;
+    transition: border-color 0.15s, opacity 0.15s; }
+  .picker-chip:hover { border-color: var(--gold); }
+  .picker-chip.picked:not(.absent) { opacity: 0.5; }
+  .picker-chip.absent { text-decoration: line-through; color: var(--muted); background: var(--warm-gray);
+    border-style: dashed; opacity: 0.75; }
+  body.dark .picker-chip.absent { background: var(--warm-gray); }
+  .picker-empty { font-size: 0.82rem; color: var(--muted); font-style: italic; line-height: 1.45; }
+  .picker-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .picker-actions .btn { flex: 1; min-width: 110px; }
+  .picker-progress { display: flex; gap: 8px; align-items: center; justify-content: center;
+    flex-wrap: wrap; font-size: 0.78rem; color: var(--muted); }
+  .picker-progress-label { font-weight: 600; }
+
+  /* Projector overlay (shared by the sidebar card and the fullscreen pop) */
+  #pickOverlay { position: fixed; inset: 0; z-index: 400; display: none; flex-direction: column;
+    align-items: center; justify-content: center; gap: 22px; padding: 4vmin;
+    background: rgba(10,15,28,0.95); }
+  .pick-close { position: absolute; top: 18px; right: 20px; width: 44px; height: 44px;
+    border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1);
+    color: #fff; font-size: 1.3rem; cursor: pointer; line-height: 1; }
+  .pick-close:hover { background: rgba(255,255,255,0.22); border-color: var(--gold); }
+  .pick-note { display: none; font-family: 'Source Sans 3', sans-serif; font-size: clamp(1rem, 3.2vw, 1.8rem);
+    color: var(--gold-light); letter-spacing: 0.04em; }
+  .pick-stage { display: flex; align-items: center; justify-content: center; text-align: center;
+    min-height: 30vh; width: 100%; }
+  .pick-name { font-family: var(--heb-font); direction: rtl; unicode-bidi: plaintext;
+    font-weight: 700; font-size: clamp(2.5rem, 14vw, 11rem); line-height: 1.05; color: #fff;
+    text-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+  .pick-name.flicker { color: #d9e2f2; animation: pickFlickerFade 0.12s linear infinite; }
+  .pick-name.landed { color: var(--gold-light); animation: pickLanded 0.5s cubic-bezier(.2,.85,.25,1); }
+  .pick-msg { font-family: 'Source Sans 3', sans-serif; font-size: clamp(1.1rem, 4vw, 2rem);
+    color: #d9e2f2; text-align: center; max-width: 22ch; line-height: 1.4; }
+  .pick-controls { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .pick-btn { font-size: clamp(0.95rem, 2.4vw, 1.25rem); padding: 12px 26px; min-height: 48px; }
+  @keyframes pickFlickerFade { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+  @keyframes pickLanded { 0% { transform: scale(0.55); opacity: 0; } 60% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
+
   /* Omer panel */
   .omer-block { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); text-align: center; }
   .omer-block .omer-heb { font-family: var(--heb-font); direction: rtl; font-size: 1.25rem; line-height: 1.55; color: var(--text); }
@@ -1287,6 +1331,12 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <button class="fs-strip-btn" type="button" onclick="fsStripVideo()"><span class="fss-ico">📺</span>Video</button>
   </div>
 </div>
+<div id="pickOverlay" role="dialog" aria-modal="true" aria-label="Student picker" style="display:none;">
+  <button class="pick-close" type="button" onclick="closePickOverlay()" aria-label="Close">✕</button>
+  <div class="pick-note" id="pickNote"></div>
+  <div class="pick-stage" id="pickStage"></div>
+  <div class="pick-controls" id="pickControls"></div>
+</div>
 <div class="dashboard">
   <!-- LEFT: Days -->
   <div class="dash-col" id="dowCol">
@@ -1342,6 +1392,16 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <button class="timer-ctrl-btn" id="timerPauseBtn" onclick="timerPause()">⏸ Pause</button>
           <button class="timer-ctrl-btn" id="timerResetBtn" onclick="timerReset()">↺ Reset</button>
         </div>
+      </div>
+    </div>
+    <div class="dash-col" id="pickerCol" style="display:none;">
+      <div class="col-title" id="pickerColTitle">Student Picker</div>
+      <div class="col-body" id="pickerBody">
+        <div class="picker-chips" id="pickerChips"></div>
+        <div class="picker-actions" id="pickerActions">
+          <button class="btn" type="button" onclick="pickOne()">🎲 Pick One</button>
+        </div>
+        <div class="picker-progress" id="pickerProgress"></div>
       </div>
     </div>
     <div id="videoSidebarSlot"></div>
@@ -3479,7 +3539,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       document.getElementById('videoPanel')?.style.display !== 'none';
     const timerVisible = settings.showTimer !== false &&
       document.getElementById('timerCol')?.style.display !== 'none';
-    const rightHidden = !!settings.hideWeather && !videoInSidebar && !timerVisible;
+    const pickerVisible = settings.showStudentPicker === true &&
+      document.getElementById('pickerCol')?.style.display !== 'none';
+    const rightHidden = !!settings.hideWeather && !videoInSidebar && !timerVisible && !pickerVisible;
     rightWrap.style.display = rightHidden ? 'none' : '';
     if (leftHidden && rightHidden) dashboard.style.gridTemplateColumns = '1fr';
     else if (leftHidden) dashboard.style.gridTemplateColumns = '1fr 290px';
@@ -4004,6 +4066,126 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         }
       }
     }
+  }
+
+  // Fisher–Yates shuffle (returns a new array). Math.random is fine in page JS.
+  function pickerShuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  let _pickTimer = null;
+  function clearPickTimer() { if (_pickTimer) { clearTimeout(_pickTimer); _pickTimer = null; } }
+  function pickOverlayKey(e) { if (e.key === 'Escape') { e.stopPropagation(); closePickOverlay(); } }
+
+  function openPickOverlay() {
+    const ov = document.getElementById('pickOverlay');
+    if (!ov) return;
+    ov.style.display = 'flex';
+    document.addEventListener('keydown', pickOverlayKey, true);
+  }
+  function closePickOverlay() {
+    clearPickTimer();
+    const ov = document.getElementById('pickOverlay');
+    if (ov) ov.style.display = 'none';
+    document.removeEventListener('keydown', pickOverlayKey, true);
+  }
+  function setPickNote(msg) {
+    const n = document.getElementById('pickNote');
+    if (!n) return;
+    n.textContent = msg || '';
+    n.style.display = msg ? 'block' : 'none';
+  }
+  function addPickBtn(container, label, cls, fn) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = cls + ' pick-btn';
+    b.textContent = label;
+    b.addEventListener('click', fn);
+    container.appendChild(b);
+  }
+  function renderPickMessage(msg) {
+    const stage = document.getElementById('pickStage');
+    const controls = document.getElementById('pickControls');
+    if (stage) { stage.innerHTML = ''; const d = document.createElement('div'); d.className = 'pick-msg'; d.textContent = msg; stage.appendChild(d); }
+    if (controls) { controls.innerHTML = ''; addPickBtn(controls, 'Close', 'btn-secondary', closePickOverlay); }
+  }
+  function renderPickResult(name) {
+    const stage = document.getElementById('pickStage');
+    const controls = document.getElementById('pickControls');
+    if (stage) {
+      stage.innerHTML = '';
+      const el = document.createElement('div');
+      el.className = 'pick-name landed';
+      el.innerHTML = pickerNameHTML(name);
+      stage.appendChild(el);
+    }
+    if (controls) {
+      controls.innerHTML = '';
+      addPickBtn(controls, '🎲 Pick Again', 'btn', pickOne);
+      addPickBtn(controls, 'Close', 'btn-secondary', closePickOverlay);
+    }
+  }
+  function animatePick(winner, pool, done) {
+    const stage = document.getElementById('pickStage');
+    const controls = document.getElementById('pickControls');
+    if (!stage) { done(); return; }
+    if (controls) controls.innerHTML = '';
+    stage.innerHTML = '';
+    const el = document.createElement('div');
+    el.className = 'pick-name flicker';
+    stage.appendChild(el);
+    clearPickTimer();
+    let elapsed = 0, delay = 55;
+    const total = 1200;
+    const step = () => {
+      el.innerHTML = pickerNameHTML(pool[Math.floor(Math.random() * pool.length)]);
+      elapsed += delay;
+      delay = Math.min(220, delay * 1.18);   // decelerate
+      if (elapsed >= total) { clearPickTimer(); done(); }
+      else _pickTimer = setTimeout(step, delay);
+    };
+    step();
+  }
+  function pickOne() {
+    normalizePickerSession();
+    openPickOverlay();
+    setPickNote('');
+    const eligible = eligibleNames();
+    if (!eligible.length) {
+      renderPickMessage(rosterNames().length ? 'Everyone is marked absent today.' : 'Add a class roster in Settings → Student Picker.');
+      return;
+    }
+    const fair = settings.pickerFairCycle !== false;
+    let pool = eligible;
+    if (fair) {
+      const picked = settings.pickerSession.picked;
+      pool = eligible.filter(n => !picked.includes(n));
+      if (!pool.length) { settings.pickerSession.picked = []; pool = eligible; setPickNote('🔄 New round'); }
+    }
+    const winner = pool[Math.floor(Math.random() * pool.length)];
+    const finish = () => {
+      renderPickResult(winner);
+      if (fair && !settings.pickerSession.picked.includes(winner)) settings.pickerSession.picked.push(winner);
+      saveSettingsToStorage();
+      renderStudentPicker();
+    };
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || eligible.length < 2) { finish(); return; }
+    animatePick(winner, eligible, finish);
+  }
+
+  function initStudentPicker() {
+    normalizePickerSession();
+    applyStudentPickerVisibility();
+    applyColCollapse('pickerCol', !!settings.pickerCollapsed);
+    const title = document.getElementById('pickerColTitle');
+    if (title) title.addEventListener('click', () => toggleColCollapse('pickerCol', 'pickerCollapsed'));
+    renderStudentPicker();
   }
 
   /* ────────── PRESETS ────────── */
@@ -5092,11 +5274,13 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
     const dowTitle = document.getElementById('dowColTitle');
     const wxTitle = document.getElementById('weatherColTitle');
     const tmTitle = document.getElementById('timerColTitle');
+    const pkTitle = document.getElementById('pickerColTitle');
     if (!dowTitle || !wxTitle) return;
     if (lang === 'none') {
       dowTitle.style.display = 'none';
       wxTitle.style.display = 'none';
       if (tmTitle) tmTitle.style.display = 'none';
+      if (pkTitle) pkTitle.style.display = 'none';
     } else {
       dowTitle.style.display = '';
       wxTitle.style.display = '';
@@ -5109,6 +5293,11 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
         tmTitle.style.display = '';
         tmTitle.style.direction = isHeb ? 'rtl' : '';
         tmTitle.innerHTML = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('כַּמָה זְמַן נִשְׁאַר?') : 'Timer'}</span><span></span>`;
+      }
+      if (pkTitle) {
+        pkTitle.style.display = '';
+        pkTitle.style.direction = isHeb ? 'rtl' : '';
+        pkTitle.innerHTML = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('מִי הַתּוֹר?') : 'Student Picker'}</span><span></span>`;
       }
     }
     const vLabel = document.getElementById('videoHeaderLabel');
@@ -5426,6 +5615,7 @@ async function onUploadFontPick(input){
     initShabbatWidget();
     initTimer();
     initOmer();
+    initStudentPicker();
     renderPresets();
     checkSchedule();
     renderScheduleUI();
