@@ -1150,12 +1150,21 @@ let translitStyle = (() => {
   catch (e) { return 'default'; }
 })();
 
-function buildTranslitDisplay() {
+// Lazy, memoized per-word display transliteration. Computing HT.apply() over the whole
+// ~19.5K-word corpus on load / on every style switch was the main-thread freeze behind the
+// slow-load regression. Instead each word's styled translit is derived on demand at render/
+// export time and cached with a style stamp (_tdStyle) so it recomputes only when the active
+// style changes. Only the currently-rendered cards ever pay the cost.
+function translitDisplayOf(w) {
+  if (!w) return '';
+  if (translitStyle === 'default') return w.translit || '';
   const HT = window.HebrewTransliterator;
-  if (!HT) return;
-  ALL_WORDS.forEach(w => {
+  if (!HT || !HT.ready) return w.translit || '';   // lib not loaded yet → raw fallback
+  if (w._tdStyle !== translitStyle) {
     w.translitDisplay = HT.apply(w.word || '', w.translit || '', translitStyle);
-  });
+    w._tdStyle = translitStyle;
+  }
+  return w.translitDisplay ?? (w.translit || '');
 }
 
 function onTranslitStyleChange(val) {
@@ -1164,7 +1173,6 @@ function onTranslitStyleChange(val) {
   const status = document.getElementById('translitLoadStatus');
   if (translitStyle === 'default') {
     if (status) status.textContent = '';
-    buildTranslitDisplay();
     if (typeof rerender === 'function') rerender();
     return;
   }
@@ -1172,7 +1180,6 @@ function onTranslitStyleChange(val) {
   window.HebrewTransliterator.ensureLoaded().then(() => {
     if (window.HebrewTransliterator.ready) {
       if (status) status.textContent = '';
-      buildTranslitDisplay();
       if (typeof rerender === 'function') rerender();
     } else {
       if (status) status.textContent = 'Library failed to load — using default style.';
@@ -1182,7 +1189,6 @@ function onTranslitStyleChange(val) {
 
 window.addEventListener('translitlibloaded', () => {
   if (translitStyle !== 'default') {
-    buildTranslitDisplay();
     if (typeof rerender === 'function') rerender();
   }
 });
@@ -1223,7 +1229,7 @@ const bulkSelected = new Map(); // bare -> {w, text}
 // Pure copy-text builder (mode is a parameter). The detail modal (Section 3) renders
 // one button per mode without ever mutating the global copyMode.
 function computeCopyText(w, mode) {
-  const tr = w.translitDisplay ?? w.translit;
+  const tr = translitDisplayOf(w);
   if (mode === 'definition') return w.translation ? `${w.word} — ${w.translation}` : w.word;
   if (mode === 'defonly') return w.translation || w.word;
   if (mode === 'transdef') {
@@ -1340,7 +1346,7 @@ function exportAnki() {
   if (err) err.textContent = '';
   const lines = ['#separator:tab', '#html:false', '#tags column:6'];
   words.forEach(w => {
-    const tr = w.translitDisplay ?? w.translit ?? '';
+    const tr = translitDisplayOf(w) || '';
     const tags = ['ivritsuite', 'hebrew', exportTagify(w.era), exportTagify(w.pos)].filter(Boolean).join(' ');
     lines.push([w.word, w.translation || '', tr, w.pos || '', w.era || '', tags].join('\t'));
   });
@@ -1357,7 +1363,7 @@ function exportQuizlet() {
   if (err) err.textContent = '';
   const rows = ['Term,Definition'];
   words.forEach(w => {
-    const tr = w.translitDisplay ?? w.translit ?? '';
+    const tr = translitDisplayOf(w) || '';
     let def = w.translation || '';
     if (tr) def = def ? `${def} (${tr})` : `(${tr})`;
     rows.push(`${csvEscape(w.word)},${csvEscape(def)}`);
@@ -1388,7 +1394,7 @@ function wlWordFromDict(w) {
   return {
     word: w.word,
     translation: w.translation || '',
-    translit: (w.translitDisplay ?? w.translit ?? ''),
+    translit: (translitDisplayOf(w) || ''),
     pos: w.pos || '',
     era: w.era || ''
   };
@@ -1746,8 +1752,8 @@ fetchJsonWithProgress('data/hebrew_words.json?v=4', updateDictLoadProgress)
       }))
     );
     if (translitStyle !== 'default') {
+      // Load the lib and repaint visible cards; translitDisplayOf() styles each on demand.
       window.HebrewTransliterator.ensureLoaded().then(() => {
-        buildTranslitDisplay();
         if (typeof rerender === 'function') rerender();
       });
     }
@@ -2192,7 +2198,7 @@ function buildWordCard(w) {
   const inner = document.createElement('div');
   inner.innerHTML = `
     <div class="wc-heb">${colorizeHebrew(w.word)}</div>
-    ${w.translit ? `<div class="wc-translit">${w.translitDisplay ?? w.translit}</div>` : ''}
+    ${w.translit ? `<div class="wc-translit">${translitDisplayOf(w)}</div>` : ''}
     ${w.translation ? `<div class="wc-transl">${w.translation}</div>` : ''}
     <div class="wc-badges">
       ${w.pos ? `<span class="badge b-pos">${w.pos}</span>` : ''}
@@ -2340,7 +2346,7 @@ function renderShoreshFamily(root) {
 function renderShoreshHeader(rootEntry, rootCons) {
   const hdr = document.getElementById('shoreshHeader');
   const bigHeb = rootEntry ? rootEntry.word : [...rootCons].join('־');
-  const tr = rootEntry ? (rootEntry.translitDisplay ?? rootEntry.translit) : '';
+  const tr = translitDisplayOf(rootEntry);
   const def = rootEntry ? rootEntry.translation : '';
   let badges = '';
   if (rootEntry) {
@@ -3851,7 +3857,7 @@ function openWordModal(w) {
   const el = w.era === 'Both' ? 'Bib + Mod' : w.era;
 
   const big = document.createElement('div'); big.className = 'wm-heb'; big.id = 'wmTitle'; big.innerHTML = colorizeHebrew(w.word); b.appendChild(big);
-  const trStr = w.translitDisplay ?? w.translit;
+  const trStr = translitDisplayOf(w);
   if (trStr) { const t = document.createElement('div'); t.className = 'wm-translit'; t.textContent = trStr; b.appendChild(t); }
   if (w.translation) { const t = document.createElement('div'); t.className = 'wm-transl'; t.textContent = w.translation; b.appendChild(t); }
 
