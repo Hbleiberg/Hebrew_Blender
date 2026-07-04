@@ -1356,6 +1356,99 @@ function exportQuizlet() {
   downloadTextFile(`ivrit-quizlet-export-${exportDateStamp()}.csv`, rows.join('\n'), 'text/csv');
 }
 
+/* ===== Word Lists — suite-wide store (localStorage['ivritSuite_wordLists']) =====
+   Foundation feature consumed by Flash Cards / Worksheet Generator. The store is
+   deliberately namespaced (not hebrewDictionary_) and denormalized (each word carries
+   its display fields) so consumers render without loading hebrew_words.json.
+   Shape: { v:1, lists: { <id>: { name, created, updated, words:[{word,translation,translit,pos,era}] } } } */
+const WORDLISTS_KEY = 'ivritSuite_wordLists';
+const WL_MAX_LISTS = 50;
+const WL_MAX_WORDS = 200;
+function wlReadStore() {
+  let s;
+  try { s = ivritSafeParse(localStorage.getItem(WORDLISTS_KEY) || '{}'); } catch (e) { s = null; }
+  if (!s || typeof s !== 'object' || !s.lists || typeof s.lists !== 'object') return { v: 1, lists: {} };
+  return { v: 1, lists: s.lists };
+}
+function wlWriteStore(store) {
+  try { localStorage.setItem(WORDLISTS_KEY, JSON.stringify(store)); return true; }
+  catch (e) { return false; }
+}
+function wlNewId() { return Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7); }
+function wlWordFromDict(w) {
+  return {
+    word: w.word,
+    translation: w.translation || '',
+    translit: (w.translitDisplay ?? w.translit ?? ''),
+    pos: w.pos || '',
+    era: w.era || ''
+  };
+}
+// Merge `words` into `existing` array, deduping by the `word` string (first occurrence wins), capped.
+function wlDedupeInto(existing, words) {
+  const seen = new Set(existing.map(x => x.word));
+  const out = existing.slice();
+  for (const w of words) {
+    if (out.length >= WL_MAX_WORDS) break;
+    if (!w || !w.word || seen.has(w.word)) continue;
+    seen.add(w.word); out.push(w);
+  }
+  return out;
+}
+function wlGetList(id) { return wlReadStore().lists[id] || null; }
+function wlListCount() { return Object.keys(wlReadStore().lists).length; }
+// Create a new list. Returns { ok:true, id, dropped } or { ok:false, err }.
+function wlAddList(name, words) {
+  const store = wlReadStore();
+  if (Object.keys(store.lists).length >= WL_MAX_LISTS)
+    return { ok: false, err: `You've reached the limit of ${WL_MAX_LISTS} word lists. Delete one to add another.` };
+  const now = Date.now();
+  const id = wlNewId();
+  const capped = wlDedupeInto([], words || []);
+  const dropped = (words ? words.length : 0) - capped.length;
+  store.lists[id] = { name: String(name || 'Untitled list'), created: now, updated: now, words: capped };
+  if (!wlWriteStore(store)) return { ok: false, err: 'Storage is full — couldn\'t save this word list. Try deleting old lists or other saved data.' };
+  return { ok: true, id, dropped };
+}
+// Merge words into an existing list. Returns { ok, added, dropped } or { ok:false, err }.
+function wlMergeIntoList(id, words) {
+  const store = wlReadStore();
+  const list = store.lists[id];
+  if (!list) return { ok: false, err: 'That word list no longer exists.' };
+  const before = list.words.length;
+  // count incoming words that are genuinely new (not already in the list, not dup among themselves)
+  const have = new Set(list.words.map(x => x.word));
+  const uniqueNew = new Set();
+  (words || []).forEach(w => { if (w && w.word && !have.has(w.word)) uniqueNew.add(w.word); });
+  const merged = wlDedupeInto(list.words, words || []);
+  list.words = merged;
+  list.updated = Date.now();
+  if (!wlWriteStore(store)) return { ok: false, err: 'Storage is full — couldn\'t update this word list.' };
+  const added = merged.length - before;
+  return { ok: true, added, dropped: uniqueNew.size - added };
+}
+function wlRenameList(id, name) {
+  const store = wlReadStore();
+  if (!store.lists[id]) return false;
+  store.lists[id].name = String(name || 'Untitled list');
+  store.lists[id].updated = Date.now();
+  return wlWriteStore(store);
+}
+function wlDeleteList(id) {
+  const store = wlReadStore();
+  if (!store.lists[id]) return false;
+  delete store.lists[id];
+  return wlWriteStore(store);
+}
+function wlRemoveWord(id, word) {
+  const store = wlReadStore();
+  const list = store.lists[id];
+  if (!list) return false;
+  list.words = list.words.filter(x => x.word !== word);
+  list.updated = Date.now();
+  return wlWriteStore(store);
+}
+
 const GEMATRIA = {'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,'כ':20,'ך':20,'ל':30,'מ':40,'ם':40,'נ':50,'ן':50,'ס':60,'ע':70,'פ':80,'ף':80,'צ':90,'ץ':90,'ק':100,'ר':200,'ש':300,'ת':400};
 function calcGematria(word) {
   let sum = 0;
