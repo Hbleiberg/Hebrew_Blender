@@ -2252,44 +2252,57 @@ const SHORESH_PREFIX   = new Set([...'והשכלבמתאינ']);
 const SHORESH_INTERIOR = new Set([...'וי']);
 const SHORESH_SUFFIX   = new Set([...'הותימנכ']);   // sofit-normalized (ם→מ, ן→נ)
 
-// Positional root match: is there an in-order embedding of root `rc` (array of letters) into
-// the word consonant skeleton `wc` (string) such that the letters that fall BEFORE the first
-// radical are all prefix letters (≤3), the letters BETWEEN consecutive radicals are matres
-// ו/י or a doubling of an adjacent radical (≤2 per gap), and the letters AFTER the last radical
-// are all suffix letters (≤4)? Backtracks over embeddings (radicals may repeat) and accepts if
-// ANY embedding is legal. Words are short, so the search is trivial. This replaces the old
-// naive-subsequence test that let any scattered-in-order match through (root אכל → אֶשְׁכּוֹל).
-// Known false-NEGATIVE (intentional, do not loosen to chase): weak roots drop a radical in
-// conjugation (נפל → יִפֹּל has no נ), so those derived forms won't appear. Sin/shin also still
+// Positional root match, scored. Finds the minimum "borrow cost" over every in-order embedding of
+// root `rc` (array of letters) into the word consonant skeleton `wc` (string) such that the letters
+// BEFORE the first radical are all prefix letters (≤3), the letters BETWEEN consecutive radicals are
+// matres ו/י or a doubling of an adjacent radical (≤2 per gap), and the letters AFTER the last
+// radical are all suffix letters (≤4). Returns Infinity when no such embedding exists. Cost weights a
+// consumed PREFIX letter heavily (×10 — the strongest sign the "root" borrowed a foreign radical),
+// interior fillers and suffix letters low, so the cheapest root is the one the word derives from most
+// directly. Backtracks over embeddings (radicals may repeat). Words are short, so the search is
+// trivial. Replaces the old naive-subsequence test that let any scattered-in-order match through
+// (root אכל → אֶשְׁכּוֹל). Known false-NEGATIVE (intentional, do not loosen to chase): weak roots drop
+// a radical in conjugation (נפל → יִפֹּל has no נ), so those forms won't appear. Sin/shin also still
 // merge here, because normHebLetters strips the שׂ/שׁ dots — a separate, deeper change.
-function consonantsContainRoot(wc, rc) {
+function shoreshMatchCost(wc, rc) {
   const m = rc.length, n = wc.length;
-  if (m === 0) return false;
+  if (m === 0) return Infinity;
+  let best = Infinity;
   const allIn = (s, e, set) => { for (let k = s; k < e; k++) if (!set.has(wc[k])) return false; return true; };
-  function place(j, from, prev) {
+  function place(j, from, prev, pre, extra) {
     for (let p = from; p < n; p++) {
       if (wc[p] !== rc[j]) continue;
+      let addPre = 0, addExtra = 0;
       if (j === 0) {                                   // prefix run wc[0..p)
         if (p > 3 || !allIn(0, p, SHORESH_PREFIX)) continue;
+        addPre = p;
       } else {                                         // interior run wc[prev+1..p)
-        if (p - prev - 1 > 2) continue;
+        const gap = p - prev - 1;
+        if (gap > 2) continue;
         let ok = true;
         for (let k = prev + 1; k < p; k++) {
           const c = wc[k];
           if (!(SHORESH_INTERIOR.has(c) || c === rc[j - 1] || c === rc[j])) { ok = false; break; }
         }
         if (!ok) continue;
+        addExtra = gap;
       }
       if (j === m - 1) {                               // suffix run wc[p+1..n)
-        if ((n - 1 - p) <= 4 && allIn(p + 1, n, SHORESH_SUFFIX)) return true;
+        const tail = n - 1 - p;
+        if (tail <= 4 && allIn(p + 1, n, SHORESH_SUFFIX)) {
+          const cost = (pre + addPre) * 10 + (extra + addExtra) + tail;
+          if (cost < best) best = cost;
+        }
         continue;                                      // try a later occurrence to shrink the tail
       }
-      if (place(j + 1, p + 1, p)) return true;
+      place(j + 1, p + 1, p, pre + addPre, extra + addExtra);
     }
-    return false;
   }
-  return place(0, 0, -1);
+  place(0, 0, -1, 0, 0);
+  return best;
 }
+// Boolean membership is just "some legal embedding exists" — one matcher, no duplicated logic.
+function consonantsContainRoot(wc, rc) { return shoreshMatchCost(wc, rc) !== Infinity; }
 
 function setDictMode(mode) {
   if (mode === 'shoresh') {
@@ -2330,6 +2343,32 @@ function buildRootIndex() {
     if (cons.length === 3) seen.add(cons);
   });
   ROOT_INDEX = [...seen].sort((a, b) => a.localeCompare(b, 'he'));
+}
+
+// Known-root universe (pos==='root', 2–4 letters, normalized) used to disambiguate shoresh family
+// membership: a candidate word stays under the queried root only when no OTHER known root explains it
+// more directly (strictly lower borrow cost). This is what removes e.g. הִכְאִיב / מַכְאִיב from root
+// איב — they derive from root כאב (which exists here) with far fewer borrowed prefix letters. Purely
+// subtractive: a word whose real root has no entry here is never affected. Memoized like ROOT_INDEX.
+let SHORESH_ROOTS = null;
+function buildShoreshRoots() {
+  if (SHORESH_ROOTS) return SHORESH_ROOTS;
+  const seen = new Set();
+  ALL_WORDS.forEach(w => {
+    if (w.pos !== 'root') return;
+    const cons = normHebLetters(w.bare || w.word);
+    if (cons.length >= 2 && cons.length <= 4) seen.add(cons);
+  });
+  SHORESH_ROOTS = [...seen];
+  return SHORESH_ROOTS;
+}
+function bestRootKeeps(wc, root, rootCost) {
+  const roots = buildShoreshRoots();
+  for (const r of roots) {
+    if (r === root) continue;
+    if (shoreshMatchCost(wc, [...r]) < rootCost) return false;
+  }
+  return true;
 }
 
 function renderRootChips(filter) {
@@ -2379,7 +2418,11 @@ function renderShoreshFamily(root) {
     if (era === 'Both') { if (!eraBib && !eraMod) return false; }
     else if (era === 'Biblical' && !eraBib) return false;
     else if (era === 'Modern' && !eraMod) return false;
-    return consonantsContainRoot(wordConsonants(w), rootCons);
+    const wc = wordConsonants(w);
+    const cost = shoreshMatchCost(wc, rootCons);
+    if (cost === Infinity) return false;
+    if (w === rootEntry) return true;                  // always keep the exact root entry
+    return bestRootKeeps(wc, root, cost);              // drop if another known root fits better
   });
 
   renderShoreshGroups(fam);
