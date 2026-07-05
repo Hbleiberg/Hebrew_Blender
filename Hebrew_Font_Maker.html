@@ -2131,7 +2131,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '2.5';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '2.6';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2343,6 +2343,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v2.6</strong> — The <strong>Place Nikkud</strong> step for a wide letterform now makes sense: it <strong>previews the vowel</strong> right on the stretched form (where it will actually sit) and gives you a one-click <strong>“Edit nikkud on …”</strong> jump to the base letter, since a wide form's vowels follow the base — no more empty screen or a “drag the handle” hint with nothing to drag. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v2.5</strong> — Stretching a wide letterform no longer runs it <strong>off the edge of the canvas</strong> — the workspace now widens to fit the whole composed glyph (and its right margin) at any Width, right up to 250%. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v2.4</strong> — Wide letterforms &amp; digraphs: the <strong>margin bands and width line</strong> on the canvas now outline the <strong>composed form</strong> — not its base letter — so they sit at the real edges of a digraph and <strong>follow the Width slider live</strong> as you stretch. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v2.3</strong> — <strong>Trop placement</strong> is safer and finer-grained. The <strong>Default spread</strong> slider no longer wipes out your hand-tuned Left/Right positions — letters you've adjusted keep their spots (with a note showing how many, and a <strong>Reset all side positions</strong> button when you really want a clean slate). A spread of <strong>0</strong> now sticks everywhere instead of quietly snapping back to the default. Every trop layout change — the spread, a mark's <strong>Left / Center / Right</strong> switch, and the new per-mark <strong>Height</strong> nudge — is now fully <strong>undoable</strong> (Ctrl/Cmd+Z). That Height row lets you raise or lower <em>one</em> trop mark on every letter, so two marks sharing a side (like Pashta and Telisha Qetana) no longer collide. And <strong>Check stacking</strong> now works while placing trop, too — preview a vowel in grey and get an instant overlap warning. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -4833,15 +4834,16 @@ async function renderStage() {
   } else if (workMode === 'anchors') {
     const pcW = precompTarget ? getPrecomp(precompTarget) : null;
     const wideMode = isWideForm(pcW);
+    let wideG = null;
     if (wideMode) {
-      const g = buildWideGlyph(pcW);   // live: shows the widened/combined outline as the slider moves
-      if (g) h += `<path d="${contoursToPath(g.contours.map(pts => ({ points: pts })), g.curves)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
+      wideG = buildWideGlyph(pcW);   // live: shows the widened/combined outline as the slider moves
+      if (wideG) h += `<path d="${contoursToPath(wideG.contours.map(pts => ({ points: pts })), wideG.curves)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
       else h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="12">Trace the base letter(s) first to preview this form.</text>`;
     } else if (l.contours) h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
     if (l.contours || project.template.showOverlay) {
       // preview the vowel (or, in precomposed-form mode, that form's mark) on the glyph
       if (precompTarget && !wideMode) { h += precompHandlesSVG(); }
-      else if (wideMode) { /* wide form: outline drawn above; sized via the Width slider */ }
+      else if (wideMode) { h += wideNikkudPreviewSVG(pcW, wideG); }   // read-only ghost of the derived below-vowel (position comes from the base letter)
       else if (isEng(l.codepoint)) { h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="12">${engSupportsAccents(l.codepoint) ? 'Pick an accented form on the left to place its accent.' : 'No accents for this letter.'}</text>`; }
       else { seedAnchorsIfNeeded(l); h += anchorHandlesSVG(l); }
     } else {
@@ -4897,7 +4899,11 @@ function renderLegend() {
   if (workMode === 'anchors') {
     const c = activeAnchorClass;
     const col = c==='below'?'var(--below)':(c==='above'?'var(--above)':'var(--center)');
-    el.innerHTML = `<span><span class="dot" style="background:${col}"></span>Previewing the <b>${ANCHOR_LABEL[c]}</b> vowel — drag the handle, or use arrow keys (Shift = 1 unit).</span>`;
+    if (isWideForm(precompTarget ? getPrecomp(precompTarget) : null)) {   // wide forms have no draggable handle — their nikkud follows the base letter
+      el.innerHTML = `<span><span class="dot" style="background:var(--below)"></span>Nikkud preview — the position follows the base letter (edit it there).</span>`;
+    } else {
+      el.innerHTML = `<span><span class="dot" style="background:${col}"></span>Previewing the <b>${ANCHOR_LABEL[c]}</b> vowel — drag the handle, or use arrow keys (Shift = 1 unit).</span>`;
+    }
   } else if (workMode === 'align') {
     el.innerHTML = `<span>Drag the letter to move · corner ◻ scales (keeps shape) · side ▭ squishes that direction · ● rotates.</span>`;
   } else if (workMode === 'nodes') {
@@ -6086,9 +6092,29 @@ function resetPrecompWidth() {
     renderStage(); renderControls();
   });
 }
+function precompDonorCp(pc) { return (pc.bases && pc.bases[pc.bases.length - 1]) || pc.base; }   // the base whose anchors drive a wide form's nikkud at export (digraph → last base)
+/* Read-only ghost of the below-vowel on a wide form, at the SAME anchor the export derives:
+   the donor base letter's below anchor mapped through the width transform. Display-only — a wide
+   form has no per-form anchor; the position is edited on the base letter. */
+function wideNikkudPreviewSVG(pc, g) {
+  if (!g) return '';
+  const donor = project.letters.find(x => x.codepoint === precompDonorCp(pc));
+  if (!donor) return '';
+  seedAnchorsIfNeeded(donor);
+  const a = donor.anchors && donor.anchors.below;
+  if (!a) return '';
+  const off = (g.offsets && g.offsets.length) ? g.offsets[g.offsets.length - 1] : 0;
+  const mx = wideX(a.x + off, g.minX, g.widthScale), my = a.y;
+  return `<path d="${markPreviewPath(activeBelowVowel, mx, my)}" fill="var(--below)" fill-opacity="0.6" pointer-events="none"/>`;
+}
+function gotoBaseNikkud(cp) {   // leave the wide-form editor and place nikkud on its base letter
+  anchorCat = 'nikkud'; activeAnchorClass = 'below'; precompTarget = null;
+  selectItem('letter', cp);   // in-anchors path re-renders the base letter's full nikkud step
+}
 function renderWideFormControls(pc) {
   const wPct = Math.round(precompWidthScale(pc) * 100), isOver = (pc.widthScale != null);
   const bases = (pc.bases || [pc.base]).map(cp => { const L = project.letters.find(x => x.codepoint === cp); return L ? (L.name || cp) : cp; });
+  const donorCp = precompDonorCp(pc), donorName = (letterMeta(donorCp) && letterMeta(donorCp).name) || ('U+' + donorCp);
   if (!buildWideGlyph(pc)) {   // a base lost its trace while the editor was open — no slider for an unbuildable form
     const need = (pc.bases || [pc.base]).filter(cp => { const L = project.letters.find(x => x.codepoint === cp); return !(L && L.contours); })
       .map(cp => (letterMeta(cp) && letterMeta(cp).name) || ('U+' + cp));
@@ -6102,6 +6128,14 @@ function renderWideFormControls(pc) {
     <div class="inline">Width <input type="range" min="100" max="250" step="1" value="${wPct}" oninput="setPrecompWidth(this.value)" onchange="udBurstCommit();renderControls();renderGrids()"> <span id="pcWidthV" class="readout">${wPct}%</span></div>
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
       ${isOver ? `<button class="ctl-btn" onclick="resetPrecompWidth()">Reset width</button>` : `<span class="hint" style="font-size:0.62rem;">Default width — drag the slider to customize.</span>`}
+    </div>
+    <hr class="ctl-divider">
+    <div class="ws-side-title">Nikkud</div>
+    <div class="hint" style="font-size:0.62rem;">Vowels on this wide form follow <b>${escapeHtml(donorName)}</b>'s placement, stretched to fit — so they stay consistent with the plain letter. Preview one below; to move it, edit the nikkud on <b>${escapeHtml(donorName)}</b>.</div>
+    <div class="hint" style="font-size:0.6rem;margin-top:4px;">Preview vowel</div>
+    <div class="mark-grid2">${BELOW_VOWELS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeBelowVowel, 'setBelowVowel')).join('')}</div>
+    <div class="ctl-row" style="margin-top:8px;">
+      <button class="ctl-btn primary" style="width:100%;" onclick="gotoBaseNikkud('${donorCp}')">Edit nikkud on ${escapeHtml(donorName)} →</button>
     </div>
     <hr class="ctl-divider">
     <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">← Back</button>`;
@@ -7396,7 +7430,9 @@ function renderAnchorUnder(U, l) {
     return;
   }
   if (precompTarget) {
-    U.innerHTML = `<div class="hint">Placing a precomposed form — drag the orange dot on the canvas, or type X / Y on the left. Your change is saved automatically.</div>`;
+    U.innerHTML = isWideForm(getPrecomp(precompTarget))
+      ? `<div class="hint">This wide form's vowels follow its base letter — size it with the <b>Width</b> slider on the left, and edit the vowel positions on the base letter.</div>`
+      : `<div class="hint">Placing a precomposed form — drag the orange dot on the canvas, or type X / Y on the left. Your change is saved automatically.</div>`;
     return;
   }
   if (isEng(l.codepoint)) {
