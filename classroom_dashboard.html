@@ -946,6 +946,9 @@
   }
   .schedule-del-btn:hover { color: #cc3333; }
   .schedule-until-lbl { font-size: 0.72rem; color: var(--muted); flex-shrink: 0; }
+  /* Derived class name for a period's preset (read-only; omitted when a preset predates class rosters) */
+  .schedule-class-lbl { font-size: 0.68rem; color: var(--muted); font-style: italic;
+    margin: -3px 0 7px 22px; direction: ltr; unicode-bidi: plaintext; }
   .schedule-row.drag-over { border: 1px solid var(--gold); background: rgba(201,146,42,0.08); border-radius: 4px; }
   .schedule-row.dragging  { opacity: 0.4; }
   .saved-schedule-list { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
@@ -4975,6 +4978,14 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
     return { status, sorted, currentIdx, currentEntry, targetEntry, diffMins, isTomorrow, timeStr: h > 0 ? `${h}h ${m}m` : `${m}m` };
   }
 
+  // Derive the class a period's preset activates (via the preset's stored activeRosterId). Returns ''
+  // when the preset is unknown, predates class rosters (no activeRosterId), or points at a deleted class.
+  function presetClassName(presetName) {
+    const snap = presets[presetName];
+    if (!snap || !snap.activeRosterId) return '';
+    const c = settings.rosters && settings.rosters[snap.activeRosterId];
+    return c ? c.name : '';
+  }
   function renderScheduleRows() {
     renderScheduleValidation();
     renderSchedulePreview();
@@ -5006,6 +5017,15 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
         `<input type="time" class="schedule-time-input" value="${esc(entry.until || '')}" onchange="updateScheduleEntry(${i},'until',this.value)">` +
         `<button class="schedule-del-btn" title="Remove" onclick="removeScheduleRow(${i})">×</button>`;
       container.appendChild(row);
+      // Show which class this period's preset activates (derived, read-only). Skipped for a preset that
+      // predates class rosters or references a since-deleted class. textContent keeps hostile names inert.
+      const cn = presetClassName(entry.preset);
+      if (cn) {
+        const sub = document.createElement('div');
+        sub.className = 'schedule-class-lbl';
+        sub.textContent = '👥 ' + cn;
+        container.appendChild(sub);
+      }
     });
     makeSortable(container, () => [...settings.currentSchedule], reordered => {
       settings.currentSchedule = reordered;
