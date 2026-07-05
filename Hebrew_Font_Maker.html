@@ -6505,6 +6505,7 @@ function renderSpacingPanel() {
     <div class="hint" style="margin-top:-4px;">Word spacing is also the width of the Space (U+0020) glyph.</div>
     <div class="inline">Line spacing <input type="range" min="0" max="500" step="10" value="${sp.lineSpacing}" oninput="setLineSpacing(this.value)" onchange="udBurstCommit()"> <span id="lnV" class="readout">${sp.lineSpacing}</span></div>
     <label class="fld">Sample text <input type="text" id="spacingSample" dir="rtl" value="${escapeHtml(sp.sample)}" oninput="setSpacingSample(this.value)" onchange="udBurstCommit()"></label>
+    ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;">${customBaseLetters().map(l => `<button class="ctl-btn" style="padding:2px 8px;font-size:0.68rem;" onclick="insertSampleGlyph('${l.codepoint}')" title="Add ${escapeHtml(l.name || ('U+' + l.codepoint))} to the sample text (it can't be typed on a keyboard)">+ ${escapeHtml(l.name || ('U+' + l.codepoint))}</button>`).join('')}</div>` : ''}
     <div class="hint">Adjusts the exported font's spacing (letter &amp; word advance widths + line gap). The preview uses your traced letters — untraced letters show as dashed boxes.</div>
     <svg id="spacingPreviewSvg" style="width:100%;height:auto;max-height:170px;margin-top:4px;"></svg>
     <div class="ctl-row" style="margin-top:4px;"><button class="ctl-btn" onclick="resetSpacing()">Reset spacing</button></div>
@@ -6518,6 +6519,13 @@ function setLetterSpacing(v) { udBurstBegin([{t:'spacing'}], 'letter spacing'); 
 function setWordSpacing(v)   { udBurstBegin([{t:'spacing'}], 'word spacing'); fontSpacing().wordSpacing   = Math.max(80,  Math.min(600, +v||0)); const s = document.getElementById('wsV'); if (s) s.textContent = fontSpacing().wordSpacing;   renderSpacingPreview(); }
 function setLineSpacing(v)   { udBurstBegin([{t:'spacing'}], 'line spacing'); fontSpacing().lineSpacing   = Math.max(0,   Math.min(500, +v||0)); const s = document.getElementById('lnV'); if (s) s.textContent = fontSpacing().lineSpacing;   renderSpacingPreview(); }
 function setSpacingSample(v) { udBurstBegin([{t:'spacing'}], 'sample text'); fontSpacing().sample = v; renderSpacingPreview(); }   // preview-only re-render → caret stays put
+function insertSampleGlyph(cp) {   // append a custom glyph's char to the sample — PUA chars have no keyboard key
+  udBurstBegin([{t:'spacing'}], 'sample text');
+  fontSpacing().sample = (fontSpacing().sample || '') + String.fromCodePoint(parseInt(cp, 16));
+  udBurstCommit();
+  const inp = document.getElementById('spacingSample'); if (inp) inp.value = fontSpacing().sample;
+  renderSpacingPreview();
+}
 function resetSpacing() { udDo([{t:'spacing'}], 'reset spacing', () => { Object.assign(fontSpacing(), { letterSpacing:0, wordSpacing:260, lineSpacing:0 }); renderSpacingPanel(); }); }   // keeps the sample text
 /* Lay out a glyph's contours in raw font units, offset by pen-x (dx) and the line baseline (yo), Y negated (y-up → SVG y-down). */
 function glyphPathAt(cs, dx, yo, curves) {
@@ -6555,8 +6563,9 @@ function renderSpacingPreview() {
   const svg = document.getElementById('spacingPreviewSvg'); if (!svg || !project) return;
   const em = effMetrics(), sp = fontSpacing(), ascender = em.lamedAscender + 100, descender = em.descender - 50;
   const lineH = (ascender - descender) + sp.lineSpacing;
-  // base letters only — combining marks (U+0591–U+05C7) have no advance, so strip them for spacing layout
-  const chars = [...(sp.sample || '')].filter(ch => { const c = ch.codePointAt(0); return !(c >= 0x0591 && c <= 0x05C7); });
+  // base letters only — combining marks (U+0591–U+05C7, plus any custom marks) have no advance, so strip them for spacing layout
+  const cmSet = new Set(customMarkCps().map(c => parseInt(c, 16)));
+  const chars = [...(sp.sample || '')].filter(ch => { const c = ch.codePointAt(0); return !(c >= 0x0591 && c <= 0x05C7) && !cmSet.has(c); });
   let total = 0;
   const cells = chars.map(ch => {
     if (ch === ' ') { const w = wordAdvance(); total += w; return { type:'space', w }; }
@@ -6635,6 +6644,7 @@ function renderKerningSection() {
         <option value="finals" ${s.cls==='finals' ? 'selected' : ''}>Finals (ך ם ן ף ץ)</option>
         <option value="desc"   ${s.cls==='desc'   ? 'selected' : ''}>Descenders</option>
         ${userKernClasses().map(c => `<option value="${c.id}" ${s.cls===c.id?'selected':''}>${escapeHtml(c.name)}</option>`).join('')}
+        ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<optgroup label="Custom glyphs">${customBaseLetters().map(l => `<option value="cp:${l.codepoint}">${escapeHtml(l.name || ('U+' + l.codepoint))}</option>`).join('')}</optgroup>` : ''}
       </select>
     </div>`;
   const isUpdate = kernPairIndex(kernSideCps(e.left), kernSideCps(e.right)) >= 0;
@@ -6702,7 +6712,12 @@ function setKernGlyph(which, v) {
   const btn = document.getElementById('kernAddBtn');        // refresh label without re-rendering (keeps input focus)
   if (btn) btn.textContent = kernPairIndex(kernSideCps(e.left), kernSideCps(e.right)) >= 0 ? 'Update pair' : 'Add pair';
 }
-function setKernClass(which, cls) { kernEnsureEdit()[which].cls = cls; renderKerningSection(); }
+function setKernClass(which, cls) {
+  const e = kernEnsureEdit();
+  if (cls && cls.startsWith('cp:')) { e[which].cp = cls.slice(3); e[which].cls = ''; }   // "Custom glyphs" optgroup — a PUA glyph can't be typed, so it's picked here as a single glyph
+  else e[which].cls = cls;
+  renderKerningSection();
+}
 function setKernValue(v) {
   const e = kernEnsureEdit();
   e.value = Math.max(-200, Math.min(200, +v||0));
