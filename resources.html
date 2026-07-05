@@ -918,6 +918,13 @@ const FONTS = [
     author: 'Baruch Sienna', authorUrl: 'https://alephtechnology.com',
     type: 'block', nikkud: true, trop: false, license: 'CC0',
     file: 'fonts/Reuben.ttf', madeWithIvritSuite: true
+  },
+  {
+    name: 'TzviScript', family: 'TzviScript',
+    author: 'Harrison Bleiberg',
+    type: 'block', nikkud: true, trop: false, license: 'OFL',
+    file: 'fonts/TzviScript.ttf', licenseFile: 'fonts/TzviScript-LICENSE.txt',
+    madeWithIvritSuite: true
   }
 ];
 const FONT_SAMPLE = 'שָׁלוֹם עוֹלָם';
@@ -1115,9 +1122,15 @@ function _saveBlob(blob, filename) {
 async function downloadFont(i) {
   const f = FONTS[i]; if (!f) return;
   const base = f.name.replace(/\s+/g, '');
-  const notice = buildLicenseNotice(f);
   try {
     const ttf = new Uint8Array(await (await fetch(f.file)).arrayBuffer());
+    // Prefer a committed license file (shipped verbatim, e.g. the full OFL text); otherwise
+    // fall back to the notice generated from the entry's metadata (CC0 spelled out in full).
+    let notice = null;
+    if (f.licenseFile) {
+      try { notice = await (await fetch(f.licenseFile)).text(); } catch (_) { notice = null; }
+    }
+    if (notice == null) notice = buildLicenseNotice(f);
     if (notice) {
       const zip = makeZip([
         { name: base + '.ttf', bytes: ttf },
