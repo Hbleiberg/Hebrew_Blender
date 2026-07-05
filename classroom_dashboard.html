@@ -140,6 +140,7 @@
     --border: #c8bfa8;
     --white: #ffffff;
     --heb-font: 'Frank Ruhl Libre', serif;
+    --eng-font: 'Source Sans 3', sans-serif;   /* Dashboard Text message English/Latin font (picker) */
     --eng-date-size: 1.35rem;
     --heb-date-size: 2.6rem;
     --time-size: 3.4rem;
@@ -569,6 +570,11 @@
     width: 100%;
     font-size: 1.2rem;
     line-height: 1.55;
+    /* Mixed Hebrew+English message: the browser resolves per glyph — Latin uses the chosen English
+       font (--eng-font), Hebrew (which curated English fonts don't cover) falls through to the chosen
+       Hebrew font (--heb-font). Caveat: a Latin font that ALSO carried Hebrew glyphs would capture the
+       Hebrew here; none of the curated English fonts do — keep it that way when adding fonts later. */
+    font-family: var(--eng-font), var(--heb-font);
   }
 
   /* ───── Weather ───── */
@@ -1043,6 +1049,7 @@
     font-size: 0.95rem;
     outline: none;
     direction: auto;
+    font-family: var(--eng-font), var(--heb-font);   /* match the message display (see .dash-text-display) */
   }
   body.dark .editor { background: var(--navy-deep); color: var(--text); }
   .editor:focus { border-color: var(--gold); }
@@ -1101,6 +1108,7 @@
   }
   body.dark .font-opt.active { background: rgba(224, 168, 50, 0.16); }
   .font-opt-preview { font-size: 1.4rem; direction: rtl; min-width: 44px; text-align: center; color: var(--text); }
+  .font-opt-preview.ltr { direction: ltr; }   /* English picker previews render left-to-right */
   .font-opt.active .font-opt-preview { color: var(--gold); }
   body.dark .font-opt.active .font-opt-preview { color: var(--gold-light); }
   .font-opt-name { font-size: 0.78rem; font-weight: 600; color: var(--text); }
@@ -1895,6 +1903,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <label>Hide dashboard text</label>
       <label class="toggle"><input type="checkbox" id="hideDashText"><span class="slider"></span></label>
     </div>
+    <div class="sub-section" style="margin-top:12px;">
+      <div class="sub-section-hdr">Text Font</div>
+      <div class="sub-section-body">
+        <div class="font-options" id="engFontOptions"></div>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" hidden onchange="onUploadEngFontPick(this)"></label>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2185,6 +2200,27 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     { section:'Cursive', name:'Shmulik CLM',         family:"'Shmulik CLM', cursive",            load:{type:'face',css:"@font-face{font-family:'Shmulik CLM';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Culmus%20Project%20(GPL%20and%20GPL%2BFE)/Yoram%20Gnat%20(GPL%2BFE)/Shmulik%20CLM/ShmulikCLM.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
   ];
 
+  /* English/Latin fonts for the Dashboard Text message (see #engFontOptions picker + --eng-font).
+     Same {section,name,family,load} shape as HEB_FONTS. load:null = already linked in <head>;
+     {type:'gfonts',url} = lazy <link>. Source Sans 3 is the DEFAULT (the message's current font). */
+  const ENG_FONTS = [
+    // ── Sans ───────────────────────────────────────
+    { section:'Sans',         name:'Source Sans 3',         family:"'Source Sans 3', sans-serif",         load:null },
+    { section:'Sans',         name:'Nunito',                family:"'Nunito', sans-serif",                load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap'} },
+    { section:'Sans',         name:'Quicksand',             family:"'Quicksand', sans-serif",             load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap'} },
+    // ── Serif ──────────────────────────────────────
+    { section:'Serif',        name:'Libre Baskerville',     family:"'Libre Baskerville', serif",          load:null },
+    { section:'Serif',        name:'Merriweather',          family:"'Merriweather', serif",               load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap'} },
+    { section:'Serif',        name:'Lora',                  family:"'Lora', serif",                       load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap'} },
+    // ── Kid-Friendly ───────────────────────────────
+    { section:'Kid-Friendly', name:'Patrick Hand',          family:"'Patrick Hand', cursive",             load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap'} },
+    { section:'Kid-Friendly', name:'Schoolbell',            family:"'Schoolbell', cursive",               load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Schoolbell&display=swap'} },
+    { section:'Kid-Friendly', name:'Comic Neue',            family:"'Comic Neue', cursive",               load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap'} },
+    // ── Easy Reading (accessibility) ───────────────
+    { section:'Easy Reading', name:'Atkinson Hyperlegible', family:"'Atkinson Hyperlegible', sans-serif", load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap'} },
+    { section:'Easy Reading', name:'Lexend',                family:"'Lexend', sans-serif",                load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap'} },
+  ];
+
   const VOWEL_GROUPS = [
     { key:'aqua',   vowels:['ָ','ַ','ֲ','ֳ'] },
     { key:'red',    vowels:['ֶ','ֱ'] },
@@ -2310,6 +2346,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     enableDashText: true,
     dashTextHTML: '',
     hebFont: 'Frank Ruhl Libre',
+    engFont: 'Source Sans 3',
     showNikkud: true,
     colorCodeNikkud: false,
     colorCodingMode: 'letter',
@@ -3931,6 +3968,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     ensureActiveClass();            // guarantee a valid active class (handles a deleted-class reference)
     normalizePickerSession();
     setHebFont(settings.hebFont);
+    setEngFont(settings.engFont);
     syncFormToSettings();
     document.getElementById('dashEditor').innerHTML = sanitizeDashHTML(settings.dashTextHTML || '');
     syncDashText();
@@ -4463,7 +4501,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   }
 
   /* ────────── PRESETS ────────── */
-  const DEFAULT_PRESET = {"Default":{"location":"New York","engDateFmt":"MDY","showEngDOW":true,"hideEngDate":false,"hebDateScript":"translit","hideHebDate":false,"timeFmt":"12","hideTime":false,"tempUnit":"F","weatherLabelLang":"he","simpleWeatherDesc":false,"hideWeatherEmoji":false,"hideWeatherDesc":false,"hideWeather":false,"dowLang":"he","showYesterday":true,"showToday":true,"showTomorrow":true,"dowEmojiSet":"chick","colorDays":true,"headerLang":"he","hideDOW":false,"enableDashText":true,"dashTextHTML":"<div>This dashboard has support for <b>bold</b>, <i>italics</i>, <u>underline</u> and <strike>strikethrough</strike>. You can insert <a href=\"https://google.com\" target=\"_blank\" rel=\"noopener noreferrer\">links</a>.</div><div><br></div><div style=\"text-align: center;\">You can center text.</div><div>Change the <font size=\"6\">size</font>.</div><div>And you can also <span class=\"spoiler\">hide spoilers</span>. (Click the box.)</div><div><br></div><div>Click the gear icon at the top to edit this text and change how this dashboard works!</div>","hebFont":"Frank Ruhl Libre","showNikkud":true,"colorCodeNikkud":false,"colorCodingMode":"letter","nikudColorOverrides":{},"dashTextSize":1.8,"showTimer":true,"showTimerFullscreen":true,"showYestTomorrow":true}};
+  const DEFAULT_PRESET = {"Default":{"location":"New York","engDateFmt":"MDY","showEngDOW":true,"hideEngDate":false,"hebDateScript":"translit","hideHebDate":false,"timeFmt":"12","hideTime":false,"tempUnit":"F","weatherLabelLang":"he","simpleWeatherDesc":false,"hideWeatherEmoji":false,"hideWeatherDesc":false,"hideWeather":false,"dowLang":"he","showYesterday":true,"showToday":true,"showTomorrow":true,"dowEmojiSet":"chick","colorDays":true,"headerLang":"he","hideDOW":false,"enableDashText":true,"dashTextHTML":"<div>This dashboard has support for <b>bold</b>, <i>italics</i>, <u>underline</u> and <strike>strikethrough</strike>. You can insert <a href=\"https://google.com\" target=\"_blank\" rel=\"noopener noreferrer\">links</a>.</div><div><br></div><div style=\"text-align: center;\">You can center text.</div><div>Change the <font size=\"6\">size</font>.</div><div>And you can also <span class=\"spoiler\">hide spoilers</span>. (Click the box.)</div><div><br></div><div>Click the gear icon at the top to edit this text and change how this dashboard works!</div>","hebFont":"Frank Ruhl Libre","engFont":"Source Sans 3","showNikkud":true,"colorCodeNikkud":false,"colorCodingMode":"letter","nikudColorOverrides":{},"dashTextSize":1.8,"showTimer":true,"showTimerFullscreen":true,"showYestTomorrow":true}};
 
   function loadPresets() {
     try { presets = ivritSafeParse(localStorage.getItem('hebrewDashboard_presets')) || {}; }
@@ -5657,6 +5695,7 @@ function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontF
   let MY_FONTS = []; const _loadedUserFonts = new Set();
   function ivEsc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
   function allFonts() { return MY_FONTS.concat(HEB_FONTS); }
+  function allEngFonts() { return MY_FONTS.concat(ENG_FONTS); }
   async function refreshMyFonts() {
     try {
       MY_FONTS = (await listUserFonts()).map(f => ({
@@ -5665,7 +5704,9 @@ function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontF
         load: { type: 'userfont' } }));
     } catch (e) { MY_FONTS = []; }
     initFontSelector();
+    initEngFontSelector();
     if (MY_FONTS.some(f => f.name === settings.hebFont)) setHebFont(settings.hebFont);
+    if (MY_FONTS.some(f => f.name === settings.engFont)) setEngFont(settings.engFont);
   }
 
 /* ═══ My Fonts uploader (shared, identical across pages) ═══ */
@@ -5688,6 +5729,11 @@ async function onUploadFontPick(input){
   input.value = '';
   if (name) { await refreshMyFonts(); setHebFont(name); }
 }
+async function onUploadEngFontPick(input){
+  const name = await ivUploadFontFromFile(input.files && input.files[0]);
+  input.value = '';
+  if (name) { await refreshMyFonts(); setEngFont(name); }
+}
 /* ═══ end My Fonts uploader ═══ */
   function loadHebFont(font) {
     if (!font.load) return;
@@ -5708,10 +5754,22 @@ async function onUploadFontPick(input){
     }
   }
 
-  function initFontSelector() {
-    const opts = document.getElementById('fontOptions');
+  /* Two font pickers share one renderer. HEB_PICKER reproduces the original Hebrew picker
+     byte-for-byte (previewLtr:false → no extra class, defaultName marks [DEFAULT], builtins[0]
+     is the fallback = Frank Ruhl Libre). ENG_PICKER drives the Dashboard Text message font. */
+  const HEB_PICKER = { mountId:'fontOptions',    settingKey:'hebFont', cssVar:'--heb-font',
+                       previewText:'אֶרֶץ',       previewLtr:false, defaultName:'Frank Ruhl Libre',
+                       fontsFn:allFonts,    builtins:HEB_FONTS };
+  const ENG_PICKER = { mountId:'engFontOptions', settingKey:'engFont', cssVar:'--eng-font',
+                       previewText:'Abc 123',    previewLtr:true,  defaultName:'Source Sans 3',
+                       fontsFn:allEngFonts, builtins:ENG_FONTS };
+
+  function renderFontPicker(cfg) {
+    const opts = document.getElementById(cfg.mountId);
+    if (!opts) return;
     opts.innerHTML = '';
-    const sections = [...new Set(allFonts().map(f => f.section))];
+    const fonts = cfg.fontsFn();
+    const sections = [...new Set(fonts.map(f => f.section))];
     let firstSection = true;
     sections.forEach(sec => {
       const hdr = document.createElement('div');
@@ -5719,28 +5777,35 @@ async function onUploadFontPick(input){
       hdr.textContent = sec === 'My Fonts' ? 'My Fonts' : sec === 'Cursive' ? 'Cursive / Script' : sec + ' Fonts';
       opts.appendChild(hdr);
       firstSection = false;
-      allFonts().filter(f => f.section === sec).forEach(font => {
+      fonts.filter(f => f.section === sec).forEach(font => {
         const btn = document.createElement('button');
-        btn.className = 'font-opt' + (font.name === settings.hebFont ? ' active' : '');
+        btn.className = 'font-opt' + (font.name === settings[cfg.settingKey] ? ' active' : '');
         btn.dataset.fontName = font.name;
         btn.innerHTML =
-          `<span class="font-opt-preview" style="font-family:${font.family};">אֶרֶץ</span>` +
-          `<span class="font-opt-name">${ivEsc(font.name)}${font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}</span>`;
-        btn.onclick = () => setHebFont(font.name);
+          `<span class="font-opt-preview${cfg.previewLtr ? ' ltr' : ''}" style="font-family:${font.family};">${cfg.previewText}</span>` +
+          `<span class="font-opt-name">${ivEsc(font.name)}${font.name === cfg.defaultName ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}</span>`;
+        btn.onclick = () => applyFontChoice(cfg, font.name);
         loadHebFont(font);
         opts.appendChild(btn);
       });
     });
   }
 
-  function setHebFont(name) {
-    const f = allFonts().find(x => x.name === name) || HEB_FONTS[0];
-    settings.hebFont = f.name;
+  function applyFontChoice(cfg, name) {
+    const f = cfg.fontsFn().find(x => x.name === name) || cfg.builtins[0];
+    settings[cfg.settingKey] = f.name;
     loadHebFont(f);
-    document.documentElement.style.setProperty('--heb-font', f.family);
-    document.querySelectorAll('.font-opt').forEach(el =>
+    document.documentElement.style.setProperty(cfg.cssVar, f.family);
+    const mount = document.getElementById(cfg.mountId);
+    if (mount) mount.querySelectorAll('.font-opt').forEach(el =>
       el.classList.toggle('active', el.dataset.fontName === f.name));
   }
+
+  /* Thin wrappers keep every existing call site (init, preset apply, uploader) working unchanged. */
+  function initFontSelector() { renderFontPicker(HEB_PICKER); }
+  function initEngFontSelector() { renderFontPicker(ENG_PICKER); }
+  function setHebFont(name) { applyFontChoice(HEB_PICKER, name); }
+  function setEngFont(name) { applyFontChoice(ENG_PICKER, name); }
 
   /* ────────── DARK MODE ────────── */
   function toggleDark() {
@@ -5882,8 +5947,10 @@ async function onUploadFontPick(input){
     loadSchedulesStorage();
     initDark();
     initFontSelector();
+    initEngFontSelector();
     initPanelCollapse();
     setHebFont(settings.hebFont);
+    setEngFont(settings.engFont);
     refreshMyFonts();
     syncFormToSettings();
     wireFormListeners();

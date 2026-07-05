@@ -123,6 +123,15 @@ Every typeface the site requests is listed below, grouped by license. The two li
 | Shlomo SemiStam | Shlomo Orbach | self-hosted (jsDelivr · `aharonium/fonts`) | https://github.com/aharonium/fonts |
 | Shlomo Stam | Shlomo Orbach | self-hosted (jsDelivr · `aharonium/fonts`) | https://github.com/aharonium/fonts |
 | Dyslexia Hebrew | Jake Shoag | self-hosted (jsDelivr · `aharonium/fonts`) | https://github.com/aharonium/fonts |
+| Nunito | Vernon Adams, Cyreal, Jacques Le Bailly | Google Fonts | https://fonts.google.com/specimen/Nunito |
+| Quicksand | Andrew Paglinawan | Google Fonts | https://fonts.google.com/specimen/Quicksand |
+| Merriweather | Eben Sorkin — Sorkin Type | Google Fonts | https://fonts.google.com/specimen/Merriweather |
+| Lora | Cyreal | Google Fonts | https://fonts.google.com/specimen/Lora |
+| Patrick Hand | Patrick Wagesreiter | Google Fonts | https://fonts.google.com/specimen/Patrick+Hand |
+| Schoolbell | Font Diner (Stuart Sandler) | Google Fonts | https://fonts.google.com/specimen/Schoolbell |
+| Comic Neue | Craig Rozynski | Google Fonts | https://fonts.google.com/specimen/Comic+Neue |
+| Atkinson Hyperlegible | Braille Institute of America | Google Fonts | https://fonts.google.com/specimen/Atkinson+Hyperlegible |
+| Lexend | Bonnie Shaver-Troup, Thomas Jockin | Google Fonts | https://fonts.google.com/specimen/Lexend |
 
 Each OFL font is © its respective authors, with its own Reserved Font Name as stated in its distribution. The full license text (identical for all of the above; a copy also ships at `splash/fonts/OFL.txt`) follows:
 
