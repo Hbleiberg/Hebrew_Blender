@@ -2131,7 +2131,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '2.3';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '2.4';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2343,6 +2343,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v2.4</strong> — Wide letterforms &amp; digraphs: the <strong>margin bands and width line</strong> on the canvas now outline the <strong>composed form</strong> — not its base letter — so they sit at the real edges of a digraph and <strong>follow the Width slider live</strong> as you stretch. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v2.3</strong> — <strong>Trop placement</strong> is safer and finer-grained. The <strong>Default spread</strong> slider no longer wipes out your hand-tuned Left/Right positions — letters you've adjusted keep their spots (with a note showing how many, and a <strong>Reset all side positions</strong> button when you really want a clean slate). A spread of <strong>0</strong> now sticks everywhere instead of quietly snapping back to the default. Every trop layout change — the spread, a mark's <strong>Left / Center / Right</strong> switch, and the new per-mark <strong>Height</strong> nudge — is now fully <strong>undoable</strong> (Ctrl/Cmd+Z). That Height row lets you raise or lower <em>one</em> trop mark on every letter, so two marks sharing a side (like Pashta and Telisha Qetana) no longer collide. And <strong>Check stacking</strong> now works while placing trop, too — preview a vowel in grey and get an instant overlap warning. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v2.2</strong> — <strong>Wide letters, Yiddish forms &amp; custom glyphs</strong> got a big reliability pass. Nikkud and trop now attach <strong>correctly to wide letterforms and digraphs in the exported font</strong> (they used to slide to the left edge), wide forms export with <strong>smooth curves</strong> instead of chunky outlines, and a digraph's width no longer double-counts your letter spacing. The Specialized / Yiddish / Ladino tiles now show a <strong>live preview built from your own letters</strong> — including the Width slider's stretch — and clicking a form whose base isn't traced yet jumps you straight to tracing it. The <strong>Quality check now covers custom glyphs and custom marks</strong>, custom glyphs can be picked in <strong>kerning</strong> and added to the <strong>spacing sample</strong> with one click, and a custom glyph at a form's code point is <strong>protected from being overwritten</strong> at export (with a clear note on the tile). Export also warns if custom glyphs are blank or the custom-glyphs toggle is off. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v2.1</strong> — <strong>Custom glyphs</strong> are easier to size. The <strong>Width &amp; margins</strong> controls now follow a letter through the <strong>Trace</strong> and <strong>Edit points</strong> steps — not just Align — so you can adjust a traced or duplicated glyph's spacing whenever you're working on its shape. Custom <strong>marks</strong> (which attach to a letter and have no width of their own) gained a <strong>Convert to main glyph</strong> button: turn a standalone symbol you built as a mark into a full glyph with its own adjustable width. And a hand-set width of <strong>zero</strong> is now respected instead of snapping back to the default. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -4369,6 +4370,27 @@ function marginGuidesSVG() {
   h += `<text x="${wx}" y="${vy2+13}" text-anchor="middle" fill="${C.margin}" font-size="9" font-family="monospace" pointer-events="none">letter width</text>`;
   return h;
 }
+/* Wide-form variant: margins/width derived from the COMPOSED glyph (buildWideGlyph result), not the
+   base letter — so the overlay sits at the digraph's real edges and tracks the Width slider live
+   (renderStage re-runs per slider tick). Display-only, like every non-align margin overlay. */
+function wideFormGuidesSVG(g) {
+  const m = effMetrics();
+  const vy1 = fy(m.letterTop + 80), vy2 = fy(m.descender - 30), mcy = (vy1+vy2)/2;
+  const C = stageColors();
+  let inkR = -1e9; g.contours.forEach(poly => poly.forEach(p => { if (p[0] > inkR) inkR = p[0]; }));
+  if (inkR === -1e9) inkR = g.advance;
+  const marginZone = (x0f, x1f, side) => {
+    const a = fx(x0f), b = fx(x1f), cx = (a+b)/2;
+    return `<rect x="${a}" y="${vy1}" width="${b-a}" height="${vy2-vy1}" fill="${C.margin}" fill-opacity="0.12" stroke="${C.margin}" stroke-width="1" stroke-dasharray="3 4" opacity="0.9" pointer-events="none"/>`
+      + `<text x="${cx}" y="${mcy}" transform="rotate(-90 ${cx} ${mcy})" text-anchor="middle" fill="${C.marginTxt}" font-size="12" font-family="'Source Sans 3',sans-serif" opacity="0.5" style="dominant-baseline:central;" pointer-events="none">${side} margin</text>`;
+  };
+  let h = marginZone(0, g.minX, 'left');                   // composed ink-left (scale is anchored here)
+  h += marginZone(inkR, g.advance, 'right');               // composed ink-right → exported advance
+  const wx = fx(g.advance);
+  h += `<line x1="${wx}" y1="${vy1}" x2="${wx}" y2="${vy2}" stroke="${C.margin}" stroke-width="1" stroke-dasharray="3 5" pointer-events="none"/>`;
+  h += `<text x="${wx}" y="${vy2+13}" text-anchor="middle" fill="${C.margin}" font-size="9" font-family="monospace" pointer-events="none">form width</text>`;
+  return h;
+}
 function captureBoxFont(l) {
   if (l.captureBox) return l.captureBox;
   const m = effMetrics();
@@ -4842,7 +4864,11 @@ async function renderStage() {
     const x = fx(cb.x0), y = fy(cb.y1), w = fx(cb.x1)-fx(cb.x0), ht = fy(cb.y0)-fy(cb.y1);
     h += `<rect x="${x}" y="${y}" width="${w}" height="${ht}" fill="none" stroke="var(--gold)" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.8" pointer-events="none"/>`;
   }
-  h += marginGuidesSVG();   // margins/width on top so the right side bearing shows over the glyph
+  // margins/width on top so the right side bearing shows over the glyph. In the wide-form editor the
+  // guides must describe the COMPOSED glyph (and follow the Width slider), not the base letter.
+  const wpcM = (workMode === 'anchors' && precompTarget) ? getPrecomp(precompTarget) : null;
+  if (isWideForm(wpcM)) { const wg = buildWideGlyph(wpcM); if (wg) h += wideFormGuidesSVG(wg); }
+  else h += marginGuidesSVG();
   h += userGuidesSVG();     // user-defined persistent guides (drawn on top; their handles are draggable)
   if (workMode === 'align' && metricAdjust) h += metricHandlesSVG();   // draggable metric guide dots
   sv.innerHTML = h;
