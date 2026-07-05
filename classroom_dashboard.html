@@ -2334,14 +2334,15 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     showOmerEnglish: true,
     showOmerProgress: true,
     // Student Picker / Group Maker
-    roster: '',                       // newline-separated names; the roster string is the source of truth
+    rosters: {},                      // named classes: { "<id>": { name, names:[] } } — SHARED, excluded from preset snapshots
+    activeRosterId: '',               // which class is live; INCLUDED in presets/.ivrit (rosters themselves are not)
     showStudentPicker: false,         // opt-in feature-add (defaults off, like showVideoEmbed/scheduleEnabled)
     showStudentPickerFullscreen: true,
     pickerCollapsed: false,
     pickerFairCycle: true,            // "don't repeat until everyone's been picked"
     groupMode: 'size',                // 'size' = groups of N · 'count' = N groups
     groupN: 4,
-    pickerSession: { picked: [], absent: [] },  // EPHEMERAL: persists across refresh, stripped from presets/.ivrit
+    pickerSessions: {},               // EPHEMERAL per-class pick/absent state keyed by rosterId; stripped from presets/.ivrit
   };
   let presets = {};
   let savedSchedules = {};
@@ -2358,6 +2359,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   /* ────────── FIRST-RUN SETUP + STARTER LAYOUTS ────────── */
   // Pristine copy of the shipped defaults, captured before any load mutates `settings`.
   const PRISTINE_DEFAULTS = JSON.parse(JSON.stringify(settings));
+  // Classes/rosters are shared data, not display config — a starter-layout reset must never touch them.
+  // Dropping these keys from the baseline means applyStarter()'s merge leaves rosters/active class alone.
+  ['rosters', 'activeRosterId', 'pickerSessions'].forEach(k => delete PRISTINE_DEFAULTS[k]);
   // Starter layouts (shared by the first-run card and the Presets panel). Each is a settings-diff
   // applied on tap over the pristine defaults — never injected into the user's preset store.
   const STARTERS = [
@@ -3594,7 +3598,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     $('showStudentPicker').checked = settings.showStudentPicker === true;
     $('showStudentPickerFullscreen').checked = settings.showStudentPickerFullscreen !== false;
     $('pickerFairCycle').checked = settings.pickerFairCycle !== false;
-    $('pickerRoster').value = settings.roster || '';
+    $('pickerRoster').value = (curClass().names || []).join('\n');
     $('groupN').value = settings.groupN || 4;
     const gmRadio = document.querySelector(`input[name="groupMode"][value="${settings.groupMode || 'size'}"]`);
     if (gmRadio) gmRadio.checked = true;
@@ -3882,11 +3886,16 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     });
   }
 
-  function applySettings(s) {
-    // Capture the roster BEFORE the merge: a preset load / scheduled period-swap that CHANGES the
-    // roster starts a fresh pick cycle, while an identical roster (e.g. a refresh re-applying the
-    // same period) keeps the picks. pickerSession is stripped from presets, so it survives the merge.
-    const prevRoster = settings.roster || '';
+  function applySettings(s, opts) {
+    opts = opts || {};
+    // A legacy snapshot (preset or old .ivrit) carries a single `roster` string and no activeRosterId.
+    // Detect it BEFORE the merge (afterwards we can't tell whether activeRosterId came from `s`), and
+    // fold its names into a matching-or-new class. Per-class pickerSessions mean switching class keeps
+    // that class's own cycle — no reset needed.
+    let forcedActiveId = null;
+    if (s && s.activeRosterId === undefined && typeof s.roster === 'string') {
+      forcedActiveId = resolveLegacyRosterToClass(s.roster, opts.presetName);
+    }
     // Preserve schedule configuration — it must never be overwritten by loading a display preset
     const savedSchedule = {
       scheduleEnabled:        settings.scheduleEnabled,
@@ -3895,9 +3904,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       countdownShowPresetName: settings.countdownShowPresetName,
       currentSchedule:        settings.currentSchedule,
     };
-    ivritSafeAssign(settings, s);
+    ivritSafeAssign(settings, s);   // presets carry no `rosters` key, so settings.rosters survives the merge
     Object.assign(settings, savedSchedule);
-    if ((settings.roster || '') !== prevRoster) settings.pickerSession = { picked: [], absent: [] };
+    if (forcedActiveId) settings.activeRosterId = forcedActiveId;
+    delete settings.roster;         // legacy field is gone once classes exist
+    ensureActiveClass();            // guarantee a valid active class (handles a deleted-class reference)
     normalizePickerSession();
     setHebFont(settings.hebFont);
     syncFormToSettings();
@@ -3931,10 +3942,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     applyWakeLock();
   }
 
-  function getSettings() {
+  function getSettings(opts) {
     settings.dashTextHTML = document.getElementById('dashEditor').innerHTML;
     const out = JSON.parse(JSON.stringify(settings));
-    delete out.pickerSession;   // ephemeral pick/absent state never travels in presets, share codes, or .ivrit exports
+    delete out.pickerSessions;   // ephemeral per-class pick/absent state never travels in presets, share codes, or .ivrit exports
+    // Rosters are SHARED across presets (a preset stores only which class is active). Keep them in
+    // .ivrit / AllTools backups (opts omitted) but strip them from preset snapshots (opts.forPreset).
+    if (opts && opts.forPreset) delete out.rosters;
     return out;
   }
 
@@ -3953,6 +3967,81 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         Object.assign(settings, DEFAULT_PRESET['Default']);
       }
     } catch (e) {}
+    migrateRostersInSettings();   // one-time: fold a legacy single roster into a named class (idempotent)
+  }
+
+  /* ────────── NAMED CLASS ROSTERS ────────── */
+  const ROSTER_MAX_CLASSES = 20;
+  let _rosterIdSeq = 0;
+  // IDs: base36 timestamp + a per-session sequence suffix, so several created in the same ms stay unique.
+  function newRosterId() { return Date.now().toString(36) + '_' + (_rosterIdSeq++).toString(36); }
+
+  // One-time migration (safe to re-run): guarantees settings.rosters / activeRosterId / pickerSessions
+  // are well-formed and that at least one class always exists. Folds the retired single `roster` string
+  // (and its ephemeral pickerSession) into a first class named "My class" without losing any names.
+  function migrateRostersInSettings() {
+    if (!settings.rosters || typeof settings.rosters !== 'object' || Array.isArray(settings.rosters)) settings.rosters = {};
+    if (!settings.pickerSessions || typeof settings.pickerSessions !== 'object' || Array.isArray(settings.pickerSessions)) settings.pickerSessions = {};
+    if (!Object.keys(settings.rosters).length) {
+      const legacyNames = typeof settings.roster === 'string' ? parseRoster(settings.roster) : [];
+      const id = newRosterId();
+      settings.rosters[id] = { name: 'My class', names: legacyNames };
+      settings.activeRosterId = id;
+      const ps = settings.pickerSession;   // carry the legacy live pick/absent state onto the new class
+      if (ps && typeof ps === 'object') {
+        settings.pickerSessions[id] = {
+          picked: Array.isArray(ps.picked) ? ps.picked.slice() : [],
+          absent: Array.isArray(ps.absent) ? ps.absent.slice() : [],
+        };
+      }
+    }
+    if (!settings.rosters[settings.activeRosterId]) settings.activeRosterId = Object.keys(settings.rosters)[0];
+    delete settings.roster;          // retired
+    delete settings.pickerSession;   // retired (per-class pickerSessions replaces it)
+  }
+
+  // Ensure a valid active class exists; returns it. Cheap + defensive — safe to call from any render path.
+  function ensureActiveClass() {
+    if (!settings.rosters || typeof settings.rosters !== 'object' || Array.isArray(settings.rosters)) settings.rosters = {};
+    let c = settings.rosters[settings.activeRosterId];
+    if (!c) {
+      const ids = Object.keys(settings.rosters);
+      if (ids.length) { settings.activeRosterId = ids[0]; c = settings.rosters[settings.activeRosterId]; }
+      else { const id = newRosterId(); c = settings.rosters[id] = { name: 'My class', names: [] }; settings.activeRosterId = id; }
+    }
+    if (!Array.isArray(c.names)) c.names = [];
+    if (typeof c.name !== 'string' || !c.name) c.name = 'My class';
+    return c;
+  }
+  function curClass() { return ensureActiveClass(); }
+  function classList() { return Object.keys(settings.rosters || {}).map(id => ({ id, cls: settings.rosters[id] })); }
+
+  // Compare two canonicalized name arrays for exact equality (order-sensitive; parseRoster canonicalizes both).
+  function classNamesEqual(a, b) {
+    if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+    return true;
+  }
+  function uniqueClassName(base) {
+    base = (String(base || '').trim()) || 'Imported class';
+    const taken = Object.values(settings.rosters || {}).map(c => c && c.name);
+    if (!taken.includes(base)) return base;
+    let i = 2;
+    while (taken.includes(base + ' ' + i)) i++;
+    return base + ' ' + i;
+  }
+  // Fold a legacy roster string into a class: reuse an existing class with identical names, else create
+  // one named after the preset. Never drops names. Returns the resolved class id (always valid).
+  function resolveLegacyRosterToClass(str, presetName) {
+    ensureActiveClass();
+    const names = parseRoster(str);
+    if (!names.length) return settings.activeRosterId;   // nothing to fold — keep the current class
+    for (const id of Object.keys(settings.rosters)) {
+      if (classNamesEqual(settings.rosters[id].names, names)) return id;
+    }
+    const id = newRosterId();
+    settings.rosters[id] = { name: uniqueClassName(presetName || 'Imported class'), names };
+    return id;
   }
 
   /* ────────── STUDENT PICKER / GROUP MAKER ────────── */
@@ -3967,18 +4056,23 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     });
     return out.slice(0, PICKER_MAX);
   }
-  function rosterNames() { return parseRoster(settings.roster); }
+  // The active class's roster names (already canonicalized on commit; capped defensively).
+  function rosterNames() { return (curClass().names || []).slice(0, PICKER_MAX); }
 
-  function normalizePickerSession() {
-    let s = settings.pickerSession;
-    if (!s || typeof s !== 'object') s = settings.pickerSession = { picked: [], absent: [] };
+  // The active class's ephemeral pick/absent session (auto-created; never travels in presets/.ivrit).
+  function curSession() {
+    if (!settings.pickerSessions || typeof settings.pickerSessions !== 'object') settings.pickerSessions = {};
+    const id = settings.activeRosterId;
+    let s = settings.pickerSessions[id];
+    if (!s || typeof s !== 'object') s = settings.pickerSessions[id] = { picked: [], absent: [] };
     if (!Array.isArray(s.picked)) s.picked = [];
     if (!Array.isArray(s.absent)) s.absent = [];
     return s;
   }
+  // Kept name for the many existing call sites; now normalizes + returns the active class's session.
+  function normalizePickerSession() { ensureActiveClass(); return curSession(); }
   function eligibleNames() {
-    normalizePickerSession();
-    const absent = settings.pickerSession.absent;
+    const absent = curSession().absent;
     return rosterNames().filter(n => !absent.includes(n));
   }
 
@@ -3994,19 +4088,19 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     const el = document.getElementById('pickerRosterCount');
     if (!el) return;
     const ta = document.getElementById('pickerRoster');
-    const raw = ta ? ta.value : settings.roster;
+    const raw = ta ? ta.value : (curClass().names || []).join('\n');
     const n = parseRoster(raw).length;
     el.textContent = `${n} name${n === 1 ? '' : 's'}${n >= PICKER_MAX ? ` (max ${PICKER_MAX})` : ''}`;
   }
-  // Commit the textarea to settings.roster on blur; reconcile (not reset) the session against the new roster.
+  // Commit the textarea into the ACTIVE class on blur; reconcile (not reset) that class's session.
   function commitRosterFromTextarea() {
     const ta = document.getElementById('pickerRoster');
     if (!ta) return;
     const names = parseRoster(ta.value);
-    settings.roster = names.join('\n');
-    ta.value = settings.roster;
+    curClass().names = names;
+    ta.value = names.join('\n');
     const set = new Set(names);
-    const sess = normalizePickerSession();
+    const sess = curSession();
     sess.picked = sess.picked.filter(n => set.has(n));
     sess.absent = sess.absent.filter(n => set.has(n));
     updatePickerRosterCount();
@@ -4030,8 +4124,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     saveSettingsToStorage();
   }
   function resetPickerCycle() {
-    normalizePickerSession();
-    settings.pickerSession.picked = [];
+    curSession().picked = [];
     renderStudentPicker();
     saveSettingsToStorage();
   }
@@ -4039,7 +4132,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function renderStudentPicker() {
     const chips = document.getElementById('pickerChips');
     if (!chips) return;   // card not mounted (e.g. settings-only build) — nothing to render
-    normalizePickerSession();
+    const sess = normalizePickerSession();
     const names = rosterNames();
     const actions = document.getElementById('pickerActions');
     const progress = document.getElementById('pickerProgress');
@@ -4047,15 +4140,15 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     if (!names.length) {
       const hint = document.createElement('div');
       hint.className = 'picker-empty';
-      hint.textContent = 'Add a class roster in Settings → Student Picker. Each preset keeps its own roster, so Schedule Sync swaps the class list per period.';
+      hint.textContent = 'Add students to this class in Settings → Student Picker, or pick a different class from the header.';
       chips.appendChild(hint);
       if (actions) actions.style.display = 'none';
       if (progress) progress.innerHTML = '';
       return;
     }
     if (actions) actions.style.display = '';
-    const absent = settings.pickerSession.absent;
-    const picked = settings.pickerSession.picked;
+    const absent = sess.absent;
+    const picked = sess.picked;
     names.forEach(name => {
       const chip = document.createElement('button');
       chip.type = 'button';
@@ -4171,25 +4264,24 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     step();
   }
   function pickOne() {
-    normalizePickerSession();
+    const sess = normalizePickerSession();
     openPickOverlay();
     setPickNote('');
     const eligible = eligibleNames();
     if (!eligible.length) {
-      renderPickMessage(rosterNames().length ? 'Everyone is marked absent today.' : 'Add a class roster in Settings → Student Picker.');
+      renderPickMessage(rosterNames().length ? 'Everyone is marked absent today.' : 'Add students to this class in Settings → Student Picker.');
       return;
     }
     const fair = settings.pickerFairCycle !== false;
     let pool = eligible;
     if (fair) {
-      const picked = settings.pickerSession.picked;
-      pool = eligible.filter(n => !picked.includes(n));
-      if (!pool.length) { settings.pickerSession.picked = []; pool = eligible; setPickNote('🔄 New round'); }
+      pool = eligible.filter(n => !sess.picked.includes(n));
+      if (!pool.length) { sess.picked = []; pool = eligible; setPickNote('🔄 New round'); }
     }
     const winner = pool[Math.floor(Math.random() * pool.length)];
     const finish = () => {
       renderPickResult(winner);
-      if (fair && !settings.pickerSession.picked.includes(winner)) settings.pickerSession.picked.push(winner);
+      if (fair && !sess.picked.includes(winner)) sess.picked.push(winner);
       saveSettingsToStorage();
       renderStudentPicker();
     };
@@ -4289,19 +4381,19 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function savePreset() {
     const name = document.getElementById('presetName').value.trim();
     if (!name) { alert('Please enter a preset name.'); return; }
-    presets[name] = getSettings();
+    presets[name] = getSettings({ forPreset: true });   // rosters are shared — snapshot only activeRosterId
     savePresetsStorage();
     document.getElementById('presetName').value = '';
     renderPresets();
   }
   function loadPreset(name) {
     if (!presets[name]) return;
-    applySettings(presets[name]);
+    applySettings(presets[name], { presetName: name });
     saveSettingsToStorage();
   }
   function overwritePreset(name) {
     if (!confirm(`Overwrite preset "${name}" with current settings?`)) return;
-    presets[name] = getSettings();
+    presets[name] = getSettings({ forPreset: true });   // rosters are shared — snapshot only activeRosterId
     savePresetsStorage();
   }
   function deletePreset(name) {
@@ -4947,7 +5039,7 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
     if (key !== _lastScheduleKey && presets[active.preset]) {
       _lastScheduleKey = key;
       if (_activeEditable) exitInPlaceEdit(true);   // commit any in-place edit before a scheduled preset switch
-      applySettings(presets[active.preset]);
+      applySettings(presets[active.preset], { presetName: active.preset });
     }
   }
 
