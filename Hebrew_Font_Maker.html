@@ -399,15 +399,17 @@
   body.layout-tabbed.cat-settings #catHost .cat-panel.cat-active .panel-body { max-height: none; }
   .stage-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 8px; max-width: 720px; margin: 0 auto; overflow: auto; max-height: 74vh; }
   #stage { width: 100%; height: auto; display: block; touch-action: none; background: var(--white); border-radius: 6px; }
-  /* Placement step: size sliders + Confirm/Reset actions sit right below the canvas (center column), which fills the center width. */
-  .stage-below { max-width: 720px; margin: 8px auto 0; display: flex; flex-direction: column; gap: 7px; }
+  /* Placement step: below the canvas, size sliders (stacked) on the left, a Confirm/Reset panel on the right. */
+  .stage-below { max-width: 720px; margin: 8px auto 0; display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; justify-content: center; }
   .stage-below:empty { display: none; }
-  /* size sliders sit side-by-side, separated by vertical dividers (bars are shortened to fit) */
-  .size-slider-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; }
-  .size-slider-cell { display: flex; align-items: center; gap: 5px; padding: 4px 10px; white-space: nowrap; font-size: 0.82rem; }
-  .size-slider-cell + .size-slider-cell { border-left: 1px solid var(--border); }
-  .size-slider-cell input[type='range'] { width: 74px; }
-  .anchor-confirm-foot { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  /* size sliders stacked one per line */
+  .size-slider-col { flex: 1 1 300px; min-width: 240px; max-width: 460px; display: flex; flex-direction: column; gap: 7px; }
+  .size-slider-line { display: flex; align-items: center; gap: 8px; white-space: nowrap; font-size: 0.82rem; }
+  .size-slider-line label { flex: 0 0 auto; min-width: 108px; }
+  .size-slider-line input[type='range'] { flex: 1 1 auto; min-width: 90px; }
+  /* Confirm / Reset actions grouped in a panel to the right of the sliders */
+  .anchor-confirm-panel { flex: 0 0 auto; display: flex; flex-direction: column; align-items: stretch; text-align: center; gap: 8px; padding: 12px; min-width: 196px; border: 1px solid var(--border); border-radius: 8px; background: var(--cream); }
+  .anchor-confirm-panel .ctl-row { justify-content: center; }
   /* Node editor (Edit-points mode) overlay */
   .node-glyph { cursor: crosshair; }
   .node-pt { fill: var(--white); stroke: var(--navy); stroke-width: 1.4; cursor: grab; }
@@ -2148,7 +2150,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '2.9';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '3.0';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2360,6 +2362,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v3.0</strong> — Placement panel, take two: the <strong>size sliders</strong> under the canvas are <strong>stacked</strong> again (one per line, so each is easy to read), and the <strong>✓ Confirm placement</strong> / <strong>Reset letter</strong> / <strong>Reset all</strong> buttons now sit together in their own <strong>panel to the right</strong> of the sliders instead of underneath them. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v2.9</strong> — The <strong>Place Nikkud / Trop</strong> panel now says what each control affects. Sections are grouped by scope — “<strong>Qamats — every letter</strong>” for a vowel's Height &amp; shape, “<strong>Below position — Alef only</strong>” for this letter's X / Y — with a short plain-language line under each, replacing one long confusing paragraph. The <strong>size sliders</strong> under the canvas now sit <strong>side-by-side</strong> with dividers, so they take one tidy row instead of a stack. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v2.8</strong> — The <strong>Place Nikkud / Trop</strong> step is tidier and works the way you'd expect. A letter's placement controls — the <strong>size sliders</strong> and the <strong>✓ Confirm placement</strong> / <strong>Reset</strong> buttons — are now grouped <strong>right below the canvas</strong> (which fills the width), so nothing's stranded in a far-off strip. The above-mark picker now only offers marks that fit the letter (the <strong>shin/sin dots</strong> show up only on <strong>Shin</strong>), and picking any mark — Holam, Shin dot, Sin dot, or <strong>Rafe</strong> — now actually previews it on the canvas (Rafe used to do nothing). <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v2.7</strong> — The <strong>mark size</strong> sliders are now <strong>undoable</strong> (Ctrl/Cmd+Z). Resizing the <strong>Nikkud</strong>, <strong>Holam</strong>, <strong>Dagesh</strong>, <strong>Holam&nbsp;(vav)</strong>, or <strong>Trop</strong> marks and changing your mind now puts them right back — one undo step per slider drag, just like every other placement change. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -7500,17 +7503,16 @@ function renderAnchorStageBelow(SB, l) {
     ? `<span class="placement-pill inherited" title="These positions were carried from the previous letter. Review them, then Confirm.">↩ Carried over — review</span>`
     : `<span class="placement-pill unconfirmed" title="This letter's placement hasn't been confirmed yet. Adjust if needed, then Confirm — undo always works.">! Unconfirmed</span>`;
   SB.innerHTML = `
-    <div class="size-slider-row">
-      <div class="size-slider-cell">${isTrop?'Trop':'Nikkud'} size <input type="range" min="40" max="180" step="5" value="${sizePct}" oninput="${sizeFn}(this.value)" onchange="udBurstCommit()"> <span id="markScaleV" class="readout">${sizePct}%</span></div>
-      ${isTrop?'':`<div class="size-slider-cell">Holam size <input type="range" min="30" max="180" step="5" value="${holPct}" oninput="setHolamScale(this.value)" onchange="udBurstCommit()"> <span id="holamScaleV" class="readout">${holPct}%</span></div>
-      <div class="size-slider-cell">Dagesh size <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
-      ${isVav?`<div class="size-slider-cell">Holam (vav) size <input type="range" min="40" max="180" step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>`:''}`}
+    <div class="size-slider-col">
+      <div class="size-slider-line"><label>${isTrop?'Trop':'Nikkud'} size</label> <input type="range" min="40" max="180" step="5" value="${sizePct}" oninput="${sizeFn}(this.value)" onchange="udBurstCommit()"> <span id="markScaleV" class="readout">${sizePct}%</span></div>
+      ${isTrop?'':`<div class="size-slider-line"><label>Holam size</label> <input type="range" min="30" max="180" step="5" value="${holPct}" oninput="setHolamScale(this.value)" onchange="udBurstCommit()"> <span id="holamScaleV" class="readout">${holPct}%</span></div>
+      <div class="size-slider-line"><label>Dagesh size</label> <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
+      ${isVav?`<div class="size-slider-line"><label>Holam (vav) size</label> <input type="range" min="40" max="180" step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>`:''}`}
+      ${isTrop?'':`<div class="hint" style="font-size:0.62rem;">Nikkud size scales the vowels and the shin/sin dot (unless a שׁ/שׂ form has its own Dot size, which wins). Holam size controls just the standalone holam dot above the letter, so you can make it thinner than the below vowels. Dagesh size controls just the dagesh dot.${isVav?' Holam (vav) size controls just the dot on the vav (וֹ), so you can grow it as part of the letter.':''}</div>`}
     </div>
-    ${isTrop?'':`<div class="hint" style="font-size:0.62rem;text-align:center;">Nikkud size scales the vowels and the shin/sin dot (unless a שׁ/שׂ form has its own Dot size, which wins). Holam size controls just the standalone holam dot above the letter, so you can make it thinner than the below vowels. Dagesh size controls just the dagesh dot.${isVav?' Holam (vav) size controls just the dot on the vav (וֹ), so you can grow it as part of the letter.':''}</div>`}
-    <hr class="ctl-divider">
-    <div class="anchor-confirm-foot">
+    <div class="anchor-confirm-panel">
       ${placementPill}${saveBtn}
-      <div class="ctl-row" style="justify-content:center;">
+      <div class="ctl-row">
         <button class="ctl-btn" onclick="resetLetterAnchors()">Reset letter</button>
         <button class="ctl-btn" onclick="resetAllAnchors()">Reset all</button>
       </div>
