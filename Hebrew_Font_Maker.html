@@ -3477,6 +3477,33 @@ function renderCustomGlyphsGrid() {
 /* ── Opt-in form tabs (Specialized / Yiddish / Ladino): a grid of auto-composed forms. Clicking a
    tile opens the form on the canvas below — the existing mark-placement editor for base+mark forms,
    the Width slider for wide letterforms / digraphs. ── */
+/* Mini live preview of a composed form, built from the user's actual traced outlines — wide forms
+   through buildWideGlyph (so the current widthScale shows), base+mark forms via the same anchor+scale
+   math as the export bake. Returns '' when the form can't compose yet → caller falls back to the
+   template-font character. Same y-flip/viewBox conventions as markTilePreviewSVG. */
+function formTilePreviewSVG(pc) {
+  let cs = null, curves = null;
+  if (isWideForm(pc)) {
+    const g = buildWideGlyph(pc); if (!g) return '';
+    cs = g.contours.map(pts => ({ points: pts })); curves = g.curves;
+  } else {
+    const baseL = project.letters.find(x => x.codepoint === pc.base);
+    if (!baseL || !baseL.contours) return '';
+    const cls = MARK_CLASS[pc.mark];
+    const anc = (cls !== 'center' && pc.anchor && pc.anchor.x != null) ? pc.anchor : qaAnchors(baseL)[cls];
+    if (!anc) return '';
+    const mscale = precompMarkScale(pc);
+    const markPoly = markContoursFor(baseL, 'nikkud', pc.mark).map(poly => poly.map(([x, y]) => [Math.round(x*mscale + anc.x), Math.round(y*mscale + anc.y)]));
+    cs = baseL.contours.concat(markPoly.map(p => ({ points: p })));
+    curves = (baseL.curves && baseL.curves.length === baseL.contours.length) ? baseL.curves.concat(markPoly.map(() => null)) : null;
+  }
+  let minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9;
+  cs.forEach(c => c.points.forEach(([x, y]) => { if (x<minX)minX=x; if (x>maxX)maxX=x; if (y<minY)minY=y; if (y>maxY)maxY=y; }));
+  if (minX > maxX) return '';
+  const pad = 70;
+  minX -= pad; maxX += pad; minY -= pad; maxY += pad;
+  return `<svg class="mark-prev" viewBox="${minX.toFixed(0)} ${(-maxY).toFixed(0)} ${(maxX-minX).toFixed(0)} ${(maxY-minY).toFixed(0)}" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><path d="${glyphPathAt(cs, 0, 0, curves)}" fill="currentColor" fill-rule="nonzero"/></svg>`;
+}
 function renderFormPanel(panelId, targets, intro) {
   const el = document.getElementById(panelId); if (!el) return;
   const isTraced = cp => { const L = project.letters.find(x => x.codepoint === cp); return !!(L && L.contours); };
@@ -3499,8 +3526,9 @@ function renderFormPanel(panelId, targets, intro) {
     const overridden = isCustomCp(t);   // a custom glyph at this code point wins at export — say so instead of pretending this form will ship
     const tile = document.createElement('div');
     tile.className = 'ltile' + (precompTarget === t ? ' sel' : '') + (traced ? '' : ' locked');
+    const pv = traced ? formTilePreviewSVG(pc) : '';   // live composed outline (reflects the Width slider); font char until composable
     tile.innerHTML = `<span class="lt-dot ${traced ? 'traced' : ''}"></span>
-      <span class="lt-heb" style="font-family:${esc(project.template.font)};direction:rtl;">${precompComposed(pc)}</span>
+      ${pv || `<span class="lt-heb" style="font-family:${esc(project.template.font)};direction:rtl;">${precompComposed(pc)}</span>`}
       <span class="lt-name">${escapeHtml(precompName(pc))}</span>${overridden ? `<span class="lt-need" title="You added a custom glyph at U+${t}; the exported font uses your custom outline, not this composed form.">custom glyph overrides</span>` : traced ? '' : `<span class="lt-need" title="Trace ${escapeHtml(need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">needs ${escapeHtml(need.map(chOf).join(' '))}</span>`}`;
     tile.onclick = () => pickPrecompForm(t);
     grid.appendChild(tile);
@@ -6022,7 +6050,7 @@ function renderWideFormControls(pc) {
   return `<div class="ws-side-title">${escapeHtml(precompName(pc))}</div>
     <div class="hint" style="font-size:0.66rem;">Auto-composed from your traced ${bases.map(escapeHtml).join(' + ')}. The <b>Width</b> slider both adds side space and stretches the outline — saved automatically.</div>
     <hr class="ctl-divider">
-    <div class="inline">Width <input type="range" min="100" max="250" step="1" value="${wPct}" oninput="setPrecompWidth(this.value)" onchange="udBurstCommit();renderControls()"> <span id="pcWidthV" class="readout">${wPct}%</span></div>
+    <div class="inline">Width <input type="range" min="100" max="250" step="1" value="${wPct}" oninput="setPrecompWidth(this.value)" onchange="udBurstCommit();renderControls();renderGrids()"> <span id="pcWidthV" class="readout">${wPct}%</span></div>
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
       ${isOver ? `<button class="ctl-btn" onclick="resetPrecompWidth()">Reset width</button>` : `<span class="hint" style="font-size:0.62rem;">Default width — drag the slider to customize.</span>`}
     </div>
