@@ -5807,7 +5807,7 @@ function seedAnchors(l) {
   const aboveY = Math.max(ANCHOR_Y.above, Math.round(bb.maxY)+40);
   const belowY = defaultBelowY(bb);
   const tAboveY = aboveY + TROP_GAP_ABOVE, tBelowY = belowY - TROP_GAP_BELOW;
-  const tOff = (project.font && project.font.tropSideOffset) || TROP_POS_SHIFT;   // Left/Right spread
+  const tOff = (project.font && project.font.tropSideOffset != null) ? project.font.tropSideOffset : TROP_POS_SHIFT;   // Left/Right spread
   l.anchors = {
     below:  { x: mid, y: belowY },
     above:  { x: mid, y: aboveY },
@@ -5824,7 +5824,7 @@ function ensureTropAnchors(l) {   // back-fill trop anchors on letters seeded be
   const aboveY = l.anchors.above ? l.anchors.above.y : ANCHOR_Y.above;
   if (!l.anchors.tropAbove) l.anchors.tropAbove = { x: mid, y: aboveY + TROP_GAP_ABOVE };
   if (!l.anchors.tropBelow) l.anchors.tropBelow = { x: mid, y: ANCHOR_Y.below - TROP_GAP_BELOW };
-  const tOff = (project.font && project.font.tropSideOffset) || TROP_POS_SHIFT, ta = l.anchors.tropAbove, tb = l.anchors.tropBelow;
+  const tOff = (project.font && project.font.tropSideOffset != null) ? project.font.tropSideOffset : TROP_POS_SHIFT, ta = l.anchors.tropAbove, tb = l.anchors.tropBelow;
   if (!l.anchors.tropAboveL) l.anchors.tropAboveL = { x: ta.x - tOff, y: ta.y };
   if (!l.anchors.tropAboveR) l.anchors.tropAboveR = { x: ta.x + tOff, y: ta.y };
   if (!l.anchors.tropBelowL) l.anchors.tropBelowL = { x: tb.x - tOff, y: tb.y };
@@ -7728,7 +7728,7 @@ function qaPlaceStackTrop(nikAnc, nik, tropCp) {
    opened in the anchor editor get computed defaults, purely for preview. */
 function qaAnchors(L) {
   const a = L.anchors;
-  const tOff = (project.font && project.font.tropSideOffset) || TROP_POS_SHIFT;
+  const tOff = (project.font && project.font.tropSideOffset != null) ? project.font.tropSideOffset : TROP_POS_SHIFT;
   const withCols = o => {   // add the Left/Right trop columns (prefer the letter's own, else center ± spread)
     o.tropAboveL = (a && a.tropAboveL) || { x: o.tropAbove.x - tOff, y: o.tropAbove.y };
     o.tropAboveR = (a && a.tropAboveR) || { x: o.tropAbove.x + tOff, y: o.tropAbove.y };
