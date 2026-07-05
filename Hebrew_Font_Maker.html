@@ -3579,6 +3579,8 @@ function addCustomGlyph() {
         it.curves   = src.curves   ? JSON.parse(JSON.stringify(src.curves))   : null;
         it.advance  = src.advance; it.lsb = src.lsb; it.rsb = src.rsb;
         it.anchors  = src.anchors  ? JSON.parse(JSON.stringify(src.anchors))  : null;
+        it.handEdited = !!src.handEdited;                    // keep shape provenance: node-edit warning + outline-only trace params
+        it.outlineOnly = !!src.outlineOnly; it.lineWeight = src.lineWeight;
       }
     }
     project.letters.push(it);
@@ -8796,6 +8798,16 @@ function wireLetterChips() {
     btn.addEventListener('click', () => { closeModal(); exportJumpToLetter(btn.dataset.cp, btn.dataset.mode); });
   });
 }
+/* Pre-export check for custom glyphs: customs present but the feature toggle off → they'd silently
+   vanish from the font; a custom base with no outline → exports as a blank, cmapped glyph. */
+function customGlyphExportIssues() {
+  const bases = (project.letters || []).filter(l => l.custom);
+  const markCount = customMarkCps().length;
+  if (!bases.length && !markCount) return null;
+  if (!project.font.addCustomGlyphs) return { kind: 'off', count: bases.length + markCount };
+  const blanks = bases.filter(l => !l.contours || !l.contours.length);
+  return blanks.length ? { kind: 'blank', blanks } : null;
+}
 async function exportFont() {
   if (!project) return;
   const fmt = (document.getElementById('exportFormat') || {}).value || 'ttf';
@@ -8818,6 +8830,19 @@ async function exportFont() {
       + letterChipsHtml(coreLetterLists().unanchored, 'nikkud'),
       [ {label:'Cancel', cls:'ghost'}, {label:'Export anyway', onClick: () => doExport(fmt)} ]);
     wireLetterChips();
+    return;
+  }
+  const cg = customGlyphExportIssues();
+  if (cg && cg.kind === 'off') {
+    askModal('Custom glyphs are turned off',
+      `This project has ${cg.count} custom glyph${cg.count === 1 ? '' : 's'}/mark${cg.count === 1 ? '' : 's'}, but <b>Add custom glyphs</b> is off — they will <b>not</b> be in the exported font. Turn the toggle back on under Advanced options to include them.`,
+      [ {label:'Cancel', cls:'ghost'}, {label:'Export without them', onClick: () => doExport(fmt)} ]);
+    return;
+  }
+  if (cg && cg.kind === 'blank') {
+    askModal('Some custom glyphs are blank',
+      `${cg.blanks.length} custom glyph${cg.blanks.length === 1 ? ' has' : 's have'} no outline yet and will export <b>blank</b>: <b>${cg.blanks.map(l => escapeHtml(l.name || ('U+' + l.codepoint))).join(', ')}</b>.`,
+      [ {label:'Cancel', cls:'ghost'}, {label:'Export anyway', onClick: () => doExport(fmt)} ]);
     return;
   }
   doExport(fmt);
@@ -9604,7 +9629,7 @@ function stripImagesForAutosave(p) {
   const c = JSON.parse(JSON.stringify(p));
   if (Array.isArray(c.combinedSheets)) c.combinedSheets.forEach(s => { if (s.dataUrl) s.dataUrl = '[omitted]'; });
   c.letters.forEach(l => { if (l.source.dataUrl) l.source.dataUrl = '[omitted]'; });
-  ['nikkud','trop'].forEach(cat => {
+  ['nikkud','trop','customMarks'].forEach(cat => {
     const cm = c.font[cat] && c.font[cat].custom;
     if (cm) Object.values(cm).forEach(m => { if (m.source && m.source.dataUrl) m.source.dataUrl = '[omitted]'; });
   });
