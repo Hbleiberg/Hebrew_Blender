@@ -736,6 +736,7 @@ function exportAllSettings() {
     flashCardPresets:    lsJSON('hebrewFlashCards_presets',   {}),
     flashCardProfiles:   lsJSON('hebrewFlashCards_profiles',  {}),
     flashCardPbStreak:   localStorage.getItem('hebrewFlashCards_pbStreak') || '0',
+    flashCardSettings:   lsJSON('hebrewFlashCards_settings',  {}),
     generatorPresetFolders:   ftRead('hebrewBlender_presetsFolders'),
     dashboardPresetFolders:   ftRead('hebrewDashboard_presetsFolders'),
     dashboardScheduleFolders: ftRead('hebrewDashboard_schedulesFolders'),
@@ -779,6 +780,10 @@ async function importAllSettings() {
     if (parsed.flashCardPresets) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewFlashCards_presets') || '{}');
       localStorage.setItem('hebrewFlashCards_presets', JSON.stringify(ivritSafeAssign(existing, parsed.flashCardPresets)));
+    }
+    if (parsed.flashCardSettings) {
+      const existing = ivritSafeParse(localStorage.getItem('hebrewFlashCards_settings') || '{}');
+      localStorage.setItem('hebrewFlashCards_settings', JSON.stringify(ivritSafeAssign(existing, parsed.flashCardSettings)));
     }
     if (parsed.flashCardProfiles && parsed.flashCardProfiles.profiles) {
       mergeFlashCardProfiles(parsed.flashCardProfiles);
@@ -842,6 +847,7 @@ function eraseAllSettings() {
     'hebrewFlashCards_presets',
     'hebrewFlashCards_profiles',
     'hebrewFlashCards_pbStreak',
+    'hebrewFlashCards_settings',
     'hebrewBlender_presetsFolders',
     'hebrewDashboard_presetsFolders',
     'hebrewDashboard_schedulesFolders',
@@ -878,6 +884,7 @@ const IVRIT_CFG = {
       flashCardPresets:    lsJSON('hebrewFlashCards_presets',   {}),
       flashCardProfiles:   lsJSON('hebrewFlashCards_profiles',  {}),
       flashCardPbStreak:   localStorage.getItem('hebrewFlashCards_pbStreak') || '0',
+      flashCardSettings:   lsJSON('hebrewFlashCards_settings',  {}),
       generatorPresetFolders:   ftRead('hebrewBlender_presetsFolders'),
       dashboardPresetFolders:   ftRead('hebrewDashboard_presetsFolders'),
       dashboardScheduleFolders: ftRead('hebrewDashboard_schedulesFolders'),
@@ -905,6 +912,7 @@ const IVRIT_CFG = {
     if (data.dashboardSchedules)  { mergeObj('hebrewDashboard_schedules',     data.dashboardSchedules);  touched = true; }
     if (data.dashboardSettings)   { mergeObj('hebrewDashboard_settings',      data.dashboardSettings);   touched = true; }
     if (data.flashCardPresets)    { mergeObj('hebrewFlashCards_presets',      data.flashCardPresets);    touched = true; }
+    if (data.flashCardSettings)   { mergeObj('hebrewFlashCards_settings',     data.flashCardSettings);   touched = true; }
     if (data.flashCardProfiles && data.flashCardProfiles.profiles) { mergeFlashCardProfiles(data.flashCardProfiles, mode === 'replace'); touched = true; }
     const repl = (mode === 'replace');
     if (data.generatorPresetFolders)   { ftImportTree('hebrewBlender_presetsFolders',     data.generatorPresetFolders,   repl); touched = true; }
