@@ -2148,7 +2148,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '2.8';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '2.9';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2360,6 +2360,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v2.9</strong> — The <strong>Place Nikkud / Trop</strong> panel now says what each control affects. Sections are grouped by scope — “<strong>Qamats — every letter</strong>” for a vowel's Height &amp; shape, “<strong>Below position — Alef only</strong>” for this letter's X / Y — with a short plain-language line under each, replacing one long confusing paragraph. The <strong>size sliders</strong> under the canvas now sit <strong>side-by-side</strong> with dividers, so they take one tidy row instead of a stack. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v2.8</strong> — The <strong>Place Nikkud / Trop</strong> step is tidier and works the way you'd expect. A letter's placement controls — the <strong>size sliders</strong> and the <strong>✓ Confirm placement</strong> / <strong>Reset</strong> buttons — are now grouped <strong>right below the canvas</strong> (which fills the width), so nothing's stranded in a far-off strip. The above-mark picker now only offers marks that fit the letter (the <strong>shin/sin dots</strong> show up only on <strong>Shin</strong>), and picking any mark — Holam, Shin dot, Sin dot, or <strong>Rafe</strong> — now actually previews it on the canvas (Rafe used to do nothing). <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v2.7</strong> — The <strong>mark size</strong> sliders are now <strong>undoable</strong> (Ctrl/Cmd+Z). Resizing the <strong>Nikkud</strong>, <strong>Holam</strong>, <strong>Dagesh</strong>, <strong>Holam&nbsp;(vav)</strong>, or <strong>Trop</strong> marks and changing your mind now puts them right back — one undo step per slider drag, just like every other placement change. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v2.6</strong> — The <strong>Place Nikkud</strong> step for a wide letterform now makes sense: it <strong>previews the vowel</strong> right on the stretched form (where it will actually sit) and gives you a one-click <strong>“Edit nikkud on …”</strong> jump to the base letter, since a wide form's vowels follow the base — no more empty screen or a “drag the handle” hint with nothing to drag. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -7334,18 +7335,20 @@ function renderAnchorLeft(L, l) {
   let grid = '';
   const editBtn = cp => `<button class="ctl-btn" title="Redesign this mark's shape from dots & bars (or an image), then apply it to this letter or all letters" onclick="openMarkEdit('nikkud','${cp}')">✎ Edit shape</button>`;
   if (cls === 'below') {
-    const ndy = markNudgeDy(activeBelowVowel);
+    const ndy = markNudgeDy(activeBelowVowel), vName = markName(activeBelowVowel);
     grid = `<div class="ws-side-title">Preview under-vowel</div>
       <div class="mark-grid2">` + BELOW_VOWELS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeBelowVowel, 'setBelowVowel', l)).join('') + `</div>
+      <hr class="ctl-divider">
+      <div class="ws-side-title">${esc(vName)} — every letter</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;">
         <span style="font-size:0.72rem;color:var(--muted);">Height</span>
-        <button class="ctl-btn" title="Raise this vowel" onclick="nudgeActiveVowel(10)">▲</button>
-        <button class="ctl-btn" title="Lower this vowel" onclick="nudgeActiveVowel(-10)">▼</button>
+        <button class="ctl-btn" title="Raise this vowel on every letter" onclick="nudgeActiveVowel(10)">▲</button>
+        <button class="ctl-btn" title="Lower this vowel on every letter" onclick="nudgeActiveVowel(-10)">▼</button>
         <span id="vowelNudgeV" class="readout">${ndy>0?'+':''}${ndy}</span>
         <button class="ctl-btn" title="Reset this vowel's height" onclick="setMarkNudge(activeVowelCp(),0)">⟲</button>
+        ${editBtn(activeBelowVowel)}
       </div>
-      <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(activeBelowVowel)}</div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">Height fine-tunes just the selected vowel on every letter; the <b>Below position</b> X / Y below moves <i>all</i> under-vowels at once. <b>Edit shape</b> redesigns the selected vowel's dots &amp; bars.</div>`;
+      <div class="hint" style="font-size:0.6rem;text-align:center;">Height raises or lowers just ${esc(vName)} — on <b>every letter</b>. <b>Edit shape</b> redesigns its dots &amp; bars.</div>`;
   } else if (cls === 'above') {
     const aboveMarks = ABOVE_MARKS.filter(v => aboveMarkApplies(v.cp, l));   // hide Shin-only dots on non-Shin letters
     const curAbove = aboveMarkFor(l);
@@ -7366,18 +7369,20 @@ function renderAnchorLeft(L, l) {
     const tNdy = markNudgeDy(activeTropCp);
     grid = `<div class="ws-side-title">Preview trop</div>
       <div class="mark-grid2">` + TROP_MARKS.filter(m => m.cls === want).map(m => squareMarkBtn('trop', m.cp, m.name, activeTropCp, 'setTropCp')).join('') + `</div>
+      <hr class="ctl-divider">
+      <div class="ws-side-title">${tName} — every letter</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;">
         <span style="font-size:0.72rem;color:var(--muted);">Height</span>
-        <button class="ctl-btn" title="Raise this mark" onclick="nudgeActiveVowel(10)">▲</button>
-        <button class="ctl-btn" title="Lower this mark" onclick="nudgeActiveVowel(-10)">▼</button>
+        <button class="ctl-btn" title="Raise this mark on every letter" onclick="nudgeActiveVowel(10)">▲</button>
+        <button class="ctl-btn" title="Lower this mark on every letter" onclick="nudgeActiveVowel(-10)">▼</button>
         <span id="vowelNudgeV" class="readout">${tNdy>0?'+':''}${tNdy}</span>
         <button class="ctl-btn" title="Reset this mark's height" onclick="setMarkNudge(activeVowelCp(),0)">⟲</button>
       </div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">Height fine-tunes just <b>${tName}</b> on every letter — e.g. to separate two marks sharing a side; drag or X / Y moves this letter's whole column.</div>
-      <hr class="ctl-divider">
-      <div class="ws-side-title">Horizontal — ${tName}</div>
-      <div class="ctl-row">${halignBtns}</div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">Sets where <b>${tName}</b> sits across <i>every</i> letter. Drag the mark (or edit X / Y below) to fine-tune just this letter. Position tweaks belong to the column (Left / Center / Right) — and stay with it if you switch sides.</div>
+      <div class="hint" style="font-size:0.6rem;text-align:center;">Raises or lowers just <b>${tName}</b> on every letter — e.g. to separate two marks sharing a side.</div>
+      <div class="ctl-row" style="margin-top:6px;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;">
+        <span style="font-size:0.72rem;color:var(--muted);">Horizontal</span>${halignBtns}
+      </div>
+      <div class="hint" style="font-size:0.6rem;text-align:center;">Sets where <b>${tName}</b> sits across every letter. Position tweaks belong to the column (Left / Center / Right) — and stay with it if you switch sides.</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;gap:6px;">
         <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">Default spread</span>
         <input type="range" id="tropSpread" min="0" max="500" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" onchange="udBurstCommit();renderControls()" style="flex:1;">
@@ -7388,8 +7393,9 @@ function renderAnchorLeft(L, l) {
       <div class="hint" style="font-size:0.6rem;text-align:center;color:var(--gold);">${nCustom} letter${nCustom === 1 ? "'s" : "s'"} hand-tuned side positions kept — the slider only moves columns still at the default.</div>
       <div class="ctl-row" style="justify-content:center;margin-top:2px;"><button class="ctl-btn" onclick="resetTropSideColumns()" title="Re-seed every letter's Left/Right columns from its center ± spread (undoable)">Reset all side positions</button></div>` : '')(tropCustomSideCount())}`;
   }
+  const xyWhat = cls === 'below' ? 'all under-vowels' : cls === 'above' ? 'the above mark' : cls === 'center' ? 'the dagesh' : "this mark's column";
   const xy = `<hr class="ctl-divider">
-    <div class="ws-side-title">${ANCHOR_LABEL[cls]} position</div>
+    <div class="ws-side-title">${ANCHOR_LABEL[cls]} position — ${esc(l.name)} only</div>
     <div class="anc-xy">
       <label>X <input type="number" id="ancX" value="${a.x}" oninput="setAnchorCoord('x',this.value)" onchange="udBurstCommit()"></label>
       <label>Y <input type="number" id="ancY" value="${a.y}" oninput="setAnchorCoord('y',this.value)" onchange="udBurstCommit()"></label>
@@ -7397,7 +7403,8 @@ function renderAnchorLeft(L, l) {
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
       <button class="ctl-btn" onclick="centerAnchorH()" title="Center horizontally — halfway between the left and right margins">Center ↔</button>
       <button class="ctl-btn" onclick="centerAnchorV()" title="Center vertically — halfway between the top and base lines">Center ↕</button>
-    </div>`;
+    </div>
+    <div class="hint" style="font-size:0.6rem;text-align:center;margin-top:5px;">Moves ${xyWhat} on <b>${esc(l.name)}</b> only.</div>`;
   let coRow = '';
   if (l.anchors) {   // "Check stacking" — preview a 2nd (nikkud) mark on this letter + warn on overlap (Babylonian all-above / two-vowel letters; on trop classes: trop-vs-vowel clashes like holam under a Left-above mark)
     const acp = activeVowelCp();
