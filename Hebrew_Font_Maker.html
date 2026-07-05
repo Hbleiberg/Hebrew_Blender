@@ -2131,7 +2131,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '2.4';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '2.5';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2343,6 +2343,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v2.5</strong> — Stretching a wide letterform no longer runs it <strong>off the edge of the canvas</strong> — the workspace now widens to fit the whole composed glyph (and its right margin) at any Width, right up to 250%. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v2.4</strong> — Wide letterforms &amp; digraphs: the <strong>margin bands and width line</strong> on the canvas now outline the <strong>composed form</strong> — not its base letter — so they sit at the real edges of a digraph and <strong>follow the Width slider live</strong> as you stretch. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v2.3</strong> — <strong>Trop placement</strong> is safer and finer-grained. The <strong>Default spread</strong> slider no longer wipes out your hand-tuned Left/Right positions — letters you've adjusted keep their spots (with a note showing how many, and a <strong>Reset all side positions</strong> button when you really want a clean slate). A spread of <strong>0</strong> now sticks everywhere instead of quietly snapping back to the default. Every trop layout change — the spread, a mark's <strong>Left / Center / Right</strong> switch, and the new per-mark <strong>Height</strong> nudge — is now fully <strong>undoable</strong> (Ctrl/Cmd+Z). That Height row lets you raise or lower <em>one</em> trop mark on every letter, so two marks sharing a side (like Pashta and Telisha Qetana) no longer collide. And <strong>Check stacking</strong> now works while placing trop, too — preview a vowel in grey and get an instant overlap warning. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v2.2</strong> — <strong>Wide letters, Yiddish forms &amp; custom glyphs</strong> got a big reliability pass. Nikkud and trop now attach <strong>correctly to wide letterforms and digraphs in the exported font</strong> (they used to slide to the left edge), wide forms export with <strong>smooth curves</strong> instead of chunky outlines, and a digraph's width no longer double-counts your letter spacing. The Specialized / Yiddish / Ladino tiles now show a <strong>live preview built from your own letters</strong> — including the Width slider's stretch — and clicking a form whose base isn't traced yet jumps you straight to tracing it. The <strong>Quality check now covers custom glyphs and custom marks</strong>, custom glyphs can be picked in <strong>kerning</strong> and added to the <strong>spacing sample</strong> with one click, and a custom glyph at a form's code point is <strong>protected from being overwritten</strong> at export (with a clear note on the tile). Export also warns if custom glyphs are blank or the custom-glyphs toggle is off. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -4335,7 +4336,7 @@ function stageColors() {
     top:'#3b6ea5', base:'#888', desc:'#a55', margin:'#c99', marginTxt:'#a05a5a'
   };
 }
-function guideLinesSVG() {
+function guideLinesSVG(rightX) {   // rightX (stage px): extend the reference lines under a wide form so they span its full width
   const meta = curMeta();
   const C = stageColors();
   const m = effMetrics();
@@ -4343,11 +4344,12 @@ function guideLinesSVG() {
   const lines = [ [m.letterTop, 'top ' + m.letterTop, C.top], [m.baseline, 'base ' + m.baseline, C.base] ];
   if (meta && meta.desc) lines.push([m.descender, 'desc ' + m.descender, C.desc]);
   if (meta && meta.asc)  lines.push([m.lamedAscender, 'lamed ' + m.lamedAscender, C.top]);
+  const x2 = (rightX != null && rightX > 498) ? Math.round(rightX) : 498;
   let h = '';
   lines.forEach(([yv, label, col]) => {
     const y = fy(yv);
-    h += `<line x1="35" y1="${y}" x2="498" y2="${y}" stroke="${col}" stroke-width="1" stroke-dasharray="${yv===0?'':'5 4'}" pointer-events="none"/>`;
-    h += `<text x="502" y="${y+3.5}" fill="${col}" font-size="10" font-family="monospace" pointer-events="none">${label}</text>`;
+    h += `<line x1="35" y1="${y}" x2="${x2}" y2="${y}" stroke="${col}" stroke-width="1" stroke-dasharray="${yv===0?'':'5 4'}" pointer-events="none"/>`;
+    h += `<text x="${x2+4}" y="${y+3.5}" fill="${col}" font-size="10" font-family="monospace" pointer-events="none">${label}</text>`;
   });
   return h;
 }
@@ -4794,6 +4796,7 @@ function contoursToPath(contours, curves) {
 }
 async function renderStage() {
   const sv = stage(); if (!project) return;
+  sv.setAttribute('viewBox', `${STAGE_VB.x} ${STAGE_VB.y} ${STAGE_VB.w} ${STAGE_VB.h}`);   // default window; the wide-form tail widens it so a stretched form isn't clipped
   const l = curLetter();
   updateTabs();
   if (curKind !== 'letter') { renderMarkStage(l); return; }   // marks have their own workspace
@@ -4858,19 +4861,25 @@ async function renderStage() {
   }
   // Guide overlays draw on top of the image (all pointer-events:none) so the dashed
   // lines, capture box and margins stay visible even where dark ink covers them.
-  h += guideLinesSVG();
+  // Wide-form context: the margins/width and the reference lines must describe the COMPOSED glyph
+  // (and follow the Width slider), and a stretched form can run past the default stage window.
+  const wpcM = (workMode === 'anchors' && precompTarget) ? getPrecomp(precompTarget) : null;
+  const wg = isWideForm(wpcM) ? buildWideGlyph(wpcM) : null;
+  const wideRight = wg ? fx(wg.advance) : null;   // stage-x of the composed form's right edge
+  h += guideLinesSVG(wideRight);                   // extend the top/base reference lines under a wide form
   if (workMode !== 'anchors') {
     const cb = captureBoxFont(l);
     const x = fx(cb.x0), y = fy(cb.y1), w = fx(cb.x1)-fx(cb.x0), ht = fy(cb.y0)-fy(cb.y1);
     h += `<rect x="${x}" y="${y}" width="${w}" height="${ht}" fill="none" stroke="var(--gold)" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.8" pointer-events="none"/>`;
   }
-  // margins/width on top so the right side bearing shows over the glyph. In the wide-form editor the
-  // guides must describe the COMPOSED glyph (and follow the Width slider), not the base letter.
-  const wpcM = (workMode === 'anchors' && precompTarget) ? getPrecomp(precompTarget) : null;
-  if (isWideForm(wpcM)) { const wg = buildWideGlyph(wpcM); if (wg) h += wideFormGuidesSVG(wg); }
+  // margins/width on top so the right side bearing shows over the glyph.
+  if (wg) h += wideFormGuidesSVG(wg);
   else h += marginGuidesSVG();
   h += userGuidesSVG();     // user-defined persistent guides (drawn on top; their handles are draggable)
   if (workMode === 'align' && metricAdjust) h += metricHandlesSVG();   // draggable metric guide dots
+  // A stretched wide form can exceed the default stage window — widen the viewBox so the whole
+  // composed glyph + its right margin/width line fit (the stage height is auto, so the box reshapes).
+  if (wideRight != null) sv.setAttribute('viewBox', `${STAGE_VB.x} ${STAGE_VB.y} ${Math.max(STAGE_VB.w, Math.round(wideRight + 52 - STAGE_VB.x))} ${STAGE_VB.h}`);
   sv.innerHTML = h;
   attachGuideDrag();   // user guides are draggable in every letter-editing mode (no-op when none)
   if (workMode === 'align' && url) attachTransformDrag(l);   // image drag always available; metric dots (drawn on top) capture their own grabs
