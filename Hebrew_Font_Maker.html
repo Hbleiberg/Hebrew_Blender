@@ -5900,9 +5900,12 @@ let activeAboveMark = '05B9';
 let activeCenterMark = '05BC';
 let activeTropCp = '0597';
 let coPreviewCp = null;   // Place-Nikkud "check stacking" — a 2nd mark previewed (grey ghost) on the current letter
+// Shin dot / Sin dot only distinguish שׁ/שׂ, so they apply only to Shin (05E9); Holam & Rafe are general.
+function aboveMarkApplies(cp, l) { return (cp !== '05C1' && cp !== '05C2') || (!!l && l.codepoint === '05E9'); }
+function aboveMarkFor(l) { return aboveMarkApplies(activeAboveMark, l) ? activeAboveMark : '05B9'; }
 function activeVowelCp() {
   switch (activeAnchorClass) {
-    case 'above': return '05B9';        // holam
+    case 'above': return aboveMarkFor(curLetter());   // preview the SELECTED above-mark (holam/shin-dot/sin-dot/rafe), not always holam
     case 'center': return '05BC';       // dagesh
     case 'tropAbove': case 'tropBelow': return activeTropCp;
     default: return activeBelowVowel;
@@ -7331,10 +7334,12 @@ function renderAnchorLeft(L, l) {
       <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(activeBelowVowel)}</div>
       <div class="hint" style="font-size:0.6rem;text-align:center;">Height fine-tunes just the selected vowel on every letter; the <b>Below position</b> X / Y below moves <i>all</i> under-vowels at once. <b>Edit shape</b> redesigns the selected vowel's dots &amp; bars.</div>`;
   } else if (cls === 'above') {
+    const aboveMarks = ABOVE_MARKS.filter(v => aboveMarkApplies(v.cp, l));   // hide Shin-only dots on non-Shin letters
+    const curAbove = aboveMarkFor(l);
     grid = `<div class="ws-side-title">Preview above-mark</div>
-      <div class="mark-grid2">` + ABOVE_MARKS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeAboveMark, 'setAboveMark', l)).join('') + `</div>
-      <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(activeAboveMark)}</div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">The holam dot and the shin/sin dots sit above the letter. <b>Edit shape</b> redesigns the selected mark.</div>`;
+      <div class="mark-grid2">` + aboveMarks.map(v => squareMarkBtn('nikkud', v.cp, v.name, curAbove, 'setAboveMark', l)).join('') + `</div>
+      <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(curAbove)}</div>
+      <div class="hint" style="font-size:0.6rem;text-align:center;">${l.codepoint === '05E9' ? 'The holam dot and the shin/sin dots sit above the letter.' : 'The holam dot and rafe sit above the letter.'} <b>Edit shape</b> redesigns the selected mark.</div>`;
   } else if (cls === 'center') {
     grid = `<div class="ws-side-title">Preview center mark</div>
       <div class="mark-grid2">` + CENTER_MARKS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeCenterMark, 'setCenterMark', l)).join('') + `</div>
