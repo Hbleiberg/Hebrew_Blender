@@ -1347,18 +1347,36 @@ function buildWideGlyph(pc) {
   const bases = pc.bases || [pc.base];
   const Ls = bases.map(cp => project.letters.find(x => x.codepoint === cp));
   if (Ls.some(L => !L || !L.contours)) return null;
-  const advs = Ls.map(effLetterAdvance);
+  const advs = Ls.map(letterAdvance);      // raw advances — the composed form is ONE glyph, so global letter-spacing is added once at the end, never per base and never stretched
   const total = advs.reduce((a, b) => a + b, 0);
-  let polys = [], x = total;               // RTL: the first (logical) base sits on the RIGHT, e.g. vav-yud ױ = yud · vav
+  let polys = [], x = total, offsets = []; // RTL: the first (logical) base sits on the RIGHT, e.g. vav-yud ױ = yud · vav
   Ls.forEach((L, i) => {
     x -= advs[i];
+    offsets.push(x);                       // base i's x shift inside the composed glyph (pre-scale) — the FEA anchor math maps through this
     L.contours.forEach(c => polys.push(c.points.map(([px, py]) => [px + x, py])));
   });
   const w = precompWidthScale(pc);
   let minX = 1e9; polys.forEach(poly => poly.forEach(p => { if (p[0] < minX) minX = p[0]; }));
   if (minX === 1e9) minX = 0;
   const contours = polys.map(poly => poly.map(([px, py]) => [wideX(px, minX, w), py]));
-  return { contours, advance: Math.round(total * w), minX, widthScale: w };
+  // Map the fitted Béziers through the same shift+scale (linear in X, so control points map exactly);
+  // kept 1:1 with the composed contours (null entry = polygon), null overall when no base has curves.
+  let curves = [], anyCurve = false;
+  Ls.forEach((L, i) => {
+    const ok = L.curves && L.curves.length === L.contours.length;
+    const tx = px => wideX(px + offsets[i], minX, w);
+    L.contours.forEach((c, j) => {
+      const cv = ok ? L.curves[j] : null;
+      if (!cv) { curves.push(null); return; }
+      anyCurve = true;
+      curves.push({ winding: cv.winding, start: [tx(cv.start[0]), cv.start[1]],
+        segments: cv.segments.map(s => ({ type: s.type, pts: s.pts.map(p => [tx(p[0]), p[1]]) })) });
+    });
+  });
+  if (!anyCurve) curves = null;
+  return { contours, curves, advance: Math.max(50, Math.round(total * w) + fontSpacing().letterSpacing),
+           minX, widthScale: w, offsets,
+           lsb: (Ls.length === 1 && Ls[0].lsb != null) ? Ls[0].lsb : null };
 }
 
 /* ── English (Latin) letters — A–Z and a–z, added on demand via the "Add English letters" advanced toggle.
@@ -4737,7 +4755,7 @@ async function renderStage() {
     const wideMode = isWideForm(pcW);
     if (wideMode) {
       const g = buildWideGlyph(pcW);   // live: shows the widened/combined outline as the slider moves
-      if (g) h += `<path d="${contoursToPath(g.contours.map(pts => ({ points: pts })))}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
+      if (g) h += `<path d="${contoursToPath(g.contours.map(pts => ({ points: pts })), g.curves)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
       else h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="12">Trace the base letter(s) first to preview this form.</text>`;
     } else if (l.contours) h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
     if (l.contours || project.template.showOverlay) {
@@ -7547,7 +7565,7 @@ function qaSynthWideRow(pc) {
                     tropAboveL: mapPt(baseAnc.tropAboveL), tropAboveR: mapPt(baseAnc.tropAboveR),
                     tropBelowL: mapPt(baseAnc.tropBelowL), tropBelowR: mapPt(baseAnc.tropBelowR) };
   const meta = letterMeta(baseCp);
-  const L = Object.assign({}, base, { anchors, curves: null, advance: g.advance, contours: g.contours.map(p => ({ points: p })) });
+  const L = Object.assign({}, base, { anchors, curves: g.curves, advance: g.advance, contours: g.contours.map(p => ({ points: p })) });
   return { cp: baseCp, name: pc.name || precompName(pc), labelCh: qaCh(pc.target), desc: meta ? meta.desc : false, L };
 }
 /* Will a composed form bake? base(s) traced, and (base+mark) the mark anchor resolves — mirrors
@@ -8080,13 +8098,16 @@ function buildFontSpec() {
 
   // wide letterforms & digraphs (Specialized / Yiddish tabs): widen / lay out the traced base(s), no mark.
   // cmap-only (no ccmp) — these are inserted by their own code point, not auto-substituted from a sequence.
+  const builtWide = [];   // {pc, g} for each wide form actually baked — buildFEA emits its mark-attachment anchors
   (project.precomposed || []).forEach(pc => {
     if (!isWideForm(pc) || !precompExportable(pc)) return;
     const g = buildWideGlyph(pc); if (!g) return;                   // skip until the base letter(s) are traced
     const nm = gname(pc.target);
-    glyphs[nm] = { contours: g.contours, advance: g.advance };
+    glyphs[nm] = { contours: g.contours, advance: g.advance, lsb: g.lsb };
+    if (g.curves) glyphs[nm].curves = g.curves;
     if (!glyphOrder.includes(nm)) { glyphOrder.push(nm); baseGlyphNames.push(nm); }
     cmap[parseInt(pc.target,16)] = nm;
+    builtWide.push({ pc, g });
   });
 
   // precomposed accented Latin letters (á, é, ñ, ç…): bake base + accent at the placed anchor — glyphs + cmap only (no ccmp/GPOS)
@@ -8119,7 +8140,7 @@ function buildFontSpec() {
   });
 
   // FEA
-  const fea = buildFEA(baseGlyphNames, built, nikOn, tropOn, builtPerLetter);
+  const fea = buildFEA(baseGlyphNames, built, nikOn, tropOn, builtPerLetter, builtWide);
 
   // name table
   const fam = fnt.familyName || 'My Hebrew Hand';
@@ -8152,8 +8173,9 @@ function buildFontSpec() {
 }
 /* Generate the Adobe .fea — `languagesystem hebr dflt;`, markClass, ccmp, mark-to-base, mkmk, GDEF.
    Nikkud blocks emit only when nikOn; trop blocks only when tropOn. A letters-only font skips both. */
-function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLetter) {
+function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLetter, builtWide) {
   builtPerLetter = builtPerLetter || [];
+  builtWide = builtWide || [];
   let f = '';
   f += 'languagesystem DFLT dflt;\n';
   f += 'languagesystem hebr dflt;\n\n';
@@ -8227,6 +8249,22 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
   builtPrecomposed.forEach(pc => emitBaseAnchors(gname(pc.target), project.letters.find(x => x.codepoint === pc.base), MARK_CLASS[pc.mark]));
   // per-letter baked glyphs are new bases too — a vowel/trop typed after one must still attach (skip the mark's own class)
   builtPerLetter.forEach(pc => emitBaseAnchors(pc.glyphName, project.letters.find(x => x.codepoint === pc.base), pc.cls));
+  // Wide letterforms & digraphs are new bases too — a vowel/trop typed after one must attach to the
+  // WIDENED outline, not fall to x=0. Reuse the donor base letter's anchors mapped through the exact
+  // ink transform buildWideGlyph applied (per-base x offset, then wideX about the composed ink-left) —
+  // the same math qaSynthWideRow uses, so the QA grid and the exported font agree. For digraphs the
+  // donor is the logically-LAST base (drawn leftmost, offset 0), since the mark follows the digraph char.
+  builtWide.forEach(bw => {
+    const pc = bw.pc, g = bw.g, bases = pc.bases || [pc.base];
+    const donor = project.letters.find(x => x.codepoint === bases[bases.length - 1]); if (!donor) return;
+    seedAnchorsIfNeeded(donor); if (!donor.anchors) return;
+    if (tropMarks.length) ensureTropAnchors(donor);                 // fill trop L/C/R on the donor BEFORE mapping, so every key maps
+    const off = (g.offsets && g.offsets.length) ? g.offsets[g.offsets.length - 1] : 0;
+    const mapA = a => a ? { x: wideX(a.x + off, g.minX, g.widthScale), y: a.y } : a;
+    const anchors = {};
+    Object.keys(donor.anchors).forEach(k => { anchors[k] = mapA(donor.anchors[k]); });
+    emitBaseAnchors(gname(pc.target), Object.assign({}, donor, { anchors }));   // no skipCls — wide forms carry no baked mark
+  });
   if (markLines) f += 'feature mark {\n' + markLines + '} mark;\n\n';
   // ── mark-to-mark — stack trop above/below a nikkud vowel (only when both categories are on) ──
   if (nikOn && tropMarks.length) {
