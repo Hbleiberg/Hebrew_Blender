@@ -5910,8 +5910,7 @@ function anchorHandlesSVG(l) {
   const cp = activeVowelCp();
   const col = ANCHOR_COL[cls] || 'var(--below)';
   let h = '';
-  const isTropCls = cls === 'tropAbove' || cls === 'tropBelow';
-  if (coPreviewCp && !isTropCls && l.anchors[MARK_CLASS[coPreviewCp]]) {   // grey ghost of the 2nd mark for the stacking-clash check (non-interactive)
+  if (coPreviewCp && l.anchors[MARK_CLASS[coPreviewCp]]) {   // grey ghost of the 2nd mark for the stacking-clash check (non-interactive; on trop classes too — trop-vs-vowel clashes are the common real-world failure)
     const ga = l.anchors[MARK_CLASS[coPreviewCp]];
     h += `<path d="${markPreviewPath(coPreviewCp, ga.x, ga.y)}" fill="#888" fill-opacity="0.55"/>`;
   }
@@ -7299,12 +7298,13 @@ function renderAnchorLeft(L, l) {
       <button class="ctl-btn" onclick="centerAnchorV()" title="Center vertically — halfway between the top and base lines">Center ↕</button>
     </div>`;
   let coRow = '';
-  if (!isTrop && l.anchors) {   // "Check stacking" — preview a 2nd mark on this letter + warn on overlap (Babylonian all-above / two-vowel letters)
+  if (l.anchors) {   // "Check stacking" — preview a 2nd (nikkud) mark on this letter + warn on overlap (Babylonian all-above / two-vowel letters; on trop classes: trop-vs-vowel clashes like holam under a Left-above mark)
     const acp = activeVowelCp();
     const opts = `<option value="">(none)</option>` + MARK_CPS.filter(cp => cp !== acp).map(cp => `<option value="${cp}"${cp===coPreviewCp?' selected':''}>${escapeHtml(markName(cp))}</option>`).join('');
     let warn = '';
     if (coPreviewCp && l.anchors[MARK_CLASS[coPreviewCp]]) {
-      const pa = qaPlace(l.anchors[activeAnchorKey()], 'nikkud', acp, nikScale(acp), l);
+      const pa = isTrop ? qaPlace(l.anchors[activeAnchorKey()], 'trop', acp, tropScale(), l)
+                        : qaPlace(l.anchors[activeAnchorKey()], 'nikkud', acp, nikScale(acp), l);
       const pc = qaPlace(l.anchors[MARK_CLASS[coPreviewCp]], 'nikkud', coPreviewCp, nikScale(coPreviewCp), l);
       warn = markPolysOverlap(pa, pc, QA_OVERLAP_TOL)
         ? `<div class="hint" style="font-size:0.64rem;color:#c0392b;font-weight:600;">⚠ ${escapeHtml(markName(coPreviewCp))} overlaps ${escapeHtml(markName(acp))} on this letter.</div>`
