@@ -3513,6 +3513,15 @@ function renderYiddishPanel()      { renderFormPanel('yiddishPanelBody', YIDDISH
 function renderLadinoPanel()       { renderFormPanel('ladinoPanelBody', LADINO_TARGETS, 'Ladino (Judeo-Spanish) forms: each base letter with the rafe / varika bar, composed from your traced letters.'); }
 function pickPrecompForm(target) {
   const pc = getPrecomp(target); if (!pc) return;
+  // A form can't be composed until EVERY base is traced (digraphs need both) — instead of opening a
+  // dead-end editor, jump to the first untraced base so the user can trace it, and say why.
+  const untraced = (pc.bases || [pc.base]).find(cp => { const L = project.letters.find(x => x.codepoint === cp); return !(L && L.contours); });
+  if (untraced) {
+    const nm = (letterMeta(untraced) && letterMeta(untraced).name) || ('U+' + untraced);
+    selectItem('letter', untraced);
+    status('Trace ' + nm + ' first — it builds ' + precompName(pc) + '. Jumped there.');
+    return;
+  }
   curKind = 'letter'; curCp = precompBaseCp(pc); precompTarget = target;
   if (workMode !== 'anchors') { anchorCat = 'nikkud'; activeAnchorClass = 'below'; }
   _setWorkMode('anchors');     // shows the canvas + form editor; 'anchors' keeps precompTarget set
@@ -6003,6 +6012,13 @@ function resetPrecompWidth() {
 function renderWideFormControls(pc) {
   const wPct = Math.round(precompWidthScale(pc) * 100), isOver = (pc.widthScale != null);
   const bases = (pc.bases || [pc.base]).map(cp => { const L = project.letters.find(x => x.codepoint === cp); return L ? (L.name || cp) : cp; });
+  if (!buildWideGlyph(pc)) {   // a base lost its trace while the editor was open — no slider for an unbuildable form
+    const need = (pc.bases || [pc.base]).filter(cp => { const L = project.letters.find(x => x.codepoint === cp); return !(L && L.contours); })
+      .map(cp => (letterMeta(cp) && letterMeta(cp).name) || ('U+' + cp));
+    return `<div class="ws-side-title">${escapeHtml(precompName(pc))}</div>
+      <div class="hint">Trace ${need.map(escapeHtml).join(' and ')} first — this form is auto-composed from ${bases.map(escapeHtml).join(' + ')}.</div>
+      <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">← Back</button>`;
+  }
   return `<div class="ws-side-title">${escapeHtml(precompName(pc))}</div>
     <div class="hint" style="font-size:0.66rem;">Auto-composed from your traced ${bases.map(escapeHtml).join(' + ')}. The <b>Width</b> slider both adds side space and stretches the outline — saved automatically.</div>
     <hr class="ctl-divider">
