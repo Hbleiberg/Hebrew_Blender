@@ -1739,13 +1739,23 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <label class="toggle"><input type="checkbox" id="showStudentPickerFullscreen"><span class="slider"></span></label>
     </div>
     <hr>
+    <div class="form-row" style="flex-direction:column;align-items:stretch;gap:6px;">
+      <label for="pickerClassSel">Class</label>
+      <div style="display:flex;gap:5px;align-items:center;">
+        <select id="pickerClassSel" onchange="switchClass(this.value)" style="flex:1;min-width:0;max-width:none;"></select>
+        <button type="button" class="btn-xs" title="New class" onclick="newClass()">➕</button>
+        <button type="button" class="btn-xs" title="Rename class" onclick="renameClass()">✏️</button>
+        <button type="button" class="btn-xs" title="Delete class" onclick="deleteClass()">🗑</button>
+      </div>
+      <span id="pickerClassNote" style="font-size:0.72rem;color:var(--gold);display:none;"></span>
+    </div>
     <div class="form-row" style="flex-direction:column;align-items:stretch;gap:4px;">
-      <label for="pickerRoster">Class roster — one name per line</label>
-      <textarea id="pickerRoster" rows="6" placeholder="Ava&#10;Noah&#10;&#1491;&#1464;&#1493;&#1460;&#1491;&#10;&#1502;&#1463;&#1497;&#1464;&#1492;" style="width:100%;resize:vertical;font-family:inherit;"></textarea>
+      <label for="pickerRoster" id="pickerRosterLabel">Roster — one name per line</label>
+      <textarea id="pickerRoster" rows="6" placeholder="e.g. Ava&#10;Noah&#10;&#1491;&#1464;&#1493;&#1460;&#1491;&#10;&#1502;&#1463;&#1497;&#1464;&#1492;" style="width:100%;resize:vertical;font-family:inherit;"></textarea>
       <span id="pickerRosterCount" style="font-size:0.72rem;color:var(--muted);">0 names</span>
     </div>
     <div class="form-row" id="pickerRosterHint" style="margin-top:2px;">
-      <span style="font-size:0.78rem;color:var(--muted);font-style:italic;">Each preset stores its own roster, so Schedule Sync swaps the class list automatically as periods change.</span>
+      <span style="font-size:0.78rem;color:var(--muted);font-style:italic;">Presets and Schedule Sync remember which class is active — rosters themselves are shared, so editing a list updates it everywhere.</span>
     </div>
     <hr>
     <div class="form-row">
@@ -3604,6 +3614,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     if (gmRadio) gmRadio.checked = true;
     updateGroupNLabel();
     updatePickerRosterCount();
+    renderClassManager();
     document.querySelector(`input[name="engDateFmt"][value="${settings.engDateFmt}"]`).checked = true;
     $('showEngDOW').checked = settings.showEngDOW;
     $('hideEngDate').checked = settings.hideEngDate;
@@ -4022,9 +4033,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
     return true;
   }
-  function uniqueClassName(base) {
+  function uniqueClassName(base, excludeId) {
     base = (String(base || '').trim()) || 'Imported class';
-    const taken = Object.values(settings.rosters || {}).map(c => c && c.name);
+    const taken = Object.keys(settings.rosters || {})
+      .filter(id => id !== excludeId)
+      .map(id => settings.rosters[id] && settings.rosters[id].name);
     if (!taken.includes(base)) return base;
     let i = 2;
     while (taken.includes(base + ' ' + i)) i++;
@@ -4106,6 +4119,75 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     updatePickerRosterCount();
     renderStudentPicker();
     saveSettingsToStorage();
+  }
+
+  // ── Class manager (settings drawer + shared with the card/fullscreen switchers) ──
+  function classOptionsHTML(selectedId) {
+    ensureActiveClass();
+    return Object.keys(settings.rosters).map(id => {
+      const c = settings.rosters[id];
+      const n = (c.names || []).length;
+      return `<option value="${esc(id)}"${id === selectedId ? ' selected' : ''}>${esc(c.name)} (${n})</option>`;
+    }).join('');
+  }
+  function pickerClassNote(msg) {
+    const el = document.getElementById('pickerClassNote');
+    if (!el) return;
+    el.textContent = msg || '';
+    el.style.display = msg ? '' : 'none';
+  }
+  // Repaint the drawer class row + labeled roster textarea for the active class.
+  function renderClassManager() {
+    const sel = document.getElementById('pickerClassSel');
+    if (!sel) return;
+    ensureActiveClass();
+    sel.innerHTML = classOptionsHTML(settings.activeRosterId);
+    sel.value = settings.activeRosterId;
+    const lbl = document.getElementById('pickerRosterLabel');
+    if (lbl) lbl.textContent = `Roster for ${curClass().name} — one name per line`;
+    const ta = document.getElementById('pickerRoster');
+    if (ta) ta.value = (curClass().names || []).join('\n');
+    updatePickerRosterCount();
+  }
+  // Central class-switch used by the drawer, card-header and fullscreen selects.
+  function switchClass(id) {
+    if (!settings.rosters[id]) return;
+    settings.activeRosterId = id;
+    saveSettingsToStorage();
+    pickerClassNote('');
+    renderClassManager();
+    renderStudentPicker();
+    if (typeof renderClassSwitchers === 'function') renderClassSwitchers();
+    if (typeof updateColTitles === 'function') updateColTitles();
+  }
+  function newClass() {
+    if (Object.keys(settings.rosters).length >= ROSTER_MAX_CLASSES) {
+      pickerClassNote(`You can have up to ${ROSTER_MAX_CLASSES} classes. Delete one to add another.`);
+      return;
+    }
+    const raw = prompt('New class name:');
+    if (raw === null) return;
+    const id = newRosterId();
+    settings.rosters[id] = { name: uniqueClassName(raw.trim() || 'My class'), names: [] };
+    switchClass(id);
+  }
+  function renameClass() {
+    const c = curClass();
+    const raw = prompt('Rename class:', c.name);
+    if (raw === null) return;
+    const name = raw.trim();
+    if (!name) return;
+    c.name = uniqueClassName(name, settings.activeRosterId);
+    switchClass(settings.activeRosterId);
+  }
+  function deleteClass() {
+    const c = curClass();
+    if (!confirm(`Delete class "${c.name}"? Its roster and today's picks will be removed.`)) return;
+    const id = settings.activeRosterId;
+    delete settings.rosters[id];
+    delete settings.pickerSessions[id];
+    ensureActiveClass();   // recreates an empty "My class" if that was the last one
+    switchClass(settings.activeRosterId);
   }
 
   function applyStudentPickerVisibility() {
