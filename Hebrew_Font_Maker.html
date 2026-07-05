@@ -7667,6 +7667,12 @@ function qaRows() {
       if (r) { r.section = 'special'; rows.push(r); }
     });
   }
+  if (project.font.addCustomGlyphs) {                                  // custom MAIN glyphs are exported bases (with anchors) → full collision rows
+    (project.letters || []).filter(l => l.custom).forEach(l => {
+      rows.push({ cp: l.codepoint, name: l.name || ('Custom U+' + l.codepoint),
+                  labelCh: qaCh(l.codepoint), desc: false, L: l, section: 'custom' });
+    });
+  }
   return rows;
 }
 function polysBounds(polys) {   // bounds over an array of [x,y]-point arrays (font units)
@@ -7797,7 +7803,20 @@ function qaWorstTrop(side) {
 /* Columns for a tab: nikkud / trop = one per enabled mark; stacked = each stackable nikkud (above or
    below) paired with the worst-case trop of the matching class (center/dagesh never stacks). */
 function qaColumns(tab) {
-  if (tab === 'nikkud') return (project.font.nikkud.enabled ? MARK_CPS : []).map(cp => ({ kind:'nikkud', cp, side: MARK_CLASS[cp], name: markName(cp), head: '◌' + qaCh(cp) }));
+  if (tab === 'nikkud') {
+    const cols = (project.font.nikkud.enabled ? MARK_CPS : []).map(cp => ({ kind:'nikkud', cp, side: MARK_CLASS[cp], name: markName(cp), head: '◌' + qaCh(cp) }));
+    // Custom marks attach via the same class anchors and export whenever Add-custom-glyphs is on
+    // (independent of built-in nikkud — mirrors buildFEA's markClass gate), so QA checks them here.
+    // They are deliberately absent from Pairs/Stacked: the export emits no mkmk for custom marks,
+    // so stacks involving them cannot exist in the real font.
+    const cmStore = (project.font.addCustomGlyphs && project.font.customMarks && project.font.customMarks.custom) || {};
+    Object.keys(cmStore).forEach(cp => {
+      const m = cmStore[cp] || {};
+      const nm = m.name || ('U+' + cp);
+      cols.push({ kind:'customMarks', cp, side: m.cls || 'below', name: nm, head: nm.slice(0, 8) });   // PUA chars render tofu → head is the name
+    });
+    return cols;
+  }
   if (tab === 'trop')   return (project.font.trop.enabled   ? TROP_CPS : []).map(cp => ({ kind:'trop',   cp, side: TROP_CLASS[cp], name: markName(cp), head: '◌' + qaCh(cp) }));
   if (tab === 'pairs') {   // each enabled nikkud mark B paired with the fixed mark A (qaPairA) — to spot two-mark stacking clashes on one letter
     if (!project.font.nikkud.enabled) return [];
@@ -7815,6 +7834,7 @@ function qaColumns(tab) {
 function qaCellLayers(L, anc, col) {
   const ms = markScale(), tms = tropScale(), ds = dageshScale();
   if (col.kind === 'nikkud') return [{ polys: qaPlace(anc[col.side], 'nikkud', col.cp, nikScale(col.cp), L), color: QA_SIDE_COLOR[col.side] }];
+  if (col.kind === 'customMarks') return [{ polys: qaPlace(anc[col.side], 'customMarks', col.cp, col.side === 'center' ? ds : ms, L), color: QA_SIDE_COLOR[col.side] }];   // scale mirrors the export bake (center = dagesh scale)
   if (col.kind === 'trop')   { const k = tropColKey(col.side, tropHalign(col.cp)); return [{ polys: qaPlace(anc[k], 'trop', col.cp, tms), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] }]; }
   if (col.kind === 'pair')   return [                                   // two nikkud marks on one letter, each at its own class anchor
     { polys: qaPlace(anc[MARK_CLASS[col.a]],  'nikkud', col.a,  nikScale(col.a),  L), color: QA_SIDE_COLOR[MARK_CLASS[col.a]] },
@@ -7902,7 +7922,8 @@ function qaBuild() {
 }
 function qaRenderTabs() {
   const bar = document.getElementById('qaTabs');
-  const have = { nikkud: project.font.nikkud.enabled, trop: project.font.trop.enabled, stacked: project.font.nikkud.enabled && project.font.trop.enabled, pairs: project.font.nikkud.enabled };
+  const customQaOn = project.font.addCustomGlyphs && customMarkCps().length > 0;   // custom marks attach even with built-in nikkud off — keep their QA columns reachable
+  const have = { nikkud: project.font.nikkud.enabled || customQaOn, trop: project.font.trop.enabled, stacked: project.font.nikkud.enabled && project.font.trop.enabled, pairs: project.font.nikkud.enabled };
   bar.innerHTML = [['nikkud','Nikkud'],['trop','Trop'],['stacked','Stacked'],['pairs','Two marks']].map(([id,label]) => {
     const n = qaResult ? qaResult.counts[id] : 0, badge = (have[id] && n) ? ` (${n})` : '';
     return have[id]
@@ -7934,9 +7955,9 @@ function qaRenderGrid() {
   let html = pairCtrl + '<table class="qa-table"><thead><tr><th></th>';
   cols.forEach(col => { html += `<th title="${escapeHtml(col.name)}"><span class="qa-colhead">${escapeHtml(col.head)}</span></th>`; });
   html += '</tr></thead><tbody>';
-  let sectionShown = false;
+  let lastSection = null;
   qaRows().forEach(row => {
-    if (row.section === 'special' && !sectionShown) { sectionShown = true; html += `<tr class="qa-section"><td class="qa-section-h" colspan="${cols.length + 1}">Specialized (wide letters)</td></tr>`; }
+    if (row.section && row.section !== lastSection) { lastSection = row.section; html += `<tr class="qa-section"><td class="qa-section-h" colspan="${cols.length + 1}">${row.section === 'special' ? 'Specialized (wide letters)' : 'Custom glyphs'}</td></tr>`; }
     const L = row.L, anc = qaAnchors(L);
     html += `<tr><td class="qa-rowlabel" title="${escapeHtml(row.name)}">${escapeHtml(row.labelCh)} <span style="color:var(--muted);">${escapeHtml(row.name)}</span></td>`;
     cols.forEach(col => {
@@ -7977,6 +7998,7 @@ function qaGridClick(e) {
 function qaJump(cp, markCp, kind, side, tropCp) {
   closeQA();
   _selectItem('letter', cp);
+  if (kind === 'customMarks') { gotoAnchors('nikkud'); setAnchorClass(side); return; }   // custom marks attach at the letter's class anchors (no vowel selector — it only knows standard vowels)
   if (kind === 'nikkud' || kind === 'pair') {                        // pair → jump to mark B's nikkud anchor (data-mark = the column mark)
     gotoAnchors('nikkud');
     const cls = MARK_CLASS[markCp];
@@ -8002,7 +8024,8 @@ function qaPairControlHtml() {
 function closeQA() { aCloseModal('qaOverlay'); }
 function openQA() {
   if (!project) { status('Open or create a project first.'); return; }
-  const have = { nikkud: project.font.nikkud.enabled, trop: project.font.trop.enabled, stacked: project.font.nikkud.enabled && project.font.trop.enabled };
+  const customQaOn = project.font.addCustomGlyphs && customMarkCps().length > 0;
+  const have = { nikkud: project.font.nikkud.enabled || customQaOn, trop: project.font.trop.enabled, stacked: project.font.nikkud.enabled && project.font.trop.enabled };
   if (!have[qaTab]) qaTab = have.nikkud ? 'nikkud' : (have.trop ? 'trop' : 'nikkud');   // fall back to a tab that has columns
   qaBuild(); qaRenderTabs(); qaRenderSummary(); qaRenderGrid();
   const ov = document.getElementById('qaOverlay');
