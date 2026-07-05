@@ -1651,7 +1651,9 @@ let guideDrag  = null;      // active user-guide drag: { id, dragAxis:'x'|'y', g
 
 /* ════════ Undo / redo (per-project, in-memory; max 100 entries). Each entry snapshots only the
    touched item/slice — never the image (source) and never savedAnchors (dirty-detection state).
-   Scopes: {t:'item',kind,cp} | {t:'spacing'} | {t:'kerning'} | {t:'metrics'} | {t:'precomp',target}. ════════ */
+   Scopes: {t:'item',kind,cp} | {t:'spacing'} | {t:'kerning'} | {t:'kernClasses'} | {t:'metrics'} |
+   {t:'guides'} | {t:'precomp',target} | {t:'tropTune'} (font-level trop layout: side spread +
+   per-mark halign + per-mark height nudges). ════════ */
 let undoStack = [], redoStack = [];
 const UNDO_MAX = 100;
 const ITEM_SKIP = { source: 1, savedAnchors: 1 };       // excluded from snapshots; preserved live on restore
@@ -1669,6 +1671,10 @@ function udSnap(s) {
   if (s.t === 'metrics') return JSON.parse(JSON.stringify(project.font.metrics));
   if (s.t === 'guides') return JSON.parse(JSON.stringify(project.guides || { show:true, items:[] }));
   if (s.t === 'precomp') { const pc = getPrecomp(s.target); return pc ? { anchor: pc.anchor ? JSON.parse(JSON.stringify(pc.anchor)) : null, markScale: (pc.markScale != null ? pc.markScale : null), widthScale: (pc.widthScale != null ? pc.widthScale : null) } : null; }
+  if (s.t === 'tropTune') return JSON.parse(JSON.stringify({
+    tropSideOffset: (project.font.tropSideOffset != null) ? project.font.tropSideOffset : null,
+    halign: (project.font.trop && project.font.trop.halign) || {},
+    markNudge: project.font.markNudge || {} }));
   return null;
 }
 function udRestore(s, snap) {
@@ -1683,6 +1689,11 @@ function udRestore(s, snap) {
   else if (s.t === 'metrics') Object.assign(project.font.metrics, JSON.parse(JSON.stringify(snap || {})));
   else if (s.t === 'guides') project.guides = JSON.parse(JSON.stringify(snap || { show:true, items:[] }));
   else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) { pc.anchor = (snap && snap.anchor) ? JSON.parse(JSON.stringify(snap.anchor)) : null; pc.markScale = (snap && snap.markScale != null) ? snap.markScale : null; pc.widthScale = (snap && snap.widthScale != null) ? snap.widthScale : null; } }
+  else if (s.t === 'tropTune') { const sn = snap || {};
+    if (sn.tropSideOffset != null) project.font.tropSideOffset = sn.tropSideOffset; else project.font.tropSideOffset = TROP_POS_SHIFT;
+    if (!project.font.trop) project.font.trop = {};
+    project.font.trop.halign = JSON.parse(JSON.stringify(sn.halign || {}));
+    project.font.markNudge = JSON.parse(JSON.stringify(sn.markNudge || {})); }
 }
 function udNavTo(s) {                                    // show the affected item (no side effects — not selectItem)
   if (s.t !== 'item') return;
