@@ -6163,17 +6163,50 @@ function setTropHalign(h) {
 }
 /* Global default Left/Right spread — re-seeds every letter's side columns from its own center column, so
    the default distance is consistent. Per-letter fine-tuning (drag / X-Y) is done after setting this. */
+function _tropTuneScopes() { return [{ t:'tropTune' }].concat((project.letters || []).map(l => ({ t:'item', kind:'letter', cp:l.codepoint }))); }
 function setTropSideOffset(v) {
   const off = Math.max(0, Math.min(600, Math.round(+v || 0)));
+  const prev = project.font.tropSideOffset != null ? project.font.tropSideOffset : TROP_POS_SHIFT;
+  udBurstBegin(_tropTuneScopes(), 'trop spread');   // one undo entry per slider interaction (applyOutlineToAll-style letter fan-out)
   project.font.tropSideOffset = off;
   (project.letters || []).forEach(l => {
     if (!l.anchors) return;
     const ta = l.anchors.tropAbove, tb = l.anchors.tropBelow;
-    if (ta) { l.anchors.tropAboveL = { x: ta.x - off, y: ta.y }; l.anchors.tropAboveR = { x: ta.x + off, y: ta.y }; }
-    if (tb) { l.anchors.tropBelowL = { x: tb.x - off, y: tb.y }; l.anchors.tropBelowR = { x: tb.x + off, y: tb.y }; }
+    // Re-seed a side column ONLY while it still sits at the old default (center ± prev) — a
+    // per-letter drag / X-Y edit made it the user's, and the global slider must not clobber it.
+    const upd = (key, c, sign) => {
+      const cur = l.anchors[key];
+      if (!cur || (cur.x === c.x + sign * prev && cur.y === c.y)) l.anchors[key] = { x: c.x + sign * off, y: c.y };
+    };
+    if (ta) { upd('tropAboveL', ta, -1); upd('tropAboveR', ta, +1); }
+    if (tb) { upd('tropBelowL', tb, -1); upd('tropBelowR', tb, +1); }
   });
   const el = document.getElementById('tropSpreadV'); if (el) el.textContent = off;
   markDirty(); renderStage();
+}
+function resetTropSideColumns() {   // opt-in clobber: re-seed EVERY side column from center ± spread (undoable)
+  if (!confirm('Reset all Left/Right trop positions on every letter to the default spread? Per-letter fine-tuning of the side columns will be lost (you can undo).')) return;
+  udDo(_tropTuneScopes(), 'reset trop side columns', () => {
+    const off = project.font.tropSideOffset != null ? project.font.tropSideOffset : TROP_POS_SHIFT;
+    (project.letters || []).forEach(l => {
+      if (!l.anchors) return;
+      const ta = l.anchors.tropAbove, tb = l.anchors.tropBelow;
+      if (ta) { l.anchors.tropAboveL = { x: ta.x - off, y: ta.y }; l.anchors.tropAboveR = { x: ta.x + off, y: ta.y }; }
+      if (tb) { l.anchors.tropBelowL = { x: tb.x - off, y: tb.y }; l.anchors.tropBelowR = { x: tb.x + off, y: tb.y }; }
+    });
+    renderStage(); renderControls();
+  });
+}
+function tropCustomSideCount() {   // letters with ≥1 side column moved off the current default (for the panel note)
+  const off = project.font.tropSideOffset != null ? project.font.tropSideOffset : TROP_POS_SHIFT;
+  let n = 0;
+  (project.letters || []).forEach(l => {
+    if (!l.anchors) return;
+    const ta = l.anchors.tropAbove, tb = l.anchors.tropBelow;
+    const moved = (key, c, sign) => { const cur = l.anchors[key]; return cur && c && !(cur.x === c.x + sign * off && cur.y === c.y); };
+    if (moved('tropAboveL', ta, -1) || moved('tropAboveR', ta, +1) || moved('tropBelowL', tb, -1) || moved('tropBelowR', tb, +1)) n++;
+  });
+  return n;
 }
 function setCoPreview(v) { coPreviewCp = v || null; renderStage(); renderControls(); }   // 2nd-mark stacking check (preview only — never saved)
 function setMarkNudge(cp, dy) {
@@ -7234,10 +7267,13 @@ function renderAnchorLeft(L, l) {
       <div class="hint" style="font-size:0.6rem;text-align:center;">Sets where <b>${tName}</b> sits across <i>every</i> letter. Drag the mark (or edit X / Y below) to fine-tune just this letter.</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;gap:6px;">
         <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">Default spread</span>
-        <input type="range" id="tropSpread" min="0" max="500" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" style="flex:1;">
+        <input type="range" id="tropSpread" min="0" max="500" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" onchange="udBurstCommit();renderControls()" style="flex:1;">
         <span id="tropSpreadV" class="readout">${tOff}</span>
       </div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">Default distance Left/Right marks shift from center, on all letters (per-letter tweaks come after).</div>`;
+      <div class="hint" style="font-size:0.6rem;text-align:center;">Default distance Left/Right marks shift from center, on all letters (per-letter tweaks come after).</div>
+      ${(nCustom => nCustom ? `
+      <div class="hint" style="font-size:0.6rem;text-align:center;color:var(--gold);">${nCustom} letter${nCustom === 1 ? "'s" : "s'"} hand-tuned side positions kept — the slider only moves columns still at the default.</div>
+      <div class="ctl-row" style="justify-content:center;margin-top:2px;"><button class="ctl-btn" onclick="resetTropSideColumns()" title="Re-seed every letter's Left/Right columns from its center ± spread (undoable)">Reset all side positions</button></div>` : '')(tropCustomSideCount())}`;
   }
   const xy = `<hr class="ctl-divider">
     <div class="ws-side-title">${ANCHOR_LABEL[cls]} position</div>
