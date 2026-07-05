@@ -6212,11 +6212,13 @@ function tropCustomSideCount() {   // letters with ≥1 side column moved off th
 }
 function setCoPreview(v) { coPreviewCp = v || null; renderStage(); renderControls(); }   // 2nd-mark stacking check (preview only — never saved)
 function setMarkNudge(cp, dy) {
-  if (!project.font.markNudge) project.font.markNudge = {};
   const v = Math.max(-200, Math.min(200, Math.round(dy)));
-  if (v) project.font.markNudge[cp] = v; else delete project.font.markNudge[cp];   // 0 → drop the key (keeps saves clean)
+  udDo([{ t:'tropTune' }], 'mark height — ' + markName(cp), () => {   // one undo entry per ▲/▼/reset click (no-ops drop out in udPush)
+    if (!project.font.markNudge) project.font.markNudge = {};
+    if (v) project.font.markNudge[cp] = v; else delete project.font.markNudge[cp];   // 0 → drop the key (keeps saves clean)
+  });
   const el = document.getElementById('vowelNudgeV'); if (el) el.textContent = (v > 0 ? '+' : '') + v;
-  renderStage(); markDirty();   // live; don't rebuild controls (keep the row stable)
+  renderStage();   // live; don't rebuild controls (keep the row stable) — dirty flag comes via udPush
 }
 function nudgeActiveVowel(delta) { const cp = activeVowelCp(); setMarkNudge(cp, markNudgeDy(cp) + delta); }
 function setMarkScale(v) {
@@ -7242,7 +7244,7 @@ function renderAnchorLeft(L, l) {
         <button class="ctl-btn" title="Raise this vowel" onclick="nudgeActiveVowel(10)">▲</button>
         <button class="ctl-btn" title="Lower this vowel" onclick="nudgeActiveVowel(-10)">▼</button>
         <span id="vowelNudgeV" class="readout">${ndy>0?'+':''}${ndy}</span>
-        <button class="ctl-btn" title="Reset this vowel's height" onclick="setMarkNudge(activeBelowVowel,0)">⟲</button>
+        <button class="ctl-btn" title="Reset this vowel's height" onclick="setMarkNudge(activeVowelCp(),0)">⟲</button>
       </div>
       <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(activeBelowVowel)}</div>
       <div class="hint" style="font-size:0.6rem;text-align:center;">Height fine-tunes just the selected vowel on every letter; the <b>Below position</b> X / Y below moves <i>all</i> under-vowels at once. <b>Edit shape</b> redesigns the selected vowel's dots &amp; bars.</div>`;
@@ -7261,8 +7263,17 @@ function renderAnchorLeft(L, l) {
     const halignBtns = [['left','◀ Left'],['center','Center'],['right','Right ▶']].map(([h,lbl]) =>
       `<button class="ctl-btn ${ha===h?'primary':''}" onclick="setTropHalign('${h}')">${lbl}</button>`).join('');
     const tOff = project.font.tropSideOffset != null ? project.font.tropSideOffset : TROP_POS_SHIFT;
+    const tNdy = markNudgeDy(activeTropCp);
     grid = `<div class="ws-side-title">Preview trop</div>
       <div class="mark-grid2">` + TROP_MARKS.filter(m => m.cls === want).map(m => squareMarkBtn('trop', m.cp, m.name, activeTropCp, 'setTropCp')).join('') + `</div>
+      <div class="ctl-row" style="margin-top:6px;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;">
+        <span style="font-size:0.72rem;color:var(--muted);">Height</span>
+        <button class="ctl-btn" title="Raise this mark" onclick="nudgeActiveVowel(10)">▲</button>
+        <button class="ctl-btn" title="Lower this mark" onclick="nudgeActiveVowel(-10)">▼</button>
+        <span id="vowelNudgeV" class="readout">${tNdy>0?'+':''}${tNdy}</span>
+        <button class="ctl-btn" title="Reset this mark's height" onclick="setMarkNudge(activeVowelCp(),0)">⟲</button>
+      </div>
+      <div class="hint" style="font-size:0.6rem;text-align:center;">Height fine-tunes just <b>${tName}</b> on every letter — e.g. to separate two marks sharing a side; drag or X / Y moves this letter's whole column.</div>
       <hr class="ctl-divider">
       <div class="ws-side-title">Horizontal — ${tName}</div>
       <div class="ctl-row">${halignBtns}</div>
