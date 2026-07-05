@@ -6156,10 +6156,12 @@ function setTropCp(cp) { activeTropCp = cp; renderStage(); renderControls(); }
    base-anchor column the mark attaches to. Only non-default values are stored (keeps saves clean). It's
    an easily-reversed config toggle, so it isn't pushed onto the geometry undo stack (no matching scope). */
 function setTropHalign(h) {
-  if (!project.font.trop.halign) project.font.trop.halign = {};
-  if (h === (TROP_HALIGN_DEFAULT[activeTropCp] || 'center')) delete project.font.trop.halign[activeTropCp];
-  else project.font.trop.halign[activeTropCp] = h;
-  markDirty(); renderStage(); renderControls();
+  udDo([{ t:'tropTune' }], 'trop side — ' + (TROP_NAMES[activeTropCp] || activeTropCp), () => {   // font-wide semantic change (moves this mark on every letter) → one undoable entry
+    if (!project.font.trop.halign) project.font.trop.halign = {};
+    if (h === (TROP_HALIGN_DEFAULT[activeTropCp] || 'center')) delete project.font.trop.halign[activeTropCp];
+    else project.font.trop.halign[activeTropCp] = h;
+    renderStage(); renderControls();
+  });
 }
 /* Global default Left/Right spread — re-seeds every letter's side columns from its own center column, so
    the default distance is consistent. Per-letter fine-tuning (drag / X-Y) is done after setting this. */
@@ -7264,7 +7266,7 @@ function renderAnchorLeft(L, l) {
       <hr class="ctl-divider">
       <div class="ws-side-title">Horizontal — ${tName}</div>
       <div class="ctl-row">${halignBtns}</div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">Sets where <b>${tName}</b> sits across <i>every</i> letter. Drag the mark (or edit X / Y below) to fine-tune just this letter.</div>
+      <div class="hint" style="font-size:0.6rem;text-align:center;">Sets where <b>${tName}</b> sits across <i>every</i> letter. Drag the mark (or edit X / Y below) to fine-tune just this letter. Position tweaks belong to the column (Left / Center / Right) — and stay with it if you switch sides.</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;gap:6px;">
         <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">Default spread</span>
         <input type="range" id="tropSpread" min="0" max="500" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" onchange="udBurstCommit();renderControls()" style="flex:1;">
