@@ -402,6 +402,11 @@
   /* Placement step: size sliders + Confirm/Reset actions sit right below the canvas (center column), which fills the center width. */
   .stage-below { max-width: 720px; margin: 8px auto 0; display: flex; flex-direction: column; gap: 7px; }
   .stage-below:empty { display: none; }
+  /* size sliders sit side-by-side, separated by vertical dividers (bars are shortened to fit) */
+  .size-slider-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; }
+  .size-slider-cell { display: flex; align-items: center; gap: 5px; padding: 4px 10px; white-space: nowrap; font-size: 0.82rem; }
+  .size-slider-cell + .size-slider-cell { border-left: 1px solid var(--border); }
+  .size-slider-cell input[type='range'] { width: 74px; }
   .anchor-confirm-foot { display: flex; flex-direction: column; align-items: center; gap: 6px; }
   /* Node editor (Edit-points mode) overlay */
   .node-glyph { cursor: crosshair; }
@@ -7488,11 +7493,13 @@ function renderAnchorStageBelow(SB, l) {
     ? `<span class="placement-pill inherited" title="These positions were carried from the previous letter. Review them, then Confirm.">↩ Carried over — review</span>`
     : `<span class="placement-pill unconfirmed" title="This letter's placement hasn't been confirmed yet. Adjust if needed, then Confirm — undo always works.">! Unconfirmed</span>`;
   SB.innerHTML = `
-    <div class="inline" style="width:100%;">${isTrop?'Trop':'Nikkud'} size <input type="range" min="40" max="180" step="5" value="${sizePct}" oninput="${sizeFn}(this.value)" onchange="udBurstCommit()"> <span id="markScaleV" class="readout">${sizePct}%</span></div>
-    ${isTrop?'':`<div class="inline" style="width:100%;">Holam size <input type="range" min="30" max="180" step="5" value="${holPct}" oninput="setHolamScale(this.value)" onchange="udBurstCommit()"> <span id="holamScaleV" class="readout">${holPct}%</span></div>
-    <div class="inline" style="width:100%;">Dagesh size <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
-    ${isVav?`<div class="inline" style="width:100%;">Holam (vav) size <input type="range" min="40" max="180" step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>`:''}
-    <div class="hint" style="font-size:0.62rem;text-align:center;">Nikkud size scales the vowels and the shin/sin dot (unless a שׁ/שׂ form has its own Dot size, which wins). Holam size controls just the standalone holam dot above the letter, so you can make it thinner than the below vowels. Dagesh size controls just the dagesh dot.${isVav?' Holam (vav) size controls just the dot on the vav (וֹ), so you can grow it as part of the letter.':''}</div>`}
+    <div class="size-slider-row">
+      <div class="size-slider-cell">${isTrop?'Trop':'Nikkud'} size <input type="range" min="40" max="180" step="5" value="${sizePct}" oninput="${sizeFn}(this.value)" onchange="udBurstCommit()"> <span id="markScaleV" class="readout">${sizePct}%</span></div>
+      ${isTrop?'':`<div class="size-slider-cell">Holam size <input type="range" min="30" max="180" step="5" value="${holPct}" oninput="setHolamScale(this.value)" onchange="udBurstCommit()"> <span id="holamScaleV" class="readout">${holPct}%</span></div>
+      <div class="size-slider-cell">Dagesh size <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
+      ${isVav?`<div class="size-slider-cell">Holam (vav) size <input type="range" min="40" max="180" step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>`:''}`}
+    </div>
+    ${isTrop?'':`<div class="hint" style="font-size:0.62rem;text-align:center;">Nikkud size scales the vowels and the shin/sin dot (unless a שׁ/שׂ form has its own Dot size, which wins). Holam size controls just the standalone holam dot above the letter, so you can make it thinner than the below vowels. Dagesh size controls just the dagesh dot.${isVav?' Holam (vav) size controls just the dot on the vav (וֹ), so you can grow it as part of the letter.':''}</div>`}
     <hr class="ctl-divider">
     <div class="anchor-confirm-foot">
       ${placementPill}${saveBtn}
