@@ -4407,7 +4407,7 @@ function updateStepTicks() {
     return;
   }
   const l = curLetter();
-  setTick('tabAlign', isVectorGlyph(l) ? 'na' : (l.source && l.source.dataUrl ? 'done' : 'todo'));   // vector glyphs skip alignment
+  setTick('tabAlign', isVectorGlyph(l) ? (l.contours ? 'done' : 'na') : (l.source && l.source.dataUrl ? 'done' : 'todo'));   // vector glyphs skip raster alignment, but the step still hosts Width/margins → 'done' once vectorized
   setTick('tabTrace', l.contours ? 'done' : 'todo');
   // Placement: the CONFIRMED flag is the done signal (carried-over + unconfirmed read as not-done).
   // English accents have no confirm flow → no tick.
@@ -6831,7 +6831,7 @@ function renderControls() {
   attachGuideSortable();                                   // re-bind drag-to-reorder on the guide cards each render
 }
 function renderNodeLeft(L, l) {
-  L.innerHTML = `<div class="ws-side-title">Edit points — ${l.name}</div>` + nodeEditPanelHTML();
+  L.innerHTML = `<div class="ws-side-title">Edit points — ${l.name}</div>` + nodeEditPanelHTML() + metricsPanel();
 }
 
 /* ── Shared right-panel pieces (reference font + opacity sliders) ── */
@@ -6956,11 +6956,11 @@ function renderAlignUnder(U, l) {
   const isSvg = !!(l.source && l.source.kind === 'svg');
   if (project.inputMode === 'font') {
     hint = `<div class="hint">${ l.contours
-      ? 'Outline loaded from your font file — no alignment needed. Go to <b>Nikkud</b> to place the vowels.'
+      ? 'Outline loaded from your font file — no tracing needed. Set the <b>Width &amp; margins</b> below, then go to <b>Nikkud</b> to place the vowels.'
       : 'No glyph for this letter was found in the uploaded font. Try another font, or pick a different input mode under <b>Add Letters</b> on the left.' }</div>`;
   } else if (isSvg) {
     hint = `<div class="hint">${ l.contours
-      ? 'Imported from SVG — no alignment needed. Go to <b>Nikkud</b> to place the vowels.'
+      ? 'Imported from SVG — no tracing needed. Set the <b>Width &amp; margins</b> below, then go to <b>Nikkud</b> to place the vowels.'
       : 'Upload an SVG for this glyph under <b>Add Letters</b> on the left.' }</div>`;
   }
   const nextBtn = isVectorGlyph(l)
@@ -6987,7 +6987,7 @@ function renderTraceRight(R, l) {
   wireReferencePanel();
 }
 function renderTraceLeft(L, l) {
-  if (project.inputMode === 'font') { L.innerHTML = ''; return; }
+  if (project.inputMode === 'font') { L.innerHTML = metricsPanel(); return; }   // width still editable for font-loaded glyphs
   if (l.source && l.source.kind === 'svg') {   // imported vector — no raster trace controls, but allow point editing
     L.innerHTML = `
       <div class="ws-side-title">Outline — ${l.name}</div>
@@ -6997,7 +6997,7 @@ function renderTraceLeft(L, l) {
         <button class="ctl-btn" onclick="clearTrace()">Clear</button>
         <button class="ctl-btn" onclick="openCopyOutline()" title="Start this letter from another letter's outline">⎘ Copy outline…</button>
         <span id="traceInfo" class="readout">${ l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : '' }</span>
-      </div>`;
+      </div>` + metricsPanel();
     return;
   }
   const detail = Math.round(100 - l.epsilon*2.5);
@@ -7022,7 +7022,7 @@ function renderTraceLeft(L, l) {
       <button class="ctl-btn" onclick="openCopyOutline()" title="Start this letter from another letter's outline">⎘ Copy outline…</button>
       <span id="traceInfo" class="readout">${ l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : '' }</span>
     </div>
-    <div class="hint">Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically. Turn on <b>Outline only</b> for hollow “bubble” letters — <b>line weight</b> sets the ring thickness.</div>`;
+    <div class="hint">Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically. Turn on <b>Outline only</b> for hollow “bubble” letters — <b>line weight</b> sets the ring thickness.</div>` + metricsPanel();
 }
 function renderTraceUnder(U, l) {
   const hint = (project.inputMode === 'font')
