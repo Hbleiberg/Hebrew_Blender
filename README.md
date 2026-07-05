@@ -11,7 +11,7 @@ A suite of browser-based tools for Hebrew literacy instruction — no installati
 ## Tools
 
 ### Worksheet Generator (`hebrew_blend_generator.html`)
-Creates printable Hebrew decoding worksheets, bingo cards, and vocabulary drills.
+Creates printable Hebrew decoding worksheets, bingo cards, and vocabulary drills. 
 
 - **Blend mode** — generate 1-, 2-, or **3-letter** (Beta) syllable grids from a custom letter + vowel selection, plus a **Vowels Only** mode, with a live "X possible combinations" counter and a pool-size readout
 - **Worksheet types** — Reading, Inverse, Fill Vowels, **Bingo**, **Gematria**, **Name the Letter**, and **Tracing** layouts
