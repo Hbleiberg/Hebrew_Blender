@@ -3404,6 +3404,7 @@ function renderCustomGlyphsPanel() {
         <label class="fld">Attaches
           <select id="cgCls"><option value="below">Below the letter</option><option value="above">Above the letter</option><option value="center">Center (dagesh-style)</option></select>
         </label>
+        <div class="hint" style="margin-top:4px;">A mark attaches to a letter and has <b>no width of its own</b>. For a standalone symbol that needs its own spacing, choose <b>Main glyph</b> instead.</div>
       </div>
       <div id="cgShapeRow" style="margin-top:6px;">
         <div class="hint">Shape</div>
@@ -3427,6 +3428,7 @@ function renderCustomGlyphsGrid() {
     return;
   }
   const delBtn = (cp, type) => `<button title="Delete glyph" onclick="event.stopPropagation();deleteCustomGlyph('${cp}','${type}')" style="position:absolute;top:1px;right:1px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:0.78rem;line-height:1;padding:2px;">✕</button>`;
+  const cvtBtn = cp => `<button title="Convert to a main glyph (gives it its own adjustable width)" onclick="event.stopPropagation();convertMarkToMain('${cp}')" style="position:absolute;top:1px;left:1px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:0.72rem;line-height:1;padding:2px;">↔</button>`;
   bases.forEach(l => {
     const st = l.anchors ? 'anchored' : (l.contours ? 'traced' : (l.source && l.source.dataUrl ? 'img' : ''));
     const tile = document.createElement('div');
@@ -3445,7 +3447,7 @@ function renderCustomGlyphsGrid() {
     tile.style.position = 'relative';
     tile.innerHTML = `<span class="lt-dot ${markStatusOf(m)}"></span>
       ${markTilePreviewSVG('customMarks', cp)}
-      <span class="lt-name">${escapeHtml(m.name || ('U+' + cp))}</span>${delBtn(cp, 'mark')}`;
+      <span class="lt-name">${escapeHtml(m.name || ('U+' + cp))}</span>${cvtBtn(cp)}${delBtn(cp, 'mark')}`;
     tile.onclick = () => selectItem('customMarks', cp);
     grid.appendChild(tile);
   });
@@ -3534,6 +3536,38 @@ function deleteCustomGlyph(cp, type) {
   renderCustomGlyphsPanel();
   renderGrids();
   status('Deleted custom glyph U+' + cp + '.');
+}
+// Custom marks have no width of their own (they attach to a letter). This turns a mark into a
+// standalone main glyph — a .custom letter carrying the mark's outline, with its own adjustable
+// width — so a symbol mistakenly built as a mark can be spaced. Mirrors the direct-mutation style
+// of add/deleteCustomGlyph (custom-glyph CRUD is not undo-backed); markDirty() drives autosave.
+function convertMarkToMain(cp) {
+  const store = (project.font.customMarks && project.font.customMarks.custom) || {};
+  const m = store[cp];
+  if (!m) return;
+  // Normalize the mark outline into letter {winding, points} contours, handling both storage forms
+  // (editor-mode marks store `pieces`; upload-mode marks store `contours`) — same split markGlyphContours uses.
+  const contours = (m.designMode === 'editor')
+    ? piecesToContours(m.pieces || []).map(pts => ({ winding: 'cw', points: pts.map(p => p.slice()) }))
+    : (m.contours || []).map(c => ({ winding: c.winding || 'cw', points: (c.points || []).map(p => p.slice()) }));
+  if (!contours.length) { alert('This mark has no outline yet — draw or upload its shape before converting.'); return; }
+  if (!confirm('Convert this mark to a main glyph? It becomes a standalone glyph with its own adjustable width and no longer attaches to letters. This cannot be undone.')) return;
+  const name = m.name || ('Custom U+' + cp);
+  const it = blankLetter({ cp, name });
+  it.custom = true; it.name = name;
+  it.contours = contours;
+  // Starting advance from ink extent + default bearings (mirrors the trace-commit formula).
+  const em = effMetrics(); let minX = Infinity, maxX = -Infinity;
+  contours.forEach(c => c.points.forEach(p => { if (p[0] < minX) minX = p[0]; if (p[0] > maxX) maxX = p[0]; }));
+  if (!isFinite(minX)) { minX = 0; maxX = Math.round(em.letterTop * 0.6); }
+  it.advance = Math.round(maxX + em.defaultRSB + Math.max(0, em.defaultLSB - minX));
+  project.letters.push(it);
+  delete store[cp];
+  selectItem('letter', cp);
+  markDirty();
+  renderCustomGlyphsPanel();
+  renderGrids();
+  status('Converted U+' + cp + ' to a main glyph — set its width under Letter Metrics.');
 }
 
 /* ════════ Work mode (Align / Trace / Nikkud) ════════ */
