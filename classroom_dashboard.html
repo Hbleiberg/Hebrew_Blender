@@ -513,6 +513,11 @@
   .picker-progress { display: flex; gap: 8px; align-items: center; justify-content: center;
     flex-wrap: wrap; font-size: 0.78rem; color: var(--muted); }
   .picker-progress-label { font-weight: 600; }
+  /* Compact class switcher mirrored in the card header and the fullscreen Pick pop */
+  .picker-class-switch { font-family: inherit; font-size: 0.68rem; font-weight: 400; text-transform: none;
+    letter-spacing: normal; max-width: 128px; padding: 2px 4px; border: 1px solid var(--border);
+    border-radius: 4px; background: var(--white); color: var(--text); cursor: pointer; flex-shrink: 0; }
+  .fs-pop .picker-class-switch { max-width: 200px; font-size: 0.8rem; padding: 6px 8px; }
 
   /* Projector overlay (shared by the sidebar card and the fullscreen pop) */
   #pickOverlay { position: fixed; inset: 0; z-index: 400; display: none; flex-direction: column;
@@ -1337,6 +1342,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <button class="fs-pop-btn fs-pop-hide" type="button" onclick="fsTimerHide()">Hide</button>
   </div>
   <div id="fsPickPop" class="fs-pop" style="display:none;">
+    <select id="pickerClassSelFs" class="picker-class-switch" dir="ltr" title="Switch class" aria-label="Switch class" onchange="switchClass(this.value)"></select>
     <button class="fs-pop-btn" type="button" onclick="fsPickOne()">🎲 Pick One</button>
     <button class="fs-pop-btn" type="button" onclick="fsPickGroups()">👥 Make Groups</button>
     <button class="fs-pop-btn fs-pop-hide" type="button" onclick="fsPickHide()">Hide</button>
@@ -4117,6 +4123,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     sess.picked = sess.picked.filter(n => set.has(n));
     sess.absent = sess.absent.filter(n => set.has(n));
     updatePickerRosterCount();
+    renderClassSwitchers();   // refresh the "(N)" name counts in every class switcher
     renderStudentPicker();
     saveSettingsToStorage();
   }
@@ -4136,13 +4143,19 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     el.textContent = msg || '';
     el.style.display = msg ? '' : 'none';
   }
+  // Sync every class <select> that exists (drawer, card header, fullscreen pop) to the active class.
+  function renderClassSwitchers() {
+    ensureActiveClass();
+    ['pickerClassSel', 'pickerClassSelCard', 'pickerClassSelFs'].forEach(id => {
+      const sel = document.getElementById(id);
+      if (!sel) return;
+      sel.innerHTML = classOptionsHTML(settings.activeRosterId);
+      sel.value = settings.activeRosterId;
+    });
+  }
   // Repaint the drawer class row + labeled roster textarea for the active class.
   function renderClassManager() {
-    const sel = document.getElementById('pickerClassSel');
-    if (!sel) return;
-    ensureActiveClass();
-    sel.innerHTML = classOptionsHTML(settings.activeRosterId);
-    sel.value = settings.activeRosterId;
+    renderClassSwitchers();
     const lbl = document.getElementById('pickerRosterLabel');
     if (lbl) lbl.textContent = `Roster for ${curClass().name} — one name per line`;
     const ta = document.getElementById('pickerRoster');
@@ -4155,10 +4168,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     settings.activeRosterId = id;
     saveSettingsToStorage();
     pickerClassNote('');
-    renderClassManager();
-    renderStudentPicker();
-    if (typeof renderClassSwitchers === 'function') renderClassSwitchers();
-    if (typeof updateColTitles === 'function') updateColTitles();
+    renderClassManager();     // repaints all switchers + the drawer roster
+    renderStudentPicker();    // swaps the chip list + this class's picked/absent state
   }
   function newClass() {
     if (Object.keys(settings.rosters).length >= ROSTER_MAX_CLASSES) {
@@ -4444,6 +4455,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     applyColCollapse('pickerCol', !!settings.pickerCollapsed);
     const title = document.getElementById('pickerColTitle');
     if (title) title.addEventListener('click', () => toggleColCollapse('pickerCol', 'pickerCollapsed'));
+    renderClassSwitchers();   // populate the fullscreen-pop class list (card header is built by updateColTitles)
     renderStudentPicker();
   }
 
@@ -5556,7 +5568,12 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
       if (pkTitle) {
         pkTitle.style.display = '';
         pkTitle.style.direction = isHeb ? 'rtl' : '';
-        pkTitle.innerHTML = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('מִי הַתּוֹר?') : 'Student Picker'}</span><span></span>`;
+        // The trailing slot is a compact class switcher. stopPropagation so operating it never
+        // toggles the card's collapse (the header itself is the collapse click target).
+        pkTitle.innerHTML = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('מִי הַתּוֹר?') : 'Student Picker'}</span>` +
+          `<select id="pickerClassSelCard" class="picker-class-switch" dir="ltr" title="Switch class" aria-label="Switch class"` +
+          ` onclick="event.stopPropagation()" onmousedown="event.stopPropagation()" onkeydown="event.stopPropagation()"` +
+          ` onchange="switchClass(this.value)">${classOptionsHTML(settings.activeRosterId)}</select>`;
       }
     }
     const vLabel = document.getElementById('videoHeaderLabel');
@@ -5763,7 +5780,9 @@ async function onUploadFontPick(input){
   }
   function fsStripPickToggle() {
     const p = document.getElementById('fsPickPop');
-    p.style.display = (p.style.display === 'none' || !p.style.display) ? 'flex' : 'none';
+    const opening = (p.style.display === 'none' || !p.style.display);
+    if (opening) renderClassSwitchers();   // make sure the fullscreen class list is current
+    p.style.display = opening ? 'flex' : 'none';
     showFsStrip();
   }
   function fsPickOne() { document.getElementById('fsPickPop').style.display = 'none'; pickOne(); }
