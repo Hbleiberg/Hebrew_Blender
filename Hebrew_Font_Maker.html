@@ -3296,6 +3296,8 @@ function whoHasCp(cp) {            // label of the existing glyph occupying cp, 
   if (MARK_NAMES[cp]) return MARK_NAMES[cp];
   if (TROP_NAMES[cp]) return TROP_NAMES[cp];
   if (PRECOMPOSED.some(p => p.target === cp)) return 'a precomposed form';
+  const xf = EXTRA_FORMS.find(f => f.target === cp);           // Specialized / Yiddish / Ladino composed forms (incl. their PUA slots)
+  if (xf) return xf.name + ' (an optional composed form)';
   if (cp === '0020') return 'the space';
   if (cp === 'E0B0') return 'the Sheva Na slot';
   return '';
@@ -3494,11 +3496,12 @@ function renderFormPanel(panelId, targets, intro) {
     const bases = pc.bases || [pc.base];
     const need = bases.filter(cp => !isTraced(cp));
     const traced = need.length === 0;
+    const overridden = isCustomCp(t);   // a custom glyph at this code point wins at export — say so instead of pretending this form will ship
     const tile = document.createElement('div');
     tile.className = 'ltile' + (precompTarget === t ? ' sel' : '') + (traced ? '' : ' locked');
     tile.innerHTML = `<span class="lt-dot ${traced ? 'traced' : ''}"></span>
       <span class="lt-heb" style="font-family:${esc(project.template.font)};direction:rtl;">${precompComposed(pc)}</span>
-      <span class="lt-name">${escapeHtml(precompName(pc))}</span>${traced ? '' : `<span class="lt-need" title="Trace ${escapeHtml(need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">needs ${escapeHtml(need.map(chOf).join(' '))}</span>`}`;
+      <span class="lt-name">${escapeHtml(precompName(pc))}</span>${overridden ? `<span class="lt-need" title="You added a custom glyph at U+${t}; the exported font uses your custom outline, not this composed form.">custom glyph overrides</span>` : traced ? '' : `<span class="lt-need" title="Trace ${escapeHtml(need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">needs ${escapeHtml(need.map(chOf).join(' '))}</span>`}`;
     tile.onclick = () => pickPrecompForm(t);
     grid.appendChild(tile);
   });
@@ -8062,6 +8065,7 @@ function buildFontSpec() {
     const markPoly = markContoursFor(baseL, 'nikkud', pc.mark).map(poly => poly.map(([x,y]) => [Math.round(x*mscale+anc.x), Math.round(y*mscale+anc.y)]));   // honor a per-letter / global custom shape for this mark
     const baseContours = baseL.contours.map(c => c.points);
     const nm = gname(pc.target);
+    if (glyphs[nm]) return;                                         // an explicit custom glyph already owns this cp — never clobber it (and no ccmp rule either: it's reached only by its own code point)
     glyphs[nm] = { contours: baseContours.concat(markPoly), advance: effLetterAdvance(baseL) };
     if (baseL.curves && baseL.curves.length === baseContours.length)
       glyphs[nm].curves = baseL.curves.concat(markPoly.map(() => null));   // base uses curves; appended mark contours stay polygon
@@ -8103,6 +8107,7 @@ function buildFontSpec() {
     if (!isWideForm(pc) || !precompExportable(pc)) return;
     const g = buildWideGlyph(pc); if (!g) return;                   // skip until the base letter(s) are traced
     const nm = gname(pc.target);
+    if (glyphs[nm]) return;                                         // an explicit custom glyph already owns this cp — never clobber it
     glyphs[nm] = { contours: g.contours, advance: g.advance, lsb: g.lsb };
     if (g.curves) glyphs[nm].curves = g.curves;
     if (!glyphOrder.includes(nm)) { glyphOrder.push(nm); baseGlyphNames.push(nm); }
@@ -8121,6 +8126,7 @@ function buildFontSpec() {
     const accPoly = markGlyphContours('accent', pc.mark).map(poly => poly.map(([x,y]) => [Math.round(x + anc.x), Math.round(y + anc.y)]));   // accents are pre-sized (scale 1)
     const baseContours = baseL.contours.map(c => c.points);
     const nm = gname(pc.target);
+    if (glyphs[nm]) return;                                         // an explicit custom glyph already owns this cp — never clobber it
     glyphs[nm] = { contours: baseContours.concat(accPoly), advance: effLetterAdvance(baseL) };
     if (baseL.curves && baseL.curves.length === baseContours.length) glyphs[nm].curves = baseL.curves.concat(accPoly.map(() => null));
     if (!glyphOrder.includes(nm)) { glyphOrder.push(nm); baseGlyphNames.push(nm); }
