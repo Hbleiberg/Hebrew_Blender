@@ -1576,7 +1576,7 @@ function svgUploadOn() { return !!(project && project.font && project.font.svgUp
 function isVectorGlyph(l) { return project.inputMode === 'font' || !!(l && l.source && l.source.kind === 'svg'); }
 /* Spacing — single source of truth so the live preview matches the exported font exactly */
 function fontSpacing() { return (project && project.font && project.font.spacing) || { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם', kernTarget:40 }; }
-function effLetterAdvance(l) { const base = (l && l.advance) || Math.round(LETTER_TOP*0.7); return Math.max(50, base + fontSpacing().letterSpacing); }
+function effLetterAdvance(l) { const base = (l && l.advance != null) ? l.advance : Math.round(LETTER_TOP*0.7); return Math.max(50, base + fontSpacing().letterSpacing); }
 function wordAdvance() { return Math.max(0, fontSpacing().wordSpacing); }
 function fontKerning() { return (project && project.font && Array.isArray(project.font.kerning)) ? project.font.kerning : []; }
 function kernTargetGap() { const t = fontSpacing().kernTarget; return t != null ? t : 40; }   // target whitespace "Suggest pairs" aims for
