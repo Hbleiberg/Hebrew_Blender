@@ -2446,7 +2446,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     applySettings(Object.assign({}, PRISTINE_DEFAULTS, s.diff));   // reset display config to a known baseline + diff (schedule preserved)
     saveSettingsToStorage();
   }
+  let _frPrevFocus = null;
   function openFirstRun() {
+    _frPrevFocus = document.activeElement;   // restore target for the drawer-button path (body on auto first-visit)
     document.getElementById('frStarters').innerHTML = STARTERS.map(s =>
       `<button class="fr-starter" onclick="frApplyStarter('${esc(s.key)}')"><b>${esc(s.label)}</b><span>${esc(s.desc)}</span></button>`
     ).join('');
@@ -2466,6 +2468,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     saveSettingsToStorage();                                        // makes the settings key non-null → never re-shown
     document.getElementById('frBackdrop').classList.remove('open');
     document.getElementById('frModal').classList.remove('open');
+    // Hand focus back to the opener (drawer's Quick-start button); auto-open has none, so
+    // just make sure focus doesn't stay trapped on a control inside the now-hidden modal
+    if (_frPrevFocus && _frPrevFocus !== document.body && _frPrevFocus.isConnected &&
+        _frPrevFocus.offsetParent !== null) _frPrevFocus.focus();
+    else if (document.activeElement &&
+             document.getElementById('frModal').contains(document.activeElement)) document.activeElement.blur();
+    _frPrevFocus = null;
   }
   function frApplyStarter(key) {
     applyStarter(key);                                             // resets settings (incl. location) to pristine + diff
