@@ -207,6 +207,17 @@ body.dark .sefaria-attr .sefaria-dark{display:inline-block;}
 .card-attr img{height:28px;}
 .card-attr:hover{background:var(--warm-gray);}
 .card-attr:focus{outline:2px solid var(--gold);outline-offset:2px;}
+
+/* Honor reduced-motion: neutralize all transitions (incl. the .page-card hover lift) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .page-card:hover { transform: none; }
+}
 </style>
 </head>
 <body>
