@@ -1896,6 +1896,19 @@ function refreshDictVowelGroupColors() {
   });
 }
 
+function bindLptA11y(t) {
+  t.tabIndex = 0;
+  t.setAttribute('role', 'button');
+  t.setAttribute('aria-pressed', t.classList.contains('selected') ? 'true' : 'false');
+  t.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); t.click(); }
+  });
+}
+
+function syncLptAria(sel) {
+  document.querySelectorAll(sel).forEach(t => t.setAttribute('aria-pressed', t.classList.contains('selected') ? 'true' : 'false'));
+}
+
 function buildPosFilterTiles(grid, i) {
   grid.innerHTML = '';
   CONSONANTS.forEach(c => {
@@ -1906,7 +1919,8 @@ function buildPosFilterTiles(grid, i) {
     t.className = 'lpt' + (posFilters[i].has(c.h) ? ' selected' : '');
     t.dataset.h = c.h;
     t.innerHTML = `<span class="h">${c.h}</span><span class="n">${c.n}</span>`;
-    t.onclick = () => { posFilters[i].has(c.h) ? posFilters[i].delete(c.h) : posFilters[i].add(c.h); t.classList.toggle('selected'); updatePB(i); onFilter(); };
+    t.onclick = () => { posFilters[i].has(c.h) ? posFilters[i].delete(c.h) : posFilters[i].add(c.h); t.classList.toggle('selected'); t.setAttribute('aria-pressed', t.classList.contains('selected') ? 'true' : 'false'); updatePB(i); onFilter(); };
+    bindLptA11y(t);
     grid.appendChild(t);
   });
 }
@@ -1980,9 +1994,11 @@ function buildAnyLetterTiles(grid) {
     t.onclick = () => {
       anyLetterFilter.has(c.h) ? anyLetterFilter.delete(c.h) : anyLetterFilter.add(c.h);
       t.classList.toggle('selected');
+      t.setAttribute('aria-pressed', t.classList.contains('selected') ? 'true' : 'false');
       updatePBAny();
       onFilter();
     };
+    bindLptA11y(t);
     grid.appendChild(t);
   });
 }
@@ -1990,6 +2006,7 @@ function buildAnyLetterTiles(grid) {
 function clearAnyLetters() {
   anyLetterFilter.clear();
   document.querySelectorAll('#pgAny .lpt').forEach(t => t.classList.remove('selected'));
+  syncLptAria('#pgAny .lpt');
   updatePBAny();
   onFilter();
 }
@@ -2022,6 +2039,7 @@ function togglePosSec(i) { document.querySelectorAll('.pos-sec')[i].classList.to
 function clearPos(i) {
   posFilters[i].clear();
   document.querySelectorAll(`#pg${i} .lpt`).forEach(t => t.classList.remove('selected'));
+  syncLptAria(`#pg${i} .lpt`);
   updatePB(i); onFilter();
 }
 
@@ -3630,6 +3648,7 @@ function applyDictState(s) {
       for (let i = 0; i < 6; i++) {
         posFilters[i] = new Set(s.posLetters[i] || []);
         document.querySelectorAll('#pg' + i + ' .lpt').forEach(t => t.classList.toggle('selected', posFilters[i].has(t.dataset.h)));
+        syncLptAria('#pg' + i + ' .lpt');
         updatePB(i);
       }
     }
@@ -3638,6 +3657,7 @@ function applyDictState(s) {
     if (Array.isArray(s.anyLetters)) {
       anyLetterFilter = new Set(s.anyLetters);
       document.querySelectorAll('#pgAny .lpt').forEach(t => t.classList.toggle('selected', anyLetterFilter.has(t.dataset.h)));
+      syncLptAria('#pgAny .lpt');
       updatePBAny();
     }
     if (typeof s.anyLetterOnly === 'boolean') {
