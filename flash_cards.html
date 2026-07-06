@@ -2605,6 +2605,20 @@ function getDisplayLetters() {
   });
 }
 
+/* Make a click-only selectable tile keyboard-operable: focusable, toggle-button
+   semantics, Enter/Space activates, aria-pressed tracks the .selected class.
+   Call AFTER the tile's own click handler is registered so the aria-pressed
+   sync (also a click listener) runs after the toggle. */
+function bindTileA11y(tile) {
+  tile.setAttribute('tabindex', '0');
+  tile.setAttribute('role', 'button');
+  tile.setAttribute('aria-pressed', tile.classList.contains('selected'));
+  tile.addEventListener('click', () => tile.setAttribute('aria-pressed', tile.classList.contains('selected')));
+  tile.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tile.click(); }
+  });
+}
+
 function initLetters() {
   const grid = document.getElementById('letterGrid');
   const display = getDisplayLetters();
@@ -2622,6 +2636,7 @@ function initLetters() {
       tile.classList.toggle('selected');
       saveSettings();
     });
+    bindTileA11y(tile);
   });
   // Lock grids (mini, per position)
   if (anyLetterLock) initLockPositionRows();
@@ -2674,6 +2689,7 @@ function buildLockLetterGrid(pos) {
       tile.classList.toggle('selected');
       saveSettings();
     });
+    bindTileA11y(tile);
   });
 }
 function applyLetterButtons() {
@@ -2742,7 +2758,16 @@ function initVowels() {
       head.className = 'vgroup-head';
       head.style.color = borderCol;
       head.innerHTML = `<span>${g.sound} Sound – ${g.colorHtml}</span>`;
-      head.addEventListener('click', () => group.classList.toggle('collapsed'));
+      head.setAttribute('tabindex', '0');
+      head.setAttribute('role', 'button');
+      head.setAttribute('aria-expanded', 'true');
+      head.addEventListener('click', () => {
+        group.classList.toggle('collapsed');
+        head.setAttribute('aria-expanded', String(!group.classList.contains('collapsed')));
+      });
+      head.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); head.click(); }
+      });
       group.appendChild(head);
     }
 
@@ -2760,6 +2785,7 @@ function initVowels() {
         updateVavAsLetterVisibility();
         saveSettings();
       });
+      bindTileA11y(tile);
       body.appendChild(tile);
     });
     group.appendChild(body);
