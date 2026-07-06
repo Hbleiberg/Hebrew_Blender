@@ -570,9 +570,10 @@ auto-hide timer. The trigger carries `tabindex="0"`, `role="button"`, `aria-expa
 `aria-describedby` pointing at the bubble.
 - **Implemented on:** `hebrew_blend_generator.html` (via `.tooltip-wrap`/`.tooltip-box`), plus
   `hebrew_dictionary.html`, `torah_trainer.html`, and `classroom_dashboard.html` (via `.tip-wrap`/`data-tip`
-  + `bindTip`, `aria-expanded`). **`flash_cards.html` is the laggard** — its `.has-tip` tooltips are
-  hover + click-to-pin only, with **no `aria-expanded` and no keyboard handler**; it is slated to adopt
-  this pattern.
+  + `bindTip`), and `flash_cards.html` (2026-07-06 — its `tooltipIIFE` now carries the `bindTip` wiring
+  adapted to `.has-tip` triggers + the `#tipFloat` `.show`/opacity model; its one native-`<button>`
+  trigger is hover/focus-only by design). Note the dashboard's `wire()` predates the
+  `aria-expanded`/`aria-describedby` attributes — verify before relying on them there.
 - **Rule:** no new hover-only tooltips anywhere. New `data-tip`s must inherit the page's accessible
   handler automatically (don't hand-roll a one-off).
 
@@ -591,9 +592,9 @@ user's saved presets/profiles — it only sets the live view.
 Every page must carry a `@media (prefers-reduced-motion: reduce)` block, and **every** animation added
 anywhere — first-visit pulses, tour transitions, timer/omer pulsing, fades — must be neutralized inside it.
 - **Implemented on:** `torah_trainer.html`, `hebrew_blend_generator.html`, `hebrew_dictionary.html`,
-  `classroom_dashboard.html`, `Hebrew_Font_Maker.html`, `404.html` (**6 files**). **Missing** on
-  `index.html`, `flash_cards.html`, `resources.html`, `contact.html`, `privacy.html` — add the block when
-  you next touch any of those.
+  `classroom_dashboard.html`, `Hebrew_Font_Maker.html`, `404.html`, `flash_cards.html`, `index.html`
+  (**8 files**). **Missing** on `resources.html` and `contact.html` — add the block when you next touch
+  either. (`privacy.html` has zero animations/transitions, so a block there would be a no-op.)
 - **Rule:** if you add an animation to a page, that page needs the reduced-motion block, and your
   animation must honor it.
 
