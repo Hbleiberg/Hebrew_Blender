@@ -5024,7 +5024,33 @@ function pickVowel() {
   return pickRandom(all);
 }
 
-function generateCard() {
+// The emoji candidate pool depends only on the current selection (selectedEmojiSubs + emojiGender),
+// not on which card is being drawn — so it's invariant across a whole generateDeck / sampleChoices
+// loop. buildDeckContext() computes it once; generateCard reuses it via ctx.emojiPool instead of
+// re-running this forEach over all ~240 emojis on every draw (up to n*30 draws per deck, and per
+// card advance in listening mode). Falls back to building its own pool when called without a ctx.
+function buildEmojiPool() {
+  const pool = [];
+  if (!EMOJI_DATA) return pool;
+  EMOJI_DATA.emojis.forEach(e => {
+    if (!selectedEmojiSubs.has(e.category + '|' + e.subcategory)) return;
+    const hasM = !!e.hebrew_masculine, hasF = !!e.hebrew_feminine;
+    if (emojiGender === 'masc')     { if (hasM) pool.push({ e, form: 'm' }); }
+    else if (emojiGender === 'fem') { if (hasF) pool.push({ e, form: 'f' }); }
+    else                            { if (hasM) pool.push({ e, form: 'm' }); if (hasF) pool.push({ e, form: 'f' }); }
+  });
+  return pool;
+}
+
+// Precompute the pools that are invariant across a deck/choice-sampling loop (currently the emoji
+// pool). Built once by the loop and threaded into generateCard(ctx).
+function buildDeckContext() {
+  const ctx = {};
+  if (otherModeActive && otherSubMode === 'emoji') ctx.emojiPool = buildEmojiPool();
+  return ctx;
+}
+
+function generateCard(ctx) {
   const m = mode;
 
   if (nameLetterMode) {
@@ -5059,16 +5085,9 @@ function generateCard() {
 
   if (otherModeActive && otherSubMode === 'emoji') {
     if (!EMOJI_DATA) return null;
-    // Build the candidate pool. In 'both' + 'separate' mode each emoji becomes one entry per
-    // non-empty Hebrew form so they're independently drawable.
-    const pool = [];
-    EMOJI_DATA.emojis.forEach(e => {
-      if (!selectedEmojiSubs.has(e.category + '|' + e.subcategory)) return;
-      const hasM = !!e.hebrew_masculine, hasF = !!e.hebrew_feminine;
-      if (emojiGender === 'masc')     { if (hasM) pool.push({ e, form: 'm' }); }
-      else if (emojiGender === 'fem') { if (hasF) pool.push({ e, form: 'f' }); }
-      else                            { if (hasM) pool.push({ e, form: 'm' }); if (hasF) pool.push({ e, form: 'f' }); }
-    });
+    // Candidate pool (one entry per drawable Hebrew form). Reuse the loop-precomputed pool when
+    // present; otherwise build it (standalone callers, e.g. a lone generateCard()).
+    const pool = (ctx && ctx.emojiPool) || buildEmojiPool();
     if (pool.length === 0) return null;
     const pick = pool[Math.floor(Math.random() * pool.length)];
     const heb      = pick.form === 'm' ? pick.e.hebrew_masculine    : pick.e.hebrew_feminine;
@@ -5218,8 +5237,9 @@ function generateDeck(n) {
   const usedHeb = new Set();
   let attempts = 0;
   let stuckCount = 0;
+  const ctx = buildDeckContext();
   while (deck.length < n && attempts < n * 30) {
-    const c = generateCard();
+    const c = generateCard(ctx);
     if (c && !usedHeb.has(c.heb)) {
       deck.push(c);
       usedHeb.add(c.heb);
@@ -5633,9 +5653,10 @@ function sampleChoices(answer, n) {
   };
   addFrom(shuffle(currentCards.slice()));   // 1) reuse distinct cards already in the deck
   let attempts = 0;
+  const ctx = buildDeckContext();
   while (distractors.length < n - 1 && attempts < n * 25) {   // 2) top up from the mode pool
     attempts++;
-    addFrom([generateCard()]);
+    addFrom([generateCard(ctx)]);
   }
   return shuffle([answer, ...distractors]);
 }
