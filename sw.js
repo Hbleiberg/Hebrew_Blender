@@ -20,6 +20,7 @@ const CORE_ASSETS = [
   '/resources.html',
   '/privacy.html',
   '/contact.html',
+  '/404.html',
   '/zelle-qr.jpg',
   '/fonts/FrankRuhlLibre-Regular.ttf',
   '/manifest.webmanifest',
