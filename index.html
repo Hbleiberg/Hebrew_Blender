@@ -756,6 +756,7 @@ function exportAllSettings() {
     dictTranslitStyle:   localStorage.getItem('hebrewDictionary_translitStyle') || 'default',
     dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate') || '0.75',
     dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
+    dictLastState:       lsJSON('hebrewDictionary_lastState', {}),
     torahTrainerSettings: lsJSON('hebrewTorahTrainer_settings', {}),
     inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
     hebFont:             localStorage.getItem('hebrewBlender_hebFont') || '',
@@ -823,6 +824,10 @@ async function importAllSettings() {
     if (parsed.dictEmojiSettings) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewDictionary_emojiSettings') || '{}');
       localStorage.setItem('hebrewDictionary_emojiSettings', JSON.stringify(ivritSafeAssign(existing, parsed.dictEmojiSettings)));
+    }
+    if (parsed.dictLastState && Object.keys(parsed.dictLastState).length) {
+      const existing = ivritSafeParse(localStorage.getItem('hebrewDictionary_lastState') || '{}');
+      localStorage.setItem('hebrewDictionary_lastState', JSON.stringify(ivritSafeAssign(existing, parsed.dictLastState)));
     }
     if (parsed.torahTrainerSettings) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewTorahTrainer_settings') || '{}');
@@ -915,6 +920,7 @@ const IVRIT_CFG = {
       dictTranslitStyle:   localStorage.getItem('hebrewDictionary_translitStyle') || 'default',
       dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate')       || '0.75',
       dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
+      dictLastState:       lsJSON('hebrewDictionary_lastState', {}),
       torahTrainerSettings:lsJSON('hebrewTorahTrainer_settings',    {}),
       inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
       hebFont:             localStorage.getItem('hebrewBlender_hebFont') || '',
@@ -951,6 +957,7 @@ const IVRIT_CFG = {
       touched = true;
     }
     if (data.dictEmojiSettings)   { mergeObj('hebrewDictionary_emojiSettings', data.dictEmojiSettings);  touched = true; }
+    if (data.dictLastState && Object.keys(data.dictLastState).length) { mergeObj('hebrewDictionary_lastState', data.dictLastState); touched = true; }
     if (data.torahTrainerSettings){ mergeObj('hebrewTorahTrainer_settings',   data.torahTrainerSettings); touched = true; }
     if (data.wordLists)           { wlMergeIntoStorage(data.wordLists, mode === 'replace'); touched = true; }
     if (data.dictAudioEnabled  !== undefined) { localStorage.setItem('hebrewDictionary_audioEnabled',  data.dictAudioEnabled);  touched = true; }

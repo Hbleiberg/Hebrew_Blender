@@ -166,10 +166,9 @@ Not every key belongs in the three AllTools functions. Split them:
   export-exempt.)
 
 Reconcile whenever you touch storage: every key a tool writes should be *either* registered in all three
-functions *or* consciously in the exempt set above. `hebrewDictionary_lastState` (the dictionary's last
-filter/session state) is currently only in `eraseAllSettings` — it is real session data, so it is a
-known gap (erased but never backed up/restored). Treat a key that is real data yet missing from
-export/import as a bug to fix, not a pattern to copy.
+functions *or* consciously in the exempt set above. Treat a key that is real data yet missing from
+export/import as a bug to fix, not a pattern to copy. (The last such gap —
+`hebrewDictionary_lastState`, previously erase-only — was registered as `dictLastState` on 2026-07-06.)
 
 ---
 
