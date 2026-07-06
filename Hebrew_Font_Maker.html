@@ -2150,7 +2150,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '3.3';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '3.4';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2362,6 +2362,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v3.4</strong> — "Apply outline to all letters" now asks before overwriting each letter's own outline and line-weight settings, matching the other apply-to-all buttons. (Still undoable.) <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.3</strong> — Small correctness fix: nikkud and trop previews now center properly on a letter whose width is set to exactly zero (a rare edge case that previously fell back to the default width). <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.2</strong> — Undo now covers two more actions: <strong>showing/hiding guides</strong> and <strong>✓ Confirm placement</strong>. Ctrl+Z steps back through both, just like every other edit. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.1</strong> — Four fixes. The <strong>shin/sin dots</strong> are now edited in just one place — <strong>Special &amp; precomposed forms</strong> (שׁ/שׂ) — instead of also appearing in the above-mark row. <strong>Tracing</strong> no longer clips your letter at an invisible box: it follows your whole reference image, so a wide letter's edges and feet come through. Reopening a saved project now shows <strong>honest letter status</strong> — untraced letters no longer look finished — and your chosen <strong>reference (tracing) font</strong> is kept when you reload. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -5853,6 +5854,7 @@ function liveLineWeight(v) {
    rasterizeCurrent() reads the CURRENT item's image, so we briefly retarget curKind/curCp. */
 function applyOutlineToAll() {
   const src = curLetter(); if (!src) return;
+  if (!confirm('Apply this letter\'s outline setting and line weight to every letter? Per-letter outline tuning will be overwritten (you can undo).')) return;
   const on = src.outlineOnly, w = src.lineWeight;
   const savedKind = curKind, savedCp = curCp;
   const scopes = project.letters.map(l => ({ t:'item', kind:'letter', cp:l.codepoint }));
