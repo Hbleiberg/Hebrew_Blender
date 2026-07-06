@@ -382,9 +382,9 @@ body.dark #fsBtn{background:#0d1220;}
 body.fullscreen header{display:none !important;}
 body.fullscreen .app{height:100vh;min-height:unset;}
 .result-count{font-size:0.85rem;color:var(--muted);flex:1;}
-.sort-sel{padding:4px 8px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--text);font-size:0.8rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;outline:none;}
+.sort-sel{padding:4px 8px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--text);font-size:0.8rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;}
 /* Section 1: toolbar share/reset buttons */
-.dict-tool-btn{padding:4px 10px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--text);font-size:0.78rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;outline:none;transition:background 0.15s,border-color 0.15s;white-space:nowrap;}
+.dict-tool-btn{padding:4px 10px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--text);font-size:0.78rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;transition:background 0.15s,border-color 0.15s;white-space:nowrap;}
 .dict-tool-btn:hover{background:var(--warm-gray);border-color:var(--gold);}
 .dict-tool-btn.copied{background:var(--gold);border-color:var(--gold);color:#fff;}
 /* Section 2: active-filter chip row */
@@ -397,6 +397,7 @@ body.fullscreen .app{height:100vh;min-height:unset;}
 .fchip-x{display:inline-flex;align-items:center;justify-content:center;width:20px;height:22px;background:transparent;color:var(--muted);font-size:0.72rem;line-height:1;border:none;border-left:1px solid var(--border);cursor:pointer;flex-shrink:0;padding:0;}
 .fchip-x:hover{background:var(--gold);color:#fff;}
 .fchip-body:focus-visible,.fchip-x:focus-visible,.fchip-reset:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
+.sort-sel:focus-visible,.dict-tool-btn:focus-visible,.word-card:focus-visible,.emoji-card:focus-visible,.lpt:focus-visible,.panel-title:focus-visible,.adv-section-title:focus-visible,.pos-sec-hdr:focus-visible,.shoresh-patterns-title:focus-visible,.emoji-cat-arrow:focus-visible,.vowel-group-section div[role="button"]:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
 .fchip-reset{font-size:0.74rem;background:var(--navy);color:#fff;border:1px solid var(--navy);border-radius:14px;padding:4px 11px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;}
 .fchip-reset:hover{background:#2a3a6a;}
 body.dark .fchip-reset{background:var(--navy-deep);}
