@@ -106,6 +106,8 @@ content parsed before the tag — hence the placement right after `<meta charset
 | `flashCardPbStreak` | `hebrewFlashCards_pbStreak` | Flash Cards personal-best streak (scalar string; imported as the **max** of existing vs incoming) |
 | `flashCardProfiles` | `hebrewFlashCards_profiles` | Flash Cards saved profiles (import merges via `mergeFlashCardProfiles`) |
 | `dictAudioEnabled` / `dictTranslitStyle` / `dictTtsRate` / `dictEmojiSettings` | `hebrewDictionary_*` | Hebrew Dictionary settings |
+| `dictLastState` | `hebrewDictionary_lastState` | Dictionary last filter/session state (`getDictState()` minus the search query); object blob merged via `ivritSafeAssign`, empty = never-set (skipped on import) |
+| `wordLists` | `ivritSuite_wordLists` | Suite-wide saved Word Lists (`{v:1,lists:{}}`); merged one level deep via `wlMergeIntoStorage` so a shallow assign can't clobber `lists` |
 | `torahTrainerSettings` | `hebrewTorahTrainer_settings` | Torah Trainer settings |
 | `userFonts` | *(IndexedDB `ivritsuite-fonts`, not localStorage)* | Custom fonts, base64-bundled at export — see "My Fonts" section |
 | `inputMode` | `hebrewBlender_inputMode` | Backup UI preference: `'auto'` (.ivrit file) or `'manual'` (text block) — see ".ivrit Save Files" below |
@@ -1318,6 +1320,11 @@ Notes:
   always gets the fresh file, so a deploy is never hidden behind a stale cached
   page. The cache is only the offline fallback for these.
 - **Static media (icons, splash images, manifest) is cache-first** for speed.
+- **`/data/` corpora live in a separate, version-independent cache**
+  (`DATA_CACHE = 'ivritsuite-data-v1'`): a routine `VERSION` bump does NOT evict
+  the ~7 MB of dictionary/emoji/parshiyot/pockettorah data, so users don't
+  re-download it on every deploy. Bump the `DATA_CACHE` name only if the
+  `/data/` eviction semantics themselves change.
 - Cross-origin requests (Google Fonts, Analytics, Sefaria, PocketTorah) bypass
   the worker, so those resources are **not** available offline.
 
