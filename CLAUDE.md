@@ -109,6 +109,8 @@ content parsed before the tag — hence the placement right after `<meta charset
 | `torahTrainerSettings` | `hebrewTorahTrainer_settings` | Torah Trainer settings |
 | `userFonts` | *(IndexedDB `ivritsuite-fonts`, not localStorage)* | Custom fonts, base64-bundled at export — see "My Fonts" section |
 | `inputMode` | `hebrewBlender_inputMode` | Backup UI preference: `'auto'` (.ivrit file) or `'manual'` (text block) — see ".ivrit Save Files" below |
+| `hebFont` / `hebFontSize` | `hebrewBlender_hebFont` / `_hebFontSize` | Shared Generator+Dictionary display prefs (selected Hebrew font + size); scalar strings, empty = never-set (skipped on import) |
+| `livePreview` | `hebrewBlender_livePreview` | Generator live-preview toggle (`'1'`/`'0'`); scalar string, empty = never-set (skipped on import) |
 
 ### Rule: any new tool with persistent data must be added here
 
@@ -591,10 +593,11 @@ user's saved presets/profiles — it only sets the live view.
 ### 4. Reduced motion
 Every page must carry a `@media (prefers-reduced-motion: reduce)` block, and **every** animation added
 anywhere — first-visit pulses, tour transitions, timer/omer pulsing, fades — must be neutralized inside it.
-- **Implemented on:** `torah_trainer.html`, `hebrew_blend_generator.html`, `hebrew_dictionary.html`,
-  `classroom_dashboard.html`, `Hebrew_Font_Maker.html`, `404.html`, `flash_cards.html`, `index.html`
-  (**8 files**). **Missing** on `resources.html` and `contact.html` — add the block when you next touch
-  either. (`privacy.html` has zero animations/transitions, so a block there would be a no-op.)
+- **Implemented on:** every page with any animation — `torah_trainer.html`,
+  `hebrew_blend_generator.html`, `hebrew_dictionary.html`, `classroom_dashboard.html`,
+  `Hebrew_Font_Maker.html`, `404.html`, `flash_cards.html`, `index.html`, `resources.html`,
+  `contact.html` (**10 files**, complete as of 2026-07-06). (`privacy.html` has zero
+  animations/transitions, so a block there would be a no-op.)
 - **Rule:** if you add an animation to a page, that page needs the reduced-motion block, and your
   animation must honor it.
 
