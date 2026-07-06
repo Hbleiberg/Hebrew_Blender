@@ -2150,7 +2150,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '3.4';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '3.5';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2362,6 +2362,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v3.5</strong> — Autosave now also captures the <strong>opacity and overlay view sliders</strong> (template, reference image, glyph) — previously a change to only those settings could be lost if the browser closed before another edit. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.4</strong> — "Apply outline to all letters" now asks before overwriting each letter's own outline and line-weight settings, matching the other apply-to-all buttons. (Still undoable.) <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.3</strong> — Small correctness fix: nikkud and trop previews now center properly on a letter whose width is set to exactly zero (a rare edge case that previously fell back to the default width). <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.2</strong> — Undo now covers two more actions: <strong>showing/hiding guides</strong> and <strong>✓ Confirm placement</strong>. Ctrl+Z steps back through both, just like every other edit. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -2689,16 +2690,18 @@ function onTemplateChange() {
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (project) { renderStage(); renderLetterGrid(); } });
 }
 /* ── View setters: R-panel opacity sliders + editable anchor X/Y. All read/write project state
-   (NOT the DOM), so renderStage()/templateGlyphSVG() never depend on a control existing. ── */
+   (NOT the DOM), so renderStage()/templateGlyphSVG() never depend on a control existing.
+   These fields serialize into save/export/autosave, so each setter marks the project dirty
+   (pure-UI pattern: dirty + autosave, no undo entry — like toggleGuideCollapse). ── */
 function setTemplateOpacity(v){ project.template.opacity=Math.max(0,Math.min(1,(+v)/100));
-  const r=document.getElementById('tplOpacityVal'); if(r) r.textContent=Math.round(project.template.opacity*100)+'%'; renderStage(); }
-function setTemplateShow(on){ project.template.showOverlay=!!on; renderStage(); renderControls(); }
+  const r=document.getElementById('tplOpacityVal'); if(r) r.textContent=Math.round(project.template.opacity*100)+'%'; markDirty(); renderStage(); }
+function setTemplateShow(on){ project.template.showOverlay=!!on; markDirty(); renderStage(); renderControls(); }
 function setImgOpacityAlign(v){ project.view.imgOpacityAlign=Math.max(0,Math.min(1,(+v)/100));
-  const r=document.getElementById('imgOpAlignVal'); if(r) r.textContent=Math.round(project.view.imgOpacityAlign*100)+'%'; renderStage(); }
+  const r=document.getElementById('imgOpAlignVal'); if(r) r.textContent=Math.round(project.view.imgOpacityAlign*100)+'%'; markDirty(); renderStage(); }
 function setImgOpacityTrace(v){ project.view.imgOpacityTrace=Math.max(0,Math.min(1,(+v)/100));
-  const r=document.getElementById('imgOpTraceVal'); if(r) r.textContent=Math.round(project.view.imgOpacityTrace*100)+'%'; renderStage(); }
+  const r=document.getElementById('imgOpTraceVal'); if(r) r.textContent=Math.round(project.view.imgOpacityTrace*100)+'%'; markDirty(); renderStage(); }
 function setGlyphOpacity(v){ project.view.glyphOpacity=Math.max(0,Math.min(1,(+v)/100));
-  const r=document.getElementById('glyphOpVal'); if(r) r.textContent=Math.round(project.view.glyphOpacity*100)+'%'; renderStage(); }
+  const r=document.getElementById('glyphOpVal'); if(r) r.textContent=Math.round(project.view.glyphOpacity*100)+'%'; markDirty(); renderStage(); }
 function setAnchorCoord(axis,v){ if(!project||workMode!=='anchors') return;
   const l=curLetter(); if(!l.anchors) return; const n=Math.round(+v); if(!Number.isFinite(n)) return;
   udBurstBegin([itemScope()], 'anchor ' + axis + ' — ' + l.name);
