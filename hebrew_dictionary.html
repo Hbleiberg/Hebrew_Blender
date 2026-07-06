@@ -1739,30 +1739,51 @@ function updateDictLoadProgress(pct, received) {
 
 fetchJsonWithProgress('data/hebrew_words.json?v=4', updateDictLoadProgress)
   .then(data => {
-    ALL_WORDS = Object.entries(data).flatMap(([cnt, words]) =>
-      words.map(w => ({
-        word: w.word,
-        bare: w.bare || '',
-        gem: calcGematria(w.bare || ''),
-        cons: Array.isArray(w.letters) ? w.letters : [],
-        translit: w.translit || '',
-        translitDisplay: w.translit || '',
-        pos: w.pos || '',
-        translation: w.translation || '',
-        era: w.era || 'Both',
-        len: parseInt(cnt)
-      }))
-    );
-    if (translitStyle !== 'default') {
-      // Load the lib and repaint visible cards; translitDisplayOf() styles each on demand.
-      window.HebrewTransliterator.ensureLoaded().then(() => {
-        if (typeof rerender === 'function') rerender();
-      });
+    // Flatten in batches so slow devices don't block the main thread for the whole
+    // ~13k-word pass (per-word calcGematria is the main cost). The loading UI stays up
+    // and _wordsReady/maybeBootstrap fire only after the final batch, because the first
+    // render (onFilter) walks the complete array.
+    let queue = [];
+    for (const [cnt, words] of Object.entries(data)) {
+      const len = parseInt(cnt);
+      for (const w of words) queue.push([w, len]);
     }
-    document.getElementById('loadingMsg').style.display = 'none';
-    document.getElementById('resultsGrid').style.display = 'grid';
-    _wordsReady = true;           // Section 1: gate restore on both DOM + words being ready
-    maybeBootstrap();
+    ALL_WORDS = [];
+    const BATCH = 2000;
+    let i = 0;
+    (function flattenBatch() {
+      const end = Math.min(i + BATCH, queue.length);
+      for (; i < end; i++) {
+        const w = queue[i][0], len = queue[i][1];
+        ALL_WORDS.push({
+          word: w.word,
+          bare: w.bare || '',
+          gem: calcGematria(w.bare || ''),
+          cons: Array.isArray(w.letters) ? w.letters : [],
+          translit: w.translit || '',
+          translitDisplay: w.translit || '',
+          pos: w.pos || '',
+          translation: w.translation || '',
+          era: w.era || 'Both',
+          len
+        });
+      }
+      if (i < queue.length) { setTimeout(flattenBatch, 0); return; }
+      queue = null;
+      setTimeout(finishLoad, 0);   // first render gets its own task, separate from the last batch
+    })();
+    function finishLoad() {
+      if (translitStyle !== 'default') {
+        // Load the lib and repaint visible cards; translitDisplayOf() styles each on demand.
+        window.HebrewTransliterator.ensureLoaded().then(() => {
+          if (typeof rerender === 'function') rerender();
+        });
+      }
+      document.getElementById('loadingMsg').style.display = 'none';
+      document.getElementById('resultsGrid').style.display = 'grid';
+      _wordsReady = true;           // Section 1: gate restore on both DOM + words being ready
+      maybeBootstrap();
+    }
   })
   .catch(() => {
     const bar = document.getElementById('loadBar'); if (bar) bar.style.display = 'none';
