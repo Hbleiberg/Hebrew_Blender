@@ -4237,6 +4237,11 @@ function selectAllLetters() {
 
 function setDageshTav(enabled) {
   dageshTavEnabled = enabled;
+  // The grid rebuilds below drop keyboard focus — remember which tile (grid + letter) had it
+  const _af = document.activeElement;
+  const _afGrid = _af && _af.closest
+    ? _af.closest('#letterGrid, #rwLetterGrid, #cwBlendLetterGrid, #lockGrid1, #lockGrid2, #lockGrid3') : null;
+  const _afHeb = _afGrid && _af.querySelector('.heb') ? _af.querySelector('.heb').textContent : null;
   // Sync all checkboxes with the same id across any duplicated controls
   document.querySelectorAll('#dageshTavToggle').forEach(el => el.checked = enabled);
   // Main blend letter grid
@@ -4283,6 +4288,14 @@ function setDageshTav(enabled) {
   initLockGrids();
 initLockVowelGrids();
 
+  // Restore focus to the equivalent rebuilt tile (tav ↔ dagesh-tav swap counts as equivalent)
+  if (_afGrid && _afHeb) {
+    const tiles = [..._afGrid.querySelectorAll('[role="button"]')];
+    const byHeb = h => tiles.find(t => { const s = t.querySelector('.heb'); return s && s.textContent === h; });
+    let target = byHeb(_afHeb);
+    if (!target && (_afHeb === 'ת' || _afHeb === 'תּ')) target = byHeb(_afHeb === 'ת' ? 'תּ' : 'ת');
+    if (target) target.focus();
+  }
   updateCombosCount();
 }
 
@@ -5582,9 +5595,13 @@ function toggleSidebar() {
   const sidebar  = document.getElementById('appSidebar');
   const showBtn  = document.getElementById('sidebarShowBtn');
   const hideBtn  = document.getElementById('sidebarToggleBtn');
+  const hadFocus = document.activeElement;
   const collapsed = sidebar.classList.toggle('hidden');
   showBtn.style.display = collapsed ? 'flex' : 'none';
   hideBtn.style.display = collapsed ? 'none' : 'flex';
+  // The activated button just became display:none — hand focus to its visible twin
+  // (guarded on activeElement so programmatic calls, e.g. the tour, never steal focus).
+  if (hadFocus === (collapsed ? hideBtn : showBtn)) (collapsed ? showBtn : hideBtn).focus();
 }
 function applyZoom(val) {
   document.getElementById('worksheetScaler').style.transform = `scale(${val/100})`;
