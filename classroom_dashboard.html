@@ -413,6 +413,10 @@
   .weather-tts-on .weather-descriptor { cursor: pointer; transition: opacity 0.15s; }
   .weather-tts-on .weather-label:hover,
   .weather-tts-on .weather-descriptor:hover { opacity: 0.7; }
+  .tts-tappable .day-main:focus-visible,
+  .tts-tappable .day-badge:focus-visible,
+  .weather-tts-on .weather-label:focus-visible,
+  .weather-tts-on .weather-descriptor:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
 
   /* ───── Center: date/time ───── */
   .dash-center {
@@ -2614,6 +2618,18 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     speechSynthesis.cancel();
     speechSynthesis.speak(utt);
   }
+  // Keyboard access for the tap-to-read nodes. Both carriers are rebuilt via innerHTML on
+  // every render (days: settings changes + midnight; weather: settings changes + the
+  // 30-min refresh), so this is called inside the render functions on fresh nodes —
+  // no double-binding possible.
+  function _wireSpeakNode(el) {
+    if (!el) return;
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('role', 'button');
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+    });
+  }
 
   function stripNikkud(s) { return s.replace(NIKKUD_RE, ''); }
 
@@ -3015,6 +3031,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           const target = e.target.closest('[data-speak]');
           if (target) speakDash(target.dataset.speak);
         });
+        item.querySelectorAll('[data-speak]').forEach(_wireSpeakNode);
       }
 
       list.appendChild(item);
@@ -3147,8 +3164,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     if (ttsOn) {
       const labelEl = block.querySelector('.weather-label');
       const descEl  = block.querySelector('.weather-descriptor');
-      if (labelEl) labelEl.addEventListener('click', () => speakDash(labelRaw));
-      if (descEl)  descEl.addEventListener('click',  () => speakDash(descriptorRaw));
+      if (labelEl) { labelEl.addEventListener('click', () => speakDash(labelRaw)); _wireSpeakNode(labelEl); }
+      if (descEl)  { descEl.addEventListener('click',  () => speakDash(descriptorRaw)); _wireSpeakNode(descEl); }
     }
   }
 
