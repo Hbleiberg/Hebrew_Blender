@@ -2150,7 +2150,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '3.0';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '3.1';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2362,6 +2362,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v3.1</strong> — Four fixes. The <strong>shin/sin dots</strong> are now edited in just one place — <strong>Special &amp; precomposed forms</strong> (שׁ/שׂ) — instead of also appearing in the above-mark row. <strong>Tracing</strong> no longer clips your letter at an invisible box: it follows your whole reference image, so a wide letter's edges and feet come through. Reopening a saved project now shows <strong>honest letter status</strong> — untraced letters no longer look finished — and your chosen <strong>reference (tracing) font</strong> is kept when you reload. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.0</strong> — Placement panel, take two: the <strong>size sliders</strong> under the canvas are <strong>stacked</strong> again (one per line, so each is easy to read), and the <strong>✓ Confirm placement</strong> / <strong>Reset letter</strong> / <strong>Reset all</strong> buttons now sit together in their own <strong>panel to the right</strong> of the sliders instead of underneath them. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v2.9</strong> — The <strong>Place Nikkud / Trop</strong> panel now says what each control affects. Sections are grouped by scope — “<strong>Qamats — every letter</strong>” for a vowel's Height &amp; shape, “<strong>Below position — Alef only</strong>” for this letter's X / Y — with a short plain-language line under each, replacing one long confusing paragraph. The <strong>size sliders</strong> under the canvas now sit <strong>side-by-side</strong> with dividers, so they take one tidy row instead of a stack. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v2.8</strong> — The <strong>Place Nikkud / Trop</strong> step is tidier and works the way you'd expect. A letter's placement controls — the <strong>size sliders</strong> and the <strong>✓ Confirm placement</strong> / <strong>Reset</strong> buttons — are now grouped <strong>right below the canvas</strong> (which fills the width), so nothing's stranded in a far-off strip. The above-mark picker now only offers marks that fit the letter (the <strong>shin/sin dots</strong> show up only on <strong>Shin</strong>), and picking any mark — Holam, Shin dot, Sin dot, or <strong>Rafe</strong> — now actually previews it on the canvas (Rafe used to do nothing). <span style="color:var(--muted);">(July 2026)</span></li>
@@ -3005,12 +3006,29 @@ async function uploadTemplateTTF(file) {
     const ff = new FontFace(fam, buf);
     await ff.load(); document.fonts.add(ff);
     const family = `'${fam}', serif`;
-    customTemplateFonts.push({ section:'Custom', name: file.name.replace(/\.[a-z0-9]+$/i,''), family, load:null });
+    const dispName = file.name.replace(/\.[a-z0-9]+$/i,'');
+    customTemplateFonts.push({ section:'Custom', name: dispName, family, load:null });
+    // Persist the font bytes on the project so the tracing guide survives Save/Load (and autosave).
+    (project.template.customFonts = project.template.customFonts || []).push({ name: dispName, fam, family, dataB64: bytesToB64(new Uint8Array(buf)) });
     project.template.font = family; project.template.showOverlay = true;
+    markDirty();
     renderStage(); renderControls(); renderLetterGrid();   // rebuilds R-panel select + retints the letter tiles
     const sel = document.getElementById('templateFont'); if (sel) sel.value = family;
     status('Template font “' + file.name + '” loaded.');
   } catch (e) { console.error(e); status('Could not read that font file.'); }
+}
+// Re-register uploaded reference (tracing-guide) fonts saved with the project, so the ghost renders and
+// the R-panel dropdown can re-select them after a reload.
+async function restoreCustomTemplateFonts() {
+  customTemplateFonts = [];
+  const list = (project.template && project.template.customFonts) || [];
+  for (const cf of list) {
+    try {
+      const ff = new FontFace(cf.fam, b64ToBytes(cf.dataB64));
+      await ff.load(); document.fonts.add(ff);
+      customTemplateFonts.push({ section:'Custom', name: cf.name, family: cf.family, load:null });
+    } catch (e) { console.warn('reference font restore failed:', cf && cf.name, e); }
+  }
 }
 function setInputMode(mode) {
   project.inputMode = mode; syncMetaToForm();
@@ -3022,17 +3040,19 @@ function setInputMode(mode) {
 
 /* ════════ Letter grid ════════ */
 function letterStatus(l) {
-  if (l.anchors) return 'anchored';
-  if (l.contours) return 'traced';
+  if (l.contours) return l.anchors ? 'anchored' : 'traced';   // 'anchored' implies a real trace exists
   if (l.source.dataUrl) return 'img';   // single: upload; combined: cropped region
   return '';
 }
 // Placement review marker for the letter grid: confirmed (solid green ✓) vs carried-over (hollow amber ✓)
 // vs unconfirmed (amber !) — the real "done" signal, not raw 'anchored'. Falls back to trace/img status.
 function placementDot(l) {
-  if (l.anchors && l.placementSaved)     return { cls: 'saved',       glyph: '✓' };
-  if (l.anchors && l.placementInherited) return { cls: 'inherited',   glyph: '✓' };
-  if (l.anchors)                         return { cls: 'unconfirmed', glyph: '!' };
+  if (l.contours) {   // anchor/placement status is only meaningful once the letter is actually traced;
+                      // untraced letters can pick up seeded anchors (export / nikkud-preview) — ignore those
+    if (l.anchors && l.placementSaved)     return { cls: 'saved',       glyph: '✓' };
+    if (l.anchors && l.placementInherited) return { cls: 'inherited',   glyph: '✓' };
+    if (l.anchors)                         return { cls: 'unconfirmed', glyph: '!' };
+  }
   return { cls: letterStatus(l), glyph: '' };   // 'traced'/'img'/'' — a11yTiles injects the T/I cue
 }
 function renderLetterGrid() {
@@ -4420,7 +4440,24 @@ function wideFormGuidesSVG(g) {
 function captureBoxFont(l) {
   if (l.captureBox) return l.captureBox;
   const m = effMetrics();
-  return { x0: -40, y0: m.descender-20, x1: (m.letterTop*1.0)+80, y1: m.letterTop+120 };
+  const fixed = { x0: -40, y0: m.descender-20, x1: (m.letterTop*1.0)+80, y1: m.letterTop+120 };
+  // Capture box FOLLOWS the placed reference image (its transformed bounds in font units) so nothing in
+  // the left/right margins is clipped out of the trace — the gold box, the rasterize clip, and traceSig
+  // all read this, so they track the image together. Trade-off the user chose: stray marks/borders inside
+  // the image become traceable too. Falls back to a fixed letter-region box when there's no image.
+  const im = (l.source && l.source.dataUrl) ? imgCache[l.source.dataUrl] : null;
+  const t = l.transform;
+  if (!im || !t) return fixed;
+  const iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height;
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (const [px, py] of [[0,0],[iw,0],[0,ih],[iw,ih]]) {
+    const sx = t[0]*px + t[2]*py + t[4];   // image px → stage px (same matrix rasterizeCurrent draws with)
+    const sy = t[1]*px + t[3]*py + t[5];
+    const X = ifx(sx), Y = ify(sy);        // stage px → font units
+    if (X < minX) minX = X; if (X > maxX) maxX = X;
+    if (Y < minY) minY = Y; if (Y > maxY) maxY = Y;
+  }
+  return { x0: minX, y0: minY, x1: maxX, y1: maxY };
 }
 
 /* ════════ Mark (nikkud / trop) workspace ════════ */
@@ -5915,8 +5952,9 @@ let activeAboveMark = '05B9';
 let activeCenterMark = '05BC';
 let activeTropCp = '0597';
 let coPreviewCp = null;   // Place-Nikkud "check stacking" — a 2nd mark previewed (grey ghost) on the current letter
-// Shin dot / Sin dot only distinguish שׁ/שׂ, so they apply only to Shin (05E9); Holam & Rafe are general.
-function aboveMarkApplies(cp, l) { return (cp !== '05C1' && cp !== '05C2') || (!!l && l.codepoint === '05E9'); }
+// Shin-dot (05C1) / sin-dot (05C2) are edited in "Special & precomposed forms" (שׁ/שׂ), not in the
+// above-mark grid — so they never appear here. The above-mark grid is Holam + Rafe only.
+function aboveMarkApplies(cp, l) { return (cp !== '05C1' && cp !== '05C2'); }
 function aboveMarkFor(l) { return aboveMarkApplies(activeAboveMark, l) ? activeAboveMark : '05B9'; }
 function activeVowelCp() {
   switch (activeAnchorClass) {
@@ -7353,12 +7391,12 @@ function renderAnchorLeft(L, l) {
       </div>
       <div class="hint" style="font-size:0.6rem;text-align:center;">Height raises or lowers just ${esc(vName)} — on <b>every letter</b>. <b>Edit shape</b> redesigns its dots &amp; bars.</div>`;
   } else if (cls === 'above') {
-    const aboveMarks = ABOVE_MARKS.filter(v => aboveMarkApplies(v.cp, l));   // hide Shin-only dots on non-Shin letters
+    const aboveMarks = ABOVE_MARKS.filter(v => aboveMarkApplies(v.cp, l));   // Holam + Rafe (shin/sin dots live in Special & precomposed forms)
     const curAbove = aboveMarkFor(l);
     grid = `<div class="ws-side-title">Preview above-mark</div>
       <div class="mark-grid2">` + aboveMarks.map(v => squareMarkBtn('nikkud', v.cp, v.name, curAbove, 'setAboveMark', l)).join('') + `</div>
       <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(curAbove)}</div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">${l.codepoint === '05E9' ? 'The holam dot and the shin/sin dots sit above the letter.' : 'The holam dot and rafe sit above the letter.'} <b>Edit shape</b> redesigns the selected mark.</div>`;
+      <div class="hint" style="font-size:0.6rem;text-align:center;">The holam dot and rafe sit above the letter. <b>Edit shape</b> redesigns the selected mark.${l.codepoint === '05E9' ? ' Edit the shin/sin dots (שׁ/שׂ) in <b>Special &amp; precomposed forms</b> below.' : ''}</div>`;
   } else if (cls === 'center') {
     grid = `<div class="ws-side-title">Preview center mark</div>
       <div class="mark-grid2">` + CENTER_MARKS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeCenterMark, 'setCenterMark', l)).join('') + `</div>
@@ -9866,6 +9904,7 @@ async function applyProjectData(data) {           // shared by file-load and "Lo
   // rebuild the runtime SVG-sheet cache (combined SVG sheets are re-parsed from their data URL — never persisted)
   (project.combinedSheets || []).forEach(s => { if (s.dataUrl && /^data:image\/svg/i.test(s.dataUrl)) cacheSvgSheet(s.dataUrl); });
   ['nikkud','trop','customMarks'].forEach(cat => { const u = project.font[cat].combinedImage && project.font[cat].combinedImage.dataUrl; if (u && /^data:image\/svg/i.test(u)) cacheSvgSheet(u); });
+  await restoreCustomTemplateFonts();   // re-register uploaded tracing fonts before the R-panel select repopulates
   curKind = 'letter'; curCp = LETTER_ORDER[0];
   syncMetaToForm(); renderGrids(); _setWorkMode('align');
   markClean();          // a freshly loaded project is a known-good state — clear the dirty flag
@@ -10009,7 +10048,7 @@ function migrateProject(data) {
     if (ex.placementInherited == null) ex.placementInherited = false;   // carried-over (not hand-confirmed) review state
     // A reopened project's already-positioned letters are "placed": their saved anchors must never be
     // overwritten by the carry-onto-next-letter convenience, and Discard must not revert to a stale snapshot.
-    if (ex.anchors) { ex.placementSaved = true; if (!ex.savedAnchors) ex.savedAnchors = JSON.parse(JSON.stringify(ex.anchors)); }
+    if (ex.anchors) { if (ex.contours) ex.placementSaved = true; if (!ex.savedAnchors) ex.savedAnchors = JSON.parse(JSON.stringify(ex.anchors)); }   // only a traced letter is a confirmed placement
     if (ex.invert == null) ex.invert = false;
     if (ex.outlineOnly == null) ex.outlineOnly = false;   // backfilled OFF → old saves render identically (no re-trace)
     if (ex.lineWeight == null) ex.lineWeight = 70;
@@ -10030,7 +10069,7 @@ function migrateProject(data) {
       if (l.cornerAngle == null) l.cornerAngle = 32;
       if (l.placementSaved == null) l.placementSaved = false;
       if (l.placementInherited == null) l.placementInherited = false;   // carried-over (not hand-confirmed) review state
-      if (l.anchors) { l.placementSaved = true; if (!l.savedAnchors) l.savedAnchors = JSON.parse(JSON.stringify(l.anchors)); }
+      if (l.anchors) { if (l.contours) l.placementSaved = true; if (!l.savedAnchors) l.savedAnchors = JSON.parse(JSON.stringify(l.anchors)); }   // only a traced letter is a confirmed placement
       if (l.invert == null) l.invert = false;
       if (l.outlineOnly == null) l.outlineOnly = false;
       if (l.lineWeight == null) l.lineWeight = 70;
@@ -10049,6 +10088,7 @@ function migrateProject(data) {
   data.precomposed = data.precomposed || PRECOMPOSED.map(p => ({...p}));
   data.precomposed.forEach(pc => { if (pc.anchor === undefined) pc.anchor = null; });   // per-form mark anchor override
   data.template = data.template || { font:"'Noto Sans Hebrew', sans-serif", opacity:0.35, showOverlay:true };
+  if (!Array.isArray(data.template.customFonts)) data.template.customFonts = [];   // uploaded tracing fonts (bytes) persist here
   data.view = data.view || { imgOpacityAlign:0.92, imgOpacityTrace:0.28, glyphOpacity:1.0 };
   ['imgOpacityAlign','imgOpacityTrace','glyphOpacity'].forEach((k,i)=>{ if(data.view[k]==null) data.view[k]=[0.92,0.28,1.0][i]; });
   if (!data.guides || typeof data.guides !== 'object') data.guides = { show: true, items: [] };   // project-wide drawing guides
