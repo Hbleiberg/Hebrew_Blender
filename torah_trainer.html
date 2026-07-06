@@ -724,6 +724,8 @@ body.dark .form-row select, body.dark .form-row input[type="text"], body.dark .f
 }
 input:checked + .slider { background:var(--gold); }
 input:checked + .slider::before { transform:translateX(16px); }
+/* The real checkbox is zero-size/transparent, so ring the visible slider on keyboard focus. */
+input:focus-visible + .slider { outline:2px solid var(--gold); outline-offset:2px; }
 
 /* ───── Radio group (lifted from classroom_dashboard.html:680-705) ───── */
 .radio-group {

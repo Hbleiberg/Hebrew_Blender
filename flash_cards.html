@@ -511,6 +511,8 @@ body.dark .panel-title {
 body.dark .slider::before { background: #d8dde9; }
 .switch input:checked + .slider { background: var(--gold); }
 .switch input:checked + .slider::before { transform: translateX(20px); }
+/* The real checkbox is zero-size/transparent, so ring the visible slider on keyboard focus. */
+.switch input:focus-visible + .slider { outline: 2px solid var(--gold); outline-offset: 2px; }
 .switch.sm { width: 34px; height: 20px; }
 .switch.sm .slider::before { width: 14px; height: 14px; left: 3px; top: 3px; }
 .switch.sm input:checked + .slider::before { transform: translateX(14px); }

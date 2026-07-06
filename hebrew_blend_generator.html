@@ -507,6 +507,8 @@
   }
   .toggle input:checked + .slider { background: var(--gold); }
   .toggle input:checked + .slider::before { transform: translateX(18px); }
+  /* The real checkbox is zero-size/transparent, so ring the visible slider on keyboard focus. */
+  .toggle input:focus-visible + .slider { outline: 2px solid var(--gold); outline-offset: 2px; }
 
   /* Vowel selector */
   .vowel-grid {
