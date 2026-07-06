@@ -960,7 +960,10 @@ body.dark .results-hero .pct { color: var(--gold-light); }
 #tipFloat.show { opacity: 1; }
 
 /* ============== UTILITIES ============== */
-.sub { color: var(--muted); font-size: 0.84rem; }
+/* .sub gets dedicated colors (not var(--muted)) to hit WCAG AA 4.5:1 — the shared
+   muted token stays lighter for decorative uses (arrows, drag handles). */
+.sub { color: #5f6a80; font-size: 0.84rem; }
+body.dark .sub { color: #99a2b8; }
 .warn { color: var(--bad); font-size: 0.88rem; padding: 8px; background: var(--bad-soft); border-radius: 8px; border: 1px solid var(--bad); }
 .hide { display: none !important; }
 .btn-xs { font-size: 0.72rem; padding: 3px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--white); cursor: pointer; font-family: inherit; color: var(--ink); transition: background 0.15s; }
