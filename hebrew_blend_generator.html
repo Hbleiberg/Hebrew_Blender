@@ -3965,7 +3965,11 @@ let blends = [];
 let classSetSheets = null;
 let translitStyle = 'default';
 
-function rebuildTranslitDisplay() {
+// scope 'all' (default) refreshes blends + the full REAL_WORDS/custom corpora — used by the rare
+// data-change events (style change, lib load, corpus load, custom import, applySettings). scope
+// 'blends' refreshes only the freshly-generated blends[]; the blend worksheet renders nothing else,
+// so renderWorksheet passes 'blends' to avoid re-transliterating ~13k corpus words on every render.
+function rebuildTranslitDisplay(scope = 'all') {
   const HT = window.HebrewTransliterator;
   if (!HT) return;
   if (Array.isArray(blends)) {
@@ -3973,6 +3977,7 @@ function rebuildTranslitDisplay() {
       b.translitDisplay = HT.apply(b.hebrewDisplay, b.combined, translitStyle);
     });
   }
+  if (scope === 'blends') return;
   if (typeof REAL_WORDS !== 'undefined' && Array.isArray(REAL_WORDS)) {
     REAL_WORDS.forEach(w => {
       w.translitDisplay = HT.apply(w.word || w.heb || '', w.translit || '', translitStyle);
@@ -8898,7 +8903,7 @@ let isShuffling = false;
 function renderWorksheet(animate = false) {
   // Refresh transliteration display strings before each render so style changes
   // (or freshly generated blends) pick up the active style.
-  if (translitStyle !== 'default') rebuildTranslitDisplay();
+  if (translitStyle !== 'default') rebuildTranslitDisplay('blends');
   const isInverse   = document.getElementById('inverseToggle').checked;
   const fillVowels  = document.getElementById('fillVowelsToggle').checked;
   // Fill-vowels has its own answer-key toggle (the global one is mutex-cleared
