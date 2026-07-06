@@ -106,7 +106,7 @@ These work the same across the tools (all pages are served from one origin, so s
 - **AllTools backup** — the gear modal on the landing page bundles every tool's settings into one export/import/erase, either as an `.ivrit` file or a JSON blob.
 - **My Fonts** — custom fonts made (or uploaded) in the Hebrew Font Maker are stored in the browser and appear in **every** tool's font picker automatically; you can upload your own `.ttf`/`.otf`/`.woff`/`.woff2` from any picker.
 - **Nikkud color-coding** — vowel-by-color rendering with two selectable schemes, **Default** and **TaL AM** (matching the TaL AM curriculum poster), in three styles (color / highlight / underline).
-- **Guided tours** — most tools (Generator, Dictionary, Dashboard, Torah Trainer, Font Maker) ship a first-visit "❓ Tour" walk-through that never changes your data.
+- **Guided tours** — all six tools (Generator, Dictionary, Dashboard, Flash Cards, Torah Trainer, Font Maker) ship a first-visit "❓ Tour" walk-through that never changes your data.
 - **Share links** — the Generator and Dictionary produce shareable `?s=` URLs; Flash Cards uses a paste-in teacher share code.
 - **Installable PWA + offline shell** — `manifest.webmanifest` + `sw.js` let the suite install to a home screen and run its app shell offline; iOS launch/splash screens live in `splash/`. (Remote resources — Google Fonts, Sefaria, PocketTorah audio — are not available offline.)
 
@@ -160,7 +160,7 @@ How it works:
 | `docs/phonotactic_blending_filter_spec.md` | Linguistic specification for the phonotactic validity filter used by the generator |
 | `splash/` | iOS launch/splash screens + `gen_splash.py` generator (and its bundled Libre Baskerville fonts) |
 | `icons/`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `og-card.png` | PWA / home-screen / social-card icons |
-| `fonts/` | Bundled Hebrew display fonts (Frank Ruhl Libre, Reuben) + their OFL license |
+| `fonts/` | Bundled Hebrew display fonts (Frank Ruhl Libre, Reuben, TzviScript, TzviScript Stroke Guide) + their license files |
 | `LICENSE` | CC BY-NC-SA 4.0 |
 | `CLAUDE.md` | Instructions for the AI coding assistant used during development |
 
