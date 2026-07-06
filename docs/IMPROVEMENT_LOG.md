@@ -9,7 +9,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 ## Candidates (prioritized, top = next)
 
 - [ ] P4 | hebrew_dictionary.html (`onFilter` ~2002) | Slow-device first-render/filter block, the surviving half of the Pass D finding after the flatten was chunked (7ef380c): the full-list `onFilter` pass takes ~220-270 ms under 4× CPU throttle (desktop is clean) — it runs once at first render and on every direct filter-control change. A real fix means optimizing the filter/render pipeline (precomputed indexes, incremental render), NOT debouncing (that would add perceived lag for everyone). Deliberately low priority. | found: 2026-07-06, Pass D; rescoped 2026-07-06 S4
-- [ ] P4 | fonts/Reuben.ttf | Unlike the TzviScript faces, Reuben has no per-font license FILE in `fonts/` — its CC0 dedication lives in the resources.html gallery entry + the generated download notice (now also listed in THIRD_PARTY_LICENSES.md, 0e9070d). Optional polish: add a `fonts/Reuben-LICENSE.txt` CC0 text like TzviScript's, if the author wants file-level parity. | found: 2026-07-06, Pass E
 
 ## In progress
 
@@ -17,6 +16,7 @@ _(none)_
 
 ## Done
 
+- [x] 2026-07-06 | (follow-up commit) | fonts/Reuben-LICENSE.txt + resources.html | P4 (Pass E follow-up; CC0 confirmed by the user) — Reuben now has file-level license parity with TzviScript: committed `fonts/Reuben-LICENSE.txt` (CC0 1.0 dedication, Baruch Sienna, made-with-IvritSuite line, matching the generated-notice wording) and the gallery entry gained `licenseFile` so downloads ship it verbatim. sw v204 (resources.html precached). | Verified headless (Playwright over local http, real `downloadFont`): Reuben.zip contains the committed license byte-for-byte; 0 pageerrors.
 - [x] 2026-07-06 | d02fbde | CLAUDE.md | P3/P4 (Pass E) — AllTools table gained rows for `dictLastState` and the previously-undocumented `wordLists` (`ivritSuite_wordLists`); SW section now documents the version-independent `DATA_CACHE` behavior. | Verified: every `IVRIT_CFG.gather()` key is now documented (the 5 folder keys are covered by the folder-tree section under their localStorage names).
 - [x] 2026-07-06 | 3afca1f | README.md | P3/P4 (Pass E) — guided-tour line updated to all six tools (was missing Flash Cards) and the `fonts/` description now lists the TzviScript files. | Verified by grep vs the 6 tour engines and `ls fonts/`.
 - [x] 2026-07-06 | 0e9070d | THIRD_PARTY_LICENSES.md | P2 (Pass E) — removed the false "no font binaries are redistributed except Libre Baskerville" claim and itemized the four bundled TTFs with their coverage: Frank Ruhl Libre (OFL, `fonts/OFL.txt`, sw-precached), Reuben (Baruch Sienna, CC0 per the Resources gallery entry + generated download notice), TzviScript ×2 (author-made, OFL, own license files). FRL's table row notes the bundling. | Verified: every `fonts/*.ttf` filename now appears in the doc; the false claim greps to zero.
