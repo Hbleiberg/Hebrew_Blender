@@ -2150,7 +2150,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '3.1';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '3.2';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2362,6 +2362,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v3.2</strong> — Undo now covers two more actions: <strong>showing/hiding guides</strong> and <strong>✓ Confirm placement</strong>. Ctrl+Z steps back through both, just like every other edit. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.1</strong> — Four fixes. The <strong>shin/sin dots</strong> are now edited in just one place — <strong>Special &amp; precomposed forms</strong> (שׁ/שׂ) — instead of also appearing in the above-mark row. <strong>Tracing</strong> no longer clips your letter at an invisible box: it follows your whole reference image, so a wide letter's edges and feet come through. Reopening a saved project now shows <strong>honest letter status</strong> — untraced letters no longer look finished — and your chosen <strong>reference (tracing) font</strong> is kept when you reload. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.0</strong> — Placement panel, take two: the <strong>size sliders</strong> under the canvas are <strong>stacked</strong> again (one per line, so each is easy to read), and the <strong>✓ Confirm placement</strong> / <strong>Reset letter</strong> / <strong>Reset all</strong> buttons now sit together in their own <strong>panel to the right</strong> of the sliders instead of underneath them. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v2.9</strong> — The <strong>Place Nikkud / Trop</strong> panel now says what each control affects. Sections are grouped by scope — “<strong>Qamats — every letter</strong>” for a vowel's Height &amp; shape, “<strong>Below position — Alef only</strong>” for this letter's X / Y — with a short plain-language line under each, replacing one long confusing paragraph. The <strong>size sliders</strong> under the canvas now sit <strong>side-by-side</strong> with dividers, so they take one tidy row instead of a stack. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -2905,7 +2906,7 @@ function toggleGuideCollapse(id){ const it = guideById(id); if (!it) return; it.
 function reorderGuides(orderedIds){ const g = ensureGuides(); udDo([{t:'guides'}], 'reorder guides', () => { const byId = Object.fromEntries(g.items.map(i => [i.id, i])); g.items = orderedIds.map(id => byId[id]).filter(Boolean); renderStage(); renderControls(); }); }
 function deleteGuide(id){ const g = ensureGuides(); const it = guideById(id); if (!it) return; if (!confirm(`Delete "${it.name || 'this guide'}"?`)) return; udDo([{t:'guides'}], 'delete guide', () => { g.items = g.items.filter(x => x.id !== id); renderStage(); renderControls(); }); }
 function clearGuides(){ const g = ensureGuides(); if (!g.items.length) return; if (!confirm('Remove all guides?')) return; udDo([{t:'guides'}], 'clear guides', () => { g.items = []; renderStage(); renderControls(); }); }
-function toggleGuides(on){ const g = ensureGuides(); g.show = on; markDirty(); renderStage(); renderControls(); }
+function toggleGuides(on){ const g = ensureGuides(); udDo([{t:'guides'}], on ? 'show guides' : 'hide guides', () => { g.show = on; renderStage(); renderControls(); }); }
 const GUIDE_STYLES = ['solid','dotted','dashed'];   // shared order for the visual dropdown
 function guideStylePreviewSVG(style, color, w){     // one dash definition shared by trigger, menu rows & canvas
   const sw = Math.max(1, Math.min(4, +w || 1));
@@ -7073,13 +7074,15 @@ function saveKernClass() {
 function savePlacement() {
   const l = curLetter();
   if (!l.anchors) { status('Set the nikkud anchors first.'); return; }
-  l.placementSaved = true;
-  l.placementInherited = false;   // a hand-confirm supersedes a carried-over placement
-  l.savedAnchors = JSON.parse(JSON.stringify(l.anchors));   // snapshot for dirty-detection baseline
+  udDo([itemScope()], 'confirm placement', () => {
+    l.placementSaved = true;
+    l.placementInherited = false;   // a hand-confirm supersedes a carried-over placement
+    l.savedAnchors = JSON.parse(JSON.stringify(l.anchors));   // snapshot for dirty-detection baseline (undo-exempt via ITEM_SKIP)
+    renderLetterGrid(); renderControls();
+  });
   lastSavedAnchors = JSON.parse(JSON.stringify(l.anchors)); // carry these coordinates onto the next fresh letter
-  renderLetterGrid(); renderControls();
   status('Placement confirmed for ' + l.name + ' ✓');
-  markDirty();   // placement confirmed into the project, but the project itself is now unsaved
+  markDirty();   // savedAnchors is snapshot-exempt, so keep the explicit dirty flag for that baseline write
 }
 function dropPlacementConfirm(l) {   // an anchor move makes a confirmed/carried-over placement "unconfirmed" again
   if (!l || (!l.placementSaved && !l.placementInherited)) return false;
