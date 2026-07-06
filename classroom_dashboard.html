@@ -2416,6 +2416,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   let presets = {};
   let savedSchedules = {};
   let _lastScheduleKey = null;
+  let _lastPreviewKey = null;
   let _savedEditorRange = null;
   let weatherCache = null;
   let weatherTimer = null;
@@ -5327,7 +5328,16 @@ else ivritInit();
     if (!el) return;
     st = st || (settings.scheduleEnabled ? computeScheduleState() : { status:'off' });
     const sorted = st.sorted || [];
-    if (!settings.scheduleEnabled || st.status === 'off' || !sorted.length) {
+    const empty = !settings.scheduleEnabled || st.status === 'off' || !sorted.length;
+    // The preview's content depends only on the schedule entries and which period is active —
+    // neither changes second-to-second. Skip the innerHTML rebuild on the per-second clock tick
+    // when nothing changed (only re-render on an actual edit or period switch), so a projector
+    // running for hours isn't churning this DOM ~21,600 times a day. (Mirrors _lastScheduleKey.)
+    const key = empty ? 'empty'
+      : sorted.map(e => e.until + '\x1f' + e.preset).join('\x1e') + '\x1d' + st.currentIdx;
+    if (key === _lastPreviewKey) return;
+    _lastPreviewKey = key;
+    if (empty) {
       el.innerHTML = '<span class="sched-preview-hint">Add periods (a preset + an end time) to preview your day.</span>';
       return;
     }
