@@ -267,6 +267,18 @@ body.dark .fp-no{color:#e06b5b;}
 #fontToast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 20px;border-radius:8px;font-size:0.86rem;box-shadow:0 6px 24px rgba(0,0,0,0.32);z-index:300;opacity:0;pointer-events:none;transition:opacity 0.25s;max-width:90vw;text-align:center;}
 #fontToast.show{opacity:1;}
 body.dark #fontToast{background:#2a4070;}
+
+/* Honor reduced-motion: neutralize all transitions (incl. the .resource-card hover lift) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .resource-card:hover { transform: none; }
+  .resource-card:hover .card-link::after { transform: none; }
+}
 </style>
 </head>
 <body>

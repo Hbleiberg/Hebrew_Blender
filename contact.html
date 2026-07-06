@@ -151,6 +151,16 @@ footer a{color:var(--gold);text-decoration:none;}
   main h1.page-title{font-size:1.5rem;}
   .pill-group .pill{padding:8px 16px;}
 }
+
+/* Honor reduced-motion: neutralize all transitions */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 </style>
 </head>
 <body>
