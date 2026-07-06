@@ -941,6 +941,49 @@ body.dark .results-hero .pct { color: var(--gold-light); }
 }
 .results-actions .btn { padding: 14px; font-size: 1rem; font-weight: 600; }
 
+/* ============== GUIDED TOUR (ported from hebrew_blend_generator.html) ============== */
+@keyframes attnPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201,146,42,0.55); }
+  50%      { box-shadow: 0 0 0 6px rgba(201,146,42,0); }
+}
+.pulse-attn { animation: attnPulse 1.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  /* No motion: fall back to a steady ring so the cue is still visible. */
+  .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
+  .tour-spot { transition: none !important; }
+}
+.tbtn {
+  background: var(--gold); color: #1a1a1a; border: none; border-radius: 6px;
+  padding: 7px 13px; cursor: pointer; font-size: 0.82rem; font-weight: 700;
+  font-family: inherit;
+}
+.tbtn.ghost { background: transparent; color: var(--text); border: 1.5px solid var(--border); }
+.tbtn:hover { filter: brightness(1.06); }
+.tbtn:disabled { opacity: 0.4; cursor: default; filter: none; }
+.tour-spot {
+  position: fixed; top: 0; left: 0; width: 0; height: 0;
+  border-radius: 8px; pointer-events: none; z-index: 400;
+  box-shadow: 0 0 0 9999px rgba(13,18,32,0.62), 0 0 0 3px var(--gold);
+  transition: top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease;
+}
+.tour-card {
+  position: fixed; z-index: 500; width: 300px; max-width: 92vw;
+  background: var(--white); color: var(--text);
+  border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4); padding: 16px 18px 14px;
+}
+.tour-card h4 { font-family: var(--serif); margin: 0 26px 8px 0; font-size: 0.98rem; color: var(--text); }
+.tour-card p { font-size: 0.84rem; line-height: 1.5; margin: 0 0 12px; color: var(--text); }
+.tour-x {
+  position: absolute; top: 8px; right: 8px; width: 26px; height: 26px;
+  background: transparent; border: none; border-radius: 6px;
+  color: var(--muted); font-size: 1rem; cursor: pointer; line-height: 1;
+}
+.tour-x:hover { background: var(--border); color: var(--text); }
+.tour-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.tour-meta > span:first-child { font-size: 0.72rem; font-weight: 700; color: var(--muted); }
+.tour-btns { display: flex; gap: 8px; }
+
 /* ============== TOOLTIP ============== */
 #tipFloat {
   position: fixed;
@@ -1057,6 +1100,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <a href="/" class="h-btn" id="homeBtn" title="Home" aria-label="Home">←</a>
   <h1>Hebrew Flash Cards for Reading Practice</h1>
   <div class="h-right">
+    <button class="h-btn" id="tourBtn" onclick="tourStart()" title="Take a quick tour" style="width:auto;border-radius:22px;padding:0 14px;font-size:0.85rem;gap:6px;">❓ Tour</button>
     <button class="h-btn" id="darkToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
   </div>
 </header>
@@ -1715,6 +1759,21 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     </nav>
   </div>
 </footer>
+
+<!-- Guided "Take a tour" coach-mark (non-modal spotlight; see tourStart) -->
+<div class="tour-spot" id="tourSpot" hidden></div>
+<div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
+  <button class="tour-x" id="tourClose" aria-label="End tour" onclick="tourEnd(false)">✕</button>
+  <h4 id="tourCardTitle"></h4>
+  <p id="tourCardBody"></p>
+  <div class="tour-meta">
+    <span id="tourStep"></span>
+    <span class="tour-btns">
+      <button class="tbtn ghost" id="tourBack" onclick="tourPrev()">Back</button>
+      <button class="tbtn" id="tourNext" onclick="tourNext()">Next</button>
+    </span>
+  </div>
+</div>
 
 <!-- ============== TOOLTIP ============== -->
 <div id="tipFloat" role="tooltip"></div>
@@ -3177,6 +3236,138 @@ function initPanelCollapse() {
   document.querySelectorAll('.has-tip').forEach(bindTip);
   document.addEventListener('click', () => { if (openEl) hide(); });
   window.addEventListener('scroll', () => { if (openEl) hide(); }, true);
+})();
+
+/* ═══ Guided tour (ported from hebrew_blend_generator.html — keep the engines in sync) ═══ */
+function _tourVisible(el) { return !!(el && el.offsetParent !== null); }
+function _tourExpandPanel(id) {
+  const p = document.getElementById(id);
+  if (p && p.classList.contains('collapsed')) { p.classList.remove('collapsed'); _syncPanelAria(p); _tourUncollapsed.add(p); }
+}
+const TOUR_STEPS = [
+  { target: () => document.getElementById('panelMode'),
+    reveal: () => _tourExpandPanel('panelMode'),
+    title: 'Practice Mode',
+    body: 'Choose what students practice: single letters, 2- or 3-letter blends, listening — or numbers, colors, emoji, and word cards.' },
+  { target: () => document.getElementById('letterGrid'),
+    reveal: () => _tourExpandPanel('panelLetters'),
+    title: 'Letters',
+    body: 'Tap letters to include or exclude them — match exactly what your class has learned.' },
+  { target: () => document.getElementById('vowelHost'),
+    reveal: () => _tourExpandPanel('panelVowels'),
+    title: 'Vowels',
+    body: "Same idea for nikkud: only the vowels you've taught." },
+  { target: () => document.getElementById('panelTeacherTools'),
+    reveal: () => _tourExpandPanel('panelTeacherTools'),
+    title: 'Teacher Tools',
+    body: 'Save presets and student profiles, and share your exact setup with a paste-in class code.' },
+  { target: () => document.getElementById('panelAdvanced'),
+    reveal: () => _tourExpandPanel('panelAdvanced'),
+    title: 'Advanced Settings',
+    body: 'Color-code the nikkud, pick a Hebrew font, and fine-tune the deck.' },
+  { target: () => document.getElementById('startBtn'),
+    title: 'Start Practicing',
+    body: 'Flips into full-screen flash cards. Tap or press Space to flip a card; arrow keys move between cards.' },
+];
+
+let _tourIdx = -1, _tourActive = false, _tourOpener = null, _tourUncollapsed = new Set(), _tourRepoTimer = null;
+
+function tourStart() {
+  if (_tourActive) return;
+  // Opening the tour once retires the first-visit nudge.
+  try { localStorage.setItem('hebrewFlashCards_tourSeen', '1'); } catch (e) {}
+  document.getElementById('tourBtn')?.classList.remove('pulse-attn');
+  _tourActive = true; _tourIdx = -1; _tourUncollapsed = new Set();
+  _tourOpener = document.activeElement;
+  document.getElementById('tourSpot').hidden = false;
+  document.getElementById('tourCard').hidden = false;
+  document.addEventListener('keydown', _tourKey, true);
+  window.addEventListener('resize', _tourReposition);
+  window.addEventListener('scroll', _tourReposition, true);
+  tourNext();
+}
+// Resolve a step's target, running its reveal() first; returns null if it can't be shown.
+function _resolveStep(idx) {
+  const step = TOUR_STEPS[idx];
+  if (!step) return null;
+  if (step.reveal) { try { step.reveal(); } catch (e) {} }
+  const el = step.target();
+  return _tourVisible(el) ? el : null;
+}
+function _tourShow(idx, dir) {
+  // Skip any step whose target can't be shown, continuing in the current direction.
+  while (idx >= 0 && idx < TOUR_STEPS.length && !_resolveStep(idx)) idx += dir;
+  if (idx < 0 || idx >= TOUR_STEPS.length) { tourEnd(dir > 0); return; }
+  _tourIdx = idx;
+  const step = TOUR_STEPS[idx], el = step.target();
+  try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {}
+  document.getElementById('tourCardTitle').textContent = step.title;
+  document.getElementById('tourCardBody').textContent = step.body;
+  document.getElementById('tourStep').textContent = 'Step ' + (idx + 1) + ' of ' + TOUR_STEPS.length;
+  document.getElementById('tourBack').disabled = (idx === 0);
+  document.getElementById('tourNext').textContent = (idx === TOUR_STEPS.length - 1) ? 'Done' : 'Next';
+  _tourReposition();
+  if (_tourRepoTimer) clearTimeout(_tourRepoTimer);
+  _tourRepoTimer = setTimeout(_tourReposition, 350);   // re-measure after scroll settles
+  setTimeout(() => { const n = document.getElementById('tourNext'); if (n && _tourActive) n.focus(); }, 0);
+}
+function tourNext() { _tourShow(_tourIdx + 1, 1); }
+function tourPrev() { _tourShow(_tourIdx - 1, -1); }
+function tourEnd(completed) {
+  if (!_tourActive) return;
+  _tourActive = false;
+  document.removeEventListener('keydown', _tourKey, true);
+  window.removeEventListener('resize', _tourReposition);
+  window.removeEventListener('scroll', _tourReposition, true);
+  if (_tourRepoTimer) { clearTimeout(_tourRepoTimer); _tourRepoTimer = null; }
+  document.getElementById('tourSpot').hidden = true;
+  document.getElementById('tourCard').hidden = true;
+  // Restore any panels the tour expanded to their pre-tour state.
+  _tourUncollapsed.forEach(p => { p.classList.add('collapsed'); _syncPanelAria(p); });
+  _tourUncollapsed = new Set();
+  const opener = _tourOpener; _tourOpener = null;
+  if (opener && opener.focus) { try { opener.focus(); } catch (e) {} }
+}
+function _tourReposition() {
+  if (!_tourActive) return;
+  const step = TOUR_STEPS[_tourIdx];
+  if (!step) return;
+  const el = step.target();
+  if (!_tourVisible(el)) return;
+  const r = el.getBoundingClientRect(), pad = 6;
+  const spot = document.getElementById('tourSpot');
+  spot.style.left = Math.max(0, r.left - pad) + 'px';
+  spot.style.top = Math.max(0, r.top - pad) + 'px';
+  spot.style.width = (r.width + pad * 2) + 'px';
+  spot.style.height = (r.height + pad * 2) + 'px';
+  // Card: below the target by default; flip above if it would overflow; clamp horizontally.
+  const card = document.getElementById('tourCard');
+  const cw = card.offsetWidth, ch = card.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
+  let top = r.bottom + 12;
+  if (top + ch > vh - 8) {
+    const above = r.top - ch - 12;
+    top = (above >= 8) ? above : Math.max(8, vh - ch - 8);
+  }
+  let left = r.left + r.width / 2 - cw / 2;
+  if (left < 8) left = 8;
+  if (left + cw > vw - 8) left = vw - cw - 8;
+  card.style.left = left + 'px';
+  card.style.top = top + 'px';
+}
+function _tourKey(e) {
+  if (!_tourActive) return;
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); tourEnd(false); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); e.stopPropagation(); tourNext(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); e.stopPropagation(); tourPrev(); }
+}
+// First-visit nudge: gently pulse the Tour button until the tour is opened once.
+(function () {
+  function nudge() {
+    try { if (localStorage.getItem('hebrewFlashCards_tourSeen')) return; } catch (e) { return; }
+    document.getElementById('tourBtn')?.classList.add('pulse-attn');
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', nudge);
+  else nudge();
 })();
 
 /* =========================================================================
