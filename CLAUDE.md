@@ -285,7 +285,10 @@ Five folder keys (naming `hebrew<Tool>_<thing>Folders`): `hebrewBlender_presetsF
 
 ### Shared component (one byte-identical block per file, like the `.ivrit` engine)
 Marked `/* ═══ IvritSuite folder-tree component (shared, identical across pages) ═══ */` (JS) plus a
-matching `.ft-*` CSS block. Entry point:
+matching `.ft-*` CSS block. Carried by generator, flash_cards, dashboard (which render trees and have
+the `.ft-*` CSS) **and `index.html`**, which deliberately uses only the block's data helpers
+(`ftRead`/`ftImportTree`/`ftDuplicateName`) for AllTools import/export — it never calls
+`mountFolderTree` and has no `.ft-*` CSS. That's by design, not dead code. Entry point:
 ```js
 mountFolderTree({ treeKey, container, listItemNames(), buildItemRow(name)→actionButtonsDOM, noun, onAfterChange? })
 ```
@@ -511,7 +514,8 @@ The store + helpers are delivered as one copy-identical block (like the `.ivrit`
   `saveUserFont(name, bytes, family)` (upsert; auto-prunes to the newest 10); `deleteUserFont(name)`;
   `loadUserFont(name)` → registers the stored bytes as a CSS-usable `FontFace` named exactly `name`.
 
-Present (verbatim) in `index.html`, `Hebrew_Font_Maker.html`, and all five font-selector tools.
+Present (verbatim; sha-verified 2026-07-06) in **8 files**: `index.html`, `Hebrew_Font_Maker.html`, and the six
+font-selector tools (generator, flash cards, dashboard, dictionary, torah trainer, resources).
 
 ### Consumer pattern (in the picker)
 Each font-selector tool keeps the block plus: `let MY_FONTS = []` + `const _loadedUserFonts = new Set()`,
@@ -522,13 +526,16 @@ load:{type:'userfont'} }`, then calls `initFontSelector()` and re-applies a pers
 `_loadedUserFonts`); `initFontSelector` renders a **"My Fonts"** section header. Call `refreshMyFonts()`
 at init. (Use `family` or `stack` to match whatever property that tool's `setHebFont` reads.)
 
-### "Upload your own font?" — byte-identical block
+### "Upload your own font?" — byte-identical block + per-page pick handler
 A second shared block `/* ═══ My Fonts uploader (shared, identical across pages) ═══ */` defines
 `ivUploadFontFromFile(file)` (validates via `new FontFace(name, bytes).load()`, de-dupes the name,
-`saveUserFont`s it) and a thin `onUploadFontPick(input)` that does `refreshMyFonts()` + `setHebFont(name)`.
-Each picker has a small **"⬆ Upload your own font?"** `<label>` (hidden `<input type="file"
-accept=".ttf,.otf,.woff,.woff2">`) directly **below the font grid**. `index.html`'s gear-modal My Fonts
-manager has the same uploader (its handler instead calls `renderMyFontsManager()` + `refreshFontsBackupCache()`).
+`saveUserFont`s it). The block contains ONLY that function (sha-verified identical across all 6 carriers,
+2026-07-06); the thin **pick handler lives BELOW the end marker and is per-page**: the four tool pickers
+use `onUploadFontPick(input)` (`refreshMyFonts()` + `setHebFont(name)`), the dashboard adds an extra
+`onUploadEngFontPick` (routes to `setEngFont`), and `index.html`'s gear-modal manager uses
+`onUploadFontPickIndex` (`renderMyFontsManager()` + `refreshFontsBackupCache()`). Each picker has a small
+**"⬆ Upload your own font?"** `<label>` (hidden `<input type="file" accept=".ttf,.otf,.woff,.woff2">`)
+directly **below the font grid**.
 
 ### Backup (no extra wiring)
 User fonts ride along in the `index.html` AllTools export as `userFonts` (base64 via

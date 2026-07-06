@@ -3360,12 +3360,14 @@ async function ivUploadFontFromFile(file){
     return name;
   } catch (e) { console.error(e); alert('Couldn’t read that font file.'); return null; }
 }
+/* ═══ end My Fonts uploader ═══ */
+/* Per-page pick handler(s) — thin wrappers over the shared uploader (each page routes the new font into its own picker/manager). */
 async function onUploadFontPick(input){
   const name = await ivUploadFontFromFile(input.files && input.files[0]);
   input.value = '';
   if (name) { await refreshMyFonts(); setHebFont(name); }
 }
-/* ═══ end My Fonts uploader ═══ */
+
 function loadHebFont(font) {
   if (!font.load) return;
   const id = 'font-' + font.name.replace(/\s+/g, '-');
