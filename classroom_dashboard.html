@@ -3980,7 +3980,17 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       } else if (!e.target.closest('a')) {
         sp.classList.remove('revealed'); e.stopPropagation();
       }
+      sp.setAttribute('aria-pressed', String(sp.classList.contains('revealed')));
       // revealed + clicking a link → fall through to default
+    });
+    document.getElementById('dashTextDisplay').addEventListener('keydown', e => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      if (e.currentTarget.classList.contains('editing')) return;   // typing, not toggling
+      const sp = e.target.closest('.spoiler');
+      if (!sp) return;
+      e.preventDefault();
+      sp.classList.toggle('revealed');
+      sp.setAttribute('aria-pressed', String(sp.classList.contains('revealed')));
     });
   }
 
@@ -5563,10 +5573,21 @@ else ivritInit();
 
   /* ── Two-way sync + in-place editing on the dashboard ── */
   function activeEditor() { return _activeEditable || document.getElementById('dashEditor'); }
+  function normalizeSpoilers() {
+    // Display-side spoiler spans are recreated on every innerHTML write, so keyboard
+    // affordances must be re-applied after each write (the reveal handlers themselves are
+    // delegated on the container and survive). Sanitize passes strip these attributes.
+    document.querySelectorAll('#dashTextDisplay .spoiler').forEach(sp => {
+      sp.setAttribute('tabindex', '0');
+      sp.setAttribute('role', 'button');
+      sp.setAttribute('aria-pressed', String(sp.classList.contains('revealed')));
+    });
+  }
   function commitEditorToDisplay() {                 // editor → display + settings (the classic direction)
     const ed = document.getElementById('dashEditor');
     document.getElementById('dashTextDisplay').innerHTML = ed.innerHTML;
     settings.dashTextHTML = ed.innerHTML;
+    normalizeSpoilers();
   }
   function commitDisplayToEditor() {                 // display → editor + settings, through the sanitizer
     const disp = document.getElementById('dashTextDisplay');
@@ -5574,11 +5595,13 @@ else ivritInit();
     disp.innerHTML = clean;
     document.getElementById('dashEditor').innerHTML = clean;
     settings.dashTextHTML = clean;
+    normalizeSpoilers();
   }
   function syncActive() {                             // fast mirror of whichever surface is active (no re-sanitize)
     const disp = document.getElementById('dashTextDisplay'), ed = document.getElementById('dashEditor');
     if (_activeEditable === disp) { ed.innerHTML = disp.innerHTML; settings.dashTextHTML = disp.innerHTML; }
     else { disp.innerHTML = ed.innerHTML; settings.dashTextHTML = ed.innerHTML; }
+    normalizeSpoilers();
   }
   function syncDashText() { commitEditorToDisplay(); }   // alias kept for oninput / init / applySettings
 
