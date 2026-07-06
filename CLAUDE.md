@@ -555,12 +555,12 @@ Escape to end, arrow keys to navigate, resize-safe, `scrollIntoView` the target 
 settings mutations**. It **never auto-launches** — entry is a header **"❓ Tour"** button with a one-time
 first-visit pulse gated by a `hebrew<Tool>_tourSeen` flag (set once so the pulse never returns).
 - **Implemented on:** `hebrew_blend_generator.html`, `hebrew_dictionary.html`, `classroom_dashboard.html`,
-  `torah_trainer.html`, `Hebrew_Font_Maker.html` (**5 tools**) — but as **per-file engines**, not yet a
-  single shared block. Flags are `hebrew<Tool>_tourSeen` except Font Maker's legacy `hebrewFontMaker_tourDone`.
-  The generator's engine is a copy of Font Maker's ("keep the engines in sync"). **Not** on `index.html`,
-  `flash_cards.html`, or `resources.html`.
+  `torah_trainer.html`, `Hebrew_Font_Maker.html`, `flash_cards.html` (2026-07-06) — **all 6 tools**, but as
+  **per-file engines**, not yet a single shared block. Flags are `hebrew<Tool>_tourSeen` except Font Maker's
+  legacy `hebrewFontMaker_tourDone`. The generator's engine is a copy of Font Maker's, and flash cards' is
+  a copy of the generator's ("keep the engines in sync"). **Not** on `index.html` or `resources.html`.
 - **Rule:** when you next touch a tour engine, extract it into a `═══`-marked shared block (house
-  convention, byte-identical across files) so the five copies stop drifting. Any **new** tool ships a tour.
+  convention, byte-identical across files) so the six copies stop drifting. Any **new** tool ships a tour.
   A tour must touch none of the undo/dirty/state machinery — read-only overlay only.
 
 ### 2. Accessible tooltips (tap + keyboard, not hover-only)
