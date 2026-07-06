@@ -79,7 +79,7 @@ blocking remote script injection, `object-src`, `base-uri` hijacks, and unexpect
 `frame-src` origins. When you add any **loaded** resource (`<script src>`, stylesheet, `@font-face`
 `url()`, `fetch`/`import()`, `new Worker`, `<iframe src>`, `<img>`/`<audio>` src, a `.wasm` fetch), add
 its origin to the correct directive on that page. Reference allowlist by page: Google Fonts + gtag
-baseline everywhere (flash_cards has **no** gtag); `esm.sh`/`cdn.jsdelivr.net` for the transliteration
+baseline everywhere (flash_cards included as of 2026-07-06); `esm.sh`/`cdn.jsdelivr.net` for the transliteration
 ESM + Ezra SIL font (generator, flash cards, dictionary, torah); `cdnjs.cloudflare.com` for
 html2canvas/jspdf (generator, Font Maker); `'wasm-unsafe-eval'` + `cdn.jsdelivr.net` for Font Maker's
 HarfBuzz WASM; `hebcal.com`/`api.open-meteo.com`/`geocoding-api.open-meteo.com`/
