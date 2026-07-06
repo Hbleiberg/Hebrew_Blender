@@ -953,6 +953,13 @@
     color: var(--muted); padding: 0 2px;
   }
   .schedule-del-btn:hover { color: #cc3333; }
+  .schedule-move-btn {
+    flex-shrink: 0; background: none; border: none;
+    font-size: 0.6rem; line-height: 1; cursor: pointer;
+    color: var(--muted); padding: 0 1px;
+  }
+  .schedule-move-btn:hover:not(:disabled) { color: var(--gold); }
+  .schedule-move-btn:disabled { opacity: 0.25; cursor: default; }
   .schedule-until-lbl { font-size: 0.72rem; color: var(--muted); flex-shrink: 0; }
   /* Derived class name for a period's preset (read-only; omitted when a preset predates class rosters) */
   .schedule-class-lbl { font-size: 0.68rem; color: var(--muted); font-style: italic;
@@ -5083,6 +5090,8 @@ else ivritInit();
         `<select class="schedule-preset-sel" onchange="updateScheduleEntry(${i},'preset',this.value)">${getPresetOptions(entry.preset)}</select>` +
         `<span class="schedule-until-lbl">until</span>` +
         `<input type="time" class="schedule-time-input" value="${esc(entry.until || '')}" onchange="updateScheduleEntry(${i},'until',this.value)">` +
+        `<button class="schedule-move-btn" title="Move up" aria-label="Move row ${i + 1} up" onclick="moveScheduleRow(${i},-1)"${i === 0 ? ' disabled' : ''}>▲</button>` +
+        `<button class="schedule-move-btn" title="Move down" aria-label="Move row ${i + 1} down" onclick="moveScheduleRow(${i},1)"${i === rows.length - 1 ? ' disabled' : ''}>▼</button>` +
         `<button class="schedule-del-btn" title="Remove" onclick="removeScheduleRow(${i})">×</button>`;
       container.appendChild(row);
       // Show which class this period's preset activates (derived, read-only). Skipped for a preset that
@@ -5101,6 +5110,22 @@ else ivritInit();
       saveSettingsToStorage();
       renderScheduleRows();
     }, '.schedule-row');
+  }
+
+  // Keyboard/touch alternative to drag-reorder (Pass C): swap with the neighbor, then
+  // put focus back on the moved row's button so repeated Enter presses keep walking it.
+  function moveScheduleRow(i, delta) {
+    const rows = settings.currentSchedule || [];
+    const j = i + delta;
+    if (j < 0 || j >= rows.length) return;
+    [rows[i], rows[j]] = [rows[j], rows[i]];
+    _lastScheduleKey = null;
+    saveSettingsToStorage();
+    renderScheduleRows();
+    const moved = document.querySelectorAll('#scheduleRows .schedule-row')[j];
+    const btn = moved && moved.querySelector(delta < 0 ? '.schedule-move-btn:not(:disabled)' : '.schedule-move-btn + .schedule-move-btn:not(:disabled)');
+    if (btn) btn.focus();
+    else if (moved) { const any = moved.querySelector('.schedule-move-btn:not(:disabled)'); if (any) any.focus(); }
   }
 
   function addScheduleRow() {
