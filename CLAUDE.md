@@ -210,7 +210,7 @@ Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_das
 
 ### Pattern: per-file `IVRIT_CFG` + shared engine
 
-Each file defines a small **`IVRIT_CFG`** object, then pastes the **shared engine** verbatim (the block between the `═══ IvritSuite .ivrit save-file engine ═══` comment markers — it is byte-for-byte identical across all files; copy it, don't rewrite it).
+Each file defines a small **`IVRIT_CFG`** object, then pastes the **shared engine** verbatim (the block between the `═══ IvritSuite .ivrit save-file engine ═══` comment markers — it is byte-for-byte identical across the three tool pages (generator, flash cards, dashboard; re-verified 2026-07-06); copy it, don't rewrite it. **Exception:** `index.html` carries a deliberately adapted AllTools superset of the engine — extra `wlMergeIntoStorage`, a legacy-blob payload shape, and a "reload open tool pages" success alert — do not "fix" it back to the shared text).
 
 ```js
 const IVRIT_CFG = {

@@ -4847,10 +4847,10 @@ function ivritAskMode() {
   });
 }
 function ivritToolMismatch(fileTool) {
-  if (!fileTool) return false;
+  if (!fileTool) return false;                  // legacy / untagged — allow
   if (fileTool === IVRIT_CFG.tool) return false;
-  if (fileTool === 'AllTools') return false;
-  if (IVRIT_CFG.tool === 'AllTools') return false;
+  if (fileTool === 'AllTools') return false;    // an AllTools file applies on any page
+  if (IVRIT_CFG.tool === 'AllTools') return false; // the AllTools page tries anything
   return true;
 }
 async function ivritRestore(text, sourceName) {
@@ -4860,7 +4860,7 @@ async function ivritRestore(text, sourceName) {
   let payload = parsed;
   if (!(parsed && parsed.format === 'ivrit-save')) {
     if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-      payload = { tool: null, data: { presets: parsed } };
+      payload = { tool: null, data: { presets: parsed } };   // tolerate a legacy raw-presets blob
     } else { alert('That file is not a recognizable .ivrit save file.'); return; }
   }
   if (ivritToolMismatch(payload.tool)) {
