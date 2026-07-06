@@ -4056,11 +4056,18 @@ function initVowels() {
       header.appendChild(hdrText);
       header.appendChild(arrow);
       header.style.color = isDark ? group.darkBorder : group.border;
+      header.setAttribute('tabindex', '0');
+      header.setAttribute('role', 'button');
+      header.setAttribute('aria-expanded', 'true');
       header.addEventListener('click', () => {
         const collapsed = chipsWrap.style.display === 'none';
         chipsWrap.style.display = collapsed ? '' : 'none';
         arrow.style.transform = collapsed ? '' : 'rotate(-90deg)';
         section.style.paddingBottom = collapsed ? '' : '2px';
+        header.setAttribute('aria-expanded', String(collapsed));
+      });
+      header.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); header.click(); }
       });
       section.appendChild(header);
     }
@@ -5986,7 +5993,7 @@ function _tourOpenSidebar() {
 }
 function _tourExpandPanel(id) {
   const p = document.getElementById(id);
-  if (p && p.classList.contains('collapsed')) { p.classList.remove('collapsed'); _tourUncollapsed.add(p); }
+  if (p && p.classList.contains('collapsed')) { p.classList.remove('collapsed'); _syncPanelHdrAria(p); _tourUncollapsed.add(p); }
 }
 const TOUR_STEPS = [
   { target: () => document.getElementById('blendTypeSelector'),
@@ -6074,7 +6081,7 @@ function tourEnd(completed) {
   document.getElementById('tourSpot').hidden = true;
   document.getElementById('tourCard').hidden = true;
   // Restore any panels the tour expanded to their pre-tour state.
-  _tourUncollapsed.forEach(p => p.classList.add('collapsed'));
+  _tourUncollapsed.forEach(p => { p.classList.add('collapsed'); _syncPanelHdrAria(p); });
   _tourUncollapsed = new Set();
   const opener = _tourOpener; _tourOpener = null;
   if (opener && opener.focus) { try { opener.focus(); } catch (e) {} }
@@ -8082,11 +8089,33 @@ function enableButtons() {
 // Collapsible panels on mobile
 function expandAllMenus()   { document.querySelectorAll('.panel').forEach(p => p.classList.remove('collapsed')); }
 function collapseAllMenus() { document.querySelectorAll('.panel').forEach(p => p.classList.add('collapsed')); }
+/* Keyboard operability for click-only collapse headers (Pass C): focusable with button
+   semantics, Enter/Space toggles, aria-expanded tracks state. Register the aria-sync
+   click listener AFTER the toggle handler so it reads post-toggle state. */
+function _wireCollapseHdr(el, expandedFn) {
+  if (!el) return;
+  el.setAttribute('tabindex', '0');
+  el.setAttribute('role', 'button');
+  el.setAttribute('aria-expanded', String(!!expandedFn()));
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+  });
+  el.addEventListener('click', () => el.setAttribute('aria-expanded', String(!!expandedFn())));
+}
+function _syncPanelHdrAria(panel) {
+  const hdr = panel.querySelector(':scope > .panel-title');
+  if (hdr && hdr.hasAttribute('aria-expanded')) hdr.setAttribute('aria-expanded', String(!panel.classList.contains('collapsed')));
+}
 function initPanelCollapse() {
   document.querySelectorAll('.panel-title').forEach(title => {
     title.addEventListener('click', () => {
       title.closest('.panel').classList.toggle('collapsed');
     });
+    _wireCollapseHdr(title, () => !title.closest('.panel').classList.contains('collapsed'));
+  });
+  // The 8 static .rw-section-header divs toggle via inline onclick (fires first).
+  document.querySelectorAll('.rw-section-header').forEach(h => {
+    _wireCollapseHdr(h, () => !h.closest('.rw-section').classList.contains('collapsed'));
   });
 }
 
@@ -9714,11 +9743,18 @@ function initCwBlendGrids() {
     cwArrow.style.cssText = 'font-size:0.72rem;transition:transform 0.2s;';
     hdr.appendChild(hdrSpan);
     hdr.appendChild(cwArrow);
+    hdr.setAttribute('tabindex', '0');
+    hdr.setAttribute('role', 'button');
+    hdr.setAttribute('aria-expanded', 'true');
     hdr.addEventListener('click', () => {
       const collapsed = cwChipsWrap.style.display === 'none';
       cwChipsWrap.style.display = collapsed ? '' : 'none';
       cwArrow.style.transform = collapsed ? '' : 'rotate(-90deg)';
       section.style.paddingBottom = collapsed ? '' : '2px';
+      hdr.setAttribute('aria-expanded', String(collapsed));
+    });
+    hdr.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hdr.click(); }
     });
     section.appendChild(hdr);
     group.vowels.forEach(v => {
