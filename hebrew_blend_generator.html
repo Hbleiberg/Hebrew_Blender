@@ -4083,6 +4083,26 @@ function initVowels() {
   });
 }
 
+/* Keyboard operability for the click-only selectable tiles (Pass C): focusable, toggle-button
+   semantics, Enter/Space activates, aria-pressed tracks the .selected class. Call AFTER the
+   tile's click handler is set so the aria-sync click listener runs post-toggle. */
+function bindTileA11y(tile) {
+  tile.setAttribute('tabindex', '0');
+  tile.setAttribute('role', 'button');
+  tile.setAttribute('aria-pressed', tile.classList.contains('selected'));
+  tile.addEventListener('click', () => tile.setAttribute('aria-pressed', tile.classList.contains('selected')));
+  tile.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tile.click(); }
+  });
+}
+/* Bulk select/clear paths (All / None / No Sofit / lock + rw variants) flip .selected without a
+   click, so re-derive aria-pressed from the class. Hooked into updateCombosCount/updateRwPoolInfo,
+   which every bulk path already calls. */
+function _syncTileAria() {
+  document.querySelectorAll('.letter-tile[role="button"], .rw-letter-tile[role="button"], .lock-letter-tile[role="button"]')
+    .forEach(t => t.setAttribute('aria-pressed', String(t.classList.contains('selected'))));
+}
+
 function initLetters() {
   const grid = document.getElementById('letterGrid');
 
@@ -4098,6 +4118,7 @@ function initLetters() {
       div.dataset.heb = 'ו';
       div.innerHTML = `<span class="heb">ו</span><span class="name">Vav</span>`;
       div.onclick = () => toggleLetter('ו', div);
+      bindTileA11y(div);
       grid.appendChild(div);
       return;
     }
@@ -4108,6 +4129,7 @@ function initLetters() {
     div.dataset.heb = l.heb;
     div.innerHTML = `<span class="heb">${l.heb}</span><span class="name">${l.name}</span>`;
     div.onclick = () => toggleLetter(l.heb, div);
+    bindTileA11y(div);
     grid.appendChild(div);
 
     // Sofit sub-tile
@@ -4117,6 +4139,7 @@ function initLetters() {
       sf.dataset.heb = l.sofit;
       sf.innerHTML = `<span class="heb">${l.sofit}</span><span class="name">${l.name} sofit</span>`;
       sf.onclick = () => toggleLetter(l.sofit, sf);
+      bindTileA11y(sf);
       grid.appendChild(sf);
     }
   });
@@ -4172,6 +4195,7 @@ function updateVavAsLetterVisibility() {
 }
 
 function updateCombosCount() {
+  _syncTileAria();
   const el = document.getElementById('combosCount');
   if (!el) return;
   const type = document.querySelector('.blend-type-btn.active[data-type]')?.dataset.type || 'two';
@@ -4242,6 +4266,7 @@ function setDageshTav(enabled) {
         if (cwBlendLetters.has(l.heb)) { cwBlendLetters.delete(l.heb); tile.classList.remove('selected'); }
         else { cwBlendLetters.add(l.heb); tile.classList.add('selected'); }
       });
+      bindTileA11y(tile);
       cwGrid.appendChild(tile);
     });
   }
@@ -7880,6 +7905,7 @@ function initLockGrids() {
       div.dataset.heb = l.heb;
       div.innerHTML = `<span class="heb">${l.heb}</span><span class="name">${l.name}</span>`;
       div.onclick = () => toggleLockLetter(pos, l.heb, div);
+      bindTileA11y(div);
       grid.appendChild(div);
     });
   });
@@ -9720,6 +9746,7 @@ function initCwBlendGrids() {
       if (cwBlendLetters.has(l.heb)) { cwBlendLetters.delete(l.heb); tile.classList.remove('selected'); }
       else { cwBlendLetters.add(l.heb); tile.classList.add('selected'); }
     });
+    bindTileA11y(tile);
     lg.appendChild(tile);
   });
 }
@@ -10319,6 +10346,7 @@ function initRwLetterGrid() {
       div.dataset.heb = t.heb;
       div.innerHTML = `<span class="heb">${t.heb}</span><span class="name">${t.name}</span>`;
       div.onclick = () => toggleRwLetter(t.heb, div);
+      bindTileA11y(div);
       grid.appendChild(div);
     });
   });
@@ -10400,6 +10428,7 @@ function getRwPool() {
 }
 
 function updateRwPoolInfo() {
+  _syncTileAria();
   const pool = getRwPool();
   const el = document.getElementById('rwPoolInfo');
   if (el) el.textContent = `${pool.length} matching words`;
