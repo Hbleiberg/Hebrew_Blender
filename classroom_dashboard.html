@@ -1495,10 +1495,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <button class="ed-btn" type="button" title="Finish editing" onclick="exitInPlaceEdit(true)">✓ Done</button>
 </div>
 <!-- ───── Settings drawer ───── --><div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
-<div class="settings-modal" id="settingsModal">
+<div class="settings-modal" id="settingsModal" role="dialog" aria-modal="true" aria-label="Dashboard settings">
   <div class="settings-header">
     <h2>⚙️  Dashboard Settings</h2>
-    <button class="settings-close" onclick="closeSettings()" title="Close">×</button>
+    <button class="settings-close" onclick="closeSettings()" title="Close" aria-label="Close settings">×</button>
   </div>
   <div class="settings-body">
 <div style="display:flex; gap:6px; margin-bottom:14px;">
@@ -3528,16 +3528,37 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   }
 
   /* ────────── SETTINGS DRAWER ────────── */
+  // Keyboard focus management for the drawer: focus in on open, Tab wraps inside
+  // the modal while open, and focus returns to the opener (the gear) on close.
+  let _settingsOpener = null;
+  function _settingsTrapKey(e) {
+    if (e.key !== 'Tab') return;
+    const modal = document.getElementById('settingsModal');
+    const focusables = [...modal.querySelectorAll('button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])')]
+      .filter(el => el.offsetParent !== null && !el.disabled);
+    if (!focusables.length) return;
+    const first = focusables[0], last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
   function openSettings() {
     if (_activeEditable) exitInPlaceEdit(true);   // one edit surface at a time — commit in-place first
+    _settingsOpener = document.activeElement;
     document.getElementById('settingsBackdrop').classList.add('open');
-    document.getElementById('settingsModal').classList.add('open');
+    const modal = document.getElementById('settingsModal');
+    modal.classList.add('open');
+    modal.addEventListener('keydown', _settingsTrapKey);
     syncFormToSettings();
+    const c = modal.querySelector('.settings-close'); if (c) c.focus();
   }
   function closeSettings() {
     document.getElementById('settingsBackdrop').classList.remove('open');
-    document.getElementById('settingsModal').classList.remove('open');
+    const modal = document.getElementById('settingsModal');
+    modal.classList.remove('open');
+    modal.removeEventListener('keydown', _settingsTrapKey);
     saveSettingsToStorage();
+    const o = _settingsOpener; _settingsOpener = null;
+    if (o && o.focus) { try { o.focus(); } catch (e) {} }
   }
 
   function extractYouTubeId(url) {
