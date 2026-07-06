@@ -4353,17 +4353,22 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function clearPickTimer() { if (_pickTimer) { clearTimeout(_pickTimer); _pickTimer = null; } }
   function pickOverlayKey(e) { if (e.key === 'Escape') { e.stopPropagation(); closePickOverlay(); } }
 
+  let _pickOpener = null;
   function openPickOverlay() {
     const ov = document.getElementById('pickOverlay');
     if (!ov) return;
+    _pickOpener = document.activeElement;
     ov.style.display = 'flex';
     document.addEventListener('keydown', pickOverlayKey, true);
+    const c = ov.querySelector('.pick-close'); if (c) c.focus();
   }
   function closePickOverlay() {
     clearPickTimer();
     const ov = document.getElementById('pickOverlay');
     if (ov) ov.style.display = 'none';
     document.removeEventListener('keydown', pickOverlayKey, true);
+    const o = _pickOpener; _pickOpener = null;
+    if (o && o.focus) { try { o.focus(); } catch (e) {} }
   }
   function setPickNote(msg) {
     const n = document.getElementById('pickNote');
