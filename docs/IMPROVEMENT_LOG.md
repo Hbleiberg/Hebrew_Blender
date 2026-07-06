@@ -8,13 +8,22 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-_(none — the backlog is empty; next session starts from its discovery pass, stalest = A)_
+- [ ] P3 | classroom_dashboard.html (`makeSortable` ~4747, schedule builder ~5070) | Schedule-builder rows reorder by HTML5 drag only — no keyboard (or touch) equivalent. Real fix: per-row Move up/down buttons or the folder-tree Move-menu pattern; a larger diff than a wiring fix. | found: 2026-07-06, Pass C (dashboard)
+- [ ] P4 | classroom_dashboard.html (day items ~2998, weather labels ~3134) | The read-aloud (TTS) taps on day names and weather text are click-only — supplementary feature, so P4; a keyboard path would need tabindex+keydown on many small text nodes (or a single "read aloud" button per widget, probably the better shape). | found: 2026-07-06, Pass C
+- [ ] P4 | classroom_dashboard.html (`#dashTextDisplay` spoiler reveal ~3935) | Spoiler reveal/hide in dashboard text is click-only. | found: 2026-07-06, Pass C
+- [ ] P4 | classroom_dashboard.html (first-run modal `frDismiss` ~2457) | When the first-run card is opened from the drawer's "Quick-start layouts…" button, dismissing it doesn't restore focus to that opener. | found: 2026-07-06, Pass C
 
 ## In progress
 
 _(none)_
 
 ## Done
+
+- [x] 2026-07-06 | 341e4e8 | classroom_dashboard.html | P3 (Pass C) — student-picker overlay (`#pickOverlay`) now moves focus to its close button on open and restores the opener on close (Escape already worked). | Verified headless (light+dark): open → focus on ✕, Escape closes, focus back on the opener; 0 pageerrors.
+- [x] 2026-07-06 | 26f2da3 | classroom_dashboard.html | P3 (Pass C) — light-mode gold text on cream failed AA (~2.6:1): the always-on holiday countdown line and dashboard-text links now use a dedicated darker gold literal (#8a6216); measured 5.47:1 light / 11.0:1 dark; `--gold` token untouched. | Verified headless computed-contrast both themes; 0 pageerrors.
+- [x] 2026-07-06 | 295f6ff | classroom_dashboard.html + CLAUDE.md | P3 (Pass C, closes the documented caveat) — `wire()` tooltips now set `aria-expanded` (synced through show/hide incl. the one-open switch) and `aria-describedby="tipFloat"`, completing the canonical bindTip contract on all five tooltip carriers. CLAUDE.md caveat replaced with the completion note. | Verified headless (light+dark): wiring on all 3 icons, Enter/Space/Escape + aria sync, one-open aria handoff; 0 pageerrors.
+- [x] 2026-07-06 | 78d3aff | classroom_dashboard.html | P3 (Pass C) — all collapse headers keyboard-operable: 13 drawer panel/sub-section titles, the 3 always-on column headers, and the video panel header (were click-only divs). tabindex/role=button/aria-expanded synced at every writer (click, Enter/Space, tour expand/restore, preset appliers). | Verified headless (light+dark × 1280/800): Enter/Space toggles + aria on all four header classes, applier-driven changes sync aria without a click; 0 pageerrors.
+- [x] 2026-07-06 | a0e04fa | classroom_dashboard.html | P2 (Pass C) — settings-drawer focus management: focus moves to the close button on open, Tab wraps inside the modal (30-Tab walk never escapes behind the backdrop), focus restores to the gear on close; drawer carries role=dialog/aria-modal/aria-label. Escape already worked. | Verified headless (light+dark × 1280/800): real gear click, focus-in, Shift+Tab/Tab wrap, Escape + focus restore, ✕ mouse path unregressed; 0 pageerrors.
 
 - [x] 2026-07-06 | 016295c | (deploy recovery, no code) | Session 6's pending deploy recovered: after two GitHub-side deploy-step failures (runs 28792937467/28793090167, build+artifact green each time), a re-trigger after the ~2h incident window succeeded — run 28802066980 concluded success and the live site serves sw v205. Playbook held: back off during the incident, re-trigger once clear.
 
@@ -75,7 +84,7 @@ _(none)_
 ### Discovery-pass rotation (run one per session, stalest first)
 - A recurring-pattern sweep: 2026-07-06 (S7 focused re-sweep of the session 5-6 surface: falsy-zero, unsafe innerHTML/JSON.parse in the diffs, localStorage registry, shared-block sha-identity, Font Maker undo/dirty — ALL CLEAN; the one innerHTML and JSON.parse diff hits are the engine's own static modal + ivritSafeParse itself, relocated by the block re-sync) ← next stalest (rotation cycles; all passes ≤1 day old)
 - B console/error audit: 2026-07-06 (load + interaction, all 11 pages — clean)
-- C accessibility (one tool): 2026-07-06 (flash_cards.html)
+- C accessibility (one tool): 2026-07-06 (flash_cards.html, then classroom_dashboard.html in S8 — dashboard P2+4×P3 fixed same session; remaining: schedule-row keyboard reorder P3 + three P4s as Candidates. Not yet Pass-C'd: generator, dictionary, torah trainer, Font Maker)
 - D performance (one tool): 2026-07-06 (hebrew_dictionary.html)
 - E freshness/site-health: 2026-07-06
 - F cross-tool consistency: 2026-07-06 (shared-block byte-identity)
