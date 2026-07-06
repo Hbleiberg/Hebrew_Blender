@@ -3104,11 +3104,21 @@ function initCountGrid() {
 /* =========================================================================
    PANELS / TOOLTIP
    ========================================================================= */
-function expandAllMenus()   { document.querySelectorAll('#screenSetup .panel').forEach(p => p.classList.remove('collapsed')); }
-function collapseAllMenus() { document.querySelectorAll('#screenSetup .panel').forEach(p => p.classList.add('collapsed')); }
+function _syncPanelAria(p) {
+  const t = p.querySelector('.panel-title');
+  if (t) t.setAttribute('aria-expanded', String(!p.classList.contains('collapsed')));
+}
+function expandAllMenus()   { document.querySelectorAll('#screenSetup .panel').forEach(p => { p.classList.remove('collapsed'); _syncPanelAria(p); }); }
+function collapseAllMenus() { document.querySelectorAll('#screenSetup .panel').forEach(p => { p.classList.add('collapsed'); _syncPanelAria(p); }); }
 function initPanelCollapse() {
   document.querySelectorAll('.panel-title').forEach(t => {
-    t.addEventListener('click', () => t.parentElement.classList.toggle('collapsed'));
+    t.setAttribute('tabindex', '0');
+    t.setAttribute('role', 'button');
+    t.setAttribute('aria-expanded', String(!t.parentElement.classList.contains('collapsed')));
+    t.addEventListener('click', () => { t.parentElement.classList.toggle('collapsed'); _syncPanelAria(t.parentElement); });
+    t.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); t.click(); }
+    });
   });
 }
 
