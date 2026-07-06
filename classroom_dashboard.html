@@ -3572,6 +3572,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     if (instant) body.style.transition = 'none';
     body.classList.toggle('vcollapsed', !!collapsed);
     if (arrow) arrow.style.transform = collapsed ? 'rotate(-90deg)' : '';
+    const vh = document.getElementById('videoPanelHeader');
+    if (vh && vh.hasAttribute('aria-expanded')) vh.setAttribute('aria-expanded', String(!collapsed));
     if (instant) requestAnimationFrame(() => { body.style.transition = ''; });
   }
 
@@ -5613,6 +5615,9 @@ else ivritInit();
 
   function applyColCollapse(colId, collapsed) {
     document.getElementById(colId).classList.toggle('collapsed', collapsed);
+    const hdrId = colId === 'dowCol' ? 'dowColTitle' : colId === 'weatherCol' ? 'weatherColTitle' : 'timerColTitle';
+    const hdr = document.getElementById(hdrId);
+    if (hdr && hdr.hasAttribute('aria-expanded')) hdr.setAttribute('aria-expanded', String(!collapsed));
   }
 
   function toggleColCollapse(colId, settingKey) {
@@ -5955,12 +5960,31 @@ async function onUploadEngFontPick(input){
   /* ────────── PANEL COLLAPSE ────────── */
   function expandAllMenus()   { document.querySelectorAll('.panel, .sub-section').forEach(p => p.classList.remove('collapsed')); }
   function collapseAllMenus() { document.querySelectorAll('.panel, .sub-section').forEach(p => p.classList.add('collapsed')); }
+  // Keyboard operability for the click-only collapse headers (Pass C): focusable with
+  // button semantics, Enter/Space toggles, aria-expanded tracks state. Register the
+  // aria-sync click listener AFTER the toggle listener so it reads post-toggle state.
+  function _wireCollapseHdr(el, expandedFn) {
+    if (!el) return;
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('role', 'button');
+    el.setAttribute('aria-expanded', String(!!expandedFn()));
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+    });
+    el.addEventListener('click', () => el.setAttribute('aria-expanded', String(!!expandedFn())));
+  }
+  function _syncPanelHdrAria(container) {
+    const hdr = container.querySelector(':scope > .panel-title, :scope > .sub-section-hdr');
+    if (hdr && hdr.hasAttribute('aria-expanded')) hdr.setAttribute('aria-expanded', String(!container.classList.contains('collapsed')));
+  }
   function initPanelCollapse() {
     document.querySelectorAll('.panel-title').forEach(t => {
       t.addEventListener('click', () => t.parentElement.classList.toggle('collapsed'));
+      _wireCollapseHdr(t, () => !t.parentElement.classList.contains('collapsed'));
     });
     document.querySelectorAll('.sub-section-hdr').forEach(h => {
       h.addEventListener('click', () => h.parentElement.classList.toggle('collapsed'));
+      _wireCollapseHdr(h, () => !h.parentElement.classList.contains('collapsed'));
     });
   }
 
@@ -6003,6 +6027,10 @@ async function onUploadEngFontPick(input){
     document.getElementById('dowColTitle').addEventListener('click', () => toggleColCollapse('dowCol', 'dowCollapsed'));
     document.getElementById('weatherColTitle').addEventListener('click', () => toggleColCollapse('weatherCol', 'weatherCollapsed'));
     document.getElementById('timerColTitle').addEventListener('click', () => toggleColCollapse('timerCol', 'timerCollapsed'));
+    _wireCollapseHdr(document.getElementById('dowColTitle'), () => !settings.dowCollapsed);
+    _wireCollapseHdr(document.getElementById('weatherColTitle'), () => !settings.weatherCollapsed);
+    _wireCollapseHdr(document.getElementById('timerColTitle'), () => !settings.timerCollapsed);
+    _wireCollapseHdr(document.getElementById('videoPanelHeader'), () => !settings.videoCollapsed);
     document.getElementById('dashEditor').addEventListener('blur', () => {
       const sel = window.getSelection();
       if (sel && sel.rangeCount > 0) _savedEditorRange = sel.getRangeAt(0).cloneRange();
@@ -6071,7 +6099,7 @@ async function onUploadEngFontPick(input){
   }
   function _tourExpandPanel(id) {
     const p = document.getElementById(id);
-    if (p && p.classList.contains('collapsed')) { p.classList.remove('collapsed'); _tourExpandedPanels.push(p); }
+    if (p && p.classList.contains('collapsed')) { p.classList.remove('collapsed'); _syncPanelHdrAria(p); _tourExpandedPanels.push(p); }
   }
   const TOUR_STEPS = [
     { target: () => document.getElementById('dowCol'), title: 'Days of the week',
@@ -6144,7 +6172,7 @@ async function onUploadEngFontPick(input){
     document.getElementById('tourCard').hidden = true;
     if (_tourUncollapsed) { _tourUncollapsed.classList.add('collapsed'); _tourUncollapsed = null; }
     // Restore the drawer + panel-collapse state we changed for the tour
-    _tourExpandedPanels.forEach(p => p.classList.add('collapsed')); _tourExpandedPanels = [];
+    _tourExpandedPanels.forEach(p => { p.classList.add('collapsed'); _syncPanelHdrAria(p); }); _tourExpandedPanels = [];
     if (_tourDrawerWasOpen === false) closeSettings();
     _tourDrawerWasOpen = null;
     if (completed) { try { localStorage.setItem('hebrewDashboard_tourSeen', '1'); } catch (e) {} }
