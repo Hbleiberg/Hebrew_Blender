@@ -1848,11 +1848,18 @@ function initVowelFilter() {
     header.appendChild(hdrText);
     header.appendChild(arrow);
     header.style.color = isDark ? group.darkBorder : group.border;
+    header.tabIndex = 0;
+    header.setAttribute('role', 'button');
+    header.setAttribute('aria-expanded', 'true');
+    header.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); header.click(); }
+    });
     header.addEventListener('click', () => {
       const collapsed = chipsWrap.style.display === 'none';
       chipsWrap.style.display = collapsed ? '' : 'none';
       arrow.style.transform = collapsed ? '' : 'rotate(-90deg)';
       section.style.paddingBottom = collapsed ? '' : '2px';
+      header.setAttribute('aria-expanded', collapsed ? 'true' : 'false');
     });
     section.appendChild(header);
     group.vowels.forEach(v => {
@@ -1909,6 +1916,34 @@ function syncLptAria(sel) {
   document.querySelectorAll(sel).forEach(t => t.setAttribute('aria-pressed', t.classList.contains('selected') ? 'true' : 'false'));
 }
 
+// Collapse-header keyboard access: tabindex/role=button/aria-expanded + Enter/Space,
+// with aria re-derived from the owning container's class at every writer.
+const COLLAPSE_HDR_SEL = '.panel-title, .adv-section-title, .pos-sec-hdr, .shoresh-patterns-title';
+function _hdrExpanded(hdr) {
+  if (hdr.classList.contains('panel-title')) { const p = hdr.closest('.panel'); return !(p && p.classList.contains('collapsed')); }
+  if (hdr.classList.contains('adv-section-title')) { const s = hdr.closest('.adv-section'); return !(s && s.classList.contains('collapsed')); }
+  if (hdr.classList.contains('pos-sec-hdr')) return hdr.parentElement.classList.contains('open');
+  if (hdr.classList.contains('shoresh-patterns-title')) return !hdr.parentElement.classList.contains('collapsed');
+  return true;
+}
+function bindHdrA11y(hdr) {
+  if (hdr._hdrA11y) return;
+  hdr._hdrA11y = true;
+  hdr.tabIndex = 0;
+  hdr.setAttribute('role', 'button');
+  hdr.setAttribute('aria-expanded', _hdrExpanded(hdr) ? 'true' : 'false');
+  hdr.addEventListener('keydown', e => {
+    if (e.target !== hdr) return; // e.g. the ✕ clear button inside .pos-sec-hdr
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hdr.click(); }
+  });
+  hdr.addEventListener('click', () => hdr.setAttribute('aria-expanded', _hdrExpanded(hdr) ? 'true' : 'false'));
+}
+function syncCollapseAria() {
+  document.querySelectorAll(COLLAPSE_HDR_SEL).forEach(h => {
+    if (h.getAttribute('role') === 'button') h.setAttribute('aria-expanded', _hdrExpanded(h) ? 'true' : 'false');
+  });
+}
+
 function buildPosFilterTiles(grid, i) {
   grid.innerHTML = '';
   CONSONANTS.forEach(c => {
@@ -1952,6 +1987,7 @@ function initPosFilters() {
         <div class="letter-pos-grid" id="pg${i}"></div>
       </div>`;
     body.appendChild(sec);
+    bindHdrA11y(sec.querySelector('.pos-sec-hdr'));
     buildPosFilterTiles(sec.querySelector(`#pg${i}`), i);
   });
 
@@ -1977,6 +2013,7 @@ function initPosFilters() {
       <div class="letter-pos-grid" id="pgAny"></div>
     </div>`;
   body.appendChild(anySec);
+  bindHdrA11y(anySec.querySelector('.pos-sec-hdr'));
   buildAnyLetterTiles(anySec.querySelector('#pgAny'));
   updatePBAny();
 }
@@ -2047,8 +2084,8 @@ function updatePB(i) {
   document.getElementById(`pb${i}`).innerHTML = [...posFilters[i]].map(h => `<span class="pbadge">${h}</span>`).join('');
 }
 
-function expandAllMenus()   { document.querySelectorAll('#appSidebar .panel, #appSidebar .adv-section').forEach(p => p.classList.remove('collapsed')); }
-function collapseAllMenus() { document.querySelectorAll('#appSidebar .panel, #appSidebar .adv-section').forEach(p => p.classList.add('collapsed')); }
+function expandAllMenus()   { document.querySelectorAll('#appSidebar .panel, #appSidebar .adv-section').forEach(p => p.classList.remove('collapsed')); syncCollapseAria(); }
+function collapseAllMenus() { document.querySelectorAll('#appSidebar .panel, #appSidebar .adv-section').forEach(p => p.classList.add('collapsed')); syncCollapseAria(); }
 function onFilter() {
   if (_applyingDictState) return;  // Section 1: applyDictState() renders once itself at the end
   if (shoreshMode) { if (lastShoreshRoot) renderShoreshFamily(lastShoreshRoot); dictAfterFilter(); return; }
@@ -2580,6 +2617,7 @@ function renderShoreshPatterns(rootCons, fam) {
     <div class="shoresh-patterns-title" onclick="this.parentElement.classList.toggle('collapsed')">Common patterns from this root</div>
     <div class="shoresh-patterns-body"><div class="shoresh-pat-grid">${cells}</div></div>
   </div>`;
+  bindHdrA11y(wrap.querySelector('.shoresh-patterns-title'));
   wrap.style.display = '';
 }
 
@@ -3256,7 +3294,18 @@ function renderEmojiCatTree() {
     const arrow = document.createElement('span');
     arrow.className = 'emoji-cat-arrow';
     arrow.textContent = '▾';
-    arrow.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); group.classList.toggle('collapsed'); });
+    arrow.tabIndex = 0;
+    arrow.setAttribute('role', 'button');
+    arrow.setAttribute('aria-label', c.name + ' subcategories');
+    arrow.setAttribute('aria-expanded', 'false');
+    arrow.addEventListener('click', e => {
+      e.preventDefault(); e.stopPropagation();
+      group.classList.toggle('collapsed');
+      arrow.setAttribute('aria-expanded', group.classList.contains('collapsed') ? 'false' : 'true');
+    });
+    arrow.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); arrow.click(); }
+    });
     const cb = document.createElement('input');
     cb.type = 'checkbox';
     cb.checked = allSelected;
@@ -3454,6 +3503,7 @@ function renderEmojiResults() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.panel-title, .adv-section-title').forEach(bindHdrA11y);
   initVowelFilter();
   initPosFilters();
   // Section 1: capture the pristine filter baseline and parse restore sources NOW —
@@ -3905,6 +3955,7 @@ function resetChipGroup(key) {
       if (el) {
         const panel = el.closest('.panel'); if (panel) panel.classList.remove('collapsed');
         const adv = el.closest('.adv-section'); if (adv) { adv.classList.remove('collapsed'); const ap = adv.closest('.panel'); if (ap) ap.classList.remove('collapsed'); }
+        syncCollapseAria();
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
@@ -4146,6 +4197,7 @@ function dictActiveGroupCount() {
     }
     if (!collapsedOnce) {
       document.querySelectorAll('#appSidebar .panel, #appSidebar .adv-section').forEach(p => p.classList.add('collapsed'));
+      syncCollapseAria();
       collapsedOnce = true;
     }
     updateMobileFiltersBtn();
@@ -4224,7 +4276,7 @@ function _tourOpenSidebar() {
 }
 function _tourExpandPanel(id) {
   const p = document.getElementById(id);
-  if (p && p.classList.contains('collapsed')) { p.classList.remove('collapsed'); _tourUncollapsed.add(p); }
+  if (p && p.classList.contains('collapsed')) { p.classList.remove('collapsed'); _tourUncollapsed.add(p); syncCollapseAria(); }
 }
 const TOUR_STEPS = [
   { target: () => document.getElementById('searchInput'),
@@ -4308,6 +4360,7 @@ function tourEnd(completed) {
   document.getElementById('tourCard').hidden = true;
   _tourUncollapsed.forEach(p => p.classList.add('collapsed'));
   _tourUncollapsed = new Set();
+  syncCollapseAria();
   const opener = _tourOpener; _tourOpener = null;
   if (opener && opener.focus) { try { opener.focus(); } catch (e) {} }
 }
