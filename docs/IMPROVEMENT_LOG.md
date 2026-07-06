@@ -8,7 +8,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 | classroom_dashboard.html (`makeSortable` ~4747, schedule builder ~5070) | Schedule-builder rows reorder by HTML5 drag only — no keyboard (or touch) equivalent. Real fix: per-row Move up/down buttons or the folder-tree Move-menu pattern; a larger diff than a wiring fix. | found: 2026-07-06, Pass C (dashboard)
+- [ ] P3 | hebrew_blend_generator.html (`.letter-tile .name` ~585 w/ opacity 0.75; dark `.rw-drill-btn` ~359) | Small muted text borderline contrast: tile-name subtext at 0.55rem compounds `--muted` with opacity:0.75; dark-mode `.rw-drill-btn` muted-on-#252d3e ≈4.6:1 at small size. Needs a considered palette tweak, not a quick literal. | found: 2026-07-06, Pass C (generator)
+- [ ] P4 | hebrew_blend_generator.html (`toggleSidebar` ~5549; Dagesh-Tav rebuild ~4240; preset-row DnD ~5031) | Three small keyboard nits: hiding the sidebar drops focus to body (move it to #sidebarShowBtn); the Dagesh-Tav toggle rebuilds the letter grids and loses tile focus; preset-item row drag-reorder is mouse-only (rows' actions are buttons; Move-menu exists via folder tree). | found: 2026-07-06, Pass C (generator)
 - [ ] P4 | classroom_dashboard.html (day items ~2998, weather labels ~3134) | The read-aloud (TTS) taps on day names and weather text are click-only — supplementary feature, so P4; a keyboard path would need tabindex+keydown on many small text nodes (or a single "read aloud" button per widget, probably the better shape). | found: 2026-07-06, Pass C
 - [ ] P4 | classroom_dashboard.html (`#dashTextDisplay` spoiler reveal ~3935) | Spoiler reveal/hide in dashboard text is click-only. | found: 2026-07-06, Pass C
 - [ ] P4 | classroom_dashboard.html (first-run modal `frDismiss` ~2457) | When the first-run card is opened from the drawer's "Quick-start layouts…" button, dismissing it doesn't restore focus to that opener. | found: 2026-07-06, Pass C
@@ -18,6 +19,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 _(none)_
 
 ## Done
+
+- [x] 2026-07-06 | 962002c | hebrew_blend_generator.html | P3 (Pass C) — removed the replacement-less inline `outline:none` from `#presetBackupBox`; keyboard focus ring restored. | Verified headless (manual input mode revealed): focused textarea shows the default outline; 0 pageerrors.
+- [x] 2026-07-06 | 3dc347d | hebrew_blend_generator.html | P3 (Pass C) — 11 panel titles, 8 `.rw-section-header`s, and the vowel-group collapse headers (initVowels + custom-blend copy) were click-only divs; all now tabindex/role=button/aria-expanded with Enter/Space, tour expand/restore aria-synced. | Verified headless (light+dark): counts, Enter/Space toggles + aria on all three header shapes; 0 pageerrors.
+- [x] 2026-07-06 | 3fec30b | hebrew_blend_generator.html | P2 (Pass C) — all six letter-tile grids (main, 3 lock, real-word, custom-blend ×2 builders) were click-only divs, the flash_cards defect unfixed here. Seven tile-creation sites now go through `bindTileA11y` (tabindex/role/aria-pressed/Enter+Space); bulk All/None/No-Sofit paths re-derive aria via `_syncTileAria` hooked into the `updateCombosCount`/`updateRwPoolInfo` chokepoints they already call. | Verified headless (light+dark × 1280/800): 31 main tiles wired, Enter/Space toggles state+aria+Set, bulk paths sync aria without clicks, rw/lock/cw grids wired, getSettings unregressed; 0 pageerrors.
+- [x] 2026-07-06 | 662bc5c | classroom_dashboard.html | P3 — schedule-builder rows gained Move up/down buttons (aria-labeled, edge-disabled); focus follows the moved row so repeated Enter keeps walking it; drag reorder unchanged. | Verified headless (light+dark, schedule sync enabled): ABC→BAC→ABC via buttons, edge no-op, focus-follow, rows still draggable; 0 pageerrors.
 
 - [x] 2026-07-06 | 341e4e8 | classroom_dashboard.html | P3 (Pass C) — student-picker overlay (`#pickOverlay`) now moves focus to its close button on open and restores the opener on close (Escape already worked). | Verified headless (light+dark): open → focus on ✕, Escape closes, focus back on the opener; 0 pageerrors.
 - [x] 2026-07-06 | 26f2da3 | classroom_dashboard.html | P3 (Pass C) — light-mode gold text on cream failed AA (~2.6:1): the always-on holiday countdown line and dashboard-text links now use a dedicated darker gold literal (#8a6216); measured 5.47:1 light / 11.0:1 dark; `--gold` token untouched. | Verified headless computed-contrast both themes; 0 pageerrors.
@@ -84,7 +90,7 @@ _(none)_
 ### Discovery-pass rotation (run one per session, stalest first)
 - A recurring-pattern sweep: 2026-07-06 (S7 focused re-sweep of the session 5-6 surface: falsy-zero, unsafe innerHTML/JSON.parse in the diffs, localStorage registry, shared-block sha-identity, Font Maker undo/dirty — ALL CLEAN; the one innerHTML and JSON.parse diff hits are the engine's own static modal + ivritSafeParse itself, relocated by the block re-sync) ← next stalest (rotation cycles; all passes ≤1 day old)
 - B console/error audit: 2026-07-06 (load + interaction, all 11 pages — clean)
-- C accessibility (one tool): 2026-07-06 (flash_cards.html, then classroom_dashboard.html in S8 — dashboard P2+4×P3 fixed same session; remaining: schedule-row keyboard reorder P3 + three P4s as Candidates. Not yet Pass-C'd: generator, dictionary, torah trainer, Font Maker)
+- C accessibility (one tool): 2026-07-06 (flash_cards → dashboard S8 → generator S9: P2 tile grids + header/textarea P3s fixed same session; leftovers logged as Candidates. Clean in the generator: vowel chips are native labels, all sidebar buttons native, no modals to trap, tour+tooltips already accessible, per-tile toggles preserve focus. Not yet Pass-C'd: dictionary, torah trainer, Font Maker)
 - D performance (one tool): 2026-07-06 (hebrew_dictionary.html)
 - E freshness/site-health: 2026-07-06
 - F cross-tool consistency: 2026-07-06 (shared-block byte-identity)
