@@ -2265,18 +2265,21 @@ function buildWordCard(w) {
   btn.className = 'wc-copy';
   btn.innerHTML = COPY_ICON;
   btn.title = 'Copy Hebrew';
+  btn.setAttribute('aria-label', 'Copy Hebrew');
   btn.addEventListener('click', e => { e.stopPropagation(); copyWord(btn, getWordCopyText(w)); });
   card.appendChild(btn);
   const speakBtn = document.createElement('button');
   speakBtn.className = 'wc-speak';
   speakBtn.textContent = '🔊';
   speakBtn.title = 'Hear pronunciation';
+  speakBtn.setAttribute('aria-label', 'Hear pronunciation');
   speakBtn.addEventListener('click', e => { e.stopPropagation(); speakWord(w.word); });
   card.appendChild(speakBtn);
   const srch = document.createElement('a');
   srch.className = 'wc-search';
   srch.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
   srch.title = 'Look up on Google';
+  srch.setAttribute('aria-label', 'Look up on Google');
   srch.href = 'https://www.google.com/search?q=' + encodeURIComponent(w.word);
   srch.target = '_blank';
   srch.rel = 'noopener';
@@ -3447,7 +3450,7 @@ function renderEmojiResults() {
         <span class="ec-gender ${cls}">${label}</span>
         <div class="ec-heb-row">
           <div class="ec-heb">${colorizeHebrew(heb)}</div>
-          <button class="ec-speak" title="Hear pronunciation" onclick="speakWord('${escHeb}')">🔊</button>
+          <button class="ec-speak" title="Hear pronunciation" aria-label="Hear pronunciation" onclick="speakWord('${escHeb}')">🔊</button>
         </div>
         ${translit ? `<div class="ec-translit">${translit}</div>` : ''}
       </div>`;
