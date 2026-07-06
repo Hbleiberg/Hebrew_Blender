@@ -1075,6 +1075,7 @@ const CONSONANTS = [
 ];
 
 const POS_KNOWN = ['noun','proper noun','verb','adjective','adverb','pronoun','preposition','conjunction','root','interjection','numeral','particle','phrase','determiner','prepositional phrase','postposition','name','name element','article'];
+const POS_KNOWN_SET = new Set(POS_KNOWN);   // O(1) membership for the hot filter path
 
 const DICT_VOWEL_GROUPS = [
   {
@@ -1755,6 +1756,11 @@ fetchJsonWithProgress('data/hebrew_words.json?v=4', updateDictLoadProgress)
       const end = Math.min(i + BATCH, queue.length);
       for (; i < end; i++) {
         const w = queue[i][0], len = queue[i][1];
+        // Precomputed immutable search fields so onFilter doesn't redo this work on
+        // every 13k-word pass. Derived ONLY from the raw translit/translation/word —
+        // never from translitDisplay, which mutates with the transliteration style.
+        const vowelSet = new Set();
+        for (const vd of VOWEL_DEFS) if (w.word.includes(vd.u)) vowelSet.add(vd.u);
         ALL_WORDS.push({
           word: w.word,
           bare: w.bare || '',
@@ -1765,7 +1771,12 @@ fetchJsonWithProgress('data/hebrew_words.json?v=4', updateDictLoadProgress)
           pos: w.pos || '',
           translation: w.translation || '',
           era: w.era || 'Both',
-          len
+          len,
+          lenKey: len >= 8 ? '8plus' : String(len),
+          translitLower: (w.translit || '').toLowerCase(),
+          translationLower: (w.translation || '').toLowerCase(),
+          vowelSet,
+          hasVowel: vowelSet.size > 0
         });
       }
       if (i < queue.length) { setTimeout(flattenBatch, 0); return; }
@@ -2043,15 +2054,11 @@ function onFilter() {
   const eraBib = document.getElementById('eraBib').checked;
   const eraMod = document.getElementById('eraMod').checked;
 
+  const posHasOther = checkedPos.has('other');   // hoisted: constant for the whole pass
   filtered = ALL_WORDS.filter(w => {
-    const lk = w.len >= 8 ? '8plus' : String(w.len);
-    if (!checkedLen.has(lk)) return false;
+    if (!checkedLen.has(w.lenKey)) return false;
 
-    const pm = [...checkedPos].some(p => {
-      if (p === 'other') return !POS_KNOWN.includes(w.pos);
-      return w.pos === p;
-    });
-    if (!pm) return false;
+    if (!checkedPos.has(w.pos) && !(posHasOther && !POS_KNOWN_SET.has(w.pos))) return false;
 
     const era = w.era;
     if (era === 'Both') { if (!eraBib && !eraMod) return false; }
@@ -2076,17 +2083,17 @@ function onFilter() {
     }
 
     if (vowelFilters.size < VOWEL_DEFS.length) {
-      for (const vd of VOWEL_DEFS) {
-        if (!vowelFilters.has(vd.u) && w.word.includes(vd.u)) return false;
+      for (const u of w.vowelSet) {
+        if (!vowelFilters.has(u)) return false;
       }
     }
 
-    if (hideNoVowels && !VOWEL_DEFS.some(vd => w.word.includes(vd.u))) return false;
+    if (hideNoVowels && !w.hasVowel) return false;
 
     if (q) {
       if (!w.word.includes(q) && !w.bare.includes(q) &&
-          !w.translit.toLowerCase().includes(q) &&
-          !w.translation.toLowerCase().includes(q)) return false;
+          !w.translitLower.includes(q) &&
+          !w.translationLower.includes(q)) return false;
     }
     return true;
   });
