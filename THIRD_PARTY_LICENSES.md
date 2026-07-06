@@ -97,7 +97,14 @@ If you re-host or fork this page, double-check Sefaria's version metadata yourse
 
 ## Fonts
 
-IvritSuite displays Hebrew and Latin text in a number of openly-licensed typefaces. **Most are loaded at runtime from Google Fonts; a handful are self-hosted via a jsDelivr CDN mirror of the [`aharonium/fonts`](https://github.com/aharonium/fonts) collection.** None of the font binaries are redistributed in this repository **except Libre Baskerville**, whose TrueType files are bundled in `splash/fonts/` (with its OFL text at `splash/fonts/OFL.txt`) so `splash/gen_splash.py` can render the app launch screens offline. Fonts a user creates with the Hebrew Font Maker are that user's own work and are not covered here.
+IvritSuite displays Hebrew and Latin text in a number of openly-licensed typefaces. **Most are loaded at runtime from Google Fonts; a handful are self-hosted via a jsDelivr CDN mirror of the [`aharonium/fonts`](https://github.com/aharonium/fonts) collection.** The font binaries redistributed in this repository are:
+
+- `splash/fonts/` — **Libre Baskerville** (OFL 1.1; license text at `splash/fonts/OFL.txt`), bundled so `splash/gen_splash.py` can render the app launch screens offline.
+- `fonts/FrankRuhlLibre-Regular.ttf` — **Frank Ruhl Libre** (OFL 1.1; license text at `fonts/OFL.txt`), self-hosted and precached by the service worker as the suite's default Hebrew face.
+- `fonts/Reuben.ttf` — **Reuben** by Baruch Sienna (CC0), made with the IvritSuite Hebrew Font Maker and offered for download in the Resources gallery; its CC0 dedication is declared in the gallery entry and in the notice generated with each download.
+- `fonts/TzviScript.ttf` and `fonts/TzviScriptStrokeGuide.ttf` — **TzviScript** / **TzviScript Stroke Guide** by Harrison Bleiberg (OFL 1.1; full texts at `fonts/TzviScript-LICENSE.txt` and `fonts/TzviScriptStrokeGuide-LICENSE.txt`), made with the Hebrew Font Maker and offered in the Resources gallery.
+
+Other fonts a user creates with the Hebrew Font Maker are that user's own work and are not covered here.
 
 Every typeface the site requests is listed below, grouped by license. The two licenses in use — the **SIL Open Font License 1.1** and the **GNU GPL v2 with the Font Exception** (the Culmus Project fonts) — follow the tables.
 
@@ -107,7 +114,7 @@ Every typeface the site requests is listed below, grouped by license. The two li
 |---|---|---|---|
 | Libre Baskerville | Pablo Impallari, Rodrigo Fuenzalida | Google Fonts (also bundled in `splash/fonts/`) | https://github.com/impallari/Libre-Baskerville |
 | Source Sans 3 | Paul D. Hunt — Adobe | Google Fonts | https://github.com/adobe-fonts/source-sans |
-| Frank Ruhl Libre | Yanek Iontef | Google Fonts | https://github.com/fontef/frankruhllibre |
+| Frank Ruhl Libre | Yanek Iontef | Google Fonts (also bundled in `fonts/`) | https://github.com/fontef/frankruhllibre |
 | David Libre | Yanek Iontef | Google Fonts | https://fonts.google.com/specimen/David+Libre |
 | Noto Sans Hebrew | Google / Noto Project | Google Fonts | https://fonts.google.com/noto/specimen/Noto+Sans+Hebrew |
 | Noto Serif Hebrew | Google / Noto Project | Google Fonts | https://fonts.google.com/noto/specimen/Noto+Serif+Hebrew |
