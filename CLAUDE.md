@@ -582,8 +582,8 @@ auto-hide timer. The trigger carries `tabindex="0"`, `role="button"`, `aria-expa
   `hebrew_dictionary.html`, `torah_trainer.html`, and `classroom_dashboard.html` (via `.tip-wrap`/`data-tip`
   + `bindTip`), and `flash_cards.html` (2026-07-06 — its `tooltipIIFE` now carries the `bindTip` wiring
   adapted to `.has-tip` triggers + the `#tipFloat` `.show`/opacity model; its one native-`<button>`
-  trigger is hover/focus-only by design). Note the dashboard's `wire()` predates the
-  `aria-expanded`/`aria-describedby` attributes — verify before relying on them there.
+  trigger is hover/focus-only by design). The dashboard's `wire()` gained `aria-expanded`/
+  `aria-describedby` on 2026-07-06, so all five tooltip carriers now meet the full contract.
 - **Rule:** no new hover-only tooltips anywhere. New `data-tip`s must inherit the page's accessible
   handler automatically (don't hand-roll a one-off).
 

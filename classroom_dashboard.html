@@ -6232,12 +6232,21 @@ async function onUploadEngFontPick(input){
       tip.style.left = left + 'px';
       tip.style.top  = top  + 'px';
     }
-    function show(wrap) { openWrap = wrap; place(wrap); }
-    function hide() { openWrap = null; tip.style.display = 'none'; }
+    function _tipIconAria(wrap, expanded) {
+      const icon = wrap && wrap.querySelector('.tip-icon');
+      if (icon) icon.setAttribute('aria-expanded', String(!!expanded));
+    }
+    function show(wrap) {
+      if (openWrap && openWrap !== wrap) _tipIconAria(openWrap, false);
+      openWrap = wrap; place(wrap); _tipIconAria(wrap, true);
+    }
+    function hide() { _tipIconAria(openWrap, false); openWrap = null; tip.style.display = 'none'; }
     function wire(wrap) {
       const icon = wrap.querySelector('.tip-icon'); if (!icon) return;
       icon.tabIndex = 0; icon.setAttribute('role', 'button');
       icon.setAttribute('aria-label', wrap.dataset.tip || 'More info');
+      icon.setAttribute('aria-expanded', 'false');
+      icon.setAttribute('aria-describedby', 'tipFloat');
       wrap.addEventListener('mouseenter', () => show(wrap));
       wrap.addEventListener('mouseleave', () => { if (openWrap === wrap) hide(); });
       icon.addEventListener('focus', () => show(wrap));
