@@ -2150,7 +2150,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '3.2';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '3.3';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2362,6 +2362,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v3.3</strong> — Small correctness fix: nikkud and trop previews now center properly on a letter whose width is set to exactly zero (a rare edge case that previously fell back to the default width). <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.2</strong> — Undo now covers two more actions: <strong>showing/hiding guides</strong> and <strong>✓ Confirm placement</strong>. Ctrl+Z steps back through both, just like every other edit. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.1</strong> — Four fixes. The <strong>shin/sin dots</strong> are now edited in just one place — <strong>Special &amp; precomposed forms</strong> (שׁ/שׂ) — instead of also appearing in the above-mark row. <strong>Tracing</strong> no longer clips your letter at an invisible box: it follows your whole reference image, so a wide letter's edges and feet come through. Reopening a saved project now shows <strong>honest letter status</strong> — untraced letters no longer look finished — and your chosen <strong>reference (tracing) font</strong> is kept when you reload. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.0</strong> — Placement panel, take two: the <strong>size sliders</strong> under the canvas are <strong>stacked</strong> again (one per line, so each is easy to read), and the <strong>✓ Confirm placement</strong> / <strong>Reset letter</strong> / <strong>Reset all</strong> buttons now sit together in their own <strong>panel to the right</strong> of the sliders instead of underneath them. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -5904,7 +5905,7 @@ function seedAnchors(l) {
   const meta = letterMeta(l.codepoint);
   // works even before tracing (so nikkud can be previewed on the reference glyph)
   const bb = l.contours ? glyphBBox(l.contours, true, meta)
-    : { midX: Math.round((l.advance || Math.round(LETTER_TOP*0.7)) / 2), minY: 0, maxY: LETTER_TOP };
+    : { midX: Math.round((l.advance != null ? l.advance : Math.round(LETTER_TOP*0.7)) / 2), minY: 0, maxY: LETTER_TOP };
   const mid = Math.round(bb.midX);
   const center = Math.round((bb.minY + bb.maxY)/2 * 0.6 + 150); // body-ish center
   const aboveY = Math.max(ANCHOR_Y.above, Math.round(bb.maxY)+40);
@@ -5923,7 +5924,7 @@ function seedAnchors(l) {
 }
 function ensureTropAnchors(l) {   // back-fill trop anchors on letters seeded before trop / the L/R columns existed
   if (!l.anchors) return;
-  const mid = l.anchors.above ? l.anchors.above.x : Math.round((l.advance||Math.round(LETTER_TOP*0.7))/2);
+  const mid = l.anchors.above ? l.anchors.above.x : Math.round((l.advance != null ? l.advance : Math.round(LETTER_TOP*0.7))/2);
   const aboveY = l.anchors.above ? l.anchors.above.y : ANCHOR_Y.above;
   if (!l.anchors.tropAbove) l.anchors.tropAbove = { x: mid, y: aboveY + TROP_GAP_ABOVE };
   if (!l.anchors.tropBelow) l.anchors.tropBelow = { x: mid, y: ANCHOR_Y.below - TROP_GAP_BELOW };
@@ -7955,7 +7956,7 @@ function qaAnchors(L) {
              tropBelow: a.tropBelow || { x:mid, y:ANCHOR_Y.below - TROP_GAP_BELOW } });
   }
   const meta = letterMeta(L.codepoint);
-  const bb = L.contours ? glyphBBox(L.contours, true, meta) : { midX: Math.round((L.advance || Math.round(LETTER_TOP*0.7))/2), minY:0, maxY:LETTER_TOP };
+  const bb = L.contours ? glyphBBox(L.contours, true, meta) : { midX: Math.round((L.advance != null ? L.advance : Math.round(LETTER_TOP*0.7))/2), minY:0, maxY:LETTER_TOP };
   const mid = Math.round(bb.midX);
   const center = Math.round((bb.minY + bb.maxY)/2 * 0.6 + 150);
   const aboveY = Math.max(ANCHOR_Y.above, Math.round(bb.maxY)+40);
@@ -10214,7 +10215,7 @@ function applyNikkudCheckAll(on){ document.querySelectorAll('#applyNikkudList .a
 function anchorMidX(l){
   const meta = letterMeta(l.codepoint);
   return l.contours ? glyphBBox(l.contours, true, meta).midX
-                    : Math.round((l.advance || Math.round(LETTER_TOP*0.7)) / 2);
+                    : Math.round((l.advance != null ? l.advance : Math.round(LETTER_TOP*0.7)) / 2);
 }
 function applyNikkudDo(){
   const src = curLetter(); if (!src) { closeApplyNikkud(); return; }
