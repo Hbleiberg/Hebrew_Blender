@@ -1836,6 +1836,14 @@ function getNikudColor(key) {
 function colorizeHebrew(text, mode) {
   // walks letter-by-letter, collects following marks, wraps with span styled by vowel key
   const DAGESH = 'ּ';
+  // Hoist the theme + defaults lookup out of the per-syllable loop: getNikudColor() reads
+  // document.body.classList.contains('dark') on every colored syllable, which across a full parsha
+  // is thousands of DOM reads per render (and this re-runs on every settings/nav change). Resolve
+  // once per word here; colorFor() returns exactly what getNikudColor(key) would.
+  const _dark = document.body.classList.contains('dark');
+  const _defaults = activeNikudDefaults(_dark);
+  const _overrides = settings.nikudColorOverrides || {};
+  const colorFor = key => (_overrides[key] !== undefined ? _overrides[key] : (_defaults[key] || '#888'));
   const chars = [...text];
   const out = [];
   let i = 0;
@@ -1863,7 +1871,7 @@ function colorizeHebrew(text, mode) {
     }
     const syl = escapeHTML(ch + marks);
     if (!key) { out.push(syl); i = j; continue; }
-    const color = getNikudColor(key);
+    const color = colorFor(key);
     if (mode === 'highlight') {
       out.push(`<span style="background-color:${color}50;border-radius:2px;">${syl}</span>`);
     } else if (mode === 'underline') {
