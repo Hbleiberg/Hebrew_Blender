@@ -759,6 +759,9 @@ function exportAllSettings() {
     dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
     torahTrainerSettings: lsJSON('hebrewTorahTrainer_settings', {}),
     inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
+    hebFont:             localStorage.getItem('hebrewBlender_hebFont') || '',
+    hebFontSize:         localStorage.getItem('hebrewBlender_hebFontSize') || '',
+    livePreview:         localStorage.getItem('hebrewBlender_livePreview') || '',
     wordLists:           lsJSON('ivritSuite_wordLists', { v: 1, lists: {} }),
     userFonts:           _fontsBackupCache || [],
   };
@@ -829,6 +832,10 @@ async function importAllSettings() {
     if (parsed.inputMode !== undefined) {
       localStorage.setItem('hebrewBlender_inputMode', parsed.inputMode);
     }
+    // Shared display prefs (Generator + Dictionary): empty string = never set, skip.
+    if (parsed.hebFont)     localStorage.setItem('hebrewBlender_hebFont',     parsed.hebFont);
+    if (parsed.hebFontSize) localStorage.setItem('hebrewBlender_hebFontSize', parsed.hebFontSize);
+    if (parsed.livePreview) localStorage.setItem('hebrewBlender_livePreview', parsed.livePreview);
     if (parsed.wordLists) {
       wlMergeIntoStorage(parsed.wordLists, false);
     }
@@ -873,6 +880,9 @@ function eraseAllSettings() {
     'hebrewFlashCards_tourSeen',
     'hebrewTorahTrainer_settings',
     'hebrewBlender_inputMode',
+    'hebrewBlender_hebFont',
+    'hebrewBlender_hebFontSize',
+    'hebrewBlender_livePreview',
     'ivritSuite_wordLists',
     // legacy cleanup: purge orphaned data from the removed community-impact feature
     'ivritsuite-impact-v1',
@@ -908,6 +918,9 @@ const IVRIT_CFG = {
       dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
       torahTrainerSettings:lsJSON('hebrewTorahTrainer_settings',    {}),
       inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
+      hebFont:             localStorage.getItem('hebrewBlender_hebFont') || '',
+      hebFontSize:         localStorage.getItem('hebrewBlender_hebFontSize') || '',
+      livePreview:         localStorage.getItem('hebrewBlender_livePreview') || '',
       wordLists:           lsJSON('ivritSuite_wordLists', { v: 1, lists: {} }),
       userFonts:           _fontsBackupCache || []
     };
@@ -945,6 +958,10 @@ const IVRIT_CFG = {
     if (data.dictTranslitStyle !== undefined) { localStorage.setItem('hebrewDictionary_translitStyle', data.dictTranslitStyle); touched = true; }
     if (data.dictTtsRate       !== undefined) { localStorage.setItem('hebrewDictionary_ttsRate',       data.dictTtsRate);       touched = true; }
     if (data.inputMode         !== undefined) { localStorage.setItem('hebrewBlender_inputMode',        data.inputMode); }
+    // Shared display prefs (Generator + Dictionary): empty string = never set, skip.
+    if (data.hebFont)     { localStorage.setItem('hebrewBlender_hebFont',     data.hebFont);     touched = true; }
+    if (data.hebFontSize) { localStorage.setItem('hebrewBlender_hebFontSize', data.hebFontSize); touched = true; }
+    if (data.livePreview) { localStorage.setItem('hebrewBlender_livePreview', data.livePreview); touched = true; }
     if (data.userFonts && Array.isArray(data.userFonts) && window.indexedDB) {
       data.userFonts.forEach(uf => { try { saveUserFont(uf.name, _ivB64ToBytes(uf.b64), uf.family); } catch (e) {} });
       refreshFontsBackupCache(); touched = true;
