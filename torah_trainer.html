@@ -734,6 +734,9 @@ input:focus-visible + .slider { outline:2px solid var(--gold); outline-offset:2p
   border-radius:5px; padding:3px;
 }
 body.dark .radio-group { background:#2a3349; }
+/* Unselected options: --muted measures 4.13:1 on the dark #2a3349 track — below
+   the 4.5:1 AA minimum at this size. Dedicated literal (4.92:1); token untouched. */
+body.dark .radio-group label { color:#99a2b8; }
 .radio-group input { display:none; }
 .radio-group label {
   text-align:center; padding:4px 10px; border-radius:3px;
@@ -741,7 +744,9 @@ body.dark .radio-group { background:#2a3349; }
   transition:0.15s; flex:none;
 }
 .radio-group input:checked + label {
-  background:var(--white); color:var(--gold); box-shadow:0 1px 3px rgba(0,0,0,0.08);
+  /* --gold on the white pill is 2.75:1 — darker gold literal (5.9:1), same
+     readable-gold precedent as the dashboard's countdown line; token untouched. */
+  background:var(--white); color:#8a6216; box-shadow:0 1px 3px rgba(0,0,0,0.08);
 }
 body.dark .radio-group input:checked + label { background:#1e2535; color:var(--gold-light); }
 
