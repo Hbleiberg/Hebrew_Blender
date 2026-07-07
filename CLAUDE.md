@@ -641,7 +641,7 @@ touch-primary tools get gesture equivalents; every new interactive element must 
 
 ## Hebrew Font Maker (`Hebrew_Font_Maker.html`)
 
-The largest file in the repo (~9,900 lines, single-file app). **Line numbers drift constantly** —
+The largest file in the repo (~10,350 lines, single-file app). **Line numbers drift constantly** —
 never trust remembered or previously-reported line numbers; locate everything by pattern
 (function names, marker comments, element ids).
 
