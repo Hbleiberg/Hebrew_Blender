@@ -1056,10 +1056,10 @@ body.fullscreen #fsExitBtn { display: flex; }
 
 <!-- ───── Settings drawer ───── -->
 <div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
-<div class="settings-modal" id="settingsModal">
+<div class="settings-modal" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="ttSettingsTitle">
   <div class="settings-header">
-    <h2>⚙️&nbsp; Torah Trainer Settings</h2>
-    <button class="settings-close" onclick="closeSettings()" title="Close">×</button>
+    <h2 id="ttSettingsTitle">⚙️&nbsp; Torah Trainer Settings</h2>
+    <button class="settings-close" onclick="closeSettings()" title="Close" aria-label="Close settings">×</button>
   </div>
   <div class="settings-body">
 
@@ -3557,15 +3557,37 @@ function maybeEnsureTranslit() {
    ══════════════════════════════════════════════════════ */
 function expandAllMenus()   { document.querySelectorAll('#settingsModal .panel').forEach(p => p.classList.remove('collapsed')); }
 function collapseAllMenus() { document.querySelectorAll('#settingsModal .panel').forEach(p => p.classList.add('collapsed')); }
+// Keyboard focus management for the drawer: focus moves in on open, Tab wraps inside the modal
+// while it's open, and focus returns to the opener (the gear) on close. Escape already closes it
+// (global keydown handler). Mirrors the dashboard's settings-drawer pattern.
+let _settingsOpener = null;
+function _settingsTrapKey(e) {
+  if (e.key !== 'Tab') return;
+  const modal = document.getElementById('settingsModal');
+  const focusables = [...modal.querySelectorAll('button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])')]
+    .filter(el => el.offsetParent !== null && !el.disabled);
+  if (!focusables.length) return;
+  const first = focusables[0], last = focusables[focusables.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+}
 function openSettings() {
+  _settingsOpener = document.activeElement;
   document.getElementById('settingsBackdrop').classList.add('open');
-  document.getElementById('settingsModal').classList.add('open');
+  const modal = document.getElementById('settingsModal');
+  modal.classList.add('open');
+  modal.addEventListener('keydown', _settingsTrapKey);
   syncFormToSettings();
+  const c = modal.querySelector('.settings-close'); if (c) c.focus();
 }
 function closeSettings() {
   document.getElementById('settingsBackdrop').classList.remove('open');
-  document.getElementById('settingsModal').classList.remove('open');
+  const modal = document.getElementById('settingsModal');
+  modal.classList.remove('open');
+  modal.removeEventListener('keydown', _settingsTrapKey);
   saveSettings();
+  const o = _settingsOpener; _settingsOpener = null;
+  if (o && o.focus) { try { o.focus(); } catch (e) {} }
 }
 function syncFormToSettings() {
   document.getElementById('optShowCantillation').checked = !!settings.showCantillation;
