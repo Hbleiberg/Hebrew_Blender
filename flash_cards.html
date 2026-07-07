@@ -3419,14 +3419,14 @@ function getSettings() {
 }
 function applySettings(s) {
   if (!s) return;
-  mode = s.mode || 2;
+  mode = s.mode ?? 2;
   inverse = !!s.inverse;
   hideHomeBtn = !!s.hideHomeBtn;
   const hideHomeToggle = document.getElementById('hideHomeToggle');
   if (hideHomeToggle) hideHomeToggle.checked = hideHomeBtn;
   const homeBtn = document.getElementById('homeBtn');
   if (homeBtn) homeBtn.style.visibility = hideHomeBtn ? 'hidden' : '';
-  cardCount = s.cardCount || 10;
+  cardCount = s.cardCount ?? 10;
   selectedLetters = new Set(s.selectedLetters || []);
   selectedVowels = new Set(s.selectedVowels || []);
   dageshTavEnabled = !!s.dageshTavEnabled;
@@ -3443,18 +3443,18 @@ function applySettings(s) {
     }
   } else if (s.lockEnabled) {
     anyLetterLock = true;
-    const pos = s.lockPosition || 1;
+    const pos = s.lockPosition ?? 1;
     letterLocks[pos] = { enabled: true, letters: new Set(s.lockLetters || []) };
   }
   colorCodingEnabled = !!s.colorCodingEnabled;
-  colorCodingMode = s.colorCodingMode || 'letter';
+  colorCodingMode = s.colorCodingMode ?? 'letter';
   nikudColorOverrides = { ...(s.nikudColorOverrides || {}) };
-  vowelColorScheme = s.vowelColorScheme || 'default';
+  vowelColorScheme = s.vowelColorScheme ?? 'default';
   const fontMigration = { frank:'Frank Ruhl Libre', david:'David Libre', noto:'Noto Serif Hebrew', heebo:'Heebo', assist:'Assistant' };
-  const rawFont = s.hebFontId || 'Frank Ruhl Libre';
+  const rawFont = s.hebFontId ?? 'Frank Ruhl Libre';
   hebFontId = fontMigration[rawFont] || (HEB_FONTS.find(f => f.name === rawFont) ? rawFont : 'Frank Ruhl Libre');
-  vowelPositions = new Set((s.vowelPositions || []).filter(p => p >= 1 && p <= (s.mode || 2)));
-  if (vowelPositions.size === 0) vowelPositions.add(s.mode || 2);
+  vowelPositions = new Set((s.vowelPositions || []).filter(p => p >= 1 && p <= (s.mode ?? 2)));
+  if (vowelPositions.size === 0) vowelPositions.add(s.mode ?? 2);
   anyVowelLock = !!s.anyVowelLock;
   vowelLocks = {
     1: { enabled: false, vowels: new Set() },
@@ -3467,7 +3467,7 @@ function applySettings(s) {
     }
   } else if (s.vowelLockEnabled) {
     anyVowelLock = true;
-    const pos = s.vowelLockPosition || 2;
+    const pos = s.vowelLockPosition ?? 2;
     vowelLocks[pos] = { enabled: true, vowels: new Set(s.lockedVowelKeys || (s.lockedVowelKey ? [s.lockedVowelKey] : [])) };
   }
 

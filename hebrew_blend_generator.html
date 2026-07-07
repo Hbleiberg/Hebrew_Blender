@@ -4533,7 +4533,7 @@ function applySettings(s) {
   selectedLetters = new Set(s.selectedLetters || []);
   selectedVowels  = new Set(s.selectedVowels  || []);
   // Vowel color scheme governs the picker grouping/order — set before rebuilding the grid.
-  if (s.vowelColorScheme !== undefined) vowelColorScheme = s.vowelColorScheme || 'default';
+  if (s.vowelColorScheme !== undefined) vowelColorScheme = s.vowelColorScheme ?? 'default';
   initVowels(); // rebuild picker in the active scheme; reads selectedVowels for checked state
   document.querySelectorAll('.letter-tile').forEach(t => {
     t.classList.toggle('selected', selectedLetters.has(t.dataset.heb));

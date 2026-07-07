@@ -260,6 +260,13 @@ Because `.ivrit` save files store `liveState = getSettings()`, keeping `getSetti
 persist a single `settings`/last-state object instead, so the equivalent obligation there is to add
 every new control to that object's save/restore path.)
 
+**Restore paths use `??`, never `||`, for numeric/boolean fields.** `x = s.field || default`
+silently discards a legitimately-stored `0`/`''`/`false` (the recurring "falsy-zero" bug —
+`cardCount || 10` turns a saved 0 into 10). Use nullish-coalescing (`s.field ?? default`) so only
+`null`/`undefined` fall back. This applies to counts, sizes, positions, indices, and toggles-as-
+numbers in `applySettings`/size-setter restores. Leave `||` for genuine display fallbacks on
+possibly-missing DOM and for array/object defaults (`s.list || []`), which carry no falsy-zero risk.
+
 ---
 
 ## Preset Lists — Nested Folders (file tree)
