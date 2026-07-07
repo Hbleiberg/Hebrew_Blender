@@ -151,8 +151,8 @@ How it works:
 | `THIRD_PARTY_LICENSES.md` | License terms for bundled/streamed third-party data (PocketTorah, Sefaria, fonts, etc.) |
 | `CNAME`, `robots.txt`, `sitemap.xml`, `.nojekyll`, `favicon.svg` | Static-site plumbing (custom domain, crawler hints, sitemap, Jekyll opt-out, favicon) |
 | `data/hebrew_words.json` | Structured word data (~2.93 MB, 13,081 entries) loaded by the generator and dictionary via `fetch()` |
-| `data/hebrew_dictionary_4_19_2026.csv` | Source CSV used to build `data/hebrew_words.json` (Hebrew w/ nikkud, transliteration, translation, POS, era) |
-| `data/hebrew_emojis.json` / `data/hebrew_emojis.csv` | Hebrew word ↔ emoji mappings used by the dictionary and flash-card emoji modes |
+| `source-data/hebrew_dictionary_4_19_2026.csv` | Pipeline-input CSV used to build `data/hebrew_words.json` (Hebrew w/ nikkud, transliteration, translation, POS, era); not served at runtime |
+| `data/hebrew_emojis.json` (+ `source-data/hebrew_emojis.csv` pipeline input) | Hebrew word ↔ emoji mappings used by the dictionary and flash-card emoji modes |
 | `data/parshiyot.json` | All 54 parshiyot with Hebrew/English names, Sefaria refs, and PocketTorah keys |
 | `data/pockettorah/aliyah.json` | Mirrored from [PocketTorah](https://github.com/rneiss/PocketTorah) — full kriyah verse ranges per parsha |
 | `data/pockettorah/manifest.json` | Maps each parsha+aliyah to its actual upstream label filename |
@@ -200,7 +200,7 @@ Top-level keys are consonant counts. There are **13,081 entries** across keys ra
 ## Attribution
 
 ### Word data
-The word data in `data/hebrew_words.json` and `data/hebrew_dictionary_4_19_2026.csv` is derived from **[Kaikki.org](https://kaikki.org/dictionary/Hebrew/index.html)**, a freely available structured dictionary extracted from Wiktionary.
+The word data in `data/hebrew_words.json` and `source-data/hebrew_dictionary_4_19_2026.csv` is derived from **[Kaikki.org](https://kaikki.org/dictionary/Hebrew/index.html)**, a freely available structured dictionary extracted from Wiktionary.
 
 **If you adapt or redistribute this project**, please credit Kaikki.org alongside the project author:
 
@@ -245,7 +245,7 @@ npx serve .
 
 ## Updating the Word Data
 
-1. Edit `data/hebrew_dictionary_4_19_2026.csv` (or replace with a new export)
+1. Edit `source-data/hebrew_dictionary_4_19_2026.csv` (or replace with a new export)
 2. Run whatever processing script converts the CSV to `data/hebrew_words.json`
 3. Bump the cache-busting version in **both** files that fetch the JSON — `hebrew_blend_generator.html` and `hebrew_dictionary.html`:
    ```js
