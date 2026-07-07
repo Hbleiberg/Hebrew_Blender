@@ -397,7 +397,7 @@ body.fullscreen .app{height:100vh;min-height:unset;}
 .fchip-x{display:inline-flex;align-items:center;justify-content:center;width:20px;height:22px;background:transparent;color:var(--muted);font-size:0.72rem;line-height:1;border:none;border-left:1px solid var(--border);cursor:pointer;flex-shrink:0;padding:0;}
 .fchip-x:hover{background:var(--gold);color:#fff;}
 .fchip-body:focus-visible,.fchip-x:focus-visible,.fchip-reset:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
-.sort-sel:focus-visible,.dict-tool-btn:focus-visible,.word-card:focus-visible,.emoji-card:focus-visible,.lpt:focus-visible,.panel-title:focus-visible,.adv-section-title:focus-visible,.pos-sec-hdr:focus-visible,.shoresh-patterns-title:focus-visible,.emoji-cat-arrow:focus-visible,.vowel-group-section div[role="button"]:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
+.sort-sel:focus-visible,.dict-tool-btn:focus-visible,.word-card:focus-visible,.emoji-card:focus-visible,.lpt:focus-visible,.panel-title:focus-visible,.adv-section-title:focus-visible,.pos-sec-hdr:focus-visible,.shoresh-patterns-title:focus-visible,.shoresh-pat.filled:focus-visible,.emoji-cat-arrow:focus-visible,.vowel-group-section div[role="button"]:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
 .fchip-reset{font-size:0.74rem;background:var(--navy);color:#fff;border:1px solid var(--navy);border-radius:14px;padding:4px 11px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;}
 .fchip-reset:hover{background:#2a3a6a;}
 body.dark .fchip-reset{background:var(--navy-deep);}
@@ -2622,6 +2622,15 @@ function renderShoreshPatterns(rootCons, fam) {
     <div class="shoresh-patterns-body"><div class="shoresh-pat-grid">${cells}</div></div>
   </div>`;
   bindHdrA11y(wrap.querySelector('.shoresh-patterns-title'));
+  // Filled tiles jump to their word (click-only divs otherwise). Action buttons,
+  // not toggles — so no aria-pressed, unlike the bindLptA11y filter tiles.
+  wrap.querySelectorAll('.shoresh-pat.filled').forEach(t => {
+    t.tabIndex = 0;
+    t.setAttribute('role', 'button');
+    t.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); t.click(); }
+    });
+  });
   wrap.style.display = '';
 }
 
