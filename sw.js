@@ -21,7 +21,6 @@ const CORE_ASSETS = [
   '/privacy.html',
   '/contact.html',
   '/404.html',
-  '/zelle-qr.jpg',
   '/fonts/FrankRuhlLibre-Regular.ttf',
   '/manifest.webmanifest',
   '/pwa.js',
