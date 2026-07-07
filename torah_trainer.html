@@ -1844,7 +1844,7 @@ const TETRAGRAMMATON_RE = /י[֑-ׇ]*ה[֑-ׇ]*ו[֑-ׇ]*ה/g;
 function replaceTetragrammaton(s) {
   return s ? s.replace(TETRAGRAMMATON_RE, 'אֲדֹנָי') : s;
 }
-function escapeHTML(s) {
+function esc(s) {
   return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
@@ -1876,14 +1876,14 @@ function colorizeHebrew(text, mode) {
     const cp = ch.codePointAt(0);
     const isHebLetter = cp >= 0x05D0 && cp <= 0x05EA;
     const isMark      = cp >= 0x0591 && cp <= 0x05C7;
-    if (!isHebLetter && !isMark) { out.push(escapeHTML(ch)); i++; continue; }
-    if (isMark) { out.push(escapeHTML(ch)); i++; continue; }
+    if (!isHebLetter && !isMark) { out.push(esc(ch)); i++; continue; }
+    if (isMark) { out.push(esc(ch)); i++; continue; }
     let marks = '', j = i + 1;
     while (j < chars.length) {
       const c2 = chars[j].codePointAt(0);
       if (c2 >= 0x0591 && c2 <= 0x05C7) { marks += chars[j++]; } else break;
     }
-    if (!marks) { out.push(escapeHTML(ch)); i++; continue; }
+    if (!marks) { out.push(esc(ch)); i++; continue; }
     const isVav = ch === 'ו';
     let key = null;
     for (const m of [...marks]) {
@@ -1893,7 +1893,7 @@ function colorizeHebrew(text, mode) {
       const k = NIKUD_CHAR_TO_KEY[m];
       if (k) { key = k; break; }
     }
-    const syl = escapeHTML(ch + marks);
+    const syl = esc(ch + marks);
     if (!key) { out.push(syl); i = j; continue; }
     const color = colorFor(key);
     if (mode === 'highlight') {
@@ -1915,7 +1915,7 @@ function processHebrewForDisplay(s) {
   if (!settings.showCantillation) t = stripTeamim(t);
   if (!settings.showNikkud) t = stripNikkud(t);
   if (settings.colorCodeNikkud && settings.showNikkud) return colorizeHebrew(t, settings.colorCodingMode);
-  return escapeHTML(t);
+  return esc(t);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1934,15 +1934,15 @@ function tokenizeHebrew(text, wordIdxStartRef) {
   for (const tok of tokens) {
     if (!tok) continue;
     if (/^\s+$/.test(tok)) { out.push(tok); continue; }
-    if (tok === '־') { out.push(escapeHTML(tok)); continue; }   // maqaf separator, not a word
+    if (tok === '־') { out.push(esc(tok)); continue; }   // maqaf separator, not a word
     if (/[א-ת]/.test(tok)) {
       const idx = wordIdxStartRef.value++;
       const inner = (settings.colorCodeNikkud && settings.showNikkud)
         ? colorizeHebrew(tok, settings.colorCodingMode)
-        : escapeHTML(tok);
+        : esc(tok);
       out.push(`<span class="tt-word" data-twi="${idx}">${inner}</span>`);
     } else {
-      out.push(escapeHTML(tok));
+      out.push(esc(tok));
     }
   }
   return out.join('');
@@ -1983,13 +1983,13 @@ function tokenizeTranslit(translitText, firstTwi, hebWordCount) {
     if (tok === '-') { out.push('-'); continue; }   // maqaf separator, not a word
     if (/[a-zA-Z]/.test(tok)) {
       if (firstTwi >= 0 && twiOffset < hebWordCount) {
-        out.push(`<span class="tt-word" data-twi="${firstTwi + twiOffset}">${escapeHTML(tok)}</span>`);
+        out.push(`<span class="tt-word" data-twi="${firstTwi + twiOffset}">${esc(tok)}</span>`);
         twiOffset++;
       } else {
-        out.push(escapeHTML(tok));
+        out.push(esc(tok));
       }
     } else {
-      out.push(escapeHTML(tok));
+      out.push(esc(tok));
     }
   }
   return out.join('');
@@ -2015,7 +2015,7 @@ function renderText() {
   // (mapped-timings path has no cheap verse-end boundary — see loopVerse note).
   const canLoop = canChant && settings.scope !== 'custom';
   let html = `<div class="tt-ref-hdr">
-    <span>${escapeHTML(currentRangeLabel)}</span>
+    <span>${esc(currentRangeLabel)}</span>
     <span style="display:flex;gap:6px;">
       <button class="tt-readall" id="ttReadAllBtn" onclick="toggleReadAll()" type="button">${ttsState.readAllActive ? '⏹ Stop' : '🔊 Read all'}</button>
       ${canChant ? `<button class="tt-readall tt-chantall" id="ttChantAllBtn" onclick="toggleChantAll()" type="button">${chantAllState.active ? '⏹ Stop chant' : '🎵 Chant all'}</button>` : ''}
@@ -2051,9 +2051,9 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant
     const esc = cssEscape(numLabel);
     const aNum = aStartByLabel[numLabel];
     if (aNum > 1) html += aliyahDividerHTML(aNum, numLabel);
-    html += `<div class="tt-verse" data-vk="${escapeHTML(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}>`;
+    html += `<div class="tt-verse" data-vk="${esc(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}>`;
     html += `  <div class="tt-verse-row" style="align-items:center;">`;
-    html += `    <span class="tt-verse-num">${escapeHTML(numLabel)}</span>`;
+    html += `    <span class="tt-verse-num">${esc(numLabel)}</span>`;
     html += `    <span class="tt-verse-buttons">`;
     html += `      <button class="tt-speak" onclick="speakVerse('${esc}')" type="button" aria-label="Read verse ${numLabel} aloud (TTS)">🔊 Read</button>`;
     if (canChant) html += `      <button class="tt-chant" onclick="chantVerse('${esc}')" type="button" aria-label="Chant verse ${numLabel} (PocketTorah audio)">🎵 Chant</button>`;
@@ -2114,7 +2114,7 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant,
     const esc = cssEscape(numLabel);
     const aNum = aStartByLabel[numLabel];
     if (aNum > 1) html += aliyahDividerHTML(aNum, numLabel);
-    html += `<div class="tt-grid-row" data-vk="${escapeHTML(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}>`;
+    html += `<div class="tt-grid-row" data-vk="${esc(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}>`;
     html += `<span class="tt-vnum">${numLabel}<span class="tt-verse-buttons" style="display:flex;flex-direction:column;gap:3px;margin-top:4px;margin-left:0;">`;
     html += `<button class="tt-speak" onclick="speakVerse('${esc}')" type="button" aria-label="Read verse ${numLabel} aloud (TTS)">🔊 Read</button>`;
     if (canChant) html += `<button class="tt-chant" onclick="chantVerse('${esc}')" type="button" aria-label="Chant verse ${numLabel} (PocketTorah audio)">🎵 Chant</button>`;
@@ -2147,13 +2147,13 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant, 
   // Hebrew block (always shown)
   const startChapter = verses[0] ? verses[0].chapter : '';
   html += '<p class="tt-bible-blk tt-bible-heb" dir="rtl">';
-  html += `<span class="tt-bible-dropcap">${escapeHTML(String(startChapter))}</span>`;
+  html += `<span class="tt-bible-dropcap">${esc(String(startChapter))}</span>`;
   for (const { v, hebHtml } of perVerse) {
     const numLabel = `${v.chapter}:${v.verse}`;
     const aNum = aStartByLabel[numLabel];
     // Inline aliyah marker keeps the running-text flow intact (no block break).
     if (aNum > 1) html += `<span class="tt-aliyah-inline" id="tt-aliyah-${aNum}" dir="rtl">✦ Aliyah ${aNum}</span> `;
-    html += `<span class="tt-bverse" data-vk="${escapeHTML(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}><sup class="tt-bnum">${escapeHTML(numLabel)}</sup><span class="tt-heb" lang="he">${hebHtml}</span></span> `;
+    html += `<span class="tt-bverse" data-vk="${esc(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}><sup class="tt-bnum">${esc(numLabel)}</sup><span class="tt-heb" lang="he">${hebHtml}</span></span> `;
   }
   html += '</p>';
   // Transliteration block (uses the Hebrew word indices captured above)
@@ -2162,7 +2162,7 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant, 
     for (const { v, firstTwi, hebCount } of perVerse) {
       const numLabel = `${v.chapter}:${v.verse}`;
       const tr = applyTranslit(v.hebrew);
-      html += `<sup class="tt-bnum">${escapeHTML(numLabel)}</sup><span class="tt-translit">${tokenizeTranslit(tr, firstTwi, hebCount)}</span> `;
+      html += `<sup class="tt-bnum">${esc(numLabel)}</sup><span class="tt-translit">${tokenizeTranslit(tr, firstTwi, hebCount)}</span> `;
     }
     html += '</p>';
   }
@@ -2171,7 +2171,7 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant, 
     html += '<p class="tt-bible-blk tt-bible-translation" dir="ltr">';
     for (const { v } of perVerse) {
       const numLabel = `${v.chapter}:${v.verse}`;
-      html += `<sup class="tt-bnum">${escapeHTML(numLabel)}</sup>${stripHTML(v.translation)} `;
+      html += `<sup class="tt-bnum">${esc(numLabel)}</sup>${stripHTML(v.translation)} `;
     }
     html += '</p>';
   }
@@ -2355,7 +2355,7 @@ function computeAliyahStarts() {
 // Slim, non-interactive divider row (block; contains no .tt-word so karaoke
 // indexing is untouched). Carries the jump anchor id.
 function aliyahDividerHTML(num, label) {
-  return `<div class="tt-aliyah-divider" id="tt-aliyah-${num}"><span>Aliyah ${num} · ${escapeHTML(label)}</span></div>`;
+  return `<div class="tt-aliyah-divider" id="tt-aliyah-${num}"><span>Aliyah ${num} · ${esc(label)}</span></div>`;
 }
 // Build the sticky jump bar for the freshly-rendered reading. Chips 1..7 show for
 // a full parsha; otherwise a lone position readout shows only for long readings.
@@ -2370,7 +2370,7 @@ function buildJumpNav() {
   if (showChips) {
     html += '<span class="tt-jump-label">Aliyah</span><span class="tt-jump-chips">';
     for (const a of _aliyahStarts) {
-      html += `<button type="button" class="tt-jump-chip" data-aliyah="${a.num}" aria-label="Jump to aliyah ${a.num} (${escapeHTML(a.label)})">${a.num}</button>`;
+      html += `<button type="button" class="tt-jump-chip" data-aliyah="${a.num}" aria-label="Jump to aliyah ${a.num} (${esc(a.label)})">${a.num}</button>`;
     }
     html += '</span>';
   } else {
@@ -3490,13 +3490,13 @@ function initFontSelector() {
       const isDefault = font.name === 'Frank Ruhl Libre';
       const attrHTML = font.attr
         ? (font.link
-            ? `<a class="font-opt-attr" href="${font.link}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${escapeHTML(font.attr)}</a>`
-            : `<span class="font-opt-attr">${escapeHTML(font.attr)}</span>`)
+            ? `<a class="font-opt-attr" href="${font.link}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(font.attr)}</a>`
+            : `<span class="font-opt-attr">${esc(font.attr)}</span>`)
         : '';
       btn.innerHTML =
         `<span class="font-opt-preview" style="font-family:${font.family};">אֶרֶץ</span>` +
         `<span class="font-opt-info">` +
-          `<span class="font-opt-name">${escapeHTML(font.name)}${isDefault ? ' <span style="font-size:0.55rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}</span>` +
+          `<span class="font-opt-name">${esc(font.name)}${isDefault ? ' <span style="font-size:0.55rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}</span>` +
           attrHTML +
         `</span>`;
       btn.onclick = () => setHebFont(font.name);
@@ -4165,7 +4165,7 @@ function updateTransFooter() {
     return;
   }
   const lic = opt.dataset.license || 'unknown license';
-  el.innerHTML = `Translation: <em>${escapeHTML(sel.value)}</em> · ${escapeHTML(shortenLicense(lic))} (via <a href="https://www.sefaria.org" target="_blank" rel="noopener">Sefaria</a>)`;
+  el.innerHTML = `Translation: <em>${esc(sel.value)}</em> · ${esc(shortenLicense(lic))} (via <a href="https://www.sefaria.org" target="_blank" rel="noopener">Sefaria</a>)`;
 }
 
 /* ══════════════════════════════════════════════════════

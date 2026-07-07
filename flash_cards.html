@@ -2506,7 +2506,7 @@ function getNikudColor(key) {
   return defs[key] || (isDark() ? '#e9eaf0' : '#1c2333');
 }
 function colorizeHebrew(text) {
-  if (!colorCodingEnabled) return '<span lang="he">' + escapeHtml(text) + '</span>';
+  if (!colorCodingEnabled) return '<span lang="he">' + esc(text) + '</span>';
   const chars = [...text];
   let out = '';
   let i = 0;
@@ -2537,24 +2537,24 @@ function colorizeHebrew(text) {
       if (colorKey) {
         const color = getNikudColor(colorKey);
         if (colorCodingMode === 'letter') {
-          out += `<span style="color:${color}">${escapeHtml(cluster)}</span>`;
+          out += `<span style="color:${color}">${esc(cluster)}</span>`;
         } else if (colorCodingMode === 'highlight') {
-          out += `<span style="background:${color}33">${escapeHtml(cluster)}</span>`;
+          out += `<span style="background:${color}33">${esc(cluster)}</span>`;
         } else if (colorCodingMode === 'underline') {
-          out += `<span style="text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${escapeHtml(cluster)}</span>`;
+          out += `<span style="text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${esc(cluster)}</span>`;
         }
       } else {
-        out += escapeHtml(cluster);
+        out += esc(cluster);
       }
       i = j;
     } else {
-      out += escapeHtml(ch);
+      out += esc(ch);
       i++;
     }
   }
   return '<span lang="he">' + out + '</span>';
 }
-function escapeHtml(s) { return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function esc(s) { return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 function applyPreviewColor(el, key) {
   const color = getNikudColor(key);
@@ -4624,9 +4624,9 @@ function renderWeaknessTab(stats, tab, container) {
     const pct = Math.round(r.rate * 100);
     const barColor = pct >= 60 ? '#cc3333' : pct >= 30 ? '#c9922a' : '#3aa655';
     return `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);">
-      <span style="font-family:var(--heb-font);font-size:1.7rem;direction:rtl;min-width:36px;text-align:center;line-height:1;">${escapeHtml(r.glyph)}</span>
+      <span style="font-family:var(--heb-font);font-size:1.7rem;direction:rtl;min-width:36px;text-align:center;line-height:1;">${esc(r.glyph)}</span>
       <span style="flex:1;min-width:0;">
-        <div style="font-size:0.82rem;font-weight:600;">${escapeHtml(r.label)}</div>
+        <div style="font-size:0.82rem;font-weight:600;">${esc(r.label)}</div>
         <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:3px;">
           <div style="height:100%;width:${pct}%;background:${barColor};"></div>
         </div>
@@ -4647,7 +4647,7 @@ function openWeaknessView(name) {
   box.style.cssText = 'background:var(--white,#fff);color:var(--text,#1a2744);max-width:460px;width:100%;border-radius:10px;padding:18px;font-family:inherit;box-shadow:0 10px 40px rgba(0,0,0,0.35);max-height:85vh;display:flex;flex-direction:column;';
   box.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-      <div style="font-weight:700;font-size:1rem;">Weaknesses — ${escapeHtml(name)}</div>
+      <div style="font-weight:700;font-size:1rem;">Weaknesses — ${esc(name)}</div>
       <button data-act="close" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:inherit;line-height:1;">×</button>
     </div>
     <div class="weak-tabs" style="display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:12px;">
@@ -5501,7 +5501,7 @@ function renderCurrentCard() {
     // Hebrew side: nikkud-colorized (colorizeHebrew escapes each char); optional translit line.
     function hebWordSide(el) {
       if (wordsShowTranslit && card.translit) {
-        const trLine = `<div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;text-align:center;">${escapeHtml(card.translit)}</div>`;
+        const trLine = `<div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;text-align:center;">${esc(card.translit)}</div>`;
         el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;"><div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(2rem,8vw,3.5rem);text-align:center;">${colorizeHebrew(card.heb)}</div>${trLine}</div>`;
         el.style.fontFamily = ''; el.style.direction = ''; el.style.fontSize = '';
       } else {
@@ -5640,7 +5640,7 @@ function choiceFace(card) {
   // Numbers speak the Hebrew number-words; the identify face follows numberFront
   // (digit when the front shows the numeral, Hebrew words otherwise).
   if (otherModeActive && otherSubMode === 'numbers' && numberFront === 'number') {
-    return `<span class="lc-num">${escapeHtml(String(card.translit))}</span>`;
+    return `<span class="lc-num">${esc(String(card.translit))}</span>`;
   }
   return `<span class="lc-heb">${colorizeHebrew(card.heb)}</span>`;
 }
@@ -5780,7 +5780,7 @@ function showResults() {
       <li class="result-item ${cls}">
         <span class="rmark">${mark}</span>
         ${middle}
-        <span class="rtr">${escapeHtml(c.translit)}</span>
+        <span class="rtr">${esc(c.translit)}</span>
       </li>
     `;
   }).join('');

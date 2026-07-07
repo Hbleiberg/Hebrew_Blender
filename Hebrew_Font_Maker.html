@@ -3473,7 +3473,7 @@ function cgSetShape(s) {
 function renderCustomGlyphsPanel() {
   const el = document.getElementById('customGlyphsPanelBody'); if (!el) return;
   const dupOpts = LETTERS.filter(L => L.cat !== 'punct')
-    .map(L => `<option value="${L.cp}">${escapeHtml(L.name)} (${String.fromCodePoint(parseInt(L.cp, 16))})</option>`).join('');
+    .map(L => `<option value="${L.cp}">${esc(L.name)} (${String.fromCodePoint(parseInt(L.cp, 16))})</option>`).join('');
   el.innerHTML = `
     <div class="hint" style="margin-bottom:8px;">Define a glyph at any Unicode code point. Brand-new shapes work best in the Private-Use range <b>U+E000–U+F8FF</b>. Trace each glyph like a letter, or duplicate an existing letter and tweak it.</div>
     <div class="letter-grid" id="customGlyphsGrid"></div>
@@ -3523,7 +3523,7 @@ function renderCustomGlyphsGrid() {
     tile.style.position = 'relative';
     tile.innerHTML = `<span class="lt-dot ${st}"></span>
       <span class="lt-heb" style="font-family:${esc(project.template.font)};">${String.fromCodePoint(parseInt(l.codepoint, 16))}</span>
-      <span class="lt-name">${escapeHtml(l.name || ('U+' + l.codepoint))}</span>${delBtn(l.codepoint, 'base')}`;
+      <span class="lt-name">${esc(l.name || ('U+' + l.codepoint))}</span>${delBtn(l.codepoint, 'base')}`;
     tile.onclick = () => selectItem('letter', l.codepoint);
     grid.appendChild(tile);
   });
@@ -3534,7 +3534,7 @@ function renderCustomGlyphsGrid() {
     tile.style.position = 'relative';
     tile.innerHTML = `<span class="lt-dot ${markStatusOf(m)}"></span>
       ${markTilePreviewSVG('customMarks', cp)}
-      <span class="lt-name">${escapeHtml(m.name || ('U+' + cp))}</span>${cvtBtn(cp)}${delBtn(cp, 'mark')}`;
+      <span class="lt-name">${esc(m.name || ('U+' + cp))}</span>${cvtBtn(cp)}${delBtn(cp, 'mark')}`;
     tile.onclick = () => selectItem('customMarks', cp);
     grid.appendChild(tile);
   });
@@ -3595,7 +3595,7 @@ function renderFormPanel(panelId, targets, intro) {
     const pv = traced ? formTilePreviewSVG(pc) : '';   // live composed outline (reflects the Width slider); font char until composable
     tile.innerHTML = `<span class="lt-dot ${traced ? 'traced' : ''}"></span>
       ${pv || `<span class="lt-heb" style="font-family:${esc(project.template.font)};direction:rtl;">${precompComposed(pc)}</span>`}
-      <span class="lt-name">${escapeHtml(precompName(pc))}</span>${overridden ? `<span class="lt-need" title="You added a custom glyph at U+${t}; the exported font uses your custom outline, not this composed form.">custom glyph overrides</span>` : traced ? '' : `<span class="lt-need" title="Trace ${escapeHtml(need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">needs ${escapeHtml(need.map(chOf).join(' '))}</span>`}`;
+      <span class="lt-name">${esc(precompName(pc))}</span>${overridden ? `<span class="lt-need" title="You added a custom glyph at U+${t}; the exported font uses your custom outline, not this composed form.">custom glyph overrides</span>` : traced ? '' : `<span class="lt-need" title="Trace ${esc(need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">needs ${esc(need.map(chOf).join(' '))}</span>`}`;
     tile.onclick = () => pickPrecompForm(t);
     grid.appendChild(tile);
   });
@@ -3930,7 +3930,7 @@ function combinedNavHTML() {
   if (curKind !== 'letter') return '';
   const n = project.combinedSheets.length; if (n < 1) return '';
   const i = project.combinedIndex, sh = project.combinedSheets[i] || {};
-  const name = escapeHtml(sh.name || ('Sheet ' + (i + 1)));
+  const name = esc(sh.name || ('Sheet ' + (i + 1)));
   const counter = `<div class="combined-counter"><div class="cn-name" title="${name}">${name}</div><div class="cn-count">${i + 1} of ${n}</div></div>`;
   const prev = n > 1 ? `<button class="ctl-btn" ${i <= 0 ? 'disabled' : ''} onclick="combinedNav(-1)">‹ Previous</button>` : '';
   const next = n > 1 ? `<button class="ctl-btn" ${i >= n - 1 ? 'disabled' : ''} onclick="combinedNav(1)">Next ›</button>` : '';
@@ -3948,7 +3948,7 @@ function removeCombinedSheet() {
   const n = project.combinedSheets.length; if (!n) return;
   const sh = project.combinedSheets[project.combinedIndex] || {};
   askModal('Remove this sheet?',
-    `Remove <b>${escapeHtml(sh.name || 'this sheet')}</b> from the set? Letters you already boxed from it keep their cropped image — you just can't re-crop from it unless you add it again.`,
+    `Remove <b>${esc(sh.name || 'this sheet')}</b> from the set? Letters you already boxed from it keep their cropped image — you just can't re-crop from it unless you add it again.`,
     [ { label:'Cancel', cls:'ghost' },
       { label:'Remove', onClick: () => {
           project.combinedSheets.splice(project.combinedIndex, 1);
@@ -4030,7 +4030,7 @@ function importMarkGlyph(kind, cp, font) {
 function askFontImportOptions(file, font, bytes) {
   status('');
   const body =
-    '<p style="margin:0 0 10px;">What should I take from <b>' + escapeHtml(file.name) + '</b>?</p>' +
+    '<p style="margin:0 0 10px;">What should I take from <b>' + esc(file.name) + '</b>?</p>' +
     '<label style="display:block;margin:7px 0;cursor:pointer;"><input type="checkbox" id="impOutlines" checked style="margin-right:7px;vertical-align:middle;">' +
       '<b>Replace letter outlines</b> — use this font’s glyph shapes for the Hebrew letters.</label>' +
     '<label style="display:block;margin:7px 0;cursor:pointer;"><input type="checkbox" id="impMarks" checked style="margin-right:7px;vertical-align:middle;">' +
@@ -4132,7 +4132,7 @@ const svgParseCache = {};                  // dataUrl → { entries, viewBox } (
 function isProbablySvg(file, text) {
   return /\.svg$/i.test((file && file.name) || '') || /image\/svg/i.test((file && file.type) || '') || /<svg[\s>]/i.test(text || '');
 }
-function askSvgError(msg) { askModal('SVG import failed', '<span class="warn">' + escapeHtml(msg) + '</span>', [{ label: 'OK' }]); }
+function askSvgError(msg) { askModal('SVG import failed', '<span class="warn">' + esc(msg) + '</span>', [{ label: 'OK' }]); }
 function numList(s) { return (s || '').trim().split(/[\s,]+/).filter(x => x !== '').map(Number); }
 function svgTextFromDataUrl(u) {            // decode a data:image/svg+xml URL back to text (to rebuild the cache on load)
   if (!u || !/^data:image\/svg\+xml/i.test(u)) return null;
@@ -6114,7 +6114,7 @@ function precompMarkScale(pc) {
 }
 function precompFormBtn(pc) {
   const custom = (markClassFor(pc.mark) !== 'center' && pc.anchor && pc.anchor.x != null) ? ' <span style="color:var(--gold);">✎</span>' : '';
-  return `<button class="ctl-btn ${precompTarget===pc.target?'primary':''}" onclick="setPrecompTarget('${pc.target}')" title="Place the ${escapeHtml(precompName(pc))} for ${escapeHtml(precompComposed(pc))}">`
+  return `<button class="ctl-btn ${precompTarget===pc.target?'primary':''}" onclick="setPrecompTarget('${pc.target}')" title="Place the ${esc(precompName(pc))} for ${esc(precompComposed(pc))}">`
     + `<span style="font-family:var(--heb-font);direction:rtl;font-size:1.15rem;">${precompComposed(pc)}</span>${custom}</button>`;
 }
 function setPrecompTarget(t) {
@@ -6190,12 +6190,12 @@ function renderWideFormControls(pc) {
   if (!buildWideGlyph(pc)) {   // a base lost its trace while the editor was open — no slider for an unbuildable form
     const need = (pc.bases || [pc.base]).filter(cp => { const L = project.letters.find(x => x.codepoint === cp); return !(L && L.contours); })
       .map(cp => (letterMeta(cp) && letterMeta(cp).name) || ('U+' + cp));
-    return `<div class="ws-side-title">${escapeHtml(precompName(pc))}</div>
-      <div class="hint">Trace ${need.map(escapeHtml).join(' and ')} first — this form is auto-composed from ${bases.map(escapeHtml).join(' + ')}.</div>
+    return `<div class="ws-side-title">${esc(precompName(pc))}</div>
+      <div class="hint">Trace ${need.map(esc).join(' and ')} first — this form is auto-composed from ${bases.map(esc).join(' + ')}.</div>
       <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">← Back</button>`;
   }
-  return `<div class="ws-side-title">${escapeHtml(precompName(pc))}</div>
-    <div class="hint" style="font-size:0.66rem;">Auto-composed from your traced ${bases.map(escapeHtml).join(' + ')}. The <b>Width</b> slider both adds side space and stretches the outline — saved automatically.</div>
+  return `<div class="ws-side-title">${esc(precompName(pc))}</div>
+    <div class="hint" style="font-size:0.66rem;">Auto-composed from your traced ${bases.map(esc).join(' + ')}. The <b>Width</b> slider both adds side space and stretches the outline — saved automatically.</div>
     <hr class="ctl-divider">
     <div class="inline">Width <input type="range" min="100" max="250" step="1" value="${wPct}" oninput="setPrecompWidth(this.value)" onchange="udBurstCommit();renderControls();renderGrids()"> <span id="pcWidthV" class="readout">${wPct}%</span></div>
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
@@ -6203,11 +6203,11 @@ function renderWideFormControls(pc) {
     </div>
     <hr class="ctl-divider">
     <div class="ws-side-title">Nikkud</div>
-    <div class="hint" style="font-size:0.62rem;">Vowels on this wide form follow <b>${escapeHtml(donorName)}</b>'s placement, stretched to fit — so they stay consistent with the plain letter. Preview one below; to move it, edit the nikkud on <b>${escapeHtml(donorName)}</b>.</div>
+    <div class="hint" style="font-size:0.62rem;">Vowels on this wide form follow <b>${esc(donorName)}</b>'s placement, stretched to fit — so they stay consistent with the plain letter. Preview one below; to move it, edit the nikkud on <b>${esc(donorName)}</b>.</div>
     <div class="hint" style="font-size:0.6rem;margin-top:4px;">Preview vowel</div>
     <div class="mark-grid2">${BELOW_VOWELS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeBelowVowel, 'setBelowVowel')).join('')}</div>
     <div class="ctl-row" style="margin-top:8px;">
-      <button class="ctl-btn primary" style="width:100%;" onclick="gotoBaseNikkud('${donorCp}')">Edit nikkud on ${escapeHtml(donorName)} →</button>
+      <button class="ctl-btn primary" style="width:100%;" onclick="gotoBaseNikkud('${donorCp}')">Edit nikkud on ${esc(donorName)} →</button>
     </div>
     <hr class="ctl-divider">
     <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">← Back</button>`;
@@ -6252,7 +6252,7 @@ function renderPrecompControls(l) {
   if (markClassFor(pc.mark) === 'center') {   // dagesh: unified with the letter's own Dagesh (Center) — size adjustable here, position follows the letter
     const g = `<span style="font-family:var(--heb-font);direction:rtl;">${precompComposed(pc)}</span>`;
     const dagPct = Math.round(dageshScale() * 100);
-    return `<div class="ws-side-title">Place <span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">${precompComposed(pc)}</span> — ${escapeHtml(precompName(pc))}</div>
+    return `<div class="ws-side-title">Place <span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">${precompComposed(pc)}</span> — ${esc(precompName(pc))}</div>
     <div class="hint" style="font-size:0.68rem;">The dagesh's <b>position</b> follows the letter's own <b>Dagesh (Center)</b>, so ${g} always matches a dagesh you place on the plain letter — to move it, edit the letter's <b>Dagesh (Center)</b> on its Nikkud step. Its <b>size</b> you can set right here:</div>
     <hr class="ctl-divider">
     <div class="inline">Dagesh size <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
@@ -6274,7 +6274,7 @@ function renderPrecompControls(l) {
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
       ${isScaleOverride ? `<button class="ctl-btn" onclick="resetPrecompMarkScale()">Reset to auto size</button>` : `<span class="hint" style="font-size:0.62rem;">Auto size — drag the slider to customize.</span>`}
     </div>`;
-  return `<div class="ws-side-title">Place <span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">${precompComposed(pc)}</span> — ${escapeHtml(precompName(pc))}</div>
+  return `<div class="ws-side-title">Place <span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">${precompComposed(pc)}</span> — ${esc(precompName(pc))}</div>
     <div class="hint" style="font-size:0.66rem;">Where the mark sits in the combined glyph. Drag the orange dot on the canvas, or type X / Y. Affects this precomposed form only — saved automatically.</div>
     <hr class="ctl-divider">
     <div class="anc-xy">
@@ -6433,7 +6433,7 @@ function openMarkEdit(kind, cp) {
   document.getElementById('meTitle').textContent = 'Edit shape — ' + meItem.name;
   const lname = L ? L.name : 'this letter';
   document.getElementById('meApplyCur').textContent = 'Apply to current letter (' + lname + ')';
-  document.getElementById('meScopeNote').innerHTML = '<b>Apply to current letter</b> changes this mark only for <b>' + escapeHtml(lname) + '</b>; <b>Apply to all letters</b> changes it everywhere. Neither affects positioning. (A per-letter shape bakes into the font for that letter+mark pair; when another mark such as a dagesh sits between them, that combination falls back to the all-letters shape.)';
+  document.getElementById('meScopeNote').innerHTML = '<b>Apply to current letter</b> changes this mark only for <b>' + esc(lname) + '</b>; <b>Apply to all letters</b> changes it everywhere. Neither affects positioning. (A per-letter shape bakes into the font for that letter+mark pair; when another mark such as a dagesh sits between them, that combination falls back to the all-letters shape.)';
   meUndoReset();
   meRender();
   aOpenModal('markEditOverlay', closeMarkEdit);
@@ -6627,8 +6627,8 @@ function meOpenUploadEditor() {                 // hand off to the existing per-
 function meConfirmApply(scope) {
   const L = curLetter(), lname = L ? L.name : 'this letter';
   const msg = scope === 'all'
-    ? 'Are you sure? This changes how <b>' + escapeHtml(meItem.name) + '</b> looks for <b>ALL letters</b> in your font. It will not affect positioning.'
-    : 'Are you sure? This changes how <b>' + escapeHtml(meItem.name) + '</b> looks for <b>only ' + escapeHtml(lname) + '</b>. It will not affect positioning.';
+    ? 'Are you sure? This changes how <b>' + esc(meItem.name) + '</b> looks for <b>ALL letters</b> in your font. It will not affect positioning.'
+    : 'Are you sure? This changes how <b>' + esc(meItem.name) + '</b> looks for <b>only ' + esc(lname) + '</b>. It will not affect positioning.';
   askModal('Apply mark shape', msg, [
     { label: 'Cancel', cls: 'ghost' },
     { label: scope === 'all' ? 'Apply to all letters' : 'Apply to ' + lname, onClick: () => meApply(scope) }
@@ -6637,7 +6637,7 @@ function meConfirmApply(scope) {
 function meConfirmReset() {
   if (!meActive || !meItem) return;
   askModal('Reset shape',
-    'Are you sure? This discards your dots &amp; bars and restores the <b>default shape</b> for <b>' + escapeHtml(meItem.name) + '</b>. Nothing is saved to your font until you Apply.',
+    'Are you sure? This discards your dots &amp; bars and restores the <b>default shape</b> for <b>' + esc(meItem.name) + '</b>. Nothing is saved to your font until you Apply.',
     [
       { label: 'Cancel', cls: 'ghost' },
       { label: 'Reset to default', onClick: () => meResetShape() }
@@ -6699,8 +6699,8 @@ function renderSpacingPanel() {
     <div class="inline">Word spacing <input type="range" min="80" max="600" step="10" value="${sp.wordSpacing}" oninput="setWordSpacing(this.value)" onchange="udBurstCommit()"> <span id="wsV" class="readout">${sp.wordSpacing}</span></div>
     <div class="hint" style="margin-top:-4px;">Word spacing is also the width of the Space (U+0020) glyph.</div>
     <div class="inline">Line spacing <input type="range" min="0" max="500" step="10" value="${sp.lineSpacing}" oninput="setLineSpacing(this.value)" onchange="udBurstCommit()"> <span id="lnV" class="readout">${sp.lineSpacing}</span></div>
-    <label class="fld">Sample text <input type="text" id="spacingSample" dir="rtl" value="${escapeHtml(sp.sample)}" oninput="setSpacingSample(this.value)" onchange="udBurstCommit()"></label>
-    ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;">${customBaseLetters().map(l => `<button class="ctl-btn" style="padding:2px 8px;font-size:0.68rem;" onclick="insertSampleGlyph('${l.codepoint}')" title="Add ${escapeHtml(l.name || ('U+' + l.codepoint))} to the sample text (it can't be typed on a keyboard)">+ ${escapeHtml(l.name || ('U+' + l.codepoint))}</button>`).join('')}</div>` : ''}
+    <label class="fld">Sample text <input type="text" id="spacingSample" dir="rtl" value="${esc(sp.sample)}" oninput="setSpacingSample(this.value)" onchange="udBurstCommit()"></label>
+    ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;">${customBaseLetters().map(l => `<button class="ctl-btn" style="padding:2px 8px;font-size:0.68rem;" onclick="insertSampleGlyph('${l.codepoint}')" title="Add ${esc(l.name || ('U+' + l.codepoint))} to the sample text (it can't be typed on a keyboard)">+ ${esc(l.name || ('U+' + l.codepoint))}</button>`).join('')}</div>` : ''}
     <div class="hint">Adjusts the exported font's spacing (letter &amp; word advance widths + line gap). The preview uses your traced letters — untraced letters show as dashed boxes.</div>
     <svg id="spacingPreviewSvg" style="width:100%;height:auto;max-height:170px;margin-top:4px;"></svg>
     <div class="ctl-row" style="margin-top:4px;"><button class="ctl-btn" onclick="resetSpacing()">Reset spacing</button></div>
@@ -6831,15 +6831,15 @@ function renderKerningSection() {
   const sideUI = (which, s) => `
     <div style="flex:1;min-width:0;">
       <div class="metric-sub" style="margin-bottom:3px;">${which === 'left' ? 'First (right)' : 'Second (left)'}</div>
-      <input type="text" dir="rtl" maxlength="2" ${s.cls ? 'disabled' : ''} value="${escapeHtml(kernSideDisplay(s))}"
+      <input type="text" dir="rtl" maxlength="2" ${s.cls ? 'disabled' : ''} value="${esc(kernSideDisplay(s))}"
         oninput="setKernGlyph('${which}', this.value)" placeholder="–"
         style="width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:5px;padding:5px;font-size:1.2rem;text-align:center;background:var(--white);color:var(--text);font-family:var(--heb-font);">
       <select onchange="setKernClass('${which}', this.value)" style="width:100%;box-sizing:border-box;margin-top:4px;border:1px solid var(--border);border-radius:5px;padding:4px;font-size:0.72rem;background:var(--white);color:var(--text);">
         <option value=""       ${s.cls===''       ? 'selected' : ''}>Single glyph</option>
         <option value="finals" ${s.cls==='finals' ? 'selected' : ''}>Finals (ך ם ן ף ץ)</option>
         <option value="desc"   ${s.cls==='desc'   ? 'selected' : ''}>Descenders</option>
-        ${userKernClasses().map(c => `<option value="${c.id}" ${s.cls===c.id?'selected':''}>${escapeHtml(c.name)}</option>`).join('')}
-        ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<optgroup label="Custom glyphs">${customBaseLetters().map(l => `<option value="cp:${l.codepoint}">${escapeHtml(l.name || ('U+' + l.codepoint))}</option>`).join('')}</optgroup>` : ''}
+        ${userKernClasses().map(c => `<option value="${c.id}" ${s.cls===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}
+        ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<optgroup label="Custom glyphs">${customBaseLetters().map(l => `<option value="cp:${l.codepoint}">${esc(l.name || ('U+' + l.codepoint))}</option>`).join('')}</optgroup>` : ''}
       </select>
     </div>`;
   const isUpdate = kernPairIndex(kernSideCps(e.left), kernSideCps(e.right)) >= 0;
@@ -6851,7 +6851,7 @@ function renderKerningSection() {
       ? `<span style="font-size:0.62rem;padding:1px 5px;border-radius:4px;white-space:nowrap;background:${reason==='untraced glyph'?'rgba(190,90,90,0.18)':'rgba(150,150,150,0.18)'};color:${reason==='untraced glyph'?'#c0392b':'var(--muted)'};" title="${reason==='untraced glyph'?'A glyph in this pair has no traced outline — it will be skipped on export.':'Pairs at 0 do nothing — drag the gap to apply.'}">${reason==='untraced glyph'?'⚠ untraced':'set a gap'}</span>`
       : '';
     rows += `<div class="readline" style="cursor:pointer;gap:8px;align-items:center;${active?'background:rgba(201,146,42,0.14);border-radius:5px;':''}" onclick="loadKernPair(${i})" title="Click to edit">
-      <span style="font-family:var(--heb-font);font-size:1.05rem;">${escapeHtml(kernSideLabel(k.left||[]))}<span style="color:var(--muted);font-size:0.7rem;font-family:inherit;"> · </span>${escapeHtml(kernSideLabel(k.right||[]))}</span>
+      <span style="font-family:var(--heb-font);font-size:1.05rem;">${esc(kernSideLabel(k.left||[]))}<span style="color:var(--muted);font-size:0.7rem;font-family:inherit;"> · </span>${esc(kernSideLabel(k.right||[]))}</span>
       <span style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
         ${badge}
         <span class="readout">${k.value>0?'+':''}${k.value|0}</span>
@@ -7021,7 +7021,7 @@ function kernClassManagerHTML() {
     `<div class="readline" style="gap:8px;align-items:center;"><span>Descenders</span><span style="color:var(--muted);font-size:0.6rem;flex-shrink:0;">built-in</span></div>`
   ];
   const user = userKernClasses().map(c => `<div class="readline" style="gap:8px;align-items:center;">
-      <span style="min-width:0;">${escapeHtml(c.name)} <span style="font-family:var(--heb-font);color:var(--muted);font-size:0.92rem;">${escapeHtml((c.members||[]).map(cp=>String.fromCodePoint(parseInt(cp,16))).join(' '))}</span></span>
+      <span style="min-width:0;">${esc(c.name)} <span style="font-family:var(--heb-font);color:var(--muted);font-size:0.92rem;">${esc((c.members||[]).map(cp=>String.fromCodePoint(parseInt(cp,16))).join(' '))}</span></span>
       <span style="display:flex;gap:6px;flex-shrink:0;">
         <button class="ctl-btn" style="padding:2px 8px;" onclick="openKernClass('${c.id}')">Edit</button>
         <button class="ctl-btn" style="padding:2px 8px;" onclick="deleteKernClass('${c.id}')" title="Delete class">✕</button>
@@ -7041,7 +7041,7 @@ function openKernClass(id) {
   const host = document.getElementById('kernClassList'); host.innerHTML = '';
   LETTERS.filter(L => L.cat !== 'punct').forEach(L => {
     const lab = document.createElement('label'); lab.className = 'chk'; lab.style.cssText = 'font-size:0.84rem;';
-    lab.innerHTML = `<input type="checkbox" class="kc-cp" value="${L.cp}" ${sel.has(L.cp)?'checked':''}> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${escapeHtml(L.name)}`;
+    lab.innerHTML = `<input type="checkbox" class="kc-cp" value="${L.cp}" ${sel.has(L.cp)?'checked':''}> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${esc(L.name)}`;
     host.appendChild(lab);
   });
   aOpenModal('kernClassOverlay', closeKernClass);
@@ -7121,7 +7121,7 @@ function updateCurrentGlyphLabel() {   // persistent "Editing: <glyph> — <name
   if (!el) return;
   const it = project && curItem();
   if (!it) { el.innerHTML = ''; return; }
-  const name = escapeHtml(it.name || '');
+  const name = esc(it.name || '');
   // Only real letters get a glyph preview: a custom Private-Use codepoint renders a tofu box, and a
   // lone combining mark (nikkud/trop) renders as a floating diacritic — show the name only for those.
   if (curKind !== 'letter' || isCustomCp(curCp)) { el.innerHTML = `Editing: ${name}`; return; }
@@ -7357,8 +7357,8 @@ function renderTraceUnder(U, l) {
 /* ── ANCHORS (Nikkud / Trop) ── */
 function renderEngAccentLeft(l) {   // English letters: accent placement = pick a precomposed accented form, then drag its accent
   const forms = project.precomposed.filter(pc => pc.base === l.codepoint);
-  if (!forms.length) return `<div class="ws-side-title">${escapeHtml(l.name)}</div><div class="hint">This letter has no accented forms — it's ready once traced.</div>`;
-  return `<div class="ws-side-title">${escapeHtml(l.name)}: place accents</div>
+  if (!forms.length) return `<div class="ws-side-title">${esc(l.name)}</div><div class="hint">This letter has no accented forms — it's ready once traced.</div>`;
+  return `<div class="ws-side-title">${esc(l.name)}: place accents</div>
     <div class="hint" style="font-size:0.66rem;">Pick an accented form, then drag the accent into place on the canvas (or type X / Y). Each is baked into the exported font.</div>
     <div class="ctl-row" style="flex-wrap:wrap;gap:5px;margin-top:6px;">${forms.map(precompFormBtn).join('')}</div>`;
 }
@@ -7459,15 +7459,15 @@ function renderAnchorLeft(L, l) {
   let coRow = '';
   if (l.anchors) {   // "Check stacking" — preview a 2nd (nikkud) mark on this letter + warn on overlap (Babylonian all-above / two-vowel letters; on trop classes: trop-vs-vowel clashes like holam under a Left-above mark)
     const acp = activeVowelCp();
-    const opts = `<option value="">(none)</option>` + MARK_CPS.filter(cp => cp !== acp).map(cp => `<option value="${cp}"${cp===coPreviewCp?' selected':''}>${escapeHtml(markName(cp))}</option>`).join('');
+    const opts = `<option value="">(none)</option>` + MARK_CPS.filter(cp => cp !== acp).map(cp => `<option value="${cp}"${cp===coPreviewCp?' selected':''}>${esc(markName(cp))}</option>`).join('');
     let warn = '';
     if (coPreviewCp && l.anchors[MARK_CLASS[coPreviewCp]]) {
       const pa = isTrop ? qaPlace(l.anchors[activeAnchorKey()], 'trop', acp, tropScale(), l)
                         : qaPlace(l.anchors[activeAnchorKey()], 'nikkud', acp, nikScale(acp), l);
       const pc = qaPlace(l.anchors[MARK_CLASS[coPreviewCp]], 'nikkud', coPreviewCp, nikScale(coPreviewCp), l);
       warn = markPolysOverlap(pa, pc, QA_OVERLAP_TOL)
-        ? `<div class="hint" style="font-size:0.64rem;color:#c0392b;font-weight:600;">⚠ ${escapeHtml(markName(coPreviewCp))} overlaps ${escapeHtml(markName(acp))} on this letter.</div>`
-        : `<div class="hint" style="font-size:0.64rem;color:#1a8a4a;">✓ No overlap with ${escapeHtml(markName(acp))}.</div>`;
+        ? `<div class="hint" style="font-size:0.64rem;color:#c0392b;font-weight:600;">⚠ ${esc(markName(coPreviewCp))} overlaps ${esc(markName(acp))} on this letter.</div>`
+        : `<div class="hint" style="font-size:0.64rem;color:#1a8a4a;">✓ No overlap with ${esc(markName(acp))}.</div>`;
     }
     coRow = `<hr class="ctl-divider">
       <div class="ws-side-title">Check stacking</div>
@@ -7486,7 +7486,7 @@ function renderAnchorLeft(L, l) {
   let _ci = _cyc.indexOf(curCp); if (_ci < 0) _ci = 0;
   const _clen = _cyc.length, _single = _clen <= 1;
   const _navChar = cp => {
-    if (isCustomCp(cp)) { const it = (project.letters || []).find(x => x.codepoint === cp); return escapeHtml(((it && it.name) ? it.name[0] : '') || '?'); }
+    if (isCustomCp(cp)) { const it = (project.letters || []).find(x => x.codepoint === cp); return esc(((it && it.name) ? it.name[0] : '') || '?'); }
     return `<span style="font-family:${esc(project.template.font)};direction:rtl;">${String.fromCodePoint(parseInt(cp,16))}</span>`;
   };
   const _prevLbl = _single ? '◀ Prev' : `◀ Prev (${_navChar(_cyc[(_ci - 1 + _clen) % _clen])})`;
@@ -8186,7 +8186,7 @@ function qaRenderSummary() {
     ? `<span class="qa-ok">✓ All placements clear.</span> Hover a cell for details; click any cell to jump to its anchor editor.`
     : `<b>${qaResult.total}</b> placement${qaResult.total === 1 ? '' : 's'} need attention (red cells). Hover for the reason; click a cell to jump to its anchor editor.`;
   if (qaResult.outline && qaResult.outline.length) {   // outline-health flag (self-intersection / overlap) — separate from placement collisions
-    const names = qaResult.outline.map(o => escapeHtml(o.name)).join(', ');
+    const names = qaResult.outline.map(o => esc(o.name)).join(', ');
     h += `<span class="qa-tall">⚠ ${qaResult.outline.length} glyph${qaResult.outline.length === 1 ? '' : 's'} with self-intersecting or overlapping outlines: ${names}. These can fill incorrectly (inverted) in some apps — edit the nodes or re-trace to fix.</span>`;
   }
   if (qaResult.tall) h += `<span class="qa-tall">⚠ Tall artwork — export will expand the clip box to ${qaResult.winAscent} / ${qaResult.winDescent} (asc/desc) so Word won't clip it.</span>`;
@@ -8201,18 +8201,18 @@ function qaRenderGrid() {
   const pairCtrl = qaTab === 'pairs' ? qaPairControlHtml() : '';
   if (!cols.length) { grid.innerHTML = pairCtrl + `<p style="color:var(--muted);font-size:0.85rem;">No ${qaTab === 'stacked' ? 'stacking' : (qaTab === 'pairs' ? 'nikkud' : qaTab)} marks are enabled for this font.</p>` + qaBuildCheckHtml(); return; }
   let html = pairCtrl + '<table class="qa-table"><thead><tr><th></th>';
-  cols.forEach(col => { html += `<th title="${escapeHtml(col.name)}"><span class="qa-colhead">${escapeHtml(col.head)}</span></th>`; });
+  cols.forEach(col => { html += `<th title="${esc(col.name)}"><span class="qa-colhead">${esc(col.head)}</span></th>`; });
   html += '</tr></thead><tbody>';
   let lastSection = null;
   qaRows().forEach(row => {
     if (row.section && row.section !== lastSection) { lastSection = row.section; html += `<tr class="qa-section"><td class="qa-section-h" colspan="${cols.length + 1}">${row.section === 'special' ? 'Specialized (wide letters)' : 'Custom glyphs'}</td></tr>`; }
     const L = row.L, anc = qaAnchors(L);
-    html += `<tr><td class="qa-rowlabel" title="${escapeHtml(row.name)}">${escapeHtml(row.labelCh)} <span style="color:var(--muted);">${escapeHtml(row.name)}</span></td>`;
+    html += `<tr><td class="qa-rowlabel" title="${esc(row.name)}">${esc(row.labelCh)} <span style="color:var(--muted);">${esc(row.name)}</span></td>`;
     cols.forEach(col => {
       const layers = qaCellLayers(L, anc, col);
       const reasons = qaCellReasons(L, row, col, layers);
       const flagged = reasons.length > 0;
-      html += `<td class="qa-cell${flagged ? ' flag' : ''}" data-cp="${row.cp}" data-kind="${col.kind}" data-mark="${col.cp}" data-side="${col.side}"${col.trop ? ` data-trop="${col.trop}"` : ''}${flagged ? ` title="${escapeHtml(reasons.join(' · '))}"` : ''}>${qaCellSvg(L, layers)}</td>`;
+      html += `<td class="qa-cell${flagged ? ' flag' : ''}" data-cp="${row.cp}" data-kind="${col.kind}" data-mark="${col.cp}" data-side="${col.side}"${col.trop ? ` data-trop="${col.trop}"` : ''}${flagged ? ` title="${esc(reasons.join(' · '))}"` : ''}>${qaCellSvg(L, layers)}</td>`;
     });
     html += '</tr>';
   });
@@ -8229,9 +8229,9 @@ function qaBuildCheckHtml() {
   forms.forEach(pc => {
     const ready = qaFormReady(pc);
     const need = (pc.bases || [pc.base]).filter(cp => { const L = project.letters.find(x => x.codepoint === cp); return !(L && L.contours); }).map(cp => qaCh(cp)).join(' ');
-    const status = ready ? '<span class="qa-bc-ok">✓ ready</span>' : `<span class="qa-bc-warn">⚠ needs ${escapeHtml(need || qaCh(precompBaseCp(pc)))}</span>`;
-    h += `<div class="qa-bc-item"><span class="qa-bc-glyph" style="font-family:${tplFont};direction:rtl;">${escapeHtml(precompComposed(pc))}</span>`
-       + `<span class="qa-bc-name">${escapeHtml(pc.name || precompName(pc))}</span>${status}</div>`;
+    const status = ready ? '<span class="qa-bc-ok">✓ ready</span>' : `<span class="qa-bc-warn">⚠ needs ${esc(need || qaCh(precompBaseCp(pc)))}</span>`;
+    h += `<div class="qa-bc-item"><span class="qa-bc-glyph" style="font-family:${tplFont};direction:rtl;">${esc(precompComposed(pc))}</span>`
+       + `<span class="qa-bc-name">${esc(pc.name || precompName(pc))}</span>${status}</div>`;
   });
   return h + '</div></div>';
 }
@@ -8263,7 +8263,7 @@ function setQaTab(t) { qaTab = t; qaRenderTabs(); qaRenderGrid(); }
 function setQaPairA(cp) { qaPairA = cp; qaBuild(); qaRenderTabs(); qaRenderGrid(); }   // recount + redraw the Two-marks tab for the new fixed mark
 function qaPairControlHtml() {
   const marks = project.font.nikkud.enabled ? MARK_CPS : [];
-  const opts = marks.map(cp => `<option value="${cp}"${cp === qaPairA ? ' selected' : ''}>${escapeHtml(markName(cp))}</option>`).join('');
+  const opts = marks.map(cp => `<option value="${cp}"${cp === qaPairA ? ' selected' : ''}>${esc(markName(cp))}</option>`).join('');
   return `<div style="margin-bottom:10px;font-size:0.82rem;display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;">
     <label>Stack <select onchange="setQaPairA(this.value)" style="font-size:0.82rem;">${opts}</select> with every other mark, on each letter.</label>
     <span style="color:var(--muted);flex:1;min-width:220px;">Red = the two marks' ink overlaps. Same-class pairs (e.g. two below-vowels) share one anchor, so they always overlap — that's expected. Cross-class clashes (e.g. a raised dagesh meeting an above-vowel) are real and fixable by moving an anchor.</span>
@@ -9021,7 +9021,7 @@ function shareThisFont() {   // open the font library (Fonts view) + a pre-fille
   });
   const url = 'resources.html?' + params.toString();
   askModal('Share your font',
-    'Post <b>' + escapeHtml(f.familyName || 'your font') + '</b> to the IvritSuite font library. This opens the library and starts a <b>pre-filled submission email</b>.<br><br>You\'ll <b>attach your exported font file</b> (.ttf) and license — use <b>⬇ Export TTF</b> first if you haven\'t.',
+    'Post <b>' + esc(f.familyName || 'your font') + '</b> to the IvritSuite font library. This opens the library and starts a <b>pre-filled submission email</b>.<br><br>You\'ll <b>attach your exported font file</b> (.ttf) and license — use <b>⬇ Export TTF</b> first if you haven\'t.',
     [ { label: 'Open library →', onClick: () => window.open(url, '_blank', 'noopener') },
       { label: 'Cancel', cls: 'ghost' } ]);
 }
@@ -9087,7 +9087,7 @@ async function exportFont() {
   }
   if (cg && cg.kind === 'blank') {
     askModal('Some custom glyphs are blank',
-      `${cg.blanks.length} custom glyph${cg.blanks.length === 1 ? ' has' : 's have'} no outline yet and will export <b>blank</b>: <b>${cg.blanks.map(l => escapeHtml(l.name || ('U+' + l.codepoint))).join(', ')}</b>.`,
+      `${cg.blanks.length} custom glyph${cg.blanks.length === 1 ? ' has' : 's have'} no outline yet and will export <b>blank</b>: <b>${cg.blanks.map(l => esc(l.name || ('U+' + l.codepoint))).join(', ')}</b>.`,
       [ {label:'Cancel', cls:'ghost'}, {label:'Export anyway', onClick: () => doExport(fmt)} ]);
     return;
   }
@@ -9307,7 +9307,7 @@ async function downloadMyFont(name) {
 }
 function deleteMyFontUI(name) {
   askModal('Remove font?',
-    'Remove <b>' + escapeHtml(name) + '</b> from My Fonts? Tools using it will fall back to their default font. (This doesn’t delete any file you already downloaded.)',
+    'Remove <b>' + esc(name) + '</b> from My Fonts? Tools using it will fall back to their default font. (This doesn’t delete any file you already downloaded.)',
     [{ label: 'Cancel', cls: 'ghost' }, { label: 'Remove', onClick: async () => { try { await deleteUserFont(name); } catch (e) { console.error(e); } if (_myFontsOpen) renderMyFontsList(); } }]);
 }
 async function saveCurrentToMyFonts(bytes) {
@@ -9320,7 +9320,7 @@ async function saveCurrentToMyFonts(bytes) {
     if (_myFontsOpen) renderMyFontsList();
   } catch (e) {
     console.error(e); status('');
-    askModal('Couldn’t save', '<span class="warn">' + escapeHtml(e && e.message || String(e)) + '</span>', [{ label: 'OK' }]);
+    askModal('Couldn’t save', '<span class="warn">' + esc(e && e.message || String(e)) + '</span>', [{ label: 'OK' }]);
   }
 }
 function offerSaveToMyFonts() {   // post-export success screen (called after every successful export, any format)
@@ -9331,7 +9331,7 @@ function offerSaveToMyFonts() {   // post-export success screen (called after ev
                 { label: '📤 Share this font', cls: 'ghost', onClick: () => shareThisFont() }];
   if (canSave) btns.push({ label: '★ My IvritSuite Fonts', onClick: () => openMyFonts() });
   askModal('Exported ✓',
-    'Your font <b>' + escapeHtml(fam) + '</b> downloaded.'
+    'Your font <b>' + esc(fam) + '</b> downloaded.'
     + (canSave ? ' Save it to <b>★ My IvritSuite Fonts</b> (this browser) to pick it in every IvritSuite tool’s font selector.' : '')
     + ' Or <b>📤 Share this font</b> to post it to the IvritSuite font library.',
     btns);
@@ -9738,8 +9738,8 @@ function templateCellHTML(item, kind) {
     '<div style="position:absolute;top:5px;left:7px;display:flex;align-items:center;gap:6px;'
       + 'color:' + TPL_INK + ';font-family:\'Source Sans 3\',sans-serif;line-height:1.05;pointer-events:none;">'
       + '<span style="font-family:' + fontFam + ';font-size:22px;direction:rtl;">' + glyph + '</span>'
-      + '<span style="font-size:10px;"><strong>' + escapeHtml(item.name) + '</strong><br>'
-      + '<span style="font-size:8.5px;opacity:.9;">' + code + escapeHtml(cls) + '</span></span>'
+      + '<span style="font-size:10px;"><strong>' + esc(item.name) + '</strong><br>'
+      + '<span style="font-size:8.5px;opacity:.9;">' + code + esc(cls) + '</span></span>'
     + '</div>';
   return '<div style="position:relative;box-sizing:border-box;width:100%;height:100%;'
     + 'border:1.5px solid ' + TPL_INK + ';border-radius:8px;background:#fff;overflow:hidden;">' + label + '</div>';
@@ -9748,7 +9748,7 @@ function templateCellHTML(item, kind) {
 function buildTemplatePageHTML(spec, pageItems, idx, count) {
   const head =
     '<div style="text-align:center;font-family:\'Libre Baskerville\',serif;font-size:19px;color:' + TPL_INK + ';margin:0 0 3px;">'
-      + escapeHtml(spec.title) + (count > 1 ? ' · page ' + (idx + 1) + ' of ' + count : '') + '</div>'
+      + esc(spec.title) + (count > 1 ? ' · page ' + (idx + 1) + ' of ' + count : '') + '</div>'
     + '<div style="text-align:center;font-family:\'Source Sans 3\',sans-serif;font-size:10.5px;color:' + TPL_INK + ';margin:0 0 12px;">'
       + 'Write one glyph per box in DARK ink, kept inside the box — the light blue grid will not scan.</div>';
   const cells = pageItems.map(it => templateCellHTML(it, spec.kind)).join('');
@@ -9809,11 +9809,9 @@ async function downloadTemplate(kind, fmt) {
     status(spec.title + ' template saved.');
   } catch (e) {
     console.error(e); status('');
-    askModal('Template error', '<span class="warn">' + escapeHtml(e.message || String(e)) + '</span>', [{ label:'OK' }]);
+    askModal('Template error', '<span class="warn">' + esc(e.message || String(e)) + '</span>', [{ label:'OK' }]);
   }
 }
-
-function escapeHtml(s) { return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 // Parse JSON from untrusted input (imported project files), dropping keys that could pollute Object.prototype.
 function ivritSafeParse(str) {
   return JSON.parse(str, (k, v) =>
@@ -9954,7 +9952,7 @@ function toggleLoadMenu(ev) {
   let h = `<button class="load-menu-item" onclick="closeLoadMenu();document.getElementById('projFile').click()">📂 Load from computer…</button>
     <div class="load-menu-sep"></div><div class="load-menu-head">Recent</div>`;
   h += recents.length
-    ? recents.map((r,i) => `<button class="load-menu-item" onclick="closeLoadMenu();loadRecentProject(${i})"><span>${escapeHtml(r.name)}</span><span class="load-menu-date">${recentDate(r.savedAt)}</span></button>`).join('')
+    ? recents.map((r,i) => `<button class="load-menu-item" onclick="closeLoadMenu();loadRecentProject(${i})"><span>${esc(r.name)}</span><span class="load-menu-date">${recentDate(r.savedAt)}</span></button>`).join('')
     : `<div class="load-menu-empty">No recent projects yet — save one first.</div>`;
   menu.innerHTML = h;
   document.body.appendChild(menu);
@@ -10184,7 +10182,7 @@ function openApplyAlign(){
   const host = document.getElementById('applyAlignList'); host.innerHTML = '';
   LETTERS.filter(L => L.cat !== 'punct' && L.cp !== src.codepoint).forEach(L => {
     const lab = document.createElement('label'); lab.className = 'chk'; lab.style.cssText = 'font-size:0.84rem;';
-    lab.innerHTML = `<input type="checkbox" class="aa-cp" value="${L.cp}"> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${escapeHtml(L.name)}`;
+    lab.innerHTML = `<input type="checkbox" class="aa-cp" value="${L.cp}"> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${esc(L.name)}`;
     host.appendChild(lab);
   });
   aOpenModal('applyAlignOverlay', closeApplyAlign);
@@ -10210,7 +10208,7 @@ function openApplyNikkud(){
   const host = document.getElementById('applyNikkudList'); host.innerHTML = '';
   LETTERS.filter(L => L.cat !== 'punct' && L.cp !== src.codepoint).forEach(L => {
     const lab = document.createElement('label'); lab.className = 'chk'; lab.style.cssText = 'font-size:0.84rem;';
-    lab.innerHTML = `<input type="checkbox" class="an-cp" value="${L.cp}"> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${escapeHtml(L.name)}`;
+    lab.innerHTML = `<input type="checkbox" class="an-cp" value="${L.cp}"> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${esc(L.name)}`;
     host.appendChild(lab);
   });
   aOpenModal('applyNikkudOverlay', closeApplyNikkud);
@@ -10256,7 +10254,7 @@ function openCopyOutline(){
   let first = true;
   sources.forEach(L => {
     const lab = document.createElement('label'); lab.className = 'chk'; lab.style.cssText = 'font-size:0.84rem;';
-    lab.innerHTML = `<input type="radio" name="copyOutlineSrc" class="co-cp" value="${L.codepoint}"${first?' checked':''}> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.codepoint,16))}</span> ${escapeHtml(L.name)}`;
+    lab.innerHTML = `<input type="radio" name="copyOutlineSrc" class="co-cp" value="${L.codepoint}"${first?' checked':''}> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.codepoint,16))}</span> ${esc(L.name)}`;
     host.appendChild(lab); first = false;
   });
   const w = document.getElementById('copyOutlineWidth'); if (w) w.checked = false;
