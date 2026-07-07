@@ -2613,109 +2613,36 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           </label>
         </div>
         <!-- Custom wordlist options — shown after import -->
-        <div id="customWordlistOptions" style="display:none;margin-top:4px;flex-direction:column;gap:6px;">
-          <div style="font-size:0.72rem;font-weight:600;color:var(--gold);">✓ Custom wordlist: <span id="cwWordCount">0</span> words</div>
-
-          <!-- Drill Type -->
-          <div class="rw-section">
-            <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Drill Type <span class="tooltip-wrap" style="font-size:0.65rem;text-transform:none;letter-spacing:normal;font-weight:400;">?<span class="tooltip-box"><strong>Reading</strong> — Hebrew shown, students read aloud.<br><br><strong>Vocab</strong> — Flip cards: Hebrew front, translation back.<br><br><strong>Reverse</strong> — Translation shown, students write the Hebrew.<br><br><strong>Identify</strong> — Custom words mixed with nonsense blends; students circle the real ones.<br><br><strong>Bingo</strong> — Unique bingo cards from your word list.</span></span></div>
-            <div class="rw-section-body">
-              <div class="blend-type-selector" style="grid-template-columns:repeat(5,1fr);margin-bottom:4px;">
-                <button class="rw-drill-btn active" data-cw-drill="reading"  onclick="setCwDrill('reading')">Reading</button>
-                <button class="rw-drill-btn"        data-cw-drill="vocab"    onclick="setCwDrill('vocab')">Vocab</button>
-                <button class="rw-drill-btn"        data-cw-drill="reverse"  onclick="setCwDrill('reverse')">Reverse</button>
-                <button class="rw-drill-btn"        data-cw-drill="identify" onclick="setCwDrill('identify')">Identify</button>
-                <button class="rw-drill-btn"        data-cw-drill="bingo"    onclick="setCwDrill('bingo')">Bingo</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Display -->
-          <div class="rw-section">
-            <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Display</div>
-            <div class="rw-section-body">
-              <div class="toggle-row">
-                <span style="font-size:0.8rem;">Show Transliteration</span>
-                <label class="toggle" style="transform:scale(0.75);transform-origin:right;"><input type="checkbox" id="cwShowTranslit" checked onchange="onCwTranslitChange()"><span class="slider"></span></label>
-              </div>
-              <div id="cwTranslitPageRow" style="display:none;padding-left:16px;">
-                <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
-                  <button class="rw-drill-btn active" data-cw-translit="same" onclick="setCwTranslitPage('same')">Same page</button>
-                  <button class="rw-drill-btn"        data-cw-translit="key"  onclick="setCwTranslitPage('key')">Answer key</button>
-                </div>
-              </div>
-              <div class="toggle-row">
-                <span style="font-size:0.8rem;">Show Translation</span>
-                <label class="toggle" style="transform:scale(0.75);transform-origin:right;"><input type="checkbox" id="cwShowTranslation" onchange="onCwTranslChange()"><span class="slider"></span></label>
-              </div>
-              <div id="cwTranslPageRow" style="display:none;padding-left:16px;">
-                <div class="blend-type-selector" style="grid-template-columns:repeat(2,1fr);margin-top:2px;">
-                  <button class="rw-drill-btn active" data-cw-transl="same" onclick="setCwTranslPage('same')">Same page</button>
-                  <button class="rw-drill-btn"        data-cw-transl="key"  onclick="setCwTranslPage('key')">Answer key</button>
-                </div>
-              </div>
-              <div class="toggle-row">
-                <span style="font-size:0.8rem;">Show Part of Speech</span>
-                <label class="toggle" style="transform:scale(0.75);transform-origin:right;"><input type="checkbox" id="cwShowPos"><span class="slider"></span></label>
-              </div>
-              <div style="margin-top:6px;display:flex;align-items:center;gap:8px;">
-                <span style="font-size:0.8rem;flex:1;">Words on sheet</span>
-                <select id="cwCount" style="font-size:0.78rem;padding:3px 6px;">
-                  <option value="10">10</option>
-                  <option value="20" selected>20</option>
-                  <option value="30">30</option>
-                  <option value="40">40</option>
-                  <option value="50">50</option>
-                  <option value="all">All</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <!-- Mix in nonsense blends -->
-          <div id="cwMixedRow">
-            <div class="toggle-row">
-              <span style="font-size:0.82rem;">Mix in nonsense blends
-                <span class="tooltip-wrap" style="font-size:0.55rem;">?<span class="tooltip-box">Randomly generated nonsense blends are mixed in with your words. Blends are checked against the full word list and your imported list to ensure they are not real Hebrew words.</span></span>
-              </span>
-              <label class="toggle" style="transform:scale(0.75);transform-origin:right;"><input type="checkbox" id="cwMixed" onchange="toggleCwBlendOpts()"><span class="slider"></span></label>
-            </div>
-            <div id="cwBlendOpts" style="display:none;padding-left:12px;border-left:2px solid var(--border);margin-top:4px;display:none;flex-direction:column;gap:6px;">
-              <div class="toggle-row">
-                <span style="font-size:0.82rem;">Star real words</span>
-                <label class="toggle" style="transform:scale(0.75);transform-origin:right;"><input type="checkbox" id="cwStarReal" checked><span class="slider"></span></label>
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;">
-                <span style="font-size:0.8rem;flex:1;">Blends to mix in</span>
-                <select id="cwBlendCount" style="font-size:0.78rem;padding:3px 6px;">
-                  <option value="match">Same as words</option>
-                  <option value="10">10</option>
-                  <option value="20">20</option>
-                  <option value="30">30</option>
-                  <option value="50">50</option>
-                </select>
-              </div>
-              <div>
-                <div style="font-size:0.72rem;font-weight:600;margin-bottom:4px;color:var(--text);">Vowels in blends</div>
-                <div style="display:flex;gap:4px;margin-bottom:4px;">
-                  <button class="btn-xs" onclick="setCwBlendVowels(true)">All</button>
-                  <button class="btn-xs" onclick="setCwBlendVowels(false)">None</button>
-                </div>
-                <div class="vowel-grid" id="cwBlendVowelGrid"></div>
-              </div>
-              <div>
-                <div style="font-size:0.72rem;font-weight:600;margin-bottom:4px;color:var(--text);">Letters in blends</div>
-                <div style="display:flex;gap:4px;margin-bottom:4px;">
-                  <button class="btn-xs" onclick="setCwBlendLetters(true)">All</button>
-                  <button class="btn-xs" onclick="setCwBlendLetters(false)">None</button>
-                </div>
-                <div class="rw-letter-grid" id="cwBlendLetterGrid"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div id="realWordsOptions" style="display:none;margin-top:4px;flex-direction:column;gap:6px;">
+
+          <!-- Word Source -->
+          <div class="rw-section" id="rwSectionSource">
+            <div class="rw-section-header" onclick="this.closest('.rw-section').classList.toggle('collapsed')">Word Source</div>
+            <div class="rw-section-body">
+              <div class="blend-type-selector" style="grid-template-columns:repeat(3,1fr);margin-bottom:6px;">
+                <button class="rw-drill-btn active" data-rwsrc="all"      onclick="setRwSource('all')">All Words</button>
+                <button class="rw-drill-btn"        data-rwsrc="lists"    onclick="setRwSource('lists')">My Word Lists</button>
+                <button class="rw-drill-btn"        data-rwsrc="imported" onclick="setRwSource('imported')">Imported List</button>
+              </div>
+              <!-- My Word Lists picker -->
+              <div id="rwListPickerWrap" style="display:none;">
+                <div id="rwListEmptyState" style="display:none;font-size:0.75rem;color:var(--muted);line-height:1.5;padding:8px 4px;">No word lists yet. <a href="hebrew_dictionary.html" style="color:var(--gold);">Create word lists in the Dictionary</a>, then come back to drill them here.</div>
+                <div id="rwListPicker" style="display:none;flex-direction:column;border:1px solid var(--border);border-radius:6px;overflow:hidden;"></div>
+              </div>
+              <!-- Imported list paste-in -->
+              <div id="rwImportWrap" style="display:none;">
+                <div style="font-size:0.7rem;color:var(--muted);line-height:1.5;margin-bottom:4px;">In the <strong>Word Lookup</strong> dictionary, enable <strong>Bulk Copy Mode</strong> and set Copy Mode to <strong>All info</strong>. Select your words, copy, then paste below. Plain Hebrew (one per line) also works.</div>
+                <textarea id="cwImportTextarea" rows="6" placeholder="אָב — av — father — noun — Both&#10;אֵם — em — mother — noun — Both&#10;…" style="width:100%;font-size:0.75rem;font-family:var(--heb-font);direction:rtl;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;" oninput="updateCwImportCount()"></textarea>
+                <div id="cwImportCount" style="font-size:0.7rem;color:var(--muted);text-align:center;min-height:1em;"></div>
+                <div style="display:flex;gap:6px;">
+                  <button class="btn-xs" style="flex:1;" onclick="importCustomWordlist()">⬇ Import</button>
+                  <button class="btn-xs" style="flex:1;" onclick="clearCustomWordlist()">✕ Clear</button>
+                </div>
+                <div id="cwImportStatus" style="font-size:0.72rem;text-align:center;color:var(--gold);font-weight:600;min-height:1.2em;"></div>
+              </div>
+              <div id="rwListPoolInfo" style="display:none;margin-top:6px;font-size:0.7rem;color:var(--muted);text-align:center;"></div>
+            </div>
+          </div>
 
           <!-- Drill Type -->
           <div class="rw-section" id="rwSectionDrillType">
@@ -3357,6 +3284,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <button class="btn btn-secondary" id="printBtn" onclick="window.print()" disabled aria-disabled="true" title="Generate a worksheet first" style="opacity:0.4;cursor:not-allowed;">🖨 Print</button>
       <button class="btn btn-outline" id="pdfBtn" onclick="exportPDF()" disabled aria-disabled="true" title="Generate a worksheet first" style="opacity:0.4;cursor:not-allowed;margin-top:8px;">⬇ Export PDF</button>
       <button class="btn btn-outline" id="shareBtn" onclick="copyShareLink('shareBtn')" style="margin-top:8px;">📋 Copy shareable link</button>
+      <div id="shareNotice" role="status" style="display:none;margin-top:6px;font-size:0.72rem;color:var(--muted);text-align:center;line-height:1.4;"></div>
       <div class="print-tip" id="printTip" style="display:none;margin-top:8px;font-size:0.72rem;color:var(--muted);background:var(--warm-gray);border-radius:5px;padding:7px 9px;line-height:1.4;">
         💡 <strong>Print tip:</strong> In the print dialog, uncheck <em>Headers and footers</em> to remove the URL and date.
       </div>
@@ -3505,23 +3433,6 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                   <button onclick="copyTextarea('presetBackupBox')" title="Copy" style="position:absolute;top:5px;right:5px;background:none;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:0.65rem;color:var(--muted);cursor:pointer;" id="presetCopyBtn">Copy</button>
                 </div>
                 <button class="btn-xs" onclick="importPresets()">⬇ Import from backup</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Import Custom Wordlist sub-panel -->
-          <div class="panel collapsed" style="border:1px solid var(--border);border-radius:6px;overflow:hidden;">
-            <div class="panel-title" style="font-size:0.72rem;padding:6px 10px;">Import Custom Wordlist</div>
-            <div class="panel-body">
-              <div class="adv-body-sm">
-                <div style="font-size:0.72rem;color:var(--muted);line-height:1.5;">In the <strong>Word Lookup</strong> dictionary, enable <strong>Bulk Copy Mode</strong> and set Copy Mode to <strong>All info</strong>. Select your words, copy, then paste below. Plain Hebrew (one per line) also works.</div>
-                <textarea id="cwImportTextarea" rows="7" placeholder="אָב — av — father — noun — Both&#10;אֵם — em — mother — noun — Both&#10;…" style="width:100%;font-size:0.75rem;font-family:var(--heb-font);direction:rtl;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;" oninput="updateCwImportCount()"></textarea>
-                <div id="cwImportCount" style="font-size:0.7rem;color:var(--muted);text-align:center;min-height:1em;"></div>
-                <div style="display:flex;gap:6px;">
-                  <button class="btn-xs" style="flex:1;" onclick="importCustomWordlist()">⬇ Import</button>
-                  <button class="btn-xs" style="flex:1;" onclick="clearCustomWordlist()">✕ Clear</button>
-                </div>
-                <div id="cwImportStatus" style="font-size:0.72rem;text-align:center;color:var(--gold);font-weight:600;min-height:1.2em;"></div>
               </div>
             </div>
           </div>
@@ -4247,7 +4158,7 @@ function setDageshTav(enabled) {
   // The grid rebuilds below drop keyboard focus — remember which tile (grid + letter) had it
   const _af = document.activeElement;
   const _afGrid = _af && _af.closest
-    ? _af.closest('#letterGrid, #rwLetterGrid, #cwBlendLetterGrid, #lockGrid1, #lockGrid2, #lockGrid3') : null;
+    ? _af.closest('#letterGrid, #rwLetterGrid, #lockGrid1, #lockGrid2, #lockGrid3') : null;
   const _afHeb = _afGrid && _af.querySelector('.heb') ? _af.querySelector('.heb').textContent : null;
   // Sync all checkboxes with the same id across any duplicated controls
   document.querySelectorAll('#dageshTavToggle').forEach(el => el.checked = enabled);
@@ -4266,28 +4177,6 @@ function setDageshTav(enabled) {
     else { rwLetterFilter.delete('תּ'); }
     rwGrid.innerHTML = '';
     initRwLetterGrid();
-  }
-  // cwBlend letter grid (only if rendered)
-  const cwGrid = document.getElementById('cwBlendLetterGrid');
-  if (cwGrid && cwGrid.children.length) {
-    if (enabled) { if (cwBlendLetters.has('ת')) cwBlendLetters.add('תּ'); }
-    else { cwBlendLetters.delete('תּ'); }
-    cwGrid.innerHTML = '';
-    const baseLets = LETTERS.filter(l =>
-      !l.sofit && l.heb !== 'וֹ' && l.heb !== 'וּ' &&
-      (dageshTavEnabled ? !l.normalTav : !l.dageshTav && !l.savVariant)
-    );
-    baseLets.forEach(l => {
-      const tile = document.createElement('div');
-      tile.className = 'rw-letter-tile' + (cwBlendLetters.has(l.heb) ? ' selected' : '');
-      tile.innerHTML = `<span class="heb" lang="he">${l.heb}</span><span class="name">${l.name}</span>`;
-      tile.addEventListener('click', () => {
-        if (cwBlendLetters.has(l.heb)) { cwBlendLetters.delete(l.heb); tile.classList.remove('selected'); }
-        else { cwBlendLetters.add(l.heb); tile.classList.add('selected'); }
-      });
-      bindTileA11y(tile);
-      cwGrid.appendChild(tile);
-    });
   }
   // Lock letter grids
   if (enabled) { [0,1,2].forEach(i => { if (lockLetters[i].has('ת')) lockLetters[i].add('תּ'); }); }
@@ -4451,6 +4340,11 @@ function getSettings() {
     rwEraBiblical:     document.getElementById('rwEraBiblical').checked,
     rwEraModern:       document.getElementById('rwEraModern').checked,
     rwLetterFilter:    [...rwLetterFilter],
+    // Word source: 'all' | 'lists' | 'imported'. Saved lists persist by NAME (survives
+    // differing ids across devices / list re-creation). Imported words are not persisted
+    // in presets (only embedded inline in ?s= share links — see serializeSettings).
+    rwSource,
+    selectedWordListNames: [...selectedWordListIds].map(id => wlGetListName(id)).filter(Boolean),
     rwBingoGrid:       document.getElementById('rwBingoGrid').value,
     rwBingoCards:      document.getElementById('rwBingoCards').value,
     rwBingoPerPage:    document.getElementById('rwBingoPerPage').value,
@@ -4462,18 +4356,6 @@ function getSettings() {
     gematriaSelfCheck: document.getElementById('gematriaSelfCheck').checked,
     gematriaAnswerKey: document.getElementById('gematriaAnswerKey').checked,
     gematriaInverse:   document.getElementById('gematriaInverse').checked,
-    // Custom Wordlist
-    cwModeActive,
-    cwDrillType,
-    cwTranslitPage,
-    cwTranslPage,
-    cwShowTranslit:    document.getElementById('cwShowTranslit').checked,
-    cwShowTranslation: document.getElementById('cwShowTranslation').checked,
-    cwShowPos:         document.getElementById('cwShowPos').checked,
-    cwCount:           document.getElementById('cwCount').value,
-    cwMixed:           document.getElementById('cwMixed').checked,
-    cwStarReal:        document.getElementById('cwStarReal').checked,
-    cwBlendCount:      document.getElementById('cwBlendCount')?.value,
     // Real Words extras
     rwGematriaInverse:   document.getElementById('rwGematriaInverse').checked,
     rwGematriaSelfCheck: document.getElementById('rwGematriaSelfCheck').checked,
@@ -4642,7 +4524,9 @@ function applySettings(s) {
 
   // Real Words
   if (s.realWords !== undefined) document.getElementById('realWordsToggle').checked = s.realWords;
-  if (s.realWords) ensureRealWords();   // preset/.ivrit/share restored with Real Words active — preload corpus
+  // Preload the corpus only for the 'All Words' source; curated lists / imported words don't need it.
+  if (s.realWords && !s.rwSource && !s.cwModeActive) ensureRealWords();
+  else if (s.realWords && s.rwSource === 'all') ensureRealWords();
   if (s.rwCount)                 document.getElementById('rwCount').value = s.rwCount;
   if (s.rwMixed !== undefined)   { document.getElementById('rwMixed').checked = s.rwMixed; toggleRwStarRow(); }
   if (s.rwStarReal !== undefined) { document.getElementById('rwStarReal').checked = s.rwStarReal; toggleRwStarPageRow(); }
@@ -4700,22 +4584,20 @@ function applySettings(s) {
   syncTraceButtons();
   syncTraceFillDisabled();
 
-  // Custom Wordlist
-  if (s.cwShowTranslit !== undefined)    document.getElementById('cwShowTranslit').checked = s.cwShowTranslit;
-  if (s.cwShowTranslation !== undefined) document.getElementById('cwShowTranslation').checked = s.cwShowTranslation;
-  if (s.cwShowPos !== undefined)         document.getElementById('cwShowPos').checked = s.cwShowPos;
-  if (s.cwCount)                         document.getElementById('cwCount').value = s.cwCount;
-  if (s.cwMixed !== undefined)           { document.getElementById('cwMixed').checked = s.cwMixed; toggleCwBlendOpts(); }
-  if (s.cwStarReal !== undefined)        document.getElementById('cwStarReal').checked = s.cwStarReal;
-  if (s.cwBlendCount && document.getElementById('cwBlendCount')) document.getElementById('cwBlendCount').value = s.cwBlendCount;
-  if (s.cwDrillType)     setCwDrill(s.cwDrillType);
-  if (s.cwTranslitPage)  setCwTranslitPage(s.cwTranslitPage);
-  if (s.cwTranslPage)    setCwTranslPage(s.cwTranslPage);
-  // Only activate cw mode if data was actually imported this session.
-  if (s.cwModeActive && customWordlistData.length > 0) {
-    activateCustomWordlistMode(true);
-  } else {
-    cwModeActive = false;
+  // Word source (Real Words). Saved-list selection persists by name; remap to local ids
+  // and silently drop lists that no longer exist. Legacy migration: an old cwModeActive
+  // preset (the retired custom-wordlist mode) becomes the 'imported' source.
+  {
+    let src = s.rwSource;
+    if (!src && s.cwModeActive) src = 'imported';
+    rwSource = (src === 'lists' || src === 'imported') ? src : 'all';
+    const idx = wlNameIndex();
+    selectedWordListIds = new Set((s.selectedWordListNames || []).map(n => idx[n]).filter(Boolean));
+    // Inline words embedded in a loaded ?s= share link take precedence over the local store.
+    rwInlinePool = Array.isArray(s.rwInlineWords)
+      ? s.rwInlineWords.map(o => ({ word: String(o.w || ''), translit: String(o.t || ''), translation: String(o.e || '') })).filter(o => o.word)
+      : null;
+    _syncRwSourceUI();   // sync buttons/panels/count without clearing rwInlinePool
   }
 
   // Real Words extras
@@ -5899,7 +5781,6 @@ const LIVE_PRESENTATION_KEYS = new Set([
   'bingoShowSounds','bingoCallerSheet',
   'traceLineStyle','traceModels','traceSolidFirst','traceDarkness','traceLinesPerItem',
   'traceRepeatModels','traceFillLine','traceSpacing',
-  'cwShowTranslit','cwShowTranslation','cwShowPos','cwTranslitPage','cwTranslPage',
   'rwFillVowelsDagesh','rwGematriaInverse','rwGematriaSelfCheck',
 ]);
 // Keys that should trigger no re-render at all (playback prefs, etc.).
@@ -6216,8 +6097,8 @@ function getVowelPos() {
 function computeModeState() {
   const np = document.getElementById('numberPracticeToggle').checked;
   const rw = document.getElementById('realWordsToggle').checked;
-  const cw = cwModeActive;
-  const source = np ? 'numbers' : rw ? 'realwords' : cw ? 'customwordlist' : 'blends';
+  // The imported wordlist is a Real Words source now (rwSource==='imported'), not a separate mode.
+  const source = np ? 'numbers' : rw ? 'realwords' : 'blends';
 
   let drill = 'standard';
   if (source === 'blends') {
@@ -6243,7 +6124,7 @@ function computeModeState() {
 // need display:flex to render. Major panels and toggle rows fall back to '' (CSS default).
 const _MODE_FLEX_IDS = new Set([
   'bingoOptions','gematriaOptions','selfCheckOptions','realWordsOptions',
-  'customWordlistOptions','numberPracticeOptions','focusOptions',
+  'numberPracticeOptions','focusOptions',
   'nameTheLetterOptions','fillVowelsDageshRow','tracingOptions','matchingOptions',
 ]);
 const _MODE_BLOCK_IDS = new Set(['threeLetterOptions']);
@@ -6332,7 +6213,6 @@ function updateModeVisibility() {
     // Real Words options stay visible in number-practice-via-real-words mode
     // so the Drill Type row (with the Number Practice button) remains accessible.
     realWordsOptions:      inRealWordsBucket,
-    customWordlistOptions: s.source === 'customwordlist',
     numberPracticeOptions: s.source === 'numbers',
     fillVowelsDageshRow:   blends && s.drill === 'fillvowels',
     tracingOptions:        blends && s.drill === 'tracing',
@@ -6418,9 +6298,16 @@ function updateModeVisibility() {
   // user has picked the Number Practice drill (the number practice options
   // panel takes over below).
   const showRwSubSections = (s.source === 'realwords');
-  ['rwSectionWordFilters','rwSectionLetterFilter','rwSectionDisplay'].forEach(id => {
+  // Source picker + Drill Options show for any Real Words drill; the corpus-only
+  // Word Filters / Letter Filter show only for the 'All Words' source (curated
+  // lists / imported words bypass those filters).
+  ['rwSectionSource','rwSectionDisplay'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = showRwSubSections ? '' : 'none';
+  });
+  ['rwSectionWordFilters','rwSectionLetterFilter'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = (showRwSubSections && rwSource === 'all') ? '' : 'none';
   });
 }
 
@@ -8438,11 +8325,6 @@ function generate(animate = false) {
     return;
   }
 
-  if (cwModeActive) {
-    generateCustomWordlist();
-    return;
-  }
-
   const rwOn = document.getElementById('realWordsToggle').checked;
   const mixed = rwOn && document.getElementById('rwMixed').checked;
 
@@ -8701,7 +8583,6 @@ function setGematriaSelfCheckMode(_on) { updateModeVisibility(); }
 function onGematriaOptionChange() {
   const ws = document.getElementById('worksheet');
   if (!ws || !ws.innerHTML.trim()) return;
-  if (cwModeActive) { generateCustomWordlist(); return; }
   if (document.getElementById('realWordsToggle')?.checked && rwDrillType === 'gematria') { generateRealWords(); return; }
   if (document.getElementById('gematriaToggle').checked) renderWorksheet(false);
 }
@@ -9684,6 +9565,78 @@ let EMOJI_MAP = null;              // lazy Map<bareHeb, emojiGlyph> for the Matc
 let rwRenderCache = null;
 let cwClueLang = 'english'; // Crossword clue language: 'english' | 'translit' | 'both'
 
+// ── Word source: All words | My Word Lists (suite-wide store) | Imported list ──
+// The Real Words drills draw from one of three sources. 'all' filters the corpus
+// (getRwPool); 'lists' unions selected saved Word Lists; 'imported' uses the paste-in
+// customWordlistData. Lists/imported bypass the corpus length/era/pos/letter filters
+// (curated lists are printed whole — matching Flash Cards' convention).
+let rwSource = 'all';                 // 'all' | 'lists' | 'imported'
+let selectedWordListIds = new Set();  // ids of the checked saved Word Lists
+let rwInlinePool = null;              // words embedded in a loaded ?s= share link (takes precedence)
+
+/* ── Word-list store reader (consumer side) ──
+   Reads the suite-wide ivritSuite_wordLists store produced by the Dictionary.
+   Store shape: { v:1, lists:{ <id>:{name,created,updated,words:[{word,translation,translit,pos,era}]} } }
+   Mirrors flash_cards.html's consumer helpers — do NOT port the Dictionary's full manager API. */
+function wlReadStoreLocal() {
+  let s;
+  try { s = ivritSafeParse(localStorage.getItem('ivritSuite_wordLists') || '{}'); } catch (e) { s = null; }
+  if (!s || typeof s !== 'object' || !s.lists || typeof s.lists !== 'object') return { v: 1, lists: {} };
+  return { v: 1, lists: s.lists };
+}
+function wlListsArray() {
+  const lists = wlReadStoreLocal().lists;
+  return Object.keys(lists).map(id => {
+    const l = lists[id] || {};
+    return { id, name: String(l.name || 'Untitled list'), words: Array.isArray(l.words) ? l.words : [] };
+  });
+}
+function wlNameIndex() {          // { name: id } — last occurrence wins on collision
+  const idx = {};
+  wlListsArray().forEach(l => { idx[l.name] = l.id; });
+  return idx;
+}
+function wlGetListName(id) {
+  const l = wlReadStoreLocal().lists[id];
+  return l ? String(l.name || 'Untitled list') : null;
+}
+
+// Convert a stored/imported word entry into the Real Words corpus shape the drills expect.
+// Only `heb` is strictly required (emoji/gematria/isReal read w.heb); bare/letters are set
+// cheaply for word-search / crossword safety.
+function rwListToPoolEntry(w) {
+  const heb = w.heb || w.word || '';
+  const bare = stripNikud(heb);
+  const letters = [...bare].filter(c => c.charCodeAt(0) >= 0x05D0 && c.charCodeAt(0) <= 0x05EA).length;
+  const translit = w.translit || '';
+  return {
+    heb,
+    word: heb,
+    bare,
+    translit,
+    translitDisplay: w.translitDisplay ?? translit,
+    pos: w.pos || '',
+    translation: w.translation || '',
+    era: w.era || 'Both',
+    letters,
+    isReal: true
+  };
+}
+
+// Union of the currently-selected saved Word Lists, deduped by the `word` string (first wins).
+function rwSelectedListUnion() {
+  const seen = new Set(), out = [];
+  wlListsArray().forEach(l => {
+    if (!selectedWordListIds.has(l.id)) return;
+    l.words.forEach(w => {
+      if (!w || !w.word || seen.has(w.word)) return;
+      seen.add(w.word);
+      out.push(w);
+    });
+  });
+  return out;
+}
+
 // Update the Generate button label when Class Set changes.
 function onClassSetChange() {
   const n = Math.max(1, Math.min(40, parseInt(document.getElementById('classSetCount')?.value) || 1));
@@ -9698,12 +9651,9 @@ function setCwClueLang(lang) {
 }
 
 // ── REAL WORDS UI TOGGLE ──
-// ── CUSTOM WORDLIST ──
+// ── IMPORTED WORDLIST (a Real Words source; see setRwSource / getRwPool) ──
 let customWordlistData = [];
-let cwModeActive = false;
-let cwDrillType = 'reading';
-let cwTranslitPage = 'same';
-let cwTranslPage = 'same';
+let cwModeActive = false;   // retired flag, kept false; legacy presets migrate to rwSource='imported'
 
 function parseCwText(text) {
   return (text || '').split('\n').map(line => {
@@ -9727,9 +9677,10 @@ function importCustomWordlist() {
   if (!parsed.length) { alert('No valid Hebrew words found. Make sure each line starts with a Hebrew word.'); return; }
   customWordlistData = parsed;
   rebuildTranslitDisplay();
-  document.getElementById('cwWordCount').textContent = parsed.length;
   document.getElementById('cwImportStatus').textContent = `✓ ${parsed.length} word${parsed.length !== 1 ? 's' : ''} imported`;
-  activateCustomWordlistMode(true);
+  // Imported list is a Real Words source now — route through the shared pool.
+  rwInlinePool = null;
+  if (rwSource !== 'imported') setRwSource('imported'); else updateRwPoolInfo();
 }
 
 function clearCustomWordlist() {
@@ -9737,148 +9688,12 @@ function clearCustomWordlist() {
   document.getElementById('cwImportTextarea').value = '';
   document.getElementById('cwImportCount').textContent = '';
   document.getElementById('cwImportStatus').textContent = '';
-  activateCustomWordlistMode(false);
+  if (rwSource === 'imported') updateRwPoolInfo();
 }
 
-function activateCustomWordlistMode(on) {
-  cwModeActive = on;
-  if (on) enforceMutex({ source: 'customwordlist' });
-  updateModeVisibility();
-  if (on) {
-    onCwTranslitChange();
-    onCwTranslChange();
-  }
-}
-
-function setCwDrill(drill) {
-  cwDrillType = drill;
-  document.querySelectorAll('[data-cw-drill]').forEach(b => b.classList.toggle('active', b.dataset.cwDrill === drill));
-  // Mix in blends not meaningful for vocab or bingo — also clear the checkbox
-  // so the option doesn't stay invisibly active when its row hides.
-  const mixRow = document.getElementById('cwMixedRow');
-  const mixHidden = ['vocab', 'bingo'].includes(drill);
-  if (mixRow) mixRow.style.display = mixHidden ? 'none' : '';
-  if (mixHidden) {
-    const mixCb = document.getElementById('cwMixed');
-    if (mixCb && mixCb.checked) { mixCb.checked = false; toggleCwBlendOpts(); }
-  }
-  onCwTranslitChange();
-  onCwTranslChange();
-  updateModeVisibility();
-}
-
-function onCwTranslitChange() {
-  const show = document.getElementById('cwShowTranslit') && document.getElementById('cwShowTranslit').checked;
-  const row = document.getElementById('cwTranslitPageRow');
-  if (row) row.style.display = (show && cwDrillType === 'reading') ? '' : 'none';
-}
-
-function onCwTranslChange() {
-  const show = document.getElementById('cwShowTranslation') && document.getElementById('cwShowTranslation').checked;
-  const row = document.getElementById('cwTranslPageRow');
-  if (row) row.style.display = (show && cwDrillType === 'reading') ? '' : 'none';
-}
-
-function setCwTranslitPage(val) {
-  cwTranslitPage = val;
-  document.querySelectorAll('[data-cw-translit]').forEach(b => b.classList.toggle('active', b.dataset.cwTranslit === val));
-}
-
-function setCwTranslPage(val) {
-  cwTranslPage = val;
-  document.querySelectorAll('[data-cw-transl]').forEach(b => b.classList.toggle('active', b.dataset.cwTransl === val));
-}
-
-let cwBlendLetters = new Set(LETTERS.filter(l => !l.sofit && !l.dageshTav && !l.savVariant).map(l => l.heb));
-let cwBlendVowels  = new Set(MAIN_VOWEL_KEYS);
-
-function initCwBlendGrids() {
-  // Vowel chips — grouped by color
-  const vg = document.getElementById('cwBlendVowelGrid');
-  if (!vg || vg.children.length) return;
-  const isDark = document.body.classList.contains('dark') || document.documentElement.classList.contains('dark-early');
-  VOWEL_GROUPS.forEach(group => {
-    const section = document.createElement('div');
-    section.className = 'vowel-group-section';
-    section.setAttribute('data-group', group.key);
-    const bg = isDark ? group.darkBg : group.bg;
-    const border = isDark ? group.darkBorder : group.border;
-    section.style.cssText = `background:${bg};border:1.5px solid ${border};border-radius:6px;padding:4px 6px;margin-bottom:3px;`;
-    const cwChipsWrap = document.createElement('div');
-    cwChipsWrap.className = 'vowel-group-chips';
-    const hdr = document.createElement('div');
-    hdr.style.cssText = `font-size:0.65rem;font-weight:700;letter-spacing:0.04em;margin-bottom:0;opacity:0.75;color:${border};display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;`;
-    const hdrSpan = document.createElement('span');
-    hdrSpan.innerHTML = `${group.sound} Sound – ${group.colorHtml}`;
-    const cwArrow = document.createElement('span');
-    cwArrow.textContent = '▾';
-    cwArrow.style.cssText = 'font-size:0.72rem;transition:transform 0.2s;';
-    hdr.appendChild(hdrSpan);
-    hdr.appendChild(cwArrow);
-    hdr.setAttribute('tabindex', '0');
-    hdr.setAttribute('role', 'button');
-    hdr.setAttribute('aria-expanded', 'true');
-    hdr.addEventListener('click', () => {
-      const collapsed = cwChipsWrap.style.display === 'none';
-      cwChipsWrap.style.display = collapsed ? '' : 'none';
-      cwArrow.style.transform = collapsed ? '' : 'rotate(-90deg)';
-      section.style.paddingBottom = collapsed ? '' : '2px';
-      hdr.setAttribute('aria-expanded', String(collapsed));
-    });
-    hdr.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hdr.click(); }
-    });
-    section.appendChild(hdr);
-    group.vowels.forEach(v => {
-      const chip = document.createElement('label');
-      chip.className = 'vowel-chip';
-      chip.setAttribute('data-key', v.key);
-      chip.innerHTML = `<input type="checkbox" ${cwBlendVowels.has(v.key) ? 'checked' : ''} style="accent-color:var(--gold);"><span style="display:flex;align-items:center;gap:5px;"><span lang="he" style="font-family:var(--heb-font);font-size:1.2rem;direction:rtl;min-width:22px;text-align:center;">${v.nikud}</span><span><strong style="font-size:0.72rem;">${v.label}</strong><br><span style="color:var(--muted);font-size:0.66rem;">${v.sub}</span></span></span>`;
-      chip.querySelector('input').addEventListener('change', e => { e.target.checked ? cwBlendVowels.add(v.key) : cwBlendVowels.delete(v.key); });
-      cwChipsWrap.appendChild(chip);
-    });
-    section.appendChild(cwChipsWrap);
-    vg.appendChild(section);
-  });
-  // Letter grid — base letters only (no sofits, no vav variants)
-  const lg = document.getElementById('cwBlendLetterGrid');
-  const baseLets = LETTERS.filter(l =>
-    !l.sofit && l.heb !== 'וֹ' && l.heb !== 'וּ' &&
-    (dageshTavEnabled ? !l.normalTav : !l.dageshTav && !l.savVariant)
-  );
-  baseLets.forEach(l => {
-    const tile = document.createElement('div');
-    tile.className = 'rw-letter-tile' + (cwBlendLetters.has(l.heb) ? ' selected' : '');
-    tile.innerHTML = `<span class="heb" lang="he">${l.heb}</span><span class="name">${l.name}</span>`;
-    tile.addEventListener('click', () => {
-      if (cwBlendLetters.has(l.heb)) { cwBlendLetters.delete(l.heb); tile.classList.remove('selected'); }
-      else { cwBlendLetters.add(l.heb); tile.classList.add('selected'); }
-    });
-    bindTileA11y(tile);
-    lg.appendChild(tile);
-  });
-}
-
-function setCwBlendVowels(on) {
-  cwBlendVowels = on ? new Set(VOWELS.map(v => v.key)) : new Set();
-  document.querySelectorAll('#cwBlendVowelGrid input').forEach(cb => cb.checked = on);
-}
-
-function setCwBlendLetters(on) {
-  const baseLets = LETTERS.filter(l =>
-    !l.sofit && l.heb !== 'וֹ' && l.heb !== 'וּ' &&
-    (dageshTavEnabled ? !l.normalTav : !l.dageshTav && !l.savVariant)
-  );
-  cwBlendLetters = on ? new Set(baseLets.map(l => l.heb)) : new Set();
-  document.querySelectorAll('#cwBlendLetterGrid .rw-letter-tile').forEach(t => t.classList.toggle('selected', on));
-}
-
-function toggleCwBlendOpts() {
-  const on = document.getElementById('cwMixed').checked;
-  const opts = document.getElementById('cwBlendOpts');
-  if (opts) opts.style.display = on ? 'flex' : 'none';
-  if (on) initCwBlendGrids();
-}
+// (The separate "custom wordlist" mode was retired — the imported list is now a Real
+//  Words source. Its drill/blend UI + generator were removed; parseCwText / import /
+//  clear survive above to feed customWordlistData into the shared getRwPool() path.)
 
 function stripNikud(str, keepDagesh = false) {
   if (keepDagesh) {
@@ -9905,153 +9720,14 @@ function stripNikud(str, keepDagesh = false) {
   return str.replace(/[\u05B0-\u05C7]/g, '');
 }
 
-function isRealWord(hebrewDisplay) {
-  const bare = stripNikud(hebrewDisplay);
-  // Check main word list
-  if (REAL_WORDS.some(w => w.bare === bare || w.heb === hebrewDisplay)) return true;
-  // Check imported custom list
-  if (customWordlistData.some(w => stripNikud(w.heb) === bare || w.heb === hebrewDisplay)) return true;
-  return false;
-}
-
-function ensureCvcBlends(needed) {
-  const VAV_VARIANTS = new Set(['וֹ','וּ']);
-  const HAS_SOFIT = new Set(LETTERS.filter(l => l.sofit).map(l => l.heb));
-  const letterPool = cwBlendLetters.size ? cwBlendLetters : new Set(LETTERS.filter(l => !l.sofit).map(l => l.heb));
-  const vowelKeys  = cwBlendVowels.size  ? [...cwBlendVowels]  : [...MAIN_VOWEL_KEYS];
-  const firstPool  = [...letterPool].filter(h => !SOFIT_CHARS.has(h) && !VAV_VARIANTS.has(h));
-  const secondPool = [...letterPool].filter(h => !HAS_SOFIT.has(h) && !VAV_VARIANTS.has(h) && h !== 'ו');
-  if (!firstPool.length || !secondPool.length || !vowelKeys.length) return;
-  blends = [];
-  const seen = new Set();
-  let safety = needed * 120;
-  while (blends.length < needed && safety-- > 0) {
-    let vowel = vowelKeys[Math.floor(Math.random() * vowelKeys.length)];
-    const first  = firstPool[Math.floor(Math.random() * firstPool.length)];
-    const second = secondPool[Math.floor(Math.random() * secondPool.length)];
-    if (first === 'י' && second === 'י') continue;
-    if (first === 'ו' && vowel === 'sh') { const alt = vowelKeys.filter(v => v !== 'sh'); if (!alt.length) continue; vowel = alt[Math.floor(Math.random() * alt.length)]; }
-    if ((first === 'שׂ' || first === 'ש') && vowel === 'o') { const alt = vowelKeys.filter(v => v !== 'o'); if (!alt.length) continue; vowel = alt[Math.floor(Math.random() * alt.length)]; }
-    if (isImpossibleCombo(first, second, null, vowel)) continue;
-    const firstObj  = getLetter(first);
-    const secondObj = getLetter(second);
-    const hebrewDisplay = withNikud(firstObj, vowel, true) + (SOFIT_CHARS.has(second) ? second : secondObj.base);
-    // Skip if this is actually a real word or already generated
-    if (isRealWord(hebrewDisplay)) continue;
-    if (seen.has(hebrewDisplay)) continue;
-    seen.add(hebrewDisplay);
-    blends.push({
-      hebrewDisplay,
-      combined: getSound(firstObj, vowel) + secondObj.sounds['sh'].replace("'", ''),
-    });
-  }
-}
-
-function generateCustomWordlist() {
-  if (!customWordlistData.length) { alert('No wordlist imported. Open Advanced → Import Custom Wordlist and click Import.'); return; }
-
-  const drill = cwDrillType;
-  const showTranslit    = document.getElementById('cwShowTranslit').checked;
-  const showTranslation = document.getElementById('cwShowTranslation').checked;
-  const showPos         = document.getElementById('cwShowPos').checked;
-  const mixed           = document.getElementById('cwMixed').checked;
-  const starRealOn      = mixed && document.getElementById('cwStarReal').checked;
-  const cwCountVal      = document.getElementById('cwCount').value;
-  const count           = cwCountVal === 'all' ? customWordlistData.length : Math.min(parseInt(cwCountVal) || 20, customWordlistData.length);
-
-  const translitOnKey   = showTranslit    && cwTranslitPage === 'key' && drill === 'reading';
-  const showTranslitInline = showTranslit && !translitOnKey;
-  const translOnKey     = showTranslation && cwTranslPage   === 'key' && drill === 'reading';
-  const showTranslInline   = showTranslation && !translOnKey;
-
-  const pool = rwShuffle([...customWordlistData]).slice(0, count);
-
-  if (document.getElementById('gematriaToggle').checked) {
-    const ws = document.getElementById('worksheet');
-    ws.innerHTML = '';
-    renderGematriaSheet(ws, pool.map(w => ({ hebrewDisplay: w.heb })));
-    enableButtons();
-    return;
-  }
-
-  if (drill === 'bingo') { generateRealWordsBingo(pool); return; }
-  if (drill === 'identify') { generateIdentifyDrill(pool, count, showTranslit, showTranslation, showTranslit, showTranslation); return; }
-
-  let items = pool.map(w => ({ ...w, isReal: true }));
-  if (mixed) {
-    const blendCountVal = document.getElementById('cwBlendCount') ? document.getElementById('cwBlendCount').value : 'match';
-    const blendCount = blendCountVal === 'match' ? count : parseInt(blendCountVal) || count;
-    ensureCvcBlends(blendCount * 3); // generate more than needed so filter has room
-    const blendItems = rwShuffle(blends).slice(0, blendCount).map(b => ({ heb: b.hebrewDisplay, word: b.hebrewDisplay, translit: b.translitDisplay ?? b.combined, translation: '', pos: 'blend', era: 'Both', isReal: false }));
-    items = rwShuffle([...items, ...blendItems]);
-  }
-  const starReal = starRealOn;
-
-  const ws = document.getElementById('worksheet');
-  ws.innerHTML = '';
-  const sheet = document.createElement('div');
-  sheet.className = 'sheet';
-  const header = document.createElement('div');
-  header.className = 'ws-header';
-  const drillLabels = { reading: 'Read each Hebrew word aloud.', vocab: 'Tap each card to reveal the meaning.', reverse: 'Write the Hebrew for each English word.' };
-  header.innerHTML = `<div><div class="ws-title">Hebrew Word Practice</div><div class="ws-subtitle">${drillLabels[drill]}${starReal ? ' <em>(★ = real word)</em>' : ''}</div></div>${wsMetaHTML()}`;
-  sheet.appendChild(header);
-
-  const cols = items.length <= 20 ? 4 : items.length <= 40 ? 5 : 6;
-  const grid = document.createElement('div');
-  grid.className = 'rw-grid';
-  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-
-  items.forEach((w, idx) => {
-    if (drill === 'vocab') {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'rw-flip'; wrapper.style.minHeight = '90px';
-      wrapper.innerHTML = `<div class="rw-flip-inner"><div class="rw-flip-front"><span class="rw-num">${idx+1}</span>${showPos && w.pos ? `<span class="rw-pos-tag">${w.pos}</span>` : ''}<span class="rw-heb" lang="he">${w.heb}</span>${showTranslitInline && w.translit ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}<span class="rw-translit" style="font-size:0.65rem;opacity:0.6;">tap to flip</span></div><div class="rw-flip-back"><span class="rw-num">${idx+1}</span><span class="rw-heb" lang="he" style="font-size:1.3rem;">${w.heb}</span>${w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}</div></div>`;
-      wrapper.querySelector('.rw-flip-inner').addEventListener('click', () => wrapper.classList.toggle('flipped'));
-      grid.appendChild(wrapper); return;
-    }
-    if (drill === 'reverse') {
-      const cell = document.createElement('div'); cell.className = 'rw-cell';
-      cell.innerHTML = `<span class="rw-num">${idx+1}</span>${showPos && w.pos ? `<span class="rw-pos-tag">${w.pos}</span>` : ''}<span class="rw-heb" lang="he" style="opacity:0;">${w.heb}</span>${w.translation ? `<span class="rw-translation">${w.translation}</span>` : '<span class="rw-translation">—</span>'}`;
-      grid.appendChild(cell); return;
-    }
-    // Reading
-    const cell = document.createElement('div'); cell.className = 'rw-cell';
-    if (starReal && !w.isReal) cell.classList.add('rw-blend');
-    cell.innerHTML = `<span class="rw-num">${idx+1}</span>${showPos && w.pos ? `<span class="rw-pos-tag">${w.pos}</span>` : ''}<span class="rw-heb" lang="he">${starReal && w.isReal ? '★ ' : ''}${w.heb}</span>${showTranslitInline && w.translit ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}${showTranslInline && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
-    grid.appendChild(cell);
-  });
-
-  sheet.appendChild(grid);
-  ws.appendChild(sheet);
-
-  // Answer key sheet (transliteration and/or translation on separate page)
-  if ((translitOnKey || translOnKey) && items.some(w => w.isReal)) {
-    const keySheet = document.createElement('div'); keySheet.className = 'sheet'; keySheet.style.marginTop = '32px';
-    const keyHdr = document.createElement('div'); keyHdr.className = 'ws-header';
-    keyHdr.innerHTML = `<div><div class="ws-title" style="color:var(--gold)">Answer Key — Teacher Copy</div></div>`;
-    keySheet.appendChild(keyHdr);
-    const keyGrid = document.createElement('div'); keyGrid.className = 'rw-grid';
-    keyGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-    items.forEach((w, idx) => {
-      if (!w.isReal) return;
-      const cell = document.createElement('div'); cell.className = 'rw-cell';
-      cell.innerHTML = `<span class="rw-num">${idx+1}</span><span class="rw-heb" lang="he">${w.heb}</span>${translitOnKey && w.translit ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}${translOnKey && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
-      keyGrid.appendChild(cell);
-    });
-    keySheet.appendChild(keyGrid);
-    ws.appendChild(keySheet);
-  }
-
-  const rb = document.getElementById('regenBtn');
-  if (rb) { rb.disabled = false; rb.style.opacity = '1'; rb.style.cursor = 'pointer'; }
-}
-
 function toggleRealWordsUI() {
   const on = document.getElementById('realWordsToggle').checked;
   if (on) enforceMutex({ source: 'realwords' });
   updateModeVisibility();
-  if (on) ensureRealWords().then(updateRwPoolInfo);   // lazy-load corpus; refresh pool count when ready
+  if (on) {
+    // Sync the Word Source sub-UI, then load the corpus only if the 'All Words' source needs it.
+    setRwSource(rwSource);
+  }
 }
 
 function toggleRwStarRow() {
@@ -10375,7 +10051,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // sub-options follow immediately after Drill Options when the bingo drill
   // is active. Done in JS so the authoring layout stays readable.
   const realWordsOpts = document.getElementById('realWordsOptions');
-  const drillTypeSec  = realWordsOpts?.querySelector('.rw-section'); // first one
+  const drillTypeSec  = document.getElementById('rwSectionDrillType'); // Word Source now precedes it
   const drillOptsSec  = document.getElementById('rwDisplayHeader')?.closest('.rw-section');
   const bingoSec      = document.getElementById('rwBingoOptions');
   if (realWordsOpts && drillTypeSec && drillOptsSec && drillOptsSec !== drillTypeSec) {
@@ -10476,6 +10152,12 @@ function rwSelectNoSofit() {
 }
 
 function getRwPool() {
+  // Non-corpus sources bypass the length/era/pos/letter filters (curated lists print whole).
+  // An inline pool from a loaded ?s= share link takes precedence over the local store.
+  if (rwInlinePool && rwInlinePool.length) return rwInlinePool.map(rwListToPoolEntry);
+  if (rwSource === 'lists')    return rwSelectedListUnion().map(rwListToPoolEntry);
+  if (rwSource === 'imported') return customWordlistData.map(rwListToPoolEntry);
+
   const len1 = document.getElementById('rwLen1').checked;
   const len2 = document.getElementById('rwLen2').checked;
   const len3 = document.getElementById('rwLen3').checked;
@@ -10519,6 +10201,69 @@ function updateRwPoolInfo() {
   const pool = getRwPool();
   const el = document.getElementById('rwPoolInfo');
   if (el) el.textContent = `${pool.length} matching words`;
+  const le = document.getElementById('rwListPoolInfo');
+  if (le) {
+    const n = pool.length, s = n !== 1 ? 's' : '';
+    if (rwSource === 'lists')         le.textContent = n ? `${n} word${s} selected` : 'No lists selected — pick one or more above.';
+    else if (rwSource === 'imported') le.textContent = n ? `${n} word${s} imported` : 'No words imported yet — paste and Import above.';
+  }
+}
+
+// Sync the Word Source sub-UI (buttons, panels, picker, count) from the current rwSource.
+// Does NOT clear rwInlinePool, so it's safe to call on ?s= restore.
+function _syncRwSourceUI() {
+  document.querySelectorAll('[data-rwsrc]').forEach(b => b.classList.toggle('active', b.dataset.rwsrc === rwSource));
+  const pw = document.getElementById('rwListPickerWrap'); if (pw) pw.style.display = (rwSource === 'lists') ? '' : 'none';
+  const iw = document.getElementById('rwImportWrap');     if (iw) iw.style.display = (rwSource === 'imported') ? '' : 'none';
+  const pi = document.getElementById('rwListPoolInfo');   if (pi) pi.style.display = (rwSource === 'all') ? 'none' : '';
+  if (rwSource === 'lists') renderRwListPicker();
+  updateRwPoolInfo();
+}
+
+// Switch the Real Words word source (All words | My Word Lists | Imported list).
+function setRwSource(src) {
+  rwSource = (src === 'lists' || src === 'imported') ? src : 'all';
+  rwInlinePool = null;   // a manual source change discards a loaded ?s= share pool
+  _syncRwSourceUI();
+  updateModeVisibility();   // hides the corpus-only filter sections for curated sources
+  // The corpus is only needed for the 'all' source (getRwPool + drawBlends don't read REAL_WORDS otherwise).
+  if (rwSource === 'all' && document.getElementById('realWordsToggle')?.checked) ensureRealWords().then(updateRwPoolInfo);
+}
+
+// Build the My Word Lists checkbox picker from the suite-wide store (names via textContent — XSS-safe).
+function renderRwListPicker() {
+  const picker = document.getElementById('rwListPicker');
+  const empty = document.getElementById('rwListEmptyState');
+  if (!picker) return;
+  const lists = wlListsArray();
+  // Prune selections whose lists no longer exist.
+  const liveIds = new Set(lists.map(l => l.id));
+  [...selectedWordListIds].forEach(id => { if (!liveIds.has(id)) selectedWordListIds.delete(id); });
+  picker.innerHTML = '';
+  if (empty) empty.style.display = lists.length ? 'none' : '';
+  if (lists.length === 0) { picker.style.display = 'none'; return; }
+  picker.style.display = 'flex';
+  lists.forEach(l => {
+    const row = document.createElement('label');
+    row.style.cssText = 'display:flex;align-items:center;gap:7px;padding:5px 8px;cursor:pointer;border-bottom:1px solid var(--border);';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = selectedWordListIds.has(l.id);
+    cb.style.cssText = 'accent-color:var(--gold);width:14px;height:14px;flex-shrink:0;';
+    cb.addEventListener('change', () => {
+      if (cb.checked) selectedWordListIds.add(l.id); else selectedWordListIds.delete(l.id);
+      rwInlinePool = null;   // manual selection discards a loaded share pool
+      updateRwPoolInfo();
+    });
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = l.name;       // untrusted → textContent (XSS-safe)
+    nameSpan.style.cssText = 'flex:1;color:var(--text);font-size:0.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+    const cnt = document.createElement('span');
+    cnt.textContent = l.words.length;
+    cnt.style.cssText = 'color:var(--muted);font-size:0.72rem;flex-shrink:0;';
+    row.appendChild(cb); row.appendChild(nameSpan); row.appendChild(cnt);
+    picker.appendChild(row);
+  });
 }
 
 function rwShuffle(arr) {
@@ -10532,7 +10277,9 @@ function rwShuffle(arr) {
 
 function generateRealWords(reuse) {
   reuse = (reuse === true);                                 // strictly boolean (defend against event args)
-  if (!REAL_WORDS.length) {                                 // corpus not loaded yet — fetch, then re-render
+  // The corpus is only needed for the 'All Words' source — curated lists / imported words
+  // (and drawBlends) never read REAL_WORDS, so those sources skip the fetch entirely.
+  if (rwSource === 'all' && !REAL_WORDS.length) {           // corpus not loaded yet — fetch, then re-render
     showPreviewNotice('Loading word list…', { kind: 'wait' });
     ensureRealWords().then(() => {
       if (!REAL_WORDS.length) { showPreviewNotice('Could not load the word list. Check your connection and try again.', { kind: 'warn', dismissible: true }); return; }
@@ -12277,6 +12024,13 @@ function appendQrToFooter(footerEl, payload) {
 }
 
 // Build the shareable URL for the current settings (only the diff vs defaults).
+const RW_WORDS_SHARE_CAP = 300;   // max curated words embedded inline in a ?s= link (keeps it usable)
+function _setShareNotice(msg) {
+  const el = document.getElementById('shareNotice');
+  if (!el) return;
+  el.textContent = msg || '';
+  el.style.display = msg ? '' : 'none';
+}
 function serializeSettings() {
   const base = location.origin + location.pathname;
   let cur;
@@ -12289,6 +12043,18 @@ function serializeSettings() {
   Object.keys(cur).forEach(k => {
     if (JSON.stringify(cur[k]) !== JSON.stringify(baseline[k])) diff[k] = cur[k];
   });
+  // A 'lists'/'imported' link is meaningless on a device without the store, so embed the
+  // resolved words inline (compact {w,t,e}), capped, with a truncation notice. On restore
+  // the embedded pool takes precedence over the local store (see applySettings).
+  if (rwSource === 'lists' || rwSource === 'imported') {
+    const pool = getRwPool();
+    diff.rwSource = rwSource;   // ensure present even if it happens to equal the baseline
+    diff.rwInlineWords = pool.slice(0, RW_WORDS_SHARE_CAP).map(w => ({ w: w.word || w.heb || '', t: w.translit || '', e: w.translation || '' }));
+    _setShareNotice(pool.length > RW_WORDS_SHARE_CAP
+      ? `Only the first ${RW_WORDS_SHARE_CAP} of ${pool.length} words were embedded in this link.` : '');
+  } else {
+    _setShareNotice('');
+  }
   if (!Object.keys(diff).length) return base;             // unchanged → clean link
   return base + '?s=' + shareB64Encode(JSON.stringify(diff));
 }
