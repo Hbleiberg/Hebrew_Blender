@@ -3367,9 +3367,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div class="panel-title"><span style="display:inline-flex;align-items:center;">Saved Presets <span class="tooltip-wrap" style="font-size:0.65rem;font-weight:400;">?<span class="tooltip-box">Save your current letter, vowel, and layout settings as a named preset. Load it later to instantly restore everything — great for switching between class levels or drill types.</span></span></span></div>
       <div class="panel-body">
         <div class="preset-row">
-          <input type="text" id="presetName" placeholder="Preset name...">
-          <button class="btn-xs" onclick="savePreset()">💾 Save</button>
+          <input type="text" id="presetName" placeholder="Preset name..." oninput="onPresetNameInput()">
+          <button class="btn-xs" id="savePresetBtn" onclick="savePreset()" aria-disabled="true">💾 Save</button>
         </div>
+        <div id="presetNameNote" role="status" aria-live="polite" style="display:none;font-size:0.7rem;color:var(--gold);margin-top:4px;"></div>
         <div class="preset-list" id="presetList"></div>
       </div>
     </div>
@@ -4812,9 +4813,23 @@ function applySettings(s) {
   updateModeVisibility();
 }
 
+// Inline preset-name validation (replaces a blocking alert()): show a note in the
+// panel + reflect the invalid state on the Save button via aria-disabled.
+function _setPresetNameNote(msg) {
+  const note = document.getElementById('presetNameNote');
+  const btn = document.getElementById('savePresetBtn');
+  if (note) { note.textContent = msg || ''; note.style.display = msg ? '' : 'none'; }
+  if (btn) btn.setAttribute('aria-disabled', msg ? 'true' : 'false');
+}
+function onPresetNameInput() {
+  const name = document.getElementById('presetName').value.trim();
+  if (name) _setPresetNameNote('');
+  else document.getElementById('savePresetBtn')?.setAttribute('aria-disabled', 'true');
+}
 function savePreset() {
   const name = document.getElementById('presetName').value.trim();
-  if (!name) { alert('Please enter a preset name.'); return; }
+  if (!name) { _setPresetNameNote('Enter a preset name to save.'); document.getElementById('presetName').focus(); return; }
+  _setPresetNameNote('');
   const presets = ivritSafeParse(localStorage.getItem('hebrewBlender_presets') || '{}');
   presets[name] = getSettings();
   localStorage.setItem('hebrewBlender_presets', JSON.stringify(presets));

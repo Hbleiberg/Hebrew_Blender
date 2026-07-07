@@ -1441,8 +1441,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div class="adv-subbody">
         <div class="preset-row">
           <input type="text" class="preset-input" id="presetName" placeholder="Preset name…" maxlength="40" />
-          <button class="btn primary sm" id="savePresetBtn">Save</button>
+          <button class="btn primary sm" id="savePresetBtn" aria-disabled="true">Save</button>
         </div>
+        <p class="sub" id="presetNameNote" role="status" aria-live="polite" style="display:none;"></p>
         <ul class="preset-list" id="presetList"></ul>
         <p class="sub" id="presetEmpty">No presets yet — configure your settings, then save them here.</p>
       </div>
@@ -3621,10 +3622,19 @@ function readPresets() {
 function writePresets(obj) {
   try { localStorage.setItem(PRESET_KEY, JSON.stringify(obj)); } catch(e){}
 }
+// Inline preset-name validation (replaces the silent empty-name focus): show a note
+// in the panel + reflect the invalid state on the Save button via aria-disabled.
+function _setPresetNameNote(msg) {
+  const note = document.getElementById('presetNameNote');
+  const btn = document.getElementById('savePresetBtn');
+  if (note) { note.textContent = msg || ''; note.style.display = msg ? '' : 'none'; }
+  if (btn) btn.setAttribute('aria-disabled', msg ? 'true' : 'false');
+}
 function savePreset() {
   const nameInput = document.getElementById('presetName');
   const name = (nameInput.value || '').trim();
-  if (!name) { nameInput.focus(); return; }
+  if (!name) { _setPresetNameNote('Enter a preset name to save.'); nameInput.focus(); return; }
+  _setPresetNameNote('');
   const presets = readPresets();
   if (presets[name]) {
     if (!confirm(`Overwrite preset "${name}"?`)) return;
@@ -6102,6 +6112,11 @@ function wireSetupScreen() {
   // Presets
   document.getElementById('savePresetBtn').addEventListener('click', savePreset);
   document.getElementById('presetName').addEventListener('keydown', e => { if (e.key === 'Enter') savePreset(); });
+  document.getElementById('presetName').addEventListener('input', () => {
+    const has = document.getElementById('presetName').value.trim();
+    if (has) _setPresetNameNote('');
+    else document.getElementById('savePresetBtn')?.setAttribute('aria-disabled', 'true');
+  });
 
   // Teacher share code
   document.getElementById('generateShareBtn').addEventListener('click', generateShareCode);

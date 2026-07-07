@@ -620,9 +620,12 @@ anywhere — first-visit pulses, tour transitions, timer/omer pulsing, fades —
 Validation should surface as **inline notes in the owning panel** plus a short summary near the primary
 action; a primary action that can't run gets `aria-disabled` + a stated reason rather than a dead click or
 a modal `alert()`. (`confirm()` for genuinely destructive actions — erase, reset-both-schemes — stays.)
-- **Implemented on:** **not yet — this is a target, not current reality.** Blocking `alert()` is still the
-  norm across the suite (≈15–21 calls each in the generator, flash cards, index, and dashboard; a handful
-  in the others). Migrate call sites toward inline validation opportunistically as you touch each panel.
+- **Implemented on:** **preset-save flows only, as a first slice (2026-07-07).** The generator and flash
+  cards preset panels now validate empty names inline (`#presetNameNote` + `aria-live="polite"`, and
+  `aria-disabled` on `#savePresetBtn`) via a shared `_setPresetNameNote(msg)` helper per file — replacing
+  the generator's blocking `alert()` and flash cards' silent input-focus. Everywhere else, blocking
+  `alert()` is still the norm (≈15–21 calls each in the generator, flash cards, index, and dashboard).
+  Migrate the remaining call sites toward inline validation opportunistically as you touch each panel.
 - **Rule:** do not add **new** `alert()`-driven validation; wire new validation inline. Leave existing
   `confirm()` destructive-action guards in place.
 
