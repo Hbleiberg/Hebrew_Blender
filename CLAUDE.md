@@ -637,6 +637,19 @@ touch-primary tools get gesture equivalents; every new interactive element must 
 - **Rule:** any new shortcut is registered in the cheat sheet **and** the triggering control's `title`, and
   shown as a `<kbd>` hint; any new interactive element is reachable and operable by keyboard.
 
+### 8. Hebrew text carries `lang="he"` (at rendering chokepoints)
+Hebrew content must be marked `lang="he"` so screen readers switch to a Hebrew voice instead of
+mispronouncing it with an English one. Mark at the **rendering chokepoint / nearest stable ancestor**,
+not per-letter: wrap the shared colorizer's return (`colorizeHebrew` in the dictionary and flash cards,
+`hebDisplay` in the dashboard) in a single `<span lang="he">…</span>`, and add `lang="he"` to the
+builder template strings for glyph tiles (letter/vowel selectors, worksheet `.heb` cells). Put the
+attribute in the **template/builder string** so it survives re-render. Never place `lang="he"` output
+inside an HTML **attribute** value (the wrapper's quotes would break it), and don't mark a container
+whose text is majority-English (e.g. mixed `<option>` labels). Verify: `document.querySelectorAll('[lang="he"]').length > 0` after render.
+- **Implemented on:** `torah_trainer.html` (verse containers), `hebrew_dictionary.html`,
+  `flash_cards.html`, `hebrew_blend_generator.html`, `classroom_dashboard.html` (2026-07-07).
+- **Rule:** any new Hebrew-rendering surface marks its output `lang="he"` at the chokepoint.
+
 ---
 
 ## Hebrew Font Maker (`Hebrew_Font_Maker.html`)

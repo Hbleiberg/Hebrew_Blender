@@ -2683,9 +2683,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   }
 
   function hebDisplay(s) {
-    if (!settings.showNikkud) return stripNikkud(s);
-    if (settings.colorCodeNikkud) return colorizeHebrew(s, settings.colorCodingMode);
-    return s;
+    let out;
+    if (!settings.showNikkud) out = stripNikkud(s);
+    else if (settings.colorCodeNikkud) out = colorizeHebrew(s, settings.colorCodingMode);
+    else out = s;
+    return '<span lang="he">' + out + '</span>';
   }
 
   function maybeStripNikkud(s) { return settings.showNikkud ? s : stripNikkud(s); }

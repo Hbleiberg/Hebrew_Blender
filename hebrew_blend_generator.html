@@ -4085,7 +4085,7 @@ function initVowels() {
         <input type="checkbox" ${selectedVowels.has(v.key) ? 'checked' : ''}
           onchange="toggleVowel('${v.key}', this.checked)">
         <span style="display:flex;align-items:center;gap:6px;">
-          <span style="font-family:var(--heb-font);font-size:1.4rem;direction:rtl;min-width:24px;text-align:center;">${v.nikud}</span>
+          <span lang="he" style="font-family:var(--heb-font);font-size:1.4rem;direction:rtl;min-width:24px;text-align:center;">${v.nikud}</span>
           <span><strong>${v.label}</strong><br><span style="color:var(--muted);font-size:0.72rem">${v.sub}</span></span>
         </span>
       `;
@@ -4129,7 +4129,7 @@ function initLetters() {
       const div = document.createElement('div');
       div.className = 'letter-tile' + (selectedLetters.has('ו') ? ' selected' : '');
       div.dataset.heb = 'ו';
-      div.innerHTML = `<span class="heb">ו</span><span class="name">Vav</span>`;
+      div.innerHTML = `<span class="heb" lang="he">ו</span><span class="name">Vav</span>`;
       div.onclick = () => toggleLetter('ו', div);
       bindTileA11y(div);
       grid.appendChild(div);
@@ -4140,7 +4140,7 @@ function initLetters() {
     const div = document.createElement('div');
     div.className = 'letter-tile' + (selectedLetters.has(l.heb) ? ' selected' : '');
     div.dataset.heb = l.heb;
-    div.innerHTML = `<span class="heb">${l.heb}</span><span class="name">${l.name}</span>`;
+    div.innerHTML = `<span class="heb" lang="he">${l.heb}</span><span class="name">${l.name}</span>`;
     div.onclick = () => toggleLetter(l.heb, div);
     bindTileA11y(div);
     grid.appendChild(div);
@@ -4150,7 +4150,7 @@ function initLetters() {
       const sf = document.createElement('div');
       sf.className = 'letter-tile' + (selectedLetters.has(l.sofit) ? ' selected' : '');
       sf.dataset.heb = l.sofit;
-      sf.innerHTML = `<span class="heb">${l.sofit}</span><span class="name">${l.name} sofit</span>`;
+      sf.innerHTML = `<span class="heb" lang="he">${l.sofit}</span><span class="name">${l.name} sofit</span>`;
       sf.onclick = () => toggleLetter(l.sofit, sf);
       bindTileA11y(sf);
       grid.appendChild(sf);
@@ -4279,7 +4279,7 @@ function setDageshTav(enabled) {
     baseLets.forEach(l => {
       const tile = document.createElement('div');
       tile.className = 'rw-letter-tile' + (cwBlendLetters.has(l.heb) ? ' selected' : '');
-      tile.innerHTML = `<span class="heb">${l.heb}</span><span class="name">${l.name}</span>`;
+      tile.innerHTML = `<span class="heb" lang="he">${l.heb}</span><span class="name">${l.name}</span>`;
       tile.addEventListener('click', () => {
         if (cwBlendLetters.has(l.heb)) { cwBlendLetters.delete(l.heb); tile.classList.remove('selected'); }
         else { cwBlendLetters.add(l.heb); tile.classList.add('selected'); }
@@ -7461,7 +7461,7 @@ function renderNumberPracticeBingo(ws) {
               (showPair ? `<span style="font-family:var(--heb-font);direction:rtl;font-size:0.75rem;line-height:1.2;color:#1a2744;margin-top:2px;text-align:center;">${cell.heb}</span>` : '');
           } else {
             cellEl.innerHTML =
-              `<span class="heb" style="font-size:0.95rem;line-height:1.3;text-align:center;">${cell.heb}</span>` +
+              `<span class="heb" lang="he" style="font-size:0.95rem;line-height:1.3;text-align:center;">${cell.heb}</span>` +
               (showPair ? `<span class="sound" style="direction:ltr;">${cell.n}</span>` : '');
           }
         }
@@ -7498,7 +7498,7 @@ function renderNumberPracticeBingo(ws) {
       item.innerHTML =
         `<span class="num">${i + 1}</span>` +
         `<span style="font-size:1.1rem;font-weight:700;color:#1a2744;direction:ltr;">${it.n}</span>` +
-        `<span class="heb">${it.heb}</span>` +
+        `<span class="heb" lang="he">${it.heb}</span>` +
         trHtml;
       grid.appendChild(item);
     });
@@ -7854,7 +7854,7 @@ function renderBingo(ws) {
           cellEl.innerHTML = '<span style="font-size:1rem;">✡︎</span><span>FREE</span>';
         } else {
           cellEl.className = cls;
-          cellEl.innerHTML = `<span class="heb">${cell.hebrewDisplay}</span>${showSounds ? `<span class="sound">${cell.translitDisplay ?? cell.combined}</span>` : ''}`;
+          cellEl.innerHTML = `<span class="heb" lang="he">${cell.hebrewDisplay}</span>${showSounds ? `<span class="sound">${cell.translitDisplay ?? cell.combined}</span>` : ''}`;
         }
         gridEl.appendChild(cellEl);
       });
@@ -7887,7 +7887,7 @@ function renderBingo(ws) {
       const item = document.createElement('div');
       item.className = 'caller-item';
       item.onclick = () => item.classList.toggle('called');
-      item.innerHTML = `<span class="num">${i + 1}</span><span class="heb">${b.hebrewDisplay}</span><span class="sound">${b.translitDisplay ?? b.combined}</span>`;
+      item.innerHTML = `<span class="num">${i + 1}</span><span class="heb" lang="he">${b.hebrewDisplay}</span><span class="sound">${b.translitDisplay ?? b.combined}</span>`;
       grid.appendChild(item);
     });
     sheet.appendChild(grid);
@@ -7937,7 +7937,7 @@ function initLockGrids() {
       const div = document.createElement('div');
       div.className = 'lock-letter-tile' + (lockLetters[i].has(l.heb) ? ' selected' : '');
       div.dataset.heb = l.heb;
-      div.innerHTML = `<span class="heb">${l.heb}</span><span class="name">${l.name}</span>`;
+      div.innerHTML = `<span class="heb" lang="he">${l.heb}</span><span class="name">${l.name}</span>`;
       div.onclick = () => toggleLockLetter(pos, l.heb, div);
       bindTileA11y(div);
       grid.appendChild(div);
@@ -8007,7 +8007,7 @@ function initLockVowelGrids() {
       const div = document.createElement('div');
       div.className = 'lock-vowel-tile' + (set.has(v.key) ? ' selected' : '');
       div.dataset.vkey = v.key;
-      div.innerHTML = `<span class="heb">${v.nikud}</span><span class="name">${v.label}</span>`;
+      div.innerHTML = `<span class="heb" lang="he">${v.nikud}</span><span class="name">${v.label}</span>`;
       div.onclick = () => toggleLockVowel(pos, v.key, div);
       grid.appendChild(div);
     });
@@ -9788,7 +9788,7 @@ function initCwBlendGrids() {
       const chip = document.createElement('label');
       chip.className = 'vowel-chip';
       chip.setAttribute('data-key', v.key);
-      chip.innerHTML = `<input type="checkbox" ${cwBlendVowels.has(v.key) ? 'checked' : ''} style="accent-color:var(--gold);"><span style="display:flex;align-items:center;gap:5px;"><span style="font-family:var(--heb-font);font-size:1.2rem;direction:rtl;min-width:22px;text-align:center;">${v.nikud}</span><span><strong style="font-size:0.72rem;">${v.label}</strong><br><span style="color:var(--muted);font-size:0.66rem;">${v.sub}</span></span></span>`;
+      chip.innerHTML = `<input type="checkbox" ${cwBlendVowels.has(v.key) ? 'checked' : ''} style="accent-color:var(--gold);"><span style="display:flex;align-items:center;gap:5px;"><span lang="he" style="font-family:var(--heb-font);font-size:1.2rem;direction:rtl;min-width:22px;text-align:center;">${v.nikud}</span><span><strong style="font-size:0.72rem;">${v.label}</strong><br><span style="color:var(--muted);font-size:0.66rem;">${v.sub}</span></span></span>`;
       chip.querySelector('input').addEventListener('change', e => { e.target.checked ? cwBlendVowels.add(v.key) : cwBlendVowels.delete(v.key); });
       cwChipsWrap.appendChild(chip);
     });
@@ -9804,7 +9804,7 @@ function initCwBlendGrids() {
   baseLets.forEach(l => {
     const tile = document.createElement('div');
     tile.className = 'rw-letter-tile' + (cwBlendLetters.has(l.heb) ? ' selected' : '');
-    tile.innerHTML = `<span class="heb">${l.heb}</span><span class="name">${l.name}</span>`;
+    tile.innerHTML = `<span class="heb" lang="he">${l.heb}</span><span class="name">${l.name}</span>`;
     tile.addEventListener('click', () => {
       if (cwBlendLetters.has(l.heb)) { cwBlendLetters.delete(l.heb); tile.classList.remove('selected'); }
       else { cwBlendLetters.add(l.heb); tile.classList.add('selected'); }
@@ -10407,7 +10407,7 @@ function initRwLetterGrid() {
       const div = document.createElement('div');
       div.className = 'rw-letter-tile';
       div.dataset.heb = t.heb;
-      div.innerHTML = `<span class="heb">${t.heb}</span><span class="name">${t.name}</span>`;
+      div.innerHTML = `<span class="heb" lang="he">${t.heb}</span><span class="name">${t.name}</span>`;
       div.onclick = () => toggleRwLetter(t.heb, div);
       bindTileA11y(div);
       grid.appendChild(div);
@@ -11819,7 +11819,7 @@ function generateRealWordsBingo(pool) {
           cellEl.innerHTML = '<span style="font-size:1rem;">✡︎</span><span>FREE</span>';
         } else {
           cellEl.className = cls;
-          cellEl.innerHTML = `<span class="heb" style="font-size:1.2rem;">${cell.heb}</span>${translitOnCard ? `<span class="sound">${cell.translit}</span>` : ''}${translOnCard && cell.translation ? `<span class="sound" style="font-size:0.6rem;">${cell.translation}</span>` : ''}`;
+          cellEl.innerHTML = `<span class="heb" lang="he" style="font-size:1.2rem;">${cell.heb}</span>${translitOnCard ? `<span class="sound">${cell.translit}</span>` : ''}${translOnCard && cell.translation ? `<span class="sound" style="font-size:0.6rem;">${cell.translation}</span>` : ''}`;
         }
         gridEl.appendChild(cellEl);
       });
@@ -11850,7 +11850,7 @@ function generateRealWordsBingo(pool) {
       const item = document.createElement('div');
       item.className = 'caller-item';
       item.onclick = () => item.classList.toggle('called');
-      item.innerHTML = `<span class="num">${i + 1}</span><span class="heb">${w.heb}</span>${translitOnCaller ? `<span class="sound">${w.translitDisplay ?? w.translit}</span>` : ''}${translOnCaller && w.translation ? `<span class="sound" style="font-size:0.6rem;font-style:italic;">${w.translation}</span>` : ''}`;
+      item.innerHTML = `<span class="num">${i + 1}</span><span class="heb" lang="he">${w.heb}</span>${translitOnCaller ? `<span class="sound">${w.translitDisplay ?? w.translit}</span>` : ''}${translOnCaller && w.translation ? `<span class="sound" style="font-size:0.6rem;font-style:italic;">${w.translation}</span>` : ''}`;
       grid.appendChild(item);
     });
     sheet.appendChild(grid);

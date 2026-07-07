@@ -2736,7 +2736,7 @@ function getNikudColor(key) {
 }
 
 function colorizeHebrew(text) {
-  if (!colorCodingEnabled) return text;
+  if (!colorCodingEnabled) return '<span lang="he">' + text + '</span>';
   const chars = [...text];
   const n = chars.length;
   const out = [];
@@ -2775,7 +2775,7 @@ function colorizeHebrew(text) {
     }
     i = j;
   }
-  return out.join('');
+  return '<span lang="he">' + out.join('') + '</span>';
 }
 
 function toggleDictAudio(on) {
