@@ -254,6 +254,14 @@ body {
 }
 
 /* ───── Header (matches classroom_dashboard.html:148-204) ───── */
+/* Skip link — visually hidden until keyboard-focused, then slides in at top-left. */
+.skip-link {
+  position:absolute; left:8px; top:-48px; z-index:200;
+  background:var(--navy); color:#fff; padding:8px 14px;
+  border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
+  text-decoration:none; transition:top 0.15s;
+}
+.skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
 header {
   background:var(--navy); color:#fff;
   padding:14px 28px;
@@ -921,10 +929,15 @@ body.fullscreen #fsExitBtn { display: flex; }
   .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
   .tour-spot { transition: none !important; }
   .tt-hint-toast { transition: none !important; }
+  /* Drawer slide, panel-collapse caret, skip link: snap instead of animating. */
+  .settings-modal { transition: none !important; }
+  .panel-title::after { transition: none !important; }
+  .skip-link { transition: none !important; }
 }
 </style>
 </head>
 <body>
+<a class="skip-link" href="#ttReading">Skip to the reading</a>
 <header>
   <div class="star">✡︎</div>
   <div class="htitle">
@@ -959,6 +972,7 @@ body.fullscreen #fsExitBtn { display: flex; }
   </div>
 </div>
 
+<main>
 <div class="tt-controls">
   <span class="tt-ctrl">
     <label for="parshaSelect">Parsha:</label>
@@ -1034,8 +1048,9 @@ body.fullscreen #fsExitBtn { display: flex; }
   <div class="tt-status" id="ttStatus" role="status" aria-live="polite"></div>
   <!-- In-page nav: aliyah jump chips + "you are here" readout (long readings). -->
   <div class="tt-jumpnav" id="ttJumpNav" role="navigation" aria-label="Jump to aliyah" hidden></div>
-  <div class="tt-reading" id="ttReading"></div>
+  <div class="tt-reading" id="ttReading" tabindex="-1"></div>
 </div>
+</main>
 
 <div class="tt-audio-bar" id="ttAudioBar" role="region" aria-label="Cantillation audio playback">
   <button class="tt-audio-collapse" id="ttAudioCollapseBtn" onclick="toggleAudioBarCollapse()" aria-label="Collapse audio bar" title="Collapse / expand audio bar">▾</button>
@@ -2047,7 +2062,7 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant
     const firstTwi = wordIdxRef.value;
     const hebHtml = tokenizeHebrew(v.hebrew, wordIdxRef);
     const hebCount = wordIdxRef.value - firstTwi;
-    html += `  <div class="tt-verse-row"><span class="tt-rowlabel">Hebrew</span><span class="tt-heb">${hebHtml}</span></div>`;
+    html += `  <div class="tt-verse-row"><span class="tt-rowlabel">Hebrew</span><span class="tt-heb" lang="he">${hebHtml}</span></div>`;
     if (withTranslit) {
       const tr = applyTranslit(v.hebrew);
       html += `  <div class="tt-verse-row"><span class="tt-rowlabel">Translit</span><span class="tt-translit">${tokenizeTranslit(tr, firstTwi, hebCount)}</span></div>`;
@@ -2104,7 +2119,7 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant,
     if (canChant) html += `<button class="tt-chant" onclick="chantVerse('${esc}')" type="button" aria-label="Chant verse ${numLabel} (PocketTorah audio)">🎵 Chant</button>`;
     if (canLoop) html += `<button class="tt-loop" onclick="loopVerse('${esc}')" type="button" aria-label="Loop verse ${numLabel} (repeat the chant)">🔁 Loop</button>`;
     html += `</span></span>`;
-    html += `<span class="tt-cell heb">${hebHtml}</span>`;
+    html += `<span class="tt-cell heb" lang="he">${hebHtml}</span>`;
     html += `</div>`;
   }
   html += `</div>`;
@@ -2137,7 +2152,7 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant, 
     const aNum = aStartByLabel[numLabel];
     // Inline aliyah marker keeps the running-text flow intact (no block break).
     if (aNum > 1) html += `<span class="tt-aliyah-inline" id="tt-aliyah-${aNum}" dir="rtl">✦ Aliyah ${aNum}</span> `;
-    html += `<span class="tt-bverse" data-vk="${escapeHTML(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}><sup class="tt-bnum">${escapeHTML(numLabel)}</sup><span class="tt-heb">${hebHtml}</span></span> `;
+    html += `<span class="tt-bverse" data-vk="${escapeHTML(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}><sup class="tt-bnum">${escapeHTML(numLabel)}</sup><span class="tt-heb" lang="he">${hebHtml}</span></span> `;
   }
   html += '</p>';
   // Transliteration block (uses the Hebrew word indices captured above)
@@ -2927,7 +2942,12 @@ let karaokeWordSpans = [];   // sparse array; karaokeWordSpans[twi] = array of s
 function paintKaraokeIdx(idx, on) {
   const els = karaokeWordSpans[idx];
   if (!els) return;
-  els.forEach(el => el.classList.toggle('active', !!on));
+  els.forEach(el => {
+    el.classList.toggle('active', !!on);
+    // Expose the chanting position non-visually (the highlight is CSS-only).
+    if (on) el.setAttribute('aria-current', 'true');
+    else el.removeAttribute('aria-current');
+  });
 }
 function firstKaraokeSpan(idx) {
   const els = karaokeWordSpans[idx];
@@ -3194,7 +3214,7 @@ function clearKaraokeHighlight() {
   // Clear every word that has .active — not just lastHighlightedIdx — so any
   // race where the binary search paints ahead of the auto-pause still wipes
   // cleanly. (Cheap: at most ~hundreds of nodes per aliyah.)
-  document.querySelectorAll('#ttReading .tt-word.active').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('#ttReading .tt-word.active').forEach(el => { el.classList.remove('active'); el.removeAttribute('aria-current'); });
   lastHighlightedIdx = -1;
 }
 function pauseKaraoke() {
