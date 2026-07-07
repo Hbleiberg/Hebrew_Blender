@@ -1826,10 +1826,12 @@ function escapeHTML(s) {
   return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+const HEX_COLOR_RE = /^#[0-9a-fA-F]{3,8}$/;
 function getNikudColor(key) {
-  if (settings.nikudColorOverrides && settings.nikudColorOverrides[key] !== undefined) {
-    return settings.nikudColorOverrides[key];
-  }
+  // Only trust a valid hex override (the color picker's output). A crafted value from an imported
+  // .ivrit / AllTools backup could otherwise break out of the style="color:…" attribute this feeds.
+  const ov = settings.nikudColorOverrides && settings.nikudColorOverrides[key];
+  if (typeof ov === 'string' && HEX_COLOR_RE.test(ov)) return ov;
   return activeNikudDefaults(document.body.classList.contains('dark'))[key] || '#888';
 }
 
@@ -1843,7 +1845,7 @@ function colorizeHebrew(text, mode) {
   const _dark = document.body.classList.contains('dark');
   const _defaults = activeNikudDefaults(_dark);
   const _overrides = settings.nikudColorOverrides || {};
-  const colorFor = key => (_overrides[key] !== undefined ? _overrides[key] : (_defaults[key] || '#888'));
+  const colorFor = key => { const ov = _overrides[key]; return (typeof ov === 'string' && HEX_COLOR_RE.test(ov)) ? ov : (_defaults[key] || '#888'); };
   const chars = [...text];
   const out = [];
   let i = 0;

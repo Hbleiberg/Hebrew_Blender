@@ -5389,7 +5389,11 @@ function refreshVowelGroupColors() {
 }
 
 function getNikudColor(key) {
-  if (nikudColorOverrides[key] !== undefined) return nikudColorOverrides[key];
+  // Only accept a valid hex color (what the <input type=color> picker produces). An imported
+  // .ivrit / AllTools backup could carry a crafted override string that would break out of the
+  // style="color:…" attribute this feeds — validate before trusting it (fall back to the default).
+  const ov = nikudColorOverrides[key];
+  if (typeof ov === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(ov)) return ov;
   return activeNikudDefaults(document.body.classList.contains('dark'))[key] || '#888';
 }
 
