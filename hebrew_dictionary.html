@@ -536,6 +536,7 @@ body.dark .tour-card{background:var(--cream);}
   .load-bar.indeterminate .load-bar-fill{animation:none !important;}
   .load-bar-fill{transition:none !important;}
   .shoresh-flash{animation:none !important;}
+  .vg-arrow,.panel-title::after,.adv-section-title::after{transition:none !important;}
   *{scroll-behavior:auto !important;}
 }
 .load-more-btn{background:var(--navy);color:var(--gold-light);border:none;border-radius:6px;padding:8px 28px;font-size:0.85rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;}
@@ -2635,10 +2636,13 @@ function renderShoreshPatterns(rootCons, fam) {
   wrap.style.display = '';
 }
 
+// Honor prefers-reduced-motion for JS-driven scrolls (an explicit behavior option overrides CSS scroll-behavior)
+function _scrollBehavior() { return (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) ? 'auto' : 'smooth'; }
+
 function scrollToShoreshWord(word) {
   const card = [...document.querySelectorAll('#shoreshResults .word-card')].find(el => el.dataset.shword === word);
   if (!card) return;
-  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  card.scrollIntoView({ behavior: _scrollBehavior(), block: 'center' });
   card.classList.remove('shoresh-flash');
   void card.offsetWidth;
   card.classList.add('shoresh-flash');
@@ -3970,7 +3974,7 @@ function resetChipGroup(key) {
         const panel = el.closest('.panel'); if (panel) panel.classList.remove('collapsed');
         const adv = el.closest('.adv-section'); if (adv) { adv.classList.remove('collapsed'); const ap = adv.closest('.panel'); if (ap) ap.classList.remove('collapsed'); }
         syncCollapseAria();
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.scrollIntoView({ behavior: _scrollBehavior(), block: 'center' });
       }
     }
   });
@@ -4199,7 +4203,7 @@ function dictActiveGroupCount() {
         filtersBtn.addEventListener('click', () => {
           const sb = document.getElementById('appSidebar');
           if (typeof expandAllMenus === 'function') expandAllMenus();
-          if (sb) sb.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          if (sb) sb.scrollIntoView({ behavior: _scrollBehavior(), block: 'start' });
         });
       }
       rowWrap = document.createElement('div'); rowWrap.className = 'mobile-bar-row';
