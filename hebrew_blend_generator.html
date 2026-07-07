@@ -3275,7 +3275,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             </div>
           </div>
         </div>
-        <div id="combosCount" style="margin-top:8px;font-size:0.72rem;color:var(--muted);text-align:center;"></div>
+        <div id="combosCount" aria-live="polite" style="margin-top:8px;font-size:0.72rem;color:var(--muted);text-align:center;"></div>
       </div>
     </div>
 
@@ -3493,7 +3493,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                   <button class="btn-xs" type="button" onclick="document.getElementById('ivritFileInput').click()">Browse…</button>
                   <input type="file" id="ivritFileInput" accept=".ivrit,application/json,text/plain" style="display:none;">
                 </div>
-                <div id="ivritStatus" style="font-size:0.7rem;color:var(--muted);margin-top:8px;min-height:1em;text-align:center;"></div>
+                <div id="ivritStatus" role="status" style="font-size:0.7rem;color:var(--muted);margin-top:8px;min-height:1em;text-align:center;"></div>
               </div>
 
               <div id="ivritManual" class="adv-body-sm" style="display:none;">

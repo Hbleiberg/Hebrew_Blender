@@ -238,7 +238,7 @@ The shared engine provides: `ivritDateStamp`, `ivritStatus`, `setIvritMode`, `iv
 
 ### Required UI markup (in the backup area)
 
-The shared `.ivrit-*` CSS block (with `var(..., fallback)` colors so it works on any page) + the toggle + `#ivritAuto` (Save button, `#ivritDrop`, `#ivritFileInput`, `#ivritStatus`) + `#ivritManual` (the legacy textarea, `display:none` by default). Copy an existing page's markup (e.g. the Generator's "Backup Presets" sub-panel).
+The shared `.ivrit-*` CSS block (with `var(..., fallback)` colors so it works on any page) + the toggle + `#ivritAuto` (Save button, `#ivritDrop`, `#ivritFileInput`, `#ivritStatus` — which carries `role="status"` so save/restore feedback is announced to screen readers) + `#ivritManual` (the legacy textarea, `display:none` by default). Copy an existing page's markup (e.g. the Generator's "Backup Presets" sub-panel).
 
 ### Rules for new tools / new options
 
