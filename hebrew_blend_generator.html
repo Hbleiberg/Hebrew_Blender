@@ -9991,19 +9991,19 @@ function generateCustomWordlist() {
     if (drill === 'vocab') {
       const wrapper = document.createElement('div');
       wrapper.className = 'rw-flip'; wrapper.style.minHeight = '90px';
-      wrapper.innerHTML = `<div class="rw-flip-inner"><div class="rw-flip-front"><span class="rw-num">${idx+1}</span>${showPos && w.pos ? `<span class="rw-pos-tag">${w.pos}</span>` : ''}<span class="rw-heb">${w.heb}</span>${showTranslitInline && w.translit ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}<span class="rw-translit" style="font-size:0.65rem;opacity:0.6;">tap to flip</span></div><div class="rw-flip-back"><span class="rw-num">${idx+1}</span><span class="rw-heb" style="font-size:1.3rem;">${w.heb}</span>${w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}</div></div>`;
+      wrapper.innerHTML = `<div class="rw-flip-inner"><div class="rw-flip-front"><span class="rw-num">${idx+1}</span>${showPos && w.pos ? `<span class="rw-pos-tag">${w.pos}</span>` : ''}<span class="rw-heb" lang="he">${w.heb}</span>${showTranslitInline && w.translit ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}<span class="rw-translit" style="font-size:0.65rem;opacity:0.6;">tap to flip</span></div><div class="rw-flip-back"><span class="rw-num">${idx+1}</span><span class="rw-heb" lang="he" style="font-size:1.3rem;">${w.heb}</span>${w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}</div></div>`;
       wrapper.querySelector('.rw-flip-inner').addEventListener('click', () => wrapper.classList.toggle('flipped'));
       grid.appendChild(wrapper); return;
     }
     if (drill === 'reverse') {
       const cell = document.createElement('div'); cell.className = 'rw-cell';
-      cell.innerHTML = `<span class="rw-num">${idx+1}</span>${showPos && w.pos ? `<span class="rw-pos-tag">${w.pos}</span>` : ''}<span class="rw-heb" style="opacity:0;">${w.heb}</span>${w.translation ? `<span class="rw-translation">${w.translation}</span>` : '<span class="rw-translation">—</span>'}`;
+      cell.innerHTML = `<span class="rw-num">${idx+1}</span>${showPos && w.pos ? `<span class="rw-pos-tag">${w.pos}</span>` : ''}<span class="rw-heb" lang="he" style="opacity:0;">${w.heb}</span>${w.translation ? `<span class="rw-translation">${w.translation}</span>` : '<span class="rw-translation">—</span>'}`;
       grid.appendChild(cell); return;
     }
     // Reading
     const cell = document.createElement('div'); cell.className = 'rw-cell';
     if (starReal && !w.isReal) cell.classList.add('rw-blend');
-    cell.innerHTML = `<span class="rw-num">${idx+1}</span>${showPos && w.pos ? `<span class="rw-pos-tag">${w.pos}</span>` : ''}<span class="rw-heb">${starReal && w.isReal ? '★ ' : ''}${w.heb}</span>${showTranslitInline && w.translit ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}${showTranslInline && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
+    cell.innerHTML = `<span class="rw-num">${idx+1}</span>${showPos && w.pos ? `<span class="rw-pos-tag">${w.pos}</span>` : ''}<span class="rw-heb" lang="he">${starReal && w.isReal ? '★ ' : ''}${w.heb}</span>${showTranslitInline && w.translit ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}${showTranslInline && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
     grid.appendChild(cell);
   });
 
@@ -10021,7 +10021,7 @@ function generateCustomWordlist() {
     items.forEach((w, idx) => {
       if (!w.isReal) return;
       const cell = document.createElement('div'); cell.className = 'rw-cell';
-      cell.innerHTML = `<span class="rw-num">${idx+1}</span><span class="rw-heb">${w.heb}</span>${translitOnKey && w.translit ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}${translOnKey && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
+      cell.innerHTML = `<span class="rw-num">${idx+1}</span><span class="rw-heb" lang="he">${w.heb}</span>${translitOnKey && w.translit ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}${translOnKey && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
       keyGrid.appendChild(cell);
     });
     keySheet.appendChild(keyGrid);
@@ -10674,14 +10674,14 @@ function generateRealWords(reuse) {
           <div class="rw-flip-front">
             <span class="rw-num">${idx + 1}</span>
             <span class="rw-pos-tag">${w.pos}</span>
-            <span class="rw-heb">${w.heb}</span>
+            <span class="rw-heb" lang="he">${w.heb}</span>
             ${vocabTrlOnFront && w.translit ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}
             ${vocabTnOnFront && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}
             <span class="rw-translit" style="font-size:0.65rem;opacity:0.6;">tap to flip</span>
           </div>
           <div class="rw-flip-back">
             <span class="rw-num">${idx + 1}</span>
-            <span class="rw-heb" style="font-size:1.3rem;">${w.heb}</span>
+            <span class="rw-heb" lang="he" style="font-size:1.3rem;">${w.heb}</span>
             ${vocabTrlOnBack && w.translit ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}
             ${vocabTnOnBack && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}
           </div>
@@ -10709,7 +10709,7 @@ function generateRealWords(reuse) {
       card.className = 'rw-card';
       card.innerHTML = `
         <span class="rw-num">${idx + 1}</span>
-        <span class="rw-heb">${w.heb}</span>
+        <span class="rw-heb" lang="he">${w.heb}</span>
         ${showTranslitInline && w.translit ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}
         ${showTranslInline && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}
         <div style="border-bottom:1.5px solid var(--border);width:90%;margin-top:8px;min-height:20px;"></div>`;
@@ -10722,7 +10722,7 @@ function generateRealWords(reuse) {
       card.innerHTML = `
         <span class="rw-num">${idx + 1}${starReal && w.isReal ? ' ★' : ''}</span>
         <span class="rw-pos-tag">${w.pos}</span>
-        <span class="rw-heb">${w.heb}</span>
+        <span class="rw-heb" lang="he">${w.heb}</span>
         ${showTranslitInline ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}
         ${showTranslInline && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
       grid.appendChild(card);
@@ -10778,7 +10778,7 @@ function generateRealWords(reuse) {
       card.innerHTML = `
         <span class="rw-num">${idx + 1}${starRealOn && w.isReal ? ' ★' : ''}</span>
         <span class="rw-pos-tag">${w.pos}</span>
-        <span class="rw-heb">${w.heb}</span>
+        <span class="rw-heb" lang="he">${w.heb}</span>
         ${translitOnKey ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}
         ${translOnKey && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}`;
       keyGrid.appendChild(card);
@@ -10978,6 +10978,7 @@ function renderMatchingSheets(ws, versionsItems, opts) {
       item.innerHTML = '<span class="match-dot"></span>';
       const heb = document.createElement('span');
       heb.className = 'match-heb';
+      heb.lang = 'he';
       heb.innerHTML = colorizeHebrew(it.heb, colorMode);   // plain text when color-coding is off
       item.appendChild(heb);
       const num = document.createElement('span');
@@ -11026,7 +11027,7 @@ function renderMatchingSheets(ws, versionsItems, opts) {
         const row = document.createElement('div');
         row.className = 'match-ak-row';
         const num = document.createElement('span'); num.className = 'match-num'; num.textContent = (i + 1) + '.';
-        const heb = document.createElement('span'); heb.className = 'match-ak-heb'; heb.innerHTML = colorizeHebrew(it.heb, colorMode);
+        const heb = document.createElement('span'); heb.className = 'match-ak-heb'; heb.lang = 'he'; heb.innerHTML = colorizeHebrew(it.heb, colorMode);
         const arrow = document.createElement('span'); arrow.textContent = '→'; arrow.style.color = 'var(--muted)';
         const let_ = document.createElement('span'); let_.className = 'match-ak-let'; let_.textContent = letter;
         const tgt = document.createElement('span'); tgt.style.color = 'var(--muted)'; tgt.textContent = it.targetText;
@@ -11603,7 +11604,7 @@ function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnO
     card.className = 'rw-card blend-cell';
     const stripped = stripNikud(w.heb, keepDagesh);
     let inner = `<span class="rw-num">${idx + 1}</span>`;
-    inner += `<div class="rw-heb">${stripped}</div>`;
+    inner += `<div class="rw-heb" lang="he">${stripped}</div>`;
     if (trOnSheet && w.translit) inner += `<div class="rw-translit">${w.translitDisplay ?? w.translit}</div>`;
     if (tnOnSheet && w.translation) inner += `<div class="rw-translation">${w.translation}</div>`;
     card.innerHTML = inner;
@@ -11641,7 +11642,7 @@ function renderRealWordsFillVowels(ws, words, trOnSheet, tnOnSheet, trOnKey, tnO
     const card = document.createElement('div');
     card.className = 'rw-card blend-cell';
     let inner = `<span class="rw-num">${idx + 1}</span>`;
-    inner += `<div class="rw-heb">${w.heb}</div>`;
+    inner += `<div class="rw-heb" lang="he">${w.heb}</div>`;
     if (trOnKey && w.translit) inner += `<div class="rw-translit">${w.translitDisplay ?? w.translit}</div>`;
     if (tnOnKey && w.translation) inner += `<div class="rw-translation">${w.translation}</div>`;
     card.innerHTML = inner;
@@ -11690,7 +11691,7 @@ function generateIdentifyDrill(pool, count, trOnSheet, tnOnSheet, trOnKey, tnOnK
       card.innerHTML = `
         <span class="rw-num">${idx + 1}${reveal && w.isReal ? ' ★' : ''}</span>
         <span class="rw-pos-tag">${reveal ? w.pos : ''}</span>
-        <span class="rw-heb">${w.heb}</span>
+        <span class="rw-heb" lang="he">${w.heb}</span>
         ${showTr ? `<span class="rw-translit">${w.translitDisplay ?? w.translit}</span>` : ''}
         ${showTn && w.isReal && w.translation ? `<span class="rw-translation">${w.translation}</span>` : ''}
         ${!reveal ? `<div style="margin-top:6px;width:20px;height:20px;border:1.5px solid var(--border);border-radius:50%;"></div>` : ''}`;
