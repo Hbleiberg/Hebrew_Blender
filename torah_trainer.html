@@ -3175,7 +3175,9 @@ function onAudioTimeUpdate() {
     if (lead) {
       const r = lead.getBoundingClientRect();
       if (r.top < 80 || r.bottom > window.innerHeight - 120) {
-        lead.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Honor reduced-motion: no smooth auto-scroll during chanting for motion-sensitive users (mirrors the jump-nav scroll).
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        lead.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
       }
     }
   }
@@ -3491,6 +3493,7 @@ function initColorPickers() {
     lbl.className = 'color-pick-label'; lbl.textContent = def.name;
     const inp = document.createElement('input');
     inp.type = 'color'; inp.className = 'color-pick-input';
+    inp.setAttribute('aria-label', 'Color for ' + def.name);   // the name is a sibling span only; label the input for AT
     inp.value = getNikudColor(def.key);
     inp.addEventListener('input', () => {
       if (!settings.nikudColorOverrides) settings.nikudColorOverrides = {};
