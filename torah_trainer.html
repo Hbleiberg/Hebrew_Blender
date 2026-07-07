@@ -3555,8 +3555,13 @@ function maybeEnsureTranslit() {
 /* ══════════════════════════════════════════════════════
    SETTINGS DRAWER + FORM SYNC
    ══════════════════════════════════════════════════════ */
-function expandAllMenus()   { document.querySelectorAll('#settingsModal .panel').forEach(p => p.classList.remove('collapsed')); }
-function collapseAllMenus() { document.querySelectorAll('#settingsModal .panel').forEach(p => p.classList.add('collapsed')); }
+function syncPanelTitleAria() {
+  document.querySelectorAll('.panel-title').forEach(t => {
+    if (t.getAttribute('role') === 'button') t.setAttribute('aria-expanded', t.parentElement.classList.contains('collapsed') ? 'false' : 'true');
+  });
+}
+function expandAllMenus()   { document.querySelectorAll('#settingsModal .panel').forEach(p => p.classList.remove('collapsed')); syncPanelTitleAria(); }
+function collapseAllMenus() { document.querySelectorAll('#settingsModal .panel').forEach(p => p.classList.add('collapsed')); syncPanelTitleAria(); }
 // Keyboard focus management for the drawer: focus moves in on open, Tab wraps inside the modal
 // while it's open, and focus returns to the opener (the gear) on close. Escape already closes it
 // (global keydown handler). Mirrors the dashboard's settings-drawer pattern.
@@ -3840,9 +3845,17 @@ function wireSettingsForm() {
     saveSettings();
     fetchAndRender();
   });
-  // Panel collapse
+  // Panel collapse — keyboard-operable (was click-only divs): role=button + Enter/Space + aria-expanded.
   document.querySelectorAll('.panel-title').forEach(t => {
-    t.addEventListener('click', () => t.parentElement.classList.toggle('collapsed'));
+    t.tabIndex = 0;
+    t.setAttribute('role', 'button');
+    t.setAttribute('aria-expanded', t.parentElement.classList.contains('collapsed') ? 'false' : 'true');
+    const toggle = () => {
+      t.parentElement.classList.toggle('collapsed');
+      t.setAttribute('aria-expanded', t.parentElement.classList.contains('collapsed') ? 'false' : 'true');
+    };
+    t.addEventListener('click', toggle);
+    t.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
   });
   // ESC closes drawer
   document.addEventListener('keydown', e => {
