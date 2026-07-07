@@ -506,6 +506,8 @@
   .hint-link { background: none; border: none; padding: 0; margin: 0; font: inherit; color: var(--gold); font-weight: 700; cursor: pointer; text-decoration: underline; }
   .hint-link:hover { filter: brightness(1.1); }
   .hint-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 3px; }
+  /* Shared focus-visible ring for the custom controls (suite standard: 2px gold) */
+  .ltile:focus-visible, .wtab:focus-visible, .ctab:focus-visible, .tbtn:focus-visible, .mode-btn:focus-visible, .ctl-btn:focus-visible, .hbtn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
   /* ── Clickable letter chips in the export-warning modals ── */
   .lchip-wrap { max-height: 46vh; overflow: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 5px 8px; margin-top: 12px; }
@@ -716,7 +718,7 @@
   </div>
   <div class="hdr-actions">
     <a href="/" class="hbtn">← Home</a>
-    <button id="darkToggle" class="hbtn" onclick="toggleDark()" title="Toggle dark mode">🌙 Dark</button>
+    <button id="darkToggle" class="hbtn" onclick="toggleDark()" title="Toggle dark mode" aria-pressed="false">🌙 Dark</button>
     <button id="fsBtn" class="hbtn" onclick="toggleFullscreen()" title="Fullscreen" aria-label="Toggle fullscreen" style="display:inline-flex;align-items:center;gap:5px;">
       <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px;"><path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>
       <span>Fullscreen</span>
@@ -825,8 +827,8 @@
       <div class="panel-title">English <span id="englishProgress" style="font-size:0.7rem;color:var(--gold-light);"></span></div>
       <div class="panel-body">
         <div class="mode-toggle" style="margin-bottom:10px;">
-          <button class="mode-btn" id="engCaseUpper" onclick="setEnglishCase('upper')">Uppercase A–Z</button>
-          <button class="mode-btn" id="engCaseLower" onclick="setEnglishCase('lower')">Lowercase a–z</button>
+          <button class="mode-btn" id="engCaseUpper" onclick="setEnglishCase('upper')" aria-pressed="true">Uppercase A–Z</button>
+          <button class="mode-btn" id="engCaseLower" onclick="setEnglishCase('lower')" aria-pressed="false">Lowercase a–z</button>
         </div>
         <div class="letter-grid" id="englishGrid"></div>
       </div>
@@ -975,8 +977,8 @@
   <div class="modal me-modal" role="dialog" aria-modal="true" aria-labelledby="meTitle">
     <h3 id="meTitle">Edit mark shape</h3>
     <div class="mode-toggle" style="margin-bottom:10px;">
-      <button class="mode-btn" id="meModeEditor" onclick="meSetMode('editor')">Simple editor</button>
-      <button class="mode-btn" id="meModeUpload" onclick="meSetMode('upload')">Upload image</button>
+      <button class="mode-btn" id="meModeEditor" onclick="meSetMode('editor')" aria-pressed="true">Simple editor</button>
+      <button class="mode-btn" id="meModeUpload" onclick="meSetMode('upload')" aria-pressed="false">Upload image</button>
     </div>
     <div id="meEditorSection">
       <div class="ctl-row" style="margin-bottom:8px;">
@@ -1166,7 +1168,9 @@
 function toggleDark() {
   document.documentElement.classList.remove('dark-early');
   const isDark = document.body.classList.toggle('dark');
-  document.getElementById('darkToggle').textContent = isDark ? '☀️ Light' : '🌙 Dark';
+  const _dt = document.getElementById('darkToggle');
+  _dt.textContent = isDark ? '☀️ Light' : '🌙 Dark';
+  _dt.setAttribute('aria-pressed', isDark ? 'true' : 'false');
   localStorage.setItem('hebrewBlender_darkMode', isDark ? '1' : '0');
   renderStage();
   renderSpacingPreview();   // recolor the spacing preview ink for the new theme
@@ -1186,6 +1190,7 @@ function initDark() {
   const saved = localStorage.getItem('hebrewBlender_darkMode');
   const dark = saved === '1' || (saved === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);   // OS default when unset; explicit choice wins
   if (dark) { document.body.classList.add('dark'); document.getElementById('darkToggle').textContent = '☀️ Light'; }
+  document.getElementById('darkToggle').setAttribute('aria-pressed', dark ? 'true' : 'false');
   document.documentElement.classList.remove('dark-early');
 }
 
@@ -2151,7 +2156,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '3.5';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '3.6';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2363,6 +2368,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v3.6</strong> — <strong>Accessibility polish.</strong> Keyboard focus now shows a clear gold outline on the letter tiles, step tabs, and buttons; the Hebrew letters in the grids are tagged as Hebrew so screen readers pronounce them with a Hebrew voice; and the on/off toggle buttons (dark mode, Default/Custom, Per Symbol/Combined, upper/lowercase, and the mark editor mode) now announce their pressed state to assistive technology. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.5</strong> — Autosave now also captures the <strong>opacity and overlay view sliders</strong> (template, reference image, glyph) — previously a change to only those settings could be lost if the browser closed before another edit. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.4</strong> — "Apply outline to all letters" now asks before overwriting each letter's own outline and line-weight settings, matching the other apply-to-all buttons. (Still undoable.) <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.3</strong> — Small correctness fix: nikkud and trop previews now center properly on a letter whose width is set to exactly zero (a rare edge case that previously fell back to the default width). <span style="color:var(--muted);">(July 2026)</span></li>
@@ -3071,7 +3077,7 @@ function renderLetterGrid() {
     const tile = document.createElement('div');
     tile.className = 'ltile' + (curKind === 'letter' && L.cp === curCp ? ' sel' : '');
     tile.innerHTML = `<span class="lt-dot ${d.cls}">${d.glyph}</span>
-      <span class="lt-heb" style="font-family:${esc(project.template.font)};">${String.fromCodePoint(parseInt(L.cp,16))}</span>
+      <span class="lt-heb" lang="he" style="font-family:${esc(project.template.font)};">${String.fromCodePoint(parseInt(L.cp,16))}</span>
       <span class="lt-name">${L.name}</span>`;
     tile.onclick = () => selectItem('letter', L.cp);
     grid.appendChild(tile);
@@ -3142,8 +3148,8 @@ function setEnglishCase(c) { englishCase = (c === 'lower') ? 'lower' : 'upper'; 
 function renderEnglishGrid() {
   const grid = document.getElementById('englishGrid'); if (!grid) return;
   const up = document.getElementById('engCaseUpper'), lo = document.getElementById('engCaseLower');
-  if (up) up.classList.toggle('active', englishCase === 'upper');
-  if (lo) lo.classList.toggle('active', englishCase === 'lower');
+  if (up) { up.classList.toggle('active', englishCase === 'upper'); up.setAttribute('aria-pressed', englishCase === 'upper'); }
+  if (lo) { lo.classList.toggle('active', englishCase === 'lower'); lo.setAttribute('aria-pressed', englishCase === 'lower'); }
   grid.innerHTML = ''; let done = 0, total = 0;
   ENGLISH_LETTERS.filter(E => E.case === englishCase).forEach(E => {
     const l = project.letters.find(x => x.codepoint === E.cp && x.eng); if (!l) return;
@@ -3179,14 +3185,14 @@ function renderMarkPanel(cat) {
     // "Mark shapes" + "Upload mode" groups sit side by side (compact) to save vertical space
     let opts = `<div class="mark-opt"><div class="hint">Mark shapes</div>
       <div class="mode-toggle">
-        <button class="mode-btn ${f.mode==='default'?'active':''}" onclick="setMarkMode('${cat}','default')">Default</button>
-        <button class="mode-btn ${f.mode==='custom'?'active':''}" onclick="setMarkMode('${cat}','custom')">Custom</button>
+        <button class="mode-btn ${f.mode==='default'?'active':''}" aria-pressed="${f.mode==='default'}" onclick="setMarkMode('${cat}','default')">Default</button>
+        <button class="mode-btn ${f.mode==='custom'?'active':''}" aria-pressed="${f.mode==='custom'}" onclick="setMarkMode('${cat}','custom')">Custom</button>
       </div></div>`;
     if (customWithMarks) {
       opts += `<div class="mark-opt"><div class="hint">Upload mode</div>
         <div class="mode-toggle">
-          <button class="mode-btn ${um==='perSymbol'?'active':''}" onclick="setMarkUploadMode('${cat}','perSymbol')">Per Symbol</button>
-          <button class="mode-btn ${um==='combined'?'active':''}" onclick="setMarkUploadMode('${cat}','combined')">Combined</button>
+          <button class="mode-btn ${um==='perSymbol'?'active':''}" aria-pressed="${um==='perSymbol'}" onclick="setMarkUploadMode('${cat}','perSymbol')">Per Symbol</button>
+          <button class="mode-btn ${um==='combined'?'active':''}" aria-pressed="${um==='combined'}" onclick="setMarkUploadMode('${cat}','combined')">Combined</button>
         </div></div>`;
     }
     let controls = `<div class="mark-opts">${opts}</div>`;
@@ -3290,7 +3296,7 @@ function renderPunctGrid() {
     const tile = document.createElement('div');
     tile.className = 'ltile' + (curKind === 'letter' && L.cp === curCp ? ' sel' : '');
     tile.innerHTML = `<span class="lt-dot ${st}"></span>
-      <span class="lt-heb" style="font-family:${esc(project.template.font)};">${String.fromCodePoint(parseInt(L.cp,16))}</span>
+      <span class="lt-heb" lang="he" style="font-family:${esc(project.template.font)};">${String.fromCodePoint(parseInt(L.cp,16))}</span>
       <span class="lt-name">${L.name}</span>`;
     tile.onclick = () => selectItem('letter', L.cp);
     grid.appendChild(tile);
@@ -3522,7 +3528,7 @@ function renderCustomGlyphsGrid() {
     tile.className = 'ltile' + (curKind === 'letter' && l.codepoint === curCp ? ' sel' : '');
     tile.style.position = 'relative';
     tile.innerHTML = `<span class="lt-dot ${st}"></span>
-      <span class="lt-heb" style="font-family:${esc(project.template.font)};">${String.fromCodePoint(parseInt(l.codepoint, 16))}</span>
+      <span class="lt-heb" lang="he" style="font-family:${esc(project.template.font)};">${String.fromCodePoint(parseInt(l.codepoint, 16))}</span>
       <span class="lt-name">${esc(l.name || ('U+' + l.codepoint))}</span>${delBtn(l.codepoint, 'base')}`;
     tile.onclick = () => selectItem('letter', l.codepoint);
     grid.appendChild(tile);
@@ -3594,7 +3600,7 @@ function renderFormPanel(panelId, targets, intro) {
     tile.className = 'ltile' + (precompTarget === t ? ' sel' : '') + (traced ? '' : ' locked');
     const pv = traced ? formTilePreviewSVG(pc) : '';   // live composed outline (reflects the Width slider); font char until composable
     tile.innerHTML = `<span class="lt-dot ${traced ? 'traced' : ''}"></span>
-      ${pv || `<span class="lt-heb" style="font-family:${esc(project.template.font)};direction:rtl;">${precompComposed(pc)}</span>`}
+      ${pv || `<span class="lt-heb" lang="he" style="font-family:${esc(project.template.font)};direction:rtl;">${precompComposed(pc)}</span>`}
       <span class="lt-name">${esc(precompName(pc))}</span>${overridden ? `<span class="lt-need" title="You added a custom glyph at U+${t}; the exported font uses your custom outline, not this composed form.">custom glyph overrides</span>` : traced ? '' : `<span class="lt-need" title="Trace ${esc(need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">needs ${esc(need.map(chOf).join(' '))}</span>`}`;
     tile.onclick = () => pickPrecompForm(t);
     grid.appendChild(tile);
@@ -6465,8 +6471,9 @@ function meDoRedo() { meCommitEdit(); if (!meRedo.length) return; meUndo.push(me
 function meUpdateUndoBtns() { const u = document.getElementById('meUndoBtn'), r = document.getElementById('meRedoBtn'); if (u) u.disabled = !meUndo.length; if (r) r.disabled = !meRedo.length; }
 function meSyncMode() {
   const mode = meItem.designMode;
-  document.getElementById('meModeEditor').classList.toggle('active', mode === 'editor');
-  document.getElementById('meModeUpload').classList.toggle('active', mode === 'upload');
+  const _meE = document.getElementById('meModeEditor'), _meU = document.getElementById('meModeUpload');
+  _meE.classList.toggle('active', mode === 'editor'); _meE.setAttribute('aria-pressed', mode === 'editor');
+  _meU.classList.toggle('active', mode === 'upload'); _meU.setAttribute('aria-pressed', mode === 'upload');
   document.getElementById('meEditorSection').style.display = mode === 'editor' ? '' : 'none';
   document.getElementById('meUploadSection').style.display = mode === 'upload' ? '' : 'none';
 }
@@ -7487,7 +7494,7 @@ function renderAnchorLeft(L, l) {
   const _clen = _cyc.length, _single = _clen <= 1;
   const _navChar = cp => {
     if (isCustomCp(cp)) { const it = (project.letters || []).find(x => x.codepoint === cp); return esc(((it && it.name) ? it.name[0] : '') || '?'); }
-    return `<span style="font-family:${esc(project.template.font)};direction:rtl;">${String.fromCodePoint(parseInt(cp,16))}</span>`;
+    return `<span lang="he" style="font-family:${esc(project.template.font)};direction:rtl;">${String.fromCodePoint(parseInt(cp,16))}</span>`;
   };
   const _prevLbl = _single ? '◀ Prev' : `◀ Prev (${_navChar(_cyc[(_ci - 1 + _clen) % _clen])})`;
   const _nextLbl = _single ? 'Next ▶' : `Next (${_navChar(_cyc[(_ci + 1) % _clen])}) ▶`;
