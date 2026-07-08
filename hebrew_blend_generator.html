@@ -2075,6 +2075,12 @@
     body.dark .match-item { background:#fff; color:#1a2744; }
     body.dark .match-dot { background:#fff; border-color:#1a2744; }
     body.dark .answer-key-banner { background:#f6efdd; color:#6b4e12; }
+    /* Gold answer/answer-key ink is faint on a B/W laser — darken it for print
+       so gematria values, blend/real-word answers, and word-bank/crossword
+       numbers stay legible on a monochrome printer. After the dark-reset, so it
+       wins in both light and dark print by source order; non-!important so
+       intentional inline nikkud color-coding still overrides. */
+    .gematria-value, .blend-answer, .rw-translation, .ws-wordbank-tn, .cw-clue-num { color:#6b4e12; }
   }
 
   /* Font selector */
