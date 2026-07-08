@@ -2034,6 +2034,47 @@
       page-break-before: always;
     }
     .trace-row { page-break-inside: avoid; break-inside: avoid; }
+    /* Keep individual worksheet items from splitting mid-cell/mid-card across
+       a page in the browser Print path (the PDF export rasterizes per sheet,
+       so it is unaffected). Scoped to single items only — the grids themselves
+       still flow across pages at cell boundaries. (.bingo-card, .caller-item,
+       .match-item already carry this.) */
+    .blend-cell, .ws-cell, .cw-cell, .rw-card { page-break-inside: avoid; break-inside: avoid; }
+    /* Keep whole puzzle blocks intact too: a single clue / word-bank entry must
+       never split mid-item, and a crossword or word-search grid should stay on
+       one page (a crossword split mid-puzzle is unreadable). Best-effort — a
+       block taller than the page will still break (the browser overrides), but
+       normally-sized puzzles stay whole. */
+    .cw-clue, .ws-wordbank-item { page-break-inside: avoid; break-inside: avoid; }
+    .cw-table, .cw-clues, .ws-grid, .ws-wordbank { page-break-inside: avoid; break-inside: avoid; }
+
+    /* Dark-mode print reset (window.print path). exportPDF() already strips
+       .dark on its html2canvas clone; this makes the browser Print output
+       match it — light paper, dark ink — instead of bleeding dark backgrounds
+       and light-on-dark Hebrew onto the sheet. The token reset fixes every
+       var(--*)-based surface (bingo/caller cells, borders); the literal-color
+       body.dark worksheet rules are re-stated to light below. All are
+       non-!important and sit after the dark rules, so they win by source order
+       while intentional inline nikkud color-coding (letter/highlight/underline
+       spans) still wins over them (inline > stylesheet). .cw-block (black
+       crossword cell) and .ws-cell.ws-word (own print rule at ~L1738) are
+       deliberately left alone. */
+    html.dark-early body, body.dark {
+      --navy:#1a2744; --gold:#c9922a; --gold-light:#f0d080; --cream:#fdf8ef;
+      --warm-gray:#e8e0d0; --text:#1a2744; --muted:#6b6050; --border:#c8bfa8; --white:#ffffff;
+    }
+    body.dark .worksheet { background:#fff; color:#1a2744; }
+    body.dark .ws-title, body.dark .blend-hebrew, body.dark .rw-heb,
+    body.dark .trace-copy, body.dark .match-heb, body.dark .match-label,
+    body.dark .match-num, body.dark .match-ak-heb, body.dark .timer-display { color:#1a2744; }
+    body.dark .ws-header { border-bottom-color:#c8bfa8; }
+    body.dark .ws-field-line { border-bottom-color:#1a2744; }
+    body.dark .ws-cell { background:#fff; }
+    body.dark .flip-card-front, body.dark .flip-card-back,
+    body.dark .rw-card, body.dark .rw-flip-front, body.dark .rw-flip-back,
+    body.dark .match-item { background:#fff; color:#1a2744; }
+    body.dark .match-dot { background:#fff; border-color:#1a2744; }
+    body.dark .answer-key-banner { background:#f6efdd; color:#6b4e12; }
   }
 
   /* Font selector */
@@ -3131,8 +3172,15 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <label class="toggle"><input type="checkbox" id="excludeRepeats"><span class="slider"></span></label>
         </div>
         <div class="option-row">
-          <div class="option-label">Landscape Print</div>
+          <div class="option-label">Landscape Print <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box">Rotates the printout to landscape (wide) for both 🖨 Print and Export PDF, and widens the blends grid. Turn off for portrait (tall).</span></span></div>
           <label class="toggle"><input type="checkbox" id="landscapeMode" onchange="toggleLandscape(this.checked)"><span class="slider"></span></label>
+        </div>
+        <div class="option-row">
+          <div class="option-label">Page Size <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box">Paper size for both Print and Export PDF. Letter (8.5×11in) is the US default; choose A4 (210×297mm) for most of the world.</span></span></div>
+          <div style="display:flex;border:1px solid var(--border);border-radius:5px;overflow:hidden;min-width:110px;">
+            <button id="pageSizeLetter" class="color-mode-btn active" onclick="setPageSize('letter')">Letter</button>
+            <button id="pageSizeA4"     class="color-mode-btn"        onclick="setPageSize('a4')">A4</button>
+          </div>
         </div>
         <div class="option-row">
           <div class="option-label">Header Labels</div>
@@ -3861,6 +3909,7 @@ const VOWEL_COLOR_DEFS_TALAM = [
 ];
 let colorCodingEnabled = false;
 let colorCodingMode = 'letter'; // 'letter' | 'highlight' | 'underline'
+let pageSize = 'letter'; // 'letter' | 'a4' — drives the browser-print @page size AND the PDF export format
 // Tracing worksheet — segmented-control state (numeric/checkbox controls read from the DOM).
 let traceLineStyle = 'bottom';  // 'bottom' | 'both'
 let traceDarkness  = 'medium';  // 'light' | 'medium' | 'dark'
@@ -4254,6 +4303,7 @@ function wsMetaHTML() {
 // ── LANDSCAPE MODE ──
 function toggleLandscape(on) {
   document.body.classList.toggle('landscape-mode', on);
+  _applyPageSizeStyle();   // re-emit @page with/without the landscape keyword so window.print() rotates
   if (blends.length) renderWorksheet(false);
 }
 
@@ -4273,6 +4323,7 @@ function getSettings() {
     excludeRepeats: document.getElementById('excludeRepeats').checked,
     landscape:     document.getElementById('landscapeMode').checked,
     headerLang,
+    pageSize,
     // Blend type & mode
     blendType:     document.querySelector('.blend-type-btn.active[data-type]')?.dataset.type || 'two',
     vowelPosition: getVowelPos(),
@@ -4452,6 +4503,7 @@ function applySettings(s) {
   if (s.excludeRepeats !== undefined) document.getElementById('excludeRepeats').checked = s.excludeRepeats;
   if (s.landscape !== undefined) { document.getElementById('landscapeMode').checked = s.landscape; toggleLandscape(s.landscape); }
   if (s.headerLang) setHeaderLang(s.headerLang);
+  if (s.pageSize) setPageSize(s.pageSize);
 
   // Blend type & mode
   const blendType = s.blendType || (s.nikudOnly ? 'nikud' : s.oneLetter ? 'one' : s.threeLetter ? 'three' : 'two');
@@ -5385,6 +5437,31 @@ function setColorMode(mode) {
   renderWorksheet(false);
 }
 
+/* Page size (Letter / A4) + orientation. Drives BOTH output paths: the
+   browser-print @page (via an injected <style>, since @page can't be scoped by
+   a body class) and the jsPDF export (read at exportPDF time). Default 'letter'
+   portrait — a US-Letter-tuned layout, so we inject @page{size:letter} even in
+   an A4-locale browser so the default is consistent everywhere until a teacher
+   picks A4. When the "Landscape Print" toggle (body.landscape-mode) is on we
+   emit `size: <page> landscape` so window.print() actually rotates the paper
+   (otherwise the toggle only widened the on-screen grid). */
+function _applyPageSizeStyle() {
+  let st = document.getElementById('pageSizeStyle');
+  if (!st) { st = document.createElement('style'); st.id = 'pageSizeStyle'; document.head.appendChild(st); }
+  const orient = document.body.classList.contains('landscape-mode') ? ' landscape' : '';
+  st.textContent = '@page { size: ' + (pageSize === 'a4' ? 'A4' : 'letter') + orient + '; margin: 0.35in; }';
+}
+function setPageSize(v) {
+  pageSize = (v === 'a4') ? 'a4' : 'letter';
+  const lb = document.getElementById('pageSizeLetter');
+  const ab = document.getElementById('pageSizeA4');
+  if (lb) lb.classList.toggle('active', pageSize === 'letter');
+  if (ab) ab.classList.toggle('active', pageSize === 'a4');
+  _applyPageSizeStyle();
+  _syncPillAria();
+  renderWorksheet(false);   // browser-print rows-per-page depends on page height
+}
+
 function applyColorExStyle(el, color) {
   const example = el.dataset.example || el.textContent;
   el.style.color = '';
@@ -5553,6 +5630,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (cb) cb.checked = stored;
   setHideZoomBar(stored);
   _syncPillAria();   // stamp initial aria-pressed on the static pill groups (hardcoded .active)
+  _applyPageSizeStyle();  // enforce the default Letter @page size (matters in A4-locale browsers)
 });
 
 /* ═══ Accessible tooltips (tap + keyboard, not just hover) ═══
@@ -8091,17 +8169,17 @@ async function exportPDF() {
     }
     if (sheets.length === 0) sheets = [ws];
 
-    // Bingo PDFs render in landscape — 4-up cards use the paper better that
-    // way, and the wider page leaves more room for Hebrew cells. Tracing follows
-    // the Landscape Print toggle (wider lines = more writing room); its rows
-    // already paginate to the chosen orientation's page height.
+    // Orientation matches the "Landscape Print" toggle for every worksheet type,
+    // so the PDF export agrees with window.print() and the on-screen layout (the
+    // toggle rotates the paper and, for blends, widens the grid to 10 cols).
+    // Bingo is always landscape regardless of the toggle — 4-up cards use the
+    // paper better that way, with more room for Hebrew cells.
     const isBingoPDF = bingoPages.length > 0;
-    const isTracingPDF = document.getElementById('tracingToggle')?.checked;
-    const wantLandscape = isBingoPDF || (isTracingPDF && document.body.classList.contains('landscape-mode'));
+    const wantLandscape = isBingoPDF || document.body.classList.contains('landscape-mode');
     const pdf = new jsPDF({
       orientation: wantLandscape ? 'landscape' : 'portrait',
       unit: 'mm',
-      format: 'letter'
+      format: pageSize === 'a4' ? 'a4' : 'letter'
     });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
@@ -9081,8 +9159,10 @@ function measureTraceRowsPerSheet(ws, title, traceDir) {
   ws.removeChild(probeSheet);
 
   const landscape = document.body.classList.contains('landscape-mode');
-  // US-letter content height at 96dpi minus the @page 0.35in margins, less footer.
-  const usableH = ((landscape ? 8.5 : 11) - 0.7) * 96 - 46;
+  // Content height at 96dpi minus the @page 0.35in margins (0.7in total), less footer.
+  // Page height depends on the chosen size (Letter 11/8.5in vs A4 11.69/8.27in).
+  const pageInches = pageSize === 'a4' ? (landscape ? 8.27 : 11.69) : (landscape ? 8.5 : 11);
+  const usableH = (pageInches - 0.7) * 96 - 46;
   if (rowOuter <= 0) return 10;
   return Math.max(1, Math.floor((usableH - headerH) / rowOuter));
 }
