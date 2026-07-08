@@ -537,7 +537,7 @@ body.dark .tour-card{background:var(--cream);}
   .load-bar.indeterminate .load-bar-fill{animation:none !important;}
   .load-bar-fill{transition:none !important;}
   .shoresh-flash{animation:none !important;}
-  .vg-arrow,.panel-title::after,.adv-section-title::after,.shoresh-patterns-title::after,.emoji-cat-arrow{transition:none !important;}
+  .vg-arrow,.panel-title::after,.adv-section-title::after,.shoresh-patterns-title::after,.emoji-cat-arrow,.pos-arrow{transition:none !important;}
   *{scroll-behavior:auto !important;}
 }
 .load-more-btn{background:var(--navy);color:var(--gold-light);border:none;border-radius:6px;padding:8px 28px;font-size:0.85rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;}
@@ -975,7 +975,7 @@ footer a{color:var(--gold);text-decoration:none;}
       <div id="shoreshControls">
         <label style="display:block;font-size:0.8rem;font-weight:600;color:var(--text);margin-bottom:6px;">Enter a שׁורש (root)</label>
         <div class="shoresh-input-row">
-          <input type="text" id="shoreshInput" placeholder="e.g. כ-ת-ב" oninput="onShoreshInput()" onkeydown="onShoreshKey(event)">
+          <input type="text" id="shoreshInput" aria-label="Enter a Hebrew root" placeholder="e.g. כ-ת-ב" oninput="onShoreshInput()" onkeydown="onShoreshKey(event)">
           <button class="shoresh-lookup-btn" onclick="runShoreshLookup(document.getElementById('shoreshInput').value)">Look up</button>
         </div>
         <div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px;">Browse roots (alef→tav) — click to look up:</div>
@@ -1317,7 +1317,7 @@ function selectAllMatching() {
 function copyBulkText() {
   const ta = document.getElementById('bulkTextarea');
   if (!ta.value) return;
-  navigator.clipboard.writeText(ta.value).catch(() => { ta.select(); document.execCommand('copy'); });
+  navigator.clipboard.writeText(ta.value).then(() => announce('Copied to clipboard')).catch(() => { ta.select(); document.execCommand('copy'); announce('Copied to clipboard'); });
 }
 
 /* ===== Export Selected Words (Anki / Quizlet) ===== */
