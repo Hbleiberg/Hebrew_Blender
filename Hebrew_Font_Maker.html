@@ -2156,7 +2156,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '3.6';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '3.7';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2368,6 +2368,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v3.7</strong> — <strong>Edit points by keyboard.</strong> In Edit-points mode you can now select points without a mouse: <strong>,</strong> and <strong>.</strong> step to the previous / next point, and <strong>i</strong> inserts a new point after the selected one — so the existing arrow-nudge and Delete shortcuts are finally reachable keyboard-only. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.6</strong> — <strong>Accessibility polish.</strong> Keyboard focus now shows a clear gold outline on the letter tiles, step tabs, and buttons; the Hebrew letters in the grids are tagged as Hebrew so screen readers pronounce them with a Hebrew voice; and the on/off toggle buttons (dark mode, Default/Custom, Per Symbol/Combined, upper/lowercase, and the mark editor mode) now announce their pressed state to assistive technology. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.5</strong> — Autosave now also captures the <strong>opacity and overlay view sliders</strong> (template, reference image, glyph) — previously a change to only those settings could be lost if the browser closed before another edit. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.4</strong> — "Apply outline to all letters" now asks before overwriting each letter's own outline and line-weight settings, matching the other apply-to-all buttons. (Still undoable.) <span style="color:var(--muted);">(July 2026)</span></li>
@@ -2570,8 +2571,10 @@ function shortcutGroups() {
       ['←  /  →  /  Home  /  End', 'Move between the step tabs when one is focused'],
     ]],
     ['Point editing — Edit points', [
+      [',  /  .', 'Select the previous / next point'],
       ['←  ↑  →  ↓', 'Nudge the selected point'],
       ['Shift + arrows', 'Nudge in bigger steps'],
+      ['I', 'Insert a point after the selected one'],
       ['Delete  or  Backspace', 'Remove the selected point'],
       ['Esc', 'Clear the selection, or leave point editing'],
     ]],
@@ -5653,6 +5656,36 @@ function nudgeSelectedNodes(dx, dy) {
     if (nd.out) { nd.out[0]+=dx; nd.out[1]+=dy; }
   });
 }
+/* Keyboard node selection (accessibility): pointerdown/marquee is otherwise the ONLY way to *pick* a
+   node, so keyboard-only users could never reach the existing arrow-nudge / Delete / smooth-corner
+   support in nodes mode. `,`/`.` cycle the single selection through every node in flat contour order;
+   `i` splits the segment after the selected node. */
+function _flatNodeKeys() {
+  const keys = [];
+  if (nodeModel) nodeModel.contours.forEach((ct, ci) => ct.nodes.forEach((nd, ni) => keys.push(nodeKey(ci, ni))));
+  return keys;
+}
+function cycleNodeSel(dir) {
+  if (!nodeModel) return;
+  const keys = _flatNodeKeys(); if (!keys.length) return;
+  let idx = -1;
+  for (let i = 0; i < keys.length; i++) if (nodeSel.has(keys[i])) { idx = i; break; }   // first selected in flat order
+  const next = idx === -1 ? (dir > 0 ? 0 : keys.length - 1) : (idx + dir + keys.length) % keys.length;
+  nodeSel.clear(); nodeSel.add(keys[next]);
+  renderStage(); renderControls();
+}
+function insertNodeAfterSel() {                       // keyboard twin of Alt-click: split the segment after the selected node at its midpoint
+  if (!nodeModel) return;
+  let ci = 0, ni = 0;
+  if (nodeSel.size) { const [c, i] = [...nodeSel][0].split(':').map(Number); ci = c; ni = i; }
+  const ct = nodeModel.contours[ci]; if (!ct || !ct.nodes.length) return;
+  const a = ct.nodes[ni], b = ct.nodes[(ni + 1) % ct.nodes.length];
+  const cubic = !!(a.out && b.in), p0 = [a.x, a.y], p3 = [b.x, b.y];
+  const mid = _bezEval([p0, cubic ? a.out : p0, cubic ? b.in : p3, p3], 0.5);   // on-curve midpoint so insertNodeAt splits this exact segment
+  const l = curLetter();
+  udDo([itemScope()], 'insert point — ' + l.name, () => { if (insertNodeAt(mid[0], mid[1]) !== false) writeThrough(l); });
+  renderStage(); renderControls();
+}
 function nodeOverlaySVG() {
   if (!nodeModel) return '';
   let h = '';
@@ -5738,7 +5771,7 @@ function nodeEditPanelHTML() {
     <button class="ctl-btn" onclick="doNodeDelete()" title="Remove the selected point (Delete or Backspace)" ${dis}>Delete</button>
     <span class="readout">${cnt} selected</span>
   </div>
-  <div class="hint">Drag a <b>point</b> to reshape · click to select, drag a box to multi-select (Shift adds) · <b>double-click</b> a point toggles □ corner / ○ smooth · <b>Alt-click</b> the outline adds a point · <b>Delete</b> removes one · arrows nudge (Shift = 25). Every edit exports and undoes (Ctrl+Z).</div>`;
+  <div class="hint">Drag a <b>point</b> to reshape · click to select, drag a box to multi-select (Shift adds) · <b>double-click</b> a point toggles □ corner / ○ smooth · <b>Alt-click</b> the outline adds a point · <b>Delete</b> removes one · arrows nudge (Shift = 25) · keyboard-only: <b>,</b> / <b>.</b> select prev / next point, <b>i</b> inserts one. Every edit exports and undoes (Ctrl+Z).</div>`;
 }
 /* Trace is split so dragging the sliders can update live:
    - rawLoopsFontUnits(): the expensive part (rasterize + marching-squares), cached.
@@ -7738,6 +7771,9 @@ document.addEventListener('keydown', e => {
   if (workMode !== 'nodes') return;
   if (udShortcutBlocked()) return;                       // typing in a field / modal open / no project
   if (e.ctrlKey || e.metaKey) return;                    // let Ctrl/Cmd+Z (undo/redo) fall through
+  if (e.key === '.' || e.key === '>') { e.preventDefault(); cycleNodeSel(1); return; }   // keyboard select: next point
+  if (e.key === ',' || e.key === '<') { e.preventDefault(); cycleNodeSel(-1); return; }  // keyboard select: previous point
+  if (e.key === 'i' || e.key === 'I') { e.preventDefault(); insertNodeAfterSel(); return; }
   const l = curLetter();
   const step = e.shiftKey ? 25 : 5; let dx=0, dy=0;
   if (e.key==='ArrowLeft') dx=-step; else if (e.key==='ArrowRight') dx=step;
