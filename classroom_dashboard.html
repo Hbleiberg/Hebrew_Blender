@@ -1280,8 +1280,31 @@
   .tip-wrap .tip-icon { cursor: pointer; }
   #tourBtn.tour-pulse { animation: tourPulse 1.6s ease-in-out infinite; }
   @keyframes tourPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(201,146,42,0.5); } 50% { box-shadow: 0 0 0 7px rgba(201,146,42,0); } }
+  /* Bottom toast (import-success confirmation, etc.) — ported from hebrew_blend_generator.html */
+  #appToast {
+    position: fixed;
+    left: 50%;
+    bottom: 84px;
+    transform: translateX(-50%) translateY(8px);
+    background: var(--navy);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 9px 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.28);
+    z-index: 2000;
+    max-width: 88vw;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  #appToast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  body.dark #appToast { background: #0a0f1c; }
+
   @media (prefers-reduced-motion: reduce) {
-    .tour-spot, .tour-card, #fsStrip, .now-next, .dash-edit-pencil, #tipFloat,
+    .tour-spot, .tour-card, #fsStrip, .now-next, .dash-edit-pencil, #tipFloat, #appToast,
     .fr-modal, .settings-modal, .settings-backdrop, .panel-title::after { transition: none !important; }
     #tourBtn.tour-pulse { animation: none !important; }
     .timer-display.done, #timerCol.running, #timerCol.running.urgent { animation: none !important; }
@@ -4895,7 +4918,7 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
       saveSchedulesStorage();
       renderPresets();
       renderSavedSchedules();
-      alert('Imported successfully.');
+      showAppToast('Imported successfully.');
     } catch (e) { alert('Invalid JSON.'); }
   }
 
@@ -4953,6 +4976,23 @@ function ivritDateStamp() {
   const d = new Date();
   const m = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   return m[d.getMonth()] + '_' + d.getDate() + '_' + d.getFullYear();
+}
+/* ═══ Bottom toast — ported from hebrew_blend_generator.html ═══ */
+let _appToastTimer = null;
+function showAppToast(msg, ms = 2600) {
+  let t = document.getElementById('appToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'appToast';
+    t.setAttribute('role', 'status');
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  // Force reflow so the transition runs even on rapid repeats.
+  void t.offsetWidth;
+  t.classList.add('show');
+  if (_appToastTimer) clearTimeout(_appToastTimer);
+  _appToastTimer = setTimeout(() => t.classList.remove('show'), ms);
 }
 function ivritStatus(msg) { const el = document.getElementById('ivritStatus'); if (el) el.textContent = msg || ''; }
 function setIvritMode(mode) {

@@ -878,6 +878,29 @@ body.dark .lc-replay { color: var(--gold-light); }
 .lc-heb { font-family: var(--heb-font); direction: rtl; font-size: clamp(1.8rem, 8vw, 3rem); line-height: 1.15; }
 .lc-num { font-family: var(--serif); direction: ltr; font-size: clamp(2rem, 9vw, 3.2rem); font-weight: 700; }
 
+/* Bottom toast (import-success confirmation, etc.) — ported from hebrew_blend_generator.html */
+#appToast {
+  position: fixed;
+  left: 50%;
+  bottom: 84px;
+  transform: translateX(-50%) translateY(8px);
+  background: var(--navy);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 9px 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.28);
+  z-index: 2000;
+  max-width: 88vw;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+#appToast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+body.dark #appToast { background: #0a0f1c; }
+
 /* Honor reduced-motion: neutralize all transitions/animations (page previously had no such block) */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -3996,7 +4019,7 @@ function importPresets() {
       const existing = readPresets();
       writePresets(ivritSafeAssign(existing, data.presets));
       renderPresets();
-      alert('Imported successfully.');
+      showAppToast('Imported successfully.');
     } else {
       alert('No "presets" key found.');
     }
@@ -4871,6 +4894,23 @@ function ivritDateStamp() {
   const d = new Date();
   const m = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   return m[d.getMonth()] + '_' + d.getDate() + '_' + d.getFullYear();
+}
+/* ═══ Bottom toast — ported from hebrew_blend_generator.html ═══ */
+let _appToastTimer = null;
+function showAppToast(msg, ms = 2600) {
+  let t = document.getElementById('appToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'appToast';
+    t.setAttribute('role', 'status');
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  // Force reflow so the transition runs even on rapid repeats.
+  void t.offsetWidth;
+  t.classList.add('show');
+  if (_appToastTimer) clearTimeout(_appToastTimer);
+  _appToastTimer = setTimeout(() => t.classList.remove('show'), ms);
 }
 function ivritStatus(msg) { const el = document.getElementById('ivritStatus'); if (el) el.textContent = msg || ''; }
 function setIvritMode(mode) {
