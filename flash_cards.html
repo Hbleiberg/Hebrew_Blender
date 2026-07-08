@@ -3188,8 +3188,15 @@ function setNameLetterMode(on) {
   saveSettings();
 }
 
+// Clamp any card count to the valid range; NaN/garbage → the default 10. Used by every
+// setter AND the restore path so a corrupt/shared blob carrying a huge cardCount can't
+// drive generateDeck()'s attempts<n*30 loop into a tab freeze on Start.
+function _clampCardCount(n) {
+  n = Math.round(Number(n));
+  return Number.isFinite(n) ? Math.min(CARD_COUNT_MAX, Math.max(CARD_COUNT_MIN, n)) : 10;
+}
 function setCardCount(n) {
-  cardCount = n;
+  cardCount = _clampCardCount(n);
   _syncCountUI();
   saveSettings();
 }
@@ -3197,7 +3204,7 @@ function setCardCount(n) {
 function setCustomCardCount(raw) {
   const n = Math.round(Number(raw));
   if (!Number.isFinite(n)) { _syncCountUI(); return; }   // ignore garbage; keep current count
-  cardCount = Math.min(CARD_COUNT_MAX, Math.max(CARD_COUNT_MIN, n));
+  cardCount = _clampCardCount(n);
   _syncCountUI();
   saveSettings();
 }
@@ -3469,7 +3476,7 @@ function applySettings(s) {
   if (hideHomeToggle) hideHomeToggle.checked = hideHomeBtn;
   const homeBtn = document.getElementById('homeBtn');
   if (homeBtn) homeBtn.style.visibility = hideHomeBtn ? 'hidden' : '';
-  cardCount = s.cardCount ?? 10;
+  cardCount = _clampCardCount(s.cardCount);   // clamp restored value (preset/.ivrit/share/corrupt blob)
   selectedLetters = new Set(s.selectedLetters || []);
   selectedVowels = new Set(s.selectedVowels || []);
   dageshTavEnabled = !!s.dageshTavEnabled;
