@@ -2067,16 +2067,16 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant
   let html = '<div class="tt-interlinear">';
   for (const v of verses) {
     const numLabel = `${v.chapter}:${v.verse}`;
-    const esc = cssEscape(numLabel);
+    const vkEsc = cssEscape(numLabel);
     const aNum = aStartByLabel[numLabel];
     if (aNum > 1) html += aliyahDividerHTML(aNum, numLabel);
     html += `<div class="tt-verse" data-vk="${esc(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}>`;
     html += `  <div class="tt-verse-row" style="align-items:center;">`;
     html += `    <span class="tt-verse-num">${esc(numLabel)}</span>`;
     html += `    <span class="tt-verse-buttons">`;
-    html += `      <button class="tt-speak" onclick="speakVerse('${esc}')" type="button" aria-label="Read verse ${numLabel} aloud (TTS)">🔊 Read</button>`;
-    if (canChant) html += `      <button class="tt-chant" onclick="chantVerse('${esc}')" type="button" aria-label="Chant verse ${numLabel} (PocketTorah audio)">🎵 Chant</button>`;
-    if (canLoop) html += `      <button class="tt-loop" onclick="loopVerse('${esc}')" type="button" aria-label="Loop verse ${numLabel} (repeat the chant)">🔁 Loop</button>`;
+    html += `      <button class="tt-speak" onclick="speakVerse('${vkEsc}')" type="button" aria-label="Read verse ${numLabel} aloud (TTS)">🔊 Read</button>`;
+    if (canChant) html += `      <button class="tt-chant" onclick="chantVerse('${vkEsc}')" type="button" aria-label="Chant verse ${numLabel} (PocketTorah audio)">🎵 Chant</button>`;
+    if (canLoop) html += `      <button class="tt-loop" onclick="loopVerse('${vkEsc}')" type="button" aria-label="Loop verse ${numLabel} (repeat the chant)">🔁 Loop</button>`;
     html += `    </span>`;
     html += `  </div>`;
     const firstTwi = wordIdxRef.value;
@@ -2130,14 +2130,14 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant,
   html += `<div class="tt-grid-col tt-col-heb"><h3>עִבְרִית</h3>`;
   for (const { v, hebHtml } of perVerse) {
     const numLabel = `${v.chapter}:${v.verse}`;
-    const esc = cssEscape(numLabel);
+    const vkEsc = cssEscape(numLabel);
     const aNum = aStartByLabel[numLabel];
     if (aNum > 1) html += aliyahDividerHTML(aNum, numLabel);
     html += `<div class="tt-grid-row" data-vk="${esc(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}>`;
     html += `<span class="tt-vnum">${numLabel}<span class="tt-verse-buttons" style="display:flex;flex-direction:column;gap:3px;margin-top:4px;margin-left:0;">`;
-    html += `<button class="tt-speak" onclick="speakVerse('${esc}')" type="button" aria-label="Read verse ${numLabel} aloud (TTS)">🔊 Read</button>`;
-    if (canChant) html += `<button class="tt-chant" onclick="chantVerse('${esc}')" type="button" aria-label="Chant verse ${numLabel} (PocketTorah audio)">🎵 Chant</button>`;
-    if (canLoop) html += `<button class="tt-loop" onclick="loopVerse('${esc}')" type="button" aria-label="Loop verse ${numLabel} (repeat the chant)">🔁 Loop</button>`;
+    html += `<button class="tt-speak" onclick="speakVerse('${vkEsc}')" type="button" aria-label="Read verse ${numLabel} aloud (TTS)">🔊 Read</button>`;
+    if (canChant) html += `<button class="tt-chant" onclick="chantVerse('${vkEsc}')" type="button" aria-label="Chant verse ${numLabel} (PocketTorah audio)">🎵 Chant</button>`;
+    if (canLoop) html += `<button class="tt-loop" onclick="loopVerse('${vkEsc}')" type="button" aria-label="Loop verse ${numLabel} (repeat the chant)">🔁 Loop</button>`;
     html += `</span></span>`;
     html += `<span class="tt-cell heb" lang="he">${hebHtml}</span>`;
     html += `</div>`;
