@@ -585,6 +585,34 @@
   .qa-bc-ok { color: #10b981; font-weight: 700; white-space: nowrap; }
   .qa-bc-warn { color: #c0392b; font-weight: 700; white-space: nowrap; }
 
+  /* ── Auto-detect letters review overlay ── */
+  #adSummary { font-size: 0.84rem; color: var(--muted); margin: 0 0 10px; line-height: 1.5; flex: 0 0 auto; }
+  #adSummary b { color: var(--text); }
+  #adSummary .ad-warn { color: #c0392b; font-weight: 600; }
+  #adSummary .ad-match { color: #10b981; font-weight: 700; }
+  #adToolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 10px; font-size: 0.8rem; color: var(--text); flex: 0 0 auto; }
+  #adToolbar .ad-ctl { display: inline-flex; align-items: center; gap: 6px; }
+  #adToolbar input[type="range"] { width: 110px; }
+  #adToolbar input[type="number"] { width: 62px; padding: 3px 5px; border: 1px solid var(--border); border-radius: 5px; background: var(--white); color: var(--text); font: inherit; }
+  #adConfirm { background: var(--cream); border-inline-start: 3px solid var(--gold); border-radius: 6px; padding: 5px 9px; display: inline-flex; align-items: center; gap: 8px; }
+  #adConfirm[hidden] { display: none; }
+  #adStage { overflow: auto; background: var(--cream); border: 1px solid var(--border); border-radius: 8px; padding: 4px; }
+  .ad-box rect { fill: rgba(201,146,42,0.07); stroke: var(--gold); stroke-width: 2.5px; vector-effect: non-scaling-stroke; }
+  .ad-box text { paint-order: stroke; stroke: #fff; stroke-width: 4px; fill: var(--navy); font-weight: 700; pointer-events: none; }
+  .ad-box { cursor: pointer; outline: none; }
+  .ad-box.sel rect, .ad-box:focus-visible rect { stroke: #2a6dd9; stroke-width: 4px; fill: rgba(42,109,217,0.12); }
+  .ad-box.un rect { stroke-dasharray: 7 5; stroke: #c0392b; }
+  .ad-box.skip rect { stroke-dasharray: 2 4; stroke: var(--muted); fill: rgba(127,127,127,0.10); }
+  .ad-box.skip text { fill: var(--muted); }
+  #adPicker { flex: 0 0 auto; border: 1px solid var(--border); border-radius: 8px; background: var(--white); padding: 8px; margin-top: 8px; max-height: 30vh; overflow-y: auto; }
+  #adPicker[hidden] { display: none; }
+  .ad-pick-title { font-size: 0.78rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .ad-pick-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+  .ad-pick-grid button { font: inherit; font-size: 0.76rem; padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--white); color: var(--text); cursor: pointer; }
+  .ad-pick-grid button:hover { border-color: var(--gold); }
+  .ad-pick-grid button.taken { color: var(--muted); }
+  .ad-pick-grid button .heb { font-size: 1rem; }
+
   .drop {
     border: 2px dashed var(--border); border-radius: 8px; padding: 16px 10px; text-align: center;
     transition: all 0.15s; font-size: 0.8rem; cursor: pointer;
@@ -1063,6 +1091,34 @@
     <div class="help-tabs" id="qaTabs"></div>
     <div class="help-body" id="qaGrid"></div>
     <div class="mbtns"><button class="tbtn" onclick="closeQA()">Close</button></div>
+  </div>
+</div>
+
+<!-- Auto-detect letters — review the proposed boxes on a combined raster sheet before committing them as crops -->
+<div class="overlay" id="adOverlay" onclick="if(event.target===this)closeAutoDetect()">
+  <div class="modal help-modal qa-modal" role="dialog" aria-modal="true" aria-labelledby="adTitle">
+    <h3 id="adTitle">Auto-detect letters — review</h3>
+    <div id="adSummary" role="status" aria-live="polite"></div>
+    <div id="adToolbar">
+      <span class="ad-ctl">Separation <span id="adSepV" class="readout">0</span>
+        <input type="range" id="adSep" min="0" max="5" step="1" value="0"
+               aria-label="Separation — split touching letters (0 off, 5 strongest)"
+               oninput="adSetSep(this.value)"></span>
+      <span class="ad-ctl">Ink threshold
+        <input type="number" id="adTh" min="1" max="254" inputmode="numeric"
+               aria-label="Detection ink threshold override"
+               onchange="adSetTh(this.value)"></span>
+      <button class="ctl-btn" onclick="adRedetect()">↻ Re-detect</button>
+      <span id="adConfirm" hidden>You changed <b id="adEditN"></b> box(es) — re-detecting discards those edits.
+        <button class="ctl-btn" onclick="adRedetect(true)">Discard &amp; re-detect</button>
+        <button class="ctl-btn" onclick="adConfirmHide()">Keep editing</button></span>
+    </div>
+    <div class="help-body" id="adStage"></div>
+    <div id="adPicker" hidden></div>
+    <div class="mbtns">
+      <button class="tbtn" id="adApplyBtn" onclick="adApply()">Apply</button>
+      <button class="tbtn ghost" onclick="closeAutoDetect()">Cancel — discard boxes</button>
+    </div>
   </div>
 </div>
 
@@ -1610,6 +1666,10 @@ function nikScale(cp) {   // size factor for a standard nikkud cp: dagesh, stand
 function svgUploadOn() { return !!(project && project.font && project.font.svgUpload); }
 /* A glyph whose outline is already vector (from a font file OR an imported SVG) — skips Align/Trace. */
 function isVectorGlyph(l) { return project.inputMode === 'font' || !!(l && l.source && l.source.kind === 'svg'); }
+/* Lighting/threshold accessors with absent-means-default semantics, so items from old saves (incl.
+   nikkud/trop marks, which migrateProject never visits) behave consistently without a migration pass. */
+function itemFlattenOn(l) { return l.flattenLighting !== false; }   // absent = ON
+function itemThresholdUserSet(l) { return l.thresholdUserSet == null ? l.binThreshold !== 128 : !!l.thresholdUserSet; }   // legacy non-default threshold ⇒ treat as hand-set
 /* Spacing — single source of truth so the live preview matches the exported font exactly */
 function fontSpacing() { return (project && project.font && project.font.spacing) || { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם', kernTarget:40 }; }
 function effLetterAdvance(l) { const base = (l && l.advance != null) ? l.advance : Math.round(LETTER_TOP*0.7); return Math.max(50, base + fontSpacing().letterSpacing); }
@@ -1682,7 +1742,9 @@ function udItem(s) {                                     // resolve by (kind,cp)
 }
 function udSnap(s) {
   if (s.t === 'item') { const it = udItem(s); if (!it) return null;
-    const o = {}; for (const k in it) if (!ITEM_SKIP[k]) o[k] = JSON.parse(JSON.stringify(it[k])); return o; }
+    // scope.withSource opts source INTO the snapshot (batch ops like auto-detect Apply, where undo
+    // must restore the image assignment; crop PNGs are small — full sheets never go through this)
+    const o = {}; for (const k in it) if (!ITEM_SKIP[k] || (s.withSource && k === 'source')) o[k] = JSON.parse(JSON.stringify(it[k])); return o; }
   if (s.t === 'spacing') return JSON.parse(JSON.stringify(project.font.spacing));
   if (s.t === 'kerning') return JSON.parse(JSON.stringify(project.font.kerning || []));
   if (s.t === 'kernClasses') return JSON.parse(JSON.stringify(project.font.kernClasses || []));
@@ -1703,9 +1765,10 @@ function udSnap(s) {
 function udRestore(s, snap) {
   if (s.t === 'item') { const it = udItem(s); if (!it || !snap) return;
     const keepSrc = it.source, keepSaved = it.savedAnchors;
-    for (const k in it) if (!ITEM_SKIP[k]) delete it[k];
+    for (const k in it) if (!ITEM_SKIP[k] || (s.withSource && k === 'source')) delete it[k];
     Object.assign(it, JSON.parse(JSON.stringify(snap)));
-    it.source = keepSrc; if (keepSaved !== undefined) it.savedAnchors = keepSaved; }
+    if (!s.withSource) it.source = keepSrc;
+    if (keepSaved !== undefined) it.savedAnchors = keepSaved; }
   else if (s.t === 'spacing') Object.assign(project.font.spacing, JSON.parse(JSON.stringify(snap || {})));
   else if (s.t === 'kerning') project.font.kerning = JSON.parse(JSON.stringify(snap || []));
   else if (s.t === 'kernClasses') project.font.kernClasses = JSON.parse(JSON.stringify(snap || []));
@@ -1772,6 +1835,8 @@ function blankLetter(L) {
     placementSaved: false,      // user hand-confirmed the nikkud placement (solid green ✓)
     placementInherited: false,  // positions carried over from the previous letter — review state, distinct from confirmed
     binThreshold: 128, invert: false, epsilon: 6, cornerAngle: 32,
+    flattenLighting: true,      // "Even out lighting" — divide out the blurred paper background before thresholding
+    thresholdUserSet: false,    // user moved the Ink-threshold slider → Otsu must never overwrite it
     outlineOnly: false, lineWeight: 70,   // "Outline only" (hollow bubble) trace + ring thickness in font units
     handEdited: false           // node editor touched this outline → warn before a destructive re-trace
   };
@@ -1835,6 +1900,7 @@ function markItem(kind, cp) {
     transform: [1,0,0,1,0,0], captureBox: null,
     contours: null, curves: null, advance: 0, anchors: null, placementSaved: false, placementInherited: false,
     binThreshold: 128, invert: false, epsilon: 6, cornerAngle: 32,
+    flattenLighting: true, thresholdUserSet: false,   // see blankLetter — same lighting/Otsu semantics
     outlineOnly: false, lineWeight: 70,   // "Outline only" (hollow bubble) trace + ring thickness in font units
     handEdited: false,
     designMode: 'editor', pieces: null
@@ -2156,7 +2222,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '3.8';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '3.9';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2368,6 +2434,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v3.9</strong> — <strong>Smarter photo tracing.</strong> Uploaded photos now pick their own starting ink threshold automatically, a new <strong>Even out lighting</strong> toggle removes phone-photo shadows before tracing, and combined sheets gained <strong>Auto-detect letters</strong> — one click finds every letter on the sheet, shows you the proposed boxes for review, and assigns them all in one undoable step. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.8</strong> — <strong>Crop from a sheet by keyboard.</strong> When cutting a letter or mark out of a "one image, all letters" / combined sheet, you can now do it without a mouse: the arrow keys move a crop box (Shift for smaller steps), <strong>+</strong> / <strong>−</strong> resize it, <strong>Enter</strong> crops, and <strong>Esc</strong> cancels. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.7</strong> — <strong>Edit points by keyboard.</strong> In Edit-points mode you can now select points without a mouse: <strong>,</strong> and <strong>.</strong> step to the previous / next point, and <strong>i</strong> inserts a new point after the selected one — so the existing arrow-nudge and Delete shortcuts are finally reachable keyboard-only. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.6</strong> — <strong>Accessibility polish.</strong> Keyboard focus now shows a clear gold outline on the letter tiles, step tabs, and buttons; the Hebrew letters in the grids are tagged as Hebrew so screen readers pronounce them with a Hebrew voice; and the on/off toggle buttons (dark mode, Default/Custom, Per Symbol/Combined, upper/lowercase, and the mark editor mode) now announce their pressed state to assistive technology. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -2589,6 +2656,13 @@ function shortcutGroups() {
       ['Plus  /  Minus', 'Grow / shrink the box'],
       ['Enter  or  Space', 'Crop the boxed area'],
       ['Esc', 'Cancel the crop box'],
+    ]],
+    ['Auto-detect review — combined sheet', [
+      ['Tab', 'Move into the detected boxes'],
+      ['←  →  or  ↑  ↓', 'Select the previous / next box'],
+      ['Enter  or  Space', 'Reassign the selected box (opens the letter picker)'],
+      ['Delete  or  Backspace', 'Remove the selected box'],
+      ['Esc', 'Close the review (discards the proposal)'],
     ]],
   ];
 }
@@ -3814,12 +3888,128 @@ function loadImg(dataUrl) {
 function readFileAsDataUrl(file) {
   return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(file); });
 }
+
+/* ════════ Auto-threshold (Otsu) + illumination flattening ════════
+   Pure pixel helpers shared by uploads, the trace pipeline, and sheet auto-detect.
+   Luminance formula and the alpha<24 transparency cutoff match rasterizeCurrent exactly. */
+function lumPlane(imageData) {                       // → {lum, mask, w, h}; mask=0 where alpha<24
+  const d = imageData.data, n = imageData.width * imageData.height;
+  const lum = new Uint8ClampedArray(n), mask = new Uint8Array(n);
+  for (let i = 0, p = 0; i < n; i++, p += 4) {
+    if (d[p + 3] < 24) { lum[i] = 255; continue; }   // transparent → paper white, excluded from histogram
+    mask[i] = 1;
+    lum[i] = 0.299 * d[p] + 0.587 * d[p + 1] + 0.114 * d[p + 2];
+  }
+  return { lum, mask, w: imageData.width, h: imageData.height };
+}
+function histOf(lum, mask) {
+  const hist = new Uint32Array(256); let total = 0;
+  for (let i = 0; i < lum.length; i++) if (mask[i]) { hist[lum[i]]++; total++; }
+  return { hist, total };
+}
+/* Otsu: pick the threshold maximizing between-class variance. Clamped to [40,220] so a degenerate
+   image can't produce an unusable default; empty/single-class histogram falls back to 128. */
+function otsuThreshold(hist, total) {
+  if (!total) return 128;
+  let sum = 0; for (let i = 0; i < 256; i++) sum += i * hist[i];
+  let sumB = 0, wB = 0, best = -1, tLo = 127, tHi = 127;
+  for (let t = 0; t < 256; t++) {
+    wB += hist[t]; if (!wB) continue;
+    const wF = total - wB; if (!wF) break;
+    sumB += t * hist[t];
+    const mB = sumB / wB, mF = (sum - sumB) / wF;
+    const v = wB * wF * (mB - mF) * (mB - mF);
+    if (v > best) { best = v; tLo = t; tHi = t; }
+    else if (v === best) tHi = t;   // exact plateau — the empty gap between classes; take its middle
+  }
+  if (best <= 0) return 128;
+  // +1 because consumers test `lum < th` and Otsu's t is the LAST ink bin; without it, ink whose
+  // value sits exactly on the class boundary (uniform scans) falls out of the trace.
+  return Math.max(40, Math.min(220, Math.round((tLo + tHi) / 2) + 1));
+}
+/* Sliding-window box blur, O(n) per pass regardless of radius; edges clamp (extend). */
+function _boxBlurH(src, dst, w, h, r) {
+  const win = 2 * r + 1;
+  for (let y = 0; y < h; y++) {
+    const row = y * w; let acc = 0;
+    for (let x = -r; x <= r; x++) acc += src[row + Math.min(w - 1, Math.max(0, x))];
+    for (let x = 0; x < w; x++) {
+      dst[row + x] = acc / win;
+      acc += src[row + Math.min(w - 1, x + r + 1)] - src[row + Math.max(0, x - r)];
+    }
+  }
+}
+function _boxBlurV(src, dst, w, h, r) {
+  const win = 2 * r + 1;
+  for (let x = 0; x < w; x++) {
+    let acc = 0;
+    for (let y = -r; y <= r; y++) acc += src[Math.min(h - 1, Math.max(0, y)) * w + x];
+    for (let y = 0; y < h; y++) {
+      dst[y * w + x] = acc / win;
+      acc += src[Math.min(h - 1, y + r + 1) * w + x] - src[Math.max(0, y - r) * w + x];
+    }
+  }
+}
+/* Paper-background estimate: heavily blurred luminance (3 box-blur rounds ≈ Gaussian),
+   radius scaled to the image. Transparent pixels contribute paper white so alpha edges don't darken it. */
+function estimateBackground(lum, mask, w, h) {
+  const n = w * h, a = new Float32Array(n), b = new Float32Array(n);
+  for (let i = 0; i < n; i++) a[i] = mask[i] ? lum[i] : 255;
+  const r = Math.max(4, Math.round(Math.min(w, h) / 8));
+  for (let p = 0; p < 3; p++) { _boxBlurH(a, b, w, h, r); _boxBlurV(b, a, w, h, r); }
+  return a;
+}
+function flattenLum(lum, bg) {                       // normalize each pixel against its local background
+  const out = new Uint8ClampedArray(lum.length);
+  for (let i = 0; i < lum.length; i++) out[i] = 255 * lum[i] / Math.max(bg[i], 1);
+  return out;
+}
+/* Flattened working copy of a source image, cached. Single entry: the current item's URL is stable
+   during slider drags, and recomputing on letter switch is cheap for crops — an LRU would just pin
+   multiple full-resolution canvases in memory. Cleared on project load. */
+let _flatCache = { url: null, canvas: null };
+function flatCanvasFor(url) {
+  if (_flatCache.url === url && _flatCache.canvas) return _flatCache.canvas;
+  const im = imgCache[url]; if (!im) return null;
+  const w = im.width, h = im.height;
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+  const ctx = cv.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(im, 0, 0);
+  const id = ctx.getImageData(0, 0, w, h);
+  const pl = lumPlane(id);
+  const flat = flattenLum(pl.lum, estimateBackground(pl.lum, pl.mask, w, h));
+  const d = id.data;
+  for (let i = 0, p = 0; i < flat.length; i++, p += 4) d[p] = d[p + 1] = d[p + 2] = flat[i];   // alpha passes through → rasterizeCurrent's a<24 branch still works
+  ctx.putImageData(id, 0, 0);
+  _flatCache = { url, canvas: cv };
+  return cv;
+}
+/* The one auto-threshold entry point every call site uses (uploads, crops, lighting toggle,
+   sheet auto-detect Apply). Samples at ≤512px long edge — the histogram shape is scale-stable. */
+function autoThresholdFor(src, flatten) {
+  const sw = src.naturalWidth || src.width, sh = src.naturalHeight || src.height;
+  if (!sw || !sh) return 128;
+  const k = Math.min(1, 512 / Math.max(sw, sh));
+  const w = Math.max(1, Math.round(sw * k)), h = Math.max(1, Math.round(sh * k));
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+  const ctx = cv.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(src, 0, 0, w, h);
+  const pl = lumPlane(ctx.getImageData(0, 0, w, h));
+  const lum = flatten ? flattenLum(pl.lum, estimateBackground(pl.lum, pl.mask, w, h)) : pl.lum;
+  const { hist, total } = histOf(lum, pl.mask);
+  return otsuThreshold(hist, total);
+}
+/* ════════ end Auto-threshold + illumination flattening ════════ */
+
 async function uploadForCurrent(file) {
   if (svgUploadOn()) return uploadSvgForCurrent(file);
   const url = await readFileAsDataUrl(file);
   const l = curLetter();
   l.source.kind = 'single'; l.source.dataUrl = url; l.source.cropRect = null;
   const im = await loadImg(url);
+  l.flattenLighting = true;                          // fresh raster upload → lighting flattening on
+  l.thresholdUserSet = false;                        // any hand-tuned threshold belonged to the old image
+  l.binThreshold = autoThresholdFor(im, true);       // Otsu initial threshold (slider still wins later)
   l.transform = defaultFitTransform(im);   // fit height to letter-top, left at LSB
   l.contours = null; l.anchors = null;
   renderLetterGrid(); renderStage(); renderControls();
@@ -3929,6 +4119,9 @@ async function finalizeCrop(l, stageBox) {
   l.source.cropRect = rect; l.source.dataUrl = url; l.source.sheetId = (csh && csh.id) || null;
   if (curKind !== 'letter') l.designMode = 'upload';   // a cropped mark behaves like an uploaded one (coherent if its category later switches to Per Symbol)
   const cim = await loadImg(url);
+  l.flattenLighting = true;                          // new cropped image → same Otsu/lighting init as a fresh upload
+  l.thresholdUserSet = false;
+  l.binThreshold = autoThresholdFor(cim, true);
   l.transform = defaultFitTransform(cim);
   l.contours = null; l.anchors = null;
   renderGrids(); renderStage(); renderControls();
@@ -3984,6 +4177,458 @@ function cropKbdCommit() {
   finalizeCrop(l, box);   // same as the pointer path; a crop isn't undoable by design (source is ITEM_SKIP — reselectArea re-does it)
 }
 function cropKbdCancel() { if (cropDrag && cropDrag.kbd) { cropDrag = null; renderStage(); } }
+
+/* ════════ Auto-detect letters on a combined raster sheet ════════
+   Finds letter-sized ink regions on the current sheet, proposes an assignment in reading order
+   (or the printed template's cell order when the row structure matches), lets the user review/fix
+   the boxes, then commits every assigned box through the same steps as a manual crop.
+   The detection functions below are pure (typed arrays in/out, no DOM) — worker-ready. */
+
+/* Binarize a working copy: flatten lighting → Otsu (or a user override) → ink bit array. */
+function adBinarize(imageData, thOverride) {
+  const pl = lumPlane(imageData);
+  const flat = flattenLum(pl.lum, estimateBackground(pl.lum, pl.mask, pl.w, pl.h));
+  const hs = histOf(flat, pl.mask);
+  const th = thOverride != null ? thOverride : otsuThreshold(hs.hist, hs.total);
+  const n = pl.w * pl.h, bits = new Uint8Array(n);
+  for (let i = 0; i < n; i++) bits[i] = (pl.mask[i] && flat[i] < th) ? 1 : 0;   // dark ink on light paper
+  return { bits, w: pl.w, h: pl.h, th };
+}
+/* One 1-D erosion/dilation run (separable square kernel), sliding-window count, O(n). Out-of-bounds
+   counts as background, so ink touching the image edge erodes normally. */
+function _binRunH(src, dst, w, h, r, erode) {
+  const win = 2 * r + 1;
+  for (let y = 0; y < h; y++) {
+    const row = y * w; let cnt = 0;
+    for (let x = 0; x <= r && x < w; x++) if (src[row + x]) cnt++;
+    for (let x = 0; x < w; x++) {
+      dst[row + x] = erode ? (cnt === win ? 1 : 0) : (cnt > 0 ? 1 : 0);
+      const xa = x + r + 1, xr = x - r;
+      if (xa < w && src[row + xa]) cnt++;
+      if (xr >= 0 && src[row + xr]) cnt--;
+    }
+  }
+}
+function _binRunV(src, dst, w, h, r, erode) {
+  const win = 2 * r + 1;
+  for (let x = 0; x < w; x++) {
+    let cnt = 0;
+    for (let y = 0; y <= r && y < h; y++) if (src[y * w + x]) cnt++;
+    for (let y = 0; y < h; y++) {
+      dst[y * w + x] = erode ? (cnt === win ? 1 : 0) : (cnt > 0 ? 1 : 0);
+      const ya = y + r + 1, yr = y - r;
+      if (ya < h && src[ya * w + x]) cnt++;
+      if (yr >= 0 && src[yr * w + x]) cnt--;
+    }
+  }
+}
+/* Morphological opening (erode ×n then dilate ×n) to split touching letters.
+   Separation level 1–5 → kernel diameter 3/5/5/7/7 px, iterations 1/1/2/2/3. */
+function adOpen(bits, w, h, level) {
+  if (!level) return bits;
+  const r = [1, 2, 2, 3, 3][level - 1], iters = [1, 1, 2, 2, 3][level - 1];
+  let a = bits.slice(); const b = new Uint8Array(bits.length);
+  for (let i = 0; i < iters; i++) { _binRunH(a, b, w, h, r, true);  _binRunV(b, a, w, h, r, true); }
+  for (let i = 0; i < iters; i++) { _binRunH(a, b, w, h, r, false); _binRunV(b, a, w, h, r, false); }
+  return a;
+}
+/* Connected components, 8-connectivity, explicit stack (no recursion). */
+function adComponents(bits, w, h) {
+  const n = w * h, labels = new Int32Array(n), stack = new Int32Array(n);
+  const comps = []; let next = 1;
+  for (let i = 0; i < n; i++) {
+    if (!bits[i] || labels[i]) continue;
+    let sp = 0; stack[sp++] = i; labels[i] = next;
+    let x0 = w, y0 = h, x1 = 0, y1 = 0, area = 0;
+    while (sp) {
+      const p = stack[--sp], px = p % w, py = (p / w) | 0;
+      area++;
+      if (px < x0) x0 = px; if (px > x1) x1 = px;
+      if (py < y0) y0 = py; if (py > y1) y1 = py;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        if (!dx && !dy) continue;
+        const nx = px + dx, ny = py + dy;
+        if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+        const q = ny * w + nx;
+        if (bits[q] && !labels[q]) { labels[q] = next; stack[sp++] = q; }
+      }
+    }
+    comps.push({ label: next, x0, y0, x1, y1, w: x1 - x0 + 1, h: y1 - y0 + 1, area,
+                 fill: area / ((x1 - x0 + 1) * (y1 - y0 + 1)) });
+    next++;
+  }
+  return { comps, labels };
+}
+/* Share of a component's ink inside the outer 15% ring of its bbox — a filled letter keeps ink in
+   the middle; a template box outline concentrates nearly all of it at the perimeter. */
+function _adPerimShare(labels, w, c) {
+  const tx = Math.max(1, Math.round(c.w * 0.15)), ty = Math.max(1, Math.round(c.h * 0.15));
+  let ring = 0;
+  for (let y = c.y0; y <= c.y1; y++) {
+    const yRing = (y < c.y0 + ty || y > c.y1 - ty);
+    for (let x = c.x0; x <= c.x1; x++) {
+      if (labels[y * w + x] !== c.label) continue;
+      if (yRing || x < c.x0 + tx || x > c.x1 - tx) ring++;
+    }
+  }
+  return ring / c.area;
+}
+/* Drop noise, page borders, rule lines, scan artifacts, and template box outlines. */
+function adFilter(comps, w, h, labels) {
+  return comps.filter(c => {
+    if (c.w < 8 || c.h < 8) return false;                       // noise
+    if (c.w > 0.9 * w && c.h > 0.9 * h) return false;           // background / page border
+    const ar = c.w / c.h;
+    if (ar < 0.04 || ar > 25) return false;                     // extreme slivers — always lines
+    // moderate thin/wide shapes are only rejected when they span the sheet (rule lines, page
+    // edges); a handwritten vav/yod bbox can be thinner than 0.15 and must survive
+    if ((ar < 0.15 && c.h > 0.5 * h) || (ar > 6 && c.w > 0.5 * w)) return false;
+    if (c.fill < 0.08) return false;                            // artifacts / broken outlines
+    if (c.fill < 0.15 && _adPerimShare(labels, w, c) > 0.8) return false;   // hollow rectangle (printed box)
+    return true;
+  });
+}
+function _adMedian(arr) { const s = arr.slice().sort((a, b) => a - b); return s.length ? s[(s.length / 2) | 0] : 0; }
+function _adUnion(t, f) {
+  t.x0 = Math.min(t.x0, f.x0); t.y0 = Math.min(t.y0, f.y0);
+  t.x1 = Math.max(t.x1, f.x1); t.y1 = Math.max(t.y1, f.y1);
+  t.w = t.x1 - t.x0 + 1; t.h = t.y1 - t.y0 + 1; t.area += f.area;
+}
+/* Rejoin detached pieces with their letter — handwritten ה and ק legitimately have a separate leg.
+   A fragment (< 25% of the median area) merges into the nearest larger component that is roughly
+   above/below it; fragments that match nothing are discarded. A second pass lets small remaining
+   components (broken strokes) rejoin too — those are kept if they match nothing. */
+function adMergeFragments(comps) {
+  if (comps.length < 2) return comps;
+  const med = _adMedian(comps.map(c => c.area));
+  const frags = comps.filter(c => c.area < 0.25 * med);
+  let bodies = comps.filter(c => c.area >= 0.25 * med);
+  if (!bodies.length) return comps;
+  const medH = _adMedian(bodies.map(c => c.h));
+  const findTarget = (f, list) => {
+    let best = null, bestScore = Infinity;
+    const fcx = (f.x0 + f.x1) / 2;
+    for (const t of list) {
+      if (t === f) continue;
+      const dcx = Math.abs(fcx - (t.x0 + t.x1) / 2);
+      if (dcx > 0.6 * Math.max(f.w, t.w)) continue;
+      const gap = Math.max(0, Math.max(f.y0, t.y0) - Math.min(f.y1, t.y1));
+      if (gap > 0.8 * medH) continue;
+      const score = gap + 0.5 * dcx;
+      if (score < bestScore) { bestScore = score; best = t; }
+    }
+    return best;
+  };
+  const kept = [];
+  for (const f of frags) {
+    const t = findTarget(f, bodies);
+    if (t) _adUnion(t, f);
+    else if (Math.max(f.w, f.h) >= 0.3 * medH) kept.push(f);   // letter-scale but detached (a small yod, a thin vav) — keep as its own box; true debris is discarded
+  }
+  bodies = bodies.concat(kept);
+  const med2 = _adMedian(bodies.map(c => c.area));
+  for (const s of bodies.filter(c => c.area < 0.25 * med2)) {
+    const t = findTarget(s, bodies.filter(b => b !== s && b.area >= 0.25 * med2));
+    if (t) { _adUnion(t, s); bodies = bodies.filter(b => b !== s); }
+  }
+  return bodies;
+}
+/* Group into rows (top within half the average height of the row's first box), rows top-to-bottom.
+   Within a row the reading order is right-to-left — Hebrew — for free-form sheets. */
+function adReadingOrder(comps) {
+  if (!comps.length) return { ordered: [], rows: [] };
+  const avgH = comps.reduce((s, c) => s + c.h, 0) / comps.length;
+  const rows = [];
+  for (const c of comps.slice().sort((a, b) => a.y0 - b.y0)) {
+    const row = rows[rows.length - 1];
+    if (row && Math.abs(c.y0 - row.top) <= 0.5 * avgH) row.boxes.push(c);
+    else rows.push({ top: c.y0, boxes: [c] });
+  }
+  rows.forEach(r => r.boxes.sort((a, b) => (b.x0 + b.x1) - (a.x0 + a.x1)));
+  return { ordered: rows.flatMap(r => r.boxes), rows };
+}
+/* Cheap template-layout match: same row count and per-row counts as a page of the printed Letters
+   template → use that page's known letter order. NOTE the printed grid fills LEFT-to-right (CSS
+   grid in an LTR document — Alef is top-LEFT on the printout), so a matched page assigns cells
+   left-to-right, unlike the RTL free-form fallback. */
+function adMatchTemplate(rows) {
+  const spec = TEMPLATE_SPECS.letters, per = spec.cols * spec.rowsPerPage;
+  const sig = rows.map(r => r.boxes.length);
+  const pages = Math.ceil(spec.items.length / per);
+  for (let p = 0; p < pages; p++) {
+    const pageItems = spec.items.slice(p * per, (p + 1) * per);
+    const rowCounts = [];
+    for (let j = 0; j < pageItems.length; j += spec.cols) rowCounts.push(Math.min(spec.cols, pageItems.length - j));
+    if (sig.length === rowCounts.length && sig.every((n, k) => n === rowCounts[k])) {
+      return { page: p, pages, order: pageItems.map(it => it.cp), label: spec.title };
+    }
+  }
+  return null;
+}
+/* Pad each box (breathing room, like a hand-dragged crop) and map detection px → full-res sheet px. */
+function adPadAndMap(comps, pad, scale, imgW, imgH) {
+  return comps.map(c => {
+    const x0 = Math.max(0, Math.round((c.x0 - pad) / scale));
+    const y0 = Math.max(0, Math.round((c.y0 - pad) / scale));
+    const x1 = Math.min(imgW, Math.round((c.x1 + 1 + pad) / scale));
+    const y1 = Math.min(imgH, Math.round((c.y1 + 1 + pad) / scale));
+    return { x: x0, y: y0, w: Math.max(2, x1 - x0), h: Math.max(2, y1 - y0) };
+  });
+}
+
+/* ── Review-overlay state + orchestration (letters only; proposal lives OUTSIDE project, so
+      Save/autosave never see it and closing the overlay discards it) ── */
+let adState = null;
+const _adYield = () => new Promise(r => setTimeout(r, 0));
+function _adCoreLetters() { return LETTERS.filter(L => L.cat !== 'punct'); }
+async function openAutoDetect() {
+  const sheet = project.combinedSheets[project.combinedIndex];
+  if (!sheet || !sheet.dataUrl) { status('Upload a sheet first.'); return; }
+  await loadImg(sheet.dataUrl).catch(() => {});
+  adState = { sheetId: sheet.id, url: sheet.dataUrl, scale: 1, sep: 0, thOverride: null, detTh: null,
+              boxes: [], matched: null, edits: 0, selId: null };
+  document.getElementById('adTitle').textContent = 'Auto-detect letters — ' + (sheet.name || 'sheet');
+  _adWire();
+  aOpenModal('adOverlay', closeAutoDetect);
+  await adRunDetection();
+}
+function closeAutoDetect() { adState = null; aCloseModal('adOverlay'); status(''); }
+async function adRunDetection() {
+  if (!adState) return;
+  const im = imgCache[adState.url];
+  if (!im) { status('Sheet image is not loaded.'); return; }
+  status('Detecting letters…', true);
+  const scale = Math.min(1, 1800 / Math.max(im.width, im.height));
+  const w = Math.max(1, Math.round(im.width * scale)), h = Math.max(1, Math.round(im.height * scale));
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+  const ctx = cv.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(im, 0, 0, w, h);
+  const id = ctx.getImageData(0, 0, w, h);
+  await _adYield();
+  const bin = adBinarize(id, adState.thOverride);
+  await _adYield();
+  const bits = adOpen(bin.bits, w, h, adState.sep);
+  await _adYield();
+  const { comps, labels } = adComponents(bits, w, h);
+  const kept = adMergeFragments(adFilter(comps, w, h, labels));
+  const { rows } = adReadingOrder(kept);
+  const matched = adMatchTemplate(rows);
+  const seq = matched
+    ? rows.flatMap(r => r.boxes.slice().sort((a, b) => (a.x0 + a.x1) - (b.x0 + b.x1)))   // printed grid → LTR cells
+    : rows.flatMap(r => r.boxes);                                                        // free-form → RTL reading order
+  const rects = adPadAndMap(seq, 10, scale, im.width, im.height);
+  adState.scale = scale; adState.detTh = bin.th; adState.matched = matched;
+  adState.boxes = rects.map((r, i) => ({ id: i + 1, rect: r, cp: null, skip: false }));
+  adState.edits = 0; adState.selId = adState.boxes.length ? adState.boxes[0].id : null;
+  adAssignDefaults();
+  status('');
+  renderAdOverlay();
+}
+/* Default assignment: detections in order vs the expected letters — untraced letters first
+   (free-form sheets); a matched template page assigns its exact cell order instead. */
+function adAssignDefaults() {
+  let order;
+  if (adState.matched) order = adState.matched.order;
+  else {
+    const core = _adCoreLetters();
+    const traced = new Set(project.letters.filter(l => l.contours).map(l => l.codepoint));
+    order = core.filter(L => !traced.has(L.cp)).concat(core.filter(L => traced.has(L.cp))).map(L => L.cp);
+  }
+  adState.boxes.forEach((b, i) => { b.cp = order[i] || null; b.skip = false; });
+}
+/* ── Overlay rendering ── */
+function renderAdOverlay() {
+  const sep = document.getElementById('adSep'), sv = document.getElementById('adSepV');
+  if (sep) sep.value = adState.sep; if (sv) sv.textContent = adState.sep;
+  const th = document.getElementById('adTh');
+  if (th) th.value = adState.thOverride != null ? adState.thOverride : (adState.detTh != null ? adState.detTh : '');
+  adConfirmHide(); adPickerClose();
+  renderAdSummary(); renderAdStage();
+}
+function renderAdSummary() {
+  const el = document.getElementById('adSummary'); if (!el) return;
+  const boxes = adState.boxes;
+  const assigned = boxes.filter(b => b.cp && !b.skip);
+  const applyBtn = document.getElementById('adApplyBtn');
+  if (!boxes.length) {
+    el.innerHTML = '<span class="ad-warn">No letters found.</span> Try a lower ink threshold or Separation 0, '
+      + 'and check that the photo is dark ink on light paper. You can also close this and box letters by hand.';
+    if (applyBtn) applyBtn.disabled = true;
+    return;
+  }
+  const expected = _adCoreLetters().length;
+  const assignedCps = new Set(assigned.map(b => b.cp));
+  const unboxed = _adCoreLetters().filter(L => !assignedCps.has(L.cp)).length;
+  const unassigned = boxes.filter(b => !b.cp && !b.skip).length;
+  let h = `<b>${boxes.length}</b> box(es) found · <b>${expected}</b> letters expected — <b>${assigned.length}</b> will be assigned.`;
+  if (adState.matched) h += ` <span class="ad-match">Matched: ${esc(adState.matched.label)} template layout (page ${adState.matched.page + 1} of ${adState.matched.pages})</span>`;
+  if (unassigned) h += ` <span class="ad-warn">${unassigned} box(es) have no letter (dashed red)</span> — select one to assign it.`;
+  if (unboxed) h += ` ${unboxed} letter(s) have no box — box them by hand afterwards.`;
+  h += ' Select a box to reassign, skip, or remove it.';
+  el.innerHTML = h;
+  if (applyBtn) applyBtn.disabled = !assigned.length;
+}
+function renderAdStage(focusSel) {
+  const host = document.getElementById('adStage'); if (!host) return;
+  const im = imgCache[adState.url];
+  if (!im) { host.innerHTML = ''; return; }
+  const W = im.width, H = im.height, fs = Math.max(14, Math.round(W / 46));
+  let h = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;" role="group" aria-label="Detected letter boxes over the sheet">`;
+  h += `<image href="${adState.url}" x="0" y="0" width="${W}" height="${H}"/>`;
+  adState.boxes.forEach(b => {
+    const r = b.rect, sel = b.id === adState.selId;
+    const meta = b.cp ? letterMeta(b.cp) : null;
+    const name = meta ? meta.name : null;
+    const glyph = b.cp ? String.fromCodePoint(parseInt(b.cp, 16)) : '';
+    const lbl = b.skip ? `Box ${b.id} — skipped` : (name ? `Box ${b.id} — ${name}` : `Box ${b.id} — no letter assigned`);
+    h += `<g class="ad-box${sel ? ' sel' : ''}${b.skip ? ' skip' : ''}${(!b.cp && !b.skip) ? ' un' : ''}" data-id="${b.id}"`
+      + ` role="button" tabindex="${sel ? 0 : -1}" aria-label="${esc(lbl)}. Enter to reassign, Delete to remove.">`;
+    h += `<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}"/>`;
+    h += `<text x="${r.x + 4}" y="${Math.max(fs + 2, r.y - 6)}" font-size="${fs}">${b.id}${b.skip ? ' ✕' : (name ? ' ' + esc(name) : ' ?')}`
+      + (glyph && !b.skip ? ` <tspan lang="he">${glyph}</tspan>` : '') + `</text></g>`;
+  });
+  h += '</svg>';
+  host.innerHTML = h;
+  if (focusSel && adState.selId != null) {
+    const g = host.querySelector(`.ad-box[data-id="${adState.selId}"]`);
+    if (g) g.focus();
+  }
+}
+/* ── Overlay interaction (wired once; delegated like the QA grid) ── */
+function _adWire() {
+  const ov = document.getElementById('adOverlay');
+  if (!ov || ov._wired) return; ov._wired = true;
+  ov.addEventListener('click', e => {
+    const g = e.target.closest && e.target.closest('.ad-box');
+    if (!g || !adState) return;
+    adState.selId = +g.dataset.id;
+    renderAdStage(true);
+    adPickerOpen(adState.selId);
+  });
+  ov.addEventListener('keydown', e => {
+    if (!adState) return;
+    const onBox = e.target.closest && e.target.closest('.ad-box');
+    if (!onBox) return;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); _adSelectRel(1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); _adSelectRel(-1); }
+    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); adPickerOpen(adState.selId); }
+    else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); adRemoveBox(adState.selId); }
+  });
+}
+function _adSelectRel(d) {
+  const boxes = adState.boxes; if (!boxes.length) return;
+  const i = Math.max(0, boxes.findIndex(b => b.id === adState.selId));
+  adState.selId = boxes[(i + d + boxes.length) % boxes.length].id;
+  adPickerClose();
+  renderAdStage(true);
+}
+/* ── Letter picker for the selected box ── */
+function adPickerOpen(boxId) {
+  const b = adState.boxes.find(x => x.id === boxId); if (!b) return;
+  const el = document.getElementById('adPicker');
+  const traced = new Set(project.letters.filter(l => l.contours || (l.source && l.source.dataUrl)).map(l => l.codepoint));
+  const core = _adCoreLetters();
+  const opts = core.filter(L => !traced.has(L.cp)).concat(core.filter(L => traced.has(L.cp)));
+  let h = `<div class="ad-pick-title">Box ${b.id} — assign a letter</div><div class="ad-pick-grid" role="group" aria-label="Assign box ${b.id}">`;
+  opts.forEach(L => {
+    const taken = traced.has(L.cp);
+    h += `<button type="button" class="${taken ? 'taken' : ''}" onclick="adAssign(${b.id}, '${L.cp}')"`
+      + `${taken ? ` title="${esc(L.name)} already has an image or trace — assigning will replace it"` : ''}>`
+      + `<span class="heb" lang="he">${String.fromCodePoint(parseInt(L.cp, 16))}</span> ${esc(L.name)}${taken ? ' •' : ''}</button>`;
+  });
+  h += `<button type="button" onclick="adSkipBox(${b.id})">${b.skip ? 'Un-skip' : 'Skip this box'}</button>`;
+  h += `<button type="button" onclick="adUnassign(${b.id})">Unassign</button>`;
+  h += `<button type="button" onclick="adRemoveBox(${b.id})">Remove box</button>`;
+  h += `<button type="button" onclick="adPickerClose(true)">Close</button></div>`;
+  el.innerHTML = h; el.hidden = false;
+  const first = el.querySelector('button'); if (first) first.focus();
+}
+function adPickerClose(refocus) {
+  const el = document.getElementById('adPicker');
+  if (el) { el.hidden = true; el.innerHTML = ''; }
+  if (refocus) renderAdStage(true);
+}
+function adAssign(boxId, cp) {
+  const b = adState.boxes.find(x => x.id === boxId); if (!b) return;
+  adState.boxes.forEach(o => { if (o !== b && o.cp === cp) o.cp = null; });   // one letter ↔ one box
+  b.cp = cp; b.skip = false; adState.edits++;
+  adPickerClose(); renderAdSummary(); renderAdStage(true);
+}
+function adSkipBox(boxId) {
+  const b = adState.boxes.find(x => x.id === boxId); if (!b) return;
+  b.skip = !b.skip; adState.edits++;
+  adPickerClose(); renderAdSummary(); renderAdStage(true);
+}
+function adUnassign(boxId) {
+  const b = adState.boxes.find(x => x.id === boxId); if (!b) return;
+  b.cp = null; b.skip = false; adState.edits++;
+  adPickerClose(); renderAdSummary(); renderAdStage(true);
+}
+function adRemoveBox(boxId) {
+  const i = adState.boxes.findIndex(x => x.id === boxId); if (i < 0) return;
+  adState.boxes.splice(i, 1); adState.edits++;
+  const next = adState.boxes[Math.min(i, adState.boxes.length - 1)];
+  adState.selId = next ? next.id : null;
+  adPickerClose(); renderAdSummary(); renderAdStage(true);
+}
+/* ── Toolbar ── */
+function adSetSep(v) {
+  adState.sep = Math.max(0, Math.min(5, +v || 0));
+  const sv = document.getElementById('adSepV'); if (sv) sv.textContent = adState.sep;
+}
+function adSetTh(v) {
+  const n = parseInt(v, 10);
+  adState.thOverride = isNaN(n) ? null : Math.max(1, Math.min(254, n));
+}
+function adRedetect(force) {
+  if (adState.edits && !force) {
+    const n = document.getElementById('adEditN'); if (n) n.textContent = adState.edits;
+    const c = document.getElementById('adConfirm');
+    if (c) { c.hidden = false; const btn = c.querySelector('button'); if (btn) btn.focus(); }
+    return;
+  }
+  adConfirmHide();
+  adRunDetection();
+}
+function adConfirmHide() { const c = document.getElementById('adConfirm'); if (c) c.hidden = true; }
+/* ── Apply: commit every assigned box through the manual-crop steps, as ONE undo entry.
+      Crops come from the ORIGINAL sheet (lighting flattening is trace-time only), so the stored
+      PNGs are byte-identical to hand-dragged crops. No synchronous tracing — letters auto-trace
+      on their first Trace visit, exactly like manual crops. ── */
+async function adApply() {
+  if (!adState) return;
+  const picks = adState.boxes.filter(b => b.cp && !b.skip);
+  if (!picks.length) { status('No boxes are assigned to letters — nothing to apply.'); return; }
+  const im = imgCache[adState.url]; if (!im) return;
+  const applyBtn = document.getElementById('adApplyBtn'); if (applyBtn) applyBtn.disabled = true;
+  const prep = [];
+  for (let i = 0; i < picks.length; i++) {
+    const b = picks[i], r = b.rect;
+    const cv = document.createElement('canvas'); cv.width = r.w; cv.height = r.h;
+    cv.getContext('2d').drawImage(im, r.x, r.y, r.w, r.h, 0, 0, r.w, r.h);   // same draw as finalizeCrop
+    const url = cv.toDataURL('image/png');
+    await loadImg(url);
+    prep.push({ cp: b.cp, rect: r, url, th: autoThresholdFor(cv, true) });
+    if ((i & 3) === 3) { status(`Preparing ${i + 1} / ${picks.length} letters…`, true); await _adYield(); }
+  }
+  const sheetId = adState.sheetId;
+  udDo(prep.map(p => ({ t: 'item', kind: 'letter', cp: p.cp, withSource: true })),
+       'auto-detect letters (' + prep.length + ')', () => {
+    prep.forEach(p => {
+      const l = project.letters.find(x => x.codepoint === p.cp); if (!l) return;
+      l.source.kind = 'combined';
+      l.source.cropRect = p.rect; l.source.dataUrl = p.url; l.source.sheetId = sheetId;
+      l.transform = defaultFitTransform(imgCache[p.url]);
+      l.contours = null; l.anchors = null;                    // the fields finalizeCrop clears (curves untouched — parity)
+      l.flattenLighting = true; l.thresholdUserSet = false; l.binThreshold = p.th;
+    });
+  });
+  adState = null; aCloseModal('adOverlay');
+  renderGrids(); renderStage(); renderControls();
+  status(`Assigned ${prep.length} letter(s) from the sheet — open each to align, then trace. Box any others by hand.`);
+}
+/* ════════ end Auto-detect letters ════════ */
+
 /* ── Combined multi-sheet navigator (Previous / counter / Next + remove), letters only ── */
 function combinedNavHTML() {
   if (curKind !== 'letter') return '';
@@ -4715,6 +5360,7 @@ function renderMarkControls(c, it) {
   } else if (workMode === 'trace') {
     h += `<div class="inline">Ink threshold <input type="range" min="1" max="254" value="${it.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()"> <span id="thV" class="readout">${it.binThreshold}</span></div>
       <label class="chk"><input type="checkbox" ${it.invert?'checked':''} onchange="liveInvert(this.checked)"> Invert (light ink on dark)</label>
+      ${ (it.source && it.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${itemFlattenOn(it)?'checked':''} onchange="liveFlatten(this.checked)" aria-label="Even out lighting — remove photo shadows before tracing"> Even out lighting (photo shadows)</label>` : '' }
       <div class="inline">Detail (less ↔ more) <input type="range" min="0" max="100" step="1" value="${Math.round(100 - it.epsilon*2.5)}" oninput="liveDetail(this.value)" onchange="udBurstCommit()"> <span id="epV" class="readout">${Math.round(100 - it.epsilon*2.5)}</span></div>
       <div class="inline">Corners (sharp ↔ round) <input type="range" min="0" max="90" step="1" value="${it.cornerAngle != null ? it.cornerAngle : 32}" oninput="liveCorners(this.value)" onchange="udBurstCommit()"> <span id="cnV" class="readout">${it.cornerAngle != null ? it.cornerAngle : 32}</span></div>
       ${ (it.source && it.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${it.outlineOnly?'checked':''} onchange="liveOutlineOnly(this.checked)"> Outline only? (hollow “bubble” letter)</label>` : '' }
@@ -5206,7 +5852,8 @@ function onStagePointerUp() {
 
 /* ════════ Vectorization: rasterize → binarize → marching squares → RDP → winding ════════ */
 function rasterizeCurrent(l) {
-  const url = curImageUrl(); const im = imgCache[url]; if (!im) return null;
+  const url = curImageUrl(); const im0 = imgCache[url]; if (!im0) return null;
+  const im = itemFlattenOn(l) ? (flatCanvasFor(url) || im0) : im0;   // flattened copy has the same intrinsic size, so l.transform applies identically
   const W = 600, H = 560, RES = 1.4;
   const cv = document.createElement('canvas'); cv.width = W*RES; cv.height = H*RES;
   const ctx = cv.getContext('2d', { willReadFrequently: true });
@@ -5831,6 +6478,7 @@ let _rawTrace = null;     // { sig, loops:[[ [x,y]... ] ...] } in font units, pr
 let _traceRAF = 0;
 function traceSig(l) {
   return l.codepoint + '|' + (l.transform||[]).join(',') + '|' + l.binThreshold + '|' + l.invert
+       + '|' + (itemFlattenOn(l) ? 1 : 0)   // lighting flattening changes the raster → invalidates the raw-loop cache
        + '|' + JSON.stringify(l.captureBox || captureBoxFont(l)) + '|' + (curImageUrl()||'');
 }
 function rawLoopsFontUnits(l) {
@@ -5925,10 +6573,25 @@ function liveCorners(v) {
 function liveThreshold(v) {
   udBurstBegin([itemScope()], 'trace — ' + curLetter().name);
   const l = curLetter(); l.binThreshold = +v;
+  l.thresholdUserSet = true;                     // hand-set → Otsu never overwrites it again
   const th = document.getElementById('thV'); if (th) th.textContent = v;
   scheduleRetrace();
 }
 function liveInvert(checked) { udBurstBegin([itemScope()], 'trace — ' + curLetter().name); curLetter().invert = checked; scheduleRetrace(); udBurstCommit(); }
+/* "Even out lighting" — divide out the blurred paper background before thresholding. Recomputes the
+   Otsu threshold for the new pixel basis unless the user has hand-set one. */
+function liveFlatten(checked) {
+  const l = curLetter();
+  udBurstBegin([itemScope()], 'trace — ' + l.name);
+  l.flattenLighting = !!checked;
+  if (!itemThresholdUserSet(l)) {
+    const im = imgCache[curImageUrl()];
+    if (im) l.binThreshold = autoThresholdFor(im, l.flattenLighting);
+  }
+  scheduleRetrace();
+  udBurstCommit();
+  renderControls();         // refresh the threshold slider/readout (checkbox change, never mid-drag)
+}
 /* Outline only ("bubble" letter): hollow the glyph into a ring of `lineWeight`. */
 function liveOutlineOnly(checked) {
   udBurstBegin([itemScope()], 'trace — ' + curLetter().name);
@@ -7413,6 +8076,7 @@ function renderTraceLeft(L, l) {
     <div class="side-slider-label">Ink threshold <span id="thV" class="readout">${l.binThreshold}</span></div>
     <input type="range" class="side-slider" min="1" max="254" value="${l.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()">
     <label class="chk"><input type="checkbox" ${l.invert?'checked':''} onchange="liveInvert(this.checked)"> Invert (light ink on dark)</label>
+    ${ (l.source && l.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${itemFlattenOn(l)?'checked':''} onchange="liveFlatten(this.checked)" aria-label="Even out lighting — remove photo shadows before tracing"> Even out lighting (photo shadows)</label>` : '' }
     <div class="side-slider-label">Detail (less ↔ more) <span id="epV" class="readout">${detail}</span></div>
     <input type="range" class="side-slider" min="0" max="100" step="1" value="${detail}" oninput="liveDetail(this.value)" onchange="udBurstCommit()">
     <div class="side-slider-label">Corners (sharp ↔ round) <span id="cnV" class="readout">${corner}</span></div>
@@ -7673,6 +8337,7 @@ function inputModeBlock() {
       <div class="allowed">${ svg ? 'Allowed: SVG only.' : 'Allowed: any image file — PNG, JPG, GIF, WebP. You can add several sheets and flip between them.' }</div>
       <input type="file" id="combinedFile" accept="${svg?'.svg,image/svg+xml':'image/*'}" multiple style="display:none;">
       ${ svg && project.combinedSheets.length ? `<div class="ctl-row" style="margin-top:6px;"><button class="ctl-btn" onclick="autoSplitCombinedSvg()">Auto-split by name</button></div>` : '' }
+      ${ !svg && project.combinedSheets.length ? `<div class="ctl-row" style="margin-top:6px;"><button class="ctl-btn" onclick="openAutoDetect()" title="Find every letter on this sheet automatically and review the proposed boxes">▦ Auto-detect letters</button></div>` : '' }
     </div>
     <div id="fontUploadRow" style="display:${(!svg && project.inputMode==='font')?'':'none'};">
       <div class="drop" id="fontDrop">Drop a font (TTF/OTF) here, or click to browse.</div>
@@ -7742,6 +8407,7 @@ function udShortcutBlocked() {
   if (document.getElementById('askOverlay')?.classList.contains('open')) return true;
   if (document.getElementById('helpOverlay')?.classList.contains('open')) return true;
   if (document.getElementById('qaOverlay')?.classList.contains('open')) return true;
+  if (document.getElementById('adOverlay')?.classList.contains('open')) return true;
   return false;
 }
 /* Ctrl/Cmd+Z = undo · Ctrl/Cmd+Shift+Z or Ctrl+Y = redo */
@@ -10009,6 +10675,7 @@ async function applyProjectData(data) {           // shared by file-load and "Lo
   if (!data || data.format !== 'hebrew-font-maker-project') { status('Not a Font Maker project file.'); return false; }
   project = migrateProject(data);
   udClear();                 // loaded project → reset undo history
+  _flatCache = { url: null, canvas: null };   // don't pin a full-res flattened canvas from the previous project
   // preload images
   const urls = [];
   (project.combinedSheets || []).forEach(s => { if (s.dataUrl) urls.push(s.dataUrl); });
@@ -10170,6 +10837,8 @@ function migrateProject(data) {
     if (ex.invert == null) ex.invert = false;
     if (ex.outlineOnly == null) ex.outlineOnly = false;   // backfilled OFF → old saves render identically (no re-trace)
     if (ex.lineWeight == null) ex.lineWeight = 70;
+    if (ex.flattenLighting == null) ex.flattenLighting = true;   // absent = ON — old items adopt lighting flattening on their next re-trace
+    if (ex.thresholdUserSet == null) ex.thresholdUserSet = (ex.binThreshold !== 128);   // legacy non-default ⇒ hand-set
     if (ex.markShapes == null) ex.markShapes = {};   // per-letter custom mark shapes ("Apply to current letter"); empty = use global/default
     if (ex.lsb === undefined) ex.lsb = null;   // per-letter left side bearing (Letter Metrics)
     if (ex.rsb === undefined) ex.rsb = null;   // per-letter right margin (independent of Width)
@@ -10191,6 +10860,8 @@ function migrateProject(data) {
       if (l.invert == null) l.invert = false;
       if (l.outlineOnly == null) l.outlineOnly = false;
       if (l.lineWeight == null) l.lineWeight = 70;
+      if (l.flattenLighting == null) l.flattenLighting = true;
+      if (l.thresholdUserSet == null) l.thresholdUserSet = (l.binThreshold !== 128);
       if (l.lsb === undefined) l.lsb = null;
       if (l.rsb === undefined) l.rsb = null;
       data.letters.push(l);
