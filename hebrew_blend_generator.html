@@ -2034,6 +2034,12 @@
       page-break-before: always;
     }
     .trace-row { page-break-inside: avoid; break-inside: avoid; }
+    /* Keep individual worksheet items from splitting mid-cell/mid-card across
+       a page in the browser Print path (the PDF export rasterizes per sheet,
+       so it is unaffected). Scoped to single items only — the grids themselves
+       still flow across pages at cell boundaries. (.bingo-card, .caller-item,
+       .match-item already carry this.) */
+    .blend-cell, .ws-cell, .cw-cell, .rw-card { page-break-inside: avoid; break-inside: avoid; }
 
     /* Dark-mode print reset (window.print path). exportPDF() already strips
        .dark on its html2canvas clone; this makes the browser Print output
