@@ -2156,7 +2156,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '3.7';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '3.8';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2368,6 +2368,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v3.8</strong> — <strong>Crop from a sheet by keyboard.</strong> When cutting a letter or mark out of a "one image, all letters" / combined sheet, you can now do it without a mouse: the arrow keys move a crop box (Shift for smaller steps), <strong>+</strong> / <strong>−</strong> resize it, <strong>Enter</strong> crops, and <strong>Esc</strong> cancels. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.7</strong> — <strong>Edit points by keyboard.</strong> In Edit-points mode you can now select points without a mouse: <strong>,</strong> and <strong>.</strong> step to the previous / next point, and <strong>i</strong> inserts a new point after the selected one — so the existing arrow-nudge and Delete shortcuts are finally reachable keyboard-only. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.6</strong> — <strong>Accessibility polish.</strong> Keyboard focus now shows a clear gold outline on the letter tiles, step tabs, and buttons; the Hebrew letters in the grids are tagged as Hebrew so screen readers pronounce them with a Hebrew voice; and the on/off toggle buttons (dark mode, Default/Custom, Per Symbol/Combined, upper/lowercase, and the mark editor mode) now announce their pressed state to assistive technology. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.5</strong> — Autosave now also captures the <strong>opacity and overlay view sliders</strong> (template, reference image, glyph) — previously a change to only those settings could be lost if the browser closed before another edit. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -2581,6 +2582,13 @@ function shortcutGroups() {
     ['Nikkud / Trop & Align placement', [
       ['←  ↑  →  ↓', 'Nudge the anchor, or the aligned image'],
       ['Shift + arrows', 'Fine (1-unit) nudge'],
+    ]],
+    ['Crop a letter from a sheet — Align step', [
+      ['←  ↑  →  ↓', 'Move the crop box (first key seeds it)'],
+      ['Shift + arrows', 'Move in smaller steps'],
+      ['Plus  /  Minus', 'Grow / shrink the box'],
+      ['Enter  or  Space', 'Crop the boxed area'],
+      ['Esc', 'Cancel the crop box'],
     ]],
   ];
 }
@@ -3723,6 +3731,7 @@ function _setWorkMode(mode) {
   }
   workMode = mode;
   nodeModel = null; nodeSel.clear(); nodeDrag = null;   // node-editor state is per-entry — rebuilt by renderStage when mode==='nodes'
+  cropDrag = null;                                       // drop any in-progress crop draft when the step changes
   if (mode !== 'anchors') precompTarget = null;   // leaving the placement step ends any precomposed-form edit
   if (mode === 'anchors') {   // keep anchorCat on an enabled category
     if (anchorCat === 'trop' && !project.font.trop.enabled) anchorCat = 'nikkud';
@@ -3934,6 +3943,47 @@ function reselectArea() {
   l.source.dataUrl = null; l.contours = null; l.anchors = null;
   renderGrids(); renderStage(); renderControls();
 }
+/* ── Keyboard crop marquee (accessibility): the pointer path (startCrop → pointermove → pointerup)
+   is otherwise the ONLY way to draw the crop box, so keyboard-only users can't crop a letter/mark
+   out of a combined sheet. These drive a `cropDrag.kbd` draft box (stage px, deliberately WITHOUT a
+   `start` field so the pointer move/up crop branches ignore it): arrows move, +/− resize, Enter
+   crops, Esc cancels. The draft renders through the existing cropSelectSVG `cropDrag.box` path. ── */
+function _cropClampBox(b) {                            // keep the draft inside the sheet's stage rect (min 10px)
+  const f = cropFit; if (!f) return b;
+  b.w = Math.max(10, Math.min(b.w, f.w)); b.h = Math.max(10, Math.min(b.h, f.h));
+  b.x = Math.max(f.ox, Math.min(b.x, f.ox + f.w - b.w));
+  b.y = Math.max(f.oy, Math.min(b.y, f.oy + f.h - b.h));
+  return b;
+}
+function cropKbdEnsure() {                             // seed a centered ~40% draft if none exists
+  if (!cropFit) return false;
+  if (!(cropDrag && cropDrag.kbd)) {
+    const f = cropFit;
+    cropDrag = { kbd: true, box: _cropClampBox({ x: f.ox + f.w*0.3, y: f.oy + f.h*0.3, w: f.w*0.4, h: f.h*0.4 }) };
+    status('Crop box — arrows move · +/− resize · Enter to crop · Esc to cancel.');
+    renderStage();
+  }
+  return true;
+}
+function cropKbdMove(dx, dy) {
+  if (!cropKbdEnsure()) return;
+  cropDrag.box.x += dx; cropDrag.box.y += dy; _cropClampBox(cropDrag.box); renderStage();
+}
+function cropKbdResize(d) {                            // grow/shrink symmetrically about the box centre
+  if (!cropKbdEnsure()) return;
+  const b = cropDrag.box, cx = b.x + b.w/2, cy = b.y + b.h/2;
+  b.w += d; b.h += d; _cropClampBox(b);
+  b.x = cx - b.w/2; b.y = cy - b.h/2; _cropClampBox(b);
+  renderStage();
+}
+function cropKbdCommit() {
+  if (!(cropDrag && cropDrag.kbd && cropDrag.box)) return;
+  const box = cropDrag.box, l = curLetter();
+  if (!(box.w > 8 && box.h > 8)) return;
+  cropDrag = null;
+  finalizeCrop(l, box);   // same as the pointer path; a crop isn't undoable by design (source is ITEM_SKIP — reselectArea re-does it)
+}
+function cropKbdCancel() { if (cropDrag && cropDrag.kbd) { cropDrag = null; renderStage(); } }
 /* ── Combined multi-sheet navigator (Previous / counter / Next + remove), letters only ── */
 function combinedNavHTML() {
   if (curKind !== 'letter') return '';
@@ -4680,7 +4730,7 @@ function renderMarkControls(c, it) {
       const hasSheet = project.font[cat].combinedImage && project.font[cat].combinedImage.dataUrl;
       if (!curImageUrl()) {
         h += `<div class="hint">${ hasSheet
-          ? `Drag a box around <b>${it.name}</b> on the sheet above to bring it into the editor.`
+          ? `Drag a box around <b>${it.name}</b> on the sheet above to bring it into the editor. Keyboard: arrows move the box, +/− resize, Enter to crop.`
           : `Combined mode: upload a sheet of ${label} symbols in the sidebar first, then drag a box around <b>${it.name}</b>.` }</div>`;
       } else {
         h += `<div class="hint">Region selected for <b>${it.name}</b>. Fine-tune below, then trace.</div>
@@ -4969,7 +5019,7 @@ async function renderStage() {
 function renderLegend() {
   const el = document.getElementById('stageLegend');
   if (isCropSelect(curLetter())) {
-    el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;">${combinedNavHTML()}<span>Click and drag a box around the letter on the sheet, then release to bring it into the editor.</span></div>`;
+    el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;">${combinedNavHTML()}<span>Click and drag a box around the letter on the sheet, then release to bring it into the editor. <span style="opacity:0.75;">Keyboard: arrows move the box, +/− resize, Enter to crop.</span></span></div>`;
     return;
   }
   if (workMode === 'anchors') {
@@ -5087,7 +5137,7 @@ function onStagePointerMove(e) {
     applyPieceDrag(p, eDrag.p0, eDrag.mode, sx, sy, eDrag.start[0], eDrag.start[1]);
     renderStage(); return;
   }
-  if (cropDrag) {
+  if (cropDrag && cropDrag.start) {                     // pointer session only (keyboard drafts have no `start`)
     const [sx,sy] = clientToStage(e);
     cropDrag.box = { x: Math.min(cropDrag.start[0],sx), y: Math.min(cropDrag.start[1],sy),
                      w: Math.abs(sx-cropDrag.start[0]), h: Math.abs(sy-cropDrag.start[1]) };
@@ -5146,7 +5196,7 @@ function onStagePointerUp() {
   if (metricDrag) { udPush(metricDrag.ud); metricDrag = null; renderControls(); return; }
   if (guideDrag) { udPush(guideDrag.ud); guideDrag = null; renderControls(); return; }
   if (eDrag) { udPush(eDrag.ud); eDrag = null; renderGrids(); renderControls(); return; }
-  if (cropDrag) {
+  if (cropDrag && cropDrag.start) {                     // pointer session only (keyboard drafts have no `start`)
     const box = cropDrag.box; cropDrag = null;
     if (box && box.w > 8 && box.h > 8) finalizeCrop(curLetter(), box); else renderStage();
     return;
@@ -7264,7 +7314,7 @@ function renderAlignLeft(L, l) {
       <input type="file" id="letterFile" accept="${svg?'.svg,image/svg+xml':'image/*'}" style="display:none;">`;
   } else if (project.inputMode === 'combined' && project.combinedSheets.length && curKind === 'letter') {
     html += (!l.source.dataUrl)
-      ? `<div class="hint">Pick a letter, then drag a box around it on the sheet to bring it into the editor.</div>`
+      ? `<div class="hint">Pick a letter, then drag a box around it on the sheet to bring it into the editor. Keyboard: arrows move the box, +/− resize, Enter to crop.</div>`
       : `<div class="hint">Region selected for <b>${l.name}</b>.</div>
          <div class="ctl-row"><button class="ctl-btn" onclick="reselectArea()">↺ Re-select area</button></div>`;
   }
@@ -7732,6 +7782,7 @@ document.addEventListener('keydown', e => {
     }
   }
   if (workMode !== 'anchors' && workMode !== 'align') return;
+  if (workMode === 'align' && isCropSelect(curLetter())) return;   // crop mode has its own keyboard handler
   const step = e.shiftKey ? 1 : 5; let dx=0,dy=0;
   if (e.key==='ArrowLeft') dx=-step; else if (e.key==='ArrowRight') dx=step;
   else if (e.key==='ArrowUp') dy=step; else if (e.key==='ArrowDown') dy=-step; else return;
@@ -7786,6 +7837,22 @@ document.addEventListener('keydown', e => {
   }
   if (e.key === 'Delete' || e.key === 'Backspace') { if (!nodeSel.size) return; e.preventDefault(); doNodeDelete(); return; }
   if (e.key === 'Escape') { e.preventDefault(); if (nodeSel.size) { nodeSel.clear(); renderStage(); renderControls(); } else setWorkMode('trace'); return; }
+});
+/* keyboard crop marquee (combined-sheet crop, Align step) — pointer-only otherwise. Arrows move the
+   box (Shift = fine), +/− resize, Enter/Space crops, Esc cancels. First key seeds a centred draft. */
+document.addEventListener('keydown', e => {
+  if (workMode !== 'align' || !isCropSelect(curLetter())) return;
+  if (udShortcutBlocked()) return;                       // typing in a field / modal open / no project
+  if (e.ctrlKey || e.metaKey || e.altKey) return;        // let Ctrl/Cmd+Z (undo/redo) fall through
+  const step = e.shiftKey ? 2 : 10;
+  if (e.key==='ArrowLeft')  { e.preventDefault(); cropKbdMove(-step, 0); return; }
+  if (e.key==='ArrowRight') { e.preventDefault(); cropKbdMove(step, 0);  return; }
+  if (e.key==='ArrowUp')    { e.preventDefault(); cropKbdMove(0, -step);  return; }
+  if (e.key==='ArrowDown')  { e.preventDefault(); cropKbdMove(0, step);   return; }
+  if (e.key==='+' || e.key==='=') { e.preventDefault(); cropKbdResize(12);  return; }
+  if (e.key==='-' || e.key==='_') { e.preventDefault(); cropKbdResize(-12); return; }
+  if (e.key==='Enter' || e.key===' ') { e.preventDefault(); cropKbdCommit(); return; }
+  if (e.key==='Escape') { e.preventDefault(); cropKbdCancel(); return; }
 });
 
 /* ════════════════════════════════════════════════════════════════════════
