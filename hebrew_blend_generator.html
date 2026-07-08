@@ -3172,7 +3172,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <label class="toggle"><input type="checkbox" id="excludeRepeats"><span class="slider"></span></label>
         </div>
         <div class="option-row">
-          <div class="option-label">Landscape Print</div>
+          <div class="option-label">Landscape Print <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box">Rotates the printout to landscape (wide) for both 🖨 Print and Export PDF, and widens the blends grid. Turn off for portrait (tall).</span></span></div>
           <label class="toggle"><input type="checkbox" id="landscapeMode" onchange="toggleLandscape(this.checked)"><span class="slider"></span></label>
         </div>
         <div class="option-row">
@@ -4303,6 +4303,7 @@ function wsMetaHTML() {
 // ── LANDSCAPE MODE ──
 function toggleLandscape(on) {
   document.body.classList.toggle('landscape-mode', on);
+  _applyPageSizeStyle();   // re-emit @page with/without the landscape keyword so window.print() rotates
   if (blends.length) renderWorksheet(false);
 }
 
@@ -5436,15 +5437,19 @@ function setColorMode(mode) {
   renderWorksheet(false);
 }
 
-/* Page size (Letter / A4). Drives BOTH output paths: the browser-print @page
-   size (via an injected <style>, since @page can't be scoped by a body class)
-   and the jsPDF export format (read at exportPDF time). Default 'letter' — a
-   US-Letter-tuned layout, so we inject @page{size:letter} even in an A4-locale
-   browser so the default is consistent everywhere until a teacher picks A4. */
+/* Page size (Letter / A4) + orientation. Drives BOTH output paths: the
+   browser-print @page (via an injected <style>, since @page can't be scoped by
+   a body class) and the jsPDF export (read at exportPDF time). Default 'letter'
+   portrait — a US-Letter-tuned layout, so we inject @page{size:letter} even in
+   an A4-locale browser so the default is consistent everywhere until a teacher
+   picks A4. When the "Landscape Print" toggle (body.landscape-mode) is on we
+   emit `size: <page> landscape` so window.print() actually rotates the paper
+   (otherwise the toggle only widened the on-screen grid). */
 function _applyPageSizeStyle() {
   let st = document.getElementById('pageSizeStyle');
   if (!st) { st = document.createElement('style'); st.id = 'pageSizeStyle'; document.head.appendChild(st); }
-  st.textContent = '@page { size: ' + (pageSize === 'a4' ? 'A4' : 'letter') + '; margin: 0.35in; }';
+  const orient = document.body.classList.contains('landscape-mode') ? ' landscape' : '';
+  st.textContent = '@page { size: ' + (pageSize === 'a4' ? 'A4' : 'letter') + orient + '; margin: 0.35in; }';
 }
 function setPageSize(v) {
   pageSize = (v === 'a4') ? 'a4' : 'letter';
