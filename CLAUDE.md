@@ -701,6 +701,10 @@ site-wide keys it also reads: `hebrewBlender_darkMode`, `hebrewBlender_welcomeSe
   It auto-closes before running `onClick`; to make elements inside the body interactive (like the
   export-warning letter chips), wire listeners on `#askBody` **after** the `askModal(...)` call.
 - **Toasts**: `status(msg, sticky)` — auto-clears in 4s unless `sticky`.
+  - Page-level toast helpers elsewhere in the suite (for the toast-adoption candidate): generator
+    `showAppToast` (`hebrew_blend_generator.html`), torah `showHintToast` (`torah_trainer.html`),
+    generator preview banner `showPreviewNotice`; plus the `.ivrit` engine's `ivritStatus` for
+    save/restore feedback.
 - **Escaping**: use `esc()` (escapes all five metacharacters, including `'`). This is the
   canonical helper across the suite; the older `escapeHtml()` (which didn't escape `'`) was
   removed on 2026-07-07 and all its call sites migrated to `esc()`.
