@@ -2330,8 +2330,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <div style="display:flex;align-items:stretch;border:1px solid var(--border);border-radius:4px;overflow:hidden;width:90px;">
               <input type="number" id="bingoCards" aria-label="Number of bingo cards" min="1" max="200" value="30" style="flex:1;font-size:0.78rem;padding:3px 6px;border:none;font-family:inherit;background:var(--white);color:var(--text);text-align:center;-moz-appearance:textfield;" oninput="this.value=Math.max(1,Math.min(200,parseInt(this.value)||1))">
               <div style="display:flex;flex-direction:column;border-left:1px solid var(--border);">
-                <button type="button" onclick="adjustBingoCards(-1)" title="Fewer cards" aria-label="Fewer cards" style="flex:1;padding:0 5px;background:var(--white);border:none;border-bottom:1px solid var(--border);cursor:pointer;font-size:0.55rem;color:var(--text);line-height:1;">▲</button>
-                <button type="button" onclick="adjustBingoCards(1)" title="More cards" aria-label="More cards" style="flex:1;padding:0 5px;background:var(--white);border:none;cursor:pointer;font-size:0.55rem;color:var(--text);line-height:1;">▼</button>
+                <button type="button" onclick="adjustBingoCards(1)" title="More cards" aria-label="More cards" style="flex:1;padding:0 5px;background:var(--white);border:none;border-bottom:1px solid var(--border);cursor:pointer;font-size:0.55rem;color:var(--text);line-height:1;">▲</button>
+                <button type="button" onclick="adjustBingoCards(-1)" title="Fewer cards" aria-label="Fewer cards" style="flex:1;padding:0 5px;background:var(--white);border:none;cursor:pointer;font-size:0.55rem;color:var(--text);line-height:1;">▼</button>
               </div>
             </div>
           </div>
