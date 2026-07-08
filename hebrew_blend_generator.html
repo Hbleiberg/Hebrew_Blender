@@ -8169,13 +8169,13 @@ async function exportPDF() {
     }
     if (sheets.length === 0) sheets = [ws];
 
-    // Bingo PDFs render in landscape — 4-up cards use the paper better that
-    // way, and the wider page leaves more room for Hebrew cells. Tracing follows
-    // the Landscape Print toggle (wider lines = more writing room); its rows
-    // already paginate to the chosen orientation's page height.
+    // Orientation matches the "Landscape Print" toggle for every worksheet type,
+    // so the PDF export agrees with window.print() and the on-screen layout (the
+    // toggle rotates the paper and, for blends, widens the grid to 10 cols).
+    // Bingo is always landscape regardless of the toggle — 4-up cards use the
+    // paper better that way, with more room for Hebrew cells.
     const isBingoPDF = bingoPages.length > 0;
-    const isTracingPDF = document.getElementById('tracingToggle')?.checked;
-    const wantLandscape = isBingoPDF || (isTracingPDF && document.body.classList.contains('landscape-mode'));
+    const wantLandscape = isBingoPDF || document.body.classList.contains('landscape-mode');
     const pdf = new jsPDF({
       orientation: wantLandscape ? 'landscape' : 'portrait',
       unit: 'mm',
