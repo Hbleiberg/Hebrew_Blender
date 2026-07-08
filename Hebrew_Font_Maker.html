@@ -10257,9 +10257,6 @@ function migrateProject(data) {
 /* ════════════════════════════════════════════════════════════════════════
    INIT
    ════════════════════════════════════════════════════════════════════════ */
-function initPanels() {
-  document.querySelectorAll('.panel-title').forEach(t => t.addEventListener('click', () => t.parentElement.classList.toggle('collapsed')));
-}
 function maybeShowMobileWarn(){
   try { if (localStorage.getItem('hebrewFontMaker_mobileWarnDismissed') === '1') return; } catch(e){}
   // Only warn on actual touch devices (phones/tablets). A narrow desktop window — non-maximized,
@@ -10390,7 +10387,7 @@ function copyOutlineDo(){
   status('Copied outline from ' + src.name + ' — reshape it with “✎ Edit points”.');
 }
 function init() {
-  initDark(); initPanels();
+  initDark();
   maybeShowMobileWarn();   // small-screen "best on desktop" splash (once, unless dismissed)
   maybeShowWelcome();      // first-launch welcome (bails if the mobile warning is showing; re-fires when that's dismissed)
   // stage drag move/up live once on the persistent <svg> (handles transform drag)
