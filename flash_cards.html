@@ -653,6 +653,23 @@ body.dark .slider::before { background: #d8dde9; }
 .count-btn.active {
   background: var(--navy); color: var(--gold-light); border-color: var(--navy);
 }
+/* Custom card-count input — sits in the count grid, styled like a .count-btn. */
+.count-custom {
+  grid-column: span 2;
+  padding: 10px 6px;
+  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  background: var(--white);
+  font-family: inherit; font-weight: 600; font-size: 0.95rem;
+  color: inherit; text-align: center;
+  -moz-appearance: textfield;
+}
+.count-custom::-webkit-outer-spin-button,
+.count-custom::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.count-custom::placeholder { color: var(--muted); font-weight: 500; }
+.count-custom:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+.count-custom.active { background: var(--navy); color: var(--gold-light); border-color: var(--navy); }
+.count-custom.active::placeholder { color: var(--gold-light); }
 
 /* ============== START STICKY ============== */
 .start-cta {
@@ -2329,6 +2346,7 @@ window.addEventListener('translitlibloaded', () => {
 });
 
 const COUNT_OPTIONS = [5, 10, 15, 20, 25, 30, 40, 50, 75, 100];
+const CARD_COUNT_MIN = 1, CARD_COUNT_MAX = 200;   // bounds for the custom card-count input
 
 /* =========================================================================
    DARK MODE
@@ -3172,13 +3190,35 @@ function setNameLetterMode(on) {
 
 function setCardCount(n) {
   cardCount = n;
-  document.querySelectorAll('.count-btn').forEach(b => b.classList.toggle('active', +b.dataset.n === n));
+  _syncCountUI();
   saveSettings();
+}
+// A custom (off-list) card count from the countGrid input — clamp to a sane range.
+function setCustomCardCount(raw) {
+  const n = Math.round(Number(raw));
+  if (!Number.isFinite(n)) { _syncCountUI(); return; }   // ignore garbage; keep current count
+  cardCount = Math.min(CARD_COUNT_MAX, Math.max(CARD_COUNT_MIN, n));
+  _syncCountUI();
+  saveSettings();
+}
+// Reflect the current cardCount into the count grid: highlight the matching preset
+// button, or (for an off-list value) highlight + fill the custom input.
+function _syncCountUI() {
+  const isCustom = !COUNT_OPTIONS.includes(cardCount);
+  document.querySelectorAll('.count-btn').forEach(b => b.classList.toggle('active', +b.dataset.n === cardCount));
+  const ci = document.getElementById('countCustom');
+  if (!ci) return;
+  ci.classList.toggle('active', isCustom);
+  if (isCustom) ci.value = cardCount;
+  else if (document.activeElement !== ci) ci.value = '';
 }
 function initCountGrid() {
   const grid = document.getElementById('countGrid');
-  grid.innerHTML = COUNT_OPTIONS.map(n => `<button class="count-btn ${n===cardCount?'active':''}" data-n="${n}">${n}</button>`).join('');
+  const isCustom = !COUNT_OPTIONS.includes(cardCount);
+  grid.innerHTML = COUNT_OPTIONS.map(n => `<button class="count-btn ${n===cardCount?'active':''}" data-n="${n}">${n}</button>`).join('')
+    + `<input type="number" class="count-custom${isCustom?' active':''}" id="countCustom" min="${CARD_COUNT_MIN}" max="${CARD_COUNT_MAX}" step="1" inputmode="numeric" placeholder="Custom" aria-label="Custom card count (${CARD_COUNT_MIN} to ${CARD_COUNT_MAX})"${isCustom?` value="${cardCount}"`:''}>`;
   grid.querySelectorAll('.count-btn').forEach(b => b.addEventListener('click', () => setCardCount(+b.dataset.n)));
+  document.getElementById('countCustom').addEventListener('change', e => setCustomCardCount(e.target.value));
 }
 
 /* =========================================================================
