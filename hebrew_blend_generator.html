@@ -2034,6 +2034,34 @@
       page-break-before: always;
     }
     .trace-row { page-break-inside: avoid; break-inside: avoid; }
+
+    /* Dark-mode print reset (window.print path). exportPDF() already strips
+       .dark on its html2canvas clone; this makes the browser Print output
+       match it — light paper, dark ink — instead of bleeding dark backgrounds
+       and light-on-dark Hebrew onto the sheet. The token reset fixes every
+       var(--*)-based surface (bingo/caller cells, borders); the literal-color
+       body.dark worksheet rules are re-stated to light below. All are
+       non-!important and sit after the dark rules, so they win by source order
+       while intentional inline nikkud color-coding (letter/highlight/underline
+       spans) still wins over them (inline > stylesheet). .cw-block (black
+       crossword cell) and .ws-cell.ws-word (own print rule at ~L1738) are
+       deliberately left alone. */
+    html.dark-early body, body.dark {
+      --navy:#1a2744; --gold:#c9922a; --gold-light:#f0d080; --cream:#fdf8ef;
+      --warm-gray:#e8e0d0; --text:#1a2744; --muted:#6b6050; --border:#c8bfa8; --white:#ffffff;
+    }
+    body.dark .worksheet { background:#fff; color:#1a2744; }
+    body.dark .ws-title, body.dark .blend-hebrew, body.dark .rw-heb,
+    body.dark .trace-copy, body.dark .match-heb, body.dark .match-label,
+    body.dark .match-num, body.dark .match-ak-heb, body.dark .timer-display { color:#1a2744; }
+    body.dark .ws-header { border-bottom-color:#c8bfa8; }
+    body.dark .ws-field-line { border-bottom-color:#1a2744; }
+    body.dark .ws-cell { background:#fff; }
+    body.dark .flip-card-front, body.dark .flip-card-back,
+    body.dark .rw-card, body.dark .rw-flip-front, body.dark .rw-flip-back,
+    body.dark .match-item { background:#fff; color:#1a2744; }
+    body.dark .match-dot { background:#fff; border-color:#1a2744; }
+    body.dark .answer-key-banner { background:#f6efdd; color:#6b4e12; }
   }
 
   /* Font selector */
