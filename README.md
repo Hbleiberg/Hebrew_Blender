@@ -71,7 +71,7 @@ A reader for the weekly Torah portion (parsha) with toggleable translit, transla
 - Hebrew TTS (per-verse + read-all), transliteration styles, Hebrew font picker, fullscreen for projection
 
 ### Hebrew Font Maker (`Hebrew_Font_Maker.html`) — Beta
-Turn your own handwritten Hebrew letters into a real, installable font — entirely in the browser. (Currently v3.5.)
+Turn your own handwritten Hebrew letters into a real, installable font — entirely in the browser. (Currently v3.6.)
 
 - **Trace from images** — upload one letter per image, one sheet of all letters (marquee-crop each), or import an existing TTF/OTF; sub-pixel marching-squares tracing with cubic-Bézier fitting and a point editor
 - **Nikkud & trop anchors** — place vowel and cantillation marks per letter; exports real GPOS mark-to-base (nikkud) and mark-to-mark (trop) positioning, plus pair kerning

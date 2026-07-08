@@ -657,7 +657,8 @@ attribute in the **template/builder string** so it survives re-render. Never pla
 inside an HTML **attribute** value (the wrapper's quotes would break it), and don't mark a container
 whose text is majority-English (e.g. mixed `<option>` labels). Verify: `document.querySelectorAll('[lang="he"]').length > 0` after render.
 - **Implemented on:** `torah_trainer.html` (verse containers), `hebrew_dictionary.html`,
-  `flash_cards.html`, `hebrew_blend_generator.html`, `classroom_dashboard.html` (2026-07-07).
+  `flash_cards.html`, `hebrew_blend_generator.html`, `classroom_dashboard.html`,
+  `Hebrew_Font_Maker.html` (glyph tiles) (2026-07-07).
 - **Rule:** any new Hebrew-rendering surface marks its output `lang="he"` at the chokepoint.
 
 ---
