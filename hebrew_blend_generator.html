@@ -3169,6 +3169,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <label class="toggle"><input type="checkbox" id="landscapeMode" onchange="toggleLandscape(this.checked)"><span class="slider"></span></label>
         </div>
         <div class="option-row">
+          <div class="option-label">Page Size <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box">Paper size for both Print and Export PDF. Letter (8.5×11in) is the US default; choose A4 (210×297mm) for most of the world.</span></span></div>
+          <div style="display:flex;border:1px solid var(--border);border-radius:5px;overflow:hidden;min-width:110px;">
+            <button id="pageSizeLetter" class="color-mode-btn active" onclick="setPageSize('letter')">Letter</button>
+            <button id="pageSizeA4"     class="color-mode-btn"        onclick="setPageSize('a4')">A4</button>
+          </div>
+        </div>
+        <div class="option-row">
           <div class="option-label">Header Labels</div>
           <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:5px;overflow:hidden;font-size:0.78rem;">
             <button id="headerLangEn" onclick="setHeaderLang('en')" style="padding:4px 10px;border:none;cursor:pointer;font-family:inherit;background:var(--navy);color:#fff;">English</button>
@@ -3895,6 +3902,7 @@ const VOWEL_COLOR_DEFS_TALAM = [
 ];
 let colorCodingEnabled = false;
 let colorCodingMode = 'letter'; // 'letter' | 'highlight' | 'underline'
+let pageSize = 'letter'; // 'letter' | 'a4' — drives the browser-print @page size AND the PDF export format
 // Tracing worksheet — segmented-control state (numeric/checkbox controls read from the DOM).
 let traceLineStyle = 'bottom';  // 'bottom' | 'both'
 let traceDarkness  = 'medium';  // 'light' | 'medium' | 'dark'
@@ -4307,6 +4315,7 @@ function getSettings() {
     excludeRepeats: document.getElementById('excludeRepeats').checked,
     landscape:     document.getElementById('landscapeMode').checked,
     headerLang,
+    pageSize,
     // Blend type & mode
     blendType:     document.querySelector('.blend-type-btn.active[data-type]')?.dataset.type || 'two',
     vowelPosition: getVowelPos(),
@@ -4486,6 +4495,7 @@ function applySettings(s) {
   if (s.excludeRepeats !== undefined) document.getElementById('excludeRepeats').checked = s.excludeRepeats;
   if (s.landscape !== undefined) { document.getElementById('landscapeMode').checked = s.landscape; toggleLandscape(s.landscape); }
   if (s.headerLang) setHeaderLang(s.headerLang);
+  if (s.pageSize) setPageSize(s.pageSize);
 
   // Blend type & mode
   const blendType = s.blendType || (s.nikudOnly ? 'nikud' : s.oneLetter ? 'one' : s.threeLetter ? 'three' : 'two');
@@ -5419,6 +5429,27 @@ function setColorMode(mode) {
   renderWorksheet(false);
 }
 
+/* Page size (Letter / A4). Drives BOTH output paths: the browser-print @page
+   size (via an injected <style>, since @page can't be scoped by a body class)
+   and the jsPDF export format (read at exportPDF time). Default 'letter' — a
+   US-Letter-tuned layout, so we inject @page{size:letter} even in an A4-locale
+   browser so the default is consistent everywhere until a teacher picks A4. */
+function _applyPageSizeStyle() {
+  let st = document.getElementById('pageSizeStyle');
+  if (!st) { st = document.createElement('style'); st.id = 'pageSizeStyle'; document.head.appendChild(st); }
+  st.textContent = '@page { size: ' + (pageSize === 'a4' ? 'A4' : 'letter') + '; margin: 0.35in; }';
+}
+function setPageSize(v) {
+  pageSize = (v === 'a4') ? 'a4' : 'letter';
+  const lb = document.getElementById('pageSizeLetter');
+  const ab = document.getElementById('pageSizeA4');
+  if (lb) lb.classList.toggle('active', pageSize === 'letter');
+  if (ab) ab.classList.toggle('active', pageSize === 'a4');
+  _applyPageSizeStyle();
+  _syncPillAria();
+  renderWorksheet(false);   // browser-print rows-per-page depends on page height
+}
+
 function applyColorExStyle(el, color) {
   const example = el.dataset.example || el.textContent;
   el.style.color = '';
@@ -5587,6 +5618,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (cb) cb.checked = stored;
   setHideZoomBar(stored);
   _syncPillAria();   // stamp initial aria-pressed on the static pill groups (hardcoded .active)
+  _applyPageSizeStyle();  // enforce the default Letter @page size (matters in A4-locale browsers)
 });
 
 /* ═══ Accessible tooltips (tap + keyboard, not just hover) ═══
@@ -8135,7 +8167,7 @@ async function exportPDF() {
     const pdf = new jsPDF({
       orientation: wantLandscape ? 'landscape' : 'portrait',
       unit: 'mm',
-      format: 'letter'
+      format: pageSize === 'a4' ? 'a4' : 'letter'
     });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
@@ -9115,8 +9147,10 @@ function measureTraceRowsPerSheet(ws, title, traceDir) {
   ws.removeChild(probeSheet);
 
   const landscape = document.body.classList.contains('landscape-mode');
-  // US-letter content height at 96dpi minus the @page 0.35in margins, less footer.
-  const usableH = ((landscape ? 8.5 : 11) - 0.7) * 96 - 46;
+  // Content height at 96dpi minus the @page 0.35in margins (0.7in total), less footer.
+  // Page height depends on the chosen size (Letter 11/8.5in vs A4 11.69/8.27in).
+  const pageInches = pageSize === 'a4' ? (landscape ? 8.27 : 11.69) : (landscape ? 8.5 : 11);
+  const usableH = (pageInches - 0.7) * 96 - 46;
   if (rowOuter <= 0) return 10;
   return Math.max(1, Math.floor((usableH - headerH) / rowOuter));
 }
