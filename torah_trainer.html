@@ -320,6 +320,12 @@ body.dark .tt-ctrl select, body.dark .tt-ctrl input[type="number"] {
 .tt-status.error { color:#cc3333; font-weight:600; }
 body.dark .tt-status.error { color:#ff6666; }
 .tt-reading { padding:8px 0; }
+/* Friendly empty-state card (no parsha loaded) — mirrors the generator's .empty-state; static, no animation. */
+.tt-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:340px; gap:14px; text-align:center; color:var(--muted); padding:24px; }
+.tt-empty-star { font-size:46px; opacity:0.4; line-height:1; }
+.tt-empty h2 { font-family:'Libre Baskerville',serif; font-size:1.15rem; color:var(--navy); margin:0; }
+body.dark .tt-empty h2 { color:var(--gold-light); }
+.tt-empty p { font-size:0.88rem; max-width:340px; margin:0; line-height:1.5; }
 
 .tt-ref-hdr {
   font-family:'Libre Baskerville',serif; font-size:1.05rem;
@@ -2003,9 +2009,17 @@ function tokenizeTranslit(translitText, firstTwi, hebWordCount) {
 /* ══════════════════════════════════════════════════════
    RENDERERS
    ══════════════════════════════════════════════════════ */
+function renderEmptyReading() {   // friendly card shown in #ttReading when no parsha/reading is loaded
+  document.getElementById('ttReading').innerHTML =
+    `<div class="tt-empty">
+       <div class="tt-empty-star" aria-hidden="true">✡︎</div>
+       <h2>Pick a parsha to start</h2>
+       <p>Choose a parsha from the dropdown above — the reading appears here with optional transliteration, translation, color-coded vowels, and chanted audio.</p>
+     </div>`;
+}
 function renderText() {
   if (!currentVerses || !currentVerses.length) {
-    document.getElementById('ttReading').innerHTML = '';
+    renderEmptyReading();
     return;
   }
   const root = document.getElementById('ttReading');
@@ -2219,6 +2233,8 @@ async function fetchAndRender() {
   currentReadingCtx = r;
   updateScopeSelectState();
   if (!r) {
+    currentVerses = null;
+    renderEmptyReading();
     setStatus('Pick a parsha to start.', false);
     return;
   }
