@@ -304,6 +304,7 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .search-wrap{position:relative;}
 .search-wrap input{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);outline:none;box-sizing:border-box;}
 .search-wrap input:focus{border-color:var(--gold);}
+.search-wrap input:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
 .search-wrap input::placeholder{color:var(--muted);}
 /* Section 4: clear-search button (all widths) */
 .search-clear{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;border:none;background:var(--warm-gray);color:var(--muted);font-size:0.72rem;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;}
@@ -536,7 +537,7 @@ body.dark .tour-card{background:var(--cream);}
   .load-bar.indeterminate .load-bar-fill{animation:none !important;}
   .load-bar-fill{transition:none !important;}
   .shoresh-flash{animation:none !important;}
-  .vg-arrow,.panel-title::after,.adv-section-title::after{transition:none !important;}
+  .vg-arrow,.panel-title::after,.adv-section-title::after,.shoresh-patterns-title::after,.emoji-cat-arrow{transition:none !important;}
   *{scroll-behavior:auto !important;}
 }
 .load-more-btn{background:var(--navy);color:var(--gold-light);border:none;border-radius:6px;padding:8px 28px;font-size:0.85rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;}
@@ -616,6 +617,7 @@ footer a{color:var(--gold);text-decoration:none;}
     padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;
     background: var(--white); color: var(--text); outline: none; }
   #shoreshInput:focus { border-color: var(--gold); }
+  #shoreshInput:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
   .shoresh-lookup-btn { background: var(--navy); color: var(--gold-light); border: none;
     border-radius: 8px; padding: 0 18px; font-family: 'Source Sans 3', sans-serif;
     font-size: 0.85rem; cursor: pointer; }
