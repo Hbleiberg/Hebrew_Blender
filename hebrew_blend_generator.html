@@ -2040,6 +2040,13 @@
        still flow across pages at cell boundaries. (.bingo-card, .caller-item,
        .match-item already carry this.) */
     .blend-cell, .ws-cell, .cw-cell, .rw-card { page-break-inside: avoid; break-inside: avoid; }
+    /* Keep whole puzzle blocks intact too: a single clue / word-bank entry must
+       never split mid-item, and a crossword or word-search grid should stay on
+       one page (a crossword split mid-puzzle is unreadable). Best-effort — a
+       block taller than the page will still break (the browser overrides), but
+       normally-sized puzzles stay whole. */
+    .cw-clue, .ws-wordbank-item { page-break-inside: avoid; break-inside: avoid; }
+    .cw-table, .cw-clues, .ws-grid, .ws-wordbank { page-break-inside: avoid; break-inside: avoid; }
 
     /* Dark-mode print reset (window.print path). exportPDF() already strips
        .dark on its html2canvas clone; this makes the browser Print output
