@@ -3395,7 +3395,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                   <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-top:4px;">
                     <button id="vowelSchemeDefault" class="color-mode-btn active" onclick="setVowelScheme('default')">Default</button>
                     <button id="vowelSchemeTalAm"   class="color-mode-btn"        onclick="setVowelScheme('talam')">TaL AM</button>
-                    <button class="color-mode-btn" onclick="resetNikudColors()">Reset</button>
+                    <button class="color-mode-btn" data-noaria onclick="resetNikudColors()">Reset</button>
                   </div>
                 </div>
               </div>
@@ -4032,6 +4032,18 @@ function _syncTileAria() {
   document.querySelectorAll('.letter-tile[role="button"], .rw-letter-tile[role="button"], .lock-letter-tile[role="button"]')
     .forEach(t => t.setAttribute('aria-pressed', String(t.classList.contains('selected'))));
 }
+
+/* Segmented "pill" button groups are single-select but track the choice only via .active; mirror it
+   to aria-pressed so AT users hear which option is selected. Re-derived from .active (idempotent) via
+   a delegated click listener + the two programmatic restore chokepoints (applySettings /
+   updateModeVisibility) + init — cheaper and more complete than syncing at each of ~16 toggle sites.
+   Action buttons that share a pill class (the color Reset) carry data-noaria and are excluded. */
+const PILL_SEL = '.blend-type-btn, .rw-drill-btn:not([data-noaria]), .color-mode-btn:not([data-noaria]), .ivrit-mode-btn, .sc-cols-btn';
+function _syncPillAria() {
+  document.querySelectorAll(PILL_SEL).forEach(b =>
+    b.setAttribute('aria-pressed', String(b.classList.contains('active'))));
+}
+document.addEventListener('click', e => { if (e.target.closest(PILL_SEL)) _syncPillAria(); });
 
 function initLetters() {
   const grid = document.getElementById('letterGrid');
@@ -5540,6 +5552,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const cb = document.getElementById('hideZoomBarToggle');
   if (cb) cb.checked = stored;
   setHideZoomBar(stored);
+  _syncPillAria();   // stamp initial aria-pressed on the static pill groups (hardcoded .active)
 });
 
 /* ═══ Accessible tooltips (tap + keyboard, not just hover) ═══
@@ -6319,6 +6332,7 @@ function updateModeVisibility() {
     const el = document.getElementById(id);
     if (el) el.style.display = (showRwSubSections && rwSource === 'all') ? '' : 'none';
   });
+  _syncPillAria();   // re-derive pill aria-pressed after any mode/drill .active change (also covers applySettings, whose last call is this fn)
 }
 
 // Force-clear toggles that conflict with the chosen mode/drill.
@@ -6591,9 +6605,9 @@ function renderNameTheLetter(ws) {
       <button class="btn-xs" onclick="flipAllCards(false)">Hide All</button>
       <div class="sc-cols-control">
         <span style="font-size:0.75rem;color:var(--muted);">Columns:</span>
-        <button class="sc-cols-btn" onclick="setSCCols(2,this)">2</button>
-        <button class="sc-cols-btn active" onclick="setSCCols(3,this)">3</button>
-        <button class="sc-cols-btn" onclick="setSCCols(5,this)">5</button>
+        <button class="sc-cols-btn" aria-pressed="false" onclick="setSCCols(2,this)">2</button>
+        <button class="sc-cols-btn active" aria-pressed="true" onclick="setSCCols(3,this)">3</button>
+        <button class="sc-cols-btn" aria-pressed="false" onclick="setSCCols(5,this)">5</button>
       </div>`;
     ws.appendChild(controls);
     const grid = document.createElement('div');
@@ -7187,9 +7201,9 @@ function renderNumberPracticeSelfCheck(ws, items, title, subtitle, audioOn, show
     <button class="btn-xs" onclick="flipAllCards(false)">Hide All</button>
     <div class="sc-cols-control">
       <span style="font-size:0.75rem;color:var(--muted);">Columns:</span>
-      <button class="sc-cols-btn" onclick="setSCCols(2,this)">2</button>
-      <button class="sc-cols-btn active" onclick="setSCCols(3,this)">3</button>
-      <button class="sc-cols-btn" onclick="setSCCols(5,this)">5</button>
+      <button class="sc-cols-btn" aria-pressed="false" onclick="setSCCols(2,this)">2</button>
+      <button class="sc-cols-btn active" aria-pressed="true" onclick="setSCCols(3,this)">3</button>
+      <button class="sc-cols-btn" aria-pressed="false" onclick="setSCCols(5,this)">5</button>
     </div>
     ${audioOn ? '<span style="font-size:0.75rem;color:var(--muted);">🔊 Tap back to hear</span>' : '<span style="font-size:0.75rem;color:var(--muted);">Tap a card to flip</span>'}`;
   ws.appendChild(controls);
@@ -8656,10 +8670,10 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
       <button class="btn-xs" onclick="flipAllCards(false)">Hide All</button>
       <div class="sc-cols-group">
         <span style="font-size:0.72rem;color:var(--muted);">Per row:</span>
-        <button class="sc-cols-btn" onclick="setSCCols(1,this)">1</button>
-        <button class="sc-cols-btn" onclick="setSCCols(2,this)">2</button>
-        <button class="sc-cols-btn" onclick="setSCCols(3,this)">3</button>
-        <button class="sc-cols-btn" onclick="setSCCols(5,this)">5</button>
+        <button class="sc-cols-btn" aria-pressed="false" onclick="setSCCols(1,this)">1</button>
+        <button class="sc-cols-btn" aria-pressed="false" onclick="setSCCols(2,this)">2</button>
+        <button class="sc-cols-btn" aria-pressed="false" onclick="setSCCols(3,this)">3</button>
+        <button class="sc-cols-btn" aria-pressed="false" onclick="setSCCols(5,this)">5</button>
       </div>
       <span style="font-size:0.75rem;color:var(--muted);">${inverse ? 'Tap a card to reveal the Hebrew word' : 'Tap a card to reveal its Gematria value'}</span>`;
     ws.appendChild(controls);
@@ -9330,10 +9344,10 @@ function renderSelfCheck(ws, cols, title, subtitle) {
     <button class="btn-xs" onclick="flipAllCards(false)">Hide All</button>
     <div class="sc-cols-group">
       <span style="font-size:0.72rem;color:var(--muted);">Per row:</span>
-      <button class="sc-cols-btn" onclick="setSCCols(1,this)">1</button>
-      <button class="sc-cols-btn" onclick="setSCCols(2,this)">2</button>
-      <button class="sc-cols-btn" onclick="setSCCols(3,this)">3</button>
-      <button class="sc-cols-btn" onclick="setSCCols(5,this)">5</button>
+      <button class="sc-cols-btn" aria-pressed="false" onclick="setSCCols(1,this)">1</button>
+      <button class="sc-cols-btn" aria-pressed="false" onclick="setSCCols(2,this)">2</button>
+      <button class="sc-cols-btn" aria-pressed="false" onclick="setSCCols(3,this)">3</button>
+      <button class="sc-cols-btn" aria-pressed="false" onclick="setSCCols(5,this)">5</button>
     </div>
     ${audioOn ? '<span style="font-size:0.75rem;color:var(--muted);">🔊 Tap back to hear</span>' : '<span style="font-size:0.75rem;color:var(--muted);">Tap a card to flip</span>'}`;
   ws.appendChild(controls);
