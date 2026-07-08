@@ -124,9 +124,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=David+Libre:wght@400;500;700&family=Noto+Rashi+Hebrew&display=swap" rel="stylesheet">
 <style>@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}</style><!-- Early dark mode (avoid flash) --><script>
-  if (localStorage.getItem('hebrewBlender_darkMode') === '1') {
-    document.documentElement.classList.add('dark-early');
-  }
+  (function(){ var s = localStorage.getItem('hebrewBlender_darkMode');
+    if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark-early');
+    } })();
 </script><style>
   /* ───── Design tokens ───── */
   :root {
@@ -1340,7 +1341,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   </div>
   <div class="hright">
     <a class="hbtn" href="/"><span>←</span><span class="hbtn-label">Home</span></a>
-    <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
+    <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
     <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
     <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour"><span>❓</span><span class="hbtn-label">Tour</span></button>
     <button id="fsBtn" class="hbtn icon-btn fs-btn" onclick="toggleFullscreen()" title="Fullscreen"><span class="fs-ico"></span><span class="fs-cap">Fullscreen</span></button>
@@ -5936,13 +5937,18 @@ async function onUploadEngFontPick(input){
     document.body.classList.toggle('dark');
     const isDark = document.body.classList.contains('dark');
     localStorage.setItem('hebrewBlender_darkMode', isDark ? '1' : '0');
-    document.getElementById('darkBtn').textContent = isDark ? '☀️' : '🌙';
+    const _db = document.getElementById('darkBtn');
+    _db.textContent = isDark ? '☀️' : '🌙';
+    _db.setAttribute('aria-pressed', isDark ? 'true' : 'false');
     if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); updateOmerDisplay(); }
   }
   function initDark() {
-    if (localStorage.getItem('hebrewBlender_darkMode') === '1') {
+    const s = localStorage.getItem('hebrewBlender_darkMode');
+    if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.body.classList.add('dark');
-      document.getElementById('darkBtn').textContent = '☀️';
+      const _db = document.getElementById('darkBtn');
+      _db.textContent = '☀️';
+      _db.setAttribute('aria-pressed', 'true');
     }
     document.documentElement.classList.remove('dark-early');
   }

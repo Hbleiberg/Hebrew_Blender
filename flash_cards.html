@@ -1111,7 +1111,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <h1>Hebrew Flash Cards for Reading Practice</h1>
   <div class="h-right">
     <button class="h-btn" id="tourBtn" onclick="tourStart()" title="Take a quick tour" style="width:auto;border-radius:22px;padding:0 14px;font-size:0.85rem;gap:6px;">❓ Tour</button>
-    <button class="h-btn" id="darkToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
+    <button class="h-btn" id="darkToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
   </div>
 </header>
 
@@ -2351,12 +2351,14 @@ function toggleDark(force) {
   document.documentElement.classList.toggle('dark-early', next);
   try { localStorage.setItem('hebrewBlender_darkMode', next ? '1' : '0'); } catch(e){}
   document.getElementById('darkToggle').textContent = next ? '☀️' : '🌙';
+  document.getElementById('darkToggle').setAttribute('aria-pressed', next ? 'true' : 'false');
   refreshVowelGroupColors();
   initColorPickers();
   if (document.getElementById('screenCard').classList.contains('active')) renderCurrentCard();
 }
 function initDarkMode() {
   document.getElementById('darkToggle').textContent = isDark() ? '☀️' : '🌙';
+  document.getElementById('darkToggle').setAttribute('aria-pressed', isDark() ? 'true' : 'false');
   document.getElementById('darkToggle').addEventListener('click', () => toggleDark());
 }
 

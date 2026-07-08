@@ -273,9 +273,10 @@
 </script>
 <script>
   // Apply dark mode BEFORE first paint to prevent flash
-  if (localStorage.getItem('hebrewBlender_darkMode') === '1') {
-    document.documentElement.classList.add('dark-early');
-  }
+  (function(){ var s = localStorage.getItem('hebrewBlender_darkMode');
+    if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark-early');
+    } })();
 </script>
 <style>
   :root {
@@ -2104,7 +2105,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   </div>
   <a href="/" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:0.8rem;font-family:'Source Sans 3',sans-serif;font-weight:600;text-decoration:none;flex-shrink:0;">← Home</a>
   <button id="tourBtn" onclick="tourStart()" title="Take a quick tour" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:0.8rem;font-family:'Source Sans 3',sans-serif;font-weight:600;flex-shrink:0;">❓ Tour</button>
-  <button id="darkToggle" onclick="toggleDark()" title="Toggle dark mode" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:1rem;flex-shrink:0;">🌙</button>
+  <button id="darkToggle" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:1rem;flex-shrink:0;">🌙</button>
   <button id="fsBtn" onclick="toggleFullscreen()" title="Full screen" style="background:transparent;border:1.5px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:4px 10px;cursor:pointer;flex-shrink:0;display:inline-flex;flex-direction:column;align-items:center;gap:1px;line-height:1;"><span class="fs-ico" style="display:inline-flex;line-height:0;"><svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg></span><span style="font-size:0.5rem;font-weight:600;letter-spacing:0.03em;">Full Screen</span></button>
 </header>
 
@@ -5471,7 +5472,9 @@ function rgbToHex(color) {
 
 function toggleDark() {
   const isDark = document.body.classList.toggle('dark');
-  document.getElementById('darkToggle').textContent = isDark ? '☀️ Light' : '🌙 Dark';
+  const _dt = document.getElementById('darkToggle');
+  _dt.textContent = isDark ? '☀️ Light' : '🌙 Dark';
+  _dt.setAttribute('aria-pressed', isDark ? 'true' : 'false');
   localStorage.setItem('hebrewBlender_darkMode', isDark ? '1' : '0');
   refreshVowelGroupColors();
   updateColorPickerValues();
@@ -5479,12 +5482,15 @@ function toggleDark() {
 
 function initDarkMode() {
   const saved = localStorage.getItem('hebrewBlender_darkMode');
-  if (saved === '1') {
+  const dark = saved === '1' || (saved === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+  const _dt = document.getElementById('darkToggle');
+  if (dark) {
     document.body.classList.add('dark');
-    document.getElementById('darkToggle').textContent = '☀️ Light';
+    _dt.textContent = '☀️ Light';
   } else {
-    document.getElementById('darkToggle').textContent = '🌙 Dark';
+    _dt.textContent = '🌙 Dark';
   }
+  _dt.setAttribute('aria-pressed', dark ? 'true' : 'false');
   // Remove early class now that body.dark takes over
   document.documentElement.classList.remove('dark-early');
 }

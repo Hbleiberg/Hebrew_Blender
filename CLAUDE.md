@@ -424,11 +424,18 @@ makeSortable(list, () => Object.keys(JSON.parse(localStorage.getItem('hebrewBlen
 ## Dark Mode (`classroom_dashboard.html`)
 
 ### No-flash IIFE
-A small inline `<script>` at the top of `<head>` adds `dark-early` to `<html>` before the page renders:
+A small inline `<script>` at the top of `<head>` adds `dark-early` to `<html>` before the page renders.
+It is **OS-aware** (suite-wide as of S24): an explicit saved choice always wins, and when there is no
+saved preference it falls back to `prefers-color-scheme: dark`.
 ```js
-(function(){try{if(localStorage.getItem('hebrewBlender_darkMode')==='1'){document.documentElement.classList.add('dark-early');}}catch(e){}})()
+(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()
 ```
-The CSS selector `html.dark-early body, body.dark` applies the dark token overrides for both the initial load and runtime toggle.
+The CSS selector `html.dark-early body, body.dark` applies the dark token overrides for both the initial
+load and runtime toggle. The page's on-load init must use the **same** OS-aware condition (otherwise a
+`dark-early` `<html>` with a light-only init would flash to light). `classroom_dashboard.html` and
+`hebrew_blend_generator.html` carry an equivalent multi-line form of this IIFE. Every dark toggle also
+carries `aria-pressed` (synced in both `toggleDark` and the on-load init), and the icon-only toggles
+carry `aria-label="Toggle dark mode"`.
 
 ### CSS tokens (light → dark)
 ```css
@@ -460,7 +467,9 @@ function toggleDark() {
   document.body.classList.toggle('dark');
   const isDark = document.body.classList.contains('dark');
   localStorage.setItem('hebrewBlender_darkMode', isDark ? '1' : '0');
-  document.getElementById('darkBtn').textContent = isDark ? '☀️' : '🌙';
+  const _db = document.getElementById('darkBtn');
+  _db.textContent = isDark ? '☀️' : '🌙';
+  _db.setAttribute('aria-pressed', isDark ? 'true' : 'false');   // toggle exposes on/off state (suite-wide)
   if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); }
 }
 ```
