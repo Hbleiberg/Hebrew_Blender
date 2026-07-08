@@ -2272,7 +2272,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <div style="border-top:1px solid var(--border);margin:10px 0 6px;"></div>
           <div class="toggle-row">
             <span>Grid size</span>
-            <select id="bingoGrid" style="font-size:0.78rem;padding:3px 6px;">
+            <select id="bingoGrid" aria-label="Bingo grid size" style="font-size:0.78rem;padding:3px 6px;">
               <option value="3">3 × 3</option>
               <option value="4">4 × 4</option>
               <option value="5" selected>5 × 5</option>
@@ -2281,7 +2281,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <div class="toggle-row">
             <span>Cards</span>
             <div style="display:flex;align-items:stretch;border:1px solid var(--border);border-radius:4px;overflow:hidden;width:90px;">
-              <input type="number" id="bingoCards" min="1" max="200" value="30" style="flex:1;font-size:0.78rem;padding:3px 6px;border:none;font-family:inherit;background:var(--white);color:var(--text);text-align:center;-moz-appearance:textfield;" oninput="this.value=Math.max(1,Math.min(200,parseInt(this.value)||1))">
+              <input type="number" id="bingoCards" aria-label="Number of bingo cards" min="1" max="200" value="30" style="flex:1;font-size:0.78rem;padding:3px 6px;border:none;font-family:inherit;background:var(--white);color:var(--text);text-align:center;-moz-appearance:textfield;" oninput="this.value=Math.max(1,Math.min(200,parseInt(this.value)||1))">
               <div style="display:flex;flex-direction:column;border-left:1px solid var(--border);">
                 <button type="button" onclick="adjustBingoCards(-1)" title="Fewer cards" aria-label="Fewer cards" style="flex:1;padding:0 5px;background:var(--white);border:none;border-bottom:1px solid var(--border);cursor:pointer;font-size:0.55rem;color:var(--text);line-height:1;">▲</button>
                 <button type="button" onclick="adjustBingoCards(1)" title="More cards" aria-label="More cards" style="flex:1;padding:0 5px;background:var(--white);border:none;cursor:pointer;font-size:0.55rem;color:var(--text);line-height:1;">▼</button>
@@ -2290,7 +2290,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           </div>
           <div class="toggle-row">
             <span>Per page</span>
-            <select id="bingoPerPage" style="font-size:0.78rem;padding:3px 6px;">
+            <select id="bingoPerPage" aria-label="Bingo cards per page" style="font-size:0.78rem;padding:3px 6px;">
               <option value="1">1 card</option>
               <option value="2">2 cards</option>
               <option value="4" selected>4 cards</option>
@@ -2343,7 +2343,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <div id="numberPracticeOptions" style="display:none;margin-top:4px;flex-direction:column;gap:6px;">
           <div id="npCountRow" style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
             <span class="sub-label" style="font-size:0.78rem;min-width:90px;">Total questions</span>
-            <select id="npCount" style="flex:1;font-size:0.78rem;padding:3px 6px;">
+            <select id="npCount" aria-label="Total questions" style="flex:1;font-size:0.78rem;padding:3px 6px;">
               <option value="10">10</option>
               <option value="20" selected>20</option>
               <option value="30">30</option>
@@ -2365,9 +2365,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           </div>
           <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;flex-wrap:wrap;">
             <span class="sub-label" style="font-size:0.78rem;min-width:90px;">Number range</span>
-            <input type="number" id="npMin" min="0" max="9999" value="0" oninput="onNpRangeChange()" style="width:62px;font-size:0.78rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
+            <input type="number" id="npMin" aria-label="Minimum number" min="0" max="9999" value="0" oninput="onNpRangeChange()" style="width:62px;font-size:0.78rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
             <span style="font-size:0.78rem;color:var(--muted);">to</span>
-            <input type="number" id="npMax" min="0" max="9999" value="20" oninput="onNpRangeChange()" style="width:62px;font-size:0.78rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
+            <input type="number" id="npMax" aria-label="Maximum number" min="0" max="9999" value="20" oninput="onNpRangeChange()" style="width:62px;font-size:0.78rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
           </div>
           <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
             <span class="sub-label" style="font-size:0.78rem;min-width:90px;">Display</span>
@@ -2637,7 +2637,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
               <!-- Imported list paste-in -->
               <div id="rwImportWrap" style="display:none;">
                 <div style="font-size:0.7rem;color:var(--muted);line-height:1.5;margin-bottom:4px;">In the <strong>Word Lookup</strong> dictionary, enable <strong>Bulk Copy Mode</strong> and set Copy Mode to <strong>All info</strong>. Select your words, copy, then paste below. Plain Hebrew (one per line) also works.</div>
-                <textarea id="cwImportTextarea" rows="6" placeholder="אָב — av — father — noun — Both&#10;אֵם — em — mother — noun — Both&#10;…" style="width:100%;font-size:0.75rem;font-family:var(--heb-font);direction:rtl;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;" oninput="updateCwImportCount()"></textarea>
+                <textarea id="cwImportTextarea" aria-label="Paste imported word list" rows="6" placeholder="אָב — av — father — noun — Both&#10;אֵם — em — mother — noun — Both&#10;…" style="width:100%;font-size:0.75rem;font-family:var(--heb-font);direction:rtl;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;" oninput="updateCwImportCount()"></textarea>
                 <div id="cwImportCount" style="font-size:0.7rem;color:var(--muted);text-align:center;min-height:1em;"></div>
                 <div style="display:flex;gap:6px;">
                   <button class="btn-xs" style="flex:1;" onclick="importCustomWordlist()">⬇ Import</button>
@@ -2752,7 +2752,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
               <!-- Number of Words is always the first option in Drill Options -->
               <div id="rwCountRow" style="display:flex;align-items:center;gap:8px;">
                 <span style="font-size:0.8rem;flex:1;">Number of Words</span>
-                <select id="rwCount" style="font-size:0.78rem;padding:3px 6px;">
+                <select id="rwCount" aria-label="Number of words" style="font-size:0.78rem;padding:3px 6px;">
                   <option value="10">10</option>
                   <option value="20">20</option>
                   <option value="30" selected>30</option>
@@ -2858,7 +2858,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
               <!-- Word Search-only rows -->
               <div class="rw-ws-only" id="rwWsWordCountRow" style="display:none;align-items:center;gap:8px;">
                 <span style="font-size:0.8rem;flex:1;">Number of Words</span>
-                <select id="wsWordCount" onchange="if(document.getElementById('worksheet').querySelector('.ws-grid'))generateRealWords()" style="font-size:0.78rem;padding:3px 6px;">
+                <select id="wsWordCount" aria-label="Number of words (word search)" onchange="if(document.getElementById('worksheet').querySelector('.ws-grid'))generateRealWords()" style="font-size:0.78rem;padding:3px 6px;">
                   <option value="5">5</option>
                   <option value="6">6</option>
                   <option value="7">7</option>
@@ -2869,7 +2869,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
               </div>
               <div class="rw-ws-only" id="rwWsGridSizeRow" style="display:none;align-items:center;gap:8px;">
                 <span style="font-size:0.8rem;flex:1;">Grid Size</span>
-                <select id="wsGridSize" onchange="if(document.getElementById('worksheet').querySelector('.ws-grid'))generateRealWords()" style="font-size:0.78rem;padding:3px 6px;">
+                <select id="wsGridSize" aria-label="Grid size (word search)" onchange="if(document.getElementById('worksheet').querySelector('.ws-grid'))generateRealWords()" style="font-size:0.78rem;padding:3px 6px;">
                   <option value="10">10 × 10</option>
                   <option value="12" selected>12 × 12</option>
                   <option value="15">15 × 15</option>
@@ -2908,7 +2908,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
               <!-- Crossword-only rows -->
               <div class="rw-cw-only" id="rwCwWordCountRow" style="display:none;align-items:center;gap:8px;">
                 <span style="font-size:0.8rem;flex:1;">Number of Words</span>
-                <select id="cwWordCountSel" onchange="if(document.getElementById('worksheet').querySelector('.cw-table'))generateRealWords()" style="font-size:0.78rem;padding:3px 6px;">
+                <select id="cwWordCountSel" aria-label="Number of words (crossword)" onchange="if(document.getElementById('worksheet').querySelector('.cw-table'))generateRealWords()" style="font-size:0.78rem;padding:3px 6px;">
                   <option value="6">6</option>
                   <option value="8">8</option>
                   <option value="10" selected>10</option>
@@ -2918,7 +2918,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
               </div>
               <div class="rw-cw-only" id="rwCwGridSizeRow" style="display:none;align-items:center;gap:8px;">
                 <span style="font-size:0.8rem;flex:1;">Grid Size</span>
-                <select id="cwGridSize" onchange="if(document.getElementById('worksheet').querySelector('.cw-table'))generateRealWords()" style="font-size:0.78rem;padding:3px 6px;">
+                <select id="cwGridSize" aria-label="Grid size (crossword)" onchange="if(document.getElementById('worksheet').querySelector('.cw-table'))generateRealWords()" style="font-size:0.78rem;padding:3px 6px;">
                   <option value="10">10 × 10</option>
                   <option value="12" selected>12 × 12</option>
                   <option value="15">15 × 15</option>
@@ -2968,7 +2968,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
               </div>
               <div class="rw-match-only" id="rwMatchCountRow" style="display:none;align-items:center;gap:8px;">
                 <span style="font-size:0.8rem;flex:1;">Number of Pairs</span>
-                <select id="matchCount" onchange="if(document.getElementById('worksheet').querySelector('.match-item'))generateRealWords()" style="font-size:0.78rem;padding:3px 6px;">
+                <select id="matchCount" aria-label="Number of pairs" onchange="if(document.getElementById('worksheet').querySelector('.match-item'))generateRealWords()" style="font-size:0.78rem;padding:3px 6px;">
                   <option value="8">8</option>
                   <option value="10" selected>10</option>
                   <option value="12">12</option>
@@ -2979,7 +2979,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                 <span style="font-size:0.8rem;flex:1;">Versions
                   <span class="tooltip-wrap" style="font-size:0.55rem;font-weight:400;">?<span class="tooltip-box">Generates multiple unique matching worksheets from the same settings — each with a different random selection and shuffle. Print one per student to prevent copying. Each is labeled 'Version A', 'Version B', etc.</span></span>
                 </span>
-                <input type="number" id="matchVersions" value="1" min="1" max="40" onchange="if(document.getElementById('worksheet').querySelector('.match-item'))generateRealWords()" style="width:56px;padding:3px 6px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.8rem;background:var(--white);color:var(--text);">
+                <input type="number" id="matchVersions" aria-label="Number of versions" value="1" min="1" max="40" onchange="if(document.getElementById('worksheet').querySelector('.match-item'))generateRealWords()" style="width:56px;padding:3px 6px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.8rem;background:var(--white);color:var(--text);">
               </div>
               <div class="toggle-row rw-match-only" style="display:none;font-size:0.82rem;">
                 <span>Show Answer Key</span>
@@ -2998,7 +2998,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
               <div style="display:flex;flex-direction:column;gap:5px;">
                 <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
                   <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Grid size</span>
-                  <select id="rwBingoGrid" style="flex:1;font-size:0.78rem;padding:3px 6px;">
+                  <select id="rwBingoGrid" aria-label="Grid size (real-words bingo)" style="flex:1;font-size:0.78rem;padding:3px 6px;">
                     <option value="3">3 × 3</option>
                     <option value="4">4 × 4</option>
                     <option value="5" selected>5 × 5</option>
@@ -3006,11 +3006,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                 </div>
                 <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
                   <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Cards</span>
-                  <input type="number" id="rwBingoCards" min="1" max="200" value="30" style="flex:1;font-size:0.78rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;font-family:inherit;background:var(--white);color:var(--text);">
+                  <input type="number" id="rwBingoCards" aria-label="Cards (real-words bingo)" min="1" max="200" value="30" style="flex:1;font-size:0.78rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;font-family:inherit;background:var(--white);color:var(--text);">
                 </div>
                 <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
                   <span class="sub-label" style="font-size:0.78rem;min-width:72px;">Per page</span>
-                  <select id="rwBingoPerPage" style="flex:1;font-size:0.78rem;padding:3px 6px;">
+                  <select id="rwBingoPerPage" aria-label="Per page (real-words bingo)" style="flex:1;font-size:0.78rem;padding:3px 6px;">
                     <option value="1">1 card</option>
                     <option value="2" selected>2 cards</option>
                     <option value="4">4 cards</option>
@@ -3071,7 +3071,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           </div>
           <div id="timerDurationRow" style="display:none;gap:6px;align-items:center;font-size:0.78rem;padding-left:8px;">
             <span class="sub-label" style="font-size:0.78rem;min-width:52px;">Duration</span>
-            <select id="timerDuration" style="flex:1;font-size:0.78rem;padding:3px 6px;">
+            <select id="timerDuration" aria-label="Timer duration" style="flex:1;font-size:0.78rem;padding:3px 6px;">
               <option value="60">1 min</option>
               <option value="120" selected>2 min</option>
               <option value="180">3 min</option>
@@ -3098,7 +3098,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <div>
             <div class="option-label">Total Blends</div>
           </div>
-          <select id="blendCount">
+          <select id="blendCount" aria-label="Total blends">
             <option value="10">10</option>
             <option value="20">20</option>
             <option value="30">30</option>
@@ -3114,17 +3114,17 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <div class="option-row" id="rowClassSet">
           <div class="option-label">Class Set <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box">Generates multiple unique worksheet versions from the same settings — each with a different random selection and order of blends. Print one per student for variety drills or low-stakes assessment. Each version is labeled 'Version A', 'Version B', etc. in the header.</span></span></div>
           <div style="display:flex;align-items:center;gap:5px;">
-            <input type="number" id="classSetCount" value="1" min="1" max="40" oninput="onClassSetChange()" style="width:56px;padding:5px 6px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;background:var(--white);color:var(--text);">
+            <input type="number" id="classSetCount" aria-label="Class set versions" value="1" min="1" max="40" oninput="onClassSetChange()" style="width:56px;padding:5px 6px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;background:var(--white);color:var(--text);">
             <span style="font-size:0.78rem;color:var(--muted);">versions</span>
           </div>
         </div>
         <div class="option-row">
           <div class="option-label">Title</div>
-          <input type="text" id="wsTitle" value="Hebrew Blends" style="width:160px;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;">
+          <input type="text" id="wsTitle" aria-label="Worksheet title" value="Hebrew Blends" style="width:160px;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;">
         </div>
         <div class="option-row">
           <div class="option-label">Subtitle</div>
-          <input type="text" id="wsSubtitle" placeholder="Optional instructions..." style="width:160px;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;">
+          <input type="text" id="wsSubtitle" aria-label="Worksheet subtitle" placeholder="Optional instructions..." style="width:160px;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;">
         </div>
         <div class="option-row" style="margin-top:4px;">
           <div class="option-label">Exclude Repeats <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box">When on, no two blends in the same worksheet will share the same pair of letters — useful for variety drills.</span></span></div>
