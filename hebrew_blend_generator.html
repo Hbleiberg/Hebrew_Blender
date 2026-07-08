@@ -1953,6 +1953,10 @@
     #appToast { transition: none !important; }
     .preview-notice { transition: none !important; }
     .tour-spot { transition: none !important; }
+    /* Drill card flip, the infinite "urgent" timer blink, and the section chevron all honor reduced motion. */
+    .blend-cell.shuffling, .blend-cell-inv.shuffling { animation: none !important; }
+    .timer-display.urgent { animation: none !important; }   /* keep the red colour, drop the blink */
+    .rw-section-header::before { transition: none !important; }
   }
 
   /* ── Guided tour (ported from the Font Maker) ── */
@@ -2279,8 +2283,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <div style="display:flex;align-items:stretch;border:1px solid var(--border);border-radius:4px;overflow:hidden;width:90px;">
               <input type="number" id="bingoCards" min="1" max="200" value="30" style="flex:1;font-size:0.78rem;padding:3px 6px;border:none;font-family:inherit;background:var(--white);color:var(--text);text-align:center;-moz-appearance:textfield;" oninput="this.value=Math.max(1,Math.min(200,parseInt(this.value)||1))">
               <div style="display:flex;flex-direction:column;border-left:1px solid var(--border);">
-                <button type="button" onclick="adjustBingoCards(-1)" style="flex:1;padding:0 5px;background:var(--white);border:none;border-bottom:1px solid var(--border);cursor:pointer;font-size:0.55rem;color:var(--text);line-height:1;">▲</button>
-                <button type="button" onclick="adjustBingoCards(1)" style="flex:1;padding:0 5px;background:var(--white);border:none;cursor:pointer;font-size:0.55rem;color:var(--text);line-height:1;">▼</button>
+                <button type="button" onclick="adjustBingoCards(-1)" title="Fewer cards" aria-label="Fewer cards" style="flex:1;padding:0 5px;background:var(--white);border:none;border-bottom:1px solid var(--border);cursor:pointer;font-size:0.55rem;color:var(--text);line-height:1;">▲</button>
+                <button type="button" onclick="adjustBingoCards(1)" title="More cards" aria-label="More cards" style="flex:1;padding:0 5px;background:var(--white);border:none;cursor:pointer;font-size:0.55rem;color:var(--text);line-height:1;">▼</button>
               </div>
             </div>
           </div>
@@ -7199,7 +7203,7 @@ function renderNumberPracticeSelfCheck(ws, items, title, subtitle, audioOn, show
   // Audio plays the Hebrew word — put the speaker button on whichever side
   // displays the Hebrew, so students can read along while listening.
   const audioBtn = audioOn
-    ? `<button class="btn-xs" style="margin-top:6px;font-size:0.7rem;" onclick="event.stopPropagation();speakBlend(this.closest('.flip-card').dataset.heb)">🔊</button>`
+    ? `<button class="btn-xs" style="margin-top:6px;font-size:0.7rem;" title="Play audio" aria-label="Play audio" onclick="event.stopPropagation();speakBlend(this.closest('.flip-card').dataset.heb)">🔊</button>`
     : '';
   const trlBack = (it) => showTrl ? `<span style="font-size:0.85rem;color:var(--gold-light);font-style:italic;margin-top:4px;">${esc(it.tr)}</span>` : '';
 
@@ -9356,7 +9360,7 @@ function renderSelfCheck(ws, cols, title, subtitle) {
         <div class="flip-card-back">
           <span class="flip-card-num" style="color:var(--gold-light);">${idx + 1}</span>
           <span style="font-size:1.1rem;">${b.translitDisplay ?? b.combined}</span>
-          ${audioOn ? `<button class="btn-xs" style="margin-top:4px;font-size:0.7rem;" onclick="event.stopPropagation();speakBlend(this.closest('.flip-card').dataset.heb)">🔊</button>` : ''}
+          ${audioOn ? `<button class="btn-xs" style="margin-top:4px;font-size:0.7rem;" title="Play audio" aria-label="Play audio" onclick="event.stopPropagation();speakBlend(this.closest('.flip-card').dataset.heb)">🔊</button>` : ''}
         </div>
       </div>
       <div class="flip-card-score-btns">
