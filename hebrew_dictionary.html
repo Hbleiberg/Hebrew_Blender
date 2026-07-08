@@ -679,7 +679,7 @@ footer a{color:var(--gold);text-decoration:none;}
   <aside class="sidebar" id="appSidebar">
 
     <div class="search-wrap">
-      <input type="text" id="searchInput" placeholder="Search Hebrew, translit, or English…" oninput="onSearchInput()" onkeydown="if(event.key==='Escape'){clearDictSearch();}">
+      <input type="text" id="searchInput" aria-label="Search Hebrew, transliteration, or English" placeholder="Search Hebrew, translit, or English…" oninput="onSearchInput()" onkeydown="if(event.key==='Escape'){clearDictSearch();}">
       <button class="search-clear" id="searchClear" onclick="clearDictSearch()" aria-label="Clear search" title="Clear search">✕</button>
     </div>
 
@@ -954,7 +954,8 @@ footer a{color:var(--gold);text-decoration:none;}
   <div class="main">
     <div id="mobileBar"></div>
     <div class="toolbar">
-      <span class="result-count" id="resultCount">Loading…</span>
+      <span class="result-count" id="resultCount" role="status" aria-live="polite" aria-atomic="true">Loading…</span>
+      <span id="a11yStatus" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;"></span>
       <label style="font-size:0.8rem;color:var(--muted);">Sort:</label>
       <select class="sort-sel" id="sortSel" onchange="onFilter()">
         <option value="alpha">Hebrew A→Z</option>
@@ -2204,8 +2205,10 @@ function rerender() {
 
 const COPY_ICON = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
 const CHECK_ICON = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+// Announce a transient message to screen readers via the shared #a11yStatus live region.
+function announce(msg) { const s = document.getElementById('a11yStatus'); if (s) s.textContent = msg; }
 function copyWord(btn, text) {
-  const finish = () => { btn.innerHTML = CHECK_ICON; btn.classList.add('copied'); setTimeout(() => { btn.innerHTML = COPY_ICON; btn.classList.remove('copied'); }, 1500); };
+  const finish = () => { btn.innerHTML = CHECK_ICON; btn.classList.add('copied'); announce('Copied to clipboard'); setTimeout(() => { btn.innerHTML = COPY_ICON; btn.classList.remove('copied'); }, 1500); };
   if (navigator.clipboard) { navigator.clipboard.writeText(text).then(finish).catch(finish); }
   else { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch(e) {} document.body.removeChild(ta); finish(); }
 }
@@ -3827,6 +3830,7 @@ function copyDictShareLink(btn) {
     const orig = btn.textContent;
     btn.textContent = '✓ Copied!';
     btn.classList.add('copied');
+    announce('Link copied to clipboard');
     setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
   };
   if (navigator.clipboard) { navigator.clipboard.writeText(url).then(done).catch(done); }
@@ -4048,7 +4052,7 @@ function closeWordModal() {
   _modalOpener = null;
 }
 function _wmCopyFlash(btn, text, label) {
-  const done = () => { btn.textContent = '✓ Copied!'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = label; btn.classList.remove('copied'); }, 1400); };
+  const done = () => { btn.textContent = '✓ Copied!'; btn.classList.add('copied'); announce('Copied to clipboard'); setTimeout(() => { btn.textContent = label; btn.classList.remove('copied'); }, 1400); };
   if (navigator.clipboard) navigator.clipboard.writeText(text).then(done).catch(done);
   else { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(ta); done(); }
 }
