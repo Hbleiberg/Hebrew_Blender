@@ -2239,6 +2239,7 @@ async function fetchAndRender() {
     return;
   }
   setStatus(`Loading ${r.label}…`, false);
+  let netDone = false;   // true once every Sefaria fetch has resolved → a later throw is a render/code bug, not an outage
   try {
     let verses = await fetchSefariaText(r.ref, settings.showTranslation, settings.translationVersion);
     if (seq !== _fetchSeq) return;   // a newer selection superseded this fetch
@@ -2266,6 +2267,7 @@ async function fetchAndRender() {
     }
     currentVerses = verses;
     currentRangeLabel = r.label;
+    netDone = true;   // all network work succeeded; anything that throws below is a render/code fault
     renderText();
     // Warn if translation was requested but Sefaria returned no English for
     // this version + ref. Could mean: version doesn't cover this passage,
@@ -2293,7 +2295,11 @@ async function fetchAndRender() {
   } catch (e) {
     if (seq !== _fetchSeq) return;   // a newer selection superseded this fetch; don't clobber it with an error
     console.error(e);
-    setStatus(`Failed to load ${r.label}: ${e.message}. Sefaria API may be unreachable.`, true);
+    // Only blame the network when the failure happened while fetching. Once the text is in hand
+    // (netDone), a throw is a render/code fault — the Hebrew is often already on screen — so
+    // "Sefaria API may be unreachable" would misdirect the user.
+    const netHint = netDone ? '' : ' Sefaria API may be unreachable.';
+    setStatus(`Failed to load ${r.label}: ${e.message}.${netHint}`, true);
   }
 }
 function setStatus(msg, isError) {
