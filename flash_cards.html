@@ -308,6 +308,7 @@
   --radius: 14px;
   --heb-font: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif;
   --serif: 'Libre Baskerville', Georgia, serif;
+  --eng-font: var(--serif);   /* English/Latin card-text face — user-selectable; defaults to the serif look */
   --sans: 'Assistant', system-ui, -apple-system, sans-serif;
 }
 html.dark-early, html.dark-early body { background: #0f1626; color: #e9eaf0; }
@@ -813,7 +814,7 @@ body.dark .slider::before { background: #d8dde9; }
 body.dark .fc-front { background: #1e2d4a; border-color: #3a5080; }
 body.dark .fc-front .fc-heb { color: var(--ink); }
 body.dark .fc-back  { background: #0e1e36; border-color: #2a4060; }
-.fc-translit { font-family: var(--serif); font-size: clamp(1.4rem, 6vw, 2.4rem); color: var(--gold-light); text-align: center; }
+.fc-translit { font-family: var(--eng-font); font-size: clamp(1.4rem, 6vw, 2.4rem); color: var(--gold-light); text-align: center; }
 .fc-hint { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
 
 /* ============== PRESENT / FULLSCREEN MODE ==============
@@ -887,7 +888,7 @@ body.dark .lc-replay { color: var(--gold-light); }
 .lc-tile.good { background: var(--good-soft); border-color: var(--good); }
 .lc-tile.bad  { background: var(--bad-soft);  border-color: var(--bad); }
 .lc-heb { font-family: var(--heb-font); direction: rtl; font-size: clamp(1.8rem, 8vw, 3rem); line-height: 1.15; }
-.lc-num { font-family: var(--serif); direction: ltr; font-size: clamp(2rem, 9vw, 3.2rem); font-weight: 700; }
+.lc-num { font-family: var(--eng-font); direction: ltr; font-size: clamp(2rem, 9vw, 3.2rem); font-weight: 700; }
 
 /* Bottom toast (import-success confirmation, etc.) — ported from hebrew_blend_generator.html */
 #appToast {
@@ -1644,6 +1645,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" hidden onchange="onUploadFontPick(this)"></label>
       </div>
 
+      <!-- English / Latin font selector — styles the English card faces (Numbers/Colors/Words + romanization) -->
+      <div class="label adv-subhead">English / Latin Font</div>
+      <div class="adv-subbody">
+        <div class="font-grid" id="engFontGrid"></div>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" hidden onchange="onUploadEngFontPick(this)"></label>
+      </div>
+
       <hr class="soft" />
 
       <!-- Backup -->
@@ -2168,6 +2176,26 @@ const HEB_FONTS = [
   { section:'Cursive', name:'Shmulik CLM', stack:"'Shmulik CLM', cursive", attr:'Yoram Gnat / Culmus Project — GPL+FE', link:'https://culmus.sourceforge.io/', load:{type:'face',css:"@font-face{font-family:'Shmulik CLM';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Culmus%20Project%20(GPL%20and%20GPL%2BFE)/Yoram%20Gnat%20(GPL%2BFE)/Shmulik%20CLM/ShmulikCLM.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
 ];
 
+// English / Latin display faces for the card fronts (Numbers/Colors/Words) + romanization. All Google
+// Fonts (already CSP-allowlisted); loaded on demand via loadHebFont (the loader is script-agnostic).
+const ENG_FONTS = [
+  // ── Sans ─────────────────────────────────────
+  { section:'Sans', name:'Source Sans 3', stack:"'Source Sans 3', sans-serif", load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap'} },
+  { section:'Sans', name:'Nunito', stack:"'Nunito', sans-serif", load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap'} },
+  { section:'Sans', name:'Quicksand', stack:"'Quicksand', sans-serif", load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap'} },
+  // ── Serif ────────────────────────────────────
+  { section:'Serif', name:'Libre Baskerville', stack:"'Libre Baskerville', serif", load:null },   // preloaded in <head>
+  { section:'Serif', name:'Merriweather', stack:"'Merriweather', serif", load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap'} },
+  { section:'Serif', name:'Lora', stack:"'Lora', serif", load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap'} },
+  // ── Kid-Friendly ─────────────────────────────
+  { section:'Kid-Friendly', name:'Patrick Hand', stack:"'Patrick Hand', cursive", load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap'} },
+  { section:'Kid-Friendly', name:'Schoolbell', stack:"'Schoolbell', cursive", load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Schoolbell&display=swap'} },
+  { section:'Kid-Friendly', name:'Comic Neue', stack:"'Comic Neue', cursive", load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap'} },
+  // ── Easy Reading (accessibility) ─────────────
+  { section:'Easy Reading', name:'Atkinson Hyperlegible', stack:"'Atkinson Hyperlegible', sans-serif", load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap'} },
+  { section:'Easy Reading', name:'Lexend', stack:"'Lexend', sans-serif", load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap'} },
+];
+
 /* =========================================================================
    STATE
    ========================================================================= */
@@ -2190,6 +2218,7 @@ let colorCodingMode = 'letter';
 let nikudColorOverrides = {};
 let vowelColorScheme = 'default'; // 'default' | 'talam'
 let hebFontId = 'Frank Ruhl Libre';
+let engFontId = 'Libre Baskerville';   // English/Latin card-text face (see ENG_FONTS)
 let audioEnabled = false;
 function updateTtsRateVisibility() {
   const row = document.getElementById('ttsRateRow');
@@ -2473,6 +2502,7 @@ function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontF
 let MY_FONTS = []; const _loadedUserFonts = new Set();
 function ivEsc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
 function allFonts() { return MY_FONTS.concat(HEB_FONTS); }
+function allEngFonts() { return MY_FONTS.concat(ENG_FONTS); }   // uploaded fonts appear in both grids
 async function refreshMyFonts() {
   try {
     MY_FONTS = (await listUserFonts()).map(f => ({
@@ -2481,7 +2511,9 @@ async function refreshMyFonts() {
       load: { type: 'userfont' } }));
   } catch (e) { MY_FONTS = []; }
   initFontSelector();
+  initEngFontSelector();
   if (MY_FONTS.some(f => f.name === hebFontId)) setHebFont(hebFontId);
+  if (MY_FONTS.some(f => f.name === engFontId)) setEngFont(engFontId);
 }
 /* ═══ My Fonts uploader (shared, identical across pages) ═══ */
 async function ivUploadFontFromFile(file){
@@ -2529,7 +2561,7 @@ function setHebFont(name) {
   hebFontId = font.name;
   loadHebFont(font);
   document.documentElement.style.setProperty('--heb-font', font.stack);
-  document.querySelectorAll('.font-opt').forEach(b => b.classList.toggle('active', b.dataset.fontName === font.name));
+  document.querySelectorAll('#fontGrid .font-opt').forEach(b => b.classList.toggle('active', b.dataset.fontName === font.name));
   saveSettings();
 }
 function initFontSelector() {
@@ -2551,6 +2583,42 @@ function initFontSelector() {
       host.appendChild(btn);
     });
   });
+}
+/* English / Latin card-text font picker — mirrors the Hebrew one above (shared loadHebFont + My Fonts),
+   drives the --eng-font CSS var used by the English card faces. */
+function setEngFont(name) {
+  const font = allEngFonts().find(f => f.name === name) || ENG_FONTS.find(f => f.name === 'Libre Baskerville');
+  engFontId = font.name;
+  loadHebFont(font);
+  document.documentElement.style.setProperty('--eng-font', font.stack);
+  document.querySelectorAll('#engFontGrid .font-opt').forEach(b => b.classList.toggle('active', b.dataset.fontName === font.name));
+  saveSettings();
+}
+function initEngFontSelector() {
+  const host = document.getElementById('engFontGrid');
+  if (!host) return;
+  host.innerHTML = '';
+  const sections = [...new Set(allEngFonts().map(f => f.section))];
+  sections.forEach(sec => {
+    const hdr = document.createElement('div');
+    hdr.className = 'font-section-hdr';
+    hdr.textContent = sec === 'My Fonts' ? 'My Fonts' : sec + ' Fonts';
+    host.appendChild(hdr);
+    allEngFonts().filter(f => f.section === sec).forEach(font => {
+      loadHebFont(font);
+      const btn = document.createElement('button');
+      btn.className = 'font-opt' + (font.name === engFontId ? ' active' : '');
+      btn.dataset.fontName = font.name;
+      btn.innerHTML = `<span style="font-family:${font.stack};font-size:1.35rem;direction:ltr;display:block;">Aa 123</span><small>${ivEsc(font.name)}${font.name === 'Libre Baskerville' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}</small>`;
+      btn.addEventListener('click', () => setEngFont(font.name));
+      host.appendChild(btn);
+    });
+  });
+}
+async function onUploadEngFontPick(input){
+  const name = await ivUploadFontFromFile(input.files && input.files[0]);
+  input.value = '';
+  if (name) { await refreshMyFonts(); setEngFont(name); }
 }
 
 /* =========================================================================
@@ -3489,7 +3557,7 @@ function getSettings() {
     colorCodingEnabled, colorCodingMode,
     nikudColorOverrides: { ...nikudColorOverrides },
     vowelColorScheme,
-    hebFontId, audioEnabled, showSkippedAgain, nameLetterMode, nameLetterShowLetter,
+    hebFontId, engFontId, audioEnabled, showSkippedAgain, nameLetterMode, nameLetterShowLetter,
     listening: listeningEnabled, listeningChoices,
     otherModeActive, otherSubMode, numberMin, numberMax, numberGender, numberFront, numberShowTranslit,
     colorGender, colorDisplayMode, colorFront, colorShowTranslit, selectedColors: [...selectedColors],
@@ -3541,6 +3609,8 @@ function applySettings(s) {
   const fontMigration = { frank:'Frank Ruhl Libre', david:'David Libre', noto:'Noto Serif Hebrew', heebo:'Heebo', assist:'Assistant' };
   const rawFont = s.hebFontId ?? 'Frank Ruhl Libre';
   hebFontId = fontMigration[rawFont] || (HEB_FONTS.find(f => f.name === rawFont) ? rawFont : 'Frank Ruhl Libre');
+  const rawEng = s.engFontId ?? 'Libre Baskerville';
+  engFontId = ENG_FONTS.find(f => f.name === rawEng) ? rawEng : 'Libre Baskerville';
   vowelPositions = new Set((s.vowelPositions || []).filter(p => p >= 1 && p <= (s.mode ?? 2)));
   if (vowelPositions.size === 0) vowelPositions.add(s.mode ?? 2);
   anyVowelLock = !!s.anyVowelLock;
@@ -3668,6 +3738,7 @@ function applySettings(s) {
     if (sl) { sl.value = s.ttsRate; document.getElementById('ttsRateVal').textContent = parseFloat(s.ttsRate).toFixed(2) + '×'; }
   }
   setHebFont(hebFontId);
+  setEngFont(engFontId);
   initLetters();
   initVowels();
   initColorPickers();
@@ -5534,14 +5605,14 @@ function renderCurrentCard() {
         el.innerHTML = `<span style="color:${textColor};font-size:clamp(1.8rem,7vw,3rem);font-weight:700;${shadow}">${esc(card.translit || '')}</span>`;
       } else {
         el.textContent = card.translit;
-        el.style.fontFamily = 'var(--serif)';
+        el.style.fontFamily = 'var(--eng-font)';
         el.style.direction = 'ltr';
         el.style.fontSize = 'clamp(1.8rem, 7vw, 3rem)';
       }
     }
     function hebColorSide(el) {
       if (colorShowTranslit && card.romanized) {
-        el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;"><div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(2rem,8vw,3.5rem);text-align:center;">${colorizeHebrew(card.heb)}</div><div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;text-align:center;">${esc(card.romanized)}</div></div>`;
+        el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;"><div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(2rem,8vw,3.5rem);text-align:center;">${colorizeHebrew(card.heb)}</div><div style="font-family:var(--eng-font);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;text-align:center;">${esc(card.romanized)}</div></div>`;
       } else {
         el.innerHTML = colorizeHebrew(card.heb);
         el.style.fontFamily = 'var(--heb-font)';
@@ -5559,7 +5630,7 @@ function renderCurrentCard() {
   } else if (otherModeActive && otherSubMode === 'numbers') {
     function hebSide(el) {
       if (numberShowTranslit) {
-        const trLine = card.romanized ? `<div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;text-align:center;">${esc(card.romanized)}</div>` : '';
+        const trLine = card.romanized ? `<div style="font-family:var(--eng-font);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;text-align:center;">${esc(card.romanized)}</div>` : '';
         el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;"><div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(1.2rem,5vw,2rem);text-align:center;">${colorizeHebrew(card.heb)}</div>${trLine}</div>`;
         el.style.fontFamily = '';
         el.style.direction = '';
@@ -5573,7 +5644,7 @@ function renderCurrentCard() {
     }
     function numSide(el) {
       el.textContent = card.translit;
-      el.style.fontFamily = 'var(--serif)';
+      el.style.fontFamily = 'var(--eng-font)';
       el.style.direction = 'ltr';
       el.style.fontSize = 'clamp(3rem, 12vw, 5rem)';
     }
@@ -5588,17 +5659,17 @@ function renderCurrentCard() {
     const showGenderHeb   = emojiShowGender && genderGlyph && (emojiGenderSide === 'hebrew' || emojiGenderSide === 'both');
     function emojiSide(el) {
       const genderLine = showGenderEmoji
-        ? `<div style="font-family:var(--serif);font-size:clamp(1.2rem,5vw,2rem);opacity:0.7;line-height:1;margin-top:6px;">${genderGlyph}</div>` : '';
+        ? `<div style="font-family:var(--eng-font);font-size:clamp(1.2rem,5vw,2rem);opacity:0.7;line-height:1;margin-top:6px;">${genderGlyph}</div>` : '';
       const enLine = card.english
-        ? `<div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.75;text-align:center;margin-top:8px;">${esc(card.english)}</div>` : '';
+        ? `<div style="font-family:var(--eng-font);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.75;text-align:center;margin-top:8px;">${esc(card.english)}</div>` : '';
       el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:0;width:100%;"><div style="font-size:clamp(4rem,18vw,8rem);line-height:1;">${esc(card.emoji)}</div>${genderLine}${enLine}</div>`;
       el.style.fontFamily = ''; el.style.direction = ''; el.style.fontSize = '';
     }
     function hebEmojiSide(el) {
       const hebInner = colorizeHebrew(card.heb) +
-        (showGenderHeb ? ` <span style="font-family:var(--serif);font-size:0.55em;opacity:0.7;">${genderGlyph}</span>` : '');
+        (showGenderHeb ? ` <span style="font-family:var(--eng-font);font-size:0.55em;opacity:0.7;">${genderGlyph}</span>` : '');
       const trLine = (emojiShowTranslit && card.romanized)
-        ? `<div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;text-align:center;">${esc(card.romanized)}</div>` : '';
+        ? `<div style="font-family:var(--eng-font);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;text-align:center;">${esc(card.romanized)}</div>` : '';
       if (trLine) {
         el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;"><div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(2rem,8vw,3.5rem);text-align:center;">${hebInner}</div>${trLine}</div>`;
         el.style.fontFamily = ''; el.style.direction = ''; el.style.fontSize = '';
@@ -5615,7 +5686,7 @@ function renderCurrentCard() {
     // Hebrew side: nikkud-colorized (colorizeHebrew escapes each char); optional translit line.
     function hebWordSide(el) {
       if (wordsShowTranslit && card.translit) {
-        const trLine = `<div style="font-family:var(--serif);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;text-align:center;">${esc(card.translit)}</div>`;
+        const trLine = `<div style="font-family:var(--eng-font);direction:ltr;font-size:clamp(1rem,4vw,1.6rem);opacity:0.85;text-align:center;">${esc(card.translit)}</div>`;
         el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;"><div style="font-family:var(--heb-font);direction:rtl;font-size:clamp(2rem,8vw,3.5rem);text-align:center;">${colorizeHebrew(card.heb)}</div>${trLine}</div>`;
         el.style.fontFamily = ''; el.style.direction = ''; el.style.fontSize = '';
       } else {
@@ -5628,7 +5699,7 @@ function renderCurrentCard() {
     // English side: translation via textContent (auto-safe); wraps on narrow cards.
     function enWordSide(el) {
       el.textContent = card.translation || '—';
-      el.style.fontFamily = 'var(--serif)';
+      el.style.fontFamily = 'var(--eng-font)';
       el.style.direction = 'ltr';
       el.style.fontSize = 'clamp(1.2rem, 5vw, 2.2rem)';
       el.style.textAlign = 'center';
@@ -5643,12 +5714,12 @@ function renderCurrentCard() {
       front.style.fontFamily = 'var(--heb-font)';
       front.style.direction = 'rtl';
       back.textContent = card.translit;
-      back.style.fontFamily = 'var(--serif)';
+      back.style.fontFamily = 'var(--eng-font)';
       back.style.direction = 'ltr';
       back.style.fontSize = 'clamp(1.4rem, 6vw, 2.4rem)';
     } else {
       front.textContent = card.translit;
-      front.style.fontFamily = 'var(--serif)';
+      front.style.fontFamily = 'var(--eng-font)';
       front.style.direction = 'ltr';
       back.textContent = card.heb;
       back.style.fontFamily = 'var(--heb-font)';
@@ -5658,7 +5729,7 @@ function renderCurrentCard() {
   } else if (inverse) {
     // Inverse: translit on front, hebrew on back
     front.textContent = card.translit;
-    front.style.fontFamily = 'var(--serif)';
+    front.style.fontFamily = 'var(--eng-font)';
     front.style.direction = 'ltr';
     back.innerHTML = colorizeHebrew(card.heb);
     back.style.fontFamily = 'var(--heb-font)';
@@ -5669,7 +5740,7 @@ function renderCurrentCard() {
     front.style.fontFamily = 'var(--heb-font)';
     front.style.direction = 'rtl';
     back.textContent = card.translit;
-    back.style.fontFamily = 'var(--serif)';
+    back.style.fontFamily = 'var(--eng-font)';
     back.style.direction = 'ltr';
     back.style.fontSize = 'clamp(1.4rem, 6vw, 2.4rem)';
   }
@@ -6290,6 +6361,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateVavAsLetterVisibility();
   initColorPickers();
   initFontSelector();
+  initEngFontSelector();
   refreshMyFonts();
   initCountGrid();
   initColorTiles();
