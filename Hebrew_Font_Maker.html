@@ -621,13 +621,13 @@
   #adConfirm { background: var(--cream); border-inline-start: 3px solid var(--gold); border-radius: 6px; padding: 5px 9px; display: inline-flex; align-items: center; gap: 8px; }
   #adConfirm[hidden] { display: none; }
   #adStage { overflow: auto; background: var(--cream); border: 1px solid var(--border); border-radius: 8px; padding: 4px; }
-  .ad-box rect { fill: rgba(201,146,42,0.07); stroke: var(--gold); stroke-width: 2.5px; vector-effect: non-scaling-stroke; }
-  .ad-box text { paint-order: stroke; stroke: #fff; stroke-width: 4px; fill: var(--navy); font-weight: 700; pointer-events: none; }
+  .ad-box rect { fill: rgba(201,146,42,0.07); stroke: var(--gold, #c9922a); stroke-width: 2.5px; vector-effect: non-scaling-stroke; }
+  .ad-box text { paint-order: stroke; stroke: #fff; stroke-width: 4px; fill: var(--navy, #1a2744); font-weight: 700; pointer-events: none; }
   .ad-box { cursor: pointer; outline: none; }
   .ad-box.sel rect, .ad-box:focus-visible rect { stroke: #2a6dd9; stroke-width: 4px; fill: rgba(42,109,217,0.12); }
   .ad-box.un rect { stroke-dasharray: 7 5; stroke: #c0392b; }
-  .ad-box.skip rect { stroke-dasharray: 2 4; stroke: var(--muted); fill: rgba(127,127,127,0.10); }
-  .ad-box.skip text { fill: var(--muted); }
+  .ad-box.skip rect { stroke-dasharray: 2 4; stroke: var(--muted, #6b6050); fill: rgba(127,127,127,0.10); }
+  .ad-box.skip text { fill: var(--muted, #6b6050); }
   #adPicker { flex: 0 0 auto; border: 1px solid var(--border); border-radius: 8px; background: var(--white); padding: 8px; margin-top: 8px; max-height: 30vh; overflow-y: auto; }
   #adPicker[hidden] { display: none; }
   .ad-pick-title { font-size: 0.78rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
@@ -2246,7 +2246,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.0';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.1';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2458,6 +2458,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.1</strong> — <strong>Auto-detect fixes.</strong> The detected-letter boxes now draw reliably in every browser — they were invisible in Firefox, which showed the sheet but not the gold boxes around each letter. And the <strong>▦ Auto-detect letters</strong> button now sits right under the sheet, next to the page navigation, where you're already looking while boxing letters. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.0</strong> — <strong>Smarter tracing and a full point-editing suite.</strong> Tracing now picks a good <strong>ink threshold automatically</strong>, can <strong>even out photo lighting</strong>, and <strong>auto-detects every letter on a combined sheet</strong> for one-click review and assignment. Edit points grew into a real outline editor: <strong>delete whole contours</strong> or <strong>stray specks</strong>, <strong>snap to guides</strong>, <strong>copy/paste points between letters</strong>, <strong>flip / rotate / scale</strong>, a <strong>selection box with move &amp; scale handles</strong>, <strong>marquee (M)</strong> and <strong>select-all</strong>, <strong>line ↔ curve segment switches</strong>, <strong>corner rounding</strong> with a live radius preview, a <strong>pen tool (P)</strong> that draws contours point by point — even on blank glyphs like digits — and a <strong>Contours panel</strong> with per-contour colors and hide-while-editing (hidden contours still export). Imported fonts round-trip faithfully: untouched glyphs keep their exact outlines, and hand edits never silently change a glyph's width. Plus a <strong>waterfall size preview</strong> on the Spacing step. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.8</strong> — <strong>Crop from a sheet by keyboard.</strong> When cutting a letter or mark out of a "one image, all letters" / combined sheet, you can now do it without a mouse: the arrow keys move a crop box (Shift for smaller steps), <strong>+</strong> / <strong>−</strong> resize it, <strong>Enter</strong> crops, and <strong>Esc</strong> cancels. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.7</strong> — <strong>Edit points by keyboard.</strong> In Edit-points mode you can now select points without a mouse: <strong>,</strong> and <strong>.</strong> step to the previous / next point, and <strong>i</strong> inserts a new point after the selected one — so the existing arrow-nudge and Delete shortcuts are finally reachable keyboard-only. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -4520,6 +4521,14 @@ function renderAdStage(focusSel) {
   const im = imgCache[adState.url];
   if (!im) { host.innerHTML = ''; return; }
   const W = im.width, H = im.height, fs = Math.max(14, Math.round(W / 46));
+  // Box color + stroke are emitted as inline SVG presentation attributes (not CSS-only) so the
+  // overlays paint even in engines that don't honor the .ad-box CSS rule / var() / vector-effect on
+  // an innerHTML-built SVG — Firefox rendered the sheet image but none of the boxes. The CSS still
+  // layers hover/focus and (where supported) the non-scaling stroke on top. Stroke width is in user
+  // units so it stays visible at any display scale without depending on vector-effect.
+  const isDark = document.body.classList.contains('dark');
+  const goldC = isDark ? '#e0a832' : '#c9922a', mutedC = isDark ? '#8a94a8' : '#6b6050', navyC = '#1a2744';
+  const bsw = Math.max(2, Math.round(Math.max(W, H) / 400)), tsw = Math.max(3, Math.round(bsw * 1.5));
   let h = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;" role="group" aria-label="Detected letter boxes over the sheet">`;
   h += `<image href="${adState.url}" x="0" y="0" width="${W}" height="${H}"/>`;
   adState.boxes.forEach(b => {
@@ -4528,10 +4537,15 @@ function renderAdStage(focusSel) {
     const name = meta ? meta.name : null;
     const glyph = b.cp ? String.fromCodePoint(parseInt(b.cp, 16)) : '';
     const lbl = b.skip ? `Box ${b.id} — skipped` : (name ? `Box ${b.id} — ${name}` : `Box ${b.id} — no letter assigned`);
+    let stroke, fill, dash = '', sw = bsw;
+    if (sel)         { stroke = '#2a6dd9'; fill = 'rgba(42,109,217,0.12)'; sw = Math.round(bsw * 1.6); }
+    else if (b.skip) { stroke = mutedC;    fill = 'rgba(127,127,127,0.10)'; dash = ` stroke-dasharray="${bsw * 2} ${bsw * 4}"`; }
+    else if (!b.cp)  { stroke = '#c0392b'; fill = 'rgba(201,146,42,0.05)';  dash = ` stroke-dasharray="${bsw * 3} ${bsw * 2}"`; }
+    else             { stroke = goldC;     fill = 'rgba(201,146,42,0.07)'; }
     h += `<g class="ad-box${sel ? ' sel' : ''}${b.skip ? ' skip' : ''}${(!b.cp && !b.skip) ? ' un' : ''}" data-id="${b.id}"`
       + ` role="button" tabindex="${sel ? 0 : -1}" aria-label="${esc(lbl)}. Enter to reassign, Delete to remove.">`;
-    h += `<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}"/>`;
-    h += `<text x="${r.x + 4}" y="${Math.max(fs + 2, r.y - 6)}" font-size="${fs}">${b.id}${b.skip ? ' ✕' : (name ? ' ' + esc(name) : ' ?')}`
+    h += `<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"${dash}/>`;
+    h += `<text x="${r.x + 4}" y="${Math.max(fs + 2, r.y - 6)}" font-size="${fs}" fill="${b.skip ? mutedC : navyC}" stroke="#fff" stroke-width="${tsw}" paint-order="stroke" font-weight="700" style="pointer-events:none;">${b.id}${b.skip ? ' ✕' : (name ? ' ' + esc(name) : ' ?')}`
       + (glyph && !b.skip ? ` <tspan lang="he">${glyph}</tspan>` : '') + `</text></g>`;
   });
   h += '</svg>';
@@ -4686,7 +4700,12 @@ function combinedNavHTML() {
   const prev = n > 1 ? `<button class="ctl-btn" ${i <= 0 ? 'disabled' : ''} onclick="combinedNav(-1)">‹ Previous</button>` : '';
   const next = n > 1 ? `<button class="ctl-btn" ${i >= n - 1 ? 'disabled' : ''} onclick="combinedNav(1)">Next ›</button>` : '';
   const rm = `<button class="ctl-btn ghost cn-remove" title="Remove this sheet from the set" onclick="removeCombinedSheet()">✕</button>`;
-  return `<div class="combined-nav">${prev}${counter}${next}${rm}</div>`;
+  // Auto-detect lives here, right under the sheet it operates on (raster sheets only). Moved out of
+  // the left upload panel so it sits where you're already looking when boxing letters.
+  const auto = !svgUploadOn()
+    ? `<button class="ctl-btn cn-autodetect" onclick="openAutoDetect()" title="Find every letter on this sheet automatically and review the proposed boxes">▦ Auto-detect letters</button>`
+    : '';
+  return `<div class="combined-nav">${prev}${counter}${next}${rm}${auto}</div>`;
 }
 async function combinedNav(delta) {
   const n = project.combinedSheets.length; if (!n) return;
@@ -9208,7 +9227,6 @@ function inputModeBlock() {
       <div class="allowed">${ svg ? 'Allowed: SVG only.' : 'Allowed: any image file — PNG, JPG, GIF, WebP. You can add several sheets and flip between them.' }</div>
       <input type="file" id="combinedFile" accept="${svg?'.svg,image/svg+xml':'image/*'}" multiple style="display:none;">
       ${ svg && project.combinedSheets.length ? `<div class="ctl-row" style="margin-top:6px;"><button class="ctl-btn" onclick="autoSplitCombinedSvg()">Auto-split by name</button></div>` : '' }
-      ${ !svg && project.combinedSheets.length ? `<div class="ctl-row" style="margin-top:6px;"><button class="ctl-btn" onclick="openAutoDetect()" title="Find every letter on this sheet automatically and review the proposed boxes">▦ Auto-detect letters</button></div>` : '' }
     </div>
     <div id="fontUploadRow" style="display:${(!svg && project.inputMode==='font')?'':'none'};">
       <div class="drop" id="fontDrop">Drop a font (TTF/OTF) here, or click to browse.</div>
