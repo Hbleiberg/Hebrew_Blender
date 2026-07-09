@@ -507,8 +507,9 @@
     .npnl-help { width: 44px; height: 44px; }
     .npnl-disc summary { min-height: 44px; }
     .npnl-ctx { min-height: 150px; }
-    #nodeBar .ctl-btn { min-height: 44px; }
+    #nodeBar .ctl-btn { min-height: 44px; min-width: 44px; }   /* the horizontal bar's constraining touch dimension is width */
     #nodeBar .nb-snap { min-height: 44px; }
+    #nodeHint .ctl-btn { min-height: 44px; min-width: 44px; }
   }
   /* ── Node-mode stage chrome: #nodeBar / #nodeStatus / #nodeHint — static DOM,
      synced by renderNodeChrome(); visible only under body.mode-nodes ── */
@@ -520,6 +521,10 @@
   .nb-glyph { line-height: 1; }
   .nb-toggle[aria-pressed="true"] { background: var(--navy); color: #fff; border-color: var(--navy); }
   .nb-toggle[aria-pressed="true"]:hover { background: var(--navy); }
+  /* dark tokens collapse --navy onto the dark surface (~1.07:1) — use the suite's dark-selected pair instead */
+  body.dark .nb-toggle[aria-pressed="true"] { background: #2a4070; border-color: #4a6aaa; }
+  body.dark .nb-toggle[aria-pressed="true"]:hover { background: #2a4070; }
+  body.dark .npnl-mode-btn.active, body.dark .npnl-mode-btn.active:hover { background: #2a4070; }
   .nb-mode { margin: 0; }
   .nb-mode .npnl-mode-btn { flex: 0 0 auto; padding: 6px 10px; }
   .nb-snap { font-size: 0.76rem; font-weight: 600; padding: 0 3px; }
@@ -537,7 +542,8 @@
   /* first-run hint — zero-height sticky wrapper floats the card over the stage top edge without taking layout space */
   .node-hint-wrap { display: none; position: sticky; top: 2px; height: 0; z-index: 5; }
   body.mode-nodes .node-hint-wrap { display: block; }
-  .node-hint { display: flex; align-items: center; gap: 8px; width: max-content; max-width: 96%; margin: 0 auto; background: var(--white); border: 1px solid var(--gold); border-radius: 8px; padding: 3px 6px 3px 10px; font-size: 0.76rem; color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  .node-hint { display: flex; align-items: center; gap: 8px; width: max-content; max-width: 96%; margin: 0 auto; background: var(--white); border: 1px solid var(--gold); border-radius: 8px; padding: 3px 6px 3px 10px; font-size: 0.76rem; color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.15); pointer-events: none; }
+  .node-hint .ctl-btn { pointer-events: auto; }   /* only the ?/✕ buttons intercept clicks — the card never blocks stage hits beneath it */
   .node-hint[hidden] { display: none !important; }
   /* ghost handles (Handles toggle ON): same geometry as .node-h/.node-hline but inert —
      never reuse .node-h here (attachNodeEditor binds pointerdown on it) */
@@ -1086,18 +1092,18 @@
           <button class="ctl-btn nb-btn" id="nodeUndoBtn" onclick="undo()" title="Undo (Ctrl+Z)" aria-label="Undo" aria-keyshortcuts="Control+Z" onkeydown="nodeBarKey(event, this)" tabindex="-1" disabled>↶</button>
           <button class="ctl-btn nb-btn" id="nodeRedoBtn" onclick="redo()" title="Redo (Ctrl+Shift+Z)" aria-label="Redo" aria-keyshortcuts="Control+Shift+Z Control+Y" onkeydown="nodeBarKey(event, this)" tabindex="-1" disabled>↷</button>
           <span class="nb-sep" aria-hidden="true"></span>
-          <button class="ctl-btn nb-btn" onclick="setZoom(stageZoom - 0.1)" title="Zoom out" aria-label="Zoom out" onkeydown="nodeBarKey(event, this)" tabindex="-1">−</button>
-          <span id="nodeZoomVal" class="zoom-val" aria-hidden="true">100%</span>
+          <button class="ctl-btn nb-btn" onclick="setZoom(Math.max(0.01, stageZoom - 0.1))" title="Zoom out" aria-label="Zoom out" onkeydown="nodeBarKey(event, this)" tabindex="-1">−</button>
+          <span id="nodeZoomVal" class="zoom-val">100%</span>
           <button class="ctl-btn nb-btn" onclick="setZoom(stageZoom + 0.1)" title="Zoom in" aria-label="Zoom in" onkeydown="nodeBarKey(event, this)" tabindex="-1">+</button>
           <button class="ctl-btn nb-btn" onclick="setZoom(1)" title="Reset zoom to 100%" aria-label="Reset zoom to 100%" onkeydown="nodeBarKey(event, this)" tabindex="-1">⊡</button>
           <span class="nb-sep" aria-hidden="true"></span>
           <button class="ctl-btn nb-btn nb-toggle" id="nodeHandlesBtn" aria-pressed="false" onclick="setNodeHandlesAll(!_nodeHandlesAll)" title="Show curve handles on every point (off: selected points only)" onkeydown="nodeBarKey(event, this)" tabindex="-1"><span class="nb-glyph" aria-hidden="true">⌖</span> <span class="nb-label">Handles</span></button>
           <button class="ctl-btn nb-btn nb-toggle" id="nodeGuidesBtn" aria-pressed="true" onclick="setNodeGuidesShown(!_nodeGuidesOn)" title="Show guide and metric lines (view only — snapping is unaffected)" onkeydown="nodeBarKey(event, this)" tabindex="-1"><span class="nb-glyph" aria-hidden="true">▦</span> <span class="nb-label">Guides</span></button>
-          <label class="chk nb-snap" title="Snap dragged points to guides and metric lines (Alt bypasses)"><input type="checkbox" id="nodeSnapChk" onchange="setSnapGuides(this.checked)" onkeydown="nodeBarKey(event, this)" tabindex="-1" aria-label="Snap dragged points to guides and metric lines (Alt bypasses)"> <span class="nb-label">Snap</span></label>
+          <label class="chk nb-snap" title="Snap dragged points to guides and metric lines (Alt bypasses)"><input type="checkbox" id="nodeSnapChk" onchange="setSnapGuides(this.checked)" onkeydown="nodeBarKey(event, this)" tabindex="-1" aria-label="Snap dragged points to guides and metric lines (Alt bypasses)"> <span class="nb-glyph" aria-hidden="true">🧲</span><span class="nb-label">Snap</span></label>
         </div>
         <div class="stage-wrap">
           <div class="node-hint-wrap">
-            <div id="nodeHint" class="node-hint" hidden>
+            <div id="nodeHint" class="node-hint" role="status" hidden>
               <span>Drag points to reshape · <b>?</b> for all shortcuts</span>
               <button class="ctl-btn nb-btn" onclick="openShortcuts('nodes')" aria-label="All point-editing shortcuts">?</button>
               <button class="ctl-btn nb-btn" onclick="dismissNodeHint()" aria-label="Dismiss this hint">✕</button>
@@ -1107,7 +1113,7 @@
         </div>
         <!-- node-mode status bar — passive readouts; #nsSel is the ONLY live region in node chrome -->
         <div id="nodeStatus">
-          <span class="ns-glyph"><span id="nsGlyph"></span><span id="nsName"></span><span id="nsCp"></span></span>
+          <span class="ns-glyph"><span id="nsGlyph" lang="he"></span><span id="nsName"></span><span id="nsCp"></span></span>
           <span id="nsCoords" class="ns-coords"></span>
           <span id="nsSel" class="ns-sel" aria-live="polite"></span>
         </div>
@@ -1982,9 +1988,17 @@ function redo() { udFlushPending(); const e = redoStack.pop(); if (!e) return; u
 function afterUndo(msg) { updateUndoButtons(); if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }   /* rebuild node model from restored curves */ renderGrids(); renderStage(); renderControls(); status(msg); markDirty(); }
 function updateUndoButtons() {   // top-toolbar + node-bar twins (bar buttons exist only after the DOM parses — null-guarded)
   const u = !undoStack.length, r = !redoStack.length;
+  const focused = document.activeElement;
   [['undoBtn', u], ['redoBtn', r], ['nodeUndoBtn', u], ['nodeRedoBtn', r]].forEach(([id, dis]) => {
     const b = document.getElementById(id); if (b) b.disabled = dis;
   });
+  // keyboard flow: disabling the focused bar button would silently eject focus to <body> —
+  // hand it to the twin (undo⇄redo) if enabled, else to the bar's current tab stop
+  if (focused && focused.disabled && (focused.id === 'nodeUndoBtn' || focused.id === 'nodeRedoBtn')) {
+    const twin = document.getElementById(focused.id === 'nodeUndoBtn' ? 'nodeRedoBtn' : 'nodeUndoBtn');
+    const to = (twin && !twin.disabled) ? twin : document.querySelector('#nodeBar .npnl-mode-btn.active');
+    if (to) { focused.tabIndex = -1; to.tabIndex = 0; to.focus(); }   // keep the one-tab-stop roving invariant
+  }
 }
 function udClear() { undoStack = []; redoStack = []; _udNudge = null; _burst = null; updateUndoButtons(); }
 
@@ -7182,6 +7196,8 @@ function npnlMode(which) {   // segmented-control click → existing setters, on
 function nodeBarKey(e, btn) {   // bar-wide roving tabindex (supersedes the panel-era npnlModeKey) —
   // arrows/Home/End move focus among the bar's enabled controls; Enter/Space (native click) activates
   const bar = btn.closest('#nodeBar'); if (!bar) return;
+  if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); return; }   // native activation wins — in pen mode the document
+  // handler would otherwise preventDefault Enter and place a point instead of pressing the focused button (mouse clicks already activate)
   const ctls = [...bar.querySelectorAll('button, input')].filter(c => !c.disabled);
   const i = ctls.indexOf(btn); let j = -1;
   if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % ctls.length;
@@ -7258,7 +7274,14 @@ function dismissNodeHint() {   // idempotent — ✕ click, or the first success
   const h = document.getElementById('nodeHint');
   if (_nodeHintDone && (!h || h.hidden)) return;
   _nodeHintDone = true; npnlSaveOpen('nodeHintDone', true);
-  if (h) h.hidden = true;
+  if (h) {
+    const hadFocus = h.contains(document.activeElement);
+    h.hidden = true;
+    if (hadFocus) {   // ✕ was focused — hiding it would drop focus to <body>; hand it to the toolbar's tab stop
+      const to = document.querySelector('#nodeBar [tabindex="0"]') || document.querySelector('#nodeBar .npnl-mode-btn.active');
+      if (to) to.focus();
+    }
+  }
 }
 function nodeChromeOn() { return !!project && workMode === 'nodes' && curKind === 'letter'; }
 function renderNodeChrome() {   // pure sync — safe to call from any render pass, including the !project early-outs
