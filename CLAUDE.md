@@ -964,9 +964,12 @@ from `torah_trainer.html`.
   default = Sefaria's public GCS text export, `--source=api` mirrors the live v3 endpoint; HTTP
   cache in gitignored `source-data/trope-cache/`). The builder excludes any aliyah whose word count
   doesn't match its PocketTorah timings (sentinel rule applied first) — never a shifted clip — and
-  fails loudly on its Genesis 1:1 smoke test. It rewrites `docs/trope_index_report.md`; re-run it
-  and commit both files together whenever the taxonomy or selection rules change.
-- **`TROPES` taxonomy** — one `═══`-marked table (27 entries: key, chars, display, Ashkenazi +
+  fails loudly on its Genesis 1:1 smoke test. It rewrites `docs/trope_index_report.md`; re-run it,
+  commit both files together, AND bump the `?v=` on the page's index fetch (the sw.js `DATA_CACHE`
+  matches exact URLs — the `?v=` bump is what refreshes returning users) whenever the taxonomy or
+  selection rules change.
+- **`TROPES` taxonomy** — one `═══`-marked table (26 entries — zarka is a single entry carrying
+  both codepoints: key, chars, display, Ashkenazi +
   Sephardi names, family, rare flag) kept **byte-identical** between `scripts/build-trope-index.mjs`
   and `trope_tutor.html` (same convention as the `.ivrit` engine; copy, don't rewrite). Family
   assignment mirrors torah_trainer's `TROPE_CHAR_TO_FAMILY`; family hues mirror
@@ -1442,9 +1445,9 @@ VERSION = "1.2"   # shown as "v{VERSION}" on the splash — bump whatever value 
 2. Run `python3 splash/gen_splash.py` — re-renders every `splash/splash-*.png`
    and rewrites `splash/apple-startup-links.html`.
 3. Only if `DEVICES` changed (NOT for a plain version bump): re-sync the
-   `apple-touch-startup-image` block in **all 11 HTML pages** (every root `*.html`: 404,
+   `apple-touch-startup-image` block in **all 12 HTML pages** (every root `*.html`: 404,
    Hebrew_Font_Maker, classroom_dashboard, contact, flash_cards, hebrew_blend_generator,
-   hebrew_dictionary, index, privacy, resources, torah_trainer) from
+   hebrew_dictionary, index, privacy, resources, torah_trainer, trope_tutor) from
    `splash/apple-startup-links.html` (the block is identical in each). A version
    bump alone keeps the same filenames, so the pages need no change.
 4. Commit & push.

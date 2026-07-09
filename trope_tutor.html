@@ -274,7 +274,9 @@ body.dark .tu-ex-play:focus-visible { outline-color:var(--gold-light); }
 }
 .tu-ex-ref { font-size:0.72rem; color:var(--muted); flex-shrink:0; font-variant-numeric:tabular-nums; }
 .tu-ex-none { font-size:0.8rem; color:var(--muted); font-style:italic; padding:2px 6px; }
-.mark-hit { color:var(--gold); background:rgba(201,146,42,0.16); border-radius:4px; }
+/* Darker readable-gold literal (same precedent as the radio-group pill): --gold on
+   the cream tint measures ~2.3:1 — far below AA even at large text sizes. */
+.mark-hit { color:#8a6216; background:rgba(201,146,42,0.16); border-radius:4px; }
 body.dark .mark-hit { color:var(--gold-light); background:rgba(224,168,50,0.2); }
 .tu-card-links { padding:0 14px 12px; font-size:0.76rem; }
 .tu-card-links a { color:var(--gold); text-decoration:none; font-weight:600; }
@@ -460,7 +462,10 @@ input:focus-visible + .slider { outline:2px solid var(--gold); outline-offset:2p
 }
 body.dark .radio-group { background:#2a3349; }
 body.dark .radio-group label { color:#99a2b8; }
-.radio-group input { display:none; }
+/* Visually hidden but focusable — display:none would drop the radios from the tab
+   order and make the tradition toggle keyboard-inoperable. */
+.radio-group input { position:absolute; opacity:0; width:1px; height:1px; margin:0; pointer-events:none; }
+.radio-group input:focus-visible + label { outline:2px solid var(--gold); outline-offset:1px; }
 .radio-group label {
   text-align:center; padding:4px 10px; border-radius:3px;
   font-size:0.78rem; cursor:pointer; font-weight:600; color:var(--muted);
@@ -632,6 +637,8 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
   .panel-title::after { transition: none !important; }
   .skip-link { transition: none !important; }
   .tu-tab, .tu-chip, .tu-choice, .font-opt, .hbtn, .btn, .tu-ex-play { transition: none !important; }
+  .slider, .slider::before { transition: none !important; }   /* settings toggle knob */
+  .settings-backdrop { transition: none !important; }
 }
 </style>
 </head>
@@ -1127,7 +1134,9 @@ async function loadData() {
   setStatus('Loading the trope index…');
   try {
     const [idxRes, manRes] = await Promise.all([
-      fetch('data/trope/trope_index.json'),
+      // ?v= is the DATA_CACHE refresh mechanism (sw.js serves /data/ cache-first,
+      // matched by exact URL) — bump it whenever the committed index is rebuilt.
+      fetch('data/trope/trope_index.json?v=1'),
       fetch('data/pockettorah/manifest.json'),
     ]);
     if (!idxRes.ok || !manRes.ok) throw new Error('HTTP ' + idxRes.status + '/' + manRes.status);
@@ -1172,6 +1181,7 @@ function stopClip() {
   _stopAt = null; _clipEndCb = null;
   if (_rafId) { cancelAnimationFrame(_rafId); _rafId = null; }
   if (!tuAudio.paused) tuAudio.pause();
+  setStatus('');   // a superseded pending load bails on its token check and would leave "Loading audio…" stuck
 }
 function _clipTick() {
   _rafId = null;
@@ -1774,7 +1784,11 @@ function buildSymbolChoices(q, t) {
     btn.type = 'button';
     btn.className = 'tu-choice';
     btn.dataset.key = k;
-    btn.setAttribute('aria-label', 'Symbol choice');
+    // Accessible name = the trope's name: glyph shapes mean nothing to a screen
+    // reader, so for AT users this becomes a hear→name question (pedagogically
+    // equivalent to Identify). A shared "Symbol choice" label would make all
+    // four answers indistinguishable.
+    btn.setAttribute('aria-label', tropeName(kt));
     btn.appendChild(tropeGlyphSpan(kt, 'c-glyph'));
     btn.onclick = () => answer(q, k, btn);
     choices.appendChild(btn);
@@ -2180,7 +2194,12 @@ function initFontSelector() {
   });
 }
 function setHebFont(name) {
-  const f = allFonts().find(x => x.name === name) || HEB_FONTS[0];
+  // Unknown name (e.g. a persisted My Font before the async refreshMyFonts() has
+  // populated MY_FONTS at init) → bail WITHOUT falling back — the dictionary
+  // pattern. Falling back to HEB_FONTS[0] here would overwrite settings.hebFont
+  // and permanently clobber the saved user-font choice on every page load.
+  const f = allFonts().find(x => x.name === name);
+  if (!f) return;
   settings.hebFont = f.name;
   loadHebFont(f);
   document.documentElement.style.setProperty('--heb-font', f.family);
