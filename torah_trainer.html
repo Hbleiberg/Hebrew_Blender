@@ -1101,14 +1101,10 @@ body.fullscreen #fsExitBtn { display: flex; }
   <div class="tt-status" id="ttStatus" role="status" aria-live="polite"></div>
   <!-- In-page nav: aliyah jump chips + "you are here" readout (long readings). -->
   <div class="tt-jumpnav" id="ttJumpNav" role="navigation" aria-label="Jump to aliyah" hidden></div>
-  <!-- Trope-family legend — shown only while trope color coding is on (applyTropeColors). -->
+  <!-- Trope-family legend — shown while trope color coding is on AND a reading is
+       loaded (applyTropeColors). Chips are generated at init from TROPE_COLOR_DEFS
+       so the family list lives in one place. -->
   <div class="tt-trope-legend" id="ttTropeLegend" hidden>
-    <span class="tt-trope-chip"><span class="tt-trope-swatch" style="background:var(--trope-sofpasuk-bg)"></span>Sof Pasuk clause</span>
-    <span class="tt-trope-chip"><span class="tt-trope-swatch" style="background:var(--trope-katon-bg)"></span>Zakef Katon clause</span>
-    <span class="tt-trope-chip"><span class="tt-trope-swatch" style="background:var(--trope-segol-bg)"></span>Segol clause</span>
-    <span class="tt-trope-chip"><span class="tt-trope-swatch" style="background:var(--trope-revia-bg)"></span>Revia group</span>
-    <span class="tt-trope-chip"><span class="tt-trope-swatch" style="background:var(--trope-geresh-bg)"></span>Geresh group</span>
-    <span class="tt-trope-chip"><span class="tt-trope-swatch" style="background:var(--trope-rare-bg)"></span>Rare marks</span>
     <a class="tt-trope-link" id="ttTropeTutorLink" hidden>Learn the trope names →</a>
   </div>
   <div class="tt-reading" id="ttReading" tabindex="-1"></div>
@@ -1926,8 +1922,15 @@ function activeColorDefs(){
 /* ── Trope-family color coding ──────────────────────────────
    Torah (21-books) cantillation taxonomy: each mark codepoint maps to one of six
    clause families. Poetic-book accents U+05AB (ole) / U+05AC (iluy) / U+05AD (dechi)
-   are deliberately unmapped — they don't occur in the Torah system → no color. */
-const TROPE_FAMILIES = ['sofpasuk', 'katon', 'segol', 'revia', 'geresh', 'rare'];
+   are deliberately unmapped — they don't occur in the Torah system → no color.
+   NOTE this is a fixed per-mark pedagogical chart (each mark sits in the family
+   where it is most at home, as on common trope-family posters). Conjunctive marks
+   (munach, mercha, kadma, darga) actually serve several clause types in real
+   leining — e.g. munach frequently serves zakef katon and revia, not only
+   etnachta — so a munach word before a zakef word shows two families. That is a
+   known, accepted approximation; context-aware clause propagation (a word
+   inheriting the family of the NEXT disjunctive) is a possible future
+   refinement, deliberately not attempted here. */
 const TROPE_CHAR_TO_FAMILY = {
   // 1. Sof Pasuk clause. NOTE: the siluk mark itself is NOT mapped — Unicode unifies
   // siluk with METEG (U+05BD), which appears mid-verse as an ordinary stress mark;
@@ -1976,6 +1979,7 @@ const TROPE_COLOR_DEFS = [
   { key:'geresh',   name:'Geresh group',       example:'א֜' },  // geresh
   { key:'rare',     name:'Rare marks',         example:'א֦' },  // mercha kefula
 ];
+const TROPE_FAMILIES = TROPE_COLOR_DEFS.map(d => d.key);
 // Six hues, distinct from each other AND from the karaoke gold (which must stay
 // unmistakable over any tint). Rendered as ~35% tints (alpha 0x59) — light set reads
 // under dark text on cream, dark set under light text on the dark surface.
@@ -2003,18 +2007,51 @@ function tropeFamilyOf(rawTok) {
   }
   return fam;
 }
+// Realign display tokens to raw tokens when stripNikkud swallowed separators
+// (its U+05B0–U+05C7 range includes maqaf U+05BE and paseq U+05C0), merging
+// display tokens. Letters are never stripped, so a display token's letters equal
+// the concatenated letters of the raw tokens it came from — walk both lists
+// matching on letters and take the clause family across the consumed raw tokens
+// (last mark wins, as in tropeFamilyOf). Returns famByTi keyed by display token
+// index. Any desync stops coloring from that point on: no color is acceptable, a
+// wrong color is not.
+function tropeRealignFamilies(tokens, rawTokens) {
+  const letters = s => s.replace(/[^א-ת]/g, '');
+  const rawWords = rawTokens.filter(t => /[א-ת]/.test(t));
+  const famByTi = [];
+  let rp = 0;
+  for (let ti = 0; ti < tokens.length; ti++) {
+    const tok = tokens[ti];
+    if (!/[א-ת]/.test(tok)) continue;
+    const target = letters(tok);
+    let acc = '', fam = null;
+    while (rp < rawWords.length && acc.length < target.length) {
+      acc += letters(rawWords[rp]);
+      fam = tropeFamilyOf(rawWords[rp]) || fam;
+      rp++;
+    }
+    if (acc !== target) return famByTi;   // desync — leave the rest uncolored
+    famByTi[ti] = fam;
+  }
+  return famByTi;
+}
+// Stricter than HEX_COLOR_RE: a trope color takes an appended alpha suffix and
+// seeds <input type=color>, both of which require the full 6-digit #rrggbb form
+// (a 3-digit override would render as an opaque background; anything non-#rrggbb
+// makes the picker swatch show black).
+const TROPE_HEX6_RE = /^#[0-9a-fA-F]{6}$/;
 function getTropeColor(fam) {
-  // Same trust model as getNikudColor: only a HEX_COLOR_RE-valid override is used
+  // Same trust model as getNikudColor: only a valid hex override is used
   // (imported .ivrit / AllTools blobs are untrusted).
   const ov = settings.tropeColorOverrides && settings.tropeColorOverrides[fam];
-  if (typeof ov === 'string' && HEX_COLOR_RE.test(ov)) return ov;
+  if (typeof ov === 'string' && TROPE_HEX6_RE.test(ov)) return ov;
   return (document.body.classList.contains('dark')
     ? TROPE_DEFAULTS_DARK : TROPE_DEFAULTS_LIGHT)[fam] || '#888888';
 }
-// Resolve the six family colors (theme read once, like colorizeHebrew's hoisting)
-// into --trope-<fam>-bg / --trope-<fam>-line custom properties on <body>, and sync
-// the body-class switches + legend visibility. Pure CSS-var recolor: theme, scheme,
-// and picker changes never need a renderText() for the trope layer.
+// Resolve the six family colors into --trope-<fam>-bg / --trope-<fam>-line custom
+// properties on <body>, and sync the body-class switches + legend visibility.
+// Pure CSS-var recolor: theme, scheme, and picker changes never need a
+// renderText() for the trope layer.
 function applyTropeColors() {
   const body = document.body;
   const on = !!settings.colorCodeTrope;
@@ -2026,18 +2063,15 @@ function applyTropeColors() {
   const fallback = on && settings.colorCodeNikkud && settings.showNikkud
                    && settings.colorCodingMode === 'highlight';
   body.classList.toggle('trope-underline-fallback', fallback);
-  const dark = body.classList.contains('dark');
-  const defaults = dark ? TROPE_DEFAULTS_DARK : TROPE_DEFAULTS_LIGHT;
-  const overrides = settings.tropeColorOverrides || {};
   for (const fam of TROPE_FAMILIES) {
-    const ov = overrides[fam];
-    const c = (typeof ov === 'string' && HEX_COLOR_RE.test(ov)) ? ov : (defaults[fam] || '#888888');
-    // 0x59 ≈ 35% alpha; only a 6-digit #rrggbb can take an alpha suffix.
-    body.style.setProperty('--trope-' + fam + '-bg', c.length === 7 ? c + '59' : c);
+    const c = getTropeColor(fam);   // override-or-theme-default, 6-digit guaranteed
+    body.style.setProperty('--trope-' + fam + '-bg', c + '59');   // 0x59 ≈ 35% alpha
     body.style.setProperty('--trope-' + fam + '-line', c);
   }
+  // The legend only makes sense over an actual reading — keep it hidden on the
+  // empty state and while a fetch is in flight (renderText re-syncs after load).
   const legend = document.getElementById('ttTropeLegend');
-  if (legend) legend.hidden = !on;
+  if (legend) legend.hidden = !(on && currentVerses && currentVerses.length > 0);
 }
 
 function stripTeamim(s)      { return s.replace(TEAMIM_RE, ''); }
@@ -2143,20 +2177,20 @@ function tokenizeHebrew(text, wordIdxStartRef) {
   // separator, so the raw and display splits align index-for-index — but
   // stripNikkud's range (U+05B0–U+05C7) swallows maqaf (U+05BE) and paseq (U+05C0),
   // so with nikkud hidden tokens can merge. A vanished separator always shrinks the
-  // array, making the length check an exact alignment guard; on mismatch we read
-  // marks from the display token itself (still correct while cantillation shows;
-  // the both-hidden mode then simply gets no family — no color, never wrong color).
+  // array, making the length check an exact alignment guard; on mismatch,
+  // tropeRealignFamilies recovers each display word's family by letter-matching
+  // (bailing to uncolored on any desync — no color, never wrong color).
   const tropeOn = !!settings.colorCodeTrope;
   const rawTokens = tropeOn ? text.split(/(\s+|־)/) : null;
   const rawAligned = tropeOn && rawTokens.length === tokens.length;
+  const famByTi = (tropeOn && !rawAligned) ? tropeRealignFamilies(tokens, rawTokens) : null;
   // Sof pasuk has no usable codepoint (Unicode unifies siluk with meteg, U+05BD),
   // so the verse-final word is classified POSITIONALLY: every caller passes exactly
   // one verse, so the last Hebrew token of this call is the sof-pasuk word.
   let lastHebIdx = -1;
   if (tropeOn) {
     for (let i = tokens.length - 1; i >= 0; i--) {
-      const t = tokens[i];
-      if (t && !/^\s+$/.test(t) && t !== '־' && /[א-ת]/.test(t)) { lastHebIdx = i; break; }
+      if (/[א-ת]/.test(tokens[i])) { lastHebIdx = i; break; }
     }
   }
   const out = [];
@@ -2173,7 +2207,8 @@ function tokenizeHebrew(text, wordIdxStartRef) {
       let tropeCls = '';
       if (tropeOn) {
         const fam = (ti === lastHebIdx) ? 'sofpasuk'
-                  : tropeFamilyOf(rawAligned ? rawTokens[ti] : tok);
+                  : rawAligned ? tropeFamilyOf(rawTokens[ti])
+                  : (famByTi[ti] || null);
         if (fam) tropeCls = ' trope-' + fam;   // fam ∈ TROPE_FAMILIES — internal constant, not user data
       }
       out.push(`<span class="tt-word${tropeCls}" data-twi="${idx}">${inner}</span>`);
@@ -4578,10 +4613,22 @@ async function init() {
   refreshMyFonts();   // async: adds a "My Fonts" section from the shared IndexedDB store + re-applies a saved user font
   initColorPickers();
   initTropeColorPickers();
-  applyTropeColors();
-  // Feature-gated future link: render only when TROPE_TUTOR_URL is non-null.
+  // Legend chips are generated once from TROPE_COLOR_DEFS (single source of truth
+  // with the pickers); the strip is static thereafter — renderText never touches it.
   const tutorLink = document.getElementById('ttTropeTutorLink');
+  TROPE_COLOR_DEFS.forEach(def => {
+    const chip = document.createElement('span');
+    chip.className = 'tt-trope-chip';
+    const sw = document.createElement('span');
+    sw.className = 'tt-trope-swatch';
+    sw.style.background = 'var(--trope-' + def.key + '-bg)';
+    chip.appendChild(sw);
+    chip.appendChild(document.createTextNode(def.name));
+    tutorLink.parentNode.insertBefore(chip, tutorLink);
+  });
+  // Feature-gated future link: render only when TROPE_TUTOR_URL is non-null.
   if (TROPE_TUTOR_URL && tutorLink) { tutorLink.href = TROPE_TUTOR_URL; tutorLink.hidden = false; }
+  applyTropeColors();
   populateParshaPicker();
   syncFormToSettings();
   wireSettingsForm();

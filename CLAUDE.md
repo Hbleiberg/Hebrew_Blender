@@ -905,20 +905,28 @@ key-based helpers (`getNikudColor`, All/Main/None) work under either scheme.
 
 A second, composable color dimension alongside nikkud coloring: each **word** is classed by its
 cantillation **clause family**. Settings keys (in the `hebrewTorahTrainer_settings` blob, so no
-AllTools wiring): `colorCodeTrope` (bool) + `tropeColorOverrides` (family → hex,
-**`HEX_COLOR_RE`-validated on every read** — imported blobs are untrusted).
+AllTools wiring): `colorCodeTrope` (bool) + `tropeColorOverrides` (family → hex, validated on
+every read with the **strict `TROPE_HEX6_RE`** (`#rrggbb` only, not the looser `HEX_COLOR_RE`) —
+imported blobs are untrusted, AND the value takes an appended `59` alpha suffix and seeds
+`<input type=color>`, both of which require the 6-digit form).
 
 - **Taxonomy**: `TROPE_CHAR_TO_FAMILY` maps codepoints to 6 families (`sofpasuk`, `katon`,
-  `segol`, `revia`, `geresh`, `rare`; ordered defs in `TROPE_COLOR_DEFS`). Sof pasuk is
+  `segol`, `revia`, `geresh`, `rare`; ordered defs in `TROPE_COLOR_DEFS` — the single source of
+  truth: `TROPE_FAMILIES` and the legend chips are derived from it). Sof pasuk is
   **positional** — the last Hebrew token of each verse (tokenizeHebrew is one-verse-per-call);
   U+05BD is never mapped (Unicode unifies siluk with meteg). Zarqa/zinor U+0598 **and** U+05AE
   both map to `segol` (Unicode names are swapped in the wild). U+05AB/AC/AD (poetic accents)
-  deliberately unmapped. Multi-family word → **last** mark wins (`tropeFamilyOf`).
+  deliberately unmapped. Multi-family word → **last** mark wins (`tropeFamilyOf`). The chart is
+  a **deliberate per-mark pedagogical approximation**: conjunctives (munach, mercha, kadma,
+  darga) serve several clause types in real leining (munach often serves zakef katon/revia), so
+  a munach word can show a different family than its disjunctive — known and accepted;
+  context-aware clause propagation is a possible future refinement.
 - **Detection reads the ORIGINAL verse text** (parallel split zipped by index) so trope coloring
   works with cantillation hidden. `stripNikkud`'s range swallows maqaf/paseq, so the zip is
-  guarded by an array-length equality check (mismatch → read the display token; both-hidden →
-  no color, never wrong color). The splitter and `data-twi` sequencing are untouched — karaoke
-  timing alignment depends on them.
+  guarded by an array-length equality check; on mismatch `tropeRealignFamilies` recovers each
+  display word's family by letter-matching (letters are never stripped), bailing to uncolored on
+  any desync — no color, never wrong color. The splitter and `data-twi` sequencing are
+  untouched — karaoke timing alignment depends on them.
 - **Presentation is class-based, never inline styles**: `trope-<fam>` classes on `.tt-word` +
   `--trope-<fam>-bg`/`-line` CSS vars set on `<body>` by `applyTropeColors()` (the chokepoint,
   called at the top of `renderText()`). All trope selectors are **`:where()`-wrapped** at
@@ -926,10 +934,12 @@ AllTools wiring): `colorCodeTrope` (bool) + `tropeColorOverrides` (family → he
 - **Collision rule (automatic, no setting)**: nikkud coloring on **and** `colorCodingMode ===
   'highlight'` (and nikkud shown) → `body.trope-underline-fallback` switches words from
   background tint to a thick `text-decoration` clause underline (offset below the nikkud).
-- **Legend** `#ttTropeLegend` is static HTML above `#ttReading` (renderText never touches it);
-  swatches read the body vars so theme/picker changes recolor them for free. The "Learn the
-  trope names →" link renders only when `const TROPE_TUTOR_URL` is non-null (keep `null` until
-  `trope_tutor.html` ships). Legend is print-hidden with the other reading chrome.
+- **Legend** `#ttTropeLegend` sits above `#ttReading` (renderText never touches it); chips are
+  generated once at init from `TROPE_COLOR_DEFS`, and swatches read the body vars so
+  theme/picker changes recolor them for free. It shows only when trope coloring is on **and** a
+  reading is loaded (hidden over the empty state). The "Learn the trope names →" link renders
+  only when `const TROPE_TUTOR_URL` is non-null (keep `null` until `trope_tutor.html` ships).
+  Legend is print-hidden with the other reading chrome.
 
 ---
 
