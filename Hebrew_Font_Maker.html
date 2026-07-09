@@ -10171,6 +10171,20 @@ function openQA() {
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.getElementById('qaOverlay')?.classList.contains('open')) closeQA(); });
 
+/* A PostScript-name- and filename-safe base derived from the family name. nameID 6 (and a download
+   filename) may only carry a limited set of printable ASCII, so keep 33–126, drop the
+   PostScript-forbidden `()<>[]{}/%` + whitespace and the filesystem-unsafe `\:*?"|`, cap so
+   `<base>-Regular` stays within the 63-char nameID-6 limit, and NEVER return empty — a family of only
+   spaces / emoji / Hebrew would otherwise ship an out-of-spec PS name or a hidden ".ttf" dotfile. The
+   Unicode-capable name fields (family/full/copyright, nameIDs 1/4/0) keep the raw family name. */
+function fontSafeBase(fam) {
+  const base = String(fam == null ? '' : fam)
+    .replace(/[^\x21-\x7E]/g, '')           // printable ASCII 33–126 only (drops space, Hebrew, emoji, accents)
+    .replace(/[()<>\[\]{}\/%\\:*?"|]/g, '')  // PostScript- + filesystem-forbidden punctuation
+    .slice(0, 55);                           // room for '-Regular' under the 63-char nameID-6 cap
+  return base || 'MyHebrewFont';
+}
+
 /* Build the compact spec handed to Python. */
 function buildFontSpec() {
   const fnt = project.font;
@@ -10359,7 +10373,7 @@ function buildFontSpec() {
   const names = {
     familyName: fam, styleName: 'Regular',
     uniqueFontIdentifier: fam + '-' + fnt.version,
-    fullName: fam, version: 'Version ' + fnt.version, psName: fam.replace(/\s+/g,'') + '-Regular',
+    fullName: fam, version: 'Version ' + fnt.version, psName: fontSafeBase(fam) + '-Regular',
     copyright: 'Copyright (c) ' + new Date().getFullYear() + ' ' + ((fnt.author||'').trim() || fam),
     manufacturer: 'IvritSuite Hebrew Font Maker',        // nameID 8  — attribution in the standard field
     designer: 'Made with IvritSuite Hebrew Font Maker',  // nameID 9
@@ -10533,7 +10547,7 @@ function buildUfoSpec() {
   const spec = buildFontSpec();
   spec.anchors     = buildUfoAnchors();
   spec.fontinfo    = buildUfoFontInfo(spec);
-  spec.ufoName     = (project.font.familyName || 'MyHebrewFont').replace(/\s+/g, '');
+  spec.ufoName     = fontSafeBase(project.font.familyName);
   spec.licenseText = licenseText();
   return spec;
 }
@@ -11046,7 +11060,7 @@ async function doExport(fmt) {
 }
 async function finishDownload(bytes, gateSkipped, fmt) {
   fmt = fmt || 'ttf';
-  const fam = (project.font.familyName||'MyHebrewFont').replace(/\s+/g,'');
+  const fam = fontSafeBase(project.font.familyName);
   window._lastFontBytes = bytes;   // for preview PDF
   if (fmt === 'ttf') {
     downloadBlob(new Blob([bytes], {type:'font/ttf'}), fam + '.ttf');
