@@ -815,6 +815,17 @@ body.dark .fc-front .fc-heb { color: var(--ink); }
 body.dark .fc-back  { background: #0e1e36; border-color: #2a4060; }
 .fc-translit { font-family: var(--serif); font-size: clamp(1.4rem, 6vw, 2.4rem); color: var(--gold-light); text-align: center; }
 .fc-hint { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
+
+/* ============== PRESENT / FULLSCREEN MODE ==============
+   Projector present toggle (#fsBtn). Fullscreen paints a black backdrop by default —
+   keep the app's theme background (both themes flow through --bg). Only the RUNNING
+   deck's card is enlarged for projection; the setup/results screens are untouched. */
+html:fullscreen, :root:fullscreen, :-webkit-full-screen { background: var(--bg); }
+body.fc-fullscreen #screenCard.active .fc-perspective { width: min(80vw, 96vh, 1000px); }
+body.fc-fullscreen #screenCard.active .fc-card        { height: min(60vh, 620px); }
+body.fc-fullscreen #screenCard.active .fc-heb         { font-size: clamp(4rem, 22vh, 14rem); }
+body.fc-fullscreen #screenCard.active .fc-translit    { font-size: clamp(2rem, 9vh, 4rem); }
+body.fc-fullscreen #screenCard.active                 { padding-top: 2vh; }
 .fc-back .fc-hint { color: rgba(255,255,255,0.55); }
 .fc-back-q { color: rgba(255,255,255,0.78); font-size: 0.85rem; margin-top: 6px; letter-spacing: 0.04em; }
 .fc-badge {
@@ -1151,6 +1162,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <h1>Hebrew Flash Cards for Reading Practice</h1>
   <div class="h-right">
     <button class="h-btn" id="tourBtn" onclick="tourStart()" title="Take a quick tour" style="width:auto;border-radius:22px;padding:0 14px;font-size:0.85rem;gap:6px;">❓ Tour</button>
+    <button class="h-btn" id="fsBtn" onclick="toggleFullscreen()" title="Present fullscreen" aria-label="Toggle fullscreen" aria-pressed="false">⛶</button>
     <button class="h-btn" id="darkToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
   </div>
 </header>
@@ -6233,8 +6245,44 @@ function wireResultsScreen() {
   document.getElementById('backToSetupBtn').addEventListener('click', returnToSetup);
 }
 
+/* ============== PRESENT / FULLSCREEN MODE ==============
+   Projector "Present" toggle for the running deck. Purely transient — fullscreen
+   never survives a reload and needs a user gesture to (re-)enter, so nothing is
+   saved to getSettings()/localStorage. The fullscreenchange listener is the single
+   source of truth, so the button stays in sync with native Escape / OS chrome. */
+function _fsElement() { return document.fullscreenElement || document.webkitFullscreenElement || null; }
+function _fsSupported() { const el = document.documentElement; return !!(el.requestFullscreen || el.webkitRequestFullscreen); }
+function toggleFullscreen() {
+  try {
+    if (_fsElement()) {
+      (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    } else {
+      const el = document.documentElement;
+      (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+    }
+  } catch (e) { /* a rejected fullscreen request is not user-facing (CLAUDE.md §5) */ }
+}
+function _syncFsBtn() {
+  const on = !!_fsElement();
+  document.body.classList.toggle('fc-fullscreen', on);
+  const btn = document.getElementById('fsBtn');
+  if (!btn) return;
+  btn.textContent = on ? '⤢' : '⛶';
+  btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  btn.title = on ? 'Exit fullscreen' : 'Present fullscreen';
+}
+function initPresent() {
+  const btn = document.getElementById('fsBtn');
+  if (!btn) return;
+  if (!_fsSupported()) { btn.style.display = 'none'; return; }   // older browsers: hide, break nothing
+  document.addEventListener('fullscreenchange', _syncFsBtn);
+  document.addEventListener('webkitfullscreenchange', _syncFsBtn);
+  _syncFsBtn();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initDarkMode();
+  initPresent();
   loadPbStreak();
   loadSettings();
   initLetters();
