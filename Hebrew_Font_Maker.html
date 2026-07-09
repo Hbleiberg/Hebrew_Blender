@@ -449,7 +449,8 @@
   body.dark .node-h { fill: #1e2535; stroke: #8aa0c8; }
   body.dark .node-hline { stroke: #5b6e94; }
   /* ── Edit-points panel (npnl-*) — panel-scoped; no shared classes modified ── */
-  .npnl-head { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--warm-gray); padding: 8px 0 7px; margin-bottom: 4px; border-bottom: 1px solid var(--border); }
+  .npnl-head { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--warm-gray); padding: 8px 0 7px; margin-bottom: 4px; border-bottom: 1px solid var(--border); box-shadow: 0 2px 5px rgba(0,0,0,0.06); }
+  body.dark .npnl-head { box-shadow: 0 2px 5px rgba(0,0,0,0.25); }
   .npnl-head-title { font-size: 0.8rem; font-weight: 700; color: var(--text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .npnl-head-title .npnl-glyph { font-size: 1.05rem; line-height: 1; }
   /* segmented mode control — panel-scoped clone of .mode-toggle */
@@ -461,23 +462,32 @@
   .npnl-mode-btn.active:hover { background: var(--navy); }
   .npnl-mode-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
   /* contextual zone — min-height reserves the tallest state so the panel never jumps */
-  .npnl-ctx { min-height: 154px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }   /* = measured height of the tallest (selection) state, so switching states never shifts the panel */
-  .npnl-ctx .ctl-row { width: 100%; }
-  .npnl-readout { font-size: 0.76rem; font-weight: 700; color: var(--muted); }
+  .npnl-ctx { min-height: 125px; display: flex; flex-direction: column; gap: 6px; align-items: stretch; }   /* = measured height of the tallest (selection) state, so switching states never shifts the panel */
+  .npnl-readout { font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  /* selection state: 2-column grid — pairs share the 1fr column, Retract/Delete share the auto column */
+  .npnl-grid { display: grid; grid-template-columns: 1fr auto; gap: 6px; align-items: start; }
+  .npnl-grid > .npnl-right { justify-self: end; }
+  .npnl-grid > .npnl-left { justify-self: start; }
   /* joined pairs (Smooth|Corner, To curve|To line) */
-  .npnl-pair { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
-  .npnl-pair .ctl-btn { border: none; border-radius: 0; }
+  .npnl-pair { display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .npnl-pair .ctl-btn { border: none; border-radius: 0; flex: 1; }
   .npnl-pair .ctl-btn + .ctl-btn { border-left: 1px solid var(--border); }
+  /* empty state: stacked full-width actions fill the reserved height */
+  .npnl-stack { display: flex; flex-direction: column; gap: 6px; }
+  .npnl-stack .ctl-btn { width: 100%; }
+  /* pen state: status card + full-width cancel fill the reserved height */
+  .npnl-pen-lines { font-size: 0.74rem; color: var(--muted); line-height: 1.6; }
+  .npnl-pen-cancel { width: 100%; }
   /* danger buttons + split-delete dropdown */
   .ctl-btn.npnl-danger { color: #c0392b; }
   .ctl-btn.npnl-danger:hover { border-color: #c0392b; background: rgba(192,57,43,0.08); }
   body.dark .ctl-btn.npnl-danger { color: #ff8a7a; }
   body.dark .ctl-btn.npnl-danger:hover { border-color: #ff8a7a; background: rgba(255,138,122,0.12); }
-  .npnl-del { position: relative; display: inline-flex; margin-left: auto; }
+  .npnl-del { position: relative; display: inline-flex; }
   .npnl-del > .ctl-btn:first-child { border-top-right-radius: 0; border-bottom-right-radius: 0; }
   .npnl-del-caret { border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none; padding: 6px 8px; }
-  .npnl-del-menu { position: absolute; top: calc(100% + 3px); right: 0; z-index: 60; background: var(--white); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.18); padding: 3px; min-width: 176px; }
-  .npnl-del-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; background: none; border: none; border-radius: 4px; padding: 7px 9px; font-family: inherit; font-size: 0.78rem; font-weight: 600; color: #c0392b; cursor: pointer; text-align: left; }
+  .npnl-del-menu { position: absolute; top: calc(100% + 3px); right: 0; z-index: 60; background: var(--white); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.18); padding: 3px; min-width: 200px; }
+  .npnl-del-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; background: none; border: none; border-radius: 4px; padding: 7px 9px; font-family: inherit; font-size: 0.78rem; font-weight: 600; color: #c0392b; cursor: pointer; text-align: left; white-space: nowrap; }
   body.dark .npnl-del-item { color: #ff8a7a; }
   .npnl-del-item span { color: var(--muted); font-size: 0.66rem; font-weight: 400; }
   .npnl-del-item:hover, .npnl-del-item:focus { background: var(--warm-gray); outline: none; }
@@ -7401,22 +7411,23 @@ function nodeEditPanelHTML(l) {
   const glyph = isCustomCp(curCp) ? '' :
     `<span class="npnl-glyph" style="font-family:${esc(project.template.font)};">${String.fromCodePoint(parseInt(curCp, 16))}</span> — `;
   const tip = _penMode
-    ? 'Tip: a contour drawn inside another shape becomes a hole · Backspace removes the last point · arrows move the cursor.'
+    ? 'Tip: a contour drawn inside another shape becomes a hole.'
     : _marqueeMode
-    ? 'Tip: drag anywhere — even starting on a point — to box-select (Shift adds) · press M or Esc to leave.'
+    ? 'Tip: drag anywhere to box-select · Shift adds · M or Esc leaves.'
     : cnt
-    ? 'Tip: arrows nudge exactly 5 units (Shift = 25) · double-click toggles ○/□ · with 2+ selected, drag inside the box to move it or its ◻/▭ handles to scale (Shift = uniform).'
-    : 'Tip: click selects · Shift-click adds · drag a box to select several · Alt-click the outline adds a point · double-click toggles ○/□.';
+    ? 'Tip: arrows nudge 5 units (Shift = 25) · double-click toggles ○/□.'
+    : 'Tip: drag points to reshape · Alt-click the outline adds a point.';
   // zone 3 — contextual: pen status, or the selection-state action set (hidden, not disabled, when empty)
   const ctx = _penMode
     ? `<div class="npnl-ctx" role="group" aria-label="Pen">
-    <div class="npnl-readout" aria-live="polite">Placing points — click: corner · drag: curve · Enter: close</div>
-    <button class="ctl-btn" onclick="togglePenMode()" title="Discard the drawing and leave the pen (Esc)">✕ Cancel path</button>
+    <div class="npnl-readout" aria-live="polite">Placing points</div>
+    <div class="npnl-pen-lines">· click: corner &nbsp;· drag: curve<br>· Enter: close &nbsp;· Esc: discard</div>
+    <button class="ctl-btn npnl-pen-cancel" onclick="togglePenMode()" title="Discard the drawing and leave the pen (Esc)">✕ Cancel path</button>
   </div>`
     : cnt === 0
     ? `<div class="npnl-ctx" role="group" aria-label="Selection actions">
     <div class="npnl-readout" aria-live="polite">No points selected</div>
-    <div class="ctl-row" style="flex-wrap:wrap;gap:6px;">
+    <div class="npnl-stack">
       <button class="ctl-btn" onclick="selectAllNodes()" title="Select every point (${M}+A)">Select all</button>
       <button class="ctl-btn" onclick="pasteNodes()" title="Paste the copied contour(s) into this letter (${M}+V)" ${nodeClipboard ? '' : 'disabled'}>Paste</button>
       <button class="ctl-btn" onclick="doRemoveSpecks()" title="Delete all tiny stray contours (under 1% of the largest)">Remove specks</button>
@@ -7424,22 +7435,19 @@ function nodeEditPanelHTML(l) {
   </div>`
     : `<div class="npnl-ctx" role="group" aria-label="Selection actions">
     <div class="npnl-readout" aria-live="polite">${cnt} point${cnt > 1 ? 's' : ''} selected</div>
-    <div class="ctl-row" style="flex-wrap:wrap;gap:6px;">
+    <div class="npnl-grid">
       <span class="npnl-pair" role="group" aria-label="Point type">
         <button class="ctl-btn" onclick="setSelectedNodeType('smooth')" title="Make the selected points smooth ○">○ Smooth</button>
         <button class="ctl-btn" onclick="setSelectedNodeType('corner')" title="Make the selected points corners □">□ Corner</button>
       </span>
-      <button class="ctl-btn" onclick="retractSelectedHandles()" title="Straighten both sides of the selected points — corners with no curve handles">Retract handles</button>
-    </div>
-    <div class="ctl-row" style="flex-wrap:wrap;gap:6px;">
+      <button class="ctl-btn npnl-right" onclick="retractSelectedHandles()" title="Retract handles — straighten both sides of the selected points; corners with no curve handles">Retract</button>
       <span class="npnl-pair" role="group" aria-label="Segment type">
         <button class="ctl-btn" onclick="setSelectedSegsType(true)" title="Make the segments between adjacent selected points curved${segWhy}" ${dis2}>To curve</button>
         <button class="ctl-btn" onclick="setSelectedSegsType(false)" title="Make the segments between adjacent selected points straight${segWhy}" ${dis2}>To line</button>
       </span>
-    </div>
-    <div class="ctl-row" style="flex-wrap:wrap;gap:6px;">
-      <button class="ctl-btn" onclick="copySelectedNodes()" title="Copy the selected points as new contour(s) (${M}+C)">Copy</button>
-      <span class="npnl-del">
+      <span aria-hidden="true"></span>
+      <button class="ctl-btn npnl-left" onclick="copySelectedNodes()" title="Copy the selected points as new contour(s) (${M}+C)">Copy</button>
+      <span class="npnl-del npnl-right">
         <button class="ctl-btn npnl-danger" onclick="doNodeDelete()" title="Remove the selected points (Delete or Backspace)">Delete</button>
         <button class="ctl-btn npnl-danger npnl-del-caret" aria-haspopup="menu" aria-expanded="false" aria-label="More delete options" onclick="npnlDelToggle(this)" onkeydown="npnlDelKey(event)">▾</button>
         <div class="npnl-del-menu" role="menu" hidden>
@@ -7450,11 +7458,11 @@ function nodeEditPanelHTML(l) {
     </div>
   </div>`;
   return `<div class="npnl-head">
-    <span class="npnl-head-title">Editing: ${glyph}${esc(l.name)}</span>
+    <span class="npnl-head-title">Edit points · ${glyph}${esc(l.name)}</span>
     <button class="ctl-btn primary" onclick="toggleNodeEdit()">Done editing</button>
   </div>
   <div class="npnl-mode" role="toolbar" aria-label="Editing mode">
-    <button class="npnl-mode-btn${mode === 'select' ? ' active' : ''}" data-mode="select" aria-pressed="${mode === 'select'}" tabindex="${mode === 'select' ? 0 : -1}" aria-keyshortcuts="Escape" title="Select — click and drag points (Esc leaves marquee or pen)" onclick="npnlMode('select')" onkeydown="npnlModeKey(event, this)">▸ Select</button>
+    <button class="npnl-mode-btn${mode === 'select' ? ' active' : ''}" data-mode="select" aria-pressed="${mode === 'select'}" tabindex="${mode === 'select' ? 0 : -1}" aria-keyshortcuts="Escape" title="Select — click and drag points (Esc leaves marquee or pen)" onclick="npnlMode('select')" onkeydown="npnlModeKey(event, this)">↖ Select</button>
     <button class="npnl-mode-btn${mode === 'marquee' ? ' active' : ''}" data-mode="marquee" aria-pressed="${mode === 'marquee'}" tabindex="${mode === 'marquee' ? 0 : -1}" aria-keyshortcuts="M" title="Marquee — dragging anywhere box-selects, even from a point (M)" onclick="npnlMode('marquee')" onkeydown="npnlModeKey(event, this)">▭ Marquee</button>
     <button class="npnl-mode-btn${mode === 'pen' ? ' active' : ''}" data-mode="pen" aria-pressed="${mode === 'pen'}" tabindex="${mode === 'pen' ? 0 : -1}" aria-keyshortcuts="P" title="Pen — draw a new contour point by point (P)" onclick="npnlMode('pen')" onkeydown="npnlModeKey(event, this)">✒ Pen</button>
   </div>
