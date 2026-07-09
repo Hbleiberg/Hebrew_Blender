@@ -271,6 +271,7 @@
 <style>
 :root {
   --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
+  --gold-text:#87681d;   /* darker gold for small gold TEXT on light bg — meets WCAG 4.5:1 where --gold (#c9922a ≈2.5:1) fails; NOT the suite --gold */
   --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
   --era-bib-bg:#e8f0ff;--era-bib-text:#2a4080;
   --era-mod-bg:#e8f5e8;--era-mod-text:#1a5c1a;
@@ -279,6 +280,7 @@
 }
 html.dark-early body,body.dark {
   --navy:#1a2744;--gold:#e0a832;--gold-light:#f5d97a;--cream:#161c2a;
+  --gold-text:var(--gold);   /* dark theme: --gold #e0a832 already ≈8:1, no darkening needed */
   --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;
   --era-bib-bg:#1a2a4a;--era-bib-text:#7a9fd0;
   --era-mod-bg:#1a3a1a;--era-mod-text:#7acf7a;
@@ -546,7 +548,7 @@ body.dark .tour-card{background:var(--cream);}
 .empty .big{font-size:2.5rem;margin-bottom:8px;}
 .loading{text-align:center;padding:60px 20px;color:var(--muted);font-style:italic;}
 footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);flex-shrink:0;}
-footer a{color:var(--gold);text-decoration:none;}
+footer a{color:var(--gold-text);text-decoration:none;}
 @media(max-width:680px){
   .app{flex-direction:column;overflow:visible;}
   /* Section 4: results (with the sticky search/mode bar) sit ABOVE the collapsed filter sidebar */
@@ -652,7 +654,7 @@ footer a{color:var(--gold);text-decoration:none;}
     font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
   .shoresh-pat.empty { border: 1px dashed var(--border); color: var(--muted); opacity: 0.65; }
   .shoresh-pat.filled { border: 1px solid var(--gold); background: color-mix(in srgb, var(--gold) 12%, var(--white)); cursor: pointer; }
-  .shoresh-pat.filled .pat-match { display: block; font-family: var(--heb-font); direction: rtl; font-size: 1.15rem; margin-top: 5px; color: var(--gold); }
+  .shoresh-pat.filled .pat-match { display: block; font-family: var(--heb-font); direction: rtl; font-size: 1.15rem; margin-top: 5px; color: var(--gold-text); }
   .shoresh-flash { animation: shoreshFlash 1.2s ease; }
   @keyframes shoreshFlash { 0%,100% { box-shadow: 0 0 0 0 transparent; } 30% { box-shadow: 0 0 0 3px var(--gold); } }
 </style>
