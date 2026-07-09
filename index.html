@@ -55,7 +55,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="IvritSuite">
 <meta property="og:title" content="IvritSuite — Free Hebrew Literacy Tools">
-<meta property="og:description" content="A free collection of Hebrew literacy tools: worksheet generator, dictionary lookup, flash cards, classroom dashboard, Torah Trainer parsha reader, and curated teaching resources.">
+<meta property="og:description" content="A free collection of Hebrew literacy tools: worksheet generator, dictionary lookup, flash cards, classroom dashboard, Torah Trainer parsha reader, Trope Tutor cantillation trainer, and curated teaching resources.">
 <meta property="og:url" content="https://ivritsuite.com/">
 <meta property="og:image" content="https://ivritsuite.com/og-card.png?v=3">
 <meta property="og:image:width" content="1200">
@@ -64,7 +64,7 @@
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="IvritSuite — Free Hebrew Literacy Tools">
-<meta name="twitter:description" content="Free Hebrew literacy tools for teachers and students: worksheets, dictionary, flash cards, classroom dashboard, Torah Trainer, and resources.">
+<meta name="twitter:description" content="Free Hebrew literacy tools for teachers and students: worksheets, dictionary, flash cards, classroom dashboard, Torah Trainer, Trope Tutor, and resources.">
 <meta name="twitter:image" content="https://ivritsuite.com/og-card.png?v=3">
 <script type="application/ld+json">
 {
@@ -96,15 +96,16 @@
       "name": "IvritSuite Tools",
       "description": "Free Hebrew literacy tools offered by IvritSuite.",
       "itemListOrder": "https://schema.org/ItemListOrderAscending",
-      "numberOfItems": 7,
+      "numberOfItems": 8,
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Hebrew Worksheet Generator", "url": "https://ivritsuite.com/hebrew_blend_generator.html", "description": "Create printable Hebrew decoding worksheets, bingo cards, and vocabulary drills with nikkud." },
         { "@type": "ListItem", "position": 2, "name": "Hebrew Word Lookup", "url": "https://ivritsuite.com/hebrew_dictionary.html", "description": "Browse and filter Hebrew vocabulary by length, part of speech, era, and letter position." },
         { "@type": "ListItem", "position": 3, "name": "Hebrew Classroom Dashboard", "url": "https://ivritsuite.com/classroom_dashboard.html", "description": "Live Hebrew date, time, weather, and days of the week for SmartBoard or projector display." },
         { "@type": "ListItem", "position": 4, "name": "Hebrew Flash Cards", "url": "https://ivritsuite.com/flash_cards.html", "description": "Decode one, two, or three Hebrew letters at a time with full nikkud support." },
         { "@type": "ListItem", "position": 5, "name": "Torah Trainer", "url": "https://ivritsuite.com/torah_trainer.html", "description": "Read the weekly parsha with vowel coloring, transliteration, translation, and chanted-audio karaoke." },
-        { "@type": "ListItem", "position": 6, "name": "Hebrew Font Maker", "url": "https://ivritsuite.com/Hebrew_Font_Maker.html", "description": "Turn handwritten Hebrew letters into a real, installable font with nikkud and cantillation; export TTF, WOFF2, or UFO." },
-        { "@type": "ListItem", "position": 7, "name": "Hebrew Teaching Resources", "url": "https://ivritsuite.com/resources.html", "description": "A curated directory of free Hebrew learning resources, printables, and Jewish education tools." }
+        { "@type": "ListItem", "position": 6, "name": "Trope Tutor", "url": "https://ivritsuite.com/trope_tutor.html", "description": "Learn the Torah cantillation marks — symbols, Ashkenazi and Sephardi names, and melodies — with real chanted examples and three drill modes." },
+        { "@type": "ListItem", "position": 7, "name": "Hebrew Font Maker", "url": "https://ivritsuite.com/Hebrew_Font_Maker.html", "description": "Turn handwritten Hebrew letters into a real, installable font with nikkud and cantillation; export TTF, WOFF2, or UFO." },
+        { "@type": "ListItem", "position": 8, "name": "Hebrew Teaching Resources", "url": "https://ivritsuite.com/resources.html", "description": "A curated directory of free Hebrew learning resources, printables, and Jewish education tools." }
       ]
     },
     {
@@ -116,6 +117,7 @@
         "Hebrew Classroom Dashboard",
         "Hebrew Flash Cards",
         "Torah Trainer",
+        "Trope Tutor",
         "Hebrew Font Maker",
         "Hebrew Teaching Resources"
       ],
@@ -125,6 +127,7 @@
         "https://ivritsuite.com/classroom_dashboard.html",
         "https://ivritsuite.com/flash_cards.html",
         "https://ivritsuite.com/torah_trainer.html",
+        "https://ivritsuite.com/trope_tutor.html",
         "https://ivritsuite.com/Hebrew_Font_Maker.html",
         "https://ivritsuite.com/resources.html"
       ]
@@ -280,6 +283,13 @@ body.dark .sefaria-attr .sefaria-dark{display:inline-block;}
       </span>
     </a>
 
+    <a class="page-card" href="trope_tutor.html">
+      <div class="icon">🎶</div>
+      <h2>Trope Tutor</h2>
+      <p>Learn the Torah cantillation marks (trope / te'amim) — symbols, Ashkenazi and Sephardi names, and melodies with real chanted examples — then drill yourself with three quiz modes.</p>
+      <div class="go-btn">Learn the trope names →</div>
+    </a>
+
     <a class="page-card" href="Hebrew_Font_Maker.html">
       <div class="icon">✍️</div>
       <h2>Hebrew Font Maker <span class="beta-tag">Beta</span></h2>
@@ -313,7 +323,7 @@ body.dark .sefaria-attr .sefaria-dark{display:inline-block;}
       <button class="ie-modal-close" onclick="closeIEModal()">×</button>
     </div>
     <div class="ie-modal-body">
-      <p class="ie-note">Back up <b>all</b> presets, saved schedules, settings, and saved fonts from the Generator, Dashboard, Flash Cards, Dictionary, Torah Trainer, and Font Maker together. <b>Automatic Input</b> saves and restores a single <b>.ivrit</b> file; <b>Manual Input</b> uses a copy-and-paste text block.</p>
+      <p class="ie-note">Back up <b>all</b> presets, saved schedules, settings, and saved fonts from the Generator, Dashboard, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, and Font Maker together. <b>Automatic Input</b> saves and restores a single <b>.ivrit</b> file; <b>Manual Input</b> uses a copy-and-paste text block.</p>
       <style>
         .ivrit-mode-toggle{display:flex;border:1px solid var(--border,#ccc);border-radius:6px;overflow:hidden;margin-bottom:12px;}
         .ivrit-mode-btn{flex:1;padding:8px 4px;border:none;background:var(--white,#fff);color:var(--text,#222);font-family:inherit;font-size:0.85rem;cursor:pointer;}
@@ -739,6 +749,36 @@ function lsJSON(key, fallback) {
   try { const v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); }
   catch (e) { return fallback; }
 }
+/* Merge an imported Trope Tutor progress blob without ever losing local mastery:
+   per-trope r/w counts and pbStreak take the MAX of existing vs incoming; visited
+   families are unioned. replace=true starts from a clean slate instead. Never a
+   shallow assign — that would let a stale import clobber higher local counts. */
+function tropeProgressMerge(incoming, replace) {
+  if (!incoming || typeof incoming !== 'object') return;
+  const base = replace ? {} : ivritSafeParse(localStorage.getItem('hebrewTropeTutor_progress') || '{}');
+  const out = { v: 1, tropes: {}, families: {}, pbStreak: 0 };
+  for (const src of [base, incoming]) {
+    if (!src || typeof src !== 'object') continue;
+    const tr = src.tropes;
+    if (tr && typeof tr === 'object') for (const k in tr) {
+      if (!Object.prototype.hasOwnProperty.call(tr, k) ||
+          k === '__proto__' || k === 'constructor' || k === 'prototype') continue;
+      const cur = out.tropes[k] || { r: 0, w: 0 };
+      cur.r = Math.max(cur.r, parseInt(tr[k] && tr[k].r, 10) || 0);
+      cur.w = Math.max(cur.w, parseInt(tr[k] && tr[k].w, 10) || 0);
+      out.tropes[k] = cur;
+    }
+    const fams = src.families;
+    if (fams && typeof fams === 'object') for (const k in fams) {
+      if (!Object.prototype.hasOwnProperty.call(fams, k) ||
+          k === '__proto__' || k === 'constructor' || k === 'prototype') continue;
+      if (fams[k]) out.families[k] = true;
+    }
+    out.pbStreak = Math.max(out.pbStreak, parseInt(src.pbStreak, 10) || 0);
+  }
+  localStorage.setItem('hebrewTropeTutor_progress', JSON.stringify(out));
+}
+
 function exportAllSettings() {
   const blob = {
     _hebrewBlenderExport: 1,
@@ -761,6 +801,8 @@ function exportAllSettings() {
     dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
     dictLastState:       lsJSON('hebrewDictionary_lastState', {}),
     torahTrainerSettings: lsJSON('hebrewTorahTrainer_settings', {}),
+    tropeTutorSettings:  lsJSON('hebrewTropeTutor_settings', {}),
+    tropeTutorProgress:  lsJSON('hebrewTropeTutor_progress', {}),
     inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
     hebFont:             localStorage.getItem('hebrewBlender_hebFont') || '',
     hebFontSize:         localStorage.getItem('hebrewBlender_hebFontSize') || '',
@@ -836,6 +878,15 @@ async function importAllSettings() {
       const existing = ivritSafeParse(localStorage.getItem('hebrewTorahTrainer_settings') || '{}');
       localStorage.setItem('hebrewTorahTrainer_settings', JSON.stringify(ivritSafeAssign(existing, parsed.torahTrainerSettings)));
     }
+    // Trope Tutor: settings = flat blob merge; progress = never-lose-mastery merge
+    // (per-trope r/w and pbStreak as max, visited families as union). Empty = never set, skip.
+    if (parsed.tropeTutorSettings && Object.keys(parsed.tropeTutorSettings).length) {
+      const existing = ivritSafeParse(localStorage.getItem('hebrewTropeTutor_settings') || '{}');
+      localStorage.setItem('hebrewTropeTutor_settings', JSON.stringify(ivritSafeAssign(existing, parsed.tropeTutorSettings)));
+    }
+    if (parsed.tropeTutorProgress && Object.keys(parsed.tropeTutorProgress).length) {
+      tropeProgressMerge(parsed.tropeTutorProgress, false);
+    }
     if (parsed.inputMode !== undefined) {
       localStorage.setItem('hebrewBlender_inputMode', parsed.inputMode);
     }
@@ -892,10 +943,13 @@ function eraseAllSettings() {
     'hebrewDashboard_setupSeen',
     'hebrewTorahTrainer_tourSeen',
     'hebrewTorahTrainer_hintSeen',
+    'hebrewTropeTutor_tourSeen',
     'hebrewFontMaker_tourDone',
     'hebrewFontMaker_mobileWarnDismissed',
     'hebrewFontMaker_inputMode',
     'hebrewTorahTrainer_settings',
+    'hebrewTropeTutor_settings',
+    'hebrewTropeTutor_progress',
     'hebrewBlender_inputMode',
     'hebrewBlender_hebFont',
     'hebrewBlender_hebFontSize',
@@ -935,6 +989,8 @@ const IVRIT_CFG = {
       dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
       dictLastState:       lsJSON('hebrewDictionary_lastState', {}),
       torahTrainerSettings:lsJSON('hebrewTorahTrainer_settings',    {}),
+      tropeTutorSettings:  lsJSON('hebrewTropeTutor_settings',      {}),
+      tropeTutorProgress:  lsJSON('hebrewTropeTutor_progress',      {}),
       inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
       hebFont:             localStorage.getItem('hebrewBlender_hebFont') || '',
       hebFontSize:         localStorage.getItem('hebrewBlender_hebFontSize') || '',
@@ -972,6 +1028,8 @@ const IVRIT_CFG = {
     if (data.dictEmojiSettings)   { mergeObj('hebrewDictionary_emojiSettings', data.dictEmojiSettings);  touched = true; }
     if (data.dictLastState && Object.keys(data.dictLastState).length) { mergeObj('hebrewDictionary_lastState', data.dictLastState); touched = true; }
     if (data.torahTrainerSettings){ mergeObj('hebrewTorahTrainer_settings',   data.torahTrainerSettings); touched = true; }
+    if (data.tropeTutorSettings && Object.keys(data.tropeTutorSettings).length) { mergeObj('hebrewTropeTutor_settings', data.tropeTutorSettings); touched = true; }
+    if (data.tropeTutorProgress && Object.keys(data.tropeTutorProgress).length) { tropeProgressMerge(data.tropeTutorProgress, mode === 'replace'); touched = true; }
     if (data.wordLists)           { wlMergeIntoStorage(data.wordLists, mode === 'replace'); touched = true; }
     if (data.dictAudioEnabled  !== undefined) { localStorage.setItem('hebrewDictionary_audioEnabled',  data.dictAudioEnabled);  touched = true; }
     if (data.dictTranslitStyle !== undefined) { localStorage.setItem('hebrewDictionary_translitStyle', data.dictTranslitStyle); touched = true; }

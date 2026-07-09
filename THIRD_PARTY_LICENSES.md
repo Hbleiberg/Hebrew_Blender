@@ -69,12 +69,13 @@ The site loads **Google Analytics 4** (`gtag.js`) from `googletagmanager.com` on
 - **Authors:** Russel Neiss & Rabbi Charlie Schwartz
 - **License:** Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) — https://creativecommons.org/licenses/by-sa/4.0/
 
-**Used by `torah_trainer.html`:**
+**Used by `torah_trainer.html` and `trope_tutor.html`:**
 - Word-timing label files (`data/torah/labels/*.txt`) are mirrored into `/data/pockettorah/timings/` in this repository.
 - MP3 cantillation audio files (`data/audio/*.mp3`) are streamed on demand from `raw.githubusercontent.com/rneiss/PocketTorah/master/data/audio/`. They are not redistributed in this repository.
 - `data/pockettorah/aliyah.json` is mirrored from upstream `data/aliyah.json`.
+- `data/trope/trope_index.json` (the Trope Tutor's example index, built by `scripts/build-trope-index.mjs`) contains per-word audio **clip boundaries derived from the PocketTorah timing files** — it is adapted material and is redistributed under CC BY-SA 4.0.
 
-**Per the CC BY-SA 4.0 license:** any IvritSuite material that incorporates PocketTorah audio (the karaoke feature in `torah_trainer.html`) inherits the CC BY-SA 4.0 license. Visible attribution is shown in the karaoke audio bar and on the Torah Trainer page footer.
+**Per the CC BY-SA 4.0 license:** any IvritSuite material that incorporates PocketTorah audio or timings (the karaoke feature in `torah_trainer.html`, and the example clips + derived index in `trope_tutor.html`) inherits the CC BY-SA 4.0 license. Visible attribution is shown in the karaoke audio bar, on the Torah Trainer page footer, and on the Trope Tutor page footer.
 
 ---
 
@@ -86,6 +87,8 @@ The site loads **Google Analytics 4** (`gtag.js`) from `googletagmanager.com` on
 - **English translations:** Each Sefaria version has its own license (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA, or proprietary "Copyright: …" for publisher-licensed editions like JPS 1985 and Robert Alter's translation).
 
 **Used by `torah_trainer.html`:** Hebrew text and English translations are fetched at runtime via Sefaria's REST API (`/api/v3/texts/...` for text, `/api/texts/versions/...` for the per-book version list, and `/api/calendars` for the current parsha).
+
+**Used by `scripts/build-trope-index.mjs` (build-time only):** the Trope Tutor's index extracts individual Hebrew Torah words (public-domain Masoretic Text with cantillation) from Sefaria's public text export bucket (`storage.googleapis.com/sefaria-export`) or the same v3 API. `trope_tutor.html` itself never calls Sefaria at runtime.
 
 **Translation filtering:** the page filters the version dropdown by the `license` field returned for each version. Only translations licensed Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, or CC BY-NC-SA are offered. Versions with a "Copyright: …" license (e.g. *Tanakh: The Holy Scriptures, JPS 1985*; Robert Alter's *The Hebrew Bible*; the JPS *Contemporary Torah, 2006*) are excluded so that copyrighted text is not republished on ivritsuite.com without permission. The default selection is *The Holy Scriptures: A New Translation (JPS 1917)* (Public Domain) when present.
 

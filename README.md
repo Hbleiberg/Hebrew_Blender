@@ -70,6 +70,15 @@ A reader for the weekly Torah portion (parsha) with toggleable translit, transla
 - **Verse looping** — loop a single verse for practice (with configurable silence between repeats) plus an audio-bar loop-stop control
 - Hebrew TTS (per-verse + read-all), transliteration styles, Hebrew font picker, fullscreen for projection
 
+### Trope Tutor (`trope_tutor.html`)
+An interactive tutor for the Torah cantillation marks (trope / te'amim) — the companion to the Torah Trainer's trope color coding.
+
+- **Learn mode** — the marks taught one clause family at a time: symbol, **Ashkenazi and Sephardi names** (switchable primary tradition), a teaching note, and 3–4 **real chanted examples** per mark with one-tap playback
+- **Drill mode** — 10-question sessions in three directions: see a marked word → name the trope; hear a clip → pick the symbol; see a symbol → pick the matching melody
+- **Per-trope mastery + personal-best streak** — misses resurface more often, and distractors lean into same-shape confusables (pashta vs. kadma) as you improve
+- **Real audio, zero live dependencies** — every example is clipped from [PocketTorah](https://pockettorah.com)'s recordings using their word-level timings, via a pre-built static index (`data/trope/trope_index.json`, generated offline by `scripts/build-trope-index.mjs` from Sefaria's Hebrew text)
+- Hebrew font picker (incl. My Fonts), dark mode, guided tour, playback-speed control
+
 ### Hebrew Font Maker (`Hebrew_Font_Maker.html`) — Beta
 Turn your own handwritten Hebrew letters into a real, installable font — entirely in the browser. (Currently v4.5.)
 
@@ -106,7 +115,7 @@ These work the same across the tools (all pages are served from one origin, so s
 - **AllTools backup** — the gear modal on the landing page bundles every tool's settings into one export/import/erase, either as an `.ivrit` file or a JSON blob.
 - **My Fonts** — custom fonts made (or uploaded) in the Hebrew Font Maker are stored in the browser and appear in **every** tool's font picker automatically; you can upload your own `.ttf`/`.otf`/`.woff`/`.woff2` from any picker.
 - **Nikkud color-coding** — vowel-by-color rendering with two selectable schemes, **Default** and **TaL AM** (matching the TaL AM curriculum poster), in three styles (color / highlight / underline).
-- **Guided tours** — all six tools (Generator, Dictionary, Dashboard, Flash Cards, Torah Trainer, Font Maker) ship a first-visit "❓ Tour" walk-through that never changes your data.
+- **Guided tours** — all seven tools (Generator, Dictionary, Dashboard, Flash Cards, Torah Trainer, Trope Tutor, Font Maker) ship a first-visit "❓ Tour" walk-through that never changes your data.
 - **Share links** — the Generator and Dictionary produce shareable `?s=` URLs; Flash Cards uses a paste-in teacher share code.
 - **Installable PWA + offline shell** — `manifest.webmanifest` + `sw.js` let the suite install to a home screen and run its app shell offline; iOS launch/splash screens live in `splash/`. (Remote resources — Google Fonts, Sefaria, PocketTorah audio — are not available offline.)
 
@@ -124,7 +133,7 @@ In each tool's **Backup** area there's an **Automatic Input / Manual Input** tog
 How it works:
 
 - A save file stores **both** your full collection of named presets **and** your current on-screen settings, so restoring brings everything back.
-- The landing-page **AllTools** save file bundles *every* tool at once (Generator, Dashboard, Flash Cards, Dictionary, and Torah Trainer settings — plus any fonts you built in the Hebrew Font Maker).
+- The landing-page **AllTools** save file bundles *every* tool at once (Generator, Dashboard, Flash Cards, Dictionary, Torah Trainer, and Trope Tutor settings/progress — plus any fonts you built in the Hebrew Font Maker).
 - Each file knows which tool it came from (recorded inside the file, so it still works even if you rename it). Dropping the wrong kind of file onto a tool warns you first.
 - On restore you choose **Merge** (add to what you have) or **Replace** (start fresh from the file).
 
@@ -140,6 +149,7 @@ How it works:
 | `flash_cards.html` | Interactive flash cards with profiles and weakness tracking — Beta |
 | `classroom_dashboard.html` | Live classroom projector / SmartBoard dashboard |
 | `torah_trainer.html` | Weekly parsha reader with translit, vowel coloring, cantillation, TTS, PocketTorah karaoke, and verse looping |
+| `trope_tutor.html` | Learn + drill the Torah cantillation marks with real chanted examples (PocketTorah clips via a pre-built index) |
 | `Hebrew_Font_Maker.html` | Make a real installable Hebrew font from your handwriting — trace, anchor nikkud/trop, export TTF/WOFF2/UFO — Beta |
 | `resources.html` | Curated directory of external Hebrew / Jewish-education resources |
 | `contact.html` | Contact / feedback form (web3forms + hCaptcha) |
@@ -157,6 +167,9 @@ How it works:
 | `data/pockettorah/aliyah.json` | Mirrored from [PocketTorah](https://github.com/rneiss/PocketTorah) — full kriyah verse ranges per parsha |
 | `data/pockettorah/manifest.json` | Maps each parsha+aliyah to its actual upstream label filename |
 | `data/pockettorah/timings/*.txt` | Mirrored PocketTorah word-level timing files (432 files, ~2 MB) |
+| `data/trope/trope_index.json` | Pre-built Trope Tutor index — example words + audio clip bounds per cantillation mark (~75 KB) |
+| `scripts/build-trope-index.mjs` | Offline builder for the trope index (plain Node, zero deps); writes `docs/trope_index_report.md` |
+| `docs/trope_index_report.md` | Build report for the trope index — per-trope counts, excluded aliyot, zarka codepoint finding |
 | `docs/phonotactic_blending_filter_spec.md` | Linguistic specification for the phonotactic validity filter used by the generator |
 | `splash/` | iOS launch/splash screens + `gen_splash.py` generator (and its bundled Libre Baskerville fonts) |
 | `icons/`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `og-card.png` | PWA / home-screen / social-card icons |
@@ -209,7 +222,7 @@ The word data in `data/hebrew_words.json` and `source-data/hebrew_dictionary_4_1
 Kaikki's underlying data is Wiktionary content, which is licensed CC BY-SA 3.0. The curation, filtering, transliteration fields, era classification, and JSON structure in this project are original work licensed under CC BY-NC-SA 4.0 (see below).
 
 ### Torah audio & timings
-The Torah Trainer's chanted-audio karaoke uses **[PocketTorah](https://pockettorah.com)** by Russel Neiss & Rabbi Charlie Schwartz — word-level timing files (mirrored into `data/pockettorah/`) and cantillation audio (streamed on demand) — licensed **[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)**. Sefaria translations are shown under their individual licenses, and only openly-licensed versions are offered. See [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md) for the full terms.
+The Torah Trainer's chanted-audio karaoke and the Trope Tutor's example clips use **[PocketTorah](https://pockettorah.com)** by Russel Neiss & Rabbi Charlie Schwartz — word-level timing files (mirrored into `data/pockettorah/`) and cantillation audio (streamed on demand) — licensed **[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)**. Sefaria translations are shown under their individual licenses, and only openly-licensed versions are offered. See [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md) for the full terms.
 
 ---
 

@@ -14,6 +14,7 @@
 - [My Fonts — shared font store](#my-fonts--shared-font-store-picker-integration--upload-every-font-selector-tool)
 - [Vowel Color Scheme — Default / TaL AM](#vowel-color-scheme--default--tal-am-all-three-picker-tools)
 - [Trope Color Coding](#trope-color-coding-torah_trainerhtml)
+- [Trope Tutor](#trope-tutor-trope_tutorhtml)
 - [Shared UX components](#shared-ux-components--the-conventions-all-tools-are-converging-on)
 - [App Version & Splash Screens](#app-version--splash-screens-splash)
 - [Service Worker & Caching](#service-worker--caching-swjs)
@@ -110,6 +111,8 @@ content parsed before the tag — hence the placement right after `<meta charset
 | `dictLastState` | `hebrewDictionary_lastState` | Dictionary last filter/session state (`getDictState()` minus the search query); object blob merged via `ivritSafeAssign`, empty = never-set (skipped on import) |
 | `wordLists` | `ivritSuite_wordLists` | Suite-wide saved Word Lists (`{v:1,lists:{}}`); merged one level deep via `wlMergeIntoStorage` so a shallow assign can't clobber `lists` |
 | `torahTrainerSettings` | `hebrewTorahTrainer_settings` | Torah Trainer settings |
+| `tropeTutorSettings` | `hebrewTropeTutor_settings` | Trope Tutor settings (tradition, font, drill toggles, playback rate); object blob merged via `ivritSafeAssign`, empty = never-set (skipped on import) |
+| `tropeTutorProgress` | `hebrewTropeTutor_progress` | Trope Tutor mastery (`{v:1,tropes:{key:{r,w}},families:{},pbStreak}`); imported via `tropeProgressMerge` — per-trope `r`/`w` and `pbStreak` as **max** of existing vs incoming, visited families as **union** (never a shallow assign) |
 | `userFonts` | *(IndexedDB `ivritsuite-fonts`, not localStorage)* | Custom fonts, base64-bundled at export — see "My Fonts" section |
 | `inputMode` | `hebrewBlender_inputMode` | Backup UI preference: `'auto'` (.ivrit file) or `'manual'` (text block) — see ".ivrit Save Files" below |
 | `hebFont` / `hebFontSize` | `hebrewBlender_hebFont` / `_hebFontSize` | Shared Generator+Dictionary display prefs (selected Hebrew font + size); scalar strings, empty = never-set (skipped on import) |
@@ -184,7 +187,7 @@ Users back up and restore via a downloadable **`.ivrit` file** (a plain JSON tex
 
 The toggle choice is remembered site-wide in `localStorage['hebrewBlender_inputMode']` (`'auto'` | `'manual'`).
 
-Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_dashboard.html` (`Dashboard`), `flash_cards.html` (`FlashCards`), and `index.html` (`AllTools`). The Dictionary and Torah Trainer have no presets of their own — their settings are backed up **only** through the `AllTools` file on `index.html`.
+Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_dashboard.html` (`Dashboard`), `flash_cards.html` (`FlashCards`), and `index.html` (`AllTools`). The Dictionary, Torah Trainer, and Trope Tutor have no presets of their own — their settings are backed up **only** through the `AllTools` file on `index.html`.
 
 ### File format
 
@@ -257,9 +260,9 @@ Whenever a new UI control is added to one of those tools, it must be included in
 
 Because `.ivrit` save files store `liveState = getSettings()`, keeping `getSettings()`/`applySettings()` complete is what makes both presets **and** `.ivrit` files capture every control. No separate `.ivrit` step is needed per control.
 
-(`torah_trainer.html` and `hebrew_dictionary.html` have no preset collection of their own — they
-persist a single `settings`/last-state object instead, so the equivalent obligation there is to add
-every new control to that object's save/restore path.)
+(`torah_trainer.html`, `hebrew_dictionary.html`, and `trope_tutor.html` have no preset collection
+of their own — they persist a single `settings`/last-state object instead, so the equivalent
+obligation there is to add every new control to that object's save/restore path.)
 
 **Restore paths use `??`, never `||`, for numeric/boolean fields.** `x = s.field || default`
 silently discards a legitimately-stored `0`/`''`/`false` (the recurring "falsy-zero" bug —
@@ -531,8 +534,8 @@ The store + helpers are delivered as one copy-identical block (like the `.ivrit`
   `saveUserFont(name, bytes, family)` (upsert; auto-prunes to the newest 10); `deleteUserFont(name)`;
   `loadUserFont(name)` → registers the stored bytes as a CSS-usable `FontFace` named exactly `name`.
 
-Present (verbatim; sha-verified 2026-07-06) in **8 files**: `index.html`, `Hebrew_Font_Maker.html`, and the six
-font-selector tools (generator, flash cards, dashboard, dictionary, torah trainer, resources).
+Present (verbatim; sha-verified 2026-07-09) in **9 files**: `index.html`, `Hebrew_Font_Maker.html`, and the seven
+font-selector tools (generator, flash cards, dashboard, dictionary, torah trainer, trope tutor, resources).
 
 ### Consumer pattern (in the picker)
 Each font-selector tool keeps the block plus: `let MY_FONTS = []` + `const _loadedUserFonts = new Set()`,
@@ -546,8 +549,8 @@ at init. (Use `family` or `stack` to match whatever property that tool's `setHeb
 ### "Upload your own font?" — byte-identical block + per-page pick handler
 A second shared block `/* ═══ My Fonts uploader (shared, identical across pages) ═══ */` defines
 `ivUploadFontFromFile(file)` (validates via `new FontFace(name, bytes).load()`, de-dupes the name,
-`saveUserFont`s it). The block contains ONLY that function (sha-verified identical across all 6 carriers,
-2026-07-06); the thin **pick handler lives BELOW the end marker and is per-page**: the four tool pickers
+`saveUserFont`s it). The block contains ONLY that function (sha-verified identical across all 7 carriers,
+2026-07-09); the thin **pick handler lives BELOW the end marker and is per-page**: the five tool pickers
 use `onUploadFontPick(input)` (`refreshMyFonts()` + `setHebFont(name)`), the dashboard adds an extra
 `onUploadEngFontPick` (routes to `setEngFont`), and `index.html`'s gear-modal manager uses
 `onUploadFontPickIndex` (`renderMyFontsManager()` + `refreshFontsBackupCache()`). Each picker has a small
@@ -582,10 +585,11 @@ Escape to end, arrow keys to navigate, resize-safe, `scrollIntoView` the target 
 settings mutations**. It **never auto-launches** — entry is a header **"❓ Tour"** button with a one-time
 first-visit pulse gated by a `hebrew<Tool>_tourSeen` flag (set once so the pulse never returns).
 - **Implemented on:** `hebrew_blend_generator.html`, `hebrew_dictionary.html`, `classroom_dashboard.html`,
-  `torah_trainer.html`, `Hebrew_Font_Maker.html`, `flash_cards.html` (2026-07-06) — **all 6 tools**, but as
-  **per-file engines**, not yet a single shared block. Flags are `hebrew<Tool>_tourSeen` except Font Maker's
-  legacy `hebrewFontMaker_tourDone`. The generator's engine is a copy of Font Maker's, and flash cards' is
-  a copy of the generator's ("keep the engines in sync"). **Not** on `index.html` or `resources.html`.
+  `torah_trainer.html`, `Hebrew_Font_Maker.html`, `flash_cards.html` (2026-07-06), and `trope_tutor.html`
+  (2026-07-09) — **all 7 tools**, but as **per-file engines**, not yet a single shared block. Flags are
+  `hebrew<Tool>_tourSeen` except Font Maker's legacy `hebrewFontMaker_tourDone`. The generator's engine is
+  a copy of Font Maker's; flash cards' and the trope tutor's are copies of the generator/torah lineage
+  ("keep the engines in sync"). **Not** on `index.html` or `resources.html`.
 - **Rule:** when you next touch a tour engine, extract it into a `═══`-marked shared block (house
   convention, byte-identical across files) so the six copies stop drifting. Any **new** tool ships a tour.
   A tour must touch none of the undo/dirty/state machinery — read-only overlay only.
@@ -600,7 +604,8 @@ auto-hide timer. The trigger carries `tabindex="0"`, `role="button"`, `aria-expa
   + `bindTip`), and `flash_cards.html` (2026-07-06 — its `tooltipIIFE` now carries the `bindTip` wiring
   adapted to `.has-tip` triggers + the `#tipFloat` `.show`/opacity model; its one native-`<button>`
   trigger is hover/focus-only by design). The dashboard's `wire()` gained `aria-expanded`/
-  `aria-describedby` on 2026-07-06, so all five tooltip carriers now meet the full contract.
+  `aria-describedby` on 2026-07-06, so all tooltip carriers meet the full contract.
+  `trope_tutor.html` (2026-07-09) carries a verbatim copy of the torah_trainer `bindTip` IIFE.
 - **Rule:** no new hover-only tooltips anywhere. New `data-tip`s must inherit the page's accessible
   handler automatically (don't hand-roll a one-off).
 
@@ -621,8 +626,8 @@ anywhere — first-visit pulses, tour transitions, timer/omer pulsing, fades —
 - **Implemented on:** every page with any animation — `torah_trainer.html`,
   `hebrew_blend_generator.html`, `hebrew_dictionary.html`, `classroom_dashboard.html`,
   `Hebrew_Font_Maker.html`, `404.html`, `flash_cards.html`, `index.html`, `resources.html`,
-  `contact.html` (**10 files**, complete as of 2026-07-06). (`privacy.html` has zero
-  animations/transitions, so a block there would be a no-op.)
+  `contact.html`, `trope_tutor.html` (**11 files**, complete as of 2026-07-09). (`privacy.html`
+  has zero animations/transitions, so a block there would be a no-op.)
 - **Rule:** if you add an animation to a page, that page needs the reduced-motion block, and your
   animation must honor it.
 
@@ -668,7 +673,8 @@ inside an HTML **attribute** value (the wrapper's quotes would break it), and do
 whose text is majority-English (e.g. mixed `<option>` labels). Verify: `document.querySelectorAll('[lang="he"]').length > 0` after render.
 - **Implemented on:** `torah_trainer.html` (verse containers), `hebrew_dictionary.html`,
   `flash_cards.html`, `hebrew_blend_generator.html`, `classroom_dashboard.html`,
-  `Hebrew_Font_Maker.html` (glyph tiles) (2026-07-07).
+  `Hebrew_Font_Maker.html` (glyph tiles) (2026-07-07), `trope_tutor.html` (glyph tiles +
+  example/question words, 2026-07-09).
 - **Rule:** any new Hebrew-rendering surface marks its output `lang="he"` at the chokepoint.
 
 ---
@@ -938,8 +944,60 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
   generated once at init from `TROPE_COLOR_DEFS`, and swatches read the body vars so
   theme/picker changes recolor them for free. It shows only when trope coloring is on **and** a
   reading is loaded (hidden over the empty state). The "Learn the trope names →" link renders
-  only when `const TROPE_TUTOR_URL` is non-null (keep `null` until `trope_tutor.html` ships).
-  Legend is print-hidden with the other reading chrome.
+  only when `const TROPE_TUTOR_URL` is non-null — set to `'trope_tutor.html'` since the Trope
+  Tutor shipped (see its section below). Legend is print-hidden with the other reading chrome.
+
+---
+
+## Trope Tutor (`trope_tutor.html`)
+
+A standalone Learn + Drill page for the cantillation marks. **Zero runtime Sefaria dependency** —
+it consumes only the pre-built static index plus PocketTorah MP3 streams. Its CSP therefore has
+**no `sefaria.org`** (and no `esm.sh`); if a change seems to need either, the design has drifted —
+stop and reconsider. Shell (dark mode, settings drawer, tooltips, tour, toast, My Fonts) is copied
+from `torah_trainer.html`.
+
+- **Index**: `data/trope/trope_index.json` — `{v:1, system:"torah", built, tropes:{<key>:[{p,a,w,ref,he,s,e}]}}`
+  where `p` = parsha pocket key, `a` = aliyah "1"–"7", `w` = 0-based sung-word index (= timings
+  index), `s`/`e` = clip bounds in seconds (**`0` is valid — never `||`-default these**). Built
+  offline by **`node scripts/build-trope-index.mjs`** (plain Node, zero deps; `--source=export`
+  default = Sefaria's public GCS text export, `--source=api` mirrors the live v3 endpoint; HTTP
+  cache in gitignored `source-data/trope-cache/`). The builder excludes any aliyah whose word count
+  doesn't match its PocketTorah timings (sentinel rule applied first) — never a shifted clip — and
+  fails loudly on its Genesis 1:1 smoke test. It rewrites `docs/trope_index_report.md`; re-run it
+  and commit both files together whenever the taxonomy or selection rules change.
+- **`TROPES` taxonomy** — one `═══`-marked table (27 entries: key, chars, display, Ashkenazi +
+  Sephardi names, family, rare flag) kept **byte-identical** between `scripts/build-trope-index.mjs`
+  and `trope_tutor.html` (same convention as the `.ivrit` engine; copy, don't rewrite). Family
+  assignment mirrors torah_trainer's `TROPE_CHAR_TO_FAMILY`; family hues mirror
+  `TROPE_DEFAULTS_LIGHT/_DARK` — keep both pages' color language in sync. `sof_pasuk` has no chars
+  (positional; siluk = meteg U+05BD, never mapped); `zarka` matches BOTH U+0598 and U+05AE
+  (Unicode's swapped names) and displays corpus-dominant U+05AE; `geresh_muqdam` has zero corpus
+  occurrences (the Learn card handles example-less tropes).
+- **Audio clip engine**: ONE `<audio id="tuAudio">`; `playClip({p,a,w,ref,he,s,e})` resolves the MP3
+  via `manifest[p].audioBase` (URL = `POCKET_AUDIO_BASE + encodeURIComponent(audioBase + '-' + a + '.mp3')`),
+  swaps `src` only when the aliyah file changes, seeks after `loadedmetadata`, and stops at `e` via
+  an rAF watcher + `timeupdate` fallback (the `_verseEndStopAt` pattern; iOS timeupdate is ~4 Hz).
+  `playbackRate` is re-asserted in the `play` handler (iOS resets it). Failures add the file to
+  `_badFiles` and call `onError` — drills **never dead-end**: substitute example → regenerate
+  question (different trope) → skip, with a toast at each step.
+- **Rendering is DOM-built** (`createElement`/`textContent`) for all index-derived Hebrew —
+  `renderMarkedWord` clusters base letters + combining marks (U+0591–U+05C7) and wraps the hit
+  cluster in `.mark-hit`; index strings never pass through `innerHTML`. Glyph tiles render marks on
+  the `GLYPH_CARRIER` (`'◌'` dotted circle — one constant; flip to `'א'` if a font floats marks).
+  Postpositive/prepositive marks sitting at word edges is **correct**, not a bug.
+- **Persistence** (no presets, no `.ivrit` engine — AllTools-only backup):
+  `hebrewTropeTutor_settings` (tradition ashk/seph, hebFont, hebFontSize, drill-type toggles,
+  playbackRate) and `hebrewTropeTutor_progress` (`{v:1, tropes:{key:{r,w}}, families:{}, pbStreak}`).
+  Registered in all five AllTools sites in `index.html`; progress imports go through
+  `tropeProgressMerge` (r/w/pbStreak = max, families = union). `hebrewTropeTutor_tourSeen` is the
+  export-exempt, erase-cleared tour flag.
+- **Drill**: 10 questions/session; three types (Identify / Hear / Melody) toggleable in settings
+  (last one refuses to uncheck **inline**, no alert). Answers sampled weighted by
+  `0.35 + (1 − mastery)` (rare ×0.5, no adjacent repeats); questions stable-sorted by clip file key
+  to minimize MP3 hops; distractors sampled without replacement, weighted toward same-family ∪
+  `CONFUSABLE_PAIRS` (pashta↔kadma etc.) as the answer's mastery rises. Melody choices are two-tap:
+  first tap plays, second tap answers.
 
 ---
 
