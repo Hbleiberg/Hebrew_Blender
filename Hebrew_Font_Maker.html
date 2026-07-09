@@ -2308,7 +2308,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.4';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.5';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2520,6 +2520,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.5</strong> — <strong>A heads-up when a letter can't keep its curves.</strong> Once in a while a traced outline is too tangled for the font engine to turn its curves into the exact form a font file needs, so it quietly falls back to straight edges for that one letter — which used to happen with no warning, leaving a font that looked faceted with no clue why. Now the <span class="ui">Exported ✓</span> screen tells you exactly <strong>which letters</strong> came out with straight edges, so you can re-trace or simplify just those and export again for smooth curves. Every other letter is unaffected. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.4</strong> — <strong>Your license always comes with your font.</strong> When you export a single <span class="ui">TTF</span> or <span class="ui">WOFF2</span>, the <span class="ui">LICENSE.txt</span> used to try to download by itself right after the font — which some browsers quietly block, leaving you with a font and no license. Now the <span class="ui">Exported ✓</span> screen gives you a one-click <strong>⬇ LICENSE.txt</strong> button (named after your font), so it can never be missed. The <span class="ui">TTF + WOFF2</span> zip and <span class="ui">UFO</span> still bundle it inside as before. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.3</strong> — <strong>Sturdier exports.</strong> Your exported font now gets a valid internal name and download filename no matter what you call it — unusual family names (with slashes, brackets, %, emoji, accents, or Hebrew letters, or a name that's only spaces) used to produce a font some programs would reject or a file saved with no name; now they're always cleaned to a safe name (falling back to <span class="ui">MyHebrewFont</span> if nothing usable is left). And the font's <strong>version number only ticks up when an export actually finishes</strong> — a failed engine download no longer bumps it on every retry. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.2</strong> — <strong>A tidier Edit points panel.</strong> The point-editing controls are reorganized into clear zones: a sticky header with <strong>Done editing</strong> always in reach, a <strong>Select / Marquee / Pen</strong> mode switch, and a middle section that shows just the actions that apply to your current selection — with a <strong>Delete ▾</strong> button that gathers point and contour deletion in one place. The Transform, Round corners, and Contours sections now look alike and <strong>remember whether you left them open</strong>. The long help paragraph became a short tip that changes with what you're doing, plus a <strong>?</strong> button that jumps straight to the point-editing shortcuts — and the shortcuts sheet itself now covers every mouse trick too (double-click, Alt-click, segment dots, selection-box moves). Nothing about how editing works changed — every action, shortcut, and undo behaves exactly as before. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -10628,6 +10629,7 @@ def hfm_build(spec_json):
     glyphs = {}
     advances = {}
     lsbs = {}
+    fell_back = []   # glyphs whose curves were present but the cubic→quadratic conversion threw → shipped as straight-line polygons
     for name in order:
         gd = spec["glyphs"][name]
         contours = gd["contours"]
@@ -10665,6 +10667,7 @@ def hfm_build(spec_json):
                 built = True
             except Exception:
                 built = False
+                fell_back.append(name)                                # curves existed but conversion failed → this glyph ships faceted (report it)
         if not built:                                                 # no curves, or any failure → all-polygon (unchanged behavior)
             pen = TTGlyphPen(None)
             for contour in contours:
@@ -10717,7 +10720,7 @@ def hfm_build(spec_json):
     fb.font.save(buf)
     data = buf.getvalue()
     import base64
-    return json.dumps({"ok": True, "ttf_b64": base64.b64encode(data).decode("ascii")})
+    return json.dumps({"ok": True, "ttf_b64": base64.b64encode(data).decode("ascii"), "fellBack": fell_back})
 
 
 def hfm_ttf_to_woff2(ttf_b64):
@@ -11003,6 +11006,7 @@ async function doExport(fmt) {
   const btn = document.getElementById('exportBtn');
   btn.disabled = true;
   status('Starting export…', true);
+  window._lastFellBack = [];   // reset per export so a prior run's faceted-glyph warning never leaks (esp. into the UFO path)
   const _prevVersion = project.font.version;
   const _setVersion = (val) => { project.font.version = val; const el = document.getElementById('fontVersion'); if (el) el.value = val; };
   try {
@@ -11043,6 +11047,10 @@ async function doExport(fmt) {
     pyodide.globals.set('hfm_spec_json', JSON.stringify(spec));
     const res = JSON.parse(pyodide.runPython('hfm_build(hfm_spec_json)'));
     if (res.error) { status(''); _setVersion(_prevVersion); askModal('Build failed', '<span class="warn">'+res.error+'</span>', [{label:'OK'}]); return; }
+    // Glyphs whose curves couldn't convert to quadratics shipped faceted (straight edges) — map their
+    // internal names to the visible Hebrew characters via the spec cmap so the success screen can warn.
+    const _n2c = {}; for (const cp in spec.cmap) _n2c[spec.cmap[cp]] = String.fromCodePoint(+cp);
+    window._lastFellBack = (res.fellBack || []).map(n => _n2c[n] || n);
     const bytes = b64ToBytes(res.ttf_b64);
 
     // harfbuzz shaping gate (only meaningful when the font has marks to position)
@@ -11241,11 +11249,20 @@ function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (
   if (licenseSeparate) btns.push({ label: '⬇ LICENSE.txt', cls: 'ghost',
     onClick: () => downloadBlob(new Blob([licenseText()], {type:'text/plain'}), fontSafeBase(project.font.familyName) + '-LICENSE.txt') });
   if (canSave) btns.push({ label: '★ My IvritSuite Fonts', onClick: () => openMyFonts() });
+  // Faceted-glyph warning: some letters' curves couldn't convert to quadratics and exported with straight
+  // edges. Surface which ones on the persistent success screen (the toast auto-clears too fast for this).
+  const _fell = window._lastFellBack || [];
+  const fellHtml = _fell.length
+    ? '<br><br><span class="warn">⚠ ' + _fell.length + (_fell.length === 1 ? ' letter' : ' letters')
+      + ' exported with straight edges — their curves couldn’t be converted: <b lang="he">' + esc(_fell.join(' ')) + '</b>.'
+      + ' Re-trace or simplify those outlines, then export again for smooth curves.</span>'
+    : '';
   askModal('Exported ✓',
     'Your font <b>' + esc(fam) + '</b> downloaded.'
     + (licenseSeparate ? ' Get its <b>⬇ LICENSE.txt</b> below and keep it with the font.' : '')
     + (canSave ? ' Save it to <b>★ My IvritSuite Fonts</b> (this browser) to pick it in every IvritSuite tool’s font selector.' : '')
-    + ' Or <b>📤 Share this font</b> to post it to the IvritSuite font library.',
+    + ' Or <b>📤 Share this font</b> to post it to the IvritSuite font library.'
+    + fellHtml,
     btns);
 }
 async function gzipBlob(str) {                       // string → gzip Blob (native, no libs)
