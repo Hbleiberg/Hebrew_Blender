@@ -43,7 +43,7 @@ if (SOURCE !== 'export' && SOURCE !== 'api') {
   process.exit(1);
 }
 
-/* ═══ TROPES taxonomy — KEEP IN SYNC with trope_tutor.html (same ═══-marked table) ═══
+/* ═══ TROPES taxonomy — KEEP IN SYNC between scripts/build-trope-index.mjs and trope_tutor.html ═══
    Per-mark taxonomy for the tutor. `chars` / `family` are ported EXACTLY from
    torah_trainer.html's TROPE_CHAR_TO_FAMILY (the six-family pedagogical grouping);
    keys are stable snake_case identifiers used in trope_index.json and in the

@@ -1,0 +1,2430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Content-Security-Policy (defense-in-depth). Placed right after <meta charset> so it applies before
+     any script/style loads. script-src keeps 'unsafe-inline' because all app JS is inline by design; the
+     value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
+     origins. This page never calls sefaria.org (it consumes only the pre-built data/trope/ index) and
+     loads no ESM modules. Update this when adding any external script/font/fetch/iframe (see CLAUDE.md). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; media-src 'self' blob: https://raw.githubusercontent.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">
+<link rel="manifest" href="manifest.webmanifest?v=3">
+<meta name="theme-color" content="#1a2744">
+<script src="/pwa.js" defer></script>
+<!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="IvritSuite">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-750x1334.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1242x2208.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1125x2436.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-828x1792.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1242x2688.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1170x2532.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1284x2778.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1179x2556.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1290x2796.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1206x2622.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/splash/splash-1320x2868.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1488x2266.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1536x2048.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1620x2160.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1640x2360.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1668x2224.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1668x2388.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-2048x2732.png">
+<title>Trope Tutor — Learn Torah Cantillation (Te'amim) Free | IvritSuite</title>
+<meta name="description" content="Free interactive tutor for Torah cantillation marks (trope / te'amim). Learn each mark's symbol, Ashkenazi and Sephardi names, and melody with real chanted examples from PocketTorah, then drill yourself with see-it, hear-it, and match-the-melody quizzes. Great for bar/bat mitzvah prep and leining practice.">
+<meta name="keywords" content="trope, te'amim, teamim, cantillation, Torah trope, trope names, learn trope, leining, layning, Torah chanting, bar mitzvah, bat mitzvah, etnachta, zakef katon, pashta, kadma, zarka, shalshelet, cantillation marks, Hebrew Bible, trope tutor, trope trainer alternative">
+<link rel="canonical" href="https://ivritsuite.com/trope_tutor.html">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Harrison Bleiberg">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IvritSuite">
+<meta property="og:title" content="Trope Tutor — Learn Torah Cantillation (Te'amim) Free">
+<meta property="og:description" content="Learn the Torah trope marks — symbols, Ashkenazi & Sephardi names, and melodies — with real chanted examples, then drill yourself with three quiz modes.">
+<meta property="og:url" content="https://ivritsuite.com/trope_tutor.html">
+<meta property="og:image" content="https://ivritsuite.com/og-card.png?v=3">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="IvritSuite Trope Tutor — free Torah cantillation tutor with chanted examples">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Trope Tutor — Learn Torah Cantillation | IvritSuite">
+<meta name="twitter:description" content="Free tutor for the Torah trope marks: names, symbols, and melodies with real chanted examples and drills.">
+<meta name="twitter:image" content="https://ivritsuite.com/og-card.png?v=3">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Trope Tutor",
+  "url": "https://ivritsuite.com/trope_tutor.html",
+  "description": "Learn the Torah cantillation marks (trope / te'amim) one clause family at a time — symbol, Ashkenazi and Sephardi names, and melody with real chanted examples — then drill yourself with three quiz modes and per-mark mastery tracking.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any (web browser)",
+  "isAccessibleForFree": true,
+  "inLanguage": "en",
+  "keywords": "trope, te'amim, cantillation, Torah chanting, leining, trope names, bar mitzvah, bat mitzvah, etnachta, zakef katon, pashta, zarka, PocketTorah",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "publisher": { "@type": "Organization", "name": "IvritSuite", "url": "https://ivritsuite.com/" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "IvritSuite", "item": "https://ivritsuite.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Trope Tutor", "item": "https://ivritsuite.com/trope_tutor.html" }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What is the Trope Tutor?", "acceptedAnswer": { "@type": "Answer", "text": "A free interactive tutor for the Torah cantillation marks (trope / te'amim). Learn mode teaches the marks one clause family at a time — symbol, names, and melody with real chanted examples — and Drill mode quizzes you three ways with per-mark mastery tracking." } },
+    { "@type": "Question", "name": "What melody tradition is this?", "acceptedAnswer": { "@type": "Answer", "text": "The recordings are PocketTorah's, chanted in a widely-taught Ashkenazi melody. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings." } },
+    { "@type": "Question", "name": "What are trope (te'amim)?", "acceptedAnswer": { "@type": "Answer", "text": "Cantillation marks printed above and below the words of the Hebrew Bible. Each mark names a melodic phrase and marks the grammar of the verse — together they tell you how to chant it." } },
+    { "@type": "Question", "name": "How does Drill mode work?", "acceptedAnswer": { "@type": "Answer", "text": "Each session asks 10 questions of three kinds: see a marked word and name the trope, hear a clip and pick the symbol, or see a symbol and pick the matching melody. Marks you miss come up more often, and distractors get sneakier (like pashta vs. kadma) as your mastery grows." } },
+    { "@type": "Question", "name": "Where do the chanted examples come from?", "acceptedAnswer": { "@type": "Answer", "text": "Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (by Russel Neiss & Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings. The Hebrew text comes from Sefaria." } },
+    { "@type": "Question", "name": "Is the Trope Tutor free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0. No account, no ads." } }
+  ]
+}
+</script>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CMLC81Z0HC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CMLC81Z0HC');
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}</style>
+<!-- Early dark mode (avoid flash) -->
+<script>(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<style>
+/* ───── Design tokens (lifted from classroom_dashboard.html:94-133) ───── */
+:root {
+  --navy:#1a2744; --navy-deep:#0d1220;
+  --gold:#c9922a; --gold-light:#f0d080;
+  --cream:#fdf8ef; --warm-gray:#e8e0d0;
+  --text:#1a2744; --muted:#6b6050;
+  --border:#c8bfa8; --white:#ffffff;
+  --heb-font:'Frank Ruhl Libre', serif;
+  --tu-heb-size:2.2rem;
+  --shadow-sm:0 2px 8px rgba(26,39,68,0.05);
+  --shadow-md:0 4px 16px rgba(26,39,68,0.08);
+  --shadow-lg:0 12px 32px rgba(26,39,68,0.12);
+}
+html.dark-early body, body.dark {
+  --navy:#1a2744; --gold:#e0a832; --gold-light:#f5d97a;
+  --cream:#161c2a; --warm-gray:#1e2535;
+  --text:#dde4f0; --muted:#8a94a8;
+  --border:#2a3349; --white:#1e2535;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  font-family:'Source Sans 3', sans-serif;
+  background:var(--cream); color:var(--text);
+  min-height:100vh; display:flex; flex-direction:column;
+  line-height:1.4;
+}
+
+/* ───── Header (house pattern) ───── */
+.skip-link {
+  position:absolute; left:8px; top:-48px; z-index:200;
+  background:var(--navy); color:#fff; padding:8px 14px;
+  border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
+  text-decoration:none; transition:top 0.15s;
+}
+.skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
+header {
+  background:var(--navy); color:#fff;
+  padding:14px 28px;
+  display:flex; align-items:center; gap:16px;
+  border-bottom:4px solid var(--gold); flex-shrink:0;
+}
+body.dark header { background:var(--navy-deep); }
+.star { font-size:28px; color:var(--gold); flex-shrink:0; }
+.htitle { flex:1; min-width:0; }
+header h1 { font-family:'Libre Baskerville',serif; font-size:1.35rem; color:#fff; line-height:1.2; }
+header p { font-size:0.78rem; color:var(--gold-light); margin-top:2px; }
+.hright { display:flex; gap:6px; align-items:center; flex-shrink:0; }
+.hbtn {
+  background:rgba(255,255,255,0.08); color:#fff;
+  border:1px solid rgba(255,255,255,0.18);
+  padding:7px 12px; border-radius:6px;
+  font-family:inherit; font-size:0.82rem; font-weight:600;
+  cursor:pointer; text-decoration:none;
+  display:inline-flex; align-items:center; gap:6px;
+  transition:all 0.15s;
+}
+.hbtn:hover { background:rgba(255,255,255,0.18); border-color:rgba(255,255,255,0.3); }
+.hbtn.icon-btn { padding:7px 10px; font-size:1rem; }
+
+/* ───── Mode tabs ───── */
+.tu-tabs {
+  display:flex; gap:6px; padding:12px 24px 0;
+  max-width:1100px; width:100%; margin:0 auto;
+}
+.tu-tab {
+  flex:0 0 auto; padding:9px 22px; font:inherit; font-weight:700; font-size:0.92rem;
+  border:1px solid var(--border); border-bottom:none; border-radius:8px 8px 0 0;
+  background:transparent; color:var(--muted); cursor:pointer; transition:all 0.15s;
+}
+.tu-tab:hover { color:var(--gold); }
+.tu-tab[aria-selected="true"] { background:var(--white); color:var(--text); border-color:var(--gold); border-bottom:2px solid var(--white); margin-bottom:-1px; }
+body.dark .tu-tab[aria-selected="true"] { border-bottom-color:var(--white); }
+.tu-tab:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+
+.tu-page {
+  flex:1; padding:0 24px 26px; max-width:1100px; width:100%; margin:0 auto;
+}
+.tu-view {
+  background:var(--white); border:1px solid var(--border); border-radius:0 10px 10px 10px;
+  padding:18px 20px 22px; box-shadow:var(--shadow-sm);
+}
+body.dark .tu-view { background:var(--navy-deep); }
+.tu-status { font-size:0.82rem; color:var(--muted); padding:5px 2px; min-height:1.5em; }
+.tu-status.error { color:#cc3333; font-weight:600; }
+body.dark .tu-status.error { color:#ff6666; }
+.tu-intro { font-size:0.9rem; color:var(--muted); margin:0 0 14px; line-height:1.5; }
+.tu-intro a { color:var(--gold); font-weight:600; text-decoration:none; }
+.tu-intro a:hover { text-decoration:underline; }
+
+/* ───── Learn: family chips ───── */
+.tu-chips { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 14px; }
+.tu-chip {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 12px; font:inherit; font-size:0.8rem; font-weight:700;
+  border:1px solid var(--border); border-left:5px solid var(--border);
+  border-radius:6px; background:transparent; color:var(--text);
+  cursor:pointer; transition:all 0.15s;
+}
+.tu-chip:hover { border-color:var(--gold); }
+.tu-chip.active { background:var(--warm-gray); border-color:var(--gold); }
+.tu-chip:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+.tu-chip .visited { color:var(--gold); font-weight:700; }
+.tu-chip.fam-sofpasuk { border-left-color:var(--trope-sofpasuk-line); }
+.tu-chip.fam-katon    { border-left-color:var(--trope-katon-line); }
+.tu-chip.fam-segol    { border-left-color:var(--trope-segol-line); }
+.tu-chip.fam-revia    { border-left-color:var(--trope-revia-line); }
+.tu-chip.fam-geresh   { border-left-color:var(--trope-geresh-line); }
+.tu-chip.fam-rare     { border-left-color:var(--trope-rare-line); }
+
+.tu-family-note {
+  font-size:0.9rem; line-height:1.55; color:var(--text);
+  background:var(--cream); border:1px solid var(--border); border-radius:8px;
+  padding:10px 14px; margin:0 0 16px;
+}
+body.dark .tu-family-note { background:#131a29; }
+
+/* ───── Learn: trope cards ───── */
+.tu-cards { display:grid; grid-template-columns:repeat(auto-fill, minmax(310px, 1fr)); gap:14px; }
+.tu-card {
+  border:1px solid var(--border); border-radius:10px; overflow:hidden;
+  background:var(--cream); display:flex; flex-direction:column;
+}
+body.dark .tu-card { background:#131a29; }
+.tu-card-head { display:flex; align-items:center; gap:12px; padding:12px 14px 8px; }
+.tu-glyph {
+  font-family:var(--heb-font); font-size:calc(var(--tu-heb-size) * 1.35); line-height:1.15;
+  min-width:64px; min-height:64px; display:flex; align-items:center; justify-content:center;
+  background:var(--white); border:1px solid var(--border); border-radius:10px;
+  padding:4px 10px; flex-shrink:0; direction:rtl;
+}
+body.dark .tu-glyph { background:var(--navy-deep); }
+.tu-names { min-width:0; }
+.tu-name-primary { font-family:'Libre Baskerville',serif; font-size:1.02rem; color:var(--text); }
+.tu-name-secondary { font-size:0.75rem; color:var(--muted); margin-top:2px; }
+.tu-rare-tag {
+  display:inline-block; font-size:0.62rem; font-weight:700; letter-spacing:0.05em;
+  text-transform:uppercase; color:var(--gold); border:1px solid var(--gold);
+  border-radius:4px; padding:1px 6px; margin-top:4px;
+}
+.tu-card-note { font-size:0.8rem; color:var(--muted); line-height:1.5; padding:0 14px 8px; }
+.tu-ex-list { list-style:none; margin:auto 0 0; padding:6px 10px 10px; display:flex; flex-direction:column; gap:4px; }
+.tu-ex-row {
+  display:flex; align-items:center; gap:10px;
+  padding:4px 6px; border-radius:6px;
+}
+.tu-ex-row:hover { background:rgba(201,146,42,0.08); }
+.tu-ex-play {
+  background:var(--gold); color:var(--navy); border:none; border-radius:50%;
+  width:30px; height:30px; font-size:0.85rem; line-height:1; cursor:pointer;
+  flex-shrink:0; transition:filter 0.15s;
+}
+.tu-ex-play:hover { filter:brightness(1.08); }
+.tu-ex-play:focus-visible { outline:2px solid var(--navy); outline-offset:2px; }
+body.dark .tu-ex-play:focus-visible { outline-color:var(--gold-light); }
+.tu-ex-word {
+  font-family:var(--heb-font); font-size:var(--tu-heb-size); direction:rtl; line-height:1.6;
+  flex:1; text-align:right; color:var(--text);
+}
+.tu-ex-ref { font-size:0.72rem; color:var(--muted); flex-shrink:0; font-variant-numeric:tabular-nums; }
+.tu-ex-none { font-size:0.8rem; color:var(--muted); font-style:italic; padding:2px 6px; }
+.mark-hit { color:var(--gold); background:rgba(201,146,42,0.16); border-radius:4px; }
+body.dark .mark-hit { color:var(--gold-light); background:rgba(224,168,50,0.2); }
+.tu-card-links { padding:0 14px 12px; font-size:0.76rem; }
+.tu-card-links a { color:var(--gold); text-decoration:none; font-weight:600; }
+.tu-card-links a:hover { text-decoration:underline; }
+.tu-learn-nav { display:flex; justify-content:flex-end; margin-top:16px; }
+
+/* ───── Drill ───── */
+.tu-drill-head {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  margin:0 0 14px; flex-wrap:wrap;
+}
+.tu-drill-prog { font-size:0.86rem; font-weight:700; color:var(--muted); font-variant-numeric:tabular-nums; }
+.tu-drill-streak { font-size:0.86rem; font-weight:700; color:var(--gold); }
+.tu-qcard {
+  border:1px solid var(--border); border-radius:10px; background:var(--cream);
+  padding:18px 16px; text-align:center;
+}
+body.dark .tu-qcard { background:#131a29; }
+.tu-qprompt { font-size:0.88rem; font-weight:600; color:var(--muted); margin:0 0 12px; }
+.tu-qstem { margin:0 0 16px; min-height:64px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
+.tu-qword { font-family:var(--heb-font); font-size:calc(var(--tu-heb-size) * 1.25); direction:rtl; line-height:1.7; }
+.tu-qref { font-size:0.76rem; color:var(--muted); }
+.tu-qglyph {
+  font-family:var(--heb-font); font-size:calc(var(--tu-heb-size) * 1.5); line-height:1.2;
+  background:var(--white); border:1px solid var(--border); border-radius:10px; padding:6px 18px; direction:rtl;
+}
+body.dark .tu-qglyph { background:var(--navy-deep); }
+.tu-qplay {
+  background:var(--gold); color:var(--navy); border:none; border-radius:8px;
+  padding:10px 20px; font:inherit; font-weight:700; font-size:0.95rem; cursor:pointer;
+}
+.tu-qplay:hover { filter:brightness(1.08); }
+.tu-choices {
+  display:grid; grid-template-columns:1fr 1fr; gap:8px; max-width:560px; margin:0 auto;
+}
+.tu-choice {
+  border:1.5px solid var(--border); border-radius:8px; background:var(--white);
+  padding:10px 12px; font:inherit; font-size:0.9rem; font-weight:600; color:var(--text);
+  cursor:pointer; transition:border-color 0.15s, background 0.15s;
+  display:flex; align-items:center; justify-content:center; gap:10px; min-height:52px;
+}
+body.dark .tu-choice { background:var(--navy-deep); }
+.tu-choice:hover:not(:disabled) { border-color:var(--gold); }
+.tu-choice:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+.tu-choice:disabled { cursor:default; }
+.tu-choice .c-glyph { font-family:var(--heb-font); font-size:calc(var(--tu-heb-size) * 0.85); line-height:1.1; direction:rtl; }
+.tu-choice .c-sub { font-size:0.7rem; color:var(--muted); font-weight:600; }
+.tu-choice.armed { border-color:var(--gold); background:rgba(201,146,42,0.12); }
+.tu-choice.good { border-color:#3a9e4e; background:rgba(58,158,78,0.14); }
+.tu-choice.bad  { border-color:#cc3333; background:rgba(204,51,51,0.12); }
+body.dark .tu-choice.good { border-color:#55c06a; background:rgba(85,192,106,0.16); }
+body.dark .tu-choice.bad  { border-color:#ff6666; background:rgba(255,102,102,0.14); }
+.tu-feedback {
+  margin:14px auto 0; max-width:560px; min-height:2.2em;
+  display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;
+  font-size:0.9rem; font-weight:600;
+}
+.tu-feedback .ok { color:#2e7d3f; }
+.tu-feedback .no { color:#cc3333; }
+body.dark .tu-feedback .ok { color:#55c06a; }
+body.dark .tu-feedback .no { color:#ff6666; }
+.tu-hint { font-size:0.75rem; color:var(--muted); margin-top:8px; }
+
+/* Drill start / results */
+.tu-drill-center { text-align:center; padding:8px 0 4px; }
+.tu-drill-center h2 { font-family:'Libre Baskerville',serif; font-size:1.15rem; margin:0 0 10px; color:var(--text); }
+.tu-drill-center .big-pct { font-size:2.6rem; font-weight:700; color:var(--gold); font-variant-numeric:tabular-nums; }
+.tu-drill-sub { font-size:0.9rem; color:var(--muted); margin:6px 0 14px; }
+.tu-pb-banner { font-size:0.95rem; font-weight:700; color:var(--gold); margin:4px 0 10px; }
+.tu-note { font-size:0.82rem; color:var(--muted); margin-top:10px; min-height:1.4em; }
+.tu-note.error { color:#cc3333; font-weight:600; }
+body.dark .tu-note.error { color:#ff6666; }
+
+/* Mastery grid */
+.tu-mgrid { display:flex; flex-direction:column; gap:8px; margin:14px auto 0; max-width:720px; text-align:initial; }
+.tu-mfam { display:flex; align-items:flex-start; gap:8px; }
+.tu-mfam-label {
+  flex:0 0 118px; font-size:0.7rem; font-weight:700; letter-spacing:0.04em;
+  text-transform:uppercase; color:var(--muted); padding-top:8px;
+  border-right:4px solid transparent; padding-right:8px; text-align:right;
+}
+.tu-mfam.fam-sofpasuk .tu-mfam-label { border-right-color:var(--trope-sofpasuk-line); }
+.tu-mfam.fam-katon    .tu-mfam-label { border-right-color:var(--trope-katon-line); }
+.tu-mfam.fam-segol    .tu-mfam-label { border-right-color:var(--trope-segol-line); }
+.tu-mfam.fam-revia    .tu-mfam-label { border-right-color:var(--trope-revia-line); }
+.tu-mfam.fam-geresh   .tu-mfam-label { border-right-color:var(--trope-geresh-line); }
+.tu-mfam.fam-rare     .tu-mfam-label { border-right-color:var(--trope-rare-line); }
+.tu-mcells { display:flex; flex-wrap:wrap; gap:5px; flex:1; }
+.tu-mcell {
+  display:flex; flex-direction:column; align-items:center; gap:1px;
+  border:1px solid var(--border); border-radius:6px; padding:4px 8px;
+  background:var(--white); min-width:74px;
+}
+body.dark .tu-mcell { background:var(--navy-deep); }
+.tu-mcell .m-glyph { font-family:var(--heb-font); font-size:1.25rem; line-height:1.1; direction:rtl; }
+.tu-mcell .m-name { font-size:0.6rem; font-weight:600; color:var(--text); text-align:center; }
+.tu-mcell .m-stat { font-size:0.62rem; color:var(--muted); font-variant-numeric:tabular-nums; }
+.tu-mcell.mastered { border-color:var(--gold); box-shadow:0 0 0 1px var(--gold) inset; }
+
+/* ───── Buttons ───── */
+.btn {
+  background:var(--gold); color:var(--navy); border:1px solid var(--gold);
+  padding:7px 14px; border-radius:5px; font-family:inherit;
+  font-weight:700; cursor:pointer; font-size:0.82rem; transition:all 0.15s;
+}
+.btn:hover { background:var(--gold-light); border-color:var(--gold-light); }
+.btn[aria-disabled="true"] { opacity:0.5; cursor:not-allowed; }
+.btn-lg { padding:10px 22px; font-size:0.95rem; }
+.btn-xs { padding:4px 9px; font-size:0.72rem; }
+.btn-secondary { background:transparent; color:var(--text); border-color:var(--border); }
+.btn-secondary:hover { background:var(--warm-gray); border-color:var(--muted); }
+body.dark .btn-secondary { color:var(--text); }
+body.dark .btn-secondary:hover { background:#2a3349; }
+
+/* ───── Settings drawer (house pattern) ───── */
+.settings-backdrop {
+  position:fixed; inset:0; background:rgba(13,18,32,0.45);
+  z-index:90; opacity:0; pointer-events:none; transition:opacity 0.25s;
+}
+.settings-backdrop.open { opacity:1; pointer-events:auto; }
+.settings-modal {
+  position:fixed; top:0; right:0;
+  width:380px; max-width:92vw; height:100vh;
+  background:var(--white); border-left:1px solid var(--border);
+  box-shadow:var(--shadow-lg); z-index:100;
+  transform:translateX(100%); transition:transform 0.3s ease;
+  display:flex; flex-direction:column;
+}
+.settings-modal.open { transform:translateX(0); }
+.settings-header {
+  padding:14px 20px; background:var(--navy); color:#fff;
+  display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+}
+body.dark .settings-header { background:var(--navy-deep); }
+.settings-header h2 {
+  font-family:'Libre Baskerville',serif; font-size:1rem;
+  letter-spacing:0.05em; color:#fff;
+}
+.settings-close {
+  background:rgba(255,255,255,0.12); color:#fff; border:none;
+  border-radius:4px; width:32px; height:32px;
+  cursor:pointer; font-size:1.2rem; line-height:1; transition:background 0.15s;
+}
+.settings-close:hover { background:rgba(255,255,255,0.22); }
+.settings-body { flex:1; overflow-y:auto; padding:16px; }
+
+.panel { background:var(--cream); border:1px solid var(--border); border-radius:8px; margin-bottom:14px; overflow:hidden; }
+body.dark .panel { background:var(--navy-deep); }
+.panel:last-child { margin-bottom:0; }
+.panel-title {
+  background:var(--navy); color:#fff;
+  font-family:'Libre Baskerville',serif; font-size:0.72rem;
+  letter-spacing:0.1em; text-transform:uppercase;
+  padding:9px 14px; cursor:pointer; user-select:none;
+  display:flex; justify-content:space-between; align-items:center;
+}
+body.dark .panel-title { background:#0a0f1c; }
+.panel-title::after { content:'▾'; color:var(--gold-light); font-size:1rem; transition:transform 0.2s; flex-shrink:0; }
+.panel.collapsed .panel-title::after { transform:rotate(-90deg); }
+.panel-body { padding:14px; }
+.panel.collapsed .panel-body { display:none; }
+
+.form-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; gap:10px; }
+.form-row:last-child { margin-bottom:0; }
+.form-row label:not(.toggle) { font-size:0.85rem; font-weight:600; flex:1; color:var(--text); }
+.toggle { position:relative; display:inline-block; width:38px; height:22px; flex-shrink:0; }
+.toggle input { opacity:0; width:0; height:0; }
+.slider {
+  position:absolute; inset:0; background:var(--border); border-radius:22px;
+  cursor:pointer; transition:0.2s;
+}
+.slider::before {
+  content:''; position:absolute; height:16px; width:16px; left:3px; top:3px;
+  background:white; border-radius:50%; transition:0.2s;
+}
+input:checked + .slider { background:var(--gold); }
+input:checked + .slider::before { transform:translateX(16px); }
+input:focus-visible + .slider { outline:2px solid var(--gold); outline-offset:2px; }
+
+.radio-group {
+  display:inline-flex; gap:3px; background:var(--warm-gray);
+  border-radius:5px; padding:3px;
+}
+body.dark .radio-group { background:#2a3349; }
+body.dark .radio-group label { color:#99a2b8; }
+.radio-group input { display:none; }
+.radio-group label {
+  text-align:center; padding:4px 10px; border-radius:3px;
+  font-size:0.78rem; cursor:pointer; font-weight:600; color:var(--muted);
+  transition:0.15s; flex:none;
+}
+.radio-group input:checked + label {
+  background:var(--white); color:#8a6216; box-shadow:0 1px 3px rgba(0,0,0,0.08);
+}
+body.dark .radio-group input:checked + label { background:#1e2535; color:var(--gold-light); }
+
+.slider-row { display:flex; align-items:center; gap:6px; margin-bottom:8px; }
+.slider-row label { font-size:0.78rem; color:var(--muted); font-weight:600; white-space:nowrap; flex-shrink:0; }
+.slider-row input[type="range"] { flex:1; accent-color:var(--gold); cursor:pointer; height:4px; }
+.slider-row .sval {
+  font-size:0.72rem; color:var(--muted); min-width:44px; text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+.slider-row .sreset {
+  background:none; border:1px solid var(--border); border-radius:4px;
+  padding:1px 6px; font-size:0.78rem; cursor:pointer;
+  color:var(--muted); line-height:1.4; font-family:inherit;
+}
+.slider-row .sreset:hover { border-color:var(--gold); color:var(--gold); }
+.settings-note { font-size:0.76rem; color:var(--muted); line-height:1.45; margin-top:6px; min-height:1em; }
+.settings-note.error { color:#cc3333; font-weight:600; }
+body.dark .settings-note.error { color:#ff6666; }
+
+/* ───── Font selector (house pattern) ───── */
+.font-options { display:grid; grid-template-columns:1fr 1fr; gap:4px; }
+.font-section-hdr {
+  font-size:0.66rem; color:var(--muted); font-weight:700;
+  letter-spacing:0.08em; text-transform:uppercase;
+  padding:6px 0 3px; border-bottom:1px solid var(--border);
+  margin-top:6px; grid-column:1 / -1;
+}
+.font-section-hdr.first { margin-top:0; }
+.font-opt {
+  background:var(--white); border:1px solid var(--border); border-radius:5px;
+  padding:5px 4px 4px; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+  gap:1px; font:inherit; transition:border-color 0.15s, background 0.15s;
+  color:var(--text);
+}
+body.dark .font-opt { background:#1e2535; border-color:var(--border); }
+.font-opt:hover { border-color:var(--gold); }
+.font-opt.active { border-color:var(--gold); background:rgba(201,146,42,0.12); }
+body.dark .font-opt.active { background:rgba(224,168,50,0.16); border-color:var(--gold-light); }
+.font-opt-preview { font-size:1.35rem; direction:rtl; line-height:1.2; color:var(--text); margin-bottom:1px; }
+.font-opt.active .font-opt-preview { color:var(--gold); }
+body.dark .font-opt.active .font-opt-preview { color:var(--gold-light); }
+.font-opt-info { display:flex; flex-direction:column; gap:0; width:100%; align-items:center; }
+.font-opt-name { font-size:0.66rem; font-weight:600; color:var(--text); line-height:1.15; word-break:break-word; }
+.font-opt-attr { font-size:0.54rem; color:var(--muted); line-height:1.2; word-break:break-word; text-decoration:none; margin-top:1px; }
+.font-opt-attr:hover { color:var(--gold); text-decoration:underline; }
+.font-upload-label {
+  display:block; margin-top:8px; font-size:0.76rem; font-weight:600; color:var(--gold);
+  cursor:pointer; text-align:center;
+}
+.font-upload-label:hover { text-decoration:underline; }
+
+/* ───── Tooltip (house pattern) ───── */
+.tip-wrap { display:inline-flex; align-items:center; }
+.tip-wrap:focus-visible { outline:2px solid var(--gold); outline-offset:2px; border-radius:50%; }
+.tip-icon {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:15px; height:15px; border-radius:50%;
+  background:var(--border); color:#4a4436;
+  font-size:0.65rem; font-weight:700; font-style:normal;
+  cursor:default; margin-left:5px; flex-shrink:0; line-height:1;
+}
+body.dark .tip-icon { background:var(--warm-gray); color:var(--muted); }
+#tipFloat {
+  display:none; position:fixed;
+  background:var(--navy); color:#fff;
+  font-size:0.72rem; font-weight:400; line-height:1.45;
+  padding:6px 9px; border-radius:6px; max-width:220px;
+  z-index:9999; box-shadow:0 2px 8px rgba(0,0,0,0.3);
+  pointer-events:none;
+}
+body.dark #tipFloat { background:#0a0f1c; }
+
+/* ───── Guided tour (house pattern) ───── */
+.tbtn {
+  background:var(--gold); color:#1a1a1a; border:none; border-radius:6px;
+  padding:7px 13px; cursor:pointer; font-size:0.82rem; font-weight:700;
+  font-family:'Source Sans 3', sans-serif;
+}
+.tbtn.ghost { background:transparent; color:var(--text); border:1.5px solid var(--border); }
+.tbtn:hover { filter:brightness(1.06); }
+.tbtn:disabled { opacity:0.4; cursor:default; filter:none; }
+.tour-spot {
+  position:fixed; top:0; left:0; width:0; height:0;
+  border-radius:8px; pointer-events:none; z-index:400;
+  box-shadow:0 0 0 9999px rgba(13,18,32,0.62), 0 0 0 3px var(--gold);
+  transition:top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease;
+}
+.tour-card {
+  position:fixed; z-index:500; width:300px; max-width:92vw;
+  background:var(--white); color:var(--text);
+  border:1px solid var(--border); border-radius:12px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.4); padding:16px 18px 14px;
+}
+.tour-card h4 { font-family:'Libre Baskerville', serif; margin:0 26px 8px 0; font-size:0.98rem; color:var(--text); }
+.tour-card p { font-size:0.84rem; line-height:1.5; margin:0 0 12px; color:var(--text); }
+.tour-x {
+  position:absolute; top:8px; right:8px; width:26px; height:26px;
+  background:transparent; border:none; border-radius:6px;
+  color:var(--muted); font-size:1rem; cursor:pointer; line-height:1;
+}
+.tour-x:hover { background:var(--warm-gray); color:var(--text); }
+.tour-meta { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.tour-meta > span:first-child { font-size:0.72rem; font-weight:700; color:var(--muted); }
+.tour-btns { display:flex; gap:8px; }
+@keyframes attnPulse {
+  0%, 100% { box-shadow:0 0 0 0 rgba(201,146,42,0.55); }
+  50%      { box-shadow:0 0 0 6px rgba(201,146,42,0); }
+}
+.pulse-attn { animation:attnPulse 1.4s ease-in-out infinite; }
+
+/* ───── Toast (house pattern) ───── */
+.tu-toast {
+  position:fixed; left:50%; bottom:64px; transform:translateX(-50%) translateY(8px);
+  background:var(--navy); color:#fff; font-size:0.84rem; font-weight:500;
+  padding:10px 16px; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.3);
+  z-index:2000; max-width:88vw; text-align:center; cursor:pointer;
+  opacity:0; pointer-events:none; transition:opacity 0.25s ease, transform 0.25s ease;
+}
+.tu-toast.show { opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
+body.dark .tu-toast { background:#0a0f1c; }
+
+/* ───── Footer ───── */
+footer {
+  background:var(--white); border-top:1px solid var(--border);
+  padding:14px 24px; color:var(--muted);
+  font-size:0.78rem; text-align:center; flex-shrink:0;
+}
+body.dark footer { background:var(--navy-deep); }
+footer a { color:var(--gold); text-decoration:none; font-weight:600; }
+footer a:hover { text-decoration:underline; }
+footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-content:center; align-items:center; }
+
+@media print {
+  header .hright, .tu-tabs, footer nav, .tu-ex-play, .tu-qplay { display:none !important; }
+}
+
+/* ───── Mobile ───── */
+@media (max-width: 720px) {
+  header { padding:12px 16px; }
+  header h1 { font-size:1.1rem; }
+  header p { display:none; }
+  .hbtn { padding:6px 9px; font-size:0.78rem; }
+  .tu-tabs { padding:10px 12px 0; }
+  .tu-page { padding:0 12px 18px; }
+  .tu-view { padding:14px 12px 18px; }
+  .tu-cards { grid-template-columns:1fr; }
+  .tu-choices { grid-template-columns:1fr; }
+  .tu-mfam { flex-direction:column; gap:4px; }
+  .tu-mfam-label { border-right:none; padding-right:0; text-align:left; flex-basis:auto; padding-top:0; }
+}
+
+/* ── Reduced motion: honor the OS "reduce motion" preference for everything this
+   tool animates (tour spotlight, first-visit pulse, toast, drawer slide, panel caret,
+   skip link, tile/chip transitions). ── */
+@media (prefers-reduced-motion: reduce) {
+  .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
+  .tour-spot { transition: none !important; }
+  .tu-toast { transition: none !important; }
+  .settings-modal { transition: none !important; }
+  .panel-title::after { transition: none !important; }
+  .skip-link { transition: none !important; }
+  .tu-tab, .tu-chip, .tu-choice, .font-opt, .hbtn, .btn, .tu-ex-play { transition: none !important; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#tuMain">Skip to the tutor</a>
+<header>
+  <div class="star">✡︎</div>
+  <div class="htitle">
+    <h1>Trope Tutor</h1>
+    <p>Learn the Torah cantillation marks — names, symbols, and melodies — with real chanted examples.</p>
+  </div>
+  <div class="hright">
+    <a class="hbtn" href="/"><span>←</span><span>Home</span></a>
+    <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour">❓ Tour</button>
+    <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
+    <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
+  </div>
+</header>
+
+<div class="tu-tabs" role="tablist" aria-label="Tutor mode">
+  <button class="tu-tab" id="tabLearn" role="tab" aria-selected="true" aria-controls="learnView" onclick="setMode('learn')">📖 Learn</button>
+  <button class="tu-tab" id="tabDrill" role="tab" aria-selected="false" aria-controls="drillView" onclick="setMode('drill')">🎯 Drill</button>
+</div>
+
+<main class="tu-page" id="tuMain">
+  <div class="tu-status" id="tuStatus" role="status"></div>
+
+  <!-- ════════ LEARN ════════ -->
+  <section class="tu-view" id="learnView" role="tabpanel" aria-labelledby="tabLearn">
+    <p class="tu-intro">Trope (te'amim) are the cantillation marks that tell you how to chant the Torah.
+      Work through them one clause family at a time, then switch to <strong>Drill</strong> to test yourself.
+      When you're ready to see them in context, open the companion reader:
+      <a href="torah_trainer.html">Torah Trainer →</a></p>
+    <div class="tu-chips" id="tuFamilyChips" role="group" aria-label="Trope clause families"></div>
+    <div class="tu-family-note" id="tuFamilyNote"></div>
+    <div class="tu-cards" id="tuCards"></div>
+    <div class="tu-learn-nav">
+      <button class="btn" id="tuNextFamily" onclick="nextFamily()">Next family →</button>
+    </div>
+  </section>
+
+  <!-- ════════ DRILL ════════ -->
+  <section class="tu-view" id="drillView" role="tabpanel" aria-labelledby="tabDrill" hidden>
+
+    <div id="drillStart">
+      <div class="tu-drill-center">
+        <h2>Drill: 10 questions per session</h2>
+        <p class="tu-drill-sub" id="drillTypesSummary"></p>
+        <button class="btn btn-lg" id="drillStartBtn" onclick="startDrill()">Start drill</button>
+        <div class="tu-note" id="drillStartNote" role="status"></div>
+        <div class="tu-mgrid" id="masteryGridStart" aria-label="Mastery by trope"></div>
+      </div>
+    </div>
+
+    <div id="drillQ" hidden>
+      <div class="tu-drill-head">
+        <span class="tu-drill-prog" id="qProgress"></span>
+        <span class="tu-drill-streak" id="qStreak"></span>
+      </div>
+      <div class="tu-qcard">
+        <p class="tu-qprompt" id="qPrompt"></p>
+        <div class="tu-qstem" id="qStem"></div>
+        <div class="tu-choices" id="qChoices" role="group" aria-label="Answer choices"></div>
+        <div class="tu-feedback" id="qFeedback" role="status"></div>
+        <div class="tu-hint" id="qHint"></div>
+      </div>
+    </div>
+
+    <div id="drillResults" hidden>
+      <div class="tu-drill-center">
+        <h2>Session complete</h2>
+        <div class="big-pct" id="resPct"></div>
+        <p class="tu-drill-sub" id="resSub"></p>
+        <div class="tu-pb-banner" id="resPb" hidden>🏆 New personal best!</div>
+        <button class="btn btn-lg" onclick="startDrill()">Drill again</button>
+        <button class="btn btn-lg btn-secondary" onclick="setMode('learn')">Back to Learn</button>
+        <div class="tu-mgrid" id="masteryGridEnd" aria-label="Mastery by trope"></div>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<!-- preload="metadata": no src at page load so nothing is fetched up front, but once
+     playClip assigns one, metadata (duration/seekability) loads without needing play()
+     first — preload="none" would leave loadedmetadata unfired and hang the clip engine. -->
+<audio id="tuAudio" preload="metadata"></audio>
+
+<footer>
+  <div class="footer-credits">
+    <span>Hebrew text via <a href="https://www.sefaria.org" target="_blank" rel="noopener">Sefaria</a> · public domain (extracted at build time — this page never calls Sefaria)</span>
+    <span>Cantillation audio © Russel Neiss &amp; Rabbi Charlie Schwartz, <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></span>
+    <span>Materials incorporating PocketTorah audio (including this page's example clips) are CC BY-SA 4.0.</span>
+  </div>
+  <div style="margin-top:10px;">
+    <details>
+      <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;">Frequently Asked Questions</summary>
+      <div style="padding:4px 0;max-width:640px;margin:0 auto;text-align:left;">
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">What is the Trope Tutor?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">A free interactive tutor for the Torah cantillation marks. Learn mode teaches each mark's symbol, names, and melody with real chanted examples; Drill mode quizzes you three ways with per-mark mastery tracking.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">What melody tradition is this?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">The recordings are PocketTorah's, chanted in a widely-taught Ashkenazi melody. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">What are trope (te'amim)?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Cantillation marks printed above and below the words of the Hebrew Bible. Each mark names a melodic phrase and marks the grammar of the verse — together they tell you how to chant it.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">How does Drill mode work?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Each session asks 10 questions of three kinds: name the trope on a marked word, pick the symbol for a melody you hear, or pick the melody that matches a symbol. Marks you miss come up more often, and distractors get sneakier (pashta vs. kadma) as your mastery grows.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Where do the chanted examples come from?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (Russel Neiss &amp; Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings. The Hebrew text comes from Sefaria.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Is the Trope Tutor free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0. No account, no ads.</p></details>
+      </div>
+    </details>
+  </div>
+  <nav aria-label="Related Hebrew Tools" style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">
+    <div style="font-family:'Libre Baskerville',serif;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;">Related Hebrew Tools</div>
+    <ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 18px;">
+      <li><a href="torah_trainer.html" style="font-size:0.8rem;">read the weekly parsha with karaoke →</a></li>
+      <li><a href="hebrew_blend_generator.html" style="font-size:0.8rem;">printable Hebrew worksheets →</a></li>
+      <li><a href="flash_cards.html" style="font-size:0.8rem;">Hebrew alphabet flash cards →</a></li>
+      <li><a href="hebrew_dictionary.html" style="font-size:0.8rem;">Hebrew word lookup →</a></li>
+      <li><a href="classroom_dashboard.html" style="font-size:0.8rem;">Hebrew classroom display →</a></li>
+      <li><a href="Hebrew_Font_Maker.html" style="font-size:0.8rem;">make your own Hebrew font →</a></li>
+    </ul>
+  </nav>
+</footer>
+
+<!-- Guided "Take a tour" coach-mark (non-modal spotlight; see tourStart) -->
+<div class="tour-spot" id="tourSpot" hidden></div>
+<div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
+  <button class="tour-x" id="tourClose" aria-label="End tour" onclick="tourEnd(false)">✕</button>
+  <h4 id="tourCardTitle"></h4>
+  <p id="tourCardBody"></p>
+  <div class="tour-meta">
+    <span id="tourStep"></span>
+    <span class="tour-btns">
+      <button class="tbtn ghost" id="tourBack" onclick="tourPrev()">Back</button>
+      <button class="tbtn" id="tourNext" onclick="tourNext()">Next</button>
+    </span>
+  </div>
+</div>
+
+<!-- Settings drawer -->
+<div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
+<div class="settings-modal" id="settingsModal" role="dialog" aria-modal="true" aria-label="Trope Tutor settings">
+  <div class="settings-header">
+    <h2>⚙ Settings</h2>
+    <button class="settings-close" onclick="closeSettings()" aria-label="Close settings">×</button>
+  </div>
+  <div class="settings-body">
+
+    <div class="panel">
+      <div class="panel-title">Names &amp; Tradition</div>
+      <div class="panel-body">
+        <div class="form-row">
+          <label>Primary trope names
+            <span class="tip-wrap" data-tip="Both names are always shown on each card; this picks which one leads. Note the classic collision: Ashkenazi 'pashta' is Sephardi 'kadma', while Ashkenazi 'kadma' is Sephardi 'azla'."><i class="tip-icon">?</i></span>
+          </label>
+          <span class="radio-group">
+            <input type="radio" id="tradAshk" name="tuTradition" value="ashk" onchange="setTradition('ashk')">
+            <label for="tradAshk">Ashkenazi</label>
+            <input type="radio" id="tradSeph" name="tuTradition" value="seph" onchange="setTradition('seph')">
+            <label for="tradSeph">Sephardi</label>
+          </span>
+        </div>
+        <p class="settings-note">The recordings themselves follow PocketTorah's Ashkenazi melody either way.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Drill</div>
+      <div class="panel-body">
+        <div class="form-row">
+          <label for="optDrillIdentify">Identify: see a word → name the trope</label>
+          <label class="toggle"><input type="checkbox" id="optDrillIdentify" onchange="setDrillType('drillIdentify', this)"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label for="optDrillHear">Hear: play a clip → pick the symbol</label>
+          <label class="toggle"><input type="checkbox" id="optDrillHear" onchange="setDrillType('drillHear', this)"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label for="optDrillMelody">Melody: see a symbol → pick its melody</label>
+          <label class="toggle"><input type="checkbox" id="optDrillMelody" onchange="setDrillType('drillMelody', this)"><span class="slider"></span></label>
+        </div>
+        <div class="settings-note" id="drillTypesNote" aria-live="polite"></div>
+        <div class="slider-row" style="margin-top:10px;">
+          <label for="optRate">Playback speed</label>
+          <input type="range" id="optRate" min="0.5" max="1.5" step="0.05" oninput="setPlaybackRate(parseFloat(this.value))">
+          <span class="sval" id="optRateVal">1.00×</span>
+          <button class="sreset" onclick="resetPlaybackRate()" title="Reset speed" aria-label="Reset playback speed">↺</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel collapsed">
+      <div class="panel-title">Hebrew Font</div>
+      <div class="panel-body">
+        <div class="font-options" id="fontOptions"></div>
+        <label class="font-upload-label">⬆ Upload your own font?
+          <input type="file" accept=".ttf,.otf,.woff,.woff2" hidden onchange="onUploadFontPick(this)">
+        </label>
+        <div class="slider-row" style="margin-top:10px;">
+          <label for="optFontSize">Hebrew size</label>
+          <input type="range" id="optFontSize" min="1.4" max="3.2" step="0.1" oninput="setHebFontSize(parseFloat(this.value))">
+          <span class="sval" id="optFontSizeVal"></span>
+          <button class="sreset" onclick="resetHebFontSize()" title="Reset size" aria-label="Reset Hebrew size">↺</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel collapsed">
+      <div class="panel-title">Progress</div>
+      <div class="panel-body">
+        <p class="settings-note" id="progressSummary" style="margin-top:0;"></p>
+        <button class="btn btn-xs btn-secondary" onclick="resetProgress()" type="button">↺ Reset mastery &amp; personal best</button>
+      </div>
+    </div>
+
+    <div class="panel collapsed">
+      <div class="panel-title">About</div>
+      <div class="panel-body">
+        <p class="settings-note" style="margin-top:0;">
+          Trope Tutor teaches the Torah cantillation marks with real chanted examples mined from
+          <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> recordings
+          (CC BY-SA 4.0) and Sefaria's Hebrew text. New here? Press ❓ Tour in the header.
+          Companion reader: <a href="torah_trainer.html">Torah Trainer</a>.
+        </p>
+        <button class="btn btn-xs btn-secondary" onclick="resetAllSettings()" type="button" style="margin-top:8px;">↺ Reset all Trope Tutor settings</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Trope Tutor — a standalone Learn + Drill page for Torah cantillation.
+   Consumes ONLY the pre-built static index (data/trope/trope_index.json, built
+   offline by scripts/build-trope-index.mjs) plus PocketTorah's MP3 streams.
+   Zero runtime Sefaria dependency — by design; see CLAUDE.md.
+   Shell patterns (dark mode, settings drawer, tooltips, tour, toast, My Fonts)
+   follow torah_trainer.html.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ══════════════════════════════════════════════════════
+   CONSTANTS + STATE
+   ══════════════════════════════════════════════════════ */
+const STORAGE_KEY  = 'hebrewTropeTutor_settings';
+const PROGRESS_KEY = 'hebrewTropeTutor_progress';
+const DARK_KEY     = 'hebrewBlender_darkMode';   // shared across all IvritSuite tools
+const POCKET_AUDIO_BASE = 'https://raw.githubusercontent.com/rneiss/PocketTorah/master/data/audio/';
+
+/* ═══ TROPES taxonomy — KEEP IN SYNC between scripts/build-trope-index.mjs and trope_tutor.html ═══
+   Per-mark taxonomy for the tutor. `chars` / `family` are ported EXACTLY from
+   torah_trainer.html's TROPE_CHAR_TO_FAMILY (the six-family pedagogical grouping);
+   keys are stable snake_case identifiers used in trope_index.json and in the
+   tutor's progress store — never rename a key without a data migration.
+   Notes:
+   - sof_pasuk has NO chars: Unicode unifies the siluk mark with METEG (U+05BD),
+     so the verse-final word is classified positionally (zero in-range marks).
+   - zarka lists BOTH U+0598 (Unicode "ZARQA") and U+05AE (Unicode "ZINOR") —
+     the Unicode names are swapped relative to traditional usage and encoded
+     texts disagree; `display` carries the codepoint this corpus actually uses.
+   - Sephardi naming collides with Ashkenazi across marks: Ashkenazi "pashta"
+     (postpositive, U+0599) is called "kadma" in Sephardi usage, while the
+     Ashkenazi "kadma" (on the stress, U+05A8) is Sephardi "azla". Same glyph
+     shape, different position — the tutor's classic confusable pair. */
+const TROPES = [
+  // 1. Sof Pasuk clause
+  { key: 'mercha',          chars: ['֥'], display: '֥', ashk: 'Mercha',          seph: "Ma'arich",        family: 'sofpasuk', rare: false },
+  { key: 'tipcha',          chars: ['֖'], display: '֖', ashk: 'Tipcha',          seph: 'Tarcha',          family: 'sofpasuk', rare: false },
+  { key: 'munach',          chars: ['֣'], display: '֣', ashk: 'Munach',          seph: 'Shofar Holech',   family: 'sofpasuk', rare: false },
+  { key: 'etnachta',        chars: ['֑'], display: '֑', ashk: 'Etnachta',        seph: 'Atnach',          family: 'sofpasuk', rare: false },
+  { key: 'sof_pasuk',       chars: [],         display: 'ֽ׃', ashk: 'Sof Pasuk (Siluk)', seph: 'Sof Pasuk (Siluk)', family: 'sofpasuk', rare: false },
+  // 2. Zakef Katon clause
+  { key: 'mahpach',         chars: ['֤'], display: '֤', ashk: 'Mahpach',         seph: 'Shofar Mehupach', family: 'katon', rare: false },
+  { key: 'pashta',          chars: ['֙'], display: '֙', ashk: 'Pashta',          seph: 'Kadma',           family: 'katon', rare: false },
+  { key: 'yetiv',           chars: ['֚'], display: '֚', ashk: 'Yetiv',           seph: 'Yetiv',           family: 'katon', rare: false },
+  { key: 'zakef_katon',     chars: ['֔'], display: '֔', ashk: 'Zakef Katon',     seph: 'Zakef Katon',     family: 'katon', rare: false },
+  { key: 'zakef_gadol',     chars: ['֕'], display: '֕', ashk: 'Zakef Gadol',     seph: 'Zakef Gadol',     family: 'katon', rare: false },
+  // 3. Segol clause
+  { key: 'zarka',           chars: ['֘', '֮'], display: '֮', ashk: 'Zarka', seph: 'Zarka',           family: 'segol', rare: false },
+  { key: 'segol',           chars: ['֒'], display: '֒', ashk: 'Segol',           seph: 'Segolta',         family: 'segol', rare: false },
+  { key: 'shalshelet',      chars: ['֓'], display: '֓', ashk: 'Shalshelet',      seph: 'Shalshelet',      family: 'segol', rare: true },
+  // 4. Revia group
+  { key: 'revia',           chars: ['֗'], display: '֗', ashk: 'Revia',           seph: 'Revia',           family: 'revia', rare: false },
+  { key: 'darga',           chars: ['֧'], display: '֧', ashk: 'Darga',           seph: 'Darga',           family: 'revia', rare: false },
+  { key: 'tevir',           chars: ['֛'], display: '֛', ashk: 'Tevir',           seph: 'Tevir',           family: 'revia', rare: false },
+  // 5. Geresh group
+  { key: 'kadma',           chars: ['֨'], display: '֨', ashk: 'Kadma',           seph: 'Azla',            family: 'geresh', rare: false },
+  { key: 'geresh',          chars: ['֜'], display: '֜', ashk: 'Geresh',          seph: 'Geresh',          family: 'geresh', rare: false },
+  { key: 'geresh_muqdam',   chars: ['֝'], display: '֝', ashk: 'Geresh Muqdam',   seph: 'Geresh Muqdam',   family: 'geresh', rare: true },
+  { key: 'gershayim',       chars: ['֞'], display: '֞', ashk: 'Gershayim',       seph: 'Shenei Gerishin', family: 'geresh', rare: false },
+  { key: 'telisha_ketana',  chars: ['֩'], display: '֩', ashk: 'Telisha Ketana',  seph: 'Talsha',          family: 'geresh', rare: false },
+  { key: 'telisha_gedola',  chars: ['֠'], display: '֠', ashk: 'Telisha Gedola',  seph: 'Tirtzah',         family: 'geresh', rare: false },
+  { key: 'pazer',           chars: ['֡'], display: '֡', ashk: 'Pazer',           seph: 'Pazer Gadol',     family: 'geresh', rare: false },
+  // 6. Rare marks
+  { key: 'mercha_kefula',   chars: ['֦'], display: '֦', ashk: 'Mercha Kefula',   seph: "Tere Ta'amei",    family: 'rare', rare: true },
+  { key: 'karnei_parah',    chars: ['֟'], display: '֟', ashk: 'Karnei Parah',    seph: 'Karnei Farah',    family: 'rare', rare: true },
+  { key: 'yerach_ben_yomo', chars: ['֪'], display: '֪', ashk: 'Yerach Ben Yomo', seph: 'Yareach Ben Yomo', family: 'rare', rare: true },
+];
+/* ═══ end TROPES taxonomy ═══ */
+
+const TROPE_BY_KEY = {};
+for (const t of TROPES) TROPE_BY_KEY[t.key] = t;
+
+/* Family order + colors ported from torah_trainer.html (TROPE_COLOR_DEFS /
+   TROPE_DEFAULTS_LIGHT / TROPE_DEFAULTS_DARK) — keep the hues in sync so the
+   two pages teach the same color language. */
+const TROPE_FAMILY_DEFS = [
+  { key:'sofpasuk', name:'Sof Pasuk clause',
+    note:"Home base: the backbone of every verse. Mercha and tipcha lead into etnachta — the deep mid-verse resting point — and the same team walks the second half down to the final sof pasuk cadence." },
+  { key:'katon', name:'Zakef Katon clause',
+    note:"The workhorse mid-verse clause: mahpach and pashta climb toward zakef katon's little pause. Pashta looks exactly like kadma — only its position at the end of the word gives it away." },
+  { key:'segol', name:'Segol clause',
+    note:"A grand early pause in long verses: zarka swings up and hands off to segol. Shalshelet — a rare, dramatic chain of notes — stands in for it at the very start of a verse." },
+  { key:'revia', name:'Revia group',
+    note:"Gentler pauses: revia hovers above the word like a single gem, while darga and tevir often pair up in a distinctive stair-step figure." },
+  { key:'geresh', name:'Geresh group',
+    note:"Ornamental short phrases: kadma-v'azla (geresh), double gershayim, the telisha twins at the word's edges, and the whirling pazer." },
+  { key:'rare', name:'Rare marks',
+    note:"Once-in-a-Torah specialties — mercha kefula, karnei parah, and yerach ben yomo. Karnei parah and yerach ben yomo each appear exactly once, back to back, in Numbers 35:5." },
+];
+const TROPE_DEFAULTS_LIGHT = {
+  sofpasuk:'#d64541', katon:'#3b82c4', segol:'#8e5bbf',
+  revia:'#3a9e4e',    geresh:'#2aa6a0', rare:'#c74f8e'
+};
+const TROPE_DEFAULTS_DARK = {
+  sofpasuk:'#e0635e', katon:'#5c9fe0', segol:'#a97fe0',
+  revia:'#55c06a',    geresh:'#3fbdb6', rare:'#e07ab0'
+};
+
+/* Per-trope placement/teaching notes (postpositive and prepositive marks sit at
+   word edges — that IS where they belong, not a rendering bug). */
+const TROPE_NOTES = {
+  pashta: "Postpositive — printed at the very end of the word even when the stress falls earlier (it's doubled on the stress in that case). Same shape as kadma; position tells them apart.",
+  kadma: "Sits on the stressed syllable, usually leading straight into a geresh (\"kadma v'azla\"). Same shape as pashta, which instead hangs off the word's end.",
+  yetiv: "Prepositive — printed at the very start of the word, below the first letter. Same shape as mahpach, different position and role.",
+  mahpach: "A rising horseshoe below the stressed syllable, almost always followed by pashta.",
+  segol: "Postpositive — the three-dot cluster rides off the end of the word.",
+  zarka: "Postpositive — curls off the end of the word and always throws ahead to a segol.",
+  shalshelet: "A long, dramatic chain of notes — always on a verse's first word, always followed by a vertical paseq line.",
+  telisha_ketana: "Postpositive — the small circle sits at the end of the word.",
+  telisha_gedola: "Prepositive — the small circle leads the word from the front.",
+  sof_pasuk: "The verse-ending cadence. Its siluk mark shares a codepoint with the meteg stress line, so learn it by position: the last word of every verse, followed by the ׃ mark.",
+  zakef_gadol: "Zakef katon's louder sibling — a vertical bar joins the two dots when the word stands alone in its clause.",
+  etnachta: "The deepest pause inside a verse — the wishbone under the word splits the verse in two.",
+  mercha_kefula: "A doubled mercha — appears only a handful of times in the whole Torah.",
+  karnei_parah: "\"Cow horns\" — the single rarest mark; one appearance in the Torah (Numbers 35:5).",
+  yerach_ben_yomo: "\"Moon one day old\" — appears once in the Torah, right before karnei parah's word (Numbers 35:5).",
+  geresh_muqdam: "A variant geresh printed earlier in the word; some printed editions use it, but this corpus has no occurrences — so there's no clip to play.",
+};
+
+/* Same-shape / easily-confused pairs — drill distractors lean on these as
+   mastery rises (pashta vs. kadma is the classic). */
+const CONFUSABLE_PAIRS = {
+  pashta: ['kadma'], kadma: ['pashta'],
+  mahpach: ['yetiv'], yetiv: ['mahpach'],
+  mercha: ['tipcha'], tipcha: ['mercha'],
+  geresh: ['gershayim'], gershayim: ['geresh'],
+  telisha_ketana: ['telisha_gedola'], telisha_gedola: ['telisha_ketana'],
+  zakef_katon: ['zakef_gadol'], zakef_gadol: ['zakef_katon'],
+};
+
+const GLYPH_CARRIER = '◌';   // dotted-circle carrier for lone marks; flip to 'א' if a font floats them
+
+const DEFAULTS = {
+  v: 1,
+  tradition: 'ashk',            // 'ashk' | 'seph'
+  hebFont: 'Frank Ruhl Libre',
+  hebFontSize: 2.2,             // rem; applied via --tu-heb-size
+  drillIdentify: true,
+  drillHear: true,
+  drillMelody: true,
+  playbackRate: 1.0,
+};
+let settings = JSON.parse(JSON.stringify(DEFAULTS));
+
+const PROGRESS_DEFAULTS = { v: 1, tropes: {}, families: {}, pbStreak: 0 };
+let progress = JSON.parse(JSON.stringify(PROGRESS_DEFAULTS));
+
+let INDEX = null;        // data/trope/trope_index.json (validated)
+let MANIFEST = null;     // data/pockettorah/manifest.json (audioBase lookup)
+let currentFamily = 'sofpasuk';
+
+/* ══════════════════════════════════════════════════════
+   HELPERS + STORAGE
+   ══════════════════════════════════════════════════════ */
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+// Parse JSON from possibly-imported input, dropping keys that could pollute Object.prototype.
+function ivritSafeParse(str) {
+  return JSON.parse(str, (k, v) =>
+    (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v);
+}
+function ivritSafeAssign(target, src) {
+  if (src && typeof src === 'object')
+    for (const k in src) if (Object.prototype.hasOwnProperty.call(src, k) &&
+        k !== '__proto__' && k !== 'constructor' && k !== 'prototype') target[k] = src[k];
+  return target;
+}
+let _saveTimer = null;
+function saveSettings() {
+  if (_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); }
+    catch (e) { console.warn('saveSettings', e); }
+  }, 300);
+}
+function loadSettings() {
+  try {
+    const s = ivritSafeParse(localStorage.getItem(STORAGE_KEY));
+    if (s && typeof s === 'object') ivritSafeAssign(settings, s);
+  } catch (e) {}
+  // numeric restores: ?? so a stored 0-ish value is never silently replaced
+  settings.hebFontSize = parseFloat(settings.hebFontSize ?? DEFAULTS.hebFontSize) || DEFAULTS.hebFontSize;
+  settings.playbackRate = parseFloat(settings.playbackRate ?? DEFAULTS.playbackRate) || DEFAULTS.playbackRate;
+}
+function saveProgress() {
+  try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); }
+  catch (e) { console.warn('saveProgress', e); }
+}
+function loadProgress() {
+  try {
+    const p = ivritSafeParse(localStorage.getItem(PROGRESS_KEY));
+    if (p && typeof p === 'object') {
+      progress.v = 1;
+      if (p.tropes && typeof p.tropes === 'object') ivritSafeAssign(progress.tropes, p.tropes);
+      if (p.families && typeof p.families === 'object') ivritSafeAssign(progress.families, p.families);
+      progress.pbStreak = parseInt(p.pbStreak, 10) || 0;
+    }
+  } catch (e) {}
+}
+function resetAllSettings() {
+  if (!confirm('Reset all Trope Tutor settings to defaults?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  settings = JSON.parse(JSON.stringify(DEFAULTS));
+  applyHebFontSize();
+  setHebFont(settings.hebFont);
+  syncFormToSettings();
+  renderLearn();
+  updateDrillStart();
+}
+function resetProgress() {
+  if (!confirm('Reset your per-trope mastery and personal-best streak? This cannot be undone.')) return;
+  progress = JSON.parse(JSON.stringify(PROGRESS_DEFAULTS));
+  saveProgress();
+  renderLearn();
+  updateDrillStart();
+  syncProgressSummary();
+}
+
+/* ══════════════════════════════════════════════════════
+   DARK MODE (house pattern; family colors re-resolve on toggle)
+   ══════════════════════════════════════════════════════ */
+function toggleDark() {
+  document.documentElement.classList.remove('dark-early');
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  localStorage.setItem(DARK_KEY, isDark ? '1' : '0');
+  const _db = document.getElementById('darkBtn');
+  _db.textContent = isDark ? '☀️' : '🌙';
+  _db.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+  applyFamilyColors();
+}
+function initDark() {
+  const s = localStorage.getItem(DARK_KEY);
+  if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.body.classList.add('dark');
+    const _db = document.getElementById('darkBtn');
+    _db.textContent = '☀️';
+    _db.setAttribute('aria-pressed', 'true');
+  }
+  document.documentElement.classList.remove('dark-early');
+}
+/* Resolve the six family hues into body CSS vars (same var names as torah_trainer,
+   so chips/labels/mastery cells recolor on theme flips for free). */
+function applyFamilyColors() {
+  const dark = document.body.classList.contains('dark');
+  const pal = dark ? TROPE_DEFAULTS_DARK : TROPE_DEFAULTS_LIGHT;
+  for (const fam of TROPE_FAMILY_DEFS) {
+    const hex = pal[fam.key] || '#888888';
+    document.body.style.setProperty(`--trope-${fam.key}-bg`, hex + '59');
+    document.body.style.setProperty(`--trope-${fam.key}-line`, hex);
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   DATA LOADING — the static index + the PocketTorah manifest
+   ══════════════════════════════════════════════════════ */
+function setStatus(msg, isError) {
+  const el = document.getElementById('tuStatus');
+  el.textContent = msg || '';
+  el.classList.toggle('error', !!isError);
+}
+async function loadData() {
+  setStatus('Loading the trope index…');
+  try {
+    const [idxRes, manRes] = await Promise.all([
+      fetch('data/trope/trope_index.json'),
+      fetch('data/pockettorah/manifest.json'),
+    ]);
+    if (!idxRes.ok || !manRes.ok) throw new Error('HTTP ' + idxRes.status + '/' + manRes.status);
+    const idx = await idxRes.json();          // same-origin data/ corpus — trusted
+    const man = await manRes.json();
+    if (!idx || idx.v !== 1 || idx.system !== 'torah' || !idx.tropes) throw new Error('bad index shape');
+    INDEX = idx;
+    MANIFEST = man;
+    setStatus('');
+  } catch (e) {
+    console.warn('trope index load failed', e);
+    INDEX = null; MANIFEST = null;
+    setStatus('Example clips unavailable (couldn’t load the trope index) — Learn mode still shows every mark.', true);
+  }
+}
+function examplesFor(key) {
+  return (INDEX && INDEX.tropes && INDEX.tropes[key]) || [];
+}
+
+/* ══════════════════════════════════════════════════════
+   AUDIO CLIP ENGINE — one <audio>, seek to s, stop at e
+   (the torah_trainer _verseEndStopAt pattern + an rAF watcher for precision;
+   iOS fires timeupdate at ~4 Hz, so rAF is primary and timeupdate the
+   throttled-tab fallback. s/e of 0 are valid — no || defaults anywhere.)
+   ══════════════════════════════════════════════════════ */
+const tuAudio = document.getElementById('tuAudio');
+let _curFileKey = null;
+let _stopAt = null;          // when set, audio auto-pauses at this currentTime
+let _clipToken = 0;          // invalidates stale async play flows
+let _rafId = null;
+let _clipEndCb = null;
+const _badFiles = new Set(); // aliyah files that failed to load this session
+
+function clipFileKey(ex) { return ex.p + '|' + ex.a; }
+function clipUrl(ex) {
+  const m = MANIFEST && MANIFEST[ex.p];
+  if (!m) return null;
+  return POCKET_AUDIO_BASE + encodeURIComponent(m.audioBase + '-' + ex.a + '.mp3');
+}
+function stopClip() {
+  _clipToken++;
+  _stopAt = null; _clipEndCb = null;
+  if (_rafId) { cancelAnimationFrame(_rafId); _rafId = null; }
+  if (!tuAudio.paused) tuAudio.pause();
+}
+function _clipTick() {
+  _rafId = null;
+  if (_stopAt === null) return;
+  if (tuAudio.currentTime >= _stopAt) {
+    const cb = _clipEndCb;
+    _stopAt = null; _clipEndCb = null;
+    if (!tuAudio.paused) tuAudio.pause();
+    if (cb) cb();
+    return;
+  }
+  if (!tuAudio.paused) _rafId = requestAnimationFrame(_clipTick);
+}
+tuAudio.addEventListener('timeupdate', () => {   // background-tab fallback for the rAF watcher
+  if (_stopAt !== null && tuAudio.currentTime >= _stopAt) {
+    const cb = _clipEndCb;
+    _stopAt = null; _clipEndCb = null;
+    if (!tuAudio.paused) tuAudio.pause();
+    if (cb) cb();
+  }
+});
+tuAudio.addEventListener('play', () => {
+  tuAudio.playbackRate = settings.playbackRate ?? 1;   // iOS resets rate on src change/play
+  if (_stopAt !== null && !_rafId) _rafId = requestAnimationFrame(_clipTick);
+});
+
+/**
+ * Play one example clip. cbs: {onEnd, onError}.
+ * Never dead-ends a drill: a load/seek failure calls onError (the caller
+ * substitutes another example); an autoplay block just leaves the ▶ button.
+ */
+async function playClip(ex, cbs) {
+  cbs = cbs || {};
+  const key = clipFileKey(ex);
+  const url = clipUrl(ex);
+  if (!url || _badFiles.has(key)) { if (cbs.onError) cbs.onError(new Error('file unavailable')); return; }
+  const token = ++_clipToken;
+  _stopAt = null; _clipEndCb = null;
+  if (_rafId) { cancelAnimationFrame(_rafId); _rafId = null; }
+  try {
+    if (_curFileKey !== key) {
+      setStatus('Loading audio…');
+      tuAudio.src = url;
+      tuAudio.load();   // force resource selection now (belt-and-braces vs preload hints)
+      _curFileKey = key;
+    }
+    if (tuAudio.readyState < 1) {
+      await new Promise((res, rej) => {
+        // A black-holed network can leave the element loading forever with no
+        // error event — cap the wait so the drill's skip path always engages.
+        const timer = setTimeout(() => { cleanup(); rej(new Error('audio load timed out')); }, 20000);
+        const onMeta = () => { cleanup(); res(); };
+        const onErr = () => { cleanup(); rej(new Error('audio load failed')); };
+        function cleanup() {
+          clearTimeout(timer);
+          tuAudio.removeEventListener('loadedmetadata', onMeta);
+          tuAudio.removeEventListener('error', onErr);
+        }
+        tuAudio.addEventListener('loadedmetadata', onMeta);
+        tuAudio.addEventListener('error', onErr);
+      });
+    }
+    if (token !== _clipToken) return;             // superseded by a newer play
+    tuAudio.currentTime = ex.s;
+    tuAudio.playbackRate = settings.playbackRate ?? 1;
+    _stopAt = ex.e;
+    _clipEndCb = cbs.onEnd || null;
+    await tuAudio.play();
+    if (token !== _clipToken) return;
+    setStatus('');
+    if (!_rafId) _rafId = requestAnimationFrame(_clipTick);
+  } catch (err) {
+    if (token !== _clipToken) return;
+    _stopAt = null; _clipEndCb = null;
+    if (err && err.name === 'NotAllowedError') { setStatus('Tap ▶ to hear the melody.'); return; }
+    setStatus('');
+    _badFiles.add(key);
+    _curFileKey = null;                            // force a fresh src next attempt
+    if (cbs.onError) cbs.onError(err);
+    else showToast('Audio unavailable right now — check your connection.');
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   RENDERING PRIMITIVES — glyphs + marked words (DOM-built, XSS-safe:
+   index-derived strings NEVER pass through innerHTML)
+   ══════════════════════════════════════════════════════ */
+function tropeGlyphText(t) { return GLYPH_CARRIER + t.display; }
+function tropeGlyphSpan(t, cls) {
+  const span = document.createElement('span');
+  span.className = cls || '';
+  span.setAttribute('lang', 'he');
+  span.dir = 'rtl';
+  span.textContent = tropeGlyphText(t);
+  return span;
+}
+function tropeName(t) { return settings.tradition === 'seph' ? t.seph : t.ashk; }
+function tropeAltName(t) { return settings.tradition === 'seph' ? t.ashk : t.seph; }
+function tropeNameLine(t) {
+  return tropeName(t) + (t.ashk === t.seph ? '' :
+    ' (' + (settings.tradition === 'seph' ? 'Ashkenazi: ' + t.ashk : 'Sephardi: ' + t.seph) + ')');
+}
+
+/**
+ * Render a Hebrew word with the trope's mark(s) highlighted, entirely via DOM
+ * nodes. Clusters = base char + following combining marks (U+0591–U+05C7);
+ * a cluster containing one of the trope's codepoints gets .mark-hit. For the
+ * positional sof_pasuk, the final letter-cluster and the ׃ mark are highlighted.
+ */
+function renderMarkedWord(he, trope) {
+  const wrap = document.createElement('span');
+  wrap.className = 'tu-ex-word';
+  wrap.setAttribute('lang', 'he');
+  wrap.dir = 'rtl';
+  const markSet = new Set(trope ? trope.chars : []);
+  const clusters = [];
+  for (const ch of String(he)) {
+    const cp = ch.codePointAt(0);
+    const combining = cp >= 0x0591 && cp <= 0x05C7;
+    if (combining && clusters.length) {
+      clusters[clusters.length - 1].text += ch;
+      if (markSet.has(ch)) clusters[clusters.length - 1].hit = true;
+    } else {
+      clusters.push({ text: ch, hit: markSet.has(ch), letter: /[א-ת]/.test(ch) });
+    }
+  }
+  if (trope && trope.key === 'sof_pasuk') {
+    for (let i = clusters.length - 1; i >= 0; i--) {
+      if (clusters[i].letter) { clusters[i].hit = true; break; }
+    }
+    for (const c of clusters) if (c.text.includes('׃')) c.hit = true;
+  }
+  for (const c of clusters) {
+    if (c.hit) {
+      const hit = document.createElement('span');
+      hit.className = 'mark-hit';
+      hit.textContent = c.text;
+      wrap.appendChild(hit);
+    } else {
+      wrap.appendChild(document.createTextNode(c.text));
+    }
+  }
+  return wrap;
+}
+
+/* ══════════════════════════════════════════════════════
+   PROGRESS / MASTERY
+   ══════════════════════════════════════════════════════ */
+function statsOf(key) {
+  const s = progress.tropes[key];
+  return { r: (s && parseInt(s.r, 10)) || 0, w: (s && parseInt(s.w, 10)) || 0 };
+}
+/* 0..1; accuracy damped until ~5 attempts so two lucky answers ≠ mastery. */
+function masteryOf(key) {
+  const { r, w } = statsOf(key);
+  const total = r + w;
+  if (total === 0) return 0;
+  return (r / total) * Math.min(1, total / 5);
+}
+let sessionStreak = 0;
+function recordAnswer(key, ok) {
+  const s = statsOf(key);
+  if (ok) s.r++; else s.w++;
+  progress.tropes[key] = s;
+  if (ok) {
+    sessionStreak++;
+    if (sessionStreak > progress.pbStreak) progress.pbStreak = sessionStreak;
+  } else {
+    sessionStreak = 0;
+  }
+  saveProgress();
+}
+
+function buildMasteryGrid(container) {
+  container.innerHTML = '';
+  for (const fam of TROPE_FAMILY_DEFS) {
+    const row = document.createElement('div');
+    row.className = 'tu-mfam fam-' + fam.key;
+    const label = document.createElement('div');
+    label.className = 'tu-mfam-label';
+    label.textContent = fam.name;
+    row.appendChild(label);
+    const cells = document.createElement('div');
+    cells.className = 'tu-mcells';
+    for (const t of TROPES.filter(x => x.family === fam.key)) {
+      const { r, w } = statsOf(t.key);
+      const m = masteryOf(t.key);
+      const cell = document.createElement('div');
+      cell.className = 'tu-mcell' + (m >= 0.8 ? ' mastered' : '');
+      cell.title = tropeName(t) + ' — ' + r + ' right / ' + w + ' wrong';
+      cell.appendChild(tropeGlyphSpan(t, 'm-glyph'));
+      const nm = document.createElement('span');
+      nm.className = 'm-name';
+      nm.textContent = tropeName(t);
+      cell.appendChild(nm);
+      const st = document.createElement('span');
+      st.className = 'm-stat';
+      st.textContent = (r + w) === 0 ? '—' : '✓' + r + ' ✗' + w;
+      cell.appendChild(st);
+      cells.appendChild(cell);
+    }
+    row.appendChild(cells);
+    container.appendChild(row);
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   MODE TABS
+   ══════════════════════════════════════════════════════ */
+function setMode(mode) {
+  stopClip();
+  const learn = mode === 'learn';
+  document.getElementById('tabLearn').setAttribute('aria-selected', learn ? 'true' : 'false');
+  document.getElementById('tabDrill').setAttribute('aria-selected', learn ? 'false' : 'true');
+  document.getElementById('learnView').hidden = !learn;
+  document.getElementById('drillView').hidden = learn;
+  if (!learn) {
+    // (re)show the start screen unless a session is mid-flight
+    if (!drill.active) {
+      document.getElementById('drillStart').hidden = false;
+      document.getElementById('drillQ').hidden = true;
+      document.getElementById('drillResults').hidden = true;
+      updateDrillStart();
+    }
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   LEARN MODE
+   ══════════════════════════════════════════════════════ */
+function renderFamilyChips() {
+  const wrap = document.getElementById('tuFamilyChips');
+  wrap.innerHTML = '';
+  for (const fam of TROPE_FAMILY_DEFS) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tu-chip fam-' + fam.key + (fam.key === currentFamily ? ' active' : '');
+    btn.setAttribute('aria-pressed', fam.key === currentFamily ? 'true' : 'false');
+    const nm = document.createElement('span');
+    nm.textContent = fam.name;
+    btn.appendChild(nm);
+    if (progress.families[fam.key]) {
+      const v = document.createElement('span');
+      v.className = 'visited';
+      v.textContent = '✓';
+      v.setAttribute('aria-label', 'visited');
+      btn.appendChild(v);
+    }
+    btn.onclick = () => { currentFamily = fam.key; renderLearn(); };
+    wrap.appendChild(btn);
+  }
+}
+
+/* Pick ≤4 example indices spread across the (parsha-round-robin-ordered) pool. */
+function spreadPick(arr, n) {
+  if (arr.length <= n) return arr.slice();
+  const idxs = [0, Math.floor(arr.length / 3), Math.floor(2 * arr.length / 3), arr.length - 1];
+  const out = [];
+  for (const i of idxs) if (!out.includes(arr[i])) out.push(arr[i]);
+  return out.slice(0, n);
+}
+
+function renderLearn() {
+  const fam = TROPE_FAMILY_DEFS.find(f => f.key === currentFamily) || TROPE_FAMILY_DEFS[0];
+  currentFamily = fam.key;
+  // Visiting a family counts as "seen" — persists to progress (families union on import).
+  if (!progress.families[fam.key]) { progress.families[fam.key] = true; saveProgress(); }
+  renderFamilyChips();
+  document.getElementById('tuFamilyNote').textContent = fam.note;
+
+  const cards = document.getElementById('tuCards');
+  cards.innerHTML = '';
+  for (const t of TROPES.filter(x => x.family === fam.key)) {
+    const card = document.createElement('div');
+    card.className = 'tu-card';
+
+    const head = document.createElement('div');
+    head.className = 'tu-card-head';
+    head.appendChild(tropeGlyphSpan(t, 'tu-glyph'));
+    const names = document.createElement('div');
+    names.className = 'tu-names';
+    const p1 = document.createElement('div');
+    p1.className = 'tu-name-primary';
+    p1.textContent = tropeName(t);
+    names.appendChild(p1);
+    if (t.ashk !== t.seph) {
+      const p2 = document.createElement('div');
+      p2.className = 'tu-name-secondary';
+      p2.textContent = (settings.tradition === 'seph' ? 'Ashkenazi: ' + t.ashk : 'Sephardi: ' + t.seph);
+      names.appendChild(p2);
+    }
+    if (t.rare) {
+      const tag = document.createElement('span');
+      tag.className = 'tu-rare-tag';
+      tag.textContent = 'Rare';
+      names.appendChild(tag);
+    }
+    head.appendChild(names);
+    card.appendChild(head);
+
+    if (TROPE_NOTES[t.key]) {
+      const note = document.createElement('p');
+      note.className = 'tu-card-note';
+      note.textContent = TROPE_NOTES[t.key];
+      card.appendChild(note);
+    }
+
+    const list = document.createElement('ul');
+    list.className = 'tu-ex-list';
+    const pool = examplesFor(t.key);
+    if (!pool.length) {
+      const li = document.createElement('li');
+      li.className = 'tu-ex-none';
+      li.textContent = INDEX
+        ? 'No chanted example in this corpus.'
+        : 'Examples unavailable (index not loaded).';
+      list.appendChild(li);
+    } else {
+      for (const ex of spreadPick(pool, 4)) {
+        const li = document.createElement('li');
+        li.className = 'tu-ex-row';
+        const play = document.createElement('button');
+        play.type = 'button';
+        play.className = 'tu-ex-play';
+        play.textContent = '▶';
+        play.setAttribute('aria-label', 'Play ' + tropeName(t) + ' example from ' + ex.p + ' ' + ex.ref);
+        play.onclick = () => playLearnExample(t, ex, play);
+        li.appendChild(play);
+        li.appendChild(renderMarkedWord(ex.he, t));
+        const ref = document.createElement('span');
+        ref.className = 'tu-ex-ref';
+        ref.textContent = ex.p + ' ' + ex.ref;
+        li.appendChild(ref);
+        list.appendChild(li);
+      }
+    }
+    card.appendChild(list);
+
+    const links = document.createElement('div');
+    links.className = 'tu-card-links';
+    const a = document.createElement('a');
+    a.href = 'torah_trainer.html';
+    a.textContent = 'See it in the parsha →';
+    a.title = 'Open the Torah Trainer reader with trope color coding';
+    links.appendChild(a);
+    card.appendChild(links);
+
+    cards.appendChild(card);
+  }
+
+  const isLast = TROPE_FAMILY_DEFS[TROPE_FAMILY_DEFS.length - 1].key === fam.key;
+  const nextBtn = document.getElementById('tuNextFamily');
+  nextBtn.textContent = isLast ? 'Ready? Try a drill →' : 'Next family →';
+}
+
+function playLearnExample(t, ex, btn) {
+  playClip(ex, {
+    onError: () => {
+      // Swap in a different example for this trope rather than dead-ending.
+      const alt = examplesFor(t.key).find(x => !_badFiles.has(clipFileKey(x)) && x !== ex);
+      if (alt) {
+        showToast('That clip wouldn’t load — trying another example.');
+        playClip(alt, { onError: () => showToast('Audio unavailable right now — check your connection.') });
+      } else {
+        showToast('Audio unavailable right now — check your connection.');
+      }
+    }
+  });
+}
+function nextFamily() {
+  const i = TROPE_FAMILY_DEFS.findIndex(f => f.key === currentFamily);
+  if (i >= TROPE_FAMILY_DEFS.length - 1) { setMode('drill'); return; }
+  currentFamily = TROPE_FAMILY_DEFS[i + 1].key;
+  renderLearn();
+  document.getElementById('tuFamilyChips').scrollIntoView({ block: 'nearest' });
+}
+
+/* ══════════════════════════════════════════════════════
+   DRILL MODE
+   ══════════════════════════════════════════════════════ */
+const QUESTIONS_PER_SESSION = 10;
+const drill = { active: false, qs: [], i: -1, correct: 0, results: [], best: 0 };
+
+function enabledTypes() {
+  const types = [];
+  if (settings.drillIdentify) types.push('identify');
+  if (settings.drillHear) types.push('hear');
+  if (settings.drillMelody) types.push('melody');
+  return types;
+}
+function drillableTropes() {
+  return TROPES.filter(t => examplesFor(t.key).length > 0);
+}
+function updateDrillStart() {
+  const types = enabledTypes();
+  const names = { identify: 'Identify', hear: 'Hear', melody: 'Melody' };
+  document.getElementById('drillTypesSummary').textContent =
+    'Question types: ' + types.map(t => names[t]).join(' · ') +
+    ' — change these in ⚙ Settings. Personal best streak: ' + progress.pbStreak + ' 🔥';
+  const btn = document.getElementById('drillStartBtn');
+  const note = document.getElementById('drillStartNote');
+  const pool = drillableTropes();
+  if (!INDEX || pool.length < 4) {
+    btn.setAttribute('aria-disabled', 'true');
+    note.classList.add('error');
+    note.textContent = INDEX
+      ? 'Not enough tropes with examples to build a drill.'
+      : 'Drill needs the example index, which didn’t load. Check your connection and refresh.';
+  } else {
+    btn.removeAttribute('aria-disabled');
+    note.classList.remove('error');
+    note.textContent = '';
+  }
+  buildMasteryGrid(document.getElementById('masteryGridStart'));
+}
+
+/* Weighted sampler. Default = WITH replacement (weak tropes may repeat across a
+   session); opts.noAdjacentRepeat blocks back-to-back repeats in the output;
+   opts.withoutReplacement makes every pick distinct (required for distractors). */
+function weightedSample(items, weightFn, n, opts) {
+  opts = opts || {};
+  const out = [];
+  let pool = items.slice();
+  while (out.length < n && pool.length) {
+    const last = out[out.length - 1];
+    let candidates = pool;
+    if (opts.noAdjacentRepeat && pool.length > 1 && last !== undefined) {
+      const nonRepeat = pool.filter(x => x !== last);
+      if (nonRepeat.length) candidates = nonRepeat;
+    }
+    const weights = candidates.map(weightFn);
+    const total = weights.reduce((a, b) => a + b, 0);
+    let pick;
+    if (!(total > 0)) pick = candidates[0];
+    else {
+      let roll = Math.random() * total;
+      pick = candidates[candidates.length - 1];
+      for (let i = 0; i < candidates.length; i++) {
+        roll -= weights[i];
+        if (roll <= 0) { pick = candidates[i]; break; }
+      }
+    }
+    out.push(pick);
+    if (opts.withoutReplacement) pool = pool.filter(x => x !== pick);
+  }
+  return out;
+}
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+function randomOf(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function pickExample(key, preferFileKey) {
+  const pool = examplesFor(key).filter(x => !_badFiles.has(clipFileKey(x)));
+  if (!pool.length) return null;
+  if (preferFileKey) {
+    const same = pool.filter(x => clipFileKey(x) === preferFileKey);
+    if (same.length) return randomOf(same);
+    const parsha = preferFileKey.split('|')[0];
+    const sameParsha = pool.filter(x => x.p === parsha);
+    if (sameParsha.length) return randomOf(sameParsha);
+  }
+  return randomOf(pool);
+}
+
+function pickDistractors(answerKey, n) {
+  const answer = TROPE_BY_KEY[answerKey];
+  const eligible = drillableTropes().map(t => t.key).filter(k => k !== answerKey);
+  const confusables = new Set([
+    ...(CONFUSABLE_PAIRS[answerKey] || []),
+    ...TROPES.filter(t => t.family === answer.family).map(t => t.key),
+  ]);
+  confusables.delete(answerKey);
+  const m = masteryOf(answerKey);
+  const weightFn = k => confusables.has(k) ? 1 + 3 * m : 1;
+  return weightedSample(eligible, weightFn, n, { withoutReplacement: true });
+}
+
+function startDrill() {
+  const btn = document.getElementById('drillStartBtn');
+  if (btn.getAttribute('aria-disabled') === 'true') { updateDrillStart(); return; }
+  const types = enabledTypes();
+  const tropePool = drillableTropes().map(t => t.key);
+  if (!types.length || tropePool.length < 4) { updateDrillStart(); return; }
+
+  const weightFn = k => {
+    let w = 0.35 + (1 - masteryOf(k));
+    if (TROPE_BY_KEY[k].rare) w *= 0.5;
+    return w;
+  };
+  const answers = weightedSample(tropePool, weightFn, QUESTIONS_PER_SESSION, { noAdjacentRepeat: true });
+  const qs = answers.map((key, i) => {
+    const type = types[i % types.length];
+    return { type, key, ex: pickExample(key) };
+  }).filter(q => q.ex);
+  // group questions by source audio file so streamed-MP3 hops are rare
+  qs.sort((a, b) => clipFileKey(a.ex).localeCompare(clipFileKey(b.ex)));
+  // top up if any answer had no playable example (rare)
+  while (qs.length < QUESTIONS_PER_SESSION && tropePool.length) {
+    const key = randomOf(tropePool);
+    const ex = pickExample(key);
+    if (ex) qs.push({ type: types[qs.length % types.length], key, ex });
+    else break;
+  }
+
+  drill.active = true;
+  drill.qs = qs.slice(0, QUESTIONS_PER_SESSION);
+  drill.i = -1;
+  drill.correct = 0;
+  drill.best = 0;
+  drill.results = [];
+  drill.pbAtStart = progress.pbStreak;
+  sessionStreak = 0;
+  document.getElementById('drillStart').hidden = true;
+  document.getElementById('drillResults').hidden = true;
+  document.getElementById('drillQ').hidden = false;
+  nextQuestion();
+}
+
+function nextQuestion() {
+  stopClip();
+  drill.i++;
+  if (drill.i >= drill.qs.length) { showResults(); return; }
+  renderQuestion(drill.qs[drill.i], 0);
+}
+
+/* Build the question UI. regenDepth guards the substitute→regenerate chain. */
+function renderQuestion(q, regenDepth) {
+  const t = TROPE_BY_KEY[q.key];
+  document.getElementById('qProgress').textContent = 'Question ' + (drill.i + 1) + ' of ' + drill.qs.length;
+  updateStreakLine();
+  const stem = document.getElementById('qStem');
+  const choices = document.getElementById('qChoices');
+  const feedback = document.getElementById('qFeedback');
+  const hint = document.getElementById('qHint');
+  stem.innerHTML = ''; choices.innerHTML = ''; feedback.innerHTML = ''; hint.textContent = '';
+  q.answered = false;
+
+  const onClipError = () => questionAudioFailed(q, regenDepth);
+
+  if (q.type === 'identify') {
+    document.getElementById('qPrompt').textContent = 'Which trope is marked on this word?';
+    const word = renderMarkedWord(q.ex.he, t);
+    word.classList.add('tu-qword');
+    stem.appendChild(word);
+    const ref = document.createElement('div');
+    ref.className = 'tu-qref';
+    ref.textContent = q.ex.p + ' ' + q.ex.ref;
+    stem.appendChild(ref);
+    buildNameChoices(q, t);
+  } else if (q.type === 'hear') {
+    document.getElementById('qPrompt').textContent = 'Listen — which mark carries this melody?';
+    const play = document.createElement('button');
+    play.type = 'button';
+    play.className = 'tu-qplay';
+    play.textContent = '▶ Play the melody';
+    play.onclick = () => playClip(q.ex, { onError: onClipError });
+    stem.appendChild(play);
+    buildSymbolChoices(q, t);
+    playClip(q.ex, { onError: onClipError });   // autoplay attempt; blocked → button remains
+  } else {
+    document.getElementById('qPrompt').textContent = 'Which melody matches this mark?';
+    stem.appendChild(tropeGlyphSpan(t, 'tu-qglyph'));
+    const nm = document.createElement('div');
+    nm.className = 'tu-qref';
+    nm.textContent = tropeNameLine(t);
+    stem.appendChild(nm);
+    buildMelodyChoices(q, t, regenDepth);
+    hint.textContent = 'Tap a number to listen; tap it again to choose.';
+  }
+}
+
+function buildNameChoices(q, t) {
+  const keys = shuffle([q.key, ...pickDistractors(q.key, 3)]);
+  const choices = document.getElementById('qChoices');
+  for (const k of keys) {
+    const kt = TROPE_BY_KEY[k];
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tu-choice';
+    btn.dataset.key = k;
+    btn.appendChild(tropeGlyphSpan(kt, 'c-glyph'));
+    const label = document.createElement('span');
+    label.textContent = tropeName(kt);
+    btn.appendChild(label);
+    btn.onclick = () => answer(q, k, btn);
+    choices.appendChild(btn);
+  }
+}
+function buildSymbolChoices(q, t) {
+  const keys = shuffle([q.key, ...pickDistractors(q.key, 3)]);
+  const choices = document.getElementById('qChoices');
+  for (const k of keys) {
+    const kt = TROPE_BY_KEY[k];
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tu-choice';
+    btn.dataset.key = k;
+    btn.setAttribute('aria-label', 'Symbol choice');
+    btn.appendChild(tropeGlyphSpan(kt, 'c-glyph'));
+    btn.onclick = () => answer(q, k, btn);
+    choices.appendChild(btn);
+  }
+}
+function buildMelodyChoices(q, t, regenDepth) {
+  const distractors = pickDistractors(q.key, 3);
+  const prefer = clipFileKey(q.ex);
+  const options = shuffle([
+    { key: q.key, ex: q.ex },
+    ...distractors.map(k => ({ key: k, ex: pickExample(k, prefer) })).filter(o => o.ex),
+  ]);
+  const choices = document.getElementById('qChoices');
+  options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tu-choice';
+    btn.dataset.key = opt.key;
+    const num = document.createElement('span');
+    num.textContent = '▶ ' + (idx + 1);
+    btn.appendChild(num);
+    const sub = document.createElement('span');
+    sub.className = 'c-sub';
+    sub.textContent = 'tap again to choose';
+    sub.hidden = true;
+    btn.appendChild(sub);
+    btn.onclick = () => {
+      if (q.answered) return;
+      if (btn.classList.contains('armed')) { answer(q, opt.key, btn); return; }
+      choices.querySelectorAll('.tu-choice').forEach(b => {
+        b.classList.remove('armed');
+        const s = b.querySelector('.c-sub'); if (s) s.hidden = true;
+      });
+      btn.classList.add('armed');
+      sub.hidden = false;
+      playClip(opt.ex, { onError: () => {
+        // a distractor clip failing is recoverable in place: re-pick its example
+        const alt = pickExample(opt.key, prefer);
+        if (alt && clipFileKey(alt) !== clipFileKey(opt.ex)) { opt.ex = alt; playClip(alt, {}); }
+        else if (opt.key === q.key) questionAudioFailed(q, regenDepth);
+        else showToast('That clip wouldn’t load.');
+      }});
+    };
+    choices.appendChild(btn);
+  });
+}
+
+/* Audio for the CURRENT question failed → substitute another example of the
+   same trope; if none left, regenerate the slot with a different trope. Never
+   a dead end. */
+function questionAudioFailed(q, regenDepth) {
+  if (q.answered || drill.qs[drill.i] !== q) return;   // stale callback — question moved on
+  const alt = pickExample(q.key);
+  if (alt) {
+    q.ex = alt;
+    showToast('That clip wouldn’t load — switched to another example.');
+    renderQuestion(q, regenDepth);
+    return;
+  }
+  if (regenDepth >= 3) {
+    showToast('Audio isn’t reachable — this question was skipped.');
+    nextQuestion();
+    return;
+  }
+  const pool = drillableTropes().map(t => t.key)
+    .filter(k => k !== q.key && pickExample(k));
+  if (!pool.length) { showToast('Audio isn’t reachable — this question was skipped.'); nextQuestion(); return; }
+  q.key = randomOf(pool);
+  q.ex = pickExample(q.key);
+  showToast('Audio for that trope wouldn’t load — new question.');
+  renderQuestion(q, regenDepth + 1);
+}
+
+function updateStreakLine() {
+  document.getElementById('qStreak').textContent =
+    '🔥 ' + sessionStreak + '  ·  🏆 ' + Math.max(progress.pbStreak, sessionStreak);
+}
+
+function answer(q, pickedKey, btn) {
+  if (q.answered) return;
+  q.answered = true;
+  const ok = pickedKey === q.key;
+  const t = TROPE_BY_KEY[q.key];
+  recordAnswer(q.key, ok);
+  if (ok) drill.correct++;
+  if (sessionStreak > drill.best) drill.best = sessionStreak;
+  drill.results.push({ key: q.key, ok });
+  updateStreakLine();
+
+  const choices = document.getElementById('qChoices');
+  choices.querySelectorAll('.tu-choice').forEach(b => {
+    b.disabled = true;
+    b.classList.remove('armed');
+    if (b.dataset.key === q.key) b.classList.add('good');
+  });
+  if (!ok && btn) btn.classList.add('bad');
+
+  const feedback = document.getElementById('qFeedback');
+  feedback.innerHTML = '';
+  const verdict = document.createElement('span');
+  verdict.className = ok ? 'ok' : 'no';
+  verdict.textContent = ok ? '✓ Correct — ' + tropeNameLine(t)
+                           : '✗ It was ' + tropeNameLine(t);
+  feedback.appendChild(verdict);
+  const replay = document.createElement('button');
+  replay.type = 'button';
+  replay.className = 'btn btn-xs btn-secondary';
+  replay.textContent = '↻ Replay';
+  replay.onclick = () => playClip(q.ex, { onError: () => showToast('That clip wouldn’t load.') });
+  feedback.appendChild(replay);
+  const next = document.createElement('button');
+  next.type = 'button';
+  next.id = 'qNextBtn';
+  next.className = 'btn';
+  next.textContent = drill.i === drill.qs.length - 1 ? 'Finish →' : 'Next →';
+  next.onclick = nextQuestion;
+  feedback.appendChild(next);
+  next.focus();
+  // reinforce the sound on Identify questions (audio is optional there)
+  if (q.type === 'identify') playClip(q.ex, { onError: () => {} });
+}
+
+function showResults() {
+  stopClip();
+  drill.active = false;
+  document.getElementById('drillQ').hidden = true;
+  document.getElementById('drillResults').hidden = false;
+  const pct = drill.qs.length ? Math.round(100 * drill.correct / drill.qs.length) : 0;
+  document.getElementById('resPct').textContent = pct + '%';
+  document.getElementById('resSub').textContent =
+    drill.correct + ' / ' + drill.qs.length + ' correct · best streak this session: ' +
+    drill.best + ' 🔥 · personal best: ' + progress.pbStreak + ' 🔥';
+  document.getElementById('resPb').hidden = !(drill.best > (drill.pbAtStart ?? 0));
+  buildMasteryGrid(document.getElementById('masteryGridEnd'));
+  drill.results = [];
+}
+
+/* ══════════════════════════════════════════════════════
+   SETTINGS DRAWER + FORM SYNC (house pattern)
+   ══════════════════════════════════════════════════════ */
+function syncPanelTitleAria() {
+  document.querySelectorAll('.panel-title').forEach(t => {
+    if (t.getAttribute('role') === 'button') t.setAttribute('aria-expanded', t.parentElement.classList.contains('collapsed') ? 'false' : 'true');
+  });
+}
+let _settingsOpener = null;
+function _settingsTrapKey(e) {
+  if (e.key !== 'Tab') return;
+  const modal = document.getElementById('settingsModal');
+  const focusables = [...modal.querySelectorAll('button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])')]
+    .filter(el => el.offsetParent !== null && !el.disabled);
+  if (!focusables.length) return;
+  const first = focusables[0], last = focusables[focusables.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+}
+function openSettings() {
+  _settingsOpener = document.activeElement;
+  document.getElementById('settingsBackdrop').classList.add('open');
+  const modal = document.getElementById('settingsModal');
+  modal.classList.add('open');
+  modal.addEventListener('keydown', _settingsTrapKey);
+  syncFormToSettings();
+  const c = modal.querySelector('.settings-close'); if (c) c.focus();
+}
+function closeSettings() {
+  document.getElementById('settingsBackdrop').classList.remove('open');
+  const modal = document.getElementById('settingsModal');
+  modal.classList.remove('open');
+  modal.removeEventListener('keydown', _settingsTrapKey);
+  saveSettings();
+  const o = _settingsOpener; _settingsOpener = null;
+  if (o && o.focus) { try { o.focus(); } catch (e) {} }
+}
+function syncFormToSettings() {
+  document.getElementById('tradAshk').checked = settings.tradition !== 'seph';
+  document.getElementById('tradSeph').checked = settings.tradition === 'seph';
+  document.getElementById('optDrillIdentify').checked = !!settings.drillIdentify;
+  document.getElementById('optDrillHear').checked = !!settings.drillHear;
+  document.getElementById('optDrillMelody').checked = !!settings.drillMelody;
+  document.getElementById('optRate').value = settings.playbackRate ?? 1;
+  document.getElementById('optRateVal').textContent = (settings.playbackRate ?? 1).toFixed(2) + '×';
+  document.getElementById('optFontSize').value = settings.hebFontSize ?? DEFAULTS.hebFontSize;
+  document.getElementById('optFontSizeVal').textContent = (settings.hebFontSize ?? DEFAULTS.hebFontSize).toFixed(1) + 'rem';
+  syncProgressSummary();
+}
+function syncProgressSummary() {
+  const attempted = TROPES.filter(t => { const s = statsOf(t.key); return s.r + s.w > 0; }).length;
+  const el = document.getElementById('progressSummary');
+  if (el) el.textContent = attempted + ' of ' + TROPES.length + ' tropes attempted · personal best streak ' + progress.pbStreak + ' 🔥';
+}
+function setTradition(v) {
+  settings.tradition = v === 'seph' ? 'seph' : 'ashk';
+  saveSettings();
+  renderLearn();
+  updateDrillStart();
+  syncProgressSummary();
+}
+function setDrillType(field, input) {
+  const next = { ...settings, [field]: input.checked };
+  const note = document.getElementById('drillTypesNote');
+  if (!next.drillIdentify && !next.drillHear && !next.drillMelody) {
+    // inline refusal — never a blocking alert(); at least one type must stay on
+    input.checked = true;
+    note.classList.add('error');
+    note.textContent = 'At least one question type must stay on.';
+    return;
+  }
+  note.classList.remove('error');
+  note.textContent = '';
+  settings[field] = input.checked;
+  saveSettings();
+  updateDrillStart();
+}
+function setPlaybackRate(v) {
+  settings.playbackRate = v;
+  document.getElementById('optRateVal').textContent = v.toFixed(2) + '×';
+  tuAudio.playbackRate = v;
+  saveSettings();
+}
+function resetPlaybackRate() {
+  setPlaybackRate(DEFAULTS.playbackRate);
+  document.getElementById('optRate').value = DEFAULTS.playbackRate;
+}
+function setHebFontSize(v) {
+  settings.hebFontSize = v;
+  document.getElementById('optFontSizeVal').textContent = v.toFixed(1) + 'rem';
+  applyHebFontSize();
+  saveSettings();
+}
+function resetHebFontSize() {
+  setHebFontSize(DEFAULTS.hebFontSize);
+  document.getElementById('optFontSize').value = DEFAULTS.hebFontSize;
+}
+function applyHebFontSize() {
+  document.documentElement.style.setProperty('--tu-heb-size', (settings.hebFontSize ?? DEFAULTS.hebFontSize) + 'rem');
+}
+
+/* ══════════════════════════════════════════════════════
+   HEBREW FONT SELECTOR (house pattern — same picker as torah_trainer)
+   ══════════════════════════════════════════════════════ */
+const HEB_FONTS = [
+  // ── Print ─────────────────────────────────────────────
+  { section:'Print',   name:'Frank Ruhl Libre',   family:"'Frank Ruhl Libre', serif",        link:'https://fonts.google.com/specimen/Frank+Ruhl+Libre', attr:'Google Fonts · OFL', load:null },
+  { section:'Print',   name:'David Libre',        family:"'David Libre', serif",             link:'https://fonts.google.com/specimen/David+Libre',      attr:'Google Fonts · OFL', load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=David+Libre:wght@400;500;700&display=swap'} },
+  { section:'Print',   name:'Noto Serif Hebrew',  family:"'Noto Serif Hebrew', serif",       link:'https://fonts.google.com/noto/specimen/Noto+Serif+Hebrew', attr:'Google Fonts · OFL', load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@400;700&display=swap'} },
+  { section:'Print',   name:'Noto Sans Hebrew',   family:"'Noto Sans Hebrew', sans-serif",   link:'https://fonts.google.com/noto/specimen/Noto+Sans+Hebrew',  attr:'Google Fonts · OFL', load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700&display=swap'} },
+  { section:'Print',   name:'Alef',               family:"'Alef', sans-serif",               link:'https://fonts.google.com/specimen/Alef',             attr:'Google Fonts · OFL', load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap'} },
+  { section:'Print',   name:'Ezra SIL',           family:"'Ezra SIL', serif",                link:'https://software.sil.org/ezra/',                     attr:'SIL International · OFL', load:{type:'face',css:"@font-face{font-family:'Ezra SIL';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/SIL%20(OFL)/Ezra%20SIL/SILEOT.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+  { section:'Print',   name:'Shlomo',             family:"'Shlomo', serif",                  link:'https://opensiddur.org/help/fonts/',                 attr:'Shlomo Orbach · OFL',     load:{type:'face',css:"@font-face{font-family:'Shlomo';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20(OFL)/Shlomo/Shlomo.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+  { section:'Print',   name:'Dyslexia Hebrew',    family:"'DyslexiaHebrew', sans-serif",     link:'https://opensiddur.org/help/fonts/',                 attr:'Jake Shoag · OFL',        load:{type:'face',css:"@font-face{font-family:'DyslexiaHebrew';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Shoag%2C%20Jake%20(OFL)/DyslexiaHebrew-Regular.otf') format('opentype');font-weight:normal;font-style:normal;}"} },
+  // ── Torah / STA"M ─────────────────────────────────────
+  { section:'Torah',   name:'Shlomo SemiStam',    family:"'ShlomoSemiStam', serif",          link:'https://opensiddur.org/help/fonts/',                 attr:'Shlomo Orbach · OFL',     load:{type:'face',css:"@font-face{font-family:'ShlomoSemiStam';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20(OFL)/ShlomoSemiStam.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+  { section:'Torah',   name:'Shlomo Stam',        family:"'ShlomoStam', serif",              link:'https://opensiddur.org/help/fonts/',                 attr:'Shlomo Orbach · OFL',     load:{type:'face',css:"@font-face{font-family:'ShlomoStam';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20(OFL)/ShlomoStam.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+  { section:'Torah',   name:'Keter Aram Sova',    family:"'KeterAramTsova', serif",          link:'https://opensiddur.org/help/fonts/',                 attr:'Yoram Gnat · GPL+FE',     load:{type:'face',css:"@font-face{font-family:'KeterAramTsova';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Culmus%20Project%20(GPL%2BFE)/Yoram%20Gnat%20(GPL%2BFE)/Taamey-Culmus/KeterAramTsova/KeterAramTsova.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+  { section:'Torah',   name:'Shofar',             family:"'ShofarRegular', serif",           link:'https://opensiddur.org/help/fonts/',                 attr:'Yoram Gnat · GPL+FE',     load:{type:'face',css:"@font-face{font-family:'ShofarRegular';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Culmus%20Project%20(GPL%2BFE)/Yoram%20Gnat%20(GPL%2BFE)/Taamey-Culmus/Shofar/ShofarRegular.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+  // ── Cursive / Script ──────────────────────────────────
+  { section:'Cursive', name:'Noto Rashi Hebrew',  family:"'Noto Rashi Hebrew', serif",       link:'https://fonts.google.com/specimen/Noto+Rashi+Hebrew', attr:'Google Fonts · OFL', load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Noto+Rashi+Hebrew:wght@400;700&display=swap'} },
+  { section:'Cursive', name:'Solitreo',           family:"'Solitreo', cursive",              link:'https://fonts.google.com/specimen/Solitreo',         attr:'Google Fonts · OFL', load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Solitreo&display=swap'} },
+  { section:'Cursive', name:'Gveret Levin',       family:"'Gveret Levin', cursive",          link:'https://fonts.google.com/specimen/Gveret+Levin',     attr:'Google Fonts · OFL', load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Gveret+Levin&display=swap'} },
+  { section:'Cursive', name:'Playpen Sans Hebrew',family:"'Playpen Sans Hebrew', cursive",   link:'https://fonts.google.com/specimen/Playpen+Sans+Hebrew', attr:'Google Fonts · OFL', load:{type:'gfonts',url:'https://fonts.googleapis.com/css2?family=Playpen+Sans+Hebrew&display=swap'} },
+  { section:'Cursive', name:'Shmulik CLM',        family:"'Shmulik CLM', cursive",           link:'https://opensiddur.org/help/fonts/',                 attr:'Yoram Gnat · GPL+FE',     load:{type:'face',css:"@font-face{font-family:'Shmulik CLM';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts@master/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Culmus%20Project%20(GPL%20and%20GPL%2BFE)/Yoram%20Gnat%20(GPL%2BFE)/Shmulik%20CLM/ShmulikCLM.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
+];
+
+/* ═══ shared: ivritsuite-fonts ═══════════════════════════════════════════════
+   User-made fonts: saved here by Hebrew_Font_Maker, consumed by Torah Trainer
+   (and, later, other IvritSuite tools). TTFs are too big for localStorage, so
+   they live in IndexedDB. This works ACROSS tools because every IvritSuite page
+   is served from the same origin (ivritsuite.com) and IndexedDB is partitioned
+   per-origin — so one DB ("ivritsuite-fonts") is automatically shared by all of
+   them. Keep this block byte-identical in every consuming page. No library is
+   needed (indexedDB + FontFace are built in), so it loads nothing at page load. */
+const IV_FONTS_DB = 'ivritsuite-fonts', IV_FONTS_STORE = 'fonts', IV_FONTS_CAP = 10;
+function _ivOpenFontsDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IV_FONTS_DB, 1);
+    req.onupgradeneeded = () => { const db = req.result;
+      if (!db.objectStoreNames.contains(IV_FONTS_STORE)) db.createObjectStore(IV_FONTS_STORE, { keyPath: 'name' }); };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+function _ivTx(mode, fn) {
+  return _ivOpenFontsDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(IV_FONTS_STORE, mode), req = fn(tx.objectStore(IV_FONTS_STORE));
+    tx.oncomplete = () => resolve(req && req.result);
+    tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
+  }));
+}
+function listUserFonts() {   // → [{name, family, created, size}] newest-first; no bytes
+  return _ivTx('readonly', os => os.getAll()).then(rows => (rows || [])
+    .map(r => ({ name: r.name, family: r.family, created: r.created || 0, size: (r.bytes && r.bytes.byteLength) || 0 }))
+    .sort((a, b) => b.created - a.created));
+}
+function getUserFont(name) { return _ivTx('readonly', os => os.get(name)); }
+function deleteUserFont(name) { return _ivTx('readwrite', os => os.delete(name)); }
+function saveUserFont(name, bytes, family) {   // bytes: Uint8Array | ArrayBuffer
+  const buf = bytes.buffer ? bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) : bytes;
+  return listUserFonts().then(list => {
+    const stale = list.filter(f => f.name !== name).slice(IV_FONTS_CAP - 1);   // keep newest CAP-1 others + this one
+    return Promise.all(stale.map(f => deleteUserFont(f.name)))
+      .then(() => _ivTx('readwrite', os => os.put({ name: name, family: family || name, bytes: buf, created: Date.now() })));
+  });
+}
+function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontFace named `name`
+  return getUserFont(name).then(rec => {
+    if (!rec) throw new Error('Font not found: ' + name);
+    return new FontFace(name, rec.bytes).load().then(f => { document.fonts.add(f); return f; });
+  });
+}
+/* ═══ end shared: ivritsuite-fonts ═══════════════════════════════════════════ */
+
+/* My Fonts shown in the picker — populated from the shared store at init (async). */
+let MY_FONTS = []; const _loadedUserFonts = new Set();
+function allFonts() { return MY_FONTS.concat(HEB_FONTS); }
+async function refreshMyFonts() {
+  try {
+    MY_FONTS = (await listUserFonts()).map(f => ({
+      section: 'My Fonts', name: f.name,
+      family: "'" + String(f.name).replace(/['"\\<>]/g, '') + "', serif",
+      link: null, attr: 'made with IvritSuite Font Maker', load: { type: 'userfont' } }));
+  } catch (e) { MY_FONTS = []; }
+  initFontSelector();   // rebuild the picker so the My Fonts section appears
+  if (MY_FONTS.some(f => f.name === settings.hebFont)) setHebFont(settings.hebFont);   // re-apply a persisted user font (now loadable via FontFace)
+}
+
+/* ═══ My Fonts uploader (shared, identical across pages) ═══ */
+async function ivUploadFontFromFile(file){
+  if (!file) return null;
+  if (!window.indexedDB || !window.FontFace){ alert('Your browser can’t store custom fonts.'); return null; }
+  let base = (file.name || 'My Font').replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim() || 'My Font';
+  try {
+    const buf = await file.arrayBuffer();
+    try { await new FontFace(base, buf).load(); }
+    catch (e) { alert('That file doesn’t look like a usable font (TTF, OTF, or WOFF).'); return null; }
+    const existing = (await listUserFonts()).map(f => f.name);
+    let name = base, i = 2; while (existing.includes(name)) name = base + ' ' + (i++);
+    await saveUserFont(name, new Uint8Array(buf), name);
+    return name;
+  } catch (e) { console.error(e); alert('Couldn’t read that font file.'); return null; }
+}
+/* ═══ end My Fonts uploader ═══ */
+/* Per-page pick handler(s) — thin wrappers over the shared uploader (each page routes the new font into its own picker/manager). */
+async function onUploadFontPick(input){
+  const name = await ivUploadFontFromFile(input.files && input.files[0]);
+  input.value = '';
+  if (name) { await refreshMyFonts(); setHebFont(name); }
+}
+
+function loadHebFont(font) {
+  if (!font.load) return;
+  const id = 'font-' + font.name.replace(/\s+/g, '-');
+  if (document.getElementById(id)) return;
+  if (font.load.type === 'gfonts') {
+    const link = document.createElement('link');
+    link.id = id; link.rel = 'stylesheet'; link.href = font.load.url;
+    document.head.appendChild(link);
+  } else if (font.load.type === 'face') {
+    const style = document.createElement('style');
+    style.id = id; style.textContent = font.load.css;
+    document.head.appendChild(style);
+  } else if (font.load.type === 'userfont') {
+    // A user-made font from the shared IndexedDB store — register it via the FontFace API.
+    if (_loadedUserFonts.has(font.name)) return;
+    _loadedUserFonts.add(font.name);
+    loadUserFont(font.name).catch(e => { _loadedUserFonts.delete(font.name); console.warn('user font load failed', font.name, e); });
+  }
+}
+function initFontSelector() {
+  const opts = document.getElementById('fontOptions');
+  if (!opts) return;
+  opts.innerHTML = '';
+  const sectionLabels = { 'My Fonts': 'My Fonts', Print: 'Print Fonts', Torah: 'Torah Fonts', Cursive: 'Cursive / Script' };
+  const sections = [...new Set(allFonts().map(f => f.section))];
+  let firstSection = true;
+  sections.forEach(sec => {
+    const hdr = document.createElement('div');
+    hdr.className = 'font-section-hdr' + (firstSection ? ' first' : '');
+    hdr.textContent = sectionLabels[sec] || (sec + ' Fonts');
+    opts.appendChild(hdr);
+    firstSection = false;
+    allFonts().filter(f => f.section === sec).forEach(font => {
+      const btn = document.createElement('button');
+      btn.className = 'font-opt' + (font.name === settings.hebFont ? ' active' : '');
+      btn.dataset.fontName = font.name;
+      btn.type = 'button';
+      const isDefault = font.name === 'Frank Ruhl Libre';
+      const attrHTML = font.attr
+        ? (font.link
+            ? `<a class="font-opt-attr" href="${font.link}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(font.attr)}</a>`
+            : `<span class="font-opt-attr">${esc(font.attr)}</span>`)
+        : '';
+      btn.innerHTML =
+        `<span class="font-opt-preview" lang="he" style="font-family:${font.family};">אֶרֶץ</span>` +
+        `<span class="font-opt-info">` +
+          `<span class="font-opt-name">${esc(font.name)}${isDefault ? ' <span style="font-size:0.55rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}</span>` +
+          attrHTML +
+        `</span>`;
+      btn.onclick = () => setHebFont(font.name);
+      loadHebFont(font);
+      opts.appendChild(btn);
+    });
+  });
+}
+function setHebFont(name) {
+  const f = allFonts().find(x => x.name === name) || HEB_FONTS[0];
+  settings.hebFont = f.name;
+  loadHebFont(f);
+  document.documentElement.style.setProperty('--heb-font', f.family);
+  document.querySelectorAll('.font-opt').forEach(el =>
+    el.classList.toggle('active', el.dataset.fontName === f.name));
+  saveSettings();
+}
+
+/* ══════════════════════════════════════════════════════
+   TOAST (house pattern)
+   ══════════════════════════════════════════════════════ */
+let _toastTimer = null;
+function showToast(msg) {
+  let el = document.getElementById('tuToast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'tuToast'; el.className = 'tu-toast';
+    el.setAttribute('role', 'status');
+    el.addEventListener('click', dismissToast);
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  requestAnimationFrame(() => el.classList.add('show'));
+  if (_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(dismissToast, 6000);
+}
+function dismissToast() {
+  const el = document.getElementById('tuToast');
+  if (el) el.classList.remove('show');
+  if (_toastTimer) { clearTimeout(_toastTimer); _toastTimer = null; }
+}
+
+/* ══════════════════════════════════════════════════════
+   ACCESSIBLE TOOLTIPS (house pattern — .tip-wrap/data-tip + one #tipFloat)
+   ══════════════════════════════════════════════════════ */
+(function() {
+  let tip = null, openWrap = null;
+  function ensureTip() {
+    if (tip) return tip;
+    tip = document.createElement('div');
+    tip.id = 'tipFloat';
+    document.body.appendChild(tip);
+    return tip;
+  }
+  function position(wrap) {
+    const t = ensureTip();
+    const iconEl = wrap.querySelector('.tip-icon') || wrap;
+    const r = iconEl.getBoundingClientRect();
+    const tw = t.offsetWidth, th = t.offsetHeight;
+    let left = r.left + r.width / 2 - tw / 2;
+    let top  = r.top - th - 6;
+    if (left < 6) left = 6;
+    if (left + tw > window.innerWidth - 6) left = window.innerWidth - tw - 6;
+    if (top < 6) top = r.bottom + 6;   // flip below if no room above
+    t.style.left = left + 'px';
+    t.style.top  = top  + 'px';
+  }
+  function isShown(wrap) { return openWrap === wrap && tip && tip.style.display === 'block'; }
+  function show(wrap) {
+    const text = wrap.dataset.tip;
+    if (!text) return;
+    const t = ensureTip();
+    t.textContent = text;
+    t.style.display = 'block';
+    position(wrap);
+    if (openWrap && openWrap !== wrap) openWrap.setAttribute('aria-expanded', 'false');
+    openWrap = wrap;
+    wrap.setAttribute('aria-expanded', 'true');
+  }
+  function hide(wrap) {
+    if (tip) tip.style.display = 'none';
+    if (openWrap) openWrap.setAttribute('aria-expanded', 'false');
+    openWrap = null;
+  }
+  function bindTip(wrap) {
+    if (wrap._tipBound) return;
+    wrap._tipBound = true;
+    wrap.setAttribute('tabindex', '0');
+    wrap.setAttribute('role', 'button');
+    wrap.setAttribute('aria-expanded', 'false');
+    wrap.setAttribute('aria-describedby', 'tipFloat');
+    if (!wrap.getAttribute('aria-label')) wrap.setAttribute('aria-label', 'More information');
+    wrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(wrap); });
+    wrap.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openWrap === wrap) hide(wrap); });
+    wrap.addEventListener('click', e => { e.stopPropagation(); isShown(wrap) ? hide(wrap) : show(wrap); });
+    wrap.addEventListener('focus', () => show(wrap));
+    wrap.addEventListener('blur', () => hide(wrap));
+    wrap.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); isShown(wrap) ? hide(wrap) : show(wrap); }
+      else if (e.key === 'Escape') { hide(wrap); wrap.blur(); }
+    });
+  }
+  window.bindTip = bindTip;
+  document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('.tip-wrap').forEach(bindTip));
+  document.addEventListener('click', () => { if (openWrap) hide(openWrap); });       // tap outside closes
+  window.addEventListener('scroll', () => { if (openWrap) hide(openWrap); }, true);   // reposition-free: close on scroll
+})();
+
+/* ══════════════════════════════════════════════════════
+   GUIDED TOUR (house engine, ported from torah_trainer.html) — non-modal
+   spotlight. Read-only: never changes settings, progress, or playback.
+   ══════════════════════════════════════════════════════ */
+function _tourVisible(el) { return !!(el && el.offsetParent !== null); }
+const TOUR_STEPS = [
+  { target: () => document.getElementById('tabLearn'),
+    title: 'Two modes',
+    body: 'Learn walks the marks family by family; Drill quizzes you on them.' },
+  { target: () => document.getElementById('tuFamilyChips'),
+    title: 'Clause families',
+    body: 'The marks come in six melodic families — the same color families as the Torah Trainer reader.' },
+  { target: () => document.querySelector('#tuCards .tu-card'),
+    title: 'One card per mark',
+    body: 'Symbol, both naming traditions, a teaching note, and real chanted example words. Press ▶ to hear one.' },
+  { target: () => document.getElementById('tuNextFamily'),
+    title: 'Work through them',
+    body: 'Step through all six families, then test yourself.' },
+  { target: () => document.getElementById('tabDrill'),
+    title: 'Drill mode',
+    body: '10 questions per session: name the marked word, match melody to symbol, or symbol to melody.' },
+  { target: () => document.getElementById('gearBtn'),
+    title: 'Settings',
+    body: 'Naming tradition, Hebrew font, question types, and playback speed live here.' },
+];
+let _tourIdx = -1, _tourActive = false, _tourOpener = null, _tourRepoTimer = null;
+function tourStart() {
+  if (_tourActive) return;
+  try { localStorage.setItem('hebrewTropeTutor_tourSeen', '1'); } catch (e) {}
+  document.getElementById('tourBtn')?.classList.remove('pulse-attn');
+  _tourActive = true; _tourIdx = -1;
+  _tourOpener = document.activeElement;
+  document.getElementById('tourSpot').hidden = false;
+  document.getElementById('tourCard').hidden = false;
+  document.addEventListener('keydown', _tourKey, true);
+  window.addEventListener('resize', _tourReposition);
+  window.addEventListener('scroll', _tourReposition, true);
+  tourNext();
+}
+function _resolveStep(idx) {
+  const step = TOUR_STEPS[idx];
+  if (!step) return null;
+  let el = null;
+  try { el = step.target(); } catch (e) {}
+  return _tourVisible(el) ? el : null;
+}
+function _tourShow(idx, dir) {
+  while (idx >= 0 && idx < TOUR_STEPS.length && !_resolveStep(idx)) idx += dir;
+  if (idx < 0 || idx >= TOUR_STEPS.length) { tourEnd(dir > 0); return; }
+  _tourIdx = idx;
+  const step = TOUR_STEPS[idx], el = step.target();
+  try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {}
+  document.getElementById('tourCardTitle').textContent = step.title;
+  document.getElementById('tourCardBody').textContent = step.body;
+  document.getElementById('tourStep').textContent = 'Step ' + (idx + 1) + ' of ' + TOUR_STEPS.length;
+  document.getElementById('tourBack').disabled = (idx === 0);
+  document.getElementById('tourNext').textContent = (idx === TOUR_STEPS.length - 1) ? 'Done' : 'Next';
+  _tourReposition();
+  if (_tourRepoTimer) clearTimeout(_tourRepoTimer);
+  _tourRepoTimer = setTimeout(_tourReposition, 350);   // re-measure after scroll settles
+  setTimeout(() => { const n = document.getElementById('tourNext'); if (n && _tourActive) n.focus(); }, 0);
+}
+function tourNext() { _tourShow(_tourIdx + 1, 1); }
+function tourPrev() { _tourShow(_tourIdx - 1, -1); }
+function tourEnd(completed) {
+  if (!_tourActive) return;
+  _tourActive = false;
+  document.removeEventListener('keydown', _tourKey, true);
+  window.removeEventListener('resize', _tourReposition);
+  window.removeEventListener('scroll', _tourReposition, true);
+  if (_tourRepoTimer) { clearTimeout(_tourRepoTimer); _tourRepoTimer = null; }
+  document.getElementById('tourSpot').hidden = true;
+  document.getElementById('tourCard').hidden = true;
+  const opener = _tourOpener; _tourOpener = null;
+  if (opener && opener.focus) { try { opener.focus(); } catch (e) {} }
+}
+function _tourReposition() {
+  if (!_tourActive) return;
+  const step = TOUR_STEPS[_tourIdx];
+  if (!step) return;
+  let el = null; try { el = step.target(); } catch (e) {}
+  if (!_tourVisible(el)) return;
+  const r = el.getBoundingClientRect(), pad = 6;
+  const spot = document.getElementById('tourSpot');
+  spot.style.left = Math.max(0, r.left - pad) + 'px';
+  spot.style.top = Math.max(0, r.top - pad) + 'px';
+  spot.style.width = (r.width + pad * 2) + 'px';
+  spot.style.height = (r.height + pad * 2) + 'px';
+  const card = document.getElementById('tourCard');
+  const cw = card.offsetWidth, ch = card.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
+  let top = r.bottom + 12;
+  if (top + ch > vh - 8) { const above = r.top - ch - 12; top = (above >= 8) ? above : Math.max(8, vh - ch - 8); }
+  let left = r.left + r.width / 2 - cw / 2;
+  if (left < 8) left = 8;
+  if (left + cw > vw - 8) left = vw - cw - 8;
+  card.style.left = left + 'px';
+  card.style.top = top + 'px';
+}
+function _tourKey(e) {
+  if (!_tourActive) return;
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); tourEnd(false); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); e.stopPropagation(); tourNext(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); e.stopPropagation(); tourPrev(); }
+}
+// First-visit nudge: gently pulse the Tour button until the tour is opened once.
+(function () {
+  function nudge() {
+    try { if (localStorage.getItem('hebrewTropeTutor_tourSeen')) return; } catch (e) { return; }
+    document.getElementById('tourBtn')?.classList.add('pulse-attn');
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', nudge);
+  else nudge();
+})();
+
+/* ══════════════════════════════════════════════════════
+   INIT
+   ══════════════════════════════════════════════════════ */
+async function init() {
+  loadSettings();
+  loadProgress();
+  initDark();
+  applyFamilyColors();
+  applyHebFontSize();
+  // panel collapse (house pattern: keyboard-operable titles)
+  document.querySelectorAll('.panel-title').forEach(t => {
+    t.tabIndex = 0;
+    t.setAttribute('role', 'button');
+    const toggle = () => { t.parentElement.classList.toggle('collapsed'); syncPanelTitleAria(); };
+    t.addEventListener('click', toggle);
+    t.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+    });
+  });
+  syncPanelTitleAria();
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('settingsModal').classList.contains('open')) closeSettings();
+  });
+  syncFormToSettings();
+  initFontSelector();
+  setHebFont(settings.hebFont);
+  refreshMyFonts();
+  await loadData();
+  renderLearn();
+  updateDrillStart();
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
