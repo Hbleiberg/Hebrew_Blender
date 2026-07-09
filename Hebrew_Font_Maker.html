@@ -423,6 +423,27 @@
   .node-xform { margin: 8px 0 4px; }
   .node-xform summary { cursor: pointer; font-size: 0.76rem; font-weight: 600; color: var(--text); user-select: none; }
   .node-xform summary:hover { color: var(--gold); }
+  /* segment midpoint affordances (click = line↔curve) */
+  .seg-mid { fill: var(--gold); opacity: 0.35; cursor: pointer; stroke: #fff; stroke-width: 1; }
+  .seg-mid:hover { opacity: 1; r: 4.5; }
+  /* selection bounding box */
+  .node-bb-fill { fill: transparent; cursor: move; }
+  .node-bb-outline { fill: none; stroke: var(--gold); stroke-width: 1; stroke-dasharray: 5 4; opacity: 0.8; pointer-events: none; }
+  /* pen tool */
+  .pen-path { stroke: var(--gold); stroke-width: 1.5; }
+  .pen-pt { fill: #fff; stroke: var(--navy); stroke-width: 1.4; }
+  .pen-first { stroke: var(--gold); stroke-width: 2.2; }
+  #penRubber { stroke: var(--gold); stroke-width: 1; stroke-dasharray: 4 3; pointer-events: none; }
+  #penCross line { stroke: var(--gold); stroke-width: 1.2; }
+  /* contours panel rows */
+  .ct-row { display: flex; align-items: center; gap: 6px; padding: 2px 0; font-size: 0.76rem; }
+  .ct-row.hid { opacity: 0.5; }
+  .ct-swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.25); }
+  .ct-kind { flex-shrink: 0; font-size: 0.7rem; color: var(--muted); }
+  .ct-name { flex: 1; text-align: start; background: none; border: 1px solid transparent; border-radius: 5px; padding: 2px 6px; font: inherit; font-size: 0.76rem; color: var(--text); cursor: pointer; }
+  .ct-name:hover { border-color: var(--gold); }
+  .ct-eye, .ct-del { background: none; border: 1px solid transparent; border-radius: 5px; padding: 1px 5px; font-size: 0.8rem; cursor: pointer; color: var(--text); flex-shrink: 0; }
+  .ct-eye:hover, .ct-del:hover { border-color: var(--gold); }
   body.dark .node-pt { fill: #1e2535; stroke: #aeb9d0; }
   body.dark .node-pt.sel { fill: var(--gold); stroke: #fff; }
   body.dark .node-h { fill: #1e2535; stroke: #8aa0c8; }
@@ -2225,7 +2246,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '3.8';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.0';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2437,6 +2458,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.0</strong> — <strong>Smarter tracing and a full point-editing suite.</strong> Tracing now picks a good <strong>ink threshold automatically</strong>, can <strong>even out photo lighting</strong>, and <strong>auto-detects every letter on a combined sheet</strong> for one-click review and assignment. Edit points grew into a real outline editor: <strong>delete whole contours</strong> or <strong>stray specks</strong>, <strong>snap to guides</strong>, <strong>copy/paste points between letters</strong>, <strong>flip / rotate / scale</strong>, a <strong>selection box with move &amp; scale handles</strong>, <strong>marquee (M)</strong> and <strong>select-all</strong>, <strong>line ↔ curve segment switches</strong>, <strong>corner rounding</strong> with a live radius preview, a <strong>pen tool (P)</strong> that draws contours point by point — even on blank glyphs like digits — and a <strong>Contours panel</strong> with per-contour colors and hide-while-editing (hidden contours still export). Imported fonts round-trip faithfully: untouched glyphs keep their exact outlines, and hand edits never silently change a glyph's width. Plus a <strong>waterfall size preview</strong> on the Spacing step. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.8</strong> — <strong>Crop from a sheet by keyboard.</strong> When cutting a letter or mark out of a "one image, all letters" / combined sheet, you can now do it without a mouse: the arrow keys move a crop box (Shift for smaller steps), <strong>+</strong> / <strong>−</strong> resize it, <strong>Enter</strong> crops, and <strong>Esc</strong> cancels. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.7</strong> — <strong>Edit points by keyboard.</strong> In Edit-points mode you can now select points without a mouse: <strong>,</strong> and <strong>.</strong> step to the previous / next point, and <strong>i</strong> inserts a new point after the selected one — so the existing arrow-nudge and Delete shortcuts are finally reachable keyboard-only. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.6</strong> — <strong>Accessibility polish.</strong> Keyboard focus now shows a clear gold outline on the letter tiles, step tabs, and buttons; the Hebrew letters in the grids are tagged as Hebrew so screen readers pronounce them with a Hebrew voice; and the on/off toggle buttons (dark mode, Default/Custom, Per Symbol/Combined, upper/lowercase, and the mark editor mode) now announce their pressed state to assistive technology. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -2642,6 +2664,10 @@ function shortcutGroups() {
     ]],
     ['Point editing — Edit points', [
       [',  /  .', 'Select the previous / next point'],
+      ['Shift + ,  /  Shift + .', 'Extend the selection to the previous / next point'],
+      [`${M} + A`, 'Select every point'],
+      [`${M} + Click`, 'Toggle a point in / out of the selection'],
+      ['M', 'Marquee mode — dragging anywhere (even on a point) box-selects'],
       ['←  ↑  →  ↓', 'Nudge the selected point'],
       ['Shift + arrows', 'Nudge in bigger steps'],
       ['I', 'Insert a point after the selected one'],
@@ -2649,7 +2675,15 @@ function shortcutGroups() {
       ['Shift + Delete', 'Delete the whole contour(s) of the selected points'],
       [`${M} + C  /  ${M} + V`, 'Copy the selected points / paste them into any letter'],
       ['Alt', 'Hold while dragging a point to bypass guide snapping'],
-      ['Esc', 'Clear the selection, or leave point editing'],
+      ['Esc', 'Leave marquee mode, clear the selection, or leave point editing'],
+    ]],
+    ['Pen — draw a contour (P)', [
+      ['P', 'Toggle the pen — click places a corner, click-drag pulls a curve point'],
+      ['Alt + Click', 'Place a curve point with ready-made handles (no drag needed)'],
+      ['←  ↑  →  ↓', 'Move the placement cursor (Shift = bigger steps)'],
+      ['Enter  /  Shift + Enter', 'Place a point at the cursor / close the contour'],
+      [`Backspace  or  ${M} + Z`, 'Remove the last placed point'],
+      ['Esc', 'Discard the drawing, then exit the pen'],
     ]],
     ['Nikkud / Trop & Align placement', [
       ['←  ↑  →  ↓', 'Nudge the anchor, or the aligned image'],
@@ -3815,6 +3849,8 @@ function _setWorkMode(mode) {
   }
   workMode = mode;
   nodeModel = null; nodeSel.clear(); nodeDrag = null;   // node-editor state is per-entry — rebuilt by renderStage when mode==='nodes'
+  _marqueeMode = false; _penMode = false; penDraft = null; _penCursor = null;   // (_penEntry survives — set by drawWithPen just before entering, consumed by renderStage)
+  _hiddenContours.clear(); _filletBase = null;          // per-entry too (disclosure open-states persist)
   cropDrag = null;                                       // drop any in-progress crop draft when the step changes
   if (mode !== 'anchors') precompTarget = null;   // leaving the placement step ends any precomposed-form edit
   if (mode === 'anchors') {   // keep anchorCat on an enabled category
@@ -4789,7 +4825,7 @@ async function applyFontImport(file, font, bytes, opts) {
       } catch (e) { console.warn('anchor import failed, will seed', e); anchorErr = true; }
     }
     const scale = 1000 / font.unitsPerEm;
-    let n = 0, anchorHits = 0;
+    let n = 0, nPunct = 0, anchorHits = 0;
     LETTERS.forEach(L => {
       const l = project.letters.find(x => x.codepoint === L.cp);
       const glyph = font.charToGlyph(String.fromCodePoint(parseInt(L.cp,16)));
@@ -4803,7 +4839,7 @@ async function applyFontImport(file, font, bytes, opts) {
         let adv = Math.round((glyph.advanceWidth || 0) * scale);
         if (!adv) { const em=effMetrics(); let mx=0, mn=1e9; contours.forEach(c=>c.points.forEach(p=>{mx=Math.max(mx,p[0]);mn=Math.min(mn,p[0]);})); adv = Math.round(mx + em.defaultRSB + Math.max(0, em.defaultLSB - mn)); }
         l.advance = adv;
-        n++;
+        if (L.cat === 'punct') nPunct++; else n++;   // digits/punctuation counted separately (the toast said "N/27 letters" while counting them)
       }
       const imp = (opts.anchors && imported) ? imported[L.cp] : null;
       if (imp) { applyImportedAnchors(l, imp); anchorHits++; }
@@ -4821,8 +4857,8 @@ async function applyFontImport(file, font, bytes, opts) {
     }
     if (opts.outlines) project.inputMode = 'font';
     syncMetaToForm(); renderGrids(); setWorkMode('anchors');
-    if (opts.outlines && !n && !markHits) { status(''); askModal('No Hebrew glyphs found', 'That font has no outlines for the Hebrew base letters (U+05D0–05EA). Try a Hebrew font.', [{label:'OK'}]); return; }
-    let msg = opts.outlines ? `Loaded ${n}/27 letters from ${file.name}.` : 'Kept your current outlines.';
+    if (opts.outlines && !n && !nPunct && !markHits) { status(''); askModal('No Hebrew glyphs found', 'That font has no outlines for the Hebrew base letters (U+05D0–05EA). Try a Hebrew font.', [{label:'OK'}]); return; }
+    let msg = opts.outlines ? `Loaded ${n}/27 letters${nPunct ? ` and ${nPunct} digit/punctuation glyph${nPunct===1?'':'s'}` : ''} from ${file.name}.` : 'Kept your current outlines.';
     if (opts.marks) {
       msg += markHits ? ` Replaced ${markHits} nikkud/trop mark shape${markHits===1?'':'s'}.` : ' (No mark glyphs found to import.)';
       if (tropImported && !project.font.trop.enabled) msg += ' Turn on Trop to use its cantillation marks.';
@@ -5634,12 +5670,25 @@ async function renderStage() {
       h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="13">Trace this letter (step 2), or turn on “Show template glyph” to place nikkud on the reference.</text>`;
     }
   } else if (workMode === 'nodes') {
-    if (!l.contours) { setWorkMode('trace'); return; }   // nothing to edit (e.g. landed here via undo) → bail to trace
+    if (_penEntry) { nodeModel = { contours: [] }; _penMode = true; _penEntry = false; _penCursor = _penCursor || [300, 300]; }   // "Draw with pen" on a blank glyph
+    if (!l.contours && !(nodeModel && _penMode)) { setWorkMode('trace'); return; }   // nothing to edit (e.g. landed here via undo) → bail to trace
     if (!nodeModel) buildNodeModel(l);
     if (url) h += `<image href="${url}" x="0" y="0" transform="matrix(${l.transform.join(' ')})" opacity="${project.view.imgOpacityTrace}"/>`;
     const C = stageColors();
-    h += `<path class="node-glyph" d="${contoursToPath(l.contours, l.curves)}" fill="${C.inkFill}" fill-opacity="0.45" fill-rule="nonzero" stroke="${C.inkStroke}" stroke-width="0.6"/>`;
+    if (l.contours) {
+      // hidden contours are an EDITING aid — filtered from the stage only; they still export and preview.
+      const visC = l.contours.filter((_, ci) => !_hiddenContours.has(ci));
+      const aligned = l.curves && l.curves.length === l.contours.length;
+      const visCv = aligned ? l.curves.filter((_, ci) => !_hiddenContours.has(ci)) : null;
+      h += `<path class="node-glyph" d="${contoursToPath(visC, visCv)}" fill="${C.inkFill}" fill-opacity="0.45" fill-rule="nonzero" stroke="${C.inkStroke}" stroke-width="0.6"/>`;
+      h += contourTintOverlaySVG(l);
+    }
+    const bb = nodeSelBBoxSVG();
+    h += bb.under;
     h += nodeOverlaySVG();
+    h += segMidMarkersSVG();
+    h += bb.over;
+    if (_penMode) h += penPreviewSVG();
     if (nodeDrag && nodeDrag.type === 'marquee' && nodeDrag.cur) {
       const s = nodeDrag.start, c = nodeDrag.cur;
       h += `<rect class="node-marquee" x="${Math.min(s[0],c[0]).toFixed(1)}" y="${Math.min(s[1],c[1]).toFixed(1)}" width="${Math.abs(c[0]-s[0]).toFixed(1)}" height="${Math.abs(c[1]-s[1]).toFixed(1)}"/>`;
@@ -5691,7 +5740,9 @@ function renderLegend() {
   } else if (workMode === 'align') {
     el.innerHTML = `<span>Drag the letter to move · corner ◻ scales (keeps shape) · side ▭ squishes that direction · ● rotates.</span>`;
   } else if (workMode === 'nodes') {
-    el.innerHTML = `<span>Editing points — drag ○/□ to reshape · double-click toggles smooth/corner · Alt-click the outline adds a point · Delete removes · arrows nudge.</span>`;
+    if (_penMode) el.innerHTML = `<span>Pen — click adds a corner · click-drag pulls a curve point · Alt-click quick-curves · click the first point or Enter closes · Backspace removes the last · Esc discards.</span>`;
+    else if (_marqueeMode) el.innerHTML = `<span>Marquee mode — drag anywhere (even from a point) to box-select (Shift adds) · press M or Esc to leave.</span>`;
+    else el.innerHTML = `<span>Editing points — drag ○/□ to reshape · double-click toggles smooth/corner · Alt-click the outline adds a point · Delete removes · arrows nudge.</span>`;
   } else {
     el.innerHTML = `<span>Adjust threshold &amp; smoothing, then Trace. Corners stay crisp; counters punch out.</span>`;
   }
@@ -5765,6 +5816,16 @@ function attachTransformDrag(l) {
   });
 }
 function onStagePointerMove(e) {
+  // pen hover: track the rubber-band target cheaply (attribute updates, not a full re-render per move)
+  if (workMode === 'nodes' && _penMode && !nodeDrag) {
+    _penCursor = clientToFont(e);
+    const rb = document.getElementById('penRubber'), cross = document.getElementById('penCross');
+    if (rb || cross) {
+      const cx = fx(_penCursor[0]), cy = fy(_penCursor[1]);
+      if (rb) { rb.setAttribute('x2', cx.toFixed(1)); rb.setAttribute('y2', cy.toFixed(1)); }
+      if (cross) cross.setAttribute('transform', `translate(${cx.toFixed(1)} ${cy.toFixed(1)})`);
+    } else renderStage();
+  }
   if (nodeDrag) {
     const l = curLetter();
     if (nodeDrag.type === 'nodes') {
@@ -5804,6 +5865,56 @@ function onStagePointerMove(e) {
       writeThrough(l); renderStage(); return;
     }
     if (nodeDrag.type === 'marquee') { nodeDrag.cur = clientToStage(e); renderStage(); return; }
+    if (nodeDrag.type === 'bboxmove') {                    // move the whole selection; the bbox EDGES snap to guides/metrics
+      const [fxp,fyp] = clientToFont(e); let dx = fxp - nodeDrag.startFont[0], dy = fyp - nodeDrag.startFont[1];
+      let hit = null;
+      if (nodeDrag.snap && snapGuidesOn() && !e.altKey) {
+        const tol = snapTolFont(), b0 = nodeDrag.bbox0;
+        let bx = null, by = null;
+        [b0.x0 + dx, b0.x1 + dx].forEach(edge => nodeDrag.snap.xs.forEach(t => { const d = Math.abs(t.v - edge); if (d <= tol && (!bx || d < bx.d)) bx = { t, d, adj: t.v - edge }; }));
+        [b0.y0 + dy, b0.y1 + dy].forEach(edge => nodeDrag.snap.ys.forEach(t => { const d = Math.abs(t.v - edge); if (d <= tol && (!by || d < by.d)) by = { t, d, adj: t.v - edge }; }));
+        if (bx) dx += bx.adj;
+        if (by) dy += by.adj;
+        if (bx || by) hit = { x: bx && bx.t, y: by && by.t };
+      }
+      _snapHit = hit;
+      nodeDrag.orig.forEach((o, key) => {
+        const [ci,ni] = key.split(':').map(Number), nd = nodeModel.contours[ci]?.nodes[ni]; if (!nd) return;
+        nd.x = o.x + dx; nd.y = o.y + dy;
+        nd.in  = o.in  ? [o.in[0]+dx,  o.in[1]+dy]  : null;
+        nd.out = o.out ? [o.out[0]+dx, o.out[1]+dy] : null;
+      });
+      writeThrough(l); renderStage(); return;
+    }
+    if (nodeDrag.type === 'bboxscale') {                   // scale about the opposite handle; Shift = uniform; NEVER snaps, NEVER flips
+      const [fxp,fyp] = clientToFont(e), sp = nodeDrag.spec;
+      let sx = 1, sy = 1;
+      if (sp.axes.includes('x') || sp.axes === 'xy') { const den = sp.grab[0] - sp.fixed[0]; if (den) sx = (fxp - sp.fixed[0]) / den; }
+      if (sp.axes.includes('y') || sp.axes === 'xy') { const den = sp.grab[1] - sp.fixed[1]; if (den) sy = (fyp - sp.fixed[1]) / den; }
+      if (sp.axes === 'x') sy = 1; else if (sp.axes === 'y') sx = 1;
+      sx = Math.max(0.02, sx); sy = Math.max(0.02, sy);    // positive-only: flips belong to the Transform disclosure
+      if (e.shiftKey) { const u = sp.axes === 'x' ? sx : sp.axes === 'y' ? sy : Math.max(0.02, (sx + sy) / 2); sx = sy = u; }
+      const px = sp.fixed[0], py = sp.fixed[1];
+      const sc = p => p ? [px + (p[0]-px)*sx, py + (p[1]-py)*sy] : null;
+      nodeDrag.orig.forEach((o, key) => {
+        const [ci,ni] = key.split(':').map(Number), nd = nodeModel.contours[ci]?.nodes[ni]; if (!nd) return;
+        const q = sc([o.x, o.y]); nd.x = q[0]; nd.y = q[1];
+        nd.in = sc(o.in); nd.out = sc(o.out);
+      });
+      writeThrough(l); renderStage(); return;
+    }
+    if (nodeDrag.type === 'pen') {                         // drag past a small dead zone pulls symmetric handles → smooth point
+      const [fxp,fyp] = clientToFont(e);
+      const nd = penDraft && penDraft.nodes[nodeDrag.idx]; if (!nd) return;
+      const dx = fxp - nd.x, dy = fyp - nd.y;
+      if (Math.hypot(dx, dy) > 4) {
+        nd.out = [nd.x + dx, nd.y + dy];
+        nd.in  = [nd.x - dx, nd.y - dy];
+        nd.type = 'smooth';
+      } else { nd.out = null; nd.in = null; nd.type = 'corner'; }
+      _penCursor = [fxp, fyp];
+      renderStage(); return;
+    }
   }
   if (eDrag && curKind !== 'letter') {
     const it = curItem(); const p = it.pieces && it.pieces[editorSel]; if (!p) return;
@@ -5858,11 +5969,19 @@ function onStagePointerMove(e) {
 function onStagePointerUp() {
   if (nodeDrag) {
     if (nodeDrag.type === 'nodes' || nodeDrag.type === 'handle') { _snapHit = null; udPush(nodeDrag.ud); nodeDrag = null; renderStage(); renderControls(); return; }
+    if (nodeDrag.type === 'bboxmove' || nodeDrag.type === 'bboxscale') {
+      _snapHit = null;
+      const l = curLetter();
+      renestNodeModel(); writeThroughRebuild(l);           // a moved/scaled subset can change nesting (a hole can leave its parent)
+      udPush(nodeDrag.ud); nodeDrag = null;
+      renderGrids(); renderStage(); renderControls(); return;
+    }
+    if (nodeDrag.type === 'pen') { nodeDrag = null; renderStage(); return; }   // draft only — one udDo happens at close
     if (nodeDrag.type === 'marquee') {
       const s = nodeDrag.start, c = nodeDrag.cur || s;
       const x0=Math.min(s[0],c[0]), x1=Math.max(s[0],c[0]), y0=Math.min(s[1],c[1]), y1=Math.max(s[1],c[1]);
       if (!nodeDrag.add) nodeSel.clear();
-      if (nodeModel) nodeModel.contours.forEach((ct,ci) => ct.nodes.forEach((nd,ni) => { const sx=fx(nd.x), sy=fy(nd.y); if (sx>=x0&&sx<=x1&&sy>=y0&&sy<=y1) nodeSel.add(nodeKey(ci,ni)); }));
+      if (nodeModel) nodeModel.contours.forEach((ct,ci) => { if (_hiddenContours.has(ci)) return; ct.nodes.forEach((nd,ni) => { const sx=fx(nd.x), sy=fy(nd.y); if (sx>=x0&&sx<=x1&&sy>=y0&&sy<=y1) nodeSel.add(nodeKey(ci,ni)); }); });
       nodeDrag = null; renderStage(); renderControls(); return;
     }
     nodeDrag = null;
@@ -6246,6 +6365,17 @@ let _snapHit = null;             // {x:target|null, y:target|null} while a node 
 let _suppressAutoTrace = false;  // set only while the empty-glyph delete path enters trace mode (must not auto-retrace)
 let nodeClipboard = null;        // session-only points clipboard — { sourceCp, pastes, contours:[{nodes:[…]}] }
 let _lastNodeClick = { key: null, t: 0 };   // manual double-click detection (survives mid-drag re-renders)
+let _marqueeMode = false;        // M: dragging anywhere (even from a point) rubber-bands instead of moving
+let _penMode = false;            // P: pen tool — click places corners, click-drag places curve points
+let _penEntry = false;           // one-shot: "Draw with pen" on a blank glyph → renderStage seeds an empty model
+let penDraft = null;             // in-progress pen contour {nodes:[…]} — never touches the undo stack
+let _penCursor = null;           // [x,y] font units — rubber-band target + keyboard placement cursor
+let _hiddenContours = new Set(); // session-only per-contour hide (stage/editing only — hidden contours still export)
+let _contoursOpen = false;       // Contours panel disclosure (open ⇒ per-contour tinting on the stage)
+let _filletOpen = false;         // Round-corners disclosure open-state
+let _filletRadius = 25;          // last-used fillet radius (session)
+let _filletBase = null;          // deep-clone snapshot of nodeModel during a live fillet-slider burst
+const NODE_TINTS = ['#e05252', '#2a8f5b', '#2a6dd9', '#c9922a', '#9245c9', '#0f9bb0', '#c94590', '#6b7c2a'];   // editing aid only — never exported or persisted
 function nodeKey(ci, ni) { return ci + ':' + ni; }
 function nodeIsSmooth(nd) {
   if (!nd.in || !nd.out) return false;
@@ -6425,17 +6555,35 @@ function nudgeSelectedNodes(dx, dy) {
    `i` splits the segment after the selected node. */
 function _flatNodeKeys() {
   const keys = [];
-  if (nodeModel) nodeModel.contours.forEach((ct, ci) => ct.nodes.forEach((nd, ni) => keys.push(nodeKey(ci, ni))));
+  if (nodeModel) nodeModel.contours.forEach((ct, ci) => { if (_hiddenContours.has(ci)) return; ct.nodes.forEach((nd, ni) => keys.push(nodeKey(ci, ni))); });   // hidden contours are non-interactive
   return keys;
 }
-function cycleNodeSel(dir) {
+function cycleNodeSel(dir, extend) {
   if (!nodeModel) return;
   const keys = _flatNodeKeys(); if (!keys.length) return;
   let idx = -1;
-  for (let i = 0; i < keys.length; i++) if (nodeSel.has(keys[i])) { idx = i; break; }   // first selected in flat order
+  if (extend && nodeSel.size) {                       // Shift: step from the run's leading edge and ADD the neighbour
+    for (let i = 0; i < keys.length; i++) {
+      const at = dir > 0 ? keys.length - 1 - i : i;   // last selected for forward, first for backward
+      if (nodeSel.has(keys[at])) { idx = at; break; }
+    }
+  } else {
+    for (let i = 0; i < keys.length; i++) if (nodeSel.has(keys[i])) { idx = i; break; }   // first selected in flat order
+  }
   const next = idx === -1 ? (dir > 0 ? 0 : keys.length - 1) : (idx + dir + keys.length) % keys.length;
-  nodeSel.clear(); nodeSel.add(keys[next]);
+  if (!extend) nodeSel.clear();
+  nodeSel.add(keys[next]);
   renderStage(); renderControls();
+}
+function selectAllNodes() {
+  if (!nodeModel) return;
+  nodeSel = new Set(_flatNodeKeys());
+  renderStage(); renderControls();
+}
+function setMarqueeMode(on) {
+  _marqueeMode = !!on;
+  if (_marqueeMode && _penMode) { penDiscard(); _penMode = false; }   // modes are exclusive
+  renderStage(); renderControls(); renderLegend();
 }
 function insertNodeAfterSel() {                       // keyboard twin of Alt-click: split the segment after the selected node at its midpoint
   if (!nodeModel) return;
@@ -6452,19 +6600,22 @@ function insertNodeAfterSel() {                       // keyboard twin of Alt-cl
 function nodeOverlaySVG() {
   if (!nodeModel) return '';
   let h = '';
-  nodeModel.contours.forEach((ct, ci) => ct.nodes.forEach((nd, ni) => {   // handles (under markers) for selected nodes
+  nodeModel.contours.forEach((ct, ci) => { if (_hiddenContours.has(ci)) return; ct.nodes.forEach((nd, ni) => {   // handles (under markers) for selected nodes
     if (!nodeSel.has(nodeKey(ci,ni))) return;
     [['in',nd.in],['out',nd.out]].forEach(([which,hp]) => {
       if (!hp) return;
       h += `<line class="node-hline" x1="${fx(nd.x).toFixed(1)}" y1="${fy(nd.y).toFixed(1)}" x2="${fx(hp[0]).toFixed(1)}" y2="${fy(hp[1]).toFixed(1)}"/>`;
       h += `<circle class="node-h" data-ci="${ci}" data-ni="${ni}" data-which="${which}" cx="${fx(hp[0]).toFixed(1)}" cy="${fy(hp[1]).toFixed(1)}" r="4"/>`;
     });
-  }));
-  nodeModel.contours.forEach((ct, ci) => ct.nodes.forEach((nd, ni) => {   // node markers on top (□ corner, ○ smooth)
-    const sel = nodeSel.has(nodeKey(ci,ni)) ? ' sel' : '', x = fx(nd.x), y = fy(nd.y);
-    if (nd.type === 'smooth') h += `<circle class="node-pt${sel}" data-ci="${ci}" data-ni="${ni}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4.5"/>`;
-    else h += `<rect class="node-pt${sel}" data-ci="${ci}" data-ni="${ni}" x="${(x-4).toFixed(1)}" y="${(y-4).toFixed(1)}" width="8" height="8"/>`;
-  }));
+  }); });
+  nodeModel.contours.forEach((ct, ci) => { if (_hiddenContours.has(ci)) return;
+    const tint = _contoursOpen ? ` style="stroke:${NODE_TINTS[ci % NODE_TINTS.length]}"` : '';   // per-contour tint while the Contours panel is open
+    ct.nodes.forEach((nd, ni) => {   // node markers on top (□ corner, ○ smooth)
+      const sel = nodeSel.has(nodeKey(ci,ni)) ? ' sel' : '', x = fx(nd.x), y = fy(nd.y);
+      if (nd.type === 'smooth') h += `<circle class="node-pt${sel}" data-ci="${ci}" data-ni="${ni}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4.5"${tint}/>`;
+      else h += `<rect class="node-pt${sel}" data-ci="${ci}" data-ni="${ni}" x="${(x-4).toFixed(1)}" y="${(y-4).toFixed(1)}" width="8" height="8"${tint}/>`;
+    });
+  });
   return h;
 }
 /* Snap targets for node drags — VISIBLE reference lines only (a hidden line can't be highlighted,
@@ -6483,18 +6634,29 @@ function snapTolFont() {   // ≈6 screen px in font units at the current zoom (
   const ctm = stage().getScreenCTM();
   return 6 / (((ctm && ctm.a) || 1) * SC);
 }
+function _startMarquee(e) {   // shared marquee start (bg drag + M-mode drags from markers/handles)
+  nodeDrag = { type:'marquee', start: clientToStage(e), add: e.shiftKey };
+  stage().setPointerCapture(e.pointerId); e.preventDefault();
+}
 function attachNodeEditor(l) {
   const sv = stage();
+  if (_penMode) return;   // pen owns the stage — markers are display-only while drawing
   sv.querySelectorAll('.node-pt').forEach(el => el.addEventListener('pointerdown', e => {
     e.stopPropagation();
+    if (_marqueeMode) { _startMarquee(e); return; }     // M: rubber-band even when starting on a point
     const ci=+el.dataset.ci, ni=+el.dataset.ni, key=nodeKey(ci,ni), now=Date.now();
+    if (e.ctrlKey || e.metaKey) {                       // Ctrl/Cmd+click toggles membership (Cmd on macOS)
+      _lastNodeClick = { key:null, t:0 };               // never arm the double-click window from a ctrl-click
+      if (nodeSel.has(key)) nodeSel.delete(key); else nodeSel.add(key);
+      renderStage(); renderControls(); e.preventDefault(); return;
+    }
     if (_lastNodeClick.key === key && now - _lastNodeClick.t < 350) {   // manual double-click → toggle smooth/corner
       _lastNodeClick = { key:null, t:0 };
       udDo([itemScope()], 'smooth/corner — ' + l.name, () => { toggleNodeSmooth(ci, ni); writeThrough(l); });
       renderStage(); renderControls(); return;
     }
     _lastNodeClick = { key, t: now };
-    if (e.shiftKey) { if (nodeSel.has(key)) nodeSel.delete(key); else nodeSel.add(key); renderStage(); renderControls(); return; }
+    if (e.shiftKey) { nodeSel.add(key); renderStage(); renderControls(); return; }   // Shift+click ADDS (mirror of Shift+marquee)
     if (!nodeSel.has(key)) { nodeSel.clear(); nodeSel.add(key); }
     const orig = new Map();
     nodeSel.forEach(k => { const [c,i]=k.split(':').map(Number), nd=nodeModel.contours[c]?.nodes[i]; if (nd) orig.set(k, { x:nd.x, y:nd.y, in: nd.in?nd.in.slice():null, out: nd.out?nd.out.slice():null }); });
@@ -6504,24 +6666,56 @@ function attachNodeEditor(l) {
   }));
   sv.querySelectorAll('.node-h').forEach(el => el.addEventListener('pointerdown', e => {
     e.stopPropagation();
+    if (_marqueeMode) { _startMarquee(e); return; }
     nodeDrag = { type:'handle', ci:+el.dataset.ci, ni:+el.dataset.ni, which: el.dataset.which, ud: udCapture([itemScope()], 'move handle — ' + l.name) };
     sv.setPointerCapture(e.pointerId); e.preventDefault();
   }));
+  sv.querySelectorAll('.seg-mid').forEach(el => el.addEventListener('pointerdown', e => {
+    e.stopPropagation(); e.preventDefault();
+    if (_marqueeMode) { _startMarquee(e); return; }
+    toggleSegType(+el.dataset.ci, +el.dataset.si);
+  }));
+  sv.querySelectorAll('.node-bb-h').forEach(el => el.addEventListener('pointerdown', e => {
+    e.stopPropagation();
+    if (_marqueeMode) { _startMarquee(e); return; }
+    const bb = nodeSelBBox(); if (!bb) return;
+    const orig = new Map();
+    nodeSel.forEach(k => { const [c,i]=k.split(':').map(Number), nd=nodeModel.contours[c]?.nodes[i]; if (nd) orig.set(k, { x:nd.x, y:nd.y, in: nd.in?nd.in.slice():null, out: nd.out?nd.out.slice():null }); });
+    nodeDrag = { type:'bboxscale', spec: nodeBBoxHandleSpec(el.dataset.c, bb), orig, ud: udCapture([itemScope()], 'scale points — ' + l.name) };
+    sv.setPointerCapture(e.pointerId); e.preventDefault();
+  }));
+  sv.querySelectorAll('.node-bb-fill').forEach(el => el.addEventListener('pointerdown', e => {
+    e.stopPropagation();
+    if (_marqueeMode) { _startMarquee(e); return; }
+    const bb = nodeSelBBox(); if (!bb) return;
+    const orig = new Map();
+    nodeSel.forEach(k => { const [c,i]=k.split(':').map(Number), nd=nodeModel.contours[c]?.nodes[i]; if (nd) orig.set(k, { x:nd.x, y:nd.y, in: nd.in?nd.in.slice():null, out: nd.out?nd.out.slice():null }); });
+    _snapHit = null;
+    nodeDrag = { type:'bboxmove', startFont: clientToFont(e), bbox0: bb, orig, snap: collectSnapTargets(), ud: udCapture([itemScope()], 'move points — ' + l.name) };
+    sv.setPointerCapture(e.pointerId); e.preventDefault();
+  }));
 }
-function onStageBgPointerDown(e) {                    // marquee / Alt-insert (markers & handles stopPropagation, so this only fires for empty/image/glyph)
+function onStageBgPointerDown(e) {                    // pen / marquee / Alt-insert (markers & handles stopPropagation, so this only fires for empty/image/glyph)
   if (workMode !== 'nodes' || curKind !== 'letter' || !nodeModel) return;
+  if (_penMode) { penPointerDown(e); return; }        // pen owns every stage click while active
   const sv = stage();
   if (e.altKey) {
     const [fxp,fyp] = clientToFont(e);
     udDo([itemScope()], 'insert point — ' + curLetter().name, () => { if (insertNodeAt(fxp,fyp) !== false) writeThrough(curLetter()); });
     renderStage(); renderControls(); return;
   }
-  nodeDrag = { type:'marquee', start: clientToStage(e), add: e.shiftKey };
-  sv.setPointerCapture(e.pointerId); e.preventDefault();
+  _startMarquee(e);
 }
 function toggleNodeEdit() {
-  if (curKind !== 'letter' || !curLetter().contours) return;
-  setWorkMode(workMode === 'nodes' ? 'trace' : 'nodes');
+  if (curKind !== 'letter') return;
+  const l = curLetter();
+  if (workMode === 'nodes') {
+    // leaving node mode with nothing drawn (abandoned pen entry on a blank glyph) must not auto-trace an image
+    if (!l.contours) { _suppressAutoTrace = true; setWorkMode('trace'); _suppressAutoTrace = false; return; }
+    setWorkMode('trace'); return;
+  }
+  if (!l.contours) return;                            // entry on a blank glyph goes through drawWithPen()
+  setWorkMode('nodes');
 }
 function setSelectedNodeType(type) {
   if (!nodeModel || !nodeSel.size) return;
@@ -6532,23 +6726,398 @@ function setSelectedNodeType(type) {
   });
   renderStage(); renderControls();
 }
+
+/* ── Segment type toggles: a segment is a cubic iff both facing handles exist (modelToCurves),
+      so line↔curve is purely adding/removing handles. Line→curve synthesizes collinear ⅓/⅔-chord
+      controls — the segment renders IDENTICALLY at the moment of conversion, then becomes editable. ── */
+function segIsCurve(ct, k) { const n = ct.nodes.length; return !!(ct.nodes[k].out && ct.nodes[(k+1)%n].in); }
+function segToCurve(ct, k) {
+  const n = ct.nodes.length, a = ct.nodes[k], b = ct.nodes[(k+1)%n];
+  if (segIsCurve(ct, k)) return false;
+  a.out = _lerp([a.x,a.y], [b.x,b.y], 1/3);
+  b.in  = _lerp([a.x,a.y], [b.x,b.y], 2/3);
+  a.type = nodeIsSmooth(a) ? 'smooth' : 'corner';
+  b.type = nodeIsSmooth(b) ? 'smooth' : 'corner';
+  return true;
+}
+function segToLine(ct, k) {
+  const n = ct.nodes.length, a = ct.nodes[k], b = ct.nodes[(k+1)%n];
+  if (!segIsCurve(ct, k)) return false;
+  a.out = null; b.in = null;
+  a.type = nodeIsSmooth(a) ? 'smooth' : 'corner';
+  b.type = nodeIsSmooth(b) ? 'smooth' : 'corner';
+  return true;
+}
+function toggleSegType(ci, si) {   // midpoint-marker click
+  if (!nodeModel) return;
+  const ct = nodeModel.contours[ci]; if (!ct) return;
+  const l = curLetter(), toCurve = !segIsCurve(ct, si);
+  udDo([itemScope()], (toCurve ? 'segment to curve — ' : 'segment to line — ') + l.name, () => {
+    (toCurve ? segToCurve : segToLine)(ct, si);
+    writeThrough(l);
+  });
+  renderStage(); renderControls();
+}
+function setSelectedSegsType(toCurve) {   // keyboard/panel path: every segment whose BOTH endpoints are selected
+  if (!nodeModel || nodeSel.size < 2) return;
+  const l = curLetter(); let count = 0;
+  udDo([itemScope()], (toCurve ? 'segments to curve — ' : 'segments to line — ') + l.name, () => {
+    nodeModel.contours.forEach((ct, ci) => {
+      const n = ct.nodes.length;
+      for (let k = 0; k < n; k++)
+        if (nodeSel.has(nodeKey(ci, k)) && nodeSel.has(nodeKey(ci, (k+1)%n)))
+          if ((toCurve ? segToCurve : segToLine)(ct, k)) count++;
+    });
+    if (count) writeThrough(l);
+  });
+  renderStage(); renderControls();
+  status(count ? `Converted ${count} segment${count>1?'s':''} to ${toCurve?'curves':'lines'}.`
+               : 'No segments between selected points — select two neighbouring points.');
+}
+function retractSelectedHandles() {   // fully straighten: selected nodes lose their handles AND the facing neighbour handles
+  if (!nodeModel || !nodeSel.size) return;            // (a stale facing handle would silently resurrect a curve later)
+  const l = curLetter();
+  udDo([itemScope()], 'retract handles — ' + l.name, () => {
+    nodeSel.forEach(key => {
+      const [ci,ni] = key.split(':').map(Number), ct = nodeModel.contours[ci]; if (!ct) return;
+      const n = ct.nodes.length, nd = ct.nodes[ni]; if (!nd) return;
+      const prev = ct.nodes[(ni-1+n)%n], next = ct.nodes[(ni+1)%n];
+      nd.in = null; nd.out = null; nd.type = 'corner';
+      prev.out = null; next.in = null;
+      prev.type = nodeIsSmooth(prev) ? 'smooth' : 'corner';
+      next.type = nodeIsSmooth(next) ? 'smooth' : 'corner';
+    });
+    writeThrough(l);
+  });
+  renderStage(); renderControls();
+}
+/* Midpoint affordances — click to toggle line↔curve. All segments when the glyph is small; on huge
+   polygon imports (hundreds of nodes) only segments adjacent to the selection get markers. */
+function segMidMarkersSVG() {
+  if (!nodeModel || _penMode) return '';
+  const totalSegs = nodeModel.contours.reduce((s, ct) => s + ct.nodes.length, 0);
+  const selOnly = totalSegs > 400;
+  let h = '';
+  nodeModel.contours.forEach((ct, ci) => {
+    if (_hiddenContours.has(ci)) return;
+    const n = ct.nodes.length;
+    for (let k = 0; k < n; k++) {
+      if (selOnly && !(nodeSel.has(nodeKey(ci, k)) || nodeSel.has(nodeKey(ci, (k+1)%n)))) continue;
+      const a = ct.nodes[k], b = ct.nodes[(k+1)%n];
+      const mid = (a.out && b.in) ? _bezEval([[a.x,a.y], a.out, b.in, [b.x,b.y]], 0.5)
+                                  : [(a.x+b.x)/2, (a.y+b.y)/2];
+      h += `<circle class="seg-mid" data-ci="${ci}" data-si="${k}" cx="${fx(mid[0]).toFixed(1)}" cy="${fy(mid[1]).toFixed(1)}" r="3"><title>${segIsCurve(ct,k) ? 'Curve segment — click to make it a straight line' : 'Line segment — click to make it a curve'}</title></circle>`;
+    }
+  });
+  return h;
+}
+
+/* ── Selection bounding box: move + scale handles, cloning align mode's ◻/▭ vocabulary
+      (no rotate — the Transform disclosure has it). Font-unit space, y-up. ── */
+function nodeSelBBox() {
+  if (!nodeModel || nodeSel.size < 2) return null;
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity, any = false;
+  nodeSel.forEach(k => { const [c,i]=k.split(':').map(Number), nd=nodeModel.contours[c]?.nodes[i]; if (!nd) return;
+    any = true; x0=Math.min(x0,nd.x); x1=Math.max(x1,nd.x); y0=Math.min(y0,nd.y); y1=Math.max(y1,nd.y); });
+  return any ? { x0, y0, x1, y1 } : null;
+}
+function nodeBBoxHandleSpec(handle, bb) {   // font-space analog of scaleHandleSpec (y-up: 't' grabs y1)
+  const cx = (bb.x0+bb.x1)/2, cy = (bb.y0+bb.y1)/2;
+  switch (handle) {
+    case 'tl': return { fixed:[bb.x1,bb.y0], grab:[bb.x0,bb.y1], axes:'xy' };
+    case 'tr': return { fixed:[bb.x0,bb.y0], grab:[bb.x1,bb.y1], axes:'xy' };
+    case 'br': return { fixed:[bb.x0,bb.y1], grab:[bb.x1,bb.y0], axes:'xy' };
+    case 'bl': return { fixed:[bb.x1,bb.y1], grab:[bb.x0,bb.y0], axes:'xy' };
+    case 'l':  return { fixed:[bb.x1,cy], grab:[bb.x0,cy], axes:'x' };
+    case 'r':  return { fixed:[bb.x0,cy], grab:[bb.x1,cy], axes:'x' };
+    case 't':  return { fixed:[cx,bb.y0], grab:[cx,bb.y1], axes:'y' };
+    case 'b':  return { fixed:[cx,bb.y1], grab:[cx,bb.y0], axes:'y' };
+    default:   return { fixed:[bb.x1,bb.y0], grab:[bb.x0,bb.y1], axes:'xy' };
+  }
+}
+function nodeSelBBoxSVG() {
+  if (_penMode || _marqueeMode || (nodeDrag && nodeDrag.type === 'marquee')) return { under:'', over:'' };
+  const bb = nodeSelBBox(); if (!bb) return { under:'', over:'' };
+  const X0 = fx(bb.x0), X1 = fx(bb.x1), Y0 = fy(bb.y1), Y1 = fy(bb.y0);   // stage px (y flips)
+  let under = `<rect class="node-bb-fill" x="${X0}" y="${Y0}" width="${X1-X0}" height="${Y1-Y0}"/>`;
+  under += `<rect class="node-bb-outline" x="${X0}" y="${Y0}" width="${X1-X0}" height="${Y1-Y0}"/>`;
+  const hs = 6, corners = [['tl',X0,Y0,'nwse-resize'],['tr',X1,Y0,'nesw-resize'],['br',X1,Y1,'nwse-resize'],['bl',X0,Y1,'nesw-resize']];
+  let over = '';
+  corners.forEach(([k,x,y,cur]) => {
+    over += `<rect class="node-bb-h" data-c="${k}" x="${x-hs}" y="${y-hs}" width="${hs*2}" height="${hs*2}" fill="#fff" stroke="var(--navy)" stroke-width="1.4" style="cursor:${cur}"><title>Scale (Shift = uniform)</title></rect>`;
+  });
+  const mx = (X0+X1)/2, my = (Y0+Y1)/2;
+  [['t',mx,Y0,'ns-resize',9,5],['b',mx,Y1,'ns-resize',9,5],['l',X0,my,'ew-resize',5,9],['r',X1,my,'ew-resize',5,9]].forEach(([k,x,y,cur,ew,eh]) => {
+    over += `<rect class="node-bb-h" data-c="${k}" x="${x-ew}" y="${y-eh}" width="${ew*2}" height="${eh*2}" rx="2" fill="var(--gold)" stroke="#fff" stroke-width="1.2" style="cursor:${cur}"><title>Scale one axis (Shift = uniform)</title></rect>`;
+  });
+  return { under, over };
+}
+
+/* ── Round corners (fillet): replace selected □ corner points with a circular-arc cubic.
+      Post-hoc outline edit — unlike the Trace step's Corners slider, which changes how a re-trace fits. ── */
+function _splitSegAt(ct, k, t) {   // De Casteljau/lerp split of segment k at parameter t → inserts a node after k, returns it
+  const n = ct.nodes.length, a = ct.nodes[k], b = ct.nodes[(k+1)%n];
+  let nd;
+  if (a.out && b.in) {
+    const p0=[a.x,a.y], p1=a.out, p2=b.in, p3=[b.x,b.y];
+    const A=_lerp(p0,p1,t), Bc=_lerp(p1,p2,t), Cc=_lerp(p2,p3,t);
+    const D=_lerp(A,Bc,t), E=_lerp(Bc,Cc,t), F=_lerp(D,E,t);
+    a.out = A; b.in = Cc;
+    nd = { x:F[0], y:F[1], in:D, out:E, type:'smooth' };
+  } else {
+    const p = _lerp([a.x,a.y],[b.x,b.y],t);
+    nd = { x:p[0], y:p[1], in:null, out:null, type:'corner' };
+  }
+  ct.nodes.splice(k+1, 0, nd);
+  return nd;
+}
+function _segChordLen(ct, k) {
+  const n = ct.nodes.length, a = ct.nodes[k], b = ct.nodes[(k+1)%n];
+  return Math.hypot(b.x-a.x, b.y-a.y);
+}
+function filletSelectedCorners(r) {   // pure op on nodeModel + nodeSel; returns {done, skipped, newKeys}
+  let done = 0, skipped = 0; const newKeys = [];
+  const byC = {};
+  nodeSel.forEach(key => { const [ci,ni]=key.split(':').map(Number); (byC[ci]=byC[ci]||[]).push(ni); });
+  Object.keys(byC).map(Number).sort((a,b)=>a-b).forEach(ci => {
+    const ct = nodeModel.contours[ci]; if (!ct) return;
+    byC[ci].sort((a,b)=>b-a).forEach(ni => {          // descending: each fillet splices 1→2 AFTER ni-1, lower indices stay valid
+      const n = ct.nodes.length, nd = ct.nodes[ni];
+      if (!nd || nd.type !== 'corner') return;        // corners only (not counted as skipped)
+      const prevI = (ni-1+n)%n;
+      const lenIn = _segChordLen(ct, prevI), lenOut = _segChordLen(ct, ni);
+      if (r > 0.45*lenIn || r > 0.45*lenOut) { skipped++; return; }
+      const prev = ct.nodes[prevI], next = ct.nodes[(ni+1)%n];
+      // unit tangents INTO and OUT OF the corner (chord approximations — visual quality is the bar)
+      const tin  = _vNorm([nd.x-prev.x, nd.y-prev.y]);
+      const tout = _vNorm([next.x-nd.x, next.y-nd.y]);
+      if ((!tin[0]&&!tin[1]) || (!tout[0]&&!tout[1])) { skipped++; return; }
+      const dot = Math.max(-1, Math.min(1, _vDot(tin, tout)));
+      const phi = Math.acos(dot);                     // turn angle
+      if (phi < 0.03) return;                         // effectively straight — nothing to round
+      const kap = (4/3) * Math.tan(phi/4) * r;        // circular-arc cubic handle length
+      // split the outgoing segment first (indices after ni), then the incoming (indices before ni)
+      const tOut = Math.min(0.9, r/lenOut);
+      const pOut = _splitSegAt(ct, ni, tOut);         // trim point leaving the corner (now at ni+1)
+      const tIn = Math.max(0.1, 1 - r/lenIn);
+      const pIn = _splitSegAt(ct, prevI, tIn);        // trim point entering the corner (now at ni — corner moved to ni+1)
+      const cornerIdx = ni + 1;                       // after both splices
+      // arc: pIn → corner's old position → pOut, as one cubic
+      pIn.out  = [pIn.x + tin[0]*kap,  pIn.y + tin[1]*kap];
+      pOut.in  = [pOut.x - tout[0]*kap, pOut.y - tout[1]*kap];
+      pIn.type = nodeIsSmooth(pIn) ? 'smooth' : 'corner';
+      pOut.type = nodeIsSmooth(pOut) ? 'smooth' : 'corner';
+      ct.nodes.splice(cornerIdx, 1);                  // remove the sharp corner — pIn/pOut now join directly
+      done++;
+      const iIn = ct.nodes.indexOf(pIn), iOut = ct.nodes.indexOf(pOut);
+      if (iIn >= 0) newKeys.push(nodeKey(ci, iIn));
+      if (iOut >= 0) newKeys.push(nodeKey(ci, iOut));
+    });
+  });
+  return { done, skipped, newKeys };
+}
+function filletLiveInput(v) {
+  if (!nodeModel || !nodeSel.size) return;
+  const l = curLetter();
+  _filletRadius = Math.max(5, Math.min(120, +v || 25));
+  if (!_filletBase) {
+    udBurstBegin([itemScope()], 'round corners — ' + l.name);
+    _filletBase = { model: JSON.parse(JSON.stringify(nodeModel)), sel: new Set(nodeSel) };
+  }
+  nodeModel = JSON.parse(JSON.stringify(_filletBase.model));
+  nodeSel = new Set(_filletBase.sel);
+  _filletLast = filletSelectedCorners(_filletRadius);
+  writeThrough(l);
+  renderStage();
+  const rv = document.getElementById('filletRadV'); if (rv) rv.textContent = _filletRadius;
+}
+let _filletLast = null;
+function filletCommit() {
+  if (!_filletBase) return;
+  udBurstCommit();
+  const res = _filletLast || { done:0, skipped:0, newKeys:[] };
+  nodeSel = new Set(res.newKeys);
+  _filletBase = null; _filletLast = null;
+  status(`Smoothed ${res.done} corner${res.done===1?'':'s'}` + (res.skipped ? `, skipped ${res.skipped} (too tight for this radius).` : '.'));
+  renderStage(); renderControls();
+}
+function filletApply() {   // keyboard/precision path — one udDo, no slider burst
+  if (!nodeModel || !nodeSel.size) return;
+  const l = curLetter(); let res;
+  udDo([itemScope()], 'round corners — ' + l.name, () => {
+    res = filletSelectedCorners(_filletRadius);
+    if (res.done) writeThrough(l);
+  });
+  nodeSel = new Set(res.newKeys);
+  status(`Smoothed ${res.done} corner${res.done===1?'':'s'}` + (res.skipped ? `, skipped ${res.skipped} (too tight for this radius).` : '.'));
+  renderStage(); renderControls();
+}
+
+/* ── Pen tool: draw a new closed contour point by point. Click = corner; click-drag = curve point
+      (drag pulls symmetric handles); Alt+click = curve point with default ⅓-chord handles (the
+      node-model equivalent of placing an off-curve point — quick curves without dragging).
+      Contours must close (≥3 points); a contour drawn inside another becomes a hole automatically. ── */
+function togglePenMode() {
+  if (!nodeModel) return;
+  if (_penMode) { penDiscard(); _penMode = false; }
+  else { _penMode = true; _marqueeMode = false; nodeSel.clear(); _penCursor = _penCursor || [300, 300]; }
+  renderStage(); renderControls(); renderLegend();
+}
+function drawWithPen() {   // entry for blank glyphs (digits etc.) — seeds an empty model, straight into pen mode
+  if (curKind !== 'letter') return;
+  _penEntry = true;
+  setWorkMode('nodes');
+}
+function penPointerDown(e) {
+  const [rx, ry] = clientToFont(e);
+  let p = [rx, ry];
+  if (snapGuidesOn() && !e.altKey) {                  // pen clicks snap to guides/metrics (Alt bypasses; Alt also = quick-curve)
+    const tg = collectSnapTargets(), tol = snapTolFont();
+    let bx = null, by = null;
+    tg.xs.forEach(t => { const d = Math.abs(t.v - p[0]); if (d <= tol && (!bx || d < bx.d)) bx = { t, d }; });
+    tg.ys.forEach(t => { const d = Math.abs(t.v - p[1]); if (d <= tol && (!by || d < by.d)) by = { t, d }; });
+    if (bx) p[0] = bx.t.v;
+    if (by) p[1] = by.t.v;
+  }
+  if (penDraft && penDraft.nodes.length >= 3) {       // click on the first point closes the contour
+    const f = penDraft.nodes[0], ctm = stage().getScreenCTM();
+    const hitR = 10 / (((ctm && ctm.a) || 1) * SC);
+    if (Math.hypot(rx - f.x, ry - f.y) <= hitR) { closePenContour(); return; }
+  }
+  penPlacePoint(p, e.altKey);
+  nodeDrag = { type:'pen', idx: penDraft.nodes.length - 1, start: p };
+  stage().setPointerCapture(e.pointerId); e.preventDefault();
+}
+function penPlacePoint(p, alt) {
+  if (!penDraft) penDraft = { nodes: [] };
+  const nd = { x: p[0], y: p[1], in: null, out: null, type: 'corner' };
+  const prev = penDraft.nodes[penDraft.nodes.length - 1];
+  if (alt && prev) {                                  // quick-curve: symmetric handles ⅓ of the previous chord
+    const chord = Math.hypot(p[0]-prev.x, p[1]-prev.y) / 3;
+    const dir = _vNorm([p[0]-prev.x, p[1]-prev.y]);
+    if (dir[0] || dir[1]) {
+      nd.in  = [p[0] - dir[0]*chord, p[1] - dir[1]*chord];
+      nd.out = [p[0] + dir[0]*chord, p[1] + dir[1]*chord];
+      nd.type = 'smooth';
+      if (!prev.out) prev.out = [prev.x + dir[0]*chord, prev.y + dir[1]*chord];
+    }
+  }
+  penDraft.nodes.push(nd);
+  _penCursor = p.slice();
+  renderStage();
+}
+function closePenContour() {
+  if (!penDraft || penDraft.nodes.length < 3) { status('Place at least 3 points, then click the first point (or press Enter) to close.'); return; }
+  const l = curLetter(), count = penDraft.nodes.length;
+  const nodes = penDraft.nodes.map(nd => ({ x:nd.x, y:nd.y, in: nd.in?nd.in.slice():null, out: nd.out?nd.out.slice():null, type: nd.type }));
+  penDraft = null; _penMode = false; _hiddenContours.clear();
+  const first = nodeModel.contours.length;
+  udDo([itemScope()], 'pen contour — ' + l.name, () => {
+    nodeModel.contours.push({ winding: 'cw', nodes });   // provisional — renest decides
+    renestNodeModel(); writeThroughRebuild(l);
+  });
+  nodeSel.clear();
+  nodeModel.contours[first].nodes.forEach((_, ni) => nodeSel.add(nodeKey(first, ni)));
+  const holed = nodeModel.contours[first].winding === 'ccw';
+  renderGrids(); renderStage(); renderControls(); renderLegend();
+  status(`Drew a ${count}-point contour.` + (holed ? ' It landed inside another contour, so it punched out as a hole.' : ''));
+}
+function penDiscard() { penDraft = null; renderStage(); }
+function penPreviewSVG() {
+  if (!_penMode) return '';
+  let h = '';
+  if (penDraft && penDraft.nodes.length) {
+    const nds = penDraft.nodes;
+    let d = `M${fx(nds[0].x).toFixed(1)} ${fy(nds[0].y).toFixed(1)} `;
+    for (let k = 1; k < nds.length; k++) {
+      const a = nds[k-1], b = nds[k];
+      if (a.out && b.in) d += `C${fx(a.out[0]).toFixed(1)} ${fy(a.out[1]).toFixed(1)} ${fx(b.in[0]).toFixed(1)} ${fy(b.in[1]).toFixed(1)} ${fx(b.x).toFixed(1)} ${fy(b.y).toFixed(1)} `;
+      else d += `L${fx(b.x).toFixed(1)} ${fy(b.y).toFixed(1)} `;
+    }
+    h += `<path class="pen-path" d="${d}" fill="none"/>`;
+    nds.forEach((nd, i) => {
+      h += `<circle class="pen-pt${i===0?' pen-first':''}" cx="${fx(nd.x).toFixed(1)}" cy="${fy(nd.y).toFixed(1)}" r="${i===0?5:3.5}"/>`;
+    });
+    if (_penCursor) {
+      const last = nds[nds.length-1];
+      h += `<line id="penRubber" x1="${fx(last.x).toFixed(1)}" y1="${fy(last.y).toFixed(1)}" x2="${fx(_penCursor[0]).toFixed(1)}" y2="${fy(_penCursor[1]).toFixed(1)}"/>`;
+    }
+  }
+  if (_penCursor) {
+    const cx = fx(_penCursor[0]).toFixed(1), cy = fy(_penCursor[1]).toFixed(1);
+    h += `<g id="penCross" transform="translate(${cx} ${cy})" pointer-events="none"><line x1="-8" y1="0" x2="8" y2="0"/><line x1="0" y1="-8" x2="0" y2="8"/></g>`;
+  }
+  return h;
+}
+
+/* ── Contours panel: one row per contour — tint swatch, hide-while-editing eye (still exports),
+      ○ hole / ● fill from winding, select, delete. Editing aid only; nothing here persists. ── */
+function selectContourNodes(ci, add) {
+  if (!nodeModel || !nodeModel.contours[ci]) return;
+  if (!add) nodeSel.clear();
+  nodeModel.contours[ci].nodes.forEach((_, ni) => nodeSel.add(nodeKey(ci, ni)));
+  renderStage(); renderControls();
+}
+function toggleContourVisibility(ci) {
+  if (_hiddenContours.has(ci)) _hiddenContours.delete(ci); else _hiddenContours.add(ci);
+  nodeSel.forEach(k => { if (+k.split(':')[0] === ci) nodeSel.delete(k); });   // hidden ⇒ non-interactive ⇒ not selected
+  renderStage(); renderControls();
+}
+function deleteContourByIndex(ci) {
+  if (!nodeModel || !nodeModel.contours[ci]) return;
+  confirmAndDeleteContours([ci]);
+}
+function contourTintOverlaySVG(l) {
+  if (!_contoursOpen || !nodeModel) return '';
+  let h = '';
+  const aligned = l.curves && l.curves.length === (l.contours || []).length;
+  (l.contours || []).forEach((c, ci) => {
+    if (_hiddenContours.has(ci)) return;
+    h += `<path d="${contoursToPath([c], aligned ? [l.curves[ci]] : null)}" fill="none" stroke="${NODE_TINTS[ci % NODE_TINTS.length]}" stroke-width="1.6" opacity="0.9" pointer-events="none"/>`;
+  });
+  return h;
+}
+function contoursPanelHTML() {
+  if (!nodeModel) return '';
+  const rows = nodeModel.contours.map((ct, ci) => {
+    const hid = _hiddenContours.has(ci), tint = NODE_TINTS[ci % NODE_TINTS.length];
+    const hole = ct.winding === 'ccw';
+    return `<div class="ct-row${hid ? ' hid' : ''}">
+      <span class="ct-swatch" style="background:${tint};" aria-hidden="true"></span>
+      <span class="ct-kind" title="${hole ? 'Hole (counter)' : 'Filled shape'}" aria-label="${hole ? 'hole' : 'filled'}">${hole ? '○' : '●'}</span>
+      <button type="button" class="ct-name" onclick="selectContourNodes(${ci}, event.shiftKey)" title="Select this contour's points (Shift adds to the selection)">Contour ${ci + 1} — ${ct.nodes.length} pts</button>
+      <button type="button" class="ct-eye" aria-pressed="${hid}" onclick="toggleContourVisibility(${ci})" title="Hide while editing — still exports" aria-label="${hid ? 'Show' : 'Hide'} contour ${ci + 1} while editing (it still exports)">${hid ? '🚫' : '👁'}</button>
+      <button type="button" class="ct-del" onclick="deleteContourByIndex(${ci})" title="Delete this contour" aria-label="Delete contour ${ci + 1}">✕</button>
+    </div>`;
+  }).join('');
+  return `<details class="node-xform node-contours" ${_contoursOpen ? 'open' : ''} ontoggle="_contoursOpen = this.open; renderStage();">
+    <summary>Contours (${nodeModel.contours.length})</summary>
+    <div class="hint" style="margin:4px 0;">Colors and hiding are editing aids only — hidden contours still export and show in previews.</div>
+    ${rows || '<div class="hint">No contours yet — draw one with the pen (P).</div>'}
+  </details>`;
+}
 function doNodeDelete() {
   if (!nodeModel || !nodeSel.size) return;
   const l = curLetter(), err = Math.max(l.epsilon || 0, 1.5), byC = {};
+  let skipped = 0;
   nodeSel.forEach(key => { const [ci,ni]=key.split(':').map(Number); (byC[ci]=byC[ci]||[]).push(ni); });
   udDo([itemScope()], 'delete points — ' + l.name, () => {
-    Object.keys(byC).forEach(ciStr => { const ci=+ciStr, ct=nodeModel.contours[ci]; if (!ct) return; byC[ci].sort((a,b)=>b-a).forEach(ni => { if (ct.nodes.length > 3) rejoinDelete(ct, ni, err); }); });   // descending so splices stay valid
+    Object.keys(byC).forEach(ciStr => { const ci=+ciStr, ct=nodeModel.contours[ci]; if (!ct) return; byC[ci].sort((a,b)=>b-a).forEach(ni => { if (ct.nodes.length > 3) rejoinDelete(ct, ni, err); else skipped++; }); });   // descending so splices stay valid
     writeThrough(l);
   });
   nodeSel.clear(); renderStage(); renderControls();
+  if (skipped) status(`Kept ${skipped} point${skipped>1?'s':''} — a contour needs at least 3. Use Delete contour (Shift+Delete) to remove the whole contour.`);
 }
 /* ── Delete whole contours (stray specks, shadow blobs, template-box remnants) ── */
 function doDeleteContours() {
   if (!nodeModel || !nodeSel.size) return;
-  const l = curLetter();
   const set = new Set(); nodeSel.forEach(k => set.add(+k.split(':')[0]));
-  const doomed = [...set].filter(ci => nodeModel.contours[ci]).sort((a, b) => b - a);
-  if (!doomed.length) return;
+  confirmAndDeleteContours([...set].filter(ci => nodeModel.contours[ci]));
+}
+function confirmAndDeleteContours(doomedIn) {         // shared confirm rules: selection path + Contours-panel rows
+  if (!nodeModel || !doomedIn.length) return;
+  const l = curLetter();
+  const doomed = doomedIn.slice().sort((a, b) => b - a);
   const empties = doomed.length >= nodeModel.contours.length;
   const big = doomed.some(ci => nodeModel.contours[ci].nodes.length > 8);
   const pts = doomed.reduce((s, ci) => s + nodeModel.contours[ci].nodes.length, 0);
@@ -6566,7 +7135,7 @@ function _deleteContoursNow(l, doomed, empties) {
     if (empties) { l.contours = null; l.curves = null; _rawTrace = null; l.handEdited = false; }   // mirror _clearTraceNow (advance + anchors kept)
     else { doomed.forEach(ci => nodeModel.contours.splice(ci, 1)); renestNodeModel(); writeThroughRebuild(l); }   // a hole whose parent died re-nests as filled
   });
-  nodeSel.clear();
+  nodeSel.clear(); _hiddenContours.clear();           // contour indices changed — session-only visibility resets
   if (empties) {
     nodeModel = null;
     _suppressAutoTrace = true; setWorkMode('trace'); _suppressAutoTrace = false;
@@ -6591,7 +7160,7 @@ function doRemoveSpecks() {
     doomed.forEach(ci => nodeModel.contours.splice(ci, 1));
     renestNodeModel(); writeThroughRebuild(l);
   });
-  nodeSel.clear(); renderGrids(); renderStage(); renderControls();
+  nodeSel.clear(); _hiddenContours.clear(); renderGrids(); renderStage(); renderControls();
   status('Removed ' + doomed.length + ' speck contour' + (doomed.length > 1 ? 's' : '') + '.');
 }
 /* ── Copy/paste selected points across letters (session-only clipboard; all glyphs share the same
@@ -6634,7 +7203,7 @@ function pasteNodes() {
         type: nd.type })) }));
     renestNodeModel(); writeThroughRebuild(l);
   });
-  nodeSel.clear();
+  nodeSel.clear(); _hiddenContours.clear();           // contour indices changed — session-only visibility resets
   for (let ci = first; ci < nodeModel.contours.length; ci++)   // pasted nodes become the selection → immediate drag/nudge moves them
     nodeModel.contours[ci].nodes.forEach((_, ni) => nodeSel.add(nodeKey(ci, ni)));
   renderGrids(); renderStage(); renderControls();
@@ -6662,6 +7231,10 @@ function transformSelectedNodes(kind, angleDeg) {
     if (!t) return;
     a = Math.cos(t); b = -Math.sin(t); c = Math.sin(t); d = Math.cos(t);
     label = 'rotate — ';
+  } else if (kind === 'scale') {
+    const s = Math.max(0.02, (+angleDeg || 0) / 100);        // percent; clamped positive — flips belong to Flip H/V
+    if (s === 1) return;
+    a = d = s; label = 'scale — ';
   } else return;
   const ap = p => p ? [cx + a * (p[0] - cx) + b * (p[1] - cy), cy + c * (p[0] - cx) + d * (p[1] - cy)] : null;
   udDo([itemScope()], label + l.name, () => {
@@ -6675,10 +7248,12 @@ function transformSelectedNodes(kind, angleDeg) {
 }
 function nodeEditPanelHTML() {
   const cnt = nodeSel.size, dis = cnt ? '' : 'disabled', M = modKey();
+  const dis2 = cnt >= 2 ? '' : 'disabled';
   return `<div class="ctl-row" style="flex-wrap:wrap;gap:6px;">
     <button class="ctl-btn primary" onclick="toggleNodeEdit()">Done editing</button>
     <button class="ctl-btn" onclick="setSelectedNodeType('smooth')" ${dis}>Smooth</button>
     <button class="ctl-btn" onclick="setSelectedNodeType('corner')" ${dis}>Corner</button>
+    <button class="ctl-btn" onclick="retractSelectedHandles()" title="Straighten both sides of the selected points — corners with no curve handles" ${dis}>Retract handles</button>
     <button class="ctl-btn" onclick="doNodeDelete()" title="Remove the selected point (Delete or Backspace)" ${dis}>Delete</button>
     <span class="readout">${cnt} selected</span>
   </div>
@@ -6687,6 +7262,13 @@ function nodeEditPanelHTML() {
     <button class="ctl-btn" onclick="doRemoveSpecks()" title="Delete all tiny stray contours (under 1% of the largest)">Remove specks</button>
     <button class="ctl-btn" onclick="copySelectedNodes()" title="Copy the selected points as new contour(s) (${M}+C)" ${dis}>Copy</button>
     <button class="ctl-btn" onclick="pasteNodes()" title="Paste the copied contour(s) into this letter (${M}+V)" ${nodeClipboard ? '' : 'disabled'}>Paste</button>
+  </div>
+  <div class="ctl-row" style="flex-wrap:wrap;gap:6px;">
+    <button class="ctl-btn${_penMode ? ' primary' : ''}" aria-pressed="${_penMode}" onclick="togglePenMode()" title="Pen — draw a new contour point by point (P)">✒ Pen${_penMode ? ' ✓' : ''}</button>
+    <button class="ctl-btn" aria-pressed="${_marqueeMode}" onclick="setMarqueeMode(!_marqueeMode)" title="Marquee mode — dragging anywhere box-selects, even from a point (M)">▭ Marquee${_marqueeMode ? ' ✓' : ''}</button>
+    <button class="ctl-btn" onclick="selectAllNodes()" title="Select every point (${M}+A)">Select all</button>
+    <button class="ctl-btn" onclick="setSelectedSegsType(true)" title="Make the segments between adjacent selected points curved" ${dis2}>To curve</button>
+    <button class="ctl-btn" onclick="setSelectedSegsType(false)" title="Make the segments between adjacent selected points straight" ${dis2}>To line</button>
   </div>
   <label class="chk"><input type="checkbox" ${snapGuidesOn() ? 'checked' : ''} onchange="setSnapGuides(this.checked)" aria-label="Snap dragged points to guides and metric lines"> Snap to guides (hold <b>Alt</b> to bypass)</label>
   <details class="node-xform" ${_nodeXformOpen ? 'open' : ''} ontoggle="_nodeXformOpen = this.open">
@@ -6697,13 +7279,28 @@ function nodeEditPanelHTML() {
       <button class="ctl-btn" onclick="transformSelectedNodes('rot', -90)" title="Rotate 90° clockwise">90° ⟳</button>
       <button class="ctl-btn" onclick="transformSelectedNodes('rot', 90)" title="Rotate 90° counter-clockwise">90° ⟲</button>
     </div>
-    <div class="ctl-row" style="gap:6px;align-items:center;margin-top:6px;">
+    <div class="ctl-row" style="gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap;">
       <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;">Angle°
         <input type="number" id="nodeRotAngle" value="0" step="1" style="width:64px;" aria-label="Rotation angle in degrees — positive turns counter-clockwise"></label>
       <button class="ctl-btn" onclick="transformSelectedNodes('rot', +(document.getElementById('nodeRotAngle')||{}).value || 0)" title="Rotate by the angle entered">Apply</button>
+      <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;">Scale %
+        <input type="number" id="nodeScalePct" value="100" step="1" min="2" style="width:64px;" aria-label="Scale percentage about the selection's center — 100 is unchanged"></label>
+      <button class="ctl-btn" onclick="transformSelectedNodes('scale', +(document.getElementById('nodeScalePct')||{}).value || 100)" title="Scale by the percentage entered (about the selection's center)">Apply</button>
     </div>
   </details>
-  <div class="hint">Drag a <b>point</b> to reshape (snaps to guides — hold <b>Alt</b> to bypass) · click to select, drag a box to multi-select (Shift adds) · <b>double-click</b> toggles □ corner / ○ smooth · <b>Alt-click</b> the outline adds a point · <b>Delete</b> removes a point, <b>Shift+Delete</b> its whole contour · <b>${M}+C</b>/<b>${M}+V</b> copy points between letters · arrows nudge exactly (Shift = 25) · keyboard-only: <b>,</b> / <b>.</b> select prev / next point, <b>i</b> inserts one. Every edit exports and undoes (${M}+Z).</div>`;
+  <details class="node-xform" ${_filletOpen ? 'open' : ''} ontoggle="_filletOpen = this.open">
+    <summary>Round corners ${cnt ? `— ${cnt} selected` : ''}</summary>
+    <div class="ctl-row" style="gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap;">
+      <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">Radius <span id="filletRadV" class="readout">${_filletRadius}</span>
+        <input type="range" min="5" max="120" step="1" value="${_filletRadius}" style="flex:1;min-width:90px;"
+               aria-label="Corner rounding radius in font units — previews live, commits on release"
+               oninput="filletLiveInput(this.value)" onchange="filletCommit()"></label>
+      <button class="ctl-btn" onclick="filletApply()" ${dis}>Apply</button>
+    </div>
+    <div class="hint" style="margin:4px 0 0;">Rounds the selected □ corner points on this outline. (The Trace step's <b>Corners</b> slider changes how a re-trace fits instead.)</div>
+  </details>
+  ${contoursPanelHTML()}
+  <div class="hint">Drag a <b>point</b> to reshape (snaps to guides — hold <b>Alt</b> to bypass) · click selects, <b>${M}-click</b> toggles, <b>Shift-click</b> adds, drag a box to multi-select · <b>M</b> = marquee from anywhere · <b>${M}+A</b> selects all · <b>Shift+,</b>/<b>.</b> grows the selection · with 2+ points selected, drag inside the box to move it or the ◻/▭ handles to scale (<b>Shift</b> = uniform; box moves snap to guides) · click a segment's small dot (or <b>To curve / To line</b>) to switch line↔curve · <b>double-click</b> toggles □/○ · <b>Alt-click</b> the outline adds a point · <b>Delete</b> removes a point, <b>Shift+Delete</b> its whole contour · <b>${M}+C</b>/<b>${M}+V</b> copy points between letters · <b>P</b> = pen: click places corners, click-drag pulls curves, <b>Alt-click</b> quick-curves, click the first point or <b>Enter</b> closes (a contour drawn inside another becomes a hole) · arrows nudge exactly (Shift = 25) · <b>,</b>/<b>.</b> step points, <b>i</b> inserts. Every edit exports and undoes (${M}+Z).</div>`;
 }
 /* Trace is split so dragging the sliders can update live:
    - rawLoopsFontUnits(): the expensive part (rasterize + marching-squares), cached.
@@ -8326,7 +8923,9 @@ function renderTraceRight(R, l) {
 }
 function renderTraceLeft(L, l) {
   if (project.inputMode === 'font') {   // width still editable for font-loaded glyphs; Edit points is the only way to reshape them
-    L.innerHTML = (l.contours ? `<div class="ctl-row"><button class="ctl-btn primary" onclick="toggleNodeEdit()">✎ Edit points</button></div>` : '') + metricsPanel();
+    L.innerHTML = `<div class="ctl-row">${l.contours
+      ? `<button class="ctl-btn primary" onclick="toggleNodeEdit()">✎ Edit points</button>`
+      : `<button class="ctl-btn primary" onclick="drawWithPen()" title="This glyph is blank — draw its outline point by point">✏ Draw with pen</button>`}</div>` + metricsPanel();
     return;
   }
   if (l.source && l.source.kind === 'svg') {   // imported vector — no raster trace controls, but allow point editing
@@ -8334,7 +8933,7 @@ function renderTraceLeft(L, l) {
       <div class="ws-side-title">Outline — ${l.name}</div>
       <div class="hint">Imported from SVG — no tracing needed. Fine-tune the shape with <b>Edit points</b>, or re-upload under <b>Add Letters</b> to replace it.</div>
       <div class="ctl-row">
-        ${ l.contours ? `<button class="ctl-btn primary" onclick="toggleNodeEdit()">✎ Edit points</button>` : '' }
+        ${ l.contours ? `<button class="ctl-btn primary" onclick="toggleNodeEdit()">✎ Edit points</button>` : `<button class="ctl-btn primary" onclick="drawWithPen()" title="This glyph is blank — draw its outline point by point">✏ Draw with pen</button>` }
         <button class="ctl-btn" onclick="clearTrace()">Clear</button>
         <button class="ctl-btn" onclick="openCopyOutline()" title="Start this letter from another letter's outline">⎘ Copy outline…</button>
         <span id="traceInfo" class="readout">${ l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : '' }</span>
@@ -8360,7 +8959,7 @@ function renderTraceLeft(L, l) {
     <div class="ctl-row">
       <button class="ctl-btn primary" onclick="traceCurrent()">Re-trace</button>
       <button class="ctl-btn" onclick="clearTrace()">Clear</button>
-      ${ l.contours ? `<button class="ctl-btn" onclick="toggleNodeEdit()">✎ Edit points</button>` : '' }
+      ${ l.contours ? `<button class="ctl-btn" onclick="toggleNodeEdit()">✎ Edit points</button>` : `<button class="ctl-btn" onclick="drawWithPen()" title="No trace yet — draw the outline point by point instead">✏ Draw with pen</button>` }
       <button class="ctl-btn" onclick="openCopyOutline()" title="Start this letter from another letter's outline">⎘ Copy outline…</button>
       <span id="traceInfo" class="readout">${ l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : '' }</span>
     </div>
@@ -8695,6 +9294,11 @@ document.addEventListener('keydown', e => {
     return;
   }
   if (tDrag || eDrag || metricDrag || guideDrag || nodeDrag || _burst || _udNudge) return;   // don't undo mid-interaction
+  if (workMode === 'nodes' && _penMode && penDraft && penDraft.nodes.length) {   // mid-draft: undo = remove the last placed pen point (draft never touches the undo stack)
+    e.preventDefault();
+    if (!(k === 'y' || e.shiftKey)) { penDraft.nodes.pop(); if (!penDraft.nodes.length) penDraft = null; renderStage(); }
+    return;                                                                       // redo is inert while drafting
+  }
   e.preventDefault();
   if (k === 'y' || e.shiftKey) redo(); else undo();
 });
@@ -8759,14 +9363,39 @@ document.addEventListener('keydown', e => {
 document.addEventListener('keydown', e => {
   if (workMode !== 'nodes') return;
   if (udShortcutBlocked()) return;                       // typing in a field / modal open / no project
-  if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && !e.repeat) {   // copy/paste points between letters
+  if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && !e.repeat) {   // copy/paste points between letters + select all
     const k = e.key.toLowerCase();
     if (k === 'c' && nodeSel.size)  { if (copySelectedNodes()) e.preventDefault(); return; }
     if (k === 'v' && nodeClipboard) { if (pasteNodes())        e.preventDefault(); return; }
+    if (k === 'a' && !_penMode)     { e.preventDefault(); selectAllNodes(); return; }
   }
   if (e.ctrlKey || e.metaKey) return;                    // let Ctrl/Cmd+Z (undo/redo) fall through
-  if (e.key === '.' || e.key === '>') { e.preventDefault(); cycleNodeSel(1); return; }   // keyboard select: next point
-  if (e.key === ',' || e.key === '<') { e.preventDefault(); cycleNodeSel(-1); return; }  // keyboard select: previous point
+  if (_penMode) {                                        // ── pen mode owns the keyboard ──
+    if (e.key === 'Enter') { e.preventDefault();
+      if (e.shiftKey) closePenContour();
+      else if (_penCursor) penPlacePoint(_penCursor.slice(), e.altKey);
+      return; }
+    if (e.key === 'Backspace' || e.key === 'Delete') { e.preventDefault();
+      if (penDraft && penDraft.nodes.length) { penDraft.nodes.pop(); if (!penDraft.nodes.length) penDraft = null; renderStage(); }
+      return; }
+    if (e.key === 'Escape') { e.preventDefault();
+      if (penDraft) penDiscard();
+      else { _penMode = false; renderStage(); renderControls(); renderLegend(); }
+      return; }
+    if (e.key === 'p' || e.key === 'P') { e.preventDefault(); togglePenMode(); return; }
+    const pstep = e.shiftKey ? 50 : 10; let pdx = 0, pdy = 0;
+    if (e.key==='ArrowLeft') pdx=-pstep; else if (e.key==='ArrowRight') pdx=pstep;
+    else if (e.key==='ArrowUp') pdy=pstep; else if (e.key==='ArrowDown') pdy=-pstep;
+    if (pdx || pdy) { e.preventDefault();
+      _penCursor = _penCursor || [300, 300];
+      _penCursor = [_penCursor[0] + pdx, _penCursor[1] + pdy];
+      renderStage(); return; }
+    return;                                              // swallow the rest — no point-editing keys while drawing
+  }
+  if (e.key === 'm' || e.key === 'M') { e.preventDefault(); setMarqueeMode(!_marqueeMode); return; }
+  if (e.key === 'p' || e.key === 'P') { e.preventDefault(); togglePenMode(); return; }
+  if (e.key === '.' || e.key === '>') { e.preventDefault(); cycleNodeSel(1, e.shiftKey); return; }   // keyboard select: next point (Shift extends)
+  if (e.key === ',' || e.key === '<') { e.preventDefault(); cycleNodeSel(-1, e.shiftKey); return; }  // keyboard select: previous point (Shift extends)
   if (e.key === 'i' || e.key === 'I') { e.preventDefault(); insertNodeAfterSel(); return; }
   const l = curLetter();
   const step = e.shiftKey ? 25 : 5; let dx=0, dy=0;
@@ -8780,7 +9409,11 @@ document.addEventListener('keydown', e => {
   }
   if (e.key === 'Delete' || e.key === 'Backspace') { if (!nodeSel.size) return; e.preventDefault();
     if (e.shiftKey) doDeleteContours(); else doNodeDelete(); return; }   // Shift = whole contour(s)
-  if (e.key === 'Escape') { e.preventDefault(); if (nodeSel.size) { nodeSel.clear(); renderStage(); renderControls(); } else setWorkMode('trace'); return; }
+  if (e.key === 'Escape') { e.preventDefault();
+    if (_marqueeMode) { setMarqueeMode(false); return; }
+    if (nodeSel.size) { nodeSel.clear(); renderStage(); renderControls(); return; }
+    if (!curLetter().contours) { _suppressAutoTrace = true; setWorkMode('trace'); _suppressAutoTrace = false; return; }   // abandoned blank-glyph entry
+    setWorkMode('trace'); return; }
 });
 /* keyboard crop marquee (combined-sheet crop, Align step) — pointer-only otherwise. Arrows move the
    box (Shift = fine), +/− resize, Enter/Space crops, Esc cancels. First key seeds a centred draft. */
