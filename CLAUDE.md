@@ -13,6 +13,7 @@
 - [Preset Lists — Nested Folders](#preset-lists--nested-folders-file-tree)
 - [My Fonts — shared font store](#my-fonts--shared-font-store-picker-integration--upload-every-font-selector-tool)
 - [Vowel Color Scheme — Default / TaL AM](#vowel-color-scheme--default--tal-am-all-three-picker-tools)
+- [Trope Color Coding](#trope-color-coding-torah_trainerhtml)
 - [Shared UX components](#shared-ux-components--the-conventions-all-tools-are-converging-on)
 - [App Version & Splash Screens](#app-version--splash-screens-splash)
 - [Service Worker & Caching](#service-worker--caching-swjs)
@@ -897,6 +898,38 @@ TaL AM color maps (`NIKUD_DEFAULTS_*` + `TALAM_DEFAULTS_*`), **both** ordered pi
 (`VOWEL_GROUPS` + `VOWEL_GROUPS_TALAM`, generator + flash cards) — then to
 `getSettings()`/`applySettings()`. Keep the vowel **keys** identical across both schemes so the
 key-based helpers (`getNikudColor`, All/Main/None) work under either scheme.
+
+---
+
+## Trope Color Coding (`torah_trainer.html`)
+
+A second, composable color dimension alongside nikkud coloring: each **word** is classed by its
+cantillation **clause family**. Settings keys (in the `hebrewTorahTrainer_settings` blob, so no
+AllTools wiring): `colorCodeTrope` (bool) + `tropeColorOverrides` (family → hex,
+**`HEX_COLOR_RE`-validated on every read** — imported blobs are untrusted).
+
+- **Taxonomy**: `TROPE_CHAR_TO_FAMILY` maps codepoints to 6 families (`sofpasuk`, `katon`,
+  `segol`, `revia`, `geresh`, `rare`; ordered defs in `TROPE_COLOR_DEFS`). Sof pasuk is
+  **positional** — the last Hebrew token of each verse (tokenizeHebrew is one-verse-per-call);
+  U+05BD is never mapped (Unicode unifies siluk with meteg). Zarqa/zinor U+0598 **and** U+05AE
+  both map to `segol` (Unicode names are swapped in the wild). U+05AB/AC/AD (poetic accents)
+  deliberately unmapped. Multi-family word → **last** mark wins (`tropeFamilyOf`).
+- **Detection reads the ORIGINAL verse text** (parallel split zipped by index) so trope coloring
+  works with cantillation hidden. `stripNikkud`'s range swallows maqaf/paseq, so the zip is
+  guarded by an array-length equality check (mismatch → read the display token; both-hidden →
+  no color, never wrong color). The splitter and `data-twi` sequencing are untouched — karaoke
+  timing alignment depends on them.
+- **Presentation is class-based, never inline styles**: `trope-<fam>` classes on `.tt-word` +
+  `--trope-<fam>-bg`/`-line` CSS vars set on `<body>` by `applyTropeColors()` (the chokepoint,
+  called at the top of `renderText()`). All trope selectors are **`:where()`-wrapped** at
+  (0,1,0) specificity so `.tt-word:hover` and karaoke `.active` always win — keep it that way.
+- **Collision rule (automatic, no setting)**: nikkud coloring on **and** `colorCodingMode ===
+  'highlight'` (and nikkud shown) → `body.trope-underline-fallback` switches words from
+  background tint to a thick `text-decoration` clause underline (offset below the nikkud).
+- **Legend** `#ttTropeLegend` is static HTML above `#ttReading` (renderText never touches it);
+  swatches read the body vars so theme/picker changes recolor them for free. The "Learn the
+  trope names →" link renders only when `const TROPE_TUTOR_URL` is non-null (keep `null` until
+  `trope_tutor.html` ships). Legend is print-hidden with the other reading chrome.
 
 ---
 

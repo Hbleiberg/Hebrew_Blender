@@ -40,8 +40,8 @@
 <link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1668x2388.png">
 <link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-2048x2732.png">
 <title>Torah Trainer — Weekly Parsha Reader with Karaoke, Translit & Vowel Coloring | IvritSuite</title>
-<meta name="description" content="Free Torah reader: study the weekly parsha in Hebrew with toggleable transliteration, English translations, per-vowel color coding, cantillation toggle, chanted Torah audio (PocketTorah karaoke), and Hebrew TTS. For students, teachers, and bar/bat mitzvah prep.">
-<meta name="keywords" content="Torah reader, weekly parsha, parshat hashavua, Hebrew Bible, Tanakh, cantillation, te'amim, trope, leining, PocketTorah karaoke, Sefaria, Hebrew transliteration, nikkud, vowel coloring, Jewish learning, bar mitzvah, bat mitzvah, Torah chanting">
+<meta name="description" content="Free Torah reader: study the weekly parsha in Hebrew with toggleable transliteration, English translations, per-vowel and trope-family (cantillation clause) color coding, cantillation toggle, chanted Torah audio (PocketTorah karaoke), and Hebrew TTS. For students, teachers, and bar/bat mitzvah prep.">
+<meta name="keywords" content="Torah reader, weekly parsha, parshat hashavua, Hebrew Bible, Tanakh, cantillation, te'amim, trope, leining, PocketTorah karaoke, Sefaria, Hebrew transliteration, nikkud, vowel coloring, trope color coding, cantillation clauses, trope families, zakef katon, etnachta, Jewish learning, bar mitzvah, bat mitzvah, Torah chanting">
 <link rel="canonical" href="https://ivritsuite.com/torah_trainer.html">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Harrison Bleiberg">
@@ -65,12 +65,12 @@
   "@type": "WebApplication",
   "name": "Torah Trainer",
   "url": "https://ivritsuite.com/torah_trainer.html",
-  "description": "Read the weekly Torah portion in Hebrew with toggleable transliteration, translations, vowel color-coding, cantillation marks, chanted-audio karaoke, and TTS.",
+  "description": "Read the weekly Torah portion in Hebrew with toggleable transliteration, translations, vowel color-coding, trope-family clause coloring, cantillation marks, chanted-audio karaoke, and TTS.",
   "applicationCategory": "EducationalApplication",
   "operatingSystem": "Any (web browser)",
   "isAccessibleForFree": true,
   "inLanguage": "en",
-  "keywords": "Torah reading, parsha, weekly Torah portion, Hebrew Bible, Tanakh, cantillation, trope, te'amim, PocketTorah, Sefaria, transliteration, nikkud, vowel coloring, Jewish learning",
+  "keywords": "Torah reading, parsha, weekly Torah portion, Hebrew Bible, Tanakh, cantillation, trope, te'amim, trope color coding, cantillation clauses, PocketTorah, Sefaria, transliteration, nikkud, vowel coloring, Jewish learning",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
   "publisher": { "@type": "Organization", "name": "IvritSuite", "url": "https://ivritsuite.com/" }
 }
@@ -94,6 +94,7 @@
     { "@type": "Question", "name": "Does Torah Trainer include chanted-audio karaoke?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. PocketTorah's recordings of all 54 parshiyot and their haftarot stream on demand, with word-level highlighting synchronized to the audio. The audio bar lets you adjust playback speed without re-fetching." } },
     { "@type": "Question", "name": "Where do the Hebrew text and English translations come from?", "acceptedAnswer": { "@type": "Answer", "text": "Sefaria's public API. The translation dropdown is populated automatically and defaults to JPS 1985 when available." } },
     { "@type": "Question", "name": "Can I read without nikkud or cantillation marks?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The settings drawer has separate toggles for nikkud (vowel points) and cantillation marks (te'amim). The cantillation strip uses Unicode range U+0591-U+05AF and leaves nikkud intact." } },
+    { "@type": "Question", "name": "Can it color-code the Torah trope (cantillation) families?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Trope color coding tints each word by its cantillation clause family — Sof Pasuk, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings." } },
     { "@type": "Question", "name": "Does it work for both diaspora and Israel reading schedules?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The default is diaspora; flip the Reading Schedule toggle in settings to switch to the Israel schedule. The 'Jump to this week's parsha' button fetches the current parsha from Sefaria using the chosen schedule." } },
     { "@type": "Question", "name": "Is the Torah Trainer free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0." } }
   ]
@@ -469,7 +470,7 @@ body.fullscreen .tt-jumpnav { padding-right:84px; }   /* clear the fullscreen ex
 .tt-aliyah-inline { font-size:0.7rem; font-weight:700; color:var(--gold); letter-spacing:0.03em; white-space:nowrap; }
 
 @media print {
-  .tt-jumpnav, .tt-resume-chip, .tt-audio-bar, .tt-verse-buttons { display:none !important; }
+  .tt-jumpnav, .tt-resume-chip, .tt-audio-bar, .tt-verse-buttons, .tt-trope-legend { display:none !important; }
   .tt-aliyah-divider { color:#555; }
 }
 
@@ -606,6 +607,51 @@ body.dark .tt-word:hover {
   box-shadow:0 0 0 2px rgba(224,168,50,0.55);
 }
 .tt-word:focus-visible { outline:2px solid var(--gold); outline-offset:1px; }
+
+/* ───── Trope-family color coding ─────
+   tokenizeHebrew emits trope-<family> classes on .tt-word while
+   settings.colorCodeTrope is on; applyTropeColors() resolves the six family colors
+   into --trope-<fam>-bg (hex+59 ≈ 35% tint) / --trope-<fam>-line vars on <body>.
+   Every selector is :where()-wrapped to stay at (0,1,0) specificity so
+   .tt-word:hover (0,2,0) and the karaoke-active rules (0,3,1) always win —
+   the moving karaoke highlight must stay dominant over any trope treatment. */
+:where(body.trope-on) :where(.tt-heb, .tt-cell.heb) .tt-word { padding:1px 3px; }  /* keep maqaf-adjacent tinted words visually separate */
+:where(body.trope-on:not(.trope-underline-fallback)) .tt-word:where(.trope-sofpasuk) { background-color:var(--trope-sofpasuk-bg); }
+:where(body.trope-on:not(.trope-underline-fallback)) .tt-word:where(.trope-katon)    { background-color:var(--trope-katon-bg); }
+:where(body.trope-on:not(.trope-underline-fallback)) .tt-word:where(.trope-segol)    { background-color:var(--trope-segol-bg); }
+:where(body.trope-on:not(.trope-underline-fallback)) .tt-word:where(.trope-revia)    { background-color:var(--trope-revia-bg); }
+:where(body.trope-on:not(.trope-underline-fallback)) .tt-word:where(.trope-geresh)   { background-color:var(--trope-geresh-bg); }
+:where(body.trope-on:not(.trope-underline-fallback)) .tt-word:where(.trope-rare)     { background-color:var(--trope-rare-bg); }
+/* Collision fallback: when nikkud color coding is in Highlight mode it owns word
+   backgrounds (per-syllable tints), so trope shows as a thick clause underline
+   pushed below the nikkud zone instead. text-decoration longhands on purpose:
+   box-shadow is contended by hover/karaoke (flicker) and border-bottom reflows
+   justified text; kar-style-underline's .active shorthand still overrides these. */
+:where(body.trope-underline-fallback) .tt-word:where(.trope-sofpasuk, .trope-katon, .trope-segol, .trope-revia, .trope-geresh, .trope-rare) {
+  text-decoration-line:underline; text-decoration-thickness:4px;
+  text-underline-offset:0.68em; text-decoration-skip-ink:none;
+}
+:where(body.trope-underline-fallback) .tt-word:where(.trope-sofpasuk) { text-decoration-color:var(--trope-sofpasuk-line); }
+:where(body.trope-underline-fallback) .tt-word:where(.trope-katon)    { text-decoration-color:var(--trope-katon-line); }
+:where(body.trope-underline-fallback) .tt-word:where(.trope-segol)    { text-decoration-color:var(--trope-segol-line); }
+:where(body.trope-underline-fallback) .tt-word:where(.trope-revia)    { text-decoration-color:var(--trope-revia-line); }
+:where(body.trope-underline-fallback) .tt-word:where(.trope-geresh)   { text-decoration-color:var(--trope-geresh-line); }
+:where(body.trope-underline-fallback) .tt-word:where(.trope-rare)     { text-decoration-color:var(--trope-rare-line); }
+
+/* Legend strip above #ttReading (card look borrowed from .tt-jumpnav, non-sticky).
+   Swatches read the same body vars, so theme/picker changes recolor them for free. */
+.tt-trope-legend {
+  display:flex; flex-wrap:wrap; align-items:center; gap:6px 14px;
+  padding:8px 12px; margin:0 0 12px;
+  background:var(--white); border:1px solid var(--border); border-radius:8px;
+  box-shadow:var(--shadow-sm); font-size:0.75rem; color:var(--text);
+}
+body.dark .tt-trope-legend { background:var(--navy-deep); }
+.tt-trope-legend[hidden] { display:none; }  /* display:flex would beat the hidden attr */
+.tt-trope-chip { display:inline-flex; align-items:center; gap:5px; }
+.tt-trope-swatch { width:14px; height:14px; border-radius:4px; border:1px solid var(--border); flex-shrink:0; }
+.tt-trope-link { margin-left:auto; font-size:0.72rem; color:var(--muted); text-decoration:none; }
+.tt-trope-link:hover { color:var(--gold); text-decoration:underline; }
 
 /* ───── Karaoke audio bar (sticky bottom) ───── */
 .tt-audio-bar {
@@ -1055,6 +1101,16 @@ body.fullscreen #fsExitBtn { display: flex; }
   <div class="tt-status" id="ttStatus" role="status" aria-live="polite"></div>
   <!-- In-page nav: aliyah jump chips + "you are here" readout (long readings). -->
   <div class="tt-jumpnav" id="ttJumpNav" role="navigation" aria-label="Jump to aliyah" hidden></div>
+  <!-- Trope-family legend — shown only while trope color coding is on (applyTropeColors). -->
+  <div class="tt-trope-legend" id="ttTropeLegend" hidden>
+    <span class="tt-trope-chip"><span class="tt-trope-swatch" style="background:var(--trope-sofpasuk-bg)"></span>Sof Pasuk clause</span>
+    <span class="tt-trope-chip"><span class="tt-trope-swatch" style="background:var(--trope-katon-bg)"></span>Zakef Katon clause</span>
+    <span class="tt-trope-chip"><span class="tt-trope-swatch" style="background:var(--trope-segol-bg)"></span>Segol clause</span>
+    <span class="tt-trope-chip"><span class="tt-trope-swatch" style="background:var(--trope-revia-bg)"></span>Revia group</span>
+    <span class="tt-trope-chip"><span class="tt-trope-swatch" style="background:var(--trope-geresh-bg)"></span>Geresh group</span>
+    <span class="tt-trope-chip"><span class="tt-trope-swatch" style="background:var(--trope-rare-bg)"></span>Rare marks</span>
+    <a class="tt-trope-link" id="ttTropeTutorLink" hidden>Learn the trope names →</a>
+  </div>
   <div class="tt-reading" id="ttReading" tabindex="-1"></div>
 </div>
 </main>
@@ -1205,6 +1261,20 @@ body.fullscreen #fsExitBtn { display: flex; }
     </div>
 
     <div class="panel collapsed">
+      <div class="panel-title">Trope color coding</div>
+      <div class="panel-body">
+        <div class="form-row">
+          <label>Color-code trope families <span class="tip-wrap" data-tip="Tints each word by its cantillation clause family — Sof Pasuk, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. When vowel coloring is in Highlight mode, trope shows as an underline instead."><i class="tip-icon">?</i></span></label>
+          <label class="toggle"><input type="checkbox" id="optColorCodeTrope"><span class="slider"></span></label>
+        </div>
+        <div class="color-pick-list" id="tropeColorPickerList" style="display:none;"></div>
+        <div class="form-row vowel-scheme-row" id="tropeResetRow" style="display:none;">
+          <button class="vowel-scheme-btn" onclick="resetTropeColors()" type="button">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel collapsed">
       <div class="panel-title">Transliteration scheme</div>
       <div class="panel-body">
         <div class="form-row">
@@ -1270,6 +1340,7 @@ body.fullscreen #fsExitBtn { display: flex; }
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Does it include chanted-audio karaoke?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener" style="color:var(--gold);">PocketTorah</a>'s recordings of all 54 parshiyot and haftarot stream on demand, with word-level highlighting synchronized to the audio. Adjust playback speed without re-fetching.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Where do the Hebrew texts and translations come from?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);"><a href="https://www.sefaria.org" target="_blank" rel="noopener" style="color:var(--gold);">Sefaria</a>'s public API. The translation dropdown defaults to JPS 1985 when available; pick any other version from the same dropdown.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Can I hide nikkud or cantillation marks?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. The Display panel has separate toggles for nikkud (vowel points) and cantillation marks (te'amim). They can be hidden independently.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Can it color-code the Torah trope (cantillation) families?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. Trope color coding tints each word by its cantillation clause family — Sof Pasuk, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Diaspora or Israel schedule?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">The default is diaspora. Flip the Reading Schedule toggle to switch to Israel. Use "Jump to this week's parsha" to auto-pick the current week's reading from Sefaria's calendar.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Is it free?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. Materials incorporating PocketTorah audio are licensed CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0.</p></details>
           </div>
@@ -1378,6 +1449,8 @@ const DEFAULTS = {
   colorCodingMode: 'letter',
   nikudColorOverrides: {},
   vowelColorScheme: 'default',
+  colorCodeTrope: false,       // tint each word by its cantillation clause family
+  tropeColorOverrides: {},     // family key → hex (HEX_COLOR_RE-validated on read)
   translitStyle: 'modernIsraeli',
   // TTS + Chanting are always available; rate sliders apply.
   karaokeRate: 1.0,
@@ -1432,6 +1505,8 @@ function resetAllSettings() {
   syncFormToSettings();
   setHebFont(settings.hebFont);
   initColorPickers();
+  initTropeColorPickers();
+  applyTropeColors();
   applyDisplayClasses();
   fetchAndRender();
 }
@@ -1467,6 +1542,10 @@ function toggleDark() {
   _db.textContent = isDark ? '☀️' : '🌙';
   _db.setAttribute('aria-pressed', isDark ? 'true' : 'false');
   if (settings.colorCodeNikkud) renderText();
+  // Trope colors are pure CSS-var (classes in the DOM are theme-independent), so a
+  // dark toggle only needs a re-resolve; renderText above already covers it when
+  // nikkud coloring forced a full re-render.
+  else if (settings.colorCodeTrope) applyTropeColors();
 }
 function initDark() {
   const s = localStorage.getItem(DARK_KEY);
@@ -1844,6 +1923,123 @@ function activeColorDefs(){
   return (settings.vowelColorScheme === 'talam') ? VOWEL_COLOR_DEFS_TALAM : VOWEL_COLOR_DEFS;
 }
 
+/* ── Trope-family color coding ──────────────────────────────
+   Torah (21-books) cantillation taxonomy: each mark codepoint maps to one of six
+   clause families. Poetic-book accents U+05AB (ole) / U+05AC (iluy) / U+05AD (dechi)
+   are deliberately unmapped — they don't occur in the Torah system → no color. */
+const TROPE_FAMILIES = ['sofpasuk', 'katon', 'segol', 'revia', 'geresh', 'rare'];
+const TROPE_CHAR_TO_FAMILY = {
+  // 1. Sof Pasuk clause. NOTE: the siluk mark itself is NOT mapped — Unicode unifies
+  // siluk with METEG (U+05BD), which appears mid-verse as an ordinary stress mark;
+  // mapping U+05BD would mis-color every meteg-bearing word. The verse-final word is
+  // classified POSITIONALLY in tokenizeHebrew instead (last Hebrew token per verse).
+  '֥': 'sofpasuk', // mercha
+  '֖': 'sofpasuk', // tipcha
+  '֣': 'sofpasuk', // munach
+  '֑': 'sofpasuk', // etnachta
+  // 2. Zakef Katon clause
+  '֤': 'katon',    // mahpach
+  '֙': 'katon',    // pashta
+  '֚': 'katon',    // yetiv
+  '֔': 'katon',    // zakef katon
+  '֕': 'katon',    // zakef gadol
+  // 3. Segol clause. Unicode's ZARQA (U+0598) / ZINOR (U+05AE) names are swapped
+  // relative to traditional usage, and encoded texts/fonts disagree about which
+  // codepoint carries the segol clause's zarka — so BOTH map to this family.
+  '֘': 'segol',    // zarka (Unicode "ZARQA")
+  '֮': 'segol',    // zarka (Unicode "ZINOR")
+  '֒': 'segol',    // segol
+  '֓': 'segol',    // shalshelet
+  // 4. Revia group
+  '֗': 'revia',    // revia
+  '֧': 'revia',    // darga
+  '֛': 'revia',    // tevir
+  // 5. Geresh group
+  '֨': 'geresh',   // kadma
+  '֜': 'geresh',   // geresh
+  '֝': 'geresh',   // geresh muqdam
+  '֞': 'geresh',   // gershayim
+  '֩': 'geresh',   // telisha ketana
+  '֠': 'geresh',   // telisha gedola
+  '֡': 'geresh',   // pazer
+  // 6. Rare marks
+  '֦': 'rare',     // mercha kefula
+  '֟': 'rare',     // karnei parah
+  '֪': 'rare',     // yerach ben yomo
+};
+// Picker rows: representative mark per family on an alef (mirrors VOWEL_COLOR_DEFS).
+const TROPE_COLOR_DEFS = [
+  { key:'sofpasuk', name:'Sof Pasuk clause',   example:'א֑' },  // etnachta
+  { key:'katon',    name:'Zakef Katon clause', example:'א֔' },  // zakef katon
+  { key:'segol',    name:'Segol clause',       example:'א֒' },  // segol
+  { key:'revia',    name:'Revia group',        example:'א֗' },  // revia
+  { key:'geresh',   name:'Geresh group',       example:'א֜' },  // geresh
+  { key:'rare',     name:'Rare marks',         example:'א֦' },  // mercha kefula
+];
+// Six hues, distinct from each other AND from the karaoke gold (which must stay
+// unmistakable over any tint). Rendered as ~35% tints (alpha 0x59) — light set reads
+// under dark text on cream, dark set under light text on the dark surface.
+const TROPE_DEFAULTS_LIGHT = {
+  sofpasuk:'#d64541', katon:'#3b82c4', segol:'#8e5bbf',
+  revia:'#3a9e4e',    geresh:'#2aa6a0', rare:'#c74f8e'
+};
+const TROPE_DEFAULTS_DARK = {
+  sofpasuk:'#e0635e', katon:'#5c9fe0', segol:'#a97fe0',
+  revia:'#55c06a',    geresh:'#3fbdb6', rare:'#e07ab0'
+};
+// Future cross-link to a planned trope-names tutor page. The legend link renders
+// only when this is a real URL — keep null until trope_tutor.html ships.
+const TROPE_TUTOR_URL = null;
+
+// Clause family of one word (raw token, marks intact), or null.
+// A word carrying marks from TWO families (uncommon — e.g. a conjunctive plus its
+// disjunctive on one token) takes the family of the LAST mark in logical order:
+// the final, clause-defining accent governs the word.
+function tropeFamilyOf(rawTok) {
+  let fam = null;
+  for (const ch of rawTok) {
+    const f = TROPE_CHAR_TO_FAMILY[ch];
+    if (f) fam = f;
+  }
+  return fam;
+}
+function getTropeColor(fam) {
+  // Same trust model as getNikudColor: only a HEX_COLOR_RE-valid override is used
+  // (imported .ivrit / AllTools blobs are untrusted).
+  const ov = settings.tropeColorOverrides && settings.tropeColorOverrides[fam];
+  if (typeof ov === 'string' && HEX_COLOR_RE.test(ov)) return ov;
+  return (document.body.classList.contains('dark')
+    ? TROPE_DEFAULTS_DARK : TROPE_DEFAULTS_LIGHT)[fam] || '#888888';
+}
+// Resolve the six family colors (theme read once, like colorizeHebrew's hoisting)
+// into --trope-<fam>-bg / --trope-<fam>-line custom properties on <body>, and sync
+// the body-class switches + legend visibility. Pure CSS-var recolor: theme, scheme,
+// and picker changes never need a renderText() for the trope layer.
+function applyTropeColors() {
+  const body = document.body;
+  const on = !!settings.colorCodeTrope;
+  body.classList.toggle('trope-on', on);
+  // COLLISION RULE: nikkud Highlight mode already paints per-syllable backgrounds,
+  // so a word-level tint would stack with them — automatically fall back to a thick
+  // clause underline below the text instead (no extra setting). showNikkud matters
+  // because syllable highlights only render while nikkud is shown.
+  const fallback = on && settings.colorCodeNikkud && settings.showNikkud
+                   && settings.colorCodingMode === 'highlight';
+  body.classList.toggle('trope-underline-fallback', fallback);
+  const dark = body.classList.contains('dark');
+  const defaults = dark ? TROPE_DEFAULTS_DARK : TROPE_DEFAULTS_LIGHT;
+  const overrides = settings.tropeColorOverrides || {};
+  for (const fam of TROPE_FAMILIES) {
+    const ov = overrides[fam];
+    const c = (typeof ov === 'string' && HEX_COLOR_RE.test(ov)) ? ov : (defaults[fam] || '#888888');
+    // 0x59 ≈ 35% alpha; only a 6-digit #rrggbb can take an alpha suffix.
+    body.style.setProperty('--trope-' + fam + '-bg', c.length === 7 ? c + '59' : c);
+    body.style.setProperty('--trope-' + fam + '-line', c);
+  }
+  const legend = document.getElementById('ttTropeLegend');
+  if (legend) legend.hidden = !on;
+}
+
 function stripTeamim(s)      { return s.replace(TEAMIM_RE, ''); }
 function stripNikkud(s)      { return s.replace(NIKKUD_RE, ''); }
 function stripAllMarks(s)    { return s.replace(ALL_MARKS_RE, ''); }
@@ -1941,8 +2137,31 @@ function tokenizeHebrew(text, wordIdxStartRef) {
   const cleaned = settings.showCantillation ? text : stripTeamim(text);
   const finalText = settings.showNikkud ? cleaned : stripNikkud(cleaned);
   const tokens = finalText.split(/(\s+|־)/);
+  // Trope families are read from the ORIGINAL text: the display copy may have had
+  // its te'amim stripped, and trope coloring must keep working with cantillation
+  // hidden (clause structure without mark clutter). stripTeamim never removes a
+  // separator, so the raw and display splits align index-for-index — but
+  // stripNikkud's range (U+05B0–U+05C7) swallows maqaf (U+05BE) and paseq (U+05C0),
+  // so with nikkud hidden tokens can merge. A vanished separator always shrinks the
+  // array, making the length check an exact alignment guard; on mismatch we read
+  // marks from the display token itself (still correct while cantillation shows;
+  // the both-hidden mode then simply gets no family — no color, never wrong color).
+  const tropeOn = !!settings.colorCodeTrope;
+  const rawTokens = tropeOn ? text.split(/(\s+|־)/) : null;
+  const rawAligned = tropeOn && rawTokens.length === tokens.length;
+  // Sof pasuk has no usable codepoint (Unicode unifies siluk with meteg, U+05BD),
+  // so the verse-final word is classified POSITIONALLY: every caller passes exactly
+  // one verse, so the last Hebrew token of this call is the sof-pasuk word.
+  let lastHebIdx = -1;
+  if (tropeOn) {
+    for (let i = tokens.length - 1; i >= 0; i--) {
+      const t = tokens[i];
+      if (t && !/^\s+$/.test(t) && t !== '־' && /[א-ת]/.test(t)) { lastHebIdx = i; break; }
+    }
+  }
   const out = [];
-  for (const tok of tokens) {
+  for (let ti = 0; ti < tokens.length; ti++) {
+    const tok = tokens[ti];
     if (!tok) continue;
     if (/^\s+$/.test(tok)) { out.push(tok); continue; }
     if (tok === '־') { out.push(esc(tok)); continue; }   // maqaf separator, not a word
@@ -1951,7 +2170,13 @@ function tokenizeHebrew(text, wordIdxStartRef) {
       const inner = (settings.colorCodeNikkud && settings.showNikkud)
         ? colorizeHebrew(tok, settings.colorCodingMode)
         : esc(tok);
-      out.push(`<span class="tt-word" data-twi="${idx}">${inner}</span>`);
+      let tropeCls = '';
+      if (tropeOn) {
+        const fam = (ti === lastHebIdx) ? 'sofpasuk'
+                  : tropeFamilyOf(rawAligned ? rawTokens[ti] : tok);
+        if (fam) tropeCls = ' trope-' + fam;   // fam ∈ TROPE_FAMILIES — internal constant, not user data
+      }
+      out.push(`<span class="tt-word${tropeCls}" data-twi="${idx}">${inner}</span>`);
     } else {
       out.push(esc(tok));
     }
@@ -2018,6 +2243,9 @@ function renderEmptyReading() {   // friendly card shown in #ttReading when no p
      </div>`;
 }
 function renderText() {
+  // Chokepoint for the trope layer: every settings/nav/theme path that re-renders
+  // also re-syncs the trope body classes, CSS vars, and legend visibility here.
+  applyTropeColors();
   if (!currentVerses || !currentVerses.length) {
     renderEmptyReading();
     return;
@@ -3624,6 +3852,44 @@ function setVowelScheme(s) {
   saveSettings();
 }
 
+/* ── Trope-family color pickers (mirror of the nikkud pickers above) ── */
+function initTropeColorPickers() {
+  const list = document.getElementById('tropeColorPickerList');
+  if (!list) return;
+  list.innerHTML = '';
+  TROPE_COLOR_DEFS.forEach(def => {
+    const row = document.createElement('div');
+    row.className = 'color-pick-row';
+    const ex = document.createElement('span');
+    ex.className = 'color-pick-ex'; ex.lang = 'he'; ex.textContent = def.example;
+    const lbl = document.createElement('span');
+    lbl.className = 'color-pick-label'; lbl.textContent = def.name;
+    const inp = document.createElement('input');
+    inp.type = 'color'; inp.className = 'color-pick-input';
+    inp.setAttribute('aria-label', 'Color for ' + def.name);
+    inp.value = getTropeColor(def.key);
+    inp.addEventListener('input', () => {
+      if (!settings.tropeColorOverrides) settings.tropeColorOverrides = {};
+      settings.tropeColorOverrides[def.key] = inp.value;
+      applyTropeColors();          // CSS-var recolor only — the word classes are already in the DOM
+      saveSettings();
+    });
+    row.appendChild(ex); row.appendChild(lbl); row.appendChild(inp);
+    list.appendChild(row);
+  });
+}
+function resetTropeColors() {
+  if (!confirm('Are you sure? This resets your custom trope-family colors to the defaults.')) return;
+  settings.tropeColorOverrides = {};
+  initTropeColorPickers();
+  applyTropeColors();
+  saveSettings();
+}
+function toggleTropeOptionsVisibility(show) {
+  document.getElementById('tropeColorPickerList').style.display = show ? '' : 'none';
+  document.getElementById('tropeResetRow').style.display = show ? '' : 'none';
+}
+
 /* ══════════════════════════════════════════════════════
    TRANSLITERATION SCHEME WIRING
    ══════════════════════════════════════════════════════ */
@@ -3737,6 +4003,8 @@ function syncFormToSettings() {
   document.getElementById('cmHighlight').checked = cm === 'highlight';
   document.getElementById('cmUnderline').checked = cm === 'underline';
   toggleColorOptionsVisibility(settings.colorCodeNikkud);
+  document.getElementById('optColorCodeTrope').checked = !!settings.colorCodeTrope;
+  toggleTropeOptionsVisibility(settings.colorCodeTrope);
   // translit style
   document.getElementById('optTranslitStyle').value = settings.translitStyle || 'modernIsraeli';
   // TTS rate (drawer + audio-bar sliders mirror each other)
@@ -3839,6 +4107,13 @@ function wireSettingsForm() {
     r.addEventListener('change', e => {
       if (e.target.checked) { settings.colorCodingMode = e.target.value; saveSettings(); renderText(); }
     });
+  });
+  // Trope color coding (renderText's applyTropeColors chokepoint syncs the
+  // body classes/vars, including the Highlight-mode underline fallback)
+  document.getElementById('optColorCodeTrope').addEventListener('change', e => {
+    settings.colorCodeTrope = e.target.checked;
+    toggleTropeOptionsVisibility(settings.colorCodeTrope);
+    saveSettings(); renderText();
   });
   // TTS rate sliders — drawer + audio bar both write to settings.ttsRate and
   // mirror each other so the user sees the same value wherever they adjust.
@@ -4302,6 +4577,11 @@ async function init() {
   setHebFont(settings.hebFont);
   refreshMyFonts();   // async: adds a "My Fonts" section from the shared IndexedDB store + re-applies a saved user font
   initColorPickers();
+  initTropeColorPickers();
+  applyTropeColors();
+  // Feature-gated future link: render only when TROPE_TUTOR_URL is non-null.
+  const tutorLink = document.getElementById('ttTropeTutorLink');
+  if (TROPE_TUTOR_URL && tutorLink) { tutorLink.href = TROPE_TUTOR_URL; tutorLink.hidden = false; }
   populateParshaPicker();
   syncFormToSettings();
   wireSettingsForm();
