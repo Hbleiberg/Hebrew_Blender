@@ -1217,52 +1217,6 @@
   }
   body.landscape-mode .blends-grid { grid-template-columns: repeat(10, 1fr) !important; }
 
-  /* ── REAL WORDS ── */
-  .rw-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 10px 10px;
-    text-align: center;
-    gap: 4px;
-    min-height: 80px;
-    position: relative;
-    overflow: hidden;
-    background: var(--white);
-  }
-  .rw-heb {
-    font-family: var(--heb-font);
-    font-size: 2rem;
-    direction: rtl;
-    color: var(--navy);
-    line-height: 1.3;
-  }
-  .rw-translit { font-size: 0.72rem; color: var(--muted); font-style: italic; }
-  .rw-translation { font-size: 0.78rem; color: var(--gold); font-weight: 600; min-height: 14px; }
-  .rw-pos-tag {
-    position: absolute;
-    top: 4px;
-    right: 6px;
-    font-size: 0.58rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-  .rw-num {
-    position: absolute;
-    top: 4px;
-    left: 6px;
-    font-size: 0.6rem;
-    color: var(--muted);
-  }
-  .rw-grid {
-    display: grid;
-    gap: 10px;
-    direction: ltr;
-  }
   /* Word Search grid */
   .ws-grid {
     display: grid;
@@ -1479,6 +1433,7 @@
   .rw-drill-btn:last-child { border-right: none; }
   .rw-drill-btn:hover { background: var(--warm-gray); color: var(--text); }
   .rw-drill-btn.active { background: var(--navy); color: var(--white); }
+  /* ── REAL WORDS (cards & grid) — single source; an earlier duplicate block was consolidated here ── */
   .rw-card {
     display: flex;
     flex-direction: column;
@@ -1496,8 +1451,8 @@
   }
   .rw-heb { font-family: var(--heb-font); font-size: 2rem; direction: rtl; color: var(--text); line-height: 1.2; }
   .rw-translit { font-size: 0.72rem; color: var(--muted); font-style: italic; }
-  .rw-translation { font-size: 0.75rem; color: var(--gold); font-weight: 600; }
-  .rw-pos-tag { position: absolute; top: 4px; right: 6px; font-size: 0.58rem; color: var(--muted); text-transform: uppercase; }
+  .rw-translation { font-size: 0.75rem; color: var(--gold); font-weight: 600; min-height: 14px; }
+  .rw-pos-tag { position: absolute; top: 4px; right: 6px; font-size: 0.58rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
   .rw-num { position: absolute; top: 4px; left: 6px; font-size: 0.6rem; color: var(--muted); }
   .rw-grid { display: grid; gap: 10px; direction: ltr; }
   /* ── MATCHING DRILL (real words) ── */
