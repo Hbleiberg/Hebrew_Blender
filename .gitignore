@@ -4,5 +4,8 @@ package.json
 __pycache__/
 *.pyc
 
+# build-trope-index.mjs HTTP cache (raw Sefaria text responses; re-fetched on demand)
+source-data/trope-cache/
+
 # Claude Code personal settings (project-local, not shared)
 .claude/settings.local.json
