@@ -448,6 +448,57 @@
   body.dark .node-pt.sel { fill: var(--gold); stroke: #fff; }
   body.dark .node-h { fill: #1e2535; stroke: #8aa0c8; }
   body.dark .node-hline { stroke: #5b6e94; }
+  /* ── Edit-points panel (npnl-*) — panel-scoped; no shared classes modified ── */
+  .npnl-head { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--warm-gray); padding: 8px 0 7px; margin-bottom: 4px; border-bottom: 1px solid var(--border); }
+  .npnl-head-title { font-size: 0.8rem; font-weight: 700; color: var(--text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .npnl-head-title .npnl-glyph { font-size: 1.05rem; line-height: 1; }
+  /* segmented mode control — panel-scoped clone of .mode-toggle */
+  .npnl-mode { display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin: 8px 0 10px; }
+  .npnl-mode-btn { flex: 1; padding: 7px 4px; border: none; background: var(--white); color: var(--text); font-family: inherit; font-size: 0.76rem; font-weight: 600; cursor: pointer; }
+  .npnl-mode-btn:hover { background: var(--warm-gray); }
+  .npnl-mode-btn + .npnl-mode-btn { border-left: 1px solid var(--border); }
+  .npnl-mode-btn.active { background: var(--navy); color: #fff; }
+  .npnl-mode-btn.active:hover { background: var(--navy); }
+  .npnl-mode-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+  /* contextual zone — min-height reserves the tallest state so the panel never jumps */
+  .npnl-ctx { min-height: 154px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }   /* = measured height of the tallest (selection) state, so switching states never shifts the panel */
+  .npnl-ctx .ctl-row { width: 100%; }
+  .npnl-readout { font-size: 0.76rem; font-weight: 700; color: var(--muted); }
+  /* joined pairs (Smooth|Corner, To curve|To line) */
+  .npnl-pair { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .npnl-pair .ctl-btn { border: none; border-radius: 0; }
+  .npnl-pair .ctl-btn + .ctl-btn { border-left: 1px solid var(--border); }
+  /* danger buttons + split-delete dropdown */
+  .ctl-btn.npnl-danger { color: #c0392b; }
+  .ctl-btn.npnl-danger:hover { border-color: #c0392b; background: rgba(192,57,43,0.08); }
+  body.dark .ctl-btn.npnl-danger { color: #ff8a7a; }
+  body.dark .ctl-btn.npnl-danger:hover { border-color: #ff8a7a; background: rgba(255,138,122,0.12); }
+  .npnl-del { position: relative; display: inline-flex; margin-left: auto; }
+  .npnl-del > .ctl-btn:first-child { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+  .npnl-del-caret { border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none; padding: 6px 8px; }
+  .npnl-del-menu { position: absolute; top: calc(100% + 3px); right: 0; z-index: 60; background: var(--white); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.18); padding: 3px; min-width: 176px; }
+  .npnl-del-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; background: none; border: none; border-radius: 4px; padding: 7px 9px; font-family: inherit; font-size: 0.78rem; font-weight: 600; color: #c0392b; cursor: pointer; text-align: left; }
+  body.dark .npnl-del-item { color: #ff8a7a; }
+  .npnl-del-item span { color: var(--muted); font-size: 0.66rem; font-weight: 400; }
+  .npnl-del-item:hover, .npnl-del-item:focus { background: var(--warm-gray); outline: none; }
+  /* uniform disclosure chrome (co-class on the existing .node-xform details) */
+  .npnl-disc { margin: 0; border-top: 1px solid var(--border); padding: 6px 0 4px; }
+  .npnl-disc summary { display: flex; align-items: center; gap: 6px; list-style: none; padding: 3px 0; }
+  .npnl-disc summary::-webkit-details-marker { display: none; }
+  .npnl-disc summary::before { content: '▸'; color: var(--muted); font-size: 0.7rem; transition: transform 0.15s; }
+  .npnl-disc[open] > summary::before { transform: rotate(90deg); }
+  .npnl-disc summary:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  /* tip line + help */
+  .npnl-tip { display: flex; align-items: flex-start; gap: 8px; margin-top: 10px; }
+  .npnl-tip .hint { flex: 1; }
+  .npnl-help { flex-shrink: 0; width: 24px; height: 24px; padding: 0; border-radius: 50%; font-weight: 700; line-height: 1; }
+  /* 44px touch targets — net-new, panel-scoped (max-width arm keeps it headless-testable) */
+  @media (pointer: coarse), (max-width: 820px) {
+    .npnl-mode-btn, .npnl-ctx .ctl-btn, .npnl-del-item, .npnl-head .ctl-btn { min-height: 44px; }
+    .npnl-help { width: 44px; height: 44px; }
+    .npnl-disc summary { min-height: 44px; }
+    .npnl-ctx { min-height: 176px; }
+  }
   .zoom-bar { display: flex; align-items: center; gap: 8px; max-width: 720px; margin: 0 auto 8px; font-size: 0.82rem; color: var(--muted); }
   .zoom-bar input[type=range] { flex: 1; accent-color: var(--gold); }
   .zoom-val { font-family: ui-monospace, Menlo, monospace; min-width: 44px; text-align: right; }
@@ -2247,7 +2298,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.1';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.2';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2459,6 +2510,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.2</strong> — <strong>A tidier Edit points panel.</strong> The point-editing controls are reorganized into clear zones: a sticky header with <strong>Done editing</strong> always in reach, a <strong>Select / Marquee / Pen</strong> mode switch, and a middle section that shows just the actions that apply to your current selection — with a <strong>Delete ▾</strong> button that gathers point and contour deletion in one place. The Transform, Round corners, and Contours sections now look alike and <strong>remember whether you left them open</strong>. The long help paragraph became a short tip that changes with what you're doing, plus a <strong>?</strong> button that jumps straight to the point-editing shortcuts — and the shortcuts sheet itself now covers every mouse trick too (double-click, Alt-click, segment dots, selection-box moves). Nothing about how editing works changed — every action, shortcut, and undo behaves exactly as before. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.1</strong> — <strong>Auto-detect fixes.</strong> The detected-letter boxes now draw reliably in every browser — they were invisible in Firefox, which showed the sheet but not the gold boxes around each letter. And the <strong>▦ Auto-detect letters</strong> button now sits right under the sheet, next to the page navigation, where you're already looking while boxing letters. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.0</strong> — <strong>Smarter tracing and a full point-editing suite.</strong> Tracing now picks a good <strong>ink threshold automatically</strong>, can <strong>even out photo lighting</strong>, and <strong>auto-detects every letter on a combined sheet</strong> for one-click review and assignment. Edit points grew into a real outline editor: <strong>delete whole contours</strong> or <strong>stray specks</strong>, <strong>snap to guides</strong>, <strong>copy/paste points between letters</strong>, <strong>flip / rotate / scale</strong>, a <strong>selection box with move &amp; scale handles</strong>, <strong>marquee (M)</strong> and <strong>select-all</strong>, <strong>line ↔ curve segment switches</strong>, <strong>corner rounding</strong> with a live radius preview, a <strong>pen tool (P)</strong> that draws contours point by point — even on blank glyphs like digits — and a <strong>Contours panel</strong> with per-contour colors and hide-while-editing (hidden contours still export). Imported fonts round-trip faithfully: untouched glyphs keep their exact outlines, and hand edits never silently change a glyph's width. Plus a <strong>waterfall size preview</strong> on the Spacing step. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v3.8</strong> — <strong>Crop from a sheet by keyboard.</strong> When cutting a letter or mark out of a "one image, all letters" / combined sheet, you can now do it without a mouse: the arrow keys move a crop box (Shift for smaller steps), <strong>+</strong> / <strong>−</strong> resize it, <strong>Enter</strong> crops, and <strong>Esc</strong> cancels. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -2657,54 +2709,61 @@ function shortcutGroups() {
       [`${M} + Z`, 'Undo'],
       [`${M} + Shift + Z  or  ${M} + Y`, 'Redo'],
       ['Esc', 'Close a dialog, or exit the current step'],
-    ]],
+    ], 'everywhere'],
     ['Letter navigation', [
       ['[', 'Previous letter — on the Place Nikkud / Trop step'],
       [']', 'Next letter — on the Place Nikkud / Trop step'],
       ['Enter  or  Space', 'Open the focused letter tile'],
       ['←  /  →  /  Home  /  End', 'Move between the step tabs when one is focused'],
-    ]],
+    ], 'nav'],
     ['Point editing — Edit points', [
       [',  /  .', 'Select the previous / next point'],
       ['Shift + ,  /  Shift + .', 'Extend the selection to the previous / next point'],
       [`${M} + A`, 'Select every point'],
       [`${M} + Click`, 'Toggle a point in / out of the selection'],
+      ['Shift + Click', 'Add a point to the selection'],
+      ['Double-click', 'Toggle a point smooth ○ / corner □'],
+      ['Alt + Click', 'Add a point where you click on the outline'],
+      ['Click', 'A segment’s small dot switches it line ↔ curve'],
+      ['Drag', 'On empty canvas: drag a box to select several points'],
       ['M', 'Marquee mode — dragging anywhere (even on a point) box-selects'],
-      ['←  ↑  →  ↓', 'Nudge the selected point'],
-      ['Shift + arrows', 'Nudge in bigger steps'],
+      ['Drag', 'With 2+ selected: drag inside the box to move it (snaps to guides), or its ◻ / ▭ handles to scale (Shift = uniform)'],
+      ['←  ↑  →  ↓', 'Nudge the selected points exactly 5 units'],
+      ['Shift + arrows', 'Nudge 25 units'],
       ['I', 'Insert a point after the selected one'],
       ['Delete  or  Backspace', 'Remove the selected point'],
       ['Shift + Delete', 'Delete the whole contour(s) of the selected points'],
       [`${M} + C  /  ${M} + V`, 'Copy the selected points / paste them into any letter'],
       ['Alt', 'Hold while dragging a point to bypass guide snapping'],
       ['Esc', 'Leave marquee mode, clear the selection, or leave point editing'],
-    ]],
+    ], 'nodes'],
     ['Pen — draw a contour (P)', [
       ['P', 'Toggle the pen — click places a corner, click-drag pulls a curve point'],
       ['Alt + Click', 'Place a curve point with ready-made handles (no drag needed)'],
+      ['Click', 'On the first point: close the contour'],
       ['←  ↑  →  ↓', 'Move the placement cursor (Shift = bigger steps)'],
-      ['Enter  /  Shift + Enter', 'Place a point at the cursor / close the contour'],
+      ['Enter  /  Shift + Enter', 'Place a point at the cursor / close the contour — a contour drawn inside another shape becomes a hole'],
       [`Backspace  or  ${M} + Z`, 'Remove the last placed point'],
       ['Esc', 'Discard the drawing, then exit the pen'],
-    ]],
+    ], 'pen'],
     ['Nikkud / Trop & Align placement', [
       ['←  ↑  →  ↓', 'Nudge the anchor, or the aligned image'],
       ['Shift + arrows', 'Fine (1-unit) nudge'],
-    ]],
+    ], 'marks'],
     ['Crop a letter from a sheet — Align step', [
       ['←  ↑  →  ↓', 'Move the crop box (first key seeds it)'],
       ['Shift + arrows', 'Move in smaller steps'],
       ['Plus  /  Minus', 'Grow / shrink the box'],
       ['Enter  or  Space', 'Crop the boxed area'],
       ['Esc', 'Cancel the crop box'],
-    ]],
+    ], 'crop'],
     ['Auto-detect review — combined sheet', [
       ['Tab', 'Move into the detected boxes'],
       ['←  →  or  ↑  ↓', 'Select the previous / next box'],
       ['Enter  or  Space', 'Reassign the selected box (opens the letter picker)'],
       ['Delete  or  Backspace', 'Remove the selected box'],
       ['Esc', 'Close the review (discards the proposal)'],
-    ]],
+    ], 'detect'],
   ];
 }
 function scKeysHtml(spec) {
@@ -2712,16 +2771,21 @@ function scKeysHtml(spec) {
     (tok === '+' || tok === '/' || tok === 'or') ? `<span class="sc-sep">${tok}</span>` : `<kbd>${esc(tok)}</kbd>`
   ).join(' ');
 }
-function openShortcuts() {
+function openShortcuts(sectionId) {   // optional sectionId ('nodes', 'pen', …) pre-scrolls to that group
   const body = document.getElementById('shortcutsBody');
-  body.innerHTML = shortcutGroups().map(([title, rows]) =>
-    `<div class="sc-group"><h4>${esc(title)}</h4>` +
+  body.innerHTML = shortcutGroups().map(([title, rows, id]) =>
+    `<div class="sc-group" id="sc-${id}"><h4>${esc(title)}</h4>` +
     rows.map(([keys, desc]) =>
       `<div class="sc-row"><span class="sc-desc">${esc(desc)}</span><span class="sc-keys">${scKeysHtml(keys)}</span></div>`
     ).join('') + `</div>`
   ).join('') +
     `<p style="font-size:0.76rem;color:var(--muted);margin:2px 0 0;">The “Edit shape” mark editor has its own undo and arrow-nudge, matching the main editor.</p>`;
   aOpenModal('shortcutsOverlay', closeShortcuts);
+  body.scrollTop = 0;   // reset AFTER the overlay opens — scrollTop writes are no-ops while display:none
+  if (sectionId) setTimeout(() => {   // after aOpenModal's setTimeout(0) focus pass
+    const el = document.getElementById('sc-' + sectionId);
+    if (el) el.scrollIntoView({ block: 'start' });
+  }, 30);
 }
 function closeShortcuts() { aCloseModal('shortcutsOverlay'); }
 // Press ? (Shift+/) anywhere — except while typing or with a modal already open — to open the sheet.
@@ -6391,8 +6455,8 @@ let _penEntry = false;           // one-shot: "Draw with pen" on a blank glyph �
 let penDraft = null;             // in-progress pen contour {nodes:[…]} — never touches the undo stack
 let _penCursor = null;           // [x,y] font units — rubber-band target + keyboard placement cursor
 let _hiddenContours = new Set(); // session-only per-contour hide (stage/editing only — hidden contours still export)
-let _contoursOpen = false;       // Contours panel disclosure (open ⇒ per-contour tinting on the stage)
-let _filletOpen = false;         // Round-corners disclosure open-state
+let _contoursOpen = wsReadPrefs().nodeContoursOpen === true;   // Contours panel disclosure (open ⇒ per-contour tinting on the stage); persisted as a view pref
+let _filletOpen = wsReadPrefs().nodeFilletOpen === true;       // Round-corners disclosure open-state; persisted as a view pref
 let _filletRadius = 25;          // last-used fillet radius (session)
 let _filletBase = null;          // deep-clone snapshot of nodeModel during a live fillet-slider burst
 const NODE_TINTS = ['#e05252', '#2a8f5b', '#2a6dd9', '#c9922a', '#9245c9', '#0f9bb0', '#c94590', '#6b7c2a'];   // editing aid only — never exported or persisted
@@ -6988,6 +7052,67 @@ function drawWithPen() {   // entry for blank glyphs (digits etc.) — seeds an 
   _penEntry = true;
   setWorkMode('nodes');
 }
+/* ── Node-panel UI glue (pure presentation — dispatches to the existing mode setters) ── */
+function npnlMode(which) {   // segmented-control click → existing setters, only on actual state change
+  if (which === 'pen') { if (!_penMode) togglePenMode(); }
+  else if (which === 'marquee') { if (!_marqueeMode) setMarqueeMode(true); }
+  else { if (_penMode) togglePenMode(); else if (_marqueeMode) setMarqueeMode(false); }
+  const b = document.querySelector(`.npnl-mode-btn[data-mode="${which}"]`);   // re-focus after the wholesale re-render
+  if (b) b.focus();
+}
+function npnlModeKey(e, btn) {   // roving tabindex — arrows move focus only, Enter/Space (native click) activates
+  const list = btn.closest('.npnl-mode'); if (!list) return;
+  const btns = [...list.querySelectorAll('.npnl-mode-btn')];
+  const i = btns.indexOf(btn); let j = -1;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % btns.length;
+  else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + btns.length) % btns.length;
+  else if (e.key === 'Home') j = 0;
+  else if (e.key === 'End') j = btns.length - 1;
+  else return;
+  e.preventDefault();
+  btns.forEach(b => b.tabIndex = -1); btns[j].tabIndex = 0; btns[j].focus();
+}
+function npnlDelToggle(btn) {   // split-Delete caret → open/close the menu
+  const wrap = btn.closest('.npnl-del'), menu = wrap && wrap.querySelector('.npnl-del-menu');
+  if (!menu) return;
+  const wasOpen = !menu.hidden;
+  npnlDelCloseAll();
+  if (!wasOpen) {
+    menu.hidden = false; btn.setAttribute('aria-expanded', 'true');
+    const f = menu.querySelector('.npnl-del-item'); if (f) f.focus();
+  }
+}
+function npnlDelCloseAll() {
+  document.querySelectorAll('.npnl-del-menu:not([hidden])').forEach(m => {
+    m.hidden = true;
+    const c = m.closest('.npnl-del')?.querySelector('.npnl-del-caret');
+    if (c) c.setAttribute('aria-expanded', 'false');
+  });
+}
+function npnlDelKey(e) {   // Escape closes (without reaching the nodes-mode Esc handler), arrows cycle the items
+  const wrap = e.target.closest('.npnl-del'); if (!wrap) return;
+  const menu = wrap.querySelector('.npnl-del-menu');
+  if (e.key === 'Escape' && !menu.hidden) {
+    e.preventDefault(); e.stopPropagation();
+    npnlDelCloseAll(); const c = wrap.querySelector('.npnl-del-caret'); if (c) c.focus();
+    return;
+  }
+  if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && !menu.hidden) {
+    e.preventDefault();
+    const items = [...menu.querySelectorAll('.npnl-del-item')];
+    const i = items.indexOf(document.activeElement);
+    items[(i + (e.key === 'ArrowDown' ? 1 : items.length - 1) + items.length) % items.length].focus();
+    return;
+  }
+  if (e.key === 'ArrowDown' && menu.hidden && e.target.classList.contains('npnl-del-caret')) {
+    e.preventDefault(); npnlDelToggle(e.target);
+  }
+}
+document.addEventListener('click', e => {   // outside-click closes the delete menu (mirrors the guide-style closer)
+  if (!document.querySelector('.npnl-del-menu:not([hidden])')) return;
+  if (e.target.closest('.npnl-del')) return;
+  npnlDelCloseAll();
+});
 function penPointerDown(e) {
   const [rx, ry] = clientToFont(e);
   let p = [rx, ry];
@@ -7110,7 +7235,7 @@ function contoursPanelHTML() {
       <button type="button" class="ct-del" onclick="deleteContourByIndex(${ci})" title="Delete this contour" aria-label="Delete contour ${ci + 1}">✕</button>
     </div>`;
   }).join('');
-  return `<details class="node-xform node-contours" ${_contoursOpen ? 'open' : ''} ontoggle="_contoursOpen = this.open; renderStage();">
+  return `<details class="node-xform npnl-disc node-contours" ${_contoursOpen ? 'open' : ''} ontoggle="_contoursOpen = this.open; npnlSaveOpen('nodeContoursOpen', this.open); renderStage();">
     <summary>Contours (${nodeModel.contours.length})</summary>
     <div class="hint" style="margin:4px 0;">Colors and hiding are editing aids only — hidden contours still export and show in previews.</div>
     ${rows || '<div class="hint">No contours yet — draw one with the pen (P).</div>'}
@@ -7232,7 +7357,7 @@ function pasteNodes() {
 }
 /* ── Transform selection: flip / rotate around the affected nodes' bbox center. Empty selection =
       whole glyph. Flips reverse contour orientation, so renest always runs (physical reversal). ── */
-let _nodeXformOpen = false;   // Transform disclosure open-state (the panel re-renders on every selection change)
+let _nodeXformOpen = wsReadPrefs().nodeXformOpen === true;   // Transform disclosure open-state (the panel re-renders on every selection change); persisted as a view pref
 function transformSelectedNodes(kind, angleDeg) {
   if (!nodeModel) return;
   const l = curLetter();
@@ -7266,32 +7391,75 @@ function transformSelectedNodes(kind, angleDeg) {
   });
   renderGrids(); renderStage(); renderControls();
 }
-function nodeEditPanelHTML() {
-  const cnt = nodeSel.size, dis = cnt ? '' : 'disabled', M = modKey();
+function nodeEditPanelHTML(l) {
+  const cnt = nodeSel.size, M = modKey();
+  const dis = cnt ? '' : 'disabled';   // still used by the Round-corners Apply button
   const dis2 = cnt >= 2 ? '' : 'disabled';
-  return `<div class="ctl-row" style="flex-wrap:wrap;gap:6px;">
+  const segWhy = cnt >= 2 ? '' : ' — select 2+ adjacent points first';
+  const mode = _penMode ? 'pen' : (_marqueeMode ? 'marquee' : 'select');
+  // glyph preview in the header — same guard as updateCurrentGlyphLabel (custom PUA codepoints render tofu)
+  const glyph = isCustomCp(curCp) ? '' :
+    `<span class="npnl-glyph" style="font-family:${esc(project.template.font)};">${String.fromCodePoint(parseInt(curCp, 16))}</span> — `;
+  const tip = _penMode
+    ? 'Tip: a contour drawn inside another shape becomes a hole · Backspace removes the last point · arrows move the cursor.'
+    : _marqueeMode
+    ? 'Tip: drag anywhere — even starting on a point — to box-select (Shift adds) · press M or Esc to leave.'
+    : cnt
+    ? 'Tip: arrows nudge exactly 5 units (Shift = 25) · double-click toggles ○/□ · with 2+ selected, drag inside the box to move it or its ◻/▭ handles to scale (Shift = uniform).'
+    : 'Tip: click selects · Shift-click adds · drag a box to select several · Alt-click the outline adds a point · double-click toggles ○/□.';
+  // zone 3 — contextual: pen status, or the selection-state action set (hidden, not disabled, when empty)
+  const ctx = _penMode
+    ? `<div class="npnl-ctx" role="group" aria-label="Pen">
+    <div class="npnl-readout" aria-live="polite">Placing points — click: corner · drag: curve · Enter: close</div>
+    <button class="ctl-btn" onclick="togglePenMode()" title="Discard the drawing and leave the pen (Esc)">✕ Cancel path</button>
+  </div>`
+    : cnt === 0
+    ? `<div class="npnl-ctx" role="group" aria-label="Selection actions">
+    <div class="npnl-readout" aria-live="polite">No points selected</div>
+    <div class="ctl-row" style="flex-wrap:wrap;gap:6px;">
+      <button class="ctl-btn" onclick="selectAllNodes()" title="Select every point (${M}+A)">Select all</button>
+      <button class="ctl-btn" onclick="pasteNodes()" title="Paste the copied contour(s) into this letter (${M}+V)" ${nodeClipboard ? '' : 'disabled'}>Paste</button>
+      <button class="ctl-btn" onclick="doRemoveSpecks()" title="Delete all tiny stray contours (under 1% of the largest)">Remove specks</button>
+    </div>
+  </div>`
+    : `<div class="npnl-ctx" role="group" aria-label="Selection actions">
+    <div class="npnl-readout" aria-live="polite">${cnt} point${cnt > 1 ? 's' : ''} selected</div>
+    <div class="ctl-row" style="flex-wrap:wrap;gap:6px;">
+      <span class="npnl-pair" role="group" aria-label="Point type">
+        <button class="ctl-btn" onclick="setSelectedNodeType('smooth')" title="Make the selected points smooth ○">○ Smooth</button>
+        <button class="ctl-btn" onclick="setSelectedNodeType('corner')" title="Make the selected points corners □">□ Corner</button>
+      </span>
+      <button class="ctl-btn" onclick="retractSelectedHandles()" title="Straighten both sides of the selected points — corners with no curve handles">Retract handles</button>
+    </div>
+    <div class="ctl-row" style="flex-wrap:wrap;gap:6px;">
+      <span class="npnl-pair" role="group" aria-label="Segment type">
+        <button class="ctl-btn" onclick="setSelectedSegsType(true)" title="Make the segments between adjacent selected points curved${segWhy}" ${dis2}>To curve</button>
+        <button class="ctl-btn" onclick="setSelectedSegsType(false)" title="Make the segments between adjacent selected points straight${segWhy}" ${dis2}>To line</button>
+      </span>
+    </div>
+    <div class="ctl-row" style="flex-wrap:wrap;gap:6px;">
+      <button class="ctl-btn" onclick="copySelectedNodes()" title="Copy the selected points as new contour(s) (${M}+C)">Copy</button>
+      <span class="npnl-del">
+        <button class="ctl-btn npnl-danger" onclick="doNodeDelete()" title="Remove the selected points (Delete or Backspace)">Delete</button>
+        <button class="ctl-btn npnl-danger npnl-del-caret" aria-haspopup="menu" aria-expanded="false" aria-label="More delete options" onclick="npnlDelToggle(this)" onkeydown="npnlDelKey(event)">▾</button>
+        <div class="npnl-del-menu" role="menu" hidden>
+          <button role="menuitem" class="npnl-del-item" onclick="doNodeDelete()" onkeydown="npnlDelKey(event)">Delete points <span>Del</span></button>
+          <button role="menuitem" class="npnl-del-item" onclick="doDeleteContours()" onkeydown="npnlDelKey(event)" title="Delete every contour that has a selected point (Shift+Delete)">Delete contour <span>Shift+Del</span></button>
+        </div>
+      </span>
+    </div>
+  </div>`;
+  return `<div class="npnl-head">
+    <span class="npnl-head-title">Editing: ${glyph}${esc(l.name)}</span>
     <button class="ctl-btn primary" onclick="toggleNodeEdit()">Done editing</button>
-    <button class="ctl-btn" onclick="setSelectedNodeType('smooth')" ${dis}>Smooth</button>
-    <button class="ctl-btn" onclick="setSelectedNodeType('corner')" ${dis}>Corner</button>
-    <button class="ctl-btn" onclick="retractSelectedHandles()" title="Straighten both sides of the selected points — corners with no curve handles" ${dis}>Retract handles</button>
-    <button class="ctl-btn" onclick="doNodeDelete()" title="Remove the selected point (Delete or Backspace)" ${dis}>Delete</button>
-    <span class="readout">${cnt} selected</span>
   </div>
-  <div class="ctl-row" style="flex-wrap:wrap;gap:6px;">
-    <button class="ctl-btn" onclick="doDeleteContours()" title="Delete every contour that has a selected point (Shift+Delete)" ${dis}>Delete contour</button>
-    <button class="ctl-btn" onclick="doRemoveSpecks()" title="Delete all tiny stray contours (under 1% of the largest)">Remove specks</button>
-    <button class="ctl-btn" onclick="copySelectedNodes()" title="Copy the selected points as new contour(s) (${M}+C)" ${dis}>Copy</button>
-    <button class="ctl-btn" onclick="pasteNodes()" title="Paste the copied contour(s) into this letter (${M}+V)" ${nodeClipboard ? '' : 'disabled'}>Paste</button>
+  <div class="npnl-mode" role="toolbar" aria-label="Editing mode">
+    <button class="npnl-mode-btn${mode === 'select' ? ' active' : ''}" data-mode="select" aria-pressed="${mode === 'select'}" tabindex="${mode === 'select' ? 0 : -1}" aria-keyshortcuts="Escape" title="Select — click and drag points (Esc leaves marquee or pen)" onclick="npnlMode('select')" onkeydown="npnlModeKey(event, this)">▸ Select</button>
+    <button class="npnl-mode-btn${mode === 'marquee' ? ' active' : ''}" data-mode="marquee" aria-pressed="${mode === 'marquee'}" tabindex="${mode === 'marquee' ? 0 : -1}" aria-keyshortcuts="M" title="Marquee — dragging anywhere box-selects, even from a point (M)" onclick="npnlMode('marquee')" onkeydown="npnlModeKey(event, this)">▭ Marquee</button>
+    <button class="npnl-mode-btn${mode === 'pen' ? ' active' : ''}" data-mode="pen" aria-pressed="${mode === 'pen'}" tabindex="${mode === 'pen' ? 0 : -1}" aria-keyshortcuts="P" title="Pen — draw a new contour point by point (P)" onclick="npnlMode('pen')" onkeydown="npnlModeKey(event, this)">✒ Pen</button>
   </div>
-  <div class="ctl-row" style="flex-wrap:wrap;gap:6px;">
-    <button class="ctl-btn${_penMode ? ' primary' : ''}" aria-pressed="${_penMode}" onclick="togglePenMode()" title="Pen — draw a new contour point by point (P)">✒ Pen${_penMode ? ' ✓' : ''}</button>
-    <button class="ctl-btn" aria-pressed="${_marqueeMode}" onclick="setMarqueeMode(!_marqueeMode)" title="Marquee mode — dragging anywhere box-selects, even from a point (M)">▭ Marquee${_marqueeMode ? ' ✓' : ''}</button>
-    <button class="ctl-btn" onclick="selectAllNodes()" title="Select every point (${M}+A)">Select all</button>
-    <button class="ctl-btn" onclick="setSelectedSegsType(true)" title="Make the segments between adjacent selected points curved" ${dis2}>To curve</button>
-    <button class="ctl-btn" onclick="setSelectedSegsType(false)" title="Make the segments between adjacent selected points straight" ${dis2}>To line</button>
-  </div>
-  <label class="chk"><input type="checkbox" ${snapGuidesOn() ? 'checked' : ''} onchange="setSnapGuides(this.checked)" aria-label="Snap dragged points to guides and metric lines"> Snap to guides (hold <b>Alt</b> to bypass)</label>
-  <details class="node-xform" ${_nodeXformOpen ? 'open' : ''} ontoggle="_nodeXformOpen = this.open">
+  ${ctx}
+  <details class="node-xform npnl-disc" ${_nodeXformOpen ? 'open' : ''} ontoggle="_nodeXformOpen = this.open; npnlSaveOpen('nodeXformOpen', this.open)">
     <summary>Transform ${cnt ? `— ${cnt} selected point${cnt > 1 ? 's' : ''}` : '— whole glyph'}</summary>
     <div class="ctl-row" style="flex-wrap:wrap;gap:6px;margin-top:6px;">
       <button class="ctl-btn" onclick="transformSelectedNodes('fliph')" title="Mirror left–right around the selection's center">Flip H</button>
@@ -7308,7 +7476,7 @@ function nodeEditPanelHTML() {
       <button class="ctl-btn" onclick="transformSelectedNodes('scale', +(document.getElementById('nodeScalePct')||{}).value || 100)" title="Scale by the percentage entered (about the selection's center)">Apply</button>
     </div>
   </details>
-  <details class="node-xform" ${_filletOpen ? 'open' : ''} ontoggle="_filletOpen = this.open">
+  <details class="node-xform npnl-disc" ${_filletOpen ? 'open' : ''} ontoggle="_filletOpen = this.open; npnlSaveOpen('nodeFilletOpen', this.open)">
     <summary>Round corners ${cnt ? `— ${cnt} selected` : ''}</summary>
     <div class="ctl-row" style="gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap;">
       <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">Radius <span id="filletRadV" class="readout">${_filletRadius}</span>
@@ -7320,7 +7488,11 @@ function nodeEditPanelHTML() {
     <div class="hint" style="margin:4px 0 0;">Rounds the selected □ corner points on this outline. (The Trace step's <b>Corners</b> slider changes how a re-trace fits instead.)</div>
   </details>
   ${contoursPanelHTML()}
-  <div class="hint">Drag a <b>point</b> to reshape (snaps to guides — hold <b>Alt</b> to bypass) · click selects, <b>${M}-click</b> toggles, <b>Shift-click</b> adds, drag a box to multi-select · <b>M</b> = marquee from anywhere · <b>${M}+A</b> selects all · <b>Shift+,</b>/<b>.</b> grows the selection · with 2+ points selected, drag inside the box to move it or the ◻/▭ handles to scale (<b>Shift</b> = uniform; box moves snap to guides) · click a segment's small dot (or <b>To curve / To line</b>) to switch line↔curve · <b>double-click</b> toggles □/○ · <b>Alt-click</b> the outline adds a point · <b>Delete</b> removes a point, <b>Shift+Delete</b> its whole contour · <b>${M}+C</b>/<b>${M}+V</b> copy points between letters · <b>P</b> = pen: click places corners, click-drag pulls curves, <b>Alt-click</b> quick-curves, click the first point or <b>Enter</b> closes (a contour drawn inside another becomes a hole) · arrows nudge exactly (Shift = 25) · <b>,</b>/<b>.</b> step points, <b>i</b> inserts. Every edit exports and undoes (${M}+Z).</div>`;
+  <label class="chk" style="margin-top:8px;"><input type="checkbox" ${snapGuidesOn() ? 'checked' : ''} onchange="setSnapGuides(this.checked)" aria-label="Snap dragged points to guides and metric lines"> Snap to guides <span class="hint">(Alt bypasses)</span></label>
+  <div class="npnl-tip">
+    <span class="hint">${tip}</span>
+    <button class="ctl-btn npnl-help" onclick="openShortcuts('nodes')" aria-label="Keyboard shortcuts for point editing" title="All point-editing shortcuts (?)">?</button>
+  </div>`;
 }
 /* Trace is split so dragging the sliders can update live:
    - rawLoopsFontUnits(): the expensive part (rasterize + marching-squares), cached.
@@ -8410,6 +8582,9 @@ function renderSpacingPreview() {
       Collapsed by default; state is a per-device UI pref (hebrewFontMaker_uiPrefs). ── */
 const WATERFALL_SIZES = [14, 18, 24, 36, 48];
 function waterfallOpenPref() { return wsReadPrefs().waterfallOpen === true; }   // missing = collapsed
+function npnlSaveOpen(key, open) {   // node-panel disclosure open-states (nodeXformOpen / nodeFilletOpen / nodeContoursOpen)
+  try { const p = wsReadPrefs(); p[key] = !!open; localStorage.setItem(WS_PREFS_KEY, JSON.stringify(p)); } catch (e) { /* private mode / quota — non-fatal */ }
+}
 function setWaterfallOpen(open) {
   try { const p = wsReadPrefs(); p.waterfallOpen = !!open; localStorage.setItem(WS_PREFS_KEY, JSON.stringify(p)); } catch (e) {}
 }
@@ -8786,7 +8961,7 @@ function renderControls() {
   attachGuideSortable();                                   // re-bind drag-to-reorder on the guide cards each render
 }
 function renderNodeLeft(L, l) {
-  L.innerHTML = `<div class="ws-side-title">Edit points — ${l.name}</div>` + nodeEditPanelHTML() + metricsPanel();
+  L.innerHTML = nodeEditPanelHTML(l) + metricsPanel();   // sticky panel header replaces the old ws-side-title line
 }
 
 /* ── Shared right-panel pieces (reference font + opacity sliders) ── */
