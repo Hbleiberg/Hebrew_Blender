@@ -621,13 +621,14 @@
   #adConfirm { background: var(--cream); border-inline-start: 3px solid var(--gold); border-radius: 6px; padding: 5px 9px; display: inline-flex; align-items: center; gap: 8px; }
   #adConfirm[hidden] { display: none; }
   #adStage { overflow: auto; background: var(--cream); border: 1px solid var(--border); border-radius: 8px; padding: 4px; }
-  .ad-box rect { fill: rgba(201,146,42,0.07); stroke: var(--gold, #c9922a); stroke-width: 2.5px; vector-effect: non-scaling-stroke; }
-  .ad-box text { paint-order: stroke; stroke: #fff; stroke-width: 4px; fill: var(--navy, #1a2744); font-weight: 700; pointer-events: none; }
+  /* Detected-box paint (fill/stroke/stroke-width/dash + label fill) is emitted INLINE as SVG
+     presentation attributes in renderAdStage so the overlays render in every engine. Firefox did
+     not apply a CSS `.ad-box rect` rule / `vector-effect: non-scaling-stroke` / unresolved var() to
+     the innerHTML-built SVG, leaving the boxes invisible while the sheet image still showed. Keeping
+     paint out of CSS (no var, no vector-effect, nothing that can silently fail) is the robust fix;
+     only cursor + keyboard focus ring stay here. */
   .ad-box { cursor: pointer; outline: none; }
-  .ad-box.sel rect, .ad-box:focus-visible rect { stroke: #2a6dd9; stroke-width: 4px; fill: rgba(42,109,217,0.12); }
-  .ad-box.un rect { stroke-dasharray: 7 5; stroke: #c0392b; }
-  .ad-box.skip rect { stroke-dasharray: 2 4; stroke: var(--muted, #6b6050); fill: rgba(127,127,127,0.10); }
-  .ad-box.skip text { fill: var(--muted, #6b6050); }
+  .ad-box:focus-visible rect { stroke: #2a6dd9; stroke-width: 4px; }
   #adPicker { flex: 0 0 auto; border: 1px solid var(--border); border-radius: 8px; background: var(--white); padding: 8px; margin-top: 8px; max-height: 30vh; overflow-y: auto; }
   #adPicker[hidden] { display: none; }
   .ad-pick-title { font-size: 0.78rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
