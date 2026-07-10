@@ -1788,7 +1788,8 @@ function buildNameChoices(q, t) {
     btn.type = 'button';
     btn.className = 'tu-choice';
     btn.dataset.key = k;
-    btn.appendChild(tropeGlyphSpan(kt, 'c-glyph'));
+    // Name only — no glyph. The stem word already shows the mark, so drawing it on each
+    // choice too would let the student shape-match instead of recalling the trope's name.
     const label = document.createElement('span');
     label.textContent = tropeName(kt);
     btn.appendChild(label);
