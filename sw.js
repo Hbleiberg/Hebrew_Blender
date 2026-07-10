@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v270';
+const VERSION = 'v271';
 const CACHE = 'ivritsuite-' + VERSION;
 // Version-independent cache for the big data/ corpora (dictionary words / emoji / parshiyot /
 // pockettorah). Kept OUT of the version-scoped CACHE so a routine VERSION bump no longer evicts
@@ -89,9 +89,12 @@ self.addEventListener('fetch', (event) => {
 
   // Network-first for pages + scripts (pwa.js) so a fresh deploy is never hidden
   // behind a stale cached copy; fall back to cache (then the home shell) offline.
+  // `cache: 'no-store'` bypasses the BROWSER HTTP cache — GitHub Pages sets a max-age
+  // on HTML, so without this the network-first fetch could itself be answered from the
+  // HTTP cache and keep handing back a stale page after a deploy.
   if (req.mode === 'navigate' || req.destination === 'script') {
     event.respondWith(
-      fetch(req)
+      fetch(req, { cache: 'no-store' })
         .then((res) => {
           if (res && res.ok && res.type === 'basic') {
             const copy = res.clone();
