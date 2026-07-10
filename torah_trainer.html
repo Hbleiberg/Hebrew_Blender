@@ -1021,6 +1021,12 @@ body.fullscreen #fsExitBtn { display: flex; }
   .tt-grid, .tt-grid.has-translit { grid-template-columns:1fr; }
 }
 
+/* Keyboard-operable font upload (suite-wide S54): `hidden` (display:none) removed the file
+   input from the tab order, making the uploader mouse-only. The input is now visually hidden
+   but FOCUSABLE — Enter/Space opens the picker — and the wrapping label shows the ring. */
+.vh-file { position:absolute; width:1px; height:1px; opacity:0; }
+label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offset:2px; }
+
 @media (prefers-reduced-motion: reduce) {
   .tt-looping { animation: none; box-shadow: inset 0 0 0 2px rgba(201,146,42,0.5); }
   /* No animated fade — a steady tint (removed by JS after ~1.6s) stands in. */
@@ -1275,7 +1281,7 @@ body.fullscreen #fsExitBtn { display: flex; }
       <div class="panel-title">Hebrew font</div>
       <div class="panel-body">
         <div class="font-options" id="fontOptions"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" hidden onchange="onUploadFontPick(this)"></label>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
       </div>
     </div>
 
