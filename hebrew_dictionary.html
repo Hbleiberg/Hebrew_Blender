@@ -1341,7 +1341,19 @@ function updateExportState() {
   if (sb) { sb.disabled = !active; sb.style.opacity = active ? '' : '0.5'; }
 }
 function exportSelectedWords() {
-  return [...bulkSelected.values()].filter(en => en.w).map(en => en.w);
+  const out = [];
+  for (const en of bulkSelected.values()) {
+    if (en.w) { out.push(en.w); }
+    else if (en.e) {
+      // Emoji cards carry the same fields a word record needs — expand each visible Hebrew form
+      // (masc/fem per the gender filter) into a word-shaped export record so it flows through the
+      // Anki / Quizlet / Word-List builders unchanged (nikkud preserved; translitDisplayOf handles it).
+      emojiVisibleForms(en.e).forEach(f => out.push({
+        word: f.heb, translation: en.e.english || '', translit: f.translit || '', pos: '', era: ''
+      }));
+    }
+  }
+  return out;
 }
 function exportDateStamp() {
   const d = new Date(), p = n => String(n).padStart(2, '0');
