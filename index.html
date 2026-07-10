@@ -958,6 +958,9 @@ function eraseAllSettings() {
     // legacy cleanup: purge orphaned data from the removed community-impact feature
     'ivritsuite-impact-v1',
     'ivritsuite-impact-optout',
+    // deliberately NOT erased: hebrewFontMaker_autosave (+ the Font Maker's IndexedDB autosave) —
+    // a settings erase must never wipe a teacher's in-progress font project; FM projects live
+    // outside the AllTools payload and the .ivrit project file is their canonical save.
   ];
   keys.forEach(k => localStorage.removeItem(k));
   if (window.indexedDB) { listUserFonts().then(l => l.forEach(f => deleteUserFont(f.name))).catch(() => {}); _fontsBackupCache = []; renderMyFontsManager(); }
