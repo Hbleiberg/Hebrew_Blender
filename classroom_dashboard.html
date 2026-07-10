@@ -134,6 +134,7 @@
     --navy: #1a2744;
     --navy-deep: #0d1220;
     --gold: #c9922a;
+    --gold-text: #7f5a13;   /* readable gold for small text on light surfaces (WCAG ≥4.5:1); brand --gold stays for borders/stars */
     --gold-light: #f0d080;
     --cream: #fdf8ef;
     --warm-gray: #e8e0d0;
@@ -163,6 +164,7 @@
   body.dark {
     --navy: #1a2744;
     --gold: #e0a832;
+    --gold-text: var(--gold);   /* dark gold already passes on dark surfaces */
     --gold-light: #f5d97a;
     --cream: #161c2a;
     --warm-gray: #1e2535;
@@ -1954,7 +1956,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div class="sub-section-hdr">Text Font</div>
       <div class="sub-section-body">
         <div class="font-options" id="engFontOptions"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadEngFontPick(this)"></label>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadEngFontPick(this)"></label>
       </div>
     </div>
   </div>
@@ -2061,7 +2063,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div class="sub-section-hdr">Hebrew Font</div>
       <div class="sub-section-body">
         <div class="font-options" id="fontOptions"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
       </div>
     </div>
     <div class="form-row">

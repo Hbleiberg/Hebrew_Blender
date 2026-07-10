@@ -232,7 +232,7 @@
 /* ───── Design tokens (lifted from classroom_dashboard.html:94-133) ───── */
 :root {
   --navy:#1a2744; --navy-deep:#0d1220;
-  --gold:#c9922a; --gold-light:#f0d080;
+  --gold:#c9922a; --gold-light:#f0d080; --gold-text:#7f5a13;
   --cream:#fdf8ef; --warm-gray:#e8e0d0;
   --text:#1a2744; --muted:#6b6050;
   --border:#c8bfa8; --white:#ffffff;
@@ -242,7 +242,7 @@
   --shadow-lg:0 12px 32px rgba(26,39,68,0.12);
 }
 html.dark-early body, body.dark {
-  --navy:#1a2744; --gold:#e0a832; --gold-light:#f5d97a;
+  --navy:#1a2744; --gold:#e0a832; --gold-light:#f5d97a; --gold-text:var(--gold);
   --cream:#161c2a; --warm-gray:#1e2535;
   --text:#dde4f0; --muted:#8a94a8;
   --border:#2a3349; --white:#1e2535;
@@ -1315,7 +1315,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="panel-title">Hebrew font</div>
       <div class="panel-body">
         <div class="font-options" id="fontOptions"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
       </div>
     </div>
 
