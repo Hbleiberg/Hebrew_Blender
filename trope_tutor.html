@@ -199,6 +199,7 @@ body.dark .tu-tab[aria-selected="true"] { border-bottom-color:var(--white); }
 }
 body.dark .tu-view { background:var(--navy-deep); }
 .tu-status { font-size:0.82rem; color:var(--muted); padding:5px 2px; min-height:1.5em; }
+.tu-status:empty { display:none; }   /* collapse when empty so the card sits flush under the tabs */
 .tu-status.error { color:#cc3333; font-weight:600; }
 body.dark .tu-status.error { color:#ff6666; }
 .tu-intro { font-size:0.9rem; color:var(--muted); margin:0 0 14px; line-height:1.5; }
