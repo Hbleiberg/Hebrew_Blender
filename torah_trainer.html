@@ -977,6 +977,13 @@ body.fullscreen #fsExitBtn { display: flex; }
 @media print {
   .tt-jumpnav, .tt-resume-chip, .tt-audio-bar, .tt-verse-buttons, .tt-trope-legend { display:none !important; }
   .tt-aliyah-divider { color:#555; }
+  /* The flanking rule-lines are 1px background fills, stripped by the print dialog's
+     default "background graphics: off" — a border always prints. */
+  .tt-aliyah-divider::before, .tt-aliyah-divider::after { background:none; height:0; border-top:1px solid #555; }
+  /* Karaoke .active is a transient audio cue — meaningless frozen on paper. A beforeprint
+     handler pauses playback + clears the class; this backstops the non-decoration styles
+     (deliberately NOT touching text-decoration, which the trope print underline uses). */
+  .tt-word.active { background:none !important; box-shadow:none !important; outline:none !important; color:inherit !important; }
 
   /* Page chrome: only the reading belongs on paper (generator S30 hide-list pattern).
      .tt-controls also covers #ttCustomPicker; the fixed-position drawer/backdrop/toast/tour
@@ -4719,6 +4726,11 @@ async function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+// Printing mid-karaoke would freeze the transient .active word-highlight onto paper
+// (kar-style-underline's gold decoration prints). Pause + clear before the snapshot;
+// the print-CSS backstop covers the non-decoration styles.
+window.addEventListener('beforeprint', () => { pauseKaraoke(); clearKaraokeHighlight(); });
 
 /* ══════════════════════════════════════════════════════
    TOOLTIP — accessible: hover (mouse), tap (touch), and keyboard (focus +
