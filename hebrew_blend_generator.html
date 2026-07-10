@@ -11337,7 +11337,13 @@ function renderCrossword(d) {
     const box = document.createElement('div');
     box.className = 'cw-cluelist';
     let html = `<div class="cw-clue-title">${name}</div>`;
-    arr.forEach(e => { html += `<div class="cw-clue"><span class="cw-clue-num">${e.num}.</span> ${esc(e.clue)}</div>`; });
+    // dir="auto": an imported word list can carry a Hebrew translation as the clue, and
+    // .cw-clue inherits the worksheet's LTR direction — first-strong-character ordering
+    // keeps English clues pixel-identical while rendering Hebrew clues RTL.
+    arr.forEach(e => {
+      const he = /[\u0590-\u05FF]/.test(e.clue);
+      html += `<div class="cw-clue"><span class="cw-clue-num">${e.num}.</span> <span dir="auto"${he ? ' lang="he"' : ''}>${esc(e.clue)}</span></div>`;
+    });
     box.innerHTML = html;
     return box;
   }
