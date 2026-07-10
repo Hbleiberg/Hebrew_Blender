@@ -212,6 +212,12 @@ body.dark .sefaria-attr .sefaria-dark{display:inline-block;}
 .card-attr:focus{outline:2px solid var(--gold);outline-offset:2px;}
 
 /* Honor reduced-motion: neutralize all transitions (incl. the .page-card hover lift) */
+/* Keyboard-operable font upload (suite-wide S54): `hidden` (display:none) removed the file
+   input from the tab order, making the uploader mouse-only. The input is now visually hidden
+   but FOCUSABLE — Enter/Space opens the picker — and the wrapping label shows the ring. */
+.vh-file { position:absolute; width:1px; height:1px; opacity:0; }
+label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offset:2px; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
@@ -356,7 +362,7 @@ body.dark .sefaria-attr .sefaria-dark{display:inline-block;}
       <div id="myFontsSection" style="margin-top:14px;border-top:1px solid rgba(0,0,0,0.12);padding-top:12px;">
         <h4 style="margin:0 0 4px;font-size:0.95rem;">★ My IvritSuite Fonts <span id="myFontsCount" style="font-weight:400;font-size:0.8rem;opacity:0.7;"></span></h4>
         <p class="ie-note" style="margin:0 0 8px;">Fonts you built in the <a href="Hebrew_Font_Maker.html">Hebrew Font Maker</a> — or any <b>.ttf / .otf / .woff</b> you upload — are saved in this browser. Use one across every tool, download it, or remove it.</p>
-        <label class="ie-action-btn secondary" style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;margin-bottom:8px;">⬆ Upload a font<input type="file" accept=".ttf,.otf,.woff,.woff2" hidden onchange="onUploadFontPickIndex(this)"></label>
+        <label class="ie-action-btn secondary" style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;margin-bottom:8px;">⬆ Upload a font<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPickIndex(this)"></label>
         <div id="myFontsList"></div>
       </div>
       <div style="margin-top:14px;border-top:1px solid rgba(0,0,0,0.12);padding-top:12px;">

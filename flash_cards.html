@@ -914,6 +914,12 @@ body.dark .lc-replay { color: var(--gold-light); }
 body.dark #appToast { background: #0a0f1c; }
 
 /* Honor reduced-motion: neutralize all transitions/animations (page previously had no such block) */
+/* Keyboard-operable font upload (suite-wide S54): `hidden` (display:none) removed the file
+   input from the tab order, making the uploader mouse-only. The input is now visually hidden
+   but FOCUSABLE — Enter/Space opens the picker — and the wrapping label shows the ring. */
+.vh-file { position:absolute; width:1px; height:1px; opacity:0; }
+label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offset:2px; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
@@ -1642,14 +1648,14 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div class="label adv-subhead">Hebrew Font</div>
       <div class="adv-subbody">
         <div class="font-grid" id="fontGrid"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" hidden onchange="onUploadFontPick(this)"></label>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
       </div>
 
       <!-- English / Latin font selector — styles the English card faces (Numbers/Colors/Words + romanization) -->
       <div class="label adv-subhead">English / Latin Font</div>
       <div class="adv-subbody">
         <div class="font-grid" id="engFontGrid"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" hidden onchange="onUploadEngFontPick(this)"></label>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadEngFontPick(this)"></label>
       </div>
 
       <hr class="soft" />
