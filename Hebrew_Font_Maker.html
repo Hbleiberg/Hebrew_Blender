@@ -729,12 +729,13 @@
   #adConfirm[hidden] { display: none; }
   #adStage { overflow: auto; background: var(--cream); border: 1px solid var(--border); border-radius: 8px; padding: 4px; }
   /* Detected-box paint (fill/stroke/stroke-width/dash + label fill) is emitted INLINE as SVG
-     presentation attributes in renderAdStage so the overlays render in every engine. Firefox did
-     not apply a CSS `.ad-box rect` rule / `vector-effect: non-scaling-stroke` / unresolved var() to
-     the innerHTML-built SVG, leaving the boxes invisible while the sheet image still showed. Keeping
-     paint out of CSS (no var, no vector-effect, nothing that can silently fail) is the robust fix;
-     only cursor + keyboard focus ring stay here. */
-  .ad-box { cursor: pointer; outline: none; }
+     presentation attributes in renderAdStage so the overlays render in every engine (no CSS var,
+     no vector-effect — nothing that can silently fail). `display: inline` is the actual Firefox
+     fix: Firefox was computing this interactive box group <g role="button"> as display:none
+     (Chromium computes inline; no author rule sets it — a Firefox SVG/UA quirk), which hid the
+     whole overlay (paths + labels rendered at 0×0) while the sheet image still showed. Forcing a
+     rendered display value on the group restores it. Only cursor + keyboard focus ring beyond that. */
+  .ad-box { display: inline; cursor: pointer; outline: none; }
   .ad-box:focus-visible path { stroke: #2a6dd9; stroke-width: 4px; }
   #adPicker { flex: 0 0 auto; border: 1px solid var(--border); border-radius: 8px; background: var(--white); padding: 8px; margin-top: 8px; max-height: 30vh; overflow-y: auto; }
   #adPicker[hidden] { display: none; }
@@ -2402,7 +2403,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.12';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.13';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2614,6 +2615,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.13</strong> — <strong>Auto-detect review boxes now appear in Firefox.</strong> The real culprit, finally pinned down: Firefox was hiding the entire box-overlay layer (it computed the interactive overlay group as <span class="ui">display:none</span>, unlike other browsers), so the detected-letter outlines and labels never showed even though the scanned sheet did. Forcing the overlay to display fixes it — the boxes now render in Firefox exactly as they do everywhere else. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.12</strong> — <strong>Auto-detect review boxes render reliably in Firefox.</strong> Following up on v4.11: the detected-letter outlines are now drawn as vector <em>paths</em> rather than rectangles, sidestepping a Firefox quirk that collapsed the rectangle outlines to zero size — so the boxes appear over the scanned sheet as intended, in every browser. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.11</strong> — <strong>More robust auto-detect review boxes.</strong> On the <span class="ui">Auto-detect letters</span> review screen, the outlined boxes around each detected letter now use fully self-contained sizing and styling, so they render consistently across browsers — a fix aimed at cases (notably Firefox) where the scanned sheet appeared but the boxes over it did not. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.10</strong> — <strong>Cleaner UFO exports for font editors.</strong> The UFO source export no longer invents an x-height: Hebrew has no lowercase, so that guide was just a duplicate of the cap-height line and confused font editors like Glyphs and RoboFont. The field is now simply left unset, the honest answer for a caseless font. <span style="color:var(--muted);">(July 2026)</span></li>
