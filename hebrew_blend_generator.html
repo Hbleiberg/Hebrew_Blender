@@ -1403,6 +1403,12 @@
 
   /* ── RW COLLAPSIBLE SECTIONS ── */
   .rw-section { border-top: 1px solid var(--border); padding-top: 6px; }
+  /* Readable gold for small text on light surfaces (brand --gold is 2.6:1 on white;
+     #7f5a13 measures 6.2:1 — same literal as the trope tutor's --gold-text). Dark's
+     brighter --gold already passes (~8:1). Underline: a link in prose needs a
+     non-color cue. */
+  #rwListEmptyState a { color:#7f5a13; text-decoration:underline; }
+  body.dark #rwListEmptyState a { color:var(--gold); }
   .rw-section-header {
     display: flex; align-items: center; gap: 5px;
     font-size: 0.7rem; color: var(--muted); font-weight: 600;
@@ -2643,7 +2649,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
               </div>
               <!-- My Word Lists picker -->
               <div id="rwListPickerWrap" style="display:none;">
-                <div id="rwListEmptyState" style="display:none;font-size:0.75rem;color:var(--muted);line-height:1.5;padding:8px 4px;">No word lists yet. <a href="hebrew_dictionary.html" style="color:var(--gold);">Create word lists in the Dictionary</a>, then come back to drill them here.</div>
+                <div id="rwListEmptyState" style="display:none;font-size:0.75rem;color:var(--muted);line-height:1.5;padding:8px 4px;">No word lists yet. <a href="hebrew_dictionary.html">Create word lists in the Dictionary</a>, then come back to drill them here.</div>
                 <div id="rwListPicker" style="display:none;flex-direction:column;border:1px solid var(--border);border-radius:6px;overflow:hidden;"></div>
               </div>
               <!-- Imported list paste-in -->
