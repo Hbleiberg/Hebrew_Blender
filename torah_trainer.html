@@ -469,42 +469,6 @@ body.fullscreen .tt-jumpnav { padding-right:84px; }   /* clear the fullscreen ex
 /* Page-view running text: an inline marker instead of a block divider. */
 .tt-aliyah-inline { font-size:0.7rem; font-weight:700; color:var(--gold); letter-spacing:0.03em; white-space:nowrap; }
 
-@media print {
-  .tt-jumpnav, .tt-resume-chip, .tt-audio-bar, .tt-verse-buttons, .tt-trope-legend { display:none !important; }
-  .tt-aliyah-divider { color:#555; }
-
-  /* Dark-mode print reset (generator S30 pattern): light paper, dark ink. The token
-     re-statement is non-!important and sits after the dark rules, so it wins by source
-     order; intentional inline nikkud color spans still win over it (inline > stylesheet). */
-  html.dark-early body, body.dark {
-    --navy:#1a2744; --gold:#c9922a; --gold-light:#f0d080; --cream:#fdf8ef;
-    --warm-gray:#e8e0d0; --text:#1a2744; --muted:#6b6050; --border:#c8bfa8; --white:#ffffff;
-  }
-  body { background:#fff; }
-
-  /* Trope coloring on paper: the family treatments are background tints, which the print
-     dialog's default "background graphics: off" strips SILENTLY — the teacher who turned
-     trope coloring on gets an uncolored sheet with no cue. Force the existing clause-
-     underline treatment (the highlight-collision fallback) for every trope-classed word
-     in print — text-decoration always prints, in every browser and B/W too. */
-  body.trope-on .tt-word:where(.trope-sofpasuk, .trope-katon, .trope-segol, .trope-revia, .trope-geresh, .trope-rare) {
-    background-color:transparent !important;
-    text-decoration-line:underline; text-decoration-thickness:4px;
-    text-underline-offset:0.68em; text-decoration-skip-ink:none;
-  }
-  body.trope-on .tt-word.trope-sofpasuk { text-decoration-color:var(--trope-sofpasuk-line); }
-  body.trope-on .tt-word.trope-katon    { text-decoration-color:var(--trope-katon-line); }
-  body.trope-on .tt-word.trope-segol    { text-decoration-color:var(--trope-segol-line); }
-  body.trope-on .tt-word.trope-revia    { text-decoration-color:var(--trope-revia-line); }
-  body.trope-on .tt-word.trope-geresh   { text-decoration-color:var(--trope-geresh-line); }
-  body.trope-on .tt-word.trope-rare     { text-decoration-color:var(--trope-rare-line); }
-
-  /* Side-by-side prints WRONG verse pairings: the two columns are independent flows that
-     drift out of sync (measured ~15 verses apart by page 3) and pagination freezes the
-     drift onto paper. Collapse to the existing ≤720px single-column layout — sequential
-     and correct, if not parallel. */
-  .tt-grid, .tt-grid.has-translit { grid-template-columns:1fr; }
-}
 
 /* ── Guided tour (ported from the generator) ── */
 .tbtn {
@@ -1007,6 +971,56 @@ body.fullscreen #fsExitBtn { display: flex; }
 /* ── Reduced motion: honor the OS "reduce motion" preference for everything this
    tool animates (verse-loop pulse, resume/jump highlight flashes, tour spotlight,
    hint toast). Shared block — extended as sections are added. ── */
+/* Print treatment - kept at the END of the stylesheet so equal-specificity print rules
+   (e.g. the .tt-grid column collapse) beat the screen rules by source order (generator S30
+   convention). !important rules don't care, but the layout overrides do. */
+@media print {
+  .tt-jumpnav, .tt-resume-chip, .tt-audio-bar, .tt-verse-buttons, .tt-trope-legend { display:none !important; }
+  .tt-aliyah-divider { color:#555; }
+
+  /* Page chrome: only the reading belongs on paper (generator S30 hide-list pattern).
+     .tt-controls also covers #ttCustomPicker; the fixed-position drawer/backdrop/toast/tour
+     otherwise re-stamp on EVERY printed page (position:fixed repeats per page in print). */
+  header, .tt-controls, #ttStatus, .tt-readall, .tt-chantall, footer, .tt-empty,
+  .settings-modal, .settings-backdrop, #tipFloat, .tt-hint-toast, .tour-spot, .tour-card, #fsExitBtn { display:none !important; }
+
+  /* Never split a verse (or a side-by-side row) across a page break; best-effort —
+     a verse taller than the page still breaks (browser overrides). */
+  .tt-verse, .tt-grid-row { break-inside:avoid; page-break-inside:avoid; }
+
+  /* Dark-mode print reset (generator S30 pattern): light paper, dark ink. The token
+     re-statement is non-!important and sits after the dark rules, so it wins by source
+     order; intentional inline nikkud color spans still win over it (inline > stylesheet). */
+  html.dark-early body, body.dark {
+    --navy:#1a2744; --gold:#c9922a; --gold-light:#f0d080; --cream:#fdf8ef;
+    --warm-gray:#e8e0d0; --text:#1a2744; --muted:#6b6050; --border:#c8bfa8; --white:#ffffff;
+  }
+  body { background:#fff; }
+
+  /* Trope coloring on paper: the family treatments are background tints, which the print
+     dialog's default "background graphics: off" strips SILENTLY — the teacher who turned
+     trope coloring on gets an uncolored sheet with no cue. Force the existing clause-
+     underline treatment (the highlight-collision fallback) for every trope-classed word
+     in print — text-decoration always prints, in every browser and B/W too. */
+  body.trope-on .tt-word:where(.trope-sofpasuk, .trope-katon, .trope-segol, .trope-revia, .trope-geresh, .trope-rare) {
+    background-color:transparent !important;
+    text-decoration-line:underline; text-decoration-thickness:4px;
+    text-underline-offset:0.68em; text-decoration-skip-ink:none;
+  }
+  body.trope-on .tt-word.trope-sofpasuk { text-decoration-color:var(--trope-sofpasuk-line); }
+  body.trope-on .tt-word.trope-katon    { text-decoration-color:var(--trope-katon-line); }
+  body.trope-on .tt-word.trope-segol    { text-decoration-color:var(--trope-segol-line); }
+  body.trope-on .tt-word.trope-revia    { text-decoration-color:var(--trope-revia-line); }
+  body.trope-on .tt-word.trope-geresh   { text-decoration-color:var(--trope-geresh-line); }
+  body.trope-on .tt-word.trope-rare     { text-decoration-color:var(--trope-rare-line); }
+
+  /* Side-by-side prints WRONG verse pairings: the two columns are independent flows that
+     drift out of sync (measured ~15 verses apart by page 3) and pagination freezes the
+     drift onto paper. Collapse to the existing ≤720px single-column layout — sequential
+     and correct, if not parallel. */
+  .tt-grid, .tt-grid.has-translit { grid-template-columns:1fr; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .tt-looping { animation: none; box-shadow: inset 0 0 0 2px rgba(201,146,42,0.5); }
   /* No animated fade — a steady tint (removed by JS after ~1.6s) stands in. */
