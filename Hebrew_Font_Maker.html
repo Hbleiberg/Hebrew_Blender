@@ -2402,7 +2402,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.10';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.11';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2614,6 +2614,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.11</strong> — <strong>More robust auto-detect review boxes.</strong> On the <span class="ui">Auto-detect letters</span> review screen, the outlined boxes around each detected letter now use fully self-contained sizing and styling, so they render consistently across browsers — a fix aimed at cases (notably Firefox) where the scanned sheet appeared but the boxes over it did not. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.10</strong> — <strong>Cleaner UFO exports for font editors.</strong> The UFO source export no longer invents an x-height: Hebrew has no lowercase, so that guide was just a duplicate of the cap-height line and confused font editors like Glyphs and RoboFont. The field is now simply left unset, the honest answer for a caseless font. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.9</strong> — <strong>Your font's version number behaves itself.</strong> Two small bookkeeping fixes: a pre-1.0 version you typed yourself (like <span class="ui">0.5</span>) no longer silently becomes 1.0-something in the exported file, and the automatic per-export version tick now only sticks when a font file actually downloads — cancelling after a failed shaping check, or a WOFF2 conversion hiccup, no longer inches the version up on every retry. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.8</strong> — <strong>Older projects export safely again.</strong> A project saved by a much older version (or edited outside the app) could be missing some of its vowel anchor points under the hood — and exporting it would fail with a generic "Export error" before your font ever built. The app now quietly restores any missing anchor points (in the same spots a fresh letter would get them) wherever it finds them — opening the anchor editor, previewing, or exporting — so those projects build normally; you can still fine-tune every anchor afterwards. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -4693,6 +4694,7 @@ function renderAdSummary() {
   el.innerHTML = h;
   if (applyBtn) applyBtn.disabled = !assigned.length;
 }
+function _adDebug() { try { return /addebug/i.test(location.hash); } catch (e) { return false; } }
 function renderAdStage(focusSel) {
   const host = document.getElementById('adStage'); if (!host) return;
   const im = imgCache[adState.url];
@@ -4706,7 +4708,10 @@ function renderAdStage(focusSel) {
   const isDark = document.body.classList.contains('dark');
   const goldC = isDark ? '#e0a832' : '#c9922a', mutedC = isDark ? '#8a94a8' : '#6b6050', navyC = '#1a2744';
   const bsw = Math.max(2, Math.round(Math.max(W, H) / 400)), tsw = Math.max(3, Math.round(bsw * 1.5));
-  let h = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;" role="group" aria-label="Detected letter boxes over the sheet">`;
+  // Root SVG carries explicit xmlns + width/height attributes AND a CSS aspect-ratio so its intrinsic
+  // size is unambiguous in every engine (belt-and-braces for Firefox height:auto sizing); the CSS
+  // width:100%;height:auto still drives responsive display and overrides the attributes for layout.
+  let h = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;aspect-ratio:${W} / ${H};display:block;" role="group" aria-label="Detected letter boxes over the sheet">`;
   h += `<image href="${adState.url}" x="0" y="0" width="${W}" height="${H}"/>`;
   adState.boxes.forEach(b => {
     const r = b.rect, sel = b.id === adState.selId;
@@ -4730,6 +4735,31 @@ function renderAdStage(focusSel) {
   if (focusSel && adState.selId != null) {
     const g = host.querySelector(`.ad-box[data-id="${adState.selId}"]`);
     if (g) g.focus();
+  }
+  // Diagnostic readout (hash-gated via #addebug) — reports the SVG box layer's real DOM/paint/geometry
+  // so a browser that hides the boxes (e.g. Firefox) can be pinpointed without a reproducing engine.
+  // Never affects normal users; must never throw.
+  if (_adDebug()) {
+    try {
+      const svg = host.querySelector('svg');
+      const gCount = host.querySelectorAll('.ad-box').length;
+      const rects = host.querySelectorAll('.ad-box rect');
+      const rect0 = rects[0] || null;
+      const bb = rect0 && rect0.getBBox ? rect0.getBBox() : null;
+      const sr = rect0 ? rect0.getBoundingClientRect() : null;
+      const cs = rect0 ? getComputedStyle(rect0) : null;
+      const R = n => Math.round(n);
+      const line = `[addebug] boxes=${adState.boxes.length} gCount=${gCount} rectCount=${rects.length}`
+        + ` | svg=${svg ? svg.clientWidth + 'x' + svg.clientHeight : 'none'}`
+        + ` | rect0.bbox=${bb ? R(bb.width) + 'x' + R(bb.height) : 'none'}`
+        + ` rect0.screen=${sr ? R(sr.width) + 'x' + R(sr.height) : 'none'}`
+        + ` | rect0 fill=${cs ? cs.fill : 'n/a'} stroke=${cs ? cs.stroke : 'n/a'} sw=${cs ? cs.strokeWidth : 'n/a'}`;
+      let d = document.getElementById('adDbg');
+      if (!d) { d = document.createElement('div'); d.id = 'adDbg'; host.parentNode.insertBefore(d, host.nextSibling); }
+      d.style.cssText = 'font:11px/1.4 monospace;color:#c0392b;background:#fff8f6;border:1px solid #c0392b;border-radius:6px;padding:6px 8px;margin-top:8px;white-space:pre-wrap;word-break:break-all;';
+      d.textContent = line;
+      console.log(line);
+    } catch (e) { /* diagnostic must never break the overlay */ }
   }
 }
 /* ── Overlay interaction (wired once; delegated like the QA grid) ── */
