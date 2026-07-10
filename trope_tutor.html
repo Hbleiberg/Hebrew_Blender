@@ -636,6 +636,7 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
    input from the tab order, making the uploader mouse-only. The input is now visually hidden
    but FOCUSABLE — Enter/Space opens the picker — and the wrapping label shows the ring. */
 .vh-file { position:absolute; width:1px; height:1px; opacity:0; }
+.vh { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
 label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offset:2px; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -654,7 +655,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 <body>
 <a class="skip-link" href="#tuMain">Skip to the tutor</a>
 <header>
-  <div class="star">✡︎</div>
+  <div class="star" aria-hidden="true">✡︎</div>
   <div class="htitle">
     <h1>Trope Tutor</h1>
     <p>Learn the Torah cantillation marks — names, symbols, and melodies — with real chanted examples.</p>
@@ -663,7 +664,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <a class="hbtn" href="/"><span>←</span><span>Home</span></a>
     <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour">❓ Tour</button>
     <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
-    <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
+    <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings" aria-label="Settings">⚙️</button>
   </div>
 </header>
 
@@ -698,7 +699,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <p class="tu-drill-sub" id="drillTypesSummary"></p>
         <button class="btn btn-lg" id="drillStartBtn" onclick="startDrill()">Start drill</button>
         <div class="tu-note" id="drillStartNote" role="status"></div>
-        <div class="tu-mgrid" id="masteryGridStart" aria-label="Mastery by trope"></div>
+        <div class="tu-mgrid" id="masteryGridStart" role="group" aria-label="Mastery by trope"></div>
       </div>
     </div>
 
@@ -724,7 +725,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <div class="tu-pb-banner" id="resPb" hidden>🏆 New personal best!</div>
         <button class="btn btn-lg" onclick="startDrill()">Drill again</button>
         <button class="btn btn-lg btn-secondary" onclick="setMode('learn')">Back to Learn</button>
-        <div class="tu-mgrid" id="masteryGridEnd" aria-label="Mastery by trope"></div>
+        <div class="tu-mgrid" id="masteryGridEnd" role="group" aria-label="Mastery by trope"></div>
       </div>
     </div>
 
@@ -799,7 +800,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           <label>Primary trope names
             <span class="tip-wrap" data-tip="Both names are always shown on each card; this picks which one leads. Note the classic collision: Ashkenazi 'pashta' is Sephardi 'kadma', while Ashkenazi 'kadma' is Sephardi 'azla'."><i class="tip-icon">?</i></span>
           </label>
-          <span class="radio-group">
+          <span class="radio-group" role="radiogroup" aria-label="Primary trope names">
             <input type="radio" id="tradAshk" name="tuTradition" value="ashk" onchange="setTradition('ashk')">
             <label for="tradAshk">Ashkenazi</label>
             <input type="radio" id="tradSeph" name="tuTradition" value="seph" onchange="setTradition('seph')">
@@ -1378,9 +1379,16 @@ function buildMasteryGrid(container) {
     for (const t of TROPES.filter(x => x.family === fam.key)) {
       const { r, w } = statsOf(t.key);
       const m = masteryOf(t.key);
+      const mastered = m >= 0.8;
       const cell = document.createElement('div');
-      cell.className = 'tu-mcell' + (m >= 0.8 ? ' mastered' : '');
-      cell.title = tropeName(t) + ' — ' + r + ' right / ' + w + ' wrong';
+      cell.className = 'tu-mcell' + (mastered ? ' mastered' : '');
+      cell.title = tropeName(t) + ' — ' + r + ' right / ' + w + ' wrong' + (mastered ? ' — mastered' : '');
+      if (mastered) {
+        const vh = document.createElement('span');
+        vh.className = 'vh';
+        vh.textContent = 'mastered';
+        cell.appendChild(vh);
+      }
       cell.appendChild(tropeGlyphSpan(t, 'm-glyph'));
       const nm = document.createElement('span');
       nm.className = 'm-name';
@@ -1763,7 +1771,7 @@ function renderQuestion(q, regenDepth) {
     nm.textContent = tropeNameLine(t);
     stem.appendChild(nm);
     buildMelodyChoices(q, t, regenDepth);
-    hint.textContent = 'Tap a number to listen; tap it again to choose.';
+    hint.textContent = 'Choose a number to hear its melody; choose it again to answer.';
   }
   // Answering destroys the focused Next button — land focus on the new prompt so keyboard users
   // aren't dropped to <body> (re-tabbing from the page top) and SRs announce the fresh question.
@@ -1819,12 +1827,13 @@ function buildMelodyChoices(q, t, regenDepth) {
     btn.type = 'button';
     btn.className = 'tu-choice';
     btn.dataset.key = opt.key;
+    btn.setAttribute('aria-pressed', 'false');
     const num = document.createElement('span');
     num.textContent = '▶ ' + (idx + 1);
     btn.appendChild(num);
     const sub = document.createElement('span');
     sub.className = 'c-sub';
-    sub.textContent = 'tap again to choose';
+    sub.textContent = 'choose again to answer';
     sub.hidden = true;
     btn.appendChild(sub);
     btn.onclick = () => {
@@ -1832,9 +1841,11 @@ function buildMelodyChoices(q, t, regenDepth) {
       if (btn.classList.contains('armed')) { answer(q, opt.key, btn); return; }
       choices.querySelectorAll('.tu-choice').forEach(b => {
         b.classList.remove('armed');
+        b.setAttribute('aria-pressed', 'false');
         const s = b.querySelector('.c-sub'); if (s) s.hidden = true;
       });
       btn.classList.add('armed');
+      btn.setAttribute('aria-pressed', 'true');
       sub.hidden = false;
       playClip(opt.ex, { onError: () => {
         // a distractor clip failing is recoverable in place: re-pick its example
@@ -1875,8 +1886,10 @@ function questionAudioFailed(q, regenDepth) {
 }
 
 function updateStreakLine() {
-  document.getElementById('qStreak').textContent =
-    '🔥 ' + sessionStreak + '  ·  🏆 ' + Math.max(progress.pbStreak, sessionStreak);
+  const el = document.getElementById('qStreak');
+  el.textContent = '🔥 ' + sessionStreak + '  ·  🏆 ' + Math.max(progress.pbStreak, sessionStreak);
+  el.setAttribute('aria-label', 'Streak ' + sessionStreak + ', personal best ' +
+    Math.max(progress.pbStreak, sessionStreak));
 }
 
 function answer(q, pickedKey, btn) {
@@ -1894,6 +1907,7 @@ function answer(q, pickedKey, btn) {
   choices.querySelectorAll('.tu-choice').forEach(b => {
     b.disabled = true;
     b.classList.remove('armed');
+    if (b.hasAttribute('aria-pressed')) b.setAttribute('aria-pressed', 'false');
     if (b.dataset.key === q.key) b.classList.add('good');
   });
   if (!ok && btn) btn.classList.add('bad');
@@ -2445,6 +2459,19 @@ async function init() {
     });
   });
   syncPanelTitleAria();
+  // tablist arrow-key nav (APG): Left/Right/Home/End move focus + activate
+  document.querySelector('.tu-tabs').addEventListener('keydown', e => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+    e.preventDefault();
+    const tabs = [document.getElementById('tabLearn'), document.getElementById('tabDrill')];
+    const cur = tabs.indexOf(document.activeElement);
+    let next;
+    if (e.key === 'Home') next = 0;
+    else if (e.key === 'End') next = tabs.length - 1;
+    else next = cur === -1 ? 0 : (cur + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length;
+    tabs[next].focus();
+    tabs[next].click();
+  });
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && document.getElementById('settingsModal').classList.contains('open')) closeSettings();
   });
