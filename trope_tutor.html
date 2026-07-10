@@ -262,7 +262,7 @@ body.dark .tu-glyph { background:var(--navy-deep); }
 .tu-ex-row:hover { background:rgba(201,146,42,0.08); }
 .tu-ex-play {
   background:var(--gold); color:var(--navy); border:none; border-radius:50%;
-  width:30px; height:30px; font-size:0.85rem; line-height:1; cursor:pointer;
+  width:38px; height:38px; font-size:0.95rem; line-height:1; cursor:pointer;   /* ≥38px — the primary student control; classroom touch bar, not just WCAG 24px */
   flex-shrink:0; transition:filter 0.15s;
 }
 .tu-ex-play:hover { filter:brightness(1.08); }
@@ -418,7 +418,7 @@ body.dark .settings-header { background:var(--navy-deep); }
 }
 .settings-close {
   background:rgba(255,255,255,0.12); color:#fff; border:none;
-  border-radius:4px; width:32px; height:32px;
+  border-radius:4px; width:40px; height:40px;
   cursor:pointer; font-size:1.2rem; line-height:1; transition:background 0.15s;
 }
 .settings-close:hover { background:rgba(255,255,255,0.22); }
@@ -486,7 +486,7 @@ body.dark .radio-group input:checked + label { background:#1e2535; color:var(--g
 }
 .slider-row .sreset {
   background:none; border:1px solid var(--border); border-radius:4px;
-  padding:1px 6px; font-size:0.78rem; cursor:pointer;
+  padding:6px 10px; font-size:0.78rem; cursor:pointer;
   color:var(--muted); line-height:1.4; font-family:inherit;
 }
 .slider-row .sreset:hover { border-color:var(--gold); color:var(--gold); }
