@@ -2402,7 +2402,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.6';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.7';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2614,6 +2614,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.7</strong> — <strong>Two quiet export safeguards.</strong> First: if your project somehow carries a word spacing of zero (possible in very old or hand-edited save files — the slider itself never goes below 80), the exported font used to get a <strong>zero-width space</strong>, so every word ran together; the space now always exports at least the slider's minimum width. Second: when vowels or trop are enabled, every export runs a quick <strong>shaping check</strong> to confirm the marks actually position correctly — but if that checker couldn't load (say, a flaky connection), the font downloaded anyway with only a briefly-flashed note. Now the <span class="ui">Exported ✓</span> screen tells you plainly when the check was skipped, so you know to test the font before sharing it. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.6</strong> — <strong>Point editing gets a proper cockpit.</strong> Everything you use while pointing at the canvas now sits in a toolbar right above it: the <span class="ui">Select / Marquee / Pen</span> switch, <span class="ui">Undo / Redo</span> buttons (handy on a tablet), zoom, and three view toggles — <span class="ui">Handles</span> (show curve handles on every point, not just the selected ones), <span class="ui">Guides</span> (hide the guide lines while you look at a shape — snapping still works), and <span class="ui">Snap</span>. A slim status line under the canvas shows which letter you're editing, the live cursor position in font units, and how many points are selected, so the side panel is shorter and keeps just the actions for your selection. Your first time in, a one-line hint points the way (it retires itself after your first edit). Nothing about how editing works changed — every button, shortcut, and undo behaves exactly as before (the old hint line under the canvas is retired; the <span class="ui">?</span> cheat sheet has every detail). <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.5</strong> — <strong>A heads-up when a letter can't keep its curves.</strong> Once in a while a traced outline is too tangled for the font engine to turn its curves into the exact form a font file needs, so it quietly falls back to straight edges for that one letter — which used to happen with no warning, leaving a font that looked faceted with no clue why. Now the <span class="ui">Exported ✓</span> screen tells you exactly <strong>which letters</strong> came out with straight edges, so you can re-trace or simplify just those and export again for smooth curves. Every other letter is unaffected. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.4</strong> — <strong>Your license always comes with your font.</strong> When you export a single <span class="ui">TTF</span> or <span class="ui">WOFF2</span>, the <span class="ui">LICENSE.txt</span> used to try to download by itself right after the font — which some browsers quietly block, leaving you with a font and no license. Now the <span class="ui">Exported ✓</span> screen gives you a one-click <strong>⬇ LICENSE.txt</strong> button (named after your font), so it can never be missed. The <span class="ui">TTF + WOFF2</span> zip and <span class="ui">UFO</span> still bundle it inside as before. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -11236,6 +11237,7 @@ async function doExport(fmt) {
   btn.disabled = true;
   status('Starting export…', true);
   window._lastFellBack = [];   // reset per export so a prior run's faceted-glyph warning never leaks (esp. into the UFO path)
+  window._lastGateSkipped = false;   // reset per export — set only when marks were enabled but the shaping check couldn't run
   const _prevVersion = project.font.version;
   const _setVersion = (val) => { project.font.version = val; const el = document.getElementById('fontVersion'); if (el) el.value = val; };
   try {
@@ -11284,7 +11286,9 @@ async function doExport(fmt) {
 
     // harfbuzz shaping gate (only meaningful when the font has marks to position)
     status('Validating shaping…', true);
-    const gate = (project.font.nikkud.enabled || project.font.trop.enabled) ? await harfbuzzGate(bytes) : { skipped: true };
+    const marksOn = project.font.nikkud.enabled || project.font.trop.enabled;
+    const gate = marksOn ? await harfbuzzGate(bytes) : { skipped: true };
+    window._lastGateSkipped = marksOn && !!(gate && gate.skipped);   // a marks-off skip is benign — nothing to validate
     if (gate && gate.fail) {
       askModal('Shaping check failed',
         `<span class="warn">${gate.msg}</span><br><br>This usually means the mark anchors didn't take. You can still download, but vowels/trop may be misplaced.`,
@@ -11486,12 +11490,20 @@ function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (
       + ' exported with straight edges — their curves couldn’t be converted: <b lang="he">' + esc(_fell.join(' ')) + '</b>.'
       + ' Re-trace or simplify those outlines, then export again for smooth curves.</span>'
     : '';
+  // Shaping-check skip warning: marks were enabled but the HarfBuzz validator couldn't run (e.g. its
+  // CDN download failed), so vowel/trop positioning shipped unverified. The status toast auto-clears
+  // too fast for this — surface it on the persistent success screen, like the faceted-glyph warning.
+  const gateHtml = window._lastGateSkipped
+    ? '<br><br><span class="warn">⚠ The shaping check couldn’t run (the validator failed to load).'
+      + ' Your font downloaded, but its vowel/trop positioning wasn’t verified — test it in a word processor,'
+      + ' or export again once you’re back online to run the check.</span>'
+    : '';
   askModal('Exported ✓',
     'Your font <b>' + esc(fam) + '</b> downloaded.'
     + (licenseSeparate ? ' Get its <b>⬇ LICENSE.txt</b> below and keep it with the font.' : '')
     + (canSave ? ' Save it to <b>★ My IvritSuite Fonts</b> (this browser) to pick it in every IvritSuite tool’s font selector.' : '')
     + ' Or <b>📤 Share this font</b> to post it to the IvritSuite font library.'
-    + fellHtml,
+    + fellHtml + gateHtml,
     btns);
 }
 async function gzipBlob(str) {                       // string → gzip Blob (native, no libs)
