@@ -1878,28 +1878,30 @@
     .desktop-buttons { display: block; }
   }
 
-  /* Bottom toast (disabled-button explanation, etc.) */
-  #appToast {
-    position: fixed;
-    left: 50%;
-    bottom: 84px;
-    transform: translateX(-50%) translateY(8px);
-    background: var(--navy);
-    color: #fff;
-    font-size: 0.82rem;
-    font-weight: 500;
-    padding: 9px 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.28);
-    z-index: 2000;
-    max-width: 88vw;
-    text-align: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-  }
-  #appToast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  body.dark #appToast { background: #0a0f1c; }
+  /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards; self-contained incl. reduced-motion) ═══ */
+#appToast {
+  position: fixed;
+  left: 50%;
+  bottom: 84px;
+  transform: translateX(-50%) translateY(8px);
+  background: var(--navy);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 9px 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.28);
+  z-index: 2000;
+  max-width: 88vw;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+#appToast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+body.dark #appToast { background: #0a0f1c; }
+@media (prefers-reduced-motion: reduce) { #appToast { transition: none !important; } }
+/* ═══ end shared: app-toast CSS ═══ */
 
   /* Attention pulse (Generate button when settings drift; Tour button first-visit nudge) */
   @keyframes attnPulse {
@@ -1917,7 +1919,6 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 @media (prefers-reduced-motion: reduce) {
     /* No motion: fall back to a steady ring so the cue is still visible. */
     .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
-    #appToast { transition: none !important; }
     .preview-notice { transition: none !important; }
     .tour-spot { transition: none !important; }
     /* Drill card flip, the infinite "urgent" timer blink, and the section chevron all honor reduced motion. */
@@ -5095,6 +5096,25 @@ const IVRIT_CFG = {
   }
 };
 
+/* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards — copy verbatim; called from the .ivrit engine restore path) ═══ */
+let _appToastTimer = null;
+function showAppToast(msg, ms = 2600) {
+  let t = document.getElementById('appToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'appToast';
+    t.setAttribute('role', 'status');
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  // Force reflow so the transition runs even on rapid repeats.
+  void t.offsetWidth;
+  t.classList.add('show');
+  if (_appToastTimer) clearTimeout(_appToastTimer);
+  _appToastTimer = setTimeout(() => t.classList.remove('show'), ms);
+}
+/* ═══ end shared: app-toast ═══ */
+
 /* ═══════════ IvritSuite .ivrit save-file engine (shared, identical across pages) ═══════════ */
 function ivritSafeParse(str) {
   // Parse JSON from untrusted input (files, share codes, URL params),
@@ -5179,7 +5199,7 @@ async function ivritRestore(text, sourceName) {
   catch (e) { alert('Restore failed: ' + e.message); return; }
   if (!IVRIT_CFG.needsReload) {
     ivritStatus('Restored from ' + (sourceName || 'file'));
-    alert('Restored successfully' + (sourceName ? ' from ' + sourceName : '') + '.');
+    showAppToast('Restored successfully' + (sourceName ? ' from ' + sourceName : '') + '.');
   }
 }
 function ivritReadFile(file) {
@@ -5717,23 +5737,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', () => { if (_openTip) positionTip(_openTip); });
 })();
 
-/* ═══ Bottom toast + disabled-FAB explanation ═══ */
-let _appToastTimer = null;
-function showAppToast(msg, ms = 2600) {
-  let t = document.getElementById('appToast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'appToast';
-    t.setAttribute('role', 'status');
-    document.body.appendChild(t);
-  }
-  t.textContent = msg;
-  // Force reflow so the transition runs even on rapid repeats.
-  void t.offsetWidth;
-  t.classList.add('show');
-  if (_appToastTimer) clearTimeout(_appToastTimer);
-  _appToastTimer = setTimeout(() => t.classList.remove('show'), ms);
-}
+/* ═══ Disabled-FAB explanation (mobile) — showAppToast lives in the shared app-toast block above ═══ */
 (function () {
   // Taps on a disabled FAB button fall through to the container (see CSS).
   function wireFab() {

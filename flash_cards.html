@@ -890,7 +890,7 @@ body.dark .lc-replay { color: var(--gold-light); }
 .lc-heb { font-family: var(--heb-font); direction: rtl; font-size: clamp(1.8rem, 8vw, 3rem); line-height: 1.15; }
 .lc-num { font-family: var(--eng-font); direction: ltr; font-size: clamp(2rem, 9vw, 3.2rem); font-weight: 700; }
 
-/* Bottom toast (import-success confirmation, etc.) — ported from hebrew_blend_generator.html */
+  /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards; self-contained incl. reduced-motion) ═══ */
 #appToast {
   position: fixed;
   left: 50%;
@@ -912,6 +912,8 @@ body.dark .lc-replay { color: var(--gold-light); }
 }
 #appToast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 body.dark #appToast { background: #0a0f1c; }
+@media (prefers-reduced-motion: reduce) { #appToast { transition: none !important; } }
+/* ═══ end shared: app-toast CSS ═══ */
 
 /* Honor reduced-motion: neutralize all transitions/animations (page previously had no such block) */
 /* Keyboard-operable font upload (suite-wide S54): `hidden` (display:none) removed the file
@@ -4968,6 +4970,25 @@ const IVRIT_CFG = {
   }
 };
 
+/* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards — copy verbatim; called from the .ivrit engine restore path) ═══ */
+let _appToastTimer = null;
+function showAppToast(msg, ms = 2600) {
+  let t = document.getElementById('appToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'appToast';
+    t.setAttribute('role', 'status');
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  // Force reflow so the transition runs even on rapid repeats.
+  void t.offsetWidth;
+  t.classList.add('show');
+  if (_appToastTimer) clearTimeout(_appToastTimer);
+  _appToastTimer = setTimeout(() => t.classList.remove('show'), ms);
+}
+/* ═══ end shared: app-toast ═══ */
+
 /* ═══════════ IvritSuite .ivrit save-file engine (shared, identical across pages) ═══════════ */
 function ivritSafeParse(str) {
   // Parse JSON from untrusted input (files, share codes, URL params),
@@ -4986,23 +5007,6 @@ function ivritDateStamp() {
   const d = new Date();
   const m = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   return m[d.getMonth()] + '_' + d.getDate() + '_' + d.getFullYear();
-}
-/* ═══ Bottom toast — ported from hebrew_blend_generator.html ═══ */
-let _appToastTimer = null;
-function showAppToast(msg, ms = 2600) {
-  let t = document.getElementById('appToast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'appToast';
-    t.setAttribute('role', 'status');
-    document.body.appendChild(t);
-  }
-  t.textContent = msg;
-  // Force reflow so the transition runs even on rapid repeats.
-  void t.offsetWidth;
-  t.classList.add('show');
-  if (_appToastTimer) clearTimeout(_appToastTimer);
-  _appToastTimer = setTimeout(() => t.classList.remove('show'), ms);
 }
 function ivritStatus(msg) { const el = document.getElementById('ivritStatus'); if (el) el.textContent = msg || ''; }
 function setIvritMode(mode) {
@@ -5069,7 +5073,7 @@ async function ivritRestore(text, sourceName) {
   catch (e) { alert('Restore failed: ' + e.message); return; }
   if (!IVRIT_CFG.needsReload) {
     ivritStatus('Restored from ' + (sourceName || 'file'));
-    alert('Restored successfully' + (sourceName ? ' from ' + sourceName : '') + '.');
+    showAppToast('Restored successfully' + (sourceName ? ' from ' + sourceName : '') + '.');
   }
 }
 function ivritReadFile(file) {
