@@ -10896,7 +10896,7 @@ function buildUfoAnchors() {
    spacing); the OS/2 win + hhea fields carry the expanded clip box; bit 7 = USE_TYPO_METRICS — all
    matching the exported TTF (PY_BUILDER). No null values (plist can't store them). */
 function buildUfoFontInfo(spec) {
-  const n = spec.names, vf = spec.version || 1.0;
+  const n = spec.names, vf = Number.isFinite(spec.version) ? spec.version : 1.0;   // ||-guard would promote a legal 0.x version to 1.x (matches L10699/L11347)
   const major = Math.floor(vf), minor = Math.round((vf - major) * 1000);
   const lic = LICENSES[project.font.license] || LICENSES.ofl, top = Math.round(effMetrics().letterTop);
   const asc = Math.round(spec.ascent), desc = Math.round(spec.descent), gap = Math.round(spec.lineGap || 0);
