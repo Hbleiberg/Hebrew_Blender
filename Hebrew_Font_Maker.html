@@ -2402,7 +2402,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.7';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.8';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2614,6 +2614,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.8</strong> — <strong>Older projects export safely again.</strong> A project saved by a much older version (or edited outside the app) could be missing some of its vowel anchor points under the hood — and exporting it would fail with a generic "Export error" before your font ever built. The app now quietly restores any missing anchor points (in the same spots a fresh letter would get them) wherever it finds them — opening the anchor editor, previewing, or exporting — so those projects build normally; you can still fine-tune every anchor afterwards. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.7</strong> — <strong>Two quiet export safeguards.</strong> First: if your project somehow carries a word spacing of zero (possible in very old or hand-edited save files — the slider itself never goes below 80), the exported font used to get a <strong>zero-width space</strong>, so every word ran together; the space now always exports at least the slider's minimum width. Second: when vowels or trop are enabled, every export runs a quick <strong>shaping check</strong> to confirm the marks actually position correctly — but if that checker couldn't load (say, a flaky connection), the font downloaded anyway with only a briefly-flashed note. Now the <span class="ui">Exported ✓</span> screen tells you plainly when the check was skipped, so you know to test the font before sharing it. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.6</strong> — <strong>Point editing gets a proper cockpit.</strong> Everything you use while pointing at the canvas now sits in a toolbar right above it: the <span class="ui">Select / Marquee / Pen</span> switch, <span class="ui">Undo / Redo</span> buttons (handy on a tablet), zoom, and three view toggles — <span class="ui">Handles</span> (show curve handles on every point, not just the selected ones), <span class="ui">Guides</span> (hide the guide lines while you look at a shape — snapping still works), and <span class="ui">Snap</span>. A slim status line under the canvas shows which letter you're editing, the live cursor position in font units, and how many points are selected, so the side panel is shorter and keeps just the actions for your selection. Your first time in, a one-line hint points the way (it retires itself after your first edit). Nothing about how editing works changed — every button, shortcut, and undo behaves exactly as before (the old hint line under the canvas is retired; the <span class="ui">?</span> cheat sheet has every detail). <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.5</strong> — <strong>A heads-up when a letter can't keep its curves.</strong> Once in a while a traced outline is too tangled for the font engine to turn its curves into the exact form a font file needs, so it quietly falls back to straight edges for that one letter — which used to happen with no warning, leaving a font that looked faceted with no clue why. Now the <span class="ui">Exported ✓</span> screen tells you exactly <strong>which letters</strong> came out with straight edges, so you can re-trace or simplify just those and export again for smooth curves. Every other letter is unaffected. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -7954,7 +7955,17 @@ function ensureTropAnchors(l) {   // back-fill trop anchors on letters seeded be
   if (!l.anchors.tropBelowL) l.anchors.tropBelowL = { x: tb.x - tOff, y: tb.y };
   if (!l.anchors.tropBelowR) l.anchors.tropBelowR = { x: tb.x + tOff, y: tb.y };
 }
-function seedAnchorsIfNeeded(l) { if (!l.anchors) seedAnchors(l); else ensureTropAnchors(l); }
+function ensureNikkudAnchors(l) {   // back-fill the nikkud triad on a PARTIAL .anchors (older/hand-edited/imported saves) — a missing below/above/center must never TypeError the export
+  if (!l.anchors || (l.anchors.below && l.anchors.above && l.anchors.center)) return;
+  const meta = letterMeta(l.codepoint);
+  const bb = l.contours ? glyphBBox(l.contours, true, meta)
+    : { midX: Math.round((l.advance != null ? l.advance : Math.round(LETTER_TOP*0.7)) / 2), minY: 0, maxY: LETTER_TOP };
+  const mid = Math.round(bb.midX);                                  // same derivations as seedAnchors, so a backfilled key matches a fresh seed
+  if (!l.anchors.below)  l.anchors.below  = { x: mid, y: defaultBelowY(bb) };
+  if (!l.anchors.above)  l.anchors.above  = { x: mid, y: Math.max(ANCHOR_Y.above, Math.round(bb.maxY)+40) };
+  if (!l.anchors.center) l.anchors.center = { x: mid, y: Math.min(Math.max(Math.round((bb.minY + bb.maxY)/2 * 0.6 + 150), 120), 380) };
+}
+function seedAnchorsIfNeeded(l) { if (!l.anchors) seedAnchors(l); else { ensureNikkudAnchors(l); ensureTropAnchors(l); } }
 
 /* ════════ Anchor editor (nikkud + trop) ════════ */
 const ANCHOR_CLASSES = [['below','var(--below)'],['above','var(--above)'],['center','var(--center)'],['tropAbove','#8b5cf6'],['tropBelow','#0ea5e9']];
@@ -10683,7 +10694,7 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
   let markLines = '';
   const emitBaseAnchors = (nm, l, skipCls) => {   // skipCls: a class the baked-in precomposed mark already occupies
     if (!l) return;
-    if (!l.anchors) seedAnchorsIfNeeded(l);   // never ship a base with no mark-to-base rule, or its nikkud drops to the baseline
+    seedAnchorsIfNeeded(l);   // never ship a base with no (or a partial) mark-to-base rule, or its nikkud drops to the baseline; idempotent when complete
     if (!l.anchors) return;
     if (byClass.below.length  && skipCls !== 'below')  markLines += `  pos base ${nm} <anchor ${l.anchors.below.x} ${l.anchors.below.y}> mark @MC_BELOW;\n`;
     if (byClass.above.length  && skipCls !== 'above')  markLines += `  pos base ${nm} <anchor ${l.anchors.above.x} ${l.anchors.above.y}> mark @MC_ABOVE;\n`;
