@@ -4743,22 +4743,44 @@ function renderAdStage(focusSel) {
   // Never affects normal users; must never throw.
   if (_adDebug()) {
     try {
+      const NS = 'http://www.w3.org/2000/svg';
       const svg = host.querySelector('svg');
       const gCount = host.querySelectorAll('.ad-box').length;
       const paths = host.querySelectorAll('.ad-box path');
       const p0 = paths[0] || null;
+      const g0 = p0 && p0.closest ? p0.closest('.ad-box') : null;
       const txt0 = host.querySelector('.ad-box text');
       const bb = p0 && p0.getBBox ? p0.getBBox() : null;
       const sr = p0 ? p0.getBoundingClientRect() : null;
       const tr = txt0 ? txt0.getBoundingClientRect() : null;
       const cs = p0 ? getComputedStyle(p0) : null;
+      const gcs = g0 ? getComputedStyle(g0) : null;
       const R = n => Math.round(n);
-      const line = `[addebug] boxes=${adState.boxes.length} gCount=${gCount} pathCount=${paths.length}`
+      // Live probe: build a <path> via DOM (createElementNS + setAttribute) and append it straight to
+      // the <svg> (NOT inside a .ad-box). If THIS renders while path0 doesn't, the box elements are
+      // the problem (innerHTML parsing / a hidden ancestor); if this is also 0×0, the <svg> itself
+      // won't paint vector children. Runs in one synchronous tick, then removes itself.
+      let probe = 'n/a';
+      if (svg) {
+        try {
+          const tp = document.createElementNS(NS, 'path');
+          tp.setAttribute('d', (p0 && p0.getAttribute('d')) || 'M0 0h60v60h-60z');
+          tp.setAttribute('fill', 'none'); tp.setAttribute('stroke', '#009900');
+          svg.appendChild(tp);
+          const pb = tp.getBBox();
+          probe = R(pb.width) + 'x' + R(pb.height);
+          svg.removeChild(tp);
+        } catch (e2) { probe = 'err'; }
+      }
+      const inSvg = p0 && p0.closest ? (p0.closest('svg') === svg) : 'n/a';
+      const par = p0 && p0.parentNode ? (p0.parentNode.nodeName + '/' + ((p0.parentNode.namespaceURI || '').includes('svg') ? 'svgNS' : 'htmlNS')) : 'none';
+      const line = `[addebug] boxes=${adState.boxes.length} gCount=${gCount} pathCount=${paths.length} svgPaths=${svg ? svg.querySelectorAll('path').length : '?'}`
         + ` | svg=${svg ? svg.clientWidth + 'x' + svg.clientHeight : 'none'}`
-        + ` | path0.bbox=${bb ? R(bb.width) + 'x' + R(bb.height) : 'none'}`
-        + ` path0.screen=${sr ? R(sr.width) + 'x' + R(sr.height) : 'none'}`
-        + ` text0.screen=${tr ? R(tr.width) + 'x' + R(tr.height) : 'none'}`
-        + ` | path0 fill=${cs ? cs.fill : 'n/a'} stroke=${cs ? cs.stroke : 'n/a'} sw=${cs ? cs.strokeWidth : 'n/a'}`;
+        + ` | path0.bbox=${bb ? R(bb.width) + 'x' + R(bb.height) : 'none'} screen=${sr ? R(sr.width) + 'x' + R(sr.height) : 'none'} text0.screen=${tr ? R(tr.width) + 'x' + R(tr.height) : 'none'}`
+        + ` | pathDisp=${cs ? cs.display : 'n/a'} gDisp=${gcs ? gcs.display : 'n/a'} gVis=${gcs ? gcs.visibility : 'n/a'} cssD=${cs && cs.d ? cs.d.slice(0, 14) : 'n/a'} dAttr=${p0 ? JSON.stringify((p0.getAttribute('d') || '').slice(0, 14)) : 'none'}`
+        + ` inSvg=${inSvg} parent=${par}`
+        + ` | DOMprobe=${probe}`
+        + ` | fill=${cs ? cs.fill : 'n/a'} stroke=${cs ? cs.stroke : 'n/a'} sw=${cs ? cs.strokeWidth : 'n/a'}`;
       let d = document.getElementById('adDbg');
       if (!d) { d = document.createElement('div'); d.id = 'adDbg'; host.parentNode.insertBefore(d, host.nextSibling); }
       d.style.cssText = 'font:11px/1.4 monospace;color:#c0392b;background:#fff8f6;border:1px solid #c0392b;border-radius:6px;padding:6px 8px;margin-top:8px;white-space:pre-wrap;word-break:break-all;';
