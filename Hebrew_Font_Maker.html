@@ -4759,22 +4759,29 @@ function renderAdStage(focusSel) {
       const cs = p0 ? getComputedStyle(p0) : null;
       const gcs = g0 ? getComputedStyle(g0) : null;
       const R = n => Math.round(n);
-      // Live probe: build a <path> via DOM (createElementNS + setAttribute) and append it straight to
-      // the <svg> (NOT inside a .ad-box). If THIS renders while path0 doesn't, the box elements are
-      // the problem (innerHTML parsing / a hidden ancestor); if this is also 0×0, the <svg> itself
-      // won't paint vector children. Runs in one synchronous tick, then removes itself.
-      let probe = 'n/a';
-      if (svg) {
+      // Isolation probes: append DOM-built test shapes straight to the <svg> and measure each path's
+      // bbox. Since an author !important rule can't beat the box group's display:none, the trigger is
+      // structural — these pin which aspect: bare <path> (control), bare <g>, <g class="ad-box">,
+      // <g role="button">. A 0×0 result = Firefox hides that variant. Each removes itself same-tick.
+      const dd = (p0 && p0.getAttribute('d')) || 'M0 0h60v60h-60z';
+      const mkProbe = (tag, attrs) => {
+        if (!svg) return 'n/a';
         try {
-          const tp = document.createElementNS(NS, 'path');
-          tp.setAttribute('d', (p0 && p0.getAttribute('d')) || 'M0 0h60v60h-60z');
-          tp.setAttribute('fill', 'none'); tp.setAttribute('stroke', '#009900');
-          svg.appendChild(tp);
-          const pb = tp.getBBox();
-          probe = R(pb.width) + 'x' + R(pb.height);
-          svg.removeChild(tp);
-        } catch (e2) { probe = 'err'; }
-      }
+          const pth = document.createElementNS(NS, 'path');
+          pth.setAttribute('d', dd); pth.setAttribute('fill', 'none'); pth.setAttribute('stroke', '#009900');
+          let top = pth;
+          if (tag !== 'path') { top = document.createElementNS(NS, tag); top.appendChild(pth); }
+          for (const k in attrs) top.setAttribute(k, attrs[k]);
+          svg.appendChild(top);
+          const pb = pth.getBBox();
+          svg.removeChild(top);
+          return R(pb.width) + 'x' + R(pb.height);
+        } catch (e2) { return 'err'; }
+      };
+      const probeBarePath = mkProbe('path', {});
+      const probeBareG = mkProbe('g', {});
+      const probeClassG = mkProbe('g', { 'class': 'ad-box' });
+      const probeRoleG = mkProbe('g', { 'role': 'button', 'tabindex': '-1' });
       const inSvg = p0 && p0.closest ? (p0.closest('svg') === svg) : 'n/a';
       const par = p0 && p0.parentNode ? (p0.parentNode.nodeName + '/' + ((p0.parentNode.namespaceURI || '').includes('svg') ? 'svgNS' : 'htmlNS')) : 'none';
       const line = `[addebug] v${FONT_MAKER_VERSION} boxes=${adState.boxes.length} gCount=${gCount} pathCount=${paths.length} svgPaths=${svg ? svg.querySelectorAll('path').length : '?'}`
@@ -4782,7 +4789,7 @@ function renderAdStage(focusSel) {
         + ` | path0.bbox=${bb ? R(bb.width) + 'x' + R(bb.height) : 'none'} screen=${sr ? R(sr.width) + 'x' + R(sr.height) : 'none'} text0.screen=${tr ? R(tr.width) + 'x' + R(tr.height) : 'none'}`
         + ` | pathDisp=${cs ? cs.display : 'n/a'} gDisp=${gcs ? gcs.display : 'n/a'} gVis=${gcs ? gcs.visibility : 'n/a'} cssD=${cs && cs.d ? cs.d.slice(0, 14) : 'n/a'} dAttr=${p0 ? JSON.stringify((p0.getAttribute('d') || '').slice(0, 14)) : 'none'}`
         + ` inSvg=${inSvg} parent=${par}`
-        + ` | DOMprobe=${probe}`
+        + ` | probes path=${probeBarePath} g=${probeBareG} g.ad-box=${probeClassG} g[role=button]=${probeRoleG}`
         + ` | fill=${cs ? cs.fill : 'n/a'} stroke=${cs ? cs.stroke : 'n/a'} sw=${cs ? cs.strokeWidth : 'n/a'}`;
       let d = document.getElementById('adDbg');
       if (!d) { d = document.createElement('div'); d.id = 'adDbg'; host.parentNode.insertBefore(d, host.nextSibling); }
