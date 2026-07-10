@@ -874,6 +874,14 @@ function activeVowelGroups(){      /* VOWEL_GROUPS_TALAM vs VOWEL_GROUPS — gen
 
 - **`getNikudColor`** reads `activeNikudDefaults(isDark)` (override check still first), so
   **`colorizeHebrew` output recolors automatically** — no change to the colorizer itself.
+  **Torah Trainer exception (S60):** its `colorizeHebrew` no longer bakes inline `style=` per
+  syllable — it emits `<span class="nik nik-<key>">`, and a single **`applyNikkudColors()`** pushes
+  the active palette into `--nikv-<key>`/`--nikh-<key>` body vars + a `body.nik-mode-<mode>` class
+  (mirroring the trope layer's CSS-var model). So on the Torah page a color / mode / scheme / dark
+  change is a **var+class swap with no reading re-render** (the heavy `renderText` tokenize+innerHTML
+  is skipped — `data-twi` karaoke indices are untouched); only `showNikkud`/`showCantillation`/
+  layout/on-off, which change the actual text or span presence, still call `renderText`. The other
+  three tools still recolor via a re-render.
 - **`initColorPickers`** iterates `activeColorDefs()` → the per-vowel picker **list re-orders**.
 - **`initVowels`** / `refreshVowelGroupColors` (generator + flash cards) iterate
   `activeVowelGroups()` → the **vowel picker boxes re-group/recolor**. In TaL AM mode
@@ -908,7 +916,10 @@ TaL AM color maps (`NIKUD_DEFAULTS_*` + `TALAM_DEFAULTS_*`), **both** ordered pi
 (`VOWEL_COLOR_DEFS` + `VOWEL_COLOR_DEFS_TALAM`), and **both** group arrays
 (`VOWEL_GROUPS` + `VOWEL_GROUPS_TALAM`, generator + flash cards) — then to
 `getSettings()`/`applySettings()`. Keep the vowel **keys** identical across both schemes so the
-key-based helpers (`getNikudColor`, All/Main/None) work under either scheme.
+key-based helpers (`getNikudColor`, All/Main/None) work under either scheme. **Torah Trainer also
+needs a matching `.nik-<key>{--nik-c:var(--nikv-<key>);--nik-h:var(--nikh-<key>)}` CSS line** (the
+`applyNikkudColors()` loop over `VOWEL_COLOR_DEFS` sets the vars for any new key automatically, but
+the CSS class→var mapping is manual).
 
 ---
 

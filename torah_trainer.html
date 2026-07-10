@@ -604,6 +604,33 @@ body.dark .tt-word:hover {
 }
 .tt-word:focus-visible { outline:2px solid var(--gold); outline-offset:1px; }
 
+/* ───── Nikkud vowel color coding ─────
+   colorizeHebrew wraps each vowel-bearing syllable in <span class="nik nik-<key>">.
+   applyNikkudColors() resolves the active scheme's per-key colors (override or default,
+   light/dark) into --nikv-<key> (solid) + --nikh-<key> (=solid+"50", the former inline
+   Highlight-mode alpha) vars on <body>, and sets a body.nik-mode-<mode> class. The color
+   value therefore lives in CSS — so a recolor / mode / scheme / theme change is a var+class
+   swap with NO innerHTML rebuild, leaving the reading DOM and its data-twi karaoke indices
+   untouched (this replaced per-syllable inline style="…"). !important preserves the exact
+   precedence that inline style had (1,0,0,0): vowel colors intentionally stay visible
+   through hover/karaoke, as before. A new vowel key must add a .nik-<key> line here. */
+.nik-a{--nik-c:var(--nikv-a);--nik-h:var(--nikh-a)}
+.nik-patah{--nik-c:var(--nikv-patah);--nik-h:var(--nikh-patah)}
+.nik-hpatah{--nik-c:var(--nikv-hpatah);--nik-h:var(--nikh-hpatah)}
+.nik-hkamatz{--nik-c:var(--nikv-hkamatz);--nik-h:var(--nikh-hkamatz)}
+.nik-e{--nik-c:var(--nikv-e);--nik-h:var(--nikh-e)}
+.nik-hsegol{--nik-c:var(--nikv-hsegol);--nik-h:var(--nikh-hsegol)}
+.nik-tzere{--nik-c:var(--nikv-tzere);--nik-h:var(--nikh-tzere)}
+.nik-i{--nik-c:var(--nikv-i);--nik-h:var(--nikh-i)}
+.nik-o{--nik-c:var(--nikv-o);--nik-h:var(--nikh-o)}
+.nik-vcholam{--nik-c:var(--nikv-vcholam);--nik-h:var(--nikh-vcholam)}
+.nik-u{--nik-c:var(--nikv-u);--nik-h:var(--nikh-u)}
+.nik-shuruk{--nik-c:var(--nikv-shuruk);--nik-h:var(--nikh-shuruk)}
+.nik-sh{--nik-c:var(--nikv-sh);--nik-h:var(--nikh-sh)}
+body.nik-mode-letter    .nik { color: var(--nik-c) !important; }
+body.nik-mode-highlight .nik { background-color: var(--nik-h) !important; border-radius:2px; }
+body.nik-mode-underline .nik { text-decoration: underline solid var(--nik-c) !important; text-decoration-thickness:2px; text-underline-offset:0.4em; }
+
 /* ───── Trope-family color coding ─────
    tokenizeHebrew emits trope-<family> classes on .tt-word while
    settings.colorCodeTrope is on; applyTropeColors() resolves the six family colors
@@ -1597,11 +1624,11 @@ function toggleDark() {
   const _db = document.getElementById('darkBtn');
   _db.textContent = isDark ? '☀️' : '🌙';
   _db.setAttribute('aria-pressed', isDark ? 'true' : 'false');
-  if (settings.colorCodeNikkud) renderText();
-  // Trope colors are pure CSS-var (classes in the DOM are theme-independent), so a
-  // dark toggle only needs a re-resolve; renderText above already covers it when
-  // nikkud coloring forced a full re-render.
-  else if (settings.colorCodeTrope) applyTropeColors();
+  // Both color layers are now pure CSS-var (the DOM classes are theme-independent), so a
+  // dark toggle only needs to re-resolve the light/dark palettes into the body vars — no
+  // reading rebuild. Nikkud and trope are independent, so refresh each that's on.
+  if (settings.colorCodeNikkud) applyNikkudColors();
+  if (settings.colorCodeTrope) applyTropeColors();
 }
 function initDark() {
   const s = localStorage.getItem(DARK_KEY);
@@ -2151,24 +2178,41 @@ function esc(s) {
 
 const HEX_COLOR_RE = /^#[0-9a-fA-F]{3,8}$/;
 function getNikudColor(key) {
-  // Only trust a valid hex override (the color picker's output). A crafted value from an imported
-  // .ivrit / AllTools backup could otherwise break out of the style="color:…" attribute this feeds.
+  // Only trust a valid hex override (the color picker's output). Validation still matters: the value
+  // seeds an <input type=color> and is pushed into the --nikv-/--nikh- CSS vars (with a "50" alpha
+  // suffix), so a crafted value from an imported .ivrit / AllTools backup must be rejected here.
   const ov = settings.nikudColorOverrides && settings.nikudColorOverrides[key];
   if (typeof ov === 'string' && HEX_COLOR_RE.test(ov)) return ov;
   return activeNikudDefaults(document.body.classList.contains('dark'))[key] || '#888';
 }
 
-function colorizeHebrew(text, mode) {
-  // walks letter-by-letter, collects following marks, wraps with span styled by vowel key
+// Push the active vowel palette + coding mode into CSS (body vars + a body.nik-mode-*
+// class) so the .nik syllable spans recolor without re-tokenizing/re-rendering the
+// reading. Called from renderText (chokepoint, next to applyTropeColors) AND directly
+// from the color-picker / reset / scheme / mode / dark handlers so those become pure
+// var/class swaps. VOWEL_COLOR_DEFS enumerates every key (identical set in both schemes).
+function applyNikkudColors() {
+  const b = document.body;
+  for (const def of VOWEL_COLOR_DEFS) {
+    const color = getNikudColor(def.key);           // override (validated hex) or active default
+    b.style.setProperty('--nikv-' + def.key, color);
+    b.style.setProperty('--nikh-' + def.key, color + '50');   // Highlight-mode alpha (matches the former "${color}50")
+  }
+  b.classList.remove('nik-mode-letter', 'nik-mode-highlight', 'nik-mode-underline');
+  if (settings.colorCodeNikkud && settings.showNikkud) {
+    const m = settings.colorCodingMode;
+    b.classList.add(m === 'highlight' ? 'nik-mode-highlight' : m === 'underline' ? 'nik-mode-underline' : 'nik-mode-letter');
+  }
+}
+
+function colorizeHebrew(text) {
+  // Walk letter-by-letter, collect following marks, wrap each vowel-bearing syllable in
+  // <span class="nik nik-<key>">. The color itself lives in CSS (--nikv/--nikh vars + a
+  // body.nik-mode-* class, set by applyNikkudColors), NOT inline — so recolor/mode/scheme/
+  // theme changes don't require re-tokenizing. The mode is a body class, so this no longer
+  // takes a mode arg. <key> is an internal constant (NIKUD_CHAR_TO_KEY value or vcholam/
+  // shuruk), never user data — safe to interpolate into the class.
   const DAGESH = 'ּ';
-  // Hoist the theme + defaults lookup out of the per-syllable loop: getNikudColor() reads
-  // document.body.classList.contains('dark') on every colored syllable, which across a full parsha
-  // is thousands of DOM reads per render (and this re-runs on every settings/nav change). Resolve
-  // once per word here; colorFor() returns exactly what getNikudColor(key) would.
-  const _dark = document.body.classList.contains('dark');
-  const _defaults = activeNikudDefaults(_dark);
-  const _overrides = settings.nikudColorOverrides || {};
-  const colorFor = key => { const ov = _overrides[key]; return (typeof ov === 'string' && HEX_COLOR_RE.test(ov)) ? ov : (_defaults[key] || '#888'); };
   const chars = [...text];
   const out = [];
   let i = 0;
@@ -2196,14 +2240,7 @@ function colorizeHebrew(text, mode) {
     }
     const syl = esc(ch + marks);
     if (!key) { out.push(syl); i = j; continue; }
-    const color = colorFor(key);
-    if (mode === 'highlight') {
-      out.push(`<span style="background-color:${color}50;border-radius:2px;">${syl}</span>`);
-    } else if (mode === 'underline') {
-      out.push(`<span style="text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${syl}</span>`);
-    } else {
-      out.push(`<span style="color:${color}">${syl}</span>`);
-    }
+    out.push(`<span class="nik nik-${key}">${syl}</span>`);
     i = j;
   }
   return out.join('');
@@ -2215,7 +2252,7 @@ function processHebrewForDisplay(s) {
   let t = s;
   if (!settings.showCantillation) t = stripTeamim(t);
   if (!settings.showNikkud) t = stripNikkud(t);
-  if (settings.colorCodeNikkud && settings.showNikkud) return colorizeHebrew(t, settings.colorCodingMode);
+  if (settings.colorCodeNikkud && settings.showNikkud) return colorizeHebrew(t);
   return esc(t);
 }
 
@@ -2262,7 +2299,7 @@ function tokenizeHebrew(text, wordIdxStartRef) {
     if (/[א-ת]/.test(tok)) {
       const idx = wordIdxStartRef.value++;
       const inner = (settings.colorCodeNikkud && settings.showNikkud)
-        ? colorizeHebrew(tok, settings.colorCodingMode)
+        ? colorizeHebrew(tok)
         : esc(tok);
       let tropeCls = '';
       if (tropeOn) {
@@ -2338,9 +2375,10 @@ function renderEmptyReading() {   // friendly card shown in #ttReading when no p
      </div>`;
 }
 function renderText() {
-  // Chokepoint for the trope layer: every settings/nav/theme path that re-renders
-  // also re-syncs the trope body classes, CSS vars, and legend visibility here.
+  // Chokepoint for the color layers: every settings/nav/theme path that re-renders
+  // also re-syncs the trope body classes/vars/legend AND the nikkud vars/mode-class here.
   applyTropeColors();
+  applyNikkudColors();
   if (!currentVerses || !currentVerses.length) {
     renderEmptyReading();
     return;
@@ -3920,7 +3958,7 @@ function initColorPickers() {
     inp.addEventListener('input', () => {
       if (!settings.nikudColorOverrides) settings.nikudColorOverrides = {};
       settings.nikudColorOverrides[def.key] = inp.value;
-      if (settings.colorCodeNikkud) renderText();
+      if (settings.colorCodeNikkud) applyNikkudColors();   // var swap, no reading rebuild
       saveSettings();
     });
     row.appendChild(ex); row.appendChild(lbl); row.appendChild(inp);
@@ -3931,7 +3969,7 @@ function resetNikudColors() {
   if (!confirm('Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.')) return;
   settings.nikudColorOverrides = {};
   initColorPickers();
-  if (settings.colorCodeNikkud) renderText();
+  if (settings.colorCodeNikkud) applyNikkudColors();   // var swap, no reading rebuild
   saveSettings();
 }
 function syncSchemeButtons() {
@@ -3945,7 +3983,7 @@ function setVowelScheme(s) {
   settings.nikudColorOverrides = {};   // show the scheme's clean palette
   initColorPickers();                  // re-order + re-seed colors
   syncSchemeButtons();
-  if (settings.colorCodeNikkud) renderText();
+  if (settings.colorCodeNikkud) applyNikkudColors();   // var swap, no reading rebuild
   saveSettings();
 }
 
@@ -4202,7 +4240,11 @@ function wireSettingsForm() {
   });
   document.querySelectorAll('input[name="optColorMode"]').forEach(r => {
     r.addEventListener('change', e => {
-      if (e.target.checked) { settings.colorCodingMode = e.target.value; saveSettings(); renderText(); }
+      if (e.target.checked) {
+        settings.colorCodingMode = e.target.value; saveSettings();
+        applyNikkudColors();   // mode = a body-class swap, no reading rebuild
+        applyTropeColors();    // keep the Highlight-mode ↔ trope-underline collision fallback in sync
+      }
     });
   });
   // Trope color coding (renderText's applyTropeColors chokepoint syncs the
