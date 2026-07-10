@@ -3838,9 +3838,11 @@ function initFontSelector() {
       btn.dataset.fontName = font.name;
       btn.type = 'button';
       const isDefault = font.name === 'Frank Ruhl Libre';
+      // A link may not nest inside a <button> (invalid interactive nesting; AT-unreliable) —
+      // the attribution stays a pointer-only shortcut; the button's action is the font pick.
       const attrHTML = font.attr
         ? (font.link
-            ? `<a class="font-opt-attr" href="${font.link}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(font.attr)}</a>`
+            ? `<span class="font-opt-attr" data-link="${esc(font.link)}" onclick="event.stopPropagation();window.open(this.dataset.link,'_blank','noopener')">${esc(font.attr)}</span>`
             : `<span class="font-opt-attr">${esc(font.attr)}</span>`)
         : '';
       btn.innerHTML =
