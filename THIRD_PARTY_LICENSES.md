@@ -98,6 +98,20 @@ If you re-host or fork this page, double-check Sefaria's version metadata yourse
 
 ---
 
+## Hebrew word data (Kaikki.org / Wiktionary)
+
+- **Source:** https://kaikki.org/dictionary/Hebrew/index.html
+- **Derived from:** Wiktionary (English) contributors
+- **License:** Creative Commons Attribution-ShareAlike 3.0 (CC BY-SA 3.0) — https://creativecommons.org/licenses/by-sa/3.0/
+
+**Used by `hebrew_blend_generator.html` and `hebrew_dictionary.html`:** the Hebrew word list in `data/hebrew_words.json` — built from `source-data/hebrew_dictionary_4_19_2026.csv` — is derived from **[Kaikki.org](https://kaikki.org/dictionary/Hebrew/index.html)**, a freely available structured dictionary extracted from Wiktionary. Kaikki's underlying data is Wiktionary content, licensed **CC BY-SA 3.0**.
+
+The curation, filtering, transliteration fields, era classification, and JSON structure layered on top are original project work under CC BY-NC-SA 4.0 (see `LICENSE`). Visible attribution to Kaikki.org is shown in the Dictionary and in page footers.
+
+**If you adapt or redistribute:** credit Kaikki.org (derived from Wiktionary contributors under CC BY-SA 3.0) alongside the project author, per the guidance in `README.md`.
+
+---
+
 ## Fonts
 
 IvritSuite displays Hebrew and Latin text in a number of openly-licensed typefaces. **Most are loaded at runtime from Google Fonts; a handful are self-hosted via a jsDelivr CDN mirror of the [`aharonium/fonts`](https://github.com/aharonium/fonts) collection.** The font binaries redistributed in this repository are:

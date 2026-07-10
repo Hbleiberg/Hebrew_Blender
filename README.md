@@ -43,7 +43,7 @@ Interactive, mobile-first flash cards for practicing Hebrew reading.
 - **Streaks + personal best** — running streak counter with a persisted personal-best
 - **Teacher share codes** — generate a code a teacher can hand out, and paste a code from your teacher to load their deck
 - **Skip / re-queue** — skipped cards come back once so the whole set is seen; re-queued slots are excluded from scoring
-- Inverse mode, scoring + results review, presets in nested folders, Hebrew font picker, nikkud color-coding, TTS, dark mode, and a **Present/fullscreen mode** for projectors
+- Inverse mode, **custom card count**, scoring + results review, presets in nested folders, **Hebrew and English/Latin font pickers**, nikkud color-coding, TTS, dark mode, and a **Present/fullscreen mode** for projectors
 
 ### Classroom Dashboard (`classroom_dashboard.html`)
 A live display board designed for classroom projectors and SmartBoards.
@@ -80,7 +80,7 @@ An interactive tutor for the Torah cantillation marks (trope / te'amim) — the 
 - Hebrew font picker (incl. My Fonts), dark mode, guided tour, playback-speed control
 
 ### Hebrew Font Maker (`Hebrew_Font_Maker.html`) — Beta
-Turn your own handwritten Hebrew letters into a real, installable font — entirely in the browser. (Currently v4.5.)
+Turn your own handwritten Hebrew letters into a real, installable font — entirely in the browser. (Currently v4.10.)
 
 - **Trace from images** — upload one letter per image, one sheet of all letters (marquee-crop each), or import an existing TTF/OTF; sub-pixel marching-squares tracing with cubic-Bézier fitting and a point editor
 - **Nikkud & trop anchors** — place vowel and cantillation marks per letter; exports real GPOS mark-to-base (nikkud) and mark-to-mark (trop) positioning, plus pair kerning

@@ -214,7 +214,7 @@ Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_das
 
 ### Pattern: per-file `IVRIT_CFG` + shared engine
 
-Each file defines a small **`IVRIT_CFG`** object, then pastes the **shared engine** verbatim (the block between the `═══ IvritSuite .ivrit save-file engine ═══` comment markers — it is byte-for-byte identical across the three tool pages (generator, flash cards, dashboard; re-verified 2026-07-06); copy it, don't rewrite it. **Exception:** `index.html` carries a deliberately adapted AllTools superset of the engine — extra `wlMergeIntoStorage`, a legacy-blob payload shape, and a "reload open tool pages" success alert — do not "fix" it back to the shared text).
+Each file defines a small **`IVRIT_CFG`** object, then pastes the **shared engine** verbatim (the block between the `═══ IvritSuite .ivrit save-file engine ═══` comment markers — its engine functions are identical across the three tool pages (generator, flash cards, dashboard); flash cards and dashboard additionally paste `showAppToast` inside their engine span (S39), so those two are byte-identical to each other while the generator's copy differs **only** by that insertion (re-verified 2026-07-10; the deferred `showAppToast` shared-block extraction will re-unify them). Copy it, don't rewrite it. **Exception:** `index.html` carries a deliberately adapted AllTools superset of the engine — extra `wlMergeIntoStorage`, a legacy-blob payload shape, and a "reload open tool pages" success alert — do not "fix" it back to the shared text).
 
 ```js
 const IVRIT_CFG = {
@@ -534,7 +534,7 @@ The store + helpers are delivered as one copy-identical block (like the `.ivrit`
   `saveUserFont(name, bytes, family)` (upsert; auto-prunes to the newest 10); `deleteUserFont(name)`;
   `loadUserFont(name)` → registers the stored bytes as a CSS-usable `FontFace` named exactly `name`.
 
-Present (verbatim; sha-verified 2026-07-09) in **9 files**: `index.html`, `Hebrew_Font_Maker.html`, and the seven
+Present (verbatim; sha-verified 2026-07-10) in **9 files**: `index.html`, `Hebrew_Font_Maker.html`, and the seven
 font-selector tools (generator, flash cards, dashboard, dictionary, torah trainer, trope tutor, resources).
 
 ### Consumer pattern (in the picker)
@@ -550,7 +550,7 @@ at init. (Use `family` or `stack` to match whatever property that tool's `setHeb
 A second shared block `/* ═══ My Fonts uploader (shared, identical across pages) ═══ */` defines
 `ivUploadFontFromFile(file)` (validates via `new FontFace(name, bytes).load()`, de-dupes the name,
 `saveUserFont`s it). The block contains ONLY that function (sha-verified identical across all 7 carriers,
-2026-07-09); the thin **pick handler lives BELOW the end marker and is per-page**: the five tool pickers
+2026-07-10); the thin **pick handler lives BELOW the end marker and is per-page**: the five tool pickers
 use `onUploadFontPick(input)` (`refreshMyFonts()` + `setHebFont(name)`), the dashboard adds an extra
 `onUploadEngFontPick` (routes to `setEngFont`), and `index.html`'s gear-modal manager uses
 `onUploadFontPickIndex` (`renderMyFontsManager()` + `refreshFontsBackupCache()`). Each picker has a small
@@ -659,6 +659,9 @@ touch-primary tools get gesture equivalents; every new interactive element must 
 - **Implemented on:** only `Hebrew_Font_Maker.html` carries the full treatment (global shortcut handler +
   `?` cheat sheet via `shortcutGroups()`/`openShortcuts()` + `<kbd>` hints). **No tool currently ships
   touch-gesture equivalents** (no `touchstart`/swipe handlers anywhere — Flash Cards flips on plain tap).
+  Beyond that shortcut treatment, `trope_tutor.html` applies APG-standard **widget** keyboard operability
+  (S51–S55): roving arrow-key nav on its `role="tablist"` plus `aria-pressed`/`role="radiogroup"` toggles —
+  an application of the keyboard-operability rule below, not a documented shortcut with a `<kbd>` hint.
 - **Rule:** any new shortcut is registered in the cheat sheet **and** the triggering control's `title`, and
   shown as a `<kbd>` hint; any new interactive element is reachable and operable by keyboard.
 
@@ -681,7 +684,7 @@ whose text is majority-English (e.g. mixed `<option>` labels). Verify: `document
 
 ## Hebrew Font Maker (`Hebrew_Font_Maker.html`)
 
-The largest file in the repo (~12,300 lines, single-file app). **Line numbers drift constantly** —
+The largest file in the repo (~12,550 lines, single-file app). **Line numbers drift constantly** —
 never trust remembered or previously-reported line numbers; locate everything by pattern
 (function names, marker comments, element ids).
 
