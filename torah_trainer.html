@@ -724,10 +724,11 @@ body.dark .tt-audio-bar { background:var(--navy-deep); }
   width:380px; max-width:92vw; height:100vh;
   background:var(--white); border-left:1px solid var(--border);
   box-shadow:var(--shadow-lg); z-index:100;
-  transform:translateX(100%); transition:transform 0.3s ease;
+  transform:translateX(100%); transition:transform 0.3s ease, visibility 0s 0.3s;
+  visibility:hidden;   /* the CLOSED drawer must leave the tab order + a11y tree — hidden once the slide-out ends */
   display:flex; flex-direction:column;
 }
-.settings-modal.open { transform:translateX(0); }
+.settings-modal.open { transform:translateX(0); visibility:visible; transition:transform 0.3s ease; }
 .settings-header {
   padding:14px 20px; background:var(--navy); color:#fff;
   display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
