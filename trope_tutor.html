@@ -700,7 +700,7 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
         <span class="tu-drill-streak" id="qStreak"></span>
       </div>
       <div class="tu-qcard">
-        <p class="tu-qprompt" id="qPrompt"></p>
+        <p class="tu-qprompt" id="qPrompt" tabindex="-1"></p>
         <div class="tu-qstem" id="qStem"></div>
         <div class="tu-choices" id="qChoices" role="group" aria-label="Answer choices"></div>
         <div class="tu-feedback" id="qFeedback" role="status"></div>
@@ -710,7 +710,7 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
 
     <div id="drillResults" hidden>
       <div class="tu-drill-center">
-        <h2>Session complete</h2>
+        <h2 id="resHeading" tabindex="-1">Session complete</h2>
         <div class="big-pct" id="resPct"></div>
         <p class="tu-drill-sub" id="resSub"></p>
         <div class="tu-pb-banner" id="resPb" hidden>🏆 New personal best!</div>
@@ -1757,6 +1757,9 @@ function renderQuestion(q, regenDepth) {
     buildMelodyChoices(q, t, regenDepth);
     hint.textContent = 'Tap a number to listen; tap it again to choose.';
   }
+  // Answering destroys the focused Next button — land focus on the new prompt so keyboard users
+  // aren't dropped to <body> (re-tabbing from the page top) and SRs announce the fresh question.
+  document.getElementById('qPrompt').focus();
 }
 
 function buildNameChoices(q, t) {
@@ -1925,6 +1928,7 @@ function showResults() {
   document.getElementById('resPb').hidden = !(drill.best > (drill.pbAtStart ?? 0));
   buildMasteryGrid(document.getElementById('masteryGridEnd'));
   drill.results = [];
+  document.getElementById('resHeading').focus();   // the focused Finish button was just hidden with #drillQ — see renderQuestion
 }
 
 /* ══════════════════════════════════════════════════════
