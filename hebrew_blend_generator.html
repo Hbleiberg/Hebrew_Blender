@@ -5908,8 +5908,12 @@ function liveClearPulse() {
 function liveGenerate() {
   const ws = document.getElementById('worksheet');
   if (!ws) return;
+  flushWorksheetBuild();   // the rollback snapshot below must capture a COMPLETE worksheet
   const prevHTML = ws.innerHTML;
   const prevBlends = blends;
+  const prevClassSetSheets = classSetSheets;   // generate() nulls this before any alert-return —
+                                               // without restoring it, a rollback + presentation
+                                               // re-render would collapse a class set to 1 version
   const prevSnapshot = lastGeneratedSnapshot;
   _liveAlertMsg = null;
   const origAlert = window.alert;
@@ -5920,8 +5924,10 @@ function liveGenerate() {
   const producedEmpty = !!ws.querySelector('.empty-state');
   if (_liveAlertMsg || producedEmpty) {
     // Roll back to the last good worksheet + baseline, and explain what's needed.
+    cancelWorksheetBuild();   // a failed generate may have queued chunks — never append onto the restore
     ws.innerHTML = prevHTML;
     blends = prevBlends;
+    classSetSheets = prevClassSetSheets;
     lastGeneratedSnapshot = prevSnapshot;
     showPreviewNotice(_liveAlertMsg || 'Waiting for a valid selection…', { kind: 'wait', dismissible: true });
   } else {
@@ -8133,6 +8139,7 @@ function initPanelCollapse() {
 }
 
 async function exportPDF() {
+  flushWorksheetBuild();   // the export reads every on-screen .sheet — finish any chunked build first
   const { jsPDF } = window.jspdf;
   const ws = document.getElementById('worksheet');
   const title = document.getElementById('wsTitle').value || 'Hebrew Blends';
@@ -8883,9 +8890,52 @@ function resetGematriaCheck() {
 // ══════════════════════════════════════════════
 //  RENDER
 // ══════════════════════════════════════════════
-let isShuffling = false;
+/* Chunked worksheet build (large Class Sets only). Building a Class-Set 40 + answer key
+   (~13,900 nodes) in one synchronous pass was a 353 ms desktop / 1,305 ms throttled longtask,
+   so above a cell threshold the standard-blend path builds version 0 synchronously and streams
+   the remaining versions in setTimeout(0) chunks. Anything that needs the COMPLETE worksheet
+   DOM right now (print via beforeprint, exportPDF, liveGenerate's snapshot) first calls
+   flushWorksheetBuild(), which finishes the build synchronously — so the old "fully built when
+   I look" contract still holds at every consumer. _wsBuildAnchor is a connectivity sentinel:
+   many paths (Number Practice, the Real Words drills, empty states) write #worksheet.innerHTML
+   directly without going through renderWorksheet, so the pump and the flush verify the last
+   synchronously-built sheet is still attached and self-cancel if a foreign render replaced it —
+   never append (or print) stale blend sheets onto another mode's output. Any NEW code that
+   overwrites #worksheet outside renderWorksheet, or reads it right after triggering a render,
+   should call cancelWorksheetBuild() / flushWorksheetBuild() respectively. */
+let _wsBuildQueue = [];    // pending thunks, one per remaining class-set version
+let _wsBuildToken = 0;     // generation token — a bump orphans any scheduled pump
+let _wsBuildTimer = null;
+let _wsBuildAnchor = null; // last synchronously-appended sheet (connectivity sentinel)
+
+function cancelWorksheetBuild() {
+  _wsBuildToken++;
+  _wsBuildQueue = [];
+  _wsBuildAnchor = null;
+  if (_wsBuildTimer) { clearTimeout(_wsBuildTimer); _wsBuildTimer = null; }
+}
+
+function flushWorksheetBuild() {
+  if (_wsBuildTimer) { clearTimeout(_wsBuildTimer); _wsBuildTimer = null; }
+  if (!_wsBuildQueue.length) return;
+  // Staleness check FIRST: if a foreign render replaced the worksheet since this build
+  // started, DROP the queue — never append stale blend sheets onto another mode's output.
+  if (_wsBuildAnchor && _wsBuildAnchor.parentNode !== document.getElementById('worksheet')) {
+    cancelWorksheetBuild();
+    return;
+  }
+  const q = _wsBuildQueue;
+  _wsBuildQueue = [];
+  _wsBuildAnchor = null;
+  q.forEach(fn => fn());
+}
+// Print must always see the complete worksheet: beforeprint fires synchronously inside
+// window.print() (both print buttons) AND on Ctrl+P, before the dialog snapshots the page.
+window.addEventListener('beforeprint', flushWorksheetBuild);
 
 function renderWorksheet(animate = false) {
+  // Any re-render invalidates an in-flight chunked build (covers every dispatch branch below).
+  cancelWorksheetBuild();
   // Refresh transliteration display strings before each render so style changes
   // (or freshly generated blends) pick up the active style.
   if (translitStyle !== 'default') rebuildTranslitDisplay('blends');
@@ -8984,19 +9034,57 @@ function renderWorksheet(animate = false) {
   // Standard blend worksheet(s). Class Set > 1 lays out Version A → Key A →
   // Version B → Key B …; otherwise a single worksheet (+ optional answer key).
   const versions = (classSetSheets && classSetSheets.length > 1) ? classSetSheets : [blends];
-  versions.forEach((arr, vi) => {
+  const buildVersion = (arr, vi) => {
     const label = versions.length > 1 ? versionLabelText(vi) : null;
     appendStandardBlendSheets(ws, arr, { isInverse, fillVowels, showAnswers, title, subtitle }, label);
-  });
+  };
+  // Small/normal builds stay fully synchronous (the pre-chunking behavior, untouched).
+  // ~600 cells ≈ ~66 ms desktop / ~245 ms @4×-throttle worst case just under the gate.
+  const totalCells = versions.length * (versions[0] ? versions[0].length : 0) * (showAnswers ? 2 : 1);
+  if (versions.length === 1 || totalCells <= 600) {
+    versions.forEach(buildVersion);
 
-  // Shuffle animation
+    // Shuffle animation
+    if (animate) {
+      ws.querySelectorAll('.blend-cell, .blend-cell-inv').forEach((cell, i) => {
+        cell.style.animationDelay = `${i * 18}ms`;
+        cell.classList.add('shuffling');
+        cell.addEventListener('animationend', () => cell.classList.remove('shuffling'), { once: true });
+      });
+    }
+    return;
+  }
+
+  // Large Class Set: version 0 synchronously (instant paint), the rest in chunks.
+  // NOTE: the thunks read live control state (qrAnswerKeyToggle, wsTitle, wsMetaHTML's
+  // headerLang, includeDageshimToggle) at EXECUTION time; every one of those controls
+  // re-renders via renderWorksheet on change (which cancels this build) — keep it that way.
+  buildVersion(versions[0], 0);
+  _wsBuildAnchor = ws.lastElementChild;
   if (animate) {
+    // Deliberate behavior change for chunked builds only: stagger just version 0's cells.
+    // (The old all-versions stagger put cell 3199 of a Class-Set 40 ~58 s out with 3,200
+    // one-shot listeners; later chunks streaming in are their own visual feedback.)
     ws.querySelectorAll('.blend-cell, .blend-cell-inv').forEach((cell, i) => {
       cell.style.animationDelay = `${i * 18}ms`;
       cell.classList.add('shuffling');
       cell.addEventListener('animationend', () => cell.classList.remove('shuffling'), { once: true });
     });
   }
+  _wsBuildQueue = versions.slice(1).map((arr, i) => () => buildVersion(arr, i + 1));
+  const token = _wsBuildToken;
+  const pump = () => {
+    if (token !== _wsBuildToken) return;                    // orphaned by cancel
+    if (_wsBuildAnchor && _wsBuildAnchor.parentNode !== ws) { cancelWorksheetBuild(); return; } // foreign render took over
+    // ONE version per tick. The script cost is trivial (~1 ms/version, measured); what
+    // makes a tick expensive is the style/layout Chrome folds into the same task for the
+    // sheets appended in it — so appending fewer sheets per tick is what keeps every task
+    // small (measured: 12 ms-of-script batches produced 90 ms tasks; 1/tick stays <50 ms).
+    _wsBuildQueue.shift()();
+    if (_wsBuildQueue.length) _wsBuildTimer = setTimeout(pump, 0);
+    else { _wsBuildTimer = null; _wsBuildAnchor = null; }
+  };
+  _wsBuildTimer = setTimeout(pump, 0);
 }
 
 // QR Answer-Key toggle handler: re-render the CURRENT drill deterministically so the

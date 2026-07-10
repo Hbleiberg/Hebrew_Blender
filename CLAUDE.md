@@ -30,6 +30,7 @@
 - [Tooltips](#tooltips-classroom_dashboardhtml)
 - [Letter Selector](#letter-selector-hebrew_blend_generatorhtml)
 - [Vowel Selector](#vowel-selector-hebrew_blend_generatorhtml)
+- [Worksheet Chunked Build](#worksheet-chunked-build-hebrew_blend_generatorhtml)
 - [Verifying changes — headless Playwright recipe](#verifying-changes--headless-playwright-recipe)
 
 ---
@@ -1423,6 +1424,28 @@ Shown only when vcholam (`וֹ`) or shuruk (`וּ`) is selected:
 let selectedVowels = new Set(/* MAIN_VOWEL_KEYS by default */);
 let vavAsLetter    = true;
 ```
+
+---
+
+## Worksheet Chunked Build (`hebrew_blend_generator.html`)
+
+Large Class-Set standard-blend builds (> ~600 cells) are **chunked**: `renderWorksheet` builds
+version 0 synchronously, then streams the remaining versions in `setTimeout(0)` chunks
+(`_wsBuildQueue`/`_wsBuildToken`/`_wsBuildTimer`/`_wsBuildAnchor`, defined just above
+`renderWorksheet`). Small/single-version worksheets remain fully synchronous. Contract rules:
+
+- **Reading `#worksheet` right after triggering a render?** Call **`flushWorksheetBuild()`** first —
+  it synchronously finishes any in-flight build. Already wired: the `beforeprint` listener (covers
+  both print buttons + Ctrl+P), `exportPDF`, and `liveGenerate`'s rollback snapshot.
+- **Writing `#worksheet.innerHTML` outside `renderWorksheet`?** The connectivity sentinel
+  (`_wsBuildAnchor`) makes pending chunks self-cancel when a foreign render replaces the worksheet —
+  but a new writer *should* still call **`cancelWorksheetBuild()`** explicitly (belt-and-braces;
+  `renderWorksheet` itself cancels at the top).
+- The queued thunks read live control state (QR toggle, title, header language, dagesh toggle) at
+  **execution** time; every such control currently re-renders via `renderWorksheet` on change (which
+  cancels the build). Keep that invariant for any new control those builders read.
+- Headless verification must **poll** for the final `.sheet` count (or `_wsBuildQueue.length === 0`)
+  after a large-class-set Generate — never count synchronously.
 
 ---
 
