@@ -5213,7 +5213,19 @@ else ivritInit();
   function addScheduleRow() {
     if (!settings.currentSchedule) settings.currentSchedule = [];
     const firstPreset = Object.keys(presets)[0] || '';
-    settings.currentSchedule.push({ preset: firstPreset, until: '' });
+    // Prefill the new row's "until" from the rows above: repeat the previous gap (the teacher's
+    // period length) when two timed rows exist, else +45 min. Stays empty when there's nothing
+    // to go on or the increment would pass midnight — same as before.
+    let until = '';
+    const timed = settings.currentSchedule.filter(e => e.until);
+    if (timed.length) {
+      const last = timeToMins(timed[timed.length - 1].until);
+      const prev = timed.length > 1 ? timeToMins(timed[timed.length - 2].until) : NaN;
+      const gap = (last > prev && last - prev < 12 * 60) ? last - prev : 45;
+      const next = last + gap;
+      if (next < 24 * 60) until = String(Math.floor(next / 60)).padStart(2, '0') + ':' + String(next % 60).padStart(2, '0');
+    }
+    settings.currentSchedule.push({ preset: firstPreset, until });
     renderScheduleRows();
     saveSettingsToStorage();
   }
