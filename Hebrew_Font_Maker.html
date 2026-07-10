@@ -2402,7 +2402,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.9';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.10';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2614,6 +2614,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.10</strong> — <strong>Cleaner UFO exports for font editors.</strong> The UFO source export no longer invents an x-height: Hebrew has no lowercase, so that guide was just a duplicate of the cap-height line and confused font editors like Glyphs and RoboFont. The field is now simply left unset, the honest answer for a caseless font. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.9</strong> — <strong>Your font's version number behaves itself.</strong> Two small bookkeeping fixes: a pre-1.0 version you typed yourself (like <span class="ui">0.5</span>) no longer silently becomes 1.0-something in the exported file, and the automatic per-export version tick now only sticks when a font file actually downloads — cancelling after a failed shaping check, or a WOFF2 conversion hiccup, no longer inches the version up on every retry. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.8</strong> — <strong>Older projects export safely again.</strong> A project saved by a much older version (or edited outside the app) could be missing some of its vowel anchor points under the hood — and exporting it would fail with a generic "Export error" before your font ever built. The app now quietly restores any missing anchor points (in the same spots a fresh letter would get them) wherever it finds them — opening the anchor editor, previewing, or exporting — so those projects build normally; you can still fine-tune every anchor afterwards. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.7</strong> — <strong>Two quiet export safeguards.</strong> First: if your project somehow carries a word spacing of zero (possible in very old or hand-edited save files — the slider itself never goes below 80), the exported font used to get a <strong>zero-width space</strong>, so every word ran together; the space now always exports at least the slider's minimum width. Second: when vowels or trop are enabled, every export runs a quick <strong>shaping check</strong> to confirm the marks actually position correctly — but if that checker couldn't load (say, a flaky connection), the font downloaded anyway with only a briefly-flashed note. Now the <span class="ui">Exported ✓</span> screen tells you plainly when the check was skipped, so you know to test the font before sharing it. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -10835,7 +10836,10 @@ function buildUfoFontInfo(spec) {
     familyName: n.familyName, styleName: 'Regular',
     styleMapFamilyName: n.familyName, styleMapStyleName: 'regular',
     versionMajor: major, versionMinor: minor, unitsPerEm: spec.unitsPerEm,
-    ascender: asc, descender: desc, capHeight: top, xHeight: top,
+    // xHeight is deliberately omitted: Hebrew is caseless, so there is no honest x-height —
+    // baking letterTop there (as capHeight's twin) drew a bogus duplicate guide in font editors.
+    // UFO fontinfo keys are optional; absent = unspecified, matching the TTF's OS/2 defaults.
+    ascender: asc, descender: desc, capHeight: top,
     openTypeOS2TypoAscender: asc, openTypeOS2TypoDescender: desc, openTypeOS2TypoLineGap: gap,
     openTypeOS2WinAscent: spec.winAscent, openTypeOS2WinDescent: spec.winDescent,
     openTypeHheaAscender: spec.winAscent, openTypeHheaDescender: -spec.winDescent, openTypeHheaLineGap: gap,
