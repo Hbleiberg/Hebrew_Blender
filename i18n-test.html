@@ -84,7 +84,7 @@
     function boot() {
       if (!window.I18n) { setTimeout(boot, 20); return; }
       var set = function (id, txt) { var el = document.getElementById(id); if (el) el.textContent = txt; };
-      I18n.ready.then(function () {
+      function render() {
         set('known', I18n.t('shared.tour.next'));
         set('placeholder', I18n.t('shared.tour.step_counter', { count: 2, total: 7 }));
         set('multiline', I18n.t('shared.ivrit.tool_mismatch_confirm', { tool: 'Worksheet', tool2: 'Dashboard' }));
@@ -92,7 +92,10 @@
         var el = document.documentElement;
         set('env', 'active lang: ' + I18n.lang + '   |   html lang: ' + el.getAttribute('lang') +
                    '   |   dir: ' + el.getAttribute('dir'));
-      });
+      }
+      I18n.ready.then(render);
+      // Exercise the live-switch path: re-render in place (no reload) when the language changes.
+      I18n.onChange(render);
     }
     boot();
   })();

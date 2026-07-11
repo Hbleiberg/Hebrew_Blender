@@ -3,17 +3,27 @@
  * Load on any page (mirrors /pwa.js):  <script src="/js/i18n.js" defer></script>
  *
  * Exposes window.I18n:
- *   I18n.lang            active language code ('en' | 'he')
- *   I18n.dir             'ltr' | 'rtl'
- *   I18n.ready           Promise that resolves once /locales/<lang>.json is loaded
- *   I18n.t(key, params)  translate; substitutes {placeholders}; returns key (+ warn) if missing
- *   I18n.setLang(code)   persist choice and reload
- *   I18n.createSwitcher()  -> a DOM node (EN / עברית)
- *   I18n.mountSwitchers()  -> fill every [data-i18n-switcher] slot
+ *   I18n.lang               active language code ('en' | 'he')
+ *   I18n.dir                'ltr' | 'rtl'
+ *   I18n.ready              Promise that resolves once /locales/<lang>.json is loaded
+ *   I18n.t(key, params)     translate; substitutes {placeholders}; returns key (+ warn) if missing
+ *   I18n.setLang(code)      switch language LIVE (no reload): swaps the locale, flips dir/lang,
+ *                           updates switchers, then fires every onChange handler
+ *   I18n.onChange(fn)       register fn(lang, dir) to re-render the page after a live switch
+ *   I18n.applyStaticI18n(root)  fill [data-i18n]/[data-i18n-title|aria-label|placeholder|html]
+ *   I18n.createSwitcher()   -> a DOM node (EN / עברית)
+ *   I18n.mountSwitchers()   -> fill every [data-i18n-switcher] slot
  * A guarded global `t` alias is also set (only if window.t is undefined).
  *
  * Language selection: ?lang= URL param (persisted) > localStorage['hebrewBlender_lang'] > 'en'.
  * On load it sets document.documentElement.lang + dir (he -> rtl, en -> ltr).
+ *
+ * LIVE SWITCH: setLang() does NOT reload — it fetches the other locale (cached after first use),
+ * swaps the active dictionary, updates <html> lang/dir, drops any ?lang= override via
+ * history.replaceState, refreshes switcher state, and fires onChange handlers. A converted page
+ * registers I18n.onChange(function(){ I18n.applyStaticI18n(); ...re-render dynamic content... }) so
+ * the whole UI repaints in place with all in-memory state intact. If the locale fetch fails, setLang
+ * falls back to the old persist-and-reload behavior so a switch never dead-ends.
  *
  * NO-FLASH SNIPPET — because this file is deferred, paste this tiny inline IIFE into each page's
  * <head> (before any render, next to the dark-mode IIFE) so dir/lang is set pre-paint and Hebrew
@@ -50,13 +60,22 @@
   var lang = resolveLang();
   var dir = RTL_LANGS.indexOf(lang) !== -1 ? 'rtl' : 'ltr';
 
-  // Re-assert on <html> (the inline no-flash IIFE sets this pre-paint; this is the authoritative set).
-  try {
-    document.documentElement.setAttribute('lang', lang);
-    document.documentElement.setAttribute('dir', dir);
-  } catch (e) {}
-
+  // Per-language dictionary cache so a live switch never re-fetches a locale it already loaded.
+  var dicts = {};
   var dict = {};
+
+  // onChange handlers — fired after each successful live switch.
+  var changeHandlers = [];
+
+  function applyLangAttrs() {
+    try {
+      document.documentElement.setAttribute('lang', lang);
+      document.documentElement.setAttribute('dir', dir);
+    } catch (e) {}
+  }
+
+  // Re-assert on <html> (the inline no-flash IIFE sets this pre-paint; this is the authoritative set).
+  applyLangAttrs();
 
   function substitute(str, params) {
     if (!params) return str;
@@ -73,17 +92,96 @@
     return substitute(dict[key], params);
   }
 
-  function setLang(next) {
-    if (!isSupported(next)) return;
-    lsSet(next);
-    try {
-      // Drop any ?lang= override so localStorage is authoritative after the reload.
-      var url = new URL(window.location.href);
-      url.searchParams.delete('lang');
-      window.location.replace(url.toString());
-    } catch (e) {
-      window.location.reload();
+  // ---- Static-DOM pass -----------------------------------------------------------------------
+  // Fill text + a small set of attributes from data-* keys. Called on ready and inside onChange.
+  var STATIC_ATTRS = [
+    ['data-i18n-title', 'title'],
+    ['data-i18n-aria-label', 'aria-label'],
+    ['data-i18n-placeholder', 'placeholder'],
+    ['data-i18n-tip', 'data-tip']   // suite-wide accessible-tooltip attribute (.tip-wrap/.has-tip)
+  ];
+  function applyStaticI18n(root) {
+    root = root || document;
+    var textNodes = root.querySelectorAll('[data-i18n]');
+    for (var i = 0; i < textNodes.length; i++) {
+      var k = textNodes[i].getAttribute('data-i18n');
+      if (k) textNodes[i].textContent = t(k);
     }
+    for (var a = 0; a < STATIC_ATTRS.length; a++) {
+      var nodes = root.querySelectorAll('[' + STATIC_ATTRS[a][0] + ']');
+      for (var j = 0; j < nodes.length; j++) {
+        var ak = nodes[j].getAttribute(STATIC_ATTRS[a][0]);
+        if (ak) nodes[j].setAttribute(STATIC_ATTRS[a][1], t(ak));
+      }
+    }
+    // data-i18n-html: only for our own trusted strings (the values come from the committed CSV).
+    var htmlNodes = root.querySelectorAll('[data-i18n-html]');
+    for (var h = 0; h < htmlNodes.length; h++) {
+      var hk = htmlNodes[h].getAttribute('data-i18n-html');
+      if (hk) htmlNodes[h].innerHTML = t(hk);
+    }
+  }
+
+  function onChange(fn) {
+    if (typeof fn === 'function') changeHandlers.push(fn);
+  }
+  function fireChange() {
+    for (var i = 0; i < changeHandlers.length; i++) {
+      try { changeHandlers[i](lang, dir); }
+      catch (e) {
+        if (typeof console !== 'undefined' && console.error) console.error('[i18n] onChange handler failed:', e);
+      }
+    }
+  }
+
+  // ---- Locale loading ------------------------------------------------------------------------
+  function loadDict(l) {
+    if (dicts[l]) return Promise.resolve(dicts[l]);
+    return fetch('/locales/' + l + '.json', { credentials: 'same-origin' })
+      .then(function (res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+      .then(function (data) { dicts[l] = data || {}; return dicts[l]; });
+  }
+
+  function updateSwitcherState() {
+    var btns = document.querySelectorAll('.i18n-switch button');
+    for (var i = 0; i < btns.length; i++) {
+      var code = btns[i].getAttribute('lang');
+      btns[i].setAttribute('aria-pressed', code === lang ? 'true' : 'false');
+    }
+  }
+
+  // ---- Live language switch (no reload) ------------------------------------------------------
+  function setLang(next) {
+    if (!isSupported(next) || next === lang) return;
+    lsSet(next);
+    loadDict(next).then(function (d) {
+      dict = d;
+      lang = next;
+      dir = RTL_LANGS.indexOf(lang) !== -1 ? 'rtl' : 'ltr';
+      I18n.lang = lang;
+      I18n.dir = dir;
+      applyLangAttrs();
+      // Drop any ?lang= override so localStorage stays authoritative — without navigating.
+      try {
+        var url = new URL(window.location.href);
+        if (url.searchParams.has('lang')) {
+          url.searchParams.delete('lang');
+          window.history.replaceState(null, '', url.toString());
+        }
+      } catch (e) {}
+      updateSwitcherState();
+      fireChange();
+    }).catch(function (err) {
+      if (typeof console !== 'undefined' && console.error) {
+        console.error('[i18n] live switch failed, falling back to reload:', err);
+      }
+      // Fallback: persist (already done) + reload with ?lang= stripped so it still switches.
+      try {
+        var url2 = new URL(window.location.href);
+        url2.searchParams.delete('lang');
+        window.location.replace(url2.toString());
+      } catch (e2) { window.location.reload(); }
+    });
   }
 
   // ---- Language switcher (self-styled; works under any header) --------------------------------
@@ -140,9 +238,8 @@
   }
 
   // ---- Load the active locale ----------------------------------------------------------------
-  var ready = fetch('/locales/' + lang + '.json', { credentials: 'same-origin' })
-    .then(function (res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
-    .then(function (data) { dict = data || {}; return dict; })
+  var ready = loadDict(lang)
+    .then(function (data) { dict = data; return dict; })
     .catch(function (err) {
       if (typeof console !== 'undefined' && console.error) {
         console.error('[i18n] failed to load /locales/' + lang + '.json:', err);
@@ -151,16 +248,19 @@
       return dict;
     });
 
-  window.I18n = {
+  var I18n = {
     lang: lang,
     dir: dir,
     supported: SUPPORTED.slice(),
     ready: ready,
     t: t,
     setLang: setLang,
+    onChange: onChange,
+    applyStaticI18n: applyStaticI18n,
     createSwitcher: createSwitcher,
     mountSwitchers: mountSwitchers
   };
+  window.I18n = I18n;
   if (typeof window.t === 'undefined') window.t = t;
 
   if (document.readyState === 'loading') {

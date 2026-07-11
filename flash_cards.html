@@ -16,6 +16,7 @@
 <link rel="manifest" href="manifest.webmanifest?v=3">
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
+<script src="/js/i18n.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -133,6 +134,19 @@
       document.addEventListener('DOMContentLoaded', function(){ document.body.classList.add('dark'); });
     }
   } catch(e) {}
+})();
+</script>
+<script>
+/* No-flash UI-language IIFE — mirrors the dark-mode one; sets dir/lang before paint so Hebrew
+   never flashes LTR->RTL. Authoritative set happens later in /js/i18n.js. */
+(function () {
+  try {
+    var p = new URLSearchParams(location.search).get('lang');
+    var l = (p === 'en' || p === 'he') ? p : (localStorage.getItem('hebrewBlender_lang') || 'en');
+    if (l !== 'en' && l !== 'he') l = 'en';
+    document.documentElement.lang = l;
+    document.documentElement.dir = (l === 'he' ? 'rtl' : 'ltr');
+  } catch (e) {}
 })();
 </script>
 <!-- Hebrew transliteration library loader (lazy via esm.sh).
@@ -390,7 +404,17 @@ body.dark .app-header { background: var(--navy-deep); border-bottom: 1px solid v
 }
 .h-btn:hover { background: rgba(255,255,255,0.14); }
 .h-btn:active { transform: scale(0.94); }
-.h-right { display: flex; gap: 6px; }
+.h-right { display: flex; gap: 6px; align-items: center; }
+/* Narrow screens: the header now also carries the language switcher, so shrink the controls
+   (and the title) to keep everything on one row without horizontal overflow. */
+@media (max-width: 440px) {
+  .app-header { gap: 4px; padding-inline: 8px; }
+  .app-header h1 { font-size: 0.9rem; }
+  .h-btn { width: 38px; height: 38px; font-size: 1.05rem; }
+  .h-right { gap: 4px; }
+  #tourBtn { padding: 0 9px !important; font-size: 0.74rem !important; }
+  .app-header .i18n-switch button { padding: 3px 7px; font-size: 0.72rem; }
+}
 
 /* ============== LAYOUT ============== */
 .wrap {
@@ -514,7 +538,7 @@ body.dark .panel-title {
 .slider::before {
   content: ''; position: absolute;
   width: 18px; height: 18px;
-  left: 3px; top: 3px;
+  inset-inline-start: 3px; top: 3px;
   background: var(--white); border-radius: 50%;
   transition: transform 0.2s;
   box-shadow: var(--shadow-sm);
@@ -522,13 +546,16 @@ body.dark .panel-title {
 body.dark .slider::before { background: #d8dde9; }
 .switch input:checked + .slider { background: var(--gold); }
 .switch input:checked + .slider::before { transform: translateX(20px); }
+/* RTL: the knob rests at the inline-start (right edge) and must slide the other way when checked. */
+[dir="rtl"] .switch input:checked + .slider::before { transform: translateX(-20px); }
 /* The real checkbox is zero-size/transparent, so ring the visible slider on keyboard focus. */
 .switch input:focus-visible + .slider { outline: 2px solid var(--gold); outline-offset: 2px; }
 .switch.sm { width: 34px; height: 20px; }
-.switch.sm .slider::before { width: 14px; height: 14px; left: 3px; top: 3px; }
+.switch.sm .slider::before { width: 14px; height: 14px; inset-inline-start: 3px; top: 3px; }
 .switch.sm input:checked + .slider::before { transform: translateX(14px); }
+[dir="rtl"] .switch.sm input:checked + .slider::before { transform: translateX(-14px); }
 .lock-pos-block { margin-top: 4px; }
-.lock-pos-block .lock-pos-grid { margin-top: 6px; padding-left: 10px; border-left: 2px solid var(--border); margin-left: 8px; }
+.lock-pos-block .lock-pos-grid { margin-top: 6px; padding-inline-start: 10px; border-inline-start: 2px solid var(--border); margin-inline-start: 8px; }
 .has-tip { border-bottom: 1px dotted var(--muted); cursor: help; }
 
 /* ============== LETTER GRID ============== */
@@ -833,7 +860,7 @@ body.fc-fullscreen #screenCard.active                 { padding-top: 2vh; }
 .fc-back-q { color: rgba(255,255,255,0.78); font-size: 0.85rem; margin-top: 6px; letter-spacing: 0.04em; }
 .fc-badge {
   position: absolute;
-  top: 10px; left: 10px;
+  top: 10px; inset-inline-start: 10px;
   width: 26px; height: 26px;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
@@ -1044,10 +1071,10 @@ body.dark .results-hero .pct { color: var(--gold-light); }
   border: 1px solid var(--border); border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.4); padding: 16px 18px 14px;
 }
-.tour-card h4 { font-family: var(--serif); margin: 0 26px 8px 0; font-size: 0.98rem; color: var(--text); }
+.tour-card h4 { font-family: var(--serif); margin-block: 0 8px; margin-inline-end: 26px; font-size: 0.98rem; color: var(--text); }
 .tour-card p { font-size: 0.84rem; line-height: 1.5; margin: 0 0 12px; color: var(--text); }
 .tour-x {
-  position: absolute; top: 8px; right: 8px; width: 26px; height: 26px;
+  position: absolute; top: 8px; inset-inline-end: 8px; width: 26px; height: 26px;
   background: transparent; border: none; border-radius: 6px;
   color: var(--muted); font-size: 1rem; cursor: pointer; line-height: 1;
 }
@@ -1105,11 +1132,11 @@ body.dark .stats-bar .stat-value { color: var(--gold-light); }
 .color-tile-swatch { height: 26px; }
 .color-tile-label { font-size: 0.52rem; text-align: center; padding: 2px 1px; background: var(--white); color: var(--ink); line-height: 1.2; }
 /* Emoji sub-mode: category tree */
-.emoji-gender-btn { flex:1; padding:5px 8px; background:var(--white); color:var(--ink); border:none; font-size:0.74rem; font-family:inherit; cursor:pointer; border-right:1px solid var(--border); transition:background 0.15s; }
-.emoji-gender-btn:last-child { border-right:none; }
+.emoji-gender-btn { flex:1; padding:5px 8px; background:var(--white); color:var(--ink); border:none; font-size:0.74rem; font-family:inherit; cursor:pointer; border-inline-end:1px solid var(--border); transition:background 0.15s; }
+.emoji-gender-btn:last-child { border-inline-end:none; }
 .emoji-gender-btn:hover { background:var(--paper); }
 .emoji-gender-btn.active { background:var(--navy); color:#fff; }
-body.dark .emoji-gender-btn { background:var(--navy-soft); color:#dde4f0; border-right-color:#2a4060; }
+body.dark .emoji-gender-btn { background:var(--navy-soft); color:#dde4f0; border-inline-end-color:#2a4060; }
 body.dark .emoji-gender-btn:hover { background:#2a4060; }
 body.dark .emoji-gender-btn.active { background:#0a0f1c; color:#fff; }
 #emojiCatTree { display:grid; grid-template-columns:1fr 1fr; column-gap:8px; align-items:start; }
@@ -1117,15 +1144,22 @@ body.dark .emoji-gender-btn.active { background:#0a0f1c; color:#fff; }
 .emoji-cat-row { display:flex; align-items:center; gap:5px; padding:2px 0; font-size:0.74rem; cursor:pointer; user-select:none; }
 .emoji-cat-row input { accent-color:var(--gold); width:12px; height:12px; cursor:pointer; flex-shrink:0; }
 .emoji-cat-row.is-cat { font-weight:600; color:var(--ink); }
-.emoji-cat-row.is-sub { padding-left:14px; font-size:0.7rem; color:var(--muted); }
+.emoji-cat-row.is-sub { padding-inline-start:14px; font-size:0.7rem; color:var(--muted); }
 .emoji-cat-row > span:not(.emoji-cat-arrow):not(.emoji-cat-count) { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
 .emoji-cat-arrow { display:inline-block; width:9px; font-size:0.65rem; color:var(--muted); transition:transform 0.15s; flex-shrink:0; }
 .emoji-cat-group.collapsed .emoji-cat-arrow { transform:rotate(-90deg); }
 .emoji-cat-group.collapsed .emoji-sub-list { display:none; }
-.emoji-cat-count { margin-left:auto; font-size:0.6rem; color:var(--muted); font-weight:400; flex-shrink:0; }
+.emoji-cat-count { margin-inline-start:auto; font-size:0.6rem; color:var(--muted); font-weight:400; flex-shrink:0; }
 .divider { height: 1px; background: var(--border); margin: 14px -16px; }
 .muted-row { font-size: 0.85rem; color: var(--muted); margin: 6px 0; }
 hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
+
+/* ── i18n / RTL utilities ── */
+/* Mirror directional glyphs (←, ‹, ›, →) when the UI renders right-to-left. */
+.dir-arrow { display: inline-block; }
+[dir="rtl"] .dir-arrow { transform: scaleX(-1); }
+/* Isolate mixed Hebrew-label + digits so numbers don't reorder under bidi. */
+.bidi-isolate { unicode-bidi: isolate; }
 
 /* compact mobile */
 @media (max-width: 420px) {
@@ -1145,7 +1179,7 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
 .ft-folder-actions { display:flex; gap:1px; flex:0 0 auto; }
 .ft-mini { background:none; border:none; cursor:pointer; font-size:.82rem; padding:0 3px; color:var(--muted,#6b6050); font-family:inherit; line-height:1; }
 .ft-mini:hover { color:var(--gold,#c9922a); }
-.ft-folder-body { padding:3px 5px 5px 16px; display:flex; flex-direction:column; gap:4px; }
+.ft-folder-body { padding-block:3px 5px; padding-inline:16px 5px; display:flex; flex-direction:column; gap:4px; }
 .ft-empty-folder { font-size:.72rem; color:var(--muted,#6b6050); font-style:italic; padding:3px 4px; }
 .ft-folder.ft-drop > .ft-folder-head { outline:2px dashed var(--gold,#c9922a); outline-offset:-2px; border-radius:4px; }
 .ft-row-drop { box-shadow:inset 0 2px 0 0 var(--gold,#c9922a); }
@@ -1154,7 +1188,7 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
 .ft-move-btn { font-size:.7rem; cursor:pointer; font-family:inherit; background:transparent; border:1px solid var(--border,#c8bfa8); border-radius:3px; padding:2px 6px; color:var(--text,#1a2744); }
 .ft-move-btn:hover { background:var(--warm-gray,#e8e0d0); }
 .ft-move-menu { position:fixed; z-index:9999; background:var(--white,#fff); border:1px solid var(--border,#c8bfa8); border-radius:6px; box-shadow:0 2px 10px rgba(0,0,0,.22); min-width:150px; max-height:260px; overflow:auto; padding:4px; }
-.ft-move-menu button { display:block; width:100%; text-align:left; background:none; border:none; padding:5px 8px; cursor:pointer; font-size:.78rem; border-radius:4px; color:var(--text,#1a2744); font-family:inherit; white-space:nowrap; }
+.ft-move-menu button { display:block; width:100%; text-align:start; background:none; border:none; padding:5px 8px; cursor:pointer; font-size:.78rem; border-radius:4px; color:var(--text,#1a2744); font-family:inherit; white-space:nowrap; }
 .ft-move-menu button:hover { background:var(--warm-gray,#e8e0d0); }
 .ft-newfolder { margin-top:6px; font-size:.74rem; font-family:inherit; cursor:pointer; padding:3px 9px; border:1px solid var(--border,#c8bfa8); border-radius:5px; background:transparent; color:var(--text,#1a2744); }
 .ft-newfolder:hover { background:var(--warm-gray,#e8e0d0); }
@@ -1170,12 +1204,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
 <!-- ============== HEADER ============== -->
 <header class="app-header">
-  <a href="/" class="h-btn" id="homeBtn" title="Home" aria-label="Home">←</a>
-  <h1>Hebrew Flash Cards for Reading Practice</h1>
+  <a href="/" class="h-btn" id="homeBtn" title="Home" aria-label="Home" data-i18n-title="flashcards.header.home_label" data-i18n-aria-label="flashcards.header.home_label"><span class="dir-arrow" aria-hidden="true">←</span></a>
+  <h1 data-i18n="flashcards.header.h1">Hebrew Flash Cards for Reading Practice</h1>
   <div class="h-right">
-    <button class="h-btn" id="tourBtn" onclick="tourStart()" title="Take a quick tour" style="width:auto;border-radius:22px;padding:0 14px;font-size:0.85rem;gap:6px;">❓ Tour</button>
-    <button class="h-btn" id="fsBtn" onclick="toggleFullscreen()" title="Present fullscreen" aria-label="Toggle fullscreen" aria-pressed="false">⛶</button>
-    <button class="h-btn" id="darkToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
+    <div data-i18n-switcher></div>
+    <button class="h-btn" id="tourBtn" onclick="tourStart()" title="Take a quick tour" data-i18n-title="flashcards.header.tour_button_title" data-i18n="flashcards.header.tour_button" style="width:auto;border-radius:22px;padding:0 14px;font-size:0.85rem;gap:6px;">❓ Tour</button>
+    <button class="h-btn" id="fsBtn" onclick="toggleFullscreen()" title="Present fullscreen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria" aria-pressed="false">⛶</button>
+    <button class="h-btn" id="darkToggle" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false">🌙</button>
   </div>
 </header>
 
@@ -1185,32 +1220,32 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 <section id="screenSetup" class="screen active">
 
   <div style="display:flex; gap:6px; margin-bottom:12px;">
-    <button class="btn sm" style="flex:1;" onclick="expandAllMenus()">Expand all menus</button>
-    <button class="btn sm" style="flex:1;" onclick="collapseAllMenus()">Collapse all menus</button>
+    <button class="btn sm" style="flex:1;" onclick="expandAllMenus()" data-i18n="flashcards.setup.expand_all">Expand all menus</button>
+    <button class="btn sm" style="flex:1;" onclick="collapseAllMenus()" data-i18n="flashcards.setup.collapse_all">Collapse all menus</button>
   </div>
 
   <!-- MODE -->
   <div class="panel" id="panelMode">
-    <h3 class="panel-title">Mode</h3>
+    <h3 class="panel-title" data-i18n="flashcards.mode.panel_title">Mode</h3>
     <div class="panel-body">
       <div class="row">
-        <span class="label">Letters per card:</span>
+        <span class="label" data-i18n="flashcards.mode.letters_per_card">Letters per card:</span>
         <div class="pill-group" id="modePills">
-          <button class="pill" data-mode="1">1 Letter</button>
-          <button class="pill active" data-mode="2">2 Letter</button>
-          <button class="pill" data-mode="3">3 Letter</button>
-          <button class="pill" id="otherModePill">Other</button>
+          <button class="pill" data-mode="1" data-i18n="flashcards.mode.pill_1letter">1 Letter</button>
+          <button class="pill active" data-mode="2" data-i18n="flashcards.mode.pill_2letter">2 Letter</button>
+          <button class="pill" data-mode="3" data-i18n="flashcards.mode.pill_3letter">3 Letter</button>
+          <button class="pill" id="otherModePill" data-i18n="flashcards.mode.pill_other">Other</button>
         </div>
       </div>
 
       <!-- 🎧 Listening mode (multiple choice) — presentation overlay across all modes -->
       <div class="row" id="listeningRow">
         <label class="switch"><input type="checkbox" id="listeningToggle"><span class="slider"></span></label>
-        <span class="label has-tip" data-tip="Instead of reading the card, hear it spoken and tap the matching answer. Trains listening (hear → identify) instead of decoding (see → say).">🎧 Listening <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
+        <span class="label has-tip" data-tip="Instead of reading the card, hear it spoken and tap the matching answer. Trains listening (hear → identify) instead of decoding (see → say)." data-i18n-tip="flashcards.mode.listening_tip"><span data-i18n="flashcards.mode.listening_label">🎧 Listening</span> <span data-i18n="flashcards.badge.beta" style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
       </div>
       <div id="listeningOpts" class="hide">
         <div class="row">
-          <span class="label" style="flex-shrink:0;margin-right:8px;">Choices:</span>
+          <span class="label" style="flex-shrink:0;margin-inline-end:8px;" data-i18n="flashcards.mode.choices_label">Choices:</span>
           <div class="pill-group" id="listenChoicePills">
             <button class="pill active" data-lc="3">3</button>
             <button class="pill" data-lc="4">4</button>
@@ -1222,17 +1257,17 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div id="letterModeOpts">
         <div class="row" id="inverseRow">
           <label class="switch"><input type="checkbox" id="inverseToggle"><span class="slider"></span></label>
-          <span class="label has-tip" data-tip="Show the transliteration first; flip to reveal the Hebrew.">Inverse Mode</span>
+          <span class="label has-tip" data-tip="Show the transliteration first; flip to reveal the Hebrew." data-i18n-tip="flashcards.mode.inverse_tip" data-i18n="flashcards.mode.inverse_label">Inverse Mode</span>
         </div>
         <!-- Name the Letter (1-letter mode only) -->
         <div class="row" id="nameLetterRow" style="display:none;">
           <label class="switch"><input type="checkbox" id="nameLetterToggle"><span class="slider"></span></label>
-          <span class="label">Name the Letter</span>
+          <span class="label" data-i18n="flashcards.mode.name_letter_label">Name the Letter</span>
         </div>
         <div id="nameLetterOpts" class="hide">
           <div class="pill-group" id="nameLetterFrontPills" style="margin-top:6px;">
-            <button class="pill active" data-nlf="letter">Show Letter</button>
-            <button class="pill" data-nlf="name">Show Name</button>
+            <button class="pill active" data-nlf="letter" data-i18n="flashcards.mode.name_letter_show_letter">Show Letter</button>
+            <button class="pill" data-nlf="name" data-i18n="flashcards.mode.name_letter_show_name">Show Name</button>
           </div>
         </div>
 
@@ -1240,7 +1275,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <hr class="soft" />
           <div class="row">
             <label class="switch"><input type="checkbox" id="lockToggle"><span class="slider"></span></label>
-            <span class="label has-tip" data-tip="Force a specific letter (or set of letters) to always appear at the chosen position.">Lock Letter</span>
+            <span class="label has-tip" data-tip="Force a specific letter (or set of letters) to always appear at the chosen position." data-i18n-tip="flashcards.mode.lock_letter_tip" data-i18n="flashcards.mode.lock_letter_label">Lock Letter</span>
           </div>
           <div id="lockOptions" class="hide">
             <!-- per-position rows built by initLockPositionRows() -->
@@ -1250,14 +1285,14 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
       <div id="otherModeSection" class="hide">
         <div class="pill-group" id="otherSubPills" style="margin-bottom:10px;">
-          <button class="pill active" data-sub="numbers">Numbers</button>
-          <button class="pill" data-sub="colors">Colors</button>
-          <button class="pill" data-sub="emoji">Emoji</button>
-          <button class="pill" data-sub="words">Words</button>
+          <button class="pill active" data-sub="numbers" data-i18n="flashcards.mode.sub_numbers">Numbers</button>
+          <button class="pill" data-sub="colors" data-i18n="flashcards.mode.sub_colors">Colors</button>
+          <button class="pill" data-sub="emoji" data-i18n="flashcards.mode.sub_emoji">Emoji</button>
+          <button class="pill" data-sub="words" data-i18n="flashcards.mode.sub_words">Words</button>
         </div>
         <div id="numOpts">
           <div class="row" style="gap:8px;align-items:center;margin-bottom:8px;">
-            <span class="label" style="flex-shrink:0;">Range:</span>
+            <span class="label" style="flex-shrink:0;" data-i18n="flashcards.mode.range_label">Range:</span>
             <input type="number" id="numMinInput" min="0" max="9999" value="1"
                    style="width:68px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-size:0.85rem;font-family:inherit;">
             <span style="color:var(--muted);">–</span>
@@ -1265,144 +1300,144 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                    style="width:68px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-size:0.85rem;font-family:inherit;">
           </div>
           <div class="row" style="margin-bottom:8px;">
-            <span class="label" style="flex-shrink:0;margin-right:8px;">Gender:</span>
+            <span class="label" style="flex-shrink:0;margin-inline-end:8px;" data-i18n="flashcards.mode.gender_label">Gender:</span>
             <div class="pill-group" id="numGenderPills">
-              <button class="pill active" data-gender="feminine">Feminine</button>
-              <button class="pill" data-gender="masculine">Masculine</button>
+              <button class="pill active" data-gender="feminine" data-i18n="flashcards.mode.gender_feminine">Feminine</button>
+              <button class="pill" data-gender="masculine" data-i18n="flashcards.mode.gender_masculine">Masculine</button>
             </div>
           </div>
           <div class="row">
-            <span class="label" style="flex-shrink:0;margin-right:8px;">Front:</span>
+            <span class="label" style="flex-shrink:0;margin-inline-end:8px;" data-i18n="flashcards.mode.front_label">Front:</span>
             <div class="pill-group" id="numShowPills">
-              <button class="pill active" data-nshow="number">Show Number</button>
-              <button class="pill" data-nshow="words">Show Words</button>
+              <button class="pill active" data-nshow="number" data-i18n="flashcards.mode.show_number">Show Number</button>
+              <button class="pill" data-nshow="words" data-i18n="flashcards.mode.show_words">Show Words</button>
             </div>
           </div>
           <div class="row" style="margin-top:8px;">
             <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;cursor:pointer;">
               <input type="checkbox" id="numTranslitToggle" style="accent-color:var(--gold);width:13px;height:13px;">
-              Show transliteration
+              <span data-i18n="flashcards.mode.show_transliteration">Show transliteration</span>
             </label>
           </div>
         </div>
         <div id="colorOpts" class="hide">
           <div style="margin-bottom:8px;">
             <div style="display:flex;gap:5px;margin-bottom:6px;">
-              <button class="btn-xs" id="colorSelectNone">None</button>
-              <button class="btn-xs" id="colorSelectMain">Main Colors</button>
-              <button class="btn-xs" id="colorSelectAll">All</button>
+              <button class="btn-xs" id="colorSelectNone" data-i18n="flashcards.mode.select_none">None</button>
+              <button class="btn-xs" id="colorSelectMain" data-i18n="flashcards.mode.select_main_colors">Main Colors</button>
+              <button class="btn-xs" id="colorSelectAll" data-i18n="flashcards.mode.select_all">All</button>
             </div>
             <div id="colorTileGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;"></div>
           </div>
           <div class="row" style="margin-bottom:8px;">
-            <span class="label" style="flex-shrink:0;margin-right:8px;">Gender:</span>
+            <span class="label" style="flex-shrink:0;margin-inline-end:8px;" data-i18n="flashcards.mode.gender_label">Gender:</span>
             <div class="pill-group" id="colorGenderPills">
-              <button class="pill active" data-cgender="masculine">Masculine</button>
-              <button class="pill" data-cgender="feminine">Feminine</button>
+              <button class="pill active" data-cgender="masculine" data-i18n="flashcards.mode.gender_masculine">Masculine</button>
+              <button class="pill" data-cgender="feminine" data-i18n="flashcards.mode.gender_feminine">Feminine</button>
             </div>
           </div>
           <div class="row" style="margin-bottom:8px;">
-            <span class="label" style="flex-shrink:0;margin-right:8px;">Display:</span>
+            <span class="label" style="flex-shrink:0;margin-inline-end:8px;" data-i18n="flashcards.mode.color_display_label">Display:</span>
             <div class="pill-group" id="colorDisplayPills">
-              <button class="pill" data-cdisplay="color">Color</button>
-              <button class="pill active" data-cdisplay="color+name">Color + Name</button>
-              <button class="pill" data-cdisplay="name">Name</button>
+              <button class="pill" data-cdisplay="color" data-i18n="flashcards.mode.color_display_color">Color</button>
+              <button class="pill active" data-cdisplay="color+name" data-i18n="flashcards.mode.color_display_colorname">Color + Name</button>
+              <button class="pill" data-cdisplay="name" data-i18n="flashcards.mode.color_display_name">Name</button>
             </div>
           </div>
           <div class="row">
-            <span class="label" style="flex-shrink:0;margin-right:8px;">Front:</span>
+            <span class="label" style="flex-shrink:0;margin-inline-end:8px;" data-i18n="flashcards.mode.front_label">Front:</span>
             <div class="pill-group" id="colorFrontPills">
-              <button class="pill active" data-cfront="color">Color</button>
-              <button class="pill" data-cfront="hebrew">Hebrew Word</button>
+              <button class="pill active" data-cfront="color" data-i18n="flashcards.mode.color_front_color">Color</button>
+              <button class="pill" data-cfront="hebrew" data-i18n="flashcards.mode.color_front_hebrew">Hebrew Word</button>
             </div>
           </div>
           <div class="row" style="margin-top:8px;">
             <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;cursor:pointer;">
               <input type="checkbox" id="colorTranslitToggle" style="accent-color:var(--gold);width:13px;height:13px;">
-              Show transliteration
+              <span data-i18n="flashcards.mode.show_transliteration">Show transliteration</span>
             </label>
           </div>
         </div>
         <div id="emojiOpts" class="hide">
           <div style="margin-bottom:8px;">
             <div style="display:flex;gap:5px;margin-bottom:6px;">
-              <button class="btn-xs" id="emojiSelectNone">None</button>
-              <button class="btn-xs" id="emojiSelectAll">All</button>
+              <button class="btn-xs" id="emojiSelectNone" data-i18n="flashcards.mode.select_none">None</button>
+              <button class="btn-xs" id="emojiSelectAll" data-i18n="flashcards.mode.select_all">All</button>
             </div>
             <div id="emojiCatTree" style="font-size:0.78rem;"></div>
           </div>
           <div class="row" style="margin-bottom:8px;">
-            <span class="label" style="flex-shrink:0;margin-right:8px;">Gender:</span>
+            <span class="label" style="flex-shrink:0;margin-inline-end:8px;" data-i18n="flashcards.mode.gender_label">Gender:</span>
             <div id="emojiGenderPills" style="display:flex;flex:1;border:1px solid var(--border);border-radius:6px;overflow:hidden;">
-              <button class="emoji-gender-btn" data-egender="masc">♂ Masc</button>
-              <button class="emoji-gender-btn" data-egender="fem">♀ Fem</button>
-              <button class="emoji-gender-btn active has-tip" data-egender="both" data-tip="For emojis with both forms (e.g. cat → חָתוּל / חֲתוּלָה), each form appears as its own card.">Show M/F Form</button>
+              <button class="emoji-gender-btn" data-egender="masc" data-i18n="flashcards.mode.emoji_gender_masc">♂ Masc</button>
+              <button class="emoji-gender-btn" data-egender="fem" data-i18n="flashcards.mode.emoji_gender_fem">♀ Fem</button>
+              <button class="emoji-gender-btn active has-tip" data-egender="both" data-tip="For emojis with both forms (e.g. cat → חָתוּל / חֲתוּלָה), each form appears as its own card." data-i18n-tip="flashcards.mode.emoji_gender_both_tip" data-i18n="flashcards.mode.emoji_gender_both">Show M/F Form</button>
             </div>
           </div>
           <div class="row" style="margin-bottom:8px;">
-            <span class="label" style="flex-shrink:0;margin-right:8px;">Front:</span>
+            <span class="label" style="flex-shrink:0;margin-inline-end:8px;" data-i18n="flashcards.mode.front_label">Front:</span>
             <div class="pill-group" id="emojiFrontPills">
-              <button class="pill active" data-efront="emoji">Emoji</button>
-              <button class="pill" data-efront="hebrew">Hebrew Word</button>
+              <button class="pill active" data-efront="emoji" data-i18n="flashcards.mode.emoji_front_emoji">Emoji</button>
+              <button class="pill" data-efront="hebrew" data-i18n="flashcards.mode.emoji_front_hebrew">Hebrew Word</button>
             </div>
           </div>
           <div class="row" style="margin-top:8px;">
             <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;cursor:pointer;">
               <input type="checkbox" id="emojiTranslitToggle" checked style="accent-color:var(--gold);width:13px;height:13px;">
-              Show transliteration
+              <span data-i18n="flashcards.mode.show_transliteration">Show transliteration</span>
             </label>
           </div>
           <div class="row" style="margin-top:6px;">
             <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;cursor:pointer;">
               <input type="checkbox" id="emojiGenderLabelToggle" checked style="accent-color:var(--gold);width:13px;height:13px;">
-              Show gender (♂/♀)
+              <span data-i18n="flashcards.mode.emoji_show_gender">Show gender (♂/♀)</span>
             </label>
           </div>
-          <div class="row" id="emojiGenderSideRow" style="margin-top:4px;margin-left:22px;">
+          <div class="row" id="emojiGenderSideRow" style="margin-top:4px;margin-inline-start:22px;">
             <div class="pill-group" id="emojiGenderSidePills">
-              <button class="pill" data-eside="emoji">Emoji side</button>
-              <button class="pill" data-eside="hebrew">Hebrew side</button>
-              <button class="pill active" data-eside="both">Both</button>
+              <button class="pill" data-eside="emoji" data-i18n="flashcards.mode.emoji_side_emoji">Emoji side</button>
+              <button class="pill" data-eside="hebrew" data-i18n="flashcards.mode.emoji_side_hebrew">Hebrew side</button>
+              <button class="pill active" data-eside="both" data-i18n="flashcards.mode.emoji_side_both">Both</button>
             </div>
           </div>
         </div>
         <div id="wordsOpts" class="hide">
           <div class="row" style="margin-bottom:8px;">
-            <span class="label" style="flex-shrink:0;margin-right:8px;">Source:</span>
+            <span class="label" style="flex-shrink:0;margin-inline-end:8px;" data-i18n="flashcards.mode.words_source_label">Source:</span>
             <div class="pill-group" id="wordsSourcePills">
-              <button class="pill active" data-wsource="mylists">My Word Lists</button>
-              <button class="pill" data-wsource="alldict">All Dictionary</button>
+              <button class="pill active" data-wsource="mylists" data-i18n="flashcards.mode.words_source_mylists">My Word Lists</button>
+              <button class="pill" data-wsource="alldict" data-i18n="flashcards.mode.words_source_alldict">All Dictionary</button>
             </div>
           </div>
           <div id="wordsMyListsOpts">
             <div id="wordsListPicker" style="font-size:0.82rem;margin-bottom:8px;"></div>
-            <div id="wordsEmptyState" class="hide" style="font-size:0.82rem;color:var(--muted);background:var(--white);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:8px;line-height:1.5;">
+            <div id="wordsEmptyState" class="hide" data-i18n-html="flashcards.mode.words_empty_state" style="font-size:0.82rem;color:var(--muted);background:var(--white);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:8px;line-height:1.5;">
               No word lists yet. <a href="hebrew_dictionary.html">Create word lists in the Dictionary</a>, then come back to drill them here.
             </div>
           </div>
           <div id="wordsAllDictOpts" class="hide">
             <div class="row" style="gap:8px;align-items:center;margin-bottom:8px;">
-              <span class="label" style="flex-shrink:0;">Word length:</span>
+              <span class="label" style="flex-shrink:0;" data-i18n="flashcards.mode.words_length_label">Word length:</span>
               <input type="number" id="wordsMinInput" min="1" max="20" value="1"
                      style="width:60px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-size:0.85rem;font-family:inherit;">
               <span style="color:var(--muted);">–</span>
               <input type="number" id="wordsMaxInput" min="1" max="20" value="20"
                      style="width:60px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-size:0.85rem;font-family:inherit;">
-              <span style="color:var(--muted);font-size:0.78rem;">letters</span>
+              <span style="color:var(--muted);font-size:0.78rem;" data-i18n="flashcards.mode.words_length_unit">letters</span>
             </div>
           </div>
           <div id="wordsCount" style="font-size:0.78rem;color:var(--muted);margin-bottom:8px;"></div>
           <div class="row" style="margin-bottom:8px;">
-            <span class="label" style="flex-shrink:0;margin-right:8px;">Front:</span>
+            <span class="label" style="flex-shrink:0;margin-inline-end:8px;" data-i18n="flashcards.mode.front_label">Front:</span>
             <div class="pill-group" id="wordsFrontPills">
-              <button class="pill active" data-wfront="hebrew">Hebrew</button>
-              <button class="pill" data-wfront="english">English</button>
+              <button class="pill active" data-wfront="hebrew" data-i18n="flashcards.mode.words_front_hebrew">Hebrew</button>
+              <button class="pill" data-wfront="english" data-i18n="flashcards.mode.words_front_english">English</button>
             </div>
           </div>
           <div class="row" style="margin-top:8px;">
             <label style="display:flex;align-items:center;gap:6px;font-size:0.82rem;cursor:pointer;">
               <input type="checkbox" id="wordsTranslitToggle" style="accent-color:var(--gold);width:13px;height:13px;">
-              Show transliteration
+              <span data-i18n="flashcards.mode.show_transliteration">Show transliteration</span>
             </label>
           </div>
         </div>
@@ -1412,7 +1447,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
   <!-- CARD COUNT -->
   <div class="panel" id="panelCount">
-    <h3 class="panel-title">Card Count</h3>
+    <h3 class="panel-title" data-i18n="flashcards.count.panel_title">Card Count</h3>
     <div class="panel-body">
       <div class="count-grid" id="countGrid"></div>
     </div>
@@ -1420,16 +1455,16 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
   <!-- LETTERS -->
   <div class="panel" id="panelLetters">
-    <h3 class="panel-title">Letter Select</h3>
+    <h3 class="panel-title" data-i18n="flashcards.letters.panel_title">Letter Select</h3>
     <div class="panel-body">
       <div class="btn-row">
-        <button class="btn sm" id="letterAll">All</button>
-        <button class="btn sm" id="letterNone">None</button>
-        <button class="btn sm" id="letterNoSofit">No Sofit</button>
+        <button class="btn sm" id="letterAll" data-i18n="flashcards.letters.all">All</button>
+        <button class="btn sm" id="letterNone" data-i18n="flashcards.letters.none">None</button>
+        <button class="btn sm" id="letterNoSofit" data-i18n="flashcards.letters.no_sofit">No Sofit</button>
       </div>
       <div class="row" style="margin-top:10px">
         <label class="switch"><input type="checkbox" id="dageshTavToggle"><span class="slider"></span></label>
-        <span class="label has-tip" data-tip="Add the Tav with dagesh ('Tav') versus without ('Sav').">Dagesh Tav / Sav</span>
+        <span class="label has-tip" data-tip="Add the Tav with dagesh ('Tav') versus without ('Sav')." data-i18n-tip="flashcards.letters.dagesh_tav_tip" data-i18n="flashcards.letters.dagesh_tav_label">Dagesh Tav / Sav</span>
       </div>
       <div class="letter-grid" id="letterGrid"></div>
     </div>
@@ -1437,27 +1472,27 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
   <!-- VOWELS -->
   <div class="panel" id="panelVowels">
-    <h3 class="panel-title">Vowel Select</h3>
+    <h3 class="panel-title" data-i18n="flashcards.vowels.panel_title">Vowel Select</h3>
     <div class="panel-body">
       <div class="btn-row">
-        <button class="btn sm" id="vowelAll">All</button>
-        <button class="btn sm" id="vowelMain">Main</button>
-        <button class="btn sm" id="vowelNone">None</button>
+        <button class="btn sm" id="vowelAll" data-i18n="flashcards.vowels.all">All</button>
+        <button class="btn sm" id="vowelMain" data-i18n="flashcards.vowels.main">Main</button>
+        <button class="btn sm" id="vowelNone" data-i18n="flashcards.vowels.none">None</button>
       </div>
       <div id="vowelHost"></div>
       <div class="row" id="vavRow" style="display:none">
         <label class="switch"><input type="checkbox" id="vavAsLetterToggle" checked><span class="slider"></span></label>
-        <span class="label has-tip" data-tip="When using cholam-vav (וֹ) or shuruk (וּ), treat the vav as the letter itself rather than a separate consonant.">Count <span style="font-family:var(--heb-font);direction:rtl;">וֹ/וּ</span> as a letter</span>
+        <span class="label has-tip" data-tip="When using cholam-vav (וֹ) or shuruk (וּ), treat the vav as the letter itself rather than a separate consonant." data-i18n-tip="flashcards.vowels.count_vav_tip" data-i18n-html="flashcards.vowels.count_vav_label">Count <span style="font-family:var(--heb-font);direction:rtl;" lang="he" dir="rtl">וֹ/וּ</span> as a letter</span>
       </div>
       <!-- Vowel Position (hidden in 1-letter mode) -->
       <div class="row" id="vowelPosRow" style="display:none;margin-top:8px;align-items:center;gap:8px;">
-        <span class="label" style="flex-shrink:0;">Vowel on letter:</span>
+        <span class="label" style="flex-shrink:0;" data-i18n="flashcards.vowels.vowel_on_letter_label">Vowel on letter:</span>
         <div class="pill-group" id="vowelPosPills"></div>
       </div>
       <!-- Vowel Lock -->
       <div class="row" style="margin-top:8px;">
         <label class="switch"><input type="checkbox" id="vowelLockToggle"><span class="slider"></span></label>
-        <span class="label">Vowel Lock</span>
+        <span class="label" data-i18n="flashcards.vowels.vowel_lock_label">Vowel Lock</span>
       </div>
       <div id="vowelLockSection" class="hide">
         <!-- per-position rows built by initVowelLockPositionRows() -->
@@ -1467,20 +1502,20 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
   <!-- TIMER -->
   <div class="panel collapsed" id="panelTimer">
-    <h3 class="panel-title">Timer</h3>
+    <h3 class="panel-title" data-i18n="flashcards.timer.panel_title">Timer</h3>
     <div class="panel-body">
       <div class="pill-group" id="timerModePills" style="margin-bottom:8px;flex-wrap:wrap;">
-        <button class="pill active" data-tmode="off">No Timer</button>
-        <button class="pill" data-tmode="track">Record Time</button>
-        <button class="pill" data-tmode="limit">Time Limit</button>
+        <button class="pill active" data-tmode="off" data-i18n="flashcards.timer.mode_off">No Timer</button>
+        <button class="pill" data-tmode="track" data-i18n="flashcards.timer.mode_track">Record Time</button>
+        <button class="pill" data-tmode="limit" data-i18n="flashcards.timer.mode_limit">Time Limit</button>
       </div>
       <div id="timerOpts" class="hide">
         <div class="row" style="margin-bottom:6px;">
           <label class="switch"><input type="checkbox" id="timerShowToggle" checked><span class="slider"></span></label>
-          <span class="label" id="timerShowLabel">Show timer on screen</span>
+          <span class="label" id="timerShowLabel" data-i18n="flashcards.timer.show_timer">Show timer on screen</span>
         </div>
         <div id="timerLimitRow" class="hide">
-          <div class="sub" style="margin-bottom:4px;">Time limit:</div>
+          <div class="sub" style="margin-bottom:4px;" data-i18n="flashcards.timer.time_limit_label">Time limit:</div>
           <div class="pill-group" id="timeLimitPills" style="flex-wrap:wrap;gap:4px;">
             <button class="pill" data-secs="30">0:30</button>
             <button class="pill active" data-secs="60">1:00</button>
@@ -1501,35 +1536,35 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <div class="panel-body">
 
       <!-- Presets -->
-      <div class="label adv-subhead">Presets</div>
+      <div class="label adv-subhead" data-i18n="flashcards.teachertools.presets_head">Presets</div>
       <div class="adv-subbody">
         <div class="preset-row">
-          <input type="text" class="preset-input" id="presetName" placeholder="Preset name…" maxlength="40" />
-          <button class="btn primary sm" id="savePresetBtn" aria-disabled="true">Save</button>
+          <input type="text" class="preset-input" id="presetName" placeholder="Preset name…" data-i18n-placeholder="flashcards.teachertools.preset_name_placeholder" maxlength="40" />
+          <button class="btn primary sm" id="savePresetBtn" aria-disabled="true" data-i18n="flashcards.teachertools.save_button">Save</button>
         </div>
         <p class="sub" id="presetNameNote" role="status" aria-live="polite" style="display:none;"></p>
         <ul class="preset-list" id="presetList"></ul>
-        <p class="sub" id="presetEmpty">No presets yet — configure your settings, then save them here.</p>
+        <p class="sub" id="presetEmpty" data-i18n="flashcards.teachertools.presets_empty">No presets yet — configure your settings, then save them here.</p>
       </div>
 
       <hr class="soft" />
 
       <!-- Teacher Share Code -->
-      <div class="label adv-subhead">Teacher Share Code</div>
+      <div class="label adv-subhead" data-i18n="flashcards.teachertools.share_head">Teacher Share Code</div>
       <div class="adv-subbody">
-        <p class="sub" style="margin-top:0;">Generate a code that captures every current setting. Share it with students — when they paste it and tap <b>Load</b>, the deck opens with your exact setup.</p>
+        <p class="sub" style="margin-top:0;" data-i18n="flashcards.teachertools.share_intro">Generate a code that captures every current setting. Share it with students — when they paste it and tap <b>Load</b>, the deck opens with your exact setup.</p>
         <div class="btn-row" style="margin-bottom:8px;">
-          <button class="btn primary sm" id="generateShareBtn">Generate Share Code</button>
-          <button class="btn sm ghost" id="copyShareBtn">📋 Copy Code</button>
+          <button class="btn primary sm" id="generateShareBtn" data-i18n="flashcards.teachertools.generate_share">Generate Share Code</button>
+          <button class="btn sm ghost" id="copyShareBtn" data-i18n="flashcards.teachertools.copy_code">📋 Copy Code</button>
         </div>
-        <textarea class="share-out" id="shareCodeOutput" readonly placeholder="Tap “Generate Share Code” to create a code…"></textarea>
+        <textarea class="share-out" id="shareCodeOutput" readonly placeholder="Tap “Generate Share Code” to create a code…" data-i18n-placeholder="flashcards.teachertools.share_output_placeholder"></textarea>
 
         <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;">
 
-        <div class="label" style="font-weight:600;margin-bottom:4px;">Got a code from your teacher?</div>
+        <div class="label" style="font-weight:600;margin-bottom:4px;" data-i18n="flashcards.teachertools.got_code">Got a code from your teacher?</div>
         <div class="preset-row">
-          <input type="text" class="preset-input" id="shareCodeInput" placeholder="Paste share code here…" />
-          <button class="btn gold sm" id="applyShareBtn">Load</button>
+          <input type="text" class="preset-input" id="shareCodeInput" placeholder="Paste share code here…" data-i18n-placeholder="flashcards.teachertools.share_input_placeholder" />
+          <button class="btn gold sm" id="applyShareBtn" data-i18n="flashcards.teachertools.load_button">Load</button>
         </div>
         <p class="share-err" id="shareCodeError"></p>
       </div>
@@ -1537,29 +1572,29 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <hr class="soft" />
 
       <!-- Profiles & Results -->
-      <div class="label adv-subhead">Profiles &amp; Results</div>
+      <div class="label adv-subhead" data-i18n="flashcards.teachertools.profiles_head">Profiles &amp; Results</div>
       <div class="adv-subbody">
-        <p class="sub" style="margin-top:0;">Save drill results to a named profile to track progress over time. After a drill, tap <b>Save Results</b> on the results screen.</p>
+        <p class="sub" style="margin-top:0;" data-i18n="flashcards.teachertools.profiles_intro">Save drill results to a named profile to track progress over time. After a drill, tap <b>Save Results</b> on the results screen.</p>
 
         <div class="preset-row" style="margin-bottom:8px;">
           <select id="activeProfileSelect" class="preset-input" style="flex:1;"></select>
-          <button class="btn sm" id="newProfileBtn" title="Create a new profile">＋ New</button>
+          <button class="btn sm" id="newProfileBtn" title="Create a new profile" data-i18n-title="flashcards.teachertools.new_profile_button_title" data-i18n="flashcards.teachertools.new_profile_button">＋ New</button>
         </div>
         <div class="btn-row" style="margin-bottom:8px;">
-          <button class="btn sm" id="renameProfileBtn">Rename</button>
-          <button class="btn sm danger" id="deleteProfileBtn">Delete</button>
+          <button class="btn sm" id="renameProfileBtn" data-i18n="flashcards.teachertools.rename_button">Rename</button>
+          <button class="btn sm danger" id="deleteProfileBtn" data-i18n="flashcards.teachertools.delete_button">Delete</button>
         </div>
 
         <ul class="preset-list" id="profileList"></ul>
-        <p class="sub" id="profileEmpty">No profiles yet — finish a drill and tap <b>Save Results</b> to create one.</p>
+        <p class="sub" id="profileEmpty" data-i18n="flashcards.teachertools.profiles_empty">No profiles yet — finish a drill and tap <b>Save Results</b> to create one.</p>
 
         <div id="profileDetail" style="display:none;">
-          <div class="label" style="font-weight:600;margin:12px 0 4px;">Results History — <span id="profileDetailName"></span></div>
+          <div class="label" id="profileDetailHeading" style="font-weight:600;margin:12px 0 4px;">Results History — <span id="profileDetailName"></span></div>
           <ul class="results-list" id="profileHistory" style="margin-top:0;"></ul>
-          <p class="sub" id="profileHistoryEmpty" style="display:none;">No saved results yet for this profile.</p>
+          <p class="sub" id="profileHistoryEmpty" style="display:none;" data-i18n="flashcards.teachertools.history_empty">No saved results yet for this profile.</p>
           <div class="btn-row" style="margin-top:8px;">
-            <button class="btn gold" id="weaknessesBtn" style="flex:1;">🎯 Practice My Weaknesses</button>
-            <button class="btn" id="viewWeaknessesBtn" style="flex:1;">📊 View Weaknesses</button>
+            <button class="btn gold" id="weaknessesBtn" style="flex:1;" data-i18n="flashcards.teachertools.practice_weaknesses">🎯 Practice My Weaknesses</button>
+            <button class="btn" id="viewWeaknessesBtn" style="flex:1;" data-i18n="flashcards.teachertools.view_weaknesses">📊 View Weaknesses</button>
           </div>
         </div>
       </div>
@@ -1568,13 +1603,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   </div>
 
   <div class="panel collapsed" id="panelAdvanced">
-    <h3 class="panel-title">Advanced Settings</h3>
+    <h3 class="panel-title" data-i18n="flashcards.advanced.panel_title">Advanced Settings</h3>
     <div class="panel-body">
 
       <!-- Hide home arrow -->
       <div class="row">
         <label class="switch"><input type="checkbox" id="hideHomeToggle"><span class="slider"></span></label>
-        <span class="label">Hide Home Arrow</span>
+        <span class="label" data-i18n="flashcards.advanced.hide_home">Hide Home Arrow</span>
       </div>
 
       <hr class="soft" />
@@ -1582,7 +1617,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <!-- Show skipped cards again -->
       <div class="row">
         <label class="switch"><input type="checkbox" id="skipReshowToggle" checked><span class="slider"></span></label>
-        <span class="label">Show skipped cards again</span>
+        <span class="label" data-i18n="flashcards.advanced.show_skipped">Show skipped cards again</span>
       </div>
 
       <hr class="soft" />
@@ -1590,19 +1625,19 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <!-- Color coding -->
       <div class="row">
         <label class="switch"><input type="checkbox" id="colorCodeToggle"><span class="slider"></span></label>
-        <span class="label">Nikkud Color Coding</span>
+        <span class="label" data-i18n="flashcards.advanced.nikkud_color_coding">Nikkud Color Coding</span>
       </div>
       <div id="colorCodeOpts" class="hide">
         <div class="pill-group" id="colorModePills" style="margin: 6px 0">
-          <button class="pill active" data-cmode="letter">Letter</button>
-          <button class="pill" data-cmode="highlight">Highlight</button>
-          <button class="pill" data-cmode="underline">Underline</button>
+          <button class="pill active" data-cmode="letter" data-i18n="flashcards.advanced.color_mode_letter">Letter</button>
+          <button class="pill" data-cmode="highlight" data-i18n="flashcards.advanced.color_mode_highlight">Highlight</button>
+          <button class="pill" data-cmode="underline" data-i18n="flashcards.advanced.color_mode_underline">Underline</button>
         </div>
         <div id="colorPickers"></div>
         <div class="pill-group" id="schemePills" style="margin-top:6px;">
-          <button class="pill active" id="vowelSchemeDefault" onclick="setVowelScheme('default')">Default</button>
-          <button class="pill" id="vowelSchemeTalAm" onclick="setVowelScheme('talam')">TaL AM</button>
-          <button class="pill" id="colorReset">Reset</button>
+          <button class="pill active" id="vowelSchemeDefault" onclick="setVowelScheme('default')" data-i18n="flashcards.advanced.scheme_default">Default</button>
+          <button class="pill" id="vowelSchemeTalAm" onclick="setVowelScheme('talam')" data-i18n="flashcards.advanced.scheme_talam">TaL AM</button>
+          <button class="pill" id="colorReset" data-i18n="flashcards.advanced.scheme_reset">Reset</button>
         </div>
       </div>
 
@@ -1611,15 +1646,15 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <!-- Audio -->
       <div class="row">
         <label class="switch"><input type="checkbox" id="audioToggle"><span class="slider"></span></label>
-        <span class="label">Audio <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
+        <span class="label"><span data-i18n="flashcards.advanced.audio_label">Audio</span> <span data-i18n="flashcards.badge.beta" style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
       </div>
       <div class="row" id="ttsRateRow" style="flex-direction:column;align-items:stretch;gap:4px;margin-top:6px;">
-        <span class="label" style="font-size:0.75rem;">Hebrew TTS Reading Speed <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
+        <span class="label" style="font-size:0.75rem;"><span data-i18n="flashcards.advanced.tts_speed_label">Hebrew TTS Reading Speed</span> <span data-i18n="flashcards.badge.beta" style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
         <div style="display:flex;align-items:center;gap:6px;">
-          <span style="font-size:0.65rem;color:var(--muted);">Slow</span>
+          <span style="font-size:0.65rem;color:var(--muted);" data-i18n="flashcards.advanced.tts_slow">Slow</span>
           <input type="range" id="ttsRateSlider" min="0.5" max="1.5" step="0.05" value="0.75" style="flex:1;accent-color:var(--gold);"
                  oninput="document.getElementById('ttsRateVal').textContent = parseFloat(this.value).toFixed(2) + '×'">
-          <span id="ttsRateVal" style="font-size:0.72rem;color:var(--text);min-width:36px;text-align:right;">0.75×</span>
+          <span id="ttsRateVal" class="bidi-isolate" style="font-size:0.72rem;color:var(--text);min-width:36px;text-align:end;">0.75×</span>
           <button class="btn sm ghost" style="padding:2px 6px;font-size:0.65rem;" onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';">↺</button>
         </div>
       </div>
@@ -1627,22 +1662,22 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <hr class="soft" />
 
       <!-- Transliteration -->
-      <div class="label adv-subhead">Transliteration</div>
+      <div class="label adv-subhead" data-i18n="flashcards.advanced.transliteration_head">Transliteration</div>
       <div class="adv-subbody">
         <select id="translitStyleSelect" onchange="onTranslitStyleChange(this.value)"
                 style="width:100%;font-size:0.85rem;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;">
-          <option value="default">Default (built-in)</option>
-          <option value="sbl">SBL Academic</option>
-          <option value="brill">Brill Academic</option>
-          <option value="modernIsraeli">Modern Israeli</option>
-          <option value="ashkenazi">Ashkenazi</option>
-          <option value="simpleStressed">Simple Stressed</option>
+          <option value="default" data-i18n="flashcards.advanced.translit_default">Default (built-in)</option>
+          <option value="sbl" data-i18n="flashcards.advanced.translit_sbl">SBL Academic</option>
+          <option value="brill" data-i18n="flashcards.advanced.translit_brill">Brill Academic</option>
+          <option value="modernIsraeli" data-i18n="flashcards.advanced.translit_modern">Modern Israeli</option>
+          <option value="ashkenazi" data-i18n="flashcards.advanced.translit_ashkenazi">Ashkenazi</option>
+          <option value="simpleStressed" data-i18n="flashcards.advanced.translit_simple">Simple Stressed</option>
         </select>
-        <div style="font-size:0.68rem;color:var(--muted);text-align:center;line-height:1.4;margin-top:5px;">
+        <div style="font-size:0.68rem;color:var(--muted);text-align:center;line-height:1.4;margin-top:5px;" data-i18n="flashcards.advanced.translit_help">
           Sets the romanization style. To show or hide transliteration on cards, use each mode's &ldquo;Show transliteration&rdquo; toggle in the Mode panel above.
         </div>
         <div id="translitLoadStatus" style="font-size:0.7rem;color:var(--muted);min-height:1em;text-align:center;margin-top:4px;"></div>
-        <div style="font-size:0.65rem;color:var(--muted);text-align:center;line-height:1.4;margin-top:4px;">
+        <div style="font-size:0.65rem;color:var(--muted);text-align:center;line-height:1.4;margin-top:4px;" data-i18n-html="flashcards.advanced.translit_credit">
           Powered by <a href="https://github.com/charlesLoder/hebrew-transliteration" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">hebrew-transliteration</a> by Charles Loder
         </div>
       </div>
@@ -1650,23 +1685,23 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <hr class="soft" />
 
       <!-- Font selector -->
-      <div class="label adv-subhead">Hebrew Font</div>
+      <div class="label adv-subhead" data-i18n="flashcards.advanced.hebrew_font_head">Hebrew Font</div>
       <div class="adv-subbody">
         <div class="font-grid" id="fontGrid"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><span data-i18n="shared.fonts.upload_label">⬆ Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
       </div>
 
       <!-- English / Latin font selector — styles the English card faces (Numbers/Colors/Words + romanization) -->
-      <div class="label adv-subhead">English / Latin Font</div>
+      <div class="label adv-subhead" data-i18n="flashcards.advanced.english_font_head">English / Latin Font</div>
       <div class="adv-subbody">
         <div class="font-grid" id="engFontGrid"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadEngFontPick(this)"></label>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><span data-i18n="shared.fonts.upload_label">⬆ Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadEngFontPick(this)"></label>
       </div>
 
       <hr class="soft" />
 
       <!-- Backup -->
-      <div class="label adv-subhead">Backup Presets</div>
+      <div class="label adv-subhead" data-i18n="flashcards.advanced.backup_head">Backup Presets</div>
       <style>
         .ivrit-mode-toggle{display:flex;border:1px solid var(--border,#ccc);border-radius:6px;overflow:hidden;margin-bottom:10px;}
         .ivrit-mode-btn{flex:1;padding:6px 4px;border:none;background:var(--white,#fff);color:var(--text,#222);font-family:inherit;font-size:0.74rem;cursor:pointer;}
@@ -1681,34 +1716,34 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       </style>
       <div class="adv-subbody">
       <div class="ivrit-mode-toggle">
-        <button type="button" id="ivritModeAuto" class="ivrit-mode-btn active" onclick="setIvritMode('auto')">Automatic Input</button>
-        <button type="button" id="ivritModeManual" class="ivrit-mode-btn" onclick="setIvritMode('manual')">Manual Input</button>
+        <button type="button" id="ivritModeAuto" class="ivrit-mode-btn active" onclick="setIvritMode('auto')" data-i18n="shared.ivrit.mode_auto">Automatic Input</button>
+        <button type="button" id="ivritModeManual" class="ivrit-mode-btn" onclick="setIvritMode('manual')" data-i18n="shared.ivrit.mode_manual">Manual Input</button>
       </div>
       <div id="ivritAuto">
-        <div class="sub" style="margin-bottom:8px;">Save your data to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it. Use the toggle below to choose what's included.</div>
-        <button class="btn sm" type="button" onclick="flashBackupSave()" style="width:100%;margin-bottom:10px;">⬇ Save to .ivrit file</button>
+        <div class="sub" style="margin-bottom:8px;" data-i18n="flashcards.advanced.backup_intro">Save your data to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it. Use the toggle below to choose what's included.</div>
+        <button class="btn sm" type="button" onclick="flashBackupSave()" style="width:100%;margin-bottom:10px;" data-i18n="shared.ivrit.save_button">⬇ Save to .ivrit file</button>
         <div id="ivritDrop" class="ivrit-drop">
-          <div style="font-size:0.85rem;">Drop a <b>.ivrit</b> file here</div>
-          <div class="sub" style="margin:4px 0;">— or —</div>
-          <button class="btn sm" type="button" onclick="document.getElementById('ivritFileInput').click()">Browse…</button>
+          <div style="font-size:0.85rem;" data-i18n="shared.ivrit.drop_hint">Drop a <b>.ivrit</b> file here</div>
+          <div class="sub" style="margin:4px 0;" data-i18n="shared.ivrit.or_divider">— or —</div>
+          <button class="btn sm" type="button" onclick="document.getElementById('ivritFileInput').click()" data-i18n="shared.ivrit.browse_button">Browse…</button>
           <input type="file" id="ivritFileInput" accept=".ivrit,application/json,text/plain" style="display:none;">
         </div>
         <div id="ivritStatus" role="status" class="sub" style="margin-top:8px;min-height:1em;text-align:center;"></div>
       </div>
       <div id="ivritManual" style="display:none;">
-        <textarea class="tx-area" id="backupArea" placeholder="Exported preset JSON appears here…"></textarea>
+        <textarea class="tx-area" id="backupArea" placeholder="Exported preset JSON appears here…" data-i18n-placeholder="flashcards.advanced.backup_manual_placeholder"></textarea>
         <div class="btn-row" style="margin-top:6px">
-          <button class="btn sm" id="exportBtn">Export</button>
-          <button class="btn sm" id="importBtn">Import</button>
-          <button class="btn sm ghost" id="copyBtn">Copy</button>
+          <button class="btn sm" id="exportBtn" data-i18n="shared.ivrit.manual_export">Export</button>
+          <button class="btn sm" id="importBtn" data-i18n="shared.ivrit.manual_import">Import</button>
+          <button class="btn sm ghost" id="copyBtn" data-i18n="shared.ivrit.manual_copy">Copy</button>
         </div>
       </div>
       <!-- What to include in the .ivrit backup -->
-      <div class="sub" style="margin:12px 0 4px;font-weight:600;">Include in backup:</div>
+      <div class="sub" style="margin:12px 0 4px;font-weight:600;" data-i18n="flashcards.advanced.backup_include_label">Include in backup:</div>
       <div class="ivrit-mode-toggle" style="margin-bottom:0;">
-        <button type="button" id="backupScopePresets" class="ivrit-mode-btn" onclick="setBackupScope('presets')">Presets</button>
-        <button type="button" id="backupScopeProfiles" class="ivrit-mode-btn" onclick="setBackupScope('profiles')">Profiles</button>
-        <button type="button" id="backupScopeBoth" class="ivrit-mode-btn active" onclick="setBackupScope('both')">Both</button>
+        <button type="button" id="backupScopePresets" class="ivrit-mode-btn" onclick="setBackupScope('presets')" data-i18n="flashcards.advanced.backup_scope_presets">Presets</button>
+        <button type="button" id="backupScopeProfiles" class="ivrit-mode-btn" onclick="setBackupScope('profiles')" data-i18n="flashcards.advanced.backup_scope_profiles">Profiles</button>
+        <button type="button" id="backupScopeBoth" class="ivrit-mode-btn active" onclick="setBackupScope('both')" data-i18n="flashcards.advanced.backup_scope_both">Both</button>
       </div>
       </div>
     </div>
@@ -1716,7 +1751,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
   <!-- START -->
   <div class="start-cta">
-    <button class="btn gold" id="startBtn">Start Practicing! ✨</button>
+    <button class="btn gold" id="startBtn" data-i18n="flashcards.start.button">Start Practicing! ✨</button>
   </div>
 
 </section>
@@ -1724,28 +1759,28 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 <!-- ============== CARD SCREEN ============== -->
 <section id="screenCard" class="screen">
   <div class="progress"><span id="progressBar" style="width:0%"></span></div>
-  <p class="card-meta" id="cardMeta">Card 1 of 10</p>
-  <p id="skipReshowHeader" class="fc-skip-header" style="display:none;">↻ Skipped Card</p>
-  <p id="timerDisplay" style="display:none;text-align:center;font-size:0.85rem;color:var(--muted);margin:0 0 4px;"></p>
+  <p class="card-meta bidi-isolate" id="cardMeta">Card 1 of 10</p>
+  <p id="skipReshowHeader" class="fc-skip-header" style="display:none;" data-i18n="flashcards.card.skipped_header">↻ Skipped Card</p>
+  <p id="timerDisplay" class="bidi-isolate" style="display:none;text-align:center;font-size:0.85rem;color:var(--muted);margin:0 0 4px;"></p>
 
   <div class="stats-bar" id="statsBar">
-    <div class="stat streak"><div class="stat-value" id="statStreak">🔥 0</div><div class="stat-label">Streak</div></div>
-    <div class="stat"><div class="stat-value" id="statPb">🏆 0</div><div class="stat-label">PB</div></div>
-    <div class="stat"><div class="stat-value" id="statCorrect">0/0</div><div class="stat-label">Correct</div></div>
-    <div class="stat"><div class="stat-value" id="statAcc">0%</div><div class="stat-label">Accuracy</div></div>
+    <div class="stat streak"><div class="stat-value bidi-isolate" id="statStreak">🔥 0</div><div class="stat-label" data-i18n="flashcards.card.stat_streak">Streak</div></div>
+    <div class="stat"><div class="stat-value bidi-isolate" id="statPb">🏆 0</div><div class="stat-label" data-i18n="flashcards.card.stat_pb">PB</div></div>
+    <div class="stat"><div class="stat-value bidi-isolate" id="statCorrect">0/0</div><div class="stat-label" data-i18n="flashcards.card.stat_correct">Correct</div></div>
+    <div class="stat"><div class="stat-value bidi-isolate" id="statAcc">0%</div><div class="stat-label" data-i18n="flashcards.card.stat_accuracy">Accuracy</div></div>
   </div>
 
   <div class="fc-perspective">
-    <div class="fc-card" id="fcCard" tabindex="0" role="button" aria-label="Flash card. Tap or press space to flip.">
+    <div class="fc-card" id="fcCard" tabindex="0" role="button" aria-label="Flash card. Tap or press space to flip." data-i18n-aria-label="flashcards.card.aria_flip">
       <div class="fc-face fc-front">
         <div class="fc-heb" id="fcFrontHeb"></div>
-        <div class="fc-hint">Tap to flip</div>
+        <div class="fc-hint" data-i18n="flashcards.card.tap_to_flip">Tap to flip</div>
         <div class="fc-badge hide" id="fcFrontBadge"></div>
       </div>
       <div class="fc-face fc-back">
         <div class="fc-translit" id="fcBackTr"></div>
-        <button id="fcSpeakBtn" class="btn-xs" style="display:none;margin:6px auto 0;font-size:0.8rem;" onclick="event.stopPropagation();">🔊 Hear</button>
-        <div class="fc-back-q">Did I get it?</div>
+        <button id="fcSpeakBtn" class="btn-xs" style="display:none;margin:6px auto 0;font-size:0.8rem;" onclick="event.stopPropagation();" data-i18n="flashcards.card.hear">🔊 Hear</button>
+        <div class="fc-back-q" data-i18n="flashcards.card.did_i_get_it">Did I get it?</div>
         <div class="fc-badge hide" id="fcBackBadge"></div>
       </div>
     </div>
@@ -1754,49 +1789,49 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <!-- 🎧 Listening view (audio prompt + multiple choice); shown in place of the flip card -->
   <div id="fcListen" style="display:none;">
     <div class="lc-prompt">
-      <button id="lcReplay" class="lc-replay" type="button" aria-label="Play audio">🔊</button>
+      <button id="lcReplay" class="lc-replay" type="button" aria-label="Play audio" data-i18n-aria-label="flashcards.card.aria_play_audio">🔊</button>
       <div id="lcHint" class="lc-hint"></div>
     </div>
-    <div id="lcChoices" class="lc-choices" role="group" aria-label="Answer choices"></div>
+    <div id="lcChoices" class="lc-choices" role="group" aria-label="Answer choices" data-i18n-aria-label="flashcards.card.aria_answer_choices"></div>
   </div>
 
   <div class="fc-mark-row">
-    <button class="fc-mark-no"  id="markNo">✗ No</button>
-    <button class="fc-mark-yes" id="markYes">✓ Yes</button>
+    <button class="fc-mark-no"  id="markNo" data-i18n="flashcards.card.mark_no">✗ No</button>
+    <button class="fc-mark-yes" id="markYes" data-i18n="flashcards.card.mark_yes">✓ Yes</button>
   </div>
 
   <div class="fc-nav">
-    <button class="nav-btn" id="prevBtn">‹ Prev</button>
-    <button class="nav-btn flip" id="flipBtn" title="Flip">↺</button>
-    <button class="nav-btn" id="nextBtn">Next ›</button>
+    <button class="nav-btn" id="prevBtn"><span class="dir-arrow" aria-hidden="true">‹</span> <span data-i18n="flashcards.card.prev">Prev</span></button>
+    <button class="nav-btn flip" id="flipBtn" title="Flip" data-i18n-title="flashcards.card.flip_title">↺</button>
+    <button class="nav-btn" id="nextBtn"><span data-i18n="flashcards.card.next">Next</span> <span class="dir-arrow" aria-hidden="true">›</span></button>
   </div>
 
   <div style="text-align:center; margin-top:18px;">
-    <button class="btn ghost sm" id="endEarlyBtn">End Practice Early</button>
+    <button class="btn ghost sm" id="endEarlyBtn" data-i18n="flashcards.card.end_early">End Practice Early</button>
   </div>
 </section>
 
 <!-- ============== RESULTS SCREEN ============== -->
 <section id="screenResults" class="screen">
   <div class="results-hero">
-    <p class="pct" id="resultsPct">0%</p>
-    <p class="frac" id="resultsFrac">0 / 0 correct</p>
-    <p id="resultsTime" style="display:none;font-size:0.85rem;color:var(--muted);margin:4px 0 0;"></p>
-    <p id="resultsStreak" style="font-size:0.9rem;color:var(--ink-soft);margin:8px 0 0;font-weight:600;"></p>
+    <p class="pct bidi-isolate" id="resultsPct">0%</p>
+    <p class="frac bidi-isolate" id="resultsFrac">0 / 0 correct</p>
+    <p id="resultsTime" class="bidi-isolate" style="display:none;font-size:0.85rem;color:var(--muted);margin:4px 0 0;"></p>
+    <p id="resultsStreak" class="bidi-isolate" style="font-size:0.9rem;color:var(--ink-soft);margin:8px 0 0;font-weight:600;"></p>
   </div>
 
   <div class="panel collapsed" id="panelResults">
-    <h3 class="panel-title">Results</h3>
+    <h3 class="panel-title" data-i18n="flashcards.results.panel_title">Results</h3>
     <div class="panel-body">
       <ul class="results-list" id="resultsList"></ul>
     </div>
   </div>
 
   <div class="results-actions">
-    <button class="btn gold" id="saveResultsBtn">💾 Save Results</button>
-    <button class="btn primary" id="redoBtn">Redo This Card Set</button>
-    <button class="btn gold" id="mistakesBtn">Practice My Mistakes</button>
-    <button class="btn ghost" id="backToSetupBtn">Return to Options</button>
+    <button class="btn gold" id="saveResultsBtn" data-i18n="flashcards.results.save_button">💾 Save Results</button>
+    <button class="btn primary" id="redoBtn" data-i18n="flashcards.results.redo">Redo This Card Set</button>
+    <button class="btn gold" id="mistakesBtn" data-i18n="flashcards.results.practice_mistakes">Practice My Mistakes</button>
+    <button class="btn ghost" id="backToSetupBtn" data-i18n="flashcards.results.return_to_options">Return to Options</button>
   </div>
 </section>
 
@@ -1806,41 +1841,41 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <div style="max-width:1200px;margin:0 auto;padding:12px 16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;align-items:start;">
     <div>
       <details>
-        <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;">Frequently Asked Questions</summary>
+        <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;" data-i18n="flashcards.faq.summary">Frequently Asked Questions</summary>
         <div style="padding:4px 0;">
-          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">How do flash cards help reading?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Hebrew flash cards build automatic letter–vowel recognition, the core skill behind fluent reading. Short drills with nikkud help students decode unfamiliar words faster.</p></details>
-          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Are they free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Yes. Free for non-commercial educational use under CC BY-NC-SA 4.0.</p></details>
-          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Do cards include nikkud?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Yes. Every card displays Hebrew letters with full nikkud, and you can choose which vowels appear.</p></details>
-          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Can I customize letters?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Yes. Pick any subset of Hebrew letters and vowels, and 1, 2, or 3 letters per card.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="flashcards.faq.q_help_reading">How do flash cards help reading?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="flashcards.faq.a_help_reading">Hebrew flash cards build automatic letter–vowel recognition, the core skill behind fluent reading. Short drills with nikkud help students decode unfamiliar words faster.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="flashcards.faq.q_free">Are they free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="flashcards.faq.a_free">Yes. Free for non-commercial educational use under CC BY-NC-SA 4.0.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="flashcards.faq.q_nikkud">Do cards include nikkud?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="flashcards.faq.a_nikkud">Yes. Every card displays Hebrew letters with full nikkud, and you can choose which vowels appear.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="flashcards.faq.q_customize">Can I customize letters?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="flashcards.faq.a_customize">Yes. Pick any subset of Hebrew letters and vowels, and 1, 2, or 3 letters per card.</p></details>
         </div>
       </details>
       <details style="margin-top:6px;">
-        <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;">How To Use</summary>
+        <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;" data-i18n="flashcards.howto.summary">How To Use</summary>
         <ol style="padding:6px 0 4px 20px;margin:0;font-size:0.78rem;line-height:1.55;">
-          <li>Choose 1, 2, or 3 letters per card.</li>
-          <li>Select Hebrew letters and vowels to drill.</li>
-          <li>Set the number of cards in the deck.</li>
-          <li>Click <strong>Start</strong> to begin.</li>
-          <li>Tap a card to reveal it; mark right or wrong.</li>
+          <li data-i18n="flashcards.howto.step1">Choose 1, 2, or 3 letters per card.</li>
+          <li data-i18n="flashcards.howto.step2">Select Hebrew letters and vowels to drill.</li>
+          <li data-i18n="flashcards.howto.step3">Set the number of cards in the deck.</li>
+          <li data-i18n="flashcards.howto.step4">Click <strong>Start</strong> to begin.</li>
+          <li data-i18n="flashcards.howto.step5">Tap a card to reveal it; mark right or wrong.</li>
         </ol>
       </details>
     </div>
     <div style="font-size:0.72rem;line-height:1.5;text-align:center;">
-      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;">About</div>
+      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;" data-i18n="shared.footer.about_header">About</div>
       Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="color:var(--gold);text-decoration:none;font-weight:600;">Harrison Bleiberg</a><br>
       <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" style="color:var(--gold);text-decoration:none;">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
       <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank" style="color:var(--gold);text-decoration:none;">GitHub</a>
     </div>
-    <nav aria-label="Related Hebrew Tools" style="text-align:right;">
-      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;">Related Hebrew Tools</div>
+    <nav aria-label="Related Hebrew Tools" style="text-align:end;">
+      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;" data-i18n="shared.nav.header">Related Hebrew Tools</div>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:2px 14px;">
-        <li><a href="hebrew_blend_generator.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;">printable Hebrew worksheets →</a></li>
-        <li><a href="hebrew_dictionary.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;">Hebrew word lookup →</a></li>
-        <li><a href="classroom_dashboard.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;">Hebrew classroom display →</a></li>
-        <li><a href="torah_trainer.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;">Torah reading practice →</a></li>
-        <li><a href="trope_tutor.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;">learn Torah trope (cantillation) →</a></li>
-        <li><a href="Hebrew_Font_Maker.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;">make your own Hebrew font →</a></li>
-        <li><a href="resources.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;">free Hebrew teaching resources →</a></li>
+        <li><a href="hebrew_blend_generator.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_worksheets">printable Hebrew worksheets →</a></li>
+        <li><a href="hebrew_dictionary.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_dictionary">Hebrew word lookup →</a></li>
+        <li><a href="classroom_dashboard.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_dashboard">Hebrew classroom display →</a></li>
+        <li><a href="torah_trainer.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_torah">Torah reading practice →</a></li>
+        <li><a href="trope_tutor.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_trope">learn Torah trope (cantillation) →</a></li>
+        <li><a href="Hebrew_Font_Maker.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_fontmaker">make your own Hebrew font →</a></li>
+        <li><a href="resources.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_resources">free Hebrew teaching resources →</a></li>
       </ul>
     </nav>
   </div>
@@ -1849,14 +1884,14 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 <!-- Guided "Take a tour" coach-mark (non-modal spotlight; see tourStart) -->
 <div class="tour-spot" id="tourSpot" hidden></div>
 <div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
-  <button class="tour-x" id="tourClose" aria-label="End tour" onclick="tourEnd(false)">✕</button>
+  <button class="tour-x" id="tourClose" aria-label="End tour" data-i18n-aria-label="shared.tour.end" onclick="tourEnd(false)">✕</button>
   <h4 id="tourCardTitle"></h4>
   <p id="tourCardBody"></p>
   <div class="tour-meta">
-    <span id="tourStep"></span>
+    <span id="tourStep" class="bidi-isolate"></span>
     <span class="tour-btns">
-      <button class="tbtn ghost" id="tourBack" onclick="tourPrev()">Back</button>
-      <button class="tbtn" id="tourNext" onclick="tourNext()">Next</button>
+      <button class="tbtn ghost" id="tourBack" onclick="tourPrev()" data-i18n="shared.tour.back">Back</button>
+      <button class="tbtn" id="tourNext" onclick="tourNext()" data-i18n="shared.tour.next">Next</button>
     </span>
   </div>
 </div>
@@ -2405,13 +2440,13 @@ function onTranslitStyleChange(val) {
     applyAndRerender();
     return;
   }
-  if (status) status.textContent = 'Loading library…';
+  if (status) status.textContent = I18n.t('flashcards.translit.loading');
   window.HebrewTransliterator.ensureLoaded().then(() => {
     if (window.HebrewTransliterator.ready) {
       if (status) status.textContent = '';
       applyAndRerender();
     } else {
-      if (status) status.textContent = 'Library failed to load — using default style.';
+      if (status) status.textContent = I18n.t('flashcards.translit.load_failed');
     }
   });
 }
@@ -2530,17 +2565,17 @@ async function refreshMyFonts() {
 /* ═══ My Fonts uploader (shared, identical across pages) ═══ */
 async function ivUploadFontFromFile(file){
   if (!file) return null;
-  if (!window.indexedDB || !window.FontFace){ alert('Your browser can’t store custom fonts.'); return null; }
+  if (!window.indexedDB || !window.FontFace){ alert(I18n.t('shared.fonts.err_no_store')); return null; }
   let base = (file.name || 'My Font').replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim() || 'My Font';
   try {
     const buf = await file.arrayBuffer();
     try { await new FontFace(base, buf).load(); }
-    catch (e) { alert('That file doesn’t look like a usable font (TTF, OTF, or WOFF).'); return null; }
+    catch (e) { alert(I18n.t('shared.fonts.err_bad_font')); return null; }
     const existing = (await listUserFonts()).map(f => f.name);
     let name = base, i = 2; while (existing.includes(name)) name = base + ' ' + (i++);
     await saveUserFont(name, new Uint8Array(buf), name);
     return name;
-  } catch (e) { console.error(e); alert('Couldn’t read that font file.'); return null; }
+  } catch (e) { console.error(e); alert(I18n.t('shared.fonts.err_unreadable')); return null; }
 }
 /* ═══ end My Fonts uploader ═══ */
 /* Per-page pick handler(s) — thin wrappers over the shared uploader (each page routes the new font into its own picker/manager). */
@@ -2583,14 +2618,14 @@ function initFontSelector() {
   sections.forEach(sec => {
     const hdr = document.createElement('div');
     hdr.className = 'font-section-hdr';
-    hdr.textContent = sec === 'My Fonts' ? 'My Fonts' : sec === 'Cursive' ? 'Cursive / Script' : sec + ' Fonts';
+    hdr.textContent = sec === 'My Fonts' ? I18n.t('shared.fonts.section_my_fonts') : sec === 'Cursive' ? I18n.t('shared.fonts.section_cursive') : I18n.t('shared.fonts.section_generic', { section: sec });
     host.appendChild(hdr);
     allFonts().filter(f => f.section === sec).forEach(font => {
       loadHebFont(font);
       const btn = document.createElement('button');
       btn.className = 'font-opt' + (font.name === hebFontId ? ' active' : '');
       btn.dataset.fontName = font.name;
-      btn.innerHTML = `<span style="font-family:${font.stack};font-size:1.4rem;direction:rtl;display:block;">אֶרֶץ</span><small>${ivEsc(font.name)}${font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}</small>`;
+      btn.innerHTML = `<span lang="he" dir="rtl" style="font-family:${font.stack};font-size:1.4rem;direction:rtl;display:block;">אֶרֶץ</span><small>${ivEsc(font.name)}${font.name === 'Frank Ruhl Libre' ? ` <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">${ivEsc(I18n.t('shared.fonts.default_marker'))}</span>` : ''}</small>`;
       btn.addEventListener('click', () => setHebFont(font.name));
       host.appendChild(btn);
     });
@@ -2614,14 +2649,14 @@ function initEngFontSelector() {
   sections.forEach(sec => {
     const hdr = document.createElement('div');
     hdr.className = 'font-section-hdr';
-    hdr.textContent = sec === 'My Fonts' ? 'My Fonts' : sec + ' Fonts';
+    hdr.textContent = sec === 'My Fonts' ? I18n.t('shared.fonts.section_my_fonts') : I18n.t('shared.fonts.section_generic', { section: sec });
     host.appendChild(hdr);
     allEngFonts().filter(f => f.section === sec).forEach(font => {
       loadHebFont(font);
       const btn = document.createElement('button');
       btn.className = 'font-opt' + (font.name === engFontId ? ' active' : '');
       btn.dataset.fontName = font.name;
-      btn.innerHTML = `<span style="font-family:${font.stack};font-size:1.35rem;direction:ltr;display:block;">Aa 123</span><small>${ivEsc(font.name)}${font.name === 'Libre Baskerville' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}</small>`;
+      btn.innerHTML = `<span dir="ltr" style="font-family:${font.stack};font-size:1.35rem;direction:ltr;display:block;">Aa 123</span><small>${ivEsc(font.name)}${font.name === 'Libre Baskerville' ? ` <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">${ivEsc(I18n.t('shared.fonts.default_marker'))}</span>` : ''}</small>`;
       btn.addEventListener('click', () => setEngFont(font.name));
       host.appendChild(btn);
     });
@@ -2645,7 +2680,7 @@ function getNikudColor(key) {
   return defs[key] || (isDark() ? '#e9eaf0' : '#1c2333');
 }
 function colorizeHebrew(text) {
-  if (!colorCodingEnabled) return '<span lang="he">' + esc(text) + '</span>';
+  if (!colorCodingEnabled) return '<span lang="he" dir="rtl">' + esc(text) + '</span>';
   const chars = [...text];
   let out = '';
   let i = 0;
@@ -2691,7 +2726,7 @@ function colorizeHebrew(text) {
       i++;
     }
   }
-  return '<span lang="he">' + out + '</span>';
+  return '<span lang="he" dir="rtl">' + out + '</span>';
 }
 function esc(s) { return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
@@ -2788,7 +2823,7 @@ function initLetters() {
   const display = getDisplayLetters();
   grid.innerHTML = display.map(L => `
     <div class="letter-tile ${selectedLetters.has(L.heb) ? 'selected' : ''}" data-heb="${L.heb}">
-      <span class="heb-char" lang="he">${L.heb}</span>
+      <span class="heb-char" lang="he" dir="rtl">${L.heb}</span>
       <small>${L.name}</small>
     </div>
   `).join('');
@@ -2843,7 +2878,7 @@ function buildLockLetterGrid(pos) {
   const lk = letterLocks[pos];
   const display = getDisplayLetters();
   grid.innerHTML = display.map(L =>
-    `<div class="letter-tile ${lk.letters.has(L.heb) ? 'selected' : ''}" data-heb="${L.heb}"><span class="heb-char" lang="he">${L.heb}</span></div>`
+    `<div class="letter-tile ${lk.letters.has(L.heb) ? 'selected' : ''}" data-heb="${L.heb}"><span class="heb-char" lang="he" dir="rtl">${L.heb}</span></div>`
   ).join('');
   grid.querySelectorAll('.letter-tile').forEach(tile => {
     tile.addEventListener('click', () => {
@@ -2941,7 +2976,7 @@ function initVowels() {
       const tile = document.createElement('div');
       tile.className = 'vtile' + (selectedVowels.has(v.key) ? ' selected' : '');
       tile.dataset.key = v.key;
-      tile.innerHTML = `<div class="vheb" lang="he">${v.nikud}</div><div class="vname">${v.label}</div>`;
+      tile.innerHTML = `<div class="vheb" lang="he" dir="rtl">${v.nikud}</div><div class="vname">${v.label}</div>`;
       tile.addEventListener('click', () => {
         if (selectedVowels.has(v.key)) selectedVowels.delete(v.key);
         else selectedVowels.add(v.key);
@@ -3059,7 +3094,7 @@ function fetchAllWordsData() {
     .catch(() => {
       ALL_WORDS_DATA = null;
       const el = document.getElementById('wordsCount');
-      if (el) el.textContent = 'Failed to load dictionary words.';
+      if (el) el.textContent = I18n.t('flashcards.words.load_failed');
     });
 }
 
@@ -3146,9 +3181,9 @@ function renderWordListPicker() {
 function updateWordsCount() {
   const el = document.getElementById('wordsCount');
   if (!el) return;
-  if (wordsSource === 'alldict' && !ALL_WORDS_DATA) { el.textContent = 'Loading dictionary…'; return; }
+  if (wordsSource === 'alldict' && !ALL_WORDS_DATA) { el.textContent = I18n.t('flashcards.words.loading_dict'); return; }
   const n = resolveWordsPool().length;
-  el.textContent = n === 1 ? '1 word in pool' : n + ' words in pool';
+  el.textContent = I18n.t('flashcards.words.pool_count.' + (n === 1 ? 'one' : 'other'), { count: n });
 }
 
 function renderEmojiCatTree() {
@@ -3341,7 +3376,7 @@ function initCountGrid() {
   const grid = document.getElementById('countGrid');
   const isCustom = !COUNT_OPTIONS.includes(cardCount);
   grid.innerHTML = COUNT_OPTIONS.map(n => `<button class="count-btn ${n===cardCount?'active':''}" data-n="${n}">${n}</button>`).join('')
-    + `<input type="number" class="count-custom${isCustom?' active':''}" id="countCustom" min="${CARD_COUNT_MIN}" max="${CARD_COUNT_MAX}" step="1" inputmode="numeric" placeholder="Custom" aria-label="Custom card count (${CARD_COUNT_MIN} to ${CARD_COUNT_MAX})"${isCustom?` value="${cardCount}"`:''}>`;
+    + `<input type="number" class="count-custom${isCustom?' active':''}" id="countCustom" min="${CARD_COUNT_MIN}" max="${CARD_COUNT_MAX}" step="1" inputmode="numeric" placeholder="${esc(I18n.t('flashcards.count.custom_placeholder'))}" aria-label="${esc(I18n.t('flashcards.count.custom_aria', { min: CARD_COUNT_MIN, max: CARD_COUNT_MAX }))}"${isCustom?` value="${cardCount}"`:''}>`;
   grid.querySelectorAll('.count-btn').forEach(b => b.addEventListener('click', () => setCardCount(+b.dataset.n)));
   document.getElementById('countCustom').addEventListener('change', e => setCustomCardCount(e.target.value));
 }
@@ -3409,7 +3444,7 @@ function initPanelCollapse() {
     el.setAttribute('tabindex', '0');
     el.setAttribute('role', 'button');
     el.setAttribute('aria-expanded', 'false');
-    if (!el.getAttribute('aria-label')) el.setAttribute('aria-label', 'More information');
+    if (!el.getAttribute('aria-label')) { el.setAttribute('aria-label', 'More information'); el.setAttribute('data-i18n-aria-label', 'shared.tip.aria_more_info'); }
     el.addEventListener('click', e => { e.stopPropagation(); isShown(el) ? hide() : show(el); });
     el.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); isShown(el) ? hide() : show(el); }
@@ -3430,27 +3465,27 @@ function _tourExpandPanel(id) {
 const TOUR_STEPS = [
   { target: () => document.getElementById('panelMode'),
     reveal: () => _tourExpandPanel('panelMode'),
-    title: 'Practice Mode',
-    body: 'Choose what students practice: single letters, 2- or 3-letter blends, listening — or numbers, colors, emoji, and word cards.' },
+    titleKey: 'flashcards.tour.mode_title',
+    bodyKey: 'flashcards.tour.mode_body' },
   { target: () => document.getElementById('letterGrid'),
     reveal: () => _tourExpandPanel('panelLetters'),
-    title: 'Letters',
-    body: 'Tap letters to include or exclude them — match exactly what your class has learned.' },
+    titleKey: 'flashcards.tour.letters_title',
+    bodyKey: 'flashcards.tour.letters_body' },
   { target: () => document.getElementById('vowelHost'),
     reveal: () => _tourExpandPanel('panelVowels'),
-    title: 'Vowels',
-    body: "Same idea for nikkud: only the vowels you've taught." },
+    titleKey: 'flashcards.tour.vowels_title',
+    bodyKey: 'flashcards.tour.vowels_body' },
   { target: () => document.getElementById('panelTeacherTools'),
     reveal: () => _tourExpandPanel('panelTeacherTools'),
-    title: 'Teacher Tools',
-    body: 'Save presets and student profiles, and share your exact setup with a paste-in class code.' },
+    titleKey: 'flashcards.tour.teachertools_title',
+    bodyKey: 'flashcards.tour.teachertools_body' },
   { target: () => document.getElementById('panelAdvanced'),
     reveal: () => _tourExpandPanel('panelAdvanced'),
-    title: 'Advanced Settings',
-    body: 'Color-code the nikkud, pick a Hebrew font, and fine-tune the deck.' },
+    titleKey: 'flashcards.tour.advanced_title',
+    bodyKey: 'flashcards.tour.advanced_body' },
   { target: () => document.getElementById('startBtn'),
-    title: 'Start Practicing',
-    body: 'Flips into full-screen flash cards. Tap or press Space to flip a card; arrow keys move between cards.' },
+    titleKey: 'flashcards.tour.start_title',
+    bodyKey: 'flashcards.tour.start_body' },
 ];
 
 let _tourIdx = -1, _tourActive = false, _tourOpener = null, _tourUncollapsed = new Set(), _tourRepoTimer = null;
@@ -3484,11 +3519,11 @@ function _tourShow(idx, dir) {
   _tourIdx = idx;
   const step = TOUR_STEPS[idx], el = step.target();
   try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {}
-  document.getElementById('tourCardTitle').textContent = step.title;
-  document.getElementById('tourCardBody').textContent = step.body;
-  document.getElementById('tourStep').textContent = 'Step ' + (idx + 1) + ' of ' + TOUR_STEPS.length;
+  document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey);
+  document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKey);
+  document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: idx + 1, total: TOUR_STEPS.length });
   document.getElementById('tourBack').disabled = (idx === 0);
-  document.getElementById('tourNext').textContent = (idx === TOUR_STEPS.length - 1) ? 'Done' : 'Next';
+  document.getElementById('tourNext').textContent = I18n.t((idx === TOUR_STEPS.length - 1) ? 'shared.tour.done' : 'shared.tour.next');
   _tourReposition();
   if (_tourRepoTimer) clearTimeout(_tourRepoTimer);
   _tourRepoTimer = setTimeout(_tourReposition, 350);   // re-measure after scroll settles
@@ -3540,8 +3575,9 @@ function _tourReposition() {
 function _tourKey(e) {
   if (!_tourActive) return;
   if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); tourEnd(false); }
-  else if (e.key === 'ArrowRight') { e.preventDefault(); e.stopPropagation(); tourNext(); }
-  else if (e.key === 'ArrowLeft') { e.preventDefault(); e.stopPropagation(); tourPrev(); }
+  // Visual-direction nav: RTL flips which arrow advances the tour.
+  else if (e.key === 'ArrowRight') { e.preventDefault(); e.stopPropagation(); _rtlNav() ? tourPrev() : tourNext(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); e.stopPropagation(); _rtlNav() ? tourNext() : tourPrev(); }
 }
 // First-visit nudge: gently pulse the Tour button until the tour is opened once.
 (function () {
@@ -3670,7 +3706,7 @@ function applySettings(s) {
   document.getElementById('timerOpts').classList.toggle('hide', timerMode === 'off');
   document.getElementById('timerLimitRow').classList.toggle('hide', timerMode !== 'limit');
   document.getElementById('timerShowToggle').checked = timerShowOnScreen;
-  document.getElementById('timerShowLabel').textContent = timerMode === 'limit' ? 'Show countdown on screen' : 'Show timer on screen';
+  { const _tsl = document.getElementById('timerShowLabel'); const _tk = timerMode === 'limit' ? 'flashcards.timer.show_countdown' : 'flashcards.timer.show_timer'; _tsl.setAttribute('data-i18n', _tk); _tsl.textContent = I18n.t(_tk); }
   document.querySelectorAll('#timeLimitPills .pill').forEach(p => p.classList.toggle('active', +p.dataset.secs === timeLimitSeconds));
   nameLetterMode = !!s.nameLetterMode;
   nameLetterShowLetter = s.nameLetterShowLetter !== false;
@@ -3803,11 +3839,11 @@ function _setPresetNameNote(msg) {
 function savePreset() {
   const nameInput = document.getElementById('presetName');
   const name = (nameInput.value || '').trim();
-  if (!name) { _setPresetNameNote('Enter a preset name to save.'); nameInput.focus(); return; }
+  if (!name) { _setPresetNameNote(I18n.t('flashcards.teachertools.preset_name_required')); nameInput.focus(); return; }
   _setPresetNameNote('');
   const presets = readPresets();
   if (presets[name]) {
-    if (!confirm(`Overwrite preset "${name}"?`)) return;
+    if (!confirm(I18n.t('flashcards.teachertools.preset_overwrite_confirm', { name: name }))) return;
   }
   presets[name] = { settings: getSettings(), order: Date.now() };
   writePresets(presets);
@@ -3825,7 +3861,7 @@ function playPreset(name) {
   startPractice();
 }
 function deletePreset(name) {
-  if (!confirm(`Delete preset "${name}"?`)) return;
+  if (!confirm(I18n.t('flashcards.teachertools.preset_delete_confirm', { name: name }))) return;
   const presets = readPresets();
   delete presets[name];
   writePresets(presets);
@@ -3834,7 +3870,7 @@ function deletePreset(name) {
 function overwritePreset(name) {
   const presets = readPresets();
   if (!presets[name]) return;
-  if (!confirm(`Overwrite preset "${name}" with current settings?`)) return;
+  if (!confirm(I18n.t('flashcards.teachertools.preset_overwrite_current_confirm', { name: name }))) return;
   presets[name] = { settings: getSettings(), order: presets[name].order || Date.now() };
   writePresets(presets);
   renderPresets();
@@ -3860,10 +3896,10 @@ function renderPresets() {
     buildItemRow: (name) => {
       const f = document.createDocumentFragment();
       const mk = (txt, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.textContent = txt; b.addEventListener('click', fn); return b; };
-      f.appendChild(mk('▶ Play', 'btn sm play', () => playPreset(name)));
-      f.appendChild(mk('Load', 'btn sm primary', () => loadPreset(name)));
-      f.appendChild(mk('Save', 'btn sm', () => overwritePreset(name)));
-      const dup = mk('⧉', 'btn sm', () => duplicatePreset(name)); dup.title = 'Duplicate'; f.appendChild(dup);
+      f.appendChild(mk(I18n.t('flashcards.teachertools.play_button'), 'btn sm play', () => playPreset(name)));
+      f.appendChild(mk(I18n.t('flashcards.teachertools.load_button'), 'btn sm primary', () => loadPreset(name)));
+      f.appendChild(mk(I18n.t('flashcards.teachertools.save_button'), 'btn sm', () => overwritePreset(name)));
+      const dup = mk('⧉', 'btn sm', () => duplicatePreset(name)); dup.title = I18n.t('shared.folders.duplicate'); f.appendChild(dup);
       f.appendChild(mk('✕', 'btn sm danger', () => deletePreset(name)));
       return f;
     }
@@ -3925,13 +3961,13 @@ function ftIsDescendant(tree, folderId, candId){
   return found;
 }
 function ftPaths(tree, excludeId){
-  const out = [{ id:null, label:'⌂ Root' }];
+  const out = [{ id:null, label: I18n.t('shared.folders.move_root') }];
   (function walk(arr, prefix){
     for (const n of arr){
       if (n.t !== 'folder') continue;
       if (excludeId && ftIsDescendant(tree, excludeId, n.id)) continue; // skip self + descendants
       const path = prefix ? prefix + ' / ' + n.name : n.name;
-      out.push({ id:n.id, label:'📁 ' + path });
+      out.push({ id:n.id, label: I18n.t('shared.folders.move_path', { path: path }) });
       walk(n.children, path);
     }
   })(tree.root, '');
@@ -4007,12 +4043,12 @@ function mountFolderTree(cfg){
 
   function renderItem(node){
     const row = document.createElement('div'); row.className = 'preset-item'; row.dataset.ftItem = node.name;
-    const h = document.createElement('span'); h.className='drag-handle'; h.title='Drag to move'; h.textContent='⠿'; h.style.flex='0 0 auto';
+    const h = document.createElement('span'); h.className='drag-handle'; h.title=I18n.t('shared.folders.drag_item'); h.textContent='⠿'; h.style.flex='0 0 auto';
     const nm = document.createElement('span'); nm.className='ft-item-name'; nm.style.flex='1'; nm.textContent = node.name;
     row.appendChild(h); row.appendChild(nm);
     const acts = cfg.buildItemRow(node.name); if (acts) row.appendChild(acts);
     const mw = document.createElement('span'); mw.className='ft-move-wrap';
-    const mb = document.createElement('button'); mb.type='button'; mb.className='ft-move-btn'; mb.textContent='Move ▾';
+    const mb = document.createElement('button'); mb.type='button'; mb.className='ft-move-btn'; mb.textContent=I18n.t('shared.folders.move_button');
     mb.addEventListener('click', e => { e.stopPropagation(); openMoveMenu(mb, node); });
     mw.appendChild(mb); row.appendChild(mw);
     makeDraggable(row, node);
@@ -4025,14 +4061,14 @@ function mountFolderTree(cfg){
     const fol = document.createElement('div'); fol.className = 'ft-folder' + (node.collapsed?' ft-collapsed':''); fol.dataset.ftFolder = node.id;
     const head = document.createElement('div'); head.className='ft-folder-head';
     const tw = document.createElement('span'); tw.className='ft-twisty'; tw.textContent='▾';
-    const h = document.createElement('span'); h.className='drag-handle'; h.title='Drag folder'; h.textContent='⠿'; h.style.flex='0 0 auto';
+    const h = document.createElement('span'); h.className='drag-handle'; h.title=I18n.t('shared.folders.drag_folder'); h.textContent='⠿'; h.style.flex='0 0 auto';
     const nm = document.createElement('span'); nm.className='ft-folder-name'; nm.textContent = node.name;
     const cnt = document.createElement('span'); cnt.className='ft-folder-count'; cnt.textContent = '(' + node.children.length + ')';
     const acts = document.createElement('span'); acts.className='ft-folder-actions';
-    acts.appendChild(mkMini('＋','New subfolder', () => { const x=(prompt('New subfolder name:')||'').trim(); if(!x) return; node.children.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); }));
-    acts.appendChild(mkMini('✎','Rename folder', () => { const x=(prompt('Rename folder:', node.name)||'').trim(); if(!x) return; node.name=x; commit(); }));
+    acts.appendChild(mkMini('＋',I18n.t('shared.folders.new_subfolder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_new_subfolder'))||'').trim(); if(!x) return; node.children.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); }));
+    acts.appendChild(mkMini('✎',I18n.t('shared.folders.rename_folder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_rename'), node.name)||'').trim(); if(!x) return; node.name=x; commit(); }));
     acts.appendChild(mkMini('↗','Move folder', (b) => openMoveMenu(b, node)));
-    acts.appendChild(mkMini('🗑','Delete folder (keeps items)', () => { if(!confirm('Delete folder "'+node.name+'"? Its contents move out — nothing is deleted.')) return; const loc=ftLocate(tree, x=>x===node); if(loc){ loc.parent.splice(loc.index, 1, ...node.children); commit(); } }));
+    acts.appendChild(mkMini('🗑',I18n.t('shared.folders.delete_folder'), () => { if(!confirm(I18n.t('shared.folders.delete_confirm', { name: node.name }))) return; const loc=ftLocate(tree, x=>x===node); if(loc){ loc.parent.splice(loc.index, 1, ...node.children); commit(); } }));
     head.appendChild(tw); head.appendChild(h); head.appendChild(nm); head.appendChild(cnt); head.appendChild(acts);
     head.addEventListener('click', e => { if (e.target.closest('.ft-folder-actions')) return; node.collapsed = !node.collapsed; commit(); });
     makeDraggable(fol, node);
@@ -4040,7 +4076,7 @@ function mountFolderTree(cfg){
     head.addEventListener('drop', e => { if (!canDrop(node)) return; e.preventDefault(); e.stopPropagation(); dropInto(node); });
     const body = document.createElement('div'); body.className='ft-folder-body';
     if (node.children.length === 0){
-      const em = document.createElement('div'); em.className='ft-empty-folder'; em.textContent='Empty — drop items here';
+      const em = document.createElement('div'); em.className='ft-empty-folder'; em.textContent=I18n.t('shared.folders.empty_folder');
       em.addEventListener('dragover', e => { if (!canDrop(node)) return; e.preventDefault(); clearCues(); fol.classList.add('ft-drop'); });
       em.addEventListener('drop', e => { if (!canDrop(node)) return; e.preventDefault(); e.stopPropagation(); dropInto(node); });
       body.appendChild(em);
@@ -4053,14 +4089,14 @@ function mountFolderTree(cfg){
     closeMenu(); container.innerHTML = '';
     const wrap = document.createElement('div'); wrap.className='ft-tree';
     renderInto(tree.root, wrap);
-    if (tree.root.length === 0){ const em=document.createElement('div'); em.className='ft-empty-folder'; em.textContent='No saved '+(cfg.noun||'item')+'s yet.'; wrap.appendChild(em); }
+    if (tree.root.length === 0){ const em=document.createElement('div'); em.className='ft-empty-folder'; em.textContent=I18n.t('shared.folders.empty_list', { noun: cfg.noun||'item' }); wrap.appendChild(em); }
     const rootDrop = document.createElement('div'); rootDrop.className='ft-root-drop';
     rootDrop.addEventListener('dragover', e => { if (!dragNode) return; e.preventDefault(); clearCues(); rootDrop.classList.add('ft-row-drop'); });
     rootDrop.addEventListener('drop', e => { if (!dragNode) return; e.preventDefault(); e.stopPropagation(); const dn=dragNode; ftRemove(tree, x=>x===dn); tree.root.push(dn); commit(); });
     wrap.appendChild(rootDrop);
     container.appendChild(wrap);
-    const add = document.createElement('button'); add.type='button'; add.className='ft-newfolder'; add.textContent='📁 New folder';
-    add.addEventListener('click', () => { const x=(prompt('New folder name:')||'').trim(); if(!x) return; tree.root.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); });
+    const add = document.createElement('button'); add.type='button'; add.className='ft-newfolder'; add.textContent=I18n.t('shared.folders.new_folder');
+    add.addEventListener('click', () => { const x=(prompt(I18n.t('shared.folders.prompt_new_folder'))||'').trim(); if(!x) return; tree.root.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); });
     container.appendChild(add);
   }
   render();
@@ -4117,12 +4153,12 @@ function importPresets() {
       const existing = readPresets();
       writePresets(ivritSafeAssign(existing, data.presets));
       renderPresets();
-      showAppToast('Imported successfully.');
+      showAppToast(I18n.t('shared.toast.imported'));
     } else {
-      alert('No "presets" key found.');
+      alert(I18n.t('flashcards.manual.no_presets_key'));
     }
   } catch(e) {
-    alert('Invalid JSON: ' + e.message);
+    alert(I18n.t('flashcards.manual.invalid_json', { message: e.message }));
   }
 }
 function copyTextarea() {
@@ -4131,7 +4167,7 @@ function copyTextarea() {
   document.execCommand('copy');
   const btn = document.getElementById('copyBtn');
   const orig = btn.textContent;
-  btn.textContent = 'Copied!';
+  btn.textContent = I18n.t('shared.toast.copied');
   setTimeout(() => btn.textContent = orig, 1200);
 }
 
@@ -4157,7 +4193,7 @@ function generateShareCode() {
     const pool = resolveWordsPool();
     data.wordsInline = pool.slice(0, WORDS_SHARE_CAP).map(w => ({ w: w.word, t: w.translit || '', e: w.translation || '' }));
     shareErr(pool.length > WORDS_SHARE_CAP
-      ? `Only the first ${WORDS_SHARE_CAP} of ${pool.length} words were embedded in this code.` : '');
+      ? I18n.t('flashcards.share.embed_cap', { count: WORDS_SHARE_CAP, total: pool.length }) : '');
   } else {
     shareErr('');
   }
@@ -4190,18 +4226,18 @@ function shareErr(msg) {
 function loadShareCode() {
   const inp = document.getElementById('shareCodeInput');
   const raw = inp ? inp.value : '';
-  if (!raw || !raw.trim()) { shareErr('Invalid code — please check and try again.'); return; }
+  if (!raw || !raw.trim()) { shareErr(I18n.t('flashcards.share.invalid_code')); return; }
   let payload;
-  try { payload = shareCodeDecode(raw); } catch (e) { shareErr('Invalid code — please check and try again.'); return; }
+  try { payload = shareCodeDecode(raw); } catch (e) { shareErr(I18n.t('flashcards.share.invalid_code')); return; }
   const data = payload && typeof payload === 'object' ? (payload.data || (payload.tool ? null : payload)) : null;
-  if (!data || typeof data !== 'object') { shareErr('Invalid code — please check and try again.'); return; }
+  if (!data || typeof data !== 'object') { shareErr(I18n.t('flashcards.share.invalid_code')); return; }
   try {
     applySettings(data);
     saveSettings();
     shareErr('');
     startPractice();
   } catch (e) {
-    shareErr('Invalid code — please check and try again.');
+    shareErr(I18n.t('flashcards.share.invalid_code'));
   }
 }
 
@@ -4285,7 +4321,7 @@ function createProfile(name) {
 function deleteProfile(name) {
   const db = readProfiles();
   if (!db.profiles[name]) return;
-  if (!confirm(`Delete profile "${name}" and all of its saved results? This cannot be undone.`)) return;
+  if (!confirm(I18n.t('flashcards.profile.delete_confirm', { name: name }))) return;
   delete db.profiles[name];
   if (db.activeProfile === name) db.activeProfile = Object.keys(db.profiles)[0] || null;
   writeProfiles(db);
@@ -4296,7 +4332,7 @@ function renameProfile(oldName, newName) {
   if (!newName || newName === oldName) return;
   const db = readProfiles();
   if (!db.profiles[oldName]) return;
-  if (db.profiles[newName] && !confirm(`Profile "${newName}" already exists — merge "${oldName}" into it?`)) return;
+  if (db.profiles[newName] && !confirm(I18n.t('flashcards.profile.merge_confirm', { newName: newName, oldName: oldName }))) return;
   const dest = db.profiles[newName] || { created: db.profiles[oldName].created, order: db.profiles[oldName].order, results: [] };
   dest.results = dest.results.concat(db.profiles[oldName].results || []).slice(-MAX_RESULTS_PER_PROFILE);
   db.profiles[newName] = dest;
@@ -4308,14 +4344,15 @@ function renameProfile(oldName, newName) {
 
 // Short human label for a saved drill's mode (used in the history list)
 function describeResultMode(s) {
-  if (!s) return 'Drill';
+  if (!s) return I18n.t('flashcards.results.mode_drill');
   let label;
   if (s.otherModeActive) {
-    label = { numbers: 'Numbers', colors: 'Colors', emoji: 'Emoji', words: 'Words' }[s.otherSubMode] || 'Drill';
+    const subKey = { numbers: 'flashcards.results.mode_numbers', colors: 'flashcards.results.mode_colors', emoji: 'flashcards.results.mode_emoji', words: 'flashcards.results.mode_words' }[s.otherSubMode];
+    label = subKey ? I18n.t(subKey) : I18n.t('flashcards.results.mode_drill');
   } else if (s.nameLetterMode) {
-    label = 'Name Letters';
+    label = I18n.t('flashcards.results.mode_name_letters');
   } else {
-    label = `${s.mode}-letter`;
+    label = I18n.t('flashcards.results.mode_n_letter', { count: s.mode });
   }
   return label + (s.listening ? ' 🎧' : '');
 }
@@ -4353,28 +4390,28 @@ function chooseProfileModal() {
     ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
     const box = document.createElement('div');
     box.style.cssText = 'background:var(--white,#fff);color:var(--text,#1a2744);max-width:380px;width:100%;border-radius:10px;padding:18px;font-family:inherit;box-shadow:0 10px 40px rgba(0,0,0,0.35);max-height:80vh;overflow:auto;';
-    let html = '<div style="font-weight:700;font-size:1rem;margin-bottom:10px;">Save results to…</div>';
+    let html = `<div style="font-weight:700;font-size:1rem;margin-bottom:10px;">${esc(I18n.t('flashcards.profile.save_modal_title'))}</div>`;
     if (names.length) {
       html += '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">';
       names.forEach(n => {
         const isActive = n === active;
-        html += `<button data-name="${encodeURIComponent(n)}" style="text-align:left;padding:9px 11px;border:1px solid ${isActive ? 'var(--gold,#c9922a)' : 'var(--border,#ccc)'};border-radius:6px;background:${isActive ? 'rgba(201,146,42,0.12)' : 'transparent'};color:inherit;cursor:pointer;font-family:inherit;font-size:0.88rem;"></button>`;
+        html += `<button data-name="${encodeURIComponent(n)}" style="text-align:start;padding:9px 11px;border:1px solid ${isActive ? 'var(--gold,#c9922a)' : 'var(--border,#ccc)'};border-radius:6px;background:${isActive ? 'rgba(201,146,42,0.12)' : 'transparent'};color:inherit;cursor:pointer;font-family:inherit;font-size:0.88rem;"></button>`;
       });
       html += '</div>';
     }
-    html += '<div style="font-size:0.82rem;font-weight:600;margin-bottom:5px;">New profile</div>'
+    html += `<div style="font-size:0.82rem;font-weight:600;margin-bottom:5px;">${esc(I18n.t('flashcards.profile.new_profile_heading'))}</div>`
       + '<div style="display:flex;gap:6px;">'
-      + '<input type="text" id="newProfileNameInput" maxlength="40" placeholder="Student name…" style="flex:1;padding:8px 10px;border:1px solid var(--border,#ccc);border-radius:6px;background:var(--white,#fff);color:inherit;font-family:inherit;font-size:0.88rem;">'
-      + '<button data-act="create" style="padding:8px 12px;border:none;border-radius:6px;background:var(--navy,#1a2744);color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">Save</button>'
+      + `<input type="text" id="newProfileNameInput" maxlength="40" placeholder="${esc(I18n.t('flashcards.profile.student_name_placeholder'))}" style="flex:1;padding:8px 10px;border:1px solid var(--border,#ccc);border-radius:6px;background:var(--white,#fff);color:inherit;font-family:inherit;font-size:0.88rem;">`
+      + `<button data-act="create" style="padding:8px 12px;border:none;border-radius:6px;background:var(--navy,#1a2744);color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t('flashcards.profile.save'))}</button>`
       + '</div>'
-      + '<button data-act="cancel" style="width:100%;margin-top:14px;padding:9px;border:1px solid var(--border,#ccc);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:inherit;font-size:0.85rem;">Cancel</button>';
+      + `<button data-act="cancel" style="width:100%;margin-top:14px;padding:9px;border:1px solid var(--border,#ccc);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t('flashcards.profile.cancel'))}</button>`;
     box.innerHTML = html;
     // fill profile button labels safely (avoid HTML injection from names)
     names.forEach(n => {
       const b = box.querySelector(`button[data-name="${encodeURIComponent(n)}"]`);
       if (b) {
         const count = (db.profiles[n].results || []).length;
-        b.textContent = `${n}  ·  ${count} saved`;
+        b.textContent = I18n.t('flashcards.profile.button_label', { name: n, count: count });
       }
     });
     ov.appendChild(box); document.body.appendChild(ov);
@@ -4394,7 +4431,7 @@ function chooseProfileModal() {
 }
 
 async function saveCurrentResult() {
-  if (!lastDrillResult) { alert('No drill results to save.'); return; }
+  if (!lastDrillResult) { alert(I18n.t('flashcards.results.no_results_to_save')); return; }
   const name = await chooseProfileModal();
   if (!name) return;
   createProfile(name); // creates if new, sets active
@@ -4405,7 +4442,7 @@ async function saveCurrentResult() {
   writeProfiles(db);
   renderProfiles();
   const btn = document.getElementById('saveResultsBtn');
-  if (btn) { btn.textContent = `✓ Saved to ${name}`; btn.disabled = true; }
+  if (btn) { btn.textContent = I18n.t('flashcards.results.save_button_done', { name: name }); btn.disabled = true; }
 }
 
 function renderProfiles() {
@@ -4422,7 +4459,7 @@ function renderProfiles() {
   sel.innerHTML = '';
   if (names.length === 0) {
     const opt = document.createElement('option');
-    opt.textContent = '— no profiles —'; opt.value = '';
+    opt.textContent = I18n.t('flashcards.profile.no_profiles_option'); opt.value = '';
     sel.appendChild(opt);
     sel.disabled = true;
   } else {
@@ -4449,9 +4486,9 @@ function renderProfiles() {
       const f = document.createDocumentFragment();
       const sub = document.createElement('span'); sub.className = 'sub';
       sub.style.cssText = 'font-size:0.72rem;white-space:nowrap;color:var(--muted);flex:0 0 auto;';
-      sub.textContent = (name === act ? '★ ' : '') + count + ' saved';
+      sub.textContent = (name === act ? I18n.t('flashcards.profile.active_marker') : '') + I18n.t('flashcards.profile.saved_count', { count: count });
       f.appendChild(sub);
-      const setb = document.createElement('button'); setb.type = 'button'; setb.className = 'btn sm primary'; setb.textContent = 'Set Active'; setb.addEventListener('click', () => setActiveProfile(name)); f.appendChild(setb);
+      const setb = document.createElement('button'); setb.type = 'button'; setb.className = 'btn sm primary'; setb.textContent = I18n.t('flashcards.profile.set_active'); setb.addEventListener('click', () => setActiveProfile(name)); f.appendChild(setb);
       const del = document.createElement('button'); del.type = 'button'; del.className = 'btn sm danger'; del.textContent = '✕'; del.addEventListener('click', () => deleteProfile(name)); f.appendChild(del);
       return f;
     }
@@ -4465,13 +4502,14 @@ function renderProfileHistory(name) {
   const detail = document.getElementById('profileDetail');
   const histList = document.getElementById('profileHistory');
   const histEmpty = document.getElementById('profileHistoryEmpty');
-  const nameEl = document.getElementById('profileDetailName');
+  const headingEl = document.getElementById('profileDetailHeading');
   const weakBtn = document.getElementById('weaknessesBtn');
   if (!detail) return;
   const db = readProfiles();
   if (!name || !db.profiles[name]) { detail.style.display = 'none'; return; }
   detail.style.display = '';
-  nameEl.textContent = name;
+  // Whole heading via t() (drops the static "Results History — <span>" split so it translates cleanly).
+  headingEl.textContent = I18n.t('flashcards.teachertools.results_history_heading', { name: name });
   const results = (db.profiles[name].results || []).slice().reverse(); // newest first
   histList.innerHTML = '';
   if (results.length === 0) {
@@ -4489,13 +4527,13 @@ function renderProfileHistory(name) {
       li.innerHTML = `
         <span class="rmark">${r.pct >= 80 ? '✓' : r.pct >= 50 ? '–' : '✗'}</span>
         <span style="flex:1;">
-          <b>${r.pct}%</b> <span class="sub">(${r.correct}/${r.total})</span><br>
+          <b>${r.pct}%</b> <span class="sub">${esc(I18n.t('flashcards.profile.history_pct_frac', { correct: r.correct, total: r.total }))}</span><br>
           <span class="sub" style="font-size:0.72rem;">${dateStr} · ${describeResultMode(r.settings)}${timeStr}</span>
         </span>
         <button class="btn sm danger" data-act="del">✕</button>
       `;
       li.querySelector('[data-act=del]').addEventListener('click', () => {
-        if (!confirm('Delete this saved result?')) return;
+        if (!confirm(I18n.t('flashcards.profile.delete_result_confirm'))) return;
         const db2 = readProfiles();
         db2.profiles[name].results.splice(realIdx, 1);
         writeProfiles(db2);
@@ -4607,25 +4645,25 @@ function askCardCount(defaultN, maxN) {
     const box = document.createElement('div');
     box.style.cssText = 'background:var(--white,#fff);color:var(--text,#1a2744);max-width:360px;width:100%;border-radius:10px;padding:18px;font-family:inherit;box-shadow:0 10px 40px rgba(0,0,0,0.35);';
     const sub = maxN
-      ? `Up to <b>${maxN}</b> weakness cards available. How many do you want to practice?`
-      : 'How many cards do you want to practice?';
+      ? I18n.t('flashcards.weaknesses.count_prompt_max', { count: maxN })
+      : I18n.t('flashcards.weaknesses.count_prompt');
     box.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <div style="font-weight:700;font-size:1rem;">Practice My Weaknesses</div>
+        <div style="font-weight:700;font-size:1rem;">${esc(I18n.t('flashcards.weaknesses.modal_title'))}</div>
         <button data-act="cancel" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:inherit;line-height:1;">×</button>
       </div>
-      <div style="font-size:0.82rem;line-height:1.5;margin-bottom:12px;opacity:0.9;">${sub}</div>
+      <div style="font-size:0.82rem;line-height:1.5;margin-bottom:12px;opacity:0.9;">${esc(sub)}</div>
       <div id="acQuick" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
         ${picks.map(n => `<button data-n="${n}" style="flex:1 0 auto;min-width:48px;padding:8px 10px;border:1px solid var(--border,#ccc);border-radius:6px;background:${n===def?'var(--navy,#1a2744)':'transparent'};color:${n===def?'#fff':'inherit'};cursor:pointer;font-family:inherit;font-size:0.85rem;">${n}</button>`).join('')}
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
-        <span style="font-size:0.82rem;opacity:0.9;">Custom:</span>
+        <span style="font-size:0.82rem;opacity:0.9;">${esc(I18n.t('flashcards.weaknesses.custom_label'))}</span>
         <input type="number" id="acCustom" min="1" ${maxN ? `max="${maxN}"` : ''} placeholder="#"
           style="flex:1;padding:7px 8px;border:1px solid var(--border,#ccc);border-radius:6px;background:var(--white,#fff);color:inherit;font-family:inherit;font-size:0.85rem;">
       </div>
       <div style="display:flex;gap:8px;">
-        <button data-act="start" style="flex:2;padding:9px;border:none;border-radius:6px;background:var(--gold,#c9922a);color:#1a2744;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.85rem;">Start</button>
-        <button data-act="cancel" style="flex:1;padding:9px;border:1px solid var(--border,#ccc);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:inherit;font-size:0.85rem;">Cancel</button>
+        <button data-act="start" style="flex:2;padding:9px;border:none;border-radius:6px;background:var(--gold,#c9922a);color:#1a2744;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t('flashcards.weaknesses.start'))}</button>
+        <button data-act="cancel" style="flex:1;padding:9px;border:1px solid var(--border,#ccc);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t('flashcards.weaknesses.cancel'))}</button>
       </div>`;
     ov.appendChild(box); document.body.appendChild(ov);
     let chosen = def;
@@ -4657,7 +4695,7 @@ async function practiceWeaknesses(name) {
   name = name || getActiveProfile();
   // Total weakness cards available = distinct missed cards + synthesizable weak combos.
   const available = collectWeaknessDeck(name, Infinity);
-  if (available.length === 0) { alert('No mistakes saved yet for this profile. Save some drill results first.'); return; }
+  if (available.length === 0) { alert(I18n.t('flashcards.weaknesses.no_mistakes_alert')); return; }
   const n = await askCardCount(cardCount, available.length);
   if (n == null) return; // cancelled
   // Keep priority order: most-missed real cards first, then synthesized weak combos.
@@ -4725,10 +4763,10 @@ function parseHebUnits(text) {
 /* "Other" drill cards (emoji / numbers / colors) carry a distinguishing field
    rather than a drilled letter+vowel blend, so they get their own bucket. */
 const OTHER_INFO = {
-  emoji:  { glyph: '😀', label: 'Emojis' },
-  number: { glyph: '#',  label: 'Numbers' },
-  color:  { glyph: '🎨', label: 'Colors' },
-  words:  { glyph: '📖', label: 'Words' },
+  emoji:  { glyph: '😀', labelKey: 'flashcards.weaknesses.other_emojis' },
+  number: { glyph: '#',  labelKey: 'flashcards.weaknesses.other_numbers' },
+  color:  { glyph: '🎨', labelKey: 'flashcards.weaknesses.other_colors' },
+  words:  { glyph: '📖', labelKey: 'flashcards.weaknesses.other_words' },
 };
 function cardOtherType(c) {
   if (c.wordCard) return 'words';   // must precede skipTranslitRebuild (word cards set both)
@@ -4780,8 +4818,8 @@ function weakRows(map, tab) {
     } else if (tab === 'letters') {
       glyph = key; label = weakLetterName(key);
     } else if (tab === 'other') {
-      const info = OTHER_INFO[key] || { glyph: '?', label: key };
-      glyph = info.glyph; label = info.label;
+      const info = OTHER_INFO[key] || { glyph: '?', labelKey: null };
+      glyph = info.glyph; label = info.labelKey ? I18n.t(info.labelKey) : key;
     } else {
       const [cons, vkey] = key.split('|');
       glyph = cons + (WEAK_VOWEL_MARK[vkey] || '');
@@ -4794,24 +4832,24 @@ function weakRows(map, tab) {
 function renderWeaknessTab(stats, tab, container) {
   const rows = weakRows(tab === 'vowels' ? stats.vowels : tab === 'letters' ? stats.letters : tab === 'other' ? stats.other : stats.combos, tab);
   if (rows.length === 0) {
-    container.innerHTML = '<p class="sub" style="text-align:center;padding:18px 0;">Not enough data yet — save more drill results.</p>';
+    container.innerHTML = `<p class="sub" style="text-align:center;padding:18px 0;">${esc(I18n.t('flashcards.weaknesses.not_enough_data'))}</p>`;
     return;
   }
   const anyMissed = rows.some(r => r.missed > 0);
   let html = '';
-  if (!anyMissed) html += '<p class="sub" style="text-align:center;margin:0 0 10px;">No mistakes here — mastered! 🎉</p>';
+  if (!anyMissed) html += `<p class="sub" style="text-align:center;margin:0 0 10px;">${esc(I18n.t('flashcards.weaknesses.mastered'))}</p>`;
   html += rows.map(r => {
     const pct = Math.round(r.rate * 100);
     const barColor = pct >= 60 ? '#cc3333' : pct >= 30 ? '#c9922a' : '#3aa655';
     return `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);">
-      <span style="font-family:var(--heb-font);font-size:1.7rem;direction:rtl;min-width:36px;text-align:center;line-height:1;">${esc(r.glyph)}</span>
+      <span lang="he" dir="rtl" style="font-family:var(--heb-font);font-size:1.7rem;direction:rtl;min-width:36px;text-align:center;line-height:1;">${esc(r.glyph)}</span>
       <span style="flex:1;min-width:0;">
         <div style="font-size:0.82rem;font-weight:600;">${esc(r.label)}</div>
         <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:3px;">
           <div style="height:100%;width:${pct}%;background:${barColor};"></div>
         </div>
       </span>
-      <span class="sub" style="font-size:0.72rem;white-space:nowrap;text-align:right;">missed ${r.missed}/${r.seen}<br>${pct}%</span>
+      <span class="sub bidi-isolate" style="font-size:0.72rem;white-space:nowrap;text-align:end;">${esc(I18n.t('flashcards.weaknesses.missed_ratio', { missed: r.missed, seen: r.seen }))}<br>${pct}%</span>
     </div>`;
   }).join('');
   container.innerHTML = html;
@@ -4819,7 +4857,7 @@ function renderWeaknessTab(stats, tab, container) {
 
 function openWeaknessView(name) {
   name = name || getActiveProfile();
-  if (!name) { alert('No profile selected.'); return; }
+  if (!name) { alert(I18n.t('flashcards.profile.no_selected_alert')); return; }
   const stats = analyzeWeaknesses(name);
   const ov = document.createElement('div');
   ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
@@ -4827,14 +4865,14 @@ function openWeaknessView(name) {
   box.style.cssText = 'background:var(--white,#fff);color:var(--text,#1a2744);max-width:460px;width:100%;border-radius:10px;padding:18px;font-family:inherit;box-shadow:0 10px 40px rgba(0,0,0,0.35);max-height:85vh;display:flex;flex-direction:column;';
   box.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-      <div style="font-weight:700;font-size:1rem;">Weaknesses — ${esc(name)}</div>
+      <div style="font-weight:700;font-size:1rem;">${I18n.t('flashcards.weaknesses.view_title', { name: esc(name) })}</div>
       <button data-act="close" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:inherit;line-height:1;">×</button>
     </div>
     <div class="weak-tabs" style="display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:12px;">
-      <button class="weak-tab active" data-tab="vowels" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">Vowels</button>
-      <button class="weak-tab" data-tab="letters" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">Letters</button>
-      <button class="weak-tab" data-tab="combos" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">Letter + Vowel</button>
-      <button class="weak-tab" data-tab="other" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">Other</button>
+      <button class="weak-tab active" data-tab="vowels" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">${esc(I18n.t('flashcards.weaknesses.tab_vowels'))}</button>
+      <button class="weak-tab" data-tab="letters" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">${esc(I18n.t('flashcards.weaknesses.tab_letters'))}</button>
+      <button class="weak-tab" data-tab="combos" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">${esc(I18n.t('flashcards.weaknesses.tab_combos'))}</button>
+      <button class="weak-tab" data-tab="other" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">${esc(I18n.t('flashcards.weaknesses.tab_other'))}</button>
     </div>
     <div id="weakContent" style="overflow-y:auto;flex:1;"></div>`;
   ov.appendChild(box); document.body.appendChild(ov);
@@ -4883,7 +4921,7 @@ function flashBackupSave() {
   a.href = url; a.download = ivritDateStamp() + '_FlashCards' + suffix + '.ivrit';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 1500);
-  ivritStatus('Saved ' + a.download);
+  ivritStatus(I18n.t('shared.ivrit.status_saved', { filename: a.download }));
 }
 // Deep-merge an incoming {activeProfile, profiles} blob into the stored one
 function mergeProfilesBlob(incoming, mode) {
@@ -4915,13 +4953,13 @@ function wireProfilesPanel() {
   });
   document.getElementById('renameProfileBtn').addEventListener('click', () => {
     const cur = getActiveProfile();
-    if (!cur) { alert('No profile selected.'); return; }
+    if (!cur) { alert(I18n.t('flashcards.profile.no_selected_alert')); return; }
     const n = (prompt('Rename profile to:', cur) || '').trim();
     if (n) renameProfile(cur, n);
   });
   document.getElementById('deleteProfileBtn').addEventListener('click', () => {
     const cur = getActiveProfile();
-    if (!cur) { alert('No profile selected.'); return; }
+    if (!cur) { alert(I18n.t('flashcards.profile.no_selected_alert')); return; }
     deleteProfile(cur);
   });
   document.getElementById('weaknessesBtn').addEventListener('click', () => practiceWeaknesses());
@@ -5030,7 +5068,7 @@ function ivritSaveFile() {
   a.href = url; a.download = ivritDateStamp() + '_' + IVRIT_CFG.tool + '.ivrit';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 1500);
-  ivritStatus('Saved ' + a.download);
+  ivritStatus(I18n.t('shared.ivrit.status_saved', { filename: a.download }));
 }
 function ivritAskMode() {
   return new Promise(resolve => {
@@ -5038,12 +5076,15 @@ function ivritAskMode() {
     ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
     const box = document.createElement('div');
     box.style.cssText = 'background:var(--white,#fff);color:var(--text,#1a2744);max-width:360px;width:100%;border-radius:10px;padding:18px;font-family:inherit;box-shadow:0 10px 40px rgba(0,0,0,0.35);';
-    box.innerHTML = '<div style="font-weight:700;font-size:1rem;margin-bottom:8px;">Restore from .ivrit file</div>'
-      + '<div style="font-size:0.82rem;line-height:1.5;margin-bottom:16px;opacity:0.9;"><b>Merge</b> keeps what you have now and adds the file\'s data (matching names are overwritten).<br><b>Replace</b> clears your current data first and loads only what\'s in the file.</div>'
+    // Render the trusted body string's lightweight markdown (**bold**, \n) to HTML.
+    const bodyHtml = esc(I18n.t('shared.ivrit.restore_dialog_body'))
+      .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+    box.innerHTML = `<div style="font-weight:700;font-size:1rem;margin-bottom:8px;">${esc(I18n.t('shared.ivrit.restore_dialog_title'))}</div>`
+      + `<div style="font-size:0.82rem;line-height:1.5;margin-bottom:16px;opacity:0.9;">${bodyHtml}</div>`
       + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
-      + '<button data-act="merge" style="flex:1;min-width:96px;padding:9px;border:none;border-radius:6px;background:var(--navy,#1a2744);color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">Merge</button>'
-      + '<button data-act="replace" style="flex:1;min-width:96px;padding:9px;border:none;border-radius:6px;background:#a83232;color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">Replace</button>'
-      + '<button data-act="cancel" style="flex:1;min-width:96px;padding:9px;border:1px solid var(--border,#ccc);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:inherit;font-size:0.85rem;">Cancel</button>'
+      + `<button data-act="merge" style="flex:1;min-width:96px;padding:9px;border:none;border-radius:6px;background:var(--navy,#1a2744);color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t('shared.ivrit.restore_merge_button'))}</button>`
+      + `<button data-act="replace" style="flex:1;min-width:96px;padding:9px;border:none;border-radius:6px;background:#a83232;color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t('shared.ivrit.restore_replace_button'))}</button>`
+      + `<button data-act="cancel" style="flex:1;min-width:96px;padding:9px;border:1px solid var(--border,#ccc);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t('shared.ivrit.restore_cancel_button'))}</button>`
       + '</div>';
     ov.appendChild(box); document.body.appendChild(ov);
     const done = v => { if (ov.parentNode) document.body.removeChild(ov); resolve(v); };
@@ -5061,30 +5102,30 @@ function ivritToolMismatch(fileTool) {
 async function ivritRestore(text, sourceName) {
   let parsed;
   try { parsed = ivritSafeParse(text); }
-  catch (e) { alert('That file could not be read as a .ivrit save file.'); return; }
+  catch (e) { alert(I18n.t('shared.ivrit.err_unreadable')); return; }
   let payload = parsed;
   if (!(parsed && parsed.format === 'ivrit-save')) {
     if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
       payload = { tool: null, data: { presets: parsed } };   // tolerate a legacy raw-presets blob
-    } else { alert('That file is not a recognizable .ivrit save file.'); return; }
+    } else { alert(I18n.t('shared.ivrit.err_unrecognized')); return; }
   }
   if (ivritToolMismatch(payload.tool)) {
-    if (!confirm('This looks like a "' + payload.tool + '" save file, but this is the ' + IVRIT_CFG.tool + ' page.\n\nImporting it here may not do anything useful. Import anyway?')) return;
+    if (!confirm(I18n.t('shared.ivrit.tool_mismatch_confirm', { tool: payload.tool, tool2: IVRIT_CFG.tool }))) return;
   }
   const mode = await ivritAskMode();
   if (!mode) return;
   try { IVRIT_CFG.apply(payload.data || {}, mode); }
-  catch (e) { alert('Restore failed: ' + e.message); return; }
+  catch (e) { alert(I18n.t('shared.ivrit.err_restore_failed', { error: e.message })); return; }
   if (!IVRIT_CFG.needsReload) {
-    ivritStatus('Restored from ' + (sourceName || 'file'));
-    showAppToast('Restored successfully' + (sourceName ? ' from ' + sourceName : '') + '.');
+    ivritStatus(I18n.t('shared.ivrit.status_restored', { source: sourceName || 'file' }));
+    showAppToast(sourceName ? I18n.t('shared.ivrit.toast_restored_named', { source: sourceName }) : I18n.t('shared.ivrit.toast_restored_plain'));
   }
 }
 function ivritReadFile(file) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = () => ivritRestore(reader.result, file.name);
-  reader.onerror = () => alert('Could not read that file.');
+  reader.onerror = () => alert(I18n.t('shared.ivrit.err_read'));
   reader.readAsText(file);
 }
 function ivritInit() {
@@ -5148,7 +5189,7 @@ function initVowelLockPositionRows() {
         <label class="switch sm"><input type="checkbox" class="vowel-lock-pos-chk" ${lk.enabled ? 'checked' : ''}><span class="slider"></span></label>
         <span class="label" style="font-size:0.82rem;">${labels[pos - 1]} Position</span>
       </div>
-      <div class="vowel-lock-pos-content ${lk.enabled ? '' : 'hide'}" style="margin-top:6px;padding-left:10px;border-left:2px solid var(--border);margin-left:8px;">
+      <div class="vowel-lock-pos-content ${lk.enabled ? '' : 'hide'}" style="margin-top:6px;padding-inline-start:10px;border-inline-start:2px solid var(--border);margin-inline-start:8px;">
         <div class="sub" style="margin-bottom:4px;">Locked vowel(s):</div>
         <div class="vowel-lock-grid-inner" id="vowelLockGrid-${pos}" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
       </div>
@@ -5174,7 +5215,7 @@ function buildVowelLockGrid(pos) {
     const tile = document.createElement('div');
     tile.className = 'vlk-tile' + (lk.vowels.has(v.key) ? ' selected' : '');
     tile.title = v.label;
-    tile.innerHTML = `<div class="vheb" lang="he">${v.nikud}</div>`;
+    tile.innerHTML = `<div class="vheb" lang="he" dir="rtl">${v.nikud}</div>`;
     tile.addEventListener('click', () => {
       if (lk.vowels.has(v.key)) lk.vowels.delete(v.key);
       else lk.vowels.add(v.key);
@@ -5515,34 +5556,34 @@ function startPractice() {
   // Validate
   const issues = [];
   if (!otherModeActive) {
-    if (selectedLetters.size === 0) issues.push('Select at least one letter.');
-    if (selectedVowels.size === 0) issues.push('Select at least one vowel.');
+    if (selectedLetters.size === 0) issues.push(I18n.t('flashcards.start.err_select_letter'));
+    if (selectedVowels.size === 0) issues.push(I18n.t('flashcards.start.err_select_vowel'));
     if (anyLetterLock && mode >= 2) {
       const hasEnabledEmpty = Object.entries(letterLocks).some(([pos, lk]) => +pos <= mode && lk.enabled && lk.letters.size === 0);
-      if (hasEnabledEmpty) issues.push('A locked position has no letter selected.');
+      if (hasEnabledEmpty) issues.push(I18n.t('flashcards.start.err_locked_empty'));
     }
   }
   if (otherModeActive && otherSubMode === 'numbers' && numberMin > numberMax) {
-    issues.push('Range min must be ≤ max.');
+    issues.push(I18n.t('flashcards.start.err_range'));
   }
   if (otherModeActive && otherSubMode === 'colors' && selectedColors.size === 0) {
-    issues.push('Select at least one color.');
+    issues.push(I18n.t('flashcards.start.err_select_color'));
   }
   if (otherModeActive && otherSubMode === 'emoji') {
-    if (!EMOJI_DATA) issues.push('Emoji data still loading — try again in a second.');
-    else if (selectedEmojiSubs.size === 0) issues.push('Select at least one emoji subcategory.');
+    if (!EMOJI_DATA) issues.push(I18n.t('flashcards.start.err_emoji_loading'));
+    else if (selectedEmojiSubs.size === 0) issues.push(I18n.t('flashcards.start.err_select_emoji'));
   }
   if (otherModeActive && otherSubMode === 'words') {
     WORDS_POOL = resolveWordsPool();
-    if (wordsSource === 'alldict' && !ALL_WORDS_DATA) issues.push('Dictionary still loading — try again in a second.');
+    if (wordsSource === 'alldict' && !ALL_WORDS_DATA) issues.push(I18n.t('flashcards.start.err_dict_loading'));
     else if (wordsSource === 'mylists' && selectedWordListIds.size === 0 && !(wordsInlinePool && wordsInlinePool.length))
-      issues.push('Select at least one word list.');
-    else if (!WORDS_POOL || WORDS_POOL.length === 0) issues.push('No words match the current selection.');
+      issues.push(I18n.t('flashcards.start.err_select_wordlist'));
+    else if (!WORDS_POOL || WORDS_POOL.length === 0) issues.push(I18n.t('flashcards.start.err_no_words'));
   }
   if (issues.length) { alert(issues.join('\n')); return; }
 
   const deck = generateDeck(cardCount);
-  if (deck.length === 0) { alert("Couldn't generate cards with the current selection."); return; }
+  if (deck.length === 0) { alert(I18n.t('flashcards.start.err_no_cards')); return; }
   currentCards = deck;
   savedCards = deck.slice();
   currentIndex = 0;
@@ -5571,7 +5612,7 @@ function renderCurrentCard() {
   const card = currentCards[currentIndex];
   const total = currentCards.length;
   const meta = document.getElementById('cardMeta');
-  meta.textContent = `Card ${currentIndex + 1} of ${total}`;
+  meta.textContent = I18n.t('flashcards.card.meta', { count: currentIndex + 1, total: total });
   document.getElementById('progressBar').style.width = `${((currentIndex + 1) / total) * 100}%`;
   const skipHdr = document.getElementById('skipReshowHeader');
   if (skipHdr) skipHdr.style.display = card.isSkippedReshow ? '' : 'none';
@@ -5599,6 +5640,9 @@ function renderCurrentCard() {
   // Reset inline styles that colors branch may set
   front.style.cssText = '';
   back.style.cssText = '';
+  // Clear content-direction pins from the previous card (re-applied per branch below).
+  front.removeAttribute('dir'); front.removeAttribute('lang');
+  back.removeAttribute('dir'); back.removeAttribute('lang');
   front.parentElement.style.background = '';
   front.parentElement.style.borderColor = '';
   back.parentElement.style.background = '';
@@ -5727,6 +5771,7 @@ function renderCurrentCard() {
       front.textContent = card.heb;
       front.style.fontFamily = 'var(--heb-font)';
       front.style.direction = 'rtl';
+      front.setAttribute('lang', 'he');
       back.textContent = card.translit;
       back.style.fontFamily = 'var(--eng-font)';
       back.style.direction = 'ltr';
@@ -5738,6 +5783,7 @@ function renderCurrentCard() {
       back.textContent = card.heb;
       back.style.fontFamily = 'var(--heb-font)';
       back.style.direction = 'rtl';
+      back.setAttribute('lang', 'he');
       back.style.fontSize = 'clamp(3rem, 12vw, 5rem)';
     }
   } else if (inverse) {
@@ -5758,6 +5804,13 @@ function renderCurrentCard() {
     back.style.direction = 'ltr';
     back.style.fontSize = 'clamp(1.4rem, 6vw, 2.4rem)';
   }
+
+  // Content-direction pin: mirror each face's explicit CSS direction onto a dir attribute so the
+  // UI language (html dir) can never flip how the Hebrew learning content renders.
+  [front, back].forEach(el => {
+    const d = el.style.direction;
+    if (d) el.setAttribute('dir', d); else el.removeAttribute('dir');
+  });
 
   // Audio speak button
   const speakBtn = document.getElementById('fcSpeakBtn');
@@ -5839,9 +5892,9 @@ function choiceFace(card) {
   // Numbers speak the Hebrew number-words; the identify face follows numberFront
   // (digit when the front shows the numeral, Hebrew words otherwise).
   if (otherModeActive && otherSubMode === 'numbers' && numberFront === 'number') {
-    return `<span class="lc-num">${esc(String(card.translit))}</span>`;
+    return `<span class="lc-num" dir="ltr">${esc(String(card.translit))}</span>`;
   }
-  return `<span class="lc-heb">${colorizeHebrew(card.heb)}</span>`;
+  return `<span class="lc-heb" lang="he" dir="rtl">${colorizeHebrew(card.heb)}</span>`;
 }
 // Answer + up to n-1 distractors, deduped by spoken form (card.heb), topped up from the
 // full mode pool via generateCard() when the deck has too few distinct forms. Shuffled.
@@ -5866,7 +5919,7 @@ function sampleChoices(answer, n) {
 function setListenHint() {
   const hint = document.getElementById('lcHint');
   if (!hint) return;
-  hint.textContent = listenHeard ? 'Which one did you hear?' : 'Tap 🔊 to hear';
+  hint.textContent = listenHeard ? I18n.t('flashcards.card.listen_hint_heard') : I18n.t('flashcards.card.listen_hint_tap');
 }
 function renderListeningCard(card) {
   listenLocked = false;
@@ -5895,7 +5948,7 @@ function renderListeningCard(card) {
   replay.onclick = () => { speakWord(card.heb); listenHeard = true; setListenHint(); };
   setListenHint();
   if (currentListenChoices.length < 2) {   // degenerate universe: only the answer exists
-    document.getElementById('lcHint').textContent = 'Add more letters/vowels for multiple-choice options.';
+    document.getElementById('lcHint').textContent = I18n.t('flashcards.card.listen_degenerate');
   }
 }
 function chooseTile(chosen, answer, tileEl) {
@@ -5953,14 +6006,14 @@ function showResults() {
   const correctCount = idxs.filter(i => scores[i] === true).length;
   const pct = total ? Math.round((correctCount / total) * 100) : 0;
   document.getElementById('resultsPct').textContent = pct + '%';
-  document.getElementById('resultsFrac').textContent = `${correctCount} / ${total} correct`;
+  document.getElementById('resultsFrac').textContent = I18n.t('flashcards.results.frac', { correct: correctCount, total: total });
   const timeEl = document.getElementById('resultsTime');
   if (timerMode === 'track') {
     timeEl.style.display = '';
-    timeEl.textContent = `Time: ${formatTimerSecs(timerElapsed)}`;
+    timeEl.textContent = I18n.t('flashcards.results.time', { time: formatTimerSecs(timerElapsed) });
   } else if (timerMode === 'limit') {
     timeEl.style.display = '';
-    timeEl.textContent = `Time limit: ${formatTimerSecs(timeLimitSeconds)}`;
+    timeEl.textContent = I18n.t('flashcards.results.time_limit', { time: formatTimerSecs(timeLimitSeconds) });
   } else {
     timeEl.style.display = 'none';
   }
@@ -5972,9 +6025,10 @@ function showResults() {
     const s = scores[i];
     const cls = s === true ? 'good' : s === false ? 'bad' : '';
     const mark = s === true ? '✓' : s === false ? '✗' : '–';
+    // Learning content: pin the Hebrew rtl/lang; the emoji wrapper stays ltr.
     const middle = c.emoji
-      ? `<span class="rheb" style="display:flex;align-items:center;gap:10px;direction:ltr;"><span style="font-size:1.6rem;flex-shrink:0;line-height:1;">${c.emoji}</span><span style="direction:rtl;font-family:var(--heb-font);">${c.heb}</span></span>`
-      : `<span class="rheb">${c.heb}</span>`;
+      ? `<span class="rheb" style="display:flex;align-items:center;gap:10px;direction:ltr;" dir="ltr"><span style="font-size:1.6rem;flex-shrink:0;line-height:1;">${c.emoji}</span><span style="direction:rtl;font-family:var(--heb-font);" lang="he" dir="rtl">${c.heb}</span></span>`
+      : `<span class="rheb" lang="he" dir="rtl">${c.heb}</span>`;
     return `
       <li class="result-item ${cls}">
         <span class="rmark">${mark}</span>
@@ -5990,15 +6044,18 @@ function showResults() {
   // Snapshot the finished drill so "Save Results" can store it to a profile
   lastDrillResult = buildResultObject();
   const saveBtn = document.getElementById('saveResultsBtn');
-  if (saveBtn) { saveBtn.disabled = !lastDrillResult; saveBtn.textContent = '💾 Save Results'; }
+  if (saveBtn) { saveBtn.disabled = !lastDrillResult; saveBtn.textContent = I18n.t('flashcards.results.save_button'); }
 
   // End-of-session summary (uses the live session stats before they reset on the next start)
   const streakEl = document.getElementById('resultsStreak');
   if (streakEl) {
     const acc = sessAttempted ? Math.round((sessCorrect / sessAttempted) * 100) : pct;
-    const answered = sessAttempted || total;
-    let summary = `Best streak: ${streakBest} 🔥 · Accuracy ${acc}% · ${answered} card${answered === 1 ? '' : 's'} answered`;
-    if (streakBest > 0 && streakBest >= pbStreak) summary += ' · 🏆 New personal best!';
+    // Real count — NOT `sessAttempted || total`, which would render a legitimate 0 as `total`
+    // (the falsy-zero bug). `{count:0}` must show "0 cards answered".
+    const answered = (sessAttempted != null) ? sessAttempted : total;
+    let summary = I18n.t('flashcards.results.summary.' + (answered === 1 ? 'one' : 'other'),
+      { streak: streakBest, pct: acc, count: answered });
+    if (streakBest > 0 && streakBest >= pbStreak) summary += ' ' + I18n.t('flashcards.results.new_pb');
     streakEl.textContent = summary;
   }
 
@@ -6049,15 +6106,16 @@ function wireCardScreen() {
   document.getElementById('markYes').addEventListener('click', markCorrect);
   document.getElementById('markNo').addEventListener('click', markIncorrect);
   document.getElementById('endEarlyBtn').addEventListener('click', () => {
-    if (confirm('End practice and see results so far?')) showResults();
+    if (confirm(I18n.t('flashcards.card.end_early_confirm'))) showResults();
   });
   document.addEventListener('keydown', e => {
     if (!document.getElementById('screenCard').classList.contains('active')) return;
     if (isListeningActive()) {
       // Listening rounds: no flip / no y-n grading (would corrupt the round).
       if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); document.getElementById('lcReplay').click(); }
-      else if (e.key === 'ArrowLeft') { prevCard(); }
-      else if (e.key === 'ArrowRight') { nextCard(); }
+      // Arrow keys follow VISUAL direction: in RTL, ArrowRight is "previous", ArrowLeft is "next".
+      else if (e.key === 'ArrowLeft') { _rtlNav() ? nextCard() : prevCard(); }
+      else if (e.key === 'ArrowRight') { _rtlNav() ? prevCard() : nextCard(); }
       else if (/^[1-9]$/.test(e.key)) {
         const tiles = document.querySelectorAll('#lcChoices .lc-tile');
         if (tiles[+e.key - 1]) tiles[+e.key - 1].click();
@@ -6065,8 +6123,8 @@ function wireCardScreen() {
       return;
     }
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipCard(); }
-    else if (e.key === 'ArrowLeft') { prevCard(); }
-    else if (e.key === 'ArrowRight') { nextCard(); }
+    else if (e.key === 'ArrowLeft') { _rtlNav() ? nextCard() : prevCard(); }
+    else if (e.key === 'ArrowRight') { _rtlNav() ? prevCard() : nextCard(); }
     else if (e.key.toLowerCase() === 'y') markCorrect();
     else if (e.key.toLowerCase() === 'n') markIncorrect();
   });
@@ -6266,7 +6324,7 @@ function wireSetupScreen() {
     document.querySelectorAll('#timerModePills .pill').forEach(x => x.classList.toggle('active', x === p));
     document.getElementById('timerOpts').classList.toggle('hide', timerMode === 'off');
     document.getElementById('timerLimitRow').classList.toggle('hide', timerMode !== 'limit');
-    document.getElementById('timerShowLabel').textContent = timerMode === 'limit' ? 'Show countdown on screen' : 'Show timer on screen';
+    { const _tsl = document.getElementById('timerShowLabel'); const _tk = timerMode === 'limit' ? 'flashcards.timer.show_countdown' : 'flashcards.timer.show_timer'; _tsl.setAttribute('data-i18n', _tk); _tsl.textContent = I18n.t(_tk); }
     saveSettings();
   }));
   document.getElementById('timerShowToggle').addEventListener('change', e => {
@@ -6292,7 +6350,7 @@ function wireSetupScreen() {
     saveSettings();
   }));
   document.getElementById('colorReset').addEventListener('click', () => {
-    if (!confirm('Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.')) return;
+    if (!confirm(I18n.t('flashcards.advanced.color_reset_confirm'))) return;
     nikudColorOverrides = {};
     initColorPickers();
     saveSettings();
@@ -6354,7 +6412,9 @@ function _syncFsBtn() {
   if (!btn) return;
   btn.textContent = on ? '⤢' : '⛶';
   btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-  btn.title = on ? 'Exit fullscreen' : 'Present fullscreen';
+  const fk = on ? 'shared.fullscreen.exit_title' : 'shared.fullscreen.enter_title';
+  btn.setAttribute('data-i18n-title', fk);
+  btn.title = I18n.t(fk);
 }
 function initPresent() {
   const btn = document.getElementById('fsBtn');
@@ -6406,7 +6466,52 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('#listenChoicePills .pill').forEach(p => p.classList.toggle('active', +p.dataset.lc === listeningChoices));
   initSpeechCapability();
   updateStatsBar();
+
+  // ── i18n: translate static chrome once the locale loads, and re-render live on switch ──
+  if (window.I18n) {
+    I18n.ready.then(applyI18n);
+    I18n.onChange(applyI18n);
+  }
 });
+
+// True when the UI is rendering right-to-left (Hebrew). Used to flip Arrow-key nav to visual dir.
+function _rtlNav() { return document.documentElement.dir === 'rtl'; }
+
+// Translate all static [data-i18n*] chrome, then rebuild the dynamic pieces that bake translated
+// strings at render time. Called on I18n.ready (first load) and on every live language switch —
+// no reload, so all in-memory session state (current drill, scores, streak) is preserved.
+function applyI18n() {
+  if (!window.I18n) return;
+  I18n.applyStaticI18n();
+  // Dynamic pieces that build their own strings via t():
+  initFontSelector();
+  initEngFontSelector();
+  initCountGrid();
+  renderPresets();
+  renderProfiles();
+  syncOtherSubUI();
+  updateWordsCount();
+  { const _tsl = document.getElementById('timerShowLabel');
+    if (_tsl) { const _tk = timerMode === 'limit' ? 'flashcards.timer.show_countdown' : 'flashcards.timer.show_timer';
+                _tsl.setAttribute('data-i18n', _tk); _tsl.textContent = I18n.t(_tk); } }
+  // Re-render the active screen so its dynamic strings (card meta, results summary, etc.) update.
+  if (document.getElementById('screenCard').classList.contains('active')) {
+    if (currentCards.length) renderCurrentCard();
+    updateStatsBar();
+    updateTimerDisplay();
+  }
+  if (document.getElementById('screenResults').classList.contains('active') && currentCards.length) showResults();
+  // Live-update the tour card if a tour is in progress.
+  if (_tourActive && _tourIdx >= 0) {
+    const step = TOUR_STEPS[_tourIdx];
+    if (step) {
+      document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey);
+      document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKey);
+      document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: _tourIdx + 1, total: TOUR_STEPS.length });
+      document.getElementById('tourNext').textContent = I18n.t(_tourIdx === TOUR_STEPS.length - 1 ? 'shared.tour.done' : 'shared.tour.next');
+    }
+  }
+}
 </script>
 </body>
 </html>

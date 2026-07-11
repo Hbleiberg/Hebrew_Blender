@@ -771,339 +771,339 @@ dictionary.wordlists.head_desc,Save selected words as a named list you can reuse
 dictionary.wordlists.head_tip,"Save selected words as a named list stored across the whole site, so you can reuse it in other tools.",,word-lists tooltip,
 dictionary.wordlists.manager_button,📚 Word Lists,,open word-lists manager button,leading-emoji
 dictionary.wordlists.save_button,⭑ Save as Word List…,,save word-list button,leading-emoji
-flashcards.advanced.audio_label,Audio,,advanced toggle label,
-flashcards.advanced.backup_head,Backup Presets,,advanced subheading,
-flashcards.advanced.backup_include_label,Include in backup:,,backup scope label,
-flashcards.advanced.backup_intro,Save your data to a .ivrit file on your device. Restore by dropping the file below or browsing for it. Use the toggle below to choose what's included.,,backup area intro,
-flashcards.advanced.backup_manual_placeholder,Exported preset JSON appears here…,,manual backup textarea placeholder,placeholder
-flashcards.advanced.backup_scope_both,Both,,backup scope button,
-flashcards.advanced.backup_scope_presets,Presets,,backup scope button,
-flashcards.advanced.backup_scope_profiles,Profiles,,backup scope button,
-flashcards.advanced.color_mode_highlight,Highlight,,color-coding mode pill,
-flashcards.advanced.color_mode_letter,Letter,,color-coding mode pill,
-flashcards.advanced.color_mode_underline,Underline,,color-coding mode pill,
-flashcards.advanced.english_font_head,English / Latin Font,,advanced subheading,
-flashcards.advanced.hebrew_font_head,Hebrew Font,,advanced subheading,
-flashcards.advanced.hide_home,Hide Home Arrow,,advanced toggle label,
-flashcards.advanced.nikkud_color_coding,Nikkud Color Coding,,advanced toggle label,
-flashcards.advanced.panel_title,Advanced Settings,,panel title,
-flashcards.advanced.scheme_default,Default,,vowel color scheme button,
-flashcards.advanced.scheme_reset,Reset,,vowel color scheme reset button,
-flashcards.advanced.scheme_talam,TaL AM,,vowel color scheme button,
-flashcards.advanced.show_skipped,Show skipped cards again,,advanced toggle label,
-flashcards.advanced.translit_ashkenazi,Ashkenazi,,transliteration style option,
-flashcards.advanced.translit_brill,Brill Academic,,transliteration style option,
-flashcards.advanced.translit_credit,Powered by hebrew-transliteration by Charles Loder,,transliteration attribution,html (contains link)
-flashcards.advanced.translit_default,Default (built-in),,transliteration style option,
-flashcards.advanced.translit_help,"Sets the romanization style. To show or hide transliteration on cards, use each mode's “Show transliteration” toggle in the Mode panel above.",,transliteration help text,
-flashcards.advanced.translit_modern,Modern Israeli,,transliteration style option,
-flashcards.advanced.translit_sbl,SBL Academic,,transliteration style option,
-flashcards.advanced.translit_simple,Simple Stressed,,transliteration style option,
-flashcards.advanced.transliteration_head,Transliteration,,advanced subheading,
-flashcards.advanced.tts_slow,Slow,,tts rate slider min label,
-flashcards.advanced.tts_speed_label,Hebrew TTS Reading Speed,,tts rate slider label,
-flashcards.badge.beta,BETA,,inline feature badge,
-flashcards.card.aria_answer_choices,Answer choices,,listening choices group aria-label,aria-label only
-flashcards.card.aria_flip,Flash card. Tap or press space to flip.,,card aria-label,aria-label only
-flashcards.card.aria_play_audio,Play audio,,listening replay aria-label,aria-label only
-flashcards.card.did_i_get_it,Did I get it?,,card back prompt,
-flashcards.card.end_early,End Practice Early,,end-early button,
-flashcards.card.flip_title,Flip,,flip button title,aria-label only
-flashcards.card.hear,🔊 Hear,,card back speak button,leading-emoji
-flashcards.card.listen_degenerate,Add more letters/vowels for multiple-choice options.,,listening insufficient-options hint,
-flashcards.card.listen_hint_heard,Which one did you hear?,,listening prompt after playing,
-flashcards.card.listen_hint_tap,Tap 🔊 to hear,,listening prompt before playing,leading-emoji
-flashcards.card.mark_no,✗ No,,mark-wrong button,leading-emoji
-flashcards.card.mark_yes,✓ Yes,,mark-right button,leading-emoji
-flashcards.card.meta,Card {count} of {total},,card progress meta,
-flashcards.card.next,Next ›,,card nav button,leading-emoji
-flashcards.card.prev,‹ Prev,,card nav button,leading-emoji
-flashcards.card.skipped_header,↻ Skipped Card,,skipped-card banner,leading-emoji
-flashcards.card.stat_accuracy,Accuracy,,card stats label,
-flashcards.card.stat_correct,Correct,,card stats label,
-flashcards.card.stat_pb,PB,,card stats label,
-flashcards.card.stat_streak,Streak,,card stats label,
-flashcards.card.tap_to_flip,Tap to flip,,card front hint,
-flashcards.count.panel_title,Card Count,,panel title,
-flashcards.faq.a_customize,"Yes. Pick any subset of Hebrew letters and vowels, and 1, 2, or 3 letters per card.",,footer FAQ answer,
-flashcards.faq.a_free,Yes. Free for non-commercial educational use under CC BY-NC-SA 4.0.,,footer FAQ answer,
-flashcards.faq.a_help_reading,"Hebrew flash cards build automatic letter–vowel recognition, the core skill behind fluent reading. Short drills with nikkud help students decode unfamiliar words faster.",,footer FAQ answer,
-flashcards.faq.a_nikkud,"Yes. Every card displays Hebrew letters with full nikkud, and you can choose which vowels appear.",,footer FAQ answer,
-flashcards.faq.q_customize,Can I customize letters?,,footer FAQ question,
-flashcards.faq.q_free,Are they free?,,footer FAQ question,
-flashcards.faq.q_help_reading,How do flash cards help reading?,,footer FAQ question,
-flashcards.faq.q_nikkud,Do cards include nikkud?,,footer FAQ question,
-flashcards.faq.summary,Frequently Asked Questions,,footer FAQ summary,
-flashcards.glyphname.letter_alef,Alef,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_ayin,Ayin,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_bet,Bet,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_chaf,Chaf,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_chaf_sofit,Chaf Sofit,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_chet,Chet,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_dalet,Dalet,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_feh,Feh,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_feh_sofit,Feh Sofit,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_gimel,Gimel,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_heh,Heh,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_kaf,Kaf,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_koof,Koof,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_lamed,Lamed,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_mem,Mem,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_mem_sofit,Mem Sofit,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_nun,Nun,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_nun_sofit,Nun Sofit,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_peh,Peh,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_resh,Resh,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_samech,Samech,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_sav,Sav,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_shin,Shin,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_sin,Sin,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_tav,Tav,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_tet,Tet,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_tzadi,Tzadi,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_tzadi_sofit,Tzadi Sofit,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_vav,Vav,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_vet,Vet,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_yud,Yud,,letter picker tile label,glyph-name
-flashcards.glyphname.letter_zayin,Zayin,,letter picker tile label,glyph-name
-flashcards.glyphname.vowel_chirik,Chirik,,vowel picker tile label,glyph-name
-flashcards.glyphname.vowel_hataf_kamatz,Hataf Kamatz,,vowel picker tile label,glyph-name
-flashcards.glyphname.vowel_hataf_patach,Hataf Patach,,vowel picker tile label,glyph-name
-flashcards.glyphname.vowel_hataf_segol,Hataf Segol,,vowel picker tile label,glyph-name
-flashcards.glyphname.vowel_holam,Holam,,vowel picker tile label,glyph-name
-flashcards.glyphname.vowel_kamatz,Kamatz,,vowel picker tile label,glyph-name
-flashcards.glyphname.vowel_kubutz,Kubutz,,vowel picker tile label,glyph-name
-flashcards.glyphname.vowel_patach,Patach,,vowel picker tile label,glyph-name
-flashcards.glyphname.vowel_segol,Segol,,vowel picker tile label,glyph-name
-flashcards.glyphname.vowel_shuruk,Shuruk,,vowel picker tile label,glyph-name
-flashcards.glyphname.vowel_shva,Shva,,vowel picker tile label,glyph-name
-flashcards.glyphname.vowel_tzere,Tzere,,vowel picker tile label,glyph-name
-flashcards.glyphname.vowel_vav_holam,Vav Holam,,vowel picker tile label,glyph-name
-flashcards.header.h1,Hebrew Flash Cards for Reading Practice,,page H1 heading,
-flashcards.header.home,←,,"header home button, icon","leading-emoji; title/aria ""Home"""
-flashcards.header.home_label,Home,,header home button title/aria,aria-label only
-flashcards.header.present_title,Present fullscreen,,header present button title (not in fullscreen),aria-label only
-flashcards.header.tour_button,❓ Tour,,header tour launcher button,leading-emoji
-flashcards.header.tour_button_title,Take a quick tour,,header tour launcher title,aria-label only
-flashcards.howto.step1,"Choose 1, 2, or 3 letters per card.",,footer how-to step,
-flashcards.howto.step2,Select Hebrew letters and vowels to drill.,,footer how-to step,
-flashcards.howto.step3,Set the number of cards in the deck.,,footer how-to step,
-flashcards.howto.step4,Click Start to begin.,,footer how-to step,html
-flashcards.howto.step5,Tap a card to reveal it; mark right or wrong.,,footer how-to step,
-flashcards.howto.summary,How To Use,,footer how-to summary,
-flashcards.letters.all,All,,letter select button,
-flashcards.letters.dagesh_tav_label,Dagesh Tav / Sav,,letter toggle label,
-flashcards.letters.dagesh_tav_tip,Add the Tav with dagesh ('Tav') versus without ('Sav').,,dagesh-tav toggle tooltip,
-flashcards.letters.no_sofit,No Sofit,,letter select button,
-flashcards.letters.none,None,,letter select button,
-flashcards.letters.panel_title,Letter Select,,panel title,
-flashcards.listening.warn_name_letter,Listening isn’t available for “Name the Letter”.,,listening disabled title,aria-label only
-flashcards.listening.warn_no_speech_note,"Audio isn’t supported in this browser, so Listening is unavailable.",,listening disabled note,
-flashcards.listening.warn_no_speech_title,Audio isn’t supported in this browser.,,listening disabled title,aria-label only
-flashcards.listening.warn_no_voice,No Hebrew voice detected on this device — audio may be silent or read with a default voice.,,listening warning note,
-flashcards.lock.locked_letters,Locked letter(s):,,letter lock sub-label,
-flashcards.lock.locked_vowels,Locked vowel(s):,,vowel lock sub-label,
-flashcards.lock.position_heading,{ordinal} Position,,letter/vowel lock per-position heading,
-flashcards.manual.invalid_json,Invalid JSON: {message},,manual import alert,
-flashcards.manual.no_presets_key,"No ""presets"" key found.",,manual import alert,
-flashcards.mode.choices_label,Choices:,,listening choices row label,
-flashcards.mode.color_display_color,Color,,colors display pill,
-flashcards.mode.color_display_colorname,Color + Name,,colors display pill,
-flashcards.mode.color_display_label,Display:,,colors display row label,
-flashcards.mode.color_display_name,Name,,colors display pill,
-flashcards.mode.color_front_color,Color,,colors front pill,
-flashcards.mode.color_front_hebrew,Hebrew Word,,colors front pill,
-flashcards.mode.emoji_front_emoji,Emoji,,emoji front pill,
-flashcards.mode.emoji_front_hebrew,Hebrew Word,,emoji front pill,
-flashcards.mode.emoji_gender_both,Show M/F Form,,emoji gender button,
-flashcards.mode.emoji_gender_both_tip,"For emojis with both forms (e.g. cat → חָתוּל / חֲתוּלָה), each form appears as its own card.",,emoji gender tooltip,mixed UI+content — do not translate {…}
-flashcards.mode.emoji_gender_fem,♀ Fem,,emoji gender button,leading-emoji
-flashcards.mode.emoji_gender_masc,♂ Masc,,emoji gender button,leading-emoji
-flashcards.mode.emoji_show_gender,Show gender (♂/♀),,emoji checkbox label,leading-emoji
-flashcards.mode.emoji_side_both,Both,,emoji gender-side pill,
-flashcards.mode.emoji_side_emoji,Emoji side,,emoji gender-side pill,
-flashcards.mode.emoji_side_hebrew,Hebrew side,,emoji gender-side pill,
-flashcards.mode.front_label,Front:,,mode front-side row label (shared across sub-modes),
-flashcards.mode.gender_feminine,Feminine,,gender pill,
-flashcards.mode.gender_label,Gender:,,mode gender row label (shared across sub-modes),
-flashcards.mode.gender_masculine,Masculine,,gender pill,
-flashcards.mode.inverse_label,Inverse Mode,,mode toggle label,
-flashcards.mode.inverse_tip,Show the transliteration first; flip to reveal the Hebrew.,,inverse toggle tooltip,
-flashcards.mode.letters_per_card,Letters per card:,,mode row label,
-flashcards.mode.listening_label,🎧 Listening,,listening toggle label,leading-emoji
-flashcards.mode.listening_tip,"Instead of reading the card, hear it spoken and tap the matching answer. Trains listening (hear → identify) instead of decoding (see → say).",,listening toggle tooltip,
-flashcards.mode.lock_letter_label,Lock Letter,,mode toggle label,
-flashcards.mode.lock_letter_tip,Force a specific letter (or set of letters) to always appear at the chosen position.,,lock-letter toggle tooltip,
-flashcards.mode.name_letter_label,Name the Letter,,mode toggle label,
-flashcards.mode.name_letter_show_letter,Show Letter,,name-letter front pill,
-flashcards.mode.name_letter_show_name,Show Name,,name-letter front pill,
-flashcards.mode.panel_title,Mode,,panel title,
-flashcards.mode.pill_1letter,1 Letter,,mode pill,
-flashcards.mode.pill_2letter,2 Letter,,mode pill,
-flashcards.mode.pill_3letter,3 Letter,,mode pill,
-flashcards.mode.pill_other,Other,,mode pill,
-flashcards.mode.range_label,Range:,,numbers mode range label,
-flashcards.mode.select_all,All,,color/emoji selection button,
-flashcards.mode.select_main_colors,Main Colors,,colors selection button,
-flashcards.mode.select_none,None,,color/emoji selection button,
-flashcards.mode.show_number,Show Number,,numbers front pill,
-flashcards.mode.show_transliteration,Show transliteration,,checkbox label (shared across sub-modes),
-flashcards.mode.show_words,Show Words,,numbers front pill,
-flashcards.mode.sub_colors,Colors,,other-mode sub pill,
-flashcards.mode.sub_emoji,Emoji,,other-mode sub pill,
-flashcards.mode.sub_numbers,Numbers,,other-mode sub pill,
-flashcards.mode.sub_words,Words,,other-mode sub pill,
-flashcards.mode.words_empty_state,"No word lists yet. Create word lists in the Dictionary, then come back to drill them here.",,words empty state,html (contains link)
-flashcards.mode.words_front_english,English,,words front pill,
-flashcards.mode.words_front_hebrew,Hebrew,,words front pill,
-flashcards.mode.words_length_label,Word length:,,words length row label,
-flashcards.mode.words_length_unit,letters,,words length unit suffix,
-flashcards.mode.words_source_alldict,All Dictionary,,words source pill,
-flashcards.mode.words_source_label,Source:,,words source row label,
-flashcards.mode.words_source_mylists,My Word Lists,,words source pill,
-flashcards.profile.button_label,{name}  ·  {count} saved,,save-to-profile choice button,
-flashcards.profile.cancel,Cancel,,save-to-profile cancel button,
-flashcards.profile.delete_confirm,"Delete profile ""{name}"" and all of its saved results? This cannot be undone.",,confirm dialog,mixed UI+content — do not translate {…}
-flashcards.profile.delete_result_confirm,Delete this saved result?,,confirm dialog,
-flashcards.profile.history_pct_frac,({correct}/{total}),,history item score fraction,
-flashcards.profile.merge_confirm,"Profile ""{newName}"" already exists — merge ""{oldName}"" into it?",,confirm dialog,mixed UI+content — do not translate {…}
-flashcards.profile.new_profile_heading,New profile,,save-to-profile modal section,
-flashcards.profile.new_prompt,New profile name:,,prompt dialog,
-flashcards.profile.no_profiles_option,— no profiles —,,active-profile dropdown empty option,
-flashcards.profile.no_selected_alert,No profile selected.,,alert,
-flashcards.profile.rename_prompt,Rename profile to:,,prompt dialog,
-flashcards.profile.save,Save,,save-to-profile create button,
-flashcards.profile.save_modal_title,Save results to…,,save-to-profile modal title,
-flashcards.profile.set_active,Set Active,,profile list button,
-flashcards.profile.student_name_placeholder,Student name…,,new-profile name input placeholder,placeholder
-flashcards.results.frac,{correct} / {total} correct,,results fraction,
-flashcards.results.mode_colors,Colors,,results-history mode label,
-flashcards.results.mode_drill,Drill,,results-history default mode label,
-flashcards.results.mode_emoji,Emoji,,results-history mode label,
-flashcards.results.mode_n_letter,{count}-letter,,results-history mode label,
-flashcards.results.mode_name_letters,Name Letters,,results-history mode label,
-flashcards.results.mode_numbers,Numbers,,results-history mode label,
-flashcards.results.mode_words,Words,,results-history mode label,
-flashcards.results.new_pb,· 🏆 New personal best!,,results summary suffix,leading-emoji
-flashcards.results.panel_title,Results,,results panel title,
-flashcards.results.practice_mistakes,Practice My Mistakes,,results action button,
-flashcards.results.redo,Redo This Card Set,,results action button,
-flashcards.results.return_to_options,Return to Options,,results action button,
-flashcards.results.save_button,💾 Save Results,,results action button,leading-emoji
-flashcards.results.save_button_done,✓ Saved to {name},,save-results confirmation label,leading-emoji
-flashcards.results.summary.one,Best streak: {streak} 🔥 · Accuracy {pct}% · {count} card answered,,results end-of-session summary,plural; leading-emoji
-flashcards.results.summary.other,Best streak: {streak} 🔥 · Accuracy {pct}% · {count} cards answered,,results end-of-session summary,plural; leading-emoji
-flashcards.results.time,Time: {time},,results time (track mode),
-flashcards.results.time_limit,Time limit: {time},,results time (limit mode),
-flashcards.setup.collapse_all,Collapse all menus,,setup toolbar button,
-flashcards.setup.expand_all,Expand all menus,,setup toolbar button,
-flashcards.share.copied,✓ Copied!,,copy-code button flash,leading-emoji
-flashcards.share.embed_cap,Only the first {count} of {total} words were embedded in this code.,,share-code warning,
-flashcards.share.invalid_code,Invalid code — please check and try again.,,share-code error,
-flashcards.start.button,Start Practicing! ✨,,start CTA button,leading-emoji
-flashcards.start.err_dict_loading,Dictionary still loading — try again in a second.,,start validation alert,
-flashcards.start.err_emoji_loading,Emoji data still loading — try again in a second.,,start validation alert,
-flashcards.start.err_locked_empty,A locked position has no letter selected.,,start validation alert,
-flashcards.start.err_no_cards,Couldn't generate cards with the current selection.,,start validation alert,
-flashcards.start.err_no_words,No words match the current selection.,,start validation alert,
-flashcards.start.err_range,Range min must be ≤ max.,,start validation alert,
-flashcards.start.err_select_color,Select at least one color.,,start validation alert,
-flashcards.start.err_select_emoji,Select at least one emoji subcategory.,,start validation alert,
-flashcards.start.err_select_letter,Select at least one letter.,,start validation alert,
-flashcards.start.err_select_vowel,Select at least one vowel.,,start validation alert,
-flashcards.start.err_select_wordlist,Select at least one word list.,,start validation alert,
-flashcards.teachertools.copy_code,📋 Copy Code,,share-code copy button,leading-emoji
-flashcards.teachertools.delete_button,Delete,,profile delete button,
-flashcards.teachertools.generate_share,Generate Share Code,,share-code button,
-flashcards.teachertools.got_code,Got a code from your teacher?,,share-code paste subheading,
-flashcards.teachertools.history_empty,No saved results yet for this profile.,,profile history empty state,empty state
-flashcards.teachertools.load_button,Load,,share-code load button,
-flashcards.teachertools.new_profile_button,＋ New,,new profile button,leading-emoji
-flashcards.teachertools.new_profile_button_title,Create a new profile,,new profile button title,aria-label only
-flashcards.teachertools.panel_title,Teacher Tools,,panel title,
-flashcards.teachertools.practice_weaknesses,🎯 Practice My Weaknesses,,teacher-tools button,leading-emoji
-flashcards.teachertools.preset_name_placeholder,Preset name…,,preset name input placeholder,placeholder
-flashcards.teachertools.presets_empty,"No presets yet — configure your settings, then save them here.",,presets empty state,empty state
-flashcards.teachertools.presets_head,Presets,,teacher-tools subheading,
-flashcards.teachertools.profiles_empty,No profiles yet — finish a drill and tap Save Results to create one.,,profiles empty state,empty state
-flashcards.teachertools.profiles_head,Profiles & Results,,teacher-tools subheading,
-flashcards.teachertools.profiles_intro,"Save drill results to a named profile to track progress over time. After a drill, tap Save Results on the results screen.",,profiles intro prose,
-flashcards.teachertools.rename_button,Rename,,profile rename button,
-flashcards.teachertools.results_history_heading,Results History — {name},,profile detail heading,
-flashcards.teachertools.save_button,Save,,save preset button,
-flashcards.teachertools.share_head,Teacher Share Code,,teacher-tools subheading,
-flashcards.teachertools.share_input_placeholder,Paste share code here…,,share input placeholder,placeholder
-flashcards.teachertools.share_intro,"Generate a code that captures every current setting. Share it with students — when they paste it and tap Load, the deck opens with your exact setup.",,share-code intro prose,
-flashcards.teachertools.share_output_placeholder,Tap “Generate Share Code” to create a code…,,share output textarea placeholder,placeholder
-flashcards.teachertools.view_weaknesses,📊 View Weaknesses,,teacher-tools button,leading-emoji
-flashcards.timer.mode_limit,Time Limit,,timer mode pill,
-flashcards.timer.mode_off,No Timer,,timer mode pill,
-flashcards.timer.mode_track,Record Time,,timer mode pill,
-flashcards.timer.panel_title,Timer,,panel title,
-flashcards.timer.show_countdown,Show countdown on screen,,timer toggle label (limit mode),
-flashcards.timer.show_timer,Show timer on screen,,timer toggle label (track/off),
-flashcards.timer.time_limit_label,Time limit:,,timer limit sub-label,
-flashcards.tour.advanced_body,"Color-code the nikkud, pick a Hebrew font, and fine-tune the deck.",,tour step body,
-flashcards.tour.advanced_title,Advanced Settings,,tour step title,
-flashcards.tour.letters_body,Tap letters to include or exclude them — match exactly what your class has learned.,,tour step body,
-flashcards.tour.letters_title,Letters,,tour step title,
-flashcards.tour.mode_body,"Choose what students practice: single letters, 2- or 3-letter blends, listening — or numbers, colors, emoji, and word cards.",,tour step body,
-flashcards.tour.mode_title,Practice Mode,,tour step title,
-flashcards.tour.start_body,Flips into full-screen flash cards. Tap or press Space to flip a card; arrow keys move between cards.,,tour step body,
-flashcards.tour.start_title,Start Practicing,,tour step title,
-flashcards.tour.teachertools_body,"Save presets and student profiles, and share your exact setup with a paste-in class code.",,tour step body,
-flashcards.tour.teachertools_title,Teacher Tools,,tour step title,
-flashcards.tour.vowels_body,Same idea for nikkud: only the vowels you've taught.,,tour step body,
-flashcards.tour.vowels_title,Vowels,,tour step title,
-flashcards.translit.load_failed,Library failed to load — using default style.,,transliteration load status,
-flashcards.translit.loading,Loading library…,,transliteration load status,toast
-flashcards.vowelgroup.color_aqua,Aqua,,vowel group color name,html (underlined first letter)
-flashcards.vowelgroup.color_blue,Blue,,vowel group color name,html (underlined first letter)
-flashcards.vowelgroup.color_green,Green,,vowel group color name,html (underlined first letter)
-flashcards.vowelgroup.color_grey,Grey,,vowel group color name,html (underlined first letter)
-flashcards.vowelgroup.color_navy,Blue,,vowel group color name (TaL AM navy),html (underlined first letter)
-flashcards.vowelgroup.color_orange,Orange,,vowel group color name (TaL AM),html (underlined first letter)
-flashcards.vowelgroup.color_purple,Purple,,vowel group color name,html (underlined first letter)
-flashcards.vowelgroup.color_red,Red,,vowel group color name,html (underlined first letter)
-flashcards.vowelgroup.color_yellow,Yellow,,vowel group color name,html (underlined first letter)
-flashcards.vowelgroup.header,{sound} Sound – {color},,vowel selector group header,html
-flashcards.vowels.all,All,,vowel select button,
-flashcards.vowels.count_vav_label,Count וֹ/וּ as a letter,,vav-as-letter toggle label,mixed UI+content — do not translate {…}
-flashcards.vowels.count_vav_tip,"When using cholam-vav (וֹ) or shuruk (וּ), treat the vav as the letter itself rather than a separate consonant.",,vav toggle tooltip,mixed UI+content — do not translate {…}
-flashcards.vowels.main,Main,,vowel select button,
-flashcards.vowels.none,None,,vowel select button,
-flashcards.vowels.panel_title,Vowel Select,,panel title,
-flashcards.vowels.pos_1st,1st,,vowel-position pill / lock ordinal,
-flashcards.vowels.pos_2nd,2nd,,vowel-position pill / lock ordinal,
-flashcards.vowels.pos_3rd,3rd,,vowel-position pill / lock ordinal,
-flashcards.vowels.pos_4th,4th,,lock ordinal,
-flashcards.vowels.vowel_lock_label,Vowel Lock,,vowel lock toggle label,
-flashcards.vowels.vowel_on_letter_label,Vowel on letter:,,vowel position row label,
-flashcards.weaknesses.cancel,Cancel,,card-count modal cancel button,
-flashcards.weaknesses.count_prompt,How many cards do you want to practice?,,card-count modal prompt,
-flashcards.weaknesses.count_prompt_max,Up to {count} weakness cards available. How many do you want to practice?,,card-count modal prompt,html
-flashcards.weaknesses.custom_label,Custom:,,card-count modal custom input label,
-flashcards.weaknesses.mastered,No mistakes here — mastered! 🎉,,weakness tab all-correct note,leading-emoji
-flashcards.weaknesses.missed_ratio,missed {missed}/{seen},,weakness row stat,
-flashcards.weaknesses.modal_title,Practice My Weaknesses,,card-count modal title,
-flashcards.weaknesses.no_mistakes_alert,No mistakes saved yet for this profile. Save some drill results first.,,alert,
-flashcards.weaknesses.not_enough_data,Not enough data yet — save more drill results.,,weakness tab empty state,empty state
-flashcards.weaknesses.other_colors,Colors,,weakness-view Other bucket label,
-flashcards.weaknesses.other_emojis,Emojis,,weakness-view Other bucket label,
-flashcards.weaknesses.other_numbers,Numbers,,weakness-view Other bucket label,
-flashcards.weaknesses.other_words,Words,,weakness-view Other bucket label,
-flashcards.weaknesses.start,Start,,card-count modal start button,
-flashcards.weaknesses.tab_combos,Letter + Vowel,,weakness-view tab,
-flashcards.weaknesses.tab_letters,Letters,,weakness-view tab,
-flashcards.weaknesses.tab_other,Other,,weakness-view tab,
-flashcards.weaknesses.tab_vowels,Vowels,,weakness-view tab,
-flashcards.weaknesses.view_title,Weaknesses — {name},,weakness-view modal title,
+flashcards.advanced.audio_label,Audio,שמע,advanced toggle label,
+flashcards.advanced.backup_head,Backup Presets,גיבוי הגדרות,advanced subheading,
+flashcards.advanced.backup_include_label,Include in backup:,כלול בגיבוי:,backup scope label,
+flashcards.advanced.backup_intro,Save your data to a .ivrit file on your device. Restore by dropping the file below or browsing for it. Use the toggle below to choose what's included.,"שמרו את הנתונים שלכם לקובץ ‎.ivrit במכשיר. לשחזור, גררו את הקובץ למטה או עיינו אליו. השתמשו במתג למטה כדי לבחור מה כלול.",backup area intro,
+flashcards.advanced.backup_manual_placeholder,Exported preset JSON appears here…,קובץ JSON מיוצא של ההגדרות יופיע כאן…,manual backup textarea placeholder,placeholder
+flashcards.advanced.backup_scope_both,Both,שניהם,backup scope button,
+flashcards.advanced.backup_scope_presets,Presets,הגדרות,backup scope button,
+flashcards.advanced.backup_scope_profiles,Profiles,פרופילים,backup scope button,
+flashcards.advanced.color_mode_highlight,Highlight,הדגשה,color-coding mode pill,
+flashcards.advanced.color_mode_letter,Letter,אות,color-coding mode pill,
+flashcards.advanced.color_mode_underline,Underline,קו תחתון,color-coding mode pill,
+flashcards.advanced.english_font_head,English / Latin Font,גופן אנגלי / לטיני,advanced subheading,
+flashcards.advanced.hebrew_font_head,Hebrew Font,גופן עברי,advanced subheading,
+flashcards.advanced.hide_home,Hide Home Arrow,הסתר חץ בית,advanced toggle label,
+flashcards.advanced.nikkud_color_coding,Nikkud Color Coding,צבעי ניקוד,advanced toggle label,
+flashcards.advanced.panel_title,Advanced Settings,הגדרות מתקדמות,panel title,
+flashcards.advanced.scheme_default,Default,ברירת מחדל,vowel color scheme button,
+flashcards.advanced.scheme_reset,Reset,איפוס,vowel color scheme reset button,
+flashcards.advanced.scheme_talam,TaL AM,תל-עם,vowel color scheme button,
+flashcards.advanced.show_skipped,Show skipped cards again,הצג שוב כרטיסים שדילגת עליהם,advanced toggle label,
+flashcards.advanced.translit_ashkenazi,Ashkenazi,אשכנזי,transliteration style option,
+flashcards.advanced.translit_brill,Brill Academic,Brill אקדמי,transliteration style option,
+flashcards.advanced.translit_credit,"Powered by <a href=""https://github.com/charlesLoder/hebrew-transliteration"" target=""_blank"" rel=""noopener"" style=""color:var(--gold);text-decoration:none;"">hebrew-transliteration</a> by Charles Loder","מופעל על ידי <a href=""https://github.com/charlesLoder/hebrew-transliteration"" target=""_blank"" rel=""noopener"" style=""color:var(--gold);text-decoration:none;"">hebrew-transliteration</a> מאת Charles Loder",transliteration attribution,html (contains link)
+flashcards.advanced.translit_default,Default (built-in),ברירת מחדל (מובנה),transliteration style option,
+flashcards.advanced.translit_help,"Sets the romanization style. To show or hide transliteration on cards, use each mode's “Show transliteration” toggle in the Mode panel above.","קובע את סגנון התעתיק. כדי להציג או להסתיר תעתיק על הכרטיסים, השתמשו במתג “הצג תעתיק” של כל מצב בלוח המצב למעלה.",transliteration help text,
+flashcards.advanced.translit_modern,Modern Israeli,עברית מודרנית,transliteration style option,
+flashcards.advanced.translit_sbl,SBL Academic,SBL אקדמי,transliteration style option,
+flashcards.advanced.translit_simple,Simple Stressed,מודגש פשוט,transliteration style option,
+flashcards.advanced.transliteration_head,Transliteration,תעתיק,advanced subheading,
+flashcards.advanced.tts_slow,Slow,איטי,tts rate slider min label,
+flashcards.advanced.tts_speed_label,Hebrew TTS Reading Speed,מהירות הקראה קולית בעברית,tts rate slider label,
+flashcards.badge.beta,BETA,בטא,inline feature badge,
+flashcards.card.aria_answer_choices,Answer choices,אפשרויות תשובה,listening choices group aria-label,aria-label only
+flashcards.card.aria_flip,Flash card. Tap or press space to flip.,כרטיס. הקישו או לחצו רווח כדי להפוך.,card aria-label,aria-label only
+flashcards.card.aria_play_audio,Play audio,נגן שמע,listening replay aria-label,aria-label only
+flashcards.card.did_i_get_it,Did I get it?,צדקתי?,card back prompt,REVIEW: casual self-check phrasing
+flashcards.card.end_early,End Practice Early,סיים תרגול מוקדם,end-early button,
+flashcards.card.flip_title,Flip,הפוך,flip button title,aria-label only
+flashcards.card.hear,🔊 Hear,🔊 השמע,card back speak button,leading-emoji
+flashcards.card.listen_degenerate,Add more letters/vowels for multiple-choice options.,הוסיפו עוד אותיות/תנועות כדי לקבל אפשרויות בחירה.,listening insufficient-options hint,
+flashcards.card.listen_hint_heard,Which one did you hear?,איזה שמעתם?,listening prompt after playing,
+flashcards.card.listen_hint_tap,Tap 🔊 to hear,הקישו 🔊 כדי לשמוע,listening prompt before playing,leading-emoji
+flashcards.card.mark_no,✗ No,✗ לא,mark-wrong button,leading-emoji
+flashcards.card.mark_yes,✓ Yes,✓ כן,mark-right button,leading-emoji
+flashcards.card.meta,Card {count} of {total},כרטיס {count} מתוך {total},card progress meta,
+flashcards.card.next,Next,הבא,card nav button,leading-emoji
+flashcards.card.prev,Prev,הקודם,card nav button,leading-emoji
+flashcards.card.skipped_header,↻ Skipped Card,↻ כרטיס שדולג,skipped-card banner,leading-emoji
+flashcards.card.stat_accuracy,Accuracy,דיוק,card stats label,
+flashcards.card.stat_correct,Correct,נכון,card stats label,
+flashcards.card.stat_pb,PB,שיא,card stats label,
+flashcards.card.stat_streak,Streak,רצף,card stats label,
+flashcards.card.tap_to_flip,Tap to flip,הקישו להיפוך,card front hint,
+flashcards.count.panel_title,Card Count,מספר כרטיסים,panel title,
+flashcards.faq.a_customize,"Yes. Pick any subset of Hebrew letters and vowels, and 1, 2, or 3 letters per card.","כן. בחרו תת-קבוצה כלשהי של אותיות ותנועות, ו-1, 2 או 3 אותיות לכרטיס.",footer FAQ answer,
+flashcards.faq.a_free,Yes. Free for non-commercial educational use under CC BY-NC-SA 4.0.,כן. חינמי לשימוש חינוכי לא-מסחרי תחת רישיון CC BY-NC-SA 4.0.,footer FAQ answer,
+flashcards.faq.a_help_reading,"Hebrew flash cards build automatic letter–vowel recognition, the core skill behind fluent reading. Short drills with nikkud help students decode unfamiliar words faster.","כרטיסי זיכרון בעברית מפתחים זיהוי אוטומטי של אות-תנועה, המיומנות המרכזית שמאחורי קריאה שוטפת. תרגולים קצרים עם ניקוד עוזרים לתלמידים לפענח מילים לא מוכרות מהר יותר.",footer FAQ answer,
+flashcards.faq.a_nikkud,"Yes. Every card displays Hebrew letters with full nikkud, and you can choose which vowels appear.","כן. כל כרטיס מציג אותיות עבריות עם ניקוד מלא, ואתם יכולים לבחור אילו תנועות יופיעו.",footer FAQ answer,
+flashcards.faq.q_customize,Can I customize letters?,אפשר להתאים אותיות?,footer FAQ question,
+flashcards.faq.q_free,Are they free?,האם הם חינמיים?,footer FAQ question,
+flashcards.faq.q_help_reading,How do flash cards help reading?,איך כרטיסי זיכרון עוזרים לקריאה?,footer FAQ question,
+flashcards.faq.q_nikkud,Do cards include nikkud?,האם הכרטיסים כוללים ניקוד?,footer FAQ question,
+flashcards.faq.summary,Frequently Asked Questions,שאלות נפוצות,footer FAQ summary,
+flashcards.glyphname.letter_alef,Alef,אלף,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_ayin,Ayin,עין,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_bet,Bet,בית,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_chaf,Chaf,כף,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_chaf_sofit,Chaf Sofit,כף סופית,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_chet,Chet,חית,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_dalet,Dalet,דלת,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_feh,Feh,פה,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_feh_sofit,Feh Sofit,פה סופית,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_gimel,Gimel,גימל,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_heh,Heh,הא,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_kaf,Kaf,כף,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_koof,Koof,קוף,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_lamed,Lamed,למד,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_mem,Mem,מם,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_mem_sofit,Mem Sofit,מם סופית,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_nun,Nun,נון,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_nun_sofit,Nun Sofit,נון סופית,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_peh,Peh,פה,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_resh,Resh,ריש,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_samech,Samech,סמך,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_sav,Sav,ת׳,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_shin,Shin,שין,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_sin,Sin,שין שמאלית,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_tav,Tav,תו,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_tet,Tet,טית,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_tzadi,Tzadi,צדי,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_tzadi_sofit,Tzadi Sofit,צדי סופית,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_vav,Vav,וו,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_vet,Vet,בית רפויה,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_yud,Yud,יוד,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.letter_zayin,Zayin,זין,letter picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.vowel_chirik,Chirik,חיריק,vowel picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.vowel_hataf_kamatz,Hataf Kamatz,חטף קמץ,vowel picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.vowel_hataf_patach,Hataf Patach,חטף פתח,vowel picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.vowel_hataf_segol,Hataf Segol,חטף סגול,vowel picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.vowel_holam,Holam,חולם,vowel picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.vowel_kamatz,Kamatz,קמץ,vowel picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.vowel_kubutz,Kubutz,קובוץ,vowel picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.vowel_patach,Patach,פתח,vowel picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.vowel_segol,Segol,סגול,vowel picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.vowel_shuruk,Shuruk,שורוק,vowel picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.vowel_shva,Shva,שווא,vowel picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.vowel_tzere,Tzere,צירה,vowel picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.glyphname.vowel_vav_holam,Vav Holam,וו חולם,vowel picker tile label,glyph-name | REVIEW: Hebrew letter/vowel name vs. keeping the transliteration
+flashcards.header.h1,Hebrew Flash Cards for Reading Practice,כרטיסי זיכרון בעברית לתרגול קריאה,page H1 heading,REVIEW: marketing headline phrasing
+flashcards.header.home,←,←,"header home button, icon","leading-emoji; title/aria ""Home"""
+flashcards.header.home_label,Home,בית,header home button title/aria,aria-label only
+flashcards.header.present_title,Present fullscreen,מצב מסך מלא,header present button title (not in fullscreen),aria-label only
+flashcards.header.tour_button,❓ Tour,❓ סיור,header tour launcher button,leading-emoji
+flashcards.header.tour_button_title,Take a quick tour,סיור קצר,header tour launcher title,aria-label only
+flashcards.howto.step1,"Choose 1, 2, or 3 letters per card.","בחרו 1, 2 או 3 אותיות לכרטיס.",footer how-to step,
+flashcards.howto.step2,Select Hebrew letters and vowels to drill.,בחרו אותיות ותנועות לתרגול.,footer how-to step,
+flashcards.howto.step3,Set the number of cards in the deck.,קבעו את מספר הכרטיסים בחפיסה.,footer how-to step,
+flashcards.howto.step4,Click Start to begin.,לחצו על “התחל” כדי להתחיל.,footer how-to step,html
+flashcards.howto.step5,Tap a card to reveal it; mark right or wrong.,הקישו על כרטיס כדי לחשוף אותו; סמנו נכון או לא נכון.,footer how-to step,
+flashcards.howto.summary,How To Use,איך להשתמש,footer how-to summary,
+flashcards.letters.all,All,הכל,letter select button,
+flashcards.letters.dagesh_tav_label,Dagesh Tav / Sav,ת׳ דגושה / ת׳ רפויה,letter toggle label,
+flashcards.letters.dagesh_tav_tip,Add the Tav with dagesh ('Tav') versus without ('Sav').,הוסיפו את הת׳ עם דגש (“ת׳”) מול הת׳ בלי דגש (“ס׳”).,dagesh-tav toggle tooltip,
+flashcards.letters.no_sofit,No Sofit,ללא סופיות,letter select button,
+flashcards.letters.none,None,ללא,letter select button,
+flashcards.letters.panel_title,Letter Select,בחירת אותיות,panel title,
+flashcards.listening.warn_name_letter,Listening isn’t available for “Name the Letter”.,האזנה אינה זמינה עבור “שם האות”.,listening disabled title,aria-label only
+flashcards.listening.warn_no_speech_note,"Audio isn’t supported in this browser, so Listening is unavailable.","שמע אינו נתמך בדפדפן זה, אז האזנה אינה זמינה.",listening disabled note,
+flashcards.listening.warn_no_speech_title,Audio isn’t supported in this browser.,שמע אינו נתמך בדפדפן זה.,listening disabled title,aria-label only
+flashcards.listening.warn_no_voice,No Hebrew voice detected on this device — audio may be silent or read with a default voice.,לא זוהה קול עברי במכשיר זה — ייתכן שהשמע יהיה שקט או יוקרא בקול ברירת מחדל.,listening warning note,
+flashcards.lock.locked_letters,Locked letter(s):,אותיות נעולות:,letter lock sub-label,
+flashcards.lock.locked_vowels,Locked vowel(s):,תנועות נעולות:,vowel lock sub-label,
+flashcards.lock.position_heading,{ordinal} Position,מיקום {ordinal},letter/vowel lock per-position heading,
+flashcards.manual.invalid_json,Invalid JSON: {message},JSON לא תקין: {message},manual import alert,
+flashcards.manual.no_presets_key,"No ""presets"" key found.","לא נמצא מפתח ""presets"".",manual import alert,
+flashcards.mode.choices_label,Choices:,אפשרויות:,listening choices row label,
+flashcards.mode.color_display_color,Color,צבע,colors display pill,
+flashcards.mode.color_display_colorname,Color + Name,צבע + שם,colors display pill,
+flashcards.mode.color_display_label,Display:,תצוגה:,colors display row label,
+flashcards.mode.color_display_name,Name,שם,colors display pill,
+flashcards.mode.color_front_color,Color,צבע,colors front pill,
+flashcards.mode.color_front_hebrew,Hebrew Word,מילה בעברית,colors front pill,
+flashcards.mode.emoji_front_emoji,Emoji,אימוג׳י,emoji front pill,
+flashcards.mode.emoji_front_hebrew,Hebrew Word,מילה בעברית,emoji front pill,
+flashcards.mode.emoji_gender_both,Show M/F Form,הצג צורת ז/נ,emoji gender button,
+flashcards.mode.emoji_gender_both_tip,"For emojis with both forms (e.g. cat → חָתוּל / חֲתוּלָה), each form appears as its own card.","עבור אימוג׳ים עם שתי הצורות (למשל חתול ← חָתוּל / חֲתוּלָה), כל צורה מופיעה ככרטיס נפרד.",emoji gender tooltip,mixed UI+content — do not translate {…}
+flashcards.mode.emoji_gender_fem,♀ Fem,♀ נקבה,emoji gender button,leading-emoji
+flashcards.mode.emoji_gender_masc,♂ Masc,♂ זכר,emoji gender button,leading-emoji
+flashcards.mode.emoji_show_gender,Show gender (♂/♀),הצג מין (♂/♀),emoji checkbox label,leading-emoji
+flashcards.mode.emoji_side_both,Both,שניהם,emoji gender-side pill,
+flashcards.mode.emoji_side_emoji,Emoji side,צד האימוג׳י,emoji gender-side pill,
+flashcards.mode.emoji_side_hebrew,Hebrew side,צד העברית,emoji gender-side pill,
+flashcards.mode.front_label,Front:,חזית:,mode front-side row label (shared across sub-modes),
+flashcards.mode.gender_feminine,Feminine,נקבה,gender pill,
+flashcards.mode.gender_label,Gender:,מין:,mode gender row label (shared across sub-modes),
+flashcards.mode.gender_masculine,Masculine,זכר,gender pill,
+flashcards.mode.inverse_label,Inverse Mode,מצב הפוך,mode toggle label,
+flashcards.mode.inverse_tip,Show the transliteration first; flip to reveal the Hebrew.,הציגו תחילה את התעתיק; הפכו כדי לחשוף את העברית.,inverse toggle tooltip,
+flashcards.mode.letters_per_card,Letters per card:,אותיות לכרטיס:,mode row label,
+flashcards.mode.listening_label,🎧 Listening,🎧 האזנה,listening toggle label,leading-emoji
+flashcards.mode.listening_tip,"Instead of reading the card, hear it spoken and tap the matching answer. Trains listening (hear → identify) instead of decoding (see → say).","במקום לקרוא את הכרטיס, שמעו אותו והקישו על התשובה התואמת. מתרגל האזנה (שמיעה ← זיהוי) במקום פענוח (ראייה ← אמירה).",listening toggle tooltip,
+flashcards.mode.lock_letter_label,Lock Letter,נעילת אות,mode toggle label,
+flashcards.mode.lock_letter_tip,Force a specific letter (or set of letters) to always appear at the chosen position.,הכריחו אות מסוימת (או קבוצת אותיות) להופיע תמיד במיקום הנבחר.,lock-letter toggle tooltip,
+flashcards.mode.name_letter_label,Name the Letter,שם האות,mode toggle label,"REVIEW: ""Name the Letter"" mode label"
+flashcards.mode.name_letter_show_letter,Show Letter,הצג אות,name-letter front pill,
+flashcards.mode.name_letter_show_name,Show Name,הצג שם,name-letter front pill,
+flashcards.mode.panel_title,Mode,מצב,panel title,
+flashcards.mode.pill_1letter,1 Letter,אות אחת,mode pill,
+flashcards.mode.pill_2letter,2 Letter,שתי אותיות,mode pill,
+flashcards.mode.pill_3letter,3 Letter,שלוש אותיות,mode pill,
+flashcards.mode.pill_other,Other,אחר,mode pill,
+flashcards.mode.range_label,Range:,טווח:,numbers mode range label,
+flashcards.mode.select_all,All,הכל,color/emoji selection button,
+flashcards.mode.select_main_colors,Main Colors,צבעים עיקריים,colors selection button,
+flashcards.mode.select_none,None,ללא,color/emoji selection button,
+flashcards.mode.show_number,Show Number,הצג מספר,numbers front pill,
+flashcards.mode.show_transliteration,Show transliteration,הצג תעתיק,checkbox label (shared across sub-modes),
+flashcards.mode.show_words,Show Words,הצג מילים,numbers front pill,
+flashcards.mode.sub_colors,Colors,צבעים,other-mode sub pill,
+flashcards.mode.sub_emoji,Emoji,אימוג׳י,other-mode sub pill,
+flashcards.mode.sub_numbers,Numbers,מספרים,other-mode sub pill,
+flashcards.mode.sub_words,Words,מילים,other-mode sub pill,
+flashcards.mode.words_empty_state,"No word lists yet. <a href=""hebrew_dictionary.html"">Create word lists in the Dictionary</a>, then come back to drill them here.","אין עדיין רשימות מילים. <a href=""hebrew_dictionary.html"">צרו רשימות מילים במילון</a>, ואז חזרו לכאן כדי לתרגל אותן.",words empty state,html (contains link)
+flashcards.mode.words_front_english,English,אנגלית,words front pill,
+flashcards.mode.words_front_hebrew,Hebrew,עברית,words front pill,
+flashcards.mode.words_length_label,Word length:,אורך המילה:,words length row label,
+flashcards.mode.words_length_unit,letters,אותיות,words length unit suffix,
+flashcards.mode.words_source_alldict,All Dictionary,כל המילון,words source pill,
+flashcards.mode.words_source_label,Source:,מקור:,words source row label,
+flashcards.mode.words_source_mylists,My Word Lists,רשימות המילים שלי,words source pill,
+flashcards.profile.button_label,{name}  ·  {count} saved,{name}  ·  {count} שמורים,save-to-profile choice button,
+flashcards.profile.cancel,Cancel,ביטול,save-to-profile cancel button,
+flashcards.profile.delete_confirm,"Delete profile ""{name}"" and all of its saved results? This cannot be undone.","למחוק את הפרופיל ""{name}"" ואת כל התוצאות השמורות שלו? לא ניתן לבטל זאת.",confirm dialog,mixed UI+content — do not translate {…}
+flashcards.profile.delete_result_confirm,Delete this saved result?,למחוק את התוצאה השמורה הזו?,confirm dialog,
+flashcards.profile.history_pct_frac,({correct}/{total}),({correct}/{total}),history item score fraction,
+flashcards.profile.merge_confirm,"Profile ""{newName}"" already exists — merge ""{oldName}"" into it?","הפרופיל ""{newName}"" כבר קיים — למזג את ""{oldName}"" אליו?",confirm dialog,mixed UI+content — do not translate {…}
+flashcards.profile.new_profile_heading,New profile,פרופיל חדש,save-to-profile modal section,
+flashcards.profile.new_prompt,New profile name:,שם פרופיל חדש:,prompt dialog,
+flashcards.profile.no_profiles_option,— no profiles —,— אין פרופילים —,active-profile dropdown empty option,
+flashcards.profile.no_selected_alert,No profile selected.,לא נבחר פרופיל.,alert,
+flashcards.profile.rename_prompt,Rename profile to:,שם חדש לפרופיל:,prompt dialog,
+flashcards.profile.save,Save,שמירה,save-to-profile create button,
+flashcards.profile.save_modal_title,Save results to…,שמור תוצאות אל…,save-to-profile modal title,
+flashcards.profile.set_active,Set Active,הפוך לפעיל,profile list button,
+flashcards.profile.student_name_placeholder,Student name…,שם התלמיד…,new-profile name input placeholder,placeholder
+flashcards.results.frac,{correct} / {total} correct,{correct} / {total} נכון,results fraction,
+flashcards.results.mode_colors,Colors,צבעים,results-history mode label,
+flashcards.results.mode_drill,Drill,תרגול,results-history default mode label,
+flashcards.results.mode_emoji,Emoji,אימוג׳י,results-history mode label,
+flashcards.results.mode_n_letter,{count}-letter,{count} אותיות,results-history mode label,
+flashcards.results.mode_name_letters,Name Letters,שמות אותיות,results-history mode label,
+flashcards.results.mode_numbers,Numbers,מספרים,results-history mode label,
+flashcards.results.mode_words,Words,מילים,results-history mode label,
+flashcards.results.new_pb,· 🏆 New personal best!,· 🏆 שיא אישי חדש!,results summary suffix,leading-emoji
+flashcards.results.panel_title,Results,תוצאות,results panel title,
+flashcards.results.practice_mistakes,Practice My Mistakes,תרגלו את הטעויות שלי,results action button,REVIEW: imperative vs. noun phrasing
+flashcards.results.redo,Redo This Card Set,חזרו על סדרת הכרטיסים,results action button,
+flashcards.results.return_to_options,Return to Options,חזרה לאפשרויות,results action button,
+flashcards.results.save_button,💾 Save Results,💾 שמור תוצאות,results action button,leading-emoji
+flashcards.results.save_button_done,✓ Saved to {name},✓ נשמר אל {name},save-results confirmation label,leading-emoji
+flashcards.results.summary.one,Best streak: {streak} 🔥 · Accuracy {pct}% · {count} card answered,רצף שיא: {streak} 🔥 · דיוק {pct}% · כרטיס {count} נענה,results end-of-session summary,plural; leading-emoji
+flashcards.results.summary.other,Best streak: {streak} 🔥 · Accuracy {pct}% · {count} cards answered,רצף שיא: {streak} 🔥 · דיוק {pct}% · {count} כרטיסים נענו,results end-of-session summary,plural; leading-emoji
+flashcards.results.time,Time: {time},זמן: {time},results time (track mode),
+flashcards.results.time_limit,Time limit: {time},מגבלת זמן: {time},results time (limit mode),
+flashcards.setup.collapse_all,Collapse all menus,כווץ את כל התפריטים,setup toolbar button,
+flashcards.setup.expand_all,Expand all menus,הרחב את כל התפריטים,setup toolbar button,
+flashcards.share.copied,✓ Copied!,✓ הועתק!,copy-code button flash,leading-emoji
+flashcards.share.embed_cap,Only the first {count} of {total} words were embedded in this code.,רק {count} המילים הראשונות מתוך {total} הוטמעו בקוד זה.,share-code warning,
+flashcards.share.invalid_code,Invalid code — please check and try again.,קוד לא תקין — אנא בדקו ונסו שוב.,share-code error,
+flashcards.start.button,Start Practicing! ✨,התחילו לתרגל! ✨,start CTA button,leading-emoji
+flashcards.start.err_dict_loading,Dictionary still loading — try again in a second.,המילון עדיין נטען — נסו שוב בעוד רגע.,start validation alert,
+flashcards.start.err_emoji_loading,Emoji data still loading — try again in a second.,נתוני האימוג׳י עדיין נטענים — נסו שוב בעוד רגע.,start validation alert,
+flashcards.start.err_locked_empty,A locked position has no letter selected.,למיקום נעול לא נבחרה אות.,start validation alert,
+flashcards.start.err_no_cards,Couldn't generate cards with the current selection.,לא התאפשר ליצור כרטיסים עם הבחירה הנוכחית.,start validation alert,
+flashcards.start.err_no_words,No words match the current selection.,אין מילים התואמות לבחירה הנוכחית.,start validation alert,
+flashcards.start.err_range,Range min must be ≤ max.,מינימום הטווח חייב להיות ≤ מקסימום.,start validation alert,
+flashcards.start.err_select_color,Select at least one color.,בחרו לפחות צבע אחד.,start validation alert,
+flashcards.start.err_select_emoji,Select at least one emoji subcategory.,בחרו לפחות תת-קטגוריה אחת של אימוג׳י.,start validation alert,
+flashcards.start.err_select_letter,Select at least one letter.,בחרו לפחות אות אחת.,start validation alert,
+flashcards.start.err_select_vowel,Select at least one vowel.,בחרו לפחות תנועה אחת.,start validation alert,
+flashcards.start.err_select_wordlist,Select at least one word list.,בחרו לפחות רשימת מילים אחת.,start validation alert,
+flashcards.teachertools.copy_code,📋 Copy Code,📋 העתק קוד,share-code copy button,leading-emoji
+flashcards.teachertools.delete_button,Delete,מחק,profile delete button,
+flashcards.teachertools.generate_share,Generate Share Code,צור קוד שיתוף,share-code button,
+flashcards.teachertools.got_code,Got a code from your teacher?,קיבלתם קוד מהמורה?,share-code paste subheading,
+flashcards.teachertools.history_empty,No saved results yet for this profile.,אין עדיין תוצאות שמורות לפרופיל זה.,profile history empty state,empty state
+flashcards.teachertools.load_button,Load,טען,share-code load button,
+flashcards.teachertools.new_profile_button,＋ New,＋ חדש,new profile button,leading-emoji
+flashcards.teachertools.new_profile_button_title,Create a new profile,צור פרופיל חדש,new profile button title,aria-label only
+flashcards.teachertools.panel_title,Teacher Tools,כלי מורה,panel title,
+flashcards.teachertools.practice_weaknesses,🎯 Practice My Weaknesses,🎯 תרגלו את החולשות שלי,teacher-tools button,leading-emoji
+flashcards.teachertools.preset_name_placeholder,Preset name…,שם ההגדרה…,preset name input placeholder,placeholder
+flashcards.teachertools.presets_empty,"No presets yet — configure your settings, then save them here.",אין עדיין הגדרות שמורות — הגדירו את ההגדרות ושמרו אותן כאן.,presets empty state,empty state
+flashcards.teachertools.presets_head,Presets,הגדרות שמורות,teacher-tools subheading,
+flashcards.teachertools.profiles_empty,No profiles yet — finish a drill and tap Save Results to create one.,אין עדיין פרופילים — סיימו תרגול והקישו “שמור תוצאות” כדי ליצור אחד.,profiles empty state,empty state
+flashcards.teachertools.profiles_head,Profiles & Results,פרופילים ותוצאות,teacher-tools subheading,
+flashcards.teachertools.profiles_intro,"Save drill results to a named profile to track progress over time. After a drill, tap Save Results on the results screen.","שמרו תוצאות תרגול לפרופיל בשם כדי לעקוב אחר ההתקדמות לאורך זמן. לאחר תרגול, הקישו “שמור תוצאות” במסך התוצאות.",profiles intro prose,
+flashcards.teachertools.rename_button,Rename,שנה שם,profile rename button,
+flashcards.teachertools.results_history_heading,Results History — {name},היסטוריית תוצאות — {name},profile detail heading,
+flashcards.teachertools.save_button,Save,שמור,save preset button,
+flashcards.teachertools.share_head,Teacher Share Code,קוד שיתוף למורה,teacher-tools subheading,
+flashcards.teachertools.share_input_placeholder,Paste share code here…,הדביקו קוד שיתוף כאן…,share input placeholder,placeholder
+flashcards.teachertools.share_intro,"Generate a code that captures every current setting. Share it with students — when they paste it and tap Load, the deck opens with your exact setup.","צרו קוד שלוכד את כל ההגדרות הנוכחיות. שתפו אותו עם התלמידים — כשהם מדביקים אותו ומקישים טען, החפיסה נפתחת עם ההגדרה המדויקת שלכם.",share-code intro prose,
+flashcards.teachertools.share_output_placeholder,Tap “Generate Share Code” to create a code…,הקישו “צור קוד שיתוף” כדי ליצור קוד…,share output textarea placeholder,placeholder
+flashcards.teachertools.view_weaknesses,📊 View Weaknesses,📊 צפה בחולשות,teacher-tools button,leading-emoji
+flashcards.timer.mode_limit,Time Limit,מגבלת זמן,timer mode pill,
+flashcards.timer.mode_off,No Timer,ללא טיימר,timer mode pill,
+flashcards.timer.mode_track,Record Time,מדוד זמן,timer mode pill,
+flashcards.timer.panel_title,Timer,טיימר,panel title,
+flashcards.timer.show_countdown,Show countdown on screen,הצג ספירה לאחור על המסך,timer toggle label (limit mode),
+flashcards.timer.show_timer,Show timer on screen,הצג טיימר על המסך,timer toggle label (track/off),
+flashcards.timer.time_limit_label,Time limit:,מגבלת זמן:,timer limit sub-label,
+flashcards.tour.advanced_body,"Color-code the nikkud, pick a Hebrew font, and fine-tune the deck.","צבעו את הניקוד, בחרו גופן עברי וכוונו את החפיסה.",tour step body,
+flashcards.tour.advanced_title,Advanced Settings,הגדרות מתקדמות,tour step title,
+flashcards.tour.letters_body,Tap letters to include or exclude them — match exactly what your class has learned.,הקישו על אותיות כדי לכלול או להוציא אותן — התאימו בדיוק למה שהכיתה למדה.,tour step body,
+flashcards.tour.letters_title,Letters,אותיות,tour step title,
+flashcards.tour.mode_body,"Choose what students practice: single letters, 2- or 3-letter blends, listening — or numbers, colors, emoji, and word cards.","בחרו מה התלמידים מתרגלים: אותיות בודדות, צירופי שתי או שלוש אותיות, האזנה — או מספרים, צבעים, אימוג׳י וכרטיסי מילים.",tour step body,
+flashcards.tour.mode_title,Practice Mode,מצב תרגול,tour step title,
+flashcards.tour.start_body,Flips into full-screen flash cards. Tap or press Space to flip a card; arrow keys move between cards.,עובר לכרטיסים במסך מלא. הקישו או לחצו רווח כדי להפוך כרטיס; מקשי החץים מנווטים בין הכרטיסים.,tour step body,
+flashcards.tour.start_title,Start Practicing,התחלת תרגול,tour step title,
+flashcards.tour.teachertools_body,"Save presets and student profiles, and share your exact setup with a paste-in class code.","שמרו הגדרות ופרופילי תלמידים, ושתפו את ההגדרה המדויקת שלכם עם קוד כיתה להדבקה.",tour step body,
+flashcards.tour.teachertools_title,Teacher Tools,כלי מורה,tour step title,
+flashcards.tour.vowels_body,Same idea for nikkud: only the vowels you've taught.,אותו רעיון עבור ניקוד: רק התנועות שלימדתם.,tour step body,
+flashcards.tour.vowels_title,Vowels,תנועות,tour step title,
+flashcards.translit.load_failed,Library failed to load — using default style.,טעינת הספרייה נכשלה — משתמשים בסגנון ברירת המחדל.,transliteration load status,
+flashcards.translit.loading,Loading library…,טוען ספרייה…,transliteration load status,toast
+flashcards.vowelgroup.color_aqua,Aqua,תכלת,vowel group color name,html (underlined first letter) | REVIEW: Aqua = תכלת?
+flashcards.vowelgroup.color_blue,Blue,כחול,vowel group color name,html (underlined first letter)
+flashcards.vowelgroup.color_green,Green,ירוק,vowel group color name,html (underlined first letter)
+flashcards.vowelgroup.color_grey,Grey,אפור,vowel group color name,html (underlined first letter)
+flashcards.vowelgroup.color_navy,Blue,כחול,vowel group color name (TaL AM navy),html (underlined first letter)
+flashcards.vowelgroup.color_orange,Orange,כתום,vowel group color name (TaL AM),html (underlined first letter)
+flashcards.vowelgroup.color_purple,Purple,סגול,vowel group color name,html (underlined first letter)
+flashcards.vowelgroup.color_red,Red,אדום,vowel group color name,html (underlined first letter)
+flashcards.vowelgroup.color_yellow,Yellow,צהוב,vowel group color name,html (underlined first letter)
+flashcards.vowelgroup.header,{sound} Sound – {color},צליל {sound} – {color},vowel selector group header,html
+flashcards.vowels.all,All,הכל,vowel select button,
+flashcards.vowels.count_vav_label,"Count <span style=""font-family:var(--heb-font);direction:rtl;"" lang=""he"" dir=""rtl"">וֹ/וּ</span> as a letter","ספור <span style=""font-family:var(--heb-font);direction:rtl;"" lang=""he"" dir=""rtl"">וֹ/וּ</span> כאות",vav-as-letter toggle label,mixed UI+content — do not translate {…}
+flashcards.vowels.count_vav_tip,"When using cholam-vav (וֹ) or shuruk (וּ), treat the vav as the letter itself rather than a separate consonant.","בשימוש בו׳-חולם (וֹ) או שורוק (וּ), התייחסו לו׳ כאות עצמה ולא כעיצור נפרד.",vav toggle tooltip,mixed UI+content — do not translate {…}
+flashcards.vowels.main,Main,עיקריות,vowel select button,
+flashcards.vowels.none,None,ללא,vowel select button,
+flashcards.vowels.panel_title,Vowel Select,בחירת תנועות,panel title,
+flashcards.vowels.pos_1st,1st,ראשונה,vowel-position pill / lock ordinal,
+flashcards.vowels.pos_2nd,2nd,שנייה,vowel-position pill / lock ordinal,
+flashcards.vowels.pos_3rd,3rd,שלישית,vowel-position pill / lock ordinal,
+flashcards.vowels.pos_4th,4th,רביעית,lock ordinal,
+flashcards.vowels.vowel_lock_label,Vowel Lock,נעילת תנועה,vowel lock toggle label,
+flashcards.vowels.vowel_on_letter_label,Vowel on letter:,תנועה על האות:,vowel position row label,
+flashcards.weaknesses.cancel,Cancel,ביטול,card-count modal cancel button,
+flashcards.weaknesses.count_prompt,How many cards do you want to practice?,כמה כרטיסים אתם רוצים לתרגל?,card-count modal prompt,
+flashcards.weaknesses.count_prompt_max,Up to {count} weakness cards available. How many do you want to practice?,עד {count} כרטיסי חולשה זמינים. כמה אתם רוצים לתרגל?,card-count modal prompt,html
+flashcards.weaknesses.custom_label,Custom:,מותאם:,card-count modal custom input label,
+flashcards.weaknesses.mastered,No mistakes here — mastered! 🎉,אין טעויות כאן — בשליטה! 🎉,weakness tab all-correct note,leading-emoji
+flashcards.weaknesses.missed_ratio,missed {missed}/{seen},טעו {missed}/{seen},weakness row stat,
+flashcards.weaknesses.modal_title,Practice My Weaknesses,תרגלו את החולשות שלי,card-count modal title,
+flashcards.weaknesses.no_mistakes_alert,No mistakes saved yet for this profile. Save some drill results first.,אין עדיין טעויות שמורות לפרופיל זה. שמרו תחילה תוצאות תרגול.,alert,
+flashcards.weaknesses.not_enough_data,Not enough data yet — save more drill results.,אין עדיין מספיק נתונים — שמרו עוד תוצאות תרגול.,weakness tab empty state,empty state
+flashcards.weaknesses.other_colors,Colors,צבעים,weakness-view Other bucket label,
+flashcards.weaknesses.other_emojis,Emojis,אימוג׳י,weakness-view Other bucket label,
+flashcards.weaknesses.other_numbers,Numbers,מספרים,weakness-view Other bucket label,
+flashcards.weaknesses.other_words,Words,מילים,weakness-view Other bucket label,
+flashcards.weaknesses.start,Start,התחל,card-count modal start button,
+flashcards.weaknesses.tab_combos,Letter + Vowel,אות + תנועה,weakness-view tab,
+flashcards.weaknesses.tab_letters,Letters,אותיות,weakness-view tab,
+flashcards.weaknesses.tab_other,Other,אחר,weakness-view tab,
+flashcards.weaknesses.tab_vowels,Vowels,תנועות,weakness-view tab,
+flashcards.weaknesses.view_title,Weaknesses — {name},חולשות — {name},weakness-view modal title,
 flashcards.wordlist.untitled,Untitled list,,fallback word-list name,
-flashcards.words.emoji_load_failed,Failed to load emoji data.,,emoji tree load error,
-flashcards.words.load_failed,Failed to load dictionary words.,,words-pool load error,
-flashcards.words.loading_dict,Loading dictionary…,,words-pool count while loading,toast
-flashcards.words.pool_count.one,{count} word in pool,,words-pool count,plural
-flashcards.words.pool_count.other,{count} words in pool,,words-pool count,plural
+flashcards.words.emoji_load_failed,Failed to load emoji data.,טעינת נתוני האימוג׳י נכשלה.,emoji tree load error,
+flashcards.words.load_failed,Failed to load dictionary words.,טעינת מילות המילון נכשלה.,words-pool load error,
+flashcards.words.loading_dict,Loading dictionary…,טוען מילון…,words-pool count while loading,toast
+flashcards.words.pool_count.one,{count} word in pool,מילה אחת במאגר,words-pool count,plural
+flashcards.words.pool_count.other,{count} words in pool,{count} מילים במאגר,words-pool count,plural
 fontmaker.about.about_intro,About Hebrew Font Maker. Version {version}. Developed by Harrison Bleiberg.,,about tab body,help prose
 fontmaker.about.beta_tag,Beta,,header beta badge,
 fontmaker.about.changelog_heading,Changelog,,about section heading,
@@ -2610,82 +2610,82 @@ resources.suggest.title,✚ Suggest a Resource,,modal header title,leading-emoji
 resources.suggest.url_placeholder,https://…,,input placeholder,
 resources.view.fonts,🔤 Fonts,,view toggle button,leading-emoji
 resources.view.links,📚 Links,,view toggle button,leading-emoji
-shared.darkmode.label_dark,🌙 Dark,,Dark-mode toggle label (shown when light),"leading-emoji; shared (labeled variant: 404, dictionary)"
-shared.darkmode.label_light,☀️ Light,,Dark-mode toggle label (shown when dark),"leading-emoji; shared (labeled variant: 404, dictionary)"
-shared.darkmode.toggle_title,Toggle dark mode,,Dark-mode toggle title/aria-label,shared
-shared.folders.delete_confirm,"Delete folder ""{name}""? Its contents move out — nothing is deleted.",,Folder delete confirm,mixed UI+content — do not translate {name}; shared
-shared.folders.delete_folder,Delete folder (keeps items),,Folder-tree action (title on 🗑),shared
-shared.folders.drag_folder,Drag folder,,Folder drag-handle title,shared
-shared.folders.drag_item,Drag to move,,Item drag-handle title,shared
-shared.folders.empty_folder,Empty — drop items here,,Empty folder placeholder,shared
-shared.folders.empty_list,No saved {noun}s yet.,,Empty list placeholder,mixed UI+content — {noun} = preset/profile/schedule/item; shared
-shared.folders.move_button,Move ▾,,Preset/profile item move button,"shared (carriers: generator, dashboard, flash_cards)"
-shared.folders.move_path,📁 {path},,Move-menu folder target,leading-emoji; mixed UI+content — do not translate {path}; shared
-shared.folders.move_root,⌂ Root,,Move-menu top-level target,leading-symbol; shared
-shared.folders.new_folder,📁 New folder,,Folder-tree button,leading-emoji; shared
-shared.folders.new_subfolder,New subfolder,,Folder-tree action (title on ＋ mini-button),shared
-shared.folders.prompt_new_folder,New folder name:,,Folder create prompt,shared
-shared.folders.prompt_new_subfolder,New subfolder name:,,Subfolder create prompt,shared
-shared.folders.prompt_rename,Rename folder:,,Folder rename prompt,shared
-shared.folders.rename_folder,Rename folder,,Folder-tree action (title on ✎),shared
-shared.fonts.default_marker,[DEFAULT],,Font-picker marker appended to the default font name,shared (carriers: all font-selector tools)
-shared.fonts.err_bad_font,"That file doesn’t look like a usable font (TTF, OTF, or WOFF).",,Font upload error alert,shared
-shared.fonts.err_no_store,Your browser can’t store custom fonts.,,Font upload error alert,shared
-shared.fonts.err_unreadable,Couldn’t read that font file.,,Font upload error alert,shared
-shared.fonts.section_cursive,Cursive / Script,,Font-picker section header,shared (carriers: all font-selector tools)
-shared.fonts.section_generic,{section} Fonts,,"Font-picker section header (e.g. Block Fonts, Print Fonts, Torah Fonts)",mixed UI+content — {section} is a category name; shared
-shared.fonts.section_my_fonts,My Fonts,,Font-picker section header (custom fonts group),shared (carriers: all font-selector tools)
-shared.fonts.upload_label,⬆ Upload your own font?,,My Fonts uploader label (below font grid),leading-emoji; shared (carriers: 7 font-selector tools)
-shared.fonts.upload_title,"Add a .ttf, .otf, or .woff/.woff2 font to My Fonts",,My Fonts uploader label title,shared
-shared.footer.about_header,About,,Footer section header,shared
-shared.footer.created_by,Created by Harrison Bleiberg,,Footer credit,mixed UI+content — do not translate 'Harrison Bleiberg'; shared
-shared.footer.github,GitHub,,Footer link,do-not-translate; shared
-shared.footer.license_link,CC BY-NC-SA 4.0,,Footer license link,do-not-translate; shared
-shared.footer.license_note,Free to use and adapt for non-commercial educational purposes with attribution,,Footer license sentence (landing pages),shared
-shared.footer.privacy_link,Privacy Policy,,Footer link (landing pages),shared
-shared.footer.word_data,Word Data from Kaikki.org,,Footer credit (data source),mixed UI+content — do not translate 'Kaikki.org'; shared
-shared.fullscreen.enter_title,Present fullscreen,,Fullscreen button title (enter),shared; variant: 'Full screen' (dictionary)
-shared.fullscreen.exit_title,Exit fullscreen,,Fullscreen button title (exit),shared
-shared.fullscreen.toggle_aria,Toggle fullscreen,,Fullscreen button aria-label,aria-label; shared
-shared.ivrit.browse_button,Browse…,,Backup drop-zone button,shared
-shared.ivrit.drop_hint,Drop a .ivrit file here,,Backup drop-zone hint,shared; '.ivrit' bold in UI
-shared.ivrit.err_read,Could not read that file.,,Restore error alert,shared
-shared.ivrit.err_restore_failed,Restore failed: {error},,Restore error alert,mixed UI+content — do not translate {error}; shared
-shared.ivrit.err_unreadable,That file could not be read as a .ivrit save file.,,Restore error alert,shared
-shared.ivrit.err_unrecognized,That file is not a recognizable .ivrit save file.,,Restore error alert,shared
-shared.ivrit.manual_copy,Copy,,Manual backup mode button,shared
-shared.ivrit.manual_export,Export,,Manual backup mode button,shared
-shared.ivrit.manual_import,Import,,Manual backup mode button,shared
-shared.ivrit.mode_auto,Automatic Input,,Backup panel input-mode toggle button,"shared (carriers: generator, dashboard, flash_cards, index)"
-shared.ivrit.mode_manual,Manual Input,,Backup panel input-mode toggle button,"shared (carriers: generator, dashboard, flash_cards, index)"
-shared.ivrit.or_divider,— or —,,Backup drop-zone divider,shared
-shared.ivrit.restore_cancel_button,Cancel,,Restore dialog button,shared
-shared.ivrit.restore_dialog_body,**Merge** keeps what you have now and adds the file's data (matching names are overwritten).\n**Replace** clears your current data first and loads only what's in the file.,,Restore-mode dialog body,contains \n; html (Merge/Replace bold); shared
-shared.ivrit.restore_dialog_title,Restore from .ivrit file,,Restore-mode dialog title,shared
-shared.ivrit.restore_merge_button,Merge,,Restore dialog button,shared
-shared.ivrit.restore_replace_button,Replace,,Restore dialog button,shared
-shared.ivrit.save_button,⬇ Save to .ivrit file,,Backup panel button,leading-emoji; shared; keep '.ivrit' literal
-shared.ivrit.status_restored,Restored from {source},,Restore status line,mixed UI+content — do not translate {source}; shared
-shared.ivrit.status_saved,Saved {filename},,Save status line (ivritStatus),mixed UI+content — do not translate {filename}; shared
-shared.ivrit.toast_restored_named,Restored successfully from {source}.,,Restore success toast,mixed UI+content — do not translate {source}; shared
-shared.ivrit.toast_restored_plain,Restored successfully.,,Restore success toast (no source name),shared
-shared.ivrit.tool_mismatch_confirm,"This looks like a ""{tool}"" save file, but this is the {tool2} page.\n\nImporting it here may not do anything useful. Import anyway?",,Tool-mismatch confirm dialog,contains \n; mixed UI+content — do not translate {tool}/{tool2}; shared
-shared.nav.header,Related Hebrew Tools,,Related-tools nav header + aria-label,shared
-shared.nav.link_dashboard,Hebrew classroom display →,,Related-tools nav link,shared
-shared.nav.link_dictionary,Hebrew word lookup →,,Related-tools nav link,shared
-shared.nav.link_fontmaker,make your own Hebrew font →,,Related-tools nav link,shared
-shared.nav.link_resources,free Hebrew teaching resources →,,Related-tools nav link,shared
-shared.nav.link_torah,Torah reading practice →,,Related-tools nav link,shared
-shared.nav.link_trope,learn Torah trope (cantillation) →,,Related-tools nav link,shared
-shared.nav.link_worksheets,printable Hebrew worksheets →,,Related-tools nav link,shared
-shared.toast.copied,Copied!,,Copy-button feedback,shared
-shared.toast.copied_check,✓ Copied!,,Copy-button feedback,leading-emoji; shared
-shared.toast.imported,Imported successfully.,,Import success toast,shared
-shared.tour.back,Back,,Guided tour nav button,shared
-shared.tour.done,Done,,Guided tour final button,shared
-shared.tour.end,End tour,,Guided tour close (aria-label on ✕),aria-label; shared
-shared.tour.next,Next,,Guided tour nav button,shared
-shared.tour.step_counter,Step {count} of {total},,Guided tour step counter,mixed UI+content — {count}/{total} numeric; shared
+shared.darkmode.label_dark,🌙 Dark,🌙 כהה,Dark-mode toggle label (shown when light),"leading-emoji; shared (labeled variant: 404, dictionary)"
+shared.darkmode.label_light,☀️ Light,☀️ בהיר,Dark-mode toggle label (shown when dark),"leading-emoji; shared (labeled variant: 404, dictionary)"
+shared.darkmode.toggle_title,Toggle dark mode,מצב כהה,Dark-mode toggle title/aria-label,shared
+shared.folders.delete_confirm,"Delete folder ""{name}""? Its contents move out — nothing is deleted.","למחוק את התיקייה ""{name}""? התוכן שלה יוצא החוצה — שום דבר לא נמחק.",Folder delete confirm,mixed UI+content — do not translate {name}; shared
+shared.folders.delete_folder,Delete folder (keeps items),מחק תיקייה (שומר פריטים),Folder-tree action (title on 🗑),shared
+shared.folders.drag_folder,Drag folder,גרור תיקייה,Folder drag-handle title,shared
+shared.folders.drag_item,Drag to move,גרור כדי להעביר,Item drag-handle title,shared
+shared.folders.empty_folder,Empty — drop items here,ריקה — גררו פריטים לכאן,Empty folder placeholder,shared
+shared.folders.empty_list,No saved {noun}s yet.,אין עדיין פריטים שמורים.,Empty list placeholder,"mixed UI+content — {noun} = preset/profile/schedule/item; shared | REVIEW: generic ""no saved items"" (ignores the {noun} token)"
+shared.folders.move_button,Move ▾,העבר ▾,Preset/profile item move button,"shared (carriers: generator, dashboard, flash_cards)"
+shared.folders.move_path,📁 {path},📁 {path},Move-menu folder target,leading-emoji; mixed UI+content — do not translate {path}; shared
+shared.folders.move_root,⌂ Root,⌂ שורש,Move-menu top-level target,leading-symbol; shared
+shared.folders.new_folder,📁 New folder,📁 תיקייה חדשה,Folder-tree button,leading-emoji; shared
+shared.folders.new_subfolder,New subfolder,תיקיית משנה חדשה,Folder-tree action (title on ＋ mini-button),shared
+shared.folders.prompt_new_folder,New folder name:,שם תיקייה חדשה:,Folder create prompt,shared
+shared.folders.prompt_new_subfolder,New subfolder name:,שם תיקיית משנה חדשה:,Subfolder create prompt,shared
+shared.folders.prompt_rename,Rename folder:,שנה שם תיקייה:,Folder rename prompt,shared
+shared.folders.rename_folder,Rename folder,שנה שם תיקייה,Folder-tree action (title on ✎),shared
+shared.fonts.default_marker,[DEFAULT],[ברירת מחדל],Font-picker marker appended to the default font name,shared (carriers: all font-selector tools)
+shared.fonts.err_bad_font,"That file doesn’t look like a usable font (TTF, OTF, or WOFF).","הקובץ הזה אינו נראה כגופן שימושי (TTF, OTF או WOFF).",Font upload error alert,shared
+shared.fonts.err_no_store,Your browser can’t store custom fonts.,הדפדפן שלכם אינו יכול לאחסן גופנים מותאמים.,Font upload error alert,shared
+shared.fonts.err_unreadable,Couldn’t read that font file.,לא ניתן היה לקרוא את קובץ הגופן.,Font upload error alert,shared
+shared.fonts.section_cursive,Cursive / Script,כתב יד / סקריפט,Font-picker section header,shared (carriers: all font-selector tools)
+shared.fonts.section_generic,{section} Fonts,גופני {section},"Font-picker section header (e.g. Block Fonts, Print Fonts, Torah Fonts)",mixed UI+content — {section} is a category name; shared
+shared.fonts.section_my_fonts,My Fonts,הגופנים שלי,Font-picker section header (custom fonts group),shared (carriers: all font-selector tools)
+shared.fonts.upload_label,⬆ Upload your own font?,⬆ העלו גופן משלכם?,My Fonts uploader label (below font grid),leading-emoji; shared (carriers: 7 font-selector tools)
+shared.fonts.upload_title,"Add a .ttf, .otf, or .woff/.woff2 font to My Fonts","הוסיפו גופן ‎.ttf‏, ‎.otf‏ או ‎.woff/.woff2 אל הגופנים שלי",My Fonts uploader label title,shared
+shared.footer.about_header,About,אודות,Footer section header,shared
+shared.footer.created_by,Created by Harrison Bleiberg,נוצר על ידי Harrison Bleiberg,Footer credit,mixed UI+content — do not translate 'Harrison Bleiberg'; shared
+shared.footer.github,GitHub,GitHub,Footer link,do-not-translate; shared
+shared.footer.license_link,CC BY-NC-SA 4.0,CC BY-NC-SA 4.0,Footer license link,do-not-translate; shared
+shared.footer.license_note,Free to use and adapt for non-commercial educational purposes with attribution,חינמי לשימוש ולהתאמה למטרות חינוכיות לא-מסחריות עם קרדיט,Footer license sentence (landing pages),shared
+shared.footer.privacy_link,Privacy Policy,מדיניות פרטיות,Footer link (landing pages),shared
+shared.footer.word_data,Word Data from Kaikki.org,נתוני מילים מ-Kaikki.org,Footer credit (data source),mixed UI+content — do not translate 'Kaikki.org'; shared
+shared.fullscreen.enter_title,Present fullscreen,מצב מסך מלא,Fullscreen button title (enter),shared; variant: 'Full screen' (dictionary)
+shared.fullscreen.exit_title,Exit fullscreen,צא ממסך מלא,Fullscreen button title (exit),shared
+shared.fullscreen.toggle_aria,Toggle fullscreen,החלף מסך מלא,Fullscreen button aria-label,aria-label; shared
+shared.ivrit.browse_button,Browse…,עיון…,Backup drop-zone button,shared
+shared.ivrit.drop_hint,Drop a .ivrit file here,גררו כאן קובץ ‎.ivrit,Backup drop-zone hint,shared; '.ivrit' bold in UI
+shared.ivrit.err_read,Could not read that file.,לא ניתן לקרוא את הקובץ הזה.,Restore error alert,shared
+shared.ivrit.err_restore_failed,Restore failed: {error},השחזור נכשל: {error},Restore error alert,mixed UI+content — do not translate {error}; shared
+shared.ivrit.err_unreadable,That file could not be read as a .ivrit save file.,לא ניתן היה לקרוא את הקובץ כקובץ שמירה ‎.ivrit‏.,Restore error alert,shared
+shared.ivrit.err_unrecognized,That file is not a recognizable .ivrit save file.,הקובץ הזה אינו קובץ שמירה ‎.ivrit‏ מזוהה.,Restore error alert,shared
+shared.ivrit.manual_copy,Copy,העתק,Manual backup mode button,shared
+shared.ivrit.manual_export,Export,ייצוא,Manual backup mode button,shared
+shared.ivrit.manual_import,Import,ייבוא,Manual backup mode button,shared
+shared.ivrit.mode_auto,Automatic Input,קלט אוטומטי,Backup panel input-mode toggle button,"shared (carriers: generator, dashboard, flash_cards, index)"
+shared.ivrit.mode_manual,Manual Input,קלט ידני,Backup panel input-mode toggle button,"shared (carriers: generator, dashboard, flash_cards, index)"
+shared.ivrit.or_divider,— or —,— או —,Backup drop-zone divider,shared
+shared.ivrit.restore_cancel_button,Cancel,ביטול,Restore dialog button,shared
+shared.ivrit.restore_dialog_body,**Merge** keeps what you have now and adds the file's data (matching names are overwritten).\n**Replace** clears your current data first and loads only what's in the file.,**מיזוג** שומר את מה שיש לכם עכשיו ומוסיף את נתוני הקובץ (שמות תואמים יידרסו).\n**החלפה** מוחקת תחילה את הנתונים הנוכחיים וטוענת רק את מה שבקובץ.,Restore-mode dialog body,contains \n; html (Merge/Replace bold); shared
+shared.ivrit.restore_dialog_title,Restore from .ivrit file,שחזור מקובץ ‎.ivrit,Restore-mode dialog title,shared
+shared.ivrit.restore_merge_button,Merge,מיזוג,Restore dialog button,shared
+shared.ivrit.restore_replace_button,Replace,החלפה,Restore dialog button,shared
+shared.ivrit.save_button,⬇ Save to .ivrit file,⬇ שמור לקובץ ‎.ivrit,Backup panel button,leading-emoji; shared; keep '.ivrit' literal
+shared.ivrit.status_restored,Restored from {source},שוחזר מ-{source},Restore status line,mixed UI+content — do not translate {source}; shared
+shared.ivrit.status_saved,Saved {filename},נשמר {filename},Save status line (ivritStatus),mixed UI+content — do not translate {filename}; shared
+shared.ivrit.toast_restored_named,Restored successfully from {source}.,השחזור הצליח מ-{source}.,Restore success toast,mixed UI+content — do not translate {source}; shared
+shared.ivrit.toast_restored_plain,Restored successfully.,השחזור הצליח.,Restore success toast (no source name),shared
+shared.ivrit.tool_mismatch_confirm,"This looks like a ""{tool}"" save file, but this is the {tool2} page.\n\nImporting it here may not do anything useful. Import anyway?","זה נראה כקובץ שמירה של ""{tool}"", אבל זה דף {tool2}.\n\nייבוא כאן עשוי לא לעשות דבר מועיל. לייבא בכל זאת?",Tool-mismatch confirm dialog,contains \n; mixed UI+content — do not translate {tool}/{tool2}; shared
+shared.nav.header,Related Hebrew Tools,כלים עבריים נוספים,Related-tools nav header + aria-label,shared
+shared.nav.link_dashboard,Hebrew classroom display →,תצוגת כיתה בעברית ←,Related-tools nav link,shared
+shared.nav.link_dictionary,Hebrew word lookup →,חיפוש מילים בעברית ←,Related-tools nav link,shared
+shared.nav.link_fontmaker,make your own Hebrew font →,צרו גופן עברי משלכם ←,Related-tools nav link,shared
+shared.nav.link_resources,free Hebrew teaching resources →,משאבים חינמיים להוראת עברית ←,Related-tools nav link,shared
+shared.nav.link_torah,Torah reading practice →,תרגול קריאה בתורה ←,Related-tools nav link,shared
+shared.nav.link_trope,learn Torah trope (cantillation) →,למדו טעמי המקרא ←,Related-tools nav link,shared
+shared.nav.link_worksheets,printable Hebrew worksheets →,דפי עבודה להדפסה בעברית ←,Related-tools nav link,shared
+shared.toast.copied,Copied!,הועתק!,Copy-button feedback,shared
+shared.toast.copied_check,✓ Copied!,✓ הועתק!,Copy-button feedback,leading-emoji; shared
+shared.toast.imported,Imported successfully.,הייבוא הצליח.,Import success toast,shared
+shared.tour.back,Back,אחורה,Guided tour nav button,shared
+shared.tour.done,Done,סיום,Guided tour final button,shared
+shared.tour.end,End tour,סיים סיור,Guided tour close (aria-label on ✕),aria-label; shared
+shared.tour.next,Next,הבא,Guided tour nav button,shared
+shared.tour.step_counter,Step {count} of {total},שלב {count} מתוך {total},Guided tour step counter,mixed UI+content — {count}/{total} numeric; shared
 torah.about.faq_a1,"A free Hebrew Torah reader. Pick a parsha and read it with optional transliteration, English translation, per-vowel color coding, cantillation strip, prose TTS, and chanted-audio karaoke that highlights words in time with the recording.",,FAQ answer,
 torah.about.faq_a2,"Yes. PocketTorah's recordings of all 54 parshiyot and haftarot stream on demand, with word-level highlighting synchronized to the audio. Adjust playback speed without re-fetching.",,FAQ answer,html
 torah.about.faq_a3,Sefaria's public API. The translation dropdown defaults to JPS 1985 when available; pick any other version from the same dropdown.,,FAQ answer,html
@@ -3630,3 +3630,17 @@ worksheet.vowels.sub.oo,OO sound,,vowel chip subtext,
 worksheet.vowels.sub.short_ah,short AH,,vowel chip subtext,
 worksheet.vowels.sub.short_eh,short EH,,vowel chip subtext,
 worksheet.vowels.sub.uh,UH / silent,,vowel chip subtext,
+flashcards.teachertools.preset_overwrite_confirm,"Overwrite preset ""{name}""?","לדרוס על ההגדרה השמורה ""{name}""?",Confirm before overwriting an existing preset on save,has {name}
+flashcards.teachertools.preset_delete_confirm,"Delete preset ""{name}""?","למחוק את ההגדרה השמורה ""{name}""?",Confirm before deleting a preset,has {name}
+flashcards.teachertools.preset_overwrite_current_confirm,"Overwrite preset ""{name}"" with current settings?","לדרוס על ההגדרה ""{name}"" עם ההגדרות הנוכחיות?",Confirm overwrite from the preset row save action,has {name}
+flashcards.teachertools.preset_name_required,Enter a preset name to save.,הזינו שם להגדרה כדי לשמור.,Inline note when Save pressed with empty preset name,
+flashcards.results.no_results_to_save,No drill results to save.,אין תוצאות תרגול לשמירה.,Guard when tapping Save Results with nothing to save,
+flashcards.card.end_early_confirm,End practice and see results so far?,לסיים את התרגול ולראות את התוצאות עד כה?,Confirm dialog for the End Practice Early button,
+flashcards.advanced.color_reset_confirm,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,האם אתם בטוחים? פעולה זו תאפס את צבעי הניקוד המותאמים שלכם בשתי ערכות הצבע — ברירת המחדל וגם תל-עם.,Confirm for the color-scheme Reset button,"REVIEW: phrasing of ""resets both schemes"""
+shared.tip.aria_more_info,More information,מידע נוסף,Default aria-label the tooltip engine adds to a trigger lacking its own label,
+shared.folders.duplicate,Duplicate,שכפול,Title on the duplicate button in the folder-tree row,
+flashcards.count.custom_placeholder,Custom,מותאם,Placeholder on the custom card-count input,
+flashcards.count.custom_aria,Custom card count ({min} to {max}),מספר כרטיסים מותאם ({min} עד {max}),aria-label on the custom card-count input,has {min} {max}
+flashcards.profile.saved_count,{count} saved,{count} שמורים,Sub-label on each profile row (saved-results count),has {count}
+flashcards.profile.active_marker,★ ,★ ,Prefix marking the active profile row,symbol only
+flashcards.teachertools.play_button,▶ Play,▶ נגן,Play button on a saved preset row (loads + starts the drill),
