@@ -2404,7 +2404,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.16';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.17';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2616,6 +2616,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.17</strong> — <strong>Clicking a nikkud or trop mark opens the full shape editor.</strong> Picking a vowel point or cantillation mark in its panel now opens the same Edit-shape window used on the letter-placement screen — dots &amp; bars, its own undo, numeric size &amp; position fields, and one-click <span class="ui">Apply to all letters</span> — instead of switching the whole workspace. Marks designed from an uploaded image (and combined-sheet mode) still go straight to their image tools. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.16</strong> — <strong>Nikkud & trop editing controls moved beside the canvas.</strong> When you edit a vowel point or cantillation mark, its controls — the Simple editor / Upload image switch, the + Dot / + Bar buttons, the dot-size slider, and the shape toggle — now sit in the left panel next to the drawing area, instead of in a strip below it. That's the same spot the letter tools already use, so editing feels consistent, and it makes use of space that used to sit empty. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.15</strong> — <strong>Glyph-editor warnings match the rest of the app.</strong> A few notices in the custom-glyph editor — an invalid code point, a code point that's already taken, or converting a mark that has no shape yet — used a plain browser pop-up instead of the tool's own in-app dialog. They now use the same styled dialog as every other message, so the experience is consistent throughout. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.14</strong> — <strong>Auto-detect review boxes now appear in Firefox.</strong> The real culprit, finally pinned down: Firefox was hiding the entire box-overlay layer (it computed the interactive overlay group as <span class="ui">display:none</span>, unlike other browsers), so the detected-letter outlines and labels never showed even though the scanned sheet did. Forcing the overlay to display fixes it — the boxes now render in Firefox exactly as they do everywhere else. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -3569,6 +3570,7 @@ function renderMarkGrid(cat) {
   const grid = document.getElementById(cat + 'Grid'); if (!grid) return;
   grid.innerHTML = '';
   const marks = cat === 'nikkud' ? NIKKUD_MARKS : TROP_MARKS;
+  const um = project.font[cat].uploadMode || 'perSymbol';
   marks.forEach(M => {
     const m = project.font[cat].custom[M.cp];
     const st = markStatusOf(m);
@@ -3577,7 +3579,11 @@ function renderMarkGrid(cat) {
     tile.innerHTML = `<span class="lt-dot ${st}"></span>
       ${markTilePreviewSVG(cat, M.cp)}
       <span class="lt-name">${M.name}</span>`;
-    tile.onclick = () => selectItem(cat, M.cp);
+    tile.onclick = () => {
+      if (um === 'combined') { selectItem(cat, M.cp); return; }               // crop-from-sheet flow lives on the workspace
+      if (m && m.designMode === 'upload') { selectItem(cat, M.cp); return; }  // image workflow → straight to the upload/trace tools
+      openMarkEdit(cat, M.cp, { global: true });                              // dots/bars → the full "Edit shape" modal, font-wide scope
+    };
     grid.appendChild(tile);
   });
   a11yTiles(grid);
@@ -8506,13 +8512,14 @@ function setBarRounded(b) {   // square ↔ rounded ends for the selected bar pi
    Edits a WORKING COPY (meItem); nothing is written to the project until Apply, so Back is a clean
    cancel and per-letter vs all-letters stays separate. Reuses the inline editor's pure helpers
    (editorStageSVG, piecesToContours, applyPieceDrag) on its own #meStage. */
-let meActive = false, meItem = null, meKind = null, meCp = null, meDrag = null;
+let meActive = false, meItem = null, meKind = null, meCp = null, meDrag = null, meGlobal = false;
 function meStageEl() { return document.getElementById('meStage'); }
-function openMarkEdit(kind, cp) {
+function openMarkEdit(kind, cp, opts) {
   if (!project) return;
   meActive = true; meKind = kind; meCp = cp;
+  meGlobal = !!(opts && opts.global);   // mark-grid launch: no letter context — must never call curLetter() (with a mark selected it returns/CREATES a mark store entry, not a letter)
   const cls = markClassOf(kind, cp) || 'above';
-  const L = curLetter();
+  const L = meGlobal ? null : curLetter();
   let src = (L && L.markShapes && L.markShapes[cp]) || null;          // seed from this letter's override first
   if (!src) { const g = project.font[kind].custom && project.font[kind].custom[cp];
     if (g && (g.designMode === 'editor' ? (g.pieces && g.pieces.length) : (g.contours && g.contours.length))) src = g; }
@@ -8527,14 +8534,20 @@ function openMarkEdit(kind, cp) {
   if (!meItem.pieces || !meItem.pieces.length) meItem.pieces = defaultPieces(kind, cp);
   editorSel = 0;
   document.getElementById('meTitle').textContent = 'Edit shape — ' + meItem.name;
-  const lname = L ? L.name : 'this letter';
-  document.getElementById('meApplyCur').textContent = 'Apply to current letter (' + lname + ')';
-  document.getElementById('meScopeNote').innerHTML = '<b>Apply to current letter</b> changes this mark only for <b>' + esc(lname) + '</b>; <b>Apply to all letters</b> changes it everywhere. Neither affects positioning. (A per-letter shape bakes into the font for that letter+mark pair; when another mark such as a dagesh sits between them, that combination falls back to the all-letters shape.)';
+  const curBtn = document.getElementById('meApplyCur');
+  curBtn.style.display = meGlobal ? 'none' : '';   // modal DOM persists across opens — set display explicitly BOTH ways
+  if (meGlobal) {
+    document.getElementById('meScopeNote').innerHTML = '<b>Apply to all letters</b> saves this shape as the font-wide design for <b>' + esc(meItem.name) + '</b> — every letter without its own per-letter override uses it. To reshape it for just one letter, open that letter’s placement step and use <b>✎ Edit shape</b> there. Neither affects positioning.';
+  } else {
+    const lname = L ? L.name : 'this letter';
+    curBtn.textContent = 'Apply to current letter (' + lname + ')';
+    document.getElementById('meScopeNote').innerHTML = '<b>Apply to current letter</b> changes this mark only for <b>' + esc(lname) + '</b>; <b>Apply to all letters</b> changes it everywhere. Neither affects positioning. (A per-letter shape bakes into the font for that letter+mark pair; when another mark such as a dagesh sits between them, that combination falls back to the all-letters shape.)';
+  }
   meUndoReset();
   meRender();
   aOpenModal('markEditOverlay', closeMarkEdit);
 }
-function closeMarkEdit() { meActive = false; meItem = null; meDrag = null; meUndoReset(); aCloseModal('markEditOverlay'); }
+function closeMarkEdit() { meActive = false; meItem = null; meDrag = null; meGlobal = false; meUndoReset(); aCloseModal('markEditOverlay'); }
 /* ── "Edit shape" working-copy undo/redo — separate from the project undo stack, because the modal edits a
    throwaway meItem and nothing reaches the font until Apply. Snapshots {pieces, designMode} and coalesces a
    drag, a slider sweep, or a run of arrow-nudges into ONE step (begin on the first change, commit at the end).
@@ -8722,7 +8735,8 @@ function meOpenUploadEditor() {                 // hand off to the existing per-
   status('Design this mark from an image here, then return to placing nikkud.');
 }
 function meConfirmApply(scope) {
-  const L = curLetter(), lname = L ? L.name : 'this letter';
+  if (meGlobal && scope !== 'all') return;   // grid launch: no letter context (the button is hidden; this is a guard)
+  const lname = scope === 'all' ? '' : (((curLetter() || {}).name) || 'this letter');
   const msg = scope === 'all'
     ? 'Are you sure? This changes how <b>' + esc(meItem.name) + '</b> looks for <b>ALL letters</b> in your font. It will not affect positioning.'
     : 'Are you sure? This changes how <b>' + esc(meItem.name) + '</b> looks for <b>only ' + esc(lname) + '</b>. It will not affect positioning.';
@@ -8766,7 +8780,7 @@ function meApply(scope) {
       project.font[kind].mode = 'custom';
     });
   } else {
-    const L = curLetter(); if (!L) { closeMarkEdit(); return; }
+    const L = meGlobal ? null : curLetter(); if (!L) { closeMarkEdit(); return; }
     udDo([{ t:'item', kind:'letter', cp: L.codepoint }], 'edit shape on ' + L.name, () => {
       if (!L.markShapes) L.markShapes = {};
       L.markShapes[cp] = { designMode: payload.designMode, pieces: payload.pieces, contours: payload.contours, curves: payload.curves, source: payload.source, cls: payload.cls };
