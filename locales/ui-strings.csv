@@ -422,355 +422,360 @@ dashboard.weather.wmo_snow,Snow,,weather description,
 dashboard.weather.wmo_snow_grains,Snow Grains,,weather description,
 dashboard.weather.wmo_snow_showers,Snow Showers,,weather description,
 dashboard.weather.wmo_thunderstorm,Thunderstorm,,weather description,
-dictionary.advanced.color_enable,Enable color coding,,color coding checkbox,
-dictionary.advanced.color_head,Color Code Nikkud,,advanced section title,
-dictionary.advanced.color_mode_highlight,Highlight,,color mode button,
-dictionary.advanced.color_mode_letter,Letter,,color mode button,
-dictionary.advanced.color_mode_underline,Underline,,color mode button,
-dictionary.advanced.color_reset,↺ Reset to defaults,,color reset button,leading-emoji
-dictionary.advanced.font_head,Hebrew Font,,advanced section title,
-dictionary.advanced.font_size,Size,,font size row label,
-dictionary.advanced.font_size_reset_title,Reset to default,,font size reset button title,aria-label only
-dictionary.advanced.panel_title,Advanced,,filter panel title,
-dictionary.audio.head,Audio,,advanced section title,
-dictionary.audio.show_button,Show pronunciation button,,audio checkbox,
-dictionary.audio.tts_fast,Fast,,tts rate scale label,
-dictionary.audio.tts_slow,Slow,,tts rate slider min label,
-dictionary.audio.tts_slower,Slower,,tts rate scale label,
-dictionary.audio.tts_speed_label,Hebrew TTS Reading Speed,,tts rate label,
-dictionary.card.aria_view_details,View details for {word},,word card aria-label,aria-label only; mixed UI+content — do not translate {…}
-dictionary.card.copy_hebrew_title,Copy Hebrew,,word card copy button title/aria,aria-label only
-dictionary.card.google_title,Look up on Google,,word card search link title/aria,aria-label only
-dictionary.card.hear_title,Hear pronunciation,,word card speak button title/aria,aria-label only
-dictionary.chips.any_letters,Any: {letters},,active filter chip,mixed UI+content — do not translate {…}
-dictionary.chips.any_only_suffix,(only),,active filter chip suffix,
-dictionary.chips.body_aria,{label} — show filter,,filter chip body aria-label,aria-label only
-dictionary.chips.categories,Categories: {count}/{total},,active filter chip (emoji),
-dictionary.chips.emoji_fem_only,♀ Fem only,,active filter chip (emoji),leading-emoji
-dictionary.chips.emoji_masc_only,♂ Masc only,,active filter chip (emoji),leading-emoji
-dictionary.chips.era_biblical_only,Era: Biblical only,,active filter chip,
-dictionary.chips.era_modern_only,Era: Modern only,,active filter chip,
-dictionary.chips.era_none,Era: none,,active filter chip,
-dictionary.chips.gematria,Gematria {op} {value},,active filter chip,
-dictionary.chips.hiding_vowelless,Hiding vowelless,,active filter chip,
-dictionary.chips.length,Length: {count}/{total},,active filter chip,
-dictionary.chips.pos,POS: {count}/{total},,active filter chip,
-dictionary.chips.position_letters,{ordinal} letter: {letters},,active filter chip,mixed UI+content — do not translate {…}
-dictionary.chips.remove_aria,Remove {label} filter,,filter chip remove aria-label,aria-label only
-dictionary.chips.reset_all,Reset all ✕,,reset-all chip,leading-emoji
-dictionary.chips.reset_all_aria,Reset all filters,,reset-all chip aria-label,aria-label only
-dictionary.chips.search,"Search: ""{query}""",,active filter chip,mixed UI+content — do not translate {…}
-dictionary.chips.vowels,Vowels: {count}/{total},,active filter chip,
-dictionary.copy.allinfo_tip,"Copies: Hebrew word — transliteration — translation — part of speech — era. Gematria value is appended if ""Show Gematria Value"" is enabled.",,all-info tooltip,
-dictionary.copy.allinfo_worksheet_tip,Select this option when using Bulk Copy to generate a manual input list for the Worksheet Generator.,,all-info gold tooltip,
-dictionary.copy.bulk_clear,Clear,,bulk clear button,
-dictionary.copy.bulk_count,{count} selected,,bulk selection count,
-dictionary.copy.bulk_hint,"While Bulk Copy is on, clicking a card selects it (instead of opening its details).",,bulk copy hint,
-dictionary.copy.bulk_mode,Bulk Copy Mode,,bulk copy checkbox,
-dictionary.copy.bulk_mode_title,Select multiple words from the results. Each selected word is added to a text box below — one per line — in whatever Copy Mode is active.,,bulk copy checkbox title,aria-label only
-dictionary.copy.copied_flash,✓ Copied!,,copy button flash (word modal / share link),leading-emoji
-dictionary.copy.copied_toast,Copied to clipboard,,copy announce,toast
-dictionary.copy.copy_all,Copy All,,bulk copy-all button,
-dictionary.copy.link_copied_toast,Link copied to clipboard,,share-link announce,toast
-dictionary.copy.mode_allinfo,All info,,copy mode radio,
-dictionary.copy.mode_defonly,Definition,,copy mode radio,
-dictionary.copy.mode_label,Copy Mode,,copy mode subheading,
-dictionary.copy.mode_tip,Changes the format used when clicking the copy button on a word card.,,copy mode tooltip,
-dictionary.copy.mode_transdef,Word — Transliteration — Definition,,copy mode radio,
-dictionary.copy.mode_word,Word,,copy mode radio,
-dictionary.copy.mode_word_def,Word — Definition,,copy mode radio,
-dictionary.copy.opts_head,Copy Options,,advanced section title,
-dictionary.copy.select_all_matching,Select all matching,,bulk select-all button,
-dictionary.copy.select_page,Select page,,bulk select-page button,
-dictionary.empty.clear_search,Clear search,,empty state button,
-dictionary.empty.no_emojis_match,No emojis match these filters,,empty state,empty state
-dictionary.empty.no_words_match,No words match these filters,,empty state,empty state
-dictionary.empty.reset_all,Reset all filters,,empty state button,
-dictionary.export.anki_button,⬇ Export for Anki,,export button,leading-emoji
-dictionary.export.count.one,{count} word selected for export.,,export count,plural
-dictionary.export.count.other,{count} words selected for export.,,export count,plural
-dictionary.export.err_select_first,Select words using Bulk Copy Mode first.,,export error / word-list error,
-dictionary.export.head,Export Selected Words,,export subheading,
-dictionary.export.hint,Active when Bulk Copy Mode is on and at least one word is selected.,,export hint,
-dictionary.export.instructions,Anki: import via File → Import. Quizlet: use Import from Word/Excel on the study set creation page.,,export instructions,
-dictionary.export.quizlet_button,⬇ Export for Quizlet,,export button,leading-emoji
-dictionary.faq.a_era,"Yes. Filter by era — biblical, mishnaic, medieval, and modern Hebrew.",,footer FAQ answer,
-dictionary.faq.a_free,Yes. Free under CC BY-NC-SA 4.0; word data sourced from Kaikki.org.,,footer FAQ answer,
-dictionary.faq.a_lookup,"Type the Hebrew word (with or without nikkud), or use filters to browse by length, part of speech, era, or letter position.",,footer FAQ answer,
-dictionary.faq.a_pos,"Yes. Filter by noun, verb, adjective, adverb, and others, combined with length and era filters.",,footer FAQ answer,
-dictionary.faq.a_share,Yes. Click 🔗 Copy link in the results toolbar to copy a link that reopens this exact filtered view — send it to your class. Your last-used filters also come back automatically on your next visit. New here? Click ❓ Tour in the header for a quick 7-step walkthrough.,,footer FAQ answer,html; leading-emoji
-dictionary.faq.q_era,Modern and biblical Hebrew?,,footer FAQ question,
-dictionary.faq.q_free,Is it free?,,footer FAQ question,
-dictionary.faq.q_lookup,How do I look up a Hebrew word?,,footer FAQ question,
-dictionary.faq.q_pos,Can I filter by part of speech?,,footer FAQ question,
-dictionary.faq.q_share,Can I share or save my filters?,,footer FAQ question,
-dictionary.faq.summary,Frequently Asked Questions,,footer FAQ summary,
-dictionary.filters.all_words,All Words,,word-length checkbox,
-dictionary.filters.any_letters_head,Any of these letters,,any-letter section header,
-dictionary.filters.any_no_others,No other letters?,,any-letter checkbox,
-dictionary.filters.dagesh_tav,Dagesh Tav / Sav,,letter filter toggle,
-dictionary.filters.emoji_all,All,,emoji category select-all,
-dictionary.filters.emoji_gender_all,All,,emoji gender button,
-dictionary.filters.emoji_gender_fem,♀ Fem,,emoji gender button,leading-emoji
-dictionary.filters.emoji_gender_masc,♂ Masc,,emoji gender button,leading-emoji
-dictionary.filters.emoji_none,None,,emoji category select-none,
-dictionary.filters.era_biblical,Biblical,,era checkbox,
-dictionary.filters.era_head,Era,,era subheading,
-dictionary.filters.era_modern,Modern,,era checkbox,
-dictionary.filters.hide_no_vowels,Hide words with no vowels,,vowel filter checkbox,
-dictionary.filters.len_2,2-Letter,,word-length checkbox,
-dictionary.filters.len_3,3-Letter,,word-length checkbox,
-dictionary.filters.len_4,4-Letter,,word-length checkbox,
-dictionary.filters.len_5,5-Letter,,word-length checkbox,
-dictionary.filters.len_6,6-Letter,,word-length checkbox,
-dictionary.filters.len_7,7-Letter,,word-length checkbox,
-dictionary.filters.len_8plus,8+ Letter,,word-length checkbox,
-dictionary.filters.len_prefix,Prefixes/Suffixes,,word-length checkbox,
-dictionary.filters.length_panel_title,Word Length,,filter panel title,
-dictionary.filters.letter_panel_title,Filter by Letter,,filter panel title,
-dictionary.filters.mobile_button,⚙ Filters,,mobile filters button,leading-emoji
-dictionary.filters.mode_emojis,Emojis,,mode switcher button,
-dictionary.filters.mode_shoresh,Shoresh,,mode switcher button,
-dictionary.filters.mode_words,Words,,mode switcher button,
-dictionary.filters.pos_all,All,,POS select-all button,
-dictionary.filters.pos_clear_title,Clear,,letter-position clear button title,aria-label only
-dictionary.filters.pos_letter_heading,{ordinal} Letter,,letter-position section header,
-dictionary.filters.pos_none,None,,POS select-none button,
-dictionary.filters.pos_panel_title,Part of Speech,,filter panel title,
-dictionary.filters.vowel_note,Show only words whose vowels are all in the selected set.,,vowel filter note,
-dictionary.filters.vowel_panel_title,Filter by Vowel,,filter panel title,
-dictionary.gematria.enable_sort,Enable Sort By Gematria Value,,gematria sort checkbox,
-dictionary.gematria.enable_sort_tip,"Adds Gematria ↑ and Gematria ↓ options to the Sort menu, letting you order words by their total Gematria value.",,gematria sort tooltip,
-dictionary.gematria.filter_exact,Exact value,,gematria filter option,
-dictionary.gematria.filter_gte,Equal to / above (≥),,gematria filter option,
-dictionary.gematria.filter_head,Filter by Gematria,,gematria filter subheading,
-dictionary.gematria.filter_lte,Equal to / below (≤),,gematria filter option,
-dictionary.gematria.filter_none,No filter,,gematria filter option,
-dictionary.gematria.filter_range,Range,,gematria filter option,
-dictionary.gematria.opts_head,Gematria Options,,advanced section title,
-dictionary.gematria.show_value,Show Gematria Value,,gematria checkbox,
-dictionary.gematria.sort_asc,Gematria ↑,,sort option (injected),leading-emoji
-dictionary.gematria.sort_desc,Gematria ↓,,sort option (injected),leading-emoji
-dictionary.gematria.val1_placeholder,Value,,gematria value input placeholder,placeholder
-dictionary.gematria.val2_placeholder,To,,gematria range-to input placeholder,placeholder
-dictionary.glyphname.letter_alef,Alef,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_ayin,Ayin,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_bet,Bet,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_chet,Chet,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_dalet,Dalet,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_fe,Fe,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_fe_sf,Fe sf,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_gimel,Gimel,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_heh,Heh,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_kaf,Kaf,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_khaf,Khaf,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_khaf_sf,Khaf sf,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_kuf,Kuf,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_lamed,Lamed,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_mem,Mem,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_mem_sf,Mem sf,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_nun,Nun,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_nun_sf,Nun sf,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_pe,Pe,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_resh,Resh,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_samech,Samech,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_sav,Sav,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_shin,Shin,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_shin_sin,Shin/Sin,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_sin,Sin,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_tav,Tav,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_tet,Tet,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_tzadi,Tzadi,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_tzadi_sf,Tzadi sf,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_vav,Vav,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_vet,Vet,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_yod,Yod,,letter filter tile label,glyph-name
-dictionary.glyphname.letter_zayin,Zayin,,letter filter tile label,glyph-name
-dictionary.glyphname.vowel_chirik,Chirik,,vowel filter/color-picker label,glyph-name
-dictionary.glyphname.vowel_hataf_kamatz,Hataf Kamatz,,vowel filter/color-picker label,glyph-name
-dictionary.glyphname.vowel_hataf_patach,Hataf Patach,,vowel filter/color-picker label,glyph-name
-dictionary.glyphname.vowel_hataf_segol,Hataf Segol,,vowel filter/color-picker label,glyph-name
-dictionary.glyphname.vowel_holam,Holam,,vowel filter/color-picker label,glyph-name
-dictionary.glyphname.vowel_kamatz,Kamatz,,vowel filter/color-picker label,glyph-name
-dictionary.glyphname.vowel_kubutz,Kubutz,,vowel filter/color-picker label,glyph-name
-dictionary.glyphname.vowel_patach,Patach,,vowel filter/color-picker label,glyph-name
-dictionary.glyphname.vowel_segol,Segol,,vowel filter/color-picker label,glyph-name
-dictionary.glyphname.vowel_shuruk,Shuruk,,vowel filter/color-picker label,glyph-name
-dictionary.glyphname.vowel_shva,Shva,,vowel filter/color-picker label,glyph-name
-dictionary.glyphname.vowel_tzere,Tzere,,vowel filter/color-picker label,glyph-name
-dictionary.glyphname.vowel_vav_holam,Vav Holam,,vowel filter/color-picker label,glyph-name
-dictionary.header.h1,Hebrew Word Lookup & Dictionary,,page H1 heading,
-dictionary.header.home,← Home,,header home link,leading-emoji
-dictionary.header.subtitle,"Browse and filter Hebrew vocabulary by length, part of speech, and era — a free Hebrew dictionary for learning and practice.",,header subtitle,
-dictionary.header.tour_button,❓ Tour,,header tour launcher button,leading-emoji
-dictionary.header.tour_button_title,Take a quick tour,,header tour launcher title,aria-label only
-dictionary.howto.step1,Type a Hebrew word in the search bar (with or without nikkud).,,footer how-to step,
-dictionary.howto.step2,"Or filter by word length, part of speech, era, or letter position.",,footer how-to step,
-dictionary.howto.step3,Click any result to view the word's details.,,footer how-to step,
-dictionary.howto.summary,How To Use,,footer how-to summary,
-dictionary.loading.dictionary,Loading dictionary…,,loading text,toast
-dictionary.loading.dictionary_kb,Loading dictionary… {kb} KB,,loading text with size,toast
-dictionary.loading.dictionary_pct,Loading dictionary… {pct}%,,loading text with percent,toast
-dictionary.loading.emoji_failed,Failed to load emoji data.,,emoji load error,
-dictionary.loading.emojis,Loading emojis…,,emoji loading text,toast
-dictionary.loading.emojis_pct,Loading emojis… {pct}%,,emoji loading text with percent,toast
-dictionary.loading.failed,Failed to load. Open via a local server (not file://).,,dictionary load error,
-dictionary.modal.add_to_bulk,➕ Add to bulk list,,word modal bulk button,leading-emoji
-dictionary.modal.close_aria,Close details,,word modal close aria-label,aria-label only
-dictionary.modal.copy_allinfo,Copy all info,,word modal copy button,
-dictionary.modal.copy_def,Copy definition,,word modal copy button,
-dictionary.modal.copy_english,Copy English,,emoji modal copy button,
-dictionary.modal.copy_hebrew,Copy Hebrew,,emoji modal copy button,
-dictionary.modal.copy_hebrew_english,Copy Hebrew — English,,emoji modal copy button,
-dictionary.modal.copy_hebrew_transdef,Copy Hebrew — translit — English,,emoji modal copy button,
-dictionary.modal.copy_word,Copy word,,word modal copy button,
-dictionary.modal.copy_word_def,Copy word — definition,,word modal copy button,
-dictionary.modal.copy_word_transdef,Copy word — translit — definition,,word modal copy button,
-dictionary.modal.era_bib_mod,Bib + Mod,,era badge (both),
-dictionary.modal.form_feminine,♀ Feminine,,emoji modal form label,leading-emoji
-dictionary.modal.form_masculine,♂ Masculine,,emoji modal form label,leading-emoji
-dictionary.modal.google,Look up on Google ↗,,word modal Google link,leading-emoji
-dictionary.modal.hear_form_aria,Hear {label},,emoji modal form speak aria-label,aria-label only
-dictionary.modal.in_bulk_list,✓ In bulk list,,word modal bulk button (added),leading-emoji
-dictionary.modal.pronounce,🔊 Pronounce,,word modal speak button,leading-emoji
-dictionary.modal.words_from_root,Words from this root  {root}  →,,word modal root button,mixed UI+content — do not translate {…}
-dictionary.ordinal_1st,1st,,letter-position ordinal,
-dictionary.ordinal_2nd,2nd,,letter-position ordinal,
-dictionary.ordinal_3rd,3rd,,letter-position ordinal,
-dictionary.ordinal_4th,4th,,letter-position ordinal,
-dictionary.ordinal_5th,5th,,letter-position ordinal,
-dictionary.ordinal_6th,6th,,letter-position ordinal,
-dictionary.pos.adjective,Adjective,,part-of-speech filter label,
-dictionary.pos.adverb,Adverb,,part-of-speech filter label,
-dictionary.pos.article,Article,,part-of-speech filter label,
-dictionary.pos.conjunction,Conjunction,,part-of-speech filter label,
-dictionary.pos.determiner,Determiner,,part-of-speech filter label,
-dictionary.pos.interjection,Interjection,,part-of-speech filter label,
-dictionary.pos.name,Name,,part-of-speech filter label,
-dictionary.pos.name_element,Name Element,,part-of-speech filter label,
-dictionary.pos.noun,Noun,,part-of-speech filter label,
-dictionary.pos.numeral,Numeral,,part-of-speech filter label,
-dictionary.pos.other,Other,,part-of-speech filter label,
-dictionary.pos.particle,Particle,,part-of-speech filter label,
-dictionary.pos.phrase,Phrase,,part-of-speech filter label,
-dictionary.pos.postposition,Postposition,,part-of-speech filter label,
-dictionary.pos.prep_phrase,Prep. Phrase,,part-of-speech filter label,
-dictionary.pos.preposition,Preposition,,part-of-speech filter label,
-dictionary.pos.pronoun,Pronoun,,part-of-speech filter label,
-dictionary.pos.proper_noun,Proper Noun,,part-of-speech filter label,
-dictionary.pos.root,Root (שׁורש),,part-of-speech filter label,mixed UI+content — do not translate {…}
-dictionary.pos.verb,Verb,,part-of-speech filter label,
-dictionary.results.count_emojis.one,{count} emoji,,result count (emoji mode),plural
-dictionary.results.count_emojis.other,{count} emojis,,result count (emoji mode),plural
-dictionary.results.count_related.one,{count} related word,,shoresh result count,plural
-dictionary.results.count_related.other,{count} related words,,shoresh result count,plural
-dictionary.results.count_words.one,{count} word,,result count,plural
-dictionary.results.count_words.other,{count} words,,result count,plural
-dictionary.results.load_more,Show more,,load-more button,
-dictionary.results.no_emojis_found,No emojis found,,result count empty (emoji mode),
-dictionary.results.no_related,No related words,,shoresh result count empty,
-dictionary.results.no_words_found,No words found,,result count empty,
-dictionary.results.no_words_in_list,No words in this list,,word-list-as-filter empty count,
-dictionary.search.aria,"Search Hebrew, transliteration, or English",,search input aria-label,aria-label only
-dictionary.search.clear_title,Clear search,,search clear button title/aria,aria-label only
-dictionary.search.placeholder,"Search Hebrew, translit, or English…",,search input placeholder,placeholder
-dictionary.shoresh.browse_roots,Browse roots (alef→tav) — click to look up:,,shoresh chips label,
-dictionary.shoresh.enter_label,Enter a שׁורש (root),,shoresh input label,mixed UI+content — do not translate {…}
-dictionary.shoresh.enter_root_count,Enter a root,,result count in empty shoresh,
-dictionary.shoresh.group_adjective,Adjective,,shoresh group header,
-dictionary.shoresh.group_adverb,Adverb,,shoresh group header,
-dictionary.shoresh.group_count,{label} ({count}),,shoresh group header format,
-dictionary.shoresh.group_noun,Noun,,shoresh group header,
-dictionary.shoresh.group_other,Other,,shoresh group header,
-dictionary.shoresh.group_root,Root,,shoresh group header,
-dictionary.shoresh.group_verb,Verb,,shoresh group header,
-dictionary.shoresh.input_placeholder,e.g. כ-ת-ב,,shoresh input placeholder,placeholder; mixed UI+content — do not translate {…}
-dictionary.shoresh.lookup_button,Look up,,shoresh lookup button,
-dictionary.shoresh.no_derived,No derived words found for this root in the current dictionary.,,shoresh empty note,
-dictionary.shoresh.no_matching_roots,No matching roots.,,shoresh chips empty,
-dictionary.shoresh.pattern_abstract_noun,abstract noun,,shoresh pattern sub-label,
-dictionary.shoresh.pattern_adjective,adjective,,shoresh pattern sub-label,
-dictionary.shoresh.pattern_agent_noun,agent noun,,shoresh pattern sub-label,
-dictionary.shoresh.pattern_noun,noun,,shoresh pattern sub-label,
-dictionary.shoresh.pattern_verb,verb,,shoresh pattern sub-label,
-dictionary.shoresh.patterns_3letter_only,Patterns are shown for 3-letter roots.,,shoresh patterns note,
-dictionary.shoresh.patterns_title,Common patterns from this root,,shoresh patterns section title,
-dictionary.shoresh.type_min_letters,Type at least 2 root letters (e.g. כתב).,,shoresh empty note,mixed UI+content — do not translate {…}
-dictionary.sidebar.collapse_all,Collapse all menus,,sidebar toolbar button,
-dictionary.sidebar.expand_all,Expand all menus,,sidebar toolbar button,
-dictionary.sidebar.hide_title,Hide sidebar,,sidebar hide button title,aria-label only
-dictionary.sidebar.show_title,Show sidebar,,sidebar show button title,aria-label only
-dictionary.toolbar.active_filters_aria,Active filters,,filter chips container aria-label,aria-label only
-dictionary.toolbar.copy_link,🔗 Copy link,,toolbar share button,leading-emoji
-dictionary.toolbar.copy_link_title,Copy a link to this exact filtered view,,toolbar share button title,aria-label only
-dictionary.toolbar.loading,Loading…,,result count while loading,toast
-dictionary.toolbar.reset_filters,↺ Reset filters,,toolbar reset button,leading-emoji
-dictionary.toolbar.reset_filters_title,Reset all filters to their defaults,,toolbar reset button title,aria-label only
-dictionary.toolbar.sort_alpha,Hebrew A→Z,,sort option,
-dictionary.toolbar.sort_cat,Category,,sort option (emoji mode),
-dictionary.toolbar.sort_english,English A→Z,,sort option (emoji mode),
-dictionary.toolbar.sort_label,Sort:,,sort dropdown label,
-dictionary.toolbar.sort_len_asc,Length ↑,,sort option,leading-emoji
-dictionary.toolbar.sort_len_desc,Length ↓,,sort option,leading-emoji
-dictionary.toolbar.sort_transl,Translation A→Z,,sort option,
-dictionary.tour.cards_body,"Tap any word for full details, pronunciation, copy options, and its root family.",,tour step body,
-dictionary.tour.cards_title,Word cards,,tour step title,
-dictionary.tour.chips_body,"Everything you have turned on shows here as chips — tap ✕ to remove one, or reset them all.",,tour step body,
-dictionary.tour.chips_title,Active filters,,tour step title,
-dictionary.tour.export_body,Select a batch of words and export straight to Anki or Quizlet — or into the Worksheet Generator.,,tour step body,
-dictionary.tour.export_title,Bulk Copy & Export,,tour step title,
-dictionary.tour.filters_body,"Narrow by length, part of speech, era, vowels — even specific letters in specific positions.",,tour step body,
-dictionary.tour.filters_title,Filters,,tour step title,
-dictionary.tour.search_body,"Type Hebrew (with or without nikkud), transliteration, or English to find any word.",,tour step body,
-dictionary.tour.search_title,Search,,tour step title,
-dictionary.tour.share_body,Copy a link to exactly this filtered view and post it for your class.,,tour step body,
-dictionary.tour.share_title,Share this view,,tour step title,
-dictionary.tour.tools_body,"Switch between the word dictionary, an emoji picture-vocabulary deck, and the Shoresh root explorer.",,tour step body,
-dictionary.tour.tools_title,Three tools in one,,tour step title,
-dictionary.translit.credit,Powered by hebrew-transliteration by Charles Loder,,transliteration attribution,html (contains link)
-dictionary.translit.head,Transliteration,,advanced section title,
-dictionary.translit.load_failed,Library failed to load — using default style.,,transliteration load status,
-dictionary.translit.loading,Loading library…,,transliteration load status,toast
-dictionary.translit.style_ashkenazi,Ashkenazi,,transliteration style option,
-dictionary.translit.style_brill,Brill Academic,,transliteration style option,
-dictionary.translit.style_default,Default (built-in),,transliteration style option,
-dictionary.translit.style_label,Style,,transliteration style label,
-dictionary.translit.style_modern,Modern Israeli,,transliteration style option,
-dictionary.translit.style_sbl,SBL Academic,,transliteration style option,
-dictionary.translit.style_simple,Simple Stressed,,transliteration style option,
-dictionary.wordlist.add_to_existing,Or add to an existing list,,save word-list modal section,
-dictionary.wordlist.add_to_selected,Add to selected list,,merge button,
-dictionary.wordlist.added.one,Added {count} word.,,merge status,plural
-dictionary.wordlist.added.other,Added {count} words.,,merge status,plural
-dictionary.wordlist.all_already_in,All selected words were already in that list.,,merge status,
-dictionary.wordlist.card_count.one,{count} word,,word-list card count,plural
-dictionary.wordlist.card_count.other,{count} words,,word-list card count,plural
-dictionary.wordlist.create_new,Create a new list,,save word-list modal section,
-dictionary.wordlist.delete,Delete,,word-list card button,
-dictionary.wordlist.delete_confirm,"Delete the word list ""{name}""? This can't be undone.",,confirm dialog,mixed UI+content — do not translate {…}
-dictionary.wordlist.dropped_suffix,{count} skipped (200-word limit).,,save/merge status suffix,
-dictionary.wordlist.dup_name_suffix,(Another list already uses this name.),,save word-list status suffix,
-dictionary.wordlist.enter_name,Please enter a name for the list.,,save word-list validation,
-dictionary.wordlist.list_empty,This list is empty.,,word-list expanded empty,
-dictionary.wordlist.load_as_filter,Load as filter (view in results),,word-list card button,
-dictionary.wordlist.manager_empty,"No word lists yet. Turn on Bulk Copy Mode, select words, and use “Save as Word List”.",,word-lists manager empty state,empty state
-dictionary.wordlist.manager_title,Word Lists,,word-lists manager modal title,
-dictionary.wordlist.name_placeholder,e.g. Parashat Noach vocab,,new list name placeholder,placeholder
-dictionary.wordlist.remove_word_title,Remove from list,,word remove button title,aria-label only
-dictionary.wordlist.rename,Rename,,word-list card button,
-dictionary.wordlist.rename_prompt,Rename word list:,,prompt dialog,
-dictionary.wordlist.save_as_new,Save as new list,,save word-list button,
-dictionary.wordlist.save_modal_title,Save as Word List,,save word-list modal title,
-dictionary.wordlist.saved.one,"Saved ""{name}"" with {count} word.",,save word-list status,plural; mixed UI+content — do not translate {…}
-dictionary.wordlist.saved.other,"Saved ""{name}"" with {count} words.",,save word-list status,plural; mixed UI+content — do not translate {…}
-dictionary.wordlist.selected_count.one,{count} word selected,,save word-list modal count,plural
-dictionary.wordlist.selected_count.other,{count} words selected,,save word-list modal count,plural
-dictionary.wordlist.view_words,View words,,word-list card button,
-dictionary.wordlists.head,Word Lists,,word-lists subheading,
-dictionary.wordlists.head_desc,Save selected words as a named list you can reuse elsewhere on the site.,,word-lists description,
-dictionary.wordlists.head_tip,"Save selected words as a named list stored across the whole site, so you can reuse it in other tools.",,word-lists tooltip,
-dictionary.wordlists.manager_button,📚 Word Lists,,open word-lists manager button,leading-emoji
-dictionary.wordlists.save_button,⭑ Save as Word List…,,save word-list button,leading-emoji
+dictionary.advanced.color_enable,Enable color coding,הפעלת צביעה,color coding checkbox,
+dictionary.advanced.color_head,Color Code Nikkud,צביעת ניקוד,advanced section title,
+dictionary.advanced.color_mode_highlight,Highlight,הדגשה,color mode button,
+dictionary.advanced.color_mode_letter,Letter,אות,color mode button,
+dictionary.advanced.color_mode_underline,Underline,קו תחתון,color mode button,
+dictionary.advanced.color_reset,↺ Reset to defaults,↺ איפוס לברירת מחדל,color reset button,leading-emoji
+dictionary.advanced.font_head,Hebrew Font,גופן עברי,advanced section title,
+dictionary.advanced.font_size,Size,גודל,font size row label,
+dictionary.advanced.font_size_reset_title,Reset to default,איפוס לברירת מחדל,font size reset button title,aria-label only
+dictionary.advanced.panel_title,Advanced,מתקדם,filter panel title,
+dictionary.audio.head,Audio,שמע,advanced section title,
+dictionary.audio.show_button,Show pronunciation button,הצגת כפתור הגייה,audio checkbox,
+dictionary.audio.tts_fast,Fast,מהיר,tts rate scale label,
+dictionary.audio.tts_slow,Slow,איטי,tts rate slider min label,
+dictionary.audio.tts_slower,Slower,איטי יותר,tts rate scale label,
+dictionary.audio.tts_speed_label,Hebrew TTS Reading Speed,מהירות הקראה בעברית,tts rate label,
+dictionary.card.aria_view_details,View details for {word},הצגת פרטים עבור {word},word card aria-label,aria-label only; mixed UI+content — do not translate {…}
+dictionary.card.copy_hebrew_title,Copy Hebrew,העתקת עברית,word card copy button title/aria,aria-label only
+dictionary.card.google_title,Look up on Google,חיפוש בגוגל,word card search link title/aria,aria-label only
+dictionary.card.hear_title,Hear pronunciation,השמעת הגייה,word card speak button title/aria,aria-label only
+dictionary.chips.any_letters,Any: {letters},כל אחת מ: {letters},active filter chip,mixed UI+content — do not translate {…}
+dictionary.chips.any_only_suffix,(only),(בלבד),active filter chip suffix,
+dictionary.chips.body_aria,{label} — show filter,{label} — הצגת המסנן,filter chip body aria-label,aria-label only
+dictionary.chips.categories,Categories: {count}/{total},קטגוריות: {count}/{total},active filter chip (emoji),
+dictionary.chips.emoji_fem_only,♀ Fem only,♀ נקבה בלבד,active filter chip (emoji),leading-emoji
+dictionary.chips.emoji_masc_only,♂ Masc only,♂ זכר בלבד,active filter chip (emoji),leading-emoji
+dictionary.chips.era_biblical_only,Era: Biblical only,תקופה: מקראית בלבד,active filter chip,
+dictionary.chips.era_modern_only,Era: Modern only,תקופה: מודרנית בלבד,active filter chip,
+dictionary.chips.era_none,Era: none,תקופה: ללא,active filter chip,
+dictionary.chips.gematria,Gematria {op} {value},גימטרייה {op} {value},active filter chip,
+dictionary.chips.hiding_vowelless,Hiding vowelless,מסתיר מילים ללא ניקוד,active filter chip,
+dictionary.chips.length,Length: {count}/{total},אורך: {count}/{total},active filter chip,
+dictionary.chips.pos,POS: {count}/{total},חלק דיבר: {count}/{total},active filter chip,
+dictionary.chips.position_letters,{ordinal} letter: {letters},אות {ordinal}: {letters},active filter chip,mixed UI+content — do not translate {…}
+dictionary.chips.remove_aria,Remove {label} filter,הסרת המסנן {label},filter chip remove aria-label,aria-label only
+dictionary.chips.reset_all,Reset all ✕,איפוס הכול ✕,reset-all chip,leading-emoji
+dictionary.chips.reset_all_aria,Reset all filters,איפוס כל המסננים,reset-all chip aria-label,aria-label only
+dictionary.chips.search,"Search: ""{query}""","חיפוש: ""{query}""",active filter chip,mixed UI+content — do not translate {…}
+dictionary.chips.vowels,Vowels: {count}/{total},תנועות: {count}/{total},active filter chip,
+dictionary.copy.allinfo_tip,"Copies: Hebrew word — transliteration — translation — part of speech — era. Gematria value is appended if ""Show Gematria Value"" is enabled.","מעתיק: מילה בעברית — תעתיק — תרגום — חלק דיבר — תקופה. ערך הגימטרייה מצורף אם ""הצגת ערך גימטרייה"" מופעלת.",all-info tooltip,
+dictionary.copy.allinfo_worksheet_tip,Select this option when using Bulk Copy to generate a manual input list for the Worksheet Generator.,בחרו באפשרות זו כשמשתמשים בהעתקה מרובה כדי ליצור רשימת קלט ידני עבור מחולל דפי העבודה.,all-info gold tooltip,
+dictionary.copy.bulk_clear,Clear,ניקוי,bulk clear button,
+dictionary.copy.bulk_count,{count} selected,{count} נבחרו,bulk selection count,
+dictionary.copy.bulk_hint,"While Bulk Copy is on, clicking a card selects it (instead of opening its details).","כשהעתקה מרובה פעילה, לחיצה על כרטיס בוחרת אותו (במקום לפתוח את פרטיו).",bulk copy hint,
+dictionary.copy.bulk_mode,Bulk Copy Mode,מצב העתקה מרובה,bulk copy checkbox,
+dictionary.copy.bulk_mode_title,Select multiple words from the results. Each selected word is added to a text box below — one per line — in whatever Copy Mode is active.,בחרו כמה מילים מהתוצאות. כל מילה שנבחרה מתווספת לתיבת טקסט למטה — אחת בכל שורה — לפי מצב ההעתקה הפעיל.,bulk copy checkbox title,aria-label only
+dictionary.copy.copied_flash,✓ Copied!,✓ הועתק!,copy button flash (word modal / share link),leading-emoji
+dictionary.copy.copied_toast,Copied to clipboard,הועתק ללוח,copy announce,toast
+dictionary.copy.copy_all,Copy All,העתקת הכול,bulk copy-all button,
+dictionary.copy.link_copied_toast,Link copied to clipboard,הקישור הועתק ללוח,share-link announce,toast
+dictionary.copy.mode_allinfo,All info,כל המידע,copy mode radio,
+dictionary.copy.mode_defonly,Definition,הגדרה,copy mode radio,
+dictionary.copy.mode_label,Copy Mode,מצב העתקה,copy mode subheading,
+dictionary.copy.mode_tip,Changes the format used when clicking the copy button on a word card.,משנה את הפורמט שבו משתמשים בעת לחיצה על כפתור ההעתקה בכרטיס מילה.,copy mode tooltip,
+dictionary.copy.mode_transdef,Word — Transliteration — Definition,מילה — תעתיק — הגדרה,copy mode radio,
+dictionary.copy.mode_word,Word,מילה,copy mode radio,
+dictionary.copy.mode_word_def,Word — Definition,מילה — הגדרה,copy mode radio,
+dictionary.copy.opts_head,Copy Options,אפשרויות העתקה,advanced section title,
+dictionary.copy.select_all_matching,Select all matching,בחירת כל המתאימות,bulk select-all button,
+dictionary.copy.select_page,Select page,בחירת העמוד,bulk select-page button,
+dictionary.empty.clear_search,Clear search,ניקוי החיפוש,empty state button,
+dictionary.empty.no_emojis_match,No emojis match these filters,אין אימוג׳ים התואמים למסננים אלו,empty state,empty state
+dictionary.empty.no_words_match,No words match these filters,אין מילים התואמות למסננים אלו,empty state,empty state
+dictionary.empty.reset_all,Reset all filters,איפוס כל המסננים,empty state button,
+dictionary.export.anki_button,⬇ Export for Anki,⬇ ייצוא ל-Anki,export button,leading-emoji
+dictionary.export.count.one,{count} word selected for export.,מילה אחת נבחרה לייצוא.,export count,plural
+dictionary.export.count.other,{count} words selected for export.,{count} מילים נבחרו לייצוא.,export count,plural
+dictionary.export.err_select_first,Select words using Bulk Copy Mode first.,בחרו מילים באמצעות מצב העתקה מרובה תחילה.,export error / word-list error,
+dictionary.export.head,Export Selected Words,ייצוא מילים נבחרות,export subheading,
+dictionary.export.hint,Active when Bulk Copy Mode is on and at least one word is selected.,פעיל כאשר מצב העתקה מרובה מופעל ולפחות מילה אחת נבחרה.,export hint,
+dictionary.export.instructions,Anki: import via File → Import. Quizlet: use Import from Word/Excel on the study set creation page.,Anki: ייבוא דרך File ← Import. Quizlet: השתמשו ב-Import from Word/Excel בדף יצירת סט הלימוד.,export instructions,
+dictionary.export.quizlet_button,⬇ Export for Quizlet,⬇ ייצוא ל-Quizlet,export button,leading-emoji
+dictionary.faq.a_era,"Yes. Filter by era — biblical, mishnaic, medieval, and modern Hebrew.","כן. סננו לפי תקופה — עברית מקראית, משנאית, ימי-ביניימית ומודרנית.",footer FAQ answer,
+dictionary.faq.a_free,Yes. Free under CC BY-NC-SA 4.0; word data sourced from Kaikki.org.,כן. חינמי תחת רישיון CC BY-NC-SA 4.0; נתוני המילים ממקור Kaikki.org.,footer FAQ answer,
+dictionary.faq.a_lookup,"Type the Hebrew word (with or without nikkud), or use filters to browse by length, part of speech, era, or letter position.","הקלידו את המילה בעברית (עם או בלי ניקוד), או השתמשו במסננים לעיון לפי אורך, חלק דיבר, תקופה או מיקום אות.",footer FAQ answer,
+dictionary.faq.a_pos,"Yes. Filter by noun, verb, adjective, adverb, and others, combined with length and era filters.","כן. סננו לפי שם עצם, פועל, שם תואר, תואר הפועל ועוד, בשילוב עם מסנני אורך ותקופה.",footer FAQ answer,
+dictionary.faq.a_share,Yes. Click 🔗 Copy link in the results toolbar to copy a link that reopens this exact filtered view — send it to your class. Your last-used filters also come back automatically on your next visit. New here? Click ❓ Tour in the header for a quick 7-step walkthrough.,כן. לחצו על 🔗 העתקת קישור בסרגל התוצאות כדי להעתיק קישור שפותח מחדש בדיוק את התצוגה המסוננת הזו — שלחו אותו לכיתה שלכם. המסננים האחרונים שלכם גם חוזרים אוטומטית בביקור הבא. חדשים כאן? לחצו על ❓ סיור בכותרת לסיור מודרך בן 7 שלבים.,footer FAQ answer,html; leading-emoji
+dictionary.faq.q_era,Modern and biblical Hebrew?,עברית מודרנית ומקראית?,footer FAQ question,
+dictionary.faq.q_free,Is it free?,האם זה חינמי?,footer FAQ question,
+dictionary.faq.q_lookup,How do I look up a Hebrew word?,איך מחפשים מילה בעברית?,footer FAQ question,
+dictionary.faq.q_pos,Can I filter by part of speech?,האם ניתן לסנן לפי חלק דיבר?,footer FAQ question,
+dictionary.faq.q_share,Can I share or save my filters?,האם ניתן לשתף או לשמור את המסננים שלי?,footer FAQ question,
+dictionary.faq.summary,Frequently Asked Questions,שאלות נפוצות,footer FAQ summary,
+dictionary.filters.all_words,All Words,כל המילים,word-length checkbox,
+dictionary.filters.any_letters_head,Any of these letters,כל אחת מהאותיות האלה,any-letter section header,
+dictionary.filters.any_no_others,No other letters?,ללא אותיות אחרות?,any-letter checkbox,
+dictionary.filters.dagesh_tav,Dagesh Tav / Sav,תו דגושה / תו רפה,letter filter toggle,REVIEW: 'Dagesh Tav / Sav' rendered תו דגושה / תו רפה — confirm phrasing
+dictionary.filters.emoji_all,All,הכול,emoji category select-all,
+dictionary.filters.emoji_gender_all,All,הכול,emoji gender button,
+dictionary.filters.emoji_gender_fem,♀ Fem,♀ נקבה,emoji gender button,leading-emoji
+dictionary.filters.emoji_gender_masc,♂ Masc,♂ זכר,emoji gender button,leading-emoji
+dictionary.filters.emoji_none,None,ללא,emoji category select-none,
+dictionary.filters.era_biblical,Biblical,מקראית,era checkbox,
+dictionary.filters.era_head,Era,תקופה,era subheading,
+dictionary.filters.era_modern,Modern,מודרנית,era checkbox,
+dictionary.filters.hide_no_vowels,Hide words with no vowels,הסתרת מילים ללא ניקוד,vowel filter checkbox,
+dictionary.filters.len_2,2-Letter,2 אותיות,word-length checkbox,
+dictionary.filters.len_3,3-Letter,3 אותיות,word-length checkbox,
+dictionary.filters.len_4,4-Letter,4 אותיות,word-length checkbox,
+dictionary.filters.len_5,5-Letter,5 אותיות,word-length checkbox,
+dictionary.filters.len_6,6-Letter,6 אותיות,word-length checkbox,
+dictionary.filters.len_7,7-Letter,7 אותיות,word-length checkbox,
+dictionary.filters.len_8plus,8+ Letter,8+ אותיות,word-length checkbox,
+dictionary.filters.len_prefix,Prefixes/Suffixes,תחיליות/סופיות,word-length checkbox,
+dictionary.filters.length_panel_title,Word Length,אורך המילה,filter panel title,
+dictionary.filters.letter_panel_title,Filter by Letter,סינון לפי אות,filter panel title,
+dictionary.filters.mobile_button,⚙ Filters,⚙ מסננים,mobile filters button,leading-emoji
+dictionary.filters.mode_emojis,Emojis,אימוג׳ים,mode switcher button,
+dictionary.filters.mode_shoresh,Shoresh,שורש,mode switcher button,
+dictionary.filters.mode_words,Words,מילים,mode switcher button,
+dictionary.filters.pos_all,All,הכול,POS select-all button,
+dictionary.filters.pos_clear_title,Clear,ניקוי,letter-position clear button title,aria-label only
+dictionary.filters.pos_letter_heading,{ordinal} Letter,אות {ordinal},letter-position section header,
+dictionary.filters.pos_none,None,ללא,POS select-none button,
+dictionary.filters.vowel_main,Main,עיקריות,vowel select-main button,
+dictionary.filters.pos_panel_title,Part of Speech,חלק דיבר,filter panel title,
+dictionary.filters.vowel_note,Show only words whose vowels are all in the selected set.,הצגת מילים שכל תנועותיהן נמצאות בקבוצה הנבחרת בלבד.,vowel filter note,
+dictionary.filters.vowel_panel_title,Filter by Vowel,סינון לפי תנועה,filter panel title,
+dictionary.gematria.enable_sort,Enable Sort By Gematria Value,הפעלת מיון לפי ערך גימטרייה,gematria sort checkbox,
+dictionary.gematria.enable_sort_tip,"Adds Gematria ↑ and Gematria ↓ options to the Sort menu, letting you order words by their total Gematria value.","מוסיף את האפשרויות גימטרייה ↑ וגימטרייה ↓ לתפריט המיון, ומאפשר לסדר מילים לפי ערך הגימטרייה הכולל שלהן.",gematria sort tooltip,
+dictionary.gematria.filter_exact,Exact value,ערך מדויק,gematria filter option,
+dictionary.gematria.filter_gte,Equal to / above (≥),שווה או גדול (≥),gematria filter option,
+dictionary.gematria.filter_head,Filter by Gematria,סינון לפי גימטרייה,gematria filter subheading,
+dictionary.gematria.filter_lte,Equal to / below (≤),שווה או קטן (≤),gematria filter option,
+dictionary.gematria.filter_none,No filter,ללא סינון,gematria filter option,
+dictionary.gematria.filter_range,Range,טווח,gematria filter option,
+dictionary.gematria.opts_head,Gematria Options,אפשרויות גימטרייה,advanced section title,
+dictionary.gematria.show_value,Show Gematria Value,הצגת ערך גימטרייה,gematria checkbox,
+dictionary.gematria.sort_asc,Gematria ↑,גימטרייה ↑,sort option (injected),leading-emoji
+dictionary.gematria.sort_desc,Gematria ↓,גימטרייה ↓,sort option (injected),leading-emoji
+dictionary.gematria.val1_placeholder,Value,ערך,gematria value input placeholder,placeholder
+dictionary.gematria.val2_placeholder,To,עד,gematria range-to input placeholder,placeholder
+dictionary.glyphname.letter_alef,Alef,אָלֶף,letter filter tile label,glyph-name
+dictionary.glyphname.letter_ayin,Ayin,עַיִן,letter filter tile label,glyph-name
+dictionary.glyphname.letter_bet,Bet,בֵּית,letter filter tile label,glyph-name
+dictionary.glyphname.letter_chet,Chet,חֵית,letter filter tile label,glyph-name
+dictionary.glyphname.letter_dalet,Dalet,דָּלֶת,letter filter tile label,glyph-name
+dictionary.glyphname.letter_fe,Fe,פֵא,letter filter tile label,glyph-name
+dictionary.glyphname.letter_fe_sf,Fe sf,פֵא סוֹפִית,letter filter tile label,glyph-name
+dictionary.glyphname.letter_gimel,Gimel,גִּימֶל,letter filter tile label,glyph-name
+dictionary.glyphname.letter_heh,Heh,הֵא,letter filter tile label,glyph-name
+dictionary.glyphname.letter_kaf,Kaf,כָּף,letter filter tile label,glyph-name
+dictionary.glyphname.letter_khaf,Khaf,כָף,letter filter tile label,glyph-name
+dictionary.glyphname.letter_khaf_sf,Khaf sf,כָף סוֹפִית,letter filter tile label,glyph-name
+dictionary.glyphname.letter_kuf,Kuf,קוֹף,letter filter tile label,glyph-name
+dictionary.glyphname.letter_lamed,Lamed,לָמֶד,letter filter tile label,glyph-name
+dictionary.glyphname.letter_mem,Mem,מֵם,letter filter tile label,glyph-name
+dictionary.glyphname.letter_mem_sf,Mem sf,מֵם סוֹפִית,letter filter tile label,glyph-name
+dictionary.glyphname.letter_nun,Nun,נוּן,letter filter tile label,glyph-name
+dictionary.glyphname.letter_nun_sf,Nun sf,נוּן סוֹפִית,letter filter tile label,glyph-name
+dictionary.glyphname.letter_pe,Pe,פֵּא,letter filter tile label,glyph-name
+dictionary.glyphname.letter_resh,Resh,רֵישׁ,letter filter tile label,glyph-name
+dictionary.glyphname.letter_samech,Samech,סָמֶךְ,letter filter tile label,glyph-name
+dictionary.glyphname.letter_sav,Sav,תָו,letter filter tile label,glyph-name; REVIEW: Sav (תו רפה) rendered תָו like Tav-rafe — confirm distinction from letter_tav
+dictionary.glyphname.letter_shin,Shin,שִׁין,letter filter tile label,glyph-name
+dictionary.glyphname.letter_shin_sin,Shin/Sin,שִׁין/שִׂין,letter filter tile label,glyph-name
+dictionary.glyphname.letter_sin,Sin,שִׂין,letter filter tile label,glyph-name
+dictionary.glyphname.letter_tav,Tav,תָּו,letter filter tile label,glyph-name
+dictionary.glyphname.letter_tet,Tet,טֵית,letter filter tile label,glyph-name
+dictionary.glyphname.letter_tzadi,Tzadi,צָדִי,letter filter tile label,glyph-name
+dictionary.glyphname.letter_tzadi_sf,Tzadi sf,צָדִי סוֹפִית,letter filter tile label,glyph-name
+dictionary.glyphname.letter_vav,Vav,וָו,letter filter tile label,glyph-name
+dictionary.glyphname.letter_vet,Vet,בֵית,letter filter tile label,glyph-name
+dictionary.glyphname.letter_yod,Yod,יוֹד,letter filter tile label,glyph-name
+dictionary.glyphname.letter_zayin,Zayin,זַיִן,letter filter tile label,glyph-name
+dictionary.glyphname.vowel_chirik,Chirik,חִירִיק,vowel filter/color-picker label,glyph-name
+dictionary.glyphname.vowel_hataf_kamatz,Hataf Kamatz,חֲטַף קָמָץ,vowel filter/color-picker label,glyph-name
+dictionary.glyphname.vowel_hataf_patach,Hataf Patach,חֲטַף פַּתַח,vowel filter/color-picker label,glyph-name
+dictionary.glyphname.vowel_hataf_segol,Hataf Segol,חֲטַף סֶגּוֹל,vowel filter/color-picker label,glyph-name
+dictionary.glyphname.vowel_holam,Holam,חוֹלָם,vowel filter/color-picker label,glyph-name
+dictionary.glyphname.vowel_kamatz,Kamatz,קָמָץ,vowel filter/color-picker label,glyph-name
+dictionary.glyphname.vowel_kubutz,Kubutz,קֻבּוּץ,vowel filter/color-picker label,glyph-name
+dictionary.glyphname.vowel_patach,Patach,פַּתַח,vowel filter/color-picker label,glyph-name
+dictionary.glyphname.vowel_segol,Segol,סֶגּוֹל,vowel filter/color-picker label,glyph-name
+dictionary.glyphname.vowel_shuruk,Shuruk,שׁוּרוּק,vowel filter/color-picker label,glyph-name
+dictionary.glyphname.vowel_shva,Shva,שְׁוָא,vowel filter/color-picker label,glyph-name
+dictionary.glyphname.vowel_tzere,Tzere,צֵירֵי,vowel filter/color-picker label,glyph-name
+dictionary.glyphname.vowel_vav_holam,Vav Holam,חוֹלָם מָלֵא,vowel filter/color-picker label,glyph-name; REVIEW: 'Vav Holam' rendered חוֹלָם מָלֵא — confirm vs וֹ naming
+dictionary.header.h1,Hebrew Word Lookup & Dictionary,חיפוש מילים ומילון עברי,page H1 heading,
+dictionary.header.home,Home,בית,header home link,leading-emoji
+dictionary.header.subtitle,"Browse and filter Hebrew vocabulary by length, part of speech, and era — a free Hebrew dictionary for learning and practice.","עיינו וסננו אוצר מילים עברי לפי אורך, חלק דיבר ותקופה — מילון עברי חינמי ללמידה ולתרגול.",header subtitle,
+dictionary.header.tour_button,❓ Tour,❓ סיור,header tour launcher button,leading-emoji
+dictionary.header.tour_button_title,Take a quick tour,צאו לסיור מהיר,header tour launcher title,aria-label only
+dictionary.howto.step1,Type a Hebrew word in the search bar (with or without nikkud).,הקלידו מילה בעברית בשורת החיפוש (עם או בלי ניקוד).,footer how-to step,
+dictionary.howto.step2,"Or filter by word length, part of speech, era, or letter position.","או סננו לפי אורך מילה, חלק דיבר, תקופה או מיקום אות.",footer how-to step,
+dictionary.howto.step3,Click any result to view the word's details.,לחצו על תוצאה כלשהי כדי להציג את פרטי המילה.,footer how-to step,
+dictionary.howto.summary,How To Use,איך להשתמש,footer how-to summary,
+dictionary.loading.dictionary,Loading dictionary…,טוען מילון…,loading text,toast
+dictionary.loading.dictionary_kb,Loading dictionary… {kb} KB,טוען מילון… {kb} KB,loading text with size,toast
+dictionary.loading.dictionary_pct,Loading dictionary… {pct}%,טוען מילון… {pct}%,loading text with percent,toast
+dictionary.loading.emoji_failed,Failed to load emoji data.,טעינת נתוני האימוג׳ים נכשלה.,emoji load error,
+dictionary.loading.emojis,Loading emojis…,טוען אימוג׳ים…,emoji loading text,toast
+dictionary.loading.emojis_pct,Loading emojis… {pct}%,טוען אימוג׳ים… {pct}%,emoji loading text with percent,toast
+dictionary.loading.failed,Failed to load. Open via a local server (not file://).,הטעינה נכשלה. פתחו דרך שרת מקומי (לא file://).,dictionary load error,
+dictionary.modal.add_to_bulk,➕ Add to bulk list,➕ הוספה לרשימה המרובה,word modal bulk button,leading-emoji
+dictionary.modal.close_aria,Close details,סגירת הפרטים,word modal close aria-label,aria-label only
+dictionary.modal.copy_allinfo,Copy all info,העתקת כל המידע,word modal copy button,
+dictionary.modal.copy_def,Copy definition,העתקת ההגדרה,word modal copy button,
+dictionary.modal.copy_english,Copy English,העתקת אנגלית,emoji modal copy button,
+dictionary.modal.copy_hebrew,Copy Hebrew,העתקת עברית,emoji modal copy button,
+dictionary.modal.copy_hebrew_english,Copy Hebrew — English,העתקת עברית — אנגלית,emoji modal copy button,
+dictionary.modal.copy_hebrew_transdef,Copy Hebrew — translit — English,העתקת עברית — תעתיק — אנגלית,emoji modal copy button,
+dictionary.modal.copy_word,Copy word,העתקת המילה,word modal copy button,
+dictionary.modal.copy_word_def,Copy word — definition,העתקת מילה — הגדרה,word modal copy button,
+dictionary.modal.copy_word_transdef,Copy word — translit — definition,העתקת מילה — תעתיק — הגדרה,word modal copy button,
+dictionary.modal.era_bib_mod,Bib + Mod,מקראית + מודרנית,era badge (both),
+dictionary.modal.form_feminine,♀ Feminine,♀ נקבה,emoji modal form label,leading-emoji
+dictionary.modal.form_masculine,♂ Masculine,♂ זכר,emoji modal form label,leading-emoji
+dictionary.modal.google,Look up on Google ↗,חיפוש בגוגל ↗,word modal Google link,leading-emoji
+dictionary.modal.hear_form_aria,Hear {label},השמעת {label},emoji modal form speak aria-label,aria-label only
+dictionary.modal.in_bulk_list,✓ In bulk list,✓ ברשימה המרובה,word modal bulk button (added),leading-emoji
+dictionary.modal.pronounce,🔊 Pronounce,🔊 הגייה,word modal speak button,leading-emoji
+dictionary.modal.words_from_root,Words from this root  {root}  →,מילים מהשורש הזה  {root}  →,word modal root button,mixed UI+content — do not translate {…}
+dictionary.ordinal_1st,1st,ראשונה,letter-position ordinal,
+dictionary.ordinal_2nd,2nd,שנייה,letter-position ordinal,
+dictionary.ordinal_3rd,3rd,שלישית,letter-position ordinal,
+dictionary.ordinal_4th,4th,רביעית,letter-position ordinal,
+dictionary.ordinal_5th,5th,חמישית,letter-position ordinal,
+dictionary.ordinal_6th,6th,שישית,letter-position ordinal,
+dictionary.pos.adjective,Adjective,שם תואר,part-of-speech filter label,
+dictionary.pos.adverb,Adverb,תואר הפועל,part-of-speech filter label,
+dictionary.pos.article,Article,תווית,part-of-speech filter label,
+dictionary.pos.conjunction,Conjunction,מילת חיבור,part-of-speech filter label,
+dictionary.pos.determiner,Determiner,מילת ייחוס,part-of-speech filter label,
+dictionary.pos.interjection,Interjection,מילת קריאה,part-of-speech filter label,
+dictionary.pos.name,Name,שם,part-of-speech filter label,
+dictionary.pos.name_element,Name Element,רכיב שם,part-of-speech filter label,
+dictionary.pos.noun,Noun,שם עצם,part-of-speech filter label,
+dictionary.pos.numeral,Numeral,מספר,part-of-speech filter label,
+dictionary.pos.other,Other,אחר,part-of-speech filter label,
+dictionary.pos.particle,Particle,מילית,part-of-speech filter label,
+dictionary.pos.phrase,Phrase,ביטוי,part-of-speech filter label,
+dictionary.pos.postposition,Postposition,מילת יחס נדחית,part-of-speech filter label,
+dictionary.pos.prep_phrase,Prep. Phrase,צירוף מילת יחס,part-of-speech filter label,
+dictionary.pos.preposition,Preposition,מילת יחס,part-of-speech filter label,
+dictionary.pos.pronoun,Pronoun,כינוי גוף,part-of-speech filter label,
+dictionary.pos.proper_noun,Proper Noun,שם פרטי,part-of-speech filter label,
+dictionary.pos.root,Root (שׁורש),שורש,part-of-speech filter label,mixed UI+content — do not translate {…}
+dictionary.pos.verb,Verb,פועל,part-of-speech filter label,
+dictionary.results.count_emojis.one,{count} emoji,אימוג׳י אחד,result count (emoji mode),plural
+dictionary.results.count_emojis.other,{count} emojis,{count} אימוג׳ים,result count (emoji mode),plural
+dictionary.results.count_related.one,{count} related word,מילה קשורה אחת,shoresh result count,plural
+dictionary.results.count_related.other,{count} related words,{count} מילים קשורות,shoresh result count,plural
+dictionary.results.count_words.one,{count} word,מילה אחת,result count,plural
+dictionary.results.count_words.other,{count} words,{count} מילים,result count,plural
+dictionary.results.load_more,Show more,הצגת עוד,load-more button,
+dictionary.results.no_emojis_found,No emojis found,לא נמצאו אימוג׳ים,result count empty (emoji mode),
+dictionary.results.no_related,No related words,אין מילים קשורות,shoresh result count empty,
+dictionary.results.no_words_found,No words found,לא נמצאו מילים,result count empty,
+dictionary.results.no_words_in_list,No words in this list,אין מילים ברשימה הזו,word-list-as-filter empty count,
+dictionary.search.aria,"Search Hebrew, transliteration, or English","חיפוש עברית, תעתיק או אנגלית",search input aria-label,aria-label only
+dictionary.search.clear_title,Clear search,ניקוי החיפוש,search clear button title/aria,aria-label only
+dictionary.search.placeholder,"Search Hebrew, translit, or English…","חיפוש עברית, תעתיק או אנגלית…",search input placeholder,placeholder
+dictionary.shoresh.browse_roots,Browse roots (alef→tav) — click to look up:,עיון בשורשים (אלף→תו) — לחצו לחיפוש:,shoresh chips label,
+dictionary.shoresh.enter_label,Enter a שׁורש (root),הזינו שׁורש,shoresh input label,mixed UI+content — do not translate {…}
+dictionary.shoresh.enter_root_count,Enter a root,הזינו שורש,result count in empty shoresh,
+dictionary.shoresh.group_adjective,Adjective,שם תואר,shoresh group header,
+dictionary.shoresh.group_adverb,Adverb,תואר הפועל,shoresh group header,
+dictionary.shoresh.group_count,{label} ({count}),{label} ({count}),shoresh group header format,
+dictionary.shoresh.group_noun,Noun,שם עצם,shoresh group header,
+dictionary.shoresh.group_other,Other,אחר,shoresh group header,
+dictionary.shoresh.group_root,Root,שורש,shoresh group header,
+dictionary.shoresh.group_verb,Verb,פועל,shoresh group header,
+dictionary.shoresh.input_placeholder,e.g. כ-ת-ב,למשל כ-ת-ב,shoresh input placeholder,placeholder; mixed UI+content — do not translate {…}
+dictionary.shoresh.lookup_button,Look up,חיפוש,shoresh lookup button,
+dictionary.shoresh.no_derived,No derived words found for this root in the current dictionary.,לא נמצאו מילים נגזרות לשורש הזה במילון הנוכחי.,shoresh empty note,
+dictionary.shoresh.no_matching_roots,No matching roots.,אין שורשים תואמים.,shoresh chips empty,
+dictionary.shoresh.pattern_abstract_noun,abstract noun,שם עצם מופשט,shoresh pattern sub-label,
+dictionary.shoresh.pattern_adjective,adjective,שם תואר,shoresh pattern sub-label,
+dictionary.shoresh.pattern_agent_noun,agent noun,שם פועל,shoresh pattern sub-label,REVIEW: 'agent noun' rendered שם פועל — confirm preferred term
+dictionary.shoresh.pattern_noun,noun,שם עצם,shoresh pattern sub-label,
+dictionary.shoresh.pattern_verb,verb,פועל,shoresh pattern sub-label,
+dictionary.shoresh.patterns_3letter_only,Patterns are shown for 3-letter roots.,המשקלים מוצגים לשורשים בני 3 אותיות.,shoresh patterns note,
+dictionary.shoresh.patterns_title,Common patterns from this root,משקלים נפוצים מהשורש הזה,shoresh patterns section title,
+dictionary.shoresh.type_min_letters,Type at least 2 root letters (e.g. כתב).,הקלידו לפחות 2 אותיות שורש (למשל כתב).,shoresh empty note,mixed UI+content — do not translate {…}
+dictionary.sidebar.collapse_all,Collapse all menus,כיווץ כל התפריטים,sidebar toolbar button,
+dictionary.sidebar.expand_all,Expand all menus,הרחבת כל התפריטים,sidebar toolbar button,
+dictionary.sidebar.hide_title,Hide sidebar,הסתרת הסרגל,sidebar hide button title,aria-label only
+dictionary.sidebar.show_title,Show sidebar,הצגת הסרגל,sidebar show button title,aria-label only
+dictionary.toolbar.active_filters_aria,Active filters,מסננים פעילים,filter chips container aria-label,aria-label only
+dictionary.toolbar.copy_link,🔗 Copy link,🔗 העתקת קישור,toolbar share button,leading-emoji
+dictionary.toolbar.copy_link_title,Copy a link to this exact filtered view,העתקת קישור לתצוגה המסוננת הזו בדיוק,toolbar share button title,aria-label only
+dictionary.toolbar.loading,Loading…,טוען…,result count while loading,toast
+dictionary.toolbar.reset_filters,↺ Reset filters,↺ איפוס מסננים,toolbar reset button,leading-emoji
+dictionary.toolbar.reset_filters_title,Reset all filters to their defaults,איפוס כל המסננים לברירת המחדל,toolbar reset button title,aria-label only
+dictionary.toolbar.sort_alpha,Hebrew A→Z,עברית א→ת,sort option,
+dictionary.toolbar.sort_cat,Category,קטגוריה,sort option (emoji mode),
+dictionary.toolbar.sort_english,English A→Z,אנגלית A→Z,sort option (emoji mode),
+dictionary.toolbar.sort_label,Sort:,מיון:,sort dropdown label,
+dictionary.toolbar.sort_len_asc,Length ↑,אורך ↑,sort option,leading-emoji
+dictionary.toolbar.sort_len_desc,Length ↓,אורך ↓,sort option,leading-emoji
+dictionary.toolbar.sort_transl,Translation A→Z,תרגום A→Z,sort option,
+dictionary.tour.cards_body,"Tap any word for full details, pronunciation, copy options, and its root family.","הקישו על מילה כלשהי לפרטים מלאים, הגייה, אפשרויות העתקה ומשפחת השורש שלה.",tour step body,
+dictionary.tour.cards_title,Word cards,כרטיסי מילים,tour step title,
+dictionary.tour.chips_body,"Everything you have turned on shows here as chips — tap ✕ to remove one, or reset them all.","כל מה שהפעלתם מוצג כאן כתגיות — הקישו על ✕ להסרת אחת, או אפסו את כולן.",tour step body,
+dictionary.tour.chips_title,Active filters,מסננים פעילים,tour step title,
+dictionary.tour.export_body,Select a batch of words and export straight to Anki or Quizlet — or into the Worksheet Generator.,בחרו אצווה של מילים וייצאו ישירות ל-Anki או ל-Quizlet — או אל מחולל דפי העבודה.,tour step body,
+dictionary.tour.export_title,Bulk Copy & Export,העתקה מרובה וייצוא,tour step title,
+dictionary.tour.filters_body,"Narrow by length, part of speech, era, vowels — even specific letters in specific positions.","צמצמו לפי אורך, חלק דיבר, תקופה, תנועות — ואפילו אותיות מסוימות במיקומים מסוימים.",tour step body,
+dictionary.tour.filters_title,Filters,מסננים,tour step title,
+dictionary.tour.search_body,"Type Hebrew (with or without nikkud), transliteration, or English to find any word.","הקלידו עברית (עם או בלי ניקוד), תעתיק או אנגלית כדי למצוא כל מילה.",tour step body,
+dictionary.tour.search_title,Search,חיפוש,tour step title,
+dictionary.tour.share_body,Copy a link to exactly this filtered view and post it for your class.,העתיקו קישור לתצוגה המסוננת הזו בדיוק ופרסמו אותו לכיתה שלכם.,tour step body,
+dictionary.tour.share_title,Share this view,שיתוף התצוגה הזו,tour step title,
+dictionary.tour.tools_body,"Switch between the word dictionary, an emoji picture-vocabulary deck, and the Shoresh root explorer.","עברו בין מילון המילים, חפיסת אוצר-מילים בתמונות אימוג׳י, וחוקר השורשים.",tour step body,
+dictionary.tour.tools_title,Three tools in one,שלושה כלים באחד,tour step title,
+dictionary.translit.credit,Powered by hebrew-transliteration by Charles Loder,"מופעל על ידי <a href=""https://github.com/charlesLoder/hebrew-transliteration"" target=""_blank"" rel=""noopener"" style=""color:var(--gold);text-decoration:none;"">hebrew-transliteration</a> מאת Charles Loder",transliteration attribution,html (contains link)
+dictionary.translit.head,Transliteration,תעתיק,advanced section title,
+dictionary.translit.load_failed,Library failed to load — using default style.,טעינת הספרייה נכשלה — נעשה שימוש בסגנון ברירת המחדל.,transliteration load status,
+dictionary.translit.loading,Loading library…,טוען ספרייה…,transliteration load status,toast
+dictionary.translit.style_ashkenazi,Ashkenazi,אשכנזי,transliteration style option,
+dictionary.translit.style_brill,Brill Academic,Brill אקדמי,transliteration style option,
+dictionary.translit.style_default,Default (built-in),ברירת מחדל (מובנה),transliteration style option,
+dictionary.translit.style_label,Style,סגנון,transliteration style label,
+dictionary.translit.style_modern,Modern Israeli,עברית מודרנית,transliteration style option,
+dictionary.translit.style_sbl,SBL Academic,SBL אקדמי,transliteration style option,
+dictionary.translit.style_simple,Simple Stressed,פשוט עם הטעמה,transliteration style option,
+dictionary.wordlist.add_to_existing,Or add to an existing list,או הוסיפו לרשימה קיימת,save word-list modal section,
+dictionary.wordlist.add_to_selected,Add to selected list,הוספה לרשימה הנבחרת,merge button,
+dictionary.wordlist.added.one,Added {count} word.,נוספה מילה אחת.,merge status,plural
+dictionary.wordlist.added.other,Added {count} words.,נוספו {count} מילים.,merge status,plural
+dictionary.wordlist.all_already_in,All selected words were already in that list.,כל המילים הנבחרות כבר היו ברשימה הזו.,merge status,
+dictionary.wordlist.card_count.one,{count} word,מילה אחת,word-list card count,plural
+dictionary.wordlist.card_count.other,{count} words,{count} מילים,word-list card count,plural
+dictionary.wordlist.create_new,Create a new list,יצירת רשימה חדשה,save word-list modal section,
+dictionary.wordlist.delete,Delete,מחיקה,word-list card button,
+dictionary.wordlist.delete_confirm,"Delete the word list ""{name}""? This can't be undone.","למחוק את רשימת המילים ""{name}""? לא ניתן לבטל פעולה זו.",confirm dialog,mixed UI+content — do not translate {…}
+dictionary.wordlist.dropped_suffix,{count} skipped (200-word limit).,{count} דולגו (מגבלת 200 מילים).,save/merge status suffix,
+dictionary.wordlist.dup_name_suffix,(Another list already uses this name.),(רשימה אחרת כבר משתמשת בשם הזה.),save word-list status suffix,
+dictionary.wordlist.enter_name,Please enter a name for the list.,אנא הזינו שם לרשימה.,save word-list validation,
+dictionary.wordlist.err_limit,You've reached the limit of {max} word lists. Delete one to add another.,הגעתם למגבלה של {max} רשימות מילים. מחקו אחת כדי להוסיף נוספת.,word-list limit error,
+dictionary.wordlist.err_storage_save,Storage is full — couldn't save this word list. Try deleting old lists or other saved data.,האחסון מלא — לא ניתן היה לשמור את רשימת המילים הזו. נסו למחוק רשימות ישנות או נתונים שמורים אחרים.,word-list save storage error,
+dictionary.wordlist.err_gone,That word list no longer exists.,רשימת המילים הזו כבר אינה קיימת.,word-list merge error,
+dictionary.wordlist.err_storage_update,Storage is full — couldn't update this word list.,האחסון מלא — לא ניתן היה לעדכן את רשימת המילים הזו.,word-list update storage error,
+dictionary.wordlist.list_empty,This list is empty.,הרשימה הזו ריקה.,word-list expanded empty,
+dictionary.wordlist.load_as_filter,Load as filter (view in results),טעינה כמסנן (הצגה בתוצאות),word-list card button,
+dictionary.wordlist.manager_empty,"No word lists yet. Turn on Bulk Copy Mode, select words, and use “Save as Word List”.","עדיין אין רשימות מילים. הפעילו מצב העתקה מרובה, בחרו מילים והשתמשו ב״שמירה כרשימת מילים״.",word-lists manager empty state,empty state
+dictionary.wordlist.manager_title,Word Lists,רשימות מילים,word-lists manager modal title,
+dictionary.wordlist.name_placeholder,e.g. Parashat Noach vocab,למשל אוצר מילים לפרשת נח,new list name placeholder,placeholder
+dictionary.wordlist.remove_word_title,Remove from list,הסרה מהרשימה,word remove button title,aria-label only
+dictionary.wordlist.rename,Rename,שינוי שם,word-list card button,
+dictionary.wordlist.rename_prompt,Rename word list:,שינוי שם רשימת המילים:,prompt dialog,
+dictionary.wordlist.save_as_new,Save as new list,שמירה כרשימה חדשה,save word-list button,
+dictionary.wordlist.save_modal_title,Save as Word List,שמירה כרשימת מילים,save word-list modal title,
+dictionary.wordlist.saved.one,"Saved ""{name}"" with {count} word.","נשמרה ""{name}"" עם מילה אחת.",save word-list status,plural; mixed UI+content — do not translate {…}
+dictionary.wordlist.saved.other,"Saved ""{name}"" with {count} words.","נשמרה ""{name}"" עם {count} מילים.",save word-list status,plural; mixed UI+content — do not translate {…}
+dictionary.wordlist.selected_count.one,{count} word selected,מילה אחת נבחרה,save word-list modal count,plural
+dictionary.wordlist.selected_count.other,{count} words selected,{count} מילים נבחרו,save word-list modal count,plural
+dictionary.wordlist.view_words,View words,הצגת המילים,word-list card button,
+dictionary.wordlists.head,Word Lists,רשימות מילים,word-lists subheading,
+dictionary.wordlists.head_desc,Save selected words as a named list you can reuse elsewhere on the site.,שמרו מילים נבחרות כרשימה בעלת שם שתוכלו לעשות בה שימוש חוזר במקומות אחרים באתר.,word-lists description,
+dictionary.wordlists.head_tip,"Save selected words as a named list stored across the whole site, so you can reuse it in other tools.","שמרו מילים נבחרות כרשימה בעלת שם המאוחסנת בכל האתר, כדי לעשות בה שימוש חוזר בכלים אחרים.",word-lists tooltip,
+dictionary.wordlists.manager_button,📚 Word Lists,📚 רשימות מילים,open word-lists manager button,leading-emoji
+dictionary.wordlists.save_button,⭑ Save as Word List…,⭑ שמירה כרשימת מילים…,save word-list button,leading-emoji
 flashcards.advanced.audio_label,Audio,שמע,advanced toggle label,
 flashcards.advanced.backup_head,Backup Presets,גיבוי הגדרות,advanced subheading,
 flashcards.advanced.backup_include_label,Include in backup:,כלול בגיבוי:,backup scope label,
@@ -2672,6 +2677,7 @@ shared.ivrit.toast_restored_plain,Restored successfully.,השחזור הצליח
 shared.ivrit.tool_mismatch_confirm,"This looks like a ""{tool}"" save file, but this is the {tool2} page.\n\nImporting it here may not do anything useful. Import anyway?","זה נראה כקובץ שמירה של ""{tool}"", אבל זה דף {tool2}.\n\nייבוא כאן עשוי לא לעשות דבר מועיל. לייבא בכל זאת?",Tool-mismatch confirm dialog,contains \n; mixed UI+content — do not translate {tool}/{tool2}; shared
 shared.nav.header,Related Hebrew Tools,כלים עבריים נוספים,Related-tools nav header + aria-label,shared
 shared.nav.link_dashboard,Hebrew classroom display →,תצוגת כיתה בעברית ←,Related-tools nav link,shared
+shared.nav.link_flashcards,Hebrew alphabet flash cards →,כרטיסיות אלפבית עברי ←,Related-tools nav link,shared
 shared.nav.link_dictionary,Hebrew word lookup →,חיפוש מילים בעברית ←,Related-tools nav link,shared
 shared.nav.link_fontmaker,make your own Hebrew font →,צרו גופן עברי משלכם ←,Related-tools nav link,shared
 shared.nav.link_resources,free Hebrew teaching resources →,משאבים חינמיים להוראת עברית ←,Related-tools nav link,shared

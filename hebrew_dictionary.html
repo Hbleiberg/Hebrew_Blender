@@ -16,6 +16,7 @@
 <link rel="manifest" href="manifest.webmanifest?v=3">
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
+<script src="/js/i18n.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -123,6 +124,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <style>@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}</style>
 <script>(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<!-- No-flash UI-language IIFE — mirrors the dark-mode one; sets dir/lang before paint so Hebrew
+     never flashes LTR->RTL. Authoritative set happens later in /js/i18n.js. -->
+<script>(function(){try{var p=new URLSearchParams(location.search).get('lang');
+  var l=(p==='en'||p==='he')?p:(localStorage.getItem('hebrewBlender_lang')||'en');
+  if(l!=='en'&&l!=='he')l='en';
+  document.documentElement.lang=l;
+  document.documentElement.dir=(l==='he'?'rtl':'ltr');}catch(e){}})();</script>
 <!-- Hebrew transliteration library loader (lazy via esm.sh).
      Keep in sync across hebrew_blend_generator.html, hebrew_dictionary.html, flash_cards.html. -->
 <script type="module">
@@ -291,17 +299,21 @@ header{background:var(--navy);color:#fff;padding:18px 32px;display:flex;align-it
 header .star{font-size:28px;color:var(--gold);flex-shrink:0;}
 header h1{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
 header p{font-size:0.82rem;color:var(--gold-light);margin-top:2px;}
-header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
+header .hright{margin-inline-start:auto;display:flex;align-items:center;gap:10px;}
 .dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:4px 12px;font-size:0.78rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;}
 .dark-btn:hover{background:rgba(255,255,255,0.1);}
 .nav-btn{background:var(--gold);color:var(--navy);border:none;border-radius:6px;padding:4px 12px;font-size:0.78rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;}
 .nav-btn:hover{background:var(--gold-light);}
+/* i18n / RTL utilities — directional glyphs mirror under RTL; bidi-isolate protects number/Latin readouts */
+.dir-arrow{display:inline-block;}
+[dir="rtl"] .dir-arrow{transform:scaleX(-1);}
+.bidi-isolate{unicode-bidi:isolate;}
 .app{display:flex;flex:1;overflow:hidden;}
-.sidebar{width:300px;flex-shrink:0;background:var(--white);border-right:1px solid var(--border);padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
+.sidebar{width:300px;flex-shrink:0;background:var(--white);border-inline-end:1px solid var(--border);padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
 #appSidebar.hidden{display:none;}
-.sidebar-toggle-btn{position:fixed;left:300px;top:50vh;transform:translateY(-50%);width:16px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:50;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
+.sidebar-toggle-btn{position:fixed;inset-inline-start:300px;top:50vh;transform:translateY(-50%);width:16px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:50;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
 .sidebar-toggle-btn:hover{background:#0f1a33;}
-.sidebar-show-btn{position:fixed;left:0;top:50vh;transform:translateY(-50%);width:16px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:100;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
+.sidebar-show-btn{position:fixed;inset-inline-start:0;top:50vh;transform:translateY(-50%);width:16px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:100;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
 .sidebar-show-btn:hover{background:#0f1a33;}
 .search-wrap{position:relative;}
 .search-wrap input{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);outline:none;box-sizing:border-box;}
@@ -309,10 +321,10 @@ header .hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .search-wrap input:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
 .search-wrap input::placeholder{color:var(--muted);}
 /* Section 4: clear-search button (all widths) */
-.search-clear{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;border:none;background:var(--warm-gray);color:var(--muted);font-size:0.72rem;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;}
+.search-clear{position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;border:none;background:var(--warm-gray);color:var(--muted);font-size:0.72rem;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;}
 .search-clear:hover{background:var(--gold);color:#fff;}
 .search-clear.show{display:inline-flex;}
-.search-wrap input.has-clear{padding-right:30px;}
+.search-wrap input.has-clear{padding-inline-end:30px;}
 /* Section 4: mobile sticky bar (populated by JS at ≤680px) */
 #mobileBar{display:none;}
 .mobile-bar-row{display:flex;gap:8px;align-items:stretch;}
@@ -351,12 +363,12 @@ body.dark .mobile-filters-btn{background:var(--navy-deep);}
 .panel-subhead{font-family:'Libre Baskerville',serif;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
 .pos-all-btn{flex:1;padding:3px 0;font-size:0.72rem;font-family:'Source Sans 3',sans-serif;background:var(--warm-gray);color:var(--text);border:1px solid var(--border);border-radius:4px;cursor:pointer;}
 .pos-all-btn:hover{border-color:var(--gold);color:var(--gold);}
-.color-mode-btn{flex:1;padding:4px 6px;font-size:0.72rem;border:none;background:var(--warm-gray);color:var(--muted);cursor:pointer;border-right:1px solid var(--border);font-family:inherit;}
-.color-mode-btn:last-child{border-right:none;}
+.color-mode-btn{flex:1;padding:4px 6px;font-size:0.72rem;border:none;background:var(--warm-gray);color:var(--muted);cursor:pointer;border-inline-end:1px solid var(--border);font-family:inherit;}
+.color-mode-btn:last-child{border-inline-end:none;}
 .color-mode-btn.active{background:var(--navy);color:var(--white);}
 body.dark .color-mode-btn.active{background:#2a4070;color:#dde4f0;}
 .color-pick-example{font-family:var(--heb-font,serif);font-size:1.1rem;width:26px;text-align:center;}
-.filter-sub{margin-top:6px;padding-left:6px;border-left:2px solid var(--border);}
+.filter-sub{margin-top:6px;padding-inline-start:6px;border-inline-start:2px solid var(--border);}
 /* Position filter */
 .pos-sec{margin-bottom:4px;}
 .pos-sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;background:var(--warm-gray);border-radius:4px;cursor:pointer;font-size:0.75rem;font-weight:600;user-select:none;gap:4px;}
@@ -380,7 +392,7 @@ body.dark .color-mode-btn.active{background:#2a4070;color:#dde4f0;}
 /* Main */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .toolbar{display:flex;align-items:center;gap:10px;padding:10px 20px;background:var(--cream);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;}
-#fsBtn{position:fixed;bottom:20px;right:20px;z-index:9999;background:var(--navy);color:var(--gold-light);border:none;border-radius:8px;padding:10px 12px;cursor:pointer;line-height:0;box-shadow:0 2px 10px rgba(0,0,0,0.3);transition:background 0.15s,transform 0.1s;}
+#fsBtn{position:fixed;bottom:20px;inset-inline-end:20px;z-index:9999;background:var(--navy);color:var(--gold-light);border:none;border-radius:8px;padding:10px 12px;cursor:pointer;line-height:0;box-shadow:0 2px 10px rgba(0,0,0,0.3);transition:background 0.15s,transform 0.1s;}
 #fsBtn:hover{background:#2a3a6a;transform:scale(1.08);}
 body.dark #fsBtn{background:#0d1220;}
 body.fullscreen header{display:none !important;}
@@ -398,7 +410,7 @@ body.fullscreen .app{height:100vh;min-height:unset;}
 .fchip{display:inline-flex;align-items:center;background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color 0.15s;}
 .fchip:hover{border-color:var(--gold);}
 .fchip-body{font-size:0.74rem;background:transparent;border:none;color:var(--text);cursor:pointer;font-family:inherit;padding:3px 6px 3px 10px;line-height:1.5;white-space:nowrap;}
-.fchip-x{display:inline-flex;align-items:center;justify-content:center;width:20px;height:22px;background:transparent;color:var(--muted);font-size:0.72rem;line-height:1;border:none;border-left:1px solid var(--border);cursor:pointer;flex-shrink:0;padding:0;}
+.fchip-x{display:inline-flex;align-items:center;justify-content:center;width:20px;height:22px;background:transparent;color:var(--muted);font-size:0.72rem;line-height:1;border:none;border-inline-start:1px solid var(--border);cursor:pointer;flex-shrink:0;padding:0;}
 .fchip-x:hover{background:var(--gold);color:#fff;}
 .fchip-body:focus-visible,.fchip-x:focus-visible,.fchip-reset:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
 .sort-sel:focus-visible,.dict-tool-btn:focus-visible,.word-card:focus-visible,.emoji-card:focus-visible,.lpt:focus-visible,.panel-title:focus-visible,.adv-section-title:focus-visible,.pos-sec-hdr:focus-visible,.shoresh-patterns-title:focus-visible,.shoresh-pat.filled:focus-visible,.emoji-cat-arrow:focus-visible,.vowel-group-section div[role="button"]:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
@@ -414,7 +426,7 @@ body.dark .fchip-reset{background:var(--navy-deep);}
 .wm-overlay.open{display:flex;}
 .wm-dialog{background:var(--white);border:1px solid var(--border);border-radius:12px;max-width:440px;width:100%;max-height:88vh;overflow-y:auto;position:relative;box-shadow:0 12px 40px rgba(0,0,0,0.35);padding:26px 22px 20px;}
 body.dark .wm-dialog{background:var(--cream);}
-.wm-close{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:6px;border:none;background:var(--warm-gray);color:var(--muted);font-size:1rem;cursor:pointer;line-height:1;}
+.wm-close{position:absolute;top:10px;inset-inline-end:10px;width:30px;height:30px;border-radius:6px;border:none;background:var(--warm-gray);color:var(--muted);font-size:1rem;cursor:pointer;line-height:1;}
 .wm-close:hover{background:var(--gold);color:#fff;}
 .wm-heb{font-family:var(--heb-font);font-size:2.6rem;direction:rtl;text-align:center;color:var(--text);line-height:1.2;margin:4px 24px 4px;}
 .wm-emoji{font-size:3.2rem;text-align:center;margin-bottom:4px;}
@@ -429,7 +441,7 @@ body.dark .wm-form{background:var(--white);}
 .wm-form-tr{font-size:0.8rem;color:var(--muted);}
 .wm-mini{border:none;background:transparent;cursor:pointer;font-size:1rem;}
 .wm-actions{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
-.wm-act{padding:7px 12px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-size:0.82rem;font-family:inherit;cursor:pointer;text-align:left;transition:background 0.15s,border-color 0.15s;}
+.wm-act{padding:7px 12px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-size:0.82rem;font-family:inherit;cursor:pointer;text-align:start;transition:background 0.15s,border-color 0.15s;}
 body.dark .wm-act{background:var(--white);}
 .wm-act:hover{border-color:var(--gold);background:var(--warm-gray);}
 .wm-act.copied{background:var(--gold);color:#fff;border-color:var(--gold);}
@@ -444,14 +456,14 @@ body.dark .wm-act{background:var(--white);}
 .word-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:3px;cursor:default;transition:border-color 0.15s,box-shadow 0.15s;position:relative;}
 .word-card:hover{border-color:var(--gold);box-shadow:0 2px 8px rgba(0,0,0,0.08);}
 .word-card.bulk-selected{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 10%,var(--white));}
-.wc-bulk-cb{position:absolute;top:8px;right:8px;width:16px;height:16px;accent-color:var(--gold);cursor:pointer;display:none;}
+.wc-bulk-cb{position:absolute;top:8px;inset-inline-end:8px;width:16px;height:16px;accent-color:var(--gold);cursor:pointer;display:none;}
 body.bulk-mode .wc-bulk-cb{display:block;}
 body.bulk-mode .word-card,body.bulk-mode .emoji-card{cursor:pointer;}
 .emoji-card.bulk-selected{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 10%,var(--white));}
 .wc-copy,.wc-search,.wc-speak{position:absolute;top:7px;background:none;border:1px solid var(--border);border-radius:4px;padding:3px;color:var(--muted);cursor:pointer;line-height:0;opacity:0.75;transition:opacity 0.15s,border-color 0.15s,color 0.15s;display:flex;align-items:center;justify-content:center;text-decoration:none;}
-.wc-copy{left:7px;}
-.wc-search{left:30px;}
-.wc-speak{left:53px;font-size:0.75rem;display:none;line-height:1;}
+.wc-copy{inset-inline-start:7px;}
+.wc-search{inset-inline-start:30px;}
+.wc-speak{inset-inline-start:53px;font-size:0.75rem;display:none;line-height:1;}
 body.dict-audio-on .wc-speak{display:flex;}
 .wc-copy:hover,.wc-copy.copied,.wc-search:hover,.wc-speak:hover{border-color:var(--gold);color:var(--gold);opacity:1;}
 .wc-heb{font-family:var(--heb-font);font-size:var(--heb-font-size);direction:rtl;text-align:right;line-height:1.2;}
@@ -470,8 +482,8 @@ body.emoji-mode .word-mode-panel{display:none;}
 body.emoji-mode .word-length-controls{display:none;}
 body:not(.emoji-mode) .emoji-cat-controls{display:none;}
 .emoji-cat-controls > hr{border:none;border-top:1px solid var(--border);margin:10px 0;}
-.emoji-gender-btn{flex:1;padding:5px 8px;background:var(--white);color:var(--text);border:none;font-size:0.74rem;font-family:inherit;cursor:pointer;border-right:1px solid var(--border);transition:background 0.15s;}
-.emoji-gender-btn:last-child{border-right:none;}
+.emoji-gender-btn{flex:1;padding:5px 8px;background:var(--white);color:var(--text);border:none;font-size:0.74rem;font-family:inherit;cursor:pointer;border-inline-end:1px solid var(--border);transition:background 0.15s;}
+.emoji-gender-btn:last-child{border-inline-end:none;}
 .emoji-gender-btn:hover{background:var(--warm-gray);}
 .emoji-gender-btn.active{background:var(--navy);color:#fff;}
 body.dark .emoji-gender-btn.active{background:#0a0f1c;}
@@ -480,12 +492,12 @@ body.dark .emoji-gender-btn.active{background:#0a0f1c;}
 .emoji-cat-row{display:flex;align-items:center;gap:5px;padding:2px 0;font-size:0.74rem;cursor:pointer;user-select:none;}
 .emoji-cat-row input{accent-color:var(--gold);width:12px;height:12px;cursor:pointer;flex-shrink:0;}
 .emoji-cat-row.is-cat{font-weight:600;}
-.emoji-cat-row.is-sub{padding-left:14px;font-size:0.7rem;color:var(--muted);}
+.emoji-cat-row.is-sub{padding-inline-start:14px;font-size:0.7rem;color:var(--muted);}
 .emoji-cat-row > span:not(.emoji-cat-arrow):not(.emoji-cat-count){overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
 .emoji-cat-arrow{display:inline-block;width:9px;font-size:0.65rem;color:var(--muted);transition:transform 0.15s;flex-shrink:0;}
 .emoji-cat-group.collapsed .emoji-cat-arrow{transform:rotate(-90deg);}
 .emoji-cat-group.collapsed .emoji-sub-list{display:none;}
-.emoji-cat-count{margin-left:auto;font-size:0.6rem;color:var(--muted);font-weight:400;flex-shrink:0;}
+.emoji-cat-count{margin-inline-start:auto;font-size:0.6rem;color:var(--muted);font-weight:400;flex-shrink:0;}
 /* Emoji card */
 .emoji-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:14px 12px 10px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;transition:border-color 0.15s,box-shadow 0.15s;position:relative;}
 .emoji-card:hover{border-color:var(--gold);box-shadow:0 2px 8px rgba(0,0,0,0.08);}
@@ -509,7 +521,7 @@ body.dict-audio-on .ec-speak{display:inline-flex;}
 .ec-tag.cat{background:var(--navy);color:var(--gold-light);}
 /* Section 5: accessible tooltips (hover + tap + keyboard), ported from torah_trainer.html */
 .tip-wrap{display:inline-flex;align-items:center;vertical-align:middle;}
-.tip-icon{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:var(--muted);color:#fff;font-size:0.62rem;font-weight:700;font-style:normal;cursor:help;margin-left:5px;flex-shrink:0;line-height:1;}
+.tip-icon{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:var(--muted);color:#fff;font-size:0.62rem;font-weight:700;font-style:normal;cursor:help;margin-inline-start:5px;flex-shrink:0;line-height:1;}
 .tip-wrap.tip-gold .tip-icon{background:var(--gold);color:var(--navy);}
 .tip-wrap:focus-visible{outline:none;}
 .tip-wrap:focus-visible .tip-icon{outline:2px solid var(--gold);outline-offset:1px;}
@@ -525,7 +537,7 @@ body.dark #tipFloat{background:#0a0f1c;}
 body.dark .tour-card{background:var(--cream);}
 .tour-card h4{font-family:'Libre Baskerville',serif;margin:0 26px 8px 0;font-size:0.98rem;color:var(--text);}
 .tour-card p{font-size:0.84rem;line-height:1.5;margin:0 0 12px;color:var(--text);}
-.tour-x{position:absolute;top:8px;right:8px;width:26px;height:26px;background:transparent;border:none;border-radius:6px;color:var(--muted);font-size:1rem;cursor:pointer;line-height:1;}
+.tour-x{position:absolute;top:8px;inset-inline-end:8px;width:26px;height:26px;background:transparent;border:none;border-radius:6px;color:var(--muted);font-size:1rem;cursor:pointer;line-height:1;}
 .tour-x:hover{background:var(--warm-gray);color:var(--text);}
 .tour-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;}
 .tour-meta > span:first-child{font-size:0.72rem;font-weight:700;color:var(--muted);}
@@ -559,7 +571,7 @@ footer a{color:var(--gold-text);text-decoration:none;}
   .app{flex-direction:column;overflow:visible;}
   /* Section 4: results (with the sticky search/mode bar) sit ABOVE the collapsed filter sidebar */
   .main{overflow:visible;order:1;}
-  #appSidebar{display:flex!important;width:100%;overflow-y:visible;border-right:none;border-bottom:1px solid var(--border);order:2;}
+  #appSidebar{display:flex!important;width:100%;overflow-y:visible;border-inline-end:none;border-bottom:1px solid var(--border);order:2;}
   #mobileBar{display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:var(--cream);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;}
   #mobileBar .search-wrap{margin:0;}
   .content{overflow-y:visible;padding:14px 12px;}
@@ -578,7 +590,7 @@ footer a{color:var(--gold-text);text-decoration:none;}
   .font-size-row { display:flex; align-items:center; gap:6px; margin-bottom:8px; }
   .font-size-row .fs-label { font-size:0.72rem; color:var(--muted); font-weight:600; white-space:nowrap; }
   .font-size-row input[type=range] { flex:1; accent-color:var(--gold); cursor:pointer; height:4px; }
-  .font-size-row .fs-val { font-size:0.68rem; color:var(--muted); min-width:38px; text-align:right; font-variant-numeric:tabular-nums; }
+  .font-size-row .fs-val { font-size:0.68rem; color:var(--muted); min-width:38px; text-align:end; font-variant-numeric:tabular-nums; }
   .font-size-row .fs-reset { background:none; border:1px solid var(--border); border-radius:4px; padding:1px 6px; font-size:0.78rem; cursor:pointer; color:var(--muted); line-height:1.4; font-family:inherit; }
   .font-size-row .fs-reset:hover { border-color:var(--gold); color:var(--gold); }
   .font-selector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
@@ -667,69 +679,70 @@ footer a{color:var(--gold-text);text-decoration:none;}
 </head>
 <body>
 
-<button id="fsBtn" onclick="toggleFullscreen()" title="Full screen"><svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg></button>
+<button id="fsBtn" onclick="toggleFullscreen()" title="Full screen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria"><svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg></button>
 
 <header>
   <span class="star">✡︎</span>
   <div>
-    <h1>Hebrew Word Lookup &amp; Dictionary</h1>
-    <p>Browse and filter Hebrew vocabulary by length, part of speech, and era — a free Hebrew dictionary for learning and practice.</p>
+    <h1 data-i18n="dictionary.header.h1">Hebrew Word Lookup &amp; Dictionary</h1>
+    <p data-i18n="dictionary.header.subtitle">Browse and filter Hebrew vocabulary by length, part of speech, and era — a free Hebrew dictionary for learning and practice.</p>
   </div>
   <div class="hright">
-    <a class="nav-btn" href="/">← Home</a>
-    <button class="nav-btn" id="tourBtn" onclick="tourStart()" title="Take a quick tour">❓ Tour</button>
-    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false">🌙 Dark</button>
+    <div data-i18n-switcher></div>
+    <a class="nav-btn" href="/"><span class="dir-arrow" aria-hidden="true">←</span> <span data-i18n="dictionary.header.home">Home</span></a>
+    <button class="nav-btn" id="tourBtn" onclick="tourStart()" title="Take a quick tour" data-i18n="dictionary.header.tour_button" data-i18n-title="dictionary.header.tour_button_title">❓ Tour</button>
+    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false" title="Toggle dark mode" data-i18n="shared.darkmode.label_dark" data-i18n-title="shared.darkmode.toggle_title">🌙 Dark</button>
   </div>
 </header>
 
-<button class="sidebar-show-btn" id="sidebarShowBtn" onclick="toggleSidebar()" title="Show sidebar">›</button>
-<button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Hide sidebar">‹</button>
+<button class="sidebar-show-btn" id="sidebarShowBtn" onclick="toggleSidebar()" title="Show sidebar" aria-label="Show sidebar" data-i18n-title="dictionary.sidebar.show_title" data-i18n-aria-label="dictionary.sidebar.show_title"><span class="dir-arrow" aria-hidden="true">›</span></button>
+<button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Hide sidebar" aria-label="Hide sidebar" data-i18n-title="dictionary.sidebar.hide_title" data-i18n-aria-label="dictionary.sidebar.hide_title"><span class="dir-arrow" aria-hidden="true">‹</span></button>
 
 <div class="app" id="appContainer">
   <aside class="sidebar" id="appSidebar">
 
     <div class="search-wrap">
-      <input type="text" id="searchInput" aria-label="Search Hebrew, transliteration, or English" placeholder="Search Hebrew, translit, or English…" oninput="onSearchInput()" onkeydown="if(event.key==='Escape'){clearDictSearch();}">
-      <button class="search-clear" id="searchClear" onclick="clearDictSearch()" aria-label="Clear search" title="Clear search">✕</button>
+      <input type="text" id="searchInput" aria-label="Search Hebrew, transliteration, or English" data-i18n-aria-label="dictionary.search.aria" placeholder="Search Hebrew, translit, or English…" data-i18n-placeholder="dictionary.search.placeholder" oninput="onSearchInput()" onkeydown="if(event.key==='Escape'){clearDictSearch();}">
+      <button class="search-clear" id="searchClear" onclick="clearDictSearch()" aria-label="Clear search" title="Clear search" data-i18n-aria-label="dictionary.search.clear_title" data-i18n-title="dictionary.search.clear_title">✕</button>
     </div>
 
     <div style="display:flex; gap:6px; margin-bottom:10px;">
-      <button class="pos-all-btn" onclick="expandAllMenus()">Expand all menus</button>
-      <button class="pos-all-btn" onclick="collapseAllMenus()">Collapse all menus</button>
+      <button class="pos-all-btn" onclick="expandAllMenus()" data-i18n="dictionary.sidebar.expand_all">Expand all menus</button>
+      <button class="pos-all-btn" onclick="collapseAllMenus()" data-i18n="dictionary.sidebar.collapse_all">Collapse all menus</button>
     </div>
 
     <!-- Word Length -->
     <div class="panel" id="panelLength">
-      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Word Length</div>
+      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')" data-i18n="dictionary.filters.length_panel_title">Word Length</div>
       <div class="panel-body">
         <div id="modeSwitcher" style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:10px;">
-          <button class="emoji-gender-btn active" data-dict-mode="words" onclick="setDictMode('words')">Words</button>
-          <button class="emoji-gender-btn" data-dict-mode="emojis" onclick="setDictMode('emojis')">Emojis</button>
-          <button class="emoji-gender-btn" data-dict-mode="shoresh" onclick="setDictMode('shoresh')">Shoresh</button>
+          <button class="emoji-gender-btn active" data-dict-mode="words" onclick="setDictMode('words')" data-i18n="dictionary.filters.mode_words">Words</button>
+          <button class="emoji-gender-btn" data-dict-mode="emojis" onclick="setDictMode('emojis')" data-i18n="dictionary.filters.mode_emojis">Emojis</button>
+          <button class="emoji-gender-btn" data-dict-mode="shoresh" onclick="setDictMode('shoresh')" data-i18n="dictionary.filters.mode_shoresh">Shoresh</button>
         </div>
         <div class="word-length-controls">
-          <label class="cb-label" style="margin-bottom:6px;font-weight:600;"><input type="checkbox" id="lenAllCb" checked onchange="toggleAllLengths(this)"> All Words</label>
+          <label class="cb-label" style="margin-bottom:6px;font-weight:600;"><input type="checkbox" id="lenAllCb" checked onchange="toggleAllLengths(this)"> <span data-i18n="dictionary.filters.all_words">All Words</span></label>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 10px;margin-bottom:6px;">
-            <label class="cb-label"><input type="checkbox" class="lcb" value="1" checked> Prefixes/Suffixes</label>
-            <label class="cb-label"><input type="checkbox" class="lcb" value="2" checked> 2-Letter</label>
-            <label class="cb-label"><input type="checkbox" class="lcb" value="3" checked> 3-Letter</label>
-            <label class="cb-label"><input type="checkbox" class="lcb" value="4" checked> 4-Letter</label>
-            <label class="cb-label"><input type="checkbox" class="lcb" value="5" checked> 5-Letter</label>
-            <label class="cb-label"><input type="checkbox" class="lcb" value="6" checked> 6-Letter</label>
-            <label class="cb-label"><input type="checkbox" class="lcb" value="7" checked> 7-Letter</label>
-            <label class="cb-label"><input type="checkbox" class="lcb" value="8plus" checked> 8+ Letter</label>
+            <label class="cb-label"><input type="checkbox" class="lcb" value="1" checked> <span data-i18n="dictionary.filters.len_prefix">Prefixes/Suffixes</span></label>
+            <label class="cb-label"><input type="checkbox" class="lcb" value="2" checked> <span data-i18n="dictionary.filters.len_2">2-Letter</span></label>
+            <label class="cb-label"><input type="checkbox" class="lcb" value="3" checked> <span data-i18n="dictionary.filters.len_3">3-Letter</span></label>
+            <label class="cb-label"><input type="checkbox" class="lcb" value="4" checked> <span data-i18n="dictionary.filters.len_4">4-Letter</span></label>
+            <label class="cb-label"><input type="checkbox" class="lcb" value="5" checked> <span data-i18n="dictionary.filters.len_5">5-Letter</span></label>
+            <label class="cb-label"><input type="checkbox" class="lcb" value="6" checked> <span data-i18n="dictionary.filters.len_6">6-Letter</span></label>
+            <label class="cb-label"><input type="checkbox" class="lcb" value="7" checked> <span data-i18n="dictionary.filters.len_7">7-Letter</span></label>
+            <label class="cb-label"><input type="checkbox" class="lcb" value="8plus" checked> <span data-i18n="dictionary.filters.len_8plus">8+ Letter</span></label>
           </div>
         </div>
         <div class="emoji-cat-controls">
           <hr>
           <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:10px;">
-            <button class="emoji-gender-btn active" data-gender="all" onclick="setEmojiGender('all')">All</button>
-            <button class="emoji-gender-btn" data-gender="masc" onclick="setEmojiGender('masc')">♂ Masc</button>
-            <button class="emoji-gender-btn" data-gender="fem" onclick="setEmojiGender('fem')">♀ Fem</button>
+            <button class="emoji-gender-btn active" data-gender="all" onclick="setEmojiGender('all')" data-i18n="dictionary.filters.emoji_gender_all">All</button>
+            <button class="emoji-gender-btn" data-gender="masc" onclick="setEmojiGender('masc')" data-i18n="dictionary.filters.emoji_gender_masc">♂ Masc</button>
+            <button class="emoji-gender-btn" data-gender="fem" onclick="setEmojiGender('fem')" data-i18n="dictionary.filters.emoji_gender_fem">♀ Fem</button>
           </div>
           <div style="display:flex;gap:5px;margin-bottom:8px;">
-            <button class="pos-all-btn" onclick="setAllEmojiCats(true)">All</button>
-            <button class="pos-all-btn" onclick="setAllEmojiCats(false)">None</button>
+            <button class="pos-all-btn" onclick="setAllEmojiCats(true)" data-i18n="dictionary.filters.emoji_all">All</button>
+            <button class="pos-all-btn" onclick="setAllEmojiCats(false)" data-i18n="dictionary.filters.emoji_none">None</button>
           </div>
           <div id="emojiCatTree"></div>
         </div>
@@ -738,194 +751,194 @@ footer a{color:var(--gold-text);text-decoration:none;}
 
     <!-- Part of Speech -->
     <div class="panel word-mode-panel" id="panelPos">
-      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Part of Speech</div>
+      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')" data-i18n="dictionary.filters.pos_panel_title">Part of Speech</div>
       <div class="panel-body">
         <div style="display:flex;gap:6px;margin-bottom:8px;">
-          <button class="pos-all-btn" onclick="setPosAll(true)">All</button>
-          <button class="pos-all-btn" onclick="setPosAll(false)">None</button>
+          <button class="pos-all-btn" onclick="setPosAll(true)" data-i18n="dictionary.filters.pos_all">All</button>
+          <button class="pos-all-btn" onclick="setPosAll(false)" data-i18n="dictionary.filters.pos_none">None</button>
         </div>
         <div class="grid2">
-          <label class="cb-label"><input type="checkbox" class="pcb" value="noun" checked> Noun</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="proper noun" checked> Proper Noun</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="verb" checked> Verb</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="adjective" checked> Adjective</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="adverb" checked> Adverb</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="pronoun" checked> Pronoun</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="preposition" checked> Preposition</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="conjunction" checked> Conjunction</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="root" checked> Root (שׁורש)</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="interjection" checked> Interjection</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="numeral" checked> Numeral</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="particle" checked> Particle</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="phrase" checked> Phrase</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="determiner" checked> Determiner</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="prepositional phrase" checked> Prep. Phrase</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="postposition" checked> Postposition</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="name" checked> Name</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="name element" checked> Name Element</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="article" checked> Article</label>
-          <label class="cb-label"><input type="checkbox" class="pcb" value="other" checked> Other</label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="noun" checked> <span data-i18n="dictionary.pos.noun">Noun</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="proper noun" checked> <span data-i18n="dictionary.pos.proper_noun">Proper Noun</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="verb" checked> <span data-i18n="dictionary.pos.verb">Verb</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="adjective" checked> <span data-i18n="dictionary.pos.adjective">Adjective</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="adverb" checked> <span data-i18n="dictionary.pos.adverb">Adverb</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="pronoun" checked> <span data-i18n="dictionary.pos.pronoun">Pronoun</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="preposition" checked> <span data-i18n="dictionary.pos.preposition">Preposition</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="conjunction" checked> <span data-i18n="dictionary.pos.conjunction">Conjunction</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="root" checked> <span data-i18n="dictionary.pos.root">Root (שׁורש)</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="interjection" checked> <span data-i18n="dictionary.pos.interjection">Interjection</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="numeral" checked> <span data-i18n="dictionary.pos.numeral">Numeral</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="particle" checked> <span data-i18n="dictionary.pos.particle">Particle</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="phrase" checked> <span data-i18n="dictionary.pos.phrase">Phrase</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="determiner" checked> <span data-i18n="dictionary.pos.determiner">Determiner</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="prepositional phrase" checked> <span data-i18n="dictionary.pos.prep_phrase">Prep. Phrase</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="postposition" checked> <span data-i18n="dictionary.pos.postposition">Postposition</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="name" checked> <span data-i18n="dictionary.pos.name">Name</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="name element" checked> <span data-i18n="dictionary.pos.name_element">Name Element</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="article" checked> <span data-i18n="dictionary.pos.article">Article</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="other" checked> <span data-i18n="dictionary.pos.other">Other</span></label>
         </div>
         <hr style="border:none;border-top:1px solid var(--border);margin:12px 0 8px;">
-        <div class="panel-subhead">Era</div>
+        <div class="panel-subhead" data-i18n="dictionary.filters.era_head">Era</div>
         <div class="era-body">
-          <label class="cb-label"><input type="checkbox" id="eraBib" checked> Biblical</label>
-          <label class="cb-label"><input type="checkbox" id="eraMod" checked> Modern</label>
+          <label class="cb-label"><input type="checkbox" id="eraBib" checked> <span data-i18n="dictionary.filters.era_biblical">Biblical</span></label>
+          <label class="cb-label"><input type="checkbox" id="eraMod" checked> <span data-i18n="dictionary.filters.era_modern">Modern</span></label>
         </div>
       </div>
     </div>
 
     <!-- Filter by Vowel -->
     <div class="panel collapsed word-mode-panel shoresh-hide" id="panelVowel">
-      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Filter by Vowel</div>
+      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')" data-i18n="dictionary.filters.vowel_panel_title">Filter by Vowel</div>
       <div class="panel-body">
-        <div class="filter-note" style="margin-bottom:6px;">Show only words whose vowels are all in the selected set.</div>
+        <div class="filter-note" style="margin-bottom:6px;" data-i18n="dictionary.filters.vowel_note">Show only words whose vowels are all in the selected set.</div>
         <div class="vowel-grid" id="vowelFilterGrid"></div>
         <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
-        <label class="cb-label"><input type="checkbox" id="hideNoVowelsCb" onchange="hideNoVowels=this.checked;onFilter()"> Hide words with no vowels</label>
+        <label class="cb-label"><input type="checkbox" id="hideNoVowelsCb" onchange="hideNoVowels=this.checked;onFilter()"> <span data-i18n="dictionary.filters.hide_no_vowels">Hide words with no vowels</span></label>
       </div>
     </div>
 
     <!-- Filter by Letter Position -->
     <div class="panel word-mode-panel shoresh-hide" id="panelLetter">
-      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Filter by Letter</div>
+      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')" data-i18n="dictionary.filters.letter_panel_title">Filter by Letter</div>
       <div class="panel-body" id="posFilterBody"></div>
     </div>
 
     <!-- Advanced -->
     <div class="panel collapsed" id="panelAdvanced">
-      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')">Advanced</div>
+      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')" data-i18n="dictionary.advanced.panel_title">Advanced</div>
       <div class="panel-body" style="display:flex;flex-direction:column;gap:0;">
 
 
         <!-- Font Selector -->
         <div class="adv-section collapsed">
-          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Hebrew Font</div>
+          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')" data-i18n="dictionary.advanced.font_head">Hebrew Font</div>
           <div class="adv-section-body">
               <div class="font-size-row">
-                <span class="fs-label">Size</span>
+                <span class="fs-label" data-i18n="dictionary.advanced.font_size">Size</span>
                 <input type="range" id="hebFontSizeSlider" min="0" max="100" value="50" step="1"
                        oninput="setHebFontSize(this.value)" ondblclick="resetHebFontSize()">
                 <span class="fs-val" id="hebFontSizeVal">2.00rem</span>
-                <button class="fs-reset" onclick="resetHebFontSize()" title="Reset to default">↺</button>
+                <button class="fs-reset" onclick="resetHebFontSize()" title="Reset to default" data-i18n-title="dictionary.advanced.font_size_reset_title">↺</button>
               </div>
             <div class="font-selector-grid"></div>
-            <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
+            <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><span data-i18n="shared.fonts.upload_label">⬆ Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
           </div>
         </div>
 
         <!-- Color Code Nikkud -->
         <div class="adv-section collapsed">
-          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Color Code Nikkud</div>
+          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')" data-i18n="dictionary.advanced.color_head">Color Code Nikkud</div>
           <div class="adv-section-body" style="display:flex;flex-direction:column;gap:6px;">
             <label class="cb-label" style="font-size:0.78rem;">
               <input type="checkbox" id="colorCodingToggle" style="accent-color:var(--gold);" onchange="toggleColorCoding(this.checked)">
-              Enable color coding
+              <span data-i18n="dictionary.advanced.color_enable">Enable color coding</span>
             </label>
             <div id="colorCodingOptions" style="display:none;flex-direction:column;gap:8px;">
               <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
-                <button id="colorModeLetter"    class="color-mode-btn active" onclick="setColorMode('letter')">Letter</button>
-                <button id="colorModeHighlight" class="color-mode-btn"        onclick="setColorMode('highlight')">Highlight</button>
-                <button id="colorModeUnderline" class="color-mode-btn"        onclick="setColorMode('underline')">Underline</button>
+                <button id="colorModeLetter"    class="color-mode-btn active" onclick="setColorMode('letter')" data-i18n="dictionary.advanced.color_mode_letter">Letter</button>
+                <button id="colorModeHighlight" class="color-mode-btn"        onclick="setColorMode('highlight')" data-i18n="dictionary.advanced.color_mode_highlight">Highlight</button>
+                <button id="colorModeUnderline" class="color-mode-btn"        onclick="setColorMode('underline')" data-i18n="dictionary.advanced.color_mode_underline">Underline</button>
               </div>
               <div id="colorPickerList"></div>
-              <button class="pos-all-btn" onclick="resetNikudColors()" style="font-size:0.68rem;width:100%;">↺ Reset to defaults</button>
+              <button class="pos-all-btn" onclick="resetNikudColors()" style="font-size:0.68rem;width:100%;" data-i18n="dictionary.advanced.color_reset">↺ Reset to defaults</button>
             </div>
           </div>
         </div>
 
         <!-- Copy Options -->
         <div class="adv-section collapsed" id="copyOptsSec">
-          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Copy Options</div>
+          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')" data-i18n="dictionary.copy.opts_head">Copy Options</div>
           <div class="adv-section-body">
-            <div style="font-size:0.72rem;font-weight:600;margin-bottom:6px;color:var(--text);">Copy Mode <span class="tip-wrap" data-tip="Changes the format used when clicking the copy button on a word card."><i class="tip-icon">?</i></span></div>
-            <label class="cb-label"><input type="radio" name="copyMode" value="word" checked onchange="onCopyModeChange('word')" style="accent-color:var(--gold);"> Word</label>
-            <label class="cb-label"><input type="radio" name="copyMode" value="definition" onchange="onCopyModeChange('definition')" style="accent-color:var(--gold);"> Word — Definition</label>
-            <label class="cb-label"><input type="radio" name="copyMode" value="transdef" onchange="onCopyModeChange('transdef')" style="accent-color:var(--gold);"> Word — Transliteration — Definition</label>
-            <label class="cb-label"><input type="radio" name="copyMode" value="defonly" onchange="onCopyModeChange('defonly')" style="accent-color:var(--gold);"> Definition</label>
-            <label class="cb-label"><input type="radio" name="copyMode" value="allinfo" onchange="onCopyModeChange('allinfo')" style="accent-color:var(--gold);"> All info<span class="tip-wrap" data-tip="Copies: Hebrew word — transliteration — translation — part of speech — era. Gematria value is appended if &quot;Show Gematria Value&quot; is enabled."><i class="tip-icon">?</i></span><span class="tip-wrap tip-gold" data-tip="Select this option when using Bulk Copy to generate a manual input list for the Worksheet Generator."><i class="tip-icon">!</i></span></label>
+            <div style="font-size:0.72rem;font-weight:600;margin-bottom:6px;color:var(--text);"><span data-i18n="dictionary.copy.mode_label">Copy Mode</span> <span class="tip-wrap" data-i18n-tip="dictionary.copy.mode_tip" data-tip="Changes the format used when clicking the copy button on a word card."><i class="tip-icon">?</i></span></div>
+            <label class="cb-label"><input type="radio" name="copyMode" value="word" checked onchange="onCopyModeChange('word')" style="accent-color:var(--gold);"> <span data-i18n="dictionary.copy.mode_word">Word</span></label>
+            <label class="cb-label"><input type="radio" name="copyMode" value="definition" onchange="onCopyModeChange('definition')" style="accent-color:var(--gold);"> <span data-i18n="dictionary.copy.mode_word_def">Word — Definition</span></label>
+            <label class="cb-label"><input type="radio" name="copyMode" value="transdef" onchange="onCopyModeChange('transdef')" style="accent-color:var(--gold);"> <span data-i18n="dictionary.copy.mode_transdef">Word — Transliteration — Definition</span></label>
+            <label class="cb-label"><input type="radio" name="copyMode" value="defonly" onchange="onCopyModeChange('defonly')" style="accent-color:var(--gold);"> <span data-i18n="dictionary.copy.mode_defonly">Definition</span></label>
+            <label class="cb-label"><input type="radio" name="copyMode" value="allinfo" onchange="onCopyModeChange('allinfo')" style="accent-color:var(--gold);"> <span data-i18n="dictionary.copy.mode_allinfo">All info</span><span class="tip-wrap" data-i18n-tip="dictionary.copy.allinfo_tip" data-tip="Copies: Hebrew word — transliteration — translation — part of speech — era. Gematria value is appended if &quot;Show Gematria Value&quot; is enabled."><i class="tip-icon">?</i></span><span class="tip-wrap tip-gold" data-i18n-tip="dictionary.copy.allinfo_worksheet_tip" data-tip="Select this option when using Bulk Copy to generate a manual input list for the Worksheet Generator."><i class="tip-icon">!</i></span></label>
             <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
-            <label class="cb-label" title="Select multiple words from the results. Each selected word is added to a text box below — one per line — in whatever Copy Mode is active."><input type="checkbox" id="bulkModeCb" style="accent-color:var(--gold);" onchange="toggleBulkMode(this.checked)"> Bulk Copy Mode</label>
+            <label class="cb-label" title="Select multiple words from the results. Each selected word is added to a text box below — one per line — in whatever Copy Mode is active." data-i18n-title="dictionary.copy.bulk_mode_title"><input type="checkbox" id="bulkModeCb" style="accent-color:var(--gold);" onchange="toggleBulkMode(this.checked)"> <span data-i18n="dictionary.copy.bulk_mode">Bulk Copy Mode</span></label>
             <div id="bulkPanel" style="display:none;margin-top:8px;">
-              <div style="font-size:0.68rem;color:var(--muted);margin-bottom:6px;line-height:1.4;">While Bulk Copy is on, clicking a card selects it (instead of opening its details).</div>
+              <div style="font-size:0.68rem;color:var(--muted);margin-bottom:6px;line-height:1.4;" data-i18n="dictionary.copy.bulk_hint">While Bulk Copy is on, clicking a card selects it (instead of opening its details).</div>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                <span style="font-size:0.72rem;color:var(--muted);" id="bulkCount">0 selected</span>
-                <button class="pos-all-btn" onclick="clearBulkSelection()">Clear</button>
+                <span class="bidi-isolate" style="font-size:0.72rem;color:var(--muted);" id="bulkCount">0 selected</span>
+                <button class="pos-all-btn" onclick="clearBulkSelection()" data-i18n="dictionary.copy.bulk_clear">Clear</button>
               </div>
               <div style="display:flex;gap:4px;margin-bottom:6px;">
-                <button class="pos-all-btn" style="flex:1;font-size:0.65rem;" onclick="selectAllOnPage()">Select page</button>
-                <button class="pos-all-btn" style="flex:1;font-size:0.65rem;" onclick="selectAllMatching()">Select all matching</button>
+                <button class="pos-all-btn" style="flex:1;font-size:0.65rem;" onclick="selectAllOnPage()" data-i18n="dictionary.copy.select_page">Select page</button>
+                <button class="pos-all-btn" style="flex:1;font-size:0.65rem;" onclick="selectAllMatching()" data-i18n="dictionary.copy.select_all_matching">Select all matching</button>
               </div>
               <textarea id="bulkTextarea" readonly rows="6" style="width:100%;font-size:0.75rem;font-family:var(--heb-font);direction:ltr;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;"></textarea>
-              <button class="pos-all-btn" style="width:100%;margin-top:5px;" onclick="copyBulkText()">Copy All</button>
+              <button class="pos-all-btn" style="width:100%;margin-top:5px;" onclick="copyBulkText()" data-i18n="dictionary.copy.copy_all">Copy All</button>
             </div>
             <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
-            <div style="font-size:0.72rem;font-weight:600;margin-bottom:2px;color:var(--text);">Export Selected Words</div>
-            <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">Active when Bulk Copy Mode is on and at least one word is selected.</div>
+            <div style="font-size:0.72rem;font-weight:600;margin-bottom:2px;color:var(--text);" data-i18n="dictionary.export.head">Export Selected Words</div>
+            <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;" data-i18n="dictionary.export.hint">Active when Bulk Copy Mode is on and at least one word is selected.</div>
             <div id="exportBox" class="export-disabled">
               <div style="display:flex;gap:5px;">
-                <button class="pos-all-btn" style="flex:1;" onclick="exportAnki()">⬇ Export for Anki</button>
-                <button class="pos-all-btn" style="flex:1;" onclick="exportQuizlet()">⬇ Export for Quizlet</button>
+                <button class="pos-all-btn" style="flex:1;" onclick="exportAnki()" data-i18n="dictionary.export.anki_button">⬇ Export for Anki</button>
+                <button class="pos-all-btn" style="flex:1;" onclick="exportQuizlet()" data-i18n="dictionary.export.quizlet_button">⬇ Export for Quizlet</button>
               </div>
-              <div id="exportCount" style="font-size:0.7rem;color:var(--muted);margin-top:5px;">0 words selected for export.</div>
+              <div id="exportCount" class="bidi-isolate" style="font-size:0.7rem;color:var(--muted);margin-top:5px;">0 words selected for export.</div>
               <div id="exportErr" style="font-size:0.72rem;color:#c0392b;margin-top:3px;min-height:1em;"></div>
-              <div style="font-size:0.65rem;color:var(--muted);margin-top:5px;line-height:1.4;">Anki: import via File → Import. Quizlet: use Import from Word/Excel on the study set creation page.</div>
+              <div style="font-size:0.65rem;color:var(--muted);margin-top:5px;line-height:1.4;" data-i18n="dictionary.export.instructions">Anki: import via File → Import. Quizlet: use Import from Word/Excel on the study set creation page.</div>
             </div>
             <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
-            <div style="font-size:0.72rem;font-weight:600;margin-bottom:2px;color:var(--text);">Word Lists <span class="tip-wrap" data-tip="Save selected words as a named list stored across the whole site, so you can reuse it in other tools."><i class="tip-icon">?</i></span></div>
-            <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;">Save selected words as a named list you can reuse elsewhere on the site.</div>
+            <div style="font-size:0.72rem;font-weight:600;margin-bottom:2px;color:var(--text);"><span data-i18n="dictionary.wordlists.head">Word Lists</span> <span class="tip-wrap" data-i18n-tip="dictionary.wordlists.head_tip" data-tip="Save selected words as a named list stored across the whole site, so you can reuse it in other tools."><i class="tip-icon">?</i></span></div>
+            <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;" data-i18n="dictionary.wordlists.head_desc">Save selected words as a named list you can reuse elsewhere on the site.</div>
             <div style="display:flex;gap:5px;">
-              <button id="wlSaveBtn" class="pos-all-btn" style="flex:1;opacity:0.5;" onclick="wlOpenSaveModal()" disabled>⭑ Save as Word List…</button>
-              <button class="pos-all-btn" style="flex:1;" onclick="wlOpenManager()">📚 Word Lists</button>
+              <button id="wlSaveBtn" class="pos-all-btn" style="flex:1;opacity:0.5;" onclick="wlOpenSaveModal()" disabled data-i18n="dictionary.wordlists.save_button">⭑ Save as Word List…</button>
+              <button class="pos-all-btn" style="flex:1;" onclick="wlOpenManager()" data-i18n="dictionary.wordlists.manager_button">📚 Word Lists</button>
             </div>
           </div>
         </div>
 
         <!-- Gematria Options -->
         <div class="adv-section collapsed" id="gematriaAdvSec">
-          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Gematria Options</div>
+          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')" data-i18n="dictionary.gematria.opts_head">Gematria Options</div>
           <div class="adv-section-body">
-            <label class="cb-label"><input type="checkbox" id="showGematriaCb" style="accent-color:var(--gold);" onchange="onShowGematriaChange()"> Show Gematria Value</label>
-            <div id="gematriaFilterPanel" style="display:none;padding-left:14px;margin-top:6px;border-left:2px solid var(--border);">
-              <div style="font-size:0.72rem;font-weight:600;margin-bottom:4px;color:var(--muted);">Filter by Gematria</div>
+            <label class="cb-label"><input type="checkbox" id="showGematriaCb" style="accent-color:var(--gold);" onchange="onShowGematriaChange()"> <span data-i18n="dictionary.gematria.show_value">Show Gematria Value</span></label>
+            <div id="gematriaFilterPanel" style="display:none;padding-inline-start:14px;margin-top:6px;border-inline-start:2px solid var(--border);">
+              <div style="font-size:0.72rem;font-weight:600;margin-bottom:4px;color:var(--muted);" data-i18n="dictionary.gematria.filter_head">Filter by Gematria</div>
               <select id="gematriaFilterType" onchange="onGematriaFilterChange()" style="font-size:0.75rem;width:100%;padding:3px 4px;margin-bottom:4px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
-                <option value="none">No filter</option>
-                <option value="exact">Exact value</option>
-                <option value="gte">Equal to / above (≥)</option>
-                <option value="lte">Equal to / below (≤)</option>
-                <option value="range">Range</option>
+                <option value="none" data-i18n="dictionary.gematria.filter_none">No filter</option>
+                <option value="exact" data-i18n="dictionary.gematria.filter_exact">Exact value</option>
+                <option value="gte" data-i18n="dictionary.gematria.filter_gte">Equal to / above (≥)</option>
+                <option value="lte" data-i18n="dictionary.gematria.filter_lte">Equal to / below (≤)</option>
+                <option value="range" data-i18n="dictionary.gematria.filter_range">Range</option>
               </select>
               <div id="gematriaFilterInputs" style="display:none;flex-direction:column;gap:3px;">
-                <input type="number" id="gematriaVal1" min="1" placeholder="Value" oninput="filterDebounced()" style="font-size:0.75rem;width:100%;box-sizing:border-box;padding:3px 5px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
-                <input type="number" id="gematriaVal2" min="1" placeholder="To" oninput="filterDebounced()" style="display:none;font-size:0.75rem;width:100%;box-sizing:border-box;padding:3px 5px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
+                <input type="number" id="gematriaVal1" min="1" placeholder="Value" data-i18n-placeholder="dictionary.gematria.val1_placeholder" oninput="filterDebounced()" style="font-size:0.75rem;width:100%;box-sizing:border-box;padding:3px 5px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
+                <input type="number" id="gematriaVal2" min="1" placeholder="To" data-i18n-placeholder="dictionary.gematria.val2_placeholder" oninput="filterDebounced()" style="display:none;font-size:0.75rem;width:100%;box-sizing:border-box;padding:3px 5px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);">
               </div>
             </div>
             <hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">
-            <label class="cb-label"><input type="checkbox" id="enableSortGematriaCb" style="accent-color:var(--gold);" onchange="toggleGematriaSort(this.checked)"> Enable Sort By Gematria Value<span class="tip-wrap" data-tip="Adds Gematria ↑ and Gematria ↓ options to the Sort menu, letting you order words by their total Gematria value."><i class="tip-icon">?</i></span></label>
+            <label class="cb-label"><input type="checkbox" id="enableSortGematriaCb" style="accent-color:var(--gold);" onchange="toggleGematriaSort(this.checked)"> <span data-i18n="dictionary.gematria.enable_sort">Enable Sort By Gematria Value</span><span class="tip-wrap" data-i18n-tip="dictionary.gematria.enable_sort_tip" data-tip="Adds Gematria ↑ and Gematria ↓ options to the Sort menu, letting you order words by their total Gematria value."><i class="tip-icon">?</i></span></label>
           </div>
         </div>
 
         <!-- Audio -->
         <div class="adv-section collapsed">
-          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Audio</div>
+          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')" data-i18n="dictionary.audio.head">Audio</div>
           <div class="adv-section-body">
             <label class="cb-label" style="font-size:0.78rem;">
               <input type="checkbox" id="dictAudioToggle" style="accent-color:var(--gold);" onchange="toggleDictAudio(this.checked)">
-              Show pronunciation button <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span>
+              <span data-i18n="dictionary.audio.show_button">Show pronunciation button</span> <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span>
             </label>
             <div style="margin-top:8px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--cream);">
-              <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.04em;color:var(--text);margin-bottom:6px;">
+              <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.04em;color:var(--text);margin-bottom:6px;" data-i18n="dictionary.audio.tts_speed_label">
                 Hebrew TTS Reading Speed
               </div>
               <div class="font-size-row">
-                <span class="fs-label">Slow</span>
+                <span class="fs-label" data-i18n="dictionary.audio.tts_slow">Slow</span>
                 <input type="range" id="ttsRateSlider" min="0.5" max="1.5" step="0.05" value="0.75"
                        oninput="onTtsRateChange(this.value)">
-                <span class="fs-val" id="ttsRateVal">0.75×</span>
-                <button class="fs-reset" onclick="resetTtsRate()" title="Reset to default">↺</button>
+                <span class="fs-val bidi-isolate" id="ttsRateVal">0.75×</span>
+                <button class="fs-reset" onclick="resetTtsRate()" title="Reset to default" data-i18n-title="dictionary.advanced.font_size_reset_title">↺</button>
               </div>
               <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:var(--muted);margin-top:1px;padding:0 2px;">
-                <span>Slower</span><span>Fast</span>
+                <span data-i18n="dictionary.audio.tts_slower">Slower</span><span data-i18n="dictionary.audio.tts_fast">Fast</span>
               </div>
             </div>
           </div>
@@ -933,22 +946,22 @@ footer a{color:var(--gold-text);text-decoration:none;}
 
         <!-- Transliteration -->
         <div class="adv-section collapsed">
-          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')">Transliteration</div>
+          <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')" data-i18n="dictionary.translit.head">Transliteration</div>
           <div class="adv-section-body" style="display:flex;flex-direction:column;gap:8px;">
             <label style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;">
-              <span style="color:var(--muted);font-size:0.7rem;letter-spacing:0.04em;text-transform:uppercase;">Style</span>
+              <span style="color:var(--muted);font-size:0.7rem;letter-spacing:0.04em;text-transform:uppercase;" data-i18n="dictionary.translit.style_label">Style</span>
               <select id="translitStyleSelect" onchange="onTranslitStyleChange(this.value)"
                       style="width:100%;font-size:0.8rem;padding:5px 7px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--text);font-family:inherit;">
-                <option value="default">Default (built-in)</option>
-                <option value="sbl">SBL Academic</option>
-                <option value="brill">Brill Academic</option>
-                <option value="modernIsraeli">Modern Israeli</option>
-                <option value="ashkenazi">Ashkenazi</option>
-                <option value="simpleStressed">Simple Stressed</option>
+                <option value="default" data-i18n="dictionary.translit.style_default">Default (built-in)</option>
+                <option value="sbl" data-i18n="dictionary.translit.style_sbl">SBL Academic</option>
+                <option value="brill" data-i18n="dictionary.translit.style_brill">Brill Academic</option>
+                <option value="modernIsraeli" data-i18n="dictionary.translit.style_modern">Modern Israeli</option>
+                <option value="ashkenazi" data-i18n="dictionary.translit.style_ashkenazi">Ashkenazi</option>
+                <option value="simpleStressed" data-i18n="dictionary.translit.style_simple">Simple Stressed</option>
               </select>
             </label>
             <div id="translitLoadStatus" style="font-size:0.7rem;color:var(--muted);min-height:1em;text-align:center;"></div>
-            <div style="font-size:0.65rem;color:var(--muted);text-align:center;border-top:1px solid var(--border);padding-top:6px;line-height:1.4;">
+            <div style="font-size:0.65rem;color:var(--muted);text-align:center;border-top:1px solid var(--border);padding-top:6px;line-height:1.4;" data-i18n-html="dictionary.translit.credit">
               Powered by <a href="https://github.com/charlesLoder/hebrew-transliteration" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">hebrew-transliteration</a> by Charles Loder
             </div>
           </div>
@@ -964,40 +977,40 @@ footer a{color:var(--gold-text);text-decoration:none;}
   <div class="main">
     <div id="mobileBar"></div>
     <div class="toolbar">
-      <span class="result-count" id="resultCount" role="status" aria-live="polite" aria-atomic="true">Loading…</span>
+      <span class="result-count bidi-isolate" id="resultCount" role="status" aria-live="polite" aria-atomic="true" data-i18n="dictionary.toolbar.loading">Loading…</span>
       <span id="a11yStatus" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;"></span>
-      <label style="font-size:0.8rem;color:var(--muted);">Sort:</label>
+      <label style="font-size:0.8rem;color:var(--muted);" data-i18n="dictionary.toolbar.sort_label">Sort:</label>
       <select class="sort-sel" id="sortSel" onchange="onFilter()">
-        <option value="alpha">Hebrew A→Z</option>
-        <option value="len-asc">Length ↑</option>
-        <option value="len-desc">Length ↓</option>
-        <option value="transl">Translation A→Z</option>
-        <option value="cat" class="emoji-sort-only" style="display:none;">Category</option>
-        <option value="english" class="emoji-sort-only" style="display:none;">English A→Z</option>
+        <option value="alpha" data-i18n="dictionary.toolbar.sort_alpha">Hebrew A→Z</option>
+        <option value="len-asc" data-i18n="dictionary.toolbar.sort_len_asc">Length ↑</option>
+        <option value="len-desc" data-i18n="dictionary.toolbar.sort_len_desc">Length ↓</option>
+        <option value="transl" data-i18n="dictionary.toolbar.sort_transl">Translation A→Z</option>
+        <option value="cat" class="emoji-sort-only" style="display:none;" data-i18n="dictionary.toolbar.sort_cat">Category</option>
+        <option value="english" class="emoji-sort-only" style="display:none;" data-i18n="dictionary.toolbar.sort_english">English A→Z</option>
       </select>
-      <button class="dict-tool-btn" id="dictShareBtn" onclick="copyDictShareLink(this)" title="Copy a link to this exact filtered view">🔗 Copy link</button>
-      <button class="dict-tool-btn" id="dictResetBtn" onclick="resetDictFilters()" title="Reset all filters to their defaults" style="display:none;">↺ Reset filters</button>
+      <button class="dict-tool-btn" id="dictShareBtn" onclick="copyDictShareLink(this)" title="Copy a link to this exact filtered view" data-i18n="dictionary.toolbar.copy_link" data-i18n-title="dictionary.toolbar.copy_link_title">🔗 Copy link</button>
+      <button class="dict-tool-btn" id="dictResetBtn" onclick="resetDictFilters()" title="Reset all filters to their defaults" style="display:none;" data-i18n="dictionary.toolbar.reset_filters" data-i18n-title="dictionary.toolbar.reset_filters_title">↺ Reset filters</button>
     </div>
-    <div class="filter-chips" id="filterChips" aria-label="Active filters"></div>
+    <div class="filter-chips" id="filterChips" aria-label="Active filters" data-i18n-aria-label="dictionary.toolbar.active_filters_aria"></div>
     <div class="content">
       <div id="shoreshControls">
-        <label style="display:block;font-size:0.8rem;font-weight:600;color:var(--text);margin-bottom:6px;">Enter a שׁורש (root)</label>
+        <label style="display:block;font-size:0.8rem;font-weight:600;color:var(--text);margin-bottom:6px;" data-i18n="dictionary.shoresh.enter_label">Enter a שׁורש (root)</label>
         <div class="shoresh-input-row">
-          <input type="text" id="shoreshInput" aria-label="Enter a Hebrew root" placeholder="e.g. כ-ת-ב" oninput="onShoreshInput()" onkeydown="onShoreshKey(event)">
-          <button class="shoresh-lookup-btn" onclick="runShoreshLookup(document.getElementById('shoreshInput').value)">Look up</button>
+          <input type="text" id="shoreshInput" aria-label="Enter a Hebrew root" data-i18n-aria-label="dictionary.shoresh.enter_label" placeholder="e.g. כ-ת-ב" data-i18n-placeholder="dictionary.shoresh.input_placeholder" oninput="onShoreshInput()" onkeydown="onShoreshKey(event)">
+          <button class="shoresh-lookup-btn" onclick="runShoreshLookup(document.getElementById('shoreshInput').value)" data-i18n="dictionary.shoresh.lookup_button">Look up</button>
         </div>
-        <div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px;">Browse roots (alef→tav) — click to look up:</div>
+        <div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px;" data-i18n="dictionary.shoresh.browse_roots">Browse roots (alef→tav) — click to look up:</div>
         <div class="shoresh-chips" id="shoreshChips"></div>
       </div>
       <div class="shoresh-header" id="shoreshHeader" style="display:none;"></div>
       <div class="loading" id="loadingMsg">
-        <div id="loadingText" role="status">Loading dictionary…</div>
+        <div id="loadingText" role="status" data-i18n="dictionary.loading.dictionary">Loading dictionary…</div>
         <div class="load-bar" id="loadBar"><div class="load-bar-fill" id="loadBarFill"></div></div>
       </div>
       <div class="results-grid" id="resultsGrid" style="display:none;"></div>
       <div id="shoreshResults"></div>
       <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
-        <button class="load-more-btn" onclick="loadMore()">Show more</button>
+        <button class="load-more-btn" onclick="loadMore()" data-i18n="dictionary.results.load_more">Show more</button>
       </div>
       <div id="shoreshPatterns" style="display:none;"></div>
     </div>
@@ -1007,14 +1020,14 @@ footer a{color:var(--gold-text);text-decoration:none;}
 <!-- Section 5: guided tour spotlight + card -->
 <div class="tour-spot" id="tourSpot" hidden></div>
 <div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
-  <button class="tour-x" id="tourClose" aria-label="End tour" onclick="tourEnd(false)">✕</button>
+  <button class="tour-x" id="tourClose" aria-label="End tour" data-i18n-aria-label="shared.tour.end" onclick="tourEnd(false)">✕</button>
   <h4 id="tourCardTitle"></h4>
   <p id="tourCardBody"></p>
   <div class="tour-meta">
-    <span id="tourStep"></span>
+    <span id="tourStep" class="bidi-isolate"></span>
     <span class="tour-btns">
-      <button class="tbtn ghost" id="tourBack" onclick="tourPrev()">Back</button>
-      <button class="tbtn" id="tourNext" onclick="tourNext()">Next</button>
+      <button class="tbtn ghost" id="tourBack" onclick="tourPrev()" data-i18n="shared.tour.back">Back</button>
+      <button class="tbtn" id="tourNext" onclick="tourNext()" data-i18n="shared.tour.next">Next</button>
     </span>
   </div>
 </div>
@@ -1022,56 +1035,63 @@ footer a{color:var(--gold-text);text-decoration:none;}
 <!-- Section 3: word / emoji detail modal (single reusable overlay) -->
 <div class="wm-overlay" id="wordModal" role="dialog" aria-modal="true" aria-labelledby="wmTitle">
   <div class="wm-dialog" id="wmDialog">
-    <button class="wm-close" id="wmClose" aria-label="Close details" onclick="closeWordModal()">✕</button>
+    <button class="wm-close" id="wmClose" aria-label="Close details" data-i18n-aria-label="dictionary.modal.close_aria" onclick="closeWordModal()">✕</button>
     <div class="wm-body" id="wmBody"></div>
   </div>
 </div>
 
-<footer style="margin-top:32px;text-align:left;padding:0;">
+<footer style="margin-top:32px;text-align:start;padding:0;">
   <div style="max-width:1200px;margin:0 auto;padding:12px 16px;font-family:'Source Sans 3',sans-serif;color:var(--muted);display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;align-items:start;">
     <div>
       <details>
-        <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;">Frequently Asked Questions</summary>
+        <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;" data-i18n="dictionary.faq.summary">Frequently Asked Questions</summary>
         <div style="padding:4px 0;">
-          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">How do I look up a Hebrew word?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Type the Hebrew word (with or without nikkud), or use filters to browse by length, part of speech, era, or letter position.</p></details>
-          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Can I filter by part of speech?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Yes. Filter by noun, verb, adjective, adverb, and others, combined with length and era filters.</p></details>
-          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Is it free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Yes. Free under CC BY-NC-SA 4.0; word data sourced from Kaikki.org.</p></details>
-          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Modern and biblical Hebrew?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Yes. Filter by era — biblical, mishnaic, medieval, and modern Hebrew.</p></details>
-          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Can I share or save my filters?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Yes. Click <strong>🔗 Copy link</strong> in the results toolbar to copy a link that reopens this exact filtered view — send it to your class. Your last-used filters also come back automatically on your next visit. New here? Click <strong>❓ Tour</strong> in the header for a quick 7-step walkthrough.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="dictionary.faq.q_lookup">How do I look up a Hebrew word?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="dictionary.faq.a_lookup">Type the Hebrew word (with or without nikkud), or use filters to browse by length, part of speech, era, or letter position.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="dictionary.faq.q_pos">Can I filter by part of speech?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="dictionary.faq.a_pos">Yes. Filter by noun, verb, adjective, adverb, and others, combined with length and era filters.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="dictionary.faq.q_free">Is it free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="dictionary.faq.a_free">Yes. Free under CC BY-NC-SA 4.0; word data sourced from Kaikki.org.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="dictionary.faq.q_era">Modern and biblical Hebrew?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="dictionary.faq.a_era">Yes. Filter by era — biblical, mishnaic, medieval, and modern Hebrew.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="dictionary.faq.q_share">Can I share or save my filters?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n-html="dictionary.faq.a_share">Yes. Click <strong>🔗 Copy link</strong> in the results toolbar to copy a link that reopens this exact filtered view — send it to your class. Your last-used filters also come back automatically on your next visit. New here? Click <strong>❓ Tour</strong> in the header for a quick 7-step walkthrough.</p></details>
         </div>
       </details>
       <details style="margin-top:6px;">
-        <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;">How To Use</summary>
+        <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;" data-i18n="dictionary.howto.summary">How To Use</summary>
         <ol style="padding:6px 0 4px 20px;margin:0;font-size:0.78rem;line-height:1.55;">
-          <li>Type a Hebrew word in the search bar (with or without nikkud).</li>
-          <li>Or filter by word length, part of speech, era, or letter position.</li>
-          <li>Click any result to view the word's details.</li>
+          <li data-i18n="dictionary.howto.step1">Type a Hebrew word in the search bar (with or without nikkud).</li>
+          <li data-i18n="dictionary.howto.step2">Or filter by word length, part of speech, era, or letter position.</li>
+          <li data-i18n="dictionary.howto.step3">Click any result to view the word's details.</li>
         </ol>
       </details>
     </div>
     <div style="font-size:0.72rem;line-height:1.5;text-align:center;">
-      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;">About</div>
+      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;" data-i18n="shared.footer.about_header">About</div>
       Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="font-weight:600;">Harrison Bleiberg</a><br>
       Word Data from <a href="https://kaikki.org/dictionary/Hebrew/index.html" target="_blank">Kaikki.org</a><br>
       <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
       <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank">GitHub</a>
     </div>
-    <nav aria-label="Related Hebrew Tools" style="text-align:right;">
-      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;">Related Hebrew Tools</div>
+    <nav aria-label="Related Hebrew Tools" data-i18n-aria-label="shared.nav.header" style="text-align:end;">
+      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;" data-i18n="shared.nav.header">Related Hebrew Tools</div>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:2px 14px;">
-        <li><a href="hebrew_blend_generator.html" style="font-size:0.8rem;">printable Hebrew worksheets →</a></li>
-        <li><a href="flash_cards.html" style="font-size:0.8rem;">Hebrew alphabet flash cards →</a></li>
-        <li><a href="classroom_dashboard.html" style="font-size:0.8rem;">Hebrew classroom display →</a></li>
-        <li><a href="torah_trainer.html" style="font-size:0.8rem;">Torah reading practice →</a></li>
-        <li><a href="trope_tutor.html" style="font-size:0.8rem;">learn Torah trope (cantillation) →</a></li>
-        <li><a href="Hebrew_Font_Maker.html" style="font-size:0.8rem;">make your own Hebrew font →</a></li>
-        <li><a href="resources.html" style="font-size:0.8rem;">free Hebrew teaching resources →</a></li>
+        <li><a href="hebrew_blend_generator.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_worksheets">printable Hebrew worksheets →</a></li>
+        <li><a href="flash_cards.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_flashcards">Hebrew alphabet flash cards →</a></li>
+        <li><a href="classroom_dashboard.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_dashboard">Hebrew classroom display →</a></li>
+        <li><a href="torah_trainer.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_torah">Torah reading practice →</a></li>
+        <li><a href="trope_tutor.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_trope">learn Torah trope (cantillation) →</a></li>
+        <li><a href="Hebrew_Font_Maker.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_fontmaker">make your own Hebrew font →</a></li>
+        <li><a href="resources.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_resources">free Hebrew teaching resources →</a></li>
       </ul>
     </nav>
   </div>
 </footer>
 
 <script>
+// Canonical HTML escaper (all five metacharacters) — used when interpolating translated/dynamic
+// strings into innerHTML templates. Prefer textContent where possible; this covers the template spots.
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+// Translate a Hebrew letter/vowel display name (e.g. "Alef", "Khaf sf", "Shin/Sin", "Hataf Patach")
+// to its localized form via the dictionary.glyphname.* keys. Falls back to the English name if no key.
+function glyphLetterName(n){ const k='dictionary.glyphname.letter_'+String(n).toLowerCase().replace(/[ \/]+/g,'_'); const v=I18n.t(k); return v===k?n:v; }
+function glyphVowelName(n){ const k='dictionary.glyphname.vowel_'+String(n).toLowerCase().replace(/[ \/]+/g,'_'); const v=I18n.t(k); return v===k?n:v; }
 const CONSONANTS = [
   {h:'א',n:'Alef'},
   {h:'בּ',n:'Bet'},{h:'ב',n:'Vet'},
@@ -1195,13 +1215,13 @@ function onTranslitStyleChange(val) {
     if (typeof rerender === 'function') rerender();
     return;
   }
-  if (status) status.textContent = 'Loading library…';
+  if (status) status.textContent = I18n.t('dictionary.translit.loading');
   window.HebrewTransliterator.ensureLoaded().then(() => {
     if (window.HebrewTransliterator.ready) {
       if (status) status.textContent = '';
       if (typeof rerender === 'function') rerender();
     } else {
-      if (status) status.textContent = 'Library failed to load — using default style.';
+      if (status) status.textContent = I18n.t('dictionary.translit.load_failed');
     }
   });
 }
@@ -1236,8 +1256,8 @@ function toggleGematriaSort(on) {
   const sel = document.getElementById('sortSel');
   [...sel.options].forEach(o => { if (o.value === 'gem-asc' || o.value === 'gem-desc') sel.remove(o.index); });
   if (on) {
-    sel.add(new Option('Gematria ↑', 'gem-asc'));
-    sel.add(new Option('Gematria ↓', 'gem-desc'));
+    sel.add(new Option(I18n.t('dictionary.gematria.sort_asc'), 'gem-asc'));
+    sel.add(new Option(I18n.t('dictionary.gematria.sort_desc'), 'gem-desc'));
   } else if (sel.value === 'gem-asc' || sel.value === 'gem-desc') {
     sel.value = 'alpha';
     onFilter();
@@ -1271,7 +1291,7 @@ function wordBulkText(w) { return getWordCopyText(w); }
 
 function updateBulkTextarea() {
   document.getElementById('bulkTextarea').value = [...bulkSelected.values()].map(e => e.text).join('\n');
-  document.getElementById('bulkCount').textContent = `${bulkSelected.size} selected`;
+  document.getElementById('bulkCount').textContent = I18n.t('dictionary.copy.bulk_count', { count: bulkSelected.size });
   updateExportState();
 }
 
@@ -1331,7 +1351,7 @@ function selectAllMatching() {
 function copyBulkText() {
   const ta = document.getElementById('bulkTextarea');
   if (!ta.value) return;
-  navigator.clipboard.writeText(ta.value).then(() => announce('Copied to clipboard')).catch(() => { ta.select(); document.execCommand('copy'); announce('Copied to clipboard'); });
+  navigator.clipboard.writeText(ta.value).then(() => announce(I18n.t('dictionary.copy.copied_toast'))).catch(() => { ta.select(); document.execCommand('copy'); announce(I18n.t('dictionary.copy.copied_toast')); });
 }
 
 /* ===== Export Selected Words (Anki / Quizlet) ===== */
@@ -1341,7 +1361,7 @@ function updateExportState() {
   const active = bulkMode && bulkSelected.size > 0;
   box.classList.toggle('export-disabled', !active);
   const c = document.getElementById('exportCount');
-  if (c) c.textContent = `${bulkSelected.size} word${bulkSelected.size !== 1 ? 's' : ''} selected for export.`;
+  if (c) c.textContent = I18n.t(bulkSelected.size === 1 ? 'dictionary.export.count.one' : 'dictionary.export.count.other', { count: bulkSelected.size });
   if (active) { const e = document.getElementById('exportErr'); if (e) e.textContent = ''; }
   const sb = document.getElementById('wlSaveBtn');
   if (sb) { sb.disabled = !active; sb.style.opacity = active ? '' : '0.5'; }
@@ -1377,7 +1397,7 @@ function exportTagify(s) { return (s || '').toLowerCase().trim().replace(/\s+/g,
 function exportAnki() {
   const err = document.getElementById('exportErr');
   const words = exportSelectedWords();
-  if (!words.length) { if (err) err.textContent = 'Select words using Bulk Copy Mode first.'; return; }
+  if (!words.length) { if (err) err.textContent = I18n.t('dictionary.export.err_select_first'); return; }
   if (err) err.textContent = '';
   const lines = ['#separator:tab', '#html:false', '#tags column:6'];
   words.forEach(w => {
@@ -1394,7 +1414,7 @@ function csvEscape(s) {
 function exportQuizlet() {
   const err = document.getElementById('exportErr');
   const words = exportSelectedWords();
-  if (!words.length) { if (err) err.textContent = 'Select words using Bulk Copy Mode first.'; return; }
+  if (!words.length) { if (err) err.textContent = I18n.t('dictionary.export.err_select_first'); return; }
   if (err) err.textContent = '';
   const rows = ['Term,Definition'];
   words.forEach(w => {
@@ -1451,20 +1471,20 @@ function wlListCount() { return Object.keys(wlReadStore().lists).length; }
 function wlAddList(name, words) {
   const store = wlReadStore();
   if (Object.keys(store.lists).length >= WL_MAX_LISTS)
-    return { ok: false, err: `You've reached the limit of ${WL_MAX_LISTS} word lists. Delete one to add another.` };
+    return { ok: false, err: I18n.t('dictionary.wordlist.err_limit', { max: WL_MAX_LISTS }) };
   const now = Date.now();
   const id = wlNewId();
   const capped = wlDedupeInto([], words || []);
   const dropped = (words ? words.length : 0) - capped.length;
   store.lists[id] = { name: String(name || 'Untitled list'), created: now, updated: now, words: capped };
-  if (!wlWriteStore(store)) return { ok: false, err: 'Storage is full — couldn\'t save this word list. Try deleting old lists or other saved data.' };
+  if (!wlWriteStore(store)) return { ok: false, err: I18n.t('dictionary.wordlist.err_storage_save') };
   return { ok: true, id, dropped };
 }
 // Merge words into an existing list. Returns { ok, added, dropped } or { ok:false, err }.
 function wlMergeIntoList(id, words) {
   const store = wlReadStore();
   const list = store.lists[id];
-  if (!list) return { ok: false, err: 'That word list no longer exists.' };
+  if (!list) return { ok: false, err: I18n.t('dictionary.wordlist.err_gone') };
   const before = list.words.length;
   // count incoming words that are genuinely new (not already in the list, not dup among themselves)
   const have = new Set(list.words.map(x => x.word));
@@ -1473,7 +1493,7 @@ function wlMergeIntoList(id, words) {
   const merged = wlDedupeInto(list.words, words || []);
   list.words = merged;
   list.updated = Date.now();
-  if (!wlWriteStore(store)) return { ok: false, err: 'Storage is full — couldn\'t update this word list.' };
+  if (!wlWriteStore(store)) return { ok: false, err: I18n.t('dictionary.wordlist.err_storage_update') };
   const added = merged.length - before;
   return { ok: true, added, dropped: uniqueNew.size - added };
 }
@@ -1516,26 +1536,26 @@ function wlOpenSaveModal() {
   const sel = wlSelectedWords();
   if (!sel.length) {
     const err = document.getElementById('exportErr');
-    if (err) err.textContent = 'Select words using Bulk Copy Mode first.';
+    if (err) err.textContent = I18n.t('dictionary.export.err_select_first');
     return;
   }
   const store = wlReadStore();
   const listIds = Object.keys(store.lists);
   const body = document.createElement('div');
-  body.appendChild(wlEl('div', { cls: 'wl-mtitle', style: 'font-family:var(--heb-font);font-size:1.3rem;font-weight:600;text-align:center;color:var(--text);margin:2px 24px 4px;' }, 'Save as Word List'));
-  body.appendChild(wlEl('div', { style: 'text-align:center;color:var(--muted);font-size:0.82rem;margin-bottom:14px;' }, `${sel.length} word${sel.length !== 1 ? 's' : ''} selected`));
+  body.appendChild(wlEl('div', { cls: 'wl-mtitle', style: 'font-family:var(--heb-font);font-size:1.3rem;font-weight:600;text-align:center;color:var(--text);margin:2px 24px 4px;' }, I18n.t('dictionary.wordlist.save_modal_title')));
+  body.appendChild(wlEl('div', { style: 'text-align:center;color:var(--muted);font-size:0.82rem;margin-bottom:14px;' }, I18n.t(sel.length === 1 ? 'dictionary.wordlist.selected_count.one' : 'dictionary.wordlist.selected_count.other', { count: sel.length })));
 
   // Create new
-  body.appendChild(wlEl('div', { style: 'font-size:0.72rem;font-weight:600;color:var(--text);margin-bottom:4px;' }, 'Create a new list'));
-  const nameIn = wlEl('input', { type: 'text', maxLength: 80, placeholder: 'e.g. Parashat Noach vocab', style: 'width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;font-size:0.85rem;margin-bottom:6px;' });
+  body.appendChild(wlEl('div', { style: 'font-size:0.72rem;font-weight:600;color:var(--text);margin-bottom:4px;' }, I18n.t('dictionary.wordlist.create_new')));
+  const nameIn = wlEl('input', { type: 'text', maxLength: 80, placeholder: I18n.t('dictionary.wordlist.name_placeholder'), style: 'width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;font-size:0.85rem;margin-bottom:6px;' });
   body.appendChild(nameIn);
-  const createBtn = wlEl('button', { cls: 'wm-root-btn', type: 'button' }, 'Save as new list');
+  const createBtn = wlEl('button', { cls: 'wm-root-btn', type: 'button' }, I18n.t('dictionary.wordlist.save_as_new'));
   body.appendChild(createBtn);
 
   // Add to existing
   if (listIds.length) {
     body.appendChild(wlEl('div', { style: 'border-top:1px solid var(--border);margin:14px 0 10px;' }));
-    body.appendChild(wlEl('div', { style: 'font-size:0.72rem;font-weight:600;color:var(--text);margin-bottom:4px;' }, 'Or add to an existing list'));
+    body.appendChild(wlEl('div', { style: 'font-size:0.72rem;font-weight:600;color:var(--text);margin-bottom:4px;' }, I18n.t('dictionary.wordlist.add_to_existing')));
     const sel2 = document.createElement('select');
     sel2.setAttribute('style', 'width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;font-size:0.85rem;margin-bottom:6px;');
     listIds.sort((a, b) => (store.lists[b].updated || 0) - (store.lists[a].updated || 0)).forEach(id => {
@@ -1545,13 +1565,13 @@ function wlOpenSaveModal() {
       sel2.appendChild(o);
     });
     body.appendChild(sel2);
-    const mergeBtn = wlEl('button', { cls: 'wm-act', type: 'button', style: 'text-align:center;font-weight:600;' }, 'Add to selected list');
+    const mergeBtn = wlEl('button', { cls: 'wm-act', type: 'button', style: 'text-align:center;font-weight:600;' }, I18n.t('dictionary.wordlist.add_to_selected'));
     body.appendChild(mergeBtn);
     mergeBtn.addEventListener('click', () => {
       const r = wlMergeIntoList(sel2.value, sel);
       if (!r.ok) { wlSetStatus(status, r.err, true); return; }
-      let msg = r.added === 0 ? 'All selected words were already in that list.' : `Added ${r.added} word${r.added !== 1 ? 's' : ''}.`;
-      if (r.dropped > 0) msg += ` ${r.dropped} skipped (200-word limit).`;
+      let msg = r.added === 0 ? I18n.t('dictionary.wordlist.all_already_in') : I18n.t(r.added === 1 ? 'dictionary.wordlist.added.one' : 'dictionary.wordlist.added.other', { count: r.added });
+      if (r.dropped > 0) msg += ' ' + I18n.t('dictionary.wordlist.dropped_suffix', { count: r.dropped });
       wlSetStatus(status, msg, false);
     });
   }
@@ -1561,13 +1581,14 @@ function wlOpenSaveModal() {
 
   createBtn.addEventListener('click', () => {
     const name = nameIn.value.trim();
-    if (!name) { wlSetStatus(status, 'Please enter a name for the list.', true); nameIn.focus(); return; }
+    if (!name) { wlSetStatus(status, I18n.t('dictionary.wordlist.enter_name'), true); nameIn.focus(); return; }
     const dup = Object.values(wlReadStore().lists).some(l => l.name === name);
     const r = wlAddList(name, sel);
     if (!r.ok) { wlSetStatus(status, r.err, true); return; }
-    let msg = `Saved "${name}" with ${wlGetList(r.id).words.length} word${wlGetList(r.id).words.length !== 1 ? 's' : ''}.`;
-    if (r.dropped > 0) msg += ` ${r.dropped} skipped (200-word limit).`;
-    if (dup) msg += ' (Another list already uses this name.)';
+    const cnt = wlGetList(r.id).words.length;
+    let msg = I18n.t(cnt === 1 ? 'dictionary.wordlist.saved.one' : 'dictionary.wordlist.saved.other', { name: name, count: cnt });
+    if (r.dropped > 0) msg += ' ' + I18n.t('dictionary.wordlist.dropped_suffix', { count: r.dropped });
+    if (dup) msg += ' ' + I18n.t('dictionary.wordlist.dup_name_suffix');
     wlSetStatus(status, msg, false);
     nameIn.value = '';
   });
@@ -1595,11 +1616,11 @@ function wlRefreshManager() {
   body.appendChild(b);
 }
 function wlRenderManagerInto(root) {
-  root.appendChild(wlEl('div', { style: 'font-family:var(--heb-font);font-size:1.3rem;font-weight:600;text-align:center;color:var(--text);margin:2px 24px 12px;' }, 'Word Lists'));
+  root.appendChild(wlEl('div', { style: 'font-family:var(--heb-font);font-size:1.3rem;font-weight:600;text-align:center;color:var(--text);margin:2px 24px 12px;' }, I18n.t('dictionary.wordlist.manager_title')));
   const store = wlReadStore();
   const ids = Object.keys(store.lists).sort((a, b) => (store.lists[b].updated || 0) - (store.lists[a].updated || 0));
   if (!ids.length) {
-    root.appendChild(wlEl('div', { style: 'text-align:center;color:var(--muted);font-size:0.85rem;padding:16px 6px;line-height:1.5;' }, 'No word lists yet. Turn on Bulk Copy Mode, select words, and use “Save as Word List”.'));
+    root.appendChild(wlEl('div', { style: 'text-align:center;color:var(--muted);font-size:0.85rem;padding:16px 6px;line-height:1.5;' }, I18n.t('dictionary.wordlist.manager_empty')));
     return;
   }
   ids.forEach(id => {
@@ -1608,7 +1629,7 @@ function wlRenderManagerInto(root) {
     const head = wlEl('div', { style: 'display:flex;align-items:center;gap:8px;' });
     const nm = wlEl('div', { style: 'flex:1;min-width:0;' });
     nm.appendChild(wlEl('div', { style: 'font-weight:600;color:var(--text);font-size:0.9rem;word-break:break-word;' }, list.name));
-    nm.appendChild(wlEl('div', { style: 'color:var(--muted);font-size:0.72rem;' }, `${list.words.length} word${list.words.length !== 1 ? 's' : ''}`));
+    nm.appendChild(wlEl('div', { style: 'color:var(--muted);font-size:0.72rem;' }, I18n.t(list.words.length === 1 ? 'dictionary.wordlist.card_count.one' : 'dictionary.wordlist.card_count.other', { count: list.words.length })));
     head.appendChild(nm);
     row.appendChild(head);
 
@@ -1619,38 +1640,38 @@ function wlRenderManagerInto(root) {
       acts.appendChild(bb);
       return bb;
     };
-    btn('View words', () => {
+    btn(I18n.t('dictionary.wordlist.view_words'), () => {
       const existing = row.querySelector('.wl-words');
       if (existing) { existing.remove(); return; }
       const wrap = wlEl('div', { cls: 'wl-words', style: 'margin-top:8px;border-top:1px solid var(--border);padding-top:8px;display:flex;flex-direction:column;gap:4px;max-height:240px;overflow-y:auto;' });
-      if (!list.words.length) wrap.appendChild(wlEl('div', { style: 'color:var(--muted);font-size:0.75rem;' }, 'This list is empty.'));
+      if (!list.words.length) wrap.appendChild(wlEl('div', { style: 'color:var(--muted);font-size:0.75rem;' }, I18n.t('dictionary.wordlist.list_empty')));
       list.words.forEach(w => {
         const wr = wlEl('div', { style: 'display:flex;align-items:center;gap:8px;font-size:0.78rem;' });
-        wr.appendChild(wlEl('span', { style: 'font-family:var(--heb-font);font-size:1.05rem;direction:rtl;min-width:60px;' }, w.word));
+        wr.appendChild(wlEl('span', { lang: 'he', dir: 'rtl', style: 'font-family:var(--heb-font);font-size:1.05rem;direction:rtl;min-width:60px;' }, w.word));
         wr.appendChild(wlEl('span', { style: 'flex:1;color:var(--muted);word-break:break-word;' }, w.translation || ''));
-        const x = wlEl('button', { cls: 'wm-mini', type: 'button', title: 'Remove from list' }, '✕');
+        const x = wlEl('button', { cls: 'wm-mini', type: 'button', title: I18n.t('dictionary.wordlist.remove_word_title') }, '✕');
         x.addEventListener('click', () => { wlRemoveWord(id, w.word); wlRefreshManager(); });
         wr.appendChild(x);
         wrap.appendChild(wr);
       });
       row.appendChild(wrap);
     });
-    btn('Rename', () => {
-      const nn = prompt('Rename word list:', list.name);
+    btn(I18n.t('dictionary.wordlist.rename'), () => {
+      const nn = prompt(I18n.t('dictionary.wordlist.rename_prompt'), list.name);
       if (nn == null) return;
       const t = nn.trim();
       if (!t) return;
       wlRenameList(id, t);
       wlRefreshManager();
     });
-    btn('Delete', () => {
-      if (!confirm(`Delete the word list "${list.name}"? This can't be undone.`)) return;
+    btn(I18n.t('dictionary.wordlist.delete'), () => {
+      if (!confirm(I18n.t('dictionary.wordlist.delete_confirm', { name: list.name }))) return;
       wlDeleteList(id);
       wlRefreshManager();
     }, 'color:#c0392b;');
     row.appendChild(acts);
     if (list.words.length) {
-      const loadBtn = wlEl('button', { cls: 'wm-root-btn', type: 'button', style: 'margin-top:8px;font-size:0.8rem;padding:7px 12px;' }, 'Load as filter (view in results)');
+      const loadBtn = wlEl('button', { cls: 'wm-root-btn', type: 'button', style: 'margin-top:8px;font-size:0.8rem;padding:7px 12px;' }, I18n.t('dictionary.wordlist.load_as_filter'));
       loadBtn.addEventListener('click', () => wlLoadListAsFilter(id));
       row.appendChild(loadBtn);
     }
@@ -1684,7 +1705,8 @@ function wlLoadListAsFilter(id) {
   if (grid) grid.innerHTML = '';
   loadMore();
   const n = filtered.length;
-  const countText = n === 0 ? 'No words in this list' : n === 1 ? '1 word' : `${n.toLocaleString()} words`;
+  const countText = n === 0 ? I18n.t('dictionary.results.no_words_in_list')
+    : I18n.t(n === 1 ? 'dictionary.results.count_words.one' : 'dictionary.results.count_words.other', { count: n.toLocaleString() });
   const rc = document.getElementById('resultCount');
   const sc = document.getElementById('sidebarWordCount');
   if (rc) rc.textContent = countText;
@@ -1763,11 +1785,11 @@ function updateDictLoadProgress(pct, received) {
   if (!txt) return;
   if (pct === null || pct === undefined) {
     if (bar) bar.classList.add('indeterminate');
-    txt.textContent = 'Loading dictionary…' + (received ? ' ' + Math.round(received / 1024).toLocaleString() + ' KB' : '');
+    txt.textContent = received ? I18n.t('dictionary.loading.dictionary_kb', { kb: Math.round(received / 1024).toLocaleString() }) : I18n.t('dictionary.loading.dictionary');
   } else {
     if (bar) bar.classList.remove('indeterminate');
     if (fill) fill.style.width = pct + '%';
-    txt.textContent = 'Loading dictionary… ' + pct + '%';
+    txt.textContent = I18n.t('dictionary.loading.dictionary_pct', { pct: pct });
   }
 }
 
@@ -1832,8 +1854,8 @@ fetchJsonWithProgress('data/hebrew_words.json?v=4', updateDictLoadProgress)
   .catch(() => {
     const bar = document.getElementById('loadBar'); if (bar) bar.style.display = 'none';
     const txt = document.getElementById('loadingText');
-    if (txt) txt.textContent = 'Failed to load. Open via a local server (not file://).';
-    else document.getElementById('loadingMsg').textContent = 'Failed to load. Open via a local server (not file://).';
+    if (txt) txt.textContent = I18n.t('dictionary.loading.failed');
+    else document.getElementById('loadingMsg').textContent = I18n.t('dictionary.loading.failed');
   });
 
 function setAllVowels(checked) {
@@ -1858,7 +1880,7 @@ function initVowelFilter() {
   const grid = document.getElementById('vowelFilterGrid');
   const btns = document.createElement('div');
   btns.style.cssText = 'display:flex;gap:5px;margin-bottom:8px;';
-  btns.innerHTML = `<button class="pos-all-btn" onclick="setAllVowels(true)">All</button><button class="pos-all-btn" onclick="setMainVowelFilter()">Main</button><button class="pos-all-btn" onclick="setAllVowels(false)">None</button>`;
+  btns.innerHTML = `<button class="pos-all-btn" onclick="setAllVowels(true)">${esc(I18n.t('dictionary.filters.pos_all'))}</button><button class="pos-all-btn" onclick="setMainVowelFilter()">${esc(I18n.t('dictionary.filters.vowel_main'))}</button><button class="pos-all-btn" onclick="setAllVowels(false)">${esc(I18n.t('dictionary.filters.pos_none'))}</button>`;
   grid.before(btns);
   const isDark = document.body.classList.contains('dark') || document.documentElement.classList.contains('dark-early');
   DICT_VOWEL_GROUPS.forEach(group => {
@@ -1901,8 +1923,8 @@ function initVowelFilter() {
       chip.innerHTML = `
         <input type="checkbox" data-u="${v.u}">
         <span style="display:flex;align-items:center;gap:6px;">
-          <span style="font-family:var(--heb-font);font-size:1.4rem;direction:rtl;min-width:24px;text-align:center;">${v.ex}</span>
-          <span><strong>${v.label}</strong><br><span style="color:var(--muted);font-size:0.72rem">${v.sub}</span></span>
+          <span lang="he" dir="rtl" style="font-family:var(--heb-font);font-size:1.4rem;direction:rtl;min-width:24px;text-align:center;">${v.ex}</span>
+          <span><strong>${esc(glyphVowelName(v.label))}</strong><br><span style="color:var(--muted);font-size:0.72rem">${esc(v.sub)}</span></span>
         </span>`;
       const cb = chip.querySelector('input');
       cb.checked = true;
@@ -1986,7 +2008,7 @@ function buildPosFilterTiles(grid, i) {
     const t = document.createElement('div');
     t.className = 'lpt' + (posFilters[i].has(c.h) ? ' selected' : '');
     t.dataset.h = c.h;
-    t.innerHTML = `<span class="h">${c.h}</span><span class="n">${c.n}</span>`;
+    t.innerHTML = `<span class="h" lang="he">${c.h}</span><span class="n">${esc(glyphLetterName(c.n))}</span>`;
     t.onclick = () => { posFilters[i].has(c.h) ? posFilters[i].delete(c.h) : posFilters[i].add(c.h); t.classList.toggle('selected'); t.setAttribute('aria-pressed', t.classList.contains('selected') ? 'true' : 'false'); updatePB(i); onFilter(); };
     bindLptA11y(t);
     grid.appendChild(t);
@@ -2000,7 +2022,7 @@ function initPosFilters() {
   ctrlRow.style.cssText = 'margin-bottom:8px;';
   ctrlRow.innerHTML = `<label style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none;font-size:0.78rem;">
     <input type="checkbox" id="dageshTavToggle" ${dageshTavEnabled ? 'checked' : ''} onchange="setDictDageshTav(this.checked)" style="accent-color:var(--gold);width:13px;height:13px;">
-    Dagesh Tav / Sav
+    ${esc(I18n.t('dictionary.filters.dagesh_tav'))}
   </label>`;
   body.appendChild(ctrlRow);
   const labels = ['1st','2nd','3rd','4th','5th','6th'];
@@ -2010,10 +2032,10 @@ function initPosFilters() {
     sec.innerHTML = `
       <div class="pos-sec-hdr" onclick="togglePosSec(${i})">
         <div class="hdr-left">
-          <span class="lbl">${lbl} Letter</span>
+          <span class="lbl">${esc(I18n.t('dictionary.filters.pos_letter_heading', { ordinal: I18n.t('dictionary.ordinal_' + lbl) }))}</span>
           <div class="pos-badges" id="pb${i}"></div>
         </div>
-        <button class="pos-clear" onclick="event.stopPropagation();clearPos(${i})" title="Clear">✕</button>
+        <button class="pos-clear" onclick="event.stopPropagation();clearPos(${i})" title="${esc(I18n.t('dictionary.filters.pos_clear_title'))}">✕</button>
         <span class="pos-arrow">▾</span>
       </div>
       <div class="pos-sec-body">
@@ -2033,15 +2055,15 @@ function initPosFilters() {
   anySec.innerHTML = `
     <div class="pos-sec-hdr" onclick="this.parentElement.classList.toggle('open')">
       <div class="hdr-left">
-        <span class="lbl">Any of these letters</span>
+        <span class="lbl">${esc(I18n.t('dictionary.filters.any_letters_head'))}</span>
         <div class="pos-badges" id="pbAny"></div>
       </div>
-      <button class="pos-clear" onclick="event.stopPropagation();clearAnyLetters()" title="Clear">✕</button>
+      <button class="pos-clear" onclick="event.stopPropagation();clearAnyLetters()" title="${esc(I18n.t('dictionary.filters.pos_clear_title'))}">✕</button>
       <span class="pos-arrow">▾</span>
     </div>
     <div class="pos-sec-body">
       <label class="cb-label" style="margin-bottom:6px;">
-        <input type="checkbox" id="anyLetterOnlyCb" ${anyLetterOnly ? 'checked' : ''} onchange="setAnyLetterOnly(this.checked)" style="accent-color:var(--gold);"> No other letters?
+        <input type="checkbox" id="anyLetterOnlyCb" ${anyLetterOnly ? 'checked' : ''} onchange="setAnyLetterOnly(this.checked)" style="accent-color:var(--gold);"> ${esc(I18n.t('dictionary.filters.any_no_others'))}
       </label>
       <div class="letter-pos-grid" id="pgAny"></div>
     </div>`;
@@ -2060,7 +2082,7 @@ function buildAnyLetterTiles(grid) {
     const t = document.createElement('div');
     t.className = 'lpt' + (anyLetterFilter.has(c.h) ? ' selected' : '');
     t.dataset.h = c.h;
-    t.innerHTML = `<span class="h">${c.h}</span><span class="n">${c.n}</span>`;
+    t.innerHTML = `<span class="h" lang="he">${c.h}</span><span class="n">${esc(glyphLetterName(c.n))}</span>`;
     t.onclick = () => {
       anyLetterFilter.has(c.h) ? anyLetterFilter.delete(c.h) : anyLetterFilter.add(c.h);
       t.classList.toggle('selected');
@@ -2128,7 +2150,8 @@ function onFilter() {
     document.getElementById('resultsGrid').innerHTML = '';
     renderEmojiResults();
     const n = emojiFiltered.length;
-    const countText = n === 0 ? 'No emojis found' : n === 1 ? '1 emoji' : `${n.toLocaleString()} emojis`;
+    const countText = n === 0 ? I18n.t('dictionary.results.no_emojis_found')
+      : I18n.t(n === 1 ? 'dictionary.results.count_emojis.one' : 'dictionary.results.count_emojis.other', { count: n.toLocaleString() });
     document.getElementById('resultCount').textContent = countText;
     document.getElementById('sidebarWordCount').textContent = countText;
     if (n === 0) renderDictEmptyState(true);
@@ -2217,7 +2240,8 @@ function onFilter() {
   loadMore();
 
   const n = filtered.length;
-  const countText = n === 0 ? 'No words found' : n === 1 ? '1 word' : `${n.toLocaleString()} words`;
+  const countText = n === 0 ? I18n.t('dictionary.results.no_words_found')
+    : I18n.t(n === 1 ? 'dictionary.results.count_words.one' : 'dictionary.results.count_words.other', { count: n.toLocaleString() });
   document.getElementById('resultCount').textContent = countText;
   document.getElementById('sidebarWordCount').textContent = countText;
   updateLenAll();
@@ -2237,7 +2261,7 @@ const CHECK_ICON = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" 
 // Announce a transient message to screen readers via the shared #a11yStatus live region.
 function announce(msg) { const s = document.getElementById('a11yStatus'); if (s) s.textContent = msg; }
 function copyWord(btn, text) {
-  const finish = () => { btn.innerHTML = CHECK_ICON; btn.classList.add('copied'); announce('Copied to clipboard'); setTimeout(() => { btn.innerHTML = COPY_ICON; btn.classList.remove('copied'); }, 1500); };
+  const finish = () => { btn.innerHTML = CHECK_ICON; btn.classList.add('copied'); announce(I18n.t('dictionary.copy.copied_toast')); setTimeout(() => { btn.innerHTML = COPY_ICON; btn.classList.remove('copied'); }, 1500); };
   if (navigator.clipboard) { navigator.clipboard.writeText(text).then(finish).catch(finish); }
   else { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch(e) {} document.body.removeChild(ta); finish(); }
 }
@@ -2265,7 +2289,7 @@ function buildWordCard(w) {
   card.className = 'word-card';
   card.dataset.shword = w.word;
   const ec = w.era === 'Biblical' ? 'b-bib' : w.era === 'Modern' ? 'b-mod' : 'b-both';
-  const el = w.era === 'Both' ? 'Bib + Mod' : w.era;
+  const el = w.era === 'Both' ? I18n.t('dictionary.modal.era_bib_mod') : w.era === 'Biblical' ? I18n.t('dictionary.filters.era_biblical') : w.era === 'Modern' ? I18n.t('dictionary.filters.era_modern') : w.era;
   const bulkCb = document.createElement('input');
   bulkCb.type = 'checkbox';
   bulkCb.className = 'wc-bulk-cb';
@@ -2281,7 +2305,7 @@ function buildWordCard(w) {
   // Section 3: click opens the detail modal (bulk mode keeps select-on-click).
   card.setAttribute('role', 'button');
   card.tabIndex = 0;
-  card.setAttribute('aria-label', 'View details for ' + w.word + (w.translation ? ' (' + w.translation + ')' : ''));
+  card.setAttribute('aria-label', I18n.t('dictionary.card.aria_view_details', { word: w.word + (w.translation ? ' (' + w.translation + ')' : '') }));
   card.addEventListener('click', e => {
     if (e.target === bulkCb) return;
     if (bulkMode) { bulkCb.checked = !bulkCb.checked; bulkCb.dispatchEvent(new Event('change', {bubbles:true})); }
@@ -2298,22 +2322,22 @@ function buildWordCard(w) {
   const btn = document.createElement('button');
   btn.className = 'wc-copy';
   btn.innerHTML = COPY_ICON;
-  btn.title = 'Copy Hebrew';
-  btn.setAttribute('aria-label', 'Copy Hebrew');
+  btn.title = I18n.t('dictionary.card.copy_hebrew_title');
+  btn.setAttribute('aria-label', I18n.t('dictionary.card.copy_hebrew_title'));
   btn.addEventListener('click', e => { e.stopPropagation(); copyWord(btn, getWordCopyText(w)); });
   card.appendChild(btn);
   const speakBtn = document.createElement('button');
   speakBtn.className = 'wc-speak';
   speakBtn.textContent = '🔊';
-  speakBtn.title = 'Hear pronunciation';
-  speakBtn.setAttribute('aria-label', 'Hear pronunciation');
+  speakBtn.title = I18n.t('dictionary.card.hear_title');
+  speakBtn.setAttribute('aria-label', I18n.t('dictionary.card.hear_title'));
   speakBtn.addEventListener('click', e => { e.stopPropagation(); speakWord(w.word); });
   card.appendChild(speakBtn);
   const srch = document.createElement('a');
   srch.className = 'wc-search';
   srch.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
-  srch.title = 'Look up on Google';
-  srch.setAttribute('aria-label', 'Look up on Google');
+  srch.title = I18n.t('dictionary.card.google_title');
+  srch.setAttribute('aria-label', I18n.t('dictionary.card.google_title'));
   srch.href = 'https://www.google.com/search?q=' + encodeURIComponent(w.word);
   srch.target = '_blank';
   srch.rel = 'noopener';
@@ -2453,7 +2477,7 @@ function enterShoresh() {
     document.getElementById('shoreshHeader').style.display = 'none';
     document.getElementById('shoreshResults').innerHTML = '';
     document.getElementById('shoreshPatterns').style.display = 'none';
-    document.getElementById('resultCount').textContent = 'Enter a root';
+    document.getElementById('resultCount').textContent = I18n.t('dictionary.shoresh.enter_root_count');
   }
 }
 
@@ -2499,8 +2523,8 @@ function renderRootChips(filter) {
   if (!box || !ROOT_INDEX) return;
   const f = normHebLetters(filter);
   const list = f ? ROOT_INDEX.filter(r => r.includes(f)) : ROOT_INDEX;
-  box.innerHTML = list.map(r => `<button type="button" class="shoresh-chip" onclick="shoreshChipClick('${r}')">${[...r].join('־')}</button>`).join('') ||
-    '<span style="font-size:0.75rem;color:var(--muted);padding:4px;">No matching roots.</span>';
+  box.innerHTML = list.map(r => `<button type="button" class="shoresh-chip" lang="he" dir="rtl" onclick="shoreshChipClick('${r}')">${[...r].join('־')}</button>`).join('') ||
+    `<span style="font-size:0.75rem;color:var(--muted);padding:4px;">${esc(I18n.t('dictionary.shoresh.no_matching_roots'))}</span>`;
 }
 
 function shoreshChipClick(r) {
@@ -2519,7 +2543,7 @@ function runShoreshLookup(raw) {
   const root = normHebLetters(raw);
   if (root.length < 2) {
     document.getElementById('shoreshHeader').style.display = 'none';
-    document.getElementById('shoreshResults').innerHTML = '<div class="shoresh-empty-note">Type at least 2 root letters (e.g. כתב).</div>';
+    document.getElementById('shoreshResults').innerHTML = `<div class="shoresh-empty-note">${esc(I18n.t('dictionary.shoresh.type_min_letters'))}</div>`;
     document.getElementById('shoreshPatterns').style.display = 'none';
     document.getElementById('resultCount').textContent = '';
     return;
@@ -2561,8 +2585,8 @@ function renderShoreshHeader(rootEntry, rootCons) {
   let badges = '';
   if (rootEntry) {
     const ec = rootEntry.era === 'Biblical' ? 'b-bib' : rootEntry.era === 'Modern' ? 'b-mod' : 'b-both';
-    const el = rootEntry.era === 'Both' ? 'Bib + Mod' : rootEntry.era;
-    badges += `<span class="badge ${ec}">${el}</span>`;
+    const el = rootEntry.era === 'Both' ? I18n.t('dictionary.modal.era_bib_mod') : rootEntry.era === 'Biblical' ? I18n.t('dictionary.filters.era_biblical') : rootEntry.era === 'Modern' ? I18n.t('dictionary.filters.era_modern') : rootEntry.era;
+    badges += `<span class="badge ${ec}">${esc(el)}</span>`;
   }
   if (showGematria) badges += `<span class="badge" style="background:var(--warm-gray);color:var(--muted);">&#x05D2; ${calcGematria(rootCons.join(''))}</span>`;
   hdr.innerHTML = `
@@ -2588,16 +2612,16 @@ function renderShoreshGroups(fam) {
   const buckets = { root: [], verb: [], noun: [], adjective: [], adverb: [], other: [] };
   fam.forEach(w => buckets[shoreshBucket(w.pos)].push(w));
   Object.keys(buckets).forEach(k => buckets[k].sort((a, b) => a.len - b.len || a.bare.localeCompare(b.bare, 'he')));
-  const order = [['root', 'Root'], ['verb', 'Verb'], ['noun', 'Noun'], ['adjective', 'Adjective'], ['adverb', 'Adverb'], ['other', 'Other']];
+  const order = [['root', 'dictionary.shoresh.group_root'], ['verb', 'dictionary.shoresh.group_verb'], ['noun', 'dictionary.shoresh.group_noun'], ['adjective', 'dictionary.shoresh.group_adjective'], ['adverb', 'dictionary.shoresh.group_adverb'], ['other', 'dictionary.shoresh.group_other']];
   const derivedCount = fam.length - buckets.root.length;
   let any = false;
-  order.forEach(([key, label]) => {
+  order.forEach(([key, labelKey]) => {
     const items = buckets[key];
     if (!items.length) return;
     any = true;
     const hdr = document.createElement('div');
     hdr.className = 'shoresh-group-hdr';
-    hdr.textContent = `${label} (${items.length})`;
+    hdr.textContent = I18n.t('dictionary.shoresh.group_count', { label: I18n.t(labelKey), count: items.length });
     box.appendChild(hdr);
     const grid = document.createElement('div');
     grid.className = 'shoresh-group-grid';
@@ -2607,12 +2631,13 @@ function renderShoreshGroups(fam) {
   if (derivedCount <= 0) {
     const note = document.createElement('div');
     note.className = 'shoresh-empty-note';
-    note.textContent = 'No derived words found for this root in the current dictionary.';
+    note.textContent = I18n.t('dictionary.shoresh.no_derived');
     box.appendChild(note);
   }
-  if (!any) box.innerHTML = '<div class="shoresh-empty-note">No derived words found for this root in the current dictionary.</div>';
+  if (!any) box.innerHTML = `<div class="shoresh-empty-note">${esc(I18n.t('dictionary.shoresh.no_derived'))}</div>`;
   const n = derivedCount > 0 ? derivedCount : 0;
-  const countText = n === 0 ? 'No related words' : n === 1 ? '1 related word' : `${n.toLocaleString()} related words`;
+  const countText = n === 0 ? I18n.t('dictionary.results.no_related')
+    : I18n.t(n === 1 ? 'dictionary.results.count_related.one' : 'dictionary.results.count_related.other', { count: n.toLocaleString() });
   document.getElementById('resultCount').textContent = countText;
   document.getElementById('sidebarWordCount').textContent = countText;
 }
@@ -2632,10 +2657,12 @@ const SHORESH_PATTERNS = [
   { name: 'פָּעוּל',  sub: 'adjective',     build: (a,b,c) => a+'ָ'+b+'ו'+c },
 ];
 
+const SHORESH_PATTERN_SUB_KEY = { 'verb': 'dictionary.shoresh.pattern_verb', 'noun': 'dictionary.shoresh.pattern_noun', 'agent noun': 'dictionary.shoresh.pattern_agent_noun', 'abstract noun': 'dictionary.shoresh.pattern_abstract_noun', 'adjective': 'dictionary.shoresh.pattern_adjective' };
+function shoreshPatternSub(sub) { const k = SHORESH_PATTERN_SUB_KEY[sub]; return k ? I18n.t(k) : sub; }
 function renderShoreshPatterns(rootCons, fam) {
   const wrap = document.getElementById('shoreshPatterns');
   if (rootCons.length !== 3) {
-    wrap.innerHTML = '<div class="shoresh-patterns-wrap"><div class="shoresh-patterns-title" onclick="this.parentElement.classList.toggle(\'collapsed\')">Common patterns from this root</div><div class="shoresh-patterns-body"><div class="shoresh-empty-note" style="padding:10px;">Patterns are shown for 3-letter roots.</div></div></div>';
+    wrap.innerHTML = `<div class="shoresh-patterns-wrap"><div class="shoresh-patterns-title" onclick="this.parentElement.classList.toggle('collapsed')">${esc(I18n.t('dictionary.shoresh.patterns_title'))}</div><div class="shoresh-patterns-body"><div class="shoresh-empty-note" style="padding:10px;">${esc(I18n.t('dictionary.shoresh.patterns_3letter_only'))}</div></div></div>`;
     wrap.style.display = '';
     return;
   }
@@ -2647,13 +2674,13 @@ function renderShoreshPatterns(rootCons, fam) {
     const hit = rx ? normFam.find(o => rx.test(o.nk)) : null;
     if (hit) {
       return `<div class="shoresh-pat filled" onclick="scrollToShoreshWord('${hit.w.word.replace(/'/g, "\\'")}')">
-        <span class="pat-name">${p.name}</span><span class="pat-sub">${p.sub}</span>
+        <span class="pat-name" lang="he">${p.name}</span><span class="pat-sub">${esc(shoreshPatternSub(p.sub))}</span>
         <span class="pat-match">${colorizeHebrew(hit.w.word)}</span></div>`;
     }
-    return `<div class="shoresh-pat empty"><span class="pat-name">${p.name}</span><span class="pat-sub">${p.sub}</span></div>`;
+    return `<div class="shoresh-pat empty"><span class="pat-name" lang="he">${p.name}</span><span class="pat-sub">${esc(shoreshPatternSub(p.sub))}</span></div>`;
   }).join('');
   wrap.innerHTML = `<div class="shoresh-patterns-wrap">
-    <div class="shoresh-patterns-title" onclick="this.parentElement.classList.toggle('collapsed')">Common patterns from this root</div>
+    <div class="shoresh-patterns-title" onclick="this.parentElement.classList.toggle('collapsed')">${esc(I18n.t('dictionary.shoresh.patterns_title'))}</div>
     <div class="shoresh-patterns-body"><div class="shoresh-pat-grid">${cells}</div></div>
   </div>`;
   bindHdrA11y(wrap.querySelector('.shoresh-patterns-title'));
@@ -2773,7 +2800,7 @@ function getNikudColor(key) {
 }
 
 function colorizeHebrew(text) {
-  if (!colorCodingEnabled) return '<span lang="he">' + text + '</span>';
+  if (!colorCodingEnabled) return '<span lang="he" dir="rtl">' + text + '</span>';
   const chars = [...text];
   const n = chars.length;
   const out = [];
@@ -2812,7 +2839,7 @@ function colorizeHebrew(text) {
     }
     i = j;
   }
-  return '<span lang="he">' + out.join('') + '</span>';
+  return '<span lang="he" dir="rtl">' + out.join('') + '</span>';
 }
 
 function toggleDictAudio(on) {
@@ -2878,7 +2905,7 @@ function initColorPickers() {
     applyColorExStyle(ex, getNikudColor(def.key));
     const lbl = document.createElement('span');
     lbl.style.cssText = 'flex:1;font-size:0.75rem;';
-    lbl.textContent = def.name;
+    lbl.textContent = glyphVowelName(def.name);
     const pick = document.createElement('input');
     pick.type = 'color';
     pick.id = `colorPick_${def.key}`;
@@ -2917,7 +2944,7 @@ function toggleDark() {
   document.documentElement.classList.remove('dark-early');
   try { localStorage.setItem('hebrewBlender_darkMode', dark ? '1' : '0'); } catch(e) {}
   const _db = document.getElementById('darkBtn');
-  _db.textContent = dark ? '☀️ Light' : '🌙 Dark';
+  _db.textContent = window.I18n ? I18n.t(dark ? 'shared.darkmode.label_light' : 'shared.darkmode.label_dark') : (dark ? '☀️ Light' : '🌙 Dark');
   _db.setAttribute('aria-pressed', dark ? 'true' : 'false');
   refreshDictVowelGroupColors();
   updateColorPickerValues();
@@ -3257,7 +3284,7 @@ function toggleEmojiMode(on) {
 function fetchEmojiData() {
   return fetchJsonWithProgress('data/hebrew_emojis.json?v=1', (pct) => {
     const rc = document.getElementById('resultCount');
-    if (rc) rc.textContent = (pct === null || pct === undefined) ? 'Loading emojis…' : 'Loading emojis… ' + pct + '%';
+    if (rc) rc.textContent = (pct === null || pct === undefined) ? I18n.t('dictionary.loading.emojis') : I18n.t('dictionary.loading.emojis_pct', { pct: pct });
   })
     .then(data => {
       EMOJI_DATA = data;
@@ -3273,7 +3300,7 @@ function fetchEmojiData() {
     })
     .catch(() => {
       const tree = document.getElementById('emojiCatTree');
-      if (tree) tree.innerHTML = '<div style="color:var(--muted);font-size:0.78rem;">Failed to load emoji data.</div>';
+      if (tree) tree.innerHTML = `<div style="color:var(--muted);font-size:0.78rem;">${esc(I18n.t('dictionary.loading.emoji_failed'))}</div>`;
     });
 }
 
@@ -3595,7 +3622,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.body.classList.add('dark');
       const _db = document.getElementById('darkBtn');
-      _db.textContent = '☀️ Light';
+      _db.textContent = (window.I18n ? I18n.t('shared.darkmode.label_light') : '☀️ Light');
       _db.setAttribute('aria-pressed', 'true');
     }
   } catch(e) {}
@@ -3638,7 +3665,67 @@ document.addEventListener('DOMContentLoaded', () => {
 
   _domReady = true;   // Section 1: DOM/UI built — restore may now proceed once words are ready too
   maybeBootstrap();
+  // i18n: register the live re-render here (inside DOMContentLoaded) so the deferred /js/i18n.js has
+  // executed and window.I18n exists — a top-level registration would run before i18n.js and be skipped.
+  if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
 });
+
+/* ===== i18n live-switch re-render ===== */
+// Update the vowel-filter chip labels in place (state-preserving — never rebuilds, so vowel
+// selections survive a language switch). The group headers/sub descriptors stay as-is.
+function relabelVowelFilter() {
+  const grid = document.getElementById('vowelFilterGrid');
+  if (!grid) return;
+  const btns = grid.previousElementSibling;
+  if (btns) { const bs = btns.querySelectorAll('button'); if (bs.length === 3) { bs[0].textContent = I18n.t('dictionary.filters.pos_all'); bs[1].textContent = I18n.t('dictionary.filters.vowel_main'); bs[2].textContent = I18n.t('dictionary.filters.pos_none'); } }
+  grid.querySelectorAll('.vowel-chip').forEach(chip => {
+    const inp = chip.querySelector('input'); if (!inp) return;
+    const v = VOWEL_DEFS.find(x => x.u === inp.dataset.u); if (!v) return;
+    const strong = chip.querySelector('strong'); if (strong) strong.textContent = glyphVowelName(v.label);
+  });
+}
+// Translate all static [data-i18n*] chrome, then rebuild the dynamic pieces that bake translated
+// strings at render time. Runs on I18n.ready (first load) and on every live language switch — no
+// reload, so all in-memory state (filters, selection, scroll, loaded list) is preserved.
+function applyI18n() {
+  if (!window.I18n) return;
+  I18n.applyStaticI18n();
+  const _db = document.getElementById('darkBtn');
+  if (_db) _db.textContent = I18n.t(document.body.classList.contains('dark') ? 'shared.darkmode.label_light' : 'shared.darkmode.label_dark');
+  initColorPickers();
+  relabelVowelFilter();
+  initPosFilters();
+  initFontSelector();
+  if (typeof window._updateMobileFiltersBtn === 'function') window._updateMobileFiltersBtn();
+  rebuildFilterChips();
+  // Re-render the active result view with translated strings, preserving the current mode/selection.
+  try {
+    if (typeof wlFilterOverride !== 'undefined' && wlFilterOverride) {
+      const grid = document.getElementById('resultsGrid');
+      if (grid) grid.innerHTML = '';
+      filtered = wlFilterOverride; shown = 0; loadMore();
+      const n = filtered.length;
+      const ct = n === 0 ? I18n.t('dictionary.results.no_words_in_list') : I18n.t(n === 1 ? 'dictionary.results.count_words.one' : 'dictionary.results.count_words.other', { count: n.toLocaleString() });
+      const rc = document.getElementById('resultCount'); if (rc) rc.textContent = ct;
+      const sc = document.getElementById('sidebarWordCount'); if (sc) sc.textContent = ct;
+    } else if (shoreshMode) {
+      if (lastShoreshRoot) renderShoreshFamily(lastShoreshRoot);
+      else document.getElementById('resultCount').textContent = I18n.t('dictionary.shoresh.enter_root_count');
+    } else {
+      onFilter();
+    }
+  } catch (e) {}
+  // Live-update the tour card if a tour is in progress.
+  if (_tourActive && _tourIdx >= 0) {
+    const step = TOUR_STEPS[_tourIdx];
+    if (step) {
+      document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey);
+      document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKey);
+      document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: _tourIdx + 1, total: TOUR_STEPS.length });
+      document.getElementById('tourNext').textContent = I18n.t((_tourIdx === TOUR_STEPS.length - 1) ? 'shared.tour.done' : 'shared.tour.next');
+    }
+  }
+}
 </script>
 
 <!--
@@ -3860,9 +3947,9 @@ function copyDictShareLink(btn) {
   const done = () => {
     if (!btn) return;
     const orig = btn.textContent;
-    btn.textContent = '✓ Copied!';
+    btn.textContent = I18n.t('dictionary.copy.copied_flash');
     btn.classList.add('copied');
-    announce('Link copied to clipboard');
+    announce(I18n.t('dictionary.copy.link_copied_toast'));
     setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
   };
   if (navigator.clipboard) { navigator.clipboard.writeText(url).then(done).catch(done); }
@@ -3928,31 +4015,31 @@ function computeActiveChips() {
   const chips = [];
   if (shoreshMode) return chips;
   const q = document.getElementById('searchInput').value.trim();
-  if (q) chips.push({ key: 'search', label: 'Search: "' + q + '"', panel: '.search-wrap' });
+  if (q) chips.push({ key: 'search', label: I18n.t('dictionary.chips.search', { query: q }), panel: '.search-wrap' });
 
   if (!emojiMode) {
     const lenAll = [...document.querySelectorAll('.lcb')], lenN = lenAll.filter(c => c.checked).length;
-    if (lenN !== lenAll.length) chips.push({ key: 'len', label: 'Length: ' + lenN + '/' + lenAll.length, panel: '#panelLength' });
+    if (lenN !== lenAll.length) chips.push({ key: 'len', label: I18n.t('dictionary.chips.length', { count: lenN, total: lenAll.length }), panel: '#panelLength' });
     const posAll = [...document.querySelectorAll('.pcb')], posN = posAll.filter(c => c.checked).length;
-    if (posN !== posAll.length) chips.push({ key: 'pos', label: 'POS: ' + posN + '/' + posAll.length, panel: '#panelPos' });
+    if (posN !== posAll.length) chips.push({ key: 'pos', label: I18n.t('dictionary.chips.pos', { count: posN, total: posAll.length }), panel: '#panelPos' });
     const bib = document.getElementById('eraBib').checked, mod = document.getElementById('eraMod').checked;
-    if (!bib || !mod) chips.push({ key: 'era', label: (!bib && !mod) ? 'Era: none' : (bib ? 'Era: Biblical only' : 'Era: Modern only'), panel: '#panelPos' });
-    if (vowelFilters.size !== VOWEL_DEFS.length) chips.push({ key: 'vowels', label: 'Vowels: ' + vowelFilters.size + '/' + VOWEL_DEFS.length, panel: '#panelVowel' });
-    if (hideNoVowels) chips.push({ key: 'noVowel', label: 'Hiding vowelless', panel: '#panelVowel' });
+    if (!bib || !mod) chips.push({ key: 'era', label: (!bib && !mod) ? I18n.t('dictionary.chips.era_none') : (bib ? I18n.t('dictionary.chips.era_biblical_only') : I18n.t('dictionary.chips.era_modern_only')), panel: '#panelPos' });
+    if (vowelFilters.size !== VOWEL_DEFS.length) chips.push({ key: 'vowels', label: I18n.t('dictionary.chips.vowels', { count: vowelFilters.size, total: VOWEL_DEFS.length }), panel: '#panelVowel' });
+    if (hideNoVowels) chips.push({ key: 'noVowel', label: I18n.t('dictionary.chips.hiding_vowelless'), panel: '#panelVowel' });
     const ord = ['1st', '2nd', '3rd', '4th', '5th', '6th'];
-    for (let i = 0; i < 6; i++) if (posFilters[i].size) chips.push({ key: 'pos' + i, label: ord[i] + ' letter: ' + [...posFilters[i]].join(' '), panel: '#panelLetter' });
-    if (anyLetterFilter.size) chips.push({ key: 'any', label: 'Any: ' + [...anyLetterFilter].join(' ') + (anyLetterOnly ? ' (only)' : ''), panel: '#panelLetter' });
+    for (let i = 0; i < 6; i++) if (posFilters[i].size) chips.push({ key: 'pos' + i, label: I18n.t('dictionary.chips.position_letters', { ordinal: I18n.t('dictionary.ordinal_' + ord[i]), letters: [...posFilters[i]].join(' ') }), panel: '#panelLetter' });
+    if (anyLetterFilter.size) chips.push({ key: 'any', label: I18n.t('dictionary.chips.any_letters', { letters: [...anyLetterFilter].join(' ') }) + (anyLetterOnly ? ' ' + I18n.t('dictionary.chips.any_only_suffix') : ''), panel: '#panelLetter' });
     const gt = document.getElementById('gematriaFilterType');
     if (gt && gt.value !== 'none') {
       const v1 = document.getElementById('gematriaVal1').value, v2 = document.getElementById('gematriaVal2').value;
       const op = { exact: '=', gte: '≥', lte: '≤', range: '∈' }[gt.value] || '';
-      chips.push({ key: 'gem', label: 'Gematria ' + op + ' ' + (gt.value === 'range' ? (v1 + '–' + v2) : v1), panel: '#gematriaAdvSec' });
+      chips.push({ key: 'gem', label: I18n.t('dictionary.chips.gematria', { op: op, value: (gt.value === 'range' ? (v1 + '–' + v2) : v1) }), panel: '#gematriaAdvSec' });
     }
   } else {
-    if (emojiGender !== 'all') chips.push({ key: 'egender', label: emojiGender === 'masc' ? '♂ Masc only' : '♀ Fem only', panel: '#panelLength' });
+    if (emojiGender !== 'all') chips.push({ key: 'egender', label: emojiGender === 'masc' ? I18n.t('dictionary.chips.emoji_masc_only') : I18n.t('dictionary.chips.emoji_fem_only'), panel: '#panelLength' });
     if (EMOJI_DATA && emojiSelectedSubs) {
       let total = 0; EMOJI_DATA.categories.forEach(c => total += c.subcategories.length);
-      if (emojiSelectedSubs.size !== total) chips.push({ key: 'ecats', label: 'Categories: ' + emojiSelectedSubs.size + '/' + total, panel: '#emojiCatTree' });
+      if (emojiSelectedSubs.size !== total) chips.push({ key: 'ecats', label: I18n.t('dictionary.chips.categories', { count: emojiSelectedSubs.size, total: total }), panel: '#emojiCatTree' });
     }
   }
   return chips;
@@ -3969,17 +4056,17 @@ function rebuildFilterChips() {
     const chip = document.createElement('span');
     chip.className = 'fchip';
     const body = document.createElement('button');
-    body.type = 'button'; body.className = 'fchip-body'; body.dataset.chip = c.key; body.dataset.panel = c.panel || '';
-    body.textContent = c.label; body.setAttribute('aria-label', c.label + ' — show filter');
+    body.type = 'button'; body.className = 'fchip-body bidi-isolate'; body.dataset.chip = c.key; body.dataset.panel = c.panel || '';
+    body.textContent = c.label; body.setAttribute('aria-label', I18n.t('dictionary.chips.body_aria', { label: c.label }));
     const x = document.createElement('button');
     x.type = 'button'; x.className = 'fchip-x'; x.dataset.reset = c.key; x.textContent = '✕';
-    x.setAttribute('aria-label', 'Remove ' + c.label + ' filter');
+    x.setAttribute('aria-label', I18n.t('dictionary.chips.remove_aria', { label: c.label }));
     chip.appendChild(body); chip.appendChild(x);
     box.appendChild(chip);
   });
   const ra = document.createElement('button');
-  ra.type = 'button'; ra.className = 'fchip-reset'; ra.dataset.chip = 'resetAll'; ra.textContent = 'Reset all ✕';
-  ra.setAttribute('aria-label', 'Reset all filters');
+  ra.type = 'button'; ra.className = 'fchip-reset'; ra.dataset.chip = 'resetAll'; ra.textContent = I18n.t('dictionary.chips.reset_all');
+  ra.setAttribute('aria-label', I18n.t('dictionary.chips.reset_all_aria'));
   box.appendChild(ra);
 }
 
@@ -4030,15 +4117,15 @@ function renderDictEmptyState(isEmoji) {
   wrap.className = 'empty';
   const big = document.createElement('div'); big.className = 'big'; big.textContent = '🔍'; wrap.appendChild(big);
   const msg = document.createElement('div');
-  msg.textContent = isEmoji ? 'No emojis match these filters' : 'No words match these filters';
+  msg.textContent = isEmoji ? I18n.t('dictionary.empty.no_emojis_match') : I18n.t('dictionary.empty.no_words_match');
   wrap.appendChild(msg);
   const actions = document.createElement('div'); actions.className = 'empty-actions';
   if (q) {
-    const b = document.createElement('button'); b.className = 'empty-btn'; b.textContent = 'Clear search';
+    const b = document.createElement('button'); b.className = 'empty-btn'; b.textContent = I18n.t('dictionary.empty.clear_search');
     b.addEventListener('click', () => { document.getElementById('searchInput').value = ''; onFilter(); });
     actions.appendChild(b);
   }
-  const r = document.createElement('button'); r.className = 'empty-btn'; r.textContent = 'Reset all filters';
+  const r = document.createElement('button'); r.className = 'empty-btn'; r.textContent = I18n.t('dictionary.empty.reset_all');
   r.addEventListener('click', resetDictFilters);
   actions.appendChild(r);
   wrap.appendChild(actions);
@@ -4084,13 +4171,13 @@ function closeWordModal() {
   _modalOpener = null;
 }
 function _wmCopyFlash(btn, text, label) {
-  const done = () => { btn.textContent = '✓ Copied!'; btn.classList.add('copied'); announce('Copied to clipboard'); setTimeout(() => { btn.textContent = label; btn.classList.remove('copied'); }, 1400); };
+  const done = () => { btn.textContent = '✓ Copied!'; btn.classList.add('copied'); announce(I18n.t('dictionary.copy.copied_toast')); setTimeout(() => { btn.textContent = label; btn.classList.remove('copied'); }, 1400); };
   if (navigator.clipboard) navigator.clipboard.writeText(text).then(done).catch(done);
   else { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(ta); done(); }
 }
 function _wmBadge(cls, text) { const s = document.createElement('span'); s.className = 'badge ' + cls; s.textContent = text; return s; }
 function _wmCopyButtons(container, textFor) {
-  [['word', 'Copy word'], ['definition', 'Copy word — definition'], ['transdef', 'Copy word — translit — definition'], ['defonly', 'Copy definition'], ['allinfo', 'Copy all info']]
+  [['word', I18n.t('dictionary.modal.copy_word')], ['definition', I18n.t('dictionary.modal.copy_word_def')], ['transdef', I18n.t('dictionary.modal.copy_word_transdef')], ['defonly', I18n.t('dictionary.modal.copy_def')], ['allinfo', I18n.t('dictionary.modal.copy_allinfo')]]
     .forEach(([m, label]) => {
       const b = document.createElement('button');
       b.className = 'wm-act'; b.textContent = label;
@@ -4102,7 +4189,7 @@ function _wmCopyButtons(container, textFor) {
 function openWordModal(w) {
   const b = document.createElement('div');
   const ec = w.era === 'Biblical' ? 'b-bib' : w.era === 'Modern' ? 'b-mod' : 'b-both';
-  const el = w.era === 'Both' ? 'Bib + Mod' : w.era;
+  const el = w.era === 'Both' ? I18n.t('dictionary.modal.era_bib_mod') : w.era === 'Biblical' ? I18n.t('dictionary.filters.era_biblical') : w.era === 'Modern' ? I18n.t('dictionary.filters.era_modern') : w.era;
 
   const big = document.createElement('div'); big.className = 'wm-heb'; big.id = 'wmTitle'; big.innerHTML = colorizeHebrew(w.word); b.appendChild(big);
   const trStr = translitDisplayOf(w);
@@ -4117,10 +4204,10 @@ function openWordModal(w) {
   b.appendChild(badges);
 
   const actions = document.createElement('div'); actions.className = 'wm-actions';
-  const spk = document.createElement('button'); spk.className = 'wm-act'; spk.textContent = '🔊 Pronounce'; spk.addEventListener('click', () => speakWord(w.word)); actions.appendChild(spk);
+  const spk = document.createElement('button'); spk.className = 'wm-act'; spk.textContent = I18n.t('dictionary.modal.pronounce'); spk.addEventListener('click', () => speakWord(w.word)); actions.appendChild(spk);
   _wmCopyButtons(actions, m => computeCopyText(w, m));
   const bulkBtn = document.createElement('button'); bulkBtn.className = 'wm-act';
-  bulkBtn.textContent = bulkSelected.has(w.word) ? '✓ In bulk list' : '➕ Add to bulk list';
+  bulkBtn.textContent = bulkSelected.has(w.word) ? I18n.t('dictionary.modal.in_bulk_list') : I18n.t('dictionary.modal.add_to_bulk');
   bulkBtn.addEventListener('click', () => toggleWordBulk(w, bulkBtn));
   actions.appendChild(bulkBtn);
   b.appendChild(actions);
@@ -4129,13 +4216,13 @@ function openWordModal(w) {
   if (rc && rc.length >= 2) {
     const row = document.createElement('div'); row.className = 'wm-root-row';
     const rb = document.createElement('button'); rb.className = 'wm-root-btn';
-    rb.textContent = 'Words from this root  ' + [...rc].join('־') + '  →';
+    rb.textContent = I18n.t('dictionary.modal.words_from_root', { root: [...rc].join('־') });
     rb.addEventListener('click', () => { closeWordModal(); setDictMode('shoresh'); runShoreshLookup(rc); });
     row.appendChild(rb); b.appendChild(row);
   }
 
   const footer = document.createElement('div'); footer.className = 'wm-footer';
-  const g = document.createElement('a'); g.className = 'wm-google'; g.href = 'https://www.google.com/search?q=' + encodeURIComponent(w.word); g.target = '_blank'; g.rel = 'noopener'; g.textContent = 'Look up on Google ↗';
+  const g = document.createElement('a'); g.className = 'wm-google'; g.href = 'https://www.google.com/search?q=' + encodeURIComponent(w.word); g.target = '_blank'; g.rel = 'noopener'; g.textContent = I18n.t('dictionary.modal.google');
   footer.appendChild(g); b.appendChild(footer);
 
   _openWordModal(b);
@@ -4149,7 +4236,7 @@ function toggleWordBulk(w, btn) {
   document.querySelectorAll('.word-card').forEach(c => {
     if (c.dataset.shword === w.word) { const cb = c.querySelector('.wc-bulk-cb'); if (cb) cb.checked = bulkSelected.has(w.word); c.classList.toggle('bulk-selected', bulkSelected.has(w.word)); }
   });
-  if (btn) btn.textContent = bulkSelected.has(w.word) ? '✓ In bulk list' : '➕ Add to bulk list';
+  if (btn) btn.textContent = bulkSelected.has(w.word) ? I18n.t('dictionary.modal.in_bulk_list') : I18n.t('dictionary.modal.add_to_bulk');
 }
 
 function openEmojiModal(e) {
@@ -4158,12 +4245,12 @@ function openEmojiModal(e) {
   const eng = document.createElement('div'); eng.className = 'wm-transl'; eng.textContent = e.english; b.appendChild(eng);
 
   const forms = document.createElement('div'); forms.className = 'wm-emoji-forms';
-  [['♂ Masculine', e.hebrew_masculine, e.translit_masculine], ['♀ Feminine', e.hebrew_feminine, e.translit_feminine]].forEach(([lbl, heb, tr]) => {
+  [[I18n.t('dictionary.modal.form_masculine'), e.hebrew_masculine, e.translit_masculine], [I18n.t('dictionary.modal.form_feminine'), e.hebrew_feminine, e.translit_feminine]].forEach(([lbl, heb, tr]) => {
     if (!heb) return;
     const row = document.createElement('div'); row.className = 'wm-form';
     const l = document.createElement('span'); l.className = 'wm-form-label'; l.textContent = lbl; row.appendChild(l);
     const h = document.createElement('span'); h.className = 'wm-heb-sm'; h.innerHTML = colorizeHebrew(heb); row.appendChild(h);
-    const sp = document.createElement('button'); sp.className = 'wm-mini'; sp.setAttribute('aria-label', 'Hear ' + lbl); sp.textContent = '🔊'; sp.addEventListener('click', () => speakWord(heb)); row.appendChild(sp);
+    const sp = document.createElement('button'); sp.className = 'wm-mini'; sp.setAttribute('aria-label', I18n.t('dictionary.modal.hear_form_aria', { label: lbl })); sp.textContent = '🔊'; sp.addEventListener('click', () => speakWord(heb)); row.appendChild(sp);
     if (tr) { const t = document.createElement('span'); t.className = 'wm-form-tr'; t.textContent = tr; row.appendChild(t); }
     forms.appendChild(row);
   });
@@ -4175,11 +4262,11 @@ function openEmojiModal(e) {
   b.appendChild(badges);
 
   const actions = document.createElement('div'); actions.className = 'wm-actions';
-  [['word', 'Copy Hebrew'], ['definition', 'Copy Hebrew — English'], ['transdef', 'Copy Hebrew — translit — English'], ['defonly', 'Copy English'], ['allinfo', 'Copy all info']]
+  [['word', I18n.t('dictionary.modal.copy_hebrew')], ['definition', I18n.t('dictionary.modal.copy_hebrew_english')], ['transdef', I18n.t('dictionary.modal.copy_hebrew_transdef')], ['defonly', I18n.t('dictionary.modal.copy_english')], ['allinfo', I18n.t('dictionary.modal.copy_allinfo')]]
     .forEach(([m, label]) => { const btn = document.createElement('button'); btn.className = 'wm-act'; btn.textContent = label; btn.addEventListener('click', () => _wmCopyFlash(btn, computeEmojiCopyText(e, m), label)); actions.appendChild(btn); });
   const key = emojiKey(e);
   const bulkBtn = document.createElement('button'); bulkBtn.className = 'wm-act';
-  bulkBtn.textContent = bulkSelected.has(key) ? '✓ In bulk list' : '➕ Add to bulk list';
+  bulkBtn.textContent = bulkSelected.has(key) ? I18n.t('dictionary.modal.in_bulk_list') : I18n.t('dictionary.modal.add_to_bulk');
   bulkBtn.addEventListener('click', () => toggleEmojiBulk(e, bulkBtn));
   actions.appendChild(bulkBtn);
   b.appendChild(actions);
@@ -4193,7 +4280,7 @@ function toggleEmojiBulk(e, btn) {
   if (bulkSelected.has(key)) bulkSelected.delete(key);
   else bulkSelected.set(key, { e, text: emojiBulkText(e) });
   updateBulkTextarea();
-  if (btn) btn.textContent = bulkSelected.has(key) ? '✓ In bulk list' : '➕ Add to bulk list';
+  if (btn) btn.textContent = bulkSelected.has(key) ? I18n.t('dictionary.modal.in_bulk_list') : I18n.t('dictionary.modal.add_to_bulk');
   rerender();
 }
 
@@ -4272,7 +4359,7 @@ function dictActiveGroupCount() {
   function updateMobileFiltersBtn() {
     if (!filtersBtn) return;
     const n = dictActiveGroupCount();
-    filtersBtn.textContent = '⚙ Filters' + (n ? ' (' + n + ')' : '');
+    filtersBtn.textContent = I18n.t('dictionary.filters.mobile_button') + (n ? ' (' + n + ')' : '');
   }
   window._updateMobileFiltersBtn = updateMobileFiltersBtn;
   const onChange = e => (e.matches ? enterMobile() : exitMobile());
@@ -4340,32 +4427,32 @@ function _tourExpandPanel(id) {
 const TOUR_STEPS = [
   { target: () => document.getElementById('searchInput'),
     reveal: () => _tourOpenSidebar(),
-    title: 'Search',
-    body: 'Type Hebrew (with or without nikkud), transliteration, or English to find any word.' },
+    titleKey: 'dictionary.tour.search_title',
+    bodyKey: 'dictionary.tour.search_body' },
   { target: () => document.getElementById('modeSwitcher'),
     reveal: () => _tourOpenSidebar(),
-    title: 'Three tools in one',
-    body: 'Switch between the word dictionary, an emoji picture-vocabulary deck, and the Shoresh root explorer.' },
+    titleKey: 'dictionary.tour.tools_title',
+    bodyKey: 'dictionary.tour.tools_body' },
   { target: () => document.getElementById('panelLength'),
     reveal: () => { _tourOpenSidebar(); _tourExpandPanel('panelLength'); },
-    title: 'Filters',
-    body: 'Narrow by length, part of speech, era, vowels — even specific letters in specific positions.' },
+    titleKey: 'dictionary.tour.filters_title',
+    bodyKey: 'dictionary.tour.filters_body' },
   { target: () => { const c = document.getElementById('filterChips'); return _tourVisible(c) ? c : document.querySelector('.toolbar'); },
     reveal: () => _tourOpenSidebar(),
-    title: 'Active filters',
-    body: 'Everything you have turned on shows here as chips — tap ✕ to remove one, or reset them all.' },
+    titleKey: 'dictionary.tour.chips_title',
+    bodyKey: 'dictionary.tour.chips_body' },
   { target: () => document.querySelector('#resultsGrid .word-card, #resultsGrid .emoji-card'),
     reveal: () => _tourOpenSidebar(),
-    title: 'Word cards',
-    body: 'Tap any word for full details, pronunciation, copy options, and its root family.' },
+    titleKey: 'dictionary.tour.cards_title',
+    bodyKey: 'dictionary.tour.cards_body' },
   { target: () => document.getElementById('copyOptsSec'),
     reveal: () => { _tourOpenSidebar(); _tourExpandPanel('panelAdvanced'); _tourExpandPanel('copyOptsSec'); },
-    title: 'Bulk Copy & Export',
-    body: 'Select a batch of words and export straight to Anki or Quizlet — or into the Worksheet Generator.' },
+    titleKey: 'dictionary.tour.export_title',
+    bodyKey: 'dictionary.tour.export_body' },
   { target: () => document.getElementById('dictShareBtn'),
     reveal: () => _tourOpenSidebar(),
-    title: 'Share this view',
-    body: 'Copy a link to exactly this filtered view and post it for your class.' },
+    titleKey: 'dictionary.tour.share_title',
+    bodyKey: 'dictionary.tour.share_body' },
 ];
 
 let _tourIdx = -1, _tourActive = false, _tourOpener = null, _tourUncollapsed = new Set(), _tourRepoTimer = null;
@@ -4396,11 +4483,11 @@ function _tourShow(idx, dir) {
   _tourIdx = idx;
   const step = TOUR_STEPS[idx], el = step.target();
   try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {}
-  document.getElementById('tourCardTitle').textContent = step.title;
-  document.getElementById('tourCardBody').textContent = step.body;
-  document.getElementById('tourStep').textContent = 'Step ' + (idx + 1) + ' of ' + TOUR_STEPS.length;
+  document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey);
+  document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKey);
+  document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: idx + 1, total: TOUR_STEPS.length });
   document.getElementById('tourBack').disabled = (idx === 0);
-  document.getElementById('tourNext').textContent = (idx === TOUR_STEPS.length - 1) ? 'Done' : 'Next';
+  document.getElementById('tourNext').textContent = I18n.t((idx === TOUR_STEPS.length - 1) ? 'shared.tour.done' : 'shared.tour.next');
   _tourReposition();
   if (_tourRepoTimer) clearTimeout(_tourRepoTimer);
   _tourRepoTimer = setTimeout(_tourReposition, 350);
