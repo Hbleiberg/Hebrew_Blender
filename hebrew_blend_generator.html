@@ -1405,12 +1405,11 @@
 
   /* ── RW COLLAPSIBLE SECTIONS ── */
   .rw-section { border-top: 1px solid var(--border); padding-top: 6px; }
-  /* Readable gold for small text on light surfaces (brand --gold is 2.6:1 on white;
-     #7f5a13 measures 6.2:1 — same literal as the trope tutor's --gold-text). Dark's
-     brighter --gold already passes (~8:1). Underline: a link in prose needs a
-     non-color cue. */
-  #rwListEmptyState a { color:#7f5a13; text-decoration:underline; }
-  body.dark #rwListEmptyState a { color:var(--gold); }
+  /* Readable gold for small text on light surfaces via the shared --gold-text token
+     (light #7f5a13 = 6.2:1 on white; dark resolves to the brighter --gold, ~8:1).
+     Underline: a link in prose needs a non-color cue. (S71 Pass F: token-ized to
+     converge with flash_cards #wordsEmptyState a on one token.) */
+  #rwListEmptyState a { color:var(--gold-text); text-decoration:underline; }
   .rw-section-header {
     display: flex; align-items: center; gap: 5px;
     font-size: 0.7rem; color: var(--muted); font-weight: 600;

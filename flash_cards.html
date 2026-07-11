@@ -1081,6 +1081,7 @@ body.dark .results-hero .pct { color: var(--gold-light); }
 body.dark .sub { color: #99a2b8; }
 .warn { color: var(--bad); font-size: 0.88rem; padding: 8px; background: var(--bad-soft); border-radius: 8px; border: 1px solid var(--bad); }
 .hide { display: none !important; }
+#wordsEmptyState a { color: var(--gold-text); text-decoration: underline; }   /* WCAG-readable gold on light (S71 Pass F — matches generator #rwListEmptyState a) */
 .btn-xs { font-size: 0.72rem; padding: 3px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--white); cursor: pointer; font-family: inherit; color: var(--ink); transition: background 0.15s; }
 .btn-xs:hover { background: var(--paper); }
 /* ===== Session stats bar (card screen) ===== */
@@ -1376,7 +1377,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <div id="wordsMyListsOpts">
             <div id="wordsListPicker" style="font-size:0.82rem;margin-bottom:8px;"></div>
             <div id="wordsEmptyState" class="hide" style="font-size:0.82rem;color:var(--muted);background:var(--white);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:8px;line-height:1.5;">
-              No word lists yet. <a href="hebrew_dictionary.html" style="color:var(--gold);">Create word lists in the Dictionary</a>, then come back to drill them here.
+              No word lists yet. <a href="hebrew_dictionary.html">Create word lists in the Dictionary</a>, then come back to drill them here.
             </div>
           </div>
           <div id="wordsAllDictOpts" class="hide">
