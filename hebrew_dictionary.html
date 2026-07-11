@@ -1160,6 +1160,7 @@ let showGematria = false;
 let bulkMode = false;
 let shoreshMode = false;
 let lastShoreshRoot = '';
+let shoreshFam = [];   // the currently-rendered root family (so "Select all matching" selects it, not the stale Words-mode `filtered`)
 let ROOT_INDEX = null;
 let _applyingDictState = false;  // guard: suppresses onFilter storms while applyDictState() sets controls (Section 1)
 
@@ -1312,6 +1313,10 @@ function selectAllOnPage() {
 function selectAllMatching() {
   if (emojiMode) {
     emojiFiltered.forEach(e => bulkSelected.set(emojiKey(e), {e, text: emojiBulkText(e)}));
+  } else if (shoreshMode) {
+    // Shoresh mode has its own result set; onFilter() early-returns without recomputing `filtered`,
+    // so selecting from `filtered` here would grab the stale Words-mode results (wrong words saved).
+    shoreshFam.forEach(w => bulkSelected.set(w.word, {w, text: wordBulkText(w)}));
   } else {
     filtered.forEach(w => bulkSelected.set(w.word, {w, text: wordBulkText(w)}));
   }
@@ -2543,6 +2548,7 @@ function renderShoreshFamily(root) {
     return bestRootKeeps(wc, root, cost);              // drop if another known root fits better
   });
 
+  shoreshFam = fam;   // remember this family so selectAllMatching() picks it, not the stale Words-mode `filtered`
   renderShoreshGroups(fam);
   renderShoreshPatterns(rootCons, fam);
 }
