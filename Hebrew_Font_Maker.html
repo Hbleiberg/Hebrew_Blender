@@ -2404,7 +2404,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.15';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.16';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2616,6 +2616,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.16</strong> — <strong>Nikkud & trop editing controls moved beside the canvas.</strong> When you edit a vowel point or cantillation mark, its controls — the Simple editor / Upload image switch, the + Dot / + Bar buttons, the dot-size slider, and the shape toggle — now sit in the left panel next to the drawing area, instead of in a strip below it. That's the same spot the letter tools already use, so editing feels consistent, and it makes use of space that used to sit empty. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.15</strong> — <strong>Glyph-editor warnings match the rest of the app.</strong> A few notices in the custom-glyph editor — an invalid code point, a code point that's already taken, or converting a mark that has no shape yet — used a plain browser pop-up instead of the tool's own in-app dialog. They now use the same styled dialog as every other message, so the experience is consistent throughout. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.14</strong> — <strong>Auto-detect review boxes now appear in Firefox.</strong> The real culprit, finally pinned down: Firefox was hiding the entire box-overlay layer (it computed the interactive overlay group as <span class="ui">display:none</span>, unlike other browsers), so the detected-letter outlines and labels never showed even though the scanned sheet did. Forcing the overlay to display fixes it — the boxes now render in Firefox exactly as they do everywhere else. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.12</strong> — <strong>Auto-detect review boxes render reliably in Firefox.</strong> Following up on v4.11: the detected-letter outlines are now drawn as vector <em>paths</em> rather than rectangles, sidestepping a Firefox quirk that collapsed the rectangle outlines to zero size — so the boxes appear over the scanned sheet as intended, in every browser. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -9273,7 +9274,7 @@ function renderControls() {
   L.classList.toggle('npnl-host', nodeChromeOn());   // scopes the node-mode Letter Metrics header restyle (off matters — #ctlLeft persists)
   if (!project) return;
   const l = curLetter();
-  if (curKind !== 'letter') { renderMarkControls(U, l); return; }   // mark editor keeps its single-panel UI → Under
+  if (curKind !== 'letter') { renderMarkControls(L, l); return; }   // mark editor → left column (beside the stage)
   if (workMode === 'align') { renderAlignLeft(L, l); renderAlignRight(R, l); renderAlignUnder(U, l); }
   else if (workMode === 'trace') { renderTraceLeft(L, l); renderTraceRight(R, l); renderTraceUnder(U, l); }
   else if (workMode === 'nodes') { renderNodeLeft(L, l); renderTraceRight(R, l); renderTraceUnder(U, l); }
