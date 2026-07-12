@@ -1135,6 +1135,7 @@ fontmaker.about.footer_about_body,"A free, experimental IvritSuite tool. Builds 
 fontmaker.about.footer_about_heading,About,,footer section heading,
 fontmaker.about.footer_desktop_note,Desktop browser recommended.,,footer note,
 fontmaker.about.special_thanks,"Special Thanks. Thank you to my colleagues at the Davis Academy for supporting the development of this program; to JEDLAB for being a supportive community of Jewish educators who are always willing to collaborate and share resources; to Logan Mendelsohn for his technical help, encouragement, and friendship; and to Baruch Sienna for his extensive beta testing, suggestions, and encouragement. 💛 And a very special thank you to my wife, Emily, for letting me endlessly rant about kerning, Bézier curves, and software licenses.",,about tab body,help prose
+fontmaker.about.app_title,Hebrew Font Maker,,header h1 app title,
 fontmaker.about.tagline,"Make your own free Hebrew font — turn your handwriting into a real, installable font with nikkud, right in your browser.",,header subtitle,
 fontmaker.ad.close,Close,,picker button,
 fontmaker.ad.matched,Matched: {label} template layout (page {page} of {pages}),,auto-detect summary fragment,

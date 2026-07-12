@@ -1124,6 +1124,7 @@
   "flashcards.words.pool_count.one": "מילה אחת במאגר",
   "flashcards.words.pool_count.other": "{count} מילים במאגר",
   "fontmaker.about.about_intro": "About Hebrew Font Maker. Version {version}. Developed by Harrison Bleiberg.",
+  "fontmaker.about.app_title": "Hebrew Font Maker",
   "fontmaker.about.beta_tag": "Beta",
   "fontmaker.about.changelog_heading": "Changelog",
   "fontmaker.about.faq_a_commercial": "That depends on the license you pick when you export. CC0 places the font in the public domain — free for any use, including commercial, with no attribution required. OFL and MIT are also free for commercial use under their terms. All Rights Reserved keeps the font yours to license as you wish. You own what you create; IvritSuite claims no rights to your fonts.",
