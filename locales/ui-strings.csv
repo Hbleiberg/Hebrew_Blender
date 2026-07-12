@@ -3294,7 +3294,7 @@ worksheet.glyphname.vet,Vet,,letter tile name,glyph-name
 worksheet.glyphname.yud,Yud,,letter tile name,glyph-name
 worksheet.glyphname.zayin,Zayin,,letter tile name,glyph-name
 worksheet.header_sub,"Free printable Hebrew worksheets, bingo cards, and decoding drills for Hebrew reading practice with nikkud.",,header subtitle,
-worksheet.home_link,← Home,,header nav button,leading-emoji
+worksheet.home_link,Home,,header nav button,arrow supplied separately by a .dir-arrow span
 worksheet.howto.step1,"Pick a practice type (1, 2, or 3 letters).",,footer how-to step,
 worksheet.howto.step2,Select the Hebrew letters to include.,,footer how-to step,
 worksheet.howto.step3,Select the nikkud (vowels) to include.,,footer how-to step,
@@ -3650,3 +3650,14 @@ flashcards.count.custom_aria,Custom card count ({min} to {max}),מספר כרט�
 flashcards.profile.saved_count,{count} saved,{count} שמורים,Sub-label on each profile row (saved-results count),has {count}
 flashcards.profile.active_marker,★ ,★ ,Prefix marking the active profile row,symbol only
 flashcards.teachertools.play_button,▶ Play,▶ נגן,Play button on a saved preset row (loads + starts the drill),
+worksheet.actions.pdf_generating,⏳ Generating...,,PDF export button (busy state),leading-emoji
+worksheet.actions.regen_title,New random draw with the same settings,,Regenerate button title (enabled),
+worksheet.empty.not_enough_blends,Not enough blends to match.,,worksheet empty state,print-adjacent empty state
+worksheet.empty.number_range_small_body,"A {gridSize}×{gridSize} card needs at least {needed} unique numbers, but the range {min}–{max} only has {range}. Widen the range or pick a smaller grid.",,worksheet empty state,print-adjacent empty state; {gridSize}/{needed}/{min}/{max}/{range} numeric
+worksheet.empty.number_range_small_title,Number range too small for bingo.,,worksheet empty state,print-adjacent empty state
+worksheet.empty.number_ready,Click Generate to create a Number Practice sheet.,,worksheet empty state,print-adjacent empty state
+worksheet.empty.pick_two_letters_vowel,Pick at least two letters and a vowel so there are blends to match.,,worksheet empty state,print-adjacent empty state
+worksheet.selfcheck.subtitle_answer,Tap each card to reveal the answer.,,self-check subtitle fallback,
+worksheet.selfcheck.subtitle_ntl,Tap each card to reveal the letter’s name.,,self-check subtitle fallback,
+worksheet.selfcheck.subtitle_ntl_inverse,Tap each card to reveal the Hebrew letter.,,self-check subtitle fallback,
+worksheet.selfcheck.subtitle_pronunciation,Tap each card to reveal the pronunciation.,,self-check subtitle fallback,
