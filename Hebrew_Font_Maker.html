@@ -2717,33 +2717,33 @@ document.addEventListener('keydown', e => {
    can float over the live app without trapping focus. */
 const TOUR_STEPS = [
   { target: () => document.getElementById('letterGrid'),
-    title: 'Your letters',
-    body: 'Every Hebrew letter lives here. The little dot on each tile shows its status.' },
+    titleKey: 'fontmaker.tour.step_1_title',
+    bodyKey: 'fontmaker.tour.step_1_body' },
   { target: () => {
       const drop = document.getElementById('letterDrop');
       return (drop && drop.offsetParent !== null) ? drop : document.getElementById('tabAlign');
     },
-    title: 'Step 1 — Align',
-    body: 'Upload a photo of a letter (or one sheet of all of them) and line it up on the canvas.' },
+    titleKey: 'fontmaker.tour.step_2_title',
+    bodyKey: 'fontmaker.tour.step_2_body' },
   { target: () => document.getElementById('tabTrace'),
-    title: 'Step 2 — Trace',
-    body: 'Tracing turns your picture into a real font outline. You can fine-tune every point.' },
+    titleKey: 'fontmaker.tour.step_3_title',
+    bodyKey: 'fontmaker.tour.step_3_body' },
   { target: () => document.getElementById('tabAnchors'),
-    title: 'Step 3 — Place Nikkud',
-    body: 'Show each vowel where to sit under (or above) your letter.' },
+    titleKey: 'fontmaker.tour.step_4_title',
+    bodyKey: 'fontmaker.tour.step_4_body' },
   { target: () => document.querySelector('[data-cat="spacing"]'),
     reveal: () => {
       const p = document.querySelector('[data-cat="spacing"]');
       if (p && p.classList.contains('collapsed')) { p.classList.remove('collapsed'); _tourUncollapsed = p; }
     },
-    title: 'Spacing preview',
-    body: 'Type any Hebrew here to watch your font come to life as you go.' },
+    titleKey: 'fontmaker.tour.step_5_title',
+    bodyKey: 'fontmaker.tour.step_5_body' },
   { target: () => document.querySelector('button[onclick="openQA()"]'),
-    title: 'QA Check',
-    body: 'Before exporting, this scans every letter × vowel combination for collisions.' },
+    titleKey: 'fontmaker.tour.step_6_title',
+    bodyKey: 'fontmaker.tour.step_6_body' },
   { target: () => document.getElementById('exportBtn'),
-    title: 'Export your font',
-    body: "When you're ready, download a real installable font — TTF, WOFF2, or UFO." },
+    titleKey: 'fontmaker.tour.step_7_title',
+    bodyKey: 'fontmaker.tour.step_7_body' },
 ];
 
 let _tourIdx = -1, _tourActive = false, _tourOpener = null, _tourUncollapsed = null, _tourRepoTimer = null;
@@ -2776,11 +2776,11 @@ function _tourShow(idx, dir) {
   _tourIdx = idx;
   const step = TOUR_STEPS[idx], el = step.target();
   try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {}
-  document.getElementById('tourCardTitle').textContent = step.title;
-  document.getElementById('tourCardBody').textContent = step.body;
-  document.getElementById('tourStep').textContent = 'Step ' + (idx + 1) + ' of ' + TOUR_STEPS.length;
+  document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey);
+  document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKey);
+  document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: idx + 1, total: TOUR_STEPS.length });
   document.getElementById('tourBack').disabled = (idx === 0);
-  document.getElementById('tourNext').textContent = (idx === TOUR_STEPS.length - 1) ? 'Done' : 'Next';
+  document.getElementById('tourNext').textContent = I18n.t((idx === TOUR_STEPS.length - 1) ? 'shared.tour.done' : 'shared.tour.next');
   _tourReposition();
   if (_tourRepoTimer) clearTimeout(_tourRepoTimer);
   _tourRepoTimer = setTimeout(_tourReposition, 350);   // re-measure after scroll settles
