@@ -2230,6 +2230,8 @@ fontmaker.status.import_turn_on_trop,Turn on Trop to use its cantillation marks.
 fontmaker.status.imported_svg,Imported SVG for {name}.,יובא SVG עבור {name}.,toast,
 fontmaker.status.importing_font,Importing font…,מייבא גופן…,toast,
 fontmaker.status.installing_fonttools,Installing fontTools…,מתקין fontTools…,toast,
+fontmaker.status.pyo_downloading,Downloading engine…,מוריד מנוע…,export button engine phase,
+fontmaker.status.pyo_preparing,Preparing engine…,מכין מנוע…,export button engine phase,
 fontmaker.status.kept_points.one,Kept {count} point — a contour needs at least 3. Use Delete contour (Shift+Delete) to remove the whole contour.,נשמרה {count} נקודה — קו מתאר צריך לפחות 3. השתמשו במחק קו מתאר (Shift+Delete) כדי להסיר את כל הקו.,toast,plural
 fontmaker.status.kept_points.other,Kept {count} points — a contour needs at least 3. Use Delete contour (Shift+Delete) to remove the whole contour.,נשמרו {count} נקודות — קו מתאר צריך לפחות 3. השתמשו במחק קו מתאר (Shift+Delete) כדי להסיר את כל הקו.,toast,plural
 fontmaker.status.kern_class_saved,Kern class saved.,מחלקת הקרנינג נשמרה.,toast,

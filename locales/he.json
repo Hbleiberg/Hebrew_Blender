@@ -2285,6 +2285,8 @@
   "fontmaker.status.project_loaded": "הפרויקט נטען.",
   "fontmaker.status.project_saved_computer": "הפרויקט נשמר במחשב שלכם (.hebrewfont).",
   "fontmaker.status.project_saved_computer2": "הפרויקט נשמר במחשב שלכם.",
+  "fontmaker.status.pyo_downloading": "מוריד מנוע…",
+  "fontmaker.status.pyo_preparing": "מכין מנוע…",
   "fontmaker.status.reading_anchors": "קורא מיקומי עוגנים…",
   "fontmaker.status.reading_font": "קורא גופן…",
   "fontmaker.status.removed_specks.one": "הוסר {count} קו מתאר כתם.",

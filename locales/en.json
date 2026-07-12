@@ -2285,6 +2285,8 @@
   "fontmaker.status.project_loaded": "Project loaded.",
   "fontmaker.status.project_saved_computer": "Project saved to your computer (.hebrewfont).",
   "fontmaker.status.project_saved_computer2": "Project saved to your computer.",
+  "fontmaker.status.pyo_downloading": "Downloading engine…",
+  "fontmaker.status.pyo_preparing": "Preparing engine…",
   "fontmaker.status.reading_anchors": "Reading anchor positions…",
   "fontmaker.status.reading_font": "Reading font…",
   "fontmaker.status.removed_specks.one": "Removed {count} speck contour.",
