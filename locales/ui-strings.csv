@@ -2956,7 +2956,7 @@ torah.trans.style_simple,Simple stressed,פשוט עם הטעמה,select option,
 torah.trans.version_opt,{title} — {license},{title} — {license},version select option,do-not-translate {title}
 torah.trope_legend.tutor_link,Learn the trope names →,למדו את שמות הטעמים →,trope legend link,
 torah.a11y.skip_to_reading,Skip to the reading,דילוג לקריאה,Skip-link to the reading (a11y),aria/skip-link
-trope.about.body,Trope Tutor teaches the Torah cantillation marks with real chanted examples mined from PocketTorah recordings (CC BY-SA 4.0) and Sefaria's Hebrew text. New here? Press ❓ Tour in the header. Companion reader: Torah Trainer.,,about panel prose,html
+trope.about.body,"Trope Tutor teaches the Torah cantillation marks with real chanted examples mined from <a href=""https://github.com/rneiss/PocketTorah"" target=""_blank"" rel=""noopener"">PocketTorah</a> recordings (CC BY-SA 4.0) and Sefaria's Hebrew text. New here? Press ❓ Tour in the header. Companion reader: <a href=""torah_trainer.html"">Torah Trainer</a>.",,about panel prose,html; keep the two <a> links
 trope.about.reset_all,↺ Reset all Trope Tutor settings,,button,leading-emoji
 trope.confirm.reset_all,Reset all Trope Tutor settings to defaults?,,confirm dialog,
 trope.confirm.reset_progress,Reset your per-trope mastery and personal-best streak? This cannot be undone.,,confirm dialog,
@@ -3077,7 +3077,7 @@ trope.learn.family_note_rare,"Once-in-a-Torah specialties — mercha kefula, kar
 trope.learn.family_note_revia,"Gentler pauses: revia hovers above the word like a single gem, while darga and tevir often pair up in a distinctive stair-step figure.",,family teaching note (Learn),pedagogical prose; scope-ambiguous
 trope.learn.family_note_segol,"A grand early pause in long verses: zarka swings up and hands off to segol. Shalshelet — a rare, dramatic chain of notes — stands in for it at the very start of a verse.",,family teaching note (Learn),pedagogical prose; scope-ambiguous
 trope.learn.family_note_sofpasuk,Home base: the backbone of every verse. Mercha and tipcha lead into etnachta — the deep mid-verse resting point — and the same team walks the second half down to the final sof pasuk cadence.,,family teaching note (Learn),pedagogical prose; scope-ambiguous
-trope.learn.intro,"Trope (te'amim) are the cantillation marks that tell you how to chant the Torah. Work through them one clause family at a time, then switch to Drill to test yourself. When you're ready to see them in context, open the companion reader: Torah Trainer →",,learn intro prose,html
+trope.learn.intro,"Trope (te'amim) are the cantillation marks that tell you how to chant the Torah. Work through them one clause family at a time, then switch to <strong>Drill</strong> to test yourself. When you're ready to see them in context, open the companion reader: <a href=""torah_trainer.html"">Torah Trainer →</a>",,learn intro prose,html; keep <strong> + the <a> link
 trope.learn.name_ashkenazi_prefix,Ashkenazi: {name},,secondary-name label on card,do-not-translate {name} (a glyph-name)
 trope.learn.name_sephardi_prefix,Sephardi: {name},,secondary-name label on card,do-not-translate {name} (a glyph-name)
 trope.learn.next_family,Next family →,,button,
@@ -3155,6 +3155,7 @@ trope.tradition.primary_aria,Primary trope names,,radiogroup aria,aria-label onl
 trope.tradition.primary_label,Primary trope names,,settings label,
 trope.tradition.primary_tip,"Both names are always shown on each card; this picks which one leads. Note the classic collision: Ashkenazi 'pashta' is Sephardi 'kadma', while Ashkenazi 'kadma' is Sephardi 'azla'.",,tooltip,
 trope.tradition.sephardi,Sephardi,,radio label,
+trope.a11y.skip_to_tutor,Skip to the tutor,,Skip-link (a11y),aria/skip-link
 worksheet.actions.copy_link,📋 Copy shareable link,📋 העתק קישור לשיתוף,action button,leading-emoji
 worksheet.actions.copy_link_title,Copy shareable link,העתק קישור לשיתוף,mobile FAB button title,aria-label only
 worksheet.actions.disabled_hint,Generate a worksheet first,צרו קודם דף עבודה,disabled-button title + FAB toast,
