@@ -204,7 +204,7 @@
   header .star { color: var(--gold-light); font-size: 1.7rem; line-height: 1; }
   header h1 { font-family: 'Libre Baskerville', serif; font-size: 1.15rem; margin: 0; color: #fff; }
   header p { margin: 1px 0 0; font-size: 0.74rem; color: var(--gold-light); }
-  .beta-tag { display: inline-block; background: var(--gold); color: var(--navy); font-size: 0.55rem; font-weight: 700; letter-spacing: 0.08em; padding: 2px 6px; border-radius: 4px; vertical-align: middle; margin-left: 6px; text-transform: uppercase; }
+  .beta-tag { display: inline-block; background: var(--gold); color: var(--navy); font-size: 0.55rem; font-weight: 700; letter-spacing: 0.08em; padding: 2px 6px; border-radius: 4px; vertical-align: middle; margin-inline-start: 6px; text-transform: uppercase; }
   .hbtn {
     background: transparent; border: 1.5px solid var(--gold-light); color: var(--gold-light);
     border-radius: 6px; padding: 6px 10px; cursor: pointer; font-size: 0.8rem;
@@ -237,7 +237,7 @@
   /* Toolbar clusters: Project · History · Review · Export. Each group wraps as a whole unit; the
      divider is a left-border on adjacent groups, so it never orphans when the row wraps. */
   .tb-group { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
-  .tb-group + .tb-group { border-left: 1px solid rgba(240,208,128,0.3); padding-left: 10px; }
+  .tb-group + .tb-group { border-inline-start: 1px solid rgba(240,208,128,0.3); padding-inline-start: 10px; }
   .tbtn {
     background: var(--gold); color: #1a1a1a; border: none; border-radius: 6px;
     padding: 7px 13px; cursor: pointer; font-size: 0.82rem; font-weight: 700;
@@ -327,14 +327,14 @@
   .ltile.sel .mark-prev { color: #fff; }
   /* Status dot. Colour PLUS a distinct glyph (I/T/A/✓) so state is never conveyed by colour alone.
      Empty (not started) stays a small grey dot; any real status grows to a 13px badge with its letter. */
-  .lt-dot { position: absolute; top: 3px; left: 3px; width: 7px; height: 7px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 8px; font-weight: 700; line-height: 1; }
-  .lt-dot.img { background: #d08c2a; width: 13px; height: 13px; top: 2px; left: 2px; }
-  .lt-dot.traced { background: #3b82f6; width: 13px; height: 13px; top: 2px; left: 2px; }
-  .lt-dot.anchored { background: #10b981; width: 13px; height: 13px; top: 2px; left: 2px; }
-  .lt-dot.saved { background: #10b981; color: #fff; width: 13px; height: 13px; top: 2px; left: 2px; font-size: 9px; }
+  .lt-dot { position: absolute; top: 3px; inset-inline-start: 3px; width: 7px; height: 7px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 8px; font-weight: 700; line-height: 1; }
+  .lt-dot.img { background: #d08c2a; width: 13px; height: 13px; top: 2px; inset-inline-start: 2px; }
+  .lt-dot.traced { background: #3b82f6; width: 13px; height: 13px; top: 2px; inset-inline-start: 2px; }
+  .lt-dot.anchored { background: #10b981; width: 13px; height: 13px; top: 2px; inset-inline-start: 2px; }
+  .lt-dot.saved { background: #10b981; color: #fff; width: 13px; height: 13px; top: 2px; inset-inline-start: 2px; font-size: 9px; }
   /* Placement review states: confirmed = solid green ✓ (.saved); carried-over = hollow amber ✓; unconfirmed = solid amber !. Glyph + fill differ so it's never colour-only. */
-  .lt-dot.inherited { background: var(--white); border: 2px solid #d08c2a; color: #d08c2a; width: 13px; height: 13px; top: 2px; left: 2px; font-size: 8px; }
-  .lt-dot.unconfirmed { background: #d08c2a; color: #fff; width: 13px; height: 13px; top: 2px; left: 2px; font-size: 10px; }
+  .lt-dot.inherited { background: var(--white); border: 2px solid #d08c2a; color: #d08c2a; width: 13px; height: 13px; top: 2px; inset-inline-start: 2px; font-size: 8px; }
+  .lt-dot.unconfirmed { background: #d08c2a; color: #fff; width: 13px; height: 13px; top: 2px; inset-inline-start: 2px; font-size: 10px; }
   /* "Unconfirmed" / "carried over — review" pill shown next to the Confirm button on the placement step */
   .placement-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 0.68rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
   .placement-pill.unconfirmed { background: rgba(208,140,42,0.16); color: #9a6612; border: 1px solid #d08c2a; }
@@ -356,7 +356,7 @@
   .wtab { padding: 7px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--white); cursor: pointer; font-size: 0.84rem; font-weight: 700; color: var(--muted); }
   .wtab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
   /* Per-glyph step completion mark (Task: step checklist). Glyph + colour, set via data-tick so it survives updateTabs' textContent. */
-  .wtab[data-tick]::after { margin-left: 7px; font-size: 0.82rem; font-weight: 700; line-height: 1; }
+  .wtab[data-tick]::after { margin-inline-start: 7px; font-size: 0.82rem; font-weight: 700; line-height: 1; }
   .wtab[data-tick="done"]::after { content: '✓'; color: #10b981; }
   .wtab[data-tick="todo"]::after { content: '✗'; color: var(--muted); opacity: 0.8; }
   .wtab[data-tick="na"]::after   { content: '–'; color: var(--muted); opacity: 0.7; }
@@ -395,9 +395,9 @@
   .col-split > div { min-width: 0; }
   .col-split > div + div { border-top: 1px solid var(--border); padding-top: 16px; }
   body.layout-tabbed #catHost .col-split { flex-direction: row; align-items: stretch; gap: 0; flex-wrap: wrap; }
-  body.layout-tabbed #catHost .col-split > div { flex: 1 1 320px; padding-right: 24px; }
-  body.layout-tabbed #catHost .col-split > div:last-child { padding-right: 0; }
-  body.layout-tabbed #catHost .col-split > div + div { border-top: none; padding-top: 0; border-left: 1px solid var(--border); padding-left: 24px; }
+  body.layout-tabbed #catHost .col-split > div { flex: 1 1 320px; padding-inline-end: 24px; }
+  body.layout-tabbed #catHost .col-split > div:last-child { padding-inline-end: 0; }
+  body.layout-tabbed #catHost .col-split > div + div { border-top: none; padding-top: 0; border-inline-start: 1px solid var(--border); padding-inline-start: 24px; }
   /* Advanced Settings grid: even columns separated by gaps (not per-item dividers),
      so wrapped rows don't leave a stray vertical line at the left edge. */
   body.layout-tabbed #catHost .col-split.adv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 30px; align-items: start; }
@@ -478,7 +478,7 @@
   .npnl-mode { display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin: 8px 0 10px; }
   .npnl-mode-btn { flex: 1; padding: 7px 4px; border: none; background: var(--white); color: var(--text); font-family: inherit; font-size: 0.76rem; font-weight: 600; cursor: pointer; }
   .npnl-mode-btn:hover { background: var(--warm-gray); }
-  .npnl-mode-btn + .npnl-mode-btn { border-left: 1px solid var(--border); }
+  .npnl-mode-btn + .npnl-mode-btn { border-inline-start: 1px solid var(--border); }
   .npnl-mode-btn.active { background: var(--navy); color: #fff; }
   .npnl-mode-btn.active:hover { background: var(--navy); }
   .npnl-mode-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
@@ -491,7 +491,7 @@
   /* joined pairs (Smooth|Corner, To curve|To line) */
   .npnl-pair { display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
   .npnl-pair .ctl-btn { border: none; border-radius: 0; flex: 1; }
-  .npnl-pair .ctl-btn + .ctl-btn { border-left: 1px solid var(--border); }
+  .npnl-pair .ctl-btn + .ctl-btn { border-inline-start: 1px solid var(--border); }
   /* empty state: stacked full-width actions fill the reserved height */
   .npnl-stack { display: flex; flex-direction: column; gap: 6px; }
   .npnl-stack .ctl-btn { width: 100%; }
@@ -505,9 +505,9 @@
   body.dark .ctl-btn.npnl-danger:hover { border-color: #ff8a7a; background: rgba(255,138,122,0.12); }
   .npnl-del { position: relative; display: inline-flex; }
   .npnl-del > .ctl-btn:first-child { border-top-right-radius: 0; border-bottom-right-radius: 0; }
-  .npnl-del-caret { border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none; padding: 6px 8px; }
-  .npnl-del-menu { position: absolute; top: calc(100% + 3px); right: 0; z-index: 60; background: var(--white); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.18); padding: 3px; min-width: 200px; }
-  .npnl-del-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; background: none; border: none; border-radius: 4px; padding: 7px 9px; font-family: inherit; font-size: 0.78rem; font-weight: 600; color: #c0392b; cursor: pointer; text-align: left; white-space: nowrap; }
+  .npnl-del-caret { border-start-start-radius: 0; border-end-start-radius: 0; border-inline-start: none; padding: 6px 8px; }
+  .npnl-del-menu { position: absolute; top: calc(100% + 3px); inset-inline-end: 0; z-index: 60; background: var(--white); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.18); padding: 3px; min-width: 200px; }
+  .npnl-del-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; background: none; border: none; border-radius: 4px; padding: 7px 9px; font-family: inherit; font-size: 0.78rem; font-weight: 600; color: #c0392b; cursor: pointer; text-align: start; white-space: nowrap; }
   body.dark .npnl-del-item { color: #ff8a7a; }
   .npnl-del-item span { color: var(--muted); font-size: 0.66rem; font-weight: 400; }
   .npnl-del-item:hover, .npnl-del-item:focus { background: var(--warm-gray); outline: none; }
@@ -557,7 +557,7 @@
   .ns-glyph { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .ns-glyph #nsGlyph { font-size: 0.95rem; color: var(--text); }
   .ns-coords { font-family: ui-monospace, Menlo, monospace; min-width: 14ch; }   /* fixed width so live updates don't jitter the row */
-  .ns-sel { margin-left: auto; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+  .ns-sel { margin-inline-start: auto; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
   @media (max-width: 640px) { #nsCp { display: none; } }
   @media (max-width: 480px) { .ns-coords { display: none; } }
   /* first-run hint — zero-height sticky wrapper floats the card over the stage top edge without taking layout space */
@@ -587,7 +587,7 @@
   .combined-counter .cn-count { font-weight: 700; font-size: 0.84rem; color: var(--text); }
   .combined-nav .cn-remove { padding: 3px 9px; line-height: 1; }
   .ctl-btn:disabled { opacity: 0.4; cursor: default; }
-  .legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+  .legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-inline-end: 5px; vertical-align: middle; }
 
   .controls { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
   .ctl-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -632,10 +632,10 @@
     border: 1px solid var(--border); border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.4); padding: 16px 18px 14px;
   }
-  .tour-card h4 { font-family: 'Libre Baskerville', serif; margin: 0 26px 8px 0; font-size: 0.98rem; color: var(--text); }
+  .tour-card h4 { font-family: 'Libre Baskerville', serif; margin-block: 0 8px; margin-inline: 0 26px; font-size: 0.98rem; color: var(--text); }
   .tour-card p { font-size: 0.84rem; line-height: 1.5; margin: 0 0 12px; color: var(--text); }
   .tour-x {
-    position: absolute; top: 8px; right: 8px; width: 26px; height: 26px;
+    position: absolute; top: 8px; inset-inline-end: 8px; width: 26px; height: 26px;
     background: transparent; border: none; border-radius: 6px;
     color: var(--muted); font-size: 1rem; cursor: pointer; line-height: 1;
   }
@@ -700,7 +700,7 @@
   .help-tab { padding: 6px 11px; border: 1px solid var(--border); border-radius: 6px; background: var(--cream); color: var(--muted); font-size: 0.76rem; font-weight: 700; font-family: inherit; cursor: pointer; }
   .help-tab:hover { border-color: var(--gold); }
   .help-tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
-  .help-body { flex: 1 1 auto; overflow-y: auto; font-size: 0.86rem; line-height: 1.55; color: var(--text); padding-right: 4px; }
+  .help-body { flex: 1 1 auto; overflow-y: auto; font-size: 0.86rem; line-height: 1.55; color: var(--text); padding-inline-end: 4px; }
   .help-body h4 { font-family: 'Libre Baskerville', serif; font-size: 0.98rem; margin: 2px 0 8px; color: var(--text); }
   .help-body p { margin: 0 0 10px; }
   .help-body ol, .help-body ul { margin: 0 0 10px; padding-inline-start: 20px; }
@@ -817,7 +817,7 @@
   .guide-style-dd { position: relative; flex-shrink: 0; }
   .guide-style-trig { display: flex; align-items: center; gap: 3px; background: var(--white); border: 1px solid var(--border); border-radius: 4px; padding: 2px 5px; cursor: pointer; }
   .guide-style-caret { font-size: 0.6rem; color: var(--muted); }
-  .guide-style-menu { display: none; position: absolute; top: calc(100% + 3px); left: 0; z-index: 50; background: var(--white); border: 1px solid var(--border); border-radius: 5px; box-shadow: 0 3px 10px rgba(0,0,0,0.18); padding: 3px; }
+  .guide-style-menu { display: none; position: absolute; top: calc(100% + 3px); inset-inline-start: 0; z-index: 50; background: var(--white); border: 1px solid var(--border); border-radius: 5px; box-shadow: 0 3px 10px rgba(0,0,0,0.18); padding: 3px; }
   .guide-style-dd.open .guide-style-menu { display: block; }
   .guide-style-opt { padding: 4px 8px; border-radius: 4px; cursor: pointer; }
   .guide-style-opt:hover { background: var(--cream, #fdf8ef); }
@@ -840,7 +840,7 @@
   .mark-sq.active { border-color: var(--navy); box-shadow: inset 0 0 0 2px var(--navy); }
   .mark-sq .mark-prev { height: 30px; margin: 0; }
   .ctl-divider { height: 1px; background: var(--border); margin: 8px 0; border: none; }
-  .ctl-btn .arrows { font-weight: 400; opacity: 0.7; margin-left: 4px; }
+  .ctl-btn .arrows { font-weight: 400; opacity: 0.7; margin-inline-start: 4px; }
   /* editable X/Y anchor fields — read like a chip, become editable on click/focus */
   .anc-xy { display: flex; gap: 12px; justify-content: center; align-items: center; margin-bottom: 4px; }
   .anc-xy label { font-size: 0.74rem; font-weight: 700; color: var(--muted); display: flex; align-items: center; gap: 5px; }
@@ -852,7 +852,7 @@
   /* "Load Project ▾" dropdown menu */
   .load-menu { position: fixed; z-index: 300; background: var(--white); color: var(--text); border: 1px solid var(--border);
     border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,0.25); padding: 5px; min-width: 230px; max-width: 320px; }
-  .load-menu-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; text-align: left;
+  .load-menu-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; text-align: start;
     background: none; border: none; border-radius: 6px; padding: 7px 10px; font-family: inherit; font-size: 0.82rem; color: var(--text); cursor: pointer; }
   .load-menu-item:hover { background: var(--warm-gray); }
   .load-menu-item span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -864,7 +864,7 @@
   /* Fullscreen (matches torah_trainer.html / classroom_dashboard.html) */
   body.fullscreen header, body.fullscreen footer { display: none; }
   #fsExitBtn {
-    display: none; position: fixed; top: 14px; right: 16px; z-index: 200;
+    display: none; position: fixed; top: 14px; inset-inline-end: 16px; z-index: 200;
     background: rgba(13,18,32,0.55); color: #fff; border: 1.5px solid rgba(255,255,255,0.2);
     border-radius: 10px; padding: 8px 10px 6px; width: 60px; cursor: pointer;
     backdrop-filter: blur(6px); opacity: 0.45; transition: opacity 0.2s, background 0.2s;
@@ -940,7 +940,7 @@
     <button class="tbtn" id="exportBtn" onclick="exportFont()" data-i18n="fontmaker.toolbar.export_btn">⬇ Export TTF</button>
     <span id="engineBadge" class="engine-badge" title="Getting the font engine ready so your first export is fast" data-i18n-title="fontmaker.toolbar.engine_badge_title" hidden><span class="engine-dot" aria-hidden="true"></span><span data-i18n="fontmaker.toolbar.engine_badge">engine loading…</span></span>
   </div>
-  <button class="tbtn ghost" style="margin-left:auto;" onclick="openHelp()" title="A plain-language guide to the whole tool" data-i18n-title="fontmaker.toolbar.help_title" aria-label="Help" data-i18n="fontmaker.toolbar.help">❓ Help</button>
+  <button class="tbtn ghost" style="margin-inline-start:auto;" onclick="openHelp()" title="A plain-language guide to the whole tool" data-i18n-title="fontmaker.toolbar.help_title" aria-label="Help" data-i18n="fontmaker.toolbar.help">❓ Help</button>
 </div>
 <div id="statusMsg" role="status"></div>
 
@@ -983,7 +983,7 @@
           <span><span class="dot" style="background:#d08c2a;"></span><span data-i18n="fontmaker.panels.legend_image">image</span></span>
           <span><span class="dot" style="background:#3b82f6;"></span><span data-i18n="fontmaker.panels.legend_traced">traced</span></span>
           <span><span class="dot" style="background:#10b981;"></span><span data-i18n="fontmaker.panels.legend_anchored">anchored</span></span>
-          <span id="tracedReadout" style="margin-left:auto;font-weight:700;white-space:nowrap;color:var(--muted);" title="Core Hebrew letters with an outline traced" data-i18n-title="fontmaker.panels.traced_readout_title"></span>
+          <span id="tracedReadout" style="margin-inline-start:auto;font-weight:700;white-space:nowrap;color:var(--muted);" title="Core Hebrew letters with an outline traced" data-i18n-title="fontmaker.panels.traced_readout_title"></span>
         </div>
         <div id="nextStepHint" class="next-hint" aria-live="polite"></div>
       </div>
@@ -2430,7 +2430,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.17';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.18';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2642,6 +2642,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.18</strong> — <strong>Hebrew interface &amp; right-to-left layout.</strong> The whole Font Maker can now switch to Hebrew — use the <span class="ui">EN / עברית</span> toggle in the header. Every menu, button, dialog, tooltip, and help page reads in Hebrew, the layout mirrors to right-to-left, and glyph &amp; letter names appear in Hebrew too. Your drawing canvas and coordinates stay left-to-right, so tracing is unaffected — and switching languages never touches your open project or undo history. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.17</strong> — <strong>Clicking a nikkud or trop mark opens the full shape editor.</strong> Picking a vowel point or cantillation mark in its panel now opens the same Edit-shape window used on the letter-placement screen — dots &amp; bars, its own undo, numeric size &amp; position fields, and one-click <span class="ui">Apply to all letters</span> — instead of switching the whole workspace. Marks designed from an uploaded image (and combined-sheet mode) still go straight to their image tools. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.16</strong> — <strong>Nikkud & trop editing controls moved beside the canvas.</strong> When you edit a vowel point or cantillation mark, its controls — the Simple editor / Upload image switch, the + Dot / + Bar buttons, the dot-size slider, and the shape toggle — now sit in the left panel next to the drawing area, instead of in a strip below it. That's the same spot the letter tools already use, so editing feels consistent, and it makes use of space that used to sit empty. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.15</strong> — <strong>Glyph-editor warnings match the rest of the app.</strong> A few notices in the custom-glyph editor — an invalid code point, a code point that's already taken, or converting a mark that has no shape yet — used a plain browser pop-up instead of the tool's own in-app dialog. They now use the same styled dialog as every other message, so the experience is consistent throughout. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -2709,9 +2710,26 @@ function buildHelpTabs() {
     bar.appendChild(b);
   });
 }
+// Changelog version order (newest first) — the About tab renders one <li> per entry from the
+// fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
+// CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
+const CHANGELOG_ORDER = ['v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+// About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
+function buildAboutBody() {
+  const T = (k, p) => I18n.t(k, p);
+  const items = CHANGELOG_ORDER.map(v => {
+    const kk = 'fontmaker.changelog.' + v, s = T(kk);
+    return (s && s !== kk) ? '<li>' + esc(s) + '</li>' : '';
+  }).join('');
+  return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
+       + '<p>' + esc(T('fontmaker.about.special_thanks')) + '</p>'
+       + '<h4>' + esc(T('fontmaker.about.changelog_heading')) + '</h4>'
+       + '<ul>' + items + '</ul>';
+}
 function showHelpTab(id) {
   document.querySelectorAll('#helpTabs .help-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
   const body = document.getElementById('helpBody');
+  if (id === 'about' && window.I18n) { body.innerHTML = buildAboutBody(); body.scrollTop = 0; return; }
   const bk = 'fontmaker.help.body_' + id, bt = window.I18n ? I18n.t(bk) : bk;
   body.innerHTML = (bt !== bk) ? bt : (HELP_CONTENT[id] || '');
   body.scrollTop = 0;
@@ -3812,7 +3830,7 @@ function setSvgUpload(on) {
   renderGrids(); renderStage(); renderControls();   // re-render the upload zones (SVG-only accept + text), tabs, and stage
 }
 function openSvgGuide() {
-  askModal(I18n.t('fontmaker.modals.svgguide_title'), `<div class="hint" style="text-align:left;line-height:1.6;">${I18n.t('fontmaker.modals.svgguide_body')}</div>`, [{ label: I18n.t('fontmaker.modals.svgguide_gotit') }]);
+  askModal(I18n.t('fontmaker.modals.svgguide_title'), `<div class="hint" style="text-align:start;line-height:1.6;">${I18n.t('fontmaker.modals.svgguide_body')}</div>`, [{ label: I18n.t('fontmaker.modals.svgguide_gotit') }]);
 }
 function cgSetType(t) {
   cgType = t;
@@ -5671,78 +5689,78 @@ function updateStepTicks() {
   setTick('tabTrop', placeState);
 }
 function renderMarkControls(c, it) {
-  const cat = curKind, label = cat==='nikkud' ? 'Nikkud' : (cat==='customMarks' ? 'Custom mark' : 'Trop');
+  const cat = curKind, label = cat==='nikkud' ? I18n.t('fontmaker.qa.tab_nikkud') : (cat==='customMarks' ? I18n.t('fontmaker.panels.custom_mark') : I18n.t('fontmaker.qa.tab_trop'));
   const combined = project.font[cat].uploadMode === 'combined';
   const heb = String.fromCodePoint(0x25CC) + String.fromCodePoint(parseInt(it.codepoint,16));
   let h = `<div class="ctl-row" style="justify-content:space-between;">
-      <div class="ctl-label">${label}: ${it.name} <span style="font-size:1.15rem;">${heb}</span></div>
-      <button class="ctl-btn" onclick="selectItem('letter', LETTER_ORDER[0])">← Letters</button>
+      <div class="ctl-label">${I18n.t('fontmaker.panels.markctl_label', {label, name: gName(it.name)})} <span style="font-size:1.15rem;">${heb}</span></div>
+      <button class="ctl-btn" onclick="selectItem('letter', LETTER_ORDER[0])">${I18n.t('fontmaker.panels.markctl_letters')}</button>
     </div>`;
   if (!combined) h += `<div class="mode-toggle" style="margin:6px 0;">
-      <button class="mode-btn ${it.designMode==='editor'?'active':''}" onclick="setMarkDesignMode('editor')">Simple editor</button>
-      <button class="mode-btn ${it.designMode==='upload'?'active':''}" onclick="setMarkDesignMode('upload')">Upload image</button>
+      <button class="mode-btn ${it.designMode==='editor'?'active':''}" onclick="setMarkDesignMode('editor')">${I18n.t('fontmaker.me.simple_editor')}</button>
+      <button class="mode-btn ${it.designMode==='upload'?'active':''}" onclick="setMarkDesignMode('upload')">${I18n.t('fontmaker.me.upload_image')}</button>
     </div>`;
   if (!combined && it.designMode === 'editor') {
     ensureMarkPieces(it);
     const selP = it.pieces && it.pieces[editorSel];
     h += `<div class="ctl-row">
-        <button class="ctl-btn" onclick="editorAddPiece('dot')">+ Dot</button>
-        <button class="ctl-btn" onclick="editorAddPiece('bar')">+ Bar</button>
-        <button class="ctl-btn" onclick="editorDeletePiece()">Delete selected</button>
+        <button class="ctl-btn" onclick="editorAddPiece('dot')">${I18n.t('fontmaker.panels.markctl_add_dot')}</button>
+        <button class="ctl-btn" onclick="editorAddPiece('bar')">${I18n.t('fontmaker.panels.markctl_add_bar')}</button>
+        <button class="ctl-btn" onclick="editorDeletePiece()">${I18n.t('fontmaker.panels.markctl_delete_sel')}</button>
       </div>`;
     if (selP && selP.type === 'dot') {
       const sh = selP.shape === 'square' ? 'square' : 'circle';
       h += `<div class="ctl-row" style="margin-top:6px;">
-        <div class="inline" style="flex:1;min-width:0;">Dot size <input type="range" min="8" max="200" step="1" value="${selP.r}" oninput="setDotSize(this.value)" onchange="udBurstCommit()" style="flex:1;min-width:0;"> <span id="dotSizeV" class="readout">${selP.r}</span></div>
+        <div class="inline" style="flex:1;min-width:0;">${I18n.t('fontmaker.panels.markctl_dot_size')} <input type="range" min="8" max="200" step="1" value="${selP.r}" oninput="setDotSize(this.value)" onchange="udBurstCommit()" style="flex:1;min-width:0;"> <span id="dotSizeV" class="readout">${selP.r}</span></div>
         <div class="mode-toggle" style="flex:1;min-width:0;">
-          <button class="mode-btn ${sh==='circle'?'active':''}" onclick="setDotShape('circle')">● Circle</button>
-          <button class="mode-btn ${sh==='square'?'active':''}" onclick="setDotShape('square')">■ Square</button>
+          <button class="mode-btn ${sh==='circle'?'active':''}" onclick="setDotShape('circle')">${I18n.t('fontmaker.panels.markctl_circle')}</button>
+          <button class="mode-btn ${sh==='square'?'active':''}" onclick="setDotShape('square')">${I18n.t('fontmaker.panels.markctl_square')}</button>
         </div>
       </div>`;
     } else if (selP && selP.type === 'bar') {
       h += `<div class="ctl-row" style="margin-top:6px;">
         <div class="mode-toggle" style="flex:1;min-width:0;">
-          <button class="mode-btn ${!selP.rounded?'active':''}" onclick="setBarRounded(false)">▭ Square</button>
-          <button class="mode-btn ${selP.rounded?'active':''}" onclick="setBarRounded(true)">▢ Rounded</button>
+          <button class="mode-btn ${!selP.rounded?'active':''}" onclick="setBarRounded(false)">${I18n.t('fontmaker.panels.markctl_bar_square')}</button>
+          <button class="mode-btn ${selP.rounded?'active':''}" onclick="setBarRounded(true)">${I18n.t('fontmaker.panels.markctl_bar_rounded')}</button>
         </div>
       </div>`;
     }
-    h += `<div class="hint">Click a piece to select; drag to move, drag the ◻ corner to resize. A bar's corner can be dragged for any width/thickness. Build the mark from dots &amp; bars — it's seeded from the default shape.</div>`;
+    h += `<div class="hint">${I18n.t('fontmaker.panels.markctl_hint')}</div>`;
   } else if (workMode === 'trace') {
-    h += `<div class="inline">Ink threshold <input type="range" min="1" max="254" value="${it.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()"> <span id="thV" class="readout">${it.binThreshold}</span></div>
+    h += `<div class="inline">${I18n.t('fontmaker.panels.ink_threshold')} <input type="range" min="1" max="254" value="${it.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()"> <span id="thV" class="readout">${it.binThreshold}</span></div>
       <label class="chk"><input type="checkbox" ${it.invert?'checked':''} onchange="liveInvert(this.checked)"> ${I18n.t('fontmaker.panels.invert')}</label>
       ${ (it.source && it.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${itemFlattenOn(it)?'checked':''} onchange="liveFlatten(this.checked)" aria-label="${esc(I18n.t('fontmaker.panels.even_lighting_aria'))}"> ${I18n.t('fontmaker.panels.even_lighting')}</label>` : '' }
-      <div class="inline">Detail (less ↔ more) <input type="range" min="0" max="100" step="1" value="${Math.round(100 - it.epsilon*2.5)}" oninput="liveDetail(this.value)" onchange="udBurstCommit()"> <span id="epV" class="readout">${Math.round(100 - it.epsilon*2.5)}</span></div>
-      <div class="inline">Corners (sharp ↔ round) <input type="range" min="0" max="90" step="1" value="${it.cornerAngle != null ? it.cornerAngle : 32}" oninput="liveCorners(this.value)" onchange="udBurstCommit()"> <span id="cnV" class="readout">${it.cornerAngle != null ? it.cornerAngle : 32}</span></div>
+      <div class="inline">${I18n.t('fontmaker.panels.detail')} <input type="range" min="0" max="100" step="1" value="${Math.round(100 - it.epsilon*2.5)}" oninput="liveDetail(this.value)" onchange="udBurstCommit()"> <span id="epV" class="readout">${Math.round(100 - it.epsilon*2.5)}</span></div>
+      <div class="inline">${I18n.t('fontmaker.panels.corners')} <input type="range" min="0" max="90" step="1" value="${it.cornerAngle != null ? it.cornerAngle : 32}" oninput="liveCorners(this.value)" onchange="udBurstCommit()"> <span id="cnV" class="readout">${it.cornerAngle != null ? it.cornerAngle : 32}</span></div>
       ${ (it.source && it.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${it.outlineOnly?'checked':''} onchange="liveOutlineOnly(this.checked)"> ${I18n.t('fontmaker.panels.outline_only')}</label>` : '' }
-      ${ (it.source && it.source.dataUrl && it.outlineOnly) ? `<div class="inline">Line weight <input type="range" min="10" max="250" step="1" value="${Math.round(it.lineWeight!=null?it.lineWeight:70)}" oninput="liveLineWeight(this.value)" onchange="udBurstCommit()"> <span id="lwV" class="readout">${Math.round(it.lineWeight!=null?it.lineWeight:70)}</span></div>
+      ${ (it.source && it.source.dataUrl && it.outlineOnly) ? `<div class="inline">${I18n.t('fontmaker.panels.line_weight')} <input type="range" min="10" max="250" step="1" value="${Math.round(it.lineWeight!=null?it.lineWeight:70)}" oninput="liveLineWeight(this.value)" onchange="udBurstCommit()"> <span id="lwV" class="readout">${Math.round(it.lineWeight!=null?it.lineWeight:70)}</span></div>
       <div class="ctl-row"><button class="ctl-btn" onclick="applyOutlineToAll()">${I18n.t('fontmaker.panels.apply_outline_all')}</button></div>` : '' }
       <div class="ctl-row">
         <button class="ctl-btn primary" onclick="traceCurrent()">${I18n.t('fontmaker.panels.retrace')}</button>
         <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
-        <span id="traceInfo" class="readout">${it.contours?`${it.contours.length} contour(s)`:''}</span>
+        <span id="traceInfo" class="readout">${it.contours?I18n.t(it.contours.length===1?'fontmaker.panels.contours_count.one':'fontmaker.panels.contours_count.other',{count:it.contours.length}):''}</span>
       </div>`;
   } else {
     if (combined) {
       const hasSheet = project.font[cat].combinedImage && project.font[cat].combinedImage.dataUrl;
       if (!curImageUrl()) {
         h += `<div class="hint">${ hasSheet
-          ? `Drag a box around <b>${it.name}</b> on the sheet above to bring it into the editor. Keyboard: arrows move the box, +/− resize, Enter to crop.`
-          : `Combined mode: upload a sheet of ${label} symbols in the sidebar first, then drag a box around <b>${it.name}</b>.` }</div>`;
+          ? I18n.t('fontmaker.panels.markctl_box_hint', {name: '<b>'+esc(gName(it.name))+'</b>'})
+          : I18n.t('fontmaker.panels.markctl_combined_hint', {label, name: '<b>'+esc(gName(it.name))+'</b>'}) }</div>`;
       } else {
-        h += `<div class="hint">Region selected for <b>${it.name}</b>. Fine-tune below, then trace.</div>
-          <div class="ctl-row"><button class="ctl-btn" onclick="reselectArea()">↺ Re-select area</button></div>`;
+        h += `<div class="hint">${I18n.t('fontmaker.panels.markctl_region_hint', {name: '<b>'+esc(gName(it.name))+'</b>'})}</div>
+          <div class="ctl-row"><button class="ctl-btn" onclick="reselectArea()">${I18n.t('fontmaker.panels.reselect_area')}</button></div>`;
       }
     } else {
       if (svgUploadOn() && it.source && it.source.kind === 'svg' && it.contours)
-        h += `<div class="ctl-row" style="align-items:center;"><span class="hint" style="flex:1;">Imported from SVG ✓ — re-drop to replace.</span><button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button></div>`;
+        h += `<div class="ctl-row" style="align-items:center;"><span class="hint" style="flex:1;">${I18n.t('fontmaker.panels.markctl_svg_imported')}</span><button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button></div>`;
       h += `<div class="drop" id="markDrop">Drop ${svgUploadOn()?'an <b>SVG</b>':'an image'} of <b>${it.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('markFile').click()">browse</span>.</div>
-        <div class="allowed">${svgUploadOn()?'Allowed: SVG only.':'Allowed: any image file — PNG, JPG, GIF, WebP.'}</div>
+        <div class="allowed">${svgUploadOn()?I18n.t('fontmaker.panels.mark_allowed_svg'):I18n.t('fontmaker.panels.mark_allowed_img')}</div>
         <input type="file" id="markFile" accept="${svgUploadOn()?'.svg,image/svg+xml':'image/*'}" style="display:none;">`;
     }
     if (curImageUrl()) h += `<div class="ctl-row">
-        <button class="ctl-btn" onclick="nudgeScale(1.06,1.06)">Scale +</button><button class="ctl-btn" onclick="nudgeScale(0.94,0.94)">Scale −</button>
-        <button class="ctl-btn primary" onclick="setWorkMode('trace')">Next: Trace →</button></div>`;
+        <button class="ctl-btn" onclick="nudgeScale(1.06,1.06)">${I18n.t('fontmaker.panels.scale_plus')}</button><button class="ctl-btn" onclick="nudgeScale(0.94,0.94)">${I18n.t('fontmaker.panels.scale_minus')}</button>
+        <button class="ctl-btn primary" onclick="setWorkMode('trace')">${I18n.t('fontmaker.panels.next_trace')}</button></div>`;
   }
   c.innerHTML = h;
   if (!combined && it.designMode === 'upload' && workMode === 'align') {
@@ -5867,7 +5885,7 @@ function attachColResizers() {
     let startX = 0, startW = 0, active = false;
     const onMove = (e) => {
       if (!active) return;
-      const dx = e.clientX - startX;
+      const dx = (e.clientX - startX) * (document.documentElement.dir === 'rtl' ? -1 : 1);   // grid mirrors under RTL → flip physical delta
       const raw = startW + (side === 'left' ? dx : -dx);    // right handle inverts
       grid.style.setProperty(prop, wsClampN(raw, WS_MIN, wsMaxFor(grid, side)) + 'px');
       if (e.cancelable) e.preventDefault();
@@ -7429,9 +7447,9 @@ function renderNodeChrome() {   // pure sync — safe to call from any render pa
   document.getElementById('nsName').textContent = l ? (isCustomCp(curCp) ? '' : ' · ') + l.name : '';
   document.getElementById('nsCp').textContent = isCustomCp(curCp) ? '' : ' · U+' + String(curCp).toUpperCase();
   // selection count — diff-guarded so unrelated re-renders never re-announce (this is the only aria-live region)
-  const txt = _penMode ? 'Placing points'
-    : nodeSel.size ? nodeSel.size + ' point' + (nodeSel.size > 1 ? 's' : '') + ' selected'
-    : 'No points selected';
+  const txt = _penMode ? I18n.t('fontmaker.node_editor.placing_points')
+    : nodeSel.size ? I18n.t(nodeSel.size === 1 ? 'fontmaker.node_editor.points_selected.one' : 'fontmaker.node_editor.points_selected.other', {count: nodeSel.size})
+    : I18n.t('fontmaker.node_editor.no_points_selected');
   const s = document.getElementById('nsSel');
   if (s && s.textContent !== txt) s.textContent = txt;
   const h = document.getElementById('nodeHint');
@@ -7755,91 +7773,91 @@ function nodeEditPanelHTML(l) {
   const cnt = nodeSel.size, M = modKey();
   const dis = cnt ? '' : 'disabled';   // still used by the Round-corners Apply button
   const dis2 = cnt >= 2 ? '' : 'disabled';
-  const segWhy = cnt >= 2 ? '' : ' — select 2+ adjacent points first';
+  const segWhy = cnt >= 2 ? '' : ' ' + I18n.t('fontmaker.node_editor.seg_why');
   // glyph preview in the header — same guard as updateCurrentGlyphLabel (custom PUA codepoints render tofu)
   const glyph = isCustomCp(curCp) ? '' :
     `<span class="npnl-glyph" style="font-family:${esc(project.template.font)};">${String.fromCodePoint(parseInt(curCp, 16))}</span> — `;
   const tip = _penMode
-    ? 'Tip: a contour drawn inside another shape becomes a hole.'
+    ? I18n.t('fontmaker.node_editor.tip_pen')
     : _marqueeMode
-    ? 'Tip: drag anywhere to box-select · Shift adds · M or Esc leaves.'
+    ? I18n.t('fontmaker.node_editor.tip_marquee')
     : cnt
-    ? 'Tip: arrows nudge 5 units (Shift = 25) · double-click toggles ○/□.'
-    : 'Tip: drag points to reshape · Alt-click the outline adds a point.';
+    ? I18n.t('fontmaker.node_editor.tip_selected')
+    : I18n.t('fontmaker.node_editor.tip_default');
   // zone 3 — contextual: pen status, or the selection-state action set (hidden, not disabled, when empty)
   const ctx = _penMode
-    ? `<div class="npnl-ctx" role="group" aria-label="Pen">
-    <div class="npnl-pen-lines">· click: corner &nbsp;· drag: curve<br>· Enter: close &nbsp;· Esc: discard</div>
-    <button class="ctl-btn npnl-pen-cancel" onclick="togglePenMode()" title="Discard the drawing and leave the pen (Esc)">✕ Cancel path</button>
+    ? `<div class="npnl-ctx" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.mode_pen'))}">
+    <div class="npnl-pen-lines">${I18n.t('fontmaker.node_editor.pen_lines')}</div>
+    <button class="ctl-btn npnl-pen-cancel" onclick="togglePenMode()" title="${esc(I18n.t('fontmaker.node_editor.pen_cancel_title'))}">${I18n.t('fontmaker.node_editor.pen_cancel')}</button>
   </div>`
     : cnt === 0
-    ? `<div class="npnl-ctx" role="group" aria-label="Selection actions">
+    ? `<div class="npnl-ctx" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.sel_actions'))}">
     <div class="npnl-stack">
-      <button class="ctl-btn" onclick="selectAllNodes()" title="Select every point (${M}+A)">Select all</button>
-      <button class="ctl-btn" onclick="pasteNodes()" title="Paste the copied contour(s) into this letter (${M}+V)" ${nodeClipboard ? '' : 'disabled'}>Paste</button>
-      <button class="ctl-btn" onclick="doRemoveSpecks()" title="Delete all tiny stray contours (under 1% of the largest)">Remove specks</button>
+      <button class="ctl-btn" onclick="selectAllNodes()" title="${esc(I18n.t('fontmaker.node_editor.select_all_title', {mod: M}))}">${I18n.t('fontmaker.node_editor.select_all')}</button>
+      <button class="ctl-btn" onclick="pasteNodes()" title="${esc(I18n.t('fontmaker.node_editor.paste_title', {mod: M}))}" ${nodeClipboard ? '' : 'disabled'}>${I18n.t('fontmaker.node_editor.paste')}</button>
+      <button class="ctl-btn" onclick="doRemoveSpecks()" title="${esc(I18n.t('fontmaker.node_editor.remove_specks_title'))}">${I18n.t('fontmaker.node_editor.remove_specks')}</button>
     </div>
   </div>`
-    : `<div class="npnl-ctx" role="group" aria-label="Selection actions">
+    : `<div class="npnl-ctx" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.sel_actions'))}">
     <div class="npnl-grid">
-      <span class="npnl-pair" role="group" aria-label="Point type">
-        <button class="ctl-btn" onclick="setSelectedNodeType('smooth')" title="Make the selected points smooth ○">○ Smooth</button>
-        <button class="ctl-btn" onclick="setSelectedNodeType('corner')" title="Make the selected points corners □">□ Corner</button>
+      <span class="npnl-pair" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.point_type'))}">
+        <button class="ctl-btn" onclick="setSelectedNodeType('smooth')" title="${esc(I18n.t('fontmaker.node_editor.smooth_title'))}">${I18n.t('fontmaker.node_editor.smooth')}</button>
+        <button class="ctl-btn" onclick="setSelectedNodeType('corner')" title="${esc(I18n.t('fontmaker.node_editor.corner_title'))}">${I18n.t('fontmaker.node_editor.corner')}</button>
       </span>
-      <button class="ctl-btn npnl-right" onclick="retractSelectedHandles()" title="Retract handles — straighten both sides of the selected points; corners with no curve handles">Retract</button>
-      <span class="npnl-pair" role="group" aria-label="Segment type">
-        <button class="ctl-btn" onclick="setSelectedSegsType(true)" title="Make the segments between adjacent selected points curved${segWhy}" ${dis2}>To curve</button>
-        <button class="ctl-btn" onclick="setSelectedSegsType(false)" title="Make the segments between adjacent selected points straight${segWhy}" ${dis2}>To line</button>
+      <button class="ctl-btn npnl-right" onclick="retractSelectedHandles()" title="${esc(I18n.t('fontmaker.node_editor.retract_title'))}">${I18n.t('fontmaker.node_editor.retract')}</button>
+      <span class="npnl-pair" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.segment_type'))}">
+        <button class="ctl-btn" onclick="setSelectedSegsType(true)" title="${esc(I18n.t('fontmaker.node_editor.to_curve_title', {why: segWhy}))}" ${dis2}>${I18n.t('fontmaker.node_editor.to_curve')}</button>
+        <button class="ctl-btn" onclick="setSelectedSegsType(false)" title="${esc(I18n.t('fontmaker.node_editor.to_line_title', {why: segWhy}))}" ${dis2}>${I18n.t('fontmaker.node_editor.to_line')}</button>
       </span>
       <span aria-hidden="true"></span>
-      <button class="ctl-btn npnl-left" onclick="copySelectedNodes()" title="Copy the selected points as new contour(s) (${M}+C)">Copy</button>
+      <button class="ctl-btn npnl-left" onclick="copySelectedNodes()" title="${esc(I18n.t('fontmaker.node_editor.copy_title', {mod: M}))}">${I18n.t('fontmaker.node_editor.copy')}</button>
       <span class="npnl-del npnl-right">
-        <button class="ctl-btn npnl-danger" onclick="doNodeDelete()" title="Remove the selected points (Delete or Backspace)">Delete</button>
-        <button class="ctl-btn npnl-danger npnl-del-caret" aria-haspopup="menu" aria-expanded="false" aria-label="More delete options" onclick="npnlDelToggle(this)" onkeydown="npnlDelKey(event)">▾</button>
+        <button class="ctl-btn npnl-danger" onclick="doNodeDelete()" title="${esc(I18n.t('fontmaker.node_editor.delete_title'))}">${I18n.t('fontmaker.node_editor.delete')}</button>
+        <button class="ctl-btn npnl-danger npnl-del-caret" aria-haspopup="menu" aria-expanded="false" aria-label="${esc(I18n.t('fontmaker.node_editor.more_delete_aria'))}" onclick="npnlDelToggle(this)" onkeydown="npnlDelKey(event)">▾</button>
         <div class="npnl-del-menu" role="menu" hidden>
-          <button role="menuitem" class="npnl-del-item" onclick="doNodeDelete()" onkeydown="npnlDelKey(event)">Delete points <span>Del</span></button>
-          <button role="menuitem" class="npnl-del-item" onclick="doDeleteContours()" onkeydown="npnlDelKey(event)" title="Delete every contour that has a selected point (Shift+Delete)">Delete contour <span>Shift+Del</span></button>
+          <button role="menuitem" class="npnl-del-item" onclick="doNodeDelete()" onkeydown="npnlDelKey(event)">${I18n.t('fontmaker.node_editor.delete_points')} <span>${I18n.t('fontmaker.node_editor.delete_points_key')}</span></button>
+          <button role="menuitem" class="npnl-del-item" onclick="doDeleteContours()" onkeydown="npnlDelKey(event)" title="${esc(I18n.t('fontmaker.node_editor.delete_contour_title'))}">${I18n.t('fontmaker.node_editor.delete_contour')} <span>${I18n.t('fontmaker.node_editor.delete_contour_key')}</span></button>
         </div>
       </span>
     </div>
   </div>`;
   return `<div class="npnl-head">
-    <span class="npnl-head-title">Edit points · ${glyph}${esc(l.name)}</span>
-    <button class="ctl-btn primary" onclick="toggleNodeEdit()">Done editing</button>
+    <span class="npnl-head-title">${I18n.t('fontmaker.node_editor.head_edit_points', {name: glyph + esc(gName(l.name))})}</span>
+    <button class="ctl-btn primary" onclick="toggleNodeEdit()">${I18n.t('fontmaker.node_editor.done_editing')}</button>
   </div>
   ${ctx}
   <details class="node-xform npnl-disc" ${_nodeXformOpen ? 'open' : ''} ontoggle="_nodeXformOpen = this.open; npnlSaveOpen('nodeXformOpen', this.open)">
-    <summary>Transform ${cnt ? `— ${cnt} selected point${cnt > 1 ? 's' : ''}` : '— whole glyph'}</summary>
+    <summary>${cnt ? I18n.t(cnt===1?'fontmaker.node_editor.xform_summary_sel.one':'fontmaker.node_editor.xform_summary_sel.other', {count: cnt}) : I18n.t('fontmaker.node_editor.xform_summary_whole')}</summary>
     <div class="ctl-row" style="flex-wrap:wrap;gap:6px;margin-top:6px;">
-      <button class="ctl-btn" onclick="transformSelectedNodes('fliph')" title="Mirror left–right around the selection's center">Flip H</button>
-      <button class="ctl-btn" onclick="transformSelectedNodes('flipv')" title="Mirror top–bottom around the selection's center">Flip V</button>
-      <button class="ctl-btn" onclick="transformSelectedNodes('rot', -90)" title="Rotate 90° clockwise">90° ⟳</button>
-      <button class="ctl-btn" onclick="transformSelectedNodes('rot', 90)" title="Rotate 90° counter-clockwise">90° ⟲</button>
+      <button class="ctl-btn" onclick="transformSelectedNodes('fliph')" title="${esc(I18n.t('fontmaker.node_editor.flip_h_title'))}">${I18n.t('fontmaker.node_editor.flip_h')}</button>
+      <button class="ctl-btn" onclick="transformSelectedNodes('flipv')" title="${esc(I18n.t('fontmaker.node_editor.flip_v_title'))}">${I18n.t('fontmaker.node_editor.flip_v')}</button>
+      <button class="ctl-btn" onclick="transformSelectedNodes('rot', -90)" title="${esc(I18n.t('fontmaker.node_editor.rot_cw_title'))}">${I18n.t('fontmaker.node_editor.rot_cw')}</button>
+      <button class="ctl-btn" onclick="transformSelectedNodes('rot', 90)" title="${esc(I18n.t('fontmaker.node_editor.rot_ccw_title'))}">${I18n.t('fontmaker.node_editor.rot_ccw')}</button>
     </div>
     <div class="ctl-row" style="gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap;">
-      <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;">Angle°
-        <input type="number" id="nodeRotAngle" value="0" step="1" style="width:64px;" aria-label="Rotation angle in degrees — positive turns counter-clockwise"></label>
-      <button class="ctl-btn" onclick="transformSelectedNodes('rot', +(document.getElementById('nodeRotAngle')||{}).value || 0)" title="Rotate by the angle entered">Apply</button>
-      <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;">Scale %
-        <input type="number" id="nodeScalePct" value="100" step="1" min="2" style="width:64px;" aria-label="Scale percentage about the selection's center — 100 is unchanged"></label>
-      <button class="ctl-btn" onclick="transformSelectedNodes('scale', +(document.getElementById('nodeScalePct')||{}).value || 100)" title="Scale by the percentage entered (about the selection's center)">Apply</button>
+      <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;">${I18n.t('fontmaker.node_editor.angle_label')}
+        <input type="number" id="nodeRotAngle" value="0" step="1" style="width:64px;" aria-label="${esc(I18n.t('fontmaker.node_editor.angle_aria'))}"></label>
+      <button class="ctl-btn" onclick="transformSelectedNodes('rot', +(document.getElementById('nodeRotAngle')||{}).value || 0)" title="${esc(I18n.t('fontmaker.node_editor.rot_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
+      <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;">${I18n.t('fontmaker.node_editor.scale_label')}
+        <input type="number" id="nodeScalePct" value="100" step="1" min="2" style="width:64px;" aria-label="${esc(I18n.t('fontmaker.node_editor.scale_aria'))}"></label>
+      <button class="ctl-btn" onclick="transformSelectedNodes('scale', +(document.getElementById('nodeScalePct')||{}).value || 100)" title="${esc(I18n.t('fontmaker.node_editor.scale_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
     </div>
   </details>
   <details class="node-xform npnl-disc" ${_filletOpen ? 'open' : ''} ontoggle="_filletOpen = this.open; npnlSaveOpen('nodeFilletOpen', this.open)">
-    <summary>Round corners ${cnt ? `— ${cnt} selected` : ''}</summary>
+    <summary>${cnt ? I18n.t('fontmaker.node_editor.round_summary_sel', {count: cnt}) : I18n.t('fontmaker.node_editor.round_summary')}</summary>
     <div class="ctl-row" style="gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap;">
-      <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">Radius <span id="filletRadV" class="readout">${_filletRadius}</span>
+      <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">${I18n.t('fontmaker.node_editor.radius_label')} <span id="filletRadV" class="readout">${_filletRadius}</span>
         <input type="range" min="5" max="120" step="1" value="${_filletRadius}" style="flex:1;min-width:90px;"
-               aria-label="Corner rounding radius in font units — previews live, commits on release"
+               aria-label="${esc(I18n.t('fontmaker.node_editor.radius_aria'))}"
                oninput="filletLiveInput(this.value)" onchange="filletCommit()"></label>
-      <button class="ctl-btn" onclick="filletApply()" ${dis}>Apply</button>
+      <button class="ctl-btn" onclick="filletApply()" ${dis}>${I18n.t('fontmaker.node_editor.apply')}</button>
     </div>
-    <div class="hint" style="margin:4px 0 0;">Rounds the selected □ corner points on this outline. (The Trace step's <b>Corners</b> slider changes how a re-trace fits instead.)</div>
+    <div class="hint" style="margin:4px 0 0;">${I18n.t('fontmaker.node_editor.round_hint')}</div>
   </details>
   ${contoursPanelHTML()}
   <div class="npnl-tip">
     <span class="hint">${tip}</span>
-    <button class="ctl-btn npnl-help" onclick="openShortcuts('nodes')" aria-label="Keyboard shortcuts for point editing" title="All point-editing shortcuts (?)">?</button>
+    <button class="ctl-btn npnl-help" onclick="openShortcuts('nodes')" aria-label="${esc(I18n.t('fontmaker.node_editor.shortcuts_help_aria'))}" title="${esc(I18n.t('fontmaker.node_editor.shortcuts_help_title'))}">?</button>
   </div>`;
 }
 /* Trace is split so dragging the sliders can update live:
@@ -8387,45 +8405,45 @@ function renderPrecompControls(l) {
   if (markClassFor(pc.mark) === 'center') {   // dagesh: unified with the letter's own Dagesh (Center) — size adjustable here, position follows the letter
     const g = `<span style="font-family:var(--heb-font);direction:rtl;">${precompComposed(pc)}</span>`;
     const dagPct = Math.round(dageshScale() * 100);
-    return `<div class="ws-side-title">Place <span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">${precompComposed(pc)}</span> — ${esc(precompName(pc))}</div>
-    <div class="hint" style="font-size:0.68rem;">The dagesh's <b>position</b> follows the letter's own <b>Dagesh (Center)</b>, so ${g} always matches a dagesh you place on the plain letter — to move it, edit the letter's <b>Dagesh (Center)</b> on its Nikkud step. Its <b>size</b> you can set right here:</div>
+    return `<div class="ws-side-title">${I18n.t('fontmaker.panels.place_precomp_title', {glyph: '<span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">'+precompComposed(pc)+'</span>', name: esc(precompName(pc))})}</div>
+    <div class="hint" style="font-size:0.68rem;">${I18n.t('fontmaker.panels.dagesh_follows_hint', {glyph: g})}</div>
     <hr class="ctl-divider">
-    <div class="inline">Dagesh size <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
+    <div class="inline">${I18n.t('fontmaker.panels.dagesh_size')} <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
     <hr class="ctl-divider">
-    <button class="ctl-btn" style="width:100%;" onclick="openMarkEdit('nikkud','${pc.mark}')">✎ Edit shape (square, dots &amp; bars)</button>
-    <div class="hint" style="font-size:0.62rem;">Make the dot a square or redesign it. Applies to this form (via its base letter); choose “all letters” in the editor to change it everywhere.</div>
+    <button class="ctl-btn" style="width:100%;" onclick="openMarkEdit('nikkud','${pc.mark}')">${I18n.t('fontmaker.panels.edit_shape_btn')}</button>
+    <div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.edit_shape_square_hint')}</div>
     <hr class="ctl-divider">
-    <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">← Back to vowels</button>`;
+    <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">${I18n.t('fontmaker.panels.back_to_vowels')}</button>`;
   }
   const a = precompAnchor(pc), isOverride = !!(pc.anchor && pc.anchor.x != null);
   const scPct = Math.round(precompMarkScale(pc) * 100), isScaleOverride = (pc.markScale != null);
   const isCholamVav = (pc.base === '05D5' && pc.mark === '05B9');   // וֹ size: surfaced here (next to the live preview) using the same control as the Nikkud-step Holam (vav) size
   const cholPct = Math.round(cholamScale() * 100);
   const sizeBlock = isCholamVav
-    ? `<div class="inline">Holam (vav) size <input type="range" min="40" max="180" step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>
-    <div class="hint" style="font-size:0.62rem;">Sizes the dot on every וֹ — the same <b>Holam (vav) size</b> control as the vav's Nikkud step. (The standalone holam on other letters is sized by <b>Nikkud size</b>.)</div>`
-    : `<div class="inline">Dot size <input type="range" min="30" max="200" step="1" value="${scPct}" oninput="setPrecompMarkScale(this.value)" onchange="udBurstCommit();renderControls()"> <span id="pcScaleV" class="readout">${scPct}%</span></div>
-    <div class="hint" style="font-size:0.62rem;">Sizes the dot for this form only — the regular vowel dot on other letters stays the same.</div>
+    ? `<div class="inline">${I18n.t('fontmaker.panels.holam_vav_size')} <input type="range" min="40" max="180" step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>
+    <div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.holam_vav_hint')}</div>`
+    : `<div class="inline">${I18n.t('fontmaker.panels.dot_size')} <input type="range" min="30" max="200" step="1" value="${scPct}" oninput="setPrecompMarkScale(this.value)" onchange="udBurstCommit();renderControls()"> <span id="pcScaleV" class="readout">${scPct}%</span></div>
+    <div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.dagesh_size_hint')}</div>
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
-      ${isScaleOverride ? `<button class="ctl-btn" onclick="resetPrecompMarkScale()">Reset to auto size</button>` : `<span class="hint" style="font-size:0.62rem;">Auto size — drag the slider to customize.</span>`}
+      ${isScaleOverride ? `<button class="ctl-btn" onclick="resetPrecompMarkScale()">${I18n.t('fontmaker.panels.reset_auto_size')}</button>` : `<span class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.auto_size_hint')}</span>`}
     </div>`;
-  return `<div class="ws-side-title">Place <span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">${precompComposed(pc)}</span> — ${esc(precompName(pc))}</div>
-    <div class="hint" style="font-size:0.66rem;">Where the mark sits in the combined glyph. Drag the orange dot on the canvas, or type X / Y. Affects this precomposed form only — saved automatically.</div>
+  return `<div class="ws-side-title">${I18n.t('fontmaker.panels.place_precomp_title', {glyph: '<span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">'+precompComposed(pc)+'</span>', name: esc(precompName(pc))})}</div>
+    <div class="hint" style="font-size:0.66rem;">${I18n.t('fontmaker.panels.precomp_where_hint')}</div>
     <hr class="ctl-divider">
     <div class="anc-xy">
       <label>X <input type="number" id="pcX" value="${a.x}" oninput="setPrecompCoord('x',this.value)" onchange="udBurstCommit()"></label>
       <label>Y <input type="number" id="pcY" value="${a.y}" oninput="setPrecompCoord('y',this.value)" onchange="udBurstCommit()"></label>
     </div>
     <div class="ctl-row" style="margin-top:8px;justify-content:center;">
-      ${isOverride ? `<button class="ctl-btn" onclick="resetPrecompAnchor()">Reset to auto</button>` : `<span class="hint" style="font-size:0.62rem;">Auto position — drag to customize.</span>`}
+      ${isOverride ? `<button class="ctl-btn" onclick="resetPrecompAnchor()">${I18n.t('fontmaker.panels.reset_to_auto')}</button>` : `<span class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.auto_position_hint')}</span>`}
     </div>
     <hr class="ctl-divider">
     ${sizeBlock}
     <hr class="ctl-divider">
-    <button class="ctl-btn" style="width:100%;" onclick="openMarkEdit('nikkud','${pc.mark}')">✎ Edit shape (square, dots &amp; bars)</button>
-    <div class="hint" style="font-size:0.62rem;">Make the dot a square or redesign it. Applies to this form (via its base letter); choose “all letters” in the editor to change it everywhere.</div>
+    <button class="ctl-btn" style="width:100%;" onclick="openMarkEdit('nikkud','${pc.mark}')">${I18n.t('fontmaker.panels.edit_shape_btn')}</button>
+    <div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.edit_shape_square_hint')}</div>
     <hr class="ctl-divider">
-    <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">← Back to vowels</button>`;
+    <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">${I18n.t('fontmaker.panels.back_to_vowels')}</button>`;
 }
 function setTropCp(cp) { activeTropCp = cp; renderStage(); renderControls(); }
 /* Per-mark horizontal placement (Left / Center / Right) — applies on every letter by selecting which
@@ -9198,20 +9216,20 @@ function suggestKernPairs() {
    so editing a class propagates to pairs built from its old member set. ── */
 function kernClassManagerHTML() {
   const builtins = [
-    `<div class="readline" style="gap:8px;align-items:center;"><span>Finals <span style="font-family:var(--heb-font);color:var(--muted);">ך ם ן ף ץ</span></span><span style="color:var(--muted);font-size:0.6rem;flex-shrink:0;">built-in</span></div>`,
-    `<div class="readline" style="gap:8px;align-items:center;"><span>Descenders</span><span style="color:var(--muted);font-size:0.6rem;flex-shrink:0;">built-in</span></div>`
+    `<div class="readline" style="gap:8px;align-items:center;"><span>${I18n.t('fontmaker.panels.kern_finals')}</span><span style="color:var(--muted);font-size:0.6rem;flex-shrink:0;">${I18n.t('fontmaker.panels.kern_builtin')}</span></div>`,
+    `<div class="readline" style="gap:8px;align-items:center;"><span>${I18n.t('fontmaker.panels.kern_descenders')}</span><span style="color:var(--muted);font-size:0.6rem;flex-shrink:0;">${I18n.t('fontmaker.panels.kern_builtin')}</span></div>`
   ];
   const user = userKernClasses().map(c => `<div class="readline" style="gap:8px;align-items:center;">
       <span style="min-width:0;">${esc(c.name)} <span style="font-family:var(--heb-font);color:var(--muted);font-size:0.92rem;">${esc((c.members||[]).map(cp=>String.fromCodePoint(parseInt(cp,16))).join(' '))}</span></span>
       <span style="display:flex;gap:6px;flex-shrink:0;">
-        <button class="ctl-btn" style="padding:2px 8px;" onclick="openKernClass('${c.id}')">Edit</button>
-        <button class="ctl-btn" style="padding:2px 8px;" onclick="deleteKernClass('${c.id}')" title="Delete class">✕</button>
+        <button class="ctl-btn" style="padding:2px 8px;" onclick="openKernClass('${c.id}')">${I18n.t('fontmaker.panels.kern_class_edit')}</button>
+        <button class="ctl-btn" style="padding:2px 8px;" onclick="deleteKernClass('${c.id}')" title="${esc(I18n.t('fontmaker.panels.kern_class_delete_title'))}">✕</button>
       </span></div>`);
   return `
-    <div class="ctl-label" style="margin-top:14px;">Kern classes</div>
-    <div class="hint" style="margin-top:-2px;">Reusable letter groups — pick one on either side of a pair. Editing a class updates every pair that uses it.</div>
+    <div class="ctl-label" style="margin-top:14px;">${I18n.t('fontmaker.panels.kern_classes')}</div>
+    <div class="hint" style="margin-top:-2px;">${I18n.t('fontmaker.panels.kern_classes_hint')}</div>
     <div style="margin-top:4px;">${builtins.concat(user).join('')}</div>
-    <div class="ctl-row" style="margin-top:4px;"><button class="ctl-btn" onclick="openKernClass()">+ New class</button></div>`;
+    <div class="ctl-row" style="margin-top:4px;"><button class="ctl-btn" onclick="openKernClass()">${I18n.t('fontmaker.panels.kern_new_class')}</button></div>`;
 }
 function openKernClass(id) {
   kernClassEditId = id || null;
@@ -9546,9 +9564,9 @@ function renderTraceUnder(U, l) {
 /* ── ANCHORS (Nikkud / Trop) ── */
 function renderEngAccentLeft(l) {   // English letters: accent placement = pick a precomposed accented form, then drag its accent
   const forms = project.precomposed.filter(pc => pc.base === l.codepoint);
-  if (!forms.length) return `<div class="ws-side-title">${esc(l.name)}</div><div class="hint">This letter has no accented forms — it's ready once traced.</div>`;
-  return `<div class="ws-side-title">${esc(l.name)}: place accents</div>
-    <div class="hint" style="font-size:0.66rem;">Pick an accented form, then drag the accent into place on the canvas (or type X / Y). Each is baked into the exported font.</div>
+  if (!forms.length) return `<div class="ws-side-title">${esc(gName(l.name))}</div><div class="hint">${I18n.t('fontmaker.panels.eng_no_accents')}</div>`;
+  return `<div class="ws-side-title">${I18n.t('fontmaker.panels.eng_place_accents', {name: esc(gName(l.name))})}</div>
+    <div class="hint" style="font-size:0.66rem;">${I18n.t('fontmaker.panels.eng_accents_hint')}</div>
     <div class="ctl-row" style="flex-wrap:wrap;gap:5px;margin-top:6px;">${forms.map(precompFormBtn).join('')}</div>`;
 }
 /* The ordered code points to cycle with ◀/▶ (or [ / ]) on the placement page — letters in the CURRENT
@@ -9698,34 +9716,34 @@ function renderAnchorRight(R, l) {
   R.innerHTML = referencePanelR() + `
     <div class="vslider-pair">
       ${vSlider('tplOpacity','tplOpacityVal',I18n.t('fontmaker.panels.slider_ref_opacity'), tplPct, 'setTemplateOpacity')}
-      ${vSlider('glyphOp','glyphOpVal','Letter opacity', glyPct, 'setGlyphOpacity')}
+      ${vSlider('glyphOp','glyphOpVal',I18n.t('fontmaker.panels.slider_letter_opacity'), glyPct, 'setGlyphOpacity')}
     </div>`;
   wireReferencePanel();
 }
 function renderAnchorUnder(U, l) {
   if (!l.contours && !project.template.showOverlay) {
-    U.innerHTML = `<div class="hint">Trace this letter first (step 2), or turn on “Show reference glyph behind” (right) to place nikkud on the reference.</div>`;
+    U.innerHTML = `<div class="hint">${I18n.t('fontmaker.panels.anchor_need_trace')}</div>`;
     return;
   }
   if (precompTarget) {
     U.innerHTML = isWideForm(getPrecomp(precompTarget))
-      ? `<div class="hint">This wide form's vowels follow its base letter — size it with the <b>Width</b> slider on the left, and edit the vowel positions on the base letter.</div>`
-      : `<div class="hint">Placing a precomposed form — drag the orange dot on the canvas, or type X / Y on the left. Your change is saved automatically.</div>`;
+      ? `<div class="hint">${I18n.t('fontmaker.panels.wide_vowels_follow')}</div>`
+      : `<div class="hint">${I18n.t('fontmaker.panels.precomp_drag_hint')}</div>`;
     return;
   }
   if (isEng(l.codepoint)) {
     U.innerHTML = engSupportsAccents(l.codepoint)
-      ? `<div class="hint">Pick an accented form on the left, then drag the orange dot to position the accent. Accents are baked into precomposed letters (á, é, ñ, ç…) when you export.</div>`
-      : `<div class="hint">No accents for this letter — it's done once traced.</div>`;
+      ? `<div class="hint">${I18n.t('fontmaker.panels.eng_accent_drag_hint')}</div>`
+      : `<div class="hint">${I18n.t('fontmaker.panels.eng_no_accents_done')}</div>`;
     return;
   }
   const { cls, isTrop, want } = _anchorCtx(l);
-  const applyBtn = `<button class="ctl-btn" onclick="openApplyNikkud()" title="Copy this letter's nikkud & trop anchor positions onto other letters">Apply positioning to other letters…</button>`;
+  const applyBtn = `<button class="ctl-btn" onclick="openApplyNikkud()" title="${esc(I18n.t('fontmaker.panels.apply_positioning_title'))}">${I18n.t('fontmaker.panels.apply_positioning')}</button>`;
   U.innerHTML = `
     <div class="ws-under-row" style="align-items:center;">
       <div style="flex:1;min-width:0;">${applyBtn}</div>
     </div>
-    <div class="hint" style="margin-top:8px;">Drag the handle (or arrow keys; Shift = 1 unit), or edit X/Y on the left, to position the ${ANCHOR_LABEL[cls].toLowerCase()} mark.${cls==='below'?' All under-vowels share this anchor.':isTrop?` All ${want}-trop share this anchor; with a vowel present, trop stacks on the vowel.`:''}</div>`;
+    <div class="hint" style="margin-top:8px;">${I18n.t('fontmaker.panels.drag_handle_hint', {class: ANCHOR_LABEL[cls].toLowerCase()})}${cls==='below'?' '+I18n.t('fontmaker.panels.all_under_share'):isTrop?' '+I18n.t('fontmaker.panels.all_trop_share', {want}):''}</div>`;
 }
 /* Mark-size sliders live directly below the canvas (center column) rather than in the under-strip. */
 function renderAnchorStageBelow(SB, l) {
@@ -9734,24 +9752,24 @@ function renderAnchorStageBelow(SB, l) {
   const { isTrop } = _anchorCtx(l);
   const sizePct = Math.round((isTrop ? tropScale() : markScale())*100), sizeFn = isTrop ? 'setTropScale' : 'setMarkScale';
   const dagPct = Math.round(dageshScale()*100), cholPct = Math.round(cholamScale()*100), holPct = Math.round(holamScale()*100), isVav = (l.codepoint === '05D5');
-  const saveBtn = `<button id="savePlacementBtn" class="ctl-btn ${l.placementSaved?'':'primary'}" style="font-weight:700;${l.placementSaved?'background:#10b981;color:#fff;border-color:#10b981;':''}" onclick="savePlacement()" title="Marks this letter's placement as reviewed. Undo (Ctrl+Z) always works — confirming isn't required to keep your changes.">${l.placementSaved?'✓ Placement confirmed':'✓ Confirm placement'}</button>`;
+  const saveBtn = `<button id="savePlacementBtn" class="ctl-btn ${l.placementSaved?'':'primary'}" style="font-weight:700;${l.placementSaved?'background:#10b981;color:#fff;border-color:#10b981;':''}" onclick="savePlacement()" title="${esc(I18n.t('fontmaker.panels.confirm_placement_title'))}">${l.placementSaved?I18n.t('fontmaker.panels.placement_confirmed'):I18n.t('fontmaker.panels.confirm_placement')}</button>`;
   const placementPill = l.placementSaved ? ''
     : l.placementInherited
-    ? `<span class="placement-pill inherited" title="These positions were carried from the previous letter. Review them, then Confirm.">↩ Carried over — review</span>`
-    : `<span class="placement-pill unconfirmed" title="This letter's placement hasn't been confirmed yet. Adjust if needed, then Confirm — undo always works.">! Unconfirmed</span>`;
+    ? `<span class="placement-pill inherited" title="${esc(I18n.t('fontmaker.panels.pill_carried_title'))}">${I18n.t('fontmaker.panels.pill_carried')}</span>`
+    : `<span class="placement-pill unconfirmed" title="${esc(I18n.t('fontmaker.panels.pill_unconfirmed_title'))}">${I18n.t('fontmaker.panels.pill_unconfirmed')}</span>`;
   SB.innerHTML = `
     <div class="size-slider-col">
-      <div class="size-slider-line"><label>${isTrop?'Trop':'Nikkud'} size</label> <input type="range" min="40" max="180" step="5" value="${sizePct}" oninput="${sizeFn}(this.value)" onchange="udBurstCommit()"> <span id="markScaleV" class="readout">${sizePct}%</span></div>
-      ${isTrop?'':`<div class="size-slider-line"><label>Holam size</label> <input type="range" min="30" max="180" step="5" value="${holPct}" oninput="setHolamScale(this.value)" onchange="udBurstCommit()"> <span id="holamScaleV" class="readout">${holPct}%</span></div>
-      <div class="size-slider-line"><label>Dagesh size</label> <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
-      ${isVav?`<div class="size-slider-line"><label>Holam (vav) size</label> <input type="range" min="40" max="180" step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>`:''}`}
-      ${isTrop?'':`<div class="hint" style="font-size:0.62rem;">Nikkud size scales the vowels and the shin/sin dot (unless a שׁ/שׂ form has its own Dot size, which wins). Holam size controls just the standalone holam dot above the letter, so you can make it thinner than the below vowels. Dagesh size controls just the dagesh dot.${isVav?' Holam (vav) size controls just the dot on the vav (וֹ), so you can grow it as part of the letter.':''}</div>`}
+      <div class="size-slider-line"><label>${isTrop?I18n.t('fontmaker.panels.trop_size'):I18n.t('fontmaker.panels.nikkud_size')}</label> <input type="range" min="40" max="180" step="5" value="${sizePct}" oninput="${sizeFn}(this.value)" onchange="udBurstCommit()"> <span id="markScaleV" class="readout">${sizePct}%</span></div>
+      ${isTrop?'':`<div class="size-slider-line"><label>${I18n.t('fontmaker.panels.holam_size')}</label> <input type="range" min="30" max="180" step="5" value="${holPct}" oninput="setHolamScale(this.value)" onchange="udBurstCommit()"> <span id="holamScaleV" class="readout">${holPct}%</span></div>
+      <div class="size-slider-line"><label>${I18n.t('fontmaker.panels.dagesh_size')}</label> <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
+      ${isVav?`<div class="size-slider-line"><label>${I18n.t('fontmaker.panels.holam_vav_size')}</label> <input type="range" min="40" max="180" step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>`:''}`}
+      ${isTrop?'':`<div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.size_hint')}${isVav?' '+I18n.t('fontmaker.panels.size_hint_vav'):''}</div>`}
     </div>
     <div class="anchor-confirm-panel">
       ${placementPill}${saveBtn}
       <div class="ctl-row">
-        <button class="ctl-btn" onclick="resetLetterAnchors()">Reset letter</button>
-        <button class="ctl-btn" onclick="resetAllAnchors()">Reset all</button>
+        <button class="ctl-btn" onclick="resetLetterAnchors()">${I18n.t('fontmaker.panels.reset_letter')}</button>
+        <button class="ctl-btn" onclick="resetAllAnchors()">${I18n.t('fontmaker.panels.reset_all')}</button>
       </div>
     </div>`;
 }
@@ -12669,6 +12687,9 @@ function init() {
 function applyI18n() {
   if (!window.I18n) return;
   I18n.applyStaticI18n();
+  // A status set during init (e.g. newProject's toast) may have run before the dict loaded, leaving a
+  // raw key in the bar. Now that translations are live, drop any stale key-looking status.
+  try { const sm = document.getElementById('statusMsg'); if (sm && sm.textContent.trim().startsWith('fontmaker.')) sm.textContent = ''; } catch (e) {}
   // Dark-toggle label is state-dependent (data-i18n gives the light-mode default; override when dark).
   try {
     const _dt = document.getElementById('darkToggle');
