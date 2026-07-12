@@ -2423,6 +2423,7 @@
   "home.alltools.no_data_alert": "This file has no all-tools data. Try importing it on its own tool's page instead.",
   "home.alltools.note": "Back up <b>all</b> presets, saved schedules, settings, and saved fonts from the Generator, Dashboard, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, and Font Maker together. <b>Automatic Input</b> saves and restores a single <b>.ivrit</b> file; <b>Manual Input</b> uses a copy-and-paste text block.",
   "home.alltools.open_button": "⚙ Import / Export All Settings",
+  "home.alltools.restore_reload": "Restored successfully. Reload any open tool pages to apply.",
   "home.alltools.save_button": "⬇ Save All Settings to .ivrit file",
   "home.alltools.textarea_placeholder": "Click 'Export All Settings' to generate a backup, or paste a backup here and click 'Import All Settings'…",
   "home.badge.beta": "Beta",

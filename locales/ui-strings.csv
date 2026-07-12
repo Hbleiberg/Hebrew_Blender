@@ -1,33 +1,33 @@
 key,en,he,context,notes
-contact.donate.open_paypal,Open PayPal →,,donation button,
-contact.donate.open_venmo,Open Venmo →,,donation button,
-contact.donate.tab_paypal,PayPal,,donation tab,
-contact.donate.tab_venmo,Venmo,,donation tab,
-contact.donate.tab_zelle,Zelle,,donation tab,
-contact.donate.zelle_qr_alt,Zelle QR code for donating to IvritSuite,,image alt,aria/alt
-contact.donate.zelle_scan_note,Scan with your bank's Zelle feature,,zelle panel caption,
-contact.form.captcha_required,Please complete the “I’m human” check below before sending.,,form status,
-contact.form.email_fallback,Prefer your own email app? Write to {email}.,,below form,template; html
-contact.form.email_label,Your email,,form label,
-contact.form.error_email_suffix,You can also email {email}.,,form status suffix,template; html
-contact.form.error_fallback,Sorry — that didn’t go through.,,form status fallback,
-contact.form.error_network,Sorry — that didn’t go through. Please email {email} directly.,,form status,template; html
-contact.form.message_label,Message,,form label,
-contact.form.name_label,Your name,,form label,
-contact.form.sending,Sending…,,form status,
-contact.form.subject_label,Subject,,form label,
-contact.form.subject_optional,(optional),,form label hint,
-contact.form.submit_button,Send message,,submit button,
-contact.form.success,Message sent ✓ — thank you! I’ll get back to you soon.,,form status,
-contact.getintouch_heading,Get in touch,,tile heading,
-contact.getintouch_intro,Send a message below and it will go straight to my inbox. Please include your email so I can write back.,,tile intro,
-contact.header.back_link,← Back,,header back button,leading-arrow
-contact.header.tagline,Get in touch · Support the project,,header subtitle,
-contact.header.title,IvritSuite — Contact & Support,,header h1,
-contact.lede,"Have a question, found a bug, or have an idea for a new feature? I'd love to hear from you.",,page lede,
-contact.page_title,Contact & Support,,page title,
-contact.support_body,"IvritSuite is free, and it always will be — no accounts, no ads, no paywalls. If these tools have been useful in your classroom or learning, a small donation helps cover the development and upkeep that keep them running and growing. It's entirely optional, and deeply appreciated. Thank you.",,tile body,
-contact.support_heading,Support IvritSuite,,tile heading,
+contact.donate.open_paypal,Open PayPal →,פתחו את PayPal →,donation button,
+contact.donate.open_venmo,Open Venmo →,פתחו את Venmo →,donation button,
+contact.donate.tab_paypal,PayPal,PayPal,donation tab,
+contact.donate.tab_venmo,Venmo,Venmo,donation tab,
+contact.donate.tab_zelle,Zelle,Zelle,donation tab,
+contact.donate.zelle_qr_alt,Zelle QR code for donating to IvritSuite,קוד QR של Zelle לתרומה ל-IvritSuite,image alt,aria/alt
+contact.donate.zelle_scan_note,Scan with your bank's Zelle feature,סרקו באמצעות תכונת Zelle של הבנק שלכם,zelle panel caption,
+contact.form.captcha_required,Please complete the “I’m human” check below before sending.,אנא השלימו את בדיקת “אני אדם” שלמטה לפני השליחה.,form status,
+contact.form.email_fallback,Prefer your own email app? Write to {email}.,מעדיפים את אפליקציית האימייל שלכם? כתבו אל {email}.,below form,template; html
+contact.form.email_label,Your email,האימייל שלכם,form label,
+contact.form.error_email_suffix,You can also email {email}.,תוכלו גם לכתוב אל {email}.,form status suffix,template; html
+contact.form.error_fallback,Sorry — that didn’t go through.,מצטערים — ההודעה לא נשלחה.,form status fallback,
+contact.form.error_network,Sorry — that didn’t go through. Please email {email} directly.,מצטערים — ההודעה לא נשלחה. אנא כתבו ישירות אל {email}.,form status,template; html
+contact.form.message_label,Message,הודעה,form label,
+contact.form.name_label,Your name,השם שלכם,form label,
+contact.form.sending,Sending…,שולח…,form status,
+contact.form.subject_label,Subject,נושא,form label,
+contact.form.subject_optional,(optional),(לא חובה),form label hint,
+contact.form.submit_button,Send message,שליחת הודעה,submit button,
+contact.form.success,Message sent ✓ — thank you! I’ll get back to you soon.,ההודעה נשלחה ✓ — תודה! אחזור אליכם בקרוב.,form status,
+contact.getintouch_heading,Get in touch,צרו קשר,tile heading,
+contact.getintouch_intro,Send a message below and it will go straight to my inbox. Please include your email so I can write back.,שלחו הודעה למטה והיא תגיע ישירות לתיבת הדואר שלי. אנא כללו את כתובת האימייל שלכם כדי שאוכל להשיב.,tile intro,
+contact.header.back_link,← Back,← חזרה,header back button,leading-arrow
+contact.header.tagline,Get in touch · Support the project,צרו קשר · תמכו בפרויקט,header subtitle,
+contact.header.title,IvritSuite — Contact & Support,IvritSuite — יצירת קשר ותמיכה,header h1,
+contact.lede,"Have a question, found a bug, or have an idea for a new feature? I'd love to hear from you.","יש לכם שאלה, מצאתם באג, או שיש לכם רעיון לתכונה חדשה? אשמח לשמוע מכם.",page lede,
+contact.page_title,Contact & Support,יצירת קשר ותמיכה,page title,
+contact.support_body,"IvritSuite is free, and it always will be — no accounts, no ads, no paywalls. If these tools have been useful in your classroom or learning, a small donation helps cover the development and upkeep that keep them running and growing. It's entirely optional, and deeply appreciated. Thank you.","IvritSuite חינמי, ותמיד יישאר כך — ללא חשבונות, ללא פרסומות, ללא תשלום. אם הכלים האלה הועילו לכם בכיתה או בלמידה, תרומה קטנה מסייעת לכסות את הפיתוח והתחזוקה ששומרים עליהם פעילים ומתפתחים. זה לגמרי אופציונלי, ומוערך מאוד. תודה.",tile body,
+contact.support_heading,Support IvritSuite,תמכו ב-IvritSuite,tile heading,
 dashboard.about.faq_a1,"It displays the live Hebrew date, time, weather, and days of the week for use on classroom SmartBoards or projectors during morning routine and Hebrew instruction.","מציג בזמן אמת את התאריך העברי, השעה, מזג האוויר וימות השבוע — לשימוש על לוחות חכמים או מקרנים בכיתה במהלך שגרת הבוקר והוראת העברית.",FAQ answer,
 dashboard.about.faq_a2,"Yes. The dashboard is designed for SmartBoards, projectors, and large displays. A built-in fullscreen mode and zoom control let you size content for any classroom screen.","כן. לוח המחוונים מתוכנן ללוחות חכמים, מקרנים ומסכים גדולים. מצב מסך מלא מובנה ופקד זום מאפשרים להתאים את גודל התוכן לכל מסך כיתתי.",FAQ answer,
 dashboard.about.faq_a3,Yes. The dashboard is free to use under CC BY-NC-SA 4.0 for non-commercial educational purposes.,כן. לוח המחוונים חינמי לשימוש תחת רישיון CC BY-NC-SA 4.0 למטרות חינוכיות לא-מסחריות.,FAQ answer,
@@ -2369,74 +2369,75 @@ fontmaker.whohas.optional_form,{name} (an optional composed form),{name} (צור
 fontmaker.whohas.precomposed,a precomposed form,צורה מורכבת מראש,glyph-owner phrase,
 fontmaker.whohas.shevana,the Sheva Na slot,משבצת שווא נע,glyph-owner phrase,
 fontmaker.whohas.space,the space,הרווח,glyph-owner phrase,
-home.alltools.copy_button,Copy to Clipboard,,button,
-home.alltools.copy_done,✓ Copied,,button state,leading-emoji
-home.alltools.copy_err_empty,Nothing to copy — export first.,,alert,
-home.alltools.copy_reset,Copy,,button state (reset after copy),
-home.alltools.drop_text,Drop an <b>AllTools .ivrit</b> file here to restore everything,,drop zone,html
-home.alltools.erase_button,🗑 Erase All Settings,,button,leading-emoji
-home.alltools.erase_confirm1,"⚠️ WARNING: This will permanently erase ALL presets, saved schedules, settings, and saved fonts for every IvritSuite tool.\n\nThis cannot be undone. Export a backup first if you want to keep your data.\n\nAre you sure you want to erase everything?",,confirm,leading-emoji; contains \n
-home.alltools.erase_confirm2,Final confirmation: erase all Hebrew Blender data on this device?,,confirm,
-home.alltools.erase_success,All settings and presets have been erased.,,alert,
-home.alltools.export_button,⬇ Export All Settings,,button (manual mode),leading-emoji
-home.alltools.import_button,⬆ Import All Settings,,button (manual mode),leading-emoji
-home.alltools.import_confirm,This will overwrite your current dashboard settings and merge all imported presets and schedules. Continue?,,confirm,
-home.alltools.import_err_empty,Paste an exported settings block first.,,alert,
-home.alltools.import_err_json,Invalid JSON — please paste the full export block.,,alert,
-home.alltools.import_err_notexport,This doesn't look like a Hebrew Blender export. Make sure you copied the full block.,,alert,
-home.alltools.import_failed,Import failed: {message},,alert,template
-home.alltools.import_success,Import successful! Reload the Dashboard to apply all settings.,,alert,
-home.alltools.modal_title,⚙ Import / Export All Settings,,modal header title,leading-emoji
-home.alltools.myfonts.download_title,Download,,button title,aria/title
-home.alltools.myfonts.empty,"No saved fonts yet. Build one in the Hebrew Font Maker, then “Save to My Fonts”.",,empty state,
-home.alltools.myfonts.note,"Fonts you built in the <a href=""Hebrew_Font_Maker.html"">Hebrew Font Maker</a> — or any <b>.ttf / .otf / .woff</b> you upload — are saved in this browser. Use one across every tool, download it, or remove it.",,section note,html
-home.alltools.myfonts.remove_confirm,Remove “{name}” from My Fonts? Tools using it will fall back to their default font.,,confirm dialog,template
-home.alltools.myfonts.remove_title,Remove,,button title,aria/title
-home.alltools.myfonts.title,★ My IvritSuite Fonts,,section heading,leading-symbol
-home.alltools.myfonts.upload_button,⬆ Upload a font,,upload label/button,leading-emoji
-home.alltools.myfonts.use_alert,“{name}” will be used in every IvritSuite tool. Reload any open tool pages to see it.,,alert,template
-home.alltools.myfonts.use_button,Use in all tools,,button,
-home.alltools.myfonts.use_status,“{name}” is now the font in every tool — reload any open tool to see it.,,status text,template
-home.alltools.no_data_alert,This file has no all-tools data. Try importing it on its own tool's page instead.,,alert (AllTools .ivrit apply),
-home.alltools.note,"Back up <b>all</b> presets, saved schedules, settings, and saved fonts from the Generator, Dashboard, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, and Font Maker together. <b>Automatic Input</b> saves and restores a single <b>.ivrit</b> file; <b>Manual Input</b> uses a copy-and-paste text block.",,modal intro note,html; mixed UI+content — do not translate tool names
-home.alltools.open_button,⚙ Import / Export All Settings,,button opening settings modal,leading-emoji
-home.alltools.save_button,⬇ Save All Settings to .ivrit file,,button (auto mode),leading-emoji
-home.alltools.textarea_placeholder,"Click 'Export All Settings' to generate a backup, or paste a backup here and click 'Import All Settings'…",,textarea placeholder,
-home.badge.beta,Beta,,tool card badge (flash cards; font maker),
-home.bookmark.button,🔖 Bookmark this page,,button,leading-emoji
-home.bookmark.tip_desktop,Press {key}+D to bookmark this page.,,tip below bookmark button,template ({key}=⌘/Ctrl)
-home.bookmark.tip_mobile,"Tap the share/menu button in your browser and choose ""Add to Home Screen"" or ""Add Bookmark"".",,tip below bookmark button,
-home.card.dashboard.cta,Open the Hebrew classroom display →,,tool card button,
-home.card.dashboard.desc,"Live Hebrew date, time, weather, and days of the week for the Hebrew classroom — SmartBoard and projector ready, free for teachers.",,tool card description,scope-ambiguous (card desc)
-home.card.dashboard.name,Hebrew Classroom Dashboard,,tool card title,
-home.card.dictionary.cta,Look up Hebrew words →,,tool card button,
-home.card.dictionary.desc,"Free Hebrew dictionary to browse and filter Hebrew vocabulary by length, part of speech, era, and letter position — useful for Hebrew learning at every level.",,tool card description,scope-ambiguous (card desc)
-home.card.dictionary.name,Hebrew Word Lookup,,tool card title,
-home.card.flashcards.cta,Practice Hebrew flash cards →,,tool card button,
-home.card.flashcards.desc,"Free Hebrew flash cards for reading practice — decode one, two, or three Hebrew letters at a time with full nikkud support. Optimized for mobile.",,tool card description,scope-ambiguous (card desc)
-home.card.flashcards.name,Hebrew Flash Cards,,tool card title (Beta badge),
-home.card.fontmaker.cta,Make your own Hebrew font →,,tool card button,
-home.card.fontmaker.desc,"Turn your own handwritten Hebrew letters into a real, installable font — trace each letter, place nikkud & trop, then export TTF, WOFF2, or UFO.",,tool card description,scope-ambiguous (card desc)
-home.card.fontmaker.name,Hebrew Font Maker,,tool card title (Beta badge),
-home.card.generator.cta,Make printable Hebrew worksheets →,,tool card button,
-home.card.generator.desc,"Create free printable Hebrew worksheets, bingo cards, and decoding drills with nikkud — customizable Hebrew reading practice for emerging readers.",,tool card description,scope-ambiguous (card desc)
-home.card.generator.name,Hebrew Worksheet Generator,,tool card title,
-home.card.resources.cta,Browse free Hebrew teaching resources →,,tool card button,
-home.card.resources.desc,"A curated directory of free Hebrew learning resources, printables, dictionaries, fonts, and Jewish education tools — organized by category and age group.",,tool card description,scope-ambiguous (card desc)
-home.card.resources.fonts_link,🔤 Hebrew Fonts →,,resources card secondary link,leading-emoji
-home.card.resources.fonts_link_title,Browse & share Hebrew fonts,,link tooltip,aria/title
-home.card.resources.name,Hebrew Teaching Resources,,tool card title,
-home.card.torah.cta,Practice Torah reading →,,tool card button,
-home.card.torah.desc,"Read the weekly parsha with vowel coloring, transliteration, English translations, cantillation toggle, and chanted-audio karaoke (PocketTorah).",,tool card description,scope-ambiguous (card desc)
-home.card.torah.name,Torah Trainer,,tool card title,
-home.card.torah.sefaria_title,Texts from Sefaria,,Sefaria attribution link tooltip,aria/title
-home.card.trope.cta,Learn the trope names →,,tool card button,
-home.card.trope.desc,"Learn the Torah cantillation marks (trope / te'amim) — symbols, Ashkenazi and Sephardi names, and melodies with real chanted examples — then drill yourself with three quiz modes.",,tool card description,scope-ambiguous (card desc)
-home.card.trope.name,Trope Tutor,,tool card title,
-home.contact_link,✉️ Contact & Support,,link button,leading-emoji
-home.header.brand,IvritSuite,,header wordmark,brand name
-home.header.tagline,Tools for Hebrew literacy instruction,,header subtitle,
-home.hero.subtitle,Free Hebrew Learning Tools for Teachers and Students,,hero subheading,
+home.alltools.copy_button,Copy to Clipboard,העתקה ללוח,button,
+home.alltools.copy_done,✓ Copied,✓ הועתק,button state,leading-emoji
+home.alltools.copy_err_empty,Nothing to copy — export first.,אין מה להעתיק — ייצאו קודם.,alert,
+home.alltools.copy_reset,Copy,העתקה,button state (reset after copy),
+home.alltools.drop_text,Drop an <b>AllTools .ivrit</b> file here to restore everything,גררו לכאן קובץ <b>AllTools .ivrit</b> כדי לשחזר את הכול,drop zone,html
+home.alltools.erase_button,🗑 Erase All Settings,🗑 מחיקת כל ההגדרות,button,leading-emoji
+home.alltools.erase_confirm1,"⚠️ WARNING: This will permanently erase ALL presets, saved schedules, settings, and saved fonts for every IvritSuite tool.\n\nThis cannot be undone. Export a backup first if you want to keep your data.\n\nAre you sure you want to erase everything?","⚠️ אזהרה: פעולה זו תמחק לצמיתות את כל ההגדרות השמורות, מערכות השעות השמורות, ההגדרות והגופנים השמורים של כל כלי IvritSuite.\n\nלא ניתן לבטל פעולה זו. ייצאו גיבוי תחילה אם ברצונכם לשמור את הנתונים שלכם.\n\nהאם אתם בטוחים שברצונכם למחוק את הכול?",confirm,leading-emoji; contains \n
+home.alltools.erase_confirm2,Final confirmation: erase all Hebrew Blender data on this device?,אישור סופי: למחוק את כל נתוני Hebrew Blender במכשיר זה?,confirm,
+home.alltools.erase_success,All settings and presets have been erased.,כל ההגדרות וההגדרות השמורות נמחקו.,alert,
+home.alltools.export_button,⬇ Export All Settings,⬇ ייצוא כל ההגדרות,button (manual mode),leading-emoji
+home.alltools.import_button,⬆ Import All Settings,⬆ ייבוא כל ההגדרות,button (manual mode),leading-emoji
+home.alltools.import_confirm,This will overwrite your current dashboard settings and merge all imported presets and schedules. Continue?,פעולה זו תדרוס את הגדרות לוח המחוונים הנוכחיות שלכם ותמזג את כל ההגדרות השמורות ומערכות השעות המיובאות. להמשיך?,confirm,
+home.alltools.import_err_empty,Paste an exported settings block first.,הדביקו תחילה בלוק הגדרות מיוצא.,alert,
+home.alltools.import_err_json,Invalid JSON — please paste the full export block.,JSON לא תקין — אנא הדביקו את בלוק הייצוא המלא.,alert,
+home.alltools.import_err_notexport,This doesn't look like a Hebrew Blender export. Make sure you copied the full block.,זה לא נראה כמו ייצוא של Hebrew Blender. ודאו שהעתקתם את הבלוק המלא.,alert,
+home.alltools.import_failed,Import failed: {message},הייבוא נכשל: {message},alert,template
+home.alltools.import_success,Import successful! Reload the Dashboard to apply all settings.,הייבוא הצליח! טענו מחדש את לוח המחוונים כדי להחיל את כל ההגדרות.,alert,
+home.alltools.restore_reload,Restored successfully. Reload any open tool pages to apply.,השחזור הצליח. טענו מחדש את דפי הכלים הפתוחים כדי להחיל.,restore success alert,
+home.alltools.modal_title,⚙ Import / Export All Settings,⚙ ייבוא / ייצוא כל ההגדרות,modal header title,leading-emoji
+home.alltools.myfonts.download_title,Download,הורדה,button title,aria/title
+home.alltools.myfonts.empty,"No saved fonts yet. Build one in the Hebrew Font Maker, then “Save to My Fonts”.","אין עדיין גופנים שמורים. צרו גופן ביוצר הגופנים העברי, ואז “שמירה לגופנים שלי”.",empty state,
+home.alltools.myfonts.note,"Fonts you built in the <a href=""Hebrew_Font_Maker.html"">Hebrew Font Maker</a> — or any <b>.ttf / .otf / .woff</b> you upload — are saved in this browser. Use one across every tool, download it, or remove it.","גופנים שיצרתם ב<a href=""Hebrew_Font_Maker.html"">יוצר הגופנים העברי</a> — או כל <b>.ttf / .otf / .woff</b> שתעלו — נשמרים בדפדפן זה. השתמשו בגופן בכל הכלים, הורידו אותו, או הסירו אותו.",section note,html
+home.alltools.myfonts.remove_confirm,Remove “{name}” from My Fonts? Tools using it will fall back to their default font.,להסיר את “{name}” מהגופנים שלי? כלים המשתמשים בו יחזרו לגופן ברירת המחדל שלהם.,confirm dialog,template
+home.alltools.myfonts.remove_title,Remove,הסרה,button title,aria/title
+home.alltools.myfonts.title,★ My IvritSuite Fonts,★ הגופנים שלי ב-IvritSuite,section heading,leading-symbol
+home.alltools.myfonts.upload_button,⬆ Upload a font,⬆ העלאת גופן,upload label/button,leading-emoji
+home.alltools.myfonts.use_alert,“{name}” will be used in every IvritSuite tool. Reload any open tool pages to see it.,“{name}” ישמש בכל כלי IvritSuite. טענו מחדש את דפי הכלים הפתוחים כדי לראותו.,alert,template
+home.alltools.myfonts.use_button,Use in all tools,שימוש בכל הכלים,button,
+home.alltools.myfonts.use_status,“{name}” is now the font in every tool — reload any open tool to see it.,“{name}” הוא כעת הגופן בכל כלי — טענו מחדש כל כלי פתוח כדי לראותו.,status text,template
+home.alltools.no_data_alert,This file has no all-tools data. Try importing it on its own tool's page instead.,בקובץ זה אין נתוני כל-הכלים. נסו לייבא אותו בעמוד הכלי הייעודי שלו במקום זאת.,alert (AllTools .ivrit apply),
+home.alltools.note,"Back up <b>all</b> presets, saved schedules, settings, and saved fonts from the Generator, Dashboard, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, and Font Maker together. <b>Automatic Input</b> saves and restores a single <b>.ivrit</b> file; <b>Manual Input</b> uses a copy-and-paste text block.","גבו <b>את כל</b> ההגדרות השמורות, מערכות השעות השמורות, ההגדרות והגופנים השמורים מהמחולל, לוח המחוונים, כרטיסי הזיכרון, המילון, מאמן התורה, מאמן הטעמים ויוצר הגופנים — יחד. <b>קלט אוטומטי</b> שומר ומשחזר קובץ <b>.ivrit</b> יחיד; <b>קלט ידני</b> משתמש בבלוק טקסט להעתקה והדבקה.",modal intro note,html; mixed UI+content — do not translate tool names
+home.alltools.open_button,⚙ Import / Export All Settings,⚙ ייבוא / ייצוא כל ההגדרות,button opening settings modal,leading-emoji
+home.alltools.save_button,⬇ Save All Settings to .ivrit file,⬇ שמירת כל ההגדרות לקובץ .ivrit,button (auto mode),leading-emoji
+home.alltools.textarea_placeholder,"Click 'Export All Settings' to generate a backup, or paste a backup here and click 'Import All Settings'…","לחצו על 'ייצוא כל ההגדרות' כדי ליצור גיבוי, או הדביקו כאן גיבוי ולחצו על 'ייבוא כל ההגדרות'…",textarea placeholder,
+home.badge.beta,Beta,בטא,tool card badge (flash cards; font maker),
+home.bookmark.button,🔖 Bookmark this page,🔖 הוספת העמוד לסימניות,button,leading-emoji
+home.bookmark.tip_desktop,Press {key}+D to bookmark this page.,הקישו {key}+D כדי להוסיף את העמוד לסימניות.,tip below bookmark button,template ({key}=⌘/Ctrl)
+home.bookmark.tip_mobile,"Tap the share/menu button in your browser and choose ""Add to Home Screen"" or ""Add Bookmark"".","הקישו על כפתור השיתוף/התפריט בדפדפן שלכם ובחרו ""הוספה למסך הבית"" או ""הוספת סימנייה"".",tip below bookmark button,
+home.card.dashboard.cta,Open the Hebrew classroom display →,פתחו את תצוגת כיתת העברית →,tool card button,
+home.card.dashboard.desc,"Live Hebrew date, time, weather, and days of the week for the Hebrew classroom — SmartBoard and projector ready, free for teachers.","תאריך עברי, שעה, מזג אוויר וימות השבוע בזמן אמת עבור כיתת העברית — מוכן ללוח חכם ולמקרן, חינם למורים.",tool card description,scope-ambiguous (card desc)
+home.card.dashboard.name,Hebrew Classroom Dashboard,לוח מחוונים לכיתת עברית,tool card title,
+home.card.dictionary.cta,Look up Hebrew words →,חפשו מילים בעברית →,tool card button,
+home.card.dictionary.desc,"Free Hebrew dictionary to browse and filter Hebrew vocabulary by length, part of speech, era, and letter position — useful for Hebrew learning at every level.","מילון עברי חינמי לעיון וסינון אוצר מילים עברי לפי אורך, חלק דיבר, תקופה ומיקום האות — שימושי ללימוד עברית בכל רמה.",tool card description,scope-ambiguous (card desc)
+home.card.dictionary.name,Hebrew Word Lookup,חיפוש מילים בעברית,tool card title,
+home.card.flashcards.cta,Practice Hebrew flash cards →,תרגלו כרטיסי זיכרון בעברית →,tool card button,
+home.card.flashcards.desc,"Free Hebrew flash cards for reading practice — decode one, two, or three Hebrew letters at a time with full nikkud support. Optimized for mobile.","כרטיסי זיכרון בעברית חינמיים לתרגול קריאה — פענחו אות עברית אחת, שתיים או שלוש בכל פעם, עם תמיכה מלאה בניקוד. מותאם למובייל.",tool card description,scope-ambiguous (card desc)
+home.card.flashcards.name,Hebrew Flash Cards,כרטיסי זיכרון בעברית,tool card title (Beta badge),
+home.card.fontmaker.cta,Make your own Hebrew font →,צרו גופן עברי משלכם →,tool card button,
+home.card.fontmaker.desc,"Turn your own handwritten Hebrew letters into a real, installable font — trace each letter, place nikkud & trop, then export TTF, WOFF2, or UFO.","הפכו את אותיות היד העבריות שלכם לגופן אמיתי הניתן להתקנה — שרטטו כל אות, מקמו ניקוד וטעמים, ואז ייצאו TTF, WOFF2 או UFO.",tool card description,scope-ambiguous (card desc)
+home.card.fontmaker.name,Hebrew Font Maker,יוצר הגופנים העברי,tool card title (Beta badge),
+home.card.generator.cta,Make printable Hebrew worksheets →,צרו דפי עבודה עבריים להדפסה →,tool card button,
+home.card.generator.desc,"Create free printable Hebrew worksheets, bingo cards, and decoding drills with nikkud — customizable Hebrew reading practice for emerging readers.","צרו דפי עבודה עבריים חינמיים להדפסה, כרטיסי בינגו ותרגילי פענוח עם ניקוד — תרגול קריאה בעברית הניתן להתאמה עבור קוראים מתחילים.",tool card description,scope-ambiguous (card desc)
+home.card.generator.name,Hebrew Worksheet Generator,מחולל דפי עבודה בעברית,tool card title,
+home.card.resources.cta,Browse free Hebrew teaching resources →,עיינו במשאבים חינמיים להוראת עברית →,tool card button,
+home.card.resources.desc,"A curated directory of free Hebrew learning resources, printables, dictionaries, fonts, and Jewish education tools — organized by category and age group.","מדריך אוצר של משאבים חינמיים ללימוד עברית, חומרים להדפסה, מילונים, גופנים וכלים לחינוך יהודי — מאורגן לפי קטגוריה וקבוצת גיל.",tool card description,scope-ambiguous (card desc)
+home.card.resources.fonts_link,🔤 Hebrew Fonts →,🔤 גופנים עבריים →,resources card secondary link,leading-emoji
+home.card.resources.fonts_link_title,Browse & share Hebrew fonts,עיון ושיתוף של גופנים עבריים,link tooltip,aria/title
+home.card.resources.name,Hebrew Teaching Resources,משאבים להוראת עברית,tool card title,
+home.card.torah.cta,Practice Torah reading →,תרגלו קריאה בתורה →,tool card button,
+home.card.torah.desc,"Read the weekly parsha with vowel coloring, transliteration, English translations, cantillation toggle, and chanted-audio karaoke (PocketTorah).","קראו את פרשת השבוע עם צביעת תנועות, תעתיק, תרגומים לאנגלית, מתג טעמים, וקריוקי אודיו של הקראה בטעמים (PocketTorah).",tool card description,scope-ambiguous (card desc)
+home.card.torah.name,Torah Trainer,מאמן התורה,tool card title,
+home.card.torah.sefaria_title,Texts from Sefaria,טקסטים מ-Sefaria,Sefaria attribution link tooltip,aria/title
+home.card.trope.cta,Learn the trope names →,למדו את שמות הטעמים →,tool card button,
+home.card.trope.desc,"Learn the Torah cantillation marks (trope / te'amim) — symbols, Ashkenazi and Sephardi names, and melodies with real chanted examples — then drill yourself with three quiz modes.","למדו את טעמי המקרא (trope / te'amim) — הסימנים, השמות האשכנזיים והספרדיים, והמנגינות עם דוגמאות הקראה אמיתיות — ואז תרגלו את עצמכם בשלושה מצבי חידון.",tool card description,scope-ambiguous (card desc)
+home.card.trope.name,Trope Tutor,מאמן הטעמים,tool card title,
+home.contact_link,✉️ Contact & Support,✉️ יצירת קשר ותמיכה,link button,leading-emoji
+home.header.brand,IvritSuite,IvritSuite,header wordmark,brand name
+home.header.tagline,Tools for Hebrew literacy instruction,כלים להוראת אוריינות עברית,header subtitle,
+home.hero.subtitle,Free Hebrew Learning Tools for Teachers and Students,כלים חינמיים ללימוד עברית למורים ולתלמידים,hero subheading,
 notfound.header.brand,IvritSuite,,header wordmark,brand name
 notfound.header.tagline,Tools for Hebrew literacy instruction,,header subtitle,
 notfound.home_button,← Back to the Promised Home Page,,primary button,leading-arrow
@@ -2448,180 +2449,180 @@ notfound.quip,"We tried to blend it back together from a few stray letters — b
 notfound.subtitle,"We searched right-to-left <em>and</em> left-to-right, but this page is nowhere to be found <span class=""heb-inline"">(לֹא נִמְצָא, <em>lo nimtza</em>)</span>. It may have slipped out for a snack and forgotten its vowels.",,hero subtitle,html; mixed UI+content; contains Hebrew
 notfound.title,This page wandered off for forty years.,,hero title,
 notfound.tool_links_intro,Or wander somewhere useful:,,tool links intro,
-privacy.effective_date,"Effective date: June 4, 2026",,effective date line,
-privacy.header.back_link,← Back,,header back button,leading-arrow
-privacy.header.tagline,How we handle your data,,header subtitle,
-privacy.header.title,IvritSuite — Privacy Policy,,header h1,
-privacy.legal.changes,"If this policy is updated, the ""Effective date"" at the top of the page will change. Material changes will be reflected on this page; there is no mailing list or account to notify because the site does not collect contact information.",,section 9 body,
-privacy.legal.children,"IvritSuite is designed to be safely usable by students of all ages, including children under 13. The site does not knowingly collect personal information from any user, regardless of age. There is no account creation, no submission form, no chat, and no upload feature. If you believe any personal information has somehow been collected in violation of this policy, please contact us through the <a href=""contact.html"">contact page</a> and we will remove it.",,section 6 body,html
-privacy.legal.collect,"IvritSuite is almost entirely client-side. There are no accounts, no logins, and no submissions, and the site stores no personal data on a server. Specifically:\n<strong>No personal information.</strong> The site does not ask for, transmit, or store your name, email address, school, classroom roster, or any other personally identifiable information.\n<strong>Tool content stays in your browser.</strong> Anything you create with the tools — worksheet presets, classroom-dashboard schedules and settings, flash-card preferences, dictionary filters, Torah Trainer settings — is stored locally in your browser using the standard <code>localStorage</code> API. It never leaves your device through any channel operated by the site.\n<strong>No tracking pixels or fingerprinting.</strong> For aggregate usage statistics the site uses only Google Analytics 4, described in Section 3.",,section 2 body (intro + list),html; contains \n
-privacy.legal.contact,"Questions or concerns about this policy can be directed to Harrison Bleiberg via the <a href=""contact.html"">contact page</a>, or by email at {email}.",,section 10 body,template; html
-privacy.legal.cookies,"The site uses <strong>Google Analytics 4</strong> (measurement ID <code>G-CMLC81Z0HC</code>) to understand which tools are used and how visitors arrive at the site. GA4 collects aggregated, anonymized data such as page views, approximate geographic region, device class, and referral source. IP addresses are anonymized by GA4 by default and are not stored by the site operator.\nYou can control or block analytics in several ways:\nUse your browser's ""Do Not Track"" or tracking-protection settings.\nInstall the <a href=""https://tools.google.com/dlpage/gaoptout"" target=""_blank"" rel=""noopener"">Google Analytics Opt-out Browser Add-on</a>.\nBlock third-party scripts via your preferred ad/tracker blocker.\nFor details on Google's data handling, see Google's <a href=""https://policies.google.com/privacy"" target=""_blank"" rel=""noopener"">Privacy Policy</a>.",,section 3 body (intro + list),html; contains \n
-privacy.legal.ferpa_analytics,"The site's only data collection is anonymized, aggregated Google Analytics 4 usage data (page views, device class, region). GA4 anonymizes IP addresses and is not associated with any student identifier; this data is not directly or indirectly linkable to individual students and therefore does not constitute ""education records"" or ""personally identifiable information"" under 34 CFR § 99.3.",,section 7 body,
-privacy.legal.ferpa_designation,"Because no PII or education records are disclosed to the site, schools and districts may permit teachers and students to use IvritSuite without entering into a separate data-sharing or ""school official"" agreement under the FERPA exception at <em>34 CFR § 99.31(a)(1)</em>. If your district nevertheless requires a written acknowledgment of these practices, you may rely on this policy as a public statement of them.",,section 7 body,html
-privacy.legal.ferpa_intro,"This section is provided for school administrators, IT departments, and educators evaluating IvritSuite for classroom use under the U.S. Family Educational Rights and Privacy Act (FERPA, <em>20 U.S.C. § 1232g; 34 CFR Part 99</em>).",,section 7 intro,html
-privacy.legal.ferpa_noads,"IvritSuite does not sell, rent, license, or otherwise share any user information with advertisers or data brokers. The site displays no advertising.",,section 7 body,
-privacy.legal.ferpa_norecords,"IvritSuite does <strong>not</strong> collect, receive, store, or transmit any personally identifiable information (PII) from student education records as defined by FERPA. The site has no user accounts, no class rosters, no grade books, no submission of student work, and no server-side storage of teacher- or student-generated content. Worksheets, presets, schedules, and tool preferences are stored exclusively in the local browser using <code>localStorage</code> and remain on the user's own device.",,section 7 body,html
-privacy.legal.ferpa_parental,"Because no student records are stored by the site, there is nothing for parents to inspect, amend, or have removed under FERPA's parental-rights provisions on the site's side. Parents wishing to review locally stored tool settings can do so directly in the browser used by the student via the home-page <strong>Import / Export All Settings</strong> control.",,section 7 body,html
-privacy.legal.ferpa_questions,"For FERPA-specific inquiries, please contact Harrison Bleiberg through the <a href=""contact.html"">contact page</a>.",,section 7 body,html
-privacy.legal.intro,"IvritSuite (the ""site"") is a free collection of Hebrew literacy tools for teachers and students, operated by Harrison Bleiberg. This Privacy Policy explains what information the site collects (and, more importantly, what it does <em>not</em>), how that information is used, and the choices you have. By using the site you agree to the practices described here.",,section 1 body,html
-privacy.legal.localstorage,"Because all of your settings live only in your browser, you have full control:\nThe <strong>Import / Export All Settings</strong> button on the home page lets you download a single JSON backup of every tool's data, restore from a backup, or erase everything in one click.\nClearing your browser's site data for IvritSuite removes all stored settings and presets.\nUsing a different browser, device, or private/incognito window will give you a fresh, separate set of settings.",,section 5 body (intro + list),html; contains \n
-privacy.legal.security,"The site is delivered over HTTPS. Because no user data is transmitted to a server operated by the site, the primary security boundary is the user's own browser and device. We recommend keeping your browser up to date and using device-level protections appropriate to your setting.",,section 8 body,
-privacy.legal.thirdparty,"Some tools fetch or link to third-party content. Visiting or interacting with these resources is governed by their own privacy policies, not by IvritSuite:\n<a href=""https://kaikki.org/dictionary/Hebrew/index.html"" target=""_blank"" rel=""noopener"">Kaikki.org</a> — source of the Hebrew word data used in the dictionary and worksheet generator.\n<a href=""https://www.pockettorah.com/"" target=""_blank"" rel=""noopener"">PocketTorah</a> — chanted-audio source used by the Torah Trainer.\n<a href=""https://fonts.google.com/"" target=""_blank"" rel=""noopener"">Google Fonts</a> — Hebrew and Latin web fonts.\nPublic weather APIs used by the Classroom Dashboard to display current local weather (only the location you enter is sent, in the standard form required to look up a forecast).\n<a href=""https://web3forms.com/"" target=""_blank"" rel=""noopener"">Web3Forms</a> and <a href=""https://www.hcaptcha.com/"" target=""_blank"" rel=""noopener"">hCaptcha</a> — used only if you send a message through the <a href=""contact.html"">contact page</a> or the ""Suggest a Resource"" form on the <a href=""resources.html"">resources page</a>. The information you enter in those forms is passed to Web3Forms solely to deliver the email to the site operator, and the form uses hCaptcha to block automated spam; both process that data under their own privacy policies. Nothing from the form is stored by IvritSuite.",,section 4 body (intro + list),html; contains \n
-privacy.page_title,Privacy Policy,,page title,
-privacy.section.changes_heading,9. Changes to This Policy,,section heading,
-privacy.section.children_heading,6. Children's Privacy,,section heading,
-privacy.section.collect_heading,2. Information We Collect,,section heading,
-privacy.section.contact_heading,10. Contact,,section heading,
-privacy.section.cookies_heading,3. Cookies & Analytics,,section heading,
-privacy.section.ferpa_badge,For Schools,,section badge,
-privacy.section.ferpa_h3_analytics,Analytics do not constitute education records,,subsection heading,
-privacy.section.ferpa_h3_designation,School-official designation is not required,,subsection heading,
-privacy.section.ferpa_h3_noads,No advertising or sale of data,,subsection heading,
-privacy.section.ferpa_h3_norecords,No collection of education records or student PII,,subsection heading,
-privacy.section.ferpa_h3_parental,Parental review and access,,subsection heading,
-privacy.section.ferpa_h3_questions,FERPA-related questions,,subsection heading,
-privacy.section.ferpa_heading,7. FERPA Compliance,,section heading,
-privacy.section.intro_heading,1. Introduction,,section heading,
-privacy.section.localstorage_heading,5. Local Storage & Your Control Over Data,,section heading,
-privacy.section.security_heading,8. Security,,section heading,
-privacy.section.thirdparty_heading,4. Third-Party Resources,,section heading,
+privacy.effective_date,"Effective date: June 4, 2026",תאריך תחילה: 4 ביוני 2026,effective date line,
+privacy.header.back_link,← Back,← חזרה,header back button,leading-arrow
+privacy.header.tagline,How we handle your data,כיצד אנו מטפלים בנתונים שלכם,header subtitle,
+privacy.header.title,IvritSuite — Privacy Policy,IvritSuite — מדיניות פרטיות,header h1,
+privacy.legal.changes,"If this policy is updated, the ""Effective date"" at the top of the page will change. Material changes will be reflected on this page; there is no mailing list or account to notify because the site does not collect contact information.","אם מדיניות זו תעודכן, ""תאריך התחילה"" בראש העמוד ישתנה. שינויים מהותיים ישתקפו בעמוד זה; אין רשימת תפוצה או חשבון ליידע, מכיוון שהאתר אינו אוסף פרטי יצירת קשר.",section 9 body,
+privacy.legal.children,"IvritSuite is designed to be safely usable by students of all ages, including children under 13. The site does not knowingly collect personal information from any user, regardless of age. There is no account creation, no submission form, no chat, and no upload feature. If you believe any personal information has somehow been collected in violation of this policy, please contact us through the <a href=""contact.html"">contact page</a> and we will remove it.","IvritSuite מתוכנן לשימוש בטוח על ידי תלמידים בכל הגילאים, כולל ילדים מתחת לגיל 13. האתר אינו אוסף ביודעין מידע אישי מאף משתמש, ללא קשר לגיל. אין יצירת חשבון, אין טופס הגשה, אין צ'אט ואין אפשרות העלאה. אם אתם סבורים שמידע אישי כלשהו נאסף איכשהו תוך הפרת מדיניות זו, אנא צרו איתנו קשר דרך <a href=""contact.html"">עמוד יצירת הקשר</a> ואנו נסיר אותו.",section 6 body,html
+privacy.legal.collect,"IvritSuite is almost entirely client-side. There are no accounts, no logins, and no submissions, and the site stores no personal data on a server. Specifically:\n<strong>No personal information.</strong> The site does not ask for, transmit, or store your name, email address, school, classroom roster, or any other personally identifiable information.\n<strong>Tool content stays in your browser.</strong> Anything you create with the tools — worksheet presets, classroom-dashboard schedules and settings, flash-card preferences, dictionary filters, Torah Trainer settings — is stored locally in your browser using the standard <code>localStorage</code> API. It never leaves your device through any channel operated by the site.\n<strong>No tracking pixels or fingerprinting.</strong> For aggregate usage statistics the site uses only Google Analytics 4, described in Section 3.","IvritSuite פועל כמעט לחלוטין בצד הלקוח. אין חשבונות, אין כניסות ואין הגשות, והאתר אינו מאחסן נתונים אישיים בשרת. באופן ספציפי:\n<strong>אין מידע אישי.</strong> האתר אינו מבקש, משדר או מאחסן את שמכם, כתובת האימייל, בית הספר, רשימת התלמידים בכיתה או כל מידע מזהה אישית אחר.\n<strong>תוכן הכלים נשאר בדפדפן שלכם.</strong> כל דבר שאתם יוצרים בעזרת הכלים — הגדרות שמורות של דפי עבודה, מערכות שעות והגדרות של לוח המחוונים לכיתה, העדפות כרטיסי זיכרון, מסנני מילון, הגדרות מאמן התורה — נשמר מקומית בדפדפן שלכם באמצעות ממשק <code>localStorage</code> הסטנדרטי. הוא לעולם אינו עוזב את המכשיר שלכם דרך ערוץ כלשהו המופעל על ידי האתר.\n<strong>אין פיקסלי מעקב או טביעת אצבע.</strong> עבור סטטיסטיקות שימוש מצטברות האתר משתמש רק ב-Google Analytics 4, המתואר בסעיף 3.",section 2 body (intro + list),html; contains \n
+privacy.legal.contact,"Questions or concerns about this policy can be directed to Harrison Bleiberg via the <a href=""contact.html"">contact page</a>, or by email at {email}.","שאלות או פניות בנוגע למדיניות זו ניתן להפנות אל Harrison Bleiberg דרך <a href=""contact.html"">עמוד יצירת הקשר</a>, או באימייל אל {email}.",section 10 body,template; html
+privacy.legal.cookies,"The site uses <strong>Google Analytics 4</strong> (measurement ID <code>G-CMLC81Z0HC</code>) to understand which tools are used and how visitors arrive at the site. GA4 collects aggregated, anonymized data such as page views, approximate geographic region, device class, and referral source. IP addresses are anonymized by GA4 by default and are not stored by the site operator.\nYou can control or block analytics in several ways:\nUse your browser's ""Do Not Track"" or tracking-protection settings.\nInstall the <a href=""https://tools.google.com/dlpage/gaoptout"" target=""_blank"" rel=""noopener"">Google Analytics Opt-out Browser Add-on</a>.\nBlock third-party scripts via your preferred ad/tracker blocker.\nFor details on Google's data handling, see Google's <a href=""https://policies.google.com/privacy"" target=""_blank"" rel=""noopener"">Privacy Policy</a>.","האתר משתמש ב-<strong>Google Analytics 4</strong> (מזהה מדידה <code>G-CMLC81Z0HC</code>) כדי להבין באילו כלים משתמשים וכיצד מבקרים מגיעים לאתר. GA4 אוסף נתונים מצטברים ואנונימיים כגון צפיות בעמודים, אזור גאוגרפי משוער, סוג מכשיר ומקור ההפניה. כתובות IP עוברות אנונימיזציה על ידי GA4 כברירת מחדל ואינן נשמרות על ידי מפעיל האתר.\nתוכלו לשלוט בניתוח או לחסום אותו בכמה דרכים:\nהשתמשו בהגדרות ""אל תעקוב"" (Do Not Track) או בהגדרות ההגנה מפני מעקב של הדפדפן שלכם.\nהתקינו את <a href=""https://tools.google.com/dlpage/gaoptout"" target=""_blank"" rel=""noopener"">התוסף לדפדפן לביטול ההסכמה ל-Google Analytics</a>.\nחסמו סקריפטים של צד שלישי באמצעות חוסם הפרסומות/המעקב המועדף עליכם.\nלפרטים על אופן הטיפול בנתונים של Google, עיינו ב<a href=""https://policies.google.com/privacy"" target=""_blank"" rel=""noopener"">מדיניות הפרטיות</a> של Google.",section 3 body (intro + list),html; contains \n
+privacy.legal.ferpa_analytics,"The site's only data collection is anonymized, aggregated Google Analytics 4 usage data (page views, device class, region). GA4 anonymizes IP addresses and is not associated with any student identifier; this data is not directly or indirectly linkable to individual students and therefore does not constitute ""education records"" or ""personally identifiable information"" under 34 CFR § 99.3.","איסוף הנתונים היחיד של האתר הוא נתוני שימוש אנונימיים ומצטברים של Google Analytics 4 (צפיות בעמודים, סוג מכשיר, אזור). GA4 מבצע אנונימיזציה של כתובות IP ואינו משויך לכל מזהה תלמיד; נתונים אלה אינם ניתנים לקישור ישיר או עקיף לתלמידים בודדים, ולפיכך אינם מהווים ""רשומות חינוכיות"" או ""מידע מזהה אישית"" לפי 34 CFR § 99.3.",section 7 body,
+privacy.legal.ferpa_designation,"Because no PII or education records are disclosed to the site, schools and districts may permit teachers and students to use IvritSuite without entering into a separate data-sharing or ""school official"" agreement under the FERPA exception at <em>34 CFR § 99.31(a)(1)</em>. If your district nevertheless requires a written acknowledgment of these practices, you may rely on this policy as a public statement of them.","מכיוון שאין מידע מזהה אישית או רשומות חינוכיות הנמסרים לאתר, בתי ספר ומחוזות רשאים להתיר למורים ולתלמידים להשתמש ב-IvritSuite ללא כניסה להסכם נפרד לשיתוף נתונים או הסכם ""פקיד בית ספר"" לפי חריג ה-FERPA שב-<em>34 CFR § 99.31(a)(1)</em>. אם המחוז שלכם דורש בכל זאת אישור בכתב של נהלים אלה, תוכלו להסתמך על מדיניות זו כהצהרה פומבית עליהם.",section 7 body,html
+privacy.legal.ferpa_intro,"This section is provided for school administrators, IT departments, and educators evaluating IvritSuite for classroom use under the U.S. Family Educational Rights and Privacy Act (FERPA, <em>20 U.S.C. § 1232g; 34 CFR Part 99</em>).","סעיף זה מיועד למנהלי בתי ספר, מחלקות IT ואנשי חינוך הבוחנים את IvritSuite לשימוש בכיתה לפי חוק הפרטיות והזכויות החינוכיות של המשפחה בארצות הברית (FERPA, <em>20 U.S.C. § 1232g; 34 CFR Part 99</em>).",section 7 intro,html
+privacy.legal.ferpa_noads,"IvritSuite does not sell, rent, license, or otherwise share any user information with advertisers or data brokers. The site displays no advertising.","IvritSuite אינו מוכר, משכיר, מעניק רישיון או משתף בכל דרך אחרת מידע כלשהו של משתמשים עם מפרסמים או סוחרי נתונים. האתר אינו מציג פרסומות.",section 7 body,
+privacy.legal.ferpa_norecords,"IvritSuite does <strong>not</strong> collect, receive, store, or transmit any personally identifiable information (PII) from student education records as defined by FERPA. The site has no user accounts, no class rosters, no grade books, no submission of student work, and no server-side storage of teacher- or student-generated content. Worksheets, presets, schedules, and tool preferences are stored exclusively in the local browser using <code>localStorage</code> and remain on the user's own device.","IvritSuite <strong>אינו</strong> אוסף, מקבל, מאחסן או משדר מידע מזהה אישית (PII) כלשהו מרשומות חינוכיות של תלמידים כפי שמוגדר ב-FERPA. לאתר אין חשבונות משתמש, אין רשימות כיתה, אין ספרי ציונים, אין הגשת עבודות תלמידים, ואין אחסון בצד השרת של תוכן שנוצר על ידי מורים או תלמידים. דפי עבודה, הגדרות שמורות, מערכות שעות והעדפות כלים נשמרים אך ורק בדפדפן המקומי באמצעות <code>localStorage</code> ונשארים במכשיר של המשתמש עצמו.",section 7 body,html
+privacy.legal.ferpa_parental,"Because no student records are stored by the site, there is nothing for parents to inspect, amend, or have removed under FERPA's parental-rights provisions on the site's side. Parents wishing to review locally stored tool settings can do so directly in the browser used by the student via the home-page <strong>Import / Export All Settings</strong> control.","מכיוון שהאתר אינו מאחסן רשומות תלמידים, אין לצד האתר דבר שהורים יכולים לבדוק, לתקן או לבקש להסיר לפי הוראות זכויות ההורים של FERPA. הורים המעוניינים לעיין בהגדרות הכלים השמורות מקומית יכולים לעשות זאת ישירות בדפדפן שבו משתמש התלמיד, באמצעות פקד <strong>ייבוא / ייצוא כל ההגדרות</strong> שבעמוד הבית.",section 7 body,html
+privacy.legal.ferpa_questions,"For FERPA-specific inquiries, please contact Harrison Bleiberg through the <a href=""contact.html"">contact page</a>.","לפניות ספציפיות בנושא FERPA, אנא צרו קשר עם Harrison Bleiberg דרך <a href=""contact.html"">עמוד יצירת הקשר</a>.",section 7 body,html
+privacy.legal.intro,"IvritSuite (the ""site"") is a free collection of Hebrew literacy tools for teachers and students, operated by Harrison Bleiberg. This Privacy Policy explains what information the site collects (and, more importantly, what it does <em>not</em>), how that information is used, and the choices you have. By using the site you agree to the practices described here.","IvritSuite (""האתר"") הוא אוסף חינמי של כלים לאוריינות עברית עבור מורים ותלמידים, המופעל על ידי Harrison Bleiberg. מדיניות פרטיות זו מסבירה איזה מידע האתר אוסף (וחשוב מכך, איזה מידע הוא <em>אינו</em> אוסף), כיצד נעשה שימוש במידע זה, ואילו אפשרויות עומדות בפניכם. השימוש באתר מהווה הסכמה לנהלים המתוארים כאן.",section 1 body,html
+privacy.legal.localstorage,"Because all of your settings live only in your browser, you have full control:\nThe <strong>Import / Export All Settings</strong> button on the home page lets you download a single JSON backup of every tool's data, restore from a backup, or erase everything in one click.\nClearing your browser's site data for IvritSuite removes all stored settings and presets.\nUsing a different browser, device, or private/incognito window will give you a fresh, separate set of settings.","מכיוון שכל ההגדרות שלכם קיימות רק בדפדפן שלכם, יש לכם שליטה מלאה:\nכפתור <strong>ייבוא / ייצוא כל ההגדרות</strong> בעמוד הבית מאפשר לכם להוריד גיבוי JSON יחיד של נתוני כל הכלים, לשחזר מגיבוי, או למחוק הכול בלחיצה אחת.\nניקוי נתוני האתר של IvritSuite בדפדפן שלכם מסיר את כל ההגדרות וההגדרות השמורות המאוחסנות.\nשימוש בדפדפן, מכשיר או חלון פרטי/גלישה בסתר אחר יעניק לכם מערך הגדרות חדש ונפרד.",section 5 body (intro + list),html; contains \n
+privacy.legal.security,"The site is delivered over HTTPS. Because no user data is transmitted to a server operated by the site, the primary security boundary is the user's own browser and device. We recommend keeping your browser up to date and using device-level protections appropriate to your setting.","האתר מסופק באמצעות HTTPS. מכיוון שאין נתוני משתמש המשודרים לשרת המופעל על ידי האתר, גבול האבטחה העיקרי הוא הדפדפן והמכשיר של המשתמש עצמו. אנו ממליצים לשמור על דפדפן מעודכן ולהשתמש באמצעי הגנה ברמת המכשיר המתאימים לסביבתכם.",section 8 body,
+privacy.legal.thirdparty,"Some tools fetch or link to third-party content. Visiting or interacting with these resources is governed by their own privacy policies, not by IvritSuite:\n<a href=""https://kaikki.org/dictionary/Hebrew/index.html"" target=""_blank"" rel=""noopener"">Kaikki.org</a> — source of the Hebrew word data used in the dictionary and worksheet generator.\n<a href=""https://www.pockettorah.com/"" target=""_blank"" rel=""noopener"">PocketTorah</a> — chanted-audio source used by the Torah Trainer.\n<a href=""https://fonts.google.com/"" target=""_blank"" rel=""noopener"">Google Fonts</a> — Hebrew and Latin web fonts.\nPublic weather APIs used by the Classroom Dashboard to display current local weather (only the location you enter is sent, in the standard form required to look up a forecast).\n<a href=""https://web3forms.com/"" target=""_blank"" rel=""noopener"">Web3Forms</a> and <a href=""https://www.hcaptcha.com/"" target=""_blank"" rel=""noopener"">hCaptcha</a> — used only if you send a message through the <a href=""contact.html"">contact page</a> or the ""Suggest a Resource"" form on the <a href=""resources.html"">resources page</a>. The information you enter in those forms is passed to Web3Forms solely to deliver the email to the site operator, and the form uses hCaptcha to block automated spam; both process that data under their own privacy policies. Nothing from the form is stored by IvritSuite.","חלק מהכלים מאחזרים תוכן של צד שלישי או מקשרים אליו. ביקור או אינטראקציה עם משאבים אלה כפופים למדיניות הפרטיות שלהם, ולא לזו של IvritSuite:\n<a href=""https://kaikki.org/dictionary/Hebrew/index.html"" target=""_blank"" rel=""noopener"">Kaikki.org</a> — מקור נתוני המילים בעברית המשמשים במילון ובמחולל דפי העבודה.\n<a href=""https://www.pockettorah.com/"" target=""_blank"" rel=""noopener"">PocketTorah</a> — מקור אודיו ההקראה בטעמים המשמש את מאמן התורה.\n<a href=""https://fonts.google.com/"" target=""_blank"" rel=""noopener"">Google Fonts</a> — גופני אינטרנט בעברית ובלטינית.\nממשקי API ציבוריים למזג אוויר המשמשים את לוח המחוונים לכיתה כדי להציג את מזג האוויר המקומי הנוכחי (רק המיקום שאתם מזינים נשלח, בפורמט הסטנדרטי הנדרש לאיתור תחזית).\n<a href=""https://web3forms.com/"" target=""_blank"" rel=""noopener"">Web3Forms</a> ו-<a href=""https://www.hcaptcha.com/"" target=""_blank"" rel=""noopener"">hCaptcha</a> — בשימוש רק אם אתם שולחים הודעה דרך <a href=""contact.html"">עמוד יצירת הקשר</a> או טופס ""הצעת משאב"" ב<a href=""resources.html"">עמוד המשאבים</a>. המידע שאתם מזינים בטפסים אלה מועבר ל-Web3Forms אך ורק לצורך מסירת האימייל למפעיל האתר, והטופס משתמש ב-hCaptcha כדי לחסום ספאם אוטומטי; שניהם מעבדים נתונים אלה לפי מדיניות הפרטיות שלהם. שום דבר מהטופס אינו נשמר על ידי IvritSuite.",section 4 body (intro + list),html; contains \n
+privacy.page_title,Privacy Policy,מדיניות פרטיות,page title,
+privacy.section.changes_heading,9. Changes to This Policy,9. שינויים במדיניות זו,section heading,
+privacy.section.children_heading,6. Children's Privacy,6. פרטיות ילדים,section heading,
+privacy.section.collect_heading,2. Information We Collect,2. מידע שאנו אוספים,section heading,
+privacy.section.contact_heading,10. Contact,10. יצירת קשר,section heading,
+privacy.section.cookies_heading,3. Cookies & Analytics,3. עוגיות וניתוח נתונים,section heading,
+privacy.section.ferpa_badge,For Schools,לבתי ספר,section badge,
+privacy.section.ferpa_h3_analytics,Analytics do not constitute education records,נתוני הניתוח אינם מהווים רשומות חינוכיות,subsection heading,
+privacy.section.ferpa_h3_designation,School-official designation is not required,"אין צורך במינוי כ""פקיד בית ספר""",subsection heading,
+privacy.section.ferpa_h3_noads,No advertising or sale of data,אין פרסום או מכירת נתונים,subsection heading,
+privacy.section.ferpa_h3_norecords,No collection of education records or student PII,אין איסוף של רשומות חינוכיות או מידע מזהה אישית של תלמידים,subsection heading,
+privacy.section.ferpa_h3_parental,Parental review and access,עיון וגישה של הורים,subsection heading,
+privacy.section.ferpa_h3_questions,FERPA-related questions,שאלות בנושא FERPA,subsection heading,
+privacy.section.ferpa_heading,7. FERPA Compliance,7. עמידה ב-FERPA,section heading,
+privacy.section.intro_heading,1. Introduction,1. מבוא,section heading,
+privacy.section.localstorage_heading,5. Local Storage & Your Control Over Data,5. אחסון מקומי והשליטה שלכם בנתונים,section heading,
+privacy.section.security_heading,8. Security,8. אבטחה,section heading,
+privacy.section.thirdparty_heading,4. Third-Party Resources,4. משאבי צד שלישי,section heading,
 pwa.aria.dismiss,Dismiss,,banner close aria-label,aria-label only
 pwa.aria.label,Install IvritSuite,,install banner aria-label,aria-label only
 pwa.install.android,Install web app?,,install banner text (Android),
 pwa.install.ios,Install Web App: Tap Share → Add to Home Screen,,install banner text (iOS),
-resources.card.grades_prefix,Grades: {gradeLabel},,resource card grade line,mixed UI+content — do not translate {gradeLabel}
-resources.card.visit_link,Visit resource,,resource card link,
-resources.cat_badge.culture,Culture,,resource card category badge,
-resources.cat_badge.hebrew,Hebrew,,resource card category badge,
-resources.cat_badge.lesson,Lesson Planning,,resource card category badge,
-resources.cat_badge.misc,Miscellaneous,,resource card category badge,
-resources.cat_badge.printable,Printables,,resource card category badge,
-resources.cat_badge.tanakh,Tanakh,,resource card category badge,
-resources.empty.fonts,No fonts match the selected filters.,,empty state,
-resources.empty.links,No resources match the selected filters.,,empty state,
-resources.faq.a1,"A curated set of websites, printables, lesson-planning tools, Tanakh references, Hebrew language sites, and Jewish culture resources.",,FAQ answer,
-resources.faq.a2,Most are free; some link to paid services. Each card notes when registration or payment is required.,,FAQ answer,
-resources.faq.a3,"Hebrew and Jewish-studies teachers, day-school faculty, supplementary-school teachers, parents, and adult learners.",,FAQ answer,
-resources.faq.howto_step1,"Pick a category (Lesson Planning, Printables, Tanakh, Hebrew, Culture, Misc).",,how-to step,
-resources.faq.howto_step2,"Pick an age group (K–2, 3–5, 6–12, Adult/Teacher).",,how-to step,
-resources.faq.howto_step3,Click any resource card to open it in a new tab.,,how-to step,
-resources.faq.howto_title,How To Use,,FAQ section summary,
-resources.faq.q1,What's in the directory?,,FAQ question,
-resources.faq.q2,Are the resources free?,,FAQ question,
-resources.faq.q3,Who is this for?,,FAQ question,
-resources.faq.title,Frequently Asked Questions,,FAQ section summary,
-resources.filters.age_adult,Adult / Teacher,,filter button,
-resources.filters.age_all,All Ages,,filter button,
-resources.filters.age_early,Early Learners (K–2),,filter button,
-resources.filters.age_elementary,Elementary (3–5),,filter button,
-resources.filters.age_label,Age Group,,filter row label,
-resources.filters.age_middle,Middle / High (6–12),,filter button,
-resources.filters.cat_all,All,,filter button,
-resources.filters.cat_culture,🎭 Culture,,filter button,leading-emoji
-resources.filters.cat_hebrew,🇮🇱 Hebrew,,filter button,leading-emoji
-resources.filters.cat_lesson,📘 Lesson Planning,,filter button,leading-emoji
-resources.filters.cat_misc,🧩 Miscellaneous,,filter button,leading-emoji
-resources.filters.cat_printable,🖨️ Printables,,filter button,leading-emoji
-resources.filters.cat_tanakh,📖 Tanakh,,filter button,leading-emoji
-resources.filters.category_label,Category,,filter row label,
-resources.filters.ffeat_all,All,,filter button,
-resources.filters.ffeat_label,Features,,filter row label,
-resources.filters.ffeat_letters,Letters Only,,filter button,
-resources.filters.ffeat_nikkud,Nikkud Supported,,filter button,
-resources.filters.ffeat_trop,Trop Supported,,filter button,
-resources.filters.flic_all,All Licenses,,filter button,
-resources.filters.flic_cc0,CC0,,filter button,license code
-resources.filters.flic_label,License,,filter row label,
-resources.filters.flic_ofl,OFL,,filter button,license code
-resources.filters.flic_other,Other,,filter button,
-resources.filters.ftype_all,All fonts,,filter button,
-resources.filters.ftype_block,Block (Print),,filter button,
-resources.filters.ftype_cursive,Cursive (כתב),,filter button,mixed (inline Hebrew)
-resources.filters.ftype_label,Type,,filter row label,
-resources.filters.ftype_other,Other,,filter button,
-resources.filters.ftype_torah,Torah,,filter button,
-resources.filters.submit_font_button,✚ Submit a font,,CTA button,leading-emoji
-resources.filters.suggest_button,✚ Suggest a Resource,,CTA button,leading-emoji
-resources.fonts.by_prefix,By {author},,font card byline,template; html
-resources.fonts.download_action,⬇ Download,,font card action,leading-emoji
-resources.fonts.nikkud_label,Nikkud,,font card meta,
-resources.fonts.preview_action,🔍 Preview,,font card action,leading-emoji
-resources.fonts.submit.anything_else,Anything else we should know:,,prefilled email body label,scope-ambiguous (mailto payload)
-resources.fonts.submit.attach,*** Please ATTACH your font file(s) (TTF / OTF / WOFF) and the license file to this email. ***,,prefilled email body line,scope-ambiguous (mailto payload)
-resources.fonts.submit.license,License (CC0 / OFL / Other — please specify):,,prefilled email body label,scope-ambiguous (mailto payload)
-resources.fonts.submit.name,Font name:,,prefilled email body label,scope-ambiguous (mailto payload)
-resources.fonts.submit.nikkud,Nikkud supported? (Yes / No):,,prefilled email body label,scope-ambiguous (mailto payload)
-resources.fonts.submit.subject,IvritSuite Font Submission,,prefilled email subject,scope-ambiguous (mailto payload)
-resources.fonts.submit.trop,Trop supported? (Yes / No):,,prefilled email body label,scope-ambiguous (mailto payload)
-resources.fonts.submit.type,Type of font (Block / Cursive / Torah / Other):,,prefilled email body label,scope-ambiguous (mailto payload)
-resources.fonts.submit.version,Version number (if applicable):,,prefilled email body label,scope-ambiguous (mailto payload)
-resources.fonts.submit.your_name,Your name:,,prefilled email body label,scope-ambiguous (mailto payload)
-resources.fonts.submit.your_website,Your website (if applicable):,,prefilled email body label,scope-ambiguous (mailto payload)
-resources.fonts.toast_add_error,Sorry — couldn’t add that font. Try Download instead.,,toast,
-resources.fonts.toast_added,✓ “{name}” added — pick it under “My Fonts” in any tool’s font selector.,,toast,leading-emoji; template
-resources.fonts.toast_adding,Adding “{name}” …,,toast,template
-resources.fonts.toast_no_storage,This browser can’t save fonts for reuse.,,toast,
-resources.fonts.trop_label,Trop,,font card meta,
-resources.fonts.type_block,Block,,font type badge,
-resources.fonts.type_cursive,Cursive,,font type badge,
-resources.fonts.type_other,Other,,font type badge,
-resources.fonts.type_torah,Torah,,font type badge,
-resources.fonts.use_action,★ Use in IvritSuite,,font card action,leading-symbol
-resources.fonts_count,Showing {count} of {total} fonts,,results count,template
-resources.header.back_link,← Back,,header back button,leading-arrow
-resources.header.tagline,Hebrew literacy tools and references,,header subtitle,
-resources.header.title,Teaching Resources,,header h1,
-resources.modal.close_aria,Close,,modal close button (both modals),aria-label only
-resources.page_heading,Resources,,page heading,
-resources.page_sub,"A curated directory of free Hebrew learning resources, worksheets, dictionaries, and Jewish education tools for teachers and students.",,page subheading,
-resources.preview.back_button,‹ Back,,button,leading-symbol
-resources.preview.input_label,Type Hebrew (or anything) to preview in this font:,,input label,
-resources.preview.title,Preview,,font preview modal title,
-resources.results_count,Showing {count} of {total} resources,,results count,template
-resources.suggest.age_adult,Adult / Teacher,,pill button,
-resources.suggest.age_all,All Ages,,pill button,
-resources.suggest.age_early,Early Learners (K–2),,pill button,
-resources.suggest.age_elementary,Elementary (3–5),,pill button,
-resources.suggest.age_label,Intended age group,,form label,
-resources.suggest.age_middle,Middle / High (6–12),,pill button,
-resources.suggest.captcha_required,Please complete the “I’m human” check before sending.,,form status,
-resources.suggest.cat_culture,🎭 Culture,,pill button,leading-emoji
-resources.suggest.cat_hebrew,🇮🇱 Hebrew,,pill button,leading-emoji
-resources.suggest.cat_lesson,📘 Lesson Planning,,pill button,leading-emoji
-resources.suggest.cat_misc,🧩 Miscellaneous,,pill button,leading-emoji
-resources.suggest.cat_printable,🖨️ Printables,,pill button,leading-emoji
-resources.suggest.cat_tanakh,📖 Tanakh,,pill button,leading-emoji
-resources.suggest.category_label,Category,,form label,
-resources.suggest.desc_label,Brief description,,form label,
-resources.suggest.desc_placeholder,"What is it, and why is it useful?",,textarea placeholder,
-resources.suggest.email_label,Your email,,form label,
-resources.suggest.error_email_suffix,You can also email {email}.,,form status suffix,template; html
-resources.suggest.error_fallback,Sorry — that didn’t go through.,,form status fallback,
-resources.suggest.error_network,Sorry — that didn’t go through. Please email {email} directly.,,form status,template; html
-resources.suggest.format_book,Book,,pill button,
-resources.suggest.format_game,Game,,pill button,
-resources.suggest.format_label,Format,,form label,
-resources.suggest.format_other,Other,,pill button,
-resources.suggest.format_song,Song / Audio,,pill button,
-resources.suggest.format_video,Video,,pill button,
-resources.suggest.format_website,Website / App,,pill button,
-resources.suggest.format_worksheet,Worksheet / Printable,,pill button,
-resources.suggest.intro,Know a great Hebrew or Jewish-education resource? Share it and I'll consider adding it to the directory.,,modal intro,
-resources.suggest.name_label,Your name,,form label,
-resources.suggest.notes_label,Additional notes,,form label,
-resources.suggest.optional_hint,(optional),,form label hint,
-resources.suggest.pick_any_hint,— pick any that apply,,form label hint,
-resources.suggest.pick_one_hint,— pick one,,form label hint (Category/Format),
-resources.suggest.resname_label,Resource name,,form label,
-resources.suggest.resurl_label,Resource URL,,form label,
-resources.suggest.sending,Sending…,,form status,
-resources.suggest.submit_button,Send suggestion,,submit button,
-resources.suggest.success,✓ Thank you — your suggestion was sent!,,form status,leading-emoji
-resources.suggest.title,✚ Suggest a Resource,,modal header title,leading-emoji
-resources.suggest.url_placeholder,https://…,,input placeholder,
-resources.view.fonts,🔤 Fonts,,view toggle button,leading-emoji
-resources.view.links,📚 Links,,view toggle button,leading-emoji
+resources.card.grades_prefix,Grades: {gradeLabel},כיתות: {gradeLabel},resource card grade line,mixed UI+content — do not translate {gradeLabel}
+resources.card.visit_link,Visit resource,מעבר למשאב,resource card link,
+resources.cat_badge.culture,Culture,תרבות,resource card category badge,
+resources.cat_badge.hebrew,Hebrew,עברית,resource card category badge,
+resources.cat_badge.lesson,Lesson Planning,תכנון שיעורים,resource card category badge,
+resources.cat_badge.misc,Miscellaneous,שונות,resource card category badge,
+resources.cat_badge.printable,Printables,חומרים להדפסה,resource card category badge,
+resources.cat_badge.tanakh,Tanakh,תנ״ך,resource card category badge,
+resources.empty.fonts,No fonts match the selected filters.,אין גופנים התואמים למסננים שנבחרו.,empty state,
+resources.empty.links,No resources match the selected filters.,אין משאבים התואמים למסננים שנבחרו.,empty state,
+resources.faq.a1,"A curated set of websites, printables, lesson-planning tools, Tanakh references, Hebrew language sites, and Jewish culture resources.","אוסף אוצר של אתרים, חומרים להדפסה, כלים לתכנון שיעורים, מקורות תנ״ך, אתרי שפה עברית ומשאבי תרבות יהודית.",FAQ answer,
+resources.faq.a2,Most are free; some link to paid services. Each card notes when registration or payment is required.,רובם חינמיים; חלקם מקשרים לשירותים בתשלום. כל כרטיס מציין כאשר נדרשת הרשמה או תשלום.,FAQ answer,
+resources.faq.a3,"Hebrew and Jewish-studies teachers, day-school faculty, supplementary-school teachers, parents, and adult learners.","מורים לעברית וללימודי יהדות, סגל בתי ספר יומיים, מורים בבתי ספר משלימים, הורים ולומדים מבוגרים.",FAQ answer,
+resources.faq.howto_step1,"Pick a category (Lesson Planning, Printables, Tanakh, Hebrew, Culture, Misc).","בחרו קטגוריה (תכנון שיעורים, חומרים להדפסה, תנ״ך, עברית, תרבות, שונות).",how-to step,
+resources.faq.howto_step2,"Pick an age group (K–2, 3–5, 6–12, Adult/Teacher).","בחרו קבוצת גיל (K–2, 3–5, 6–12, מבוגר/מורה).",how-to step,
+resources.faq.howto_step3,Click any resource card to open it in a new tab.,לחצו על כרטיס משאב כלשהו כדי לפתוח אותו בכרטיסייה חדשה.,how-to step,
+resources.faq.howto_title,How To Use,איך להשתמש,FAQ section summary,
+resources.faq.q1,What's in the directory?,מה יש במדריך?,FAQ question,
+resources.faq.q2,Are the resources free?,האם המשאבים חינמיים?,FAQ question,
+resources.faq.q3,Who is this for?,למי זה מיועד?,FAQ question,
+resources.faq.title,Frequently Asked Questions,שאלות נפוצות,FAQ section summary,
+resources.filters.age_adult,Adult / Teacher,מבוגר / מורה,filter button,
+resources.filters.age_all,All Ages,כל הגילאים,filter button,
+resources.filters.age_early,Early Learners (K–2),לומדים מתחילים (K–2),filter button,
+resources.filters.age_elementary,Elementary (3–5),יסודי (3–5),filter button,
+resources.filters.age_label,Age Group,קבוצת גיל,filter row label,
+resources.filters.age_middle,Middle / High (6–12),חטיבה / תיכון (6–12),filter button,
+resources.filters.cat_all,All,הכול,filter button,
+resources.filters.cat_culture,🎭 Culture,🎭 תרבות,filter button,leading-emoji
+resources.filters.cat_hebrew,🇮🇱 Hebrew,🇮🇱 עברית,filter button,leading-emoji
+resources.filters.cat_lesson,📘 Lesson Planning,📘 תכנון שיעורים,filter button,leading-emoji
+resources.filters.cat_misc,🧩 Miscellaneous,🧩 שונות,filter button,leading-emoji
+resources.filters.cat_printable,🖨️ Printables,🖨️ חומרים להדפסה,filter button,leading-emoji
+resources.filters.cat_tanakh,📖 Tanakh,📖 תנ״ך,filter button,leading-emoji
+resources.filters.category_label,Category,קטגוריה,filter row label,
+resources.filters.ffeat_all,All,הכול,filter button,
+resources.filters.ffeat_label,Features,תכונות,filter row label,
+resources.filters.ffeat_letters,Letters Only,אותיות בלבד,filter button,
+resources.filters.ffeat_nikkud,Nikkud Supported,תמיכה בניקוד,filter button,
+resources.filters.ffeat_trop,Trop Supported,תמיכה בטעמים,filter button,
+resources.filters.flic_all,All Licenses,כל הרישיונות,filter button,
+resources.filters.flic_cc0,CC0,CC0,filter button,license code
+resources.filters.flic_label,License,רישיון,filter row label,
+resources.filters.flic_ofl,OFL,OFL,filter button,license code
+resources.filters.flic_other,Other,אחר,filter button,
+resources.filters.ftype_all,All fonts,כל הגופנים,filter button,
+resources.filters.ftype_block,Block (Print),בלוק (דפוס),filter button,
+resources.filters.ftype_cursive,Cursive (כתב),כתב יד,filter button,mixed (inline Hebrew)
+resources.filters.ftype_label,Type,סוג,filter row label,
+resources.filters.ftype_other,Other,אחר,filter button,
+resources.filters.ftype_torah,Torah,תורה,filter button,
+resources.filters.submit_font_button,✚ Submit a font,✚ הגשת גופן,CTA button,leading-emoji
+resources.filters.suggest_button,✚ Suggest a Resource,✚ הצעת משאב,CTA button,leading-emoji
+resources.fonts.by_prefix,By {author},מאת {author},font card byline,template; html
+resources.fonts.download_action,⬇ Download,⬇ הורדה,font card action,leading-emoji
+resources.fonts.nikkud_label,Nikkud,ניקוד,font card meta,
+resources.fonts.preview_action,🔍 Preview,🔍 תצוגה מקדימה,font card action,leading-emoji
+resources.fonts.submit.anything_else,Anything else we should know:,משהו נוסף שכדאי לנו לדעת:,prefilled email body label,scope-ambiguous (mailto payload)
+resources.fonts.submit.attach,*** Please ATTACH your font file(s) (TTF / OTF / WOFF) and the license file to this email. ***,*** אנא צרפו את קובץ/קבצי הגופן שלכם (TTF / OTF / WOFF) ואת קובץ הרישיון לאימייל זה. ***,prefilled email body line,scope-ambiguous (mailto payload)
+resources.fonts.submit.license,License (CC0 / OFL / Other — please specify):,רישיון (CC0 / OFL / אחר — אנא פרטו):,prefilled email body label,scope-ambiguous (mailto payload)
+resources.fonts.submit.name,Font name:,שם הגופן:,prefilled email body label,scope-ambiguous (mailto payload)
+resources.fonts.submit.nikkud,Nikkud supported? (Yes / No):,תמיכה בניקוד? (כן / לא):,prefilled email body label,scope-ambiguous (mailto payload)
+resources.fonts.submit.subject,IvritSuite Font Submission,הגשת גופן ל-IvritSuite,prefilled email subject,scope-ambiguous (mailto payload)
+resources.fonts.submit.trop,Trop supported? (Yes / No):,תמיכה בטעמים? (כן / לא):,prefilled email body label,scope-ambiguous (mailto payload)
+resources.fonts.submit.type,Type of font (Block / Cursive / Torah / Other):,סוג הגופן (בלוק / כתב יד / תורה / אחר):,prefilled email body label,scope-ambiguous (mailto payload)
+resources.fonts.submit.version,Version number (if applicable):,מספר גרסה (אם רלוונטי):,prefilled email body label,scope-ambiguous (mailto payload)
+resources.fonts.submit.your_name,Your name:,השם שלכם:,prefilled email body label,scope-ambiguous (mailto payload)
+resources.fonts.submit.your_website,Your website (if applicable):,האתר שלכם (אם רלוונטי):,prefilled email body label,scope-ambiguous (mailto payload)
+resources.fonts.toast_add_error,Sorry — couldn’t add that font. Try Download instead.,מצטערים — לא ניתן היה להוסיף את הגופן. נסו להוריד אותו במקום זאת.,toast,
+resources.fonts.toast_added,✓ “{name}” added — pick it under “My Fonts” in any tool’s font selector.,✓ “{name}” נוסף — בחרו אותו תחת “הגופנים שלי” בבורר הגופנים של כל כלי.,toast,leading-emoji; template
+resources.fonts.toast_adding,Adding “{name}” …,מוסיף את “{name}” …,toast,template
+resources.fonts.toast_no_storage,This browser can’t save fonts for reuse.,דפדפן זה אינו יכול לשמור גופנים לשימוש חוזר.,toast,
+resources.fonts.trop_label,Trop,טעמים,font card meta,
+resources.fonts.type_block,Block,בלוק,font type badge,
+resources.fonts.type_cursive,Cursive,כתב יד,font type badge,
+resources.fonts.type_other,Other,אחר,font type badge,
+resources.fonts.type_torah,Torah,תורה,font type badge,
+resources.fonts.use_action,★ Use in IvritSuite,★ שימוש ב-IvritSuite,font card action,leading-symbol
+resources.fonts_count,Showing {count} of {total} fonts,מציג {count} מתוך {total} גופנים,results count,template
+resources.header.back_link,← Back,← חזרה,header back button,leading-arrow
+resources.header.tagline,Hebrew literacy tools and references,כלים ומקורות לאוריינות עברית,header subtitle,
+resources.header.title,Teaching Resources,משאבים להוראה,header h1,
+resources.modal.close_aria,Close,סגירה,modal close button (both modals),aria-label only
+resources.page_heading,Resources,משאבים,page heading,
+resources.page_sub,"A curated directory of free Hebrew learning resources, worksheets, dictionaries, and Jewish education tools for teachers and students.","מדריך אוצר של משאבים חינמיים ללימוד עברית, דפי עבודה, מילונים וכלים לחינוך יהודי עבור מורים ותלמידים.",page subheading,
+resources.preview.back_button,‹ Back,‹ חזרה,button,leading-symbol
+resources.preview.input_label,Type Hebrew (or anything) to preview in this font:,הקלידו עברית (או כל דבר) לתצוגה מקדימה בגופן זה:,input label,
+resources.preview.title,Preview,תצוגה מקדימה,font preview modal title,
+resources.results_count,Showing {count} of {total} resources,מציג {count} מתוך {total} משאבים,results count,template
+resources.suggest.age_adult,Adult / Teacher,מבוגר / מורה,pill button,
+resources.suggest.age_all,All Ages,כל הגילאים,pill button,
+resources.suggest.age_early,Early Learners (K–2),לומדים מתחילים (K–2),pill button,
+resources.suggest.age_elementary,Elementary (3–5),יסודי (3–5),pill button,
+resources.suggest.age_label,Intended age group,קבוצת הגיל המיועדת,form label,
+resources.suggest.age_middle,Middle / High (6–12),חטיבה / תיכון (6–12),pill button,
+resources.suggest.captcha_required,Please complete the “I’m human” check before sending.,אנא השלימו את בדיקת “אני אדם” לפני השליחה.,form status,
+resources.suggest.cat_culture,🎭 Culture,🎭 תרבות,pill button,leading-emoji
+resources.suggest.cat_hebrew,🇮🇱 Hebrew,🇮🇱 עברית,pill button,leading-emoji
+resources.suggest.cat_lesson,📘 Lesson Planning,📘 תכנון שיעורים,pill button,leading-emoji
+resources.suggest.cat_misc,🧩 Miscellaneous,🧩 שונות,pill button,leading-emoji
+resources.suggest.cat_printable,🖨️ Printables,🖨️ חומרים להדפסה,pill button,leading-emoji
+resources.suggest.cat_tanakh,📖 Tanakh,📖 תנ״ך,pill button,leading-emoji
+resources.suggest.category_label,Category,קטגוריה,form label,
+resources.suggest.desc_label,Brief description,תיאור קצר,form label,
+resources.suggest.desc_placeholder,"What is it, and why is it useful?","מה זה, ולמה זה שימושי?",textarea placeholder,
+resources.suggest.email_label,Your email,האימייל שלכם,form label,
+resources.suggest.error_email_suffix,You can also email {email}.,תוכלו גם לכתוב אל {email}.,form status suffix,template; html
+resources.suggest.error_fallback,Sorry — that didn’t go through.,מצטערים — ההודעה לא נשלחה.,form status fallback,
+resources.suggest.error_network,Sorry — that didn’t go through. Please email {email} directly.,מצטערים — ההודעה לא נשלחה. אנא כתבו ישירות אל {email}.,form status,template; html
+resources.suggest.format_book,Book,ספר,pill button,
+resources.suggest.format_game,Game,משחק,pill button,
+resources.suggest.format_label,Format,פורמט,form label,
+resources.suggest.format_other,Other,אחר,pill button,
+resources.suggest.format_song,Song / Audio,שיר / אודיו,pill button,
+resources.suggest.format_video,Video,וידאו,pill button,
+resources.suggest.format_website,Website / App,אתר / אפליקציה,pill button,
+resources.suggest.format_worksheet,Worksheet / Printable,דף עבודה / חומר להדפסה,pill button,
+resources.suggest.intro,Know a great Hebrew or Jewish-education resource? Share it and I'll consider adding it to the directory.,מכירים משאב מצוין לעברית או לחינוך יהודי? שתפו אותו ואשקול להוסיף אותו למדריך.,modal intro,
+resources.suggest.name_label,Your name,השם שלכם,form label,
+resources.suggest.notes_label,Additional notes,הערות נוספות,form label,
+resources.suggest.optional_hint,(optional),(לא חובה),form label hint,
+resources.suggest.pick_any_hint,— pick any that apply,— בחרו כל מה שמתאים,form label hint,
+resources.suggest.pick_one_hint,— pick one,— בחרו אחד,form label hint (Category/Format),
+resources.suggest.resname_label,Resource name,שם המשאב,form label,
+resources.suggest.resurl_label,Resource URL,כתובת המשאב,form label,
+resources.suggest.sending,Sending…,שולח…,form status,
+resources.suggest.submit_button,Send suggestion,שליחת הצעה,submit button,
+resources.suggest.success,✓ Thank you — your suggestion was sent!,✓ תודה — ההצעה שלכם נשלחה!,form status,leading-emoji
+resources.suggest.title,✚ Suggest a Resource,✚ הצעת משאב,modal header title,leading-emoji
+resources.suggest.url_placeholder,https://…,https://…,input placeholder,
+resources.view.fonts,🔤 Fonts,🔤 גופנים,view toggle button,leading-emoji
+resources.view.links,📚 Links,📚 קישורים,view toggle button,leading-emoji
 shared.darkmode.label_dark,🌙 Dark,🌙 כהה,Dark-mode toggle label (shown when light),"leading-emoji; shared (labeled variant: 404, dictionary)"
 shared.darkmode.label_light,☀️ Light,☀️ בהיר,Dark-mode toggle label (shown when dark),"leading-emoji; shared (labeled variant: 404, dictionary)"
 shared.darkmode.toggle_title,Toggle dark mode,מצב כהה,Dark-mode toggle title/aria-label,shared
