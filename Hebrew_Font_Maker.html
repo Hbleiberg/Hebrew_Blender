@@ -5709,16 +5709,16 @@ function renderMarkControls(c, it) {
     h += `<div class="hint">Click a piece to select; drag to move, drag the ◻ corner to resize. A bar's corner can be dragged for any width/thickness. Build the mark from dots &amp; bars — it's seeded from the default shape.</div>`;
   } else if (workMode === 'trace') {
     h += `<div class="inline">Ink threshold <input type="range" min="1" max="254" value="${it.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()"> <span id="thV" class="readout">${it.binThreshold}</span></div>
-      <label class="chk"><input type="checkbox" ${it.invert?'checked':''} onchange="liveInvert(this.checked)"> Invert (light ink on dark)</label>
-      ${ (it.source && it.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${itemFlattenOn(it)?'checked':''} onchange="liveFlatten(this.checked)" aria-label="Even out lighting — remove photo shadows before tracing"> Even out lighting (photo shadows)</label>` : '' }
+      <label class="chk"><input type="checkbox" ${it.invert?'checked':''} onchange="liveInvert(this.checked)"> ${I18n.t('fontmaker.panels.invert')}</label>
+      ${ (it.source && it.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${itemFlattenOn(it)?'checked':''} onchange="liveFlatten(this.checked)" aria-label="${esc(I18n.t('fontmaker.panels.even_lighting_aria'))}"> ${I18n.t('fontmaker.panels.even_lighting')}</label>` : '' }
       <div class="inline">Detail (less ↔ more) <input type="range" min="0" max="100" step="1" value="${Math.round(100 - it.epsilon*2.5)}" oninput="liveDetail(this.value)" onchange="udBurstCommit()"> <span id="epV" class="readout">${Math.round(100 - it.epsilon*2.5)}</span></div>
       <div class="inline">Corners (sharp ↔ round) <input type="range" min="0" max="90" step="1" value="${it.cornerAngle != null ? it.cornerAngle : 32}" oninput="liveCorners(this.value)" onchange="udBurstCommit()"> <span id="cnV" class="readout">${it.cornerAngle != null ? it.cornerAngle : 32}</span></div>
-      ${ (it.source && it.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${it.outlineOnly?'checked':''} onchange="liveOutlineOnly(this.checked)"> Outline only? (hollow “bubble” letter)</label>` : '' }
+      ${ (it.source && it.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${it.outlineOnly?'checked':''} onchange="liveOutlineOnly(this.checked)"> ${I18n.t('fontmaker.panels.outline_only')}</label>` : '' }
       ${ (it.source && it.source.dataUrl && it.outlineOnly) ? `<div class="inline">Line weight <input type="range" min="10" max="250" step="1" value="${Math.round(it.lineWeight!=null?it.lineWeight:70)}" oninput="liveLineWeight(this.value)" onchange="udBurstCommit()"> <span id="lwV" class="readout">${Math.round(it.lineWeight!=null?it.lineWeight:70)}</span></div>
-      <div class="ctl-row"><button class="ctl-btn" onclick="applyOutlineToAll()">Apply outline to all letters</button></div>` : '' }
+      <div class="ctl-row"><button class="ctl-btn" onclick="applyOutlineToAll()">${I18n.t('fontmaker.panels.apply_outline_all')}</button></div>` : '' }
       <div class="ctl-row">
-        <button class="ctl-btn primary" onclick="traceCurrent()">Re-trace</button>
-        <button class="ctl-btn" onclick="clearTrace()">Clear</button>
+        <button class="ctl-btn primary" onclick="traceCurrent()">${I18n.t('fontmaker.panels.retrace')}</button>
+        <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
         <span id="traceInfo" class="readout">${it.contours?`${it.contours.length} contour(s)`:''}</span>
       </div>`;
   } else {
@@ -5734,7 +5734,7 @@ function renderMarkControls(c, it) {
       }
     } else {
       if (svgUploadOn() && it.source && it.source.kind === 'svg' && it.contours)
-        h += `<div class="ctl-row" style="align-items:center;"><span class="hint" style="flex:1;">Imported from SVG ✓ — re-drop to replace.</span><button class="ctl-btn" onclick="clearTrace()">Clear</button></div>`;
+        h += `<div class="ctl-row" style="align-items:center;"><span class="hint" style="flex:1;">Imported from SVG ✓ — re-drop to replace.</span><button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button></div>`;
       h += `<div class="drop" id="markDrop">Drop ${svgUploadOn()?'an <b>SVG</b>':'an image'} of <b>${it.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('markFile').click()">browse</span>.</div>
         <div class="allowed">${svgUploadOn()?'Allowed: SVG only.':'Allowed: any image file — PNG, JPG, GIF, WebP.'}</div>
         <input type="file" id="markFile" accept="${svgUploadOn()?'.svg,image/svg+xml':'image/*'}" style="display:none;">`;
@@ -9334,16 +9334,16 @@ function renderNodeLeft(L, l) {
 /* ── Shared right-panel pieces (reference font + opacity sliders) ── */
 function referencePanelR() {
   return `
-    <div class="ws-side-title">Reference</div>
-    <label class="fld" style="font-size:0.74rem;">Reference font (tracing guide)
+    <div class="ws-side-title">${I18n.t('fontmaker.panels.reference_title')}</div>
+    <label class="fld" style="font-size:0.74rem;">${I18n.t('fontmaker.panels.reference_font')}
       <select id="templateFont" onchange="onTemplateChange()"></select>
     </label>
     <div id="refUploadWrap" style="display:none;">
-      <button class="ctl-btn" style="font-size:0.72rem;width:100%;" onclick="document.getElementById('ttfTemplateFile').click()">⬆ Upload your own reference font</button>
-      <div class="allowed">Allowed: TTF or OTF font files.</div>
+      <button class="ctl-btn" style="font-size:0.72rem;width:100%;" onclick="document.getElementById('ttfTemplateFile').click()">${I18n.t('fontmaker.panels.reference_upload')}</button>
+      <div class="allowed">${I18n.t('fontmaker.panels.reference_upload_allowed')}</div>
       <input type="file" id="ttfTemplateFile" accept=".ttf,.otf,font/ttf,font/otf,application/font-sfnt" style="display:none;">
     </div>
-    <label class="chk"><input type="checkbox" id="showTemplate" ${project.template.showOverlay?'checked':''} onchange="setTemplateShow(this.checked)"> Show reference glyph behind</label>`;
+    <label class="chk"><input type="checkbox" id="showTemplate" ${project.template.showOverlay?'checked':''} onchange="setTemplateShow(this.checked)"> ${I18n.t('fontmaker.panels.reference_show')}</label>`;
 }
 function wireReferencePanel() {
   buildTemplateFontSelect();   // repopulates options + sets value (guards on null)
@@ -9397,7 +9397,7 @@ function _anchorCtx(l) {            // shared anchor-class computation (nik/trop
 /* ── ALIGN ── */
 function renderAlignLeft(L, l) {
   // "Add Letters" — input mode + the upload zone for the current mode/letter, in the left column
-  let html = `<div class="ws-side-title">Add Letters</div>` + inputModeBlock();
+  let html = `<div class="ws-side-title">${I18n.t('fontmaker.panels.add_letters')}</div>` + inputModeBlock();
   if (project.inputMode === 'single' && curKind === 'letter') {
     const svg = svgUploadOn();
     html += `<div class="drop" id="letterDrop">Drop ${svg?'an <b>SVG</b>':'an image'} for <b>${l.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('letterFile').click()">browse</span>.</div>
@@ -9413,21 +9413,21 @@ function renderAlignLeft(L, l) {
   if (!isVectorGlyph(l) && curImageUrl()) {
     html += `
     <hr class="ctl-divider">
-    <div class="ws-side-title">Adjust — ${l.name}</div>
+    <div class="ws-side-title">${I18n.t('fontmaker.panels.adjust_title', {name: gName(l.name)})}</div>
     <div class="scale-pairs">
-      <button class="ctl-btn" onclick="nudgeScale(1.05,1.05)">Scale +</button>
-      <button class="ctl-btn" onclick="nudgeScale(1.05,1)">Wider <span class="arrows">← →</span></button>
-      <button class="ctl-btn" onclick="nudgeScale(0.95,0.95)">Scale −</button>
-      <button class="ctl-btn" onclick="nudgeScale(0.95,1)">Narrower <span class="arrows">→ ←</span></button>
-      <button class="ctl-btn" onclick="nudgeScale(1,1.05)">Taller <span class="arrows">↑ ↓</span></button>
-      <button class="ctl-btn" onclick="nudgeRotate(-2)">⟲ Rotate</button>
-      <button class="ctl-btn" onclick="nudgeScale(1,0.95)">Shorter <span class="arrows">↓ ↑</span></button>
-      <button class="ctl-btn" onclick="nudgeRotate(2)">⟳ Rotate</button>
-      <button class="ctl-btn" onclick="nudgeSkew(-2)">Skew ⟍</button>
-      <button class="ctl-btn" onclick="nudgeSkew(2)">Skew ⟋</button>
+      <button class="ctl-btn" onclick="nudgeScale(1.05,1.05)">${I18n.t('fontmaker.panels.scale_plus')}</button>
+      <button class="ctl-btn" onclick="nudgeScale(1.05,1)">${I18n.t('fontmaker.panels.wider')} <span class="arrows">← →</span></button>
+      <button class="ctl-btn" onclick="nudgeScale(0.95,0.95)">${I18n.t('fontmaker.panels.scale_minus')}</button>
+      <button class="ctl-btn" onclick="nudgeScale(0.95,1)">${I18n.t('fontmaker.panels.narrower')} <span class="arrows">→ ←</span></button>
+      <button class="ctl-btn" onclick="nudgeScale(1,1.05)">${I18n.t('fontmaker.panels.taller')} <span class="arrows">↑ ↓</span></button>
+      <button class="ctl-btn" onclick="nudgeRotate(-2)">${I18n.t('fontmaker.panels.rotate_ccw')}</button>
+      <button class="ctl-btn" onclick="nudgeScale(1,0.95)">${I18n.t('fontmaker.panels.shorter')} <span class="arrows">↓ ↑</span></button>
+      <button class="ctl-btn" onclick="nudgeRotate(2)">${I18n.t('fontmaker.panels.rotate_cw')}</button>
+      <button class="ctl-btn" onclick="nudgeSkew(-2)">${I18n.t('fontmaker.panels.skew_left')}</button>
+      <button class="ctl-btn" onclick="nudgeSkew(2)">${I18n.t('fontmaker.panels.skew_right')}</button>
     </div>
     <div class="ctl-row" style="margin-top:6px;">
-      <button class="ctl-btn" onclick="snapFit()">Center</button>
+      <button class="ctl-btn" onclick="snapFit()">${I18n.t('fontmaker.panels.center')}</button>
     </div>`;
   }
   html += metricsPanel();   // Letter Metrics lives in the left column
@@ -9443,8 +9443,8 @@ function renderAlignRight(R, l) {
   const imgPct = Math.round(project.view.imgOpacityAlign*100), tplPct = Math.round(project.template.opacity*100);
   R.innerHTML = referencePanelR() + `
     <div class="vslider-pair">
-      ${vSlider('tplOpacity','tplOpacityVal','Reference letter opacity', tplPct, 'setTemplateOpacity')}
-      ${vSlider('imgOpAlign','imgOpAlignVal','Imported image opacity', imgPct, 'setImgOpacityAlign')}
+      ${vSlider('tplOpacity','tplOpacityVal',I18n.t('fontmaker.panels.slider_ref_opacity'), tplPct, 'setTemplateOpacity')}
+      ${vSlider('imgOpAlign','imgOpAlignVal',I18n.t('fontmaker.panels.slider_img_opacity'), imgPct, 'setImgOpacityAlign')}
     </div>`;
   wireReferencePanel();
 }
@@ -9478,26 +9478,26 @@ function renderTraceRight(R, l) {
   const imgPct = Math.round(project.view.imgOpacityTrace*100), tplPct = Math.round(project.template.opacity*100);
   R.innerHTML = referencePanelR() + `
     <div class="vslider-pair">
-      ${vSlider('tplOpacity','tplOpacityVal','Reference letter opacity', tplPct, 'setTemplateOpacity')}
-      ${vSlider('imgOpTrace','imgOpTraceVal','Imported image opacity', imgPct, 'setImgOpacityTrace')}
+      ${vSlider('tplOpacity','tplOpacityVal',I18n.t('fontmaker.panels.slider_ref_opacity'), tplPct, 'setTemplateOpacity')}
+      ${vSlider('imgOpTrace','imgOpTraceVal',I18n.t('fontmaker.panels.slider_img_opacity'), imgPct, 'setImgOpacityTrace')}
     </div>`;
   wireReferencePanel();
 }
 function renderTraceLeft(L, l) {
   if (project.inputMode === 'font') {   // width still editable for font-loaded glyphs; Edit points is the only way to reshape them
     L.innerHTML = `<div class="ctl-row">${l.contours
-      ? `<button class="ctl-btn primary" onclick="toggleNodeEdit()">✎ Edit points</button>`
-      : `<button class="ctl-btn primary" onclick="drawWithPen()" title="This glyph is blank — draw its outline point by point">✏ Draw with pen</button>`}</div>` + metricsPanel();
+      ? `<button class="ctl-btn primary" onclick="toggleNodeEdit()">${I18n.t('fontmaker.panels.edit_points')}</button>`
+      : `<button class="ctl-btn primary" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title'))}">${I18n.t('fontmaker.panels.draw_pen')}</button>`}</div>` + metricsPanel();
     return;
   }
   if (l.source && l.source.kind === 'svg') {   // imported vector — no raster trace controls, but allow point editing
     L.innerHTML = `
-      <div class="ws-side-title">Outline — ${l.name}</div>
+      <div class="ws-side-title">${I18n.t('fontmaker.panels.outline_title', {name: gName(l.name)})}</div>
       <div class="hint">Imported from SVG — no tracing needed. Fine-tune the shape with <b>Edit points</b>, or re-upload under <b>Add Letters</b> to replace it.</div>
       <div class="ctl-row">
-        ${ l.contours ? `<button class="ctl-btn primary" onclick="toggleNodeEdit()">✎ Edit points</button>` : `<button class="ctl-btn primary" onclick="drawWithPen()" title="This glyph is blank — draw its outline point by point">✏ Draw with pen</button>` }
-        <button class="ctl-btn" onclick="clearTrace()">Clear</button>
-        <button class="ctl-btn" onclick="openCopyOutline()" title="Start this letter from another letter's outline">⎘ Copy outline…</button>
+        ${ l.contours ? `<button class="ctl-btn primary" onclick="toggleNodeEdit()">${I18n.t('fontmaker.panels.edit_points')}</button>` : `<button class="ctl-btn primary" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title'))}">${I18n.t('fontmaker.panels.draw_pen')}</button>` }
+        <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
+        <button class="ctl-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${I18n.t('fontmaker.panels.copy_outline')}</button>
         <span id="traceInfo" class="readout">${ l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : '' }</span>
       </div>` + metricsPanel();
     return;
@@ -9505,24 +9505,24 @@ function renderTraceLeft(L, l) {
   const detail = Math.round(100 - l.epsilon*2.5);
   const corner = (l.cornerAngle != null ? l.cornerAngle : 32);
   L.innerHTML = `
-    <div class="ws-side-title">Trace — ${l.name}</div>
-    <div class="side-slider-label">Ink threshold <span id="thV" class="readout">${l.binThreshold}</span></div>
+    <div class="ws-side-title">${I18n.t('fontmaker.panels.trace_title', {name: gName(l.name)})}</div>
+    <div class="side-slider-label">${I18n.t('fontmaker.panels.ink_threshold')} <span id="thV" class="readout">${l.binThreshold}</span></div>
     <input type="range" class="side-slider" min="1" max="254" value="${l.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()">
-    <label class="chk"><input type="checkbox" ${l.invert?'checked':''} onchange="liveInvert(this.checked)"> Invert (light ink on dark)</label>
-    ${ (l.source && l.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${itemFlattenOn(l)?'checked':''} onchange="liveFlatten(this.checked)" aria-label="Even out lighting — remove photo shadows before tracing"> Even out lighting (photo shadows)</label>` : '' }
-    <div class="side-slider-label">Detail (less ↔ more) <span id="epV" class="readout">${detail}</span></div>
+    <label class="chk"><input type="checkbox" ${l.invert?'checked':''} onchange="liveInvert(this.checked)"> ${I18n.t('fontmaker.panels.invert')}</label>
+    ${ (l.source && l.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${itemFlattenOn(l)?'checked':''} onchange="liveFlatten(this.checked)" aria-label="${esc(I18n.t('fontmaker.panels.even_lighting_aria'))}"> ${I18n.t('fontmaker.panels.even_lighting')}</label>` : '' }
+    <div class="side-slider-label">${I18n.t('fontmaker.panels.detail')} <span id="epV" class="readout">${detail}</span></div>
     <input type="range" class="side-slider" min="0" max="100" step="1" value="${detail}" oninput="liveDetail(this.value)" onchange="udBurstCommit()">
-    <div class="side-slider-label">Corners (sharp ↔ round) <span id="cnV" class="readout">${corner}</span></div>
+    <div class="side-slider-label">${I18n.t('fontmaker.panels.corners')} <span id="cnV" class="readout">${corner}</span></div>
     <input type="range" class="side-slider" min="0" max="90" step="1" value="${corner}" oninput="liveCorners(this.value)" onchange="udBurstCommit()">
-    ${ (l.source && l.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${l.outlineOnly?'checked':''} onchange="liveOutlineOnly(this.checked)"> Outline only? (hollow “bubble” letter)</label>` : '' }
-    ${ (l.source && l.source.dataUrl && l.outlineOnly) ? `<div class="side-slider-label">Line weight <span id="lwV" class="readout">${Math.round(l.lineWeight!=null?l.lineWeight:70)}</span></div>
+    ${ (l.source && l.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${l.outlineOnly?'checked':''} onchange="liveOutlineOnly(this.checked)"> ${I18n.t('fontmaker.panels.outline_only')}</label>` : '' }
+    ${ (l.source && l.source.dataUrl && l.outlineOnly) ? `<div class="side-slider-label">${I18n.t('fontmaker.panels.line_weight')} <span id="lwV" class="readout">${Math.round(l.lineWeight!=null?l.lineWeight:70)}</span></div>
     <input type="range" class="side-slider" min="10" max="250" step="1" value="${Math.round(l.lineWeight!=null?l.lineWeight:70)}" oninput="liveLineWeight(this.value)" onchange="udBurstCommit()">
-    <div class="ctl-row"><button class="ctl-btn" onclick="applyOutlineToAll()">Apply outline to all letters</button></div>` : '' }
+    <div class="ctl-row"><button class="ctl-btn" onclick="applyOutlineToAll()">${I18n.t('fontmaker.panels.apply_outline_all')}</button></div>` : '' }
     <div class="ctl-row">
-      <button class="ctl-btn primary" onclick="traceCurrent()">Re-trace</button>
-      <button class="ctl-btn" onclick="clearTrace()">Clear</button>
-      ${ l.contours ? `<button class="ctl-btn" onclick="toggleNodeEdit()">✎ Edit points</button>` : `<button class="ctl-btn" onclick="drawWithPen()" title="No trace yet — draw the outline point by point instead">✏ Draw with pen</button>` }
-      <button class="ctl-btn" onclick="openCopyOutline()" title="Start this letter from another letter's outline">⎘ Copy outline…</button>
+      <button class="ctl-btn primary" onclick="traceCurrent()">${I18n.t('fontmaker.panels.retrace')}</button>
+      <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
+      ${ l.contours ? `<button class="ctl-btn" onclick="toggleNodeEdit()">${I18n.t('fontmaker.panels.edit_points')}</button>` : `<button class="ctl-btn" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title2'))}">${I18n.t('fontmaker.panels.draw_pen')}</button>` }
+      <button class="ctl-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${I18n.t('fontmaker.panels.copy_outline')}</button>
       <span id="traceInfo" class="readout">${ l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : '' }</span>
     </div>
     <div class="hint">Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically. Turn on <b>Outline only</b> for hollow “bubble” letters — <b>line weight</b> sets the ring thickness.</div>` + metricsPanel();
@@ -9695,7 +9695,7 @@ function renderAnchorRight(R, l) {
   const tplPct = Math.round(project.template.opacity*100), glyPct = Math.round(project.view.glyphOpacity*100);
   R.innerHTML = referencePanelR() + `
     <div class="vslider-pair">
-      ${vSlider('tplOpacity','tplOpacityVal','Reference letter opacity', tplPct, 'setTemplateOpacity')}
+      ${vSlider('tplOpacity','tplOpacityVal',I18n.t('fontmaker.panels.slider_ref_opacity'), tplPct, 'setTemplateOpacity')}
       ${vSlider('glyphOp','glyphOpVal','Letter opacity', glyPct, 'setGlyphOpacity')}
     </div>`;
   wireReferencePanel();
@@ -9759,9 +9759,9 @@ function inputModeBlock() {
   const svg = svgUploadOn();
   return `
     <div class="mode-toggle mode-toggle-stack">
-      <button class="mode-btn ${project.inputMode==='single'?'active':''}" id="modeSingle" onclick="setInputMode('single')">One letter per image</button>
-      <button class="mode-btn ${project.inputMode==='combined'?'active':''}" id="modeCombined" onclick="setInputMode('combined')">One image with all letters</button>
-      ${ svg ? '' : `<button class="mode-btn ${project.inputMode==='font'?'active':''}" id="modeFont" onclick="setInputMode('font')">Existing font file</button>` }
+      <button class="mode-btn ${project.inputMode==='single'?'active':''}" id="modeSingle" onclick="setInputMode('single')">${I18n.t('fontmaker.panels.input_single')}</button>
+      <button class="mode-btn ${project.inputMode==='combined'?'active':''}" id="modeCombined" onclick="setInputMode('combined')">${I18n.t('fontmaker.panels.input_combined')}</button>
+      ${ svg ? '' : `<button class="mode-btn ${project.inputMode==='font'?'active':''}" id="modeFont" onclick="setInputMode('font')">${I18n.t('fontmaker.panels.input_font')}</button>` }
     </div>
     <div id="combinedUploadRow" style="display:${project.inputMode==='combined'?'':'none'};">
       <div class="drop" id="combinedDrop">${ svg
@@ -9773,7 +9773,7 @@ function inputModeBlock() {
     </div>
     <div id="fontUploadRow" style="display:${(!svg && project.inputMode==='font')?'':'none'};">
       <div class="drop" id="fontDrop">Drop a font (TTF/OTF) here, or click to browse.</div>
-      <div class="allowed">Allowed: TTF or OTF font files.</div>
+      <div class="allowed">${I18n.t('fontmaker.panels.reference_upload_allowed')}</div>
       <input type="file" id="sourceFontFile" accept=".ttf,.otf,font/ttf,font/otf,application/font-sfnt" style="display:none;">
     </div>`;
 }
