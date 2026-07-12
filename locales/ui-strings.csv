@@ -2694,268 +2694,268 @@ shared.tour.done,Done,סיום,Guided tour final button,shared
 shared.tour.end,End tour,סיים סיור,Guided tour close (aria-label on ✕),aria-label; shared
 shared.tour.next,Next,הבא,Guided tour nav button,shared
 shared.tour.step_counter,Step {count} of {total},שלב {count} מתוך {total},Guided tour step counter,mixed UI+content — {count}/{total} numeric; shared
-torah.about.faq_a1,"A free Hebrew Torah reader. Pick a parsha and read it with optional transliteration, English translation, per-vowel color coding, cantillation strip, prose TTS, and chanted-audio karaoke that highlights words in time with the recording.",,FAQ answer,
-torah.about.faq_a2,"Yes. <a href=""https://github.com/rneiss/PocketTorah"" target=""_blank"" rel=""noopener"" style=""color:var(--gold);"">PocketTorah</a>'s recordings of all 54 parshiyot and haftarot stream on demand, with word-level highlighting synchronized to the audio. Adjust playback speed without re-fetching.",,FAQ answer,html; contains an <a> link — preserve the tag
-torah.about.faq_a3,"<a href=""https://www.sefaria.org"" target=""_blank"" rel=""noopener"" style=""color:var(--gold);"">Sefaria</a>'s public API. The translation dropdown defaults to JPS 1985 when available; pick any other version from the same dropdown.",,FAQ answer,html; contains an <a> link — preserve the tag
-torah.about.faq_a4,Yes. The Display panel has separate toggles for nikkud (vowel points) and cantillation marks (te'amim). They can be hidden independently.,,FAQ answer,
-torah.about.faq_a5,"Yes. Trope color coding tints each word by its cantillation clause family — Sof Pasuk, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings.",,FAQ answer,
-torah.about.faq_a6,"The default is diaspora. Flip the Reading Schedule toggle to switch to Israel. Use ""Jump to this week's parsha"" to auto-pick the current week's reading from Sefaria's calendar.",,FAQ answer,
-torah.about.faq_a7,Yes. Materials incorporating PocketTorah audio are licensed CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0.,,FAQ answer,
-torah.about.faq_q1,What is the Torah Trainer?,,FAQ question,
-torah.about.faq_q2,Does it include chanted-audio karaoke?,,FAQ question,
-torah.about.faq_q3,Where do the Hebrew texts and translations come from?,,FAQ question,
-torah.about.faq_q4,Can I hide nikkud or cantillation marks?,,FAQ question,
-torah.about.faq_q5,Can it color-code the Torah trope (cantillation) families?,,FAQ question,
-torah.about.faq_q6,Diaspora or Israel schedule?,,FAQ question,
-torah.about.faq_q7,Is it free?,,FAQ question,
-torah.about.faq_summary,Frequently Asked Questions,,accordion summary,
-torah.about.howto_1,"Pick a parsha from the top dropdown (defaults to this week's). The Reading dropdown shows each aliyah's verse range, and 🎵 marks readings with chanted audio.",,howto step,
-torah.about.howto_2,Toggle Translit and Translation; choose Side-by-side or Interlinear layout.,,howto step,
-torah.about.howto_3,"Customize the Hebrew font, vowel coloring, and translit scheme in this drawer.",,howto step,
-torah.about.howto_4,Enable Karaoke and pick an aliyah from the Reading dropdown to chant along. Use 🔁 Loop on any verse to repeat it hands-free for practice.,,howto step,
-torah.about.howto_5,"On a full parsha, use the aliyah jump chips at the top to skip around, and the Resume chip to pick up where you left off.",,howto step,
-torah.about.howto_6,Click the fullscreen button to project to a SmartBoard.,,howto step,
-torah.about.howto_7,New here? Press <strong>❓ Tour</strong> in the header for a quick walkthrough.,,howto step,html; keep the <strong> around ❓ Tour
-torah.about.howto_summary,How To Use,,accordion summary,
-torah.audio.chant_label,Chant,,rate slider label,
-torah.audio.chant_rate_aria,Chanting playback speed,,rate slider aria,aria-label only
-torah.audio.collapse_aria,Collapse audio bar,,collapse button aria,aria-label only
-torah.audio.collapse_title,Collapse / expand audio bar,,collapse button title,
-torah.audio.credit,"Cantillation © Russel Neiss & Rabbi Charlie Schwartz, PocketTorah, CC BY-SA 4.0",,audio bar credit,html
-torah.audio.element_aria,Chanted Torah audio,,audio element aria,aria-label only
-torah.audio.expand_aria,Expand audio bar,,collapse button aria (expanded state),aria-label only
-torah.audio.karaoke_label,Karaoke,,audio bar label,
-torah.audio.loop_pause_1,1 second,,select option,
-torah.audio.loop_pause_2,2 seconds,,select option,
-torah.audio.loop_pause_half,0.5 seconds,,select option,
-torah.audio.loop_pause_label,Pause between repeats,,settings label,
-torah.audio.loop_pause_none,None,,select option,
-torah.audio.loop_pause_tip,"When you loop a verse (🔁), wait this long before repeating it — handy for practicing along.",,tooltip,
-torah.audio.loopstop_aria,Stop looping,,loop-stop button aria + title,
-torah.audio.loopstop_text,⏹ Stop loop,,loop-stop button text,leading-emoji
-torah.audio.pause_aria,Pause,,play/pause button aria (dynamic),aria-label only
-torah.audio.play_aria,Play,,play/pause button aria (dynamic),aria-label only
-torah.audio.playpause_aria,Play or pause,,play/pause button aria,aria-label only
-torah.audio.playpause_title,Play / pause,,play/pause button title,
-torah.audio.read_label,Read,,rate slider label,
-torah.audio.read_rate_aria,TTS reading speed,,rate slider aria,aria-label only
-torah.audio.region_aria,Cantillation audio playback,,audio bar region aria,aria-label only
-torah.audio.speed_chant,Chant,,slider label,
-torah.audio.speed_read,Read,,slider label,
-torah.audio.speeds_credit,"Cantillation audio © Russel Neiss & Rabbi Charlie Schwartz, PocketTorah, CC BY-SA 4.0.",,settings credit,html
-torah.audio.speeds_intro,"Click <strong>🔊 Read</strong> on any verse for browser TTS in Hebrew, or <strong>🎵 Chant</strong> to stream PocketTorah's recording with real-time word highlighting. These sliders mirror the ones in the audio bar at the bottom of the page.",,settings prose,html; keep the two <strong> spans
-torah.audio.tts_no_voice,No Hebrew voice detected on this device — TTS may fall back to a generic voice.,,settings status,
-torah.audio.tts_unsupported,Speech synthesis not supported.,,settings status,
-torah.audio.looping_label,🔁 Looping {verse},,Audio-bar label while a verse loops,leading-glyph; {verse} content
-torah.color.code_nikkud,Color-code nikkud,,settings label,
-torah.color.code_trope,Color-code trope families,,settings label,
-torah.color.code_trope_tip,"Tints each word by its cantillation clause family — Sof Pasuk, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. When vowel coloring is in Highlight mode, trope shows as an underline instead.",,tooltip,
-torah.color.mode_highlight,Highlight,,radio label,
-torah.color.mode_label,Mode,,settings label,
-torah.color.mode_letter,Letter,,radio label,
-torah.color.mode_underline,Underline,,radio label,
-torah.color.picker_aria,Color for {name},,color input aria,aria-label only; do-not-translate {name} (name is a glyph-name)
-torah.color.scheme_default,Default,,vowel scheme button,
-torah.color.scheme_reset,Reset,,vowel scheme button,
-torah.color.scheme_talam,TaL AM,,vowel scheme button,
-torah.color.trope_reset,Reset,,trope scheme button,
-torah.confirm.reset_all,Reset all Torah Trainer settings to defaults?,,confirm dialog,
-torah.confirm.reset_trope_colors,Are you sure? This resets your custom trope-family colors to the defaults.,,confirm dialog,
-torah.confirm.reset_vowel_colors,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,,confirm dialog,
-torah.controls.custom_range_button,Custom range…,,button,
-torah.controls.layout_interlinear,Interlinear,,layout radio,
-torah.controls.layout_label,Layout:,,control label,
-torah.controls.layout_page,Page view,,layout radio,
-torah.controls.layout_side,Side by side,,layout radio,
-torah.controls.parsha_label,Parsha:,,control label,
-torah.controls.scope_aria,Reading scope,,scope select aria-label,aria-label only
-torah.controls.translation_toggle,Translation,,toggle label,
-torah.controls.translit_toggle,Translit,,toggle label,
-torah.controls.version_label,Version:,,control label,
-torah.controls.version_loading,Loading…,,select placeholder option,
-torah.custom.book_deuteronomy,Deuteronomy,,book option,glyph-name
-torah.custom.book_exodus,Exodus,,book option,glyph-name
-torah.custom.book_genesis,Genesis,,book option,glyph-name
-torah.custom.book_label,Book:,,custom-range picker label,
-torah.custom.book_leviticus,Leviticus,,book option,glyph-name
-torah.custom.book_numbers,Numbers,,book option,glyph-name
-torah.custom.chapter_label,Chapter:,,custom-range picker label,
-torah.custom.go_button,Go,,button,
-torah.custom.verse_from_ph,from,,input placeholder,placeholder
-torah.custom.verse_to_ph,to,,input placeholder,placeholder
-torah.custom.verses_label,Verses:,,custom-range picker label,
-torah.display.click_chant,Chant,,radio label,
-torah.display.click_read,Read,,radio label,
-torah.display.click_word_label,Click on word to,,settings label,
-torah.display.click_word_tip,Chant: jump the karaoke audio to that word (auto-loads the right aliyah). Read: speak the verse containing the word via Hebrew TTS.,,tooltip,
-torah.display.follow_both,Both,,radio label,
-torah.display.follow_hebrew,Hebrew,,radio label,
-torah.display.follow_label,Follow,,settings label,
-torah.display.follow_translit,Translit,,radio label,
-torah.display.font_default_tag,[DEFAULT],,font picker default marker,
-torah.display.font_section_cursive,Cursive / Script,,font picker section header,
-torah.display.font_section_fallback,{section} Fonts,,font picker section header (fallback),do-not-translate {section}
-torah.display.font_section_my,My Fonts,,font picker section header,
-torah.display.font_section_print,Print Fonts,,font picker section header,
-torah.display.font_section_torah,Torah Fonts,,font picker section header,
-torah.display.font_sizes_header,Font sizes,,settings subheader,
-torah.display.karaoke_header,Karaoke settings,,settings subheader,
-torah.display.restore_default_title,Restore default,,reset button title,
-torah.display.show_cantillation,Show cantillation marks (te'amim),,settings label,
-torah.display.show_cantillation_tip,Cantillation marks (above and below letters) indicate chanting melody. Toggle off to see only nikkud (vowels).,,tooltip,
-torah.display.show_nikkud,Show nikkud (vowels),,settings label,
-torah.display.size_english,English,,slider label,
-torah.display.size_hebrew,Hebrew,,slider label,
-torah.display.size_translit,Translit,,slider label,
-torah.display.style_highlight,Highlight,,radio label,
-torah.display.style_label,Style,,settings label,
-torah.display.style_none,None,,radio label,
-torah.display.style_outline,Outline,,radio label,
-torah.display.style_under,Under,,radio label,
-torah.display.restore_default,Restore default,,Slider reset (↺) button title,title
-torah.footer.cantillation_credit,Cantillation audio: PocketTorah · CC BY-SA 4.0,,footer data-source credit,html
-torah.footer.license_note,"Only translations whose license permits redistribution are offered (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA).",,footer note,
-torah.footer.sefaria_credit,Hebrew text via Sefaria · public domain,,footer data-source credit,html
-torah.footer.translation_static,Translation: (none selected),,footer credit,
-torah.glyphname.trope_geresh,Geresh group,,trope-family legend + picker label,glyph-name; scope-ambiguous
-torah.glyphname.trope_katon,Zakef Katon clause,,trope-family legend + picker label,glyph-name; scope-ambiguous
-torah.glyphname.trope_rare,Rare marks,,trope-family legend + picker label,glyph-name; scope-ambiguous
-torah.glyphname.trope_revia,Revia group,,trope-family legend + picker label,glyph-name; scope-ambiguous
-torah.glyphname.trope_segol,Segol clause,,trope-family legend + picker label,glyph-name; scope-ambiguous
-torah.glyphname.trope_sofpasuk,Sof Pasuk clause,,trope-family legend + picker label,glyph-name; scope-ambiguous
-torah.glyphname.vowel_chirik,Chirik,,vowel color-picker label,glyph-name
-torah.glyphname.vowel_hkamatz,H. Kamatz,,vowel color-picker label,glyph-name
-torah.glyphname.vowel_holam,Holam,,vowel color-picker label,glyph-name
-torah.glyphname.vowel_hpatach,H. Patach,,vowel color-picker label,glyph-name
-torah.glyphname.vowel_hsegol,H. Segol,,vowel color-picker label,glyph-name
-torah.glyphname.vowel_kamatz,Kamatz,,vowel color-picker label,glyph-name
-torah.glyphname.vowel_kubutz,Kubutz,,vowel color-picker label,glyph-name
-torah.glyphname.vowel_patach,Patach,,vowel color-picker label,glyph-name
-torah.glyphname.vowel_segol,Segol,,vowel color-picker label,glyph-name
-torah.glyphname.vowel_shuruk,Shuruk,,vowel color-picker label,glyph-name
-torah.glyphname.vowel_shva,Shva,,vowel color-picker label,glyph-name
-torah.glyphname.vowel_tzere,Tzere,,vowel color-picker label,glyph-name
-torah.glyphname.vowel_vav_holam,Vav Holam,,vowel color-picker label,glyph-name
-torah.header.home,Home,,header nav button,
-torah.header.settings_title,Settings,,header gear button title,
-torah.header.subtitle,"Read the weekly parsha with vowel coloring, transliteration, translations, and chanted-audio karaoke.",,header subtitle,
-torah.header.title,Torah Trainer,,h1 header,
-torah.header.tour_button,❓ Tour,,header button,leading-emoji
-torah.header.tour_title,Take a quick tour,,header button title,
-torah.jumpnav.aria,Jump to aliyah,,in-page nav aria-label,aria-label only
-torah.reading.chant_all,🎵 Chant all,,ref-header button,leading-emoji
-torah.reading.chant_all_stop,⏹ Stop chant,,ref-header button,leading-emoji
-torah.reading.empty_body,"Choose a parsha from the dropdown above — the reading appears here with optional transliteration, translation, color-coded vowels, and chanted audio.",,empty state,
-torah.reading.empty_title,Pick a parsha to start,,empty state h2,print-adjacent empty state
-torah.reading.jump_chip_aria,Jump to aliyah {n} ({label}),,aliyah jump chip aria,aria-label only; mixed UI+content — do not translate {n}/{label}
-torah.reading.read_all,🔊 Read all,,ref-header button,leading-emoji
-torah.reading.resume,Resume at {verse} →,,resume chip,mixed UI+content — do not translate {verse}
-torah.reading.resume_dismiss_aria,Dismiss resume,,resume chip dismiss aria,aria-label only
-torah.reading.stop,⏹ Stop,,ref-header button (reading),leading-emoji
-torah.reading.verse_chant,🎵 Chant,,per-verse button,leading-emoji
-torah.reading.verse_chant_aria,Chant verse {verseRef} (PocketTorah audio),,per-verse button aria,aria-label only; mixed UI+content — do not translate {verseRef}
-torah.reading.verse_loop,🔁 Loop,,per-verse button,leading-emoji
-torah.reading.verse_loop_aria,Loop verse {verseRef} (repeat the chant),,per-verse button aria,aria-label only; mixed UI+content — do not translate {verseRef}
-torah.reading.verse_loop_stop_aria,Stop looping verse {verseRef},,per-verse button aria (looping),aria-label only; mixed UI+content — do not translate {verseRef}
-torah.reading.verse_read,🔊 Read,,per-verse button,leading-emoji
-torah.reading.verse_read_aria,Read verse {verseRef} aloud (TTS),,per-verse button aria,aria-label only; mixed UI+content — do not translate {verseRef}
-torah.reading.row_hebrew,Hebrew,,Interlinear/side-by-side row label (Hebrew line),
-torah.reading.row_translit,Translit,,Interlinear/side-by-side row label (translit line),
-torah.reading.row_english,English,,Interlinear/side-by-side row label (translation line),
-torah.reading.aliyah_inline,✦ Aliyah {n},,Inline aliyah marker in the flowing reading,leading-glyph; {n} numeric
-torah.reading.aliyah_divider,Aliyah {n} · {label},,Aliyah divider heading (page/interlinear view),{n} numeric; {label} is the aliyah name/range content
-torah.schedule.diaspora,Diaspora,,radio label,
-torah.schedule.israel,Israel,,radio label,
-torah.schedule.jump_this_week,Jump to this week's parsha,,button,
-torah.schedule.schedule_label,Schedule,,settings label,
-torah.schedule.schedule_tip,Diaspora and Israel reading schedules diverge for several weeks per cycle (when a Yom Tov falls on Shabbat). Affects which parsha is selected as 'this week'.,,tooltip,
-torah.schedule.scope_aliyah,Aliyah {n},,scope option,do-not-translate {n}
-torah.schedule.scope_disabled_title,"Reading scope applies to weekly parshiyot, not holiday readings.",,scope select title (disabled),
-torah.schedule.scope_full,Full parsha,,scope option,
-torah.schedule.scope_full_reading,Full reading,,scope option (holiday/custom),
-torah.schedule.scope_haftarah,Haftarah,,scope option,
-torah.settings.close_aria,Close settings,,close button aria,aria-label only
-torah.settings.close_title,Close,,close button title,
-torah.settings.collapse_all,Collapse all menus,,button,
-torah.settings.expand_all,Expand all menus,,button,
-torah.settings.panel_about,About & FAQ,,panel title,
-torah.settings.panel_audio,Audio speeds,,panel title,
-torah.settings.panel_display,Display,,panel title,
-torah.settings.panel_font,Hebrew font,,panel title,
-torah.settings.panel_reset,Reset,,panel title,
-torah.settings.panel_schedule,Reading schedule,,panel title,
-torah.settings.panel_translit,Transliteration scheme,,panel title,
-torah.settings.panel_trope_color,Trope color coding,,panel title,
-torah.settings.panel_vowel_color,Vowel color coding,,panel title,
-torah.settings.reset_all,↺ Reset all Torah Trainer settings,,button,leading-emoji
-torah.settings.title,⚙️ Torah Trainer Settings,,settings drawer header,leading-emoji
-torah.status.aliyah_audio_unavailable,Audio for aliyah {n} is not available in PocketTorah.,,karaoke status,do-not-translate {n}
-torah.status.audio_basename_missing,Audio basename missing in manifest.,,karaoke status,
-torah.status.cant_determine_parsha,Could not determine the current parsha (Sefaria API unreachable).,,status,
-torah.status.chant_unavailable,Chanting isn't available for this reading.,,status,
-torah.status.data_load_failed,"Failed to load static data files (data/parshiyot.json, data/pockettorah/*.json). The page may not work correctly.",,status,
-torah.status.failed_load,Failed to load {label}: {error}.,,status,do-not-translate {label}/{error}
-torah.status.failed_timings,Failed to load timings: {error}.,,karaoke status,do-not-translate {error}
-torah.status.fallback_version,"""{version}"" isn't available here — showing ""{other}"" instead.",,status,do-not-translate {version}/{other}
-torah.status.hint_action_chant,chant from that spot,,hint toast fragment,
-torah.status.hint_action_read,read it aloud,,hint toast fragment,
-torah.status.hint_click_word,💡 Tip: click any Hebrew word to {action},,one-time hint toast,leading-emoji; do-not-translate {action} (built from fragments below)
-torah.status.loaded_drift,Loaded — note: text has {words} words but audio has {timings} word timings; alignment may drift.,,karaoke status,do-not-translate {words}/{timings}
-torah.status.loaded_timings,Loaded {count} word timings. Click any Hebrew word to jump to that part.,,karaoke status,do-not-translate {count}
-torah.status.loading_aliyah_verse,Loading aliyah {n} to {action} verse {verseRef}…,,status,do-not-translate {n}/{verseRef}; {action} = loop|chant
-torah.status.loading_audio_chant,Loading audio to chant {verseRef}…,,status,do-not-translate {verseRef}
-torah.status.loading_audio_for,"Loading audio for {parsha}, {aliyah}…",,karaoke status,do-not-translate {parsha}; {aliyah} = Haftarah|Aliyah {n}
-torah.status.loading_label,Loading {label}…,,status,do-not-translate {label}
-torah.status.loop_verse,Looping verse {verseRef}. Click Loop again (or Stop in the audio bar) to end.,,karaoke status,do-not-translate {verseRef}
-torah.status.net_hint,Sefaria API may be unreachable.,,status fragment (appended),
-torah.status.no_aliyah_data,No aliyah data for this parsha.,,status,
-torah.status.no_chantable_audio,No chantable audio for this reading.,,status,
-torah.status.no_manifest,No PocketTorah manifest entry for this parsha.,,karaoke status,
-torah.status.pick_parsha,Pick a parsha to start.,,status,
-torah.status.pick_parsha_chant,Pick a parsha first to chant.,,status,
-torah.status.pick_parsha_chant_verses,Pick a parsha first to chant verses.,,status,
-torah.status.sefaria_no_ref,"Sefaria says this week is ""{name}"" but didn't return a Torah reference for it.",,status,do-not-translate {name}
-torah.status.tts_unsupported_browser,Speech synthesis not supported in this browser.,,status,
-torah.status.verse_not_found,Couldn't find verse {verseRef} in the rendered text.,,status,do-not-translate {verseRef}
-torah.status.verse_outside_cant_chant,Verse {verseRef} is outside this parsha's aliyot — can't chant it here.,,status,do-not-translate {verseRef}
-torah.status.verse_outside_pick_haftarah,Verse {verseRef} is outside this parsha's aliyot — pick Haftarah from Reading if you want to chant it.,,status,do-not-translate {verseRef}
-torah.status.version_no_cover,"""{version}"" doesn't cover this passage.",,status,do-not-translate {version}
-torah.status.version_not_returned,"""{version}"" wasn't returned by Sefaria for this passage — pick a different version.",,status,do-not-translate {version}
-torah.status.reading_load_failed,Failed to load {label}: {error}.,,status (reading fetch error),do-not-translate {label}/{error}
-torah.tip.more_info,More information,,tooltip fallback aria,aria-label only
-torah.tour.s1_body,Pick any parsha — it starts on this week's automatically.,,tour step body,
-torah.tour.s1_title,Pick a parsha,,tour step title,
-torah.tour.s2_body,"Read the whole parsha, one aliyah, or the haftarah. 🎵 means chanted audio is available.",,tour step body,
-torah.tour.s2_title,Reading scope,,tour step title,
-torah.tour.s3_body,"Show transliteration and translation, side-by-side or line-by-line.",,tour step body,
-torah.tour.s3_title,Layout & toggles,,tour step title,
-torah.tour.s4_body,"Every verse can be read aloud, chanted with word-by-word highlighting, or looped for practice.",,tour step body,
-torah.tour.s4_title,"Read, chant, or loop",,tour step title,
-torah.tour.s5_body,Click any Hebrew word to chant from exactly that spot.,,tour step body,
-torah.tour.s5_title,The text itself,,tour step title,
-torah.tour.s6_body,"Fonts, vowel colors, transliteration styles, and speeds live here.",,tour step body,
-torah.tour.s6_title,Settings,,tour step title,
-torah.trans.footer_line,"Translation: <em>{version}</em> · {license} (via <a href=""https://www.sefaria.org"" target=""_blank"" rel=""noopener"">Sefaria</a>)",,footer translation line,html; keep <em>/<a>; do-not-translate {version}/{license}
-torah.trans.footer_none,Translation: (none selected — toggle Translation off or pick a version),,footer translation line,
-torah.trans.lib_failed,Transliteration library failed to load (offline?).,,translit status,
-torah.trans.lib_loaded,Library loaded.,,translit status,
-torah.trans.license_cc0,CC0,,license label,
-torah.trans.license_ccby,CC BY,,license label,
-torah.trans.license_ccbync,CC BY-NC,,license label,
-torah.trans.license_ccbyncsa,CC BY-NC-SA,,license label,
-torah.trans.license_ccbysa,CC BY-SA,,license label,
-torah.trans.license_public_domain,Public Domain,,license label,
-torah.trans.license_unknown,unknown license,,license fallback,
-torah.trans.no_versions,(no openly licensed English versions available for this book),,version select option,
-torah.trans.style_ashkenazi,Ashkenazi,,select option,
-torah.trans.style_brill,Brill Academic,,select option,
-torah.trans.style_label,Style,,settings label,
-torah.trans.style_modern,Modern Israeli [DEFAULT],,select option,
-torah.trans.style_sbl,SBL Academic,,select option,
-torah.trans.style_simple,Simple stressed,,select option,
-torah.trans.version_opt,{title} — {license},,version select option,do-not-translate {title}
-torah.trope_legend.tutor_link,Learn the trope names →,,trope legend link,
-torah.a11y.skip_to_reading,Skip to the reading,,Skip-link to the reading (a11y),aria/skip-link
+torah.about.faq_a1,"A free Hebrew Torah reader. Pick a parsha and read it with optional transliteration, English translation, per-vowel color coding, cantillation strip, prose TTS, and chanted-audio karaoke that highlights words in time with the recording.","קורא תורה עברי חינמי. בחרו פרשה וקראו אותה עם תעתיק אופציונלי, תרגום לאנגלית, צביעת ניקוד לפי תנועה, רצועת טעמים, הקראה קולית, וקריוקי בטעמים שמדגיש מילים בזמן אמת עם ההקלטה.",FAQ answer,
+torah.about.faq_a2,"Yes. <a href=""https://github.com/rneiss/PocketTorah"" target=""_blank"" rel=""noopener"" style=""color:var(--gold);"">PocketTorah</a>'s recordings of all 54 parshiyot and haftarot stream on demand, with word-level highlighting synchronized to the audio. Adjust playback speed without re-fetching.","כן. ההקלטות של <a href=""https://github.com/rneiss/PocketTorah"" target=""_blank"" rel=""noopener"" style=""color:var(--gold);"">PocketTorah</a> של כל 54 הפרשיות וההפטרות מוזרמות לפי דרישה, עם הדגשה ברמת המילה המסונכרנת לשמע. אפשר לכוונן את מהירות ההשמעה בלי לטעון מחדש.",FAQ answer,html; contains an <a> link — preserve the tag
+torah.about.faq_a3,"<a href=""https://www.sefaria.org"" target=""_blank"" rel=""noopener"" style=""color:var(--gold);"">Sefaria</a>'s public API. The translation dropdown defaults to JPS 1985 when available; pick any other version from the same dropdown.","ה-API הציבורי של <a href=""https://www.sefaria.org"" target=""_blank"" rel=""noopener"" style=""color:var(--gold);"">Sefaria</a>. תפריט התרגומים מוגדר כברירת מחדל ל-JPS 1985 כשהוא זמין; בחרו כל גרסה אחרת מאותו תפריט.",FAQ answer,html; contains an <a> link — preserve the tag
+torah.about.faq_a4,Yes. The Display panel has separate toggles for nikkud (vowel points) and cantillation marks (te'amim). They can be hidden independently.,כן. בלוח התצוגה יש מתגים נפרדים לניקוד ולטעמי המקרא. אפשר להסתיר כל אחד מהם בנפרד.,FAQ answer,
+torah.about.faq_a5,"Yes. Trope color coding tints each word by its cantillation clause family — Sof Pasuk, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings.","כן. צביעת הטעמים צובעת כל מילה לפי משפחת הטעם שלה — סוף פסוק, זקף קטון, סגול, רביע, גרש וטעמים נדירים — עם מקרא מעל הקריאה. היא משתלבת עם צביעת הניקוד, ממשיכה לעבוד גם כשהטעמים עצמם מוסתרים, וצבע כל משפחה ניתן להתאמה בהגדרות.",FAQ answer,
+torah.about.faq_a6,"The default is diaspora. Flip the Reading Schedule toggle to switch to Israel. Use ""Jump to this week's parsha"" to auto-pick the current week's reading from Sefaria's calendar.","ברירת המחדל היא תפוצות. העבירו את מתג לוח הקריאה כדי לעבור לישראל. השתמשו ב""קפיצה לפרשת השבוע"" כדי לבחור אוטומטית את קריאת השבוע הנוכחי מלוח השנה של Sefaria.",FAQ answer,
+torah.about.faq_a7,Yes. Materials incorporating PocketTorah audio are licensed CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0.,כן. חומרים הכוללים שמע של PocketTorah מורשים תחת CC BY-SA 4.0; שאר תוכן IvritSuite מורשה תחת CC BY-NC-SA 4.0.,FAQ answer,
+torah.about.faq_q1,What is the Torah Trainer?,מהו מאמן התורה?,FAQ question,
+torah.about.faq_q2,Does it include chanted-audio karaoke?,האם הוא כולל קריוקי בטעמים?,FAQ question,
+torah.about.faq_q3,Where do the Hebrew texts and translations come from?,מהיכן מגיעים הטקסטים בעברית והתרגומים?,FAQ question,
+torah.about.faq_q4,Can I hide nikkud or cantillation marks?,אפשר להסתיר ניקוד או טעמים?,FAQ question,
+torah.about.faq_q5,Can it color-code the Torah trope (cantillation) families?,האם ניתן לצבוע את משפחות הטעמים של התורה?,FAQ question,
+torah.about.faq_q6,Diaspora or Israel schedule?,לוח תפוצות או ישראל?,FAQ question,
+torah.about.faq_q7,Is it free?,האם זה חינמי?,FAQ question,
+torah.about.faq_summary,Frequently Asked Questions,שאלות נפוצות,accordion summary,
+torah.about.howto_1,"Pick a parsha from the top dropdown (defaults to this week's). The Reading dropdown shows each aliyah's verse range, and 🎵 marks readings with chanted audio.","בחרו פרשה מהתפריט העליון (ברירת המחדל היא פרשת השבוע). תפריט הקריאה מציג את טווח הפסוקים של כל עלייה, ו-🎵 מסמן קריאות עם שמע בטעמים.",howto step,
+torah.about.howto_2,Toggle Translit and Translation; choose Side-by-side or Interlinear layout.,הפעילו תעתיק ותרגום; בחרו פריסה זה־לצד־זה או בין־שורתית.,howto step,
+torah.about.howto_3,"Customize the Hebrew font, vowel coloring, and translit scheme in this drawer.","התאימו את הגופן העברי, צביעת התנועות וסגנון התעתיק במגירה הזו.",howto step,
+torah.about.howto_4,Enable Karaoke and pick an aliyah from the Reading dropdown to chant along. Use 🔁 Loop on any verse to repeat it hands-free for practice.,הפעילו קריוקי ובחרו עלייה מתפריט הקריאה כדי לשיר יחד. השתמשו ב-🔁 לולאה על כל פסוק כדי לחזור עליו אוטומטית לתרגול.,howto step,
+torah.about.howto_5,"On a full parsha, use the aliyah jump chips at the top to skip around, and the Resume chip to pick up where you left off.","בפרשה מלאה, השתמשו בתגיות הקפיצה לעליות שלמעלה כדי לדלג, ובתגית ההמשך כדי להמשיך מהמקום שבו הפסקתם.",howto step,
+torah.about.howto_6,Click the fullscreen button to project to a SmartBoard.,לחצו על כפתור המסך המלא כדי להקרין ללוח חכם.,howto step,
+torah.about.howto_7,New here? Press <strong>❓ Tour</strong> in the header for a quick walkthrough.,חדשים כאן? לחצו על <strong>❓ סיור</strong> בכותרת לסיור מהיר.,howto step,html; keep the <strong> around ❓ Tour
+torah.about.howto_summary,How To Use,איך להשתמש,accordion summary,
+torah.audio.chant_label,Chant,שירה,rate slider label,
+torah.audio.chant_rate_aria,Chanting playback speed,מהירות השמעת השירה,rate slider aria,aria-label only
+torah.audio.collapse_aria,Collapse audio bar,כיווץ סרגל השמע,collapse button aria,aria-label only
+torah.audio.collapse_title,Collapse / expand audio bar,כיווץ / הרחבת סרגל השמע,collapse button title,
+torah.audio.credit,"Cantillation © Russel Neiss & Rabbi Charlie Schwartz, PocketTorah, CC BY-SA 4.0","טעמים © Russel Neiss & Rabbi Charlie Schwartz, PocketTorah, CC BY-SA 4.0",audio bar credit,html
+torah.audio.element_aria,Chanted Torah audio,שמע תורה בטעמים,audio element aria,aria-label only
+torah.audio.expand_aria,Expand audio bar,הרחבת סרגל השמע,collapse button aria (expanded state),aria-label only
+torah.audio.karaoke_label,Karaoke,קריוקי,audio bar label,
+torah.audio.loop_pause_1,1 second,שנייה אחת,select option,
+torah.audio.loop_pause_2,2 seconds,2 שניות,select option,
+torah.audio.loop_pause_half,0.5 seconds,0.5 שניות,select option,
+torah.audio.loop_pause_label,Pause between repeats,השהיה בין חזרות,settings label,
+torah.audio.loop_pause_none,None,ללא,select option,
+torah.audio.loop_pause_tip,"When you loop a verse (🔁), wait this long before repeating it — handy for practicing along.","כשאתם חוזרים על פסוק בלולאה (🔁), המתינו זמן זה לפני החזרה — נוח לתרגול תוך כדי.",tooltip,
+torah.audio.loopstop_aria,Stop looping,עצירת הלולאה,loop-stop button aria + title,
+torah.audio.loopstop_text,⏹ Stop loop,⏹ עצירת הלולאה,loop-stop button text,leading-emoji
+torah.audio.pause_aria,Pause,השהה,play/pause button aria (dynamic),aria-label only
+torah.audio.play_aria,Play,נגן,play/pause button aria (dynamic),aria-label only
+torah.audio.playpause_aria,Play or pause,נגן או השהה,play/pause button aria,aria-label only
+torah.audio.playpause_title,Play / pause,נגן / השהה,play/pause button title,
+torah.audio.read_label,Read,הקראה,rate slider label,
+torah.audio.read_rate_aria,TTS reading speed,מהירות ההקראה הקולית,rate slider aria,aria-label only
+torah.audio.region_aria,Cantillation audio playback,השמעת שמע הטעמים,audio bar region aria,aria-label only
+torah.audio.speed_chant,Chant,שירה,slider label,
+torah.audio.speed_read,Read,הקראה,slider label,
+torah.audio.speeds_credit,"Cantillation audio © Russel Neiss & Rabbi Charlie Schwartz, PocketTorah, CC BY-SA 4.0.","שמע הטעמים © Russel Neiss & Rabbi Charlie Schwartz, PocketTorah, CC BY-SA 4.0.",settings credit,html
+torah.audio.speeds_intro,"Click <strong>🔊 Read</strong> on any verse for browser TTS in Hebrew, or <strong>🎵 Chant</strong> to stream PocketTorah's recording with real-time word highlighting. These sliders mirror the ones in the audio bar at the bottom of the page.","לחצו על <strong>🔊 הקראה</strong> על כל פסוק להקראה קולית בעברית בדפדפן, או על <strong>🎵 שירה</strong> כדי להזרים את ההקלטה של PocketTorah עם הדגשת מילים בזמן אמת. המחוונים האלה משקפים את אלה שבסרגל השמע בתחתית העמוד.",settings prose,html; keep the two <strong> spans
+torah.audio.tts_no_voice,No Hebrew voice detected on this device — TTS may fall back to a generic voice.,לא זוהה קול עברי במכשיר זה — ההקראה הקולית עשויה לעבור לקול כללי.,settings status,
+torah.audio.tts_unsupported,Speech synthesis not supported.,סינתזת דיבור אינה נתמכת.,settings status,
+torah.audio.looping_label,🔁 Looping {verse},🔁 לולאה על {verse},Audio-bar label while a verse loops,leading-glyph; {verse} content
+torah.color.code_nikkud,Color-code nikkud,צביעת ניקוד,settings label,
+torah.color.code_trope,Color-code trope families,צביעת משפחות טעמים,settings label,
+torah.color.code_trope_tip,"Tints each word by its cantillation clause family — Sof Pasuk, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. When vowel coloring is in Highlight mode, trope shows as an underline instead.","צובע כל מילה לפי משפחת הטעם שלה — סוף פסוק, זקף קטון, סגול, רביע, גרש וטעמים נדירים — כך שמבנה הביטויים של הפסוק נשאר גלוי גם כשהטעמים מוסתרים. כשצביעת התנועות במצב הדגשה, הטעמים מוצגים כקו תחתון במקום.",tooltip,
+torah.color.mode_highlight,Highlight,הדגשה,radio label,
+torah.color.mode_label,Mode,מצב,settings label,
+torah.color.mode_letter,Letter,אות,radio label,
+torah.color.mode_underline,Underline,קו תחתון,radio label,
+torah.color.picker_aria,Color for {name},צבע עבור {name},color input aria,aria-label only; do-not-translate {name} (name is a glyph-name)
+torah.color.scheme_default,Default,ברירת מחדל,vowel scheme button,
+torah.color.scheme_reset,Reset,איפוס,vowel scheme button,
+torah.color.scheme_talam,TaL AM,תל-עם,vowel scheme button,
+torah.color.trope_reset,Reset,איפוס,trope scheme button,
+torah.confirm.reset_all,Reset all Torah Trainer settings to defaults?,לאפס את כל הגדרות מאמן התורה לברירת המחדל?,confirm dialog,
+torah.confirm.reset_trope_colors,Are you sure? This resets your custom trope-family colors to the defaults.,האם אתם בטוחים? פעולה זו מאפסת את צבעי משפחות הטעמים המותאמים אישית שלכם לברירת המחדל.,confirm dialog,
+torah.confirm.reset_vowel_colors,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,האם אתם בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים אישית שלכם עבור ערכות ברירת המחדל ותל-עם כאחד.,confirm dialog,
+torah.controls.custom_range_button,Custom range…,טווח מותאם…,button,
+torah.controls.layout_interlinear,Interlinear,בין־שורתי,layout radio,
+torah.controls.layout_label,Layout:,פריסה:,control label,
+torah.controls.layout_page,Page view,תצוגת עמוד,layout radio,
+torah.controls.layout_side,Side by side,זה לצד זה,layout radio,
+torah.controls.parsha_label,Parsha:,פרשה:,control label,
+torah.controls.scope_aria,Reading scope,היקף הקריאה,scope select aria-label,aria-label only
+torah.controls.translation_toggle,Translation,תרגום,toggle label,
+torah.controls.translit_toggle,Translit,תעתיק,toggle label,
+torah.controls.version_label,Version:,גרסה:,control label,
+torah.controls.version_loading,Loading…,טוען…,select placeholder option,
+torah.custom.book_deuteronomy,Deuteronomy,דברים,book option,glyph-name
+torah.custom.book_exodus,Exodus,שמות,book option,glyph-name
+torah.custom.book_genesis,Genesis,בראשית,book option,glyph-name
+torah.custom.book_label,Book:,ספר:,custom-range picker label,
+torah.custom.book_leviticus,Leviticus,ויקרא,book option,glyph-name
+torah.custom.book_numbers,Numbers,במדבר,book option,glyph-name
+torah.custom.chapter_label,Chapter:,פרק:,custom-range picker label,
+torah.custom.go_button,Go,מעבר,button,
+torah.custom.verse_from_ph,from,מ,input placeholder,placeholder
+torah.custom.verse_to_ph,to,עד,input placeholder,placeholder
+torah.custom.verses_label,Verses:,פסוקים:,custom-range picker label,
+torah.display.click_chant,Chant,שירה,radio label,
+torah.display.click_read,Read,הקראה,radio label,
+torah.display.click_word_label,Click on word to,לחיצה על מילה:,settings label,
+torah.display.click_word_tip,Chant: jump the karaoke audio to that word (auto-loads the right aliyah). Read: speak the verse containing the word via Hebrew TTS.,שירה: קפיצת שמע הקריוקי לאותה מילה (טוען אוטומטית את העלייה הנכונה). הקראה: הקראת הפסוק המכיל את המילה בהקראה קולית בעברית.,tooltip,
+torah.display.follow_both,Both,שניהם,radio label,
+torah.display.follow_hebrew,Hebrew,עברית,radio label,
+torah.display.follow_label,Follow,מעקב,settings label,
+torah.display.follow_translit,Translit,תעתיק,radio label,
+torah.display.font_default_tag,[DEFAULT],[ברירת מחדל],font picker default marker,
+torah.display.font_section_cursive,Cursive / Script,כתב יד / רהוט,font picker section header,
+torah.display.font_section_fallback,{section} Fonts,גופני {section},font picker section header (fallback),do-not-translate {section}
+torah.display.font_section_my,My Fonts,הגופנים שלי,font picker section header,
+torah.display.font_section_print,Print Fonts,גופני דפוס,font picker section header,
+torah.display.font_section_torah,Torah Fonts,גופני תורה,font picker section header,
+torah.display.font_sizes_header,Font sizes,גודלי גופן,settings subheader,
+torah.display.karaoke_header,Karaoke settings,הגדרות קריוקי,settings subheader,
+torah.display.restore_default_title,Restore default,שחזור ברירת מחדל,reset button title,
+torah.display.show_cantillation,Show cantillation marks (te'amim),הצגת טעמי המקרא,settings label,
+torah.display.show_cantillation_tip,Cantillation marks (above and below letters) indicate chanting melody. Toggle off to see only nikkud (vowels).,טעמי המקרא (מעל ומתחת לאותיות) מציינים את מנגינת הטעמים. כבו כדי לראות ניקוד בלבד.,tooltip,
+torah.display.show_nikkud,Show nikkud (vowels),הצגת ניקוד,settings label,
+torah.display.size_english,English,אנגלית,slider label,
+torah.display.size_hebrew,Hebrew,עברית,slider label,
+torah.display.size_translit,Translit,תעתיק,slider label,
+torah.display.style_highlight,Highlight,הדגשה,radio label,
+torah.display.style_label,Style,סגנון,settings label,
+torah.display.style_none,None,ללא,radio label,
+torah.display.style_outline,Outline,מיתאר,radio label,
+torah.display.style_under,Under,קו תחתון,radio label,
+torah.display.restore_default,Restore default,שחזור ברירת מחדל,Slider reset (↺) button title,title
+torah.footer.cantillation_credit,Cantillation audio: PocketTorah · CC BY-SA 4.0,שמע הטעמים: PocketTorah · CC BY-SA 4.0,footer data-source credit,html
+torah.footer.license_note,"Only translations whose license permits redistribution are offered (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA).","מוצעים רק תרגומים שרישיונם מתיר הפצה מחדש (נחלת הכלל, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA).",footer note,
+torah.footer.sefaria_credit,Hebrew text via Sefaria · public domain,טקסט עברי דרך Sefaria · נחלת הכלל,footer data-source credit,html
+torah.footer.translation_static,Translation: (none selected),תרגום: (לא נבחר),footer credit,
+torah.glyphname.trope_geresh,Geresh group,גרש,trope-family legend + picker label,glyph-name; scope-ambiguous
+torah.glyphname.trope_katon,Zakef Katon clause,זקף קטון,trope-family legend + picker label,glyph-name; scope-ambiguous
+torah.glyphname.trope_rare,Rare marks,טעמים נדירים,trope-family legend + picker label,glyph-name; scope-ambiguous
+torah.glyphname.trope_revia,Revia group,רביע,trope-family legend + picker label,glyph-name; scope-ambiguous | REVIEW: 'Revia group' rendered רביע — confirm
+torah.glyphname.trope_segol,Segol clause,סגול,trope-family legend + picker label,glyph-name; scope-ambiguous | REVIEW: 'Segol clause' rendered סגול — confirm
+torah.glyphname.trope_sofpasuk,Sof Pasuk clause,סוף פסוק,trope-family legend + picker label,glyph-name; scope-ambiguous
+torah.glyphname.vowel_chirik,Chirik,חִירִיק,vowel color-picker label,glyph-name
+torah.glyphname.vowel_hkamatz,H. Kamatz,חֲטַף קָמָץ,vowel color-picker label,glyph-name
+torah.glyphname.vowel_holam,Holam,חוֹלָם,vowel color-picker label,glyph-name
+torah.glyphname.vowel_hpatach,H. Patach,חֲטַף פַּתַח,vowel color-picker label,glyph-name
+torah.glyphname.vowel_hsegol,H. Segol,חֲטַף סֶגּוֹל,vowel color-picker label,glyph-name
+torah.glyphname.vowel_kamatz,Kamatz,קָמָץ,vowel color-picker label,glyph-name
+torah.glyphname.vowel_kubutz,Kubutz,קֻבּוּץ,vowel color-picker label,glyph-name
+torah.glyphname.vowel_patach,Patach,פַּתַח,vowel color-picker label,glyph-name
+torah.glyphname.vowel_segol,Segol,סֶגּוֹל,vowel color-picker label,glyph-name
+torah.glyphname.vowel_shuruk,Shuruk,שׁוּרוּק,vowel color-picker label,glyph-name
+torah.glyphname.vowel_shva,Shva,שְׁוָא,vowel color-picker label,glyph-name
+torah.glyphname.vowel_tzere,Tzere,צֵירֵי,vowel color-picker label,glyph-name
+torah.glyphname.vowel_vav_holam,Vav Holam,חוֹלָם מָלֵא,vowel color-picker label,glyph-name
+torah.header.home,Home,בית,header nav button,
+torah.header.settings_title,Settings,הגדרות,header gear button title,
+torah.header.subtitle,"Read the weekly parsha with vowel coloring, transliteration, translations, and chanted-audio karaoke.","קראו את פרשת השבוע עם צביעת תנועות, תעתיק, תרגומים וקריוקי בטעמים.",header subtitle,
+torah.header.title,Torah Trainer,מאמן התורה,h1 header,
+torah.header.tour_button,❓ Tour,❓ סיור,header button,leading-emoji
+torah.header.tour_title,Take a quick tour,צאו לסיור מהיר,header button title,
+torah.jumpnav.aria,Jump to aliyah,קפיצה לעלייה,in-page nav aria-label,aria-label only
+torah.reading.chant_all,🎵 Chant all,🎵 שירת הכול,ref-header button,leading-emoji
+torah.reading.chant_all_stop,⏹ Stop chant,⏹ עצירת השירה,ref-header button,leading-emoji
+torah.reading.empty_body,"Choose a parsha from the dropdown above — the reading appears here with optional transliteration, translation, color-coded vowels, and chanted audio.","בחרו פרשה מהתפריט שלמעלה — הקריאה תופיע כאן עם תעתיק אופציונלי, תרגום, תנועות צבועות ושמע בטעמים.",empty state,
+torah.reading.empty_title,Pick a parsha to start,בחרו פרשה כדי להתחיל,empty state h2,print-adjacent empty state
+torah.reading.jump_chip_aria,Jump to aliyah {n} ({label}),קפיצה לעלייה {n} ({label}),aliyah jump chip aria,aria-label only; mixed UI+content — do not translate {n}/{label}
+torah.reading.read_all,🔊 Read all,🔊 הקראת הכול,ref-header button,leading-emoji
+torah.reading.resume,Resume at {verse} →,המשך מ-{verse} →,resume chip,mixed UI+content — do not translate {verse}
+torah.reading.resume_dismiss_aria,Dismiss resume,ביטול ההמשך,resume chip dismiss aria,aria-label only
+torah.reading.stop,⏹ Stop,⏹ עצירה,ref-header button (reading),leading-emoji
+torah.reading.verse_chant,🎵 Chant,🎵 שירה,per-verse button,leading-emoji
+torah.reading.verse_chant_aria,Chant verse {verseRef} (PocketTorah audio),שירת פסוק {verseRef} (שמע PocketTorah),per-verse button aria,aria-label only; mixed UI+content — do not translate {verseRef}
+torah.reading.verse_loop,🔁 Loop,🔁 לולאה,per-verse button,leading-emoji
+torah.reading.verse_loop_aria,Loop verse {verseRef} (repeat the chant),לולאה על פסוק {verseRef} (חזרה על השירה),per-verse button aria,aria-label only; mixed UI+content — do not translate {verseRef}
+torah.reading.verse_loop_stop_aria,Stop looping verse {verseRef},עצירת הלולאה על פסוק {verseRef},per-verse button aria (looping),aria-label only; mixed UI+content — do not translate {verseRef}
+torah.reading.verse_read,🔊 Read,🔊 הקראה,per-verse button,leading-emoji
+torah.reading.verse_read_aria,Read verse {verseRef} aloud (TTS),הקראת פסוק {verseRef} בקול (הקראה קולית),per-verse button aria,aria-label only; mixed UI+content — do not translate {verseRef}
+torah.reading.row_hebrew,Hebrew,עברית,Interlinear/side-by-side row label (Hebrew line),
+torah.reading.row_translit,Translit,תעתיק,Interlinear/side-by-side row label (translit line),
+torah.reading.row_english,English,אנגלית,Interlinear/side-by-side row label (translation line),
+torah.reading.aliyah_inline,✦ Aliyah {n},✦ עלייה {n},Inline aliyah marker in the flowing reading,leading-glyph; {n} numeric
+torah.reading.aliyah_divider,Aliyah {n} · {label},עלייה {n} · {label},Aliyah divider heading (page/interlinear view),{n} numeric; {label} is the aliyah name/range content
+torah.schedule.diaspora,Diaspora,תפוצות,radio label,
+torah.schedule.israel,Israel,ישראל,radio label,
+torah.schedule.jump_this_week,Jump to this week's parsha,קפיצה לפרשת השבוע,button,
+torah.schedule.schedule_label,Schedule,לוח,settings label,
+torah.schedule.schedule_tip,Diaspora and Israel reading schedules diverge for several weeks per cycle (when a Yom Tov falls on Shabbat). Affects which parsha is selected as 'this week'.,לוחות הקריאה של התפוצות וישראל נבדלים במשך כמה שבועות בכל מחזור (כשיום טוב חל בשבת). משפיע על הפרשה הנבחרת כ'פרשת השבוע'.,tooltip,
+torah.schedule.scope_aliyah,Aliyah {n},עלייה {n},scope option,do-not-translate {n}
+torah.schedule.scope_disabled_title,"Reading scope applies to weekly parshiyot, not holiday readings.","היקף הקריאה חל על פרשיות השבוע, לא על קריאות החגים.",scope select title (disabled),
+torah.schedule.scope_full,Full parsha,פרשה מלאה,scope option,
+torah.schedule.scope_full_reading,Full reading,קריאה מלאה,scope option (holiday/custom),
+torah.schedule.scope_haftarah,Haftarah,הפטרה,scope option,
+torah.settings.close_aria,Close settings,סגירת ההגדרות,close button aria,aria-label only
+torah.settings.close_title,Close,סגירה,close button title,
+torah.settings.collapse_all,Collapse all menus,כיווץ כל התפריטים,button,
+torah.settings.expand_all,Expand all menus,הרחבת כל התפריטים,button,
+torah.settings.panel_about,About & FAQ,אודות ושאלות נפוצות,panel title,
+torah.settings.panel_audio,Audio speeds,מהירויות שמע,panel title,
+torah.settings.panel_display,Display,תצוגה,panel title,
+torah.settings.panel_font,Hebrew font,גופן עברי,panel title,
+torah.settings.panel_reset,Reset,איפוס,panel title,
+torah.settings.panel_schedule,Reading schedule,לוח קריאה,panel title,
+torah.settings.panel_translit,Transliteration scheme,סגנון תעתיק,panel title,
+torah.settings.panel_trope_color,Trope color coding,צביעת טעמים,panel title,
+torah.settings.panel_vowel_color,Vowel color coding,צביעת תנועות,panel title,
+torah.settings.reset_all,↺ Reset all Torah Trainer settings,↺ איפוס כל הגדרות מאמן התורה,button,leading-emoji
+torah.settings.title,⚙️ Torah Trainer Settings,⚙️ הגדרות מאמן התורה,settings drawer header,leading-emoji
+torah.status.aliyah_audio_unavailable,Audio for aliyah {n} is not available in PocketTorah.,השמע לעלייה {n} אינו זמין ב-PocketTorah.,karaoke status,do-not-translate {n}
+torah.status.audio_basename_missing,Audio basename missing in manifest.,שם קובץ השמע חסר במניפסט.,karaoke status,
+torah.status.cant_determine_parsha,Could not determine the current parsha (Sefaria API unreachable).,לא ניתן לקבוע את הפרשה הנוכחית (ה-API של Sefaria לא נגיש).,status,
+torah.status.chant_unavailable,Chanting isn't available for this reading.,שירה אינה זמינה לקריאה זו.,status,
+torah.status.data_load_failed,"Failed to load static data files (data/parshiyot.json, data/pockettorah/*.json). The page may not work correctly.","טעינת קובצי הנתונים הסטטיים נכשלה (data/parshiyot.json, data/pockettorah/*.json). ייתכן שהעמוד לא יעבוד כראוי.",status,
+torah.status.failed_load,Failed to load {label}: {error}.,טעינת {label} נכשלה: {error}.,status,do-not-translate {label}/{error}
+torah.status.failed_timings,Failed to load timings: {error}.,טעינת התזמונים נכשלה: {error}.,karaoke status,do-not-translate {error}
+torah.status.fallback_version,"""{version}"" isn't available here — showing ""{other}"" instead.","""{version}"" אינו זמין כאן — מוצג ""{other}"" במקום.",status,do-not-translate {version}/{other}
+torah.status.hint_action_chant,chant from that spot,לשיר מאותה נקודה,hint toast fragment,
+torah.status.hint_action_read,read it aloud,להקריא אותו בקול,hint toast fragment,
+torah.status.hint_click_word,💡 Tip: click any Hebrew word to {action},💡 טיפ: לחצו על מילה עברית כלשהי כדי {action},one-time hint toast,leading-emoji; do-not-translate {action} (built from fragments below)
+torah.status.loaded_drift,Loaded — note: text has {words} words but audio has {timings} word timings; alignment may drift.,נטען — לתשומת לב: בטקסט {words} מילים אך בשמע {timings} תזמוני מילים; ייתכן סטייה ביישור.,karaoke status,do-not-translate {words}/{timings}
+torah.status.loaded_timings,Loaded {count} word timings. Click any Hebrew word to jump to that part.,נטענו {count} תזמוני מילים. לחצו על מילה עברית כלשהי כדי לקפוץ לאותו חלק.,karaoke status,do-not-translate {count}
+torah.status.loading_aliyah_verse,Loading aliyah {n} to {action} verse {verseRef}…,טוען עלייה {n} כדי {action} פסוק {verseRef}…,status,do-not-translate {n}/{verseRef}; {action} = loop|chant
+torah.status.loading_audio_chant,Loading audio to chant {verseRef}…,טוען שמע כדי לשיר את {verseRef}…,status,do-not-translate {verseRef}
+torah.status.loading_audio_for,"Loading audio for {parsha}, {aliyah}…","טוען שמע עבור {parsha}, {aliyah}…",karaoke status,do-not-translate {parsha}; {aliyah} = Haftarah|Aliyah {n}
+torah.status.loading_label,Loading {label}…,טוען {label}…,status,do-not-translate {label}
+torah.status.loop_verse,Looping verse {verseRef}. Click Loop again (or Stop in the audio bar) to end.,לולאה על פסוק {verseRef}. לחצו שוב על לולאה (או על עצירה בסרגל השמע) כדי לסיים.,karaoke status,do-not-translate {verseRef}
+torah.status.net_hint,Sefaria API may be unreachable.,ייתכן שה-API של Sefaria אינו נגיש.,status fragment (appended),
+torah.status.no_aliyah_data,No aliyah data for this parsha.,אין נתוני עליות לפרשה זו.,status,
+torah.status.no_chantable_audio,No chantable audio for this reading.,אין שמע לשירה לקריאה זו.,status,
+torah.status.no_manifest,No PocketTorah manifest entry for this parsha.,אין רשומת מניפסט של PocketTorah לפרשה זו.,karaoke status,
+torah.status.pick_parsha,Pick a parsha to start.,בחרו פרשה כדי להתחיל.,status,
+torah.status.pick_parsha_chant,Pick a parsha first to chant.,בחרו קודם פרשה כדי לשיר.,status,
+torah.status.pick_parsha_chant_verses,Pick a parsha first to chant verses.,בחרו קודם פרשה כדי לשיר פסוקים.,status,
+torah.status.sefaria_no_ref,"Sefaria says this week is ""{name}"" but didn't return a Torah reference for it.","Sefaria מציין שהשבוע הוא ""{name}"" אך לא החזיר עבורו הפניה לתורה.",status,do-not-translate {name}
+torah.status.tts_unsupported_browser,Speech synthesis not supported in this browser.,סינתזת דיבור אינה נתמכת בדפדפן זה.,status,
+torah.status.verse_not_found,Couldn't find verse {verseRef} in the rendered text.,לא נמצא פסוק {verseRef} בטקסט המוצג.,status,do-not-translate {verseRef}
+torah.status.verse_outside_cant_chant,Verse {verseRef} is outside this parsha's aliyot — can't chant it here.,פסוק {verseRef} נמצא מחוץ לעליות של פרשה זו — לא ניתן לשיר אותו כאן.,status,do-not-translate {verseRef}
+torah.status.verse_outside_pick_haftarah,Verse {verseRef} is outside this parsha's aliyot — pick Haftarah from Reading if you want to chant it.,פסוק {verseRef} נמצא מחוץ לעליות של פרשה זו — בחרו הפטרה בקריאה אם ברצונכם לשיר אותו.,status,do-not-translate {verseRef}
+torah.status.version_no_cover,"""{version}"" doesn't cover this passage.","""{version}"" אינו מכסה קטע זה.",status,do-not-translate {version}
+torah.status.version_not_returned,"""{version}"" wasn't returned by Sefaria for this passage — pick a different version.","""{version}"" לא הוחזר על ידי Sefaria עבור קטע זה — בחרו גרסה אחרת.",status,do-not-translate {version}
+torah.status.reading_load_failed,Failed to load {label}: {error}.,טעינת {label} נכשלה: {error}.,status (reading fetch error),do-not-translate {label}/{error}
+torah.tip.more_info,More information,מידע נוסף,tooltip fallback aria,aria-label only
+torah.tour.s1_body,Pick any parsha — it starts on this week's automatically.,בחרו כל פרשה — הוא מתחיל בפרשת השבוע אוטומטית.,tour step body,
+torah.tour.s1_title,Pick a parsha,בחרו פרשה,tour step title,
+torah.tour.s2_body,"Read the whole parsha, one aliyah, or the haftarah. 🎵 means chanted audio is available.","קראו את הפרשה כולה, עלייה אחת, או את ההפטרה. 🎵 מציין ששמע בטעמים זמין.",tour step body,
+torah.tour.s2_title,Reading scope,היקף הקריאה,tour step title,
+torah.tour.s3_body,"Show transliteration and translation, side-by-side or line-by-line.","הציגו תעתיק ותרגום, זה לצד זה או שורה אחר שורה.",tour step body,
+torah.tour.s3_title,Layout & toggles,פריסה ומתגים,tour step title,
+torah.tour.s4_body,"Every verse can be read aloud, chanted with word-by-word highlighting, or looped for practice.","כל פסוק ניתן להקראה בקול, לשירה עם הדגשת מילה־אחר־מילה, או ללולאה לתרגול.",tour step body,
+torah.tour.s4_title,"Read, chant, or loop","הקראה, שירה או לולאה",tour step title,
+torah.tour.s5_body,Click any Hebrew word to chant from exactly that spot.,לחצו על מילה עברית כלשהי כדי לשיר בדיוק מאותה נקודה.,tour step body,
+torah.tour.s5_title,The text itself,הטקסט עצמו,tour step title,
+torah.tour.s6_body,"Fonts, vowel colors, transliteration styles, and speeds live here.","גופנים, צבעי תנועות, סגנונות תעתיק ומהירויות נמצאים כאן.",tour step body,
+torah.tour.s6_title,Settings,הגדרות,tour step title,
+torah.trans.footer_line,"Translation: <em>{version}</em> · {license} (via <a href=""https://www.sefaria.org"" target=""_blank"" rel=""noopener"">Sefaria</a>)","תרגום: <em>{version}</em> · {license} (דרך <a href=""https://www.sefaria.org"" target=""_blank"" rel=""noopener"">Sefaria</a>)",footer translation line,html; keep <em>/<a>; do-not-translate {version}/{license}
+torah.trans.footer_none,Translation: (none selected — toggle Translation off or pick a version),תרגום: (לא נבחר — כבו את התרגום או בחרו גרסה),footer translation line,
+torah.trans.lib_failed,Transliteration library failed to load (offline?).,טעינת ספריית התעתיק נכשלה (לא מקוון?).,translit status,
+torah.trans.lib_loaded,Library loaded.,הספרייה נטענה.,translit status,
+torah.trans.license_cc0,CC0,CC0,license label,
+torah.trans.license_ccby,CC BY,CC BY,license label,
+torah.trans.license_ccbync,CC BY-NC,CC BY-NC,license label,
+torah.trans.license_ccbyncsa,CC BY-NC-SA,CC BY-NC-SA,license label,
+torah.trans.license_ccbysa,CC BY-SA,CC BY-SA,license label,
+torah.trans.license_public_domain,Public Domain,נחלת הכלל,license label,
+torah.trans.license_unknown,unknown license,רישיון לא ידוע,license fallback,
+torah.trans.no_versions,(no openly licensed English versions available for this book),(אין גרסאות אנגלית ברישיון פתוח זמינות לספר זה),version select option,
+torah.trans.style_ashkenazi,Ashkenazi,אשכנזי,select option,
+torah.trans.style_brill,Brill Academic,Brill אקדמי,select option,
+torah.trans.style_label,Style,סגנון,settings label,
+torah.trans.style_modern,Modern Israeli [DEFAULT],עברית מודרנית [ברירת מחדל],select option,
+torah.trans.style_sbl,SBL Academic,SBL אקדמי,select option,
+torah.trans.style_simple,Simple stressed,פשוט עם הטעמה,select option,
+torah.trans.version_opt,{title} — {license},{title} — {license},version select option,do-not-translate {title}
+torah.trope_legend.tutor_link,Learn the trope names →,למדו את שמות הטעמים →,trope legend link,
+torah.a11y.skip_to_reading,Skip to the reading,דילוג לקריאה,Skip-link to the reading (a11y),aria/skip-link
 trope.about.body,Trope Tutor teaches the Torah cantillation marks with real chanted examples mined from PocketTorah recordings (CC BY-SA 4.0) and Sefaria's Hebrew text. New here? Press ❓ Tour in the header. Companion reader: Torah Trainer.,,about panel prose,html
 trope.about.reset_all,↺ Reset all Trope Tutor settings,,button,leading-emoji
 trope.confirm.reset_all,Reset all Trope Tutor settings to defaults?,,confirm dialog,

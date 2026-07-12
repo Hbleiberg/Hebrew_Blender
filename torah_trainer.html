@@ -1238,7 +1238,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 <div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
 <div class="settings-modal" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="ttSettingsTitle">
   <div class="settings-header">
-    <h2 id="ttSettingsTitle">⚙️&nbsp; Torah Trainer Settings</h2>
+    <h2 id="ttSettingsTitle" data-i18n="torah.settings.title">⚙️&nbsp; Torah Trainer Settings</h2>
     <button class="settings-close" onclick="closeSettings()" title="Close" aria-label="Close settings">×</button>
   </div>
   <div class="settings-body">
@@ -1252,7 +1252,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="panel-title" data-i18n="torah.settings.panel_display">Display</div>
       <div class="panel-body">
         <div class="form-row">
-          <label>Show cantillation marks (te'amim) <span class="tip-wrap" data-tip="Cantillation marks (above and below letters) indicate chanting melody. Toggle off to see only nikkud (vowels)."><i class="tip-icon">?</i></span></label>
+          <label><span data-i18n="torah.display.show_cantillation">Show cantillation marks (te'amim)</span> <span class="tip-wrap" data-i18n-tip="torah.display.show_cantillation_tip" data-tip="Cantillation marks (above and below letters) indicate chanting melody. Toggle off to see only nikkud (vowels)."><i class="tip-icon">?</i></span></label>
           <label class="toggle"><input type="checkbox" id="optShowCantillation"><span class="slider"></span></label>
         </div>
         <div class="form-row">
@@ -1260,7 +1260,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           <label class="toggle"><input type="checkbox" id="optShowNikkud"><span class="slider"></span></label>
         </div>
         <div class="form-row">
-          <label>Click on word to <span class="tip-wrap" data-tip="Chant: jump the karaoke audio to that word (auto-loads the right aliyah). Read: speak the verse containing the word via Hebrew TTS."><i class="tip-icon">?</i></span></label>
+          <label><span data-i18n="torah.display.click_word_label">Click on word to</span> <span class="tip-wrap" data-i18n-tip="torah.display.click_word_tip" data-tip="Chant: jump the karaoke audio to that word (auto-loads the right aliyah). Read: speak the verse containing the word via Hebrew TTS."><i class="tip-icon">?</i></span></label>
           <span class="radio-group">
             <input type="radio" name="optClickAction" id="caChant" value="chant"><label for="caChant" data-i18n="torah.display.click_chant">Chant</label>
             <input type="radio" name="optClickAction" id="caRead"  value="read"><label for="caRead" data-i18n="torah.display.click_read">Read</label>
@@ -1289,7 +1289,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <hr style="border:none; border-top:1px solid var(--border); margin:12px 0 8px;">
         <div style="font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;" data-i18n="torah.display.karaoke_header">Karaoke settings</div>
         <div class="form-row">
-          <label>Style</label>
+          <label data-i18n="torah.display.style_label">Style</label>
           <span class="radio-group">
             <input type="radio" name="optKarStyle" id="ksHighlight" value="highlight"><label for="ksHighlight" data-i18n="torah.display.style_highlight">Highlight</label>
             <input type="radio" name="optKarStyle" id="ksOutline"   value="outline"><label for="ksOutline" data-i18n="torah.display.style_outline">Outline</label>
@@ -1312,7 +1312,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="panel-title" data-i18n="torah.settings.panel_schedule">Reading schedule</div>
       <div class="panel-body">
         <div class="form-row">
-          <label>Schedule <span class="tip-wrap" data-tip="Diaspora and Israel reading schedules diverge for several weeks per cycle (when a Yom Tov falls on Shabbat). Affects which parsha is selected as 'this week'."><i class="tip-icon">?</i></span></label>
+          <label><span data-i18n="torah.schedule.schedule_label">Schedule</span> <span class="tip-wrap" data-i18n-tip="torah.schedule.schedule_tip" data-tip="Diaspora and Israel reading schedules diverge for several weeks per cycle (when a Yom Tov falls on Shabbat). Affects which parsha is selected as 'this week'."><i class="tip-icon">?</i></span></label>
           <span class="radio-group">
             <input type="radio" name="optSchedule" id="schedDiaspora" value="diaspora"><label for="schedDiaspora" data-i18n="torah.schedule.diaspora">Diaspora</label>
             <input type="radio" name="optSchedule" id="schedIsrael" value="israel"><label for="schedIsrael" data-i18n="torah.schedule.israel">Israel</label>
@@ -1360,7 +1360,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="panel-title" data-i18n="torah.settings.panel_trope_color">Trope color coding</div>
       <div class="panel-body">
         <div class="form-row">
-          <label>Color-code trope families <span class="tip-wrap" data-tip="Tints each word by its cantillation clause family — Sof Pasuk, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. When vowel coloring is in Highlight mode, trope shows as an underline instead."><i class="tip-icon">?</i></span></label>
+          <label><span data-i18n="torah.color.code_trope">Color-code trope families</span> <span class="tip-wrap" data-i18n-tip="torah.color.code_trope_tip" data-tip="Tints each word by its cantillation clause family — Sof Pasuk, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. When vowel coloring is in Highlight mode, trope shows as an underline instead."><i class="tip-icon">?</i></span></label>
           <label class="toggle"><input type="checkbox" id="optColorCodeTrope"><span class="slider"></span></label>
         </div>
         <div class="color-pick-list" id="tropeColorPickerList" style="display:none;"></div>
@@ -1374,7 +1374,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="panel-title" data-i18n="torah.settings.panel_translit">Transliteration scheme</div>
       <div class="panel-body">
         <div class="form-row">
-          <label for="optTranslitStyle">Style</label>
+          <label for="optTranslitStyle" data-i18n="torah.trans.style_label">Style</label>
           <select id="optTranslitStyle">
             <option value="modernIsraeli" data-i18n="torah.trans.style_modern">Modern Israeli [DEFAULT]</option>
             <option value="ashkenazi" data-i18n="torah.trans.style_ashkenazi">Ashkenazi</option>
@@ -1427,7 +1427,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     </div>
 
     <div class="panel collapsed">
-      <div class="panel-title">About &amp; FAQ</div>
+      <div class="panel-title" data-i18n="torah.settings.panel_about">About &amp; FAQ</div>
       <div class="panel-body">
         <details style="margin:0 0 10px;">
           <summary style="cursor:pointer;font-weight:600;font-size:0.85rem;padding:4px 0;" data-i18n="torah.about.faq_summary">Frequently Asked Questions</summary>
@@ -1483,16 +1483,16 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <span>Cantillation audio: <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> · CC BY-SA 4.0</span>
     <span data-i18n="torah.footer.license_note">Only translations whose license permits redistribution are offered (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA).</span>
   </div>
-  <nav aria-label="Related Hebrew Tools" style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">
-    <div style="font-family:'Libre Baskerville',serif;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;">Related Hebrew Tools</div>
+  <nav aria-label="Related Hebrew Tools" data-i18n-aria-label="shared.nav.header" style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">
+    <div style="font-family:'Libre Baskerville',serif;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;" data-i18n="shared.nav.header">Related Hebrew Tools</div>
     <ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 18px;">
-      <li><a href="trope_tutor.html" style="font-size:0.8rem;">learn Torah trope (cantillation) →</a></li>
-      <li><a href="hebrew_blend_generator.html" style="font-size:0.8rem;">printable Hebrew worksheets →</a></li>
-      <li><a href="flash_cards.html" style="font-size:0.8rem;">Hebrew alphabet flash cards →</a></li>
-      <li><a href="hebrew_dictionary.html" style="font-size:0.8rem;">Hebrew word lookup →</a></li>
-      <li><a href="classroom_dashboard.html" style="font-size:0.8rem;">Hebrew classroom display →</a></li>
-      <li><a href="Hebrew_Font_Maker.html" style="font-size:0.8rem;">make your own Hebrew font →</a></li>
-      <li><a href="resources.html" style="font-size:0.8rem;">free Hebrew teaching resources →</a></li>
+      <li><a href="trope_tutor.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_trope">learn Torah trope (cantillation) →</a></li>
+      <li><a href="hebrew_blend_generator.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_worksheets">printable Hebrew worksheets →</a></li>
+      <li><a href="flash_cards.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_flashcards">Hebrew alphabet flash cards →</a></li>
+      <li><a href="hebrew_dictionary.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_dictionary">Hebrew word lookup →</a></li>
+      <li><a href="classroom_dashboard.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_dashboard">Hebrew classroom display →</a></li>
+      <li><a href="Hebrew_Font_Maker.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_fontmaker">make your own Hebrew font →</a></li>
+      <li><a href="resources.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_resources">free Hebrew teaching resources →</a></li>
     </ul>
   </nav>
 </footer>
@@ -4465,13 +4465,8 @@ function refreshScopeLabels() {
   // Holiday/custom scope: the disabled "Full reading" option is managed by
   // updateScopeSelectState — leave the weekly-scope labels untouched.
   if (settings.scope === 'custom') return;
-  const BASE = {
-    'parsha-full': 'Full parsha',
-    'parsha-aliyah-1': 'Aliyah 1', 'parsha-aliyah-2': 'Aliyah 2',
-    'parsha-aliyah-3': 'Aliyah 3', 'parsha-aliyah-4': 'Aliyah 4',
-    'parsha-aliyah-5': 'Aliyah 5', 'parsha-aliyah-6': 'Aliyah 6',
-    'parsha-aliyah-7': 'Aliyah 7', 'parsha-haftarah': 'Haftarah',
-  };
+  const BASE = { 'parsha-full': I18n.t('torah.schedule.scope_full'), 'parsha-haftarah': I18n.t('torah.schedule.scope_haftarah') };
+  for (let i = 1; i <= 7; i++) BASE['parsha-aliyah-' + i] = I18n.t('torah.schedule.scope_aliyah', { n: i });
   const setLabel = (val, txt) => {
     const opt = scopeSel.querySelector(`option[value="${val}"]`);
     if (opt) opt.textContent = txt;
@@ -4488,21 +4483,21 @@ function refreshScopeLabels() {
   if (nums.length) {
     const first = al.aliyot[nums[0]], last = al.aliyot[nums[nums.length - 1]];
     const span = fmtRange({ startC: first.startC, startV: first.startV, endC: last.endC, endV: last.endV });
-    setLabel('parsha-full', `${mark}Full parsha${span ? ' · ' + span : ''}`);
+    setLabel('parsha-full', `${mark}${I18n.t('torah.schedule.scope_full')}${span ? ' · ' + span : ''}`);
   } else {
-    setLabel('parsha-full', `${mark}Full parsha`);
+    setLabel('parsha-full', `${mark}${I18n.t('torah.schedule.scope_full')}`);
   }
   for (let n = 1; n <= 7; n++) {
     const rng = al.aliyot[n] ? fmtRange(al.aliyot[n]) : '';
-    setLabel('parsha-aliyah-' + n, `${mark}Aliyah ${n}${rng ? ' · ' + rng : ''}`);
+    setLabel('parsha-aliyah-' + n, `${mark}${I18n.t('torah.schedule.scope_aliyah', { n: n })}${rng ? ' · ' + rng : ''}`);
   }
-  let hafLabel = `${mark}Haftarah`;
+  let hafLabel = `${mark}${I18n.t('torah.schedule.scope_haftarah')}`;
   if (al.haftarah) {
     // Haftarah refs (aliyah.json) space the range hyphen, e.g. "Zechariah 2:14 - 4:7",
     // and use underscores in some book names ("Kings_1"). Collapse the hyphen to an
     // en-dash and de-underscore; the haftarah is from another book, so keep its name.
     const ref = al.haftarah.replace(/\s*[-–—]\s*/g, '–').replace(/_/g, ' ');
-    hafLabel = `${mark}Haftarah · ${ref}`;
+    hafLabel = `${mark}${I18n.t('torah.schedule.scope_haftarah')} · ${ref}`;
   }
   setLabel('parsha-haftarah', hafLabel);
 }
