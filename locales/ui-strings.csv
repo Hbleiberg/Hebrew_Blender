@@ -1105,7 +1105,7 @@ flashcards.weaknesses.tab_letters,Letters,אותיות,weakness-view tab,
 flashcards.weaknesses.tab_other,Other,אחר,weakness-view tab,
 flashcards.weaknesses.tab_vowels,Vowels,תנועות,weakness-view tab,
 flashcards.weaknesses.view_title,Weaknesses — {name},חולשות — {name},weakness-view modal title,
-flashcards.wordlist.untitled,Untitled list,,fallback word-list name,
+flashcards.wordlist.untitled,Untitled list,רשימה ללא שם,fallback word-list name,
 flashcards.words.emoji_load_failed,Failed to load emoji data.,טעינת נתוני האימוג׳י נכשלה.,emoji tree load error,
 flashcards.words.load_failed,Failed to load dictionary words.,טעינת מילות המילון נכשלה.,words-pool load error,
 flashcards.words.loading_dict,Loading dictionary…,טוען מילון…,words-pool count while loading,toast
@@ -2438,17 +2438,17 @@ home.contact_link,✉️ Contact & Support,✉️ יצירת קשר ותמיכה
 home.header.brand,IvritSuite,IvritSuite,header wordmark,brand name
 home.header.tagline,Tools for Hebrew literacy instruction,כלים להוראת אוריינות עברית,header subtitle,
 home.hero.subtitle,Free Hebrew Learning Tools for Teachers and Students,כלים חינמיים ללימוד עברית למורים ולתלמידים,hero subheading,
-notfound.header.brand,IvritSuite,,header wordmark,brand name
-notfound.header.tagline,Tools for Hebrew literacy instruction,,header subtitle,
-notfound.home_button,← Back to the Promised Home Page,,primary button,leading-arrow
-notfound.link.dictionary,Dictionary,,tool link,
-notfound.link.flashcards,Flash Cards,,tool link,
-notfound.link.generator,Worksheet Generator,,tool link,
-notfound.link.torah,Torah Trainer,,tool link,
-notfound.quip,"We tried to blend it back together from a few stray letters — but without the nikkud, nobody could agree on how to pronounce it.",,hero quip,
-notfound.subtitle,"We searched right-to-left <em>and</em> left-to-right, but this page is nowhere to be found <span class=""heb-inline"">(לֹא נִמְצָא, <em>lo nimtza</em>)</span>. It may have slipped out for a snack and forgotten its vowels.",,hero subtitle,html; mixed UI+content; contains Hebrew
-notfound.title,This page wandered off for forty years.,,hero title,
-notfound.tool_links_intro,Or wander somewhere useful:,,tool links intro,
+notfound.header.brand,IvritSuite,IvritSuite,header wordmark,brand name
+notfound.header.tagline,Tools for Hebrew literacy instruction,כלים להוראת אוריינות עברית,header subtitle,
+notfound.home_button,← Back to the Promised Home Page,← חזרה לדף הבית המובטח,primary button,leading-arrow
+notfound.link.dictionary,Dictionary,מילון,tool link,
+notfound.link.flashcards,Flash Cards,כרטיסי זיכרון,tool link,
+notfound.link.generator,Worksheet Generator,מחולל דפי עבודה,tool link,
+notfound.link.torah,Torah Trainer,מאמן התורה,tool link,
+notfound.quip,"We tried to blend it back together from a few stray letters — but without the nikkud, nobody could agree on how to pronounce it.","ניסינו להרכיב אותו מחדש מכמה אותיות תועות — אבל בלי הניקוד, אף אחד לא הצליח להסכים איך להגות אותו.",hero quip,
+notfound.subtitle,"We searched right-to-left <em>and</em> left-to-right, but this page is nowhere to be found <span class=""heb-inline"">(לֹא נִמְצָא, <em>lo nimtza</em>)</span>. It may have slipped out for a snack and forgotten its vowels.","חיפשנו מימין לשמאל <em>וגם</em> משמאל לימין, אבל הדף הזה איננו <span class=""heb-inline"">(לֹא נִמְצָא, <em>lo nimtza</em>)</span>. ייתכן שהוא יצא לחטיף ושכח את התנועות שלו.",hero subtitle,html; mixed UI+content; contains Hebrew
+notfound.title,This page wandered off for forty years.,הדף הזה תעה במדבר ארבעים שנה.,hero title,
+notfound.tool_links_intro,Or wander somewhere useful:,או שוטטו למקום מועיל:,tool links intro,
 privacy.effective_date,"Effective date: June 4, 2026",תאריך תחילה: 4 ביוני 2026,effective date line,
 privacy.header.back_link,← Back,← חזרה,header back button,leading-arrow
 privacy.header.tagline,How we handle your data,כיצד אנו מטפלים בנתונים שלכם,header subtitle,
@@ -2487,10 +2487,10 @@ privacy.section.intro_heading,1. Introduction,1. מבוא,section heading,
 privacy.section.localstorage_heading,5. Local Storage & Your Control Over Data,5. אחסון מקומי והשליטה שלכם בנתונים,section heading,
 privacy.section.security_heading,8. Security,8. אבטחה,section heading,
 privacy.section.thirdparty_heading,4. Third-Party Resources,4. משאבי צד שלישי,section heading,
-pwa.aria.dismiss,Dismiss,,banner close aria-label,aria-label only
-pwa.aria.label,Install IvritSuite,,install banner aria-label,aria-label only
-pwa.install.android,Install web app?,,install banner text (Android),
-pwa.install.ios,Install Web App: Tap Share → Add to Home Screen,,install banner text (iOS),
+pwa.aria.dismiss,Dismiss,סגירה,banner close aria-label,aria-label only
+pwa.aria.label,Install IvritSuite,התקנת IvritSuite,install banner aria-label,aria-label only
+pwa.install.android,Install web app?,להתקין את האפליקציה?,install banner text (Android),
+pwa.install.ios,Install Web App: Tap Share → Add to Home Screen,התקנת האפליקציה: הקישו שיתוף ← הוספה למסך הבית,install banner text (iOS),
 resources.card.grades_prefix,Grades: {gradeLabel},כיתות: {gradeLabel},resource card grade line,mixed UI+content — do not translate {gradeLabel}
 resources.card.visit_link,Visit resource,מעבר למשאב,resource card link,
 resources.cat_badge.culture,Culture,תרבות,resource card category badge,

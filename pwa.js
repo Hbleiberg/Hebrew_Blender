@@ -4,6 +4,13 @@
 (function () {
   'use strict';
 
+  // Translate via the shared i18n runtime when it's loaded; fall back to English otherwise
+  // (the banner can build before /js/i18n.js resolves its dictionary).
+  function t(key, fallback) {
+    try { if (window.I18n && window.I18n.t) { var v = window.I18n.t(key); if (v && v !== key) return v; } } catch (e) {}
+    return fallback;
+  }
+
   /* ---------- Service worker registration ---------- */
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
@@ -85,18 +92,19 @@
     injectStyles();
 
     var text = mode === 'ios'
-      ? 'Install Web App: Tap Share → Add to Home Screen'
-      : 'Install web app?';
+      ? t('pwa.install.ios', 'Install Web App: Tap Share → Add to Home Screen')
+      : t('pwa.install.android', 'Install web app?');
 
     var banner = document.createElement('div');
     banner.id = 'pwaInstallBanner';
     banner.setAttribute('role', 'dialog');
-    banner.setAttribute('aria-label', 'Install IvritSuite');
+    banner.setAttribute('aria-label', t('pwa.aria.label', 'Install IvritSuite'));
     banner.innerHTML =
       '<img class="pwa-banner-icon" src="/icons/icon-192.png" alt="" width="42" height="42">' +
       '<span class="pwa-banner-text"></span>' +
       '<button class="pwa-banner-close" type="button" aria-label="Dismiss">×</button>';
     banner.querySelector('.pwa-banner-text').textContent = text;
+    banner.querySelector('.pwa-banner-close').setAttribute('aria-label', t('pwa.aria.dismiss', 'Dismiss'));
     document.body.appendChild(banner);
     bannerEl = banner;
 
