@@ -948,7 +948,7 @@
   <aside class="sidebar">
     <div id="catPanelGroup">
     <div class="panel cat-panel" data-cat="fontdetails">
-      <div class="panel-title" data-i18n="fontmaker.panels.fontdetails">Font Details</div>
+      <div class="panel-title" data-i18n="fontmaker.panels.font_details">Font Details</div>
       <div class="panel-body">
         <label class="fld"><span data-i18n="fontmaker.panels.family_name">Family name</span>
           <input type="text" id="familyName" value="My Hebrew Hand" oninput="onMetaChange()">
@@ -12649,6 +12649,26 @@ function init() {
   if (!window.WebAssembly || !window.FontFace) {
     status('Heads up: this browser may not support font export (needs WASM + FontFace).', true);
   }
+  // Wire i18n here (inside init, which runs on DOMContentLoaded) so the deferred /js/i18n.js
+  // has already defined window.I18n — at top-level script parse time it is still undefined.
+  if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
+}
+/* ── i18n: fill static chrome + re-render read-only surfaces on load + live switch ──
+   Read-only paths only — never udDo/markDirty (the undo/dirty contract). The glyph-edit
+   stage geometry is unaffected (its container is pinned dir=ltr). */
+function applyI18n() {
+  if (!window.I18n) return;
+  I18n.applyStaticI18n();
+  // Dark-toggle label is state-dependent (data-i18n gives the light-mode default; override when dark).
+  try {
+    const _dt = document.getElementById('darkToggle');
+    if (_dt) _dt.textContent = I18n.t(document.body.classList.contains('dark') ? 'shared.darkmode.label_light' : 'shared.darkmode.label_dark');
+  } catch (e) {}
+  // Re-render JS-built chrome (read-only) so any i18n it carries updates in place.
+  try { renderControls(); } catch (e) {}
+  try { renderGrids(); } catch (e) {}
+  try { renderNextStepHint(); } catch (e) {}
+  try { if (typeof _pyoPhase !== 'undefined') _setPyoPhase(_pyoPhase); } catch (e) {}
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 </script>
