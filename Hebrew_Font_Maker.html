@@ -8844,20 +8844,20 @@ function renderSpacingPanel() {
   body.innerHTML = `
     <div class="col-split">
     <div>
-    <div class="ctl-label" style="margin-bottom:6px;">Spacing</div>
-    <div class="inline">Letter spacing <input type="range" min="-40" max="200" step="5" value="${sp.letterSpacing}" oninput="setLetterSpacing(this.value)" onchange="udBurstCommit()"> <span id="lsV" class="readout">${sp.letterSpacing}</span></div>
-    <div class="inline">Word spacing <input type="range" min="80" max="600" step="10" value="${sp.wordSpacing}" oninput="setWordSpacing(this.value)" onchange="udBurstCommit()"> <span id="wsV" class="readout">${sp.wordSpacing}</span></div>
-    <div class="hint" style="margin-top:-4px;">Word spacing is also the width of the Space (U+0020) glyph.</div>
-    <div class="inline">Line spacing <input type="range" min="0" max="500" step="10" value="${sp.lineSpacing}" oninput="setLineSpacing(this.value)" onchange="udBurstCommit()"> <span id="lnV" class="readout">${sp.lineSpacing}</span></div>
-    <label class="fld">Sample text <input type="text" id="spacingSample" dir="rtl" value="${esc(sp.sample)}" oninput="setSpacingSample(this.value)" onchange="udBurstCommit()"></label>
+    <div class="ctl-label" style="margin-bottom:6px;">${I18n.t('fontmaker.panels.spacing_title')}</div>
+    <div class="inline">${I18n.t('fontmaker.panels.letter_spacing')} <input type="range" min="-40" max="200" step="5" value="${sp.letterSpacing}" oninput="setLetterSpacing(this.value)" onchange="udBurstCommit()"> <span id="lsV" class="readout">${sp.letterSpacing}</span></div>
+    <div class="inline">${I18n.t('fontmaker.panels.word_spacing')} <input type="range" min="80" max="600" step="10" value="${sp.wordSpacing}" oninput="setWordSpacing(this.value)" onchange="udBurstCommit()"> <span id="wsV" class="readout">${sp.wordSpacing}</span></div>
+    <div class="hint" style="margin-top:-4px;">${I18n.t('fontmaker.panels.word_spacing_hint')}</div>
+    <div class="inline">${I18n.t('fontmaker.panels.line_spacing')} <input type="range" min="0" max="500" step="10" value="${sp.lineSpacing}" oninput="setLineSpacing(this.value)" onchange="udBurstCommit()"> <span id="lnV" class="readout">${sp.lineSpacing}</span></div>
+    <label class="fld">${I18n.t('fontmaker.panels.sample_text')} <input type="text" id="spacingSample" dir="rtl" value="${esc(sp.sample)}" oninput="setSpacingSample(this.value)" onchange="udBurstCommit()"></label>
     ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;">${customBaseLetters().map(l => `<button class="ctl-btn" style="padding:2px 8px;font-size:0.68rem;" onclick="insertSampleGlyph('${l.codepoint}')" title="Add ${esc(l.name || ('U+' + l.codepoint))} to the sample text (it can't be typed on a keyboard)">+ ${esc(l.name || ('U+' + l.codepoint))}</button>`).join('')}</div>` : ''}
-    <div class="hint">Adjusts the exported font's spacing (letter &amp; word advance widths + line gap). The preview uses your traced letters — untraced letters show as dashed boxes.</div>
+    <div class="hint">${I18n.t('fontmaker.panels.spacing_hint')}</div>
     <svg id="spacingPreviewSvg" style="width:100%;height:auto;max-height:170px;margin-top:4px;"></svg>
     <details id="waterfallWrap" ${waterfallOpenPref() ? 'open' : ''} ontoggle="onWaterfallToggle(this)" style="margin-top:6px;">
-      <summary style="cursor:pointer;font-size:0.74rem;font-weight:600;">Waterfall — sample at several sizes</summary>
+      <summary style="cursor:pointer;font-size:0.74rem;font-weight:600;">${I18n.t('fontmaker.panels.waterfall_summary')}</summary>
       <div id="waterfallBody" style="overflow-x:auto;display:flex;flex-direction:column;gap:3px;padding:4px 0;"></div>
     </details>
-    <div class="ctl-row" style="margin-top:4px;"><button class="ctl-btn" onclick="resetSpacing()">Reset spacing</button></div>
+    <div class="ctl-row" style="margin-top:4px;"><button class="ctl-btn" onclick="resetSpacing()">${I18n.t('fontmaker.panels.reset_spacing')}</button></div>
     </div>
     <div id="kerningBody"></div>
     </div>`;
@@ -9017,16 +9017,16 @@ function renderKerningSection() {
   const e = kernEnsureEdit(), pairs = fontKerning();
   const sideUI = (which, s) => `
     <div style="flex:1;min-width:0;">
-      <div class="metric-sub" style="margin-bottom:3px;">${which === 'left' ? 'First (right)' : 'Second (left)'}</div>
+      <div class="metric-sub" style="margin-bottom:3px;">${which === 'left' ? I18n.t('fontmaker.panels.kern_first') : I18n.t('fontmaker.panels.kern_second')}</div>
       <input type="text" dir="rtl" maxlength="2" ${s.cls ? 'disabled' : ''} value="${esc(kernSideDisplay(s))}"
         oninput="setKernGlyph('${which}', this.value)" placeholder="–"
         style="width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:5px;padding:5px;font-size:1.2rem;text-align:center;background:var(--white);color:var(--text);font-family:var(--heb-font);">
       <select onchange="setKernClass('${which}', this.value)" style="width:100%;box-sizing:border-box;margin-top:4px;border:1px solid var(--border);border-radius:5px;padding:4px;font-size:0.72rem;background:var(--white);color:var(--text);">
-        <option value=""       ${s.cls===''       ? 'selected' : ''}>Single glyph</option>
-        <option value="finals" ${s.cls==='finals' ? 'selected' : ''}>Finals (ך ם ן ף ץ)</option>
-        <option value="desc"   ${s.cls==='desc'   ? 'selected' : ''}>Descenders</option>
+        <option value=""       ${s.cls===''       ? 'selected' : ''}>${I18n.t('fontmaker.panels.kern_single_glyph')}</option>
+        <option value="finals" ${s.cls==='finals' ? 'selected' : ''}>${I18n.t('fontmaker.panels.kern_finals')}</option>
+        <option value="desc"   ${s.cls==='desc'   ? 'selected' : ''}>${I18n.t('fontmaker.panels.kern_descenders')}</option>
         ${userKernClasses().map(c => `<option value="${c.id}" ${s.cls===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}
-        ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<optgroup label="Custom glyphs">${customBaseLetters().map(l => `<option value="cp:${l.codepoint}">${esc(l.name || ('U+' + l.codepoint))}</option>`).join('')}</optgroup>` : ''}
+        ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<optgroup label="${esc(I18n.t('fontmaker.panels.kern_custom_glyphs'))}">${customBaseLetters().map(l => `<option value="cp:${l.codepoint}">${esc(l.name || ('U+' + l.codepoint))}</option>`).join('')}</optgroup>` : ''}
       </select>
     </div>`;
   const isUpdate = kernPairIndex(kernSideCps(e.left), kernSideCps(e.right)) >= 0;
@@ -9046,19 +9046,19 @@ function renderKerningSection() {
       </span></div>`;
   });
   box.innerHTML = `
-    <div class="ctl-label" style="margin-bottom:6px;">Kerning</div>
+    <div class="ctl-label" style="margin-bottom:6px;">${I18n.t('fontmaker.panels.kerning')}</div>
     <div class="row2" style="gap:10px;align-items:flex-start;">${sideUI('left', e.left)}${sideUI('right', e.right)}</div>
-    <div class="hint" style="margin-top:3px;">Type the pair in reading order — in Hebrew the first letter sits on the <b>right</b>.</div>
+    <div class="hint" style="margin-top:3px;">${I18n.t('fontmaker.panels.kern_reading_hint')}</div>
     <svg id="kernPreviewSvg" style="width:100%;height:auto;max-height:120px;margin-top:8px;"></svg>
-    ${(e.left.cls||e.right.cls) ? `<div class="hint" style="margin-top:-2px;font-size:0.62rem;">Preview shows one member of each class.</div>` : ''}
-    <div class="inline" style="margin-top:2px;">Gap <input type="range" min="-200" max="200" step="5" value="${e.value}" oninput="setKernValue(this.value)"> <span id="kernV" class="readout">${e.value>0?'+':''}${e.value|0}</span></div>
+    ${(e.left.cls||e.right.cls) ? `<div class="hint" style="margin-top:-2px;font-size:0.62rem;">${I18n.t('fontmaker.panels.kern_preview_note')}</div>` : ''}
+    <div class="inline" style="margin-top:2px;">${I18n.t('fontmaker.panels.kern_gap')} <input type="range" min="-200" max="200" step="5" value="${e.value}" oninput="setKernValue(this.value)"> <span id="kernV" class="readout">${e.value>0?'+':''}${e.value|0}</span></div>
     <div class="ctl-row" style="margin-top:6px;">
-      <button id="kernAddBtn" class="ctl-btn primary" onclick="addOrUpdateKernPair()">${isUpdate?'Update pair':'Add pair'}</button>
-      <button class="ctl-btn" onclick="suggestKernPairs()">Suggest pairs</button>
+      <button id="kernAddBtn" class="ctl-btn primary" onclick="addOrUpdateKernPair()">${isUpdate?I18n.t('fontmaker.panels.kern_update'):I18n.t('fontmaker.panels.kern_add')}</button>
+      <button class="ctl-btn" onclick="suggestKernPairs()">${I18n.t('fontmaker.panels.kern_suggest')}</button>
     </div>
-    <div class="inline" style="margin-top:6px;">Auto-tightness <input type="range" min="-40" max="160" step="5" value="${kernTargetGap()}" oninput="setKernTarget(this.value)" onchange="udBurstCommit()"> <span id="kernTgtV" class="readout">${kernTargetGap()}</span></div>
+    <div class="inline" style="margin-top:6px;">${I18n.t('fontmaker.panels.kern_autotightness')} <input type="range" min="-40" max="160" step="5" value="${kernTargetGap()}" oninput="setKernTarget(this.value)" onchange="udBurstCommit()"> <span id="kernTgtV" class="readout">${kernTargetGap()}</span></div>
     <div class="hint" style="margin-top:4px;">Negative = tighter, positive = looser (font units). “Suggest pairs” seeds an even starting gap toward <b>Auto-tightness</b> (lower = tighter), measured <b>optically</b> so overhanging letters tuck in; Preview PDF shows it shaped in full.</div>
-    ${pairs.length ? `<div class="hint" style="margin-top:8px;">${nReady} of ${pairs.length} pair${pairs.length>1?'s':''} will be exported.${nReady<pairs.length?' Pairs marked “⚠ untraced” or “set a gap” are skipped.':''}</div><div style="margin-top:4px;">${rows}</div>` : '<div class="hint" style="margin-top:8px;">No pairs yet — pick two glyphs (or a class on either side) and Add.</div>'}
+    ${pairs.length ? `<div class="hint" style="margin-top:8px;">${nReady} of ${pairs.length} pair${pairs.length>1?'s':''} will be exported.${nReady<pairs.length?' Pairs marked “⚠ untraced” or “set a gap” are skipped.':''}</div><div style="margin-top:4px;">${rows}</div>` : '<div class="hint" style="margin-top:8px;">'+esc(I18n.t('fontmaker.panels.kern_no_pairs'))+'</div>'}
     ${kernClassManagerHTML()}`;
   renderKernPreview();
   renderSpacingPreview();   // keep the big multi-line sample in sync with every kerning add/update/delete
