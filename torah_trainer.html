@@ -16,6 +16,7 @@
 <link rel="manifest" href="manifest.webmanifest?v=3">
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
+<script src="/js/i18n.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -130,6 +131,8 @@
 <style>@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}</style>
 <!-- Early dark mode (avoid flash) -->
 <script>(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<!-- Early language/dir (avoid LTR->RTL flash); authoritative set later in /js/i18n.js -->
+<script>(function(){try{var p=new URLSearchParams(location.search).get('lang');var l=(p==='en'||p==='he')?p:(localStorage.getItem('hebrewBlender_lang')||'en');if(l!=='en'&&l!=='he')l='en';document.documentElement.lang=l;document.documentElement.dir=(l==='he'?'rtl':'ltr');}catch(e){}})()</script>
 <!-- Hebrew transliteration library loader (lazy via esm.sh).
      Lifted verbatim from hebrew_dictionary.html — keep in sync. -->
 <script type="module">
@@ -276,6 +279,10 @@ body.dark header { background:var(--navy-deep); }
 header h1 { font-family:'Libre Baskerville',serif; font-size:1.35rem; color:#fff; line-height:1.2; }
 header p { font-size:0.78rem; color:var(--gold-light); margin-top:2px; }
 .hright { display:flex; gap:6px; align-items:center; flex-shrink:0; }
+/* i18n RTL utilities: mirror directional glyphs; isolate mixed-direction runs. */
+.dir-arrow { display:inline-block; }
+[dir="rtl"] .dir-arrow { transform:scaleX(-1); }
+.bidi-isolate { unicode-bidi:isolate; }
 .hbtn {
   background:rgba(255,255,255,0.08); color:#fff;
   border:1px solid rgba(255,255,255,0.18);
@@ -743,15 +750,20 @@ body.dark .tt-audio-bar { background:var(--navy-deep); }
 }
 .settings-backdrop.open { opacity:1; pointer-events:auto; }
 .settings-modal {
-  position:fixed; top:0; right:0;
+  position:fixed; top:0; inset-inline-end:0;   /* right in LTR, left in RTL (drawer flips to the inline-end edge) */
   width:380px; max-width:92vw; height:100vh;
-  background:var(--white); border-left:1px solid var(--border);
+  background:var(--white); border-inline-start:1px solid var(--border);
   box-shadow:var(--shadow-lg); z-index:100;
   transform:translateX(100%); transition:transform 0.3s ease, visibility 0s 0.3s;
   visibility:hidden;   /* the CLOSED drawer must leave the tab order + a11y tree — hidden once the slide-out ends */
   display:flex; flex-direction:column;
 }
 .settings-modal.open { transform:translateX(0); visibility:visible; transition:transform 0.3s ease; }
+/* RTL: the drawer anchors to the left edge, so the CLOSED slide-out goes the other way.
+   [dir=rtl] .settings-modal has the SAME specificity as .settings-modal.open (attr+class), so the
+   OPEN state needs its own equally-scoped [dir=rtl] rule to win back translateX(0). */
+[dir="rtl"] .settings-modal { transform:translateX(-100%); }
+[dir="rtl"] .settings-modal.open { transform:translateX(0); }
 .settings-header {
   padding:14px 20px; background:var(--navy); color:#fff;
   display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
@@ -1077,37 +1089,38 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 </style>
 </head>
 <body>
-<a class="skip-link" href="#ttReading">Skip to the reading</a>
+<a class="skip-link" href="#ttReading" data-i18n="torah.a11y.skip_to_reading">Skip to the reading</a>
 <header>
   <div class="star">✡︎</div>
   <div class="htitle">
-    <h1>Torah Trainer</h1>
-    <p>Read the weekly parsha with vowel coloring, transliteration, translations, and chanted-audio karaoke.</p>
+    <h1 data-i18n="torah.header.title">Torah Trainer</h1>
+    <p data-i18n="torah.header.subtitle">Read the weekly parsha with vowel coloring, transliteration, translations, and chanted-audio karaoke.</p>
   </div>
   <div class="hright">
-    <a class="hbtn" href="/"><span>←</span><span>Home</span></a>
-    <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour">❓ Tour</button>
-    <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
-    <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
-    <button id="fsBtn" class="hbtn icon-btn" onclick="toggleFullscreen()" title="Fullscreen" aria-label="Toggle fullscreen"></button>
+    <a class="hbtn" href="/"><span class="dir-arrow" aria-hidden="true">←</span><span data-i18n="torah.header.home">Home</span></a>
+    <div data-i18n-switcher></div>
+    <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour" data-i18n="torah.header.tour_button" data-i18n-title="torah.header.tour_title">❓ Tour</button>
+    <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false">🌙</button>
+    <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings" data-i18n-title="torah.header.settings_title">⚙️</button>
+    <button id="fsBtn" class="hbtn icon-btn" onclick="toggleFullscreen()" title="Fullscreen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria"></button>
   </div>
 </header>
-<button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen" aria-label="Exit fullscreen">
+<button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen" aria-label="Exit fullscreen" data-i18n-title="shared.fullscreen.exit_title" data-i18n-aria-label="shared.fullscreen.exit_title">
   <span class="fs-x">✕</span>
-  <span class="fs-label">Exit Fullscreen</span>
+  <span class="fs-label" data-i18n="shared.fullscreen.exit_label">Exit Fullscreen</span>
 </button>
 
 <!-- Guided "Take a tour" coach-mark (non-modal spotlight; see tourStart) -->
 <div class="tour-spot" id="tourSpot" hidden></div>
 <div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
-  <button class="tour-x" id="tourClose" aria-label="End tour" onclick="tourEnd(false)">✕</button>
+  <button class="tour-x" id="tourClose" aria-label="End tour" data-i18n-aria-label="shared.tour.end" onclick="tourEnd(false)">✕</button>
   <h4 id="tourCardTitle"></h4>
   <p id="tourCardBody"></p>
   <div class="tour-meta">
     <span id="tourStep"></span>
     <span class="tour-btns">
-      <button class="tbtn ghost" id="tourBack" onclick="tourPrev()">Back</button>
-      <button class="tbtn" id="tourNext" onclick="tourNext()">Next</button>
+      <button class="tbtn ghost" id="tourBack" onclick="tourPrev()" data-i18n="shared.tour.back">Back</button>
+      <button class="tbtn" id="tourNext" onclick="tourNext()" data-i18n="shared.tour.next">Next</button>
     </span>
   </div>
 </div>
@@ -1115,12 +1128,12 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 <main>
 <div class="tt-controls">
   <span class="tt-ctrl">
-    <label for="parshaSelect">Parsha:</label>
+    <label for="parshaSelect" data-i18n="torah.controls.parsha_label">Parsha:</label>
     <select id="parshaSelect"></select>
   </span>
   <span class="tt-ctrl">
-    <select id="scopeSelect" aria-label="Reading scope">
-      <option value="parsha-full">Full parsha</option>
+    <select id="scopeSelect" aria-label="Reading scope" data-i18n-aria-label="torah.controls.scope_aria">
+      <option value="parsha-full" data-i18n="torah.schedule.scope_full">Full parsha</option>
       <option value="parsha-aliyah-1">Aliyah 1</option>
       <option value="parsha-aliyah-2">Aliyah 2</option>
       <option value="parsha-aliyah-3">Aliyah 3</option>
@@ -1128,60 +1141,60 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <option value="parsha-aliyah-5">Aliyah 5</option>
       <option value="parsha-aliyah-6">Aliyah 6</option>
       <option value="parsha-aliyah-7">Aliyah 7</option>
-      <option value="parsha-haftarah">Haftarah</option>
+      <option value="parsha-haftarah" data-i18n="torah.schedule.scope_haftarah">Haftarah</option>
     </select>
   </span>
   <span class="tt-ctrl">
-    <label>Layout:</label>
+    <label data-i18n="torah.controls.layout_label">Layout:</label>
     <span class="radio-group">
-      <input type="radio" name="ttLayout" id="ttLayoutSide" value="sidebyside"><label for="ttLayoutSide">Side&nbsp;by&nbsp;side</label>
-      <input type="radio" name="ttLayout" id="ttLayoutInter" value="interlinear"><label for="ttLayoutInter">Interlinear</label>
-      <input type="radio" name="ttLayout" id="ttLayoutBible" value="biblepage"><label for="ttLayoutBible">Page&nbsp;view</label>
+      <input type="radio" name="ttLayout" id="ttLayoutSide" value="sidebyside"><label for="ttLayoutSide" data-i18n-html="torah.controls.layout_side">Side&nbsp;by&nbsp;side</label>
+      <input type="radio" name="ttLayout" id="ttLayoutInter" value="interlinear"><label for="ttLayoutInter" data-i18n="torah.controls.layout_interlinear">Interlinear</label>
+      <input type="radio" name="ttLayout" id="ttLayoutBible" value="biblepage"><label for="ttLayoutBible" data-i18n-html="torah.controls.layout_page">Page&nbsp;view</label>
     </span>
   </span>
   <span class="tt-ctrl tt-stack-toggles">
     <span class="row">
-      <label for="ttShowTranslit">Translit</label>
+      <label for="ttShowTranslit" data-i18n="torah.controls.translit_toggle">Translit</label>
       <label class="toggle"><input type="checkbox" id="ttShowTranslit"><span class="slider"></span></label>
     </span>
     <span class="row">
-      <label for="ttShowTranslation">Translation</label>
+      <label for="ttShowTranslation" data-i18n="torah.controls.translation_toggle">Translation</label>
       <label class="toggle"><input type="checkbox" id="ttShowTranslation"><span class="slider"></span></label>
     </span>
   </span>
   <span class="tt-ctrl" id="ttVersionWrap" style="display:none;">
-    <label for="ttVersionSelect">Version:</label>
-    <select id="ttVersionSelect"><option value="">Loading…</option></select>
+    <label for="ttVersionSelect" data-i18n="torah.controls.version_label">Version:</label>
+    <select id="ttVersionSelect"><option value="" data-i18n="torah.controls.version_loading">Loading…</option></select>
   </span>
   <span class="tt-ctrl">
     <label for="ttCustomToggle">
-      <button class="btn btn-xs btn-secondary" onclick="toggleCustomPicker()" type="button">Custom range…</button>
+      <button class="btn btn-xs btn-secondary" onclick="toggleCustomPicker()" type="button" data-i18n="torah.controls.custom_range_button">Custom range…</button>
     </label>
   </span>
 </div>
 
 <div id="ttCustomPicker" class="tt-controls" style="display:none;border-top:1px dashed var(--border);">
   <span class="tt-ctrl">
-    <label for="ttCustomBook">Book:</label>
+    <label for="ttCustomBook" data-i18n="torah.custom.book_label">Book:</label>
     <select id="ttCustomBook">
-      <option value="Genesis">Genesis</option>
-      <option value="Exodus">Exodus</option>
-      <option value="Leviticus">Leviticus</option>
-      <option value="Numbers">Numbers</option>
-      <option value="Deuteronomy">Deuteronomy</option>
+      <option value="Genesis" data-i18n="torah.custom.book_genesis">Genesis</option>
+      <option value="Exodus" data-i18n="torah.custom.book_exodus">Exodus</option>
+      <option value="Leviticus" data-i18n="torah.custom.book_leviticus">Leviticus</option>
+      <option value="Numbers" data-i18n="torah.custom.book_numbers">Numbers</option>
+      <option value="Deuteronomy" data-i18n="torah.custom.book_deuteronomy">Deuteronomy</option>
     </select>
   </span>
   <span class="tt-ctrl">
-    <label for="ttCustomChapter">Chapter:</label>
+    <label for="ttCustomChapter" data-i18n="torah.custom.chapter_label">Chapter:</label>
     <input type="number" id="ttCustomChapter" min="1" max="50" step="1" value="1" style="width:60px;">
   </span>
   <span class="tt-ctrl">
-    <label for="ttCustomVStart">Verses:</label>
-    <input type="number" id="ttCustomVStart" min="1" step="1" placeholder="from" style="width:60px;">
+    <label for="ttCustomVStart" data-i18n="torah.custom.verses_label">Verses:</label>
+    <input type="number" id="ttCustomVStart" min="1" step="1" placeholder="from" data-i18n-placeholder="torah.custom.verse_from_ph" style="width:60px;">
     <span style="color:var(--muted);">–</span>
-    <input type="number" id="ttCustomVEnd" min="1" step="1" placeholder="to" style="width:60px;">
+    <input type="number" id="ttCustomVEnd" min="1" step="1" placeholder="to" data-i18n-placeholder="torah.custom.verse_to_ph" style="width:60px;">
   </span>
-  <button class="btn btn-xs" onclick="applyCustomRange()" type="button">Go</button>
+  <button class="btn btn-xs" onclick="applyCustomRange()" type="button" data-i18n="torah.custom.go_button">Go</button>
 </div>
 
 <div class="tt-page">
@@ -1192,27 +1205,27 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
        loaded (applyTropeColors). Chips are generated at init from TROPE_COLOR_DEFS
        so the family list lives in one place. -->
   <div class="tt-trope-legend" id="ttTropeLegend" hidden>
-    <a class="tt-trope-link" id="ttTropeTutorLink" hidden>Learn the trope names →</a>
+    <a class="tt-trope-link" id="ttTropeTutorLink" hidden data-i18n="torah.trope_legend.tutor_link">Learn the trope names →</a>
   </div>
   <div class="tt-reading" id="ttReading" tabindex="-1"></div>
 </div>
 </main>
 
-<div class="tt-audio-bar" id="ttAudioBar" role="region" aria-label="Cantillation audio playback">
-  <button class="tt-audio-collapse" id="ttAudioCollapseBtn" onclick="toggleAudioBarCollapse()" aria-label="Collapse audio bar" title="Collapse / expand audio bar">▾</button>
-  <button class="tt-audio-playpause" id="ttAudioPlayPauseBtn" onclick="toggleAudioPlay()" aria-label="Play or pause" title="Play / pause">▶</button>
-  <span class="tt-audio-label" id="ttAudioLabel">Karaoke</span>
-  <button class="tt-audio-loopstop" id="ttLoopStopBtn" onclick="stopLoop()" aria-label="Stop looping" title="Stop looping" style="display:none;">⏹ Stop loop</button>
-  <audio id="ttAudio" controls preload="none" aria-label="Chanted Torah audio"></audio>
+<div class="tt-audio-bar" id="ttAudioBar" role="region" aria-label="Cantillation audio playback" data-i18n-aria-label="torah.audio.region_aria">
+  <button class="tt-audio-collapse" id="ttAudioCollapseBtn" onclick="toggleAudioBarCollapse()" aria-label="Collapse audio bar" title="Collapse / expand audio bar" data-i18n-aria-label="torah.audio.collapse_aria" data-i18n-title="torah.audio.collapse_title">▾</button>
+  <button class="tt-audio-playpause" id="ttAudioPlayPauseBtn" onclick="toggleAudioPlay()" aria-label="Play or pause" title="Play / pause" data-i18n-aria-label="torah.audio.playpause_aria" data-i18n-title="torah.audio.playpause_title">▶</button>
+  <span class="tt-audio-label" id="ttAudioLabel" data-i18n="torah.audio.karaoke_label">Karaoke</span>
+  <button class="tt-audio-loopstop" id="ttLoopStopBtn" onclick="stopLoop()" aria-label="Stop looping" title="Stop looping" data-i18n-aria-label="torah.audio.loopstop_aria" data-i18n-title="torah.audio.loopstop_aria" style="display:none;" data-i18n="torah.audio.loopstop_text">⏹ Stop loop</button>
+  <audio id="ttAudio" controls preload="none" aria-label="Chanted Torah audio" data-i18n-aria-label="torah.audio.element_aria"></audio>
   <span class="tt-audio-rates">
     <span class="row">
-      <label for="ttKaraokeRate">Chant</label>
-      <input type="range" id="ttKaraokeRate" min="0.5" max="1.5" step="0.05" value="1.0" aria-label="Chanting playback speed">
+      <label for="ttKaraokeRate" data-i18n="torah.audio.chant_label">Chant</label>
+      <input type="range" id="ttKaraokeRate" min="0.5" max="1.5" step="0.05" value="1.0" aria-label="Chanting playback speed" data-i18n-aria-label="torah.audio.chant_rate_aria">
       <span class="val" id="ttKaraokeRateVal">1.00×</span>
     </span>
     <span class="row">
-      <label for="ttTTSRateBar">Read</label>
-      <input type="range" id="ttTTSRateBar" min="0.5" max="1.5" step="0.05" value="0.75" aria-label="TTS reading speed">
+      <label for="ttTTSRateBar" data-i18n="torah.audio.read_label">Read</label>
+      <input type="range" id="ttTTSRateBar" min="0.5" max="1.5" step="0.05" value="0.75" aria-label="TTS reading speed" data-i18n-aria-label="torah.audio.read_rate_aria">
       <span class="val" id="ttTTSRateBarVal">0.75×</span>
     </span>
   </span>
@@ -1231,88 +1244,88 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <div class="settings-body">
 
     <div style="display:flex; gap:6px; margin-bottom:14px;">
-      <button class="btn btn-xs btn-secondary" style="flex:1;" onclick="expandAllMenus()">Expand all menus</button>
-      <button class="btn btn-xs btn-secondary" style="flex:1;" onclick="collapseAllMenus()">Collapse all menus</button>
+      <button class="btn btn-xs btn-secondary" style="flex:1;" onclick="expandAllMenus()" data-i18n="torah.settings.expand_all">Expand all menus</button>
+      <button class="btn btn-xs btn-secondary" style="flex:1;" onclick="collapseAllMenus()" data-i18n="torah.settings.collapse_all">Collapse all menus</button>
     </div>
 
     <div class="panel">
-      <div class="panel-title">Display</div>
+      <div class="panel-title" data-i18n="torah.settings.panel_display">Display</div>
       <div class="panel-body">
         <div class="form-row">
           <label>Show cantillation marks (te'amim) <span class="tip-wrap" data-tip="Cantillation marks (above and below letters) indicate chanting melody. Toggle off to see only nikkud (vowels)."><i class="tip-icon">?</i></span></label>
           <label class="toggle"><input type="checkbox" id="optShowCantillation"><span class="slider"></span></label>
         </div>
         <div class="form-row">
-          <label>Show nikkud (vowels)</label>
+          <label data-i18n="torah.display.show_nikkud">Show nikkud (vowels)</label>
           <label class="toggle"><input type="checkbox" id="optShowNikkud"><span class="slider"></span></label>
         </div>
         <div class="form-row">
           <label>Click on word to <span class="tip-wrap" data-tip="Chant: jump the karaoke audio to that word (auto-loads the right aliyah). Read: speak the verse containing the word via Hebrew TTS."><i class="tip-icon">?</i></span></label>
           <span class="radio-group">
-            <input type="radio" name="optClickAction" id="caChant" value="chant"><label for="caChant">Chant</label>
-            <input type="radio" name="optClickAction" id="caRead"  value="read"><label for="caRead">Read</label>
+            <input type="radio" name="optClickAction" id="caChant" value="chant"><label for="caChant" data-i18n="torah.display.click_chant">Chant</label>
+            <input type="radio" name="optClickAction" id="caRead"  value="read"><label for="caRead" data-i18n="torah.display.click_read">Read</label>
           </span>
         </div>
         <hr style="border:none; border-top:1px solid var(--border); margin:12px 0 8px;">
-        <div style="font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;">Font sizes</div>
+        <div style="font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;" data-i18n="torah.display.font_sizes_header">Font sizes</div>
         <div class="slider-row">
-          <label>Hebrew</label>
+          <label data-i18n="torah.display.size_hebrew">Hebrew</label>
           <input type="range" id="optHebSize" min="0.7" max="3.5" step="0.05" value="1.5">
           <span class="sval" id="optHebSizeVal">1.50rem</span>
-          <button class="sreset" onclick="resetFontSize('heb')" type="button" title="Restore default">↺</button>
+          <button class="sreset" onclick="resetFontSize('heb')" type="button" title="Restore default" data-i18n-title="torah.display.restore_default">↺</button>
         </div>
         <div class="slider-row">
-          <label>Translit</label>
+          <label data-i18n="torah.display.size_translit">Translit</label>
           <input type="range" id="optTranslitSize" min="0.5" max="2" step="0.05" value="0.95">
           <span class="sval" id="optTranslitSizeVal">0.95rem</span>
-          <button class="sreset" onclick="resetFontSize('translit')" type="button" title="Restore default">↺</button>
+          <button class="sreset" onclick="resetFontSize('translit')" type="button" title="Restore default" data-i18n-title="torah.display.restore_default">↺</button>
         </div>
         <div class="slider-row">
-          <label>English</label>
+          <label data-i18n="torah.display.size_english">English</label>
           <input type="range" id="optEnglishSize" min="0.5" max="2" step="0.05" value="0.95">
           <span class="sval" id="optEnglishSizeVal">0.95rem</span>
-          <button class="sreset" onclick="resetFontSize('english')" type="button" title="Restore default">↺</button>
+          <button class="sreset" onclick="resetFontSize('english')" type="button" title="Restore default" data-i18n-title="torah.display.restore_default">↺</button>
         </div>
         <hr style="border:none; border-top:1px solid var(--border); margin:12px 0 8px;">
-        <div style="font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;">Karaoke settings</div>
+        <div style="font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;" data-i18n="torah.display.karaoke_header">Karaoke settings</div>
         <div class="form-row">
           <label>Style</label>
           <span class="radio-group">
-            <input type="radio" name="optKarStyle" id="ksHighlight" value="highlight"><label for="ksHighlight">Highlight</label>
-            <input type="radio" name="optKarStyle" id="ksOutline"   value="outline"><label for="ksOutline">Outline</label>
-            <input type="radio" name="optKarStyle" id="ksUnderline" value="underline"><label for="ksUnderline">Under</label>
-            <input type="radio" name="optKarStyle" id="ksNone"      value="none"><label for="ksNone">None</label>
+            <input type="radio" name="optKarStyle" id="ksHighlight" value="highlight"><label for="ksHighlight" data-i18n="torah.display.style_highlight">Highlight</label>
+            <input type="radio" name="optKarStyle" id="ksOutline"   value="outline"><label for="ksOutline" data-i18n="torah.display.style_outline">Outline</label>
+            <input type="radio" name="optKarStyle" id="ksUnderline" value="underline"><label for="ksUnderline" data-i18n="torah.display.style_under">Under</label>
+            <input type="radio" name="optKarStyle" id="ksNone"      value="none"><label for="ksNone" data-i18n="torah.display.style_none">None</label>
           </span>
         </div>
         <div class="form-row">
-          <label>Follow</label>
+          <label data-i18n="torah.display.follow_label">Follow</label>
           <span class="radio-group">
-            <input type="radio" name="optKarFollow" id="kfHebrew"   value="hebrew"><label for="kfHebrew">Hebrew</label>
-            <input type="radio" name="optKarFollow" id="kfTranslit" value="translit"><label for="kfTranslit">Translit</label>
-            <input type="radio" name="optKarFollow" id="kfBoth"     value="both"><label for="kfBoth">Both</label>
+            <input type="radio" name="optKarFollow" id="kfHebrew"   value="hebrew"><label for="kfHebrew" data-i18n="torah.display.follow_hebrew">Hebrew</label>
+            <input type="radio" name="optKarFollow" id="kfTranslit" value="translit"><label for="kfTranslit" data-i18n="torah.display.follow_translit">Translit</label>
+            <input type="radio" name="optKarFollow" id="kfBoth"     value="both"><label for="kfBoth" data-i18n="torah.display.follow_both">Both</label>
           </span>
         </div>
       </div>
     </div>
 
     <div class="panel collapsed">
-      <div class="panel-title">Reading schedule</div>
+      <div class="panel-title" data-i18n="torah.settings.panel_schedule">Reading schedule</div>
       <div class="panel-body">
         <div class="form-row">
           <label>Schedule <span class="tip-wrap" data-tip="Diaspora and Israel reading schedules diverge for several weeks per cycle (when a Yom Tov falls on Shabbat). Affects which parsha is selected as 'this week'."><i class="tip-icon">?</i></span></label>
           <span class="radio-group">
-            <input type="radio" name="optSchedule" id="schedDiaspora" value="diaspora"><label for="schedDiaspora">Diaspora</label>
-            <input type="radio" name="optSchedule" id="schedIsrael" value="israel"><label for="schedIsrael">Israel</label>
+            <input type="radio" name="optSchedule" id="schedDiaspora" value="diaspora"><label for="schedDiaspora" data-i18n="torah.schedule.diaspora">Diaspora</label>
+            <input type="radio" name="optSchedule" id="schedIsrael" value="israel"><label for="schedIsrael" data-i18n="torah.schedule.israel">Israel</label>
           </span>
         </div>
         <div class="form-row">
-          <button class="btn btn-xs btn-secondary" onclick="goToCurrentParshah()" type="button">Jump to this week's parsha</button>
+          <button class="btn btn-xs btn-secondary" onclick="goToCurrentParshah()" type="button" data-i18n="torah.schedule.jump_this_week">Jump to this week's parsha</button>
         </div>
       </div>
     </div>
 
     <div class="panel collapsed">
-      <div class="panel-title">Hebrew font</div>
+      <div class="panel-title" data-i18n="torah.settings.panel_font">Hebrew font</div>
       <div class="panel-body">
         <div class="font-options" id="fontOptions"></div>
         <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
@@ -1320,31 +1333,31 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     </div>
 
     <div class="panel collapsed">
-      <div class="panel-title">Vowel color coding</div>
+      <div class="panel-title" data-i18n="torah.settings.panel_vowel_color">Vowel color coding</div>
       <div class="panel-body">
         <div class="form-row">
-          <label>Color-code nikkud</label>
+          <label data-i18n="torah.color.code_nikkud">Color-code nikkud</label>
           <label class="toggle"><input type="checkbox" id="optColorCode"><span class="slider"></span></label>
         </div>
         <div class="form-row" id="colorModeRow" style="display:none;">
-          <label>Mode</label>
+          <label data-i18n="torah.color.mode_label">Mode</label>
           <span class="radio-group">
-            <input type="radio" name="optColorMode" id="cmLetter" value="letter"><label for="cmLetter">Letter</label>
-            <input type="radio" name="optColorMode" id="cmHighlight" value="highlight"><label for="cmHighlight">Highlight</label>
-            <input type="radio" name="optColorMode" id="cmUnderline" value="underline"><label for="cmUnderline">Underline</label>
+            <input type="radio" name="optColorMode" id="cmLetter" value="letter"><label for="cmLetter" data-i18n="torah.color.mode_letter">Letter</label>
+            <input type="radio" name="optColorMode" id="cmHighlight" value="highlight"><label for="cmHighlight" data-i18n="torah.color.mode_highlight">Highlight</label>
+            <input type="radio" name="optColorMode" id="cmUnderline" value="underline"><label for="cmUnderline" data-i18n="torah.color.mode_underline">Underline</label>
           </span>
         </div>
         <div class="color-pick-list" id="colorPickerList" style="display:none;"></div>
         <div class="form-row vowel-scheme-row" id="colorResetRow" style="display:none;">
-          <button class="vowel-scheme-btn active" id="vowelSchemeDefault" onclick="setVowelScheme('default')" type="button">Default</button>
-          <button class="vowel-scheme-btn" id="vowelSchemeTalAm" onclick="setVowelScheme('talam')" type="button">TaL AM</button>
-          <button class="vowel-scheme-btn" onclick="resetNikudColors()" type="button">Reset</button>
+          <button class="vowel-scheme-btn active" id="vowelSchemeDefault" onclick="setVowelScheme('default')" type="button" data-i18n="torah.color.scheme_default">Default</button>
+          <button class="vowel-scheme-btn" id="vowelSchemeTalAm" onclick="setVowelScheme('talam')" type="button" data-i18n="torah.color.scheme_talam">TaL AM</button>
+          <button class="vowel-scheme-btn" onclick="resetNikudColors()" type="button" data-i18n="torah.color.scheme_reset">Reset</button>
         </div>
       </div>
     </div>
 
     <div class="panel collapsed">
-      <div class="panel-title">Trope color coding</div>
+      <div class="panel-title" data-i18n="torah.settings.panel_trope_color">Trope color coding</div>
       <div class="panel-body">
         <div class="form-row">
           <label>Color-code trope families <span class="tip-wrap" data-tip="Tints each word by its cantillation clause family — Sof Pasuk, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. When vowel coloring is in Highlight mode, trope shows as an underline instead."><i class="tip-icon">?</i></span></label>
@@ -1352,22 +1365,22 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         </div>
         <div class="color-pick-list" id="tropeColorPickerList" style="display:none;"></div>
         <div class="form-row vowel-scheme-row" id="tropeResetRow" style="display:none;">
-          <button class="vowel-scheme-btn" onclick="resetTropeColors()" type="button">Reset</button>
+          <button class="vowel-scheme-btn" onclick="resetTropeColors()" type="button" data-i18n="torah.color.trope_reset">Reset</button>
         </div>
       </div>
     </div>
 
     <div class="panel collapsed">
-      <div class="panel-title">Transliteration scheme</div>
+      <div class="panel-title" data-i18n="torah.settings.panel_translit">Transliteration scheme</div>
       <div class="panel-body">
         <div class="form-row">
           <label for="optTranslitStyle">Style</label>
           <select id="optTranslitStyle">
-            <option value="modernIsraeli">Modern Israeli [DEFAULT]</option>
-            <option value="ashkenazi">Ashkenazi</option>
-            <option value="sbl">SBL Academic</option>
-            <option value="brill">Brill Academic</option>
-            <option value="simpleStressed">Simple stressed</option>
+            <option value="modernIsraeli" data-i18n="torah.trans.style_modern">Modern Israeli [DEFAULT]</option>
+            <option value="ashkenazi" data-i18n="torah.trans.style_ashkenazi">Ashkenazi</option>
+            <option value="sbl" data-i18n="torah.trans.style_sbl">SBL Academic</option>
+            <option value="brill" data-i18n="torah.trans.style_brill">Brill Academic</option>
+            <option value="simpleStressed" data-i18n="torah.trans.style_simple">Simple stressed</option>
           </select>
         </div>
         <div id="optTranslitStatus" style="font-size:0.72rem;color:var(--muted);"></div>
@@ -1375,32 +1388,32 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     </div>
 
     <div class="panel collapsed">
-      <div class="panel-title">Audio speeds</div>
+      <div class="panel-title" data-i18n="torah.settings.panel_audio">Audio speeds</div>
       <div class="panel-body">
-        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;line-height:1.45;">
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;line-height:1.45;" data-i18n-html="torah.audio.speeds_intro">
           Click <strong>🔊 Read</strong> on any verse for browser TTS in Hebrew, or <strong>🎵 Chant</strong> to stream PocketTorah's recording with real-time word highlighting. These sliders mirror the ones in the audio bar at the bottom of the page.
         </div>
         <div class="slider-row">
-          <label>Chant</label>
+          <label data-i18n="torah.audio.speed_chant">Chant</label>
           <input type="range" id="optKaraokeRate" min="0.5" max="1.5" step="0.05" value="1.0">
           <span class="sval" id="optKaraokeRateVal">1.00×</span>
-          <button class="sreset" onclick="resetKaraokeRate()" type="button" title="Restore default">↺</button>
+          <button class="sreset" onclick="resetKaraokeRate()" type="button" title="Restore default" data-i18n-title="torah.display.restore_default">↺</button>
         </div>
         <div class="slider-row">
-          <label>Read</label>
+          <label data-i18n="torah.audio.speed_read">Read</label>
           <input type="range" id="optTTSRate" min="0.5" max="1.5" step="0.05" value="0.75">
           <span class="sval" id="optTTSRateVal">0.75×</span>
-          <button class="sreset" onclick="resetTTSRate()" type="button" title="Restore default">↺</button>
+          <button class="sreset" onclick="resetTTSRate()" type="button" title="Restore default" data-i18n-title="torah.display.restore_default">↺</button>
         </div>
         <div class="form-row" style="margin-top:8px;">
           <label for="optLoopPause">Pause between repeats
             <span class="tip-wrap" data-tip="When you loop a verse (🔁), wait this long before repeating it — handy for practicing along."><i class="tip-icon">?</i></span>
           </label>
           <select id="optLoopPause">
-            <option value="0">None</option>
-            <option value="500">0.5 seconds</option>
-            <option value="1000">1 second</option>
-            <option value="2000">2 seconds</option>
+            <option value="0" data-i18n="torah.audio.loop_pause_none">None</option>
+            <option value="500" data-i18n="torah.audio.loop_pause_half">0.5 seconds</option>
+            <option value="1000" data-i18n="torah.audio.loop_pause_1">1 second</option>
+            <option value="2000" data-i18n="torah.audio.loop_pause_2">2 seconds</option>
           </select>
         </div>
         <div id="optTTSStatus" style="font-size:0.7rem;color:var(--muted);margin-top:6px;"></div>
@@ -1417,27 +1430,27 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="panel-title">About &amp; FAQ</div>
       <div class="panel-body">
         <details style="margin:0 0 10px;">
-          <summary style="cursor:pointer;font-weight:600;font-size:0.85rem;padding:4px 0;">Frequently Asked Questions</summary>
+          <summary style="cursor:pointer;font-weight:600;font-size:0.85rem;padding:4px 0;" data-i18n="torah.about.faq_summary">Frequently Asked Questions</summary>
           <div style="padding:4px 0;">
-            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">What is the Torah Trainer?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">A free Hebrew Torah reader. Pick a parsha and read it with optional transliteration, English translation, per-vowel color coding, cantillation strip, prose TTS, and chanted-audio karaoke that highlights words in time with the recording.</p></details>
-            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Does it include chanted-audio karaoke?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener" style="color:var(--gold);">PocketTorah</a>'s recordings of all 54 parshiyot and haftarot stream on demand, with word-level highlighting synchronized to the audio. Adjust playback speed without re-fetching.</p></details>
-            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Where do the Hebrew texts and translations come from?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);"><a href="https://www.sefaria.org" target="_blank" rel="noopener" style="color:var(--gold);">Sefaria</a>'s public API. The translation dropdown defaults to JPS 1985 when available; pick any other version from the same dropdown.</p></details>
-            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Can I hide nikkud or cantillation marks?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. The Display panel has separate toggles for nikkud (vowel points) and cantillation marks (te'amim). They can be hidden independently.</p></details>
-            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Can it color-code the Torah trope (cantillation) families?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. Trope color coding tints each word by its cantillation clause family — Sof Pasuk, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings.</p></details>
-            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Diaspora or Israel schedule?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">The default is diaspora. Flip the Reading Schedule toggle to switch to Israel. Use "Jump to this week's parsha" to auto-pick the current week's reading from Sefaria's calendar.</p></details>
-            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Is it free?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. Materials incorporating PocketTorah audio are licensed CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q1">What is the Torah Trainer?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a1">A free Hebrew Torah reader. Pick a parsha and read it with optional transliteration, English translation, per-vowel color coding, cantillation strip, prose TTS, and chanted-audio karaoke that highlights words in time with the recording.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q2">Does it include chanted-audio karaoke?</summary><p data-i18n-html="torah.about.faq_a2" style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener" style="color:var(--gold);">PocketTorah</a>'s recordings of all 54 parshiyot and haftarot stream on demand, with word-level highlighting synchronized to the audio. Adjust playback speed without re-fetching.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q3">Where do the Hebrew texts and translations come from?</summary><p data-i18n-html="torah.about.faq_a3" style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);"><a href="https://www.sefaria.org" target="_blank" rel="noopener" style="color:var(--gold);">Sefaria</a>'s public API. The translation dropdown defaults to JPS 1985 when available; pick any other version from the same dropdown.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q4">Can I hide nikkud or cantillation marks?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a4">Yes. The Display panel has separate toggles for nikkud (vowel points) and cantillation marks (te'amim). They can be hidden independently.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q5">Can it color-code the Torah trope (cantillation) families?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a5">Yes. Trope color coding tints each word by its cantillation clause family — Sof Pasuk, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q6">Diaspora or Israel schedule?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a6">The default is diaspora. Flip the Reading Schedule toggle to switch to Israel. Use "Jump to this week's parsha" to auto-pick the current week's reading from Sefaria's calendar.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q7">Is it free?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a7">Yes. Materials incorporating PocketTorah audio are licensed CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0.</p></details>
           </div>
         </details>
         <details style="margin:0 0 10px;">
-          <summary style="cursor:pointer;font-weight:600;font-size:0.85rem;padding:4px 0;">How To Use</summary>
+          <summary style="cursor:pointer;font-weight:600;font-size:0.85rem;padding:4px 0;" data-i18n="torah.about.howto_summary">How To Use</summary>
           <ol style="padding:6px 0 4px 20px;margin:0;font-size:0.8rem;line-height:1.5;color:var(--muted);">
-            <li>Pick a parsha from the top dropdown (defaults to this week's). The Reading dropdown shows each aliyah's verse range, and 🎵 marks readings with chanted audio.</li>
-            <li>Toggle Translit and Translation; choose Side-by-side or Interlinear layout.</li>
-            <li>Customize the Hebrew font, vowel coloring, and translit scheme in this drawer.</li>
-            <li>Enable Karaoke and pick an aliyah from the Reading dropdown to chant along. Use 🔁 Loop on any verse to repeat it hands-free for practice.</li>
-            <li>On a full parsha, use the aliyah jump chips at the top to skip around, and the Resume chip to pick up where you left off.</li>
-            <li>Click the fullscreen button to project to a SmartBoard.</li>
-            <li>New here? Press <strong>❓ Tour</strong> in the header for a quick walkthrough.</li>
+            <li data-i18n="torah.about.howto_1">Pick a parsha from the top dropdown (defaults to this week's). The Reading dropdown shows each aliyah's verse range, and 🎵 marks readings with chanted audio.</li>
+            <li data-i18n="torah.about.howto_2">Toggle Translit and Translation; choose Side-by-side or Interlinear layout.</li>
+            <li data-i18n="torah.about.howto_3">Customize the Hebrew font, vowel coloring, and translit scheme in this drawer.</li>
+            <li data-i18n="torah.about.howto_4">Enable Karaoke and pick an aliyah from the Reading dropdown to chant along. Use 🔁 Loop on any verse to repeat it hands-free for practice.</li>
+            <li data-i18n="torah.about.howto_5">On a full parsha, use the aliyah jump chips at the top to skip around, and the Resume chip to pick up where you left off.</li>
+            <li data-i18n="torah.about.howto_6">Click the fullscreen button to project to a SmartBoard.</li>
+            <li data-i18n-html="torah.about.howto_7">New here? Press <strong>❓ Tour</strong> in the header for a quick walkthrough.</li>
           </ol>
         </details>
         <div>
@@ -1454,9 +1467,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     </div>
 
     <div class="panel collapsed">
-      <div class="panel-title">Reset</div>
+      <div class="panel-title" data-i18n="torah.settings.panel_reset">Reset</div>
       <div class="panel-body">
-        <button class="btn btn-xs btn-secondary" onclick="resetAllSettings()" type="button">↺ Reset all Torah Trainer settings</button>
+        <button class="btn btn-xs btn-secondary" onclick="resetAllSettings()" type="button" data-i18n="torah.settings.reset_all">↺ Reset all Torah Trainer settings</button>
       </div>
     </div>
 
@@ -1466,9 +1479,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 <footer>
   <div class="footer-credits">
     <span>Hebrew text via <a href="https://www.sefaria.org" target="_blank" rel="noopener" class="sefaria-attr"><img src="https://files.readme.io/87c5652-image.png" alt="Sefaria" class="sefaria-light" loading="lazy"><img src="https://files.readme.io/dcee0a8-image.png" alt="Sefaria" class="sefaria-dark" loading="lazy"></a> · public domain</span>
-    <span id="ttFooterTrans">Translation: (none selected)</span>
+    <span id="ttFooterTrans" data-i18n="torah.footer.translation_static">Translation: (none selected)</span>
     <span>Cantillation audio: <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> · CC BY-SA 4.0</span>
-    <span>Only translations whose license permits redistribution are offered (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA).</span>
+    <span data-i18n="torah.footer.license_note">Only translations whose license permits redistribution are offered (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA).</span>
   </div>
   <nav aria-label="Related Hebrew Tools" style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">
     <div style="font-family:'Libre Baskerville',serif;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;">Related Hebrew Tools</div>
@@ -2162,6 +2175,25 @@ function applyTropeColors() {
   if (legend) legend.hidden = !(on && currentVerses && currentVerses.length > 0);
 }
 
+// Build (or rebuild, on a language switch) the trope-legend family chips from TROPE_COLOR_DEFS.
+// Family names come from the torah.glyphname.trope_* keys (fall back to def.name pre-i18n).
+function buildTropeLegend() {
+  const tutorLink = document.getElementById('ttTropeTutorLink');
+  if (!tutorLink) return;
+  const legend = tutorLink.parentNode;
+  legend.querySelectorAll('.tt-trope-chip').forEach(c => c.remove());
+  TROPE_COLOR_DEFS.forEach(def => {
+    const chip = document.createElement('span');
+    chip.className = 'tt-trope-chip';
+    const sw = document.createElement('span');
+    sw.className = 'tt-trope-swatch';
+    sw.style.background = 'var(--trope-' + def.key + '-bg)';
+    chip.appendChild(sw);
+    chip.appendChild(document.createTextNode(window.I18n ? I18n.t('torah.glyphname.trope_' + def.key) : def.name));
+    legend.insertBefore(chip, tutorLink);
+  });
+}
+
 function stripTeamim(s)      { return s.replace(TEAMIM_RE, ''); }
 function stripNikkud(s)      { return s.replace(NIKKUD_RE, ''); }
 function stripAllMarks(s)    { return s.replace(ALL_MARKS_RE, ''); }
@@ -2371,8 +2403,8 @@ function renderEmptyReading() {   // friendly card shown in #ttReading when no p
   document.getElementById('ttReading').innerHTML =
     `<div class="tt-empty">
        <div class="tt-empty-star" aria-hidden="true">✡︎</div>
-       <h2>Pick a parsha to start</h2>
-       <p>Choose a parsha from the dropdown above — the reading appears here with optional transliteration, translation, color-coded vowels, and chanted audio.</p>
+       <h2>${esc(I18n.t('torah.reading.empty_title'))}</h2>
+       <p>${esc(I18n.t('torah.reading.empty_body'))}</p>
      </div>`;
 }
 function renderText() {
@@ -2398,8 +2430,8 @@ function renderText() {
   let html = `<div class="tt-ref-hdr">
     <span>${esc(currentRangeLabel)}</span>
     <span style="display:flex;gap:6px;">
-      <button class="tt-readall" id="ttReadAllBtn" onclick="toggleReadAll()" type="button">${ttsState.readAllActive ? '⏹ Stop' : '🔊 Read all'}</button>
-      ${canChant ? `<button class="tt-readall tt-chantall" id="ttChantAllBtn" onclick="toggleChantAll()" type="button">${chantAllState.active ? '⏹ Stop chant' : '🎵 Chant all'}</button>` : ''}
+      <button class="tt-readall" id="ttReadAllBtn" onclick="toggleReadAll()" type="button">${ttsState.readAllActive ? esc(I18n.t('torah.reading.stop')) : esc(I18n.t('torah.reading.read_all'))}</button>
+      ${canChant ? `<button class="tt-readall tt-chantall" id="ttChantAllBtn" onclick="toggleChantAll()" type="button">${chantAllState.active ? esc(I18n.t('torah.reading.chant_all_stop')) : esc(I18n.t('torah.reading.chant_all'))}</button>` : ''}
     </span>
   </div>`;
   // Aliyah landmarks (full-parsha only) — inline dividers + jump targets.
@@ -2436,21 +2468,21 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant
     html += `  <div class="tt-verse-row" style="align-items:center;">`;
     html += `    <span class="tt-verse-num">${esc(numLabel)}</span>`;
     html += `    <span class="tt-verse-buttons">`;
-    html += `      <button class="tt-speak" onclick="speakVerse('${vkEsc}')" type="button" aria-label="Read verse ${numLabel} aloud (TTS)">🔊 Read</button>`;
-    if (canChant) html += `      <button class="tt-chant" onclick="chantVerse('${vkEsc}')" type="button" aria-label="Chant verse ${numLabel} (PocketTorah audio)">🎵 Chant</button>`;
-    if (canLoop) html += `      <button class="tt-loop" onclick="loopVerse('${vkEsc}')" type="button" aria-label="Loop verse ${numLabel} (repeat the chant)">🔁 Loop</button>`;
+    html += `      <button class="tt-speak" onclick="speakVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_read_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_read'))}</button>`;
+    if (canChant) html += `      <button class="tt-chant" onclick="chantVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_chant_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_chant'))}</button>`;
+    if (canLoop) html += `      <button class="tt-loop" onclick="loopVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_loop_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_loop'))}</button>`;
     html += `    </span>`;
     html += `  </div>`;
     const firstTwi = wordIdxRef.value;
     const hebHtml = tokenizeHebrew(v.hebrew, wordIdxRef);
     const hebCount = wordIdxRef.value - firstTwi;
-    html += `  <div class="tt-verse-row"><span class="tt-rowlabel">Hebrew</span><span class="tt-heb" lang="he">${hebHtml}</span></div>`;
+    html += `  <div class="tt-verse-row"><span class="tt-rowlabel">${esc(I18n.t('torah.reading.row_hebrew'))}</span><span class="tt-heb" lang="he">${hebHtml}</span></div>`;
     if (withTranslit) {
       const tr = applyTranslit(v.hebrew);
-      html += `  <div class="tt-verse-row"><span class="tt-rowlabel">Translit</span><span class="tt-translit">${tokenizeTranslit(tr, firstTwi, hebCount)}</span></div>`;
+      html += `  <div class="tt-verse-row"><span class="tt-rowlabel">${esc(I18n.t('torah.reading.row_translit'))}</span><span class="tt-translit">${tokenizeTranslit(tr, firstTwi, hebCount)}</span></div>`;
     }
     if (withTrans) {
-      html += `  <div class="tt-verse-row"><span class="tt-rowlabel">English</span><span class="tt-translation">${stripHTML(v.translation)}</span></div>`;
+      html += `  <div class="tt-verse-row"><span class="tt-rowlabel">${esc(I18n.t('torah.reading.row_english'))}</span><span class="tt-translation">${stripHTML(v.translation)}</span></div>`;
     }
     html += `</div>`;
   }
@@ -2497,9 +2529,9 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant,
     if (aNum > 1) html += aliyahDividerHTML(aNum, numLabel);
     html += `<div class="tt-grid-row" data-vk="${esc(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}>`;
     html += `<span class="tt-vnum">${numLabel}<span class="tt-verse-buttons" style="display:flex;flex-direction:column;gap:3px;margin-top:4px;margin-left:0;">`;
-    html += `<button class="tt-speak" onclick="speakVerse('${vkEsc}')" type="button" aria-label="Read verse ${numLabel} aloud (TTS)">🔊 Read</button>`;
-    if (canChant) html += `<button class="tt-chant" onclick="chantVerse('${vkEsc}')" type="button" aria-label="Chant verse ${numLabel} (PocketTorah audio)">🎵 Chant</button>`;
-    if (canLoop) html += `<button class="tt-loop" onclick="loopVerse('${vkEsc}')" type="button" aria-label="Loop verse ${numLabel} (repeat the chant)">🔁 Loop</button>`;
+    html += `<button class="tt-speak" onclick="speakVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_read_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_read'))}</button>`;
+    if (canChant) html += `<button class="tt-chant" onclick="chantVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_chant_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_chant'))}</button>`;
+    if (canLoop) html += `<button class="tt-loop" onclick="loopVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_loop_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_loop'))}</button>`;
     html += `</span></span>`;
     html += `<span class="tt-cell heb" lang="he">${hebHtml}</span>`;
     html += `</div>`;
@@ -2533,7 +2565,7 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant, 
     const numLabel = `${v.chapter}:${v.verse}`;
     const aNum = aStartByLabel[numLabel];
     // Inline aliyah marker keeps the running-text flow intact (no block break).
-    if (aNum > 1) html += `<span class="tt-aliyah-inline" id="tt-aliyah-${aNum}" dir="rtl">✦ Aliyah ${aNum}</span> `;
+    if (aNum > 1) html += `<span class="tt-aliyah-inline" id="tt-aliyah-${aNum}" dir="rtl">${esc(I18n.t('torah.reading.aliyah_inline', { n: aNum }))}</span> `;
     html += `<span class="tt-bverse" data-vk="${esc(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}><sup class="tt-bnum">${esc(numLabel)}</sup><span class="tt-heb" lang="he">${hebHtml}</span></span> `;
   }
   html += '</p>';
@@ -2597,10 +2629,10 @@ async function fetchAndRender() {
   if (!r) {
     currentVerses = null;
     renderEmptyReading();
-    setStatus('Pick a parsha to start.', false);
+    setStatus(I18n.t('torah.status.pick_parsha'), false);
     return;
   }
-  setStatus(`Loading ${r.label}…`, false);
+  setStatus(I18n.t('torah.status.loading_label', { label: r.label }), false);
   let netDone = false;   // true once every Sefaria fetch has resolved → a later throw is a render/code bug, not an outage
   try {
     let verses = await fetchSefariaText(r.ref, settings.showTranslation, settings.translationVersion);
@@ -2660,8 +2692,8 @@ async function fetchAndRender() {
     // Only blame the network when the failure happened while fetching. Once the text is in hand
     // (netDone), a throw is a render/code fault — the Hebrew is often already on screen — so
     // "Sefaria API may be unreachable" would misdirect the user.
-    const netHint = netDone ? '' : ' Sefaria API may be unreachable.';
-    setStatus(`Failed to load ${r.label}: ${e.message}.${netHint}`, true);
+    const netHint = netDone ? '' : ' ' + I18n.t('torah.status.net_hint');
+    setStatus(I18n.t('torah.status.reading_load_failed', { label: r.label, error: e.message }) + netHint, true);
   }
 }
 function setStatus(msg, isError) {
@@ -2744,7 +2776,7 @@ function computeAliyahStarts() {
 // Slim, non-interactive divider row (block; contains no .tt-word so karaoke
 // indexing is untouched). Carries the jump anchor id.
 function aliyahDividerHTML(num, label) {
-  return `<div class="tt-aliyah-divider" id="tt-aliyah-${num}"><span>Aliyah ${num} · ${esc(label)}</span></div>`;
+  return `<div class="tt-aliyah-divider" id="tt-aliyah-${num}"><span>${esc(I18n.t('torah.reading.aliyah_divider', { n: num, label: label }))}</span></div>`;
 }
 // Build the sticky jump bar for the freshly-rendered reading. Chips 1..7 show for
 // a full parsha; otherwise a lone position readout shows only for long readings.
@@ -2834,7 +2866,7 @@ function maybeShowResumeChip() {
   chip.id = 'ttResumeChip';
   const go = document.createElement('button');
   go.type = 'button'; go.className = 'tt-resume-go';
-  go.textContent = `Resume at ${lp.verse} →`;
+  go.textContent = I18n.t('torah.reading.resume', { verse: lp.verse });
   go.addEventListener('click', () => { removeResumeChip(); flashVerse(lp.verse); });
   const x = document.createElement('button');
   x.type = 'button'; x.className = 'tt-resume-x';
@@ -2920,7 +2952,7 @@ function computeVerseAudioBounds(numLabel) {
 function seekToVerseInLoadedAudio(numLabel, silent) {
   if (!currentTimings || !currentAudio) return false;
   const b = computeVerseAudioBounds(numLabel);
-  if (!b) { if (!silent) setStatus(`Couldn't find verse ${numLabel} in the rendered text.`, true); return false; }
+  if (!b) { if (!silent) setStatus(I18n.t('torah.status.verse_not_found', { verseRef: numLabel }), true); return false; }
   if (ttsState.readAllActive) stopReadAll();
   speechSynthesis.cancel();
   // Pause at the verse end, unless Chant all is running (it chains straight through).
@@ -2963,7 +2995,7 @@ function startLoop(numLabel, bounds) {
   if (lastHighlightedIdx >= 0) paintKaraokeIdx(lastHighlightedIdx, false);
   lastHighlightedIdx = -1;
   renderLoopState();
-  setKaraokeStatus(`Looping verse ${numLabel}. Click Loop again (or Stop in the audio bar) to end.`);
+  setKaraokeStatus(I18n.t('torah.status.loop_verse', { verseRef: numLabel }));
   if (currentAudio.paused) currentAudio.play().catch(() => {});
 }
 // Stop the loop and pause playback (what the active Loop button and the audio-bar
@@ -2996,7 +3028,7 @@ function renderLoopState() {
     const vk = holder ? holder.dataset.vk : '';
     const on = !!active && vk === active;
     btn.classList.toggle('active', on);
-    btn.textContent = on ? '⏹ Stop loop' : '🔁 Loop';
+    btn.textContent = on ? I18n.t('torah.audio.loopstop_text') : I18n.t('torah.reading.verse_loop');
     btn.setAttribute('aria-label', on ? `Stop looping verse ${vk}` : `Loop verse ${vk} (repeat the chant)`);
     if (on) btn.setAttribute('aria-pressed', 'true'); else btn.removeAttribute('aria-pressed');
   });
@@ -3005,7 +3037,7 @@ function renderLoopState() {
 function updateAudioBarLoopUi() {
   const label = document.getElementById('ttAudioLabel');
   const stopBtn = document.getElementById('ttLoopStopBtn');
-  if (label) label.textContent = loopState.active ? `🔁 Looping ${loopState.verseLabel}` : (_audioBaseLabel || 'Karaoke');
+  if (label) label.textContent = loopState.active ? I18n.t('torah.audio.looping_label', { verse: loopState.verseLabel }) : (_audioBaseLabel || I18n.t('torah.audio.karaoke_label'));
   if (stopBtn) stopBtn.style.display = loopState.active ? '' : 'none';
 }
 // Shared auto-load tail: find the aliyah containing numLabel, switch scope, and
@@ -3016,15 +3048,15 @@ function _navigateToVerseAliyahAndQueue(numLabel, mode) {
   const tc = parseInt(m[1], 10), tv = parseInt(m[2], 10);
   const p = (currentReadingCtx && currentReadingCtx.parshahEntry)
             || parshiyotData.find(x => x.en === settings.parshahKey);
-  if (!p) { setStatus('Pick a parsha first to chant verses.', false); return false; }
+  if (!p) { setStatus(I18n.t('torah.status.pick_parsha_chant_verses'), false); return false; }
   const al = aliyahLookup(p.en);
-  if (!al || !al.aliyot) { setStatus('No aliyah data for this parsha.', true); return false; }
+  if (!al || !al.aliyot) { setStatus(I18n.t('torah.status.no_aliyah_data'), true); return false; }
   let aliyahNum = null;
   for (const num of ['1','2','3','4','5','6','7']) {
     const r = al.aliyot[num];
     if (r && verseInRange(tc, tv, r)) { aliyahNum = num; break; }
   }
-  if (!aliyahNum) { setStatus(`Verse ${numLabel} is outside this parsha's aliyot — pick Haftarah from Reading if you want to chant it.`, true); return false; }
+  if (!aliyahNum) { setStatus(I18n.t('torah.status.verse_outside_pick_haftarah', { verseRef: numLabel }), true); return false; }
   settings.parshahKey = p.en;
   settings.holidayKey = null;
   settings.customLabel = null;
@@ -3040,7 +3072,7 @@ function _navigateToVerseAliyahAndQueue(numLabel, mode) {
   saveSettings();
   if (ttsState.readAllActive) stopReadAll();
   speechSynthesis.cancel();
-  setStatus(`Loading aliyah ${aliyahNum} to ${mode === 'loop' ? 'loop' : 'chant'} verse ${numLabel}…`, false);
+  setStatus(I18n.t('torah.status.loading_aliyah_verse', { n: aliyahNum, action: mode === 'loop' ? 'loop' : 'chant', verseRef: numLabel }), false);
   fetchAndRender();
   return true;
 }
@@ -3134,7 +3166,7 @@ async function chantHolidayWord(numLabel, wordInVerse) {
     const r = al.aliyot[num];
     if (r && verseInRange(tc, tv, r)) { n = num; break; }
   }
-  if (!n) { setStatus(`Verse ${numLabel} is outside this parsha's aliyot — can't chant it here.`, true); return false; }
+  if (!n) { setStatus(I18n.t('torah.status.verse_outside_cant_chant', { verseRef: numLabel }), true); return false; }
   const map = await getAliyahVerseWordMap(p, n, al.aliyot[n]);
   if (!map || map[numLabel] == null) return false;
   const idx = map[numLabel] + (wordInVerse || 0);
@@ -3153,7 +3185,7 @@ async function chantHolidayWord(numLabel, wordInVerse) {
   _holidayKaraoke = { map };
   _pendingChantWordIdx = idx;
   _verseEndStopAt = null;
-  setStatus(`Loading audio to chant ${numLabel}…`, false);
+  setStatus(I18n.t('torah.status.loading_audio_chant', { verseRef: numLabel }), false);
   await loadKaraoke(p, String(n), map._totalWords || null);
   return true;
 }
@@ -3166,7 +3198,7 @@ function verseInRange(c, v, range) {
   return true;
 }
 function speakHebrew(text) {
-  if (!window.speechSynthesis) { setStatus('Speech synthesis not supported in this browser.', true); return; }
+  if (!window.speechSynthesis) { setStatus(I18n.t('torah.status.tts_unsupported_browser'), true); return; }
   if (!text) return;
   speechSynthesis.cancel();
   const utt = new SpeechSynthesisUtterance(replaceTetragrammaton(stripTeamim(text)));
@@ -3180,7 +3212,7 @@ function toggleReadAll() {
   pauseKaraoke();
   ttsState.readAllActive = true;
   ttsState.readAllIdx = 0;
-  document.getElementById('ttReadAllBtn').textContent = '⏹ Stop';
+  document.getElementById('ttReadAllBtn').textContent = I18n.t('torah.reading.stop');
   document.getElementById('ttReadAllBtn').classList.add('active');
   readAllStep();
 }
@@ -3200,7 +3232,7 @@ function stopReadAll() {
   ttsState.readAllActive = false;
   speechSynthesis.cancel();
   const btn = document.getElementById('ttReadAllBtn');
-  if (btn) { btn.textContent = '🔊 Read all'; btn.classList.remove('active'); }
+  if (btn) { btn.textContent = I18n.t('torah.reading.read_all'); btn.classList.remove('active'); }
 }
 
 /* ══════════════════════════════════════════════════════
@@ -3219,7 +3251,7 @@ async function toggleChantAll() {
     // one so we start at the reading's opening verse rather than the aliyah's.
     p = (currentReadingCtx && currentReadingCtx.parshahEntry) || parshaContainingRef(settings.customRef);
     const rng = parseRefRange(settings.customRef);
-    if (!p || !manifestData[p.pocket] || !rng) { setStatus('Chanting isn\'t available for this reading.', true); return; }
+    if (!p || !manifestData[p.pocket] || !rng) { setStatus(I18n.t('torah.status.chant_unavailable'), true); return; }
     queue = overlappingAliyot(p.en, rng);
     if (!queue.length) { setStatus('No chantable audio for this reading.', true); return; }
     startVerse = `${rng.startC}:${rng.startV}`;
@@ -3241,7 +3273,7 @@ async function toggleChantAll() {
   _verseEndStopAt = null;
   if (startVerse) _pendingChantVerse = startVerse;
   const btn = document.getElementById('ttChantAllBtn');
-  if (btn) { btn.textContent = '⏹ Stop chant'; btn.classList.add('active'); }
+  if (btn) { btn.textContent = I18n.t('torah.reading.chant_all_stop'); btn.classList.add('active'); }
   await playNextChant();
 }
 
@@ -3287,11 +3319,11 @@ function stopChantAll() {
     currentAudio.onended = () => { clearKaraokeHighlight(); updatePlayPauseIcon(); };
   }
   const btn = document.getElementById('ttChantAllBtn');
-  if (btn) { btn.textContent = '🎵 Chant all'; btn.classList.remove('active'); }
+  if (btn) { btn.textContent = I18n.t('torah.reading.chant_all'); btn.classList.remove('active'); }
 }
 function checkTTSVoiceAvailability() {
   if (!window.speechSynthesis) {
-    document.getElementById('optTTSStatus').textContent = 'Speech synthesis not supported.';
+    document.getElementById('optTTSStatus').textContent = I18n.t('torah.audio.tts_unsupported');
     return;
   }
   function check() {
@@ -3394,11 +3426,11 @@ function teardownKaraokeAudio() {
 }
 
 async function loadKaraoke(parshahEntry, suffix, expectedWords) {
-  setKaraokeStatus(`Loading audio for ${parshahEntry.en}, ${suffix === 'H' ? 'Haftarah' : 'Aliyah ' + suffix}…`);
+  setKaraokeStatus(I18n.t('torah.status.loading_audio_for', { parsha: parshahEntry.en, aliyah: suffix === 'H' ? I18n.t('torah.schedule.scope_haftarah') : I18n.t('torah.schedule.scope_aliyah', { n: suffix }) }));
   const m = manifestData[parshahEntry.pocket];
   if (!m) { setKaraokeStatus('No PocketTorah manifest entry for this parsha.'); return; }
   const labelFile = m.labels && m.labels[suffix];
-  if (!labelFile) { setKaraokeStatus(`Audio for aliyah ${suffix} is not available in PocketTorah.`); return; }
+  if (!labelFile) { setKaraokeStatus(I18n.t('torah.status.aliyah_audio_unavailable', { n: suffix })); return; }
   const audioBase = m.audioBase;
   if (!audioBase) { setKaraokeStatus('Audio basename missing in manifest.'); return; }
   // Fetch timing file
@@ -3467,7 +3499,7 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
   bar.classList.toggle('collapsed', !!settings.karaokeBarCollapsed);
   document.body.classList.add('tt-karaoke-active');
   _audioBaseLabel = `${parshahEntry.en} · ${suffix === 'H' ? 'Haftarah' : 'Aliyah ' + suffix}`;
-  document.getElementById('ttAudioLabel').textContent = loopState.active ? `🔁 Looping ${loopState.verseLabel}` : _audioBaseLabel;
+  document.getElementById('ttAudioLabel').textContent = loopState.active ? I18n.t('torah.audio.looping_label', { verse: loopState.verseLabel }) : _audioBaseLabel;
   setKaraokeStatus(`Loaded ${timings.length} word timings. Click any Hebrew word to jump to that part.`);
   updateKaraokeWordRefs();
   if (karaokeWordSpans.length && timings.length) {
@@ -4041,11 +4073,11 @@ function wireTranslit() {
     }
   });
   window.addEventListener('translitlibloaded', () => {
-    status.textContent = 'Library loaded.';
+    status.textContent = I18n.t('torah.trans.lib_loaded');
     if (settings.showTranslit) renderText();
   });
   window.addEventListener('translitlibfailed', () => {
-    status.textContent = 'Transliteration library failed to load (offline?).';
+    status.textContent = I18n.t('torah.trans.lib_failed');
   });
 }
 function maybeEnsureTranslit() {
@@ -4487,7 +4519,7 @@ function updateScopeSelectState() {
     if (!customOpt) {
       customOpt = document.createElement('option');
       customOpt.value = 'custom';
-      customOpt.textContent = 'Full reading';
+      customOpt.textContent = I18n.t('torah.schedule.scope_full_reading');
       scopeSel.appendChild(customOpt);
     }
     scopeSel.value = 'custom';
@@ -4550,14 +4582,14 @@ function shortenLicense(lic) {
 
 async function populateVersionDropdown(book) {
   const sel = document.getElementById('ttVersionSelect');
-  sel.innerHTML = '<option value="">Loading…</option>';
+  sel.innerHTML = `<option value="">${esc(I18n.t('torah.controls.version_loading'))}</option>`;
   const versions = await fetchVersionsList(book);
   const eng = versions.filter(v => v.language === 'en' || /english/i.test(v.languageFamilyName||v.language||''));
   // Keep only versions whose license clearly permits redistribution.
   const safe = eng.filter(v => isPermissiveLicense(v.license));
   sel.innerHTML = '';
   if (!safe.length) {
-    sel.innerHTML = '<option value="">(no openly licensed English versions available for this book)</option>';
+    sel.innerHTML = `<option value="">${esc(I18n.t('torah.trans.no_versions'))}</option>`;
     return;
   }
   safe.forEach(v => {
@@ -4603,11 +4635,11 @@ function updateTransFooter() {
   const sel = document.getElementById('ttVersionSelect');
   const opt = sel && sel.options[sel.selectedIndex];
   if (!sel || !sel.value || !opt) {
-    el.textContent = 'Translation: (none selected — toggle Translation off or pick a version)';
+    el.textContent = I18n.t('torah.trans.footer_none');
     return;
   }
   const lic = opt.dataset.license || 'unknown license';
-  el.innerHTML = `Translation: <em>${esc(sel.value)}</em> · ${esc(shortenLicense(lic))} (via <a href="https://www.sefaria.org" target="_blank" rel="noopener">Sefaria</a>)`;
+  el.innerHTML = I18n.t('torah.trans.footer_line', { version: esc(sel.value), license: esc(shortenLicense(lic)) });
 }
 
 /* ══════════════════════════════════════════════════════
@@ -4708,7 +4740,7 @@ async function init() {
     aliyahData = aj;
   } catch (e) {
     console.error('Failed to load data files', e);
-    setStatus('Failed to load static data files (data/parshiyot.json, data/pockettorah/*.json). The page may not work correctly.', true);
+    setStatus(I18n.t('torah.status.data_load_failed'), true);
   }
 
   // Build UI
@@ -4720,17 +4752,8 @@ async function init() {
   initTropeColorPickers();
   // Legend chips are generated once from TROPE_COLOR_DEFS (single source of truth
   // with the pickers); the strip is static thereafter — renderText never touches it.
+  buildTropeLegend();
   const tutorLink = document.getElementById('ttTropeTutorLink');
-  TROPE_COLOR_DEFS.forEach(def => {
-    const chip = document.createElement('span');
-    chip.className = 'tt-trope-chip';
-    const sw = document.createElement('span');
-    sw.className = 'tt-trope-swatch';
-    sw.style.background = 'var(--trope-' + def.key + '-bg)';
-    chip.appendChild(sw);
-    chip.appendChild(document.createTextNode(def.name));
-    tutorLink.parentNode.insertBefore(chip, tutorLink);
-  });
   // Feature-gated future link: render only when TROPE_TUTOR_URL is non-null.
   if (TROPE_TUTOR_URL && tutorLink) { tutorLink.href = TROPE_TUTOR_URL; tutorLink.hidden = false; }
   applyTropeColors();
@@ -4771,6 +4794,28 @@ async function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+// ── Live i18n: re-translate static chrome + rebuild dynamic pieces on language switch ──
+// Registered on DOMContentLoaded so the deferred /js/i18n.js has already defined window.I18n.
+function applyI18n() {
+  if (!window.I18n) return;
+  I18n.applyStaticI18n();
+  try { buildTropeLegend(); } catch (e) {}          // family chips (glyphname keys)
+  try { refreshScopeLabels(); } catch (e) {}        // scope dropdown per-parsha labels
+  try { updateTransFooter(); } catch (e) {}         // translation credit line
+  // Re-render the reading so row labels / aliyah markers / verse buttons translate — but NEVER
+  // while audio is playing or looping (a renderText() rebuild would desync the karaoke data-twi
+  // word-timing). When playing, the reading re-translates the next time it is rebuilt.
+  const playing = (typeof chantAllState !== 'undefined' && chantAllState.active) ||
+                  (typeof loopState !== 'undefined' && loopState.active) ||
+                  (typeof currentAudio !== 'undefined' && currentAudio && !currentAudio.paused);
+  if (!playing && typeof currentVerses !== 'undefined' && currentVerses && currentVerses.length > 0) {
+    try { renderText(); } catch (e) {}
+  }
+}
+function _wireTorahI18n() { if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); } }
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _wireTorahI18n);
+else _wireTorahI18n();
 
 // Printing mid-karaoke would freeze the transient .active word-highlight onto paper
 // (kar-style-underline's gold decoration prints). Pause + clear before the snapshot;
@@ -4855,23 +4900,17 @@ window.addEventListener('beforeprint', () => { pauseKaraoke(); clearKaraokeHighl
 function _tourVisible(el) { return !!(el && el.offsetParent !== null); }
 const TOUR_STEPS = [
   { target: () => document.getElementById('parshaSelect'),
-    title: 'Pick a parsha',
-    body: "Pick any parsha — it starts on this week's automatically." },
+    titleKey: 'torah.tour.s1_title', bodyKey: 'torah.tour.s1_body' },
   { target: () => document.getElementById('scopeSelect'),
-    title: 'Reading scope',
-    body: 'Read the whole parsha, one aliyah, or the haftarah. 🎵 means chanted audio is available.' },
+    titleKey: 'torah.tour.s2_title', bodyKey: 'torah.tour.s2_body' },
   { target: () => (document.getElementById('ttLayoutSide') || {}).closest ? document.getElementById('ttLayoutSide').closest('.tt-ctrl') : null,
-    title: 'Layout & toggles',
-    body: 'Show transliteration and translation, side-by-side or line-by-line.' },
+    titleKey: 'torah.tour.s3_title', bodyKey: 'torah.tour.s3_body' },
   { target: () => document.querySelector('#ttReading .tt-verse-buttons'),
-    title: 'Read, chant, or loop',
-    body: 'Every verse can be read aloud, chanted with word-by-word highlighting, or looped for practice.' },
+    titleKey: 'torah.tour.s4_title', bodyKey: 'torah.tour.s4_body' },
   { target: () => document.querySelector('#ttReading .tt-heb, #ttReading .tt-cell.heb, #ttReading .tt-bverse'),
-    title: 'The text itself',
-    body: 'Click any Hebrew word to chant from exactly that spot.' },
+    titleKey: 'torah.tour.s5_title', bodyKey: 'torah.tour.s5_body' },
   { target: () => document.getElementById('gearBtn'),
-    title: 'Settings',
-    body: 'Fonts, vowel colors, transliteration styles, and speeds live here.' },
+    titleKey: 'torah.tour.s6_title', bodyKey: 'torah.tour.s6_body' },
 ];
 let _tourIdx = -1, _tourActive = false, _tourOpener = null, _tourRepoTimer = null;
 function tourStart() {
@@ -4900,11 +4939,11 @@ function _tourShow(idx, dir) {
   _tourIdx = idx;
   const step = TOUR_STEPS[idx], el = step.target();
   try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {}
-  document.getElementById('tourCardTitle').textContent = step.title;
-  document.getElementById('tourCardBody').textContent = step.body;
-  document.getElementById('tourStep').textContent = 'Step ' + (idx + 1) + ' of ' + TOUR_STEPS.length;
+  document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey);
+  document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKey);
+  document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: idx + 1, total: TOUR_STEPS.length });
   document.getElementById('tourBack').disabled = (idx === 0);
-  document.getElementById('tourNext').textContent = (idx === TOUR_STEPS.length - 1) ? 'Done' : 'Next';
+  document.getElementById('tourNext').textContent = I18n.t((idx === TOUR_STEPS.length - 1) ? 'shared.tour.done' : 'shared.tour.next');
   _tourReposition();
   if (_tourRepoTimer) clearTimeout(_tourRepoTimer);
   _tourRepoTimer = setTimeout(_tourReposition, 350);   // re-measure after scroll settles
@@ -4972,8 +5011,8 @@ function maybeShowClickHint() {
   } catch (e) { return; }
   if (!currentReadingChantable()) return;
   try { localStorage.setItem('hebrewTorahTrainer_hintSeen', '1'); } catch (e) {}
-  const action = (settings.clickAction === 'read') ? 'read it aloud' : 'chant from that spot';
-  showHintToast(`💡 Tip: click any Hebrew word to ${action}`);
+  const action = (settings.clickAction === 'read') ? I18n.t('torah.status.hint_action_read') : I18n.t('torah.status.hint_action_chant');
+  showHintToast(I18n.t('torah.status.hint_click_word', { action: action }));
 }
 function showHintToast(msg) {
   let el = document.getElementById('ttHintToast');

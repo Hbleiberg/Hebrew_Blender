@@ -2695,8 +2695,8 @@ shared.tour.end,End tour,סיים סיור,Guided tour close (aria-label on ✕)
 shared.tour.next,Next,הבא,Guided tour nav button,shared
 shared.tour.step_counter,Step {count} of {total},שלב {count} מתוך {total},Guided tour step counter,mixed UI+content — {count}/{total} numeric; shared
 torah.about.faq_a1,"A free Hebrew Torah reader. Pick a parsha and read it with optional transliteration, English translation, per-vowel color coding, cantillation strip, prose TTS, and chanted-audio karaoke that highlights words in time with the recording.",,FAQ answer,
-torah.about.faq_a2,"Yes. PocketTorah's recordings of all 54 parshiyot and haftarot stream on demand, with word-level highlighting synchronized to the audio. Adjust playback speed without re-fetching.",,FAQ answer,html
-torah.about.faq_a3,Sefaria's public API. The translation dropdown defaults to JPS 1985 when available; pick any other version from the same dropdown.,,FAQ answer,html
+torah.about.faq_a2,"Yes. <a href=""https://github.com/rneiss/PocketTorah"" target=""_blank"" rel=""noopener"" style=""color:var(--gold);"">PocketTorah</a>'s recordings of all 54 parshiyot and haftarot stream on demand, with word-level highlighting synchronized to the audio. Adjust playback speed without re-fetching.",,FAQ answer,html; contains an <a> link — preserve the tag
+torah.about.faq_a3,"<a href=""https://www.sefaria.org"" target=""_blank"" rel=""noopener"" style=""color:var(--gold);"">Sefaria</a>'s public API. The translation dropdown defaults to JPS 1985 when available; pick any other version from the same dropdown.",,FAQ answer,html; contains an <a> link — preserve the tag
 torah.about.faq_a4,Yes. The Display panel has separate toggles for nikkud (vowel points) and cantillation marks (te'amim). They can be hidden independently.,,FAQ answer,
 torah.about.faq_a5,"Yes. Trope color coding tints each word by its cantillation clause family — Sof Pasuk, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings.",,FAQ answer,
 torah.about.faq_a6,"The default is diaspora. Flip the Reading Schedule toggle to switch to Israel. Use ""Jump to this week's parsha"" to auto-pick the current week's reading from Sefaria's calendar.",,FAQ answer,
@@ -2715,7 +2715,7 @@ torah.about.howto_3,"Customize the Hebrew font, vowel coloring, and translit sch
 torah.about.howto_4,Enable Karaoke and pick an aliyah from the Reading dropdown to chant along. Use 🔁 Loop on any verse to repeat it hands-free for practice.,,howto step,
 torah.about.howto_5,"On a full parsha, use the aliyah jump chips at the top to skip around, and the Resume chip to pick up where you left off.",,howto step,
 torah.about.howto_6,Click the fullscreen button to project to a SmartBoard.,,howto step,
-torah.about.howto_7,New here? Press ❓ Tour in the header for a quick walkthrough.,,howto step,html
+torah.about.howto_7,New here? Press <strong>❓ Tour</strong> in the header for a quick walkthrough.,,howto step,html; keep the <strong> around ❓ Tour
 torah.about.howto_summary,How To Use,,accordion summary,
 torah.audio.chant_label,Chant,,rate slider label,
 torah.audio.chant_rate_aria,Chanting playback speed,,rate slider aria,aria-label only
@@ -2743,9 +2743,10 @@ torah.audio.region_aria,Cantillation audio playback,,audio bar region aria,aria-
 torah.audio.speed_chant,Chant,,slider label,
 torah.audio.speed_read,Read,,slider label,
 torah.audio.speeds_credit,"Cantillation audio © Russel Neiss & Rabbi Charlie Schwartz, PocketTorah, CC BY-SA 4.0.",,settings credit,html
-torah.audio.speeds_intro,"Click 🔊 Read on any verse for browser TTS in Hebrew, or 🎵 Chant to stream PocketTorah's recording with real-time word highlighting. These sliders mirror the ones in the audio bar at the bottom of the page.",,settings prose,html
+torah.audio.speeds_intro,"Click <strong>🔊 Read</strong> on any verse for browser TTS in Hebrew, or <strong>🎵 Chant</strong> to stream PocketTorah's recording with real-time word highlighting. These sliders mirror the ones in the audio bar at the bottom of the page.",,settings prose,html; keep the two <strong> spans
 torah.audio.tts_no_voice,No Hebrew voice detected on this device — TTS may fall back to a generic voice.,,settings status,
 torah.audio.tts_unsupported,Speech synthesis not supported.,,settings status,
+torah.audio.looping_label,🔁 Looping {verse},,Audio-bar label while a verse loops,leading-glyph; {verse} content
 torah.color.code_nikkud,Color-code nikkud,,settings label,
 torah.color.code_trope,Color-code trope families,,settings label,
 torah.color.code_trope_tip,"Tints each word by its cantillation clause family — Sof Pasuk, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. When vowel coloring is in Highlight mode, trope shows as an underline instead.",,tooltip,
@@ -2811,6 +2812,7 @@ torah.display.style_label,Style,,settings label,
 torah.display.style_none,None,,radio label,
 torah.display.style_outline,Outline,,radio label,
 torah.display.style_under,Under,,radio label,
+torah.display.restore_default,Restore default,,Slider reset (↺) button title,title
 torah.footer.cantillation_credit,Cantillation audio: PocketTorah · CC BY-SA 4.0,,footer data-source credit,html
 torah.footer.license_note,"Only translations whose license permits redistribution are offered (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA).",,footer note,
 torah.footer.sefaria_credit,Hebrew text via Sefaria · public domain,,footer data-source credit,html
@@ -2857,6 +2859,11 @@ torah.reading.verse_loop_aria,Loop verse {verseRef} (repeat the chant),,per-vers
 torah.reading.verse_loop_stop_aria,Stop looping verse {verseRef},,per-verse button aria (looping),aria-label only; mixed UI+content — do not translate {verseRef}
 torah.reading.verse_read,🔊 Read,,per-verse button,leading-emoji
 torah.reading.verse_read_aria,Read verse {verseRef} aloud (TTS),,per-verse button aria,aria-label only; mixed UI+content — do not translate {verseRef}
+torah.reading.row_hebrew,Hebrew,,Interlinear/side-by-side row label (Hebrew line),
+torah.reading.row_translit,Translit,,Interlinear/side-by-side row label (translit line),
+torah.reading.row_english,English,,Interlinear/side-by-side row label (translation line),
+torah.reading.aliyah_inline,✦ Aliyah {n},,Inline aliyah marker in the flowing reading,leading-glyph; {n} numeric
+torah.reading.aliyah_divider,Aliyah {n} · {label},,Aliyah divider heading (page/interlinear view),{n} numeric; {label} is the aliyah name/range content
 torah.schedule.diaspora,Diaspora,,radio label,
 torah.schedule.israel,Israel,,radio label,
 torah.schedule.jump_this_week,Jump to this week's parsha,,button,
@@ -2914,6 +2921,7 @@ torah.status.verse_outside_cant_chant,Verse {verseRef} is outside this parsha's 
 torah.status.verse_outside_pick_haftarah,Verse {verseRef} is outside this parsha's aliyot — pick Haftarah from Reading if you want to chant it.,,status,do-not-translate {verseRef}
 torah.status.version_no_cover,"""{version}"" doesn't cover this passage.",,status,do-not-translate {version}
 torah.status.version_not_returned,"""{version}"" wasn't returned by Sefaria for this passage — pick a different version.",,status,do-not-translate {version}
+torah.status.reading_load_failed,Failed to load {label}: {error}.,,status (reading fetch error),do-not-translate {label}/{error}
 torah.tip.more_info,More information,,tooltip fallback aria,aria-label only
 torah.tour.s1_body,Pick any parsha — it starts on this week's automatically.,,tour step body,
 torah.tour.s1_title,Pick a parsha,,tour step title,
@@ -2927,7 +2935,7 @@ torah.tour.s5_body,Click any Hebrew word to chant from exactly that spot.,,tour 
 torah.tour.s5_title,The text itself,,tour step title,
 torah.tour.s6_body,"Fonts, vowel colors, transliteration styles, and speeds live here.",,tour step body,
 torah.tour.s6_title,Settings,,tour step title,
-torah.trans.footer_line,Translation: {version} · {license} (via Sefaria),,footer translation line,html; do-not-translate {version}
+torah.trans.footer_line,"Translation: <em>{version}</em> · {license} (via <a href=""https://www.sefaria.org"" target=""_blank"" rel=""noopener"">Sefaria</a>)",,footer translation line,html; keep <em>/<a>; do-not-translate {version}/{license}
 torah.trans.footer_none,Translation: (none selected — toggle Translation off or pick a version),,footer translation line,
 torah.trans.lib_failed,Transliteration library failed to load (offline?).,,translit status,
 torah.trans.lib_loaded,Library loaded.,,translit status,
@@ -2947,6 +2955,7 @@ torah.trans.style_sbl,SBL Academic,,select option,
 torah.trans.style_simple,Simple stressed,,select option,
 torah.trans.version_opt,{title} — {license},,version select option,do-not-translate {title}
 torah.trope_legend.tutor_link,Learn the trope names →,,trope legend link,
+torah.a11y.skip_to_reading,Skip to the reading,,Skip-link to the reading (a11y),aria/skip-link
 trope.about.body,Trope Tutor teaches the Torah cantillation marks with real chanted examples mined from PocketTorah recordings (CC BY-SA 4.0) and Sefaria's Hebrew text. New here? Press ❓ Tour in the header. Companion reader: Torah Trainer.,,about panel prose,html
 trope.about.reset_all,↺ Reset all Trope Tutor settings,,button,leading-emoji
 trope.confirm.reset_all,Reset all Trope Tutor settings to defaults?,,confirm dialog,
