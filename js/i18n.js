@@ -11,7 +11,7 @@
  *                           updates switchers, then fires every onChange handler
  *   I18n.onChange(fn)       register fn(lang, dir) to re-render the page after a live switch
  *   I18n.applyStaticI18n(root)  fill [data-i18n]/[data-i18n-title|aria-label|placeholder|html]
- *   I18n.createSwitcher()   -> a DOM node (EN / עברית)
+ *   I18n.createSwitcher()   -> a DOM node (🇺🇸 EN / 🇮🇱 עברית — flag is decorative; label carries it on Windows)
  *   I18n.mountSwitchers()   -> fill every [data-i18n-switcher] slot
  * A guarded global `t` alias is also set (only if window.t is undefined).
  *
@@ -189,11 +189,13 @@
   function injectStyle() {
     if (document.getElementById(STYLE_ID)) return;
     var css =
-      '.i18n-switch{display:inline-flex;border:1px solid var(--border,#c8bfa8);border-radius:6px;' +
+      // direction:ltr pins the flag to the leading edge + keeps EN|עברית order stable on RTL pages.
+      '.i18n-switch{display:inline-flex;direction:ltr;border:1px solid var(--border,#c8bfa8);border-radius:6px;' +
       'overflow:hidden;vertical-align:middle;font-family:inherit;}' +
-      '.i18n-switch button{appearance:none;-webkit-appearance:none;border:0;margin:0;cursor:pointer;' +
-      'padding:4px 10px;font-size:0.78rem;font-family:inherit;font-weight:600;line-height:1.3;' +
-      'background:var(--white,#fff);color:var(--text,#1a2744);}' +
+      '.i18n-switch button{display:inline-flex;align-items:center;gap:5px;appearance:none;-webkit-appearance:none;' +
+      'border:0;margin:0;cursor:pointer;padding:4px 10px;font-size:0.78rem;font-family:inherit;font-weight:600;' +
+      'line-height:1.3;background:var(--white,#fff);color:var(--text,#1a2744);}' +
+      '.i18n-switch .i18n-flag{font-size:0.95em;line-height:1;}' +
       '.i18n-switch button + button{border-inline-start:1px solid var(--border,#c8bfa8);}' +
       '.i18n-switch button[aria-pressed="true"]{background:var(--gold,#c9922a);color:var(--navy,#1a2744);}' +
       '.i18n-switch button:hover:not([aria-pressed="true"]){background:var(--warm-gray,#e8e0d0);}' +
@@ -204,9 +206,12 @@
     (document.head || document.documentElement).appendChild(el);
   }
 
+  // flag is a decorative regional-indicator emoji (aria-hidden). NOTE: it is NOT a real glyph on
+  // Windows (Segoe UI Emoji ships no flags — it falls back to the "US"/"IL" letter pair), so the
+  // text `label` must always accompany it; never make this switcher flag-only.
   var SWITCHER_LANGS = [
-    { code: 'en', label: 'EN', aria: 'English' },
-    { code: 'he', label: 'עברית', aria: 'Hebrew' }
+    { code: 'en', label: 'EN', flag: '🇺🇸', aria: 'English' },
+    { code: 'he', label: 'עברית', flag: '🇮🇱', aria: 'Hebrew' }
   ];
 
   function createSwitcher() {
@@ -218,7 +223,14 @@
     SWITCHER_LANGS.forEach(function (o) {
       var b = document.createElement('button');
       b.type = 'button';
-      b.textContent = o.label;
+      if (o.flag) {
+        var fl = document.createElement('span');
+        fl.className = 'i18n-flag';
+        fl.setAttribute('aria-hidden', 'true');   // decorative — the aria-label carries the language
+        fl.textContent = o.flag;
+        b.appendChild(fl);
+      }
+      b.appendChild(document.createTextNode(o.label));
       b.setAttribute('lang', o.code);
       b.setAttribute('aria-label', o.aria);
       b.setAttribute('aria-pressed', o.code === lang ? 'true' : 'false');
