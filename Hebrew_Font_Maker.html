@@ -3812,19 +3812,7 @@ function setSvgUpload(on) {
   renderGrids(); renderStage(); renderControls();   // re-render the upload zones (SVG-only accept + text), tabs, and stage
 }
 function openSvgGuide() {
-  askModal('SVG Upload Guide', `<div class="hint" style="text-align:left;line-height:1.6;">
-    <p><b>SVG only.</b> With this mode on, every upload zone accepts only <code>.svg</code> files. The vector paths become your glyph outlines <b>directly — there is no tracing step</b>, so the shapes stay exact.</p>
-    <p><b>One letter per file.</b> Choose <b>One letter per image</b>, pick a letter, and drop its SVG. It opens straight on the <b>Nikkud</b> step with the outline already in place.</p>
-    <p><b>Auto-split one big sheet.</b> Put every letter in a single SVG and name each element so it maps to a glyph — set the element's <code>id</code> (or Inkscape <i>label</i>) to one of:
-      <br>• <code>uni05D0</code> / <code>u05D0</code> / <code>glyph05D0</code> (the Unicode hex)
-      <br>• the literal Hebrew letter, e.g. <code>א</code>
-      <br>• the English name, e.g. <code>Alef</code>, <code>Kaf-sofit</code>.
-      <br>Then choose <b>One image with all letters</b>, drop the SVG, and matches assign automatically (or click <b>Auto-split by name</b>).</p>
-    <p><b>Box the rest by hand.</b> Anything unnamed can still be selected: drag a box around a letter on the sheet and the shapes inside it become that glyph.</p>
-    <p><b>Auto-fit.</b> Each imported outline is scaled to the cap height and seated on the baseline (descenders dip below). Use <b>Edit points</b> and the <b>Width / side-bearing</b> controls to fine-tune.</p>
-    <p><b>New shapes / PUA.</b> For glyphs that aren't standard characters, turn on <b>Add custom glyphs</b> and import the SVG at a Private-Use code point (<b>U+E000–U+F8FF</b>).</p>
-    <p><b>Tips:</b> group transforms are honored, so flatten/ungroup freely; convert <i>strokes to fills</i> first (open strokes don't fill); clipped, masked, hidden, and <code>&lt;use&gt;</code>-referenced elements are skipped.</p>
-  </div>`, [{ label: 'Got it' }]);
+  askModal(I18n.t('fontmaker.modals.svgguide_title'), `<div class="hint" style="text-align:left;line-height:1.6;">${I18n.t('fontmaker.modals.svgguide_body')}</div>`, [{ label: I18n.t('fontmaker.modals.svgguide_gotit') }]);
 }
 function cgSetType(t) {
   cgType = t;
@@ -3993,8 +3981,8 @@ function pickPrecompForm(target) {
 }
 function addCustomGlyph() {
   const cp = normalizeCp(document.getElementById('cgCp').value);
-  if (!cp) { askModal('Enter a code point', 'Enter a valid Unicode code point — e.g. E000, U+05D0, or paste a character. (Basic Multilingual Plane only.)', [{label:'OK'}]); return; }
-  if (isCustomCp(cp)) { askModal('Glyph already exists', 'You already have a custom glyph at U+' + esc(cp) + '.', [{label:'OK'}]); return; }
+  if (!cp) { askModal(I18n.t('fontmaker.modals.enter_codepoint_title'), I18n.t('fontmaker.modals.enter_codepoint_body'), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
+  if (isCustomCp(cp)) { askModal(I18n.t('fontmaker.modals.glyph_exists_title'), I18n.t('fontmaker.modals.glyph_exists_body', {cp: esc(cp)}), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
   const who = whoHasCp(cp);
   if (who && !confirm('U+' + cp + ' is already ' + who + '. Adding this will REPLACE it in your exported font. Continue?')) return;
   const name = (document.getElementById('cgName').value || '').trim();
@@ -4047,7 +4035,7 @@ function convertMarkToMain(cp) {
   const contours = (m.designMode === 'editor')
     ? piecesToContours(m.pieces || []).map(pts => ({ winding: 'cw', points: pts.map(p => p.slice()) }))
     : (m.contours || []).map(c => ({ winding: c.winding || 'cw', points: (c.points || []).map(p => p.slice()) }));
-  if (!contours.length) { askModal('No outline yet', 'This mark has no outline yet — draw or upload its shape before converting.', [{label:'OK'}]); return; }
+  if (!contours.length) { askModal(I18n.t('fontmaker.modals.no_outline_title'), I18n.t('fontmaker.modals.no_outline_body'), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
   if (!confirm('Convert this mark to a main glyph? It becomes a standalone glyph with its own adjustable width and no longer attaches to letters. This cannot be undone.')) return;
   const name = m.name || ('Custom U+' + cp);
   const it = blankLetter({ cp, name });
@@ -5013,10 +5001,10 @@ async function combinedNav(delta) {
 function removeCombinedSheet() {
   const n = project.combinedSheets.length; if (!n) return;
   const sh = project.combinedSheets[project.combinedIndex] || {};
-  askModal('Remove this sheet?',
-    `Remove <b>${esc(sh.name || 'this sheet')}</b> from the set? Letters you already boxed from it keep their cropped image — you just can't re-crop from it unless you add it again.`,
-    [ { label:'Cancel', cls:'ghost' },
-      { label:'Remove', onClick: () => {
+  askModal(I18n.t('fontmaker.modals.remove_sheet_title'),
+    I18n.t('fontmaker.modals.remove_sheet_body', {name: `<b>${esc(sh.name || I18n.t('fontmaker.modals.remove_sheet_this'))}</b>`}),
+    [ { label:I18n.t('fontmaker.modals.cancel'), cls:'ghost' },
+      { label:I18n.t('fontmaker.modals.remove'), onClick: () => {
           project.combinedSheets.splice(project.combinedIndex, 1);
           if (project.combinedIndex >= project.combinedSheets.length) project.combinedIndex = Math.max(0, project.combinedSheets.length - 1);
           renderStage(); renderControls(); status(I18n.t('fontmaker.status.sheet_removed'));
@@ -5076,7 +5064,7 @@ async function uploadSourceFont(file) {
     const buf = await file.arrayBuffer();
     font = ot.parse(buf);
     bytes = new Uint8Array(buf);
-  } catch (e) { console.error(e); status(''); askModal('Font read failed', '<span class="warn">'+(e.message||e)+'</span>', [{label:'OK'}]); return; }
+  } catch (e) { console.error(e); status(''); askModal(I18n.t('fontmaker.modals.font_read_failed_title'), '<span class="warn">'+(e.message||e)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); return; }
   askFontImportOptions(file, font, bytes);
 }
 /* Pull one mark glyph's outline from an imported font into project.font[kind].custom — like an uploaded mark. */
@@ -5096,28 +5084,28 @@ function importMarkGlyph(kind, cp, font) {
 function askFontImportOptions(file, font, bytes) {
   status('');
   const body =
-    '<p style="margin:0 0 10px;">What should I take from <b>' + esc(file.name) + '</b>?</p>' +
+    '<p style="margin:0 0 10px;">' + I18n.t('fontmaker.modals.import_font_q', {name: '<b>' + esc(file.name) + '</b>'}) + '</p>' +
     '<label style="display:block;margin:7px 0;cursor:pointer;"><input type="checkbox" id="impOutlines" checked style="margin-right:7px;vertical-align:middle;">' +
-      '<b>Replace letter outlines</b> — use this font’s glyph shapes for the Hebrew letters.</label>' +
+      I18n.t('fontmaker.modals.import_outlines') + '</label>' +
     '<label style="display:block;margin:7px 0;cursor:pointer;"><input type="checkbox" id="impMarks" checked style="margin-right:7px;vertical-align:middle;">' +
-      '<b>Replace nikkud &amp; trop shapes</b> — use this font’s own vowel &amp; cantillation marks instead of the built-in ones.</label>' +
+      I18n.t('fontmaker.modals.import_marks') + '</label>' +
     '<label style="display:block;margin:7px 0;cursor:pointer;"><input type="checkbox" id="impAnchors" checked style="margin-right:7px;vertical-align:middle;">' +
-      '<b>Import nikkud anchor positions</b> — read where the vowels &amp; trop attach so you can inspect and fix them. ' +
-      '<span style="color:var(--muted);">If the font has none, I’ll place them automatically.</span></label>' +
-    '<p style="margin:11px 0 0;color:var(--muted);font-size:.85rem;">Fixing a broken font? Keep these on, then drag any misplaced anchors in the Nikkud step.</p>';
-  askModal('Import font', body, [
-    { label: 'Cancel', cls: 'ghost' },
-    { label: 'Import', onClick: () => {
+      I18n.t('fontmaker.modals.import_anchors') + ' ' +
+      '<span style="color:var(--muted);">' + I18n.t('fontmaker.modals.import_anchors_none') + '</span></label>' +
+    '<p style="margin:11px 0 0;color:var(--muted);font-size:.85rem;">' + I18n.t('fontmaker.modals.import_fixing') + '</p>';
+  askModal(I18n.t('fontmaker.modals.import_font_title'), body, [
+    { label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' },
+    { label: I18n.t('fontmaker.modals.import'), onClick: () => {
         const gv = id => { const el = document.getElementById(id); return el ? el.checked : true; };
         const opts = { outlines: gv('impOutlines'), marks: gv('impMarks'), anchors: gv('impAnchors') };
         if (!opts.outlines && !opts.marks && !opts.anchors) { status(I18n.t('fontmaker.status.nothing_selected')); return; }
         // Confirm before overwriting letters the user has already drawn (only when replacing outlines).
         const existing = opts.outlines ? project.letters.filter(x => x.contours && x.contours.length).length : 0;
         if (existing > 0) {
-          askModal('Replace your letters?',
-            'Replacing outlines will overwrite the <b>' + existing + '</b> letter' + (existing===1?'':'s') + ' you’ve already drawn in this project. Continue?',
-            [{ label: 'Cancel', cls: 'ghost' },
-             { label: 'Replace & import', onClick: () => applyFontImport(file, font, bytes, opts) }]);
+          askModal(I18n.t('fontmaker.modals.replace_letters_title'),
+            I18n.t(existing===1?'fontmaker.modals.replace_letters_body.one':'fontmaker.modals.replace_letters_body.other', {count: '<b>' + existing + '</b>'}),
+            [{ label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' },
+             { label: I18n.t('fontmaker.modals.replace_import'), onClick: () => applyFontImport(file, font, bytes, opts) }]);
         } else {
           applyFontImport(file, font, bytes, opts);
         }
@@ -5172,7 +5160,7 @@ async function applyFontImport(file, font, bytes, opts) {
     }
     if (opts.outlines) project.inputMode = 'font';
     syncMetaToForm(); renderGrids(); setWorkMode('anchors');
-    if (opts.outlines && !n && !nPunct && !markHits) { status(''); askModal('No Hebrew glyphs found', 'That font has no outlines for the Hebrew base letters (U+05D0–05EA). Try a Hebrew font.', [{label:'OK'}]); return; }
+    if (opts.outlines && !n && !nPunct && !markHits) { status(''); askModal(I18n.t('fontmaker.modals.no_hebrew_title'), I18n.t('fontmaker.modals.no_hebrew_body'), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
     let msg = opts.outlines ? `Loaded ${n}/27 letters${nPunct ? ` and ${nPunct} digit/punctuation glyph${nPunct===1?'':'s'}` : ''} from ${file.name}.` : 'Kept your current outlines.';
     if (opts.marks) {
       msg += markHits ? ` Replaced ${markHits} nikkud/trop mark shape${markHits===1?'':'s'}.` : ' (No mark glyphs found to import.)';
@@ -5183,7 +5171,7 @@ async function applyFontImport(file, font, bytes, opts) {
            : (anchorErr ? ' Anchors placed automatically (couldn’t read the font’s).' : ' No anchor data in the font — anchors placed automatically.');
     } else if (!opts.marks) { msg += ' Set nikkud, then export.'; }
     status(msg);
-  } catch (e) { console.error(e); status(''); askModal('Font import failed', '<span class="warn">'+(e.message||e)+'</span>', [{label:'OK'}]); }
+  } catch (e) { console.error(e); status(''); askModal(I18n.t('fontmaker.modals.font_import_failed_title'), '<span class="warn">'+(e.message||e)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); }
 }
 
 /* ════════ SVG import (Advanced → "Enable SVG uploading") ════════
@@ -5198,7 +5186,7 @@ const svgParseCache = {};                  // dataUrl → { entries, viewBox } (
 function isProbablySvg(file, text) {
   return /\.svg$/i.test((file && file.name) || '') || /image\/svg/i.test((file && file.type) || '') || /<svg[\s>]/i.test(text || '');
 }
-function askSvgError(msg) { askModal('SVG import failed', '<span class="warn">' + esc(msg) + '</span>', [{ label: 'OK' }]); }
+function askSvgError(msg) { askModal(I18n.t('fontmaker.modals.svg_import_failed_title'), '<span class="warn">' + esc(msg) + '</span>', [{ label: I18n.t('fontmaker.modals.ok') }]); }
 function numList(s) { return (s || '').trim().split(/[\s,]+/).filter(x => x !== '').map(Number); }
 function svgTextFromDataUrl(u) {            // decode a data:image/svg+xml URL back to text (to rebuild the cache on load)
   if (!u || !/^data:image\/svg\+xml/i.test(u)) return null;
@@ -7639,12 +7627,12 @@ function confirmAndDeleteContours(doomedIn) {         // shared confirm rules: s
   const big = doomed.some(ci => nodeModel.contours[ci].nodes.length > 8);
   const pts = doomed.reduce((s, ci) => s + nodeModel.contours[ci].nodes.length, 0);
   const run = () => _deleteContoursNow(l, doomed, empties);
-  if (empties) askModal('Delete the whole outline?',
-    `This deletes <b>every remaining contour</b> of <b>${esc(l.name)}</b> — the letter goes back to untraced. Its width and mark placement are kept, and you can undo with ${modKey()}+Z.`,
-    [ {label:'Cancel', cls:'ghost'}, {label:'Delete all', onClick: run} ]);
-  else if (big) askModal('Delete contour?',
-    `This removes <b>${doomed.length} contour${doomed.length > 1 ? 's' : ''}</b> (${pts} points) from <b>${esc(l.name)}</b>. You can undo with ${modKey()}+Z.`,
-    [ {label:'Cancel', cls:'ghost'}, {label:'Delete', onClick: run} ]);
+  if (empties) askModal(I18n.t('fontmaker.modals.delete_outline_title'),
+    I18n.t('fontmaker.modals.delete_outline_body', {name: `<b>${esc(l.name)}</b>`, mod: modKey()}),
+    [ {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost'}, {label:I18n.t('fontmaker.modals.delete_all'), onClick: run} ]);
+  else if (big) askModal(I18n.t('fontmaker.modals.delete_contour_title'),
+    I18n.t(doomed.length === 1 ? 'fontmaker.modals.delete_contour_body.one' : 'fontmaker.modals.delete_contour_body.other', {count: doomed.length, pts: pts, name: `<b>${esc(l.name)}</b>`, mod: modKey()}),
+    [ {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost'}, {label:I18n.t('fontmaker.modals.delete'), onClick: run} ]);
   else run();   // small specks delete without friction
 }
 function _deleteContoursNow(l, doomed, empties) {
@@ -7915,7 +7903,7 @@ function updateTraceInfo(l) {
   if (ti) ti.textContent = l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : 'no ink detected';
 }
 function traceCurrent() {   // warn-first wraps udDo (never nests an async confirm inside it)
-  if (curItem().handEdited) { askModal('Re-trace this letter?', 'This letter has hand-edited points. Re-tracing rebuilds the outline from the image and <b>discards your point edits</b> (you can still undo with Ctrl+Z afterward).', [{ label:'Re-trace', onClick: _traceCurrentNow }, { label:'Cancel', cls:'ghost' }]); return; }
+  if (curItem().handEdited) { askModal(I18n.t('fontmaker.modals.retrace_title'), I18n.t('fontmaker.modals.retrace_body'), [{ label:I18n.t('fontmaker.modals.retrace'), onClick: _traceCurrentNow }, { label:I18n.t('fontmaker.modals.cancel'), cls:'ghost' }]); return; }
   _traceCurrentNow();
 }
 function _traceCurrentNow() {
@@ -7930,7 +7918,7 @@ function _traceCurrentNow() {
   });
 }
 function clearTrace() {
-  if (curItem().handEdited) { askModal('Clear this outline?', 'This letter has hand-edited points. Clearing <b>discards the outline and your point edits</b> (you can still undo with Ctrl+Z afterward).', [{ label:'Clear', onClick: _clearTraceNow }, { label:'Cancel', cls:'ghost' }]); return; }
+  if (curItem().handEdited) { askModal(I18n.t('fontmaker.modals.clear_outline_title'), I18n.t('fontmaker.modals.clear_outline_body'), [{ label:I18n.t('fontmaker.modals.clear'), onClick: _clearTraceNow }, { label:I18n.t('fontmaker.modals.cancel'), cls:'ghost' }]); return; }
   _clearTraceNow();
 }
 function _clearTraceNow() {
@@ -8781,22 +8769,22 @@ function meOpenUploadEditor() {                 // hand off to the existing per-
 }
 function meConfirmApply(scope) {
   if (meGlobal && scope !== 'all') return;   // grid launch: no letter context (the button is hidden; this is a guard)
-  const lname = scope === 'all' ? '' : (((curLetter() || {}).name) || 'this letter');
+  const lname = scope === 'all' ? '' : (((curLetter() || {}).name) || I18n.t('fontmaker.modals.this_letter'));
   const msg = scope === 'all'
-    ? 'Are you sure? This changes how <b>' + esc(meItem.name) + '</b> looks for <b>ALL letters</b> in your font. It will not affect positioning.'
-    : 'Are you sure? This changes how <b>' + esc(meItem.name) + '</b> looks for <b>only ' + esc(lname) + '</b>. It will not affect positioning.';
-  askModal('Apply mark shape', msg, [
-    { label: 'Cancel', cls: 'ghost' },
-    { label: scope === 'all' ? 'Apply to all letters' : 'Apply to ' + lname, onClick: () => meApply(scope) }
+    ? I18n.t('fontmaker.modals.apply_mark_all', {name: '<b>' + esc(meItem.name) + '</b>'})
+    : I18n.t('fontmaker.modals.apply_mark_letter', {name: '<b>' + esc(meItem.name) + '</b>', letter: esc(lname)});
+  askModal(I18n.t('fontmaker.modals.apply_mark_title'), msg, [
+    { label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' },
+    { label: scope === 'all' ? I18n.t('fontmaker.modals.markedit_apply_all') : I18n.t('fontmaker.modals.apply_to', {name: lname}), onClick: () => meApply(scope) }
   ]);
 }
 function meConfirmReset() {
   if (!meActive || !meItem) return;
-  askModal('Reset shape',
-    'Are you sure? This discards your dots &amp; bars and restores the <b>default shape</b> for <b>' + esc(meItem.name) + '</b>. Nothing is saved to your font until you Apply.',
+  askModal(I18n.t('fontmaker.modals.reset_shape_title'),
+    I18n.t('fontmaker.modals.reset_shape_body', {name: '<b>' + esc(meItem.name) + '</b>'}),
     [
-      { label: 'Cancel', cls: 'ghost' },
-      { label: 'Reset to default', onClick: () => meResetShape() }
+      { label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' },
+      { label: I18n.t('fontmaker.modals.reset_to_default'), onClick: () => meResetShape() }
     ]);
 }
 function meResetShape() {
@@ -9809,10 +9797,10 @@ function resetLetterAnchors() {
   udDo([itemScope()], 'reset anchors — ' + l.name, () => { seedAnchors(l); renderStage(); renderControls(); renderLetterGrid(); });   // undoable → no confirm
 }
 function resetAllAnchors() {
-  askModal('Reset every letter?',
-    `Put the nikkud/trop anchors for <strong>all letters</strong> back to their starting positions? (You can undo this.)`,
-    [ {label:'Cancel', cls:'ghost'},
-      {label:'Reset all', onClick: () => {
+  askModal(I18n.t('fontmaker.modals.reset_every_title'),
+    I18n.t('fontmaker.modals.reset_every_body'),
+    [ {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost'},
+      {label:I18n.t('fontmaker.panels.reset_all'), onClick: () => {
         const scopes = project.letters.filter(l => l.contours).map(l => ({ t:'item', kind:'letter', cp:l.codepoint }));
         udDo(scopes, 'reset all anchors', () => { lastSavedAnchors = null; project.letters.forEach(l => { if (l.contours) seedAnchors(l); }); renderStage(); renderControls(); renderLetterGrid(); });
       }} ]);
@@ -11308,10 +11296,10 @@ function shareThisFont() {   // open the font library (Fonts view) + a pre-fille
     trop: (f.trop && f.trop.enabled) ? 'Yes' : 'No'
   });
   const url = 'resources.html?' + params.toString();
-  askModal('Share your font',
-    'Post <b>' + esc(f.familyName || 'your font') + '</b> to the IvritSuite font library. This opens the library and starts a <b>pre-filled submission email</b>.<br><br>You\'ll <b>attach your exported font file</b> (.ttf) and license — use <b>⬇ Export TTF</b> first if you haven\'t.',
-    [ { label: 'Open library →', onClick: () => window.open(url, '_blank', 'noopener') },
-      { label: 'Cancel', cls: 'ghost' } ]);
+  askModal(I18n.t('fontmaker.modals.share_font_title'),
+    I18n.t('fontmaker.modals.share_font_body', {name: '<b>' + esc(f.familyName || I18n.t('fontmaker.modals.your_font_default')) + '</b>'}),
+    [ { label: I18n.t('fontmaker.modals.open_library'), onClick: () => window.open(url, '_blank', 'noopener') },
+      { label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' } ]);
 }
 // Close any export-warning modal and jump to a letter to fix it — guard-free navigation shared
 // with the QA grid (_selectItem bypasses the unsaved-placement guard; QA/warnings are read-only).
@@ -11350,33 +11338,33 @@ async function exportFont() {
   if (s.traced === 0) { status(I18n.t('fontmaker.status.trace_first')); return; }
   if (s.blanks.length) {
     const anchorNote = (nikOn && s.unanchored.length)
-      ? ` Also, ${s.unanchored.length} traced letter${s.unanchored.length === 1 ? '' : 's'} ${s.unanchored.length === 1 ? 'has' : 'have'} no nikkud anchors yet, so vowels may sit wrong.` : '';
-    askModal("Some letters aren't traced",
-      `These ${s.blanks.length} core letter${s.blanks.length === 1 ? '' : 's'} have no outline and will export <b>blank</b>.${anchorNote} <span style="color:var(--muted);">Click a letter to go trace it:</span>`
+      ? ' ' + I18n.t(s.unanchored.length === 1 ? 'fontmaker.modals.export_anchornote.one' : 'fontmaker.modals.export_anchornote.other', {count: s.unanchored.length}) : '';
+    askModal(I18n.t('fontmaker.modals.export_untraced_title'),
+      I18n.t(s.blanks.length === 1 ? 'fontmaker.modals.export_untraced_body.one' : 'fontmaker.modals.export_untraced_body.other', {count: s.blanks.length, anchorNote: anchorNote})
       + letterChipsHtml(coreLetterLists().blanks, 'align'),
-      [ {label:'Cancel', cls:'ghost'}, {label:'Export anyway', onClick: () => doExport(fmt)} ]);
+      [ {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost'}, {label:I18n.t('fontmaker.modals.export_anyway'), onClick: () => doExport(fmt)} ]);
     wireLetterChips();
     return;
   }
   if (nikOn && s.unanchored.length) {
-    askModal('Nikkud not placed on every letter',
-      `${s.unanchored.length} traced letter${s.unanchored.length === 1 ? '' : 's'} ${s.unanchored.length === 1 ? 'has' : 'have'} no nikkud anchors yet — vowels may sit wrong. <span style="color:var(--muted);">Click a letter to place its nikkud, or export anyway:</span>`
+    askModal(I18n.t('fontmaker.modals.export_nikkud_title'),
+      I18n.t(s.unanchored.length === 1 ? 'fontmaker.modals.export_nikkud_body.one' : 'fontmaker.modals.export_nikkud_body.other', {count: s.unanchored.length})
       + letterChipsHtml(coreLetterLists().unanchored, 'nikkud'),
-      [ {label:'Cancel', cls:'ghost'}, {label:'Export anyway', onClick: () => doExport(fmt)} ]);
+      [ {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost'}, {label:I18n.t('fontmaker.modals.export_anyway'), onClick: () => doExport(fmt)} ]);
     wireLetterChips();
     return;
   }
   const cg = customGlyphExportIssues();
   if (cg && cg.kind === 'off') {
-    askModal('Custom glyphs are turned off',
-      `This project has ${cg.count} custom glyph${cg.count === 1 ? '' : 's'}/mark${cg.count === 1 ? '' : 's'}, but <b>Add custom glyphs</b> is off — they will <b>not</b> be in the exported font. Turn the toggle back on under Advanced options to include them.`,
-      [ {label:'Cancel', cls:'ghost'}, {label:'Export without them', onClick: () => doExport(fmt)} ]);
+    askModal(I18n.t('fontmaker.modals.export_customoff_title'),
+      I18n.t('fontmaker.modals.export_customoff_body', {count: cg.count}),
+      [ {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost'}, {label:I18n.t('fontmaker.modals.export_without_them'), onClick: () => doExport(fmt)} ]);
     return;
   }
   if (cg && cg.kind === 'blank') {
-    askModal('Some custom glyphs are blank',
-      `${cg.blanks.length} custom glyph${cg.blanks.length === 1 ? ' has' : 's have'} no outline yet and will export <b>blank</b>: <b>${cg.blanks.map(l => esc(l.name || ('U+' + l.codepoint))).join(', ')}</b>.`,
-      [ {label:'Cancel', cls:'ghost'}, {label:'Export anyway', onClick: () => doExport(fmt)} ]);
+    askModal(I18n.t('fontmaker.modals.export_blank_title'),
+      I18n.t(cg.blanks.length === 1 ? 'fontmaker.modals.export_blank_body.one' : 'fontmaker.modals.export_blank_body.other', {count: cg.blanks.length, names: `<b>${cg.blanks.map(l => esc(l.name || ('U+' + l.codepoint))).join(', ')}</b>`}),
+      [ {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost'}, {label:I18n.t('fontmaker.modals.export_anyway'), onClick: () => doExport(fmt)} ]);
     return;
   }
   doExport(fmt);
@@ -11397,9 +11385,9 @@ async function doExport(fmt) {
       await ensurePyodide();
     } catch (e) {
       _exportPreparing = false; onExportFormatChange(); status('');
-      askModal('Font engine didn’t load',
-        '<span class="warn">Couldn’t download the font engine. Check your internet connection, then click Export to try again.</span>',
-        [{label:'OK'}]);
+      askModal(I18n.t('fontmaker.modals.engine_fail_title'),
+        '<span class="warn">' + I18n.t('fontmaker.modals.engine_fail_body') + '</span>',
+        [{label:I18n.t('fontmaker.modals.ok')}]);
       return;   // outer finally re-enables the button
     }
     _exportPreparing = false; onExportFormatChange();
@@ -11417,7 +11405,7 @@ async function doExport(fmt) {
       const spec = buildUfoSpec();
       pyodide.globals.set('hfm_spec_json', JSON.stringify(spec));
       const ures = JSON.parse(pyodide.runPython('hfm_build_ufo(hfm_spec_json)'));
-      if (ures.error) { status(''); _setVersion(_prevVersion); askModal('UFO build failed', '<span class="warn">'+ures.error+'</span>', [{label:'OK'}]); return; }
+      if (ures.error) { status(''); _setVersion(_prevVersion); askModal(I18n.t('fontmaker.modals.ufo_fail_title'), '<span class="warn">'+ures.error+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); return; }
       downloadBlob(new Blob([b64ToBytes(ures.zip_b64)], {type:'application/zip'}), spec.ufoName + '.ufo.zip');
       status('Exported ' + spec.ufoName + '.ufo.zip ✓ (UFO source — cubic curves, anchors & features.fea)');
       offerSaveToMyFonts();
@@ -11428,7 +11416,7 @@ async function doExport(fmt) {
     const spec = buildFontSpec();
     pyodide.globals.set('hfm_spec_json', JSON.stringify(spec));
     const res = JSON.parse(pyodide.runPython('hfm_build(hfm_spec_json)'));
-    if (res.error) { status(''); _setVersion(_prevVersion); askModal('Build failed', '<span class="warn">'+res.error+'</span>', [{label:'OK'}]); return; }
+    if (res.error) { status(''); _setVersion(_prevVersion); askModal(I18n.t('fontmaker.modals.build_fail_title'), '<span class="warn">'+res.error+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); return; }
     // Glyphs whose curves couldn't convert to quadratics shipped faceted (straight edges) — map their
     // internal names to the visible Hebrew characters via the spec cmap so the success screen can warn.
     const _n2c = {}; for (const cp in spec.cmap) _n2c[spec.cmap[cp]] = String.fromCodePoint(+cp);
@@ -11441,16 +11429,16 @@ async function doExport(fmt) {
     const gate = marksOn ? await harfbuzzGate(bytes) : { skipped: true };
     window._lastGateSkipped = marksOn && !!(gate && gate.skipped);   // a marks-off skip is benign — nothing to validate
     if (gate && gate.fail) {
-      askModal('Shaping check failed',
-        `<span class="warn">${gate.msg}</span><br><br>This usually means the mark anchors didn't take. You can still download, but vowels/trop may be misplaced.`,
-        [ {label:'Cancel', cls:'ghost', onClick: () => _setVersion(_prevVersion) },   // no download happened — don't ratchet the version per retry
-          {label:'Download anyway', onClick: () => finishDownload(bytes, gate && gate.skipped, fmt).then(done => { if (!done) _setVersion(_prevVersion); }) } ]);
+      askModal(I18n.t('fontmaker.modals.shaping_fail_title'),
+        `<span class="warn">${gate.msg}</span><br><br>` + I18n.t('fontmaker.modals.shaping_fail_body'),
+        [ {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost', onClick: () => _setVersion(_prevVersion) },   // no download happened — don't ratchet the version per retry
+          {label:I18n.t('fontmaker.modals.download_anyway'), onClick: () => finishDownload(bytes, gate && gate.skipped, fmt).then(done => { if (!done) _setVersion(_prevVersion); }) } ]);
       return;
     }
     if (!await finishDownload(bytes, gate && gate.skipped, fmt)) _setVersion(_prevVersion);   // WOFF2/zip failure = no file shipped → roll the bump back
   } catch (err) {
     console.error(err); status(''); _setVersion(_prevVersion);
-    askModal('Export error', '<span class="warn">'+(err && err.message || err)+'</span>', [{label:'OK'}]);
+    askModal(I18n.t('fontmaker.modals.export_error_title'), '<span class="warn">'+(err && err.message || err)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]);
   } finally {
     btn.disabled = false;   // never leave the button stuck disabled
     if (_exportPreparing) { _exportPreparing = false; onExportFormatChange(); }
@@ -11472,7 +11460,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
     await pyodide.loadPackage(['brotli']);
     pyodide.globals.set('hfm_ttf_b64', bytesToB64(bytes));
     const wr = JSON.parse(pyodide.runPython('hfm_ttf_to_woff2(hfm_ttf_b64)'));
-    if (wr.error) { status(''); askModal('WOFF2 failed', '<span class="warn">'+wr.error+'</span>', [{label:'OK'}]); return false; }
+    if (wr.error) { status(''); askModal(I18n.t('fontmaker.modals.woff2_fail_title'), '<span class="warn">'+wr.error+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); return false; }
     const woff2 = b64ToBytes(wr.woff2_b64);
     if (fmt === 'woff2') {
       downloadBlob(new Blob([woff2], {type:'font/woff2'}), fam + '.woff2');
@@ -11495,7 +11483,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
     return true;
   } catch (err) {
     console.error(err); status('');
-    askModal('Export error', '<span class="warn">'+(err && err.message || err)+'</span>', [{label:'OK'}]);
+    askModal(I18n.t('fontmaker.modals.export_error_title'), '<span class="warn">'+(err && err.message || err)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]);
     return false;
   }
 }
@@ -11560,7 +11548,7 @@ function myFontsDate(ts) {
   catch (e) { return ''; }
 }
 function openMyFonts() {
-  if (!window.indexedDB) { askModal('Not supported', 'This browser has no IndexedDB, so fonts can’t be saved for reuse in IvritSuite.', [{ label: 'OK' }]); return; }
+  if (!window.indexedDB) { askModal(I18n.t('fontmaker.modals.not_supported_title'), I18n.t('fontmaker.modals.not_supported_idb'), [{ label: I18n.t('fontmaker.modals.ok') }]); return; }
   _myFontsOpen = true;
   aOpenModal('myFontsOverlay', closeMyFonts);
   renderMyFontsList();
@@ -11607,9 +11595,9 @@ async function downloadMyFont(name) {
   } catch (e) { console.error(e); }
 }
 function deleteMyFontUI(name) {
-  askModal('Remove font?',
-    'Remove <b>' + esc(name) + '</b> from My Fonts? Tools using it will fall back to their default font. (This doesn’t delete any file you already downloaded.)',
-    [{ label: 'Cancel', cls: 'ghost' }, { label: 'Remove', onClick: async () => { try { await deleteUserFont(name); } catch (e) { console.error(e); } if (_myFontsOpen) renderMyFontsList(); } }]);
+  askModal(I18n.t('fontmaker.modals.remove_font_title'),
+    I18n.t('fontmaker.modals.remove_font_body', {name: '<b>' + esc(name) + '</b>'}),
+    [{ label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' }, { label: I18n.t('fontmaker.modals.remove'), onClick: async () => { try { await deleteUserFont(name); } catch (e) { console.error(e); } if (_myFontsOpen) renderMyFontsList(); } }]);
 }
 async function saveCurrentToMyFonts(bytes) {
   if (!project || project.letters.filter(l => l.contours).length === 0) { status(I18n.t('fontmaker.status.trace_first')); return; }
@@ -11621,42 +11609,38 @@ async function saveCurrentToMyFonts(bytes) {
     if (_myFontsOpen) renderMyFontsList();
   } catch (e) {
     console.error(e); status('');
-    askModal('Couldn’t save', '<span class="warn">' + esc(e && e.message || String(e)) + '</span>', [{ label: 'OK' }]);
+    askModal(I18n.t('fontmaker.modals.couldnt_save_title'), '<span class="warn">' + esc(e && e.message || String(e)) + '</span>', [{ label: I18n.t('fontmaker.modals.ok') }]);
   }
 }
 function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (called after every successful export, any format)
   markClean();   // a successful export is a safe checkpoint → drop the unsaved-work breadcrumb
   const fam = (project.font.familyName || 'My Hebrew Font').trim();
   const canSave = !!(window.indexedDB && window.FontFace);
-  const btns = [{ label: 'Done', cls: 'ghost' },
-                { label: '📤 Share this font', cls: 'ghost', onClick: () => shareThisFont() }];
+  const btns = [{ label: I18n.t('fontmaker.modals.exported_done'), cls: 'ghost' },
+                { label: I18n.t('fontmaker.modals.exported_share_btn'), cls: 'ghost', onClick: () => shareThisFont() }];
   // Single-file TTF/WOFF2 downloads don't carry the license (the zip/UFO embed it), so offer it as a
   // reliable one-click download here — a click inside the modal is never blocked, unlike an
   // auto-triggered second download.
-  if (licenseSeparate) btns.push({ label: '⬇ LICENSE.txt', cls: 'ghost',
+  if (licenseSeparate) btns.push({ label: I18n.t('fontmaker.modals.exported_license_btn'), cls: 'ghost',
     onClick: () => downloadBlob(new Blob([licenseText()], {type:'text/plain'}), fontSafeBase(project.font.familyName) + '-LICENSE.txt') });
-  if (canSave) btns.push({ label: '★ My IvritSuite Fonts', onClick: () => openMyFonts() });
+  if (canSave) btns.push({ label: I18n.t('fontmaker.modals.exported_myfonts_btn'), onClick: () => openMyFonts() });
   // Faceted-glyph warning: some letters' curves couldn't convert to quadratics and exported with straight
   // edges. Surface which ones on the persistent success screen (the toast auto-clears too fast for this).
   const _fell = window._lastFellBack || [];
   const fellHtml = _fell.length
-    ? '<br><br><span class="warn">⚠ ' + _fell.length + (_fell.length === 1 ? ' letter' : ' letters')
-      + ' exported with straight edges — their curves couldn’t be converted: <b lang="he">' + esc(_fell.join(' ')) + '</b>.'
-      + ' Re-trace or simplify those outlines, then export again for smooth curves.</span>'
+    ? '<br><br><span class="warn">' + I18n.t(_fell.length === 1 ? 'fontmaker.modals.exported_faceted.one' : 'fontmaker.modals.exported_faceted.other', {count: _fell.length, chars: '<b lang="he">' + esc(_fell.join(' ')) + '</b>'}) + '</span>'
     : '';
   // Shaping-check skip warning: marks were enabled but the HarfBuzz validator couldn't run (e.g. its
   // CDN download failed), so vowel/trop positioning shipped unverified. The status toast auto-clears
   // too fast for this — surface it on the persistent success screen, like the faceted-glyph warning.
   const gateHtml = window._lastGateSkipped
-    ? '<br><br><span class="warn">⚠ The shaping check couldn’t run (the validator failed to load).'
-      + ' Your font downloaded, but its vowel/trop positioning wasn’t verified — test it in a word processor,'
-      + ' or export again once you’re back online to run the check.</span>'
+    ? '<br><br><span class="warn">' + I18n.t('fontmaker.modals.exported_gate_skip') + '</span>'
     : '';
-  askModal('Exported ✓',
-    'Your font <b>' + esc(fam) + '</b> downloaded.'
-    + (licenseSeparate ? ' Get its <b>⬇ LICENSE.txt</b> below and keep it with the font.' : '')
-    + (canSave ? ' Save it to <b>★ My IvritSuite Fonts</b> (this browser) to pick it in every IvritSuite tool’s font selector.' : '')
-    + ' Or <b>📤 Share this font</b> to post it to the IvritSuite font library.'
+  askModal(I18n.t('fontmaker.modals.exported_title'),
+    I18n.t('fontmaker.modals.exported_body', {name: '<b>' + esc(fam) + '</b>'})
+    + (licenseSeparate ? ' ' + I18n.t('fontmaker.modals.exported_license') : '')
+    + (canSave ? ' ' + I18n.t('fontmaker.modals.exported_save') : '')
+    + ' ' + I18n.t('fontmaker.modals.exported_share')
     + fellHtml + gateHtml,
     btns);
 }
@@ -11896,7 +11880,7 @@ async function generatePreviewPDF() {
   status(I18n.t('fontmaker.status.building_font_preview'), true);
   let fontBytes;
   try { fontBytes = await buildFontBytes(); }            // build the TTF on demand — no separate Export needed
-  catch (e) { console.error(e); status(''); askModal('Preview error', '<span class="warn">'+(e.message||e)+'</span>', [{label:'OK'}]); return; }
+  catch (e) { console.error(e); status(''); askModal(I18n.t('fontmaker.modals.preview_error_title'), '<span class="warn">'+(e.message||e)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); return; }
   status(I18n.t('fontmaker.status.building_preview_pdf'), true);
   try {
     const fam = 'HFMPreview_' + Date.now();
@@ -12030,7 +12014,7 @@ async function generatePreviewPDF() {
     }
     pdf.save((project.font.familyName||'font').replace(/\s+/g,'_') + '_specimen.pdf');
     status(I18n.t('fontmaker.status.preview_pdf_saved'));
-  } catch (e) { console.error(e); status(''); askModal('PDF error', '<span class="warn">'+(e.message||e)+'</span>', [{label:'OK'}]); }
+  } catch (e) { console.error(e); status(''); askModal(I18n.t('fontmaker.modals.pdf_error_title'), '<span class="warn">'+(e.message||e)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); }
 }
 /* ════════════════════════════════════════════════════════════════════════
    DOWNLOAD TEMPLATES — printable blank worksheets (Letters / Nikkud / Trop)
@@ -12133,7 +12117,7 @@ async function downloadTemplate(kind, fmt) {
     status(spec.title + ' template saved.');
   } catch (e) {
     console.error(e); status('');
-    askModal('Template error', '<span class="warn">' + esc(e.message || String(e)) + '</span>', [{ label:'OK' }]);
+    askModal(I18n.t('fontmaker.modals.template_error_title'), '<span class="warn">' + esc(e.message || String(e)) + '</span>', [{ label:I18n.t('fontmaker.modals.ok') }]);
   }
 }
 // Parse JSON from untrusted input (imported project files), dropping keys that could pollute Object.prototype.
@@ -12149,11 +12133,11 @@ function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;'
    ════════════════════════════════════════════════════════════════════════ */
 function saveProject() {
   // Two ways to save: a permanent file on the computer, or a quick copy kept in this browser.
-  askModal('Save Project',
-    'Where would you like to save?<br><span style="color:var(--muted);">“To computer” is a permanent backup file you keep. “In this browser” is a quick save that stays on this device only.</span>',
-    [ {label:'💾 To computer', onClick: () => saveToComputer()},
-      {label:'🌐 In this browser', onClick: () => saveToBrowser()},
-      {label:'Cancel', cls:'ghost'} ]);
+  askModal(I18n.t('fontmaker.modals.save_project_title'),
+    I18n.t('fontmaker.modals.save_project_body'),
+    [ {label:I18n.t('fontmaker.modals.save_to_computer'), onClick: () => saveToComputer()},
+      {label:I18n.t('fontmaker.modals.save_in_browser'), onClick: () => saveToBrowser()},
+      {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost'} ]);
 }
 async function saveToComputer() {
   project.savedAt = new Date().toISOString();
@@ -12177,9 +12161,9 @@ function saveToBrowser() {
   onMetaChange();
   const ok = pushRecentProject(project);   // full project → this browser (reopen via Load Project ▾ → Recent)
   if (!ok) {
-    askModal('Couldn’t save in the browser',
-      'This project is too large for the browser’s limited storage (photos add up fast). Please use <b>💾 To computer</b> instead — that always works.',
-      [{label:'OK'}]);
+    askModal(I18n.t('fontmaker.modals.couldnt_save_browser_title'),
+      I18n.t('fontmaker.modals.couldnt_save_browser_body'),
+      [{label:I18n.t('fontmaker.modals.ok')}]);
     return;
   }
   markClean();   // saved in this browser → drop the unsaved-work breadcrumb (Recent keeps the full copy)
@@ -12187,9 +12171,9 @@ function saveToBrowser() {
   // Periodic nudge — the browser copy is NOT a real backup.
   if (Date.now() - _lastBrowserReminder > 10*60*1000) {
     _lastBrowserReminder = Date.now();
-    askModal('Saved in this browser ✓',
-      'Heads-up: this copy lives only in <b>this browser, on this device</b>. If you clear your browsing data or move to another computer, it’s gone.<br><br>⚠️ Use <b>Save Project → 💾 To computer</b> every so often so you always have a backup you can’t lose.',
-      [{label:'Got it'}]);
+    askModal(I18n.t('fontmaker.modals.saved_browser_title'),
+      I18n.t('fontmaker.modals.saved_browser_reminder'),
+      [{label:I18n.t('fontmaker.modals.gotit')}]);
   }
 }
 function stripImagesForAutosave(p) {
@@ -12359,12 +12343,12 @@ async function maybeRestoreAutosave() {
     try { const raw = localStorage.getItem('hebrewFontMaker_autosave'); if (raw) { data = ivritSafeParse(raw); stripped = true; } } catch (e) {}
   }
   if (!data || data.format !== 'hebrew-font-maker-project') return;
-  askModal('Continue where you left off?',
-    `Reopen your most recent work from <b>${_autosaveRelTime((rec && rec.savedAt) || data.savedAt)}</b>?`
-    + (stripped ? '<br><span class="warn">Your browser couldn’t keep the source photos this time — traced outlines remain, but uploaded scans may be missing.</span>' : '')
-    + '<br><span style="color:var(--muted);font-size:0.82rem;">Your saved files are untouched either way.</span>',
-    [ { label: 'Continue', onClick: async () => { if (await applyProjectData(data)) status(I18n.t('fontmaker.status.reopened_recent')); } },
-      { label: 'Start fresh', cls: 'ghost', onClick: () => autosaveDiscard() } ]);
+  askModal(I18n.t('fontmaker.modals.continue_title'),
+    I18n.t('fontmaker.modals.continue_body', {time: `<b>${_autosaveRelTime((rec && rec.savedAt) || data.savedAt)}</b>`})
+    + (stripped ? '<br><span class="warn">' + I18n.t('fontmaker.modals.continue_stripped') + '</span>' : '')
+    + '<br><span style="color:var(--muted);font-size:0.82rem;">' + I18n.t('fontmaker.modals.continue_untouched') + '</span>',
+    [ { label: I18n.t('fontmaker.modals.continue'), onClick: async () => { if (await applyProjectData(data)) status(I18n.t('fontmaker.status.reopened_recent')); } },
+      { label: I18n.t('fontmaker.modals.start_fresh'), cls: 'ghost', onClick: () => autosaveDiscard() } ]);
 }
 function migrateProject(data) {
   // ensure all 27 letters exist & fields present (forward-compatible)
