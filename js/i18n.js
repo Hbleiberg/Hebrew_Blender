@@ -11,7 +11,8 @@
  *                           updates switchers, then fires every onChange handler
  *   I18n.onChange(fn)       register fn(lang, dir) to re-render the page after a live switch
  *   I18n.applyStaticI18n(root)  fill [data-i18n]/[data-i18n-title|aria-label|placeholder|html]
- *   I18n.createSwitcher()   -> a DOM node (🇺🇸 EN / 🇮🇱 עברית — flag is decorative; label carries it on Windows)
+ *   I18n.createSwitcher()   -> a DOM node: a <select> dropdown (🇺🇸 EN / 🇮🇱 עברית — flag is decorative,
+ *                           label carries it on Windows where flag glyphs fall back to letters)
  *   I18n.mountSwitchers()   -> fill every [data-i18n-switcher] slot
  * A guarded global `t` alias is also set (only if window.t is undefined).
  *
@@ -143,11 +144,8 @@
   }
 
   function updateSwitcherState() {
-    var btns = document.querySelectorAll('.i18n-switch button');
-    for (var i = 0; i < btns.length; i++) {
-      var code = btns[i].getAttribute('lang');
-      btns[i].setAttribute('aria-pressed', code === lang ? 'true' : 'false');
-    }
+    var sels = document.querySelectorAll('.i18n-switch select');
+    for (var i = 0; i < sels.length; i++) sels[i].value = lang;
   }
 
   // ---- Live language switch (no reload) ------------------------------------------------------
@@ -189,54 +187,51 @@
   function injectStyle() {
     if (document.getElementById(STYLE_ID)) return;
     var css =
-      // direction:ltr pins the flag to the leading edge + keeps EN|עברית order stable on RTL pages.
-      '.i18n-switch{display:inline-flex;direction:ltr;border:1px solid var(--border,#c8bfa8);border-radius:6px;' +
-      'overflow:hidden;vertical-align:middle;font-family:inherit;}' +
-      '.i18n-switch button{display:inline-flex;align-items:center;gap:5px;appearance:none;-webkit-appearance:none;' +
-      'border:0;margin:0;cursor:pointer;padding:4px 10px;font-size:0.78rem;font-family:inherit;font-weight:600;' +
-      'line-height:1.3;background:var(--white,#fff);color:var(--text,#1a2744);}' +
-      '.i18n-switch .i18n-flag{font-size:0.95em;line-height:1;}' +
-      '.i18n-switch button + button{border-inline-start:1px solid var(--border,#c8bfa8);}' +
-      '.i18n-switch button[aria-pressed="true"]{background:var(--gold,#c9922a);color:var(--navy,#1a2744);}' +
-      '.i18n-switch button:hover:not([aria-pressed="true"]){background:var(--warm-gray,#e8e0d0);}' +
-      '.i18n-switch button:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:-2px;}';
+      // direction:ltr keeps the flag+label order and the caret side stable on RTL pages.
+      // appearance:none guarantees the custom bg/color apply (so dark mode is correct on Safari too);
+      // the caret is a ::after pseudo (var(--muted) → theme-adaptive), not a fixed-color SVG.
+      '.i18n-switch{position:relative;display:inline-flex;direction:ltr;vertical-align:middle;font-family:inherit;}' +
+      '.i18n-switch::after{content:"\\25BE";position:absolute;inset-inline-end:8px;top:50%;transform:translateY(-50%);' +
+      'font-size:0.7rem;color:var(--muted,#6b6050);pointer-events:none;}' +
+      '.i18n-switch select.i18n-select{appearance:none;-webkit-appearance:none;margin:0;cursor:pointer;' +
+      'font-family:inherit;font-size:0.78rem;font-weight:600;line-height:1.3;direction:ltr;' +
+      'color:var(--text,#1a2744);background:var(--white,#fff);' +
+      'border:1px solid var(--border,#c8bfa8);border-radius:6px;padding-block:4px;padding-inline:8px 24px;}' +
+      '.i18n-switch select.i18n-select:hover{background:var(--warm-gray,#e8e0d0);}' +
+      '.i18n-switch select.i18n-select:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:1px;}';
     var el = document.createElement('style');
     el.id = STYLE_ID;
     el.textContent = css;
     (document.head || document.documentElement).appendChild(el);
   }
 
-  // flag is a decorative regional-indicator emoji (aria-hidden). NOTE: it is NOT a real glyph on
-  // Windows (Segoe UI Emoji ships no flags — it falls back to the "US"/"IL" letter pair), so the
-  // text `label` must always accompany it; never make this switcher flag-only.
+  // flag is a decorative regional-indicator emoji shown in the option text. NOTE: it is NOT a real
+  // glyph on Windows (Segoe UI Emoji ships no flags — it falls back to the "US"/"IL" letter pair), so
+  // the text `label` must always accompany it; never make an option flag-only. `aria` is unused by the
+  // <select> (each option is announced by its own text) but kept for parity with future custom UIs.
   var SWITCHER_LANGS = [
     { code: 'en', label: 'EN', flag: '🇺🇸', aria: 'English' },
     { code: 'he', label: 'עברית', flag: '🇮🇱', aria: 'Hebrew' }
   ];
 
+  // A native <select> dropdown: fully keyboard/touch/screen-reader accessible for free, and it scales
+  // cleanly as languages are added (vs. an ever-growing row of buttons). Live-switches on `change`.
   function createSwitcher() {
     injectStyle();
     var wrap = document.createElement('div');
     wrap.className = 'i18n-switch';
-    wrap.setAttribute('role', 'group');
-    wrap.setAttribute('aria-label', 'Language');
+    var sel = document.createElement('select');
+    sel.className = 'i18n-select';
+    sel.setAttribute('aria-label', 'Language');
     SWITCHER_LANGS.forEach(function (o) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      if (o.flag) {
-        var fl = document.createElement('span');
-        fl.className = 'i18n-flag';
-        fl.setAttribute('aria-hidden', 'true');   // decorative — the aria-label carries the language
-        fl.textContent = o.flag;
-        b.appendChild(fl);
-      }
-      b.appendChild(document.createTextNode(o.label));
-      b.setAttribute('lang', o.code);
-      b.setAttribute('aria-label', o.aria);
-      b.setAttribute('aria-pressed', o.code === lang ? 'true' : 'false');
-      b.addEventListener('click', function () { if (o.code !== lang) setLang(o.code); });
-      wrap.appendChild(b);
+      var opt = document.createElement('option');
+      opt.value = o.code;
+      opt.textContent = (o.flag ? o.flag + ' ' : '') + o.label;
+      if (o.code === lang) opt.selected = true;
+      sel.appendChild(opt);
     });
+    sel.addEventListener('change', function () { if (sel.value !== lang) setLang(sel.value); });
+    wrap.appendChild(sel);
     return wrap;
   }
 
