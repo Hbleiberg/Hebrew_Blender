@@ -140,6 +140,7 @@ function scanFile(file, errors, warnings) {
     // 3) setAttribute('aria-label'|'title'|'placeholder', '<plain literal>').
     const setRe = /\.setAttribute\s*\(\s*(['"])(aria-label|title|placeholder)\1\s*,\s*/g;
     while ((m = setRe.exec(line))) {
+      if (line.includes("'data-i18n-" + m[2] + "'") || line.includes('"data-i18n-' + m[2] + '"')) continue; // paired data-i18n-* fallback
       const rhs = line.slice(m.index + m[0].length);
       if (goesThroughI18n(rhs)) continue;
       const lit = readLeadingLiteral(rhs);
@@ -224,7 +225,7 @@ function main() {
   } else {
     console.log('check-i18n: Check A clean — no NEW hardcoded UI-string literals in JS.');
   }
-  if (known) console.log('check-i18n: (' + known + ' baselined Check-A finding(s) — see scripts/check-i18n-baseline.txt; the Pass K backlog.)');
+  if (known) console.log('check-i18n: (' + known + ' baselined Check-A finding(s) — see scripts/check-i18n-baseline.txt.)');
 
   // Check A tooltip-attribute backlog (warn-only).
   if (warnings.length) {

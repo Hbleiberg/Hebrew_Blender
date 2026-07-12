@@ -161,10 +161,11 @@ disrupt in-flight audio/animation (see torah_trainer/trope_tutor/Font Maker for 
 Run **`node scripts/check-i18n.js`** before finishing. It flags hardcoded English literals that don't go
 through `I18n.t()` (**Check A**, a hard gate — exit 1 on any **new** violation) and reports empty-`he`
 translation debt + untranslated `title`/`aria-label`/`placeholder` tooltip attributes (warn-only). A
-pre-existing baseline (`scripts/check-i18n-baseline.txt`) lists the debt the initial rollout missed — the
-**Pass K** backlog (see `docs/IMPROVEMENT_LOG.md`); its Group A is permanent printed-output exceptions. To
-accept an intentional non-translatable literal, add a same-line **`i18n-ignore`** comment (don't add it to
-the baseline). When you fix a baselined line, delete it from the baseline.
+baseline (`scripts/check-i18n-baseline.txt`) holds accepted Check-A findings that don't fail the gate —
+currently only the permanent printed answer-key / QR-caption output (the initial rollout's untranslated-UI
+backlog was wired up in the first **Pass K** run, 2026-07-12; see `docs/IMPROVEMENT_LOG.md`). To accept a
+new intentional non-translatable literal, prefer a same-line **`i18n-ignore`** comment; reserve the baseline
+for genuinely-permanent printed-output cases (regenerate with `--update-baseline`, then re-apply its header).
 
 ## Import / Export All Settings (`index.html`)
 

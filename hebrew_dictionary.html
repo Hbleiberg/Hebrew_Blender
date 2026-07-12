@@ -3120,17 +3120,17 @@ async function refreshMyFonts() {
 /* ═══ My Fonts uploader (shared, identical across pages) ═══ */
 async function ivUploadFontFromFile(file){
   if (!file) return null;
-  if (!window.indexedDB || !window.FontFace){ alert('Your browser can’t store custom fonts.'); return null; }
+  if (!window.indexedDB || !window.FontFace){ alert(I18n.t('shared.fonts.err_no_store')); return null; }
   let base = (file.name || 'My Font').replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim() || 'My Font';
   try {
     const buf = await file.arrayBuffer();
     try { await new FontFace(base, buf).load(); }
-    catch (e) { alert('That file doesn’t look like a usable font (TTF, OTF, or WOFF).'); return null; }
+    catch (e) { alert(I18n.t('shared.fonts.err_bad_font')); return null; }
     const existing = (await listUserFonts()).map(f => f.name);
     let name = base, i = 2; while (existing.includes(name)) name = base + ' ' + (i++);
     await saveUserFont(name, new Uint8Array(buf), name);
     return name;
-  } catch (e) { console.error(e); alert('Couldn’t read that font file.'); return null; }
+  } catch (e) { console.error(e); alert(I18n.t('shared.fonts.err_unreadable')); return null; }
 }
 /* ═══ end My Fonts uploader ═══ */
 /* Per-page pick handler(s) — thin wrappers over the shared uploader (each page routes the new font into its own picker/manager). */
@@ -4171,7 +4171,7 @@ function closeWordModal() {
   _modalOpener = null;
 }
 function _wmCopyFlash(btn, text, label) {
-  const done = () => { btn.textContent = '✓ Copied!'; btn.classList.add('copied'); announce(I18n.t('dictionary.copy.copied_toast')); setTimeout(() => { btn.textContent = label; btn.classList.remove('copied'); }, 1400); };
+  const done = () => { btn.textContent = I18n.t('dictionary.copy.copied_flash'); btn.classList.add('copied'); announce(I18n.t('dictionary.copy.copied_toast')); setTimeout(() => { btn.textContent = label; btn.classList.remove('copied'); }, 1400); };
   if (navigator.clipboard) navigator.clipboard.writeText(text).then(done).catch(done);
   else { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(ta); done(); }
 }
@@ -4397,7 +4397,7 @@ function dictActiveGroupCount() {
     wrap.setAttribute('role', 'button');
     wrap.setAttribute('aria-expanded', 'false');
     wrap.setAttribute('aria-describedby', 'tipFloat');
-    if (!wrap.getAttribute('aria-label')) wrap.setAttribute('aria-label', 'More information');
+    if (!wrap.getAttribute('aria-label')) wrap.setAttribute('aria-label', I18n.t('shared.tip.aria_more_info'));
     wrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(wrap); });
     wrap.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openWrap === wrap) hide(); });
     wrap.addEventListener('click', e => { e.stopPropagation(); isShown(wrap) ? hide() : show(wrap); });

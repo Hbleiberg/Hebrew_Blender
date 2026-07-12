@@ -1102,7 +1102,7 @@ function loadProgress() {
   } catch (e) {}
 }
 function resetAllSettings() {
-  if (!confirm('Reset all Trope Tutor settings to defaults?')) return;
+  if (!confirm(I18n.t('trope.confirm.reset_all'))) return;
   localStorage.removeItem(STORAGE_KEY);
   settings = JSON.parse(JSON.stringify(DEFAULTS));
   applyHebFontSize();
@@ -1112,7 +1112,7 @@ function resetAllSettings() {
   updateDrillStart();
 }
 function resetProgress() {
-  if (!confirm('Reset your per-trope mastery and personal-best streak? This cannot be undone.')) return;
+  if (!confirm(I18n.t('trope.confirm.reset_progress'))) return;
   progress = JSON.parse(JSON.stringify(PROGRESS_DEFAULTS));
   saveProgress();
   renderLearn();
@@ -2166,17 +2166,17 @@ async function refreshMyFonts() {
 /* ═══ My Fonts uploader (shared, identical across pages) ═══ */
 async function ivUploadFontFromFile(file){
   if (!file) return null;
-  if (!window.indexedDB || !window.FontFace){ alert('Your browser can’t store custom fonts.'); return null; }
+  if (!window.indexedDB || !window.FontFace){ alert(I18n.t('shared.fonts.err_no_store')); return null; }
   let base = (file.name || 'My Font').replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim() || 'My Font';
   try {
     const buf = await file.arrayBuffer();
     try { await new FontFace(base, buf).load(); }
-    catch (e) { alert('That file doesn’t look like a usable font (TTF, OTF, or WOFF).'); return null; }
+    catch (e) { alert(I18n.t('shared.fonts.err_bad_font')); return null; }
     const existing = (await listUserFonts()).map(f => f.name);
     let name = base, i = 2; while (existing.includes(name)) name = base + ' ' + (i++);
     await saveUserFont(name, new Uint8Array(buf), name);
     return name;
-  } catch (e) { console.error(e); alert('Couldn’t read that font file.'); return null; }
+  } catch (e) { console.error(e); alert(I18n.t('shared.fonts.err_unreadable')); return null; }
 }
 /* ═══ end My Fonts uploader ═══ */
 /* Per-page pick handler(s) — thin wrappers over the shared uploader (each page routes the new font into its own picker/manager). */

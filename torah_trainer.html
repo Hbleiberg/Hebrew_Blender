@@ -1596,7 +1596,7 @@ function loadSettings() {
   } catch (e) {}
 }
 function resetAllSettings() {
-  if (!confirm('Reset all Torah Trainer settings to defaults?')) return;
+  if (!confirm(I18n.t('torah.confirm.reset_all'))) return;
   localStorage.removeItem(STORAGE_KEY);
   settings = JSON.parse(JSON.stringify(DEFAULTS));
   syncFormToSettings();
@@ -2870,7 +2870,7 @@ function maybeShowResumeChip() {
   go.addEventListener('click', () => { removeResumeChip(); flashVerse(lp.verse); });
   const x = document.createElement('button');
   x.type = 'button'; x.className = 'tt-resume-x';
-  x.setAttribute('aria-label', 'Dismiss resume'); x.textContent = '✕';
+  x.setAttribute('aria-label', I18n.t('torah.reading.resume_dismiss_aria')); x.textContent = '✕';
   x.addEventListener('click', () => { _resumeDismissedFor = key; removeResumeChip(); });
   chip.appendChild(go); chip.appendChild(x);
   root.insertBefore(chip, root.firstChild);
@@ -3851,17 +3851,17 @@ async function refreshMyFonts() {
 /* ═══ My Fonts uploader (shared, identical across pages) ═══ */
 async function ivUploadFontFromFile(file){
   if (!file) return null;
-  if (!window.indexedDB || !window.FontFace){ alert('Your browser can’t store custom fonts.'); return null; }
+  if (!window.indexedDB || !window.FontFace){ alert(I18n.t('shared.fonts.err_no_store')); return null; }
   let base = (file.name || 'My Font').replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim() || 'My Font';
   try {
     const buf = await file.arrayBuffer();
     try { await new FontFace(base, buf).load(); }
-    catch (e) { alert('That file doesn’t look like a usable font (TTF, OTF, or WOFF).'); return null; }
+    catch (e) { alert(I18n.t('shared.fonts.err_bad_font')); return null; }
     const existing = (await listUserFonts()).map(f => f.name);
     let name = base, i = 2; while (existing.includes(name)) name = base + ' ' + (i++);
     await saveUserFont(name, new Uint8Array(buf), name);
     return name;
-  } catch (e) { console.error(e); alert('Couldn’t read that font file.'); return null; }
+  } catch (e) { console.error(e); alert(I18n.t('shared.fonts.err_unreadable')); return null; }
 }
 /* ═══ end My Fonts uploader ═══ */
 /* Per-page pick handler(s) — thin wrappers over the shared uploader (each page routes the new font into its own picker/manager). */
@@ -3999,7 +3999,7 @@ function initColorPickers() {
   });
 }
 function resetNikudColors() {
-  if (!confirm('Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.')) return;
+  if (!confirm(I18n.t('torah.confirm.reset_vowel_colors'))) return;
   settings.nikudColorOverrides = {};
   initColorPickers();
   if (settings.colorCodeNikkud) applyNikkudColors();   // var swap, no reading rebuild
@@ -4047,7 +4047,7 @@ function initTropeColorPickers() {
   });
 }
 function resetTropeColors() {
-  if (!confirm('Are you sure? This resets your custom trope-family colors to the defaults.')) return;
+  if (!confirm(I18n.t('torah.confirm.reset_trope_colors'))) return;
   settings.tropeColorOverrides = {};
   initTropeColorPickers();
   applyTropeColors();
@@ -4868,7 +4868,7 @@ window.addEventListener('beforeprint', () => { pauseKaraoke(); clearKaraokeHighl
     wrap.setAttribute('role', 'button');
     wrap.setAttribute('aria-expanded', 'false');
     wrap.setAttribute('aria-describedby', 'tipFloat');
-    if (!wrap.getAttribute('aria-label')) wrap.setAttribute('aria-label', 'More information');
+    if (!wrap.getAttribute('aria-label')) wrap.setAttribute('aria-label', I18n.t('shared.tip.aria_more_info'));
     // Hover only for a real mouse (touch synthesizes pointerenter+click and would
     // otherwise show-then-toggle-off immediately).
     wrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(wrap); });

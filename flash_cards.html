@@ -4210,7 +4210,7 @@ function copyShareCode() {
     const btn = document.getElementById('copyShareBtn');
     if (!btn) return;
     const orig = btn.textContent;
-    btn.textContent = '✓ Copied!';
+    btn.textContent = I18n.t('flashcards.share.copied');
     setTimeout(() => btn.textContent = orig, 1500);
   };
   if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -4948,13 +4948,13 @@ function mergeProfilesBlob(incoming, mode) {
 function wireProfilesPanel() {
   document.getElementById('activeProfileSelect').addEventListener('change', e => { if (e.target.value) setActiveProfile(e.target.value); });
   document.getElementById('newProfileBtn').addEventListener('click', () => {
-    const n = (prompt('New profile name:') || '').trim();
+    const n = (prompt(I18n.t('flashcards.profile.new_prompt')) || '').trim();
     if (n) { createProfile(n); renderProfiles(); }
   });
   document.getElementById('renameProfileBtn').addEventListener('click', () => {
     const cur = getActiveProfile();
     if (!cur) { alert(I18n.t('flashcards.profile.no_selected_alert')); return; }
-    const n = (prompt('Rename profile to:', cur) || '').trim();
+    const n = (prompt(I18n.t('flashcards.profile.rename_prompt'), cur) || '').trim();
     if (n) renameProfile(cur, n);
   });
   document.getElementById('deleteProfileBtn').addEventListener('click', () => {

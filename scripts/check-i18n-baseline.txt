@@ -1,66 +1,14 @@
-# check-i18n baseline — pre-existing Check-A findings that do NOT fail the gate.
+# check-i18n baseline — Check-A findings that do NOT fail the gate.
 # Signature per line: <relpath>\t<message>\t<snippet>. Regenerate: node scripts/check-i18n.js --update-baseline
-# NOTE: --update-baseline rewrites this file flat (losing the Group A/B split below); re-apply the
-# grouping by hand, or just treat every line as 'known'. The gate only cares that a signature is present.
+# (--update-baseline rewrites flat; re-apply this header by hand if you regenerate.)
 #
-# ── Group A — intentional printed-output / boundary literals (PERMANENT; do not translate). ──
-# These build the printed worksheet answer-key / QR caption, which stays English per the
-# Internationalization scope boundary (see CLAUDE.md).
+# Only Group A remains: intentional printed-output / boundary literals (PERMANENT — do not translate).
+# These build the printed worksheet answer-key banner / QR caption / brand, which stay English per the
+# Internationalization scope boundary (CLAUDE.md). The Group-B backlog (untranslated UI the rollout
+# missed) was burned down in the first Pass K run (2026-07-12) — all wired through I18n.t().
 hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	akBanner.textContent = '✦ Answer Key ✦';
 hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	banner.textContent = '✦ Answer Key ✦';
 hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	brand.textContent = 'IvritSuite.com';
 hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	cap.textContent = '📱 Scan for answer key';
 hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	meta.textContent = 'Answer Key — scan to self-check';
 hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	numBar.textContent = 'CARD';
-#
-# ── Group B — untranslated UI the rollout missed: the Pass K backlog. ──
-# Real UI chrome (shared folder-tree prompts/confirms/titles, the shared My-Fonts uploader alerts,
-# Font-Maker confirms + My-Fonts buttons, profile prompts, reset confirms, '✓ Copied!', two
-# 'More information' aria-labels). A Pass K run wires each through I18n.t() and removes its line.
-Hebrew_Font_Maker.html	.textContent assigned a hardcoded English literal	const up = document.createElement('option'); up.value = '__uploadRef__'; up.textContent = '⬆ Upload 
-Hebrew_Font_Maker.html	.textContent assigned a hardcoded English literal	if (b) { b.className = 'ctl-btn primary'; b.setAttribute('style', 'font-weight:700;'); b.textContent
-Hebrew_Font_Maker.html	.textContent assigned a hardcoded English literal	if (dark) { document.body.classList.add('dark'); document.getElementById('darkToggle').textContent =
-Hebrew_Font_Maker.html	.textContent assigned a hardcoded English literal	p.textContent = 'No saved fonts yet. Build a font, then “★ Save current font”.';
-Hebrew_Font_Maker.html	.textContent assigned a hardcoded English literal	t.textContent = 'Tip: use the arrow keys for finer, exact movement.';
-Hebrew_Font_Maker.html	.title assigned a hardcoded English literal	del.className = 'tbtn ghost'; del.textContent = '🗑'; del.title = 'Remove from My Fonts'; del.style.
-Hebrew_Font_Maker.html	.title assigned a hardcoded English literal	dl.className = 'tbtn ghost'; dl.textContent = '⬇'; dl.title = 'Download this font'; dl.style.padding
-Hebrew_Font_Maker.html	confirm() with a hardcoded English literal	function clearGuides(){ const g = ensureGuides(); if (!g.items.length) return; if (!confirm('Remove 
-Hebrew_Font_Maker.html	confirm() with a hardcoded English literal	function deleteGuide(id){ const g = ensureGuides(); const it = guideById(id); if (!it) return; if (!
-Hebrew_Font_Maker.html	confirm() with a hardcoded English literal	if (!confirm('Apply this letter\'s outline setting and line weight to every letter? Per-letter outli
-Hebrew_Font_Maker.html	confirm() with a hardcoded English literal	if (!confirm('Convert this mark to a main glyph? It becomes a standalone glyph with its own adjustab
-Hebrew_Font_Maker.html	confirm() with a hardcoded English literal	if (!confirm('Delete this custom glyph (U+' + cp + ')? This cannot be undone.')) return;
-Hebrew_Font_Maker.html	confirm() with a hardcoded English literal	if (!confirm('Reset all Left/Right trop positions on every letter to the default spread? Per-letter 
-Hebrew_Font_Maker.html	confirm() with a hardcoded English literal	if (!confirm(`Delete kern class “${c.name}”? Pairs that use it keep their current letters.`)) return
-Hebrew_Font_Maker.html	confirm() with a hardcoded English literal	if (who && !confirm('U+' + cp + ' is already ' + who + '. Adding this will REPLACE it in your export
-flash_cards.html	.textContent assigned a hardcoded English literal	btn.textContent = '✓ Copied!';
-flash_cards.html	prompt() with a hardcoded English literal	const n = (prompt('New profile name:') || '').trim();
-flash_cards.html	prompt() with a hardcoded English literal	const n = (prompt('Rename profile to:', cur) || '').trim();
-flash_cards.html	setAttribute('aria-label', <hardcoded English literal>)	if (!el.getAttribute('aria-label')) { el.setAttribute('aria-label', 'More information'); el.setAttri
-hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	note.textContent = '⚠ Too many items for a QR answer key — reduce the item count.';
-hebrew_dictionary.html	.textContent assigned a hardcoded English literal	const done = () => { btn.textContent = '✓ Copied!'; btn.classList.add('copied'); announce(I18n.t('di
-hebrew_dictionary.html	alert() with a hardcoded English literal	catch (e) { alert('That file doesn’t look like a usable font (TTF, OTF, or WOFF).'); return null; }
-hebrew_dictionary.html	alert() with a hardcoded English literal	if (!window.indexedDB || !window.FontFace){ alert('Your browser can’t store custom fonts.'); return 
-hebrew_dictionary.html	alert() with a hardcoded English literal	} catch (e) { console.error(e); alert('Couldn’t read that font file.'); return null; }
-hebrew_dictionary.html	setAttribute('aria-label', <hardcoded English literal>)	if (!wrap.getAttribute('aria-label')) wrap.setAttribute('aria-label', 'More information');
-index.html	.textContent assigned a hardcoded English literal	const add = document.createElement('button'); add.type='button'; add.className='ft-newfolder'; add.t
-index.html	.textContent assigned a hardcoded English literal	const em = document.createElement('div'); em.className='ft-empty-folder'; em.textContent='Empty — dr
-index.html	.textContent assigned a hardcoded English literal	const mb = document.createElement('button'); mb.type='button'; mb.className='ft-move-btn'; mb.textCo
-index.html	.title assigned a hardcoded English literal	const h = document.createElement('span'); h.className='drag-handle'; h.title='Drag folder'; h.textCo
-index.html	.title assigned a hardcoded English literal	const h = document.createElement('span'); h.className='drag-handle'; h.title='Drag to move'; h.textC
-index.html	confirm() with a hardcoded English literal	acts.appendChild(mkMini('🗑','Delete folder (keeps items)', () => { if(!confirm('Delete folder "'+no
-index.html	prompt() with a hardcoded English literal	acts.appendChild(mkMini('✎','Rename folder', () => { const x=(prompt('Rename folder:', node.name)||'
-index.html	prompt() with a hardcoded English literal	acts.appendChild(mkMini('＋','New subfolder', () => { const x=(prompt('New subfolder name:')||'').tri
-index.html	prompt() with a hardcoded English literal	add.addEventListener('click', () => { const x=(prompt('New folder name:')||'').trim(); if(!x) return
-torah_trainer.html	alert() with a hardcoded English literal	catch (e) { alert('That file doesn’t look like a usable font (TTF, OTF, or WOFF).'); return null; }
-torah_trainer.html	alert() with a hardcoded English literal	if (!window.indexedDB || !window.FontFace){ alert('Your browser can’t store custom fonts.'); return 
-torah_trainer.html	alert() with a hardcoded English literal	} catch (e) { console.error(e); alert('Couldn’t read that font file.'); return null; }
-torah_trainer.html	confirm() with a hardcoded English literal	if (!confirm('Are you sure? This resets your custom trope-family colors to the defaults.')) return;
-torah_trainer.html	confirm() with a hardcoded English literal	if (!confirm('Are you sure? This resets your custom vowel colors for both the Default and TaL AM sch
-torah_trainer.html	confirm() with a hardcoded English literal	if (!confirm('Reset all Torah Trainer settings to defaults?')) return;
-torah_trainer.html	setAttribute('aria-label', <hardcoded English literal>)	if (!wrap.getAttribute('aria-label')) wrap.setAttribute('aria-label', 'More information');
-torah_trainer.html	setAttribute('aria-label', <hardcoded English literal>)	x.setAttribute('aria-label', 'Dismiss resume'); x.textContent = '✕';
-trope_tutor.html	alert() with a hardcoded English literal	catch (e) { alert('That file doesn’t look like a usable font (TTF, OTF, or WOFF).'); return null; }
-trope_tutor.html	alert() with a hardcoded English literal	if (!window.indexedDB || !window.FontFace){ alert('Your browser can’t store custom fonts.'); return 
-trope_tutor.html	alert() with a hardcoded English literal	} catch (e) { console.error(e); alert('Couldn’t read that font file.'); return null; }
-trope_tutor.html	confirm() with a hardcoded English literal	if (!confirm('Reset all Trope Tutor settings to defaults?')) return;
-trope_tutor.html	confirm() with a hardcoded English literal	if (!confirm('Reset your per-trope mastery and personal-best streak? This cannot be undone.')) retur

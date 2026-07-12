@@ -1437,7 +1437,7 @@ document.addEventListener('fullscreenchange', () => {
 function initDark() {
   const saved = localStorage.getItem('hebrewBlender_darkMode');
   const dark = saved === '1' || (saved === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);   // OS default when unset; explicit choice wins
-  if (dark) { document.body.classList.add('dark'); document.getElementById('darkToggle').textContent = '☀️ Light'; }
+  if (dark) { document.body.classList.add('dark'); document.getElementById('darkToggle').textContent = (window.I18n ? I18n.t('shared.darkmode.label_light') : '☀️ Light'); }
   document.getElementById('darkToggle').setAttribute('aria-pressed', dark ? 'true' : 'false');
   document.documentElement.classList.remove('dark-early');
 }
@@ -3043,7 +3043,7 @@ function buildTemplateFontSelect() {
   });
   // divider + "upload your own" action at the very bottom of the menu
   const sep = document.createElement('option'); sep.disabled = true; sep.textContent = '──────────'; sel.appendChild(sep);
-  const up = document.createElement('option'); up.value = '__uploadRef__'; up.textContent = '⬆ Upload your own reference font…'; sel.appendChild(up);
+  const up = document.createElement('option'); up.value = '__uploadRef__'; up.textContent = I18n.t('fontmaker.panels.upload_ref_font'); sel.appendChild(up);
   if (project) sel.value = project.template.font;
 }
 function onTemplateChange() {
@@ -3285,8 +3285,8 @@ function setGuideWeight(id, w){ const it = guideById(id); if (!it) return; udBur
 function setGuideName(id, name){ const it = guideById(id); if (!it) return; const v = (name||'').trim(); if (!v || v === it.name) return; udDo([{t:'guides'}], 'rename guide', () => { it.name = v; renderStage(); }); }
 function toggleGuideCollapse(id){ const it = guideById(id); if (!it) return; it.collapsed = !it.collapsed; markDirty(); renderControls(); }   // pure UI — not an undo step
 function reorderGuides(orderedIds){ const g = ensureGuides(); udDo([{t:'guides'}], 'reorder guides', () => { const byId = Object.fromEntries(g.items.map(i => [i.id, i])); g.items = orderedIds.map(id => byId[id]).filter(Boolean); renderStage(); renderControls(); }); }
-function deleteGuide(id){ const g = ensureGuides(); const it = guideById(id); if (!it) return; if (!confirm(`Delete "${it.name || 'this guide'}"?`)) return; udDo([{t:'guides'}], 'delete guide', () => { g.items = g.items.filter(x => x.id !== id); renderStage(); renderControls(); }); }
-function clearGuides(){ const g = ensureGuides(); if (!g.items.length) return; if (!confirm('Remove all guides?')) return; udDo([{t:'guides'}], 'clear guides', () => { g.items = []; renderStage(); renderControls(); }); }
+function deleteGuide(id){ const g = ensureGuides(); const it = guideById(id); if (!it) return; if (!confirm(I18n.t('fontmaker.modals.confirm_delete_guide', { name: it.name || I18n.t('fontmaker.modals.confirm_this_guide') }))) return; udDo([{t:'guides'}], 'delete guide', () => { g.items = g.items.filter(x => x.id !== id); renderStage(); renderControls(); }); }
+function clearGuides(){ const g = ensureGuides(); if (!g.items.length) return; if (!confirm(I18n.t('fontmaker.modals.confirm_clear_guides'))) return; udDo([{t:'guides'}], 'clear guides', () => { g.items = []; renderStage(); renderControls(); }); }
 function toggleGuides(on){ const g = ensureGuides(); udDo([{t:'guides'}], on ? 'show guides' : 'hide guides', () => { g.show = on; renderStage(); renderControls(); }); }
 const GUIDE_STYLES = ['solid','dotted','dashed'];   // shared order for the visual dropdown
 function guideStylePreviewSVG(style, color, w){     // one dash definition shared by trigger, menu rows & canvas
@@ -4002,7 +4002,7 @@ function addCustomGlyph() {
   if (!cp) { askModal(I18n.t('fontmaker.modals.enter_codepoint_title'), I18n.t('fontmaker.modals.enter_codepoint_body'), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
   if (isCustomCp(cp)) { askModal(I18n.t('fontmaker.modals.glyph_exists_title'), I18n.t('fontmaker.modals.glyph_exists_body', {cp: esc(cp)}), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
   const who = whoHasCp(cp);
-  if (who && !confirm('U+' + cp + ' is already ' + who + '. Adding this will REPLACE it in your exported font. Continue?')) return;
+  if (who && !confirm(I18n.t('fontmaker.modals.confirm_replace_cp', { cp: cp, who: who }))) return;
   const name = (document.getElementById('cgName').value || '').trim();
   if (cgType === 'mark') {
     const cls = document.getElementById('cgCls').value || 'below';
@@ -4032,7 +4032,7 @@ function addCustomGlyph() {
   status(I18n.t('fontmaker.status.added_custom_glyph', {cp: cp}));
 }
 function deleteCustomGlyph(cp, type) {
-  if (!confirm('Delete this custom glyph (U+' + cp + ')? This cannot be undone.')) return;
+  if (!confirm(I18n.t('fontmaker.modals.confirm_delete_custom', { cp: cp }))) return;
   if (type === 'mark') delete project.font.customMarks.custom[cp];
   else project.letters = project.letters.filter(l => !(l.custom && l.codepoint === cp));
   if (curCp === cp) selectItem('letter', LETTER_ORDER[0]);
@@ -4054,7 +4054,7 @@ function convertMarkToMain(cp) {
     ? piecesToContours(m.pieces || []).map(pts => ({ winding: 'cw', points: pts.map(p => p.slice()) }))
     : (m.contours || []).map(c => ({ winding: c.winding || 'cw', points: (c.points || []).map(p => p.slice()) }));
   if (!contours.length) { askModal(I18n.t('fontmaker.modals.no_outline_title'), I18n.t('fontmaker.modals.no_outline_body'), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
-  if (!confirm('Convert this mark to a main glyph? It becomes a standalone glyph with its own adjustable width and no longer attaches to letters. This cannot be undone.')) return;
+  if (!confirm(I18n.t('fontmaker.modals.confirm_convert_mark'))) return;
   const name = m.name || ('Custom U+' + cp);
   const it = blankLetter({ cp, name });
   it.custom = true; it.name = name;
@@ -8000,7 +8000,7 @@ function liveLineWeight(v) {
    rasterizeCurrent() reads the CURRENT item's image, so we briefly retarget curKind/curCp. */
 function applyOutlineToAll() {
   const src = curLetter(); if (!src) return;
-  if (!confirm('Apply this letter\'s outline setting and line weight to every letter? Per-letter outline tuning will be overwritten (you can undo).')) return;
+  if (!confirm(I18n.t('fontmaker.modals.confirm_apply_outline_all'))) return;
   const on = src.outlineOnly, w = src.lineWeight;
   const savedKind = curKind, savedCp = curCp;
   const scopes = project.letters.map(l => ({ t:'item', kind:'letter', cp:l.codepoint }));
@@ -8219,7 +8219,7 @@ function showAncTip(cx, cy) {
     t.style.cssText = 'position:fixed;z-index:9999;background:var(--navy);color:#fff;font-size:0.72rem;line-height:1.3;padding:5px 9px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.3);pointer-events:none;max-width:200px;';
     document.body.appendChild(t);
   }
-  t.textContent = 'Tip: use the arrow keys for finer, exact movement.';
+  t.textContent = I18n.t('fontmaker.panels.tip_finer_move');
   t.style.display = 'block';
   t.style.left = Math.min(cx + 14, window.innerWidth - 210) + 'px';
   t.style.top = Math.max(8, cy - 40) + 'px';
@@ -8481,7 +8481,7 @@ function setTropSideOffset(v) {
   markDirty(); renderStage();
 }
 function resetTropSideColumns() {   // opt-in clobber: re-seed EVERY side column from center ± spread (undoable)
-  if (!confirm('Reset all Left/Right trop positions on every letter to the default spread? Per-letter fine-tuning of the side columns will be lost (you can undo).')) return;
+  if (!confirm(I18n.t('fontmaker.modals.confirm_reset_trop_sides'))) return;
   udDo(_tropTuneScopes(), 'reset trop side columns', () => {
     const off = project.font.tropSideOffset != null ? project.font.tropSideOffset : TROP_POS_SHIFT;
     (project.letters || []).forEach(l => {
@@ -9248,7 +9248,7 @@ function openKernClass(id) {
 function closeKernClass(){ aCloseModal('kernClassOverlay'); }
 function deleteKernClass(id) {
   const c = userKernClasses().find(x => x.id === id); if (!c) return;
-  if (!confirm(`Delete kern class “${c.name}”? Pairs that use it keep their current letters.`)) return;
+  if (!confirm(I18n.t('fontmaker.modals.confirm_delete_kernclass', { name: c.name }))) return;
   udDo([{t:'kernClasses'}], 'delete kern class', () => { project.font.kernClasses = userKernClasses().filter(x => x.id !== id); });
   renderKerningSection();
 }
@@ -9302,7 +9302,7 @@ function noteAnchorMoved(l) {
   if (!dropPlacementConfirm(l)) return;
   renderLetterGrid();
   const b = document.getElementById('savePlacementBtn');
-  if (b) { b.className = 'ctl-btn primary'; b.setAttribute('style', 'font-weight:700;'); b.textContent = '✓ Confirm placement'; }
+  if (b) { b.className = 'ctl-btn primary'; b.setAttribute('style', 'font-weight:700;'); b.textContent = I18n.t('fontmaker.panels.confirm_placement'); }
 }
 function guardPlacement(proceed) {
   // Placement moves are live + undoable, so leaving never prompts (like Align/Trace). On the way out,
@@ -11582,7 +11582,7 @@ async function renderMyFontsList() {
   if (!list.length) {
     const p = document.createElement('p');
     p.style.cssText = 'font-size:0.82rem;color:var(--muted);margin:8px 0 0;';
-    p.textContent = 'No saved fonts yet. Build a font, then “★ Save current font”.';
+    p.textContent = I18n.t('fontmaker.modals.myfonts_empty');
     host.appendChild(p);
     return;
   }
@@ -11596,10 +11596,10 @@ async function renderMyFontsList() {
     meta.style.cssText = 'flex:0 0 auto;font-size:0.72rem;color:var(--muted);';
     meta.textContent = myFontsDate(f.created) + ' · ' + Math.max(1, Math.round((f.size || 0) / 1024)) + ' KB';
     const dl = document.createElement('button');
-    dl.className = 'tbtn ghost'; dl.textContent = '⬇'; dl.title = 'Download this font'; dl.style.padding = '4px 8px';
+    dl.className = 'tbtn ghost'; dl.textContent = '⬇'; dl.title = I18n.t('fontmaker.modals.myfonts_download_title'); dl.style.padding = '4px 8px';
     dl.onclick = () => downloadMyFont(f.name);
     const del = document.createElement('button');
-    del.className = 'tbtn ghost'; del.textContent = '🗑'; del.title = 'Remove from My Fonts'; del.style.padding = '4px 8px';
+    del.className = 'tbtn ghost'; del.textContent = '🗑'; del.title = I18n.t('fontmaker.modals.myfonts_remove_title'); del.style.padding = '4px 8px';
     del.onclick = () => deleteMyFontUI(f.name);
     row.append(nm, meta, dl, del);
     host.appendChild(row);

@@ -3692,3 +3692,6 @@ fontmaker.node_editor.sel_actions,Selection actions,פעולות בחירה,grou
 fontmaker.node_editor.point_type,Point type,סוג נקודה,group aria-label,
 fontmaker.node_editor.segment_type,Segment type,סוג מקטע,group aria-label,
 fontmaker.panels.edit_shape_btn,"✎ Edit shape (square, dots & bars)","✎ עריכת צורה (ריבוע, נקודות ומוטות)",button,
+fontmaker.panels.tip_finer_move,"Tip: use the arrow keys for finer, exact movement.","טיפ: השתמשו במקשי החִצים לתנועה עדינה ומדויקת יותר.",anchor nudge hint,
+fontmaker.panels.upload_ref_font,⬆ Upload your own reference font…,⬆ העלו גופן ייחוס משלכם…,reference-font selector option,
+worksheet.qr.too_many,⚠ Too many items for a QR answer key — reduce the item count.,⚠ יותר מדי פריטים עבור מפתח תשובות QR — הפחיתו את מספר הפריטים.,QR options validation note,
