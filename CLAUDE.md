@@ -6,6 +6,7 @@
 - [Git](#git)
 - [Definition of done](#definition-of-done--check-every-item-before-finishing-a-change)
 - [Security — required patterns (`ivritSafeParse` / `esc()` / CSP)](#security--required-patterns-safe-json-parse-esc-csp)
+- [Internationalization (i18n / RTL) — `I18n.t()` / `data-i18n*` / logical CSS](#internationalization-i18n--rtl)
 - [Import / Export All Settings — AllTools registration](#import--export-all-settings-indexhtml)
 - [localStorage flag guidance — what belongs in AllTools](#localstorage-flag-guidance--what-belongs-in-alltools)
 - [.ivrit save files](#ivrit-save-files-automatic-input--required-on-every-tool-with-presetssettings)
@@ -45,6 +46,7 @@
 - [ ] Shipped a Font Maker feature? → bump `FONT_MAKER_VERSION` + prepend a matching changelog `<li>` in the About tab (one **combined** bump/entry per release, not per sub-feature).
 - [ ] Added an external script/font/fetch/wasm/iframe? → update that page's **CSP meta tag** (Security rule 3).
 - [ ] New UI control in a preset-bearing tool? → wire `getSettings()`/`applySettings()` (+ AllTools export/import/erase keys if it's a new localStorage store).
+- [ ] Added/changed a user-facing UI string or new CSS? → route the string through `I18n.t()`/`data-i18n*` (+ a key in `locales/ui-strings.csv`, then `node scripts/build-locales.js`); use **logical** CSS props (`*-inline-*`, `text-align:start/end`); run **`node scripts/check-i18n.js`** (must report no NEW violations). See Internationalization.
 - [ ] Verified headless with the **Playwright recipe** (see "Verifying changes" section): light + dark mode, desktop + ~800px.
 - [ ] Added or meaningfully changed a page's content? → run **`node scripts/update-sitemap.mjs`** as your last step so each `<lastmod>` reflects this change's commit date (see Deploy section). Idempotent; safe to run every session.
 - [ ] Committed + pushed directly to `main`, and the **Pages deploy run concluded `success`** (see Deploy section — code on `main` is not yet the live site).
@@ -91,6 +93,78 @@ HarfBuzz WASM; `hebcal.com`/`api.open-meteo.com`/`geocoding-api.open-meteo.com`/
 `*.hcaptcha.com` for contact/resources. `data:`/`blob:` stay in `img-src` (and `media-src`) for
 PDF/PNG/`.ivrit` export. Meta CSP can't express `frame-ancestors` or `report-uri` and doesn't cover
 content parsed before the tag — hence the placement right after `<meta charset>`.
+
+## Internationalization (i18n / RTL)
+
+The suite ships a full Hebrew UI (English default). Every page loads the shared runtime
+`js/i18n.js` (`window.I18n`) and mounts an EN/עברית switcher. **All 12 pages + `pwa.js` are localized;
+`locales/ui-strings.csv` is the single source of truth.** These rules are binding for every change —
+a new feature that hardcodes English or uses physical CSS silently breaks the Hebrew experience.
+Enforced by **`node scripts/check-i18n.js`** (run it before finishing; see rule 7).
+
+### 1. Never hardcode a user-facing UI string — route it through `I18n.t()` / `data-i18n*`
+- **Static HTML** → a `data-i18n*` attribute (filled by `I18n.applyStaticI18n`): `data-i18n` (textContent),
+  `data-i18n-title`, `data-i18n-aria-label`, `data-i18n-placeholder`, `data-i18n-tip` (→ `data-tip`),
+  `data-i18n-html` (innerHTML, trusted CSV only). A visible `title=`/`aria-label=` literal may stay as the
+  pre-JS fallback **only** alongside its `data-i18n-*` sibling.
+- **Dynamic JS** → `I18n.t('key')` or `I18n.t('key', {name, count})` (`{placeholder}` substitution). This
+  covers `alert`/`confirm`/`prompt`, `.textContent`/`.innerHTML`, button/option labels, `.placeholder`/
+  `.title`, and `setAttribute('aria-label'|'title'|'placeholder', …)`. A **missing key returns the key
+  string** (and `console.warn`s), so a raw `page.feature.x` on screen means an unbuilt/typo'd key.
+- Never build a UI string by concatenating English literals; put the whole sentence in one key with params.
+
+### 2. CSV workflow
+New keys go in `locales/ui-strings.csv` (columns **`key,en,he,context,notes`**, exactly 5 fields). Then run
+**`node scripts/build-locales.js`** — it compiles the committed `locales/en.json`/`he.json` (no deploy-time
+build). An empty `he` cell falls back to English and is tracked debt (reported by `build-locales` and
+`check-i18n`). Plurals are split `.one`/`.other` (tag `plural` in notes); interpolation uses `{placeholder}`
+tokens. Any precached-file edit still bumps `sw.js VERSION`.
+
+### 3. Key naming
+`page.feature.element` — lowercase, dot-separated (e.g. `dashboard.picker.close_aria`,
+`fontmaker.modals.save_project_title`). Cross-tool chrome lives under `shared.*` (`shared.nav.*`,
+`shared.footer.*`, `shared.darkmode.*`, `shared.fonts.*`, `shared.ivrit.*`, `shared.folders.*`). Glyph names
+under `*.glyphname.*`.
+
+### 4. Scope boundary — what translates vs. what stays content
+**TRANSLATE (UI chrome):** every control, dialog, tooltip, placeholder, aria-label, toast/status, empty
+state, help/FAQ. **NEVER translate** (stays English, a content-language toggle, or pinned Hebrew — mark such
+a literal with an inline `i18n-ignore` comment so `check-i18n` skips it):
+- **Printed worksheet / answer-key / flash-card-face output.** The printed Name/Date/Class header follows
+  **`headerLang`**, not `I18n.lang`; the printed **answer-key banner + QR caption** are printed output
+  (English/`headerLang`) — only the QR *sidebar controls* translate.
+- **Dashboard projected/student-facing widget content** (dates, days, weather, Omer, column titles, picker
+  group labels) → the existing **`headerLang`/`dowLang`/`showOmerEnglish`** toggles, **independent of
+  `I18n.lang`**. Only the teacher-facing settings drawer + chrome follow the UI language.
+- Hebrew instructional/example content, transliteration, Sefaria/PocketTorah content, the taught
+  Ashkenazi/Sephardi **trope pronunciation names**, footer brand/attribution credits, and third-party
+  resource-directory data.
+
+### 5. RTL / CSS — logical properties, not physical
+New CSS uses **logical properties** so chrome mirrors in Hebrew and is a no-op in English:
+`margin-inline-start/end`, `padding-inline-*`, `inset-inline-start/end` (not `left`/`right`),
+`border-inline-*`, `text-align: start/end` (not `left`/`right`). Hebrew-**content** containers get an explicit
+`dir="rtl" lang="he"` at the render chokepoint. **Known exception:** coordinate systems that must NOT mirror
+— the Font-Maker glyph-edit stage (`.stage-wrap`/`#stage`/`#meStage`/`.ws-center`) — stay pinned
+`direction:ltr`; a `dir=rtl`-conditional sign-flip is used where a physical delta drives a mirrored grid
+(the `.ws-split` column resize).
+
+### 6. The `applyI18n` wiring rule
+Every page defines `applyI18n()` = `I18n.applyStaticI18n()` **plus** a re-render of its JS-built dynamic
+content (and a re-sync of state-dependent labels like the dark-toggle). Wire it **inside** the page's
+`DOMContentLoaded` handler: `if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }`
+— the deferred `js/i18n.js` means `window.I18n` is **undefined at inline-script parse time**, so top-level
+wiring silently no-ops. `applyI18n` must be read-only: never mutate undo/dirty/project state, and never
+disrupt in-flight audio/animation (see torah_trainer/trope_tutor/Font Maker for the guarded versions).
+
+### 7. Enforcement — `scripts/check-i18n.js`
+Run **`node scripts/check-i18n.js`** before finishing. It flags hardcoded English literals that don't go
+through `I18n.t()` (**Check A**, a hard gate — exit 1 on any **new** violation) and reports empty-`he`
+translation debt + untranslated `title`/`aria-label`/`placeholder` tooltip attributes (warn-only). A
+pre-existing baseline (`scripts/check-i18n-baseline.txt`) lists the debt the initial rollout missed — the
+**Pass K** backlog (see `docs/IMPROVEMENT_LOG.md`); its Group A is permanent printed-output exceptions. To
+accept an intentional non-translatable literal, add a same-line **`i18n-ignore`** comment (don't add it to
+the baseline). When you fix a baselined line, delete it from the baseline.
 
 ## Import / Export All Settings (`index.html`)
 
