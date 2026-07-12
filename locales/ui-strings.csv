@@ -28,400 +28,402 @@ contact.lede,"Have a question, found a bug, or have an idea for a new feature? I
 contact.page_title,Contact & Support,,page title,
 contact.support_body,"IvritSuite is free, and it always will be — no accounts, no ads, no paywalls. If these tools have been useful in your classroom or learning, a small donation helps cover the development and upkeep that keep them running and growing. It's entirely optional, and deeply appreciated. Thank you.",,tile body,
 contact.support_heading,Support IvritSuite,,tile heading,
-dashboard.about.faq_a1,"It displays the live Hebrew date, time, weather, and days of the week for use on classroom SmartBoards or projectors during morning routine and Hebrew instruction.",,FAQ answer,
-dashboard.about.faq_a2,"Yes. The dashboard is designed for SmartBoards, projectors, and large displays. A built-in fullscreen mode and zoom control let you size content for any classroom screen.",,FAQ answer,
-dashboard.about.faq_a3,Yes. The dashboard is free to use under CC BY-NC-SA 4.0 for non-commercial educational purposes.,,FAQ answer,
-dashboard.about.faq_a4,Yes. The Hebrew (Jewish) date and the corresponding Gregorian date are shown live and update automatically each day.,,FAQ answer,
-dashboard.about.faq_a5,"Click ❓ Tour in the top bar for a quick walkthrough. First-time teachers also get a setup card. To switch layouts, open Settings → Presets and tap a Quick-start layout — Hebrew classroom, Morning routine, or a General classroom layout for non-Judaics rooms — then tweak it and Save your own preset.",,FAQ answer,
-dashboard.about.faq_a6,Yes. Settings → Schedule Sync lets you assign a preset and an end time to each period; the board reconfigures itself through the day and shows a live Now / Next display and a countdown.,,FAQ answer,
-dashboard.about.faq_a7,"Fullscreen keeps the screen awake automatically. Otherwise turn on Keep screen awake in Settings → Display Options, where the browser supports it.",,FAQ answer,
-dashboard.about.faq_q1,What is the Hebrew classroom dashboard for?,,FAQ question,
-dashboard.about.faq_q2,Does it work on SmartBoards?,,FAQ question,
-dashboard.about.faq_q3,Is the dashboard free?,,FAQ question,
-dashboard.about.faq_q4,Can I project the Hebrew date?,,FAQ question,
-dashboard.about.faq_q5,"Is there a guided tour, and how do I switch layouts?",,FAQ question,
-dashboard.about.faq_q6,Can the dashboard switch between periods by itself?,,FAQ question,
-dashboard.about.faq_q7,How do I keep the display from going to sleep?,,FAQ question,
-dashboard.about.faq_summary,Frequently Asked Questions,,FAQ section summary,
-dashboard.about.howto_1,Set your location for accurate weather and Hebrew date.,,how-to step,
-dashboard.about.howto_2,Pick which panels to show in Display Options.,,how-to step,
-dashboard.about.howto_3,Customize the Hebrew font and nikkud display.,,how-to step,
-dashboard.about.howto_4,Use the fullscreen button to project to your SmartBoard.,,how-to step,
-dashboard.about.howto_5,Save your setup as a preset — or start from a Quick-start layout in the Presets panel.,,how-to step,
-dashboard.about.howto_6,"In fullscreen, move the mouse to reveal quick controls (settings, timer, text, video).",,how-to step,
-dashboard.about.howto_7,Click the ✎ on the dashboard message to edit it right on the board.,,how-to step,
-dashboard.about.howto_summary,How To Use,,how-to section summary,
-dashboard.backup.err_invalid_json,Invalid JSON.,,Manual-backup import error alert,alert
-dashboard.backup.placeholder,"Paste backup JSON here, or click Export…",,Manual-backup textarea placeholder,placeholder
-dashboard.color.color_code_nikkud,Color-code nikkud,,settings label,
-dashboard.color.color_style,Color style,,settings label,
-dashboard.color.mode_color,Color,,radio option,
-dashboard.color.mode_highlight,Highlight,,radio option,
-dashboard.color.mode_underline,Underline,,radio option,
-dashboard.color.reset,Reset,,vowel scheme reset button,
-dashboard.color.reset_confirm,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,,confirm dialog,
-dashboard.color.scheme_default,Default,,vowel scheme button,
-dashboard.color.scheme_talam,TaL AM,,vowel scheme button,
-dashboard.color.show_nikkud,Show nikkud,,settings label,
-dashboard.color.tts_fast,Fast,,TTS slider scale label,
-dashboard.color.tts_slow,Slow,,TTS slider label,
-dashboard.color.tts_slower,Slower,,TTS slider scale label,
-dashboard.color.tts_speed_label,Hebrew TTS Reading Speed,,settings label,
-dashboard.common.beta_badge,BETA,,inline feature badge (repeated),
-dashboard.common.opt_both,Both,,radio option,
-dashboard.common.opt_english,English,,radio option (display language),
-dashboard.common.opt_none,None,,radio option (no headers),
-dashboard.common.restore_default,Restore default,,size-reset button title (repeated),
-dashboard.datetime.date_format,Date format,,settings label,
-dashboard.datetime.eng_date_size,Eng Date size,,size slider label,
-dashboard.datetime.fmt_12,12-hr,,radio option,
-dashboard.datetime.fmt_24,24-hr,,radio option,
-dashboard.datetime.fmt_dmy,DD/MM/YYYY,,radio option,
-dashboard.datetime.fmt_long,Long,,radio option,
-dashboard.datetime.fmt_mdy,MM/DD/YYYY,,radio option,
-dashboard.datetime.heb_date_size,Heb Date size,,size slider label,
-dashboard.datetime.hebdate_display,Display,,settings label (Hebrew date),
-dashboard.datetime.hide_eng_date,Hide English date,,settings label,
-dashboard.datetime.hide_heb_date,Hide Hebrew date,,settings label,
-dashboard.datetime.hide_time,Hide time,,settings label,
-dashboard.datetime.show_eng_dow,Show day of the week,,settings label,
-dashboard.datetime.show_holiday_countdown,Show Countdown to Next Holiday,,settings label,
-dashboard.datetime.show_seconds,Show seconds,,settings label,
-dashboard.datetime.sub_english_date,English Date,,settings sub-section header,
-dashboard.datetime.sub_hebrew_date,Hebrew Date,,settings sub-section header,
-dashboard.datetime.sub_time,Time,,settings sub-section header,
-dashboard.datetime.time_format,Time format,,settings label,
-dashboard.datetime.time_size,Time size,,size slider label,
-dashboard.days.col_title,Days of the Week,,live-card column title,RTL / hebDisplay; Hebrew fork אֵיזֶה יוֹם הַיוֹם?
-dashboard.days.color_days,Color days of the week,,settings label,
-dashboard.days.display_label,Display,,settings label (day of week),
-dashboard.days.display_size,Display size,,size slider label,
-dashboard.days.dow_friday,Friday,,day-of-week name,
-dashboard.days.dow_monday,Monday,,day-of-week name,
-dashboard.days.dow_saturday,Saturday,,day-of-week name,
-dashboard.days.dow_sunday,Sunday,,day-of-week name,
-dashboard.days.dow_thursday,Thursday,,day-of-week name,
-dashboard.days.dow_tuesday,Tuesday,,day-of-week name,
-dashboard.days.dow_wednesday,Wednesday,,day-of-week name,
-dashboard.days.emoji_none,None,,emoji-set button (no emoji),
-dashboard.days.emoji_sequence,Emoji sequence,,settings label,
-dashboard.days.emoji_size,Emoji size,,size slider label,
-dashboard.days.hide_panel,Hide Day of Week panel,,settings label,
-dashboard.days.holiday_countdown.one,{count} day until {title},,holiday countdown line,plural; mixed UI+content — do not translate {…}
-dashboard.days.holiday_countdown.other,{count} days until {title},,holiday countdown line,plural; mixed UI+content — do not translate {…}
-dashboard.days.holiday_today,🎉 Today is {title}!,,holiday countdown line,leading-emoji; mixed UI+content — do not translate {…}
-dashboard.days.marker_today,Today,,day marker badge,RTL / hebDisplay; Hebrew fork הַיוֹם
-dashboard.days.marker_tomorrow,Tomorrow,,day marker badge,RTL / hebDisplay; Hebrew fork מָחָר יִהְיֶה
-dashboard.days.marker_yesterday,Yesterday,,day marker badge,RTL / hebDisplay; Hebrew fork אֶתְמוֹל הָיָה
-dashboard.days.omer_day,Day {n} of the Omer,,Omer panel English label,
-dashboard.days.omer_day_week,"Day {n} of the Omer · Week {w}, Day {d}",,Omer panel English label,mixed UI+content — do not translate {…}
-dashboard.days.omer_shavuot,Chag Sameach — Shavuot,,Omer panel (Shavuot),
-dashboard.days.omer_show_english,Show English day/week label,,settings label,
-dashboard.days.omer_show_panel,Show Omer panel,,settings label,
-dashboard.days.omer_show_progress,Show progress bar,,settings label,
-dashboard.days.shabbat_candle,🕯️ Candle lighting: {date} at {time},,Shabbat times line,leading-emoji; mixed UI+content — do not translate {…}
-dashboard.days.shabbat_havdalah,✨ Havdalah: {day} at {time},,Shabbat times line,leading-emoji; mixed UI+content — do not translate {…}
-dashboard.days.shabbat_location_hint,Uses the same location as the weather widget above.,,settings hint,
-dashboard.days.shabbat_unavailable,Shabbat times unavailable,,Shabbat error state,
-dashboard.days.show_shabbat,Show Candle Lighting / Havdalah times,,settings label,
-dashboard.days.show_today,Show Today marker,,settings label,
-dashboard.days.show_tomorrow,Show Tomorrow marker,,settings label,
-dashboard.days.show_yesterday,Show Yesterday marker,,settings label,
-dashboard.days.tap_to_read,Tap to read,,settings label,
-dashboard.days.ytt_size,Y/T/T size,,size slider label,
-dashboard.display.column_headers,Column headers,,settings label,
-dashboard.display.current_location,📍 Current Location,,location button,leading-emoji
-dashboard.display.header_size,Header size,,size slider label,
-dashboard.display.hide_zoom_bar,Hide zoom bar,,settings label,
-dashboard.display.keep_awake,Keep screen awake,,settings label,
-dashboard.display.keep_awake_tip,Prevents the display from dimming or sleeping while the dashboard is open (Screen Wake Lock). Fullscreen keeps the screen awake automatically.,,settings tooltip,
-dashboard.display.location_placeholder,"City, e.g. New York",,location input placeholder,
-dashboard.display.location_update,Update,,location update button,
-dashboard.display.reset_all_text_sizes,↺ Reset all text sizes,,settings button,leading-emoji
-dashboard.display.reset_all_text_sizes_confirm,Reset all text sizes to defaults?,,confirm dialog,
-dashboard.display.show_text_size_options,Show text size options,,settings label,
-dashboard.display.show_video_embed,Show video embed,,settings label,
-dashboard.display.wake_dot,Screen will stay awake,,wake-lock indicator (title+aria),
-dashboard.display.zoom_label,🔍 Zoom,,zoom bar label,leading-emoji
-dashboard.display.zoom_reset,Reset,,zoom bar reset button,
-dashboard.font.default_tag,[DEFAULT],,default-font marker,
-dashboard.font.section_cursive,Cursive / Script,,font picker section header,
-dashboard.font.section_myfonts,My Fonts,,font picker section header,
-dashboard.font.section_suffix,{section} Fonts,,font picker section header,mixed UI+content — do not translate {…}
-dashboard.fs.controls_aria,Fullscreen controls,,fullscreen strip toolbar aria,aria-label only
-dashboard.fs.strip_pick,Pick,,fullscreen strip button,
-dashboard.fs.strip_settings,Settings,,fullscreen strip button,
-dashboard.fs.strip_text,Text,,fullscreen strip button,
-dashboard.fs.strip_timer,Timer,,fullscreen strip button,
-dashboard.fs.strip_video,Video,,fullscreen strip button,
-dashboard.glyphname.chirik,Chirik,,vowel color-picker row label,glyph-name
-dashboard.glyphname.hataf_kamatz,H. Kamatz,,vowel color-picker row label,glyph-name
-dashboard.glyphname.hataf_patach,H. Patach,,vowel color-picker row label,glyph-name
-dashboard.glyphname.hataf_segol,H. Segol,,vowel color-picker row label,glyph-name
-dashboard.glyphname.holam,Holam,,vowel color-picker row label,glyph-name
-dashboard.glyphname.kamatz,Kamatz,,vowel color-picker row label,glyph-name
-dashboard.glyphname.kubutz,Kubutz,,vowel color-picker row label,glyph-name
-dashboard.glyphname.patach,Patach,,vowel color-picker row label,glyph-name
-dashboard.glyphname.segol,Segol,,vowel color-picker row label,glyph-name
-dashboard.glyphname.shuruk,Shuruk,,vowel color-picker row label,glyph-name
-dashboard.glyphname.shva,Shva,,vowel color-picker row label,glyph-name
-dashboard.glyphname.tzere,Tzere,,vowel color-picker row label,glyph-name
-dashboard.glyphname.vav_holam,Vav Holam,,vowel color-picker row label,glyph-name
-dashboard.groups.close,Close,,group result close button,
-dashboard.groups.group_title,Group {n},,group card title,RTL / hebDisplay; Hebrew fork קְבוּצָה {n}
-dashboard.groups.reshuffle,🔀 Reshuffle,,group result button,leading-emoji
-dashboard.header.home,Home,,header nav button,
-dashboard.header.settings_btn,Settings,,header icon button title,
-dashboard.header.subtitle,"Live Hebrew date, time, weather, and days of the week for SmartBoards — a free Hebrew teaching dashboard.",,page header subtitle,
-dashboard.header.title,Hebrew Classroom Dashboard,,page header h1,
-dashboard.header.tour_btn,Tour,,header button label,
-dashboard.header.tour_btn_title,Take a quick tour,,header button title,
-dashboard.picker.all_absent,Everyone is marked absent today.,,pick overlay message,
-dashboard.picker.chip_absent,Absent today — tap to include,,chip tooltip (absent),
-dashboard.picker.chip_present,Tap to mark absent for this session,,chip tooltip (present),
-dashboard.picker.class_cap_note,You can have up to {max} classes. Delete one to add another.,,inline note,
-dashboard.picker.class_label,Class,,settings label,
-dashboard.picker.class_option,{name} ({count}),,class-switcher option,mixed UI+content — do not translate {…}
-dashboard.picker.close,Close,,pick overlay close button,
-dashboard.picker.close_aria,Close,,projector overlay close aria,aria-label only
-dashboard.picker.col_title,Student Picker,,live-card column title,RTL / hebDisplay; Hebrew fork מִי הַתּוֹר?
-dashboard.picker.default_class_name,My class,,default class name,
-dashboard.picker.delete_class_confirm,"Delete class ""{name}""? Its roster and today's picks will be removed.",,confirm dialog,mixed UI+content — do not translate {…}
-dashboard.picker.delete_class_title,Delete class,,icon button title,
-dashboard.picker.empty_card,"Add students to this class in Settings → Student Picker, or pick a different class from the header.",,empty state (sidebar card),
-dashboard.picker.empty_groups,Add a class roster in Settings → Student Picker.,,groups overlay empty state,
-dashboard.picker.empty_pick,Add students to this class in Settings → Student Picker.,,pick overlay empty state,
-dashboard.picker.fair_cycle,Don't repeat until everyone's been picked,,settings label,
-dashboard.picker.fs_hide,Hide,,fullscreen pick pop button,
-dashboard.picker.fs_make_groups,👥 Make Groups,,fullscreen pick pop button,leading-emoji
-dashboard.picker.fs_pick_one,🎲 Pick One,,fullscreen pick pop button,leading-emoji
-dashboard.picker.group_count_label,Number of groups (N),,settings label (count mode),
-dashboard.picker.group_mode,Group Maker mode,,settings label,
-dashboard.picker.group_of_n,Groups of N,,radio option,
-dashboard.picker.group_size_label,Group size (N),,settings label (size mode),
-dashboard.picker.make_groups,👥 Make Groups,,sidebar picker button,leading-emoji
-dashboard.picker.n_groups,N groups,,radio option,
-dashboard.picker.new_class_prompt,New class name:,,prompt,
-dashboard.picker.new_class_title,New class,,icon button title,
-dashboard.picker.new_round,🔄 New round,,fair-cycle reset button + pick note,leading-emoji
-dashboard.picker.overlay_aria,Student picker,,projector overlay aria,aria-label only
-dashboard.picker.pick_again,🎲 Pick Again,,pick result button,leading-emoji
-dashboard.picker.pick_one,🎲 Pick One,,sidebar picker button,leading-emoji
-dashboard.picker.progress,Picked {done} / {total},,fair-cycle progress,
-dashboard.picker.rename_class_prompt,Rename class:,,prompt,
-dashboard.picker.rename_class_title,Rename class,,icon button title,
-dashboard.picker.roster_count.one,{count} name,,roster name count,plural
-dashboard.picker.roster_count.other,{count} names,,roster name count,plural
-dashboard.picker.roster_count_max_suffix,(max {max}),,appended to roster count at cap,
-dashboard.picker.roster_hint,"Presets and Schedule Sync remember which class is active — rosters themselves are shared, so editing a list updates it everywhere.",,settings hint,
-dashboard.picker.roster_label,Roster — one name per line,,settings label (default),
-dashboard.picker.roster_label_named,Roster for {name} — one name per line,,settings label (active class),mixed UI+content — do not translate {…}
-dashboard.picker.roster_placeholder,e.g. Ava\nNoah\nדָּוִד\nמַיָה,,roster textarea placeholder,contains \n; mixed UI+content — do not translate {…}
-dashboard.picker.show_fullscreen,Show in fullscreen mode,,settings label,
-dashboard.picker.show_panel,Show Student Picker panel,,settings label,
-dashboard.picker.switch_class,Switch class,,class switcher (title+aria),
-dashboard.preset.delete_confirm,"Delete preset ""{name}""?",,confirm dialog,mixed UI+content — do not translate {…}
-dashboard.preset.delete_title,Delete,,preset row button title,
-dashboard.preset.duplicate_title,Duplicate,,preset row button title,
-dashboard.preset.load,Load,,preset row button,
-dashboard.preset.name_placeholder,Preset name,,preset name input placeholder,
-dashboard.preset.overwrite_confirm,"Overwrite preset ""{name}"" with current settings?",,confirm dialog,mixed UI+content — do not translate {…}
-dashboard.preset.overwrite_title,Overwrite with current settings,,preset row button title,
-dashboard.preset.quickstart_button,✨ Quick-start layouts…,,presets panel button,leading-emoji
-dashboard.preset.quickstart_desc,Apply a ready-made setup — including a general-classroom layout — then tweak it and Save it as your own preset.,,presets panel prose,
-dashboard.preset.save,Save,,preset save button,
-dashboard.preset.save_empty,Please enter a preset name.,,alert,
-dashboard.schedule.add,+ Add,,settings button,leading-emoji
-dashboard.schedule.countdown_next_generic,Next class in {time},,countdown line,
-dashboard.schedule.countdown_next_named,Next: {preset} in {time},,countdown line,mixed UI+content — do not translate {…}
-dashboard.schedule.delete_confirm,"Delete schedule ""{name}""?",,confirm dialog,mixed UI+content — do not translate {…}
-dashboard.schedule.drag_reorder,Drag to reorder,,drag handle title,
-dashboard.schedule.enable,Enable Schedule Sync,,settings label,
-dashboard.schedule.explain,"Each row shows a chosen preset until a set time — as the day moves on, the dashboard reconfigures itself to the next preset automatically, and the countdown shows how long is left in the current block.",,settings prose,
-dashboard.schedule.explain_eg,e.g. Morning until 8:45 → Ivrit until 9:30 → Recess until 9:45,,settings prose example,mixed UI+content — do not translate {…}
-dashboard.schedule.hdr_preset,Preset,,schedule table column header,
-dashboard.schedule.hdr_until,Until,,schedule table column header,
-dashboard.schedule.move_down,Move down,,schedule row button title,
-dashboard.schedule.move_down_aria,Move row {n} down,,schedule row button aria,aria-label only
-dashboard.schedule.move_up,Move up,,schedule row button title,
-dashboard.schedule.move_up_aria,Move row {n} up,,schedule row button aria,aria-label only
-dashboard.schedule.name_prompt,Schedule name:,,prompt,
-dashboard.schedule.next_at,at {time},,next block value,
-dashboard.schedule.next_label,Next,,now/next block label,
-dashboard.schedule.no_entries,No entries yet — click + Add.,,empty state,
-dashboard.schedule.now_label,Now,,now/next block label,
-dashboard.schedule.nownext_tip,Shows the current period and the upcoming one (with preset names) in the center of the dashboard.,,settings tooltip,
-dashboard.schedule.overwrite_confirm,"Overwrite schedule ""{name}"" with the current schedule?",,confirm dialog,mixed UI+content — do not translate {…}
-dashboard.schedule.overwrite_title,Overwrite with current schedule,,saved schedule row button title,
-dashboard.schedule.preview_hint,Add periods (a preset + an end time) to preview your day.,,settings preview empty state,
-dashboard.schedule.remove,Remove,,schedule row button title,
-dashboard.schedule.save_as,Save Schedule As…,,settings button,
-dashboard.schedule.save_empty,Add at least one schedule entry first.,,alert,
-dashboard.schedule.sched_delete_title,Delete,,saved schedule row button title,
-dashboard.schedule.sched_duplicate_title,Duplicate,,saved schedule row button title,
-dashboard.schedule.sched_load,Load,,saved schedule row button,
-dashboard.schedule.show_countdown,Show countdown to next class,,settings label,
-dashboard.schedule.show_nownext,Show Now / Next on dashboard,,settings label,
-dashboard.schedule.show_preset_name,Show preset name,,settings label,
-dashboard.schedule.sort_by_time,Sort by time,,validation button,
-dashboard.schedule.sub_input,Schedule Input,,settings sub-section header,
-dashboard.schedule.sub_load,Load Schedule,,settings sub-section header,
-dashboard.schedule.sub_options,Schedule Sync Options,,settings sub-section header,
-dashboard.schedule.suffix_tomorrow,(tomorrow),,countdown/now-next suffix,
-dashboard.schedule.time_left,{time} left,,now block value,
-dashboard.schedule.until_label,until,,schedule row inline label,
-dashboard.schedule.warn_duplicate_time,⚠ Two rows end at the same time ({time}).,,validation warning,leading-emoji
-dashboard.schedule.warn_missing_until,⚠ A row is missing an “until” time.,,validation warning,leading-emoji
-dashboard.schedule.warn_out_of_order,⚠ Rows are out of time order. ,,validation warning,leading-emoji
-dashboard.schedule.warn_unknown_preset,⚠ Preset “{name}” doesn't exist — create it in Presets.,,validation warning,leading-emoji; mixed UI+content — do not translate {…}
-dashboard.settings.close_aria,Close settings,,settings drawer close aria,aria-label only
-dashboard.settings.close_title,Close,,settings drawer close title,
-dashboard.settings.collapse_all,Collapse all menus,,settings drawer button,
-dashboard.settings.expand_all,Expand all menus,,settings drawer button,
-dashboard.settings.header,⚙️  Dashboard Settings,,settings drawer header,leading-emoji
-dashboard.settings.panel_about,About & FAQ,,panel title,
-dashboard.settings.panel_dashtext,Dashboard Text,,panel title,
-dashboard.settings.panel_datetime,Date & Time,,panel title,
-dashboard.settings.panel_display,Display Options,,panel title,
-dashboard.settings.panel_dow,Day of Week,,panel title,
-dashboard.settings.panel_hebrew,Hebrew Settings,,panel title,
-dashboard.settings.panel_location,Location,,panel title,
-dashboard.settings.panel_omer,Omer,,panel title,
-dashboard.settings.panel_picker,Student Picker,,panel title,
-dashboard.settings.panel_presets,Presets,,panel title,
-dashboard.settings.panel_schedule,Schedule Sync,,panel title,
-dashboard.settings.panel_timer,Timer,,panel title,
-dashboard.settings.panel_weather,Weather,,panel title,
-dashboard.settings.sub_hebrew_font,Hebrew Font,,settings sub-section header,
-dashboard.setup.close_aria,Close,,first-run setup close aria,aria-label only
-dashboard.setup.skip,Skip — use New York for now,,first-run setup link,
-dashboard.setup.starter_general_desc,"Secular layout — English date, big clock, weather, timer. No Hebrew calendar.",,starter layout description,
-dashboard.setup.starter_general_label,General classroom,,starter layout label,
-dashboard.setup.starter_hebrew_desc,"Everything on — Hebrew headers & date, Shabbat, Omer, holidays, weather.",,starter layout description,
-dashboard.setup.starter_hebrew_label,Hebrew classroom,,starter layout label,
-dashboard.setup.starter_morning_desc,"Days, both dates, a big clock, weather and a timer — minimal chrome.",,starter layout description,
-dashboard.setup.starter_morning_label,Morning routine,,starter layout label,
-dashboard.setup.subtitle,"Set your location for accurate weather and Shabbat times, then pick a starting layout. You can change anything later in Settings.",,first-run setup prose,
-dashboard.setup.title,Welcome! Let's set up your dashboard,,first-run setup modal title,
-dashboard.text.align_center,Center,,editor toolbar button title,
-dashboard.text.align_left,Align left (LTR),,editor toolbar button title,
-dashboard.text.align_right,Align right (RTL),,editor toolbar button title,
-dashboard.text.bold,Bold,,editor toolbar button title,
-dashboard.text.display_size,Display size,,size slider label (dashboard text),
-dashboard.text.done_btn,✓ Done,,in-place toolbar button,leading-emoji
-dashboard.text.done_btn_title,Finish editing,,in-place toolbar button title,
-dashboard.text.edit_pencil_aria,Edit dashboard text,,edit pencil aria,aria-label only
-dashboard.text.edit_pencil_title,Edit text,,edit pencil title,
-dashboard.text.hide,Hide dashboard text,,settings label,
-dashboard.text.insert_link,Insert link (or remove if cursor is inside one),,editor toolbar button title,
-dashboard.text.italic,Italic,,editor toolbar button title,
-dashboard.text.link_prompt,Enter URL:,,prompt,
-dashboard.text.size_large,Large,,editor size option,
-dashboard.text.size_normal,Normal,,editor size option,
-dashboard.text.size_small,Small,,editor size option,
-dashboard.text.size_title,Size,,editor toolbar size select title,
-dashboard.text.size_xl,XL,,editor size option,
-dashboard.text.size_xxl,XXL,,editor size option,
-dashboard.text.spoiler,Spoiler,,editor toolbar button,
-dashboard.text.spoiler_title,Wrap selection in spoiler (hidden until tapped),,editor toolbar button title,
-dashboard.text.strikethrough,Strikethrough,,editor toolbar button title,
-dashboard.text.sub_font,Text Font,,settings sub-section header,
-dashboard.text.text_color,Text color,,editor toolbar color picker title,
-dashboard.text.underline,Underline,,editor toolbar button title,
-dashboard.timer.col_title,Timer,,live-card column title,RTL / hebDisplay; Hebrew fork כַּמָה זְמַן נִשְׁאַר?
-dashboard.timer.custom,Custom,,timer custom button,
-dashboard.timer.custom_invalid,Enter a duration as MM:SS (e.g. 2:30).,,alert,
-dashboard.timer.custom_placeholder,MM:SS,,timer custom input placeholder,
-dashboard.timer.done,Time!,,timer finished display,
-dashboard.timer.fs_10min,10 min,,fullscreen timer pop button,
-dashboard.timer.fs_1min,1 min,,fullscreen timer pop button,
-dashboard.timer.fs_3min,3 min,,fullscreen timer pop button,
-dashboard.timer.fs_5min,5 min,,fullscreen timer pop button,
-dashboard.timer.fs_hide,Hide,,fullscreen timer pop button,
-dashboard.timer.pause,⏸ Pause,,timer control button,leading-emoji
-dashboard.timer.preset_10min,10 min,,timer preset button,
-dashboard.timer.preset_1min,1 min,,timer preset button,
-dashboard.timer.preset_3min,3 min,,timer preset button,
-dashboard.timer.preset_5min,5 min,,timer preset button,
-dashboard.timer.reset,↺ Reset,,timer control button,leading-emoji
-dashboard.timer.set,Set,,timer custom set button,
-dashboard.timer.show_fullscreen,Show timer in fullscreen mode,,settings label,
-dashboard.timer.show_panel,Show Timer panel,,settings label,
-dashboard.timer.start,▶ Start,,timer control button,leading-emoji
-dashboard.tour.firstrun_link,Take a tour →,,First-run setup-card tour link,first-run affordance
-dashboard.tour.launch_label,Tour,,Header tour-launch button label (❓ icon separate),"header button, short"
-dashboard.tour.launch_title,Take a quick tour,,Header tour-launch button title,tooltip
-dashboard.tour.step1_body,"Yesterday, today and tomorrow in Hebrew — plus Shabbat times and the Omer count when they apply.",,tour step body,
-dashboard.tour.step1_title,Days of the week,,tour step title,
-dashboard.tour.step2_body,"Today's English and Hebrew dates, the live clock, an optional holiday countdown — and, with Schedule Sync, a Now / Next line.",,tour step body,
-dashboard.tour.step2_title,"Date, Hebrew date & time",,tour step title,
-dashboard.tour.step3_body,"Local weather for your set location, refreshed automatically all day.",,tour step body,
-dashboard.tour.step3_title,Live weather,,tour step title,
-dashboard.tour.step4_body,"Go fullscreen — it scales everything up, keeps the screen awake, and shows quick controls when you move the mouse.",,tour step body,
-dashboard.tour.step4_title,Project to your SmartBoard,,tour step title,
-dashboard.tour.step5_body,"Everything is customizable here — location, panels, fonts, nikkud colors, and a classroom timer.",,tour step body,
-dashboard.tour.step5_title,Settings,,tour step title,
-dashboard.tour.step6_body,One-tap starter setups — including a general-classroom layout — and save your own presets.,,tour step body,
-dashboard.tour.step6_title,Quick-start layouts,,tour step title,
-dashboard.tour.step7_body,"Load your daily schedule and the dashboard switches presets by itself, period by period.",,tour step body,
-dashboard.tour.step7_title,Schedule Sync,,tour step title,
-dashboard.video.header,Video,,video panel header + collapse header,RTL / hebDisplay; Hebrew fork וִידֵאוֹ
-dashboard.video.layout_below,Under dashboard,,radio option,
-dashboard.video.layout_sidebar,In sidebar,,radio option,
-dashboard.video.update_button,Update Video,,settings button,
-dashboard.video.url_placeholder,Paste YouTube URL…,,video url input placeholder,
-dashboard.weather.city_current,Current Location,,geolocation fallback city name,
-dashboard.weather.col_title,Weather,,live-card column title,RTL / hebDisplay; Hebrew fork מַה יֵש בַּחוּץ?
-dashboard.weather.desc_size,Description size,,size slider label,
-dashboard.weather.descriptor_cold,Cold,,weather temp descriptor,
-dashboard.weather.descriptor_hot,Hot,,weather temp descriptor,
-dashboard.weather.descriptor_pleasant,Pleasant,,weather temp descriptor,
-dashboard.weather.geo_error,Could not get location: {message},,alert,mixed UI+content — do not translate {…}
-dashboard.weather.geo_unsupported,Geolocation is not supported by this browser.,,alert,
-dashboard.weather.hide_desc,Hide weather description,,settings label,
-dashboard.weather.hide_emoji,Hide weather emoji,,settings label,
-dashboard.weather.hide_highlow,Hide High/Low,,settings label,
-dashboard.weather.hide_panel,Hide weather panel,,settings label,
-dashboard.weather.hide_temperature,Hide temperature,,settings label,
-dashboard.weather.highlow,H: {high} · L: {low},,weather high/low line,
-dashboard.weather.hl_size,H/L size,,size slider label,
-dashboard.weather.label_language,Label language,,settings label,
-dashboard.weather.label_size,Label size,,size slider label,
-dashboard.weather.loading,Loading weather…,,weather loading state,
-dashboard.weather.not_found,"Location ""{location}"" not found.",,weather error state,mixed UI+content — do not translate {…}
-dashboard.weather.refresh,↺ Refresh,,weather refresh button,leading-emoji
-dashboard.weather.refresh_title,Refresh weather,,weather refresh button title,
-dashboard.weather.simple_clouds,Clouds,,simple weather description,
-dashboard.weather.simple_desc,Simple weather description,,settings label,
-dashboard.weather.simple_desc_tip,"Limits description to: Sun, Clouds, Sun & Clouds, Rain, Snow, or Fog — instead of full WMO detail.",,settings tooltip,
-dashboard.weather.simple_fog,Fog,,simple weather description,
-dashboard.weather.simple_rain,Rain,,simple weather description,
-dashboard.weather.simple_snow,Snow,,simple weather description,
-dashboard.weather.simple_sun,Sun,,simple weather description,
-dashboard.weather.simple_sun_clouds,Sun and Clouds,,simple weather description,
-dashboard.weather.simple_sun_clouds_rain,"Sun, Clouds and Rain",,simple weather description,
-dashboard.weather.tap_to_read,Tap to read,,settings label,
-dashboard.weather.temp_size,Temp size,,size slider label,
-dashboard.weather.temp_unit,Temperature unit,,settings label,
-dashboard.weather.unavailable,Weather unavailable,,weather error state,
-dashboard.weather.unit_c,°C,,radio option,
-dashboard.weather.unit_f,°F,,radio option,
-dashboard.weather.wmo_clear,Clear,,weather description,
-dashboard.weather.wmo_drizzle,Drizzle,,weather description,
-dashboard.weather.wmo_fallback,Weather,,weather description fallback,
-dashboard.weather.wmo_fog,Fog,,weather description,
-dashboard.weather.wmo_heavy_rain,Heavy Rain,,weather description,
-dashboard.weather.wmo_heavy_showers,Heavy Showers,,weather description,
-dashboard.weather.wmo_heavy_snow,Heavy Snow,,weather description,
-dashboard.weather.wmo_heavy_thunderstorm,Heavy Thunderstorm,,weather description,
-dashboard.weather.wmo_overcast,Overcast,,weather description,
-dashboard.weather.wmo_partly_cloudy,Partly Cloudy,,weather description,
-dashboard.weather.wmo_rain,Rain,,weather description,
-dashboard.weather.wmo_showers,Showers,,weather description,
-dashboard.weather.wmo_snow,Snow,,weather description,
-dashboard.weather.wmo_snow_grains,Snow Grains,,weather description,
-dashboard.weather.wmo_snow_showers,Snow Showers,,weather description,
-dashboard.weather.wmo_thunderstorm,Thunderstorm,,weather description,
+dashboard.about.faq_a1,"It displays the live Hebrew date, time, weather, and days of the week for use on classroom SmartBoards or projectors during morning routine and Hebrew instruction.","מציג בזמן אמת את התאריך העברי, השעה, מזג האוויר וימות השבוע — לשימוש על לוחות חכמים או מקרנים בכיתה במהלך שגרת הבוקר והוראת העברית.",FAQ answer,
+dashboard.about.faq_a2,"Yes. The dashboard is designed for SmartBoards, projectors, and large displays. A built-in fullscreen mode and zoom control let you size content for any classroom screen.","כן. לוח המחוונים מתוכנן ללוחות חכמים, מקרנים ומסכים גדולים. מצב מסך מלא מובנה ופקד זום מאפשרים להתאים את גודל התוכן לכל מסך כיתתי.",FAQ answer,
+dashboard.about.faq_a3,Yes. The dashboard is free to use under CC BY-NC-SA 4.0 for non-commercial educational purposes.,כן. לוח המחוונים חינמי לשימוש תחת רישיון CC BY-NC-SA 4.0 למטרות חינוכיות לא-מסחריות.,FAQ answer,
+dashboard.about.faq_a4,Yes. The Hebrew (Jewish) date and the corresponding Gregorian date are shown live and update automatically each day.,כן. התאריך העברי (היהודי) והתאריך הלועזי המקביל מוצגים בזמן אמת ומתעדכנים אוטומטית מדי יום.,FAQ answer,
+dashboard.about.faq_a5,"Click <strong>❓ Tour</strong> in the top bar for a quick walkthrough. First-time teachers also get a setup card. To switch layouts, open Settings → Presets and tap a Quick-start layout — Hebrew classroom, Morning routine, or a General classroom layout for non-Judaics rooms — then tweak it and Save your own preset.","לחצו על <strong>❓ סיור</strong> בסרגל העליון לסיור מהיר. מורים חדשים מקבלים גם כרטיס הגדרה. כדי להחליף פריסות, פתחו הגדרות ← תבניות והקישו על פריסת התחלה מהירה — כיתת עברית, שגרת בוקר, או פריסת כיתה כללית לכיתות שאינן לימודי יהדות — ואז התאימו אותה ושמרו תבנית משלכם.",FAQ answer,html
+dashboard.about.faq_a6,Yes. Settings → Schedule Sync lets you assign a preset and an end time to each period; the board reconfigures itself through the day and shows a live Now / Next display and a countdown.,כן. הגדרות ← סנכרון מערכת שעות מאפשר להקצות תבנית וזמן סיום לכל שיעור; הלוח מגדיר את עצמו מחדש במהלך היום ומציג תצוגת עכשיו / הבא בזמן אמת וספירה לאחור.,FAQ answer,
+dashboard.about.faq_a7,"Fullscreen keeps the screen awake automatically. Otherwise turn on <strong>Keep screen awake</strong> in Settings → Display Options, where the browser supports it.","מסך מלא שומר את המסך פעיל אוטומטית. אחרת, הפעילו את <strong>שמור מסך פעיל</strong> בהגדרות ← אפשרויות תצוגה, במקומות שהדפדפן תומך בכך.",FAQ answer,html
+dashboard.about.faq_q1,What is the Hebrew classroom dashboard for?,למה מיועד לוח המחוונים לכיתת עברית?,FAQ question,
+dashboard.about.faq_q2,Does it work on SmartBoards?,האם הוא עובד על לוחות חכמים?,FAQ question,
+dashboard.about.faq_q3,Is the dashboard free?,האם לוח המחוונים חינמי?,FAQ question,
+dashboard.about.faq_q4,Can I project the Hebrew date?,האם אפשר להקרין את התאריך העברי?,FAQ question,
+dashboard.about.faq_q5,"Is there a guided tour, and how do I switch layouts?","האם יש סיור מודרך, ואיך מחליפים פריסות?",FAQ question,
+dashboard.about.faq_q6,Can the dashboard switch between periods by itself?,האם לוח המחוונים יכול להחליף בין שיעורים בעצמו?,FAQ question,
+dashboard.about.faq_q7,How do I keep the display from going to sleep?,איך מונעים מהמסך להיכנס למצב שינה?,FAQ question,
+dashboard.about.faq_summary,Frequently Asked Questions,שאלות נפוצות,FAQ section summary,
+dashboard.about.howto_1,Set your location for accurate weather and Hebrew date.,הגדירו את המיקום שלכם למזג אוויר ותאריך עברי מדויקים.,how-to step,
+dashboard.about.howto_2,Pick which panels to show in <em>Display Options</em>.,בחרו אילו פאנלים להציג ב<em>אפשרויות תצוגה</em>.,how-to step,html
+dashboard.about.howto_3,Customize the Hebrew font and nikkud display.,התאימו את הגופן העברי ותצוגת הניקוד.,how-to step,
+dashboard.about.howto_4,Use the fullscreen button to project to your SmartBoard.,השתמשו בכפתור מסך מלא כדי להקרין ללוח החכם.,how-to step,
+dashboard.about.howto_5,Save your setup as a preset — or start from a Quick-start layout in the Presets panel.,שמרו את ההגדרה שלכם כתבנית — או התחילו מפריסת התחלה מהירה בפאנל התבניות.,how-to step,
+dashboard.about.howto_6,"In fullscreen, move the mouse to reveal quick controls (settings, timer, text, video).","במסך מלא, הזיזו את העכבר כדי לחשוף פקדים מהירים (הגדרות, טיימר, טקסט, וידאו).",how-to step,
+dashboard.about.howto_7,Click the ✎ on the dashboard message to edit it right on the board.,לחצו על ה-✎ בהודעת הלוח כדי לערוך אותה ישירות על הלוח.,how-to step,
+dashboard.about.howto_summary,How To Use,איך להשתמש,how-to section summary,
+dashboard.backup.auto_explainer,"Save all your presets, saved schedules, and current settings to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it.","שמרו את כל התבניות, מערכות השעות השמורות וההגדרות הנוכחיות שלכם לקובץ <b>.ivrit</b> במכשיר שלכם. שחזרו על ידי גרירת הקובץ למטה או איתורו בעיון.",backup panel explainer,html
+dashboard.backup.err_invalid_json,Invalid JSON.,JSON לא תקין.,Manual-backup import error alert,alert
+dashboard.backup.placeholder,"Paste backup JSON here, or click Export…","הדביקו כאן JSON של גיבוי, או לחצו על ייצוא…",Manual-backup textarea placeholder,placeholder
+dashboard.color.color_code_nikkud,Color-code nikkud,קידוד צבעים לניקוד,settings label,
+dashboard.color.color_style,Color style,סגנון צבע,settings label,
+dashboard.color.mode_color,Color,צבע,radio option,
+dashboard.color.mode_highlight,Highlight,הדגשה,radio option,
+dashboard.color.mode_underline,Underline,קו תחתון,radio option,
+dashboard.color.reset,Reset,איפוס,vowel scheme reset button,
+dashboard.color.reset_confirm,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים שלכם עבור שתי הסכמות — ברירת מחדל ו-TaL AM.,confirm dialog,
+dashboard.color.scheme_default,Default,ברירת מחדל,vowel scheme button,
+dashboard.color.scheme_talam,TaL AM,TaL AM,vowel scheme button,
+dashboard.color.show_nikkud,Show nikkud,הצג ניקוד,settings label,
+dashboard.color.tts_fast,Fast,מהיר,TTS slider scale label,
+dashboard.color.tts_slow,Slow,איטי,TTS slider label,
+dashboard.color.tts_slower,Slower,איטי יותר,TTS slider scale label,
+dashboard.color.tts_speed_label,Hebrew TTS Reading Speed,מהירות ההקראה בעברית,settings label,
+dashboard.common.beta_badge,BETA,בטא,inline feature badge (repeated),
+dashboard.common.opt_both,Both,שניהם,radio option,
+dashboard.common.opt_english,English,אנגלית,radio option (display language),
+dashboard.common.opt_none,None,ללא,radio option (no headers),
+dashboard.common.restore_default,Restore default,שחזר ברירת מחדל,size-reset button title (repeated),
+dashboard.datetime.date_format,Date format,פורמט תאריך,settings label,
+dashboard.datetime.eng_date_size,Eng Date size,גודל תאריך לועזי,size slider label,
+dashboard.datetime.fmt_12,12-hr,12 שעות,radio option,
+dashboard.datetime.fmt_24,24-hr,24 שעות,radio option,
+dashboard.datetime.fmt_dmy,DD/MM/YYYY,DD/MM/YYYY,radio option,
+dashboard.datetime.fmt_long,Long,ארוך,radio option,
+dashboard.datetime.fmt_mdy,MM/DD/YYYY,MM/DD/YYYY,radio option,
+dashboard.datetime.heb_date_size,Heb Date size,גודל תאריך עברי,size slider label,
+dashboard.datetime.hebdate_display,Display,תצוגה,settings label (Hebrew date),
+dashboard.datetime.hide_eng_date,Hide English date,הסתר תאריך לועזי,settings label,
+dashboard.datetime.hide_heb_date,Hide Hebrew date,הסתר תאריך עברי,settings label,
+dashboard.datetime.hide_time,Hide time,הסתר שעה,settings label,
+dashboard.datetime.show_eng_dow,Show day of the week,הצג את יום השבוע,settings label,
+dashboard.datetime.show_holiday_countdown,Show Countdown to Next Holiday,הצג ספירה לחג הבא,settings label,
+dashboard.datetime.show_seconds,Show seconds,הצג שניות,settings label,
+dashboard.datetime.sub_english_date,English Date,תאריך לועזי,settings sub-section header,
+dashboard.datetime.sub_hebrew_date,Hebrew Date,תאריך עברי,settings sub-section header,
+dashboard.datetime.sub_time,Time,שעה,settings sub-section header,
+dashboard.datetime.time_format,Time format,פורמט שעה,settings label,
+dashboard.datetime.time_size,Time size,גודל השעה,size slider label,
+dashboard.days.col_title,Days of the Week,ימות השבוע,live-card column title,RTL / hebDisplay; Hebrew fork אֵיזֶה יוֹם הַיוֹם?
+dashboard.days.color_days,Color days of the week,צבע את ימות השבוע,settings label,
+dashboard.days.display_label,Display,תצוגה,settings label (day of week),
+dashboard.days.display_size,Display size,גודל תצוגה,size slider label,
+dashboard.days.dow_friday,Friday,יום שישי,day-of-week name,
+dashboard.days.dow_monday,Monday,יום שני,day-of-week name,
+dashboard.days.dow_saturday,Saturday,שבת,day-of-week name,
+dashboard.days.dow_sunday,Sunday,יום ראשון,day-of-week name,
+dashboard.days.dow_thursday,Thursday,יום חמישי,day-of-week name,
+dashboard.days.dow_tuesday,Tuesday,יום שלישי,day-of-week name,
+dashboard.days.dow_wednesday,Wednesday,יום רביעי,day-of-week name,
+dashboard.days.emoji_none,None,ללא,emoji-set button (no emoji),
+dashboard.days.emoji_sequence,Emoji sequence,רצף אמוג'י,settings label,
+dashboard.days.emoji_size,Emoji size,גודל אמוג'י,size slider label,
+dashboard.days.hide_panel,Hide Day of Week panel,הסתר פאנל יום בשבוע,settings label,
+dashboard.days.holiday_countdown.one,{count} day until {title},עוד {count} יום עד {title},holiday countdown line,plural; mixed UI+content — do not translate {…}
+dashboard.days.holiday_countdown.other,{count} days until {title},עוד {count} ימים עד {title},holiday countdown line,plural; mixed UI+content — do not translate {…}
+dashboard.days.holiday_today,🎉 Today is {title}!,🎉 היום {title}!,holiday countdown line,leading-emoji; mixed UI+content — do not translate {…}
+dashboard.days.marker_today,Today,היום,day marker badge,RTL / hebDisplay; Hebrew fork הַיוֹם
+dashboard.days.marker_tomorrow,Tomorrow,מחר,day marker badge,RTL / hebDisplay; Hebrew fork מָחָר יִהְיֶה
+dashboard.days.marker_yesterday,Yesterday,אתמול,day marker badge,RTL / hebDisplay; Hebrew fork אֶתְמוֹל הָיָה
+dashboard.days.omer_day,Day {n} of the Omer,יום {n} לעומר,Omer panel English label,
+dashboard.days.omer_day_week,"Day {n} of the Omer · Week {w}, Day {d}","יום {n} לעומר · שבוע {w}, יום {d}",Omer panel English label,mixed UI+content — do not translate {…}
+dashboard.days.omer_shavuot,Chag Sameach — Shavuot,חג שמח — שבועות,Omer panel (Shavuot),
+dashboard.days.omer_show_english,Show English day/week label,הצג תווית יום/שבוע באנגלית,settings label,
+dashboard.days.omer_show_panel,Show Omer panel,הצג פאנל עומר,settings label,
+dashboard.days.omer_show_progress,Show progress bar,הצג סרגל התקדמות,settings label,
+dashboard.days.shabbat_candle,🕯️ Candle lighting: {date} at {time},🕯️ הדלקת נרות: {date} בשעה {time},Shabbat times line,leading-emoji; mixed UI+content — do not translate {…}
+dashboard.days.shabbat_havdalah,✨ Havdalah: {day} at {time},✨ הבדלה: {day} בשעה {time},Shabbat times line,leading-emoji; mixed UI+content — do not translate {…}
+dashboard.days.shabbat_location_hint,Uses the same location as the weather widget above.,משתמש באותו מיקום כמו רכיב מזג האוויר שלמעלה.,settings hint,
+dashboard.days.shabbat_unavailable,Shabbat times unavailable,זמני שבת אינם זמינים,Shabbat error state,
+dashboard.days.show_shabbat,Show Candle Lighting / Havdalah times,הצג זמני הדלקת נרות / הבדלה,settings label,
+dashboard.days.show_today,Show Today marker,הצג סמן היום,settings label,
+dashboard.days.show_tomorrow,Show Tomorrow marker,הצג סמן מחר,settings label,
+dashboard.days.show_yesterday,Show Yesterday marker,הצג סמן אתמול,settings label,
+dashboard.days.tap_to_read,Tap to read,הקשה להקראה,settings label,
+dashboard.days.ytt_size,Y/T/T size,גודל א/ה/מ,size slider label,REVIEW: 'Y/T/T size' -> 'גודל א/ה/מ' — confirm
+dashboard.display.column_headers,Column headers,כותרות עמודות,settings label,
+dashboard.display.current_location,📍 Current Location,📍 מיקום נוכחי,location button,leading-emoji
+dashboard.display.header_size,Header size,גודל כותרת,size slider label,
+dashboard.display.hide_zoom_bar,Hide zoom bar,הסתר סרגל זום,settings label,
+dashboard.display.keep_awake,Keep screen awake,שמור מסך פעיל,settings label,
+dashboard.display.keep_awake_tip,Prevents the display from dimming or sleeping while the dashboard is open (Screen Wake Lock). Fullscreen keeps the screen awake automatically.,מונע מהמסך להתעמעם או להיכנס לשינה בזמן שלוח המחוונים פתוח (Screen Wake Lock). מסך מלא שומר את המסך פעיל אוטומטית.,settings tooltip,
+dashboard.display.location_placeholder,"City, e.g. New York","עיר, למשל New York",location input placeholder,
+dashboard.display.location_update,Update,עדכן,location update button,
+dashboard.display.reset_all_text_sizes,↺ Reset all text sizes,↺ אפס את כל גדלי הטקסט,settings button,leading-emoji
+dashboard.display.reset_all_text_sizes_confirm,Reset all text sizes to defaults?,לאפס את כל גדלי הטקסט לברירות המחדל?,confirm dialog,
+dashboard.display.show_text_size_options,Show text size options,הצג אפשרויות גודל טקסט,settings label,
+dashboard.display.show_video_embed,Show video embed,הצג הטמעת וידאו,settings label,
+dashboard.display.wake_dot,Screen will stay awake,המסך יישאר פעיל,wake-lock indicator (title+aria),
+dashboard.display.zoom_label,🔍 Zoom,🔍 זום,zoom bar label,leading-emoji
+dashboard.display.zoom_reset,Reset,איפוס,zoom bar reset button,
+dashboard.font.default_tag,[DEFAULT],[ברירת מחדל],default-font marker,
+dashboard.font.section_cursive,Cursive / Script,כתב יד / סקריפט,font picker section header,
+dashboard.font.section_myfonts,My Fonts,הגופנים שלי,font picker section header,
+dashboard.font.section_suffix,{section} Fonts,גופני {section},font picker section header,mixed UI+content — do not translate {…}
+dashboard.fs.controls_aria,Fullscreen controls,פקדי מסך מלא,fullscreen strip toolbar aria,aria-label only
+dashboard.fs.strip_pick,Pick,הגרלה,fullscreen strip button,
+dashboard.fs.strip_settings,Settings,הגדרות,fullscreen strip button,
+dashboard.fs.strip_text,Text,טקסט,fullscreen strip button,
+dashboard.fs.strip_timer,Timer,טיימר,fullscreen strip button,
+dashboard.fs.strip_video,Video,וידאו,fullscreen strip button,
+dashboard.glyphname.chirik,Chirik,חיריק,vowel color-picker row label,glyph-name
+dashboard.glyphname.hataf_kamatz,H. Kamatz,חטף קמץ,vowel color-picker row label,glyph-name
+dashboard.glyphname.hataf_patach,H. Patach,חטף פתח,vowel color-picker row label,glyph-name
+dashboard.glyphname.hataf_segol,H. Segol,חטף סגול,vowel color-picker row label,glyph-name
+dashboard.glyphname.holam,Holam,חולם,vowel color-picker row label,glyph-name
+dashboard.glyphname.kamatz,Kamatz,קמץ,vowel color-picker row label,glyph-name
+dashboard.glyphname.kubutz,Kubutz,קובוץ,vowel color-picker row label,glyph-name
+dashboard.glyphname.patach,Patach,פתח,vowel color-picker row label,glyph-name
+dashboard.glyphname.segol,Segol,סגול,vowel color-picker row label,glyph-name
+dashboard.glyphname.shuruk,Shuruk,שורוק,vowel color-picker row label,glyph-name
+dashboard.glyphname.shva,Shva,שווא,vowel color-picker row label,glyph-name
+dashboard.glyphname.tzere,Tzere,צירה,vowel color-picker row label,glyph-name
+dashboard.glyphname.vav_holam,Vav Holam,וו חולם,vowel color-picker row label,glyph-name
+dashboard.groups.close,Close,סגור,group result close button,
+dashboard.groups.group_title,Group {n},קבוצה {n},group card title,RTL / hebDisplay; Hebrew fork קְבוּצָה {n}
+dashboard.groups.reshuffle,🔀 Reshuffle,🔀 ערבוב מחדש,group result button,leading-emoji
+dashboard.header.home,Home,בית,header nav button,
+dashboard.header.settings_btn,Settings,הגדרות,header icon button title,
+dashboard.header.subtitle,"Live Hebrew date, time, weather, and days of the week for SmartBoards — a free Hebrew teaching dashboard.","תאריך עברי, שעה, מזג אוויר וימות השבוע בזמן אמת ללוחות חכמים — לוח מחוונים חינמי להוראת עברית.",page header subtitle,
+dashboard.header.title,Hebrew Classroom Dashboard,לוח מחוונים לכיתת עברית,page header h1,
+dashboard.header.tour_btn,Tour,סיור,header button label,
+dashboard.header.tour_btn_title,Take a quick tour,צאו לסיור מהיר,header button title,
+dashboard.picker.all_absent,Everyone is marked absent today.,כולם מסומנים כנעדרים היום.,pick overlay message,
+dashboard.picker.chip_absent,Absent today — tap to include,נעדר היום — הקישו כדי לכלול,chip tooltip (absent),
+dashboard.picker.chip_present,Tap to mark absent for this session,הקישו כדי לסמן כנעדר לשיעור זה,chip tooltip (present),
+dashboard.picker.class_cap_note,You can have up to {max} classes. Delete one to add another.,אפשר להחזיק עד {max} כיתות. מחקו אחת כדי להוסיף נוספת.,inline note,
+dashboard.picker.class_label,Class,כיתה,settings label,
+dashboard.picker.class_option,{name} ({count}),{name} ({count}),class-switcher option,mixed UI+content — do not translate {…}
+dashboard.picker.close,Close,סגור,pick overlay close button,
+dashboard.picker.close_aria,Close,סגור,projector overlay close aria,aria-label only
+dashboard.picker.col_title,Student Picker,בורר תלמידים,live-card column title,RTL / hebDisplay; Hebrew fork מִי הַתּוֹר?
+dashboard.picker.default_class_name,My class,הכיתה שלי,default class name,
+dashboard.picker.delete_class_confirm,"Delete class ""{name}""? Its roster and today's picks will be removed.","למחוק את הכיתה ""{name}""? רשימת התלמידים שלה והבחירות של היום יימחקו.",confirm dialog,mixed UI+content — do not translate {…}
+dashboard.picker.delete_class_title,Delete class,מחק כיתה,icon button title,
+dashboard.picker.empty_card,"Add students to this class in Settings → Student Picker, or pick a different class from the header.","הוסיפו תלמידים לכיתה זו בהגדרות ← בורר תלמידים, או בחרו כיתה אחרת מהכותרת.",empty state (sidebar card),
+dashboard.picker.empty_groups,Add a class roster in Settings → Student Picker.,הוסיפו רשימת תלמידים לכיתה בהגדרות ← בורר תלמידים.,groups overlay empty state,
+dashboard.picker.empty_pick,Add students to this class in Settings → Student Picker.,הוסיפו תלמידים לכיתה זו בהגדרות ← בורר תלמידים.,pick overlay empty state,
+dashboard.picker.fair_cycle,Don't repeat until everyone's been picked,אל תחזור עד שכולם נבחרו,settings label,
+dashboard.picker.fs_hide,Hide,הסתר,fullscreen pick pop button,
+dashboard.picker.fs_make_groups,👥 Make Groups,👥 חלוקה לקבוצות,fullscreen pick pop button,leading-emoji
+dashboard.picker.fs_pick_one,🎲 Pick One,🎲 הגרל אחד,fullscreen pick pop button,leading-emoji
+dashboard.picker.group_count_label,Number of groups (N),מספר קבוצות (N),settings label (count mode),
+dashboard.picker.group_mode,Group Maker mode,מצב יצירת קבוצות,settings label,
+dashboard.picker.group_of_n,Groups of N,קבוצות של N,radio option,
+dashboard.picker.group_size_label,Group size (N),גודל קבוצה (N),settings label (size mode),
+dashboard.picker.make_groups,👥 Make Groups,👥 חלוקה לקבוצות,sidebar picker button,leading-emoji
+dashboard.picker.n_groups,N groups,N קבוצות,radio option,
+dashboard.picker.new_class_prompt,New class name:,שם כיתה חדשה:,prompt,
+dashboard.picker.new_class_title,New class,כיתה חדשה,icon button title,
+dashboard.picker.new_round,🔄 New round,🔄 סבב חדש,fair-cycle reset button + pick note,leading-emoji
+dashboard.picker.overlay_aria,Student picker,בורר תלמידים,projector overlay aria,aria-label only
+dashboard.picker.pick_again,🎲 Pick Again,🎲 הגרל שוב,pick result button,leading-emoji
+dashboard.picker.pick_one,🎲 Pick One,🎲 הגרל אחד,sidebar picker button,leading-emoji
+dashboard.picker.progress,Picked {done} / {total},נבחרו {done} / {total},fair-cycle progress,
+dashboard.picker.rename_class_prompt,Rename class:,שנה שם כיתה:,prompt,
+dashboard.picker.rename_class_title,Rename class,שנה שם כיתה,icon button title,
+dashboard.picker.roster_count.one,{count} name,{count} שם,roster name count,plural
+dashboard.picker.roster_count.other,{count} names,{count} שמות,roster name count,plural
+dashboard.picker.roster_count_max_suffix,(max {max}),(מקסימום {max}),appended to roster count at cap,
+dashboard.picker.roster_hint,"Presets and Schedule Sync remember which class is active — rosters themselves are shared, so editing a list updates it everywhere.","תבניות וסנכרון מערכת שעות זוכרים איזו כיתה פעילה — רשימות התלמידים עצמן משותפות, כך שעריכת רשימה מעדכנת אותה בכל מקום.",settings hint,
+dashboard.picker.roster_label,Roster — one name per line,רשימת תלמידים — שם אחד בכל שורה,settings label (default),
+dashboard.picker.roster_label_named,Roster for {name} — one name per line,רשימת תלמידים עבור {name} — שם אחד בכל שורה,settings label (active class),mixed UI+content — do not translate {…}
+dashboard.picker.roster_placeholder,e.g. Ava\nNoah\nדָּוִד\nמַיָה,למשל Ava\nNoah\nדָּוִד\nמַיָה,roster textarea placeholder,contains \n; mixed UI+content — do not translate {…}
+dashboard.picker.show_fullscreen,Show in fullscreen mode,הצג במצב מסך מלא,settings label,
+dashboard.picker.show_panel,Show Student Picker panel,הצג פאנל בורר תלמידים,settings label,
+dashboard.picker.switch_class,Switch class,החלף כיתה,class switcher (title+aria),
+dashboard.preset.delete_confirm,"Delete preset ""{name}""?","למחוק את התבנית ""{name}""?",confirm dialog,mixed UI+content — do not translate {…}
+dashboard.preset.delete_title,Delete,מחק,preset row button title,
+dashboard.preset.duplicate_title,Duplicate,שכפול,preset row button title,
+dashboard.preset.load,Load,טען,preset row button,
+dashboard.preset.name_placeholder,Preset name,שם תבנית,preset name input placeholder,
+dashboard.preset.overwrite_confirm,"Overwrite preset ""{name}"" with current settings?","לדרוס את התבנית ""{name}"" בהגדרות הנוכחיות?",confirm dialog,mixed UI+content — do not translate {…}
+dashboard.preset.overwrite_title,Overwrite with current settings,דרוס בהגדרות הנוכחיות,preset row button title,
+dashboard.preset.quickstart_button,✨ Quick-start layouts…,✨ פריסות התחלה מהירה…,presets panel button,leading-emoji
+dashboard.preset.quickstart_desc,Apply a ready-made setup — including a general-classroom layout — then tweak it and Save it as your own preset.,החילו הגדרה מוכנה — כולל פריסת כיתה כללית — ואז התאימו ושמרו אותה כתבנית משלכם.,presets panel prose,
+dashboard.preset.save,Save,שמור,preset save button,
+dashboard.preset.save_empty,Please enter a preset name.,אנא הזינו שם תבנית.,alert,
+dashboard.schedule.add,+ Add,+ הוסף,settings button,leading-emoji
+dashboard.schedule.countdown_next_generic,Next class in {time},השיעור הבא בעוד {time},countdown line,
+dashboard.schedule.countdown_next_named,Next: {preset} in {time},הבא: {preset} בעוד {time},countdown line,mixed UI+content — do not translate {…}
+dashboard.schedule.delete_confirm,"Delete schedule ""{name}""?","למחוק את מערכת השעות ""{name}""?",confirm dialog,mixed UI+content — do not translate {…}
+dashboard.schedule.drag_reorder,Drag to reorder,גרור לסידור מחדש,drag handle title,
+dashboard.schedule.enable,Enable Schedule Sync,הפעל סנכרון מערכת שעות,settings label,
+dashboard.schedule.explain,"Each row shows a chosen preset until a set time — as the day moves on, the dashboard reconfigures itself to the next preset automatically, and the countdown shows how long is left in the current block.","כל שורה מציגה תבנית נבחרת עד לשעה מוגדרת — ככל שהיום מתקדם, לוח המחוונים מגדיר את עצמו מחדש לתבנית הבאה אוטומטית, והספירה לאחור מציגה כמה זמן נותר בבלוק הנוכחי.",settings prose,
+dashboard.schedule.explain_eg,e.g. Morning until 8:45 → Ivrit until 9:30 → Recess until 9:45,למשל בוקר עד 8:45 ← עברית עד 9:30 ← הפסקה עד 9:45,settings prose example,mixed UI+content — do not translate {…}
+dashboard.schedule.hdr_preset,Preset,תבנית,schedule table column header,
+dashboard.schedule.hdr_until,Until,עד,schedule table column header,
+dashboard.schedule.move_down,Move down,הזז למטה,schedule row button title,
+dashboard.schedule.move_down_aria,Move row {n} down,הזז שורה {n} למטה,schedule row button aria,aria-label only
+dashboard.schedule.move_up,Move up,הזז למעלה,schedule row button title,
+dashboard.schedule.move_up_aria,Move row {n} up,הזז שורה {n} למעלה,schedule row button aria,aria-label only
+dashboard.schedule.name_prompt,Schedule name:,שם מערכת שעות:,prompt,
+dashboard.schedule.next_at,at {time},בשעה {time},next block value,
+dashboard.schedule.next_label,Next,הבא,now/next block label,
+dashboard.schedule.no_entries,No entries yet — click + Add.,אין עדיין רשומות — לחצו על + הוסף.,empty state,
+dashboard.schedule.now_label,Now,עכשיו,now/next block label,
+dashboard.schedule.nownext_tip,Shows the current period and the upcoming one (with preset names) in the center of the dashboard.,מציג את השיעור הנוכחי ואת הבא (עם שמות התבניות) במרכז לוח המחוונים.,settings tooltip,
+dashboard.schedule.overwrite_confirm,"Overwrite schedule ""{name}"" with the current schedule?","לדרוס את מערכת השעות ""{name}"" במערכת השעות הנוכחית?",confirm dialog,mixed UI+content — do not translate {…}
+dashboard.schedule.overwrite_title,Overwrite with current schedule,דרוס במערכת השעות הנוכחית,saved schedule row button title,
+dashboard.schedule.preview_hint,Add periods (a preset + an end time) to preview your day.,הוסיפו שיעורים (תבנית + שעת סיום) כדי לצפות ביום שלכם.,settings preview empty state,
+dashboard.schedule.remove,Remove,הסר,schedule row button title,
+dashboard.schedule.save_as,Save Schedule As…,שמור מערכת שעות בשם…,settings button,
+dashboard.schedule.save_empty,Add at least one schedule entry first.,הוסיפו תחילה לפחות רשומה אחת למערכת השעות.,alert,
+dashboard.schedule.sched_delete_title,Delete,מחק,saved schedule row button title,
+dashboard.schedule.sched_duplicate_title,Duplicate,שכפול,saved schedule row button title,
+dashboard.schedule.sched_load,Load,טען,saved schedule row button,
+dashboard.schedule.show_countdown,Show countdown to next class,הצג ספירה לאחור לשיעור הבא,settings label,
+dashboard.schedule.show_nownext,Show Now / Next on dashboard,הצג עכשיו / הבא בלוח המחוונים,settings label,
+dashboard.schedule.show_preset_name,Show preset name,הצג שם תבנית,settings label,
+dashboard.schedule.sort_by_time,Sort by time,מיין לפי שעה,validation button,
+dashboard.schedule.sub_input,Schedule Input,הזנת מערכת שעות,settings sub-section header,
+dashboard.schedule.sub_load,Load Schedule,טעינת מערכת שעות,settings sub-section header,
+dashboard.schedule.sub_options,Schedule Sync Options,אפשרויות סנכרון מערכת שעות,settings sub-section header,
+dashboard.schedule.suffix_tomorrow,(tomorrow),(מחר),countdown/now-next suffix,
+dashboard.schedule.time_left,{time} left,נותרו {time},now block value,
+dashboard.schedule.until_label,until,עד,schedule row inline label,
+dashboard.schedule.warn_duplicate_time,⚠ Two rows end at the same time ({time}).,⚠ שתי שורות מסתיימות באותה שעה ({time}).,validation warning,leading-emoji
+dashboard.schedule.warn_missing_until,⚠ A row is missing an “until” time.,"⚠ לשורה חסרה שעת ""עד"".",validation warning,leading-emoji
+dashboard.schedule.warn_out_of_order,⚠ Rows are out of time order. ,⚠ השורות אינן בסדר כרונולוגי. ,validation warning,leading-emoji
+dashboard.schedule.warn_unknown_preset,⚠ Preset “{name}” doesn't exist — create it in Presets.,"⚠ התבנית ""{name}"" אינה קיימת — צרו אותה בתבניות.",validation warning,leading-emoji; mixed UI+content — do not translate {…}
+dashboard.settings.close_aria,Close settings,סגור הגדרות,settings drawer close aria,aria-label only
+dashboard.settings.close_title,Close,סגור,settings drawer close title,
+dashboard.settings.drawer_aria,Dashboard settings,הגדרות לוח המחוונים,settings drawer aria-label,aria-label only
+dashboard.settings.collapse_all,Collapse all menus,כווץ את כל התפריטים,settings drawer button,
+dashboard.settings.expand_all,Expand all menus,הרחב את כל התפריטים,settings drawer button,
+dashboard.settings.header,⚙️  Dashboard Settings,⚙️  הגדרות לוח המחוונים,settings drawer header,leading-emoji
+dashboard.settings.panel_about,About & FAQ,אודות ושאלות נפוצות,panel title,
+dashboard.settings.panel_dashtext,Dashboard Text,טקסט הלוח,panel title,
+dashboard.settings.panel_datetime,Date & Time,תאריך ושעה,panel title,
+dashboard.settings.panel_display,Display Options,אפשרויות תצוגה,panel title,
+dashboard.settings.panel_dow,Day of Week,יום בשבוע,panel title,
+dashboard.settings.panel_hebrew,Hebrew Settings,הגדרות עברית,panel title,
+dashboard.settings.panel_location,Location,מיקום,panel title,
+dashboard.settings.panel_omer,Omer,עומר,panel title,
+dashboard.settings.panel_picker,Student Picker,בורר תלמידים,panel title,
+dashboard.settings.panel_presets,Presets,תבניות,panel title,
+dashboard.settings.panel_schedule,Schedule Sync,סנכרון מערכת שעות,panel title,
+dashboard.settings.panel_timer,Timer,טיימר,panel title,
+dashboard.settings.panel_weather,Weather,מזג אוויר,panel title,
+dashboard.settings.sub_hebrew_font,Hebrew Font,גופן עברי,settings sub-section header,
+dashboard.setup.close_aria,Close,סגור,first-run setup close aria,aria-label only
+dashboard.setup.skip,Skip — use New York for now,דלג — השתמש ב-New York בינתיים,first-run setup link,
+dashboard.setup.starter_general_desc,"Secular layout — English date, big clock, weather, timer. No Hebrew calendar.","פריסה חילונית — תאריך לועזי, שעון גדול, מזג אוויר, טיימר. ללא לוח שנה עברי.",starter layout description,
+dashboard.setup.starter_general_label,General classroom,כיתה כללית,starter layout label,
+dashboard.setup.starter_hebrew_desc,"Everything on — Hebrew headers & date, Shabbat, Omer, holidays, weather.","הכול פעיל — כותרות ותאריך בעברית, שבת, עומר, חגים, מזג אוויר.",starter layout description,
+dashboard.setup.starter_hebrew_label,Hebrew classroom,כיתת עברית,starter layout label,
+dashboard.setup.starter_morning_desc,"Days, both dates, a big clock, weather and a timer — minimal chrome.","ימים, שני התאריכים, שעון גדול, מזג אוויר וטיימר — מינימום עיטורים.",starter layout description,
+dashboard.setup.starter_morning_label,Morning routine,שגרת בוקר,starter layout label,
+dashboard.setup.subtitle,"Set your location for accurate weather and Shabbat times, then pick a starting layout. You can change anything later in Settings.","הגדירו את המיקום שלכם למזג אוויר וזמני שבת מדויקים, ואז בחרו פריסת התחלה. תוכלו לשנות הכול מאוחר יותר בהגדרות.",first-run setup prose,
+dashboard.setup.title,Welcome! Let's set up your dashboard,ברוכים הבאים! בואו נגדיר את לוח המחוונים שלכם,first-run setup modal title,
+dashboard.text.align_center,Center,מרכז,editor toolbar button title,
+dashboard.text.align_left,Align left (LTR),יישור לשמאל (LTR),editor toolbar button title,
+dashboard.text.align_right,Align right (RTL),יישור לימין (RTL),editor toolbar button title,
+dashboard.text.bold,Bold,מודגש,editor toolbar button title,
+dashboard.text.display_size,Display size,גודל תצוגה,size slider label (dashboard text),
+dashboard.text.done_btn,✓ Done,✓ סיום,in-place toolbar button,leading-emoji
+dashboard.text.done_btn_title,Finish editing,סיים עריכה,in-place toolbar button title,
+dashboard.text.edit_pencil_aria,Edit dashboard text,ערוך את טקסט הלוח,edit pencil aria,aria-label only
+dashboard.text.edit_pencil_title,Edit text,ערוך טקסט,edit pencil title,
+dashboard.text.hide,Hide dashboard text,הסתר את טקסט הלוח,settings label,
+dashboard.text.insert_link,Insert link (or remove if cursor is inside one),הוסף קישור (או הסר אם הסמן בתוך אחד),editor toolbar button title,
+dashboard.text.italic,Italic,נטוי,editor toolbar button title,
+dashboard.text.link_prompt,Enter URL:,הזינו כתובת URL:,prompt,
+dashboard.text.size_large,Large,גדול,editor size option,
+dashboard.text.size_normal,Normal,רגיל,editor size option,
+dashboard.text.size_small,Small,קטן,editor size option,
+dashboard.text.size_title,Size,גודל,editor toolbar size select title,
+dashboard.text.size_xl,XL,XL,editor size option,
+dashboard.text.size_xxl,XXL,XXL,editor size option,
+dashboard.text.spoiler,Spoiler,ספוילר,editor toolbar button,
+dashboard.text.spoiler_title,Wrap selection in spoiler (hidden until tapped),עטוף את הבחירה בספוילר (מוסתר עד להקשה),editor toolbar button title,
+dashboard.text.strikethrough,Strikethrough,קו חוצה,editor toolbar button title,
+dashboard.text.sub_font,Text Font,גופן טקסט,settings sub-section header,
+dashboard.text.text_color,Text color,צבע טקסט,editor toolbar color picker title,
+dashboard.text.underline,Underline,קו תחתון,editor toolbar button title,
+dashboard.timer.col_title,Timer,טיימר,live-card column title,RTL / hebDisplay; Hebrew fork כַּמָה זְמַן נִשְׁאַר?
+dashboard.timer.custom,Custom,מותאם,timer custom button,
+dashboard.timer.custom_invalid,Enter a duration as MM:SS (e.g. 2:30).,הזינו משך זמן בפורמט MM:SS (למשל 2:30).,alert,
+dashboard.timer.custom_placeholder,MM:SS,MM:SS,timer custom input placeholder,
+dashboard.timer.done,Time!,הזמן נגמר!,timer finished display,
+dashboard.timer.fs_10min,10 min,10 דק',fullscreen timer pop button,
+dashboard.timer.fs_1min,1 min,1 דק',fullscreen timer pop button,
+dashboard.timer.fs_3min,3 min,3 דק',fullscreen timer pop button,
+dashboard.timer.fs_5min,5 min,5 דק',fullscreen timer pop button,
+dashboard.timer.fs_hide,Hide,הסתר,fullscreen timer pop button,
+dashboard.timer.pause,⏸ Pause,⏸ השהה,timer control button,leading-emoji
+dashboard.timer.preset_10min,10 min,10 דק',timer preset button,
+dashboard.timer.preset_1min,1 min,1 דק',timer preset button,
+dashboard.timer.preset_3min,3 min,3 דק',timer preset button,
+dashboard.timer.preset_5min,5 min,5 דק',timer preset button,
+dashboard.timer.reset,↺ Reset,↺ איפוס,timer control button,leading-emoji
+dashboard.timer.set,Set,הגדר,timer custom set button,
+dashboard.timer.show_fullscreen,Show timer in fullscreen mode,הצג טיימר במצב מסך מלא,settings label,
+dashboard.timer.show_panel,Show Timer panel,הצג פאנל טיימר,settings label,
+dashboard.timer.start,▶ Start,▶ התחל,timer control button,leading-emoji
+dashboard.tour.firstrun_link,Take a tour →,צאו לסיור ←,First-run setup-card tour link,first-run affordance
+dashboard.tour.launch_label,Tour,סיור,Header tour-launch button label (❓ icon separate),"header button, short"
+dashboard.tour.launch_title,Take a quick tour,צאו לסיור מהיר,Header tour-launch button title,tooltip
+dashboard.tour.step1_body,"Yesterday, today and tomorrow in Hebrew — plus Shabbat times and the Omer count when they apply.","אתמול, היום ומחר בעברית — וגם זמני שבת וספירת העומר כשהם רלוונטיים.",tour step body,
+dashboard.tour.step1_title,Days of the week,ימות השבוע,tour step title,
+dashboard.tour.step2_body,"Today's English and Hebrew dates, the live clock, an optional holiday countdown — and, with Schedule Sync, a Now / Next line.","התאריך הלועזי והעברי של היום, השעון החי, ספירה לחג אופציונלית — ועם סנכרון מערכת שעות, שורת עכשיו / הבא.",tour step body,
+dashboard.tour.step2_title,"Date, Hebrew date & time","תאריך, תאריך עברי ושעה",tour step title,
+dashboard.tour.step3_body,"Local weather for your set location, refreshed automatically all day.","מזג אוויר מקומי למיקום שהגדרתם, מתעדכן אוטומטית לאורך היום.",tour step body,
+dashboard.tour.step3_title,Live weather,מזג אוויר בזמן אמת,tour step title,
+dashboard.tour.step4_body,"Go fullscreen — it scales everything up, keeps the screen awake, and shows quick controls when you move the mouse.","עברו למסך מלא — זה מגדיל הכול, שומר על המסך פעיל, ומציג פקדים מהירים כשמזיזים את העכבר.",tour step body,
+dashboard.tour.step4_title,Project to your SmartBoard,הקרינו ללוח החכם,tour step title,
+dashboard.tour.step5_body,"Everything is customizable here — location, panels, fonts, nikkud colors, and a classroom timer.","כאן הכול ניתן להתאמה — מיקום, פאנלים, גופנים, צבעי ניקוד, וטיימר כיתתי.",tour step body,
+dashboard.tour.step5_title,Settings,הגדרות,tour step title,
+dashboard.tour.step6_body,One-tap starter setups — including a general-classroom layout — and save your own presets.,הגדרות התחלה בהקשה אחת — כולל פריסת כיתה כללית — ושמירת תבניות משלכם.,tour step body,
+dashboard.tour.step6_title,Quick-start layouts,פריסות התחלה מהירה,tour step title,
+dashboard.tour.step7_body,"Load your daily schedule and the dashboard switches presets by itself, period by period.","טענו את מערכת השעות היומית ולוח המחוונים יחליף תבניות בעצמו, שיעור אחר שיעור.",tour step body,
+dashboard.tour.step7_title,Schedule Sync,סנכרון מערכת שעות,tour step title,
+dashboard.video.header,Video,וידאו,video panel header + collapse header,RTL / hebDisplay; Hebrew fork וִידֵאוֹ
+dashboard.video.layout_below,Under dashboard,מתחת ללוח,radio option,
+dashboard.video.layout_sidebar,In sidebar,בסרגל הצד,radio option,
+dashboard.video.update_button,Update Video,עדכן וידאו,settings button,
+dashboard.video.url_placeholder,Paste YouTube URL…,הדביקו כתובת YouTube…,video url input placeholder,
+dashboard.weather.city_current,Current Location,מיקום נוכחי,geolocation fallback city name,
+dashboard.weather.col_title,Weather,מזג אוויר,live-card column title,RTL / hebDisplay; Hebrew fork מַה יֵש בַּחוּץ?
+dashboard.weather.desc_size,Description size,גודל תיאור,size slider label,
+dashboard.weather.descriptor_cold,Cold,קר,weather temp descriptor,
+dashboard.weather.descriptor_hot,Hot,חם,weather temp descriptor,
+dashboard.weather.descriptor_pleasant,Pleasant,נעים,weather temp descriptor,
+dashboard.weather.geo_error,Could not get location: {message},לא ניתן לקבל מיקום: {message},alert,mixed UI+content — do not translate {…}
+dashboard.weather.geo_unsupported,Geolocation is not supported by this browser.,הדפדפן הזה אינו תומך באיתור מיקום.,alert,
+dashboard.weather.hide_desc,Hide weather description,הסתר תיאור מזג אוויר,settings label,
+dashboard.weather.hide_emoji,Hide weather emoji,הסתר אמוג'י מזג אוויר,settings label,
+dashboard.weather.hide_highlow,Hide High/Low,הסתר מקסימום/מינימום,settings label,
+dashboard.weather.hide_panel,Hide weather panel,הסתר פאנל מזג אוויר,settings label,
+dashboard.weather.hide_temperature,Hide temperature,הסתר טמפרטורה,settings label,
+dashboard.weather.highlow,H: {high} · L: {low},מקס': {high} · מינ': {low},weather high/low line,
+dashboard.weather.hl_size,H/L size,גודל מקס'/מינ',size slider label,
+dashboard.weather.label_language,Label language,שפת התוויות,settings label,
+dashboard.weather.label_size,Label size,גודל תווית,size slider label,
+dashboard.weather.loading,Loading weather…,טוען מזג אוויר…,weather loading state,
+dashboard.weather.not_found,"Location ""{location}"" not found.","המיקום ""{location}"" לא נמצא.",weather error state,mixed UI+content — do not translate {…}
+dashboard.weather.refresh,↺ Refresh,↺ רענן,weather refresh button,leading-emoji
+dashboard.weather.refresh_title,Refresh weather,רענן מזג אוויר,weather refresh button title,
+dashboard.weather.simple_clouds,Clouds,עננים,simple weather description,
+dashboard.weather.simple_desc,Simple weather description,תיאור מזג אוויר פשוט,settings label,
+dashboard.weather.simple_desc_tip,"Limits description to: Sun, Clouds, Sun & Clouds, Rain, Snow, or Fog — instead of full WMO detail.","מגביל את התיאור ל: שמש, עננים, שמש ועננים, גשם, שלג או ערפל — במקום פירוט WMO מלא.",settings tooltip,
+dashboard.weather.simple_fog,Fog,ערפל,simple weather description,
+dashboard.weather.simple_rain,Rain,גשם,simple weather description,
+dashboard.weather.simple_snow,Snow,שלג,simple weather description,
+dashboard.weather.simple_sun,Sun,שמש,simple weather description,
+dashboard.weather.simple_sun_clouds,Sun and Clouds,שמש ועננים,simple weather description,
+dashboard.weather.simple_sun_clouds_rain,"Sun, Clouds and Rain","שמש, עננים וגשם",simple weather description,
+dashboard.weather.tap_to_read,Tap to read,הקשה להקראה,settings label,
+dashboard.weather.temp_size,Temp size,גודל טמפרטורה,size slider label,
+dashboard.weather.temp_unit,Temperature unit,יחידת טמפרטורה,settings label,
+dashboard.weather.unavailable,Weather unavailable,מזג אוויר לא זמין,weather error state,
+dashboard.weather.unit_c,°C,°C,radio option,
+dashboard.weather.unit_f,°F,°F,radio option,
+dashboard.weather.wmo_clear,Clear,בהיר,weather description,
+dashboard.weather.wmo_drizzle,Drizzle,טפטוף,weather description,
+dashboard.weather.wmo_fallback,Weather,מזג אוויר,weather description fallback,
+dashboard.weather.wmo_fog,Fog,ערפל,weather description,
+dashboard.weather.wmo_heavy_rain,Heavy Rain,גשם כבד,weather description,
+dashboard.weather.wmo_heavy_showers,Heavy Showers,ממטרים כבדים,weather description,
+dashboard.weather.wmo_heavy_snow,Heavy Snow,שלג כבד,weather description,
+dashboard.weather.wmo_heavy_thunderstorm,Heavy Thunderstorm,סופת רעמים כבדה,weather description,
+dashboard.weather.wmo_overcast,Overcast,מעונן,weather description,
+dashboard.weather.wmo_partly_cloudy,Partly Cloudy,מעונן חלקית,weather description,
+dashboard.weather.wmo_rain,Rain,גשם,weather description,
+dashboard.weather.wmo_showers,Showers,ממטרים,weather description,
+dashboard.weather.wmo_snow,Snow,שלג,weather description,
+dashboard.weather.wmo_snow_grains,Snow Grains,גרגרי שלג,weather description,
+dashboard.weather.wmo_snow_showers,Snow Showers,ממטרי שלג,weather description,
+dashboard.weather.wmo_thunderstorm,Thunderstorm,סופת רעמים,weather description,
 dictionary.advanced.color_enable,Enable color coding,הפעלת צביעה,color coding checkbox,
 dictionary.advanced.color_head,Color Code Nikkud,צביעת ניקוד,advanced section title,
 dictionary.advanced.color_mode_highlight,Highlight,הדגשה,color mode button,

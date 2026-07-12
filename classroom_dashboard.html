@@ -16,6 +16,7 @@
 <link rel="manifest" href="manifest.webmanifest?v=3">
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
+<script src="/js/i18n.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -128,6 +129,18 @@
     if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark-early');
     } })();
+</script><script>
+  /* No-flash UI-language IIFE — mirrors the dark-mode one; sets dir/lang before paint so Hebrew
+     never flashes LTR->RTL. Authoritative set happens later in /js/i18n.js. */
+  (function () {
+    try {
+      var p = new URLSearchParams(location.search).get('lang');
+      var l = (p === 'en' || p === 'he') ? p : (localStorage.getItem('hebrewBlender_lang') || 'en');
+      if (l !== 'en' && l !== 'he') l = 'en';
+      document.documentElement.lang = l;
+      document.documentElement.dir = (l === 'he' ? 'rtl' : 'ltr');
+    } catch (e) {}
+  })();
 </script><style>
   /* ───── Design tokens ───── */
   :root {
@@ -221,7 +234,7 @@
     padding: 2px 6px;
     border-radius: 4px;
     vertical-align: middle;
-    margin-left: 6px;
+    margin-inline-start: 6px;
     text-transform: uppercase;
   }
   .hright { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
@@ -247,6 +260,13 @@
   .fs-btn { flex-direction: column; gap: 1px; padding: 4px 10px; line-height: 1; }
   .fs-btn .fs-ico { display: inline-flex; }
   .fs-btn .fs-cap { font-size: 0.5rem; font-weight: 600; letter-spacing: 0.03em; }
+
+  /* ── i18n / RTL utilities ── */
+  /* Mirror directional glyphs (←, ‹, ›, →) when the UI renders right-to-left. */
+  .dir-arrow { display: inline-block; }
+  [dir="rtl"] .dir-arrow { transform: scaleX(-1); }
+  /* Isolate mixed Hebrew-label + digits so numbers don't reorder under bidi. */
+  .bidi-isolate { unicode-bidi: isolate; }
 
   /* ───── Dashboard grid ───── */
   .dashboard {
@@ -645,12 +665,12 @@
   .settings-backdrop.open { opacity: 1; pointer-events: auto; }
   .settings-modal {
     position: fixed;
-    top: 0; right: 0;
+    top: 0; inset-inline-end: 0;
     width: 380px;
     max-width: 92vw;
     height: 100vh;
     background: var(--white);
-    border-left: 1px solid var(--border);
+    border-inline-start: 1px solid var(--border);
     box-shadow: var(--shadow-lg);
     z-index: 100;
     transform: translateX(100%);
@@ -660,6 +680,10 @@
     flex-direction: column;
   }
   .settings-modal.open { transform: translateX(0); visibility: visible; transition: transform 0.3s ease; }
+  /* RTL: the drawer anchors to the inline-end edge (left in Hebrew); flip the off-screen slide sign.
+     The .open rule is repeated at [dir=rtl] specificity so it wins the attr+class tie against the base. */
+  [dir="rtl"] .settings-modal { transform: translateX(-100%); }
+  [dir="rtl"] .settings-modal.open { transform: translateX(0); }
   .settings-header {
     padding: 14px 20px;
     background: var(--navy);
@@ -758,7 +782,7 @@
     width: 15px; height: 15px; border-radius: 50%;
     background: var(--border); color: #4a4436;
     font-size: 0.65rem; font-weight: 700; font-style: normal;
-    cursor: default; margin-left: 5px; flex-shrink: 0; line-height: 1;
+    cursor: default; margin-inline-start: 5px; flex-shrink: 0; line-height: 1;
   }
   body.dark .tip-icon { background: var(--warm-gray); color: var(--muted); }
   #tipFloat {
@@ -1108,7 +1132,7 @@
     gap: 10px;
     transition: all 0.15s;
     color: var(--text);
-    text-align: left;
+    text-align: start;
     width: 100%;
   }
   body.dark .font-opt { background: var(--navy-deep); }
@@ -1173,7 +1197,7 @@
   body.fullscreen .weather-temp { font-size: 2.4rem; }
 
   /* ── Screen Wake Lock indicator ── */
-  .wake-dot { display: none; align-items: center; margin-left: 2px; }
+  .wake-dot { display: none; align-items: center; margin-inline-start: 2px; }
   .wake-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%;
     background: var(--gold); box-shadow: 0 0 4px var(--gold); display: inline-block; }
   body.wake-held .wake-dot.zoom-wake-dot { display: inline-flex; }
@@ -1196,7 +1220,7 @@
   .fr-loc-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
   .fr-loc-row input { flex: 1; min-width: 140px; }
   .fr-starters { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 0 0 18px; }
-  .fr-starter { text-align: left; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px;
+  .fr-starter { text-align: start; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px;
     cursor: pointer; background: var(--white); color: var(--text); transition: border-color 0.15s, background 0.15s; font-family: inherit; }
   body.dark .fr-starter { background: var(--navy); }
   .fr-starter:hover { border-color: var(--gold); background: rgba(201,146,42,0.08); }
@@ -1363,53 +1387,54 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 <body><header>
   <div class="star">✡︎</div>
   <div class="htitle">
-    <h1>Hebrew Classroom Dashboard</h1>
-    <p>Live Hebrew date, time, weather, and days of the week for SmartBoards — a free Hebrew teaching dashboard.</p>
+    <h1 data-i18n="dashboard.header.title">Hebrew Classroom Dashboard</h1>
+    <p data-i18n="dashboard.header.subtitle">Live Hebrew date, time, weather, and days of the week for SmartBoards — a free Hebrew teaching dashboard.</p>
   </div>
   <div class="hright">
-    <a class="hbtn" href="/"><span>←</span><span class="hbtn-label">Home</span></a>
-    <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
-    <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
-    <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour"><span>❓</span><span class="hbtn-label">Tour</span></button>
-    <button id="fsBtn" class="hbtn icon-btn fs-btn" onclick="toggleFullscreen()" title="Fullscreen"><span class="fs-ico"></span><span class="fs-cap">Fullscreen</span></button>
+    <a class="hbtn" href="/"><span class="dir-arrow" aria-hidden="true">←</span><span class="hbtn-label" data-i18n="dashboard.header.home">Home</span></a>
+    <div data-i18n-switcher></div>
+    <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" aria-label="Toggle dark mode" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false">🌙</button>
+    <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings" data-i18n-title="dashboard.header.settings_btn">⚙️</button>
+    <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour" data-i18n-title="dashboard.header.tour_btn_title"><span>❓</span><span class="hbtn-label" data-i18n="dashboard.header.tour_btn">Tour</span></button>
+    <button id="fsBtn" class="hbtn icon-btn fs-btn" onclick="toggleFullscreen()" title="Fullscreen" data-i18n-title="shared.fullscreen.enter_title"><span class="fs-ico"></span><span class="fs-cap" data-i18n="shared.fullscreen.label">Fullscreen</span></button>
   </div>
 </header>
 <div id="zoomBar" style="background:var(--warm-gray);border-bottom:1px solid var(--border);padding:5px 20px;display:flex;align-items:center;gap:10px;font-size:0.78rem;color:var(--text);">
-  <span style="font-weight:600;white-space:nowrap;">🔍 Zoom</span>
+  <span style="font-weight:600;white-space:nowrap;" data-i18n="dashboard.display.zoom_label">🔍 Zoom</span>
   <input type="range" id="zoomSlider" min="50" max="200" step="5" value="100" style="flex:1;accent-color:var(--gold);cursor:pointer;">
-  <span id="zoomLabel" style="white-space:nowrap;min-width:36px;">100%</span>
-  <button onclick="applyZoom(100)" style="font-size:0.7rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);cursor:pointer;">Reset</button>
-  <span class="wake-dot zoom-wake-dot" role="img" title="Screen will stay awake" aria-label="Screen will stay awake"></span>
+  <span id="zoomLabel" class="bidi-isolate" style="white-space:nowrap;min-width:36px;">100%</span>
+  <button onclick="applyZoom(100)" style="font-size:0.7rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);cursor:pointer;" data-i18n="dashboard.display.zoom_reset">Reset</button>
+  <span class="wake-dot zoom-wake-dot" role="img" title="Screen will stay awake" data-i18n-title="dashboard.display.wake_dot" aria-label="Screen will stay awake" data-i18n-aria-label="dashboard.display.wake_dot"></span>
 </div>
-<button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen">
+<button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen" data-i18n-title="shared.fullscreen.exit_title">
   <span class="fs-x">✕</span>
-  <span class="fs-label">Exit Fullscreen</span>
+  <span class="fs-label" data-i18n="shared.fullscreen.exit_label">Exit Fullscreen</span>
 </button>
-<span class="wake-dot wake-dot-fs" role="img" title="Screen will stay awake" aria-label="Screen will stay awake"></span>
-<div id="fsStrip" role="toolbar" aria-label="Fullscreen controls">
+<span class="wake-dot wake-dot-fs" role="img" title="Screen will stay awake" data-i18n-title="dashboard.display.wake_dot" aria-label="Screen will stay awake" data-i18n-aria-label="dashboard.display.wake_dot"></span>
+<div id="fsStrip" role="toolbar" aria-label="Fullscreen controls" data-i18n-aria-label="dashboard.fs.controls_aria">
   <div id="fsTimerPop" class="fs-pop" style="display:none;">
-    <button class="fs-pop-btn" type="button" onclick="fsTimerStart(1)">1 min</button>
-    <button class="fs-pop-btn" type="button" onclick="fsTimerStart(3)">3 min</button>
-    <button class="fs-pop-btn" type="button" onclick="fsTimerStart(5)">5 min</button>
-    <button class="fs-pop-btn" type="button" onclick="fsTimerStart(10)">10 min</button>
-    <button class="fs-pop-btn fs-pop-hide" type="button" onclick="fsTimerHide()">Hide</button>
+    <button class="fs-pop-btn" type="button" onclick="fsTimerStart(1)" data-i18n="dashboard.timer.fs_1min">1 min</button>
+    <button class="fs-pop-btn" type="button" onclick="fsTimerStart(3)" data-i18n="dashboard.timer.fs_3min">3 min</button>
+    <button class="fs-pop-btn" type="button" onclick="fsTimerStart(5)" data-i18n="dashboard.timer.fs_5min">5 min</button>
+    <button class="fs-pop-btn" type="button" onclick="fsTimerStart(10)" data-i18n="dashboard.timer.fs_10min">10 min</button>
+    <button class="fs-pop-btn fs-pop-hide" type="button" onclick="fsTimerHide()" data-i18n="dashboard.timer.fs_hide">Hide</button>
   </div>
   <div id="fsPickPop" class="fs-pop" style="display:none;">
-    <select id="pickerClassSelFs" class="picker-class-switch" dir="ltr" title="Switch class" aria-label="Switch class" onchange="switchClass(this.value)"></select>
-    <button class="fs-pop-btn" type="button" onclick="fsPickOne()">🎲 Pick One</button>
-    <button class="fs-pop-btn" type="button" onclick="fsPickGroups()">👥 Make Groups</button>
-    <button class="fs-pop-btn fs-pop-hide" type="button" onclick="fsPickHide()">Hide</button>
+    <select id="pickerClassSelFs" class="picker-class-switch" dir="ltr" title="Switch class" data-i18n-title="dashboard.picker.switch_class" aria-label="Switch class" data-i18n-aria-label="dashboard.picker.switch_class" onchange="switchClass(this.value)"></select>
+    <button class="fs-pop-btn" type="button" onclick="fsPickOne()" data-i18n="dashboard.picker.fs_pick_one">🎲 Pick One</button>
+    <button class="fs-pop-btn" type="button" onclick="fsPickGroups()" data-i18n="dashboard.picker.fs_make_groups">👥 Make Groups</button>
+    <button class="fs-pop-btn fs-pop-hide" type="button" onclick="fsPickHide()" data-i18n="dashboard.picker.fs_hide">Hide</button>
   </div>
   <div class="fs-strip-inner">
-    <button class="fs-strip-btn" type="button" onclick="openSettings()"><span class="fss-ico">⚙️</span>Settings</button>
-    <button class="fs-strip-btn" type="button" id="fsTimerBtn" onclick="fsStripTimerToggle()"><span class="fss-ico">⏱️</span>Timer</button>
-    <button class="fs-strip-btn" type="button" id="fsPickBtn" onclick="fsStripPickToggle()"><span class="fss-ico">🎲</span>Pick</button>
-    <button class="fs-strip-btn" type="button" onclick="fsStripText()"><span class="fss-ico">✎</span>Text</button>
-    <button class="fs-strip-btn" type="button" onclick="fsStripVideo()"><span class="fss-ico">📺</span>Video</button>
+    <button class="fs-strip-btn" type="button" onclick="openSettings()"><span class="fss-ico">⚙️</span><span data-i18n="dashboard.fs.strip_settings">Settings</span></button>
+    <button class="fs-strip-btn" type="button" id="fsTimerBtn" onclick="fsStripTimerToggle()"><span class="fss-ico">⏱️</span><span data-i18n="dashboard.fs.strip_timer">Timer</span></button>
+    <button class="fs-strip-btn" type="button" id="fsPickBtn" onclick="fsStripPickToggle()"><span class="fss-ico">🎲</span><span data-i18n="dashboard.fs.strip_pick">Pick</span></button>
+    <button class="fs-strip-btn" type="button" onclick="fsStripText()"><span class="fss-ico">✎</span><span data-i18n="dashboard.fs.strip_text">Text</span></button>
+    <button class="fs-strip-btn" type="button" onclick="fsStripVideo()"><span class="fss-ico">📺</span><span data-i18n="dashboard.fs.strip_video">Video</span></button>
   </div>
 </div>
-<div id="pickOverlay" role="dialog" aria-modal="true" aria-label="Student picker" style="display:none;">
-  <button class="pick-close" type="button" onclick="closePickOverlay()" aria-label="Close">✕</button>
+<div id="pickOverlay" role="dialog" aria-modal="true" aria-label="Student picker" data-i18n-aria-label="dashboard.picker.overlay_aria" style="display:none;">
+  <button class="pick-close" type="button" onclick="closePickOverlay()" aria-label="Close" data-i18n-aria-label="dashboard.picker.close_aria">✕</button>
   <div class="pick-note" id="pickNote"></div>
   <div class="pick-stage" id="pickStage"></div>
   <div class="pick-controls" id="pickControls"></div>
@@ -1434,17 +1459,17 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     </div>
     <div id="dashTextWrap" style="display:none;width:100%;">
       <div id="dashTextDisplay" class="dash-text-display"></div>
-      <button id="dashEditPencil" class="dash-edit-pencil" title="Edit text" aria-label="Edit dashboard text" onclick="enterInPlaceEdit()">✎</button>
+      <button id="dashEditPencil" class="dash-edit-pencil" title="Edit text" data-i18n-title="dashboard.text.edit_pencil_title" aria-label="Edit dashboard text" data-i18n-aria-label="dashboard.text.edit_pencil_aria" onclick="enterInPlaceEdit()">✎</button>
     </div>
   </div><!-- RIGHT: Weather --><div class="right-col-wrap">
     <div class="dash-col" id="weatherCol">
       <div class="col-title" id="weatherColTitle">Weather</div>
       <div class="col-body" id="weatherBody">
         <div id="weatherBlock" class="weather-block">
-          <div class="weather-loading">Loading weather…</div>
+          <div class="weather-loading" data-i18n="dashboard.weather.loading">Loading weather…</div>
         </div>
         <div style="text-align:center;margin-top:6px;">
-          <button onclick="renderWeather()" title="Refresh weather"
+          <button onclick="renderWeather()" title="Refresh weather" data-i18n-title="dashboard.weather.refresh_title" data-i18n="dashboard.weather.refresh"
             style="font-size:0.68rem;padding:2px 8px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--muted);cursor:pointer;">↺ Refresh</button>
         </div>
       </div>
@@ -1454,20 +1479,20 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div class="col-body" id="timerBody">
         <div class="timer-display" id="timerDisplay">0:00</div>
         <div class="timer-presets">
-          <button class="timer-preset-btn" onclick="timerPreset(60)">1 min</button>
-          <button class="timer-preset-btn" onclick="timerPreset(180)">3 min</button>
-          <button class="timer-preset-btn" onclick="timerPreset(300)">5 min</button>
-          <button class="timer-preset-btn" onclick="timerPreset(600)">10 min</button>
-          <button class="timer-preset-btn" onclick="timerToggleCustom()">Custom</button>
+          <button class="timer-preset-btn" onclick="timerPreset(60)" data-i18n="dashboard.timer.preset_1min">1 min</button>
+          <button class="timer-preset-btn" onclick="timerPreset(180)" data-i18n="dashboard.timer.preset_3min">3 min</button>
+          <button class="timer-preset-btn" onclick="timerPreset(300)" data-i18n="dashboard.timer.preset_5min">5 min</button>
+          <button class="timer-preset-btn" onclick="timerPreset(600)" data-i18n="dashboard.timer.preset_10min">10 min</button>
+          <button class="timer-preset-btn" onclick="timerToggleCustom()" data-i18n="dashboard.timer.custom">Custom</button>
         </div>
         <div class="timer-custom-row" id="timerCustomRow" style="display:none;">
-          <input type="text" id="timerCustomInput" placeholder="MM:SS" inputmode="numeric" maxlength="5" onkeydown="if(event.key==='Enter')timerSetCustom()">
-          <button class="timer-ctrl-btn" onclick="timerSetCustom()">Set</button>
+          <input type="text" id="timerCustomInput" placeholder="MM:SS" data-i18n-placeholder="dashboard.timer.custom_placeholder" inputmode="numeric" maxlength="5" onkeydown="if(event.key==='Enter')timerSetCustom()">
+          <button class="timer-ctrl-btn" onclick="timerSetCustom()" data-i18n="dashboard.timer.set">Set</button>
         </div>
         <div class="timer-controls">
-          <button class="timer-ctrl-btn" id="timerStartBtn" onclick="timerStart()">▶ Start</button>
-          <button class="timer-ctrl-btn" id="timerPauseBtn" onclick="timerPause()">⏸ Pause</button>
-          <button class="timer-ctrl-btn" id="timerResetBtn" onclick="timerReset()">↺ Reset</button>
+          <button class="timer-ctrl-btn" id="timerStartBtn" onclick="timerStart()" data-i18n="dashboard.timer.start">▶ Start</button>
+          <button class="timer-ctrl-btn" id="timerPauseBtn" onclick="timerPause()" data-i18n="dashboard.timer.pause">⏸ Pause</button>
+          <button class="timer-ctrl-btn" id="timerResetBtn" onclick="timerReset()" data-i18n="dashboard.timer.reset">↺ Reset</button>
         </div>
       </div>
     </div>
@@ -1476,8 +1501,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div class="col-body" id="pickerBody">
         <div class="picker-chips" id="pickerChips"></div>
         <div class="picker-actions" id="pickerActions">
-          <button class="btn" type="button" onclick="pickOne()">🎲 Pick One</button>
-          <button class="btn-secondary" type="button" onclick="makeGroups()">👥 Make Groups</button>
+          <button class="btn" type="button" onclick="pickOne()" data-i18n="dashboard.picker.pick_one">🎲 Pick One</button>
+          <button class="btn-secondary" type="button" onclick="makeGroups()" data-i18n="dashboard.picker.make_groups">👥 Make Groups</button>
         </div>
         <div class="picker-progress" id="pickerProgress"></div>
       </div>
@@ -1500,30 +1525,30 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 <!-- ───── First-run setup card ───── -->
 <div class="fr-backdrop" id="frBackdrop" onclick="frSkip()"></div>
 <div class="fr-modal" id="frModal" role="dialog" aria-modal="true" aria-labelledby="frTitle">
-  <button class="fr-close" onclick="frSkip()" aria-label="Close">✕</button>
-  <h2 class="fr-h" id="frTitle">Welcome! Let's set up your dashboard</h2>
-  <p class="fr-sub">Set your location for accurate weather and Shabbat times, then pick a starting layout. You can change anything later in Settings.</p>
+  <button class="fr-close" onclick="frSkip()" aria-label="Close" data-i18n-aria-label="dashboard.setup.close_aria">✕</button>
+  <h2 class="fr-h" id="frTitle" data-i18n="dashboard.setup.title">Welcome! Let's set up your dashboard</h2>
+  <p class="fr-sub" data-i18n="dashboard.setup.subtitle">Set your location for accurate weather and Shabbat times, then pick a starting layout. You can change anything later in Settings.</p>
   <div class="fr-loc-row">
-    <input type="text" id="frLocationInput" placeholder="City, e.g. New York">
-    <button class="btn btn-xs" onclick="frUpdateLocation()">Update</button>
-    <button class="btn btn-xs btn-secondary" onclick="frUseCurrentLocation()">📍 Current Location</button>
+    <input type="text" id="frLocationInput" placeholder="City, e.g. New York" data-i18n-placeholder="dashboard.display.location_placeholder">
+    <button class="btn btn-xs" onclick="frUpdateLocation()" data-i18n="dashboard.display.location_update">Update</button>
+    <button class="btn btn-xs btn-secondary" onclick="frUseCurrentLocation()" data-i18n="dashboard.display.current_location">📍 Current Location</button>
   </div>
   <div class="fr-starters" id="frStarters"></div>
   <div class="fr-actions">
-    <a href="#" class="fr-skip" onclick="frSkip();return false;">Skip — use New York for now</a>
-    <a href="#" class="fr-tour" id="frTourLink" style="display:none;" onclick="frDismiss();tourStart();return false;">Take a tour →</a>
+    <a href="#" class="fr-skip" onclick="frSkip();return false;" data-i18n="dashboard.setup.skip">Skip — use New York for now</a>
+    <a href="#" class="fr-tour" id="frTourLink" style="display:none;" onclick="frDismiss();tourStart();return false;" data-i18n="dashboard.tour.firstrun_link">Take a tour →</a>
   </div>
 </div>
 <!-- ───── Guided tour coach-mark (non-modal spotlight) ───── -->
 <div class="tour-spot" id="tourSpot" hidden></div>
 <div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
-  <button class="tour-x" id="tourClose" aria-label="End tour" onclick="tourEnd(false)">✕</button>
+  <button class="tour-x" id="tourClose" aria-label="End tour" data-i18n-aria-label="shared.tour.end" onclick="tourEnd(false)">✕</button>
   <h4 id="tourCardTitle"></h4>
   <p id="tourCardBody"></p>
   <div class="tour-meta">
     <span id="tourStep"></span>
     <span class="tour-btns">
-      <button class="tbtn ghost" id="tourBack" onclick="tourPrev()">Back</button>
+      <button class="tbtn ghost" id="tourBack" onclick="tourPrev()" data-i18n="shared.tour.back">Back</button>
       <button class="tbtn" id="tourNext" onclick="tourNext()">Next</button>
     </span>
   </div>
@@ -1532,165 +1557,165 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 <div id="inplaceToolbar" class="editor-toolbar inplace-toolbar" style="display:none;">
   <span id="inplaceToolbarCmds" style="display:contents;"></span>
   <span class="ed-sep"></span>
-  <button class="ed-btn" type="button" title="Finish editing" onclick="exitInPlaceEdit(true)">✓ Done</button>
+  <button class="ed-btn" type="button" title="Finish editing" onclick="exitInPlaceEdit(true)" data-i18n="dashboard.text.done_btn">✓ Done</button>
 </div>
 <!-- ───── Settings drawer ───── --><div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
-<div class="settings-modal" id="settingsModal" role="dialog" aria-modal="true" aria-label="Dashboard settings">
+<div class="settings-modal" id="settingsModal" role="dialog" aria-modal="true" aria-label="Dashboard settings" data-i18n-aria-label="dashboard.settings.drawer_aria">
   <div class="settings-header">
-    <h2>⚙️  Dashboard Settings</h2>
-    <button class="settings-close" onclick="closeSettings()" title="Close" aria-label="Close settings">×</button>
+    <h2 data-i18n="dashboard.settings.header">⚙️  Dashboard Settings</h2>
+    <button class="settings-close" onclick="closeSettings()" title="Close" data-i18n-title="dashboard.settings.close_title" aria-label="Close settings" data-i18n-aria-label="dashboard.settings.close_aria">×</button>
   </div>
   <div class="settings-body">
 <div style="display:flex; gap:6px; margin-bottom:14px;">
-  <button class="btn btn-xs" style="flex:1;" onclick="expandAllMenus()">Expand all menus</button>
-  <button class="btn btn-xs" style="flex:1;" onclick="collapseAllMenus()">Collapse all menus</button>
+  <button class="btn btn-xs" style="flex:1;" onclick="expandAllMenus()" data-i18n="dashboard.settings.expand_all">Expand all menus</button>
+  <button class="btn btn-xs" style="flex:1;" onclick="collapseAllMenus()" data-i18n="dashboard.settings.collapse_all">Collapse all menus</button>
 </div>
 <div class="panel">
-  <div class="panel-title">Location</div>
+  <div class="panel-title" data-i18n="dashboard.settings.panel_location">Location</div>
   <div class="panel-body">
     <div class="form-row">
-      <input type="text" id="locationInput" placeholder="City, e.g. New York" style="max-width:220px;">
-      <button class="btn btn-xs" onclick="updateLocation()">Update</button>
+      <input type="text" id="locationInput" placeholder="City, e.g. New York" data-i18n-placeholder="dashboard.display.location_placeholder" style="max-width:220px;">
+      <button class="btn btn-xs" onclick="updateLocation()" data-i18n="dashboard.display.location_update">Update</button>
     </div>
     <div class="form-row" style="margin-top:4px;">
-      <button class="btn btn-xs" id="currentLocBtn" onclick="useCurrentLocation()" style="width:100%;">📍 Current Location</button>
+      <button class="btn btn-xs" id="currentLocBtn" onclick="useCurrentLocation()" style="width:100%;" data-i18n="dashboard.display.current_location">📍 Current Location</button>
     </div>
   </div>
 </div>
 
 <div class="panel">
-  <div class="panel-title">Display Options</div>
+  <div class="panel-title" data-i18n="dashboard.settings.panel_display">Display Options</div>
   <div class="panel-body">
     <div class="form-row">
-      <label>Column headers</label>
+      <label data-i18n="dashboard.display.column_headers">Column headers</label>
       <div class="radio-group">
         <input type="radio" name="headerLang" id="hl-he" value="he"><label for="hl-he">עִבְרִית</label>
-        <input type="radio" name="headerLang" id="hl-en" value="en"><label for="hl-en">English</label>
-        <input type="radio" name="headerLang" id="hl-none" value="none"><label for="hl-none">None</label>
+        <input type="radio" name="headerLang" id="hl-en" value="en"><label for="hl-en" data-i18n="dashboard.common.opt_english">English</label>
+        <input type="radio" name="headerLang" id="hl-none" value="none"><label for="hl-none" data-i18n="dashboard.common.opt_none">None</label>
       </div>
     </div>
     <div class="size-row">
-      <label for="colTitleSizeSlider">Header size</label>
+      <label for="colTitleSizeSlider" data-i18n="dashboard.display.header_size">Header size</label>
       <input type="range" id="colTitleSizeSlider" min="0.5" max="1.8" step="0.05" value="0.78" oninput="setColTitleSize(this.value)">
       <span class="size-val" id="colTitleSizeVal">0.78rem</span>
       <button class="btn-xs" onclick="setColTitleSize(0.78)" title="Restore default">↺</button>
     </div>
     <div class="form-row" style="margin-top:8px;">
-      <label>Show text size options</label>
+      <label data-i18n="dashboard.display.show_text_size_options">Show text size options</label>
       <label class="toggle"><input type="checkbox" id="showTextSizeOptions"><span class="slider"></span></label>
     </div>
     <div style="padding-left:18px;margin-bottom:6px;">
-      <button class="btn btn-xs btn-secondary" onclick="resetAllTextSizes()">↺ Reset all text sizes</button>
+      <button class="btn btn-xs btn-secondary" onclick="resetAllTextSizes()" data-i18n="dashboard.display.reset_all_text_sizes">↺ Reset all text sizes</button>
     </div>
     <div class="form-row">
-      <label>Hide zoom bar</label>
+      <label data-i18n="dashboard.display.hide_zoom_bar">Hide zoom bar</label>
       <label class="toggle"><input type="checkbox" id="hideZoomBar"><span class="slider"></span></label>
     </div>
     <div class="form-row" id="keepAwakeRow">
-      <label>Keep screen awake <span class="tip-wrap" data-tip="Prevents the display from dimming or sleeping while the dashboard is open (Screen Wake Lock). Fullscreen keeps the screen awake automatically."><i class="tip-icon">?</i></span></label>
+      <label><span data-i18n="dashboard.display.keep_awake">Keep screen awake</span> <span class="tip-wrap" data-tip="Prevents the display from dimming or sleeping while the dashboard is open (Screen Wake Lock). Fullscreen keeps the screen awake automatically." data-i18n-tip="dashboard.display.keep_awake_tip"><i class="tip-icon">?</i></span></label>
       <label class="toggle"><input type="checkbox" id="keepAwake"><span class="slider"></span></label>
     </div>
     <div class="form-row">
-      <label>Show video embed</label>
+      <label data-i18n="dashboard.display.show_video_embed">Show video embed</label>
       <label class="toggle"><input type="checkbox" id="showVideoEmbed"><span class="slider"></span></label>
     </div>
     <div id="videoUrlRow" style="display:none;flex-direction:column;gap:8px;margin-top:4px;padding:8px;background:var(--cream);border:1px solid var(--border);border-radius:6px;">
       <div style="display:flex;gap:14px;font-size:0.78rem;">
         <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
-          <input type="radio" name="videoLayout" id="vlBelow" value="below" style="accent-color:var(--gold);"> Under dashboard
+          <input type="radio" name="videoLayout" id="vlBelow" value="below" style="accent-color:var(--gold);"> <span data-i18n="dashboard.video.layout_below">Under dashboard</span>
         </label>
         <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
-          <input type="radio" name="videoLayout" id="vlSidebar" value="sidebar" style="accent-color:var(--gold);"> In sidebar
+          <input type="radio" name="videoLayout" id="vlSidebar" value="sidebar" style="accent-color:var(--gold);"> <span data-i18n="dashboard.video.layout_sidebar">In sidebar</span>
         </label>
       </div>
-      <input type="text" id="videoUrlInput" placeholder="Paste YouTube URL…" style="width:100%;box-sizing:border-box;">
-      <button class="btn btn-xs" onclick="updateVideoEmbed()">Update Video</button>
+      <input type="text" id="videoUrlInput" placeholder="Paste YouTube URL…" data-i18n-placeholder="dashboard.video.url_placeholder" style="width:100%;box-sizing:border-box;">
+      <button class="btn btn-xs" onclick="updateVideoEmbed()" data-i18n="dashboard.video.update_button">Update Video</button>
     </div>
   </div>
 </div>
 
 <div class="panel">
-  <div class="panel-title">Date &amp; Time</div>
+  <div class="panel-title" data-i18n="dashboard.settings.panel_datetime">Date &amp; Time</div>
   <div class="panel-body">
 
     <div class="sub-section">
-      <div class="sub-section-hdr">English Date</div>
+      <div class="sub-section-hdr" data-i18n="dashboard.datetime.sub_english_date">English Date</div>
       <div class="sub-section-body">
         <div class="form-row">
-          <label>Date format</label>
+          <label data-i18n="dashboard.datetime.date_format">Date format</label>
           <div class="radio-group">
-            <input type="radio" name="engDateFmt" id="ef-mdy" value="MDY"><label for="ef-mdy">MM/DD/YYYY</label>
-            <input type="radio" name="engDateFmt" id="ef-dmy" value="DMY"><label for="ef-dmy">DD/MM/YYYY</label>
-            <input type="radio" name="engDateFmt" id="ef-long" value="LONG"><label for="ef-long">Long</label>
+            <input type="radio" name="engDateFmt" id="ef-mdy" value="MDY"><label for="ef-mdy" data-i18n="dashboard.datetime.fmt_mdy">MM/DD/YYYY</label>
+            <input type="radio" name="engDateFmt" id="ef-dmy" value="DMY"><label for="ef-dmy" data-i18n="dashboard.datetime.fmt_dmy">DD/MM/YYYY</label>
+            <input type="radio" name="engDateFmt" id="ef-long" value="LONG"><label for="ef-long" data-i18n="dashboard.datetime.fmt_long">Long</label>
           </div>
         </div>
         <div class="form-row">
-          <label>Show day of the week</label>
+          <label data-i18n="dashboard.datetime.show_eng_dow">Show day of the week</label>
           <label class="toggle"><input type="checkbox" id="showEngDOW"><span class="slider"></span></label>
         </div>
         <div class="size-row text-size-opt" style="display:none;">
-          <label for="engDateSizeSlider">Eng Date size</label>
+          <label for="engDateSizeSlider" data-i18n="dashboard.datetime.eng_date_size">Eng Date size</label>
           <input type="range" id="engDateSizeSlider" min="0.5" max="3" step="0.05" value="1.35" oninput="setEngDateSize(this.value)">
           <span class="size-val" id="engDateSizeVal">1.35rem</span>
           <button class="btn-xs" onclick="setEngDateSize(1.35)" title="Restore default">↺</button>
         </div>
         <div class="form-row">
-          <label>Hide English date</label>
+          <label data-i18n="dashboard.datetime.hide_eng_date">Hide English date</label>
           <label class="toggle"><input type="checkbox" id="hideEngDate"><span class="slider"></span></label>
         </div>
       </div>
     </div>
 
     <div class="sub-section">
-      <div class="sub-section-hdr">Hebrew Date</div>
+      <div class="sub-section-hdr" data-i18n="dashboard.datetime.sub_hebrew_date">Hebrew Date</div>
       <div class="sub-section-body">
         <div class="form-row">
-          <label>Display</label>
+          <label data-i18n="dashboard.datetime.hebdate_display">Display</label>
           <div class="radio-group">
             <input type="radio" name="hebDateScript" id="hs-he" value="he"><label for="hs-he">עברית</label>
-            <input type="radio" name="hebDateScript" id="hs-translit" value="translit"><label for="hs-translit">English</label>
-            <input type="radio" name="hebDateScript" id="hs-both" value="both"><label for="hs-both">Both</label>
+            <input type="radio" name="hebDateScript" id="hs-translit" value="translit"><label for="hs-translit" data-i18n="dashboard.common.opt_english">English</label>
+            <input type="radio" name="hebDateScript" id="hs-both" value="both"><label for="hs-both" data-i18n="dashboard.common.opt_both">Both</label>
           </div>
         </div>
         <div class="size-row text-size-opt" style="display:none;">
-          <label for="hebDateSizeSlider">Heb Date size</label>
+          <label for="hebDateSizeSlider" data-i18n="dashboard.datetime.heb_date_size">Heb Date size</label>
           <input type="range" id="hebDateSizeSlider" min="0.5" max="5" step="0.1" value="2.6" oninput="setHebDateSize(this.value)">
           <span class="size-val" id="hebDateSizeVal">2.6rem</span>
           <button class="btn-xs" onclick="setHebDateSize(2.6)" title="Restore default">↺</button>
         </div>
         <div class="form-row">
-          <label>Hide Hebrew date</label>
+          <label data-i18n="dashboard.datetime.hide_heb_date">Hide Hebrew date</label>
           <label class="toggle"><input type="checkbox" id="hideHebDate"><span class="slider"></span></label>
         </div>
         <div class="form-row">
-          <label>Show Countdown to Next Holiday</label>
+          <label data-i18n="dashboard.datetime.show_holiday_countdown">Show Countdown to Next Holiday</label>
           <label class="toggle"><input type="checkbox" id="showHolidayCountdown"><span class="slider"></span></label>
         </div>
       </div>
     </div>
 
     <div class="sub-section">
-      <div class="sub-section-hdr">Time</div>
+      <div class="sub-section-hdr" data-i18n="dashboard.datetime.sub_time">Time</div>
       <div class="sub-section-body">
         <div class="form-row">
-          <label>Time format</label>
+          <label data-i18n="dashboard.datetime.time_format">Time format</label>
           <div class="radio-group">
-            <input type="radio" name="timeFmt" id="tf-12" value="12"><label for="tf-12">12-hr</label>
-            <input type="radio" name="timeFmt" id="tf-24" value="24"><label for="tf-24">24-hr</label>
+            <input type="radio" name="timeFmt" id="tf-12" value="12"><label for="tf-12" data-i18n="dashboard.datetime.fmt_12">12-hr</label>
+            <input type="radio" name="timeFmt" id="tf-24" value="24"><label for="tf-24" data-i18n="dashboard.datetime.fmt_24">24-hr</label>
           </div>
         </div>
         <div class="form-row">
-          <label>Show seconds</label>
+          <label data-i18n="dashboard.datetime.show_seconds">Show seconds</label>
           <label class="toggle"><input type="checkbox" id="showSeconds"><span class="slider"></span></label>
         </div>
         <div class="size-row text-size-opt" style="display:none;">
-          <label for="timeSizeSlider">Time size</label>
+          <label for="timeSizeSlider" data-i18n="dashboard.datetime.time_size">Time size</label>
           <input type="range" id="timeSizeSlider" min="0.5" max="6" step="0.1" value="3.4" oninput="setTimeSize(this.value)">
           <span class="size-val" id="timeSizeVal">3.4rem</span>
           <button class="btn-xs" onclick="setTimeSize(3.4)" title="Restore default">↺</button>
         </div>
         <div class="form-row">
-          <label>Hide time</label>
+          <label data-i18n="dashboard.datetime.hide_time">Hide time</label>
           <label class="toggle"><input type="checkbox" id="hideTime"><span class="slider"></span></label>
         </div>
       </div>
@@ -1700,182 +1725,182 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 </div>
 
 <div class="panel">
-  <div class="panel-title">Weather</div>
+  <div class="panel-title" data-i18n="dashboard.settings.panel_weather">Weather</div>
   <div class="panel-body">
     <div class="form-row">
-      <label>Temperature unit</label>
+      <label data-i18n="dashboard.weather.temp_unit">Temperature unit</label>
       <div class="radio-group">
-        <input type="radio" name="tempUnit" id="tu-f" value="F"><label for="tu-f">°F</label>
-        <input type="radio" name="tempUnit" id="tu-c" value="C"><label for="tu-c">°C</label>
+        <input type="radio" name="tempUnit" id="tu-f" value="F"><label for="tu-f" data-i18n="dashboard.weather.unit_f">°F</label>
+        <input type="radio" name="tempUnit" id="tu-c" value="C"><label for="tu-c" data-i18n="dashboard.weather.unit_c">°C</label>
       </div>
     </div>
     <div class="size-row text-size-opt" style="display:none;">
-      <label for="tempSizeSlider">Temp size</label>
+      <label for="tempSizeSlider" data-i18n="dashboard.weather.temp_size">Temp size</label>
       <input type="range" id="tempSizeSlider" min="0.5" max="4" step="0.1" value="2" oninput="setTempSize(this.value)">
       <span class="size-val" id="tempSizeVal">2rem</span>
       <button class="btn-xs" onclick="setTempSize(2)" title="Restore default">↺</button>
     </div>
     <div class="form-row">
-      <label>Label language</label>
+      <label data-i18n="dashboard.weather.label_language">Label language</label>
       <div class="radio-group">
         <input type="radio" name="weatherLabelLang" id="wl-he" value="he"><label for="wl-he">עִבְרִית</label>
-        <input type="radio" name="weatherLabelLang" id="wl-en" value="en"><label for="wl-en">English</label>
+        <input type="radio" name="weatherLabelLang" id="wl-en" value="en"><label for="wl-en" data-i18n="dashboard.common.opt_english">English</label>
       </div>
     </div>
     <div class="size-row text-size-opt" style="display:none;">
-      <label for="weatherLabelSizeSlider">Label size</label>
+      <label for="weatherLabelSizeSlider" data-i18n="dashboard.weather.label_size">Label size</label>
       <input type="range" id="weatherLabelSizeSlider" min="0.5" max="3" step="0.05" value="1.1" oninput="setWeatherLabelSize(this.value)">
       <span class="size-val" id="weatherLabelSizeVal">1.1rem</span>
       <button class="btn-xs" onclick="setWeatherLabelSize(1.1)" title="Restore default">↺</button>
     </div>
     <div class="form-row">
-      <label>Simple weather description <span class="tip-wrap" data-tip="Limits description to: Sun, Clouds, Sun &amp; Clouds, Rain, Snow, or Fog — instead of full WMO detail."><i class="tip-icon">?</i></span></label>
+      <label><span data-i18n="dashboard.weather.simple_desc">Simple weather description</span> <span class="tip-wrap" data-tip="Limits description to: Sun, Clouds, Sun &amp; Clouds, Rain, Snow, or Fog — instead of full WMO detail." data-i18n-tip="dashboard.weather.simple_desc_tip"><i class="tip-icon">?</i></span></label>
       <label class="toggle"><input type="checkbox" id="simpleWeatherDesc"><span class="slider"></span></label>
     </div>
     <div class="form-row">
-      <label>Hide temperature</label>
+      <label data-i18n="dashboard.weather.hide_temperature">Hide temperature</label>
       <label class="toggle"><input type="checkbox" id="hideTemperature"><span class="slider"></span></label>
     </div>
     <div class="form-row">
-      <label>Hide weather emoji</label>
+      <label data-i18n="dashboard.weather.hide_emoji">Hide weather emoji</label>
       <label class="toggle"><input type="checkbox" id="hideWeatherEmoji"><span class="slider"></span></label>
     </div>
     <div class="form-row">
-      <label>Hide High/Low</label>
+      <label data-i18n="dashboard.weather.hide_highlow">Hide High/Low</label>
       <label class="toggle"><input type="checkbox" id="hideHighLow"><span class="slider"></span></label>
     </div>
     <div class="size-row text-size-opt" style="display:none;">
-      <label for="weatherHLSizeSlider">H/L size</label>
+      <label for="weatherHLSizeSlider" data-i18n="dashboard.weather.hl_size">H/L size</label>
       <input type="range" id="weatherHLSizeSlider" min="0.3" max="2" step="0.05" value="0.72" oninput="setWeatherHLSize(this.value)">
       <span class="size-val" id="weatherHLSizeVal">0.72rem</span>
       <button class="btn-xs" onclick="setWeatherHLSize(0.72)" title="Restore default">↺</button>
     </div>
     <div class="form-row">
-      <label>Hide weather description</label>
+      <label data-i18n="dashboard.weather.hide_desc">Hide weather description</label>
       <label class="toggle"><input type="checkbox" id="hideWeatherDesc"><span class="slider"></span></label>
     </div>
     <div class="size-row text-size-opt" style="display:none;">
-      <label for="weatherDescSizeSlider">Description size</label>
+      <label for="weatherDescSizeSlider" data-i18n="dashboard.weather.desc_size">Description size</label>
       <input type="range" id="weatherDescSizeSlider" min="0.4" max="3" step="0.05" value="1.05" oninput="setWeatherDescSize(this.value)">
       <span class="size-val" id="weatherDescSizeVal">1.05rem</span>
       <button class="btn-xs" onclick="setWeatherDescSize(1.05)" title="Restore default">↺</button>
     </div>
     <div class="form-row">
-      <label>Tap to read <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></label>
+      <label><span data-i18n="dashboard.weather.tap_to_read">Tap to read</span> <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;" data-i18n="dashboard.common.beta_badge">BETA</span></label>
       <label class="toggle"><input type="checkbox" id="tapToReadWeather"><span class="slider"></span></label>
     </div>
     <hr>
     <div class="form-row">
-      <label>Hide weather panel</label>
+      <label data-i18n="dashboard.weather.hide_panel">Hide weather panel</label>
       <label class="toggle"><input type="checkbox" id="hideWeather"><span class="slider"></span></label>
     </div>
   </div>
 </div>
 
 <div class="panel">
-  <div class="panel-title">Timer</div>
+  <div class="panel-title" data-i18n="dashboard.settings.panel_timer">Timer</div>
   <div class="panel-body">
     <div class="form-row">
-      <label>Show Timer panel</label>
+      <label data-i18n="dashboard.timer.show_panel">Show Timer panel</label>
       <label class="toggle"><input type="checkbox" id="showTimer"><span class="slider"></span></label>
     </div>
     <div class="form-row">
-      <label>Show timer in fullscreen mode</label>
+      <label data-i18n="dashboard.timer.show_fullscreen">Show timer in fullscreen mode</label>
       <label class="toggle"><input type="checkbox" id="showTimerFullscreen"><span class="slider"></span></label>
     </div>
   </div>
 </div>
 
 <div class="panel">
-  <div class="panel-title">Student Picker</div>
+  <div class="panel-title" data-i18n="dashboard.settings.panel_picker">Student Picker</div>
   <div class="panel-body">
     <div class="form-row">
-      <label>Show Student Picker panel</label>
+      <label data-i18n="dashboard.picker.show_panel">Show Student Picker panel</label>
       <label class="toggle"><input type="checkbox" id="showStudentPicker"><span class="slider"></span></label>
     </div>
     <div class="form-row">
-      <label>Show in fullscreen mode</label>
+      <label data-i18n="dashboard.picker.show_fullscreen">Show in fullscreen mode</label>
       <label class="toggle"><input type="checkbox" id="showStudentPickerFullscreen"><span class="slider"></span></label>
     </div>
     <hr>
     <div class="form-row" style="flex-direction:column;align-items:stretch;gap:6px;">
-      <label for="pickerClassSel">Class</label>
+      <label for="pickerClassSel" data-i18n="dashboard.picker.class_label">Class</label>
       <div style="display:flex;gap:5px;align-items:center;">
         <select id="pickerClassSel" onchange="switchClass(this.value)" style="flex:1;min-width:0;max-width:none;"></select>
-        <button type="button" class="btn-xs" title="New class" onclick="newClass()">➕</button>
-        <button type="button" class="btn-xs" title="Rename class" onclick="renameClass()">✏️</button>
-        <button type="button" class="btn-xs" title="Delete class" onclick="deleteClass()">🗑</button>
+        <button type="button" class="btn-xs" title="New class" data-i18n-title="dashboard.picker.new_class_title" onclick="newClass()">➕</button>
+        <button type="button" class="btn-xs" title="Rename class" data-i18n-title="dashboard.picker.rename_class_title" onclick="renameClass()">✏️</button>
+        <button type="button" class="btn-xs" title="Delete class" data-i18n-title="dashboard.picker.delete_class_title" onclick="deleteClass()">🗑</button>
       </div>
       <span id="pickerClassNote" style="font-size:0.72rem;color:var(--gold);display:none;"></span>
     </div>
     <div class="form-row" style="flex-direction:column;align-items:stretch;gap:4px;">
-      <label for="pickerRoster" id="pickerRosterLabel">Roster — one name per line</label>
+      <label for="pickerRoster" id="pickerRosterLabel" data-i18n="dashboard.picker.roster_label">Roster — one name per line</label>
       <textarea id="pickerRoster" rows="6" placeholder="e.g. Ava&#10;Noah&#10;&#1491;&#1464;&#1493;&#1460;&#1491;&#10;&#1502;&#1463;&#1497;&#1464;&#1492;" style="width:100%;resize:vertical;font-family:inherit;"></textarea>
       <span id="pickerRosterCount" style="font-size:0.72rem;color:var(--muted);">0 names</span>
     </div>
     <div class="form-row" id="pickerRosterHint" style="margin-top:2px;">
-      <span style="font-size:0.78rem;color:var(--muted);font-style:italic;">Presets and Schedule Sync remember which class is active — rosters themselves are shared, so editing a list updates it everywhere.</span>
+      <span style="font-size:0.78rem;color:var(--muted);font-style:italic;" data-i18n="dashboard.picker.roster_hint">Presets and Schedule Sync remember which class is active — rosters themselves are shared, so editing a list updates it everywhere.</span>
     </div>
     <hr>
     <div class="form-row">
-      <label>Don't repeat until everyone's been picked</label>
+      <label data-i18n="dashboard.picker.fair_cycle">Don't repeat until everyone's been picked</label>
       <label class="toggle"><input type="checkbox" id="pickerFairCycle"><span class="slider"></span></label>
     </div>
     <div class="form-row">
-      <label>Group Maker mode</label>
+      <label data-i18n="dashboard.picker.group_mode">Group Maker mode</label>
       <div class="radio-group">
-        <input type="radio" name="groupMode" id="gm-size" value="size"><label for="gm-size">Groups of N</label>
-        <input type="radio" name="groupMode" id="gm-count" value="count"><label for="gm-count">N groups</label>
+        <input type="radio" name="groupMode" id="gm-size" value="size"><label for="gm-size" data-i18n="dashboard.picker.group_of_n">Groups of N</label>
+        <input type="radio" name="groupMode" id="gm-count" value="count"><label for="gm-count" data-i18n="dashboard.picker.n_groups">N groups</label>
       </div>
     </div>
     <div class="form-row">
-      <label for="groupN" id="groupNLabel">Group size (N)</label>
+      <label for="groupN" id="groupNLabel" data-i18n="dashboard.picker.group_size_label">Group size (N)</label>
       <input type="number" id="groupN" min="2" max="60" step="1" value="4" style="width:64px;text-align:center;">
     </div>
   </div>
 </div>
 
 <div class="panel">
-  <div class="panel-title">Day of Week</div>
+  <div class="panel-title" data-i18n="dashboard.settings.panel_dow">Day of Week</div>
   <div class="panel-body">
     <div class="form-row">
-      <label>Display</label>
+      <label data-i18n="dashboard.days.display_label">Display</label>
       <div class="radio-group">
         <input type="radio" name="dowLang" id="dl-he" value="he"><label for="dl-he">עִבְרִית</label>
-        <input type="radio" name="dowLang" id="dl-both" value="both"><label for="dl-both">Both</label>
-        <input type="radio" name="dowLang" id="dl-en" value="en"><label for="dl-en">English</label>
+        <input type="radio" name="dowLang" id="dl-both" value="both"><label for="dl-both" data-i18n="dashboard.common.opt_both">Both</label>
+        <input type="radio" name="dowLang" id="dl-en" value="en"><label for="dl-en" data-i18n="dashboard.common.opt_english">English</label>
       </div>
     </div>
     <div class="size-row text-size-opt" style="display:none;">
-      <label for="dowDisplaySizeSlider">Display size</label>
+      <label for="dowDisplaySizeSlider" data-i18n="dashboard.days.display_size">Display size</label>
       <input type="range" id="dowDisplaySizeSlider" min="0.5" max="3" step="0.05" value="1.35" oninput="setDowDisplaySize(this.value)">
       <span class="size-val" id="dowDisplaySizeVal">1.35rem</span>
       <button class="btn-xs" onclick="setDowDisplaySize(1.35)" title="Restore default">↺</button>
     </div>
     <div class="form-row">
-      <label>Color days of the week</label>
+      <label data-i18n="dashboard.days.color_days">Color days of the week</label>
       <label class="toggle"><input type="checkbox" id="colorDays"><span class="slider"></span></label>
     </div>
     <div class="form-row">
-      <label>Show Yesterday marker</label>
+      <label data-i18n="dashboard.days.show_yesterday">Show Yesterday marker</label>
       <label class="toggle"><input type="checkbox" id="showYesterday"><span class="slider"></span></label>
     </div>
     <div class="form-row">
-      <label>Show Today marker</label>
+      <label data-i18n="dashboard.days.show_today">Show Today marker</label>
       <label class="toggle"><input type="checkbox" id="showToday"><span class="slider"></span></label>
     </div>
     <div class="form-row">
-      <label>Show Tomorrow marker</label>
+      <label data-i18n="dashboard.days.show_tomorrow">Show Tomorrow marker</label>
       <label class="toggle"><input type="checkbox" id="showTomorrow"><span class="slider"></span></label>
     </div>
     <div class="size-row text-size-opt" style="display:none;">
-      <label for="dowYTTSizeSlider">Y/T/T size</label>
+      <label for="dowYTTSizeSlider" data-i18n="dashboard.days.ytt_size">Y/T/T size</label>
       <input type="range" id="dowYTTSizeSlider" min="0.3" max="2" step="0.05" value="0.72" oninput="setDowYTTSize(this.value)">
       <span class="size-val" id="dowYTTSizeVal">0.72rem</span>
       <button class="btn-xs" onclick="setDowYTTSize(0.72)" title="Restore default">↺</button>
     </div>
     <div class="form-row">
-      <label>Emoji sequence</label>
+      <label data-i18n="dashboard.days.emoji_sequence">Emoji sequence</label>
       <div class="emoji-set-btns" id="emojiSetBtns">
         <button class="emoji-set-btn" data-set="chick">🥚🐣🐔</button>
         <button class="emoji-set-btn" data-set="city">🌇🏙️🌃</button>
@@ -1884,85 +1909,85 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <button class="emoji-set-btn" data-set="plant">🌱🪴🌲</button>
         <button class="emoji-set-btn" data-set="boy">👶👦🧔‍♂️</button>
         <button class="emoji-set-btn" data-set="girl">👶👧👩</button>
-        <button class="emoji-set-btn" data-set="none">None</button>
+        <button class="emoji-set-btn" data-set="none" data-i18n="dashboard.days.emoji_none">None</button>
       </div>
     </div>
     <div class="size-row text-size-opt" style="display:none;">
-      <label for="dowEmojiSizeSlider">Emoji size</label>
+      <label for="dowEmojiSizeSlider" data-i18n="dashboard.days.emoji_size">Emoji size</label>
       <input type="range" id="dowEmojiSizeSlider" min="0.5" max="4" step="0.1" value="1.4" oninput="setDowEmojiSize(this.value)">
       <span class="size-val" id="dowEmojiSizeVal">1.4rem</span>
       <button class="btn-xs" onclick="setDowEmojiSize(1.4)" title="Restore default">↺</button>
     </div>
     <div class="form-row">
-      <label>Tap to read <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></label>
+      <label><span data-i18n="dashboard.days.tap_to_read">Tap to read</span> <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;" data-i18n="dashboard.common.beta_badge">BETA</span></label>
       <label class="toggle"><input type="checkbox" id="tapToReadDow"><span class="slider"></span></label>
     </div>
     <hr>
     <div class="form-row">
-      <label>Show Candle Lighting / Havdalah times</label>
+      <label data-i18n="dashboard.days.show_shabbat">Show Candle Lighting / Havdalah times</label>
       <label class="toggle"><input type="checkbox" id="showShabbatTimes"><span class="slider"></span></label>
     </div>
     <div class="form-row" id="candleZipRow" style="margin-top:4px;">
-      <span style="font-size:0.78rem;color:var(--muted);font-style:italic;">Uses the same location as the weather widget above.</span>
+      <span style="font-size:0.78rem;color:var(--muted);font-style:italic;" data-i18n="dashboard.days.shabbat_location_hint">Uses the same location as the weather widget above.</span>
     </div>
     <hr>
     <div class="form-row">
-      <label>Hide Day of Week panel</label>
+      <label data-i18n="dashboard.days.hide_panel">Hide Day of Week panel</label>
       <label class="toggle"><input type="checkbox" id="hideDOW"><span class="slider"></span></label>
     </div>
   </div>
 </div>
 
 <div class="panel" id="omerSettingsPanel" style="display:none;">
-  <div class="panel-title">Omer</div>
+  <div class="panel-title" data-i18n="dashboard.settings.panel_omer">Omer</div>
   <div class="panel-body">
     <div class="form-row">
-      <label>Show Omer panel</label>
+      <label data-i18n="dashboard.days.omer_show_panel">Show Omer panel</label>
       <label class="toggle"><input type="checkbox" id="showOmerCounter"><span class="slider"></span></label>
     </div>
     <div class="form-row">
-      <label>Show English day/week label</label>
+      <label data-i18n="dashboard.days.omer_show_english">Show English day/week label</label>
       <label class="toggle"><input type="checkbox" id="showOmerEnglish"><span class="slider"></span></label>
     </div>
     <div class="form-row">
-      <label>Show progress bar</label>
+      <label data-i18n="dashboard.days.omer_show_progress">Show progress bar</label>
       <label class="toggle"><input type="checkbox" id="showOmerProgress"><span class="slider"></span></label>
     </div>
   </div>
 </div>
 
 <div class="panel">
-  <div class="panel-title">Dashboard Text</div>
+  <div class="panel-title" data-i18n="dashboard.settings.panel_dashtext">Dashboard Text</div>
   <div class="panel-body">
     <div class="size-row">
-      <label for="dashTextSizeSlider">Display size</label>
+      <label for="dashTextSizeSlider" data-i18n="dashboard.text.display_size">Display size</label>
       <input type="range" id="dashTextSizeSlider" min="0.8" max="5" step="0.1" value="1.8" oninput="setDashTextSize(this.value)">
       <span class="size-val" id="dashTextSizeVal">1.8rem</span>
     </div>
     <div class="editor-toolbar" id="drawerToolbar"></div>
     <div id="dashEditor" class="editor" contenteditable="true" oninput="syncDashText()"></div>
     <div class="form-row" style="margin-top:10px;">
-      <label>Hide dashboard text</label>
+      <label data-i18n="dashboard.text.hide">Hide dashboard text</label>
       <label class="toggle"><input type="checkbox" id="hideDashText"><span class="slider"></span></label>
     </div>
     <div class="sub-section" style="margin-top:12px;">
-      <div class="sub-section-hdr">Text Font</div>
+      <div class="sub-section-hdr" data-i18n="dashboard.text.sub_font">Text Font</div>
       <div class="sub-section-body">
         <div class="font-options" id="engFontOptions"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadEngFontPick(this)"></label>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><span data-i18n="shared.fonts.upload_label">⬆ Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadEngFontPick(this)"></label>
       </div>
     </div>
   </div>
 </div>
 
 <div class="panel" id="presetsPanel">
-  <div class="panel-title">Presets</div>
+  <div class="panel-title" data-i18n="dashboard.settings.panel_presets">Presets</div>
   <div class="panel-body">
-    <button class="btn btn-xs btn-secondary" id="starterLayoutsBtn" onclick="openFirstRun()" style="width:100%;margin-bottom:8px;">✨ Quick-start layouts…</button>
-    <p style="font-size:0.72rem;color:var(--muted);margin:0 0 10px;line-height:1.4;">Apply a ready-made setup — including a general-classroom layout — then tweak it and Save it as your own preset.</p>
+    <button class="btn btn-xs btn-secondary" id="starterLayoutsBtn" onclick="openFirstRun()" style="width:100%;margin-bottom:8px;" data-i18n="dashboard.preset.quickstart_button">✨ Quick-start layouts…</button>
+    <p style="font-size:0.72rem;color:var(--muted);margin:0 0 10px;line-height:1.4;" data-i18n="dashboard.preset.quickstart_desc">Apply a ready-made setup — including a general-classroom layout — then tweak it and Save it as your own preset.</p>
     <div class="form-row">
-      <input type="text" id="presetName" placeholder="Preset name" style="max-width:200px;">
-      <button class="btn btn-xs" onclick="savePreset()">Save</button>
+      <input type="text" id="presetName" placeholder="Preset name" data-i18n-placeholder="dashboard.preset.name_placeholder" style="max-width:200px;">
+      <button class="btn btn-xs" onclick="savePreset()" data-i18n="dashboard.preset.save">Save</button>
     </div>
     <div class="preset-list" id="presetList"></div>
     <hr>
@@ -1974,73 +1999,73 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       .ivrit-drop.ivrit-drag{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
     </style>
     <div class="ivrit-mode-toggle">
-      <button type="button" id="ivritModeAuto" class="ivrit-mode-btn active" onclick="setIvritMode('auto')">Automatic Input</button>
-      <button type="button" id="ivritModeManual" class="ivrit-mode-btn" onclick="setIvritMode('manual')">Manual Input</button>
+      <button type="button" id="ivritModeAuto" class="ivrit-mode-btn active" onclick="setIvritMode('auto')" data-i18n="shared.ivrit.mode_auto">Automatic Input</button>
+      <button type="button" id="ivritModeManual" class="ivrit-mode-btn" onclick="setIvritMode('manual')" data-i18n="shared.ivrit.mode_manual">Manual Input</button>
     </div>
     <div id="ivritAuto">
-      <div style="font-size:0.72rem;color:var(--muted);line-height:1.4;margin-bottom:8px;">Save all your presets, saved schedules, and current settings to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it.</div>
-      <button class="btn btn-xs btn-secondary" type="button" onclick="ivritSaveFile()" style="width:100%;margin-bottom:10px;">⬇ Save to .ivrit file</button>
+      <div style="font-size:0.72rem;color:var(--muted);line-height:1.4;margin-bottom:8px;" data-i18n-html="dashboard.backup.auto_explainer">Save all your presets, saved schedules, and current settings to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it.</div>
+      <button class="btn btn-xs btn-secondary" type="button" onclick="ivritSaveFile()" style="width:100%;margin-bottom:10px;" data-i18n="shared.ivrit.save_button">⬇ Save to .ivrit file</button>
       <div id="ivritDrop" class="ivrit-drop">
-        <div style="font-size:0.78rem;">Drop a <b>.ivrit</b> file here</div>
-        <div style="font-size:0.7rem;color:var(--muted);margin:4px 0;">— or —</div>
-        <button class="btn btn-xs btn-secondary" type="button" onclick="document.getElementById('ivritFileInput').click()">Browse…</button>
+        <div style="font-size:0.78rem;" data-i18n-html="shared.ivrit.drop_hint">Drop a <b>.ivrit</b> file here</div>
+        <div style="font-size:0.7rem;color:var(--muted);margin:4px 0;" data-i18n="shared.ivrit.or_divider">— or —</div>
+        <button class="btn btn-xs btn-secondary" type="button" onclick="document.getElementById('ivritFileInput').click()" data-i18n="shared.ivrit.browse_button">Browse…</button>
         <input type="file" id="ivritFileInput" accept=".ivrit,application/json,text/plain" style="display:none;">
       </div>
       <div id="ivritStatus" role="status" style="font-size:0.7rem;color:var(--muted);margin-top:8px;min-height:1em;text-align:center;"></div>
     </div>
     <div id="ivritManual" style="display:none;">
       <div style="display:flex;gap:6px;margin-bottom:8px;">
-        <button class="btn btn-xs btn-secondary" onclick="exportPresets()" style="flex:1;">Export</button>
-        <button class="btn btn-xs btn-secondary" onclick="importPresets()" style="flex:1;">Import</button>
+        <button class="btn btn-xs btn-secondary" onclick="exportPresets()" style="flex:1;" data-i18n="shared.ivrit.manual_export">Export</button>
+        <button class="btn btn-xs btn-secondary" onclick="importPresets()" style="flex:1;" data-i18n="shared.ivrit.manual_import">Import</button>
       </div>
       <div style="position:relative;">
-        <textarea id="presetBackupBox" placeholder="Paste backup JSON here, or click Export…" style="height:80px;font-family:monospace;font-size:0.72rem;width:100%;"></textarea>
-        <button onclick="copyPresetBackup()" id="presetCopyBtn" title="Copy" style="position:absolute;top:5px;right:5px;background:none;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:0.65rem;color:var(--muted);cursor:pointer;">Copy</button>
+        <textarea id="presetBackupBox" placeholder="Paste backup JSON here, or click Export…" data-i18n-placeholder="dashboard.backup.placeholder" style="height:80px;font-family:monospace;font-size:0.72rem;width:100%;"></textarea>
+        <button onclick="copyPresetBackup()" id="presetCopyBtn" title="Copy" data-i18n-title="shared.ivrit.manual_copy" data-i18n="shared.ivrit.manual_copy" style="position:absolute;top:5px;right:5px;background:none;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:0.65rem;color:var(--muted);cursor:pointer;">Copy</button>
       </div>
     </div>
   </div>
 </div>
 
 <div class="panel" id="schedulePanel">
-  <div class="panel-title">Schedule Sync</div>
+  <div class="panel-title" data-i18n="dashboard.settings.panel_schedule">Schedule Sync</div>
   <div class="panel-body">
     <p class="sched-explain">Each row shows a chosen preset <b>until</b> a set time — as the day moves on, the dashboard reconfigures itself to the next preset automatically, and the countdown shows how long is left in the current block.<span class="sched-eg">e.g. <b>Morning</b> until 8:45 → <b>Ivrit</b> until 9:30 → <b>Recess</b> until 9:45</span></p>
     <div class="form-row" style="margin-bottom:12px;">
-      <label>Enable Schedule Sync</label>
+      <label data-i18n="dashboard.schedule.enable">Enable Schedule Sync</label>
       <label class="toggle"><input type="checkbox" id="scheduleEnabled" onchange="toggleScheduleSync(this.checked)"><span class="slider"></span></label>
     </div>
     <div id="scheduleSyncBody" style="display:none;">
       <div class="sub-section">
-        <div class="sub-section-hdr">Schedule Input</div>
+        <div class="sub-section-hdr" data-i18n="dashboard.schedule.sub_input">Schedule Input</div>
         <div class="sub-section-body">
           <div id="scheduleRows"></div>
           <div id="scheduleValidation" class="schedule-validation" style="display:none;"></div>
           <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-            <button class="btn-xs" onclick="addScheduleRow()">+ Add</button>
-            <button class="btn-xs btn-secondary" onclick="saveScheduleAs()">Save Schedule As…</button>
+            <button class="btn-xs" onclick="addScheduleRow()" data-i18n="dashboard.schedule.add">+ Add</button>
+            <button class="btn-xs btn-secondary" onclick="saveScheduleAs()" data-i18n="dashboard.schedule.save_as">Save Schedule As…</button>
           </div>
           <div id="schedulePreview" class="sched-preview"></div>
         </div>
       </div>
       <div class="sub-section">
-        <div class="sub-section-hdr">Load Schedule</div>
+        <div class="sub-section-hdr" data-i18n="dashboard.schedule.sub_load">Load Schedule</div>
         <div class="sub-section-body">
           <div class="saved-schedule-list" id="savedScheduleList"></div>
         </div>
       </div>
       <div class="sub-section">
-        <div class="sub-section-hdr">Schedule Sync Options</div>
+        <div class="sub-section-hdr" data-i18n="dashboard.schedule.sub_options">Schedule Sync Options</div>
         <div class="sub-section-body">
           <div class="form-row">
-            <label>Show countdown to next class</label>
+            <label data-i18n="dashboard.schedule.show_countdown">Show countdown to next class</label>
             <label class="toggle"><input type="checkbox" id="scheduleShowCountdown" onchange="setScheduleCountdown(this.checked)"><span class="slider"></span></label>
           </div>
           <div class="form-row" id="countdownPresetNameRow" style="display:none;padding-left:16px;">
-            <label style="font-size:0.8rem;font-weight:500;color:var(--muted);">Show preset name</label>
+            <label style="font-size:0.8rem;font-weight:500;color:var(--muted);" data-i18n="dashboard.schedule.show_preset_name">Show preset name</label>
             <label class="toggle"><input type="checkbox" id="countdownShowPresetName" onchange="settings.countdownShowPresetName=this.checked;updateCountdown();saveSettingsToStorage();"><span class="slider"></span></label>
           </div>
           <div class="form-row">
-            <label>Show Now / Next on dashboard <span class="tip-wrap" data-tip="Shows the current period and the upcoming one (with preset names) in the center of the dashboard."><i class="tip-icon">?</i></span></label>
+            <label><span data-i18n="dashboard.schedule.show_nownext">Show Now / Next on dashboard</span> <span class="tip-wrap" data-tip="Shows the current period and the upcoming one (with preset names) in the center of the dashboard." data-i18n-tip="dashboard.schedule.nownext_tip"><i class="tip-icon">?</i></span></label>
             <label class="toggle"><input type="checkbox" id="scheduleShowPeriods" onchange="setScheduleShowPeriods(this.checked)"><span class="slider"></span></label>
           </div>
         </div>
@@ -2050,42 +2075,42 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 </div>
 
 <div class="panel">
-  <div class="panel-title">Hebrew Settings</div>
+  <div class="panel-title" data-i18n="dashboard.settings.panel_hebrew">Hebrew Settings</div>
   <div class="panel-body">
     <div class="sub-section">
-      <div class="sub-section-hdr">Hebrew Font</div>
+      <div class="sub-section-hdr" data-i18n="dashboard.settings.sub_hebrew_font">Hebrew Font</div>
       <div class="sub-section-body">
         <div class="font-options" id="fontOptions"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><span data-i18n="shared.fonts.upload_label">⬆ Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
       </div>
     </div>
     <div class="form-row">
-      <label>Show nikkud</label>
+      <label data-i18n="dashboard.color.show_nikkud">Show nikkud</label>
       <label class="toggle"><input type="checkbox" id="showNikkud"><span class="slider"></span></label>
     </div>
     <div class="form-row">
-      <label>Color-code nikkud</label>
+      <label data-i18n="dashboard.color.color_code_nikkud">Color-code nikkud</label>
       <label class="toggle"><input type="checkbox" id="colorCodeNikkud"><span class="slider"></span></label>
     </div>
     <div class="form-row" id="colorModeRow" style="display:none;">
-      <label>Color style</label>
+      <label data-i18n="dashboard.color.color_style">Color style</label>
       <div class="radio-group">
-        <input type="radio" name="colorMode" id="cm-letter" value="letter"><label for="cm-letter">Color</label>
-        <input type="radio" name="colorMode" id="cm-highlight" value="highlight"><label for="cm-highlight">Highlight</label>
-        <input type="radio" name="colorMode" id="cm-underline" value="underline"><label for="cm-underline">Underline</label>
+        <input type="radio" name="colorMode" id="cm-letter" value="letter"><label for="cm-letter" data-i18n="dashboard.color.mode_color">Color</label>
+        <input type="radio" name="colorMode" id="cm-highlight" value="highlight"><label for="cm-highlight" data-i18n="dashboard.color.mode_highlight">Highlight</label>
+        <input type="radio" name="colorMode" id="cm-underline" value="underline"><label for="cm-underline" data-i18n="dashboard.color.mode_underline">Underline</label>
       </div>
     </div>
     <div class="color-pick-list" id="colorPickerList" style="display:none;"></div>
     <div class="vowel-scheme-row" id="vowelSchemeRow" style="display:none;">
-      <button class="vowel-scheme-btn active" id="vowelSchemeDefault" onclick="setVowelScheme('default')">Default</button>
-      <button class="vowel-scheme-btn" id="vowelSchemeTalAm" onclick="setVowelScheme('talam')">TaL AM</button>
-      <button class="vowel-scheme-btn" id="nikudResetBtn" onclick="resetNikudColors()">Reset</button>
+      <button class="vowel-scheme-btn active" id="vowelSchemeDefault" onclick="setVowelScheme('default')" data-i18n="dashboard.color.scheme_default">Default</button>
+      <button class="vowel-scheme-btn" id="vowelSchemeTalAm" onclick="setVowelScheme('talam')" data-i18n="dashboard.color.scheme_talam">TaL AM</button>
+      <button class="vowel-scheme-btn" id="nikudResetBtn" onclick="resetNikudColors()" data-i18n="dashboard.color.reset">Reset</button>
     </div>
 
     <div class="form-row" style="margin-top:12px;flex-direction:column;align-items:stretch;gap:4px;">
-      <label style="font-size:0.78rem;font-weight:600;">Hebrew TTS Reading Speed <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></label>
+      <label style="font-size:0.78rem;font-weight:600;"><span data-i18n="dashboard.color.tts_speed_label">Hebrew TTS Reading Speed</span> <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;" data-i18n="dashboard.common.beta_badge">BETA</span></label>
       <div style="display:flex;align-items:center;gap:6px;">
-        <span style="font-size:0.65rem;color:var(--muted);">Slow</span>
+        <span style="font-size:0.65rem;color:var(--muted);" data-i18n="dashboard.color.tts_slow">Slow</span>
         <input type="range" id="ttsRateSlider" min="0.5" max="1.5" step="0.05" value="0.75" style="flex:1;accent-color:var(--gold);"
                oninput="document.getElementById('ttsRateVal').textContent = parseFloat(this.value).toFixed(2) + '×'">
         <span id="ttsRateVal" style="font-size:0.72rem;color:var(--text);min-width:36px;text-align:right;">0.75×</span>
@@ -2093,47 +2118,47 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                 onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';settings.ttsRate=0.75;saveSettingsToStorage();">↺</button>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:var(--muted);padding:0 1px;">
-        <span>Slower</span><span>Fast</span>
+        <span data-i18n="dashboard.color.tts_slower">Slower</span><span data-i18n="dashboard.color.tts_fast">Fast</span>
       </div>
     </div>
   </div>
 </div>
 
 <div class="panel collapsed">
-  <div class="panel-title">About &amp; FAQ</div>
+  <div class="panel-title" data-i18n="dashboard.settings.panel_about">About &amp; FAQ</div>
   <div class="panel-body">
     <details style="margin:0 0 10px;">
-      <summary style="cursor:pointer;font-weight:600;font-size:0.85rem;padding:4px 0;">Frequently Asked Questions</summary>
+      <summary style="cursor:pointer;font-weight:600;font-size:0.85rem;padding:4px 0;" data-i18n="dashboard.about.faq_summary">Frequently Asked Questions</summary>
       <div style="padding:4px 0;">
-        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">What is the Hebrew classroom dashboard for?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">It displays the live Hebrew date, time, weather, and days of the week for use on classroom SmartBoards or projectors during morning routine and Hebrew instruction.</p></details>
-        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Does it work on SmartBoards?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. The dashboard is designed for SmartBoards, projectors, and large displays. A built-in fullscreen mode and zoom control let you size content for any classroom screen.</p></details>
-        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Is the dashboard free?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. The dashboard is free to use under CC BY-NC-SA 4.0 for non-commercial educational purposes.</p></details>
-        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Can I project the Hebrew date?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. The Hebrew (Jewish) date and the corresponding Gregorian date are shown live and update automatically each day.</p></details>
-        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Is there a guided tour, and how do I switch layouts?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Click <strong>❓ Tour</strong> in the top bar for a quick walkthrough. First-time teachers also get a setup card. To switch layouts, open Settings → Presets and tap a Quick-start layout — Hebrew classroom, Morning routine, or a General classroom layout for non-Judaics rooms — then tweak it and Save your own preset.</p></details>
-        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">Can the dashboard switch between periods by itself?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. Settings → Schedule Sync lets you assign a preset and an end time to each period; the board reconfigures itself through the day and shows a live Now / Next display and a countdown.</p></details>
-        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;">How do I keep the display from going to sleep?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Fullscreen keeps the screen awake automatically. Otherwise turn on <strong>Keep screen awake</strong> in Settings → Display Options, where the browser supports it.</p></details>
+        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="dashboard.about.faq_q1">What is the Hebrew classroom dashboard for?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a1">It displays the live Hebrew date, time, weather, and days of the week for use on classroom SmartBoards or projectors during morning routine and Hebrew instruction.</p></details>
+        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="dashboard.about.faq_q2">Does it work on SmartBoards?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a2">Yes. The dashboard is designed for SmartBoards, projectors, and large displays. A built-in fullscreen mode and zoom control let you size content for any classroom screen.</p></details>
+        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="dashboard.about.faq_q3">Is the dashboard free?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a3">Yes. The dashboard is free to use under CC BY-NC-SA 4.0 for non-commercial educational purposes.</p></details>
+        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="dashboard.about.faq_q4">Can I project the Hebrew date?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a4">Yes. The Hebrew (Jewish) date and the corresponding Gregorian date are shown live and update automatically each day.</p></details>
+        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="dashboard.about.faq_q5">Is there a guided tour, and how do I switch layouts?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n-html="dashboard.about.faq_a5">Click <strong>❓ Tour</strong> in the top bar for a quick walkthrough. First-time teachers also get a setup card. To switch layouts, open Settings → Presets and tap a Quick-start layout — Hebrew classroom, Morning routine, or a General classroom layout for non-Judaics rooms — then tweak it and Save your own preset.</p></details>
+        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="dashboard.about.faq_q6">Can the dashboard switch between periods by itself?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a6">Yes. Settings → Schedule Sync lets you assign a preset and an end time to each period; the board reconfigures itself through the day and shows a live Now / Next display and a countdown.</p></details>
+        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="dashboard.about.faq_q7">How do I keep the display from going to sleep?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n-html="dashboard.about.faq_a7">Fullscreen keeps the screen awake automatically. Otherwise turn on <strong>Keep screen awake</strong> in Settings → Display Options, where the browser supports it.</p></details>
       </div>
     </details>
     <details style="margin:0 0 10px;">
-      <summary style="cursor:pointer;font-weight:600;font-size:0.85rem;padding:4px 0;">How To Use</summary>
+      <summary style="cursor:pointer;font-weight:600;font-size:0.85rem;padding:4px 0;" data-i18n="dashboard.about.howto_summary">How To Use</summary>
       <ol style="padding:6px 0 4px 20px;margin:0;font-size:0.8rem;line-height:1.5;color:var(--muted);">
-        <li>Set your location for accurate weather and Hebrew date.</li>
-        <li>Pick which panels to show in <em>Display Options</em>.</li>
-        <li>Customize the Hebrew font and nikkud display.</li>
-        <li>Use the fullscreen button to project to your SmartBoard.</li>
-        <li>Save your setup as a preset — or start from a Quick-start layout in the Presets panel.</li>
-        <li>In fullscreen, move the mouse to reveal quick controls (settings, timer, text, video).</li>
-        <li>Click the ✎ on the dashboard message to edit it right on the board.</li>
+        <li data-i18n="dashboard.about.howto_1">Set your location for accurate weather and Hebrew date.</li>
+        <li data-i18n-html="dashboard.about.howto_2">Pick which panels to show in <em>Display Options</em>.</li>
+        <li data-i18n="dashboard.about.howto_3">Customize the Hebrew font and nikkud display.</li>
+        <li data-i18n="dashboard.about.howto_4">Use the fullscreen button to project to your SmartBoard.</li>
+        <li data-i18n="dashboard.about.howto_5">Save your setup as a preset — or start from a Quick-start layout in the Presets panel.</li>
+        <li data-i18n="dashboard.about.howto_6">In fullscreen, move the mouse to reveal quick controls (settings, timer, text, video).</li>
+        <li data-i18n="dashboard.about.howto_7">Click the ✎ on the dashboard message to edit it right on the board.</li>
       </ol>
     </details>
     <div>
-      <div style="font-family:'Libre Baskerville',serif;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;">Related Hebrew Tools</div>
+      <div style="font-family:'Libre Baskerville',serif;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;" data-i18n="shared.nav.header">Related Hebrew Tools</div>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px;">
-        <li><a href="hebrew_blend_generator.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;">Generate printable Hebrew worksheets →</a></li>
-        <li><a href="flash_cards.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;">Practice with Hebrew flash cards →</a></li>
-        <li><a href="hebrew_dictionary.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;">Look up Hebrew words →</a></li>
-        <li><a href="trope_tutor.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;">Learn Torah trope (cantillation) →</a></li>
-        <li><a href="resources.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;">Hebrew teaching resources →</a></li>
+        <li><a href="hebrew_blend_generator.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_worksheets">Generate printable Hebrew worksheets →</a></li>
+        <li><a href="flash_cards.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_flashcards">Practice with Hebrew flash cards →</a></li>
+        <li><a href="hebrew_dictionary.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_dictionary">Look up Hebrew words →</a></li>
+        <li><a href="trope_tutor.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_trope">Learn Torah trope (cantillation) →</a></li>
+        <li><a href="resources.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_resources">Hebrew teaching resources →</a></li>
       </ul>
     </div>
   </div>
@@ -2485,7 +2510,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function openFirstRun() {
     _frPrevFocus = document.activeElement;   // restore target for the drawer-button path (body on auto first-visit)
     document.getElementById('frStarters').innerHTML = STARTERS.map(s =>
-      `<button class="fr-starter" onclick="frApplyStarter('${esc(s.key)}')"><b>${esc(s.label)}</b><span>${esc(s.desc)}</span></button>`
+      `<button class="fr-starter" onclick="frApplyStarter('${esc(s.key)}')"><b>${esc(I18n.t('dashboard.setup.starter_' + s.key + '_label'))}</b><span>${esc(I18n.t('dashboard.setup.starter_' + s.key + '_desc'))}</span></button>`
     ).join('');
     document.getElementById('frLocationInput').value = settings.location || '';
     const tl = document.getElementById('frTourLink');
@@ -2716,7 +2741,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     if (!settings.showNikkud) out = stripNikkud(s);
     else if (settings.colorCodeNikkud) out = colorizeHebrew(s, settings.colorCodingMode);
     else out = s;
-    return '<span lang="he">' + out + '</span>';
+    return '<span lang="he" dir="rtl">' + out + '</span>';
   }
 
   function maybeStripNikkud(s) { return settings.showNikkud ? s : stripNikkud(s); }
@@ -2751,7 +2776,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     });
   }
   function resetNikudColors() {
-    if (!confirm('Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.')) return;
+    if (!confirm(I18n.t('dashboard.color.reset_confirm'))) return;
     settings.nikudColorOverrides = {};
     initColorPickers();
     if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); }
@@ -2902,7 +2927,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   }
 
   function resetAllTextSizes() {
-    if (!confirm('Reset all text sizes to defaults?')) return;
+    if (!confirm(I18n.t('dashboard.display.reset_all_text_sizes_confirm'))) return;
     setEngDateSize(1.35);
     setHebDateSize(2.6);
     setTimeSize(3.4);
@@ -3078,7 +3103,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     if (weatherCol) weatherCol.style.display = settings.hideWeather ? 'none' : '';
     if (settings.hideWeather) return;
     const block = document.getElementById('weatherBlock');
-    block.innerHTML = '<div class="weather-loading">Loading weather…</div>';
+    block.innerHTML = '<div class="weather-loading">' + esc(I18n.t('dashboard.weather.loading')) + '</div>';
     try {
       let place;
       if (settings._geoCoords) {
@@ -3089,7 +3114,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         );
         const geo = await geoRes.json();
         if (!geo.results || !geo.results.length) {
-          block.innerHTML = `<div class="weather-loading">Location "${esc(settings.location)}" not found.</div>`;
+          block.innerHTML = '<div class="weather-loading">' + I18n.t('dashboard.weather.not_found', { location: esc(settings.location) }) + '</div>';
           return;
         }
         place = geo.results[0];
@@ -3105,13 +3130,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       weatherCache = { data: wData, place };
       renderWeather();
     } catch (e) {
-      block.innerHTML = '<div class="weather-loading">Weather unavailable</div>';
+      block.innerHTML = '<div class="weather-loading">' + esc(I18n.t('dashboard.weather.unavailable')) + '</div>';
     }
   }
 
   async function useCurrentLocation() {
     if (!navigator.geolocation) {
-      alert('Geolocation is not supported by this browser.');
+      alert(I18n.t('dashboard.weather.geo_unsupported'));
       return;
     }
     const btn = document.getElementById('currentLocBtn');
@@ -3138,13 +3163,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         await fetchWeather();
         fetchShabbat(true);
       } finally {
-        btn.textContent = '📍 Current Location';
+        btn.textContent = I18n.t('dashboard.display.current_location');
         btn.disabled = false;
       }
     }, err => {
-      btn.textContent = '📍 Current Location';
+      btn.textContent = I18n.t('dashboard.display.current_location');
       btn.disabled = false;
-      alert('Could not get location: ' + (err.message || 'Permission denied'));
+      alert(I18n.t('dashboard.weather.geo_error', { message: err.message || 'Permission denied' }));
     });
   }
 
@@ -3330,7 +3355,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         if (c && c.items) { renderShabbat(c.items, false); return; }
       } catch (e2) {}
       const el = document.getElementById('shabbatTimes');
-      if (el && settings.showShabbatTimes) { el.style.display = ''; el.innerHTML = '<div class="shabbat-loading">Shabbat times unavailable</div>'; }
+      if (el && settings.showShabbatTimes) { el.style.display = ''; el.innerHTML = '<div class="shabbat-loading">' + esc(I18n.t('dashboard.days.shabbat_unavailable')) + '</div>'; }
       else if (el) el.style.display = 'none';
     }
   }
@@ -3446,7 +3471,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     let sec = 0;
     if (/^\d{1,3}:\d{1,2}$/.test(v)) { const [m, s] = v.split(':').map(Number); sec = m * 60 + s; }
     else if (/^\d+$/.test(v)) { sec = parseInt(v) * 60; }
-    if (sec <= 0) { alert('Enter a duration as MM:SS (e.g. 2:30).'); return; }
+    if (sec <= 0) { alert(I18n.t('dashboard.timer.custom_invalid')); return; }
     timerTotal = sec; timerRemaining = sec;
     document.getElementById('timerCustomRow').style.display = 'none';
     timerStart();
@@ -3459,7 +3484,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     timerBeep();
     const d = document.getElementById('timerDisplay');
     d.classList.remove('warn');
-    d.textContent = 'Time!';
+    d.textContent = I18n.t('dashboard.timer.done');
     d.classList.add('done');
     setTimeout(() => {
       d.classList.remove('done');
@@ -4252,7 +4277,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     const ta = document.getElementById('pickerRoster');
     const raw = ta ? ta.value : (curClass().names || []).join('\n');
     const n = parseRoster(raw).length;
-    el.textContent = `${n} name${n === 1 ? '' : 's'}${n >= PICKER_MAX ? ` (max ${PICKER_MAX})` : ''}`;
+    el.textContent = I18n.t(n === 1 ? 'dashboard.picker.roster_count.one' : 'dashboard.picker.roster_count.other', { count: n }) + (n >= PICKER_MAX ? ' ' + I18n.t('dashboard.picker.roster_count_max_suffix', { max: PICKER_MAX }) : '');
   }
   // Commit the textarea into the ACTIVE class on blur; reconcile (not reset) that class's session.
   function commitRosterFromTextarea() {
@@ -4300,7 +4325,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function renderClassManager() {
     renderClassSwitchers();
     const lbl = document.getElementById('pickerRosterLabel');
-    if (lbl) lbl.textContent = `Roster for ${curClass().name} — one name per line`;
+    if (lbl) lbl.textContent = I18n.t('dashboard.picker.roster_label_named', { name: curClass().name });
     const ta = document.getElementById('pickerRoster');
     if (ta) ta.value = (curClass().names || []).join('\n');
     updatePickerRosterCount();
@@ -4319,7 +4344,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       pickerClassNote(`You can have up to ${ROSTER_MAX_CLASSES} classes. Delete one to add another.`);
       return;
     }
-    const raw = prompt('New class name:');
+    const raw = prompt(I18n.t('dashboard.picker.new_class_prompt'));
     if (raw === null) return;
     const id = newRosterId();
     settings.rosters[id] = { name: uniqueClassName(raw.trim() || 'My class'), names: [] };
@@ -4327,7 +4352,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   }
   function renameClass() {
     const c = curClass();
-    const raw = prompt('Rename class:', c.name);
+    const raw = prompt(I18n.t('dashboard.picker.rename_class_prompt'), c.name);
     if (raw === null) return;
     const name = raw.trim();
     if (!name) return;
@@ -4336,7 +4361,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   }
   function deleteClass() {
     const c = curClass();
-    if (!confirm(`Delete class "${c.name}"? Its roster and today's picks will be removed.`)) return;
+    if (!confirm(I18n.t('dashboard.picker.delete_class_confirm', { name: c.name }))) return;
     const id = settings.activeRosterId;
     delete settings.rosters[id];
     delete settings.pickerSessions[id];
@@ -4376,7 +4401,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     if (!names.length) {
       const hint = document.createElement('div');
       hint.className = 'picker-empty';
-      hint.textContent = 'Add students to this class in Settings → Student Picker, or pick a different class from the header.';
+      hint.textContent = I18n.t('dashboard.picker.empty_card');
       chips.appendChild(hint);
       if (actions) actions.style.display = 'none';
       if (progress) progress.innerHTML = '';
@@ -4402,13 +4427,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         const done = picked.filter(n => !absent.includes(n) && names.includes(n)).length;
         const label = document.createElement('span');
         label.className = 'picker-progress-label';
-        label.textContent = `Picked ${done} / ${total}`;
+        label.textContent = I18n.t('dashboard.picker.progress', { done: done, total: total });
         progress.appendChild(label);
         if (done > 0) {
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.className = 'btn-xs';
-          btn.textContent = '🔄 New round';
+          btn.textContent = I18n.t('dashboard.picker.new_round');
           btn.addEventListener('click', resetPickerCycle);
           progress.appendChild(btn);
         }
@@ -4517,7 +4542,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     let pool = eligible;
     if (fair) {
       pool = eligible.filter(n => !sess.picked.includes(n));
-      if (!pool.length) { sess.picked = []; pool = eligible; setPickNote('🔄 New round'); }
+      if (!pool.length) { sess.picked = []; pool = eligible; setPickNote(I18n.t('dashboard.picker.new_round')); }
     }
     const winner = pool[Math.floor(Math.random() * pool.length)];
     const finish = () => {
@@ -4546,7 +4571,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     openPickOverlay();
     setPickNote('');
     if (!eligibleNames().length) {
-      renderPickMessage(rosterNames().length ? 'Everyone is marked absent today.' : 'Add a class roster in Settings → Student Picker.');
+      renderPickMessage(rosterNames().length ? I18n.t('dashboard.picker.all_absent') : I18n.t('dashboard.picker.empty_groups'));
       return;
     }
     renderGroups();
@@ -4622,7 +4647,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
   function savePreset() {
     const name = document.getElementById('presetName').value.trim();
-    if (!name) { alert('Please enter a preset name.'); return; }
+    if (!name) { alert(I18n.t('dashboard.preset.save_empty')); return; }
     presets[name] = getSettings({ forPreset: true });   // rosters are shared — snapshot only activeRosterId
     savePresetsStorage();
     document.getElementById('presetName').value = '';
@@ -4634,12 +4659,12 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     saveSettingsToStorage();
   }
   function overwritePreset(name) {
-    if (!confirm(`Overwrite preset "${name}" with current settings?`)) return;
+    if (!confirm(I18n.t('dashboard.preset.overwrite_confirm', { name: name }))) return;
     presets[name] = getSettings({ forPreset: true });   // rosters are shared — snapshot only activeRosterId
     savePresetsStorage();
   }
   function deletePreset(name) {
-    if (!confirm(`Delete preset "${name}"?`)) return;
+    if (!confirm(I18n.t('dashboard.preset.delete_confirm', { name: name }))) return;
     delete presets[name];
     savePresetsStorage();
     renderPresets();
@@ -4652,7 +4677,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     ftInsertAfter('hebrewDashboard_presetsFolders', name, nn);
     renderPresets();
   }
-  /* ═══ IvritSuite folder-tree component (shared, identical across pages) ═══ */
+/* ═══ IvritSuite folder-tree component (shared, identical across pages) ═══ */
 /* Sidecar overlay: the preset/schedule/profile store stays a flat {name:...} object and is the
    source of truth for which items EXIST. This tree only organizes them (references items by name).
    Stored as JSON under a per-list key. mountFolderTree(cfg) renders + wires DnD and a Move menu. */
@@ -4707,13 +4732,13 @@ function ftIsDescendant(tree, folderId, candId){
   return found;
 }
 function ftPaths(tree, excludeId){
-  const out = [{ id:null, label:'⌂ Root' }];
+  const out = [{ id:null, label: I18n.t('shared.folders.move_root') }];
   (function walk(arr, prefix){
     for (const n of arr){
       if (n.t !== 'folder') continue;
       if (excludeId && ftIsDescendant(tree, excludeId, n.id)) continue; // skip self + descendants
       const path = prefix ? prefix + ' / ' + n.name : n.name;
-      out.push({ id:n.id, label:'📁 ' + path });
+      out.push({ id:n.id, label: I18n.t('shared.folders.move_path', { path: path }) });
       walk(n.children, path);
     }
   })(tree.root, '');
@@ -4789,12 +4814,12 @@ function mountFolderTree(cfg){
 
   function renderItem(node){
     const row = document.createElement('div'); row.className = 'preset-item'; row.dataset.ftItem = node.name;
-    const h = document.createElement('span'); h.className='drag-handle'; h.title='Drag to move'; h.textContent='⠿'; h.style.flex='0 0 auto';
+    const h = document.createElement('span'); h.className='drag-handle'; h.title=I18n.t('shared.folders.drag_item'); h.textContent='⠿'; h.style.flex='0 0 auto';
     const nm = document.createElement('span'); nm.className='ft-item-name'; nm.style.flex='1'; nm.textContent = node.name;
     row.appendChild(h); row.appendChild(nm);
     const acts = cfg.buildItemRow(node.name); if (acts) row.appendChild(acts);
     const mw = document.createElement('span'); mw.className='ft-move-wrap';
-    const mb = document.createElement('button'); mb.type='button'; mb.className='ft-move-btn'; mb.textContent='Move ▾';
+    const mb = document.createElement('button'); mb.type='button'; mb.className='ft-move-btn'; mb.textContent=I18n.t('shared.folders.move_button');
     mb.addEventListener('click', e => { e.stopPropagation(); openMoveMenu(mb, node); });
     mw.appendChild(mb); row.appendChild(mw);
     makeDraggable(row, node);
@@ -4807,14 +4832,14 @@ function mountFolderTree(cfg){
     const fol = document.createElement('div'); fol.className = 'ft-folder' + (node.collapsed?' ft-collapsed':''); fol.dataset.ftFolder = node.id;
     const head = document.createElement('div'); head.className='ft-folder-head';
     const tw = document.createElement('span'); tw.className='ft-twisty'; tw.textContent='▾';
-    const h = document.createElement('span'); h.className='drag-handle'; h.title='Drag folder'; h.textContent='⠿'; h.style.flex='0 0 auto';
+    const h = document.createElement('span'); h.className='drag-handle'; h.title=I18n.t('shared.folders.drag_folder'); h.textContent='⠿'; h.style.flex='0 0 auto';
     const nm = document.createElement('span'); nm.className='ft-folder-name'; nm.textContent = node.name;
     const cnt = document.createElement('span'); cnt.className='ft-folder-count'; cnt.textContent = '(' + node.children.length + ')';
     const acts = document.createElement('span'); acts.className='ft-folder-actions';
-    acts.appendChild(mkMini('＋','New subfolder', () => { const x=(prompt('New subfolder name:')||'').trim(); if(!x) return; node.children.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); }));
-    acts.appendChild(mkMini('✎','Rename folder', () => { const x=(prompt('Rename folder:', node.name)||'').trim(); if(!x) return; node.name=x; commit(); }));
+    acts.appendChild(mkMini('＋',I18n.t('shared.folders.new_subfolder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_new_subfolder'))||'').trim(); if(!x) return; node.children.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); }));
+    acts.appendChild(mkMini('✎',I18n.t('shared.folders.rename_folder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_rename'), node.name)||'').trim(); if(!x) return; node.name=x; commit(); }));
     acts.appendChild(mkMini('↗','Move folder', (b) => openMoveMenu(b, node)));
-    acts.appendChild(mkMini('🗑','Delete folder (keeps items)', () => { if(!confirm('Delete folder "'+node.name+'"? Its contents move out — nothing is deleted.')) return; const loc=ftLocate(tree, x=>x===node); if(loc){ loc.parent.splice(loc.index, 1, ...node.children); commit(); } }));
+    acts.appendChild(mkMini('🗑',I18n.t('shared.folders.delete_folder'), () => { if(!confirm(I18n.t('shared.folders.delete_confirm', { name: node.name }))) return; const loc=ftLocate(tree, x=>x===node); if(loc){ loc.parent.splice(loc.index, 1, ...node.children); commit(); } }));
     head.appendChild(tw); head.appendChild(h); head.appendChild(nm); head.appendChild(cnt); head.appendChild(acts);
     head.addEventListener('click', e => { if (e.target.closest('.ft-folder-actions')) return; node.collapsed = !node.collapsed; commit(); });
     makeDraggable(fol, node);
@@ -4822,7 +4847,7 @@ function mountFolderTree(cfg){
     head.addEventListener('drop', e => { if (!canDrop(node)) return; e.preventDefault(); e.stopPropagation(); dropInto(node); });
     const body = document.createElement('div'); body.className='ft-folder-body';
     if (node.children.length === 0){
-      const em = document.createElement('div'); em.className='ft-empty-folder'; em.textContent='Empty — drop items here';
+      const em = document.createElement('div'); em.className='ft-empty-folder'; em.textContent=I18n.t('shared.folders.empty_folder');
       em.addEventListener('dragover', e => { if (!canDrop(node)) return; e.preventDefault(); clearCues(); fol.classList.add('ft-drop'); });
       em.addEventListener('drop', e => { if (!canDrop(node)) return; e.preventDefault(); e.stopPropagation(); dropInto(node); });
       body.appendChild(em);
@@ -4835,14 +4860,14 @@ function mountFolderTree(cfg){
     closeMenu(); container.innerHTML = '';
     const wrap = document.createElement('div'); wrap.className='ft-tree';
     renderInto(tree.root, wrap);
-    if (tree.root.length === 0){ const em=document.createElement('div'); em.className='ft-empty-folder'; em.textContent='No saved '+(cfg.noun||'item')+'s yet.'; wrap.appendChild(em); }
+    if (tree.root.length === 0){ const em=document.createElement('div'); em.className='ft-empty-folder'; em.textContent=I18n.t('shared.folders.empty_list', { noun: cfg.noun||'item' }); wrap.appendChild(em); }
     const rootDrop = document.createElement('div'); rootDrop.className='ft-root-drop';
     rootDrop.addEventListener('dragover', e => { if (!dragNode) return; e.preventDefault(); clearCues(); rootDrop.classList.add('ft-row-drop'); });
     rootDrop.addEventListener('drop', e => { if (!dragNode) return; e.preventDefault(); e.stopPropagation(); const dn=dragNode; ftRemove(tree, x=>x===dn); tree.root.push(dn); commit(); });
     wrap.appendChild(rootDrop);
     container.appendChild(wrap);
-    const add = document.createElement('button'); add.type='button'; add.className='ft-newfolder'; add.textContent='📁 New folder';
-    add.addEventListener('click', () => { const x=(prompt('New folder name:')||'').trim(); if(!x) return; tree.root.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); });
+    const add = document.createElement('button'); add.type='button'; add.className='ft-newfolder'; add.textContent=I18n.t('shared.folders.new_folder');
+    add.addEventListener('click', () => { const x=(prompt(I18n.t('shared.folders.prompt_new_folder'))||'').trim(); if(!x) return; tree.root.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); });
     container.appendChild(add);
   }
   render();
@@ -4890,10 +4915,10 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
       buildItemRow: (name) => {
         const f = document.createDocumentFragment();
         const mk = (txt, title, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.textContent = txt; if (title) b.title = title; b.addEventListener('click', fn); return b; };
-        f.appendChild(mk('Load', '', 'btn btn-xs', () => loadPreset(name)));
-        f.appendChild(mk('↺', 'Overwrite with current settings', 'btn btn-xs btn-secondary', () => overwritePreset(name)));
-        f.appendChild(mk('⧉', 'Duplicate', 'btn btn-xs btn-secondary', () => duplicatePreset(name)));
-        f.appendChild(mk('×', 'Delete', 'btn btn-xs btn-secondary', () => deletePreset(name)));
+        f.appendChild(mk(I18n.t('dashboard.preset.load'), '', 'btn btn-xs', () => loadPreset(name)));
+        f.appendChild(mk('↺', I18n.t('dashboard.preset.overwrite_title'), 'btn btn-xs btn-secondary', () => overwritePreset(name)));
+        f.appendChild(mk('⧉', I18n.t('dashboard.preset.duplicate_title'), 'btn btn-xs btn-secondary', () => duplicatePreset(name)));
+        f.appendChild(mk('×', I18n.t('dashboard.preset.delete_title'), 'btn btn-xs btn-secondary', () => deletePreset(name)));
         return f;
       }
     });
@@ -4907,7 +4932,7 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
     const btn = document.getElementById('presetCopyBtn');
     if (!box.value) return;
     navigator.clipboard.writeText(box.value).catch(() => { box.select(); document.execCommand('copy'); });
-    btn.textContent = '✓'; setTimeout(() => btn.textContent = 'Copy', 1500);
+    btn.textContent = '✓'; setTimeout(() => btn.textContent = I18n.t('shared.ivrit.manual_copy'), 1500);
   }
   function importPresets() {
     try {
@@ -4923,8 +4948,8 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
       saveSchedulesStorage();
       renderPresets();
       renderSavedSchedules();
-      showAppToast('Imported successfully.');
-    } catch (e) { alert('Invalid JSON.'); }
+      showAppToast(I18n.t('shared.toast.imported'));
+    } catch (e) { alert(I18n.t('dashboard.backup.err_invalid_json')); }
   }
 
   /* ────────── .ivrit SAVE FILE ────────── */
@@ -5019,7 +5044,7 @@ function ivritSaveFile() {
   a.href = url; a.download = ivritDateStamp() + '_' + IVRIT_CFG.tool + '.ivrit';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 1500);
-  ivritStatus('Saved ' + a.download);
+  ivritStatus(I18n.t('shared.ivrit.status_saved', { filename: a.download }));
 }
 function ivritAskMode() {
   return new Promise(resolve => {
@@ -5027,12 +5052,15 @@ function ivritAskMode() {
     ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
     const box = document.createElement('div');
     box.style.cssText = 'background:var(--white,#fff);color:var(--text,#1a2744);max-width:360px;width:100%;border-radius:10px;padding:18px;font-family:inherit;box-shadow:0 10px 40px rgba(0,0,0,0.35);';
-    box.innerHTML = '<div style="font-weight:700;font-size:1rem;margin-bottom:8px;">Restore from .ivrit file</div>'
-      + '<div style="font-size:0.82rem;line-height:1.5;margin-bottom:16px;opacity:0.9;"><b>Merge</b> keeps what you have now and adds the file\'s data (matching names are overwritten).<br><b>Replace</b> clears your current data first and loads only what\'s in the file.</div>'
+    // Render the trusted body string's lightweight markdown (**bold**, \n) to HTML.
+    const bodyHtml = esc(I18n.t('shared.ivrit.restore_dialog_body'))
+      .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+    box.innerHTML = `<div style="font-weight:700;font-size:1rem;margin-bottom:8px;">${esc(I18n.t('shared.ivrit.restore_dialog_title'))}</div>`
+      + `<div style="font-size:0.82rem;line-height:1.5;margin-bottom:16px;opacity:0.9;">${bodyHtml}</div>`
       + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
-      + '<button data-act="merge" style="flex:1;min-width:96px;padding:9px;border:none;border-radius:6px;background:var(--navy,#1a2744);color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">Merge</button>'
-      + '<button data-act="replace" style="flex:1;min-width:96px;padding:9px;border:none;border-radius:6px;background:#a83232;color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">Replace</button>'
-      + '<button data-act="cancel" style="flex:1;min-width:96px;padding:9px;border:1px solid var(--border,#ccc);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:inherit;font-size:0.85rem;">Cancel</button>'
+      + `<button data-act="merge" style="flex:1;min-width:96px;padding:9px;border:none;border-radius:6px;background:var(--navy,#1a2744);color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t('shared.ivrit.restore_merge_button'))}</button>`
+      + `<button data-act="replace" style="flex:1;min-width:96px;padding:9px;border:none;border-radius:6px;background:#a83232;color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t('shared.ivrit.restore_replace_button'))}</button>`
+      + `<button data-act="cancel" style="flex:1;min-width:96px;padding:9px;border:1px solid var(--border,#ccc);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t('shared.ivrit.restore_cancel_button'))}</button>`
       + '</div>';
     ov.appendChild(box); document.body.appendChild(ov);
     const done = v => { if (ov.parentNode) document.body.removeChild(ov); resolve(v); };
@@ -5050,30 +5078,30 @@ function ivritToolMismatch(fileTool) {
 async function ivritRestore(text, sourceName) {
   let parsed;
   try { parsed = ivritSafeParse(text); }
-  catch (e) { alert('That file could not be read as a .ivrit save file.'); return; }
+  catch (e) { alert(I18n.t('shared.ivrit.err_unreadable')); return; }
   let payload = parsed;
   if (!(parsed && parsed.format === 'ivrit-save')) {
     if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
       payload = { tool: null, data: { presets: parsed } };   // tolerate a legacy raw-presets blob
-    } else { alert('That file is not a recognizable .ivrit save file.'); return; }
+    } else { alert(I18n.t('shared.ivrit.err_unrecognized')); return; }
   }
   if (ivritToolMismatch(payload.tool)) {
-    if (!confirm('This looks like a "' + payload.tool + '" save file, but this is the ' + IVRIT_CFG.tool + ' page.\n\nImporting it here may not do anything useful. Import anyway?')) return;
+    if (!confirm(I18n.t('shared.ivrit.tool_mismatch_confirm', { tool: payload.tool, tool2: IVRIT_CFG.tool }))) return;
   }
   const mode = await ivritAskMode();
   if (!mode) return;
   try { IVRIT_CFG.apply(payload.data || {}, mode); }
-  catch (e) { alert('Restore failed: ' + e.message); return; }
+  catch (e) { alert(I18n.t('shared.ivrit.err_restore_failed', { error: e.message })); return; }
   if (!IVRIT_CFG.needsReload) {
-    ivritStatus('Restored from ' + (sourceName || 'file'));
-    showAppToast('Restored successfully' + (sourceName ? ' from ' + sourceName : '') + '.');
+    ivritStatus(I18n.t('shared.ivrit.status_restored', { source: sourceName || 'file' }));
+    showAppToast(sourceName ? I18n.t('shared.ivrit.toast_restored_named', { source: sourceName }) : I18n.t('shared.ivrit.toast_restored_plain'));
   }
 }
 function ivritReadFile(file) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = () => ivritRestore(reader.result, file.name);
-  reader.onerror = () => alert('Could not read that file.');
+  reader.onerror = () => alert(I18n.t('shared.ivrit.err_read'));
   reader.readAsText(file);
 }
 function ivritInit() {
@@ -5157,7 +5185,7 @@ else ivritInit();
     if (!container) return;
     const rows = settings.currentSchedule || [];
     if (!rows.length) {
-      container.innerHTML = '<div style="font-size:0.75rem;color:var(--muted);font-style:italic;padding:4px 0;">No entries yet — click + Add.</div>';
+      container.innerHTML = '<div style="font-size:0.75rem;color:var(--muted);font-style:italic;padding:4px 0;">' + esc(I18n.t('dashboard.schedule.no_entries')) + '</div>';
       return;
     }
     container.innerHTML = '';
@@ -5165,9 +5193,9 @@ else ivritInit();
     hdr.className = 'sched-hdr-row';
     hdr.innerHTML =
       `<span class="drag-handle" style="visibility:hidden">⠿</span>` +
-      `<span class="sched-hdr">Preset</span>` +
-      `<span class="schedule-until-lbl" style="visibility:hidden">until</span>` +
-      `<span class="sched-hdr sched-hdr-until">Until</span>` +
+      `<span class="sched-hdr">${esc(I18n.t('dashboard.schedule.hdr_preset'))}</span>` +
+      `<span class="schedule-until-lbl" style="visibility:hidden">${esc(I18n.t('dashboard.schedule.until_label'))}</span>` +
+      `<span class="sched-hdr sched-hdr-until">${esc(I18n.t('dashboard.schedule.hdr_until'))}</span>` +
       `<span style="width:16px;flex-shrink:0;"></span>`;
     container.appendChild(hdr);
     rows.forEach((entry, i) => {
@@ -5175,13 +5203,13 @@ else ivritInit();
       row.className = 'schedule-row';
       row.draggable = true;
       row.innerHTML =
-        `<span class="drag-handle" title="Drag to reorder">⠿</span>` +
+        `<span class="drag-handle" title="${esc(I18n.t('dashboard.schedule.drag_reorder'))}">⠿</span>` +
         `<select class="schedule-preset-sel" onchange="updateScheduleEntry(${i},'preset',this.value)">${getPresetOptions(entry.preset)}</select>` +
-        `<span class="schedule-until-lbl">until</span>` +
+        `<span class="schedule-until-lbl">${esc(I18n.t('dashboard.schedule.until_label'))}</span>` +
         `<input type="time" class="schedule-time-input" value="${esc(entry.until || '')}" onchange="updateScheduleEntry(${i},'until',this.value)">` +
-        `<button class="schedule-move-btn" title="Move up" aria-label="Move row ${i + 1} up" onclick="moveScheduleRow(${i},-1)"${i === 0 ? ' disabled' : ''}>▲</button>` +
-        `<button class="schedule-move-btn" title="Move down" aria-label="Move row ${i + 1} down" onclick="moveScheduleRow(${i},1)"${i === rows.length - 1 ? ' disabled' : ''}>▼</button>` +
-        `<button class="schedule-del-btn" title="Remove" onclick="removeScheduleRow(${i})">×</button>`;
+        `<button class="schedule-move-btn" title="${esc(I18n.t('dashboard.schedule.move_up'))}" aria-label="${esc(I18n.t('dashboard.schedule.move_up_aria', { n: i + 1 }))}" onclick="moveScheduleRow(${i},-1)"${i === 0 ? ' disabled' : ''}>▲</button>` +
+        `<button class="schedule-move-btn" title="${esc(I18n.t('dashboard.schedule.move_down'))}" aria-label="${esc(I18n.t('dashboard.schedule.move_down_aria', { n: i + 1 }))}" onclick="moveScheduleRow(${i},1)"${i === rows.length - 1 ? ' disabled' : ''}>▼</button>` +
+        `<button class="schedule-del-btn" title="${esc(I18n.t('dashboard.schedule.remove'))}" onclick="removeScheduleRow(${i})">×</button>`;
       container.appendChild(row);
       // Show which class this period's preset activates (derived, read-only). Skipped for a preset that
       // predates class rosters or references a since-deleted class. textContent keeps hostile names inert.
@@ -5255,8 +5283,8 @@ else ivritInit();
 
   function saveScheduleAs() {
     const rows = settings.currentSchedule || [];
-    if (!rows.length) { alert('Add at least one schedule entry first.'); return; }
-    const name = prompt('Schedule name:');
+    if (!rows.length) { alert(I18n.t('dashboard.schedule.save_empty')); return; }
+    const name = prompt(I18n.t('dashboard.schedule.name_prompt'));
     if (!name || !name.trim()) return;
     savedSchedules[name.trim()] = JSON.parse(JSON.stringify(rows));
     saveSchedulesStorage();
@@ -5274,10 +5302,10 @@ else ivritInit();
       buildItemRow: (name) => {
         const f = document.createDocumentFragment();
         const mk = (txt, title, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.textContent = txt; if (title) b.title = title; b.addEventListener('click', fn); return b; };
-        f.appendChild(mk('Load', '', 'btn btn-xs', () => loadSavedSchedule(name)));
-        f.appendChild(mk('↺', 'Overwrite with current schedule', 'btn btn-xs btn-secondary', () => overwriteSavedSchedule(name)));
-        f.appendChild(mk('⧉', 'Duplicate', 'btn btn-xs btn-secondary', () => duplicateSavedSchedule(name)));
-        f.appendChild(mk('×', 'Delete', 'btn btn-xs btn-secondary', () => deleteSavedSchedule(name)));
+        f.appendChild(mk(I18n.t('dashboard.schedule.sched_load'), '', 'btn btn-xs', () => loadSavedSchedule(name)));
+        f.appendChild(mk('↺', I18n.t('dashboard.schedule.overwrite_title'), 'btn btn-xs btn-secondary', () => overwriteSavedSchedule(name)));
+        f.appendChild(mk('⧉', I18n.t('dashboard.schedule.sched_duplicate_title'), 'btn btn-xs btn-secondary', () => duplicateSavedSchedule(name)));
+        f.appendChild(mk('×', I18n.t('dashboard.schedule.sched_delete_title'), 'btn btn-xs btn-secondary', () => deleteSavedSchedule(name)));
         return f;
       }
     });
@@ -5292,13 +5320,13 @@ else ivritInit();
   }
 
   function overwriteSavedSchedule(name) {
-    if (!confirm(`Overwrite schedule "${name}" with the current schedule?`)) return;
+    if (!confirm(I18n.t('dashboard.schedule.overwrite_confirm', { name: name }))) return;
     savedSchedules[name] = JSON.parse(JSON.stringify(settings.currentSchedule || []));
     saveSchedulesStorage();
   }
 
   function deleteSavedSchedule(name) {
-    if (!confirm(`Delete schedule "${name}"?`)) return;
+    if (!confirm(I18n.t('dashboard.schedule.delete_confirm', { name: name }))) return;
     delete savedSchedules[name];
     saveSchedulesStorage();
     renderSavedSchedules();
@@ -5361,10 +5389,10 @@ else ivritInit();
     const cd = document.getElementById('scheduleCountdown');
     if (cd) {
       if (settings.scheduleEnabled && settings.scheduleShowCountdown && live) {
-        const suffix = st.isTomorrow ? ' (tomorrow)' : '';
+        const suffix = st.isTomorrow ? ' ' + I18n.t('dashboard.schedule.suffix_tomorrow') : '';
         cd.textContent = settings.countdownShowPresetName !== false
-          ? `Next: ${st.targetEntry.preset}${suffix} in ${st.timeStr}`
-          : `Next class${suffix} in ${st.timeStr}`;
+          ? I18n.t('dashboard.schedule.countdown_next_named', { preset: st.targetEntry.preset + suffix, time: st.timeStr })
+          : I18n.t('dashboard.schedule.countdown_next_generic', { time: st.timeStr + suffix });
         cd.style.display = 'block';
       } else cd.style.display = 'none';
     }
@@ -5374,12 +5402,12 @@ else ivritInit();
       if (settings.scheduleEnabled && settings.scheduleShowPeriods !== false && live) {
         const nextName = esc(st.targetEntry ? st.targetEntry.preset : '—');
         const at = st.targetEntry && st.targetEntry.until ? esc(st.targetEntry.until) : '';
-        const morrow = st.isTomorrow ? ' <span class="nn-morrow">(tomorrow)</span>' : '';
+        const morrow = st.isTomorrow ? ' <span class="nn-morrow">' + esc(I18n.t('dashboard.schedule.suffix_tomorrow')) + '</span>' : '';
         const nowCol = st.currentEntry
-          ? `<span class="nn-item"><span class="nn-lbl">Now</span><span class="nn-val">${esc(st.currentEntry.preset)}</span><span class="nn-in">${st.timeStr} left</span></span>`
+          ? `<span class="nn-item"><span class="nn-lbl">${esc(I18n.t('dashboard.schedule.now_label'))}</span><span class="nn-val">${esc(st.currentEntry.preset)}</span><span class="nn-in">${esc(I18n.t('dashboard.schedule.time_left', { time: st.timeStr }))}</span></span>`
           : '';
         nn.innerHTML = nowCol +
-          `<span class="nn-item"><span class="nn-lbl">Next</span><span class="nn-val">${nextName}</span><span class="nn-in">${at ? 'at ' + at : ''}${morrow}</span></span>`;
+          `<span class="nn-item"><span class="nn-lbl">${esc(I18n.t('dashboard.schedule.next_label'))}</span><span class="nn-val">${nextName}</span><span class="nn-in">${at ? I18n.t('dashboard.schedule.next_at', { time: at }) : ''}${morrow}</span></span>`;
         nn.style.display = '';
       } else nn.style.display = 'none';
     }
@@ -5402,7 +5430,7 @@ else ivritInit();
     if (key === _lastPreviewKey) return;
     _lastPreviewKey = key;
     if (empty) {
-      el.innerHTML = '<span class="sched-preview-hint">Add periods (a preset + an end time) to preview your day.</span>';
+      el.innerHTML = '<span class="sched-preview-hint">' + esc(I18n.t('dashboard.schedule.preview_hint')) + '</span>';
       return;
     }
     let prev = '';
@@ -5421,11 +5449,11 @@ else ivritInit();
     const rows = (settings.currentSchedule || []).filter(e => e.preset || e.until);
     const msgs = [];
     const unknown = [...new Set(rows.filter(e => e.preset && !presets[e.preset]).map(e => e.preset))];
-    unknown.forEach(name => msgs.push(`⚠ Preset “${esc(name)}” doesn't exist — create it in Presets.`));
-    if (rows.some(e => e.preset && !e.until)) msgs.push('⚠ A row is missing an “until” time.');
+    unknown.forEach(name => msgs.push(I18n.t('dashboard.schedule.warn_unknown_preset', { name: esc(name) })));
+    if (rows.some(e => e.preset && !e.until)) msgs.push(I18n.t('dashboard.schedule.warn_missing_until'));
     const times = rows.map(e => e.until).filter(Boolean);
     [...new Set(times.filter((t, i) => times.indexOf(t) !== i))]
-      .forEach(t => msgs.push(`⚠ Two rows end at the same time (${esc(t)}).`));
+      .forEach(t => msgs.push(I18n.t('dashboard.schedule.warn_duplicate_time', { time: esc(t) })));
     const withTime = rows.filter(e => e.until);
     let outOfOrder = false;
     for (let i = 1; i < withTime.length; i++)
@@ -5434,8 +5462,8 @@ else ivritInit();
     msgs.forEach(m => { const d = document.createElement('div'); d.className = 'sched-warn'; d.innerHTML = m; el.appendChild(d); });
     if (outOfOrder) {
       const d = document.createElement('div'); d.className = 'sched-warn';
-      d.appendChild(document.createTextNode('⚠ Rows are out of time order. '));
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'btn-xs'; b.textContent = 'Sort by time';
+      d.appendChild(document.createTextNode(I18n.t('dashboard.schedule.warn_out_of_order')));
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'btn-xs'; b.textContent = I18n.t('dashboard.schedule.sort_by_time');
       b.addEventListener('click', sortScheduleByTime);
       d.appendChild(b); el.appendChild(d);
     }
@@ -5561,7 +5589,7 @@ else ivritInit();
       syncActive();
       return;
     }
-    const url = prompt('Enter URL:', 'https://');
+    const url = prompt(I18n.t('dashboard.text.link_prompt'), 'https://');
     if (!url || !url.trim()) return;
     const href = url.trim();
     const range = sel.getRangeAt(0);
@@ -5893,17 +5921,17 @@ function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontF
 /* ═══ My Fonts uploader (shared, identical across pages) ═══ */
 async function ivUploadFontFromFile(file){
   if (!file) return null;
-  if (!window.indexedDB || !window.FontFace){ alert('Your browser can’t store custom fonts.'); return null; }
+  if (!window.indexedDB || !window.FontFace){ alert(I18n.t('shared.fonts.err_no_store')); return null; }
   let base = (file.name || 'My Font').replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim() || 'My Font';
   try {
     const buf = await file.arrayBuffer();
     try { await new FontFace(base, buf).load(); }
-    catch (e) { alert('That file doesn’t look like a usable font (TTF, OTF, or WOFF).'); return null; }
+    catch (e) { alert(I18n.t('shared.fonts.err_bad_font')); return null; }
     const existing = (await listUserFonts()).map(f => f.name);
     let name = base, i = 2; while (existing.includes(name)) name = base + ' ' + (i++);
     await saveUserFont(name, new Uint8Array(buf), name);
     return name;
-  } catch (e) { console.error(e); alert('Couldn’t read that font file.'); return null; }
+  } catch (e) { console.error(e); alert(I18n.t('shared.fonts.err_unreadable')); return null; }
 }
 /* ═══ end My Fonts uploader ═══ */
 /* Per-page pick handler(s) — thin wrappers over the shared uploader (each page routes the new font into its own picker/manager). */
@@ -5957,7 +5985,7 @@ async function onUploadEngFontPick(input){
     sections.forEach(sec => {
       const hdr = document.createElement('div');
       hdr.className = 'font-section-hdr' + (firstSection ? ' first' : '');
-      hdr.textContent = sec === 'My Fonts' ? 'My Fonts' : sec === 'Cursive' ? 'Cursive / Script' : sec + ' Fonts';
+      hdr.textContent = sec === 'My Fonts' ? I18n.t('shared.fonts.section_my_fonts') : sec === 'Cursive' ? I18n.t('shared.fonts.section_cursive') : I18n.t('shared.fonts.section_generic', { section: sec });
       opts.appendChild(hdr);
       firstSection = false;
       fonts.filter(f => f.section === sec).forEach(font => {
@@ -6225,6 +6253,33 @@ async function onUploadEngFontPick(input){
       const tb = document.getElementById('tourBtn'); if (tb) tb.classList.add('tour-pulse');
     }
     if (isFirstVisit && !localStorage.getItem('hebrewDashboard_setupSeen')) openFirstRun();
+
+    // ── i18n: re-render dynamic surfaces on load + live language switch ──
+    // Static chrome is handled by applyStaticI18n; the rest are JS-built strings that must be
+    // rebuilt. Widget CONTENT (day names, dates, Omer, weather description, group-card labels)
+    // stays under its own headerLang/dowLang/showOmerEnglish toggles — not the UI language.
+    function applyI18n() {
+      if (!window.I18n) return;
+      I18n.applyStaticI18n();
+      _lastPreviewKey = null; _lastScheduleKey = null;   // bust caches so the schedule preview/countdown re-render translated
+      try { initFontSelector(); } catch (e) {}           // font-picker section headers build via t()
+      try { initEngFontSelector(); } catch (e) {}
+      try { updateColTitles(); } catch (e) {}
+      try { updateDateTimeDisplay(); } catch (e) {}
+      try { renderDaysList(); } catch (e) {}
+      try { renderWeather(); } catch (e) {}
+      try { updateOmerDisplay(); } catch (e) {}
+      try { renderStudentPicker(); } catch (e) {}
+      try { renderScheduleRows(); } catch (e) {}
+      try { renderSavedSchedules(); } catch (e) {}
+      try { renderPresets(); } catch (e) {}
+      try { renderScheduleUI(); } catch (e) {}
+      try { fetchShabbat(false); } catch (e) {}   // re-render Shabbat widget (status strings via t())
+      try { if (document.getElementById('frModal').classList.contains('open'))
+        document.getElementById('frStarters').innerHTML = STARTERS.map(st =>
+          `<button class="fr-starter" onclick="frApplyStarter('${esc(st.key)}')"><b>${esc(I18n.t('dashboard.setup.starter_' + st.key + '_label'))}</b><span>${esc(I18n.t('dashboard.setup.starter_' + st.key + '_desc'))}</span></button>`).join(''); } catch (e) {}
+    }
+    if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
   });
 
   // ESC closes settings / the first-run card
@@ -6260,22 +6315,15 @@ async function onUploadEngFontPick(input){
     if (p && p.classList.contains('collapsed')) { p.classList.remove('collapsed'); _syncPanelHdrAria(p); _tourExpandedPanels.push(p); }
   }
   const TOUR_STEPS = [
-    { target: () => document.getElementById('dowCol'), title: 'Days of the week',
-      body: 'Yesterday, today and tomorrow in Hebrew — plus Shabbat times and the Omer count when they apply.' },
-    { target: () => document.getElementById('dateTimeBlock'), title: 'Date, Hebrew date & time',
-      body: "Today's English and Hebrew dates, the live clock, an optional holiday countdown — and, with Schedule Sync, a Now / Next line." },
-    { target: () => document.getElementById('weatherCol'), title: 'Live weather',
-      body: 'Local weather for your set location, refreshed automatically all day.' },
-    { target: () => document.getElementById('fsBtn'), title: 'Project to your SmartBoard',
-      body: 'Go fullscreen — it scales everything up, keeps the screen awake, and shows quick controls when you move the mouse.' },
-    { target: () => document.getElementById('gearBtn'), reveal: _tourOpenDrawer, title: 'Settings',
-      body: 'Everything is customizable here — location, panels, fonts, nikkud colors, and a classroom timer.' },
+    { target: () => document.getElementById('dowCol'), titleKey: 'dashboard.tour.step1_title', bodyKey: 'dashboard.tour.step1_body' },
+    { target: () => document.getElementById('dateTimeBlock'), titleKey: 'dashboard.tour.step2_title', bodyKey: 'dashboard.tour.step2_body' },
+    { target: () => document.getElementById('weatherCol'), titleKey: 'dashboard.tour.step3_title', bodyKey: 'dashboard.tour.step3_body' },
+    { target: () => document.getElementById('fsBtn'), titleKey: 'dashboard.tour.step4_title', bodyKey: 'dashboard.tour.step4_body' },
+    { target: () => document.getElementById('gearBtn'), reveal: _tourOpenDrawer, titleKey: 'dashboard.tour.step5_title', bodyKey: 'dashboard.tour.step5_body' },
     { target: () => document.getElementById('starterLayoutsBtn'),
-      reveal: () => { _tourOpenDrawer(); _tourExpandPanel('presetsPanel'); }, title: 'Quick-start layouts',
-      body: 'One-tap starter setups — including a general-classroom layout — and save your own presets.' },
+      reveal: () => { _tourOpenDrawer(); _tourExpandPanel('presetsPanel'); }, titleKey: 'dashboard.tour.step6_title', bodyKey: 'dashboard.tour.step6_body' },
     { target: () => document.getElementById('schedulePanel'),
-      reveal: () => { _tourOpenDrawer(); _tourExpandPanel('schedulePanel'); }, title: 'Schedule Sync',
-      body: 'Load your daily schedule and the dashboard switches presets by itself, period by period.' },
+      reveal: () => { _tourOpenDrawer(); _tourExpandPanel('schedulePanel'); }, titleKey: 'dashboard.tour.step7_title', bodyKey: 'dashboard.tour.step7_body' },
   ];
 
   function tourStart() {
@@ -6307,11 +6355,11 @@ async function onUploadEngFontPick(input){
     _tourIdx = idx;
     const step = TOUR_STEPS[idx], el = step.target();
     try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {}
-    document.getElementById('tourCardTitle').textContent = step.title;
-    document.getElementById('tourCardBody').textContent = step.body;
-    document.getElementById('tourStep').textContent = 'Step ' + (idx + 1) + ' of ' + TOUR_STEPS.length;
+    document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey);
+    document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKey);
+    document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: idx + 1, total: TOUR_STEPS.length });
     document.getElementById('tourBack').disabled = (idx === 0);
-    document.getElementById('tourNext').textContent = (idx === TOUR_STEPS.length - 1) ? 'Done' : 'Next';
+    document.getElementById('tourNext').textContent = I18n.t((idx === TOUR_STEPS.length - 1) ? 'shared.tour.done' : 'shared.tour.next');
     _tourReposition();
     if (_tourRepoTimer) clearTimeout(_tourRepoTimer);
     _tourRepoTimer = setTimeout(_tourReposition, 350);   // re-measure after scroll settles
