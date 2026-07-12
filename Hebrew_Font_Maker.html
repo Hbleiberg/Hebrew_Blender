@@ -8086,6 +8086,7 @@ function seedAnchorsIfNeeded(l) { if (!l.anchors) seedAnchors(l); else { ensureN
 /* ════════ Anchor editor (nikkud + trop) ════════ */
 const ANCHOR_CLASSES = [['below','var(--below)'],['above','var(--above)'],['center','var(--center)'],['tropAbove','#8b5cf6'],['tropBelow','#0ea5e9']];
 const ANCHOR_LABEL = { below:'Below', above:'Above (Holam)', center:'Dagesh (Center)', tropAbove:'Trop above', tropBelow:'Trop below' };
+function anchorLabelT(k){ const slug=k.replace('tropAbove','trop_above').replace('tropBelow','trop_below'); const key='fontmaker.panels.anchor_'+slug; const v=window.I18n?I18n.t(key):key; return v===key?(ANCHOR_LABEL[k]||k):v; }
 const ANCHOR_COL = { below:'var(--below)', above:'var(--above)', center:'var(--center)', tropAbove:'#8b5cf6', tropBelow:'#0ea5e9' };
 const BELOW_VOWELS = [
   { cp:'05B8', name:'Qamats' }, { cp:'05B7', name:'Patach' }, { cp:'05B6', name:'Segol' },
@@ -9577,33 +9578,33 @@ function renderAnchorLeft(L, l) {
   if (isEng(l.codepoint)) { L.innerHTML = renderEngAccentLeft(l); return; }   // English letters: place accents (precomposed forms)
   const { visCls, cls, isTrop, want, a } = _anchorCtx(l);
   const classBtns = visCls.map(k =>
-    `<button class="ctl-btn ${cls===k?'primary':''}" style="${cls===k?`background:${ANCHOR_COL[k]};color:#fff;border-color:${ANCHOR_COL[k]};`:''}" onclick="setAnchorClass('${k}')">${ANCHOR_LABEL[k]}</button>`).join('');
+    `<button class="ctl-btn ${cls===k?'primary':''}" style="${cls===k?`background:${ANCHOR_COL[k]};color:#fff;border-color:${ANCHOR_COL[k]};`:''}" onclick="setAnchorClass('${k}')">${anchorLabelT(k)}</button>`).join('');
   let grid = '';
   const editBtn = cp => `<button class="ctl-btn" title="Redesign this mark's shape from dots & bars (or an image), then apply it to this letter or all letters" onclick="openMarkEdit('nikkud','${cp}')">✎ Edit shape</button>`;
   if (cls === 'below') {
     const ndy = markNudgeDy(activeBelowVowel), vName = markName(activeBelowVowel);
-    grid = `<div class="ws-side-title">Preview under-vowel</div>
+    grid = `<div class="ws-side-title">${I18n.t('fontmaker.panels.preview_under_vowel')}</div>
       <div class="mark-grid2">` + BELOW_VOWELS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeBelowVowel, 'setBelowVowel', l)).join('') + `</div>
       <hr class="ctl-divider">
-      <div class="ws-side-title">${esc(vName)} — every letter</div>
+      <div class="ws-side-title">${I18n.t('fontmaker.panels.vowel_every_letter', {name: esc(vName)})}</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;">
-        <span style="font-size:0.72rem;color:var(--muted);">Height</span>
-        <button class="ctl-btn" title="Raise this vowel on every letter" onclick="nudgeActiveVowel(10)">▲</button>
-        <button class="ctl-btn" title="Lower this vowel on every letter" onclick="nudgeActiveVowel(-10)">▼</button>
+        <span style="font-size:0.72rem;color:var(--muted);">${I18n.t('fontmaker.panels.height')}</span>
+        <button class="ctl-btn" title="${esc(I18n.t('fontmaker.panels.raise_vowel_title'))}" onclick="nudgeActiveVowel(10)">▲</button>
+        <button class="ctl-btn" title="${esc(I18n.t('fontmaker.panels.lower_vowel_title'))}" onclick="nudgeActiveVowel(-10)">▼</button>
         <span id="vowelNudgeV" class="readout">${ndy>0?'+':''}${ndy}</span>
-        <button class="ctl-btn" title="Reset this vowel's height" onclick="setMarkNudge(activeVowelCp(),0)">⟲</button>
+        <button class="ctl-btn" title="${esc(I18n.t('fontmaker.panels.reset_vowel_height_title'))}" onclick="setMarkNudge(activeVowelCp(),0)">⟲</button>
         ${editBtn(activeBelowVowel)}
       </div>
       <div class="hint" style="font-size:0.6rem;text-align:center;">Height raises or lowers just ${esc(vName)} — on <b>every letter</b>. <b>Edit shape</b> redesigns its dots &amp; bars.</div>`;
   } else if (cls === 'above') {
     const aboveMarks = ABOVE_MARKS.filter(v => aboveMarkApplies(v.cp, l));   // Holam + Rafe (shin/sin dots live in Special & precomposed forms)
     const curAbove = aboveMarkFor(l);
-    grid = `<div class="ws-side-title">Preview above-mark</div>
+    grid = `<div class="ws-side-title">${I18n.t('fontmaker.panels.preview_above_mark')}</div>
       <div class="mark-grid2">` + aboveMarks.map(v => squareMarkBtn('nikkud', v.cp, v.name, curAbove, 'setAboveMark', l)).join('') + `</div>
       <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(curAbove)}</div>
       <div class="hint" style="font-size:0.6rem;text-align:center;">The holam dot and rafe sit above the letter. <b>Edit shape</b> redesigns the selected mark.${l.codepoint === '05E9' ? ' Edit the shin/sin dots (שׁ/שׂ) in <b>Special &amp; precomposed forms</b> below.' : ''}</div>`;
   } else if (cls === 'center') {
-    grid = `<div class="ws-side-title">Preview center mark</div>
+    grid = `<div class="ws-side-title">${I18n.t('fontmaker.panels.preview_center_mark')}</div>
       <div class="mark-grid2">` + CENTER_MARKS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeCenterMark, 'setCenterMark', l)).join('') + `</div>
       <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(activeCenterMark)}</div>
       <div class="hint" style="font-size:0.6rem;text-align:center;">The dagesh sits inside the letter body. <b>Edit shape</b> redesigns it.</div>`;
@@ -9613,24 +9614,24 @@ function renderAnchorLeft(L, l) {
       `<button class="ctl-btn ${ha===h?'primary':''}" onclick="setTropHalign('${h}')">${lbl}</button>`).join('');
     const tOff = project.font.tropSideOffset != null ? project.font.tropSideOffset : TROP_POS_SHIFT;
     const tNdy = markNudgeDy(activeTropCp);
-    grid = `<div class="ws-side-title">Preview trop</div>
+    grid = `<div class="ws-side-title">${I18n.t('fontmaker.panels.preview_trop')}</div>
       <div class="mark-grid2">` + TROP_MARKS.filter(m => m.cls === want).map(m => squareMarkBtn('trop', m.cp, m.name, activeTropCp, 'setTropCp')).join('') + `</div>
       <hr class="ctl-divider">
-      <div class="ws-side-title">${tName} — every letter</div>
+      <div class="ws-side-title">${I18n.t('fontmaker.panels.trop_every_letter', {name: esc(tName)})}</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;">
-        <span style="font-size:0.72rem;color:var(--muted);">Height</span>
-        <button class="ctl-btn" title="Raise this mark on every letter" onclick="nudgeActiveVowel(10)">▲</button>
-        <button class="ctl-btn" title="Lower this mark on every letter" onclick="nudgeActiveVowel(-10)">▼</button>
+        <span style="font-size:0.72rem;color:var(--muted);">${I18n.t('fontmaker.panels.height')}</span>
+        <button class="ctl-btn" title="${esc(I18n.t('fontmaker.panels.raise_mark_title'))}" onclick="nudgeActiveVowel(10)">▲</button>
+        <button class="ctl-btn" title="${esc(I18n.t('fontmaker.panels.lower_mark_title'))}" onclick="nudgeActiveVowel(-10)">▼</button>
         <span id="vowelNudgeV" class="readout">${tNdy>0?'+':''}${tNdy}</span>
-        <button class="ctl-btn" title="Reset this mark's height" onclick="setMarkNudge(activeVowelCp(),0)">⟲</button>
+        <button class="ctl-btn" title="${esc(I18n.t('fontmaker.panels.reset_mark_height_title'))}" onclick="setMarkNudge(activeVowelCp(),0)">⟲</button>
       </div>
       <div class="hint" style="font-size:0.6rem;text-align:center;">Raises or lowers just <b>${tName}</b> on every letter — e.g. to separate two marks sharing a side.</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;">
-        <span style="font-size:0.72rem;color:var(--muted);">Horizontal</span>${halignBtns}
+        <span style="font-size:0.72rem;color:var(--muted);">${I18n.t('fontmaker.panels.horizontal')}</span>${halignBtns}
       </div>
       <div class="hint" style="font-size:0.6rem;text-align:center;">Sets where <b>${tName}</b> sits across every letter. Position tweaks belong to the column (Left / Center / Right) — and stay with it if you switch sides.</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;gap:6px;">
-        <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">Default spread</span>
+        <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">${I18n.t('fontmaker.panels.default_spread')}</span>
         <input type="range" id="tropSpread" min="0" max="500" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" onchange="udBurstCommit();renderControls()" style="flex:1;">
         <span id="tropSpreadV" class="readout">${tOff}</span>
       </div>
