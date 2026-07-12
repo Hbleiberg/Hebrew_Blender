@@ -919,28 +919,28 @@
   <div class="tb-group">
     <button class="tbtn ghost" onclick="newProjectFresh()" data-i18n="fontmaker.toolbar.new">New</button>
     <button class="tbtn ghost" onclick="toggleLoadMenu(event)" data-i18n="fontmaker.toolbar.load_project">Load Project ▾</button>
-    <button class="tbtn ghost" onclick="saveProject()">Save Project</button>
+    <button class="tbtn ghost" onclick="saveProject()" data-i18n="fontmaker.toolbar.save_project">Save Project</button>
     <input type="file" id="projFile" accept=".hebrewfont,.json,application/json,application/gzip" style="display:none;">
   </div>
   <div class="tb-group">
-    <button class="tbtn ghost" id="undoBtn" onclick="undo()" title="Undo (Ctrl+Z)" aria-label="Undo" disabled>↶</button>
-    <button class="tbtn ghost" id="redoBtn" onclick="redo()" title="Redo (Ctrl+Shift+Z)" aria-label="Redo" disabled>↷</button>
+    <button class="tbtn ghost" id="undoBtn" onclick="undo()" title="Undo (Ctrl+Z)" data-i18n-title="fontmaker.toolbar.undo_title" aria-label="Undo" disabled>↶</button>
+    <button class="tbtn ghost" id="redoBtn" onclick="redo()" title="Redo (Ctrl+Shift+Z)" data-i18n-title="fontmaker.toolbar.redo_title" aria-label="Redo" disabled>↷</button>
   </div>
   <div class="tb-group">
-    <button class="tbtn ghost" onclick="openQA()" title="Review every letter × mark placement for collisions" data-i18n="fontmaker.toolbar.qa_check">🔍 QA Check</button>
+    <button class="tbtn ghost" onclick="openQA()" title="Review every letter × mark placement for collisions" data-i18n-title="fontmaker.toolbar.qa_check_title" data-i18n="fontmaker.toolbar.qa_check">🔍 QA Check</button>
     <button class="tbtn ghost" onclick="generatePreviewPDF()" data-i18n="fontmaker.toolbar.preview_pdf">Preview PDF</button>
   </div>
   <div class="tb-group">
-    <select class="tbtn-select" id="exportFormat" onchange="onExportFormatChange()" title="Choose an export format — or save the font for use in IvritSuite">
+    <select class="tbtn-select" id="exportFormat" onchange="onExportFormatChange()" title="Choose an export format — or save the font for use in IvritSuite" data-i18n-title="fontmaker.toolbar.export_format_title">
       <option value="ttf" selected data-i18n="fontmaker.toolbar.fmt_ttf">TTF (recommended)</option>
       <option value="woff2" data-i18n="fontmaker.toolbar.fmt_woff2">WOFF2 (web)</option>
       <option value="ttfwoff2" data-i18n="fontmaker.toolbar.fmt_ttfwoff2">TTF + WOFF2 (zip)</option>
       <option value="ufo" data-i18n="fontmaker.toolbar.fmt_ufo">UFO source (zip)</option>
     </select>
     <button class="tbtn" id="exportBtn" onclick="exportFont()" data-i18n="fontmaker.toolbar.export_btn">⬇ Export TTF</button>
-    <span id="engineBadge" class="engine-badge" title="Getting the font engine ready so your first export is fast" hidden><span class="engine-dot" aria-hidden="true"></span>engine loading…</span>
+    <span id="engineBadge" class="engine-badge" title="Getting the font engine ready so your first export is fast" data-i18n-title="fontmaker.toolbar.engine_badge_title" hidden><span class="engine-dot" aria-hidden="true"></span>engine loading…</span>
   </div>
-  <button class="tbtn ghost" style="margin-left:auto;" onclick="openHelp()" title="A plain-language guide to the whole tool" aria-label="Help" data-i18n="fontmaker.toolbar.help">❓ Help</button>
+  <button class="tbtn ghost" style="margin-left:auto;" onclick="openHelp()" title="A plain-language guide to the whole tool" data-i18n-title="fontmaker.toolbar.help_title" aria-label="Help" data-i18n="fontmaker.toolbar.help">❓ Help</button>
 </div>
 <div id="statusMsg" role="status"></div>
 
@@ -983,7 +983,7 @@
           <span><span class="dot" style="background:#d08c2a;"></span><span data-i18n="fontmaker.panels.legend_image">image</span></span>
           <span><span class="dot" style="background:#3b82f6;"></span><span data-i18n="fontmaker.panels.legend_traced">traced</span></span>
           <span><span class="dot" style="background:#10b981;"></span><span data-i18n="fontmaker.panels.legend_anchored">anchored</span></span>
-          <span id="tracedReadout" style="margin-left:auto;font-weight:700;white-space:nowrap;color:var(--muted);" title="Core Hebrew letters with an outline traced"></span>
+          <span id="tracedReadout" style="margin-left:auto;font-weight:700;white-space:nowrap;color:var(--muted);" title="Core Hebrew letters with an outline traced" data-i18n-title="fontmaker.panels.traced_readout_title"></span>
         </div>
         <div id="nextStepHint" class="next-hint" aria-live="polite"></div>
       </div>
@@ -1038,40 +1038,40 @@
     <div class="panel cat-panel" data-cat="advanced">
       <div class="panel-title" data-i18n="fontmaker.panels.advanced">Advanced Settings</div>
       <div class="panel-body">
-        <div class="adv-group-title">Add glyphs &amp; languages</div>
+        <div class="adv-group-title" data-i18n="fontmaker.panels.adv_add_glyphs">Add glyphs &amp; languages</div>
         <div class="col-split adv-grid">
           <div>
-            <div class="ctl-label" style="margin-bottom:6px;">English letters</div>
-            <label class="chk"><input type="checkbox" id="addEnglishLettersChk" onchange="setAddEnglishLetters(this.checked)"> Add English letters</label>
-            <div class="hint">Adds an <strong>English</strong> tab to design <strong>A–Z and a–z</strong> (with an uppercase/lowercase switch). Accent-supporting letters can carry accents (á, é, ñ, ç…). Template: <a href="#" onclick="downloadTemplate('englishletters','pdf');return false;" data-i18n="fontmaker.templates.export_pdf">PDF</a> · <a href="#" onclick="downloadTemplate('englishletters','png');return false;">PNG</a></div>
+            <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_english_label">English letters</div>
+            <label class="chk"><input type="checkbox" id="addEnglishLettersChk" onchange="setAddEnglishLetters(this.checked)"> <span data-i18n="fontmaker.panels.adv_add_english">Add English letters</span></label>
+            <div class="hint" data-i18n-html="fontmaker.panels.adv_english_hint">Adds an <strong>English</strong> tab to design <strong>A–Z and a–z</strong> (with an uppercase/lowercase switch). Accent-supporting letters can carry accents (á, é, ñ, ç…). Template: <a href="#" onclick="downloadTemplate('englishletters','pdf');return false;">PDF</a> · <a href="#" onclick="downloadTemplate('englishletters','png');return false;">PNG</a></div>
           </div>
           <div>
-            <div class="ctl-label" style="margin-bottom:6px;">Specialized letters</div>
-            <label class="chk"><input type="checkbox" id="addSpecialFormsChk" onchange="setAddSpecialForms(this.checked)"> Add specialized letters</label>
-            <div class="hint">Adds a <strong>Specialized letters</strong> tab with the <strong>wide letterforms</strong> (wide alef, dalet, he, kaf, lamed, final mem, resh, tav) — <strong>auto-composed from your traced letters</strong>, each with a <strong>Width</strong> slider that adds space &amp; stretches.</div>
+            <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_special_label">Specialized letters</div>
+            <label class="chk"><input type="checkbox" id="addSpecialFormsChk" onchange="setAddSpecialForms(this.checked)"> <span data-i18n="fontmaker.panels.adv_add_special">Add specialized letters</span></label>
+            <div class="hint" data-i18n-html="fontmaker.panels.adv_special_hint">Adds a <strong>Specialized letters</strong> tab with the <strong>wide letterforms</strong> (wide alef, dalet, he, kaf, lamed, final mem, resh, tav) — <strong>auto-composed from your traced letters</strong>, each with a <strong>Width</strong> slider that adds space &amp; stretches.</div>
           </div>
           <div>
-            <div class="ctl-label" style="margin-bottom:6px;">Yiddish</div>
-            <label class="chk"><input type="checkbox" id="addYiddishChk" onchange="setAddYiddish(this.checked)"> Add Yiddish glyphs</label>
-            <div class="hint">Adds a <strong>Yiddish</strong> tab: pasekh/komets alef (אַ אָ), the rafe letters (בֿ כֿ פֿ), and the digraphs tsvey vovn / vov-yud / tsvey yudn (װ ױ ײ) — all composed from your traced letters.</div>
+            <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_yiddish_label">Yiddish</div>
+            <label class="chk"><input type="checkbox" id="addYiddishChk" onchange="setAddYiddish(this.checked)"> <span data-i18n="fontmaker.panels.adv_add_yiddish">Add Yiddish glyphs</span></label>
+            <div class="hint" data-i18n-html="fontmaker.panels.adv_yiddish_hint">Adds a <strong>Yiddish</strong> tab: pasekh/komets alef (אַ אָ), the rafe letters (בֿ כֿ פֿ), and the digraphs tsvey vovn / vov-yud / tsvey yudn (װ ױ ײ) — all composed from your traced letters.</div>
           </div>
           <div>
-            <div class="ctl-label" style="margin-bottom:6px;">Ladino</div>
-            <label class="chk"><input type="checkbox" id="addLadinoChk" onchange="setAddLadino(this.checked)"> Add Ladino glyphs</label>
-            <div class="hint">Adds a <strong>Ladino</strong> (Judeo-Spanish) tab: the rafe / varika letters (בֿ גֿ דֿ זֿ טֿ פֿ קֿ) plus שׁ / שׂ — composed from your traced letters.</div>
+            <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_ladino_label">Ladino</div>
+            <label class="chk"><input type="checkbox" id="addLadinoChk" onchange="setAddLadino(this.checked)"> <span data-i18n="fontmaker.panels.adv_add_ladino">Add Ladino glyphs</span></label>
+            <div class="hint" data-i18n-html="fontmaker.panels.adv_ladino_hint">Adds a <strong>Ladino</strong> (Judeo-Spanish) tab: the rafe / varika letters (בֿ גֿ דֿ זֿ טֿ פֿ קֿ) plus שׁ / שׂ — composed from your traced letters.</div>
           </div>
           <div>
-            <div class="ctl-label" style="margin-bottom:6px;">Custom glyphs</div>
-            <label class="chk"><input type="checkbox" id="addCustomGlyphsChk" onchange="setAddCustomGlyphs(this.checked)"> Add custom glyphs</label>
-            <div class="hint">Adds a <strong>Custom glyphs</strong> tab (after Punctuation) where you can define glyphs at any Unicode code point — a main letter or a nikkud mark. Tip: for brand-new shapes use the Private-Use range <b>U+E000–U+F8FF</b> so they don't collide with standard characters.</div>
+            <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_custom_label">Custom glyphs</div>
+            <label class="chk"><input type="checkbox" id="addCustomGlyphsChk" onchange="setAddCustomGlyphs(this.checked)"> <span data-i18n="fontmaker.panels.adv_add_custom">Add custom glyphs</span></label>
+            <div class="hint" data-i18n-html="fontmaker.panels.adv_custom_hint">Adds a <strong>Custom glyphs</strong> tab (after Punctuation) where you can define glyphs at any Unicode code point — a main letter or a nikkud mark. Tip: for brand-new shapes use the Private-Use range <b>U+E000–U+F8FF</b> so they don't collide with standard characters.</div>
           </div>
         </div>
         <div class="adv-group-title adv-group-gap" data-i18n="fontmaker.panels.adv_input_mode">Input mode</div>
         <div class="col-split adv-grid">
           <div>
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_svg_label">SVG uploading</div>
-            <label class="chk"><input type="checkbox" id="svgUploadChk" onchange="setSvgUpload(this.checked)"> Enable SVG uploading</label>
-            <div class="hint">Upload <strong>SVG</strong> files instead of images — vector paths become the glyph outlines <strong>directly, with no tracing</strong>. In this mode the upload zones accept SVG only. <a href="#" onclick="openSvgGuide();return false;">SVG Upload Guide →</a></div>
+            <label class="chk"><input type="checkbox" id="svgUploadChk" onchange="setSvgUpload(this.checked)"> <span data-i18n="fontmaker.panels.adv_enable_svg">Enable SVG uploading</span></label>
+            <div class="hint" data-i18n-html="fontmaker.panels.adv_svg_hint">Upload <strong>SVG</strong> files instead of images — vector paths become the glyph outlines <strong>directly, with no tracing</strong>. In this mode the upload zones accept SVG only. <a href="#" onclick="openSvgGuide();return false;">SVG Upload Guide →</a></div>
           </div>
         </div>
       </div>
@@ -1099,7 +1099,7 @@
       <div class="ws-split l" data-side="left" role="separator" aria-orientation="vertical" aria-label="Resize left panel"></div>
       <div class="ws-center">
         <div class="zoom-bar">
-          <span title="Zoom the view">🔍</span>
+          <span title="Zoom the view" data-i18n-title="fontmaker.node_editor.zoom_title">🔍</span>
           <input type="range" id="zoomRange" min="1" max="400" step="1" value="100" oninput="setZoom(this.value/100)">
           <span id="zoomVal" class="zoom-val">100%</span>
           <button class="ctl-btn zoom-reset" onclick="setZoom(1)" data-i18n="fontmaker.node_editor.zoom_reset">Reset</button>
@@ -1108,29 +1108,29 @@
              calls the same function its panel/toolbar predecessor did (zero behavioral change) -->
         <div id="nodeBar" role="toolbar" aria-label="Point editing tools">
           <div class="npnl-mode nb-mode" role="group" aria-label="Editing mode">
-            <button class="npnl-mode-btn active" data-mode="select" aria-pressed="true" tabindex="0" aria-keyshortcuts="Escape" title="Select — click and drag points (Esc leaves marquee or pen)" onclick="npnlMode('select')" onkeydown="nodeBarKey(event, this)"><span class="nb-glyph" aria-hidden="true">↖</span> <span class="nb-label" data-i18n="fontmaker.node_editor.mode_select">Select</span></button>
-            <button class="npnl-mode-btn" data-mode="marquee" aria-pressed="false" tabindex="-1" aria-keyshortcuts="M" title="Marquee — dragging anywhere box-selects, even from a point (M)" onclick="npnlMode('marquee')" onkeydown="nodeBarKey(event, this)"><span class="nb-glyph" aria-hidden="true">▭</span> <span class="nb-label" data-i18n="fontmaker.node_editor.mode_marquee">Marquee</span></button>
-            <button class="npnl-mode-btn" data-mode="pen" aria-pressed="false" tabindex="-1" aria-keyshortcuts="P" title="Pen — draw a new contour point by point (P)" onclick="npnlMode('pen')" onkeydown="nodeBarKey(event, this)"><span class="nb-glyph" aria-hidden="true">✒</span> <span class="nb-label" data-i18n="fontmaker.node_editor.mode_pen">Pen</span></button>
+            <button class="npnl-mode-btn active" data-mode="select" aria-pressed="true" tabindex="0" aria-keyshortcuts="Escape" title="Select — click and drag points (Esc leaves marquee or pen)" data-i18n-title="fontmaker.node_editor.mode_select_title" onclick="npnlMode('select')" onkeydown="nodeBarKey(event, this)"><span class="nb-glyph" aria-hidden="true">↖</span> <span class="nb-label" data-i18n="fontmaker.node_editor.mode_select">Select</span></button>
+            <button class="npnl-mode-btn" data-mode="marquee" aria-pressed="false" tabindex="-1" aria-keyshortcuts="M" title="Marquee — dragging anywhere box-selects, even from a point (M)" data-i18n-title="fontmaker.node_editor.mode_marquee_title" onclick="npnlMode('marquee')" onkeydown="nodeBarKey(event, this)"><span class="nb-glyph" aria-hidden="true">▭</span> <span class="nb-label" data-i18n="fontmaker.node_editor.mode_marquee">Marquee</span></button>
+            <button class="npnl-mode-btn" data-mode="pen" aria-pressed="false" tabindex="-1" aria-keyshortcuts="P" title="Pen — draw a new contour point by point (P)" data-i18n-title="fontmaker.node_editor.mode_pen_title" onclick="npnlMode('pen')" onkeydown="nodeBarKey(event, this)"><span class="nb-glyph" aria-hidden="true">✒</span> <span class="nb-label" data-i18n="fontmaker.node_editor.mode_pen">Pen</span></button>
           </div>
           <span class="nb-sep" aria-hidden="true"></span>
-          <button class="ctl-btn nb-btn" id="nodeUndoBtn" onclick="undo()" title="Undo (Ctrl+Z)" aria-label="Undo" aria-keyshortcuts="Control+Z" onkeydown="nodeBarKey(event, this)" tabindex="-1" disabled>↶</button>
-          <button class="ctl-btn nb-btn" id="nodeRedoBtn" onclick="redo()" title="Redo (Ctrl+Shift+Z)" aria-label="Redo" aria-keyshortcuts="Control+Shift+Z Control+Y" onkeydown="nodeBarKey(event, this)" tabindex="-1" disabled>↷</button>
+          <button class="ctl-btn nb-btn" id="nodeUndoBtn" onclick="undo()" title="Undo (Ctrl+Z)" data-i18n-title="fontmaker.toolbar.undo_title" aria-label="Undo" aria-keyshortcuts="Control+Z" onkeydown="nodeBarKey(event, this)" tabindex="-1" disabled>↶</button>
+          <button class="ctl-btn nb-btn" id="nodeRedoBtn" onclick="redo()" title="Redo (Ctrl+Shift+Z)" data-i18n-title="fontmaker.toolbar.redo_title" aria-label="Redo" aria-keyshortcuts="Control+Shift+Z Control+Y" onkeydown="nodeBarKey(event, this)" tabindex="-1" disabled>↷</button>
           <span class="nb-sep" aria-hidden="true"></span>
-          <button class="ctl-btn nb-btn" onclick="setZoom(Math.max(0.01, stageZoom - 0.1))" title="Zoom out" aria-label="Zoom out" onkeydown="nodeBarKey(event, this)" tabindex="-1">−</button>
+          <button class="ctl-btn nb-btn" onclick="setZoom(Math.max(0.01, stageZoom - 0.1))" title="Zoom out" data-i18n-title="fontmaker.node_editor.zoom_out_title" aria-label="Zoom out" data-i18n-aria-label="fontmaker.node_editor.zoom_out_title" onkeydown="nodeBarKey(event, this)" tabindex="-1">−</button>
           <span id="nodeZoomVal" class="zoom-val">100%</span>
-          <button class="ctl-btn nb-btn" onclick="setZoom(stageZoom + 0.1)" title="Zoom in" aria-label="Zoom in" onkeydown="nodeBarKey(event, this)" tabindex="-1">+</button>
-          <button class="ctl-btn nb-btn" onclick="setZoom(1)" title="Reset zoom to 100%" aria-label="Reset zoom to 100%" onkeydown="nodeBarKey(event, this)" tabindex="-1">⊡</button>
+          <button class="ctl-btn nb-btn" onclick="setZoom(stageZoom + 0.1)" title="Zoom in" data-i18n-title="fontmaker.node_editor.zoom_in_title" aria-label="Zoom in" data-i18n-aria-label="fontmaker.node_editor.zoom_in_title" onkeydown="nodeBarKey(event, this)" tabindex="-1">+</button>
+          <button class="ctl-btn nb-btn" onclick="setZoom(1)" title="Reset zoom to 100%" data-i18n-title="fontmaker.node_editor.zoom_reset100_title" aria-label="Reset zoom to 100%" data-i18n-aria-label="fontmaker.node_editor.zoom_reset100_title" onkeydown="nodeBarKey(event, this)" tabindex="-1">⊡</button>
           <span class="nb-sep" aria-hidden="true"></span>
-          <button class="ctl-btn nb-btn nb-toggle" id="nodeHandlesBtn" aria-pressed="false" onclick="setNodeHandlesAll(!_nodeHandlesAll)" title="Show curve handles on every point (off: selected points only)" onkeydown="nodeBarKey(event, this)" tabindex="-1"><span class="nb-glyph" aria-hidden="true">⌖</span> <span class="nb-label" data-i18n="fontmaker.node_editor.handles">Handles</span></button>
-          <button class="ctl-btn nb-btn nb-toggle" id="nodeGuidesBtn" aria-pressed="true" onclick="setNodeGuidesShown(!_nodeGuidesOn)" title="Show guide and metric lines (view only — snapping is unaffected)" onkeydown="nodeBarKey(event, this)" tabindex="-1"><span class="nb-glyph" aria-hidden="true">▦</span> <span class="nb-label">Guides</span></button>
-          <label class="chk nb-snap" title="Snap dragged points to guides and metric lines (Alt bypasses)"><input type="checkbox" id="nodeSnapChk" onchange="setSnapGuides(this.checked)" onkeydown="nodeBarKey(event, this)" tabindex="-1" aria-label="Snap dragged points to guides and metric lines (Alt bypasses)"> <span class="nb-glyph" aria-hidden="true">🧲</span><span class="nb-label" data-i18n="fontmaker.node_editor.snap">Snap</span></label>
+          <button class="ctl-btn nb-btn nb-toggle" id="nodeHandlesBtn" aria-pressed="false" onclick="setNodeHandlesAll(!_nodeHandlesAll)" title="Show curve handles on every point (off: selected points only)" data-i18n-title="fontmaker.node_editor.handles_title" onkeydown="nodeBarKey(event, this)" tabindex="-1"><span class="nb-glyph" aria-hidden="true">⌖</span> <span class="nb-label" data-i18n="fontmaker.node_editor.handles">Handles</span></button>
+          <button class="ctl-btn nb-btn nb-toggle" id="nodeGuidesBtn" aria-pressed="true" onclick="setNodeGuidesShown(!_nodeGuidesOn)" title="Show guide and metric lines (view only — snapping is unaffected)" data-i18n-title="fontmaker.node_editor.guides_title" onkeydown="nodeBarKey(event, this)" tabindex="-1"><span class="nb-glyph" aria-hidden="true">▦</span> <span class="nb-label" data-i18n="fontmaker.node_editor.guides">Guides</span></button>
+          <label class="chk nb-snap" title="Snap dragged points to guides and metric lines (Alt bypasses)" data-i18n-title="fontmaker.node_editor.snap_title"><input type="checkbox" id="nodeSnapChk" onchange="setSnapGuides(this.checked)" onkeydown="nodeBarKey(event, this)" tabindex="-1" aria-label="Snap dragged points to guides and metric lines (Alt bypasses)" data-i18n-aria-label="fontmaker.node_editor.snap_title"> <span class="nb-glyph" aria-hidden="true">🧲</span><span class="nb-label" data-i18n="fontmaker.node_editor.snap">Snap</span></label>
         </div>
         <div class="stage-wrap" dir="ltr">
           <div class="node-hint-wrap">
             <div id="nodeHint" class="node-hint" role="status" hidden>
-              <span>Drag points to reshape · <b>?</b> for all shortcuts</span>
-              <button class="ctl-btn nb-btn" onclick="openShortcuts('nodes')" aria-label="All point-editing shortcuts">?</button>
-              <button class="ctl-btn nb-btn" onclick="dismissNodeHint()" aria-label="Dismiss this hint">✕</button>
+              <span data-i18n="fontmaker.node_editor.node_hint">Drag points to reshape · <b>?</b> for all shortcuts</span>
+              <button class="ctl-btn nb-btn" onclick="openShortcuts('nodes')" aria-label="All point-editing shortcuts" data-i18n-aria-label="fontmaker.node_editor.node_hint_shortcuts_aria">?</button>
+              <button class="ctl-btn nb-btn" onclick="dismissNodeHint()" aria-label="Dismiss this hint" data-i18n-aria-label="fontmaker.node_editor.node_hint_dismiss_aria">✕</button>
             </div>
           </div>
           <svg id="stage" viewBox="0 150 600 410"></svg>
@@ -1170,23 +1170,23 @@
       </details>
     </div>
     <div style="font-size:0.72rem;line-height:1.5;text-align:center;">
-      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;">About</div>
-      A free, experimental IvritSuite tool. Builds real fonts entirely client-side (the font engine loads on first export), with GPOS mark positioning for nikkud (mark-to-base) and cantillation/trop (mark-to-mark). Exports TrueType (TTF), WOFF2 and editable UFO source.<br>
+      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;" data-i18n="fontmaker.about.footer_about_heading">About</div>
+      <span data-i18n="fontmaker.about.footer_about_body">A free, experimental IvritSuite tool. Builds real fonts entirely client-side (the font engine loads on first export), with GPOS mark positioning for nikkud (mark-to-base) and cantillation/trop (mark-to-mark). Exports TrueType (TTF), WOFF2 and editable UFO source.</span><br>
       Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="font-weight:600;">Harrison Bleiberg</a><br>
       <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
       <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank">GitHub</a><br>
-      Desktop browser recommended.
+      <span data-i18n="fontmaker.about.footer_desktop_note">Desktop browser recommended.</span>
     </div>
-    <nav aria-label="Related Hebrew Tools" style="text-align:right;">
-      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;">Related Hebrew Tools</div>
+    <nav aria-label="Related Hebrew Tools" data-i18n-aria-label="shared.nav.header" style="text-align:right;">
+      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;" data-i18n="shared.nav.header">Related Hebrew Tools</div>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:2px 14px;">
-        <li><a href="hebrew_blend_generator.html" style="font-size:0.8rem;">printable Hebrew worksheets →</a></li>
-        <li><a href="flash_cards.html" style="font-size:0.8rem;">Hebrew alphabet flash cards →</a></li>
-        <li><a href="hebrew_dictionary.html" style="font-size:0.8rem;">Hebrew word lookup →</a></li>
-        <li><a href="classroom_dashboard.html" style="font-size:0.8rem;">Hebrew classroom display →</a></li>
-        <li><a href="torah_trainer.html" style="font-size:0.8rem;">Torah reading practice →</a></li>
-        <li><a href="trope_tutor.html" style="font-size:0.8rem;">learn Torah trope (cantillation) →</a></li>
-        <li><a href="resources.html" style="font-size:0.8rem;">free Hebrew teaching resources →</a></li>
+        <li><a href="hebrew_blend_generator.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_worksheets">printable Hebrew worksheets →</a></li>
+        <li><a href="flash_cards.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_flashcards">Hebrew alphabet flash cards →</a></li>
+        <li><a href="hebrew_dictionary.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_dictionary">Hebrew word lookup →</a></li>
+        <li><a href="classroom_dashboard.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_dashboard">Hebrew classroom display →</a></li>
+        <li><a href="torah_trainer.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_torah">Torah reading practice →</a></li>
+        <li><a href="trope_tutor.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_trope">learn Torah trope (cantillation) →</a></li>
+        <li><a href="resources.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_resources">free Hebrew teaching resources →</a></li>
       </ul>
     </nav>
   </div>
@@ -1197,30 +1197,30 @@
   <div class="modal me-modal" role="dialog" aria-modal="true" aria-labelledby="meTitle">
     <h3 id="meTitle" data-i18n="fontmaker.modals.markedit_title">Edit mark shape</h3>
     <div class="mode-toggle" style="margin-bottom:10px;">
-      <button class="mode-btn" id="meModeEditor" onclick="meSetMode('editor')" aria-pressed="true">Simple editor</button>
-      <button class="mode-btn" id="meModeUpload" onclick="meSetMode('upload')" aria-pressed="false">Upload image</button>
+      <button class="mode-btn" id="meModeEditor" onclick="meSetMode('editor')" aria-pressed="true" data-i18n="fontmaker.modals.markedit_mode_editor">Simple editor</button>
+      <button class="mode-btn" id="meModeUpload" onclick="meSetMode('upload')" aria-pressed="false" data-i18n="fontmaker.modals.markedit_mode_upload">Upload image</button>
     </div>
     <div id="meEditorSection">
       <div class="ctl-row" style="margin-bottom:8px;">
         <button class="ctl-btn" onclick="meAddPiece('dot')" data-i18n="fontmaker.modals.markedit_add_dot">+ Add dot</button>
         <button class="ctl-btn" onclick="meAddPiece('bar')" data-i18n="fontmaker.modals.markedit_add_bar">+ Add bar</button>
-        <button class="ctl-btn" onclick="meDeletePiece()">Delete selected</button>
-        <button class="ctl-btn" id="meUndoBtn" onclick="meDoUndo()" title="Undo (Ctrl/Cmd+Z)" disabled data-i18n="fontmaker.modals.markedit_undo">↶ Undo</button>
-        <button class="ctl-btn" id="meRedoBtn" onclick="meDoRedo()" title="Redo (Ctrl/Cmd+Shift+Z)" disabled data-i18n="fontmaker.modals.markedit_redo">↷ Redo</button>
+        <button class="ctl-btn" onclick="meDeletePiece()" data-i18n="fontmaker.modals.markedit_delete_sel">Delete selected</button>
+        <button class="ctl-btn" id="meUndoBtn" onclick="meDoUndo()" title="Undo (Ctrl/Cmd+Z)" data-i18n-title="fontmaker.modals.markedit_undo_title" disabled data-i18n="fontmaker.modals.markedit_undo">↶ Undo</button>
+        <button class="ctl-btn" id="meRedoBtn" onclick="meDoRedo()" title="Redo (Ctrl/Cmd+Shift+Z)" data-i18n-title="fontmaker.modals.markedit_redo_title" disabled data-i18n="fontmaker.modals.markedit_redo">↷ Redo</button>
       </div>
       <svg id="meStage" dir="ltr" viewBox="0 150 600 410" style="width:100%;height:280px;background:var(--cream);border:1px solid var(--border);border-radius:8px;touch-action:none;"></svg>
       <div id="mePieceList" class="me-piece-list"></div>
       <div id="mePieceCtl"></div>
-      <div class="hint">Click a piece (here or in the list) to select; drag it to move, drag the ◻ corner to resize. Bars can be any width/thickness. Build the mark from dots &amp; bars — it's seeded from the default shape.</div>
+      <div class="hint" data-i18n="fontmaker.modals.markedit_hint">Click a piece (here or in the list) to select; drag it to move, drag the ◻ corner to resize. Bars can be any width/thickness. Build the mark from dots &amp; bars — it's seeded from the default shape.</div>
     </div>
     <div id="meUploadSection" style="display:none;">
-      <p style="font-size:0.84rem;color:var(--muted);line-height:1.5;">Design this mark from an uploaded image (per-symbol or from a combined sheet) on its own editing tab — the full align &amp; trace tools live there. Uploaded mark shapes apply to <b>all letters</b>.</p>
+      <p style="font-size:0.84rem;color:var(--muted);line-height:1.5;" data-i18n="fontmaker.modals.markedit_upload_desc">Design this mark from an uploaded image (per-symbol or from a combined sheet) on its own editing tab — the full align &amp; trace tools live there. Uploaded mark shapes apply to <b>all letters</b>.</p>
       <div class="ctl-row"><button class="ctl-btn primary" onclick="meOpenUploadEditor()" data-i18n="fontmaker.modals.markedit_open_upload">Open image editor for this mark →</button></div>
     </div>
     <div class="hint" id="meScopeNote" style="margin-top:8px;"></div>
     <div class="mbtns" style="justify-content:space-between;">
       <button class="tbtn ghost" onclick="closeMarkEdit()" data-i18n="fontmaker.modals.markedit_back">‹ Back</button>
-      <button class="tbtn ghost" onclick="meConfirmReset()" title="Discard your edits and restore this mark's default shape" data-i18n="fontmaker.modals.markedit_reset">↺ Reset</button>
+      <button class="tbtn ghost" onclick="meConfirmReset()" title="Discard your edits and restore this mark's default shape" data-i18n-title="fontmaker.modals.markedit_reset_title" data-i18n="fontmaker.modals.markedit_reset">↺ Reset</button>
       <span style="display:flex;gap:10px;flex-wrap:wrap;">
         <button class="tbtn" id="meApplyCur" onclick="meConfirmApply('current')" data-i18n="fontmaker.modals.markedit_apply_current">Apply to current letter</button>
         <button class="tbtn" id="meApplyAll" onclick="meConfirmApply('all')" data-i18n="fontmaker.modals.markedit_apply_all">Apply to all letters</button>
@@ -1248,7 +1248,7 @@
       <span id="myFontsCount" style="font-size:0.78rem;color:var(--muted);"></span>
     </div>
     <div id="myFontsList"></div>
-    <div class="mbtns"><button class="tbtn ghost" onclick="closeMyFonts()">Close</button></div>
+    <div class="mbtns"><button class="tbtn ghost" onclick="closeMyFonts()" data-i18n="fontmaker.modals.myfonts_close">Close</button></div>
   </div>
 </div>
 
@@ -1257,12 +1257,12 @@
   <div class="modal help-modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h3 id="helpTitle" data-i18n="fontmaker.modals.help_title">How does this work?</h3>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px;">
-      <button class="tbtn" onclick="closeHelp(); tourStart();">▶ Take a tour</button>
+      <button class="tbtn" onclick="closeHelp(); tourStart();" data-i18n="fontmaker.modals.help_take_tour">▶ Take a tour</button>
       <button class="tbtn ghost" onclick="closeHelp(); openShortcuts();" data-i18n="fontmaker.modals.help_shortcuts">⌨ Shortcuts</button>
     </div>
     <div class="help-tabs" id="helpTabs"></div>
     <div class="help-body" id="helpBody"></div>
-    <div class="mbtns"><button class="tbtn" onclick="closeHelp()">Close</button></div>
+    <div class="mbtns"><button class="tbtn" onclick="closeHelp()" data-i18n="fontmaker.modals.help_close">Close</button></div>
   </div>
 </div>
 
@@ -1271,7 +1271,7 @@
   <div class="modal help-modal" role="dialog" aria-modal="true" aria-labelledby="shortcutsTitle" style="max-width:560px;">
     <h3 id="shortcutsTitle" data-i18n="fontmaker.modals.shortcuts_title">⌨ Keyboard shortcuts</h3>
     <div class="help-body" id="shortcutsBody"></div>
-    <div class="mbtns"><button class="tbtn" onclick="closeShortcuts()">Close</button></div>
+    <div class="mbtns"><button class="tbtn" onclick="closeShortcuts()" data-i18n="fontmaker.modals.shortcuts_close">Close</button></div>
   </div>
 </div>
 
@@ -1282,7 +1282,7 @@
     <div id="qaSummary"></div>
     <div class="help-tabs" id="qaTabs"></div>
     <div class="help-body" id="qaGrid"></div>
-    <div class="mbtns"><button class="tbtn" onclick="closeQA()">Close</button></div>
+    <div class="mbtns"><button class="tbtn" onclick="closeQA()" data-i18n="fontmaker.modals.qa_close">Close</button></div>
   </div>
 </div>
 
@@ -1292,23 +1292,23 @@
     <h3 id="adTitle" data-i18n="fontmaker.modals.ad_title">Auto-detect letters — review</h3>
     <div id="adSummary" role="status" aria-live="polite"></div>
     <div id="adToolbar">
-      <span class="ad-ctl">Separation <span id="adSepV" class="readout">0</span>
+      <span class="ad-ctl"><span data-i18n="fontmaker.modals.ad_separation">Separation</span> <span id="adSepV" class="readout">0</span>
         <input type="range" id="adSep" min="0" max="5" step="1" value="0"
-               aria-label="Separation — split touching letters (0 off, 5 strongest)"
+               aria-label="Separation — split touching letters (0 off, 5 strongest)" data-i18n-aria-label="fontmaker.modals.ad_separation_aria"
                oninput="adSetSep(this.value)"></span>
-      <span class="ad-ctl">Ink threshold
+      <span class="ad-ctl"><span data-i18n="fontmaker.modals.ad_ink_threshold">Ink threshold</span>
         <input type="number" id="adTh" min="1" max="254" inputmode="numeric"
-               aria-label="Detection ink threshold override"
+               aria-label="Detection ink threshold override" data-i18n-aria-label="fontmaker.modals.ad_threshold_aria"
                onchange="adSetTh(this.value)"></span>
       <button class="ctl-btn" onclick="adRedetect()" data-i18n="fontmaker.modals.ad_redetect">↻ Re-detect</button>
       <span id="adConfirm" hidden>You changed <b id="adEditN"></b> box(es) — re-detecting discards those edits.
-        <button class="ctl-btn" onclick="adRedetect(true)">Discard &amp; re-detect</button>
+        <button class="ctl-btn" onclick="adRedetect(true)" data-i18n="fontmaker.modals.ad_discard_redetect">Discard &amp; re-detect</button>
         <button class="ctl-btn" onclick="adConfirmHide()" data-i18n="fontmaker.modals.ad_keep_editing">Keep editing</button></span>
     </div>
     <div class="help-body" id="adStage"></div>
     <div id="adPicker" hidden></div>
     <div class="mbtns">
-      <button class="tbtn" id="adApplyBtn" onclick="adApply()">Apply</button>
+      <button class="tbtn" id="adApplyBtn" onclick="adApply()" data-i18n="fontmaker.modals.ad_apply">Apply</button>
       <button class="tbtn ghost" onclick="closeAutoDetect()" data-i18n="fontmaker.modals.ad_cancel">Cancel — discard boxes</button>
     </div>
   </div>
@@ -1317,9 +1317,9 @@
 <div class="overlay" id="mobileWarnOverlay">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mobileWarnTitle" style="max-width:430px;text-align:center;">
     <h3 id="mobileWarnTitle" data-i18n="fontmaker.modals.mobilewarn_title">📱 Best on a computer</h3>
-    <p>The Hebrew Font Maker uses precise tracing and a lot of fine controls — it's much easier on a <strong>desktop or laptop</strong>. You're welcome to keep going on this device, but it may feel cramped.</p>
+    <p data-i18n="fontmaker.modals.mobilewarn_body">The Hebrew Font Maker uses precise tracing and a lot of fine controls — it's much easier on a <strong>desktop or laptop</strong>. You're welcome to keep going on this device, but it may feel cramped.</p>
     <label class="chk" style="justify-content:center;margin:14px 0 0;">
-      <input type="checkbox" id="mobileWarnDontShow"> Don't show this warning again
+      <input type="checkbox" id="mobileWarnDontShow"> <span data-i18n="fontmaker.modals.mobilewarn_dontshow">Don't show this warning again</span>
     </label>
     <div class="mbtns" style="justify-content:center;">
       <button class="tbtn ghost" onclick="dismissMobileWarn(true)" data-i18n="fontmaker.modals.mobilewarn_goback">← Go back</button>
@@ -1331,12 +1331,12 @@
 <div class="overlay" id="welcomeOverlay" onclick="if(event.target===this)dismissWelcome(false)">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle" style="max-width:460px;text-align:center;">
     <h3 id="welcomeTitle" data-i18n="fontmaker.modals.welcome_title">✍️ Welcome to the Hebrew Font Maker</h3>
-    <p>Turn your own handwriting into a real, installable Hebrew font — trace each letter, place the nikkud &amp; trop, then export TTF/WOFF2 (or save it straight into your other IvritSuite tools). New here? The guide walks through every step.</p>
+    <p data-i18n="fontmaker.modals.welcome_body">Turn your own handwriting into a real, installable Hebrew font — trace each letter, place the nikkud &amp; trop, then export TTF/WOFF2 (or save it straight into your other IvritSuite tools). New here? The guide walks through every step.</p>
     <label class="chk" style="justify-content:center;margin:14px 0 0;">
-      <input type="checkbox" id="welcomeDontShow"> Don't show this again
+      <input type="checkbox" id="welcomeDontShow"> <span data-i18n="fontmaker.modals.welcome_dontshow">Don't show this again</span>
     </label>
     <div class="mbtns" style="justify-content:center;">
-      <button class="tbtn" onclick="dismissWelcome(true)">Take a tour →</button>
+      <button class="tbtn" onclick="dismissWelcome(true)" data-i18n="fontmaker.modals.welcome_take_tour">Take a tour →</button>
       <button class="tbtn ghost" onclick="dismissWelcome(false)" data-i18n="fontmaker.modals.welcome_start_tracing">Start tracing</button>
     </div>
   </div>
@@ -1345,13 +1345,13 @@
 <!-- Guided "Take a tour" coach-mark (non-modal spotlight; see tourStart) -->
 <div class="tour-spot" id="tourSpot" hidden></div>
 <div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
-  <button class="tour-x" id="tourClose" aria-label="End tour" onclick="tourEnd(false)">✕</button>
+  <button class="tour-x" id="tourClose" aria-label="End tour" data-i18n-aria-label="shared.tour.end" onclick="tourEnd(false)">✕</button>
   <h4 id="tourCardTitle"></h4>
   <p id="tourCardBody"></p>
   <div class="tour-meta">
     <span id="tourStep"></span>
     <span class="tour-btns">
-      <button class="tbtn ghost" id="tourBack" onclick="tourPrev()">Back</button>
+      <button class="tbtn ghost" id="tourBack" onclick="tourPrev()" data-i18n="shared.tour.back">Back</button>
       <button class="tbtn" id="tourNext" onclick="tourNext()">Next</button>
     </span>
   </div>
@@ -1360,28 +1360,28 @@
 <div class="overlay" id="applyAlignOverlay" onclick="if(event.target===this)closeApplyAlign()">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="applyAlignTitle" style="max-width:480px;">
     <h3 id="applyAlignTitle" data-i18n="fontmaker.modals.applyalign_title">Apply this alignment to other letters</h3>
-    <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;">Copies the current letter's position &amp; scale (its image transform — <b>not</b> its traced outline) onto the letters you pick, overwriting their current alignment. You can undo it.</p>
+    <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;" data-i18n="fontmaker.modals.applyalign_desc">Copies the current letter's position &amp; scale (its image transform — <b>not</b> its traced outline) onto the letters you pick, overwriting their current alignment. You can undo it.</p>
     <div style="display:flex;gap:8px;margin:6px 0 8px;">
-      <button class="ctl-btn" onclick="applyAlignCheckAll(true)">Select all</button>
+      <button class="ctl-btn" onclick="applyAlignCheckAll(true)" data-i18n="fontmaker.modals.applyalign_select_all">Select all</button>
       <button class="ctl-btn" onclick="applyAlignCheckAll(false)" data-i18n="fontmaker.modals.applyalign_none">None</button>
     </div>
     <div id="applyAlignList" style="display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;max-height:46vh;overflow:auto;"></div>
-    <div class="mbtns"><button class="tbtn ghost" onclick="closeApplyAlign()">Cancel</button><button class="tbtn" onclick="applyAlignDo()">Apply</button></div>
+    <div class="mbtns"><button class="tbtn ghost" onclick="closeApplyAlign()" data-i18n="fontmaker.modals.applyalign_cancel">Cancel</button><button class="tbtn" onclick="applyAlignDo()" data-i18n="fontmaker.modals.applyalign_apply">Apply</button></div>
   </div>
 </div>
 
 <div class="overlay" id="applyNikkudOverlay" onclick="if(event.target===this)closeApplyNikkud()">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="applyNikkudTitle" style="max-width:480px;">
     <h3 id="applyNikkudTitle" data-i18n="fontmaker.modals.applynikkud_title">Apply this positioning to other letters</h3>
-    <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;">Copies where this letter's nikkud &amp; trop marks sit (the anchor positions) onto the letters you pick, overwriting theirs. You can undo it.</p>
-    <label class="chk" style="font-size:0.84rem;"><input type="checkbox" id="applyNikkudCenter" checked> Keep each letter horizontally centered (recommended)</label>
+    <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;" data-i18n="fontmaker.modals.applynikkud_desc">Copies where this letter's nikkud &amp; trop marks sit (the anchor positions) onto the letters you pick, overwriting theirs. You can undo it.</p>
+    <label class="chk" style="font-size:0.84rem;"><input type="checkbox" id="applyNikkudCenter" checked> <span data-i18n="fontmaker.modals.applynikkud_center">Keep each letter horizontally centered (recommended)</span></label>
     <div class="hint" style="font-size:0.66rem;margin:2px 0 4px;" data-i18n="fontmaker.modals.applynikkud_center_hint">On: copies the vertical positions and keeps each mark centered on the target letter's own width (best when letters differ in width). Off: copies the exact X positions too.</div>
     <div style="display:flex;gap:8px;margin:6px 0 8px;">
-      <button class="ctl-btn" onclick="applyNikkudCheckAll(true)">Select all</button>
+      <button class="ctl-btn" onclick="applyNikkudCheckAll(true)" data-i18n="fontmaker.modals.applyalign_select_all">Select all</button>
       <button class="ctl-btn" onclick="applyNikkudCheckAll(false)" data-i18n="fontmaker.modals.applyalign_none">None</button>
     </div>
     <div id="applyNikkudList" style="display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;max-height:46vh;overflow:auto;"></div>
-    <div class="mbtns"><button class="tbtn ghost" onclick="closeApplyNikkud()">Cancel</button><button class="tbtn" onclick="applyNikkudDo()">Apply</button></div>
+    <div class="mbtns"><button class="tbtn ghost" onclick="closeApplyNikkud()" data-i18n="fontmaker.modals.applyalign_cancel">Cancel</button><button class="tbtn" onclick="applyNikkudDo()" data-i18n="fontmaker.modals.applyalign_apply">Apply</button></div>
   </div>
 </div>
 
@@ -1389,9 +1389,9 @@
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="copyOutlineTitle" style="max-width:480px;">
     <h3 id="copyOutlineTitle" data-i18n="fontmaker.modals.copyoutline_title">Copy outline from another letter</h3>
     <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;">Drops a letter's traced outline into <b id="copyOutlineTarget">this letter</b> as a starting point — then reshape it (e.g. copy <b>Tav</b> and delete the toe to make <b>Het</b>, <b>He</b> or <b>Resh</b>) with <b>✎ Edit points</b>. The current letter's width &amp; spacing stay as they are. You can undo it.</p>
-    <label class="chk" style="font-size:0.84rem;"><input type="checkbox" id="copyOutlineWidth"> Also copy width &amp; side bearings</label>
+    <label class="chk" style="font-size:0.84rem;"><input type="checkbox" id="copyOutlineWidth"> <span data-i18n="fontmaker.modals.copyoutline_width">Also copy width &amp; side bearings</span></label>
     <div id="copyOutlineList" style="display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;max-height:46vh;overflow:auto;margin-top:8px;"></div>
-    <div class="mbtns"><button class="tbtn ghost" onclick="closeCopyOutline()">Cancel</button><button class="tbtn" onclick="copyOutlineDo()" data-i18n="fontmaker.modals.copyoutline_copy">Copy outline</button></div>
+    <div class="mbtns"><button class="tbtn ghost" onclick="closeCopyOutline()" data-i18n="fontmaker.modals.copyoutline_cancel">Cancel</button><button class="tbtn" onclick="copyOutlineDo()" data-i18n="fontmaker.modals.copyoutline_copy">Copy outline</button></div>
   </div>
 </div>
 
@@ -1399,7 +1399,7 @@
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="kernClassTitle" style="max-width:480px;">
     <h3 id="kernClassTitle" data-i18n="fontmaker.modals.kernclass_title_new">New kern class</h3>
     <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;" data-i18n="fontmaker.modals.kernclass_desc">A named group of letters you can kern as a unit (e.g. all wide-top letters). Use it on either side of a pair; editing the class later updates every pair that uses it.</p>
-    <label class="fld" style="font-size:0.84rem;">Class name <input type="text" id="kernClassName" placeholder="e.g. Wide tops" style="width:100%;box-sizing:border-box;"></label>
+    <label class="fld" style="font-size:0.84rem;"><span data-i18n="fontmaker.modals.kernclass_name">Class name</span> <input type="text" id="kernClassName" placeholder="e.g. Wide tops" data-i18n-placeholder="fontmaker.modals.kernclass_name_ph" style="width:100%;box-sizing:border-box;"></label>
     <div id="kernClassList" style="display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;max-height:42vh;overflow:auto;margin-top:8px;"></div>
     <div class="mbtns"><button class="tbtn ghost" onclick="closeKernClass()">Cancel</button><button class="tbtn" onclick="saveKernClass()" data-i18n="fontmaker.modals.kernclass_save">Save class</button></div>
   </div>
@@ -2433,7 +2433,7 @@ const HELP_CONTENT = {
     <h4>Welcome 👋</h4>
     <p>Hebrew Font Maker turns your hand-drawn Hebrew letters into a <strong>real font</strong> you can install on your computer and type with — vowels (nikkud) and cantillation marks (trop) included.</p>
     <p style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="tbtn" onclick="closeHelp(); tourStart();">▶ Take a tour</button>
+      <button class="tbtn" onclick="closeHelp(); tourStart();" data-i18n="fontmaker.modals.help_take_tour">▶ Take a tour</button>
       <button class="tbtn ghost" onclick="closeHelp(); openShortcuts();">⌨ Keyboard shortcuts</button>
     </p>
     <p>Here's the whole journey, start to finish:</p>
