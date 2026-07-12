@@ -145,6 +145,23 @@ dashboard.display.show_video_embed,Show video embed,הצג הטמעת וידאו
 dashboard.display.wake_dot,Screen will stay awake,המסך יישאר פעיל,wake-lock indicator (title+aria),
 dashboard.display.zoom_label,🔍 Zoom,🔍 זום,zoom bar label,leading-emoji
 dashboard.display.zoom_reset,Reset,איפוס,zoom bar reset button,
+dashboard.editor.align_center,Center,מרכוז,Editor toolbar button title,
+dashboard.editor.align_left,Align left (LTR),יישור לשמאל (LTR),Editor toolbar button title,
+dashboard.editor.align_right,Align right (RTL),יישור לימין (RTL),Editor toolbar button title,
+dashboard.editor.bold,Bold,מודגש,Editor toolbar button title,
+dashboard.editor.insert_link,Insert link (or remove if cursor is inside one),הוספת קישור (או הסרה אם הסמן בתוך קישור),Editor toolbar button title,
+dashboard.editor.italic,Italic,נטוי,Editor toolbar button title,
+dashboard.editor.size_large,Large,גדול,Editor size option,
+dashboard.editor.size_normal,Normal,רגיל,Editor size option,
+dashboard.editor.size_small,Small,קטן,Editor size option,
+dashboard.editor.size_title,Size,גודל,Editor toolbar size select title,
+dashboard.editor.size_xl,XL,גדול מאוד,Editor size option,
+dashboard.editor.size_xxl,XXL,ענק,Editor size option,
+dashboard.editor.spoiler_button,Spoiler,ספוילר,Editor toolbar button face,
+dashboard.editor.spoiler_title,Wrap selection in spoiler (hidden until tapped),עטיפת הבחירה בספוילר (מוסתר עד הקשה),Editor toolbar button title,
+dashboard.editor.strikethrough,Strikethrough,קו חוצה,Editor toolbar button title,
+dashboard.editor.text_color,Text color,צבע טקסט,Editor toolbar color input title,
+dashboard.editor.underline,Underline,קו תחתון,Editor toolbar button title,
 dashboard.font.default_tag,[DEFAULT],[ברירת מחדל],default-font marker,
 dashboard.font.section_cursive,Cursive / Script,כתב יד / סקריפט,font picker section header,
 dashboard.font.section_myfonts,My Fonts,הגופנים שלי,font picker section header,
@@ -2633,6 +2650,7 @@ shared.folders.drag_item,Drag to move,גרור כדי להעביר,Item drag-han
 shared.folders.empty_folder,Empty — drop items here,ריקה — גררו פריטים לכאן,Empty folder placeholder,shared
 shared.folders.empty_list,No saved {noun}s yet.,אין עדיין פריטים שמורים.,Empty list placeholder,"mixed UI+content — {noun} = preset/profile/schedule/item; shared | REVIEW: generic ""no saved items"" (ignores the {noun} token)"
 shared.folders.move_button,Move ▾,העבר ▾,Preset/profile item move button,"shared (carriers: generator, dashboard, flash_cards)"
+shared.folders.move_folder,Move folder,העבר תיקייה,Folder-tree action (title on ↗ mini-button),shared
 shared.folders.move_path,📁 {path},📁 {path},Move-menu folder target,leading-emoji; mixed UI+content — do not translate {path}; shared
 shared.folders.move_root,⌂ Root,⌂ שורש,Move-menu top-level target,leading-symbol; shared
 shared.folders.new_folder,📁 New folder,📁 תיקייה חדשה,Folder-tree button,leading-emoji; shared
@@ -2771,6 +2789,7 @@ torah.confirm.reset_all,Reset all Torah Trainer settings to defaults?,לאפס �
 torah.confirm.reset_trope_colors,Are you sure? This resets your custom trope-family colors to the defaults.,האם אתם בטוחים? פעולה זו מאפסת את צבעי משפחות הטעמים המותאמים אישית שלכם לברירת המחדל.,confirm dialog,
 torah.confirm.reset_vowel_colors,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,האם אתם בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים אישית שלכם עבור ערכות ברירת המחדל ותל-עם כאחד.,confirm dialog,
 torah.controls.custom_range_button,Custom range…,טווח מותאם…,button,
+torah.controls.holiday_group_label,Holiday Torah Readings,קריאות התורה לחגים,Parsha-picker optgroup header,
 torah.controls.layout_interlinear,Interlinear,בין־שורתי,layout radio,
 torah.controls.layout_label,Layout:,פריסה:,control label,
 torah.controls.layout_page,Page view,תצוגת עמוד,layout radio,
@@ -2850,7 +2869,9 @@ torah.header.subtitle,"Read the weekly parsha with vowel coloring, transliterati
 torah.header.title,Torah Trainer,מאמן התורה,h1 header,
 torah.header.tour_button,❓ Tour,❓ סיור,header button,leading-emoji
 torah.header.tour_title,Take a quick tour,צאו לסיור מהיר,header button title,
+torah.jumpnav.aliyah_label,Aliyah,עלייה,Jump-bar chips group label,
 torah.jumpnav.aria,Jump to aliyah,קפיצה לעלייה,in-page nav aria-label,aria-label only
+torah.jumpnav.current_verse,Current verse,פסוק נוכחי,Jump-bar position readout label + title,
 torah.reading.chant_all,🎵 Chant all,🎵 שירת הכול,ref-header button,leading-emoji
 torah.reading.chant_all_stop,⏹ Stop chant,⏹ עצירת השירה,ref-header button,leading-emoji
 torah.reading.empty_body,"Choose a parsha from the dropdown above — the reading appears here with optional transliteration, translation, color-coded vowels, and chanted audio.","בחרו פרשה מהתפריט שלמעלה — הקריאה תופיע כאן עם תעתיק אופציונלי, תרגום, תנועות צבועות ושמע בטעמים.",empty state,
@@ -2878,6 +2899,13 @@ torah.schedule.jump_this_week,Jump to this week's parsha,קפיצה לפרשת �
 torah.schedule.schedule_label,Schedule,לוח,settings label,
 torah.schedule.schedule_tip,Diaspora and Israel reading schedules diverge for several weeks per cycle (when a Yom Tov falls on Shabbat). Affects which parsha is selected as 'this week'.,לוחות הקריאה של התפוצות וישראל נבדלים במשך כמה שבועות בכל מחזור (כשיום טוב חל בשבת). משפיע על הפרשה הנבחרת כ'פרשת השבוע'.,tooltip,
 torah.schedule.scope_aliyah,Aliyah {n},עלייה {n},scope option,do-not-translate {n}
+torah.schedule.scope_aliyah_1,Aliyah 1,עלייה 1,scope option static fallback (runtime label via scope_aliyah),
+torah.schedule.scope_aliyah_2,Aliyah 2,עלייה 2,scope option static fallback (runtime label via scope_aliyah),
+torah.schedule.scope_aliyah_3,Aliyah 3,עלייה 3,scope option static fallback (runtime label via scope_aliyah),
+torah.schedule.scope_aliyah_4,Aliyah 4,עלייה 4,scope option static fallback (runtime label via scope_aliyah),
+torah.schedule.scope_aliyah_5,Aliyah 5,עלייה 5,scope option static fallback (runtime label via scope_aliyah),
+torah.schedule.scope_aliyah_6,Aliyah 6,עלייה 6,scope option static fallback (runtime label via scope_aliyah),
+torah.schedule.scope_aliyah_7,Aliyah 7,עלייה 7,scope option static fallback (runtime label via scope_aliyah),
 torah.schedule.scope_disabled_title,"Reading scope applies to weekly parshiyot, not holiday readings.","היקף הקריאה חל על פרשיות השבוע, לא על קריאות החגים.",scope select title (disabled),
 torah.schedule.scope_full,Full parsha,פרשה מלאה,scope option,
 torah.schedule.scope_full_reading,Full reading,קריאה מלאה,scope option (holiday/custom),

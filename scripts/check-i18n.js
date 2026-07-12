@@ -10,7 +10,8 @@
  *     - .textContent / .innerHTML / .placeholder / .title = '<English literal>',
  *     - .setAttribute('aria-label'|'title'|'placeholder', '<English literal>'),
  *     - HTML title="…" / aria-label="…" / placeholder="…" attributes with no paired data-i18n-* sibling.
- * Check B (debt report): lists locales/ui-strings.csv keys whose `he` cell is empty.
+ * Check B (debt report): lists locales/ui-strings.csv keys with an empty cell in any non-`en`
+ *   language column (the CSV schema is column-driven — see build-locales.js).
  *
  * A literal is only linguistic if it contains an ASCII letter (pure symbol/emoji/number/computed
  * strings like '✕', '⠿', '0.75×', '(' + n + ')' are skipped). RHS/args that contain I18n.t( are
@@ -34,8 +35,8 @@ const BASELINE_PATH = path.join(__dirname, 'check-i18n-baseline.txt');
 
 // Files whose *.html we deliberately do NOT scan (the i18n dev harness).
 const SKIP_HTML = new Set(['i18n-test.html']);
-// Keys whose empty `he` is intentional English (Check B allowlist).
-const EMPTY_HE_ALLOW = new Set(['worksheet.layout.title_default']);
+// Keys whose empty cell is intentional English (Check B allowlist — applies to every language column).
+const EMPTY_ALLOW = new Set(['worksheet.layout.title_default']);
 
 // ── RFC-4180 CSV parser (copied verbatim from build-locales.js — house style: copy shared logic) ──
 function parseCSV(text) {
@@ -180,13 +181,23 @@ function loadBaseline() {
 }
 
 // ── Check B ──
+// Column-driven like build-locales.js: languages = the header columns between `key` and
+// `context,notes`; the first (`en`) is the fallback source, so only the OTHER language
+// columns carry translation debt.
 function checkDebt() {
   const rows = parseCSV(fs.readFileSync(CSV_PATH, 'utf8'));
-  const empties = [];
-  rows.slice(1).forEach((r) => {
-    if (r.length >= 3 && r[0] && r[2].trim() === '' && !EMPTY_HE_ALLOW.has(r[0])) empties.push(r[0]);
-  });
-  return empties;
+  const header = rows[0] || [];
+  const langs = header.slice(1, Math.max(1, header.length - 2));
+  const debt = {};                                    // lang -> [keys with an empty cell]
+  for (let i = 1; i < langs.length; i++) {
+    const lang = langs[i], col = 1 + i;
+    const empties = [];
+    rows.slice(1).forEach((r) => {
+      if (r.length > col && r[0] && r[col].trim() === '' && !EMPTY_ALLOW.has(r[0])) empties.push(r[0]);
+    });
+    if (empties.length) debt[lang] = empties;
+  }
+  return debt;
 }
 
 function main() {
@@ -235,15 +246,19 @@ function main() {
     if (warnings.length > preview.length) console.warn('  … and ' + (warnings.length - preview.length) + ' more.');
   }
 
-  // Check B — translation-debt report (warn-only).
-  const empties = checkDebt();
-  if (empties.length) {
-    const preview = empties.slice(0, 50);
-    console.warn('\ncheck-i18n: WARNING — ' + empties.length + ' key(s) have an empty `he` (translation debt):');
-    console.warn('  ' + preview.join('\n  '));
-    if (empties.length > preview.length) console.warn('  … and ' + (empties.length - preview.length) + ' more.');
+  // Check B — translation-debt report (warn-only), per non-`en` language column.
+  const debt = checkDebt();
+  const debtLangs = Object.keys(debt);
+  if (debtLangs.length) {
+    for (const lang of debtLangs) {
+      const empties = debt[lang];
+      const preview = empties.slice(0, 50);
+      console.warn('\ncheck-i18n: WARNING — ' + empties.length + ' key(s) have an empty `' + lang + '` (translation debt):');
+      console.warn('  ' + preview.join('\n  '));
+      if (empties.length > preview.length) console.warn('  … and ' + (empties.length - preview.length) + ' more.');
+    }
   } else {
-    console.log('check-i18n: Check B clean — every ui-strings.csv key has Hebrew (allowlisted exceptions aside).');
+    console.log('check-i18n: Check B clean — every ui-strings.csv key is translated in every language column (allowlisted exceptions aside).');
   }
 
   if (!fresh.length) console.log('\ncheck-i18n: clean (no new blocking violations).');

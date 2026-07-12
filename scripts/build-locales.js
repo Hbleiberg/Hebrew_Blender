@@ -4,12 +4,17 @@
 /*
  * build-locales.js — turn locales/ui-strings.csv into per-locale JSON.
  *
- * Single source of truth: locales/ui-strings.csv (columns: key,en,he,context,notes).
- * Emits flat key->string maps to locales/en.json and locales/he.json.
+ * Single source of truth: locales/ui-strings.csv. The schema is COLUMN-DRIVEN:
+ * `key`, then one language column per locale (the FIRST language column must be
+ * `en` — it is the fallback source), then `context,notes` as the last two
+ * columns. Currently `key,en,he,context,notes`; adding a language = adding a
+ * column here (plus the runtime/sw.js steps in CLAUDE.md "Adding a new UI
+ * language"). Emits a flat key->string map to locales/<lang>.json per language.
  *
- *   - Empty `he` cell  -> falls back to the `en` value (and the key is reported as untranslated).
+ *   - Empty non-`en` cell -> falls back to the `en` value (and the key is reported as untranslated).
  *   - Literal "\n" in a CSV value -> a real newline in the JSON string.
- *   - Fails loudly (exit 1) on a bad header, a row without exactly 5 fields, or duplicate keys.
+ *   - Fails loudly (exit 1) on a bad header, a row whose field count doesn't
+ *     match the header, or duplicate keys.
  *
  * Plain Node, zero dependencies. Run: node scripts/build-locales.js
  * (No deploy-time build — the JSON is committed and served statically.)
@@ -22,9 +27,6 @@ const ROOT = path.resolve(__dirname, '..');
 // Optional CSV path override (process.argv[2]) is used for testing validation
 // against throwaway copies; validation errors exit before any file is written.
 const CSV_PATH = process.argv[2] ? path.resolve(process.argv[2]) : path.join(ROOT, 'locales', 'ui-strings.csv');
-const OUT_EN = path.join(ROOT, 'locales', 'en.json');
-const OUT_HE = path.join(ROOT, 'locales', 'he.json');
-const EXPECTED_HEADER = ['key', 'en', 'he', 'context', 'notes'];
 
 function die(msg) {
   console.error('build-locales: ERROR — ' + msg);
@@ -79,34 +81,41 @@ function main() {
   if (rows.length === 0) die('CSV is empty: ' + CSV_PATH);
 
   const header = rows[0];
-  const headerOk = header.length === EXPECTED_HEADER.length &&
-    EXPECTED_HEADER.every((h, i) => header[i] === h);
+  // Column-driven schema: key, <language columns…>, context, notes.
+  const headerOk = header.length >= 4 && header[0] === 'key' &&
+    header[header.length - 2] === 'context' && header[header.length - 1] === 'notes';
   if (!headerOk) {
-    die('unexpected header — got [' + header.join(', ') + '], expected [' + EXPECTED_HEADER.join(', ') + '].');
+    die('unexpected header — got [' + header.join(', ') + '], expected [key, <lang columns…>, context, notes].');
   }
+  const langs = header.slice(1, header.length - 2);
+  if (langs[0] !== 'en') die('the first language column must be `en` (got `' + langs[0] + '`).');
+  if (new Set(langs).size !== langs.length) die('duplicate language column(s) in header: [' + langs.join(', ') + '].');
 
-  const en = {};
-  const he = {};
+  const dicts = {};           // lang -> { key -> string }
+  const untranslated = {};    // lang -> [keys with an empty cell]
+  for (const l of langs) { dicts[l] = {}; untranslated[l] = []; }
   const seen = new Set();
   const dups = new Set();
-  const untranslated = [];
 
   rows.slice(1).forEach((r, idx) => {
     const lineNo = idx + 2; // 1-based, accounting for the header row
-    if (r.length !== 5) {
-      die('row ' + lineNo + ' has ' + r.length + ' field(s), expected 5: ' + JSON.stringify(r));
+    if (r.length !== header.length) {
+      die('row ' + lineNo + ' has ' + r.length + ' field(s), expected ' + header.length + ': ' + JSON.stringify(r));
     }
     const key = r[0];
     if (!key) die('row ' + lineNo + ' has an empty key.');
     if (seen.has(key)) dups.add(key); else seen.add(key);
 
     const enStr = unescapeNewlines(r[1]);
-    en[key] = enStr;
-    if (r[2].trim() !== '') {
-      he[key] = unescapeNewlines(r[2]);
-    } else {
-      he[key] = enStr;          // fall back to English
-      untranslated.push(key);
+    dicts.en[key] = enStr;
+    for (let i = 1; i < langs.length; i++) {
+      const cell = r[1 + i];
+      if (cell.trim() !== '') {
+        dicts[langs[i]][key] = unescapeNewlines(cell);
+      } else {
+        dicts[langs[i]][key] = enStr;          // fall back to English
+        untranslated[langs[i]].push(key);
+      }
     }
   });
 
@@ -114,24 +123,25 @@ function main() {
     die('duplicate key(s) (' + dups.size + '): ' + [...dups].join(', '));
   }
 
-  writeSortedJSON(OUT_EN, en);
-  writeSortedJSON(OUT_HE, he);
+  for (const l of langs) writeSortedJSON(path.join(ROOT, 'locales', l + '.json'), dicts[l]);
 
-  const total = Object.keys(en).length;
-  console.log('build-locales: wrote ' + path.relative(ROOT, OUT_EN) + ' and ' +
-    path.relative(ROOT, OUT_HE) + ' (' + total + ' keys each).');
+  const total = Object.keys(dicts.en).length;
+  console.log('build-locales: wrote ' + langs.map(l => 'locales/' + l + '.json').join(' and ') +
+    ' (' + total + ' keys each).');
 
-  if (untranslated.length > 0) {
-    const preview = untranslated.slice(0, 50);
-    console.warn('\nbuild-locales: WARNING — ' + untranslated.length + ' of ' + total +
-      ' key(s) are untranslated (empty `he` → English fallback):');
+  let anyDebt = false;
+  for (const l of langs.slice(1)) {
+    if (untranslated[l].length === 0) continue;
+    anyDebt = true;
+    const preview = untranslated[l].slice(0, 50);
+    console.warn('\nbuild-locales: WARNING — ' + untranslated[l].length + ' of ' + total +
+      ' key(s) are untranslated (empty `' + l + '` → English fallback):');
     console.warn('  ' + preview.join('\n  '));
-    if (untranslated.length > preview.length) {
-      console.warn('  … and ' + (untranslated.length - preview.length) + ' more.');
+    if (untranslated[l].length > preview.length) {
+      console.warn('  … and ' + (untranslated[l].length - preview.length) + ' more.');
     }
-  } else {
-    console.log('build-locales: all ' + total + ' keys translated.');
   }
+  if (!anyDebt) console.log('build-locales: all ' + total + ' keys translated in every language.');
   process.exit(0);
 }
 

@@ -114,11 +114,13 @@ Enforced by **`node scripts/check-i18n.js`** (run it before finishing; see rule 
 - Never build a UI string by concatenating English literals; put the whole sentence in one key with params.
 
 ### 2. CSV workflow
-New keys go in `locales/ui-strings.csv` (columns **`key,en,he,context,notes`**, exactly 5 fields). Then run
-**`node scripts/build-locales.js`** — it compiles the committed `locales/en.json`/`he.json` (no deploy-time
-build). An empty `he` cell falls back to English and is tracked debt (reported by `build-locales` and
-`check-i18n`). Plurals are split `.one`/`.other` (tag `plural` in notes); interpolation uses `{placeholder}`
-tokens. Any precached-file edit still bumps `sw.js VERSION`.
+New keys go in `locales/ui-strings.csv`. The schema is **column-driven**: `key`, then one column per
+language (**the first must be `en`** — the fallback source; currently `key,en,he,context,notes`), then
+`context,notes` as the last two columns; every row carries exactly one field per header column. Then run
+**`node scripts/build-locales.js`** — it compiles a committed `locales/<lang>.json` per language column
+(no deploy-time build). An empty non-`en` cell falls back to English and is tracked debt (reported per
+language by `build-locales` and `check-i18n`). Plurals are split `.one`/`.other` (tag `plural` in notes);
+interpolation uses `{placeholder}` tokens. Any precached-file edit still bumps `sw.js VERSION`.
 
 ### 3. Key naming
 `page.feature.element` — lowercase, dot-separated (e.g. `dashboard.picker.close_aria`,
@@ -136,6 +138,9 @@ a literal with an inline `i18n-ignore` comment so `check-i18n` skips it):
 - **Dashboard projected/student-facing widget content** (dates, days, weather, Omer, column titles, picker
   group labels) → the existing **`headerLang`/`dowLang`/`showOmerEnglish`** toggles, **independent of
   `I18n.lang`**. Only the teacher-facing settings drawer + chrome follow the UI language.
+- **Browser tab `<title>`s + `<meta name="description">`** stay English on all 12 pages (SEO — the
+  statically-served source is what crawlers index; nothing writes `document.title`, and none of these
+  carry `data-i18n`). A documented decision, not a gap.
 - Hebrew instructional/example content, transliteration, Sefaria/PocketTorah content, the taught
   Ashkenazi/Sephardi **trope pronunciation names**, footer brand/attribution credits, and third-party
   resource-directory data.
@@ -166,6 +171,33 @@ currently only the permanent printed answer-key / QR-caption output (the initial
 backlog was wired up in the first **Pass K** run, 2026-07-12; see `docs/IMPROVEMENT_LOG.md`). To accept a
 new intentional non-translatable literal, prefer a same-line **`i18n-ignore`** comment; reserve the baseline
 for genuinely-permanent printed-output cases (regenerate with `--update-baseline`, then re-apply its header).
+**Known blind spot:** Check A only sees plain-literal JS assignments and static markup (script regions are
+blanked), so an English `title=`/`aria-label=` built inside a JS **template literal** (or passed as a plain
+function argument) escapes it — don't treat a green gate as proof there are zero untranslated tooltips. The
+remaining backlog of that shape (Font-Maker-heavy) is tracked for Pass K run 2 in `docs/IMPROVEMENT_LOG.md`.
+
+### 8. Adding a new UI language
+The pipeline is N-language-ready; Hebrew is just the first non-English locale. To add language `X`
+(LTR example `fr`, RTL example `yi`):
+1. **CSV** — add an `X` column to `locales/ui-strings.csv` after the last language column (header order =
+   column order; `context,notes` stay last); fill translations — empty cells fall back to English as
+   tracked debt.
+2. **Build + gate** — `node scripts/build-locales.js` emits `locales/X.json` automatically (the schema is
+   column-driven), and `check-i18n` Check B reports the new column's debt automatically. No script edits.
+3. **`js/i18n.js`** — add `'X'` to `SUPPORTED`; if right-to-left, add it to `RTL_LANGS` (lang→dir is
+   list-driven — no other dir code); add a `SWITCHER_LANGS` entry (`{code, label, aria}`) — the switcher on
+   every page grows the new button automatically.
+4. **The inline no-flash IIFE** in every production page `<head>` hardcodes the supported codes + the
+   `he`→`rtl` map (locate all copies by grepping `hebrewBlender_lang`; 12 pages + the template comment at
+   the top of `js/i18n.js`) — update each copy to accept `X` (and map it to `rtl` if RTL).
+5. **`sw.js`** — add `/locales/X.json` to `CORE_ASSETS` and bump `VERSION`.
+6. **Caveat — plurals:** call sites pick keys with the English binary rule (`n === 1 ? '.one' : '.other'`);
+   Hebrew ships with that approximation. A language whose plural categories differ (French 0/1, Slavic
+   forms) needs an `Intl.PluralRules`-based helper plus a call-site sweep — a deliberate future refactor,
+   not part of this mechanical recipe.
+
+(The `headerLang`/`dowLang`/`showOmerEnglish` **content**-language toggles are a separate system — adding a
+UI language does NOT add a printed/projected content language.)
 
 ## Import / Export All Settings (`index.html`)
 

@@ -1134,13 +1134,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <span class="tt-ctrl">
     <select id="scopeSelect" aria-label="Reading scope" data-i18n-aria-label="torah.controls.scope_aria">
       <option value="parsha-full" data-i18n="torah.schedule.scope_full">Full parsha</option>
-      <option value="parsha-aliyah-1">Aliyah 1</option>
-      <option value="parsha-aliyah-2">Aliyah 2</option>
-      <option value="parsha-aliyah-3">Aliyah 3</option>
-      <option value="parsha-aliyah-4">Aliyah 4</option>
-      <option value="parsha-aliyah-5">Aliyah 5</option>
-      <option value="parsha-aliyah-6">Aliyah 6</option>
-      <option value="parsha-aliyah-7">Aliyah 7</option>
+      <option value="parsha-aliyah-1" data-i18n="torah.schedule.scope_aliyah_1">Aliyah 1</option>
+      <option value="parsha-aliyah-2" data-i18n="torah.schedule.scope_aliyah_2">Aliyah 2</option>
+      <option value="parsha-aliyah-3" data-i18n="torah.schedule.scope_aliyah_3">Aliyah 3</option>
+      <option value="parsha-aliyah-4" data-i18n="torah.schedule.scope_aliyah_4">Aliyah 4</option>
+      <option value="parsha-aliyah-5" data-i18n="torah.schedule.scope_aliyah_5">Aliyah 5</option>
+      <option value="parsha-aliyah-6" data-i18n="torah.schedule.scope_aliyah_6">Aliyah 6</option>
+      <option value="parsha-aliyah-7" data-i18n="torah.schedule.scope_aliyah_7">Aliyah 7</option>
       <option value="parsha-haftarah" data-i18n="torah.schedule.scope_haftarah">Haftarah</option>
     </select>
   </span>
@@ -1200,7 +1200,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 <div class="tt-page">
   <div class="tt-status" id="ttStatus" role="status" aria-live="polite"></div>
   <!-- In-page nav: aliyah jump chips + "you are here" readout (long readings). -->
-  <div class="tt-jumpnav" id="ttJumpNav" role="navigation" aria-label="Jump to aliyah" hidden></div>
+  <div class="tt-jumpnav" id="ttJumpNav" role="navigation" aria-label="Jump to aliyah" data-i18n-aria-label="torah.jumpnav.aria" hidden></div>
   <!-- Trope-family legend — shown while trope color coding is on AND a reading is
        loaded (applyTropeColors). Chips are generated at init from TROPE_COLOR_DEFS
        so the family list lives in one place. -->
@@ -2789,17 +2789,17 @@ function buildJumpNav() {
   if (!showIndicator) { nav.hidden = true; nav.innerHTML = ''; return; }
   let html = '';
   if (showChips) {
-    html += '<span class="tt-jump-label">Aliyah</span><span class="tt-jump-chips">';
+    html += `<span class="tt-jump-label">${esc(I18n.t('torah.jumpnav.aliyah_label'))}</span><span class="tt-jump-chips">`;
     for (const a of _aliyahStarts) {
-      html += `<button type="button" class="tt-jump-chip" data-aliyah="${a.num}" aria-label="Jump to aliyah ${a.num} (${esc(a.label)})">${a.num}</button>`;
+      html += `<button type="button" class="tt-jump-chip" data-aliyah="${a.num}" aria-label="${esc(I18n.t('torah.reading.jump_chip_aria', { n: a.num, label: a.label }))}">${a.num}</button>`;
     }
     html += '</span>';
   } else {
     // No aliyah chips (single aliyah, haftarah, holiday/custom) — label the lone
     // readout so it doesn't read as a stray, unlabeled "timecode" box.
-    html += '<span class="tt-jump-label">Current verse</span>';
+    html += `<span class="tt-jump-label">${esc(I18n.t('torah.jumpnav.current_verse'))}</span>`;
   }
-  html += '<span class="tt-jump-pos" id="ttJumpPos" aria-live="polite" title="Current verse"></span>';
+  html += `<span class="tt-jump-pos" id="ttJumpPos" aria-live="polite" title="${esc(I18n.t('torah.jumpnav.current_verse'))}"></span>`;
   nav.innerHTML = html;
   nav.hidden = false;
   nav.querySelectorAll('.tt-jump-chip').forEach(btn =>
@@ -4423,7 +4423,7 @@ function populateParshaPicker() {
     sel.appendChild(opt);
   }
   const og = document.createElement('optgroup');
-  og.label = 'Holiday Torah Readings';
+  og.label = I18n.t('torah.controls.holiday_group_label');
   for (const h of HOLIDAY_READINGS) {
     const opt = document.createElement('option');
     opt.value = 'holiday:' + h.key;
@@ -4797,6 +4797,7 @@ function applyI18n() {
   I18n.applyStaticI18n();
   try { buildTropeLegend(); } catch (e) {}          // family chips (glyphname keys)
   try { refreshScopeLabels(); } catch (e) {}        // scope dropdown per-parsha labels
+  try { const og = document.querySelector('#parshaSelect optgroup'); if (og) og.label = I18n.t('torah.controls.holiday_group_label'); } catch (e) {}
   try { updateTransFooter(); } catch (e) {}         // translation credit line
   // Re-render the reading so row labels / aliyah markers / verse buttons translate — but NEVER
   // while audio is playing or looping (a renderText() rebuild would desync the karaoke data-twi
