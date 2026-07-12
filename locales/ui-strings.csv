@@ -2956,206 +2956,206 @@ torah.trans.style_simple,Simple stressed,פשוט עם הטעמה,select option,
 torah.trans.version_opt,{title} — {license},{title} — {license},version select option,do-not-translate {title}
 torah.trope_legend.tutor_link,Learn the trope names →,למדו את שמות הטעמים →,trope legend link,
 torah.a11y.skip_to_reading,Skip to the reading,דילוג לקריאה,Skip-link to the reading (a11y),aria/skip-link
-trope.about.body,"Trope Tutor teaches the Torah cantillation marks with real chanted examples mined from <a href=""https://github.com/rneiss/PocketTorah"" target=""_blank"" rel=""noopener"">PocketTorah</a> recordings (CC BY-SA 4.0) and Sefaria's Hebrew text. New here? Press ❓ Tour in the header. Companion reader: <a href=""torah_trainer.html"">Torah Trainer</a>.",,about panel prose,html; keep the two <a> links
-trope.about.reset_all,↺ Reset all Trope Tutor settings,,button,leading-emoji
-trope.confirm.reset_all,Reset all Trope Tutor settings to defaults?,,confirm dialog,
-trope.confirm.reset_progress,Reset your per-trope mastery and personal-best streak? This cannot be undone.,,confirm dialog,
-trope.drill.back_to_learn,Back to Learn,,button,
-trope.drill.choices_aria,Answer choices,,choices group aria,aria-label only
-trope.drill.choose_again,choose again to answer,,melody choice subtext,
-trope.drill.correct,✓ Correct — {name},,answer feedback,leading-emoji; do-not-translate {name}
-trope.drill.drill_again,Drill again,,button,
-trope.drill.finish,Finish →,,button (last question),
-trope.drill.heading,Drill: 10 questions per session,,drill start heading,
-trope.drill.incorrect,✗ It was {name},,answer feedback,leading-emoji; do-not-translate {name}
-trope.drill.index_not_loaded,"Drill needs the example index, which didn’t load. Check your connection and refresh.",,drill start note,
-trope.drill.mastered_vh,mastered,,mastery cell (visually hidden),
-trope.drill.mastery_aria,Mastery by trope,,mastery grid aria,aria-label only
-trope.drill.mastery_cell_title,{name} — {r} right / {w} wrong,,mastery cell title,do-not-translate {name}/{r}/{w}
-trope.drill.mastery_cell_title_suffix, — mastered,,mastery cell title suffix (appended when mastered),
-trope.drill.melody_choice_num,▶ {n},,melody choice button,leading-emoji; do-not-translate {n}
-trope.drill.melody_hint,Choose a number to hear its melody; choose it again to answer.,,hint,
-trope.drill.min_one_type,At least one question type must stay on.,,inline validation note,
-trope.drill.next,Next →,,button,
-trope.drill.not_enough,Not enough tropes with examples to build a drill.,,drill start note,
-trope.drill.opt_hear,Hear: play a clip → pick the symbol,,drill settings label,
-trope.drill.opt_identify,Identify: see a word → name the trope,,drill settings label,
-trope.drill.opt_melody,Melody: see a symbol → pick its melody,,drill settings label,
-trope.drill.play_melody,▶ Play the melody,,button,leading-emoji
-trope.drill.playback_speed,Playback speed,,slider label,
-trope.drill.q_hear,Listen — which mark carries this melody?,,question prompt,
-trope.drill.q_identify,Which trope is marked on this word?,,question prompt,
-trope.drill.q_melody,Which melody matches this mark?,,question prompt,
-trope.drill.q_progress,Question {n} of {total},,drill progress,do-not-translate {n}/{total}
-trope.drill.replay,↻ Replay,,button,leading-emoji
-trope.drill.reset_speed_aria,Reset playback speed,,reset button aria,aria-label only
-trope.drill.reset_speed_title,Reset speed,,reset button title,
-trope.drill.results_heading,Session complete,,results heading,
-trope.drill.results_pb,🏆 New personal best!,,results banner,leading-emoji
-trope.drill.results_sub,{correct} / {total} correct · best streak this session: {best} 🔥 · personal best: {pb} 🔥,,results subtitle,do-not-translate {correct}/{total}/{best}/{pb}
-trope.drill.start_button,Start drill,,button,
-trope.drill.streak_aria,"Streak {n}, personal best {best}",,drill streak aria,aria-label only; do-not-translate {n}/{best}
-trope.drill.streak_line,🔥 {n}  ·  🏆 {best},,drill streak display,leading-emoji; do-not-translate {n}/{best}
-trope.drill.type_hear,Hear,,drill-type name,
-trope.drill.type_identify,Identify,,drill-type name,
-trope.drill.type_melody,Melody,,drill-type name,
-trope.drill.types_summary,Question types: {types} — change these in ⚙ Settings. Personal best streak: {n} 🔥,,drill start subtitle,leading-emoji trailing; do-not-translate {types}/{n}
-trope.footer.cantillation_credit,"Cantillation audio © Russel Neiss & Rabbi Charlie Schwartz, PocketTorah · CC BY-SA 4.0",,footer data-source credit,html
-trope.footer.faq_a1,"A free interactive tutor for the Torah cantillation marks. Learn mode teaches each mark's symbol, names, and melody with real chanted examples; Drill mode quizzes you three ways with per-mark mastery tracking.",,FAQ answer,
-trope.footer.faq_a2,"The recordings are PocketTorah's, chanted in a widely-taught Ashkenazi melody. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings.",,FAQ answer,
-trope.footer.faq_a3,Cantillation marks printed above and below the words of the Hebrew Bible. Each mark names a melodic phrase and marks the grammar of the verse — together they tell you how to chant it.,,FAQ answer,
-trope.footer.faq_a4,"Each session asks 10 questions of three kinds: name the trope on a marked word, pick the symbol for a melody you hear, or pick the melody that matches a symbol. Marks you miss come up more often, and distractors get sneakier (pashta vs. kadma) as your mastery grows.",,FAQ answer,
-trope.footer.faq_a5,"Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (Russel Neiss & Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings. The Hebrew text comes from Sefaria.",,FAQ answer,
-trope.footer.faq_a6,"Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0. No account, no ads.",,FAQ answer,
-trope.footer.faq_q1,What is the Trope Tutor?,,FAQ question,
-trope.footer.faq_q2,What melody tradition is this?,,FAQ question,
-trope.footer.faq_q3,What are trope (te'amim)?,,FAQ question,
-trope.footer.faq_q4,How does Drill mode work?,,FAQ question,
-trope.footer.faq_q5,Where do the chanted examples come from?,,FAQ question,
-trope.footer.faq_q6,Is the Trope Tutor free?,,FAQ question,
-trope.footer.faq_summary,Frequently Asked Questions,,footer accordion summary,
-trope.footer.materials_note,Materials incorporating PocketTorah audio (including this page's example clips) are CC BY-SA 4.0.,,footer note,
-trope.footer.sefaria_credit,Hebrew text via Sefaria · public domain (extracted at build time — this page never calls Sefaria),,footer data-source credit,html
-trope.glyphname.darga.ashk,Darga,,trope name (both traditions),glyph-name
-trope.glyphname.etnachta.ashk,Etnachta,,trope name (Ashkenazi),glyph-name
-trope.glyphname.etnachta.seph,Atnach,,trope name (Sephardi),glyph-name
-trope.glyphname.family_geresh,Geresh group,,family chip + mastery label,glyph-name; scope-ambiguous
-trope.glyphname.family_katon,Zakef Katon clause,,family chip + mastery label,glyph-name; scope-ambiguous
-trope.glyphname.family_rare,Rare marks,,family chip + mastery label,glyph-name; scope-ambiguous
-trope.glyphname.family_revia,Revia group,,family chip + mastery label,glyph-name; scope-ambiguous
-trope.glyphname.family_segol,Segol clause,,family chip + mastery label,glyph-name; scope-ambiguous
-trope.glyphname.family_sofpasuk,Sof Pasuk clause,,family chip + mastery label,glyph-name; scope-ambiguous
-trope.glyphname.geresh.ashk,Geresh,,trope name (both traditions),glyph-name
-trope.glyphname.geresh_muqdam.ashk,Geresh Muqdam,,trope name (both traditions),glyph-name
-trope.glyphname.gershayim.ashk,Gershayim,,trope name (Ashkenazi),glyph-name
-trope.glyphname.gershayim.seph,Shenei Gerishin,,trope name (Sephardi),glyph-name
-trope.glyphname.kadma.ashk,Kadma,,trope name (Ashkenazi),glyph-name
-trope.glyphname.kadma.seph,Azla,,trope name (Sephardi),glyph-name
-trope.glyphname.karnei_parah.ashk,Karnei Parah,,trope name (Ashkenazi),glyph-name
-trope.glyphname.karnei_parah.seph,Karnei Farah,,trope name (Sephardi),glyph-name
-trope.glyphname.mahpach.ashk,Mahpach,,trope name (Ashkenazi),glyph-name
-trope.glyphname.mahpach.seph,Shofar Mehupach,,trope name (Sephardi),glyph-name
-trope.glyphname.mercha.ashk,Mercha,,trope name (Ashkenazi),glyph-name
-trope.glyphname.mercha.seph,Ma'arich,,trope name (Sephardi),glyph-name
-trope.glyphname.mercha_kefula.ashk,Mercha Kefula,,trope name (Ashkenazi),glyph-name
-trope.glyphname.mercha_kefula.seph,Tere Ta'amei,,trope name (Sephardi),glyph-name
-trope.glyphname.munach.ashk,Munach,,trope name (Ashkenazi),glyph-name
-trope.glyphname.munach.seph,Shofar Holech,,trope name (Sephardi),glyph-name
-trope.glyphname.pashta.ashk,Pashta,,trope name (Ashkenazi),glyph-name
-trope.glyphname.pashta.seph,Kadma,,trope name (Sephardi),glyph-name
-trope.glyphname.pazer.ashk,Pazer,,trope name (Ashkenazi),glyph-name
-trope.glyphname.pazer.seph,Pazer Gadol,,trope name (Sephardi),glyph-name
-trope.glyphname.revia.ashk,Revia,,trope name (both traditions),glyph-name
-trope.glyphname.segol.ashk,Segol,,trope name (Ashkenazi),glyph-name
-trope.glyphname.segol.seph,Segolta,,trope name (Sephardi),glyph-name
-trope.glyphname.shalshelet.ashk,Shalshelet,,trope name (both traditions),glyph-name
-trope.glyphname.sof_pasuk.ashk,Sof Pasuk (Siluk),,trope name (both traditions),glyph-name
-trope.glyphname.telisha_gedola.ashk,Telisha Gedola,,trope name (Ashkenazi),glyph-name
-trope.glyphname.telisha_gedola.seph,Tirtzah,,trope name (Sephardi),glyph-name
-trope.glyphname.telisha_ketana.ashk,Telisha Ketana,,trope name (Ashkenazi),glyph-name
-trope.glyphname.telisha_ketana.seph,Talsha,,trope name (Sephardi),glyph-name
-trope.glyphname.tevir.ashk,Tevir,,trope name (both traditions),glyph-name
-trope.glyphname.tipcha.ashk,Tipcha,,trope name (Ashkenazi),glyph-name
-trope.glyphname.tipcha.seph,Tarcha,,trope name (Sephardi),glyph-name
-trope.glyphname.yerach_ben_yomo.ashk,Yerach Ben Yomo,,trope name (Ashkenazi),glyph-name
-trope.glyphname.yerach_ben_yomo.seph,Yareach Ben Yomo,,trope name (Sephardi),glyph-name
-trope.glyphname.yetiv.ashk,Yetiv,,trope name (both traditions),glyph-name
-trope.glyphname.zakef_gadol.ashk,Zakef Gadol,,trope name (both traditions),glyph-name
-trope.glyphname.zakef_katon.ashk,Zakef Katon,,trope name (both traditions),glyph-name
-trope.glyphname.zarka.ashk,Zarka,,trope name (both traditions),glyph-name
-trope.header.home,Home,,header nav button,
-trope.header.settings_title,Settings,,header gear title + aria,
-trope.header.subtitle,"Learn the Torah cantillation marks — names, symbols, and melodies — with real chanted examples.",,header subtitle,
-trope.header.title,Trope Tutor,,h1 header,
-trope.header.tour_button,❓ Tour,,header button,leading-emoji
-trope.header.tour_title,Take a quick tour,,header button title,
-trope.learn.examples_unavailable,Examples unavailable (index not loaded).,,card empty state,
-trope.learn.families_aria,Trope clause families,,family chip group aria,aria-label only
-trope.learn.family_note_geresh,"Ornamental short phrases: kadma-v'azla (geresh), double gershayim, the telisha twins at the word's edges, and the whirling pazer.",,family teaching note (Learn),pedagogical prose; scope-ambiguous
-trope.learn.family_note_katon,The workhorse mid-verse clause: mahpach and pashta climb toward zakef katon's little pause. Pashta looks exactly like kadma — only its position at the end of the word gives it away.,,family teaching note (Learn),pedagogical prose; scope-ambiguous
-trope.learn.family_note_rare,"Once-in-a-Torah specialties — mercha kefula, karnei parah, and yerach ben yomo. Karnei parah and yerach ben yomo each appear exactly once, back to back, in Numbers 35:5.",,family teaching note (Learn),pedagogical prose; scope-ambiguous
-trope.learn.family_note_revia,"Gentler pauses: revia hovers above the word like a single gem, while darga and tevir often pair up in a distinctive stair-step figure.",,family teaching note (Learn),pedagogical prose; scope-ambiguous
-trope.learn.family_note_segol,"A grand early pause in long verses: zarka swings up and hands off to segol. Shalshelet — a rare, dramatic chain of notes — stands in for it at the very start of a verse.",,family teaching note (Learn),pedagogical prose; scope-ambiguous
-trope.learn.family_note_sofpasuk,Home base: the backbone of every verse. Mercha and tipcha lead into etnachta — the deep mid-verse resting point — and the same team walks the second half down to the final sof pasuk cadence.,,family teaching note (Learn),pedagogical prose; scope-ambiguous
-trope.learn.intro,"Trope (te'amim) are the cantillation marks that tell you how to chant the Torah. Work through them one clause family at a time, then switch to <strong>Drill</strong> to test yourself. When you're ready to see them in context, open the companion reader: <a href=""torah_trainer.html"">Torah Trainer →</a>",,learn intro prose,html; keep <strong> + the <a> link
-trope.learn.name_ashkenazi_prefix,Ashkenazi: {name},,secondary-name label on card,do-not-translate {name} (a glyph-name)
-trope.learn.name_sephardi_prefix,Sephardi: {name},,secondary-name label on card,do-not-translate {name} (a glyph-name)
-trope.learn.next_family,Next family →,,button,
-trope.learn.no_example,No chanted example in this corpus.,,card empty state,
-trope.learn.play_example_aria,Play {name} example from {parsha} {ref},,example play button aria,aria-label only; do-not-translate {parsha}/{ref}
-trope.learn.rare_tag,Rare,,card tag,
-trope.learn.ready_drill,Ready? Try a drill →,,button (on last family),
-trope.learn.see_in_parsha,See it in the parsha →,,card link,
-trope.learn.see_in_parsha_title,Open the Torah Trainer reader with trope color coding,,card link title,
-trope.learn.trope_note_etnachta,The deepest pause inside a verse — the wishbone under the word splits the verse in two.,,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
-trope.learn.trope_note_geresh_muqdam,"A variant geresh printed earlier in the word; some printed editions use it, but this corpus has no occurrences — so there's no clip to play.",,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
-trope.learn.trope_note_kadma,"Sits on the stressed syllable, usually leading straight into a geresh (""kadma v'azla""). Same shape as pashta, which instead hangs off the word's end.",,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
-trope.learn.trope_note_karnei_parah,"""Cow horns"" — the single rarest mark; one appearance in the Torah (Numbers 35:5).",,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
-trope.learn.trope_note_mahpach,"A rising horseshoe below the stressed syllable, almost always followed by pashta.",,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
-trope.learn.trope_note_mercha_kefula,A doubled mercha — appears only a handful of times in the whole Torah.,,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
-trope.learn.trope_note_pashta,Postpositive — printed at the very end of the word even when the stress falls earlier (it's doubled on the stress in that case). Same shape as kadma; position tells them apart.,,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
-trope.learn.trope_note_segol,Postpositive — the three-dot cluster rides off the end of the word.,,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
-trope.learn.trope_note_shalshelet,"A long, dramatic chain of notes — always on a verse's first word, always followed by a vertical paseq line.",,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
-trope.learn.trope_note_sof_pasuk,"The verse-ending cadence. Its siluk mark shares a codepoint with the meteg stress line, so learn it by position: the last word of every verse, followed by the ׃ mark.",,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
-trope.learn.trope_note_telisha_gedola,Prepositive — the small circle leads the word from the front.,,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
-trope.learn.trope_note_telisha_ketana,Postpositive — the small circle sits at the end of the word.,,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
-trope.learn.trope_note_yerach_ben_yomo,"""Moon one day old"" — appears once in the Torah, right before karnei parah's word (Numbers 35:5).",,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
-trope.learn.trope_note_yetiv,"Prepositive — printed at the very start of the word, below the first letter. Same shape as mahpach, different position and role.",,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
-trope.learn.trope_note_zakef_gadol,Zakef katon's louder sibling — a vertical bar joins the two dots when the word stands alone in its clause.,,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
-trope.learn.trope_note_zarka,Postpositive — curls off the end of the word and always throws ahead to a segol.,,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
-trope.learn.visited_aria,visited,,family chip visited badge aria,aria-label only
-trope.progress.reset_button,↺ Reset mastery & personal best,,button,leading-emoji
-trope.progress.summary,{n} of {total} tropes attempted · personal best streak {pb} 🔥,,progress summary,do-not-translate {n}/{total}/{pb}
-trope.settings.aria,Trope Tutor settings,,settings drawer aria,aria-label only
-trope.settings.close_aria,Close settings,,close button aria,aria-label only
-trope.settings.font_default_tag,[DEFAULT],,font picker default marker,
-trope.settings.font_section_cursive,Cursive / Script,,font picker section header,
-trope.settings.font_section_fallback,{section} Fonts,,font picker section header (fallback),do-not-translate {section}
-trope.settings.font_section_my,My Fonts,,font picker section header,
-trope.settings.font_section_print,Print Fonts,,font picker section header,
-trope.settings.font_section_torah,Torah Fonts,,font picker section header,
-trope.settings.heb_size,Hebrew size,,slider label,
-trope.settings.panel_about,About,,panel title,
-trope.settings.panel_drill,Drill,,panel title,
-trope.settings.panel_font,Hebrew Font,,panel title,
-trope.settings.panel_names,Names & Tradition,,panel title,
-trope.settings.panel_progress,Progress,,panel title,
-trope.settings.reset_size_aria,Reset Hebrew size,,reset button aria,aria-label only
-trope.settings.reset_size_title,Reset size,,reset button title,
-trope.settings.title,⚙ Settings,,settings drawer header,leading-emoji
-trope.status.index_unavailable,Example clips unavailable (couldn’t load the trope index) — Learn mode still shows every mark.,,status,
-trope.status.loading_audio,Loading audio…,,status,
-trope.status.loading_index,Loading the trope index…,,status,
-trope.status.tap_to_hear,Tap ▶ to hear the melody.,,status,
-trope.tabs.aria,Tutor mode,,tablist aria,aria-label only
-trope.tabs.drill,🎯 Drill,,mode tab,leading-emoji
-trope.tabs.learn,📖 Learn,,mode tab,leading-emoji
-trope.tip.more_info,More information,,tooltip fallback aria,aria-label only
-trope.toast.audio_new_question,Audio for that trope wouldn’t load — new question.,,toast,
-trope.toast.audio_unavailable,Audio unavailable right now — check your connection.,,toast,
-trope.toast.audio_unreachable_skipped,Audio isn’t reachable — this question was skipped.,,toast,
-trope.toast.clip_switched,That clip wouldn’t load — switched to another example.,,toast,
-trope.toast.clip_trying_another,That clip wouldn’t load — trying another example.,,toast,
-trope.toast.clip_wont_load,That clip wouldn’t load.,,toast,
-trope.tour.s1_body,Learn walks the marks family by family; Drill quizzes you on them.,,tour step body,
-trope.tour.s1_title,Two modes,,tour step title,
-trope.tour.s2_body,The marks come in six melodic families — the same color families as the Torah Trainer reader.,,tour step body,
-trope.tour.s2_title,Clause families,,tour step title,
-trope.tour.s3_body,"Symbol, both naming traditions, a teaching note, and real chanted example words. Press ▶ to hear one.",,tour step body,
-trope.tour.s3_title,One card per mark,,tour step title,
-trope.tour.s4_body,"Step through all six families, then test yourself.",,tour step body,
-trope.tour.s4_title,Work through them,,tour step title,
-trope.tour.s5_body,"10 questions per session: name the marked word, match melody to symbol, or symbol to melody.",,tour step body,
-trope.tour.s5_title,Drill mode,,tour step title,
-trope.tour.s6_body,"Naming tradition, Hebrew font, question types, and playback speed live here.",,tour step body,
-trope.tour.s6_title,Settings,,tour step title,
-trope.tradition.ashkenazi,Ashkenazi,,radio label,
-trope.tradition.note,The recordings themselves follow PocketTorah's Ashkenazi melody either way.,,settings note,
-trope.tradition.primary_aria,Primary trope names,,radiogroup aria,aria-label only
-trope.tradition.primary_label,Primary trope names,,settings label,
-trope.tradition.primary_tip,"Both names are always shown on each card; this picks which one leads. Note the classic collision: Ashkenazi 'pashta' is Sephardi 'kadma', while Ashkenazi 'kadma' is Sephardi 'azla'.",,tooltip,
-trope.tradition.sephardi,Sephardi,,radio label,
-trope.a11y.skip_to_tutor,Skip to the tutor,,Skip-link (a11y),aria/skip-link
+trope.about.body,"Trope Tutor teaches the Torah cantillation marks with real chanted examples mined from <a href=""https://github.com/rneiss/PocketTorah"" target=""_blank"" rel=""noopener"">PocketTorah</a> recordings (CC BY-SA 4.0) and Sefaria's Hebrew text. New here? Press ❓ Tour in the header. Companion reader: <a href=""torah_trainer.html"">Torah Trainer</a>.","מאמן הטעמים מלמד את טעמי המקרא של התורה עם דוגמאות מושרות אמיתיות שנלקטו מהקלטות <a href=""https://github.com/rneiss/PocketTorah"" target=""_blank"" rel=""noopener"">PocketTorah</a> (CC BY-SA 4.0) ומהטקסט העברי של Sefaria. חדשים כאן? לחצו על ❓ סיור בכותרת. קורא משלים: <a href=""torah_trainer.html"">מאמן התורה</a>.",about panel prose,html; keep the two <a> links
+trope.about.reset_all,↺ Reset all Trope Tutor settings,↺ איפוס כל הגדרות מאמן הטעמים,button,leading-emoji
+trope.confirm.reset_all,Reset all Trope Tutor settings to defaults?,לאפס את כל הגדרות מאמן הטעמים לברירת המחדל?,confirm dialog,
+trope.confirm.reset_progress,Reset your per-trope mastery and personal-best streak? This cannot be undone.,לאפס את השליטה בכל טעם ואת רצף השיא האישי? לא ניתן לבטל פעולה זו.,confirm dialog,
+trope.drill.back_to_learn,Back to Learn,חזרה ללימוד,button,
+trope.drill.choices_aria,Answer choices,אפשרויות תשובה,choices group aria,aria-label only
+trope.drill.choose_again,choose again to answer,בחרו שוב כדי לענות,melody choice subtext,
+trope.drill.correct,✓ Correct — {name},✓ נכון — {name},answer feedback,leading-emoji; do-not-translate {name}
+trope.drill.drill_again,Drill again,תרגול נוסף,button,
+trope.drill.finish,Finish →,סיום →,button (last question),
+trope.drill.heading,Drill: 10 questions per session,תרגול: 10 שאלות בכל מפגש,drill start heading,
+trope.drill.incorrect,✗ It was {name},✗ זה היה {name},answer feedback,leading-emoji; do-not-translate {name}
+trope.drill.index_not_loaded,"Drill needs the example index, which didn’t load. Check your connection and refresh.","התרגול זקוק למפתח הדוגמאות, שלא נטען. בדקו את החיבור ורעננו.",drill start note,
+trope.drill.mastered_vh,mastered,נשלט,mastery cell (visually hidden),
+trope.drill.mastery_aria,Mastery by trope,שליטה לפי טעם,mastery grid aria,aria-label only
+trope.drill.mastery_cell_title,{name} — {r} right / {w} wrong,{name} — {r} נכון / {w} שגוי,mastery cell title,do-not-translate {name}/{r}/{w}
+trope.drill.mastery_cell_title_suffix, — mastered, — נשלט,mastery cell title suffix (appended when mastered),
+trope.drill.melody_choice_num,▶ {n},▶ {n},melody choice button,leading-emoji; do-not-translate {n}
+trope.drill.melody_hint,Choose a number to hear its melody; choose it again to answer.,בחרו מספר כדי לשמוע את המנגינה שלו; בחרו בו שוב כדי לענות.,hint,
+trope.drill.min_one_type,At least one question type must stay on.,לפחות סוג שאלה אחד חייב להישאר פעיל.,inline validation note,
+trope.drill.next,Next →,הבא →,button,
+trope.drill.not_enough,Not enough tropes with examples to build a drill.,אין מספיק טעמים עם דוגמאות כדי לבנות תרגול.,drill start note,
+trope.drill.opt_hear,Hear: play a clip → pick the symbol,האזנה: השמיעו קטע → בחרו את הסימן,drill settings label,
+trope.drill.opt_identify,Identify: see a word → name the trope,זיהוי: ראו מילה → נקבו את הטעם,drill settings label,
+trope.drill.opt_melody,Melody: see a symbol → pick its melody,מנגינה: ראו סימן → בחרו את המנגינה שלו,drill settings label,
+trope.drill.play_melody,▶ Play the melody,▶ השמעת המנגינה,button,leading-emoji
+trope.drill.playback_speed,Playback speed,מהירות השמעה,slider label,
+trope.drill.q_hear,Listen — which mark carries this melody?,האזינו — איזה טעם נושא את המנגינה הזו?,question prompt,
+trope.drill.q_identify,Which trope is marked on this word?,איזה טעם מסומן על המילה הזו?,question prompt,
+trope.drill.q_melody,Which melody matches this mark?,איזו מנגינה מתאימה לטעם הזה?,question prompt,
+trope.drill.q_progress,Question {n} of {total},שאלה {n} מתוך {total},drill progress,do-not-translate {n}/{total}
+trope.drill.replay,↻ Replay,↻ השמעה חוזרת,button,leading-emoji
+trope.drill.reset_speed_aria,Reset playback speed,איפוס מהירות ההשמעה,reset button aria,aria-label only
+trope.drill.reset_speed_title,Reset speed,איפוס מהירות,reset button title,
+trope.drill.results_heading,Session complete,המפגש הושלם,results heading,
+trope.drill.results_pb,🏆 New personal best!,🏆 שיא אישי חדש!,results banner,leading-emoji
+trope.drill.results_sub,{correct} / {total} correct · best streak this session: {best} 🔥 · personal best: {pb} 🔥,{correct} / {total} נכון · רצף שיא במפגש זה: {best} 🔥 · שיא אישי: {pb} 🔥,results subtitle,do-not-translate {correct}/{total}/{best}/{pb}
+trope.drill.start_button,Start drill,התחלת תרגול,button,
+trope.drill.streak_aria,"Streak {n}, personal best {best}","רצף {n}, שיא אישי {best}",drill streak aria,aria-label only; do-not-translate {n}/{best}
+trope.drill.streak_line,🔥 {n}  ·  🏆 {best},🔥 {n}  ·  🏆 {best},drill streak display,leading-emoji; do-not-translate {n}/{best}
+trope.drill.type_hear,Hear,האזנה,drill-type name,
+trope.drill.type_identify,Identify,זיהוי,drill-type name,
+trope.drill.type_melody,Melody,מנגינה,drill-type name,
+trope.drill.types_summary,Question types: {types} — change these in ⚙ Settings. Personal best streak: {n} 🔥,סוגי שאלות: {types} — שנו אותם ב-⚙ הגדרות. רצף שיא אישי: {n} 🔥,drill start subtitle,leading-emoji trailing; do-not-translate {types}/{n}
+trope.footer.cantillation_credit,"Cantillation audio © Russel Neiss & Rabbi Charlie Schwartz, PocketTorah · CC BY-SA 4.0","שמע הטעמים © Russel Neiss & Rabbi Charlie Schwartz, PocketTorah · CC BY-SA 4.0",footer data-source credit,html
+trope.footer.faq_a1,"A free interactive tutor for the Torah cantillation marks. Learn mode teaches each mark's symbol, names, and melody with real chanted examples; Drill mode quizzes you three ways with per-mark mastery tracking.","מאמן אינטראקטיבי חינמי לטעמי המקרא של התורה. מצב הלימוד מלמד את הסימן, השמות והמנגינה של כל טעם עם דוגמאות מושרות אמיתיות; מצב התרגול בוחן אתכם בשלוש דרכים עם מעקב שליטה לכל טעם.",FAQ answer,
+trope.footer.faq_a2,"The recordings are PocketTorah's, chanted in a widely-taught Ashkenazi melody. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings.","ההקלטות הן של PocketTorah, מושרות במנגינה אשכנזית נפוצה בהוראה. מוצגים שמות הטעמים גם באשכנזית וגם בספרדית, ואפשר להחליף את מסורת השמות העיקרית בהגדרות.",FAQ answer,
+trope.footer.faq_a3,Cantillation marks printed above and below the words of the Hebrew Bible. Each mark names a melodic phrase and marks the grammar of the verse — together they tell you how to chant it.,סימני טעמים המודפסים מעל ומתחת למילות התנ״ך. כל סימן מציין משפט מלודי ומסמן את תחביר הפסוק — יחד הם מלמדים כיצד לשיר אותו.,FAQ answer,
+trope.footer.faq_a4,"Each session asks 10 questions of three kinds: name the trope on a marked word, pick the symbol for a melody you hear, or pick the melody that matches a symbol. Marks you miss come up more often, and distractors get sneakier (pashta vs. kadma) as your mastery grows.","כל מפגש שואל 10 שאלות משלושה סוגים: נקבו את הטעם על מילה מסומנת, בחרו את הסימן למנגינה שאתם שומעים, או בחרו את המנגינה שמתאימה לסימן. טעמים שאתם מפספסים מופיעים לעיתים קרובות יותר, והמסיחים נעשים ערמומיים יותר (פשטא מול קדמא) ככל שהשליטה שלכם גדלה.",FAQ answer,
+trope.footer.faq_a5,"Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (Russel Neiss & Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings. The Hebrew text comes from Sefaria.","כל דוגמה היא מילה אמיתית מקריאת התורה, שנחתכה מהקלטות PocketTorah (Russel Neiss & Rabbi Charlie Schwartz, CC BY-SA 4.0) בעזרת התזמונים שלהן ברמת המילה. הטקסט העברי מגיע מ-Sefaria.",FAQ answer,
+trope.footer.faq_a6,"Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0. No account, no ads.","כן. חומרים המשלבים שמע של PocketTorah הם CC BY-SA 4.0; שאר תוכן IvritSuite הוא CC BY-NC-SA 4.0. בלי חשבון, בלי פרסומות.",FAQ answer,
+trope.footer.faq_q1,What is the Trope Tutor?,מהו מאמן הטעמים?,FAQ question,
+trope.footer.faq_q2,What melody tradition is this?,מהי מסורת המנגינה כאן?,FAQ question,
+trope.footer.faq_q3,What are trope (te'amim)?,מהם טעמים (טעמי המקרא)?,FAQ question,
+trope.footer.faq_q4,How does Drill mode work?,כיצד מצב התרגול עובד?,FAQ question,
+trope.footer.faq_q5,Where do the chanted examples come from?,מהיכן מגיעות הדוגמאות המושרות?,FAQ question,
+trope.footer.faq_q6,Is the Trope Tutor free?,האם מאמן הטעמים חינמי?,FAQ question,
+trope.footer.faq_summary,Frequently Asked Questions,שאלות נפוצות,footer accordion summary,
+trope.footer.materials_note,Materials incorporating PocketTorah audio (including this page's example clips) are CC BY-SA 4.0.,חומרים המשלבים שמע של PocketTorah (כולל קטעי הדוגמה בעמוד זה) הם CC BY-SA 4.0.,footer note,
+trope.footer.sefaria_credit,Hebrew text via Sefaria · public domain (extracted at build time — this page never calls Sefaria),טקסט עברי דרך Sefaria · נחלת הכלל (חולץ בזמן הבנייה — עמוד זה אינו פונה ל-Sefaria),footer data-source credit,html
+trope.glyphname.darga.ashk,Darga,דרגא,trope name (both traditions),"glyph-name | REVIEW: 'Darga' rendered דרגא — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.etnachta.ashk,Etnachta,אתנחתא,trope name (Ashkenazi),"glyph-name | REVIEW: 'Etnachta' rendered אתנחתא — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.etnachta.seph,Atnach,אתנח,trope name (Sephardi),"glyph-name | REVIEW: 'Atnach' rendered אתנח — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.family_geresh,Geresh group,גרש,family chip + mastery label,glyph-name; scope-ambiguous
+trope.glyphname.family_katon,Zakef Katon clause,זקף קטון,family chip + mastery label,glyph-name; scope-ambiguous
+trope.glyphname.family_rare,Rare marks,טעמים נדירים,family chip + mastery label,glyph-name; scope-ambiguous
+trope.glyphname.family_revia,Revia group,רביע,family chip + mastery label,glyph-name; scope-ambiguous
+trope.glyphname.family_segol,Segol clause,סגול,family chip + mastery label,glyph-name; scope-ambiguous
+trope.glyphname.family_sofpasuk,Sof Pasuk clause,סוף פסוק,family chip + mastery label,glyph-name; scope-ambiguous
+trope.glyphname.geresh.ashk,Geresh,גרש,trope name (both traditions),"glyph-name | REVIEW: 'Geresh' rendered גרש — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.geresh_muqdam.ashk,Geresh Muqdam,גרש מוקדם,trope name (both traditions),"glyph-name | REVIEW: 'Geresh Muqdam' rendered גרש מוקדם — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.gershayim.ashk,Gershayim,גרשיים,trope name (Ashkenazi),"glyph-name | REVIEW: 'Gershayim' rendered גרשיים — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.gershayim.seph,Shenei Gerishin,שני גרישין,trope name (Sephardi),"glyph-name | REVIEW: 'Shenei Gerishin' rendered שני גרישין — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.kadma.ashk,Kadma,קדמא,trope name (Ashkenazi),"glyph-name | REVIEW: 'Kadma' rendered קדמא — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.kadma.seph,Azla,אזלא,trope name (Sephardi),"glyph-name | REVIEW: 'Azla' rendered אזלא — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.karnei_parah.ashk,Karnei Parah,קרני פרה,trope name (Ashkenazi),"glyph-name | REVIEW: 'Karnei Parah' rendered קרני פרה — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.karnei_parah.seph,Karnei Farah,קרני פרה,trope name (Sephardi),"glyph-name | REVIEW: 'Karnei Farah' rendered קרני פרה — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.mahpach.ashk,Mahpach,מהפך,trope name (Ashkenazi),"glyph-name | REVIEW: 'Mahpach' rendered מהפך — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.mahpach.seph,Shofar Mehupach,שופר מהופך,trope name (Sephardi),"glyph-name | REVIEW: 'Shofar Mehupach' rendered שופר מהופך — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.mercha.ashk,Mercha,מרכא,trope name (Ashkenazi),"glyph-name | REVIEW: 'Mercha' rendered מרכא — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.mercha.seph,Ma'arich,מאריך,trope name (Sephardi),"glyph-name | REVIEW: 'Ma'arich' rendered מאריך — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.mercha_kefula.ashk,Mercha Kefula,מרכא כפולה,trope name (Ashkenazi),"glyph-name | REVIEW: 'Mercha Kefula' rendered מרכא כפולה — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.mercha_kefula.seph,Tere Ta'amei,תרי טעמי,trope name (Sephardi),"glyph-name | REVIEW: 'Tere Ta'amei' rendered תרי טעמי — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.munach.ashk,Munach,מונח,trope name (Ashkenazi),"glyph-name | REVIEW: 'Munach' rendered מונח — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.munach.seph,Shofar Holech,שופר הולך,trope name (Sephardi),"glyph-name | REVIEW: 'Shofar Holech' rendered שופר הולך — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.pashta.ashk,Pashta,פשטא,trope name (Ashkenazi),"glyph-name | REVIEW: 'Pashta' rendered פשטא — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.pashta.seph,Kadma,קדמא,trope name (Sephardi),"glyph-name | REVIEW: 'Kadma' rendered קדמא — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.pazer.ashk,Pazer,פזר,trope name (Ashkenazi),"glyph-name | REVIEW: 'Pazer' rendered פזר — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.pazer.seph,Pazer Gadol,פזר גדול,trope name (Sephardi),"glyph-name | REVIEW: 'Pazer Gadol' rendered פזר גדול — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.revia.ashk,Revia,רביע,trope name (both traditions),"glyph-name | REVIEW: 'Revia' rendered רביע — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.segol.ashk,Segol,סגול,trope name (Ashkenazi),"glyph-name | REVIEW: 'Segol' rendered סגול — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.segol.seph,Segolta,סגולתא,trope name (Sephardi),"glyph-name | REVIEW: 'Segolta' rendered סגולתא — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.shalshelet.ashk,Shalshelet,שלשלת,trope name (both traditions),"glyph-name | REVIEW: 'Shalshelet' rendered שלשלת — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.sof_pasuk.ashk,Sof Pasuk (Siluk),סוף פסוק (סילוק),trope name (both traditions),"glyph-name | REVIEW: 'Sof Pasuk (Siluk)' rendered סוף פסוק (סילוק) — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.telisha_gedola.ashk,Telisha Gedola,תלישא גדולה,trope name (Ashkenazi),"glyph-name | REVIEW: 'Telisha Gedola' rendered תלישא גדולה — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.telisha_gedola.seph,Tirtzah,תרצה,trope name (Sephardi),"glyph-name | REVIEW: 'Tirtzah' rendered תרצה — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.telisha_ketana.ashk,Telisha Ketana,תלישא קטנה,trope name (Ashkenazi),"glyph-name | REVIEW: 'Telisha Ketana' rendered תלישא קטנה — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.telisha_ketana.seph,Talsha,תלשא,trope name (Sephardi),"glyph-name | REVIEW: 'Talsha' rendered תלשא — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.tevir.ashk,Tevir,תביר,trope name (both traditions),"glyph-name | REVIEW: 'Tevir' rendered תביר — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.tipcha.ashk,Tipcha,טפחא,trope name (Ashkenazi),"glyph-name | REVIEW: 'Tipcha' rendered טפחא — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.tipcha.seph,Tarcha,טרחא,trope name (Sephardi),"glyph-name | REVIEW: 'Tarcha' rendered טרחא — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.yerach_ben_yomo.ashk,Yerach Ben Yomo,ירח בן יומו,trope name (Ashkenazi),"glyph-name | REVIEW: 'Yerach Ben Yomo' rendered ירח בן יומו — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.yerach_ben_yomo.seph,Yareach Ben Yomo,ירח בן יומו,trope name (Sephardi),"glyph-name | REVIEW: 'Yareach Ben Yomo' rendered ירח בן יומו — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.yetiv.ashk,Yetiv,יתיב,trope name (both traditions),"glyph-name | REVIEW: 'Yetiv' rendered יתיב — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.zakef_gadol.ashk,Zakef Gadol,זקף גדול,trope name (both traditions),"glyph-name | REVIEW: 'Zakef Gadol' rendered זקף גדול — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.zakef_katon.ashk,Zakef Katon,זקף קטון,trope name (both traditions),"glyph-name | REVIEW: 'Zakef Katon' rendered זקף קטון — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.glyphname.zarka.ashk,Zarka,זרקא,trope name (both traditions),"glyph-name | REVIEW: 'Zarka' rendered זרקא — confirm (trope pronunciation name; JS-driven, key unreferenced)"
+trope.header.home,Home,בית,header nav button,
+trope.header.settings_title,Settings,הגדרות,header gear title + aria,
+trope.header.subtitle,"Learn the Torah cantillation marks — names, symbols, and melodies — with real chanted examples.","למדו את טעמי המקרא של התורה — שמות, סימנים ומנגינות — עם דוגמאות מושרות אמיתיות.",header subtitle,
+trope.header.title,Trope Tutor,מאמן הטעמים,h1 header,
+trope.header.tour_button,❓ Tour,❓ סיור,header button,leading-emoji
+trope.header.tour_title,Take a quick tour,צאו לסיור מהיר,header button title,
+trope.learn.examples_unavailable,Examples unavailable (index not loaded).,הדוגמאות אינן זמינות (המפתח לא נטען).,card empty state,
+trope.learn.families_aria,Trope clause families,משפחות הטעמים,family chip group aria,aria-label only
+trope.learn.family_note_geresh,"Ornamental short phrases: kadma-v'azla (geresh), double gershayim, the telisha twins at the word's edges, and the whirling pazer.","משפטים קצרים ומקושטים: קדמא-ואזלא (גרש), גרשיים כפולים, תאומי התלישא בקצות המילה, והפזר המסתחרר.",family teaching note (Learn),pedagogical prose; scope-ambiguous
+trope.learn.family_note_katon,The workhorse mid-verse clause: mahpach and pashta climb toward zakef katon's little pause. Pashta looks exactly like kadma — only its position at the end of the word gives it away.,משפט העבודה שבאמצע הפסוק: מהפך ופשטא מטפסים אל ההפוגה הקטנה של זקף קטון. פשטא נראה בדיוק כמו קדמא — רק מיקומו בסוף המילה מסגיר אותו.,family teaching note (Learn),pedagogical prose; scope-ambiguous
+trope.learn.family_note_rare,"Once-in-a-Torah specialties — mercha kefula, karnei parah, and yerach ben yomo. Karnei parah and yerach ben yomo each appear exactly once, back to back, in Numbers 35:5.","מיוחדים שמופיעים פעם אחת בתורה — מרכא כפולה, קרני פרה וירח בן יומו. קרני פרה וירח בן יומו מופיעים כל אחד בדיוק פעם אחת, זה אחר זה, בבמדבר לה:ה.",family teaching note (Learn),pedagogical prose; scope-ambiguous
+trope.learn.family_note_revia,"Gentler pauses: revia hovers above the word like a single gem, while darga and tevir often pair up in a distinctive stair-step figure.","הפוגות עדינות יותר: רביע מרחף מעל המילה כמו אבן חן יחידה, בעוד דרגא ותביר מזדווגים לרוב בתבנית מדרגות ייחודית.",family teaching note (Learn),pedagogical prose; scope-ambiguous
+trope.learn.family_note_segol,"A grand early pause in long verses: zarka swings up and hands off to segol. Shalshelet — a rare, dramatic chain of notes — stands in for it at the very start of a verse.",הפוגה מוקדמת ומרשימה בפסוקים ארוכים: זרקא מתנופף כלפי מעלה ומעביר לסגול. שלשלת — שרשרת תווים נדירה ודרמטית — מחליפה אותו ממש בתחילת פסוק.,family teaching note (Learn),pedagogical prose; scope-ambiguous
+trope.learn.family_note_sofpasuk,Home base: the backbone of every verse. Mercha and tipcha lead into etnachta — the deep mid-verse resting point — and the same team walks the second half down to the final sof pasuk cadence.,בסיס הבית: עמוד השדרה של כל פסוק. מרכא וטפחא מובילים אל האתנחתא — נקודת המנוחה העמוקה שבאמצע הפסוק — ואותו צוות מוליך את החצי השני אל הקדנצה הסופית של סוף פסוק.,family teaching note (Learn),pedagogical prose; scope-ambiguous
+trope.learn.intro,"Trope (te'amim) are the cantillation marks that tell you how to chant the Torah. Work through them one clause family at a time, then switch to <strong>Drill</strong> to test yourself. When you're ready to see them in context, open the companion reader: <a href=""torah_trainer.html"">Torah Trainer →</a>","טעמים (טעמי המקרא) הם הסימנים שמלמדים כיצד לשיר את התורה. עברו עליהם משפחת טעמים אחת בכל פעם, ואז עברו אל <strong>תרגול</strong> כדי לבחון את עצמכם. כשתהיו מוכנים לראות אותם בהקשר, פתחו את הקורא המשלים: <a href=""torah_trainer.html"">מאמן התורה →</a>",learn intro prose,html; keep <strong> + the <a> link
+trope.learn.name_ashkenazi_prefix,Ashkenazi: {name},אשכנזי: {name},secondary-name label on card,do-not-translate {name} (a glyph-name)
+trope.learn.name_sephardi_prefix,Sephardi: {name},ספרדי: {name},secondary-name label on card,do-not-translate {name} (a glyph-name)
+trope.learn.next_family,Next family →,המשפחה הבאה →,button,
+trope.learn.no_example,No chanted example in this corpus.,אין דוגמה מושרת בקורפוס זה.,card empty state,
+trope.learn.play_example_aria,Play {name} example from {parsha} {ref},השמעת דוגמת {name} מ{parsha} {ref},example play button aria,aria-label only; do-not-translate {parsha}/{ref}
+trope.learn.rare_tag,Rare,נדיר,card tag,
+trope.learn.ready_drill,Ready? Try a drill →,מוכנים? נסו תרגול →,button (on last family),
+trope.learn.see_in_parsha,See it in the parsha →,ראו אותו בפרשה →,card link,
+trope.learn.see_in_parsha_title,Open the Torah Trainer reader with trope color coding,פתחו את הקורא של מאמן התורה עם צביעת טעמים,card link title,
+trope.learn.trope_note_etnachta,The deepest pause inside a verse — the wishbone under the word splits the verse in two.,ההפוגה העמוקה ביותר בתוך פסוק — עצם המזלג שמתחת למילה חוצה את הפסוק לשניים.,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
+trope.learn.trope_note_geresh_muqdam,"A variant geresh printed earlier in the word; some printed editions use it, but this corpus has no occurrences — so there's no clip to play.","גרש בגרסה שמודפסת מוקדם יותר במילה; מהדורות דפוס מסוימות משתמשות בו, אך בקורפוס זה אין מופעים — ולכן אין קטע להשמעה.",per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
+trope.learn.trope_note_kadma,"Sits on the stressed syllable, usually leading straight into a geresh (""kadma v'azla""). Same shape as pashta, which instead hangs off the word's end.","יושב על ההברה המוטעמת, בדרך כלל מוביל ישירות אל גרש (""קדמא ואזלא""). אותה צורה כמו פשטא, שנתלה במקום זאת בסוף המילה.",per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
+trope.learn.trope_note_karnei_parah,"""Cow horns"" — the single rarest mark; one appearance in the Torah (Numbers 35:5).","""קרני פרה"" — הטעם הנדיר ביותר; מופע אחד בתורה (במדבר לה:ה).",per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
+trope.learn.trope_note_mahpach,"A rising horseshoe below the stressed syllable, almost always followed by pashta.","פרסה עולה מתחת להברה המוטעמת, כמעט תמיד באה אחריה פשטא.",per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
+trope.learn.trope_note_mercha_kefula,A doubled mercha — appears only a handful of times in the whole Torah.,מרכא כפולה — מופיעה רק מספר פעמים בכל התורה.,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
+trope.learn.trope_note_pashta,Postpositive — printed at the very end of the word even when the stress falls earlier (it's doubled on the stress in that case). Same shape as kadma; position tells them apart.,טעם מאחר — מודפס ממש בסוף המילה גם כשההטעמה נופלת מוקדם יותר (במקרה כזה הוא מוכפל על ההברה המוטעמת). אותה צורה כמו קדמא; המיקום מבדיל ביניהם.,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
+trope.learn.trope_note_segol,Postpositive — the three-dot cluster rides off the end of the word.,טעם מאחר — צביר שלוש הנקודות רוכב על סוף המילה.,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
+trope.learn.trope_note_shalshelet,"A long, dramatic chain of notes — always on a verse's first word, always followed by a vertical paseq line.","שרשרת תווים ארוכה ודרמטית — תמיד על המילה הראשונה של פסוק, תמיד באה אחריה קו פסק אנכי.",per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
+trope.learn.trope_note_sof_pasuk,"The verse-ending cadence. Its siluk mark shares a codepoint with the meteg stress line, so learn it by position: the last word of every verse, followed by the ׃ mark.","הקדנצה שמסיימת את הפסוק. סימן הסילוק שלה חולק נקודת קוד עם קו ההטעמה מתג, ולכן למדו אותה לפי מיקום: המילה האחרונה של כל פסוק, ואחריה הסימן ׃.",per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
+trope.learn.trope_note_telisha_gedola,Prepositive — the small circle leads the word from the front.,טעם מקדים — העיגול הקטן מוביל את המילה מלפנים.,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
+trope.learn.trope_note_telisha_ketana,Postpositive — the small circle sits at the end of the word.,טעם מאחר — העיגול הקטן יושב בסוף המילה.,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
+trope.learn.trope_note_yerach_ben_yomo,"""Moon one day old"" — appears once in the Torah, right before karnei parah's word (Numbers 35:5).","""ירח בן יומו"" — מופיע פעם אחת בתורה, ממש לפני המילה של קרני פרה (במדבר לה:ה).",per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
+trope.learn.trope_note_yetiv,"Prepositive — printed at the very start of the word, below the first letter. Same shape as mahpach, different position and role.","טעם מקדים — מודפס ממש בתחילת המילה, מתחת לאות הראשונה. אותה צורה כמו מהפך, מיקום ותפקיד שונים.",per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
+trope.learn.trope_note_zakef_gadol,Zakef katon's louder sibling — a vertical bar joins the two dots when the word stands alone in its clause.,אחיו הרם יותר של זקף קטון — קו אנכי מצטרף לשתי הנקודות כשהמילה עומדת לבדה במשפטה.,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
+trope.learn.trope_note_zarka,Postpositive — curls off the end of the word and always throws ahead to a segol.,טעם מאחר — מסתלסל בסוף המילה ותמיד משליך קדימה אל סגול.,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
+trope.learn.visited_aria,visited,נצפה,family chip visited badge aria,aria-label only
+trope.progress.reset_button,↺ Reset mastery & personal best,↺ איפוס שליטה ושיא אישי,button,leading-emoji
+trope.progress.summary,{n} of {total} tropes attempted · personal best streak {pb} 🔥,{n} מתוך {total} טעמים נוסו · רצף שיא אישי {pb} 🔥,progress summary,do-not-translate {n}/{total}/{pb}
+trope.settings.aria,Trope Tutor settings,הגדרות מאמן הטעמים,settings drawer aria,aria-label only
+trope.settings.close_aria,Close settings,סגירת ההגדרות,close button aria,aria-label only
+trope.settings.font_default_tag,[DEFAULT],[ברירת מחדל],font picker default marker,
+trope.settings.font_section_cursive,Cursive / Script,כתב יד / סקריפט,font picker section header,
+trope.settings.font_section_fallback,{section} Fonts,גופני {section},font picker section header (fallback),do-not-translate {section}
+trope.settings.font_section_my,My Fonts,הגופנים שלי,font picker section header,
+trope.settings.font_section_print,Print Fonts,גופני דפוס,font picker section header,
+trope.settings.font_section_torah,Torah Fonts,גופני תורה,font picker section header,
+trope.settings.heb_size,Hebrew size,גודל עברית,slider label,
+trope.settings.panel_about,About,אודות,panel title,
+trope.settings.panel_drill,Drill,תרגול,panel title,
+trope.settings.panel_font,Hebrew Font,גופן עברי,panel title,
+trope.settings.panel_names,Names & Tradition,שמות ומסורת,panel title,
+trope.settings.panel_progress,Progress,התקדמות,panel title,
+trope.settings.reset_size_aria,Reset Hebrew size,איפוס גודל עברית,reset button aria,aria-label only
+trope.settings.reset_size_title,Reset size,איפוס גודל,reset button title,
+trope.settings.title,⚙ Settings,⚙ הגדרות,settings drawer header,leading-emoji
+trope.status.index_unavailable,Example clips unavailable (couldn’t load the trope index) — Learn mode still shows every mark.,קטעי הדוגמה אינם זמינים (טעינת מפתח הטעמים נכשלה) — מצב הלימוד עדיין מציג כל טעם.,status,
+trope.status.loading_audio,Loading audio…,טוען שמע…,status,
+trope.status.loading_index,Loading the trope index…,טוען את מפתח הטעמים…,status,
+trope.status.tap_to_hear,Tap ▶ to hear the melody.,הקישו על ▶ כדי לשמוע את המנגינה.,status,
+trope.tabs.aria,Tutor mode,מצב המאמן,tablist aria,aria-label only
+trope.tabs.drill,🎯 Drill,🎯 תרגול,mode tab,leading-emoji
+trope.tabs.learn,📖 Learn,📖 לימוד,mode tab,leading-emoji
+trope.tip.more_info,More information,מידע נוסף,tooltip fallback aria,aria-label only
+trope.toast.audio_new_question,Audio for that trope wouldn’t load — new question.,השמע של הטעם הזה לא נטען — שאלה חדשה.,toast,
+trope.toast.audio_unavailable,Audio unavailable right now — check your connection.,השמע אינו זמין כרגע — בדקו את החיבור.,toast,
+trope.toast.audio_unreachable_skipped,Audio isn’t reachable — this question was skipped.,לא ניתן להגיע לשמע — השאלה הזו דולגה.,toast,
+trope.toast.clip_switched,That clip wouldn’t load — switched to another example.,הקטע הזה לא נטען — עברנו לדוגמה אחרת.,toast,
+trope.toast.clip_trying_another,That clip wouldn’t load — trying another example.,הקטע הזה לא נטען — מנסים דוגמה אחרת.,toast,
+trope.toast.clip_wont_load,That clip wouldn’t load.,הקטע הזה לא נטען.,toast,
+trope.tour.s1_body,Learn walks the marks family by family; Drill quizzes you on them.,הלימוד עובר על הטעמים משפחה אחר משפחה; התרגול בוחן אתכם עליהם.,tour step body,
+trope.tour.s1_title,Two modes,שני מצבים,tour step title,
+trope.tour.s2_body,The marks come in six melodic families — the same color families as the Torah Trainer reader.,הטעמים מגיעים בשש משפחות מלודיות — אותן משפחות צבע כמו בקורא של מאמן התורה.,tour step body,
+trope.tour.s2_title,Clause families,משפחות טעמים,tour step title,
+trope.tour.s3_body,"Symbol, both naming traditions, a teaching note, and real chanted example words. Press ▶ to hear one.","סימן, שתי מסורות השמות, הערת לימוד, ומילות דוגמה מושרות אמיתיות. לחצו על ▶ כדי לשמוע אחת.",tour step body,
+trope.tour.s3_title,One card per mark,כרטיס אחד לכל טעם,tour step title,
+trope.tour.s4_body,"Step through all six families, then test yourself.","עברו על כל שש המשפחות, ואז בחנו את עצמכם.",tour step body,
+trope.tour.s4_title,Work through them,עברו עליהם,tour step title,
+trope.tour.s5_body,"10 questions per session: name the marked word, match melody to symbol, or symbol to melody.","10 שאלות בכל מפגש: נקבו את המילה המסומנת, התאימו מנגינה לסימן, או סימן למנגינה.",tour step body,
+trope.tour.s5_title,Drill mode,מצב תרגול,tour step title,
+trope.tour.s6_body,"Naming tradition, Hebrew font, question types, and playback speed live here.","מסורת השמות, הגופן העברי, סוגי השאלות ומהירות ההשמעה נמצאים כאן.",tour step body,
+trope.tour.s6_title,Settings,הגדרות,tour step title,
+trope.tradition.ashkenazi,Ashkenazi,אשכנזי,radio label,
+trope.tradition.note,The recordings themselves follow PocketTorah's Ashkenazi melody either way.,ההקלטות עצמן הולכות אחר המנגינה האשכנזית של PocketTorah כך או כך.,settings note,
+trope.tradition.primary_aria,Primary trope names,שמות הטעמים העיקריים,radiogroup aria,aria-label only
+trope.tradition.primary_label,Primary trope names,שמות הטעמים העיקריים,settings label,
+trope.tradition.primary_tip,"Both names are always shown on each card; this picks which one leads. Note the classic collision: Ashkenazi 'pashta' is Sephardi 'kadma', while Ashkenazi 'kadma' is Sephardi 'azla'.","שני השמות מוצגים תמיד בכל כרטיס; כאן בוחרים איזה מהם מוביל. שימו לב להתנגשות הקלאסית: 'פשטא' האשכנזי הוא 'קדמא' הספרדי, בעוד 'קדמא' האשכנזי הוא 'אזלא' הספרדי.",tooltip,
+trope.tradition.sephardi,Sephardi,ספרדי,radio label,
+trope.a11y.skip_to_tutor,Skip to the tutor,דלגו למאמן,Skip-link (a11y),aria/skip-link
 worksheet.actions.copy_link,📋 Copy shareable link,📋 העתק קישור לשיתוף,action button,leading-emoji
 worksheet.actions.copy_link_title,Copy shareable link,העתק קישור לשיתוף,mobile FAB button title,aria-label only
 worksheet.actions.disabled_hint,Generate a worksheet first,צרו קודם דף עבודה,disabled-button title + FAB toast,

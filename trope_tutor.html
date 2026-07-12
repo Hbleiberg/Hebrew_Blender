@@ -1395,7 +1395,7 @@ function buildMasteryGrid(container) {
     row.className = 'tu-mfam fam-' + fam.key;
     const label = document.createElement('div');
     label.className = 'tu-mfam-label';
-    label.textContent = fam.name;
+    label.textContent = I18n.t('trope.glyphname.family_' + fam.key);
     row.appendChild(label);
     const cells = document.createElement('div');
     cells.className = 'tu-mcells';
@@ -1461,7 +1461,7 @@ function renderFamilyChips() {
     btn.className = 'tu-chip fam-' + fam.key + (fam.key === currentFamily ? ' active' : '');
     btn.setAttribute('aria-pressed', fam.key === currentFamily ? 'true' : 'false');
     const nm = document.createElement('span');
-    nm.textContent = fam.name;
+    nm.textContent = I18n.t('trope.glyphname.family_' + fam.key);
     btn.appendChild(nm);
     if (progress.families[fam.key]) {
       const v = document.createElement('span');
