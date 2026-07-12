@@ -1,0 +1,14 @@
+# check-i18n baseline — Check-A findings that do NOT fail the gate.
+# Signature per line: <relpath>\t<message>\t<snippet>. Regenerate: node scripts/check-i18n.js --update-baseline
+# (--update-baseline rewrites flat; re-apply this header by hand if you regenerate.)
+#
+# Only Group A remains: intentional printed-output / boundary literals (PERMANENT — do not translate).
+# These build the printed worksheet answer-key banner / QR caption / brand, which stay English per the
+# Internationalization scope boundary (CLAUDE.md). The Group-B backlog (untranslated UI the rollout
+# missed) was burned down in the first Pass K run (2026-07-12) — all wired through I18n.t().
+hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	akBanner.textContent = '✦ Answer Key ✦';
+hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	banner.textContent = '✦ Answer Key ✦';
+hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	brand.textContent = 'IvritSuite.com';
+hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	cap.textContent = '📱 Scan for answer key';
+hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	meta.textContent = 'Answer Key — scan to self-check';
+hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	numBar.textContent = 'CARD';

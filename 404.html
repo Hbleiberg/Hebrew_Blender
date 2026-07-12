@@ -16,6 +16,7 @@
 <link rel="manifest" href="manifest.webmanifest?v=3">
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
+<script src="/js/i18n.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -55,6 +56,19 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <script>(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<script>
+  /* No-flash UI-language IIFE — mirrors the dark-mode one; sets dir/lang before paint so Hebrew
+     never flashes LTR->RTL. Authoritative set happens later in /js/i18n.js. */
+  (function () {
+    try {
+      var p = new URLSearchParams(location.search).get('lang');
+      var l = (p === 'en' || p === 'he') ? p : (localStorage.getItem('hebrewBlender_lang') || 'en');
+      if (l !== 'en' && l !== 'he') l = 'en';
+      document.documentElement.lang = l;
+      document.documentElement.dir = (l === 'he' ? 'rtl' : 'ltr');
+    } catch (e) {}
+  })();
+</script>
 <style>
 :root {
   --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
@@ -70,7 +84,7 @@ header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-it
 header .star{font-size:32px;color:var(--gold);flex-shrink:0;}
 header h1{font-family:'Libre Baskerville',serif;font-size:1.8rem;letter-spacing:0.01em;}
 header p{font-size:0.88rem;color:var(--gold-light);margin-top:3px;}
-header .hright{margin-left:auto;}
+header .hright{margin-inline-start:auto;}
 .dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;}
 .dark-btn:hover{background:rgba(255,255,255,0.1);}
 
@@ -106,29 +120,30 @@ footer a{color:var(--gold);text-decoration:none;}
 <header>
   <span class="star">✡︎</span>
   <div>
-    <h1>IvritSuite</h1>
-    <p>Tools for Hebrew literacy instruction</p>
+    <h1 data-i18n="notfound.header.brand">IvritSuite</h1>
+    <p data-i18n="notfound.header.tagline">Tools for Hebrew literacy instruction</p>
   </div>
   <div class="hright">
-    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false">🌙 Dark</button>
+    <div data-i18n-switcher></div>
+    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false" aria-label="Toggle dark mode" data-i18n-aria-label="shared.darkmode.toggle_title" data-i18n-title="shared.darkmode.toggle_title" data-i18n="shared.darkmode.label_dark">🌙 Dark</button>
   </div>
 </header>
 
 <main class="hero">
   <div class="code-404" aria-hidden="true">4<span class="lost-star">✡︎</span>4</div>
   <div class="heb-404">דַּף לֹא נִמְצָא</div>
-  <h2 class="hero-title">This page wandered off for forty years.</h2>
-  <p class="hero-sub">We searched right-to-left <em>and</em> left-to-right, but this page is nowhere to be found <span class="heb-inline">(לֹא נִמְצָא, <em>lo nimtza</em>)</span>. It may have slipped out for a snack and forgotten its vowels.</p>
-  <p class="hero-quip">We tried to blend it back together from a few stray letters — but without the nikkud, nobody could agree on how to pronounce it.</p>
+  <h2 class="hero-title" data-i18n="notfound.title">This page wandered off for forty years.</h2>
+  <p class="hero-sub" data-i18n-html="notfound.subtitle">We searched right-to-left <em>and</em> left-to-right, but this page is nowhere to be found <span class="heb-inline">(לֹא נִמְצָא, <em>lo nimtza</em>)</span>. It may have slipped out for a snack and forgotten its vowels.</p>
+  <p class="hero-quip" data-i18n="notfound.quip">We tried to blend it back together from a few stray letters — but without the nikkud, nobody could agree on how to pronounce it.</p>
 
-  <a class="home-btn" href="index.html">← Back to the Promised Home Page</a>
+  <a class="home-btn" href="index.html" data-i18n="notfound.home_button">← Back to the Promised Home Page</a>
 
   <div class="tool-links">
-    Or wander somewhere useful:
-    <a href="hebrew_blend_generator.html">Worksheet Generator</a> ·
-    <a href="flash_cards.html">Flash Cards</a> ·
-    <a href="hebrew_dictionary.html">Dictionary</a> ·
-    <a href="torah_trainer.html">Torah Trainer</a>
+    <span data-i18n="notfound.tool_links_intro">Or wander somewhere useful:</span>
+    <a href="hebrew_blend_generator.html" data-i18n="notfound.link.generator">Worksheet Generator</a> ·
+    <a href="flash_cards.html" data-i18n="notfound.link.flashcards">Flash Cards</a> ·
+    <a href="hebrew_dictionary.html" data-i18n="notfound.link.dictionary">Dictionary</a> ·
+    <a href="torah_trainer.html" data-i18n="notfound.link.torah">Torah Trainer</a>
   </div>
 </main>
 
@@ -147,8 +162,16 @@ function toggleDark() {
   document.documentElement.classList.remove('dark-early');
   try { localStorage.setItem('hebrewBlender_darkMode', dark ? '1' : '0'); } catch(e) {}
   const _db = document.getElementById('darkBtn');
-  _db.textContent = dark ? '☀️ Light' : '🌙 Dark';
+  _db.textContent = dark ? (window.I18n ? I18n.t('shared.darkmode.label_light') : '☀️ Light') : (window.I18n ? I18n.t('shared.darkmode.label_dark') : '🌙 Dark');
   _db.setAttribute('aria-pressed', dark ? 'true' : 'false');
+}
+/* ── i18n: fill static chrome + re-sync dark label on load + live language switch.
+   Wired inside DOMContentLoaded because /js/i18n.js is deferred (window.I18n is undefined at
+   inline-script parse time). ── */
+function applyI18n() {
+  if (!window.I18n) return;
+  I18n.applyStaticI18n();
+  try { const _db = document.getElementById('darkBtn'); if (_db) _db.textContent = document.body.classList.contains('dark') ? I18n.t('shared.darkmode.label_light') : I18n.t('shared.darkmode.label_dark'); } catch (e) {}
 }
 document.addEventListener('DOMContentLoaded', () => {
   try {
@@ -156,10 +179,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.body.classList.add('dark');
       const _db = document.getElementById('darkBtn');
-      _db.textContent = '☀️ Light';
+      _db.textContent = (window.I18n ? I18n.t('shared.darkmode.label_light') : '☀️ Light');
       _db.setAttribute('aria-pressed', 'true');
     }
   } catch(e) {}
+  if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
 });
 </script>
 

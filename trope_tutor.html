@@ -16,6 +16,7 @@
 <link rel="manifest" href="manifest.webmanifest?v=3">
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
+<script src="/js/i18n.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -129,6 +130,8 @@
 <style>@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}</style>
 <!-- Early dark mode (avoid flash) -->
 <script>(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<!-- Early language/dir (avoid LTR->RTL flash); authoritative set later in /js/i18n.js -->
+<script>(function(){try{var p=new URLSearchParams(location.search).get('lang');var l=(p==='en'||p==='he')?p:(localStorage.getItem('hebrewBlender_lang')||'en');if(l!=='en'&&l!=='he')l='en';document.documentElement.lang=l;document.documentElement.dir=(l==='he'?'rtl':'ltr');}catch(e){}})()</script>
 <style>
 /* ───── Design tokens (lifted from classroom_dashboard.html:94-133) ───── */
 :root {
@@ -179,6 +182,10 @@ body.dark header { background:var(--navy-deep); }
 header h1 { font-family:'Libre Baskerville',serif; font-size:1.35rem; color:#fff; line-height:1.2; }
 header p { font-size:0.78rem; color:var(--gold-light); margin-top:2px; }
 .hright { display:flex; gap:6px; align-items:center; flex-shrink:0; }
+/* i18n RTL utilities: mirror directional glyphs; isolate mixed-direction runs. */
+.dir-arrow { display:inline-block; }
+[dir="rtl"] .dir-arrow { transform:scaleX(-1); }
+.bidi-isolate { unicode-bidi:isolate; }
 .hbtn {
   background:rgba(255,255,255,0.08); color:#fff;
   border:1px solid rgba(255,255,255,0.18);
@@ -417,15 +424,19 @@ body.dark .btn-secondary:hover { background:#2a3349; }
 }
 .settings-backdrop.open { opacity:1; pointer-events:auto; }
 .settings-modal {
-  position:fixed; top:0; right:0;
+  position:fixed; top:0; inset-inline-end:0;   /* right in LTR, left in RTL (drawer flips to the inline-end edge) */
   width:380px; max-width:92vw; height:100vh;
-  background:var(--white); border-left:1px solid var(--border);
+  background:var(--white); border-inline-start:1px solid var(--border);
   box-shadow:var(--shadow-lg); z-index:100;
   transform:translateX(100%); transition:transform 0.3s ease, visibility 0s 0.3s;
   visibility:hidden;   /* the CLOSED drawer must leave the tab order + a11y tree — hidden once the slide-out ends */
   display:flex; flex-direction:column;
 }
 .settings-modal.open { transform:translateX(0); visibility:visible; transition:transform 0.3s ease; }
+/* RTL: drawer anchors to the left edge; the CLOSED slide-out goes the other way. [dir=rtl] .settings-modal
+   ties specificity with .settings-modal.open (attr+class), so the OPEN state needs its own [dir=rtl] rule. */
+[dir="rtl"] .settings-modal { transform:translateX(-100%); }
+[dir="rtl"] .settings-modal.open { transform:translateX(0); }
 .settings-header {
   padding:14px 20px; background:var(--navy); color:#fff;
   display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
@@ -628,7 +639,7 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
 
 /* ───── Mobile ───── */
 @media (max-width: 720px) {
-  header { padding:12px 16px; }
+  header { padding:12px 16px; flex-wrap:wrap; row-gap:8px; }   /* narrow: nav buttons wrap below the title instead of overflowing */
   header h1 { font-size:1.1rem; }
   header p { display:none; }
   .hbtn { padding:6px 9px; font-size:0.78rem; }
@@ -665,24 +676,25 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 </style>
 </head>
 <body>
-<a class="skip-link" href="#tuMain">Skip to the tutor</a>
+<a class="skip-link" href="#tuMain" data-i18n="trope.a11y.skip_to_tutor">Skip to the tutor</a>
 <header>
   <div class="star" aria-hidden="true">✡︎</div>
   <div class="htitle">
-    <h1>Trope Tutor</h1>
-    <p>Learn the Torah cantillation marks — names, symbols, and melodies — with real chanted examples.</p>
+    <h1 data-i18n="trope.header.title">Trope Tutor</h1>
+    <p data-i18n="trope.header.subtitle">Learn the Torah cantillation marks — names, symbols, and melodies — with real chanted examples.</p>
   </div>
   <div class="hright">
-    <a class="hbtn" href="/"><span>←</span><span>Home</span></a>
-    <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour">❓ Tour</button>
-    <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
-    <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings" aria-label="Settings">⚙️</button>
+    <a class="hbtn" href="/"><span class="dir-arrow" aria-hidden="true">←</span><span data-i18n="trope.header.home">Home</span></a>
+    <div data-i18n-switcher></div>
+    <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour" data-i18n="trope.header.tour_button" data-i18n-title="trope.header.tour_title">❓ Tour</button>
+    <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false">🌙</button>
+    <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings" aria-label="Settings" data-i18n-title="trope.header.settings_title" data-i18n-aria-label="trope.header.settings_title">⚙️</button>
   </div>
 </header>
 
-<div class="tu-tabs" role="tablist" aria-label="Tutor mode">
-  <button class="tu-tab" id="tabLearn" role="tab" aria-selected="true" aria-controls="learnView" onclick="setMode('learn')">📖 Learn</button>
-  <button class="tu-tab" id="tabDrill" role="tab" aria-selected="false" aria-controls="drillView" onclick="setMode('drill')">🎯 Drill</button>
+<div class="tu-tabs" role="tablist" aria-label="Tutor mode" data-i18n-aria-label="trope.tabs.aria">
+  <button class="tu-tab" id="tabLearn" role="tab" aria-selected="true" aria-controls="learnView" onclick="setMode('learn')" data-i18n="trope.tabs.learn">📖 Learn</button>
+  <button class="tu-tab" id="tabDrill" role="tab" aria-selected="false" aria-controls="drillView" onclick="setMode('drill')" data-i18n="trope.tabs.drill">🎯 Drill</button>
 </div>
 
 <main class="tu-page" id="tuMain">
@@ -690,15 +702,15 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 
   <!-- ════════ LEARN ════════ -->
   <section class="tu-view" id="learnView" role="tabpanel" aria-labelledby="tabLearn">
-    <p class="tu-intro">Trope (te'amim) are the cantillation marks that tell you how to chant the Torah.
+    <p class="tu-intro" data-i18n-html="trope.learn.intro">Trope (te'amim) are the cantillation marks that tell you how to chant the Torah.
       Work through them one clause family at a time, then switch to <strong>Drill</strong> to test yourself.
       When you're ready to see them in context, open the companion reader:
       <a href="torah_trainer.html">Torah Trainer →</a></p>
-    <div class="tu-chips" id="tuFamilyChips" role="group" aria-label="Trope clause families"></div>
+    <div class="tu-chips" id="tuFamilyChips" role="group" aria-label="Trope clause families" data-i18n-aria-label="trope.learn.families_aria"></div>
     <div class="tu-family-note" id="tuFamilyNote"></div>
     <div class="tu-cards" id="tuCards"></div>
     <div class="tu-learn-nav">
-      <button class="btn" id="tuNextFamily" onclick="nextFamily()">Next family →</button>
+      <button class="btn" id="tuNextFamily" onclick="nextFamily()" data-i18n="trope.learn.next_family">Next family →</button>
     </div>
   </section>
 
@@ -707,11 +719,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 
     <div id="drillStart">
       <div class="tu-drill-center">
-        <h2>Drill: 10 questions per session</h2>
+        <h2 data-i18n="trope.drill.heading">Drill: 10 questions per session</h2>
         <p class="tu-drill-sub" id="drillTypesSummary"></p>
-        <button class="btn btn-lg" id="drillStartBtn" onclick="startDrill()">Start drill</button>
+        <button class="btn btn-lg" id="drillStartBtn" onclick="startDrill()" data-i18n="trope.drill.start_button">Start drill</button>
         <div class="tu-note" id="drillStartNote" role="status"></div>
-        <div class="tu-mgrid" id="masteryGridStart" role="group" aria-label="Mastery by trope"></div>
+        <div class="tu-mgrid" id="masteryGridStart" role="group" aria-label="Mastery by trope" data-i18n-aria-label="trope.drill.mastery_aria"></div>
       </div>
     </div>
 
@@ -723,7 +735,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="tu-qcard">
         <p class="tu-qprompt" id="qPrompt" tabindex="-1"></p>
         <div class="tu-qstem" id="qStem"></div>
-        <div class="tu-choices" id="qChoices" role="group" aria-label="Answer choices"></div>
+        <div class="tu-choices" id="qChoices" role="group" aria-label="Answer choices" data-i18n-aria-label="trope.drill.choices_aria"></div>
         <div class="tu-feedback" id="qFeedback" role="status"></div>
         <div class="tu-hint" id="qHint"></div>
       </div>
@@ -731,13 +743,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 
     <div id="drillResults" hidden>
       <div class="tu-drill-center">
-        <h2 id="resHeading" tabindex="-1">Session complete</h2>
+        <h2 id="resHeading" tabindex="-1" data-i18n="trope.drill.results_heading">Session complete</h2>
         <div class="big-pct" id="resPct"></div>
         <p class="tu-drill-sub" id="resSub"></p>
-        <div class="tu-pb-banner" id="resPb" hidden>🏆 New personal best!</div>
-        <button class="btn btn-lg" onclick="startDrill()">Drill again</button>
-        <button class="btn btn-lg btn-secondary" onclick="setMode('learn')">Back to Learn</button>
-        <div class="tu-mgrid" id="masteryGridEnd" role="group" aria-label="Mastery by trope"></div>
+        <div class="tu-pb-banner" id="resPb" hidden data-i18n="trope.drill.results_pb">🏆 New personal best!</div>
+        <button class="btn btn-lg" onclick="startDrill()" data-i18n="trope.drill.drill_again">Drill again</button>
+        <button class="btn btn-lg btn-secondary" onclick="setMode('learn')" data-i18n="trope.drill.back_to_learn">Back to Learn</button>
+        <div class="tu-mgrid" id="masteryGridEnd" role="group" aria-label="Mastery by trope" data-i18n-aria-label="trope.drill.mastery_aria"></div>
       </div>
     </div>
 
@@ -753,31 +765,31 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <div class="footer-credits">
     <span>Hebrew text via <a href="https://www.sefaria.org" target="_blank" rel="noopener">Sefaria</a> · public domain (extracted at build time — this page never calls Sefaria)</span>
     <span>Cantillation audio © Russel Neiss &amp; Rabbi Charlie Schwartz, <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></span>
-    <span>Materials incorporating PocketTorah audio (including this page's example clips) are CC BY-SA 4.0.</span>
+    <span data-i18n="trope.footer.materials_note">Materials incorporating PocketTorah audio (including this page's example clips) are CC BY-SA 4.0.</span>
   </div>
   <div style="margin-top:10px;">
     <details>
-      <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;">Frequently Asked Questions</summary>
+      <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;" data-i18n="trope.footer.faq_summary">Frequently Asked Questions</summary>
       <div style="padding:4px 0;max-width:640px;margin:0 auto;text-align:left;">
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">What is the Trope Tutor?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">A free interactive tutor for the Torah cantillation marks. Learn mode teaches each mark's symbol, names, and melody with real chanted examples; Drill mode quizzes you three ways with per-mark mastery tracking.</p></details>
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">What melody tradition is this?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">The recordings are PocketTorah's, chanted in a widely-taught Ashkenazi melody. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings.</p></details>
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">What are trope (te'amim)?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Cantillation marks printed above and below the words of the Hebrew Bible. Each mark names a melodic phrase and marks the grammar of the verse — together they tell you how to chant it.</p></details>
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">How does Drill mode work?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Each session asks 10 questions of three kinds: name the trope on a marked word, pick the symbol for a melody you hear, or pick the melody that matches a symbol. Marks you miss come up more often, and distractors get sneakier (pashta vs. kadma) as your mastery grows.</p></details>
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Where do the chanted examples come from?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (Russel Neiss &amp; Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings. The Hebrew text comes from Sefaria.</p></details>
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Is the Trope Tutor free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0. No account, no ads.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="trope.footer.faq_q1">What is the Trope Tutor?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a1">A free interactive tutor for the Torah cantillation marks. Learn mode teaches each mark's symbol, names, and melody with real chanted examples; Drill mode quizzes you three ways with per-mark mastery tracking.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="trope.footer.faq_q2">What melody tradition is this?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a2">The recordings are PocketTorah's, chanted in a widely-taught Ashkenazi melody. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="trope.footer.faq_q3">What are trope (te'amim)?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a3">Cantillation marks printed above and below the words of the Hebrew Bible. Each mark names a melodic phrase and marks the grammar of the verse — together they tell you how to chant it.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="trope.footer.faq_q4">How does Drill mode work?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a4">Each session asks 10 questions of three kinds: name the trope on a marked word, pick the symbol for a melody you hear, or pick the melody that matches a symbol. Marks you miss come up more often, and distractors get sneakier (pashta vs. kadma) as your mastery grows.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="trope.footer.faq_q5">Where do the chanted examples come from?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a5">Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (Russel Neiss &amp; Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings. The Hebrew text comes from Sefaria.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="trope.footer.faq_q6">Is the Trope Tutor free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a6">Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0. No account, no ads.</p></details>
       </div>
     </details>
   </div>
-  <nav aria-label="Related Hebrew Tools" style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">
-    <div style="font-family:'Libre Baskerville',serif;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;">Related Hebrew Tools</div>
+  <nav aria-label="Related Hebrew Tools" data-i18n-aria-label="shared.nav.header" style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">
+    <div style="font-family:'Libre Baskerville',serif;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;" data-i18n="shared.nav.header">Related Hebrew Tools</div>
     <ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 18px;">
-      <li><a href="torah_trainer.html" style="font-size:0.8rem;">read the weekly parsha with karaoke →</a></li>
-      <li><a href="hebrew_blend_generator.html" style="font-size:0.8rem;">printable Hebrew worksheets →</a></li>
-      <li><a href="flash_cards.html" style="font-size:0.8rem;">Hebrew alphabet flash cards →</a></li>
-      <li><a href="hebrew_dictionary.html" style="font-size:0.8rem;">Hebrew word lookup →</a></li>
-      <li><a href="classroom_dashboard.html" style="font-size:0.8rem;">Hebrew classroom display →</a></li>
-      <li><a href="Hebrew_Font_Maker.html" style="font-size:0.8rem;">make your own Hebrew font →</a></li>
-      <li><a href="resources.html" style="font-size:0.8rem;">free Hebrew teaching resources →</a></li>
+      <li><a href="torah_trainer.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_torah">read the weekly parsha with karaoke →</a></li>
+      <li><a href="hebrew_blend_generator.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_worksheets">printable Hebrew worksheets →</a></li>
+      <li><a href="flash_cards.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_flashcards">Hebrew alphabet flash cards →</a></li>
+      <li><a href="hebrew_dictionary.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_dictionary">Hebrew word lookup →</a></li>
+      <li><a href="classroom_dashboard.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_dashboard">Hebrew classroom display →</a></li>
+      <li><a href="Hebrew_Font_Maker.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_fontmaker">make your own Hebrew font →</a></li>
+      <li><a href="resources.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_resources">free Hebrew teaching resources →</a></li>
     </ul>
   </nav>
 </footer>
@@ -785,96 +797,96 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 <!-- Guided "Take a tour" coach-mark (non-modal spotlight; see tourStart) -->
 <div class="tour-spot" id="tourSpot" hidden></div>
 <div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
-  <button class="tour-x" id="tourClose" aria-label="End tour" onclick="tourEnd(false)">✕</button>
+  <button class="tour-x" id="tourClose" aria-label="End tour" data-i18n-aria-label="shared.tour.end" onclick="tourEnd(false)">✕</button>
   <h4 id="tourCardTitle"></h4>
   <p id="tourCardBody"></p>
   <div class="tour-meta">
     <span id="tourStep"></span>
     <span class="tour-btns">
-      <button class="tbtn ghost" id="tourBack" onclick="tourPrev()">Back</button>
-      <button class="tbtn" id="tourNext" onclick="tourNext()">Next</button>
+      <button class="tbtn ghost" id="tourBack" onclick="tourPrev()" data-i18n="shared.tour.back">Back</button>
+      <button class="tbtn" id="tourNext" onclick="tourNext()" data-i18n="shared.tour.next">Next</button>
     </span>
   </div>
 </div>
 
 <!-- Settings drawer -->
 <div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
-<div class="settings-modal" id="settingsModal" role="dialog" aria-modal="true" aria-label="Trope Tutor settings">
+<div class="settings-modal" id="settingsModal" role="dialog" aria-modal="true" aria-label="Trope Tutor settings" data-i18n-aria-label="trope.settings.aria">
   <div class="settings-header">
-    <h2>⚙ Settings</h2>
-    <button class="settings-close" onclick="closeSettings()" aria-label="Close settings">×</button>
+    <h2 data-i18n="trope.settings.title">⚙ Settings</h2>
+    <button class="settings-close" onclick="closeSettings()" aria-label="Close settings" data-i18n-aria-label="trope.settings.close_aria">×</button>
   </div>
   <div class="settings-body">
 
     <div class="panel">
-      <div class="panel-title">Names &amp; Tradition</div>
+      <div class="panel-title" data-i18n="trope.settings.panel_names">Names &amp; Tradition</div>
       <div class="panel-body">
         <div class="form-row">
-          <label>Primary trope names
-            <span class="tip-wrap" data-tip="Both names are always shown on each card; this picks which one leads. Note the classic collision: Ashkenazi 'pashta' is Sephardi 'kadma', while Ashkenazi 'kadma' is Sephardi 'azla'."><i class="tip-icon">?</i></span>
+          <label><span data-i18n="trope.tradition.primary_label">Primary trope names</span>
+            <span class="tip-wrap" data-i18n-tip="trope.tradition.primary_tip" data-tip="Both names are always shown on each card; this picks which one leads. Note the classic collision: Ashkenazi 'pashta' is Sephardi 'kadma', while Ashkenazi 'kadma' is Sephardi 'azla'."><i class="tip-icon">?</i></span>
           </label>
-          <span class="radio-group" role="radiogroup" aria-label="Primary trope names">
+          <span class="radio-group" role="radiogroup" aria-label="Primary trope names" data-i18n-aria-label="trope.tradition.primary_aria">
             <input type="radio" id="tradAshk" name="tuTradition" value="ashk" onchange="setTradition('ashk')">
-            <label for="tradAshk">Ashkenazi</label>
+            <label for="tradAshk" data-i18n="trope.tradition.ashkenazi">Ashkenazi</label>
             <input type="radio" id="tradSeph" name="tuTradition" value="seph" onchange="setTradition('seph')">
-            <label for="tradSeph">Sephardi</label>
+            <label for="tradSeph" data-i18n="trope.tradition.sephardi">Sephardi</label>
           </span>
         </div>
-        <p class="settings-note">The recordings themselves follow PocketTorah's Ashkenazi melody either way.</p>
+        <p class="settings-note" data-i18n="trope.tradition.note">The recordings themselves follow PocketTorah's Ashkenazi melody either way.</p>
       </div>
     </div>
 
     <div class="panel">
-      <div class="panel-title">Drill</div>
+      <div class="panel-title" data-i18n="trope.settings.panel_drill">Drill</div>
       <div class="panel-body">
         <div class="form-row">
-          <label for="optDrillIdentify">Identify: see a word → name the trope</label>
+          <label for="optDrillIdentify" data-i18n="trope.drill.opt_identify">Identify: see a word → name the trope</label>
           <label class="toggle"><input type="checkbox" id="optDrillIdentify" onchange="setDrillType('drillIdentify', this)"><span class="slider"></span></label>
         </div>
         <div class="form-row">
-          <label for="optDrillHear">Hear: play a clip → pick the symbol</label>
+          <label for="optDrillHear" data-i18n="trope.drill.opt_hear">Hear: play a clip → pick the symbol</label>
           <label class="toggle"><input type="checkbox" id="optDrillHear" onchange="setDrillType('drillHear', this)"><span class="slider"></span></label>
         </div>
         <div class="form-row">
-          <label for="optDrillMelody">Melody: see a symbol → pick its melody</label>
+          <label for="optDrillMelody" data-i18n="trope.drill.opt_melody">Melody: see a symbol → pick its melody</label>
           <label class="toggle"><input type="checkbox" id="optDrillMelody" onchange="setDrillType('drillMelody', this)"><span class="slider"></span></label>
         </div>
         <div class="settings-note" id="drillTypesNote" aria-live="polite"></div>
         <div class="slider-row" style="margin-top:10px;">
-          <label for="optRate">Playback speed</label>
+          <label for="optRate" data-i18n="trope.drill.playback_speed">Playback speed</label>
           <input type="range" id="optRate" min="0.5" max="1.5" step="0.05" oninput="setPlaybackRate(parseFloat(this.value))">
           <span class="sval" id="optRateVal">1.00×</span>
-          <button class="sreset" onclick="resetPlaybackRate()" title="Reset speed" aria-label="Reset playback speed">↺</button>
+          <button class="sreset" onclick="resetPlaybackRate()" title="Reset speed" aria-label="Reset playback speed" data-i18n-title="trope.drill.reset_speed_title" data-i18n-aria-label="trope.drill.reset_speed_aria">↺</button>
         </div>
       </div>
     </div>
 
     <div class="panel collapsed">
-      <div class="panel-title">Hebrew Font</div>
+      <div class="panel-title" data-i18n="trope.settings.panel_font">Hebrew Font</div>
       <div class="panel-body">
         <div class="font-options" id="fontOptions"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><span data-i18n="shared.fonts.upload_label">⬆ Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
         <div class="slider-row" style="margin-top:10px;">
-          <label for="optFontSize">Hebrew size</label>
+          <label for="optFontSize" data-i18n="trope.settings.heb_size">Hebrew size</label>
           <input type="range" id="optFontSize" min="1.4" max="3.2" step="0.1" oninput="setHebFontSize(parseFloat(this.value))">
           <span class="sval" id="optFontSizeVal"></span>
-          <button class="sreset" onclick="resetHebFontSize()" title="Reset size" aria-label="Reset Hebrew size">↺</button>
+          <button class="sreset" onclick="resetHebFontSize()" title="Reset size" aria-label="Reset Hebrew size" data-i18n-title="trope.settings.reset_size_title" data-i18n-aria-label="trope.settings.reset_size_aria">↺</button>
         </div>
       </div>
     </div>
 
     <div class="panel collapsed">
-      <div class="panel-title">Progress</div>
+      <div class="panel-title" data-i18n="trope.settings.panel_progress">Progress</div>
       <div class="panel-body">
         <p class="settings-note" id="progressSummary" style="margin-top:0;"></p>
-        <button class="btn btn-xs btn-secondary" onclick="resetProgress()" type="button">↺ Reset mastery &amp; personal best</button>
+        <button class="btn btn-xs btn-secondary" onclick="resetProgress()" type="button" data-i18n="trope.progress.reset_button">↺ Reset mastery &amp; personal best</button>
       </div>
     </div>
 
     <div class="panel collapsed">
-      <div class="panel-title">About</div>
+      <div class="panel-title" data-i18n="trope.settings.panel_about">About</div>
       <div class="panel-body">
-        <p class="settings-note" style="margin-top:0;">
+        <p class="settings-note" style="margin-top:0;" data-i18n-html="trope.about.body">
           Trope Tutor teaches the Torah cantillation marks with real chanted examples mined from
           <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> recordings
           (CC BY-SA 4.0) and Sefaria's Hebrew text. New here? Press ❓ Tour in the header.
@@ -1090,7 +1102,7 @@ function loadProgress() {
   } catch (e) {}
 }
 function resetAllSettings() {
-  if (!confirm('Reset all Trope Tutor settings to defaults?')) return;
+  if (!confirm(I18n.t('trope.confirm.reset_all'))) return;
   localStorage.removeItem(STORAGE_KEY);
   settings = JSON.parse(JSON.stringify(DEFAULTS));
   applyHebFontSize();
@@ -1100,7 +1112,7 @@ function resetAllSettings() {
   updateDrillStart();
 }
 function resetProgress() {
-  if (!confirm('Reset your per-trope mastery and personal-best streak? This cannot be undone.')) return;
+  if (!confirm(I18n.t('trope.confirm.reset_progress'))) return;
   progress = JSON.parse(JSON.stringify(PROGRESS_DEFAULTS));
   saveProgress();
   renderLearn();
@@ -1282,7 +1294,7 @@ async function playClip(ex, cbs) {
     _badFiles.add(key);
     _curFileKey = null;                            // force a fresh src next attempt
     if (cbs.onError) cbs.onError(err);
-    else showToast('Audio unavailable right now — check your connection.');
+    else showToast(I18n.t('trope.toast.audio_unavailable'));
   }
 }
 
@@ -1383,7 +1395,7 @@ function buildMasteryGrid(container) {
     row.className = 'tu-mfam fam-' + fam.key;
     const label = document.createElement('div');
     label.className = 'tu-mfam-label';
-    label.textContent = fam.name;
+    label.textContent = I18n.t('trope.glyphname.family_' + fam.key);
     row.appendChild(label);
     const cells = document.createElement('div');
     cells.className = 'tu-mcells';
@@ -1393,11 +1405,11 @@ function buildMasteryGrid(container) {
       const mastered = m >= 0.8;
       const cell = document.createElement('div');
       cell.className = 'tu-mcell' + (mastered ? ' mastered' : '');
-      cell.title = tropeName(t) + ' — ' + r + ' right / ' + w + ' wrong' + (mastered ? ' — mastered' : '');
+      cell.title = I18n.t('trope.drill.mastery_cell_title', { name: tropeName(t), r: r, w: w }) + (mastered ? I18n.t('trope.drill.mastery_cell_title_suffix') : '');
       if (mastered) {
         const vh = document.createElement('span');
         vh.className = 'vh';
-        vh.textContent = 'mastered';
+        vh.textContent = I18n.t('trope.drill.mastered_vh');
         cell.appendChild(vh);
       }
       cell.appendChild(tropeGlyphSpan(t, 'm-glyph'));
@@ -1449,13 +1461,13 @@ function renderFamilyChips() {
     btn.className = 'tu-chip fam-' + fam.key + (fam.key === currentFamily ? ' active' : '');
     btn.setAttribute('aria-pressed', fam.key === currentFamily ? 'true' : 'false');
     const nm = document.createElement('span');
-    nm.textContent = fam.name;
+    nm.textContent = I18n.t('trope.glyphname.family_' + fam.key);
     btn.appendChild(nm);
     if (progress.families[fam.key]) {
       const v = document.createElement('span');
       v.className = 'visited';
       v.textContent = '✓';
-      v.setAttribute('aria-label', 'visited');
+      v.setAttribute('aria-label', I18n.t('trope.learn.visited_aria'));
       btn.appendChild(v);
     }
     btn.onclick = () => { currentFamily = fam.key; renderLearn(); };
@@ -1478,7 +1490,7 @@ function renderLearn() {
   // Visiting a family counts as "seen" — persists to progress (families union on import).
   if (!progress.families[fam.key]) { progress.families[fam.key] = true; saveProgress(); }
   renderFamilyChips();
-  document.getElementById('tuFamilyNote').textContent = fam.note;
+  document.getElementById('tuFamilyNote').textContent = I18n.t('trope.learn.family_note_' + fam.key);
 
   const cards = document.getElementById('tuCards');
   cards.innerHTML = '';
@@ -1498,13 +1510,13 @@ function renderLearn() {
     if (t.ashk !== t.seph) {
       const p2 = document.createElement('div');
       p2.className = 'tu-name-secondary';
-      p2.textContent = (settings.tradition === 'seph' ? 'Ashkenazi: ' + t.ashk : 'Sephardi: ' + t.seph);
+      p2.textContent = (settings.tradition === 'seph' ? I18n.t('trope.learn.name_ashkenazi_prefix', { name: t.ashk }) : I18n.t('trope.learn.name_sephardi_prefix', { name: t.seph }));
       names.appendChild(p2);
     }
     if (t.rare) {
       const tag = document.createElement('span');
       tag.className = 'tu-rare-tag';
-      tag.textContent = 'Rare';
+      tag.textContent = I18n.t('trope.learn.rare_tag');
       names.appendChild(tag);
     }
     head.appendChild(names);
@@ -1513,7 +1525,7 @@ function renderLearn() {
     if (TROPE_NOTES[t.key]) {
       const note = document.createElement('p');
       note.className = 'tu-card-note';
-      note.textContent = TROPE_NOTES[t.key];
+      { const _nk = 'trope.learn.trope_note_' + t.key, _nv = I18n.t(_nk); note.textContent = _nv === _nk ? TROPE_NOTES[t.key] : _nv; }
       card.appendChild(note);
     }
 
@@ -1535,7 +1547,7 @@ function renderLearn() {
         play.type = 'button';
         play.className = 'tu-ex-play';
         play.textContent = '▶';
-        play.setAttribute('aria-label', 'Play ' + tropeName(t) + ' example from ' + ex.p + ' ' + ex.ref);
+        play.setAttribute('aria-label', I18n.t('trope.learn.play_example_aria', { name: tropeName(t), parsha: ex.p, ref: ex.ref }));
         play.onclick = () => playLearnExample(t, ex, play);
         li.appendChild(play);
         li.appendChild(renderMarkedWord(ex.he, t));
@@ -1552,8 +1564,8 @@ function renderLearn() {
     links.className = 'tu-card-links';
     const a = document.createElement('a');
     a.href = 'torah_trainer.html';
-    a.textContent = 'See it in the parsha →';
-    a.title = 'Open the Torah Trainer reader with trope color coding';
+    a.textContent = I18n.t('trope.learn.see_in_parsha');
+    a.title = I18n.t('trope.learn.see_in_parsha_title');
     links.appendChild(a);
     card.appendChild(links);
 
@@ -1571,10 +1583,10 @@ function playLearnExample(t, ex, btn) {
       // Swap in a different example for this trope rather than dead-ending.
       const alt = examplesFor(t.key).find(x => !_badFiles.has(clipFileKey(x)) && x !== ex);
       if (alt) {
-        showToast('That clip wouldn’t load — trying another example.');
-        playClip(alt, { onError: () => showToast('Audio unavailable right now — check your connection.') });
+        showToast(I18n.t('trope.toast.clip_trying_another'));
+        playClip(alt, { onError: () => showToast(I18n.t('trope.toast.audio_unavailable')) });
       } else {
-        showToast('Audio unavailable right now — check your connection.');
+        showToast(I18n.t('trope.toast.audio_unavailable'));
       }
     }
   });
@@ -1605,10 +1617,9 @@ function drillableTropes() {
 }
 function updateDrillStart() {
   const types = enabledTypes();
-  const names = { identify: 'Identify', hear: 'Hear', melody: 'Melody' };
+  const names = { identify: I18n.t('trope.drill.type_identify'), hear: I18n.t('trope.drill.type_hear'), melody: I18n.t('trope.drill.type_melody') };
   document.getElementById('drillTypesSummary').textContent =
-    'Question types: ' + types.map(t => names[t]).join(' · ') +
-    ' — change these in ⚙ Settings. Personal best streak: ' + progress.pbStreak + ' 🔥';
+    I18n.t('trope.drill.types_summary', { types: types.map(t => names[t]).join(' · '), n: progress.pbStreak });
   const btn = document.getElementById('drillStartBtn');
   const note = document.getElementById('drillStartNote');
   const pool = drillableTropes();
@@ -1616,8 +1627,8 @@ function updateDrillStart() {
     btn.setAttribute('aria-disabled', 'true');
     note.classList.add('error');
     note.textContent = INDEX
-      ? 'Not enough tropes with examples to build a drill.'
-      : 'Drill needs the example index, which didn’t load. Check your connection and refresh.';
+      ? I18n.t('trope.drill.not_enough')
+      : I18n.t('trope.drill.index_not_loaded');
   } else {
     btn.removeAttribute('aria-disabled');
     note.classList.remove('error');
@@ -1743,7 +1754,7 @@ function nextQuestion() {
 /* Build the question UI. regenDepth guards the substitute→regenerate chain. */
 function renderQuestion(q, regenDepth) {
   const t = TROPE_BY_KEY[q.key];
-  document.getElementById('qProgress').textContent = 'Question ' + (drill.i + 1) + ' of ' + drill.qs.length;
+  document.getElementById('qProgress').textContent = I18n.t('trope.drill.q_progress', { n: drill.i + 1, total: drill.qs.length });
   updateStreakLine();
   const stem = document.getElementById('qStem');
   const choices = document.getElementById('qChoices');
@@ -1755,7 +1766,7 @@ function renderQuestion(q, regenDepth) {
   const onClipError = () => questionAudioFailed(q, regenDepth);
 
   if (q.type === 'identify') {
-    document.getElementById('qPrompt').textContent = 'Which trope is marked on this word?';
+    document.getElementById('qPrompt').textContent = I18n.t('trope.drill.q_identify');
     const word = renderMarkedWord(q.ex.he, t);
     word.classList.add('tu-qword');
     stem.appendChild(word);
@@ -1765,24 +1776,24 @@ function renderQuestion(q, regenDepth) {
     stem.appendChild(ref);
     buildNameChoices(q, t);
   } else if (q.type === 'hear') {
-    document.getElementById('qPrompt').textContent = 'Listen — which mark carries this melody?';
+    document.getElementById('qPrompt').textContent = I18n.t('trope.drill.q_hear');
     const play = document.createElement('button');
     play.type = 'button';
     play.className = 'tu-qplay';
-    play.textContent = '▶ Play the melody';
+    play.textContent = I18n.t('trope.drill.play_melody');
     play.onclick = () => playClip(q.ex, { onError: onClipError });
     stem.appendChild(play);
     buildSymbolChoices(q, t);
     playClip(q.ex, { onError: onClipError });   // autoplay attempt; blocked → button remains
   } else {
-    document.getElementById('qPrompt').textContent = 'Which melody matches this mark?';
+    document.getElementById('qPrompt').textContent = I18n.t('trope.drill.q_melody');
     stem.appendChild(tropeGlyphSpan(t, 'tu-qglyph'));
     const nm = document.createElement('div');
     nm.className = 'tu-qref';
     nm.textContent = tropeNameLine(t);
     stem.appendChild(nm);
     buildMelodyChoices(q, t, regenDepth);
-    hint.textContent = 'Choose a number to hear its melody; choose it again to answer.';
+    hint.textContent = I18n.t('trope.drill.melody_hint');
   }
   // Answering destroys the focused Next button — land focus on the new prompt so keyboard users
   // aren't dropped to <body> (re-tabbing from the page top) and SRs announce the fresh question.
@@ -1845,7 +1856,7 @@ function buildMelodyChoices(q, t, regenDepth) {
     btn.appendChild(num);
     const sub = document.createElement('span');
     sub.className = 'c-sub';
-    sub.textContent = 'choose again to answer';
+    sub.textContent = I18n.t('trope.drill.choose_again');
     sub.hidden = true;
     btn.appendChild(sub);
     btn.onclick = () => {
@@ -1864,7 +1875,7 @@ function buildMelodyChoices(q, t, regenDepth) {
         const alt = pickExample(opt.key, prefer);
         if (alt && clipFileKey(alt) !== clipFileKey(opt.ex)) { opt.ex = alt; playClip(alt, {}); }
         else if (opt.key === q.key) questionAudioFailed(q, regenDepth);
-        else showToast('That clip wouldn’t load.');
+        else showToast(I18n.t('trope.toast.clip_wont_load'));
       }});
     };
     choices.appendChild(btn);
@@ -1879,29 +1890,28 @@ function questionAudioFailed(q, regenDepth) {
   const alt = pickExample(q.key);
   if (alt) {
     q.ex = alt;
-    showToast('That clip wouldn’t load — switched to another example.');
+    showToast(I18n.t('trope.toast.clip_switched'));
     renderQuestion(q, regenDepth);
     return;
   }
   if (regenDepth >= 3) {
-    showToast('Audio isn’t reachable — this question was skipped.');
+    showToast(I18n.t('trope.toast.audio_unreachable_skipped'));
     nextQuestion();
     return;
   }
   const pool = drillableTropes().map(t => t.key)
     .filter(k => k !== q.key && pickExample(k));
-  if (!pool.length) { showToast('Audio isn’t reachable — this question was skipped.'); nextQuestion(); return; }
+  if (!pool.length) { showToast(I18n.t('trope.toast.audio_unreachable_skipped')); nextQuestion(); return; }
   q.key = randomOf(pool);
   q.ex = pickExample(q.key);
-  showToast('Audio for that trope wouldn’t load — new question.');
+  showToast(I18n.t('trope.toast.audio_new_question'));
   renderQuestion(q, regenDepth + 1);
 }
 
 function updateStreakLine() {
   const el = document.getElementById('qStreak');
   el.textContent = '🔥 ' + sessionStreak + '  ·  🏆 ' + Math.max(progress.pbStreak, sessionStreak);
-  el.setAttribute('aria-label', 'Streak ' + sessionStreak + ', personal best ' +
-    Math.max(progress.pbStreak, sessionStreak));
+  el.setAttribute('aria-label', I18n.t('trope.drill.streak_aria', { n: sessionStreak, best: Math.max(progress.pbStreak, sessionStreak) }));
 }
 
 function answer(q, pickedKey, btn) {
@@ -1928,20 +1938,20 @@ function answer(q, pickedKey, btn) {
   feedback.innerHTML = '';
   const verdict = document.createElement('span');
   verdict.className = ok ? 'ok' : 'no';
-  verdict.textContent = ok ? '✓ Correct — ' + tropeNameLine(t)
-                           : '✗ It was ' + tropeNameLine(t);
+  verdict.textContent = ok ? I18n.t('trope.drill.correct', { name: tropeNameLine(t) })
+                           : I18n.t('trope.drill.incorrect', { name: tropeNameLine(t) });
   feedback.appendChild(verdict);
   const replay = document.createElement('button');
   replay.type = 'button';
   replay.className = 'btn btn-xs btn-secondary';
-  replay.textContent = '↻ Replay';
-  replay.onclick = () => playClip(q.ex, { onError: () => showToast('That clip wouldn’t load.') });
+  replay.textContent = I18n.t('trope.drill.replay');
+  replay.onclick = () => playClip(q.ex, { onError: () => showToast(I18n.t('trope.toast.clip_wont_load')) });
   feedback.appendChild(replay);
   const next = document.createElement('button');
   next.type = 'button';
   next.id = 'qNextBtn';
   next.className = 'btn';
-  next.textContent = drill.i === drill.qs.length - 1 ? 'Finish →' : 'Next →';
+  next.textContent = drill.i === drill.qs.length - 1 ? I18n.t('trope.drill.finish') : I18n.t('trope.drill.next');
   next.onclick = nextQuestion;
   feedback.appendChild(next);
   next.focus();
@@ -1957,8 +1967,7 @@ function showResults() {
   const pct = drill.qs.length ? Math.round(100 * drill.correct / drill.qs.length) : 0;
   document.getElementById('resPct').textContent = pct + '%';
   document.getElementById('resSub').textContent =
-    drill.correct + ' / ' + drill.qs.length + ' correct · best streak this session: ' +
-    drill.best + ' 🔥 · personal best: ' + progress.pbStreak + ' 🔥';
+    I18n.t('trope.drill.results_sub', { correct: drill.correct, total: drill.qs.length, best: drill.best, pb: progress.pbStreak });
   document.getElementById('resPb').hidden = !(drill.best > (drill.pbAtStart ?? 0));
   buildMasteryGrid(document.getElementById('masteryGridEnd'));
   drill.results = [];
@@ -2033,7 +2042,7 @@ function setDrillType(field, input) {
     // inline refusal — never a blocking alert(); at least one type must stay on
     input.checked = true;
     note.classList.add('error');
-    note.textContent = 'At least one question type must stay on.';
+    note.textContent = I18n.t('trope.drill.min_one_type');
     return;
   }
   note.classList.remove('error');
@@ -2157,17 +2166,17 @@ async function refreshMyFonts() {
 /* ═══ My Fonts uploader (shared, identical across pages) ═══ */
 async function ivUploadFontFromFile(file){
   if (!file) return null;
-  if (!window.indexedDB || !window.FontFace){ alert('Your browser can’t store custom fonts.'); return null; }
+  if (!window.indexedDB || !window.FontFace){ alert(I18n.t('shared.fonts.err_no_store')); return null; }
   let base = (file.name || 'My Font').replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim() || 'My Font';
   try {
     const buf = await file.arrayBuffer();
     try { await new FontFace(base, buf).load(); }
-    catch (e) { alert('That file doesn’t look like a usable font (TTF, OTF, or WOFF).'); return null; }
+    catch (e) { alert(I18n.t('shared.fonts.err_bad_font')); return null; }
     const existing = (await listUserFonts()).map(f => f.name);
     let name = base, i = 2; while (existing.includes(name)) name = base + ' ' + (i++);
     await saveUserFont(name, new Uint8Array(buf), name);
     return name;
-  } catch (e) { console.error(e); alert('Couldn’t read that font file.'); return null; }
+  } catch (e) { console.error(e); alert(I18n.t('shared.fonts.err_unreadable')); return null; }
 }
 /* ═══ end My Fonts uploader ═══ */
 /* Per-page pick handler(s) — thin wrappers over the shared uploader (each page routes the new font into its own picker/manager). */
@@ -2322,7 +2331,7 @@ function dismissToast() {
     wrap.setAttribute('role', 'button');
     wrap.setAttribute('aria-expanded', 'false');
     wrap.setAttribute('aria-describedby', 'tipFloat');
-    if (!wrap.getAttribute('aria-label')) wrap.setAttribute('aria-label', 'More information');
+    if (!wrap.getAttribute('aria-label')) wrap.setAttribute('aria-label', I18n.t('shared.tip.aria_more_info'));
     wrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(wrap); });
     wrap.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openWrap === wrap) hide(wrap); });
     wrap.addEventListener('click', e => { e.stopPropagation(); isShown(wrap) ? hide(wrap) : show(wrap); });
@@ -2346,23 +2355,17 @@ function dismissToast() {
 function _tourVisible(el) { return !!(el && el.offsetParent !== null); }
 const TOUR_STEPS = [
   { target: () => document.getElementById('tabLearn'),
-    title: 'Two modes',
-    body: 'Learn walks the marks family by family; Drill quizzes you on them.' },
+    titleKey: 'trope.tour.s1_title', bodyKey: 'trope.tour.s1_body' },
   { target: () => document.getElementById('tuFamilyChips'),
-    title: 'Clause families',
-    body: 'The marks come in six melodic families — the same color families as the Torah Trainer reader.' },
+    titleKey: 'trope.tour.s2_title', bodyKey: 'trope.tour.s2_body' },
   { target: () => document.querySelector('#tuCards .tu-card'),
-    title: 'One card per mark',
-    body: 'Symbol, both naming traditions, a teaching note, and real chanted example words. Press ▶ to hear one.' },
+    titleKey: 'trope.tour.s3_title', bodyKey: 'trope.tour.s3_body' },
   { target: () => document.getElementById('tuNextFamily'),
-    title: 'Work through them',
-    body: 'Step through all six families, then test yourself.' },
+    titleKey: 'trope.tour.s4_title', bodyKey: 'trope.tour.s4_body' },
   { target: () => document.getElementById('tabDrill'),
-    title: 'Drill mode',
-    body: '10 questions per session: name the marked word, match melody to symbol, or symbol to melody.' },
+    titleKey: 'trope.tour.s5_title', bodyKey: 'trope.tour.s5_body' },
   { target: () => document.getElementById('gearBtn'),
-    title: 'Settings',
-    body: 'Naming tradition, Hebrew font, question types, and playback speed live here.' },
+    titleKey: 'trope.tour.s6_title', bodyKey: 'trope.tour.s6_body' },
 ];
 let _tourIdx = -1, _tourActive = false, _tourOpener = null, _tourRepoTimer = null;
 function tourStart() {
@@ -2391,11 +2394,11 @@ function _tourShow(idx, dir) {
   _tourIdx = idx;
   const step = TOUR_STEPS[idx], el = step.target();
   try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {}
-  document.getElementById('tourCardTitle').textContent = step.title;
-  document.getElementById('tourCardBody').textContent = step.body;
-  document.getElementById('tourStep').textContent = 'Step ' + (idx + 1) + ' of ' + TOUR_STEPS.length;
+  document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey);
+  document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKey);
+  document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: idx + 1, total: TOUR_STEPS.length });
   document.getElementById('tourBack').disabled = (idx === 0);
-  document.getElementById('tourNext').textContent = (idx === TOUR_STEPS.length - 1) ? 'Done' : 'Next';
+  document.getElementById('tourNext').textContent = I18n.t((idx === TOUR_STEPS.length - 1) ? 'shared.tour.done' : 'shared.tour.next');
   _tourReposition();
   if (_tourRepoTimer) clearTimeout(_tourRepoTimer);
   _tourRepoTimer = setTimeout(_tourReposition, 350);   // re-measure after scroll settles
@@ -2482,7 +2485,11 @@ async function init() {
     let next;
     if (e.key === 'Home') next = 0;
     else if (e.key === 'End') next = tabs.length - 1;
-    else next = cur === -1 ? 0 : (cur + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length;
+    else {
+      // Move by VISUAL direction: in RTL, ArrowLeft advances (the tab order is mirrored).
+      const fwd = (document.documentElement.dir === 'rtl') ? (e.key === 'ArrowLeft') : (e.key === 'ArrowRight');
+      next = cur === -1 ? 0 : (cur + (fwd ? 1 : tabs.length - 1)) % tabs.length;
+    }
     tabs[next].focus();
     tabs[next].click();
   });
@@ -2498,6 +2505,21 @@ async function init() {
   updateDrillStart();
 }
 document.addEventListener('DOMContentLoaded', init);
+
+// ── Live i18n: re-translate static chrome + rebuild dynamic pieces on language switch ──
+// Registered on DOMContentLoaded so the deferred /js/i18n.js has already defined window.I18n.
+function applyI18n() {
+  if (!window.I18n) return;
+  I18n.applyStaticI18n();
+  try { initFontSelector(); } catch (e) {}                 // My Fonts section headers + [DEFAULT] marker
+  try { if (!document.getElementById('learnView').hidden) renderLearn(); } catch (e) {}   // family/trope notes, name prefixes
+  try { updateDrillStart(); } catch (e) {}                 // drill start summary + note
+  // An in-flight drill question is NOT re-rendered — that would restart its audio clip; it
+  // translates on the next question. The dark-toggle label is emoji-only, so no relabel needed.
+}
+function _wireTropeI18n() { if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); } }
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _wireTropeI18n);
+else _wireTropeI18n();
 </script>
 </body>
 </html>

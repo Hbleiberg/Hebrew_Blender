@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>i18n runtime test — IvritSuite</title>
+
+<!-- No-flash language IIFE: set dir/lang before first paint (mirrors the dark-mode IIFE). -->
+<script>(function(){try{var p=new URLSearchParams(location.search).get('lang');
+  var l=(p==='en'||p==='he')?p:(localStorage.getItem('hebrewBlender_lang')||'en');
+  if(l!=='en'&&l!=='he')l='en';
+  document.documentElement.lang=l;
+  document.documentElement.dir=(l==='he'?'rtl':'ltr');}catch(e){}})();</script>
+
+<style>
+  :root{ --navy:#1a2744; --gold:#c9922a; --border:#c8bfa8; --white:#fff; --warm-gray:#e8e0d0;
+         --text:#1a2744; --muted:#6b6050; --cream:#fdf8ef; }
+  @media (prefers-color-scheme: dark){
+    :root{ --gold:#e0a832; --border:#2a3349; --white:#1e2535; --warm-gray:#1e2535;
+           --text:#dde4f0; --muted:#8a94a8; --cream:#161c2a; }
+  }
+  body{ font-family:'Source Sans 3',system-ui,sans-serif; margin:0; background:var(--cream);
+        color:var(--text); }
+  header{ display:flex; align-items:center; justify-content:space-between; gap:12px;
+          padding:12px 18px; background:var(--navy); color:#fff; }
+  header h1{ font-size:1rem; margin:0; font-weight:700; letter-spacing:.03em; }
+  .hright{ display:flex; align-items:center; gap:8px; }
+  main{ max-width:720px; margin:0 auto; padding:22px 18px 60px; }
+  .card{ background:var(--white); border:1px solid var(--border); border-radius:8px;
+         padding:14px 16px; margin:0 0 14px; }
+  .card h2{ font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted);
+            margin:0 0 8px; }
+  .val{ font-size:1.05rem; white-space:pre-wrap; }
+  code{ font-family:ui-monospace,monospace; font-size:.8rem; color:var(--muted); }
+  .readout{ font-family:ui-monospace,monospace; font-size:.85rem; }
+  .ok{ color:#2e7d32; } .warn{ color:#b26a00; }
+</style>
+</head>
+<body>
+<header>
+  <h1>i18n runtime test</h1>
+  <div class="hright">
+    <!-- The switcher auto-mounts here. -->
+    <div data-i18n-switcher></div>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <h2>Environment</h2>
+    <div class="readout" id="env">loading…</div>
+    <p><code>&lt;html lang&gt;</code> and <code>dir</code> are set by the no-flash IIFE + i18n.js.
+       Switch to <span lang="he">עברית</span> to flip to RTL (text falls back to English until
+       the <code>he</code> column is filled in).</p>
+  </div>
+
+  <div class="card">
+    <h2>Known key — <code>shared.tour.next</code></h2>
+    <div class="val" id="known">…</div>
+  </div>
+
+  <div class="card">
+    <h2>Placeholder — <code>shared.tour.step_counter</code> with <code>{count:2,total:7}</code></h2>
+    <div class="val" id="placeholder">…</div>
+  </div>
+
+  <div class="card">
+    <h2>Multiline + mixed — <code>shared.ivrit.tool_mismatch_confirm</code></h2>
+    <div class="val" id="multiline">…</div>
+  </div>
+
+  <div class="card">
+    <h2>Missing key — returns the key + <code>console.warn</code></h2>
+    <div class="val" id="missing">…</div>
+  </div>
+</main>
+
+<script src="/js/i18n.js" defer></script>
+<script>
+  // Wait for the active locale to load, then render via t().
+  (function () {
+    function boot() {
+      if (!window.I18n) { setTimeout(boot, 20); return; }
+      var set = function (id, txt) { var el = document.getElementById(id); if (el) el.textContent = txt; };
+      function render() {
+        set('known', I18n.t('shared.tour.next'));
+        set('placeholder', I18n.t('shared.tour.step_counter', { count: 2, total: 7 }));
+        set('multiline', I18n.t('shared.ivrit.tool_mismatch_confirm', { tool: 'Worksheet', tool2: 'Dashboard' }));
+        set('missing', I18n.t('this.key.does.not.exist'));
+        var el = document.documentElement;
+        set('env', 'active lang: ' + I18n.lang + '   |   html lang: ' + el.getAttribute('lang') +
+                   '   |   dir: ' + el.getAttribute('dir'));
+      }
+      I18n.ready.then(render);
+      // Exercise the live-switch path: re-render in place (no reload) when the language changes.
+      I18n.onChange(render);
+    }
+    boot();
+  })();
+</script>
+</body>
+</html>

@@ -16,6 +16,7 @@
 <link rel="manifest" href="manifest.webmanifest?v=3">
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
+<script src="/js/i18n.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -140,6 +141,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <style>@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}</style>
 <script>(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<script>
+  /* No-flash UI-language IIFE — mirrors the dark-mode one; sets dir/lang before paint so Hebrew
+     never flashes LTR->RTL. Authoritative set happens later in /js/i18n.js. */
+  (function () {
+    try {
+      var p = new URLSearchParams(location.search).get('lang');
+      var l = (p === 'en' || p === 'he') ? p : (localStorage.getItem('hebrewBlender_lang') || 'en');
+      if (l !== 'en' && l !== 'he') l = 'en';
+      document.documentElement.lang = l;
+      document.documentElement.dir = (l === 'he' ? 'rtl' : 'ltr');
+    } catch (e) {}
+  })();
+</script>
 <style>
 :root {
   --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
@@ -155,7 +169,7 @@ header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-it
 header .star{font-size:32px;color:var(--gold);flex-shrink:0;}
 header h1{font-family:'Libre Baskerville',serif;font-size:1.8rem;letter-spacing:0.01em;}
 header p{font-size:0.88rem;color:var(--gold-light);margin-top:3px;}
-header .hright{margin-left:auto;}
+header .hright{margin-inline-start:auto;}
 .dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;}
 .dark-btn:hover{background:rgba(255,255,255,0.1);}
 
@@ -173,7 +187,7 @@ header .hright{margin-left:auto;}
 .page-card .go-btn{margin-top:6px;background:var(--navy);color:var(--gold-light);border:none;border-radius:7px;padding:9px 28px;font-size:0.88rem;font-family:'Source Sans 3',sans-serif;font-weight:600;cursor:pointer;letter-spacing:0.02em;transition:background 0.15s;}
 .page-card:hover .go-btn{background:var(--gold);color:var(--navy);}
 
-.beta-tag{display:inline-block;background:var(--gold);color:var(--navy);font-size:0.55rem;font-weight:700;letter-spacing:0.08em;padding:2px 6px;border-radius:4px;vertical-align:middle;margin-left:6px;text-transform:uppercase;}
+.beta-tag{display:inline-block;background:var(--gold);color:var(--navy);font-size:0.55rem;font-weight:700;letter-spacing:0.08em;padding:2px 6px;border-radius:4px;vertical-align:middle;margin-inline-start:6px;text-transform:uppercase;}
 .bookmark-btn{margin-top:28px;display:flex;align-items:center;gap:7px;background:none;border:1px solid var(--border);border-radius:7px;padding:7px 18px;font-size:0.82rem;font-family:'Source Sans 3',sans-serif;color:var(--muted);cursor:pointer;transition:border-color 0.15s,color 0.15s;}
 .bookmark-btn:hover{border-color:var(--gold);color:var(--gold);}
 .bookmark-tip{margin-top:10px;font-size:0.78rem;color:var(--muted);text-align:center;opacity:0;transition:opacity 0.25s;pointer-events:none;}
@@ -234,54 +248,55 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 <header>
   <span class="star">✡︎</span>
   <div>
-    <h1>IvritSuite</h1>
-    <p>Tools for Hebrew literacy instruction</p>
+    <h1 data-i18n="home.header.brand">IvritSuite</h1>
+    <p data-i18n="home.header.tagline">Tools for Hebrew literacy instruction</p>
   </div>
   <div class="hright">
-    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false">🌙 Dark</button>
+    <div data-i18n-switcher></div>
+    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false" aria-label="Toggle dark mode" data-i18n-aria-label="shared.darkmode.toggle_title" data-i18n-title="shared.darkmode.toggle_title" data-i18n="shared.darkmode.label_dark">🌙 Dark</button>
   </div>
 </header>
 
 <div class="hero">
-  <h2 class="hero-sub" style="font-family:'Libre Baskerville',serif;font-size:1.05rem;font-weight:400;color:var(--muted);margin:0 0 18px;">Free Hebrew Learning Tools for Teachers and Students</h2>
+  <h2 class="hero-sub" style="font-family:'Libre Baskerville',serif;font-size:1.05rem;font-weight:400;color:var(--muted);margin:0 0 18px;" data-i18n="home.hero.subtitle">Free Hebrew Learning Tools for Teachers and Students</h2>
 
   <div class="cards">
     <!-- DRAFT: go-btn call-to-action label copy pending author review -->
 
     <a class="page-card" href="hebrew_blend_generator.html">
       <div class="icon">📄</div>
-      <h2>Hebrew Worksheet Generator</h2>
-      <p>Create free printable Hebrew worksheets, bingo cards, and decoding drills with nikkud — customizable Hebrew reading practice for emerging readers.</p>
-      <div class="go-btn">Make printable Hebrew worksheets →</div>
+      <h2 data-i18n="home.card.generator.name">Hebrew Worksheet Generator</h2>
+      <p data-i18n="home.card.generator.desc">Create free printable Hebrew worksheets, bingo cards, and decoding drills with nikkud — customizable Hebrew reading practice for emerging readers.</p>
+      <div class="go-btn" data-i18n="home.card.generator.cta">Make printable Hebrew worksheets →</div>
     </a>
 
     <a class="page-card" href="hebrew_dictionary.html">
       <div class="icon">🔍</div>
-      <h2>Hebrew Word Lookup</h2>
-      <p>Free Hebrew dictionary to browse and filter Hebrew vocabulary by length, part of speech, era, and letter position — useful for Hebrew learning at every level.</p>
-      <div class="go-btn">Look up Hebrew words →</div>
+      <h2 data-i18n="home.card.dictionary.name">Hebrew Word Lookup</h2>
+      <p data-i18n="home.card.dictionary.desc">Free Hebrew dictionary to browse and filter Hebrew vocabulary by length, part of speech, era, and letter position — useful for Hebrew learning at every level.</p>
+      <div class="go-btn" data-i18n="home.card.dictionary.cta">Look up Hebrew words →</div>
     </a>
 
     <a class="page-card" href="classroom_dashboard.html">
       <div class="icon">📺</div>
-      <h2>Hebrew Classroom Dashboard</h2>
-      <p>Live Hebrew date, time, weather, and days of the week for the Hebrew classroom — SmartBoard and projector ready, free for teachers.</p>
-      <div class="go-btn">Open the Hebrew classroom display →</div>
+      <h2 data-i18n="home.card.dashboard.name">Hebrew Classroom Dashboard</h2>
+      <p data-i18n="home.card.dashboard.desc">Live Hebrew date, time, weather, and days of the week for the Hebrew classroom — SmartBoard and projector ready, free for teachers.</p>
+      <div class="go-btn" data-i18n="home.card.dashboard.cta">Open the Hebrew classroom display →</div>
     </a>
 
     <a class="page-card" href="flash_cards.html">
       <div class="icon">🃏</div>
-      <h2>Hebrew Flash Cards <span class="beta-tag">Beta</span></h2>
-      <p>Free Hebrew flash cards for reading practice — decode one, two, or three Hebrew letters at a time with full nikkud support. Optimized for mobile.</p>
-      <div class="go-btn">Practice Hebrew flash cards →</div>
+      <h2><span data-i18n="home.card.flashcards.name">Hebrew Flash Cards</span> <span class="beta-tag" data-i18n="home.badge.beta">Beta</span></h2>
+      <p data-i18n="home.card.flashcards.desc">Free Hebrew flash cards for reading practice — decode one, two, or three Hebrew letters at a time with full nikkud support. Optimized for mobile.</p>
+      <div class="go-btn" data-i18n="home.card.flashcards.cta">Practice Hebrew flash cards →</div>
     </a>
 
     <a class="page-card" href="torah_trainer.html">
       <div class="icon">📜</div>
-      <h2>Torah Trainer</h2>
-      <p>Read the weekly parsha with vowel coloring, transliteration, English translations, cantillation toggle, and chanted-audio karaoke (PocketTorah).</p>
-      <div class="go-btn">Practice Torah reading →</div>
-      <span class="sefaria-attr card-attr" role="link" tabindex="0" title="Texts from Sefaria"
+      <h2 data-i18n="home.card.torah.name">Torah Trainer</h2>
+      <p data-i18n="home.card.torah.desc">Read the weekly parsha with vowel coloring, transliteration, English translations, cantillation toggle, and chanted-audio karaoke (PocketTorah).</p>
+      <div class="go-btn" data-i18n="home.card.torah.cta">Practice Torah reading →</div>
+      <span class="sefaria-attr card-attr" role="link" tabindex="0" title="Texts from Sefaria" data-i18n-title="home.card.torah.sefaria_title"
             onclick="event.stopPropagation();event.preventDefault();window.open('https://www.sefaria.org','_blank','noopener');"
             onkeydown="if(event.key==='Enter'||event.key===' '){event.stopPropagation();event.preventDefault();window.open('https://www.sefaria.org','_blank','noopener');}">
         <img src="https://files.readme.io/87c5652-image.png" alt="Sefaria" class="sefaria-light" loading="lazy">
@@ -291,45 +306,45 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 
     <a class="page-card" href="trope_tutor.html">
       <div class="icon">🎶</div>
-      <h2>Trope Tutor</h2>
-      <p>Learn the Torah cantillation marks (trope / te'amim) — symbols, Ashkenazi and Sephardi names, and melodies with real chanted examples — then drill yourself with three quiz modes.</p>
-      <div class="go-btn">Learn the trope names →</div>
+      <h2 data-i18n="home.card.trope.name">Trope Tutor</h2>
+      <p data-i18n="home.card.trope.desc">Learn the Torah cantillation marks (trope / te'amim) — symbols, Ashkenazi and Sephardi names, and melodies with real chanted examples — then drill yourself with three quiz modes.</p>
+      <div class="go-btn" data-i18n="home.card.trope.cta">Learn the trope names →</div>
     </a>
 
     <a class="page-card" href="Hebrew_Font_Maker.html">
       <div class="icon">✍️</div>
-      <h2>Hebrew Font Maker <span class="beta-tag">Beta</span></h2>
-      <p>Turn your own handwritten Hebrew letters into a real, installable font — trace each letter, place nikkud &amp; trop, then export TTF, WOFF2, or UFO.</p>
-      <div class="go-btn">Make your own Hebrew font →</div>
+      <h2><span data-i18n="home.card.fontmaker.name">Hebrew Font Maker</span> <span class="beta-tag" data-i18n="home.badge.beta">Beta</span></h2>
+      <p data-i18n="home.card.fontmaker.desc">Turn your own handwritten Hebrew letters into a real, installable font — trace each letter, place nikkud &amp; trop, then export TTF, WOFF2, or UFO.</p>
+      <div class="go-btn" data-i18n="home.card.fontmaker.cta">Make your own Hebrew font →</div>
     </a>
 
     <a class="page-card" href="resources.html">
       <div class="icon">📚</div>
-      <h2>Hebrew Teaching Resources</h2>
-      <p>A curated directory of free Hebrew learning resources, printables, dictionaries, fonts, and Jewish education tools — organized by category and age group.</p>
-      <div class="go-btn">Browse free Hebrew teaching resources →</div>
-      <span class="card-attr" role="link" tabindex="0" title="Browse &amp; share Hebrew fonts" style="font-size:0.8rem;color:var(--muted);font-weight:600;letter-spacing:0.02em;"
+      <h2 data-i18n="home.card.resources.name">Hebrew Teaching Resources</h2>
+      <p data-i18n="home.card.resources.desc">A curated directory of free Hebrew learning resources, printables, dictionaries, fonts, and Jewish education tools — organized by category and age group.</p>
+      <div class="go-btn" data-i18n="home.card.resources.cta">Browse free Hebrew teaching resources →</div>
+      <span class="card-attr" role="link" tabindex="0" title="Browse &amp; share Hebrew fonts" data-i18n-title="home.card.resources.fonts_link_title" style="font-size:0.8rem;color:var(--muted);font-weight:600;letter-spacing:0.02em;"
             onclick="event.stopPropagation();event.preventDefault();window.location.href='resources.html?view=fonts';"
-            onkeydown="if(event.key==='Enter'||event.key===' '){event.stopPropagation();event.preventDefault();window.location.href='resources.html?view=fonts';}">🔤 Hebrew Fonts →</span>
+            onkeydown="if(event.key==='Enter'||event.key===' '){event.stopPropagation();event.preventDefault();window.location.href='resources.html?view=fonts';}" data-i18n="home.card.resources.fonts_link">🔤 Hebrew Fonts →</span>
     </a>
 
   </div>
 
-  <button class="bookmark-btn" onclick="showBookmarkTip()">🔖 Bookmark this page</button>
+  <button class="bookmark-btn" onclick="showBookmarkTip()" data-i18n="home.bookmark.button">🔖 Bookmark this page</button>
   <div class="bookmark-tip" id="bookmarkTip"></div>
-  <button class="ie-btn" onclick="openIEModal()">⚙ Import / Export All Settings</button>
-  <a class="ie-btn" href="contact.html">✉️ Contact &amp; Support</a>
+  <button class="ie-btn" onclick="openIEModal()" data-i18n="home.alltools.open_button">⚙ Import / Export All Settings</button>
+  <a class="ie-btn" href="contact.html" data-i18n="home.contact_link">✉️ Contact &amp; Support</a>
 </div>
 
 <!-- Import/Export modal -->
 <div class="ie-backdrop" id="ieBackdrop" onclick="closeIEModal(event)">
   <div class="ie-modal" onclick="event.stopPropagation()">
     <div class="ie-modal-hdr">
-      <h3>⚙ Import / Export All Settings</h3>
+      <h3 data-i18n="home.alltools.modal_title">⚙ Import / Export All Settings</h3>
       <button class="ie-modal-close" onclick="closeIEModal()">×</button>
     </div>
     <div class="ie-modal-body">
-      <p class="ie-note">Back up <b>all</b> presets, saved schedules, settings, and saved fonts from the Generator, Dashboard, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, and Font Maker together. <b>Automatic Input</b> saves and restores a single <b>.ivrit</b> file; <b>Manual Input</b> uses a copy-and-paste text block.</p>
+      <p class="ie-note" data-i18n-html="home.alltools.note">Back up <b>all</b> presets, saved schedules, settings, and saved fonts from the Generator, Dashboard, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, and Font Maker together. <b>Automatic Input</b> saves and restores a single <b>.ivrit</b> file; <b>Manual Input</b> uses a copy-and-paste text block.</p>
       <style>
         .ivrit-mode-toggle{display:flex;border:1px solid var(--border,#ccc);border-radius:6px;overflow:hidden;margin-bottom:12px;}
         .ivrit-mode-btn{flex:1;padding:8px 4px;border:none;background:var(--white,#fff);color:var(--text,#222);font-family:inherit;font-size:0.85rem;cursor:pointer;}
@@ -338,35 +353,35 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         .ivrit-drop.ivrit-drag{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
       </style>
       <div class="ivrit-mode-toggle">
-        <button type="button" id="ivritModeAuto" class="ivrit-mode-btn active" onclick="setIvritMode('auto')">Automatic Input</button>
-        <button type="button" id="ivritModeManual" class="ivrit-mode-btn" onclick="setIvritMode('manual')">Manual Input</button>
+        <button type="button" id="ivritModeAuto" class="ivrit-mode-btn active" onclick="setIvritMode('auto')" data-i18n="shared.ivrit.mode_auto">Automatic Input</button>
+        <button type="button" id="ivritModeManual" class="ivrit-mode-btn" onclick="setIvritMode('manual')" data-i18n="shared.ivrit.mode_manual">Manual Input</button>
       </div>
       <div id="ivritAuto">
-        <button class="ie-action-btn primary" type="button" onclick="ivritSaveFile()" style="width:100%;margin-bottom:10px;">⬇ Save All Settings to .ivrit file</button>
+        <button class="ie-action-btn primary" type="button" onclick="ivritSaveFile()" style="width:100%;margin-bottom:10px;" data-i18n="home.alltools.save_button">⬇ Save All Settings to .ivrit file</button>
         <div id="ivritDrop" class="ivrit-drop">
-          <div style="font-size:0.92rem;">Drop an <b>AllTools .ivrit</b> file here to restore everything</div>
-          <div style="margin:6px 0;opacity:0.7;">— or —</div>
-          <button class="ie-action-btn secondary" type="button" onclick="document.getElementById('ivritFileInput').click()">Browse…</button>
+          <div style="font-size:0.92rem;" data-i18n-html="home.alltools.drop_text">Drop an <b>AllTools .ivrit</b> file here to restore everything</div>
+          <div style="margin:6px 0;opacity:0.7;" data-i18n="shared.ivrit.or_divider">— or —</div>
+          <button class="ie-action-btn secondary" type="button" onclick="document.getElementById('ivritFileInput').click()" data-i18n="shared.ivrit.browse_button">Browse…</button>
           <input type="file" id="ivritFileInput" accept=".ivrit,application/json,text/plain" style="display:none;">
         </div>
         <div id="ivritStatus" role="status" style="margin-top:8px;min-height:1em;text-align:center;opacity:0.75;font-size:0.82rem;"></div>
       </div>
       <div id="ivritManual" style="display:none;">
         <div class="btn-row">
-          <button class="ie-action-btn primary" onclick="exportAllSettings()">⬇ Export All Settings</button>
-          <button class="ie-action-btn primary" onclick="importAllSettings()">⬆ Import All Settings</button>
+          <button class="ie-action-btn primary" onclick="exportAllSettings()" data-i18n="home.alltools.export_button">⬇ Export All Settings</button>
+          <button class="ie-action-btn primary" onclick="importAllSettings()" data-i18n="home.alltools.import_button">⬆ Import All Settings</button>
         </div>
-        <textarea id="ieTextarea" placeholder="Click 'Export All Settings' to generate a backup, or paste a backup here and click 'Import All Settings'…" spellcheck="false"></textarea>
-        <div><button class="ie-action-btn secondary" onclick="copyIEText()" id="ieCopyBtn">Copy to Clipboard</button></div>
+        <textarea id="ieTextarea" placeholder="Click 'Export All Settings' to generate a backup, or paste a backup here and click 'Import All Settings'…" data-i18n-placeholder="home.alltools.textarea_placeholder" spellcheck="false"></textarea>
+        <div><button class="ie-action-btn secondary" onclick="copyIEText()" id="ieCopyBtn" data-i18n="home.alltools.copy_button">Copy to Clipboard</button></div>
       </div>
       <div id="myFontsSection" style="margin-top:14px;border-top:1px solid rgba(0,0,0,0.12);padding-top:12px;">
-        <h4 style="margin:0 0 4px;font-size:0.95rem;">★ My IvritSuite Fonts <span id="myFontsCount" style="font-weight:400;font-size:0.8rem;opacity:0.7;"></span></h4>
-        <p class="ie-note" style="margin:0 0 8px;">Fonts you built in the <a href="Hebrew_Font_Maker.html">Hebrew Font Maker</a> — or any <b>.ttf / .otf / .woff</b> you upload — are saved in this browser. Use one across every tool, download it, or remove it.</p>
-        <label class="ie-action-btn secondary" style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;margin-bottom:8px;">⬆ Upload a font<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPickIndex(this)"></label>
+        <h4 style="margin:0 0 4px;font-size:0.95rem;"><span data-i18n="home.alltools.myfonts.title">★ My IvritSuite Fonts</span> <span id="myFontsCount" style="font-weight:400;font-size:0.8rem;opacity:0.7;"></span></h4>
+        <p class="ie-note" style="margin:0 0 8px;" data-i18n-html="home.alltools.myfonts.note">Fonts you built in the <a href="Hebrew_Font_Maker.html">Hebrew Font Maker</a> — or any <b>.ttf / .otf / .woff</b> you upload — are saved in this browser. Use one across every tool, download it, or remove it.</p>
+        <label class="ie-action-btn secondary" style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;margin-bottom:8px;"><span data-i18n="home.alltools.myfonts.upload_button">⬆ Upload a font</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPickIndex(this)"></label>
         <div id="myFontsList"></div>
       </div>
       <div style="margin-top:14px;border-top:1px solid rgba(0,0,0,0.12);padding-top:12px;">
-        <button class="ie-action-btn" style="background:#a83232;color:#fff;" onclick="eraseAllSettings()">🗑 Erase All Settings</button>
+        <button class="ie-action-btn" style="background:#a83232;color:#fff;" onclick="eraseAllSettings()" data-i18n="home.alltools.erase_button">🗑 Erase All Settings</button>
       </div>
     </div>
   </div>
@@ -451,17 +466,17 @@ function _ivFmt(ts) { if (!ts) return ''; try { return new Date(ts).toLocaleDate
 /* ═══ My Fonts uploader (shared, identical across pages) ═══ */
 async function ivUploadFontFromFile(file){
   if (!file) return null;
-  if (!window.indexedDB || !window.FontFace){ alert('Your browser can’t store custom fonts.'); return null; }
+  if (!window.indexedDB || !window.FontFace){ alert(I18n.t('shared.fonts.err_no_store')); return null; }
   let base = (file.name || 'My Font').replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim() || 'My Font';
   try {
     const buf = await file.arrayBuffer();
     try { await new FontFace(base, buf).load(); }
-    catch (e) { alert('That file doesn’t look like a usable font (TTF, OTF, or WOFF).'); return null; }
+    catch (e) { alert(I18n.t('shared.fonts.err_bad_font')); return null; }
     const existing = (await listUserFonts()).map(f => f.name);
     let name = base, i = 2; while (existing.includes(name)) name = base + ' ' + (i++);
     await saveUserFont(name, new Uint8Array(buf), name);
     return name;
-  } catch (e) { console.error(e); alert('Couldn’t read that font file.'); return null; }
+  } catch (e) { console.error(e); alert(I18n.t('shared.fonts.err_unreadable')); return null; }
 }
 /* ═══ end My Fonts uploader ═══ */
 /* Per-page pick handler(s) — thin wrappers over the shared uploader (each page routes the new font into its own picker/manager). */
@@ -479,7 +494,7 @@ async function renderMyFontsManager() {
   host.innerHTML = '';
   if (!list.length) {
     const p = document.createElement('p'); p.className = 'ie-note'; p.style.margin = '0';
-    p.textContent = 'No saved fonts yet. Build one in the Hebrew Font Maker, then “Save to My Fonts”.';
+    p.textContent = I18n.t('home.alltools.myfonts.empty');
     host.appendChild(p); return;
   }
   list.forEach(f => {   // rows via DOM (names are user-controlled → no innerHTML)
@@ -493,9 +508,9 @@ async function renderMyFontsManager() {
     meta.textContent = _ivFmt(f.created) + ' · ' + Math.max(1, Math.round((f.size || 0) / 1024)) + ' KB';
     const mk = (txt, title, fn) => { const b = document.createElement('button'); b.className = 'ie-action-btn secondary'; b.textContent = txt; if (title) b.title = title; b.style.cssText = 'padding:4px 8px;font-size:0.78rem;'; b.onclick = fn; return b; };
     row.append(nm, meta,
-      mk('Use in all tools', '', () => useFontEverywhere(f.name)),
-      mk('⬇', 'Download', () => downloadMyFontFile(f.name)),
-      mk('🗑', 'Remove', () => deleteMyFontFile(f.name)));
+      mk(I18n.t('home.alltools.myfonts.use_button'), '', () => useFontEverywhere(f.name)),
+      mk('⬇', I18n.t('home.alltools.myfonts.download_title'), () => downloadMyFontFile(f.name)),
+      mk('🗑', I18n.t('home.alltools.myfonts.remove_title'), () => deleteMyFontFile(f.name)));
     host.appendChild(row);
   });
 }
@@ -507,7 +522,7 @@ async function downloadMyFontFile(name) {
   } catch (e) { console.error(e); }
 }
 function deleteMyFontFile(name) {
-  if (!confirm('Remove “' + name + '” from My Fonts? Tools using it will fall back to their default font.')) return;
+  if (!confirm(I18n.t('home.alltools.myfonts.remove_confirm', {name: name}))) return;
   deleteUserFont(name).then(renderMyFontsManager).catch(e => console.error(e));
 }
 function useFontEverywhere(name) {
@@ -518,8 +533,8 @@ function useFontEverywhere(name) {
   setIn('hebrewDashboard_settings', 'hebFont');
   setIn('hebrewTorahTrainer_settings', 'hebFont');
   setIn('hebrewFlashCards_settings', 'hebFontId');
-  const s = document.getElementById('ivritStatus'); if (s) s.textContent = '“' + name + '” is now the font in every tool — reload any open tool to see it.';
-  alert('“' + name + '” will be used in every IvritSuite tool. Reload any open tool pages to see it.');
+  const s = document.getElementById('ivritStatus'); if (s) s.textContent = I18n.t('home.alltools.myfonts.use_status', {name: name});
+  alert(I18n.t('home.alltools.myfonts.use_alert', {name: name}));
 }
 
 function openIEModal() {
@@ -607,13 +622,13 @@ function ftIsDescendant(tree, folderId, candId){
   return found;
 }
 function ftPaths(tree, excludeId){
-  const out = [{ id:null, label:'⌂ Root' }];
+  const out = [{ id:null, label: I18n.t('shared.folders.move_root') }];
   (function walk(arr, prefix){
     for (const n of arr){
       if (n.t !== 'folder') continue;
       if (excludeId && ftIsDescendant(tree, excludeId, n.id)) continue; // skip self + descendants
       const path = prefix ? prefix + ' / ' + n.name : n.name;
-      out.push({ id:n.id, label:'📁 ' + path });
+      out.push({ id:n.id, label: I18n.t('shared.folders.move_path', { path: path }) });
       walk(n.children, path);
     }
   })(tree.root, '');
@@ -689,12 +704,12 @@ function mountFolderTree(cfg){
 
   function renderItem(node){
     const row = document.createElement('div'); row.className = 'preset-item'; row.dataset.ftItem = node.name;
-    const h = document.createElement('span'); h.className='drag-handle'; h.title='Drag to move'; h.textContent='⠿'; h.style.flex='0 0 auto';
+    const h = document.createElement('span'); h.className='drag-handle'; h.title=I18n.t('shared.folders.drag_item'); h.textContent='⠿'; h.style.flex='0 0 auto';
     const nm = document.createElement('span'); nm.className='ft-item-name'; nm.style.flex='1'; nm.textContent = node.name;
     row.appendChild(h); row.appendChild(nm);
     const acts = cfg.buildItemRow(node.name); if (acts) row.appendChild(acts);
     const mw = document.createElement('span'); mw.className='ft-move-wrap';
-    const mb = document.createElement('button'); mb.type='button'; mb.className='ft-move-btn'; mb.textContent='Move ▾';
+    const mb = document.createElement('button'); mb.type='button'; mb.className='ft-move-btn'; mb.textContent=I18n.t('shared.folders.move_button');
     mb.addEventListener('click', e => { e.stopPropagation(); openMoveMenu(mb, node); });
     mw.appendChild(mb); row.appendChild(mw);
     makeDraggable(row, node);
@@ -707,14 +722,14 @@ function mountFolderTree(cfg){
     const fol = document.createElement('div'); fol.className = 'ft-folder' + (node.collapsed?' ft-collapsed':''); fol.dataset.ftFolder = node.id;
     const head = document.createElement('div'); head.className='ft-folder-head';
     const tw = document.createElement('span'); tw.className='ft-twisty'; tw.textContent='▾';
-    const h = document.createElement('span'); h.className='drag-handle'; h.title='Drag folder'; h.textContent='⠿'; h.style.flex='0 0 auto';
+    const h = document.createElement('span'); h.className='drag-handle'; h.title=I18n.t('shared.folders.drag_folder'); h.textContent='⠿'; h.style.flex='0 0 auto';
     const nm = document.createElement('span'); nm.className='ft-folder-name'; nm.textContent = node.name;
     const cnt = document.createElement('span'); cnt.className='ft-folder-count'; cnt.textContent = '(' + node.children.length + ')';
     const acts = document.createElement('span'); acts.className='ft-folder-actions';
-    acts.appendChild(mkMini('＋','New subfolder', () => { const x=(prompt('New subfolder name:')||'').trim(); if(!x) return; node.children.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); }));
-    acts.appendChild(mkMini('✎','Rename folder', () => { const x=(prompt('Rename folder:', node.name)||'').trim(); if(!x) return; node.name=x; commit(); }));
-    acts.appendChild(mkMini('↗','Move folder', (b) => openMoveMenu(b, node)));
-    acts.appendChild(mkMini('🗑','Delete folder (keeps items)', () => { if(!confirm('Delete folder "'+node.name+'"? Its contents move out — nothing is deleted.')) return; const loc=ftLocate(tree, x=>x===node); if(loc){ loc.parent.splice(loc.index, 1, ...node.children); commit(); } }));
+    acts.appendChild(mkMini('＋',I18n.t('shared.folders.new_subfolder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_new_subfolder'))||'').trim(); if(!x) return; node.children.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); }));
+    acts.appendChild(mkMini('✎',I18n.t('shared.folders.rename_folder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_rename'), node.name)||'').trim(); if(!x) return; node.name=x; commit(); }));
+    acts.appendChild(mkMini('↗',I18n.t('shared.folders.move_folder'), (b) => openMoveMenu(b, node)));
+    acts.appendChild(mkMini('🗑',I18n.t('shared.folders.delete_folder'), () => { if(!confirm(I18n.t('shared.folders.delete_confirm', { name: node.name }))) return; const loc=ftLocate(tree, x=>x===node); if(loc){ loc.parent.splice(loc.index, 1, ...node.children); commit(); } }));
     head.appendChild(tw); head.appendChild(h); head.appendChild(nm); head.appendChild(cnt); head.appendChild(acts);
     head.addEventListener('click', e => { if (e.target.closest('.ft-folder-actions')) return; node.collapsed = !node.collapsed; commit(); });
     makeDraggable(fol, node);
@@ -722,7 +737,7 @@ function mountFolderTree(cfg){
     head.addEventListener('drop', e => { if (!canDrop(node)) return; e.preventDefault(); e.stopPropagation(); dropInto(node); });
     const body = document.createElement('div'); body.className='ft-folder-body';
     if (node.children.length === 0){
-      const em = document.createElement('div'); em.className='ft-empty-folder'; em.textContent='Empty — drop items here';
+      const em = document.createElement('div'); em.className='ft-empty-folder'; em.textContent=I18n.t('shared.folders.empty_folder');
       em.addEventListener('dragover', e => { if (!canDrop(node)) return; e.preventDefault(); clearCues(); fol.classList.add('ft-drop'); });
       em.addEventListener('drop', e => { if (!canDrop(node)) return; e.preventDefault(); e.stopPropagation(); dropInto(node); });
       body.appendChild(em);
@@ -735,14 +750,14 @@ function mountFolderTree(cfg){
     closeMenu(); container.innerHTML = '';
     const wrap = document.createElement('div'); wrap.className='ft-tree';
     renderInto(tree.root, wrap);
-    if (tree.root.length === 0){ const em=document.createElement('div'); em.className='ft-empty-folder'; em.textContent='No saved '+(cfg.noun||'item')+'s yet.'; wrap.appendChild(em); }
+    if (tree.root.length === 0){ const em=document.createElement('div'); em.className='ft-empty-folder'; em.textContent=I18n.t('shared.folders.empty_list', { noun: cfg.noun||'item' }); wrap.appendChild(em); }
     const rootDrop = document.createElement('div'); rootDrop.className='ft-root-drop';
     rootDrop.addEventListener('dragover', e => { if (!dragNode) return; e.preventDefault(); clearCues(); rootDrop.classList.add('ft-row-drop'); });
     rootDrop.addEventListener('drop', e => { if (!dragNode) return; e.preventDefault(); e.stopPropagation(); const dn=dragNode; ftRemove(tree, x=>x===dn); tree.root.push(dn); commit(); });
     wrap.appendChild(rootDrop);
     container.appendChild(wrap);
-    const add = document.createElement('button'); add.type='button'; add.className='ft-newfolder'; add.textContent='📁 New folder';
-    add.addEventListener('click', () => { const x=(prompt('New folder name:')||'').trim(); if(!x) return; tree.root.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); });
+    const add = document.createElement('button'); add.type='button'; add.className='ft-newfolder'; add.textContent=I18n.t('shared.folders.new_folder');
+    add.addEventListener('click', () => { const x=(prompt(I18n.t('shared.folders.prompt_new_folder'))||'').trim(); if(!x) return; tree.root.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); });
     container.appendChild(add);
   }
   render();
@@ -820,11 +835,11 @@ function exportAllSettings() {
 }
 async function importAllSettings() {
   const raw = document.getElementById('ieTextarea').value.trim();
-  if (!raw) { alert('Paste an exported settings block first.'); return; }
+  if (!raw) { alert(I18n.t('home.alltools.import_err_empty')); return; }
   let parsed;
-  try { parsed = ivritSafeParse(raw); } catch(e) { alert('Invalid JSON — please paste the full export block.'); return; }
-  if (!parsed._hebrewBlenderExport) { alert('This doesn\'t look like a Hebrew Blender export. Make sure you copied the full block.'); return; }
-  if (!confirm('This will overwrite your current dashboard settings and merge all imported presets and schedules. Continue?')) return;
+  try { parsed = ivritSafeParse(raw); } catch(e) { alert(I18n.t('home.alltools.import_err_json')); return; }
+  if (!parsed._hebrewBlenderExport) { alert(I18n.t('home.alltools.import_err_notexport')); return; }
+  if (!confirm(I18n.t('home.alltools.import_confirm'))) return;
   try {
     if (parsed.generatorPresets) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewBlender_presets') || '{}');
@@ -907,20 +922,20 @@ async function importAllSettings() {
       for (const uf of parsed.userFonts) { try { await saveUserFont(uf.name, _ivB64ToBytes(uf.b64), uf.family); } catch (e) {} }
       refreshFontsBackupCache();
     }
-    alert('Import successful! Reload the Dashboard to apply all settings.');
-  } catch(e) { alert('Import failed: ' + e.message); }
+    alert(I18n.t('home.alltools.import_success'));
+  } catch(e) { alert(I18n.t('home.alltools.import_failed', {message: e.message})); }
 }
 function copyIEText() {
   const ta = document.getElementById('ieTextarea');
-  if (!ta.value) { alert('Nothing to copy — export first.'); return; }
+  if (!ta.value) { alert(I18n.t('home.alltools.copy_err_empty')); return; }
   const btn = document.getElementById('ieCopyBtn');
   navigator.clipboard.writeText(ta.value).catch(() => { ta.select(); document.execCommand('copy'); });
-  btn.textContent = '✓ Copied'; setTimeout(() => btn.textContent = 'Copy', 1800);
+  btn.textContent = I18n.t('home.alltools.copy_done'); setTimeout(() => btn.textContent = I18n.t('home.alltools.copy_reset'), 1800);
 }
 
 function eraseAllSettings() {
-  if (!confirm('⚠️ WARNING: This will permanently erase ALL presets, saved schedules, settings, and saved fonts for every IvritSuite tool.\n\nThis cannot be undone. Export a backup first if you want to keep your data.\n\nAre you sure you want to erase everything?')) return;
-  if (!confirm('Final confirmation: erase all Hebrew Blender data on this device?')) return;
+  if (!confirm(I18n.t('home.alltools.erase_confirm1'))) return;
+  if (!confirm(I18n.t('home.alltools.erase_confirm2'))) return;
   const keys = [
     'hebrewBlender_presets',
     'hebrewDashboard_presets',
@@ -971,7 +986,7 @@ function eraseAllSettings() {
   keys.forEach(k => localStorage.removeItem(k));
   if (window.indexedDB) { listUserFonts().then(l => l.forEach(f => deleteUserFont(f.name))).catch(() => {}); _fontsBackupCache = []; renderMyFontsManager(); }
   document.getElementById('ieTextarea').value = '';
-  alert('All settings and presets have been erased.');
+  alert(I18n.t('home.alltools.erase_success'));
 }
 
 /* ────────── .ivrit SAVE FILE (AllTools) ────────── */
@@ -1052,7 +1067,7 @@ const IVRIT_CFG = {
       data.userFonts.forEach(uf => { try { saveUserFont(uf.name, _ivB64ToBytes(uf.b64), uf.family); } catch (e) {} });
       refreshFontsBackupCache(); touched = true;
     }
-    if (!touched) { alert('This file has no all-tools data. Try importing it on its own tool\'s page instead.'); }
+    if (!touched) { alert(I18n.t('home.alltools.no_data_alert')); }
   }
 };
 
@@ -1133,30 +1148,30 @@ function ivritToolMismatch(fileTool) {
 async function ivritRestore(text, sourceName) {
   let parsed;
   try { parsed = ivritSafeParse(text); }
-  catch (e) { alert('That file could not be read as a .ivrit save file.'); return; }
+  catch (e) { alert(I18n.t('shared.ivrit.err_unreadable')); return; }
   let payload = parsed;
   if (!(parsed && parsed.format === 'ivrit-save')) {
     if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
       payload = { tool: null, data: parsed };   // tolerate a legacy AllTools export blob
-    } else { alert('That file is not a recognizable .ivrit save file.'); return; }
+    } else { alert(I18n.t('shared.ivrit.err_unrecognized')); return; }
   }
   if (ivritToolMismatch(payload.tool)) {
-    if (!confirm('This looks like a "' + payload.tool + '" save file, but this is the ' + IVRIT_CFG.tool + ' page.\n\nImporting it here may not do anything useful. Import anyway?')) return;
+    if (!confirm(I18n.t('shared.ivrit.tool_mismatch_confirm', {tool: payload.tool, tool2: IVRIT_CFG.tool}))) return;
   }
   const mode = await ivritAskMode();
   if (!mode) return;
   try { IVRIT_CFG.apply(payload.data || {}, mode); }
-  catch (e) { alert('Restore failed: ' + e.message); return; }
+  catch (e) { alert(I18n.t('shared.ivrit.err_restore_failed', {error: e.message})); return; }
   if (!IVRIT_CFG.needsReload) {
     ivritStatus('Restored from ' + (sourceName || 'file'));
-    alert('Restored successfully' + (sourceName ? ' from ' + sourceName : '') + '. Reload any open tool pages to apply.');
+    alert(I18n.t('home.alltools.restore_reload'));
   }
 }
 function ivritReadFile(file) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = () => ivritRestore(reader.result, file.name);
-  reader.onerror = () => alert('Could not read that file.');
+  reader.onerror = () => alert(I18n.t('shared.ivrit.err_read'));
   reader.readAsText(file);
 }
 function ivritInit() {
@@ -1179,8 +1194,8 @@ function showBookmarkTip() {
   const isMobile = /Android|iPhone|iPad/.test(navigator.userAgent);
   const tip = document.getElementById('bookmarkTip');
   tip.textContent = isMobile
-    ? 'Tap the share/menu button in your browser and choose "Add to Home Screen" or "Add Bookmark".'
-    : `Press ${isMac ? '⌘' : 'Ctrl'}+D to bookmark this page.`;
+    ? I18n.t('home.bookmark.tip_mobile')
+    : I18n.t('home.bookmark.tip_desktop', {key: isMac ? '⌘' : 'Ctrl'});
   tip.classList.add('show');
   clearTimeout(tip._t);
   tip._t = setTimeout(() => tip.classList.remove('show'), 4000);
@@ -1191,8 +1206,17 @@ function toggleDark() {
   document.documentElement.classList.remove('dark-early');
   try { localStorage.setItem('hebrewBlender_darkMode', dark ? '1' : '0'); } catch(e) {}
   const _db = document.getElementById('darkBtn');
-  _db.textContent = dark ? '☀️ Light' : '🌙 Dark';
+  _db.textContent = dark ? I18n.t('shared.darkmode.label_light') : I18n.t('shared.darkmode.label_dark');
   _db.setAttribute('aria-pressed', dark ? 'true' : 'false');
+}
+/* ── i18n: fill static chrome + re-sync state-dependent + dynamic bits on load + live switch.
+   Wired inside DOMContentLoaded because /js/i18n.js is deferred (window.I18n is undefined at
+   inline-script parse time). ── */
+function applyI18n() {
+  if (!window.I18n) return;
+  I18n.applyStaticI18n();
+  try { const _db = document.getElementById('darkBtn'); if (_db) _db.textContent = document.body.classList.contains('dark') ? I18n.t('shared.darkmode.label_light') : I18n.t('shared.darkmode.label_dark'); } catch (e) {}
+  try { if (typeof renderMyFontsManager === 'function' && document.getElementById('myFontsList')) renderMyFontsManager(); } catch (e) {}
 }
 document.addEventListener('DOMContentLoaded', () => {
   try {
@@ -1200,10 +1224,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.body.classList.add('dark');
       const _db = document.getElementById('darkBtn');
-      _db.textContent = '☀️ Light';
+      _db.textContent = (window.I18n ? I18n.t('shared.darkmode.label_light') : '☀️ Light');
       _db.setAttribute('aria-pressed', 'true');
     }
   } catch(e) {}
+  if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') document.getElementById('ieBackdrop').classList.remove('open');

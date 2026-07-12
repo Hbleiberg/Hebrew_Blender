@@ -17,6 +17,7 @@
 <link rel="manifest" href="manifest.webmanifest?v=3">
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
+<script src="/js/i18n.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -71,6 +72,19 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <script>(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<script>
+  /* No-flash UI-language IIFE — mirrors the dark-mode one; sets dir/lang before paint so Hebrew
+     never flashes LTR->RTL. Authoritative set happens later in /js/i18n.js. */
+  (function () {
+    try {
+      var p = new URLSearchParams(location.search).get('lang');
+      var l = (p === 'en' || p === 'he') ? p : (localStorage.getItem('hebrewBlender_lang') || 'en');
+      if (l !== 'en' && l !== 'he') l = 'en';
+      document.documentElement.lang = l;
+      document.documentElement.dir = (l === 'he' ? 'rtl' : 'ltr');
+    } catch (e) {}
+  })();
+</script>
 <style>
 :root {
   --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
@@ -86,7 +100,7 @@ header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-it
 header .star{font-size:32px;}
 header h1{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
 header p{font-size:0.85rem;color:var(--gold-light);margin-top:3px;}
-header .hright{margin-left:auto;display:flex;gap:10px;align-items:center;}
+header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;}
 .hbtn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;text-decoration:none;}
 .hbtn:hover{background:rgba(255,255,255,0.1);}
 .dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;}
@@ -168,76 +182,77 @@ footer a{color:var(--gold);text-decoration:none;}
 <header>
   <span class="star">✡︎</span>
   <div>
-    <h1>IvritSuite — Contact &amp; Support</h1>
-    <p>Get in touch · Support the project</p>
+    <h1 data-i18n="contact.header.title">IvritSuite — Contact &amp; Support</h1>
+    <p data-i18n="contact.header.tagline">Get in touch · Support the project</p>
   </div>
   <div class="hright">
-    <a class="hbtn" href="/">← Back</a>
-    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false">🌙 Dark</button>
+    <a class="hbtn" href="/" data-i18n="contact.header.back_link">← Back</a>
+    <div data-i18n-switcher></div>
+    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false" aria-label="Toggle dark mode" data-i18n-aria-label="shared.darkmode.toggle_title" data-i18n-title="shared.darkmode.toggle_title" data-i18n="shared.darkmode.label_dark">🌙 Dark</button>
   </div>
 </header>
 
 <main>
-  <h1 class="page-title">Contact &amp; Support</h1>
-  <div class="lede">Have a question, found a bug, or have an idea for a new feature? I'd love to hear from you.</div>
+  <h1 class="page-title" data-i18n="contact.page_title">Contact &amp; Support</h1>
+  <div class="lede" data-i18n="contact.lede">Have a question, found a bug, or have an idea for a new feature? I'd love to hear from you.</div>
 
   <div class="cs-grid">
     <section class="cs-tile">
-      <h2>Get in touch</h2>
-      <p>Send a message below and it will go straight to my inbox. Please include your email so I can write back.</p>
+      <h2 data-i18n="contact.getintouch_heading">Get in touch</h2>
+      <p data-i18n="contact.getintouch_intro">Send a message below and it will go straight to my inbox. Please include your email so I can write back.</p>
       <form id="contactForm">
       <input type="hidden" name="access_key" value="236416bf-9bf9-459c-9bf2-e31303467db4">
       <div class="field">
-        <label for="cfName">Your name</label>
+        <label for="cfName" data-i18n="contact.form.name_label">Your name</label>
         <input type="text" id="cfName" name="name" required autocomplete="name">
       </div>
       <div class="field">
-        <label for="cfEmail">Your email</label>
+        <label for="cfEmail" data-i18n="contact.form.email_label">Your email</label>
         <input type="email" id="cfEmail" name="email" required autocomplete="email">
       </div>
       <div class="field">
-        <label for="cfSubject">Subject <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
+        <label for="cfSubject"><span data-i18n="contact.form.subject_label">Subject</span> <span style="color:var(--muted);font-weight:400;" data-i18n="contact.form.subject_optional">(optional)</span></label>
         <input type="text" id="cfSubject" name="subject">
       </div>
       <div class="field">
-        <label for="cfMessage">Message</label>
+        <label for="cfMessage" data-i18n="contact.form.message_label">Message</label>
         <textarea id="cfMessage" name="message" required></textarea>
       </div>
       <!-- honeypot (Web3Forms): hidden from humans, catches bots -->
       <input type="checkbox" name="botcheck" class="honey" tabindex="-1" autocomplete="off" aria-hidden="true">
       <!-- hCaptcha: free, server-verified by Web3Forms via its shared site key -->
       <div class="h-captcha" data-captcha="true" style="margin:4px 0 14px;"></div>
-      <button type="submit" class="btn-primary">Send message</button>
+      <button type="submit" class="btn-primary" data-i18n="contact.form.submit_button">Send message</button>
       <div id="formStatus" role="status" aria-live="polite"></div>
       </form>
-      <p class="email-line">Prefer your own email app? Write to <a class="eml"></a>.</p>
+      <p class="email-line" id="cfEmailLine">Prefer your own email app? Write to <a class="eml"></a>.</p>
     </section>
 
     <section class="cs-tile">
-      <h2>Support IvritSuite</h2>
-  <p>IvritSuite is free, and it always will be — no accounts, no ads, no paywalls. If these tools have been useful in your classroom or learning, a small donation helps cover the development and upkeep that keep them running and growing. It's entirely optional, and deeply appreciated. Thank you.</p>
+      <h2 data-i18n="contact.support_heading">Support IvritSuite</h2>
+  <p data-i18n="contact.support_body">IvritSuite is free, and it always will be — no accounts, no ads, no paywalls. If these tools have been useful in your classroom or learning, a small donation helps cover the development and upkeep that keep them running and growing. It's entirely optional, and deeply appreciated. Thank you.</p>
 
   <div class="pill-wrap">
     <div class="pill-group" id="payPills">
-      <button class="pill active" data-pay="paypal" onclick="showPay('paypal')">PayPal</button>
-      <button class="pill" data-pay="venmo" onclick="showPay('venmo')">Venmo</button>
-      <button class="pill" data-pay="zelle" onclick="showPay('zelle')">Zelle</button>
+      <button class="pill active" data-pay="paypal" onclick="showPay('paypal')" data-i18n="contact.donate.tab_paypal">PayPal</button>
+      <button class="pill" data-pay="venmo" onclick="showPay('venmo')" data-i18n="contact.donate.tab_venmo">Venmo</button>
+      <button class="pill" data-pay="zelle" onclick="showPay('zelle')" data-i18n="contact.donate.tab_zelle">Zelle</button>
     </div>
   </div>
 
   <div class="donate-panel active" data-pay="paypal">
     <div class="donate-handle">@HarrisonBleiberg</div>
     <div class="donate-sub">PayPal</div>
-    <a class="donate-btn" href="https://www.paypal.me/HarrisonBleiberg" target="_blank" rel="noopener">Open PayPal →</a>
+    <a class="donate-btn" href="https://www.paypal.me/HarrisonBleiberg" target="_blank" rel="noopener" data-i18n="contact.donate.open_paypal">Open PayPal →</a>
   </div>
   <div class="donate-panel" data-pay="venmo">
     <div class="donate-handle">@Harrison-Bleiberg</div>
     <div class="donate-sub">Venmo</div>
-    <a class="donate-btn" href="https://venmo.com/u/Harrison-Bleiberg" target="_blank" rel="noopener">Open Venmo →</a>
+    <a class="donate-btn" href="https://venmo.com/u/Harrison-Bleiberg" target="_blank" rel="noopener" data-i18n="contact.donate.open_venmo">Open Venmo →</a>
   </div>
   <div class="donate-panel" data-pay="zelle">
     <img class="zelle-qr" src="zelle-qr.jpg?v=1" alt="Zelle QR code for donating to IvritSuite" loading="lazy">
-    <div class="donate-sub" style="margin-top:14px;margin-bottom:0;">Scan with your bank's Zelle feature</div>
+    <div class="donate-sub" style="margin-top:14px;margin-bottom:0;" data-i18n="contact.donate.zelle_scan_note">Scan with your bank's Zelle feature</div>
   </div>
     </section>
   </div>
@@ -254,24 +269,13 @@ footer a{color:var(--gold);text-decoration:none;}
 
 <script>
 function toggleDark() {
+  const dark = document.body.classList.toggle('dark');
   document.documentElement.classList.remove('dark-early');
-  document.body.classList.toggle('dark');
-  const isDark = document.body.classList.contains('dark');
-  localStorage.setItem('hebrewBlender_darkMode', isDark ? '1' : '0');
+  try { localStorage.setItem('hebrewBlender_darkMode', dark ? '1' : '0'); } catch(e) {}
   const _db = document.getElementById('darkBtn');
-  _db.textContent = isDark ? '☀️ Light' : '🌙 Dark';
-  _db.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+  _db.textContent = dark ? (window.I18n ? I18n.t('shared.darkmode.label_light') : '☀️ Light') : (window.I18n ? I18n.t('shared.darkmode.label_dark') : '🌙 Dark');
+  _db.setAttribute('aria-pressed', dark ? 'true' : 'false');
 }
-(function(){
-  var s = localStorage.getItem('hebrewBlender_darkMode');
-  if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
-    document.body.classList.add('dark');
-    var _db = document.getElementById('darkBtn');
-    _db.textContent = '☀️ Light';
-    _db.setAttribute('aria-pressed', 'true');
-  }
-  document.documentElement.classList.remove('dark-early');
-})();
 
 // Donation tabs
 function showPay(which){
@@ -303,12 +307,12 @@ form.addEventListener('submit', async function(e){
   const formData = new FormData(form);
   if (!formData.get('h-captcha-response')) {
     statusEl.style.color = 'var(--muted)';
-    statusEl.textContent = 'Please complete the “I’m human” check below before sending.';
+    statusEl.textContent = I18n.t('contact.form.captcha_required');
     return;
   }
   btn.disabled = true;
   statusEl.style.color = 'var(--muted)';
-  statusEl.textContent = 'Sending…';
+  statusEl.textContent = I18n.t('contact.form.sending');
   if (!formData.get('subject')) formData.set('subject', 'IvritSuite contact form');
   formData.set('from_name', formData.get('name') || 'IvritSuite contact form');
   try {
@@ -324,18 +328,45 @@ form.addEventListener('submit', async function(e){
       form.reset();
       if (window.hcaptcha) { try { window.hcaptcha.reset(); } catch (_) {} }
       statusEl.style.color = 'var(--gold)';
-      statusEl.textContent = 'Message sent ✓ — thank you! I’ll get back to you soon.';
+      statusEl.textContent = I18n.t('contact.form.success');
     } else {
       statusEl.style.color = 'var(--muted)';
-      statusEl.innerHTML = (data && data.message ? esc(data.message) : 'Sorry — that didn’t go through.') +
-        ' You can also email ' + emailLink() + '.';
+      statusEl.innerHTML = (data && data.message ? esc(data.message) : I18n.t('contact.form.error_fallback')) +
+        ' ' + I18n.t('contact.form.error_email_suffix', { email: emailLink() });
     }
   } catch (err) {
     statusEl.style.color = 'var(--muted)';
-    statusEl.innerHTML = 'Sorry — that didn’t go through. Please email ' + emailLink() + ' directly.';
+    statusEl.innerHTML = I18n.t('contact.form.error_network', { email: emailLink() });
   } finally {
     btn.disabled = false;
   }
+});
+
+/* ── i18n: fill static chrome + re-sync dark label + re-render JS-built content on load + live switch.
+   Wired inside DOMContentLoaded because /js/i18n.js is deferred (window.I18n is undefined at
+   inline-script parse time). ── */
+function renderEmailLine() {
+  const el = document.getElementById('cfEmailLine');
+  if (el && window.I18n) el.innerHTML = I18n.t('contact.form.email_fallback', { email: emailLink() });
+}
+function applyI18n() {
+  if (!window.I18n) return;
+  I18n.applyStaticI18n();
+  try { const _db = document.getElementById('darkBtn'); if (_db) _db.textContent = document.body.classList.contains('dark') ? I18n.t('shared.darkmode.label_light') : I18n.t('shared.darkmode.label_dark'); } catch (e) {}
+  try { const qr = document.querySelector('.zelle-qr'); if (qr) qr.alt = I18n.t('contact.donate.zelle_qr_alt'); } catch (e) {}
+  renderEmailLine();
+}
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const s = localStorage.getItem('hebrewBlender_darkMode');
+    if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.body.classList.add('dark');
+      const _db = document.getElementById('darkBtn');
+      _db.textContent = (window.I18n ? I18n.t('shared.darkmode.label_light') : '☀️ Light');
+      _db.setAttribute('aria-pressed', 'true');
+    }
+  } catch(e) {}
+  if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
 });
 </script>
 <!-- Web3Forms helper: renders the free hCaptcha widget (Web3Forms' shared site key) -->
