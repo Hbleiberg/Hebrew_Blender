@@ -2079,7 +2079,7 @@ function newProject() {
   };
   udClear();                 // fresh project → drop any prior undo history / open bursts
   curKind = 'letter'; curCp = LETTER_ORDER[0]; workMode = 'align';
-  syncMetaToForm(); renderGrids(); setWorkMode('align'); status('New project.');
+  syncMetaToForm(); renderGrids(); setWorkMode('align'); status(I18n.t('fontmaker.status.new_project'));
   _projectDirty = false; clearTimeout(_autosaveTimer);   // fresh project: not dirty (boot keeps any snapshot so the prompt can still offer prior work)
 }
 function newProjectFresh() {   // toolbar "New" → user explicitly starts over: also drop the continuity snapshot
@@ -3365,8 +3365,8 @@ async function uploadTemplateTTF(file) {
     markDirty();
     renderStage(); renderControls(); renderLetterGrid();   // rebuilds R-panel select + retints the letter tiles
     const sel = document.getElementById('templateFont'); if (sel) sel.value = family;
-    status('Template font “' + file.name + '” loaded.');
-  } catch (e) { console.error(e); status('Could not read that font file.'); }
+    status(I18n.t('fontmaker.status.template_font_loaded', {name: file.name}));
+  } catch (e) { console.error(e); status(I18n.t('fontmaker.status.font_read_fail')); }
 }
 // Re-register uploaded reference (tracing-guide) fonts saved with the project, so the ghost renders and
 // the R-panel dropdown can re-select them after a reload.
@@ -4010,7 +4010,7 @@ function addCustomGlyph() {
     selectItem('letter', cp);
   }
   renderCustomGlyphsPanel();                          // reset the add form + refresh the list
-  status('Added custom glyph U+' + cp + '.');
+  status(I18n.t('fontmaker.status.added_custom_glyph', {cp: cp}));
 }
 function deleteCustomGlyph(cp, type) {
   if (!confirm('Delete this custom glyph (U+' + cp + ')? This cannot be undone.')) return;
@@ -4019,7 +4019,7 @@ function deleteCustomGlyph(cp, type) {
   if (curCp === cp) selectItem('letter', LETTER_ORDER[0]);
   renderCustomGlyphsPanel();
   renderGrids();
-  status('Deleted custom glyph U+' + cp + '.');
+  status(I18n.t('fontmaker.status.deleted_custom_glyph', {cp: cp}));
 }
 // Custom marks have no width of their own (they attach to a letter). This turns a mark into a
 // standalone main glyph — a .custom letter carrying the mark's outline, with its own adjustable
@@ -4051,7 +4051,7 @@ function convertMarkToMain(cp) {
   markDirty();
   renderCustomGlyphsPanel();
   renderGrids();
-  status('Converted U+' + cp + ' to a main glyph — set its width under Letter Metrics.');
+  status(I18n.t('fontmaker.status.converted_main', {cp: cp}));
 }
 
 /* ════════ Work mode (Align / Trace / Nikkud) ════════ */
@@ -4310,7 +4310,7 @@ async function uploadCombined(files) {
   syncMetaToForm(); setWorkMode('align'); renderLetterGrid(); renderStage(); renderControls();
   if (svg) {
     const n = autoSplitCombinedSvg();   // auto-assign any named elements; sets its own status
-    if (!n) status('SVG sheet loaded. Drag a box around a letter, or name elements like id="uni05D0" and click Auto-split by name.');
+    if (!n) status(I18n.t('fontmaker.status.svg_sheet_loaded'));
     return;
   }
   status(list.length > 1 ? (list.length + ' sheets added — pick a letter, then drag a box around it.')
@@ -4422,7 +4422,7 @@ function cropKbdEnsure() {                             // seed a centered ~40% d
   if (!(cropDrag && cropDrag.kbd)) {
     const f = cropFit;
     cropDrag = { kbd: true, box: _cropClampBox({ x: f.ox + f.w*0.3, y: f.oy + f.h*0.3, w: f.w*0.4, h: f.h*0.4 }) };
-    status('Crop box — arrows move · +/− resize · Enter to crop · Esc to cancel.');
+    status(I18n.t('fontmaker.status.crop_box_help'));
     renderStage();
   }
   return true;
@@ -4652,7 +4652,7 @@ const _adYield = () => new Promise(r => setTimeout(r, 0));
 function _adCoreLetters() { return LETTERS.filter(L => L.cat !== 'punct'); }
 async function openAutoDetect() {
   const sheet = project.combinedSheets[project.combinedIndex];
-  if (!sheet || !sheet.dataUrl) { status('Upload a sheet first.'); return; }
+  if (!sheet || !sheet.dataUrl) { status(I18n.t('fontmaker.status.upload_sheet_first')); return; }
   await loadImg(sheet.dataUrl).catch(() => {});
   adState = { sheetId: sheet.id, url: sheet.dataUrl, scale: 1, sep: 0, thOverride: null, detTh: null,
               boxes: [], matched: null, edits: 0, selId: null };
@@ -4665,8 +4665,8 @@ function closeAutoDetect() { adState = null; aCloseModal('adOverlay'); status(''
 async function adRunDetection() {
   if (!adState) return;
   const im = imgCache[adState.url];
-  if (!im) { status('Sheet image is not loaded.'); return; }
-  status('Detecting letters…', true);
+  if (!im) { status(I18n.t('fontmaker.status.sheet_not_loaded')); return; }
+  status(I18n.t('fontmaker.status.detecting_letters'), true);
   const scale = Math.min(1, 1800 / Math.max(im.width, im.height));
   const w = Math.max(1, Math.round(im.width * scale)), h = Math.max(1, Math.round(im.height * scale));
   const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
@@ -4942,7 +4942,7 @@ function adConfirmHide() { const c = document.getElementById('adConfirm'); if (c
 async function adApply() {
   if (!adState) return;
   const picks = adState.boxes.filter(b => b.cp && !b.skip);
-  if (!picks.length) { status('No boxes are assigned to letters — nothing to apply.'); return; }
+  if (!picks.length) { status(I18n.t('fontmaker.status.no_boxes_assigned')); return; }
   const im = imgCache[adState.url]; if (!im) return;
   const applyBtn = document.getElementById('adApplyBtn'); if (applyBtn) applyBtn.disabled = true;
   const prep = [];
@@ -5006,7 +5006,7 @@ function removeCombinedSheet() {
       { label:'Remove', onClick: () => {
           project.combinedSheets.splice(project.combinedIndex, 1);
           if (project.combinedIndex >= project.combinedSheets.length) project.combinedIndex = Math.max(0, project.combinedSheets.length - 1);
-          renderStage(); renderControls(); status('Sheet removed.');
+          renderStage(); renderControls(); status(I18n.t('fontmaker.status.sheet_removed'));
       } } ]);
 }
 
@@ -5056,7 +5056,7 @@ function applyImportedAnchors(l, imp) {
   });
 }
 async function uploadSourceFont(file) {
-  status('Reading font…', true);
+  status(I18n.t('fontmaker.status.reading_font'), true);
   let font, bytes;
   try {
     const ot = await ensureOpentype();
@@ -5097,7 +5097,7 @@ function askFontImportOptions(file, font, bytes) {
     { label: 'Import', onClick: () => {
         const gv = id => { const el = document.getElementById(id); return el ? el.checked : true; };
         const opts = { outlines: gv('impOutlines'), marks: gv('impMarks'), anchors: gv('impAnchors') };
-        if (!opts.outlines && !opts.marks && !opts.anchors) { status('Nothing selected — import cancelled.'); return; }
+        if (!opts.outlines && !opts.marks && !opts.anchors) { status(I18n.t('fontmaker.status.nothing_selected')); return; }
         // Confirm before overwriting letters the user has already drawn (only when replacing outlines).
         const existing = opts.outlines ? project.letters.filter(x => x.contours && x.contours.length).length : 0;
         if (existing > 0) {
@@ -5112,13 +5112,13 @@ function askFontImportOptions(file, font, bytes) {
   ]);
 }
 async function applyFontImport(file, font, bytes, opts) {
-  status('Importing font…', true);
+  status(I18n.t('fontmaker.status.importing_font'), true);
   try {
     let imported = null, hadGpos = false, anchorErr = false;
     if (opts.anchors) {
       try {
         await ensurePyodide();
-        status('Reading anchor positions…', true);
+        status(I18n.t('fontmaker.status.reading_anchors'), true);
         pyodide.globals.set('hfm_anchor_b64', bytesToB64(bytes));
         pyodide.globals.set('hfm_anchor_classmap', JSON.stringify(anchorClassMapForImport()));
         const r = JSON.parse(pyodide.runPython('hfm_read_anchors(hfm_anchor_b64, hfm_anchor_classmap)'));
@@ -5387,7 +5387,7 @@ function matchSvgEntryToCp(entry, nameMap) {
 }
 function autoSplitCombinedSvg() {
   const parsed = combinedSvgParsed();
-  if (!parsed) { status('Load an SVG sheet first.'); return 0; }
+  if (!parsed) { status(I18n.t('fontmaker.status.load_svg_first')); return 0; }
   const sh = curCombinedSheet(), nameMap = buildSvgNameMap(), byCp = {};
   parsed.entries.forEach(entry => {
     const cp = matchSvgEntryToCp(entry, nameMap); if (!cp) return;
@@ -5400,7 +5400,7 @@ function autoSplitCombinedSvg() {
     const contours = svgLoopsToContours(byCp[cp], { span: svgSpanFor(cp, 'letter') });
     if (contours) built.push({ l, cp, contours });
   });
-  if (!built.length) { status('No SVG elements matched a letter name. Box each letter by hand, or name elements like id="uni05D0".'); return 0; }
+  if (!built.length) { status(I18n.t('fontmaker.status.no_svg_matched')); return 0; }
   udDo(built.map(b => ({ t: 'item', kind: 'letter', cp: b.cp })), 'auto-split SVG (' + built.length + ')', () => {
     built.forEach(b => assignSvgContours(b.l, 'letter', b.contours, sh && sh.id, null));
   });
@@ -5420,7 +5420,7 @@ function finalizeCropSvg(l, parsed, im, rect, csh) {
   });
   const kind = curKind;
   const contours = loops.length ? svgLoopsToContours(loops, { span: svgSpanFor(l.codepoint, kind) }) : null;
-  if (!contours) { status('No vector shapes inside that box — drag around a letter.'); renderStage(); return; }
+  if (!contours) { status(I18n.t('fontmaker.status.no_vector_in_box')); renderStage(); return; }
   udDo([itemScope()], 'crop SVG — ' + l.name, () => { assignSvgContours(l, kind, contours, csh && csh.id, rect); });
   renderGrids(); renderStage(); renderControls();
   if (kind === 'letter') setWorkMode('anchors');
@@ -7511,7 +7511,7 @@ function penPlacePoint(p, alt) {
   renderStage();
 }
 function closePenContour() {
-  if (!penDraft || penDraft.nodes.length < 3) { status('Place at least 3 points, then click the first point (or press Enter) to close.'); return; }
+  if (!penDraft || penDraft.nodes.length < 3) { status(I18n.t('fontmaker.status.pen_min_points')); return; }
   const l = curLetter(), count = penDraft.nodes.length;
   const nodes = penDraft.nodes.map(nd => ({ x:nd.x, y:nd.y, in: nd.in?nd.in.slice():null, out: nd.out?nd.out.slice():null, type: nd.type }));
   penDraft = null; _penMode = false; _hiddenContours.clear();
@@ -7647,7 +7647,7 @@ function _deleteContoursNow(l, doomed, empties) {
     status(l.name + ': outline cleared — re-trace or upload to start again.');
   } else {
     renderGrids(); renderStage(); renderControls();
-    status('Deleted ' + doomed.length + ' contour' + (doomed.length > 1 ? 's' : '') + '.');
+    status(I18n.t(doomed.length===1?'fontmaker.status.deleted_contours.one':'fontmaker.status.deleted_contours.other', {count: doomed.length}));
   }
 }
 /* Bulk speck removal: every contour under 1% of the largest contour's area. The largest survives
@@ -7655,17 +7655,17 @@ function _deleteContoursNow(l, doomed, empties) {
 function doRemoveSpecks() {
   if (!nodeModel) return;
   const l = curLetter();
-  if (nodeModel.contours.length < 2) { status('No specks found — the glyph has only one contour.'); return; }
+  if (nodeModel.contours.length < 2) { status(I18n.t('fontmaker.status.no_specks_one_contour')); return; }
   const areas = nodeModel.contours.map(ct => Math.abs(signedArea(nodeContourToPoints(ct))));
   const max = Math.max(...areas);
   const doomed = areas.map((a, ci) => a < 0.01 * max ? ci : -1).filter(ci => ci >= 0).sort((a, b) => b - a);
-  if (!doomed.length) { status('No specks found — every contour is at least 1% of the largest.'); return; }
+  if (!doomed.length) { status(I18n.t('fontmaker.status.no_specks')); return; }
   udDo([itemScope()], 'remove specks — ' + l.name, () => {
     doomed.forEach(ci => nodeModel.contours.splice(ci, 1));
     renestNodeModel(); writeThroughRebuild(l);
   });
   nodeSel.clear(); _hiddenContours.clear(); renderGrids(); renderStage(); renderControls();
-  status('Removed ' + doomed.length + ' speck contour' + (doomed.length > 1 ? 's' : '') + '.');
+  status(I18n.t(doomed.length===1?'fontmaker.status.removed_specks.one':'fontmaker.status.removed_specks.other', {count: doomed.length}));
 }
 /* ── Copy/paste selected points across letters (session-only clipboard; all glyphs share the same
       font-unit space, so a shape copied from Tav lands in exactly the right place in He) ── */
@@ -7687,7 +7687,7 @@ function copySelectedNodes() {
     nodes.forEach(nd => { nd.type = nodeIsSmooth(nd) ? 'smooth' : 'corner'; });
     contours.push({ nodes });
   });
-  if (!contours.length) { status('Select at least 3 points on a contour to copy.'); return false; }
+  if (!contours.length) { status(I18n.t('fontmaker.status.copy_min_points')); return false; }
   nodeClipboard = { sourceCp: curCp, pastes: 0, contours };
   status(`Copied ${contours.length} contour${contours.length > 1 ? 's' : ''} — open another letter's Edit points and press ${modKey()}+V.`);
   renderControls();                                          // enable the Paste button
@@ -7909,7 +7909,7 @@ function _traceCurrentNow() {
   udDo([itemScope()], 're-trace — ' + curLetter().name, () => {
     const l = curLetter();
     const raw = rawLoopsFontUnits(l);
-    if (!raw || !raw.length) { _rawTrace = null; l.contours = null; l.curves = null; status('No ink detected — adjust threshold / invert.'); renderStage(); renderControls(); renderLetterGrid(); return; }
+    if (!raw || !raw.length) { _rawTrace = null; l.contours = null; l.curves = null; status(I18n.t('fontmaker.status.no_ink')); renderStage(); renderControls(); renderLetterGrid(); return; }
     _rawTrace = { sig: traceSig(l), loops: raw };
     const n = finalizeWithOutline(l, raw);
     renderLetterGrid(); renderStage(); renderControls();
@@ -8763,7 +8763,7 @@ function meOpenUploadEditor() {                 // hand off to the existing per-
   closeMarkEdit();
   selectItem(kind, cp);
   setMarkDesignMode('upload');
-  status('Design this mark from an image here, then return to placing nikkud.');
+  status(I18n.t('fontmaker.status.mark_design_here'));
 }
 function meConfirmApply(scope) {
   if (meGlobal && scope !== 'all') return;   // grid launch: no letter context (the button is hidden; this is a guard)
@@ -9101,7 +9101,7 @@ function setKernValue(v) {
 }
 function addOrUpdateKernPair() {
   const e = kernEnsureEdit(), left = kernSideCps(e.left), right = kernSideCps(e.right);
-  if (!left.length || !right.length) { status('Pick a glyph or class for each side.'); return; }
+  if (!left.length || !right.length) { status(I18n.t('fontmaker.status.pick_glyph_side')); return; }
   udDo([{t:'kerning'}], 'kerning pair', () => {
     if (!Array.isArray(project.font.kerning)) project.font.kerning = [];
     const idx = kernPairIndex(left, right);
@@ -9184,7 +9184,7 @@ function suggestKernPairs() {
     cand.push({ a, b, v });
   }
   const pick = cand.filter(p => Math.abs(p.v) >= EPS).sort((x,y) => Math.abs(y.v) - Math.abs(x.v)).slice(0, 15);
-  if (!pick.length) { status('No new pairs need adjusting — trace more letters, lengthen the sample, or change Auto-tightness.'); return; }
+  if (!pick.length) { status(I18n.t('fontmaker.status.no_new_pairs')); return; }
   udDo([{t:'kerning'}], 'suggest kerning pairs', () => {
     if (!Array.isArray(project.font.kerning)) project.font.kerning = [];
     pick.forEach(p => project.font.kerning.push({ left:[p.a], right:[p.b], value:p.v }));
@@ -9235,8 +9235,8 @@ function deleteKernClass(id) {
 function saveKernClass() {
   const name = (document.getElementById('kernClassName').value || '').trim();
   const members = [...document.querySelectorAll('#kernClassList .kc-cp:checked')].map(c => c.value);
-  if (!name) { status('Give the class a name.'); return; }
-  if (!members.length) { status('Pick at least one letter for the class.'); return; }
+  if (!name) { status(I18n.t('fontmaker.status.give_class_name')); return; }
+  if (!members.length) { status(I18n.t('fontmaker.status.pick_class_letter')); return; }
   udDo([{t:'kerning'},{t:'kernClasses'}], 'kern class', () => {
     if (!Array.isArray(project.font.kernClasses)) project.font.kernClasses = [];
     if (kernClassEditId) {
@@ -9255,11 +9255,11 @@ function saveKernClass() {
   });
   closeKernClass();
   renderKerningSection();
-  status('Kern class saved.');
+  status(I18n.t('fontmaker.status.kern_class_saved'));
 }
 function savePlacement() {
   const l = curLetter();
-  if (!l.anchors) { status('Set the nikkud anchors first.'); return; }
+  if (!l.anchors) { status(I18n.t('fontmaker.status.set_anchors_first')); return; }
   udDo([itemScope()], 'confirm placement', () => {
     l.placementSaved = true;
     l.placementInherited = false;   // a hand-confirm supersedes a carried-over placement
@@ -9267,7 +9267,7 @@ function savePlacement() {
     renderLetterGrid(); renderControls();
   });
   lastSavedAnchors = JSON.parse(JSON.stringify(l.anchors)); // carry these coordinates onto the next fresh letter
-  status('Placement confirmed for ' + l.name + ' ✓');
+  status(I18n.t('fontmaker.status.placement_confirmed', {name: gName(l.name)}));
   markDirty();   // savedAnchors is snapshot-exempt, so keep the explicit dirty flag for that baseline write
 }
 function dropPlacementConfirm(l) {   // an anchor move makes a confirmed/carried-over placement "unconfirmed" again
@@ -10021,15 +10021,15 @@ async function ensurePyodide(opts) {
   if (pyodideLoading) return pyodideLoading;
   pyodideLoading = (async () => {
     try {
-      if (!background) status('Loading font engine (one-time ~8 MB)…', true);
+      if (!background) status(I18n.t('fontmaker.status.loading_engine'), true);
       _setPyoPhase('download');
       if (!window.loadPyodide) await loadScript('https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js');
       pyodide = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/' });
-      if (!background) status('Installing fontTools…', true);
+      if (!background) status(I18n.t('fontmaker.status.installing_fonttools'), true);
       _setPyoPhase('install');
       await pyodide.loadPackage('fonttools');
       pyodide.runPython(PY_BUILDER);
-      if (!background) status('Font engine ready.', true);
+      if (!background) status(I18n.t('fontmaker.status.engine_ready'), true);
       _setPyoPhase('ready');
       return pyodide;
     } catch (err) {
@@ -10520,7 +10520,7 @@ function qaPairControlHtml() {
 }
 function closeQA() { aCloseModal('qaOverlay'); }
 function openQA() {
-  if (!project) { status('Open or create a project first.'); return; }
+  if (!project) { status(I18n.t('fontmaker.status.open_create_first')); return; }
   const customQaOn = project.font.addCustomGlyphs && customMarkCps().length > 0;
   const have = { nikkud: project.font.nikkud.enabled || customQaOn, trop: project.font.trop.enabled, stacked: project.font.nikkud.enabled && project.font.trop.enabled };
   if (!have[qaTab]) qaTab = have.nikkud ? 'nikkud' : (have.trop ? 'trop' : 'nikkud');   // fall back to a tab that has columns
@@ -11328,7 +11328,7 @@ async function exportFont() {
   const fmt = (document.getElementById('exportFormat') || {}).value || 'ttf';
   const nikOn = project.font.nikkud.enabled;
   const s = coreLetterStats();
-  if (s.traced === 0) { status('Trace at least one letter first.'); return; }
+  if (s.traced === 0) { status(I18n.t('fontmaker.status.trace_first')); return; }
   if (s.blanks.length) {
     const anchorNote = (nikOn && s.unanchored.length)
       ? ` Also, ${s.unanchored.length} traced letter${s.unanchored.length === 1 ? '' : 's'} ${s.unanchored.length === 1 ? 'has' : 'have'} no nikkud anchors yet, so vowels may sit wrong.` : '';
@@ -11366,7 +11366,7 @@ async function doExport(fmt) {
   fmt = fmt || 'ttf';
   const btn = document.getElementById('exportBtn');
   btn.disabled = true;
-  status('Starting export…', true);
+  status(I18n.t('fontmaker.status.starting_export'), true);
   window._lastFellBack = [];   // reset per export so a prior run's faceted-glyph warning never leaks (esp. into the UFO path)
   window._lastGateSkipped = false;   // reset per export — set only when marks were enabled but the shaping check couldn't run
   const _prevVersion = project.font.version;
@@ -11394,7 +11394,7 @@ async function doExport(fmt) {
 
     // UFO is a source format — built straight from the spec (cubic curves + anchors); no TTF/shaping gate.
     if (fmt === 'ufo') {
-      status('Building UFO…', true);
+      status(I18n.t('fontmaker.status.building_ufo'), true);
       const spec = buildUfoSpec();
       pyodide.globals.set('hfm_spec_json', JSON.stringify(spec));
       const ures = JSON.parse(pyodide.runPython('hfm_build_ufo(hfm_spec_json)'));
@@ -11405,7 +11405,7 @@ async function doExport(fmt) {
       return;
     }
 
-    status('Building font…', true);
+    status(I18n.t('fontmaker.status.building_font'), true);
     const spec = buildFontSpec();
     pyodide.globals.set('hfm_spec_json', JSON.stringify(spec));
     const res = JSON.parse(pyodide.runPython('hfm_build(hfm_spec_json)'));
@@ -11417,7 +11417,7 @@ async function doExport(fmt) {
     const bytes = b64ToBytes(res.ttf_b64);
 
     // harfbuzz shaping gate (only meaningful when the font has marks to position)
-    status('Validating shaping…', true);
+    status(I18n.t('fontmaker.status.validating_shaping'), true);
     const marksOn = project.font.nikkud.enabled || project.font.trop.enabled;
     const gate = marksOn ? await harfbuzzGate(bytes) : { skipped: true };
     window._lastGateSkipped = marksOn && !!(gate && gate.skipped);   // a marks-off skip is benign — nothing to validate
@@ -11449,7 +11449,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
   }
   // WOFF2 / TTF+WOFF2 zip — re-flavour the just-built TTF through fontTools (brotli loaded on demand)
   try {
-    status('Compressing WOFF2…', true);
+    status(I18n.t('fontmaker.status.compressing_woff2'), true);
     await pyodide.loadPackage(['brotli']);
     pyodide.globals.set('hfm_ttf_b64', bytesToB64(bytes));
     const wr = JSON.parse(pyodide.runPython('hfm_ttf_to_woff2(hfm_ttf_b64)'));
@@ -11457,7 +11457,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
     const woff2 = b64ToBytes(wr.woff2_b64);
     if (fmt === 'woff2') {
       downloadBlob(new Blob([woff2], {type:'font/woff2'}), fam + '.woff2');
-      status('Exported ' + fam + '.woff2 ✓');
+      status(I18n.t('fontmaker.status.exported_woff2', {name: fam}));
       offerSaveToMyFonts(true);   // single-file → offer LICENSE.txt reliably from the success screen
       return true;
     }
@@ -11593,12 +11593,12 @@ function deleteMyFontUI(name) {
     [{ label: 'Cancel', cls: 'ghost' }, { label: 'Remove', onClick: async () => { try { await deleteUserFont(name); } catch (e) { console.error(e); } if (_myFontsOpen) renderMyFontsList(); } }]);
 }
 async function saveCurrentToMyFonts(bytes) {
-  if (!project || project.letters.filter(l => l.contours).length === 0) { status('Trace at least one letter first.'); return; }
+  if (!project || project.letters.filter(l => l.contours).length === 0) { status(I18n.t('fontmaker.status.trace_first')); return; }
   const fam = (project.font.familyName || 'My Hebrew Font').trim();
   try {
-    if (!bytes) { status('Building font…', true); bytes = await buildFontBytes(); }
+    if (!bytes) { status(I18n.t('fontmaker.status.building_font'), true); bytes = await buildFontBytes(); }
     await saveUserFont(fam, bytes, fam);
-    status('Saved “' + fam + '” to My Fonts ✓');
+    status(I18n.t('fontmaker.status.saved_myfonts', {name: fam}));
     if (_myFontsOpen) renderMyFontsList();
   } catch (e) {
     console.error(e); status('');
@@ -11873,12 +11873,12 @@ async function harfbuzzGate(bytes) {
    ════════════════════════════════════════════════════════════════════════ */
 async function generatePreviewPDF() {
   if (!project) return;
-  if (!project.letters.some(l => l.contours)) { status('Trace at least one letter first, then Preview PDF.'); return; }
-  status('Building font for preview…', true);
+  if (!project.letters.some(l => l.contours)) { status(I18n.t('fontmaker.status.trace_first_preview')); return; }
+  status(I18n.t('fontmaker.status.building_font_preview'), true);
   let fontBytes;
   try { fontBytes = await buildFontBytes(); }            // build the TTF on demand — no separate Export needed
   catch (e) { console.error(e); status(''); askModal('Preview error', '<span class="warn">'+(e.message||e)+'</span>', [{label:'OK'}]); return; }
-  status('Building preview PDF…', true);
+  status(I18n.t('fontmaker.status.building_preview_pdf'), true);
   try {
     const fam = 'HFMPreview_' + Date.now();
     const ff = new FontFace(fam, fontBytes.buffer.slice(0));
@@ -12010,7 +12010,7 @@ async function generatePreviewPDF() {
       if (chars.length) specimenPage('Custom glyphs', chars, { rtl: true, cols: 8, glyphPx: 42 });
     }
     pdf.save((project.font.familyName||'font').replace(/\s+/g,'_') + '_specimen.pdf');
-    status('Preview PDF saved.');
+    status(I18n.t('fontmaker.status.preview_pdf_saved'));
   } catch (e) { console.error(e); status(''); askModal('PDF error', '<span class="warn">'+(e.message||e)+'</span>', [{label:'OK'}]); }
 }
 /* ════════════════════════════════════════════════════════════════════════
@@ -12090,7 +12090,7 @@ async function renderTemplateCanvases(kind) {
 async function downloadTemplate(kind, fmt) {
   const spec = TEMPLATE_SPECS[kind];
   if (!spec) return;
-  status('Building ' + spec.title + ' template…', true);
+  status(I18n.t('fontmaker.status.building_template', {title: spec.title}), true);
   try {
     const canvases = await renderTemplateCanvases(kind);
     const stem = spec.title.replace(/[^a-z0-9]+/gi, '_').replace(/^_|_$/g, '') + '_template';
@@ -12144,10 +12144,10 @@ async function saveToComputer() {
   const stamp = `${mon}_${d.getDate()}_${d.getFullYear()}_FontMaker`;
   if (typeof CompressionStream !== 'undefined') {
     downloadBlob(await gzipBlob(json), `${stamp}.hebrewfont`);   // single compressed self-contained file
-    status('Project saved to your computer (.hebrewfont).');
+    status(I18n.t('fontmaker.status.project_saved_computer'));
   } else {
     downloadBlob(new Blob([json], { type: 'application/json' }), `${stamp}.json`);  // old-browser fallback
-    status('Project saved to your computer.');
+    status(I18n.t('fontmaker.status.project_saved_computer2'));
   }
   pushRecentProject(project);   // also refresh the in-browser Recent list
   markClean();   // saved to a file → drop the unsaved-work breadcrumb
@@ -12164,7 +12164,7 @@ function saveToBrowser() {
     return;
   }
   markClean();   // saved in this browser → drop the unsaved-work breadcrumb (Recent keeps the full copy)
-  status('Saved in this browser ✓  ·  reopen from Load Project ▾ → Recent');
+  status(I18n.t('fontmaker.status.saved_browser'));
   // Periodic nudge — the browser copy is NOT a real backup.
   if (Date.now() - _lastBrowserReminder > 10*60*1000) {
     _lastBrowserReminder = Date.now();
@@ -12197,11 +12197,11 @@ async function loadProjectFile(file) {
       text = new TextDecoder().decode(buf);                     // legacy plain-JSON .json
     }
     data = ivritSafeParse(text);
-  } catch { status('Not a valid project file.'); return; }
-  if (await applyProjectData(data)) status('Project loaded.');
+  } catch { status(I18n.t('fontmaker.status.not_valid_project')); return; }
+  if (await applyProjectData(data)) status(I18n.t('fontmaker.status.project_loaded'));
 }
 async function applyProjectData(data) {           // shared by file-load and "Load recent"
-  if (!data || data.format !== 'hebrew-font-maker-project') { status('Not a Font Maker project file.'); return false; }
+  if (!data || data.format !== 'hebrew-font-maker-project') { status(I18n.t('fontmaker.status.not_fontmaker_file')); return false; }
   project = migrateProject(data);
   udClear();                 // loaded project → reset undo history
   _flatCache = { url: null, canvas: null };   // don't pin a full-res flattened canvas from the previous project
@@ -12245,7 +12245,7 @@ function pushRecentProject(p) {
 }
 async function loadRecentProject(idx) {
   const r = getRecentProjects()[idx]; if (!r) return;
-  if (await applyProjectData(JSON.parse(JSON.stringify(r.data)))) status('Loaded “' + r.name + '”.');
+  if (await applyProjectData(JSON.parse(JSON.stringify(r.data)))) status(I18n.t('fontmaker.status.loaded_named', {name: r.name}));
 }
 /* "Load Project ▾" split menu: From computer… + the recent list */
 function recentDate(iso) { try { return new Date(iso).toLocaleDateString(undefined, { month:'short', day:'numeric' }); } catch (e) { return ''; } }
@@ -12344,7 +12344,7 @@ async function maybeRestoreAutosave() {
     `Reopen your most recent work from <b>${_autosaveRelTime((rec && rec.savedAt) || data.savedAt)}</b>?`
     + (stripped ? '<br><span class="warn">Your browser couldn’t keep the source photos this time — traced outlines remain, but uploaded scans may be missing.</span>' : '')
     + '<br><span style="color:var(--muted);font-size:0.82rem;">Your saved files are untouched either way.</span>',
-    [ { label: 'Continue', onClick: async () => { if (await applyProjectData(data)) status('Reopened your most recent work.'); } },
+    [ { label: 'Continue', onClick: async () => { if (await applyProjectData(data)) status(I18n.t('fontmaker.status.reopened_recent')); } },
       { label: 'Start fresh', cls: 'ghost', onClick: () => autosaveDiscard() } ]);
 }
 function migrateProject(data) {
@@ -12507,7 +12507,7 @@ function applyAlignDo(){
     renderGrids(); renderStage(); renderControls();
   });
   closeApplyAlign();
-  status('Applied alignment to ' + targets.length + ' letter' + (targets.length === 1 ? '' : 's') + '.');
+  status(I18n.t(targets.length===1?'fontmaker.status.applied_alignment.one':'fontmaker.status.applied_alignment.other', {count: targets.length}));
 }
 // Apply the current letter's nikkud/trop anchor positions to other letters (one undoable batch).
 function openApplyNikkud(){
@@ -12550,7 +12550,7 @@ function applyNikkudDo(){
     renderGrids(); renderStage(); renderControls();
   });
   closeApplyNikkud();
-  status('Applied nikkud positioning to ' + targets.length + ' letter' + (targets.length === 1 ? '' : 's') + '.');
+  status(I18n.t(targets.length===1?'fontmaker.status.applied_nikkud.one':'fontmaker.status.applied_nikkud.other', {count: targets.length}));
 }
 // Copy another letter's traced outline into the current letter as a starting point (one undoable step).
 function openCopyOutline(){
@@ -12558,7 +12558,7 @@ function openCopyOutline(){
   const tgt = document.getElementById('copyOutlineTarget'); if (tgt) tgt.textContent = t.name;
   const host = document.getElementById('copyOutlineList'); host.innerHTML = '';
   const sources = project.letters.filter(L => L.codepoint !== t.codepoint && L.contours && L.contours.length);
-  if (!sources.length) { status('No other letters have a traced outline to copy yet.'); return; }
+  if (!sources.length) { status(I18n.t('fontmaker.status.no_outline_to_copy')); return; }
   let first = true;
   sources.forEach(L => {
     const lab = document.createElement('label'); lab.className = 'chk'; lab.style.cssText = 'font-size:0.84rem;';
@@ -12573,7 +12573,7 @@ function copyOutlineDo(){
   const t = curLetter(); if (!t) { closeCopyOutline(); return; }
   const cp = (document.querySelector('#copyOutlineList .co-cp:checked')||{}).value;
   const src = cp && project.letters.find(l => l.codepoint === cp);
-  if (!src || !src.contours) { status('Pick a letter that has a traced outline.'); return; }
+  if (!src || !src.contours) { status(I18n.t('fontmaker.status.pick_traced_outline')); return; }
   const alsoWidth = !!(document.getElementById('copyOutlineWidth') && document.getElementById('copyOutlineWidth').checked);
   const clone = v => v ? JSON.parse(JSON.stringify(v)) : null;
   udDo([itemScope()], 'copy outline from ' + src.name, () => {
@@ -12585,7 +12585,7 @@ function copyOutlineDo(){
     renderGrids(); renderStage(); renderControls();
   });
   closeCopyOutline();
-  status('Copied outline from ' + src.name + ' — reshape it with “✎ Edit points”.');
+  status(I18n.t('fontmaker.status.copied_outline', {name: gName(src.name)}));
 }
 function init() {
   initDark();
@@ -12655,7 +12655,7 @@ function init() {
   // re-measure the template glyph once web fonts settle
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (project) renderStage(); });
   if (!window.WebAssembly || !window.FontFace) {
-    status('Heads up: this browser may not support font export (needs WASM + FontFace).', true);
+    status(I18n.t('fontmaker.status.export_no_wasm'), true);
   }
   // Wire i18n here (inside init, which runs on DOMContentLoaded) so the deferred /js/i18n.js
   // has already defined window.I18n — at top-level script parse time it is still undefined.
