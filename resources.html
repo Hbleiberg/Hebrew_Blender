@@ -17,6 +17,7 @@
 <link rel="manifest" href="manifest.webmanifest?v=3">
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
+<script src="/js/i18n.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -119,6 +120,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <style>@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}</style>
 <script>(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<!-- No-flash UI-language IIFE — mirrors the dark-mode one; sets dir/lang before paint so Hebrew
+     never flashes LTR->RTL. Authoritative set happens later in /js/i18n.js. -->
+<script>(function(){try{var p=new URLSearchParams(location.search).get('lang');
+  var l=(p==='en'||p==='he')?p:(localStorage.getItem('hebrewBlender_lang')||'en');
+  if(l!=='en'&&l!=='he')l='en';
+  document.documentElement.lang=l;
+  document.documentElement.dir=(l==='he'?'rtl':'ltr');}catch(e){}})();</script>
 <style>
 :root {
   --navy:#1a2744;--navy-deep:#0d1220;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
@@ -137,7 +145,7 @@ header{background:var(--navy);color:#fff;padding:16px 32px;display:flex;align-it
 header .star{font-size:28px;color:var(--gold);flex-shrink:0;}
 header h1{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
 header p{font-size:0.82rem;color:var(--gold-light);margin-top:2px;}
-header .hright{margin-left:auto;display:flex;align-items:center;gap:8px;}
+header .hright{margin-inline-start:auto;display:flex;align-items:center;gap:8px;}
 .hbtn{display:inline-flex;align-items:center;gap:5px;background:none;border:1px solid rgba(255,255,255,0.3);color:#fff;border-radius:6px;padding:5px 12px;font-size:0.82rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;text-decoration:none;transition:background 0.15s;}
 .hbtn:hover{background:rgba(255,255,255,0.12);}
 .dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;}
@@ -198,7 +206,7 @@ footer a{color:var(--gold);text-decoration:none;}
 
 /* ── Suggest a Resource: CTA button + modal ── */
 .filter-bar{position:relative;}
-.suggest-btn{position:absolute;right:18px;bottom:12px;display:inline-flex;align-items:center;gap:6px;background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:8px 16px;font-size:0.88rem;font-weight:700;font-family:'Source Sans 3',sans-serif;cursor:pointer;transition:background 0.15s,transform 0.05s;}
+.suggest-btn{position:absolute;inset-inline-end:18px;bottom:12px;display:inline-flex;align-items:center;gap:6px;background:var(--gold);color:var(--navy);border:none;border-radius:8px;padding:8px 16px;font-size:0.88rem;font-weight:700;font-family:'Source Sans 3',sans-serif;cursor:pointer;transition:background 0.15s,transform 0.05s;}
 .suggest-btn:hover{background:var(--gold-light);}
 .suggest-btn:active{transform:scale(0.98);}
 @media(max-width:860px){.suggest-btn{position:static;margin-top:6px;align-self:flex-start;}}
@@ -287,129 +295,130 @@ body.dark #fontToast{background:#2a4070;}
 <header>
   <span class="star">✡︎</span>
   <div>
-    <h1>Teaching Resources</h1>
-    <p>Hebrew literacy tools and references</p>
+    <h1 data-i18n="resources.header.title">Teaching Resources</h1>
+    <p data-i18n="resources.header.tagline">Hebrew literacy tools and references</p>
   </div>
   <div class="hright">
-    <a class="hbtn" href="/">← Back</a>
-    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false">🌙 Dark</button>
+    <div data-i18n-switcher></div>
+    <a class="hbtn" href="/" data-i18n="resources.header.back_link">← Back</a>
+    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false" title="Toggle dark mode" data-i18n="shared.darkmode.label_dark" data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title">🌙 Dark</button>
   </div>
 </header>
 
 <main>
-  <h2 class="page-heading">Resources</h2>
-  <p class="page-sub">A curated directory of free Hebrew learning resources, worksheets, dictionaries, and Jewish education tools for teachers and students.</p>
+  <h2 class="page-heading" data-i18n="resources.page_heading">Resources</h2>
+  <p class="page-sub" data-i18n="resources.page_sub">A curated directory of free Hebrew learning resources, worksheets, dictionaries, and Jewish education tools for teachers and students.</p>
 
   <div class="view-toggle">
-    <button data-view="links" class="active" onclick="setView('links')">📚 Links</button>
-    <button data-view="fonts" onclick="setView('fonts')">🔤 Fonts</button>
+    <button data-view="links" class="active" onclick="setView('links')" data-i18n="resources.view.links">📚 Links</button>
+    <button data-view="fonts" onclick="setView('fonts')" data-i18n="resources.view.fonts">🔤 Fonts</button>
   </div>
 
   <div id="linksRegion">
   <div class="filter-bar">
     <div class="filter-row">
-      <span class="filter-label">Category</span>
-      <button class="filter-btn active" data-filter="cat" data-value="all">All</button>
-      <button class="filter-btn" data-filter="cat" data-value="lesson-planning">📘 Lesson Planning</button>
-      <button class="filter-btn" data-filter="cat" data-value="printable">🖨️ Printables</button>
-      <button class="filter-btn" data-filter="cat" data-value="tanakh">📖 Tanakh</button>
-      <button class="filter-btn" data-filter="cat" data-value="hebrew">🇮🇱 Hebrew</button>
-      <button class="filter-btn" data-filter="cat" data-value="culture">🎭 Culture</button>
-      <button class="filter-btn" data-filter="cat" data-value="misc">🧩 Miscellaneous</button>
+      <span class="filter-label" data-i18n="resources.filters.category_label">Category</span>
+      <button class="filter-btn active" data-filter="cat" data-value="all" data-i18n="resources.filters.cat_all">All</button>
+      <button class="filter-btn" data-filter="cat" data-value="lesson-planning" data-i18n="resources.filters.cat_lesson">📘 Lesson Planning</button>
+      <button class="filter-btn" data-filter="cat" data-value="printable" data-i18n="resources.filters.cat_printable">🖨️ Printables</button>
+      <button class="filter-btn" data-filter="cat" data-value="tanakh" data-i18n="resources.filters.cat_tanakh">📖 Tanakh</button>
+      <button class="filter-btn" data-filter="cat" data-value="hebrew" data-i18n="resources.filters.cat_hebrew">🇮🇱 Hebrew</button>
+      <button class="filter-btn" data-filter="cat" data-value="culture" data-i18n="resources.filters.cat_culture">🎭 Culture</button>
+      <button class="filter-btn" data-filter="cat" data-value="misc" data-i18n="resources.filters.cat_misc">🧩 Miscellaneous</button>
     </div>
     <div class="filter-row">
-      <span class="filter-label">Age Group</span>
-      <button class="filter-btn active" data-filter="age" data-value="all">All Ages</button>
-      <button class="filter-btn" data-filter="age" data-value="early">Early Learners (K–2)</button>
-      <button class="filter-btn" data-filter="age" data-value="elementary">Elementary (3–5)</button>
-      <button class="filter-btn" data-filter="age" data-value="middle">Middle / High (6–12)</button>
-      <button class="filter-btn" data-filter="age" data-value="adult">Adult / Teacher</button>
+      <span class="filter-label" data-i18n="resources.filters.age_label">Age Group</span>
+      <button class="filter-btn active" data-filter="age" data-value="all" data-i18n="resources.filters.age_all">All Ages</button>
+      <button class="filter-btn" data-filter="age" data-value="early" data-i18n="resources.filters.age_early">Early Learners (K–2)</button>
+      <button class="filter-btn" data-filter="age" data-value="elementary" data-i18n="resources.filters.age_elementary">Elementary (3–5)</button>
+      <button class="filter-btn" data-filter="age" data-value="middle" data-i18n="resources.filters.age_middle">Middle / High (6–12)</button>
+      <button class="filter-btn" data-filter="age" data-value="adult" data-i18n="resources.filters.age_adult">Adult / Teacher</button>
     </div>
-    <button class="suggest-btn" onclick="openSuggestModal()">✚ Suggest a Resource</button>
+    <button class="suggest-btn" onclick="openSuggestModal()" data-i18n="resources.filters.suggest_button">✚ Suggest a Resource</button>
   </div>
 
   <p class="results-count" id="resultsCount"></p>
   <div class="resource-grid" id="resourceGrid"></div>
   <div class="empty-state" id="emptyState" style="display:none;">
     <div class="emoji">🔍</div>
-    <p>No resources match the selected filters.</p>
+    <p data-i18n="resources.empty.links">No resources match the selected filters.</p>
   </div>
   </div>
 
   <div id="fontsRegion" style="display:none;">
   <div class="filter-bar">
     <div class="filter-row">
-      <span class="filter-label">Type</span>
-      <button class="filter-btn active" data-filter="ftype" data-value="all">All fonts</button>
-      <button class="filter-btn" data-filter="ftype" data-value="block">Block (Print)</button>
-      <button class="filter-btn" data-filter="ftype" data-value="cursive">Cursive (כתב)</button>
-      <button class="filter-btn" data-filter="ftype" data-value="torah">Torah</button>
-      <button class="filter-btn" data-filter="ftype" data-value="other">Other</button>
+      <span class="filter-label" data-i18n="resources.filters.ftype_label">Type</span>
+      <button class="filter-btn active" data-filter="ftype" data-value="all" data-i18n="resources.filters.ftype_all">All fonts</button>
+      <button class="filter-btn" data-filter="ftype" data-value="block" data-i18n="resources.filters.ftype_block">Block (Print)</button>
+      <button class="filter-btn" data-filter="ftype" data-value="cursive" data-i18n="resources.filters.ftype_cursive">Cursive (כתב)</button>
+      <button class="filter-btn" data-filter="ftype" data-value="torah" data-i18n="resources.filters.ftype_torah">Torah</button>
+      <button class="filter-btn" data-filter="ftype" data-value="other" data-i18n="resources.filters.ftype_other">Other</button>
     </div>
     <div class="filter-row">
-      <span class="filter-label">Features</span>
-      <button class="filter-btn active" data-filter="ffeat" data-value="all">All</button>
-      <button class="filter-btn" data-filter="ffeat" data-value="nikkud">Nikkud Supported</button>
-      <button class="filter-btn" data-filter="ffeat" data-value="trop">Trop Supported</button>
-      <button class="filter-btn" data-filter="ffeat" data-value="letters">Letters Only</button>
+      <span class="filter-label" data-i18n="resources.filters.ffeat_label">Features</span>
+      <button class="filter-btn active" data-filter="ffeat" data-value="all" data-i18n="resources.filters.ffeat_all">All</button>
+      <button class="filter-btn" data-filter="ffeat" data-value="nikkud" data-i18n="resources.filters.ffeat_nikkud">Nikkud Supported</button>
+      <button class="filter-btn" data-filter="ffeat" data-value="trop" data-i18n="resources.filters.ffeat_trop">Trop Supported</button>
+      <button class="filter-btn" data-filter="ffeat" data-value="letters" data-i18n="resources.filters.ffeat_letters">Letters Only</button>
     </div>
     <div class="filter-row">
-      <span class="filter-label">License</span>
-      <button class="filter-btn active" data-filter="flic" data-value="all">All Licenses</button>
-      <button class="filter-btn" data-filter="flic" data-value="cc0">CC0</button>
-      <button class="filter-btn" data-filter="flic" data-value="ofl">OFL</button>
-      <button class="filter-btn" data-filter="flic" data-value="other">Other</button>
+      <span class="filter-label" data-i18n="resources.filters.flic_label">License</span>
+      <button class="filter-btn active" data-filter="flic" data-value="all" data-i18n="resources.filters.flic_all">All Licenses</button>
+      <button class="filter-btn" data-filter="flic" data-value="cc0" data-i18n="resources.filters.flic_cc0">CC0</button>
+      <button class="filter-btn" data-filter="flic" data-value="ofl" data-i18n="resources.filters.flic_ofl">OFL</button>
+      <button class="filter-btn" data-filter="flic" data-value="other" data-i18n="resources.filters.flic_other">Other</button>
     </div>
-    <button class="suggest-btn" onclick="openSubmitFont()">✚ Submit a font</button>
+    <button class="suggest-btn" onclick="openSubmitFont()" data-i18n="resources.filters.submit_font_button">✚ Submit a font</button>
   </div>
 
   <p class="results-count" id="fontCount"></p>
   <div class="resource-grid" id="fontGrid"></div>
   <div class="empty-state" id="fontEmpty" style="display:none;">
     <div class="emoji">🔤</div>
-    <p>No fonts match the selected filters.</p>
+    <p data-i18n="resources.empty.fonts">No fonts match the selected filters.</p>
   </div>
   </div>
 
 </main>
 
-<footer style="margin-top:32px;text-align:left;padding:0;">
+<footer style="margin-top:32px;text-align:start;padding:0;">
   <div style="max-width:1200px;margin:0 auto;padding:12px 16px;font-family:'Source Sans 3',sans-serif;color:var(--muted);display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;align-items:start;">
     <div>
       <details>
-        <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;">Frequently Asked Questions</summary>
+        <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;" data-i18n="resources.faq.title">Frequently Asked Questions</summary>
         <div style="padding:4px 0;">
-          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">What's in the directory?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">A curated set of websites, printables, lesson-planning tools, Tanakh references, Hebrew language sites, and Jewish culture resources.</p></details>
-          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Are the resources free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Most are free; some link to paid services. Each card notes when registration or payment is required.</p></details>
-          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;">Who is this for?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;">Hebrew and Jewish-studies teachers, day-school faculty, supplementary-school teachers, parents, and adult learners.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="resources.faq.q1">What's in the directory?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="resources.faq.a1">A curated set of websites, printables, lesson-planning tools, Tanakh references, Hebrew language sites, and Jewish culture resources.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="resources.faq.q2">Are the resources free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="resources.faq.a2">Most are free; some link to paid services. Each card notes when registration or payment is required.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="resources.faq.q3">Who is this for?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="resources.faq.a3">Hebrew and Jewish-studies teachers, day-school faculty, supplementary-school teachers, parents, and adult learners.</p></details>
         </div>
       </details>
       <details style="margin-top:6px;">
-        <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;">How To Use</summary>
+        <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;" data-i18n="resources.faq.howto_title">How To Use</summary>
         <ol style="padding:6px 0 4px 20px;margin:0;font-size:0.78rem;line-height:1.55;">
-          <li>Pick a category (Lesson Planning, Printables, Tanakh, Hebrew, Culture, Misc).</li>
-          <li>Pick an age group (K–2, 3–5, 6–12, Adult/Teacher).</li>
-          <li>Click any resource card to open it in a new tab.</li>
+          <li data-i18n="resources.faq.howto_step1">Pick a category (Lesson Planning, Printables, Tanakh, Hebrew, Culture, Misc).</li>
+          <li data-i18n="resources.faq.howto_step2">Pick an age group (K–2, 3–5, 6–12, Adult/Teacher).</li>
+          <li data-i18n="resources.faq.howto_step3">Click any resource card to open it in a new tab.</li>
         </ol>
       </details>
     </div>
     <div style="font-size:0.72rem;line-height:1.5;text-align:center;">
-      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;">About</div>
+      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;" data-i18n="shared.footer.about_header">About</div>
       Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="font-weight:600;">Harrison Bleiberg</a><br>
       Word Data from <a href="https://kaikki.org/dictionary/Hebrew/index.html" target="_blank">Kaikki.org</a><br>
       <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
       <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank">GitHub</a>
     </div>
-    <nav aria-label="Related Hebrew Tools" style="text-align:right;">
-      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;">Related Hebrew Tools</div>
+    <nav aria-label="Related Hebrew Tools" data-i18n-aria-label="shared.nav.header" style="text-align:end;">
+      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;" data-i18n="shared.nav.header">Related Hebrew Tools</div>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:2px 14px;">
-        <li><a href="hebrew_blend_generator.html" style="font-size:0.8rem;">printable Hebrew worksheets →</a></li>
-        <li><a href="flash_cards.html" style="font-size:0.8rem;">Hebrew alphabet flash cards →</a></li>
-        <li><a href="hebrew_dictionary.html" style="font-size:0.8rem;">Hebrew word lookup →</a></li>
-        <li><a href="classroom_dashboard.html" style="font-size:0.8rem;">Hebrew classroom display →</a></li>
-        <li><a href="torah_trainer.html" style="font-size:0.8rem;">Torah reading practice →</a></li>
-        <li><a href="trope_tutor.html" style="font-size:0.8rem;">learn Torah trope (cantillation) →</a></li>
-        <li><a href="Hebrew_Font_Maker.html" style="font-size:0.8rem;">make your own Hebrew font →</a></li>
+        <li><a href="hebrew_blend_generator.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_worksheets">printable Hebrew worksheets →</a></li>
+        <li><a href="flash_cards.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_flashcards">Hebrew alphabet flash cards →</a></li>
+        <li><a href="hebrew_dictionary.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_dictionary">Hebrew word lookup →</a></li>
+        <li><a href="classroom_dashboard.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_dashboard">Hebrew classroom display →</a></li>
+        <li><a href="torah_trainer.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_torah">Torah reading practice →</a></li>
+        <li><a href="trope_tutor.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_trope">learn Torah trope (cantillation) →</a></li>
+        <li><a href="Hebrew_Font_Maker.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_fontmaker">make your own Hebrew font →</a></li>
       </ul>
     </nav>
   </div>
@@ -780,6 +789,8 @@ const CAT_META = {
   'culture':         { label: 'Culture',           icon: '🎭' },
   'misc':            { label: 'Miscellaneous',     icon: '🧩' },
 };
+/* cat key → resources.cat_badge.* i18n key suffix (only 'lesson-planning' differs from its key). */
+const CAT_BADGE_KEY = { 'lesson-planning':'lesson', 'printable':'printable', 'tanakh':'tanakh', 'hebrew':'hebrew', 'culture':'culture', 'misc':'misc' };
 
 /* ── Filter state ── */
 let activeCat = 'all';
@@ -805,21 +816,22 @@ function render() {
   }
 
   empty.style.display = 'none';
-  count.textContent = `Showing ${filtered.length} of ${RESOURCES.length} resources`;
+  count.textContent = I18n.t('resources.results_count', {count: filtered.length, total: RESOURCES.length});
 
   grid.innerHTML = filtered.map(r => {
     const cat = CAT_META[r.cat] || { label: r.cat, icon: '📌' };
+    const badgeLabel = CAT_BADGE_KEY[r.cat] ? I18n.t('resources.cat_badge.' + CAT_BADGE_KEY[r.cat]) : cat.label;
     const target = r.url === 'index.html' ? '_self' : '_blank';
     return `
     <a class="resource-card" href="${r.url}" target="${target}" rel="noopener">
       <div class="card-top">
         <div class="card-icon">${cat.icon}</div>
-        <span class="card-cat-badge">${cat.label}</span>
+        <span class="card-cat-badge">${badgeLabel}</span>
       </div>
       <div class="card-title">${r.title}</div>
       <div class="card-desc">${r.desc}</div>
-      <div class="card-grade">Grades: ${r.gradeLabel}</div>
-      <span class="card-link">Visit resource</span>
+      <div class="card-grade">${I18n.t('resources.card.grades_prefix', {gradeLabel: r.gradeLabel})}</div>
+      <span class="card-link">${I18n.t('resources.card.visit_link')}</span>
     </a>`;
   }).join('');
 }
@@ -843,8 +855,20 @@ function toggleDark() {
   document.documentElement.classList.remove('dark-early');
   try { localStorage.setItem('hebrewBlender_darkMode', dark ? '1' : '0'); } catch(e) {}
   const _db = document.getElementById('darkBtn');
-  _db.textContent = dark ? '☀️ Light' : '🌙 Dark';
+  _db.textContent = dark ? I18n.t('shared.darkmode.label_light') : I18n.t('shared.darkmode.label_dark');
   _db.setAttribute('aria-pressed', dark ? 'true' : 'false');
+}
+
+/* ── i18n: fill static chrome + re-sync the state-dependent dark label + re-render the JS-built
+   grids on load and on every live language switch. Wired inside DOMContentLoaded because
+   /js/i18n.js is deferred (window.I18n is undefined at inline-script parse time). ── */
+function applyI18n() {
+  if (!window.I18n) return;
+  I18n.applyStaticI18n();
+  const _db = document.getElementById('darkBtn');
+  if (_db) _db.textContent = I18n.t(document.body.classList.contains('dark') ? 'shared.darkmode.label_light' : 'shared.darkmode.label_dark');
+  render();
+  renderFonts();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -853,7 +877,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.body.classList.add('dark');
       const _db = document.getElementById('darkBtn');
-      _db.textContent = '☀️ Light';
+      _db.textContent = (window.I18n ? I18n.t('shared.darkmode.label_light') : '☀️ Light');
       _db.setAttribute('aria-pressed', 'true');
     }
   } catch(e) {}
@@ -871,6 +895,7 @@ document.addEventListener('DOMContentLoaded', () => {
       history.replaceState({}, '', location.pathname);   // clean the URL so a refresh doesn't re-fire
     }
   } catch(e) {}
+  if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
 });
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -995,26 +1020,27 @@ function renderFonts() {
     return;
   }
   empty.style.display = 'none';
-  count.textContent = 'Showing ' + filtered.length + ' of ' + FONTS.length + ' fonts';
+  count.textContent = I18n.t('resources.fonts_count', {count: filtered.length, total: FONTS.length});
   grid.innerHTML = filtered.map(f => {
     const i = FONTS.indexOf(f);
     ensureGalleryFont(f);
     const yn = b => b ? '<span class="fp-yes">✓</span>' : '<span class="fp-no">✗</span>';
-    const by = f.authorUrl
-      ? 'By <a href="' + esc(f.authorUrl) + '" target="_blank" rel="noopener">' + esc(f.author) + '</a>'
-      : 'By ' + esc(f.author);
+    const authorHtml = f.authorUrl
+      ? '<a href="' + esc(f.authorUrl) + '" target="_blank" rel="noopener">' + esc(f.author) + '</a>'
+      : esc(f.author);
+    const by = I18n.t('resources.fonts.by_prefix', {author: authorHtml});
     return '<div class="resource-card font-card">' +
       '<div class="card-top"><div class="card-title">' + esc(f.name) + '</div>' +
-      '<span class="card-cat-badge">' + esc(FTYPE_LABEL[f.type] || f.type) + '</span></div>' +
+      '<span class="card-cat-badge">' + esc(FTYPE_LABEL[f.type] ? I18n.t('resources.fonts.type_' + f.type) : f.type) + '</span></div>' +
       '<div class="font-preview-line" style="font-family:\'' + esc(f.family) + '\',serif;">' + esc(FONT_SAMPLE) + '</div>' +
       '<div class="font-by">' + by + '</div>' +
       '<div class="font-actions">' +
-        '<a onclick="openFontPreview(' + i + ')">🔍 Preview</a>' +
-        '<a onclick="downloadFont(' + i + ')">⬇ Download</a>' +
-        '<a onclick="useFontInIvritSuite(' + i + ')">★ Use in IvritSuite</a>' +
+        '<a onclick="openFontPreview(' + i + ')">' + esc(I18n.t('resources.fonts.preview_action')) + '</a>' +
+        '<a onclick="downloadFont(' + i + ')">' + esc(I18n.t('resources.fonts.download_action')) + '</a>' +
+        '<a onclick="useFontInIvritSuite(' + i + ')">' + esc(I18n.t('resources.fonts.use_action')) + '</a>' +
       '</div>' +
-      '<div class="font-meta-row"><span>Nikkud ' + yn(f.nikkud) + '</span>' +
-        '<span>Trop ' + yn(f.trop) + '</span>' +
+      '<div class="font-meta-row"><span>' + esc(I18n.t('resources.fonts.nikkud_label')) + ' ' + yn(f.nikkud) + '</span>' +
+        '<span>' + esc(I18n.t('resources.fonts.trop_label')) + ' ' + yn(f.trop) + '</span>' +
         '<span class="font-badge">' + esc(f.license) + '</span></div>' +
       '</div>';
   }).join('');
@@ -1175,14 +1201,14 @@ async function downloadFont(i) {
 }
 async function useFontInIvritSuite(i) {
   const f = FONTS[i]; if (!f) return;
-  if (!window.indexedDB || !window.FontFace) { fontToast('This browser can’t save fonts for reuse.'); return; }
+  if (!window.indexedDB || !window.FontFace) { fontToast(I18n.t('resources.fonts.toast_no_storage')); return; }
   try {
-    fontToast('Adding “' + f.name + '” …');
+    fontToast(I18n.t('resources.fonts.toast_adding', {name: f.name}));
     const buf = await (await fetch(f.file)).arrayBuffer();
     await saveUserFont(f.name, new Uint8Array(buf), f.family);
     try { await loadUserFont(f.name); } catch (_) {}
-    fontToast('✓ “' + f.name + '” added — pick it under “My Fonts” in any tool’s font selector.');
-  } catch (e) { console.error(e); fontToast('Sorry — couldn’t add that font. Try Download instead.'); }
+    fontToast(I18n.t('resources.fonts.toast_added', {name: f.name}));
+  } catch (e) { console.error(e); fontToast(I18n.t('resources.fonts.toast_add_error')); }
 }
 
 /* ── Submit a font — scraper-obscured mailto (address assembled at runtime) ── */
@@ -1192,21 +1218,21 @@ let _fontSubmitPrefill = null;   // set from a Font Maker "Share this font" deep
 function openSubmitFont(pf) {
   pf = pf || _fontSubmitPrefill || {};
   const ln = (label, val) => label + (val ? ' ' + val : '');
-  const subject = 'IvritSuite Font Submission' + (pf.name ? ': ' + pf.name : '');
+  const subject = I18n.t('resources.fonts.submit.subject') + (pf.name ? ': ' + pf.name : '');
   const body = [
-    ln('Font name:', pf.name),
-    'Type of font (Block / Cursive / Torah / Other):',
-    ln('Nikkud supported? (Yes / No):', pf.nikkud),
-    ln('Trop supported? (Yes / No):', pf.trop),
-    ln('License (CC0 / OFL / Other — please specify):', pf.license),
-    ln('Version number (if applicable):', pf.version),
+    ln(I18n.t('resources.fonts.submit.name'), pf.name),
+    I18n.t('resources.fonts.submit.type'),
+    ln(I18n.t('resources.fonts.submit.nikkud'), pf.nikkud),
+    ln(I18n.t('resources.fonts.submit.trop'), pf.trop),
+    ln(I18n.t('resources.fonts.submit.license'), pf.license),
+    ln(I18n.t('resources.fonts.submit.version'), pf.version),
     '',
-    ln('Your name:', pf.author),
-    'Your website (if applicable):',
+    ln(I18n.t('resources.fonts.submit.your_name'), pf.author),
+    I18n.t('resources.fonts.submit.your_website'),
     '',
-    '*** Please ATTACH your font file(s) (TTF / OTF / WOFF) and the license file to this email. ***',
+    I18n.t('resources.fonts.submit.attach'),
     '',
-    'Anything else we should know:'
+    I18n.t('resources.fonts.submit.anything_else')
   ].join('\r\n');
   window.location.href = 'mailto:' + emailAddr() + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
 }
@@ -1216,78 +1242,78 @@ function openSubmitFont(pf) {
 <div class="sg-backdrop" id="sgBackdrop" onclick="closeSuggestModal(event)">
   <div class="sg-modal" onclick="event.stopPropagation()">
     <div class="sg-modal-hdr">
-      <h3>✚ Suggest a Resource</h3>
-      <button class="sg-modal-close" onclick="closeSuggestModal()" aria-label="Close">×</button>
+      <h3 data-i18n="resources.suggest.title">✚ Suggest a Resource</h3>
+      <button class="sg-modal-close" onclick="closeSuggestModal()" aria-label="Close" data-i18n-aria-label="resources.modal.close_aria">×</button>
     </div>
     <div class="sg-modal-body">
-      <p class="sg-intro">Know a great Hebrew or Jewish-education resource? Share it and I'll consider adding it to the directory.</p>
+      <p class="sg-intro" data-i18n="resources.suggest.intro">Know a great Hebrew or Jewish-education resource? Share it and I'll consider adding it to the directory.</p>
       <form id="suggestForm">
         <input type="hidden" name="access_key" value="8c041c46-1e9f-41ac-9066-f42b21040a5a">
         <div class="sg-field">
-          <label for="sgName">Your name</label>
+          <label for="sgName" data-i18n="resources.suggest.name_label">Your name</label>
           <input type="text" id="sgName" name="name" required autocomplete="name">
         </div>
         <div class="sg-field">
-          <label for="sgEmail">Your email</label>
+          <label for="sgEmail" data-i18n="resources.suggest.email_label">Your email</label>
           <input type="email" id="sgEmail" name="email" required autocomplete="email">
         </div>
         <div class="sg-field">
-          <label for="sgResName">Resource name</label>
+          <label for="sgResName" data-i18n="resources.suggest.resname_label">Resource name</label>
           <input type="text" id="sgResName" name="Resource Name" required>
         </div>
         <div class="sg-field">
-          <label for="sgResUrl">Resource URL</label>
-          <input type="url" id="sgResUrl" name="Resource URL" placeholder="https://…" required>
+          <label for="sgResUrl" data-i18n="resources.suggest.resurl_label">Resource URL</label>
+          <input type="url" id="sgResUrl" name="Resource URL" placeholder="https://…" data-i18n-placeholder="resources.suggest.url_placeholder" required>
         </div>
         <div class="sg-field">
-          <label>Category <span class="sg-hint">— pick one</span></label>
+          <label><span data-i18n="resources.suggest.category_label">Category</span> <span class="sg-hint" data-i18n="resources.suggest.pick_one_hint">— pick one</span></label>
           <div class="sg-pillrow" id="sgCatPills">
-            <button type="button" class="sg-pill" data-val="Lesson Planning">📘 Lesson Planning</button>
-            <button type="button" class="sg-pill" data-val="Printables">🖨️ Printables</button>
-            <button type="button" class="sg-pill" data-val="Tanakh">📖 Tanakh</button>
-            <button type="button" class="sg-pill" data-val="Hebrew">🇮🇱 Hebrew</button>
-            <button type="button" class="sg-pill" data-val="Culture">🎭 Culture</button>
-            <button type="button" class="sg-pill" data-val="Miscellaneous">🧩 Miscellaneous</button>
+            <button type="button" class="sg-pill" data-val="Lesson Planning" data-i18n="resources.suggest.cat_lesson">📘 Lesson Planning</button>
+            <button type="button" class="sg-pill" data-val="Printables" data-i18n="resources.suggest.cat_printable">🖨️ Printables</button>
+            <button type="button" class="sg-pill" data-val="Tanakh" data-i18n="resources.suggest.cat_tanakh">📖 Tanakh</button>
+            <button type="button" class="sg-pill" data-val="Hebrew" data-i18n="resources.suggest.cat_hebrew">🇮🇱 Hebrew</button>
+            <button type="button" class="sg-pill" data-val="Culture" data-i18n="resources.suggest.cat_culture">🎭 Culture</button>
+            <button type="button" class="sg-pill" data-val="Miscellaneous" data-i18n="resources.suggest.cat_misc">🧩 Miscellaneous</button>
           </div>
           <input type="hidden" name="Category" id="sgCat">
         </div>
         <div class="sg-field">
-          <label>Format <span class="sg-hint">— pick one</span></label>
+          <label><span data-i18n="resources.suggest.format_label">Format</span> <span class="sg-hint" data-i18n="resources.suggest.pick_one_hint">— pick one</span></label>
           <div class="sg-pillrow" id="sgFormatPills">
-            <button type="button" class="sg-pill" data-val="Worksheet / Printable">Worksheet / Printable</button>
-            <button type="button" class="sg-pill" data-val="Website / App">Website / App</button>
-            <button type="button" class="sg-pill" data-val="Video">Video</button>
-            <button type="button" class="sg-pill" data-val="Book">Book</button>
-            <button type="button" class="sg-pill" data-val="Song / Audio">Song / Audio</button>
-            <button type="button" class="sg-pill" data-val="Game">Game</button>
-            <button type="button" class="sg-pill" data-val="Other">Other</button>
+            <button type="button" class="sg-pill" data-val="Worksheet / Printable" data-i18n="resources.suggest.format_worksheet">Worksheet / Printable</button>
+            <button type="button" class="sg-pill" data-val="Website / App" data-i18n="resources.suggest.format_website">Website / App</button>
+            <button type="button" class="sg-pill" data-val="Video" data-i18n="resources.suggest.format_video">Video</button>
+            <button type="button" class="sg-pill" data-val="Book" data-i18n="resources.suggest.format_book">Book</button>
+            <button type="button" class="sg-pill" data-val="Song / Audio" data-i18n="resources.suggest.format_song">Song / Audio</button>
+            <button type="button" class="sg-pill" data-val="Game" data-i18n="resources.suggest.format_game">Game</button>
+            <button type="button" class="sg-pill" data-val="Other" data-i18n="resources.suggest.format_other">Other</button>
           </div>
           <input type="hidden" name="Format" id="sgFormat">
         </div>
         <div class="sg-field">
-          <label>Intended age group <span class="sg-hint">— pick any that apply</span></label>
+          <label><span data-i18n="resources.suggest.age_label">Intended age group</span> <span class="sg-hint" data-i18n="resources.suggest.pick_any_hint">— pick any that apply</span></label>
           <div class="sg-pillrow" id="sgAgePills">
-            <button type="button" class="sg-pill" data-val="Early Learners (K–2)">Early Learners (K–2)</button>
-            <button type="button" class="sg-pill" data-val="Elementary (3–5)">Elementary (3–5)</button>
-            <button type="button" class="sg-pill" data-val="Middle / High (6–12)">Middle / High (6–12)</button>
-            <button type="button" class="sg-pill" data-val="Adult / Teacher">Adult / Teacher</button>
-            <button type="button" class="sg-pill" data-val="All Ages">All Ages</button>
+            <button type="button" class="sg-pill" data-val="Early Learners (K–2)" data-i18n="resources.suggest.age_early">Early Learners (K–2)</button>
+            <button type="button" class="sg-pill" data-val="Elementary (3–5)" data-i18n="resources.suggest.age_elementary">Elementary (3–5)</button>
+            <button type="button" class="sg-pill" data-val="Middle / High (6–12)" data-i18n="resources.suggest.age_middle">Middle / High (6–12)</button>
+            <button type="button" class="sg-pill" data-val="Adult / Teacher" data-i18n="resources.suggest.age_adult">Adult / Teacher</button>
+            <button type="button" class="sg-pill" data-val="All Ages" data-i18n="resources.suggest.age_all">All Ages</button>
           </div>
           <input type="hidden" name="Intended Age Group" id="sgAge">
         </div>
         <div class="sg-field">
-          <label for="sgDesc">Brief description</label>
-          <textarea id="sgDesc" name="Description" required placeholder="What is it, and why is it useful?"></textarea>
+          <label for="sgDesc" data-i18n="resources.suggest.desc_label">Brief description</label>
+          <textarea id="sgDesc" name="Description" required placeholder="What is it, and why is it useful?" data-i18n-placeholder="resources.suggest.desc_placeholder"></textarea>
         </div>
         <div class="sg-field">
-          <label for="sgNotes">Additional notes <span class="sg-hint">(optional)</span></label>
+          <label for="sgNotes"><span data-i18n="resources.suggest.notes_label">Additional notes</span> <span class="sg-hint" data-i18n="resources.suggest.optional_hint">(optional)</span></label>
           <textarea id="sgNotes" name="Additional Notes"></textarea>
         </div>
         <!-- honeypot: hidden from humans, catches bots -->
         <input type="checkbox" name="botcheck" class="honey" tabindex="-1" autocomplete="off" aria-hidden="true">
         <!-- hCaptcha (free, server-verified by Web3Forms via its shared site key); rendered on modal open -->
         <div id="sgHcaptcha" style="min-height:78px;"></div>
-        <button type="submit" class="sg-btn-primary">Send suggestion</button>
+        <button type="submit" class="sg-btn-primary" data-i18n="resources.suggest.submit_button">Send suggestion</button>
         <div id="sgStatus" role="status" aria-live="polite"></div>
       </form>
     </div>
@@ -1298,15 +1324,15 @@ function openSubmitFont(pf) {
 <div class="sg-backdrop" id="fontPreviewBackdrop" onclick="closeFontPreview(event)">
   <div class="sg-modal" onclick="event.stopPropagation()">
     <div class="sg-modal-hdr">
-      <h3 id="fontPreviewTitle">Preview</h3>
-      <button class="sg-modal-close" onclick="closeFontPreview()" aria-label="Close">×</button>
+      <h3 id="fontPreviewTitle" data-i18n="resources.preview.title">Preview</h3>
+      <button class="sg-modal-close" onclick="closeFontPreview()" aria-label="Close" data-i18n-aria-label="resources.modal.close_aria">×</button>
     </div>
     <div class="sg-modal-body">
-      <label for="fontPreviewInput" class="sg-hint" style="display:block;margin-bottom:6px;">Type Hebrew (or anything) to preview in this font:</label>
+      <label for="fontPreviewInput" class="sg-hint" style="display:block;margin-bottom:6px;" data-i18n="resources.preview.input_label">Type Hebrew (or anything) to preview in this font:</label>
       <input type="text" id="fontPreviewInput" dir="rtl" oninput="updateFontPreview()" value="שָׁלוֹם עוֹלָם">
       <div class="fp-render" id="fontPreviewRender"></div>
       <div class="fp-sizes" id="fontPreviewSizes"></div>
-      <button class="sg-btn-primary" style="margin-top:16px;" onclick="closeFontPreview()">‹ Back</button>
+      <button class="sg-btn-primary" style="margin-top:16px;" onclick="closeFontPreview()" data-i18n="resources.preview.back_button">‹ Back</button>
     </div>
   </div>
 </div>
@@ -1361,12 +1387,12 @@ function openSubmitFont(pf) {
     const token = (window.hcaptcha && hcId !== null) ? window.hcaptcha.getResponse(hcId) : '';
     if (!token){
       statusEl.style.color = 'var(--muted)';
-      statusEl.textContent = 'Please complete the “I’m human” check before sending.';
+      statusEl.textContent = I18n.t('resources.suggest.captcha_required');
       return;
     }
     btn.disabled = true;
     statusEl.style.color = 'var(--muted)';
-    statusEl.textContent = 'Sending…';
+    statusEl.textContent = I18n.t('resources.suggest.sending');
     const formData = new FormData(form);
     formData.set('subject', 'New Resource Suggestion: ' + (formData.get('Resource Name') || '').trim());
     formData.set('from_name', formData.get('name') || 'IvritSuite resource suggestion');
@@ -1386,15 +1412,17 @@ function openSubmitFont(pf) {
         ['sgCat','sgFormat','sgAge'].forEach(function(id){ document.getElementById(id).value = ''; });
         if (window.hcaptcha && hcId !== null){ try { window.hcaptcha.reset(hcId); } catch (_) {} }
         statusEl.style.color = 'var(--gold)';
-        statusEl.textContent = '✓ Thank you — your suggestion was sent!';
+        statusEl.textContent = I18n.t('resources.suggest.success');
       } else {
         statusEl.style.color = 'var(--muted)';
-        statusEl.innerHTML = (data && data.message ? esc(data.message) : 'Sorry — that didn’t go through.') +
-          ' You can also email <a href="mailto:' + emailAddr() + '">' + emailAddr() + '</a>.';
+        const _mail = '<a href="mailto:' + emailAddr() + '">' + emailAddr() + '</a>';
+        statusEl.innerHTML = (data && data.message ? esc(data.message) : I18n.t('resources.suggest.error_fallback')) +
+          ' ' + I18n.t('resources.suggest.error_email_suffix', {email: _mail});
       }
     } catch (err){
       statusEl.style.color = 'var(--muted)';
-      statusEl.innerHTML = 'Sorry — that didn’t go through. Please email <a href="mailto:' + emailAddr() + '">' + emailAddr() + '</a> directly.';
+      const _mail = '<a href="mailto:' + emailAddr() + '">' + emailAddr() + '</a>';
+      statusEl.innerHTML = I18n.t('resources.suggest.error_network', {email: _mail});
     } finally {
       btn.disabled = false;
     }
