@@ -3406,6 +3406,14 @@ function placementDot(l) {
   }
   return { cls: letterStatus(l), glyph: '' };   // 'traced'/'img'/'' — a11yTiles injects the T/I cue
 }
+/* Glyph display name → Hebrew in a Hebrew UI (falls back to the English name when the
+   slug has no key). Used only at DISPLAY sites; internal undo labels keep the raw name. */
+function gName(n) {
+  if (!window.I18n || !n) return n;
+  const k = 'fontmaker.glyphname.' + String(n).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+  const v = I18n.t(k);
+  return v === k ? n : v;
+}
 function renderLetterGrid() {
   const grid = document.getElementById('letterGrid'); grid.innerHTML = '';
   let done = 0;
@@ -3416,7 +3424,7 @@ function renderLetterGrid() {
     tile.className = 'ltile' + (curKind === 'letter' && L.cp === curCp ? ' sel' : '');
     tile.innerHTML = `<span class="lt-dot ${d.cls}">${d.glyph}</span>
       <span class="lt-heb" lang="he" style="font-family:${esc(project.template.font)};">${String.fromCodePoint(parseInt(L.cp,16))}</span>
-      <span class="lt-name">${L.name}</span>`;
+      <span class="lt-name">${gName(L.name)}</span>`;
     tile.onclick = () => selectItem('letter', L.cp);
     grid.appendChild(tile);
   });
@@ -3601,7 +3609,7 @@ function renderMarkGrid(cat) {
     tile.className = 'ltile' + (curKind === cat && M.cp === curCp ? ' sel' : '');
     tile.innerHTML = `<span class="lt-dot ${st}"></span>
       ${markTilePreviewSVG(cat, M.cp)}
-      <span class="lt-name">${M.name}</span>`;
+      <span class="lt-name">${gName(M.name)}</span>`;
     tile.onclick = () => {
       if (um === 'combined') { selectItem(cat, M.cp); return; }               // crop-from-sheet flow lives on the workspace
       if (m && m.designMode === 'upload') { selectItem(cat, M.cp); return; }  // image workflow → straight to the upload/trace tools
@@ -3640,7 +3648,7 @@ function renderPunctGrid() {
     tile.className = 'ltile' + (curKind === 'letter' && L.cp === curCp ? ' sel' : '');
     tile.innerHTML = `<span class="lt-dot ${st}"></span>
       <span class="lt-heb" lang="he" style="font-family:${esc(project.template.font)};">${String.fromCodePoint(parseInt(L.cp,16))}</span>
-      <span class="lt-name">${L.name}</span>`;
+      <span class="lt-name">${gName(L.name)}</span>`;
     tile.onclick = () => selectItem('letter', L.cp);
     grid.appendChild(tile);
   });
