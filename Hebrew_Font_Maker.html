@@ -2689,20 +2689,28 @@ const HELP_CONTENT = {
   `,
 };
 function openHelp(tab) {
+  buildHelpTabs();
+  showHelpTab(tab || 'start');
+  aOpenModal('helpOverlay', closeHelp);
+}
+function buildHelpTabs() {
   const bar = document.getElementById('helpTabs');
-  if (!bar.children.length) HELP_TABS.forEach(([id, label]) => {
+  bar.innerHTML = '';
+  HELP_TABS.forEach(([id, label]) => {
     const b = document.createElement('button');
-    b.className = 'help-tab'; b.textContent = label; b.dataset.tab = id;
+    b.className = 'help-tab';
+    const tk = 'fontmaker.help.tab_' + id, tt = window.I18n ? I18n.t(tk) : tk;
+    b.textContent = (tt !== tk) ? tt : label;
+    b.dataset.tab = id;
     b.onclick = () => showHelpTab(id);
     bar.appendChild(b);
   });
-  showHelpTab(tab || 'start');
-  aOpenModal('helpOverlay', closeHelp);
 }
 function showHelpTab(id) {
   document.querySelectorAll('#helpTabs .help-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
   const body = document.getElementById('helpBody');
-  body.innerHTML = HELP_CONTENT[id] || '';
+  const bk = 'fontmaker.help.body_' + id, bt = window.I18n ? I18n.t(bk) : bk;
+  body.innerHTML = (bt !== bk) ? bt : (HELP_CONTENT[id] || '');
   body.scrollTop = 0;
 }
 function closeHelp() { aCloseModal('helpOverlay'); }
@@ -12677,6 +12685,15 @@ function applyI18n() {
   try { renderGrids(); } catch (e) {}
   try { renderNextStepHint(); } catch (e) {}
   try { if (typeof _pyoPhase !== 'undefined') _setPyoPhase(_pyoPhase); } catch (e) {}
+  // Re-render an open Help modal (tab labels + active body) so a live switch retranslates it.
+  try {
+    const ho = document.getElementById('helpOverlay');
+    if (ho && ho.classList.contains('open')) {
+      buildHelpTabs();
+      const act = document.querySelector('#helpTabs .help-tab.active');
+      showHelpTab(act ? act.dataset.tab : 'start');
+    }
+  } catch (e) {}
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 </script>
