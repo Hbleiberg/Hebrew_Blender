@@ -5595,7 +5595,7 @@ function rgbToHex(color) {
 function toggleDark() {
   const isDark = document.body.classList.toggle('dark');
   const _dt = document.getElementById('darkToggle');
-  _dt.textContent = isDark ? '☀️ Light' : '🌙 Dark';
+  _dt.textContent = window.I18n ? I18n.t(isDark ? 'shared.darkmode.label_light' : 'shared.darkmode.label_dark') : (isDark ? '☀️ Light' : '🌙 Dark');
   _dt.setAttribute('aria-pressed', isDark ? 'true' : 'false');
   localStorage.setItem('hebrewBlender_darkMode', isDark ? '1' : '0');
   refreshVowelGroupColors();
@@ -5608,9 +5608,9 @@ function initDarkMode() {
   const _dt = document.getElementById('darkToggle');
   if (dark) {
     document.body.classList.add('dark');
-    _dt.textContent = '☀️ Light';
+    _dt.textContent = window.I18n ? I18n.t('shared.darkmode.label_light') : '☀️ Light';
   } else {
-    _dt.textContent = '🌙 Dark';
+    _dt.textContent = window.I18n ? I18n.t('shared.darkmode.label_dark') : '🌙 Dark';
   }
   _dt.setAttribute('aria-pressed', dark ? 'true' : 'false');
   // Remove early class now that body.dark takes over
@@ -12500,6 +12500,11 @@ function applyI18n() {
   try { if (typeof _tourActive !== 'undefined' && _tourActive && _tourIdx >= 0) _tourShow(_tourIdx, 1); } catch (e) {}
   // Let the share buttons re-capture their freshly-translated label on the next copy.
   ['shareBtn', 'shareBtnMob'].forEach(id => { const b = document.getElementById(id); if (b) delete b.dataset.label; });
+  // The dark toggle's label is JS-driven (not a static data-i18n), so relabel it to match the live state.
+  try {
+    const _dt = document.getElementById('darkToggle');
+    if (_dt) _dt.textContent = I18n.t(document.body.classList.contains('dark') ? 'shared.darkmode.label_light' : 'shared.darkmode.label_dark');
+  } catch (e) {}
 }
 function _wireGenI18n() {
   if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }

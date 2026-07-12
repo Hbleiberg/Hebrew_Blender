@@ -2652,6 +2652,8 @@ shared.footer.word_data,Word Data from Kaikki.org,נתוני מילים מ-Kaikk
 shared.fullscreen.enter_title,Present fullscreen,מצב מסך מלא,Fullscreen button title (enter),shared; variant: 'Full screen' (dictionary)
 shared.fullscreen.exit_title,Exit fullscreen,צא ממסך מלא,Fullscreen button title (exit),shared
 shared.fullscreen.toggle_aria,Toggle fullscreen,החלף מסך מלא,Fullscreen button aria-label,aria-label; shared
+shared.fullscreen.label,Full Screen,מסך מלא,Fullscreen button label (enter),leading-none; shared (labeled variant: generator)
+shared.fullscreen.exit_label,Exit Full Screen,יציאה ממסך מלא,Fullscreen exit-strip label,shared (labeled variant: generator/dashboard)
 shared.ivrit.browse_button,Browse…,עיון…,Backup drop-zone button,shared
 shared.ivrit.drop_hint,Drop a .ivrit file here,גררו כאן קובץ ‎.ivrit,Backup drop-zone hint,shared; '.ivrit' bold in UI
 shared.ivrit.err_read,Could not read that file.,לא ניתן לקרוא את הקובץ הזה.,Restore error alert,shared
@@ -3144,498 +3146,498 @@ trope.tradition.primary_aria,Primary trope names,,radiogroup aria,aria-label onl
 trope.tradition.primary_label,Primary trope names,,settings label,
 trope.tradition.primary_tip,"Both names are always shown on each card; this picks which one leads. Note the classic collision: Ashkenazi 'pashta' is Sephardi 'kadma', while Ashkenazi 'kadma' is Sephardi 'azla'.",,tooltip,
 trope.tradition.sephardi,Sephardi,,radio label,
-worksheet.actions.copy_link,📋 Copy shareable link,,action button,leading-emoji
-worksheet.actions.copy_link_title,Copy shareable link,,mobile FAB button title,aria-label only
-worksheet.actions.disabled_hint,Generate a worksheet first,,disabled-button title + FAB toast,
-worksheet.actions.export_pdf,⬇ Export PDF,,action button,leading-emoji
-worksheet.actions.generate,⬡ Generate Worksheet,,primary action button,leading-emoji
-worksheet.actions.generate_mob,⬡ Generate,,mobile FAB button,leading-emoji
-worksheet.actions.pdf_mob,⬇ PDF,,mobile FAB button,leading-emoji
-worksheet.actions.print,🖨 Print,,action button,leading-emoji
-worksheet.actions.print_tip,"💡 Print tip: In the print dialog, uncheck Headers and footers to remove the URL and date.",,tip box,leading-emoji;html
-worksheet.actions.regenerate,↺ Regenerate,,action button,leading-emoji
-worksheet.advanced.backup_auto_explainer,Save all your presets and current settings to a .ivrit save file on your device. Restore later by dropping the file below or browsing for it.,,backup panel explainer,html
-worksheet.advanced.backup_manual_explainer,Export your saved presets as text you can copy and store. Paste it back to restore.,,backup panel explainer,
-worksheet.advanced.backup_placeholder,Paste backup here to import…,,textarea placeholder,
-worksheet.advanced.backup_title,Backup Presets,,sub-panel title,
-worksheet.advanced.colorcode_enable,Enable color coding,,toggle-row label,
-worksheet.advanced.colorcode_title,Color Code Nikkud,,sub-panel title,
-worksheet.advanced.colormode.highlight,Highlight,,color-mode button,
-worksheet.advanced.colormode.letter,Letter,,color-mode button,
-worksheet.advanced.colormode.underline,Underline,,color-mode button,
-worksheet.advanced.copy,Copy,,textarea copy button,
-worksheet.advanced.export_backup,⬆ Export backup,,button,leading-emoji
-worksheet.advanced.font_title,Hebrew Font,,sub-panel title,
-worksheet.advanced.hide_zoom_bar,Hide Zoom Bar,,toggle-row label,
-worksheet.advanced.import_backup,⬇ Import from backup,,button,leading-emoji
-worksheet.advanced.live_preview,Live update preview,,toggle-row label,
-worksheet.advanced.live_preview_tooltip,"When on, the worksheet updates as you change settings (after your first Generate). Turn it off to update only when you click Generate.",,tooltip,
-worksheet.advanced.panel_title,Advanced,,panel title,
-worksheet.advanced.reset_scheme_confirm,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,,confirm dialog,
-worksheet.advanced.scheme.default,Default,,vowel-scheme button,
-worksheet.advanced.scheme.reset,Reset,,vowel-scheme reset button,
-worksheet.advanced.scheme.talam,TaL AM,,vowel-scheme button,
-worksheet.advanced.translit.ashkenazi,Ashkenazi,,translit-style option,
-worksheet.advanced.translit.brill,Brill Academic,,translit-style option,
-worksheet.advanced.translit.default,Default (built-in),,translit-style option,
-worksheet.advanced.translit.modern,Modern Israeli,,translit-style option,
-worksheet.advanced.translit.sbl,SBL Academic,,translit-style option,
-worksheet.advanced.translit.simple,Simple Stressed,,translit-style option,
-worksheet.advanced.translit_credit,Powered by hebrew-transliteration by Charles Loder,,credit line,html
-worksheet.advanced.translit_failed,Library failed to load — using default style.,,status,
-worksheet.advanced.translit_loading,Loading library…,,status,
-worksheet.advanced.translit_style,Style,,select label,
-worksheet.advanced.translit_title,Transliteration,,sub-panel title,
-worksheet.advanced.tts_fast,Fast,,tts range high label,
-worksheet.advanced.tts_slow,Slow,,tts slider label,
-worksheet.advanced.tts_slower,Slower,,tts range low label,
-worksheet.advanced.tts_speed,Hebrew TTS Reading Speed,,advanced section label,
-worksheet.common.all,All,,select-all button,
-worksheet.common.all_match,All cards match,,toggle-row label,
-worksheet.common.audio,Audio,,toggle-row label,
-worksheet.common.beta,BETA,,inline badge,
-worksheet.common.both,Both,,segmented option,
-worksheet.common.caller_sheet,Caller sheet,,toggle-row label,
-worksheet.common.cards,Cards,,select label,
-worksheet.common.dagesh_tav,Dagesh Tav / Sav,,letter control checkbox,
-worksheet.common.fewer_cards,Fewer cards,,stepper button title,aria-label only
-worksheet.common.free_space,Free space,,toggle-row label,
-worksheet.common.grid_size,Grid Size,,select label,
-worksheet.common.grid_size_lc,Grid size,,select label,
-worksheet.common.include_dageshim,Include dageshim,,toggle-row label,
-worksheet.common.inverse_show_numbers,Inverse (show numbers),,toggle-row label,
-worksheet.common.main,Main,,select-main button,
-worksheet.common.more_cards,More cards,,stepper button title,aria-label only
-worksheet.common.no_sofit,No Sofit,,letter control button,
-worksheet.common.none,None,,clear button,
-worksheet.common.num_pairs,Number of Pairs,,select label,
-worksheet.common.num_words,Number of Words,,select label,
-worksheet.common.per_page,Per page,,select label,
-worksheet.common.reset_default,Reset to default,,slider reset button title,aria-label only
-worksheet.common.self_check,Self Check,,toggle-row label,
-worksheet.common.self_check_mode,Student Self-Check Mode,,toggle-row label,
-worksheet.common.show_answer_key,Show Answer Key,,toggle-row label,
-worksheet.common.show_nikkud,Show Nikkud,,toggle-row label,
-worksheet.common.show_transliteration,Show Transliteration,,toggle-row label,
-worksheet.common.show_word_bank,Show Word Bank,,toggle-row label,
-worksheet.common.size,Size,,slider label,
-worksheet.common.translit,Translit,,segmented option,
-worksheet.empty.cant_place_body,Try a larger grid or shorter words.,,worksheet empty state,print-adjacent empty state
-worksheet.empty.cant_place_title,Could not place any words.,,worksheet empty state,print-adjacent empty state
-worksheet.empty.emoji_failed_body,"Check your connection and try again, or choose a different match target.",,worksheet empty state,print-adjacent empty state
-worksheet.empty.emoji_failed_title,Couldn't load emoji.,,worksheet empty state,print-adjacent empty state
-worksheet.empty.loading_emoji,Loading emoji…,,worksheet empty state / pool note,print-adjacent empty state
-worksheet.empty.loosen_emoji,Loosen your Word Filters — only words with a matching emoji can be used.,,worksheet empty state,print-adjacent empty state
-worksheet.empty.loosen_pairs,Loosen your Word Filters or lower the number of pairs.,,worksheet empty state,print-adjacent empty state
-worksheet.empty.no_emoji_words,No emoji words match.,,worksheet empty state,print-adjacent empty state
-worksheet.empty.no_words_match_body,Loosen your Word Filters or pick a larger grid size.,,worksheet empty state,print-adjacent empty state
-worksheet.empty.no_words_match_title,No words match.,,worksheet empty state,print-adjacent empty state
-worksheet.empty.not_enough_words,Not enough words to match.,,worksheet empty state,print-adjacent empty state
-worksheet.empty.pick_direction_body,Word Search needs somewhere to hide the words — enable at least one arrow under Drill Options → Directions.,,worksheet empty state,print-adjacent empty state
-worksheet.empty.pick_direction_title,Pick at least one direction.,,worksheet empty state,print-adjacent empty state
-worksheet.empty.ready_body,"Select your letters and vowels on the left, then click Generate Worksheet.",,main empty-state,html
-worksheet.empty.ready_title,Ready to Generate,,main empty-state h2,
-worksheet.empty.select_letter,Please select at least one letter.,,worksheet empty state,print-adjacent empty state
-worksheet.empty.select_letters_vowels,Please select letters and vowels.,,worksheet empty state,print-adjacent empty state
-worksheet.empty.select_more_letters,Please select more letters.,,worksheet empty state,print-adjacent empty state
-worksheet.empty.select_vowel,Please select at least one vowel.,,worksheet empty state,print-adjacent empty state
-worksheet.empty.too_few_intersect,Too few words intersect — try a larger grid or more words.,,worksheet empty state,print-adjacent empty state
-worksheet.faq.a1,"A Hebrew blend worksheet pairs Hebrew letters with vowels (nikkud) so students can practice decoding syllables one, two, or three letters at a time.",,footer FAQ answer,
-worksheet.faq.a2,Yes. All worksheets are free under CC BY-NC-SA 4.0 for non-commercial educational use.,,footer FAQ answer,
-worksheet.faq.a3,Yes. The generator outputs print-ready PDFs sized for standard letter and A4 paper.,,footer FAQ answer,
-worksheet.faq.a4,"Yes. Choose any combination of nikkud — kamatz, patach, segol, tzere, hirik, holam, kubutz, shuruk, shva, and hataf vowels.",,footer FAQ answer,
-worksheet.faq.a5,Designed for emerging Hebrew readers — elementary students and adult beginners — but fully customizable for any level.,,footer FAQ answer,
-worksheet.faq.q1,What is a Hebrew blend worksheet?,,footer FAQ question,
-worksheet.faq.q2,Are these Hebrew worksheets free?,,footer FAQ question,
-worksheet.faq.q3,Can I print the worksheets?,,footer FAQ question,
-worksheet.faq.q4,Do they include nikkud?,,footer FAQ question,
-worksheet.faq.q5,What ages is it for?,,footer FAQ question,
-worksheet.faq.title,Frequently Asked Questions,,footer FAQ heading,
-worksheet.glyphname.alef,Alef,,letter tile name,glyph-name
-worksheet.glyphname.ayin,Ayin,,letter tile name,glyph-name
-worksheet.glyphname.bet,Bet,,letter tile name,glyph-name
-worksheet.glyphname.chaf,Chaf,,letter tile name,glyph-name
-worksheet.glyphname.chet,Chet,,letter tile name,glyph-name
-worksheet.glyphname.chirik,Chirik,,vowel name,glyph-name
-worksheet.glyphname.dalet,Dalet,,letter tile name,glyph-name
-worksheet.glyphname.feh,Feh,,letter tile name,glyph-name
-worksheet.glyphname.gimel,Gimel,,letter tile name,glyph-name
-worksheet.glyphname.hataf_kamatz,Hataf Kamatz,,vowel name,glyph-name
-worksheet.glyphname.hataf_patach,Hataf Patach,,vowel name,glyph-name
-worksheet.glyphname.hataf_segol,Hataf Segol,,vowel name,glyph-name
-worksheet.glyphname.heh,Heh,,letter tile name,glyph-name
-worksheet.glyphname.holam,Holam,,vowel name,glyph-name
-worksheet.glyphname.kaf,Kaf,,letter tile name,glyph-name
-worksheet.glyphname.kamatz,Kamatz,,vowel name,glyph-name
-worksheet.glyphname.koof,Koof,,letter tile name,glyph-name
-worksheet.glyphname.kubutz,Kubutz,,vowel name,glyph-name
-worksheet.glyphname.lamed,Lamed,,letter tile name,glyph-name
-worksheet.glyphname.mem,Mem,,letter tile name,glyph-name
-worksheet.glyphname.nun,Nun,,letter tile name,glyph-name
-worksheet.glyphname.patach,Patach,,vowel name,glyph-name
-worksheet.glyphname.peh,Peh,,letter tile name,glyph-name
-worksheet.glyphname.resh,Resh,,letter tile name,glyph-name
-worksheet.glyphname.samech,Samech,,letter tile name,glyph-name
-worksheet.glyphname.sav,Sav,,letter tile name,glyph-name
-worksheet.glyphname.segol,Segol,,vowel name,glyph-name
-worksheet.glyphname.shin,Shin,,letter tile name,glyph-name
-worksheet.glyphname.shuruk,Shuruk,,vowel name,glyph-name
-worksheet.glyphname.shva,Shva,,vowel name,glyph-name
-worksheet.glyphname.sin,Sin,,letter tile name,glyph-name
-worksheet.glyphname.sofit_suffix,{name} sofit,,sofit letter tile name,glyph-name;mixed UI+content — do not translate {…}
-worksheet.glyphname.tav,Tav,,letter tile name,glyph-name
-worksheet.glyphname.tet,Tet,,letter tile name,glyph-name
-worksheet.glyphname.tzadi,Tzadi,,letter tile name,glyph-name
-worksheet.glyphname.tzere,Tzere,,vowel name,glyph-name
-worksheet.glyphname.vav,Vav,,letter tile name,glyph-name
-worksheet.glyphname.vav_holam,Vav Holam,,letter/vowel tile name,glyph-name
-worksheet.glyphname.vav_shuruk,Vav Shuruk,,letter tile name,glyph-name
-worksheet.glyphname.vet,Vet,,letter tile name,glyph-name
-worksheet.glyphname.yud,Yud,,letter tile name,glyph-name
-worksheet.glyphname.zayin,Zayin,,letter tile name,glyph-name
-worksheet.header_sub,"Free printable Hebrew worksheets, bingo cards, and decoding drills for Hebrew reading practice with nikkud.",,header subtitle,
-worksheet.home_link,Home,,header nav button,arrow supplied separately by a .dir-arrow span
-worksheet.howto.step1,"Pick a practice type (1, 2, or 3 letters).",,footer how-to step,
-worksheet.howto.step2,Select the Hebrew letters to include.,,footer how-to step,
-worksheet.howto.step3,Select the nikkud (vowels) to include.,,footer how-to step,
-worksheet.howto.step4,Click Generate Worksheet.,,footer how-to step,html
-worksheet.howto.step5,Click Print or Export PDF to download.,,footer how-to step,html
-worksheet.howto.title,How To Use,,footer section heading,
-worksheet.layout.class_set,Class Set,,layout option label,
-worksheet.layout.class_set_tooltip,"Generates multiple unique worksheet versions from the same settings — each with a different random selection and order of blends. Print one per student for variety drills or low-stakes assessment. Each version is labeled 'Version A', 'Version B', etc. in the header.",,tooltip,
-worksheet.layout.exclude_repeats,Exclude Repeats,,layout option label,
-worksheet.layout.exclude_repeats_tooltip,"When on, no two blends in the same worksheet will share the same pair of letters — useful for variety drills.",,tooltip,
-worksheet.layout.header.en,English,,header-language button,
-worksheet.layout.header.he,עברית,,header-language button,RTL / hebDisplay
-worksheet.layout.header_labels,Header Labels,,layout option label,
-worksheet.layout.landscape,Landscape Print,,layout option label,
-worksheet.layout.landscape_tooltip,"Rotates the printout to landscape (wide) for both 🖨 Print and Export PDF, and widens the blends grid. Turn off for portrait (tall).",,tooltip,leading-emoji
-worksheet.layout.page.a4,A4,,page-size button,
-worksheet.layout.page.letter,Letter,,page-size button,
-worksheet.layout.page_size,Page Size,,layout option label,
-worksheet.layout.page_size_tooltip,Paper size for both Print and Export PDF. Letter (8.5×11in) is the US default; choose A4 (210×297mm) for most of the world.,,tooltip,
-worksheet.layout.panel_title,Layout,,panel title,
-worksheet.layout.subtitle,Subtitle,,layout option label,
-worksheet.layout.subtitle_placeholder,Optional instructions...,,input placeholder,
-worksheet.layout.title,Title,,layout option label,
+worksheet.actions.copy_link,📋 Copy shareable link,📋 העתק קישור לשיתוף,action button,leading-emoji
+worksheet.actions.copy_link_title,Copy shareable link,העתק קישור לשיתוף,mobile FAB button title,aria-label only
+worksheet.actions.disabled_hint,Generate a worksheet first,צרו קודם דף עבודה,disabled-button title + FAB toast,
+worksheet.actions.export_pdf,⬇ Export PDF,⬇ ייצא PDF,action button,leading-emoji
+worksheet.actions.generate,⬡ Generate Worksheet,⬡ צור דף עבודה,primary action button,leading-emoji
+worksheet.actions.generate_mob,⬡ Generate,⬡ צור,mobile FAB button,leading-emoji
+worksheet.actions.pdf_mob,⬇ PDF,⬇ PDF,mobile FAB button,leading-emoji
+worksheet.actions.print,🖨 Print,🖨 הדפס,action button,leading-emoji
+worksheet.actions.print_tip,"💡 Print tip: In the print dialog, uncheck Headers and footers to remove the URL and date.","💡 טיפ להדפסה: בתיבת ההדפסה, בטלו את הסימון של כותרות עליונות ותחתונות כדי להסיר את הכתובת והתאריך.",tip box,leading-emoji;html
+worksheet.actions.regenerate,↺ Regenerate,↺ צור מחדש,action button,leading-emoji
+worksheet.advanced.backup_auto_explainer,Save all your presets and current settings to a .ivrit save file on your device. Restore later by dropping the file below or browsing for it.,"שמרו את כל ההגדרות השמורות וההגדרות הנוכחיות שלכם לקובץ שמירה .ivrit במכשיר. לשחזור מאוחר יותר, גררו את הקובץ למטה או עיינו אליו.",backup panel explainer,html
+worksheet.advanced.backup_manual_explainer,Export your saved presets as text you can copy and store. Paste it back to restore.,ייצאו את ההגדרות השמורות שלכם כטקסט שאפשר להעתיק ולשמור. הדביקו אותו בחזרה כדי לשחזר.,backup panel explainer,
+worksheet.advanced.backup_placeholder,Paste backup here to import…,הדביקו כאן גיבוי כדי לייבא…,textarea placeholder,
+worksheet.advanced.backup_title,Backup Presets,גיבוי הגדרות,sub-panel title,
+worksheet.advanced.colorcode_enable,Enable color coding,הפעל צביעה,toggle-row label,
+worksheet.advanced.colorcode_title,Color Code Nikkud,צביעת ניקוד,sub-panel title,
+worksheet.advanced.colormode.highlight,Highlight,הדגשה,color-mode button,
+worksheet.advanced.colormode.letter,Letter,אות,color-mode button,
+worksheet.advanced.colormode.underline,Underline,קו תחתון,color-mode button,
+worksheet.advanced.copy,Copy,העתק,textarea copy button,
+worksheet.advanced.export_backup,⬆ Export backup,⬆ ייצא גיבוי,button,leading-emoji
+worksheet.advanced.font_title,Hebrew Font,גופן עברי,sub-panel title,
+worksheet.advanced.hide_zoom_bar,Hide Zoom Bar,הסתר סרגל זום,toggle-row label,
+worksheet.advanced.import_backup,⬇ Import from backup,⬇ ייבא מגיבוי,button,leading-emoji
+worksheet.advanced.live_preview,Live update preview,עדכון תצוגה מקדימה בזמן אמת,toggle-row label,
+worksheet.advanced.live_preview_tooltip,"When on, the worksheet updates as you change settings (after your first Generate). Turn it off to update only when you click Generate.","כשמופעל, דף העבודה מתעדכן תוך כדי שינוי ההגדרות (לאחר היצירה הראשונה). כבו כדי לעדכן רק כשלוחצים על ״צור דף עבודה״.",tooltip,
+worksheet.advanced.panel_title,Advanced,מתקדם,panel title,
+worksheet.advanced.reset_scheme_confirm,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,האם אתם בטוחים? פעולה זו תאפס את צבעי הניקוד המותאמים שלכם בשתי ערכות הצבע — ברירת המחדל וגם תל-עם.,confirm dialog,
+worksheet.advanced.scheme.default,Default,ברירת מחדל,vowel-scheme button,
+worksheet.advanced.scheme.reset,Reset,איפוס,vowel-scheme reset button,
+worksheet.advanced.scheme.talam,TaL AM,תל-עם,vowel-scheme button,
+worksheet.advanced.translit.ashkenazi,Ashkenazi,אשכנזי,translit-style option,
+worksheet.advanced.translit.brill,Brill Academic,Brill אקדמי,translit-style option,
+worksheet.advanced.translit.default,Default (built-in),ברירת מחדל (מובנה),translit-style option,
+worksheet.advanced.translit.modern,Modern Israeli,עברית מודרנית,translit-style option,
+worksheet.advanced.translit.sbl,SBL Academic,SBL אקדמי,translit-style option,
+worksheet.advanced.translit.simple,Simple Stressed,מודגש פשוט,translit-style option,
+worksheet.advanced.translit_credit,Powered by hebrew-transliteration by Charles Loder,מופעל על ידי hebrew-transliteration מאת Charles Loder,credit line,html
+worksheet.advanced.translit_failed,Library failed to load — using default style.,טעינת הספרייה נכשלה — משתמשים בסגנון ברירת המחדל.,status,
+worksheet.advanced.translit_loading,Loading library…,טוען ספרייה…,status,
+worksheet.advanced.translit_style,Style,סגנון,select label,
+worksheet.advanced.translit_title,Transliteration,תעתיק,sub-panel title,
+worksheet.advanced.tts_fast,Fast,מהיר,tts range high label,
+worksheet.advanced.tts_slow,Slow,איטי,tts slider label,
+worksheet.advanced.tts_slower,Slower,איטי יותר,tts range low label,
+worksheet.advanced.tts_speed,Hebrew TTS Reading Speed,מהירות הקראה קולית בעברית,advanced section label,
+worksheet.common.all,All,הכל,select-all button,
+worksheet.common.all_match,All cards match,כל הכרטיסים זהים,toggle-row label,
+worksheet.common.audio,Audio,שמע,toggle-row label,
+worksheet.common.beta,BETA,בטא,inline badge,
+worksheet.common.both,Both,שניהם,segmented option,
+worksheet.common.caller_sheet,Caller sheet,דף הקראה,toggle-row label,
+worksheet.common.cards,Cards,כרטיסים,select label,
+worksheet.common.dagesh_tav,Dagesh Tav / Sav,ת׳ דגושה / ת׳ רפויה,letter control checkbox,
+worksheet.common.fewer_cards,Fewer cards,פחות כרטיסים,stepper button title,aria-label only
+worksheet.common.free_space,Free space,משבצת חופשית,toggle-row label,
+worksheet.common.grid_size,Grid Size,גודל רשת,select label,
+worksheet.common.grid_size_lc,Grid size,גודל רשת,select label,
+worksheet.common.include_dageshim,Include dageshim,כלול דגשים,toggle-row label,
+worksheet.common.inverse_show_numbers,Inverse (show numbers),הפוך (הצג מספרים),toggle-row label,
+worksheet.common.main,Main,עיקריות,select-main button,
+worksheet.common.more_cards,More cards,עוד כרטיסים,stepper button title,aria-label only
+worksheet.common.no_sofit,No Sofit,ללא סופיות,letter control button,
+worksheet.common.none,None,ללא,clear button,
+worksheet.common.num_pairs,Number of Pairs,מספר הזוגות,select label,
+worksheet.common.num_words,Number of Words,מספר המילים,select label,
+worksheet.common.per_page,Per page,לכל עמוד,select label,
+worksheet.common.reset_default,Reset to default,אפס לברירת המחדל,slider reset button title,aria-label only
+worksheet.common.self_check,Self Check,בדיקה עצמית,toggle-row label,
+worksheet.common.self_check_mode,Student Self-Check Mode,מצב בדיקה עצמית לתלמיד,toggle-row label,
+worksheet.common.show_answer_key,Show Answer Key,הצג מפתח תשובות,toggle-row label,
+worksheet.common.show_nikkud,Show Nikkud,הצג ניקוד,toggle-row label,
+worksheet.common.show_transliteration,Show Transliteration,הצג תעתיק,toggle-row label,
+worksheet.common.show_word_bank,Show Word Bank,הצג מאגר מילים,toggle-row label,
+worksheet.common.size,Size,גודל,slider label,
+worksheet.common.translit,Translit,תעתיק,segmented option,
+worksheet.empty.cant_place_body,Try a larger grid or shorter words.,נסו רשת גדולה יותר או מילים קצרות יותר.,worksheet empty state,print-adjacent empty state
+worksheet.empty.cant_place_title,Could not place any words.,לא ניתן היה למקם אף מילה.,worksheet empty state,print-adjacent empty state
+worksheet.empty.emoji_failed_body,"Check your connection and try again, or choose a different match target.","בדקו את החיבור ונסו שוב, או בחרו יעד התאמה אחר.",worksheet empty state,print-adjacent empty state
+worksheet.empty.emoji_failed_title,Couldn't load emoji.,טעינת האימוג׳י נכשלה.,worksheet empty state,print-adjacent empty state
+worksheet.empty.loading_emoji,Loading emoji…,טוען אימוג׳י…,worksheet empty state / pool note,print-adjacent empty state
+worksheet.empty.loosen_emoji,Loosen your Word Filters — only words with a matching emoji can be used.,הרפו את מסנני המילים — ניתן להשתמש רק במילים עם אימוג׳י תואם.,worksheet empty state,print-adjacent empty state
+worksheet.empty.loosen_pairs,Loosen your Word Filters or lower the number of pairs.,הרפו את מסנני המילים או הפחיתו את מספר הזוגות.,worksheet empty state,print-adjacent empty state
+worksheet.empty.no_emoji_words,No emoji words match.,אין מילות אימוג׳י תואמות.,worksheet empty state,print-adjacent empty state
+worksheet.empty.no_words_match_body,Loosen your Word Filters or pick a larger grid size.,הרפו את מסנני המילים או בחרו גודל רשת גדול יותר.,worksheet empty state,print-adjacent empty state
+worksheet.empty.no_words_match_title,No words match.,אין מילים תואמות.,worksheet empty state,print-adjacent empty state
+worksheet.empty.not_enough_words,Not enough words to match.,אין מספיק מילים להתאמה.,worksheet empty state,print-adjacent empty state
+worksheet.empty.pick_direction_body,Word Search needs somewhere to hide the words — enable at least one arrow under Drill Options → Directions.,תפזורת צריכה מקום להסתיר בו את המילים — הפעילו לפחות חץ אחד תחת אפשרויות תרגול ← כיוונים.,worksheet empty state,print-adjacent empty state
+worksheet.empty.pick_direction_title,Pick at least one direction.,בחרו לפחות כיוון אחד.,worksheet empty state,print-adjacent empty state
+worksheet.empty.ready_body,"Select your letters and vowels on the left, then click Generate Worksheet.","בחרו את האותיות והתנועות שלכם משמאל, ואז לחצו על צור דף עבודה.",main empty-state,html
+worksheet.empty.ready_title,Ready to Generate,מוכן ליצירה,main empty-state h2,
+worksheet.empty.select_letter,Please select at least one letter.,בחרו לפחות אות אחת.,worksheet empty state,print-adjacent empty state
+worksheet.empty.select_letters_vowels,Please select letters and vowels.,בחרו אותיות ותנועות.,worksheet empty state,print-adjacent empty state
+worksheet.empty.select_more_letters,Please select more letters.,בחרו עוד אותיות.,worksheet empty state,print-adjacent empty state
+worksheet.empty.select_vowel,Please select at least one vowel.,בחרו לפחות תנועה אחת.,worksheet empty state,print-adjacent empty state
+worksheet.empty.too_few_intersect,Too few words intersect — try a larger grid or more words.,מעט מדי מילים מצטלבות — נסו רשת גדולה יותר או יותר מילים.,worksheet empty state,print-adjacent empty state
+worksheet.faq.a1,"A Hebrew blend worksheet pairs Hebrew letters with vowels (nikkud) so students can practice decoding syllables one, two, or three letters at a time.","דף צירופים בעברית משלב אותיות עבריות עם תנועות (ניקוד) כדי שהתלמידים יוכלו לתרגל פענוח הברות — אות, שתיים או שלוש בכל פעם.",footer FAQ answer,
+worksheet.faq.a2,Yes. All worksheets are free under CC BY-NC-SA 4.0 for non-commercial educational use.,כן. כל דפי העבודה חינמיים תחת רישיון CC BY-NC-SA 4.0 לשימוש חינוכי לא-מסחרי.,footer FAQ answer,
+worksheet.faq.a3,Yes. The generator outputs print-ready PDFs sized for standard letter and A4 paper.,כן. המחולל מפיק קובצי PDF מוכנים להדפסה בגודל נייר Letter ו-A4 סטנדרטי.,footer FAQ answer,
+worksheet.faq.a4,"Yes. Choose any combination of nikkud — kamatz, patach, segol, tzere, hirik, holam, kubutz, shuruk, shva, and hataf vowels.","כן. בחרו כל שילוב של ניקוד — קמץ, פתח, סגול, צירה, חיריק, חולם, קובוץ, שורוק, שווא ותנועות חטף.",footer FAQ answer,
+worksheet.faq.a5,Designed for emerging Hebrew readers — elementary students and adult beginners — but fully customizable for any level.,מיועד לקוראים מתחילים בעברית — תלמידי יסודי ומבוגרים מתחילים — אך ניתן להתאמה מלאה לכל רמה.,footer FAQ answer,
+worksheet.faq.q1,What is a Hebrew blend worksheet?,מהו דף צירופים בעברית?,footer FAQ question,
+worksheet.faq.q2,Are these Hebrew worksheets free?,האם דפי העבודה בעברית חינמיים?,footer FAQ question,
+worksheet.faq.q3,Can I print the worksheets?,האם אפשר להדפיס את דפי העבודה?,footer FAQ question,
+worksheet.faq.q4,Do they include nikkud?,האם הם כוללים ניקוד?,footer FAQ question,
+worksheet.faq.q5,What ages is it for?,לאילו גילאים זה מתאים?,footer FAQ question,
+worksheet.faq.title,Frequently Asked Questions,שאלות נפוצות,footer FAQ heading,
+worksheet.glyphname.alef,Alef,אלף,letter tile name,glyph-name
+worksheet.glyphname.ayin,Ayin,עין,letter tile name,glyph-name
+worksheet.glyphname.bet,Bet,בית,letter tile name,glyph-name
+worksheet.glyphname.chaf,Chaf,כף,letter tile name,glyph-name
+worksheet.glyphname.chet,Chet,חית,letter tile name,glyph-name
+worksheet.glyphname.chirik,Chirik,חיריק,vowel name,glyph-name
+worksheet.glyphname.dalet,Dalet,דלת,letter tile name,glyph-name
+worksheet.glyphname.feh,Feh,פה,letter tile name,glyph-name
+worksheet.glyphname.gimel,Gimel,גימל,letter tile name,glyph-name
+worksheet.glyphname.hataf_kamatz,Hataf Kamatz,חטף קמץ,vowel name,glyph-name
+worksheet.glyphname.hataf_patach,Hataf Patach,חטף פתח,vowel name,glyph-name
+worksheet.glyphname.hataf_segol,Hataf Segol,חטף סגול,vowel name,glyph-name
+worksheet.glyphname.heh,Heh,הא,letter tile name,glyph-name
+worksheet.glyphname.holam,Holam,חולם,vowel name,glyph-name
+worksheet.glyphname.kaf,Kaf,כף,letter tile name,glyph-name
+worksheet.glyphname.kamatz,Kamatz,קמץ,vowel name,glyph-name
+worksheet.glyphname.koof,Koof,קוף,letter tile name,glyph-name
+worksheet.glyphname.kubutz,Kubutz,קובוץ,vowel name,glyph-name
+worksheet.glyphname.lamed,Lamed,למד,letter tile name,glyph-name
+worksheet.glyphname.mem,Mem,מם,letter tile name,glyph-name
+worksheet.glyphname.nun,Nun,נון,letter tile name,glyph-name
+worksheet.glyphname.patach,Patach,פתח,vowel name,glyph-name
+worksheet.glyphname.peh,Peh,פה,letter tile name,glyph-name
+worksheet.glyphname.resh,Resh,ריש,letter tile name,glyph-name
+worksheet.glyphname.samech,Samech,סמך,letter tile name,glyph-name
+worksheet.glyphname.sav,Sav,ת׳,letter tile name,glyph-name
+worksheet.glyphname.segol,Segol,סגול,vowel name,glyph-name
+worksheet.glyphname.shin,Shin,שין,letter tile name,glyph-name
+worksheet.glyphname.shuruk,Shuruk,שורוק,vowel name,glyph-name
+worksheet.glyphname.shva,Shva,שווא,vowel name,glyph-name
+worksheet.glyphname.sin,Sin,שין שמאלית,letter tile name,glyph-name
+worksheet.glyphname.sofit_suffix,{name} sofit,{name} סופית,sofit letter tile name,glyph-name;mixed UI+content — do not translate {…}
+worksheet.glyphname.tav,Tav,תו,letter tile name,glyph-name
+worksheet.glyphname.tet,Tet,טית,letter tile name,glyph-name
+worksheet.glyphname.tzadi,Tzadi,צדי,letter tile name,glyph-name
+worksheet.glyphname.tzere,Tzere,צירה,vowel name,glyph-name
+worksheet.glyphname.vav,Vav,וו,letter tile name,glyph-name
+worksheet.glyphname.vav_holam,Vav Holam,וו חולם,letter/vowel tile name,glyph-name
+worksheet.glyphname.vav_shuruk,Vav Shuruk,וו שורוק,letter tile name,glyph-name
+worksheet.glyphname.vet,Vet,בית רפויה,letter tile name,glyph-name
+worksheet.glyphname.yud,Yud,יוד,letter tile name,glyph-name
+worksheet.glyphname.zayin,Zayin,זין,letter tile name,glyph-name
+worksheet.header_sub,"Free printable Hebrew worksheets, bingo cards, and decoding drills for Hebrew reading practice with nikkud.","דפי עבודה חינמיים להדפסה בעברית, כרטיסי בינגו ותרגולי פענוח לתרגול קריאה בעברית עם ניקוד.",header subtitle,
+worksheet.home_link,Home,בית,header nav button,arrow supplied separately by a .dir-arrow span
+worksheet.howto.step1,"Pick a practice type (1, 2, or 3 letters).","בחרו סוג תרגול (1, 2 או 3 אותיות).",footer how-to step,
+worksheet.howto.step2,Select the Hebrew letters to include.,בחרו את האותיות העבריות לכלול.,footer how-to step,
+worksheet.howto.step3,Select the nikkud (vowels) to include.,בחרו את הניקוד (התנועות) לכלול.,footer how-to step,
+worksheet.howto.step4,Click Generate Worksheet.,לחצו על צור דף עבודה.,footer how-to step,html
+worksheet.howto.step5,Click Print or Export PDF to download.,לחצו על הדפס או ייצא PDF כדי להוריד.,footer how-to step,html
+worksheet.howto.title,How To Use,איך להשתמש,footer section heading,
+worksheet.layout.class_set,Class Set,סט כיתתי,layout option label,
+worksheet.layout.class_set_tooltip,"Generates multiple unique worksheet versions from the same settings — each with a different random selection and order of blends. Print one per student for variety drills or low-stakes assessment. Each version is labeled 'Version A', 'Version B', etc. in the header.","מפיק כמה גרסאות ייחודיות של דף העבודה מאותן הגדרות — כל אחת עם בחירה וסדר אקראיים שונים של צירופים. הדפיסו אחד לכל תלמיד לתרגולי גיוון או להערכה בסיכון נמוך. כל גרסה מסומנת ׳Version A׳, ׳Version B׳ וכו׳ בכותרת.",tooltip,
+worksheet.layout.exclude_repeats,Exclude Repeats,ללא חזרות,layout option label,
+worksheet.layout.exclude_repeats_tooltip,"When on, no two blends in the same worksheet will share the same pair of letters — useful for variety drills.","כשמופעל, שני צירופים באותו דף עבודה לא יחלקו את אותו זוג אותיות — שימושי לתרגולי גיוון.",tooltip,
+worksheet.layout.header.en,English,אנגלית,header-language button,
+worksheet.layout.header.he,עברית,עברית,header-language button,RTL / hebDisplay
+worksheet.layout.header_labels,Header Labels,תוויות כותרת,layout option label,
+worksheet.layout.landscape,Landscape Print,הדפסה לרוחב,layout option label,
+worksheet.layout.landscape_tooltip,"Rotates the printout to landscape (wide) for both 🖨 Print and Export PDF, and widens the blends grid. Turn off for portrait (tall).","מסובב את התדפיס לרוחב עבור 🖨 הדפס וגם ייצא PDF, ומרחיב את רשת הצירופים. כבו לפריסה לאורך.",tooltip,leading-emoji
+worksheet.layout.page.a4,A4,A4,page-size button,
+worksheet.layout.page.letter,Letter,Letter,page-size button,
+worksheet.layout.page_size,Page Size,גודל עמוד,layout option label,
+worksheet.layout.page_size_tooltip,Paper size for both Print and Export PDF. Letter (8.5×11in) is the US default; choose A4 (210×297mm) for most of the world.,גודל הנייר עבור הדפס וגם ייצא PDF. Letter (8.5×11 אינץ׳) הוא ברירת המחדל בארה״ב; בחרו A4 (210×297 מ״מ) עבור רוב העולם.,tooltip,
+worksheet.layout.panel_title,Layout,פריסה,panel title,
+worksheet.layout.subtitle,Subtitle,כותרת משנה,layout option label,
+worksheet.layout.subtitle_placeholder,Optional instructions...,הוראות לא חובה...,input placeholder,
+worksheet.layout.title,Title,כותרת,layout option label,
 worksheet.layout.title_default,Hebrew Blends,,worksheet title input default,
-worksheet.layout.total_blends,Total Blends,,layout option label,
-worksheet.layout.versions,versions,,count suffix,
-worksheet.letters.combos,{count} possible combinations,,letters panel count,
-worksheet.letters.first_letter,First Letter,,lock position label,
-worksheet.letters.lock_letters,Lock Letters,,section label,
-worksheet.letters.lock_warning,⚠ {letter} isn't in your Letters Included selection — add it there first.,,inline warning,leading-emoji;mixed UI+content — do not translate {…}
-worksheet.letters.panel_title,Letters Included,,panel title,
-worksheet.letters.second_letter,Second Letter,,lock position label,
-worksheet.letters.third_letter,Third Letter,,lock position label,
-worksheet.letters.yud_warning,⚠ Yud + Yud blends will be skipped,,inline warning,leading-emoji
-worksheet.menus.collapse_all,Collapse all menus,,sidebar button,
-worksheet.menus.expand_all,Expand all menus,,sidebar button,
-worksheet.modes.bingo.all_match_tooltip,Every student's card contains the same blends — just in different positions. Every blend you call will be on every card. Great for younger students and faster games.,,tooltip,html
-worksheet.modes.bingo.caller_tooltip,Adds a teacher page listing every blend in the call order. Check them off as you call them during the game.,,tooltip,
-worksheet.modes.bingo.label,Bingo Mode,,toggle-row label,
-worksheet.modes.bingo.show_translit,Show Transliteration on card,,bingo option toggle,
-worksheet.modes.bingo.tooltip,"Generates unique randomized bingo cards using Hebrew blends. Print one card per student, then call out blends aloud — students mark off matches. Includes a caller sheet for the teacher.",,tooltip,html
-worksheet.modes.fill_vowels,Fill in the Vowels (students add nikkud),,toggle-row label,
-worksheet.modes.gematria.answer_key,Answer Key,,gematria toggle,
-worksheet.modes.gematria.label,Gematria Mode,,toggle-row label,
-worksheet.modes.gematria.tooltip,"Students write the total Gematria value below each word or blend. Enable Self Check for flip cards, or Answer Key to print a teacher copy on the second page.",,tooltip,html
-worksheet.modes.help.bingo,Generates printable bingo cards from your blends.,,worksheet-type help line,
-worksheet.modes.help.fillvowels,Hebrew with no nikkud — students add the vowel marks.,,worksheet-type help line,
-worksheet.modes.help.gematria,Students calculate the Gematria value of each word.,,worksheet-type help line,
-worksheet.modes.help.inverse,English shown — students write Hebrew.,,worksheet-type help line,
-worksheet.modes.help.matching,"Draw-a-line matching — blends in one column, their sounds shuffled in the other. Includes an optional answer key.",,worksheet-type help line,
-worksheet.modes.help.nametheletter,Drill Hebrew letter names. Only available with 1-Letter practice.,,worksheet-type help line,
-worksheet.modes.help.reading,Hebrew shown — students read aloud.,,worksheet-type help line,
-worksheet.modes.help.tracing,"Ruled lines with faded models — students trace, then write on their own.",,worksheet-type help line,
-worksheet.modes.inverse_mode,Inverse Mode (English → write Hebrew),,toggle-row label,
-worksheet.modes.matching.label,Matching,,toggle-row label,
-worksheet.modes.matching.num_pairs_tooltip,How many blend↔sound pairs to put on the matching worksheet. Kept small so everything fits one printed page.,,tooltip,
-worksheet.modes.ntl.inverse,Inverse (show letter name),,toggle-row label,
-worksheet.modes.ntl.label,Name the Letter,,toggle-row label,
-worksheet.modes.ntl.tooltip,"Drill Hebrew letter names. Students see a Hebrew letter and write its name (Alef, Bet…). Turn on Inverse to flip it: the name is shown and the student writes the Hebrew letter.",,tooltip,
-worksheet.modes.number.bingo,Bingo Mode,,number-practice toggle,
-worksheet.modes.number.bingo.all_match_tooltip,Every student's card contains the same numbers — just in different positions.,,tooltip,
-worksheet.modes.number.bingo.caller_tooltip,"Adds a teacher page listing every number drawn, with both digit and Hebrew word, in the call order.",,tooltip,
-worksheet.modes.number.bingo.show_pair,Show pair,,number-bingo option,
-worksheet.modes.number.bingo.show_pair_tooltip,Shows the matching digit under each Hebrew word (or vice-versa) on every cell.,,tooltip,
-worksheet.modes.number.bingo_tooltip,Generate printable bingo cards filled with numbers (or Hebrew number words). Includes a teacher caller sheet showing both the digit and the Hebrew word.,,tooltip,
-worksheet.modes.number.display,Display,,number-practice label,
-worksheet.modes.number.display.number,Number,,display button,
-worksheet.modes.number.display.word,Hebrew word,,display button,
-worksheet.modes.number.gender,Gender,,number-practice label,
-worksheet.modes.number.gender.f,Feminine,,gender button,
-worksheet.modes.number.gender.m,Masculine,,gender button,
-worksheet.modes.number.label,Number Practice,,toggle-row label,
-worksheet.modes.number.range,Number range,,number-practice label,
-worksheet.modes.number.range_to,to,,number-range separator,
-worksheet.modes.number.tooltip,Practice Hebrew numbers from 0–9999. Show students a digit and have them write the Hebrew word — or show the Hebrew word and have them write the digit. Supports masculine and feminine forms.,,tooltip,html
-worksheet.modes.number.total_questions,Total questions,,number-practice label,
-worksheet.modes.panel_title,Worksheet Mode,,panel title,
-worksheet.modes.practice.nikud,Vowels Only,,practice-type button,contains \n
-worksheet.modes.practice.one,1-Letter,,practice-type button,
-worksheet.modes.practice.realwords,Real Words,,practice-type button,contains \n
-worksheet.modes.practice.three,3-Letter,,practice-type button,
-worksheet.modes.practice.two,2-Letter,,practice-type button,
-worksheet.modes.practice_type_label,Practice Type,,section label,
-worksheet.modes.realwords.label,Real Words Mode,,toggle-row label,
-worksheet.modes.realwords.tooltip,"Includes several drill types using real Hebrew words from a dictionary of over 13,000 words.",,tooltip,
-worksheet.modes.three.first_letter,1st letter,,3-letter checkbox,
-worksheet.modes.three.second_letter,2nd letter,,3-letter checkbox,
-worksheet.modes.three.vowel_on,Vowel on,,3-letter sub-option label,
-worksheet.modes.tracing.darkness,Trace darkness,,tracing label,
-worksheet.modes.tracing.darkness.dark,Dark,,trace-darkness button,
-worksheet.modes.tracing.darkness.light,Light,,trace-darkness button,
-worksheet.modes.tracing.darkness.medium,Medium,,trace-darkness button,
-worksheet.modes.tracing.faded_models,Faded models per line,,tracing toggle-row,
-worksheet.modes.tracing.faded_models_tooltip,How many faded copies print at the start of each line for the student to trace.,,tooltip,
-worksheet.modes.tracing.fill_line,Fill the line,,tracing toggle-row,
-worksheet.modes.tracing.fill_line_tooltip,"Repeat faded copies across the whole line instead of leaving blank writing space — trace-only practice. Disables ""Faded models per line"".",,tooltip,
-worksheet.modes.tracing.label,Tracing,,toggle-row label,
-worksheet.modes.tracing.line.both,Top + bottom,,tracing line-style button,
-worksheet.modes.tracing.line.bottom,Bottom line,,tracing line-style button,
-worksheet.modes.tracing.line_style,Line style,,tracing label,
-worksheet.modes.tracing.lines_per_item,Lines per item,,tracing toggle-row,
-worksheet.modes.tracing.lines_per_item_tooltip,Repeat each item on this many consecutive ruled lines.,,tooltip,
-worksheet.modes.tracing.repeat_models,Repeat models on every line,,tracing toggle-row,
-worksheet.modes.tracing.repeat_models_tooltip,On: every ruled line for an item shows the faded models. Off: only the first line does; the rest are blank ruled lines.,,tooltip,
-worksheet.modes.tracing.solid_first,Solid example first,,tracing toggle-row,
-worksheet.modes.tracing.solid_first_tooltip,"Print the first (rightmost) copy at full darkness as a model, followed by the faded copies to trace.",,tooltip,
-worksheet.modes.tracing.spacing,Spacing,,tracing slider label,
-worksheet.modes.type.bingo,Bingo,,worksheet-type button,
-worksheet.modes.type.fillvowels,Fill Vowels,,worksheet-type button,contains \n
-worksheet.modes.type.gematria,Gematria,,worksheet-type button,
-worksheet.modes.type.inverse,Inverse,,worksheet-type button,
-worksheet.modes.type.matching,Matching,,worksheet-type button,
-worksheet.modes.type.nametheletter,Name the Letter,,worksheet-type button,contains \n
-worksheet.modes.type.reading,Reading,,worksheet-type button,
-worksheet.modes.type.tracing,Tracing,,worksheet-type button,
-worksheet.modes.worksheet_type_label,Worksheet Type,,section label,
-worksheet.opt.answer_key,Answer Key,,translit-placement / toggle label,
-worksheet.opt.answer_key_lc,Answer key,,translit-placement button,
-worksheet.opt.back,Back,,flip-placement button,
-worksheet.opt.caller,Caller,,bingo-placement button,
-worksheet.opt.card,Card,,bingo-placement button,
-worksheet.opt.english,English,,segmented / language option,
-worksheet.opt.front,Front,,flip-placement button,
-worksheet.opt.grid_10,10 × 10,,grid-size option,
-worksheet.opt.grid_12,12 × 12,,grid-size option,
-worksheet.opt.grid_15,15 × 15,,grid-size option,
-worksheet.opt.grid_18,18 × 18,,grid-size option,
-worksheet.opt.grid_3,3 × 3,,grid-size option,
-worksheet.opt.grid_4,4 × 4,,grid-size option,
-worksheet.opt.grid_5,5 × 5,,grid-size option,
-worksheet.opt.perpage_1,1 card,,per-page option,
-worksheet.opt.perpage_2,2 cards,,per-page option,
-worksheet.opt.perpage_4,4 cards,,per-page option,
-worksheet.opt.same_page,Same page,,translit-placement button,
-worksheet.opt.timer_1min,1 min,,timer-duration option,
-worksheet.opt.timer_2min,2 min,,timer-duration option,
-worksheet.opt.timer_3min,3 min,,timer-duration option,
-worksheet.opt.timer_5min,5 min,,timer-duration option,
-worksheet.opt.worksheet,Worksheet,,translit-placement button,
-worksheet.output.duration,Duration,,self-check option,
-worksheet.output.qr_answer_key,QR Answer Key,,output toggle-row label,
-worksheet.output.qr_answer_key_tooltip,"Adds a small QR code to the worksheet footer. Students scan it with a phone to open a scan-to-check answer key that matches their sheet — handy for self-checking at centers. Works for reading, inverse, name-the-letter, fill-vowels, gematria, matching, number practice, and the real-words drills (including word search & crossword).",,tooltip,
-worksheet.output.timer,Timer,,self-check option,
-worksheet.presets.delete_confirm,"Are you sure you want to delete the preset ""{name}""?",,confirm dialog,mixed UI+content — do not translate {…}
-worksheet.presets.delete_title,Delete,,preset action button title,aria-label only
-worksheet.presets.duplicate_title,Duplicate,,preset action button title,aria-label only
-worksheet.presets.import_empty,Paste a backup into the text box first.,,alert,
-worksheet.presets.import_invalid,Invalid backup. Make sure you pasted the full exported text.,,alert,
-worksheet.presets.import_toast,Imported {count} preset(s). Duplicates were overwritten.,,toast,
-worksheet.presets.load,Load,,preset action button,
-worksheet.presets.name_note_empty,Enter a preset name to save.,,inline validation note,
-worksheet.presets.name_placeholder,Preset name...,,input placeholder,
-worksheet.presets.overwrite_confirm,"Overwrite preset ""{name}"" with current settings?",,confirm dialog,mixed UI+content — do not translate {…}
-worksheet.presets.overwrite_title,Overwrite with current settings,,preset action button title,aria-label only
-worksheet.presets.panel_title,Saved Presets,,panel title,
-worksheet.presets.panel_tooltip,"Save your current letter, vowel, and layout settings as a named preset. Load it later to instantly restore everything — great for switching between class levels or drill types.",,tooltip,
-worksheet.presets.save,💾 Save,,button,leading-emoji
-worksheet.preview.adjust_selection,Adjust your selection to continue.,,preview notice,
-worksheet.preview.dismiss,Dismiss,,preview notice close button,aria-label only
-worksheet.preview.loading_word_list,Loading word list…,,preview notice,
-worksheet.preview.settings_changed,Settings changed — Generate to apply.,,preview notice,
-worksheet.preview.waiting_selection,Waiting for a valid selection…,,preview notice,
-worksheet.preview.word_list_failed,Could not load the word list. Check your connection and try again.,,preview notice,
-worksheet.quickstart.class_bingo,Class Bingo (30 cards),,quick-start chip,
-worksheet.quickstart.drawer_summary,⚡ Quick start — ready-made worksheets,,sidebar drawer summary,leading-emoji
-worksheet.quickstart.empty_label,Or start with a ready-made worksheet,,empty-state label,
-worksheet.quickstart.fill_vowels,Fill-in-the-Vowels quiz,,quick-start chip,
-worksheet.quickstart.kamatz_patach,Kamatz & Patach drill,,quick-start chip,
-worksheet.quickstart.loaded_notice,Loaded “{name}” — tweak anything on the left; the preview updates live.,,preview notice toast,mixed UI+content — do not translate {…}
-worksheet.quickstart.name_letter,Alef-Bet: Name the Letter,,quick-start chip,
-worksheet.quickstart.numbers,Numbers 0–20,,quick-start chip,
-worksheet.realwords.bingo.title,Bingo Options,,rw section header,
-worksheet.realwords.clear_btn,✕ Clear,,button,leading-emoji
-worksheet.realwords.cw.clue.english,English,,crossword clue-language button,
-worksheet.realwords.cw.clue_lang,Clue Language,,rw crossword label,
-worksheet.realwords.display.title,Drill Options,,rw section header,
-worksheet.realwords.drill.bingo,Bingo,,drill-type button,
-worksheet.realwords.drill.crossword,Crossword,,drill-type button,
-worksheet.realwords.drill.fillvowels,Fill Vowels,,drill-type button,
-worksheet.realwords.drill.gematria,Gematria,,drill-type button,
-worksheet.realwords.drill.identify,ID Real Words,,drill-type button,
-worksheet.realwords.drill.idpos,ID Parts of Speech,,drill-type button,
-worksheet.realwords.drill.matching,Matching,,drill-type button,
-worksheet.realwords.drill.numpractice,Number Practice,,drill-type button,
-worksheet.realwords.drill.reading,Reading,,drill-type button,
-worksheet.realwords.drill.reverse,Reverse,,drill-type button,
-worksheet.realwords.drill.vocab,Self-Check,,drill-type button,
-worksheet.realwords.drill.wordsearch,Word Search,,drill-type button,
-worksheet.realwords.drilltype.title,Drill Type,,rw section header,
-worksheet.realwords.era.biblical,Biblical,,era checkbox,
-worksheet.realwords.era.modern,Modern,,era checkbox,
-worksheet.realwords.filters.era,Era,,filter group label,
-worksheet.realwords.filters.len.2,2-Letter,,length checkbox,
-worksheet.realwords.filters.len.3,3-Letter,,length checkbox,
-worksheet.realwords.filters.len.4,4-Letter,,length checkbox,
-worksheet.realwords.filters.len.5,5-Letter,,length checkbox,
-worksheet.realwords.filters.len.6,6-Letter,,length checkbox,
-worksheet.realwords.filters.len.7,7-Letter,,length checkbox,
-worksheet.realwords.filters.len.8plus,8+ Letter,,length checkbox,
-worksheet.realwords.filters.len.prefix,Prefixes/Suffixes,,length checkbox,
-worksheet.realwords.filters.length,Length,,filter group label,
-worksheet.realwords.filters.pos,Part of Speech,,filter group label,
-worksheet.realwords.filters.title,Word Filters,,rw section header,
-worksheet.realwords.help.bingo,Unique bingo cards with real Hebrew words. Teacher calls words aloud; students mark matches.,,drill help line,
-worksheet.realwords.help.crossword,A printable Hebrew crossword. Words interlock on shared letters; clues are the English meaning or transliteration. Includes a word bank and answer key.,,drill help line,
-worksheet.realwords.help.fillvowels,Hebrew words shown with nikkud stripped — students write in the vowel marks.,,drill help line,
-worksheet.realwords.help.gematria,Each word is shown with a blank line. Students calculate the total Gematria value of the letters.,,drill help line,
-worksheet.realwords.help.identify,Mixed real words + nonsense blends; students circle the real ones. Includes a teacher answer key.,,drill help line,
-worksheet.realwords.help.idpos,Hebrew words shown; students write the part of speech. Answer key includes a small POS tag on each card.,,drill help line,
-worksheet.realwords.help.matching,"Draw-a-line matching: Hebrew words in one column, shuffled targets in the other. Match by English translation, emoji (picture matching), or transliteration. Includes an optional answer key.",,drill help line,
-worksheet.realwords.help.numpractice,Hebrew number practice (0–9999). Includes its own options panel.,,drill help line,
-worksheet.realwords.help.reading,Hebrew shown — students read aloud and flip to check.,,drill help line,
-worksheet.realwords.help.reverse,English shown — students recall or write the Hebrew.,,drill help line,
-worksheet.realwords.help.vocab,"Flip cards: Hebrew front, English translation back.",,drill help line,
-worksheet.realwords.help.wordsearch,"A printable Hebrew word search puzzle. Pick grid size, word count, and allowed directions.",,drill help line,
-worksheet.realwords.idpos_section,Parts of Speech,,rw sub-section header,
-worksheet.realwords.import_btn,⬇ Import,,button,leading-emoji
-worksheet.realwords.import_detected.one,{count} word detected,,import count note,plural
-worksheet.realwords.import_detected.other,{count} words detected,,import count note,plural
-worksheet.realwords.import_instructions,"In the Word Lookup dictionary, enable Bulk Copy Mode and set Copy Mode to All info. Select your words, copy, then paste below. Plain Hebrew (one per line) also works.",,instructions,html
-worksheet.realwords.import_success.one,✓ {count} word imported,,import status,plural;leading-emoji
-worksheet.realwords.import_success.other,✓ {count} words imported,,import status,plural;leading-emoji
-worksheet.realwords.import_textarea_aria,Paste imported word list,,textarea aria-label,aria-label only
-worksheet.realwords.letterfilter.hint,Only show words using these letters,,filter hint,
-worksheet.realwords.letterfilter.title,Letter Filter,,rw section header,
-worksheet.realwords.list_empty,"No word lists yet. Create word lists in the Dictionary, then come back to drill them here.",,empty state,html
-worksheet.realwords.match.emoji,Emoji,,match-target button,
-worksheet.realwords.match.translation,Translation,,match-target button,
-worksheet.realwords.match.versions,Versions,,rw match label,
-worksheet.realwords.match.versions_tooltip,"Generates multiple unique matching worksheets from the same settings — each with a different random selection and shuffle. Print one per student to prevent copying. Each is labeled 'Version A', 'Version B', etc.",,tooltip,
-worksheet.realwords.match_emoji_pool.one,{count} word has a matching emoji.,,match pool note,plural
-worksheet.realwords.match_emoji_pool.other,{count} words have a matching emoji.,,match pool note,plural
-worksheet.realwords.match_target,Match Target,,rw match label,
-worksheet.realwords.match_target_tooltip,What students match each Hebrew word to. Emoji makes a picture-matching worksheet — only words that have an emoji are used.,,tooltip,
-worksheet.realwords.mix_blends,Mix with generated blends,,toggle-row label,
-worksheet.realwords.mix_blends_tooltip,"When on, real words are mixed in with randomly generated blends. Students won't know which are real — great for a ""find the real words"" activity.",,tooltip,
-worksheet.realwords.pool_imported.one,{count} word imported,,pool info,plural
-worksheet.realwords.pool_imported.other,{count} words imported,,pool info,plural
-worksheet.realwords.pool_matching,{count} matching words,,pool info,
-worksheet.realwords.pool_no_lists,No lists selected — pick one or more above.,,pool info,
-worksheet.realwords.pool_none_imported,No words imported yet — paste and Import above.,,pool info,
-worksheet.realwords.pool_selected.one,{count} word selected,,pool info,plural
-worksheet.realwords.pool_selected.other,{count} words selected,,pool info,plural
-worksheet.realwords.pos.adjective,Adjective,,part-of-speech checkbox,
-worksheet.realwords.pos.adverb,Adverb,,part-of-speech checkbox,
-worksheet.realwords.pos.conjunction,Conjunction,,part-of-speech checkbox,
-worksheet.realwords.pos.noun,Noun,,part-of-speech checkbox,
-worksheet.realwords.pos.other,Other,,part-of-speech checkbox,
-worksheet.realwords.pos.preposition,Preposition,,part-of-speech checkbox,
-worksheet.realwords.pos.pronoun,Pronoun,,part-of-speech checkbox,
-worksheet.realwords.pos.proper_noun,Proper Noun,,part-of-speech checkbox,
-worksheet.realwords.pos.root,Root (שׁורש),,part-of-speech checkbox,RTL / hebDisplay
-worksheet.realwords.pos.verb,Verb,,part-of-speech checkbox,
-worksheet.realwords.show_translation,Show Translation,,toggle-row label,
-worksheet.realwords.source.all,All Words,,word-source button,
-worksheet.realwords.source.imported,Imported List,,word-source button,
-worksheet.realwords.source.lists,My Word Lists,,word-source button,
-worksheet.realwords.source.title,Word Source,,rw section header,
-worksheet.realwords.star_real,Star real words,,toggle-row label,
-worksheet.realwords.ws.directions,Directions,,rw word-search label,
-worksheet.realwords.ws.directions_tooltip,Pick which directions words can be hidden in. ← is right-to-left (the natural Hebrew reading direction). Enable more directions for harder puzzles.,,tooltip,
-worksheet.selfcheck.columns,Columns:,,self-check control label,
-worksheet.selfcheck.got_it,✓ Got it,,flip-card score button,leading-emoji
-worksheet.selfcheck.hide_all,Hide All,,self-check control button,
-worksheet.selfcheck.missed,✗ Missed,,flip-card score button,leading-emoji
-worksheet.selfcheck.per_row,Per row:,,self-check control label,
-worksheet.selfcheck.play_audio,Play audio,,audio button title,aria-label only
-worksheet.selfcheck.remaining,{count} left,,score-bar remaining count,
-worksheet.selfcheck.reset,↺ Reset,,self-check reset button,leading-emoji
-worksheet.selfcheck.reveal_all,Reveal All,,self-check control button,
-worksheet.selfcheck.score_line,{correct} correct · {incorrect} incorrect · {total} total,,score summary line,mixed UI+content — do not translate {…}
-worksheet.selfcheck.session_complete,Session Complete!,,score summary h2,
-worksheet.selfcheck.tap_back_hear,🔊 Tap back to hear,,self-check control hint,leading-emoji
-worksheet.selfcheck.tap_reveal_gematria,Tap a card to reveal its Gematria value,,self-check control hint,
-worksheet.selfcheck.tap_reveal_word,Tap a card to reveal the Hebrew word,,self-check control hint,
-worksheet.selfcheck.tap_to_flip,Tap a card to flip,,self-check control hint,
-worksheet.selfcheck.tap_to_reveal,tap to reveal,,flip-card hint,
-worksheet.selfcheck.timer_pause,⏸ Pause,,timer control button,leading-emoji
-worksheet.selfcheck.timer_start,▶ Start,,timer control button,leading-emoji
-worksheet.selfcheck.try_again,Try Again,,score summary button,
-worksheet.share.copied,✓ Copied!,,share button feedback,leading-emoji
-worksheet.share.truncate_notice,Only the first {cap} of {count} words were embedded in this link.,,share notice,mixed UI+content — do not translate {…}
-worksheet.sidebar.hide,Hide sidebar,,sidebar toggle title,aria-label only
-worksheet.sidebar.show,Show sidebar,,sidebar toggle title,aria-label only
-worksheet.title,Hebrew Worksheet Generator,,page h1,
-worksheet.tour.firstrun_link,Take a quick tour →,,First-run quick-start tour link,first-run affordance
-worksheet.tour.generate.body,Builds your worksheet instantly. Regenerate keeps your settings but reshuffles.,,tour step body,
-worksheet.tour.generate.title,Generate,,tour step title,
-worksheet.tour.launch_button,❓ Tour,,Header tour-launch button,leading-emoji
-worksheet.tour.launch_title,Take a quick tour,,Header tour-launch button title,tooltip
-worksheet.tour.letters.body,Tap letters to include or exclude them — match exactly what your class has learned.,,tour step body,
-worksheet.tour.letters.title,Letters,,tour step title,
-worksheet.tour.practice_type.body,"Choose what students practice: single letters, 2- or 3-letter blends, vowels alone, or real Hebrew words.",,tour step body,
-worksheet.tour.practice_type.title,Practice Type,,tour step title,
-worksheet.tour.presets.body,Save setups you reuse — one per class level — and reload them in a click.,,tour step body,
-worksheet.tour.presets.title,Presets,,tour step title,
-worksheet.tour.share.body,Copies a link with all your settings baked in — send it to a colleague and they get your exact setup.,,tour step body,
-worksheet.tour.share.title,Share,,tour step title,
-worksheet.tour.vowels.body,Same idea for nikkud: only the vowels you've taught.,,tour step body,
-worksheet.tour.vowels.title,Vowels,,tour step title,
-worksheet.tour.worksheet_type.body,"Turn the same practice into a reading sheet, a fill-in-the-vowels quiz, bingo cards, and more.",,tour step body,
-worksheet.tour.worksheet_type.title,Worksheet Type,,tour step title,
-worksheet.validation.bingo_need_words,Need at least {count} words for a {gridSize}×{gridSize} grid. Only {available} match your filters.,,alert,mixed UI+content — do not translate {…}
-worksheet.validation.no_valid_hebrew,No valid Hebrew words found. Make sure each line starts with a Hebrew word.,,alert,
-worksheet.validation.no_words_available,No words available.,,alert,
-worksheet.validation.no_words_filters,No words match your current filters. Try enabling more options.,,alert,
-worksheet.validation.pdf_failed,PDF export failed. Try using Print → Save as PDF instead.,,alert,
-worksheet.validation.select_letter,Please select at least one letter.,,alert,
-worksheet.validation.select_more_letters,"Please select more letters. At least one non-sofit letter is needed for first position, and at least one valid letter for second position.",,alert,
-worksheet.validation.select_vowel,Please select at least one vowel.,,alert,
-worksheet.vowels.color.aqua,Aqua,,vowel group color name,
-worksheet.vowels.color.blue,Blue,,vowel group color name,
-worksheet.vowels.color.green,Green,,vowel group color name,
-worksheet.vowels.color.grey,Grey,,vowel group color name,
-worksheet.vowels.color.orange,Orange,,vowel group color name,
-worksheet.vowels.color.purple,Purple,,vowel group color name,
-worksheet.vowels.color.red,Red,,vowel group color name,
-worksheet.vowels.color.yellow,Yellow,,vowel group color name,
-worksheet.vowels.count_vav,Count וֹ/וּ as a letter,,vowel option checkbox,RTL / hebDisplay
-worksheet.vowels.count_vav_tooltip,"When unchecked (default), vav-holam (וֹ) and shuruk (וּ) appear alongside a consonant — the Vav is the vowel marker, not counted as a letter. When checked, they appear as standalone וֹ and וּ — the Vav itself is the letter.",,tooltip,RTL / hebDisplay;html
-worksheet.vowels.group_header,{sound} Sound – {color},,vowel group header template,mixed UI+content — do not translate {…}
-worksheet.vowels.lock_vowels,Lock Vowels,,section label,
-worksheet.vowels.lock_vowels_tooltip,"When on, generated blends use only the locked vowels — a quick way to drill a single vowel sound (or a small set) without changing the main vowel selection above.",,tooltip,
-worksheet.vowels.lock_warning,⚠ That vowel isn't in your Vowels Included selection — add it above first.,,inline warning,leading-emoji
-worksheet.vowels.panel_title,Vowels Included,,panel title,
-worksheet.vowels.sound.ah,AH,,vowel group sound label,
-worksheet.vowels.sound.ee,EE,,vowel group sound label,
-worksheet.vowels.sound.eh,EH,,vowel group sound label,
-worksheet.vowels.sound.ey,EY,,vowel group sound label,
-worksheet.vowels.sound.oh,OH,,vowel group sound label,
-worksheet.vowels.sound.oo,OO,,vowel group sound label,
-worksheet.vowels.sound.uh,UH,,vowel group sound label,
-worksheet.vowels.sub.ah,AH sound,,vowel chip subtext,
-worksheet.vowels.sub.ee,EE sound,,vowel chip subtext,
-worksheet.vowels.sub.eh,EH sound,,vowel chip subtext,
-worksheet.vowels.sub.ey,EY sound,,vowel chip subtext,
-worksheet.vowels.sub.oh,OH sound,,vowel chip subtext,
-worksheet.vowels.sub.oo,OO sound,,vowel chip subtext,
-worksheet.vowels.sub.short_ah,short AH,,vowel chip subtext,
-worksheet.vowels.sub.short_eh,short EH,,vowel chip subtext,
-worksheet.vowels.sub.uh,UH / silent,,vowel chip subtext,
+worksheet.layout.total_blends,Total Blends,סך הצירופים,layout option label,
+worksheet.layout.versions,versions,גרסאות,count suffix,
+worksheet.letters.combos,{count} possible combinations,{count} צירופים אפשריים,letters panel count,
+worksheet.letters.first_letter,First Letter,אות ראשונה,lock position label,
+worksheet.letters.lock_letters,Lock Letters,נעילת אותיות,section label,
+worksheet.letters.lock_warning,⚠ {letter} isn't in your Letters Included selection — add it there first.,⚠ {letter} אינה בבחירת האותיות הכלולות שלכם — הוסיפו אותה שם קודם.,inline warning,leading-emoji;mixed UI+content — do not translate {…}
+worksheet.letters.panel_title,Letters Included,אותיות כלולות,panel title,
+worksheet.letters.second_letter,Second Letter,אות שנייה,lock position label,
+worksheet.letters.third_letter,Third Letter,אות שלישית,lock position label,
+worksheet.letters.yud_warning,⚠ Yud + Yud blends will be skipped,⚠ צירופי יוד + יוד יידלגו,inline warning,leading-emoji
+worksheet.menus.collapse_all,Collapse all menus,כווץ את כל התפריטים,sidebar button,
+worksheet.menus.expand_all,Expand all menus,הרחב את כל התפריטים,sidebar button,
+worksheet.modes.bingo.all_match_tooltip,Every student's card contains the same blends — just in different positions. Every blend you call will be on every card. Great for younger students and faster games.,הכרטיס של כל תלמיד מכיל את אותם צירופים — רק במיקומים שונים. כל צירוף שתקריאו יופיע בכל כרטיס. מצוין לתלמידים צעירים ולמשחקים מהירים יותר.,tooltip,html
+worksheet.modes.bingo.caller_tooltip,Adds a teacher page listing every blend in the call order. Check them off as you call them during the game.,מוסיף דף למורה המפרט כל צירוף בסדר ההקראה. סמנו אותם תוך כדי ההקראה במהלך המשחק.,tooltip,
+worksheet.modes.bingo.label,Bingo Mode,מצב בינגו,toggle-row label,
+worksheet.modes.bingo.show_translit,Show Transliteration on card,הצג תעתיק על הכרטיס,bingo option toggle,
+worksheet.modes.bingo.tooltip,"Generates unique randomized bingo cards using Hebrew blends. Print one card per student, then call out blends aloud — students mark off matches. Includes a caller sheet for the teacher.","מפיק כרטיסי בינגו ייחודיים ואקראיים באמצעות צירופים בעברית. הדפיסו כרטיס אחד לכל תלמיד, ואז הקריאו צירופים בקול — התלמידים מסמנים התאמות. כולל דף הקראה למורה.",tooltip,html
+worksheet.modes.fill_vowels,Fill in the Vowels (students add nikkud),מילוי התנועות (התלמידים מוסיפים ניקוד),toggle-row label,
+worksheet.modes.gematria.answer_key,Answer Key,מפתח תשובות,gematria toggle,
+worksheet.modes.gematria.label,Gematria Mode,מצב גימטריה,toggle-row label,
+worksheet.modes.gematria.tooltip,"Students write the total Gematria value below each word or blend. Enable Self Check for flip cards, or Answer Key to print a teacher copy on the second page.","התלמידים כותבים את ערך הגימטריה הכולל מתחת לכל מילה או צירוף. הפעילו בדיקה עצמית לכרטיסים מתהפכים, או מפתח תשובות כדי להדפיס עותק למורה בעמוד השני.",tooltip,html
+worksheet.modes.help.bingo,Generates printable bingo cards from your blends.,מפיק כרטיסי בינגו להדפסה מהצירופים שלכם.,worksheet-type help line,
+worksheet.modes.help.fillvowels,Hebrew with no nikkud — students add the vowel marks.,עברית ללא ניקוד — התלמידים מוסיפים את סימני הניקוד.,worksheet-type help line,
+worksheet.modes.help.gematria,Students calculate the Gematria value of each word.,התלמידים מחשבים את ערך הגימטריה של כל מילה.,worksheet-type help line,
+worksheet.modes.help.inverse,English shown — students write Hebrew.,מוצגת אנגלית — התלמידים כותבים עברית.,worksheet-type help line,
+worksheet.modes.help.matching,"Draw-a-line matching — blends in one column, their sounds shuffled in the other. Includes an optional answer key.","התאמה בקו — צירופים בטור אחד, הצלילים שלהם מעורבבים בטור השני. כולל מפתח תשובות לא חובה.",worksheet-type help line,
+worksheet.modes.help.nametheletter,Drill Hebrew letter names. Only available with 1-Letter practice.,תרגול שמות האותיות העבריות. זמין רק בתרגול אות אחת.,worksheet-type help line,
+worksheet.modes.help.reading,Hebrew shown — students read aloud.,מוצגת עברית — התלמידים קוראים בקול.,worksheet-type help line,
+worksheet.modes.help.tracing,"Ruled lines with faded models — students trace, then write on their own.","שורות משורטטות עם דגמים דהויים — התלמידים עוקבים, ואז כותבים בעצמם.",worksheet-type help line,
+worksheet.modes.inverse_mode,Inverse Mode (English → write Hebrew),מצב הפוך (אנגלית ← כתיבת עברית),toggle-row label,
+worksheet.modes.matching.label,Matching,התאמה,toggle-row label,
+worksheet.modes.matching.num_pairs_tooltip,How many blend↔sound pairs to put on the matching worksheet. Kept small so everything fits one printed page.,כמה זוגות צירוף↔צליל להכניס לדף ההתאמה. נשמר קטן כדי שהכול ייכנס לעמוד מודפס אחד.,tooltip,
+worksheet.modes.ntl.inverse,Inverse (show letter name),הפוך (הצג שם אות),toggle-row label,
+worksheet.modes.ntl.label,Name the Letter,שם האות,toggle-row label,
+worksheet.modes.ntl.tooltip,"Drill Hebrew letter names. Students see a Hebrew letter and write its name (Alef, Bet…). Turn on Inverse to flip it: the name is shown and the student writes the Hebrew letter.","תרגול שמות האותיות העבריות. התלמידים רואים אות עברית וכותבים את שמה (אלף, בית…). הפעילו הפוך כדי להחליף: השם מוצג והתלמיד כותב את האות העברית.",tooltip,
+worksheet.modes.number.bingo,Bingo Mode,מצב בינגו,number-practice toggle,
+worksheet.modes.number.bingo.all_match_tooltip,Every student's card contains the same numbers — just in different positions.,הכרטיס של כל תלמיד מכיל את אותם מספרים — רק במיקומים שונים.,tooltip,
+worksheet.modes.number.bingo.caller_tooltip,"Adds a teacher page listing every number drawn, with both digit and Hebrew word, in the call order.","מוסיף דף למורה המפרט כל מספר שהוגרל, עם הספרה והמילה בעברית, בסדר ההקראה.",tooltip,
+worksheet.modes.number.bingo.show_pair,Show pair,הצג זוג,number-bingo option,
+worksheet.modes.number.bingo.show_pair_tooltip,Shows the matching digit under each Hebrew word (or vice-versa) on every cell.,מציג את הספרה התואמת מתחת לכל מילה בעברית (או להפך) בכל משבצת.,tooltip,
+worksheet.modes.number.bingo_tooltip,Generate printable bingo cards filled with numbers (or Hebrew number words). Includes a teacher caller sheet showing both the digit and the Hebrew word.,צרו כרטיסי בינגו להדפסה מלאים במספרים (או במילות מספר בעברית). כולל דף הקראה למורה המציג את הספרה והמילה בעברית.,tooltip,
+worksheet.modes.number.display,Display,תצוגה,number-practice label,
+worksheet.modes.number.display.number,Number,מספר,display button,
+worksheet.modes.number.display.word,Hebrew word,מילה בעברית,display button,
+worksheet.modes.number.gender,Gender,מין,number-practice label,
+worksheet.modes.number.gender.f,Feminine,נקבה,gender button,
+worksheet.modes.number.gender.m,Masculine,זכר,gender button,
+worksheet.modes.number.label,Number Practice,תרגול מספרים,toggle-row label,
+worksheet.modes.number.range,Number range,טווח מספרים,number-practice label,
+worksheet.modes.number.range_to,to,עד,number-range separator,
+worksheet.modes.number.tooltip,Practice Hebrew numbers from 0–9999. Show students a digit and have them write the Hebrew word — or show the Hebrew word and have them write the digit. Supports masculine and feminine forms.,תרגלו מספרים בעברית מ-0–9999. הציגו לתלמידים ספרה ובקשו מהם לכתוב את המילה בעברית — או הציגו את המילה בעברית ובקשו מהם לכתוב את הספרה. תומך בצורות זכר ונקבה.,tooltip,html
+worksheet.modes.number.total_questions,Total questions,סך השאלות,number-practice label,
+worksheet.modes.panel_title,Worksheet Mode,מצב דף העבודה,panel title,
+worksheet.modes.practice.nikud,Vowels Only,תנועות בלבד,practice-type button,contains \n
+worksheet.modes.practice.one,1-Letter,אות אחת,practice-type button,
+worksheet.modes.practice.realwords,Real Words,מילים אמיתיות,practice-type button,contains \n
+worksheet.modes.practice.three,3-Letter,שלוש אותיות,practice-type button,
+worksheet.modes.practice.two,2-Letter,שתי אותיות,practice-type button,
+worksheet.modes.practice_type_label,Practice Type,סוג תרגול,section label,
+worksheet.modes.realwords.label,Real Words Mode,מצב מילים אמיתיות,toggle-row label,
+worksheet.modes.realwords.tooltip,"Includes several drill types using real Hebrew words from a dictionary of over 13,000 words.","כולל כמה סוגי תרגול המשתמשים במילים עבריות אמיתיות ממילון של יותר מ-13,000 מילים.",tooltip,
+worksheet.modes.three.first_letter,1st letter,אות ראשונה,3-letter checkbox,
+worksheet.modes.three.second_letter,2nd letter,אות שנייה,3-letter checkbox,
+worksheet.modes.three.vowel_on,Vowel on,תנועה על,3-letter sub-option label,
+worksheet.modes.tracing.darkness,Trace darkness,כהות המעקב,tracing label,
+worksheet.modes.tracing.darkness.dark,Dark,כהה,trace-darkness button,
+worksheet.modes.tracing.darkness.light,Light,בהיר,trace-darkness button,
+worksheet.modes.tracing.darkness.medium,Medium,בינוני,trace-darkness button,
+worksheet.modes.tracing.faded_models,Faded models per line,דגמים דהויים בכל שורה,tracing toggle-row,
+worksheet.modes.tracing.faded_models_tooltip,How many faded copies print at the start of each line for the student to trace.,כמה עותקים דהויים יודפסו בתחילת כל שורה שהתלמיד יעקוב אחריהם.,tooltip,
+worksheet.modes.tracing.fill_line,Fill the line,מלא את השורה,tracing toggle-row,
+worksheet.modes.tracing.fill_line_tooltip,"Repeat faded copies across the whole line instead of leaving blank writing space — trace-only practice. Disables ""Faded models per line"".",חוזר על עותקים דהויים לאורך כל השורה במקום להשאיר מקום כתיבה ריק — תרגול מעקב בלבד. מבטל את ״דגמים דהויים בכל שורה״.,tooltip,
+worksheet.modes.tracing.label,Tracing,מעקב,toggle-row label,REVIEW: 'Tracing' rendered מעקב — confirm
+worksheet.modes.tracing.line.both,Top + bottom,עליון + תחתון,tracing line-style button,
+worksheet.modes.tracing.line.bottom,Bottom line,שורה תחתונה,tracing line-style button,
+worksheet.modes.tracing.line_style,Line style,סגנון קו,tracing label,
+worksheet.modes.tracing.lines_per_item,Lines per item,שורות לכל פריט,tracing toggle-row,
+worksheet.modes.tracing.lines_per_item_tooltip,Repeat each item on this many consecutive ruled lines.,חוזר על כל פריט במספר זה של שורות משורטטות רצופות.,tooltip,
+worksheet.modes.tracing.repeat_models,Repeat models on every line,חזור על דגמים בכל שורה,tracing toggle-row,
+worksheet.modes.tracing.repeat_models_tooltip,On: every ruled line for an item shows the faded models. Off: only the first line does; the rest are blank ruled lines.,מופעל: כל שורה משורטטת של פריט מציגה את הדגמים הדהויים. כבוי: רק השורה הראשונה; השאר הן שורות משורטטות ריקות.,tooltip,
+worksheet.modes.tracing.solid_first,Solid example first,דוגמה מלאה תחילה,tracing toggle-row,
+worksheet.modes.tracing.solid_first_tooltip,"Print the first (rightmost) copy at full darkness as a model, followed by the faded copies to trace.","הדפיסו את העותק הראשון (הימני ביותר) בכהות מלאה כדגם, ואחריו העותקים הדהויים למעקב.",tooltip,
+worksheet.modes.tracing.spacing,Spacing,מרווח,tracing slider label,
+worksheet.modes.type.bingo,Bingo,בינגו,worksheet-type button,
+worksheet.modes.type.fillvowels,Fill Vowels,מילוי תנועות,worksheet-type button,contains \n
+worksheet.modes.type.gematria,Gematria,גימטריה,worksheet-type button,
+worksheet.modes.type.inverse,Inverse,הפוך,worksheet-type button,
+worksheet.modes.type.matching,Matching,התאמה,worksheet-type button,
+worksheet.modes.type.nametheletter,Name the Letter,שם האות,worksheet-type button,contains \n
+worksheet.modes.type.reading,Reading,קריאה,worksheet-type button,
+worksheet.modes.type.tracing,Tracing,מעקב,worksheet-type button,REVIEW: 'Tracing' rendered מעקב — confirm
+worksheet.modes.worksheet_type_label,Worksheet Type,סוג דף העבודה,section label,
+worksheet.opt.answer_key,Answer Key,מפתח תשובות,translit-placement / toggle label,
+worksheet.opt.answer_key_lc,Answer key,מפתח תשובות,translit-placement button,
+worksheet.opt.back,Back,גב,flip-placement button,
+worksheet.opt.caller,Caller,מקריא,bingo-placement button,
+worksheet.opt.card,Card,כרטיס,bingo-placement button,
+worksheet.opt.english,English,אנגלית,segmented / language option,
+worksheet.opt.front,Front,חזית,flip-placement button,
+worksheet.opt.grid_10,10 × 10,10 × 10,grid-size option,
+worksheet.opt.grid_12,12 × 12,12 × 12,grid-size option,
+worksheet.opt.grid_15,15 × 15,15 × 15,grid-size option,
+worksheet.opt.grid_18,18 × 18,18 × 18,grid-size option,
+worksheet.opt.grid_3,3 × 3,3 × 3,grid-size option,
+worksheet.opt.grid_4,4 × 4,4 × 4,grid-size option,
+worksheet.opt.grid_5,5 × 5,5 × 5,grid-size option,
+worksheet.opt.perpage_1,1 card,כרטיס אחד,per-page option,
+worksheet.opt.perpage_2,2 cards,2 כרטיסים,per-page option,
+worksheet.opt.perpage_4,4 cards,4 כרטיסים,per-page option,
+worksheet.opt.same_page,Same page,אותו עמוד,translit-placement button,
+worksheet.opt.timer_1min,1 min,דקה,timer-duration option,
+worksheet.opt.timer_2min,2 min,2 דקות,timer-duration option,
+worksheet.opt.timer_3min,3 min,3 דקות,timer-duration option,
+worksheet.opt.timer_5min,5 min,5 דקות,timer-duration option,
+worksheet.opt.worksheet,Worksheet,דף עבודה,translit-placement button,
+worksheet.output.duration,Duration,משך,self-check option,
+worksheet.output.qr_answer_key,QR Answer Key,מפתח תשובות QR,output toggle-row label,
+worksheet.output.qr_answer_key_tooltip,"Adds a small QR code to the worksheet footer. Students scan it with a phone to open a scan-to-check answer key that matches their sheet — handy for self-checking at centers. Works for reading, inverse, name-the-letter, fill-vowels, gematria, matching, number practice, and the real-words drills (including word search & crossword).","מוסיף קוד QR קטן לכותרת התחתונה של דף העבודה. התלמידים סורקים אותו בטלפון כדי לפתוח מפתח תשובות לסריקה ובדיקה שתואם לדף שלהם — נוח לבדיקה עצמית בעמדות. פועל עבור קריאה, הפוך, שם האות, מילוי תנועות, גימטריה, התאמה, תרגול מספרים ותרגולי המילים האמיתיות (כולל תפזורת ותשבץ).",tooltip,
+worksheet.output.timer,Timer,טיימר,self-check option,
+worksheet.presets.delete_confirm,"Are you sure you want to delete the preset ""{name}""?","האם אתם בטוחים שברצונכם למחוק את ההגדרה ""{name}""?",confirm dialog,mixed UI+content — do not translate {…}
+worksheet.presets.delete_title,Delete,מחק,preset action button title,aria-label only
+worksheet.presets.duplicate_title,Duplicate,שכפול,preset action button title,aria-label only
+worksheet.presets.import_empty,Paste a backup into the text box first.,הדביקו קודם גיבוי בתיבת הטקסט.,alert,
+worksheet.presets.import_invalid,Invalid backup. Make sure you pasted the full exported text.,גיבוי לא תקין. ודאו שהדבקתם את כל הטקסט המיוצא.,alert,
+worksheet.presets.import_toast,Imported {count} preset(s). Duplicates were overwritten.,יובאו {count} הגדרות. כפילויות נדרסו.,toast,
+worksheet.presets.load,Load,טען,preset action button,
+worksheet.presets.name_note_empty,Enter a preset name to save.,הזינו שם להגדרה כדי לשמור.,inline validation note,
+worksheet.presets.name_placeholder,Preset name...,שם ההגדרה...,input placeholder,
+worksheet.presets.overwrite_confirm,"Overwrite preset ""{name}"" with current settings?","לדרוס על ההגדרה ""{name}"" עם ההגדרות הנוכחיות?",confirm dialog,mixed UI+content — do not translate {…}
+worksheet.presets.overwrite_title,Overwrite with current settings,דריסה עם ההגדרות הנוכחיות,preset action button title,aria-label only
+worksheet.presets.panel_title,Saved Presets,הגדרות שמורות,panel title,
+worksheet.presets.panel_tooltip,"Save your current letter, vowel, and layout settings as a named preset. Load it later to instantly restore everything — great for switching between class levels or drill types.","שמרו את הגדרות האותיות, התנועות והפריסה הנוכחיות שלכם כהגדרה בשם. טענו אותה מאוחר יותר כדי לשחזר הכול מיד — מצוין למעבר בין רמות כיתה או סוגי תרגול.",tooltip,
+worksheet.presets.save,💾 Save,💾 שמור,button,leading-emoji
+worksheet.preview.adjust_selection,Adjust your selection to continue.,התאימו את הבחירה שלכם כדי להמשיך.,preview notice,
+worksheet.preview.dismiss,Dismiss,סגור,preview notice close button,aria-label only
+worksheet.preview.loading_word_list,Loading word list…,טוען רשימת מילים…,preview notice,
+worksheet.preview.settings_changed,Settings changed — Generate to apply.,ההגדרות השתנו — צרו כדי להחיל.,preview notice,
+worksheet.preview.waiting_selection,Waiting for a valid selection…,ממתין לבחירה תקינה…,preview notice,
+worksheet.preview.word_list_failed,Could not load the word list. Check your connection and try again.,לא ניתן לטעון את רשימת המילים. בדקו את החיבור ונסו שוב.,preview notice,
+worksheet.quickstart.class_bingo,Class Bingo (30 cards),בינגו כיתתי (30 כרטיסים),quick-start chip,
+worksheet.quickstart.drawer_summary,⚡ Quick start — ready-made worksheets,⚡ התחלה מהירה — דפי עבודה מוכנים,sidebar drawer summary,leading-emoji
+worksheet.quickstart.empty_label,Or start with a ready-made worksheet,או התחילו עם דף עבודה מוכן,empty-state label,
+worksheet.quickstart.fill_vowels,Fill-in-the-Vowels quiz,מבחן מילוי תנועות,quick-start chip,
+worksheet.quickstart.kamatz_patach,Kamatz & Patach drill,תרגול קמץ ופתח,quick-start chip,
+worksheet.quickstart.loaded_notice,Loaded “{name}” — tweak anything on the left; the preview updates live.,נטען ״{name}״ — שנו כל דבר משמאל; התצוגה המקדימה מתעדכנת בזמן אמת.,preview notice toast,mixed UI+content — do not translate {…}
+worksheet.quickstart.name_letter,Alef-Bet: Name the Letter,אלף-בית: שם האות,quick-start chip,
+worksheet.quickstart.numbers,Numbers 0–20,מספרים 0–20,quick-start chip,
+worksheet.realwords.bingo.title,Bingo Options,אפשרויות בינגו,rw section header,
+worksheet.realwords.clear_btn,✕ Clear,✕ נקה,button,leading-emoji
+worksheet.realwords.cw.clue.english,English,אנגלית,crossword clue-language button,
+worksheet.realwords.cw.clue_lang,Clue Language,שפת ההגדרות,rw crossword label,
+worksheet.realwords.display.title,Drill Options,אפשרויות תרגול,rw section header,
+worksheet.realwords.drill.bingo,Bingo,בינגו,drill-type button,
+worksheet.realwords.drill.crossword,Crossword,תשבץ,drill-type button,
+worksheet.realwords.drill.fillvowels,Fill Vowels,מילוי תנועות,drill-type button,
+worksheet.realwords.drill.gematria,Gematria,גימטריה,drill-type button,
+worksheet.realwords.drill.identify,ID Real Words,זיהוי מילים אמיתיות,drill-type button,
+worksheet.realwords.drill.idpos,ID Parts of Speech,זיהוי חלקי דיבר,drill-type button,
+worksheet.realwords.drill.matching,Matching,התאמה,drill-type button,
+worksheet.realwords.drill.numpractice,Number Practice,תרגול מספרים,drill-type button,
+worksheet.realwords.drill.reading,Reading,קריאה,drill-type button,
+worksheet.realwords.drill.reverse,Reverse,הפוך,drill-type button,
+worksheet.realwords.drill.vocab,Self-Check,בדיקה עצמית,drill-type button,
+worksheet.realwords.drill.wordsearch,Word Search,תפזורת,drill-type button,
+worksheet.realwords.drilltype.title,Drill Type,סוג תרגול,rw section header,
+worksheet.realwords.era.biblical,Biblical,מקראית,era checkbox,
+worksheet.realwords.era.modern,Modern,מודרנית,era checkbox,
+worksheet.realwords.filters.era,Era,תקופה,filter group label,
+worksheet.realwords.filters.len.2,2-Letter,2 אותיות,length checkbox,
+worksheet.realwords.filters.len.3,3-Letter,3 אותיות,length checkbox,
+worksheet.realwords.filters.len.4,4-Letter,4 אותיות,length checkbox,
+worksheet.realwords.filters.len.5,5-Letter,5 אותיות,length checkbox,
+worksheet.realwords.filters.len.6,6-Letter,6 אותיות,length checkbox,
+worksheet.realwords.filters.len.7,7-Letter,7 אותיות,length checkbox,
+worksheet.realwords.filters.len.8plus,8+ Letter,8+ אותיות,length checkbox,
+worksheet.realwords.filters.len.prefix,Prefixes/Suffixes,קידומות/סיומות,length checkbox,
+worksheet.realwords.filters.length,Length,אורך,filter group label,
+worksheet.realwords.filters.pos,Part of Speech,חלק דיבר,filter group label,
+worksheet.realwords.filters.title,Word Filters,מסנני מילים,rw section header,
+worksheet.realwords.help.bingo,Unique bingo cards with real Hebrew words. Teacher calls words aloud; students mark matches.,כרטיסי בינגו ייחודיים עם מילים עבריות אמיתיות. המורה מקריא מילים בקול; התלמידים מסמנים התאמות.,drill help line,
+worksheet.realwords.help.crossword,A printable Hebrew crossword. Words interlock on shared letters; clues are the English meaning or transliteration. Includes a word bank and answer key.,תשבץ עברי להדפסה. המילים משתלבות באותיות משותפות; ההגדרות הן המשמעות באנגלית או התעתיק. כולל מאגר מילים ומפתח תשובות.,drill help line,
+worksheet.realwords.help.fillvowels,Hebrew words shown with nikkud stripped — students write in the vowel marks.,מילים עבריות מוצגות ללא ניקוד — התלמידים כותבים את סימני הניקוד.,drill help line,
+worksheet.realwords.help.gematria,Each word is shown with a blank line. Students calculate the total Gematria value of the letters.,כל מילה מוצגת עם שורה ריקה. התלמידים מחשבים את ערך הגימטריה הכולל של האותיות.,drill help line,
+worksheet.realwords.help.identify,Mixed real words + nonsense blends; students circle the real ones. Includes a teacher answer key.,מילים אמיתיות מעורבבות עם צירופי שטות; התלמידים מקיפים את האמיתיות. כולל מפתח תשובות למורה.,drill help line,
+worksheet.realwords.help.idpos,Hebrew words shown; students write the part of speech. Answer key includes a small POS tag on each card.,מילים עבריות מוצגות; התלמידים כותבים את חלק הדיבר. מפתח התשובות כולל תגית חלק דיבר קטנה על כל כרטיס.,drill help line,
+worksheet.realwords.help.matching,"Draw-a-line matching: Hebrew words in one column, shuffled targets in the other. Match by English translation, emoji (picture matching), or transliteration. Includes an optional answer key.","התאמה בקו: מילים עבריות בטור אחד, יעדים מעורבבים בטור השני. התאימו לפי תרגום לאנגלית, אימוג׳י (התאמת תמונות) או תעתיק. כולל מפתח תשובות לא חובה.",drill help line,
+worksheet.realwords.help.numpractice,Hebrew number practice (0–9999). Includes its own options panel.,תרגול מספרים בעברית (0–9999). כולל לוח אפשרויות משלו.,drill help line,
+worksheet.realwords.help.reading,Hebrew shown — students read aloud and flip to check.,מוצגת עברית — התלמידים קוראים בקול ומהפכים כדי לבדוק.,drill help line,
+worksheet.realwords.help.reverse,English shown — students recall or write the Hebrew.,מוצגת אנגלית — התלמידים נזכרים או כותבים את העברית.,drill help line,
+worksheet.realwords.help.vocab,"Flip cards: Hebrew front, English translation back.","כרטיסים מתהפכים: עברית בחזית, תרגום לאנגלית בגב.",drill help line,
+worksheet.realwords.help.wordsearch,"A printable Hebrew word search puzzle. Pick grid size, word count, and allowed directions.","תפזורת עברית להדפסה. בחרו גודל רשת, מספר מילים וכיוונים מותרים.",drill help line,
+worksheet.realwords.idpos_section,Parts of Speech,חלקי דיבר,rw sub-section header,
+worksheet.realwords.import_btn,⬇ Import,⬇ ייבא,button,leading-emoji
+worksheet.realwords.import_detected.one,{count} word detected,זוהתה מילה אחת,import count note,plural
+worksheet.realwords.import_detected.other,{count} words detected,זוהו {count} מילים,import count note,plural
+worksheet.realwords.import_instructions,"In the Word Lookup dictionary, enable Bulk Copy Mode and set Copy Mode to All info. Select your words, copy, then paste below. Plain Hebrew (one per line) also works.","במילון חיפוש המילים, הפעילו מצב העתקה מרובה והגדירו את מצב ההעתקה ל׳כל המידע׳. בחרו את המילים שלכם, העתיקו, ואז הדביקו למטה. גם עברית פשוטה (אחת בכל שורה) עובדת.",instructions,html
+worksheet.realwords.import_success.one,✓ {count} word imported,✓ מילה אחת יובאה,import status,plural;leading-emoji
+worksheet.realwords.import_success.other,✓ {count} words imported,✓ {count} מילים יובאו,import status,plural;leading-emoji
+worksheet.realwords.import_textarea_aria,Paste imported word list,הדביקו רשימת מילים מיובאת,textarea aria-label,aria-label only
+worksheet.realwords.letterfilter.hint,Only show words using these letters,הצג רק מילים המשתמשות באותיות אלה,filter hint,
+worksheet.realwords.letterfilter.title,Letter Filter,מסנן אותיות,rw section header,
+worksheet.realwords.list_empty,"No word lists yet. Create word lists in the Dictionary, then come back to drill them here.","אין עדיין רשימות מילים. צרו רשימות מילים במילון, ואז חזרו לכאן כדי לתרגל אותן.",empty state,html
+worksheet.realwords.match.emoji,Emoji,אימוג׳י,match-target button,
+worksheet.realwords.match.translation,Translation,תרגום,match-target button,
+worksheet.realwords.match.versions,Versions,גרסאות,rw match label,
+worksheet.realwords.match.versions_tooltip,"Generates multiple unique matching worksheets from the same settings — each with a different random selection and shuffle. Print one per student to prevent copying. Each is labeled 'Version A', 'Version B', etc.","מפיק כמה דפי התאמה ייחודיים מאותן הגדרות — כל אחד עם בחירה וערבוב אקראיים שונים. הדפיסו אחד לכל תלמיד כדי למנוע העתקה. כל אחד מסומן ׳Version A׳, ׳Version B׳ וכו׳.",tooltip,
+worksheet.realwords.match_emoji_pool.one,{count} word has a matching emoji.,למילה אחת יש אימוג׳י תואם.,match pool note,plural
+worksheet.realwords.match_emoji_pool.other,{count} words have a matching emoji.,ל-{count} מילים יש אימוג׳י תואם.,match pool note,plural
+worksheet.realwords.match_target,Match Target,יעד התאמה,rw match label,
+worksheet.realwords.match_target_tooltip,What students match each Hebrew word to. Emoji makes a picture-matching worksheet — only words that have an emoji are used.,למה התלמידים מתאימים כל מילה עברית. אימוג׳י יוצר דף התאמת תמונות — נעשה שימוש רק במילים שיש להן אימוג׳י.,tooltip,
+worksheet.realwords.mix_blends,Mix with generated blends,ערבב עם צירופים שנוצרו,toggle-row label,
+worksheet.realwords.mix_blends_tooltip,"When on, real words are mixed in with randomly generated blends. Students won't know which are real — great for a ""find the real words"" activity.","כשמופעל, מילים אמיתיות מעורבבות עם צירופים שנוצרו אקראית. התלמידים לא יידעו אילו אמיתיות — מצוין לפעילות ״מצא את המילים האמיתיות״.",tooltip,
+worksheet.realwords.pool_imported.one,{count} word imported,מילה אחת יובאה,pool info,plural
+worksheet.realwords.pool_imported.other,{count} words imported,{count} מילים יובאו,pool info,plural
+worksheet.realwords.pool_matching,{count} matching words,{count} מילים תואמות,pool info,
+worksheet.realwords.pool_no_lists,No lists selected — pick one or more above.,לא נבחרו רשימות — בחרו אחת או יותר למעלה.,pool info,
+worksheet.realwords.pool_none_imported,No words imported yet — paste and Import above.,לא יובאו עדיין מילים — הדביקו וייבאו למעלה.,pool info,
+worksheet.realwords.pool_selected.one,{count} word selected,מילה אחת נבחרה,pool info,plural
+worksheet.realwords.pool_selected.other,{count} words selected,{count} מילים נבחרו,pool info,plural
+worksheet.realwords.pos.adjective,Adjective,שם תואר,part-of-speech checkbox,
+worksheet.realwords.pos.adverb,Adverb,תואר הפועל,part-of-speech checkbox,
+worksheet.realwords.pos.conjunction,Conjunction,מילת חיבור,part-of-speech checkbox,
+worksheet.realwords.pos.noun,Noun,שם עצם,part-of-speech checkbox,
+worksheet.realwords.pos.other,Other,אחר,part-of-speech checkbox,
+worksheet.realwords.pos.preposition,Preposition,מילת יחס,part-of-speech checkbox,
+worksheet.realwords.pos.pronoun,Pronoun,כינוי גוף,part-of-speech checkbox,
+worksheet.realwords.pos.proper_noun,Proper Noun,שם פרטי,part-of-speech checkbox,
+worksheet.realwords.pos.root,Root (שׁורש),שורש,part-of-speech checkbox,RTL / hebDisplay
+worksheet.realwords.pos.verb,Verb,פועל,part-of-speech checkbox,
+worksheet.realwords.show_translation,Show Translation,הצג תרגום,toggle-row label,
+worksheet.realwords.source.all,All Words,כל המילים,word-source button,
+worksheet.realwords.source.imported,Imported List,רשימה מיובאת,word-source button,
+worksheet.realwords.source.lists,My Word Lists,רשימות המילים שלי,word-source button,
+worksheet.realwords.source.title,Word Source,מקור המילים,rw section header,
+worksheet.realwords.star_real,Star real words,סמן מילים אמיתיות בכוכב,toggle-row label,
+worksheet.realwords.ws.directions,Directions,כיוונים,rw word-search label,
+worksheet.realwords.ws.directions_tooltip,Pick which directions words can be hidden in. ← is right-to-left (the natural Hebrew reading direction). Enable more directions for harder puzzles.,בחרו באילו כיוונים אפשר להסתיר מילים. ← הוא מימין לשמאל (כיוון הקריאה הטבעי בעברית). הפעילו יותר כיוונים לחידות קשות יותר.,tooltip,
+worksheet.selfcheck.columns,Columns:,עמודות:,self-check control label,
+worksheet.selfcheck.got_it,✓ Got it,✓ ידעתי,flip-card score button,leading-emoji
+worksheet.selfcheck.hide_all,Hide All,הסתר הכל,self-check control button,
+worksheet.selfcheck.missed,✗ Missed,✗ טעיתי,flip-card score button,leading-emoji
+worksheet.selfcheck.per_row,Per row:,בכל שורה:,self-check control label,
+worksheet.selfcheck.play_audio,Play audio,נגן שמע,audio button title,aria-label only
+worksheet.selfcheck.remaining,{count} left,נותרו {count},score-bar remaining count,
+worksheet.selfcheck.reset,↺ Reset,↺ איפוס,self-check reset button,leading-emoji
+worksheet.selfcheck.reveal_all,Reveal All,חשוף הכל,self-check control button,
+worksheet.selfcheck.score_line,{correct} correct · {incorrect} incorrect · {total} total,{correct} נכון · {incorrect} שגוי · {total} סך הכול,score summary line,mixed UI+content — do not translate {…}
+worksheet.selfcheck.session_complete,Session Complete!,המפגש הושלם!,score summary h2,
+worksheet.selfcheck.tap_back_hear,🔊 Tap back to hear,🔊 הקישו על הגב כדי לשמוע,self-check control hint,leading-emoji
+worksheet.selfcheck.tap_reveal_gematria,Tap a card to reveal its Gematria value,הקישו על כרטיס כדי לחשוף את ערך הגימטריה שלו,self-check control hint,
+worksheet.selfcheck.tap_reveal_word,Tap a card to reveal the Hebrew word,הקישו על כרטיס כדי לחשוף את המילה בעברית,self-check control hint,
+worksheet.selfcheck.tap_to_flip,Tap a card to flip,הקישו על כרטיס כדי להפוך,self-check control hint,
+worksheet.selfcheck.tap_to_reveal,tap to reveal,הקישו כדי לחשוף,flip-card hint,
+worksheet.selfcheck.timer_pause,⏸ Pause,⏸ השהה,timer control button,leading-emoji
+worksheet.selfcheck.timer_start,▶ Start,▶ התחל,timer control button,leading-emoji
+worksheet.selfcheck.try_again,Try Again,נסו שוב,score summary button,
+worksheet.share.copied,✓ Copied!,✓ הועתק!,share button feedback,leading-emoji
+worksheet.share.truncate_notice,Only the first {cap} of {count} words were embedded in this link.,רק {cap} המילים הראשונות מתוך {count} הוטמעו בקישור זה.,share notice,mixed UI+content — do not translate {…}
+worksheet.sidebar.hide,Hide sidebar,הסתר סרגל צד,sidebar toggle title,aria-label only
+worksheet.sidebar.show,Show sidebar,הצג סרגל צד,sidebar toggle title,aria-label only
+worksheet.title,Hebrew Worksheet Generator,מחולל דפי עבודה בעברית,page h1,
+worksheet.tour.firstrun_link,Take a quick tour →,צאו לסיור קצר ←,First-run quick-start tour link,first-run affordance
+worksheet.tour.generate.body,Builds your worksheet instantly. Regenerate keeps your settings but reshuffles.,בונה את דף העבודה שלכם מיד. ׳צור מחדש׳ שומר על ההגדרות אך מערבב מחדש.,tour step body,
+worksheet.tour.generate.title,Generate,צור,tour step title,
+worksheet.tour.launch_button,❓ Tour,❓ סיור,Header tour-launch button,leading-emoji
+worksheet.tour.launch_title,Take a quick tour,סיור קצר,Header tour-launch button title,tooltip
+worksheet.tour.letters.body,Tap letters to include or exclude them — match exactly what your class has learned.,הקישו על אותיות כדי לכלול או להוציא אותן — התאימו בדיוק למה שהכיתה למדה.,tour step body,
+worksheet.tour.letters.title,Letters,אותיות,tour step title,
+worksheet.tour.practice_type.body,"Choose what students practice: single letters, 2- or 3-letter blends, vowels alone, or real Hebrew words.","בחרו מה התלמידים מתרגלים: אותיות בודדות, צירופי שתי או שלוש אותיות, תנועות בלבד, או מילים עבריות אמיתיות.",tour step body,
+worksheet.tour.practice_type.title,Practice Type,סוג תרגול,tour step title,
+worksheet.tour.presets.body,Save setups you reuse — one per class level — and reload them in a click.,שמרו הגדרות שאתם משתמשים בהן שוב — אחת לכל רמת כיתה — וטענו אותן מחדש בלחיצה.,tour step body,
+worksheet.tour.presets.title,Presets,הגדרות שמורות,tour step title,
+worksheet.tour.share.body,Copies a link with all your settings baked in — send it to a colleague and they get your exact setup.,מעתיק קישור עם כל ההגדרות שלכם מוטמעות — שלחו אותו לעמית והוא יקבל את ההגדרה המדויקת שלכם.,tour step body,
+worksheet.tour.share.title,Share,שיתוף,tour step title,
+worksheet.tour.vowels.body,Same idea for nikkud: only the vowels you've taught.,אותו רעיון עבור ניקוד: רק התנועות שלימדתם.,tour step body,
+worksheet.tour.vowels.title,Vowels,תנועות,tour step title,
+worksheet.tour.worksheet_type.body,"Turn the same practice into a reading sheet, a fill-in-the-vowels quiz, bingo cards, and more.","הפכו את אותו תרגול לדף קריאה, מבחן מילוי תנועות, כרטיסי בינגו ועוד.",tour step body,
+worksheet.tour.worksheet_type.title,Worksheet Type,סוג דף העבודה,tour step title,
+worksheet.validation.bingo_need_words,Need at least {count} words for a {gridSize}×{gridSize} grid. Only {available} match your filters.,נדרשות לפחות {count} מילים לרשת {gridSize}×{gridSize}. רק {available} תואמות למסננים שלכם.,alert,mixed UI+content — do not translate {…}
+worksheet.validation.no_valid_hebrew,No valid Hebrew words found. Make sure each line starts with a Hebrew word.,לא נמצאו מילים עבריות תקינות. ודאו שכל שורה מתחילה במילה עברית.,alert,
+worksheet.validation.no_words_available,No words available.,אין מילים זמינות.,alert,
+worksheet.validation.no_words_filters,No words match your current filters. Try enabling more options.,אין מילים התואמות למסננים הנוכחיים שלכם. נסו להפעיל עוד אפשרויות.,alert,
+worksheet.validation.pdf_failed,PDF export failed. Try using Print → Save as PDF instead.,ייצוא ה-PDF נכשל. נסו במקום זאת הדפס ← שמור כ-PDF.,alert,
+worksheet.validation.select_letter,Please select at least one letter.,בחרו לפחות אות אחת.,alert,
+worksheet.validation.select_more_letters,"Please select more letters. At least one non-sofit letter is needed for first position, and at least one valid letter for second position.","בחרו עוד אותיות. נדרשת לפחות אות אחת שאינה סופית למיקום הראשון, ולפחות אות תקינה אחת למיקום השני.",alert,
+worksheet.validation.select_vowel,Please select at least one vowel.,בחרו לפחות תנועה אחת.,alert,
+worksheet.vowels.color.aqua,Aqua,תכלת,vowel group color name,
+worksheet.vowels.color.blue,Blue,כחול,vowel group color name,
+worksheet.vowels.color.green,Green,ירוק,vowel group color name,
+worksheet.vowels.color.grey,Grey,אפור,vowel group color name,
+worksheet.vowels.color.orange,Orange,כתום,vowel group color name,
+worksheet.vowels.color.purple,Purple,סגול,vowel group color name,
+worksheet.vowels.color.red,Red,אדום,vowel group color name,
+worksheet.vowels.color.yellow,Yellow,צהוב,vowel group color name,
+worksheet.vowels.count_vav,Count וֹ/וּ as a letter,ספור וֹ/וּ כאות,vowel option checkbox,RTL / hebDisplay
+worksheet.vowels.count_vav_tooltip,"When unchecked (default), vav-holam (וֹ) and shuruk (וּ) appear alongside a consonant — the Vav is the vowel marker, not counted as a letter. When checked, they appear as standalone וֹ and וּ — the Vav itself is the letter.","כשלא מסומן (ברירת מחדל), וו-חולם (וֹ) ושורוק (וּ) מופיעים לצד עיצור — הוו הוא סימן התנועה, ולא נספר כאות. כשמסומן, הם מופיעים כ-וֹ ו-וּ עצמאיים — הוו עצמו הוא האות.",tooltip,RTL / hebDisplay;html
+worksheet.vowels.group_header,{sound} Sound – {color},צליל {sound} – {color},vowel group header template,mixed UI+content — do not translate {…}
+worksheet.vowels.lock_vowels,Lock Vowels,נעילת תנועות,section label,
+worksheet.vowels.lock_vowels_tooltip,"When on, generated blends use only the locked vowels — a quick way to drill a single vowel sound (or a small set) without changing the main vowel selection above.","כשמופעל, הצירופים שנוצרים משתמשים רק בתנועות הנעולות — דרך מהירה לתרגל תנועה בודדת (או קבוצה קטנה) בלי לשנות את בחירת התנועות הראשית למעלה.",tooltip,
+worksheet.vowels.lock_warning,⚠ That vowel isn't in your Vowels Included selection — add it above first.,⚠ תנועה זו אינה בבחירת התנועות הכלולות שלכם — הוסיפו אותה למעלה קודם.,inline warning,leading-emoji
+worksheet.vowels.panel_title,Vowels Included,תנועות כלולות,panel title,
+worksheet.vowels.sound.ah,AH,AH,vowel group sound label,REVIEW: 'AH' rendered AH — confirm
+worksheet.vowels.sound.ee,EE,EE,vowel group sound label,REVIEW: 'EE' rendered EE — confirm
+worksheet.vowels.sound.eh,EH,EH,vowel group sound label,REVIEW: 'EH' rendered EH — confirm
+worksheet.vowels.sound.ey,EY,EY,vowel group sound label,REVIEW: 'EY' rendered EY — confirm
+worksheet.vowels.sound.oh,OH,OH,vowel group sound label,REVIEW: 'OH' rendered OH — confirm
+worksheet.vowels.sound.oo,OO,OO,vowel group sound label,REVIEW: 'OO' rendered OO — confirm
+worksheet.vowels.sound.uh,UH,UH,vowel group sound label,REVIEW: 'UH' rendered UH — confirm
+worksheet.vowels.sub.ah,AH sound,צליל AH,vowel chip subtext,
+worksheet.vowels.sub.ee,EE sound,צליל EE,vowel chip subtext,
+worksheet.vowels.sub.eh,EH sound,צליל EH,vowel chip subtext,
+worksheet.vowels.sub.ey,EY sound,צליל EY,vowel chip subtext,
+worksheet.vowels.sub.oh,OH sound,צליל OH,vowel chip subtext,
+worksheet.vowels.sub.oo,OO sound,צליל OO,vowel chip subtext,
+worksheet.vowels.sub.short_ah,short AH,AH קצר,vowel chip subtext,
+worksheet.vowels.sub.short_eh,short EH,EH קצר,vowel chip subtext,
+worksheet.vowels.sub.uh,UH / silent,UH / שקט,vowel chip subtext,
 flashcards.teachertools.preset_overwrite_confirm,"Overwrite preset ""{name}""?","לדרוס על ההגדרה השמורה ""{name}""?",Confirm before overwriting an existing preset on save,has {name}
 flashcards.teachertools.preset_delete_confirm,"Delete preset ""{name}""?","למחוק את ההגדרה השמורה ""{name}""?",Confirm before deleting a preset,has {name}
 flashcards.teachertools.preset_overwrite_current_confirm,"Overwrite preset ""{name}"" with current settings?","לדרוס על ההגדרה ""{name}"" עם ההגדרות הנוכחיות?",Confirm overwrite from the preset row save action,has {name}
@@ -3650,14 +3652,14 @@ flashcards.count.custom_aria,Custom card count ({min} to {max}),מספר כרט�
 flashcards.profile.saved_count,{count} saved,{count} שמורים,Sub-label on each profile row (saved-results count),has {count}
 flashcards.profile.active_marker,★ ,★ ,Prefix marking the active profile row,symbol only
 flashcards.teachertools.play_button,▶ Play,▶ נגן,Play button on a saved preset row (loads + starts the drill),
-worksheet.actions.pdf_generating,⏳ Generating...,,PDF export button (busy state),leading-emoji
-worksheet.actions.regen_title,New random draw with the same settings,,Regenerate button title (enabled),
-worksheet.empty.not_enough_blends,Not enough blends to match.,,worksheet empty state,print-adjacent empty state
-worksheet.empty.number_range_small_body,"A {gridSize}×{gridSize} card needs at least {needed} unique numbers, but the range {min}–{max} only has {range}. Widen the range or pick a smaller grid.",,worksheet empty state,print-adjacent empty state; {gridSize}/{needed}/{min}/{max}/{range} numeric
-worksheet.empty.number_range_small_title,Number range too small for bingo.,,worksheet empty state,print-adjacent empty state
-worksheet.empty.number_ready,Click Generate to create a Number Practice sheet.,,worksheet empty state,print-adjacent empty state
-worksheet.empty.pick_two_letters_vowel,Pick at least two letters and a vowel so there are blends to match.,,worksheet empty state,print-adjacent empty state
-worksheet.selfcheck.subtitle_answer,Tap each card to reveal the answer.,,self-check subtitle fallback,
-worksheet.selfcheck.subtitle_ntl,Tap each card to reveal the letter’s name.,,self-check subtitle fallback,
-worksheet.selfcheck.subtitle_ntl_inverse,Tap each card to reveal the Hebrew letter.,,self-check subtitle fallback,
-worksheet.selfcheck.subtitle_pronunciation,Tap each card to reveal the pronunciation.,,self-check subtitle fallback,
+worksheet.actions.pdf_generating,⏳ Generating...,⏳ יוצר...,PDF export button (busy state),leading-emoji
+worksheet.actions.regen_title,New random draw with the same settings,הגרלה אקראית חדשה עם אותן הגדרות,Regenerate button title (enabled),
+worksheet.empty.not_enough_blends,Not enough blends to match.,אין מספיק צירופים להתאמה.,worksheet empty state,print-adjacent empty state
+worksheet.empty.number_range_small_body,"A {gridSize}×{gridSize} card needs at least {needed} unique numbers, but the range {min}–{max} only has {range}. Widen the range or pick a smaller grid.","כרטיס {gridSize}×{gridSize} דורש לפחות {needed} מספרים ייחודיים, אך בטווח {min}–{max} יש רק {range}. הרחיבו את הטווח או בחרו רשת קטנה יותר.",worksheet empty state,print-adjacent empty state; {gridSize}/{needed}/{min}/{max}/{range} numeric
+worksheet.empty.number_range_small_title,Number range too small for bingo.,טווח המספרים קטן מדי לבינגו.,worksheet empty state,print-adjacent empty state
+worksheet.empty.number_ready,Click Generate to create a Number Practice sheet.,לחצו על צור כדי ליצור דף תרגול מספרים.,worksheet empty state,print-adjacent empty state
+worksheet.empty.pick_two_letters_vowel,Pick at least two letters and a vowel so there are blends to match.,בחרו לפחות שתי אותיות ותנועה כדי שיהיו צירופים להתאמה.,worksheet empty state,print-adjacent empty state
+worksheet.selfcheck.subtitle_answer,Tap each card to reveal the answer.,הקישו על כל כרטיס כדי לחשוף את התשובה.,self-check subtitle fallback,
+worksheet.selfcheck.subtitle_ntl,Tap each card to reveal the letter’s name.,הקישו על כל כרטיס כדי לחשוף את שם האות.,self-check subtitle fallback,
+worksheet.selfcheck.subtitle_ntl_inverse,Tap each card to reveal the Hebrew letter.,הקישו על כל כרטיס כדי לחשוף את האות העברית.,self-check subtitle fallback,
+worksheet.selfcheck.subtitle_pronunciation,Tap each card to reveal the pronunciation.,הקישו על כל כרטיס כדי לחשוף את ההגייה.,self-check subtitle fallback,
