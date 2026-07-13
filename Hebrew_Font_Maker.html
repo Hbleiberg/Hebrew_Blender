@@ -3180,7 +3180,7 @@ function metricsPanel() {
         ${lamed}
       </div>
       <div class="metric-col">
-        <div class="metric-sub">${I18n.t('fontmaker.panels.metric_this_letter', {name: l ? gName(l.name) : ''})}</div>
+        <div class="metric-sub">${I18n.t('fontmaker.panels.metric_this_letter', {name: l ? esc(gName(l.name)) : ''})}</div>
         ${f('mAdv',I18n.t('fontmaker.panels.metric_width'),        letterAdvance(l), 'setLetterMetric','advance')}
         ${f('mLsb',I18n.t('fontmaker.panels.metric_left_margin'),  letterLSB(l),     'setLetterMetric','lsb')}
         ${f('mRsb',I18n.t('fontmaker.panels.metric_right_margin'), letterRSB(l),     'setLetterMetric','rsb')}
@@ -4383,7 +4383,7 @@ function cropSelectSVG(l) {
     h += `<rect x="${box.x}" y="${box.y}" width="${box.w}" height="${box.h}" fill="none" stroke="var(--gold)" stroke-width="2" pointer-events="none"/>`;
   }
   const heb = (curKind === 'letter' ? '' : String.fromCodePoint(0x25CC)) + String.fromCodePoint(parseInt(l.codepoint,16));
-  h += `<text x="300" y="${V.y+20}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--navy)" style="paint-order:stroke;stroke:#fff;stroke-width:4px;" pointer-events="none">Select area for ${l.name} ${heb} — drag a box around it</text>`;
+  h += `<text x="300" y="${V.y+20}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--navy)" style="paint-order:stroke;stroke:#fff;stroke-width:4px;" pointer-events="none">Select area for ${esc(l.name)} ${heb} — drag a box around it</text>`;
   return h;
 }
 function startCrop(e) {
@@ -5693,7 +5693,7 @@ function renderMarkControls(c, it) {
   const combined = project.font[cat].uploadMode === 'combined';
   const heb = String.fromCodePoint(0x25CC) + String.fromCodePoint(parseInt(it.codepoint,16));
   let h = `<div class="ctl-row" style="justify-content:space-between;">
-      <div class="ctl-label">${I18n.t('fontmaker.panels.markctl_label', {label, name: gName(it.name)})} <span style="font-size:1.15rem;">${heb}</span></div>
+      <div class="ctl-label">${I18n.t('fontmaker.panels.markctl_label', {label, name: esc(gName(it.name))})} <span style="font-size:1.15rem;">${heb}</span></div>
       <button class="ctl-btn" onclick="selectItem('letter', LETTER_ORDER[0])">${I18n.t('fontmaker.panels.markctl_letters')}</button>
     </div>`;
   if (!combined) h += `<div class="mode-toggle" style="margin:6px 0;">
@@ -5754,7 +5754,7 @@ function renderMarkControls(c, it) {
     } else {
       if (svgUploadOn() && it.source && it.source.kind === 'svg' && it.contours)
         h += `<div class="ctl-row" style="align-items:center;"><span class="hint" style="flex:1;">${I18n.t('fontmaker.panels.markctl_svg_imported')}</span><button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button></div>`;
-      h += `<div class="drop" id="markDrop">Drop ${svgUploadOn()?'an <b>SVG</b>':'an image'} of <b>${it.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('markFile').click()">browse</span>.</div>
+      h += `<div class="drop" id="markDrop">Drop ${svgUploadOn()?'an <b>SVG</b>':'an image'} of <b>${esc(it.name)}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('markFile').click()">browse</span>.</div>
         <div class="allowed">${svgUploadOn()?I18n.t('fontmaker.panels.mark_allowed_svg'):I18n.t('fontmaker.panels.mark_allowed_img')}</div>
         <input type="file" id="markFile" accept="${svgUploadOn()?'.svg,image/svg+xml':'image/*'}" style="display:none;">`;
     }
@@ -8403,9 +8403,9 @@ function renderPrecompControls(l) {
   if (!pc || precompBaseCp(pc) !== l.codepoint) { precompTarget = null; return ''; }
   if (isWideForm(pc)) return renderWideFormControls(pc);   // wide letterforms / digraphs → Width slider
   if (markClassFor(pc.mark) === 'center') {   // dagesh: unified with the letter's own Dagesh (Center) — size adjustable here, position follows the letter
-    const g = `<span style="font-family:var(--heb-font);direction:rtl;">${precompComposed(pc)}</span>`;
+    const g = `<span style="font-family:var(--heb-font);direction:rtl;">${esc(precompComposed(pc))}</span>`;
     const dagPct = Math.round(dageshScale() * 100);
-    return `<div class="ws-side-title">${I18n.t('fontmaker.panels.place_precomp_title', {glyph: '<span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">'+precompComposed(pc)+'</span>', name: esc(precompName(pc))})}</div>
+    return `<div class="ws-side-title">${I18n.t('fontmaker.panels.place_precomp_title', {glyph: '<span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">'+esc(precompComposed(pc))+'</span>', name: esc(precompName(pc))})}</div>
     <div class="hint" style="font-size:0.68rem;">${I18n.t('fontmaker.panels.dagesh_follows_hint', {glyph: g})}</div>
     <hr class="ctl-divider">
     <div class="inline">${I18n.t('fontmaker.panels.dagesh_size')} <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
@@ -8427,7 +8427,7 @@ function renderPrecompControls(l) {
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
       ${isScaleOverride ? `<button class="ctl-btn" onclick="resetPrecompMarkScale()">${I18n.t('fontmaker.panels.reset_auto_size')}</button>` : `<span class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.auto_size_hint')}</span>`}
     </div>`;
-  return `<div class="ws-side-title">${I18n.t('fontmaker.panels.place_precomp_title', {glyph: '<span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">'+precompComposed(pc)+'</span>', name: esc(precompName(pc))})}</div>
+  return `<div class="ws-side-title">${I18n.t('fontmaker.panels.place_precomp_title', {glyph: '<span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">'+esc(precompComposed(pc))+'</span>', name: esc(precompName(pc))})}</div>
     <div class="hint" style="font-size:0.66rem;">${I18n.t('fontmaker.panels.precomp_where_hint')}</div>
     <hr class="ctl-divider">
     <div class="anc-xy">
@@ -9420,20 +9420,20 @@ function renderAlignLeft(L, l) {
   let html = `<div class="ws-side-title">${I18n.t('fontmaker.panels.add_letters')}</div>` + inputModeBlock();
   if (project.inputMode === 'single' && curKind === 'letter') {
     const svg = svgUploadOn();
-    html += `<div class="drop" id="letterDrop">Drop ${svg?'an <b>SVG</b>':'an image'} for <b>${l.name}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('letterFile').click()">browse</span>.</div>
+    html += `<div class="drop" id="letterDrop">Drop ${svg?'an <b>SVG</b>':'an image'} for <b>${esc(l.name)}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('letterFile').click()">browse</span>.</div>
       <div class="allowed">${svg?'Allowed: SVG only — vectors import directly (no tracing).':'Allowed: any image file — PNG, JPG, GIF, WebP.'}</div>
       <input type="file" id="letterFile" accept="${svg?'.svg,image/svg+xml':'image/*'}" style="display:none;">`;
   } else if (project.inputMode === 'combined' && project.combinedSheets.length && curKind === 'letter') {
     html += (!l.source.dataUrl)
       ? `<div class="hint">Pick a letter, then drag a box around it on the sheet to bring it into the editor. Keyboard: arrows move the box, +/− resize, Enter to crop.</div>`
-      : `<div class="hint">Region selected for <b>${l.name}</b>.</div>
+      : `<div class="hint">Region selected for <b>${esc(l.name)}</b>.</div>
          <div class="ctl-row"><button class="ctl-btn" onclick="reselectArea()">↺ Re-select area</button></div>`;
   }
   // Adjust tools appear once there's an image to move (never for already-vector glyphs: font / SVG)
   if (!isVectorGlyph(l) && curImageUrl()) {
     html += `
     <hr class="ctl-divider">
-    <div class="ws-side-title">${I18n.t('fontmaker.panels.adjust_title', {name: gName(l.name)})}</div>
+    <div class="ws-side-title">${I18n.t('fontmaker.panels.adjust_title', {name: esc(gName(l.name))})}</div>
     <div class="scale-pairs">
       <button class="ctl-btn" onclick="nudgeScale(1.05,1.05)">${I18n.t('fontmaker.panels.scale_plus')}</button>
       <button class="ctl-btn" onclick="nudgeScale(1.05,1)">${I18n.t('fontmaker.panels.wider')} <span class="arrows">← →</span></button>
@@ -9512,7 +9512,7 @@ function renderTraceLeft(L, l) {
   }
   if (l.source && l.source.kind === 'svg') {   // imported vector — no raster trace controls, but allow point editing
     L.innerHTML = `
-      <div class="ws-side-title">${I18n.t('fontmaker.panels.outline_title', {name: gName(l.name)})}</div>
+      <div class="ws-side-title">${I18n.t('fontmaker.panels.outline_title', {name: esc(gName(l.name))})}</div>
       <div class="hint">Imported from SVG — no tracing needed. Fine-tune the shape with <b>Edit points</b>, or re-upload under <b>Add Letters</b> to replace it.</div>
       <div class="ctl-row">
         ${ l.contours ? `<button class="ctl-btn primary" onclick="toggleNodeEdit()">${I18n.t('fontmaker.panels.edit_points')}</button>` : `<button class="ctl-btn primary" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title'))}">${I18n.t('fontmaker.panels.draw_pen')}</button>` }
@@ -9525,7 +9525,7 @@ function renderTraceLeft(L, l) {
   const detail = Math.round(100 - l.epsilon*2.5);
   const corner = (l.cornerAngle != null ? l.cornerAngle : 32);
   L.innerHTML = `
-    <div class="ws-side-title">${I18n.t('fontmaker.panels.trace_title', {name: gName(l.name)})}</div>
+    <div class="ws-side-title">${I18n.t('fontmaker.panels.trace_title', {name: esc(gName(l.name))})}</div>
     <div class="side-slider-label">${I18n.t('fontmaker.panels.ink_threshold')} <span id="thV" class="readout">${l.binThreshold}</span></div>
     <input type="range" class="side-slider" min="1" max="254" value="${l.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()">
     <label class="chk"><input type="checkbox" ${l.invert?'checked':''} onchange="liveInvert(this.checked)"> ${I18n.t('fontmaker.panels.invert')}</label>
@@ -9704,7 +9704,7 @@ function renderAnchorLeft(L, l) {
     </div>`;
   L.innerHTML = `
     ${navRow}
-    <div class="ws-side-title">${l.name}: place the…</div>
+    <div class="ws-side-title">${esc(l.name)}: place the…</div>
     <div class="ctl-row">${classBtns}</div>
     ${ grid ? `<hr class="ctl-divider">${grid}` : '' }
     ${xy}
