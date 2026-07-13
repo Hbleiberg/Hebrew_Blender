@@ -2913,6 +2913,7 @@ torah.schedule.scope_haftarah,Haftarah,הפטרה,scope option,
 torah.settings.close_aria,Close settings,סגירת ההגדרות,close button aria,aria-label only
 torah.settings.close_title,Close,סגירה,close button title,
 torah.settings.collapse_all,Collapse all menus,כיווץ כל התפריטים,button,
+torah.settings.color_for_aria,Color for {name},צבע עבור {name},vowel/trope color-picker input aria,aria-label only; {name} is the vowel/trope name (content) — do not translate {name}
 torah.settings.expand_all,Expand all menus,הרחבת כל התפריטים,button,
 torah.settings.panel_about,About & FAQ,אודות ושאלות נפוצות,panel title,
 torah.settings.panel_audio,Audio speeds,מהירויות שמע,panel title,

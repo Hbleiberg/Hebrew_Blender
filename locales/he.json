@@ -2941,6 +2941,7 @@
   "torah.settings.close_aria": "סגירת ההגדרות",
   "torah.settings.close_title": "סגירה",
   "torah.settings.collapse_all": "כיווץ כל התפריטים",
+  "torah.settings.color_for_aria": "צבע עבור {name}",
   "torah.settings.expand_all": "הרחבת כל התפריטים",
   "torah.settings.panel_about": "אודות ושאלות נפוצות",
   "torah.settings.panel_audio": "מהירויות שמע",

@@ -3031,7 +3031,7 @@ function renderLoopState() {
     const on = !!active && vk === active;
     btn.classList.toggle('active', on);
     btn.textContent = on ? I18n.t('torah.audio.loopstop_text') : I18n.t('torah.reading.verse_loop');
-    btn.setAttribute('aria-label', on ? `Stop looping verse ${vk}` : `Loop verse ${vk} (repeat the chant)`);
+    btn.setAttribute('aria-label', on ? I18n.t('torah.reading.verse_loop_stop_aria', {verseRef: vk}) : I18n.t('torah.reading.verse_loop_aria', {verseRef: vk}));
     if (on) btn.setAttribute('aria-pressed', 'true'); else btn.removeAttribute('aria-pressed');
   });
   updateAudioBarLoopUi();
@@ -3656,7 +3656,7 @@ function toggleAudioBarCollapse() {
   settings.karaokeBarCollapsed = collapsed;
   saveSettings();
   const btn = document.getElementById('ttAudioCollapseBtn');
-  if (btn) btn.setAttribute('aria-label', collapsed ? 'Expand audio bar' : 'Collapse audio bar');
+  if (btn) btn.setAttribute('aria-label', collapsed ? I18n.t('torah.audio.expand_aria') : I18n.t('torah.audio.collapse_aria'));
 }
 
 function toggleAudioPlay() {
@@ -3668,7 +3668,7 @@ function updatePlayPauseIcon() {
   const btn = document.getElementById('ttAudioPlayPauseBtn');
   if (!btn || !currentAudio) return;
   btn.textContent = currentAudio.paused ? '▶' : '⏸';
-  btn.setAttribute('aria-label', currentAudio.paused ? 'Play' : 'Pause');
+  btn.setAttribute('aria-label', currentAudio.paused ? I18n.t('torah.audio.play_aria') : I18n.t('torah.audio.pause_aria'));
 }
 
 // Click-to-seek: when karaoke audio is loaded, clicking a Hebrew word jumps
@@ -3988,7 +3988,7 @@ function initColorPickers() {
     lbl.className = 'color-pick-label'; lbl.textContent = def.name;
     const inp = document.createElement('input');
     inp.type = 'color'; inp.className = 'color-pick-input';
-    inp.setAttribute('aria-label', 'Color for ' + def.name);   // the name is a sibling span only; label the input for AT
+    inp.setAttribute('aria-label', I18n.t('torah.settings.color_for_aria', {name: def.name}));   // the name is a sibling span only; label the input for AT
     inp.value = getNikudColor(def.key);
     inp.addEventListener('input', () => {
       if (!settings.nikudColorOverrides) settings.nikudColorOverrides = {};
@@ -4036,7 +4036,7 @@ function initTropeColorPickers() {
     lbl.className = 'color-pick-label'; lbl.textContent = def.name;
     const inp = document.createElement('input');
     inp.type = 'color'; inp.className = 'color-pick-input';
-    inp.setAttribute('aria-label', 'Color for ' + def.name);
+    inp.setAttribute('aria-label', I18n.t('torah.settings.color_for_aria', {name: def.name}));
     inp.value = getTropeColor(def.key);
     inp.addEventListener('input', () => {
       if (!settings.tropeColorOverrides) settings.tropeColorOverrides = {};

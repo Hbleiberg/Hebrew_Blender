@@ -2941,6 +2941,7 @@
   "torah.settings.close_aria": "Close settings",
   "torah.settings.close_title": "Close",
   "torah.settings.collapse_all": "Collapse all menus",
+  "torah.settings.color_for_aria": "Color for {name}",
   "torah.settings.expand_all": "Expand all menus",
   "torah.settings.panel_about": "About & FAQ",
   "torah.settings.panel_audio": "Audio speeds",
