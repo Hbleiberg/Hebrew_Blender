@@ -6467,6 +6467,21 @@ document.addEventListener('DOMContentLoaded', () => {
   initSpeechCapability();
   updateStatsBar();
 
+  // Deep-link from the Dictionary: ?wl=<listId> auto-selects that saved Word List into the Words
+  // drill and lands the teacher on setup (no auto-start — a link only sets the live view). The id is
+  // validated against the shared store; used only as an object key / Set member, never interpolated.
+  try {
+    const wlParam = new URLSearchParams(location.search).get('wl');
+    if (wlParam && wlReadStoreLocal().lists[wlParam]) {
+      otherSubMode = 'words';
+      wordsSource = 'mylists';
+      selectedWordListIds = new Set([wlParam]);
+      setOtherMode(true);   // enter Other mode + persist into hebrewFlashCards_settings
+      syncOtherSubUI();     // show Words options + render the picker (list pre-checked) + count
+      document.getElementById('wordsOpts')?.scrollIntoView({ block: 'nearest' });
+    }
+  } catch (e) {}
+
   // ── i18n: translate static chrome once the locale loads, and re-render live on switch ──
   if (window.I18n) {
     I18n.ready.then(applyI18n);
