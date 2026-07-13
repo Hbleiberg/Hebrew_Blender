@@ -1158,13 +1158,29 @@ function applyFamilyColors() {
 /* ══════════════════════════════════════════════════════
    DATA LOADING — the static index + the PocketTorah manifest
    ══════════════════════════════════════════════════════ */
+// _statusState remembers the on-screen status so a live language switch (or a late
+// I18n.ready) re-translates it; _i18nReady gates I18n.t so the pre-ready first paint
+// (loadData runs during init, before /locales/*.json has loaded) shows the English
+// fallback rather than a raw key — and logs no missing-key warning.
+let _i18nReady = false;
+let _statusState = null;   // { key, en, isError } | null
 function setStatus(msg, isError) {
   const el = document.getElementById('tuStatus');
   el.textContent = msg || '';
   el.classList.toggle('error', !!isError);
+  if (!msg) _statusState = null;
+}
+function _statusText(key, en) {
+  const tr = (_i18nReady && window.I18n) ? I18n.t(key) : null;
+  return (tr && tr !== key) ? tr : en;   // fall back to the English literal pre-ready / if missing
+}
+// Set a status from an i18n key; the English literal stays as the pre-ready fallback.
+function setStatusKey(key, en, isError) {
+  _statusState = { key, en, isError: !!isError };
+  setStatus(_statusText(key, en), isError);
 }
 async function loadData() {
-  setStatus('Loading the trope index…');
+  setStatusKey('trope.status.loading_index', 'Loading the trope index…');
   try {
     const [idxRes, manRes] = await Promise.all([
       // ?v= is the DATA_CACHE refresh mechanism (sw.js serves /data/ cache-first,
@@ -1182,7 +1198,7 @@ async function loadData() {
   } catch (e) {
     console.warn('trope index load failed', e);
     INDEX = null; MANIFEST = null;
-    setStatus('Example clips unavailable (couldn’t load the trope index) — Learn mode still shows every mark.', true);
+    setStatusKey('trope.status.index_unavailable', 'Example clips unavailable (couldn’t load the trope index) — Learn mode still shows every mark.', true);
   }
 }
 function examplesFor(key) {
@@ -1256,7 +1272,7 @@ async function playClip(ex, cbs) {
   if (_rafId) { cancelAnimationFrame(_rafId); _rafId = null; }
   try {
     if (_curFileKey !== key) {
-      setStatus('Loading audio…');
+      setStatusKey('trope.status.loading_audio', 'Loading audio…');
       tuAudio.src = url;
       tuAudio.load();   // force resource selection now (belt-and-braces vs preload hints)
       _curFileKey = key;
@@ -1289,7 +1305,7 @@ async function playClip(ex, cbs) {
   } catch (err) {
     if (token !== _clipToken) return;
     _stopAt = null; _clipEndCb = null;
-    if (err && err.name === 'NotAllowedError') { setStatus('Tap ▶ to hear the melody.'); return; }
+    if (err && err.name === 'NotAllowedError') { setStatusKey('trope.status.tap_to_hear', 'Tap ▶ to hear the melody.'); return; }
     setStatus('');
     _badFiles.add(key);
     _curFileKey = null;                            // force a fresh src next attempt
@@ -2511,13 +2527,14 @@ document.addEventListener('DOMContentLoaded', init);
 function applyI18n() {
   if (!window.I18n) return;
   I18n.applyStaticI18n();
+  if (_statusState) setStatusKey(_statusState.key, _statusState.en, _statusState.isError);  // re-translate a visible status
   try { initFontSelector(); } catch (e) {}                 // My Fonts section headers + [DEFAULT] marker
   try { if (!document.getElementById('learnView').hidden) renderLearn(); } catch (e) {}   // family/trope notes, name prefixes
   try { updateDrillStart(); } catch (e) {}                 // drill start summary + note
   // An in-flight drill question is NOT re-rendered — that would restart its audio clip; it
   // translates on the next question. The dark-toggle label is emoji-only, so no relabel needed.
 }
-function _wireTropeI18n() { if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); } }
+function _wireTropeI18n() { if (window.I18n) { I18n.ready.then(() => { _i18nReady = true; applyI18n(); }); I18n.onChange(applyI18n); } }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _wireTropeI18n);
 else _wireTropeI18n();
 </script>
