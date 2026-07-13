@@ -64,6 +64,11 @@
   // Per-language dictionary cache so a live switch never re-fetches a locale it already loaded.
   var dicts = {};
   var dict = {};
+  // Becomes true once a locale dict has actually loaded. Gates the missing-key warning: before
+  // I18n.ready resolves, `dict` is {} so EVERY key looks "missing" — pages that call I18n.t() during
+  // init (before the deferred locale fetch lands) would otherwise flood the console with hundreds of
+  // false [i18n] missing-key warnings on every load. applyI18n re-renders on ready, so display self-heals.
+  var dictLoaded = false;
 
   // onChange handlers — fired after each successful live switch.
   var changeHandlers = [];
@@ -87,7 +92,8 @@
 
   function t(key, params) {
     if (!Object.prototype.hasOwnProperty.call(dict, key)) {
-      if (typeof console !== 'undefined' && console.warn) console.warn('[i18n] missing key: ' + key);
+      // Only warn once a dict is actually loaded — pre-ready every key looks missing (see dictLoaded).
+      if (dictLoaded && typeof console !== 'undefined' && console.warn) console.warn('[i18n] missing key: ' + key);
       return key;
     }
     return substitute(dict[key], params);
@@ -246,7 +252,7 @@
 
   // ---- Load the active locale ----------------------------------------------------------------
   var ready = loadDict(lang)
-    .then(function (data) { dict = data; return dict; })
+    .then(function (data) { dict = data; dictLoaded = true; return dict; })
     .catch(function (err) {
       if (typeof console !== 'undefined' && console.error) {
         console.error('[i18n] failed to load /locales/' + lang + '.json:', err);
