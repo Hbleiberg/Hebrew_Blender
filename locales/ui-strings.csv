@@ -2796,6 +2796,7 @@ torah.controls.layout_label,Layout:,פריסה:,control label,
 torah.controls.layout_page,Page view,תצוגת עמוד,layout radio,
 torah.controls.layout_side,Side by side,זה לצד זה,layout radio,
 torah.controls.parsha_label,Parsha:,פרשה:,control label,
+torah.controls.reading_label,Reading:,קריאה:,control label (scope select),
 torah.controls.scope_aria,Reading scope,היקף הקריאה,scope select aria-label,aria-label only
 torah.controls.translation_toggle,Translation,תרגום,toggle label,
 torah.controls.translit_toggle,Translit,תעתיק,toggle label,
