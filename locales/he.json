@@ -1759,7 +1759,7 @@
   "fontmaker.node_editor.rot_ccw_title": "סובב 90° נגד כיוון השעון",
   "fontmaker.node_editor.rot_cw": "90° ⟳",
   "fontmaker.node_editor.rot_cw_title": "סובב 90° עם כיוון השעון",
-  "fontmaker.node_editor.round_hint": "מעגל את נקודות הפינה □ הנבחרות במתאר זה. (מחוון הפינות בשלב המעקב משנה במקום זאת כיצד מעקב מחדש מתאים.)",
+  "fontmaker.node_editor.round_hint": "מעגל את הנקודות שבחרת במתאר זה — פינות או נקודות עקומה חלקות כאחד. (מחוון הפינות בשלב המעקב משנה במקום זאת כיצד מעקב מחדש מתאים.)",
   "fontmaker.node_editor.round_summary": "עיגול פינות",
   "fontmaker.node_editor.round_summary_sel": "עיגול פינות — {count} נבחרו",
   "fontmaker.node_editor.scale_apply_title": "שנה גודל לפי האחוז שהוזן (סביב מרכז הבחירה)",

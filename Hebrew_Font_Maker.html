@@ -2430,7 +2430,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.19';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.20';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2642,6 +2642,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.20</strong> — <strong>Adjust margins from any step &amp; Round corners that actually rounds.</strong> Two fixes for redrawing an existing font. The draggable margin guides (and the <span class="ui">Adjust margins manually?</span> switch) are now available in <em>every</em> editing step — including while placing nikkud — so you no longer have to turn off Nikkud-compatibility just to nudge a letter's spacing. And <span class="ui">Round corners</span> now rounds whatever points you select, including the smooth curve points you get from tracing an image (before, it quietly did nothing on those); the radius also shrinks automatically to fit short segments instead of skipping them. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.19</strong> — <strong>Thinner guides &amp; jump straight to editing points.</strong> Two editing conveniences. The guideline <span class="ui">Size</span> slider now moves both ways, so a reference guide can be made <em>thinner</em> than the old default hairline as well as thicker — whatever reads best over your artwork. And when you move to a letter you've already traced, it opens right on the <span class="ui">Edit points</span> view instead of snapping back to <span class="ui">Align</span> — so editing your way through a finished alphabet no longer means re-picking the step on every letter. Brand-new letters you haven't traced yet still start on <span class="ui">Align</span>. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.18</strong> — <strong>Hebrew interface &amp; right-to-left layout.</strong> The whole Font Maker can now switch to Hebrew — use the <span class="ui">EN / עברית</span> toggle in the header. Every menu, button, dialog, tooltip, and help page reads in Hebrew, the layout mirrors to right-to-left, and glyph &amp; letter names appear in Hebrew too. Your drawing canvas and coordinates stay left-to-right, so tracing is unaffected — and switching languages never touches your open project or undo history. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.17</strong> — <strong>Clicking a nikkud or trop mark opens the full shape editor.</strong> Picking a vowel point or cantillation mark in its panel now opens the same Edit-shape window used on the letter-placement screen — dots &amp; bars, its own undo, numeric size &amp; position fields, and one-click <span class="ui">Apply to all letters</span> — instead of switching the whole workspace. Marks designed from an uploaded image (and combined-sheet mode) still go straight to their image tools. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -6036,6 +6037,7 @@ async function renderStage() {
   // capture box stays (it bounds the editable area, not a guide), and snapping is untouched
   // (collectSnapTargets reads the guide DATA, not this rendering).
   const noGuides = workMode === 'nodes' && !_nodeGuidesOn;
+  const showMetric = metricAdjust && !wg;   // draggable margin dots: available in every letter-editing step (not wide-form placement)
   if (!noGuides) h += guideLinesSVG(wideRight);    // extend the top/base reference lines under a wide form
   if (workMode !== 'anchors') {
     const cb = captureBoxFont(l);
@@ -6043,19 +6045,19 @@ async function renderStage() {
     h += `<rect x="${x}" y="${y}" width="${w}" height="${ht}" fill="none" stroke="var(--gold)" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.8" pointer-events="none"/>`;
   }
   // margins/width on top so the right side bearing shows over the glyph.
-  if (!noGuides) {
+  if (!noGuides || showMetric) {
     if (wg) h += wideFormGuidesSVG(wg);
     else h += marginGuidesSVG();
-    h += userGuidesSVG();   // user-defined persistent guides (drawn on top; their handles are draggable)
+    if (!noGuides) h += userGuidesSVG();   // user-defined persistent guides (drawn on top; their handles are draggable)
   }
-  if (workMode === 'align' && metricAdjust) h += metricHandlesSVG();   // draggable metric guide dots
+  if (showMetric) h += metricHandlesSVG();   // draggable metric guide dots (every letter-editing step)
   // A stretched wide form can exceed the default stage window — widen the viewBox so the whole
   // composed glyph + its right margin/width line fit (the stage height is auto, so the box reshapes).
   if (wideRight != null) sv.setAttribute('viewBox', `${STAGE_VB.x} ${STAGE_VB.y} ${Math.max(STAGE_VB.w, Math.round(wideRight + 52 - STAGE_VB.x))} ${STAGE_VB.h}`);
   sv.innerHTML = h;
   attachGuideDrag();   // user guides are draggable in every letter-editing mode (no-op when none)
   if (workMode === 'align' && url) attachTransformDrag(l);   // image drag always available; metric dots (drawn on top) capture their own grabs
-  if (workMode === 'align' && metricAdjust) attachMetricDrag();
+  if (showMetric) attachMetricDrag();
   if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) { if (precompTarget) { if (!isWideForm(getPrecomp(precompTarget))) attachPrecompDrag(); } else if (!isEng(l.codepoint)) attachAnchorDrag(l); }
   if (workMode === 'nodes') attachNodeEditor(l);
   renderLegend();
@@ -7236,10 +7238,11 @@ function filletSelectedCorners(r) {   // pure op on nodeModel + nodeSel; returns
     const ct = nodeModel.contours[ci]; if (!ct) return;
     byC[ci].sort((a,b)=>b-a).forEach(ni => {          // descending: each fillet splices 1→2 AFTER ni-1, lower indices stay valid
       const n = ct.nodes.length, nd = ct.nodes[ni];
-      if (!nd || nd.type !== 'corner') return;        // corners only (not counted as skipped)
+      if (!nd) return;                                // round any selected node the user picked — corner OR smooth (traced outlines are mostly smooth)
       const prevI = (ni-1+n)%n;
       const lenIn = _segChordLen(ct, prevI), lenOut = _segChordLen(ct, ni);
-      if (r > 0.45*lenIn || r > 0.45*lenOut) { skipped++; return; }
+      const rEff = Math.min(r, 0.45*lenIn, 0.45*lenOut);   // auto-fit the radius to the adjacent segments instead of skipping "too tight"
+      if (rEff < 0.5) { skipped++; return; }          // segments too short to round at all
       const prev = ct.nodes[prevI], next = ct.nodes[(ni+1)%n];
       // unit tangents INTO and OUT OF the corner (chord approximations — visual quality is the bar)
       const tin  = _vNorm([nd.x-prev.x, nd.y-prev.y]);
@@ -7247,12 +7250,12 @@ function filletSelectedCorners(r) {   // pure op on nodeModel + nodeSel; returns
       if ((!tin[0]&&!tin[1]) || (!tout[0]&&!tout[1])) { skipped++; return; }
       const dot = Math.max(-1, Math.min(1, _vDot(tin, tout)));
       const phi = Math.acos(dot);                     // turn angle
-      if (phi < 0.03) return;                         // effectively straight — nothing to round
-      const kap = (4/3) * Math.tan(phi/4) * r;        // circular-arc cubic handle length
+      if (phi < 0.03) { skipped++; return; }          // effectively straight — nothing to round (counted so the status is honest)
+      const kap = (4/3) * Math.tan(phi/4) * rEff;     // circular-arc cubic handle length
       // split the outgoing segment first (indices after ni), then the incoming (indices before ni)
-      const tOut = Math.min(0.9, r/lenOut);
+      const tOut = Math.min(0.9, rEff/lenOut);
       const pOut = _splitSegAt(ct, ni, tOut);         // trim point leaving the corner (now at ni+1)
-      const tIn = Math.max(0.1, 1 - r/lenIn);
+      const tIn = Math.max(0.1, 1 - rEff/lenIn);
       const pIn = _splitSegAt(ct, prevI, tIn);        // trim point entering the corner (now at ni — corner moved to ni+1)
       const cornerIdx = ni + 1;                       // after both splices
       // arc: pIn → corner's old position → pOut, as one cubic
@@ -7291,7 +7294,7 @@ function filletCommit() {
   const res = _filletLast || { done:0, skipped:0, newKeys:[] };
   nodeSel = new Set(res.newKeys);
   _filletBase = null; _filletLast = null;
-  status(`Smoothed ${res.done} corner${res.done===1?'':'s'}` + (res.skipped ? `, skipped ${res.skipped} (too tight for this radius).` : '.'));
+  status(`Rounded ${res.done} point${res.done===1?'':'s'}` + (res.skipped ? `; skipped ${res.skipped} (too straight or too short to round).` : '.'));
   renderStage(); renderControls();
 }
 function filletApply() {   // keyboard/precision path — one udDo, no slider burst
@@ -7302,7 +7305,7 @@ function filletApply() {   // keyboard/precision path — one udDo, no slider bu
     if (res.done) writeThrough(l);
   });
   nodeSel = new Set(res.newKeys);
-  status(`Smoothed ${res.done} corner${res.done===1?'':'s'}` + (res.skipped ? `, skipped ${res.skipped} (too tight for this radius).` : '.'));
+  status(`Rounded ${res.done} point${res.done===1?'':'s'}` + (res.skipped ? `; skipped ${res.skipped} (too straight or too short to round).` : '.'));
   renderStage(); renderControls();
 }
 
@@ -9716,7 +9719,8 @@ function renderAnchorLeft(L, l) {
     ${ grid ? `<hr class="ctl-divider">${grid}` : '' }
     ${xy}
     ${coRow}
-    ${formsSection}`;
+    ${formsSection}
+    ${metricsPanel()}`;   // Adjust-margins toggle + fields reachable on the Nikkud/Trop step too
 }
 function renderAnchorRight(R, l) {
   const tplPct = Math.round(project.template.opacity*100), glyPct = Math.round(project.view.glyphOpacity*100);

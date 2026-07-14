@@ -1759,7 +1759,7 @@
   "fontmaker.node_editor.rot_ccw_title": "Rotate 90° counter-clockwise",
   "fontmaker.node_editor.rot_cw": "90° ⟳",
   "fontmaker.node_editor.rot_cw_title": "Rotate 90° clockwise",
-  "fontmaker.node_editor.round_hint": "Rounds the selected □ corner points on this outline. (The Trace step's Corners slider changes how a re-trace fits instead.)",
+  "fontmaker.node_editor.round_hint": "Rounds the points you select on this outline — corners or smooth curve points alike. (The Trace step's Corners slider changes how a re-trace fits instead.)",
   "fontmaker.node_editor.round_summary": "Round corners",
   "fontmaker.node_editor.round_summary_sel": "Round corners — {count} selected",
   "fontmaker.node_editor.scale_apply_title": "Scale by the percentage entered (about the selection's center)",
