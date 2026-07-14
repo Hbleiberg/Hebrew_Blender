@@ -2430,7 +2430,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.22';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.23';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2642,6 +2642,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.23</strong> — <strong>The “Traced” badge stays consistent after reopening.</strong> Reopening a project used to quietly mark every traced letter's nikkud placement as “confirmed” (green ✓), even ones you'd never confirmed — so the badge changed between sessions. Now a traced letter reads <strong>blue “Traced”</strong> both while you work and after you reopen, and only turns green ✓ once you actually confirm its placement. (Your positioned nikkud is still protected on reopen exactly as before.) <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.22</strong> — <strong>“Fit margins” button for redrawn letters.</strong> When you trace a letter its left/right margins are set for you, but if you then redraw the shape by hand the spacing didn't follow along — leaving you guessing where the margins should go. The new <span class="ui">Fit margins</span> button (next to <span class="ui">Adjust margins manually?</span> in the margins panel, on every editing step) gives the letter the font's standard left and right margins around your current outline in one click. It's undoable, so you can always tweak from there. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.21</strong> — <strong>Traced letters show the blue “Traced” badge right away.</strong> After you traced a letter, its tile showed an amber <span class="ui">!</span> marker that used the same brown as the “image” badge — so it looked like the letter still wasn't traced. That marker actually meant “traced, but nikkud/trop placement not yet confirmed,” and it appeared the instant you traced, before you'd touched placement. Now a traced letter turns <strong>blue “Traced”</strong> as soon as it has an outline, and it upgrades to the green ✓ once you confirm its placement. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.20</strong> — <strong>Adjust margins from any step &amp; Round corners that actually rounds.</strong> Two fixes for redrawing an existing font. The draggable margin guides (and the <span class="ui">Adjust margins manually?</span> switch) are now available in <em>every</em> editing step — including while placing nikkud — so you no longer have to turn off Nikkud-compatibility just to nudge a letter's spacing. And <span class="ui">Round corners</span> now rounds whatever points you select, including the smooth curve points you get from tracing an image (before, it quietly did nothing on those); the radius also shrinks automatically to fit short segments instead of skipping them. (Also: the point editor's handle-stripping button is now labeled <span class="ui">Straighten</span> instead of the jargony <span class="ui">Retract</span>.) <span style="color:var(--muted);">(July 2026)</span></li>
@@ -12411,9 +12412,11 @@ function migrateProject(data) {
     if (ex.cornerAngle == null) ex.cornerAngle = 32;   // Bézier corner threshold (curves regenerate on next trace)
     if (ex.placementSaved == null) ex.placementSaved = false;
     if (ex.placementInherited == null) ex.placementInherited = false;   // carried-over (not hand-confirmed) review state
-    // A reopened project's already-positioned letters are "placed": their saved anchors must never be
-    // overwritten by the carry-onto-next-letter convenience, and Discard must not revert to a stale snapshot.
-    if (ex.anchors) { if (ex.contours) ex.placementSaved = true; if (!ex.savedAnchors) ex.savedAnchors = JSON.parse(JSON.stringify(ex.anchors)); }   // only a traced letter is a confirmed placement
+    // A reopened project keeps a saved-anchors baseline so the carry-onto-next-letter convenience can't
+    // overwrite already-positioned letters and Discard won't revert to a stale snapshot. We do NOT
+    // auto-confirm placement here — a traced letter stays "traced" (blue) until the user actually
+    // confirms it (then green ✓), so the badge reads the same in-session and after reopening.
+    if (ex.anchors && !ex.savedAnchors) ex.savedAnchors = JSON.parse(JSON.stringify(ex.anchors));
     if (ex.invert == null) ex.invert = false;
     if (ex.outlineOnly == null) ex.outlineOnly = false;   // backfilled OFF → old saves render identically (no re-trace)
     if (ex.lineWeight == null) ex.lineWeight = 70;
@@ -12436,7 +12439,7 @@ function migrateProject(data) {
       if (l.cornerAngle == null) l.cornerAngle = 32;
       if (l.placementSaved == null) l.placementSaved = false;
       if (l.placementInherited == null) l.placementInherited = false;   // carried-over (not hand-confirmed) review state
-      if (l.anchors) { if (l.contours) l.placementSaved = true; if (!l.savedAnchors) l.savedAnchors = JSON.parse(JSON.stringify(l.anchors)); }   // only a traced letter is a confirmed placement
+      if (l.anchors && !l.savedAnchors) l.savedAnchors = JSON.parse(JSON.stringify(l.anchors));   // baseline only; no auto-confirm (stays "traced" until the user confirms placement)
       if (l.invert == null) l.invert = false;
       if (l.outlineOnly == null) l.outlineOnly = false;
       if (l.lineWeight == null) l.lineWeight = 70;
