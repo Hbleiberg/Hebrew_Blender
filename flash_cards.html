@@ -816,7 +816,7 @@ body.dark .slider::before { background: #d8dde9; }
   margin-bottom: 18px;
 }
 .fc-perspective { perspective: 1200px; width: min(420px, 90vw); margin: 0 auto; }
-.fc-skip-header { text-align: center; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: var(--gold); border-radius: 999px; padding: 4px 14px; margin: 0 auto 10px; width: max-content; max-width: 90%; }
+.fc-skip-header { text-align: center; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--navy); background: var(--gold); border-radius: 999px; padding: 4px 14px; margin: 0 auto 10px; width: max-content; max-width: 90%; }
 .fc-card {
   position: relative; width: 100%;
   height: clamp(220px, 44vw, 340px);
@@ -1121,7 +1121,7 @@ body.dark .sub { color: #99a2b8; }
 .stats-bar .stat-value { font-weight: 800; color: var(--navy); font-size: 1.15rem; line-height: 1.1; }
 body.dark .stats-bar .stat-value { color: var(--gold-light); }
 .stats-bar .stat-label { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
-.stats-bar .stat.streak .stat-value { color: var(--gold); }
+.stats-bar .stat.streak .stat-value { color: var(--gold-text); }
 @media (max-width: 520px) { .stats-bar .stat-value { font-size: 1rem; } .stats-bar { gap: 4px; } }
 /* ===== Share-code panel ===== */
 .share-out { width: 100%; min-height: 56px; resize: vertical; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.74rem; padding: 8px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--paper); color: var(--ink); word-break: break-all; }
@@ -1678,7 +1678,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         </div>
         <div id="translitLoadStatus" style="font-size:0.7rem;color:var(--muted);min-height:1em;text-align:center;margin-top:4px;"></div>
         <div style="font-size:0.65rem;color:var(--muted);text-align:center;line-height:1.4;margin-top:4px;" data-i18n-html="flashcards.advanced.translit_credit">
-          Powered by <a href="https://github.com/charlesLoder/hebrew-transliteration" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">hebrew-transliteration</a> by Charles Loder
+          Powered by <a href="https://github.com/charlesLoder/hebrew-transliteration" target="_blank" rel="noopener" style="color:var(--gold-text);text-decoration:none;">hebrew-transliteration</a> by Charles Loder
         </div>
       </div>
 
@@ -1862,20 +1862,20 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     </div>
     <div style="font-size:0.72rem;line-height:1.5;text-align:center;">
       <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;" data-i18n="shared.footer.about_header">About</div>
-      Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="color:var(--gold);text-decoration:none;font-weight:600;">Harrison Bleiberg</a><br>
-      <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" style="color:var(--gold);text-decoration:none;">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
-      <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank" style="color:var(--gold);text-decoration:none;">GitHub</a>
+      Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="color:var(--gold-text);text-decoration:none;font-weight:600;">Harrison Bleiberg</a><br>
+      <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" style="color:var(--gold-text);text-decoration:none;">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
+      <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank" style="color:var(--gold-text);text-decoration:none;">GitHub</a>
     </div>
     <nav aria-label="Related Hebrew Tools" style="text-align:end;">
       <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;" data-i18n="shared.nav.header">Related Hebrew Tools</div>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:2px 14px;">
-        <li><a href="hebrew_blend_generator.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_worksheets">printable Hebrew worksheets →</a></li>
-        <li><a href="hebrew_dictionary.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_dictionary">Hebrew word lookup →</a></li>
-        <li><a href="classroom_dashboard.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_dashboard">Hebrew classroom display →</a></li>
-        <li><a href="torah_trainer.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_torah">Torah reading practice →</a></li>
-        <li><a href="trope_tutor.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_trope">learn Torah trope (cantillation) →</a></li>
-        <li><a href="Hebrew_Font_Maker.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_fontmaker">make your own Hebrew font →</a></li>
-        <li><a href="resources.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_resources">free Hebrew teaching resources →</a></li>
+        <li><a href="hebrew_blend_generator.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_worksheets">printable Hebrew worksheets →</a></li>
+        <li><a href="hebrew_dictionary.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_dictionary">Hebrew word lookup →</a></li>
+        <li><a href="classroom_dashboard.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_dashboard">Hebrew classroom display →</a></li>
+        <li><a href="torah_trainer.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_torah">Torah reading practice →</a></li>
+        <li><a href="trope_tutor.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_trope">learn Torah trope (cantillation) →</a></li>
+        <li><a href="Hebrew_Font_Maker.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_fontmaker">make your own Hebrew font →</a></li>
+        <li><a href="resources.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_resources">free Hebrew teaching resources →</a></li>
       </ul>
     </nav>
   </div>
