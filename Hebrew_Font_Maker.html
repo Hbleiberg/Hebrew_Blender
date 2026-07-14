@@ -2430,7 +2430,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.20';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.21';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2642,6 +2642,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.21</strong> — <strong>Traced letters show the blue “Traced” badge right away.</strong> After you traced a letter, its tile showed an amber <span class="ui">!</span> marker that used the same brown as the “image” badge — so it looked like the letter still wasn't traced. That marker actually meant “traced, but nikkud/trop placement not yet confirmed,” and it appeared the instant you traced, before you'd touched placement. Now a traced letter turns <strong>blue “Traced”</strong> as soon as it has an outline, and it upgrades to the green ✓ once you confirm its placement. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.20</strong> — <strong>Adjust margins from any step &amp; Round corners that actually rounds.</strong> Two fixes for redrawing an existing font. The draggable margin guides (and the <span class="ui">Adjust margins manually?</span> switch) are now available in <em>every</em> editing step — including while placing nikkud — so you no longer have to turn off Nikkud-compatibility just to nudge a letter's spacing. And <span class="ui">Round corners</span> now rounds whatever points you select, including the smooth curve points you get from tracing an image (before, it quietly did nothing on those); the radius also shrinks automatically to fit short segments instead of skipping them. (Also: the point editor's handle-stripping button is now labeled <span class="ui">Straighten</span> instead of the jargony <span class="ui">Retract</span>.) <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.19</strong> — <strong>Thinner guides &amp; jump straight to editing points.</strong> Two editing conveniences. The guideline <span class="ui">Size</span> slider now moves both ways, so a reference guide can be made <em>thinner</em> than the old default hairline as well as thicker — whatever reads best over your artwork. And when you move to a letter you've already traced, it opens right on the <span class="ui">Edit points</span> view instead of snapping back to <span class="ui">Align</span> — so editing your way through a finished alphabet no longer means re-picking the step on every letter. Brand-new letters you haven't traced yet still start on <span class="ui">Align</span>. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.18</strong> — <strong>Hebrew interface &amp; right-to-left layout.</strong> The whole Font Maker can now switch to Hebrew — use the <span class="ui">EN / עברית</span> toggle in the header. Every menu, button, dialog, tooltip, and help page reads in Hebrew, the layout mirrors to right-to-left, and glyph &amp; letter names appear in Hebrew too. Your drawing canvas and coordinates stay left-to-right, so tracing is unaffected — and switching languages never touches your open project or undo history. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -3428,16 +3429,16 @@ function letterStatus(l) {
   if (l.source.dataUrl) return 'img';   // single: upload; combined: cropped region
   return '';
 }
-// Placement review marker for the letter grid: confirmed (solid green ✓) vs carried-over (hollow amber ✓)
-// vs unconfirmed (amber !) — the real "done" signal, not raw 'anchored'. Falls back to trace/img status.
+// Placement status marker for the letter grid: a traced letter reads as blue "traced" until its
+// placement is confirmed (solid green ✓) or carried over (hollow amber ✓). Falls back to trace/img status.
 function placementDot(l) {
-  if (l.contours) {   // anchor/placement status is only meaningful once the letter is actually traced;
-                      // untraced letters can pick up seeded anchors (export / nikkud-preview) — ignore those
-    if (l.anchors && l.placementSaved)     return { cls: 'saved',       glyph: '✓' };
-    if (l.anchors && l.placementInherited) return { cls: 'inherited',   glyph: '✓' };
-    if (l.anchors)                         return { cls: 'unconfirmed', glyph: '!' };
+  if (l.contours) {   // a traced letter reads as "traced" (blue) until its placement is CONFIRMED (green ✓);
+                      // auto-seeded anchors alone no longer demote it to the amber "!" (that read like the image badge)
+    if (l.anchors && l.placementSaved)     return { cls: 'saved',     glyph: '✓' };
+    if (l.anchors && l.placementInherited) return { cls: 'inherited', glyph: '✓' };
+    return { cls: 'traced', glyph: '' };
   }
-  return { cls: letterStatus(l), glyph: '' };   // 'traced'/'img'/'' — a11yTiles injects the T/I cue
+  return { cls: letterStatus(l), glyph: '' };   // 'img'/'' — a11yTiles injects the I cue
 }
 /* Glyph display name → Hebrew in a Hebrew UI (falls back to the English name when the
    slug has no key). Used only at DISPLAY sites; internal undo labels keep the raw name. */
