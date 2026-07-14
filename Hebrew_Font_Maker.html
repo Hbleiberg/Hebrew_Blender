@@ -1798,6 +1798,17 @@ function tropColKey(cls, halign) {   // cls: 'above'|'below' → per-letter anch
   const base = cls === 'above' ? 'tropAbove' : 'tropBelow';
   return halign === 'center' ? base : base + (halign === 'left' ? 'L' : 'R');
 }
+/* Font-wide vowel+trop pairing behavior per vertical class. mode 'stack' (default; a center-halign
+   trop mkmk-stacks on the vowel) | 'slide' (the vowel shifts sideways by dx font units via a
+   contextual GPOS rule; the trop attaches to the LETTER's center trop column instead). dx is
+   signed; + = visually right (GPOS xPlacement is direction-independent, so it maps 1:1 in RTL). */
+function vowelPairCfg(cls) {   // cls: 'below' | 'above'; absent/partial data ⇒ stack (old saves safe)
+  const vp = (project && project.font && project.font.trop && project.font.trop.vowelPair) || null;
+  const c = vp && vp[cls];
+  return { mode: (c && c.mode) === 'slide' ? 'slide' : 'stack',
+           dx: (c && typeof c.dx === 'number') ? c.dx : 70 };
+}
+function vowelSlideDx(cls) { const c = vowelPairCfg(cls); return c.mode === 'slide' ? c.dx : 0; }
 
 /* ── Punctuation & More: default outlines (font units; baseline 0, letter-top 600).
    Each factory returns { contours:[{winding,points}], advance }. Digits 0–9 are ABSENT →
@@ -1923,7 +1934,8 @@ let guideDrag  = null;      // active user-guide drag: { id, dragAxis:'x'|'y', g
    touched item/slice — never the image (source) and never savedAnchors (dirty-detection state).
    Scopes: {t:'item',kind,cp} | {t:'spacing'} | {t:'kerning'} | {t:'kernClasses'} | {t:'metrics'} |
    {t:'guides'} | {t:'precomp',target} | {t:'tropTune'} (font-level mark tuning: side spread +
-   per-mark halign + per-mark height nudges + mark/dagesh/holam/cholam/trop sizes). ════════ */
+   per-mark halign + per-mark height nudges + mark/dagesh/holam/cholam/trop sizes + vowel+trop
+   pairing (stack | slide)). ════════ */
 let undoStack = [], redoStack = [];
 const UNDO_MAX = 100;
 const ITEM_SKIP = { source: 1, savedAnchors: 1 };       // excluded from snapshots; preserved live on restore
@@ -1946,6 +1958,7 @@ function udSnap(s) {
   if (s.t === 'tropTune') return JSON.parse(JSON.stringify({
     tropSideOffset: (project.font.tropSideOffset != null) ? project.font.tropSideOffset : null,
     halign: (project.font.trop && project.font.trop.halign) || {},
+    vowelPair: (project.font.trop && project.font.trop.vowelPair) || null,
     markNudge: project.font.markNudge || {},
     markScale:   (project.font.markScale   != null) ? project.font.markScale   : null,
     dageshScale: (project.font.dageshScale != null) ? project.font.dageshScale : null,
@@ -1971,6 +1984,7 @@ function udRestore(s, snap) {
     if (sn.tropSideOffset != null) project.font.tropSideOffset = sn.tropSideOffset; else project.font.tropSideOffset = TROP_POS_SHIFT;
     if (!project.font.trop) project.font.trop = {};
     project.font.trop.halign = JSON.parse(JSON.stringify(sn.halign || {}));
+    if (sn.vowelPair) project.font.trop.vowelPair = JSON.parse(JSON.stringify(sn.vowelPair)); else delete project.font.trop.vowelPair;   // readers go through vowelPairCfg, so absent ⇒ stack
     project.font.markNudge = JSON.parse(JSON.stringify(sn.markNudge || {}));
     ['markScale','dageshScale','cholamScale','holamScale','tropScale'].forEach(k => {
       if (sn[k] != null) project.font[k] = sn[k]; else delete project.font[k]; }); }
@@ -2057,7 +2071,7 @@ function newProject() {
       familyName: 'My Hebrew Hand', reservedFontName: 'My Hebrew Hand', author: '', license: 'ofl',
       version: '1.000', unitsPerEm: UPM, markScale: 1.0, tropScale: 1.0, dageshScale: 1.0, cholamScale: 1.0, holamScale: 1.0, markNudge: {}, tropSideOffset: TROP_POS_SHIFT,
       nikkud: { enabled: true,  mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, shevaNa: false },   // mode: 'default' | 'custom'; uploadMode: 'perSymbol' | 'combined'; shevaNa: bold sheva-na alternate
-      trop:   { enabled: false, mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, halign: {} },
+      trop:   { enabled: false, mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, halign: {}, vowelPair: { below: { mode: 'stack', dx: 70 }, above: { mode: 'stack', dx: 70 } } },
       customMarks: { enabled: true, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },   // user-defined nikkud marks added via the Custom glyphs tab
       metrics: { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP, descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB },
       spacing: { letterSpacing: 0, wordSpacing: 260, lineSpacing: 0, sample: 'שלום עולם', kernTarget: 40 },
@@ -2430,7 +2444,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.24';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.25';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2642,6 +2656,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.25</strong> — <strong>Choose how a vowel and a trop share a letter.</strong> When a letter carries both a vowel and a cantillation mark, the trop has always stacked right on the vowel. A new font-wide control on the <span class="ui">Place Trop</span> step lets you instead <strong>slide the vowel aside</strong> — left or right, with an adjustable distance — while the trop stays centered on the letter, the way many printed chumashim set it. Choose separately for below-the-letter and above-the-letter marks; stacking stays the default, previews and the quality check follow your choice, and it's fully undoable. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.24</strong> — <strong>One button toggles Edit points ⇄ Done editing.</strong> They used to be two separate buttons in two different spots, so you had to hunt for the other one. Now a single button lives up in the step bar next to <span class="ui">2 · Trace</span> and simply switches between <span class="ui">✎ Edit points</span> and <span class="ui">Done editing</span> in the same place — click it to start editing points, click the same spot to finish. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.23</strong> — <strong>The “Traced” badge stays consistent after reopening.</strong> Reopening a project used to quietly mark every traced letter's nikkud placement as “confirmed” (green ✓), even ones you'd never confirmed — so the badge changed between sessions. Now a traced letter reads <strong>blue “Traced”</strong> both while you work and after you reopen, and only turns green ✓ once you actually confirm its placement. (Your positioned nikkud is still protected on reopen exactly as before.) <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.22</strong> — <strong>“Fit margins” button for redrawn letters.</strong> When you trace a letter its left/right margins are set for you, but if you then redraw the shape by hand the spacing didn't follow along — leaving you guessing where the margins should go. The new <span class="ui">Fit margins</span> button (next to <span class="ui">Adjust margins manually?</span> in the margins panel, on every editing step) gives the letter the font's standard left and right margins around your current outline in one click. It's undoable, so you can always tweak from there. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -2719,7 +2734,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -8163,6 +8178,16 @@ function activeAnchorKey() {
     return tropColKey(activeAnchorClass === 'tropAbove' ? 'above' : 'below', tropHalign(activeTropCp));
   return activeAnchorClass;
 }
+/* dx the ghost VOWEL shifts in the stacking-check preview: only when editing a CENTER-halign trop
+   whose class is in vowelPair slide mode and the previewed 2nd mark is a same-class vowel (mirrors
+   the FEA contextual rule; a dagesh/other-class ghost never slides). */
+function coGhostDx() {
+  if (activeAnchorClass !== 'tropAbove' && activeAnchorClass !== 'tropBelow') return 0;
+  const cls = activeAnchorClass === 'tropAbove' ? 'above' : 'below';
+  if (tropHalign(activeTropCp) !== 'center') return 0;
+  if (!coPreviewCp || MARK_CLASS[coPreviewCp] !== cls) return 0;
+  return vowelSlideDx(cls);
+}
 function markPreviewPath(cp, ax, ay, scaleOverride) {
   const cat = catOfCp(cp), s = scaleOverride != null ? scaleOverride : (cat==='trop'?tropScale():(cat==='accent'?1:nikScale(cp)));
   const contours = markContoursFor(curLetter(), cat, cp);
@@ -8209,7 +8234,7 @@ function anchorHandlesSVG(l) {
   let h = '';
   if (coPreviewCp && l.anchors[MARK_CLASS[coPreviewCp]]) {   // grey ghost of the 2nd mark for the stacking-clash check (non-interactive; on trop classes too — trop-vs-vowel clashes are the common real-world failure)
     const ga = l.anchors[MARK_CLASS[coPreviewCp]];
-    h += `<path d="${markPreviewPath(coPreviewCp, ga.x, ga.y)}" fill="#888" fill-opacity="0.55"/>`;
+    h += `<path d="${markPreviewPath(coPreviewCp, ga.x + coGhostDx(), ga.y)}" fill="#888" fill-opacity="0.55"/>`;   // slide mode: the ghost vowel sits at its slid position
   }
   h += `<path id="ancMark" d="${markPreviewPath(cp, a.x, a.y)}" fill="${col}"/>`;
   h += markSelectRect(cp, a.x, a.y, undefined, 'anc', col, `data-cls="${key}"`);
@@ -8486,6 +8511,28 @@ function setTropHalign(h) {
     else project.font.trop.halign[activeTropCp] = h;
     renderStage(); renderControls();
   });
+}
+/* ── Vowel + trop pairing (font-wide, per vertical class — see vowelPairCfg) ── */
+function _ensureVowelPair() {
+  if (!project.font.trop.vowelPair) project.font.trop.vowelPair = { below: { mode:'stack', dx:70 }, above: { mode:'stack', dx:70 } };
+  return project.font.trop.vowelPair;
+}
+function setVowelPairMode(cls, choice) {   // choice: 'stack' | 'left' | 'right' — left/right pick slide mode with the dx sign; magnitude kept
+  udDo([{ t:'tropTune' }], 'vowel + trop pairing', () => {   // font-level only — no per-letter data touched
+    const c = _ensureVowelPair()[cls];
+    if (choice === 'stack') c.mode = 'stack';
+    else { c.mode = 'slide'; c.dx = (choice === 'left' ? -1 : 1) * (Math.abs(c.dx) || 70); }
+    renderStage(); renderControls();
+  });
+}
+function setVowelPairDx(v) {   // slider drag: one undo entry per interaction (commit on the slider's onchange)
+  udBurstBegin([{ t:'tropTune' }], 'vowel slide distance');
+  const cls = activeAnchorClass === 'tropAbove' ? 'above' : 'below';
+  const c = _ensureVowelPair()[cls];
+  const mag = Math.max(0, Math.min(300, Math.round(+v || 0)));
+  c.dx = (c.dx < 0 ? -1 : 1) * mag;
+  const el = document.getElementById('vowelPairDxV'); if (el) el.textContent = mag;
+  markDirty(); renderStage();   // controls rebuilt on onchange (keeps slider focus during the drag)
 }
 /* Global default Left/Right spread — re-seeds every letter's side columns from its own center column, so
    the default distance is consistent. Per-letter fine-tuning (drag / X-Y) is done after setting this. */
@@ -9690,7 +9737,26 @@ function renderAnchorLeft(L, l) {
       <div class="hint" style="font-size:0.6rem;text-align:center;">Default distance Left/Right marks shift from center, on all letters (per-letter tweaks come after).</div>
       ${(nCustom => nCustom ? `
       <div class="hint" style="font-size:0.6rem;text-align:center;color:var(--gold);">${nCustom} letter${nCustom === 1 ? "'s" : "s'"} hand-tuned side positions kept — the slider only moves columns still at the default.</div>
-      <div class="ctl-row" style="justify-content:center;margin-top:2px;"><button class="ctl-btn" onclick="resetTropSideColumns()" title="Re-seed every letter's Left/Right columns from its center ± spread (undoable)">Reset all side positions</button></div>` : '')(tropCustomSideCount())}`;
+      <div class="ctl-row" style="justify-content:center;margin-top:2px;"><button class="ctl-btn" onclick="resetTropSideColumns()" title="Re-seed every letter's Left/Right columns from its center ± spread (undoable)">Reset all side positions</button></div>` : '')(tropCustomSideCount())}
+      <hr class="ctl-divider">
+      <div class="ws-side-title">${I18n.t('fontmaker.panels.pair_title')}</div>
+      <div class="ctl-row" style="margin-top:6px;justify-content:center;gap:5px;flex-wrap:wrap;">${
+        (pcfg => {
+          const sel = pcfg.mode === 'slide' ? (pcfg.dx < 0 ? 'left' : 'right') : 'stack';
+          const btn = (id, lblKey, titleKey) =>
+            `<button class="ctl-btn ${sel === id ? 'primary' : ''}" title="${esc(I18n.t(titleKey))}" onclick="setVowelPairMode('${want}','${id}')">${I18n.t(lblKey)}</button>`;
+          return btn('stack', 'fontmaker.panels.pair_stack',       'fontmaker.panels.pair_stack_title')
+               + btn('left',  'fontmaker.panels.pair_slide_left',  'fontmaker.panels.pair_slide_left_title')
+               + btn('right', 'fontmaker.panels.pair_slide_right', 'fontmaker.panels.pair_slide_right_title')
+               + (pcfg.mode === 'slide' ? `
+      </div>
+      <div class="ctl-row" style="margin-top:6px;align-items:center;gap:6px;">
+        <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">${I18n.t('fontmaker.panels.pair_distance')}</span>
+        <input type="range" id="vowelPairDx" min="0" max="300" step="10" value="${Math.abs(pcfg.dx)}" oninput="setVowelPairDx(this.value)" onchange="udBurstCommit();renderControls()" style="flex:1;">
+        <span id="vowelPairDxV" class="readout">${Math.abs(pcfg.dx)}</span>` : '');
+        })(vowelPairCfg(want))}
+      </div>
+      <div class="hint" style="font-size:0.6rem;text-align:center;">${I18n.t('fontmaker.panels.pair_hint')}</div>`;
   }
   const xyWhat = cls === 'below' ? 'all under-vowels' : cls === 'above' ? 'the above mark' : cls === 'center' ? 'the dagesh' : "this mark's column";
   const xy = `<hr class="ctl-divider">
@@ -9712,7 +9778,8 @@ function renderAnchorLeft(L, l) {
     if (coPreviewCp && l.anchors[MARK_CLASS[coPreviewCp]]) {
       const pa = isTrop ? qaPlace(l.anchors[activeAnchorKey()], 'trop', acp, tropScale(), l)
                         : qaPlace(l.anchors[activeAnchorKey()], 'nikkud', acp, nikScale(acp), l);
-      const pc = qaPlace(l.anchors[MARK_CLASS[coPreviewCp]], 'nikkud', coPreviewCp, nikScale(coPreviewCp), l);
+      const gAnc = l.anchors[MARK_CLASS[coPreviewCp]], gdx = coGhostDx();   // slide mode: the ghost vowel is checked at its slid position (matches the stage ghost + the FEA)
+      const pc = qaPlace({ x: gAnc.x + gdx, y: gAnc.y }, 'nikkud', coPreviewCp, nikScale(coPreviewCp), l);
       warn = markPolysOverlap(pa, pc, QA_OVERLAP_TOL)
         ? `<div class="hint" style="font-size:0.64rem;color:#c0392b;font-weight:600;">⚠ ${esc(markName(coPreviewCp))} overlaps ${esc(markName(acp))} on this letter.</div>`
         : `<div class="hint" style="font-size:0.64rem;color:#1a8a4a;">✓ No overlap with ${esc(markName(acp))}.</div>`;
@@ -10403,7 +10470,10 @@ function qaCellLayers(L, anc, col) {
   if (col.kind === 'pair')   return [                                   // two nikkud marks on one letter, each at its own class anchor
     { polys: qaPlace(anc[MARK_CLASS[col.a]],  'nikkud', col.a,  nikScale(col.a),  L), color: QA_SIDE_COLOR[MARK_CLASS[col.a]] },
     { polys: qaPlace(anc[MARK_CLASS[col.cp]], 'nikkud', col.cp, nikScale(col.cp), L), color: QA_SIDE_COLOR[MARK_CLASS[col.cp]] } ];
-  const nikAnc = anc[col.side];
+  const nikAnc = anc[col.side], pairCfg = vowelPairCfg(col.side);
+  if (pairCfg.mode === 'slide')   // slide mode mirrors the FEA: vowel shifts dx; trop attaches to the LETTER's center trop column
+    return [ { polys: qaPlace({ x: nikAnc.x + pairCfg.dx, y: nikAnc.y }, 'nikkud', col.cp, ms, L), color: QA_SIDE_COLOR[col.side] },
+             { polys: qaPlace(anc[tropColKey(col.side, 'center')], 'trop', col.trop, tms), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] } ];
   return [ { polys: qaPlace(nikAnc, 'nikkud', col.cp, ms, L), color: QA_SIDE_COLOR[col.side] },
            { polys: qaPlaceStackTrop(nikAnc, col.cp, col.trop), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] } ];
 }
@@ -10448,7 +10518,7 @@ function fontInkBounds() {
     if (nikOn) MARK_CPS.forEach(cp => {
       const cls = MARK_CLASS[cp], anc = L.anchors[cls]; if (!anc) return;
       upd(polysBounds(qaPlace(anc, 'nikkud', cp, nikScale(cp), L)));
-      if (tropOn && cls !== 'center') { const a = markMkmkAnchor(cp);
+      if (tropOn && cls !== 'center' && vowelPairCfg(cls).mode !== 'slide') { const a = markMkmkAnchor(cp);   // slide mode: no mkmk stack — the letter-attached trop extents (below) already cover it
         if (cls === 'above' && tropTop != null) updTop(anc.y + a.above.y + tropTop);
         if (cls === 'below' && tropBot != null) updBot(anc.y + a.below.y + tropBot);
       }
@@ -10823,7 +10893,8 @@ function buildFontSpec() {
     baseGlyphNames, markGlyphNames
   };
 }
-/* Generate the Adobe .fea — `languagesystem hebr dflt;`, markClass, ccmp, mark-to-base, mkmk, GDEF.
+/* Generate the Adobe .fea — `languagesystem hebr dflt;`, markClass, ccmp, mark-to-base, mkmk,
+   contextual vowel-slide lookups (vowelPair slide mode), GDEF.
    Nikkud blocks emit only when nikOn; trop blocks only when tropOn. A letters-only font skips both. */
 function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLetter, builtWide) {
   builtPerLetter = builtPerLetter || [];
@@ -10918,14 +10989,41 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     emitBaseAnchors(gname(pc.target), Object.assign({}, donor, { anchors }));   // no skipCls — wide forms carry no baked mark
   });
   if (markLines) f += 'feature mark {\n' + markLines + '} mark;\n\n';
-  // ── mark-to-mark — stack trop above/below a nikkud vowel (only when both categories are on) ──
+  // ── vowel+trop slide mode (vowelPair): when a CENTER-halign trop shares the letter with a vowel,
+  //    a chaining-contextual rule shifts the VOWEL sideways by dx; the trop then attaches to the
+  //    letter's center trop column via the mark-to-base rules above (that class's mkmk is suppressed
+  //    below, so HarfBuzz attachment-offset propagation can't drag the trop along with the vowel).
+  //    The UseMarkFilteringSet (vowels + trops — the vowel itself MUST be in it or the shaper skips
+  //    the marked glyph) makes the pair adjacent even with a dagesh between them in canonical order
+  //    (bet, qamats ccc18, dagesh ccc21, etnahta ccc220). lookupflag inside a named lookup is scoped
+  //    to it, so the plain mark-to-base rules keep lookupflag 0.
+  //    ORDER MATTERS: mark-to-base attachment REPLACES the mark's offsets (it doesn't add), so the
+  //    slide lookup needs a HIGHER lookup index — defined after the base feature block above and
+  //    referenced via a second `feature mark` block (feaLib merges same-tag blocks). Verified
+  //    end-to-end against real feaLib + HarfBuzz (a def-before-the-block ordering silently no-ops). ──
+  let slideDefs = '', slideRefs = '';
+  if (nikOn && tropMarks.length) ['below','above'].forEach(cls => {
+    const cfg = vowelPairCfg(cls);
+    if (cfg.mode !== 'slide') return;
+    const vowels = byClass[cls], trops = tropGroups[cls].center;   // vowels incl. custom marks + sheva-na; center trops only (mirrors the mkmk guard this replaces)
+    if (!vowels.length || !trops.length) return;
+    const NAME = 'NIK_SLIDE_' + cls.toUpperCase();
+    slideDefs += `lookup ${NAME}_ADJ {\n  pos [${vowels.join(' ')}] <${cfg.dx} 0 0 0>;\n} ${NAME}_ADJ;\n\n`;
+    slideDefs += `lookup ${NAME} {\n  lookupflag UseMarkFilteringSet [${vowels.concat(trops).join(' ')}];\n  pos [${vowels.join(' ')}]' lookup ${NAME}_ADJ [${trops.join(' ')}];\n} ${NAME};\n\n`;
+    slideRefs += `  lookup ${NAME};\n`;
+  });
+  if (slideRefs) f += slideDefs + 'feature mark {\n' + slideRefs + '} mark;\n\n';
+  // ── mark-to-mark — stack trop above/below a nikkud vowel (only when both categories are on;
+  //    a class in vowelPair slide mode is skipped — its trop attaches to the letter instead) ──
   if (nikOn && tropMarks.length) {
+    const stackAbove = vowelPairCfg('above').mode !== 'slide';
+    const stackBelow = vowelPairCfg('below').mode !== 'slide';
     let mkmkLines = '';
     MARK_CPS.forEach(cp => {
       const cls = MARK_CLASS[cp], a = markMkmkAnchor(cp), nm = gname(cp);
-      if (cls === 'above' && tropGroups.above.center.length)              // only CENTER trop stacks on a vowel; edge (Left/Right) marks attach to the letter edge instead
+      if (cls === 'above' && stackAbove && tropGroups.above.center.length)              // only CENTER trop stacks on a vowel; edge (Left/Right) marks attach to the letter edge instead
         mkmkLines += `  pos mark ${nm} <anchor ${a.above.x} ${a.above.y}> mark @MC_TROP_ABOVE;\n`;
-      else if (cls === 'below' && tropGroups.below.center.length)
+      else if (cls === 'below' && stackBelow && tropGroups.below.center.length)
         mkmkLines += `  pos mark ${nm} <anchor ${a.below.x} ${a.below.y}> mark @MC_TROP_BELOW;\n`;
       // center marks (dagesh/shin/sin dot) carry no trop — trop stacks on the base letter instead
     });
@@ -10997,7 +11095,7 @@ function buildUfoAnchors() {
   if (nikOn) MARK_CPS.forEach(cp => {
     const nm = gname(cp), cls = MARK_CLASS[cp];
     push(nm, '_' + cls, 0, 0);
-    if (tropOn && cls !== 'center') { const a = markMkmkAnchor(cp);
+    if (tropOn && cls !== 'center' && vowelPairCfg(cls).mode !== 'slide') { const a = markMkmkAnchor(cp);   // slide mode emits no mkmk, so the UFO source carries no stack attach point either
       if (cls === 'above') push(nm, 'tropAbove', a.above.x, a.above.y);
       else                 push(nm, 'tropBelow', a.below.x, a.below.y);
     }
@@ -11925,6 +12023,29 @@ async function harfbuzzGate(bytes) {
         }
       }
     }
+    // vowelPair slide probe: the vowel's x_offset must differ by exactly dx between "letter+vowel"
+    // and "letter+vowel+center-trop". Identify the vowel by GLYPH ID from the pair-less shape (the
+    // zero-advance glyph) — never by index, since RTL Hebrew can return the mark first. Unexpected
+    // glyph counts (precomposed substitutions etc.) skip the check rather than guess — same
+    // resilient philosophy as the probes above.
+    if (project.font.nikkud.enabled && project.font.trop.enabled) {
+      const shapeIt = t => { const buf = H.createBuffer(); buf.addText(t); buf.guessSegmentProperties(); H.shape(font, buf); const r = buf.json(font); buf.destroy(); return r; };
+      const centerTrop = cls => TROP_CPS.find(cp => TROP_CLASS[cp] === cls && tropHalign(cp) === 'center');
+      for (const [cls, nik] of [['below','05B8'], ['above','05B9']]) {   // qamats / holam
+        const cfg = vowelPairCfg(cls), trop = centerTrop(cls);
+        if (cfg.mode !== 'slide' || !trop) continue;                     // no center trop left in the class → no rule was emitted
+        const alone = shapeIt('ב' + String.fromCodePoint(parseInt(nik, 16)));
+        const pair  = shapeIt('ב' + String.fromCodePoint(parseInt(nik, 16)) + String.fromCodePoint(parseInt(trop, 16)));
+        if (alone.length !== 2 || pair.length !== 3) continue;
+        const vowel = alone.find(g => !(g.ax || 0));                     // the zero-advance glyph = the vowel mark
+        const vp = vowel && pair.find(g => g.g === vowel.g);
+        if (!vowel || !vp) continue;
+        if ((vp.dx || 0) - (vowel.dx || 0) !== cfg.dx) {
+          font.destroy(); face.destroy(); blob.destroy();
+          return { fail: true, msg: `Vowel slide (${cls}) not applied by the shaper — expected a ${cfg.dx}-unit shift.` };
+        }
+      }
+    }
     font.destroy(); face.destroy(); blob.destroy();
     if (sawTwoGlyphs && !anyMarkOffset) return { fail: true, msg: 'Marks shaped with zero offset (fallback). The hebr script / anchors may be missing.' };
     return { ok: true };
@@ -12504,6 +12625,12 @@ function migrateProject(data) {
     if (!data.font.trop.uploadMode) data.font.trop.uploadMode = 'perSymbol';
     if (!data.font.trop.combinedImage) data.font.trop.combinedImage = { dataUrl: null };
     if (!data.font.trop.halign) data.font.trop.halign = {};   // per-mark Left/Center/Right (back-filled; L/R anchor columns added lazily by ensureTropAnchors)
+    if (!data.font.trop.vowelPair) data.font.trop.vowelPair = {};   // vowel+trop pairing (stack | slide) per vertical class
+    ['below','above'].forEach(c => {
+      const v = data.font.trop.vowelPair[c] || (data.font.trop.vowelPair[c] = {});
+      if (v.mode !== 'slide') v.mode = 'stack';
+      if (typeof v.dx !== 'number') v.dx = 70;
+    });
     if (data.font.addCustomGlyphs == null) data.font.addCustomGlyphs = false;
     if (data.font.svgUpload == null) data.font.svgUpload = false;
     if (data.font.addEnglishLetters == null) data.font.addEnglishLetters = false;
