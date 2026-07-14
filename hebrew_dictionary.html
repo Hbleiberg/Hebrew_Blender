@@ -3201,7 +3201,7 @@ function initFontSelector() {
     sections.forEach(sec => {
       const hdr = document.createElement('div');
       hdr.className = 'font-section-hdr';
-      hdr.textContent = sec === 'My Fonts' ? 'My Fonts' : sec === 'Cursive' ? 'Cursive / Script' : sec + ' Fonts';
+      hdr.textContent = sec === 'My Fonts' ? I18n.t('shared.fonts.section_my_fonts') : sec === 'Cursive' ? I18n.t('shared.fonts.section_cursive') : I18n.t('shared.fonts.section_generic', { section: sec });
       grid.appendChild(hdr);
       allFonts().filter(f => f.section === sec).forEach(font => {
         const btn = document.createElement('button');
@@ -3210,7 +3210,7 @@ function initFontSelector() {
         btn.innerHTML =
           '<span class="font-opt-preview" style="font-family:' + font.stack + ';">אֶרֶץ</span>' +
           '<span class="font-opt-info">' +
-            '<span class="font-opt-label">' + ivEsc(font.name) + (font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : '') + '</span>' +
+            '<span class="font-opt-label">' + ivEsc(font.name) + (font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">' + ivEsc(I18n.t('shared.fonts.default_marker')) + '</span>' : '') + '</span>' +
             // A link may not nest inside a <button> (invalid interactive nesting; AT-unreliable) —
             // the attribution stays a pointer-only shortcut; the button's action is the font pick.
             (font.link ? '<span class="font-opt-attr" data-link="' + ivEsc(font.link) + '" onclick="event.stopPropagation();window.open(this.dataset.link,\'_blank\',\'noopener\')">' + ivEsc(font.attr) + '</span>' : '<span class="font-opt-attr">' + ivEsc(font.attr) + '</span>') +

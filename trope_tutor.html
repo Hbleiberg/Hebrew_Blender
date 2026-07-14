@@ -2225,13 +2225,12 @@ function initFontSelector() {
   const opts = document.getElementById('fontOptions');
   if (!opts) return;
   opts.innerHTML = '';
-  const sectionLabels = { 'My Fonts': 'My Fonts', Print: 'Print Fonts', Torah: 'Torah Fonts', Cursive: 'Cursive / Script' };
   const sections = [...new Set(allFonts().map(f => f.section))];
   let firstSection = true;
   sections.forEach(sec => {
     const hdr = document.createElement('div');
     hdr.className = 'font-section-hdr' + (firstSection ? ' first' : '');
-    hdr.textContent = sectionLabels[sec] || (sec + ' Fonts');
+    hdr.textContent = sec === 'My Fonts' ? I18n.t('shared.fonts.section_my_fonts') : sec === 'Cursive' ? I18n.t('shared.fonts.section_cursive') : I18n.t('shared.fonts.section_generic', { section: sec });
     opts.appendChild(hdr);
     firstSection = false;
     allFonts().filter(f => f.section === sec).forEach(font => {
@@ -2250,7 +2249,7 @@ function initFontSelector() {
       btn.innerHTML =
         `<span class="font-opt-preview" lang="he" style="font-family:${font.family};">אֶרֶץ</span>` +
         `<span class="font-opt-info">` +
-          `<span class="font-opt-name">${esc(font.name)}${isDefault ? ' <span style="font-size:0.55rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}</span>` +
+          `<span class="font-opt-name">${esc(font.name)}${isDefault ? ' <span style="font-size:0.55rem;color:var(--muted);font-weight:400;">' + esc(I18n.t('shared.fonts.default_marker')) + '</span>' : ''}</span>` +
           attrHTML +
         `</span>`;
       btn.onclick = () => setHebFont(font.name);

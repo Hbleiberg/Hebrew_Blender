@@ -1331,7 +1331,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="panel-title" data-i18n="torah.settings.panel_font">Hebrew font</div>
       <div class="panel-body">
         <div class="font-options" id="fontOptions"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><span data-i18n="shared.fonts.upload_label">⬆ Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
       </div>
     </div>
 
@@ -3897,13 +3897,12 @@ function initFontSelector() {
   const opts = document.getElementById('fontOptions');
   if (!opts) return;
   opts.innerHTML = '';
-  const sectionLabels = { 'My Fonts': 'My Fonts', Print: 'Print Fonts', Torah: 'Torah Fonts', Cursive: 'Cursive / Script' };
   const sections = [...new Set(allFonts().map(f => f.section))];
   let firstSection = true;
   sections.forEach(sec => {
     const hdr = document.createElement('div');
     hdr.className = 'font-section-hdr' + (firstSection ? ' first' : '');
-    hdr.textContent = sectionLabels[sec] || (sec + ' Fonts');
+    hdr.textContent = sec === 'My Fonts' ? I18n.t('shared.fonts.section_my_fonts') : sec === 'Cursive' ? I18n.t('shared.fonts.section_cursive') : I18n.t('shared.fonts.section_generic', { section: sec });
     opts.appendChild(hdr);
     firstSection = false;
     allFonts().filter(f => f.section === sec).forEach(font => {
@@ -3922,7 +3921,7 @@ function initFontSelector() {
       btn.innerHTML =
         `<span class="font-opt-preview" style="font-family:${font.family};">אֶרֶץ</span>` +
         `<span class="font-opt-info">` +
-          `<span class="font-opt-name">${esc(font.name)}${isDefault ? ' <span style="font-size:0.55rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}</span>` +
+          `<span class="font-opt-name">${esc(font.name)}${isDefault ? ' <span style="font-size:0.55rem;color:var(--muted);font-weight:400;">' + esc(I18n.t('shared.fonts.default_marker')) + '</span>' : ''}</span>` +
           attrHTML +
         `</span>`;
       btn.onclick = () => setHebFont(font.name);
@@ -4798,6 +4797,7 @@ document.addEventListener('DOMContentLoaded', init);
 function applyI18n() {
   if (!window.I18n) return;
   I18n.applyStaticI18n();
+  try { initFontSelector(); } catch (e) {}          // My Fonts section headers + [DEFAULT] marker
   try { buildTropeLegend(); } catch (e) {}          // family chips (glyphname keys)
   try { refreshScopeLabels(); } catch (e) {}        // scope dropdown per-parsha labels
   try { const og = document.querySelector('#parshaSelect optgroup'); if (og) og.label = I18n.t('torah.controls.holiday_group_label'); } catch (e) {}
