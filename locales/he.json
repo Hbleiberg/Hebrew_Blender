@@ -2066,6 +2066,8 @@
   "fontmaker.panels.metric_baseline_drag": "קו בסיס — גררו כדי לקבוע",
   "fontmaker.panels.metric_descender": "יורדת",
   "fontmaker.panels.metric_descender_drag": "יורדת — גררו כדי לקבוע",
+  "fontmaker.panels.metric_fit": "התאם שוליים",
+  "fontmaker.panels.metric_fit_title": "תן לאות את שולי ברירת המחדל (ימין/שמאל) של הגופן סביב המתאר הנוכחי (ניתן לביטול)",
   "fontmaker.panels.metric_hint": "סמנו התאמת מרווחים ידנית? כדי להציג נקודות הניתנות לגרירה: גררו את הנקודה השמאלית כדי להחליק את כל האות, את הנקודה הימנית כדי לקבוע את המרווח הימני, ואת הרוחב כדי לקבוע את הקידום. (תמונת הייחוס נשארת ניתנת לגרירה כך או כך.)",
   "fontmaker.panels.metric_lamed_asc": "עולה למד",
   "fontmaker.panels.metric_lamed_drag": "עולה הלמד — גררו כדי לקבוע",

@@ -2049,6 +2049,8 @@ fontmaker.panels.metric_lamed_drag,Lamed ascender — drag to set,עולה הל�
 fontmaker.panels.metric_left_margin,Left margin,מרווח שמאלי,metric field label,
 fontmaker.panels.metric_lsb_drag,Left margin — drag to slide the whole letter,מרווח שמאלי — גררו כדי להחליק את כל האות,drag handle title,
 fontmaker.panels.metric_reset,Reset to defaults,אפס לברירות מחדל,button,
+fontmaker.panels.metric_fit,Fit margins,התאם שוליים,button,
+fontmaker.panels.metric_fit_title,Give this letter the font's default left/right margins around its current outline (undoable),תן לאות את שולי ברירת המחדל (ימין/שמאל) של הגופן סביב המתאר הנוכחי (ניתן לביטול),button title,
 fontmaker.panels.metric_right_margin,Right margin,מרווח ימני,metric field label,
 fontmaker.panels.metric_rsb_drag,Right margin — drag,מרווח ימני — גררו,drag handle title,
 fontmaker.panels.metric_this_letter,{name} (this letter),{name} (אות זו),metric sub-heading,
