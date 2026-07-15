@@ -1468,6 +1468,7 @@ function toggleDark() {
   localStorage.setItem('hebrewBlender_darkMode', isDark ? '1' : '0');
   renderStage();
   renderSpacingPreview();   // recolor the spacing preview ink for the new theme
+  if (bgState) boldGenRender();   // recolor the Generate Bold preview if its modal is open
 }
 /* ── Fullscreen (matches torah_trainer.html / classroom_dashboard.html) ── */
 function toggleFullscreen() {
