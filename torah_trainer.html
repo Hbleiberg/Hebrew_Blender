@@ -1036,12 +1036,19 @@ body.fullscreen #fsExitBtn { display: flex; }
 
   /* Dark-mode print reset (generator S30 pattern): light paper, dark ink. The token
      re-statement is non-!important and sits after the dark rules, so it wins by source
-     order; intentional inline nikkud color spans still win over it (inline > stylesheet). */
+     order. Post-S60 the nikkud color layer is a stylesheet !important rule reading body
+     vars (NOT inline spans) — Letter (color) and Underline (text-decoration) modes reprint
+     fine, but Highlight is a background tint that "background graphics: off" strips, so it
+     gets its own print underline fallback below (mirroring the trope layer). */
   html.dark-early body, body.dark {
     --navy:#1a2744; --gold:#c9922a; --gold-light:#f0d080; --cream:#fdf8ef;
     --warm-gray:#e8e0d0; --text:#1a2744; --muted:#6b6050; --border:#c8bfa8; --white:#ffffff;
   }
   body { background:#fff; }
+  /* The reference header's dark-mode override is light gold (~1.4:1 on white); the token
+     reset keeps --gold-light light, so force the header to dark ink — it is the only label
+     identifying WHICH reading the sheet is. */
+  body.dark .tt-ref-hdr { color:var(--navy); }
 
   /* Trope coloring on paper: the family treatments are background tints, which the print
      dialog's default "background graphics: off" strips SILENTLY — the teacher who turned
@@ -1059,6 +1066,16 @@ body.fullscreen #fsExitBtn { display: flex; }
   body.trope-on .tt-word.trope-revia    { text-decoration-color:var(--trope-revia-line); }
   body.trope-on .tt-word.trope-geresh   { text-decoration-color:var(--trope-geresh-line); }
   body.trope-on .tt-word.trope-rare     { text-decoration-color:var(--trope-rare-line); }
+
+  /* Nikkud color-coding on paper (post-S60 var/class model): Letter mode prints as text
+     color and Underline mode as a text-decoration underline (both survive). Highlight mode
+     is a background tint that "background graphics: off" strips SILENTLY — convert it to the
+     same per-vowel underline (reusing the --nik-c color chain) so the vowel coding survives. */
+  body.nik-mode-highlight .nik {
+    background:transparent !important;
+    text-decoration:underline solid var(--nik-c) !important;
+    text-decoration-thickness:2px; text-underline-offset:0.4em;
+  }
 
   /* Side-by-side prints WRONG verse pairings: the two columns are independent flows that
      drift out of sync (measured ~15 verses apart by page 3) and pagination freezes the
