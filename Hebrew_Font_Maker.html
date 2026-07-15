@@ -963,6 +963,12 @@
             <input type="text" id="fontVersion" value="1.000" oninput="onMetaChange()" title="Edit it freely — also ticks up on each export." data-i18n-title="fontmaker.panels.version_title">
           </label>
         </div>
+        <label class="fld"><span data-i18n="fontmaker.panels.style">Style</span>
+          <select id="fontStyle" onchange="onMetaChange()" title="Pick Bold to export this project as the Bold style of the same family — install the Regular and Bold files together and the B button switches between them." data-i18n-title="fontmaker.panels.style_title">
+            <option value="regular" selected data-i18n="fontmaker.panels.style_regular">Regular</option>
+            <option value="bold" data-i18n="fontmaker.panels.style_bold">Bold</option>
+          </select>
+        </label>
         <label class="fld"><span data-i18n="fontmaker.panels.author">Author</span>
           <input type="text" id="author" value="" placeholder="Your name" data-i18n-placeholder="fontmaker.panels.author_ph" oninput="onMetaChange()">
         </label>
@@ -2072,6 +2078,7 @@ function newProject() {
     savedAt: new Date().toISOString(),
     font: {
       familyName: 'My Hebrew Hand', reservedFontName: 'My Hebrew Hand', author: '', license: 'ofl',
+      style: 'regular',   // 'regular' | 'bold' — exported as the family's Regular or Bold member
       version: '1.000', unitsPerEm: UPM, markScale: 1.0, tropScale: 1.0, dageshScale: 1.0, cholamScale: 1.0, holamScale: 1.0, markNudge: {}, tropSideOffset: TROP_POS_SHIFT,
       nikkud: { enabled: true,  mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, shevaNa: false },   // mode: 'default' | 'custom'; uploadMode: 'perSymbol' | 'combined'; shevaNa: bold sheva-na alternate
       trop:   { enabled: false, mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, halign: {}, vowelPair: { below: { mode: 'stack', dx: 70 }, above: { mode: 'stack', dx: 70 } } },
@@ -2447,7 +2454,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.26';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.27';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2659,6 +2666,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.27</strong> — <strong>Make a proper Bold.</strong> A new <span class="ui">Style</span> dropdown in <span class="ui">Font Details</span> (Regular / Bold) exports your font as the Bold member of its family: build or import a heavier version of your font, set the Style to <span class="ui">Bold</span>, and export — install the Regular and Bold files together and programs like Word switch between them with the <strong>B</strong> button. Use the exact same Family name in both projects so they link up. Importing a TTF that's already marked bold sets the Style for you. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.26</strong> — <strong>A zoom slider for point editing, copy-outline within reach, and smoother corner rounding.</strong> Three conveniences for fine outline work. The <span class="ui">Edit points</span> view now has a <strong>drag zoom slider</strong>, so you can glide from 100% to 200% for detail work instead of clicking the <span class="ui">+</span> button ten times. <strong>Copy outline</strong> (reuse another letter's shape, like <span class="ui">Kaf → Kaf sofit</span>) and <strong>Clear outline</strong> now sit on the <span class="ui">Align</span> step — and Clear is in the <span class="ui">Contours</span> list too — so you no longer have to switch to the <span class="ui">Trace</span> tab to reach them. And rounding corners and nudging their handles is steadier: a handle pulled onto its own point no longer flips or spikes the curve, and <span class="ui">Round corners</span> blends into traced (curved) outlines without a kink. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.25</strong> — <strong>Choose how a vowel and a trop share a letter.</strong> When a letter carries both a vowel and a cantillation mark, the trop has always stacked right on the vowel. A new font-wide control on the <span class="ui">Place Trop</span> step lets you instead <strong>slide the vowel aside</strong> — left or right, with an adjustable distance — while the trop stays centered on the letter, the way many printed chumashim set it. Choose separately for below-the-letter and above-the-letter marks; stacking stays the default, previews and the quality check follow your choice, and it's fully undoable. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.24</strong> — <strong>One button toggles Edit points ⇄ Done editing.</strong> They used to be two separate buttons in two different spots, so you had to hunt for the other one. Now a single button lives up in the step bar next to <span class="ui">2 · Trace</span> and simply switches between <span class="ui">✎ Edit points</span> and <span class="ui">Done editing</span> in the same place — click it to start editing points, click the same spot to finish. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -2738,7 +2746,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -3006,6 +3014,7 @@ function syncMetaToForm() {
   document.getElementById('fontVersion').value = project.font.version;
   document.getElementById('author').value = project.font.author || '';
   document.getElementById('license').value = project.font.license || 'ofl';
+  document.getElementById('fontStyle').value = (project.font.style === 'bold') ? 'bold' : 'regular';
   // Reference-font / input-mode controls now live in the dynamically-rendered workspace
   // (renderControls), driven by project state — nothing to sync here.
 }
@@ -3015,6 +3024,8 @@ function onMetaChange() {
   project.font.version = document.getElementById('fontVersion').value;
   project.font.author = document.getElementById('author').value;
   project.font.license = document.getElementById('license').value;
+  project.font.style = document.getElementById('fontStyle').value === 'bold' ? 'bold' : 'regular';
+  markDirty();   // meta edits autosave like every other edit
 }
 /* ════════ Template fonts — ported from torah_trainer.html, same grouping ════════ */
 const HEB_FONTS = [
@@ -5224,6 +5235,17 @@ async function applyFontImport(file, font, bytes, opts) {
       if (trp) project.font.trop.mode = 'custom';
       markHits = nik + trp; tropImported = trp;
     }
+    // Style prefill: a source font flagged bold (OS/2 fsSelection bit 5, usWeightClass ≥ 600, or
+    // head.macStyle bit 0) makes this project the family's Bold style — the "import my bold TTF,
+    // mark it Bold, export" flow lands ready to go. Only when outlines were imported (a marks/anchors-
+    // only import keeps the current project's style).
+    if (opts.outlines) {
+      try {
+        const os2 = font.tables && font.tables.os2, head = font.tables && font.tables.head;
+        project.font.style = ((os2 && (((os2.fsSelection || 0) & 0x20) || (os2.usWeightClass || 0) >= 600))
+                           || (head && ((head.macStyle || 0) & 0x01))) ? 'bold' : 'regular';
+      } catch (e) {}
+    }
     if (opts.outlines) project.inputMode = 'font';
     syncMetaToForm(); renderGrids(); setWorkMode('anchors');
     if (opts.outlines && !n && !nPunct && !markHits) { status(''); askModal(I18n.t('fontmaker.modals.no_hebrew_title'), I18n.t('fontmaker.modals.no_hebrew_body'), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
@@ -5236,6 +5258,7 @@ async function applyFontImport(file, font, bytes, opts) {
       msg += hadGpos ? ` Anchors imported for ${anchorHits} letter${anchorHits===1?'':'s'} — fix any that look off, then export.`
            : (anchorErr ? ' Anchors placed automatically (couldn’t read the font’s).' : ' No anchor data in the font — anchors placed automatically.');
     } else if (!opts.marks) { msg += ' Set nikkud, then export.'; }
+    if (opts.outlines && project.font.style === 'bold') msg += ' ' + I18n.t('fontmaker.status.style_bold_detected');
     status(msg);
   } catch (e) { console.error(e); status(''); askModal(I18n.t('fontmaker.modals.font_import_failed_title'), '<span class="warn">'+(e.message||e)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); }
 }
@@ -10696,9 +10719,13 @@ function fontSafeBase(fam) {
   const base = String(fam == null ? '' : fam)
     .replace(/[^\x21-\x7E]/g, '')           // printable ASCII 33–126 only (drops space, Hebrew, emoji, accents)
     .replace(/[()<>\[\]{}\/%\\:*?"|]/g, '')  // PostScript- + filesystem-forbidden punctuation
-    .slice(0, 55);                           // room for '-Regular' under the 63-char nameID-6 cap
+    .slice(0, 55);                           // room for '-Regular' (or the shorter '-Bold') under the 63-char nameID-6 cap
   return base || 'MyHebrewFont';
 }
+function fontIsBold() { return !!(project && project.font && project.font.style === 'bold'); }
+/* Filename/PostScript stem for downloads: family base + '-Bold' for the bold style, so a
+   Regular and a Bold of the same family never overwrite each other's files. */
+function fontFileStem() { return fontSafeBase(project.font.familyName) + (fontIsBold() ? '-Bold' : ''); }
 
 /* Build the compact spec handed to Python. */
 function buildFontSpec() {
@@ -10881,14 +10908,17 @@ function buildFontSpec() {
   // FEA
   const fea = buildFEA(baseGlyphNames, built, nikOn, tropOn, builtPerLetter, builtWide);
 
-  // name table
+  // name table — nameID 1 stays the bare family for both styles (that's the RIBBI link);
+  // only nameID 2/3/4/6 carry the Regular/Bold distinction.
   const fam = fnt.familyName || 'My Hebrew Hand';
+  const bold = fnt.style === 'bold';
+  const styleName = bold ? 'Bold' : 'Regular';
   const reserved = fnt.reservedFontName || fam;
   const lic = LICENSES[fnt.license] || LICENSES.ofl;
   const names = {
-    familyName: fam, styleName: 'Regular',
-    uniqueFontIdentifier: fam + '-' + fnt.version,
-    fullName: fam, version: 'Version ' + fnt.version, psName: fontSafeBase(fam) + '-Regular',
+    familyName: fam, styleName: styleName,
+    uniqueFontIdentifier: fam + (bold ? ' Bold' : '') + '-' + fnt.version,
+    fullName: fam + (bold ? ' Bold' : ''), version: 'Version ' + fnt.version, psName: fontSafeBase(fam) + '-' + styleName,
     copyright: 'Copyright (c) ' + new Date().getFullYear() + ' ' + ((fnt.author||'').trim() || fam),
     manufacturer: 'IvritSuite Hebrew Font Maker',        // nameID 8  — attribution in the standard field
     designer: 'Made with IvritSuite Hebrew Font Maker',  // nameID 9
@@ -10905,7 +10935,7 @@ function buildFontSpec() {
   const aAsc = effMetrics().lamedAscender + 100, aDesc = effMetrics().descender - 50, ink = fontInkBounds();
   const winAscent = Math.max(aAsc, Math.ceil(ink.top)), winDescent = Math.max(-aDesc, Math.ceil(-ink.bottom));
   return {
-    unitsPerEm: UPM, glyphOrder, glyphs, cmap, fea, names,
+    unitsPerEm: UPM, glyphOrder, glyphs, cmap, fea, names, bold: bold,
     ascent: aAsc, descent: aDesc, lineGap: fontSpacing().lineSpacing, version: versionFloat,
     winAscent, winDescent,
     baseGlyphNames, markGlyphNames
@@ -11091,7 +11121,7 @@ function buildUfoSpec() {
   const spec = buildFontSpec();
   spec.anchors     = buildUfoAnchors();
   spec.fontinfo    = buildUfoFontInfo(spec);
-  spec.ufoName     = fontSafeBase(project.font.familyName);
+  spec.ufoName     = fontFileStem();
   spec.licenseText = licenseText();
   return spec;
 }
@@ -11129,9 +11159,10 @@ function buildUfoFontInfo(spec) {
   const major = Math.floor(vf), minor = Math.round((vf - major) * 1000);
   const lic = LICENSES[project.font.license] || LICENSES.ofl, top = Math.round(effMetrics().letterTop);
   const asc = Math.round(spec.ascent), desc = Math.round(spec.descent), gap = Math.round(spec.lineGap || 0);
+  const bold = !!spec.bold;
   return {
-    familyName: n.familyName, styleName: 'Regular',
-    styleMapFamilyName: n.familyName, styleMapStyleName: 'regular',
+    familyName: n.familyName, styleName: bold ? 'Bold' : 'Regular',
+    styleMapFamilyName: n.familyName, styleMapStyleName: bold ? 'bold' : 'regular',
     versionMajor: major, versionMinor: minor, unitsPerEm: spec.unitsPerEm,
     // xHeight is deliberately omitted: Hebrew is caseless, so there is no honest x-height —
     // baking letterTop there (as capHeight's twin) drew a bogus duplicate guide in font editors.
@@ -11140,21 +11171,25 @@ function buildUfoFontInfo(spec) {
     openTypeOS2TypoAscender: asc, openTypeOS2TypoDescender: desc, openTypeOS2TypoLineGap: gap,
     openTypeOS2WinAscent: spec.winAscent, openTypeOS2WinDescent: spec.winDescent,
     openTypeHheaAscender: spec.winAscent, openTypeHheaDescender: -spec.winDescent, openTypeHheaLineGap: gap,
-    openTypeOS2Selection: [7], openTypeOS2VendorID: 'IVST', openTypeOS2CodePageRanges: [0, 5],
+    // openTypeOS2Selection carries ONLY bit 7 for both styles — UFO3 forbids bits 0/5/6 here;
+    // compilers derive them from styleMapStyleName. Weight class is what makes the Bold heavy-flagged.
+    openTypeOS2Selection: [7], openTypeOS2WeightClass: bold ? 700 : 400,
+    openTypeOS2VendorID: 'IVST', openTypeOS2CodePageRanges: [0, 5],
     copyright: n.copyright,
     openTypeNameDesigner: n.designer || 'Made with IvritSuite Hebrew Font Maker',
     openTypeNameLicense: lic.desc, openTypeNameLicenseURL: lic.url,
     openTypeNameUniqueID: n.uniqueFontIdentifier, postscriptFontName: n.psName
   };
 }
-/* Paste-ready @font-face for the TTF + WOFF2 zip. `fam` = display family, `file` = the file stem. */
-function fontFaceCss(fam, file) {
+/* Paste-ready @font-face for the TTF + WOFF2 zip. `fam` = display family, `file` = the file stem.
+   font-family stays the bare family for both styles so a Regular and a Bold block pair up in CSS. */
+function fontFaceCss(fam, file, bold) {
   return `/* Paste into your CSS. Keep ${file}.woff2 (and ${file}.ttf) next to this stylesheet. */
 @font-face {
   font-family: ${JSON.stringify(fam)};
   src: url('${file}.woff2') format('woff2'),
        url('${file}.ttf') format('truetype');
-  font-weight: normal;
+  font-weight: ${bold ? 'bold' : 'normal'};
   font-style: normal;
 }
 `;
@@ -11246,15 +11281,21 @@ def hfm_build(spec_json):
     fb.setupOS2(sTypoAscender=int(spec["ascent"]), sTypoDescender=int(spec["descent"]),
                 sTypoLineGap=int(spec.get("lineGap", 0)),
                 usWinAscent=_winAsc, usWinDescent=_winDesc,
+                usWeightClass=(700 if spec.get("bold") else 400),
                 achVendID="IVST")
     # Declare Hebrew (cp1255) + Latin-1 (cp1252) code pages so Office/Word recognizes the font for
     # Hebrew. Without this, Word substitutes a fallback (e.g. Aptos) and won't apply it to Hebrew text.
     _os2 = fb.font["OS/2"]
     _os2.ulCodePageRange1 = (1 << 0) | (1 << 5)
     _os2.ulCodePageRange2 = 0
-    # REGULAR (bit 6); clear italic/bold; set USE_TYPO_METRICS (bit 7) so line height follows the
-    # stable sTypo metrics (+ the Line-spacing control) instead of the enlarged clip box.
-    _os2.fsSelection = (_os2.fsSelection & ~0x21) | 0x40 | 0x80
+    if spec.get("bold"):
+        # BOLD (bit 5); clear italic (bit 0) + regular (bit 6); keep USE_TYPO_METRICS (bit 7).
+        _os2.fsSelection = (_os2.fsSelection & ~0x41) | 0x20 | 0x80
+        fb.font["head"].macStyle |= 0x01   # head.macStyle bit 0 must agree with fsSelection bit 5
+    else:
+        # REGULAR (bit 6); clear italic/bold; set USE_TYPO_METRICS (bit 7) so line height follows the
+        # stable sTypo metrics (+ the Line-spacing control) instead of the enlarged clip box.
+        _os2.fsSelection = (_os2.fsSelection & ~0x21) | 0x40 | 0x80
     fb.setupPost()
     try:
         addOpenTypeFeaturesFromString(fb.font, spec["fea"])
@@ -11464,7 +11505,7 @@ function shareThisFont() {   // open the font library (Fonts view) + a pre-fille
   const licMap = { cc0:'CC0 (Public Domain)', ofl:'OFL (SIL Open Font License 1.1)', mit:'MIT License', arr:'All Rights Reserved' };
   const params = new URLSearchParams({
     view: 'fonts', submit: '1',
-    name: (f.familyName || '').trim(),
+    name: ((f.familyName || '').trim() + (f.style === 'bold' ? ' Bold' : '')),
     author: (f.author || '').trim(),
     license: licMap[f.license] || f.license || '',
     version: (f.version || '').trim(),
@@ -11622,7 +11663,7 @@ async function doExport(fmt) {
 }
 async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only when a file actually shipped — callers roll the version bump back on false
   fmt = fmt || 'ttf';
-  const fam = fontSafeBase(project.font.familyName);
+  const fam = fontFileStem();   // family base + '-Bold' for the bold style — no Regular/Bold file collisions
   window._lastFontBytes = bytes;   // for preview PDF
   if (fmt === 'ttf') {
     downloadBlob(new Blob([bytes], {type:'font/ttf'}), fam + '.ttf');
@@ -11648,7 +11689,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
     const entries = [
       { name: fam + '.ttf',   b64: bytesToB64(bytes) },
       { name: fam + '.woff2', b64: wr.woff2_b64 },
-      { name: fam + '.css',   text: fontFaceCss(project.font.familyName || fam, fam) },
+      { name: fam + '.css',   text: fontFaceCss(project.font.familyName || fam, fam, fontIsBold()) },
       { name: 'LICENSE.txt',  text: licenseText() }
     ];
     pyodide.globals.set('hfm_zip_json', JSON.stringify(entries));
@@ -11777,7 +11818,8 @@ function deleteMyFontUI(name) {
 }
 async function saveCurrentToMyFonts(bytes) {
   if (!project || project.letters.filter(l => l.contours).length === 0) { status(I18n.t('fontmaker.status.trace_first')); return; }
-  const fam = (project.font.familyName || 'My Hebrew Font').trim();
+  // The My Fonts store is keyed by name — a bold save must not evict its Regular sibling.
+  const fam = (project.font.familyName || 'My Hebrew Font').trim() + (fontIsBold() ? ' Bold' : '');
   try {
     if (!bytes) { status(I18n.t('fontmaker.status.building_font'), true); bytes = await buildFontBytes(); }
     await saveUserFont(fam, bytes, fam);
@@ -11790,7 +11832,7 @@ async function saveCurrentToMyFonts(bytes) {
 }
 function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (called after every successful export, any format)
   markClean();   // a successful export is a safe checkpoint → drop the unsaved-work breadcrumb
-  const fam = (project.font.familyName || 'My Hebrew Font').trim();
+  const fam = (project.font.familyName || 'My Hebrew Font').trim() + (fontIsBold() ? ' Bold' : '');
   const canSave = !!(window.indexedDB && window.FontFace);
   const btns = [{ label: I18n.t('fontmaker.modals.exported_done'), cls: 'ghost' },
                 { label: I18n.t('fontmaker.modals.exported_share_btn'), cls: 'ghost', onClick: () => shareThisFont() }];
@@ -12132,7 +12174,7 @@ async function generatePreviewPDF() {
       ctx.font = HEB(16); ctx.measureText('שלום');   // warm up the font for canvas
       ctx.textBaseline = 'alphabetic'; let y = 66;
       ctx.fillStyle = '#1a2744'; ctx.font = "27px 'Libre Baskerville', serif";
-      ctx.fillText(project.font.familyName || 'My Font', W/2, y); y += 22;
+      ctx.fillText((project.font.familyName || 'My Font') + (fontIsBold() ? ' Bold' : ''), W/2, y); y += 22;
       ctx.fillStyle = '#666'; ctx.font = "12px 'Source Sans 3', sans-serif";
       ctx.fillText('Hebrew Font Maker specimen · v' + (project.font.version || '1'), W/2, y); y += 18;
       ctx.strokeStyle = '#1a2744'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(64, y); ctx.lineTo(W-64, y); ctx.stroke(); y += 76;
@@ -12211,7 +12253,7 @@ async function generatePreviewPDF() {
       const chars = mains.concat(marks).filter(Boolean);
       if (chars.length) specimenPage('Custom glyphs', chars, { rtl: true, cols: 8, glyphPx: 42 });
     }
-    pdf.save((project.font.familyName||'font').replace(/\s+/g,'_') + '_specimen.pdf');
+    pdf.save(((project.font.familyName||'font') + (fontIsBold() ? ' Bold' : '')).replace(/\s+/g,'_') + '_specimen.pdf');
     status(I18n.t('fontmaker.status.preview_pdf_saved'));
   } catch (e) { console.error(e); status(''); askModal(I18n.t('fontmaker.modals.pdf_error_title'), '<span class="warn">'+(e.message||e)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); }
 }
@@ -12434,7 +12476,8 @@ const RECENT_KEY = 'hebrewFontMaker_recentProjects', MAX_RECENT = 6;
 function getRecentProjects() { try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch (e) { return []; } }
 function pushRecentProject(p) {
   let list = getRecentProjects();
-  const fam = (p.font && p.font.familyName) || 'Untitled';
+  // The style is part of the identity — a Bold project must not evict its Regular sibling from Recents.
+  const fam = ((p.font && p.font.familyName) || 'Untitled') + ((p.font && p.font.style) === 'bold' ? ' Bold' : '');
   const res = (p.font && p.font.reservedFontName) || '';
   const name = res ? `${fam} - ${res}` : fam;
   list = list.filter(r => r.name !== name);                       // newest copy of a name wins
@@ -12622,6 +12665,7 @@ function migrateProject(data) {
     if (data.font.author === undefined) data.font.author = data.font.copyright || '';   // Copyright field → Author
     delete data.font.copyright;
     if (!data.font.license) data.font.license = 'ofl';
+    data.font.style = data.font.style === 'bold' ? 'bold' : 'regular';   // Regular/Bold family style — backfills old saves and coerces junk
     if (!data.font.metrics) data.font.metrics = { baseline:BASELINE, letterTop:LETTER_TOP, lamedAscender:LAMED_TOP, descender:DESCENDER, defaultLSB:DEF_LSB, defaultRSB:DEF_RSB };
     else ['baseline','letterTop','lamedAscender','descender','defaultLSB','defaultRSB'].forEach((k,i)=>{ if(data.font.metrics[k]==null) data.font.metrics[k]=[BASELINE,LETTER_TOP,LAMED_TOP,DESCENDER,DEF_LSB,DEF_RSB][i]; });
     if (data.font.tropScale == null) data.font.tropScale = 1.0;
