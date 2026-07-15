@@ -13187,13 +13187,17 @@ function init() {
   window.addEventListener('beforeunload', e => { if (_projectDirty) { e.preventDefault(); e.returnValue = ''; } });   // warn before losing unsaved work
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushAutosave(); });   // tab hidden → flush the debounced autosave now
   window.addEventListener('pagehide', flushAutosave);   // closing/navigating away → last-chance flush
-  maybeRestoreAutosave();   // offer to restore work from a prior session that was never saved to a file
+  // Defer the restore prompt until translations have loaded — window.I18n exists by DOMContentLoaded,
+  // but I18n.ready (the locale-JSON fetch) may not have resolved, so building the modal now would
+  // render its labels as raw i18n keys (fontmaker.modals.continue_body, …).
+  if (window.I18n) I18n.ready.then(maybeRestoreAutosave); else maybeRestoreAutosave();
   window.addEventListener('resize', wsOnWindowResize);   // re-clamp widths if the window shrinks
   onExportFormatChange();   // sync the Export button label to the format picker (browsers may restore its value on reload)
   // re-measure the template glyph once web fonts settle
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (project) renderStage(); });
   if (!window.WebAssembly || !window.FontFace) {
-    status(I18n.t('fontmaker.status.export_no_wasm'), true);
+    const _noWasm = () => status(I18n.t('fontmaker.status.export_no_wasm'), true);   // same guard: wait for translations
+    if (window.I18n) I18n.ready.then(_noWasm); else _noWasm();
   }
   // Wire i18n here (inside init, which runs on DOMContentLoaded) so the deferred /js/i18n.js
   // has already defined window.I18n — at top-level script parse time it is still undefined.
