@@ -1036,12 +1036,19 @@ body.fullscreen #fsExitBtn { display: flex; }
 
   /* Dark-mode print reset (generator S30 pattern): light paper, dark ink. The token
      re-statement is non-!important and sits after the dark rules, so it wins by source
-     order; intentional inline nikkud color spans still win over it (inline > stylesheet). */
+     order. Post-S60 the nikkud color layer is a stylesheet !important rule reading body
+     vars (NOT inline spans) — Letter (color) and Underline (text-decoration) modes reprint
+     fine, but Highlight is a background tint that "background graphics: off" strips, so it
+     gets its own print underline fallback below (mirroring the trope layer). */
   html.dark-early body, body.dark {
     --navy:#1a2744; --gold:#c9922a; --gold-light:#f0d080; --cream:#fdf8ef;
     --warm-gray:#e8e0d0; --text:#1a2744; --muted:#6b6050; --border:#c8bfa8; --white:#ffffff;
   }
   body { background:#fff; }
+  /* The reference header's dark-mode override is light gold (~1.4:1 on white); the token
+     reset keeps --gold-light light, so force the header to dark ink — it is the only label
+     identifying WHICH reading the sheet is. */
+  body.dark .tt-ref-hdr { color:var(--navy); }
 
   /* Trope coloring on paper: the family treatments are background tints, which the print
      dialog's default "background graphics: off" strips SILENTLY — the teacher who turned
@@ -1059,6 +1066,16 @@ body.fullscreen #fsExitBtn { display: flex; }
   body.trope-on .tt-word.trope-revia    { text-decoration-color:var(--trope-revia-line); }
   body.trope-on .tt-word.trope-geresh   { text-decoration-color:var(--trope-geresh-line); }
   body.trope-on .tt-word.trope-rare     { text-decoration-color:var(--trope-rare-line); }
+
+  /* Nikkud color-coding on paper (post-S60 var/class model): Letter mode prints as text
+     color and Underline mode as a text-decoration underline (both survive). Highlight mode
+     is a background tint that "background graphics: off" strips SILENTLY — convert it to the
+     same per-vowel underline (reusing the --nik-c color chain) so the vowel coding survives. */
+  body.nik-mode-highlight .nik {
+    background:transparent !important;
+    text-decoration:underline solid var(--nik-c) !important;
+    text-decoration-thickness:2px; text-underline-offset:0.4em;
+  }
 
   /* Side-by-side prints WRONG verse pairings: the two columns are independent flows that
      drift out of sync (measured ~15 verses apart by page 3) and pagination freezes the
@@ -1331,7 +1348,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="panel-title" data-i18n="torah.settings.panel_font">Hebrew font</div>
       <div class="panel-body">
         <div class="font-options" id="fontOptions"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;">⬆ Upload your own font?<input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><span data-i18n="shared.fonts.upload_label">⬆ Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
       </div>
     </div>
 
@@ -3897,13 +3914,12 @@ function initFontSelector() {
   const opts = document.getElementById('fontOptions');
   if (!opts) return;
   opts.innerHTML = '';
-  const sectionLabels = { 'My Fonts': 'My Fonts', Print: 'Print Fonts', Torah: 'Torah Fonts', Cursive: 'Cursive / Script' };
   const sections = [...new Set(allFonts().map(f => f.section))];
   let firstSection = true;
   sections.forEach(sec => {
     const hdr = document.createElement('div');
     hdr.className = 'font-section-hdr' + (firstSection ? ' first' : '');
-    hdr.textContent = sectionLabels[sec] || (sec + ' Fonts');
+    hdr.textContent = sec === 'My Fonts' ? I18n.t('shared.fonts.section_my_fonts') : sec === 'Cursive' ? I18n.t('shared.fonts.section_cursive') : I18n.t('shared.fonts.section_generic', { section: sec });
     opts.appendChild(hdr);
     firstSection = false;
     allFonts().filter(f => f.section === sec).forEach(font => {
@@ -3922,7 +3938,7 @@ function initFontSelector() {
       btn.innerHTML =
         `<span class="font-opt-preview" style="font-family:${font.family};">אֶרֶץ</span>` +
         `<span class="font-opt-info">` +
-          `<span class="font-opt-name">${esc(font.name)}${isDefault ? ' <span style="font-size:0.55rem;color:var(--muted);font-weight:400;">[DEFAULT]</span>' : ''}</span>` +
+          `<span class="font-opt-name">${esc(font.name)}${isDefault ? ' <span style="font-size:0.55rem;color:var(--muted);font-weight:400;">' + esc(I18n.t('shared.fonts.default_marker')) + '</span>' : ''}</span>` +
           attrHTML +
         `</span>`;
       btn.onclick = () => setHebFont(font.name);
@@ -4798,6 +4814,7 @@ document.addEventListener('DOMContentLoaded', init);
 function applyI18n() {
   if (!window.I18n) return;
   I18n.applyStaticI18n();
+  try { initFontSelector(); } catch (e) {}          // My Fonts section headers + [DEFAULT] marker
   try { buildTropeLegend(); } catch (e) {}          // family chips (glyphname keys)
   try { refreshScopeLabels(); } catch (e) {}        // scope dropdown per-parsha labels
   try { const og = document.querySelector('#parshaSelect optgroup'); if (og) og.label = I18n.t('torah.controls.holiday_group_label'); } catch (e) {}

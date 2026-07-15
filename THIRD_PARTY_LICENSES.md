@@ -112,6 +112,59 @@ The curation, filtering, transliteration fields, era classification, and JSON st
 
 ---
 
+## Third-Party Web Services & APIs
+
+The Classroom Dashboard and the contact / resources forms call these external services at runtime. They
+are hosted services and public APIs — no code from them is bundled or redistributed in this repository;
+each is governed by its own terms, linked below. (Google Analytics 4, also a runtime service, is
+documented under *Analytics* above.)
+
+### Hebcal
+
+- **Service:** https://www.hebcal.com
+- **Developer APIs:** https://www.hebcal.com/home/developer-apis
+- **Terms:** Hebcal's Jewish-calendar data is free to use under the [Hebcal Terms of Use](https://www.hebcal.com/home/about); the underlying `@hebcal/core` library is licensed GPL-2.0-or-later.
+
+**Used by `classroom_dashboard.html`:** candle-lighting / Shabbat times, Jewish-holiday dates and
+countdowns, and the Omer count are fetched at runtime from the Hebcal REST API (`/hebcal` and
+`/shabbat`). No Hebcal code is redistributed here.
+
+### Open-Meteo
+
+- **Service:** https://open-meteo.com
+- **License:** Weather and geocoding data are licensed **Creative Commons Attribution 4.0 International (CC BY 4.0)** — https://open-meteo.com/en/license. The non-commercial API tier requires no key.
+
+**Used by `classroom_dashboard.html`:** the weather widget's current conditions + daily high/low
+(`api.open-meteo.com/v1/forecast`) and city-name geocoding (`geocoding-api.open-meteo.com/v1/search`).
+**Attribution:** CC BY 4.0 requires crediting Open-Meteo as the data source.
+
+### Nominatim / OpenStreetMap
+
+- **Service:** https://nominatim.openstreetmap.org (OpenStreetMap Foundation)
+- **License:** The underlying map data is **© OpenStreetMap contributors**, licensed under the **Open Database License (ODbL) 1.0** — https://www.openstreetmap.org/copyright. Use is subject to the [Nominatim Usage Policy](https://operations.osmfoundation.org/policies/nominatim/).
+
+**Used by `classroom_dashboard.html`:** reverse-geocoding a "use my location" latitude/longitude to a
+place name (`nominatim.openstreetmap.org/reverse`). **Attribution:** ODbL requires the credit
+"© OpenStreetMap contributors".
+
+### Web3Forms
+
+- **Service:** https://web3forms.com
+- **Terms:** Proprietary hosted form-submission service — https://web3forms.com/terms. Its client script and submit endpoint load from `web3forms.com` / `api.web3forms.com`.
+
+**Used by `contact.html` and `resources.html`:** delivers the contact and resource-suggestion form
+submissions by email without a backend server. No Web3Forms code is redistributed here.
+
+### hCaptcha
+
+- **Service:** https://www.hcaptcha.com (Intuition Machines, Inc.)
+- **Terms:** Proprietary bot-protection service — https://www.hcaptcha.com/terms. Its widget script loads from `js.hcaptcha.com`; the data it collects is described in `privacy.html`.
+
+**Used by `contact.html` and `resources.html`:** protects the Web3Forms form submission from automated
+abuse.
+
+---
+
 ## Fonts
 
 IvritSuite displays Hebrew and Latin text in a number of openly-licensed typefaces. **Most are loaded at runtime from Google Fonts; a handful are self-hosted via a jsDelivr CDN mirror of the [`aharonium/fonts`](https://github.com/aharonium/fonts) collection.** The font binaries redistributed in this repository are:
