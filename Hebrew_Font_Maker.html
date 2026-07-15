@@ -969,6 +969,9 @@
             <option value="bold" data-i18n="fontmaker.panels.style_bold">Bold</option>
           </select>
         </label>
+        <div class="ctl-row">
+          <button class="ctl-btn" id="boldGenBtn" onclick="boldGenOpen(false)" title="Thicken (or lighten) every traced outline to create a Bold weight — with a live preview before anything changes." data-i18n="fontmaker.panels.boldgen_open" data-i18n-title="fontmaker.panels.boldgen_open_title">Generate Bold…</button>
+        </div>
         <label class="fld"><span data-i18n="fontmaker.panels.author">Author</span>
           <input type="text" id="author" value="" placeholder="Your name" data-i18n-placeholder="fontmaker.panels.author_ph" oninput="onMetaChange()">
         </label>
@@ -1234,6 +1237,40 @@
         <button class="tbtn" id="meApplyCur" onclick="meConfirmApply('current')" data-i18n="fontmaker.modals.markedit_apply_current">Apply to current letter</button>
         <button class="tbtn" id="meApplyAll" onclick="meConfirmApply('all')" data-i18n="fontmaker.modals.markedit_apply_all">Apply to all letters</button>
       </span>
+    </div>
+  </div>
+</div>
+
+<!-- Generate Bold — synthetic weight generation with live before/after preview -->
+<div class="overlay" id="boldGenOverlay" onclick="if(event.target===this)boldGenClose()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="bgTitle" style="max-width:560px;">
+    <h3 id="bgTitle" data-i18n="fontmaker.boldgen.title">Generate Bold</h3>
+    <p class="hint" style="margin:0 0 10px;" data-i18n="fontmaker.boldgen.intro">Thickens every traced letter's strokes by the amount below. Nothing changes until you press Apply, one Undo reverts it all, and applying again stacks on top of the current weight. A positive weight also sets the font's Style to Bold.</p>
+    <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;" data-i18n="fontmaker.boldgen.before">Before</div>
+    <svg id="bgBefore" dir="ltr" style="width:100%;height:72px;display:block;"></svg>
+    <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-top:4px;" data-i18n="fontmaker.boldgen.after">After</div>
+    <svg id="bgAfter" dir="ltr" style="width:100%;height:72px;display:block;"></svg>
+    <div class="inline" style="margin-top:10px;">
+      <span data-i18n="fontmaker.boldgen.strength">Stroke gain (font units)</span>
+      <input type="range" id="bgStrength" min="-50" max="120" step="5" value="65" style="flex:1;min-width:0;" oninput="boldGenSet(this.value)" data-i18n-aria-label="fontmaker.boldgen.strength" aria-label="Stroke gain (font units)">
+      <span id="bgStrengthV" class="readout">+65</span>
+    </div>
+    <div class="ctl-row" style="margin-top:7px;flex-wrap:wrap;">
+      <button class="ctl-btn" onclick="boldGenPreset(-40)" data-i18n="fontmaker.boldgen.preset_light">Light −40</button>
+      <button class="ctl-btn" onclick="boldGenPreset(40)" data-i18n="fontmaker.boldgen.preset_semibold">Semibold +40</button>
+      <button class="ctl-btn" onclick="boldGenPreset(65)" data-i18n="fontmaker.boldgen.preset_bold">Bold +65</button>
+      <button class="ctl-btn" onclick="boldGenPreset(95)" data-i18n="fontmaker.boldgen.preset_heavy">Heavy +95</button>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:9px;">
+      <label class="inline" style="cursor:pointer;"><input type="checkbox" id="bgKeepHeight" checked onchange="boldGenOptChange()" style="accent-color:var(--gold);"> <span data-i18n="fontmaker.boldgen.keep_height">Keep letter height</span></label>
+      <label class="inline" style="cursor:pointer;"><input type="checkbox" id="bgMarks" checked onchange="boldGenOptChange()" style="accent-color:var(--gold);"> <span data-i18n="fontmaker.boldgen.thicken_marks">Also thicken nikkud &amp; trop marks</span></label>
+    </div>
+    <div id="bgWarn" class="hint warn" style="display:none;margin-top:8px;" role="status"></div>
+    <div id="bgCurvesNote" class="hint" style="display:none;margin-top:6px;"></div>
+    <div id="bgZeroNote" class="hint" style="display:none;margin-top:6px;" data-i18n="fontmaker.boldgen.zero_note">Move the slider to pick a weight — at 0 there's nothing to apply.</div>
+    <div class="mbtns">
+      <button class="tbtn ghost" onclick="boldGenClose()" data-i18n="fontmaker.modals.cancel">Cancel</button>
+      <button class="tbtn" id="bgApply" onclick="boldGenApply()" data-i18n="fontmaker.boldgen.apply">Apply</button>
     </div>
   </div>
 </div>
@@ -2454,7 +2491,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.27';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.28';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2666,6 +2703,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.28</strong> — <strong>Generate Bold, automatically.</strong> The new <span class="ui">Generate Bold…</span> button in <span class="ui">Font Details</span> (also offered when you import a font) thickens every traced letter's strokes to build a real Bold weight — with a live before/after preview, an adjustable strength slider (it can lighten too), an option to keep letter heights, and matching thickening for nikkud and trop. One click sets the <span class="ui">Style</span> to Bold so the export links with your Regular, and one Undo reverts everything. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.27</strong> — <strong>Make a proper Bold.</strong> A new <span class="ui">Style</span> dropdown in <span class="ui">Font Details</span> (Regular / Bold) exports your font as the Bold member of its family: build or import a heavier version of your font, set the Style to <span class="ui">Bold</span>, and export — install the Regular and Bold files together and programs like Word switch between them with the <strong>B</strong> button. Use the exact same Family name in both projects so they link up. Importing a TTF that's already marked bold sets the Style for you. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.26</strong> — <strong>A zoom slider for point editing, copy-outline within reach, and smoother corner rounding.</strong> Three conveniences for fine outline work. The <span class="ui">Edit points</span> view now has a <strong>drag zoom slider</strong>, so you can glide from 100% to 200% for detail work instead of clicking the <span class="ui">+</span> button ten times. <strong>Copy outline</strong> (reuse another letter's shape, like <span class="ui">Kaf → Kaf sofit</span>) and <strong>Clear outline</strong> now sit on the <span class="ui">Align</span> step — and Clear is in the <span class="ui">Contours</span> list too — so you no longer have to switch to the <span class="ui">Trace</span> tab to reach them. And rounding corners and nudging their handles is steadier: a handle pulled onto its own point no longer flips or spikes the curve, and <span class="ui">Round corners</span> blends into traced (curved) outlines without a kink. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.25</strong> — <strong>Choose how a vowel and a trop share a letter.</strong> When a letter carries both a vowel and a cantillation mark, the trop has always stacked right on the vowel. A new font-wide control on the <span class="ui">Place Trop</span> step lets you instead <strong>slide the vowel aside</strong> — left or right, with an adjustable distance — while the trop stays centered on the letter, the way many printed chumashim set it. Choose separately for below-the-letter and above-the-letter marks; stacking stays the default, previews and the quality check follow your choice, and it's fully undoable. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -2746,7 +2784,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -5169,12 +5207,15 @@ function askFontImportOptions(file, font, bytes) {
     '<label style="display:block;margin:7px 0;cursor:pointer;"><input type="checkbox" id="impAnchors" checked style="margin-right:7px;vertical-align:middle;">' +
       I18n.t('fontmaker.modals.import_anchors') + ' ' +
       '<span style="color:var(--muted);">' + I18n.t('fontmaker.modals.import_anchors_none') + '</span></label>' +
+    '<label style="display:block;margin:7px 0;cursor:pointer;"><input type="checkbox" id="impBoldAfter" style="margin-right:7px;vertical-align:middle;">' +
+      I18n.t('fontmaker.modals.import_bold_after') + '</label>' +
     '<p style="margin:11px 0 0;color:var(--muted);font-size:.85rem;">' + I18n.t('fontmaker.modals.import_fixing') + '</p>';
   askModal(I18n.t('fontmaker.modals.import_font_title'), body, [
     { label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' },
     { label: I18n.t('fontmaker.modals.import'), onClick: () => {
         const gv = id => { const el = document.getElementById(id); return el ? el.checked : true; };
-        const opts = { outlines: gv('impOutlines'), marks: gv('impMarks'), anchors: gv('impAnchors') };
+        const bEl = document.getElementById('impBoldAfter');   // defaults OFF — gv()'s missing→true default is wrong here
+        const opts = { outlines: gv('impOutlines'), marks: gv('impMarks'), anchors: gv('impAnchors'), boldAfter: !!(bEl && bEl.checked) };
         if (!opts.outlines && !opts.marks && !opts.anchors) { status(I18n.t('fontmaker.status.nothing_selected')); return; }
         // Confirm before overwriting letters the user has already drawn (only when replacing outlines).
         const existing = opts.outlines ? project.letters.filter(x => x.contours && x.contours.length).length : 0;
@@ -5259,7 +5300,9 @@ async function applyFontImport(file, font, bytes, opts) {
            : (anchorErr ? ' Anchors placed automatically (couldn’t read the font’s).' : ' No anchor data in the font — anchors placed automatically.');
     } else if (!opts.marks) { msg += ' Set nikkud, then export.'; }
     if (opts.outlines && project.font.style === 'bold') msg += ' ' + I18n.t('fontmaker.status.style_bold_detected');
+    if (opts.outlines && n && project.font.style !== 'bold' && !opts.boldAfter) msg += ' ' + I18n.t('fontmaker.status.boldgen_hint');
     status(msg);
+    if (opts.boldAfter && opts.outlines && n) boldGenOpen(true);   // the no-Hebrew early return above bypasses this
   } catch (e) { console.error(e); status(''); askModal(I18n.t('fontmaker.modals.font_import_failed_title'), '<span class="warn">'+(e.message||e)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); }
 }
 
@@ -8958,6 +9001,247 @@ function setTropScale(v) {
   const s = document.getElementById('markScaleV'); if (s) s.textContent = Math.round(project.font.tropScale*100) + '%';
   renderStage();
   markDirty();
+}
+
+/* ════════ Generate Bold — synthetic weight generation ════════
+   Dilates (or thins, d<0) every glyph ring by offsetting each edge along the outward-of-filled
+   normal. Outer rings are stored 'cw' (signedArea<0, y-up) and holes 'ccw', so the LEFT normal
+   of the stored edge direction points away from the filled region for BOTH — one rule dilates
+   outers outward and shrinks holes, and inverts cleanly for negative d. All rendering and the
+   TrueType rasterizer use the nonzero winding rule, which tolerates the local self-crossings a
+   simple offset produces; full ring collapses are culled, partial ones surface as a warning. */
+const BG_ARC_STEP = Math.PI / 15, BG_MIN_AREA = 200, BG_MITER = 4;
+function bgDedupe(pts) {
+  const out = [];
+  pts.forEach(p => { const q = out[out.length - 1]; if (!q || q[0] !== p[0] || q[1] !== p[1]) out.push(p); });
+  while (out.length > 1 && out[0][0] === out[out.length-1][0] && out[0][1] === out[out.length-1][1]) out.pop();
+  return out;
+}
+/* Offset one closed ring by signed d. Returns float points, or null if the ring collapsed
+   (winding sign flipped / shrank to a speck) — bold fills a too-small counter, light erases a
+   too-thin piece. Winding of survivors is preserved by construction. */
+function boldGenOffsetRing(points, d) {
+  const pts = bgDedupe(points);
+  const n = pts.length; if (n < 3) return null;
+  const A0 = signedArea(pts); if (!A0) return null;
+  const dir = [], nor = [];
+  for (let i = 0; i < n; i++) {
+    const q = pts[(i+1) % n], dx = q[0]-pts[i][0], dy = q[1]-pts[i][1], L = Math.hypot(dx, dy) || 1;
+    dir.push([dx/L, dy/L]); nor.push([-dy/L, dx/L]);          // LEFT normal = outward of filled
+  }
+  const out = [];
+  for (let i = 0; i < n; i++) {                               // vertex i joins edge (i-1) → edge i
+    const V = pts[i], uA = dir[(i-1+n) % n], uB = dir[i], nA = nor[(i-1+n) % n], nB = nor[i];
+    const a = [V[0]+nA[0]*d, V[1]+nA[1]*d], b = [V[0]+nB[0]*d, V[1]+nB[1]*d];
+    const z = uA[0]*uB[1] - uA[1]*uB[0];
+    if (z * d < -1e-9) {                                      // gap on the offset side → round join
+      out.push(a);
+      const ang = Math.atan2(nA[0]*nB[1]-nA[1]*nB[0], nA[0]*nB[0]+nA[1]*nB[1]);
+      const m = Math.max(1, Math.ceil(Math.abs(ang) / BG_ARC_STEP));
+      for (let k = 1; k < m; k++) {
+        const t = ang*k/m, c = Math.cos(t), s = Math.sin(t);
+        out.push([V[0]+(nA[0]*c-nA[1]*s)*d, V[1]+(nA[0]*s+nA[1]*c)*d]);
+      }
+      out.push(b);
+    } else if (z * d > 1e-9) {                                // overlap → miter, spike-limited
+      const t = ((b[0]-a[0])*uB[1] - (b[1]-a[1])*uB[0]) / z;
+      const P = [a[0]+uA[0]*t, a[1]+uA[1]*t];
+      if (Math.hypot(P[0]-V[0], P[1]-V[1]) <= BG_MITER*Math.abs(d) + 2) out.push(P);
+      else { out.push(a); out.push(b); }                      // bevel — tiny bowtie is harmless under nonzero fill
+    } else { out.push(a); if (Math.hypot(b[0]-a[0], b[1]-a[1]) > 0.5) out.push(b); }
+  }
+  const thin = rdpClosed(out, 0.8);
+  if (thin.length < 3) return null;
+  const A1 = signedArea(thin);
+  if ((A1 > 0) !== (A0 > 0) || Math.abs(A1) < BG_MIN_AREA) return null;
+  // |area| must move in the dilation direction (outer grows iff d>0, hole shrinks iff d>0);
+  // a ring that inverted in BOTH axes keeps its sign but grows the wrong way — that's a collapse.
+  const grows = (A0 < 0) === (d > 0);
+  if (grows ? Math.abs(A1) < Math.abs(A0) : Math.abs(A1) > Math.abs(A0)) return null;
+  return thin;
+}
+/* Embolden one letter-like object ({contours, curves, advance, lsb, anchors}) IN PLACE.
+   keepHeight refits the result back into the original ink band (bolds gain stem weight without
+   growing taller; baseline seat preserved). LSB/RSB gaps are delta-preserved (advance grows by
+   the ink-width gain — deliberately NOT re-imposing default margins). Anchors ride a
+   proportional bbox remap so they track the heavier ink. Returns {ok, warn, hadCurves};
+   ok:false = every ring collapsed → the letter was left untouched. */
+function boldGenLetter(l, d, keepHeight) {
+  const pre = polysBounds(l.contours.map(c => c.points));
+  const preW = pre.maxX - pre.minX, preH = pre.maxY - pre.minY;
+  let warn = false;
+  const rings = [];
+  l.contours.forEach(c => {
+    const r = boldGenOffsetRing(c.points, d);
+    if (r) rings.push({ winding: c.winding, pts: r }); else warn = true;
+  });
+  if (!rings.length) return { ok: false, warn: true, hadCurves: false };
+  const post = polysBounds(rings.map(r => r.pts));
+  const fy = (keepHeight && post.maxY - post.minY > 0 && preH > 0) ? preH / (post.maxY - post.minY) : 1;
+  const dx = pre.minX - post.minX;
+  const mapY = keepHeight ? (y => pre.minY + (y - post.minY) * fy) : (y => y);
+  const newContours = rings.map(r => ({ winding: r.winding,
+    points: bgDedupe(r.pts.map(([x, y]) => [Math.round(x + dx), Math.round(mapY(y))])) }))
+    .filter(c => c.points.length >= 3 && Math.abs(signedArea(c.points)) >= BG_MIN_AREA);
+  if (!newContours.length) return { ok: false, warn: true, hadCurves: false };
+  l.contours = newContours;
+  warn = warn || newContours.some(c => c.points.length <= 400 && contourSelfIntersects(c.points));
+  const fin = polysBounds(newContours.map(c => c.points));
+  l.advance = Math.round(letterAdvance(l) + ((fin.maxX - fin.minX) - preW));
+  l.lsb = null;                                               // position lives in the contours (as translateLetterX)
+  if (l.anchors && preW > 0 && preH > 0) for (const k in l.anchors) {
+    const a = l.anchors[k]; if (!a) continue;
+    a.x = Math.round(fin.minX + (a.x - pre.minX) * (fin.maxX - fin.minX) / preW);
+    if (!keepHeight) a.y = Math.round(fin.minY + (a.y - pre.minY) * (fin.maxY - fin.minY) / preH);
+  }
+  const hadCurves = !!(l.curves && l.curves.length);
+  l.curves = null;                                            // offset points would desync a parallel Bézier model
+  return { ok: true, warn, hadCurves };
+}
+/* Thicken one mark shape (font-wide custom item OR a per-letter markShapes override) in
+   mark-local units dm. Parametric dots/bars inflate exactly like a dilation; contour shapes
+   take the ring offset. */
+function boldGenMarkShape(m, dm, kind, cp) {
+  if (m.pieces || m.designMode === 'editor') {
+    if (!m.pieces) m.pieces = defaultPieces(kind, cp);
+    m.pieces.forEach(p => {
+      if (p.type === 'dot') p.r = Math.max(8, Math.round(p.r + dm));
+      else {
+        const mx = (p.x0 + p.x1) / 2, my = (p.y0 + p.y1) / 2;
+        const hx = Math.max(4, Math.abs(p.x1 - p.x0) / 2 + dm), hy = Math.max(4, Math.abs(p.y1 - p.y0) / 2 + dm);
+        const sx = p.x0 <= p.x1 ? 1 : -1, sy = p.y0 <= p.y1 ? 1 : -1;
+        p.x0 = Math.round(mx - sx*hx); p.x1 = Math.round(mx + sx*hx);
+        p.y0 = Math.round(my - sy*hy); p.y1 = Math.round(my + sy*hy);
+      }
+    });
+  } else if (m.contours && m.contours.length) {
+    const rings = [];
+    m.contours.forEach(c => { const r = boldGenOffsetRing(c.points, dm); if (r) rings.push({ winding: c.winding,
+      points: bgDedupe(r.map(([x, y]) => [Math.round(x), Math.round(y)])) }); });
+    if (rings.length) { m.contours = rings.filter(c => c.points.length >= 3); m.curves = null; }
+  }
+}
+/* The mark codepoints the "thicken marks" pass touches: standard nikkud (when enabled) + trop
+   (when enabled). User-invented customMarks glyphs are deliberately skipped — rare & editable. */
+function boldGenMarkCps() {
+  const out = [];
+  if (project.font.nikkud.enabled) NIKKUD_MARKS.forEach(m => out.push(['nikkud', m.cp]));
+  if (project.font.trop.enabled) TROP_MARKS.forEach(t => out.push(['trop', t.cp]));
+  return out;
+}
+function bgIsPunct(cp) { const L = LETTERS.find(x => x.cp === cp); return !!(L && L.cat === 'punct'); }
+function bgMarkLocalD(kind, cp, d) {   // marks render scaled — thicken in mark-local units
+  const s = kind === 'trop' ? tropScale() : nikScale(cp);
+  return Math.round(d / Math.max(0.3, s));
+}
+
+/* ── Generate Bold modal ── */
+let bgState = null;   // { v, keepHeight, marks, fromImport, copies:[{name,cp,contours,curves,advance}], raf }
+const BG_PREVIEW_CPS = ['05D0','05D1','05D4','05E9','05DD','05E5'];   // א ב ה ש ם ץ — stems, bars, counters, descender
+function boldGenOpen(fromImport) {
+  const traced = project.letters.filter(l => l.contours && l.contours.length);
+  // The built-in punctuation glyphs ship pre-drawn — the guard and preview key on real letters.
+  const tracedLetters = traced.filter(l => !bgIsPunct(l.codepoint));
+  if (!tracedLetters.length) { status(I18n.t('fontmaker.status.trace_first')); return; }
+  let pick = tracedLetters.filter(l => BG_PREVIEW_CPS.includes(l.codepoint));
+  tracedLetters.forEach(l => { if (pick.length < 5 && !pick.includes(l)) pick.push(l); });
+  pick = pick.slice(0, 5);
+  bgState = { v: 65, keepHeight: true, marks: true, fromImport: !!fromImport,
+    copies: pick.map(l => ({ name: l.name, cp: l.codepoint,
+      contours: JSON.parse(JSON.stringify(l.contours)), advance: letterAdvance(l) })),
+    all: traced.map(l => ({ name: l.name, contours: l.contours, hasCurves: !!(l.curves && l.curves.length) })),
+    raf: 0 };
+  const sl = document.getElementById('bgStrength'); sl.value = 65;
+  document.getElementById('bgKeepHeight').checked = true;
+  document.getElementById('bgMarks').checked = true;
+  aOpenModal('boldGenOverlay', boldGenClose);
+  boldGenRender();
+}
+function boldGenClose() { bgState = null; aCloseModal('boldGenOverlay'); }
+function boldGenSet(v) {
+  if (!bgState) return;
+  bgState.v = Math.max(-50, Math.min(120, Math.round(+v / 5) * 5));
+  if (!bgState.raf) bgState.raf = requestAnimationFrame(() => { if (bgState) { bgState.raf = 0; boldGenRender(); } });
+}
+function boldGenPreset(v) {
+  if (!bgState) return;
+  bgState.v = v; document.getElementById('bgStrength').value = v;
+  boldGenRender();
+}
+function boldGenOptChange() {
+  if (!bgState) return;
+  bgState.keepHeight = document.getElementById('bgKeepHeight').checked;
+  bgState.marks = document.getElementById('bgMarks').checked;
+  boldGenRender();
+}
+function bgRowSVG(letters, svgEl, totalW) {   // one RTL pen-walk row into an existing <svg>
+  const em = effMetrics(), ascender = em.lamedAscender + 100, descender = em.descender - 50;
+  let pen = totalW, body = '';
+  letters.forEach(c => { pen -= c.advance; body += `<path d="${glyphPathAt(c.contours, pen, 0, null)}" fill="currentColor"/>`; });
+  svgEl.setAttribute('viewBox', `-24 ${(-ascender-16).toFixed(0)} ${(totalW+48).toFixed(0)} ${(ascender-descender+32).toFixed(0)}`);
+  svgEl.style.color = _previewInkColor();
+  svgEl.innerHTML = body;
+}
+function boldGenRender() {
+  if (!bgState) return;
+  const S = bgState.v, d = S / 2;
+  const after = bgState.copies.map(c => {
+    const w = { contours: JSON.parse(JSON.stringify(c.contours)), curves: null, advance: c.advance, lsb: null, anchors: null };
+    if (S !== 0) boldGenLetter(w, d, bgState.keepHeight);
+    return { contours: w.contours, advance: letterAdvance(w) };
+  });
+  const wBefore = bgState.copies.reduce((t, c) => t + c.advance, 0);
+  const wAfter = after.reduce((t, c) => t + c.advance, 0);
+  const totalW = Math.max(wBefore, wAfter);                    // one shared scale for both rows
+  bgRowSVG(bgState.copies.map(c => ({ contours: c.contours, advance: c.advance })), document.getElementById('bgBefore'), totalW);
+  bgRowSVG(after, document.getElementById('bgAfter'), totalW);
+  document.getElementById('bgStrengthV').textContent = (S > 0 ? '+' : '') + S;
+  // Warnings scan ALL traced letters (cheap), not just the preview subset.
+  const warns = [];
+  let converted = 0;
+  if (S !== 0) bgState.all.forEach(a => {
+    const w = { contours: JSON.parse(JSON.stringify(a.contours)), curves: null, advance: 500, lsb: null, anchors: null };
+    const r = boldGenLetter(w, d, bgState.keepHeight);
+    if (!r.ok || r.warn) warns.push(a.name);
+    if (a.hasCurves) converted++;
+  });
+  const warnEl = document.getElementById('bgWarn');
+  warnEl.style.display = warns.length ? '' : 'none';
+  if (warns.length) warnEl.textContent = I18n.t('fontmaker.boldgen.warn_detail', { letters: warns.join(', ') });
+  const cvEl = document.getElementById('bgCurvesNote');
+  cvEl.style.display = (S !== 0 && converted) ? '' : 'none';
+  if (converted) cvEl.textContent = I18n.t(converted === 1 ? 'fontmaker.boldgen.curves_note.one' : 'fontmaker.boldgen.curves_note.other', { count: converted });
+  const zero = S === 0, applyBtn = document.getElementById('bgApply');
+  applyBtn.setAttribute('aria-disabled', zero ? 'true' : 'false');
+  applyBtn.classList.toggle('ghost', zero);
+  document.getElementById('bgZeroNote').style.display = zero ? '' : 'none';
+}
+function boldGenApply() {
+  if (!bgState || bgState.v === 0) return;                     // aria-disabled guard — inline note explains
+  const S = bgState.v, d = S / 2, keepHeight = bgState.keepHeight, withMarks = bgState.marks;
+  const letters = project.letters.filter(l => (l.contours && l.contours.length) || (withMarks && l.markShapes && Object.keys(l.markShapes).length));
+  const markCps = withMarks ? boldGenMarkCps() : [];
+  markCps.forEach(([kind, cp]) => customMark(kind, cp));       // create BEFORE the undo snapshot, so undo restores them
+  const scopes = letters.map(l => ({ t: 'item', kind: 'letter', cp: l.codepoint }))
+    .concat(markCps.map(([kind, cp]) => ({ t: 'item', kind, cp })));
+  udDo(scopes, 'generate bold', () => {
+    letters.forEach(l => {
+      if (l.contours && l.contours.length) boldGenLetter(l, d, keepHeight);
+      if (withMarks && l.markShapes) Object.keys(l.markShapes).forEach(cp => {
+        const kind = catOfCp(cp) === 'trop' ? 'trop' : 'nikkud';
+        boldGenMarkShape(l.markShapes[cp], bgMarkLocalD(kind, cp, d), kind, cp);
+      });
+    });
+    markCps.forEach(([kind, cp]) => boldGenMarkShape(project.font[kind].custom[cp], bgMarkLocalD(kind, cp, d), kind, cp));
+    if (markCps.some(m => m[0] === 'nikkud')) project.font.nikkud.mode = 'custom';
+    if (markCps.some(m => m[0] === 'trop')) project.font.trop.mode = 'custom';
+  });
+  if (S > 0) { project.font.style = 'bold'; syncMetaToForm(); }   // meta field — not undo-covered, like all meta edits
+  if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }
+  boldGenClose();
+  renderGrids(); renderStage(); renderControls();
+  if (typeof renderSpacingPreview === 'function') renderSpacingPreview();
+  status(I18n.t('fontmaker.boldgen.applied'));
 }
 
 /* ════════ Spacing panel + live preview ════════ */
