@@ -2818,6 +2818,21 @@ function bindTileA11y(tile) {
   });
 }
 
+/* Segmented pill-groups (mode / sub-mode / color / timer / scheme / listen / …) show the selected
+   option only via the .active class — invisible to screen readers. Expose it as toggle-button
+   aria-pressed, kept in sync via a class MutationObserver so it tracks BOTH click and programmatic
+   .active changes (preset restore, ?wl= deep-link, mode switches). Pills are native <button>s
+   (already keyboard-operable) and the pill-groups are static markup, so observing them once is enough. */
+function initPillAria() {
+  const sync = p => p.setAttribute('aria-pressed', p.classList.contains('active') ? 'true' : 'false');
+  const pills = document.querySelectorAll('.pill-group .pill');
+  pills.forEach(sync);
+  const mo = new MutationObserver(muts => muts.forEach(m => {
+    if (m.target.classList && m.target.classList.contains('pill')) sync(m.target);
+  }));
+  pills.forEach(p => mo.observe(p, { attributes: true, attributeFilter: ['class'] }));
+}
+
 function initLetters() {
   const grid = document.getElementById('letterGrid');
   const display = getDisplayLetters();
@@ -6466,6 +6481,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('#listenChoicePills .pill').forEach(p => p.classList.toggle('active', +p.dataset.lc === listeningChoices));
   initSpeechCapability();
   updateStatsBar();
+  initPillAria();   // toggle-button aria-pressed on all segmented pill-groups (a11y)
 
   // Deep-link from the Dictionary: ?wl=<listId> auto-selects that saved Word List into the Words
   // drill and lands the teacher on setup (no auto-start — a link only sets the live view). The id is
