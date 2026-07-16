@@ -2446,6 +2446,7 @@ home.alltools.import_failed,Import failed: {message},הייבוא נכשל: {mes
 home.alltools.import_success,Import successful! Reload the Dashboard to apply all settings.,הייבוא הצליח! טענו מחדש את לוח המחוונים כדי להחיל את כל ההגדרות.,alert,
 home.alltools.restore_reload,Restored successfully. Reload any open tool pages to apply.,השחזור הצליח. טענו מחדש את דפי הכלים הפתוחים כדי להחיל.,restore success alert,
 home.alltools.modal_title,⚙ Import / Export All Settings,⚙ ייבוא / ייצוא כל ההגדרות,modal header title,leading-emoji
+home.alltools.modal_close_aria,Close,סגור,alltools modal close button aria,aria-label only
 home.alltools.myfonts.download_title,Download,הורדה,button title,aria/title
 home.alltools.myfonts.empty,"No saved fonts yet. Build one in the Hebrew Font Maker, then “Save to My Fonts”.","אין עדיין גופנים שמורים. צרו גופן ביוצר הגופנים העברי, ואז “שמירה לגופנים שלי”.",empty state,
 home.alltools.myfonts.note,"Fonts you built in the <a href=""Hebrew_Font_Maker.html"">Hebrew Font Maker</a> — or any <b>.ttf / .otf / .woff</b> you upload — are saved in this browser. Use one across every tool, download it, or remove it.","גופנים שיצרתם ב<a href=""Hebrew_Font_Maker.html"">יוצר הגופנים העברי</a> — או כל <b>.ttf / .otf / .woff</b> שתעלו — נשמרים בדפדפן זה. השתמשו בגופן בכל הכלים, הורידו אותו, או הסירו אותו.",section note,html

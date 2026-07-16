@@ -2469,6 +2469,7 @@
   "home.alltools.import_err_notexport": "זה לא נראה כמו ייצוא של Hebrew Blender. ודאו שהעתקתם את הבלוק המלא.",
   "home.alltools.import_failed": "הייבוא נכשל: {message}",
   "home.alltools.import_success": "הייבוא הצליח! טענו מחדש את לוח המחוונים כדי להחיל את כל ההגדרות.",
+  "home.alltools.modal_close_aria": "סגור",
   "home.alltools.modal_title": "⚙ ייבוא / ייצוא כל ההגדרות",
   "home.alltools.myfonts.download_title": "הורדה",
   "home.alltools.myfonts.empty": "אין עדיין גופנים שמורים. צרו גופן ביוצר הגופנים העברי, ואז “שמירה לגופנים שלי”.",

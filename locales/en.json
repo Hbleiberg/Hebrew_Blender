@@ -2469,6 +2469,7 @@
   "home.alltools.import_err_notexport": "This doesn't look like a Hebrew Blender export. Make sure you copied the full block.",
   "home.alltools.import_failed": "Import failed: {message}",
   "home.alltools.import_success": "Import successful! Reload the Dashboard to apply all settings.",
+  "home.alltools.modal_close_aria": "Close",
   "home.alltools.modal_title": "⚙ Import / Export All Settings",
   "home.alltools.myfonts.download_title": "Download",
   "home.alltools.myfonts.empty": "No saved fonts yet. Build one in the Hebrew Font Maker, then “Save to My Fonts”.",

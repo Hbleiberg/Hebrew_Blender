@@ -341,7 +341,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <div class="ie-modal" onclick="event.stopPropagation()">
     <div class="ie-modal-hdr">
       <h3 data-i18n="home.alltools.modal_title">⚙ Import / Export All Settings</h3>
-      <button class="ie-modal-close" onclick="closeIEModal()">×</button>
+      <button class="ie-modal-close" onclick="closeIEModal()" aria-label="Close" data-i18n-aria-label="home.alltools.modal_close_aria">×</button>
     </div>
     <div class="ie-modal-body">
       <p class="ie-note" data-i18n-html="home.alltools.note">Back up <b>all</b> presets, saved schedules, settings, and saved fonts from the Generator, Dashboard, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, and Font Maker together. <b>Automatic Input</b> saves and restores a single <b>.ivrit</b> file; <b>Manual Input</b> uses a copy-and-paste text block.</p>
