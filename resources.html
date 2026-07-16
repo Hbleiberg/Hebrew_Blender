@@ -254,9 +254,9 @@ body.dark .view-toggle button.active{background:#2a3f6a;border-color:#4a6aaa;}
 .font-by a{color:var(--gold);text-decoration:none;}
 .font-by a:hover{text-decoration:underline;}
 .font-actions{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin-top:2px;}
-.font-actions a{font-size:0.8rem;font-weight:600;color:var(--navy);cursor:pointer;text-decoration:none;white-space:nowrap;}
-body.dark .font-actions a{color:#aab8d8;}
-.font-actions a:hover{color:var(--gold);text-decoration:underline;}
+.font-actions a,.font-actions button{font-size:0.8rem;font-weight:600;color:var(--navy);cursor:pointer;text-decoration:none;white-space:nowrap;background:none;border:none;padding:0;font-family:inherit;line-height:inherit;}
+body.dark .font-actions a,body.dark .font-actions button{color:#aab8d8;}
+.font-actions a:hover,.font-actions button:hover{color:var(--gold);text-decoration:underline;}
 .font-meta-row{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-size:0.74rem;color:var(--muted);margin-top:2px;}
 .font-badge{font-size:0.62rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:2px 9px;border-radius:10px;background:rgba(26,39,68,0.09);color:var(--navy);white-space:nowrap;}
 body.dark .font-badge{background:rgba(221,228,240,0.1);color:#aab8d8;}
@@ -1035,9 +1035,9 @@ function renderFonts() {
       '<div class="font-preview-line" style="font-family:\'' + esc(f.family) + '\',serif;">' + esc(FONT_SAMPLE) + '</div>' +
       '<div class="font-by">' + by + '</div>' +
       '<div class="font-actions">' +
-        '<a onclick="openFontPreview(' + i + ')">' + esc(I18n.t('resources.fonts.preview_action')) + '</a>' +
-        '<a onclick="downloadFont(' + i + ')">' + esc(I18n.t('resources.fonts.download_action')) + '</a>' +
-        '<a onclick="useFontInIvritSuite(' + i + ')">' + esc(I18n.t('resources.fonts.use_action')) + '</a>' +
+        '<button type="button" onclick="openFontPreview(' + i + ')">' + esc(I18n.t('resources.fonts.preview_action')) + '</button>' +
+        '<button type="button" onclick="downloadFont(' + i + ')">' + esc(I18n.t('resources.fonts.download_action')) + '</button>' +
+        '<button type="button" onclick="useFontInIvritSuite(' + i + ')">' + esc(I18n.t('resources.fonts.use_action')) + '</button>' +
       '</div>' +
       '<div class="font-meta-row"><span>' + esc(I18n.t('resources.fonts.nikkud_label')) + ' ' + yn(f.nikkud) + '</span>' +
         '<span>' + esc(I18n.t('resources.fonts.trop_label')) + ' ' + yn(f.trop) + '</span>' +
