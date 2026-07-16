@@ -12466,6 +12466,8 @@ function restoreFromURL() {
 }
 
 // "📋 Copy shareable link" — sync the address bar, copy the URL, flash the button.
+// Announce a transient message to screen readers via the hidden #a11yStatus live region.
+function announce(msg) { const s = document.getElementById('a11yStatus'); if (s) s.textContent = msg; }
 function copyShareLink(btnId) {
   const url = serializeSettings();
   try { history.replaceState(null, '', url); } catch(e) {}
@@ -12481,6 +12483,7 @@ function copyShareLink(btnId) {
     if (b.dataset.label === undefined) b.dataset.label = b.innerHTML;
     b.innerHTML = (id === 'shareBtnMob') ? '✓' : esc(I18n.t('worksheet.share.copied'));
   });
+  announce(I18n.t('worksheet.share.copied'));
   setTimeout(() => {
     ['shareBtn','shareBtnMob'].forEach(id => {
       const b = document.getElementById(id);
@@ -12527,5 +12530,6 @@ if (document.readyState === 'loading') {
   restoreFromURL();
 }
 </script>
+<span id="a11yStatus" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;"></span>
 </body>
 </html>

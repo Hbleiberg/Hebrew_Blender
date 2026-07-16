@@ -4214,12 +4214,15 @@ function generateShareCode() {
   const out = document.getElementById('shareCodeOutput');
   if (out) out.value = shareCodeEncode(payload);
 }
+// Announce a transient message to screen readers via the hidden #a11yStatus live region.
+function announce(msg) { const s = document.getElementById('a11yStatus'); if (s) s.textContent = msg; }
 function copyShareCode() {
   const out = document.getElementById('shareCodeOutput');
   if (!out || !out.value) { generateShareCode(); }
   const text = out.value;
   if (!text) return;
   const done = () => {
+    announce(I18n.t('flashcards.share.copied'));
     const btn = document.getElementById('copyShareBtn');
     if (!btn) return;
     const orig = btn.textContent;
@@ -6573,5 +6576,6 @@ function applyI18n() {
   }
 }
 </script>
+<span id="a11yStatus" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;"></span>
 </body>
 </html>
