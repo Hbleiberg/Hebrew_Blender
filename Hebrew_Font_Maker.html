@@ -925,8 +925,8 @@
     <input type="file" id="projFile" accept=".hebrewfont,.json,application/json,application/gzip" style="display:none;">
   </div>
   <div class="tb-group">
-    <button class="tbtn ghost" id="undoBtn" onclick="undo()" title="Undo (Ctrl+Z)" data-i18n-title="fontmaker.toolbar.undo_title" aria-label="Undo" disabled>↶</button>
-    <button class="tbtn ghost" id="redoBtn" onclick="redo()" title="Redo (Ctrl+Shift+Z)" data-i18n-title="fontmaker.toolbar.redo_title" aria-label="Redo" disabled>↷</button>
+    <button class="tbtn ghost" id="undoBtn" onclick="undo()" title="Undo (Ctrl+Z)" data-i18n-title="fontmaker.toolbar.undo_title" data-i18n-aria-label="fontmaker.toolbar.undo_aria" aria-label="Undo" disabled>↶</button>
+    <button class="tbtn ghost" id="redoBtn" onclick="redo()" title="Redo (Ctrl+Shift+Z)" data-i18n-title="fontmaker.toolbar.redo_title" data-i18n-aria-label="fontmaker.toolbar.redo_aria" aria-label="Redo" disabled>↷</button>
   </div>
   <div class="tb-group">
     <button class="tbtn ghost" onclick="openQA()" title="Review every letter × mark placement for collisions" data-i18n-title="fontmaker.toolbar.qa_check_title" data-i18n="fontmaker.toolbar.qa_check">🔍 QA Check</button>
@@ -1124,8 +1124,8 @@
             <button class="npnl-mode-btn" data-mode="pen" aria-pressed="false" tabindex="-1" aria-keyshortcuts="P" title="Pen — draw a new contour point by point (P)" data-i18n-title="fontmaker.node_editor.mode_pen_title" onclick="npnlMode('pen')" onkeydown="nodeBarKey(event, this)"><span class="nb-glyph" aria-hidden="true">✒</span> <span class="nb-label" data-i18n="fontmaker.node_editor.mode_pen">Pen</span></button>
           </div>
           <span class="nb-sep" aria-hidden="true"></span>
-          <button class="ctl-btn nb-btn" id="nodeUndoBtn" onclick="undo()" title="Undo (Ctrl+Z)" data-i18n-title="fontmaker.toolbar.undo_title" aria-label="Undo" aria-keyshortcuts="Control+Z" onkeydown="nodeBarKey(event, this)" tabindex="-1" disabled>↶</button>
-          <button class="ctl-btn nb-btn" id="nodeRedoBtn" onclick="redo()" title="Redo (Ctrl+Shift+Z)" data-i18n-title="fontmaker.toolbar.redo_title" aria-label="Redo" aria-keyshortcuts="Control+Shift+Z Control+Y" onkeydown="nodeBarKey(event, this)" tabindex="-1" disabled>↷</button>
+          <button class="ctl-btn nb-btn" id="nodeUndoBtn" onclick="undo()" title="Undo (Ctrl+Z)" data-i18n-title="fontmaker.toolbar.undo_title" data-i18n-aria-label="fontmaker.toolbar.undo_aria" aria-label="Undo" aria-keyshortcuts="Control+Z" onkeydown="nodeBarKey(event, this)" tabindex="-1" disabled>↶</button>
+          <button class="ctl-btn nb-btn" id="nodeRedoBtn" onclick="redo()" title="Redo (Ctrl+Shift+Z)" data-i18n-title="fontmaker.toolbar.redo_title" data-i18n-aria-label="fontmaker.toolbar.redo_aria" aria-label="Redo" aria-keyshortcuts="Control+Shift+Z Control+Y" onkeydown="nodeBarKey(event, this)" tabindex="-1" disabled>↷</button>
           <span class="nb-sep" aria-hidden="true"></span>
           <button class="ctl-btn nb-btn" onclick="setZoom(Math.max(0.01, stageZoom - 0.1))" title="Zoom out" data-i18n-title="fontmaker.node_editor.zoom_out_title" aria-label="Zoom out" data-i18n-aria-label="fontmaker.node_editor.zoom_out_title" onkeydown="nodeBarKey(event, this)" tabindex="-1">−</button>
           <input type="range" id="nodeZoomRange" class="nb-zoom-range" min="1" max="400" step="1" value="100" oninput="setZoom(this.value/100)" title="Zoom the view" data-i18n-title="fontmaker.node_editor.zoom_title" aria-label="Zoom the view" data-i18n-aria-label="fontmaker.node_editor.zoom_title" tabindex="0">
