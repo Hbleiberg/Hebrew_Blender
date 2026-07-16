@@ -4029,7 +4029,7 @@ function initVowels() {
       header.className = 'vowel-group-header';
       header.style.cssText = 'font-size:0.68rem;font-weight:700;letter-spacing:0.04em;margin-bottom:0;opacity:0.75;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;';
       const hdrText = document.createElement('span');
-      hdrText.innerHTML = `${group.sound} Sound – ${group.colorHtml}`;
+      hdrText.innerHTML = window.I18n ? I18n.t('worksheet.vowels.group_header', {sound: group.sound, color: group.colorHtml}) : (group.sound + ' Sound – ' + group.colorHtml);
       const arrow = document.createElement('span');
       arrow.className = 'vg-arrow';
       arrow.textContent = '▾';
@@ -5400,7 +5400,7 @@ function refreshVowelGroupColors() {
     if (hdr) {
       hdr.style.color = border;
       const span = hdr.firstElementChild;
-      if (span) span.innerHTML = `${group.sound} Sound – ${group.colorHtml}`;
+      if (span) span.innerHTML = window.I18n ? I18n.t('worksheet.vowels.group_header', {sound: group.sound, color: group.colorHtml}) : (group.sound + ' Sound – ' + group.colorHtml);
     }
   });
 }
@@ -12516,6 +12516,7 @@ function applyI18n() {
   try { renderPresets(); } catch (e) {}
   try { renderQuickStarts(); } catch (e) {}
   try { updateCombosCount(); } catch (e) {}
+  try { refreshVowelGroupColors(); } catch (e) {}   // re-localize the vowel-group "Sound" headers
   try { updateRwPoolInfo(); } catch (e) {}
   try { updateMatchPoolNote(); } catch (e) {}
   try { initFontSelector(); } catch (e) {}

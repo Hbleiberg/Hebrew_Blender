@@ -2969,7 +2969,7 @@ function initVowels() {
       const head = document.createElement('div');
       head.className = 'vgroup-head';
       head.style.color = borderCol;
-      head.innerHTML = `<span>${g.sound} Sound – ${g.colorHtml}</span>`;
+      head.innerHTML = window.I18n ? `<span>${I18n.t('flashcards.vowelgroup.header', {sound: g.sound, color: g.colorHtml})}</span>` : `<span>${g.sound} Sound – ${g.colorHtml}</span>`;
       head.setAttribute('tabindex', '0');
       head.setAttribute('role', 'button');
       head.setAttribute('aria-expanded', 'true');
@@ -6564,6 +6564,7 @@ function applyI18n() {
   initFontSelector();
   initEngFontSelector();
   initCountGrid();
+  initVowels();               // re-localize the vowel-group "Sound" headers
   renderPresets();
   renderProfiles();
   syncOtherSubUI();
