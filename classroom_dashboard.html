@@ -2707,11 +2707,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       const cp = ch.codePointAt(0);
       const isHebLetter = cp >= 0x05D0 && cp <= 0x05EA;
       const isNikud     = cp >= 0x05B0 && cp <= 0x05C7;
-      if (!isHebLetter && !isNikud) { out.push(ch); i++; continue; }
-      if (isNikud) { out.push(ch); i++; continue; }
+      if (!isHebLetter && !isNikud) { out.push(esc(ch)); i++; continue; }
+      if (isNikud) { out.push(esc(ch)); i++; continue; }
       let marks = '', j = i + 1;
       while (j < chars.length && chars[j].codePointAt(0) >= 0x05B0 && chars[j].codePointAt(0) <= 0x05C7) marks += chars[j++];
-      if (!marks) { out.push(ch); i++; continue; }
+      if (!marks) { out.push(esc(ch)); i++; continue; }
       const isVav = ch === '\u05D5';
       let key = null;
       for (const m of [...marks]) {
@@ -2721,15 +2721,15 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         const k = NIKUD_CHAR_TO_KEY[m];
         if (k) { key = k; break; }
       }
-      if (!key) { out.push(ch + marks); i = j; continue; }
+      if (!key) { out.push(esc(ch + marks)); i = j; continue; }
       const color = getNikudColor(key);
       const syl = ch + marks;
       if (mode === 'highlight') {
-        out.push(`<span style="background-color:${color}50;border-radius:2px;">${syl}</span>`);
+        out.push(`<span style="background-color:${color}50;border-radius:2px;">${esc(syl)}</span>`);
       } else if (mode === 'underline') {
-        out.push(`<span style="text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${syl}</span>`);
+        out.push(`<span style="text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${esc(syl)}</span>`);
       } else {
-        out.push(`<span style="color:${color}">${syl}</span>`);
+        out.push(`<span style="color:${color}">${esc(syl)}</span>`);
       }
       i = j;
     }

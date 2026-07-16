@@ -2808,7 +2808,7 @@ function getNikudColor(key) {
 }
 
 function colorizeHebrew(text) {
-  if (!colorCodingEnabled) return '<span lang="he" dir="rtl">' + text + '</span>';
+  if (!colorCodingEnabled) return '<span lang="he" dir="rtl">' + esc(text) + '</span>';
   const chars = [...text];
   const n = chars.length;
   const out = [];
@@ -2818,15 +2818,15 @@ function colorizeHebrew(text) {
     const cp = ch.codePointAt(0);
     const isHebLetter = cp >= 0x05D0 && cp <= 0x05EA;
     const isNikud = cp >= 0x05B0 && cp <= 0x05C7;
-    if (!isHebLetter && !isNikud) { out.push(ch); i++; continue; }
-    if (isNikud) { out.push(ch); i++; continue; }
+    if (!isHebLetter && !isNikud) { out.push(esc(ch)); i++; continue; }
+    if (isNikud) { out.push(esc(ch)); i++; continue; }
     // Hebrew letter — collect following nikud
     let nikudStr = '';
     let j = i + 1;
     while (j < n && chars[j].codePointAt(0) >= 0x05B0 && chars[j].codePointAt(0) <= 0x05C7) {
       nikudStr += chars[j++];
     }
-    if (!nikudStr) { out.push(ch); i++; continue; }
+    if (!nikudStr) { out.push(esc(ch)); i++; continue; }
     const isVav = ch === 'ו';
     let primaryKey = null;
     for (const nc of [...nikudStr]) {
@@ -2835,15 +2835,15 @@ function colorizeHebrew(text) {
       const k = NIKUD_CHAR_TO_KEY[nc];
       if (k) { primaryKey = k; break; }
     }
-    if (!primaryKey) { out.push(ch + nikudStr); i = j; continue; }
+    if (!primaryKey) { out.push(esc(ch + nikudStr)); i = j; continue; }
     const color = getNikudColor(primaryKey);
     const syllable = ch + nikudStr;
     if (colorCodingMode === 'highlight') {
-      out.push(`<span style="background-color:${color}50;border-radius:2px;">${syllable}</span>`);
+      out.push(`<span style="background-color:${color}50;border-radius:2px;">${esc(syllable)}</span>`);
     } else if (colorCodingMode === 'underline') {
-      out.push(`<span style="text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${syllable}</span>`);
+      out.push(`<span style="text-decoration:underline solid ${color};text-decoration-thickness:2px;text-underline-offset:0.4em;">${esc(syllable)}</span>`);
     } else {
-      out.push(`<span style="color:${color}">${syllable}</span>`);
+      out.push(`<span style="color:${color}">${esc(syllable)}</span>`);
     }
     i = j;
   }
