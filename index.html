@@ -258,7 +258,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   </div>
 </header>
 
-<div class="hero">
+<div class="hero" role="main">
   <h2 class="hero-sub" style="font-family:'Libre Baskerville',serif;font-size:1.05rem;font-weight:400;color:var(--muted);margin:0 0 18px;" data-i18n="home.hero.subtitle">Free Hebrew Learning Tools for Teachers and Students</h2>
 
   <div class="cards">
@@ -354,8 +354,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         .ivrit-drop.ivrit-drag{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
       </style>
       <div class="ivrit-mode-toggle">
-        <button type="button" id="ivritModeAuto" class="ivrit-mode-btn active" onclick="setIvritMode('auto')" data-i18n="shared.ivrit.mode_auto">Automatic Input</button>
-        <button type="button" id="ivritModeManual" class="ivrit-mode-btn" onclick="setIvritMode('manual')" data-i18n="shared.ivrit.mode_manual">Manual Input</button>
+        <button type="button" id="ivritModeAuto" class="ivrit-mode-btn active" aria-pressed="true" onclick="setIvritMode('auto')" data-i18n="shared.ivrit.mode_auto">Automatic Input</button>
+        <button type="button" id="ivritModeManual" class="ivrit-mode-btn" aria-pressed="false" onclick="setIvritMode('manual')" data-i18n="shared.ivrit.mode_manual">Manual Input</button>
       </div>
       <div id="ivritAuto">
         <button class="ie-action-btn primary" type="button" onclick="ivritSaveFile()" style="width:100%;margin-bottom:10px;" data-i18n="home.alltools.save_button">⬇ Save All Settings to .ivrit file</button>
@@ -1111,8 +1111,8 @@ function ivritStatus(msg) { const el = document.getElementById('ivritStatus'); i
 function setIvritMode(mode) {
   const a = document.getElementById('ivritAuto'), mn = document.getElementById('ivritManual');
   const ba = document.getElementById('ivritModeAuto'), bm = document.getElementById('ivritModeManual');
-  if (ba) ba.classList.toggle('active', mode === 'auto');
-  if (bm) bm.classList.toggle('active', mode === 'manual');
+  if (ba) { ba.classList.toggle('active', mode === 'auto'); ba.setAttribute('aria-pressed', mode === 'auto' ? 'true' : 'false'); }
+  if (bm) { bm.classList.toggle('active', mode === 'manual'); bm.setAttribute('aria-pressed', mode === 'manual' ? 'true' : 'false'); }
   if (a)  a.style.display  = mode === 'auto'   ? '' : 'none';
   if (mn) mn.style.display = mode === 'manual' ? '' : 'none';
   try { localStorage.setItem('hebrewBlender_inputMode', mode); } catch (e) {}
