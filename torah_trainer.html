@@ -1014,7 +1014,17 @@ body.fullscreen #fsExitBtn { display: flex; }
    (e.g. the .tt-grid column collapse) beat the screen rules by source order (generator S30
    convention). !important rules don't care, but the layout overrides do. */
 @media print {
-  .tt-jumpnav, .tt-resume-chip, .tt-audio-bar, .tt-verse-buttons, .tt-trope-legend { display:none !important; }
+  .tt-jumpnav, .tt-resume-chip, .tt-audio-bar, .tt-verse-buttons { display:none !important; }
+  /* Printed trope legend (S90): the reading prints its clause colors as underlines, so the
+     color->family key belongs on paper too. Flatten the on-screen card, force the swatch
+     backgrounds to print (print-color-adjust), and drop the interactive tutor link. The
+     legend stays [hidden] (→ display:none) unless trope coloring is on + a reading is loaded,
+     so it never prints spuriously; swatches read --trope-*-bg, re-resolved to the light
+     palette by the S89 beforeprint handler. */
+  .tt-trope-legend { box-shadow:none; border:1px solid #999; background:#fff; color:#1a2744;
+    font-size:0.68rem; padding:4px 8px; margin:0 0 8px; break-inside:avoid; page-break-inside:avoid; }
+  .tt-trope-swatch { -webkit-print-color-adjust:exact; print-color-adjust:exact; border-color:#888; }
+  .tt-trope-link { display:none !important; }
   .tt-aliyah-divider { color:#555; }
   /* The flanking rule-lines are 1px background fills, stripped by the print dialog's
      default "background graphics: off" — a border always prints. */
