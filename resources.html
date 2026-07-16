@@ -1033,7 +1033,7 @@ function renderFonts() {
     return '<div class="resource-card font-card">' +
       '<div class="card-top"><div class="card-title">' + esc(f.name) + '</div>' +
       '<span class="card-cat-badge">' + esc(FTYPE_LABEL[f.type] ? I18n.t('resources.fonts.type_' + f.type) : f.type) + '</span></div>' +
-      '<div class="font-preview-line" style="font-family:\'' + esc(f.family) + '\',serif;">' + esc(FONT_SAMPLE) + '</div>' +
+      '<div class="font-preview-line" lang="he" style="font-family:\'' + esc(f.family) + '\',serif;">' + esc(FONT_SAMPLE) + '</div>' +
       '<div class="font-by">' + by + '</div>' +
       '<div class="font-actions">' +
         '<button type="button" onclick="openFontPreview(' + i + ')">' + esc(I18n.t('resources.fonts.preview_action')) + '</button>' +
@@ -1241,9 +1241,9 @@ function openSubmitFont(pf) {
 
 <!-- Suggest a Resource modal -->
 <div class="sg-backdrop" id="sgBackdrop" onclick="closeSuggestModal(event)">
-  <div class="sg-modal" onclick="event.stopPropagation()">
+  <div class="sg-modal" role="dialog" aria-modal="true" aria-labelledby="sgTitle" onclick="event.stopPropagation()">
     <div class="sg-modal-hdr">
-      <h3 data-i18n="resources.suggest.title">✚ Suggest a Resource</h3>
+      <h3 id="sgTitle" data-i18n="resources.suggest.title">✚ Suggest a Resource</h3>
       <button class="sg-modal-close" onclick="closeSuggestModal()" aria-label="Close" data-i18n-aria-label="resources.modal.close_aria">×</button>
     </div>
     <div class="sg-modal-body">
@@ -1323,16 +1323,16 @@ function openSubmitFont(pf) {
 
 <!-- Font preview modal -->
 <div class="sg-backdrop" id="fontPreviewBackdrop" onclick="closeFontPreview(event)">
-  <div class="sg-modal" onclick="event.stopPropagation()">
+  <div class="sg-modal" role="dialog" aria-modal="true" aria-labelledby="fontPreviewTitle" onclick="event.stopPropagation()">
     <div class="sg-modal-hdr">
       <h3 id="fontPreviewTitle" data-i18n="resources.preview.title">Preview</h3>
       <button class="sg-modal-close" onclick="closeFontPreview()" aria-label="Close" data-i18n-aria-label="resources.modal.close_aria">×</button>
     </div>
     <div class="sg-modal-body">
       <label for="fontPreviewInput" class="sg-hint" style="display:block;margin-bottom:6px;" data-i18n="resources.preview.input_label">Type Hebrew (or anything) to preview in this font:</label>
-      <input type="text" id="fontPreviewInput" dir="rtl" oninput="updateFontPreview()" value="שָׁלוֹם עוֹלָם">
-      <div class="fp-render" id="fontPreviewRender"></div>
-      <div class="fp-sizes" id="fontPreviewSizes"></div>
+      <input type="text" id="fontPreviewInput" dir="rtl" lang="he" oninput="updateFontPreview()" value="שָׁלוֹם עוֹלָם">
+      <div class="fp-render" id="fontPreviewRender" lang="he"></div>
+      <div class="fp-sizes" id="fontPreviewSizes" lang="he"></div>
       <button class="sg-btn-primary" style="margin-top:16px;" onclick="closeFontPreview()" data-i18n="resources.preview.back_button">‹ Back</button>
     </div>
   </div>
