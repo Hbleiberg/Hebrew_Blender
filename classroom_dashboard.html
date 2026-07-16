@@ -2475,6 +2475,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   let _savedEditorRange = null;
   let weatherCache = null;
   let weatherTimer = null;
+  let _weatherStatus = null;   // 'loading'|'not_found'|'unavailable' before any cached data — re-translatable so applyI18n/renderWeather heals a status message rendered before I18n was ready (no raw key left on a fresh/offline load)
   let clockInterval = null;
   let _wakeLock = null;
   let _activeEditable = null;
@@ -3098,12 +3099,26 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   }
 
   /* ────────── WEATHER (Open-Meteo, no API key) ────────── */
+  // Render the pre-cache status message (loading / not_found / unavailable) via I18n.t at call time.
+  // Called from fetchWeather AND from renderWeather (hence applyI18n), so a message painted before
+  // I18n loaded is re-translated once it is ready — never a raw key left on screen.
+  function renderWeatherStatus() {
+    if (!_weatherStatus) return false;
+    const block = document.getElementById('weatherBlock');
+    if (!block) return true;
+    if (settings.hideWeather) { block.innerHTML = ''; return true; }
+    const msg = _weatherStatus === 'not_found'
+      ? I18n.t('dashboard.weather.not_found', { location: esc(settings.location) })
+      : esc(I18n.t(_weatherStatus === 'loading' ? 'dashboard.weather.loading' : 'dashboard.weather.unavailable'));
+    block.innerHTML = '<div class="weather-loading">' + msg + '</div>';
+    return true;
+  }
+
   async function fetchWeather() {
     const weatherCol = document.getElementById('weatherCol');
     if (weatherCol) weatherCol.style.display = settings.hideWeather ? 'none' : '';
     if (settings.hideWeather) return;
-    const block = document.getElementById('weatherBlock');
-    block.innerHTML = '<div class="weather-loading">' + esc(I18n.t('dashboard.weather.loading')) + '</div>';
+    _weatherStatus = 'loading'; renderWeatherStatus();
     try {
       let place;
       if (settings._geoCoords) {
@@ -3114,7 +3129,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         );
         const geo = await geoRes.json();
         if (!geo.results || !geo.results.length) {
-          block.innerHTML = '<div class="weather-loading">' + I18n.t('dashboard.weather.not_found', { location: esc(settings.location) }) + '</div>';
+          _weatherStatus = 'not_found'; renderWeatherStatus();
           return;
         }
         place = geo.results[0];
@@ -3127,10 +3142,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       // Open-Meteo returns an error JSON with a non-200 status; validate before
       // caching so a bad response can't poison weatherCache and later throw in renderWeather.
       if (!wData || !wData.current) throw new Error('weather: no current data');
-      weatherCache = { data: wData, place };
+      _weatherStatus = null; weatherCache = { data: wData, place };
       renderWeather();
     } catch (e) {
-      block.innerHTML = '<div class="weather-loading">' + esc(I18n.t('dashboard.weather.unavailable')) + '</div>';
+      _weatherStatus = 'unavailable'; renderWeatherStatus();
     }
   }
 
@@ -3176,7 +3191,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function renderWeather() {
     const block = document.getElementById('weatherBlock');
     if (settings.hideWeather) { block.innerHTML = ''; return; }
-    if (!weatherCache || !weatherCache.data || !weatherCache.data.current) return;
+    if (!weatherCache || !weatherCache.data || !weatherCache.data.current) { renderWeatherStatus(); return; }
 
     const { data, place } = weatherCache;
     const tempC = data.current.temperature_2m;
