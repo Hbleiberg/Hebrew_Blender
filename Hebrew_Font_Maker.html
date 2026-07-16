@@ -2057,6 +2057,11 @@ function udDo(scopes, label, fn) { const p = udCapture(scopes, label); fn(); udP
 let _burst = null;
 function udBurstBegin(scopes, label) { if (!_burst && project) _burst = udCapture(scopes, label); }
 function udBurstCommit() { if (_burst) { flushTrace(); const p = _burst; _burst = null; udPush(p); } }
+function udBurstCancel() {   // drop an open burst and restore its `before` state — for live previews released at neutral
+  if (!_burst) return;       // (udPush's no-op compare can't catch these: a live writeThrough sets handEdited + re-flattens points)
+  const p = _burst; _burst = null;
+  p.slices.forEach(sl => udRestore(sl.scope, sl.before));
+}
 /* debounced arrow-key nudge burst — collapses a flurry of taps into one entry (triggers wired in commit 2) */
 let _udNudge = null, _udNudgeTimer = 0;
 function udNudgeTick(scopes, label) {
@@ -2704,7 +2709,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v4.29</strong> — <strong>Fewer points, real curves.</strong> Importing a TTF/OTF font now keeps the font's actual curves instead of flattening them into hundreds of tiny straight segments — <span class="ui">Edit points</span> shows roughly the points the original designer drew, and exports keep genuinely smooth curves. And when an outline has too many points (a font or SVG imported by an older version, or a heavy trace), the new <span class="ui">Reduce points</span> panel in <span class="ui">Edit points</span> cleans it up: drag the strength slider for a live preview with a running point count, release to keep it, and one Undo brings everything back. Plus a fix: importing a font's nikkud and trop mark shapes no longer stops the import with an error. <span style="color:var(--muted);">(July 2026)</span></li>
+      <li><strong>v4.29</strong> — <strong>Fewer points, real curves.</strong> Importing a TTF/OTF font now keeps the font's actual curves instead of flattening them into hundreds of tiny straight segments — <span class="ui">Edit points</span> shows roughly the points the original designer drew, and exports keep genuinely smooth curves. And when an outline has too many points (a font or SVG imported by an older version, or a heavy trace), the new <span class="ui">Reduce points</span> panel in <span class="ui">Edit points</span> cleans it up: drag the strength slider for a live preview with a running point count, release to keep it, and one Undo brings everything back. Plus a fix: importing a font's nikkud and trop mark shapes no longer stops the import with an error. And the <span class="ui">Transform</span> panel in <span class="ui">Edit points</span> gains live rotate and scale sliders: drag for a live preview around the selection's center, release to keep it — one Undo reverts, and the exact angle/percent fields are still there for precise entry. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.28</strong> — <strong>Generate Bold, automatically.</strong> The new <span class="ui">Generate Bold…</span> button in <span class="ui">Font Details</span> (also offered when you import a font) thickens every traced letter's strokes to build a real Bold weight — with a live before/after preview, an adjustable strength slider (it can lighten too), an option to keep letter heights, and matching thickening for nikkud and trop. One click sets the <span class="ui">Style</span> to Bold so the export links with your Regular, and one Undo reverts everything. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.27</strong> — <strong>Make a proper Bold.</strong> A new <span class="ui">Style</span> dropdown in <span class="ui">Font Details</span> (Regular / Bold) exports your font as the Bold member of its family: build or import a heavier version of your font, set the Style to <span class="ui">Bold</span>, and export — install the Regular and Bold files together and programs like Word switch between them with the <strong>B</strong> button. Use the exact same Family name in both projects so they link up. Importing a TTF that's already marked bold sets the Style for you. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.26</strong> — <strong>A zoom slider for point editing, copy-outline within reach, and smoother corner rounding.</strong> Three conveniences for fine outline work. The <span class="ui">Edit points</span> view now has a <strong>drag zoom slider</strong>, so you can glide from 100% to 200% for detail work instead of clicking the <span class="ui">+</span> button ten times. <strong>Copy outline</strong> (reuse another letter's shape, like <span class="ui">Kaf → Kaf sofit</span>) and <strong>Clear outline</strong> now sit on the <span class="ui">Align</span> step — and Clear is in the <span class="ui">Contours</span> list too — so you no longer have to switch to the <span class="ui">Trace</span> tab to reach them. And rounding corners and nudging their handles is steadier: a handle pulled onto its own point no longer flips or spikes the curve, and <span class="ui">Round corners</span> blends into traced (curved) outlines without a kink. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -6864,6 +6869,7 @@ let _reduceOpen = wsReadPrefs().nodeReduceOpen === true;       // Reduce-points 
 let _reduceEps = 8;              // last-used reduce tolerance in font units (session)
 let _reduceBase = null;          // deep-clone snapshot of nodeModel during a live reduce-slider burst
 let _reduceLast = null;          // last reducePointsOp result during a burst (for the commit toast)
+let _xformBase = null;           // { kind:'rot'|'scale', keys, model, sel, val } — snapshot during a live transform-slider burst
 const NODE_TINTS = ['#e05252', '#2a8f5b', '#2a6dd9', '#c9922a', '#9245c9', '#0f9bb0', '#c94590', '#6b7c2a'];   // editing aid only — never exported or persisted
 function nodeKey(ci, ni) { return ci + ':' + ni; }
 function nodeIsSmooth(nd) {
@@ -7962,37 +7968,92 @@ function pasteNodes() {
 /* ── Transform selection: flip / rotate around the affected nodes' bbox center. Empty selection =
       whole glyph. Flips reverse contour orientation, so renest always runs (physical reversal). ── */
 let _nodeXformOpen = wsReadPrefs().nodeXformOpen === true;   // Transform disclosure open-state (the panel re-renders on every selection change); persisted as a view pref
-function transformSelectedNodes(kind, angleDeg) {
-  if (!nodeModel) return;
-  const l = curLetter();
-  const keys = nodeSel.size ? [...nodeSel] : _flatNodeKeys();
+function xformMatrix(kind, arg) {                            // → {a,b,c,d,label} or null on no-op / unknown kind
+  if (kind === 'fliph') return { a:-1, b:0, c:0, d:1, label:'flip horizontal — ' };
+  if (kind === 'flipv') return { a:1, b:0, c:0, d:-1, label:'flip vertical — ' };
+  if (kind === 'rot') {
+    const t = (+arg || 0) * Math.PI / 180;                   // CCW-positive (font units are y-up)
+    if (!t) return null;
+    return { a:Math.cos(t), b:-Math.sin(t), c:Math.sin(t), d:Math.cos(t), label:'rotate — ' };
+  }
+  if (kind === 'scale') {
+    const s = Math.max(0.02, (+arg || 0) / 100);             // percent; clamped positive — flips belong to Flip H/V
+    if (s === 1) return null;
+    return { a:s, b:0, c:0, d:s, label:'scale — ' };
+  }
+  return null;
+}
+function applyXformToKeys(keys, m) {                         // affine about the keys' anchor-bbox center; → count of nodes mapped
   const nds = [];
   keys.forEach(k => { const [ci, ni] = k.split(':').map(Number); const nd = nodeModel.contours[ci]?.nodes[ni]; if (nd) nds.push(nd); });
-  if (!nds.length) return;
+  if (!nds.length) return 0;
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   nds.forEach(nd => { x0 = Math.min(x0, nd.x); x1 = Math.max(x1, nd.x); y0 = Math.min(y0, nd.y); y1 = Math.max(y1, nd.y); });
   const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
-  let a = 1, b = 0, c = 0, d = 1, label = 'transform — ';
-  if (kind === 'fliph') { a = -1; label = 'flip horizontal — '; }
-  else if (kind === 'flipv') { d = -1; label = 'flip vertical — '; }
-  else if (kind === 'rot') {
-    const t = (+angleDeg || 0) * Math.PI / 180;              // CCW-positive (font units are y-up)
-    if (!t) return;
-    a = Math.cos(t); b = -Math.sin(t); c = Math.sin(t); d = Math.cos(t);
-    label = 'rotate — ';
-  } else if (kind === 'scale') {
-    const s = Math.max(0.02, (+angleDeg || 0) / 100);        // percent; clamped positive — flips belong to Flip H/V
-    if (s === 1) return;
-    a = d = s; label = 'scale — ';
-  } else return;
-  const ap = p => p ? [cx + a * (p[0] - cx) + b * (p[1] - cy), cy + c * (p[0] - cx) + d * (p[1] - cy)] : null;
-  udDo([itemScope()], label + l.name, () => {
-    nds.forEach(nd => {
-      const p = ap([nd.x, nd.y]); nd.x = p[0]; nd.y = p[1];  // linear maps preserve handle collinearity → smooth stays smooth
-      nd.in = ap(nd.in); nd.out = ap(nd.out);
-    });
-    renestNodeModel(); writeThroughRebuild(l);
+  const ap = p => p ? [cx + m.a * (p[0] - cx) + m.b * (p[1] - cy), cy + m.c * (p[0] - cx) + m.d * (p[1] - cy)] : null;
+  nds.forEach(nd => {
+    const p = ap([nd.x, nd.y]); nd.x = p[0]; nd.y = p[1];    // linear maps preserve handle collinearity → smooth stays smooth
+    nd.in = ap(nd.in); nd.out = ap(nd.out);
   });
+  return nds.length;
+}
+function transformSelectedNodes(kind, angleDeg) {            // button / number-field Apply path — one udDo per click
+  if (!nodeModel) return;
+  const l = curLetter();
+  const m = xformMatrix(kind, angleDeg);
+  if (!m) return;
+  const keys = nodeSel.size ? [...nodeSel] : _flatNodeKeys();
+  if (!keys.length) return;
+  udDo([itemScope()], m.label + l.name, () => {
+    if (!applyXformToKeys(keys, m)) return;                  // stale keys resolved to nothing — udPush drops the no-op slice
+    renestNodeModel(); writeThroughRebuild(l);               // flips reverse winding; a transformed subset can change nesting
+  });
+  renderGrids(); renderStage(); renderControls();
+}
+/* Live transform sliders — the fillet/reduce burst idiom, but for a RELATIVE op: the slider value
+   is the total rotation/scale since drag start (reset-from-base each tick), and it snaps back to
+   neutral (0° / 100%) after every commit because the transform is baked into the outline. A drag
+   released AT neutral must leave zero undo entries — udBurstCancel restores the exact before-state
+   (a live writeThrough already set handEdited + re-flattened points, which udPush wouldn't drop). */
+const _XFORM_CLAMP = { rot:   v => Math.max(-180, Math.min(180, +v || 0)),
+                       scale: v => Math.max(25, Math.min(400, +v || 100)) };
+function xformLive(kind, v) {
+  if (!nodeModel || _penMode) return;
+  if (_xformBase && _xformBase.kind !== kind) return;        // the other transform slider owns the burst (multitouch) — ignore
+  const l = curLetter();
+  if (!_xformBase) {
+    const keys = nodeSel.size ? [...nodeSel] : _flatNodeKeys();
+    if (!keys.length) return;                                // blank glyph — nothing to transform
+    udBurstBegin([itemScope()], (kind === 'rot' ? 'rotate — ' : 'scale — ') + l.name);
+    _xformBase = { kind, keys, model: JSON.parse(JSON.stringify(nodeModel)), sel: new Set(nodeSel), val: kind === 'rot' ? 0 : 100 };
+  }
+  const val = _XFORM_CLAMP[kind](v);
+  _xformBase.val = val;
+  nodeModel = JSON.parse(JSON.stringify(_xformBase.model));  // reset to the pre-drag snapshot, re-apply at the new value
+  nodeSel = new Set(_xformBase.sel);
+  const m = xformMatrix(kind, val);                          // null at neutral (0° / 100%) → identity preview
+  if (m) applyXformToKeys(_xformBase.keys, m);               // same keys every tick ⇒ same bbox pivot every tick
+  writeThrough(l);                                           // plain write-through — indices/orientation untouched mid-drag
+  renderStage();
+  const ro = document.getElementById(kind === 'rot' ? 'nodeRotV' : 'nodeScaleV');
+  if (ro) ro.textContent = kind === 'rot' ? val + '°' : val + '%';
+}
+function xformCommit(kind) {
+  if (!_xformBase || _xformBase.kind !== kind) return;
+  const l = curLetter(), val = _xformBase.val;
+  if (kind === 'rot' ? val === 0 : val === 100) {            // released at neutral — leave ZERO undo entries
+    udBurstCancel();                                         // exact restore of l (curves, points, handEdited)
+    nodeModel = JSON.parse(JSON.stringify(_xformBase.model));
+    nodeSel = new Set(_xformBase.sel);
+    _xformBase = null;
+    renderStage(); renderControls();                         // panel re-render snaps the slider back to neutral
+    return;
+  }
+  renestNodeModel(); writeThroughRebuild(l);                 // BEFORE udBurstCommit — its `after` snapshot must be the settled,
+  udBurstCommit();                                           // renested state (same order as the bbox drag-scale pointerup)
+  _xformBase = null;
+  status(I18n.t(kind === 'rot' ? 'fontmaker.status.nodes_rotated' : 'fontmaker.status.nodes_scaled',
+                kind === 'rot' ? { deg: val } : { pct: val }));
   renderGrids(); renderStage(); renderControls();
 }
 function nodeEditPanelHTML(l) {
@@ -8061,11 +8122,19 @@ function nodeEditPanelHTML(l) {
       <button class="ctl-btn" onclick="transformSelectedNodes('rot', 90)" title="${esc(I18n.t('fontmaker.node_editor.rot_ccw_title'))}">${I18n.t('fontmaker.node_editor.rot_ccw')}</button>
     </div>
     <div class="ctl-row" style="gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap;">
-      <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;">${I18n.t('fontmaker.node_editor.angle_label')}
-        <input type="number" id="nodeRotAngle" value="0" step="1" style="width:64px;" aria-label="${esc(I18n.t('fontmaker.node_editor.angle_aria'))}"></label>
+      <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">${I18n.t('fontmaker.node_editor.angle_label')} <span id="nodeRotV" class="readout">0°</span>
+        <input type="range" min="-180" max="180" step="1" value="0" style="flex:1;min-width:70px;"
+               aria-label="${esc(I18n.t('fontmaker.node_editor.rot_slider_aria'))}"
+               oninput="xformLive('rot', this.value)" onchange="xformCommit('rot')"></label>
+      <input type="number" id="nodeRotAngle" value="0" step="1" style="width:56px;" aria-label="${esc(I18n.t('fontmaker.node_editor.angle_aria'))}">
       <button class="ctl-btn" onclick="transformSelectedNodes('rot', +(document.getElementById('nodeRotAngle')||{}).value || 0)" title="${esc(I18n.t('fontmaker.node_editor.rot_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
-      <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;">${I18n.t('fontmaker.node_editor.scale_label')}
-        <input type="number" id="nodeScalePct" value="100" step="1" min="2" style="width:64px;" aria-label="${esc(I18n.t('fontmaker.node_editor.scale_aria'))}"></label>
+    </div>
+    <div class="ctl-row" style="gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap;">
+      <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">${I18n.t('fontmaker.node_editor.scale_label')} <span id="nodeScaleV" class="readout">100%</span>
+        <input type="range" min="25" max="400" step="1" value="100" style="flex:1;min-width:70px;"
+               aria-label="${esc(I18n.t('fontmaker.node_editor.scale_slider_aria'))}"
+               oninput="xformLive('scale', this.value)" onchange="xformCommit('scale')"></label>
+      <input type="number" id="nodeScalePct" value="100" step="1" min="2" style="width:56px;" aria-label="${esc(I18n.t('fontmaker.node_editor.scale_aria'))}">
       <button class="ctl-btn" onclick="transformSelectedNodes('scale', +(document.getElementById('nodeScalePct')||{}).value || 100)" title="${esc(I18n.t('fontmaker.node_editor.scale_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
     </div>
   </details>
