@@ -80,7 +80,7 @@ An interactive tutor for the Torah cantillation marks (trope / te'amim) — the 
 - Hebrew font picker (incl. My Fonts), dark mode, guided tour, playback-speed control
 
 ### Hebrew Font Maker (`Hebrew_Font_Maker.html`) — Beta
-Turn your own handwritten Hebrew letters into a real, installable font — entirely in the browser. (Currently v4.26.)
+Turn your own handwritten Hebrew letters into a real, installable font — entirely in the browser. (Currently v4.29.)
 
 - **Trace from images** — upload one letter per image, one sheet of all letters (marquee-crop each), or import an existing TTF/OTF; sub-pixel marching-squares tracing with cubic-Bézier fitting and a point editor
 - **Nikkud & trop anchors** — place vowel and cantillation marks per letter; exports real GPOS mark-to-base (nikkud) and mark-to-mark (trop) positioning, plus pair kerning
