@@ -4864,7 +4864,7 @@ function importPresets() {
 /* Sidecar overlay: the preset/schedule/profile store stays a flat {name:...} object and is the
    source of truth for which items EXIST. This tree only organizes them (references items by name).
    Stored as JSON under a per-list key. mountFolderTree(cfg) renders + wires DnD and a Move menu. */
-function ftRead(key){ try { const o = JSON.parse(localStorage.getItem(key) || 'null'); if (o && Array.isArray(o.root)) return o; } catch(e){} return { v:1, root:[] }; }
+function ftRead(key){ try { const o = ivritSafeParse(localStorage.getItem(key) || 'null'); if (o && Array.isArray(o.root)) return o; } catch(e){} return { v:1, root:[] }; }
 function ftWrite(key, tree){ try { localStorage.setItem(key, JSON.stringify(tree)); } catch(e){} }
 function ftGenId(){ return 'f_' + Math.random().toString(36).slice(2,9); }
 function syncTree(tree, names){
