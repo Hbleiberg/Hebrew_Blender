@@ -1590,7 +1590,7 @@ function renderLearn() {
 
   const isLast = TROPE_FAMILY_DEFS[TROPE_FAMILY_DEFS.length - 1].key === fam.key;
   const nextBtn = document.getElementById('tuNextFamily');
-  nextBtn.textContent = isLast ? 'Ready? Try a drill →' : 'Next family →';
+  nextBtn.textContent = isLast ? I18n.t('trope.learn.ready_drill') : I18n.t('trope.learn.next_family');
 }
 
 function playLearnExample(t, ex, btn) {
