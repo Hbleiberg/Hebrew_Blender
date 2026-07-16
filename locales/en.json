@@ -737,7 +737,7 @@
   "dictionary.tour.cards_title": "Word cards",
   "dictionary.tour.chips_body": "Everything you have turned on shows here as chips — tap ✕ to remove one, or reset them all.",
   "dictionary.tour.chips_title": "Active filters",
-  "dictionary.tour.export_body": "Select a batch of words and export straight to Anki or Quizlet — or into the Worksheet Generator.",
+  "dictionary.tour.export_body": "Select a batch of words and export them to Anki or Quizlet, or save them as a Word List to reuse in your other tools.",
   "dictionary.tour.export_title": "Bulk Copy & Export",
   "dictionary.tour.filters_body": "Narrow by length, part of speech, era, vowels — even specific letters in specific positions.",
   "dictionary.tour.filters_title": "Filters",

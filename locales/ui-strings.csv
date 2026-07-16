@@ -737,7 +737,7 @@ dictionary.tour.cards_body,"Tap any word for full details, pronunciation, copy o
 dictionary.tour.cards_title,Word cards,כרטיסי מילים,tour step title,
 dictionary.tour.chips_body,"Everything you have turned on shows here as chips — tap ✕ to remove one, or reset them all.","כל מה שהפעלתם מוצג כאן כתגיות — הקישו על ✕ להסרת אחת, או אפסו את כולן.",tour step body,
 dictionary.tour.chips_title,Active filters,מסננים פעילים,tour step title,
-dictionary.tour.export_body,Select a batch of words and export straight to Anki or Quizlet — or into the Worksheet Generator.,בחרו אצווה של מילים וייצאו ישירות ל-Anki או ל-Quizlet — או אל מחולל דפי העבודה.,tour step body,
+dictionary.tour.export_body,"Select a batch of words and export them to Anki or Quizlet, or save them as a Word List to reuse in your other tools.","בחרו אצווה של מילים וייצאו אותן ל-Anki או ל-Quizlet, או שמרו אותן כרשימת מילים לשימוש חוזר בכלים אחרים.",tour step body,
 dictionary.tour.export_title,Bulk Copy & Export,העתקה מרובה וייצוא,tour step title,
 dictionary.tour.filters_body,"Narrow by length, part of speech, era, vowels — even specific letters in specific positions.","צמצמו לפי אורך, חלק דיבר, תקופה, תנועות — ואפילו אותיות מסוימות במיקומים מסוימים.",tour step body,
 dictionary.tour.filters_title,Filters,מסננים,tour step title,
