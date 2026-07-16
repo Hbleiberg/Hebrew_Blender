@@ -1048,9 +1048,7 @@ flashcards.teachertools.new_profile_button_title,Create a new profile,צור פ�
 flashcards.teachertools.panel_title,Teacher Tools,כלי מורה,panel title,
 flashcards.teachertools.practice_weaknesses,🎯 Practice My Weaknesses,🎯 תרגלו את החולשות שלי,teacher-tools button,leading-emoji
 flashcards.teachertools.preset_name_placeholder,Preset name…,שם ההגדרה…,preset name input placeholder,placeholder
-flashcards.teachertools.presets_empty,"No presets yet — configure your settings, then save them here.",אין עדיין הגדרות שמורות — הגדירו את ההגדרות ושמרו אותן כאן.,presets empty state,empty state
 flashcards.teachertools.presets_head,Presets,הגדרות שמורות,teacher-tools subheading,
-flashcards.teachertools.profiles_empty,No profiles yet — finish a drill and tap Save Results to create one.,אין עדיין פרופילים — סיימו תרגול והקישו “שמור תוצאות” כדי ליצור אחד.,profiles empty state,empty state
 flashcards.teachertools.profiles_head,Profiles & Results,פרופילים ותוצאות,teacher-tools subheading,
 flashcards.teachertools.profiles_intro,"Save drill results to a named profile to track progress over time. After a drill, tap Save Results on the results screen.","שמרו תוצאות תרגול לפרופיל בשם כדי לעקוב אחר ההתקדמות לאורך זמן. לאחר תרגול, הקישו “שמור תוצאות” במסך התוצאות.",profiles intro prose,
 flashcards.teachertools.rename_button,Rename,שנה שם,profile rename button,
