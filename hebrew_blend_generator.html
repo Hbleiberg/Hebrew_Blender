@@ -2065,6 +2065,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     body.dark .flip-card-front, body.dark .flip-card-back,
     body.dark .rw-card, body.dark .rw-flip-front, body.dark .rw-flip-back,
     body.dark .match-item { background:#fff; color:#1a2744; }
+    /* Self-check "Reveal all" flips the .flip-card-back into view; its base background is
+       var(--navy) (dark even in LIGHT mode), so a light-mode reveal-then-print bled a solid
+       dark block + gold text onto paper — the body.dark reset above only covers dark mode.
+       Relight it for print in both modes (unscoped, non-!important, wins by source order). */
+    .flip-card-back { background:#fff; color:#1a2744; }
     body.dark .match-dot { background:#fff; border-color:#1a2744; }
     body.dark .answer-key-banner { background:#f6efdd; color:#6b4e12; }
     /* Gold answer/answer-key ink is faint on a B/W laser — darken it for print
