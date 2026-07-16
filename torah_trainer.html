@@ -2161,12 +2161,16 @@ function tropeRealignFamilies(tokens, rawTokens) {
 // (a 3-digit override would render as an opaque background; anything non-#rrggbb
 // makes the picker swatch show black).
 const TROPE_HEX6_RE = /^#[0-9a-fA-F]{6}$/;
+// When set (during printing from dark mode), the nikkud/trope resolvers force the LIGHT
+// default palette regardless of body.dark — the dark palettes are set as inline body vars
+// (beating the print-CSS token reset) and print washed-out on white paper. See beforeprint.
+let _printForceLight = false;
 function getTropeColor(fam) {
   // Same trust model as getNikudColor: only a valid hex override is used
   // (imported .ivrit / AllTools blobs are untrusted).
   const ov = settings.tropeColorOverrides && settings.tropeColorOverrides[fam];
   if (typeof ov === 'string' && TROPE_HEX6_RE.test(ov)) return ov;
-  return (document.body.classList.contains('dark')
+  return ((_printForceLight ? false : document.body.classList.contains('dark'))
     ? TROPE_DEFAULTS_DARK : TROPE_DEFAULTS_LIGHT)[fam] || '#888888';
 }
 // Resolve the six family colors into --trope-<fam>-bg / --trope-<fam>-line custom
@@ -2236,7 +2240,7 @@ function getNikudColor(key) {
   // suffix), so a crafted value from an imported .ivrit / AllTools backup must be rejected here.
   const ov = settings.nikudColorOverrides && settings.nikudColorOverrides[key];
   if (typeof ov === 'string' && HEX_COLOR_RE.test(ov)) return ov;
-  return activeNikudDefaults(document.body.classList.contains('dark'))[key] || '#888';
+  return activeNikudDefaults(_printForceLight ? false : document.body.classList.contains('dark'))[key] || '#888';
 }
 
 // Push the active vowel palette + coding mode into CSS (body vars + a body.nik-mode-*
@@ -4840,7 +4844,16 @@ else _wireTorahI18n();
 // Printing mid-karaoke would freeze the transient .active word-highlight onto paper
 // (kar-style-underline's gold decoration prints). Pause + clear before the snapshot;
 // the print-CSS backstop covers the non-decoration styles.
-window.addEventListener('beforeprint', () => { pauseKaraoke(); clearKaraokeHighlight(); });
+window.addEventListener('beforeprint', () => {
+  pauseKaraoke(); clearKaraokeHighlight();
+  // Dark-mode nikkud/trope palettes live in inline --nikv-*/--trope-*-line body vars that beat
+  // the print-CSS token reset, so they'd print washed-out (e.g. tzere #aaaadd ≈1.9:1 on paper).
+  // Re-resolve both to the LIGHT scheme for the snapshot; afterprint restores the dark palette.
+  if (document.body.classList.contains('dark')) { _printForceLight = true; applyNikkudColors(); applyTropeColors(); }
+});
+window.addEventListener('afterprint', () => {
+  if (_printForceLight) { _printForceLight = false; applyNikkudColors(); applyTropeColors(); }
+});
 
 /* ══════════════════════════════════════════════════════
    TOOLTIP — accessible: hover (mouse), tap (touch), and keyboard (focus +
