@@ -9158,7 +9158,7 @@ function boldGenOpen(fromImport) {
   aOpenModal('boldGenOverlay', boldGenClose);
   boldGenRender();
 }
-function boldGenClose() { bgState = null; aCloseModal('boldGenOverlay'); }
+function boldGenClose() { bgState = null; clearTimeout(_bgWarnTimer); _bgWarnTimer = 0; aCloseModal('boldGenOverlay'); }
 function boldGenSet(v) {
   if (!bgState) return;
   bgState.v = Math.max(-50, Math.min(120, Math.round(+v / 5) * 5));
@@ -9197,7 +9197,22 @@ function boldGenRender() {
   bgRowSVG(bgState.copies.map(c => ({ contours: c.contours, advance: c.advance })), document.getElementById('bgBefore'), totalW);
   bgRowSVG(after, document.getElementById('bgAfter'), totalW);
   document.getElementById('bgStrengthV').textContent = (S > 0 ? '+' : '') + S;
-  // Warnings scan ALL traced letters (cheap), not just the preview subset.
+  // The warning scan deep-clones + offsets + self-intersection-tests EVERY traced letter — heavy
+  // enough to jank a live strength-slider drag on low-end/throttled hardware (Pass D S85: ~65 ms/frame
+  // @4× CPU over a full alphabet). Debounce it so each drag frame re-renders only the ≤5 preview
+  // glyphs above and the full-corpus scan settles once the slider stops (imperceptible ~130 ms lag).
+  boldGenScheduleWarn();
+  const zero = S === 0, applyBtn = document.getElementById('bgApply');
+  applyBtn.setAttribute('aria-disabled', zero ? 'true' : 'false');
+  applyBtn.classList.toggle('ghost', zero);
+  document.getElementById('bgZeroNote').style.display = zero ? '' : 'none';
+}
+let _bgWarnTimer = 0;
+function boldGenScheduleWarn() { clearTimeout(_bgWarnTimer); _bgWarnTimer = setTimeout(boldGenWarnScan, 130); }
+function boldGenWarnScan() {
+  _bgWarnTimer = 0;
+  if (!bgState) return;                                          // modal closed before the scan fired
+  const S = bgState.v, d = S / 2;
   const warns = [];
   let converted = 0;
   if (S !== 0) bgState.all.forEach(a => {
@@ -9212,10 +9227,6 @@ function boldGenRender() {
   const cvEl = document.getElementById('bgCurvesNote');
   cvEl.style.display = (S !== 0 && converted) ? '' : 'none';
   if (converted) cvEl.textContent = I18n.t(converted === 1 ? 'fontmaker.boldgen.curves_note.one' : 'fontmaker.boldgen.curves_note.other', { count: converted });
-  const zero = S === 0, applyBtn = document.getElementById('bgApply');
-  applyBtn.setAttribute('aria-disabled', zero ? 'true' : 'false');
-  applyBtn.classList.toggle('ghost', zero);
-  document.getElementById('bgZeroNote').style.display = zero ? '' : 'none';
 }
 function boldGenApply() {
   if (!bgState || bgState.v === 0) return;                     // aria-disabled guard — inline note explains
