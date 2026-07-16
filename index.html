@@ -338,9 +338,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 
 <!-- Import/Export modal -->
 <div class="ie-backdrop" id="ieBackdrop" onclick="closeIEModal(event)">
-  <div class="ie-modal" onclick="event.stopPropagation()">
+  <div class="ie-modal" role="dialog" aria-modal="true" aria-labelledby="ieModalTitle" onclick="event.stopPropagation()">
     <div class="ie-modal-hdr">
-      <h3 data-i18n="home.alltools.modal_title">⚙ Import / Export All Settings</h3>
+      <h3 id="ieModalTitle" data-i18n="home.alltools.modal_title">⚙ Import / Export All Settings</h3>
       <button class="ie-modal-close" onclick="closeIEModal()" aria-label="Close" data-i18n-aria-label="home.alltools.modal_close_aria">×</button>
     </div>
     <div class="ie-modal-body">
@@ -537,13 +537,20 @@ function useFontEverywhere(name) {
   alert(I18n.t('home.alltools.myfonts.use_alert', {name: name}));
 }
 
+let _ieReturnFocus = null;
 function openIEModal() {
-  document.getElementById('ieBackdrop').classList.add('open');
+  _ieReturnFocus = document.activeElement;
+  const backdrop = document.getElementById('ieBackdrop');
+  backdrop.classList.add('open');
   if (window.indexedDB) { renderMyFontsManager(); refreshFontsBackupCache(); }
+  const closeBtn = backdrop.querySelector('.ie-modal-close');
+  if (closeBtn) closeBtn.focus();   // move focus into the dialog (a11y)
 }
 function closeIEModal(e) {
   if (e && e.target !== document.getElementById('ieBackdrop')) return;
   document.getElementById('ieBackdrop').classList.remove('open');
+  if (_ieReturnFocus && typeof _ieReturnFocus.focus === 'function') { _ieReturnFocus.focus(); }
+  _ieReturnFocus = null;   // restore focus to the trigger
 }
 
 // Deep-merge an incoming Flash Cards profiles blob ({activeProfile, profiles}) into storage.
@@ -1233,7 +1240,17 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
 });
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') document.getElementById('ieBackdrop').classList.remove('open');
+  const bd = document.getElementById('ieBackdrop');
+  if (!bd.classList.contains('open')) return;
+  if (e.key === 'Escape') { closeIEModal(); return; }   // Escape closes + restores focus
+  if (e.key === 'Tab') {   // keep focus inside the dialog
+    const f = [...bd.querySelectorAll('.ie-modal button, .ie-modal [href], .ie-modal input, .ie-modal textarea, .ie-modal select, .ie-modal [tabindex]:not([tabindex="-1"])')]
+      .filter(el => !el.disabled && el.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
 });
 </script>
 </body>
