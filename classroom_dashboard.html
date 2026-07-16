@@ -1298,8 +1298,12 @@
   .tbtn:hover { filter: brightness(1.06); }
   .tbtn:disabled { opacity: 0.4; cursor: default; filter: none; }
   .tip-wrap .tip-icon { cursor: pointer; }
-  #tourBtn.tour-pulse { animation: tourPulse 1.6s ease-in-out infinite; }
-  @keyframes tourPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(201,146,42,0.5); } 50% { box-shadow: 0 0 0 7px rgba(201,146,42,0); } }
+  /* Attention pulse (Tour button first-visit nudge) — shared .pulse-attn, matching the other tools */
+  @keyframes attnPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(201,146,42,0.55); }
+    50%      { box-shadow: 0 0 0 6px rgba(201,146,42,0); }
+  }
+  .pulse-attn { animation: attnPulse 1.4s ease-in-out infinite; }
   /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards; self-contained incl. reduced-motion) ═══ */
 #appToast {
   position: fixed;
@@ -1334,7 +1338,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 @media (prefers-reduced-motion: reduce) {
     .tour-spot, .tour-card, #fsStrip, .now-next, .dash-edit-pencil, #tipFloat,
     .fr-modal, .settings-modal, .settings-backdrop, .panel-title::after { transition: none !important; }
-    #tourBtn.tour-pulse { animation: none !important; }
+    .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
     .timer-display.done, #timerCol.running, #timerCol.running.urgent { animation: none !important; }
     .pick-name.flicker, .pick-name.landed { animation: none !important; }
   }
@@ -1549,7 +1553,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <span id="tourStep"></span>
     <span class="tour-btns">
       <button class="tbtn ghost" id="tourBack" onclick="tourPrev()" data-i18n="shared.tour.back">Back</button>
-      <button class="tbtn" id="tourNext" onclick="tourNext()">Next</button>
+      <button class="tbtn" id="tourNext" onclick="tourNext()" data-i18n="shared.tour.next">Next</button>
     </span>
   </div>
 </div>
@@ -6268,7 +6272,7 @@ async function onUploadEngFontPick(input){
       setTimeout(tick, 24 * 3600 * 1000);
     }, msToMidnight);
     if (!localStorage.getItem('hebrewDashboard_tourSeen') && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
-      const tb = document.getElementById('tourBtn'); if (tb) tb.classList.add('tour-pulse');
+      const tb = document.getElementById('tourBtn'); if (tb) tb.classList.add('pulse-attn');
     }
     if (isFirstVisit && !localStorage.getItem('hebrewDashboard_setupSeen')) openFirstRun();
 
@@ -6350,7 +6354,7 @@ async function onUploadEngFontPick(input){
     if (_tourActive) return;
     if (document.fullscreenElement) { try { document.exitFullscreen(); } catch (e) {} }   // the header is hidden in fullscreen
     try { localStorage.setItem('hebrewDashboard_tourSeen', '1'); } catch (e) {}
-    const tb = document.getElementById('tourBtn'); if (tb) tb.classList.remove('tour-pulse');
+    const tb = document.getElementById('tourBtn'); if (tb) tb.classList.remove('pulse-attn');
     _tourActive = true; _tourIdx = -1; _tourUncollapsed = null;
     _tourDrawerWasOpen = null; _tourExpandedPanels = [];
     _tourOpener = document.activeElement;
