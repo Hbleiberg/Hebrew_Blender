@@ -2492,7 +2492,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.28';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.29';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2704,6 +2704,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.29</strong> — <strong>Fewer points, real curves.</strong> Importing a TTF/OTF font now keeps the font's actual curves instead of flattening them into hundreds of tiny straight segments — <span class="ui">Edit points</span> shows roughly the points the original designer drew, and exports keep genuinely smooth curves. And when an outline has too many points (a font or SVG imported by an older version, or a heavy trace), the new <span class="ui">Reduce points</span> panel in <span class="ui">Edit points</span> cleans it up: drag the strength slider for a live preview with a running point count, release to keep it, and one Undo brings everything back. Plus a fix: importing a font's nikkud and trop mark shapes no longer stops the import with an error. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.28</strong> — <strong>Generate Bold, automatically.</strong> The new <span class="ui">Generate Bold…</span> button in <span class="ui">Font Details</span> (also offered when you import a font) thickens every traced letter's strokes to build a real Bold weight — with a live before/after preview, an adjustable strength slider (it can lighten too), an option to keep letter heights, and matching thickening for nikkud and trop. One click sets the <span class="ui">Style</span> to Bold so the export links with your Regular, and one Undo reverts everything. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.27</strong> — <strong>Make a proper Bold.</strong> A new <span class="ui">Style</span> dropdown in <span class="ui">Font Details</span> (Regular / Bold) exports your font as the Bold member of its family: build or import a heavier version of your font, set the Style to <span class="ui">Bold</span>, and export — install the Regular and Bold files together and programs like Word switch between them with the <strong>B</strong> button. Use the exact same Family name in both projects so they link up. Importing a TTF that's already marked bold sets the Style for you. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.26</strong> — <strong>A zoom slider for point editing, copy-outline within reach, and smoother corner rounding.</strong> Three conveniences for fine outline work. The <span class="ui">Edit points</span> view now has a <strong>drag zoom slider</strong>, so you can glide from 100% to 200% for detail work instead of clicking the <span class="ui">+</span> button ten times. <strong>Copy outline</strong> (reuse another letter's shape, like <span class="ui">Kaf → Kaf sofit</span>) and <strong>Clear outline</strong> now sit on the <span class="ui">Align</span> step — and Clear is in the <span class="ui">Contours</span> list too — so you no longer have to switch to the <span class="ui">Trace</span> tab to reach them. And rounding corners and nudging their handles is steadier: a handle pulled onto its own point no longer flips or spikes the curve, and <span class="ui">Round corners</span> blends into traced (curved) outlines without a kink. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -2785,7 +2786,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -5129,8 +5130,11 @@ function removeCombinedSheet() {
 
 /* ════════ Input mode: extract letters from an uploaded font (TTF/OTF) ════════
    opentype.js reads the font; each Hebrew glyph's outline becomes that letter's
-   contours directly (curves flattened to straight segments), in 1000-UPM y-up
-   units. No scanning/tracing — go straight to nikkud. */
+   contours AND curves directly, in 1000-UPM y-up units: the polyline contours
+   are flattened for bbox/anchors/QA (as always), while the font's real Béziers
+   are kept as `curves` (quadratics elevated to exact cubics) so the node editor
+   shows the original design points and export emits true curves, not facets.
+   No scanning/tracing — go straight to nikkud. */
 let opentypeLoading = null;
 async function ensureOpentype() {
   if (window.opentype) return window.opentype;
@@ -5140,22 +5144,49 @@ async function ensureOpentype() {
 }
 function flattenQuad(p0,p1,p2,n) { const o=[]; for (let i=1;i<=n;i++){ const t=i/n,u=1-t; o.push([u*u*p0[0]+2*u*t*p1[0]+t*t*p2[0], u*u*p0[1]+2*u*t*p1[1]+t*t*p2[1]]); } return o; }
 function flattenCubic(p0,p1,p2,p3,n) { const o=[]; for (let i=1;i<=n;i++){ const t=i/n,u=1-t; o.push([u*u*u*p0[0]+3*u*u*t*p1[0]+3*u*t*t*p2[0]+t*t*t*p3[0], u*u*u*p0[1]+3*u*u*t*p1[1]+3*u*t*t*p2[1]+t*t*t*p3[1]]); } return o; }
-function pathToContours(path) {
+function pathToOutline(path) {
   // path from glyph.getPath(0,0,1000): coords are 1000-UPM but y is screen-down,
   // so negate y to restore the font's native y-up (preserves TrueType winding).
-  const contours = []; let cur = null, pen = [0,0];
+  // ONE walk builds both aligned representations — the flattened polyline (pts,
+  // identical to the old pathToContours pipeline) and the real segments (segs,
+  // quadratics elevated exactly: c1 = p0 + ⅔(q−p0), c2 = p2 + ⅔(q−p2)) — so a
+  // contour dropped by the polyline filters drops BOTH halves and the
+  // curves.length === contours.length invariant can never desync.
+  const rnd = p => [Math.round(p[0]), Math.round(p[1])];
+  const raw = []; let cur = null, pen = [0,0];
+  const closeCur = () => {
+    if (cur && cur.pts.length >= 3) {
+      const s = rnd(cur.start), e = rnd(pen);   // segments must form a closed loop (node model + Cu2QuPen assume it)
+      if (cur.segs.length && (s[0] !== e[0] || s[1] !== e[1])) cur.segs.push({ type:'line', pts:[s] });
+      raw.push(cur);
+    }
+    cur = null;
+  };
   path.commands.forEach(c => {
-    if (c.type === 'M') { if (cur && cur.length>=3) contours.push(cur); cur=[]; pen=[c.x,-c.y]; cur.push(pen.slice()); }
-    else if (c.type === 'L') { pen=[c.x,-c.y]; cur.push(pen.slice()); }
-    else if (c.type === 'Q') { const p1=[c.x1,-c.y1], p2=[c.x,-c.y]; flattenQuad(pen,p1,p2,8).forEach(p=>cur.push(p)); pen=p2; }
-    else if (c.type === 'C') { const p1=[c.x1,-c.y1], p2=[c.x2,-c.y2], p3=[c.x,-c.y]; flattenCubic(pen,p1,p2,p3,10).forEach(p=>cur.push(p)); pen=p3; }
-    else if (c.type === 'Z') { if (cur && cur.length>=3) contours.push(cur); cur=null; }
+    if (c.type === 'M') { closeCur(); pen=[c.x,-c.y]; cur={ start: pen.slice(), pts: [pen.slice()], segs: [] }; }
+    else if (!cur) { /* stray command before any M — ignore */ }
+    else if (c.type === 'L') { const p=[c.x,-c.y], r=rnd(p), rp=rnd(pen);
+      if (r[0]!==rp[0] || r[1]!==rp[1]) cur.segs.push({ type:'line', pts:[r] });   // zero-length after rounding → no segment
+      cur.pts.push(p.slice()); pen=p; }
+    else if (c.type === 'Q') { const q=[c.x1,-c.y1], p2=[c.x,-c.y];
+      cur.segs.push({ type:'cubic', pts:[ rnd([pen[0]+2/3*(q[0]-pen[0]), pen[1]+2/3*(q[1]-pen[1])]),
+                                          rnd([p2[0]+2/3*(q[0]-p2[0]),  p2[1]+2/3*(q[1]-p2[1])]), rnd(p2) ] });
+      flattenQuad(pen,q,p2,8).forEach(p=>cur.pts.push(p)); pen=p2; }
+    else if (c.type === 'C') { const p1=[c.x1,-c.y1], p2=[c.x2,-c.y2], p3=[c.x,-c.y];
+      cur.segs.push({ type:'cubic', pts:[rnd(p1), rnd(p2), rnd(p3)] });
+      flattenCubic(pen,p1,p2,p3,10).forEach(p=>cur.pts.push(p)); pen=p3; }
+    else if (c.type === 'Z') closeCur();
   });
-  if (cur && cur.length>=3) contours.push(cur);
-  return contours
-    .map(pts => rdpClosed(pts, 1.2))
-    .filter(pts => pts.length>=3 && Math.abs(signedArea(pts))>40)
-    .map(pts => ({ winding: signedArea(pts) < 0 ? 'cw' : 'ccw', points: pts.map(p => [Math.round(p[0]), Math.round(p[1])]) }));
+  closeCur();
+  const contours = [], curves = [];
+  raw.forEach(r => {
+    const pts = rdpClosed(r.pts, 1.2);
+    if (pts.length < 3 || Math.abs(signedArea(pts)) <= 40) return;   // joint drop — alignment preserved
+    const winding = signedArea(pts) < 0 ? 'cw' : 'ccw';
+    contours.push({ winding, points: pts.map(rnd) });
+    curves.push(r.segs.length ? { winding, start: rnd(r.start), segments: r.segs } : null);   // no segments (all degenerate) → polygon fallback
+  });
+  return { contours, curves: curves.some(cv => cv) ? curves : null };
 }
 /* Unicode(int) -> our anchor key, for the Python GPOS reader (below/above/center + trop). */
 function anchorClassMapForImport() {
@@ -5187,10 +5218,10 @@ async function uploadSourceFont(file) {
 function importMarkGlyph(kind, cp, font) {
   const glyph = font.charToGlyph(String.fromCodePoint(parseInt(cp,16)));
   if (!glyph || glyph.index === 0) return false;
-  const contours = pathToContours(glyph.getPath(0, 0, 1000));   // 1000-UPM, y-up — same space as the built-in marks
-  if (!contours.length) return false;
+  const o = pathToOutline(glyph.getPath(0, 0, 1000));   // 1000-UPM, y-up — same space as the built-in marks
+  if (!o.contours.length) return false;
   const m = customMark(kind, cp);
-  m.contours = contours; m.curves = null;
+  m.contours = o.contours; m.curves = o.curves;   // real curves ride along (markGlyphCurves translates, export scales them)
   m.designMode = 'upload';     // uses contours + bbox-derived attach origin, exactly like a traced mark
   m.cls = markClassOf(kind, cp) || m.cls;
   m.placementSaved = false;
@@ -5255,9 +5286,10 @@ async function applyFontImport(file, font, bytes, opts) {
       if (opts.outlines) {
         l.source = { kind:'font', dataUrl:null, cropRect:null };
         if (!hasGlyph) { l.contours = null; l.curves = null; l.anchors = null; return; }
-        const contours = pathToContours(glyph.getPath(0, 0, 1000));
-        if (!contours.length) { l.contours = null; l.curves = null; l.anchors = null; return; }
-        l.contours = contours; l.curves = null;   // font glyphs are already vector polygons — no Bézier fit
+        const o = pathToOutline(glyph.getPath(0, 0, 1000));
+        if (!o.contours.length) { l.contours = null; l.curves = null; l.anchors = null; return; }
+        l.contours = o.contours; l.curves = o.curves; l.handEdited = false;   // font's own Béziers preserved; a fresh import resets any prior hand-edits
+        const contours = o.contours;
         let adv = Math.round((glyph.advanceWidth || 0) * scale);
         if (!adv) { const em=effMetrics(); let mx=0, mn=1e9; contours.forEach(c=>c.points.forEach(p=>{mx=Math.max(mx,p[0]);mn=Math.min(mn,p[0]);})); adv = Math.round(mx + em.defaultRSB + Math.max(0, em.defaultLSB - mn)); }
         l.advance = adv;
@@ -5271,7 +5303,7 @@ async function applyFontImport(file, font, bytes, opts) {
     let markHits = 0, tropImported = 0;
     if (opts.marks) {
       let nik = 0, trp = 0;
-      NIKKUD_MARKS.forEach(cp => { if (importMarkGlyph('nikkud', cp, font)) nik++; });
+      NIKKUD_MARKS.forEach(m => { if (importMarkGlyph('nikkud', m.cp, font)) nik++; });   // NIKKUD_MARKS holds {cp,name,cls} objects — passing the object made String.fromCodePoint throw and abort the whole import
       TROP_MARKS.forEach(t => { if (importMarkGlyph('trop', t.cp, font)) trp++; });
       if (nik) project.font.nikkud.mode = 'custom';
       if (trp) project.font.trop.mode = 'custom';
@@ -5311,8 +5343,10 @@ async function applyFontImport(file, font, bytes, opts) {
    Mirrors the Font-Source path: uploaded SVG vector paths become the glyph outline DIRECTLY — no
    raster trace. We let the browser's own SVG engine do the hard math (relative cmds, smooth-reflection,
    elliptical arcs, group transforms) by sampling each subpath/shape via getTotalLength/getPointAtLength,
-   then fit the polylines into font units. Curves are flattened to polygons (curves=null), exactly like
-   font-source — a proven, TrueType-friendly representation; buildFontSpec needs no changes. */
+   then fit the polylines into font units. Curves are flattened to polygons (curves=null) — unlike
+   font-source, which now keeps the font's real Béziers (arc-length sampling has no commands to
+   preserve; the node editor's "Reduce points" panel refits smooth curves on demand). A proven,
+   TrueType-friendly representation; buildFontSpec needs no changes. */
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const SVG_SAMPLE_PX = 2.5;                 // ~1 sample per 2.5 user-units of perimeter (clamped 12..600 / contour)
 const svgParseCache = {};                  // dataUrl → { entries, viewBox } (runtime only — rebuilt on load, never persisted)
@@ -6826,6 +6860,10 @@ let _contoursOpen = wsReadPrefs().nodeContoursOpen === true;   // Contours panel
 let _filletOpen = wsReadPrefs().nodeFilletOpen === true;       // Round-corners disclosure open-state; persisted as a view pref
 let _filletRadius = 25;          // last-used fillet radius (session)
 let _filletBase = null;          // deep-clone snapshot of nodeModel during a live fillet-slider burst
+let _reduceOpen = wsReadPrefs().nodeReduceOpen === true;       // Reduce-points disclosure open-state; persisted as a view pref
+let _reduceEps = 8;              // last-used reduce tolerance in font units (session)
+let _reduceBase = null;          // deep-clone snapshot of nodeModel during a live reduce-slider burst
+let _reduceLast = null;          // last reducePointsOp result during a burst (for the commit toast)
 const NODE_TINTS = ['#e05252', '#2a8f5b', '#2a6dd9', '#c9922a', '#9245c9', '#0f9bb0', '#c94590', '#6b7c2a'];   // editing aid only — never exported or persisted
 function nodeKey(ci, ni) { return ci + ':' + ni; }
 function nodeIsSmooth(nd) {
@@ -6834,26 +6872,27 @@ function nodeIsSmooth(nd) {
   if ((!di[0]&&!di[1]) || (!dou[0]&&!dou[1])) return false;
   return _vDot(di, dou) < -Math.cos(8*Math.PI/180);   // in/out nearly antiparallel → collinear → smooth
 }
+function curvesEntryToNodes(cv) {                     // one curves-contour → node list (positions + handles, smooth classified)
+  const segs = cv.segments, n = segs.length, nodes = [];
+  for (let i=0;i<n;i++) nodes.push({ x:0, y:0, in:null, out:null, type:'corner' });
+  nodes[0].x = cv.start[0]; nodes[0].y = cv.start[1];
+  for (let k=0;k<n;k++) {                             // segment k endpoint → node[(k+1)%n]
+    const seg = segs[k], nx = (k+1)%n, end = seg.pts[seg.pts.length-1];
+    nodes[nx].x = end[0]; nodes[nx].y = end[1];
+    if (seg.type === 'cubic') { nodes[k].out = [seg.pts[0][0], seg.pts[0][1]]; nodes[nx].in = [seg.pts[1][0], seg.pts[1][1]]; }
+  }
+  nodes.forEach(nd => { nd.type = nodeIsSmooth(nd) ? 'smooth' : 'corner'; });
+  return nodes;
+}
 function buildNodeModel(l) {
   const model = { contours: [] };
   if (l && l.contours) {
     const useCurves = l.curves && l.curves.length === l.contours.length;
     l.contours.forEach((c, ci) => {
       const cv = useCurves ? l.curves[ci] : null;
-      const nodes = [];
-      if (cv && cv.segments && cv.segments.length) {
-        const segs = cv.segments, n = segs.length;
-        for (let i=0;i<n;i++) nodes.push({ x:0, y:0, in:null, out:null, type:'corner' });
-        nodes[0].x = cv.start[0]; nodes[0].y = cv.start[1];
-        for (let k=0;k<n;k++) {                       // segment k endpoint → node[(k+1)%n]
-          const seg = segs[k], nx = (k+1)%n, end = seg.pts[seg.pts.length-1];
-          nodes[nx].x = end[0]; nodes[nx].y = end[1];
-          if (seg.type === 'cubic') { nodes[k].out = [seg.pts[0][0], seg.pts[0][1]]; nodes[nx].in = [seg.pts[1][0], seg.pts[1][1]]; }
-        }
-      } else {                                        // null-curve (polygon) → all-corner nodes from points
-        (c.points||[]).forEach(p => nodes.push({ x:p[0], y:p[1], in:null, out:null, type:'corner' }));
-      }
-      nodes.forEach(nd => { nd.type = nodeIsSmooth(nd) ? 'smooth' : 'corner'; });
+      const nodes = (cv && cv.segments && cv.segments.length)
+        ? curvesEntryToNodes(cv)
+        : (c.points||[]).map(p => ({ x:p[0], y:p[1], in:null, out:null, type:'corner' }));   // null-curve (polygon) → all-corner nodes
       model.contours.push({ winding: c.winding, nodes });
     });
   }
@@ -7421,6 +7460,69 @@ function filletApply() {   // keyboard/precision path — one udDo, no slider bu
   renderStage(); renderControls();
 }
 
+/* ── Reduce points: simplify contours (RDP) then refit smooth curves (Schneider) — the tracer's
+      Detail pipeline applied on demand. Turns dense all-corner outlines (font/SVG imports from
+      older versions, heavy traces) back into a handful of curve nodes. Whole glyph when nothing
+      is selected; otherwise only the contours holding a selected node. ── */
+function reduceTargetCis(selSet) {          // → Set of contour indices to touch, or null = whole glyph
+  const s = selSet || nodeSel;
+  if (!s.size) return null;
+  const out = new Set(); s.forEach(k => out.add(+k.split(':')[0])); return out;
+}
+function reducePointsOp(eps, targetCis) {   // pure op on nodeModel — returns {before, after, changed, skipped}
+  let before = 0, after = 0, changed = 0, skipped = 0;
+  const l = curLetter(), cornerDeg = (l && l.cornerAngle != null) ? l.cornerAngle : 32;   // same default as finalizeFromRaw
+  nodeModel.contours.forEach((ct, ci) => {
+    before += ct.nodes.length;
+    if ((targetCis && !targetCis.has(ci)) || ct.nodes.length < 4) { after += ct.nodes.length; return; }   // untargeted / nothing to reduce
+    const ring = rdpClosed(nodeContourToPoints(ct), eps);
+    if (ring.length < 3) { after += ct.nodes.length; skipped++; return; }   // would collapse — keep the original
+    const cv = fitContourCurves(ring, ct.winding, Math.max(eps, 1.5), cornerDeg);   // trace-pipeline fitErr formula
+    const nodes = (cv && cv.segments && cv.segments.length) ? curvesEntryToNodes(cv)
+                : ring.map(p => ({ x:p[0], y:p[1], in:null, out:null, type:'corner' }));   // fit bailed → polygon nodes
+    if (nodes.length < 3) { after += ct.nodes.length; skipped++; return; }
+    ct.nodes = nodes; changed++; after += nodes.length;
+  });
+  return { before, after, changed, skipped };
+}
+function reduceLiveInput(v) {
+  if (!nodeModel || _penMode) return;
+  const l = curLetter();
+  _reduceEps = Math.max(1, Math.min(30, +v || 8));
+  if (!_reduceBase) {
+    udBurstBegin([itemScope()], 'reduce points — ' + l.name);
+    _reduceBase = { model: JSON.parse(JSON.stringify(nodeModel)), sel: new Set(nodeSel) };
+  }
+  nodeModel = JSON.parse(JSON.stringify(_reduceBase.model));   // reset to the pre-drag snapshot, re-apply at the new strength
+  nodeSel = new Set(_reduceBase.sel);
+  _reduceLast = reducePointsOp(_reduceEps, reduceTargetCis(_reduceBase.sel));
+  writeThrough(l);
+  renderStage();
+  const ev = document.getElementById('reduceEpsV'); if (ev) ev.textContent = _reduceEps;
+  const pv = document.getElementById('reducePtsV');
+  if (pv) pv.textContent = I18n.t('fontmaker.node_editor.reduce_count', { before: _reduceLast.before, after: _reduceLast.after });
+}
+function reduceCommit() {
+  if (!_reduceBase) return;
+  udBurstCommit();
+  const res = _reduceLast || { before: 0, after: 0 };
+  nodeSel.clear();                          // node indices changed — old selection keys are invalid
+  _reduceBase = null; _reduceLast = null;
+  status(I18n.t('fontmaker.status.points_reduced', { before: res.before, after: res.after }));
+  renderGrids(); renderStage(); renderControls();
+}
+function reduceApply() {                    // button path — one udDo, no slider burst
+  if (!nodeModel || _penMode) return;
+  const l = curLetter(); let res;
+  udDo([itemScope()], 'reduce points — ' + l.name, () => {
+    res = reducePointsOp(_reduceEps, reduceTargetCis());
+    if (res.changed) writeThrough(l);
+  });
+  nodeSel.clear();
+  status(I18n.t('fontmaker.status.points_reduced', { before: res.before, after: res.after }));
+  renderGrids(); renderStage(); renderControls();
+}
+
 /* ── Pen tool: draw a new closed contour point by point. Click = corner; click-drag = curve point
       (drag pulls symmetric handles); Alt+click = curve point with default ⅓-chord handles (the
       node-model equivalent of placing an off-curve point — quick curves without dragging).
@@ -7897,6 +7999,7 @@ function nodeEditPanelHTML(l) {
   const cnt = nodeSel.size, M = modKey();
   const dis = cnt ? '' : 'disabled';   // still used by the Round-corners Apply button
   const dis2 = cnt >= 2 ? '' : 'disabled';
+  const totalPts = nodeModel ? nodeModel.contours.reduce((t, ct) => t + ct.nodes.length, 0) : 0;   // Reduce-points readout
   const segWhy = cnt >= 2 ? '' : ' ' + I18n.t('fontmaker.node_editor.seg_why');
   // glyph preview in the header — same guard as updateCurrentGlyphLabel (custom PUA codepoints render tofu)
   const glyph = isCustomCp(curCp) ? '' :
@@ -7976,6 +8079,18 @@ function nodeEditPanelHTML(l) {
       <button class="ctl-btn" onclick="filletApply()" ${dis}>${I18n.t('fontmaker.node_editor.apply')}</button>
     </div>
     <div class="hint" style="margin:4px 0 0;">${I18n.t('fontmaker.node_editor.round_hint')}</div>
+  </details>
+  <details class="node-xform npnl-disc" ${_reduceOpen ? 'open' : ''} ontoggle="_reduceOpen = this.open; npnlSaveOpen('nodeReduceOpen', this.open)">
+    <summary>${cnt ? I18n.t('fontmaker.node_editor.reduce_summary_sel') : I18n.t('fontmaker.node_editor.reduce_summary')}</summary>
+    <div class="ctl-row" style="gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap;">
+      <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">${I18n.t('fontmaker.node_editor.reduce_strength_label')} <span id="reduceEpsV" class="readout">${_reduceEps}</span>
+        <input type="range" min="1" max="30" step="1" value="${_reduceEps}" style="flex:1;min-width:90px;"
+               aria-label="${esc(I18n.t('fontmaker.node_editor.reduce_strength_aria'))}"
+               oninput="reduceLiveInput(this.value)" onchange="reduceCommit()"></label>
+      <button class="ctl-btn" onclick="reduceApply()" title="${esc(I18n.t('fontmaker.node_editor.reduce_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
+    </div>
+    <div class="hint" style="margin:4px 0 0;"><span id="reducePtsV" class="readout">${I18n.t('fontmaker.node_editor.reduce_count_now', {count: totalPts})}</span></div>
+    <div class="hint" style="margin:4px 0 0;">${I18n.t('fontmaker.node_editor.reduce_hint', {mod: M})}</div>
   </details>
   ${contoursPanelHTML()}
   <div class="npnl-tip">
@@ -9374,7 +9489,7 @@ function renderSpacingPreview() {
       Collapsed by default; state is a per-device UI pref (hebrewFontMaker_uiPrefs). ── */
 const WATERFALL_SIZES = [14, 18, 24, 36, 48];
 function waterfallOpenPref() { return wsReadPrefs().waterfallOpen === true; }   // missing = collapsed
-function npnlSaveOpen(key, open) {   // node-panel disclosure open-states (nodeXformOpen / nodeFilletOpen / nodeContoursOpen)
+function npnlSaveOpen(key, open) {   // node-panel disclosure open-states (nodeXformOpen / nodeFilletOpen / nodeReduceOpen / nodeContoursOpen)
   try { const p = wsReadPrefs(); p[key] = !!open; localStorage.setItem(WS_PREFS_KEY, JSON.stringify(p)); } catch (e) { /* private mode / quota — non-fatal */ }
 }
 function setWaterfallOpen(open) {
