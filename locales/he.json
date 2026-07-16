@@ -2467,6 +2467,8 @@
   "fontmaker.whohas.precomposed": "צורה מורכבת מראש",
   "fontmaker.whohas.shevana": "משבצת שווא נע",
   "fontmaker.whohas.space": "הרווח",
+  "fontmaker.workspace.editing": "עריכה: {name}",
+  "fontmaker.workspace.editing_glyph": "עריכה: {glyph} — {name}",
   "home.alltools.copy_button": "העתקה ללוח",
   "home.alltools.copy_done": "✓ הועתק",
   "home.alltools.copy_err_empty": "אין מה להעתיק — ייצאו קודם.",

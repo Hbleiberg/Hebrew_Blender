@@ -2467,6 +2467,8 @@
   "fontmaker.whohas.precomposed": "a precomposed form",
   "fontmaker.whohas.shevana": "the Sheva Na slot",
   "fontmaker.whohas.space": "the space",
+  "fontmaker.workspace.editing": "Editing: {name}",
+  "fontmaker.workspace.editing_glyph": "Editing: {glyph} — {name}",
   "home.alltools.copy_button": "Copy to Clipboard",
   "home.alltools.copy_done": "✓ Copied",
   "home.alltools.copy_err_empty": "Nothing to copy — export first.",

@@ -2422,6 +2422,8 @@ fontmaker.toolbar.redo_title,Redo (Ctrl+Shift+Z),בצע שוב (Ctrl+Shift+Z),to
 fontmaker.toolbar.save_project,Save Project,שמירת פרויקט,toolbar button,
 fontmaker.toolbar.undo_aria,Undo,בטל,aria-label only,aria-label only
 fontmaker.toolbar.undo_title,Undo (Ctrl+Z),בטל (Ctrl+Z),toolbar button title,
+fontmaker.workspace.editing,Editing: {name},עריכה: {name},work-current glyph label (interpolated),html
+fontmaker.workspace.editing_glyph,Editing: {glyph} — {name},עריכה: {glyph} — {name},work-current glyph label (interpolated glyph+name),html
 fontmaker.tour.firstrun_link,Take a tour →,צאו לסיור ←,First-run tour link,first-run affordance
 fontmaker.tour.launch_button,▶ Take a tour,▶ צאו לסיור,Welcome-modal / header tour-launch button,leading-symbol
 fontmaker.tour.step_1_body,Every Hebrew letter lives here. The little dot on each tile shows its status.,כל אות עברית נמצאת כאן. הנקודה הקטנה בכל אריח מציגה את הסטטוס שלה.,tour step body,

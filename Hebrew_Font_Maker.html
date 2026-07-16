@@ -9914,9 +9914,9 @@ function updateCurrentGlyphLabel() {   // persistent "Editing: <glyph> — <name
   const name = esc(it.name || '');
   // Only real letters get a glyph preview: a custom Private-Use codepoint renders a tofu box, and a
   // lone combining mark (nikkud/trop) renders as a floating diacritic — show the name only for those.
-  if (curKind !== 'letter' || isCustomCp(curCp)) { el.innerHTML = `Editing: ${name}`; return; }
+  if (curKind !== 'letter' || isCustomCp(curCp)) { el.innerHTML = window.I18n ? I18n.t('fontmaker.workspace.editing', {name: name}) : ('Editing: ' + name); return; }
   const glyph = `<span class="wc-glyph" style="font-family:${esc(project.template.font)};">${String.fromCodePoint(parseInt(curCp,16))}</span>`;
-  el.innerHTML = `Editing: ${glyph} — ${name}`;
+  el.innerHTML = window.I18n ? I18n.t('fontmaker.workspace.editing_glyph', {glyph: glyph, name: name}) : ('Editing: ' + glyph + ' — ' + name);
 }
 function updateNodeEditToggle() {   // one persistent Edit points ⇄ Done editing toggle in the work-tabs header (same spot in both modes)
   const btn = document.getElementById('nodeEditToggle'); if (!btn) return;
@@ -13416,6 +13416,7 @@ function applyI18n() {
   try { renderControls(); } catch (e) {}
   try { renderGrids(); } catch (e) {}
   try { updateTabs(); } catch (e) {}     // step-tab labels (accents/nikkud pick) + tick aria strings
+  try { updateCurrentGlyphLabel(); } catch (e) {}   // re-localize the "Editing: <glyph> — <name>" indicator
   try { renderNextStepHint(); } catch (e) {}
   try { if (typeof _pyoPhase !== 'undefined') _setPyoPhase(_pyoPhase); } catch (e) {}
   // Re-render an open Help modal (tab labels + active body) so a live switch retranslates it.
