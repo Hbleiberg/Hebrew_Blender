@@ -820,7 +820,7 @@
   "flashcards.advanced.show_skipped": "Show skipped cards again",
   "flashcards.advanced.translit_ashkenazi": "Ashkenazi",
   "flashcards.advanced.translit_brill": "Brill Academic",
-  "flashcards.advanced.translit_credit": "Powered by <a href=\"https://github.com/charlesLoder/hebrew-transliteration\" target=\"_blank\" rel=\"noopener\" style=\"color:var(--gold);text-decoration:none;\">hebrew-transliteration</a> by Charles Loder",
+  "flashcards.advanced.translit_credit": "Powered by <a href=\"https://github.com/charlesLoder/hebrew-transliteration\" target=\"_blank\" rel=\"noopener\" style=\"color:var(--gold-text);text-decoration:none;\">hebrew-transliteration</a> by Charles Loder",
   "flashcards.advanced.translit_default": "Default (built-in)",
   "flashcards.advanced.translit_help": "Sets the romanization style. To show or hide transliteration on cards, use each mode's “Show transliteration” toggle in the Mode panel above.",
   "flashcards.advanced.translit_modern": "Modern Israeli",

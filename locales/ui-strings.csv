@@ -747,7 +747,7 @@ dictionary.tour.share_body,Copy a link to exactly this filtered view and post it
 dictionary.tour.share_title,Share this view,שיתוף התצוגה הזו,tour step title,
 dictionary.tour.tools_body,"Switch between the word dictionary, an emoji picture-vocabulary deck, and the Shoresh root explorer.","עברו בין מילון המילים, חפיסת אוצר-מילים בתמונות אימוג׳י, וחוקר השורשים.",tour step body,
 dictionary.tour.tools_title,Three tools in one,שלושה כלים באחד,tour step title,
-dictionary.translit.credit,Powered by hebrew-transliteration by Charles Loder,"מופעל על ידי <a href=""https://github.com/charlesLoder/hebrew-transliteration"" target=""_blank"" rel=""noopener"" style=""color:var(--gold);text-decoration:none;"">hebrew-transliteration</a> מאת Charles Loder",transliteration attribution,html (contains link)
+dictionary.translit.credit,Powered by hebrew-transliteration by Charles Loder,"מופעל על ידי <a href=""https://github.com/charlesLoder/hebrew-transliteration"" target=""_blank"" rel=""noopener"" style=""color:var(--gold-text);text-decoration:none;"">hebrew-transliteration</a> מאת Charles Loder",transliteration attribution,html (contains link)
 dictionary.translit.head,Transliteration,תעתיק,advanced section title,
 dictionary.translit.load_failed,Library failed to load — using default style.,טעינת הספרייה נכשלה — נעשה שימוש בסגנון ברירת המחדל.,transliteration load status,
 dictionary.translit.loading,Loading library…,טוען ספרייה…,transliteration load status,toast
@@ -818,7 +818,7 @@ flashcards.advanced.scheme_talam,TaL AM,תל-עם,vowel color scheme button,
 flashcards.advanced.show_skipped,Show skipped cards again,הצג שוב כרטיסים שדילגת עליהם,advanced toggle label,
 flashcards.advanced.translit_ashkenazi,Ashkenazi,אשכנזי,transliteration style option,
 flashcards.advanced.translit_brill,Brill Academic,Brill אקדמי,transliteration style option,
-flashcards.advanced.translit_credit,"Powered by <a href=""https://github.com/charlesLoder/hebrew-transliteration"" target=""_blank"" rel=""noopener"" style=""color:var(--gold);text-decoration:none;"">hebrew-transliteration</a> by Charles Loder","מופעל על ידי <a href=""https://github.com/charlesLoder/hebrew-transliteration"" target=""_blank"" rel=""noopener"" style=""color:var(--gold);text-decoration:none;"">hebrew-transliteration</a> מאת Charles Loder",transliteration attribution,html (contains link)
+flashcards.advanced.translit_credit,"Powered by <a href=""https://github.com/charlesLoder/hebrew-transliteration"" target=""_blank"" rel=""noopener"" style=""color:var(--gold-text);text-decoration:none;"">hebrew-transliteration</a> by Charles Loder","מופעל על ידי <a href=""https://github.com/charlesLoder/hebrew-transliteration"" target=""_blank"" rel=""noopener"" style=""color:var(--gold-text);text-decoration:none;"">hebrew-transliteration</a> מאת Charles Loder",transliteration attribution,html (contains link)
 flashcards.advanced.translit_default,Default (built-in),ברירת מחדל (מובנה),transliteration style option,
 flashcards.advanced.translit_help,"Sets the romanization style. To show or hide transliteration on cards, use each mode's “Show transliteration” toggle in the Mode panel above.","קובע את סגנון התעתיק. כדי להציג או להסתיר תעתיק על הכרטיסים, השתמשו במתג “הצג תעתיק” של כל מצב בלוח המצב למעלה.",transliteration help text,
 flashcards.advanced.translit_modern,Modern Israeli,עברית מודרנית,transliteration style option,
