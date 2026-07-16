@@ -8412,7 +8412,7 @@ async function exportPDF() {
     const filename = `${title.replace(/\s+/g, '_')}_Hebrew_Blends.pdf`;
     pdf.save(filename);
   } catch (err) {
-    alert(I18n.t('worksheet.validation.pdf_failed'));
+    showPreviewNotice(I18n.t('worksheet.validation.pdf_failed'), { kind: 'warn', dismissible: true });
     console.error(err);
   } finally {
     pdfBtn.textContent = I18n.t('worksheet.actions.export_pdf');
