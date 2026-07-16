@@ -4394,6 +4394,37 @@ function buildResultObject() {
 }
 
 // Modal to pick an existing profile or create a new one. Resolves to a name or null.
+// Give a JS-built overlay proper dialog semantics: role/aria-modal/aria-labelledby,
+// Escape-to-close, a Tab focus-trap, and focus save + restore (mirrors the guided tour's
+// _tourOpener/Escape idiom, adding the trap the non-modal tour spotlight omits). closeFn is
+// the overlay's own teardown (done(null) / close()); titleEl (optional) is referenced via
+// aria-labelledby; initialEl (optional) takes focus on open, else the first focusable in box.
+function fcModalize(ov, box, closeFn, titleEl, initialEl) {
+  const opener = document.activeElement;
+  box.setAttribute('role', 'dialog');
+  box.setAttribute('aria-modal', 'true');
+  if (titleEl) {
+    if (!titleEl.id) titleEl.id = 'fcDlgTitle_' + (fcModalize._n = (fcModalize._n || 0) + 1);
+    box.setAttribute('aria-labelledby', titleEl.id);
+  }
+  const SEL = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+  ov.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { e.preventDefault(); closeFn(); return; }
+    if (e.key !== 'Tab') return;
+    const f = [...box.querySelectorAll(SEL)].filter(el => el.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+  // Restore focus to the opener once the overlay is torn down (its teardown removes ov).
+  const mo = new MutationObserver(() => {
+    if (!ov.parentNode) { mo.disconnect(); try { opener && opener.focus && opener.focus(); } catch (e) {} }
+  });
+  mo.observe(document.body, { childList: true });
+  setTimeout(() => { try { (initialEl || box.querySelector(SEL))?.focus(); } catch (e) {} }, 0);
+}
+
 function chooseProfileModal() {
   return new Promise(resolve => {
     const db = readProfiles();
@@ -4440,6 +4471,7 @@ function chooseProfileModal() {
     });
     box.querySelector('[data-act=cancel]').addEventListener('click', () => done(null));
     ov.addEventListener('click', e => { if (e.target === ov) done(null); });
+    fcModalize(ov, box, () => done(null), box.firstElementChild, box.querySelector('#newProfileNameInput'));
   });
 }
 
@@ -4698,7 +4730,7 @@ function askCardCount(defaultN, maxN) {
       done(n);
     });
     ov.addEventListener('click', e => { if (e.target === ov) done(null); });
-    setTimeout(() => box.querySelector('[data-act=start]').focus(), 0);
+    fcModalize(ov, box, () => done(null), box.querySelector('div[style*="font-weight:700"]'), box.querySelector('[data-act=start]'));
   });
 }
 
@@ -4907,6 +4939,7 @@ function openWeaknessView(name) {
   const close = () => { if (ov.parentNode) document.body.removeChild(ov); };
   box.querySelector('[data-act=close]').addEventListener('click', close);
   ov.addEventListener('click', e => { if (e.target === ov) close(); });
+  fcModalize(ov, box, close, box.querySelector('div[style*="font-weight:700"]'));
 }
 
 /* ── Unified .ivrit backup scope (Presets / Profiles / Both) ── */
