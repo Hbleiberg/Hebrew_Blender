@@ -132,9 +132,10 @@
   --navy:#1a2744;--navy-deep:#0d1220;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
   --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
   --shadow-md:0 4px 16px rgba(0,0,0,0.10);
+  --gold-text:#7f5a13;   /* readable gold for small text on light surfaces (WCAG ≥4.5:1) */
 }
 html.dark-early body,body.dark {
-  --gold:#e0a832;--gold-light:#f5d97a;--cream:#161c2a;
+  --gold:#e0a832;--gold-light:#f5d97a;--cream:#161c2a;--gold-text:var(--gold);
   --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -180,7 +181,7 @@ body.dark .filter-btn.active{background:#2a3f6a;border-color:#4a6aaa;}
 body.dark .card-cat-badge{background:rgba(221,228,240,0.1);color:#aab8d8;}
 .card-title{font-family:'Libre Baskerville',serif;font-size:1rem;font-weight:700;line-height:1.3;}
 .card-desc{font-size:0.82rem;color:var(--muted);line-height:1.55;flex:1;}
-.card-grade{font-size:0.72rem;font-weight:600;color:var(--gold);}
+.card-grade{font-size:0.72rem;font-weight:600;color:var(--gold-text);}
 body.dark .card-grade{color:var(--gold-light);}
 .card-link{display:inline-flex;align-items:center;gap:4px;font-size:0.76rem;font-weight:600;color:var(--navy);margin-top:2px;opacity:0.55;transition:opacity 0.15s;}
 body.dark .card-link{color:#aab8d8;}
@@ -195,7 +196,7 @@ body.dark .card-link{color:#aab8d8;}
 
 /* ── Footer ── */
 footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
-footer a{color:var(--gold);text-decoration:none;}
+footer a{color:var(--gold-text);text-decoration:none;}
 
 @media(max-width:640px){
   header{padding:12px 16px;}
@@ -239,7 +240,7 @@ body.dark .sg-pill.active{background:#2a3f6a;border-color:#4a6aaa;}
 body.dark .sg-btn-primary{background:#2a4070;}
 .honey{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden;}
 #sgStatus{font-size:0.88rem;color:var(--muted);min-height:1.2em;}
-#sgStatus a{color:var(--gold);}
+#sgStatus a{color:var(--gold-text);}
 
 /* ── Links / Fonts view toggle ── */
 .view-toggle{display:flex;justify-content:center;gap:8px;margin:0 auto 24px;}
@@ -251,7 +252,7 @@ body.dark .view-toggle button.active{background:#2a3f6a;border-color:#4a6aaa;}
 /* ── Font gallery card extras (reuses .resource-card) ── */
 .font-preview-line{font-size:2rem;line-height:1.35;direction:rtl;text-align:center;padding:8px 4px;color:var(--text);min-height:1.35em;overflow:hidden;}
 .font-by{font-size:0.82rem;color:var(--muted);}
-.font-by a{color:var(--gold);text-decoration:none;}
+.font-by a{color:var(--gold-text);text-decoration:none;}
 .font-by a:hover{text-decoration:underline;}
 .font-actions{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin-top:2px;}
 .font-actions a,.font-actions button{font-size:0.8rem;font-weight:600;color:var(--navy);cursor:pointer;text-decoration:none;white-space:nowrap;background:none;border:none;padding:0;font-family:inherit;line-height:inherit;}
@@ -1411,7 +1412,7 @@ function openSubmitFont(pf) {
         form.querySelectorAll('.sg-pill.active').forEach(function(b){ b.classList.remove('active'); });
         ['sgCat','sgFormat','sgAge'].forEach(function(id){ document.getElementById(id).value = ''; });
         if (window.hcaptcha && hcId !== null){ try { window.hcaptcha.reset(hcId); } catch (_) {} }
-        statusEl.style.color = 'var(--gold)';
+        statusEl.style.color = 'var(--gold-text)';
         statusEl.textContent = I18n.t('resources.suggest.success');
       } else {
         statusEl.style.color = 'var(--muted)';
