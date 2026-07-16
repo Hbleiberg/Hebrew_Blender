@@ -1039,6 +1039,7 @@ flashcards.start.err_select_vowel,Select at least one vowel.,בחרו לפחות
 flashcards.start.err_select_wordlist,Select at least one word list.,בחרו לפחות רשימת מילים אחת.,start validation alert,
 flashcards.teachertools.copy_code,📋 Copy Code,📋 העתק קוד,share-code copy button,leading-emoji
 flashcards.teachertools.delete_button,Delete,מחק,profile delete button,
+flashcards.actions.delete_aria,Delete {name},מחק את {name},icon-only ✕ delete button aria-label (preset / profile),aria-label only
 flashcards.teachertools.generate_share,Generate Share Code,צור קוד שיתוף,share-code button,
 flashcards.teachertools.got_code,Got a code from your teacher?,קיבלתם קוד מהמורה?,share-code paste subheading,
 flashcards.teachertools.history_empty,No saved results yet for this profile.,אין עדיין תוצאות שמורות לפרופיל זה.,profile history empty state,empty state

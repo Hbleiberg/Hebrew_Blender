@@ -796,6 +796,7 @@
   "dictionary.wordlists.head_tip": "שמרו מילים נבחרות כרשימה בעלת שם המאוחסנת בכל האתר, כדי לעשות בה שימוש חוזר בכלים אחרים.",
   "dictionary.wordlists.manager_button": "📚 רשימות מילים",
   "dictionary.wordlists.save_button": "⭑ שמירה כרשימת מילים…",
+  "flashcards.actions.delete_aria": "מחק את {name}",
   "flashcards.advanced.audio_label": "שמע",
   "flashcards.advanced.backup_head": "גיבוי הגדרות",
   "flashcards.advanced.backup_include_label": "כלול בגיבוי:",

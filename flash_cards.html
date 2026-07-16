@@ -1864,7 +1864,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" style="color:var(--gold-text);text-decoration:none;">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
       <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank" style="color:var(--gold-text);text-decoration:none;">GitHub</a>
     </div>
-    <nav aria-label="Related Hebrew Tools" style="text-align:end;">
+    <nav aria-label="Related Hebrew Tools" data-i18n-aria-label="shared.nav.header" style="text-align:end;">
       <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;" data-i18n="shared.nav.header">Related Hebrew Tools</div>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:2px 14px;">
         <li><a href="hebrew_blend_generator.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_worksheets">printable Hebrew worksheets →</a></li>
@@ -3911,7 +3911,9 @@ function renderPresets() {
       f.appendChild(mk(I18n.t('flashcards.teachertools.load_button'), 'btn sm primary', () => loadPreset(name)));
       f.appendChild(mk(I18n.t('flashcards.teachertools.save_button'), 'btn sm', () => overwritePreset(name)));
       const dup = mk('⧉', 'btn sm', () => duplicatePreset(name)); dup.title = I18n.t('shared.folders.duplicate'); f.appendChild(dup);
-      f.appendChild(mk('✕', 'btn sm danger', () => deletePreset(name)));
+      const delP = mk('✕', 'btn sm danger', () => deletePreset(name));
+      delP.setAttribute('aria-label', I18n.t('flashcards.actions.delete_aria', { name }));
+      f.appendChild(delP);
       return f;
     }
   });
@@ -4498,7 +4500,7 @@ function renderProfiles() {
       sub.textContent = (name === act ? I18n.t('flashcards.profile.active_marker') : '') + I18n.t('flashcards.profile.saved_count', { count: count });
       f.appendChild(sub);
       const setb = document.createElement('button'); setb.type = 'button'; setb.className = 'btn sm primary'; setb.textContent = I18n.t('flashcards.profile.set_active'); setb.addEventListener('click', () => setActiveProfile(name)); f.appendChild(setb);
-      const del = document.createElement('button'); del.type = 'button'; del.className = 'btn sm danger'; del.textContent = '✕'; del.addEventListener('click', () => deleteProfile(name)); f.appendChild(del);
+      const del = document.createElement('button'); del.type = 'button'; del.className = 'btn sm danger'; del.textContent = '✕'; del.setAttribute('aria-label', I18n.t('flashcards.actions.delete_aria', { name })); del.addEventListener('click', () => deleteProfile(name)); f.appendChild(del);
       return f;
     }
   });

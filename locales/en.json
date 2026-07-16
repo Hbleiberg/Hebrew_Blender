@@ -796,6 +796,7 @@
   "dictionary.wordlists.head_tip": "Save selected words as a named list stored across the whole site, so you can reuse it in other tools.",
   "dictionary.wordlists.manager_button": "📚 Word Lists",
   "dictionary.wordlists.save_button": "⭑ Save as Word List…",
+  "flashcards.actions.delete_aria": "Delete {name}",
   "flashcards.advanced.audio_label": "Audio",
   "flashcards.advanced.backup_head": "Backup Presets",
   "flashcards.advanced.backup_include_label": "Include in backup:",
