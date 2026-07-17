@@ -194,6 +194,28 @@ dashboard.header.subtitle,"Live Hebrew date, time, weather, and days of the week
 dashboard.header.title,Hebrew Classroom Dashboard,לוח מחוונים לכיתת עברית,page header h1,
 dashboard.header.tour_btn,Tour,סיור,header button label,
 dashboard.header.tour_btn_title,Take a quick tour,צאו לסיור מהיר,header button title,
+dashboard.layout.bar_aria,Move panels,הזזת פאנלים,move-panels edit-mode toolbar aria-label,
+dashboard.layout.done_button,✓ Done,✓ סיום,move-panels bar button,leading-emoji
+dashboard.layout.edit_hint,Use the arrow buttons on each panel to move it. Changes save automatically.,השתמשו בכפתורי החצים שעל כל פאנל כדי להזיז אותו. השינויים נשמרים אוטומטית.,move-panels bar hint,
+dashboard.layout.ghost_hidden_note,hidden — enable in Settings,מוסתר — הפעלה בהגדרות,ghost note on hidden panels in edit mode,
+dashboard.layout.move_below_aria,Move {name} below the dashboard,העברת {name} אל מתחת ללוח,panel move button aria-label + title,do not translate {…}
+dashboard.layout.move_down_aria,Move {name} down,העברת {name} למטה,panel move button aria-label + title,do not translate {…}
+dashboard.layout.move_out_below_aria,Move {name} back up to a side column,החזרת {name} למעלה לעמודה צדדית,panel move button aria-label + title,do not translate {…}
+dashboard.layout.move_panels_button,↔ Move panels,↔ הזזת פאנלים,settings Display Options button,leading-emoji
+dashboard.layout.move_panels_label,Panel arrangement,סידור הפאנלים,settings row label,
+dashboard.layout.move_up_aria,Move {name} up,העברת {name} למעלה,panel move button aria-label + title,do not translate {…}
+dashboard.layout.moved_announce,"{panel} moved to {zone}, position {pos} of {count}","הפאנל {panel} הועבר אל {zone}, מיקום {pos} מתוך {count}",screen-reader move announcement (#a11yStatus),do not translate {…}
+dashboard.layout.panel_dow,Days of the Week,ימות השבוע,panel name in move-panels chrome,
+dashboard.layout.panel_picker,Student Picker,בורר תלמידים,panel name in move-panels chrome,
+dashboard.layout.panel_timer,Timer,טיימר,panel name in move-panels chrome,
+dashboard.layout.panel_video,Video,וידאו,panel name in move-panels chrome,
+dashboard.layout.panel_weather,Weather,מזג אוויר,panel name in move-panels chrome,
+dashboard.layout.reset_button,↺ Restore default layout,↺ שחזור פריסת ברירת המחדל,move-panels bar button,leading-emoji
+dashboard.layout.reset_toast,Default layout restored,פריסת ברירת המחדל שוחזרה,toast + announcement after layout reset,
+dashboard.layout.switch_column_aria,Move {name} to the other column,העברת {name} לעמודה השנייה,panel move button aria-label + title,do not translate {…}
+dashboard.layout.zone_below,Bottom row,השורה התחתונה,zone badge + announcement zone name,
+dashboard.layout.zone_left,Left column,העמודה הימנית,zone badge + announcement zone name,start rail — visually RIGHT in the RTL Hebrew UI; the he string deliberately says right
+dashboard.layout.zone_right,Right column,העמודה השמאלית,zone badge + announcement zone name,end rail — visually LEFT in the RTL Hebrew UI; the he string deliberately says left
 dashboard.picker.all_absent,Everyone is marked absent today.,כולם מסומנים כנעדרים היום.,pick overlay message,
 dashboard.picker.chip_absent,Absent today — tap to include,נעדר היום — הקישו כדי לכלול,chip tooltip (absent),
 dashboard.picker.chip_present,Tap to mark absent for this session,הקישו כדי לסמן כנעדר לשיעור זה,chip tooltip (present),
@@ -384,6 +406,8 @@ dashboard.tour.step6_body,One-tap starter setups — including a general-classro
 dashboard.tour.step6_title,Quick-start layouts,פריסות התחלה מהירה,tour step title,
 dashboard.tour.step7_body,"Load your daily schedule and the dashboard switches presets by itself, period by period.","טענו את מערכת השעות היומית ולוח המחוונים יחליף תבניות בעצמו, שיעור אחר שיעור.",tour step body,
 dashboard.tour.step7_title,Schedule Sync,סנכרון מערכת שעות,tour step title,
+dashboard.tour.step_layout_body,"Tap Move panels to rearrange the dashboard — put any panel in either side column, or in the row below. Changes save automatically.","הקישו על הזזת פאנלים כדי לסדר מחדש את הלוח — אפשר למקם כל פאנל בכל עמודה צדדית, או בשורה שמתחת. השינויים נשמרים אוטומטית.",tour step body,
+dashboard.tour.step_layout_title,Rearrange the panels,סידור הפאנלים מחדש,tour step title,
 dashboard.video.header,Video,וידאו,video panel header + collapse header,RTL / hebDisplay; Hebrew fork וִידֵאוֹ
 dashboard.video.layout_below,Under dashboard,מתחת ללוח,radio option,
 dashboard.video.layout_sidebar,In sidebar,בסרגל הצד,radio option,

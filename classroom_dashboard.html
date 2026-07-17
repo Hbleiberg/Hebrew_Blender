@@ -293,22 +293,25 @@
     background: #1e2535;
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   }
-  .right-col-wrap {
+  /* Side rails — the "left"/"right" panelLayout zones (renderPanelLayout reparents panels here) */
+  .zone-col {
     display: flex;
     flex-direction: column;
     gap: 16px;
     min-width: 0;
   }
+  /* Days card keeps its full-rail stretch (it was a stretched grid child before the zone wrap) */
+  .zone-col > #dowCol { flex: 1 0 auto; }
   /* Weather card: compact, don't stretch */
-  .right-col-wrap #weatherCol { flex-shrink: 0; }
-  /* Video card in sidebar fills remaining height */
-  .right-col-wrap #videoPanel {
+  .zone-col #weatherCol { flex-shrink: 0; }
+  /* Video card in a side rail fills remaining height */
+  .zone-col #videoPanel {
     flex: 1;
     display: flex;
     flex-direction: column;
     min-height: 0;
   }
-  .right-col-wrap #videoPanel #videoBody {
+  .zone-col #videoPanel #videoBody {
     flex: 1;
     min-height: 0;
     padding: 10px;
@@ -324,11 +327,124 @@
     padding-top: 0;
     padding-bottom: 0;
   }
-  .right-col-wrap #videoPanel #videoIframe {
+  .zone-col #videoPanel #videoIframe {
     width: 100%;
     height: 100%;
     aspect-ratio: unset;
   }
+  /* Below zone — full-width panels stack inside the container (updateDashboardGrid hides it when empty) */
+  #videoBelowSlot {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-inline: 28px;
+    padding-block-end: 28px;
+  }
+  #videoBelowSlot:empty { display: none; }
+  /* Zone-emptiness column collapse — class-driven and desktop-scoped so the ≤980px
+     single-column media query always wins (an inline grid-template would beat it). */
+  @media (min-width: 981px) {
+    .dashboard.cols-no-left  { grid-template-columns: 1fr 290px; }
+    .dashboard.cols-no-right { grid-template-columns: 290px 1fr; }
+    .dashboard.cols-center-only { grid-template-columns: 1fr; }
+  }
+
+  /* ───── Move-panels edit mode ───── */
+  body.layout-edit .zone-col,
+  body.layout-edit #videoBelowSlot {
+    outline: 2px dashed var(--gold);
+    outline-offset: 4px;
+    border-radius: 8px;
+  }
+  body.layout-edit #videoBelowSlot { min-height: 64px; margin-block-start: 8px; }
+  body.layout-edit .zone-col::before,
+  body.layout-edit #videoBelowSlot::before {
+    content: attr(data-zone-label);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-align: start;
+  }
+  .pmv-row {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: var(--warm-gray);
+    border-block-end: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  body.layout-edit .pmv-row { display: flex; }
+  .pmv-name {
+    flex: 1;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pmv-hidden-note { font-size: 0.66rem; color: var(--muted); font-style: italic; white-space: nowrap; }
+  .pmv-btn {
+    min-width: 34px;
+    min-height: 30px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: var(--white);
+    color: var(--navy);
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: inherit;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .pmv-btn:hover:not(:disabled) { background: var(--gold-light); }
+  .pmv-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+  .pmv-btn:disabled { opacity: 0.35; cursor: default; }
+  body.dark .pmv-row { background: #161c2a; }
+  body.dark .pmv-btn { background: #1e2535; color: #dde4f0; }
+  body.dark .pmv-btn:hover:not(:disabled) { background: #2a3349; }
+  /* Hidden-by-toggle panels appear ghosted in edit mode (beats their inline display:none) */
+  body.layout-edit .dash-col.pmv-ghost { display: flex !important; opacity: 0.45; }
+  body.layout-edit #videoPanel.pmv-ghost { display: block !important; opacity: 0.45; }
+  #layoutEditBar {
+    display: none;
+    position: fixed;
+    inset-block-end: 18px;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
+    margin-inline: auto;
+    width: fit-content;
+    max-width: 92vw;
+    z-index: 300;
+    background: var(--navy);
+    color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+    padding: 10px 14px;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  body.layout-edit #layoutEditBar { display: flex; }
+  body.dark #layoutEditBar { background: #0a0f1c; }
+  #layoutEditBar .leb-hint { font-size: 0.74rem; opacity: 0.85; }
+  .leb-btn {
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.8rem;
+    padding: 7px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .leb-btn:hover { background: rgba(255,255,255,0.22); }
+  .leb-btn:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 1px; }
 
   .col-title {
     font-family: 'Libre Baskerville', serif;
@@ -1444,7 +1560,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <div class="pick-controls" id="pickControls"></div>
 </div>
 <div class="dashboard">
-  <!-- LEFT: Days -->
+  <!-- START RAIL (panelLayout zone "left") -->
+  <div class="zone-col" id="zoneLeft">
+  <!-- Days -->
   <div class="dash-col" id="dowCol">
     <div class="col-title" id="dowColTitle">Days of the Week</div>
     <div class="col-body" id="dowBody">
@@ -1452,7 +1570,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div class="shabbat-block" id="shabbatTimes" style="display:none;"></div>
       <div class="omer-block" id="omerPanel" style="display:none;"></div>
     </div>
-  </div><!-- CENTER: Date / Time / Custom Text --><div class="dash-col dash-center">
+  </div>
+  </div><!-- CENTER: Date / Time / Custom Text (fixed — not a movable panel) --><div class="dash-col dash-center">
     <div id="dateTimeBlock" style="width:100%;">
       <div class="eng-date" id="engDate"></div>
       <div class="heb-date" id="hebDate"></div>
@@ -1465,7 +1584,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div id="dashTextDisplay" class="dash-text-display"></div>
       <button id="dashEditPencil" class="dash-edit-pencil" title="Edit text" data-i18n-title="dashboard.text.edit_pencil_title" aria-label="Edit dashboard text" data-i18n-aria-label="dashboard.text.edit_pencil_aria" onclick="enterInPlaceEdit()">✎</button>
     </div>
-  </div><!-- RIGHT: Weather --><div class="right-col-wrap">
+  </div><!-- END RAIL (panelLayout zone "right") --><div class="zone-col" id="zoneRight">
     <div class="dash-col" id="weatherCol">
       <div class="col-title" id="weatherColTitle">Weather</div>
       <div class="col-body" id="weatherBody">
@@ -1511,9 +1630,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <div class="picker-progress" id="pickerProgress"></div>
       </div>
     </div>
-    <div id="videoSidebarSlot"></div>
   </div>
 </div>
+<!-- Below zone (panelLayout zone "below") — full-width panels live INSIDE this container -->
 <div id="videoBelowSlot"></div>
 <div id="videoPanel" style="display:none;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);">
   <div id="videoPanelHeader" onclick="toggleVideoCollapse()" style="background:var(--navy);color:#fff;padding:7px 14px;display:flex;align-items:center;cursor:pointer;user-select:none;border-bottom:2px solid var(--gold);">
@@ -1563,6 +1682,14 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <span class="ed-sep"></span>
   <button class="ed-btn" type="button" title="Finish editing" onclick="exitInPlaceEdit(true)" data-i18n="dashboard.text.done_btn">✓ Done</button>
 </div>
+<!-- ───── Move-panels edit-mode bar (shown only while body.layout-edit) ───── -->
+<div id="layoutEditBar" role="toolbar" aria-label="Move panels" data-i18n-aria-label="dashboard.layout.bar_aria">
+  <span class="leb-hint" data-i18n="dashboard.layout.edit_hint">Use the arrow buttons on each panel to move it. Changes save automatically.</span>
+  <button class="leb-btn" type="button" id="layoutResetBtn" onclick="resetPanelLayout()" data-i18n="dashboard.layout.reset_button">↺ Restore default layout</button>
+  <button class="leb-btn" type="button" id="layoutDoneBtn" onclick="exitLayoutEdit()" data-i18n="dashboard.layout.done_button">✓ Done</button>
+</div>
+<!-- Screen-reader live region for move announcements (same pattern as flash_cards #a11yStatus) -->
+<span id="a11yStatus" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;"></span>
 <!-- ───── Settings drawer ───── --><div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
 <div class="settings-modal" id="settingsModal" role="dialog" aria-modal="true" aria-label="Dashboard settings" data-i18n-aria-label="dashboard.settings.drawer_aria">
   <div class="settings-header">
@@ -1587,9 +1714,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   </div>
 </div>
 
-<div class="panel">
+<div class="panel" id="displayPanel">
   <div class="panel-title" data-i18n="dashboard.settings.panel_display">Display Options</div>
   <div class="panel-body">
+    <div class="form-row">
+      <label data-i18n="dashboard.layout.move_panels_label">Panel arrangement</label>
+      <button class="btn btn-xs" id="movePanelsBtn" onclick="enterLayoutEdit()" data-i18n="dashboard.layout.move_panels_button">↔ Move panels</button>
+    </div>
     <div class="form-row">
       <label data-i18n="dashboard.display.column_headers">Column headers</label>
       <div class="radio-group">
@@ -2388,6 +2519,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   const FS_EXIT  = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>';
 
   /* ────────── STATE ────────── */
+  // Movable widget panels: id → element id. The center date/time column is fixed (the product's
+  // anchor) and is not in this map. settings.panelLayout is the single source of truth for where
+  // each panel lives; the legacy settings.videoLayout is kept as a derived mirror (see
+  // applyPanelLayout) so pre-panelLayout exports/pages still position the video sensibly.
+  const MOVABLE_PANELS = { dow: 'dowCol', weather: 'weatherCol', timer: 'timerCol', picker: 'pickerCol', video: 'videoPanel' };
+  const PANEL_ZONES = ['left', 'right', 'below'];   // 'left'/'right' are LOGICAL rails (first/third grid child) — the grid mirrors under dir=rtl, so they swap sides visually in Hebrew
+  const DEFAULT_PANEL_LAYOUT = { left: ['dow'], right: ['weather', 'timer', 'picker'], below: ['video'] };
   let settings = {
     location: 'New York',
     engDateFmt: 'MDY',
@@ -2431,7 +2569,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     showVideoEmbed: false,
     videoEmbedUrl: '',
     videoCollapsed: false,
-    videoLayout: 'below',
+    videoLayout: 'below',             // legacy mirror — derived from panelLayout on every layout change; read only when a stored blob predates panelLayout
+    panelLayout: JSON.parse(JSON.stringify(DEFAULT_PANEL_LAYOUT)),
     tapToReadDow: false,
     tapToReadWeather: false,
     ttsRate: 0.75,
@@ -3690,47 +3829,344 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   }
 
   function toggleVideoCollapse() {
+    if (document.body.classList.contains('layout-edit')) return;   // header clicks are inert while moving panels
     settings.videoCollapsed = !settings.videoCollapsed;
     applyVideoCollapse(settings.videoCollapsed, false);
     saveSettingsToStorage();
   }
 
-  function setVideoLayout(layout) {
-    const panel  = document.getElementById('videoPanel');
-    const iframe = document.getElementById('videoIframe');
-    panel.style.border       = '1px solid var(--border)';
-    panel.style.borderRadius = '12px';
-    panel.style.boxShadow    = 'var(--shadow-sm)';
-    if (layout === 'sidebar') {
-      document.getElementById('videoSidebarSlot').appendChild(panel);
-      panel.style.width  = '';
-      panel.style.margin = '';
-      // iframe fills card height — aspect-ratio handled by CSS
-      iframe.style.aspectRatio = '';
-    } else {
-      const slot = document.getElementById('videoBelowSlot');
-      slot.parentNode.insertBefore(panel, slot.nextSibling);
-      panel.style.width  = '';
-      panel.style.margin = '0 28px 28px';
-      // restore 16:9 aspect ratio for full-width below mode
-      iframe.style.aspectRatio = '16/9';
-    }
-  }
-
   function applyVideoEmbed(show, url) {
     const panel  = document.getElementById('videoPanel');
     const iframe = document.getElementById('videoIframe');
-    if (!show) { panel.style.display = 'none'; return; }
+    if (!show) { panel.style.display = 'none'; applyPanelLayout(); return; }
     const id = url ? extractYouTubeId(url) : null;
     if (id) {
       // Always set src — empty src="" is resolved to the page URL by browsers
       iframe.src = 'https://www.youtube.com/embed/' + id;
-      setVideoLayout(settings.videoLayout || 'below');
       panel.style.display = 'block';
       applyVideoCollapse(settings.videoCollapsed, true); // instant on load
     } else {
       panel.style.display = 'none';
     }
+    applyPanelLayout();
+  }
+
+  /* ────────── MOVABLE PANEL LAYOUT ────────── */
+  // Validator for settings.panelLayout — runs at EVERY ingress (storage load, applySettings,
+  // legacy synthesis). Always rebuilds into fresh arrays (never returns its input), so imported
+  // blobs can't alias PRISTINE_DEFAULTS and a tampered file can never leave a panel unrendered:
+  // unknown ids are dropped, duplicates de-duped (first wins), missing ids appended to their
+  // default zone.
+  function normalizePanelLayout(raw) {
+    const out = { left: [], right: [], below: [] };
+    const seen = new Set();
+    if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+      PANEL_ZONES.forEach(z => {
+        (Array.isArray(raw[z]) ? raw[z] : []).forEach(id => {
+          if (typeof id === 'string' && Object.prototype.hasOwnProperty.call(MOVABLE_PANELS, id) && !seen.has(id)) {
+            seen.add(id);
+            out[z].push(id);
+          }
+        });
+      });
+    }
+    PANEL_ZONES.forEach(z => DEFAULT_PANEL_LAYOUT[z].forEach(id => {
+      if (!seen.has(id)) { seen.add(id); out[z].push(id); }
+    }));
+    return out;
+  }
+
+  function synthesizePanelLayoutFromVideoLayout(vl) {
+    const out = JSON.parse(JSON.stringify(DEFAULT_PANEL_LAYOUT));
+    if (vl === 'sidebar') {
+      out.below = out.below.filter(id => id !== 'video');
+      out.right.push('video');
+    }
+    return out;
+  }
+
+  // One visibility predicate per panel — mirrors what each panel's own toggle/render path does.
+  function isPanelVisible(id) {
+    switch (id) {
+      case 'dow':     return !settings.hideDOW;
+      case 'weather': return !settings.hideWeather;
+      case 'timer':   return settings.showTimer !== false &&
+                             document.getElementById('timerCol')?.style.display !== 'none';
+      case 'picker':  return settings.showStudentPicker === true &&
+                             document.getElementById('pickerCol')?.style.display !== 'none';
+      case 'video':   return !!settings.showVideoEmbed &&
+                             document.getElementById('videoPanel')?.style.display !== 'none';
+    }
+    return false;
+  }
+
+  function _panelZoneEls() {
+    return {
+      left:  document.getElementById('zoneLeft'),
+      right: document.getElementById('zoneRight'),
+      below: document.getElementById('videoBelowSlot'),
+    };
+  }
+
+  // Reparent panels to match `layout` with minimal DOM churn. #videoPanel is the pinned node:
+  // when its zone is unchanged it is never re-inserted (a DOM move reloads the iframe) — any
+  // within-zone reorder moves the OTHER panels around it instead. Moving the video to a
+  // different zone still reloads it, exactly like the old sidebar/below radio did.
+  function renderPanelLayout(layout) {
+    const zones = _panelZoneEls();
+    const videoEl = document.getElementById('videoPanel');
+    PANEL_ZONES.forEach(z => {
+      const zoneEl = zones[z];
+      if (!zoneEl) return;
+      const desired = (layout[z] || []).map(id => document.getElementById(MOVABLE_PANELS[id])).filter(Boolean);
+      const pinIdx = desired.indexOf(videoEl);
+      if (pinIdx !== -1 && videoEl.parentElement === zoneEl) {
+        // Video already in this zone — place its neighbors around it without touching it.
+        let ref = videoEl;
+        for (let i = pinIdx - 1; i >= 0; i--) {
+          const el = desired[i];
+          if (el.parentElement !== zoneEl || el.nextElementSibling !== ref) zoneEl.insertBefore(el, ref);
+          ref = el;
+        }
+        let cursor = videoEl;
+        for (let i = pinIdx + 1; i < desired.length; i++) {
+          const el = desired[i];
+          if (el.parentElement !== zoneEl || el.previousElementSibling !== cursor) zoneEl.insertBefore(el, cursor.nextSibling);
+          cursor = el;
+        }
+      } else {
+        let cursor = null;
+        desired.forEach(el => {
+          if (el.parentElement !== zoneEl || el.previousElementSibling !== cursor) {
+            zoneEl.insertBefore(el, cursor ? cursor.nextSibling : zoneEl.firstChild);
+          }
+          cursor = el;
+        });
+      }
+    });
+    // 16:9 only in the full-width below zone; in a side rail the iframe fills the card (the
+    // markup's inline aspect-ratio would beat a stylesheet rule, so this stays a JS toggle).
+    const iframe = document.getElementById('videoIframe');
+    if (iframe) iframe.style.aspectRatio = (layout.below || []).includes('video') ? '16/9' : '';
+  }
+
+  function applyPanelLayout() {
+    settings.panelLayout = normalizePanelLayout(settings.panelLayout);
+    const L = settings.panelLayout;
+    // Derived legacy mirror: either rail counts as 'sidebar' so a pre-panelLayout page opening a
+    // new export keeps the video in a rail instead of demoting it below.
+    settings.videoLayout = (L.right.includes('video') || L.left.includes('video')) ? 'sidebar' : 'below';
+    renderPanelLayout(L);
+    updateDashboardGrid();
+  }
+
+  function updateDashboardGrid() {
+    const dashboard = document.querySelector('.dashboard');
+    if (!dashboard) return;
+    const zones = _panelZoneEls();
+    const layout = normalizePanelLayout(settings.panelLayout);
+    // In edit mode every zone stays visible (empty zones are drop targets).
+    const editing = document.body.classList.contains('layout-edit');
+    const zoneShown = z => editing || layout[z].some(isPanelVisible);
+    const leftShown = zoneShown('left');
+    const rightShown = zoneShown('right');
+    if (zones.left)  zones.left.style.display  = leftShown  ? '' : 'none';
+    if (zones.right) zones.right.style.display = rightShown ? '' : 'none';
+    // Explicit 'flex' so the empty below zone still shows as a drop target in edit mode.
+    if (zones.below) zones.below.style.display = zoneShown('below') ? 'flex' : 'none';
+    // Column templates are CLASS-driven and scoped to >980px in the CSS, so the mobile
+    // single-column media query always wins (an inline grid-template-columns would beat it).
+    dashboard.classList.toggle('cols-no-left', !leftShown && rightShown);
+    dashboard.classList.toggle('cols-no-right', leftShown && !rightShown);
+    dashboard.classList.toggle('cols-center-only', !leftShown && !rightShown);
+  }
+
+  /* ────────── MOVE-PANELS EDIT MODE ────────── */
+  // Explicit, teacher-only mode: the projected view shows zero affordances. Buttons (not drag)
+  // are the baseline so every move works on a touch-only SmartBoard and by keyboard alike.
+  let _layoutEditActive = false;
+
+  function announceLayout(msg) {
+    const el = document.getElementById('a11yStatus');
+    if (el) el.textContent = msg;
+  }
+
+  function _buildPanelStrip(id) {
+    const layout = settings.panelLayout;
+    const zone = PANEL_ZONES.find(z => layout[z].includes(id)) || 'right';
+    const arr = layout[zone];
+    const idx = arr.indexOf(id);
+    const name = I18n.t('dashboard.layout.panel_' + id);
+    const strip = document.createElement('div');
+    strip.className = 'pmv-row';
+    strip.dataset.panel = id;
+    const nameEl = document.createElement('span');
+    nameEl.className = 'pmv-name';
+    nameEl.textContent = name;
+    strip.appendChild(nameEl);
+    if (!isPanelVisible(id)) {
+      const note = document.createElement('span');
+      note.className = 'pmv-hidden-note';
+      note.textContent = I18n.t('dashboard.layout.ghost_hidden_note');
+      strip.appendChild(note);
+    }
+    const defs = [
+      { act: 'up',   glyph: '▲', key: 'dashboard.layout.move_up_aria',   disabled: idx <= 0 },
+      { act: 'down', glyph: '▼', key: 'dashboard.layout.move_down_aria', disabled: idx === arr.length - 1 },
+    ];
+    if (zone === 'below') {
+      defs.push({ act: 'out', glyph: '⤒', key: 'dashboard.layout.move_out_below_aria', disabled: false });
+    } else {
+      defs.push({ act: 'switch', glyph: '⇄', key: 'dashboard.layout.switch_column_aria', disabled: false });
+      defs.push({ act: 'below',  glyph: '⤓', key: 'dashboard.layout.move_below_aria',   disabled: false });
+    }
+    defs.forEach(d => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'pmv-btn';
+      btn.dataset.act = d.act;
+      btn.textContent = d.glyph;
+      btn.disabled = d.disabled;
+      const label = I18n.t(d.key, { name: name });
+      btn.setAttribute('aria-label', label);
+      btn.title = label;
+      btn.addEventListener('click', () => movePanel(id, d.act));
+      strip.appendChild(btn);
+    });
+    return strip;
+  }
+
+  // Rebuild every panel's control strip + ghost state + zone badges. Cheap (5 small strips), so
+  // a full rebuild after each move keeps disabled states and glyph sets trivially correct.
+  function refreshLayoutStrips() {
+    if (!_layoutEditActive) return;
+    Object.keys(MOVABLE_PANELS).forEach(id => {
+      const panel = document.getElementById(MOVABLE_PANELS[id]);
+      if (!panel) return;
+      const old = panel.querySelector(':scope > .pmv-row');
+      if (old) old.remove();
+      panel.insertBefore(_buildPanelStrip(id), panel.firstChild);
+      panel.classList.toggle('pmv-ghost', !isPanelVisible(id));
+    });
+    const zones = _panelZoneEls();
+    PANEL_ZONES.forEach(z => {
+      if (zones[z]) zones[z].setAttribute('data-zone-label', I18n.t('dashboard.layout.zone_' + z));
+    });
+  }
+
+  // applyI18n hook — READ-ONLY re-render of the edit chrome on language switch, restoring focus
+  // to the equivalent control afterwards (the rebuild destroys the focused node).
+  function refreshLayoutEditChrome() {
+    if (!_layoutEditActive) return;
+    const act = document.activeElement;
+    const desc = (act && act.classList && act.classList.contains('pmv-btn'))
+      ? { panel: act.closest('.pmv-row')?.dataset.panel, act: act.dataset.act } : null;
+    refreshLayoutStrips();
+    if (desc && desc.panel) {
+      const strip = document.getElementById(MOVABLE_PANELS[desc.panel])?.querySelector(':scope > .pmv-row');
+      const btn = strip && (strip.querySelector('.pmv-btn[data-act="' + desc.act + '"]:not(:disabled)') ||
+                            strip.querySelector('.pmv-btn:not(:disabled)'));
+      if (btn) { try { btn.focus(); } catch (e) {} }
+    }
+  }
+
+  function movePanel(id, action) {
+    settings.panelLayout = normalizePanelLayout(settings.panelLayout);
+    const layout = settings.panelLayout;
+    const zone = PANEL_ZONES.find(z => layout[z].includes(id));
+    if (!zone) return;
+    const arr = layout[zone];
+    const i = arr.indexOf(id);
+    let target = zone;
+    if (action === 'up') {
+      if (i === 0) return;
+      arr.splice(i, 1); arr.splice(i - 1, 0, id);
+    } else if (action === 'down') {
+      if (i === arr.length - 1) return;
+      arr.splice(i, 1); arr.splice(i + 1, 0, id);
+    } else if (action === 'switch') {
+      if (zone === 'below') return;
+      target = (zone === 'left') ? 'right' : 'left';
+      arr.splice(i, 1); layout[target].push(id);
+    } else if (action === 'below') {
+      if (zone === 'below') return;
+      target = 'below';
+      arr.splice(i, 1); layout.below.push(id);
+    } else if (action === 'out') {
+      if (zone !== 'below') return;
+      target = 'right';
+      arr.splice(i, 1); layout.right.push(id);
+    } else return;
+    saveSettingsToStorage();
+    applyPanelLayout();
+    refreshLayoutStrips();
+    // Focus the equivalent button on the FRESH strip (the rebuild destroyed the activated node),
+    // falling back to any enabled button — same pattern as moveScheduleRow.
+    if (_layoutEditActive) {
+      const strip = document.getElementById(MOVABLE_PANELS[id])?.querySelector(':scope > .pmv-row');
+      const btn = strip && (strip.querySelector('.pmv-btn[data-act="' + action + '"]:not(:disabled)') ||
+                            strip.querySelector('.pmv-btn:not(:disabled)'));
+      if (btn) btn.focus();
+    }
+    const tArr = settings.panelLayout[target];
+    announceLayout(I18n.t('dashboard.layout.moved_announce', {
+      panel: I18n.t('dashboard.layout.panel_' + id),
+      zone: I18n.t('dashboard.layout.zone_' + target),
+      pos: tArr.indexOf(id) + 1,
+      count: tArr.length,
+    }));
+  }
+
+  function resetPanelLayout() {
+    settings.panelLayout = JSON.parse(JSON.stringify(DEFAULT_PANEL_LAYOUT));
+    saveSettingsToStorage();
+    applyPanelLayout();
+    refreshLayoutStrips();
+    const msg = I18n.t('dashboard.layout.reset_toast');
+    if (typeof showAppToast === 'function') showAppToast(msg);
+    announceLayout(msg);
+  }
+
+  function _layoutEditKey(e) {
+    if (e.key === 'Escape' && _layoutEditActive) {
+      e.preventDefault();
+      e.stopPropagation();
+      exitLayoutEdit();
+    }
+  }
+
+  function enterLayoutEdit() {
+    if (_layoutEditActive) return;
+    if (document.fullscreenElement) { try { document.exitFullscreen(); } catch (e) {} }   // edit mode is a teacher task — never over the projected fullscreen view
+    if (_activeEditable) exitInPlaceEdit(true);
+    if (typeof _tourActive !== 'undefined' && _tourActive) tourEnd(false);
+    if (document.getElementById('settingsModal').classList.contains('open')) closeSettings();
+    _layoutEditActive = true;
+    document.body.classList.add('layout-edit');
+    settings.panelLayout = normalizePanelLayout(settings.panelLayout);
+    refreshLayoutStrips();
+    updateDashboardGrid();   // shows empty zones as drop targets
+    document.addEventListener('keydown', _layoutEditKey, true);
+    const done = document.getElementById('layoutDoneBtn');
+    if (done) done.focus();
+  }
+
+  function exitLayoutEdit() {
+    if (!_layoutEditActive) return;
+    _layoutEditActive = false;
+    document.body.classList.remove('layout-edit');
+    document.removeEventListener('keydown', _layoutEditKey, true);
+    document.querySelectorAll('.pmv-row').forEach(el => el.remove());
+    Object.keys(MOVABLE_PANELS).forEach(id => {
+      const panel = document.getElementById(MOVABLE_PANELS[id]);
+      if (panel) panel.classList.remove('pmv-ghost');
+    });
+    const zones = _panelZoneEls();
+    PANEL_ZONES.forEach(z => { if (zones[z]) zones[z].removeAttribute('data-zone-label'); });
+    updateDashboardGrid();
+    saveSettingsToStorage();
+    const g = document.getElementById('gearBtn');
+    if (g) { try { g.focus(); } catch (e) {} }
   }
 
   function updateVideoEmbed() {
@@ -3743,26 +4179,6 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function toggleVideoUrlRow(show) {
     const row = document.getElementById('videoUrlRow');
     row.style.display = show ? 'flex' : 'none';
-  }
-
-  function updateDashboardGrid() {
-    const dashboard = document.querySelector('.dashboard');
-    const rightWrap = document.querySelector('.right-col-wrap');
-    if (!dashboard || !rightWrap) return;
-    const leftHidden = !!settings.hideDOW;
-    const videoInSidebar = !!settings.showVideoEmbed &&
-      settings.videoLayout === 'sidebar' &&
-      document.getElementById('videoPanel')?.style.display !== 'none';
-    const timerVisible = settings.showTimer !== false &&
-      document.getElementById('timerCol')?.style.display !== 'none';
-    const pickerVisible = settings.showStudentPicker === true &&
-      document.getElementById('pickerCol')?.style.display !== 'none';
-    const rightHidden = !!settings.hideWeather && !videoInSidebar && !timerVisible && !pickerVisible;
-    rightWrap.style.display = rightHidden ? 'none' : '';
-    if (leftHidden && rightHidden) dashboard.style.gridTemplateColumns = '1fr';
-    else if (leftHidden) dashboard.style.gridTemplateColumns = '1fr 290px';
-    else if (rightHidden) dashboard.style.gridTemplateColumns = '290px 1fr';
-    else dashboard.style.gridTemplateColumns = '';
   }
 
   function applyZoom(val) {
@@ -3849,7 +4265,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     $('showVideoEmbed').checked = !!settings.showVideoEmbed;
     $('videoUrlInput').value = settings.videoEmbedUrl || '';
     toggleVideoUrlRow(!!settings.showVideoEmbed);
-    const vlRadio = document.querySelector(`input[name="videoLayout"][value="${settings.videoLayout || 'below'}"]`);
+    // Radio state derives from panelLayout (the canonical source), defensively — applySettings
+    // may sync the form before the tail normalize has run on an imported blob.
+    const vlVal = ((settings.panelLayout?.right || []).includes('video') ||
+                   (settings.panelLayout?.left || []).includes('video')) ? 'sidebar' : 'below';
+    const vlRadio = document.querySelector(`input[name="videoLayout"][value="${vlVal}"]`);
     if (vlRadio) vlRadio.checked = true;
     $('showNikkud').checked = settings.showNikkud;
     $('colorCodeNikkud').checked = settings.colorCodeNikkud;
@@ -4055,16 +4475,17 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     document.getElementById('showVideoEmbed').addEventListener('change', e => {
       settings.showVideoEmbed = e.target.checked;
       toggleVideoUrlRow(e.target.checked);
-      applyVideoEmbed(e.target.checked, settings.videoEmbedUrl);
-      updateDashboardGrid();
+      applyVideoEmbed(e.target.checked, settings.videoEmbedUrl);   // re-applies the panel layout too
       saveSettingsToStorage();
     });
+    // The sidebar/below radios are now a shortcut over panelLayout: 'sidebar' = either side rail
+    // (movePanel puts it in the end rail), 'below' = the below zone. movePanel saves + re-renders.
     document.querySelectorAll('input[name="videoLayout"]').forEach(r =>
       r.addEventListener('change', () => {
-        settings.videoLayout = r.value;
-        if (settings.showVideoEmbed) setVideoLayout(r.value);
-        updateDashboardGrid();
-        saveSettingsToStorage();
+        const L = normalizePanelLayout(settings.panelLayout);
+        const inRail = L.left.includes('video') || L.right.includes('video');
+        if (r.value === 'sidebar' && !inRail) movePanel('video', 'out');
+        else if (r.value === 'below' && inRail) movePanel('video', 'below');
       }));
     document.getElementById('zoomSlider').addEventListener('input', e => applyZoom(+e.target.value));
     document.getElementById('dashTextDisplay').addEventListener('click', e => {
@@ -4110,6 +4531,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     };
     ivritSafeAssign(settings, s);   // presets carry no `rosters` key, so settings.rosters survives the merge
     Object.assign(settings, savedSchedule);
+    // Panel layout: a pre-panelLayout snapshot expresses the video position via videoLayout —
+    // honor that intent. A snapshot with NEITHER key predates the video feature and carries no
+    // layout opinion, so the current layout stands (house convention for newly added keys under
+    // the shallow merge). Normalize immediately — nothing below may see an un-validated shape.
+    if (s && s.panelLayout === undefined && s.videoLayout !== undefined)
+      settings.panelLayout = synthesizePanelLayoutFromVideoLayout(s.videoLayout);
+    settings.panelLayout = normalizePanelLayout(settings.panelLayout);
     if (forcedActiveId) settings.activeRosterId = forcedActiveId;
     delete settings.roster;         // legacy field is gone once classes exist
     ensureActiveClass();            // guarantee a valid active class (handles a deleted-class reference)
@@ -4141,8 +4569,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     updateDateTimeDisplay();
     renderDaysList();
     renderWeather();
-    updateDashboardGrid();
+    applyTimerVisibility();
     applyStudentPickerVisibility();
+    applyPanelLayout();   // reparent panels + recompute zone emptiness AFTER the visibility appliers above
     renderStudentPicker();
     applyWakeLock();
   }
@@ -4168,10 +4597,15 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         ivritSafeAssign(settings, saved);
         if (saved.showDOWEmojis === false) settings.dowEmojiSet = 'none';
         delete settings.showDOWEmojis;
+        // Legacy: pre-panelLayout blobs express the video position via videoLayout only. Key the
+        // check on the RAW blob — the settings-literal default masks absence on `settings` itself.
+        if (saved.panelLayout === undefined && saved.videoLayout)
+          settings.panelLayout = synthesizePanelLayoutFromVideoLayout(saved.videoLayout);
       } else {
         Object.assign(settings, DEFAULT_PRESET['Default']);
       }
     } catch (e) {}
+    settings.panelLayout = normalizePanelLayout(settings.panelLayout);
     migrateRostersInSettings();   // one-time: fold a legacy single roster into a named class (idempotent)
   }
 
@@ -5838,6 +6272,7 @@ else ivritInit();
   }
 
   function toggleColCollapse(colId, settingKey) {
+    if (document.body.classList.contains('layout-edit')) return;   // title clicks are inert while moving panels
     settings[settingKey] = !settings[settingKey];
     applyColCollapse(colId, settings[settingKey]);
     saveSettingsToStorage();
@@ -6155,6 +6590,7 @@ async function onUploadEngFontPick(input){
     const isFs = !!document.fullscreenElement;
     document.body.classList.toggle('fullscreen', isFs);
     document.querySelector('#fsBtn .fs-ico').innerHTML = isFs ? FS_EXIT : FS_ENTER;
+    if (isFs && _layoutEditActive) exitLayoutEdit();   // never project the move-panels chrome to the class
     applyTimerVisibility();
     applyStudentPickerVisibility();
     if (isFs) { acquireWakeLock(); showFsStrip(); }
@@ -6243,7 +6679,7 @@ async function onUploadEngFontPick(input){
     applyColCollapse('dowCol', !!settings.dowCollapsed);
     applyColCollapse('weatherCol', !!settings.weatherCollapsed);
     applyColCollapse('timerCol', !!settings.timerCollapsed);
-    updateDashboardGrid();
+    applyPanelLayout();   // place panels per saved layout + collapse empty zones
     if (!('wakeLock' in navigator)) { const kr = document.getElementById('keepAwakeRow'); if (kr) kr.style.display = 'none'; }
     applyWakeLock();
     document.getElementById('dowColTitle').addEventListener('click', () => toggleColCollapse('dowCol', 'dowCollapsed'));
@@ -6312,6 +6748,7 @@ async function onUploadEngFontPick(input){
       try { renderSavedSchedules(); } catch (e) {}
       try { renderPresets(); } catch (e) {}
       try { renderScheduleUI(); } catch (e) {}
+      try { refreshLayoutEditChrome(); } catch (e) {}   // move-panels strips/badges re-label (read-only, focus-restoring)
       try { fetchShabbat(false); } catch (e) {}   // re-render Shabbat widget (status strings via t())
       try { if (document.getElementById('frModal').classList.contains('open'))
         document.getElementById('frStarters').innerHTML = STARTERS.map(st =>
@@ -6358,6 +6795,8 @@ async function onUploadEngFontPick(input){
     { target: () => document.getElementById('weatherCol'), titleKey: 'dashboard.tour.step3_title', bodyKey: 'dashboard.tour.step3_body' },
     { target: () => document.getElementById('fsBtn'), titleKey: 'dashboard.tour.step4_title', bodyKey: 'dashboard.tour.step4_body' },
     { target: () => document.getElementById('gearBtn'), reveal: _tourOpenDrawer, titleKey: 'dashboard.tour.step5_title', bodyKey: 'dashboard.tour.step5_body' },
+    { target: () => document.getElementById('movePanelsBtn'),
+      reveal: () => { _tourOpenDrawer(); _tourExpandPanel('displayPanel'); }, titleKey: 'dashboard.tour.step_layout_title', bodyKey: 'dashboard.tour.step_layout_body' },
     { target: () => document.getElementById('starterLayoutsBtn'),
       reveal: () => { _tourOpenDrawer(); _tourExpandPanel('presetsPanel'); }, titleKey: 'dashboard.tour.step6_title', bodyKey: 'dashboard.tour.step6_body' },
     { target: () => document.getElementById('schedulePanel'),
