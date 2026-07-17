@@ -300,8 +300,8 @@
     gap: 16px;
     min-width: 0;
   }
-  /* Days card keeps its full-rail stretch (it was a stretched grid child before the zone wrap) */
-  .zone-col > #dowCol { flex: 1 0 auto; }
+  /* Cards size to content and top-align in any rail (position-independent, so a moved panel
+     never balloons); only the video panel stretches to fill (see below). */
   /* Weather card: compact, don't stretch */
   .zone-col #weatherCol { flex-shrink: 0; }
   /* Video card in a side rail fills remaining height */
@@ -410,6 +410,11 @@
   /* Hidden-by-toggle panels appear ghosted in edit mode (beats their inline display:none) */
   body.layout-edit .dash-col.pmv-ghost { display: flex !important; opacity: 0.45; }
   body.layout-edit #videoPanel.pmv-ghost { display: block !important; opacity: 0.45; }
+  /* Panel CONTENT is inert to touch/mouse while rearranging, so a stray tap can't start a
+     timer, pick a student, or fire TTS — only the .pmv-row move controls stay live. (Keyboard
+     collapse is separately blocked by the layout-edit guards in toggleColCollapse/toggleVideoCollapse.) */
+  body.layout-edit .dash-col > :not(.pmv-row),
+  body.layout-edit #videoPanel > :not(.pmv-row) { pointer-events: none; }
   #layoutEditBar {
     display: none;
     position: fixed;
@@ -4054,6 +4059,15 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     });
   }
 
+  // Focus the equivalent move button on a panel's FRESH strip (the rebuild destroyed the node the
+  // user activated), falling back to any enabled button — the moveScheduleRow re-query pattern.
+  function _focusPanelMoveBtn(id, act) {
+    const strip = document.getElementById(MOVABLE_PANELS[id])?.querySelector(':scope > .pmv-row');
+    const btn = strip && (strip.querySelector('.pmv-btn[data-act="' + act + '"]:not(:disabled)') ||
+                          strip.querySelector('.pmv-btn:not(:disabled)'));
+    if (btn) { try { btn.focus(); } catch (e) {} }
+  }
+
   // applyI18n hook — READ-ONLY re-render of the edit chrome on language switch, restoring focus
   // to the equivalent control afterwards (the rebuild destroys the focused node).
   function refreshLayoutEditChrome() {
@@ -4062,12 +4076,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     const desc = (act && act.classList && act.classList.contains('pmv-btn'))
       ? { panel: act.closest('.pmv-row')?.dataset.panel, act: act.dataset.act } : null;
     refreshLayoutStrips();
-    if (desc && desc.panel) {
-      const strip = document.getElementById(MOVABLE_PANELS[desc.panel])?.querySelector(':scope > .pmv-row');
-      const btn = strip && (strip.querySelector('.pmv-btn[data-act="' + desc.act + '"]:not(:disabled)') ||
-                            strip.querySelector('.pmv-btn:not(:disabled)'));
-      if (btn) { try { btn.focus(); } catch (e) {} }
-    }
+    if (desc && desc.panel) _focusPanelMoveBtn(desc.panel, desc.act);
   }
 
   function movePanel(id, action) {
@@ -4100,14 +4109,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     saveSettingsToStorage();
     applyPanelLayout();
     refreshLayoutStrips();
-    // Focus the equivalent button on the FRESH strip (the rebuild destroyed the activated node),
-    // falling back to any enabled button — same pattern as moveScheduleRow.
-    if (_layoutEditActive) {
-      const strip = document.getElementById(MOVABLE_PANELS[id])?.querySelector(':scope > .pmv-row');
-      const btn = strip && (strip.querySelector('.pmv-btn[data-act="' + action + '"]:not(:disabled)') ||
-                            strip.querySelector('.pmv-btn:not(:disabled)'));
-      if (btn) btn.focus();
-    }
+    if (_layoutEditActive) _focusPanelMoveBtn(id, action);
     const tArr = settings.panelLayout[target];
     announceLayout(I18n.t('dashboard.layout.moved_announce', {
       panel: I18n.t('dashboard.layout.panel_' + id),
@@ -4531,13 +4533,22 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     };
     ivritSafeAssign(settings, s);   // presets carry no `rosters` key, so settings.rosters survives the merge
     Object.assign(settings, savedSchedule);
-    // Panel layout: a pre-panelLayout snapshot expresses the video position via videoLayout —
-    // honor that intent. A snapshot with NEITHER key predates the video feature and carries no
-    // layout opinion, so the current layout stands (house convention for newly added keys under
-    // the shallow merge). Normalize immediately — nothing below may see an un-validated shape.
-    if (s && s.panelLayout === undefined && s.videoLayout !== undefined)
-      settings.panelLayout = synthesizePanelLayoutFromVideoLayout(s.videoLayout);
+    // Panel layout: an old snapshot's ONLY layout opinion is the video's sidebar/below position
+    // (it predates panelLayout). Honor just that — reposition the video within the CURRENT layout
+    // — rather than resetting the user's other panels to default (Schedule Sync auto-applies
+    // presets, so a full reset would wipe a custom arrangement on every period change). A snapshot
+    // with neither key has no opinion, so the current layout stands. Normalize first — nothing
+    // below may see an un-validated shape.
     settings.panelLayout = normalizePanelLayout(settings.panelLayout);
+    if (s && s.panelLayout === undefined && s.videoLayout !== undefined) {
+      const L = settings.panelLayout;
+      const inRail = L.left.includes('video') || L.right.includes('video');
+      if (s.videoLayout === 'sidebar' && !inRail) {
+        L.below = L.below.filter(id => id !== 'video'); L.right.push('video');
+      } else if (s.videoLayout === 'below' && inRail) {
+        L.left = L.left.filter(id => id !== 'video'); L.right = L.right.filter(id => id !== 'video'); L.below.push('video');
+      }
+    }
     if (forcedActiveId) settings.activeRosterId = forcedActiveId;
     delete settings.roster;         // legacy field is gone once classes exist
     ensureActiveClass();            // guarantee a valid active class (handles a deleted-class reference)
@@ -6574,8 +6585,7 @@ async function onUploadEngFontPick(input){
   }
   function fsStripVideo() {
     settings.showVideoEmbed = !settings.showVideoEmbed;
-    applyVideoEmbed(settings.showVideoEmbed, settings.videoEmbedUrl);
-    updateDashboardGrid();
+    applyVideoEmbed(settings.showVideoEmbed, settings.videoEmbedUrl);   // re-applies the panel layout + grid
     saveSettingsToStorage();
     if (settings.showVideoEmbed && !settings.videoEmbedUrl) openSettings();   // no URL yet → let the teacher paste one
     showFsStrip();
@@ -6593,6 +6603,7 @@ async function onUploadEngFontPick(input){
     if (isFs && _layoutEditActive) exitLayoutEdit();   // never project the move-panels chrome to the class
     applyTimerVisibility();
     applyStudentPickerVisibility();
+    updateDashboardGrid();   // fullscreen-only timer/picker visibility can empty a rail — recompute zone collapse
     if (isFs) { acquireWakeLock(); showFsStrip(); }
     else {
       if (_fsStripTimer) clearTimeout(_fsStripTimer);
@@ -6704,6 +6715,7 @@ async function onUploadEngFontPick(input){
     initTimer();
     initOmer();
     initStudentPicker();
+    updateDashboardGrid();   // initTimer/initStudentPicker set timer/picker display — recompute zone collapse now that visibility is final
     renderPresets();
     checkSchedule();
     renderScheduleUI();
