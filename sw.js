@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v324';
+const VERSION = 'v325';
 const CACHE = 'ivritsuite-' + VERSION;
 // Version-independent cache for the big data/ corpora (dictionary words / emoji / parshiyot /
 // pockettorah). Kept OUT of the version-scoped CACHE so a routine VERSION bump no longer evicts
@@ -86,6 +86,26 @@ self.addEventListener('fetch', (event) => {
             .catch(() => cached || Response.error());
         })
       )
+    );
+    return;
+  }
+
+  // Locale dictionaries: network-first (like pages) so new i18n keys shipped in a deploy aren't
+  // masked by the stale precached locale until the next worker activation — otherwise fresh
+  // (network-first) HTML can reference keys the cache-first locale doesn't have yet, and the UI
+  // shows raw `page.feature.key` strings. `cache: 'no-store'` bypasses the browser HTTP cache;
+  // falls back to the precached copy offline.
+  if (url.pathname.startsWith('/locales/')) {
+    event.respondWith(
+      fetch(req, { cache: 'no-store' })
+        .then((res) => {
+          if (res && res.ok && res.type === 'basic') {
+            const copy = res.clone();
+            caches.open(CACHE).then((cache) => cache.put(req, copy));
+          }
+          return res;
+        })
+        .catch(() => caches.match(req, { ignoreSearch: true }))
     );
     return;
   }
