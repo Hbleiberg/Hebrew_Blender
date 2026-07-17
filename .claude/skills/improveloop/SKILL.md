@@ -84,9 +84,9 @@ update this skill. Never "normalize" the ledger back to this skill's templates.
 ## Ledger structure (bootstrap template — the live ledger's own structure wins)
 
 Use this template ONLY when creating a missing ledger or section. An existing ledger's section names,
-ordering, and extra sections (e.g. `## Recurring-pattern sweep status`, the `### Discovery-pass
-rotation` table under Metrics, the trailing `**Next session (SN):**` pointer) are authoritative — match
-them, don't restructure them.
+ordering, and extra sections (e.g. `## Recurring-pattern sweep status` with its `### Discovery-pass
+rotation` table nested under it, the trailing `**Next session (SN):**` pointer) are authoritative —
+match them, don't restructure them.
 
 ```
 # IvritSuite Improvement Log
@@ -114,6 +114,9 @@ them, don't restructure them.
 ### Retired patterns
 - <pattern> | retired <date> | reason
 
+## Recurring-pattern sweep status
+- <pattern>: <last sweep's date, surface covered, and detection method / result detail>
+
 ### Discovery-pass rotation (run one per session, stalest first)
 - <letter> <name>: <date> (<SN>: <one-line result>)
 
@@ -128,9 +131,11 @@ read cheaply every session.
 1. **Discover, then select.** Run the single stalest discovery pass FIRST (per the ledger's rotation
    table; the `**Next session**` pointer resolves ties), logging everything found as Candidates /
    Feature seeds before fixing anything. The pass consumes **1 iteration** — a full session is
-   `1 pass + 4 fixes = 5`, and the per-session Metrics line records it that way. Skip the pass only on
-   explicit user direction, recording `pass run: — (skipped; <X> stays stalest)`. Then select the top
-   candidate from the ledger that satisfies the variety governor.
+   `1 pass + 4 fixes = 5`, and the per-session Metrics line records it that way. The pass charges the
+   iteration budget but NOT the variety governor's per-tool/per-pattern caps — fixing what the pass
+   just found in its own tool is the point. Skip the pass only on explicit user direction, recording
+   `pass run: — (skipped; <X> stays stalest)`. Then select the top candidate from the ledger that
+   satisfies the variety governor.
 2. **Ground:** open the file, grep the exact anchors, read the surrounding conventions (strict
    single-file HTML; match local style exactly). Line numbers in ledger entries drift — locate by
    pattern, not by remembered line.
@@ -163,7 +168,9 @@ this skill doesn't define (added after this writing), run it the way its ledger 
 section** (not a fixed list — patterns get registered and retired over time; the founding registry
 included falsy-zero numerics, Font-Maker undo/slider wiring, workMode reachability,
 localStorage-vs-AllTools, unescaped-input/unsafe-parse, JSON-LD parity, and destructive-bulk, several
-of which are now retired). Focus each sweep on surface changed since that pattern's last sweep —
+of which are now retired). Each pattern's ledger lines (Pattern health, the Recurring-pattern sweep
+status log, Retired patterns) carry its detection definition — the tuned greps, the exemption list,
+what counts as a hit. Sweep by that definition; don't re-derive a weaker one. Focus each sweep on surface changed since that pattern's last sweep —
 including outside-loop landings found in the drift check. When a fix reveals a NEW recurring shape,
 register it as a pattern with its own health line. After the sweep, update Pattern health.
 **Retirement:** a pattern retires after 3 consecutive clean sweeps **unless it is
@@ -216,7 +223,7 @@ Small user-visible enhancements are in scope, under tight fencing:
   governor's per-tool cap it charges 1 iteration to each tool it touches. Skip it entirely in any
   session where a P1 exists.
 - **Selection:** prefer seeds that serve both the Hebrew tools and secular uses (number practice, timers, student picker, English font support) — dual-audience seeds outrank single-audience at equal size.
-- **Verification is stricter:** everything in step 4 of the protocol, plus a fresh-profile check (pass-I style, empty localStorage) and a `.ivrit` round-trip if any state was added.
+- **Verification is stricter:** everything in step 4 of the protocol, plus a fresh-profile check (pass-I style: fresh browser context, empty localStorage AND IndexedDB) and a `.ivrit` round-trip if any state was added.
 - **Abort rule:** if the diff is trending past ~150 lines or touching any tool outside the seed's declared scope, stop, revert cleanly, and split the seed into smaller seeds in the ledger. A reverted attempt is logged in Done as "attempted, split."
 
 ## Prioritization rubric (for ordering Candidates)
@@ -228,8 +235,10 @@ Tie-breakers, in order: (1) affects teachers' saved work, (2) affects the printe
 
 ## Hard rules (non-negotiable; CLAUDE.md is the full text — these are the ones loop sessions hit most)
 - `ivritSafeParse`/`ivritSafeAssign` for all untrusted JSON; `esc()` for all user-input rendering; any
-  new external resource requires updating that page's CSP meta tag (and SRI on any **new** external
-  script — a loop-local rule stricter than CLAUDE.md; don't retrofit existing CDN loads as a drive-by).
+  new external resource requires updating that page's CSP meta tag — and only then: never loosen or
+  edit a page's CSP otherwise, and note the added directive in the commit message. (Plus SRI on any
+  **new** external script — a loop-local rule stricter than CLAUDE.md; don't retrofit existing CDN
+  loads as a drive-by.)
 - Single-file HTML conventions preserved; no build step introduced.
 - Every new/changed user-facing UI string routes through `I18n.t()`/`data-i18n*` (+ CSV key +
   `node scripts/build-locales.js`); new CSS uses logical properties; `node scripts/check-i18n.js` must
