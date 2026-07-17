@@ -1653,14 +1653,24 @@ HTML). Verify changes end-to-end by driving the real page headless. Proven recip
   const { chromium } = pkg;   // CJS module — a named import fails
   ```
   Chromium is preinstalled (`PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers`) — never run `playwright install`.
-- Load the page as `file://…/<page>.html` with `waitUntil: 'domcontentloaded'`, and **route-abort
-  every non-`file:`/`data:`/`blob:` request** — otherwise `page.goto` hangs on Google Fonts/gtag:
+- **Serve the repo root over local HTTP and load the page as `http://localhost:<port>/<page>.html` —
+  NOT `file://`.** Every page loads `/js/i18n.js` **root-absolute**, so under `file://` it resolves to
+  the filesystem root, `window.I18n` stays undefined, and i18n-dependent render paths throw (the
+  Font-Maker render pipeline especially — documented at S85); `fetch('data/…')` corpora also need a
+  web root. Any preinstalled static server works — `http-server -p 8080 -c-1`, `serve -l 8080`, or
+  `python3 -m http.server 8080` — run from the repo root (background it). Still **route-abort every
+  external origin** (Google Fonts, gtag, the CDNs) or `page.goto` hangs on them; keep your localhost
+  origin alongside `data:`/`blob:`:
   ```js
-  await page.route('**/*', r => { const u = r.request().url();
-    (u.startsWith('file:')||u.startsWith('data:')||u.startsWith('blob:')) ? r.continue() : r.abort(); });
+  const BASE = 'http://localhost:8080';
+  await page.route('**/*', r => { const u = r.request().url();  // register BEFORE goto
+    (u.startsWith(BASE)||u.startsWith('data:')||u.startsWith('blob:')) ? r.continue() : r.abort(); });
+  await page.goto(BASE + '/<page>.html', { waitUntil: 'domcontentloaded' });
   ```
   The aborted resources produce console "Failed to load" errors — expected noise. Assert on the
-  `pageerror` event count (should be 0) instead of console errors.
+  `pageerror` event count (should be 0) instead of console errors. A bare `file://` load still works
+  for a page with no i18n/`data/` dependency, but local HTTP is the reliable default the recent
+  discovery passes standardized on.
 - Dismiss auto-open modals before testing:
   `document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open'))`.
 - Font Maker fixtures: a traced letter's contours are `[{points: [[x,y], …]}]` — renderers like
