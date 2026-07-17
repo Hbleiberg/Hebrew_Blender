@@ -925,7 +925,7 @@
   <div class="tb-group">
     <button class="tbtn ghost" onclick="newProjectFresh()" data-i18n="fontmaker.toolbar.new">New</button>
     <button class="tbtn ghost" onclick="toggleLoadMenu(event)" data-i18n="fontmaker.toolbar.load_project">Load Project ▾</button>
-    <button class="tbtn ghost" onclick="saveProject()" data-i18n="fontmaker.toolbar.save_project">Save Project</button>
+    <button class="tbtn ghost" onclick="toggleSaveMenu(event)" data-i18n="fontmaker.toolbar.save_project_menu">Save Project ▾</button>
     <input type="file" id="projFile" accept=".hebrewfont,.json,application/json,application/gzip" style="display:none;">
   </div>
   <div class="tb-group">
@@ -2501,7 +2501,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.29';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.30';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2713,6 +2713,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.30</strong> — <strong>Save a copy to make a variant.</strong> The <span class="ui">Save Project</span> button is now a <span class="ui">Save Project ▾</span> menu with a new <span class="ui">Save as a copy…</span> option: give the copy a name and it's saved alongside your current font under <span class="ui">Load Project ▾ → Recent</span>, then the editor switches to the copy so you can start tweaking the variant right away — your original stays untouched. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.29</strong> — <strong>Fewer points, real curves.</strong> Importing a TTF/OTF font now keeps the font's actual curves instead of flattening them into hundreds of tiny straight segments — <span class="ui">Edit points</span> shows roughly the points the original designer drew, and exports keep genuinely smooth curves. And when an outline has too many points (a font or SVG imported by an older version, or a heavy trace), the new <span class="ui">Reduce points</span> panel in <span class="ui">Edit points</span> cleans it up: drag the strength slider for a live preview with a running point count, release to keep it, and one Undo brings everything back. Plus a fix: importing a font's nikkud and trop mark shapes no longer stops the import with an error. And the <span class="ui">Transform</span> panel in <span class="ui">Edit points</span> gains live rotate and scale sliders: drag for a live preview around the selection's center, release to keep it — one Undo reverts, and the exact angle/percent fields are still there for precise entry. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.28</strong> — <strong>Generate Bold, automatically.</strong> The new <span class="ui">Generate Bold…</span> button in <span class="ui">Font Details</span> (also offered when you import a font) thickens every traced letter's strokes to build a real Bold weight — with a live before/after preview, an adjustable strength slider (it can lighten too), an option to keep letter heights, and matching thickening for nikkud and trop. One click sets the <span class="ui">Style</span> to Bold so the export links with your Regular, and one Undo reverts everything. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.27</strong> — <strong>Make a proper Bold.</strong> A new <span class="ui">Style</span> dropdown in <span class="ui">Font Details</span> (Regular / Bold) exports your font as the Bold member of its family: build or import a heavier version of your font, set the Style to <span class="ui">Bold</span>, and export — install the Regular and Bold files together and programs like Word switch between them with the <strong>B</strong> button. Use the exact same Family name in both projects so they link up. Importing a TTF that's already marked bold sets the Style for you. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -12843,6 +12844,58 @@ function saveToBrowser() {
       [{label:I18n.t('fontmaker.modals.gotit')}]);
   }
 }
+/* ── "Save as a copy…" — duplicate the current font under a new name, then switch to editing the copy.
+   The current font is first saved to Recents (so it's preserved); the copy gets a DISTINCT name — a
+   project's identity is its derived family name (see pushRecentProject), so a same-named copy would
+   silently evict the original. Switching is done through the shared applyProjectData load path. ── */
+function fmDerivedProjectName(familyName, reservedFontName, style) {   // mirrors pushRecentProject's naming
+  const fam = (familyName || 'Untitled') + (style === 'bold' ? ' Bold' : '');
+  const res = reservedFontName || '';
+  return res ? `${fam} - ${res}` : fam;
+}
+function fmUniqueCopyName(base, style) {                               // "X copy", "X copy 2", … not already in Recents
+  const b = ((base || '').trim()) || 'My Hebrew Font';
+  const taken = new Set(getRecentProjects().map(r => r.name));
+  let n = b + ' copy', i = 1;
+  while (taken.has(fmDerivedProjectName(n, n, style))) n = b + ' copy ' + (++i);
+  return n;
+}
+function saveProjectAs() {
+  if (!project) return;
+  onMetaChange();                                                     // flush pending name/meta edits into project
+  const style = project.font.style;
+  const suggested = fmUniqueCopyName(project.font.familyName, style);
+  askModal(I18n.t('fontmaker.modals.save_as_title'),
+    `<p style="margin:0 0 10px;">${I18n.t('fontmaker.modals.save_as_body')}</p>` +
+    `<input id="saveAsNameInput" type="text" value="${esc(suggested)}" placeholder="${esc(I18n.t('fontmaker.modals.save_as_name_placeholder'))}" ` +
+    `style="width:100%;box-sizing:border-box;padding:7px 9px;border:1px solid var(--border);border-radius:6px;font-size:0.95rem;background:var(--white);color:var(--text);">`,
+    [ {label:I18n.t('fontmaker.modals.save_copy_btn'), onClick: commitSaveAs},
+      {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost'} ]);
+  const inp = document.getElementById('saveAsNameInput');
+  if (inp) {
+    inp.focus(); inp.select();
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); closeModal(); commitSaveAs(); } });
+  }
+  async function commitSaveAs() {
+    const el = document.getElementById('saveAsNameInput');            // #askBody persists after close → readable here
+    let name = ((el && el.value) || '').trim();
+    if (!name) { status(I18n.t('fontmaker.status.save_as_need_name')); return; }
+    // never let the copy's name collide with (and evict) the original we're about to save
+    const original = fmDerivedProjectName(project.font.familyName, project.font.reservedFontName, project.font.style);
+    if (fmDerivedProjectName(name, name, style) === original) name = name + ' copy';
+    // 1) preserve the current font in Recents
+    project.savedAt = new Date().toISOString();
+    pushRecentProject(project);
+    // 2) build the renamed copy (familyName === reservedFontName, like a fresh project's seed)
+    const copy = JSON.parse(JSON.stringify(project));
+    copy.font.familyName = name; copy.font.reservedFontName = name;
+    copy.savedAt = new Date().toISOString();
+    pushRecentProject(copy);
+    // 3) switch the editor to the copy via the shared load path (image/SVG cache, undo reset, render, autosave)
+    await applyProjectData(JSON.parse(JSON.stringify(copy)));
+    status(I18n.t('fontmaker.status.saved_as', {name}));
+  }
+}
 function stripImagesForAutosave(p) {
   // size-guard: keep structure, drop big data URLs for the autosave slot
   const c = JSON.parse(JSON.stringify(p));
@@ -12937,6 +12990,22 @@ function toggleLoadMenu(ev) {
   menu.style.left = Math.max(6, Math.min(rect.left, window.innerWidth - menu.offsetWidth - 8)) + 'px';
   menu.style.top = (rect.bottom + 4) + 'px';
   setTimeout(() => document.addEventListener('click', closeLoadMenu), 0);
+}
+/* "Save Project ▾" split menu: Save Project… + Save as a copy… (reuses the .load-menu styling) */
+function closeSaveMenu() { const m = document.getElementById('saveMenu'); if (m) m.remove(); document.removeEventListener('click', closeSaveMenu); }
+function toggleSaveMenu(ev) {
+  ev.stopPropagation();
+  if (document.getElementById('saveMenu')) { closeSaveMenu(); return; }
+  const menu = document.createElement('div'); menu.id = 'saveMenu'; menu.className = 'load-menu';
+  menu.innerHTML =
+    `<button class="load-menu-item" onclick="closeSaveMenu();saveProject()">${esc(I18n.t('fontmaker.savemenu.save'))}</button>` +
+    `<div class="load-menu-sep"></div>` +
+    `<button class="load-menu-item" onclick="closeSaveMenu();saveProjectAs()">${esc(I18n.t('fontmaker.savemenu.save_as'))}</button>`;
+  document.body.appendChild(menu);
+  const rect = ev.currentTarget.getBoundingClientRect();
+  menu.style.left = Math.max(6, Math.min(rect.left, window.innerWidth - menu.offsetWidth - 8)) + 'px';
+  menu.style.top = (rect.bottom + 4) + 'px';
+  setTimeout(() => document.addEventListener('click', closeSaveMenu), 0);
 }
 /* ── Autosave: a single-slot safety net kept in its OWN IndexedDB database. Deliberately NOT the
    shared 'ivritsuite-fonts' DB — bumping that DB's version here would make every other tool's

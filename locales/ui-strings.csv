@@ -1696,6 +1696,10 @@ fontmaker.modals.reset_to_default,Reset to default,אפס לברירת מחדל,
 fontmaker.modals.retrace,Re-trace,עקוב מחדש,dialog button,
 fontmaker.modals.retrace_body,This letter has hand-edited points. Re-tracing rebuilds the outline from the image and discards your point edits (you can still undo with Ctrl+Z afterward).,לאות זו יש נקודות שנערכו ידנית. מעקב מחדש בונה מחדש את המתאר מהתמונה ומבטל את עריכות הנקודות שלכם (עדיין תוכלו לבטל עם Ctrl+Z לאחר מכן).,dialog body,
 fontmaker.modals.retrace_title,Re-trace this letter?,לעקוב מחדש אחר אות זו?,dialog title,
+fontmaker.modals.save_as_body,"Give the copy a name. Your current font stays in Recent Projects, and you'll switch to editing the copy so you can make a variant.","תנו שם לעותק. הפונט הנוכחי יישמר ברשימת הפרויקטים האחרונים, ותעברו לעריכת העותק כדי ליצור וריאציה.",dialog body,
+fontmaker.modals.save_as_name_placeholder,Font name,שם הפונט,input placeholder,
+fontmaker.modals.save_as_title,Save as a new font,שמירה כפונט חדש,dialog title,
+fontmaker.modals.save_copy_btn,Save copy,שמירת עותק,dialog button,
 fontmaker.modals.save_in_browser,🌐 In this browser,🌐 בדפדפן זה,dialog button,leading-emoji
 fontmaker.modals.save_project_body,Where would you like to save? “To computer” is a permanent backup file you keep. “In this browser” is a quick save that stays on this device only.,"היכן תרצו לשמור? ""למחשב"" הוא קובץ גיבוי קבוע שנשאר אצלכם. ""בדפדפן זה"" היא שמירה מהירה שנשארת במכשיר זה בלבד.",dialog body,
 fontmaker.modals.save_project_title,Save Project,שמירת פרויקט,dialog title,
@@ -2270,6 +2274,8 @@ fontmaker.qa.tab_pairs,Two marks,שני סימנים,QA tab,
 fontmaker.qa.tab_stacked,Stacked,מוערמים,QA tab,
 fontmaker.qa.tab_trop,Trop,טעמים,QA tab,
 fontmaker.qa.tall_warn,⚠ Tall artwork — export will expand the clip box to {asc} / {desc} (asc/desc) so Word won't clip it.,⚠ איור גבוה — הייצוא ירחיב את תיבת החיתוך ל-{asc} / {desc} (עליון/תחתון) כדי ש-Word לא יחתוך אותו.,QA summary,leading-emoji
+fontmaker.savemenu.save,💾 Save Project…,💾 שמירת פרויקט…,menu item,leading-emoji
+fontmaker.savemenu.save_as,📑 Save as a copy…,📑 שמירה כעותק…,menu item,leading-emoji
 fontmaker.status.added_custom_glyph,Added custom glyph U+{cp}.,נוסף גליף מותאם U+{cp}.,toast,
 fontmaker.status.added_pairs.one,Added {count} pair at an even starting gap — fine-tune any.,נוסף {count} זוג במרווח התחלתי אחיד — כווננו כרצונכם.,toast,plural
 fontmaker.status.added_pairs.other,Added {count} pairs at an even starting gap — fine-tune any.,נוספו {count} זוגות במרווח התחלתי אחיד — כווננו כרצונכם.,toast,plural
@@ -2378,6 +2384,8 @@ fontmaker.status.reading_font,Reading font…,קורא גופן…,toast,
 fontmaker.status.removed_specks.one,Removed {count} speck contour.,הוסר {count} קו מתאר כתם.,toast,plural
 fontmaker.status.removed_specks.other,Removed {count} speck contours.,הוסרו {count} קווי מתאר כתמים.,toast,plural
 fontmaker.status.reopened_recent,Reopened your most recent work.,נפתחה מחדש העבודה האחרונה שלכם.,toast,
+fontmaker.status.save_as_need_name,Please enter a name for the copy.,אנא הזינו שם לעותק.,toast,
+fontmaker.status.saved_as,Saved a copy “{name}” — now editing the copy; your original stays in Recent Projects.,נשמר עותק „{name}” — עורכים כעת את העותק; המקור נשמר ברשימת הפרויקטים האחרונים.,toast,
 fontmaker.status.saved_browser,Saved in this browser ✓  ·  reopen from Load Project ▾ → Recent,נשמר בדפדפן זה ✓  ·  פתחו מחדש מ-טעינת פרויקט ▾ → אחרונים,toast,leading-emoji
 fontmaker.status.saved_myfonts,Saved “{name}” to My Fonts ✓,"""{name}"" נשמר בגופנים שלי ✓",toast,leading-emoji
 fontmaker.status.set_anchors_first,Set the nikkud anchors first.,קבעו קודם את עוגני הניקוד.,toast,
@@ -2444,6 +2452,7 @@ fontmaker.toolbar.qa_check_title,Review every letter × mark placement for colli
 fontmaker.toolbar.redo_aria,Redo,בצע שוב,aria-label only,aria-label only
 fontmaker.toolbar.redo_title,Redo (Ctrl+Shift+Z),בצע שוב (Ctrl+Shift+Z),toolbar button title,
 fontmaker.toolbar.save_project,Save Project,שמירת פרויקט,toolbar button,
+fontmaker.toolbar.save_project_menu,Save Project ▾,שמירת פרויקט ▾,toolbar button,
 fontmaker.toolbar.undo_aria,Undo,בטל,aria-label only,aria-label only
 fontmaker.toolbar.undo_title,Undo (Ctrl+Z),בטל (Ctrl+Z),toolbar button title,
 fontmaker.workspace.editing,Editing: {name},עריכה: {name},work-current glyph label (interpolated),html
