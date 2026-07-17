@@ -4566,7 +4566,27 @@ function updateScopeSelectState() {
 }
 function toggleCustomPicker() {
   const el = document.getElementById('ttCustomPicker');
-  el.style.display = el.style.display === 'none' ? '' : 'none';
+  const opening = el.style.display === 'none';
+  el.style.display = opening ? '' : 'none';
+  if (opening) prefillCustomPicker();
+}
+// Seed Book (+ chapter max) from the current reading so the picker doesn't always
+// reset to Genesis — a teacher mid-Deuteronomy shouldn't have to re-pick the book.
+function prefillCustomPicker() {
+  let book = '', chap = 0;
+  if (settings.scope === 'custom' && settings.customRef) {
+    const m = settings.customRef.match(/^([A-Za-z]+)\s+(\d+)/);   // "Deuteronomy 3:23-29" → book+chapter
+    if (m) { book = m[1]; chap = parseInt(m[2], 10); }
+  } else {
+    const p = parshiyotData.find(x => x.en === settings.parshahKey);
+    if (p && p.book) book = p.book;
+  }
+  if (!book || !TORAH_BOOK_CHAPTERS[book]) return;                 // unknown/holiday context → leave the Genesis default
+  const bookSel = document.getElementById('ttCustomBook');
+  const chapIn = document.getElementById('ttCustomChapter');
+  bookSel.value = book;
+  chapIn.max = TORAH_BOOK_CHAPTERS[book];
+  if (chap >= 1 && chap <= TORAH_BOOK_CHAPTERS[book]) chapIn.value = chap;
 }
 function applyCustomRange() {
   const book = document.getElementById('ttCustomBook').value;
