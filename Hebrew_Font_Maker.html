@@ -4864,7 +4864,6 @@ function renderAdSummary() {
   el.innerHTML = h;
   if (applyBtn) applyBtn.disabled = !assigned.length;
 }
-function _adDebug() { try { return /addebug/i.test(location.hash); } catch (e) { return false; } }
 function renderAdStage(focusSel) {
   const host = document.getElementById('adStage'); if (!host) return;
   const im = imgCache[adState.url];
@@ -4906,63 +4905,6 @@ function renderAdStage(focusSel) {
   if (focusSel && adState.selId != null) {
     const g = host.querySelector(`.ad-box[data-id="${adState.selId}"]`);
     if (g) g.focus();
-  }
-  // Diagnostic readout (hash-gated via #addebug) — reports the SVG box layer's real DOM/paint/geometry
-  // so a browser that hides the boxes (e.g. Firefox) can be pinpointed without a reproducing engine.
-  // Never affects normal users; must never throw.
-  if (_adDebug()) {
-    try {
-      const NS = 'http://www.w3.org/2000/svg';
-      const svg = host.querySelector('svg');
-      const gCount = host.querySelectorAll('.ad-box').length;
-      const paths = host.querySelectorAll('.ad-box path');
-      const p0 = paths[0] || null;
-      const g0 = p0 && p0.closest ? p0.closest('.ad-box') : null;
-      const txt0 = host.querySelector('.ad-box text');
-      const bb = p0 && p0.getBBox ? p0.getBBox() : null;
-      const sr = p0 ? p0.getBoundingClientRect() : null;
-      const tr = txt0 ? txt0.getBoundingClientRect() : null;
-      const cs = p0 ? getComputedStyle(p0) : null;
-      const gcs = g0 ? getComputedStyle(g0) : null;
-      const R = n => Math.round(n);
-      // Isolation probes: append DOM-built test shapes straight to the <svg> and measure each path's
-      // bbox. Since an author !important rule can't beat the box group's display:none, the trigger is
-      // structural — these pin which aspect: bare <path> (control), bare <g>, <g class="ad-box">,
-      // <g role="button">. A 0×0 result = Firefox hides that variant. Each removes itself same-tick.
-      const dd = (p0 && p0.getAttribute('d')) || 'M0 0h60v60h-60z';
-      const mkProbe = (tag, attrs) => {
-        if (!svg) return 'n/a';
-        try {
-          const pth = document.createElementNS(NS, 'path');
-          pth.setAttribute('d', dd); pth.setAttribute('fill', 'none'); pth.setAttribute('stroke', '#009900');
-          let top = pth;
-          if (tag !== 'path') { top = document.createElementNS(NS, tag); top.appendChild(pth); }
-          for (const k in attrs) top.setAttribute(k, attrs[k]);
-          svg.appendChild(top);
-          const pb = pth.getBBox();
-          svg.removeChild(top);
-          return R(pb.width) + 'x' + R(pb.height);
-        } catch (e2) { return 'err'; }
-      };
-      const probeBarePath = mkProbe('path', {});
-      const probeBareG = mkProbe('g', {});
-      const probeClassG = mkProbe('g', { 'class': 'ad-box' });
-      const probeRoleG = mkProbe('g', { 'role': 'button', 'tabindex': '-1' });
-      const inSvg = p0 && p0.closest ? (p0.closest('svg') === svg) : 'n/a';
-      const par = p0 && p0.parentNode ? (p0.parentNode.nodeName + '/' + ((p0.parentNode.namespaceURI || '').includes('svg') ? 'svgNS' : 'htmlNS')) : 'none';
-      const line = `[addebug] v${FONT_MAKER_VERSION} boxes=${adState.boxes.length} gCount=${gCount} pathCount=${paths.length} svgPaths=${svg ? svg.querySelectorAll('path').length : '?'}`
-        + ` | svg=${svg ? svg.clientWidth + 'x' + svg.clientHeight : 'none'}`
-        + ` | path0.bbox=${bb ? R(bb.width) + 'x' + R(bb.height) : 'none'} screen=${sr ? R(sr.width) + 'x' + R(sr.height) : 'none'} text0.screen=${tr ? R(tr.width) + 'x' + R(tr.height) : 'none'}`
-        + ` | pathDisp=${cs ? cs.display : 'n/a'} gDisp=${gcs ? gcs.display : 'n/a'} gVis=${gcs ? gcs.visibility : 'n/a'} cssD=${cs && cs.d ? cs.d.slice(0, 14) : 'n/a'} dAttr=${p0 ? JSON.stringify((p0.getAttribute('d') || '').slice(0, 14)) : 'none'}`
-        + ` inSvg=${inSvg} parent=${par}`
-        + ` | probes path=${probeBarePath} g=${probeBareG} g.ad-box=${probeClassG} g[role=button]=${probeRoleG}`
-        + ` | fill=${cs ? cs.fill : 'n/a'} stroke=${cs ? cs.stroke : 'n/a'} sw=${cs ? cs.strokeWidth : 'n/a'}`;
-      let d = document.getElementById('adDbg');
-      if (!d) { d = document.createElement('div'); d.id = 'adDbg'; host.parentNode.insertBefore(d, host.nextSibling); }
-      d.style.cssText = 'font:11px/1.4 monospace;color:#c0392b;background:#fff8f6;border:1px solid #c0392b;border-radius:6px;padding:6px 8px;margin-top:8px;white-space:pre-wrap;word-break:break-all;';
-      d.textContent = line;
-      console.log(line);
-    } catch (e) { /* diagnostic must never break the overlay */ }
   }
 }
 /* ── Overlay interaction (wired once; delegated like the QA grid) ── */
