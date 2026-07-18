@@ -1426,10 +1426,14 @@ function exportAnki() {
   if (!words.length) { if (err) err.textContent = I18n.t('dictionary.export.err_select_first'); return; }
   if (err) err.textContent = '';
   const lines = ['#separator:tab', '#html:false', '#tags column:6'];
+  // Anki's tab-separated import has no per-field escape, so a literal tab/newline/CR in a field
+  // would split a column or spill into a new row. Collapse any such char to a space per field
+  // (Quizlet's CSV path uses csvEscape quoting; a TSV can't quote, so sanitize instead).
+  const ankiField = s => String(s == null ? '' : s).replace(/[\t\r\n]+/g, ' ');
   words.forEach(w => {
     const tr = translitDisplayOf(w) || '';
     const tags = ['ivritsuite', 'hebrew', exportTagify(w.era), exportTagify(w.pos)].filter(Boolean).join(' ');
-    lines.push([w.word, w.translation || '', tr, w.pos || '', w.era || '', tags].join('\t'));
+    lines.push([w.word, w.translation || '', tr, w.pos || '', w.era || '', tags].map(ankiField).join('\t'));
   });
   downloadTextFile(`ivrit-anki-export-${exportDateStamp()}.txt`, lines.join('\n'), 'text/plain');
 }
