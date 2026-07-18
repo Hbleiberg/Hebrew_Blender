@@ -4802,7 +4802,7 @@ async function openAutoDetect() {
   await loadImg(sheet.dataUrl).catch(() => {});
   adState = { sheetId: sheet.id, url: sheet.dataUrl, scale: 1, sep: 0, thOverride: null, detTh: null,
               boxes: [], matched: null, edits: 0, selId: null };
-  document.getElementById('adTitle').textContent = 'Auto-detect letters — ' + (sheet.name || 'sheet');
+  document.getElementById('adTitle').textContent = I18n.t('fontmaker.modals.ad_title_sheet', { name: sheet.name || 'sheet' });
   _adWire();
   aOpenModal('adOverlay', closeAutoDetect);
   await adRunDetection();
@@ -8953,15 +8953,15 @@ function openMarkEdit(kind, cp, opts) {
   };
   if (!meItem.pieces || !meItem.pieces.length) meItem.pieces = defaultPieces(kind, cp);
   editorSel = 0;
-  document.getElementById('meTitle').textContent = 'Edit shape — ' + meItem.name;
+  document.getElementById('meTitle').textContent = I18n.t('fontmaker.modals.markedit_title_named', { name: meItem.name });
   const curBtn = document.getElementById('meApplyCur');
   curBtn.style.display = meGlobal ? 'none' : '';   // modal DOM persists across opens — set display explicitly BOTH ways
   if (meGlobal) {
-    document.getElementById('meScopeNote').innerHTML = '<b>Apply to all letters</b> saves this shape as the font-wide design for <b>' + esc(meItem.name) + '</b> — every letter without its own per-letter override uses it. To reshape it for just one letter, open that letter’s placement step and use <b>✎ Edit shape</b> there. Neither affects positioning.';
+    document.getElementById('meScopeNote').innerHTML = I18n.t('fontmaker.modals.markedit_scope_all', { name: esc(meItem.name) });
   } else {
     const lname = L ? L.name : 'this letter';
-    curBtn.textContent = 'Apply to current letter (' + lname + ')';
-    document.getElementById('meScopeNote').innerHTML = '<b>Apply to current letter</b> changes this mark only for <b>' + esc(lname) + '</b>; <b>Apply to all letters</b> changes it everywhere. Neither affects positioning. (A per-letter shape bakes into the font for that letter+mark pair; when another mark such as a dagesh sits between them, that combination falls back to the all-letters shape.)';
+    curBtn.textContent = I18n.t('fontmaker.modals.markedit_apply_current_named', { name: lname });
+    document.getElementById('meScopeNote').innerHTML = I18n.t('fontmaker.modals.markedit_scope_letter', { name: esc(lname) });
   }
   meUndoReset();
   meRender();
