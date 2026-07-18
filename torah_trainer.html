@@ -1206,6 +1206,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <button class="btn btn-xs btn-secondary" onclick="toggleCustomPicker()" type="button" data-i18n="torah.controls.custom_range_button">Custom range…</button>
     </label>
   </span>
+  <span class="tt-ctrl">
+    <button id="ttPrintBtn" class="btn btn-xs btn-secondary" onclick="printReading()" type="button" data-i18n="torah.controls.print_button" data-i18n-title="torah.controls.print_title" title="Print this reading for students">🖨️ Print</button>
+  </span>
 </div>
 
 <div id="ttCustomPicker" class="tt-controls" style="display:none;border-top:1px dashed var(--border);">
@@ -4751,6 +4754,12 @@ function findParshaByName(sefariaName) {
     }
   }
   return null;
+}
+function printReading() {
+  // Core use case: print a reading for students. Guard the empty state so a
+  // stray click never opens a blank print dialog (the reading chrome is print-hidden).
+  if (!currentVerses || !currentVerses.length) { showHintToast(I18n.t('torah.controls.print_need_reading')); return; }
+  window.print();
 }
 async function goToCurrentParshah() {
   const cur = await fetchCurrentParshah(settings.schedule !== 'israel');

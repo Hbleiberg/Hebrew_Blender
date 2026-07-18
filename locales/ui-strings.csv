@@ -2892,6 +2892,9 @@ torah.confirm.reset_all,Reset all Torah Trainer settings to defaults?,לאפס �
 torah.confirm.reset_trope_colors,Are you sure? This resets your custom trope-family colors to the defaults.,האם אתם בטוחים? פעולה זו מאפסת את צבעי משפחות הטעמים המותאמים אישית שלכם לברירת המחדל.,confirm dialog,
 torah.confirm.reset_vowel_colors,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,האם אתם בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים אישית שלכם עבור ערכות ברירת המחדל ותל-עם כאחד.,confirm dialog,
 torah.controls.custom_range_button,Custom range…,טווח מותאם…,button,
+torah.controls.print_button,🖨️ Print,🖨️ הדפסה,button,leading-emoji
+torah.controls.print_title,Print this reading for students,הדפיסו את הקריאה עבור התלמידים,button title,
+torah.controls.print_need_reading,Load a parsha first to print.,טענו פרשה קודם כדי להדפיס.,toast,
 torah.controls.holiday_group_label,Holiday Torah Readings,קריאות התורה לחגים,Parsha-picker optgroup header,
 torah.controls.layout_interlinear,Interlinear,בין־שורתי,layout radio,
 torah.controls.layout_label,Layout:,פריסה:,control label,
