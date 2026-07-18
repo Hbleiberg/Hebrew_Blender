@@ -172,6 +172,7 @@ IvritSuite displays Hebrew and Latin text in a number of openly-licensed typefac
 - `splash/fonts/` — **Libre Baskerville** (OFL 1.1; license text at `splash/fonts/OFL.txt`), bundled so `splash/gen_splash.py` can render the app launch screens offline.
 - `fonts/FrankRuhlLibre-Regular.ttf` — **Frank Ruhl Libre** (OFL 1.1; license text at `fonts/OFL.txt`), self-hosted and precached by the service worker as the suite's default Hebrew face.
 - `fonts/Reuben.ttf` — **Reuben** by Baruch Sienna (CC0), made with the IvritSuite Hebrew Font Maker and offered for download in the Resources gallery; its CC0 dedication is declared in the gallery entry and in the notice generated with each download.
+- `fonts/LakhishBold.ttf` — **Lakhish Bold** by Baruch Sienna, offered for download in the Resources gallery.
 - `fonts/TzviScript.ttf` and `fonts/TzviScriptStrokeGuide.ttf` — **TzviScript** / **TzviScript Stroke Guide** by Harrison Bleiberg (OFL 1.1; full texts at `fonts/TzviScript-LICENSE.txt` and `fonts/TzviScriptStrokeGuide-LICENSE.txt`), made with the Hebrew Font Maker and offered in the Resources gallery.
 
 Other fonts a user creates with the Hebrew Font Maker are that user's own work and are not covered here.
