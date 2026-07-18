@@ -1163,6 +1163,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <select id="parshaSelect"></select>
   </span>
   <span class="tt-ctrl">
+    <button id="ttJumpWeekTop" class="btn btn-xs btn-secondary" onclick="goToCurrentParshah()" type="button" data-i18n="torah.schedule.jump_this_week">Jump to this week's parsha</button>
+  </span>
+  <span class="tt-ctrl">
     <label for="scopeSelect" data-i18n="torah.controls.reading_label">Reading:</label>
     <select id="scopeSelect" aria-label="Reading scope" data-i18n-aria-label="torah.controls.scope_aria">
       <option value="parsha-full" data-i18n="torah.schedule.scope_full">Full parsha</option>
