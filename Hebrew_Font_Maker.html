@@ -2822,7 +2822,14 @@ function buildAboutBody() {
 function showHelpTab(id) {
   document.querySelectorAll('#helpTabs .help-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
   const body = document.getElementById('helpBody');
-  if (id === 'about' && window.I18n) { body.innerHTML = buildAboutBody(); body.scrollTop = 0; return; }
+  // English shows the original richly-formatted authored HTML (HELP_CONTENT); other languages get the
+  // translated body (plain, from the i18n keys / buildAboutBody) — keeps Hebrew translated, restores English formatting.
+  const isEn = !window.I18n || I18n.lang === 'en';
+  if (id === 'about') {
+    body.innerHTML = isEn ? (HELP_CONTENT.about || '') : buildAboutBody();
+    body.scrollTop = 0; return;
+  }
+  if (isEn) { body.innerHTML = HELP_CONTENT[id] || ''; body.scrollTop = 0; return; }
   const bk = 'fontmaker.help.body_' + id, bt = window.I18n ? I18n.t(bk) : bk;
   body.innerHTML = (bt !== bk) ? bt : (HELP_CONTENT[id] || '');
   body.scrollTop = 0;
