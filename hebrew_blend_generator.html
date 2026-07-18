@@ -3149,7 +3149,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <div>
             <div class="option-label" data-i18n="worksheet.layout.total_blends">Total Blends</div>
           </div>
-          <select id="blendCount" aria-label="Total blends">
+          <select id="blendCount" aria-label="Total blends" data-i18n-aria-label="worksheet.layout.total_blends">
             <option value="10">10</option>
             <option value="20">20</option>
             <option value="30">30</option>
@@ -3165,17 +3165,17 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <div class="option-row" id="rowClassSet">
           <div class="option-label"><span data-i18n="worksheet.layout.class_set">Class Set</span> <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box" data-i18n="worksheet.layout.class_set_tooltip">Generates multiple unique worksheet versions from the same settings — each with a different random selection and order of blends. Print one per student for variety drills or low-stakes assessment. Each version is labeled 'Version A', 'Version B', etc. in the header.</span></span></div>
           <div style="display:flex;align-items:center;gap:5px;">
-            <input type="number" id="classSetCount" aria-label="Class set versions" value="1" min="1" max="40" oninput="onClassSetChange()" style="width:56px;padding:5px 6px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;background:var(--white);color:var(--text);">
+            <input type="number" id="classSetCount" aria-label="Class set versions" data-i18n-aria-label="worksheet.layout.class_set_versions_aria" value="1" min="1" max="40" oninput="onClassSetChange()" style="width:56px;padding:5px 6px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;background:var(--white);color:var(--text);">
             <span style="font-size:0.78rem;color:var(--muted);" data-i18n="worksheet.layout.versions">versions</span>
           </div>
         </div>
         <div class="option-row">
           <div class="option-label" data-i18n="worksheet.layout.title">Title</div>
-          <input type="text" id="wsTitle" aria-label="Worksheet title" value="Hebrew Blends" style="width:160px;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;">
+          <input type="text" id="wsTitle" aria-label="Worksheet title" data-i18n-aria-label="worksheet.layout.title_aria" value="Hebrew Blends" style="width:160px;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;">
         </div>
         <div class="option-row">
           <div class="option-label" data-i18n="worksheet.layout.subtitle">Subtitle</div>
-          <input type="text" id="wsSubtitle" aria-label="Worksheet subtitle" placeholder="Optional instructions..." data-i18n-placeholder="worksheet.layout.subtitle_placeholder" style="width:160px;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;">
+          <input type="text" id="wsSubtitle" aria-label="Worksheet subtitle" data-i18n-aria-label="worksheet.layout.subtitle_aria" placeholder="Optional instructions..." data-i18n-placeholder="worksheet.layout.subtitle_placeholder" style="width:160px;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.85rem;">
         </div>
         <div class="option-row" style="margin-top:4px;">
           <div class="option-label"><span data-i18n="worksheet.layout.exclude_repeats">Exclude Repeats</span> <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box" data-i18n="worksheet.layout.exclude_repeats_tooltip">When on, no two blends in the same worksheet will share the same pair of letters — useful for variety drills.</span></span></div>

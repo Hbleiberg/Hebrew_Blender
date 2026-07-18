@@ -3456,6 +3456,7 @@ worksheet.howto.step4,Click Generate Worksheet.,לחצו על צור דף עבו
 worksheet.howto.step5,Click Print or Export PDF to download.,לחצו על הדפס או ייצא PDF כדי להוריד.,footer how-to step,html
 worksheet.howto.title,How To Use,איך להשתמש,footer section heading,
 worksheet.layout.class_set,Class Set,סט כיתתי,layout option label,
+worksheet.layout.class_set_versions_aria,Class set versions,גרסאות סט כיתתי,input aria-label,
 worksheet.layout.class_set_tooltip,"Generates multiple unique worksheet versions from the same settings — each with a different random selection and order of blends. Print one per student for variety drills or low-stakes assessment. Each version is labeled 'Version A', 'Version B', etc. in the header.","מפיק כמה גרסאות ייחודיות של דף העבודה מאותן הגדרות — כל אחת עם בחירה וסדר אקראיים שונים של צירופים. הדפיסו אחד לכל תלמיד לתרגולי גיוון או להערכה בסיכון נמוך. כל גרסה מסומנת ׳Version A׳, ׳Version B׳ וכו׳ בכותרת.",tooltip,
 worksheet.layout.exclude_repeats,Exclude Repeats,ללא חזרות,layout option label,
 worksheet.layout.exclude_repeats_tooltip,"When on, no two blends in the same worksheet will share the same pair of letters — useful for variety drills.","כשמופעל, שני צירופים באותו דף עבודה לא יחלקו את אותו זוג אותיות — שימושי לתרגולי גיוון.",tooltip,
@@ -3471,7 +3472,9 @@ worksheet.layout.page_size_tooltip,Paper size for both Print and Export PDF. Let
 worksheet.layout.panel_title,Layout,פריסה,panel title,
 worksheet.layout.subtitle,Subtitle,כותרת משנה,layout option label,
 worksheet.layout.subtitle_placeholder,Optional instructions...,הוראות לא חובה...,input placeholder,
+worksheet.layout.subtitle_aria,Worksheet subtitle,כותרת משנה של דף העבודה,input aria-label,
 worksheet.layout.title,Title,כותרת,layout option label,
+worksheet.layout.title_aria,Worksheet title,כותרת דף העבודה,input aria-label,
 worksheet.layout.title_default,Hebrew Blends,,worksheet title input default,
 worksheet.layout.total_blends,Total Blends,סך הצירופים,layout option label,
 worksheet.layout.versions,versions,גרסאות,count suffix,
