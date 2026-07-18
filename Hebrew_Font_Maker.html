@@ -2004,7 +2004,7 @@ function udSnap(s) {
   if (s.t === 'kernClasses') return JSON.parse(JSON.stringify(project.font.kernClasses || []));
   if (s.t === 'metrics') return JSON.parse(JSON.stringify(project.font.metrics));
   if (s.t === 'guides') return JSON.parse(JSON.stringify(project.guides || { show:true, items:[] }));
-  if (s.t === 'precomp') { const pc = getPrecomp(s.target); return pc ? { anchor: pc.anchor ? JSON.parse(JSON.stringify(pc.anchor)) : null, markScale: (pc.markScale != null ? pc.markScale : null), widthScale: (pc.widthScale != null ? pc.widthScale : null) } : null; }
+  if (s.t === 'precomp') { const pc = getPrecomp(s.target); return pc ? { anchor: pc.anchor ? JSON.parse(JSON.stringify(pc.anchor)) : null, holam: pc.holam ? JSON.parse(JSON.stringify(pc.holam)) : null, markScale: (pc.markScale != null ? pc.markScale : null), widthScale: (pc.widthScale != null ? pc.widthScale : null) } : null; }
   if (s.t === 'tropTune') return JSON.parse(JSON.stringify({
     tropSideOffset: (project.font.tropSideOffset != null) ? project.font.tropSideOffset : null,
     halign: (project.font.trop && project.font.trop.halign) || {},
@@ -2029,7 +2029,7 @@ function udRestore(s, snap) {
   else if (s.t === 'kernClasses') project.font.kernClasses = JSON.parse(JSON.stringify(snap || []));
   else if (s.t === 'metrics') Object.assign(project.font.metrics, JSON.parse(JSON.stringify(snap || {})));
   else if (s.t === 'guides') project.guides = JSON.parse(JSON.stringify(snap || { show:true, items:[] }));
-  else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) { pc.anchor = (snap && snap.anchor) ? JSON.parse(JSON.stringify(snap.anchor)) : null; pc.markScale = (snap && snap.markScale != null) ? snap.markScale : null; pc.widthScale = (snap && snap.widthScale != null) ? snap.widthScale : null; } }
+  else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) { pc.anchor = (snap && snap.anchor) ? JSON.parse(JSON.stringify(snap.anchor)) : null; pc.holam = (snap && snap.holam) ? JSON.parse(JSON.stringify(snap.holam)) : null; pc.markScale = (snap && snap.markScale != null) ? snap.markScale : null; pc.widthScale = (snap && snap.widthScale != null) ? snap.widthScale : null; } }
   else if (s.t === 'tropTune') { const sn = snap || {};
     if (sn.tropSideOffset != null) project.font.tropSideOffset = sn.tropSideOffset; else project.font.tropSideOffset = TROP_POS_SHIFT;
     if (!project.font.trop) project.font.trop = {};
@@ -2145,7 +2145,7 @@ function newProject() {
     inputMode: 'single',
     combinedSheets: [], combinedIndex: 0,
     letters: LETTERS.map(blankLetter),
-    precomposed: PRECOMPOSED.map(p => ({ target: p.target, base: p.base, mark: p.mark, anchor: null }))
+    precomposed: PRECOMPOSED.map(p => ({ target: p.target, base: p.base, mark: p.mark, anchor: null, holam: null }))
   };
   udClear();                 // fresh project → drop any prior undo history / open bursts
   curKind = 'letter'; curCp = LETTER_ORDER[0]; workMode = 'align';
@@ -2500,7 +2500,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.0';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.1';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2712,6 +2712,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.1</strong> — <strong>Dotted shin &amp; sin + holam.</strong> A שׁ or שׂ that also carries a holam now stacks correctly — the vowel dot lands to the left of the shin-dot (two dots) or merges onto the sin-dot (one dot), in the live preview, the QA sheet, and the exported font. Fine-tune where the holam sits on שׁ/שׂ in Special &amp; precomposed forms. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.0</strong> — <strong>Initial release.</strong> The Hebrew Font Maker is out of beta — this is its first full public release. Huge thanks to everyone who tested the beta versions and sent feedback along the way. <span style="color:var(--muted);">(July 2026)</span></li>
     </ul>
     <details style="margin:6px 0 0;">
@@ -2802,7 +2803,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -2810,8 +2811,8 @@ function buildAboutBody() {
     const kk = 'fontmaker.changelog.' + v, s = T(kk);
     return (s && s !== kk) ? '<li>' + esc(s) + '</li>' : '';
   }).join('');
-  const v5 = T('fontmaker.changelog.v5_0');
-  const v5li = (v5 && v5 !== 'fontmaker.changelog.v5_0') ? '<li>' + esc(v5) + '</li>' : '';
+  const cur = T('fontmaker.changelog.v5_1');   // newest release shown on top; older v5_x fall into the history list
+  const v5li = (cur && cur !== 'fontmaker.changelog.v5_1') ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
        + '<p>' + esc(T('fontmaker.about.special_thanks')) + '</p>'
        + '<h4>' + esc(T('fontmaker.about.changelog_heading')) + '</h4>'
@@ -8539,6 +8540,19 @@ function precompAnchor(pc) {
   if (b) { seedAnchorsIfNeeded(b); const a = b.anchors && b.anchors[cls]; if (a) return { x: a.x, y: a.y }; }
   return { x: 0, y: 0 };
 }
+// Where a holam typed AFTER a precomposed shin/sin form (שׁ/שׂ) attaches. The baked dot occupies the
+// letter's single "above" slot, so the export removes the plain above anchor from FB2A/FB2B — a following
+// holam would otherwise fall to x=0. Default = the LEFT above-point: the shin-dot sits upper-RIGHT
+// (shape +120 in MARK_GLYPHS), so mirroring left gives שֹׁ two distinct dots; the sin-dot sits upper-LEFT
+// (shape −120), so the same left point lands ON it and שֹׂ reads as one merged dot. Editable via pc.holam
+// (the 2nd draggable handle in "Special & precomposed forms"). 120/55 mirror the dot/holam shape centers
+// in MARK_GLYPHS (dot ≈ ±120,150; holam ≈ 0,95; 150−95 = 55).
+function precompTakesHolam(pc) { return !!pc && pc.base === '05E9' && (pc.mark === '05C1' || pc.mark === '05C2'); }   // שׁ/שׂ carry an editable holam-attach anchor (their baked dot is above-class)
+function precompHolamAnchor(pc) {
+  if (pc.holam && pc.holam.x != null) return pc.holam;   // user override
+  const a = precompAnchor(pc);                            // tracks any dot-position override too
+  return { x: a.x - 120, y: a.y + 55 };
+}
 function precompMarkScale(pc) {
   if (catOfCp(pc.mark) === 'accent') return 1;                           // Latin accents are pre-sized — no per-form scaling
   if (markClassFor(pc.mark) === 'center') return dageshScale();          // dagesh forms track the global DAGESH size, independent of the vowel size
@@ -8568,6 +8582,20 @@ function setPrecompCoord(axis, v) {
 function resetPrecompAnchor() {
   udDo([{ t:'precomp', target: precompTarget }], 'reset mark anchor', () => {
     const pc = getPrecomp(precompTarget); if (pc) pc.anchor = null;
+    renderStage(); renderControls();
+  });
+}
+function setPrecompHolamCoord(axis, v) {   // שׁ/שׂ: where a following holam attaches (the 2nd handle)
+  const pc = getPrecomp(precompTarget); if (!pc) return;
+  const n = Math.round(+v); if (!Number.isFinite(n)) return;
+  udBurstBegin([{ t:'precomp', target: precompTarget }], 'holam anchor ' + axis);
+  const a = precompHolamAnchor(pc);
+  pc.holam = { x: axis==='x'?n:a.x, y: axis==='y'?n:a.y };
+  renderStage();   // not renderControls → keep the number input focused while typing
+}
+function resetPrecompHolam() {
+  udDo([{ t:'precomp', target: precompTarget }], 'reset holam anchor', () => {
+    const pc = getPrecomp(precompTarget); if (pc) pc.holam = null;
     renderStage(); renderControls();
   });
 }
@@ -8652,7 +8680,13 @@ function precompHandlesSVG() {
   const a = precompAnchor(pc), col = '#e0731f';
   const mark = `<path id="pcMark" d="${markPreviewPath(pc.mark, a.x, a.y, sc)}" fill="${col}"/>`;
   if (markClassFor(pc.mark) === 'center') return mark;   // dagesh follows the letter's center anchor — static preview, not draggable here
-  return mark + markSelectRect(pc.mark, a.x, a.y, sc, 'pcanc', col, '');
+  let out = mark + markSelectRect(pc.mark, a.x, a.y, sc, 'pcanc', col, '');
+  if (precompTakesHolam(pc)) {   // שׁ/שׂ: preview + drag where a following holam attaches — both dots visible IS the stacking check for this case
+    const ha = precompHolamAnchor(pc), hcol = '#2a86d6', hsc = nikScale('05B9');
+    out += `<path id="pcHolamMark" d="${markPreviewPath('05B9', ha.x, ha.y, hsc)}" fill="${hcol}" fill-opacity="0.85"/>`;
+    out += markSelectRect('05B9', ha.x, ha.y, hsc, 'pcholam', hcol, '');
+  }
+  return out;
 }
 function attachPrecompDrag() {
   const pc = getPrecomp(precompTarget); if (!pc) return;
@@ -8678,6 +8712,26 @@ function attachPrecompDrag() {
     el.addEventListener('pointerup', () => { grab = null; udPush(pend); pend = null; hideAncTip(); renderStage(); renderControls(); });
     el.addEventListener('pointercancel', () => { grab = null; udPush(pend); pend = null; hideAncTip(); });
   });
+  const hsc = nikScale('05B9');
+  stage().querySelectorAll('.pcholam').forEach(el => {   // שׁ/שׂ holam-attach handle (2nd draggable dot)
+    let grab = null, pend = null;
+    el.addEventListener('pointerdown', e => {
+      el.setPointerCapture(e.pointerId);
+      const [fxp,fyp] = clientToFont(e); const a = precompHolamAnchor(pc); grab = [a.x-fxp, a.y-fyp];
+      pend = udCapture([{ t:'precomp', target: precompTarget }], 'holam anchor move');
+      showAncTip(e.clientX, e.clientY); e.preventDefault();
+    });
+    el.addEventListener('pointermove', e => {
+      if (!grab) return;
+      const [fxp,fyp] = clientToFont(e);
+      pc.holam = { x: Math.round(fxp+grab[0]), y: Math.round(fyp+grab[1]) };
+      const mark = stage().querySelector('#pcHolamMark'); if (mark) mark.setAttribute('d', markPreviewPath('05B9', pc.holam.x, pc.holam.y, hsc));
+      const rx = document.getElementById('pcHolamX'); if (rx) rx.value = pc.holam.x;
+      const ry = document.getElementById('pcHolamY'); if (ry) ry.value = pc.holam.y;
+    });
+    el.addEventListener('pointerup', () => { grab = null; udPush(pend); pend = null; hideAncTip(); renderStage(); renderControls(); });
+    el.addEventListener('pointercancel', () => { grab = null; udPush(pend); pend = null; hideAncTip(); });
+  });
 }
 function renderPrecompControls(l) {
   const pc = getPrecomp(precompTarget);
@@ -8697,6 +8751,8 @@ function renderPrecompControls(l) {
     <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">${I18n.t('fontmaker.panels.back_to_vowels')}</button>`;
   }
   const a = precompAnchor(pc), isOverride = !!(pc.anchor && pc.anchor.x != null);
+  const takesHolam = precompTakesHolam(pc);                    // שׁ/שׂ get a 2nd anchor for a following holam
+  const ha = takesHolam ? precompHolamAnchor(pc) : null, isHolamOverride = !!(pc.holam && pc.holam.x != null);
   const scPct = Math.round(precompMarkScale(pc) * 100), isScaleOverride = (pc.markScale != null);
   const isCholamVav = (pc.base === '05D5' && pc.mark === '05B9');   // וֹ size: surfaced here (next to the live preview) using the same control as the Nikkud-step Holam (vav) size
   const cholPct = Math.round(cholamScale() * 100);
@@ -8717,7 +8773,17 @@ function renderPrecompControls(l) {
     </div>
     <div class="ctl-row" style="margin-top:8px;justify-content:center;">
       ${isOverride ? `<button class="ctl-btn" onclick="resetPrecompAnchor()">${I18n.t('fontmaker.panels.reset_to_auto')}</button>` : `<span class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.auto_position_hint')}</span>`}
+    </div>${takesHolam ? `
+    <hr class="ctl-divider">
+    <div class="ws-side-title">${I18n.t('fontmaker.panels.precomp_holam_title')}</div>
+    <div class="hint" style="font-size:0.64rem;">${I18n.t('fontmaker.panels.precomp_holam_hint')}</div>
+    <div class="anc-xy">
+      <label>X <input type="number" id="pcHolamX" value="${ha.x}" oninput="setPrecompHolamCoord('x',this.value)" onchange="udBurstCommit()"></label>
+      <label>Y <input type="number" id="pcHolamY" value="${ha.y}" oninput="setPrecompHolamCoord('y',this.value)" onchange="udBurstCommit()"></label>
     </div>
+    <div class="ctl-row" style="margin-top:8px;justify-content:center;">
+      ${isHolamOverride ? `<button class="ctl-btn" onclick="resetPrecompHolam()">${I18n.t('fontmaker.panels.reset_to_auto')}</button>` : `<span class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.auto_position_hint')}</span>`}
+    </div>` : ''}
     <hr class="ctl-divider">
     ${sizeBlock}
     <hr class="ctl-divider">
@@ -9475,6 +9541,25 @@ function kernPreviewValue(firstCp, secondCp) {   // big-sample preview: the in-p
     if (L.includes(firstCp) && R.includes(secondCp)) return e.value|0; }
   return kernBetween(firstCp, secondCp);
 }
+function _spacingCellMarks(cell) {   // place a glyph cell's stacked nikkud together — precomposed-aware, faithful to the exported font
+  const L = cell.letter, cps = cell._markCps; if (!L || !cps || !cps.length) return;
+  const anc = cell._anc || (cell._anc = qaAnchors(L));
+  // Shin/sin (שׁ/שׂ) route their dot through a precomposed form (FB2A/FB2B): bake the dot at the form's
+  // dot anchor and send a following holam to the form's holam anchor — matching the exported font, in any
+  // typed order (marks were collected first). Everything else stacks at its class anchor as before.
+  const dotCp = (cell.cp === '05E9') ? cps.find(m => m === '05C1' || m === '05C2') : null;
+  const pc = dotCp ? getPrecomp(dotCp === '05C1' ? 'FB2A' : 'FB2B') : null;
+  cps.forEach(mcp => {
+    const cls = MARK_CLASS[mcp]; if (!cls) return;
+    let ancPt = anc[cls], scale = nikScale(mcp);
+    if (pc) {
+      if (mcp === dotCp) { ancPt = precompAnchor(pc); scale = precompMarkScale(pc); }   // the baked dot
+      else if (mcp === '05B9' || mcp === '05BA') ancPt = precompHolamAnchor(pc);         // holam → the form's holam slot
+    }
+    const polys = qaPlace(ancPt, 'nikkud', mcp, scale, L);
+    if (polys && polys.length) (cell.marks = cell.marks || []).push(polys);
+  });
+}
 function spacingPreviewLayout() {   // shared by the big preview and the waterfall — cells, kern gaps, line metrics
   const em = effMetrics(), sp = fontSpacing(), ascender = em.lamedAscender + 100, descender = em.descender - 50;
   const lineH = (ascender - descender) + sp.lineSpacing;
@@ -9492,11 +9577,9 @@ function spacingPreviewLayout() {   // shared by the big preview and the waterfa
     if (isMarkCp(c)) {                                   // nikkud → stack on the current base letter (zero advance)
       if (!base || !base.contours) continue;            // no traced base to sit on → skip (preview uses your traced letters)
       const mcp = c.toString(16).toUpperCase().padStart(4,'0');
-      const cls = MARK_CLASS[mcp]; if (!cls) continue;  // nikkud only; trop/custom marks have no MARK_CLASS → skipped, no layout effect
-      const anc = base._anc || (base._anc = qaAnchors(base.letter));
-      const polys = qaPlace(anc[cls], 'nikkud', mcp, nikScale(mcp), base.letter);
-      if (polys && polys.length) (base.marks = base.marks || []).push(polys);
-      continue;
+      if (!MARK_CLASS[mcp]) continue;                   // nikkud only; trop/custom marks have no MARK_CLASS → no layout effect
+      (base._markCps = base._markCps || []).push(mcp);  // collect; placed together once the cell's marks are known,
+      continue;                                          // so a precomposed shin/sin + holam composes like the font in any typed order
     }
     if (ch === ' ') { const w = wordAdvance(); total += w; cells.push({ type:'space', w }); base = null; continue; }
     const cp = c.toString(16).toUpperCase().padStart(4,'0');
@@ -9506,6 +9589,7 @@ function spacingPreviewLayout() {   // shared by the big preview and the waterfa
     const cell = { type:'glyph', cp, w, contours: l && l.contours, curves: l && l.curves, letter: l };
     cells.push(cell); base = cell;
   }
+  cells.forEach(c => { if (c.type === 'glyph' && c._markCps) _spacingCellMarks(c); });   // place stacked marks (precomposed-aware)
   // pair kerning between adjacent glyphs (reading order) — matches the exported `kern` feature & the kern-panel preview
   const gaps = cells.map((c, i) => { const n = cells[i+1]; return (c.type === 'glyph' && n && n.type === 'glyph') ? kernPreviewValue(c.cp, n.cp) : 0; });
   gaps.forEach(g => total += g);
@@ -10726,8 +10810,14 @@ function qaSynthPrecompRow(pc, baseMeta, label) {
   const dotAnc = (MARK_CLASS[pc.mark] !== 'center' && pc.anchor && pc.anchor.x != null) ? pc.anchor : anc[MARK_CLASS[pc.mark]];   // dagesh follows the base's center anchor (unified)
   if (!dotAnc) return null;                                            // unknown anchor class → skip (shouldn't happen for nikkud)
   const dotPolys = qaPlace(dotAnc, 'nikkud', pc.mark, precompMarkScale(pc));   // per-form dot size, same translate as export
+  // Shin/sin (שׁ/שׂ) bake an above-class dot, so the export relocates the above anchor to the form's holam
+  // slot (clear of / merged with the dot). Freeze the QA row's above anchor to match, so the holam column
+  // sits where the exported font puts it — not piled on the baked dot. (dotAnc was captured above, so the
+  // baked dot itself is unaffected; qaCellLayers reads these frozen anchors for both nikkud & pair cells.)
+  const rowAnchors = (pc.base === '05E9' && (pc.mark === '05C1' || pc.mark === '05C2'))
+    ? Object.assign({}, anc, { above: precompHolamAnchor(pc) }) : anc;
   const L = Object.assign({}, base, {
-    anchors: anc,                                                       // freeze the base's anchors (vowels sit here)
+    anchors: rowAnchors,                                                // freeze anchors (vowels sit here); above → holam slot for שׁ/שׂ
     curves: null,                                                       // mixed bezier+polygon → render all as polygons
     contours: base.contours.concat(dotPolys.map(p => ({ points: p })))  // dot becomes part of the base ink
   });
@@ -11450,7 +11540,21 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
   }
   if (builtPrecomposed.length || builtPerLetter.length) {
     f += 'feature ccmp {\n';
-    builtPrecomposed.forEach(pc => { f += `  sub ${gname(pc.base)} ${gname(pc.mark)} by ${gname(pc.target)};\n`; });
+    // Shin/sin precomposition (שׁ/שׂ) must fire even when a holam shares the letter. HarfBuzz canonically
+    // reorders combining marks by combining class before GSUB (holam ccc19 < shin-dot ccc24), so a typed
+    // shin+dot+holam becomes [shin, holam, dot] — a plain `sub shin shindot` no longer sees them adjacent
+    // and never fires. A UseMarkFilteringSet scoped to the shin/sin dots makes the shaper skip the
+    // intervening holam for THIS lookup only, so the ligature still matches. It MUST stay scoped: applying
+    // it to `sub vav holam by FB4B` would filter out that rule's own holam and break וֹ. (Same named-lookup
+    // + filtering-set device the vowel+trop slide uses below.)
+    const isShinSin = pc => pc.base === '05E9' && (pc.mark === '05C1' || pc.mark === '05C2');
+    const shinSin = builtPrecomposed.filter(isShinSin);
+    if (shinSin.length) {
+      f += '  lookup ccmp_shinsin {\n    lookupflag UseMarkFilteringSet [' + [...new Set(shinSin.map(pc => gname(pc.mark)))].join(' ') + '];\n';
+      shinSin.forEach(pc => { f += `    sub ${gname(pc.base)} ${gname(pc.mark)} by ${gname(pc.target)};\n`; });
+      f += '  } ccmp_shinsin;\n';
+    }
+    builtPrecomposed.filter(pc => !isShinSin(pc)).forEach(pc => { f += `  sub ${gname(pc.base)} ${gname(pc.mark)} by ${gname(pc.target)};\n`; });
     builtPerLetter.forEach(pc => { f += `  sub ${gname(pc.base)} ${gname(pc.mark)} by ${pc.glyphName};\n`; });   // per-letter custom shapes
     f += '} ccmp;\n\n';
   }
@@ -11481,7 +11585,22 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
   // glyphs. A vowel typed after the composed pair attaches to the TARGET, not the original letter — so
   // the target needs the base letter's anchors too, or the vowel falls back to x=0 and hugs the left
   // edge. Skip the class the baked-in mark already occupies so a second mark doesn't double-stack on it.
-  builtPrecomposed.forEach(pc => emitBaseAnchors(gname(pc.target), project.letters.find(x => x.codepoint === pc.base), MARK_CLASS[pc.mark]));
+  // EXCEPTION — shin/sin (FB2A/FB2B) bake an ABOVE-class dot, the SAME class as a holam, so skipping
+  // 'above' would strand a following holam at x=0 (the שֹׁ/שֹׂ bug). Give those targets a real above anchor
+  // at the form's holam position (precompHolamAnchor) instead, so the holam attaches clear of / merged
+  // with the baked dot per its default. Dagesh/vav-holam/rafe forms keep skipping their baked mark's class.
+  builtPrecomposed.forEach(pc => {
+    const base = project.letters.find(x => x.codepoint === pc.base);
+    if (base && pc.base === '05E9' && (pc.mark === '05C1' || pc.mark === '05C2')) {
+      seedAnchorsIfNeeded(base);
+      if (base.anchors) {
+        const ha = precompHolamAnchor(pc);
+        emitBaseAnchors(gname(pc.target), Object.assign({}, base, { anchors: Object.assign({}, base.anchors, { above: { x: ha.x, y: ha.y } }) }));
+        return;
+      }
+    }
+    emitBaseAnchors(gname(pc.target), base, MARK_CLASS[pc.mark]);
+  });
   // per-letter baked glyphs are new bases too — a vowel/trop typed after one must still attach (skip the mark's own class)
   builtPerLetter.forEach(pc => emitBaseAnchors(pc.glyphName, project.letters.find(x => x.codepoint === pc.base), pc.cls));
   // Wide letterforms & digraphs are new bases too — a vowel/trop typed after one must attach to the
@@ -12570,6 +12689,21 @@ async function harfbuzzGate(bytes) {
         }
       }
     }
+    // Shin/sin + holam regression guard (the שֹׁ/שֹׂ bug): the dotted form must ligate to FB2A/FB2B AND
+    // still anchor a following holam. A missing above-anchor on the precomposed glyph drops the holam to
+    // x=0; a mis-scoped ccmp lookup fails to ligate (3 glyphs instead of 2). Only checked when shin is drawn.
+    if (project.font.nikkud.enabled && project.letters.some(l => l.codepoint === '05E9' && l.contours)) {
+      const shapeSeq = t => { const buf = H.createBuffer(); buf.addText(t); buf.guessSegmentProperties(); H.shape(font, buf); const r = buf.json(font); buf.destroy(); return r; };
+      const holamCh = String.fromCodePoint(0x05B9);
+      for (const dot of ['05C1', '05C2']) {   // shin-dot, sin-dot
+        const r = shapeSeq('ש' + String.fromCodePoint(parseInt(dot, 16)) + holamCh);
+        if (r.length > 2) { font.destroy(); face.destroy(); blob.destroy();
+          return { fail: true, msg: 'A dotted shin/sin + holam did not compose (' + r.length + ' glyphs) — the shin/sin ccmp mark-filtering set may be missing.' }; }
+        const hol = r.find(g => !(g.ax || 0));   // the zero-advance glyph = the holam mark
+        if (hol && !(Math.abs(hol.dx || 0) > 0 || Math.abs(hol.dy || 0) > 0)) { font.destroy(); face.destroy(); blob.destroy();
+          return { fail: true, msg: 'A holam on a dotted shin/sin shaped at x=0 — the precomposed form is missing its above anchor.' }; }
+      }
+    }
     font.destroy(); face.destroy(); blob.destroy();
     if (sawTwoGlyphs && !anyMarkOffset) return { fail: true, msg: 'Marks shaped with zero offset (fallback). The hebr script / anchors may be missing.' };
     return { ok: true };
@@ -13183,7 +13317,7 @@ function migrateProject(data) {
   data.combinedIndex = Math.max(0, Math.min(data.combinedIndex, Math.max(0, data.combinedSheets.length - 1)));
   delete data.combinedImage;
   data.precomposed = data.precomposed || PRECOMPOSED.map(p => ({...p}));
-  data.precomposed.forEach(pc => { if (pc.anchor === undefined) pc.anchor = null; });   // per-form mark anchor override
+  data.precomposed.forEach(pc => { if (pc.anchor === undefined) pc.anchor = null; if (pc.holam === undefined) pc.holam = null; });   // per-form mark anchor + holam-attach override
   data.template = data.template || { font:"'Noto Sans Hebrew', sans-serif", opacity:0.35, showOverlay:true };
   if (!Array.isArray(data.template.customFonts)) data.template.customFonts = [];   // uploaded tracing fonts (bytes) persist here
   data.view = data.view || { imgOpacityAlign:0.92, imgOpacityTrace:0.28, glyphOpacity:1.0 };
