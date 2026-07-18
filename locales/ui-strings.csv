@@ -814,6 +814,10 @@ dictionary.wordlist.saved.other,"Saved ""{name}"" with {count} words.","נשמר
 dictionary.wordlist.selected_count.one,{count} word selected,מילה אחת נבחרה,save word-list modal count,plural
 dictionary.wordlist.selected_count.other,{count} words selected,{count} מילים נבחרו,save word-list modal count,plural
 dictionary.wordlist.use_in_flashcards,Use in Flash Cards →,שימוש בכרטיסיות ←,word-list manager + save-success deep link to Flash Cards,trailing arrow mirrors in RTL
+dictionary.wordlist.active_banner.one,Saved list: {name} · {count} word,רשימה שמורה: {name} · מילה אחת,Load-as-filter active-list banner,plural; mixed UI+content — do not translate {name}
+dictionary.wordlist.active_banner.other,Saved list: {name} · {count} words,רשימה שמורה: {name} · {count} מילים,Load-as-filter active-list banner,plural; mixed UI+content — do not translate {name}
+dictionary.wordlist.active_exit,✕ Exit list,✕ יציאה מהרשימה,Load-as-filter active-list banner exit button,
+dictionary.wordlist.active_exit_aria,Exit the saved list view and show all words,יציאה מתצוגת הרשימה השמורה והצגת כל המילים,Load-as-filter active-list banner exit aria-label,
 dictionary.wordlist.view_words,View words,הצגת המילים,word-list card button,
 dictionary.wordlists.head,Word Lists,רשימות מילים,word-lists subheading,
 dictionary.wordlists.head_desc,Save selected words as a named list you can reuse elsewhere on the site.,שמרו מילים נבחרות כרשימה בעלת שם שתוכלו לעשות בה שימוש חוזר במקומות אחרים באתר.,word-lists description,

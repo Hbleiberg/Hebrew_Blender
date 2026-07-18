@@ -414,6 +414,12 @@ body.fullscreen .app{height:100vh;min-height:unset;}
 .fchip-body{font-size:0.74rem;background:transparent;border:none;color:var(--text);cursor:pointer;font-family:inherit;padding:3px 6px 3px 10px;line-height:1.5;white-space:nowrap;}
 .fchip-x{display:inline-flex;align-items:center;justify-content:center;width:20px;height:22px;background:transparent;color:var(--muted);font-size:0.72rem;line-height:1;border:none;border-inline-start:1px solid var(--border);cursor:pointer;flex-shrink:0;padding:0;}
 .fchip-x:hover{background:var(--gold);color:#fff;}
+/* "Load as filter" active-list banner — makes the saved-list view visible (and exitable)
+   so it no longer silently vanishes when the next filter change clears wlFilterOverride. */
+#wlActiveBanner{align-items:center;gap:10px;margin:8px 20px 0;padding:7px 12px;background:var(--warm-gray);border:1px solid var(--border);border-inline-start:3px solid var(--gold);border-radius:8px;font-size:0.82rem;}
+.wl-active-label{color:var(--text);font-weight:600;}
+.wl-active-exit{margin-inline-start:auto;background:var(--white);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:0.74rem;padding:3px 10px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:border-color 0.15s,background 0.15s;}
+.wl-active-exit:hover{border-color:var(--gold);background:var(--gold);color:#fff;}
 .fchip-body:focus-visible,.fchip-x:focus-visible,.fchip-reset:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
 .sort-sel:focus-visible,.dict-tool-btn:focus-visible,.word-card:focus-visible,.emoji-card:focus-visible,.lpt:focus-visible,.panel-title:focus-visible,.adv-section-title:focus-visible,.pos-sec-hdr:focus-visible,.shoresh-patterns-title:focus-visible,.shoresh-pat.filled:focus-visible,.emoji-cat-arrow:focus-visible,.vowel-group-section div[role="button"]:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
 .fchip-reset{font-size:0.74rem;background:var(--navy);color:#fff;border:1px solid var(--navy);border-radius:14px;padding:4px 11px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;}
@@ -1011,6 +1017,7 @@ footer a{color:var(--gold-text);text-decoration:none;}
       <button class="dict-tool-btn" id="dictResetBtn" onclick="resetDictFilters()" title="Reset all filters to their defaults" style="display:none;" data-i18n="dictionary.toolbar.reset_filters" data-i18n-title="dictionary.toolbar.reset_filters_title">↺ Reset filters</button>
     </div>
     <div class="filter-chips" id="filterChips" aria-label="Active filters" data-i18n-aria-label="dictionary.toolbar.active_filters_aria"></div>
+    <div id="wlActiveBanner" role="status" aria-live="polite" style="display:none;"></div>
     <div class="content">
       <div id="shoreshControls">
         <label style="display:block;font-size:0.8rem;font-weight:600;color:var(--text);margin-bottom:6px;" data-i18n="dictionary.shoresh.enter_label">Enter a שׁורש (root)</label>
@@ -1742,7 +1749,41 @@ function wlLoadListAsFilter(id) {
   if (rc) rc.textContent = countText;
   if (sc) sc.textContent = countText;
   if (n === 0) renderDictEmptyState(false);
+  wlShowActiveBanner(list.name, n);
   closeWordModal();
+}
+
+/* The "Load as filter" view is a live-only override (wlFilterOverride) that any real filter
+   change silently discards. This banner makes that state visible and gives an explicit exit,
+   so the teacher's list view no longer just vanishes. Name goes through textContent (safe). */
+let _wlActiveListName = null;
+function wlShowActiveBanner(name, n) {
+  _wlActiveListName = name;
+  const b = document.getElementById('wlActiveBanner');
+  if (!b) return;
+  b.innerHTML = '';
+  const label = document.createElement('span');
+  label.className = 'wl-active-label';
+  label.textContent = I18n.t(n === 1 ? 'dictionary.wordlist.active_banner.one' : 'dictionary.wordlist.active_banner.other', { name, count: n.toLocaleString() });
+  b.appendChild(label);
+  const exit = document.createElement('button');
+  exit.type = 'button';
+  exit.className = 'wl-active-exit';
+  exit.textContent = I18n.t('dictionary.wordlist.active_exit');
+  exit.setAttribute('aria-label', I18n.t('dictionary.wordlist.active_exit_aria'));
+  exit.addEventListener('click', wlExitActiveFilter);
+  b.appendChild(exit);
+  b.style.display = 'flex';
+}
+function wlHideActiveBanner() {
+  _wlActiveListName = null;
+  const b = document.getElementById('wlActiveBanner');
+  if (b) { b.style.display = 'none'; b.innerHTML = ''; }
+}
+function wlExitActiveFilter() {
+  wlFilterOverride = null;
+  wlHideActiveBanner();
+  onFilter();   // re-render the normal filtered view (onFilter also hides the banner — idempotent)
 }
 
 const GEMATRIA = {'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,'כ':20,'ך':20,'ל':30,'מ':40,'ם':40,'נ':50,'ן':50,'ס':60,'ע':70,'פ':80,'ף':80,'צ':90,'ץ':90,'ק':100,'ר':200,'ש':300,'ת':400};
@@ -2173,6 +2214,7 @@ function expandAllMenus()   { document.querySelectorAll('#appSidebar .panel, #ap
 function collapseAllMenus() { document.querySelectorAll('#appSidebar .panel, #appSidebar .adv-section').forEach(p => p.classList.add('collapsed')); syncCollapseAria(); }
 function onFilter() {
   if (_applyingDictState) return;  // Section 1: applyDictState() renders once itself at the end
+  wlHideActiveBanner();  // any genuine filter change leaves the "Load as filter" view
   if (shoreshMode) { if (lastShoreshRoot) renderShoreshFamily(lastShoreshRoot); dictAfterFilter(); return; }
   if (emojiMode) {
     filterEmojis();
@@ -2482,6 +2524,7 @@ function shoreshMatchCost(wc, rc) {
 function consonantsContainRoot(wc, rc) { return shoreshMatchCost(wc, rc) !== Infinity; }
 
 function setDictMode(mode) {
+  wlHideActiveBanner();  // switching modes leaves any active "Load as filter" view
   if (mode === 'shoresh') {
     if (emojiMode) toggleEmojiMode(false);
     shoreshMode = true;
@@ -3739,6 +3782,7 @@ function applyI18n() {
       const ct = n === 0 ? I18n.t('dictionary.results.no_words_in_list') : I18n.t(n === 1 ? 'dictionary.results.count_words.one' : 'dictionary.results.count_words.other', { count: n.toLocaleString() });
       const rc = document.getElementById('resultCount'); if (rc) rc.textContent = ct;
       const sc = document.getElementById('sidebarWordCount'); if (sc) sc.textContent = ct;
+      if (_wlActiveListName) wlShowActiveBanner(_wlActiveListName, n);  // re-localize the active-list banner
     } else if (shoreshMode) {
       if (lastShoreshRoot) renderShoreshFamily(lastShoreshRoot);
       else document.getElementById('resultCount').textContent = I18n.t('dictionary.shoresh.enter_root_count');
