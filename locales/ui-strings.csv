@@ -3074,6 +3074,7 @@ torah.tour.s5_body,Click any Hebrew word to chant from exactly that spot.,לחצ
 torah.tour.s5_title,The text itself,הטקסט עצמו,tour step title,
 torah.tour.s6_body,"Fonts, vowel colors, transliteration styles, and speeds live here.","גופנים, צבעי תנועות, סגנונות תעתיק ומהירויות נמצאים כאן.",tour step body,
 torah.tour.s6_title,Settings,הגדרות,tour step title,
+torah.tour.reading_loading,Loading the reading…,טוען את הקריאה…,tour step shown while the Sefaria reading is still streaming in,
 torah.trans.footer_line,"Translation: <em>{version}</em> · {license} (via <a href=""https://www.sefaria.org"" target=""_blank"" rel=""noopener"">Sefaria</a>)","תרגום: <em>{version}</em> · {license} (דרך <a href=""https://www.sefaria.org"" target=""_blank"" rel=""noopener"">Sefaria</a>)",footer translation line,html; keep <em>/<a>; do-not-translate {version}/{license}
 torah.trans.footer_none,Translation: (none selected — toggle Translation off or pick a version),תרגום: (לא נבחר — כבו את התרגום או בחרו גרסה),footer translation line,
 torah.trans.lib_failed,Transliteration library failed to load (offline?).,טעינת ספריית התעתיק נכשלה (לא מקוון?).,translit status,

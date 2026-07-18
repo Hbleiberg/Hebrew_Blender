@@ -2445,6 +2445,7 @@ function renderEmptyReading() {   // friendly card shown in #ttReading when no p
        <h2>${esc(I18n.t('torah.reading.empty_title'))}</h2>
        <p>${esc(I18n.t('torah.reading.empty_body'))}</p>
      </div>`;
+  _tourOnReadingChanged();   // no reading will arrive — release any tour reading-hold so it skips those steps
 }
 function renderText() {
   // Chokepoint for the color layers: every settings/nav/theme path that re-renders
@@ -2494,6 +2495,7 @@ function renderText() {
   setupVerseObserver();
   buildJumpNav();
   initReadingRover();   // innerHTML rebuild dropped any prior rover word
+  _tourOnReadingChanged();   // a parked tour reading-step can now resolve
 }
 function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant, canLoop, aStartByLabel) {
   aStartByLabel = aStartByLabel || {};
@@ -2660,17 +2662,20 @@ function cssEscape(s) {
    FETCH + RENDER ORCHESTRATION
    ══════════════════════════════════════════════════════ */
 let _fetchSeq = 0;   // stale-response guard: only the latest fetchAndRender may render
+let _readingLoading = false;   // true while a Sefaria reading fetch is in flight — the tour holds its reading steps until it resolves
 async function fetchAndRender() {
   const r = resolveRef();
   const seq = ++_fetchSeq;
   currentReadingCtx = r;
   updateScopeSelectState();
   if (!r) {
+    _readingLoading = false;
     currentVerses = null;
     renderEmptyReading();
     setStatus(I18n.t('torah.status.pick_parsha'), false);
     return;
   }
+  _readingLoading = true;
   setStatus(I18n.t('torah.status.loading_label', { label: r.label }), false);
   let netDone = false;   // true once every Sefaria fetch has resolved → a later throw is a render/code bug, not an outage
   try {
@@ -2701,6 +2706,7 @@ async function fetchAndRender() {
     currentVerses = verses;
     currentRangeLabel = r.label;
     netDone = true;   // all network work succeeded; anything that throws below is a render/code fault
+    _readingLoading = false;
     renderText();
     // Warn if translation was requested but Sefaria returned no English for
     // this version + ref. Could mean: version doesn't cover this passage,
@@ -2727,12 +2733,14 @@ async function fetchAndRender() {
     maybeShowClickHint();
   } catch (e) {
     if (seq !== _fetchSeq) return;   // a newer selection superseded this fetch; don't clobber it with an error
+    _readingLoading = false;
     console.error(e);
     // Only blame the network when the failure happened while fetching. Once the text is in hand
     // (netDone), a throw is a render/code fault — the Hebrew is often already on screen — so
     // "Sefaria API may be unreachable" would misdirect the user.
     const netHint = netDone ? '' : ' ' + I18n.t('torah.status.net_hint');
     setStatus(I18n.t('torah.status.reading_load_failed', { label: r.label, error: e.message }) + netHint, true);
+    _tourOnReadingChanged();   // a parked tour reading-step won't get its content — release it so it skips past
   }
 }
 function setStatus(msg, isError) {
@@ -4974,13 +4982,14 @@ const TOUR_STEPS = [
   { target: () => (document.getElementById('ttLayoutSide') || {}).closest ? document.getElementById('ttLayoutSide').closest('.tt-ctrl') : null,
     titleKey: 'torah.tour.s3_title', bodyKey: 'torah.tour.s3_body' },
   { target: () => document.querySelector('#ttReading .tt-verse-buttons'),
-    titleKey: 'torah.tour.s4_title', bodyKey: 'torah.tour.s4_body' },
+    titleKey: 'torah.tour.s4_title', bodyKey: 'torah.tour.s4_body', waitForReading: true },
   { target: () => document.querySelector('#ttReading .tt-heb, #ttReading .tt-cell.heb, #ttReading .tt-bverse'),
-    titleKey: 'torah.tour.s5_title', bodyKey: 'torah.tour.s5_body' },
+    titleKey: 'torah.tour.s5_title', bodyKey: 'torah.tour.s5_body', waitForReading: true },
   { target: () => document.getElementById('gearBtn'),
     titleKey: 'torah.tour.s6_title', bodyKey: 'torah.tour.s6_body' },
 ];
 let _tourIdx = -1, _tourActive = false, _tourOpener = null, _tourRepoTimer = null;
+let _tourPendingIdx = null, _tourHoldEl = null;   // reading-load hold: step parked until #ttReading renders
 function tourStart() {
   if (_tourActive) return;
   try { localStorage.setItem('hebrewTorahTrainer_tourSeen', '1'); } catch (e) {}
@@ -5002,8 +5011,15 @@ function _resolveStep(idx) {
   return _tourVisible(el) ? el : null;
 }
 function _tourShow(idx, dir) {
-  while (idx >= 0 && idx < TOUR_STEPS.length && !_resolveStep(idx)) idx += dir;
+  while (idx >= 0 && idx < TOUR_STEPS.length && !_resolveStep(idx)) {
+    // The reading steps (s4/s5) don't exist until the Sefaria fetch renders #ttReading. If one is
+    // still streaming in, hold here instead of skipping past the two most important steps — the
+    // renderText()/renderEmptyReading() hook re-drives us via _tourOnReadingChanged() once it lands.
+    if (dir > 0 && TOUR_STEPS[idx].waitForReading && _readingLoading) { _tourHoldForReading(idx); return; }
+    idx += dir;
+  }
   if (idx < 0 || idx >= TOUR_STEPS.length) { tourEnd(dir > 0); return; }
+  _tourPendingIdx = null; _tourHoldEl = null;   // a real step resolved — clear any reading-hold
   _tourIdx = idx;
   const step = TOUR_STEPS[idx], el = step.target();
   try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {}
@@ -5017,11 +5033,33 @@ function _tourShow(idx, dir) {
   _tourRepoTimer = setTimeout(_tourReposition, 350);   // re-measure after scroll settles
   setTimeout(() => { const n = document.getElementById('tourNext'); if (n && _tourActive) n.focus(); }, 0);
 }
+// Park the tour on a reading step while its content streams in (instead of dropping s4/s5).
+function _tourHoldForReading(idx) {
+  _tourIdx = idx;
+  _tourPendingIdx = idx;
+  _tourHoldEl = document.getElementById('ttReading');   // spotlight the (still-loading) reading container
+  const step = TOUR_STEPS[idx];
+  document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey);
+  document.getElementById('tourCardBody').textContent = I18n.t('torah.tour.reading_loading');
+  document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: idx + 1, total: TOUR_STEPS.length });
+  document.getElementById('tourBack').disabled = (idx === 0);
+  document.getElementById('tourNext').textContent = I18n.t((idx === TOUR_STEPS.length - 1) ? 'shared.tour.done' : 'shared.tour.next');
+  try { _tourHoldEl && _tourHoldEl.scrollIntoView({ block: 'center' }); } catch (e) {}
+  _tourReposition();
+}
+// Re-drive a reading-hold once the reading finishes (or fails) rendering.
+function _tourOnReadingChanged() {
+  if (!_tourActive || _tourPendingIdx == null) return;
+  const held = _tourPendingIdx;
+  _tourPendingIdx = null; _tourHoldEl = null;
+  _tourShow(held, 1);   // reading ready → show the step; still absent (load failed) → skip past it
+}
 function tourNext() { _tourShow(_tourIdx + 1, 1); }
 function tourPrev() { _tourShow(_tourIdx - 1, -1); }
 function tourEnd(completed) {
   if (!_tourActive) return;
   _tourActive = false;
+  _tourPendingIdx = null; _tourHoldEl = null;
   document.removeEventListener('keydown', _tourKey, true);
   window.removeEventListener('resize', _tourReposition);
   window.removeEventListener('scroll', _tourReposition, true);
@@ -5036,6 +5074,7 @@ function _tourReposition() {
   const step = TOUR_STEPS[_tourIdx];
   if (!step) return;
   let el = null; try { el = step.target(); } catch (e) {}
+  if (!_tourVisible(el)) el = _tourHoldEl;   // reading-load hold: fall back to the reading container
   if (!_tourVisible(el)) return;
   const r = el.getBoundingClientRect(), pad = 6;
   const spot = document.getElementById('tourSpot');

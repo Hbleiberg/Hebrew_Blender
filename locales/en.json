@@ -3090,6 +3090,7 @@
   "torah.status.version_no_cover": "\"{version}\" doesn't cover this passage.",
   "torah.status.version_not_returned": "\"{version}\" wasn't returned by Sefaria for this passage — pick a different version.",
   "torah.tip.more_info": "More information",
+  "torah.tour.reading_loading": "Loading the reading…",
   "torah.tour.s1_body": "Pick any parsha — it starts on this week's automatically.",
   "torah.tour.s1_title": "Pick a parsha",
   "torah.tour.s2_body": "Read the whole parsha, one aliyah, or the haftarah. 🎵 means chanted audio is available.",
