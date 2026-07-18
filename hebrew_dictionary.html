@@ -1442,7 +1442,10 @@ function exportQuizlet() {
     if (tr) def = def ? `${def} (${tr})` : `(${tr})`;
     rows.push(`${csvEscape(w.word)},${csvEscape(def)}`);
   });
-  downloadTextFile(`ivrit-quizlet-export-${exportDateStamp()}.csv`, rows.join('\n'), 'text/csv');
+  // Lead with a UTF-8 BOM so Windows-Excel (the documented Quizlet import path — see the
+  // "Import from Word/Excel" hint) renders Hebrew correctly instead of mojibake. The BOM is an
+  // encoding marker Excel consumes, not cell content, so the Excel→paste→Quizlet flow stays clean.
+  downloadTextFile(`ivrit-quizlet-export-${exportDateStamp()}.csv`, '\uFEFF' + rows.join('\n'), 'text/csv');
 }
 
 /* ===== Word Lists — suite-wide store (localStorage['ivritSuite_wordLists']) =====
