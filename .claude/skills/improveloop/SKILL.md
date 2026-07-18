@@ -270,6 +270,11 @@ Tie-breakers, in order: (1) affects teachers' saved work, (2) affects the printe
 4. **Print a summary:** iterations completed, pass run, patterns swept (hits/clean), micro-feature
    shipped or split, top 3 remaining candidates + top feature seed, any protocol divergence flagged
    for this skill, and anything a human must do (starting with: merge the PR, then verify the deploy).
+5. **End with a plain-language recap.** Every loop run must finish with a short **"In simple terms, what
+   did this loop session do?"** section — the very last thing printed, after the technical summary above.
+   Write it in jargon-free language a non-technical teacher would understand (no pass letters, ledger
+   terms, commit hashes, or version numbers): what visibly changed for people using the site, what was
+   checked and found fine, and what the human needs to do next.
 
 ## First-session bootstrap (only if `docs/IMPROVEMENT_LOG.md` is absent)
 Create the ledger with the full v2 structure, then spend the whole session on discovery: run sweep A in full plus pass B, populate Candidates (expect 10–25 items), fix ONLY any P1s discovered, and close out. Fixing begins in earnest next session against a real backlog.
