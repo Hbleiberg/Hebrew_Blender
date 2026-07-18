@@ -988,6 +988,17 @@ const FONTS = [
   }
 ];
 const FONT_SAMPLE = 'שָׁלוֹם עוֹלָם';
+/* A letters-only face has no vowel-point / cantillation glyphs, so those marks in the
+   shared sample fall back to another font and look broken. Strip the marks a given font
+   doesn't support (nikkud when !f.nikkud, te'amim when !f.trop) from its preview text. */
+const _SAMPLE_NIKKUD_RE = /[\u05B0-\u05BD\u05BF\u05C1\u05C2\u05C7]/g;  // vowel points (sheva..meteg, rafe, shin/sin dots, qamats qatan)
+const _SAMPLE_TEAMIM_RE = /[\u0591-\u05AF]/g;  // cantillation (te'amim)
+function fontSampleFor(f) {
+  let s = FONT_SAMPLE;
+  if (f && !f.nikkud) s = s.replace(_SAMPLE_NIKKUD_RE, '');
+  if (f && !f.trop)   s = s.replace(_SAMPLE_TEAMIM_RE, '');
+  return s;
+}
 const FTYPE_LABEL = { block: 'Block', cursive: 'Cursive', torah: 'Torah', other: 'Other' };
 const _loadedGalleryFonts = new Set();
 function ensureGalleryFont(f) {
@@ -1041,7 +1052,7 @@ function renderFonts() {
     return '<div class="resource-card font-card">' +
       '<div class="card-top"><div class="card-title">' + esc(f.name) + '</div>' +
       '<span class="card-cat-badge">' + esc(FTYPE_LABEL[f.type] ? I18n.t('resources.fonts.type_' + f.type) : f.type) + '</span></div>' +
-      '<div class="font-preview-line" lang="he" style="font-family:\'' + esc(f.family) + '\',serif;">' + esc(FONT_SAMPLE) + '</div>' +
+      '<div class="font-preview-line" lang="he" style="font-family:\'' + esc(f.family) + '\',serif;">' + esc(fontSampleFor(f)) + '</div>' +
       '<div class="font-by">' + by + '</div>' +
       '<div class="font-actions">' +
         '<button type="button" onclick="openFontPreview(' + i + ')">' + esc(I18n.t('resources.fonts.preview_action')) + '</button>' +
@@ -1066,7 +1077,7 @@ function setView(v) {
 }
 
 /* ── Font preview modal ── */
-let _fpFamily = 'serif';
+let _fpFamily = 'serif', _fpDefault = FONT_SAMPLE;
 function openFontPreview(i) {
   const f = FONTS[i]; if (!f) return;
   ensureGalleryFont(f);
@@ -1074,13 +1085,17 @@ function openFontPreview(i) {
   document.getElementById('fontPreviewTitle').textContent = f.name;
   const inp = document.getElementById('fontPreviewInput');
   inp.style.fontFamily = _fpFamily;
-  if (!inp.value) inp.value = FONT_SAMPLE;
+  // Seed with a sample the font can actually render; refresh the untouched default when
+  // switching fonts, but preserve any custom text the user typed.
+  const sample = fontSampleFor(f);
+  if (!inp.value || inp.value === _fpDefault) inp.value = sample;
+  _fpDefault = sample;
   updateFontPreview();
   document.getElementById('fontPreviewBackdrop').classList.add('open');
   setTimeout(() => { inp.focus(); inp.select(); }, 60);
 }
 function updateFontPreview() {
-  const txt = document.getElementById('fontPreviewInput').value || FONT_SAMPLE;
+  const txt = document.getElementById('fontPreviewInput').value || _fpDefault;
   const render = document.getElementById('fontPreviewRender');
   render.style.fontFamily = _fpFamily; render.textContent = txt;
   const sizes = document.getElementById('fontPreviewSizes');
