@@ -208,7 +208,6 @@
   header .star { color: var(--gold-light); font-size: 1.7rem; line-height: 1; }
   header h1 { font-family: 'Libre Baskerville', serif; font-size: 1.15rem; margin: 0; color: #fff; }
   header p { margin: 1px 0 0; font-size: 0.74rem; color: var(--gold-light); }
-  .beta-tag { display: inline-block; background: var(--gold); color: var(--navy); font-size: 0.55rem; font-weight: 700; letter-spacing: 0.08em; padding: 2px 6px; border-radius: 4px; vertical-align: middle; margin-inline-start: 6px; text-transform: uppercase; }
   .hbtn {
     background: transparent; border: 1.5px solid var(--gold-light); color: var(--gold-light);
     border-radius: 6px; padding: 6px 10px; cursor: pointer; font-size: 0.8rem;
@@ -903,7 +902,7 @@
 <header>
   <span class="star">✡︎</span>
   <div style="flex:1;min-width:0;">
-    <h1><span data-i18n="fontmaker.about.app_title">Hebrew Font Maker</span> <span class="beta-tag" data-i18n="fontmaker.about.beta_tag">Beta</span></h1>
+    <h1><span data-i18n="fontmaker.about.app_title">Hebrew Font Maker</span></h1>
     <p data-i18n="fontmaker.about.tagline">Make your own free Hebrew font — turn your handwriting into a real, installable font with nikkud, right in your browser.</p>
   </div>
   <div class="hdr-actions">
@@ -2501,7 +2500,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.31';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.0';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2713,6 +2712,11 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.0</strong> — <strong>Initial release.</strong> The Hebrew Font Maker is out of beta — this is its first full public release. Huge thanks to everyone who tested the beta versions and sent feedback along the way. <span style="color:var(--muted);">(July 2026)</span></li>
+    </ul>
+    <details style="margin:6px 0 0;">
+      <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;">Beta version history</summary>
+    <ul>
       <li><strong>v4.31</strong> — <strong>Nikkud in the spacing preview.</strong> The <span class="ui">Spacing</span> panel's sample text now shows vowel points (nikkud) sitting on your letters instead of dropping them — the big preview and the <span class="ui">Waterfall</span> stack each mark over its letter using the same placement as the exported font, so what you see matches what you'll download. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.30</strong> — <strong>Save a copy to make a variant.</strong> The <span class="ui">Save Project</span> button is now a <span class="ui">Save Project ▾</span> menu with a new <span class="ui">Save as a copy…</span> option: give the copy a name and it's saved alongside your current font under <span class="ui">Load Project ▾ → Recent</span>, then the editor switches to the copy so you can start tweaking the variant right away — your original stays untouched. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.29</strong> — <strong>Fewer points, real curves.</strong> Importing a TTF/OTF font now keeps the font's actual curves instead of flattening them into hundreds of tiny straight segments — <span class="ui">Edit points</span> shows roughly the points the original designer drew, and exports keep genuinely smooth curves. And when an outline has too many points (a font or SVG imported by an older version, or a heavy trace), the new <span class="ui">Reduce points</span> panel in <span class="ui">Edit points</span> cleans it up: drag the strength slider for a live preview with a running point count, release to keep it, and one Undo brings everything back. Plus a fix: importing a font's nikkud and trop mark shapes no longer stops the import with an error. And the <span class="ui">Transform</span> panel in <span class="ui">Edit points</span> gains live rotate and scale sliders: drag for a live preview around the selection's center, release to keep it — one Undo reverts, and the exact angle/percent fields are still there for precise entry. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -2774,6 +2778,7 @@ const HELP_CONTENT = {
       <li><strong>v1.1</strong> — Import an existing TTF's letter outlines, its own nikkud &amp; trop mark shapes, and its real anchor positions — so you can fix or build on existing fonts. Exported fonts now embed the license name and a Made-with-IvritSuite attribution in their metadata. Bigger editing workspace on wide monitors. Removed the CC&nbsp;BY&nbsp;4.0 license option. <span style="color:var(--muted);">(June 2026)</span></li>
       <li><strong>v1.0</strong> — Initial release. <span style="color:var(--muted);">(June 2026)</span></li>
     </ul>
+    </details>
   `,
 };
 function openHelp(tab) {
@@ -2805,10 +2810,14 @@ function buildAboutBody() {
     const kk = 'fontmaker.changelog.' + v, s = T(kk);
     return (s && s !== kk) ? '<li>' + esc(s) + '</li>' : '';
   }).join('');
+  const v5 = T('fontmaker.changelog.v5_0');
+  const v5li = (v5 && v5 !== 'fontmaker.changelog.v5_0') ? '<li>' + esc(v5) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
        + '<p>' + esc(T('fontmaker.about.special_thanks')) + '</p>'
        + '<h4>' + esc(T('fontmaker.about.changelog_heading')) + '</h4>'
-       + '<ul>' + items + '</ul>';
+       + '<ul>' + v5li + '</ul>'
+       + '<details style="margin:6px 0 0;"><summary style="cursor:pointer;font-family:\'Libre Baskerville\',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;">'
+       + esc(T('fontmaker.about.changelog_history')) + '</summary><ul>' + items + '</ul></details>';
 }
 function showHelpTab(id) {
   document.querySelectorAll('#helpTabs .help-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
