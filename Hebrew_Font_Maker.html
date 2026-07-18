@@ -2501,7 +2501,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '4.30';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '4.31';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2713,6 +2713,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v4.31</strong> — <strong>Nikkud in the spacing preview.</strong> The <span class="ui">Spacing</span> panel's sample text now shows vowel points (nikkud) sitting on your letters instead of dropping them — the big preview and the <span class="ui">Waterfall</span> stack each mark over its letter using the same placement as the exported font, so what you see matches what you'll download. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.30</strong> — <strong>Save a copy to make a variant.</strong> The <span class="ui">Save Project</span> button is now a <span class="ui">Save Project ▾</span> menu with a new <span class="ui">Save as a copy…</span> option: give the copy a name and it's saved alongside your current font under <span class="ui">Load Project ▾ → Recent</span>, then the editor switches to the copy so you can start tweaking the variant right away — your original stays untouched. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.29</strong> — <strong>Fewer points, real curves.</strong> Importing a TTF/OTF font now keeps the font's actual curves instead of flattening them into hundreds of tiny straight segments — <span class="ui">Edit points</span> shows roughly the points the original designer drew, and exports keep genuinely smooth curves. And when an outline has too many points (a font or SVG imported by an older version, or a heavy trace), the new <span class="ui">Reduce points</span> panel in <span class="ui">Edit points</span> cleans it up: drag the strength slider for a live preview with a running point count, release to keep it, and one Undo brings everything back. Plus a fix: importing a font's nikkud and trop mark shapes no longer stops the import with an error. And the <span class="ui">Transform</span> panel in <span class="ui">Edit points</span> gains live rotate and scale sliders: drag for a live preview around the selection's center, release to keep it — one Undo reverts, and the exact angle/percent fields are still there for precise entry. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v4.28</strong> — <strong>Generate Bold, automatically.</strong> The new <span class="ui">Generate Bold…</span> button in <span class="ui">Font Details</span> (also offered when you import a font) thickens every traced letter's strokes to build a real Bold weight — with a live before/after preview, an adjustable strength slider (it can lighten too), an option to keep letter heights, and matching thickening for nikkud and trop. One click sets the <span class="ui">Style</span> to Bold so the export links with your Regular, and one Undo reverts everything. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -9461,17 +9462,34 @@ function kernPreviewValue(firstCp, secondCp) {   // big-sample preview: the in-p
 function spacingPreviewLayout() {   // shared by the big preview and the waterfall — cells, kern gaps, line metrics
   const em = effMetrics(), sp = fontSpacing(), ascender = em.lamedAscender + 100, descender = em.descender - 50;
   const lineH = (ascender - descender) + sp.lineSpacing;
-  // base letters only — combining marks (U+0591–U+05C7, plus any custom marks) have no advance, so strip them for spacing layout
+  // Combining marks (U+0591–U+05C7, plus custom marks) have zero advance, so they don't affect the RTL
+  // spacing layout — but instead of stripping them we attach each nikkud to its preceding base letter and
+  // stack it via the export-faithful QA kernel (qaAnchors + qaPlace), so the preview shows vowel points
+  // sitting on the letters exactly where the exported font puts them (preview == QA == font).
   const cmSet = new Set(customMarkCps().map(c => parseInt(c, 16)));
-  const chars = [...(sp.sample || '')].filter(ch => { const c = ch.codePointAt(0); return !(c >= 0x0591 && c <= 0x05C7) && !cmSet.has(c); });
+  const isMarkCp = c => (c >= 0x0591 && c <= 0x05C7) || cmSet.has(c);
   let total = 0;
-  const cells = chars.map(ch => {
-    if (ch === ' ') { const w = wordAdvance(); total += w; return { type:'space', w }; }
-    const cp = ch.codePointAt(0).toString(16).toUpperCase().padStart(4,'0');
+  const cells = [];
+  let base = null;   // most-recent glyph cell a mark can attach to
+  for (const ch of [...(sp.sample || '')]) {
+    const c = ch.codePointAt(0);
+    if (isMarkCp(c)) {                                   // nikkud → stack on the current base letter (zero advance)
+      if (!base || !base.contours) continue;            // no traced base to sit on → skip (preview uses your traced letters)
+      const mcp = c.toString(16).toUpperCase().padStart(4,'0');
+      const cls = MARK_CLASS[mcp]; if (!cls) continue;  // nikkud only; trop/custom marks have no MARK_CLASS → skipped, no layout effect
+      const anc = base._anc || (base._anc = qaAnchors(base.letter));
+      const polys = qaPlace(anc[cls], 'nikkud', mcp, nikScale(mcp), base.letter);
+      if (polys && polys.length) (base.marks = base.marks || []).push(polys);
+      continue;
+    }
+    if (ch === ' ') { const w = wordAdvance(); total += w; cells.push({ type:'space', w }); base = null; continue; }
+    const cp = c.toString(16).toUpperCase().padStart(4,'0');
     const l = project.letters.find(x => x.codepoint === cp);
     const w = l ? effLetterAdvance(l) : effLetterAdvance(null);
-    total += w; return { type:'glyph', cp, w, contours: l && l.contours, curves: l && l.curves };
-  });
+    total += w;
+    const cell = { type:'glyph', cp, w, contours: l && l.contours, curves: l && l.curves, letter: l };
+    cells.push(cell); base = cell;
+  }
   // pair kerning between adjacent glyphs (reading order) — matches the exported `kern` feature & the kern-panel preview
   const gaps = cells.map((c, i) => { const n = cells[i+1]; return (c.type === 'glyph' && n && n.type === 'glyph') ? kernPreviewValue(c.cp, n.cp) : 0; });
   gaps.forEach(g => total += g);
@@ -9482,7 +9500,10 @@ function spacingLineSVG(L, yo) {   // one line of the sample at baseline offset 
   L.cells.forEach((c, i) => {
     pen -= c.w;
     if (c.type === 'glyph') {
-      if (c.contours) body += `<path d="${glyphPathAt(c.contours, pen, yo, c.curves)}" fill="currentColor"/>`;
+      if (c.contours) {
+        body += `<path d="${glyphPathAt(c.contours, pen, yo, c.curves)}" fill="currentColor"/>`;
+        if (c.marks) c.marks.forEach(polys => { body += `<path d="${glyphPathAt(polys.map(p => ({points:p})), pen, yo, null)}" fill="currentColor"/>`; });   // nikkud stacked on the letter
+      }
       else body += `<rect x="${(pen+40).toFixed(0)}" y="${(yo-L.ascender+60).toFixed(0)}" width="${Math.max(20,c.w-80).toFixed(0)}" height="${(L.ascender-60).toFixed(0)}" rx="10" fill="none" stroke="currentColor" stroke-dasharray="7 6" opacity="0.3"/>`;
     }
     pen -= L.gaps[i];   // open/close the kern before the next glyph (− tightens, + loosens)
