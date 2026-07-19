@@ -212,6 +212,7 @@
   "dashboard.layout.panel_video": "וידאו",
   "dashboard.layout.panel_weather": "מזג אוויר",
   "dashboard.layout.reset_button": "↺ שחזור פריסת ברירת המחדל",
+  "dashboard.layout.reset_confirm": "בטוחים? פעולה זו מבטלת את סידור הפאנלים המותאם שלכם ומשחזרת את פריסת ברירת המחדל.",
   "dashboard.layout.reset_toast": "פריסת ברירת המחדל שוחזרה",
   "dashboard.layout.switch_column_aria": "העברת {name} לעמודה השנייה",
   "dashboard.layout.zone_below": "השורה התחתונה",

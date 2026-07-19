@@ -212,6 +212,7 @@
   "dashboard.layout.panel_video": "Video",
   "dashboard.layout.panel_weather": "Weather",
   "dashboard.layout.reset_button": "↺ Restore default layout",
+  "dashboard.layout.reset_confirm": "Are you sure? This discards your custom panel arrangement and restores the default layout.",
   "dashboard.layout.reset_toast": "Default layout restored",
   "dashboard.layout.switch_column_aria": "Move {name} to the other column",
   "dashboard.layout.zone_below": "Bottom row",

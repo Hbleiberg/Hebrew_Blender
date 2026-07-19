@@ -4122,6 +4122,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   }
 
   function resetPanelLayout() {
+    if (!confirm(I18n.t('dashboard.layout.reset_confirm'))) return;
     settings.panelLayout = JSON.parse(JSON.stringify(DEFAULT_PANEL_LAYOUT));
     saveSettingsToStorage();
     applyPanelLayout();

@@ -212,6 +212,7 @@ dashboard.layout.panel_timer,Timer,טיימר,panel name in move-panels chrome,
 dashboard.layout.panel_video,Video,וידאו,panel name in move-panels chrome,
 dashboard.layout.panel_weather,Weather,מזג אוויר,panel name in move-panels chrome,
 dashboard.layout.reset_button,↺ Restore default layout,↺ שחזור פריסת ברירת המחדל,move-panels bar button,leading-emoji
+dashboard.layout.reset_confirm,Are you sure? This discards your custom panel arrangement and restores the default layout.,בטוחים? פעולה זו מבטלת את סידור הפאנלים המותאם שלכם ומשחזרת את פריסת ברירת המחדל.,confirm dialog before layout reset,
 dashboard.layout.reset_toast,Default layout restored,פריסת ברירת המחדל שוחזרה,toast + announcement after layout reset,
 dashboard.layout.switch_column_aria,Move {name} to the other column,העברת {name} לעמודה השנייה,panel move button aria-label + title,do not translate {…}
 dashboard.layout.zone_below,Bottom row,השורה התחתונה,zone badge + announcement zone name,
