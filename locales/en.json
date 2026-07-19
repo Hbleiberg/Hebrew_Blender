@@ -1946,6 +1946,7 @@
   "fontmaker.panels.combined_drag_hint": "Click and drag a box around the letter on the sheet, then release to bring it into the editor. Keyboard: arrows move the box, +/− resize, Enter to crop.",
   "fontmaker.panels.combined_drop_img": "Drop your sheet(s) here, or click to browse — add more than one for multi-page templates.",
   "fontmaker.panels.combined_drop_svg": "Drop your SVG sheet(s) here, or click to browse — name elements like id=\"uni05D0\" for auto-split, or box each letter.",
+  "fontmaker.panels.combined_form_tile_title": "Place the {name} for {composed} — opens Special & precomposed forms.",
   "fontmaker.panels.combined_forms_label": "Combined forms:",
   "fontmaker.panels.combined_next": "Next ›",
   "fontmaker.panels.combined_prev": "‹ Previous",

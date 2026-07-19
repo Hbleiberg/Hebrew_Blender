@@ -1582,8 +1582,8 @@ const CHART_COLS = [
 ];
 /* ccmp precomposed targets — built from the user's own base glyph + the mark. */
 const PRECOMPOSED = [
-  { target:'FB4B', base:'05D5', mark:'05B9' }, // vav + holam   → cholam
-  { target:'FB35', base:'05D5', mark:'05BC' }, // vav + dagesh  → shuruk
+  { target:'FB4B', base:'05D5', mark:'05B9', name:'Holam (vav)' }, // vav + holam   → cholam
+  { target:'FB35', base:'05D5', mark:'05BC', name:'Shuruk' },      // vav + dagesh  → shuruk
   { target:'FB2A', base:'05E9', mark:'05C1' }, // shin + shin-dot
   { target:'FB2B', base:'05E9', mark:'05C2' }, // shin + sin-dot
   { target:'FB31', base:'05D1', mark:'05BC' }, // dotted bet
@@ -8387,10 +8387,19 @@ let activeAboveMark = '05B9';
 let activeCenterMark = '05BC';
 let activeTropCp = '0597';
 let coPreviewCp = null;   // Place-Nikkud "check stacking" — a 2nd mark previewed (grey ghost) on the current letter
-// Shin-dot (05C1) / sin-dot (05C2) are edited in "Special & precomposed forms" (שׁ/שׂ), not in the
-// above-mark grid — so they never appear here. The above-mark grid is Holam + Rafe only.
-function aboveMarkApplies(cp, l) { return (cp !== '05C1' && cp !== '05C2'); }
-function aboveMarkFor(l) { return aboveMarkApplies(activeAboveMark, l) ? activeAboveMark : '05B9'; }
+// A mark is NOT a plain above-mark on this letter when the letter+mark pair composes to a
+// precomposed form (shin dots → שׁ/שׂ, holam on vav → וֹ): those are edited via their form tile in
+// the grid, which opens "Special & precomposed forms" — the single anchor home. The plain-anchor
+// picker keeps only marks the exported font really attaches at the letter's own above anchor.
+function aboveMarkApplies(cp, l) {
+  if (cp === '05C1' || cp === '05C2') return false;
+  return !precompFormFor(l, cp);
+}
+function aboveMarkFor(l) {
+  if (aboveMarkApplies(activeAboveMark, l)) return activeAboveMark;
+  const first = ABOVE_MARKS.find(v => aboveMarkApplies(v.cp, l));   // e.g. vav: Holam → form tile, so fall to Rafe
+  return first ? first.cp : '05B9';
+}
 function activeVowelCp() {
   switch (activeAnchorClass) {
     case 'above': return aboveMarkFor(curLetter());   // preview the SELECTED above-mark (holam/shin-dot/sin-dot/rafe), not always holam
@@ -8417,14 +8426,24 @@ function coGhostDx() {
   if (!coPreviewCp || MARK_CLASS[coPreviewCp] !== cls) return 0;
   return vowelSlideDx(cls);
 }
-/* A shin/sin dot on ש routes through the precomposed form (FB2A/FB2B): the "check stacking" ghost and
-   overlap check must draw it at the FORM's dot anchor + Dot-size — matching _spacingCellMarks, the QA
-   sheet and the exported font — not piled on the shared class-above anchor (where a holam also sits).
-   Returns {x, y, scale, pc} for that case, or null when the generic class-anchor path applies. */
+/* The precomposed form a letter+mark pair composes to via ccmp (shin+dot → FB2A/FB2B, vav+holam →
+   FB4B, bet+dagesh → FB31, …), or null. Wide/digraph forms carry pc.bases and no pc.mark, so they
+   never match. */
+function precompFormFor(l, cp) {
+  if (!l || !project || !project.precomposed) return null;
+  return project.precomposed.find(pc => pc.base === l.codepoint && pc.mark === cp) || null;
+}
+/* A mark whose letter+mark pair composes to a precomposed form routes through that form: the "check
+   stacking" ghost and overlap check must draw it at the FORM's anchor + size — matching
+   _spacingCellMarks, the QA sheet and the exported font — not at the shared class anchor (where the
+   dot would pile on a holam, and where a vav-holam would ignore its own size/position). For center
+   forms this resolves to the letter's own center anchor + dagesh size, i.e. a harmless no-op.
+   Returns {x, y, scale, pc} for the form case, or null when the generic class-anchor path applies. */
 function coStackGhostPlacement(l, cp) {
-  if (!l || l.codepoint !== '05E9' || (cp !== '05C1' && cp !== '05C2')) return null;
-  const pc = getPrecomp(cp === '05C1' ? 'FB2A' : 'FB2B');
+  const pc = precompFormFor(l, cp);
   if (!pc) return null;
+  const cls = markClassFor(pc.mark);
+  if (cls !== 'above' && cls !== 'center') return null;
   const a = precompAnchor(pc);
   return { x: a.x, y: a.y, scale: precompMarkScale(pc), pc };
 }
@@ -8574,12 +8593,23 @@ function precompMarkScale(pc) {
   if (pc.mark === '05B9' || pc.mark === '05BA') return holamScale();    // any other holam form follows the standalone Holam size
   return (pc.markScale != null) ? pc.markScale : markScale();            // else this form's own dot size, or inherit the global mark size
 }
-/* Discoverability row: the current letter's combined forms whose baked mark belongs to the given
-   class, surfaced right beside that class's mark picker (שׁ/שׂ and וֹ next to Holam/Rafe, בּ/וּ next
-   to Dagesh). The tiles are JUMPS into the single Special & precomposed forms editor — never a
-   second anchor store (the v3.1 one-place rule). */
-function precompJumpRow(l, cls) {
-  const forms = (project.precomposed || []).filter(pc => pc.base === l.codepoint && markClassFor(pc.mark) === cls);
+/* A combined form rendered as a mark-grid tile (same .mark-sq shape as the generic mark tiles, but
+   faced with the composed glyph, e.g. שׁ / וֹ / וּ). It REPLACES the generic tile of the mark it
+   composes with — the redundant pair "Dagesh + וּ" never shows — and clicking it JUMPS into the
+   single Special & precomposed forms editor; it is never a second anchor store (the v3.1 one-place
+   rule). */
+function precompSquareTile(pc) {
+  const name = precompName(pc);
+  const custom = (markClassFor(pc.mark) !== 'center' && pc.anchor && pc.anchor.x != null) ? ' <span style="color:var(--gold);">✎</span>' : '';
+  return `<button type="button" class="mark-sq ${precompTarget===pc.target?'active':''}" onclick="setPrecompTarget('${pc.target}')" title="${esc(I18n.t('fontmaker.panels.combined_form_tile_title', { name, composed: precompComposed(pc) }))}">`
+    + `<span lang="he" style="font-family:var(--heb-font);direction:rtl;font-size:1.5rem;line-height:1.5;">${precompComposed(pc)}</span><span>${esc(name)}${custom}</span></button>`;
+}
+/* Fallback discoverability row for combined forms whose mark has no tile in this class's picker
+   (e.g. Latin accent forms). The Hebrew forms (שׁ/שׂ, וֹ, וּ, בּ…) render as in-grid tiles via
+   precompSquareTile instead, so this row is empty for them. */
+function precompJumpRow(l, cls, gridCps) {
+  const forms = (project.precomposed || []).filter(pc =>
+    pc.base === l.codepoint && markClassFor(pc.mark) === cls && !gridCps.includes(pc.mark));
   if (!forms.length) return '';
   return `<div class="ctl-row" style="margin-top:6px;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;">
     <span style="font-size:0.72rem;color:var(--muted);">${I18n.t('fontmaker.panels.combined_forms_label')}</span>${forms.map(precompFormBtn).join('')}</div>`;
@@ -10323,17 +10353,28 @@ function renderAnchorLeft(L, l) {
       </div>
       <div class="hint" style="font-size:0.6rem;text-align:center;">Height raises or lowers just ${esc(vName)} — on <b>every letter</b>. <b>Edit shape</b> redesigns its dots &amp; bars.</div>`;
   } else if (cls === 'above') {
-    const aboveMarks = ABOVE_MARKS.filter(v => aboveMarkApplies(v.cp, l));   // Holam + Rafe (shin/sin dots live in Special & precomposed forms)
     const curAbove = aboveMarkFor(l);
+    // One tile per above mark: the combined-form tile when this letter+mark composes to a form
+    // (shin dots → שׁ/שׂ, vav's holam → וֹ), else the plain-anchor picker tile (Holam/Rafe).
+    const aboveTiles = ABOVE_MARKS.map(v => {
+      const pc = precompFormFor(l, v.cp);
+      if (pc) return precompSquareTile(pc);
+      return aboveMarkApplies(v.cp, l) ? squareMarkBtn('nikkud', v.cp, v.name, curAbove, 'setAboveMark', l) : '';
+    }).join('');
     grid = `<div class="ws-side-title">${I18n.t('fontmaker.panels.preview_above_mark')}</div>
-      <div class="mark-grid2">` + aboveMarks.map(v => squareMarkBtn('nikkud', v.cp, v.name, curAbove, 'setAboveMark', l)).join('') + `</div>
-      ${precompJumpRow(l, 'above')}
+      <div class="mark-grid2">${aboveTiles}</div>
+      ${precompJumpRow(l, 'above', ABOVE_MARKS.map(v => v.cp))}
       <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(curAbove)}</div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">The holam dot and rafe sit above the letter. <b>Edit shape</b> redesigns the selected mark.${l.codepoint === '05E9' ? ' Edit the shin/sin dots (שׁ/שׂ) via the tiles above — they open <b>Special &amp; precomposed forms</b>.' : ''}</div>`;
+      <div class="hint" style="font-size:0.6rem;text-align:center;">The holam dot and rafe sit above the letter. <b>Edit shape</b> redesigns the selected mark.${l.codepoint === '05E9' ? ' The שׁ/שׂ tiles open <b>Special &amp; precomposed forms</b> — the one place the dots are placed.' : ''}</div>`;
   } else if (cls === 'center') {
+    const centerTiles = CENTER_MARKS.map(v => {
+      const pc = precompFormFor(l, v.cp);   // a dotted form (בּ/וּ…) replaces the generic Dagesh tile — same anchor, one control
+      if (pc) return precompSquareTile(pc);
+      return squareMarkBtn('nikkud', v.cp, v.name, activeCenterMark, 'setCenterMark', l);
+    }).join('');
     grid = `<div class="ws-side-title">${I18n.t('fontmaker.panels.preview_center_mark')}</div>
-      <div class="mark-grid2">` + CENTER_MARKS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeCenterMark, 'setCenterMark', l)).join('') + `</div>
-      ${precompJumpRow(l, 'center')}
+      <div class="mark-grid2">${centerTiles}</div>
+      ${precompJumpRow(l, 'center', CENTER_MARKS.map(v => v.cp))}
       <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(activeCenterMark)}</div>
       <div class="hint" style="font-size:0.6rem;text-align:center;">The dagesh sits inside the letter body. <b>Edit shape</b> redesigns it.</div>`;
   } else if (isTrop) {

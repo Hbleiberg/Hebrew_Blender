@@ -1946,6 +1946,7 @@
   "fontmaker.panels.combined_drag_hint": "לחצו וגררו תיבה סביב האות בדף, ואז שחררו כדי להביא אותה לעורך. מקלדת: חצים מזיזים את התיבה, +/− משנים גודל, Enter לחיתוך.",
   "fontmaker.panels.combined_drop_img": "שחררו כאן את הדף/ים שלכם, או לחצו לעיון — הוסיפו יותר מאחד לתבניות רב-עמודיות.",
   "fontmaker.panels.combined_drop_svg": "שחררו כאן את דף/י ה-SVG שלכם, או לחצו לעיון — תנו לרכיבים שם כמו id=\"uni05D0\" לפיצול אוטומטי, או תחמו כל אות.",
+  "fontmaker.panels.combined_form_tile_title": "מיקום ה{name} של {composed} — פותח את צורות מיוחדות ומורכבות מראש.",
   "fontmaker.panels.combined_forms_label": "צורות משולבות:",
   "fontmaker.panels.combined_next": "הבא ›",
   "fontmaker.panels.combined_prev": "‹ הקודם",
