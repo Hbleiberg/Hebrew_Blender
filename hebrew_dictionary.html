@@ -1014,6 +1014,7 @@ footer a{color:var(--gold-text);text-decoration:none;}
         <option value="english" class="emoji-sort-only" style="display:none;" data-i18n="dictionary.toolbar.sort_english">English A→Z</option>
       </select>
       <button class="dict-tool-btn" id="dictShareBtn" onclick="copyDictShareLink(this)" title="Copy a link to this exact filtered view" data-i18n="dictionary.toolbar.copy_link" data-i18n-title="dictionary.toolbar.copy_link_title">🔗 Copy link</button>
+      <button class="dict-tool-btn" id="dictPrintBtn" onclick="printDictionary()" title="Print the current results" data-i18n="dictionary.toolbar.print_button" data-i18n-title="dictionary.toolbar.print_title">🖨️ Print</button>
       <button class="dict-tool-btn" id="dictResetBtn" onclick="resetDictFilters()" title="Reset all filters to their defaults" style="display:none;" data-i18n="dictionary.toolbar.reset_filters" data-i18n-title="dictionary.toolbar.reset_filters_title">↺ Reset filters</button>
     </div>
     <div class="filter-chips" id="filterChips" aria-label="Active filters" data-i18n-aria-label="dictionary.toolbar.active_filters_aria"></div>
@@ -2370,6 +2371,12 @@ const COPY_ICON = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" s
 const CHECK_ICON = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
 // Announce a transient message to screen readers via the shared #a11yStatus live region.
 function announce(msg) { const s = document.getElementById('a11yStatus'); if (s) s.textContent = msg; }
+// Print the current results (surfaces the @media print stylesheet — parity with Ctrl+P). Guard the
+// empty state so a stray click never opens a blank print dialog; the toolbar/chrome is print-hidden.
+function printDictionary() {
+  if (!filtered || !filtered.length) { announce(I18n.t('dictionary.toolbar.print_empty')); return; }
+  window.print();
+}
 function copyWord(btn, text) {
   const finish = () => { btn.innerHTML = CHECK_ICON; btn.classList.add('copied'); announce(I18n.t('dictionary.copy.copied_toast')); setTimeout(() => { btn.innerHTML = COPY_ICON; btn.classList.remove('copied'); }, 1500); };
   if (navigator.clipboard) { navigator.clipboard.writeText(text).then(finish).catch(finish); }
