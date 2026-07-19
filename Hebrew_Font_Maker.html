@@ -7803,17 +7803,17 @@ function contoursPanelHTML() {
     const hole = ct.winding === 'ccw';
     return `<div class="ct-row${hid ? ' hid' : ''}">
       <span class="ct-swatch" style="background:${tint};" aria-hidden="true"></span>
-      <span class="ct-kind" title="${hole ? 'Hole (counter)' : 'Filled shape'}" aria-label="${hole ? 'hole' : 'filled'}">${hole ? '○' : '●'}</span>
-      <button type="button" class="ct-name" onclick="selectContourNodes(${ci}, event.shiftKey)" title="Select this contour's points (Shift adds to the selection)">Contour ${ci + 1} — ${ct.nodes.length} pts</button>
-      <button type="button" class="ct-eye" aria-pressed="${hid}" onclick="toggleContourVisibility(${ci})" title="Hide while editing — still exports" aria-label="${hid ? 'Show' : 'Hide'} contour ${ci + 1} while editing (it still exports)">${hid ? '🚫' : '👁'}</button>
-      <button type="button" class="ct-del" onclick="deleteContourByIndex(${ci})" title="Delete this contour" aria-label="Delete contour ${ci + 1}">✕</button>
+      <span class="ct-kind" title="${hole ? I18n.t('fontmaker.node_editor.contour_hole_title') : I18n.t('fontmaker.node_editor.contour_filled_title')}" aria-label="${hole ? I18n.t('fontmaker.node_editor.contour_hole_aria') : I18n.t('fontmaker.node_editor.contour_filled_aria')}">${hole ? '○' : '●'}</span>
+      <button type="button" class="ct-name" onclick="selectContourNodes(${ci}, event.shiftKey)" title="${I18n.t('fontmaker.node_editor.contour_select_title')}">${I18n.t('fontmaker.node_editor.contour_row', { count: ci + 1, n: ct.nodes.length })}</button>
+      <button type="button" class="ct-eye" aria-pressed="${hid}" onclick="toggleContourVisibility(${ci})" title="${I18n.t('fontmaker.node_editor.contour_hide_title')}" aria-label="${hid ? I18n.t('fontmaker.node_editor.contour_show_aria', { count: ci + 1 }) : I18n.t('fontmaker.node_editor.contour_hide_aria', { count: ci + 1 })}">${hid ? '🚫' : '👁'}</button>
+      <button type="button" class="ct-del" onclick="deleteContourByIndex(${ci})" title="${I18n.t('fontmaker.node_editor.contour_del_title')}" aria-label="${I18n.t('fontmaker.node_editor.contour_del_aria', { count: ci + 1 })}">✕</button>
     </div>`;
   }).join('');
   return `<details class="node-xform npnl-disc node-contours" ${_contoursOpen ? 'open' : ''} ontoggle="_contoursOpen = this.open; npnlSaveOpen('nodeContoursOpen', this.open); renderStage();">
-    <summary>Contours (${nodeModel.contours.length})</summary>
-    <div class="hint" style="margin:4px 0;">Colors and hiding are editing aids only — hidden contours still export and show in previews.</div>
+    <summary>${I18n.t('fontmaker.node_editor.contours_summary', { count: nodeModel.contours.length })}</summary>
+    <div class="hint" style="margin:4px 0;">${I18n.t('fontmaker.node_editor.contours_hint')}</div>
     ${ nodeModel.contours.length ? `<div class="ctl-row" style="margin:0 0 6px;"><button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear_outline')}</button></div>` : '' }
-    ${rows || '<div class="hint">No contours yet — draw one with the pen (P).</div>'}
+    ${rows || `<div class="hint">${I18n.t('fontmaker.node_editor.contours_empty')}</div>`}
   </details>`;
 }
 function doNodeDelete() {
