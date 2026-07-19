@@ -3315,7 +3315,7 @@ function initFontSelector() {
         btn.setAttribute('aria-pressed', font.name === active ? 'true' : 'false');
         btn.dataset.font = font.name;
         btn.innerHTML =
-          '<span class="font-opt-preview" style="font-family:' + font.stack + ';">אֶרֶץ</span>' +
+          '<span class="font-opt-preview" lang="he" style="font-family:' + font.stack + ';">אֶרֶץ</span>' +
           '<span class="font-opt-info">' +
             '<span class="font-opt-label">' + ivEsc(font.name) + (font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">' + ivEsc(I18n.t('shared.fonts.default_marker')) + '</span>' : '') + '</span>' +
             // A link may not nest inside a <button> (invalid interactive nesting; AT-unreliable) —

@@ -6478,7 +6478,7 @@ async function onUploadEngFontPick(input){
         btn.setAttribute('aria-pressed', font.name === settings[cfg.settingKey] ? 'true' : 'false');
         btn.dataset.fontName = font.name;
         btn.innerHTML =
-          `<span class="font-opt-preview${cfg.previewLtr ? ' ltr' : ''}" style="font-family:${font.family};">${cfg.previewText}</span>` +
+          `<span class="font-opt-preview${cfg.previewLtr ? ' ltr' : ''}"${cfg.previewLtr ? '' : ' lang="he"'} style="font-family:${font.family};">${cfg.previewText}</span>` +
           `<span class="font-opt-name">${ivEsc(font.name)}${font.name === cfg.defaultName ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">' + ivEsc(I18n.t('shared.fonts.default_marker')) + '</span>' : ''}</span>`;
         btn.onclick = () => applyFontChoice(cfg, font.name);
         loadHebFont(font);

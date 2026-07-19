@@ -3971,7 +3971,7 @@ function initFontSelector() {
             : `<span class="font-opt-attr">${esc(font.attr)}</span>`)
         : '';
       btn.innerHTML =
-        `<span class="font-opt-preview" style="font-family:${font.family};">אֶרֶץ</span>` +
+        `<span class="font-opt-preview" lang="he" style="font-family:${font.family};">אֶרֶץ</span>` +
         `<span class="font-opt-info">` +
           `<span class="font-opt-name">${esc(font.name)}${isDefault ? ' <span style="font-size:0.55rem;color:var(--muted);font-weight:400;">' + esc(I18n.t('shared.fonts.default_marker')) + '</span>' : ''}</span>` +
           attrHTML +
