@@ -1619,12 +1619,12 @@ function wlOpenSaveModal() {
     const name = nameIn.value.trim();
     if (!name) { wlSetStatus(status, I18n.t('dictionary.wordlist.enter_name'), true); nameIn.focus(); return; }
     const dup = Object.values(wlReadStore().lists).some(l => l.name === name);
+    if (dup) { wlSetStatus(status, I18n.t('dictionary.wordlist.dup_name_suffix'), true); nameIn.focus(); return; }
     const r = wlAddList(name, sel);
     if (!r.ok) { wlSetStatus(status, r.err, true); return; }
     const cnt = wlGetList(r.id).words.length;
     let msg = I18n.t(cnt === 1 ? 'dictionary.wordlist.saved.one' : 'dictionary.wordlist.saved.other', { name: name, count: cnt });
     if (r.dropped > 0) msg += ' ' + I18n.t('dictionary.wordlist.dropped_suffix', { count: r.dropped });
-    if (dup) msg += ' ' + I18n.t('dictionary.wordlist.dup_name_suffix');
     wlSetStatus(status, msg, false);
     useFcLink.href = 'flash_cards.html?wl=' + encodeURIComponent(r.id);
     useFcLink.style.display = 'block';
