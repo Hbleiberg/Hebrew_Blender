@@ -6322,7 +6322,7 @@ else ivritInit();
         // The trailing slot is a compact class switcher. stopPropagation so operating it never
         // toggles the card's collapse (the header itself is the collapse click target).
         pkTitle.innerHTML = `<span style="flex:1;text-align:center;">${isHeb ? hebDisplay('מִי הַתּוֹר?') : 'Student Picker'}</span>` +
-          `<select id="pickerClassSelCard" class="picker-class-switch" dir="ltr" title="Switch class" aria-label="Switch class"` +
+          `<select id="pickerClassSelCard" class="picker-class-switch" dir="ltr" title="${I18n.t('dashboard.picker.switch_class')}" aria-label="${I18n.t('dashboard.picker.switch_class')}"` +
           ` onclick="event.stopPropagation()" onmousedown="event.stopPropagation()" onkeydown="event.stopPropagation()"` +
           ` onchange="switchClass(this.value)">${classOptionsHTML(settings.activeRosterId)}</select>`;
       }
