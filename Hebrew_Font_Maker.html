@@ -8556,7 +8556,11 @@ function setCenterMark(cp) { activeCenterMark = cp; renderStage(); renderControl
    matching anchor (shared with the live vowels); a per-form override lets the user place it exactly. */
 let precompTarget = null;   // active precomposed form's target codepoint (e.g. 'FB2A'), or null
 function getPrecomp(t) { return project.precomposed.find(p => p.target === t); }
-function precompName(pc) { return pc.name || MARK_NAMES[pc.mark] || (LATIN_ACCENTS[pc.mark] && LATIN_ACCENTS[pc.mark].name) || 'mark'; }
+function precompName(pc) {
+  if (pc.name) return pc.name;
+  const st = PRECOMPOSED.find(p => p.target === pc.target && p.name);   // project seeds strip `name` (newProject copies an explicit field list) — recover it from the static table
+  return (st && st.name) || MARK_NAMES[pc.mark] || (LATIN_ACCENTS[pc.mark] && LATIN_ACCENTS[pc.mark].name) || 'mark';
+}
 function precompComposed(pc) {
   if (pc.bases) return pc.bases.map(c => String.fromCodePoint(parseInt(c,16))).join('');   // digraph: show both bases
   const b = pc.base ? String.fromCodePoint(parseInt(pc.base,16)) : '';
