@@ -3301,9 +3301,9 @@ async function toggleChantAll() {
     // one so we start at the reading's opening verse rather than the aliyah's.
     p = (currentReadingCtx && currentReadingCtx.parshahEntry) || parshaContainingRef(settings.customRef);
     const rng = parseRefRange(settings.customRef);
-    if (!p || !manifestData[p.pocket] || !rng) { setStatus(I18n.t('torah.status.chant_unavailable'), true); return; }
+    if (!p || !manifestData[p.pocket] || !rng) { const _cu = I18n.t('torah.status.chant_unavailable'); setStatus(_cu, true); showHintToast(_cu); return; }
     queue = overlappingAliyot(p.en, rng);
-    if (!queue.length) { setStatus(I18n.t('torah.status.chant_unavailable'), true); return; }
+    if (!queue.length) { const _cu = I18n.t('torah.status.chant_unavailable'); setStatus(_cu, true); showHintToast(_cu); return; }
     startVerse = `${rng.startC}:${rng.startV}`;
     // Leave the holiday framing — playback renders the parsha aliyot.
     settings.parshahKey = p.en;
@@ -3480,7 +3480,7 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
   const m = manifestData[parshahEntry.pocket];
   if (!m) { setKaraokeStatus('No PocketTorah manifest entry for this parsha.'); return; }
   const labelFile = m.labels && m.labels[suffix];
-  if (!labelFile) { setKaraokeStatus(I18n.t('torah.status.aliyah_audio_unavailable', { n: suffix })); return; }
+  if (!labelFile) { const _au = I18n.t('torah.status.aliyah_audio_unavailable', { n: suffix }); setKaraokeStatus(_au); showHintToast(_au); return; }
   const audioBase = m.audioBase;
   if (!audioBase) { setKaraokeStatus('Audio basename missing in manifest.'); return; }
   // Fetch timing file
