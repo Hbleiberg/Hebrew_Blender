@@ -3669,7 +3669,7 @@ function renderEmojiResults() {
     // Section 3: click opens the emoji detail modal (bulk mode keeps select-on-click).
     card.setAttribute('role', 'button');
     card.tabIndex = 0;
-    card.setAttribute('aria-label', 'View details for ' + e.english);
+    card.setAttribute('aria-label', I18n.t('dictionary.card.aria_view_details', { word: e.english }));
     card.addEventListener('click', ev => {
       if (ev.target === bulkCb || ev.target.closest('.ec-speak')) return;
       if (bulkMode) { bulkCb.checked = !bulkCb.checked; bulkCb.dispatchEvent(new Event('change', { bubbles: true })); }
