@@ -3349,6 +3349,23 @@ worksheet.advanced.tts_fast,Fast,מהיר,tts range high label,
 worksheet.advanced.tts_slow,Slow,איטי,tts slider label,
 worksheet.advanced.tts_slower,Slower,איטי יותר,tts range low label,
 worksheet.advanced.tts_speed,Hebrew TTS Reading Speed,מהירות הקראה קולית בעברית,advanced section label,
+worksheet.aria.bingo_grid,Bingo grid size,גודל רשת הבינגו,bingo grid select,aria-label only
+worksheet.aria.bingo_cards,Number of bingo cards,מספר כרטיסי הבינגו,bingo cards input,aria-label only
+worksheet.aria.bingo_perpage,Bingo cards per page,כרטיסי בינגו לעמוד,bingo per-page select,aria-label only
+worksheet.aria.total_questions,Total questions,סך השאלות,questions total input,aria-label only
+worksheet.aria.min_number,Minimum number,מספר מינימלי,numbers min input,aria-label only
+worksheet.aria.max_number,Maximum number,מספר מקסימלי,numbers max input,aria-label only
+worksheet.aria.num_words,Number of words,מספר המילים,words count input,aria-label only
+worksheet.aria.wordsearch_words,Number of words (word search),מספר המילים (תפזורת),word-search count input,aria-label only
+worksheet.aria.wordsearch_grid,Grid size (word search),גודל הרשת (תפזורת),word-search grid input,aria-label only
+worksheet.aria.crossword_words,Number of words (crossword),מספר המילים (תשבץ),crossword count input,aria-label only
+worksheet.aria.crossword_grid,Grid size (crossword),גודל הרשת (תשבץ),crossword grid input,aria-label only
+worksheet.aria.num_pairs,Number of pairs,מספר הזוגות,matching pairs input,aria-label only
+worksheet.aria.num_versions,Number of versions,מספר הגרסאות,matching versions input,aria-label only
+worksheet.aria.rwbingo_grid,Grid size (real-words bingo),גודל הרשת (בינגו מילים),real-words bingo grid,aria-label only
+worksheet.aria.rwbingo_cards,Cards (real-words bingo),כרטיסים (בינגו מילים),real-words bingo cards,aria-label only
+worksheet.aria.rwbingo_perpage,Per page (real-words bingo),לעמוד (בינגו מילים),real-words bingo per-page,aria-label only
+worksheet.aria.timer_duration,Timer duration,משך הטיימר,timer duration input,aria-label only
 worksheet.common.all,All,הכל,select-all button,
 worksheet.common.all_match,All cards match,כל הכרטיסים זהים,toggle-row label,
 worksheet.common.audio,Audio,שמע,toggle-row label,
