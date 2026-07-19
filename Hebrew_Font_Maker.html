@@ -8574,6 +8574,16 @@ function precompMarkScale(pc) {
   if (pc.mark === '05B9' || pc.mark === '05BA') return holamScale();    // any other holam form follows the standalone Holam size
   return (pc.markScale != null) ? pc.markScale : markScale();            // else this form's own dot size, or inherit the global mark size
 }
+/* Discoverability row: the current letter's combined forms whose baked mark belongs to the given
+   class, surfaced right beside that class's mark picker (שׁ/שׂ and וֹ next to Holam/Rafe, בּ/וּ next
+   to Dagesh). The tiles are JUMPS into the single Special & precomposed forms editor — never a
+   second anchor store (the v3.1 one-place rule). */
+function precompJumpRow(l, cls) {
+  const forms = (project.precomposed || []).filter(pc => pc.base === l.codepoint && markClassFor(pc.mark) === cls);
+  if (!forms.length) return '';
+  return `<div class="ctl-row" style="margin-top:6px;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;">
+    <span style="font-size:0.72rem;color:var(--muted);">${I18n.t('fontmaker.panels.combined_forms_label')}</span>${forms.map(precompFormBtn).join('')}</div>`;
+}
 function precompFormBtn(pc) {
   const custom = (markClassFor(pc.mark) !== 'center' && pc.anchor && pc.anchor.x != null) ? ' <span style="color:var(--gold);">✎</span>' : '';
   return `<button class="ctl-btn ${precompTarget===pc.target?'primary':''}" onclick="setPrecompTarget('${pc.target}')" title="Place the ${esc(precompName(pc))} for ${esc(precompComposed(pc))}">`
@@ -10317,11 +10327,13 @@ function renderAnchorLeft(L, l) {
     const curAbove = aboveMarkFor(l);
     grid = `<div class="ws-side-title">${I18n.t('fontmaker.panels.preview_above_mark')}</div>
       <div class="mark-grid2">` + aboveMarks.map(v => squareMarkBtn('nikkud', v.cp, v.name, curAbove, 'setAboveMark', l)).join('') + `</div>
+      ${precompJumpRow(l, 'above')}
       <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(curAbove)}</div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">The holam dot and rafe sit above the letter. <b>Edit shape</b> redesigns the selected mark.${l.codepoint === '05E9' ? ' Edit the shin/sin dots (שׁ/שׂ) in <b>Special &amp; precomposed forms</b> below.' : ''}</div>`;
+      <div class="hint" style="font-size:0.6rem;text-align:center;">The holam dot and rafe sit above the letter. <b>Edit shape</b> redesigns the selected mark.${l.codepoint === '05E9' ? ' Edit the shin/sin dots (שׁ/שׂ) via the tiles above — they open <b>Special &amp; precomposed forms</b>.' : ''}</div>`;
   } else if (cls === 'center') {
     grid = `<div class="ws-side-title">${I18n.t('fontmaker.panels.preview_center_mark')}</div>
       <div class="mark-grid2">` + CENTER_MARKS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeCenterMark, 'setCenterMark', l)).join('') + `</div>
+      ${precompJumpRow(l, 'center')}
       <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(activeCenterMark)}</div>
       <div class="hint" style="font-size:0.6rem;text-align:center;">The dagesh sits inside the letter body. <b>Edit shape</b> redesigns it.</div>`;
   } else if (isTrop) {
