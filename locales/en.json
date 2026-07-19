@@ -762,6 +762,7 @@
   "dictionary.toolbar.sort_len_asc": "Length ↑",
   "dictionary.toolbar.sort_len_desc": "Length ↓",
   "dictionary.toolbar.sort_transl": "Translation A→Z",
+  "dictionary.toolbar.wordlists_title": "View and manage your saved Word Lists",
   "dictionary.tour.cards_body": "Tap any word for full details, pronunciation, copy options, and its root family.",
   "dictionary.tour.cards_title": "Word cards",
   "dictionary.tour.chips_body": "Everything you have turned on shows here as chips — tap ✕ to remove one, or reset them all.",

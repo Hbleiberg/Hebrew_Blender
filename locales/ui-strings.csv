@@ -753,6 +753,7 @@ dictionary.toolbar.loading,Loading…,טוען…,result count while loading,toa
 dictionary.toolbar.print_button,🖨️ Print,🖨️ הדפסה,toolbar print button,leading-emoji
 dictionary.toolbar.print_empty,No words to print — search first.,אין מילים להדפסה — חפשו קודם.,print empty-state SR announce,
 dictionary.toolbar.print_title,Print the current results,הדפסת התוצאות הנוכחיות,toolbar print button title,
+dictionary.toolbar.wordlists_title,View and manage your saved Word Lists,צפייה וניהול של רשימות המילים השמורות,toolbar word-lists button title,
 dictionary.toolbar.reset_filters,↺ Reset filters,↺ איפוס מסננים,toolbar reset button,leading-emoji
 dictionary.toolbar.reset_filters_title,Reset all filters to their defaults,איפוס כל המסננים לברירת המחדל,toolbar reset button title,aria-label only
 dictionary.toolbar.sort_alpha,Hebrew A→Z,עברית א→ת,sort option,
