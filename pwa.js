@@ -102,7 +102,7 @@
     banner.innerHTML =
       '<img class="pwa-banner-icon" src="/icons/icon-192.png" alt="" width="42" height="42">' +
       '<span class="pwa-banner-text"></span>' +
-      '<button class="pwa-banner-close" type="button" aria-label="Dismiss">×</button>';
+      '<button class="pwa-banner-close" type="button">×</button>';  // aria-label set below via t('pwa.aria.dismiss') — no static literal, matching the banner aria-label above
     banner.querySelector('.pwa-banner-text').textContent = text;
     banner.querySelector('.pwa-banner-close').setAttribute('aria-label', t('pwa.aria.dismiss', 'Dismiss'));
     document.body.appendChild(banner);
