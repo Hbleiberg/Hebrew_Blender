@@ -3853,7 +3853,7 @@ async function uploadMarkSheet(cat, file) {
   await loadImg(url);
   renderMarkPanel(cat);
   if (curKind === cat) setWorkMode('align');
-  status(`${cat === 'nikkud' ? 'Nikkud' : 'Trop'} sheet loaded. Pick a symbol, then drag a box around it.`);
+  status(I18n.t('fontmaker.status.mark_sheet_loaded', {label: cat === 'nikkud' ? 'Nikkud' : 'Trop'}));
 }
 
 /* ════════ Custom glyphs (Advanced → "Add custom glyphs") ════════
@@ -4429,7 +4429,7 @@ async function uploadForCurrent(file) {
   l.transform = defaultFitTransform(im);   // fit height to letter-top, left at LSB
   l.contours = null; l.anchors = null;
   renderLetterGrid(); renderStage(); renderControls();
-  status(`Loaded image for ${l.name}.`);
+  status(I18n.t('fontmaker.status.loaded_image', {name: l.name}));
 }
 async function uploadCombined(files) {
   const list = files == null ? [] : (files.length !== undefined ? Array.from(files) : [files]);
@@ -4541,7 +4541,7 @@ async function finalizeCrop(l, stageBox) {
   l.transform = defaultFitTransform(cim);
   l.contours = null; l.anchors = null;
   renderGrids(); renderStage(); renderControls();
-  status(`${l.name}: area selected — align, then trace.`);
+  status(I18n.t('fontmaker.status.area_selected', {name: l.name}));
 }
 function reselectArea() {
   const l = curLetter();
@@ -5042,7 +5042,7 @@ async function adApply() {
     const url = cv.toDataURL('image/png');
     await loadImg(url);
     prep.push({ cp: b.cp, rect: r, url, th: autoThresholdFor(cv, true) });
-    if ((i & 3) === 3) { status(`Preparing ${i + 1} / ${picks.length} letters…`, true); await _adYield(); }
+    if ((i & 3) === 3) { status(I18n.t('fontmaker.status.preparing_letters', {i: i + 1, total: picks.length}), true); await _adYield(); }
   }
   const sheetId = adState.sheetId;
   udDo(prep.map(p => ({ t: 'item', kind: 'letter', cp: p.cp, withSource: true })),
@@ -5502,7 +5502,7 @@ async function uploadSvgForCurrent(file) {  // single-letter / per-mark SVG uplo
   udDo([itemScope()], 'import SVG — ' + it.name, () => { assignSvgContours(it, kind, contours, null, null); });
   renderGrids(); renderStage(); renderControls();
   if (kind === 'letter') setWorkMode('anchors');   // land on Nikkud, bypassing Align/Trace
-  status(`Imported SVG for ${it.name}.`);
+  status(I18n.t('fontmaker.status.imported_svg', {name: it.name}));
 }
 /* Auto-split a single combined SVG by element id / inkscape:label → glyph. */
 function buildSvgNameMap() {
@@ -5563,7 +5563,7 @@ function finalizeCropSvg(l, parsed, im, rect, csh) {
   udDo([itemScope()], 'crop SVG — ' + l.name, () => { assignSvgContours(l, kind, contours, csh && csh.id, rect); });
   renderGrids(); renderStage(); renderControls();
   if (kind === 'letter') setWorkMode('anchors');
-  status(`${l.name}: vector selected from the SVG sheet.`);
+  status(I18n.t('fontmaker.status.vector_selected', {name: l.name}));
 }
 
 /* ════════ Stage rendering ════════ */
@@ -7740,7 +7740,7 @@ function closePenContour() {
   nodeModel.contours[first].nodes.forEach((_, ni) => nodeSel.add(nodeKey(first, ni)));
   const holed = nodeModel.contours[first].winding === 'ccw';
   renderGrids(); renderStage(); renderControls(); renderLegend();
-  status(`Drew a ${count}-point contour.` + (holed ? ' It landed inside another contour, so it punched out as a hole.' : ''));
+  status(I18n.t('fontmaker.status.drew_contour', {count: count}) + (holed ? ' ' + I18n.t('fontmaker.status.drew_contour_hole') : ''));
 }
 function penDiscard() { penDraft = null; renderStage(); }
 function penPreviewSVG() {
@@ -7827,7 +7827,7 @@ function doNodeDelete() {
     writeThrough(l);
   });
   nodeSel.clear(); renderStage(); renderControls();
-  if (skipped) status(`Kept ${skipped} point${skipped>1?'s':''} — a contour needs at least 3. Use Delete contour (Shift+Delete) to remove the whole contour.`);
+  if (skipped) status(I18n.t(skipped === 1 ? 'fontmaker.status.kept_points.one' : 'fontmaker.status.kept_points.other', {count: skipped}));
 }
 /* ── Delete whole contours (stray specks, shadow blobs, template-box remnants) ── */
 function doDeleteContours() {
@@ -7906,7 +7906,7 @@ function copySelectedNodes() {
   });
   if (!contours.length) { status(I18n.t('fontmaker.status.copy_min_points')); return false; }
   nodeClipboard = { sourceCp: curCp, pastes: 0, contours };
-  status(`Copied ${contours.length} contour${contours.length > 1 ? 's' : ''} — open another letter's Edit points and press ${modKey()}+V.`);
+  status(I18n.t(contours.length === 1 ? 'fontmaker.status.copied_contours.one' : 'fontmaker.status.copied_contours.other', {count: contours.length, mod: modKey()}));
   renderControls();                                          // enable the Paste button
   return true;
 }
@@ -7928,7 +7928,7 @@ function pasteNodes() {
   for (let ci = first; ci < nodeModel.contours.length; ci++)   // pasted nodes become the selection → immediate drag/nudge moves them
     nodeModel.contours[ci].nodes.forEach((_, ni) => nodeSel.add(nodeKey(ci, ni)));
   renderGrids(); renderStage(); renderControls();
-  status(`Pasted ${nodeClipboard.contours.length} contour${nodeClipboard.contours.length > 1 ? 's' : ''}.`);
+  status(I18n.t(nodeClipboard.contours.length === 1 ? 'fontmaker.status.pasted_contours.one' : 'fontmaker.status.pasted_contours.other', {count: nodeClipboard.contours.length}));
   return true;
 }
 /* ── Transform selection: flip / rotate around the affected nodes' bbox center. Empty selection =
@@ -9870,7 +9870,7 @@ function suggestKernPairs() {
     pick.forEach(p => project.font.kerning.push({ left:[p.a], right:[p.b], value:p.v }));
   });
   renderKerningSection();
-  status(`Added ${pick.length} pair${pick.length>1?'s':''} at an even starting gap — fine-tune any.`);
+  status(I18n.t(pick.length === 1 ? 'fontmaker.status.added_pairs.one' : 'fontmaker.status.added_pairs.other', {count: pick.length}));
 }
 /* ── Kern classes — reusable named letter groups (project.font.kernClasses); pair sides stay arrays,
    so editing a class propagates to pairs built from its old member set. ── */
