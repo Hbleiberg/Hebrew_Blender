@@ -660,6 +660,7 @@ dictionary.loading.emojis,Loading emojis…,טוען אימוג׳ים…,emoji l
 dictionary.loading.emojis_pct,Loading emojis… {pct}%,טוען אימוג׳ים… {pct}%,emoji loading text with percent,toast
 dictionary.loading.failed,Failed to load. Open via a local server (not file://).,הטעינה נכשלה. פתחו דרך שרת מקומי (לא file://).,dictionary load error,
 dictionary.modal.add_to_bulk,➕ Add to bulk list,➕ הוספה לרשימה המרובה,word modal bulk button,leading-emoji
+dictionary.modal.add_to_wordlist,➕ Add to Word List…,➕ הוספה לרשימת מילים…,word modal add-to-word-list button,leading-emoji
 dictionary.modal.close_aria,Close details,סגירת הפרטים,word modal close aria-label,aria-label only
 dictionary.modal.copy_allinfo,Copy all info,העתקת כל המידע,word modal copy button,
 dictionary.modal.copy_def,Copy definition,העתקת ההגדרה,word modal copy button,
@@ -784,6 +785,7 @@ dictionary.translit.style_sbl,SBL Academic,SBL אקדמי,transliteration style 
 dictionary.translit.style_simple,Simple Stressed,פשוט עם הטעמה,transliteration style option,
 dictionary.wordlist.add_to_existing,Or add to an existing list,או הוסיפו לרשימה קיימת,save word-list modal section,
 dictionary.wordlist.add_to_selected,Add to selected list,הוספה לרשימה הנבחרת,merge button,
+dictionary.wordlist.add_word_title,Add to Word List,הוספה לרשימת מילים,add-word-to-list modal title,
 dictionary.wordlist.added.one,Added {count} word.,נוספה מילה אחת.,merge status,plural
 dictionary.wordlist.added.other,Added {count} words.,נוספו {count} מילים.,merge status,plural
 dictionary.wordlist.all_already_in,All selected words were already in that list.,כל המילים הנבחרות כבר היו ברשימה הזו.,merge status,

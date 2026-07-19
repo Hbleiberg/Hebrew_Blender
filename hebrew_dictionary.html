@@ -1634,6 +1634,40 @@ function wlOpenSaveModal() {
   _openWordModal(body);
   setTimeout(() => { try { nameIn.focus(); } catch (e) {} }, 0);
 }
+// Per-word shortcut: add a single dictionary word to an existing Word List straight
+// from the word-detail modal, skipping the Bulk-Copy-Mode detour. Only offered when
+// at least one list already exists (see the word modal's guarded button).
+function wlOpenAddToListModal(w) {
+  const store = wlReadStore();
+  const listIds = Object.keys(store.lists);
+  const body = document.createElement('div');
+  body.appendChild(wlEl('div', { cls: 'wl-mtitle', style: 'font-family:var(--heb-font);font-size:1.3rem;font-weight:600;text-align:center;color:var(--text);margin:2px 24px 4px;' }, I18n.t('dictionary.wordlist.add_word_title')));
+  const wline = wlEl('div', { style: 'text-align:center;color:var(--muted);font-size:0.85rem;margin-bottom:14px;' });
+  wline.appendChild(wlEl('span', { lang: 'he', style: 'font-family:var(--heb-font);font-size:1.15rem;color:var(--text);' }, w.word));
+  if (w.translation) wline.appendChild(document.createTextNode(' — ' + w.translation));
+  body.appendChild(wline);
+  const sel2 = document.createElement('select');
+  sel2.setAttribute('style', 'width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;font-size:0.85rem;margin-bottom:6px;');
+  listIds.sort((a, b) => (store.lists[b].updated || 0) - (store.lists[a].updated || 0)).forEach(id => {
+    const o = document.createElement('option');
+    o.value = id;
+    o.textContent = `${store.lists[id].name} (${store.lists[id].words.length})`;
+    sel2.appendChild(o);
+  });
+  body.appendChild(sel2);
+  const addBtn = wlEl('button', { cls: 'wm-root-btn', type: 'button' }, I18n.t('dictionary.wordlist.add_to_selected'));
+  body.appendChild(addBtn);
+  const status = wlEl('div', { style: 'font-size:0.78rem;margin-top:12px;min-height:1.1em;text-align:center;' });
+  body.appendChild(status);
+  addBtn.addEventListener('click', () => {
+    const r = wlMergeIntoList(sel2.value, [wlWordFromDict(w)]);
+    if (!r.ok) { wlSetStatus(status, r.err, true); return; }
+    let msg = r.added === 0 ? I18n.t('dictionary.wordlist.all_already_in') : I18n.t(r.added === 1 ? 'dictionary.wordlist.added.one' : 'dictionary.wordlist.added.other', { count: r.added });
+    if (r.dropped > 0) msg += ' ' + I18n.t('dictionary.wordlist.dropped_suffix', { count: r.dropped });
+    wlSetStatus(status, msg, false);
+  });
+  _openWordModal(body);
+}
 function wlSetStatus(el, msg, isErr) {
   el.textContent = msg;
   el.style.color = isErr ? '#c0392b' : 'var(--gold-text)';
@@ -4289,6 +4323,12 @@ function openWordModal(w) {
   bulkBtn.textContent = bulkSelected.has(w.word) ? I18n.t('dictionary.modal.in_bulk_list') : I18n.t('dictionary.modal.add_to_bulk');
   bulkBtn.addEventListener('click', () => toggleWordBulk(w, bulkBtn));
   actions.appendChild(bulkBtn);
+  if (wlListCount() > 0) {
+    const wlBtn = document.createElement('button'); wlBtn.className = 'wm-act';
+    wlBtn.textContent = I18n.t('dictionary.modal.add_to_wordlist');
+    wlBtn.addEventListener('click', () => wlOpenAddToListModal(w));
+    actions.appendChild(wlBtn);
+  }
   b.appendChild(actions);
 
   const rc = wordConsonants(w);
