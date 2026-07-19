@@ -945,7 +945,7 @@
     <button class="tbtn" id="exportBtn" onclick="exportFont()" data-i18n="fontmaker.toolbar.export_btn">⬇ Export TTF</button>
     <span id="engineBadge" class="engine-badge" title="Getting the font engine ready so your first export is fast" data-i18n-title="fontmaker.toolbar.engine_badge_title" hidden><span class="engine-dot" aria-hidden="true"></span><span data-i18n="fontmaker.toolbar.engine_badge">engine loading…</span></span>
   </div>
-  <button class="tbtn ghost" style="margin-inline-start:auto;" onclick="openHelp()" title="A plain-language guide to the whole tool" data-i18n-title="fontmaker.toolbar.help_title" aria-label="Help" data-i18n="fontmaker.toolbar.help">❓ Help</button>
+  <button class="tbtn ghost" style="margin-inline-start:auto;" onclick="openHelp()" title="A plain-language guide to the whole tool" data-i18n-title="fontmaker.toolbar.help_title" aria-label="Help" data-i18n-aria-label="fontmaker.toolbar.help_aria" data-i18n="fontmaker.toolbar.help">❓ Help</button>
 </div>
 <div id="statusMsg" role="status"></div>
 
@@ -1094,7 +1094,7 @@
   </aside>
 
   <main class="workspace">
-    <div class="work-tabs" role="tablist" aria-label="Workspace step">
+    <div class="work-tabs" role="tablist" aria-label="Workspace step" data-i18n-aria-label="fontmaker.workspace.steps_aria">
       <div class="work-current" id="workCurrent" aria-hidden="true"></div>
       <div class="wtab-group">
         <div class="wtab active" id="tabAlign" role="tab" aria-selected="true" tabindex="0" onclick="setWorkMode('align')" data-i18n="fontmaker.tabs.step_align">1 · Align</div>
@@ -1105,12 +1105,12 @@
       <div class="work-tabs-spacer"><button id="nodeEditToggle" class="ctl-btn" style="display:none;margin-inline-start:auto;" onclick="toggleNodeEdit()" aria-pressed="false"></button></div>
     </div>
 
-    <div class="cat-tabs" id="catTabs" role="tablist" aria-label="Glyph category"></div>
+    <div class="cat-tabs" id="catTabs" role="tablist" aria-label="Glyph category" data-i18n-aria-label="fontmaker.workspace.categories_aria"></div>
     <div id="catHost"></div>
 
     <div class="ws-grid">
       <div class="ws-left" id="ctlLeft"></div>
-      <div class="ws-split l" data-side="left" role="separator" aria-orientation="vertical" aria-label="Resize left panel"></div>
+      <div class="ws-split l" data-side="left" role="separator" aria-orientation="vertical" aria-label="Resize left panel" data-i18n-aria-label="fontmaker.workspace.resize_left_aria"></div>
       <div class="ws-center">
         <div class="zoom-bar">
           <span title="Zoom the view" data-i18n-title="fontmaker.node_editor.zoom_title">🔍</span>
@@ -1120,8 +1120,8 @@
         </div>
         <!-- node-mode stage toolbar — static DOM, synced by renderNodeChrome(); every control
              calls the same function its panel/toolbar predecessor did (zero behavioral change) -->
-        <div id="nodeBar" role="toolbar" aria-label="Point editing tools">
-          <div class="npnl-mode nb-mode" role="group" aria-label="Editing mode">
+        <div id="nodeBar" role="toolbar" aria-label="Point editing tools" data-i18n-aria-label="fontmaker.node_editor.toolbar_aria">
+          <div class="npnl-mode nb-mode" role="group" aria-label="Editing mode" data-i18n-aria-label="fontmaker.node_editor.mode_group_aria">
             <button class="npnl-mode-btn active" data-mode="select" aria-pressed="true" tabindex="0" aria-keyshortcuts="Escape" title="Select — click and drag points (Esc leaves marquee or pen)" data-i18n-title="fontmaker.node_editor.mode_select_title" onclick="npnlMode('select')" onkeydown="nodeBarKey(event, this)"><span class="nb-glyph" aria-hidden="true">↖</span> <span class="nb-label" data-i18n="fontmaker.node_editor.mode_select">Select</span></button>
             <button class="npnl-mode-btn" data-mode="marquee" aria-pressed="false" tabindex="-1" aria-keyshortcuts="M" title="Marquee — dragging anywhere box-selects, even from a point (M)" data-i18n-title="fontmaker.node_editor.mode_marquee_title" onclick="npnlMode('marquee')" onkeydown="nodeBarKey(event, this)"><span class="nb-glyph" aria-hidden="true">▭</span> <span class="nb-label" data-i18n="fontmaker.node_editor.mode_marquee">Marquee</span></button>
             <button class="npnl-mode-btn" data-mode="pen" aria-pressed="false" tabindex="-1" aria-keyshortcuts="P" title="Pen — draw a new contour point by point (P)" data-i18n-title="fontmaker.node_editor.mode_pen_title" onclick="npnlMode('pen')" onkeydown="nodeBarKey(event, this)"><span class="nb-glyph" aria-hidden="true">✒</span> <span class="nb-label" data-i18n="fontmaker.node_editor.mode_pen">Pen</span></button>
@@ -1159,7 +1159,7 @@
         <div class="legend" id="stageLegend"></div>
         <div class="stage-below" id="stageBelow"></div>
       </div>
-      <div class="ws-split r" data-side="right" role="separator" aria-orientation="vertical" aria-label="Resize right panel"></div>
+      <div class="ws-split r" data-side="right" role="separator" aria-orientation="vertical" aria-label="Resize right panel" data-i18n-aria-label="fontmaker.workspace.resize_right_aria"></div>
       <div class="ws-right" id="ctlRight"></div>
       <div class="ws-under" id="ctlUnder"></div>
     </div>

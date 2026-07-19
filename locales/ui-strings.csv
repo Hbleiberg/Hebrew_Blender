@@ -1778,6 +1778,7 @@ fontmaker.node_editor.guides_title,Show guide and metric lines (view only — sn
 fontmaker.node_editor.handles,Handles,ידיות,node-bar toggle,
 fontmaker.node_editor.handles_title,Show curve handles on every point (off: selected points only),הצג ידיות עקומה על כל נקודה (כבוי: רק נקודות נבחרות),node-bar toggle title,
 fontmaker.node_editor.head_edit_points,Edit points · {name},עריכת נקודות · {name},panel header,
+fontmaker.node_editor.mode_group_aria,Editing mode,מצב עריכה,node editor mode group,aria-label only
 fontmaker.node_editor.mode_marquee,Marquee,מלבן בחירה,node-mode button,
 fontmaker.node_editor.mode_marquee_title,"Marquee — dragging anywhere box-selects, even from a point (M)","מלבן בחירה — גרירה בכל מקום בוחרת בתיבה, אפילו מנקודה (M)",node-mode button title,
 fontmaker.node_editor.mode_pen,Pen,עט,node-mode button,
@@ -1837,6 +1838,7 @@ fontmaker.node_editor.to_curve,To curve,לעקומה,button,
 fontmaker.node_editor.to_curve_title,Make the segments between adjacent selected points curved{why},הפוך את המקטעים בין נקודות נבחרות סמוכות לעקומים{why},button title,
 fontmaker.node_editor.to_line,To line,לקו,button,
 fontmaker.node_editor.to_line_title,Make the segments between adjacent selected points straight{why},הפוך את המקטעים בין נקודות נבחרות סמוכות לישרים{why},button title,
+fontmaker.node_editor.toolbar_aria,Point editing tools,כלי עריכת נקודות,node editor toolbar,aria-label only
 fontmaker.node_editor.xform_summary_sel.one,Transform — {count} selected point,טרנספורמציה — {count} נקודה נבחרת,disclosure summary,plural
 fontmaker.node_editor.xform_summary_sel.other,Transform — {count} selected points,טרנספורמציה — {count} נקודות נבחרות,disclosure summary,plural
 fontmaker.node_editor.xform_summary_whole,Transform — whole glyph,טרנספורמציה — גליף שלם,disclosure summary,
@@ -2456,6 +2458,7 @@ fontmaker.toolbar.fmt_ttfwoff2,TTF + WOFF2 (zip),TTF + WOFF2 (zip),export format
 fontmaker.toolbar.fmt_ufo,UFO source (zip),מקור UFO (zip),export format option,
 fontmaker.toolbar.fmt_woff2,WOFF2 (web),WOFF2 (לרשת),export format option,
 fontmaker.toolbar.help,❓ Help,❓ עזרה,toolbar button,leading-emoji
+fontmaker.toolbar.help_aria,Help,עזרה,toolbar Help button,aria-label only
 fontmaker.toolbar.help_title,A plain-language guide to the whole tool,מדריך בשפה פשוטה לכל הכלי,toolbar button title,
 fontmaker.toolbar.home,← Home,← בית,toolbar link,leading-emoji
 fontmaker.toolbar.load_project,Load Project ▾,טעינת פרויקט ▾,toolbar button,
@@ -2469,6 +2472,7 @@ fontmaker.toolbar.save_project,Save Project,שמירת פרויקט,toolbar butt
 fontmaker.toolbar.save_project_menu,Save Project ▾,שמירת פרויקט ▾,toolbar button,
 fontmaker.toolbar.undo_aria,Undo,בטל,aria-label only,aria-label only
 fontmaker.toolbar.undo_title,Undo (Ctrl+Z),בטל (Ctrl+Z),toolbar button title,
+fontmaker.workspace.categories_aria,Glyph category,קטגוריית תווים,glyph category tablist,aria-label only
 fontmaker.workspace.editing,Editing: {name},עריכה: {name},work-current glyph label (interpolated),html
 fontmaker.workspace.editing_glyph,Editing: {glyph} — {name},עריכה: {glyph} — {name},work-current glyph label (interpolated glyph+name),html
 fontmaker.tour.firstrun_link,Take a tour →,צאו לסיור ←,First-run tour link,first-run affordance
@@ -2491,6 +2495,9 @@ fontmaker.whohas.optional_form,{name} (an optional composed form),{name} (צור
 fontmaker.whohas.precomposed,a precomposed form,צורה מורכבת מראש,glyph-owner phrase,
 fontmaker.whohas.shevana,the Sheva Na slot,משבצת שווא נע,glyph-owner phrase,
 fontmaker.whohas.space,the space,הרווח,glyph-owner phrase,
+fontmaker.workspace.resize_left_aria,Resize left panel,שינוי גודל הלוח השמאלי,left panel resize handle,aria-label only
+fontmaker.workspace.resize_right_aria,Resize right panel,שינוי גודל הלוח הימני,right panel resize handle,aria-label only
+fontmaker.workspace.steps_aria,Workspace step,שלב עבודה,workspace step tablist,aria-label only
 home.alltools.copy_button,Copy to Clipboard,העתקה ללוח,button,
 home.alltools.copy_done,✓ Copied,✓ הועתק,button state,leading-emoji
 home.alltools.copy_err_empty,Nothing to copy — export first.,אין מה להעתיק — ייצאו קודם.,alert,
