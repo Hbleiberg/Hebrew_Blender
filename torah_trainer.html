@@ -2699,7 +2699,7 @@ async function fetchAndRender() {
         const alt = await fetchSefariaText(r.ref, true, fb);
         if (seq !== _fetchSeq) return;   // a newer selection superseded this fetch
         if (alt._engCount > 0) {
-          fallbackNote = `"${settings.translationVersion}" isn't available here — showing "${fb}" instead.`;
+          fallbackNote = I18n.t('torah.status.fallback_version', { version: settings.translationVersion, other: fb });
           settings.translationVersion = fb;
           saveSettings();
           verses = alt;
@@ -2718,8 +2718,8 @@ async function fetchAndRender() {
       setStatus(fallbackNote, false);
     } else if (settings.showTranslation && settings.translationVersion && verses._engCount === 0) {
       const reason = verses._engFound
-        ? `"${settings.translationVersion}" doesn't cover this passage.`
-        : `"${settings.translationVersion}" wasn't returned by Sefaria for this passage — pick a different version.`;
+        ? I18n.t('torah.status.version_no_cover', { version: settings.translationVersion })
+        : I18n.t('torah.status.version_not_returned', { version: settings.translationVersion });
       setStatus(reason, true);
     } else {
       setStatus('', false);
@@ -3312,7 +3312,7 @@ async function toggleChantAll() {
     syncParshaSelect();
   } else {
     p = parshiyotData.find(x => x.en === settings.parshahKey);
-    if (!p) { setStatus('Pick a parsha first to chant.', false); return; }
+    if (!p) { setStatus(I18n.t('torah.status.pick_parsha_chant'), false); return; }
     if (settings.scope === 'parsha-haftarah') queue = ['H'];
     else if (/^parsha-aliyah-(\d)$/.test(settings.scope)) queue = [settings.scope.match(/(\d)$/)[1]];
     else queue = ['1','2','3','4','5','6','7'];
@@ -3478,11 +3478,11 @@ function teardownKaraokeAudio() {
 async function loadKaraoke(parshahEntry, suffix, expectedWords) {
   setKaraokeStatus(I18n.t('torah.status.loading_audio_for', { parsha: parshahEntry.en, aliyah: suffix === 'H' ? I18n.t('torah.schedule.scope_haftarah') : I18n.t('torah.schedule.scope_aliyah', { n: suffix }) }));
   const m = manifestData[parshahEntry.pocket];
-  if (!m) { setKaraokeStatus('No PocketTorah manifest entry for this parsha.'); return; }
+  if (!m) { setKaraokeStatus(I18n.t('torah.status.no_manifest')); return; }
   const labelFile = m.labels && m.labels[suffix];
   if (!labelFile) { const _au = I18n.t('torah.status.aliyah_audio_unavailable', { n: suffix }); setKaraokeStatus(_au); showHintToast(_au); return; }
   const audioBase = m.audioBase;
-  if (!audioBase) { setKaraokeStatus('Audio basename missing in manifest.'); return; }
+  if (!audioBase) { setKaraokeStatus(I18n.t('torah.status.audio_basename_missing')); return; }
   // Fetch timing file
   let timings;
   try {
@@ -3505,7 +3505,7 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
       timings = timings.slice(1);
     }
   } catch (e) {
-    setKaraokeStatus(`Failed to load timings: ${e.message}.`);
+    setKaraokeStatus(I18n.t('torah.status.failed_timings', { error: e.message }));
     return;
   }
   // Set up audio
@@ -3551,11 +3551,11 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
   document.body.classList.add('tt-karaoke-active');
   _audioBaseLabel = `${parshahEntry.en} · ${suffix === 'H' ? 'Haftarah' : 'Aliyah ' + suffix}`;
   document.getElementById('ttAudioLabel').textContent = loopState.active ? I18n.t('torah.audio.looping_label', { verse: loopState.verseLabel }) : _audioBaseLabel;
-  setKaraokeStatus(`Loaded ${timings.length} word timings. Click any Hebrew word to jump to that part.`);
+  setKaraokeStatus(I18n.t('torah.status.loaded_timings', { count: timings.length }));
   updateKaraokeWordRefs();
   if (karaokeWordSpans.length && timings.length) {
     if (Math.abs(karaokeWordSpans.length - timings.length) > 3) {
-      setKaraokeStatus(`Loaded — note: text has ${karaokeWordSpans.length} words but audio has ${timings.length} word timings; alignment may drift.`);
+      setKaraokeStatus(I18n.t('torah.status.loaded_drift', { words: karaokeWordSpans.length, timings: timings.length }));
     }
   }
   // If chantVerse() asked us to jump to a specific verse once audio was ready,
@@ -4767,7 +4767,7 @@ function printReading() {
 }
 async function goToCurrentParshah() {
   const cur = await fetchCurrentParshah(settings.schedule !== 'israel');
-  if (!cur) { setStatus('Could not determine the current parsha (Sefaria API unreachable).', true); return; }
+  if (!cur) { setStatus(I18n.t('torah.status.cant_determine_parsha'), true); return; }
   const match = findParshaByName(cur.name);
   if (match) {
     settings.parshahKey = match.en;
@@ -4794,7 +4794,7 @@ async function goToCurrentParshah() {
     fetchAndRender();
     return;
   }
-  setStatus(`Sefaria says this week is "${cur.name}" but didn't return a Torah reference for it.`, true);
+  setStatus(I18n.t('torah.status.sefaria_no_ref', { name: cur.name }), true);
 }
 
 /* ══════════════════════════════════════════════════════
