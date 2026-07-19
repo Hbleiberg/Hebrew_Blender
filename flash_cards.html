@@ -1073,10 +1073,11 @@ body.dark .results-hero .pct { color: var(--gold-light); }
   border: 1px solid var(--border); border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.4); padding: 16px 18px 14px;
 }
-.tour-card h4 { font-family: var(--serif); margin-block: 0 8px; margin-inline-end: 26px; font-size: 0.98rem; color: var(--text); }
+.tour-card h4 { font-family: var(--serif); margin-block: 0 8px; margin-inline-end: 30px; font-size: 0.98rem; color: var(--text); }
 .tour-card p { font-size: 0.84rem; line-height: 1.5; margin: 0 0 12px; color: var(--text); }
 .tour-x {
-  position: absolute; top: 8px; inset-inline-end: 8px; width: 26px; height: 26px;
+  position: absolute; top: 8px; inset-inline-end: 8px; width: 30px; height: 30px;
+  display: inline-flex; align-items: center; justify-content: center;
   background: transparent; border: none; border-radius: 6px;
   color: var(--muted); font-size: 1rem; cursor: pointer; line-height: 1;
 }
@@ -1111,7 +1112,7 @@ body.dark .sub { color: #99a2b8; }
 .warn { color: var(--bad); font-size: 0.88rem; padding: 8px; background: var(--bad-soft); border-radius: 8px; border: 1px solid var(--bad); }
 .hide { display: none !important; }
 #wordsEmptyState a { color: var(--gold-text); text-decoration: underline; }   /* WCAG-readable gold on light (S71 Pass F — matches generator #rwListEmptyState a) */
-.btn-xs { font-size: 0.72rem; padding: 3px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--white); cursor: pointer; font-family: inherit; color: var(--ink); transition: background 0.15s; }
+.btn-xs { font-size: 0.72rem; padding: 3px 8px; min-height: 30px; min-width: 30px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 4px; background: var(--white); cursor: pointer; font-family: inherit; color: var(--ink); transition: background 0.15s; }
 .btn-xs:hover { background: var(--paper); }
 /* ===== Session stats bar (card screen) ===== */
 .stats-bar {
