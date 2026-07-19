@@ -1148,6 +1148,7 @@
   .schedule-validation { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
   .schedule-validation .sched-warn { font-size: 0.72rem; color: #b4521f; line-height: 1.4; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   body.dark .schedule-validation .sched-warn { color: #e0a060; }
+  .schedule-validation .sched-hint { font-size: 0.72rem; color: var(--muted); line-height: 1.4; }
   .sched-hdr-row { display: flex; align-items: center; gap: 5px; margin-bottom: 2px; }
   .sched-hdr { flex: 1; min-width: 0; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
   .sched-hdr-until { flex: none; width: 82px; }
@@ -5941,6 +5942,14 @@ else ivritInit();
     for (let i = 1; i < withTime.length; i++)
       if (timeToMins(withTime[i].until) < timeToMins(withTime[i - 1].until)) { outOfOrder = true; break; }
     el.innerHTML = '';
+    // New-teacher nudge: schedule blocks only switch between saved presets, so with just
+    // the seeded "Default" preset there's nothing useful to assign — point them at Presets.
+    const needPresets = Object.keys(presets).length <= 1 && rows.length > 0;
+    if (needPresets) {
+      const h = document.createElement('div'); h.className = 'sched-hint';
+      h.textContent = I18n.t('dashboard.schedule.need_presets_hint');
+      el.appendChild(h);
+    }
     msgs.forEach(m => { const d = document.createElement('div'); d.className = 'sched-warn'; d.innerHTML = m; el.appendChild(d); });
     if (outOfOrder) {
       const d = document.createElement('div'); d.className = 'sched-warn';
@@ -5949,7 +5958,7 @@ else ivritInit();
       b.addEventListener('click', sortScheduleByTime);
       d.appendChild(b); el.appendChild(d);
     }
-    el.style.display = (msgs.length || outOfOrder) ? '' : 'none';
+    el.style.display = (needPresets || msgs.length || outOfOrder) ? '' : 'none';
   }
 
   function sortScheduleByTime() {

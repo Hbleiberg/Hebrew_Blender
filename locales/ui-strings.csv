@@ -316,6 +316,7 @@ dashboard.schedule.warn_duplicate_time,⚠ Two rows end at the same time ({time}
 dashboard.schedule.warn_missing_until,⚠ A row is missing an “until” time.,"⚠ לשורה חסרה שעת ""עד"".",validation warning,leading-emoji
 dashboard.schedule.warn_out_of_order,⚠ Rows are out of time order. ,⚠ השורות אינן בסדר כרונולוגי. ,validation warning,leading-emoji
 dashboard.schedule.warn_unknown_preset,⚠ Preset “{name}” doesn't exist — create it in Presets.,"⚠ התבנית ""{name}"" אינה קיימת — צרו אותה בתבניות.",validation warning,leading-emoji; mixed UI+content — do not translate {…}
+dashboard.schedule.need_presets_hint,Each block switches to a saved preset — create a couple in Presets first.,כל מקטע עובר לתבנית שמורה — צרו כמה בתבניות תחילה.,schedule builder hint shown when only the Default preset exists,
 dashboard.settings.close_aria,Close settings,סגור הגדרות,settings drawer close aria,aria-label only
 dashboard.settings.close_title,Close,סגור,settings drawer close title,
 dashboard.settings.drawer_aria,Dashboard settings,הגדרות לוח המחוונים,settings drawer aria-label,aria-label only
@@ -340,7 +341,7 @@ dashboard.setup.close_aria,Close,סגור,first-run setup close aria,aria-label 
 dashboard.setup.skip,Skip for now,דלג בינתיים,first-run setup link,
 dashboard.setup.starter_general_desc,"Secular layout — English date, big clock, weather, timer. No Hebrew calendar.","פריסה חילונית — תאריך לועזי, שעון גדול, מזג אוויר, טיימר. ללא לוח שנה עברי.",starter layout description,
 dashboard.setup.starter_general_label,General classroom,כיתה כללית,starter layout label,
-dashboard.setup.starter_hebrew_desc,"Everything on — Hebrew headers & date, Shabbat, Omer, holidays, weather.","הכול פעיל — כותרות ותאריך בעברית, שבת, עומר, חגים, מזג אוויר.",starter layout description,
+dashboard.setup.starter_hebrew_desc,"Hebrew headers & date, Shabbat, Omer, holidays, weather.","כותרות ותאריך בעברית, שבת, עומר, חגים, מזג אוויר.",starter layout description,
 dashboard.setup.starter_hebrew_label,Hebrew classroom,כיתת עברית,starter layout label,
 dashboard.setup.starter_morning_desc,"Days, both dates, a big clock, weather and a timer — minimal chrome.","ימים, שני התאריכים, שעון גדול, מזג אוויר וטיימר — מינימום עיטורים.",starter layout description,
 dashboard.setup.starter_morning_label,Morning routine,שגרת בוקר,starter layout label,
