@@ -2323,6 +2323,7 @@
   "fontmaker.qa.tab_stacked": "מוערמים",
   "fontmaker.qa.tab_trop": "טעמים",
   "fontmaker.qa.tall_warn": "⚠ איור גבוה — הייצוא ירחיב את תיבת החיתוך ל-{asc} / {desc} (עליון/תחתון) כדי ש-Word לא יחתוך אותו.",
+  "fontmaker.savemenu.my_fonts": "★ הגופנים שלי ב-IvritSuite…",
   "fontmaker.savemenu.save": "💾 שמירת פרויקט…",
   "fontmaker.savemenu.save_as": "📑 שמירה כעותק…",
   "fontmaker.status.added_custom_glyph": "נוסף גליף מותאם U+{cp}.",

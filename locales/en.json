@@ -2323,6 +2323,7 @@
   "fontmaker.qa.tab_stacked": "Stacked",
   "fontmaker.qa.tab_trop": "Trop",
   "fontmaker.qa.tall_warn": "⚠ Tall artwork — export will expand the clip box to {asc} / {desc} (asc/desc) so Word won't clip it.",
+  "fontmaker.savemenu.my_fonts": "★ My IvritSuite Fonts…",
   "fontmaker.savemenu.save": "💾 Save Project…",
   "fontmaker.savemenu.save_as": "📑 Save as a copy…",
   "fontmaker.status.added_custom_glyph": "Added custom glyph U+{cp}.",

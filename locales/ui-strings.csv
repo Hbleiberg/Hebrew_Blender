@@ -2300,6 +2300,7 @@ fontmaker.qa.tab_trop,Trop,טעמים,QA tab,
 fontmaker.qa.tall_warn,⚠ Tall artwork — export will expand the clip box to {asc} / {desc} (asc/desc) so Word won't clip it.,⚠ איור גבוה — הייצוא ירחיב את תיבת החיתוך ל-{asc} / {desc} (עליון/תחתון) כדי ש-Word לא יחתוך אותו.,QA summary,leading-emoji
 fontmaker.savemenu.save,💾 Save Project…,💾 שמירת פרויקט…,menu item,leading-emoji
 fontmaker.savemenu.save_as,📑 Save as a copy…,📑 שמירה כעותק…,menu item,leading-emoji
+fontmaker.savemenu.my_fonts,★ My IvritSuite Fonts…,★ הגופנים שלי ב-IvritSuite…,menu item,leading-emoji
 fontmaker.status.added_custom_glyph,Added custom glyph U+{cp}.,נוסף גליף מותאם U+{cp}.,toast,
 fontmaker.status.added_pairs.one,Added {count} pair at an even starting gap — fine-tune any.,נוסף {count} זוג במרווח התחלתי אחיד — כווננו כרצונכם.,toast,plural
 fontmaker.status.added_pairs.other,Added {count} pairs at an even starting gap — fine-tune any.,נוספו {count} זוגות במרווח התחלתי אחיד — כווננו כרצונכם.,toast,plural

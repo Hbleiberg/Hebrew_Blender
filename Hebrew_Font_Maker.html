@@ -2500,7 +2500,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.1';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.2';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2712,6 +2712,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.2</strong> — <strong>Reach your saved fonts anytime.</strong> The <em>My IvritSuite Fonts</em> window — where the fonts you've saved for every IvritSuite tool live, and where you can save the one you're working on — used to appear only right after an export. It now has its own entry in the <strong>Save Project ▾</strong> menu, so it's one click away whenever you need it. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.1</strong> — <strong>Dotted shin &amp; sin + holam.</strong> A שׁ or שׂ that also carries a holam now stacks correctly — the vowel dot lands to the left of the shin-dot (two dots) or merges onto the sin-dot (one dot), in the live preview, the QA sheet, and the exported font. Fine-tune where the holam sits on שׁ/שׂ in Special &amp; precomposed forms. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.0</strong> — <strong>Initial release.</strong> The Hebrew Font Maker is out of beta — this is its first full public release. Huge thanks to everyone who tested the beta versions and sent feedback along the way. <span style="color:var(--muted);">(July 2026)</span></li>
     </ul>
@@ -13171,7 +13172,9 @@ function toggleSaveMenu(ev) {
   menu.innerHTML =
     `<button class="load-menu-item" onclick="closeSaveMenu();saveProject()">${esc(I18n.t('fontmaker.savemenu.save'))}</button>` +
     `<div class="load-menu-sep"></div>` +
-    `<button class="load-menu-item" onclick="closeSaveMenu();saveProjectAs()">${esc(I18n.t('fontmaker.savemenu.save_as'))}</button>`;
+    `<button class="load-menu-item" onclick="closeSaveMenu();saveProjectAs()">${esc(I18n.t('fontmaker.savemenu.save_as'))}</button>` +
+    `<div class="load-menu-sep"></div>` +
+    `<button class="load-menu-item" onclick="closeSaveMenu();openMyFonts()">${esc(I18n.t('fontmaker.savemenu.my_fonts'))}</button>`;
   document.body.appendChild(menu);
   const rect = ev.currentTarget.getBoundingClientRect();
   menu.style.left = Math.max(6, Math.min(rect.left, window.innerWidth - menu.offsetWidth - 8)) + 'px';
