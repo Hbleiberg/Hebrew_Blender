@@ -3395,11 +3395,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <div class="panel-title" style="font-size:0.72rem;padding:6px 10px;" data-i18n="worksheet.advanced.font_title">Hebrew Font</div>
             <div class="panel-body">
               <div class="font-size-row">
-                <span class="fs-label" data-i18n="worksheet.common.size">Size</span>
+                <label class="fs-label" for="hebFontSizeSlider" data-i18n="worksheet.common.size">Size</label>
                 <input type="range" id="hebFontSizeSlider" min="0" max="100" value="50" step="1"
                        oninput="setHebFontSize(this.value)" ondblclick="resetHebFontSize()">
                 <span class="fs-val" id="hebFontSizeVal">2.00rem</span>
-                <button class="fs-reset" onclick="resetHebFontSize()" title="Reset to default" data-i18n-title="worksheet.common.reset_default">↺</button>
+                <button class="fs-reset" onclick="resetHebFontSize()" title="Reset to default" aria-label="Reset to default" data-i18n-title="worksheet.common.reset_default" data-i18n-aria-label="worksheet.common.reset_default">↺</button>
               </div>
               <div class="font-selector-grid"></div>
               <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><span data-i18n="shared.fonts.upload_label">⬆ Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>

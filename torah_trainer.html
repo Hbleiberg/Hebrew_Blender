@@ -1307,22 +1307,22 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <hr style="border:none; border-top:1px solid var(--border); margin:12px 0 8px;">
         <div style="font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;" data-i18n="torah.display.font_sizes_header">Font sizes</div>
         <div class="slider-row">
-          <label data-i18n="torah.display.size_hebrew">Hebrew</label>
+          <label for="optHebSize" data-i18n="torah.display.size_hebrew">Hebrew</label>
           <input type="range" id="optHebSize" min="0.7" max="3.5" step="0.05" value="1.5">
           <span class="sval" id="optHebSizeVal">1.50rem</span>
-          <button class="sreset" onclick="resetFontSize('heb')" type="button" title="Restore default" data-i18n-title="torah.display.restore_default">↺</button>
+          <button class="sreset" onclick="resetFontSize('heb')" type="button" title="Restore default" aria-label="Restore default" data-i18n-title="torah.display.restore_default" data-i18n-aria-label="torah.display.restore_default">↺</button>
         </div>
         <div class="slider-row">
-          <label data-i18n="torah.display.size_translit">Translit</label>
+          <label for="optTranslitSize" data-i18n="torah.display.size_translit">Translit</label>
           <input type="range" id="optTranslitSize" min="0.5" max="2" step="0.05" value="0.95">
           <span class="sval" id="optTranslitSizeVal">0.95rem</span>
-          <button class="sreset" onclick="resetFontSize('translit')" type="button" title="Restore default" data-i18n-title="torah.display.restore_default">↺</button>
+          <button class="sreset" onclick="resetFontSize('translit')" type="button" title="Restore default" aria-label="Restore default" data-i18n-title="torah.display.restore_default" data-i18n-aria-label="torah.display.restore_default">↺</button>
         </div>
         <div class="slider-row">
-          <label data-i18n="torah.display.size_english">English</label>
+          <label for="optEnglishSize" data-i18n="torah.display.size_english">English</label>
           <input type="range" id="optEnglishSize" min="0.5" max="2" step="0.05" value="0.95">
           <span class="sval" id="optEnglishSizeVal">0.95rem</span>
-          <button class="sreset" onclick="resetFontSize('english')" type="button" title="Restore default" data-i18n-title="torah.display.restore_default">↺</button>
+          <button class="sreset" onclick="resetFontSize('english')" type="button" title="Restore default" aria-label="Restore default" data-i18n-title="torah.display.restore_default" data-i18n-aria-label="torah.display.restore_default">↺</button>
         </div>
         <hr style="border:none; border-top:1px solid var(--border); margin:12px 0 8px;">
         <div style="font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;" data-i18n="torah.display.karaoke_header">Karaoke settings</div>

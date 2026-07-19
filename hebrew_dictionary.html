@@ -841,11 +841,11 @@ footer a{color:var(--gold-text);text-decoration:none;}
           <div class="adv-section-title" onclick="this.closest('.adv-section').classList.toggle('collapsed')" data-i18n="dictionary.advanced.font_head">Hebrew Font</div>
           <div class="adv-section-body">
               <div class="font-size-row">
-                <span class="fs-label" data-i18n="dictionary.advanced.font_size">Size</span>
+                <label class="fs-label" for="hebFontSizeSlider" data-i18n="dictionary.advanced.font_size">Size</label>
                 <input type="range" id="hebFontSizeSlider" min="0" max="100" value="50" step="1"
                        oninput="setHebFontSize(this.value)" ondblclick="resetHebFontSize()">
                 <span class="fs-val" id="hebFontSizeVal">2.00rem</span>
-                <button class="fs-reset" onclick="resetHebFontSize()" title="Reset to default" data-i18n-title="dictionary.advanced.font_size_reset_title">↺</button>
+                <button class="fs-reset" onclick="resetHebFontSize()" title="Reset to default" aria-label="Reset to default" data-i18n-title="dictionary.advanced.font_size_reset_title" data-i18n-aria-label="dictionary.advanced.font_size_reset_title">↺</button>
               </div>
             <div class="font-selector-grid"></div>
             <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><span data-i18n="shared.fonts.upload_label">⬆ Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
