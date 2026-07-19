@@ -3276,8 +3276,11 @@ function setHebFont(name, save = true) {
   loadHebFont(font);
   document.documentElement.style.setProperty('--heb-font', font.stack);
   if (save) try { localStorage.setItem('hebrewBlender_hebFont', name); } catch(e) {}
-  document.querySelectorAll('.font-opt').forEach(el =>
-    el.classList.toggle('active', el.dataset.font === name));
+  document.querySelectorAll('.font-opt').forEach(el => {
+    const on = el.dataset.font === name;
+    el.classList.toggle('active', on);
+    el.setAttribute('aria-pressed', String(on));
+  });
 }
 
 function setHebFontSize(val) {
@@ -3309,6 +3312,7 @@ function initFontSelector() {
       allFonts().filter(f => f.section === sec).forEach(font => {
         const btn = document.createElement('button');
         btn.className = 'font-opt' + (font.name === active ? ' active' : '');
+        btn.setAttribute('aria-pressed', font.name === active ? 'true' : 'false');
         btn.dataset.font = font.name;
         btn.innerHTML =
           '<span class="font-opt-preview" style="font-family:' + font.stack + ';">אֶרֶץ</span>' +

@@ -2238,6 +2238,7 @@ function initFontSelector() {
     allFonts().filter(f => f.section === sec).forEach(font => {
       const btn = document.createElement('button');
       btn.className = 'font-opt' + (font.name === settings.hebFont ? ' active' : '');
+      btn.setAttribute('aria-pressed', font.name === settings.hebFont ? 'true' : 'false');
       btn.dataset.fontName = font.name;
       btn.type = 'button';
       const isDefault = font.name === 'Frank Ruhl Libre';
@@ -2270,8 +2271,11 @@ function setHebFont(name) {
   settings.hebFont = f.name;
   loadHebFont(f);
   document.documentElement.style.setProperty('--heb-font', f.family);
-  document.querySelectorAll('.font-opt').forEach(el =>
-    el.classList.toggle('active', el.dataset.fontName === f.name));
+  document.querySelectorAll('.font-opt').forEach(el => {
+    const on = el.dataset.fontName === f.name;
+    el.classList.toggle('active', on);
+    el.setAttribute('aria-pressed', String(on));
+  });
   saveSettings();
 }
 

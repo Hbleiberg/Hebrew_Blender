@@ -6475,6 +6475,7 @@ async function onUploadEngFontPick(input){
       fonts.filter(f => f.section === sec).forEach(font => {
         const btn = document.createElement('button');
         btn.className = 'font-opt' + (font.name === settings[cfg.settingKey] ? ' active' : '');
+        btn.setAttribute('aria-pressed', font.name === settings[cfg.settingKey] ? 'true' : 'false');
         btn.dataset.fontName = font.name;
         btn.innerHTML =
           `<span class="font-opt-preview${cfg.previewLtr ? ' ltr' : ''}" style="font-family:${font.family};">${cfg.previewText}</span>` +
@@ -6492,8 +6493,11 @@ async function onUploadEngFontPick(input){
     loadHebFont(f);
     document.documentElement.style.setProperty(cfg.cssVar, f.family);
     const mount = document.getElementById(cfg.mountId);
-    if (mount) mount.querySelectorAll('.font-opt').forEach(el =>
-      el.classList.toggle('active', el.dataset.fontName === f.name));
+    if (mount) mount.querySelectorAll('.font-opt').forEach(el => {
+      const on = el.dataset.fontName === f.name;
+      el.classList.toggle('active', on);
+      el.setAttribute('aria-pressed', String(on));
+    });
   }
 
   /* Thin wrappers keep every existing call site (init, preset apply, uploader) working unchanged. */

@@ -2608,7 +2608,7 @@ function setHebFont(name) {
   hebFontId = font.name;
   loadHebFont(font);
   document.documentElement.style.setProperty('--heb-font', font.stack);
-  document.querySelectorAll('#fontGrid .font-opt').forEach(b => b.classList.toggle('active', b.dataset.fontName === font.name));
+  document.querySelectorAll('#fontGrid .font-opt').forEach(b => { const on = b.dataset.fontName === font.name; b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)); });
   saveSettings();
 }
 function initFontSelector() {
@@ -2624,6 +2624,7 @@ function initFontSelector() {
       loadHebFont(font);
       const btn = document.createElement('button');
       btn.className = 'font-opt' + (font.name === hebFontId ? ' active' : '');
+      btn.setAttribute('aria-pressed', font.name === hebFontId ? 'true' : 'false');
       btn.dataset.fontName = font.name;
       btn.innerHTML = `<span lang="he" dir="rtl" style="font-family:${font.stack};font-size:1.4rem;direction:rtl;display:block;">אֶרֶץ</span><small>${ivEsc(font.name)}${font.name === 'Frank Ruhl Libre' ? ` <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">${ivEsc(I18n.t('shared.fonts.default_marker'))}</span>` : ''}</small>`;
       btn.addEventListener('click', () => setHebFont(font.name));
@@ -2638,7 +2639,7 @@ function setEngFont(name) {
   engFontId = font.name;
   loadHebFont(font);
   document.documentElement.style.setProperty('--eng-font', font.stack);
-  document.querySelectorAll('#engFontGrid .font-opt').forEach(b => b.classList.toggle('active', b.dataset.fontName === font.name));
+  document.querySelectorAll('#engFontGrid .font-opt').forEach(b => { const on = b.dataset.fontName === font.name; b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)); });
   saveSettings();
 }
 function initEngFontSelector() {
@@ -2655,6 +2656,7 @@ function initEngFontSelector() {
       loadHebFont(font);
       const btn = document.createElement('button');
       btn.className = 'font-opt' + (font.name === engFontId ? ' active' : '');
+      btn.setAttribute('aria-pressed', font.name === engFontId ? 'true' : 'false');
       btn.dataset.fontName = font.name;
       btn.innerHTML = `<span dir="ltr" style="font-family:${font.stack};font-size:1.35rem;direction:ltr;display:block;">Aa 123</span><small>${ivEsc(font.name)}${font.name === 'Libre Baskerville' ? ` <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">${ivEsc(I18n.t('shared.fonts.default_marker'))}</span>` : ''}</small>`;
       btn.addEventListener('click', () => setEngFont(font.name));
