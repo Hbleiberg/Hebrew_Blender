@@ -1731,12 +1731,32 @@ function wlRenderManagerInto(root) {
       row.appendChild(wrap);
     });
     btn(I18n.t('dictionary.wordlist.rename'), () => {
-      const nn = prompt(I18n.t('dictionary.wordlist.rename_prompt'), list.name);
-      if (nn == null) return;
-      const t = nn.trim();
-      if (!t) return;
-      wlRenameList(id, t);
-      wlRefreshManager();
+      // Inline styled rename (replaces the legacy prompt()) with a duplicate-name guard
+      // matching the Save flow — a list can't be renamed onto another list's name.
+      if (row.querySelector('.wl-rename')) return;   // already editing this row
+      acts.style.display = 'none';
+      const ed = wlEl('div', { cls: 'wl-rename', style: 'margin-top:8px;border-top:1px solid var(--border);padding-top:8px;' });
+      ed.appendChild(wlEl('div', { style: 'font-size:0.72rem;font-weight:600;color:var(--text);margin-bottom:4px;' }, I18n.t('dictionary.wordlist.rename_prompt')));
+      const input = wlEl('input', { type: 'text', maxLength: 80, value: list.name, placeholder: I18n.t('dictionary.wordlist.name_placeholder'), style: 'width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;font-size:0.85rem;margin-bottom:6px;' });
+      const st = wlEl('div', { style: 'font-size:0.75rem;margin:0 0 6px;min-height:1em;' });
+      st.setAttribute('role', 'status'); st.setAttribute('aria-live', 'polite');
+      const okBtn = wlEl('button', { cls: 'wm-root-btn', type: 'button', style: 'margin-bottom:6px;' }, I18n.t('dictionary.wordlist.rename_save'));
+      const cancelBtn = wlEl('button', { cls: 'pos-all-btn', type: 'button', style: 'width:100%;' }, I18n.t('dictionary.wordlist.rename_cancel'));
+      const commit = () => {
+        const t = input.value.trim();
+        if (!t) { wlSetStatus(st, I18n.t('dictionary.wordlist.enter_name'), true); input.focus(); return; }
+        const lists = wlReadStore().lists;
+        const dup = Object.keys(lists).some(lid => lid !== id && lists[lid].name === t);   // exclude self
+        if (dup) { wlSetStatus(st, I18n.t('dictionary.wordlist.dup_name_suffix'), true); input.focus(); input.select(); return; }
+        if (t !== list.name) wlRenameList(id, t);
+        wlRefreshManager();
+      };
+      okBtn.addEventListener('click', commit);
+      cancelBtn.addEventListener('click', () => wlRefreshManager());
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); commit(); } });
+      ed.appendChild(input); ed.appendChild(st); ed.appendChild(okBtn); ed.appendChild(cancelBtn);
+      row.appendChild(ed);
+      input.focus(); input.select();
     });
     btn(I18n.t('dictionary.wordlist.delete'), () => {
       if (!confirm(I18n.t('dictionary.wordlist.delete_confirm', { name: list.name }))) return;

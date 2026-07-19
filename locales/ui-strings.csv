@@ -814,7 +814,9 @@ dictionary.wordlist.manager_title,Word Lists,רשימות מילים,word-lists 
 dictionary.wordlist.name_placeholder,e.g. Parashat Noach vocab,למשל אוצר מילים לפרשת נח,new list name placeholder,placeholder
 dictionary.wordlist.remove_word_title,Remove from list,הסרה מהרשימה,word remove button title,aria-label only
 dictionary.wordlist.rename,Rename,שינוי שם,word-list card button,
-dictionary.wordlist.rename_prompt,Rename word list:,שינוי שם רשימת המילים:,prompt dialog,
+dictionary.wordlist.rename_prompt,Rename word list:,שינוי שם רשימת המילים:,inline rename editor label,
+dictionary.wordlist.rename_save,Save,שמירה,inline rename editor confirm button,
+dictionary.wordlist.rename_cancel,Cancel,ביטול,inline rename editor cancel button,
 dictionary.wordlist.save_as_new,Save as new list,שמירה כרשימה חדשה,save word-list button,
 dictionary.wordlist.save_modal_title,Save as Word List,שמירה כרשימת מילים,save word-list modal title,
 dictionary.wordlist.saved.one,"Saved ""{name}"" with {count} word.","נשמרה ""{name}"" עם מילה אחת.",save word-list status,plural; mixed UI+content — do not translate {…}
