@@ -1687,7 +1687,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 <div id="inplaceToolbar" class="editor-toolbar inplace-toolbar" style="display:none;">
   <span id="inplaceToolbarCmds" style="display:contents;"></span>
   <span class="ed-sep"></span>
-  <button class="ed-btn" type="button" title="Finish editing" onclick="exitInPlaceEdit(true)" data-i18n="dashboard.text.done_btn">✓ Done</button>
+  <button class="ed-btn" type="button" title="Finish editing" data-i18n-title="dashboard.editor.finish_editing" onclick="exitInPlaceEdit(true)" data-i18n="dashboard.text.done_btn">✓ Done</button>
 </div>
 <!-- ───── Move-panels edit-mode bar (shown only while body.layout-edit) ───── -->
 <div id="layoutEditBar" role="toolbar" aria-label="Move panels" data-i18n-aria-label="dashboard.layout.bar_aria">
@@ -1977,7 +1977,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     </div>
     <div class="form-row" style="flex-direction:column;align-items:stretch;gap:4px;">
       <label for="pickerRoster" id="pickerRosterLabel" data-i18n="dashboard.picker.roster_label">Roster — one name per line</label>
-      <textarea id="pickerRoster" rows="6" placeholder="e.g. Ava&#10;Noah&#10;&#1491;&#1464;&#1493;&#1460;&#1491;&#10;&#1502;&#1463;&#1497;&#1464;&#1492;" style="width:100%;resize:vertical;font-family:inherit;"></textarea>
+      <textarea id="pickerRoster" rows="6" placeholder="e.g. Ava&#10;Noah&#10;&#1491;&#1464;&#1493;&#1460;&#1491;&#10;&#1502;&#1463;&#1497;&#1464;&#1492;" style="width:100%;resize:vertical;font-family:inherit;"></textarea><!-- i18n-ignore: roster placeholder is example student names (mixed EN/HE) with encoded newlines — illustrative content, not translatable chrome -->
       <span id="pickerRosterCount" style="font-size:0.72rem;color:var(--muted);">0 names</span>
     </div>
     <div class="form-row" id="pickerRosterHint" style="margin-top:2px;">
