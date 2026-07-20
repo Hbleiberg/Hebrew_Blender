@@ -2505,7 +2505,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.4';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.5';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2717,6 +2717,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.5</strong> — <strong>Your dagesh customizations, really in the exported font.</strong> A deep export audit found three quiet bugs in one chain: the OpenType rules that compose dotted letters (בּ, וֹ, וּ and friends) were accidentally inheriting a filter meant only for שׁ/שׂ, so in modern apps they never fired; a shin's own custom dagesh had no composed שּׁ/שּׂ form at all; and the pre-download shaping check couldn't load its engine, so it silently skipped instead of catching any of this. All three are fixed: exports now build the real שּׁ/שּׂ characters (U+FB2C/U+FB2D) from your dotted shin plus your own dagesh, every dagesh combination composes even with a vowel between the letter and the dot in the typed text, a new שּׁ chip joins the <span class="ui">Spacing</span> test combos, and the shaping check now genuinely runs — verifying שּׁ, בּ and בָּ before your font downloads. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.4</strong> — <strong>Two ḥolams, two homes.</strong> The dot of a vowel vav (וֹ, as in שָׁלוֹם) and the small dot of a consonantal vav (וֺ, as in מִצְוֺת written ḥaser) are different characters — and now each has its own editor. The new <span class="ui">Holam Haser</span> tile on the vav's <span class="ui">Above</span> step places and reshapes the mitzvot-style dot, while the וֹ tile keeps styling the combined vowel form, with a note in each explaining which typed keys reach which. A new וֺ chip joins the <span class="ui">Spacing</span> test combos so you can see both side by side, and every export now verifies that a typed vav + ḥolam really composes into your וֹ form. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.3</strong> — <strong>Dotted shin &amp; sin, done right everywhere.</strong> <span class="ui">Check stacking</span> now shows and measures שׁ/שׂ exactly as the exported font composes them: the dot appears at its true Special-forms position and size, the vowel you're placing is measured at the form's holam slot (shown in blue), and stale or impossible pairings no longer draw or warn — so no more false "overlaps" alarms nudging you to shrink dots that were fine. The <span class="ui">QA sheet</span> follows suit: dot columns on ש measure at the form's anchors, and the <span class="ui">Two marks</span> tab no longer offers pairings that can't exist. The dotted forms are easier to find, too: שׁ, שׂ, וֹ, וּ, בּ and friends now sit as tiles right in the vowel picker, replacing the redundant generic tile, one click from their editor. New chips under the <span class="ui">Spacing</span> sample insert hard-to-type test combos — שֹׁ, שֹׂ, וֹ, וּ — and a typed וֹ previews with its own Holam&nbsp;(vav) size and position. Also fixed: a failed shaping-check download no longer silently stays off for the whole session — it retries on your next export. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.2</strong> — <strong>Reach your saved fonts anytime.</strong> The <em>My IvritSuite Fonts</em> window — where the fonts you've saved for every IvritSuite tool live, and where you can save the one you're working on — used to appear only right after an export. It now has its own entry in the <strong>Save Project ▾</strong> menu, so it's one click away whenever you need it. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -2811,7 +2812,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -2819,8 +2820,8 @@ function buildAboutBody() {
     const kk = 'fontmaker.changelog.' + v, s = T(kk);
     return (s && s !== kk) ? '<li>' + esc(s) + '</li>' : '';
   }).join('');
-  const cur = T('fontmaker.changelog.v5_4');   // newest release shown on top; older v5_x fall into the history list
-  const v5li = (cur && cur !== 'fontmaker.changelog.v5_4') ? '<li>' + esc(cur) + '</li>' : '';
+  const cur = T('fontmaker.changelog.v5_5');   // newest release shown on top; older v5_x fall into the history list
+  const v5li = (cur && cur !== 'fontmaker.changelog.v5_5') ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
        + '<p>' + esc(T('fontmaker.about.special_thanks')) + '</p>'
        + '<h4>' + esc(T('fontmaker.about.changelog_heading')) + '</h4>'
@@ -9597,7 +9598,7 @@ function insertSampleGlyph(cp) {   // append a custom glyph's char to the sample
 }
 /* Tricky-combo chips: nikkud sequences most keyboards can't type (shin/sin dot + holam, vav forms).
    Stored decomposed — the preview and the exported font compose them (ccmp), same as real typing. */
-const SAMPLE_TEST_COMBOS = ['05E9,05C1,05B9', '05E9,05C2,05B9', '05D5,05B9', '05D5,05BA', '05D5,05BC'];   // שֹׁ שֹׂ וֹ וֺ וּ — vav appears twice on purpose: 05B9 composes to the וֹ form, 05BA (holam haser) stays at the plain anchor
+const SAMPLE_TEST_COMBOS = ['05E9,05C1,05B9', '05E9,05C2,05B9', '05E9,05BC,05C1', '05D5,05B9', '05D5,05BA', '05D5,05BC'];   // שֹׁ שֹׂ שּׁ וֹ וֺ וּ — vav appears twice on purpose: 05B9 composes to the וֹ form, 05BA (holam haser) stays at the plain anchor; שּׁ exercises the dagesh-on-dotted-shin (FB2C) composition
 function sampleComboStr(cps) { return cps.split(',').map(c => String.fromCodePoint(parseInt(c, 16))).join(''); }
 function insertSampleCombo(cps) {   // append a test combo to the sample (space-separated so combos stay readable)
   udBurstBegin([{t:'spacing'}], 'sample text');
@@ -11519,6 +11520,7 @@ function buildFontSpec() {
     if (isWideForm(pc) || !precompExportable(pc)) return;           // wide forms bake below; opt-in forms only while their tab is on
     const baseL = project.letters.find(x => x.codepoint === pc.base);
     if (!baseL || !baseL.contours) return;                          // need a traced base (anchor may be a per-form override)
+    seedAnchorsIfNeeded(baseL);                                     // a never-seeded anchor must not silently skip the bake
     const cls = MARK_CLASS[pc.mark];
     const anc = (cls !== 'center' && pc.anchor && pc.anchor.x != null) ? pc.anchor : (baseL.anchors && baseL.anchors[cls]); if (!anc) return;   // dagesh follows the letter's center anchor (unified with the live dagesh)
     const mscale = precompMarkScale(pc);                            // per-form dot size, or inherit the global mark scale
@@ -11534,6 +11536,27 @@ function buildFontSpec() {
     built.push(pc);
   });
 
+  // Shin/sin + dagesh (שּׁ/שּׂ → real U+FB2C/U+FB2D): FB2A/FB2B are NEW bases, so after the shin-dot
+  // ligature a typed dagesh could only attach as the GLOBAL uni05BC glyph — silently dropping a
+  // per-letter custom dagesh shape. Bake the full forms (dotted shin + the letter's own dagesh at its
+  // center anchor, dagesh-sized), reached via the mark-filtered ccmp_dagesh lookup in buildFEA.
+  const builtShinDagesh = [];
+  if (nikOn) [['FB2A','FB2C'], ['FB2B','FB2D']].forEach(([src, target]) => {
+    const pc = built.find(p => p.target === src); if (!pc) return;   // dotted form not baked → no rule either
+    const shinL = project.letters.find(x => x.codepoint === pc.base);
+    const anc = shinL && shinL.anchors && shinL.anchors.center; if (!anc) return;   // seeded above when FB2A baked
+    const srcG = glyphs[gname(src)];
+    const ds2 = nikScale('05BC');                                    // dagesh size — matches the per-letter & precomposed dagesh bakes
+    const markPoly = markContoursFor(shinL, 'nikkud', '05BC').map(poly => poly.map(([x,y]) => [Math.round(x*ds2+anc.x), Math.round(y*ds2+anc.y)]));
+    const nm = gname(target);
+    if (glyphs[nm]) return;                                          // an explicit custom glyph already owns this cp — never clobber it
+    glyphs[nm] = { contours: srcG.contours.concat(markPoly), advance: srcG.advance };
+    if (srcG.curves) glyphs[nm].curves = srcG.curves.concat(markPoly.map(() => null));
+    glyphOrder.push(nm); baseGlyphNames.push(nm);
+    cmap[parseInt(target,16)] = nm;
+    builtShinDagesh.push({ pc, target });
+  });
+
   // per-letter custom mark shapes (Nikkud only): "Apply to current letter" → bake a base+mark glyph,
   // substituted via ccmp (no cmap — reached only by typing the sequence). Skip (base,mark) pairs already
   // baked as a precomposed form (e.g. שׁ, וֹ) — that bake already honors the override, so no duplicate rule.
@@ -11542,6 +11565,7 @@ function buildFontSpec() {
     const builtPairs = new Set(built.map(pc => pc.base + '|' + pc.mark));
     (project.letters || []).forEach(L => {
       if (!L.markShapes || !L.contours || !L.contours.length) return;
+      seedAnchorsIfNeeded(L);                                        // a never-seeded anchor must not silently skip the bake
       Object.keys(L.markShapes).forEach(cp => {
         const cls = MARK_CLASS[cp]; if (!cls) return;                  // nikkud marks only (MARK_CLASS is the nikkud set)
         if (builtPairs.has(L.codepoint + '|' + cp)) return;            // already covered by a precomposed form's bake
@@ -11606,7 +11630,7 @@ function buildFontSpec() {
   });
 
   // FEA
-  const fea = buildFEA(baseGlyphNames, built, nikOn, tropOn, builtPerLetter, builtWide);
+  const fea = buildFEA(baseGlyphNames, built, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh);
 
   // name table — nameID 1 stays the bare family for both styles (that's the RIBBI link);
   // only nameID 2/3/4/6 carry the Regular/Bold distinction.
@@ -11641,12 +11665,13 @@ function buildFontSpec() {
     baseGlyphNames, markGlyphNames
   };
 }
-/* Generate the Adobe .fea — `languagesystem hebr dflt;`, markClass, ccmp, mark-to-base, mkmk,
-   contextual vowel-slide lookups (vowelPair slide mode), GDEF.
+/* Generate the Adobe .fea — `languagesystem hebr dflt;`, markClass, ccmp (incl. the mark-filtered
+   ccmp_dagesh lookup), mark-to-base, mkmk, contextual vowel-slide lookups (vowelPair slide mode), GDEF.
    Nikkud blocks emit only when nikOn; trop blocks only when tropOn. A letters-only font skips both. */
-function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLetter, builtWide) {
+function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh) {
   builtPerLetter = builtPerLetter || [];
   builtWide = builtWide || [];
+  builtShinDagesh = builtShinDagesh || [];
   let f = '';
   f += 'languagesystem DFLT dflt;\n';
   f += 'languagesystem hebr dflt;\n\n';
@@ -11699,9 +11724,25 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
       f += '  lookup ccmp_shinsin {\n    lookupflag UseMarkFilteringSet [' + [...new Set(shinSin.map(pc => gname(pc.mark)))].join(' ') + '];\n';
       shinSin.forEach(pc => { f += `    sub ${gname(pc.base)} ${gname(pc.mark)} by ${gname(pc.target)};\n`; });
       f += '  } ccmp_shinsin;\n';
+      // feaLib carries lookupflag OUT of a named lookup block (verified against the pyodide-bundled
+      // fontTools 4.51): without this reset every rule below inherits the dots filtering set — which
+      // hides each rule's OWN mark, so none of them (וֹ, בּ, per-letter shapes) could ever match.
+      f += '  lookupflag 0;\n';
     }
-    builtPrecomposed.filter(pc => !isShinSin(pc)).forEach(pc => { f += `  sub ${gname(pc.base)} ${gname(pc.mark)} by ${gname(pc.target)};\n`; });
-    builtPerLetter.forEach(pc => { f += `  sub ${gname(pc.base)} ${gname(pc.mark)} by ${pc.glyphName};\n`; });   // per-letter custom shapes
+    const isDagesh = pc => pc.mark === '05BC';
+    builtPrecomposed.filter(pc => !isShinSin(pc) && !isDagesh(pc)).forEach(pc => { f += `  sub ${gname(pc.base)} ${gname(pc.mark)} by ${gname(pc.target)};\n`; });
+    builtPerLetter.filter(pc => !isDagesh(pc)).forEach(pc => { f += `  sub ${gname(pc.base)} ${gname(pc.mark)} by ${pc.glyphName};\n`; });   // per-letter custom shapes
+    // Dagesh composition (בּ/כּ/פּ/תּ/וּ, per-letter dagesh shapes, and שּׁ/שּׂ → FB2C/FB2D) lives in ONE
+    // mark-filtered lookup so the rules still match when a canonically-earlier vowel sits between the
+    // letter and the dagesh (typed בָּ = bet, qamats ccc18, dagesh ccc21 — a plain adjacent rule never
+    // fires). Defined AFTER the plain rules so it runs last: a dagesh shin composes in two steps —
+    // ccmp_shinsin makes FB2A/FB2B, then this lookup adds the letter's own dagesh (FB2C/FB2D) instead
+    // of letting the generic uni05BC attach. Same scoped filtering-set device as ccmp_shinsin.
+    let dageshRules = '';
+    builtPrecomposed.filter(pc => !isShinSin(pc) && isDagesh(pc)).forEach(pc => { dageshRules += `    sub ${gname(pc.base)} ${gname(pc.mark)} by ${gname(pc.target)};\n`; });
+    builtPerLetter.filter(isDagesh).forEach(pc => { dageshRules += `    sub ${gname(pc.base)} ${gname(pc.mark)} by ${pc.glyphName};\n`; });
+    builtShinDagesh.forEach(sd => { dageshRules += `    sub ${gname(sd.pc.target)} ${gname('05BC')} by ${gname(sd.target)};\n`; });
+    if (dageshRules) f += '  lookup ccmp_dagesh {\n    lookupflag UseMarkFilteringSet [' + gname('05BC') + '];\n' + dageshRules + '  } ccmp_dagesh;\n';
     f += '} ccmp;\n\n';
   }
   if (shevaNaOn) {   // "Sheva Na" stylistic set — turn any sheva into the bold sheva to mark it mobile
@@ -11746,6 +11787,16 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
       }
     }
     emitBaseAnchors(gname(pc.target), base, MARK_CLASS[pc.mark]);
+  });
+  // שּׁ/שּׂ (FB2C/FB2D) are new bases too — same anchors as FB2A/FB2B (above = the form's holam slot,
+  // so a following holam lands clear of the baked dot), minus the center class their baked dagesh occupies.
+  builtShinDagesh.forEach(sd => {
+    const base = project.letters.find(x => x.codepoint === sd.pc.base);
+    if (!base) return;
+    seedAnchorsIfNeeded(base);
+    if (!base.anchors) return;
+    const ha = precompHolamAnchor(sd.pc);
+    emitBaseAnchors(gname(sd.target), Object.assign({}, base, { anchors: Object.assign({}, base.anchors, { above: { x: ha.x, y: ha.y } }) }), 'center');
   });
   // per-letter baked glyphs are new bases too — a vowel/trop typed after one must still attach (skip the mark's own class)
   builtPerLetter.forEach(pc => emitBaseAnchors(pc.glyphName, project.letters.find(x => x.codepoint === pc.base), pc.cls));
@@ -12773,11 +12824,14 @@ async function ensureHB() {
   if (hbLoading) return hbLoading;
   hbLoading = (async () => {
     try {
+      // harfbuzzjs 0.4.x MUST load through its emscripten glue (hb.js): its hb.wasm declares wasi/env
+      // imports and hbjs.js needs the runtime's addFunction, so the old bare
+      // `WebAssembly.instantiate(wasm, {})` threw unconditionally — every export "passed" a gate that
+      // had silently skipped. createHarfBuzz() fetches + instantiates hb.wasm itself (resolved next to
+      // the hb.js script URL) and resolves to the ready Module that hbjs() wraps.
+      if (!window.createHarfBuzz) await loadScript('https://cdn.jsdelivr.net/npm/harfbuzzjs@0.4.6/hb.js');
       if (!window.hbjs) await loadScript('https://cdn.jsdelivr.net/npm/harfbuzzjs@0.4.6/hbjs.js');
-      const resp = await fetch('https://cdn.jsdelivr.net/npm/harfbuzzjs@0.4.6/hb.wasm');
-      const wasm = await resp.arrayBuffer();
-      const mod = await WebAssembly.instantiate(wasm, {});
-      hb = window.hbjs(mod.instance);
+      hb = window.hbjs(await window.createHarfBuzz());
       return hb;
     } catch (err) {
       // Reset so a later export retries the CDN load cleanly (mirrors ensurePyodide) — otherwise the
@@ -12857,6 +12911,36 @@ async function harfbuzzGate(bytes) {
         if (hol && !(Math.abs(hol.dx || 0) > 0 || Math.abs(hol.dy || 0) > 0)) { font.destroy(); face.destroy(); blob.destroy();
           return { fail: true, msg: 'A holam on a dotted shin/sin shaped at x=0 — the precomposed form is missing its above anchor.' }; }
       }
+    }
+    // Shin/sin + dagesh composition guard (the שּׁ custom-dagesh bug): a typed shin + dagesh + dot must
+    // compose to the single FB2C/FB2D form — more glyphs means ccmp_dagesh is missing and the shin's own
+    // dagesh shape silently reverts to the global one. A vowel in the cluster (שָּׁ) must survive the
+    // two-step ligation and still attach. Only checked when shin is drawn.
+    if (project.font.nikkud.enabled && project.letters.some(l => l.codepoint === '05E9' && l.contours)) {
+      const shapeSeq = t => { const buf = H.createBuffer(); buf.addText(t); buf.guessSegmentProperties(); H.shape(font, buf); const r = buf.json(font); buf.destroy(); return r; };
+      for (const dot of ['05C1', '05C2']) {   // שּׁ / שּׂ → uniFB2C / uniFB2D
+        const r = shapeSeq('ש' + String.fromCodePoint(0x05BC) + String.fromCodePoint(parseInt(dot, 16)));
+        if (r.length !== 1) { font.destroy(); face.destroy(); blob.destroy();
+          return { fail: true, msg: I18n.t('fontmaker.modals.shaping_fail_shin_dagesh', { n: r.length }) }; }
+      }
+      const rv = shapeSeq('ש' + String.fromCodePoint(0x05BC) + String.fromCodePoint(0x05B8) + String.fromCodePoint(0x05C1));   // שָּׁ
+      if (rv.length !== 2) { font.destroy(); face.destroy(); blob.destroy();
+        return { fail: true, msg: I18n.t('fontmaker.modals.shaping_fail_shin_dagesh_vowel', { n: rv.length }) }; }
+      const vw = rv.find(g => !(g.ax || 0));   // the zero-advance glyph = the vowel mark
+      if (vw && !(Math.abs(vw.dx || 0) > 0 || Math.abs(vw.dy || 0) > 0)) { font.destroy(); face.destroy(); blob.destroy();
+        return { fail: true, msg: I18n.t('fontmaker.modals.shaping_fail_shin_dagesh_vowel_pos') }; }
+    }
+    // Dagesh-form guard (בּ / בָּ): the dotted-bet ligature must fire adjacently AND across a
+    // canonically-earlier vowel — the ccmp_dagesh filtering set is what makes the pair adjacent
+    // (typed בָּ = bet, qamats ccc18, dagesh ccc21). Only checked when bet is drawn.
+    if (project.font.nikkud.enabled && project.letters.some(l => l.codepoint === '05D1' && l.contours)) {
+      const shapeSeq = t => { const buf = H.createBuffer(); buf.addText(t); buf.guessSegmentProperties(); H.shape(font, buf); const r = buf.json(font); buf.destroy(); return r; };
+      const rb = shapeSeq('ב' + String.fromCodePoint(0x05BC));   // בּ
+      if (rb.length !== 1) { font.destroy(); face.destroy(); blob.destroy();
+        return { fail: true, msg: I18n.t('fontmaker.modals.shaping_fail_dagesh_plain', { n: rb.length }) }; }
+      const r = shapeSeq('ב' + String.fromCodePoint(0x05B8) + String.fromCodePoint(0x05BC));   // בָּ
+      if (r.length !== 2) { font.destroy(); face.destroy(); blob.destroy();
+        return { fail: true, msg: I18n.t('fontmaker.modals.shaping_fail_dagesh_vowel', { n: r.length }) }; }
     }
     // Vav + holam composition guard (the וֹ form): a typed vav + regular holam (05B9) must ligate to
     // the single FB4B glyph — the ccmp rule and the glyph are built together, so 2 glyphs here means
