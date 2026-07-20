@@ -2623,6 +2623,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   let savedSchedules = {};
   let _lastScheduleKey = null;
   let _lastPreviewKey = null;
+  let _lastNowNextKey = null;
   let _savedEditorRange = null;
   let weatherCache = null;
   let weatherTimer = null;
@@ -5883,16 +5884,26 @@ else ivritInit();
     const nn = document.getElementById('nowNextBlock');
     if (nn) {
       if (settings.scheduleEnabled && settings.scheduleShowPeriods !== false && live) {
-        const nextName = esc(st.targetEntry ? st.targetEntry.preset : '—');
-        const at = st.targetEntry && st.targetEntry.until ? esc(st.targetEntry.until) : '';
-        const morrow = st.isTomorrow ? ' <span class="nn-morrow">' + esc(I18n.t('dashboard.schedule.suffix_tomorrow')) + '</span>' : '';
-        const nowCol = st.currentEntry
-          ? `<span class="nn-item"><span class="nn-lbl">${esc(I18n.t('dashboard.schedule.now_label'))}</span><span class="nn-val">${esc(st.currentEntry.preset)}</span><span class="nn-in">${esc(I18n.t('dashboard.schedule.time_left', { time: st.timeStr }))}</span></span>`
-          : '';
-        nn.innerHTML = nowCol +
-          `<span class="nn-item"><span class="nn-lbl">${esc(I18n.t('dashboard.schedule.next_label'))}</span><span class="nn-val">${nextName}</span><span class="nn-in">${at ? I18n.t('dashboard.schedule.next_at', { time: at }) : ''}${morrow}</span></span>`;
+        // Content depends only on the active/next entries + minute-granularity time-left, not the
+        // per-second tick. Skip the innerHTML rebuild when unchanged so an all-day projector isn't
+        // churning this block ~21,600×/day (mirrors renderSchedulePreview's _lastPreviewKey guard;
+        // applyI18n nulls the key so translated labels re-render on a language switch).
+        const key = [st.currentIdx, st.currentEntry ? st.currentEntry.preset : '', st.timeStr,
+                     st.targetEntry ? st.targetEntry.preset : '', st.targetEntry ? st.targetEntry.until : '',
+                     st.isTomorrow ? 1 : 0].join('\x1f');
+        if (key !== _lastNowNextKey) {
+          _lastNowNextKey = key;
+          const nextName = esc(st.targetEntry ? st.targetEntry.preset : '—');
+          const at = st.targetEntry && st.targetEntry.until ? esc(st.targetEntry.until) : '';
+          const morrow = st.isTomorrow ? ' <span class="nn-morrow">' + esc(I18n.t('dashboard.schedule.suffix_tomorrow')) + '</span>' : '';
+          const nowCol = st.currentEntry
+            ? `<span class="nn-item"><span class="nn-lbl">${esc(I18n.t('dashboard.schedule.now_label'))}</span><span class="nn-val">${esc(st.currentEntry.preset)}</span><span class="nn-in">${esc(I18n.t('dashboard.schedule.time_left', { time: st.timeStr }))}</span></span>`
+            : '';
+          nn.innerHTML = nowCol +
+            `<span class="nn-item"><span class="nn-lbl">${esc(I18n.t('dashboard.schedule.next_label'))}</span><span class="nn-val">${nextName}</span><span class="nn-in">${at ? I18n.t('dashboard.schedule.next_at', { time: at }) : ''}${morrow}</span></span>`;
+        }
         nn.style.display = '';
-      } else nn.style.display = 'none';
+      } else { nn.style.display = 'none'; _lastNowNextKey = null; }
     }
     // (iii) settings-panel preview
     renderSchedulePreview(st);
@@ -6761,7 +6772,7 @@ async function onUploadEngFontPick(input){
     function applyI18n() {
       if (!window.I18n) return;
       I18n.applyStaticI18n();
-      _lastPreviewKey = null; _lastScheduleKey = null;   // bust caches so the schedule preview/countdown re-render translated
+      _lastPreviewKey = null; _lastScheduleKey = null; _lastNowNextKey = null;   // bust caches so the schedule preview/countdown/now-next re-render translated
       try { initFontSelector(); } catch (e) {}           // font-picker section headers build via t()
       try { initEngFontSelector(); } catch (e) {}
       try { buildToolbar(document.getElementById('drawerToolbar')); } catch (e) {}      // editor toolbar titles/labels build via t()
