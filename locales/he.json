@@ -487,6 +487,8 @@
   "dictionary.audio.tts_speed_label": "מהירות הקראה בעברית",
   "dictionary.card.aria_view_details": "הצגת פרטים עבור {word}",
   "dictionary.card.copy_hebrew_title": "העתקת עברית",
+  "dictionary.card.form_fem_only": "♀ נקבה (הצורה היחידה)",
+  "dictionary.card.form_masc_only": "♂ זכר (הצורה היחידה)",
   "dictionary.card.google_title": "חיפוש בגוגל",
   "dictionary.card.hear_title": "השמעת הגייה",
   "dictionary.chips.any_letters": "כל אחת מ: {letters}",

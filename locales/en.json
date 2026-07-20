@@ -487,6 +487,8 @@
   "dictionary.audio.tts_speed_label": "Hebrew TTS Reading Speed",
   "dictionary.card.aria_view_details": "View details for {word}",
   "dictionary.card.copy_hebrew_title": "Copy Hebrew",
+  "dictionary.card.form_fem_only": "♀ Feminine (only form)",
+  "dictionary.card.form_masc_only": "♂ Masculine (only form)",
   "dictionary.card.google_title": "Look up on Google",
   "dictionary.card.hear_title": "Hear pronunciation",
   "dictionary.chips.any_letters": "Any: {letters}",

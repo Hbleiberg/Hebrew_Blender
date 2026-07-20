@@ -489,6 +489,8 @@ dictionary.card.aria_view_details,View details for {word},הצגת פרטים ע
 dictionary.card.copy_hebrew_title,Copy Hebrew,העתקת עברית,word card copy button title/aria,aria-label only
 dictionary.card.google_title,Look up on Google,חיפוש בגוגל,word card search link title/aria,aria-label only
 dictionary.card.hear_title,Hear pronunciation,השמעת הגייה,word card speak button title/aria,aria-label only
+dictionary.card.form_fem_only,♀ Feminine (only form),♀ נקבה (הצורה היחידה),emoji card gender label when only this form exists,leading-emoji
+dictionary.card.form_masc_only,♂ Masculine (only form),♂ זכר (הצורה היחידה),emoji card gender label when only this form exists,leading-emoji
 dictionary.chips.any_letters,Any: {letters},כל אחת מ: {letters},active filter chip,mixed UI+content — do not translate {…}
 dictionary.chips.any_only_suffix,(only),(בלבד),active filter chip suffix,
 dictionary.chips.body_aria,{label} — show filter,{label} — הצגת המסנן,filter chip body aria-label,aria-label only

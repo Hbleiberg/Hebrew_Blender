@@ -3678,21 +3678,26 @@ function renderEmojiResults() {
     const fallbackMasc = (emojiGender === 'masc' && !e.hebrew_masculine && e.hebrew_feminine);
     const fallbackFem  = (emojiGender === 'fem'  && !e.hebrew_feminine  && e.hebrew_masculine);
     let formsHtml = '';
-    const addForm = (label, cls, heb, translit) => {
+    // data-i18n* keys so applyStaticI18n re-localizes these template-built cards on a live
+    // language switch (renderEmojiResults is not re-run by applyI18n); inline I18n.t() gives the
+    // correct value at build time (e.g. first render already in Hebrew).
+    const hearT = window.I18n ? I18n.t('dictionary.card.hear_title') : 'Hear pronunciation';
+    const addForm = (labelKey, labelFallback, cls, heb, translit) => {
       const escHeb = heb.replace(/"/g, '&quot;');
+      const label = window.I18n ? I18n.t(labelKey) : labelFallback;
       formsHtml += `<div class="ec-form">
-        <span class="ec-gender ${cls}">${label}</span>
+        <span class="ec-gender ${cls}" data-i18n="${labelKey}">${esc(label)}</span>
         <div class="ec-heb-row">
           <div class="ec-heb">${colorizeHebrew(heb)}</div>
-          <button class="ec-speak" title="Hear pronunciation" aria-label="Hear pronunciation" onclick="speakWord('${escHeb}')">🔊</button>
+          <button class="ec-speak" title="${esc(hearT)}" aria-label="${esc(hearT)}" data-i18n-title="dictionary.card.hear_title" data-i18n-aria-label="dictionary.card.hear_title" onclick="speakWord('${escHeb}')">🔊</button>
         </div>
         ${translit ? `<div class="ec-translit">${translit}</div>` : ''}
       </div>`;
     };
-    if (showMasc) addForm('♂ Masculine', 'masc', e.hebrew_masculine, e.translit_masculine);
-    if (showFem)  addForm('♀ Feminine',  'fem',  e.hebrew_feminine,  e.translit_feminine);
-    if (fallbackMasc) addForm('♀ Feminine (only form)', 'fem', e.hebrew_feminine, e.translit_feminine);
-    if (fallbackFem)  addForm('♂ Masculine (only form)', 'masc', e.hebrew_masculine, e.translit_masculine);
+    if (showMasc) addForm('dictionary.modal.form_masculine', '♂ Masculine', 'masc', e.hebrew_masculine, e.translit_masculine);
+    if (showFem)  addForm('dictionary.modal.form_feminine',  '♀ Feminine',  'fem',  e.hebrew_feminine,  e.translit_feminine);
+    if (fallbackMasc) addForm('dictionary.card.form_fem_only', '♀ Feminine (only form)', 'fem', e.hebrew_feminine, e.translit_feminine);
+    if (fallbackFem)  addForm('dictionary.card.form_masc_only', '♂ Masculine (only form)', 'masc', e.hebrew_masculine, e.translit_masculine);
     const key = emojiKey(e);
     const bulkCb = document.createElement('input');
     bulkCb.type = 'checkbox';
