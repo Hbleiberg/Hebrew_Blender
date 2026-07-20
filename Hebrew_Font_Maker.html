@@ -2505,7 +2505,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.3';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.4';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2717,6 +2717,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.4</strong> — <strong>Two ḥolams, two homes.</strong> The dot of a vowel vav (וֹ, as in שָׁלוֹם) and the small dot of a consonantal vav (וֺ, as in מִצְוֺת written ḥaser) are different characters — and now each has its own editor. The new <span class="ui">Holam Haser</span> tile on the vav's <span class="ui">Above</span> step places and reshapes the mitzvot-style dot, while the וֹ tile keeps styling the combined vowel form, with a note in each explaining which typed keys reach which. A new וֺ chip joins the <span class="ui">Spacing</span> test combos so you can see both side by side, and every export now verifies that a typed vav + ḥolam really composes into your וֹ form. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.3</strong> — <strong>Dotted shin &amp; sin, done right everywhere.</strong> <span class="ui">Check stacking</span> now shows and measures שׁ/שׂ exactly as the exported font composes them: the dot appears at its true Special-forms position and size, the vowel you're placing is measured at the form's holam slot (shown in blue), and stale or impossible pairings no longer draw or warn — so no more false "overlaps" alarms nudging you to shrink dots that were fine. The <span class="ui">QA sheet</span> follows suit: dot columns on ש measure at the form's anchors, and the <span class="ui">Two marks</span> tab no longer offers pairings that can't exist. The dotted forms are easier to find, too: שׁ, שׂ, וֹ, וּ, בּ and friends now sit as tiles right in the vowel picker, replacing the redundant generic tile, one click from their editor. New chips under the <span class="ui">Spacing</span> sample insert hard-to-type test combos — שֹׁ, שֹׂ, וֹ, וּ — and a typed וֹ previews with its own Holam&nbsp;(vav) size and position. Also fixed: a failed shaping-check download no longer silently stays off for the whole session — it retries on your next export. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.2</strong> — <strong>Reach your saved fonts anytime.</strong> The <em>My IvritSuite Fonts</em> window — where the fonts you've saved for every IvritSuite tool live, and where you can save the one you're working on — used to appear only right after an export. It now has its own entry in the <strong>Save Project ▾</strong> menu, so it's one click away whenever you need it. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.1</strong> — <strong>Dotted shin &amp; sin + holam.</strong> A שׁ or שׂ that also carries a holam now stacks correctly — the vowel dot lands to the left of the shin-dot (two dots) or merges onto the sin-dot (one dot), in the live preview, the QA sheet, and the exported font. Fine-tune where the holam sits on שׁ/שׂ in Special &amp; precomposed forms. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -2810,7 +2811,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -2818,8 +2819,8 @@ function buildAboutBody() {
     const kk = 'fontmaker.changelog.' + v, s = T(kk);
     return (s && s !== kk) ? '<li>' + esc(s) + '</li>' : '';
   }).join('');
-  const cur = T('fontmaker.changelog.v5_3');   // newest release shown on top; older v5_x fall into the history list
-  const v5li = (cur && cur !== 'fontmaker.changelog.v5_3') ? '<li>' + esc(cur) + '</li>' : '';
+  const cur = T('fontmaker.changelog.v5_4');   // newest release shown on top; older v5_x fall into the history list
+  const v5li = (cur && cur !== 'fontmaker.changelog.v5_4') ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
        + '<p>' + esc(T('fontmaker.about.special_thanks')) + '</p>'
        + '<h4>' + esc(T('fontmaker.about.changelog_heading')) + '</h4>'
@@ -8384,7 +8385,7 @@ const BELOW_VOWELS = [
   { cp:'05B0', name:'Sheva' }, { cp:'05B2', name:'Hataf Patach' }, { cp:'05B1', name:'Hataf Segol' }, { cp:'05B3', name:'Hataf Qamats' },
   { cp:'05C7', name:'Qamats Qatan' }
 ];
-const ABOVE_MARKS = [ { cp:'05B9', name:'Holam' }, { cp:'05C1', name:'Shin dot' }, { cp:'05C2', name:'Sin dot' }, { cp:'05BF', name:'Rafe' } ];
+const ABOVE_MARKS = [ { cp:'05B9', name:'Holam' }, { cp:'05BA', name:'Holam Haser' }, { cp:'05C1', name:'Shin dot' }, { cp:'05C2', name:'Sin dot' }, { cp:'05BF', name:'Rafe' } ];
 const CENTER_MARKS = [ { cp:'05BC', name:'Dagesh' } ];
 let activeAnchorClass = 'below';
 let activeBelowVowel = '05B8';
@@ -8398,6 +8399,7 @@ let coPreviewCp = null;   // Place-Nikkud "check stacking" — a 2nd mark previe
 // picker keeps only marks the exported font really attaches at the letter's own above anchor.
 function aboveMarkApplies(cp, l) {
   if (cp === '05C1' || cp === '05C2') return false;
+  if (cp === '05BA') return !!l && l.codepoint === '05D5';   // Holam Haser: the consonantal-vav dot (מִצְוֺת) — vav-only, never composed, attaches at vav's plain above anchor
   return !precompFormFor(l, cp);
 }
 function aboveMarkFor(l) {
@@ -8841,7 +8843,8 @@ function renderPrecompControls(l) {
   const cholPct = Math.round(cholamScale() * 100);
   const sizeBlock = isCholamVav
     ? `<div class="inline">${I18n.t('fontmaker.panels.holam_vav_size')} <input type="range" min="40" max="180" step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>
-    <div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.holam_vav_hint')}</div>`
+    <div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.holam_vav_hint')}</div>
+    <div class="hint" style="font-size:0.62rem;">${esc(I18n.t('fontmaker.panels.holam_vav_vs_haser'))}</div>`
     : `<div class="inline">${I18n.t('fontmaker.panels.dot_size')} <input type="range" min="30" max="200" step="1" value="${scPct}" oninput="setPrecompMarkScale(this.value)" onchange="udBurstCommit();renderControls()"> <span id="pcScaleV" class="readout">${scPct}%</span></div>
     <div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.dagesh_size_hint')}</div>
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
@@ -9594,7 +9597,7 @@ function insertSampleGlyph(cp) {   // append a custom glyph's char to the sample
 }
 /* Tricky-combo chips: nikkud sequences most keyboards can't type (shin/sin dot + holam, vav forms).
    Stored decomposed — the preview and the exported font compose them (ccmp), same as real typing. */
-const SAMPLE_TEST_COMBOS = ['05E9,05C1,05B9', '05E9,05C2,05B9', '05D5,05B9', '05D5,05BC'];   // שֹׁ שֹׂ וֹ וּ
+const SAMPLE_TEST_COMBOS = ['05E9,05C1,05B9', '05E9,05C2,05B9', '05D5,05B9', '05D5,05BA', '05D5,05BC'];   // שֹׁ שֹׂ וֹ וֺ וּ — vav appears twice on purpose: 05B9 composes to the וֹ form, 05BA (holam haser) stays at the plain anchor
 function sampleComboStr(cps) { return cps.split(',').map(c => String.fromCodePoint(parseInt(c, 16))).join(''); }
 function insertSampleCombo(cps) {   // append a test combo to the sample (space-separated so combos stay readable)
   udBurstBegin([{t:'spacing'}], 'sample text');
@@ -10394,7 +10397,7 @@ function renderAnchorLeft(L, l) {
       <div class="mark-grid2">${aboveTiles}</div>
       ${precompJumpRow(l, 'above', ABOVE_MARKS.map(v => v.cp))}
       <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(curAbove)}</div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">${esc(I18n.t('fontmaker.panels.above_hint'))}${l.codepoint === '05E9' ? ' ' + esc(I18n.t('fontmaker.panels.above_hint_shin')) : ''}</div>`;
+      <div class="hint" style="font-size:0.6rem;text-align:center;">${esc(I18n.t('fontmaker.panels.above_hint'))}${l.codepoint === '05E9' ? ' ' + esc(I18n.t('fontmaker.panels.above_hint_shin')) : ''}${l.codepoint === '05D5' ? ' ' + esc(I18n.t('fontmaker.panels.above_hint_vav')) : ''}</div>`;
   } else if (cls === 'center') {
     const centerTiles = CENTER_MARKS.map(v => {
       const pc = precompFormFor(l, v.cp);   // a dotted form (בּ/וּ…) replaces the generic Dagesh tile — same anchor, one control
@@ -12854,6 +12857,16 @@ async function harfbuzzGate(bytes) {
         if (hol && !(Math.abs(hol.dx || 0) > 0 || Math.abs(hol.dy || 0) > 0)) { font.destroy(); face.destroy(); blob.destroy();
           return { fail: true, msg: 'A holam on a dotted shin/sin shaped at x=0 — the precomposed form is missing its above anchor.' }; }
       }
+    }
+    // Vav + holam composition guard (the וֹ form): a typed vav + regular holam (05B9) must ligate to
+    // the single FB4B glyph — the ccmp rule and the glyph are built together, so 2 glyphs here means
+    // the ligature is broken and every shalom-style word would render decomposed. (Holam haser 05BA
+    // deliberately never composes; it is not probed.) Only checked when vav is drawn.
+    if (project.font.nikkud.enabled && project.letters.some(l => l.codepoint === '05D5' && l.contours)) {
+      const shapeSeq = t => { const buf = H.createBuffer(); buf.addText(t); buf.guessSegmentProperties(); H.shape(font, buf); const r = buf.json(font); buf.destroy(); return r; };
+      const r = shapeSeq('ו' + String.fromCodePoint(0x05B9));
+      if (r.length !== 1) { font.destroy(); face.destroy(); blob.destroy();
+        return { fail: true, msg: I18n.t('fontmaker.modals.shaping_fail_vav_holam', { n: r.length }) }; }
     }
     font.destroy(); face.destroy(); blob.destroy();
     if (sawTwoGlyphs && !anyMarkOffset) return { fail: true, msg: 'Marks shaped with zero offset (fallback). The hebr script / anchors may be missing.' };
