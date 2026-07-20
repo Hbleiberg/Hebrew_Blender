@@ -4897,7 +4897,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       chip.type = 'button';
       chip.className = 'picker-chip' + (absent.includes(name) ? ' absent' : '') + (picked.includes(name) ? ' picked' : '');
       chip.setAttribute('aria-pressed', absent.includes(name) ? 'true' : 'false');
-      chip.title = absent.includes(name) ? 'Absent today — tap to include' : 'Tap to mark absent for this session';
+      chip.title = absent.includes(name) ? I18n.t('dashboard.picker.chip_absent') : I18n.t('dashboard.picker.chip_present');
       chip.innerHTML = pickerNameHTML(name);
       chip.addEventListener('click', () => toggleAbsent(name));
       chips.appendChild(chip);
