@@ -356,6 +356,7 @@ dashboard.text.done_btn,✓ Done,✓ סיום,in-place toolbar button,leading-em
 dashboard.text.done_btn_title,Finish editing,סיים עריכה,in-place toolbar button title,
 dashboard.text.edit_pencil_aria,Edit dashboard text,ערוך את טקסט הלוח,edit pencil aria,aria-label only
 dashboard.text.edit_pencil_title,Edit text,ערוך טקסט,edit pencil title,
+dashboard.text.empty_placeholder,Click to add a message…,לחצו כדי להוסיף הודעה…,empty-state placeholder shown on the dashboard message surface when it is on but blank,placeholder
 dashboard.text.hide,Hide dashboard text,הסתר את טקסט הלוח,settings label,
 dashboard.text.insert_link,Insert link (or remove if cursor is inside one),הוסף קישור (או הסר אם הסמן בתוך אחד),editor toolbar button title,
 dashboard.text.italic,Italic,נטוי,editor toolbar button title,

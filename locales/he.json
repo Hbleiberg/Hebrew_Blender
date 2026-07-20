@@ -356,6 +356,7 @@
   "dashboard.text.done_btn_title": "סיים עריכה",
   "dashboard.text.edit_pencil_aria": "ערוך את טקסט הלוח",
   "dashboard.text.edit_pencil_title": "ערוך טקסט",
+  "dashboard.text.empty_placeholder": "לחצו כדי להוסיף הודעה…",
   "dashboard.text.hide": "הסתר את טקסט הלוח",
   "dashboard.text.insert_link": "הוסף קישור (או הסר אם הסמן בתוך אחד)",
   "dashboard.text.italic": "נטוי",

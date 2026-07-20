@@ -1370,6 +1370,15 @@
   body.dark .inplace-toolbar { background: var(--navy-deep); }
   .dash-text-display.editing { outline: 2px dashed var(--gold); outline-offset: 4px; border-radius: 6px; min-height: 1.4em; cursor: text; }
   .dash-text-display.editing .spoiler { background: #c0392b33; color: inherit; cursor: text; user-select: text; }
+  /* Empty-state affordance: when the message surface is on but blank, invite the teacher to add text
+     (the whole strip is click-to-edit). Placeholder text comes from data-i18n-placeholder → the
+     `placeholder` attribute. Hidden while editing and in fullscreen (projected) so students never see
+     an edit hint. */
+  #dashTextDisplay:empty:not(.editing)::before {
+    content: attr(placeholder);
+    color: var(--muted); font-style: italic; opacity: 0.72; cursor: pointer;
+  }
+  body.fullscreen #dashTextDisplay:empty::before { content: none; }
 
   /* ── Fullscreen quick-controls strip ── */
   #fsStrip { position: fixed; z-index: 205; left: 50%; bottom: 18px; transform: translateX(-50%) translateY(20px);
@@ -1589,7 +1598,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div id="nowNextBlock" class="now-next" style="display:none;"></div>
     </div>
     <div id="dashTextWrap" style="display:none;width:100%;">
-      <div id="dashTextDisplay" class="dash-text-display"></div>
+      <div id="dashTextDisplay" class="dash-text-display" data-i18n-placeholder="dashboard.text.empty_placeholder"></div>
       <button id="dashEditPencil" class="dash-edit-pencil" title="Edit text" data-i18n-title="dashboard.text.edit_pencil_title" aria-label="Edit dashboard text" data-i18n-aria-label="dashboard.text.edit_pencil_aria" onclick="enterInPlaceEdit()">✎</button>
     </div>
   </div><!-- END RAIL (panelLayout zone "right") --><div class="zone-col" id="zoneRight">
@@ -4497,6 +4506,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     document.getElementById('zoomSlider').addEventListener('input', e => applyZoom(+e.target.value));
     document.getElementById('dashTextDisplay').addEventListener('click', e => {
       if (e.currentTarget.classList.contains('editing')) return;   // spoilers stay revealed while editing
+      // Empty message surface = a "click to add" affordance (matches the placeholder). Not in the
+      // projected/fullscreen view, where editing is done from the quick strip (✎ hidden there too).
+      if (!e.currentTarget.firstChild && !document.body.classList.contains('fullscreen')) { enterInPlaceEdit(); return; }
       const sp = e.target.closest('.spoiler');
       if (!sp) return;
       if (!sp.classList.contains('revealed')) {
@@ -6012,7 +6024,8 @@ else ivritInit();
         if (tag === 'A' && el.hasAttribute('href')) { el.setAttribute('target', '_blank'); el.setAttribute('rel', 'noopener noreferrer'); }
       }
     })(tpl.content);
-    return tpl.innerHTML;
+    const out = tpl.innerHTML;
+    return _dashTextEmpty(out) ? '' : out;   // collapse a cleared-out message to '' so the placeholder returns
   }
   function restoreEditorFocus() {
     const ed = activeEditor();
@@ -6206,10 +6219,20 @@ else ivritInit();
       sp.setAttribute('aria-pressed', String(sp.classList.contains('revealed')));
     });
   }
+  // "Effectively empty" — the lone <br> / empty <div>s that contenteditable leaves behind when a
+  // teacher clears the text. Collapsing these to '' keeps settings.dashTextHTML clean AND lets the
+  // :empty placeholder reliably reappear. An <hr> counts as real (visible) content.
+  function _dashTextEmpty(html) {
+    const t = document.createElement('template');
+    t.innerHTML = String(html || '');
+    if (t.content.querySelector('hr')) return false;
+    return (t.content.textContent || '').replace(/\u00a0/g, ' ').trim() === '';
+  }
   function commitEditorToDisplay() {                 // editor → display + settings (the classic direction)
     const ed = document.getElementById('dashEditor');
-    document.getElementById('dashTextDisplay').innerHTML = ed.innerHTML;
-    settings.dashTextHTML = ed.innerHTML;
+    const html = _dashTextEmpty(ed.innerHTML) ? '' : ed.innerHTML;
+    document.getElementById('dashTextDisplay').innerHTML = html;
+    settings.dashTextHTML = html;
     normalizeSpoilers();
   }
   function commitDisplayToEditor() {                 // display → editor + settings, through the sanitizer
