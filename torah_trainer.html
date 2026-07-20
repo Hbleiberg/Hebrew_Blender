@@ -4580,7 +4580,14 @@ function updateScopeSelectState() {
     scopeSel.value = settings.scope || 'parsha-full';
   }
   scopeSel.disabled = isCustom;
-  scopeSel.title = isCustom ? 'Reading scope applies to weekly parshiyot, not holiday readings.' : '';
+  if (isCustom) {
+    // data-i18n-title so applyStaticI18n re-resolves it on a live language switch
+    scopeSel.setAttribute('data-i18n-title', 'torah.controls.scope_holiday_note');
+    scopeSel.title = window.I18n ? I18n.t('torah.controls.scope_holiday_note') : 'Reading scope applies to weekly parshiyot, not holiday readings.';
+  } else {
+    scopeSel.removeAttribute('data-i18n-title');
+    scopeSel.title = '';
+  }
 }
 function toggleCustomPicker() {
   const el = document.getElementById('ttCustomPicker');

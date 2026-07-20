@@ -2975,6 +2975,7 @@
   "torah.controls.print_title": "Print this reading for students",
   "torah.controls.reading_label": "Reading:",
   "torah.controls.scope_aria": "Reading scope",
+  "torah.controls.scope_holiday_note": "Reading scope applies to weekly parshiyot, not holiday readings.",
   "torah.controls.translation_toggle": "Translation",
   "torah.controls.translit_toggle": "Translit",
   "torah.controls.version_label": "Version:",

@@ -2975,6 +2975,7 @@
   "torah.controls.print_title": "הדפיסו את הקריאה עבור התלמידים",
   "torah.controls.reading_label": "קריאה:",
   "torah.controls.scope_aria": "היקף הקריאה",
+  "torah.controls.scope_holiday_note": "היקף הקריאה חל על פרשות השבוע, לא על קריאות התורה לחגים.",
   "torah.controls.translation_toggle": "תרגום",
   "torah.controls.translit_toggle": "תעתיק",
   "torah.controls.version_label": "גרסה:",
