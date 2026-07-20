@@ -297,6 +297,11 @@
   .chk { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; cursor: pointer; }
   .chk input { accent-color: var(--gold); width: 15px; height: 15px; }
   .hint { font-size: 0.7rem; color: var(--muted); line-height: 1.4; }
+  /* check-stacking verdict colors — ≥4.5:1 on the panel background in BOTH modes (the old inline
+     #1a8a4a/#c0392b fell short even in light mode at these small hint sizes) */
+  .co-ok { color: #116635; } .co-warn { color: #a32b1d; }
+  html.dark-early body .co-ok,   body.dark .co-ok   { color: #4ade80; }
+  html.dark-early body .co-warn, body.dark .co-warn { color: #f87171; }
   .allowed { font-size: 0.65rem; color: var(--muted); opacity: 0.8; margin-top: 4px; text-align: center; line-height: 1.35; }
 
   /* ── Input mode toggle ── */
@@ -2712,7 +2717,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.3</strong> — <strong>Dotted shin &amp; sin: honest stacking checks and one-click test combos.</strong> While placing nikkud, <span class="ui">Check stacking</span> now shows the שׁ/שׂ dot at its true position and size (from Special &amp; precomposed forms) — preview the Shin dot or Sin dot as the 2nd mark and you'll see the same two dots (or the merged שֹׂ dot) the exported font produces, with an accurate overlap verdict instead of a constant false alarm. New chips under the <span class="ui">Spacing</span> sample add hard-to-type test combos — שֹׁ, שֹׂ, וֹ, וּ — with one click, and a typed וֹ now previews with its own Holam&nbsp;(vav) size and dot position, matching the font. Also fixed: if the export-time shaping check couldn't download once, it quietly stayed off for the rest of the session — it now retries on your next export, just like the skip message promises. <span style="color:var(--muted);">(July 2026)</span></li>
+      <li><strong>v5.3</strong> — <strong>Dotted shin &amp; sin, done right everywhere.</strong> <span class="ui">Check stacking</span> now shows and measures שׁ/שׂ exactly as the exported font composes them: the dot appears at its true Special-forms position and size, the vowel you're placing is measured at the form's holam slot (shown in blue), and stale or impossible pairings no longer draw or warn — so no more false "overlaps" alarms nudging you to shrink dots that were fine. The <span class="ui">QA sheet</span> follows suit: dot columns on ש measure at the form's anchors, and the <span class="ui">Two marks</span> tab no longer offers pairings that can't exist. The dotted forms are easier to find, too: שׁ, שׂ, וֹ, וּ, בּ and friends now sit as tiles right in the vowel picker, replacing the redundant generic tile, one click from their editor. New chips under the <span class="ui">Spacing</span> sample insert hard-to-type test combos — שֹׁ, שֹׂ, וֹ, וּ — and a typed וֹ previews with its own Holam&nbsp;(vav) size and position. Also fixed: a failed shaping-check download no longer silently stays off for the whole session — it retries on your next export. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.2</strong> — <strong>Reach your saved fonts anytime.</strong> The <em>My IvritSuite Fonts</em> window — where the fonts you've saved for every IvritSuite tool live, and where you can save the one you're working on — used to appear only right after an export. It now has its own entry in the <strong>Save Project ▾</strong> menu, so it's one click away whenever you need it. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.1</strong> — <strong>Dotted shin &amp; sin + holam.</strong> A שׁ or שׂ that also carries a holam now stacks correctly — the vowel dot lands to the left of the shin-dot (two dots) or merges onto the sin-dot (one dot), in the live preview, the QA sheet, and the exported font. Fine-tune where the holam sits on שׁ/שׂ in Special &amp; precomposed forms. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.0</strong> — <strong>Initial release.</strong> The Hebrew Font Maker is out of beta — this is its first full public release. Huge thanks to everyone who tested the beta versions and sent feedback along the way. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -8426,6 +8431,17 @@ function coGhostDx() {
   if (!coPreviewCp || MARK_CLASS[coPreviewCp] !== cls) return 0;
   return vowelSlideDx(cls);
 }
+/* Effective 2nd-mark preview for "check stacking". The dropdown, the stage ghost, and the overlap
+   verdict must share this ONE validity predicate so the three surfaces can never disagree. Null when:
+   nothing is previewed; the previewed mark IS the active mark (a base takes one mark per class — the
+   dropdown filters it out, so warning "X overlaps X" would be nonsense); or a shin/sin dot is
+   previewed on a letter that can never carry one. Deliberately a read-side SUPPRESSION, not a clear:
+   coPreviewCp survives letter walks (the dagesh-walk design), and a dot ghost restores on return to ש. */
+function coPreviewFor(l, acp) {
+  if (!coPreviewCp || coPreviewCp === acp) return null;
+  if ((coPreviewCp === '05C1' || coPreviewCp === '05C2') && (!l || l.codepoint !== '05E9')) return null;
+  return coPreviewCp;
+}
 /* The precomposed form a letter+mark pair composes to via ccmp (shin+dot → FB2A/FB2B, vav+holam →
    FB4B, bet+dagesh → FB31, …), or null. Wide/digraph forms carry pc.bases and no pc.mark, so they
    never match. */
@@ -8491,10 +8507,19 @@ function anchorHandlesSVG(l) {
   const cp = activeVowelCp();
   const col = ANCHOR_COL[cls] || 'var(--below)';
   let h = '';
-  if (coPreviewCp && l.anchors[MARK_CLASS[coPreviewCp]]) {   // grey ghost of the 2nd mark for the stacking-clash check (non-interactive; on trop classes too — trop-vs-vowel clashes are the common real-world failure)
-    const gp = coStackGhostPlacement(l, coPreviewCp);   // shin/sin dot → the FB2A/FB2B form's dot anchor + Dot-size (a baked ligature dot never slides)
-    const ga = gp || l.anchors[MARK_CLASS[coPreviewCp]];
-    h += `<path d="${markPreviewPath(coPreviewCp, ga.x + (gp ? 0 : coGhostDx()), ga.y, gp ? gp.scale : undefined)}" fill="#888" fill-opacity="0.55"/>`;   // slide mode: the ghost vowel sits at its slid position
+  const co = coPreviewFor(l, cp);   // effective ghost — same validity predicate as the dropdown + verdict (stale/self ghosts suppress)
+  if (co && l.anchors[MARK_CLASS[co]]) {   // grey ghost of the 2nd mark for the stacking-clash check (non-interactive; on trop classes too — trop-vs-vowel clashes are the common real-world failure)
+    const gp = coStackGhostPlacement(l, co);   // a mark that composes to a form → the form's anchor + size (a baked ligature mark never slides)
+    const ga = gp || l.anchors[MARK_CLASS[co]];
+    h += `<path d="${markPreviewPath(co, ga.x + (gp ? 0 : coGhostDx()), ga.y, gp ? gp.scale : undefined)}" fill="#888" fill-opacity="0.55"/>`;   // slide mode: the ghost vowel sits at its slid position
+    if (gp && precompTakesHolam(gp.pc) && cls === 'above') {
+      // ש + dot ghost: the exported FB2A/FB2B attach the active above-mark at the form's holam slot —
+      // the verdict measures it there, so draw it there too (the precomp editor's blue). The colored
+      // mark on the class anchor stays put: that spot is real for the UNDOTTED letter and is what the
+      // drag ring edits.
+      const ha = precompHolamAnchor(gp.pc);
+      h += `<path d="${markPreviewPath(cp, ha.x, ha.y)}" fill="#2a86d6" fill-opacity="0.55"/>`;
+    }
   }
   h += `<path id="ancMark" d="${markPreviewPath(cp, a.x, a.y)}" fill="${col}"/>`;
   h += markSelectRect(cp, a.x, a.y, undefined, 'anc', col, `data-cls="${key}"`);
@@ -10369,7 +10394,7 @@ function renderAnchorLeft(L, l) {
       <div class="mark-grid2">${aboveTiles}</div>
       ${precompJumpRow(l, 'above', ABOVE_MARKS.map(v => v.cp))}
       <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(curAbove)}</div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">The holam dot and rafe sit above the letter. <b>Edit shape</b> redesigns the selected mark.${l.codepoint === '05E9' ? ' The שׁ/שׂ tiles open <b>Special &amp; precomposed forms</b> — the one place the dots are placed.' : ''}</div>`;
+      <div class="hint" style="font-size:0.6rem;text-align:center;">${esc(I18n.t('fontmaker.panels.above_hint'))}${l.codepoint === '05E9' ? ' ' + esc(I18n.t('fontmaker.panels.above_hint_shin')) : ''}</div>`;
   } else if (cls === 'center') {
     const centerTiles = CENTER_MARKS.map(v => {
       const pc = precompFormFor(l, v.cp);   // a dotted form (בּ/וּ…) replaces the generic Dagesh tile — same anchor, one control
@@ -10380,7 +10405,7 @@ function renderAnchorLeft(L, l) {
       <div class="mark-grid2">${centerTiles}</div>
       ${precompJumpRow(l, 'center', CENTER_MARKS.map(v => v.cp))}
       <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(activeCenterMark)}</div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">The dagesh sits inside the letter body. <b>Edit shape</b> redesigns it.</div>`;
+      <div class="hint" style="font-size:0.6rem;text-align:center;">${esc(I18n.t('fontmaker.panels.center_hint'))}</div>`;
   } else if (isTrop) {
     const ha = tropHalign(activeTropCp), tName = TROP_NAMES[activeTropCp] || 'this mark';
     const halignBtns = [['left','◀ Left'],['center','Center'],['right','Right ▶']].map(([h,lbl]) =>
@@ -10447,36 +10472,45 @@ function renderAnchorLeft(L, l) {
   let coRow = '';
   if (l.anchors) {   // "Check stacking" — preview a 2nd (nikkud) mark on this letter + warn on overlap (Babylonian all-above / two-vowel letters; on trop classes: trop-vs-vowel clashes like holam under a Left-above mark)
     const acp = activeVowelCp();
-    const opts = `<option value="">(none)</option>` + MARK_CPS.filter(cp => cp !== acp && ((cp !== '05C1' && cp !== '05C2') || l.codepoint === '05E9')).map(cp => `<option value="${cp}"${cp===coPreviewCp?' selected':''}>${esc(markName(cp))}</option>`).join('');   // shin/sin dots only ever sit on ש
+    const co = coPreviewFor(l, acp);   // effective preview — the dropdown, stage ghost and verdict share this one predicate (stale/self ghosts suppress)
+    const opts = `<option value="">${esc(I18n.t('fontmaker.panels.check_stacking_none'))}</option>` + MARK_CPS.filter(cp => cp !== acp && ((cp !== '05C1' && cp !== '05C2') || l.codepoint === '05E9')).map(cp => `<option value="${cp}"${cp===co?' selected':''}>${esc(gName(markName(cp)))}</option>`).join('');   // shin/sin dots only ever sit on ש
     let warn = '';
-    if (coPreviewCp && l.anchors[MARK_CLASS[coPreviewCp]]) {
-      const gp = coStackGhostPlacement(l, coPreviewCp);   // shin/sin dot ghost → the FB2A/FB2B form's dot anchor + Dot-size (matches the stage ghost, _spacingCellMarks and the export)
-      const holamActive = !!gp && !isTrop && (acp === '05B9' || acp === '05BA');   // ש + dot + holam: the font attaches the holam at the form's holam slot, not the shared above anchor
+    if (co && l.anchors[MARK_CLASS[co]]) {
+      const gp = coStackGhostPlacement(l, co);   // a mark that composes to a form (ש dots, וֹ) → the form's anchor + size (matches the stage ghost, _spacingCellMarks and the export)
+      // ש + dot ghost: the exported FB2A/FB2B attach EVERY above-class mark (holam, rafe) at the
+      // form's holam slot — so measure the active mark there, matching buildFEA's anchor relocation.
+      const aboveOnForm = !!gp && precompTakesHolam(gp.pc) && !isTrop && MARK_CLASS[acp] === 'above';
       const pa = isTrop ? qaPlace(l.anchors[activeAnchorKey()], 'trop', acp, tropScale(), l)
-                        : qaPlace(holamActive ? precompHolamAnchor(gp.pc) : l.anchors[activeAnchorKey()], 'nikkud', acp, nikScale(acp), l);
-      const gAnc = gp || l.anchors[MARK_CLASS[coPreviewCp]], gdx = gp ? 0 : coGhostDx();   // slide mode: the ghost vowel is checked at its slid position (matches the stage ghost + the FEA)
-      const pg = qaPlace({ x: gAnc.x + gdx, y: gAnc.y }, 'nikkud', coPreviewCp, gp ? gp.scale : nikScale(coPreviewCp), l);
-      if (holamActive && coPreviewCp === '05C2') {
+                        : qaPlace(aboveOnForm ? precompHolamAnchor(gp.pc) : l.anchors[activeAnchorKey()], 'nikkud', acp, nikScale(acp), l);
+      const gAnc = gp || l.anchors[MARK_CLASS[co]], gdx = gp ? 0 : coGhostDx();   // slide mode: the ghost vowel is checked at its slid position (matches the stage ghost + the FEA)
+      const pg = qaPlace({ x: gAnc.x + gdx, y: gAnc.y }, 'nikkud', co, gp ? gp.scale : nikScale(co), l);
+      const overlaps = markPolysOverlap(pa, pg, QA_OVERLAP_TOL);
+      const holamPair = aboveOnForm && (acp === '05B9' || acp === '05BA');
+      if (holamPair && co === '05C2' && overlaps) {
         // שֹׂ merges the sin dot and the holam into ONE dot by convention — overlap here is the design, not a clash.
         warn = `<div class="hint" style="font-size:0.64rem;">${esc(I18n.t('fontmaker.panels.sin_stack_merged_note'))}</div>`;
+      } else if (holamPair && co === '05C2') {
+        // The user separated them — legitimate, but say what שֹׂ will look like instead of implying a merge.
+        warn = `<div class="hint co-ok" style="font-size:0.64rem;">${esc(I18n.t('fontmaker.panels.check_stacking_clear', { active: gName(markName(acp)) }))}</div>`
+             + `<div class="hint" style="font-size:0.6rem;">${esc(I18n.t('fontmaker.panels.sin_stack_separate_note'))}</div>`;
       } else {
-        warn = markPolysOverlap(pa, pg, QA_OVERLAP_TOL)
-          ? `<div class="hint" style="font-size:0.64rem;color:#c0392b;font-weight:600;">⚠ ${esc(markName(coPreviewCp))} overlaps ${esc(markName(acp))} on this letter.</div>`
-          : `<div class="hint" style="font-size:0.64rem;color:#1a8a4a;">✓ No overlap with ${esc(markName(acp))}.</div>`;
-        if (holamActive) warn += `<div class="hint" style="font-size:0.6rem;">${esc(I18n.t('fontmaker.panels.shin_stack_note'))}</div>`;
+        warn = overlaps
+          ? `<div class="hint co-warn" style="font-size:0.64rem;font-weight:600;">${esc(I18n.t('fontmaker.panels.check_stacking_overlap', { mark: gName(markName(co)), active: gName(markName(acp)) }))}</div>`
+          : `<div class="hint co-ok" style="font-size:0.64rem;">${esc(I18n.t('fontmaker.panels.check_stacking_clear', { active: gName(markName(acp)) }))}</div>`;
+        if (aboveOnForm) warn += `<div class="hint" style="font-size:0.6rem;">${esc(I18n.t('fontmaker.panels.shin_stack_note'))}</div>`;
       }
     }
     coRow = `<hr class="ctl-divider">
-      <div class="ws-side-title">Check stacking</div>
-      <label class="fld" style="font-size:0.72rem;">Preview a 2nd mark on this letter
+      <div class="ws-side-title">${esc(I18n.t('fontmaker.panels.check_stacking'))}</div>
+      <label class="fld" style="font-size:0.72rem;">${esc(I18n.t('fontmaker.panels.check_stacking_label'))}
         <select onchange="setCoPreview(this.value)">${opts}</select>
       </label>${warn}
-      <div class="hint" style="font-size:0.6rem;">Shows the chosen mark in grey beside the one you're placing and warns if they collide — handy for Babylonian (all-above) and two-vowel letters. The QA <b>Two marks</b> tab sweeps every letter.</div>`;
+      <div class="hint" style="font-size:0.6rem;">${esc(I18n.t('fontmaker.panels.check_stacking_hint'))}</div>`;
   }
   const forms = project.precomposed.filter(pc => pc.base === l.codepoint);
   const formsSection = forms.length ? `<hr class="ctl-divider">
-    <div class="ws-side-title">Special &amp; precomposed forms</div>
-    <div class="hint" style="font-size:0.66rem;">Set where the dot sits in the combined glyph (e.g. שׁ / שׂ).</div>
+    <div class="ws-side-title">${esc(I18n.t('fontmaker.panels.special_precomposed'))}</div>
+    <div class="hint" style="font-size:0.66rem;">${esc(I18n.t('fontmaker.panels.special_precomposed_hint'))}</div>
     <div class="ctl-row" style="flex-wrap:wrap;gap:5px;">${forms.map(precompFormBtn).join('')}</div>` : '';
   // Label Prev/Next with the actual neighbor glyph, computed from the SAME source stepLetter uses so they can't drift.
   const _cyc = _placementCycleCps();
@@ -10912,7 +10946,8 @@ function qaSynthPrecompRow(pc, baseMeta, label) {
   const L = Object.assign({}, base, {
     anchors: rowAnchors,                                                // freeze anchors (vowels sit here); above → holam slot for שׁ/שׂ
     curves: null,                                                       // mixed bezier+polygon → render all as polygons
-    contours: base.contours.concat(dotPolys.map(p => ({ points: p })))  // dot becomes part of the base ink
+    contours: base.contours.concat(dotPolys.map(p => ({ points: p }))), // dot becomes part of the base ink
+    _qaSynth: true                                                      // synth rows share the base codepoint — qaCellLayers must not re-route their mark cells through the form
   });
   return { cp: pc.base, name: label, labelCh: qaCh(pc.base) + qaCh(pc.mark), desc: baseMeta.desc, L };
 }
@@ -11139,7 +11174,12 @@ function qaColumns(tab) {
   if (tab === 'trop')   return (project.font.trop.enabled   ? TROP_CPS : []).map(cp => ({ kind:'trop',   cp, side: TROP_CLASS[cp], name: markName(cp), head: '◌' + qaCh(cp) }));
   if (tab === 'pairs') {   // each enabled nikkud mark B paired with the fixed mark A (qaPairA) — to spot two-mark stacking clashes on one letter
     if (!project.font.nikkud.enabled) return [];
-    return MARK_CPS.filter(cp => cp !== qaPairA).map(cp => ({ kind:'pair', cp, a: qaPairA, side: MARK_CLASS[cp], name: markName(qaPairA) + ' + ' + markName(cp), head: '◌' + qaCh(qaPairA) + qaCh(cp) }));
+    // Shin/sin dots are excluded: pair cells measure raw class anchors, but a dot only ever exists
+    // inside the FB2A/FB2B ligature (impossible on 26 letters, resolved via the holam slot on ש) — a
+    // dot pair would paint a wall of false reds. The שׁ/שׂ synth rows already cover the real dot
+    // interactions faithfully.
+    if (qaPairA === '05C1' || qaPairA === '05C2') qaPairA = '05BC';   // stale in-session pick of a now-excluded dot
+    return MARK_CPS.filter(cp => cp !== qaPairA && cp !== '05C1' && cp !== '05C2').map(cp => ({ kind:'pair', cp, a: qaPairA, side: MARK_CLASS[cp], name: markName(qaPairA) + ' + ' + markName(cp), head: '◌' + qaCh(qaPairA) + qaCh(cp) }));
   }
   if (!(project.font.nikkud.enabled && project.font.trop.enabled)) return [];
   const wa = qaWorstTrop('above'), wb = qaWorstTrop('below');
@@ -11152,7 +11192,17 @@ function qaColumns(tab) {
 /* The colored mark layer(s) to draw + test for one cell. */
 function qaCellLayers(L, anc, col) {
   const ms = markScale(), tms = tropScale(), ds = dageshScale();
-  if (col.kind === 'nikkud') return [{ polys: qaPlace(anc[col.side], 'nikkud', col.cp, nikScale(col.cp), L), color: QA_SIDE_COLOR[col.side] }];
+  if (col.kind === 'nikkud') {
+    // A mark that composes to a form on this letter (ש dots → FB2A/FB2B, וֹ on vav) is measured at the
+    // FORM's anchor + size — matching the exported font — instead of the raw class anchor, which would
+    // false-flag (or miss) once the form is customized. Synth rows keep their frozen anchors: their
+    // baked dot is already ink, and a following mark at the frozen holam slot matches the export.
+    if (!L._qaSynth) {
+      const g = coStackGhostPlacement(L, col.cp);
+      if (g) return [{ polys: qaPlace({ x: g.x, y: g.y }, 'nikkud', col.cp, g.scale, L), color: QA_SIDE_COLOR[col.side] }];
+    }
+    return [{ polys: qaPlace(anc[col.side], 'nikkud', col.cp, nikScale(col.cp), L), color: QA_SIDE_COLOR[col.side] }];
+  }
   if (col.kind === 'customMarks') return [{ polys: qaPlace(anc[col.side], 'customMarks', col.cp, col.side === 'center' ? ds : ms, L), color: QA_SIDE_COLOR[col.side] }];   // scale mirrors the export bake (center = dagesh scale)
   if (col.kind === 'trop')   { const k = tropColKey(col.side, tropHalign(col.cp)); return [{ polys: qaPlace(anc[k], 'trop', col.cp, tms), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] }]; }
   if (col.kind === 'pair')   return [                                   // two nikkud marks on one letter, each at its own class anchor
@@ -11336,7 +11386,7 @@ function qaJump(cp, markCp, kind, side, tropCp) {
 function setQaTab(t) { qaTab = t; qaRenderTabs(); qaRenderGrid(); }
 function setQaPairA(cp) { qaPairA = cp; qaBuild(); qaRenderTabs(); qaRenderGrid(); }   // recount + redraw the Two-marks tab for the new fixed mark
 function qaPairControlHtml() {
-  const marks = project.font.nikkud.enabled ? MARK_CPS : [];
+  const marks = (project.font.nikkud.enabled ? MARK_CPS : []).filter(cp => cp !== '05C1' && cp !== '05C2');   // dots live only in the FB2A/FB2B ligature — see qaColumns('pairs')
   const opts = marks.map(cp => `<option value="${cp}"${cp === qaPairA ? ' selected' : ''}>${esc(markName(cp))}</option>`).join('');
   return `<div style="margin-bottom:10px;font-size:0.82rem;display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;">
     <label>Stack <select onchange="setQaPairA(this.value)" style="font-size:0.82rem;">${opts}</select> with every other mark, on each letter.</label>
