@@ -5065,7 +5065,7 @@ async function adApply() {
   });
   adState = null; aCloseModal('adOverlay');
   renderGrids(); renderStage(); renderControls();
-  status(`Assigned ${prep.length} letter(s) from the sheet — open each to align, then trace. Box any others by hand.`);
+  status(I18n.t(prep.length === 1 ? 'fontmaker.status.assigned_letters.one' : 'fontmaker.status.assigned_letters.other', {count: prep.length}));
 }
 /* ════════ end Auto-detect letters ════════ */
 
@@ -5551,7 +5551,7 @@ function autoSplitCombinedSvg() {
     built.forEach(b => assignSvgContours(b.l, 'letter', b.contours, sh && sh.id, null));
   });
   renderGrids(); renderStage(); renderControls();
-  status(`Auto-assigned ${built.length} letter(s) from named SVG elements.` + (built.length < 27 ? ' Box any others by hand.' : ''));
+  status(I18n.t(built.length === 1 ? 'fontmaker.status.autoassigned_svg.one' : 'fontmaker.status.autoassigned_svg.other', {count: built.length}) + (built.length < 27 ? ' ' + I18n.t('fontmaker.status.box_others') : ''));
   return built.length;
 }
 /* Marquee fallback: select the parsed subpaths whose bbox center is inside the dragged box → that glyph. */
