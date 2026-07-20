@@ -830,6 +830,7 @@
   "dictionary.wordlist.selected_count.one": "מילה אחת נבחרה",
   "dictionary.wordlist.selected_count.other": "{count} מילים נבחרו",
   "dictionary.wordlist.use_in_flashcards": "שימוש בכרטיסיות ←",
+  "dictionary.wordlist.use_in_generator": "שימוש במחולל דפי העבודה ←",
   "dictionary.wordlist.view_words": "הצגת המילים",
   "dictionary.wordlists.head": "רשימות מילים",
   "dictionary.wordlists.head_desc": "שמרו מילים נבחרות כרשימה בעלת שם שתוכלו לעשות בה שימוש חוזר במקומות אחרים באתר.",

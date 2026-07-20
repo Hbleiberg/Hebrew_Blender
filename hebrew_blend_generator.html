@@ -12481,6 +12481,22 @@ function restoreFromURL() {
     const ak = new URLSearchParams(location.search).get('ak');
     if (ak && renderAnswerKeyView(ak)) return;              // valid key view → stop normal init
   } catch(e) {}                                             // any failure → fall through to ?s=
+  // Deep-link from the Dictionary: ?wl=<listId> loads that saved Word List as the Real-Words source
+  // and generates a worksheet from it (the second half of the S72 handshake; the Flash Cards half
+  // shipped then). The id is validated against the shared store and used only as an object key / Set
+  // member — never interpolated. A link only sets the live view; it never clobbers saved presets.
+  try {
+    const wlParam = new URLSearchParams(location.search).get('wl');
+    if (wlParam && wlReadStoreLocal().lists[wlParam]) {
+      const rwT = document.getElementById('realWordsToggle');
+      if (rwT) rwT.checked = true;
+      selectedWordListIds = new Set([wlParam]);
+      rwSource = 'lists';        // set before toggleRealWordsUI so its setRwSource(rwSource) skips the corpus load
+      toggleRealWordsUI();       // enter Real-Words mode; setRwSource('lists') renders the picker (list pre-checked)
+      try { generate(); } catch(e) {}
+      return;                    // ?wl= handled — skip ?s=
+    }
+  } catch(e) {}
   try { SHARE_DEFAULTS = getSettings(); } catch(e) { return; } // pristine baseline for diffing
   let s;
   try { s = new URLSearchParams(location.search).get('s'); } catch(e) { return; }

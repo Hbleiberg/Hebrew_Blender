@@ -1616,6 +1616,9 @@ function wlOpenSaveModal() {
   // Revealed after a successful save — the strongest moment to carry the new list into Flash Cards.
   const useFcLink = wlEl('a', { cls: 'wm-root-btn', href: '#', style: 'display:none;box-sizing:border-box;text-align:center;text-decoration:none;margin-top:10px;' }, I18n.t('dictionary.wordlist.use_in_flashcards'));
   body.appendChild(useFcLink);
+  // …and into the Worksheet Generator (make printable worksheets from the same list).
+  const useGenLink = wlEl('a', { cls: 'wm-root-btn', href: '#', style: 'display:none;box-sizing:border-box;text-align:center;text-decoration:none;margin-top:6px;' }, I18n.t('dictionary.wordlist.use_in_generator'));
+  body.appendChild(useGenLink);
 
   createBtn.addEventListener('click', () => {
     const name = nameIn.value.trim();
@@ -1630,6 +1633,8 @@ function wlOpenSaveModal() {
     wlSetStatus(status, msg, false);
     useFcLink.href = 'flash_cards.html?wl=' + encodeURIComponent(r.id);
     useFcLink.style.display = 'block';
+    useGenLink.href = 'hebrew_blend_generator.html?wl=' + encodeURIComponent(r.id);
+    useGenLink.style.display = 'block';
     nameIn.value = '';
   });
 
@@ -1771,6 +1776,9 @@ function wlRenderManagerInto(root) {
       // Carry this list straight into Flash Cards' Words drill (same-origin deep link; id is the stable key).
       const useFc = wlEl('a', { cls: 'wm-root-btn', href: 'flash_cards.html?wl=' + encodeURIComponent(id), style: 'display:block;box-sizing:border-box;text-align:center;text-decoration:none;margin-top:6px;font-size:0.8rem;padding:7px 12px;' }, I18n.t('dictionary.wordlist.use_in_flashcards'));
       row.appendChild(useFc);
+      // …or straight into the Worksheet Generator (make printable worksheets from the list).
+      const useGen = wlEl('a', { cls: 'wm-root-btn', href: 'hebrew_blend_generator.html?wl=' + encodeURIComponent(id), style: 'display:block;box-sizing:border-box;text-align:center;text-decoration:none;margin-top:6px;font-size:0.8rem;padding:7px 12px;' }, I18n.t('dictionary.wordlist.use_in_generator'));
+      row.appendChild(useGen);
     }
     root.appendChild(row);
   });
