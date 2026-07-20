@@ -2073,7 +2073,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
        Relight it for print in both modes (unscoped, non-!important, wins by source order). */
     .flip-card-back { background:#fff; color:#1a2744; }
     body.dark .match-dot { background:#fff; border-color:#1a2744; }
-    body.dark .answer-key-banner { background:#f6efdd; color:#6b4e12; }
+    /* Relight the banner to the LIGHT-mode navy/gold it wears in light print and the
+       exportPDF output (per this block's goal), not a third beige scheme — so the same
+       answer key prints identically whatever theme the teacher printed it from. */
+    body.dark .answer-key-banner { background:#1a2744; color:#f0d080; }
     /* Gold answer/answer-key ink is faint on a B/W laser — darken it for print
        so gematria values, blend/real-word answers, and word-bank/crossword
        numbers stay legible on a monochrome printer. After the dark-reset, so it
