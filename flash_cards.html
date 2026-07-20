@@ -2344,6 +2344,8 @@ let colorShowTranslit = false;
 let selectedColors = new Set(COLOR_DATA.filter(c => c.isMain).map(c => c.key));
 const EMOJI_VISIBLE_CATEGORIES = ['Animal', 'Food'];
 let EMOJI_DATA = null;                  // { categories: [...], emojis: [...] } — filtered to visible categories
+let _emojiFetchP = null;               // in-flight fetch promise (~450KB file — never fetch it twice); null when idle/failed
+let _emojiAwaitingStart = false;       // guards the "Start clicked while emoji data still loading" wait-and-retry
 let emojiGender = 'both';               // 'masc' | 'fem' | 'both' (Show M/F Form)
 let emojiFront = 'emoji';               // 'emoji' | 'hebrew'
 let emojiShowTranslit = true;
@@ -3054,7 +3056,9 @@ function syncOtherSubUI() {
 }
 
 function fetchEmojiData() {
-  return fetch('data/hebrew_emojis.json?v=1')
+  if (EMOJI_DATA) return Promise.resolve();
+  if (_emojiFetchP) return _emojiFetchP;   // reuse the in-flight fetch — the file is ~450KB, never load it twice
+  _emojiFetchP = fetch('data/hebrew_emojis.json?v=1')
     .then(r => r.json())
     .then(data => {
       const allowed = new Set(EMOJI_VISIBLE_CATEGORIES);
@@ -3074,9 +3078,11 @@ function fetchEmojiData() {
       renderEmojiCatTree();
     })
     .catch(() => {
+      _emojiFetchP = null;   // failed — let a later re-entry / Start retry the fetch
       const tree = document.getElementById('emojiCatTree');
       if (tree) tree.innerHTML = '<div style="color:var(--muted);font-size:0.78rem;">Failed to load emoji data.</div>';
     });
+  return _emojiFetchP;
 }
 
 /* ── Words sub-mode: word-list store reader + pool resolution ──
@@ -5636,7 +5642,18 @@ function startPractice() {
     issues.push(I18n.t('flashcards.start.err_select_color'));
   }
   if (otherModeActive && otherSubMode === 'emoji') {
-    if (!EMOJI_DATA) issues.push(I18n.t('flashcards.start.err_emoji_loading'));
+    if (!EMOJI_DATA && _emojiFetchP) {
+      // Emoji data (~450KB) may still be downloading if Start was tapped right after switching to
+      // Emoji — on slow school wifi that window is real. Wait for the in-flight fetch and retry once
+      // with a non-blocking toast, instead of a blocking "try again in a second" alert dead-end.
+      if (!_emojiAwaitingStart) {
+        _emojiAwaitingStart = true;
+        if (typeof showAppToast === 'function') showAppToast(I18n.t('flashcards.start.err_emoji_loading'));
+        _emojiFetchP.then(() => { _emojiAwaitingStart = false; startPractice(); });
+      }
+      return;
+    }
+    if (!EMOJI_DATA) issues.push(I18n.t('flashcards.start.err_emoji_loading'));   // genuine load failure
     else if (selectedEmojiSubs.size === 0) issues.push(I18n.t('flashcards.start.err_select_emoji'));
   }
   if (otherModeActive && otherSubMode === 'words') {
