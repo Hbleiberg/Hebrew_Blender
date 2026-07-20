@@ -80,7 +80,7 @@ An interactive tutor for the Torah cantillation marks (trope / te'amim) — the 
 - Hebrew font picker (incl. My Fonts), dark mode, guided tour, playback-speed control
 
 ### Hebrew Font Maker (`Hebrew_Font_Maker.html`) — Beta
-Turn your own handwritten Hebrew letters into a real, installable font — entirely in the browser. (Currently v4.29.)
+Turn your own handwritten Hebrew letters into a real, installable font — entirely in the browser. (Currently v5.5.)
 
 - **Trace from images** — upload one letter per image, one sheet of all letters (marquee-crop each), or import an existing TTF/OTF; sub-pixel marching-squares tracing with cubic-Bézier fitting and a point editor
 - **Nikkud & trop anchors** — place vowel and cantillation marks per letter; exports real GPOS mark-to-base (nikkud) and mark-to-mark (trop) positioning, plus pair kerning
@@ -173,7 +173,7 @@ How it works:
 | `docs/phonotactic_blending_filter_spec.md` | Linguistic specification for the phonotactic validity filter used by the generator |
 | `splash/` | iOS launch/splash screens + `gen_splash.py` generator (and its bundled Libre Baskerville fonts) |
 | `icons/`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `og-card.png` | PWA / home-screen / social-card icons |
-| `fonts/` | Bundled Hebrew display fonts (Frank Ruhl Libre, Reuben, TzviScript, TzviScript Stroke Guide) + their license files |
+| `fonts/` | Bundled Hebrew display fonts (Frank Ruhl Libre, Lakhish Bold, Reuben, TzviScript, TzviScript Stroke Guide) + their license files |
 | `LICENSE` | CC BY-NC-SA 4.0 |
 | `CLAUDE.md` | Instructions for the AI coding assistant used during development |
 
