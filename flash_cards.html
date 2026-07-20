@@ -3178,6 +3178,11 @@ function renderWordListPicker() {
   if (empty) empty.classList.toggle('hide', lists.length !== 0);
   if (lists.length === 0) { picker.classList.add('hide'); return; }
   picker.classList.remove('hide');
+  // A single saved list with nothing checked is a dead-end — Start errors on an empty selection.
+  // Default-select the sole list so a teacher with exactly one list can Start immediately; the
+  // multi-list case is left alone (ambiguous — the teacher must choose). Runtime-only, so a later
+  // deliberate deselect still holds until the picker is re-rendered (mode switch / list change).
+  if (lists.length === 1 && selectedWordListIds.size === 0) selectedWordListIds.add(lists[0].id);
   lists.forEach(l => {
     const row = document.createElement('label');
     row.style.cssText = 'display:flex;align-items:center;gap:7px;padding:5px 4px;cursor:pointer;border-bottom:1px solid var(--border);';
