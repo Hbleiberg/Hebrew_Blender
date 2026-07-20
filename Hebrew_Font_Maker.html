@@ -1119,7 +1119,7 @@
       <div class="ws-center">
         <div class="zoom-bar">
           <span title="Zoom the view" data-i18n-title="fontmaker.node_editor.zoom_title">🔍</span>
-          <input type="range" id="zoomRange" min="1" max="400" step="1" value="100" oninput="setZoom(this.value/100)">
+          <input type="range" id="zoomRange" min="1" max="400" step="1" value="100" oninput="setZoom(this.value/100)" aria-label="Zoom the view" data-i18n-aria-label="fontmaker.node_editor.zoom_title">
           <span id="zoomVal" class="zoom-val">100%</span>
           <button class="ctl-btn zoom-reset" onclick="setZoom(1)" data-i18n="fontmaker.node_editor.zoom_reset">Reset</button>
         </div>
@@ -10145,7 +10145,7 @@ function wireReferencePanel() {
 }
 function vSlider(id, valId, label, pct, fn) {
   return `<div class="vslider-col"><span class="vslabel">${label}</span>
-    <input type="range" id="${id}" min="0" max="100" step="1" value="${pct}" oninput="${fn}(this.value)">
+    <input type="range" id="${id}" min="0" max="100" step="1" value="${pct}" oninput="${fn}(this.value)" aria-label="${esc(label)}">
     <span class="vsval" id="${valId}">${pct}%</span></div>`;
 }
 function squareMarkBtn(cat, cp, name, activeCp, fn, forLetter) {
