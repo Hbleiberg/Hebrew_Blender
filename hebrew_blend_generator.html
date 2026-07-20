@@ -9777,15 +9777,21 @@ let REAL_WORDS = [];
 // retry can re-attempt. Triggered on first Real Words use (see generateRealWords,
 // toggleRealWordsUI, applySettings, and the ?s= share-restore path) — the corpus is
 // no longer fetched unconditionally at init.
+// Guard a corpus/pasted Hebrew answer word against stray trailing junk: strip a trailing run of
+// whitespace + a space-separated period (the "רָקַד ." data-corruption shape) that would otherwise
+// render as phantom crossword/word-search cells and word-bank junk. Deliberately narrow — it never
+// removes a period ATTACHED to a letter (abbreviations "א.ג.נ.", "…דִי. סִי.") nor maqaf/gershayim
+// (bound-morpheme forms like "בְּ־"), which stay intact.
+const cleanRealWordHeb = s => String(s || '').replace(/\s+\.?\s*$/u, '');
 let _realWordsPromise = null;
 function ensureRealWords() {
   if (_realWordsPromise) return _realWordsPromise;
-  _realWordsPromise = fetch('data/hebrew_words.json?v=4')
+  _realWordsPromise = fetch('data/hebrew_words.json?v=5')
     .then(r => r.json())
     .then(data => {
       REAL_WORDS = Object.entries(data).flatMap(([count, words]) =>
         words.map(w => ({
-          heb: w.word,
+          heb: cleanRealWordHeb(w.word),
           bare: w.bare || '',
           translit: w.translit || '',
           translitDisplay: w.translit || '',
@@ -9906,7 +9912,7 @@ function parseCwText(text) {
     if (!line) return null;
     // Split on em-dash, en-dash, or hyphen surrounded by spaces
     const parts = line.split(/\s*[—–]\s*|\s+-\s+/);
-    const heb = (parts[0] || '').trim();
+    const heb = cleanRealWordHeb((parts[0] || '').trim());
     if (!heb) return null;
     return { heb, word: heb, translit: (parts[1]||'').trim(), translation: (parts[2]||'').trim(), pos: (parts[3]||'').trim(), era: (parts[4]||'Both').trim(), isReal: true };
   }).filter(Boolean);
