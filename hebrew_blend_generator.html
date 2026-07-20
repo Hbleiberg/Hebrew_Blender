@@ -6219,7 +6219,11 @@ document.addEventListener('fullscreenchange', () => {
   const ico = document.querySelector('#fsBtn .fs-ico');
   if (ico) ico.innerHTML = on ? FS_EXIT_ICON : FS_ENTER_ICON;
   const btn = document.getElementById('fsBtn');
-  if (btn) btn.title = on ? 'Exit full screen' : 'Full screen';
+  if (btn) {
+    const fk = on ? 'shared.fullscreen.exit_title' : 'shared.fullscreen.enter_title';
+    btn.setAttribute('data-i18n-title', fk);   // keep localized so a later language switch re-resolves it
+    btn.title = window.I18n ? I18n.t(fk) : (on ? 'Exit full screen' : 'Full screen');
+  }
 });
 
 function initZoom() {
