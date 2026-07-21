@@ -829,8 +829,6 @@ function exportAllSettings() {
     dictAudioEnabled:    localStorage.getItem('hebrewDictionary_audioEnabled') || '0',
     dictTranslitStyle:   localStorage.getItem('hebrewDictionary_translitStyle') || 'default',
     dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate') || '0.75',
-    generatorAdvTts:     localStorage.getItem('hebrewBlender_advTts') || '0',
-    dictAdvTts:          localStorage.getItem('hebrewDictionary_advTts') || '0',
     dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
     dictLastState:       lsJSON('hebrewDictionary_lastState', {}),
     torahTrainerSettings: lsJSON('hebrewTorahTrainer_settings', {}),
@@ -899,14 +897,6 @@ async function importAllSettings() {
     if (parsed.dictTtsRate !== undefined) {
       localStorage.setItem('hebrewDictionary_ttsRate', parsed.dictTtsRate);
     }
-    // Advanced-TTS page toggles travel; the model download itself is per-device
-    // (ivritSuite_ttsEnabled stays out of export — a new machine must re-download).
-    if (parsed.generatorAdvTts !== undefined) {
-      localStorage.setItem('hebrewBlender_advTts', parsed.generatorAdvTts);
-    }
-    if (parsed.dictAdvTts !== undefined) {
-      localStorage.setItem('hebrewDictionary_advTts', parsed.dictAdvTts);
-    }
     if (parsed.dictEmojiSettings) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewDictionary_emojiSettings') || '{}');
       localStorage.setItem('hebrewDictionary_emojiSettings', JSON.stringify(ivritSafeAssign(existing, parsed.dictEmojiSettings)));
@@ -973,15 +963,6 @@ function eraseAllSettings() {
     'hebrewDictionary_audioEnabled',
     'hebrewDictionary_translitStyle',
     'hebrewDictionary_ttsRate',
-    'hebrewBlender_advTts',
-    'hebrewDictionary_advTts',
-    // Advanced-TTS per-device state: export-exempt (the model download is per-machine),
-    // but "erase means fresh start" clears the enable flag + cached vocab snapshot. The
-    // downloaded model (Cache API 'tts-models-v1') and synthesized clips (IndexedDB
-    // 'ivritsuite-tts') are deliberately left — re-enabling shouldn't cost a ~310 MB
-    // re-download; clear them from tts/test.html if truly needed.
-    'ivritSuite_ttsEnabled',
-    'ivritSuite_ttsVocab',
     'hebrewDictionary_emojiSettings',
     'hebrewDictionary_lastState',
     'hebrewDictionary_tourSeen',
@@ -1039,8 +1020,6 @@ const IVRIT_CFG = {
       dictAudioEnabled:    localStorage.getItem('hebrewDictionary_audioEnabled')  || '0',
       dictTranslitStyle:   localStorage.getItem('hebrewDictionary_translitStyle') || 'default',
       dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate')       || '0.75',
-      generatorAdvTts:     localStorage.getItem('hebrewBlender_advTts')    || '0',
-      dictAdvTts:          localStorage.getItem('hebrewDictionary_advTts') || '0',
       dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
       dictLastState:       lsJSON('hebrewDictionary_lastState', {}),
       torahTrainerSettings:lsJSON('hebrewTorahTrainer_settings',    {}),
@@ -1089,8 +1068,6 @@ const IVRIT_CFG = {
     if (data.dictAudioEnabled  !== undefined) { localStorage.setItem('hebrewDictionary_audioEnabled',  data.dictAudioEnabled);  touched = true; }
     if (data.dictTranslitStyle !== undefined) { localStorage.setItem('hebrewDictionary_translitStyle', data.dictTranslitStyle); touched = true; }
     if (data.dictTtsRate       !== undefined) { localStorage.setItem('hebrewDictionary_ttsRate',       data.dictTtsRate);       touched = true; }
-    if (data.generatorAdvTts   !== undefined) { localStorage.setItem('hebrewBlender_advTts',           data.generatorAdvTts);   touched = true; }
-    if (data.dictAdvTts        !== undefined) { localStorage.setItem('hebrewDictionary_advTts',        data.dictAdvTts);        touched = true; }
     if (data.inputMode         !== undefined) { localStorage.setItem('hebrewBlender_inputMode',        data.inputMode); }
     // Shared display prefs (Generator + Dictionary): empty string = never set, skip.
     if (data.hebFont)     { localStorage.setItem('hebrewBlender_hebFont',     data.hebFont);     touched = true; }

@@ -7,7 +7,7 @@
      value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
      origins. Note: meta CSP can't express frame-ancestors or report-uri and does not cover content parsed
      before this tag. Update this when adding any external script/font/fetch/iframe (see CLAUDE.md). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net https://huggingface.co https://cdn-lfs.huggingface.co https://cas-bridge.xethub.hf.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
@@ -1659,13 +1659,6 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <button class="btn sm ghost" style="padding:2px 6px;font-size:0.65rem;" onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';">↺</button>
         </div>
       </div>
-      <div class="row">
-        <label class="switch"><input type="checkbox" id="advTtsToggle" onchange="onAdvTtsToggle(this.checked)"><span class="slider"></span></label>
-        <span class="label has-tip" data-tip="High-quality Hebrew voice (Kokoro) that runs fully on your device. One-time ~310 MB download, then works offline. Separate from the basic Audio option above." data-i18n-tip="shared.tts.enable_tip"><span data-i18n="shared.tts.enable_label">Enable Advanced TTS</span> <span data-i18n="shared.tts.beta" style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
-      </div>
-      <div class="row" style="margin-top:2px;">
-        <span style="font-size:0.68rem;color:var(--muted);line-height:1.45;"><span data-i18n="shared.tts.enable_note">Natural Hebrew voice, downloaded once to your device.</span> <a href="#" onclick="advTtsOpenCredits(event)" style="color:var(--gold-text,var(--gold));" data-i18n="shared.tts.credits_link">Voice credits</a></span>
-      </div>
 
       <hr class="soft" />
 
@@ -1871,7 +1864,6 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <div style="font-size:0.72rem;line-height:1.5;text-align:center;">
       <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;" data-i18n="shared.footer.about_header">About</div>
       Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="color:var(--gold-text);text-decoration:none;font-weight:600;">Harrison Bleiberg</a><br>
-      <span data-i18n="shared.tts.footer_credit">Hebrew voice: Kokoro · SASPEECH (Shaul Amsterdamski) — non-commercial</span><br>
       <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" style="color:var(--gold-text);text-decoration:none;">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
       <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank" style="color:var(--gold-text);text-decoration:none;">GitHub</a>
     </div>
@@ -3642,7 +3634,7 @@ function getSettings() {
     colorCodingEnabled, colorCodingMode,
     nikudColorOverrides: { ...nikudColorOverrides },
     vowelColorScheme,
-    hebFontId, engFontId, audioEnabled, advTts: advTtsActive(), showSkippedAgain, nameLetterMode, nameLetterShowLetter,
+    hebFontId, engFontId, audioEnabled, showSkippedAgain, nameLetterMode, nameLetterShowLetter,
     listening: listeningEnabled, listeningChoices,
     otherModeActive, otherSubMode, numberMin, numberMax, numberGender, numberFront, numberShowTranslit,
     colorGender, colorDisplayMode, colorFront, colorShowTranslit, selectedColors: [...selectedColors],
@@ -3731,11 +3723,6 @@ function applySettings(s) {
   audioEnabled = !!s.audioEnabled;
   document.getElementById('audioToggle').checked = audioEnabled;
   updateTtsRateVisibility();
-  const advOn = !!s.advTts;
-  const advCb = document.getElementById('advTtsToggle');
-  if (advCb) advCb.checked = advOn;
-  document.body.classList.toggle('adv-tts-on', advOn);
-  if (advOn) advTtsEnsureLoaded().catch(() => {});
   listeningEnabled = !!s.listening;
   listeningChoices = (s.listeningChoices === 4 ? 4 : 3);
   showSkippedAgain = s.showSkippedAgain !== undefined ? !!s.showSkippedAgain : true;
@@ -5700,63 +5687,12 @@ function startPractice() {
 }
 
 function speakWord(text) {
-  if (advTtsActive()) { advTtsSpeak(text, null, () => speakWordWebSpeech(text)); return; }
-  speakWordWebSpeech(text);
-}
-function speakWordWebSpeech(text) {
   if (!window.speechSynthesis) return;
   const utt = new SpeechSynthesisUtterance(text);
   utt.lang = 'he-IL';
   utt.rate = parseFloat(document.getElementById('ttsRateSlider')?.value || 0.75);
   speechSynthesis.cancel();
   speechSynthesis.speak(utt);
-}
-
-/* ═══ shared: adv-tts loader (identical across generator/dictionary/flash cards) ═══
-   Lazy-loads the Advanced TTS stack (/tts/*.js) only once the "Enable Advanced TTS"
-   toggle is (or previously was) on — pristine visitors make zero TTS-related network
-   requests. The page-specific advTtsPersist(on) lives BELOW the end marker. The
-   Kokoro Hebrew voice is non-commercial — see CREDITS.md. */
-let _advTtsLoad = null;
-function advTtsEnsureLoaded() {
-  if (_advTtsLoad) return _advTtsLoad;
-  const files = ['/tts/phonemizer.js', '/tts/tts-engine.js', '/tts/tts-ui.js'];
-  _advTtsLoad = files.reduce((p, src) => p.then(() => new Promise((res, rej) => {
-    const s = document.createElement('script');
-    s.src = src; s.onload = res; s.onerror = () => rej(new Error('failed to load ' + src));
-    document.head.appendChild(s);
-  })), Promise.resolve()).then(() => { AdvTtsUI.init(); });
-  _advTtsLoad.catch(() => { _advTtsLoad = null; }); // allow retry after a failed load
-  return _advTtsLoad;
-}
-function advTtsActive() {
-  const cb = document.getElementById('advTtsToggle');
-  return !!(cb && cb.checked);
-}
-function advTtsRevertToggle() {
-  const cb = document.getElementById('advTtsToggle');
-  if (cb) cb.checked = false;
-  onAdvTtsToggle(false);
-}
-function advTtsSpeak(text, el, fallbackFn) {
-  advTtsEnsureLoaded()
-    .then(() => AdvTtsUI.speak(text, el, advTtsRevertToggle))
-    .catch(() => { if (fallbackFn) fallbackFn(); });
-  return true;
-}
-function onAdvTtsToggle(on) {
-  document.body.classList.toggle('adv-tts-on', on);
-  advTtsPersist(on);
-  if (on) advTtsEnsureLoaded().then(() => AdvTtsUI.onToggle(true, advTtsRevertToggle)).catch(() => {});
-  else if (window.AdvTtsUI) AdvTtsUI.onToggle(false);
-}
-function advTtsOpenCredits(e) {
-  if (e) e.preventDefault();
-  advTtsEnsureLoaded().then(() => AdvTtsUI.openCredits()).catch(() => {});
-}
-/* ═══ end shared: adv-tts loader ═══ */
-function advTtsPersist(on) {
-  saveSettings(); // advTts lives in the flash-cards settings blob (hebrewFlashCards_settings)
 }
 
 function renderCurrentCard() {
@@ -5964,9 +5900,9 @@ function renderCurrentCard() {
     if (d) el.setAttribute('dir', d); else el.removeAttribute('dir');
   });
 
-  // Audio speak button (basic Audio toggle OR Advanced TTS — speakWord routes)
+  // Audio speak button
   const speakBtn = document.getElementById('fcSpeakBtn');
-  if (audioEnabled || advTtsActive()) {
+  if (audioEnabled) {
     speakBtn.style.display = 'block';
     speakBtn.onclick = (e) => { e.stopPropagation(); speakWord(card.heb); };
   } else {
