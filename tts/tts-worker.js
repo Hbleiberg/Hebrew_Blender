@@ -17,6 +17,7 @@
 var CFG = null;
 var session = null;
 var activeEP = null;
+var _warmupPeak = null; // peak amplitude of the accepted provider's warm-up (diagnostics)
 var vocab = null;
 var voices = null;      // { name: {data: Float32Array, shape} }
 var speedKind = null;   // 'float32' | 'int32' — resolved on first synth (export flavors differ)
@@ -36,6 +37,23 @@ function fail(stage, err, id) {
 // recoverable error and the EP loop can fall through to the next provider.
 var CREATE_TIMEOUT_MS = 45000;   // per execution-provider session create
 var WARMUP_TIMEOUT_MS = 30000;   // per-provider warm-up inference (doubles as EP validation)
+// A provider that runs but emits ~silence or NaN (e.g. Firefox WebGPU + ORT can produce
+// all-zeros / NaN where WASM works) must be REJECTED, not accepted — otherwise every real
+// speak plays a silent buffer with no error. Warm-up validates audible output above this
+// peak amplitude; below it (or any NaN) the EP fails and the next is tried.
+var SILENCE_EPS = 1e-4;
+
+// max(|sample|); returns NaN if any sample is NaN (so a NaN-producing EP is rejected).
+function peakOf(samples) {
+  var peak = 0;
+  for (var i = 0; i < samples.length; i++) {
+    var v = samples[i];
+    if (v !== v) return NaN;
+    var a = v < 0 ? -v : v;
+    if (a > peak) peak = a;
+  }
+  return peak;
+}
 function withTimeout(p, ms, label) {
   return new Promise(function (resolve, reject) {
     var settled = false;
@@ -147,7 +165,7 @@ async function init(cfg) {
 
   self.postMessage({
     type: 'ready', ep: activeEP, vocab: vocab,
-    voices: Object.keys(voices), modelUrl: model.url
+    voices: Object.keys(voices), modelUrl: model.url, warmupPeak: _warmupPeak
   });
 }
 
@@ -185,16 +203,22 @@ async function createSession(modelBytes) {
       activeEP = ep;
       inputStyle = session.inputNames.indexOf('input_ids') !== -1 ? 'input_ids' : 'tokens';
       // Warm-up = shader compile now (so the first real speak is fast) AND EP validation.
+      // Validation now includes AUDIBILITY: a provider that runs but returns silence/NaN
+      // (Firefox WebGPU is a known offender) is rejected so we fall through to WASM.
       self.postMessage({ type: 'phase', phase: 'warmup', ep: ep });
-      await withTimeout(runInference('ʃalˈom', CFG.defaultVoice, 1.0), WARMUP_TIMEOUT_MS, ep + ' warm-up');
-      return; // provider works
+      var warm = await withTimeout(runInference('ʃalˈom', CFG.defaultVoice, 1.0), WARMUP_TIMEOUT_MS, ep + ' warm-up');
+      _warmupPeak = warm.peak;
+      if (!(warm.peak >= SILENCE_EPS)) {
+        throw new Error(ep + ' produced silent/NaN audio (peak=' + warm.peak + ') — rejecting provider');
+      }
+      return; // provider works AND is audible
     } catch (e) {
       lastErr = e;
       session = null; activeEP = null; speedKind = null;
       try { if (sess && sess.release) await sess.release(); } catch (_) {}
     }
   }
-  throw lastErr || new Error('no execution provider could load the model');
+  throw lastErr || new Error('no execution provider produced audible audio');
 }
 
 function tokenize(phonemes) {
@@ -234,9 +258,10 @@ async function runInference(phonemes, voice, speed) {
   feeds[inputStyle] = new ort.Tensor('int64', padded, [1, padded.length]);
   feeds.style = new ort.Tensor('float32', new Float32Array(style.data), [1, style.dim]);
 
-  // Export flavors disagree on the speed dtype (kokoro-onnx feeds int32 to the newer
-  // export, float32 to the legacy one). Resolve adaptively once, then remember.
-  var kinds = speedKind ? [speedKind] : ['float32', 'int32'];
+  // Export flavors disagree on the speed dtype. The thewh1teagle kokoro.onnx export (what
+  // the Hebrew repo derives from) wants int32 — try it FIRST to avoid a wasteful throwing
+  // float32 attempt — but keep the adaptive fallback for the legacy float32 export.
+  var kinds = speedKind ? [speedKind] : ['int32', 'float32'];
   var out = null, lastErr = null;
   for (var k = 0; k < kinds.length && !out; k++) {
     try {
@@ -253,15 +278,20 @@ async function runInference(phonemes, voice, speed) {
   var samples = first.data instanceof Float32Array ? first.data : Float32Array.from(first.data);
   var copy = new Float32Array(samples.length);
   copy.set(samples);
-  return copy;
+  return { samples: copy, tokenCount: ids.length, peak: peakOf(copy) };
 }
 
 async function synth(msg) {
   if (!session) return fail('synth', new Error('session not initialized'), msg.id);
   try {
     var speed = typeof msg.speed === 'number' ? msg.speed : 1.0;
-    var copy = await runInference(msg.phonemes, msg.voice, speed);
-    self.postMessage({ type: 'result', id: msg.id, samples: copy, sampleRate: SAMPLE_RATE }, [copy.buffer]);
+    var r = await runInference(msg.phonemes, msg.voice, speed);
+    // Report diagnostics with every clip so the (unhearable-in-sandbox) pipeline is legible:
+    // token count, active provider, and output peak amplitude. peak≈0 => silent inference.
+    self.postMessage({
+      type: 'result', id: msg.id, samples: r.samples, sampleRate: SAMPLE_RATE,
+      stats: { tokenCount: r.tokenCount, peak: r.peak, ep: activeEP }
+    }, [r.samples.buffer]);
   } catch (e) { fail('synth', e, msg.id); }
 }
 

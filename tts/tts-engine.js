@@ -58,9 +58,14 @@
     VOCAB_CACHE: 'ivritSuite_ttsVocab'        // vocab snapshot for workerless cache-hits
   };
 
+  // A synth whose peak amplitude is below this is treated as a FAILURE, not played as a
+  // silent clip — so silence surfaces as an error instead of "nothing happened".
+  var SILENCE_EPS = 1e-4;
+
   var state = 'uninitialized';
   var worker = null;
   var activeEP = null;
+  var warmupPeak = null;   // diagnostics: peak of the accepted provider's warm-up
   var chosenModelUrl = null;
   var audioCtx = null;
   var currentSource = null;
@@ -196,6 +201,9 @@
   function playBlob(blob, el) {
     return blob.arrayBuffer().then(function (buf) {
       var ctx = ensureAudioCtx();
+      // Resume BEFORE starting — an AudioContext left 'suspended' (autoplay policy) plays
+      // nothing even with valid PCM. resume() is async; wait for it.
+      return Promise.resolve(ctx.state === 'suspended' ? ctx.resume() : null).then(function () {
       return new Promise(function (resolve, reject) {
         ctx.decodeAudioData(buf.slice(0), function (audio) {
           stopPlayback();
@@ -211,6 +219,7 @@
           };
           src.start();
         }, reject);
+      });
       });
     });
   }
@@ -282,11 +291,12 @@
           chosenModelUrl = msg.modelUrl;
           if (root.HebrewPhonemizer) HebrewPhonemizer.setVocab(msg.vocab);
           try { localStorage.setItem(TTS_CONFIG.VOCAB_CACHE, JSON.stringify(msg.vocab)); } catch (e) {}
-          setState('ready', { ep: msg.ep });
+          warmupPeak = (typeof msg.warmupPeak === 'number') ? msg.warmupPeak : null;
+          setState('ready', { ep: msg.ep, warmupPeak: warmupPeak });
           finishResolve();
         } else if (msg.type === 'result') {
           var p = pendingSynth[msg.id];
-          if (p) { delete pendingSynth[msg.id]; p.resolve({ samples: msg.samples, sampleRate: msg.sampleRate }); }
+          if (p) { delete pendingSynth[msg.id]; p.resolve({ samples: msg.samples, sampleRate: msg.sampleRate, stats: msg.stats }); }
         } else if (msg.type === 'error') {
           if (msg.id !== undefined && pendingSynth[msg.id]) {
             var pe = pendingSynth[msg.id]; delete pendingSynth[msg.id];
@@ -362,9 +372,16 @@
         return bootWorker().then(function () {
           touchIdle();
           return workerSynth(phonemes, voice, speed).then(function (res) {
+            var stats = res.stats || {};
+            emit('clip', { cached: false, text: text, stats: stats });
+            // Do NOT cache or play silence — surface it as a failure so it doesn't look
+            // like "nothing happened". (peak≈0 => model ran but emitted no audio.)
+            if (typeof stats.peak === 'number' && !(stats.peak >= SILENCE_EPS)) {
+              throw new Error('synthesized audio was silent (peak=' + stats.peak.toFixed(6) +
+                ', tokens=' + stats.tokenCount + ', ep=' + stats.ep + ')');
+            }
             var blob = encodeWav(res.samples, res.sampleRate);
             idbPut({ key: key, blob: blob, created: Date.now(), bytes: blob.size, text: text }).then(idbPrune);
-            emit('clip', { cached: false, text: text });
             return { blob: blob, cached: false };
           });
         });
@@ -448,7 +465,7 @@
       ]).then(function (r) {
         return {
           state: state, ep: activeEP, modelUrl: chosenModelUrl,
-          modelVersion: TTS_CONFIG.MODEL_VERSION,
+          modelVersion: TTS_CONFIG.MODEL_VERSION, warmupPeak: warmupPeak,
           cachedClips: r[0], cachedModelFiles: r[1],
           vocabLoaded: !!(root.HebrewPhonemizer && HebrewPhonemizer.getVocab())
         };

@@ -63,12 +63,19 @@ Model download is ~<span id="mbHint"></span> MB, non-commercial license — see 
   <div class="kv">
     <div><b>State:</b> <span id="stState">uninitialized</span></div>
     <div><b>Execution provider:</b> <span id="stEp">—</span></div>
+    <div><b>Warm-up peak (audible?):</b> <span id="stWarm">—</span></div>
+    <div><b>Last synth — tokens:</b> <span id="stTokens">—</span></div>
+    <div><b>Last synth — output peak:</b> <span id="stPeak">—</span></div>
     <div><b>Model URL in use:</b> <span id="stModel" class="mono">—</span></div>
     <div><b>Download progress:</b> <span id="stProg">—</span></div>
     <div><b>Last synth latency:</b> <span id="stLatency">—</span></div>
     <div><b>Last clip:</b> <span id="stCache">—</span></div>
     <div><b>Cached clips / model files:</b> <span id="stCounts">—</span></div>
   </div>
+  <p class="kv"><b>How to read this:</b> after Enable + Speak — <b>peak &gt; 0</b> &amp; you hear
+  sound = working; <b>output peak ≈ 0</b> = model ran but produced silence (inference/provider);
+  <b>tokens ≈ 0</b> or an error mentioning out-of-vocab = phoneme/vocab mismatch; peak &gt; 0 but
+  no sound = playback. Please report EP · tokens · output peak · any error.</p>
   <p>
     <button id="statusBtn">Refresh status</button>
     <button id="clearClips">Clear clip cache (IndexedDB)</button>
@@ -160,16 +167,28 @@ Model download is ~<span id="mbHint"></span> MB, non-commercial license — see 
   // ── 4: engine ────────────────────────────────────────────────────────────
   AdvTtsUI.init();
   function setTxt(id, v) { document.getElementById(id).textContent = v; }
-  HebrewTTS.on('state', function (d) { setTxt('stState', d.state + (d.detail && d.detail.reason ? ' — ' + d.detail.reason : '')); refreshStatus(); });
+  function fmtPeak(p) {
+    if (typeof p !== 'number') return '—';
+    return p.toFixed(6) + (p >= 1e-4 ? ' ✓ audible' : ' ✗ SILENT');
+  }
+  HebrewTTS.on('state', function (d) {
+    setTxt('stState', d.state + (d.detail && d.detail.reason ? ' — ' + d.detail.reason : ''));
+    if (d.detail && typeof d.detail.warmupPeak === 'number') setTxt('stWarm', fmtPeak(d.detail.warmupPeak));
+    refreshStatus();
+  });
   HebrewTTS.on('progress', function (p) {
     setTxt('stProg', Math.round(p.loaded / 1048576) + (p.total ? ' / ' + Math.round(p.total / 1048576) : '') + ' MB');
   });
-  HebrewTTS.on('clip', function (c) { setTxt('stCache', (c.cached ? 'cache HIT' : 'cache MISS (synthesized)') + ' — ' + c.text); });
+  HebrewTTS.on('clip', function (c) {
+    setTxt('stCache', (c.cached ? 'cache HIT' : 'cache MISS (synthesized)') + ' — ' + c.text);
+    if (c.stats) { setTxt('stTokens', String(c.stats.tokenCount)); setTxt('stPeak', fmtPeak(c.stats.peak)); }
+  });
   HebrewTTS.on('error', function (e) { setTxt('stState', 'error: ' + e.stage + ' — ' + e.message); });
 
   function refreshStatus() {
     HebrewTTS.getStatus().then(function (s) {
       setTxt('stEp', s.ep || '—');
+      setTxt('stWarm', fmtPeak(s.warmupPeak));
       setTxt('stModel', s.modelUrl || '—');
       setTxt('stCounts', s.cachedClips + ' clips / ' + s.cachedModelFiles + ' model files');
     });

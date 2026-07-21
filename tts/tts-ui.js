@@ -241,6 +241,11 @@
       root.HebrewTTS.on('state', function (d) {
         if (d.state === 'webspeech') toast(t('shared.tts.fallback_toast'));
       });
+      // Surface runtime speak/synth errors (e.g. a silent-output failure) so a silent
+      // Web-Speech fallback on a device with no Hebrew voice is never fully invisible.
+      root.HebrewTTS.on('error', function (d) {
+        toast(t('shared.tts.error_toast', { msg: (d && d.message) || '' }));
+      });
     },
 
     /* Page toggle changed. onCancel reverts the page's toggle if the user dismisses
