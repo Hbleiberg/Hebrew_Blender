@@ -3479,16 +3479,16 @@ function guidesPanelHTML(){
     return `
     <div class="guide-card" data-guide-id="${it.id}">
       <div class="guide-card-head">
-        <span class="guide-handle" draggable="true" onclick="toggleGuideCollapse('${it.id}')" title="Collapse / drag to reorder">${it.collapsed?'＋':'－'}</span>
+        <span class="guide-handle" draggable="true" onclick="toggleGuideCollapse('${it.id}')" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_collapse_title') : 'Collapse / drag to reorder')}">${it.collapsed?'＋':'－'}</span>
         <span class="guide-orient" title="${it.axis==='v'?'Vertical':'Horizontal'} guide">${it.axis==='v'?'│':'─'}</span>
-        <input type="color" value="${col}" oninput="setGuideColor('${it.id}',this.value)" title="Guide color" class="guide-color">
-        <input class="guide-name" type="text" value="${nm.replace(/"/g,'&quot;')}" onchange="setGuideName('${it.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()" title="Guide name" spellcheck="false">
+        <input type="color" value="${col}" oninput="setGuideColor('${it.id}',this.value)" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_color_title') : 'Guide color')}" class="guide-color">
+        <input class="guide-name" type="text" value="${nm.replace(/"/g,'&quot;')}" onchange="setGuideName('${it.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_name_title') : 'Guide name')}" spellcheck="false">
         <button class="guide-rename" onclick="this.closest('.guide-card-head').querySelector('.guide-name').focus()" title="Rename">Rename</button>
-        <button class="guide-del" onclick="deleteGuide('${it.id}')" title="Delete this guide">✕</button>
+        <button class="guide-del" onclick="deleteGuide('${it.id}')" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_delete_title') : 'Delete this guide')}">✕</button>
       </div>
       <div class="guide-card-body"${it.collapsed?' style="display:none;"':''}>
         <div class="guide-style-dd" data-guide-id="${it.id}">
-          <button class="guide-style-trig" onclick="toggleGuideStyleMenu('${it.id}')" title="Line style">${guideStylePreviewSVG(st, col, it.weight)}<span class="guide-style-caret">▾</span></button>
+          <button class="guide-style-trig" onclick="toggleGuideStyleMenu('${it.id}')" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_style_title') : 'Line style')}">${guideStylePreviewSVG(st, col, it.weight)}<span class="guide-style-caret">▾</span></button>
           <div class="guide-style-menu">${menu}</div>
         </div>
         <span class="guide-lbl">Size</span>
@@ -4020,7 +4020,7 @@ function renderCustomGlyphsGrid() {
     grid.innerHTML = `<div class="hint" style="grid-column:1/-1;direction:ltr;text-align:left;">No custom glyphs yet — add one below</div>`;
     return;
   }
-  const delBtn = (cp, type) => `<button title="Delete glyph" onclick="event.stopPropagation();deleteCustomGlyph('${cp}','${type}')" style="position:absolute;top:1px;right:1px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:0.78rem;line-height:1;padding:2px;">✕</button>`;
+  const delBtn = (cp, type) => `<button title="${esc(window.I18n ? I18n.t('fontmaker.panels.custom_del_title') : 'Delete glyph')}" onclick="event.stopPropagation();deleteCustomGlyph('${cp}','${type}')" style="position:absolute;top:1px;right:1px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:0.78rem;line-height:1;padding:2px;">✕</button>`;
   const cvtBtn = cp => `<button title="Convert to a main glyph (gives it its own adjustable width)" onclick="event.stopPropagation();convertMarkToMain('${cp}')" style="position:absolute;top:1px;left:1px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:0.72rem;line-height:1;padding:2px;">↔</button>`;
   bases.forEach(l => {
     const st = l.anchors ? 'anchored' : (l.contours ? 'traced' : (l.source && l.source.dataUrl ? 'img' : ''));
@@ -5079,7 +5079,7 @@ function combinedNavHTML() {
   const counter = `<div class="combined-counter"><div class="cn-name" title="${name}">${name}</div><div class="cn-count">${i + 1} of ${n}</div></div>`;
   const prev = n > 1 ? `<button class="ctl-btn" ${i <= 0 ? 'disabled' : ''} onclick="combinedNav(-1)">‹ Previous</button>` : '';
   const next = n > 1 ? `<button class="ctl-btn" ${i >= n - 1 ? 'disabled' : ''} onclick="combinedNav(1)">Next ›</button>` : '';
-  const rm = `<button class="ctl-btn ghost cn-remove" title="Remove this sheet from the set" onclick="removeCombinedSheet()">✕</button>`;
+  const rm = `<button class="ctl-btn ghost cn-remove" title="${esc(window.I18n ? I18n.t('fontmaker.panels.combined_remove_title') : 'Remove this sheet from the set')}" onclick="removeCombinedSheet()">✕</button>`;
   // Auto-detect lives here, right under the sheet it operates on (raster sheets only). Moved out of
   // the left upload panel so it sits where you're already looking when boxing letters.
   const auto = !svgUploadOn()
@@ -9130,7 +9130,7 @@ function meRenderList() {
       +   `<label class="me-coord">Y:<input type="number" step="1" value="${c.y}" onchange="meSetPieceY(${i}, this.value)"></label>`
       +   size
       + `</span>`
-      + `<button class="me-del" title="Delete this piece" onclick="event.stopPropagation();meDeletePiece(${i})">✕</button></div>`;
+      + `<button class="me-del" title="${esc(window.I18n ? I18n.t('fontmaker.me.delete_piece_title') : 'Delete this piece')}" onclick="event.stopPropagation();meDeletePiece(${i})">✕</button></div>`;
   }).join('') || `<div class="hint">No pieces yet — add a dot or bar above.</div>`;
 }
 function meRenderControls() {
@@ -9809,7 +9809,7 @@ function renderKerningSection() {
     const badge = reason
       ? `<span style="font-size:0.62rem;padding:1px 5px;border-radius:4px;white-space:nowrap;background:${reason==='untraced glyph'?'rgba(190,90,90,0.18)':'rgba(150,150,150,0.18)'};color:${reason==='untraced glyph'?'#c0392b':'var(--muted)'};" title="${reason==='untraced glyph'?'A glyph in this pair has no traced outline — it will be skipped on export.':'Pairs at 0 do nothing — drag the gap to apply.'}">${reason==='untraced glyph'?'⚠ untraced':'set a gap'}</span>`
       : '';
-    rows += `<div class="readline" style="cursor:pointer;gap:8px;align-items:center;${active?'background:rgba(201,146,42,0.14);border-radius:5px;':''}" onclick="loadKernPair(${i})" title="Click to edit">
+    rows += `<div class="readline" style="cursor:pointer;gap:8px;align-items:center;${active?'background:rgba(201,146,42,0.14);border-radius:5px;':''}" onclick="loadKernPair(${i})" title="${esc(window.I18n ? I18n.t('fontmaker.panels.kern_click_edit') : 'Click to edit')}">
       <span style="font-family:var(--heb-font);font-size:1.05rem;">${esc(kernSideLabel(k.left||[]))}<span style="color:var(--muted);font-size:0.7rem;font-family:inherit;"> · </span>${esc(kernSideLabel(k.right||[]))}</span>
       <span style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
         ${badge}
