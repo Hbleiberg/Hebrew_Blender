@@ -11,6 +11,17 @@ runtime from the URLs in the config block at the top of `tts/tts-engine.js`.
 > site fetches the original files from Hugging Face at runtime and this workflow is only
 > useful for local testing / preparing for a future authorized hosting setup.
 
+> **Why this is the durable fix for the "hang after download" problem.** Upstream ships
+> the Hebrew model **fp32-only (~310 MB)**. That size is the root cause of slow/failed
+> in-browser session creation (documented onnxruntime-web WASM out-of-memory on mobile
+> Safari; every reference browser Kokoro deployment uses the ~88 MB q8/int8 build on WASM
+> and reserves fp32 for WebGPU). The runtime was hardened so a 310 MB model now degrades
+> gracefully (timeouts, WebGPU→WASM fallback, Web Speech fallback) instead of hanging — but
+> the real cure is to **quantize the Hebrew `kokoro.onnx` to int8 (~88 MB) and host it**,
+> then set `MODEL_INT8_URL` in `tts/tts-engine.js` to that URL and bump `MODEL_VERSION`.
+> `tts/tts-worker.js` already prefers a reachable int8 model automatically, so this is a
+> one-URL swap once the license gate above is cleared.
+
 ## What the site fetches at runtime (default configuration)
 
 From `https://huggingface.co/thewh1teagle/kokoro-hebrew-nc/resolve/main/`:

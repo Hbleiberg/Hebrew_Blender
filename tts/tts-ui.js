@@ -27,6 +27,9 @@
     'shared.tts.preparing': 'Preparing voice…',
     'shared.tts.ready_toast': 'Hebrew voice ready',
     'shared.tts.error_toast': 'Advanced TTS failed: {msg}',
+    'shared.tts.error_retry': "Couldn't start the Hebrew voice ({msg}). Tap Retry to try again.",
+    'shared.tts.retry_btn': 'Retry',
+    'shared.tts.optimizing': 'Optimizing voice…',
     'shared.tts.fallback_toast': "Using the browser's Hebrew voice instead (lower quality).",
     'shared.tts.credits_link': 'Voice credits',
     'shared.tts.credits_title': 'Voice & Audio Credits',
@@ -77,6 +80,7 @@
     '#advTtsBar{height:8px;border-radius:4px;background:var(--warm-gray,#e8e0d0);overflow:hidden;}',
     '#advTtsBarFill{height:100%;width:0%;background:var(--gold,#c9922a);transition:width 0.2s;}',
     '#advTtsBarLabel{font-size:0.72rem;color:var(--muted,#6b6050);margin-top:5px;}',
+    '#advTtsBarLabel.adv-tts-err{color:#c0392b;font-weight:600;}',
     '#advTtsCreditsOverlay{position:fixed;inset:0;background:rgba(13,18,32,0.55);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px;}',
     '#advTtsCreditsOverlay.open{display:flex;}',
     '#advTtsCreditsModal{background:var(--white,#fff);color:var(--text,#1a2744);border:1px solid var(--border,#c8bfa8);border-radius:10px;max-width:420px;width:100%;padding:18px;font-size:0.85rem;line-height:1.6;}',
@@ -141,19 +145,35 @@
     document.body.appendChild(cardEl);
 
     cancel.addEventListener('click', function () { removeCard(); if (onCancel) onCancel(); });
-    dl.addEventListener('click', function () {
+
+    // Download/enable, with an inline error + Retry state on failure so the card never
+    // spins forever (the field bug) and a transient failure is recoverable in place.
+    function startDownload() {
       dl.disabled = true; cancel.disabled = true;
+      label.classList.remove('adv-tts-err');
       barWrap.style.display = 'block';
+      var fillEl = document.getElementById('advTtsBarFill'); if (fillEl) fillEl.style.width = '0%';
       label.textContent = t('shared.tts.preparing');
       root.HebrewTTS.enable().then(function () {
         removeCard();
         toast(t('shared.tts.ready_toast'));
       }).catch(function (err) {
-        removeCard();
-        if (root.HebrewTTS.getState() === 'webspeech') toast(t('shared.tts.fallback_toast'));
-        else toast(t('shared.tts.error_toast', { msg: err.message }));
+        if (root.HebrewTTS.getState() === 'webspeech') {
+          // Engine already fell back to the browser voice — inform and dismiss.
+          removeCard();
+          toast(t('shared.tts.fallback_toast'));
+        } else {
+          // No fallback available — surface the error and offer Retry in place.
+          var f = document.getElementById('advTtsBarFill'); if (f) f.style.width = '0%';
+          label.textContent = t('shared.tts.error_retry', { msg: err.message });
+          label.classList.add('adv-tts-err');
+          dl.disabled = false; cancel.disabled = false;
+          dl.textContent = t('shared.tts.retry_btn');
+          dl.focus();
+        }
       });
-    });
+    }
+    dl.addEventListener('click', startDownload);
     dl.focus();
   }
   function removeCard() { if (cardEl) { cardEl.remove(); cardEl = null; } }
@@ -208,6 +228,14 @@
     init: function () {
       injectCss();
       root.HebrewTTS.on('progress', onProgress);
+      root.HebrewTTS.on('phase', function () {
+        // Download done, session-create/warm-up under way — keep the card informative
+        // (and its bar full) instead of looking stalled during the compile step.
+        var label = document.getElementById('advTtsBarLabel');
+        var fill = document.getElementById('advTtsBarFill');
+        if (fill) fill.style.width = '100%';
+        if (label && !label.classList.contains('adv-tts-err')) label.textContent = t('shared.tts.optimizing');
+      });
       root.HebrewTTS.on('speakstart', function (d) { if (d.el) d.el.classList.add('tts-speaking'); });
       root.HebrewTTS.on('speakend', function (d) { if (d.el) d.el.classList.remove('tts-speaking'); });
       root.HebrewTTS.on('state', function (d) {

@@ -3923,3 +3923,6 @@ shared.tts.credits_more,Full license details (CREDITS.md),פרטי הרישיו�
 shared.tts.close,Close,סגירה,Voice-credits modal close button,shared
 shared.tts.speak_aria,Read aloud,הקראה,aria-label on per-item speaker buttons,aria-label; shared
 shared.tts.read_row_aria,Read this row aloud,הקראת השורה,aria-label on the worksheet read-row button,aria-label; shared
+shared.tts.error_retry,Couldn't start the Hebrew voice ({msg}). Tap Retry to try again.,לא הצלחנו להפעיל את הקול העברי ({msg}). הקישו על נסו שוב.,Advanced-TTS enable-failure inline message with Retry,{msg} technical; shared
+shared.tts.retry_btn,Retry,נסו שוב,Advanced-TTS download-card retry button,shared
+shared.tts.optimizing,Optimizing voice…,מייעל את הקול…,Advanced-TTS status while the ONNX session is created/warmed up,shared

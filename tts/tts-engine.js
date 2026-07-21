@@ -47,6 +47,11 @@
     DB_NAME: 'ivritsuite-tts', DB_VERSION: 1, STORE: 'tts-audio',
     DEFAULT_VOICE: 'he_shaul',
     MODEL_SIZE_HINT_MB: 310,
+    // Watchdog for a *silent* worker during init (no progress/phase/ready message). Must
+    // exceed the worker's per-provider create timeout (45 s) + margin so a legitimately slow
+    // session-create doesn't trip it; a genuinely wedged init does. Downloads re-arm it via
+    // progress ticks, so first-time large downloads are never cut off.
+    INIT_WATCHDOG_MS: 75000,
     IDLE_TEARDOWN_MS: 5 * 60 * 1000,
     MAX_CLIPS: 4000,                      // soft IndexedDB cap; oldest pruned beyond this
     ENABLED_FLAG: 'ivritSuite_ttsEnabled',    // per-device (model lives on this device)
@@ -231,16 +236,46 @@
     if (initPromise) return initPromise;
     setState('initializing');
     initPromise = new Promise(function (resolve, reject) {
+      var settled = false;
+      var watchdog = null;
       var w;
+      // Watchdog: reject only if the worker goes *silent* — no progress, no phase change,
+      // no ready — for WATCHDOG_MS. Every worker message re-arms it, so a legitimately slow
+      // download (progress ticks) or a bounded session-create (phase messages) never trips
+      // it; a truly wedged init does. This is what turns the field hang into a recoverable
+      // error instead of a permanent, silent wedge.
+      function arm() {
+        if (watchdog) clearTimeout(watchdog);
+        watchdog = setTimeout(function () {
+          finishReject(new Error('init-timeout: the voice engine stopped responding'));
+        }, TTS_CONFIG.INIT_WATCHDOG_MS);
+      }
+      function finishResolve() {
+        if (settled) return; settled = true;
+        if (watchdog) clearTimeout(watchdog);
+        resolve();
+      }
+      function finishReject(err) {
+        if (settled) return; settled = true;
+        if (watchdog) clearTimeout(watchdog);
+        initPromise = null;                 // never cache a dead promise — allow a fresh retry
+        try { w && w.terminate(); } catch (e) {}
+        reject(err);
+      }
       try { w = new Worker(TTS_CONFIG.WORKER_URL); }
       catch (e) { initPromise = null; return reject(e); }
+      arm();
       w.onerror = function (e) {
-        if (state === 'initializing') { initPromise = null; reject(new Error('worker error: ' + (e.message || 'load failed'))); }
+        finishReject(new Error('worker error: ' + (e.message || 'load failed')));
       };
       w.onmessage = function (ev) {
         var msg = ev.data || {};
         if (msg.type === 'progress') {
+          arm();
           emit('progress', { loaded: msg.loaded, total: msg.total });
+        } else if (msg.type === 'phase') {
+          arm();
+          emit('phase', { phase: msg.phase, ep: msg.ep });
         } else if (msg.type === 'ready') {
           worker = w;
           activeEP = msg.ep;
@@ -248,7 +283,7 @@
           if (root.HebrewPhonemizer) HebrewPhonemizer.setVocab(msg.vocab);
           try { localStorage.setItem(TTS_CONFIG.VOCAB_CACHE, JSON.stringify(msg.vocab)); } catch (e) {}
           setState('ready', { ep: msg.ep });
-          resolve();
+          finishResolve();
         } else if (msg.type === 'result') {
           var p = pendingSynth[msg.id];
           if (p) { delete pendingSynth[msg.id]; p.resolve({ samples: msg.samples, sampleRate: msg.sampleRate }); }
@@ -256,10 +291,8 @@
           if (msg.id !== undefined && pendingSynth[msg.id]) {
             var pe = pendingSynth[msg.id]; delete pendingSynth[msg.id];
             pe.reject(new Error(msg.stage + ': ' + msg.message));
-          } else if (state === 'initializing') {
-            initPromise = null;
-            try { w.terminate(); } catch (e) {}
-            reject(new Error(msg.stage + ': ' + msg.message));
+          } else if (!settled) {
+            finishReject(new Error(msg.stage + ': ' + msg.message));
           } else {
             emit('error', { stage: msg.stage, message: msg.message });
           }

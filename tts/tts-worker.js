@@ -30,6 +30,25 @@ function fail(stage, err, id) {
   self.postMessage({ type: 'error', stage: stage, message: msg, id: id });
 }
 
+// onnxruntime-web's create()/run() have NO built-in timeout: a hung WebGPU shader
+// compile or a stalled WASM OOM otherwise blocks init forever (the field bug this
+// worker was hardened against). Bound every long ORT call so a hang becomes a
+// recoverable error and the EP loop can fall through to the next provider.
+var CREATE_TIMEOUT_MS = 45000;   // per execution-provider session create
+var WARMUP_TIMEOUT_MS = 30000;   // per-provider warm-up inference (doubles as EP validation)
+function withTimeout(p, ms, label) {
+  return new Promise(function (resolve, reject) {
+    var settled = false;
+    var timer = setTimeout(function () {
+      if (!settled) { settled = true; reject(new Error((label || 'operation') + ' timed out after ' + ms + 'ms')); }
+    }, ms);
+    Promise.resolve(p).then(
+      function (v) { if (!settled) { settled = true; clearTimeout(timer); resolve(v); } },
+      function (e) { if (!settled) { settled = true; clearTimeout(timer); reject(e); } }
+    );
+  });
+}
+
 /* Cache-first fetch. Cache keys are synthetic versioned URLs so a MODEL_VERSION bump
  * invalidates cleanly regardless of the source host; the network URL is only used on miss. */
 function cacheKey(name) { return 'https://tts-cache.invalid/' + CFG.modelVersion + '/' + name; }
@@ -79,9 +98,10 @@ async function isCached(name) {
 async function chooseModel() {
   if (CFG.modelInt8Url && await isCached('model-int8')) return { name: 'model-int8', url: CFG.modelInt8Url };
   if (await isCached('model')) return { name: 'model', url: CFG.modelUrl };
-  if (CFG.modelInt8Url) {
+  if (CFG.modelInt8Url && CFG.modelInt8Url !== CFG.modelUrl) {
     try {
-      var head = await fetch(CFG.modelInt8Url, { method: 'HEAD' });
+      // Bounded — a slow/hanging HEAD must never stall the whole init.
+      var head = await withTimeout(fetch(CFG.modelInt8Url, { method: 'HEAD' }), 8000, 'int8 probe');
       if (head.ok) return { name: 'model-int8', url: CFG.modelInt8Url };
     } catch (e) { /* fall through to fp32 */ }
   }
@@ -120,22 +140,61 @@ async function init(cfg) {
   } catch (e) { return fail('fetch-model', e); }
 
   try {
-    var eps = CFG.executionProviders || ['webgpu', 'wasm'];
-    var lastErr = null;
-    for (var i = 0; i < eps.length && !session; i++) {
-      try {
-        session = await ort.InferenceSession.create(modelBuf, { executionProviders: [eps[i]] });
-        activeEP = eps[i];
-      } catch (e) { lastErr = e; }
-    }
-    if (!session) throw lastErr || new Error('no execution provider available');
-    inputStyle = session.inputNames.indexOf('input_ids') !== -1 ? 'input_ids' : 'tokens';
+    var modelBytes = new Uint8Array(modelBuf);
+    modelBuf = null; // release the source ArrayBuffer; createSession copies as needed
+    await createSession(modelBytes);
   } catch (e) { return fail('create-session', e); }
 
   self.postMessage({
     type: 'ready', ep: activeEP, vocab: vocab,
     voices: Object.keys(voices), modelUrl: model.url
   });
+}
+
+/* Try execution providers in order, each fully bounded. A provider must both create()
+ * AND pass a warm-up inference to count — an EP that creates but can't run (or hangs on
+ * the first shader compile) is rejected and the next is tried. WebGPU is attempted only
+ * when the worker actually exposes it (navigator.gpu); the documented ORT EP-array
+ * fallback is unreliable on init error (#20729), so selection is explicit here. Each
+ * attempt gets FRESH model bytes — ORT can transfer/detach the input buffer to its proxy
+ * worker, which would poison the next provider's create() (#19157 / #10774). */
+async function createSession(modelBytes) {
+  var want = CFG.executionProviders || ['webgpu', 'wasm'];
+  var eps = [];
+  var hasGpu = (typeof navigator !== 'undefined') && !!navigator.gpu;
+  if (want.indexOf('webgpu') !== -1 && hasGpu) eps.push('webgpu');
+  if (want.indexOf('wasm') !== -1) eps.push('wasm');
+  if (!eps.length) eps = ['wasm'];
+
+  var lastErr = null;
+  for (var i = 0; i < eps.length; i++) {
+    var ep = eps[i];
+    var isLast = i === eps.length - 1;
+    // Non-final attempts get a copy so the original survives for the next provider;
+    // the final attempt uses the original directly (no extra 310 MB peak on the common
+    // single-provider path — matters on memory-tight mobile).
+    var input = modelBytes;
+    if (!isLast) { input = new Uint8Array(modelBytes.length); input.set(modelBytes); }
+    var sess = null;
+    try {
+      self.postMessage({ type: 'phase', phase: 'create', ep: ep });
+      sess = await withTimeout(
+        ort.InferenceSession.create(input, { executionProviders: [ep] }),
+        CREATE_TIMEOUT_MS, ep + ' session create');
+      session = sess;
+      activeEP = ep;
+      inputStyle = session.inputNames.indexOf('input_ids') !== -1 ? 'input_ids' : 'tokens';
+      // Warm-up = shader compile now (so the first real speak is fast) AND EP validation.
+      self.postMessage({ type: 'phase', phase: 'warmup', ep: ep });
+      await withTimeout(runInference('ʃalˈom', CFG.defaultVoice, 1.0), WARMUP_TIMEOUT_MS, ep + ' warm-up');
+      return; // provider works
+    } catch (e) {
+      lastErr = e;
+      session = null; activeEP = null; speedKind = null;
+      try { if (sess && sess.release) await sess.release(); } catch (_) {}
+    }
+  }
+  throw lastErr || new Error('no execution provider could load the model');
 }
 
 function tokenize(phonemes) {
@@ -158,43 +217,50 @@ function styleFor(voiceName, tokenCount) {
   return { data: v.data.subarray(row * dim, (row + 1) * dim), dim: dim };
 }
 
+/* Shared inference core (used by both real synth and the warm-up/EP-validation run).
+ * Returns a freshly-copied Float32Array of samples so the caller can transfer it without
+ * detaching ORT-owned memory. */
+async function runInference(phonemes, voice, speed) {
+  var ids = tokenize(phonemes);
+  if (!ids.length) throw new Error('no tokens produced from "' + phonemes + '"');
+  if (ids.length > MAX_PHONEME_LENGTH) {
+    throw new Error('too many tokens (' + ids.length + ' > ' + MAX_PHONEME_LENGTH + ') — split the text');
+  }
+  var padded = new BigInt64Array(ids.length + 2);
+  for (var i = 0; i < ids.length; i++) padded[i + 1] = BigInt(ids[i]);
+  var style = styleFor(voice || CFG.defaultVoice, ids.length);
+
+  var feeds = {};
+  feeds[inputStyle] = new ort.Tensor('int64', padded, [1, padded.length]);
+  feeds.style = new ort.Tensor('float32', new Float32Array(style.data), [1, style.dim]);
+
+  // Export flavors disagree on the speed dtype (kokoro-onnx feeds int32 to the newer
+  // export, float32 to the legacy one). Resolve adaptively once, then remember.
+  var kinds = speedKind ? [speedKind] : ['float32', 'int32'];
+  var out = null, lastErr = null;
+  for (var k = 0; k < kinds.length && !out; k++) {
+    try {
+      feeds.speed = kinds[k] === 'float32'
+        ? new ort.Tensor('float32', new Float32Array([speed]), [1])
+        : new ort.Tensor('int32', new Int32Array([Math.max(1, Math.round(speed))]), [1]);
+      out = await session.run(feeds);
+      speedKind = kinds[k];
+    } catch (e) { lastErr = e; }
+  }
+  if (!out) throw lastErr || new Error('inference failed');
+
+  var first = out[session.outputNames[0]];
+  var samples = first.data instanceof Float32Array ? first.data : Float32Array.from(first.data);
+  var copy = new Float32Array(samples.length);
+  copy.set(samples);
+  return copy;
+}
+
 async function synth(msg) {
   if (!session) return fail('synth', new Error('session not initialized'), msg.id);
   try {
-    var ids = tokenize(msg.phonemes);
-    if (!ids.length) throw new Error('no tokens produced from "' + msg.phonemes + '"');
-    if (ids.length > MAX_PHONEME_LENGTH) {
-      throw new Error('too many tokens (' + ids.length + ' > ' + MAX_PHONEME_LENGTH + ') — split the text');
-    }
-    var padded = new BigInt64Array(ids.length + 2);
-    for (var i = 0; i < ids.length; i++) padded[i + 1] = BigInt(ids[i]);
-    var style = styleFor(msg.voice || CFG.defaultVoice, ids.length);
     var speed = typeof msg.speed === 'number' ? msg.speed : 1.0;
-
-    var feeds = {};
-    feeds[inputStyle] = new ort.Tensor('int64', padded, [1, padded.length]);
-    feeds.style = new ort.Tensor('float32', new Float32Array(style.data), [1, style.dim]);
-
-    // Export flavors disagree on the speed dtype (kokoro-onnx feeds int32 to the newer
-    // export, float32 to the legacy one). Resolve adaptively once, then remember.
-    var kinds = speedKind ? [speedKind] : ['float32', 'int32'];
-    var out = null, lastErr = null;
-    for (var k = 0; k < kinds.length && !out; k++) {
-      try {
-        feeds.speed = kinds[k] === 'float32'
-          ? new ort.Tensor('float32', new Float32Array([speed]), [1])
-          : new ort.Tensor('int32', new Int32Array([Math.max(1, Math.round(speed))]), [1]);
-        out = await session.run(feeds);
-        speedKind = kinds[k];
-      } catch (e) { lastErr = e; }
-    }
-    if (!out) throw lastErr || new Error('inference failed');
-
-    var first = out[session.outputNames[0]];
-    var samples = first.data instanceof Float32Array ? first.data : Float32Array.from(first.data);
-    // Copy so the transfer never detaches ORT-owned memory.
-    var copy = new Float32Array(samples.length);
-    copy.set(samples);
+    var copy = await runInference(msg.phonemes, msg.voice, speed);
     self.postMessage({ type: 'result', id: msg.id, samples: copy, sampleRate: SAMPLE_RATE }, [copy.buffer]);
   } catch (e) { fail('synth', e, msg.id); }
 }
