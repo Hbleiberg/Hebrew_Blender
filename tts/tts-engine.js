@@ -335,7 +335,17 @@
     }
   }
 
+  // SERIALIZE every synth: onnxruntime-web sessions are NOT safe to run() concurrently,
+  // and the Generator's background prefetch can overlap a user tap — concurrent runs on one
+  // session corrupt/silence output (why it works on the test page, which never overlaps, but
+  // only sometimes on the tools). This chain guarantees exactly one worker synth in flight.
+  var _synthChain = Promise.resolve();
   function workerSynth(phonemes, voice, speed) {
+    var run = _synthChain.then(function () { return _workerSynthRaw(phonemes, voice, speed); });
+    _synthChain = run.then(function () {}, function () {}); // keep the chain alive past failures
+    return run;
+  }
+  function _workerSynthRaw(phonemes, voice, speed) {
     var id = ++synthSeq;
     return new Promise(function (resolve, reject) {
       pendingSynth[id] = { resolve: resolve, reject: reject };
@@ -417,7 +427,12 @@
       var speed = typeof opts.speed === 'number' ? opts.speed : 1.0;
       if (state === 'webspeech') return webSpeechSpeak(text, opts);
       if (state === 'unavailable') return Promise.reject(new Error('advanced TTS unavailable on this device'));
-      return synthToCache(text, voice, speed).then(function (res) {
+      prefetchToken++; // pause background prefetch so this tap isn't queued behind it
+      // Wrap in Promise.resolve().then so a SYNCHRONOUS phonemize throw (out-of-vocab word)
+      // becomes a rejection the .catch handles — otherwise it escaped as a silent failure.
+      return Promise.resolve().then(function () {
+        return synthToCache(text, voice, speed);
+      }).then(function (res) {
         touchIdle();
         return playBlob(res.blob, opts.el);
       }).catch(function (err) {
