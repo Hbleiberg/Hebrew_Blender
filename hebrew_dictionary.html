@@ -2406,6 +2406,30 @@ function printDictionary() {
   if (!filtered || !filtered.length) { announce(I18n.t('dictionary.toolbar.print_empty')); return; }
   window.print();
 }
+// Print completeness (S127 Pass G): results are lazy-paginated (PAGE=100), but window.print()
+// snapshots the live DOM — so a filtered set >100 printed silently truncated to the loaded page,
+// with no on-paper cue (the "Show more" button, result count, and sidebar count are all
+// print-hidden). Materialize every filtered row before the browser paginates for paper, then
+// restore the lazy view afterward. Covers BOTH the 🖨️ button and Ctrl+P. Shoresh renders all
+// roots (no pagination), so it is skipped.
+let _printExpandedFrom = null;
+window.addEventListener('beforeprint', () => {
+  if (typeof shoreshMode !== 'undefined' && shoreshMode) return;
+  const total = emojiMode ? emojiFiltered.length : filtered.length;
+  if (shown >= total) return;
+  _printExpandedFrom = shown;
+  let guard = 0;
+  while (shown < total && guard++ < 20000) { const before = shown; loadMore(); if (shown === before) break; }
+});
+window.addEventListener('afterprint', () => {
+  if (_printExpandedFrom == null) return;
+  const grid = document.getElementById('resultsGrid');
+  while (grid.children.length > _printExpandedFrom) grid.removeChild(grid.lastChild);
+  shown = _printExpandedFrom;
+  const total = emojiMode ? emojiFiltered.length : filtered.length;
+  document.getElementById('loadMoreWrap').style.display = shown < total ? 'block' : 'none';
+  _printExpandedFrom = null;
+});
 function copyWord(btn, text) {
   const finish = () => { btn.innerHTML = CHECK_ICON; btn.classList.add('copied'); announce(I18n.t('dictionary.copy.copied_toast')); setTimeout(() => { btn.innerHTML = COPY_ICON; btn.classList.remove('copied'); }, 1500); };
   if (navigator.clipboard) { navigator.clipboard.writeText(text).then(finish).catch(finish); }
