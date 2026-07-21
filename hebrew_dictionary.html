@@ -695,10 +695,18 @@ footer a{color:var(--gold-text);text-decoration:none;}
     background:#fff !important; color:#1a2744 !important;
   }
   header, footer, .sidebar, #mobileBar, .toolbar, .filter-chips, .load-more-btn,
-  #fsBtn, .sidebar-toggle-btn, .sidebar-show-btn, #tipFloat,
-  .wm-overlay, .tour-spot, .tour-card { display:none !important; }
+  #fsBtn, .sidebar-toggle-btn, .sidebar-show-btn, #tipFloat, #shoreshControls,
+  .wc-copy, .wc-search, .wc-speak, .wm-overlay, .tour-spot, .tour-card { display:none !important; }
   .app, .main, .content { overflow:visible !important; }
   .word-card, .emoji-card { break-inside:avoid; }
+  /* Background-graphics-off (the print-dialog default) drops every fill, so elements whose only
+     legibility channel was a background need a text+border channel to survive on paper — and
+     dark-theme label colors must revert to the legible light-theme values (S127 Pass G). */
+  .b-len, .ec-tag.cat { background:transparent !important; color:var(--gold-text) !important; border:1px solid var(--gold); }
+  .shoresh-patterns-title { background:transparent !important; color:var(--navy) !important; border-bottom:1px solid var(--border); }
+  .shoresh-patterns-title::after { color:var(--navy); }
+  .ec-gender.masc { color:#3a78c0 !important; }
+  .ec-gender.fem  { color:#c9468f !important; }
 }
 </style>
 </head>
