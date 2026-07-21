@@ -2,6 +2,13 @@
 
 This project uses the following third-party libraries, data sources, and fonts. Their licenses are reproduced (or referenced) below in compliance with their terms.
 
+> **Hebrew TTS voice (Advanced TTS):** the Kokoro Hebrew voice pipeline — Kokoro-82M (Apache 2.0),
+> the non-commercial Hebrew fine-tune trained on the SASPEECH corpus (the voice of Shaul
+> Amsterdamski), the kokoro-onnx interface logic (MIT), the Phonikud phoneme inventory (CC BY 4.0),
+> and the onnxruntime-web / fflate runtime libraries (MIT) — is documented in full, with verbatim
+> terms, in [`CREDITS.md`](CREDITS.md). Model weights are fetched at runtime from Hugging Face and
+> never redistributed by this repository.
+
 ---
 
 ## hebrew-transliteration

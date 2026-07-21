@@ -7,7 +7,7 @@
      value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
      origins. Note: meta CSP can't express frame-ancestors or report-uri and does not cover content parsed
      before this tag. Update this when adding any external script/font/fetch/iframe (see CLAUDE.md). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net https://huggingface.co https://cdn-lfs.huggingface.co https://cas-bridge.xethub.hf.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
@@ -472,7 +472,7 @@ body.bulk-mode .word-card,body.bulk-mode .emoji-card{cursor:pointer;}
 .wc-copy{inset-inline-start:7px;}
 .wc-search{inset-inline-start:30px;}
 .wc-speak{inset-inline-start:53px;font-size:0.75rem;display:none;line-height:1;}
-body.dict-audio-on .wc-speak{display:flex;}
+body.dict-audio-on .wc-speak,body.adv-tts-on .wc-speak{display:flex;}
 .wc-copy:hover,.wc-copy.copied,.wc-search:hover,.wc-speak:hover{border-color:var(--gold);color:var(--gold);opacity:1;}
 .wc-heb{font-family:var(--heb-font);font-size:var(--heb-font-size);direction:rtl;text-align:right;line-height:1.2;}
 .wc-translit{font-size:0.76rem;color:var(--muted);font-style:italic;text-align:right;}
@@ -523,7 +523,7 @@ body.dark .ec-gender.fem{color:#ec88bb;}
 .ec-translit{font-size:0.76rem;color:var(--muted);font-style:italic;}
 .ec-speak{display:none;background:none;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:0.78rem;cursor:pointer;color:var(--muted);line-height:1;opacity:0.75;transition:opacity 0.15s,border-color 0.15s,color 0.15s;}
 .ec-speak:hover{border-color:var(--gold);color:var(--gold);opacity:1;}
-body.dict-audio-on .ec-speak{display:inline-flex;}
+body.dict-audio-on .ec-speak,body.adv-tts-on .ec-speak{display:inline-flex;}
 .ec-tags{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
 .ec-tag{font-size:0.62rem;padding:2px 6px;border-radius:3px;background:var(--warm-gray);color:var(--muted);font-weight:600;letter-spacing:0.03em;text-transform:uppercase;}
 .ec-tag.cat{background:var(--navy);color:var(--gold-light);}
@@ -966,6 +966,15 @@ footer a{color:var(--gold-text);text-decoration:none;}
                 <span data-i18n="dictionary.audio.tts_slower">Slower</span><span data-i18n="dictionary.audio.tts_fast">Fast</span>
               </div>
             </div>
+            <hr style="border:none;border-top:1px solid var(--border);margin:10px 0 8px;">
+            <label class="cb-label" style="font-size:0.78rem;">
+              <input type="checkbox" id="advTtsToggle" style="accent-color:var(--gold);" onchange="onAdvTtsToggle(this.checked)">
+              <span data-i18n="shared.tts.enable_label">Enable Advanced TTS</span> <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;" data-i18n="shared.tts.beta">BETA</span><span class="tip-wrap" data-i18n-tip="shared.tts.enable_tip" data-tip="High-quality Hebrew voice (Kokoro) that runs fully on your device. One-time ~310 MB download, then works offline. Separate from the basic pronunciation button above."><i class="tip-icon">?</i></span>
+            </label>
+            <div style="font-size:0.68rem;color:var(--muted);margin-top:4px;line-height:1.45;">
+              <span data-i18n="shared.tts.enable_note">Natural Hebrew voice, downloaded once to your device.</span>
+              <a href="#" onclick="advTtsOpenCredits(event)" data-i18n="shared.tts.credits_link">Voice credits</a>
+            </div>
           </div>
         </div>
 
@@ -1094,6 +1103,7 @@ footer a{color:var(--gold-text);text-decoration:none;}
       <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;" data-i18n="shared.footer.about_header">About</div>
       Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="font-weight:600;">Harrison Bleiberg</a><br>
       Word Data from <a href="https://kaikki.org/dictionary/Hebrew/index.html" target="_blank">Kaikki.org</a><br>
+      <span data-i18n="shared.tts.footer_credit">Hebrew voice: Kokoro · SASPEECH (Shaul Amsterdamski) — non-commercial</span><br>
       <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
       <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank">GitHub</a>
     </div>
@@ -2413,12 +2423,63 @@ function copyWord(btn, text) {
 }
 
 function speakWord(text) {
+  if (advTtsActive()) { advTtsSpeak(text, null, () => speakWordWebSpeech(text)); return; }
+  speakWordWebSpeech(text);
+}
+function speakWordWebSpeech(text) {
   if (!window.speechSynthesis) return;
   const utt = new SpeechSynthesisUtterance(text);
   utt.lang = 'he-IL';
   utt.rate = parseFloat(document.getElementById('ttsRateSlider')?.value || 0.75);
   speechSynthesis.cancel();
   speechSynthesis.speak(utt);
+}
+
+/* ═══ shared: adv-tts loader (identical across generator/dictionary/flash cards) ═══
+   Lazy-loads the Advanced TTS stack (/tts/*.js) only once the "Enable Advanced TTS"
+   toggle is (or previously was) on — pristine visitors make zero TTS-related network
+   requests. The page-specific advTtsPersist(on) lives BELOW the end marker. The
+   Kokoro Hebrew voice is non-commercial — see CREDITS.md. */
+let _advTtsLoad = null;
+function advTtsEnsureLoaded() {
+  if (_advTtsLoad) return _advTtsLoad;
+  const files = ['/tts/phonemizer.js', '/tts/tts-engine.js', '/tts/tts-ui.js'];
+  _advTtsLoad = files.reduce((p, src) => p.then(() => new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = res; s.onerror = () => rej(new Error('failed to load ' + src));
+    document.head.appendChild(s);
+  })), Promise.resolve()).then(() => { AdvTtsUI.init(); });
+  _advTtsLoad.catch(() => { _advTtsLoad = null; }); // allow retry after a failed load
+  return _advTtsLoad;
+}
+function advTtsActive() {
+  const cb = document.getElementById('advTtsToggle');
+  return !!(cb && cb.checked);
+}
+function advTtsRevertToggle() {
+  const cb = document.getElementById('advTtsToggle');
+  if (cb) cb.checked = false;
+  onAdvTtsToggle(false);
+}
+function advTtsSpeak(text, el, fallbackFn) {
+  advTtsEnsureLoaded()
+    .then(() => AdvTtsUI.speak(text, el, advTtsRevertToggle))
+    .catch(() => { if (fallbackFn) fallbackFn(); });
+  return true;
+}
+function onAdvTtsToggle(on) {
+  document.body.classList.toggle('adv-tts-on', on);
+  advTtsPersist(on);
+  if (on) advTtsEnsureLoaded().then(() => AdvTtsUI.onToggle(true, advTtsRevertToggle)).catch(() => {});
+  else if (window.AdvTtsUI) AdvTtsUI.onToggle(false);
+}
+function advTtsOpenCredits(e) {
+  if (e) e.preventDefault();
+  advTtsEnsureLoaded().then(() => AdvTtsUI.openCredits()).catch(() => {});
+}
+/* ═══ end shared: adv-tts loader ═══ */
+function advTtsPersist(on) {
+  try { localStorage.setItem('hebrewDictionary_advTts', on ? '1' : '0'); } catch(e) {}
 }
 
 function onTtsRateChange(val) {
@@ -3764,6 +3825,14 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.add('dict-audio-on');
       const cb = document.getElementById('dictAudioToggle');
       if (cb) cb.checked = true;
+    }
+  } catch(e) {}
+  try {
+    if (localStorage.getItem('hebrewDictionary_advTts') === '1') {
+      document.body.classList.add('adv-tts-on');
+      const acb = document.getElementById('advTtsToggle');
+      if (acb) acb.checked = true;
+      advTtsEnsureLoaded().catch(() => {});
     }
   } catch(e) {}
   try {

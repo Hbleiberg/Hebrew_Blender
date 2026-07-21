@@ -224,6 +224,13 @@ Kaikki's underlying data is Wiktionary content, which is licensed CC BY-SA 3.0. 
 ### Torah audio & timings
 The Torah Trainer's chanted-audio karaoke and the Trope Tutor's example clips use **[PocketTorah](https://pockettorah.com)** by Russel Neiss & Rabbi Charlie Schwartz — word-level timing files (mirrored into `data/pockettorah/`) and cantillation audio (streamed on demand) — licensed **[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)**. Sefaria translations are shown under their individual licenses, and only openly-licensed versions are offered. See [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md) for the full terms.
 
+### Voice & Audio Credits (Advanced TTS)
+The opt-in **Advanced TTS** feature (the "Enable Advanced TTS" toggle in the Worksheet Generator, Dictionary, and Flash Cards) synthesizes Hebrew speech fully in the browser using **[Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)** (Apache 2.0) fine-tuned for Hebrew on the **SASPEECH** corpus — the voice of journalist **Shaul Amsterdamski**, recorded with Kan (IPBC) for the Robo-Shaul project. The Hebrew fine-tune ([avris/kokoro-hebrew-saspeech](https://huggingface.co/avris/kokoro-hebrew-saspeech); ONNX export [thewh1teagle/kokoro-hebrew-nc](https://huggingface.co/thewh1teagle/kokoro-hebrew-nc)) is licensed for **non-commercial use only**. The in-browser tokenizer/voice loader mirrors [kokoro-onnx](https://github.com/thewh1teagle/kokoro-onnx) (MIT), and the rule-based phonemizer was written against [Phonikud](https://github.com/thewh1teagle/phonikud)'s phoneme inventory (CC BY 4.0). Model weights are fetched at runtime from Hugging Face and are never bundled with or redistributed by this repository. Full verbatim terms: [`CREDITS.md`](CREDITS.md).
+
+**Pages using this voice are and must remain non-commercial (no advertising, paywalls, or sales), per the Hebrew model's license.**
+
+**CSP note for maintainers:** the three integrated pages' Content-Security-Policy meta tags include `'wasm-unsafe-eval'` (onnxruntime-web), `https://cdn.jsdelivr.net` (pinned onnxruntime-web + fflate builds), and `https://huggingface.co` / `https://cdn-lfs.huggingface.co` / `https://cas-bridge.xethub.hf.co` in `connect-src` (model downloads). If the model host ever changes (see the config block at the top of `tts/tts-engine.js`), those CSP entries must change with it.
+
 ---
 
 ## License

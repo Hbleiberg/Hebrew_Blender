@@ -9,3 +9,7 @@ source-data/trope-cache/
 
 # Claude Code personal settings (project-local, not shared)
 .claude/settings.local.json
+
+# Maintainer-only TTS model prep (tools/quantize_model.py) — never commit model weights
+tools/model/
+tools/parity/

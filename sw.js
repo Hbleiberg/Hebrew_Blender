@@ -1,11 +1,16 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v370';
+const VERSION = 'v371';
 const CACHE = 'ivritsuite-' + VERSION;
 // Version-independent cache for the big data/ corpora (dictionary words / emoji / parshiyot /
 // pockettorah). Kept OUT of the version-scoped CACHE so a routine VERSION bump no longer evicts
 // the ~7 MB of data files and forces a full re-download on the next visit. Bump this name only if
 // the /data/ eviction semantics below actually change.
 const DATA_CACHE = 'ivritsuite-data-v1';
+// Advanced-TTS model cache, owned and written by tts/tts-worker.js (NOT by this worker —
+// cross-origin model downloads bypass the SW entirely). Listed here ONLY so activate's
+// cleanup never deletes the ~hundreds-of-MB Kokoro model on a routine VERSION bump.
+// Invalidation is handled by MODEL_VERSION inside tts/tts-engine.js, not by renaming this.
+const TTS_CACHE = 'tts-models-v1';
 
 /* Core app shell. Big media (og-card, the data/ corpus) is left to runtime caching. */
 const CORE_ASSETS = [
@@ -48,8 +53,8 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
-      // Keep both the current shell cache and the version-independent data cache.
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE && k !== DATA_CACHE).map((k) => caches.delete(k))))
+      // Keep the current shell cache, the version-independent data cache, and the TTS model cache.
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE && k !== DATA_CACHE && k !== TTS_CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });

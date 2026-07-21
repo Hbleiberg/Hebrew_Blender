@@ -7,7 +7,7 @@
      value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
      origins. Note: meta CSP can't express frame-ancestors or report-uri and does not cover content parsed
      before this tag. Update this when adding any external script/font/fetch/iframe (see CLAUDE.md). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdnjs.cloudflare.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.googletagmanager.com https://cdnjs.cloudflare.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net https://huggingface.co https://cdn-lfs.huggingface.co https://cas-bridge.xethub.hf.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
@@ -785,6 +785,15 @@
     min-height: 14px;
   }
   .blend-answer.hidden { visibility: hidden; }
+  /* Advanced-TTS speaker buttons (screen-only; hidden in print below). The worksheet
+     is a pinned-RTL Hebrew coordinate system, so physical `left` is intentional here
+     (opposite corner from the cell number) — same exception as other worksheet-internal
+     positioning. */
+  .blend-cell { position: relative; }
+  .blend-speak { position: absolute; left: 2px; top: 1px; background: none; border: 1px solid var(--border); border-radius: 4px; font-size: 0.68rem; line-height: 1; padding: 2px 3px; cursor: pointer; opacity: 0.6; transition: opacity 0.15s, border-color 0.15s; }
+  .blend-speak:hover { opacity: 1; border-color: var(--gold); }
+  .blend-row-speak { position: absolute; left: 2px; bottom: 1px; background: none; border: 1px solid var(--gold); border-radius: 4px; font-size: 0.6rem; line-height: 1; padding: 2px 3px; cursor: pointer; opacity: 0.7; transition: opacity 0.15s; color: var(--gold); }
+  .blend-row-speak:hover { opacity: 1; }
   .gematria-blank { width: 52px; height: 1px; background: var(--border); margin-top: 8px; align-self: center; }
   .gematria-value { font-size: 0.85rem; font-weight: 700; color: var(--gold); margin-top: 6px; }
 
@@ -1990,7 +1999,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   @media print {
     .sidebar, header, footer, .mobile-fab, .zoom-bar, .print-tip, .main-toolbar,
     .sidebar-toggle-btn, .sidebar-show-btn, #fsBtn, #previewNotice,
-    .score-bar, .self-check-controls, .timer-bar { display: none !important; }
+    .score-bar, .self-check-controls, .timer-bar,
+    .blend-speak, .blend-row-speak { display: none !important; }
     .app { display: block; min-height: unset; }
     .main { padding: 0; overflow: visible; }
     /* The on-screen layout pads .main-content by 28px on top — without
@@ -3520,6 +3530,21 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             </div>
           </div>
 
+          <!-- Advanced TTS (Kokoro, on-device — separate from the self-check Audio toggle) -->
+          <div style="margin-top:8px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--cream);">
+            <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
+              <span class="sub-label" style="font-size:0.78rem;flex:1;"><span data-i18n="shared.tts.enable_label">Enable Advanced TTS</span> <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;" data-i18n="shared.tts.beta">BETA</span></span>
+              <label class="toggle" style="transform:scale(0.75);transform-origin:right;">
+                <input type="checkbox" id="advTtsToggle" onchange="onAdvTtsToggle(this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div style="font-size:0.68rem;color:var(--muted);margin-top:4px;line-height:1.45;">
+              <span data-i18n="shared.tts.enable_note">Natural Hebrew voice, downloaded once to your device.</span>
+              <a href="#" onclick="advTtsOpenCredits(event)" style="color:var(--gold-text,var(--gold));" data-i18n="shared.tts.credits_link">Voice credits</a>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -3613,6 +3638,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;padding:2px 0;" data-i18n="shared.footer.about_header">About</div>
       Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="color:var(--gold-text);text-decoration:none;font-weight:600;">Harrison Bleiberg</a><br>
       Word Data from <a href="https://kaikki.org/dictionary/Hebrew/index.html" target="_blank" style="color:var(--gold-text);text-decoration:none;">Kaikki.org</a><br>
+      <span data-i18n="shared.tts.footer_credit">Hebrew voice: Kokoro · SASPEECH (Shaul Amsterdamski) — non-commercial</span><br>
       <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" style="color:var(--gold-text);text-decoration:none;">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
       <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank" style="color:var(--gold-text);text-decoration:none;">GitHub</a>
     </div>
@@ -4355,6 +4381,7 @@ function getSettings() {
     timerOn:       document.getElementById('timerToggle').checked,
     timerDuration: document.getElementById('timerDuration').value,
     audio:         document.getElementById('audioToggle').checked,
+    advTts:        advTtsActive(),
     ttsRate:       parseFloat(document.getElementById('ttsRateSlider')?.value || 0.75),
     // Focus letters
     focusOn:       document.getElementById('focusToggle').checked,
@@ -4539,6 +4566,13 @@ function applySettings(s) {
   if (s.timerOn !== undefined)   document.getElementById('timerToggle').checked = s.timerOn;
   if (s.timerDuration)           document.getElementById('timerDuration').value = s.timerDuration;
   if (s.audio !== undefined)     document.getElementById('audioToggle').checked = s.audio;
+  if (s.advTts !== undefined)    {
+    const el = document.getElementById('advTtsToggle');
+    if (el) el.checked = !!s.advTts;
+    document.body.classList.toggle('adv-tts-on', !!s.advTts);
+    try { localStorage.setItem('hebrewBlender_advTts', s.advTts ? '1' : '0'); } catch(e) {}
+    if (s.advTts) advTtsEnsureLoaded().catch(() => {});
+  }
   if (s.ttsRate !== undefined)   {
     const sl = document.getElementById('ttsRateSlider');
     if (sl) { sl.value = s.ttsRate; document.getElementById('ttsRateVal').textContent = parseFloat(s.ttsRate).toFixed(2) + '×'; }
@@ -5385,6 +5419,10 @@ function resetSelfCheck() {
 //  AUDIO (BETA)
 // ══════════════════════════════════════════════
 function speakBlend(text) {
+  if (advTtsActive()) { advTtsSpeak(text, null, () => speakBlendWebSpeech(text)); return; }
+  speakBlendWebSpeech(text);
+}
+function speakBlendWebSpeech(text) {
   if (!window.speechSynthesis) return;
   const utt = new SpeechSynthesisUtterance(text);
   utt.lang = 'he-IL';
@@ -5392,6 +5430,85 @@ function speakBlend(text) {
   speechSynthesis.cancel();
   speechSynthesis.speak(utt);
 }
+
+/* ═══ shared: adv-tts loader (identical across generator/dictionary/flash cards) ═══
+   Lazy-loads the Advanced TTS stack (/tts/*.js) only once the "Enable Advanced TTS"
+   toggle is (or previously was) on — pristine visitors make zero TTS-related network
+   requests. The page-specific advTtsPersist(on) lives BELOW the end marker. The
+   Kokoro Hebrew voice is non-commercial — see CREDITS.md. */
+let _advTtsLoad = null;
+function advTtsEnsureLoaded() {
+  if (_advTtsLoad) return _advTtsLoad;
+  const files = ['/tts/phonemizer.js', '/tts/tts-engine.js', '/tts/tts-ui.js'];
+  _advTtsLoad = files.reduce((p, src) => p.then(() => new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = res; s.onerror = () => rej(new Error('failed to load ' + src));
+    document.head.appendChild(s);
+  })), Promise.resolve()).then(() => { AdvTtsUI.init(); });
+  _advTtsLoad.catch(() => { _advTtsLoad = null; }); // allow retry after a failed load
+  return _advTtsLoad;
+}
+function advTtsActive() {
+  const cb = document.getElementById('advTtsToggle');
+  return !!(cb && cb.checked);
+}
+function advTtsRevertToggle() {
+  const cb = document.getElementById('advTtsToggle');
+  if (cb) cb.checked = false;
+  onAdvTtsToggle(false);
+}
+function advTtsSpeak(text, el, fallbackFn) {
+  advTtsEnsureLoaded()
+    .then(() => AdvTtsUI.speak(text, el, advTtsRevertToggle))
+    .catch(() => { if (fallbackFn) fallbackFn(); });
+  return true;
+}
+function onAdvTtsToggle(on) {
+  document.body.classList.toggle('adv-tts-on', on);
+  advTtsPersist(on);
+  if (on) advTtsEnsureLoaded().then(() => AdvTtsUI.onToggle(true, advTtsRevertToggle)).catch(() => {});
+  else if (window.AdvTtsUI) AdvTtsUI.onToggle(false);
+}
+function advTtsOpenCredits(e) {
+  if (e) e.preventDefault();
+  advTtsEnsureLoaded().then(() => AdvTtsUI.openCredits()).catch(() => {});
+}
+/* ═══ end shared: adv-tts loader ═══ */
+function advTtsPersist(on) {
+  try { localStorage.setItem('hebrewBlender_advTts', on ? '1' : '0'); } catch(e) {}
+  // Worksheet speaker buttons appear via the normal render paths: live preview
+  // re-renders on the 'advTts' presentation-key diff; otherwise on the next Generate.
+}
+/* Sequential row read-aloud: each speak resolves when its clip finishes. Stops early
+   if the toggle is turned off or the download card is showing (speak returns false). */
+function advTtsReadRow(texts, btn) {
+  advTtsEnsureLoaded().then(async () => {
+    for (const t of texts) {
+      if (!advTtsActive()) break;
+      const ok = await AdvTtsUI.speak(t, btn, advTtsRevertToggle).catch(() => false);
+      if (ok === false) break;
+    }
+  }).catch(() => {});
+}
+/* Idle-priority background synthesis of everything currently on the worksheet, so
+   taps play instantly. Re-collecting restarts the engine's abortable prefetch queue. */
+function advTtsPrefetchVisible() {
+  if (!advTtsActive() || !window.AdvTtsUI || !window.HebrewTTS || !HebrewTTS.isReady()) return;
+  const texts = [...new Set([...document.querySelectorAll('#worksheet .blend-hebrew')]
+    .map(el => el.textContent.trim()).filter(Boolean))];
+  if (texts.length) AdvTtsUI.prefetch(texts);
+}
+// Restore the toggle on load (per-page preference; the model itself is per-device).
+(function () {
+  try {
+    if (localStorage.getItem('hebrewBlender_advTts') === '1') {
+      const cb = document.getElementById('advTtsToggle');
+      if (cb) cb.checked = true;
+      document.body.classList.add('adv-tts-on');
+      advTtsEnsureLoaded().catch(() => {});
+    }
+  } catch(e) {}
+})();
 function refreshVowelGroupColors() {
   const isDark = document.body.classList.contains('dark');
   document.querySelectorAll('#vowelGrid .vowel-group-section[data-group]').forEach(sec => {
@@ -5918,7 +6035,7 @@ let _liveAlertMsg = null;
 // misclassifying content as presentation would show stale output, so when unsure → content.
 const LIVE_PRESENTATION_KEYS = new Set([
   'wsTitle','wsSubtitle','headerLang','landscape',
-  'inverse','fillVowels','fillVowelsAnswerKey','answerKey','qrAnswerKey','selfCheck','includeDageshim','audio',
+  'inverse','fillVowels','fillVowelsAnswerKey','answerKey','qrAnswerKey','selfCheck','includeDageshim','audio','advTts',
   'hebFontSize','colorCoding','colorCodingMode','nikudColorOverrides','vowelColorScheme','translitStyle',
   'timerOn','timerDuration',
   'gematriaSelfCheck','gematriaAnswerKey','gematriaInverse',
@@ -8305,6 +8422,9 @@ async function exportPDF() {
         onclone: (clonedDoc, el) => {
           clonedDoc.body.classList.remove('dark');
           clonedDoc.documentElement.classList.remove('dark-early');
+          // Advanced-TTS speaker buttons are screen-only chrome (absolutely
+          // positioned, so removal never shifts layout).
+          el.querySelectorAll('.blend-speak, .blend-row-speak').forEach(d => d.remove());
           // Strip the screen-only page-break decoration (dashed top border,
           // extra padding-top, margin-top). Without this, page 1 is captured
           // shorter than pages 2+ and the cards don't line up in the PDF.
@@ -9215,6 +9335,23 @@ function appendStandardBlendSheets(ws, arr, ctx, versionLabel) {
     if (isInverse) renderInverseCell(grid, b, idx, false);
     else renderHebrewCell(grid, b, idx, false, fillVowels);
   });
+  // Advanced-TTS "read row" control: one ▶ per grid row, riding inside the row's first
+  // cell (absolutely positioned — never shifts worksheet layout; print/PDF strip it).
+  if (advTtsActive() && !isInverse) {
+    for (let start = 0; start < arr.length; start += cols) {
+      const rowTexts = arr.slice(start, start + cols).map(b => b.hebrewDisplay);
+      const firstCell = grid.children[start];
+      if (!firstCell || rowTexts.length < 2) continue;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'blend-row-speak';
+      btn.textContent = '▶';
+      btn.setAttribute('aria-label', (window.I18n ? I18n.t('shared.tts.read_row_aria') : 'Read this row aloud'));
+      btn.addEventListener('click', (e) => { e.stopPropagation(); advTtsReadRow(rowTexts, btn); });
+      firstCell.appendChild(btn);
+    }
+    advTtsPrefetchVisible();
+  }
   const footer = document.createElement('div');
   footer.style.cssText = 'margin-top:20px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;';
   footer.innerHTML = `<span class="ws-brand">IvritSuite.com</span><span>${arr.length} blends · Hebrew Blend Generator</span>`;
@@ -9649,6 +9786,21 @@ function renderHebrewCell(grid, b, idx, showAnswers, fillVowels = false) {
   ans.className = 'blend-answer' + (showAnswers || fillVowels ? '' : ' hidden');
   ans.textContent = b.translitDisplay ?? b.combined;
   cell.appendChild(ans);
+
+  // Advanced-TTS per-cell speaker (screen-only; print/PDF strip it). Speaks the fully
+  // pointed blend even in fill-vowels mode — hearing the vowels is the point.
+  if (advTtsActive() && !showAnswers) {
+    const spk = document.createElement('button');
+    spk.type = 'button';
+    spk.className = 'blend-speak';
+    spk.textContent = '🔊';
+    spk.setAttribute('aria-label', (window.I18n ? I18n.t('shared.tts.speak_aria') : 'Read aloud') + ' ' + (idx + 1));
+    spk.addEventListener('click', (e) => {
+      e.stopPropagation();
+      advTtsSpeak(b.hebrewDisplay, spk, () => speakBlendWebSpeech(b.hebrewDisplay));
+    });
+    cell.appendChild(spk);
+  }
 
   grid.appendChild(cell);
 }
