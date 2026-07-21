@@ -5686,13 +5686,35 @@ function startPractice() {
   startTimer();
 }
 
+// Basic (browser) TTS depends on the OS having a Hebrew voice — Firefox on Windows
+// commonly has none, so the call runs but is silent. Detect the voice and, when it's
+// missing, say so instead of failing silently. (Voice lists load async.)
+let _heVoiceWarned = false;
+function _hebVoice() {
+  try { return (speechSynthesis.getVoices() || []).find(v => /^(he|iw)(-|_|$)/i.test(v.lang)) || null; }
+  catch (e) { return null; }
+}
+function _noHebVoiceNotice() {
+  const m = I18n.t('shared.audio.no_hebrew_voice');
+  if (typeof showAppToast === 'function') showAppToast(m, 6000);
+  else if (!_heVoiceWarned) { _heVoiceWarned = true; alert(m); }
+}
 function speakWord(text) {
   if (!window.speechSynthesis) return;
-  const utt = new SpeechSynthesisUtterance(text);
-  utt.lang = 'he-IL';
-  utt.rate = parseFloat(document.getElementById('ttsRateSlider')?.value || 0.75);
-  speechSynthesis.cancel();
-  speechSynthesis.speak(utt);
+  let done = false;
+  const go = () => {
+    if (done) return; done = true;
+    const v = _hebVoice();
+    if (!v) { _noHebVoiceNotice(); return; }
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = 'he-IL';
+    utt.voice = v;
+    utt.rate = parseFloat(document.getElementById('ttsRateSlider')?.value || 0.75);
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utt);
+  };
+  if ((speechSynthesis.getVoices() || []).length) go();
+  else { speechSynthesis.addEventListener('voiceschanged', go, { once: true }); setTimeout(go, 400); }
 }
 
 function renderCurrentCard() {

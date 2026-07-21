@@ -2814,6 +2814,7 @@
   "resources.suggest.url_placeholder": "https://…",
   "resources.view.fonts": "🔤 גופנים",
   "resources.view.links": "📚 קישורים",
+  "shared.audio.no_hebrew_voice": "אין קול עברי מותקן בדפדפן הזה, ולכן לא ניתן להקריא את המילה. Chrome או Edge בדרך כלל עובדים, או הוסיפו קול עברי בהגדרות השפה של המכשיר.",
   "shared.darkmode.label_dark": "🌙 כהה",
   "shared.darkmode.label_light": "☀️ בהיר",
   "shared.darkmode.toggle_title": "מצב כהה",

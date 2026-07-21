@@ -2814,6 +2814,7 @@
   "resources.suggest.url_placeholder": "https://…",
   "resources.view.fonts": "🔤 Fonts",
   "resources.view.links": "📚 Links",
+  "shared.audio.no_hebrew_voice": "No Hebrew voice is installed in this browser, so it can't read the word aloud. Chrome or Edge usually work, or add a Hebrew voice in your device's language settings.",
   "shared.darkmode.label_dark": "🌙 Dark",
   "shared.darkmode.label_light": "☀️ Light",
   "shared.darkmode.toggle_title": "Toggle dark mode",
