@@ -819,6 +819,8 @@
   "dictionary.wordlist.load_as_filter": "Load as filter (view in results)",
   "dictionary.wordlist.manager_empty": "No word lists yet. Turn on Bulk Copy Mode, select words, and use “Save as Word List”.",
   "dictionary.wordlist.manager_title": "Word Lists",
+  "dictionary.wordlist.move_down_title": "Move down",
+  "dictionary.wordlist.move_up_title": "Move up",
   "dictionary.wordlist.name_placeholder": "e.g. Parashat Noach vocab",
   "dictionary.wordlist.remove_word_title": "Remove from list",
   "dictionary.wordlist.rename": "Rename",

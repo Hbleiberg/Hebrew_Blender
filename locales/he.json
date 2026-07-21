@@ -819,6 +819,8 @@
   "dictionary.wordlist.load_as_filter": "טעינה כמסנן (הצגה בתוצאות)",
   "dictionary.wordlist.manager_empty": "עדיין אין רשימות מילים. הפעילו מצב העתקה מרובה, בחרו מילים והשתמשו ב״שמירה כרשימת מילים״.",
   "dictionary.wordlist.manager_title": "רשימות מילים",
+  "dictionary.wordlist.move_down_title": "הזז למטה",
+  "dictionary.wordlist.move_up_title": "הזז למעלה",
   "dictionary.wordlist.name_placeholder": "למשל אוצר מילים לפרשת נח",
   "dictionary.wordlist.remove_word_title": "הסרה מהרשימה",
   "dictionary.wordlist.rename": "שינוי שם",

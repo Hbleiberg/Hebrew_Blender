@@ -817,6 +817,8 @@ dictionary.wordlist.manager_empty,"No word lists yet. Turn on Bulk Copy Mode, se
 dictionary.wordlist.manager_title,Word Lists,רשימות מילים,word-lists manager modal title,
 dictionary.wordlist.name_placeholder,e.g. Parashat Noach vocab,למשל אוצר מילים לפרשת נח,new list name placeholder,placeholder
 dictionary.wordlist.remove_word_title,Remove from list,הסרה מהרשימה,word remove button title,aria-label only
+dictionary.wordlist.move_up_title,Move up,הזז למעלה,word reorder button title,aria-label only
+dictionary.wordlist.move_down_title,Move down,הזז למטה,word reorder button title,aria-label only
 dictionary.wordlist.rename,Rename,שינוי שם,word-list card button,
 dictionary.wordlist.rename_prompt,Rename word list:,שינוי שם רשימת המילים:,inline rename editor label,
 dictionary.wordlist.rename_save,Save,שמירה,inline rename editor confirm button,

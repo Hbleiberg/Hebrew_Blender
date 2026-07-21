@@ -1561,6 +1561,20 @@ function wlRemoveWord(id, word) {
   list.updated = Date.now();
   return wlWriteStore(store);
 }
+// Reorder a word within a saved list (dir -1 = up, +1 = down). Swaps with its neighbour;
+// no-op at the ends. The new order rides in the same ivritSuite_wordLists store (already
+// backed up via AllTools + the .ivrit engine), so no extra persistence wiring is needed.
+function wlMoveWord(id, word, dir) {
+  const store = wlReadStore();
+  const list = store.lists[id];
+  if (!list) return false;
+  const i = list.words.findIndex(x => x.word === word);
+  const j = i + dir;
+  if (i < 0 || j < 0 || j >= list.words.length) return false;
+  const t = list.words[i]; list.words[i] = list.words[j]; list.words[j] = t;
+  list.updated = Date.now();
+  return wlWriteStore(store);
+}
 
 /* ----- Word Lists UI (Save modal + Manager modal) ----- */
 function wlSelectedWords() { return exportSelectedWords().map(wlWordFromDict); }
@@ -1731,16 +1745,33 @@ function wlRenderManagerInto(root) {
       const existing = row.querySelector('.wl-words');
       if (existing) { existing.remove(); return; }
       const wrap = wlEl('div', { cls: 'wl-words', style: 'margin-top:8px;border-top:1px solid var(--border);padding-top:8px;display:flex;flex-direction:column;gap:4px;max-height:240px;overflow-y:auto;' });
-      if (!list.words.length) wrap.appendChild(wlEl('div', { style: 'color:var(--muted);font-size:0.75rem;' }, I18n.t('dictionary.wordlist.list_empty')));
-      list.words.forEach(w => {
-        const wr = wlEl('div', { style: 'display:flex;align-items:center;gap:8px;font-size:0.78rem;' });
-        wr.appendChild(wlEl('span', { lang: 'he', dir: 'rtl', style: 'font-family:var(--heb-font);font-size:1.05rem;direction:rtl;min-width:60px;' }, w.word));
-        wr.appendChild(wlEl('span', { style: 'flex:1;color:var(--muted);word-break:break-word;' }, w.translation || ''));
-        const x = wlEl('button', { cls: 'wm-mini', type: 'button', title: I18n.t('dictionary.wordlist.remove_word_title') }, '✕');
-        x.addEventListener('click', () => { wlRemoveWord(id, w.word); wlRefreshManager(); });
-        wr.appendChild(x);
-        wrap.appendChild(wr);
-      });
+      // Re-paint the rows from the live store order so ↑/↓ reorder updates in place (a full
+      // wlRefreshManager would collapse this expansion). Word removal still does a full refresh
+      // (the header word-count changes).
+      const paint = () => {
+        wrap.textContent = '';
+        const words = (wlGetList(id) || { words: [] }).words;
+        if (!words.length) { wrap.appendChild(wlEl('div', { style: 'color:var(--muted);font-size:0.75rem;' }, I18n.t('dictionary.wordlist.list_empty'))); return; }
+        words.forEach((w, idx) => {
+          const wr = wlEl('div', { style: 'display:flex;align-items:center;gap:8px;font-size:0.78rem;' });
+          wr.appendChild(wlEl('span', { lang: 'he', dir: 'rtl', style: 'font-family:var(--heb-font);font-size:1.05rem;direction:rtl;min-width:60px;' }, w.word));
+          wr.appendChild(wlEl('span', { style: 'flex:1;color:var(--muted);word-break:break-word;' }, w.translation || ''));
+          const up = wlEl('button', { cls: 'wm-mini', type: 'button', title: I18n.t('dictionary.wordlist.move_up_title') }, '↑');
+          up.setAttribute('aria-label', I18n.t('dictionary.wordlist.move_up_title'));
+          if (idx === 0) { up.disabled = true; up.style.opacity = '0.3'; }
+          up.addEventListener('click', () => { wlMoveWord(id, w.word, -1); paint(); });
+          const dn = wlEl('button', { cls: 'wm-mini', type: 'button', title: I18n.t('dictionary.wordlist.move_down_title') }, '↓');
+          dn.setAttribute('aria-label', I18n.t('dictionary.wordlist.move_down_title'));
+          if (idx === words.length - 1) { dn.disabled = true; dn.style.opacity = '0.3'; }
+          dn.addEventListener('click', () => { wlMoveWord(id, w.word, 1); paint(); });
+          const x = wlEl('button', { cls: 'wm-mini', type: 'button', title: I18n.t('dictionary.wordlist.remove_word_title') }, '✕');
+          x.setAttribute('aria-label', I18n.t('dictionary.wordlist.remove_word_title'));
+          x.addEventListener('click', () => { wlRemoveWord(id, w.word); wlRefreshManager(); });
+          wr.appendChild(up); wr.appendChild(dn); wr.appendChild(x);
+          wrap.appendChild(wr);
+        });
+      };
+      paint();
       row.appendChild(wrap);
     });
     btn(I18n.t('dictionary.wordlist.rename'), () => {
