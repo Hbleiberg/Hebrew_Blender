@@ -690,6 +690,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <div data-i18n-switcher></div>
     <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour" data-i18n="trope.header.tour_button" data-i18n-title="trope.header.tour_title">❓ Tour</button>
     <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false">🌙</button>
+    <button id="fsBtn" class="hbtn icon-btn" onclick="toggleFullscreen()" title="Full screen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg></button>
     <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings" aria-label="Settings" data-i18n-title="trope.header.settings_title" data-i18n-aria-label="trope.header.settings_title">⚙️</button>
   </div>
 </header>
@@ -1145,6 +1146,29 @@ function initDark() {
   }
   document.documentElement.classList.remove('dark-early');
 }
+/* ── Fullscreen "project" toggle — lets a teacher present the tutor on a SmartBoard. Single-button
+   model, mirroring the dictionary: one #fsBtn swaps its glyph + title on fullscreenchange. Reuses the
+   shared.fullscreen.* keys (no new keys); the header .hright is already print-hidden, and the button
+   stays visible in fullscreen so it also exits. ── */
+const FS_ENTER_ICON = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg>`;
+const FS_EXIT_ICON  = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5,0.5 4.5,4.5 0.5,4.5"/><polyline points="13.5,4.5 9.5,4.5 9.5,0.5"/><polyline points="9.5,13.5 9.5,9.5 13.5,9.5"/><polyline points="0.5,9.5 4.5,9.5 4.5,13.5"/></svg>`;
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen();
+  }
+}
+document.addEventListener('fullscreenchange', () => {
+  const on = !!document.fullscreenElement;
+  const btn = document.getElementById('fsBtn');
+  if (btn) {
+    btn.innerHTML = on ? FS_EXIT_ICON : FS_ENTER_ICON;
+    const fk = on ? 'shared.fullscreen.exit_title' : 'shared.fullscreen.enter_title';
+    btn.setAttribute('data-i18n-title', fk);   // keep localized so a later language switch re-resolves it
+    btn.title = window.I18n ? I18n.t(fk) : (on ? 'Exit full screen' : 'Full screen');
+  }
+});
 /* Resolve the six family hues into body CSS vars (same var names as torah_trainer,
    so chips/labels/mastery cells recolor on theme flips for free). */
 function applyFamilyColors() {
