@@ -2,11 +2,11 @@
 
 - **Built:** 2026-07-22
 - **Source:** PocketTorah aliyah recordings (raw.githubusercontent.com/rneiss/PocketTorah), clips selected from `data/trope/trope_index.json`
-- **Output:** `data/trope/trope_motifs.json` — 2905 bytes (budget 16,384)
+- **Output:** `data/trope/trope_motifs.json` — 2933 bytes (budget 16,384)
 - **Decoder:** mpg123-decoder (WASM); pitch detection: YIN (80–400 Hz band, 10 ms hop, threshold 0.15)
 - **Reference pitch:** each clip's final sustained segment (≥120 ms); p = semitones relative to it (notated as B, middle line, treble clef)
-- **Examples analyzed:** 71 clips across 36 aliyah MP3s (0 downloaded, 36 cache hits)
-- **Run mode:** --force (verified entries re-analyzed)
+- **Examples analyzed:** 71 clips across 36 aliyah MP3s (1 downloaded, 35 cache hits)
+- **Run mode:** default (verified entries kept verbatim)
 - **License:** transcriptions derived from PocketTorah audio © Russel Neiss & Rabbi Charlie Schwartz — [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); this report and the output JSON are likewise CC BY-SA 4.0.
 
 Every non-kept entry is `verified: false` — a machine draft awaiting by-ear
@@ -55,11 +55,11 @@ flip `verified` to `true`; re-runs keep verified entries).
 
 | Example | Word | Dur | Voiced% | Contour (p:d) |
 |---|---|---|---|---|
+| Achrei Mot 16:1 | אַהֲרֹ֑ן | 0.96s | 39% | 1:1 · 0:4 |
 | Vayakhel 35:1 | אֲלֵהֶ֑ם | 1.21s | 38% | 0:1 |
 | Metzora 14:2 | טׇהֳרָת֑וֹ | 1.6s | 49% | -2:1 · 0:2 |
-| Shemot 1:1 | מִצְרָ֑יְמָה | 1.38s | 25% | 2:1 · 0:2 |
 
-- Chosen: example 2 (medoid, Σdist 2)
+- Chosen: example 3 (medoid, Σdist 2)
 - Motif: `-2:1 · 0:2`
 - Warnings: low voiced ratio 49%
 
@@ -91,25 +91,25 @@ flip `verified` to `true`; re-runs keep verified entries).
 
 | Example | Word | Dur | Voiced% | Contour (p:d) |
 |---|---|---|---|---|
-| Yitro 18:1 | מִדְיָן֙ | 1.28s | 72% | -5:1 · -4:2 · -3:1 · 3:2 · 0:4 |
 | Shemini 9:1 | וַֽיְהִי֙ | 1.99s | 9% | 3:1 · 0:2 |
 | Pekudei 38:21 | הַמִּשְׁכָּן֙ | 1.37s | 38% | -3:1 · -4:1 · 2:2 · 0:3 |
+| Shemot 1:1 | שְׁמוֹת֙ | 2.29s | 24% | 0:2 · -2:2 · -7:1 |
 
-- Chosen: example 3 (medoid, Σdist 4.33)
-- Motif: `-3:1 · -4:1 · 2:2 · 0:3`
-- Warnings: low voiced ratio 38%
+- Chosen: example 1 (medoid, Σdist 5)
+- Motif: `3:1 · 0:2`
+- Warnings: low voiced ratio 9%
 
 ### yetiv
 
 | Example | Word | Dur | Voiced% | Contour (p:d) |
 |---|---|---|---|---|
-| Pekudei 38:26 | בֶּ֚קַע | 1s | 43% | 3:1 · 0:2 |
+| Shemot 1:9 | עַ֚ם | 1.72s | 39% | 6:1 · 3:1 · 0:2 |
 | Noach 6:9 | אֵ֚לֶּה | 1.75s | 34% | 3:1 · 2:2 · 0:4 |
 | Beshalach 13:17 | דֶּ֚רֶךְ | 1.63s | 34% | 0:1 |
 
-- Chosen: example 1 (medoid, Σdist 2)
-- Motif: `3:1 · 0:2`
-- Warnings: low voiced ratio 43%
+- Chosen: example 1 (medoid, Σdist 3.33)
+- Motif: `6:1 · 3:1 · 0:2`
+- Warnings: low voiced ratio 39%
 
 ### zakef_katon
 
@@ -177,9 +177,9 @@ flip `verified` to `true`; re-runs keep verified entries).
 |---|---|---|---|---|
 | Yitro 18:2 | וַיִּקַּ֗ח | 2.39s | 70% | 7:4 · 8:1 · 5:2 · 3:1 · 2:3 · 0:4 |
 | Metzora 14:6 | הַֽחַיָּ֗ה | 2.07s | 42% | 5:4 · 4:1 · 2:1 · 0:2 |
-| Shemot 1:1 | וְאֵ֗לֶּה | 2.29s | 24% | 0:2 · -2:2 · -7:1 |
+| Bereshit 1:2 | וְהָאָ֗רֶץ | 2.34s | 54% | 8:3 · 6:4 · 4:1 · 2:1 · -1:1 · 0:1 |
 
-- Chosen: example 2 (medoid, Σdist 6.33)
+- Chosen: example 2 (medoid, Σdist 4.67)
 - Motif: `5:4 · 4:1 · 2:1 · 0:2`
 - Warnings: low voiced ratio 42%
 
@@ -189,11 +189,11 @@ flip `verified` to `true`; re-runs keep verified entries).
 |---|---|---|---|---|
 | Chukat 19:4 | אֶלְעָזָ֧ר | 1.99s | 73% | 1:3 · 2:3 · 6:1 · 5:2 · 2:2 · 0:4 · 5:2 · 0:4 |
 | Metzora 14:4 | וְלָקַ֧ח | 2.04s | 43% | 0:2 · 5:2 · 3:1 · 1:1 · 0:3 |
-| Noach 6:12 | וַיַּ֧רְא | 1.96s | 51% | 5:4 · 0:1 · 2:1 · 0:3 |
+| Bereshit 1:4 | וַיַּ֧רְא | 2.12s | 66% | 0:4 · 5:4 · 2:1 · 0:1 · 2:2 · 0:3 |
 
-- Chosen: example 2 (medoid, Σdist 6.33)
-- Motif: `0:2 · 5:2 · 3:1 · 1:1 · 0:3`
-- Warnings: low voiced ratio 43%
+- Chosen: example 3 (medoid, Σdist 5)
+- Motif: `0:4 · 5:4 · 2:1 · 0:1 · 2:2 · 0:3`
+- Warnings: (none)
 
 ### tevir
 
@@ -211,35 +211,35 @@ flip `verified` to `true`; re-runs keep verified entries).
 
 | Example | Word | Dur | Voiced% | Contour (p:d) |
 |---|---|---|---|---|
-| Shemot 1:14 | וַיְמָרְר֨וּ | 1.95s | 8% | 0:1 |
 | Noach 6:13 | וַיֹּ֨אמֶר | 1.61s | 14% | 0:1 |
 | Vayetzei 28:11 | וַיִּפְגַּ֨ע | 1.55s | 64% | -5:1 · -3:3 · 0:4 |
+| Vayigash 44:20 | וַיִּוָּתֵ֨ר | 1.44s | 54% | 4:1 · -3:2 · 0:2 |
 
-- Chosen: example 1 (medoid, Σdist 2)
-- Motif: `0:1`
-- Warnings: low voiced ratio 8%
+- Chosen: example 2 (medoid, Σdist 3)
+- Motif: `-5:1 · -3:3 · 0:4`
+- Warnings: (none)
 
 ### geresh
 
 | Example | Word | Dur | Voiced% | Contour (p:d) |
 |---|---|---|---|---|
 | Shemini 9:4 | וָאַ֜יִל | 1.74s | 61% | -3:2 · 0:1 · -4:3 · 1:2 · -1:1 · 0:4 |
-| Emor 21:23 | הַפָּרֹ֜כֶת | 1.84s | 54% | 0:1 · -1:1 · -2:2 · 0:1 · -3:2 · -2:1 · 2:1 · 0:4 |
-| Toldot 26:7 | יַֽהַרְגֻ֜נִי | 1.76s | 58% | -3:2 · 0:2 · -4:1 · 2:2 · 0:1 · -12:1 · 0:2 |
+| Bereshit 1:9 | הַמַּ֜יִם | 1.74s | 66% | -3:3 · 0:3 · -4:1 · -3:2 · 2:2 · 0:4 |
+| Vayigash 44:18 | אֵלָ֜יו | 2.11s | 87% | -14:1 · -2:1 · -3:1 · -1:1 · -3:1 · 2:1 · 0:4 |
 
-- Chosen: example 1 (medoid, Σdist 6.33)
-- Motif: `-3:2 · 0:1 · -4:3 · 1:2 · -1:1 · 0:4`
+- Chosen: example 2 (medoid, Σdist 5)
+- Motif: `-3:3 · 0:3 · -4:1 · -3:2 · 2:2 · 0:4`
 - Warnings: (none)
 
 ### gershayim
 
 | Example | Word | Dur | Voiced% | Contour (p:d) |
 |---|---|---|---|---|
+| Chukat 19:4 | וְלָקַ֞ח | 2.42s | 72% | -6:1 · -4:2 · -2:2 · 0:2 · -5:2 · -4:2 · -2:2 · 0:3 |
 | Shemini 9:7 | וַעֲשֵׂ֞ה | 2.27s | 32% | -4:1 · -2:3 · 0:4 |
 | Pekudei 38:23 | אׇהֳלִיאָ֞ב | 2.21s | 44% | -4:1 · -2:2 · 0:1 |
-| Toldot 26:7 | וַֽיִּשְׁאֲל֞וּ | 2.32s | 52% | -4:1 · -2:3 · -1:3 · -2:2 · -4:3 · -1:1 · -2:2 · 0:4 |
 
-- Chosen: example 2 (medoid, Σdist 5)
+- Chosen: example 3 (medoid, Σdist 5)
 - Motif: `-4:1 · -2:2 · 0:1`
 - Warnings: low voiced ratio 44%
 
@@ -272,11 +272,11 @@ flip `verified` to `true`; re-runs keep verified entries).
 | Example | Word | Dur | Voiced% | Contour (p:d) |
 |---|---|---|---|---|
 | Chukat 19:13 | הַנֹּגֵ֡עַ | 2.71s | 86% | 0:2 · 1:1 · 2:1 · 3:2 · 6:1 · -5:1 · 2:1 · 0:3 |
-| Beshalach 13:21 | וַֽיהֹוָ֡ה | 3.67s | 75% | -3:1 · -2:2 · 0:1 · 2:1 · 3:1 · 5:3 · 2:2 · 0:4 |
+| Bereshit 1:21 | הָֽרֹמֶ֡שֶׂת | 3.57s | 54% | 0:2 · -2:3 · 3:1 · 4:2 · 7:2 · 5:1 · 2:1 · 0:1 |
 | Vayechi 48:15 | הָֽאֱלֹהִ֡ים | 3.72s | 85% | -2:4 · 1:1 · 3:1 · 5:1 · 7:1 · 5:1 · 2:1 · 0:3 |
 
-- Chosen: example 3 (medoid, Σdist 6.33)
-- Motif: `-2:4 · 1:1 · 3:1 · 5:1 · 7:1 · 5:1 · 2:1 · 0:3`
+- Chosen: example 2 (medoid, Σdist 5)
+- Motif: `0:2 · -2:3 · 3:1 · 4:2 · 7:2 · 5:1 · 2:1 · 0:1`
 - Warnings: note cap applied
 
 ### mercha_kefula

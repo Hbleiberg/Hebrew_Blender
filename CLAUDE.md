@@ -1087,7 +1087,11 @@ from `torah_trainer.html`.
   offline by **`node scripts/build-trope-index.mjs`** (plain Node, zero deps; `--source=export`
   default = Sefaria's public GCS text export, `--source=api` mirrors the live v3 endpoint; HTTP
   cache in gitignored `source-data/trope-cache/`). The builder excludes any aliyah whose word count
-  doesn't match its PocketTorah timings (sentinel rule applied first) — never a shifted clip — and
+  doesn't match its PocketTorah timings — never a shifted clip. Timings semantics (audio-audited
+  2026-07-22, mirrored in torah_trainer's `loadKaraoke`): a leading `0.0` is word 0's *nominal
+  onset*, NEVER a droppable lead-in sentinel; in the two files with one extra timing (Shemot-1,
+  Bamidbar-3) the extra value is a TRAILING end-of-last-word marker, dropped before the count
+  check. (The old leading-drop rule shifted those two aliyot one word late.) The builder also
   fails loudly on its Genesis 1:1 smoke test. It rewrites `docs/trope_index_report.md`; re-run it,
   commit both files together, AND bump the `?v=` on the page's index fetch (the sw.js `DATA_CACHE`
   matches exact URLs — the `?v=` bump is what refreshes returning users) whenever the taxonomy or

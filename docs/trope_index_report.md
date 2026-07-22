@@ -1,8 +1,8 @@
 # Trope index build report
 
-- **Built:** 2026-07-09
+- **Built:** 2026-07-22
 - **Source:** Sefaria public text export bucket (storage.googleapis.com/sefaria-export, Hebrew merged.json per Torah book)
-- **Output:** `data/trope/trope_index.json` — 75,346 bytes (budget 256,000)
+- **Output:** `data/trope/trope_index.json` — 75,340 bytes (budget 256,000)
 - **Aligned aliyot:** 320 of 378 (64,908 sung words)
 - **Selection:** words whose in-range marks (U+0591–05AF) map to exactly one trope key
   (single-occurrence marks preferred), clip 0.35–4s (8s for
@@ -14,13 +14,13 @@
 
 | Trope | Family | Candidates | Selected | Parshiyot | Rare |
 |---|---|---|---|---|---|
-| mercha | sofpasuk | 7213 | 40 | 40 |  |
-| tipcha | sofpasuk | 9007 | 40 | 40 |  |
+| mercha | sofpasuk | 7216 | 40 | 40 |  |
+| tipcha | sofpasuk | 9005 | 40 | 40 |  |
 | munach | sofpasuk | 7340 | 40 | 40 |  |
-| etnachta | sofpasuk | 4390 | 40 | 40 |  |
-| sof_pasuk | sofpasuk | 4354 | 40 | 40 |  |
+| etnachta | sofpasuk | 4387 | 40 | 40 |  |
+| sof_pasuk | sofpasuk | 4347 | 40 | 40 |  |
 | mahpach | katon | 2437 | 40 | 40 |  |
-| pashta | katon | 4359 | 40 | 40 |  |
+| pashta | katon | 4358 | 40 | 40 |  |
 | yetiv | katon | 302 | 40 | 40 |  |
 | zakef_katon | katon | 5295 | 40 | 40 |  |
 | zakef_gadol | katon | 379 | 40 | 40 |  |
@@ -31,7 +31,7 @@
 | darga | revia | 899 | 40 | 40 |  |
 | tevir | revia | 2156 | 40 | 40 |  |
 | kadma | geresh | 1644 | 40 | 40 |  |
-| geresh | geresh | 901 | 40 | 40 |  |
+| geresh | geresh | 900 | 40 | 40 |  |
 | geresh_muqdam | geresh | 0 | 0 | 0 | yes |
 | gershayim | geresh | 406 | 40 | 40 |  |
 | telisha_ketana | geresh | 375 | 40 | 40 |  |

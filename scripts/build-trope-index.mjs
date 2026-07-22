@@ -268,8 +268,13 @@ for (let i = 0; i < parshiyot.length; i++) {
       exclusions.push({ parsha: pocket, aliyah: suffix, reason: `timings file unreadable: ${labelFile}` });
       continue;
     }
+    // A leading 0.0 is word 0's (nominal) onset — never a lead-in sentinel. In the
+    // two files with one EXTRA timing (Shemot-1, Bamidbar-3), audio analysis shows
+    // the extra value is a TRAILING end-of-last-word marker; dropping the front
+    // instead (the old rule, inherited from a torah_trainer audit) shifted those
+    // clips one word late. Drop the trailing marker so word w = timings[w].
     if (timings.length > 1 && timings[0] === 0 && timings.length === words.length + 1) {
-      timings = timings.slice(1);
+      timings = timings.slice(0, -1);
     }
     if (timings.length !== words.length) {
       exclusions.push({

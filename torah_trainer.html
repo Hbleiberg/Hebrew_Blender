@@ -3490,20 +3490,15 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
     if (!r.ok) throw new Error(`timings ${r.status}`);
     const txt = await r.text();
     timings = txt.trim().split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
-    // A leading 0.0 in a PocketTorah label file is almost always the real onset of
-    // word 0 — NOT a lead-in sentinel. An offline audit of all 432 files (timing
-    // count vs. the aliyah's Hebrew word count, same tokenization the renderer uses)
-    // found that of the 307 aliyah files starting with 0.0, 304 have exactly one
-    // timing per word (the 0.0 is word 0) and only 2 are true sentinels (one extra
-    // timing). Blindly slicing the 0.0 therefore shifted 304 aliyot one word late.
-    // Decide per file: only drop the leading 0.0 when the file has exactly one MORE
-    // timing than the aliyah has words (a genuine sentinel). When the count isn't
-    // known (expectedWords == null) keep every timing — never strip.
-    if (timings.length > 1 && timings[0] === 0 &&
-        typeof expectedWords === 'number' && expectedWords > 0 &&
-        timings.length === expectedWords + 1) {
-      timings = timings.slice(1);
-    }
+    // A leading 0.0 in a PocketTorah label file is the (nominal) onset of word 0 —
+    // NEVER a lead-in sentinel. An offline audit of all 432 files found 304 of the
+    // 307 leading-0.0 files have exactly one timing per word, and audio analysis of
+    // the remaining 2 with one EXTRA timing (Shemot-1, Bamidbar-3; singing begins
+    // well before what a leading-drop would call word 0) shows the extra value is a
+    // TRAILING end-of-last-word marker, not a leading sentinel. So: never strip the
+    // front — word i is always timings[i]; a trailing extra value is harmless (and
+    // serves as the last word's end bound in the range player).
+    // (expectedWords retained by callers for potential diagnostics.)
   } catch (e) {
     setKaraokeStatus(I18n.t('torah.status.failed_timings', { error: e.message }));
     return;
