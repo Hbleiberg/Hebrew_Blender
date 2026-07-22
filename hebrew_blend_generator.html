@@ -672,12 +672,13 @@
     position: fixed; left: 0; bottom: 0;
     width: 320px; box-sizing: border-box;
     padding: 10px 16px;
+    display: flex; justify-content: center;   /* full-width bar, centered button */
     background: var(--white); border-top: 1px solid var(--border);
     box-shadow: 0 -3px 8px rgba(0,0,0,0.12);
     z-index: 90; transition: opacity 0.15s;
   }
   body.dark .gen-fab { background: #1e2535; }
-  .gen-fab .btn { width: 100%; margin: 0; }
+  .gen-fab .btn { width: auto; min-width: 200px; margin: 0; }
   .gen-fab.gen-fab-hidden { opacity: 0; pointer-events: none; }
   /* Reserve room so the fixed footer never hides the last slice of sidebar content. */
   .sidebar { padding-bottom: 70px; }
