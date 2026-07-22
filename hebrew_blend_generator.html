@@ -664,15 +664,16 @@
   }
   .btn-primary:hover { background: #b8821e; color: var(--white); }
 
-  /* Frozen "Generate" footer (desktop): keeps the primary action reachable without scrolling the
-     tall controls sidebar (S130 Pass-H friction; user-directed). Sticks to the sidebar bottom;
-     mobile already has the .mobile-fab bar. Hidden by JS while the inline #generateBtn is on
-     screen (see the genFab IntersectionObserver) so the two never show at once. */
+  /* Frozen "Generate" footer: keeps the primary action reachable without scrolling the tall
+     controls sidebar (S130 Pass-H friction; user-directed). A full-width bar with a centered
+     button, fixed to the bottom on every width (desktop = sidebar width; mobile = full screen).
+     Hidden by JS while the inline #generateBtn is on screen (see the genFab IntersectionObserver)
+     so the two never show at once. Replaces the old mobile-only .mobile-fab. */
   .gen-fab {
     position: fixed; left: 0; bottom: 0;
-    width: 320px; box-sizing: border-box;
+    width: 320px; box-sizing: border-box;       /* desktop = sidebar width; 100% on mobile below */
     padding: 10px 16px;
-    display: flex; justify-content: center;   /* full-width bar, centered button */
+    display: flex; justify-content: center;      /* full-width bar, centered button */
     background: var(--white); border-top: 1px solid var(--border);
     box-shadow: 0 -3px 8px rgba(0,0,0,0.12);
     z-index: 90; transition: opacity 0.15s;
@@ -682,7 +683,10 @@
   .gen-fab.gen-fab-hidden { opacity: 0; pointer-events: none; }
   /* Reserve room so the fixed footer never hides the last slice of sidebar content. */
   .sidebar { padding-bottom: 70px; }
-  @media (max-width: 700px) { .gen-fab { display: none; } .sidebar { padding-bottom: 12px; } }   /* mobile uses .mobile-fab */
+  @media (max-width: 700px) {
+    .gen-fab { width: 100%; }                    /* mobile: span the full (stacked) width */
+    .main-content { padding-bottom: 78px; }      /* clear the fixed footer over the worksheet */
+  }
   .btn-secondary {
     background: var(--navy);
     color: var(--white);
@@ -1897,29 +1901,13 @@
 
     .btn { font-size: 0.85rem; padding: 10px; }
 
-    /* Floating generate bar on mobile */
-    .mobile-fab {
-      display: flex;
-      gap: 8px;
-      position: sticky;
-      bottom: 0;
-      background: var(--white);
-      border-top: 1px solid var(--border);
-      padding: 10px 12px;
-      z-index: 100;
-      box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
-    }
-    .mobile-fab .btn { margin-top: 0; flex: 1; }
-    /* Let taps on a disabled FAB button fall through to the container so we can
-       explain why it's off (title tooltips don't show on touch). */
-    .mobile-fab button[disabled] { pointer-events: none; }
-
-    /* Hide desktop button group on mobile */
-    .desktop-buttons { display: none; }
+    /* The action group shows inline in the (stacked) sidebar on mobile too, matching desktop;
+       the old bottom .mobile-fab bar is retired in favor of the shared .gen-fab frozen footer. */
+    .desktop-buttons { display: block; }
   }
 
+  .mobile-fab { display: none; }   /* retired everywhere — replaced by the shared .gen-fab footer */
   @media (min-width: 701px) {
-    .mobile-fab { display: none; }
     .desktop-buttons { display: block; }
   }
 
@@ -6028,7 +6016,7 @@ function liveIsHeavyMode() {
 
 function livePulseGenerate(msg) {
   ['generateBtn'].forEach(id => document.getElementById(id)?.classList.add('pulse-attn'));
-  document.querySelector('.mobile-fab .btn-primary')?.classList.add('pulse-attn');
+  document.querySelector('#genFab button')?.classList.add('pulse-attn');
   if (msg) showPreviewNotice(msg, { kind: 'wait', dismissible: true });
 }
 function liveClearPulse() {
@@ -6156,7 +6144,7 @@ const TOUR_STEPS = [
     titleKey: 'worksheet.tour.vowels.title',
     bodyKey: 'worksheet.tour.vowels.body' },
   { target: () => { const g = document.getElementById('generateBtn');
-      return _tourVisible(g) ? g : document.querySelector('.mobile-fab .btn-primary'); },
+      return _tourVisible(g) ? g : document.querySelector('#genFab button'); },
     reveal: () => _tourOpenSidebar(),
     titleKey: 'worksheet.tour.generate.title',
     bodyKey: 'worksheet.tour.generate.body' },
