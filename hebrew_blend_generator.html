@@ -5859,13 +5859,30 @@ document.addEventListener('DOMContentLoaded', () => {
   function initGenFab() {
     const fab = document.getElementById('genFab');
     const inline = document.getElementById('generateBtn');
-    if (!fab || !inline || !('IntersectionObserver' in window)) return;
+    const sidebar = document.getElementById('appSidebar');
+    if (!fab || !inline || !sidebar) return;
+    // Span the footer to the sidebar's ACTUAL rendered width (content + padding + border) so there's
+    // no gap at its padded right edge on desktop; on mobile the CSS full-width rule handles it. A
+    // ResizeObserver keeps it aligned through window resizes and sidebar-width changes.
+    const sizeFab = () => {
+      if (window.innerWidth <= 700) { fab.style.left = ''; fab.style.width = ''; fab.style.display = ''; return; }
+      const r = sidebar.getBoundingClientRect();
+      if (r.width === 0) { fab.style.display = 'none'; return; }   // sidebar collapsed/hidden → no footer
+      fab.style.display = '';
+      fab.style.left = r.left + 'px';
+      fab.style.width = r.width + 'px';
+    };
+    sizeFab();
+    if ('ResizeObserver' in window) new ResizeObserver(sizeFab).observe(sidebar);
+    else window.addEventListener('resize', sizeFab);
     // The page (not the sidebar) scrolls, so observe against the viewport: hide the frozen footer
     // whenever the inline Generate button is itself on screen.
-    const io = new IntersectionObserver(es => {
-      fab.classList.toggle('gen-fab-hidden', es[0].isIntersecting);
-    }, { root: null, threshold: 0.2 });
-    io.observe(inline);
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(es => {
+        fab.classList.toggle('gen-fab-hidden', es[0].isIntersecting);
+      }, { root: null, threshold: 0.2 });
+      io.observe(inline);
+    }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initGenFab);
   else initGenFab();
