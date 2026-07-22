@@ -7,5 +7,8 @@ __pycache__/
 # build-trope-index.mjs HTTP cache (raw Sefaria text responses; re-fetched on demand)
 source-data/trope-cache/
 
+# build-trope-motifs.mjs MP3 cache (PocketTorah aliyah audio; re-fetched on demand)
+source-data/motif-cache/
+
 # Claude Code personal settings (project-local, not shared)
 .claude/settings.local.json
