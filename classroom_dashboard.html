@@ -6707,6 +6707,23 @@ async function onUploadEngFontPick(input){
     });
   }
 
+  // A11y: each settings toggle switch keeps its descriptive text in a sibling <label> that has
+  // no `for=`, so the checkbox itself was nameless to screen readers. Point aria-labelledby at
+  // that text (the inner [data-i18n] span when a tooltip shares the label, else the label
+  // itself) — aria-labelledby resolves the name live, so it follows an I18n language switch for
+  // free and needs no re-run on applyI18n.
+  function nameToggleSwitches() {
+    document.querySelectorAll('.form-row .toggle input[type="checkbox"]').forEach(cb => {
+      if (!cb.id || cb.getAttribute('aria-labelledby') || cb.getAttribute('aria-label')) return;
+      const row = cb.closest('.form-row'); if (!row) return;
+      const descLabel = [...row.querySelectorAll('label')].find(l => !l.classList.contains('toggle'));
+      if (!descLabel) return;
+      const textEl = descLabel.querySelector('[data-i18n]') || descLabel;
+      if (!textEl.id) textEl.id = 'swlbl_' + cb.id;
+      cb.setAttribute('aria-labelledby', textEl.id);
+    });
+  }
+
   /* ────────── INIT ────────── */
   document.addEventListener('DOMContentLoaded', () => {
     const isFirstVisit = localStorage.getItem('hebrewDashboard_settings') === null;
@@ -6717,6 +6734,7 @@ async function onUploadEngFontPick(input){
     initFontSelector();
     initEngFontSelector();
     initPanelCollapse();
+    nameToggleSwitches();
     setHebFont(settings.hebFont);
     setEngFont(settings.engFont);
     refreshMyFonts();
