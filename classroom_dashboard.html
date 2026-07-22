@@ -2925,6 +2925,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       const inp = document.createElement('input');
       inp.type = 'color';
       inp.className = 'color-pick-input';
+      inp.setAttribute('aria-label', def.name);   // a11y: name the picker by its vowel (matches the visible label)
       inp.value = getNikudColor(def.key);
       inp.addEventListener('input', () => {
         if (!settings.nikudColorOverrides) settings.nikudColorOverrides = {};
