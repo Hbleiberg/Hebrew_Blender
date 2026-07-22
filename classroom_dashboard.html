@@ -1537,8 +1537,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   </div>
 </header>
 <div id="zoomBar" style="background:var(--warm-gray);border-bottom:1px solid var(--border);padding:5px 20px;display:flex;align-items:center;gap:10px;font-size:0.78rem;color:var(--text);">
-  <span style="font-weight:600;white-space:nowrap;" data-i18n="dashboard.display.zoom_label">🔍 Zoom</span>
-  <input type="range" id="zoomSlider" min="50" max="200" step="5" value="100" style="flex:1;accent-color:var(--gold);cursor:pointer;">
+  <span id="zoomSliderLabel" style="font-weight:600;white-space:nowrap;" data-i18n="dashboard.display.zoom_label">🔍 Zoom</span>
+  <input type="range" id="zoomSlider" aria-labelledby="zoomSliderLabel" min="50" max="200" step="5" value="100" style="flex:1;accent-color:var(--gold);cursor:pointer;">
   <span id="zoomLabel" class="bidi-isolate" style="white-space:nowrap;min-width:36px;">100%</span>
   <button onclick="applyZoom(100)" style="font-size:0.7rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);cursor:pointer;" data-i18n="dashboard.display.zoom_reset">Reset</button>
   <span class="wake-dot zoom-wake-dot" role="img" title="Screen will stay awake" data-i18n-title="dashboard.display.wake_dot" aria-label="Screen will stay awake" data-i18n-aria-label="dashboard.display.wake_dot"></span>
@@ -2260,10 +2260,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     </div>
 
     <div class="form-row" style="margin-top:12px;flex-direction:column;align-items:stretch;gap:4px;">
-      <label style="font-size:0.78rem;font-weight:600;"><span data-i18n="dashboard.color.tts_speed_label">Hebrew TTS Reading Speed</span> <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;" data-i18n="dashboard.common.beta_badge">BETA</span></label>
+      <label style="font-size:0.78rem;font-weight:600;"><span id="ttsRateSliderLabel" data-i18n="dashboard.color.tts_speed_label">Hebrew TTS Reading Speed</span> <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;" data-i18n="dashboard.common.beta_badge">BETA</span></label>
       <div style="display:flex;align-items:center;gap:6px;">
         <span style="font-size:0.65rem;color:var(--muted);" data-i18n="dashboard.color.tts_slow">Slow</span>
-        <input type="range" id="ttsRateSlider" min="0.5" max="1.5" step="0.05" value="0.75" style="flex:1;accent-color:var(--gold);"
+        <input type="range" id="ttsRateSlider" aria-labelledby="ttsRateSliderLabel" min="0.5" max="1.5" step="0.05" value="0.75" style="flex:1;accent-color:var(--gold);"
                oninput="document.getElementById('ttsRateVal').textContent = parseFloat(this.value).toFixed(2) + '×'">
         <span id="ttsRateVal" style="font-size:0.72rem;color:var(--text);min-width:36px;text-align:right;">0.75×</span>
         <button class="btn btn-xs btn-secondary" style="padding:2px 6px;font-size:0.65rem;"
