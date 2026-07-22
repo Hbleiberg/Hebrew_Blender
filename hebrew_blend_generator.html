@@ -675,6 +675,9 @@
     padding: 10px 16px;
     display: flex; justify-content: center;      /* full-width bar, centered button */
     background: var(--white); border-top: 1px solid var(--border);
+    /* Match the sidebar's right divider: the fixed bar sits on top of the sidebar's border-right,
+       so without this its background blanks the tan/slate divider line for the footer's height. */
+    border-right: 1px solid var(--border);
     /* Negative spread keeps the lift-shadow pointing UP (content scrolls under the bar) without
        bleeding sideways past the sidebar's right divider into the main content. */
     box-shadow: 0 -4px 7px -4px rgba(0,0,0,0.18);
@@ -686,7 +689,7 @@
   /* Reserve room so the fixed footer never hides the last slice of sidebar content. */
   .sidebar { padding-bottom: 70px; }
   @media (max-width: 700px) {
-    .gen-fab { width: 100%; }                    /* mobile: span the full (stacked) width */
+    .gen-fab { width: 100%; border-right: none; } /* mobile: full (stacked) width; sidebar uses border-bottom, no right divider */
     .main-content { padding-bottom: 78px; }      /* clear the fixed footer over the worksheet */
   }
   .btn-secondary {
