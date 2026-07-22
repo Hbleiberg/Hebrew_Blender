@@ -4231,7 +4231,15 @@ function generateShareCode() {
   if (out) out.value = shareCodeEncode(payload);
 }
 // Announce a transient message to screen readers via the hidden #a11yStatus live region.
-function announce(msg) { const s = document.getElementById('a11yStatus'); if (s) s.textContent = msg; }
+// Mark Hebrew content lang="he" (per the suite's lang="he" chokepoint rule) so a screen reader
+// switches to a Hebrew voice instead of mis-voicing the glyphs; clear it for Latin content
+// (transliteration faces, the share-copied toast) so those stay in the ambient voice.
+function announce(msg) {
+  const s = document.getElementById('a11yStatus');
+  if (!s) return;
+  s.lang = /[\u0590-\u05FF]/.test(msg) ? 'he' : '';
+  s.textContent = msg;
+}
 // Read the visible text off a card face for the SR live region (falls back to card data when a
 // face renders as a non-text swatch, e.g. a plain color card). Content only — no i18n chrome.
 function faceText(el, card) {
