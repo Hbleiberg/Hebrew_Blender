@@ -265,7 +265,11 @@ body.dark .tu-family-note { background:#131a29; }
   background:var(--cream); display:flex; flex-direction:column;
 }
 body.dark .tu-card { background:#131a29; }
-.tu-card-head { display:flex; align-items:center; gap:12px; padding:12px 14px 8px; }
+.tu-card-head { display:flex; align-items:center; gap:12px; padding:12px 14px 8px; flex-wrap:wrap; row-gap:6px; }
+/* Motif staff: full size always — on narrow cards it wraps below the names to the
+   inline-end edge (margin-inline-start:auto) rather than scaling into illegibility.
+   Notation itself is inherently LTR (direction pinned; SVG coords are absolute). */
+.tu-motif { inline-size:165px; block-size:52px; flex-shrink:0; margin-inline-start:auto; color:var(--text); direction:ltr; }
 .tu-glyph {
   font-family:var(--heb-font); font-size:calc(var(--tu-heb-size) * 1.35); line-height:1.15;
   min-width:64px; min-height:64px; display:flex; align-items:center; justify-content:center;
@@ -768,7 +772,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <div class="footer-credits">
     <span>Hebrew text via <a href="https://www.sefaria.org" target="_blank" rel="noopener">Sefaria</a> · public domain (extracted at build time — this page never calls Sefaria)</span>
     <span>Cantillation audio © Russel Neiss &amp; Rabbi Charlie Schwartz, <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></span>
-    <span data-i18n="trope.footer.materials_note">Materials incorporating PocketTorah audio (including this page's example clips) are CC BY-SA 4.0.</span>
+    <span data-i18n="trope.footer.materials_note">Materials incorporating PocketTorah audio (including this page's example clips and notated melody motifs) are CC BY-SA 4.0.</span>
   </div>
   <div style="margin-top:10px;">
     <details>
@@ -1053,6 +1057,7 @@ let progress = JSON.parse(JSON.stringify(PROGRESS_DEFAULTS));
 
 let INDEX = null;        // data/trope/trope_index.json (validated)
 let MANIFEST = null;     // data/pockettorah/manifest.json (audioBase lookup)
+let MOTIFS = null;       // data/trope/trope_motifs.json (validated; null = no staffs)
 let currentFamily = 'sofpasuk';
 
 /* ══════════════════════════════════════════════════════
@@ -1208,11 +1213,13 @@ function setStatusKey(key, en, isError) {
 async function loadData() {
   setStatusKey('trope.status.loading_index', 'Loading the trope index…');
   try {
-    const [idxRes, manRes] = await Promise.all([
+    const [idxRes, manRes, motifRes] = await Promise.all([
       // ?v= is the DATA_CACHE refresh mechanism (sw.js serves /data/ cache-first,
       // matched by exact URL) — bump it whenever the committed index is rebuilt.
       fetch('data/trope/trope_index.json?v=1'),
       fetch('data/pockettorah/manifest.json'),
+      // ?v= bump rule applies here too (on every trope_motifs.json change).
+      fetch('data/trope/trope_motifs.json?v=1').catch(() => null),
     ]);
     if (!idxRes.ok || !manRes.ok) throw new Error('HTTP ' + idxRes.status + '/' + manRes.status);
     const idx = await idxRes.json();          // same-origin data/ corpus — trusted
@@ -1220,6 +1227,14 @@ async function loadData() {
     if (!idx || idx.v !== 1 || idx.system !== 'torah' || !idx.tropes) throw new Error('bad index shape');
     INDEX = idx;
     MANIFEST = man;
+    try {   // motifs are cosmetic — a bad/missing file must never take the index down
+      if (motifRes && motifRes.ok) {
+        // ivritSafeParse rather than res.json(): motif entries are hand-edited
+        // during by-ear verification, so treat the file like imported data.
+        const mot = ivritSafeParse(await motifRes.text());
+        if (mot && mot.v === 1 && mot.system === 'torah' && mot.tropes && typeof mot.tropes === 'object') MOTIFS = mot;
+      }
+    } catch (e) { console.warn('trope motifs load failed', e); }
     setStatus('');
   } catch (e) {
     console.warn('trope index load failed', e);
@@ -1229,6 +1244,11 @@ async function loadData() {
 }
 function examplesFor(key) {
   return (INDEX && INDEX.tropes && INDEX.tropes[key]) || [];
+}
+function motifFor(key) {
+  const m = MOTIFS && MOTIFS.tropes && MOTIFS.tropes[key];
+  return (m && Array.isArray(m.notes) && m.notes.length &&
+          m.notes.every(n => n && Number.isFinite(n.p) && Number.isFinite(n.d) && n.d > 0)) ? m : null;
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1403,6 +1423,81 @@ function renderMarkedWord(he, trope) {
 }
 
 /* ══════════════════════════════════════════════════════
+   MOTIF STAFF — hand-rolled inline SVG (createElementNS, no libraries).
+   Motif pitches are semitones relative to the reciting tone, notated with the
+   reference on B4 (middle line, treble clef, no key signature) — an octave
+   above the sung male voice, the conventional treble transposition.
+   ══════════════════════════════════════════════════════ */
+const SVG_NS = 'http://www.w3.org/2000/svg';
+function _svgEl(tag, attrs) {
+  const el = document.createElementNS(SVG_NS, tag);
+  for (const k in attrs) el.setAttribute(k, attrs[k]);
+  return el;
+}
+// Semitones-from-B4 → diatonic steps above the middle line + accidental.
+// Ascending spelled with sharps, descending with flats; beyond ±12 fold by
+// an octave (±7 diatonic steps).
+function motifPitchPos(p) {
+  const UP = [[0,''],[1,''],[1,'♯'],[2,''],[2,'♯'],[3,''],[4,''],[4,'♯'],[5,''],[5,'♯'],[6,''],[6,'♯']];
+  const DN = [[0,''],[0,'♭'],[-1,''],[-1,'♭'],[-2,''],[-2,'♭'],[-3,''],[-4,''],[-4,'♭'],[-5,''],[-5,'♭'],[-6,'']];
+  let oct = 0, q = Math.round(p);
+  while (q >= 12) { q -= 12; oct += 7; }
+  while (q <= -12) { q += 12; oct -= 7; }
+  const [step, acc] = q >= 0 ? UP[q] : DN[-q];
+  return { step: step + oct, acc };
+}
+function renderMotifStaff(t, motif) {
+  const W = 180, H = 56, MID = 28, STEP = 3, X0 = 30, XEND = W - 8;
+  const svg = _svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'tu-motif', role: 'img' });
+  svg.setAttribute('aria-label', I18n.t('trope.learn.motif_aria', { name: tropeName(t) }));
+  for (let i = -2; i <= 2; i++)
+    svg.appendChild(_svgEl('line', { x1: 1, y1: MID + i * 6, x2: W - 1, y2: MID + i * 6,
+      stroke: 'currentColor', 'stroke-width': 0.8, opacity: 0.55 }));
+  const clef = _svgEl('text', { x: 2, y: 38, 'font-size': 30, fill: 'currentColor', 'aria-hidden': 'true' });
+  clef.textContent = '\u{1D11E}';   // 𝄞 treble-clef symbol, not a UI string — i18n-ignore
+  svg.appendChild(clef);
+  // Horizontal slots ∝ d+1 (the +1 keeps short notes from cramping together).
+  const total = motif.notes.reduce((a, n) => a + (n.d + 1), 0);
+  let cum = 0;
+  motif.notes.forEach((n, i) => {
+    const share = n.d + 1;
+    const cx = X0 + ((cum + share / 2) / total) * (XEND - X0);
+    cum += share;
+    const { step, acc } = motifPitchPos(n.p);
+    const cy = MID - step * STEP;
+    const g = _svgEl('g', { class: 'tu-motif-note', 'data-i': i, 'data-d': n.d, 'aria-hidden': 'true' });
+    for (let s = 6; s <= step; s += 2)      // ledger lines above the staff
+      g.appendChild(_svgEl('line', { x1: cx - 6, y1: MID - s * STEP, x2: cx + 6, y2: MID - s * STEP,
+        stroke: 'currentColor', 'stroke-width': 0.8 }));
+    for (let s = -6; s >= step; s -= 2)     // and below
+      g.appendChild(_svgEl('line', { x1: cx - 6, y1: MID - s * STEP, x2: cx + 6, y2: MID - s * STEP,
+        stroke: 'currentColor', 'stroke-width': 0.8 }));
+    if (acc) {
+      const a = _svgEl('text', { x: cx - 12, y: cy + 3, 'font-size': 8, fill: 'currentColor' });
+      a.textContent = acc;
+      g.appendChild(a);
+    }
+    const open = n.d >= 3;                  // long tones drawn open (half-note style)
+    g.appendChild(_svgEl('ellipse', open
+      ? { cx, cy, rx: 3.4, ry: 2.5, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.2,
+          transform: 'rotate(-18 ' + cx + ' ' + cy + ')' }
+      : { cx, cy, rx: 3.4, ry: 2.5, fill: 'currentColor', transform: 'rotate(-18 ' + cx + ' ' + cy + ')' }));
+    const up = step < 0;                    // engraving convention: stem up below the middle line
+    const sx = up ? cx + 3.1 : cx - 3.1;
+    const sy2 = cy + (up ? -17 : 17);
+    g.appendChild(_svgEl('line', { x1: sx, y1: cy + (up ? -1 : 1), x2: sx, y2: sy2,
+      stroke: 'currentColor', 'stroke-width': 1.1 }));
+    if (n.d === 1) {                        // eighth flag off the stem tip
+      const dir = up ? 1 : -1;
+      g.appendChild(_svgEl('path', { d: 'M ' + sx + ' ' + sy2 + ' q 4.5 ' + (3 * dir) + ' 3 ' + (8.5 * dir),
+        fill: 'none', stroke: 'currentColor', 'stroke-width': 1.1 }));
+    }
+    svg.appendChild(g);
+  });
+  return svg;
+}
+
+/* ══════════════════════════════════════════════════════
    PROGRESS / MASTERY
    ══════════════════════════════════════════════════════ */
 function statsOf(key) {
@@ -1562,6 +1657,8 @@ function renderLearn() {
       names.appendChild(tag);
     }
     head.appendChild(names);
+    const motif = motifFor(t.key);
+    if (motif) head.appendChild(renderMotifStaff(t, motif));
     card.appendChild(head);
 
     if (TROPE_NOTES[t.key]) {
