@@ -663,6 +663,25 @@
     color: var(--navy);
   }
   .btn-primary:hover { background: #b8821e; color: var(--white); }
+
+  /* Frozen "Generate" footer (desktop): keeps the primary action reachable without scrolling the
+     tall controls sidebar (S130 Pass-H friction; user-directed). Sticks to the sidebar bottom;
+     mobile already has the .mobile-fab bar. Hidden by JS while the inline #generateBtn is on
+     screen (see the genFab IntersectionObserver) so the two never show at once. */
+  .gen-fab {
+    position: fixed; left: 0; bottom: 0;
+    width: 320px; box-sizing: border-box;
+    padding: 10px 16px;
+    background: var(--white); border-top: 1px solid var(--border);
+    box-shadow: 0 -3px 8px rgba(0,0,0,0.12);
+    z-index: 90; transition: opacity 0.15s;
+  }
+  body.dark .gen-fab { background: #1e2535; }
+  .gen-fab .btn { width: 100%; margin: 0; }
+  .gen-fab.gen-fab-hidden { opacity: 0; pointer-events: none; }
+  /* Reserve room so the fixed footer never hides the last slice of sidebar content. */
+  .sidebar { padding-bottom: 70px; }
+  @media (max-width: 700px) { .gen-fab { display: none; } .sidebar { padding-bottom: 12px; } }   /* mobile uses .mobile-fab */
   .btn-secondary {
     background: var(--navy);
     color: var(--white);
@@ -1950,6 +1969,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     .blend-cell.shuffling, .blend-cell-inv.shuffling { animation: none !important; }
     .timer-display.urgent { animation: none !important; }   /* keep the red colour, drop the blink */
     .rw-section-header::before { transition: none !important; }
+    .gen-fab { transition: none !important; }
   }
 
   /* ── Guided tour (ported from the Font Maker) ── */
@@ -3522,6 +3542,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
         </div>
       </div>
+    </div>
+
+    <!-- Frozen "Generate" footer (desktop) — always-reachable primary action; sticks to the sidebar bottom -->
+    <div class="gen-fab" id="genFab">
+      <button class="btn btn-primary" onclick="generate()" title="Generate the worksheet" data-i18n="worksheet.actions.generate_mob" data-i18n-title="worksheet.actions.generate">⬡ Generate</button>
     </div>
 
   </aside>
@@ -5837,6 +5862,24 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wireFab);
   else wireFab();
+})();
+
+/* ═══ Frozen Generate footer (desktop): hide it while the inline #generateBtn is on screen so the
+   two Generate buttons never show at once (S130 Pass-H friction; user-directed) ═══ */
+(function () {
+  function initGenFab() {
+    const fab = document.getElementById('genFab');
+    const inline = document.getElementById('generateBtn');
+    if (!fab || !inline || !('IntersectionObserver' in window)) return;
+    // The page (not the sidebar) scrolls, so observe against the viewport: hide the frozen footer
+    // whenever the inline Generate button is itself on screen.
+    const io = new IntersectionObserver(es => {
+      fab.classList.toggle('gen-fab-hidden', es[0].isIntersecting);
+    }, { root: null, threshold: 0.2 });
+    io.observe(inline);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initGenFab);
+  else initGenFab();
 })();
 
 /* ═══ Preview notice bar (recipe flash + live-preview messages) ═══ */
