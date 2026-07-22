@@ -270,6 +270,11 @@ body.dark .tu-card { background:#131a29; }
    inline-end edge (margin-inline-start:auto) rather than scaling into illegibility.
    Notation itself is inherently LTR (direction pinned; SVG coords are absolute). */
 .tu-motif { inline-size:165px; block-size:52px; flex-shrink:0; margin-inline-start:auto; color:var(--text); direction:ltr; }
+/* Playback highlight: a discrete color swap (no transition — sync stays crisp and
+   prefers-reduced-motion needs no special-casing). currentColor recolors the
+   note's head, stem, flag, ledger lines, and accidental in one rule. */
+.tu-motif-note.tu-motif-active { color:var(--gold-text); }
+body.dark .tu-motif-note.tu-motif-active { color:var(--gold-light); }
 .tu-glyph {
   font-family:var(--heb-font); font-size:calc(var(--tu-heb-size) * 1.35); line-height:1.15;
   min-width:64px; min-height:64px; display:flex; align-items:center; justify-content:center;
@@ -1058,6 +1063,10 @@ let progress = JSON.parse(JSON.stringify(PROGRESS_DEFAULTS));
 let INDEX = null;        // data/trope/trope_index.json (validated)
 let MANIFEST = null;     // data/pockettorah/manifest.json (audioBase lookup)
 let MOTIFS = null;       // data/trope/trope_motifs.json (validated; null = no staffs)
+// Dev-only motif audition (?debug=motifs): tap a card's staff to hear the
+// notated pitches as oscillator tones — for by-ear verification of the
+// machine-drafted transcriptions. Not a user-facing feature.
+const DEBUG_MOTIFS = new URLSearchParams(location.search).get('debug') === 'motifs';
 let currentFamily = 'sofpasuk';
 
 /* ══════════════════════════════════════════════════════
@@ -1263,6 +1272,7 @@ let _stopAt = null;          // when set, audio auto-pauses at this currentTime
 let _clipToken = 0;          // invalidates stale async play flows
 let _rafId = null;
 let _clipEndCb = null;
+let _clipProgressCb = null;  // per-play staff-highlight callback; called with currentTime, or null to clear
 const _badFiles = new Set(); // aliyah files that failed to load this session
 
 function clipFileKey(ex) { return ex.p + '|' + ex.a; }
@@ -1271,9 +1281,13 @@ function clipUrl(ex) {
   if (!m) return null;
   return POCKET_AUDIO_BASE + encodeURIComponent(m.audioBase + '-' + ex.a + '.mp3');
 }
+function _clearProgress() {  // fire-with-null contract: tells the owner to un-highlight
+  if (_clipProgressCb) { const cb = _clipProgressCb; _clipProgressCb = null; cb(null); }
+}
 function stopClip() {
   _clipToken++;
   _stopAt = null; _clipEndCb = null;
+  _clearProgress();
   if (_rafId) { cancelAnimationFrame(_rafId); _rafId = null; }
   if (!tuAudio.paused) tuAudio.pause();
   setStatus('');   // a superseded pending load bails on its token check and would leave "Loading audio…" stuck
@@ -1284,19 +1298,30 @@ function _clipTick() {
   if (tuAudio.currentTime >= _stopAt) {
     const cb = _clipEndCb;
     _stopAt = null; _clipEndCb = null;
+    _clearProgress();
     if (!tuAudio.paused) tuAudio.pause();
     if (cb) cb();
     return;
   }
+  if (_clipProgressCb) _clipProgressCb(tuAudio.currentTime);
   if (!tuAudio.paused) _rafId = requestAnimationFrame(_clipTick);
 }
 tuAudio.addEventListener('timeupdate', () => {   // background-tab fallback for the rAF watcher
   if (_stopAt !== null && tuAudio.currentTime >= _stopAt) {
     const cb = _clipEndCb;
     _stopAt = null; _clipEndCb = null;
+    _clearProgress();
     if (!tuAudio.paused) tuAudio.pause();
     if (cb) cb();
+  } else if (_stopAt !== null && _clipProgressCb) {
+    _clipProgressCb(tuAudio.currentTime);          // ~4 Hz highlight fallback when rAF is throttled
   }
+});
+tuAudio.addEventListener('pause', () => {
+  // A mid-clip pause (OS media keys) clears the highlight WITHOUT dropping the
+  // callback, so resuming re-highlights. Engine-driven pauses (clip end, stop,
+  // supersede) null _stopAt first, making this a no-op for them.
+  if (_stopAt !== null && _clipProgressCb) _clipProgressCb(null);
 });
 tuAudio.addEventListener('play', () => {
   tuAudio.playbackRate = settings.playbackRate ?? 1;   // iOS resets rate on src change/play
@@ -1304,7 +1329,9 @@ tuAudio.addEventListener('play', () => {
 });
 
 /**
- * Play one example clip. cbs: {onEnd, onError}.
+ * Play one example clip. cbs: {onEnd, onError, onProgress}.
+ * onProgress(currentTime) fires each watcher tick while the clip plays, and
+ * once with null when the highlight must clear (end/stop/supersede/error).
  * Never dead-ends a drill: a load/seek failure calls onError (the caller
  * substitutes another example); an autoplay block just leaves the ▶ button.
  */
@@ -1315,6 +1342,7 @@ async function playClip(ex, cbs) {
   if (!url || _badFiles.has(key)) { if (cbs.onError) cbs.onError(new Error('file unavailable')); return; }
   const token = ++_clipToken;
   _stopAt = null; _clipEndCb = null;
+  _clearProgress();   // supersede: the previous card's staff un-highlights now
   if (_rafId) { cancelAnimationFrame(_rafId); _rafId = null; }
   try {
     if (_curFileKey !== key) {
@@ -1344,6 +1372,7 @@ async function playClip(ex, cbs) {
     tuAudio.playbackRate = settings.playbackRate ?? 1;
     _stopAt = ex.e;
     _clipEndCb = cbs.onEnd || null;
+    _clipProgressCb = cbs.onProgress || null;
     await tuAudio.play();
     if (token !== _clipToken) return;
     setStatus('');
@@ -1351,6 +1380,7 @@ async function playClip(ex, cbs) {
   } catch (err) {
     if (token !== _clipToken) return;
     _stopAt = null; _clipEndCb = null;
+    _clearProgress();
     if (err && err.name === 'NotAllowedError') { setStatusKey('trope.status.tap_to_hear', 'Tap ▶ to hear the melody.'); return; }
     setStatus('');
     _badFiles.add(key);
@@ -1495,6 +1525,35 @@ function renderMotifStaff(t, motif) {
     svg.appendChild(g);
   });
   return svg;
+}
+
+/* Dev-only (?debug=motifs): play a motif as plain Web Audio oscillator tones
+   so a human can compare the notated draft against the recording by ear.
+   CSP-clean — no new origins. */
+let _dbgCtx = null, _dbgOscs = [];
+function auditionMotif(motif) {
+  stopClip();                                        // never fight the real clip engine
+  for (const o of _dbgOscs) { try { o.stop(); } catch (e) {} }
+  _dbgOscs = [];
+  if (!_dbgCtx) _dbgCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (_dbgCtx.state === 'suspended') _dbgCtx.resume();
+  const UNIT = 0.28;                                 // seconds per d unit
+  const REF_HZ = 246.94;                             // B3 — the sung octave of the notated B4
+  let t0 = _dbgCtx.currentTime + 0.03;
+  for (const n of motif.notes) {
+    const dur = n.d * UNIT;
+    const osc = _dbgCtx.createOscillator(), g = _dbgCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = REF_HZ * Math.pow(2, n.p / 12);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.25, t0 + 0.02);
+    g.gain.setValueAtTime(0.25, Math.max(t0 + 0.02, t0 + dur - 0.06));
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur - 0.005);
+    osc.connect(g); g.connect(_dbgCtx.destination);
+    osc.start(t0); osc.stop(t0 + dur);
+    _dbgOscs.push(osc);
+    t0 += dur;
+  }
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1658,7 +1717,14 @@ function renderLearn() {
     }
     head.appendChild(names);
     const motif = motifFor(t.key);
-    if (motif) head.appendChild(renderMotifStaff(t, motif));
+    if (motif) {
+      const staff = renderMotifStaff(t, motif);
+      if (DEBUG_MOTIFS) {
+        staff.style.cursor = 'pointer';
+        staff.addEventListener('click', () => auditionMotif(motif));
+      }
+      head.appendChild(staff);
+    }
     card.appendChild(head);
 
     if (TROPE_NOTES[t.key]) {
@@ -1716,14 +1782,44 @@ function renderLearn() {
   nextBtn.textContent = isLast ? I18n.t('trope.learn.ready_drill') : I18n.t('trope.learn.next_family');
 }
 
+/**
+ * Staff-highlight closure for one play of one example. True per-note timing is
+ * impossible (the motif stretches differently over every word), so note i is
+ * active while (currentTime − ex.s)/(ex.e − ex.s) < cumulative(d)/total(d) —
+ * proportional distribution, approximate by design. null clears.
+ */
+function makeMotifHighlighter(staffEl, ex) {
+  const groups = staffEl ? staffEl.querySelectorAll('.tu-motif-note') : [];
+  if (!groups.length || !(ex.e > ex.s)) return null;
+  const bounds = []; let total = 0, acc = 0;
+  groups.forEach(g => { total += (parseFloat(g.dataset.d) || 1); });
+  groups.forEach(g => { acc += (parseFloat(g.dataset.d) || 1); bounds.push(acc / total); });
+  let cur = -1;
+  return (time) => {
+    let next = -1;
+    if (time !== null) {
+      const frac = Math.min(Math.max((time - ex.s) / (ex.e - ex.s), 0), 0.999);
+      next = bounds.findIndex(b => frac < b);
+    }
+    if (next === cur) return;
+    if (cur >= 0) groups[cur].classList.remove('tu-motif-active');
+    if (next >= 0) groups[next].classList.add('tu-motif-active');
+    cur = next;
+  };
+}
 function playLearnExample(t, ex, btn) {
+  const staff = btn && btn.closest('.tu-card') ? btn.closest('.tu-card').querySelector('svg.tu-motif') : null;
   playClip(ex, {
+    onProgress: makeMotifHighlighter(staff, ex),
     onError: () => {
       // Swap in a different example for this trope rather than dead-ending.
       const alt = examplesFor(t.key).find(x => !_badFiles.has(clipFileKey(x)) && x !== ex);
       if (alt) {
         showToast(I18n.t('trope.toast.clip_trying_another'));
-        playClip(alt, { onError: () => showToast(I18n.t('trope.toast.audio_unavailable')) });
+        playClip(alt, {
+          onProgress: makeMotifHighlighter(staff, alt),   // alt has its own s/e window
+          onError: () => showToast(I18n.t('trope.toast.audio_unavailable'))
+        });
       } else {
         showToast(I18n.t('trope.toast.audio_unavailable'));
       }
