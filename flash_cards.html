@@ -1594,7 +1594,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <ul class="results-list" id="profileHistory" style="margin-top:0;"></ul>
           <p class="sub" id="profileHistoryEmpty" style="display:none;" data-i18n="flashcards.teachertools.history_empty">No saved results yet for this profile.</p>
           <div class="btn-row" style="margin-top:8px;">
-            <button class="btn gold" id="weaknessesBtn" style="flex:1;" data-i18n="flashcards.teachertools.practice_weaknesses">🎯 Practice My Weaknesses</button>
+            <button class="btn gold" id="weaknessesBtn" style="flex:1;" data-i18n="flashcards.teachertools.practice_weaknesses">🎯 Practice My Weak Cards</button>
             <button class="btn" id="viewWeaknessesBtn" style="flex:1;" data-i18n="flashcards.teachertools.view_weaknesses">📊 View Weaknesses</button>
           </div>
         </div>
@@ -1831,7 +1831,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <div class="results-actions">
     <button class="btn gold" id="saveResultsBtn" data-i18n="flashcards.results.save_button">💾 Save Results</button>
     <button class="btn primary" id="redoBtn" data-i18n="flashcards.results.redo">Redo This Card Set</button>
-    <button class="btn gold" id="mistakesBtn" data-i18n="flashcards.results.practice_mistakes">Practice My Mistakes</button>
+    <button class="btn gold" id="mistakesBtn" data-i18n="flashcards.results.practice_mistakes">Practice This Drill's Mistakes</button>
     <button class="btn ghost" id="backToSetupBtn" data-i18n="flashcards.results.return_to_options">Return to Options</button>
   </div>
 </section>
@@ -4232,6 +4232,13 @@ function generateShareCode() {
 }
 // Announce a transient message to screen readers via the hidden #a11yStatus live region.
 function announce(msg) { const s = document.getElementById('a11yStatus'); if (s) s.textContent = msg; }
+// Read the visible text off a card face for the SR live region (falls back to card data when a
+// face renders as a non-text swatch, e.g. a plain color card). Content only — no i18n chrome.
+function faceText(el, card) {
+  let t = (el && el.textContent || '').replace(/\s+/g, ' ').trim();
+  if (!t && card) t = card.translit || card.romanized || card.english || card.heb || '';
+  return t;
+}
 function copyShareCode() {
   const out = document.getElementById('shareCodeOutput');
   if (!out || !out.value) { generateShareCode(); }
@@ -5951,6 +5958,10 @@ function renderCurrentCard() {
   // Disable nav at edges (visual only)
   document.getElementById('prevBtn').disabled = (currentIndex === 0);
   // next stays enabled to allow skipping
+
+  // Announce the currently-visible face to screen-reader users (the card is a pointer/flip target
+  // with no inherent text semantics otherwise).
+  announce(faceText(isFlipped ? back : front, card));
 }
 
 function flipCard() {
@@ -5958,6 +5969,9 @@ function flipCard() {
   document.getElementById('fcCard').classList.toggle('flipped', isFlipped);
   hasFlipped[currentIndex] = true;
   document.querySelector('.fc-mark-row').classList.remove('hide');
+  // Announce the newly-revealed face to screen-reader users.
+  const card = currentCards[currentIndex];
+  if (card) announce(faceText(isFlipped ? document.getElementById('fcBackTr') : document.getElementById('fcFrontHeb'), card));
 }
 
 function applyMark(ok) {
@@ -6150,6 +6164,11 @@ function showResults() {
 
   mistakeIndices = idxs.filter(i => scores[i] === false || scores[i] === null);
   document.getElementById('mistakesBtn').disabled = mistakeIndices.length === 0;
+
+  // Auto-expand the per-card ✓/✗ breakdown when the student missed something (the "what to reteach"
+  // list); a perfect score keeps it collapsed so the score hero stays clean.
+  const resultsPanel = document.getElementById('panelResults');
+  if (resultsPanel) resultsPanel.classList.toggle('collapsed', mistakeIndices.length === 0);
 
   // Snapshot the finished drill so "Save Results" can store it to a profile
   lastDrillResult = buildResultObject();

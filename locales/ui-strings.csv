@@ -1056,7 +1056,7 @@ flashcards.results.mode_numbers,Numbers,מספרים,results-history mode label,
 flashcards.results.mode_words,Words,מילים,results-history mode label,
 flashcards.results.new_pb,· 🏆 New personal best!,· 🏆 שיא אישי חדש!,results summary suffix,leading-emoji
 flashcards.results.panel_title,Results,תוצאות,results panel title,
-flashcards.results.practice_mistakes,Practice My Mistakes,תרגלו את הטעויות שלי,results action button,REVIEW: imperative vs. noun phrasing
+flashcards.results.practice_mistakes,Practice This Drill's Mistakes,תרגלו את הטעויות בתרגול הזה,results action button,disambiguated from teacher-tools weak-cards
 flashcards.results.redo,Redo This Card Set,חזרו על סדרת הכרטיסים,results action button,
 flashcards.results.return_to_options,Return to Options,חזרה לאפשרויות,results action button,
 flashcards.results.save_button,💾 Save Results,💾 שמור תוצאות,results action button,leading-emoji
@@ -1092,7 +1092,7 @@ flashcards.teachertools.load_button,Load,טען,share-code load button,
 flashcards.teachertools.new_profile_button,＋ New,＋ חדש,new profile button,leading-emoji
 flashcards.teachertools.new_profile_button_title,Create a new profile,צור פרופיל חדש,new profile button title,aria-label only
 flashcards.teachertools.panel_title,Teacher Tools,כלי מורה,panel title,
-flashcards.teachertools.practice_weaknesses,🎯 Practice My Weaknesses,🎯 תרגלו את החולשות שלי,teacher-tools button,leading-emoji
+flashcards.teachertools.practice_weaknesses,🎯 Practice My Weak Cards,🎯 תרגלו את הקלפים החלשים שלי,teacher-tools button,leading-emoji; cross-session weak cards
 flashcards.teachertools.preset_name_placeholder,Preset name…,שם ההגדרה…,preset name input placeholder,placeholder
 flashcards.teachertools.presets_head,Presets,הגדרות שמורות,teacher-tools subheading,
 flashcards.teachertools.profiles_head,Profiles & Results,פרופילים ותוצאות,teacher-tools subheading,
@@ -2513,6 +2513,8 @@ fontmaker.whohas.space,the space,הרווח,glyph-owner phrase,
 fontmaker.workspace.resize_left_aria,Resize left panel,שינוי גודל הלוח השמאלי,left panel resize handle,aria-label only
 fontmaker.workspace.resize_right_aria,Resize right panel,שינוי גודל הלוח הימני,right panel resize handle,aria-label only
 fontmaker.workspace.steps_aria,Workspace step,שלב עבודה,workspace step tablist,aria-label only
+fontmaker.stage.canvas_aria,Glyph editing canvas — {glyph},משטח עריכת התו — {glyph},glyph edit canvas aria-label,aria-label only; {glyph}=localized glyph name
+fontmaker.stage.detect_canvas_aria,Letter detection canvas — drag to adjust the box around each letter,משטח זיהוי אותיות — גררו כדי להתאים את התיבה סביב כל אות,auto-detect modal canvas aria-label,aria-label only
 home.alltools.copy_button,Copy to Clipboard,העתקה ללוח,button,
 home.alltools.copy_done,✓ Copied,✓ הועתק,button state,leading-emoji
 home.alltools.copy_err_empty,Nothing to copy — export first.,אין מה להעתיק — ייצאו קודם.,alert,
