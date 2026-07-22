@@ -675,7 +675,9 @@
     padding: 10px 16px;
     display: flex; justify-content: center;      /* full-width bar, centered button */
     background: var(--white); border-top: 1px solid var(--border);
-    box-shadow: 0 -3px 8px rgba(0,0,0,0.12);
+    /* Negative spread keeps the lift-shadow pointing UP (content scrolls under the bar) without
+       bleeding sideways past the sidebar's right divider into the main content. */
+    box-shadow: 0 -4px 7px -4px rgba(0,0,0,0.18);
     z-index: 90; transition: opacity 0.15s;
   }
   body.dark .gen-fab { background: #1e2535; }
