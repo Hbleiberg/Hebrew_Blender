@@ -3113,6 +3113,8 @@
   "torah.settings.panel_vowel_color": "צביעת תנועות",
   "torah.settings.reset_all": "↺ איפוס כל הגדרות מאמן התורה",
   "torah.settings.title": "⚙️ הגדרות מאמן התורה",
+  "torah.shem.chip_label": "שם ה׳",
+  "torah.shem.chip_tip": "הקריאה כוללת שם קדוש. דף מודפס טעון גניזה — נהוג שלא להשליכו לאשפה.",
   "torah.status.aliyah_audio_unavailable": "השמע לעלייה {n} אינו זמין ב-PocketTorah.",
   "torah.status.audio_basename_missing": "שם קובץ השמע חסר במניפסט.",
   "torah.status.cant_determine_parsha": "לא ניתן לקבוע את הפרשה הנוכחית (ה-API של Sefaria לא נגיש).",

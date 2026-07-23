@@ -344,6 +344,15 @@ body.dark .tt-empty h2 { color:var(--gold-light); }
   display:flex; justify-content:space-between; align-items:center; gap:10px;
 }
 body.dark .tt-ref-hdr { color:var(--gold-light); }
+/* שם ה׳ chip — shown in the ref header when the loaded reading contains a
+   divine name (geniza awareness). Screen-only: print-hidden with the chrome. */
+.tt-shem-chip {
+  display:inline-block; font-size:0.68rem; font-weight:700; line-height:1;
+  font-family:var(--heb-font); color:var(--navy); background:var(--warm-gray);
+  border:1px solid var(--gold); border-radius:999px;
+  padding:3px 9px; margin-inline-start:8px; vertical-align:middle; cursor:pointer;
+}
+body.dark .tt-shem-chip { color:var(--gold-light); background:rgba(255,255,255,0.06); }
 .tt-ref-hdr .tt-readall {
   font-size:0.78rem; padding:4px 10px;
   background:var(--gold); color:var(--navy); border:none; border-radius:5px;
@@ -1040,7 +1049,7 @@ body.fullscreen #fsExitBtn { display: flex; }
      .tt-controls also covers #ttCustomPicker; the fixed-position drawer/backdrop/toast/tour
      otherwise re-stamp on EVERY printed page (position:fixed repeats per page in print). */
   header, .tt-controls, #ttStatus, .tt-readall, .tt-chantall, footer, .tt-empty,
-  .settings-modal, .settings-backdrop, #tipFloat, .tt-hint-toast, .tour-spot, .tour-card, #fsExitBtn { display:none !important; }
+  .settings-modal, .settings-backdrop, #tipFloat, .tt-hint-toast, .tour-spot, .tour-card, #fsExitBtn, .tt-shem-chip { display:none !important; }
 
   /* Never split a verse (or a side-by-side row) across a page break; best-effort —
      a verse taller than the page still breaks (browser overrides). */
@@ -2247,6 +2256,84 @@ const TETRAGRAMMATON_RE = /י[֑-ׇ]*ה[֑-ׇ]*ו[֑-ׇ]*ה/g;
 function replaceTetragrammaton(s) {
   return s ? s.replace(TETRAGRAMMATON_RE, 'אֲדֹנָי') : s;
 }
+/* ── Divine-name (שם ה׳) detection ──────────────────────────────
+   Scans the ORIGINAL fetched Hebrew (currentVerses[].hebrew — nikkud +
+   te'amim intact, never TTS-substituted) so teachers can be told when the
+   printed page carries a divine name and traditionally requires geniza.
+   Per-word, split on whitespace + maqaf like tokenizeHebrew. Letters-only
+   tests catch יהוה / the אלהים family / אלוה / צבאות / bare יה; pointed
+   tests disambiguate the lookalikes (אֵל vs אֶל "to", שַׁדַּי vs שְׂדֵי
+   "fields of", אֲדֹנָי vs אֲדֹנִי "my lord") via ORDER-AGNOSTIC mark-cluster
+   checks — Unicode canonical reordering may legally reorder a letter's marks,
+   so never test for a fixed mark sequence. אהיה is deliberately unmatched
+   (a common verb form; flagging every "I will be" would be noise). */
+let _readingHasShem = false;
+function _shemPointedCandidates(tok) {
+  // Nikkud+letters only: te'amim out, then meteg/paseq/sof-pasuk/nun-hafukha
+  // (those sit inside the U+05B0–05C7 "nikkud" block and would break the
+  // $-anchored tests on verse-final words like אֲדֹנָֽי׃).
+  let p = stripTeamim(tok).replace(/[^ְ-ׇא-ת]/g, '').replace(/[ֽ׀׃׆]/g, '');
+  // The word itself, then with 1 and 2 leading prefix letters (ו ב ל כ מ ש ה)
+  // stripped, each with its marks. Trying ALL candidates avoids the greedy-
+  // strip trap: the ש of שַׁדַּי is itself a prefix letter.
+  const out = [p];
+  let cur = p;
+  for (let i = 0; i < 2; i++) {
+    const m = cur.match(/^[ובלכמשה][ְ-ׇ]*(?=[א-ת])/);
+    if (!m) break;
+    cur = cur.slice(m[0].length);
+    out.push(cur);
+  }
+  return out;
+}
+function _shemWordIsDivine(tok) {
+  const letters = tok.replace(/[^א-ת]/g, '');
+  if (!letters) return false;
+  // Tetragrammaton, incl. prefixed ליהוה/ויהוה/ביהוה — no other word contains the sequence.
+  if (letters.indexOf('יהוה') !== -1) return true;
+  if (letters === 'יה') return true;   // bare Yah (Ex 15:2)
+  // Elohim family — stem אלהי, so אלה "these" can never match.
+  if (/^[ובלכמשה]{0,2}אלהי(ם|ך|ו|נו|כם|הם|הן)?$/.test(letters)) return true;
+  if (/^[ובלכמשה]{0,2}אלוה$/.test(letters)) return true;   // Eloah
+  if (letters === 'צבאות') return true;   // Tzevaot (haftarah scope prints Prophets text)
+  for (const c of _shemPointedCandidates(tok)) {
+    let m;
+    // אֵל standalone — tzere on the aleph (אֶל "to" has segol; ישראל/אלה/אלי end differently).
+    if ((m = c.match(/^א([ְ-ׇ]*)ל$/)) && m[1].indexOf('ֵ') !== -1) return true;
+    // Prefixed Yah (בְּיָהּ) — kamatz on the yod AND mappiq in the heh
+    // (הָיָה minus its ה prefix leaves יָה with no mappiq).
+    if ((m = c.match(/^י([ְ-ׇ]*)ה([ְ-ׇ]*)$/)) &&
+        m[1].indexOf('ָ') !== -1 && m[2].indexOf('ּ') !== -1) return true;
+    // שַׁדַּי — patach/kamatz on the shin AND dagesh in the dalet
+    // (שְׂדֵי "fields of" has shva; poetic שָׂדַי "my fields" has no dagesh).
+    if ((m = c.match(/^ש([ְ-ׇ]*)ד([ְ-ׇ]*)י$/)) &&
+        /[ַָ]/.test(m[1]) && m[2].indexOf('ּ') !== -1) return true;
+    // אֲדֹנָי — kamatz on the nun is the masoretic discriminator (אֲדֹנִי "my
+    // lord" has hiriq, אֲדֹנַי "my lords" patach). No aleph-vowel constraint,
+    // so the bare-aleph וַאדֹנָי (the prefix took the vowel) still matches.
+    if ((m = c.match(/^א([ְ-ׇ]*)ד([ְ-ׇ]*)נ([ְ-ׇ]*)י$/)) &&
+        m[3].indexOf('ָ') !== -1) return true;
+  }
+  return false;
+}
+function detectShem(verses) {
+  if (!verses) return false;
+  for (const v of verses) {
+    if (!v || !v.hebrew) continue;
+    for (const tok of v.hebrew.split(/[\s־]+/)) {
+      if (_shemWordIsDivine(tok)) return true;
+    }
+  }
+  return false;
+}
+// Sync the שם-dependent handout-bar rows (notice + geniza-marker opt-in).
+// Null-safe so it can run before the handout bar exists in the DOM.
+function updateHandoutShemUI() {
+  const note = document.getElementById('ttHandoutShemNote');
+  const row  = document.getElementById('ttHandoutGenizaRow');
+  if (note) note.hidden = !_readingHasShem;
+  if (row)  row.hidden  = !_readingHasShem;
+}
 function esc(s) {
   return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -2471,7 +2558,9 @@ function renderText() {
   // (mapped-timings path has no cheap verse-end boundary — see loopVerse note).
   const canLoop = canChant && settings.scope !== 'custom';
   let html = `<div class="tt-ref-hdr">
-    <span>${esc(currentRangeLabel)}</span>
+    <span>${esc(currentRangeLabel)}${_readingHasShem
+      ? ` <span class="tt-shem-chip" lang="he" data-i18n-tip="torah.shem.chip_tip" data-tip="${esc(I18n.t('torah.shem.chip_tip'))}">${esc(I18n.t('torah.shem.chip_label'))}</span>`
+      : ''}</span>
     <span style="display:flex;gap:6px;">
       <button class="tt-readall" id="ttReadAllBtn" onclick="toggleReadAll()" type="button">${ttsState.readAllActive ? esc(I18n.t('torah.reading.stop')) : esc(I18n.t('torah.reading.read_all'))}</button>
       ${canChant ? `<button class="tt-readall tt-chantall" id="ttChantAllBtn" onclick="toggleChantAll()" type="button">${chantAllState.active ? esc(I18n.t('torah.reading.chant_all_stop')) : esc(I18n.t('torah.reading.chant_all'))}</button>` : ''}
@@ -2490,6 +2579,10 @@ function renderText() {
     html += renderSideBySide(currentVerses, includeTranslit, includeTrans, wordIdxRef, canChant, canLoop, aStartByLabel);
   }
   root.innerHTML = html;
+  // The tooltip IIFE only auto-binds at DOMContentLoaded — the freshly-built
+  // chip needs an explicit bind each render for tap/keyboard accessibility.
+  const _shemChipEl = root.querySelector('.tt-shem-chip');
+  if (_shemChipEl && window.bindTip) bindTip(_shemChipEl);
   if (currentTimings && currentAudio) updateKaraokeWordRefs();
   // Re-apply the loop marker/button state to the freshly-built DOM (survives a
   // layout/font re-render of the same reading; the timing indices are unchanged).
@@ -2674,6 +2767,8 @@ async function fetchAndRender() {
   if (!r) {
     _readingLoading = false;
     currentVerses = null;
+    _readingHasShem = false;
+    updateHandoutShemUI();
     renderEmptyReading();
     setStatus(I18n.t('torah.status.pick_parsha'), false);
     return;
@@ -2707,6 +2802,8 @@ async function fetchAndRender() {
       }
     }
     currentVerses = verses;
+    _readingHasShem = detectShem(verses);   // before renderText so the chip renders in the same pass
+    updateHandoutShemUI();
     currentRangeLabel = r.label;
     netDone = true;   // all network work succeeded; anything that throws below is a render/code fault
     _readingLoading = false;

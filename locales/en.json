@@ -3113,6 +3113,8 @@
   "torah.settings.panel_vowel_color": "Vowel color coding",
   "torah.settings.reset_all": "↺ Reset all Torah Trainer settings",
   "torah.settings.title": "⚙️ Torah Trainer Settings",
+  "torah.shem.chip_label": "שם ה׳",
+  "torah.shem.chip_tip": "This reading contains God's name. A printed page traditionally requires geniza (respectful storage), not disposal.",
   "torah.status.aliyah_audio_unavailable": "Audio for aliyah {n} is not available in PocketTorah.",
   "torah.status.audio_basename_missing": "Audio basename missing in manifest.",
   "torah.status.cant_determine_parsha": "Could not determine the current parsha (Sefaria API unreachable).",

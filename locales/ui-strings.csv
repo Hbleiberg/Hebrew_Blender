@@ -2922,6 +2922,8 @@ torah.controls.custom_range_button,Custom range…,טווח מותאם…,button
 torah.controls.print_button,🖨️ Print,🖨️ הדפסה,button,leading-emoji
 torah.controls.print_title,Print this reading for students,הדפיסו את הקריאה עבור התלמידים,button title,
 torah.controls.print_need_reading,Load a parsha first to print.,טענו פרשה קודם כדי להדפיס.,toast,
+torah.shem.chip_label,שם ה׳,שם ה׳,chip in the reading header when a divine name is detected,pinned Hebrew in both languages by design
+torah.shem.chip_tip,"This reading contains God's name. A printed page traditionally requires geniza (respectful storage), not disposal.","הקריאה כוללת שם קדוש. דף מודפס טעון גניזה — נהוג שלא להשליכו לאשפה.",accessible tooltip on the שם ה׳ chip,
 torah.controls.holiday_group_label,Holiday Torah Readings,קריאות התורה לחגים,Parsha-picker optgroup header,
 torah.controls.layout_interlinear,Interlinear,בין־שורתי,layout radio,
 torah.controls.layout_label,Layout:,פריסה:,control label,
