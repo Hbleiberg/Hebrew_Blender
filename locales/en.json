@@ -1028,7 +1028,7 @@
   "flashcards.mode.sub_emoji": "Emoji",
   "flashcards.mode.sub_numbers": "Numbers",
   "flashcards.mode.sub_words": "Words",
-  "flashcards.mode.words_empty_state": "No word lists yet. <a href=\"hebrew_dictionary.html\">Create word lists in the Dictionary</a>, then come back to drill them here.",
+  "flashcards.mode.words_empty_state": "No word lists yet. <a href=\"hebrew_dictionary.html?wordlists=open\">Create word lists in the Dictionary</a>, then come back to drill them here.",
   "flashcards.mode.words_front_english": "English",
   "flashcards.mode.words_front_hebrew": "Hebrew",
   "flashcards.mode.words_length_label": "Word length:",

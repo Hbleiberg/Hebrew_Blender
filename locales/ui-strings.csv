@@ -1023,7 +1023,7 @@ flashcards.mode.sub_colors,Colors,צבעים,other-mode sub pill,
 flashcards.mode.sub_emoji,Emoji,אימוג׳י,other-mode sub pill,
 flashcards.mode.sub_numbers,Numbers,מספרים,other-mode sub pill,
 flashcards.mode.sub_words,Words,מילים,other-mode sub pill,
-flashcards.mode.words_empty_state,"No word lists yet. <a href=""hebrew_dictionary.html"">Create word lists in the Dictionary</a>, then come back to drill them here.","אין עדיין רשימות מילים. <a href=""hebrew_dictionary.html"">צרו רשימות מילים במילון</a>, ואז חזרו לכאן כדי לתרגל אותן.",words empty state,html (contains link)
+flashcards.mode.words_empty_state,"No word lists yet. <a href=""hebrew_dictionary.html?wordlists=open"">Create word lists in the Dictionary</a>, then come back to drill them here.","אין עדיין רשימות מילים. <a href=""hebrew_dictionary.html?wordlists=open"">צרו רשימות מילים במילון</a>, ואז חזרו לכאן כדי לתרגל אותן.",words empty state,html (contains link)
 flashcards.mode.words_front_english,English,אנגלית,words front pill,
 flashcards.mode.words_front_hebrew,Hebrew,עברית,words front pill,
 flashcards.mode.words_length_label,Word length:,אורך המילה:,words length row label,

@@ -3916,6 +3916,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // i18n: register the live re-render here (inside DOMContentLoaded) so the deferred /js/i18n.js has
   // executed and window.I18n exists — a top-level registration would run before i18n.js and be skipped.
   if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
+  // Deep-link (e.g. from Flash Cards' "My Word Lists" empty state): open the
+  // Word List manager straight away instead of landing on the plain Dictionary.
+  if (new URLSearchParams(location.search).get('wordlists') === 'open') {
+    const _openWL = () => { try { wlOpenManager(); } catch (e) {} };
+    (window.I18n && I18n.ready) ? I18n.ready.then(_openWL) : _openWL();
+  }
 });
 
 /* ===== i18n live-switch re-render ===== */
