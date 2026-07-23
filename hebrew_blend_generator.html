@@ -9872,7 +9872,7 @@ const cleanRealWordHeb = s => String(s || '').replace(/\s+\.?\s*$/u, '');
 let _realWordsPromise = null;
 function ensureRealWords() {
   if (_realWordsPromise) return _realWordsPromise;
-  _realWordsPromise = fetch('data/hebrew_words.json?v=5')
+  _realWordsPromise = fetch('data/hebrew_words.json?v=6')
     .then(r => r.json())
     .then(data => {
       REAL_WORDS = Object.entries(data).flatMap(([count, words]) =>

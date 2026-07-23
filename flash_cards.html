@@ -3112,7 +3112,7 @@ function wlGetListName(id) {
 }
 
 function fetchAllWordsData() {
-  return fetch('data/hebrew_words.json?v=5')
+  return fetch('data/hebrew_words.json?v=6')
     .then(r => r.json())
     .then(data => { ALL_WORDS_DATA = data; updateWordsCount(); })
     .catch(() => {

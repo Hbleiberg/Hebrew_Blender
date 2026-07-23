@@ -1999,7 +1999,7 @@ function updateDictLoadProgress(pct, received) {
   }
 }
 
-fetchJsonWithProgress('data/hebrew_words.json?v=5', updateDictLoadProgress)
+fetchJsonWithProgress('data/hebrew_words.json?v=6', updateDictLoadProgress)
   .then(data => {
     // Flatten in batches so slow devices don't block the main thread for the whole
     // ~13k-word pass (per-word calcGematria is the main cost). The loading UI stays up
