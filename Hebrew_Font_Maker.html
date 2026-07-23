@@ -4036,7 +4036,7 @@ function renderCustomGlyphsGrid() {
     return;
   }
   const delBtn = (cp, type) => `<button title="${esc(window.I18n ? I18n.t('fontmaker.panels.custom_del_title') : 'Delete glyph')}" onclick="event.stopPropagation();deleteCustomGlyph('${cp}','${type}')" style="position:absolute;top:1px;right:1px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:0.78rem;line-height:1;padding:2px;">✕</button>`;
-  const cvtBtn = cp => `<button title="Convert to a main glyph (gives it its own adjustable width)" onclick="event.stopPropagation();convertMarkToMain('${cp}')" style="position:absolute;top:1px;left:1px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:0.72rem;line-height:1;padding:2px;">↔</button>`;
+  const cvtBtn = cp => `<button title="${esc(window.I18n ? I18n.t('fontmaker.tip.convert_to_main') : 'Convert to a main glyph (gives it its own adjustable width)')}" onclick="event.stopPropagation();convertMarkToMain('${cp}')" style="position:absolute;top:1px;left:1px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:0.72rem;line-height:1;padding:2px;">↔</button>`;
   bases.forEach(l => {
     const st = l.anchors ? 'anchored' : (l.contours ? 'traced' : (l.source && l.source.dataUrl ? 'img' : ''));
     const tile = document.createElement('div');
@@ -4116,7 +4116,7 @@ function renderFormPanel(panelId, targets, intro) {
     const pv = traced ? formTilePreviewSVG(pc) : '';   // live composed outline (reflects the Width slider); font char until composable
     tile.innerHTML = `<span class="lt-dot ${traced ? 'traced' : ''}"></span>
       ${pv || `<span class="lt-heb" lang="he" style="font-family:${esc(project.template.font)};direction:rtl;">${precompComposed(pc)}</span>`}
-      <span class="lt-name">${esc(precompName(pc))}</span>${overridden ? `<span class="lt-need" title="You added a custom glyph at U+${t}; the exported font uses your custom outline, not this composed form.">custom glyph overrides</span>` : traced ? '' : `<span class="lt-need" title="Trace ${esc(need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">needs ${esc(need.map(chOf).join(' '))}</span>`}`;
+      <span class="lt-name">${esc(precompName(pc))}</span>${overridden ? `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.custom_glyph_overrides', {t}) : 'You added a custom glyph at U+' + t + '; the exported font uses your custom outline, not this composed form.')}">custom glyph overrides</span>` : traced ? '' : `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.trace_needs', {names: need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', ')}) : 'Trace ' + need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">needs ${esc(need.map(chOf).join(' '))}</span>`}`;
     tile.onclick = () => pickPrecompForm(t);
     grid.appendChild(tile);
   });
@@ -4987,7 +4987,7 @@ function adPickerOpen(boxId) {
   const traced = new Set(project.letters.filter(l => l.contours || (l.source && l.source.dataUrl)).map(l => l.codepoint));
   const core = _adCoreLetters();
   const opts = core.filter(L => !traced.has(L.cp)).concat(core.filter(L => traced.has(L.cp)));
-  let h = `<div class="ad-pick-title">Box ${b.id} — assign a letter</div><div class="ad-pick-grid" role="group" aria-label="Assign box ${b.id}">`;
+  let h = `<div class="ad-pick-title">${esc(window.I18n ? I18n.t('fontmaker.adpick.box_title', {id: b.id}) : 'Box ' + b.id + ' — assign a letter')}</div><div class="ad-pick-grid" role="group" aria-label="${esc(window.I18n ? I18n.t('fontmaker.aria.assign_box', {id: b.id}) : 'Assign box ' + b.id)}">`;
   opts.forEach(L => {
     const taken = traced.has(L.cp);
     h += `<button type="button" class="${taken ? 'taken' : ''}" onclick="adAssign(${b.id}, '${L.cp}')"`
@@ -7443,7 +7443,7 @@ function filletCommit() {
   const res = _filletLast || { done:0, skipped:0, newKeys:[] };
   nodeSel = new Set(res.newKeys);
   _filletBase = null; _filletLast = null;
-  status(`Rounded ${res.done} point${res.done===1?'':'s'}` + (res.skipped ? `; skipped ${res.skipped} (too straight or too short to round).` : '.'));
+  status((window.I18n ? I18n.t(res.done===1?'fontmaker.status.rounded_points.one':'fontmaker.status.rounded_points.other', {n: res.done}) : `Rounded ${res.done} point${res.done===1?'':'s'}`) + (res.skipped ? (window.I18n ? I18n.t('fontmaker.status.rounded_skipped', {k: res.skipped}) : `; skipped ${res.skipped} (too straight or too short to round).`) : '.'));
   renderStage(); renderControls();
 }
 function filletApply() {   // keyboard/precision path — one udDo, no slider burst
@@ -7454,7 +7454,7 @@ function filletApply() {   // keyboard/precision path — one udDo, no slider bu
     if (res.done) writeThrough(l);
   });
   nodeSel = new Set(res.newKeys);
-  status(`Rounded ${res.done} point${res.done===1?'':'s'}` + (res.skipped ? `; skipped ${res.skipped} (too straight or too short to round).` : '.'));
+  status((window.I18n ? I18n.t(res.done===1?'fontmaker.status.rounded_points.one':'fontmaker.status.rounded_points.other', {n: res.done}) : `Rounded ${res.done} point${res.done===1?'':'s'}`) + (res.skipped ? (window.I18n ? I18n.t('fontmaker.status.rounded_skipped', {k: res.skipped}) : `; skipped ${res.skipped} (too straight or too short to round).`) : '.'));
   renderStage(); renderControls();
 }
 
@@ -8666,7 +8666,7 @@ function precompJumpRow(l, cls, gridCps) {
 }
 function precompFormBtn(pc) {
   const custom = (markClassFor(pc.mark) !== 'center' && pc.anchor && pc.anchor.x != null) ? ' <span style="color:var(--gold);">✎</span>' : '';
-  return `<button class="ctl-btn ${precompTarget===pc.target?'primary':''}" onclick="setPrecompTarget('${pc.target}')" title="Place the ${esc(precompName(pc))} for ${esc(precompComposed(pc))}">`
+  return `<button class="ctl-btn ${precompTarget===pc.target?'primary':''}" onclick="setPrecompTarget('${pc.target}')" title="${esc(window.I18n ? I18n.t('fontmaker.tip.place_mark_for', {mark: precompName(pc), composed: precompComposed(pc)}) : 'Place the ' + precompName(pc) + ' for ' + precompComposed(pc))}">`
     + `<span style="font-family:var(--heb-font);direction:rtl;font-size:1.15rem;">${precompComposed(pc)}</span>${custom}</button>`;
 }
 function setPrecompTarget(t) {
@@ -8757,7 +8757,7 @@ function renderWideFormControls(pc) {
     const need = (pc.bases || [pc.base]).filter(cp => { const L = project.letters.find(x => x.codepoint === cp); return !(L && L.contours); })
       .map(cp => (letterMeta(cp) && letterMeta(cp).name) || ('U+' + cp));
     return `<div class="ws-side-title">${esc(precompName(pc))}</div>
-      <div class="hint">Trace ${need.map(esc).join(' and ')} first — this form is auto-composed from ${bases.map(esc).join(' + ')}.</div>
+      <div class="hint">${esc(window.I18n ? I18n.t('fontmaker.hint.trace_first_composed', {needs: need.join(' and '), bases: bases.join(' + ')}) : 'Trace ' + need.join(' and ') + ' first — this form is auto-composed from ' + bases.join(' + ') + '.')}</div>
       <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">← Back</button>`;
   }
   return `<div class="ws-side-title">${esc(precompName(pc))}</div>
@@ -9589,7 +9589,7 @@ function renderSpacingPanel() {
     <div class="hint" style="margin-top:-4px;">${I18n.t('fontmaker.panels.word_spacing_hint')}</div>
     <div class="inline">${I18n.t('fontmaker.panels.line_spacing')} <input type="range" min="0" max="500" step="10" value="${sp.lineSpacing}" oninput="setLineSpacing(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.line_spacing'))}"> <span id="lnV" class="readout">${sp.lineSpacing}</span></div>
     <label class="fld">${I18n.t('fontmaker.panels.sample_text')} <input type="text" id="spacingSample" dir="rtl" value="${esc(sp.sample)}" oninput="setSpacingSample(this.value)" onchange="udBurstCommit()"></label>
-    ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;">${customBaseLetters().map(l => `<button class="ctl-btn" style="padding:2px 8px;font-size:0.68rem;" onclick="insertSampleGlyph('${l.codepoint}')" title="Add ${esc(l.name || ('U+' + l.codepoint))} to the sample text (it can't be typed on a keyboard)">+ ${esc(l.name || ('U+' + l.codepoint))}</button>`).join('')}</div>` : ''}
+    ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;">${customBaseLetters().map(l => `<button class="ctl-btn" style="padding:2px 8px;font-size:0.68rem;" onclick="insertSampleGlyph('${l.codepoint}')" title="${esc(window.I18n ? I18n.t('fontmaker.tip.add_glyph_sample', {name: l.name || ('U+' + l.codepoint)}) : "Add " + (l.name || ('U+' + l.codepoint)) + " to the sample text (it can't be typed on a keyboard)")}">+ ${esc(l.name || ('U+' + l.codepoint))}</button>`).join('')}</div>` : ''}
     ${project.font.nikkud.enabled ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;align-items:center;"><span class="hint" style="font-size:0.66rem;">${I18n.t('fontmaker.panels.test_combos_label')}</span>${SAMPLE_TEST_COMBOS.map(c => { const s = sampleComboStr(c); return `<button class="ctl-btn" style="padding:2px 8px;font-size:0.8rem;" onclick="insertSampleCombo('${c}')" title="${esc(I18n.t('fontmaker.panels.test_combos_tip', { combo: s }))}">+ <span lang="he" style="font-family:var(--heb-font);direction:rtl;">${s}</span></button>`; }).join('')}</div>` : ''}
     <div class="hint">${I18n.t('fontmaker.panels.spacing_hint')}</div>
     <svg id="spacingPreviewSvg" style="width:100%;height:auto;max-height:170px;margin-top:4px;"></svg>
@@ -9763,7 +9763,7 @@ function renderWaterfall(L) {
     const hPx = Math.max(8, Math.round(vbH * px / UPM));   // UPM font units = px screen pixels at this size
     return `<div style="display:flex;align-items:center;gap:8px;">
       <span class="readout" style="min-width:44px;text-align:right;flex:0 0 auto;">${px} px</span>
-      <svg viewBox="${-pad} ${(-L.ascender-pad).toFixed(0)} ${vbW.toFixed(0)} ${vbH.toFixed(0)}" height="${hPx}" style="color:${color};flex:0 0 auto;" role="img" aria-label="Sample text at ${px} pixels">${spacingLineSVG(L, 0)}</svg>
+      <svg viewBox="${-pad} ${(-L.ascender-pad).toFixed(0)} ${vbW.toFixed(0)} ${vbH.toFixed(0)}" height="${hPx}" style="color:${color};flex:0 0 auto;" role="img" aria-label="${esc(window.I18n ? I18n.t('fontmaker.aria.sample_text_px', {px}) : 'Sample text at ' + px + ' pixels')}">${spacingLineSVG(L, 0)}</svg>
     </div>`;
   }).join('');
 }
@@ -10283,7 +10283,7 @@ function renderAlignUnder(U, l) {
     ? (l.contours && !isPunctItem() ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">Next: Nikkud →</button>` : '')
     : (curImageUrl() ? `<button class="ctl-btn primary" onclick="setWorkMode('trace')">Next: Trace →</button>` : '');
   const applyBtn = (curKind === 'letter' && !isVectorGlyph(l) && curImageUrl())
-    ? `<button class="ctl-btn" onclick="openApplyAlign()" title="Copy this letter's position & scale onto other letters">Apply alignment to other letters…</button>` : '';
+    ? `<button class="ctl-btn" onclick="openApplyAlign()" title="${esc(window.I18n ? I18n.t('fontmaker.tip.apply_align_other') : "Copy this letter's position & scale onto other letters")}">Apply alignment to other letters…</button>` : '';
   U.innerHTML = `
     <div class="ws-under-row" style="align-items:center;">
       <div class="ws-under-grow">${hint}</div>
@@ -10388,7 +10388,7 @@ function renderAnchorLeft(L, l) {
   const classBtns = visCls.map(k =>
     `<button class="ctl-btn ${cls===k?'primary':''}" style="${cls===k?`background:${ANCHOR_COL[k]};color:#fff;border-color:${ANCHOR_COL[k]};`:''}" onclick="setAnchorClass('${k}')">${anchorLabelT(k)}</button>`).join('');
   let grid = '';
-  const editBtn = cp => `<button class="ctl-btn" title="Redesign this mark's shape from dots & bars (or an image), then apply it to this letter or all letters" onclick="openMarkEdit('nikkud','${cp}')">✎ Edit shape</button>`;
+  const editBtn = cp => `<button class="ctl-btn" title="${esc(window.I18n ? I18n.t('fontmaker.tip.edit_mark_shape') : "Redesign this mark's shape from dots & bars (or an image), then apply it to this letter or all letters")}" onclick="openMarkEdit('nikkud','${cp}')">✎ Edit shape</button>`;
   if (cls === 'below') {
     const ndy = markNudgeDy(activeBelowVowel), vName = markName(activeBelowVowel);
     grid = `<div class="ws-side-title">${I18n.t('fontmaker.panels.preview_under_vowel')}</div>
