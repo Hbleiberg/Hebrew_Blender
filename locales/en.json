@@ -2987,6 +2987,7 @@
   "torah.controls.translit_toggle": "Translit",
   "torah.controls.version_label": "Version:",
   "torah.controls.version_loading": "Loading…",
+  "torah.copy.bulk_cb_aria": "Select verse {verseRef}",
   "torah.copy.bulk_count": "{count} selected",
   "torah.copy.bulk_hint": "While Select verses is on, clicking a verse selects it (instead of playing its words).",
   "torah.copy.bulk_mode": "Select verses",

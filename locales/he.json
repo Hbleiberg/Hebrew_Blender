@@ -2987,6 +2987,7 @@
   "torah.controls.translit_toggle": "תעתיק",
   "torah.controls.version_label": "גרסה:",
   "torah.controls.version_loading": "טוען…",
+  "torah.copy.bulk_cb_aria": "בחירת פסוק {verseRef}",
   "torah.copy.bulk_count": "{count} נבחרו",
   "torah.copy.bulk_hint": "כשבחירת פסוקים פעילה, לחיצה על פסוק בוחרת אותו (במקום להשמיע את מילותיו).",
   "torah.copy.bulk_mode": "בחירת פסוקים",

@@ -389,6 +389,7 @@ body.dark .tt-ref-hdr .tt-chantall { background:#0a0f1c; }
 .tt-verse {
   border-bottom:1px solid var(--border); padding:10px 0;
   display:flex; flex-direction:column; gap:4px;
+  position:relative;   /* anchors the interlinear bulk-select checkbox to the top-right corner */
 }
 .tt-verse:last-child { border-bottom:none; }
 .tt-verse-num {
@@ -452,6 +453,15 @@ body.dark .tt-looping { background: rgba(224,168,50,0.14); }
 }
 body.dark .tt-bulk-selected { background: rgba(224,168,50,0.16); }
 body.tt-bulk-mode #ttReading [data-vk] { cursor:pointer; }
+/* Per-verse bulk-select checkbox — hidden until "Select verses" mode is on
+   (mirrors the dictionary's .wc-bulk-cb). Placement per layout: absolute
+   top-right corner in interlinear; inline (in the vnum button stack / before
+   the bible-page verse number) elsewhere. State is driven by syncBulkClasses. */
+.tt-bulk-cb { display:none; accent-color:var(--gold); cursor:pointer; width:15px; height:15px; margin:0; vertical-align:middle; flex-shrink:0; }
+body.tt-bulk-mode .tt-bulk-cb { display:inline-block; }
+.tt-verse > .tt-bulk-cb { position:absolute; top:11px; inset-inline-end:2px; }
+body.tt-bulk-mode .tt-verse > .tt-bulk-cb { display:block; }
+.tt-bverse > .tt-bulk-cb { margin-inline-end:3px; }
 /* Audio-bar loop stop control (shown only while a loop is active). */
 .tt-audio-loopstop {
   background:var(--gold); color:var(--navy); border:none; border-radius:6px;
@@ -1060,6 +1070,7 @@ body.fullscreen #fsExitBtn { display: flex; }
   .tt-jumpnav, .tt-resume-chip, .tt-audio-bar, .tt-verse-buttons { display:none !important; }
   /* Bulk-select tint is a screen-only affordance — never ink. */
   .tt-bulk-selected { background:none !important; box-shadow:none !important; }
+  .tt-bulk-cb { display:none !important; }   /* selection checkbox is a screen-only affordance */
   /* Printed trope legend (S90): the reading prints its clause colors as underlines, so the
      color->family key belongs on paper too. Flatten the on-screen card, force the swatch
      backgrounds to print (print-color-adjust), and drop the interactive tutor link. The
@@ -2736,6 +2747,7 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant
     const aNum = aStartByLabel[numLabel];
     if (aNum > 1) html += aliyahDividerHTML(aNum, numLabel);
     html += `<div class="tt-verse" data-vk="${esc(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}>`;
+    html += `    <input type="checkbox" class="tt-bulk-cb" aria-label="${esc(I18n.t('torah.copy.bulk_cb_aria',{verseRef:numLabel}))}"${ttBulkSelected.has(numLabel) ? ' checked' : ''}>`;
     html += `  <div class="tt-verse-row" style="align-items:center;">`;
     html += `    <span class="tt-verse-num">${esc(numLabel)}</span>`;
     html += `    <span class="tt-verse-buttons">`;
@@ -2801,6 +2813,7 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant,
     if (aNum > 1) html += aliyahDividerHTML(aNum, numLabel);
     html += `<div class="tt-grid-row" data-vk="${esc(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}>`;
     html += `<span class="tt-vnum">${numLabel}<span class="tt-verse-buttons" style="display:flex;flex-direction:column;gap:3px;margin-top:4px;margin-left:0;">`;
+    html += `<input type="checkbox" class="tt-bulk-cb" aria-label="${esc(I18n.t('torah.copy.bulk_cb_aria',{verseRef:numLabel}))}"${ttBulkSelected.has(numLabel) ? ' checked' : ''}>`;
     html += `<button class="tt-speak" onclick="speakVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_read_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_read'))}</button>`;
     if (canChant) html += `<button class="tt-chant" onclick="chantVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_chant_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_chant'))}</button>`;
     if (canLoop) html += `<button class="tt-loop" onclick="loopVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_loop_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_loop'))}</button>`;
@@ -2840,7 +2853,7 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant, 
     const aNum = aStartByLabel[numLabel];
     // Inline aliyah marker keeps the running-text flow intact (no block break).
     if (aNum > 1) html += `<span class="tt-aliyah-inline" id="tt-aliyah-${aNum}" dir="rtl">${esc(I18n.t('torah.reading.aliyah_inline', { n: aNum }))}</span> `;
-    html += `<span class="tt-bverse" data-vk="${esc(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}><sup class="tt-bnum">${esc(numLabel)}</sup><span class="tt-heb" lang="he">${hebHtml}</span></span> `;
+    html += `<span class="tt-bverse" data-vk="${esc(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}><input type="checkbox" class="tt-bulk-cb" aria-label="${esc(I18n.t('torah.copy.bulk_cb_aria',{verseRef:numLabel}))}"${ttBulkSelected.has(numLabel) ? ' checked' : ''}><sup class="tt-bnum">${esc(numLabel)}</sup><span class="tt-heb" lang="he">${hebHtml}</span></span> `;
   }
   html += '</p>';
   // Transliteration block (uses the Hebrew word indices captured above)
@@ -5203,10 +5216,16 @@ function selectAllVerses() {
   currentVerses.forEach(v => ttBulkSelected.add(`${v.chapter}:${v.verse}`));
   syncBulkClasses(); updateCopyTextarea();
 }
-// Re-apply selection classes to a freshly-built #ttReading (renderText rebuilds innerHTML).
+// Re-apply selection tint + checkbox state to a freshly-built #ttReading (renderText
+// rebuilds innerHTML, recreating the checkboxes; also reconciles the native checkbox
+// flip after a click-through toggle so state always matches ttBulkSelected).
 function syncBulkClasses() {
-  document.querySelectorAll('#ttReading [data-vk]').forEach(el =>
-    el.classList.toggle('tt-bulk-selected', ttBulkSelected.has(el.dataset.vk)));
+  document.querySelectorAll('#ttReading [data-vk]').forEach(el => {
+    const sel = ttBulkSelected.has(el.dataset.vk);
+    el.classList.toggle('tt-bulk-selected', sel);
+    const cb = el.querySelector('.tt-bulk-cb');
+    if (cb) cb.checked = sel;
+  });
 }
 // Textarea/count refresh — output in currentVerses (reading) order, never click order.
 function updateCopyTextarea() {

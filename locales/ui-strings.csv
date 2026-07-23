@@ -2943,6 +2943,7 @@ torah.copy.title,Copy verses,העתקת פסוקים,copy options bar title,
 torah.copy.inc_ref,Include verse numbers,כולל מספרי פסוקים,copy option toggle,
 torah.copy.inc_trans,Include translation,כולל תרגום,copy option toggle,
 torah.copy.inc_translit,Include transliteration,כולל תעתיק,copy option toggle,
+torah.copy.bulk_cb_aria,Select verse {verseRef},בחירת פסוק {verseRef},per-verse bulk-select checkbox aria-label,aria-label only
 torah.copy.wysiwyg_hint,Nikkud and te'amim copy as shown on screen — change them with the display toggles.,ניקוד וטעמים מועתקים כפי שהם מוצגים על המסך — ניתן לשנותם באמצעות מתגי התצוגה.,copy bar hint line,
 torah.copy.bulk_mode,Select verses,בחירת פסוקים,bulk select toggle,
 torah.copy.bulk_hint,"While Select verses is on, clicking a verse selects it (instead of playing its words).","כשבחירת פסוקים פעילה, לחיצה על פסוק בוחרת אותו (במקום להשמיע את מילותיו).",bulk hint,
