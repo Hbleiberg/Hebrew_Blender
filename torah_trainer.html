@@ -353,6 +353,15 @@ body.dark .tt-ref-hdr { color:var(--gold-light); }
   padding:3px 9px; margin-inline-start:8px; vertical-align:middle; cursor:pointer;
 }
 body.dark .tt-shem-chip { color:var(--gold-light); background:rgba(255,255,255,0.06); }
+/* Handout-bar שם-dependent rows: .tt-ctrl's inline-flex would beat the hidden
+   attribute (same trap as .tt-trope-legend[hidden]) — make hidden win. */
+#ttHandoutShemNote[hidden], #ttHandoutGenizaRow[hidden] { display:none; }
+#ttHandoutGenizaRow label[for="ttHandoutGeniza"] { white-space:normal; }
+.tt-handout-shem-note { font-size:0.72rem; font-weight:600; color:var(--navy); max-width:420px; white-space:normal; }
+body.dark .tt-handout-shem-note { color:var(--gold-light); }
+/* Printed geniza marker — screen-hidden; shown only by the print block's
+   body.tt-handout-geniza rule. */
+#ttGenizaMark { display:none; }
 .tt-ref-hdr .tt-readall {
   font-size:0.78rem; padding:4px 10px;
   background:var(--gold); color:var(--navy); border:none; border-radius:5px;
@@ -1103,6 +1112,24 @@ body.fullscreen #fsExitBtn { display: flex; }
      drift onto paper. Collapse to the existing ≤720px single-column layout — sequential
      and correct, if not parallel. */
   .tt-grid, .tt-grid.has-translit { grid-template-columns:1fr; }
+
+  /* ── Student handout (transient body classes set by printHandout; the
+     teacher's layout is unchanged — side-by-side collapses above). The
+     body-level --tt-heb-size beats applyFontSizes' documentElement inline
+     var for every reading element (.tt-heb / .tt-cell.heb / .tt-bible-heb). */
+  body.tt-handout-size-large { --tt-heb-size:2.2rem; }
+  body.tt-handout-size-xl    { --tt-heb-size:2.8rem; }
+  body.tt-handout-hidenums .tt-verse-num,
+  body.tt-handout-hidenums .tt-vnum,
+  body.tt-handout-hidenums .tt-bnum { display:none !important; }
+  /* Geniza footer: prints ONLY when the teacher opted in AND a divine name
+     was detected (body.tt-handout-geniza gates both). Literal ink colors —
+     the print block already forces light paper. */
+  body.tt-handout-geniza #ttGenizaMark {
+    display:block; text-align:end; margin-block-start:20px;
+    font-size:0.85rem; font-weight:700; color:#333;
+    border-block-start:1px solid #999; padding-block-start:6px;
+  }
 }
 
 /* Keyboard-operable font upload (suite-wide S54): `hidden` (display:none) removed the file
@@ -1218,6 +1245,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <span class="tt-ctrl">
     <button id="ttPrintBtn" class="btn btn-xs btn-secondary" onclick="printReading()" type="button" data-i18n="torah.controls.print_button" data-i18n-title="torah.controls.print_title" title="Print this reading for students">🖨️ Print</button>
   </span>
+  <span class="tt-ctrl">
+    <button id="ttHandoutBtn" class="btn btn-xs btn-secondary" onclick="toggleHandoutBar()" type="button" aria-expanded="false" aria-controls="ttHandoutBar" data-i18n="torah.handout.button" data-i18n-title="torah.handout.button_title" title="Print a clean Hebrew-only handout for students">🎓 Student handout</button>
+  </span>
 </div>
 
 <div id="ttCustomPicker" class="tt-controls" style="display:none;border-top:1px dashed var(--border);">
@@ -1244,6 +1274,35 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <button class="btn btn-xs" onclick="applyCustomRange()" type="button" data-i18n="torah.custom.go_button">Go</button>
 </div>
 
+<!-- Student handout: options bar (same inline-disclosure pattern as #ttCustomPicker).
+     Print-hidden automatically via the .tt-controls entry in the print chrome hide-list. -->
+<div id="ttHandoutBar" class="tt-controls" style="display:none;border-top:1px dashed var(--border);" role="group" aria-labelledby="ttHandoutTitle">
+  <span class="tt-ctrl"><strong id="ttHandoutTitle" data-i18n="torah.handout.title">Student handout</strong></span>
+  <span class="tt-ctrl">
+    <label for="ttHandoutHideNikkud" data-i18n="torah.handout.hide_nikkud">Hide nikkud (vowels)</label>
+    <label class="toggle"><input type="checkbox" id="ttHandoutHideNikkud"><span class="slider"></span></label>
+  </span>
+  <span class="tt-ctrl">
+    <label for="ttHandoutHideNums" data-i18n="torah.handout.hide_nums">Hide verse numbers</label>
+    <label class="toggle"><input type="checkbox" id="ttHandoutHideNums"><span class="slider"></span></label>
+  </span>
+  <span class="tt-ctrl">
+    <label data-i18n="torah.handout.font_size">Font size:</label>
+    <span class="radio-group">
+      <input type="radio" name="ttHandoutSize" id="hsNormal" value="normal"><label for="hsNormal" data-i18n="torah.handout.size_normal">Normal</label>
+      <input type="radio" name="ttHandoutSize" id="hsLarge" value="large"><label for="hsLarge" data-i18n="torah.handout.size_large">Large</label>
+      <input type="radio" name="ttHandoutSize" id="hsXL" value="xl"><label for="hsXL" data-i18n="torah.handout.size_xl">Extra large</label>
+    </span>
+  </span>
+  <span class="tt-ctrl" id="ttHandoutGenizaRow" hidden>
+    <label for="ttHandoutGeniza" data-i18n="torah.handout.geniza_check">Add a לגניזה marker to the printed page</label>
+    <label class="toggle"><input type="checkbox" id="ttHandoutGeniza"><span class="slider"></span></label>
+  </span>
+  <span class="tt-ctrl tt-handout-shem-note" id="ttHandoutShemNote" hidden data-i18n="torah.handout.shem_note">This reading contains שם ה׳ — printed pages traditionally go to geniza, not the trash.</span>
+  <button class="btn btn-xs" onclick="printHandout()" type="button" data-i18n="torah.handout.print_button">🖨️ Print handout</button>
+  <button class="btn btn-xs btn-secondary" onclick="toggleHandoutBar()" type="button" data-i18n="torah.handout.cancel">Cancel</button>
+</div>
+
 <div class="tt-page">
   <div class="tt-status" id="ttStatus" role="status" aria-live="polite"></div>
   <!-- In-page nav: aliyah jump chips + "you are here" readout (long readings). -->
@@ -1255,6 +1314,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <a class="tt-trope-link" id="ttTropeTutorLink" hidden data-i18n="torah.trope_legend.tutor_link">Learn the trope names →</a>
   </div>
   <div class="tt-reading" id="ttReading" tabindex="-1"></div>
+  <!-- i18n-ignore: printed handout output — pinned Hebrew content, not UI chrome.
+       Screen-hidden; shown only by the print block's body.tt-handout-geniza rule.
+       Never contains the Tetragrammaton. -->
+  <div id="ttGenizaMark" lang="he" dir="rtl">לגניזה</div>
 </div>
 </main>
 
@@ -1603,6 +1666,11 @@ const DEFAULTS = {
   karaokeBarCollapsed: false,
   karaokeStyle: 'highlight',   // 'highlight' | 'outline' | 'underline' | 'none'
   karaokeFollow: 'hebrew',     // 'hebrew' | 'translit'
+  // Student handout (print-flow options; the transient print override itself is never persisted)
+  handoutHideNikkud: false,    // strip nikkud on the printed handout
+  handoutHideNums: false,      // hide verse numbers on the printed handout
+  handoutFontSize: 'large',    // 'normal' (screen size) | 'large' (2.2rem) | 'xl' (2.8rem)
+  handoutGenizaMark: false,    // print a לגניזה footer when a divine name is detected
 };
 let settings = JSON.parse(JSON.stringify(DEFAULTS));
 
@@ -1619,6 +1687,7 @@ let textCache = new Map();  // key: ref+version → verses array
    ══════════════════════════════════════════════════════ */
 let _saveTimer = null;
 function saveSettings() {
+  if (_handoutActive) return;   // transient handout print override must never persist
   if (_saveTimer) clearTimeout(_saveTimer);
   _saveTimer = setTimeout(() => {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); }
@@ -4553,6 +4622,21 @@ function wireSettingsForm() {
     t.addEventListener('click', toggle);
     t.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
   });
+  // Student handout bar options → persisted handout* fields
+  document.getElementById('ttHandoutHideNikkud').addEventListener('change', e => {
+    settings.handoutHideNikkud = e.target.checked; saveSettings();
+  });
+  document.getElementById('ttHandoutHideNums').addEventListener('change', e => {
+    settings.handoutHideNums = e.target.checked; saveSettings();
+  });
+  document.querySelectorAll('input[name="ttHandoutSize"]').forEach(r => {
+    r.addEventListener('change', e => {
+      if (e.target.checked) { settings.handoutFontSize = e.target.value; saveSettings(); }
+    });
+  });
+  document.getElementById('ttHandoutGeniza').addEventListener('change', e => {
+    settings.handoutGenizaMark = e.target.checked; saveSettings();
+  });
   // ESC closes drawer
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && document.getElementById('settingsModal').classList.contains('open')) closeSettings();
@@ -4864,6 +4948,88 @@ function printReading() {
   if (!currentVerses || !currentVerses.length) { showHintToast(I18n.t('torah.controls.print_need_reading')); return; }
   window.print();
 }
+/* ── Student handout: temporary Hebrew-only view → print → restore ──
+   The teacher's persisted settings never change: enter snapshots the three
+   display toggles, forces them off (turning a toggle OFF never needs a
+   Sefaria fetch), re-renders, prints; exit restores + re-renders. Enter/exit
+   are separately callable so headless tests can drive them (window.print()
+   blocks there). Idempotent via _handoutActive; saveSettings() is a no-op
+   while active. */
+let _handoutActive = false;
+let _handoutSnap = null;
+function _handoutEnter() {
+  if (_handoutActive) return;
+  // Flush any PENDING debounced save with the PRE-override values (the verse
+  // observer's saveLastPos may have scheduled one) so the 300 ms timer can't
+  // fire mid-override and persist the forced-off toggles.
+  if (_saveTimer) {
+    clearTimeout(_saveTimer); _saveTimer = null;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); } catch (e) {}
+  }
+  _handoutActive = true;
+  // Stop ALL audio/TTS before the rebuild — renderText() replaces #ttReading,
+  // orphaning karaoke word refs and mid-chain read/chant handlers.
+  clearLoop();
+  if (ttsState.readAllActive) stopReadAll();
+  if (chantAllState.active) stopChantAll();
+  pauseKaraoke(); clearKaraokeHighlight();
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  _handoutSnap = {
+    showTranslit: settings.showTranslit,
+    showTranslation: settings.showTranslation,
+    showNikkud: settings.showNikkud,
+  };
+  settings.showTranslit = false;
+  settings.showTranslation = false;
+  if (settings.handoutHideNikkud) settings.showNikkud = false;
+  const b = document.body;
+  const fs = settings.handoutFontSize || 'large';
+  b.classList.add('tt-handout-print');
+  b.classList.toggle('tt-handout-hidenums', !!settings.handoutHideNums);
+  b.classList.toggle('tt-handout-size-large', fs === 'large');
+  b.classList.toggle('tt-handout-size-xl', fs === 'xl');
+  b.classList.toggle('tt-handout-geniza', !!(settings.handoutGenizaMark && _readingHasShem));
+  renderText();
+}
+function _handoutExit() {
+  if (!_handoutActive) return;
+  _handoutActive = false;
+  if (_handoutSnap) {
+    settings.showTranslit    = _handoutSnap.showTranslit;
+    settings.showTranslation = _handoutSnap.showTranslation;
+    settings.showNikkud      = _handoutSnap.showNikkud;
+    _handoutSnap = null;
+  }
+  document.body.classList.remove('tt-handout-print', 'tt-handout-hidenums',
+    'tt-handout-size-large', 'tt-handout-size-xl', 'tt-handout-geniza');
+  renderText();   // no saveSettings — the persisted settings never changed
+}
+function printHandout() {
+  if (!currentVerses || !currentVerses.length) { showHintToast(I18n.t('torah.controls.print_need_reading')); return; }
+  _handoutEnter();
+  // Desktop print dialogs block here, so restore right after; the afterprint
+  // listener is belt-and-braces (mobile Safari's print() can return early —
+  // if a truncated snapshot is ever reported, move the primary restore there).
+  try { window.print(); } finally { _handoutExit(); }
+}
+function toggleHandoutBar() {
+  const el = document.getElementById('ttHandoutBar');
+  const opening = el.style.display === 'none';
+  el.style.display = opening ? '' : 'none';
+  const btn = document.getElementById('ttHandoutBtn');
+  if (btn) btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+  if (opening) syncHandoutForm();
+}
+function syncHandoutForm() {
+  document.getElementById('ttHandoutHideNikkud').checked = !!settings.handoutHideNikkud;
+  document.getElementById('ttHandoutHideNums').checked   = !!settings.handoutHideNums;
+  const fs = settings.handoutFontSize || 'large';
+  document.getElementById('hsNormal').checked = fs === 'normal';
+  document.getElementById('hsLarge').checked  = fs === 'large';
+  document.getElementById('hsXL').checked     = fs === 'xl';
+  document.getElementById('ttHandoutGeniza').checked = !!settings.handoutGenizaMark;
+  updateHandoutShemUI();
+}
 async function goToCurrentParshah() {
   const cur = await fetchCurrentParshah(settings.schedule !== 'israel');
   if (!cur) { setStatus(I18n.t('torah.status.cant_determine_parsha'), true); return; }
@@ -5033,6 +5199,10 @@ window.addEventListener('beforeprint', () => {
 window.addEventListener('afterprint', () => {
   if (_printForceLight) { _printForceLight = false; applyNikkudColors(); applyTropeColors(); }
 });
+// Handout restore — belt-and-braces alongside the try/finally in printHandout().
+// Idempotent; registered AFTER the palette-restore listener above so the exit
+// re-render re-applies the dark palette last. Do not reorder.
+window.addEventListener('afterprint', _handoutExit);
 
 /* ══════════════════════════════════════════════════════
    TOOLTIP — accessible: hover (mouse), tap (touch), and keyboard (focus +

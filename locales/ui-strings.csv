@@ -2924,6 +2924,19 @@ torah.controls.print_title,Print this reading for students,הדפיסו את ה�
 torah.controls.print_need_reading,Load a parsha first to print.,טענו פרשה קודם כדי להדפיס.,toast,
 torah.shem.chip_label,שם ה׳,שם ה׳,chip in the reading header when a divine name is detected,pinned Hebrew in both languages by design
 torah.shem.chip_tip,"This reading contains God's name. A printed page traditionally requires geniza (respectful storage), not disposal.","הקריאה כוללת שם קדוש. דף מודפס טעון גניזה — נהוג שלא להשליכו לאשפה.",accessible tooltip on the שם ה׳ chip,
+torah.handout.button,🎓 Student handout,🎓 דף לתלמיד,top-bar button next to Print,leading-emoji
+torah.handout.button_title,Print a clean Hebrew-only handout for students,הדפסת דף נקי לתלמידים — עברית בלבד,button title,
+torah.handout.title,Student handout,דף לתלמיד,handout options bar title,
+torah.handout.hide_nikkud,Hide nikkud (vowels),הסתרת ניקוד (תנועות),handout option toggle,
+torah.handout.hide_nums,Hide verse numbers,הסתרת מספרי פסוקים,handout option toggle,
+torah.handout.font_size,Font size:,גודל גופן:,handout option label,
+torah.handout.size_normal,Normal,רגיל,font-size radio (= current screen size),
+torah.handout.size_large,Large,גדול,font-size radio (2.2rem; the default),
+torah.handout.size_xl,Extra large,גדול במיוחד,font-size radio (2.8rem),
+torah.handout.print_button,🖨️ Print handout,🖨️ הדפסת הדף,handout bar primary button,leading-emoji
+torah.handout.cancel,Cancel,ביטול,handout bar close button,
+torah.handout.shem_note,"This reading contains שם ה׳ — printed pages traditionally go to geniza, not the trash.",הקריאה כוללת שם ה׳ — דפים מודפסים נהוג להביא לגניזה ולא להשליכם לאשפה.,notice in handout bar when a divine name is detected,שם ה׳ pinned Hebrew in both languages
+torah.handout.geniza_check,Add a לגניזה marker to the printed page,הוספת סימון לגניזה בתחתית הדף המודפס,handout option toggle (shown only when a divine name is detected),לגניזה pinned Hebrew in both languages
 torah.controls.holiday_group_label,Holiday Torah Readings,קריאות התורה לחגים,Parsha-picker optgroup header,
 torah.controls.layout_interlinear,Interlinear,בין־שורתי,layout radio,
 torah.controls.layout_label,Layout:,פריסה:,control label,
