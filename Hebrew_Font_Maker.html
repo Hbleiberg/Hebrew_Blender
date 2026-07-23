@@ -3473,17 +3473,17 @@ function guidesPanelHTML(){
   const rows = g.items.map(it => {
     const col = it.color || '#19b3c6';
     const st = it.style || 'dashed';
-    const nm = it.name || (it.axis==='v' ? 'Vertical' : 'Horizontal');
+    const nm = it.name || (window.I18n ? I18n.t(it.axis==='v' ? 'fontmaker.panels.guide_default_v' : 'fontmaker.panels.guide_default_h') : (it.axis==='v' ? 'Vertical' : 'Horizontal'));
     const menu = GUIDE_STYLES.map(s => `
         <div class="guide-style-opt${s===st?' sel':''}" onclick="pickGuideStyle('${it.id}','${s}')" title="${s.charAt(0).toUpperCase()+s.slice(1)}">${guideStylePreviewSVG(s, col, it.weight)}</div>`).join('');
     return `
     <div class="guide-card" data-guide-id="${it.id}">
       <div class="guide-card-head">
         <span class="guide-handle" draggable="true" onclick="toggleGuideCollapse('${it.id}')" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_collapse_title') : 'Collapse / drag to reorder')}">${it.collapsed?'＋':'－'}</span>
-        <span class="guide-orient" title="${it.axis==='v'?'Vertical':'Horizontal'} guide">${it.axis==='v'?'│':'─'}</span>
+        <span class="guide-orient" title="${esc(window.I18n ? I18n.t(it.axis==='v'?'fontmaker.panels.guide_orient_v_title':'fontmaker.panels.guide_orient_h_title') : (it.axis==='v'?'Vertical':'Horizontal') + ' guide')}">${it.axis==='v'?'│':'─'}</span>
         <input type="color" value="${col}" oninput="setGuideColor('${it.id}',this.value)" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_color_title') : 'Guide color')}" class="guide-color">
         <input class="guide-name" type="text" value="${nm.replace(/"/g,'&quot;')}" onchange="setGuideName('${it.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_name_title') : 'Guide name')}" spellcheck="false">
-        <button class="guide-rename" onclick="this.closest('.guide-card-head').querySelector('.guide-name').focus()" title="Rename">Rename</button>
+        <button class="guide-rename" onclick="this.closest('.guide-card-head').querySelector('.guide-name').focus()" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_rename') : 'Rename')}">${esc(window.I18n ? I18n.t('fontmaker.panels.guide_rename') : 'Rename')}</button>
         <button class="guide-del" onclick="deleteGuide('${it.id}')" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_delete_title') : 'Delete this guide')}">✕</button>
       </div>
       <div class="guide-card-body"${it.collapsed?' style="display:none;"':''}>
@@ -3491,10 +3491,10 @@ function guidesPanelHTML(){
           <button class="guide-style-trig" onclick="toggleGuideStyleMenu('${it.id}')" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_style_title') : 'Line style')}">${guideStylePreviewSVG(st, col, it.weight)}<span class="guide-style-caret">▾</span></button>
           <div class="guide-style-menu">${menu}</div>
         </div>
-        <span class="guide-lbl">Size</span>
-        <input class="guide-size" type="range" min="0.25" max="4" step="0.25" value="${+it.weight||1}" oninput="setGuideWeight('${it.id}',this.value)" onchange="udBurstCommit()" title="Line weight (px)">
-        <span class="guide-lbl">Pos (${it.axis==='v'?'X':'Y'})</span>
-        <input class="guide-pos" type="number" value="${Math.round(it.pos)}" step="1" onchange="setGuidePos('${it.id}',this.value)" title="${it.axis==='v'?'X':'Y'} position (font units)">
+        <span class="guide-lbl">${esc(window.I18n ? I18n.t('fontmaker.panels.guide_size') : 'Size')}</span>
+        <input class="guide-size" type="range" min="0.25" max="4" step="0.25" value="${+it.weight||1}" oninput="setGuideWeight('${it.id}',this.value)" onchange="udBurstCommit()" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_weight_title') : 'Line weight (px)')}">
+        <span class="guide-lbl">${esc(window.I18n ? I18n.t('fontmaker.panels.guide_pos', {axis: it.axis==='v'?'X':'Y'}) : 'Pos (' + (it.axis==='v'?'X':'Y') + ')')}</span>
+        <input class="guide-pos" type="number" value="${Math.round(it.pos)}" step="1" onchange="setGuidePos('${it.id}',this.value)" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_pos_title', {axis: it.axis==='v'?'X':'Y'}) : (it.axis==='v'?'X':'Y') + ' position (font units)')}">
       </div>
     </div>`;
   }).join('');
@@ -12912,7 +12912,7 @@ async function harfbuzzGate(bytes) {
         if (!vowel || !vp) continue;
         if ((vp.dx || 0) - (vowel.dx || 0) !== cfg.dx) {
           font.destroy(); face.destroy(); blob.destroy();
-          return { fail: true, msg: `Vowel slide (${cls}) not applied by the shaper — expected a ${cfg.dx}-unit shift.` };
+          return { fail: true, msg: I18n.t('fontmaker.modals.shaping_fail_vowel_slide', { class: cls, dx: cfg.dx }) };
         }
       }
     }
@@ -12925,10 +12925,10 @@ async function harfbuzzGate(bytes) {
       for (const dot of ['05C1', '05C2']) {   // shin-dot, sin-dot
         const r = shapeSeq('ש' + String.fromCodePoint(parseInt(dot, 16)) + holamCh);
         if (r.length > 2) { font.destroy(); face.destroy(); blob.destroy();
-          return { fail: true, msg: 'A dotted shin/sin + holam did not compose (' + r.length + ' glyphs) — the shin/sin ccmp mark-filtering set may be missing.' }; }
+          return { fail: true, msg: I18n.t('fontmaker.modals.shaping_fail_shin_holam', { n: r.length }) }; }
         const hol = r.find(g => !(g.ax || 0));   // the zero-advance glyph = the holam mark
         if (hol && !(Math.abs(hol.dx || 0) > 0 || Math.abs(hol.dy || 0) > 0)) { font.destroy(); face.destroy(); blob.destroy();
-          return { fail: true, msg: 'A holam on a dotted shin/sin shaped at x=0 — the precomposed form is missing its above anchor.' }; }
+          return { fail: true, msg: I18n.t('fontmaker.modals.shaping_fail_shin_holam_pos') }; }
       }
     }
     // Shin/sin + dagesh composition guard (the שּׁ custom-dagesh bug): a typed shin + dagesh + dot must
@@ -12972,7 +12972,7 @@ async function harfbuzzGate(bytes) {
         return { fail: true, msg: I18n.t('fontmaker.modals.shaping_fail_vav_holam', { n: r.length }) }; }
     }
     font.destroy(); face.destroy(); blob.destroy();
-    if (sawTwoGlyphs && !anyMarkOffset) return { fail: true, msg: 'Marks shaped with zero offset (fallback). The hebr script / anchors may be missing.' };
+    if (sawTwoGlyphs && !anyMarkOffset) return { fail: true, msg: I18n.t('fontmaker.modals.shaping_fail_zero_offset') };
     return { ok: true };
   } catch (e) { console.warn('harfbuzz gate error', e); return { skipped: true }; }
 }
