@@ -1239,6 +1239,7 @@ const vowelFilters = new Set();
 let hideNoVowels = false;
 
 let ALL_WORDS = [];
+let _themePosCounts = {};   // {theme: {pos: count}} — drives POS-aware theme-panel visibility (built at load)
 let copyMode = 'word';
 let showGematria = false;
 let bulkMode = false;
@@ -2046,14 +2047,19 @@ fetchJsonWithProgress('data/hebrew_words.json?v=6', updateDictLoadProgress)
       setTimeout(finishLoad, 0);   // first render gets its own task, separate from the last batch
     })();
     function finishLoad() {
-      // Theme filter: per-theme word counts on the checkbox labels. If NO word carries a
-      // theme (a stale cached corpus predating the themes field), hide the panel entirely
-      // rather than offer 14 filters that each select nothing.
-      const themeCounts = {};
-      for (const w of ALL_WORDS) if (w.themes) for (const t of w.themes) themeCounts[t] = (themeCounts[t] || 0) + 1;
-      document.querySelectorAll('#panelThemes .theme-count').forEach(el => { el.textContent = '(' + (themeCounts[el.dataset.themeCount] || 0) + ')'; });
-      const _pt = document.getElementById('panelThemes');
-      if (_pt && !Object.keys(themeCounts).length) _pt.style.display = 'none';
+      // Theme filter: precompute a {theme: {pos: count}} breakdown, then let
+      // updateThemeVisibility() show only the theme categories reachable from the currently
+      // selected parts of speech (and hide the whole panel when none are — e.g. a stale
+      // cached corpus predating the themes field, or Noun+Adjective both unchecked).
+      _themePosCounts = {};
+      for (const w of ALL_WORDS) {
+        if (!w.themes || !w.themes.length) continue;
+        for (const t of w.themes) {
+          (_themePosCounts[t] || (_themePosCounts[t] = {}));
+          _themePosCounts[t][w.pos] = (_themePosCounts[t][w.pos] || 0) + 1;
+        }
+      }
+      updateThemeVisibility();
       if (translitStyle !== 'default') {
         // Load the lib and repaint visible cards; translitDisplayOf() styles each on demand.
         window.HebrewTransliterator.ensureLoaded().then(() => {
@@ -2382,6 +2388,7 @@ function onFilter() {
   const eraMod = document.getElementById('eraMod').checked;
 
   const posHasOther = checkedPos.has('other');   // hoisted: constant for the whole pass
+  updateThemeVisibility(checkedPos);   // sync theme panel to the current POS BEFORE reading the theme set (may uncheck now-hidden themes)
   const themeSel = new Set([...document.querySelectorAll('.tcb:checked')].map(c => c.value));   // empty = theme filter off
   filtered = ALL_WORDS.filter(w => {
     if (!checkedLen.has(w.lenKey)) return false;
@@ -2996,6 +3003,34 @@ function setPosAll(checked) {
 function clearThemeFilter() {
   document.querySelectorAll('.tcb').forEach(cb => cb.checked = false);
   onFilter();
+}
+
+// Show only the theme categories that have words in the currently-selected parts of speech;
+// hide the whole panel when none do. Themes live on nouns (all 14) + color adjectives (colors
+// only), so: Noun checked → all themes; Adjective-only → just Colors; neither → panel hidden.
+// A category that becomes unreachable is unchecked so it can't silently filter while hidden.
+// Counts on the labels are POS-aware, so each badge equals the exact theme∩POS match count.
+function updateThemeVisibility(checkedPos) {
+  const pt = document.getElementById('panelThemes');
+  if (!pt) return;
+  if (!checkedPos) checkedPos = new Set([...document.querySelectorAll('.pcb:checked')].map(c => c.value));
+  let anyVisible = false;
+  document.querySelectorAll('#panelThemes .tcb').forEach(cb => {
+    const breakdown = _themePosCounts[cb.value] || {};
+    let n = 0;
+    for (const pos in breakdown) if (checkedPos.has(pos)) n += breakdown[pos];
+    const label = cb.closest('.cb-label');
+    if (n > 0) {
+      anyVisible = true;
+      if (label) label.style.display = '';
+      const badge = pt.querySelector('.theme-count[data-theme-count="' + cb.value + '"]');
+      if (badge) badge.textContent = '(' + n + ')';
+    } else {
+      if (label) label.style.display = 'none';
+      if (cb.checked) cb.checked = false;   // don't let a hidden theme keep filtering
+    }
+  });
+  pt.style.display = anyVisible ? '' : 'none';
 }
 
 function toggleAllLengths(cb) {
