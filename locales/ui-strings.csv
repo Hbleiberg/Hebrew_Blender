@@ -3957,3 +3957,20 @@ fontmaker.modals.shaping_fail_vowel_slide,Vowel slide ({class}) not applied by t
 fontmaker.modals.shaping_fail_shin_holam,A dotted shin/sin + holam did not compose ({n} glyphs) — the shin/sin ccmp mark-filtering set may be missing.,שין/שׂין מנוקדת + חולם לא התרכבו ({n} גליפים) — ייתכן שקבוצת סינון־הסימנים (ccmp) של שין/שׂין חסרה.,FM export shaping-gate; {n}=glyph count,maintainer-approved HE
 fontmaker.modals.shaping_fail_shin_holam_pos,A holam on a dotted shin/sin shaped at x=0 — the precomposed form is missing its above anchor.,חולם על שין/שׂין מנוקדת עוצב ב־x=0 — לצורה המורכבת־מראש חסרה נקודת העיגון העליונה.,FM export shaping-gate,maintainer-approved HE
 fontmaker.modals.shaping_fail_zero_offset,Marks shaped with zero offset (fallback). The hebr script / anchors may be missing.,הסימנים עוצבו ללא היסט (ברירת מחדל). ייתכן שסקריפט hebr או נקודות העיגון חסרים.,FM export shaping-gate,maintainer-approved HE
+dictionary.themes.panel_title,Browse by Theme,עיון לפי נושא,dictionary sidebar theme-filter panel,REVIEW: machine-drafted HE — confirm
+dictionary.themes.note,Pick themes to browse topic vocabulary — no selection shows all words.,בחרו נושאים כדי לעיין באוצר מילים לפי נושא — ללא בחירה מוצגות כל המילים.,theme panel helper note,REVIEW: machine-drafted HE — confirm
+dictionary.themes.clear,Clear,ניקוי,theme panel clear button,REVIEW: machine-drafted HE — confirm
+dictionary.themes.body,Body Parts,איברי הגוף,theme name,REVIEW: machine-drafted HE — confirm
+dictionary.themes.food,Food & Drink,אוכל ושתייה,theme name,REVIEW: machine-drafted HE — confirm
+dictionary.themes.animals,Animals,בעלי חיים,theme name,REVIEW: machine-drafted HE — confirm
+dictionary.themes.colors,Colors,צבעים,theme name,REVIEW: machine-drafted HE — confirm
+dictionary.themes.clothing,Clothing,בגדים,theme name,REVIEW: machine-drafted HE — confirm
+dictionary.themes.home,Home,הבית,theme name,REVIEW: machine-drafted HE — confirm
+dictionary.themes.family,Family & People,משפחה ואנשים,theme name,REVIEW: machine-drafted HE — confirm
+dictionary.themes.nature,Nature,טבע,theme name,REVIEW: machine-drafted HE — confirm
+dictionary.themes.weather,Weather & Seasons,מזג אוויר ועונות,theme name,REVIEW: machine-drafted HE — confirm
+dictionary.themes.time,Time & Calendar,זמן ולוח שנה,theme name,REVIEW: machine-drafted HE — confirm
+dictionary.themes.school,School,בית ספר,theme name,REVIEW: machine-drafted HE — confirm
+dictionary.themes.feelings,Feelings,רגשות,theme name,REVIEW: machine-drafted HE — confirm
+dictionary.themes.places,Places,מקומות,theme name,REVIEW: machine-drafted HE — confirm
+dictionary.themes.holidays,Holidays & Judaism,חגים ויהדות,theme name,REVIEW: machine-drafted HE — confirm

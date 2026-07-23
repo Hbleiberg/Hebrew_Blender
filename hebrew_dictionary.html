@@ -506,6 +506,7 @@ body.dark .emoji-gender-btn.active{background:#0a0f1c;}
 .emoji-cat-group.collapsed .emoji-cat-arrow{transform:rotate(-90deg);}
 .emoji-cat-group.collapsed .emoji-sub-list{display:none;}
 .emoji-cat-count{margin-inline-start:auto;font-size:0.6rem;color:var(--muted);font-weight:400;flex-shrink:0;}
+.theme-count{font-size:0.6rem;color:var(--muted);font-weight:400;}
 /* Emoji card */
 .emoji-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:14px 12px 10px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;transition:border-color 0.15s,box-shadow 0.15s;position:relative;}
 .emoji-card:hover{border-color:var(--gold);box-shadow:0 2px 8px rgba(0,0,0,0.08);}
@@ -817,6 +818,33 @@ footer a{color:var(--gold-text);text-decoration:none;}
         <div class="era-body">
           <label class="cb-label"><input type="checkbox" id="eraBib" checked> <span data-i18n="dictionary.filters.era_biblical">Biblical</span></label>
           <label class="cb-label"><input type="checkbox" id="eraMod" checked> <span data-i18n="dictionary.filters.era_modern">Modern</span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Browse by Theme (word mode only; hidden automatically if the cached corpus predates themes) -->
+    <div class="panel word-mode-panel shoresh-hide" id="panelThemes">
+      <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')" data-i18n="dictionary.themes.panel_title">Browse by Theme</div>
+      <div class="panel-body">
+        <div class="filter-note" style="margin-bottom:6px;" data-i18n="dictionary.themes.note">Pick themes to browse topic vocabulary — no selection shows all words.</div>
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <button class="pos-all-btn" onclick="clearThemeFilter()" data-i18n="dictionary.themes.clear">Clear</button>
+        </div>
+        <div class="grid2">
+          <label class="cb-label"><input type="checkbox" class="tcb" value="body"> <span>💪 <span data-i18n="dictionary.themes.body">Body Parts</span> <span class="theme-count" data-theme-count="body"></span></span></label>
+          <label class="cb-label"><input type="checkbox" class="tcb" value="food"> <span>🍎 <span data-i18n="dictionary.themes.food">Food &amp; Drink</span> <span class="theme-count" data-theme-count="food"></span></span></label>
+          <label class="cb-label"><input type="checkbox" class="tcb" value="animals"> <span>🐶 <span data-i18n="dictionary.themes.animals">Animals</span> <span class="theme-count" data-theme-count="animals"></span></span></label>
+          <label class="cb-label"><input type="checkbox" class="tcb" value="colors"> <span>🎨 <span data-i18n="dictionary.themes.colors">Colors</span> <span class="theme-count" data-theme-count="colors"></span></span></label>
+          <label class="cb-label"><input type="checkbox" class="tcb" value="clothing"> <span>👕 <span data-i18n="dictionary.themes.clothing">Clothing</span> <span class="theme-count" data-theme-count="clothing"></span></span></label>
+          <label class="cb-label"><input type="checkbox" class="tcb" value="home"> <span>🏠 <span data-i18n="dictionary.themes.home">Home</span> <span class="theme-count" data-theme-count="home"></span></span></label>
+          <label class="cb-label"><input type="checkbox" class="tcb" value="family"> <span>👪 <span data-i18n="dictionary.themes.family">Family &amp; People</span> <span class="theme-count" data-theme-count="family"></span></span></label>
+          <label class="cb-label"><input type="checkbox" class="tcb" value="nature"> <span>🌳 <span data-i18n="dictionary.themes.nature">Nature</span> <span class="theme-count" data-theme-count="nature"></span></span></label>
+          <label class="cb-label"><input type="checkbox" class="tcb" value="weather"> <span>🌦️ <span data-i18n="dictionary.themes.weather">Weather &amp; Seasons</span> <span class="theme-count" data-theme-count="weather"></span></span></label>
+          <label class="cb-label"><input type="checkbox" class="tcb" value="time"> <span>🕐 <span data-i18n="dictionary.themes.time">Time &amp; Calendar</span> <span class="theme-count" data-theme-count="time"></span></span></label>
+          <label class="cb-label"><input type="checkbox" class="tcb" value="school"> <span>📚 <span data-i18n="dictionary.themes.school">School</span> <span class="theme-count" data-theme-count="school"></span></span></label>
+          <label class="cb-label"><input type="checkbox" class="tcb" value="feelings"> <span>😊 <span data-i18n="dictionary.themes.feelings">Feelings</span> <span class="theme-count" data-theme-count="feelings"></span></span></label>
+          <label class="cb-label"><input type="checkbox" class="tcb" value="places"> <span>🗺️ <span data-i18n="dictionary.themes.places">Places</span> <span class="theme-count" data-theme-count="places"></span></span></label>
+          <label class="cb-label"><input type="checkbox" class="tcb" value="holidays"> <span>🕎 <span data-i18n="dictionary.themes.holidays">Holidays &amp; Judaism</span> <span class="theme-count" data-theme-count="holidays"></span></span></label>
         </div>
       </div>
     </div>
@@ -2004,6 +2032,7 @@ fetchJsonWithProgress('data/hebrew_words.json?v=5', updateDictLoadProgress)
           pos: w.pos || '',
           translation: w.translation || '',
           era: w.era || 'Both',
+          themes: Array.isArray(w.themes) ? w.themes : [],
           len,
           lenKey: len >= 8 ? '8plus' : String(len),
           translitLower: (w.translit || '').toLowerCase(),
@@ -2017,6 +2046,14 @@ fetchJsonWithProgress('data/hebrew_words.json?v=5', updateDictLoadProgress)
       setTimeout(finishLoad, 0);   // first render gets its own task, separate from the last batch
     })();
     function finishLoad() {
+      // Theme filter: per-theme word counts on the checkbox labels. If NO word carries a
+      // theme (a stale cached corpus predating the themes field), hide the panel entirely
+      // rather than offer 14 filters that each select nothing.
+      const themeCounts = {};
+      for (const w of ALL_WORDS) if (w.themes) for (const t of w.themes) themeCounts[t] = (themeCounts[t] || 0) + 1;
+      document.querySelectorAll('#panelThemes .theme-count').forEach(el => { el.textContent = '(' + (themeCounts[el.dataset.themeCount] || 0) + ')'; });
+      const _pt = document.getElementById('panelThemes');
+      if (_pt && !Object.keys(themeCounts).length) _pt.style.display = 'none';
       if (translitStyle !== 'default') {
         // Load the lib and repaint visible cards; translitDisplayOf() styles each on demand.
         window.HebrewTransliterator.ensureLoaded().then(() => {
@@ -2345,10 +2382,19 @@ function onFilter() {
   const eraMod = document.getElementById('eraMod').checked;
 
   const posHasOther = checkedPos.has('other');   // hoisted: constant for the whole pass
+  const themeSel = new Set([...document.querySelectorAll('.tcb:checked')].map(c => c.value));   // empty = theme filter off
   filtered = ALL_WORDS.filter(w => {
     if (!checkedLen.has(w.lenKey)) return false;
 
     if (!checkedPos.has(w.pos) && !(posHasOther && !POS_KNOWN_SET.has(w.pos))) return false;
+
+    // Theme filter: opt-in — with no theme checked every word passes; with themes
+    // checked, keep only words carrying at least one selected theme (union).
+    if (themeSel.size) {
+      let hit = false;
+      if (w.themes) for (const t of w.themes) { if (themeSel.has(t)) { hit = true; break; } }
+      if (!hit) return false;
+    }
 
     const era = w.era;
     if (era === 'Both') { if (!eraBib && !eraMod) return false; }
@@ -2944,6 +2990,11 @@ function scrollToShoreshWord(word) {
 
 function setPosAll(checked) {
   document.querySelectorAll('.pcb').forEach(cb => cb.checked = checked);
+  onFilter();
+}
+
+function clearThemeFilter() {
+  document.querySelectorAll('.tcb').forEach(cb => cb.checked = false);
   onFilter();
 }
 
@@ -3874,7 +3925,7 @@ document.addEventListener('DOMContentLoaded', () => {
       _db.setAttribute('aria-pressed', 'true');
     }
   } catch(e) {}
-  document.querySelectorAll('.lcb,.pcb').forEach(cb => cb.addEventListener('change', onFilter));
+  document.querySelectorAll('.lcb,.pcb,.tcb').forEach(cb => cb.addEventListener('change', onFilter));
   document.getElementById('eraBib').addEventListener('change', onFilter);
   document.getElementById('eraMod').addEventListener('change', onFilter);
 
@@ -4046,6 +4097,7 @@ function getDictState() {
     sort: document.getElementById('sortSel').value,
     len: [...document.querySelectorAll('.lcb:checked')].map(c => c.value),
     pos: [...document.querySelectorAll('.pcb:checked')].map(c => c.value),
+    themes: [...document.querySelectorAll('.tcb:checked')].map(c => c.value),
     era: { bib: document.getElementById('eraBib').checked, mod: document.getElementById('eraMod').checked },
     vowels: [...vowelFilters],
     hideNoVowels: hideNoVowels,
@@ -4128,6 +4180,14 @@ function applyDictState(s) {
     if (Array.isArray(s.pos)) {
       const set = new Set(s.pos);
       document.querySelectorAll('.pcb').forEach(cb => { cb.checked = set.has(cb.value); });
+    }
+
+    // 7b. themes (opt-in filter; absent/empty array = filter off). Values are matched
+    // against the static .tcb checkboxes, so unknown keys from an untrusted ?s= /
+    // imported lastState blob are simply ignored.
+    if (Array.isArray(s.themes)) {
+      const tset = new Set(s.themes);
+      document.querySelectorAll('.tcb').forEach(cb => { cb.checked = tset.has(cb.value); });
     }
 
     // 8. era
