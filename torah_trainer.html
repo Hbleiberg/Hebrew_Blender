@@ -362,6 +362,18 @@ body.dark .tt-handout-shem-note { color:var(--gold-light); }
 /* Printed geniza marker — screen-hidden; shown only by the print block's
    body.tt-handout-geniza rule. */
 #ttGenizaMark { display:none; }
+/* Copy-bar bulk panel: [hidden] must beat the flex display (same lesson as the
+   handout shem rows above). Textarea takes a full wrap-row of the flex bar. */
+#ttCopyBulkPanel { display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; flex-basis:100%; }
+#ttCopyBulkPanel[hidden] { display:none; }
+#ttCopyBulkPanel .tt-copy-hintline { font-size:0.72rem; color:var(--muted); flex-basis:100%; white-space:normal; }
+.tt-copy-wysiwyg { font-size:0.72rem; color:var(--muted); max-width:420px; white-space:normal; }
+#ttCopyTextarea {
+  flex-basis:100%; box-sizing:border-box; resize:vertical;
+  border:1px solid var(--border); border-radius:5px; padding:6px 8px;
+  background:var(--white); color:var(--text);
+  font-family:var(--heb-font); font-size:0.9rem; text-align:start;
+}
 .tt-ref-hdr .tt-readall {
   font-size:0.78rem; padding:4px 10px;
   background:var(--gold); color:var(--navy); border:none; border-radius:5px;
@@ -403,7 +415,7 @@ body.dark .tt-ref-hdr .tt-chantall { background:#0a0f1c; }
   flex:1; direction:ltr; text-align:center;
   font-size:var(--tt-english-size, 0.95rem); color:var(--text); line-height:1.5;
 }
-.tt-speak, .tt-chant, .tt-loop {
+.tt-speak, .tt-chant, .tt-loop, .tt-copy {
   background:transparent; border:1px solid var(--border); border-radius:4px;
   padding:2px 7px; font-size:0.7rem; font-weight:600; cursor:pointer;
   color:var(--muted); transition:all 0.15s; flex-shrink:0;
@@ -415,6 +427,7 @@ body.dark .tt-ref-hdr .tt-chantall { background:#0a0f1c; }
 .tt-chant:disabled { opacity:0.45; cursor:not-allowed; }
 .tt-loop:hover:not(:disabled) { border-color:var(--gold); color:var(--gold); }
 .tt-loop.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
+.tt-copy:hover { border-color:var(--gold); color:var(--gold); }
 .tt-verse-buttons { display:inline-flex; gap:4px; margin-left:6px; }
 
 /* Verse loop (practice mode): the looping verse row gets a tinted background and
@@ -429,6 +442,16 @@ body.dark .tt-ref-hdr .tt-chantall { background:#0a0f1c; }
   animation: ttLoopPulse 1.6s ease-in-out infinite;
 }
 body.dark .tt-looping { background: rgba(224,168,50,0.14); }
+/* Bulk verse selection (Copy bar "Select verses"): steady gold tint, no animation
+   (nothing to neutralize for reduced motion). box-decoration-break keeps the tint
+   contiguous on the bible page's wrapped inline .tt-bverse spans. */
+.tt-bulk-selected {
+  background: rgba(201,146,42,0.12); border-radius:6px;
+  box-shadow: inset 0 0 0 2px rgba(201,146,42,0.55);
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+body.dark .tt-bulk-selected { background: rgba(224,168,50,0.16); }
+body.tt-bulk-mode #ttReading [data-vk] { cursor:pointer; }
 /* Audio-bar loop stop control (shown only while a loop is active). */
 .tt-audio-loopstop {
   background:var(--gold); color:var(--navy); border:none; border-radius:6px;
@@ -1035,6 +1058,8 @@ body.fullscreen #fsExitBtn { display: flex; }
    convention). !important rules don't care, but the layout overrides do. */
 @media print {
   .tt-jumpnav, .tt-resume-chip, .tt-audio-bar, .tt-verse-buttons { display:none !important; }
+  /* Bulk-select tint is a screen-only affordance — never ink. */
+  .tt-bulk-selected { background:none !important; box-shadow:none !important; }
   /* Printed trope legend (S90): the reading prints its clause colors as underlines, so the
      color->family key belongs on paper too. Flatten the on-screen card, force the swatch
      backgrounds to print (print-color-adjust), and drop the interactive tutor link. The
@@ -1248,6 +1273,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <span class="tt-ctrl">
     <button id="ttHandoutBtn" class="btn btn-xs btn-secondary" onclick="toggleHandoutBar()" type="button" aria-expanded="false" aria-controls="ttHandoutBar" data-i18n="torah.handout.button" data-i18n-title="torah.handout.button_title" title="Print a clean Hebrew-only handout for students">🎓 Student handout</button>
   </span>
+  <span class="tt-ctrl">
+    <button id="ttCopyBtn" class="btn btn-xs btn-secondary" onclick="toggleCopyBar()" type="button" aria-expanded="false" aria-controls="ttCopyBar" data-i18n="torah.copy.button" data-i18n-title="torah.copy.button_title" title="Copy verses to the clipboard — one verse or a selection">📋 Copy</button>
+  </span>
 </div>
 
 <div id="ttCustomPicker" class="tt-controls" style="display:none;border-top:1px dashed var(--border);">
@@ -1301,6 +1329,34 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <span class="tt-ctrl tt-handout-shem-note" id="ttHandoutShemNote" hidden data-i18n="torah.handout.shem_note">This reading contains שם ה׳ — printed pages traditionally go to geniza, not the trash.</span>
   <button class="btn btn-xs" onclick="printHandout()" type="button" data-i18n="torah.handout.print_button">🖨️ Print handout</button>
   <button class="btn btn-xs btn-secondary" onclick="toggleHandoutBar()" type="button" data-i18n="torah.handout.cancel">Cancel</button>
+</div>
+
+<!-- Copy verses: options bar (same inline-disclosure pattern as #ttHandoutBar).
+     Print-hidden automatically via the .tt-controls entry in the print chrome hide-list.
+     Independent of the handout bar (siblings — both may be open). -->
+<div id="ttCopyBar" class="tt-controls" style="display:none;border-top:1px dashed var(--border);" role="group" aria-labelledby="ttCopyTitle">
+  <span class="tt-ctrl"><strong id="ttCopyTitle" data-i18n="torah.copy.title">Copy verses</strong></span>
+  <span class="tt-ctrl">
+    <label for="ttCopyIncRef" data-i18n="torah.copy.inc_ref">Include verse numbers</label>
+    <label class="toggle"><input type="checkbox" id="ttCopyIncRef"><span class="slider"></span></label>
+  </span>
+  <span class="tt-ctrl">
+    <label for="ttCopyIncTrans" data-i18n="torah.copy.inc_trans">Include translation</label>
+    <label class="toggle"><input type="checkbox" id="ttCopyIncTrans"><span class="slider"></span></label>
+  </span>
+  <span class="tt-ctrl tt-copy-wysiwyg" data-i18n="torah.copy.wysiwyg_hint">Nikkud and te'amim copy as shown on screen — change them with the display toggles.</span>
+  <span class="tt-ctrl">
+    <label for="ttCopyBulkCb" data-i18n="torah.copy.bulk_mode">Select verses</label>
+    <label class="toggle"><input type="checkbox" id="ttCopyBulkCb"><span class="slider"></span></label>
+  </span>
+  <span id="ttCopyBulkPanel" hidden>
+    <span class="tt-copy-hintline" data-i18n="torah.copy.bulk_hint">While Select verses is on, clicking a verse selects it (instead of playing its words).</span>
+    <span class="tt-ctrl" id="ttCopyCount" dir="auto">0 selected</span>
+    <button class="btn btn-xs btn-secondary" onclick="clearBulkVerses()" type="button" data-i18n="torah.copy.clear">Clear</button>
+    <button class="btn btn-xs btn-secondary" onclick="selectAllVerses()" type="button" data-i18n="torah.copy.select_all">Select all</button>
+    <textarea id="ttCopyTextarea" readonly rows="5" dir="auto" aria-label="Selected verses (copy preview)" data-i18n-aria-label="torah.copy.textarea_aria"></textarea>
+    <button class="btn btn-xs" onclick="copyAllSelected()" type="button" data-i18n="torah.copy.copy_all">Copy All</button>
+  </span>
 </div>
 
 <div class="tt-page">
@@ -1671,6 +1727,9 @@ const DEFAULTS = {
   handoutHideNums: false,      // hide verse numbers on the printed handout
   handoutFontSize: 'large',    // 'normal' (screen size) | 'large' (2.2rem) | 'xl' (2.8rem)
   handoutGenizaMark: false,    // print a לגניזה footer when a divine name is detected
+  // Copy verses (clipboard) — format prefs persist; bulk-select mode/selection never do
+  copyIncludeRef: true,        // prefix each copied verse with "C:V "
+  copyIncludeTrans: false,     // append the plain-text translation line
 };
 let settings = JSON.parse(JSON.stringify(DEFAULTS));
 
@@ -2652,6 +2711,7 @@ function renderText() {
   // chip needs an explicit bind each render for tap/keyboard accessibility.
   const _shemChipEl = root.querySelector('.tt-shem-chip');
   if (_shemChipEl && window.bindTip) bindTip(_shemChipEl);
+  syncBulkClasses();   // innerHTML rebuild dropped any bulk-selection tint
   if (currentTimings && currentAudio) updateKaraokeWordRefs();
   // Re-apply the loop marker/button state to the freshly-built DOM (survives a
   // layout/font re-render of the same reading; the timing indices are unchanged).
@@ -2677,6 +2737,7 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant
     html += `      <button class="tt-speak" onclick="speakVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_read_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_read'))}</button>`;
     if (canChant) html += `      <button class="tt-chant" onclick="chantVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_chant_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_chant'))}</button>`;
     if (canLoop) html += `      <button class="tt-loop" onclick="loopVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_loop_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_loop'))}</button>`;
+    html += `      <button class="tt-copy" onclick="copyVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_copy_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_copy'))}</button>`;
     html += `    </span>`;
     html += `  </div>`;
     const firstTwi = wordIdxRef.value;
@@ -2738,6 +2799,7 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant,
     html += `<button class="tt-speak" onclick="speakVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_read_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_read'))}</button>`;
     if (canChant) html += `<button class="tt-chant" onclick="chantVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_chant_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_chant'))}</button>`;
     if (canLoop) html += `<button class="tt-loop" onclick="loopVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_loop_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_loop'))}</button>`;
+    html += `<button class="tt-copy" onclick="copyVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_copy_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_copy'))}</button>`;
     html += `</span></span>`;
     html += `<span class="tt-cell heb" lang="he">${hebHtml}</span>`;
     html += `</div>`;
@@ -2750,8 +2812,9 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant, 
   aStartByLabel = aStartByLabel || {};
   // "Page view": continuous, justified text like a printed Chumash/Bible page.
   // Verse numbers are inline superscripts; the opening chapter shows as a drop-cap.
-  // Per-verse Read/Chant buttons are omitted here (they don't fit running text) —
-  // use the passage-level Read all / Chant all buttons, or click individual words.
+  // Per-verse Read/Chant/Copy buttons are omitted here (they don't fit running text) —
+  // use the passage-level Read all / Chant all buttons, click individual words, or
+  // copy via the Copy bar's "Select verses" mode (click-to-select works in this layout).
   // Each verse is wrapped in a [data-vk] span, and words reuse the same
   // .tt-heb / .tt-translit classes the other layouts use, so the karaoke engine
   // (updateKaraokeWordRefs, seekToVerseInLoadedAudio, click-to-seek) finds and
@@ -2838,6 +2901,8 @@ async function fetchAndRender() {
     currentVerses = null;
     _readingHasShem = false;
     updateHandoutShemUI();
+    _bulkReadingKey = null;
+    if (ttBulkSelected.size) { ttBulkSelected.clear(); updateCopyTextarea(); }
     renderEmptyReading();
     setStatus(I18n.t('torah.status.pick_parsha'), false);
     return;
@@ -2873,6 +2938,13 @@ async function fetchAndRender() {
     currentVerses = verses;
     _readingHasShem = detectShem(verses);   // before renderText so the chip renders in the same pass
     updateHandoutShemUI();
+    // New reading → stale bulk selection would silently mis-copy (every parsha
+    // has a "1:1"). Same-reading refetches (e.g. toggling translation) keep it.
+    const _rk = readingKey();
+    if (_rk !== _bulkReadingKey) {
+      _bulkReadingKey = _rk;
+      if (ttBulkSelected.size) { ttBulkSelected.clear(); updateCopyTextarea(); }
+    }
     currentRangeLabel = r.label;
     netDone = true;   // all network work succeeded; anything that throws below is a render/code fault
     _readingLoading = false;
@@ -3926,6 +3998,18 @@ function onReadingKeydown(e) {
   words[j].focus();
 }
 function onReadingClick(e) {
+  // Bulk select mode: a click anywhere inside a verse toggles its selection —
+  // all three layouts (.tt-verse / .tt-grid-row / .tt-bverse all carry data-vk).
+  // Buttons are exempt (their own inline handlers already ran at the target),
+  // and word-audio never fires while selecting. Enter/Space arrive here too
+  // via onReadingKeydown's delegation.
+  if (ttBulkMode) {
+    if (!e.target.closest('button')) {
+      const bulkEl = e.target.closest('[data-vk]');
+      if (bulkEl) toggleBulkVerse(bulkEl.dataset.vk);
+    }
+    return;
+  }
   const wordEl = e.target.closest('.tt-word');
   if (!wordEl) return;
   // Keep the keyboard rover on the last-activated Hebrew word.
@@ -4637,6 +4721,15 @@ function wireSettingsForm() {
   document.getElementById('ttHandoutGeniza').addEventListener('change', e => {
     settings.handoutGenizaMark = e.target.checked; saveSettings();
   });
+  // Copy bar options → persisted copy* fields; format change live-rewrites the
+  // bulk textarea (mirrors the dictionary's onCopyModeChange).
+  document.getElementById('ttCopyIncRef').addEventListener('change', e => {
+    settings.copyIncludeRef = e.target.checked; saveSettings(); updateCopyTextarea();
+  });
+  document.getElementById('ttCopyIncTrans').addEventListener('change', e => {
+    settings.copyIncludeTrans = e.target.checked; saveSettings(); updateCopyTextarea();
+  });
+  document.getElementById('ttCopyBulkCb').addEventListener('change', e => toggleBulkSelectMode(e.target.checked));
   // ESC closes drawer
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && document.getElementById('settingsModal').classList.contains('open')) closeSettings();
@@ -5030,6 +5123,116 @@ function syncHandoutForm() {
   document.getElementById('ttHandoutGeniza').checked = !!settings.handoutGenizaMark;
   updateHandoutShemUI();
 }
+/* ── Copy verses: per-verse 📋 button + bulk select-and-copy ──
+   Mirrors hebrew_dictionary.html's bulk-copy pattern (pure builder, body-class
+   mode, Set of keys, verse-order output). Format prefs (copyIncludeRef/
+   copyIncludeTrans) persist; bulk mode + selection are session-only.
+   Copied Hebrew keeps the original Tetragrammaton — replaceTetragrammaton is
+   TTS-pronunciation-only and must never touch clipboard text. */
+let ttBulkMode = false;
+const ttBulkSelected = new Set();      // vk strings "C:V"
+let _bulkReadingKey = null;            // selection is per-reading (vks like "1:1" repeat across parshiyot)
+
+// Pure builder — WYSIWYG: nikkud/te'amim follow the on-screen display toggles.
+function verseCopyText(v) {
+  let heb = v.hebrew || '';
+  if (!settings.showCantillation) heb = stripTeamim(heb);
+  if (!settings.showNikkud)       heb = stripNikkud(heb);
+  let out = settings.copyIncludeRef ? `${v.chapter}:${v.verse} ${heb}` : heb;
+  if (settings.copyIncludeTrans && v.translation) {
+    // v.translation may carry Sefaria HTML (stripHTML keeps <i> etc.) — plain-text it.
+    const t = new DOMParser().parseFromString(v.translation, 'text/html').body.textContent.trim();
+    if (t) out += '\n' + t;
+  }
+  return out;
+}
+function ttCopyToClipboard(text, done) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(() => _ttCopyFallback(text, done));
+  } else { _ttCopyFallback(text, done); }
+}
+function _ttCopyFallback(text, done) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.setAttribute('readonly', '');
+  ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  ta.remove(); done();
+}
+function copyVerse(numLabel) {
+  const v = currentVerses && currentVerses.find(x => `${x.chapter}:${x.verse}` === numLabel);
+  if (!v) return;
+  ttCopyToClipboard(verseCopyText(v), () => {
+    flashVerse(numLabel);
+    showHintToast(I18n.t('shared.toast.copied'));
+  });
+}
+function toggleBulkSelectMode(on) {
+  ttBulkMode = on;
+  document.body.classList.toggle('tt-bulk-mode', on);
+  const panel = document.getElementById('ttCopyBulkPanel');
+  if (panel) panel.hidden = !on;
+  if (!on) { ttBulkSelected.clear(); syncBulkClasses(); }
+  updateCopyTextarea();
+}
+function toggleBulkVerse(vk) {
+  if (ttBulkSelected.has(vk)) ttBulkSelected.delete(vk); else ttBulkSelected.add(vk);
+  syncBulkClasses(); updateCopyTextarea();
+}
+function clearBulkVerses() { ttBulkSelected.clear(); syncBulkClasses(); updateCopyTextarea(); }
+function selectAllVerses() {
+  if (!currentVerses) return;
+  currentVerses.forEach(v => ttBulkSelected.add(`${v.chapter}:${v.verse}`));
+  syncBulkClasses(); updateCopyTextarea();
+}
+// Re-apply selection classes to a freshly-built #ttReading (renderText rebuilds innerHTML).
+function syncBulkClasses() {
+  document.querySelectorAll('#ttReading [data-vk]').forEach(el =>
+    el.classList.toggle('tt-bulk-selected', ttBulkSelected.has(el.dataset.vk)));
+}
+// Textarea/count refresh — output in currentVerses (reading) order, never click order.
+function updateCopyTextarea() {
+  const ta = document.getElementById('ttCopyTextarea');
+  if (!ta) return;
+  const lines = (currentVerses || [])
+    .filter(v => ttBulkSelected.has(`${v.chapter}:${v.verse}`))
+    .map(verseCopyText);
+  ta.value = lines.join(settings.copyIncludeTrans ? '\n\n' : '\n');
+  const c = document.getElementById('ttCopyCount');
+  if (c) c.textContent = I18n.t('torah.copy.bulk_count', { count: ttBulkSelected.size });
+}
+function copyAllSelected() {
+  const ta = document.getElementById('ttCopyTextarea');
+  if (!ta || !ta.value) return;
+  // Same shape as the dictionary's copyBulkText: writeText, textarea-select fallback.
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(ta.value)
+      .then(() => showHintToast(I18n.t('shared.toast.copied')))
+      .catch(() => { ta.select(); document.execCommand('copy'); showHintToast(I18n.t('shared.toast.copied')); });
+  } else { ta.select(); document.execCommand('copy'); showHintToast(I18n.t('shared.toast.copied')); }
+}
+function toggleCopyBar() {
+  const el = document.getElementById('ttCopyBar');
+  const opening = el.style.display === 'none';
+  el.style.display = opening ? '' : 'none';
+  const btn = document.getElementById('ttCopyBtn');
+  if (btn) btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+  if (opening) syncCopyForm();
+  else if (ttBulkMode) {
+    // Closing the bar must not strand an invisible mode that swallows word-clicks
+    // (deliberate divergence from the dictionary, whose bulk checkbox lives in an
+    // always-visible sidebar).
+    const cb = document.getElementById('ttCopyBulkCb');
+    if (cb) cb.checked = false;
+    toggleBulkSelectMode(false);
+  }
+}
+function syncCopyForm() {
+  document.getElementById('ttCopyIncRef').checked   = !!settings.copyIncludeRef;
+  document.getElementById('ttCopyIncTrans').checked = !!settings.copyIncludeTrans;
+  document.getElementById('ttCopyBulkCb').checked   = ttBulkMode;
+  updateCopyTextarea();
+}
 async function goToCurrentParshah() {
   const cur = await fetchCurrentParshah(settings.schedule !== 'israel');
   if (!cur) { setStatus(I18n.t('torah.status.cant_determine_parsha'), true); return; }
@@ -5172,6 +5375,7 @@ function applyI18n() {
   try { refreshScopeLabels(); } catch (e) {}        // scope dropdown per-parsha labels
   try { const og = document.querySelector('#parshaSelect optgroup'); if (og) og.label = I18n.t('torah.controls.holiday_group_label'); } catch (e) {}
   try { updateTransFooter(); } catch (e) {}         // translation credit line
+  try { updateCopyTextarea(); } catch (e) {}        // re-localize the "{count} selected" line
   // Re-render the reading so row labels / aliyah markers / verse buttons translate — but NEVER
   // while audio is playing or looping (a renderText() rebuild would desync the karaoke data-twi
   // word-timing). When playing, the reading re-translates the next time it is rebuilt.

@@ -2937,6 +2937,21 @@ torah.handout.print_button,🖨️ Print handout,🖨️ הדפסת הדף,hando
 torah.handout.cancel,Cancel,ביטול,handout bar close button,
 torah.handout.shem_note,"This reading contains שם ה׳ — printed pages traditionally go to geniza, not the trash.",הקריאה כוללת שם ה׳ — דפים מודפסים נהוג להביא לגניזה ולא להשליכם לאשפה.,notice in handout bar when a divine name is detected,שם ה׳ pinned Hebrew in both languages
 torah.handout.geniza_check,Add a לגניזה marker to the printed page,הוספת סימון לגניזה בתחתית הדף המודפס,handout option toggle (shown only when a divine name is detected),לגניזה pinned Hebrew in both languages
+torah.copy.button,📋 Copy,📋 העתקה,top-bar button next to Student handout,leading-emoji
+torah.copy.button_title,Copy verses to the clipboard — one verse or a selection,העתקת פסוקים ללוח — פסוק אחד או בחירה,button title,
+torah.copy.title,Copy verses,העתקת פסוקים,copy options bar title,
+torah.copy.inc_ref,Include verse numbers,כולל מספרי פסוקים,copy option toggle,
+torah.copy.inc_trans,Include translation,כולל תרגום,copy option toggle,
+torah.copy.wysiwyg_hint,Nikkud and te'amim copy as shown on screen — change them with the display toggles.,ניקוד וטעמים מועתקים כפי שהם מוצגים על המסך — ניתן לשנותם באמצעות מתגי התצוגה.,copy bar hint line,
+torah.copy.bulk_mode,Select verses,בחירת פסוקים,bulk select toggle,
+torah.copy.bulk_hint,"While Select verses is on, clicking a verse selects it (instead of playing its words).","כשבחירת פסוקים פעילה, לחיצה על פסוק בוחרת אותו (במקום להשמיע את מילותיו).",bulk hint,
+torah.copy.bulk_count,{count} selected,{count} נבחרו,bulk selection count,
+torah.copy.clear,Clear,ניקוי,bulk clear button,
+torah.copy.select_all,Select all,בחירת הכול,bulk select-all button,
+torah.copy.copy_all,Copy All,העתקת הכול,bulk copy-all button,
+torah.copy.textarea_aria,Selected verses (copy preview),פסוקים שנבחרו (תצוגה מקדימה להעתקה),bulk textarea accessible name,aria-label only
+torah.reading.verse_copy,📋 Copy,📋 העתקה,per-verse button,leading-emoji
+torah.reading.verse_copy_aria,Copy verse {verseRef} to the clipboard,העתקת פסוק {verseRef} ללוח,per-verse button aria-label,aria-label only
 torah.controls.holiday_group_label,Holiday Torah Readings,קריאות התורה לחגים,Parsha-picker optgroup header,
 torah.controls.layout_interlinear,Interlinear,בין־שורתי,layout radio,
 torah.controls.layout_label,Layout:,פריסה:,control label,
