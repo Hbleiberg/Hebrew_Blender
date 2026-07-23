@@ -2996,6 +2996,7 @@
   "torah.copy.copy_all": "העתקת הכול",
   "torah.copy.inc_ref": "כולל מספרי פסוקים",
   "torah.copy.inc_trans": "כולל תרגום",
+  "torah.copy.inc_translit": "כולל תעתיק",
   "torah.copy.select_all": "בחירת הכול",
   "torah.copy.textarea_aria": "פסוקים שנבחרו (תצוגה מקדימה להעתקה)",
   "torah.copy.title": "העתקת פסוקים",

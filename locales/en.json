@@ -2996,6 +2996,7 @@
   "torah.copy.copy_all": "Copy All",
   "torah.copy.inc_ref": "Include verse numbers",
   "torah.copy.inc_trans": "Include translation",
+  "torah.copy.inc_translit": "Include transliteration",
   "torah.copy.select_all": "Select all",
   "torah.copy.textarea_aria": "Selected verses (copy preview)",
   "torah.copy.title": "Copy verses",
