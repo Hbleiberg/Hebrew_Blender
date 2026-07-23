@@ -1468,6 +1468,12 @@ body.dark #appToast { background: #0a0f1c; }
 .vh-file { position:absolute; width:1px; height:1px; opacity:0; }
 label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offset:2px; }
 
+/* Generic keyboard-focus fallback — a consistent gold ring on buttons/links that
+   lack their own :focus-visible rule (the scoped component rules above win by
+   specificity). Matches the suite's outline convention; keyboard-only (mouse
+   clicks don't trigger :focus-visible), so nothing changes on pointer use. */
+button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+
 @media (prefers-reduced-motion: reduce) {
     .tour-spot, .tour-card, #fsStrip, .now-next, .dash-edit-pencil, #tipFloat,
     .fr-modal, .settings-modal, .settings-backdrop, .panel-title::after { transition: none !important; }
