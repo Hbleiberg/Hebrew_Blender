@@ -816,6 +816,7 @@
   .blend-answer.hidden { visibility: hidden; }
   .gematria-blank { width: 52px; height: 1px; background: var(--border); margin-top: 8px; align-self: center; }
   .gematria-value { font-size: 0.85rem; font-weight: 700; color: var(--gold); margin-top: 6px; }
+  .ntl-ak-name { color: var(--gold); }   /* Name-the-Letter answer-key letter name; darkened for print (see @media print) */
 
   /* ── Tracing worksheet ──
      Tuned against Frank Ruhl Libre + uploaded My Fonts at --trace-font-size.
@@ -2096,7 +2097,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
        numbers stay legible on a monochrome printer. After the dark-reset, so it
        wins in both light and dark print by source order; non-!important so
        intentional inline nikkud color-coding still overrides. */
-    .gematria-value, .blend-answer, .rw-translation, .ws-wordbank-tn, .cw-clue-num { color:#6b4e12; }
+    .gematria-value, .blend-answer, .rw-translation, .ws-wordbank-tn, .cw-clue-num, .ntl-ak-name { color:#6b4e12; }
     /* The gematria write-on blank is a 1px tan background fill — stripped by the print
        dialog's default background-graphics:off, and faint on B/W even when kept. Print
        it as a real border in the same ink as the name/date .ws-field-line. */
@@ -6914,7 +6915,7 @@ function renderNameTheLetter(ws) {
       cell.innerHTML = `
         <div style="font-size:0.6rem;color:var(--muted);align-self:flex-start;width:100%;padding-bottom:2px;direction:ltr;text-align:right;">${idx + 1}</div>
         <div style="font-family:var(--heb-font);font-size:2rem;direction:rtl;text-align:center;color:var(--text);line-height:1.1;">${b.hebrewDisplay}</div>
-        <div style="font-size:0.95rem;font-weight:700;direction:ltr;text-align:center;color:var(--gold);margin-top:4px;">${b.combined}</div>`;
+        <div class="ntl-ak-name" style="font-size:0.95rem;font-weight:700;direction:ltr;text-align:center;margin-top:4px;">${b.combined}</div>`;
       akGrid.appendChild(cell);
     });
     ak.appendChild(akGrid);

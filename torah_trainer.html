@@ -4845,6 +4845,29 @@ async function init() {
   document.getElementById('ttReading').addEventListener('click', onReadingClick);
   document.getElementById('ttReading').addEventListener('keydown', onReadingKeydown);
 
+  // Deep-link: ?parsha=<name>&v=<C:V> overrides any saved/default parsha (emitted by the Trope
+  // Tutor's "See it in the parsha →", e.g. torah_trainer.html?parsha=Va'eira&v=6:2). Because it
+  // SETS settings.parshahKey, the default-selection block below is skipped when it resolves and
+  // runs normally otherwise. Anything unresolvable is silently ignored (mirrors the ?lang param).
+  let deepVerse = null;
+  try {
+    const _dl = new URLSearchParams(location.search);
+    const _dlParsha = _dl.get('parsha');
+    if (_dlParsha) {
+      const dm = findParshaByName(_dlParsha);
+      if (dm) {
+        settings.parshahKey = dm.en;
+        settings.scope = 'parsha-full';          // full parsha so the target verse is in range
+        settings.holidayKey = null; settings.customRef = null; settings.customLabel = null;
+        saveSettings();
+        syncParshaSelect();
+        document.getElementById('scopeSelect').value = 'parsha-full';
+        const _dlV = _dl.get('v');
+        if (_dlV && /^\d+:\d+$/.test(_dlV)) deepVerse = _dlV;   // regex REQUIRED: value flows into a querySelector
+      }
+    }
+  } catch (e) { /* never let a bad URL break init */ }
+
   // Determine starting parsha
   if (!settings.parshahKey) {
     const cur = await fetchCurrentParshah(settings.schedule !== 'israel');
@@ -4870,7 +4893,8 @@ async function init() {
   // the moment the user toggles translit on (no flicker / empty rows).
   if (window.HebrewTransliterator) window.HebrewTransliterator.ensureLoaded();
 
-  fetchAndRender();
+  await fetchAndRender();
+  if (deepVerse) flashVerse(deepVerse);   // scroll+flash the deep-linked verse (no-ops if not rendered)
 }
 
 document.addEventListener('DOMContentLoaded', init);

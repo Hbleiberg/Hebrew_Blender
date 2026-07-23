@@ -1784,7 +1784,14 @@ function renderLearn() {
     const links = document.createElement('div');
     links.className = 'tu-card-links';
     const a = document.createElement('a');
-    a.href = 'torah_trainer.html';
+    // Deep-link to the reader at this trope's first (earliest-in-Torah) example verse.
+    // pool = examplesFor(t.key) is in scope; ex.p = PocketTorah parsha key (== Sefaria en for 53/54,
+    // resolved by torah_trainer's findParshaByName), ex.ref = "C:V". encodeURIComponent handles the
+    // apostrophes/spaces in keys like Va'eira / Lech Lecha and the colon in the ref.
+    const primary = pool[0];
+    a.href = primary
+      ? 'torah_trainer.html?parsha=' + encodeURIComponent(primary.p) + '&v=' + encodeURIComponent(primary.ref)
+      : 'torah_trainer.html';
     a.textContent = I18n.t('trope.learn.see_in_parsha');
     a.title = I18n.t('trope.learn.see_in_parsha_title');
     links.appendChild(a);
