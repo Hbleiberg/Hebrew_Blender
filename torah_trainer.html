@@ -2764,7 +2764,11 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant
     const firstTwi = wordIdxRef.value;
     const hebHtml = tokenizeHebrew(v.hebrew, wordIdxRef);
     const hebCount = wordIdxRef.value - firstTwi;
-    html += `  <div class="tt-verse-row"><span class="tt-rowlabel">${esc(I18n.t('torah.reading.row_hebrew'))}</span><span class="tt-heb" lang="he">${hebHtml}</span></div>`;
+    // The row label only earns its space when it tells rows apart. With translit and
+    // translation both off the Hebrew is the only row, so "HEBREW" labels nothing —
+    // drop it (screen and print alike; the handout already hides it via CSS).
+    const labelRows = withTranslit || withTrans;
+    html += `  <div class="tt-verse-row">${labelRows ? `<span class="tt-rowlabel">${esc(I18n.t('torah.reading.row_hebrew'))}</span>` : ''}<span class="tt-heb" lang="he">${hebHtml}</span></div>`;
     if (withTranslit) {
       const tr = applyTranslit(v.hebrew);
       html += `  <div class="tt-verse-row"><span class="tt-rowlabel">${esc(I18n.t('torah.reading.row_translit'))}</span><span class="tt-translit">${tokenizeTranslit(tr, firstTwi, hebCount)}</span></div>`;
