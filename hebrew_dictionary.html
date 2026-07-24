@@ -846,6 +846,9 @@ footer a{color:var(--gold-text);text-decoration:none;}
           <label class="cb-label"><input type="checkbox" class="tcb" value="places"> <span>🗺️ <span data-i18n="dictionary.themes.places">Places</span> <span class="theme-count" data-theme-count="places"></span></span></label>
           <label class="cb-label"><input type="checkbox" class="tcb" value="holidays"> <span>🕎 <span data-i18n="dictionary.themes.holidays">Holidays &amp; Judaism</span> <span class="theme-count" data-theme-count="holidays"></span></span></label>
         </div>
+        <!-- One-click bridge from a theme browse → save the whole set as a Word List. Shown only when a
+             theme is selected (toggled in onFilter). Reuses the Advanced-panel Bulk-select → Save flow. -->
+        <button id="themeSaveWlBtn" class="pos-all-btn" style="width:100%;margin-top:8px;display:none;" onclick="saveThemeAsWordList()" data-i18n="dictionary.wordlists.save_button">⭑ Save as Word List…</button>
       </div>
     </div>
 
@@ -1411,6 +1414,17 @@ function selectAllMatching() {
     const card = cb.closest('.word-card,.emoji-card');
     if (card) card.classList.add('bulk-selected');
   });
+}
+
+// One-click bridge from the Browse-by-Theme results → save the whole themed set as a Word List.
+// Without this a teacher had to expand Advanced, enable Bulk Copy Mode, and Select-all-matching
+// before the "Save as Word List" button appeared (S151 Pass H). Reuses that exact flow.
+function saveThemeAsWordList() {
+  if (!filtered || !filtered.length) return;
+  if (!bulkMode) { const cb = document.getElementById('bulkModeCb'); if (cb) cb.checked = true; toggleBulkMode(true); }
+  selectAllMatching();      // selects every word in the current (theme-filtered) results
+  updateExportState();      // enables the save path now that a selection exists
+  wlOpenSaveModal();        // reads the bulk selection, prompts for a list name
 }
 
 function copyBulkText() {
@@ -2390,6 +2404,7 @@ function onFilter() {
   const posHasOther = checkedPos.has('other');   // hoisted: constant for the whole pass
   updateThemeVisibility(checkedPos);   // sync theme panel to the current POS BEFORE reading the theme set (may uncheck now-hidden themes)
   const themeSel = new Set([...document.querySelectorAll('.tcb:checked')].map(c => c.value));   // empty = theme filter off
+  { const _tb = document.getElementById('themeSaveWlBtn'); if (_tb) _tb.style.display = themeSel.size ? '' : 'none'; }   // surface the one-click save only while a theme is active
   filtered = ALL_WORDS.filter(w => {
     if (!checkedLen.has(w.lenKey)) return false;
 
