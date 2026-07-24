@@ -1310,9 +1310,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   </span>
   <span class="tt-ctrl">
     <label for="ttCustomVStart" data-i18n="torah.custom.verses_label">Verses:</label>
-    <input type="number" id="ttCustomVStart" min="1" step="1" placeholder="from" data-i18n-placeholder="torah.custom.verse_from_ph" style="width:60px;">
+    <input type="number" id="ttCustomVStart" min="1" step="1" placeholder="from" data-i18n-placeholder="torah.custom.verse_from_ph" aria-label="First verse" data-i18n-aria-label="torah.custom.verse_from_aria" style="width:60px;">
     <span style="color:var(--muted);">–</span>
-    <input type="number" id="ttCustomVEnd" min="1" step="1" placeholder="to" data-i18n-placeholder="torah.custom.verse_to_ph" style="width:60px;">
+    <input type="number" id="ttCustomVEnd" min="1" step="1" placeholder="to" data-i18n-placeholder="torah.custom.verse_to_ph" aria-label="Last verse" data-i18n-aria-label="torah.custom.verse_to_aria" style="width:60px;">
   </span>
   <button class="btn btn-xs" onclick="applyCustomRange()" type="button" data-i18n="torah.custom.go_button">Go</button>
 </div>

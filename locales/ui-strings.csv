@@ -2976,7 +2976,9 @@ torah.custom.book_leviticus,Leviticus,ויקרא,book option,glyph-name
 torah.custom.book_numbers,Numbers,במדבר,book option,glyph-name
 torah.custom.chapter_label,Chapter:,פרק:,custom-range picker label,
 torah.custom.go_button,Go,מעבר,button,
+torah.custom.verse_from_aria,First verse,פסוק ראשון,custom-range start-verse input aria-label,aria-label only
 torah.custom.verse_from_ph,from,מ,input placeholder,placeholder
+torah.custom.verse_to_aria,Last verse,פסוק אחרון,custom-range end-verse input aria-label,aria-label only
 torah.custom.verse_to_ph,to,עד,input placeholder,placeholder
 torah.custom.verses_label,Verses:,פסוקים:,custom-range picker label,
 torah.display.click_chant,Chant,שירה,radio label,
