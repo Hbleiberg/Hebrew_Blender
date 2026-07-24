@@ -2564,6 +2564,8 @@ function dismissToast() {
     wrap.setAttribute('aria-expanded', 'false');
     wrap.setAttribute('aria-describedby', 'tipFloat');
     if (!wrap.getAttribute('aria-label')) wrap.setAttribute('aria-label', I18n.t('shared.tip.aria_more_info'));
+    // Hover only for a real mouse (touch synthesizes pointerenter+click and would
+    // otherwise show-then-toggle-off immediately).
     wrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(wrap); });
     wrap.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openWrap === wrap) hide(wrap); });
     wrap.addEventListener('click', e => { e.stopPropagation(); isShown(wrap) ? hide(wrap) : show(wrap); });
