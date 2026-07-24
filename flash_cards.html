@@ -921,7 +921,7 @@ body.dark .lc-replay { color: var(--gold-light); }
 .lc-heb { font-family: var(--heb-font); direction: rtl; font-size: clamp(1.8rem, 8vw, 3rem); line-height: 1.15; }
 .lc-num { font-family: var(--eng-font); direction: ltr; font-size: clamp(2rem, 9vw, 3.2rem); font-weight: 700; }
 
-  /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards; self-contained incl. reduced-motion) ═══ */
+  /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards/dictionary; self-contained incl. reduced-motion) ═══ */
 #appToast {
   position: fixed;
   left: 50%;
@@ -5090,7 +5090,7 @@ const IVRIT_CFG = {
   }
 };
 
-/* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards — copy verbatim; called from the .ivrit engine restore path) ═══ */
+/* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary — copy verbatim; called from the .ivrit engine restore path) ═══ */
 let _appToastTimer = null;
 function showAppToast(msg, ms = 2600) {
   let t = document.getElementById('appToast');

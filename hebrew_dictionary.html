@@ -536,6 +536,30 @@ body.dict-audio-on .ec-speak{display:inline-flex;}
 .tip-wrap:focus-visible .tip-icon{outline:2px solid var(--gold);outline-offset:1px;}
 #tipFloat{display:none;position:fixed;background:var(--navy);color:#fff;font-size:0.72rem;font-weight:400;line-height:1.45;padding:6px 9px;border-radius:6px;max-width:220px;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,0.3);pointer-events:none;}
 body.dark #tipFloat{background:#0a0f1c;}
+  /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards/dictionary; self-contained incl. reduced-motion) ═══ */
+#appToast {
+  position: fixed;
+  left: 50%;
+  bottom: 84px;
+  transform: translateX(-50%) translateY(8px);
+  background: var(--navy);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 9px 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.28);
+  z-index: 2000;
+  max-width: 88vw;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+#appToast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+body.dark #appToast { background: #0a0f1c; }
+@media (prefers-reduced-motion: reduce) { #appToast { transition: none !important; } }
+/* ═══ end shared: app-toast CSS ═══ */
 /* Section 5: guided tour (ported from hebrew_blend_generator.html) */
 .tbtn{background:var(--gold);color:#1a1a1a;border:none;border-radius:6px;padding:7px 13px;cursor:pointer;font-size:0.82rem;font-weight:700;font-family:'Source Sans 3',sans-serif;}
 .tbtn.ghost{background:transparent;color:var(--text);border:1.5px solid var(--border);}
@@ -3393,6 +3417,25 @@ const HEB_FONTS = [
     load: { type: 'face', css: "@font-face{font-family:'Shmulik CLM';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Culmus%20Project%20(GPL%20and%20GPL%2BFE)/Yoram%20Gnat%20(GPL%2BFE)/Shmulik%20CLM/ShmulikCLM.ttf') format('truetype');font-weight:normal;font-style:normal;}" }
   },
 ];
+
+/* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary — copy verbatim; called from the .ivrit engine restore path) ═══ */
+let _appToastTimer = null;
+function showAppToast(msg, ms = 2600) {
+  let t = document.getElementById('appToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'appToast';
+    t.setAttribute('role', 'status');
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  // Force reflow so the transition runs even on rapid repeats.
+  void t.offsetWidth;
+  t.classList.add('show');
+  if (_appToastTimer) clearTimeout(_appToastTimer);
+  _appToastTimer = setTimeout(() => t.classList.remove('show'), ms);
+}
+/* ═══ end shared: app-toast ═══ */
 
 /* ═══ shared: ivritsuite-fonts ═══════════════════════════════════════════════
    User-made fonts: saved here by Hebrew_Font_Maker, consumed by Torah Trainer
