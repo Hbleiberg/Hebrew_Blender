@@ -3478,12 +3478,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     if (!next) { el.style.display = 'none'; return; }
     const days = Math.round((nextDate - today) / 86400000);
     const heb = next.hebrew ? ` <span class="heb-name">(${hebDisplay(next.hebrew)})</span>` : '';
+    const title = escapeHtmlDash(next.title);   // {title} stays as-is (mixed UI+content); framing follows the UI language
     if (days === 0) {
       el.innerHTML = isSolemnHoliday(next)
-        ? `🕯️ Today is ${escapeHtmlDash(next.title)}`
-        : `🎉 Today is ${escapeHtmlDash(next.title)}!`;
+        ? I18n.t('dashboard.days.holiday_today_solemn', { title })
+        : I18n.t('dashboard.days.holiday_today', { title });
     } else {
-      el.innerHTML = `${days} day${days === 1 ? '' : 's'} until ${escapeHtmlDash(next.title)}${heb}`;
+      el.innerHTML = I18n.t(days === 1 ? 'dashboard.days.holiday_countdown.one' : 'dashboard.days.holiday_countdown.other', { count: days, title }) + heb;
     }
     el.style.display = '';
   }
@@ -3578,11 +3579,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     let html = '';
     if (candles && candles.date) {
       const d = new Date(candles.date);
-      if (!isNaN(d)) html += `<div class="shabbat-line">🕯️ Candle lighting: ${d.toLocaleDateString('en-US', dayMonth)} at ${d.toLocaleTimeString('en-US', timeOpts)}</div>`;
+      if (!isNaN(d)) html += `<div class="shabbat-line">${I18n.t('dashboard.days.shabbat_candle', { date: d.toLocaleDateString('en-US', dayMonth), time: d.toLocaleTimeString('en-US', timeOpts) })}</div>`;
     }
     if (havdalah && havdalah.date) {
       const d = new Date(havdalah.date);
-      if (!isNaN(d)) html += `<div class="shabbat-line">✨ Havdalah: ${d.toLocaleDateString('en-US', { weekday: 'long' })} at ${d.toLocaleTimeString('en-US', timeOpts)}</div>`;
+      if (!isNaN(d)) html += `<div class="shabbat-line">${I18n.t('dashboard.days.shabbat_havdalah', { day: d.toLocaleDateString('en-US', { weekday: 'long' }), time: d.toLocaleTimeString('en-US', timeOpts) })}</div>`;
     }
     if (!html) { el.style.display = 'none'; return; }
     el.innerHTML = html;
@@ -6849,6 +6850,7 @@ async function onUploadEngFontPick(input){
       try { renderScheduleUI(); } catch (e) {}
       try { refreshLayoutEditChrome(); } catch (e) {}   // move-panels strips/badges re-label (read-only, focus-restoring)
       try { fetchShabbat(false); } catch (e) {}   // re-render Shabbat widget (status strings via t())
+      try { fetchHolidays(); } catch (e) {}       // re-render holiday countdown (framing via t(); cache-first, no refetch)
       try { if (document.getElementById('frModal').classList.contains('open'))
         document.getElementById('frStarters').innerHTML = STARTERS.map(st =>
           `<button class="fr-starter" onclick="frApplyStarter('${esc(st.key)}')"><b>${esc(I18n.t('dashboard.setup.starter_' + st.key + '_label'))}</b><span>${esc(I18n.t('dashboard.setup.starter_' + st.key + '_desc'))}</span></button>`).join(''); } catch (e) {}
