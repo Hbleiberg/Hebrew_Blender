@@ -188,8 +188,9 @@ The pipeline is N-language-ready; Hebrew is just the first non-English locale. T
    list-driven — no other dir code); add a `SWITCHER_LANGS` entry (`{code, label, aria}`) — the switcher on
    every page grows the new button automatically.
 4. **The inline no-flash IIFE** in every production page `<head>` hardcodes the supported codes + the
-   `he`→`rtl` map (locate all copies by grepping `hebrewBlender_lang`; 12 pages + the template comment at
-   the top of `js/i18n.js`) — update each copy to accept `X` (and map it to `rtl` if RTL).
+   `he`→`rtl` map (locate all copies by grepping `hebrewBlender_lang` → 13 root HTML files: the 12
+   production pages + the non-production `i18n-test.html` harness; plus the template comment at the top of
+   `js/i18n.js`) — update each copy to accept `X` (and map it to `rtl` if RTL).
 5. **`sw.js`** — add `/locales/X.json` to `CORE_ASSETS` and bump `VERSION`.
 6. **Caveat — plurals:** call sites pick keys with the English binary rule (`n === 1 ? '.one' : '.other'`);
    Hebrew ships with that approximation. A language whose plural categories differ (French 0/1, Slavic
@@ -794,7 +795,7 @@ whose text is majority-English (e.g. mixed `<option>` labels). Verify: `document
 
 ## Hebrew Font Maker (`Hebrew_Font_Maker.html`)
 
-The largest file in the repo (~13,400 lines, single-file app). **Line numbers drift constantly** —
+The largest file in the repo (~13,900 lines, single-file app). **Line numbers drift constantly** —
 never trust remembered or previously-reported line numbers; locate everything by pattern
 (function names, marker comments, element ids).
 
