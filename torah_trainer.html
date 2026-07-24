@@ -1433,11 +1433,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="panel-title" data-i18n="torah.settings.panel_display">Display</div>
       <div class="panel-body">
         <div class="form-row">
-          <label><span data-i18n="torah.display.show_cantillation">Show cantillation marks (te'amim)</span> <span class="tip-wrap" data-i18n-tip="torah.display.show_cantillation_tip" data-tip="Cantillation marks (above and below letters) indicate chanting melody. Toggle off to see only nikkud (vowels)."><i class="tip-icon">?</i></span></label>
-          <label class="toggle"><input type="checkbox" id="optShowCantillation"><span class="slider"></span></label>
+          <label><span id="lblShowCantillation" data-i18n="torah.display.show_cantillation">Show cantillation marks (te'amim)</span> <span class="tip-wrap" data-i18n-tip="torah.display.show_cantillation_tip" data-tip="Cantillation marks (above and below letters) indicate chanting melody. Toggle off to see only nikkud (vowels)."><i class="tip-icon">?</i></span></label>
+          <label class="toggle"><input type="checkbox" id="optShowCantillation" aria-labelledby="lblShowCantillation"><span class="slider"></span></label>
         </div>
         <div class="form-row">
-          <label data-i18n="torah.display.show_nikkud">Show nikkud (vowels)</label>
+          <label for="optShowNikkud" data-i18n="torah.display.show_nikkud">Show nikkud (vowels)</label>
           <label class="toggle"><input type="checkbox" id="optShowNikkud"><span class="slider"></span></label>
         </div>
         <div class="form-row">
@@ -1517,7 +1517,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="panel-title" data-i18n="torah.settings.panel_vowel_color">Vowel color coding</div>
       <div class="panel-body">
         <div class="form-row">
-          <label data-i18n="torah.color.code_nikkud">Color-code nikkud</label>
+          <label for="optColorCode" data-i18n="torah.color.code_nikkud">Color-code nikkud</label>
           <label class="toggle"><input type="checkbox" id="optColorCode"><span class="slider"></span></label>
         </div>
         <div class="form-row" id="colorModeRow" style="display:none;">
@@ -1541,8 +1541,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="panel-title" data-i18n="torah.settings.panel_trope_color">Trope color coding</div>
       <div class="panel-body">
         <div class="form-row">
-          <label><span data-i18n="torah.color.code_trope">Color-code trope families</span> <span class="tip-wrap" data-i18n-tip="torah.color.code_trope_tip" data-tip="Tints each word by its cantillation clause family — Sof Pasuk, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. When vowel coloring is in Highlight mode, trope shows as an underline instead."><i class="tip-icon">?</i></span></label>
-          <label class="toggle"><input type="checkbox" id="optColorCodeTrope"><span class="slider"></span></label>
+          <label><span id="lblColorCodeTrope" data-i18n="torah.color.code_trope">Color-code trope families</span> <span class="tip-wrap" data-i18n-tip="torah.color.code_trope_tip" data-tip="Tints each word by its cantillation clause family — Sof Pasuk, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. When vowel coloring is in Highlight mode, trope shows as an underline instead."><i class="tip-icon">?</i></span></label>
+          <label class="toggle"><input type="checkbox" id="optColorCodeTrope" aria-labelledby="lblColorCodeTrope"><span class="slider"></span></label>
         </div>
         <div class="color-pick-list" id="tropeColorPickerList" style="display:none;"></div>
         <div class="form-row vowel-scheme-row" id="tropeResetRow" style="display:none;">
@@ -1575,13 +1575,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           Click <strong>🔊 Read</strong> on any verse for browser TTS in Hebrew, or <strong>🎵 Chant</strong> to stream PocketTorah's recording with real-time word highlighting. These sliders mirror the ones in the audio bar at the bottom of the page.
         </div>
         <div class="slider-row">
-          <label data-i18n="torah.audio.speed_chant">Chant</label>
+          <label for="optKaraokeRate" data-i18n="torah.audio.speed_chant">Chant</label>
           <input type="range" id="optKaraokeRate" min="0.5" max="1.5" step="0.05" value="1.0">
           <span class="sval" id="optKaraokeRateVal">1.00×</span>
           <button class="sreset" onclick="resetKaraokeRate()" type="button" title="Restore default" data-i18n-title="torah.display.restore_default">↺</button>
         </div>
         <div class="slider-row">
-          <label data-i18n="torah.audio.speed_read">Read</label>
+          <label for="optTTSRate" data-i18n="torah.audio.speed_read">Read</label>
           <input type="range" id="optTTSRate" min="0.5" max="1.5" step="0.05" value="0.75">
           <span class="sval" id="optTTSRateVal">0.75×</span>
           <button class="sreset" onclick="resetTTSRate()" type="button" title="Restore default" data-i18n-title="torah.display.restore_default">↺</button>
