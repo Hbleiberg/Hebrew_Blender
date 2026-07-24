@@ -111,6 +111,7 @@
   "dashboard.days.holiday_countdown.one": "{count} day until {title}",
   "dashboard.days.holiday_countdown.other": "{count} days until {title}",
   "dashboard.days.holiday_today": "🎉 Today is {title}!",
+  "dashboard.days.holiday_today_solemn": "🕯️ Today is {title}",
   "dashboard.days.marker_today": "Today",
   "dashboard.days.marker_tomorrow": "Tomorrow",
   "dashboard.days.marker_yesterday": "Yesterday",
