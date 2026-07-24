@@ -5755,7 +5755,12 @@ document.addEventListener('DOMContentLoaded', () => {
     wrap.setAttribute('tabindex', '0');
     wrap.setAttribute('role', 'button');
     wrap.setAttribute('aria-expanded', 'false');
-    wrap.setAttribute('aria-label', I18n.t('shared.tip.aria_more_info'));
+    // Pre-ready I18n.t() returns the raw key (the dictLoaded warn-gate hides it); seed the English
+    // fallback + data-i18n-aria-label so the on-ready applyStaticI18n sweep translates it, and use
+    // the live string when the dict is already loaded (tips bound after ready).
+    wrap.setAttribute('data-i18n-aria-label', 'shared.tip.aria_more_info');
+    const _tipAria = window.I18n ? I18n.t('shared.tip.aria_more_info') : 'shared.tip.aria_more_info';
+    wrap.setAttribute('aria-label', _tipAria === 'shared.tip.aria_more_info' ? 'More information' : _tipAria);
     const box = wrap.querySelector('.tooltip-box');
     if (box) {
       if (!box.id) box.id = 'tipbox_' + (++_tipSeq);

@@ -4769,7 +4769,14 @@ function dictActiveGroupCount() {
     wrap.setAttribute('role', 'button');
     wrap.setAttribute('aria-expanded', 'false');
     wrap.setAttribute('aria-describedby', 'tipFloat');
-    if (!wrap.getAttribute('aria-label')) wrap.setAttribute('aria-label', I18n.t('shared.tip.aria_more_info'));
+    // Pre-ready I18n.t() returns the raw key (the dictLoaded warn-gate hides it); seed the English
+    // fallback + data-i18n-aria-label so the on-ready applyStaticI18n sweep translates it, and use
+    // the live string when the dict is already loaded (tips bound after ready).
+    if (!wrap.getAttribute('aria-label')) {
+      wrap.setAttribute('data-i18n-aria-label', 'shared.tip.aria_more_info');
+      const _tipAria = window.I18n ? I18n.t('shared.tip.aria_more_info') : 'shared.tip.aria_more_info';
+      wrap.setAttribute('aria-label', _tipAria === 'shared.tip.aria_more_info' ? 'More information' : _tipAria);
+    }
     wrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(wrap); });
     wrap.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openWrap === wrap) hide(); });
     wrap.addEventListener('click', e => { e.stopPropagation(); isShown(wrap) ? hide() : show(wrap); });
