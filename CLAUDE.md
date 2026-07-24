@@ -323,9 +323,9 @@ Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_das
 
 ### Pattern: per-file `IVRIT_CFG` + shared engine
 
-Each file defines a small **`IVRIT_CFG`** object, then pastes the **shared engine** verbatim (the block between the `═══ IvritSuite .ivrit save-file engine ═══` comment markers — it is byte-for-byte identical across the three tool pages (generator, flash cards, dashboard; re-verified 2026-07-10 — the S39 `showAppToast` interleave that had broken this was extracted into its own shared block in **S59**, re-unifying the engine); copy it, don't rewrite it. The restore-success path calls the shared **`showAppToast`** (non-blocking toast), not a blocking `alert()`. **Exception:** `index.html` carries a deliberately adapted AllTools superset of the engine — extra `wlMergeIntoStorage`, a legacy-blob payload shape, and a "reload open tool pages" success `alert()` (kept as a blocking, actionable instruction; index has no `showAppToast`) — do not "fix" it back to the shared text).
+Each file defines a small **`IVRIT_CFG`** object, then pastes the **shared engine** verbatim (the block between the `═══ IvritSuite .ivrit save-file engine ═══` comment markers — it is byte-for-byte identical across the three tool pages (generator, flash cards, dashboard; re-verified 2026-07-24 — the S39 `showAppToast` interleave that had broken this was extracted into its own shared block in **S59**, re-unifying the engine); copy it, don't rewrite it. The restore-success path calls the shared **`showAppToast`** (non-blocking toast), not a blocking `alert()`. **Exception:** `index.html` carries a deliberately adapted AllTools superset of the engine — extra `wlMergeIntoStorage`, a legacy-blob payload shape, and a "reload open tool pages" success `alert()` (kept as a blocking, actionable instruction; index has no `showAppToast`) — do not "fix" it back to the shared text).
 
-**Shared `app-toast` block (S59).** `showAppToast(msg, ms = 2600)` + `let _appToastTimer` live in a byte-identical `/* ═══ shared: app-toast ═══ … ═══ end shared: app-toast ═══ */` JS block placed immediately **before** the `.ivrit` engine block, with a matching `/* ═══ shared: app-toast CSS ═══ … */` block (the `#appToast` rules + a self-contained `@media (prefers-reduced-motion)` neutralizer) in each `<style>`. Both blocks are identical across `hebrew_blend_generator.html`, `classroom_dashboard.html`, `flash_cards.html` (sha-verified 2026-07-10) — copy verbatim, like `ivritsuite-fonts` / folder-tree. `index.html` does **not** carry it. Torah Trainer's `showHintToast` and the Trope Tutor's `showToast` are separate sibling toasts with distinct ids/selectors — not part of this block.
+**Shared `app-toast` block (S59).** `showAppToast(msg, ms = 2600)` + `let _appToastTimer` live in a byte-identical `/* ═══ shared: app-toast ═══ … ═══ end shared: app-toast ═══ */` JS block placed immediately **before** the `.ivrit` engine block, with a matching `/* ═══ shared: app-toast CSS ═══ … */` block (the `#appToast` rules + a self-contained `@media (prefers-reduced-motion)` neutralizer) in each `<style>`. Both blocks are identical across `hebrew_blend_generator.html`, `classroom_dashboard.html`, `flash_cards.html` (sha-verified 2026-07-24) — copy verbatim, like `ivritsuite-fonts` / folder-tree. `index.html` does **not** carry it. Torah Trainer's `showHintToast` and the Trope Tutor's `showToast` are separate sibling toasts with distinct ids/selectors — not part of this block.
 
 ```js
 const IVRIT_CFG = {
@@ -645,8 +645,9 @@ The store + helpers are delivered as one copy-identical block (like the `.ivrit`
   `saveUserFont(name, bytes, family)` (upsert; auto-prunes to the newest 10); `deleteUserFont(name)`;
   `loadUserFont(name)` → registers the stored bytes as a CSS-usable `FontFace` named exactly `name`.
 
-Present (verbatim; sha-verified 2026-07-10) in **9 files**: `index.html`, `Hebrew_Font_Maker.html`, and the seven
-font-selector tools (generator, flash cards, dashboard, dictionary, torah trainer, trope tutor, resources).
+Present (verbatim; sha-verified 2026-07-24) in **9 files**: `index.html`, `Hebrew_Font_Maker.html`, the six
+font-selector tools (generator, flash cards, dashboard, dictionary, torah trainer, trope tutor), and
+`resources.html` (a store *consumer* — its font gallery reads `listUserFonts` but has no picker/uploader).
 
 ### Consumer pattern (in the picker)
 Each font-selector tool keeps the block plus: `let MY_FONTS = []` + `const _loadedUserFonts = new Set()`,
@@ -661,7 +662,7 @@ at init. (Use `family` or `stack` to match whatever property that tool's `setHeb
 A second shared block `/* ═══ My Fonts uploader (shared, identical across pages) ═══ */` defines
 `ivUploadFontFromFile(file)` (validates via `new FontFace(name, bytes).load()`, de-dupes the name,
 `saveUserFont`s it). The block contains ONLY that function (sha-verified identical across all 7 carriers,
-2026-07-10); the thin **pick handler lives BELOW the end marker and is per-page**: the five tool pickers
+2026-07-24); the thin **pick handler lives BELOW the end marker and is per-page**: the five tool pickers
 use `onUploadFontPick(input)` (`refreshMyFonts()` + `setHebFont(name)`), the dashboard adds an extra
 `onUploadEngFontPick` (routes to `setEngFont`), and `index.html`'s gear-modal manager uses
 `onUploadFontPickIndex` (`renderMyFontsManager()` + `refreshFontsBackupCache()`). Each picker has a small
