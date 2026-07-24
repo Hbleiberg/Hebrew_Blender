@@ -111,6 +111,7 @@ dashboard.days.hide_panel,Hide Day of Week panel,הסתר פאנל יום בשב
 dashboard.days.holiday_countdown.one,{count} day until {title},עוד {count} יום עד {title},holiday countdown line,plural; mixed UI+content — do not translate {…}
 dashboard.days.holiday_countdown.other,{count} days until {title},עוד {count} ימים עד {title},holiday countdown line,plural; mixed UI+content — do not translate {…}
 dashboard.days.holiday_today,🎉 Today is {title}!,🎉 היום {title}!,holiday countdown line,leading-emoji; mixed UI+content — do not translate {…}
+dashboard.days.holiday_today_solemn,🕯️ Today is {title},🕯️ היום {title},holiday countdown line,leading-emoji; solemn/fast days; mixed UI+content — do not translate {…}
 dashboard.days.marker_today,Today,היום,day marker badge,RTL / hebDisplay; Hebrew fork הַיוֹם
 dashboard.days.marker_tomorrow,Tomorrow,מחר,day marker badge,RTL / hebDisplay; Hebrew fork מָחָר יִהְיֶה
 dashboard.days.marker_yesterday,Yesterday,אתמול,day marker badge,RTL / hebDisplay; Hebrew fork אֶתְמוֹל הָיָה

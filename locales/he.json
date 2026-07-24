@@ -111,6 +111,7 @@
   "dashboard.days.holiday_countdown.one": "עוד {count} יום עד {title}",
   "dashboard.days.holiday_countdown.other": "עוד {count} ימים עד {title}",
   "dashboard.days.holiday_today": "🎉 היום {title}!",
+  "dashboard.days.holiday_today_solemn": "🕯️ היום {title}",
   "dashboard.days.marker_today": "היום",
   "dashboard.days.marker_tomorrow": "מחר",
   "dashboard.days.marker_yesterday": "אתמול",

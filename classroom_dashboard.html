@@ -3445,6 +3445,16 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     }
   }
 
+  // Fast/mourning days must not get the celebratory banner. subcat 'fast' covers
+  // Tish'a B'Av (and the minor fasts if the feed ever includes them); the title
+  // check covers Yom Kippur (subcat 'major'), Erev/observed variants, and the
+  // modern memorial days should the feed ever widen.
+  function isSolemnHoliday(it) {
+    if (it && it.subcat === 'fast') return true;
+    const t = String((it && it.title) || '').toLowerCase();
+    return /tish.?a b.?av|yom kippur|yom hashoah|yom hazikaron/.test(t);
+  }
+
   function renderHolidayCountdown(items) {
     const el = document.getElementById('holidayCountdown');
     if (!el) return;
@@ -3469,7 +3479,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     const days = Math.round((nextDate - today) / 86400000);
     const heb = next.hebrew ? ` <span class="heb-name">(${hebDisplay(next.hebrew)})</span>` : '';
     if (days === 0) {
-      el.innerHTML = `🎉 Today is ${escapeHtmlDash(next.title)}!`;
+      el.innerHTML = isSolemnHoliday(next)
+        ? `🕯️ Today is ${escapeHtmlDash(next.title)}`
+        : `🎉 Today is ${escapeHtmlDash(next.title)}!`;
     } else {
       el.innerHTML = `${days} day${days === 1 ? '' : 's'} until ${escapeHtmlDash(next.title)}${heb}`;
     }
