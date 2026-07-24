@@ -4052,6 +4052,7 @@ function applyI18n() {
   refreshDictVowelGroupColors();   // re-localize the vowel-group "Sound" headers
   initPosFilters();
   initFontSelector();
+  updateExportState();   // export count is built via t() at init (pre-ready), so it needs a re-render here
   if (typeof window._updateMobileFiltersBtn === 'function') window._updateMobileFiltersBtn();
   rebuildFilterChips();
   // Re-render the active result view with translated strings, preserving the current mode/selection.

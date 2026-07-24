@@ -6844,6 +6844,7 @@ async function onUploadEngFontPick(input){
       try { renderWeather(); } catch (e) {}
       try { updateOmerDisplay(); } catch (e) {}
       try { renderStudentPicker(); } catch (e) {}
+      try { updatePickerRosterCount(); } catch (e) {}   // roster count is built via t() at init (pre-ready), so it needs a re-render here
       try { renderScheduleRows(); } catch (e) {}
       try { renderSavedSchedules(); } catch (e) {}
       try { renderPresets(); } catch (e) {}
