@@ -3994,18 +3994,33 @@ function rebuildTranslitDisplay(scope = 'all') {
       w.translitDisplay = HT.apply(w.heb || w.word || '', w.translit || '', translitStyle);
     });
   }
+  // rwRenderCache holds shallow COPIES of the pool words (`words.map(w => ({...w}))` in
+  // generateRealWords), so they detach from REAL_WORDS the moment they're cached. Refreshing
+  // only the corpus would leave a reuse=true re-render showing the OLD style. Covers the
+  // word-list drills (reading / reverse / idpos / vocab / identify) and gematria/fillvowels;
+  // matching, word-search and crossword cache derived structures instead and are untouched.
+  // Blend-derived items (isReal === false) are skipped — their `translit` already holds a
+  // rendered display string, so re-applying would transliterate a transliteration.
+  if (typeof rwRenderCache !== 'undefined' && rwRenderCache) {
+    const refresh = w => {
+      if (!w || typeof w !== 'object' || w.isReal === false) return;
+      if (!w.heb && !w.word) return;
+      w.translitDisplay = HT.apply(w.heb || w.word || '', w.translit || '', translitStyle);
+    };
+    if (Array.isArray(rwRenderCache.items)) rwRenderCache.items.forEach(refresh);
+    if (Array.isArray(rwRenderCache.words)) rwRenderCache.words.forEach(refresh);
+  }
 }
 
 function rerenderAfterTranslitChange() {
   try {
-    if (typeof cwModeActive !== 'undefined' && cwModeActive) {
-      if (typeof renderCustomWordlist === 'function') { renderCustomWordlist(); return; }
-    }
-    const rwToggle = document.getElementById('realWordsToggle');
-    if (rwToggle && rwToggle.checked) {
-      if (typeof renderRealWords === 'function') { renderRealWords(); return; }
-    }
-    if (blends.length && typeof renderWorksheet === 'function') renderWorksheet(false);
+    // Was guarded on renderCustomWordlist/renderRealWords — both folded into the current
+    // renderers long ago, so the guards never matched and control fell through to a
+    // `blends.length` check that is 0 in Real Words mode. Net effect: changing the
+    // transliteration style silently did nothing to a Real Words sheet, which kept
+    // printing the previous style. Delegate to the deterministic re-render instead, which
+    // routes each activity family to its own renderer and reshuffles nothing.
+    rerenderCurrentSheet();
   } catch (e) { console.warn('[translit] rerender failed', e); }
 }
 
@@ -9250,15 +9265,23 @@ function renderWorksheet(animate = false) {
   _wsBuildTimer = setTimeout(pump, 0);
 }
 
-// QR Answer-Key toggle handler: re-render the CURRENT drill deterministically so the
-// footer QR is added/removed in place — WITHOUT reshuffling the items (else the QR's
-// encoded answers wouldn't match the printed sheet). blends[] and numberPracticeItems[]
-// are stable module caches; real words re-render from rwRenderCache via reuse=true.
-function onQrAnswerKeyToggle() {
+// Re-render the CURRENT drill deterministically — same items, no reshuffle. Each activity
+// family has its own renderer and its own stable cache: Number Practice renders from
+// numberPracticeItems[], Real Words renders through generateRealWords(reuse=true) off
+// rwRenderCache (NOT renderWorksheet, which only knows blends[] — and blends is empty in
+// Real Words mode, so calling it there would replace the sheet and drop the answer-key page),
+// and standard blends render from blends[].
+function rerenderCurrentSheet() {
   const ws = document.getElementById('worksheet');
   if (document.getElementById('numberPracticeToggle')?.checked) { renderNumberPractice(ws); return; }
   if (document.getElementById('realWordsToggle')?.checked)      { generateRealWords(true); return; }
   if (typeof blends !== 'undefined' && blends.length)           { renderWorksheet(false); }
+}
+
+// QR Answer-Key toggle handler: re-render in place so the footer QR is added/removed
+// WITHOUT reshuffling the items (else the QR's encoded answers wouldn't match the sheet).
+function onQrAnswerKeyToggle() {
+  rerenderCurrentSheet();
 }
 
 // "Version A" / "Version B" … or "גרסה א" / "גרסה ב" … under an עברית header.
