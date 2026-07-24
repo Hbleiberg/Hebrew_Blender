@@ -1158,6 +1158,10 @@ body.fullscreen #fsExitBtn { display: flex; }
   body.tt-handout-hidenums .tt-verse-num,
   body.tt-handout-hidenums .tt-vnum,
   body.tt-handout-hidenums .tt-bnum { display:none !important; }
+  /* The handout is Hebrew-only (translit + translation are forced off in
+     _handoutEnter), so the per-verse "Hebrew" row label distinguishes nothing —
+     drop it so the student sheet reads clean, not stamped "HEBREW" per verse. */
+  body.tt-handout-print .tt-rowlabel { display:none !important; }
   /* Geniza footer: prints ONLY when the teacher opted in AND a divine name
      was detected (body.tt-handout-geniza gates both). Literal ink colors —
      the print block already forces light paper. */
