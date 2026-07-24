@@ -3003,6 +3003,11 @@ async function fetchAndRender() {
     // "Sefaria API may be unreachable" would misdirect the user.
     const netHint = netDone ? '' : ' ' + I18n.t('torah.status.net_hint');
     setStatus(I18n.t('torah.status.reading_load_failed', { label: r.label, error: e.message }) + netHint, true);
+    // A failed FIRST load (e.g. offline / Sefaria down) would otherwise leave the
+    // reading pane blank — show the friendly empty card so the error status has
+    // context and the pane isn't dead. Guarded on currentVerses so a refetch
+    // failure (translation toggle, etc.) never wipes an already-displayed reading.
+    if (!currentVerses || !currentVerses.length) renderEmptyReading();
     _tourOnReadingChanged();   // a parked tour reading-step won't get its content — release it so it skips past
   }
 }
