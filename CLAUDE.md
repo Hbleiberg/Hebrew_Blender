@@ -355,6 +355,8 @@ The shared engine provides: `ivritDateStamp`, `ivritStatus`, `setIvritMode`, `iv
 
 The shared `.ivrit-*` CSS block (with `var(..., fallback)` colors so it works on any page) + the toggle + `#ivritAuto` (Save button, `#ivritDrop`, `#ivritFileInput`, `#ivritStatus` — which carries `role="status"` so save/restore feedback is announced to screen readers) + `#ivritManual` (the legacy textarea, `display:none` by default). Copy an existing page's markup (e.g. the Generator's "Backup Presets" sub-panel).
 
+Unlike the JS shared blocks, this `.ivrit-*` CSS is **convention-shared but deliberately NOT `═══`-marked byte-identical**: the *rules* are identical across the generator/dashboard/flash_cards copies, but leading indentation legitimately differs because the block sits at a different `<style>` nesting depth in each file. A Pass F consistency sweep should treat that indentation delta as expected, not drift — do not "fix" it to byte-identity (it would only mis-indent two of the three copies against their surrounding CSS). Decided S145 (2026-07-24).
+
 ### Rules for new tools / new options
 
 1. **Every new tool that saves presets or settings MUST implement this** (toggle + `IVRIT_CFG` + shared engine + UI markup) and register its key(s) in the `index.html` AllTools functions (see section above).
