@@ -101,7 +101,7 @@ html.dark-early body,body.dark {
 body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
 header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
 header .star{font-size:32px;}
-header h1{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
+header .brand-title{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
 header p{font-size:0.85rem;color:var(--gold-light);margin-top:3px;}
 header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;}
 .hbtn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;text-decoration:none;}
@@ -163,7 +163,7 @@ footer a{color:var(--gold-text);text-decoration:none;}
 }
 @media (max-width:640px){
   header{padding:16px 20px;}
-  header h1{font-size:1.2rem;}
+  header .brand-title{font-size:1.2rem;}
   main{padding:28px 18px 48px;}
   main h1.page-title{font-size:1.5rem;}
   .pill-group .pill{padding:8px 16px;}
@@ -185,7 +185,7 @@ footer a{color:var(--gold-text);text-decoration:none;}
 <header>
   <span class="star">✡︎</span>
   <div>
-    <h1 data-i18n="contact.header.title">IvritSuite — Contact &amp; Support</h1>
+    <div class="brand-title" data-i18n="contact.header.title">IvritSuite — Contact &amp; Support</div>
     <p data-i18n="contact.header.tagline">Get in touch · Support the project</p>
   </div>
   <div class="hright">
