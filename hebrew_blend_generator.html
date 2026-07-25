@@ -974,10 +974,12 @@
 
   .quick-tour-link {
     background: none; border: none; cursor: pointer; font-family: inherit;
-    font-size: 0.82rem; font-weight: 600; color: var(--gold);
+    font-size: 0.82rem; font-weight: 600; color: var(--gold-text);
     text-decoration: underline; padding: 2px 6px;
   }
-  .quick-tour-link:hover { color: var(--gold-light); }
+  /* Hover darkens toward body text rather than lightening — --gold-light on a
+     light surface drops to ~1.5:1, so the old hover was the least readable state. */
+  .quick-tour-link:hover { color: var(--text); }
 
   /* Sidebar Quick Start drawer */
   .quick-start-drawer {
