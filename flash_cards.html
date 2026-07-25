@@ -2002,7 +2002,7 @@ const HAS_SOFIT_CHARS = new Set(['כ','מ','נ','פ','צ']);
 const VOWEL_GROUPS = [
   {
     key: 'aqua', sound: 'AH', colorName: 'Aqua', colorHtml: '<u>A</u>qua', label: 'AH sound',
-    bg: 'rgba(0,180,210,0.18)', border: '#00b4d2', darkBg: 'rgba(0,160,190,0.25)', darkBorder: '#00c4e0',
+    bg: 'rgba(0,180,210,0.18)', border: '#00b4d2', headerText: '#007083', darkBg: 'rgba(0,160,190,0.25)', darkBorder: '#00c4e0', darkHeaderText: '#00c4e0',
     vowels: [
       { key: 'a',       label: 'Kamatz',      sub: 'AH sound', nikud: 'אָ', isMain: true  },
       { key: 'patah',   label: 'Patach',       sub: 'AH sound', nikud: 'אַ', isMain: true  },
@@ -2012,7 +2012,7 @@ const VOWEL_GROUPS = [
   },
   {
     key: 'red', sound: 'EH', colorName: 'Red', colorHtml: 'R<u>e</u>d', label: 'EH sound',
-    bg: 'rgba(210,50,50,0.15)', border: '#d03232', darkBg: 'rgba(220,60,60,0.22)', darkBorder: '#e05050',
+    bg: 'rgba(210,50,50,0.15)', border: '#d03232', headerText: '#b92a2a', darkBg: 'rgba(220,60,60,0.22)', darkBorder: '#e05050', darkHeaderText: '#e87c7c',
     vowels: [
       { key: 'e',      label: 'Segol',       sub: 'EH sound', nikud: 'אֶ', isMain: true  },
       { key: 'hsegol', label: 'Hataf Segol', sub: 'short EH', nikud: 'אֱ', isMain: false },
@@ -2020,21 +2020,21 @@ const VOWEL_GROUPS = [
   },
   {
     key: 'grey', sound: 'EY', colorName: 'Grey', colorHtml: 'Gr<u>ey</u>', label: 'EY sound',
-    bg: 'rgba(130,130,140,0.18)', border: '#888898', darkBg: 'rgba(140,140,155,0.25)', darkBorder: '#aaaabc',
+    bg: 'rgba(130,130,140,0.18)', border: '#888898', headerText: '#626271', darkBg: 'rgba(140,140,155,0.25)', darkBorder: '#aaaabc', darkHeaderText: '#aaaabc',
     vowels: [
       { key: 'tzere', label: 'Tzere', sub: 'EY sound', nikud: 'אֵ', isMain: true },
     ]
   },
   {
     key: 'green', sound: 'EE', colorName: 'Green', colorHtml: 'Gr<u>ee</u>n', label: 'EE sound',
-    bg: 'rgba(40,160,60,0.15)', border: '#28a03c', darkBg: 'rgba(50,180,70,0.22)', darkBorder: '#30c050',
+    bg: 'rgba(40,160,60,0.15)', border: '#28a03c', headerText: '#1d752c', darkBg: 'rgba(50,180,70,0.22)', darkBorder: '#30c050', darkHeaderText: '#30c050',
     vowels: [
       { key: 'i', label: 'Chirik', sub: 'EE sound', nikud: 'אִ', isMain: true },
     ]
   },
   {
     key: 'yellow', sound: 'OH', colorName: 'Yellow', colorHtml: 'Yell<u>ow</u>', label: 'OH sound',
-    bg: 'rgba(200,165,0,0.18)', border: '#c8a800', darkBg: 'rgba(220,185,0,0.25)', darkBorder: '#e0c020',
+    bg: 'rgba(200,165,0,0.18)', border: '#c8a800', headerText: '#796600', darkBg: 'rgba(220,185,0,0.25)', darkBorder: '#e0c020', darkHeaderText: '#e0c020',
     vowels: [
       { key: 'o',       label: 'Holam',     sub: 'OH sound', nikud: 'אֹ', isMain: true },
       { key: 'vcholam', label: 'Vav Holam', sub: 'OH sound', nikud: 'וֹ', isMain: true },
@@ -2042,7 +2042,7 @@ const VOWEL_GROUPS = [
   },
   {
     key: 'blue', sound: 'OO', colorName: 'Blue', colorHtml: 'Bl<u>ue</u>', label: 'OO sound',
-    bg: 'rgba(40,80,200,0.15)', border: '#2850c8', darkBg: 'rgba(60,100,220,0.22)', darkBorder: '#5080e0',
+    bg: 'rgba(40,80,200,0.15)', border: '#2850c8', headerText: '#2850c8', darkBg: 'rgba(60,100,220,0.22)', darkBorder: '#5080e0', darkHeaderText: '#779ce7',
     vowels: [
       { key: 'u',      label: 'Kubutz', sub: 'OO sound', nikud: 'אֻ', isMain: true },
       { key: 'shuruk', label: 'Shuruk', sub: 'OO sound', nikud: 'וּ', isMain: true },
@@ -2050,7 +2050,7 @@ const VOWEL_GROUPS = [
   },
   {
     key: 'purple', sound: 'UH', colorName: 'Purple', colorHtml: 'P<u>u</u>rple', label: 'UH sound',
-    bg: 'rgba(130,60,180,0.15)', border: '#823cb4', darkBg: 'rgba(150,70,200,0.22)', darkBorder: '#a060d0',
+    bg: 'rgba(130,60,180,0.15)', border: '#823cb4', headerText: '#823cb4', darkBg: 'rgba(150,70,200,0.22)', darkBorder: '#a060d0', darkHeaderText: '#b988dc',
     vowels: [
       { key: 'sh', label: 'Shva', sub: 'UH / silent', nikud: 'אְ', isMain: false },
     ]
@@ -2062,7 +2062,7 @@ const VOWEL_GROUPS = [
 const VOWEL_GROUPS_TALAM = [
   {
     key: 'red', sound: 'AH', colorName: 'Red', colorHtml: 'R<u>e</u>d', label: 'AH sound',
-    bg: 'rgba(209,42,31,0.15)', border: '#d12a1f', darkBg: 'rgba(240,98,90,0.22)', darkBorder: '#f0625a',
+    bg: 'rgba(209,42,31,0.15)', border: '#d12a1f', headerText: '#bb261c', darkBg: 'rgba(240,98,90,0.22)', darkBorder: '#f0625a', darkHeaderText: '#f27871',
     vowels: [
       { key: 'a',       label: 'Kamatz',       sub: 'AH sound', nikud: 'אָ', isMain: true  },
       { key: 'patah',   label: 'Patach',       sub: 'AH sound', nikud: 'אַ', isMain: true  },
@@ -2072,7 +2072,7 @@ const VOWEL_GROUPS_TALAM = [
   },
   {
     key: 'gold', sound: 'EH', colorName: 'Yellow', colorHtml: 'Y<u>e</u>llow', label: 'EH sound',
-    bg: 'rgba(200,150,0,0.18)', border: '#c08a00', darkBg: 'rgba(230,194,76,0.22)', darkBorder: '#e6c24c',
+    bg: 'rgba(200,150,0,0.18)', border: '#c08a00', headerText: '#856000', darkBg: 'rgba(230,194,76,0.22)', darkBorder: '#e6c24c', darkHeaderText: '#e6c24c',
     vowels: [
       { key: 'tzere',  label: 'Tzere',       sub: 'EY sound', nikud: 'אֵ', isMain: true  },
       { key: 'e',      label: 'Segol',       sub: 'EH sound', nikud: 'אֶ', isMain: true  },
@@ -2081,14 +2081,14 @@ const VOWEL_GROUPS_TALAM = [
   },
   {
     key: 'green', sound: 'EE', colorName: 'Green', colorHtml: 'Gr<u>ee</u>n', label: 'EE sound',
-    bg: 'rgba(46,156,52,0.15)', border: '#2e9c34', darkBg: 'rgba(70,204,82,0.22)', darkBorder: '#46cc52',
+    bg: 'rgba(46,156,52,0.15)', border: '#2e9c34', headerText: '#227527', darkBg: 'rgba(70,204,82,0.22)', darkBorder: '#46cc52', darkHeaderText: '#46cc52',
     vowels: [
       { key: 'i', label: 'Chirik', sub: 'EE sound', nikud: 'אִ', isMain: true },
     ]
   },
   {
     key: 'navy', sound: 'OH', colorName: 'Blue', colorHtml: 'Bl<u>ue</u>', label: 'OH sound',
-    bg: 'rgba(31,63,143,0.15)', border: '#1f3f8f', darkBg: 'rgba(111,140,230,0.22)', darkBorder: '#6f8ce6',
+    bg: 'rgba(31,63,143,0.15)', border: '#1f3f8f', headerText: '#1f3f8f', darkBg: 'rgba(111,140,230,0.22)', darkBorder: '#6f8ce6', darkHeaderText: '#859dea',
     vowels: [
       { key: 'vcholam', label: 'Vav Holam', sub: 'OH sound', nikud: 'וֹ', isMain: true },
       { key: 'o',       label: 'Holam',     sub: 'OH sound', nikud: 'אֹ', isMain: true },
@@ -2096,7 +2096,7 @@ const VOWEL_GROUPS_TALAM = [
   },
   {
     key: 'orange', sound: 'OO', colorName: 'Orange', colorHtml: 'Or<u>a</u>nge', label: 'OO sound',
-    bg: 'rgba(217,121,27,0.15)', border: '#d9791b', darkBg: 'rgba(240,162,62,0.22)', darkBorder: '#f0a23e',
+    bg: 'rgba(217,121,27,0.15)', border: '#d9791b', headerText: '#9a5613', darkBg: 'rgba(240,162,62,0.22)', darkBorder: '#f0a23e', darkHeaderText: '#f0a23e',
     vowels: [
       { key: 'shuruk', label: 'Shuruk', sub: 'OO sound', nikud: 'וּ', isMain: true },
       { key: 'u',      label: 'Kubutz', sub: 'OO sound', nikud: 'אֻ', isMain: true },
@@ -2104,7 +2104,7 @@ const VOWEL_GROUPS_TALAM = [
   },
   {
     key: 'grey', sound: 'UH', colorName: 'Grey', colorHtml: 'Gr<u>ey</u>', label: 'UH sound',
-    bg: 'rgba(107,107,107,0.15)', border: '#6b6b6b', darkBg: 'rgba(154,160,172,0.22)', darkBorder: '#9aa0ac',
+    bg: 'rgba(107,107,107,0.15)', border: '#6b6b6b', headerText: '#636363', darkBg: 'rgba(154,160,172,0.22)', darkBorder: '#9aa0ac', darkHeaderText: '#9ea4af',
     vowels: [
       { key: 'sh', label: 'Shva', sub: 'UH / silent', nikud: 'אְ', isMain: false },
     ]
@@ -2785,6 +2785,13 @@ function initColorPickers() {
   });
 }
 
+/* The group hue is too light (light mode) / too dark (dark mode) for small text on the
+   group's own tinted background. headerText/darkHeaderText are the same hue nudged until
+   they clear 4.5:1, used ONLY for the heading text — every swatch, chip and box border
+   keeps the exact taught colour. Mirrors the generator's vowelHeaderColor(). */
+function vowelHeaderColor(g, dark) {
+  return dark ? (g.darkHeaderText || g.darkBorder) : (g.headerText || g.border);
+}
 function refreshVowelGroupColors() {
   document.querySelectorAll('.vgroup').forEach(g => {
     const key = g.dataset.key;
@@ -2794,7 +2801,7 @@ function refreshVowelGroupColors() {
     g.style.background = isDark() ? grp.darkBg : grp.bg;
     g.style.borderColor = borderCol;
     const head = g.querySelector('.vgroup-head');
-    if (head) head.style.color = borderCol;
+    if (head) head.style.color = vowelHeaderColor(grp, isDark());
   });
 }
 
@@ -2992,7 +2999,7 @@ function initVowels() {
     if (vowelColorScheme !== 'talam') {
       const head = document.createElement('div');
       head.className = 'vgroup-head';
-      head.style.color = borderCol;
+      head.style.color = vowelHeaderColor(g, isDark());
       head.innerHTML = window.I18n ? `<span>${I18n.t('flashcards.vowelgroup.header', {sound: g.sound, color: g.colorHtml})}</span>` : `<span>${g.sound} Sound – ${g.colorHtml}</span>`;
       head.setAttribute('tabindex', '0');
       head.setAttribute('role', 'button');
