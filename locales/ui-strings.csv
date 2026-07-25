@@ -3877,6 +3877,7 @@ worksheet.vowels.sub.oo,OO sound,צליל OO,vowel chip subtext,
 worksheet.vowels.sub.short_ah,short AH,AH קצר,vowel chip subtext,
 worksheet.vowels.sub.short_eh,short EH,EH קצר,vowel chip subtext,
 worksheet.vowels.sub.uh,UH / silent,UH / שקט,vowel chip subtext,
+worksheet.zoom.slider_aria,Zoom,זום,zoom bar slider aria-label,
 flashcards.teachertools.preset_overwrite_confirm,"Overwrite preset ""{name}""?","לדרוס על ההגדרה השמורה ""{name}""?",Confirm before overwriting an existing preset on save,has {name}
 flashcards.teachertools.preset_delete_confirm,"Delete preset ""{name}""?","למחוק את ההגדרה השמורה ""{name}""?",Confirm before deleting a preset,has {name}
 flashcards.teachertools.preset_overwrite_current_confirm,"Overwrite preset ""{name}"" with current settings?","לדרוס על ההגדרה ""{name}"" עם ההגדרות הנוכחיות?",Confirm overwrite from the preset row save action,has {name}

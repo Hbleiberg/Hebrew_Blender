@@ -2464,7 +2464,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             </div>
           </div>
           <div class="toggle-row" id="npBingoRow" style="font-size:0.82rem;">
-            <span>Bingo Mode
+            <span><span data-i18n="worksheet.modes.number.bingo">Bingo Mode</span>
               <span class="tooltip-wrap">?<span class="tooltip-box" data-i18n="worksheet.modes.number.bingo_tooltip">Generate printable bingo cards filled with numbers (or Hebrew number words). Includes a teacher caller sheet showing both the digit and the Hebrew word.</span></span>
             </span>
             <label class="toggle" style="transform:scale(0.75);transform-origin:right;">
@@ -2620,13 +2620,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             </div>
           </div>
           <div class="toggle-row" id="traceModelsRow" style="font-size:0.82rem;">
-            <span>Faded models per line
+            <span><span data-i18n="worksheet.modes.tracing.faded_models">Faded models per line</span>
               <span class="tooltip-wrap">?<span class="tooltip-box" data-i18n="worksheet.modes.tracing.faded_models_tooltip">How many faded copies print at the start of each line for the student to trace.</span></span>
             </span>
             <input type="number" id="traceModels" min="1" max="5" value="3" oninput="this.value=Math.max(1,Math.min(5,parseInt(this.value)||1));renderTracingIfActive()" style="width:56px;font-size:0.82rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);text-align:center;-moz-appearance:textfield;">
           </div>
           <div class="toggle-row" style="font-size:0.82rem;">
-            <span>Solid example first
+            <span><span data-i18n="worksheet.modes.tracing.solid_first">Solid example first</span>
               <span class="tooltip-wrap">?<span class="tooltip-box" data-i18n="worksheet.modes.tracing.solid_first_tooltip">Print the first (rightmost) copy at full darkness as a model, followed by the faded copies to trace.</span></span>
             </span>
             <label class="toggle" style="transform:scale(0.75);transform-origin:right;"><input type="checkbox" id="traceSolidFirst" checked onchange="renderTracingIfActive()"><span class="slider"></span></label>
@@ -3526,11 +3526,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <!-- TTS Reading Speed -->
           <div style="margin-top:8px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--cream);">
             <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.04em;color:var(--text);margin-bottom:6px;">
-              <span data-i18n="worksheet.advanced.tts_speed">Hebrew TTS Reading Speed</span> <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;" data-i18n="worksheet.common.beta">BETA</span>
+              <span id="ttsSpeedLbl" data-i18n="worksheet.advanced.tts_speed">Hebrew TTS Reading Speed</span> <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;" data-i18n="worksheet.common.beta">BETA</span>
             </div>
             <div class="font-size-row">
               <span class="fs-label" data-i18n="worksheet.advanced.tts_slow">Slow</span>
-              <input type="range" id="ttsRateSlider" min="0.5" max="1.5" step="0.05" value="0.75"
+              <input type="range" id="ttsRateSlider" min="0.5" max="1.5" step="0.05" value="0.75" aria-labelledby="ttsSpeedLbl"
                      oninput="document.getElementById('ttsRateVal').textContent = parseFloat(this.value).toFixed(2) + '×'">
               <span class="fs-val" id="ttsRateVal">0.75×</span>
               <button class="fs-reset" onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';" title="Reset to default" data-i18n-title="worksheet.common.reset_default">↺</button>
@@ -3580,7 +3580,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <div class="main-toolbar">
       <div class="zoom-bar" id="zoomBar">
         <span>🔍</span>
-        <input type="range" id="zoomSlider" min="50" max="200" value="100" oninput="applyZoom(this.value)">
+        <input type="range" id="zoomSlider" min="50" max="200" value="100" aria-label="Zoom" data-i18n-aria-label="worksheet.zoom.slider_aria" oninput="applyZoom(this.value)">
         <span id="zoomLabel">100%</span>
       </div>
     </div>
@@ -4147,6 +4147,29 @@ function _syncPillAria() {
     b.setAttribute('aria-pressed', String(b.classList.contains('active'))));
 }
 document.addEventListener('click', e => { if (e.target.closest(PILL_SEL)) _syncPillAria(); });
+
+/* Sidebar controls are labeled only by the text sitting next to them — a toggle-switch
+   <label class="toggle"> wraps just the input + slider, and the sliders/number/select
+   inputs have no <label for>. To a screen reader every one of them was nameless. Point
+   each at its own visible label (the row's data-i18n text, so the name follows the UI
+   language) — same fix as the dashboard's nameToggleSwitches(), widened to every
+   adjacent-text-labeled control type. Rows are static markup, so one pass at init is
+   enough; JS-built controls name themselves in their own builders. */
+function nameRowLabeledControls() {
+  document.querySelectorAll('input[type="checkbox"], input[type="range"], input[type="number"], select').forEach(el => {
+    if (!el.id || el.getAttribute('aria-label') || el.getAttribute('aria-labelledby')) return;
+    if (document.querySelector(`label[for="${CSS.escape(el.id)}"]`)) return;
+    const wrap = el.closest('label');
+    if (wrap && wrap.textContent.trim()) return;          // wrapping label already names it
+    const row = el.closest('.toggle-row, .option-row, .font-size-row, .lock-pos-header, div');
+    if (!row) return;
+    const textEl = [...row.querySelectorAll('[data-i18n]')]
+      .find(n => !n.closest('label.toggle') && !n.closest('.tooltip-box'));
+    if (!textEl) return;
+    if (!textEl.id) textEl.id = 'ctrllbl_' + el.id;
+    el.setAttribute('aria-labelledby', textEl.id);
+  });
+}
 
 function initLetters() {
   const grid = document.getElementById('letterGrid');
@@ -5625,6 +5648,7 @@ function initColorPickers() {
     const pick = document.createElement('input');
     pick.type = 'color';
     pick.id = `colorPick_${def.key}`;
+    pick.setAttribute('aria-label', def.name);   // the same vowel name the row's label shows
     pick.value = rgbToHex(getNikudColor(def.key));
     pick.style.cssText = 'width:30px;height:22px;border:none;cursor:pointer;padding:0;background:none;border-radius:3px;';
     pick.addEventListener('input', e => {
@@ -5753,6 +5777,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (cb) cb.checked = stored;
   setHideZoomBar(stored);
   _syncPillAria();   // stamp initial aria-pressed on the static pill groups (hardcoded .active)
+  nameRowLabeledControls();   // give every adjacent-text-labeled control an accessible name
   _applyPageSizeStyle();  // enforce the default Letter @page size (matters in A4-locale browsers)
 });
 
