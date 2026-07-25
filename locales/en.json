@@ -2930,6 +2930,8 @@
   "shared.nav.link_torah": "Torah reading practice →",
   "shared.nav.link_trope": "learn Torah trope (cantillation) →",
   "shared.nav.link_worksheets": "printable Hebrew worksheets →",
+  "shared.range.max_aria": "Maximum",
+  "shared.range.min_aria": "Minimum",
   "shared.tip.aria_more_info": "More information",
   "shared.toast.copied": "Copied!",
   "shared.toast.copied_check": "✓ Copied!",

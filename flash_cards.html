@@ -950,6 +950,7 @@ body.dark #appToast { background: #0a0f1c; }
 /* Keyboard-operable font upload (suite-wide S54): `hidden` (display:none) removed the file
    input from the tab order, making the uploader mouse-only. The input is now visually hidden
    but FOCUSABLE — Enter/Space opens the picker — and the wrapping label shows the ring. */
+.vh { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; }
 .vh-file { position:absolute; width:1px; height:1px; opacity:0; }
 label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offset:2px; }
 
@@ -1295,11 +1296,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         </div>
         <div id="numOpts">
           <div class="row" style="gap:8px;align-items:center;margin-bottom:8px;">
-            <span class="label" style="flex-shrink:0;" data-i18n="flashcards.mode.range_label">Range:</span>
-            <input type="number" id="numMinInput" min="0" max="9999" value="1"
+            <span class="label" style="flex-shrink:0;" id="numRangeLbl" data-i18n="flashcards.mode.range_label">Range:</span>
+            <input type="number" id="numMinInput" aria-labelledby="numRangeLbl rangeMinLbl" min="0" max="9999" value="1"
                    style="width:68px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-size:0.85rem;font-family:inherit;">
             <span style="color:var(--muted);">–</span>
-            <input type="number" id="numMaxInput" min="0" max="9999" value="100"
+            <input type="number" id="numMaxInput" aria-labelledby="numRangeLbl rangeMaxLbl" min="0" max="9999" value="100"
                    style="width:68px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-size:0.85rem;font-family:inherit;">
           </div>
           <div class="row" style="margin-bottom:8px;">
@@ -1420,11 +1421,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           </div>
           <div id="wordsAllDictOpts" class="hide">
             <div class="row" style="gap:8px;align-items:center;margin-bottom:8px;">
-              <span class="label" style="flex-shrink:0;" data-i18n="flashcards.mode.words_length_label">Word length:</span>
-              <input type="number" id="wordsMinInput" min="1" max="20" value="1"
+              <span class="label" style="flex-shrink:0;" id="wordsLenLbl" data-i18n="flashcards.mode.words_length_label">Word length:</span>
+              <input type="number" id="wordsMinInput" aria-labelledby="wordsLenLbl rangeMinLbl" min="1" max="20" value="1"
                      style="width:60px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-size:0.85rem;font-family:inherit;">
               <span style="color:var(--muted);">–</span>
-              <input type="number" id="wordsMaxInput" min="1" max="20" value="20"
+              <input type="number" id="wordsMaxInput" aria-labelledby="wordsLenLbl rangeMaxLbl" min="1" max="20" value="20"
                      style="width:60px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-size:0.85rem;font-family:inherit;">
               <span style="color:var(--muted);font-size:0.78rem;" data-i18n="flashcards.mode.words_length_unit">letters</span>
             </div>
@@ -6684,6 +6685,12 @@ function applyI18n() {
   }
 }
 </script>
+<!-- Shared min/max words for the number-range pairs. Each pair shows ONE visible label with a bare
+     "–" between the two boxes, so both inputs would otherwise carry the same name. Referencing one
+     of these alongside the pair's own label composes e.g. "Range: Minimum". One copy each, since
+     aria-labelledby resolves by id and any number of inputs may point at the same span. -->
+<span class="vh" id="rangeMinLbl" data-i18n="shared.range.min_aria">Minimum</span>
+<span class="vh" id="rangeMaxLbl" data-i18n="shared.range.max_aria">Maximum</span>
 <span id="a11yStatus" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;"></span>
 </body>
 </html>

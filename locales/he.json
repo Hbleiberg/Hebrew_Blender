@@ -2930,6 +2930,8 @@
   "shared.nav.link_torah": "תרגול קריאה בתורה ←",
   "shared.nav.link_trope": "למדו טעמי המקרא ←",
   "shared.nav.link_worksheets": "דפי עבודה להדפסה בעברית ←",
+  "shared.range.max_aria": "מקסימום",
+  "shared.range.min_aria": "מינימום",
   "shared.tip.aria_more_info": "מידע נוסף",
   "shared.toast.copied": "הועתק!",
   "shared.toast.copied_check": "✓ הועתק!",

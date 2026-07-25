@@ -3885,6 +3885,8 @@ flashcards.teachertools.preset_name_required,Enter a preset name to save.,הזי
 flashcards.results.no_results_to_save,No drill results to save.,אין תוצאות תרגול לשמירה.,Guard when tapping Save Results with nothing to save,
 flashcards.card.end_early_confirm,End practice and see results so far?,לסיים את התרגול ולראות את התוצאות עד כה?,Confirm dialog for the End Practice Early button,
 flashcards.advanced.color_reset_confirm,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,האם אתם בטוחים? פעולה זו תאפס את צבעי הניקוד המותאמים שלכם בשתי ערכות הצבע — ברירת המחדל וגם תל-עם.,Confirm for the color-scheme Reset button,"REVIEW: phrasing of ""resets both schemes"""
+shared.range.min_aria,Minimum,מינימום,aria-label for the lower box of a min–max number pair (composed after the pair's visible label),aria-label only
+shared.range.max_aria,Maximum,מקסימום,aria-label for the upper box of a min–max number pair (composed after the pair's visible label),aria-label only
 shared.tip.aria_more_info,More information,מידע נוסף,Default aria-label the tooltip engine adds to a trigger lacking its own label,
 shared.folders.duplicate,Duplicate,שכפול,Title on the duplicate button in the folder-tree row,
 flashcards.count.custom_placeholder,Custom,מותאם,Placeholder on the custom card-count input,
