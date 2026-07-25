@@ -5422,6 +5422,11 @@ function applyI18n() {
   if (!window.I18n) return;
   I18n.applyStaticI18n();
   try { initFontSelector(); } catch (e) {}          // My Fonts section headers + [DEFAULT] marker
+  // Both picker lists set their input aria-label via I18n.t() while building. They build at init,
+  // which is BEFORE I18n.ready resolves, so without a rebuild here the aria-label stays the raw
+  // key string forever (19 inputs, Hebrew only). Both are pure re-renders of current settings.
+  try { initColorPickers(); } catch (e) {}          // vowel colour inputs — aria-label is I18n.t(...{name})
+  try { initTropeColorPickers(); } catch (e) {}     // trope-family colour inputs — same
   try { buildTropeLegend(); } catch (e) {}          // family chips (glyphname keys)
   try { refreshScopeLabels(); } catch (e) {}        // scope dropdown per-parsha labels
   try { const og = document.querySelector('#parshaSelect optgroup'); if (og) og.label = I18n.t('torah.controls.holiday_group_label'); } catch (e) {}
