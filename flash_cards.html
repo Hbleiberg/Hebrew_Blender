@@ -1054,6 +1054,40 @@ body.dark .results-hero .pct { color: var(--gold-light); }
   .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
   .tour-spot { transition: none !important; }
 }
+
+/* ───── Print (S159 Pass G) ─────
+   Flash Cards had no print styling at all, so Ctrl+P reproduced the whole app: in light mode
+   44 pieces of chrome plus a full-width navy header bar, and in dark mode the entire 1280x2709
+   page as one solid dark fill. Same shape as the other tools' print blocks — remap the dark
+   tokens back to their light values so paper is white and ink is dark, hide the chrome, and
+   give anything that relied on a background fill a text+border channel, because print dialogs
+   default "background graphics" to OFF and drop every fill. */
+@media print {
+  html, html.dark-early, body, body.dark, html.dark-early body {
+    --navy:#1a2a47; --navy-deep:#12203a; --navy-soft:#e8edf6;
+    --gold:#c9922a; --gold-text:#7f5a13; --gold-light:#f0d080;
+    --white:#fff; --paper:#fff; --ink:#1a2a47; --text:#1a2a47; --ink-soft:#3d4a63;
+    --muted:#5a6070; --border:#c8bfa8; --border-strong:#8d8570;
+    background:#fff !important; color:#1a2a47 !important;
+  }
+  .app-header, footer, nav, .stats-bar, .progress, .fc-hint, .fc-back-q,
+  #tourBtn, #fsBtn, #darkToggle, .i18n-select, #tipFloat, #appToast,
+  #prevBtn, #flipBtn, #nextBtn, #endEarlyBtn, #fcSpeakBtn,
+  .tour-spot, .tour-card, .overlay, details { display:none !important; }
+  /* The setup screen is teacher-side configuration, never a printable artifact. */
+  #screenSetup { display:none !important; }
+  /* The answer face is a solid navy fill on screen; on paper the fill is stripped, so it needs
+     ink + a border of its own or it prints as invisible light text on white. */
+  .fc-face { box-shadow:none !important; break-inside:avoid; page-break-inside:avoid; }
+  /* The dark theme paints both faces with literal hexes, which the token remap above cannot
+     reach — override them by selector so neither face prints as a slab of ink. */
+  .fc-front, .fc-back, body.dark .fc-front, body.dark .fc-back {
+    background:#fff !important; border:2px solid #8d8570 !important; }
+  .fc-back .fc-translit, .fc-back-q, .fc-front .fc-heb, body.dark .fc-front .fc-heb {
+    color:#1a2a47 !important; }
+  .fc-card, .fc-perspective { box-shadow:none !important; }
+  .screen:not(.active) { display:none !important; }
+}
 .tbtn {
   background: var(--gold); color: #1a1a1a; border: none; border-radius: 6px;
   padding: 7px 13px; cursor: pointer; font-size: 0.82rem; font-weight: 700;
