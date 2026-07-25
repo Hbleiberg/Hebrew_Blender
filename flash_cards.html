@@ -1574,12 +1574,12 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <hr class="soft" />
 
       <!-- Profiles & Results -->
-      <div class="label adv-subhead" data-i18n="flashcards.teachertools.profiles_head">Profiles &amp; Results</div>
+      <div class="label adv-subhead" id="profilesHeadLbl" data-i18n="flashcards.teachertools.profiles_head">Profiles &amp; Results</div>
       <div class="adv-subbody">
         <p class="sub" style="margin-top:0;" data-i18n="flashcards.teachertools.profiles_intro">Save drill results to a named profile to track progress over time. After a drill, tap <b>Save Results</b> on the results screen.</p>
 
         <div class="preset-row" style="margin-bottom:8px;">
-          <select id="activeProfileSelect" class="preset-input" style="flex:1;"></select>
+          <select id="activeProfileSelect" class="preset-input" aria-labelledby="profilesHeadLbl" style="flex:1;"></select>
           <button class="btn sm" id="newProfileBtn" title="Create a new profile" data-i18n-title="flashcards.teachertools.new_profile_button_title" data-i18n="flashcards.teachertools.new_profile_button">＋ New</button>
         </div>
         <div class="btn-row" style="margin-bottom:8px;">
@@ -1650,10 +1650,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <span class="label"><span data-i18n="flashcards.advanced.audio_label">Audio</span> <span data-i18n="flashcards.badge.beta" style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
       </div>
       <div class="row" id="ttsRateRow" style="flex-direction:column;align-items:stretch;gap:4px;margin-top:6px;">
-        <span class="label" style="font-size:0.75rem;"><span data-i18n="flashcards.advanced.tts_speed_label">Hebrew TTS Reading Speed</span> <span data-i18n="flashcards.badge.beta" style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
+        <span class="label" style="font-size:0.75rem;"><span id="ttsSpeedLbl" data-i18n="flashcards.advanced.tts_speed_label">Hebrew TTS Reading Speed</span> <span data-i18n="flashcards.badge.beta" style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
         <div style="display:flex;align-items:center;gap:6px;">
           <span style="font-size:0.65rem;color:var(--muted);" data-i18n="flashcards.advanced.tts_slow">Slow</span>
-          <input type="range" id="ttsRateSlider" min="0.5" max="1.5" step="0.05" value="0.75" style="flex:1;accent-color:var(--gold);"
+          <input type="range" id="ttsRateSlider" aria-labelledby="ttsSpeedLbl" min="0.5" max="1.5" step="0.05" value="0.75" style="flex:1;accent-color:var(--gold);"
                  oninput="document.getElementById('ttsRateVal').textContent = parseFloat(this.value).toFixed(2) + '×'">
           <span id="ttsRateVal" class="bidi-isolate" style="font-size:0.72rem;color:var(--text);min-width:36px;text-align:end;">0.75×</span>
           <button class="btn sm ghost" style="padding:2px 6px;font-size:0.65rem;" onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';">↺</button>
@@ -1663,9 +1663,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <hr class="soft" />
 
       <!-- Transliteration -->
-      <div class="label adv-subhead" data-i18n="flashcards.advanced.transliteration_head">Transliteration</div>
+      <div class="label adv-subhead" id="translitHeadLbl" data-i18n="flashcards.advanced.transliteration_head">Transliteration</div>
       <div class="adv-subbody">
-        <select id="translitStyleSelect" onchange="onTranslitStyleChange(this.value)"
+        <select id="translitStyleSelect" aria-labelledby="translitHeadLbl" onchange="onTranslitStyleChange(this.value)"
                 style="width:100%;font-size:0.85rem;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;">
           <option value="default" data-i18n="flashcards.advanced.translit_default">Default (built-in)</option>
           <option value="sbl" data-i18n="flashcards.advanced.translit_sbl">SBL Academic</option>
@@ -2770,7 +2770,7 @@ function initColorPickers() {
     row.innerHTML = `
       <span data-preview-key="${def.key}" style="font-family:var(--heb-font);font-size:1.1rem;direction:rtl;min-width:22px;text-align:center;">${def.example}</span>
       <span class="lbl" style="flex:1;">${def.name}</span>
-      <input type="color" data-key="${def.key}" value="${color}" />
+      <input type="color" data-key="${def.key}" value="${color}" aria-label="${esc(def.name)}" />
     `;
     const preview = row.querySelector('[data-preview-key]');
     applyPreviewColor(preview, def.key);
@@ -2860,6 +2860,22 @@ function initLetters() {
   // Lock grids (mini, per position)
   if (anyLetterLock) initLockPositionRows();
 }
+/* Every settings switch is <div class="row"><label class="switch">(input+slider)</label>
+   <span class="label" data-i18n>Text</span></div> — the wrapping label holds no text, so
+   the switch was nameless to a screen reader. Point each at its own visible label, which
+   also makes the name follow the UI language. (Same fix as the dashboard's
+   nameToggleSwitches() and the generator's nameRowLabeledControls().) */
+function nameSwitchRows() {
+  document.querySelectorAll('.row label.switch input[type="checkbox"]').forEach(cb => {
+    if (!cb.id || cb.getAttribute('aria-label') || cb.getAttribute('aria-labelledby')) return;
+    const row = cb.closest('.row'); if (!row) return;
+    const textEl = row.querySelector('.label[data-i18n], .label');
+    if (!textEl) return;
+    if (!textEl.id) textEl.id = 'swlbl_' + cb.id;
+    cb.setAttribute('aria-labelledby', textEl.id);
+  });
+}
+
 function initLockPositionRows() {
   const container = document.getElementById('lockOptions');
   if (!container) return;
@@ -6584,6 +6600,7 @@ document.addEventListener('DOMContentLoaded', () => {
   wireProfilesPanel();
   initAdvSubCollapse();
   initPanelCollapse();
+  nameSwitchRows();   // give every settings switch an accessible name
   wireSetupScreen();
   wireCardScreen();
   wireResultsScreen();
