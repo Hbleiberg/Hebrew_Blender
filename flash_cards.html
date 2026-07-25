@@ -5124,6 +5124,10 @@ const IVRIT_CFG = {
     return {
       presets: readPresets(),
       presetFolders: ftRead('hebrewFlashCards_presetsFolders'),
+      // Student profiles travel with the file too. apply() has always been able to restore them
+      // (it reads data.flashCardProfiles, the AllTools bundle key) but gather() never wrote them,
+      // so a FlashCards .ivrit carried the profile FOLDERS with none of the profiles inside.
+      flashCardProfiles: readProfiles(),
       profileFolders: ftRead('hebrewFlashCards_profilesFolders'),
       liveState: getSettings()
     };
