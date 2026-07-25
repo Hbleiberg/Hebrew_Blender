@@ -2812,7 +2812,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                 <button class="btn-xs" onclick="rwSelectNoSofit()" data-i18n="worksheet.common.no_sofit">No Sofit</button>
                 <button class="btn-xs" onclick="rwClearLetters()" data-i18n="worksheet.common.none">None</button>
                 <label class="btn-xs" style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none;">
-                  <input type="checkbox" id="dageshTavToggle" onchange="setDageshTav(this.checked)" style="accent-color:var(--gold);width:13px;height:13px;">
+                  <input type="checkbox" id="rwDageshTavToggle" class="js-dagesh-tav" onchange="setDageshTav(this.checked)" style="accent-color:var(--gold);width:13px;height:13px;">
                   <span data-i18n="worksheet.common.dagesh_tav">Dagesh Tav / Sav</span>
                 </label>
               </div>
@@ -3236,7 +3236,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <button class="btn-xs" onclick="clearAllLetters()" data-i18n="worksheet.common.none">None</button>
           <button class="btn-xs" onclick="selectNoSofit()" data-i18n="worksheet.common.no_sofit">No Sofit</button>
           <label class="btn-xs" style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none;">
-            <input type="checkbox" id="dageshTavToggle" onchange="setDageshTav(this.checked)" style="accent-color:var(--gold);width:13px;height:13px;">
+            <input type="checkbox" id="dageshTavToggle" class="js-dagesh-tav" onchange="setDageshTav(this.checked)" style="accent-color:var(--gold);width:13px;height:13px;">
             <span data-i18n="worksheet.common.dagesh_tav">Dagesh Tav / Sav</span>
           </label>
         </div>
@@ -4310,7 +4310,7 @@ function setDageshTav(enabled) {
     ? _af.closest('#letterGrid, #rwLetterGrid, #lockGrid1, #lockGrid2, #lockGrid3') : null;
   const _afHeb = _afGrid && _af.querySelector('.heb') ? _af.querySelector('.heb').textContent : null;
   // Sync all checkboxes with the same id across any duplicated controls
-  document.querySelectorAll('#dageshTavToggle').forEach(el => el.checked = enabled);
+  document.querySelectorAll('.js-dagesh-tav').forEach(el => el.checked = enabled);
   // Main blend letter grid
   if (enabled) {
     if (selectedLetters.has('ת')) selectedLetters.add('תּ');
@@ -4565,7 +4565,7 @@ function applySettings(s) {
   // Letters
   if (s.dageshTav !== undefined) {
     dageshTavEnabled = s.dageshTav;
-    document.querySelectorAll('#dageshTavToggle').forEach(el => el.checked = s.dageshTav);
+    document.querySelectorAll('.js-dagesh-tav').forEach(el => el.checked = s.dageshTav);
     const grid = document.getElementById('letterGrid');
     if (grid) { grid.innerHTML = ''; initLetters(); }
   }
