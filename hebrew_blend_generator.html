@@ -4532,6 +4532,11 @@ function getSettings() {
     matchAnswerKey:        document.getElementById('matchAnswerKey')?.checked,
     // Font size
     hebFontSize:       document.getElementById('hebFontSizeSlider').value,
+    // The size travelled but the chosen font never did, so a restored .ivrit fell back to the
+    // default face; same for the live-preview toggle. Both are registered in AllTools, so only
+    // the per-tool file was short.
+    hebFont:           localStorage.getItem('hebrewBlender_hebFont') || '',
+    livePreview:       livePreviewEnabled,
     vavAsLetter,
     // Color coding
     colorCoding:       colorCodingEnabled,
@@ -4785,6 +4790,8 @@ function applySettings(s) {
 
   // Font size
   if (s.hebFontSize !== undefined) { const sl = document.getElementById('hebFontSizeSlider'); if (sl) { sl.value = s.hebFontSize; setHebFontSize(s.hebFontSize); } }
+  if (s.hebFont) setHebFont(s.hebFont);                              // no-ops if that font isn't on this machine
+  if (s.livePreview !== undefined) setLivePreview(s.livePreview);    // presence-guarded: older presets are unaffected
 
   // Vav-as-letter
   if (s.vavAsLetter !== undefined) { vavAsLetter = s.vavAsLetter; const cb = document.getElementById('vavAsLetterCheck'); if (cb) cb.checked = vavAsLetter; updateVavAsLetterVisibility(); }
