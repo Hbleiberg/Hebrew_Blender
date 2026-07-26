@@ -5003,7 +5003,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     const stage = document.getElementById('pickStage');
     const controls = document.getElementById('pickControls');
     if (stage) { stage.innerHTML = ''; const d = document.createElement('div'); d.className = 'pick-msg'; d.textContent = msg; stage.appendChild(d); }
-    if (controls) { controls.innerHTML = ''; addPickBtn(controls, 'Close', 'btn-secondary', closePickOverlay); }
+    if (controls) { controls.innerHTML = ''; addPickBtn(controls, I18n.t('dashboard.picker.close'), 'btn-secondary', closePickOverlay); }
   }
   function renderPickResult(name) {
     const stage = document.getElementById('pickStage');
@@ -5017,8 +5017,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     }
     if (controls) {
       controls.innerHTML = '';
-      addPickBtn(controls, '🎲 Pick Again', 'btn', pickOne);
-      addPickBtn(controls, 'Close', 'btn-secondary', closePickOverlay);
+      addPickBtn(controls, I18n.t('dashboard.picker.pick_again'), 'btn', pickOne);
+      addPickBtn(controls, I18n.t('dashboard.picker.close'), 'btn-secondary', closePickOverlay);
     }
   }
   function animatePick(winner, pool, done) {
@@ -5048,7 +5048,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     setPickNote('');
     const eligible = eligibleNames();
     if (!eligible.length) {
-      renderPickMessage(rosterNames().length ? 'Everyone is marked absent today.' : 'Add students to this class in Settings → Student Picker.');
+      renderPickMessage(rosterNames().length ? I18n.t('dashboard.picker.all_absent') : I18n.t('dashboard.picker.empty_pick'));
       return;
     }
     const fair = settings.pickerFairCycle !== false;
@@ -5130,8 +5130,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     }
     if (controls) {
       controls.innerHTML = '';
-      addPickBtn(controls, '🔀 Reshuffle', 'btn', renderGroups);
-      addPickBtn(controls, 'Close', 'btn-secondary', closePickOverlay);
+      addPickBtn(controls, I18n.t('dashboard.groups.reshuffle'), 'btn', renderGroups);
+      addPickBtn(controls, I18n.t('dashboard.picker.close'), 'btn-secondary', closePickOverlay);
     }
   }
 
