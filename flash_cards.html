@@ -1087,7 +1087,26 @@ body.dark .results-hero .pct { color: var(--gold-light); }
     color:#1a2a47 !important; }
   .fc-card, .fc-perspective { box-shadow:none !important; }
   .screen:not(.active) { display:none !important; }
+  /* Cut-out card sheet: when printing the sheet, the whole app steps aside so only the
+     grid reaches paper. Cell height is 2.6in x 3 rows = 7.8in, which clears the printable
+     height of BOTH Letter (9in) and A4 (10.2in) with room for the header. */
+  body.fc-sheet-mode .screen, body.fc-sheet-mode .app-header, body.fc-sheet-mode footer { display:none !important; }
+  body.fc-sheet-mode #fcSheet { display:block !important; }
+  .fcs-page { break-after:page; page-break-after:always; }
+  .fcs-page:last-child { break-after:auto; page-break-after:auto; }
+  .fcs-head { font-size:8pt; color:#5a6070; margin:0 0 4pt; display:flex; justify-content:space-between; }
+  .fcs-grid { display:grid; grid-template-columns:repeat(3, 1fr); }
+  .fcs-cell { height:2.6in; border:1px dashed #8d8570; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:6pt; padding:6pt; overflow:hidden;
+    break-inside:avoid; page-break-inside:avoid; text-align:center; }
+  .fcs-swatch { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .fcs-heb { font-family:var(--heb-font); font-size:34pt; line-height:1.25; direction:rtl; }
+  .fcs-emoji { font-size:30pt; line-height:1; }
+  .fcs-answer { font-family:var(--eng-font); font-size:15pt; line-height:1.4; color:#1a2a47; }
+  .fcs-sub { font-size:10pt; color:#3d4a63; }
 }
+/* The sheet host never shows on screen — it exists only to be printed. */
+#fcSheet { display:none; }
 .tbtn {
   background: var(--gold); color: #1a1a1a; border: none; border-radius: 6px;
   padding: 7px 13px; cursor: pointer; font-size: 0.82rem; font-weight: 700;
@@ -1788,6 +1807,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <!-- START -->
   <div class="start-cta">
     <button class="btn gold" id="startBtn" data-i18n="flashcards.start.button">Start Practicing! ✨</button>
+    <button class="btn" id="printSheetBtn" onclick="printCardSheet()" data-i18n="flashcards.sheet.button">🖨️ Print card sheet</button>
+    <div class="row" id="sheetDuplexRow">
+      <label class="switch"><input type="checkbox" id="sheetDuplexToggle" onchange="setSheetDuplex(this.checked)"><span class="slider"></span></label>
+      <span class="label has-tip" data-tip="Prints a matching answer page after each card page. Flip on the long edge so each answer lands behind its own card." data-i18n-tip="flashcards.sheet.duplex_tip" data-i18n="flashcards.sheet.duplex">Answer on the back (double-sided)</span>
+    </div>
   </div>
 
 </section>
@@ -1934,6 +1958,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
 <!-- ============== TOOLTIP ============== -->
 <div id="tipFloat" role="tooltip"></div>
+<!-- Cut-out card sheet: built on demand by printCardSheet(), print-only, cleared on afterprint. -->
+<div id="fcSheet" aria-hidden="true"></div>
 
 <script>
 /* =========================================================================
@@ -3706,6 +3732,7 @@ function getSettings() {
     anyVowelLock,
     vowelLocks: Object.fromEntries(Object.entries(vowelLocks).map(([k, v]) => [k, { enabled: v.enabled, vowels: [...v.vowels] }])),
     translitStyle,
+    sheetDuplex,
   };
 }
 function applySettings(s) {
@@ -3882,6 +3909,9 @@ function applySettings(s) {
   translitStyle = s.translitStyle || 'default';
   const tsSel = document.getElementById('translitStyleSelect');
   if (tsSel) tsSel.value = translitStyle;
+  sheetDuplex = s.sheetDuplex ?? false;          // ?? not || — a stored false must survive
+  const sdT = document.getElementById('sheetDuplexToggle');
+  if (sdT) sdT.checked = sheetDuplex;
   // Always load the library so romanized fields on numbers/colors cards get populated
   window.HebrewTransliterator.ensureLoaded().then(() => {
     rebuildDeckTranslit();
@@ -5629,6 +5659,64 @@ function generateCard(ctx) {
   return result;
 }
 function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+/* ═══ Cut-out card sheet (print) ═══
+   Lays the generated deck out 3x3 per page with dashed cut lines. With duplex on, each card
+   page is followed by its answer page. Every card shape in the tool is {heb, translit, ...},
+   so one builder covers Hebrew, numbers, colors, emoji and words alike. */
+let sheetDuplex = false;
+const FCS_COLS = 3, FCS_PER_PAGE = 9;
+function setSheetDuplex(v) { sheetDuplex = !!v; saveSettings(); }
+
+// Flipping a sheet on its long edge reverses left-right, so each ROW is reversed on the answer
+// page. The row is padded to full width FIRST — otherwise a short final row reverses into the
+// wrong columns and every answer on it lands behind the wrong card.
+function fcsMirrorRows(chunk) {
+  const out = [];
+  for (let i = 0; i < chunk.length; i += FCS_COLS) {
+    const row = chunk.slice(i, i + FCS_COLS);
+    while (row.length < FCS_COLS) row.push(null);
+    out.push(...row.reverse());
+  }
+  return out;
+}
+function fcsCell(card, isBack) {
+  if (!card) return '<div class="fcs-cell"></div>';
+  if (isBack) {
+    const sub = [card.romanized && card.romanized !== card.translit ? card.romanized : '', card.translation || '']
+      .filter(Boolean).map(t => `<span class="fcs-sub">${esc(t)}</span>`).join('');
+    return `<div class="fcs-cell"><span class="fcs-answer">${esc(card.translit || '')}</span>${sub}</div>`;
+  }
+  // Only a literal hex/rgb from the built-in COLOR_DATA table may reach the style attribute.
+  const safeCss = /^(#[0-9a-f]{3,8}|rgba?\([\d\s,.%]+\))$/i.test(card.colorCss || '') ? card.colorCss : '';
+  const swatch = safeCss ? ` fcs-swatch" style="background:${safeCss};color:${card.textDark ? '#1a2a47' : '#fff'}` : '';
+  const emoji = card.emoji ? `<span class="fcs-emoji">${esc(card.emoji)}</span>` : '';
+  return `<div class="fcs-cell${swatch}">${emoji}<span class="fcs-heb" lang="he" dir="rtl">${esc(card.heb || '')}</span></div>`;
+}
+function printCardSheet() {
+  const deck = generateDeck(cardCount);
+  if (!deck.length) {
+    if (typeof showAppToast === 'function') showAppToast(I18n.t('flashcards.sheet.err_empty'));
+    return;
+  }
+  const pages = [];
+  for (let i = 0; i < deck.length; i += FCS_PER_PAGE) {
+    const chunk = deck.slice(i, i + FCS_PER_PAGE);
+    pages.push({ cards: chunk, back: false });
+    if (sheetDuplex) pages.push({ cards: fcsMirrorRows(chunk), back: true });
+  }
+  document.getElementById('fcSheet').innerHTML = pages.map((p, i) =>
+    `<div class="fcs-page"><div class="fcs-head"><span>${esc(I18n.t('flashcards.sheet.button'))}</span>`
+    + `<span>${i + 1} / ${pages.length}</span></div>`
+    + `<div class="fcs-grid">${p.cards.map(c => fcsCell(c, p.back)).join('')}</div></div>`).join('');
+  document.body.classList.add('fc-sheet-mode');
+  window.print();
+}
+window.addEventListener('afterprint', () => {
+  if (!document.body.classList.contains('fc-sheet-mode')) return;
+  document.body.classList.remove('fc-sheet-mode');
+  document.getElementById('fcSheet').innerHTML = '';
+});
 
 function generateDeck(n) {
   const deck = [];

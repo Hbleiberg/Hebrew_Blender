@@ -3980,3 +3980,7 @@ dictionary.themes.school,School,בית ספר,theme name,REVIEW: machine-drafted
 dictionary.themes.feelings,Feelings,רגשות,theme name,REVIEW: machine-drafted HE — confirm
 dictionary.themes.places,Places,מקומות,theme name,REVIEW: machine-drafted HE — confirm
 dictionary.themes.holidays,Holidays & Judaism,חגים ויהדות,theme name,REVIEW: machine-drafted HE — confirm
+flashcards.sheet.button,🖨️ Print card sheet,🖨️ הדפיסו דף כרטיסים,setup CTA button next to Start,leading-emoji
+flashcards.sheet.duplex,Answer on the back (double-sided),תשובה בצד השני (הדפסה דו-צדדית),card-sheet print option,
+flashcards.sheet.duplex_tip,Prints a matching answer page after each card page. Flip on the long edge so each answer lands behind its own card.,מדפיס דף תשובות תואם אחרי כל דף כרטיסים. הפכו לאורך הצד הארוך כדי שכל תשובה תיפול מאחורי הכרטיס שלה.,card-sheet duplex tooltip,
+flashcards.sheet.err_empty,No cards to print — choose some letters and vowels first.,אין כרטיסים להדפסה — בחרו קודם אותיות ותנועות.,card-sheet empty-deck toast,
