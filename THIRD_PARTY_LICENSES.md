@@ -94,6 +94,20 @@ The site loads **Google Analytics 4** (`gtag.js`) from `googletagmanager.com` on
 
 The active translation's title and license are displayed in the page footer per the attribution requirement of CC BY / CC BY-SA / CC BY-NC / CC BY-NC-SA.
 
+**Sefaria logo (attribution mark) — `index.html` and `torah_trainer.html`:** both pages display Sefaria's
+wordmark as the visible attribution next to the link to https://www.sefaria.org — on the home page beside
+the Torah Trainer card, and in the Torah Trainer's "Hebrew text via …" footer line. Two variants are used
+(`sefaria-light` / `sefaria-dark`, swapped by theme) and both are **hot-linked**, not redistributed:
+`https://files.readme.io/87c5652-image.png` and `https://files.readme.io/dcee0a8-image.png`, served from
+the CDN behind Sefaria's developer documentation. `files.readme.io` is allowlisted in the `img-src`
+directive of those two pages' CSP meta tags, and nowhere else.
+
+The logo is Sefaria's **trademark**, used here nominatively to credit the source of the text. That is a
+separate question from the text licenses above: the CC / public-domain terms covering Sefaria's *content*
+grant no rights in the mark. If you fork or re-host this project, review Sefaria's brand guidance before
+reusing the wordmark, and note that hot-linking depends on a third-party host neither project controls —
+self-hosting a permitted copy, or falling back to the plain text "Sefaria", is the safer option.
+
 If you re-host or fork this page, double-check Sefaria's version metadata yourself before relaxing the license filter.
 
 ---
