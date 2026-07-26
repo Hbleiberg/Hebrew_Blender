@@ -3510,7 +3510,10 @@ function setCustomCardCount(raw) {
 // button, or (for an off-list value) highlight + fill the custom input.
 function _syncCountUI() {
   const isCustom = !COUNT_OPTIONS.includes(cardCount);
-  document.querySelectorAll('.count-btn').forEach(b => b.classList.toggle('active', +b.dataset.n === cardCount));
+  document.querySelectorAll('.count-btn').forEach(b => {
+    const on = +b.dataset.n === cardCount;
+    b.classList.toggle('active', on); b.setAttribute('aria-pressed', on);   // state, not just colour
+  });
   const ci = document.getElementById('countCustom');
   if (!ci) return;
   ci.classList.toggle('active', isCustom);
@@ -3520,7 +3523,7 @@ function _syncCountUI() {
 function initCountGrid() {
   const grid = document.getElementById('countGrid');
   const isCustom = !COUNT_OPTIONS.includes(cardCount);
-  grid.innerHTML = COUNT_OPTIONS.map(n => `<button class="count-btn ${n===cardCount?'active':''}" data-n="${n}">${n}</button>`).join('')
+  grid.innerHTML = COUNT_OPTIONS.map(n => `<button class="count-btn ${n===cardCount?'active':''}" aria-pressed="${n===cardCount}" data-n="${n}">${n}</button>`).join('')
     + `<input type="number" class="count-custom${isCustom?' active':''}" id="countCustom" min="${CARD_COUNT_MIN}" max="${CARD_COUNT_MAX}" step="1" inputmode="numeric" placeholder="${esc(I18n.t('flashcards.count.custom_placeholder'))}" aria-label="${esc(I18n.t('flashcards.count.custom_aria', { min: CARD_COUNT_MIN, max: CARD_COUNT_MAX }))}"${isCustom?` value="${cardCount}"`:''}>`;
   grid.querySelectorAll('.count-btn').forEach(b => b.addEventListener('click', () => setCardCount(+b.dataset.n)));
   document.getElementById('countCustom').addEventListener('change', e => setCustomCardCount(e.target.value));
