@@ -3383,7 +3383,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div class="panel-title"><span style="display:inline-flex;align-items:center;"><span data-i18n="worksheet.presets.panel_title">Saved Presets</span>&nbsp;<span class="tooltip-wrap" style="font-size:0.65rem;font-weight:400;">?<span class="tooltip-box" data-i18n="worksheet.presets.panel_tooltip">Save your current letter, vowel, and layout settings as a named preset. Load it later to instantly restore everything — great for switching between class levels or drill types.</span></span></span></div>
       <div class="panel-body">
         <div class="preset-row">
-          <input type="text" id="presetName" placeholder="Preset name..." data-i18n-placeholder="worksheet.presets.name_placeholder" oninput="onPresetNameInput()">
+          <input type="text" id="presetName" placeholder="Preset name..." data-i18n-placeholder="worksheet.presets.name_placeholder" aria-label="Preset name..." data-i18n-aria-label="worksheet.presets.name_placeholder" oninput="onPresetNameInput()">
           <button class="btn-xs" id="savePresetBtn" onclick="savePreset()" aria-disabled="true" data-i18n="worksheet.presets.save">💾 Save</button>
         </div>
         <div id="presetNameNote" role="status" aria-live="polite" style="display:none;font-size:0.7rem;color:var(--gold);margin-top:4px;"></div>
@@ -3517,7 +3517,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                 <div style="font-size:0.72rem;color:var(--muted);line-height:1.4;" data-i18n="worksheet.advanced.backup_manual_explainer">Export your saved presets as text you can copy and store. Paste it back to restore.</div>
                 <button class="btn-xs" onclick="exportPresets()" data-i18n="worksheet.advanced.export_backup">⬆ Export backup</button>
                 <div style="position:relative;">
-                  <textarea id="presetBackupBox" rows="4" spellcheck="false" placeholder="Paste backup here to import…" data-i18n-placeholder="worksheet.advanced.backup_placeholder" style="width:100%;font-size:0.7rem;font-family:monospace;border:1px solid var(--border);border-radius:5px;background:var(--cream);color:var(--text);padding:6px;resize:vertical;"></textarea>
+                  <textarea id="presetBackupBox" rows="4" spellcheck="false" placeholder="Paste backup here to import…" data-i18n-placeholder="worksheet.advanced.backup_placeholder" aria-label="Paste backup here to import…" data-i18n-aria-label="worksheet.advanced.backup_placeholder" style="width:100%;font-size:0.7rem;font-family:monospace;border:1px solid var(--border);border-radius:5px;background:var(--cream);color:var(--text);padding:6px;resize:vertical;"></textarea>
                   <button onclick="copyTextarea('presetBackupBox')" title="Copy" data-i18n-title="worksheet.advanced.copy" style="position:absolute;top:5px;inset-inline-end:5px;background:none;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:0.65rem;color:var(--muted);cursor:pointer;" id="presetCopyBtn" data-i18n="worksheet.advanced.copy">Copy</button>
                 </div>
                 <button class="btn-xs" onclick="importPresets()" data-i18n="worksheet.advanced.import_backup">⬇ Import from backup</button>

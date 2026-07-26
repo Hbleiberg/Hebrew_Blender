@@ -1619,7 +1619,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div class="label adv-subhead" data-i18n="flashcards.teachertools.presets_head">Presets</div>
       <div class="adv-subbody">
         <div class="preset-row">
-          <input type="text" class="preset-input" id="presetName" placeholder="Preset name…" data-i18n-placeholder="flashcards.teachertools.preset_name_placeholder" maxlength="40" />
+          <input type="text" class="preset-input" id="presetName" placeholder="Preset name…" data-i18n-placeholder="flashcards.teachertools.preset_name_placeholder" aria-label="Preset name…" data-i18n-aria-label="flashcards.teachertools.preset_name_placeholder" maxlength="40" />
           <button class="btn primary sm" id="savePresetBtn" aria-disabled="true" data-i18n="flashcards.teachertools.save_button">Save</button>
         </div>
         <p class="sub" id="presetNameNote" role="status" aria-live="polite" style="display:none;"></p>
@@ -1636,13 +1636,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <button class="btn primary sm" id="generateShareBtn" data-i18n="flashcards.teachertools.generate_share">Generate Share Code</button>
           <button class="btn sm ghost" id="copyShareBtn" data-i18n="flashcards.teachertools.copy_code">📋 Copy Code</button>
         </div>
-        <textarea class="share-out" id="shareCodeOutput" readonly placeholder="Tap “Generate Share Code” to create a code…" data-i18n-placeholder="flashcards.teachertools.share_output_placeholder"></textarea>
+        <textarea class="share-out" id="shareCodeOutput" readonly placeholder="Tap “Generate Share Code” to create a code…" data-i18n-placeholder="flashcards.teachertools.share_output_placeholder" aria-label="Tap “Generate Share Code” to create a code…" data-i18n-aria-label="flashcards.teachertools.share_output_placeholder"></textarea>
 
         <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;">
 
         <div class="label" style="font-weight:600;margin-bottom:4px;" data-i18n="flashcards.teachertools.got_code">Got a code from your teacher?</div>
         <div class="preset-row">
-          <input type="text" class="preset-input" id="shareCodeInput" placeholder="Paste share code here…" data-i18n-placeholder="flashcards.teachertools.share_input_placeholder" />
+          <input type="text" class="preset-input" id="shareCodeInput" placeholder="Paste share code here…" data-i18n-placeholder="flashcards.teachertools.share_input_placeholder" aria-label="Paste share code here…" data-i18n-aria-label="flashcards.teachertools.share_input_placeholder" />
           <button class="btn gold sm" id="applyShareBtn" data-i18n="flashcards.teachertools.load_button">Load</button>
         </div>
         <p class="share-err" id="shareCodeError"></p>
@@ -1809,7 +1809,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <div id="ivritStatus" role="status" class="sub" style="margin-top:8px;min-height:1em;text-align:center;"></div>
       </div>
       <div id="ivritManual" style="display:none;">
-        <textarea class="tx-area" id="backupArea" placeholder="Exported preset JSON appears here…" data-i18n-placeholder="flashcards.advanced.backup_manual_placeholder"></textarea>
+        <textarea class="tx-area" id="backupArea" placeholder="Exported preset JSON appears here…" data-i18n-placeholder="flashcards.advanced.backup_manual_placeholder" aria-label="Exported preset JSON appears here…" data-i18n-aria-label="flashcards.advanced.backup_manual_placeholder"></textarea>
         <div class="btn-row" style="margin-top:6px">
           <button class="btn sm" id="exportBtn" data-i18n="shared.ivrit.manual_export">Export</button>
           <button class="btn sm" id="importBtn" data-i18n="shared.ivrit.manual_import">Import</button>

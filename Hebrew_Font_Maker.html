@@ -9806,11 +9806,15 @@ function kernPairReason(k){                                                     
 function renderKerningSection() {
   const box = document.getElementById('kerningBody'); if (!box) return;
   const e = kernEnsureEdit(), pairs = fontKerning();
-  const sideUI = (which, s) => `
+  const sideUI = (which, s) => {
+    // one label for the visible caption AND the input's accessible name, so the two
+    // can never drift apart (the "–" placeholder is no name at all on its own)
+    const sideLabel = which === 'left' ? I18n.t('fontmaker.panels.kern_first') : I18n.t('fontmaker.panels.kern_second');
+    return `
     <div style="flex:1;min-width:0;">
-      <div class="metric-sub" style="margin-bottom:3px;">${which === 'left' ? I18n.t('fontmaker.panels.kern_first') : I18n.t('fontmaker.panels.kern_second')}</div>
+      <div class="metric-sub" style="margin-bottom:3px;">${sideLabel}</div>
       <input type="text" dir="rtl" maxlength="2" ${s.cls ? 'disabled' : ''} value="${esc(kernSideDisplay(s))}"
-        oninput="setKernGlyph('${which}', this.value)" placeholder="–"
+        oninput="setKernGlyph('${which}', this.value)" placeholder="–" aria-label="${esc(sideLabel)}"
         style="width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:5px;padding:5px;font-size:1.2rem;text-align:center;background:var(--white);color:var(--text);font-family:var(--heb-font);">
       <select onchange="setKernClass('${which}', this.value)" style="width:100%;box-sizing:border-box;margin-top:4px;border:1px solid var(--border);border-radius:5px;padding:4px;font-size:0.72rem;background:var(--white);color:var(--text);">
         <option value=""       ${s.cls===''       ? 'selected' : ''}>${I18n.t('fontmaker.panels.kern_single_glyph')}</option>
@@ -9820,6 +9824,7 @@ function renderKerningSection() {
         ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<optgroup label="${esc(I18n.t('fontmaker.panels.kern_custom_glyphs'))}">${customBaseLetters().map(l => `<option value="cp:${l.codepoint}">${esc(l.name || ('U+' + l.codepoint))}</option>`).join('')}</optgroup>` : ''}
       </select>
     </div>`;
+  };
   const isUpdate = kernPairIndex(kernSideCps(e.left), kernSideCps(e.right)) >= 0;
   let rows = '', nReady = 0;
   pairs.forEach((k, i) => {

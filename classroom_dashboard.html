@@ -1632,7 +1632,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <button class="timer-preset-btn" onclick="timerToggleCustom()" data-i18n="dashboard.timer.custom">Custom</button>
         </div>
         <div class="timer-custom-row" id="timerCustomRow" style="display:none;">
-          <input type="text" id="timerCustomInput" placeholder="MM:SS" data-i18n-placeholder="dashboard.timer.custom_placeholder" inputmode="numeric" maxlength="5" onkeydown="if(event.key==='Enter')timerSetCustom()">
+          <input type="text" id="timerCustomInput" placeholder="MM:SS" data-i18n-placeholder="dashboard.timer.custom_placeholder" aria-label="Custom" data-i18n-aria-label="dashboard.timer.custom" inputmode="numeric" maxlength="5" onkeydown="if(event.key==='Enter')timerSetCustom()">
           <button class="timer-ctrl-btn" onclick="timerSetCustom()" data-i18n="dashboard.timer.set">Set</button>
         </div>
         <div class="timer-controls">
@@ -1675,7 +1675,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <h2 class="fr-h" id="frTitle" data-i18n="dashboard.setup.title">Welcome! Let's set up your dashboard</h2>
   <p class="fr-sub" data-i18n="dashboard.setup.subtitle">Set your location for accurate weather and Shabbat times, then pick a starting layout. You can change anything later in Settings.</p>
   <div class="fr-loc-row">
-    <input type="text" id="frLocationInput" placeholder="City, e.g. New York" data-i18n-placeholder="dashboard.display.location_placeholder">
+    <input type="text" id="frLocationInput" placeholder="City, e.g. New York" data-i18n-placeholder="dashboard.display.location_placeholder" aria-label="Location" data-i18n-aria-label="dashboard.settings.panel_location">
     <button class="btn btn-xs" onclick="frUpdateLocation()" data-i18n="dashboard.display.location_update">Update</button>
     <button class="btn btn-xs btn-secondary" onclick="frUseCurrentLocation()" data-i18n="dashboard.display.current_location">📍 Current Location</button>
   </div>
@@ -1728,7 +1728,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <div class="panel-title" data-i18n="dashboard.settings.panel_location">Location</div>
   <div class="panel-body">
     <div class="form-row">
-      <input type="text" id="locationInput" placeholder="City, e.g. New York" data-i18n-placeholder="dashboard.display.location_placeholder" style="max-width:220px;">
+      <input type="text" id="locationInput" placeholder="City, e.g. New York" data-i18n-placeholder="dashboard.display.location_placeholder" aria-label="Location" data-i18n-aria-label="dashboard.settings.panel_location" style="max-width:220px;">
       <button class="btn btn-xs" onclick="updateLocation()" data-i18n="dashboard.display.location_update">Update</button>
     </div>
     <div class="form-row" style="margin-top:4px;">
@@ -1786,7 +1786,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <input type="radio" name="videoLayout" id="vlSidebar" value="sidebar" style="accent-color:var(--gold);"> <span data-i18n="dashboard.video.layout_sidebar">In sidebar</span>
         </label>
       </div>
-      <input type="text" id="videoUrlInput" placeholder="Paste YouTube URL…" data-i18n-placeholder="dashboard.video.url_placeholder" style="width:100%;box-sizing:border-box;">
+      <input type="text" id="videoUrlInput" placeholder="Paste YouTube URL…" data-i18n-placeholder="dashboard.video.url_placeholder" aria-label="Paste YouTube URL…" data-i18n-aria-label="dashboard.video.url_placeholder" style="width:100%;box-sizing:border-box;">
       <button class="btn btn-xs" onclick="updateVideoEmbed()" data-i18n="dashboard.video.update_button">Update Video</button>
     </div>
   </div>
@@ -2144,7 +2144,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <button class="btn btn-xs btn-secondary" id="starterLayoutsBtn" onclick="openFirstRun()" style="width:100%;margin-bottom:8px;" data-i18n="dashboard.preset.quickstart_button">✨ Quick-start layouts…</button>
     <p style="font-size:0.72rem;color:var(--muted);margin:0 0 10px;line-height:1.4;" data-i18n="dashboard.preset.quickstart_desc">Apply a ready-made setup — including a general-classroom layout — then tweak it and Save it as your own preset.</p>
     <div class="form-row">
-      <input type="text" id="presetName" placeholder="Preset name" data-i18n-placeholder="dashboard.preset.name_placeholder" style="max-width:200px;">
+      <input type="text" id="presetName" placeholder="Preset name" data-i18n-placeholder="dashboard.preset.name_placeholder" aria-label="Preset name" data-i18n-aria-label="dashboard.preset.name_placeholder" style="max-width:200px;">
       <button class="btn btn-xs" onclick="savePreset()" data-i18n="dashboard.preset.save">Save</button>
     </div>
     <div class="preset-list" id="presetList"></div>
@@ -2177,7 +2177,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <button class="btn btn-xs btn-secondary" onclick="importPresets()" style="flex:1;" data-i18n="shared.ivrit.manual_import">Import</button>
       </div>
       <div style="position:relative;">
-        <textarea id="presetBackupBox" placeholder="Paste backup JSON here, or click Export…" data-i18n-placeholder="dashboard.backup.placeholder" style="height:80px;font-family:monospace;font-size:0.72rem;width:100%;"></textarea>
+        <textarea id="presetBackupBox" placeholder="Paste backup JSON here, or click Export…" data-i18n-placeholder="dashboard.backup.placeholder" aria-label="Paste backup JSON here, or click Export…" data-i18n-aria-label="dashboard.backup.placeholder" style="height:80px;font-family:monospace;font-size:0.72rem;width:100%;"></textarea>
         <button onclick="copyPresetBackup()" id="presetCopyBtn" title="Copy" data-i18n-title="shared.ivrit.manual_copy" data-i18n="shared.ivrit.manual_copy" style="position:absolute;top:5px;right:5px;background:none;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:0.65rem;color:var(--muted);cursor:pointer;">Copy</button>
       </div>
     </div>
