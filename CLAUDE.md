@@ -1073,7 +1073,11 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
   theme/picker changes recolor them for free. It shows only when trope coloring is on **and** a
   reading is loaded (hidden over the empty state). The "Learn the trope names →" link renders
   only when `const TROPE_TUTOR_URL` is non-null — set to `'trope_tutor.html'` since the Trope
-  Tutor shipped (see its section below). Legend is print-hidden with the other reading chrome.
+  Tutor shipped (see its section below). The legend **prints** (S90) — the reading carries its
+  clause colors onto paper as underlines, so the color→family key belongs there too; the `@media
+  print` block flattens the card, forces the swatches with `print-color-adjust`, and drops the
+  interactive tutor link. It still never prints spuriously, because it stays `[hidden]` unless
+  trope coloring is on **and** a reading is loaded. Do not "restore" it to print-hidden.
 
 ---
 
