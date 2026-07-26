@@ -2684,9 +2684,12 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     const tl = document.getElementById('frTourLink');
     if (tl) tl.style.display = (typeof tourStart === 'function') ? '' : 'none';
     document.getElementById('frBackdrop').classList.add('open');
-    document.getElementById('frModal').classList.add('open');
+    const frm = document.getElementById('frModal');
+    frm.classList.add('open');
+    frm.addEventListener('keydown', _frTrapKey);
     document.getElementById('frLocationInput').focus();
   }
+  function _frTrapKey(e) { _trapTabWithin(document.getElementById('frModal'), e); }
   function frCaptureLocation() {
     const loc = document.getElementById('frLocationInput').value.trim();
     if (loc) { settings.location = loc; delete settings._geoCoords; }
@@ -2696,6 +2699,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     saveSettingsToStorage();                                        // makes the settings key non-null → never re-shown
     document.getElementById('frBackdrop').classList.remove('open');
     document.getElementById('frModal').classList.remove('open');
+    document.getElementById('frModal').removeEventListener('keydown', _frTrapKey);
     // Hand focus back to the opener (drawer's Quick-start button); auto-open has none, so
     // just make sure focus doesn't stay trapped on a control inside the now-hidden modal
     if (_frPrevFocus && _frPrevFocus !== document.body && _frPrevFocus.isConnected &&
@@ -3819,17 +3823,21 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   /* ────────── SETTINGS DRAWER ────────── */
   // Keyboard focus management for the drawer: focus in on open, Tab wraps inside
   // the modal while open, and focus returns to the opener (the gear) on close.
-  let _settingsOpener = null;
-  function _settingsTrapKey(e) {
-    if (e.key !== 'Tab') return;
-    const modal = document.getElementById('settingsModal');
-    const focusables = [...modal.querySelectorAll('button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])')]
+  // Shared Tab wrap for this page's aria-modal="true" dialogs (settings drawer, first-run card,
+  // student-picker overlay). aria-modal tells assistive tech the rest of the page is inert, so
+  // keyboard focus must not walk behind the dialog — especially the picker, a full-viewport
+  // overlay where an escaped focus ring is invisible.
+  function _trapTabWithin(container, e) {
+    if (e.key !== 'Tab' || !container) return;
+    const focusables = [...container.querySelectorAll('button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])')]
       .filter(el => el.offsetParent !== null && !el.disabled);
     if (!focusables.length) return;
     const first = focusables[0], last = focusables[focusables.length - 1];
     if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   }
+  let _settingsOpener = null;
+  function _settingsTrapKey(e) { _trapTabWithin(document.getElementById('settingsModal'), e); }
   function openSettings() {
     if (_activeEditable) exitInPlaceEdit(true);   // one edit surface at a time — commit in-place first
     _settingsOpener = document.activeElement;
@@ -4955,7 +4963,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
   let _pickTimer = null;
   function clearPickTimer() { if (_pickTimer) { clearTimeout(_pickTimer); _pickTimer = null; } }
-  function pickOverlayKey(e) { if (e.key === 'Escape') { e.stopPropagation(); closePickOverlay(); } }
+  function pickOverlayKey(e) {
+    if (e.key === 'Escape') { e.stopPropagation(); closePickOverlay(); return; }
+    _trapTabWithin(document.getElementById('pickOverlay'), e);
+  }
 
   let _pickOpener = null;
   function openPickOverlay() {
