@@ -1100,6 +1100,8 @@
   "flashcards.sheet.duplex": "תשובה בצד השני (הדפסה דו-צדדית)",
   "flashcards.sheet.duplex_tip": "מדפיס דף תשובות תואם אחרי כל דף כרטיסים. הפכו לאורך הצד הארוך כדי שכל תשובה תיפול מאחורי הכרטיס שלה.",
   "flashcards.sheet.err_empty": "אין כרטיסים להדפסה — בחרו קודם אותיות ותנועות.",
+  "flashcards.sheet.menu_title": "אפשרויות דף כרטיסים",
+  "flashcards.sheet.print_now": "הדפיסו",
   "flashcards.start.button": "התחילו לתרגל! ✨",
   "flashcards.start.err_dict_loading": "המילון עדיין נטען — נסו שוב בעוד רגע.",
   "flashcards.start.err_emoji_loading": "נתוני האימוג׳י עדיין נטענים — נסו שוב בעוד רגע.",

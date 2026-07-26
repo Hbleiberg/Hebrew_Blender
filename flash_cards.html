@@ -560,6 +560,29 @@ body.dark .slider::before { background: #d8dde9; }
 .lock-pos-block .lock-pos-grid { margin-top: 6px; padding-inline-start: 10px; border-inline-start: 2px solid var(--border); margin-inline-start: 8px; }
 .has-tip { border-bottom: 1px dotted var(--muted); cursor: help; }
 
+/* Print options drop-down, opened off #printSheetBtn. Same shape as the shared folder-tree
+   "Move ▾" menu: position:fixed so the sticky CTA can't clip it, JS-placed. The page tokens
+   already flip for dark mode, so no body.dark rule is needed. z-index sits above .start-cta (10)
+   and below #tipFloat (200), so a tooltip opened inside the menu still paints on top. */
+.sheet-menu {
+  position: fixed; z-index: 150;
+  background: var(--white);
+  border: 1px solid var(--border-strong); border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+  padding: 12px 14px;
+  min-width: 250px; max-width: min(380px, calc(100vw - 12px));
+}
+.sheet-menu[hidden] { display: none; }
+.sheet-menu-title {
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--ink-soft); text-align: start; margin-bottom: 4px;
+}
+/* Keep the switch and its label on one line — the label is long enough to wrap under the switch
+   at the menu's width, which reads as two unrelated controls. It wraps its own text instead. */
+.sheet-menu .row { margin: 6px 0 10px; flex-wrap: nowrap; }
+.sheet-menu .row .label { flex: 1; min-width: 0; }
+.sheet-menu #sheetPrintBtn { width: 100%; }
+
 /* ============== LETTER GRID ============== */
 .letter-grid {
   display: grid;
@@ -1071,7 +1094,7 @@ body.dark .results-hero .pct { color: var(--gold-light); }
     background:#fff !important; color:#1a2a47 !important;
   }
   .app-header, footer, nav, .stats-bar, .progress, .fc-hint, .fc-back-q,
-  #tourBtn, #fsBtn, #darkToggle, .i18n-select, #tipFloat, #appToast,
+  #tourBtn, #fsBtn, #darkToggle, .i18n-select, #tipFloat, #appToast, #sheetMenu,
   #prevBtn, #flipBtn, #nextBtn, #endEarlyBtn, #fcSpeakBtn,
   .tour-spot, .tour-card, .overlay, details { display:none !important; }
   /* The setup screen is teacher-side configuration, never a printable artifact. */
@@ -1807,11 +1830,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <!-- START -->
   <div class="start-cta">
     <button class="btn gold" id="startBtn" data-i18n="flashcards.start.button">Start Practicing! ✨</button>
-    <button class="btn" id="printSheetBtn" onclick="printCardSheet()" data-i18n="flashcards.sheet.button">🖨️ Print card sheet</button>
-    <div class="row" id="sheetDuplexRow">
-      <label class="switch"><input type="checkbox" id="sheetDuplexToggle" onchange="setSheetDuplex(this.checked)"><span class="slider"></span></label>
-      <span class="label has-tip" data-tip="Prints a matching answer page after each card page. Flip on the long edge so each answer lands behind its own card." data-i18n-tip="flashcards.sheet.duplex_tip" data-i18n="flashcards.sheet.duplex">Answer on the back (double-sided)</span>
-    </div>
+    <button class="btn" id="printSheetBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="sheetMenu" onclick="toggleSheetMenu()" data-i18n="flashcards.sheet.button">🖨️ Print card sheet</button>
   </div>
 
 </section>
@@ -1960,6 +1979,19 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 <div id="tipFloat" role="tooltip"></div>
 <!-- Cut-out card sheet: built on demand by printCardSheet(), print-only, cleared on afterprint. -->
 <div id="fcSheet" aria-hidden="true"></div>
+<!-- Print options drop-down. The duplex switch is an option of the Print button, not a Flash Cards
+     setting, so it only appears once printing is chosen. It lives here, at the top level, for two
+     reasons: the menu is position:fixed off a STICKY footer button, and the row must be static
+     markup — bindTip, nameSwitchRows() and applyStaticI18n() each scan the DOM once at init and are
+     not delegated, so a JS-built copy would lose its tooltip, its accessible name and its Hebrew. -->
+<div id="sheetMenu" class="sheet-menu" role="group" aria-labelledby="sheetMenuTitle" hidden>
+  <div class="sheet-menu-title" id="sheetMenuTitle" data-i18n="flashcards.sheet.menu_title">Card sheet options</div>
+  <div class="row" id="sheetDuplexRow">
+    <label class="switch"><input type="checkbox" id="sheetDuplexToggle" onchange="setSheetDuplex(this.checked)"><span class="slider"></span></label>
+    <span class="label has-tip" data-tip="Prints a matching answer page after each card page. Flip on the long edge so each answer lands behind its own card." data-i18n-tip="flashcards.sheet.duplex_tip" data-i18n="flashcards.sheet.duplex">Answer on the back (double-sided)</span>
+  </div>
+  <button class="btn gold sm" id="sheetPrintBtn" type="button" onclick="printCardSheet()" data-i18n="flashcards.sheet.print_now">Print</button>
+</div>
 
 <script>
 /* =========================================================================
@@ -5668,6 +5700,71 @@ let sheetDuplex = false;
 const FCS_COLS = 3, FCS_PER_PAGE = 9;
 function setSheetDuplex(v) { sheetDuplex = !!v; saveSettings(); }
 
+/* The duplex option belongs to the Print button, not to Flash Cards as a whole, so it lives in a
+   drop-down that opens off that button instead of sitting in the CTA full-time. Mechanics mirror
+   the shared folder-tree "Move ▾" menu: placed from the trigger's rect, clamped to the viewport,
+   closed on outside click / scroll / resize. The CTA is a sticky footer pinned to the bottom of
+   the viewport, so the menu opens UPWARD and only flips below when there is no room above.
+   Escape-to-close and focus return are added on top — the Move menu has neither. */
+let _sheetMenuOpen = false;
+const _FC_FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+function toggleSheetMenu() { _sheetMenuOpen ? closeSheetMenu(true) : openSheetMenu(); }
+// The trigger is exempt: this runs in the capture phase, i.e. BEFORE the button's own onclick, so
+// closing here would just let toggleSheetMenu() reopen a menu the user meant to dismiss.
+function _sheetMenuDoc(e) {
+  const m = document.getElementById('sheetMenu'), b = document.getElementById('printSheetBtn');
+  if (!m.contains(e.target) && !b.contains(e.target)) closeSheetMenu();
+}
+function _sheetMenuScroll() { closeSheetMenu(); }
+function _sheetMenuKey(e) {
+  if (e.key === 'Escape') { e.preventDefault(); closeSheetMenu(true); return; }
+  if (e.key !== 'Tab') return;
+  // The menu sits at the end of <body>, so Tab would otherwise walk out of the page entirely —
+  // wrap it. Queried rather than hardcoded: bindTip makes the tooltip label focusable too, and
+  // any control added to the menu later must join the cycle automatically.
+  const f = [...document.getElementById('sheetMenu').querySelectorAll(_FC_FOCUSABLE)]
+    .filter(el => el.offsetParent !== null);
+  if (!f.length) return;
+  const first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+}
+function openSheetMenu() {
+  const btn = document.getElementById('printSheetBtn'), menu = document.getElementById('sheetMenu');
+  menu.hidden = false;                                   // unhide first — it must be measurable
+  const rc = btn.getBoundingClientRect();
+  let top = rc.top - menu.offsetHeight - 6;
+  if (top < 6) top = Math.min(rc.bottom + 6, window.innerHeight - menu.offsetHeight - 6);
+  let left = rc.left + rc.width / 2 - menu.offsetWidth / 2;   // centred, so RTL needs no branch
+  left = Math.max(6, Math.min(left, window.innerWidth - menu.offsetWidth - 6));
+  menu.style.top = Math.max(6, top) + 'px';
+  menu.style.left = left + 'px';
+  btn.setAttribute('aria-expanded', 'true');
+  _sheetMenuOpen = true;
+  document.getElementById('sheetDuplexToggle').focus();
+  // Everything except the outside-click handler is armed NOW: deferring them would leave a window
+  // in which an immediate Escape or scroll goes unheard.
+  document.addEventListener('keydown', _sheetMenuKey);
+  window.addEventListener('resize', _sheetMenuScroll);
+  window.addEventListener('scroll', _sheetMenuScroll, true);
+  // Only the click handler waits a tick, so the click that opened the menu can't also close it.
+  // Capture phase: the tooltip trigger inside the menu calls stopPropagation, which would
+  // otherwise hide this handler — capture runs first and sees the target is inside the menu.
+  setTimeout(() => { if (_sheetMenuOpen) document.addEventListener('click', _sheetMenuDoc, true); }, 0);
+}
+function closeSheetMenu(refocus) {
+  if (!_sheetMenuOpen) return;
+  _sheetMenuOpen = false;
+  document.getElementById('sheetMenu').hidden = true;
+  const btn = document.getElementById('printSheetBtn');
+  btn.setAttribute('aria-expanded', 'false');
+  document.removeEventListener('click', _sheetMenuDoc, true);
+  document.removeEventListener('keydown', _sheetMenuKey);
+  window.removeEventListener('resize', _sheetMenuScroll);
+  window.removeEventListener('scroll', _sheetMenuScroll, true);
+  if (refocus) btn.focus();     // keyboard/toggle close only — an outside click keeps its target
+}
+
 // Flipping a sheet on its long edge reverses left-right, so each ROW is reversed on the answer
 // page. The row is padded to full width FIRST — otherwise a short final row reverses into the
 // wrong columns and every answer on it lands behind the wrong card.
@@ -5694,6 +5791,7 @@ function fcsCell(card, isBack) {
   return `<div class="fcs-cell${swatch}">${emoji}<span class="fcs-heb" lang="he" dir="rtl">${esc(card.heb || '')}</span></div>`;
 }
 function printCardSheet() {
+  closeSheetMenu();                      // never let the drop-down be on screen behind the dialog
   const deck = generateDeck(cardCount);
   if (!deck.length) {
     if (typeof showAppToast === 'function') showAppToast(I18n.t('flashcards.sheet.err_empty'));

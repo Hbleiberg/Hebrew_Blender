@@ -3984,3 +3984,5 @@ flashcards.sheet.button,🖨️ Print card sheet,🖨️ הדפיסו דף כר�
 flashcards.sheet.duplex,Answer on the back (double-sided),תשובה בצד השני (הדפסה דו-צדדית),card-sheet print option,
 flashcards.sheet.duplex_tip,Prints a matching answer page after each card page. Flip on the long edge so each answer lands behind its own card.,מדפיס דף תשובות תואם אחרי כל דף כרטיסים. הפכו לאורך הצד הארוך כדי שכל תשובה תיפול מאחורי הכרטיס שלה.,card-sheet duplex tooltip,
 flashcards.sheet.err_empty,No cards to print — choose some letters and vowels first.,אין כרטיסים להדפסה — בחרו קודם אותיות ותנועות.,card-sheet empty-deck toast,
+flashcards.sheet.menu_title,Card sheet options,אפשרויות דף כרטיסים,card-sheet print drop-down heading,REVIEW: machine-drafted HE — confirm
+flashcards.sheet.print_now,Print,הדפיסו,card-sheet drop-down print button,REVIEW: machine-drafted HE — confirm
