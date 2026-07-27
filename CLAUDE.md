@@ -1683,6 +1683,16 @@ HTML). Verify changes end-to-end by driving the real page headless. Proven recip
   `pageerror` event count (should be 0) instead of console errors. A bare `file://` load still works
   for a page with no i18n/`data/` dependency, but local HTTP is the reliable default the recent
   discovery passes standardized on.
+- **Testing a failure/offline path? Open the context with `serviceWorkers: 'block'`.** `sw.js` calls
+  `skipWaiting()` + `clients.claim()`, so the worker activates on the first load and then serves
+  `/data/` out of the version-independent `DATA_CACHE` — and **service-worker requests bypass
+  `page.route` entirely**. Without the block, a route that aborts `/data/` silently stops blocking
+  once the worker is live: the fetch succeeds, no failure path runs, and the test reports whatever
+  the happy path rendered. That cost S165 a fabricated "Flash Cards is silent on failure" finding
+  (its real message, `flashcards.words.load_failed`, shows correctly once the worker is blocked).
+  ```js
+  const ctx = await browser.newContext({ serviceWorkers: 'block' });   // required for offline tests
+  ```
 - Dismiss auto-open modals before testing:
   `document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open'))`.
 - Font Maker fixtures: a traced letter's contours are `[{points: [[x,y], …]}]` — renderers like
