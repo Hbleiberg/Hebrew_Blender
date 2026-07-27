@@ -2930,7 +2930,7 @@ async function fetchAndRender() {
     _bulkReadingKey = null;
     if (ttBulkSelected.size) { ttBulkSelected.clear(); updateCopyTextarea(); }
     renderEmptyReading();
-    setStatus(I18n.t('torah.status.pick_parsha'), false);
+    setStatus(I18n.t('torah.status.pick_parsha'), false, 'torah.status.pick_parsha');
     return;
   }
   _readingLoading = true;
@@ -3015,10 +3015,14 @@ async function fetchAndRender() {
     _tourOnReadingChanged();   // a parked tour reading-step won't get its content — release it so it skips past
   }
 }
-function setStatus(msg, isError) {
+function setStatus(msg, isError, key) {
   const el = document.getElementById('ttStatus');
   el.textContent = msg;
   el.classList.toggle('error', !!isError);
+  // Callers with a plain (non-interpolated) message pass its key, so applyI18n can
+  // re-resolve this line when the language changes — or when I18n was not yet ready
+  // at the time it was written, which leaves the raw key on screen.
+  if (key) el.dataset.i18nKey = key; else delete el.dataset.i18nKey;
 }
 // True when the current reading maps to a parsha that has PocketTorah audio.
 function currentReadingChantable() {
@@ -3367,7 +3371,7 @@ function _navigateToVerseAliyahAndQueue(numLabel, mode) {
   const tc = parseInt(m[1], 10), tv = parseInt(m[2], 10);
   const p = (currentReadingCtx && currentReadingCtx.parshahEntry)
             || parshiyotData.find(x => x.en === settings.parshahKey);
-  if (!p) { setStatus(I18n.t('torah.status.pick_parsha_chant_verses'), false); return false; }
+  if (!p) { setStatus(I18n.t('torah.status.pick_parsha_chant_verses'), false, 'torah.status.pick_parsha_chant_verses'); return false; }
   const al = aliyahLookup(p.en);
   if (!al || !al.aliyot) { setStatus(I18n.t('torah.status.no_aliyah_data'), true); return false; }
   let aliyahNum = null;
@@ -3581,7 +3585,7 @@ async function toggleChantAll() {
     syncParshaSelect();
   } else {
     p = parshiyotData.find(x => x.en === settings.parshahKey);
-    if (!p) { setStatus(I18n.t('torah.status.pick_parsha_chant'), false); return; }
+    if (!p) { setStatus(I18n.t('torah.status.pick_parsha_chant'), false, 'torah.status.pick_parsha_chant'); return; }
     if (settings.scope === 'parsha-haftarah') queue = ['H'];
     else if (/^parsha-aliyah-(\d)$/.test(settings.scope)) queue = [settings.scope.match(/(\d)$/)[1]];
     else queue = ['1','2','3','4','5','6','7'];
@@ -5432,6 +5436,24 @@ function applyI18n() {
   try { const og = document.querySelector('#parshaSelect optgroup'); if (og) og.label = I18n.t('torah.controls.holiday_group_label'); } catch (e) {}
   try { updateTransFooter(); } catch (e) {}         // translation credit line
   try { updateCopyTextarea(); } catch (e) {}        // re-localize the "{count} selected" line
+  // The empty-reading card and the status line are written BEFORE I18n.ready whenever a data
+  // fetch fails fast (blocked/offline network), and the reading re-render below only covers a
+  // LOADED reading — so on that path both stayed frozen at their raw key strings, in both
+  // languages. Repair them in place rather than calling renderEmptyReading(): that fires
+  // _tourOnReadingChanged(), which advances a running tour, and applyI18n must never do that.
+  try {
+    const emptyCard = document.querySelector('#ttReading .tt-empty');
+    if (emptyCard) {
+      const h = emptyCard.querySelector('h2'), b = emptyCard.querySelector('p');
+      if (h) h.textContent = I18n.t('torah.reading.empty_title');
+      if (b) b.textContent = I18n.t('torah.reading.empty_body');
+    }
+    // Re-resolve the status line from the key its writer recorded — this both heals a raw
+    // key left by a pre-ready write AND keeps the line following later language switches.
+    // Interpolated messages record no key and are left alone, so nothing is clobbered.
+    const st = document.getElementById('ttStatus');
+    if (st && st.dataset.i18nKey) st.textContent = I18n.t(st.dataset.i18nKey);
+  } catch (e) {}
   // Re-render the reading so row labels / aliyah markers / verse buttons translate — but NEVER
   // while audio is playing or looping (a renderText() rebuild would desync the karaoke data-twi
   // word-timing). When playing, the reading re-translates the next time it is rebuilt.
