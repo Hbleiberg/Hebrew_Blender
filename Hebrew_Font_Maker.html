@@ -5858,7 +5858,7 @@ function renderMarkControls(c, it) {
     if (selP && selP.type === 'dot') {
       const sh = selP.shape === 'square' ? 'square' : 'circle';
       h += `<div class="ctl-row" style="margin-top:6px;">
-        <div class="inline" style="flex:1;min-width:0;">${I18n.t('fontmaker.panels.markctl_dot_size')} <input type="range" min="8" max="200" step="1" value="${selP.r}" oninput="setDotSize(this.value)" onchange="udBurstCommit()" style="flex:1;min-width:0;"> <span id="dotSizeV" class="readout">${selP.r}</span></div>
+        <div class="inline" style="flex:1;min-width:0;">${I18n.t('fontmaker.panels.markctl_dot_size')} <input type="range" min="8" max="200" step="1" value="${selP.r}" oninput="setDotSize(this.value)" onchange="udBurstCommit()" style="flex:1;min-width:0;" aria-label="${esc(I18n.t('fontmaker.panels.markctl_dot_size'))}"> <span id="dotSizeV" class="readout">${selP.r}</span></div>
         <div class="mode-toggle" style="flex:1;min-width:0;">
           <button class="mode-btn ${sh==='circle'?'active':''}" aria-pressed="${sh==='circle'}" onclick="setDotShape('circle')">${I18n.t('fontmaker.panels.markctl_circle')}</button>
           <button class="mode-btn ${sh==='square'?'active':''}" aria-pressed="${sh==='square'}" onclick="setDotShape('square')">${I18n.t('fontmaker.panels.markctl_square')}</button>
@@ -5874,13 +5874,13 @@ function renderMarkControls(c, it) {
     }
     h += `<div class="hint">${I18n.t('fontmaker.panels.markctl_hint')}</div>`;
   } else if (workMode === 'trace') {
-    h += `<div class="inline">${I18n.t('fontmaker.panels.ink_threshold')} <input type="range" min="1" max="254" value="${it.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()"> <span id="thV" class="readout">${it.binThreshold}</span></div>
+    h += `<div class="inline">${I18n.t('fontmaker.panels.ink_threshold')} <input type="range" min="1" max="254" value="${it.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.ink_threshold'))}"> <span id="thV" class="readout">${it.binThreshold}</span></div>
       <label class="chk"><input type="checkbox" ${it.invert?'checked':''} onchange="liveInvert(this.checked)"> ${I18n.t('fontmaker.panels.invert')}</label>
       ${ (it.source && it.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${itemFlattenOn(it)?'checked':''} onchange="liveFlatten(this.checked)" aria-label="${esc(I18n.t('fontmaker.panels.even_lighting_aria'))}"> ${I18n.t('fontmaker.panels.even_lighting')}</label>` : '' }
-      <div class="inline">${I18n.t('fontmaker.panels.detail')} <input type="range" min="0" max="100" step="1" value="${Math.round(100 - it.epsilon*2.5)}" oninput="liveDetail(this.value)" onchange="udBurstCommit()"> <span id="epV" class="readout">${Math.round(100 - it.epsilon*2.5)}</span></div>
-      <div class="inline">${I18n.t('fontmaker.panels.corners')} <input type="range" min="0" max="90" step="1" value="${it.cornerAngle != null ? it.cornerAngle : 32}" oninput="liveCorners(this.value)" onchange="udBurstCommit()"> <span id="cnV" class="readout">${it.cornerAngle != null ? it.cornerAngle : 32}</span></div>
+      <div class="inline">${I18n.t('fontmaker.panels.detail')} <input type="range" min="0" max="100" step="1" value="${Math.round(100 - it.epsilon*2.5)}" oninput="liveDetail(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.detail'))}"> <span id="epV" class="readout">${Math.round(100 - it.epsilon*2.5)}</span></div>
+      <div class="inline">${I18n.t('fontmaker.panels.corners')} <input type="range" min="0" max="90" step="1" value="${it.cornerAngle != null ? it.cornerAngle : 32}" oninput="liveCorners(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.corners'))}"> <span id="cnV" class="readout">${it.cornerAngle != null ? it.cornerAngle : 32}</span></div>
       ${ (it.source && it.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${it.outlineOnly?'checked':''} onchange="liveOutlineOnly(this.checked)"> ${I18n.t('fontmaker.panels.outline_only')}</label>` : '' }
-      ${ (it.source && it.source.dataUrl && it.outlineOnly) ? `<div class="inline">${I18n.t('fontmaker.panels.line_weight')} <input type="range" min="10" max="250" step="1" value="${Math.round(it.lineWeight!=null?it.lineWeight:70)}" oninput="liveLineWeight(this.value)" onchange="udBurstCommit()"> <span id="lwV" class="readout">${Math.round(it.lineWeight!=null?it.lineWeight:70)}</span></div>
+      ${ (it.source && it.source.dataUrl && it.outlineOnly) ? `<div class="inline">${I18n.t('fontmaker.panels.line_weight')} <input type="range" min="10" max="250" step="1" value="${Math.round(it.lineWeight!=null?it.lineWeight:70)}" oninput="liveLineWeight(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.line_weight'))}"> <span id="lwV" class="readout">${Math.round(it.lineWeight!=null?it.lineWeight:70)}</span></div>
       <div class="ctl-row"><button class="ctl-btn" onclick="applyOutlineToAll()">${I18n.t('fontmaker.panels.apply_outline_all')}</button></div>` : '' }
       <div class="ctl-row">
         <button class="ctl-btn primary" onclick="traceCurrent()">${I18n.t('fontmaker.panels.retrace')}</button>
@@ -8849,7 +8849,7 @@ function renderPrecompControls(l) {
     return `<div class="ws-side-title">${I18n.t('fontmaker.panels.place_precomp_title', {glyph: '<span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">'+esc(precompComposed(pc))+'</span>', name: esc(precompName(pc))})}</div>
     <div class="hint" style="font-size:0.68rem;">${I18n.t('fontmaker.panels.dagesh_follows_hint', {glyph: g})}</div>
     <hr class="ctl-divider">
-    <div class="inline">${I18n.t('fontmaker.panels.dagesh_size')} <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
+    <div class="inline">${I18n.t('fontmaker.panels.dagesh_size')} <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.dagesh_size'))}"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
     <hr class="ctl-divider">
     <button class="ctl-btn" style="width:100%;" onclick="openMarkEdit('nikkud','${pc.mark}')">${I18n.t('fontmaker.panels.edit_shape_btn')}</button>
     <div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.edit_shape_square_hint')}</div>
@@ -8863,10 +8863,10 @@ function renderPrecompControls(l) {
   const isCholamVav = (pc.base === '05D5' && pc.mark === '05B9');   // וֹ size: surfaced here (next to the live preview) using the same control as the Nikkud-step Holam (vav) size
   const cholPct = Math.round(cholamScale() * 100);
   const sizeBlock = isCholamVav
-    ? `<div class="inline">${I18n.t('fontmaker.panels.holam_vav_size')} <input type="range" min="40" max="180" step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>
+    ? `<div class="inline">${I18n.t('fontmaker.panels.holam_vav_size')} <input type="range" min="40" max="180" step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.holam_vav_size'))}"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>
     <div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.holam_vav_hint')}</div>
     <div class="hint" style="font-size:0.62rem;">${esc(I18n.t('fontmaker.panels.holam_vav_vs_haser'))}</div>`
-    : `<div class="inline">${I18n.t('fontmaker.panels.dot_size')} <input type="range" min="30" max="200" step="1" value="${scPct}" oninput="setPrecompMarkScale(this.value)" onchange="udBurstCommit();renderControls()"> <span id="pcScaleV" class="readout">${scPct}%</span></div>
+    : `<div class="inline">${I18n.t('fontmaker.panels.dot_size')} <input type="range" min="30" max="200" step="1" value="${scPct}" oninput="setPrecompMarkScale(this.value)" onchange="udBurstCommit();renderControls()" aria-label="${esc(I18n.t('fontmaker.panels.dot_size'))}"> <span id="pcScaleV" class="readout">${scPct}%</span></div>
     <div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.dagesh_size_hint')}</div>
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
       ${isScaleOverride ? `<button class="ctl-btn" onclick="resetPrecompMarkScale()">${I18n.t('fontmaker.panels.reset_auto_size')}</button>` : `<span class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.auto_size_hint')}</span>`}
@@ -9160,7 +9160,7 @@ function meRenderControls() {
   if (p && p.type === 'dot') {
     const sh = p.shape === 'square' ? 'square' : 'circle';
     wrap.innerHTML = `<div class="ctl-row" style="margin-top:6px;">
-      <div class="inline" style="flex:1;min-width:0;">${I18n.t('fontmaker.panels.markctl_dot_size')} <input type="range" min="8" max="200" step="1" value="${p.r}" oninput="meSetDotSize(this.value)" onchange="meCommitEdit()" style="flex:1;min-width:0;"> <span id="meDotSizeV" class="readout">${p.r}</span></div>
+      <div class="inline" style="flex:1;min-width:0;">${I18n.t('fontmaker.panels.markctl_dot_size')} <input type="range" min="8" max="200" step="1" value="${p.r}" oninput="meSetDotSize(this.value)" onchange="meCommitEdit()" style="flex:1;min-width:0;" aria-label="${esc(I18n.t('fontmaker.panels.markctl_dot_size'))}"> <span id="meDotSizeV" class="readout">${p.r}</span></div>
       <div class="mode-toggle" style="flex:1;min-width:0;">
         <button class="mode-btn ${sh==='circle'?'active':''}" aria-pressed="${sh==='circle'}" onclick="meSetDotShape('circle')">${I18n.t('fontmaker.panels.markctl_circle')}</button>
         <button class="mode-btn ${sh==='square'?'active':''}" aria-pressed="${sh==='square'}" onclick="meSetDotShape('square')">${I18n.t('fontmaker.panels.markctl_square')}</button>
@@ -10614,10 +10614,10 @@ function renderAnchorStageBelow(SB, l) {
     : `<span class="placement-pill unconfirmed" title="${esc(I18n.t('fontmaker.panels.pill_unconfirmed_title'))}">${I18n.t('fontmaker.panels.pill_unconfirmed')}</span>`;
   SB.innerHTML = `
     <div class="size-slider-col">
-      <div class="size-slider-line"><label>${isTrop?I18n.t('fontmaker.panels.trop_size'):I18n.t('fontmaker.panels.nikkud_size')}</label> <input type="range" min="40" max="180" step="5" value="${sizePct}" oninput="${sizeFn}(this.value)" onchange="udBurstCommit()"> <span id="markScaleV" class="readout">${sizePct}%</span></div>
-      ${isTrop?'':`<div class="size-slider-line"><label>${I18n.t('fontmaker.panels.holam_size')}</label> <input type="range" min="30" max="180" step="5" value="${holPct}" oninput="setHolamScale(this.value)" onchange="udBurstCommit()"> <span id="holamScaleV" class="readout">${holPct}%</span></div>
-      <div class="size-slider-line"><label>${I18n.t('fontmaker.panels.dagesh_size')}</label> <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
-      ${isVav?`<div class="size-slider-line"><label>${I18n.t('fontmaker.panels.holam_vav_size')}</label> <input type="range" min="40" max="180" step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>`:''}`}
+      <div class="size-slider-line"><label>${isTrop?I18n.t('fontmaker.panels.trop_size'):I18n.t('fontmaker.panels.nikkud_size')}</label> <input type="range" min="40" max="180" step="5" value="${sizePct}" oninput="${sizeFn}(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.nikkud_size'))}"> <span id="markScaleV" class="readout">${sizePct}%</span></div>
+      ${isTrop?'':`<div class="size-slider-line"><label>${I18n.t('fontmaker.panels.holam_size')}</label> <input type="range" min="30" max="180" step="5" value="${holPct}" oninput="setHolamScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.holam_size'))}"> <span id="holamScaleV" class="readout">${holPct}%</span></div>
+      <div class="size-slider-line"><label>${I18n.t('fontmaker.panels.dagesh_size')}</label> <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.dagesh_size'))}"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
+      ${isVav?`<div class="size-slider-line"><label>${I18n.t('fontmaker.panels.holam_vav_size')}</label> <input type="range" min="40" max="180" step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.holam_vav_size'))}"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>`:''}`}
       ${isTrop?'':`<div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.size_hint')}${isVav?' '+I18n.t('fontmaker.panels.size_hint_vav'):''}</div>`}
     </div>
     <div class="anchor-confirm-panel">
