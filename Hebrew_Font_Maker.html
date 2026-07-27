@@ -9160,16 +9160,16 @@ function meRenderControls() {
   if (p && p.type === 'dot') {
     const sh = p.shape === 'square' ? 'square' : 'circle';
     wrap.innerHTML = `<div class="ctl-row" style="margin-top:6px;">
-      <div class="inline" style="flex:1;min-width:0;">Dot size <input type="range" min="8" max="200" step="1" value="${p.r}" oninput="meSetDotSize(this.value)" onchange="meCommitEdit()" style="flex:1;min-width:0;"> <span id="meDotSizeV" class="readout">${p.r}</span></div>
+      <div class="inline" style="flex:1;min-width:0;">${I18n.t('fontmaker.panels.markctl_dot_size')} <input type="range" min="8" max="200" step="1" value="${p.r}" oninput="meSetDotSize(this.value)" onchange="meCommitEdit()" style="flex:1;min-width:0;"> <span id="meDotSizeV" class="readout">${p.r}</span></div>
       <div class="mode-toggle" style="flex:1;min-width:0;">
-        <button class="mode-btn ${sh==='circle'?'active':''}" aria-pressed="${sh==='circle'}" onclick="meSetDotShape('circle')">● Circle</button>
-        <button class="mode-btn ${sh==='square'?'active':''}" aria-pressed="${sh==='square'}" onclick="meSetDotShape('square')">■ Square</button>
+        <button class="mode-btn ${sh==='circle'?'active':''}" aria-pressed="${sh==='circle'}" onclick="meSetDotShape('circle')">${I18n.t('fontmaker.panels.markctl_circle')}</button>
+        <button class="mode-btn ${sh==='square'?'active':''}" aria-pressed="${sh==='square'}" onclick="meSetDotShape('square')">${I18n.t('fontmaker.panels.markctl_square')}</button>
       </div></div>`;
   } else if (p && p.type === 'bar') {
     wrap.innerHTML = `<div class="ctl-row" style="margin-top:6px;">
       <div class="mode-toggle" style="flex:1;min-width:0;">
-        <button class="mode-btn ${!p.rounded?'active':''}" aria-pressed="${!p.rounded}" onclick="meSetBarRounded(false)">▭ Square ends</button>
-        <button class="mode-btn ${p.rounded?'active':''}" aria-pressed="${p.rounded}" onclick="meSetBarRounded(true)">▢ Rounded ends</button>
+        <button class="mode-btn ${!p.rounded?'active':''}" aria-pressed="${!p.rounded}" onclick="meSetBarRounded(false)">${I18n.t('fontmaker.panels.markctl_bar_square_ends')}</button>
+        <button class="mode-btn ${p.rounded?'active':''}" aria-pressed="${p.rounded}" onclick="meSetBarRounded(true)">${I18n.t('fontmaker.panels.markctl_bar_rounded_ends')}</button>
       </div></div>`;
   } else wrap.innerHTML = '';
 }
