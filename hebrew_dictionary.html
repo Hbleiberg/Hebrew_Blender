@@ -2112,9 +2112,18 @@ fetchJsonWithProgress('data/hebrew_words.json?v=6', updateDictLoadProgress)
   })
   .catch(() => {
     const bar = document.getElementById('loadBar'); if (bar) bar.style.display = 'none';
-    const txt = document.getElementById('loadingText');
-    if (txt) txt.textContent = I18n.t('dictionary.loading.failed');
-    else document.getElementById('loadingMsg').textContent = I18n.t('dictionary.loading.failed');
+    // This fetch starts at parse time, so a fast failure (blocked/offline network) can land
+    // here BEFORE the deferred js/i18n.js has run — a bare I18n.t() then throws a
+    // ReferenceError, killing the handler and leaving "Loading dictionary…" up for good.
+    // Re-point the element's data-i18n at the failure key so applyStaticI18n() fills it in
+    // whenever I18n is ready (and re-fills it on a language switch), and paint the English
+    // fallback now so the message is never blank in the meantime.
+    const el = document.getElementById('loadingText') || document.getElementById('loadingMsg');
+    if (!el) return;
+    el.setAttribute('data-i18n', 'dictionary.loading.failed');
+    el.textContent = window.I18n
+      ? I18n.t('dictionary.loading.failed')
+      : 'Failed to load. Open via a local server (not file://).';
   });
 
 function setAllVowels(checked) {
