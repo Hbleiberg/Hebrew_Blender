@@ -3919,10 +3919,14 @@ function applySettings(s) {
   nikudColorOverrides = { ...(s.nikudColorOverrides || {}) };
   vowelColorScheme = s.vowelColorScheme ?? 'default';
   const fontMigration = { frank:'Frank Ruhl Libre', david:'David Libre', noto:'Noto Serif Hebrew', heebo:'Heebo', assist:'Assistant' };
+  // Resolve against allFonts()/allEngFonts() (built-ins ∪ My Fonts), not the built-in lists
+  // alone — otherwise any mid-session settings round trip (preset load, .ivrit restore, a
+  // Learner Ladder exit) silently coerces an uploaded font back to the default. At first load
+  // MY_FONTS is still empty, so init behavior is unchanged (refreshMyFonts re-applies after).
   const rawFont = s.hebFontId ?? 'Frank Ruhl Libre';
-  hebFontId = fontMigration[rawFont] || (HEB_FONTS.find(f => f.name === rawFont) ? rawFont : 'Frank Ruhl Libre');
+  hebFontId = fontMigration[rawFont] || (allFonts().find(f => f.name === rawFont) ? rawFont : 'Frank Ruhl Libre');
   const rawEng = s.engFontId ?? 'Libre Baskerville';
-  engFontId = ENG_FONTS.find(f => f.name === rawEng) ? rawEng : 'Libre Baskerville';
+  engFontId = allEngFonts().find(f => f.name === rawEng) ? rawEng : 'Libre Baskerville';
   vowelPositions = new Set((s.vowelPositions || []).filter(p => p >= 1 && p <= (s.mode ?? 2)));
   if (vowelPositions.size === 0) vowelPositions.add(s.mode ?? 2);
   anyVowelLock = !!s.anyVowelLock;
@@ -5258,9 +5262,12 @@ const _LAD_V_AH     = ['a','patah'];
 const _LAD_V_EH     = _LAD_V_AH.concat(['e','tzere']);
 const _LAD_V_EE     = _LAD_V_EH.concat(['i']);
 const _LAD_V_MAIN   = _LAD_V_EE.concat(['o','vcholam','u','shuruk']);   // the 9 isMain:true keys
-const _LAD_V_SHVA   = _LAD_V_MAIN.concat(['sh']);
-const _LAD_V_ALL    = _LAD_V_SHVA.concat(['hpatah','hkamatz','hsegol']);
+const _LAD_V_ALL    = _LAD_V_MAIN.concat(['hpatah','hkamatz','hsegol']);
 const _LAD_V_BLEND1 = ['a','patah','e','i'];
+/* NOTE: 'sh' is deliberately absent from every set. generateCard never allows shva as a
+   syllable NUCLEUS (Rule N1 — a 'sh' pick is rerolled, then hard-rejected); shva only renders
+   as the automatic CONNECTOR on a non-vowelled position before the last vowel (בְּרָ). The
+   shva level therefore teaches it via `connector: true` below, not via a vowel key. */
 
 const LADDER_PASS_PCT = 80;   // same threshold as renderProfileHistory's ✓, so the two never disagree
 
@@ -5269,7 +5276,12 @@ const LADDER_PASS_PCT = 80;   // same threshold as renderProfileHistory's ✓, s
    silently detaches. Titles/descriptions live in i18n under title_<id> / desc_<id>.
 
    nameLetter levels still carry a vowel list: generateCard ignores selectedVowels entirely in
-   nameLetterMode, but startPractice's validation does not exempt it, and an empty set fails. */
+   nameLetterMode, but startPractice's validation does not exempt it, and an empty set fails.
+
+   `connector: true` = the level drills the shva-connector pattern: vowelPositions pins only the
+   LAST position, so every earlier letter deterministically carries a connector shva (בְּרָ).
+   That's the only way the engine ever renders shva, which is why the shva level sits right
+   before the two-letter blends — it IS the bridge into them. */
 const FC_LADDER = [
   { id:'names1',    mode:1, nameLetter:true,  letters:_LAD_G1,     vowels:_LAD_V_MAIN },
   { id:'names2',    mode:1, nameLetter:true,  letters:_LAD_G2,     vowels:_LAD_V_MAIN },
@@ -5278,8 +5290,8 @@ const FC_LADDER = [
   { id:'eh',        mode:1, nameLetter:false, letters:_LAD_DECODE, vowels:_LAD_V_EH },
   { id:'ee',        mode:1, nameLetter:false, letters:_LAD_DECODE, vowels:_LAD_V_EE },
   { id:'ohoo',      mode:1, nameLetter:false, letters:_LAD_DECODE, vowels:_LAD_V_MAIN },
-  { id:'shva',      mode:1, nameLetter:false, letters:_LAD_DECODE, vowels:_LAD_V_SHVA },
   { id:'allvowels', mode:1, nameLetter:false, letters:_LAD_DECODE, vowels:_LAD_V_ALL },
+  { id:'shva',      mode:2, nameLetter:false, letters:_LAD_DECODE, vowels:_LAD_V_MAIN, connector:true },
   { id:'blend2a',   mode:2, nameLetter:false, letters:_LAD_DECODE, vowels:_LAD_V_BLEND1 },
   { id:'blend2b',   mode:2, nameLetter:false, letters:_LAD_DECODE, vowels:_LAD_V_MAIN },
   { id:'blend3',    mode:3, nameLetter:false, letters:_LAD_DECODE, vowels:_LAD_V_MAIN },
@@ -5352,9 +5364,11 @@ function _ladderOverrides(lv) {
     nameLetterShowLetter: true,
     selectedLetters: lv.letters.slice(),
     selectedVowels: lv.vowels.slice(),
-    // Every letter carries its own vowel. The app default is {mode}, which puts a shva
-    // connector on the earlier letters (בְּרָ); a first blend drill wants plain CV-CV (בָּרָ).
-    vowelPositions: Array.from({ length: lv.mode }, (_, i) => i + 1),
+    // Blend levels vowel EVERY letter — the app default ({mode}) puts a shva connector on the
+    // earlier letters (בְּרָ), and a first blend drill wants plain CV-CV (בָּרָ). The connector
+    // level inverts that on purpose: only the last position is vowelled, so the connector shva
+    // appears on every card — the engine's one and only way to render a shva.
+    vowelPositions: lv.connector ? [lv.mode] : Array.from({ length: lv.mode }, (_, i) => i + 1),
     cardCount: 10,
     dageshTavEnabled: false,
     vavAsLetter: true,
@@ -5374,7 +5388,9 @@ function _ladderEnter(levelId) {
   if (!profile) return false;
   const lv = FC_LADDER[i];
   const snapshot = getSettings();
-  _ladderActive = { levelId, profile, snapshot, recorded: false };
+  // getSettings deliberately never serializes a share-code's inline word pool, and
+  // applySettings nulls it when absent — stash it so the round trip can't destroy it.
+  _ladderActive = { levelId, profile, snapshot, recorded: false, wordsPool: wordsInlinePool };
   applySettings(Object.assign({}, snapshot, _ladderOverrides(lv)));
   startPractice();
   // startPractice() alerts and returns on a validation failure or an empty deck. If it never
@@ -5388,10 +5404,20 @@ function _ladderEnter(levelId) {
 function _ladderExit() {
   if (!_ladderActive) return;
   const snap = _ladderActive.snapshot;
+  const pool = _ladderActive.wordsPool;
   // Restore while the guard is still up, so applySettings' ~dozen internal saveSettings()
-  // calls can't persist a half-restored state; then clear it and write once.
-  try { applySettings(snap); } finally { _ladderActive = null; }
-  saveSettings();
+  // calls can't persist a half-restored state; then clear it and write once. If the restore
+  // itself throws, do NOT write: disk still holds the correct pre-ladder blob (nothing was
+  // persisted all session), and saving a half-restored state is the only way to lose it.
+  let restored = true;
+  try { applySettings(snap); }
+  catch (e) { restored = false; console.error('Ladder settings restore failed', e); }
+  _ladderActive = null;
+  if (restored) {
+    wordsInlinePool = pool ?? null;
+    if (wordsInlinePool) updateWordsCount();
+    saveSettings();
+  }
   const strip = document.getElementById('ladderStrip');
   if (strip) { strip.hidden = true; strip.innerHTML = ''; }
   renderLadderCard();
@@ -5424,9 +5450,22 @@ function renderLadderStrip(pct) {
 
   if (!_ladderActive.recorded) {
     _ladderActive.recorded = true;
+    // Bank into drill history only when this attempt sets a new best (the first attempt always
+    // does — including a first fail, which is exactly the weakness-tracking signal). Grinding
+    // Try Again must not flood the 50-entry cap and evict the teacher's own saved drills.
+    const prev = readLadderLevels(profile)[levelId];
+    const isNewBest = !prev || pct > (prev.bestPct || 0);
     recordLadderResult(profile, levelId, pct);
-    // Ladder drills bank themselves, so they feed weakness tracking and the progress report.
-    if (lastDrillResult) saveResultToProfile(profile, lastDrillResult);
+    if (lastDrillResult && isNewBest) {
+      saveResultToProfile(profile, lastDrillResult);
+      _ladderActive.banked = true;
+    }
+  } else if (_ladderActive.banked) {
+    // Re-render (applyI18n re-runs showResults on a language switch): showResults just reset the
+    // Save button to its default enabled state, which would invite a duplicate manual save of an
+    // already-banked drill — re-assert the saved state instead.
+    const btn = document.getElementById('saveResultsBtn');
+    if (btn) { btn.textContent = I18n.t('flashcards.results.save_button_done', { name: profile }); btn.disabled = true; }
   }
 
   const passed = pct >= LADDER_PASS_PCT;
@@ -5520,7 +5559,9 @@ function openLadderMap() {
     btn.disabled = !unlocked;
 
     const glyph = document.createElement('span');
-    glyph.className = 'ladder-glyph';
+    // dir-arrow mirrors the play triangle in the RTL UI (house convention, see #homeBtn);
+    // ✓ and 🔒 must not mirror, so the class goes only on the arrow.
+    glyph.className = 'ladder-glyph' + (!passed && unlocked ? ' dir-arrow' : '');
     glyph.textContent = passed ? '✓' : unlocked ? '▶' : '🔒';
     glyph.setAttribute('aria-hidden', 'true');
 
