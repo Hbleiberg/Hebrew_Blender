@@ -1034,6 +1034,52 @@ body.dark .results-hero .pct { color: var(--gold-light); }
   margin-top: 6px;
   letter-spacing: 0.05em;
 }
+/* ── Learner Ladder ──────────────────────────────────────────────────────────
+   Entry card (setup screen), level-map rows (modal), and the results strip.
+   Logical properties throughout so the whole path mirrors in the Hebrew UI. */
+.ladder-card {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  background: var(--paper); border: 1px solid var(--gold);
+  border-radius: 8px; padding: 12px 14px; margin-bottom: 12px;
+}
+.ladder-card-text { flex: 1 1 220px; min-width: 0; }
+.ladder-card-title {
+  font-family: var(--serif); font-weight: 700; font-size: 0.95rem;
+  margin: 0; color: var(--navy);
+}
+body.dark .ladder-card-title { color: var(--gold-light); }
+.ladder-card-pitch { font-size: 0.78rem; color: var(--muted); margin: 3px 0 0; line-height: 1.45; }
+.ladder-card-resume { font-size: 0.78rem; font-weight: 700; color: var(--gold-text); margin: 5px 0 0; }
+.ladder-card > .btn { flex: 0 0 auto; }
+
+.ladder-row {
+  display: flex; align-items: flex-start; gap: 10px; width: 100%;
+  text-align: start; font-family: inherit; font-size: 0.82rem;
+  background: var(--white); color: inherit;
+  border: 1px solid var(--border); border-radius: 6px;
+  padding: 9px 11px; margin-bottom: 6px; cursor: pointer;
+}
+.ladder-row:hover:not(:disabled) { border-color: var(--gold); }
+.ladder-row:disabled { opacity: 0.5; cursor: default; }
+/* The next-up level gets a thicker leading edge — a position cue that survives B/W and
+   colour-blindness, since the ▶/✓/🔒 glyph already carries the state itself. */
+.ladder-row.next { border-color: var(--gold); border-inline-start-width: 4px; }
+.ladder-row.passed .ladder-glyph { color: var(--good); }
+.ladder-glyph { flex: 0 0 auto; font-size: 0.95rem; line-height: 1.4; min-width: 1.15em; text-align: center; }
+.ladder-row-text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ladder-row-title { font-weight: 700; }
+.ladder-row-desc { font-size: 0.74rem; color: var(--muted); line-height: 1.4; }
+.ladder-row-status { flex: 0 0 auto; font-size: 0.7rem; color: var(--muted); white-space: nowrap; padding-top: 1px; }
+
+.ladder-strip {
+  border: 1px solid var(--gold); border-radius: 8px;
+  background: var(--paper); padding: 12px 14px; margin: 0 0 14px;
+  text-align: center;
+}
+.ladder-strip-line { font-weight: 700; font-size: 0.9rem; margin: 0 0 9px; color: var(--navy); }
+body.dark .ladder-strip-line { color: var(--gold-light); }
+.ladder-strip-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
 .results-list {
   list-style: none;
   margin: 0;
@@ -1350,6 +1396,18 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <div style="display:flex; gap:6px; margin-bottom:12px;">
     <button class="btn sm" style="flex:1;" onclick="expandAllMenus()" data-i18n="flashcards.setup.expand_all">Expand all menus</button>
     <button class="btn sm" style="flex:1;" onclick="collapseAllMenus()" data-i18n="flashcards.setup.collapse_all">Collapse all menus</button>
+  </div>
+
+  <!-- Learner Ladder entry. Deliberately NOT a .panel: everything below is a control the
+       teacher configures, and this is the one thing a learner can tap without configuring
+       anything. #ladderResume is filled by renderLadderCard() once there is progress. -->
+  <div class="ladder-card">
+    <div class="ladder-card-text">
+      <p class="ladder-card-title" data-i18n="flashcards.ladder.card_title">🪜 Learning Path</p>
+      <p class="ladder-card-pitch" data-i18n="flashcards.ladder.card_pitch">Not sure where to start? Follow a step-by-step path from letter names to full blends.</p>
+      <p class="ladder-card-resume" id="ladderResume" hidden></p>
+    </div>
+    <button class="btn primary" id="ladderBtn" data-i18n="flashcards.ladder.card_button">Open Learning Path</button>
   </div>
 
   <!-- MODE -->
@@ -1949,6 +2007,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <p id="resultsTime" class="bidi-isolate" style="display:none;font-size:0.85rem;color:var(--muted);margin:4px 0 0;"></p>
     <p id="resultsStreak" class="bidi-isolate" style="font-size:0.9rem;color:var(--ink-soft);margin:8px 0 0;font-weight:600;"></p>
   </div>
+
+  <!-- Learner Ladder outcome. Built by renderLadderStrip() only while a ladder drill is
+       active; stays hidden (and empty) for every teacher-configured drill. -->
+  <div class="ladder-strip" id="ladderStrip" hidden></div>
 
   <div class="panel collapsed" id="panelResults">
     <h3 class="panel-title" data-i18n="flashcards.results.panel_title">Results</h3>
@@ -4008,6 +4070,10 @@ function applySettings(s) {
 
 const SETTINGS_KEY = 'hebrewFlashCards_settings';
 function saveSettings() {
+  // A Learner Ladder level reconfigures the whole drill transiently. This one guard is what
+  // keeps the teacher's persisted settings untouched across all ~70 call sites; _ladderExit()
+  // restores the snapshot and then writes once.
+  if (_ladderActive) return;
   try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(getSettings())); } catch(e){}
 }
 function loadSettings() {
@@ -4558,6 +4624,10 @@ function renameProfile(oldName, newName) {
   if (db.profiles[newName] && !confirm(I18n.t('flashcards.profile.merge_confirm', { newName: newName, oldName: oldName }))) return;
   const dest = db.profiles[newName] || { created: db.profiles[oldName].created, order: db.profiles[oldName].order, results: [] };
   dest.results = dest.results.concat(db.profiles[oldName].results || []).slice(-MAX_RESULTS_PER_PROFILE);
+  // dest is rebuilt from `results` alone, so anything else on the source is dropped unless it
+  // is carried across explicitly — Learner Ladder progress is the first such field.
+  const ladder = mergeLadder(db.profiles[newName] && db.profiles[newName].ladder, db.profiles[oldName].ladder);
+  if (ladder) dest.ladder = ladder;
   db.profiles[newName] = dest;
   delete db.profiles[oldName];
   if (db.activeProfile === oldName) db.activeProfile = newName;
@@ -4685,19 +4755,26 @@ function chooseProfileModal() {
   });
 }
 
-async function saveCurrentResult() {
-  if (!lastDrillResult) { alert(I18n.t('flashcards.results.no_results_to_save')); return; }
-  const name = await chooseProfileModal();
-  if (!name) return;
+/* The write half of saveCurrentResult, split out so the Learner Ladder's auto-save shares it
+   rather than forking the storage logic: push → cap → persist → re-render → button state. */
+function saveResultToProfile(name, result) {
   createProfile(name); // creates if new, sets active
   const db = readProfiles();
   const prof = db.profiles[name];
-  prof.results.push(lastDrillResult);
+  if (!prof) return;
+  prof.results.push(result);
   if (prof.results.length > MAX_RESULTS_PER_PROFILE) prof.results = prof.results.slice(-MAX_RESULTS_PER_PROFILE);
   writeProfiles(db);
   renderProfiles();
   const btn = document.getElementById('saveResultsBtn');
   if (btn) { btn.textContent = I18n.t('flashcards.results.save_button_done', { name: name }); btn.disabled = true; }
+}
+
+async function saveCurrentResult() {
+  if (!lastDrillResult) { alert(I18n.t('flashcards.results.no_results_to_save')); return; }
+  const name = await chooseProfileModal();
+  if (!name) return;
+  saveResultToProfile(name, lastDrillResult);
 }
 
 function renderProfiles() {
@@ -4749,6 +4826,8 @@ function renderProfiles() {
 
   // Results history for active profile
   renderProfileHistory(active);
+  // The ladder's resume hint is per-profile, so it follows every profile switch and save.
+  renderLadderCard();
 }
 
 function renderProfileHistory(name) {
@@ -5154,6 +5233,333 @@ function openWeaknessView(name) {
   fcModalize(ov, box, close, box.querySelector('div[style*="font-weight:700"]'));
 }
 
+/* ═══ Learner Ladder (guided decoding path) ═══
+   Every drill in this tool is teacher-configured; a learner opening the page alone has no
+   answer to "where do I start?". The ladder is a fixed, ordered list of levels, each of
+   which is just a locked-down configuration of the drill machinery that already exists —
+   no second deck generator, no pedagogy engine.
+
+   The contract, borrowed from torah_trainer's _handoutEnter/_handoutExit: the teacher's
+   persisted settings never change. A level snapshots getSettings(), applies its overrides,
+   runs the drill, and restores the snapshot on the way out; saveSettings() is a no-op for
+   the duration, which is what makes the round trip byte-identical. */
+
+/* Letter groups, keyed by the `heb` strings that populate selectedLetters. Levels pin
+   dageshTavEnabled:false, so getDisplayLetters() yields 31 entries and 'ת' unambiguously
+   means normalTav (the savVariant shares the string but only appears when dagesh is on). */
+const _LAD_G1 = ['א','בּ','ב','ג','ד','ה','ו','ז','ח','ט','י'];
+const _LAD_G2 = ['כּ','כ','ך','ל','מ','ם','נ','ן','ס','ע','פּ'];
+const _LAD_G3 = ['פ','ף','צ','ץ','ק','ר','ש','שׂ','ת'];
+const _LAD_SOFIT = ['ך','ם','ן','ף','ץ'];
+// Decoding levels drop the sofits — the same default loadSettings() picks for a fresh install.
+const _LAD_DECODE = _LAD_G1.concat(_LAD_G2, _LAD_G3).filter(h => _LAD_SOFIT.indexOf(h) === -1);
+
+const _LAD_V_AH     = ['a','patah'];
+const _LAD_V_EH     = _LAD_V_AH.concat(['e','tzere']);
+const _LAD_V_EE     = _LAD_V_EH.concat(['i']);
+const _LAD_V_MAIN   = _LAD_V_EE.concat(['o','vcholam','u','shuruk']);   // the 9 isMain:true keys
+const _LAD_V_SHVA   = _LAD_V_MAIN.concat(['sh']);
+const _LAD_V_ALL    = _LAD_V_SHVA.concat(['hpatah','hkamatz','hsegol']);
+const _LAD_V_BLEND1 = ['a','patah','e','i'];
+
+const LADDER_PASS_PCT = 80;   // same threshold as renderProfileHistory's ✓, so the two never disagree
+
+/* Level ids are STABLE STORAGE KEYS (profile.ladder.levels[id]). Reorder, reword or insert
+   levels freely — but never rename or renumber an existing id, or that student's progress
+   silently detaches. Titles/descriptions live in i18n under title_<id> / desc_<id>.
+
+   nameLetter levels still carry a vowel list: generateCard ignores selectedVowels entirely in
+   nameLetterMode, but startPractice's validation does not exempt it, and an empty set fails. */
+const FC_LADDER = [
+  { id:'names1',    mode:1, nameLetter:true,  letters:_LAD_G1,     vowels:_LAD_V_MAIN },
+  { id:'names2',    mode:1, nameLetter:true,  letters:_LAD_G2,     vowels:_LAD_V_MAIN },
+  { id:'names3',    mode:1, nameLetter:true,  letters:_LAD_G3,     vowels:_LAD_V_MAIN },
+  { id:'ah',        mode:1, nameLetter:false, letters:_LAD_DECODE, vowels:_LAD_V_AH },
+  { id:'eh',        mode:1, nameLetter:false, letters:_LAD_DECODE, vowels:_LAD_V_EH },
+  { id:'ee',        mode:1, nameLetter:false, letters:_LAD_DECODE, vowels:_LAD_V_EE },
+  { id:'ohoo',      mode:1, nameLetter:false, letters:_LAD_DECODE, vowels:_LAD_V_MAIN },
+  { id:'shva',      mode:1, nameLetter:false, letters:_LAD_DECODE, vowels:_LAD_V_SHVA },
+  { id:'allvowels', mode:1, nameLetter:false, letters:_LAD_DECODE, vowels:_LAD_V_ALL },
+  { id:'blend2a',   mode:2, nameLetter:false, letters:_LAD_DECODE, vowels:_LAD_V_BLEND1 },
+  { id:'blend2b',   mode:2, nameLetter:false, letters:_LAD_DECODE, vowels:_LAD_V_MAIN },
+  { id:'blend3',    mode:3, nameLetter:false, letters:_LAD_DECODE, vowels:_LAD_V_MAIN },
+];
+
+function _ladderIndexOf(id) { return FC_LADDER.findIndex(l => l.id === id); }
+function ladderTitle(lv) { return I18n.t('flashcards.ladder.title_' + lv.id); }
+function ladderDesc(lv)  { return I18n.t('flashcards.ladder.desc_' + lv.id); }
+
+/* Progress rides inside the existing profile object, so it needs no localStorage key of its
+   own, no AllTools wiring, and no migration — an old profile simply has no `ladder` yet. */
+function readLadderLevels(name) {
+  const p = readProfiles().profiles[name];
+  return (p && p.ladder && p.ladder.levels) ? p.ladder.levels : {};
+}
+function ladderIsPassed(levels, id) {
+  const rec = levels[id];
+  return !!rec && (rec.bestPct ?? 0) >= LADDER_PASS_PCT;
+}
+// Unlock state is DERIVED, never stored — a stored pointer could de-sync across a merge.
+function ladderIsUnlocked(levels, i) { return i === 0 || ladderIsPassed(levels, FC_LADDER[i - 1].id); }
+function ladderNextIndex(levels) {
+  for (let i = 0; i < FC_LADDER.length; i++) if (!ladderIsPassed(levels, FC_LADDER[i].id)) return i;
+  return -1;   // the whole path is complete
+}
+
+/* Merge two profiles' ladders: per level the higher bestPct wins and the EARLIEST passedAt is
+   kept (the date the student first earned it). Shared by renameProfile and mergeProfilesBlob,
+   both of which otherwise rebuild a profile from `results` alone and would drop this field. */
+function mergeLadder(a, b) {
+  const A = (a && a.levels) || {}, B = (b && b.levels) || {};
+  const ids = Object.keys(A).concat(Object.keys(B).filter(k => !(k in A)));
+  if (!ids.length) return undefined;
+  const levels = {};
+  ids.forEach(id => {
+    const x = A[id], y = B[id];
+    if (!x || !y) { levels[id] = Object.assign({}, x || y); return; }
+    const merged = { bestPct: Math.max(x.bestPct || 0, y.bestPct || 0) };
+    const stamps = [x.passedAt, y.passedAt].filter(Boolean).sort();
+    if (stamps.length) merged.passedAt = stamps[0];
+    levels[id] = merged;
+  });
+  return { levels };
+}
+
+function recordLadderResult(name, levelId, pct) {
+  const db = readProfiles();
+  const prof = db.profiles[name];
+  if (!prof) return;
+  if (!prof.ladder || !prof.ladder.levels) prof.ladder = { levels: {} };
+  const rec = prof.ladder.levels[levelId] || { bestPct: 0 };
+  rec.bestPct = Math.max(rec.bestPct || 0, pct);
+  if (!rec.passedAt && pct >= LADDER_PASS_PCT) rec.passedAt = new Date().toISOString();
+  prof.ladder.levels[levelId] = rec;
+  writeProfiles(db);
+}
+
+let _ladderActive = null;   // { levelId, profile, snapshot, recorded } while a ladder drill runs
+
+/* The deck-shaping fields a level pins. Everything NOT listed here — font, size, colour
+   coding, audio, transliteration style, TTS rate — is inherited from the teacher's snapshot,
+   so a ladder drill still looks like their app. Pinning matters: a snapshot carrying
+   otherModeActive, a letter lock or listening mode would quietly produce the wrong deck. */
+function _ladderOverrides(lv) {
+  const noLocks = { 1:{enabled:false,letters:[]}, 2:{enabled:false,letters:[]}, 3:{enabled:false,letters:[]} };
+  const noVowelLocks = { 1:{enabled:false,vowels:[]}, 2:{enabled:false,vowels:[]}, 3:{enabled:false,vowels:[]} };
+  return {
+    mode: lv.mode,
+    nameLetterMode: !!lv.nameLetter,
+    nameLetterShowLetter: true,
+    selectedLetters: lv.letters.slice(),
+    selectedVowels: lv.vowels.slice(),
+    // Every letter carries its own vowel. The app default is {mode}, which puts a shva
+    // connector on the earlier letters (בְּרָ); a first blend drill wants plain CV-CV (בָּרָ).
+    vowelPositions: Array.from({ length: lv.mode }, (_, i) => i + 1),
+    cardCount: 10,
+    dageshTavEnabled: false,
+    vavAsLetter: true,
+    inverse: false,
+    listening: false,
+    otherModeActive: false,
+    anyLetterLock: false, letterLocks: noLocks,
+    anyVowelLock: false,  vowelLocks: noVowelLocks,
+    timerMode: 'off',
+  };
+}
+
+function _ladderEnter(levelId) {
+  const i = _ladderIndexOf(levelId);
+  if (i < 0) return false;
+  const profile = getActiveProfile();
+  if (!profile) return false;
+  const lv = FC_LADDER[i];
+  const snapshot = getSettings();
+  _ladderActive = { levelId, profile, snapshot, recorded: false };
+  applySettings(Object.assign({}, snapshot, _ladderOverrides(lv)));
+  startPractice();
+  // startPractice() alerts and returns on a validation failure or an empty deck. If it never
+  // reached the card screen we'd be stranded mid-ladder with the teacher's settings still
+  // overwritten, so unwind rather than leave the app in that state.
+  if (!document.getElementById('screenCard').classList.contains('active')) { _ladderExit(); return false; }
+  announce(I18n.t('flashcards.ladder.started_announce', { n: i + 1, title: ladderTitle(lv) }));
+  return true;
+}
+
+function _ladderExit() {
+  if (!_ladderActive) return;
+  const snap = _ladderActive.snapshot;
+  // Restore while the guard is still up, so applySettings' ~dozen internal saveSettings()
+  // calls can't persist a half-restored state; then clear it and write once.
+  try { applySettings(snap); } finally { _ladderActive = null; }
+  saveSettings();
+  const strip = document.getElementById('ladderStrip');
+  if (strip) { strip.hidden = true; strip.innerHTML = ''; }
+  renderLadderCard();
+}
+
+/* Redo and Practice-Mistakes replay a deck that is no longer the level's own 10-card draw, so
+   the ladder must stop claiming the outcome. It still owns the SETTINGS until the learner
+   reaches the setup screen, so this drops only the scoring claim, never the snapshot —
+   restoring mid-deck would swap the drill's configuration out from under the open cards. */
+function _ladderDetach() { if (_ladderActive) _ladderActive.detached = true; }
+
+function _ladderActionBtn(key, cls, onClick) {
+  const b = document.createElement('button');
+  b.className = 'btn ' + cls;
+  b.textContent = I18n.t(key);
+  b.addEventListener('click', onClick);
+  return b;
+}
+
+/* Called from showResults() for every drill; renders nothing unless a ladder level is running.
+   The record + auto-save are guarded by `recorded` because showResults is re-entrant — a
+   language switch re-runs it via applyI18n, which must not bank the same drill twice. */
+function renderLadderStrip(pct) {
+  const strip = document.getElementById('ladderStrip');
+  if (!strip) return;
+  if (!_ladderActive || _ladderActive.detached) { strip.hidden = true; strip.innerHTML = ''; return; }
+  const { levelId, profile } = _ladderActive;
+  const i = _ladderIndexOf(levelId);
+  if (i < 0) { strip.hidden = true; return; }
+
+  if (!_ladderActive.recorded) {
+    _ladderActive.recorded = true;
+    recordLadderResult(profile, levelId, pct);
+    // Ladder drills bank themselves, so they feed weakness tracking and the progress report.
+    if (lastDrillResult) saveResultToProfile(profile, lastDrillResult);
+  }
+
+  const passed = pct >= LADDER_PASS_PCT;
+  const isLast = i === FC_LADDER.length - 1;
+  strip.hidden = false;
+  strip.innerHTML = '';
+
+  const line = document.createElement('p');
+  line.className = 'ladder-strip-line';
+  line.textContent = passed
+    ? (isLast ? I18n.t('flashcards.ladder.finished_path') : I18n.t('flashcards.ladder.complete'))
+    : I18n.t('flashcards.ladder.need_pct', { pct: LADDER_PASS_PCT });
+  strip.appendChild(line);
+
+  const row = document.createElement('div');
+  row.className = 'ladder-strip-actions';
+  if (passed && !isLast) {
+    row.appendChild(_ladderActionBtn('flashcards.ladder.next_level', 'primary', () => {
+      const nextId = FC_LADDER[i + 1].id;
+      _ladderExit();
+      if (!_ladderEnter(nextId)) showScreen('screenSetup');
+    }));
+  }
+  if (!passed) {
+    row.appendChild(_ladderActionBtn('flashcards.ladder.try_again', 'primary', () => {
+      _ladderExit();
+      if (!_ladderEnter(levelId)) showScreen('screenSetup');
+    }));
+  }
+  row.appendChild(_ladderActionBtn('flashcards.ladder.back_to_path', 'ghost', () => {
+    showScreen('screenSetup');   // the chokepoint in showScreen exits the ladder for us
+    openLadderMap();
+  }));
+  strip.appendChild(row);
+  announce(line.textContent);
+}
+
+// Resume hint on the setup-screen card — only once there is progress to resume.
+function renderLadderCard() {
+  const resume = document.getElementById('ladderResume');
+  if (!resume) return;
+  const name = getActiveProfile();
+  const levels = name ? readLadderLevels(name) : {};
+  if (!name || !Object.keys(levels).length) { resume.hidden = true; resume.textContent = ''; return; }
+  const idx = ladderNextIndex(levels);
+  resume.hidden = false;
+  resume.textContent = idx < 0
+    ? I18n.t('flashcards.ladder.finished_path')
+    : I18n.t('flashcards.ladder.card_resume', { title: ladderTitle(FC_LADDER[idx]) });
+}
+
+/* Level map. Same modal idiom as openWeaknessView: a built overlay + box, fcModalize for the
+   focus trap, esc() on the one value that is user input (the profile name). Rows are real
+   <button>s so a locked level is `disabled` rather than a click-suppressed div. */
+function openLadderMap() {
+  const name = getActiveProfile();
+  if (!name) {
+    // Progress without an identity is meaningless, so a profile is required up front.
+    chooseProfileModal().then(n => {
+      if (!n) return;
+      createProfile(n); renderProfiles(); openLadderMap();
+    });
+    return;
+  }
+  const levels = readLadderLevels(name);
+  const nextIdx = ladderNextIndex(levels);
+
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
+  const box = document.createElement('div');
+  box.style.cssText = 'background:var(--white,#fff);color:var(--text,#1a2744);max-width:460px;width:100%;border-radius:10px;padding:18px;font-family:inherit;box-shadow:0 10px 40px rgba(0,0,0,0.35);max-height:85vh;display:flex;flex-direction:column;';
+  box.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div style="font-weight:700;font-size:1rem;">${I18n.t('flashcards.ladder.modal_title', { name: esc(name) })}</div>
+      <button data-act="close" aria-label="${esc(I18n.t('flashcards.ladder.close_aria'))}" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:inherit;line-height:1;">×</button>
+    </div>
+    <div id="ladderList" style="overflow-y:auto;flex:1;"></div>`;
+  ov.appendChild(box); document.body.appendChild(ov);
+  const close = () => { if (ov.parentNode) document.body.removeChild(ov); };
+
+  const list = box.querySelector('#ladderList');
+  let focusEl = null;
+  FC_LADDER.forEach((lv, i) => {
+    const rec = levels[lv.id];
+    const passed = ladderIsPassed(levels, lv.id);
+    const unlocked = ladderIsUnlocked(levels, i);
+    const isNext = i === nextIdx;
+
+    const btn = document.createElement('button');
+    btn.className = 'ladder-row' + (passed ? ' passed' : '') + (isNext ? ' next' : '');
+    btn.disabled = !unlocked;
+
+    const glyph = document.createElement('span');
+    glyph.className = 'ladder-glyph';
+    glyph.textContent = passed ? '✓' : unlocked ? '▶' : '🔒';
+    glyph.setAttribute('aria-hidden', 'true');
+
+    const text = document.createElement('span');
+    text.className = 'ladder-row-text';
+    const title = document.createElement('span');
+    title.className = 'ladder-row-title';
+    title.textContent = I18n.t('flashcards.ladder.level_label', { n: i + 1, title: ladderTitle(lv) });
+    const desc = document.createElement('span');
+    desc.className = 'ladder-row-desc';
+    desc.textContent = ladderDesc(lv);
+    text.append(title, desc);
+
+    // The status text sits inside the button, so it is part of the accessible name — a locked
+    // row announces "… Locked" without any hand-built aria-label.
+    const status = document.createElement('span');
+    status.className = 'ladder-row-status';
+    status.textContent = passed   ? I18n.t('flashcards.ladder.status_passed', { pct: rec.bestPct })
+                       : !unlocked ? I18n.t('flashcards.ladder.status_locked')
+                       : rec       ? I18n.t('flashcards.ladder.status_best', { pct: rec.bestPct })
+                       :             I18n.t('flashcards.ladder.status_next');
+
+    btn.append(glyph, text, status);
+    if (unlocked) {
+      btn.addEventListener('click', () => { close(); _ladderEnter(lv.id); });
+      if (isNext) focusEl = btn;
+    } else {
+      btn.title = I18n.t('flashcards.ladder.locked_aria');
+    }
+    list.appendChild(btn);
+  });
+  // Path fully complete: no "next" row exists, so land on the last level instead of the ×.
+  if (!focusEl && nextIdx < 0) focusEl = list.lastElementChild;
+
+  box.querySelector('[data-act=close]').addEventListener('click', close);
+  ov.addEventListener('click', e => { if (e.target === ov) close(); });
+  fcModalize(ov, box, close, box.querySelector('div[style*="font-weight:700"]'), focusEl);
+}
+
 /* ═══ Student progress report (print-only) ═══
    A one-page, parent-conference-ready handout built entirely from what the profile already
    stores. Architecture mirrors printCardSheet(): a print-only host in the markup, a body class
@@ -5349,6 +5755,9 @@ function mergeProfilesBlob(incoming, mode) {
       base.profiles[name].results = base.profiles[name].results
         .sort((a, b) => new Date(a.savedAt) - new Date(b.savedAt))
         .slice(-MAX_RESULTS_PER_PROFILE);
+      // Only `results` is merged above, so an imported backup's ladder needs its own pass.
+      const ladder = mergeLadder(base.profiles[name].ladder, src.ladder);
+      if (ladder) base.profiles[name].ladder = ladder;
     }
   });
   if (inc.activeProfile && base.profiles[inc.activeProfile]) base.activeProfile = inc.activeProfile;
@@ -6059,6 +6468,10 @@ function generateDeck(n) {
    PRACTICE FLOW
    ========================================================================= */
 function showScreen(id) {
+  // A ladder level owns the settings only until the learner is back on the setup screen.
+  // Exiting here covers every route home in one place — the header button, End Practice
+  // Early, and Return to Options — instead of a restore sprinkled at each call site.
+  if (_ladderActive && id === 'screenSetup') _ladderExit();
   document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
@@ -6658,10 +7071,12 @@ function showResults() {
     streakEl.textContent = summary;
   }
 
+  renderLadderStrip(pct);   // no-op unless a Learner Ladder level is running
   showScreen('screenResults');
 }
 
 function redoSameSet() {
+  _ladderDetach();
   currentCards = savedCards.slice();
   currentIndex = 0;
   scores = new Array(currentCards.length).fill(null);
@@ -6676,6 +7091,7 @@ function redoSameSet() {
 }
 function practiceMistakes() {
   if (mistakeIndices.length === 0) return;
+  _ladderDetach();
   currentCards = mistakeIndices.map(i => { const c = { ...currentCards[i] }; delete c.isSkippedReshow; return c; });
   savedCards = currentCards.slice();
   currentIndex = 0;
@@ -6975,6 +7391,9 @@ function wireSetupScreen() {
   document.getElementById('exportBtn').addEventListener('click', exportPresets);
   document.getElementById('importBtn').addEventListener('click', importPresets);
   document.getElementById('copyBtn').addEventListener('click', copyTextarea);
+
+  // Learner Ladder
+  document.getElementById('ladderBtn').addEventListener('click', () => openLadderMap());
 
   // Start
   document.getElementById('startBtn').addEventListener('click', startPractice);

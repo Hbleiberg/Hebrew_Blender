@@ -4011,3 +4011,46 @@ flashcards.sheet.duplex_tip,Prints a matching answer page after each card page. 
 flashcards.sheet.err_empty,No cards to print — choose some letters and vowels first.,אין כרטיסים להדפסה — בחרו קודם אותיות ותנועות.,card-sheet empty-deck toast,
 flashcards.sheet.menu_title,Card sheet options,אפשרויות דף כרטיסים,card-sheet print drop-down heading,REVIEW: machine-drafted HE — confirm
 flashcards.sheet.print_now,Print,הדפיסו,card-sheet drop-down print button,REVIEW: machine-drafted HE — confirm
+flashcards.ladder.card_title,🪜 Learning Path,🪜 מסלול הלמידה,Title on the setup-screen Learner Ladder entry card,leading-emoji
+flashcards.ladder.card_pitch,Not sure where to start? Follow a step-by-step path from letter names to full blends.,"לא בטוחים מאיפה להתחיל? עברו שלב אחר שלב, משמות האותיות ועד צירופים מלאים.",One-line pitch on the ladder entry card,
+flashcards.ladder.card_button,Open Learning Path,פתחו את מסלול הלמידה,Button that opens the ladder level map,
+flashcards.ladder.card_resume,Next: {title},הבא: {title},Resume hint on the entry card naming the next level,has {title}
+flashcards.ladder.modal_title,Learning Path — {name},מסלול הלמידה — {name},Level-map modal title (student profile name),has {name}
+flashcards.ladder.level_label,Level {n}: {title},שלב {n}: {title},Level row heading in the level map,has {n} {title}
+flashcards.ladder.status_next,Start here,התחילו כאן,Status on the next unlocked level (never attempted),
+flashcards.ladder.status_passed,Passed · best {pct}%,עבר · שיא {pct}%,Status on a passed level,has {pct}
+flashcards.ladder.status_best,Best {pct}%,שיא {pct}%,Status on an attempted-but-not-passed level,has {pct}
+flashcards.ladder.status_locked,Locked,נעול,Status on a locked level,
+flashcards.ladder.locked_aria,Locked — finish the level before it,נעול — סיימו קודם את השלב שלפניו,Tooltip explaining why a level row is disabled,
+flashcards.ladder.started_announce,Starting level {n}: {title},מתחילים שלב {n}: {title},Screen-reader announcement when a level drill starts,has {n} {title}
+flashcards.ladder.complete,🎉 Level complete!,🎉 סיימתם את השלב!,Results strip heading after passing a level,leading-emoji
+flashcards.ladder.need_pct,Score {pct}% to unlock the next level.,השיגו {pct}% כדי לפתוח את השלב הבא.,Results strip heading after failing a level,has {pct}
+flashcards.ladder.next_level,Next Level →,לשלב הבא ←,Results strip button advancing to the next level,directional arrow mirrored for RTL
+flashcards.ladder.try_again,Try Again,נסו שוב,Results strip button replaying the same level,
+flashcards.ladder.back_to_path,Back to Path,חזרה למסלול,Results strip button reopening the level map,
+flashcards.ladder.finished_path,You finished the path! 🎉,סיימתם את כל המסלול! 🎉,Shown after the final level and as the entry-card resume line,
+flashcards.ladder.close_aria,Close the learning path,סגירת מסלול הלמידה,aria-label on the level-map close button,aria-label only
+flashcards.ladder.title_names1,Letter Names I,שמות האותיות א׳,Ladder level title,
+flashcards.ladder.desc_names1,Alef through Yud — say the name of each letter.,מאלף עד יוד — אמרו את שם כל אות.,Ladder level description,
+flashcards.ladder.title_names2,Letter Names II,שמות האותיות ב׳,Ladder level title,
+flashcards.ladder.desc_names2,"Kaf through Peh, including their final forms.","מכף עד פא, כולל האותיות הסופיות.",Ladder level description,
+flashcards.ladder.title_names3,Letter Names III,שמות האותיות ג׳,Ladder level title,
+flashcards.ladder.desc_names3,Feh through Tav — the rest of the alef-bet.,מפא עד תו — שאר האלף-בית.,Ladder level description,
+flashcards.ladder.title_ah,First Sounds: AH,צלילים ראשונים: AH,Ladder level title,vowel-sound name AH stays Latin
+flashcards.ladder.desc_ah,One letter with kamatz or patach.,אות אחת עם קמץ או פתח.,Ladder level description,
+flashcards.ladder.title_eh,Add EH & EY,מוסיפים EH ו-EY,Ladder level title,vowel-sound names stay Latin
+flashcards.ladder.desc_eh,Segol and tzere join the AH vowels.,סגול וצירה מצטרפים לתנועות ה-AH.,Ladder level description,
+flashcards.ladder.title_ee,Add EE,מוסיפים EE,Ladder level title,vowel-sound name stays Latin
+flashcards.ladder.desc_ee,Chirik joins the set.,חיריק מצטרף לקבוצה.,Ladder level description,
+flashcards.ladder.title_ohoo,Add OH & OO,מוסיפים OH ו-OO,Ladder level title,vowel-sound names stay Latin
+flashcards.ladder.desc_ohoo,"Holam, vav-holam, kubutz and shuruk complete the main vowels.","חולם, חולם מלא, קובוץ ושורוק משלימים את התנועות העיקריות.",Ladder level description,
+flashcards.ladder.title_shva,Add Shva,מוסיפים שווא,Ladder level title,
+flashcards.ladder.desc_shva,The silent mark joins every main vowel.,סימן השווא מצטרף לכל התנועות העיקריות.,Ladder level description,
+flashcards.ladder.title_allvowels,Every Vowel,כל התנועות,Ladder level title,
+flashcards.ladder.desc_allvowels,"All thirteen, including the hataf vowels.","כל שלוש-עשרה, כולל תנועות החטף.",Ladder level description,
+flashcards.ladder.title_blend2a,Two-Letter Blends I,צירופים בני שתי אותיות א׳,Ladder level title,
+flashcards.ladder.desc_blend2a,"Two vowelled letters, using the first four vowels.","שתי אותיות מנוקדות, עם ארבע התנועות הראשונות.",Ladder level description,
+flashcards.ladder.title_blend2b,Two-Letter Blends II,צירופים בני שתי אותיות ב׳,Ladder level title,
+flashcards.ladder.desc_blend2b,"Two vowelled letters, all main vowels.","שתי אותיות מנוקדות, כל התנועות העיקריות.",Ladder level description,
+flashcards.ladder.title_blend3,Three-Letter Blends,צירופים בני שלוש אותיות,Ladder level title,
+flashcards.ladder.desc_blend3,Three vowelled letters — full decoding practice.,שלוש אותיות מנוקדות — תרגול פענוח מלא.,Ladder level description,
