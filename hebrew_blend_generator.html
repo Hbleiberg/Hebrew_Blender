@@ -10600,6 +10600,11 @@ function initRwLetterGrid() {
       const div = document.createElement('div');
       div.className = 'rw-letter-tile';
       div.dataset.heb = t.heb;
+      // The filter is the source of truth and survives every rebuild (setDageshTav, a language
+      // switch), so re-derive .selected here — before bindTileA11y, which reads the class to seed
+      // aria-pressed. Without this a rebuild left the tiles looking (and announcing) unselected
+      // while rwLetterFilter kept filtering the pool.
+      if (rwLetterFilter.has(t.heb)) div.classList.add('selected');
       div.innerHTML = `<span class="heb" lang="he">${t.heb}</span><span class="name">${t.name}</span>`;
       div.onclick = () => toggleRwLetter(t.heb, div);
       bindTileA11y(div);
