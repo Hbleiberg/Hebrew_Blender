@@ -3882,6 +3882,50 @@ let lockLetters = [new Set(), new Set(), new Set()]; // pos 1, 2, 3
 let lockVowels  = [new Set(), new Set(), new Set()];  // pos 1, 2, 3
 
 // ── COLOR CODING ──
+// ── Localized glyph / vowel names ────────────────────────────────
+// The worksheet.glyphname.* family and the vowel sub/colour families were authored and fully
+// translated but never referenced, so letter and vowel names stayed English in a Hebrew UI.
+// These resolve the EXISTING English name in the data tables to its key and fall back to that
+// same English name on any miss — an unmapped entry degrades to today's behaviour, never to a
+// raw key. That fallback also makes them idempotent: an already-localized name matches no key
+// and is returned unchanged, so a mixed list can be passed through safely.
+// Selector chrome only: the printed worksheet and its answer key never render these
+// (Name-the-Letter prints `combined`, the sound), so the print-stays-English boundary holds.
+function i18nName(prefix, name) {
+  if (!name) return '';
+  if (!window.I18n) return name;
+  const k = prefix + String(name).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+  const v = I18n.t(k);
+  return v === k ? name : v;
+}
+// The sub-labels don't slugify to their keys ("AH sound" is keyed `ah`), so map them explicitly.
+const VOWEL_SUB_KEY = {
+  'AH sound': 'ah', 'EH sound': 'eh', 'EY sound': 'ey', 'EE sound': 'ee',
+  'OH sound': 'oh', 'OO sound': 'oo', 'UH sound': 'uh', 'UH / silent': 'uh',
+  'short AH': 'short_ah', 'short EH': 'short_eh',
+};
+const glyphName = n => i18nName('worksheet.glyphname.', n);
+function vowelSub(sub) {
+  if (!sub || !window.I18n) return sub || '';
+  const slug = VOWEL_SUB_KEY[sub];
+  if (!slug) return sub;
+  const k = 'worksheet.vowels.sub.' + slug, v = I18n.t(k);
+  return v === k ? sub : v;
+}
+// `abbr` is the cramped real-words/lock tile, whose English form uses a NON-BREAKING space so
+// the label can't wrap mid-name. Keep it unbreakable in every language.
+function glyphNameSofit(name, abbr) {
+  const base = glyphName(name), eng = base + '\u00a0' + (abbr ? 'sf' : 'sofit');
+  if (!window.I18n) return eng;
+  const k = 'worksheet.glyphname.sofit_suffix', v = I18n.t(k, { name: base });
+  return v === k ? eng : (abbr ? v.replace(/ /g, '\u00a0') : v);
+}
+// The English colour label carries a teaching mnemonic (<u>A</u>qua = "A for AH"); keep it
+// exactly when the translation IS the English word, else use the plain translated colour.
+function vowelColorLabel(group) {
+  const t = i18nName('worksheet.vowels.color.', group.colorName);
+  return t === group.colorName ? group.colorHtml : esc(t);
+}
 const VOWEL_COLOR_DEFS = [
   { key: 'a',       name: 'Kamatz',       example: 'אָ' },
   { key: 'patah',   name: 'Patach',       example: 'אַ' },
@@ -4115,7 +4159,7 @@ function initVowels() {
       header.className = 'vowel-group-header';
       header.style.cssText = 'font-size:0.68rem;font-weight:700;letter-spacing:0.04em;margin-bottom:0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;';
       const hdrText = document.createElement('span');
-      hdrText.innerHTML = window.I18n ? I18n.t('worksheet.vowels.group_header', {sound: group.sound, color: group.colorHtml}) : (group.sound + ' Sound – ' + group.colorHtml);
+      hdrText.innerHTML = window.I18n ? I18n.t('worksheet.vowels.group_header', {sound: i18nName('worksheet.vowels.sound.', group.sound), color: vowelColorLabel(group)}) : (group.sound + ' Sound – ' + group.colorHtml);
       const arrow = document.createElement('span');
       arrow.className = 'vg-arrow';
       arrow.textContent = '▾';
@@ -4147,7 +4191,7 @@ function initVowels() {
           onchange="toggleVowel('${v.key}', this.checked)">
         <span style="display:flex;align-items:center;gap:6px;">
           <span lang="he" style="font-family:var(--heb-font);font-size:1.4rem;direction:rtl;min-width:24px;text-align:center;">${v.nikud}</span>
-          <span><strong>${v.label}</strong><br><span style="color:var(--muted);font-size:0.72rem">${v.sub}</span></span>
+          <span><strong>${esc(glyphName(v.label))}</strong><br><span style="color:var(--muted);font-size:0.72rem">${esc(vowelSub(v.sub))}</span></span>
         </span>
       `;
       chipsWrap.appendChild(chip);
@@ -4225,7 +4269,7 @@ function initLetters() {
       const div = document.createElement('div');
       div.className = 'letter-tile' + (selectedLetters.has('ו') ? ' selected' : '');
       div.dataset.heb = 'ו';
-      div.innerHTML = `<span class="heb" lang="he">ו</span><span class="name">Vav</span>`;
+      div.innerHTML = `<span class="heb" lang="he">ו</span><span class="name">${esc(glyphName('Vav'))}</span>`;
       div.onclick = () => toggleLetter('ו', div);
       bindTileA11y(div);
       grid.appendChild(div);
@@ -4236,7 +4280,7 @@ function initLetters() {
     const div = document.createElement('div');
     div.className = 'letter-tile' + (selectedLetters.has(l.heb) ? ' selected' : '');
     div.dataset.heb = l.heb;
-    div.innerHTML = `<span class="heb" lang="he">${l.heb}</span><span class="name">${l.name}</span>`;
+    div.innerHTML = `<span class="heb" lang="he">${l.heb}</span><span class="name">${esc(glyphName(l.name))}</span>`;
     div.onclick = () => toggleLetter(l.heb, div);
     bindTileA11y(div);
     grid.appendChild(div);
@@ -4246,7 +4290,7 @@ function initLetters() {
       const sf = document.createElement('div');
       sf.className = 'letter-tile' + (selectedLetters.has(l.sofit) ? ' selected' : '');
       sf.dataset.heb = l.sofit;
-      sf.innerHTML = `<span class="heb" lang="he">${l.sofit}</span><span class="name">${l.name} sofit</span>`;
+      sf.innerHTML = `<span class="heb" lang="he">${l.sofit}</span><span class="name">${esc(glyphNameSofit(l.name))}</span>`;
       sf.onclick = () => toggleLetter(l.sofit, sf);
       bindTileA11y(sf);
       grid.appendChild(sf);
@@ -5547,7 +5591,7 @@ function refreshVowelGroupColors() {
     if (hdr) {
       hdr.style.color = vowelHeaderColor(group, isDark);
       const span = hdr.firstElementChild;
-      if (span) span.innerHTML = window.I18n ? I18n.t('worksheet.vowels.group_header', {sound: group.sound, color: group.colorHtml}) : (group.sound + ' Sound – ' + group.colorHtml);
+      if (span) span.innerHTML = window.I18n ? I18n.t('worksheet.vowels.group_header', {sound: i18nName('worksheet.vowels.sound.', group.sound), color: vowelColorLabel(group)}) : (group.sound + ' Sound – ' + group.colorHtml);
     }
   });
 }
@@ -5701,11 +5745,11 @@ function initColorPickers() {
     applyColorExStyle(ex, getNikudColor(def.key));
     const lbl = document.createElement('span');
     lbl.style.cssText = 'flex:1;font-size:0.75rem;';
-    lbl.textContent = def.name;
+    lbl.textContent = glyphName(def.name);
     const pick = document.createElement('input');
     pick.type = 'color';
     pick.id = `colorPick_${def.key}`;
-    pick.setAttribute('aria-label', def.name);   // the same vowel name the row's label shows
+    pick.setAttribute('aria-label', glyphName(def.name));   // the same vowel name the row's label shows
     pick.value = rgbToHex(getNikudColor(def.key));
     pick.style.cssText = 'width:30px;height:22px;border:none;cursor:pointer;padding:0;background:none;border-radius:3px;';
     pick.addEventListener('input', e => {
@@ -8170,7 +8214,7 @@ function initLockGrids() {
   ];
   const sofitEntries = LETTERS
     .filter(l => l.sofit)
-    .map(l => ({ heb: l.sofit, base: l.sofit, name: l.name + ' sf', sofit: null }));
+    .map(l => ({ heb: l.sofit, base: l.sofit, name: glyphNameSofit(l.name, true), sofit: null }));
 
   pools.forEach((pool, i) => {
     const pos = i + 1;
@@ -8182,7 +8226,7 @@ function initLockGrids() {
       const div = document.createElement('div');
       div.className = 'lock-letter-tile' + (lockLetters[i].has(l.heb) ? ' selected' : '');
       div.dataset.heb = l.heb;
-      div.innerHTML = `<span class="heb" lang="he">${l.heb}</span><span class="name">${l.name}</span>`;
+      div.innerHTML = `<span class="heb" lang="he">${l.heb}</span><span class="name">${esc(glyphName(l.name))}</span>`;
       div.onclick = () => toggleLockLetter(pos, l.heb, div);
       bindTileA11y(div);
       grid.appendChild(div);
@@ -8252,7 +8296,7 @@ function initLockVowelGrids() {
       const div = document.createElement('div');
       div.className = 'lock-vowel-tile' + (set.has(v.key) ? ' selected' : '');
       div.dataset.vkey = v.key;
-      div.innerHTML = `<span class="heb" lang="he">${v.nikud}</span><span class="name">${v.label}</span>`;
+      div.innerHTML = `<span class="heb" lang="he">${v.nikud}</span><span class="name">${esc(glyphName(v.label))}</span>`;
       div.onclick = () => toggleLockVowel(pos, v.key, div);
       grid.appendChild(div);
     });
@@ -10547,9 +10591,9 @@ function initRwLetterGrid() {
     if (l.dageshTav && !dageshTavEnabled) return;
     if (l.savVariant && !dageshTavEnabled) return;
     const tiles = l.heb === 'ו'
-      ? [{ heb: 'ו', name: 'Vav' }]
-      : [{ heb: l.heb, name: l.name }];
-    if (l.sofit) tiles.push({ heb: l.sofit, name: l.name + ' sf' });
+      ? [{ heb: 'ו', name: glyphName('Vav') }]
+      : [{ heb: l.heb, name: glyphName(l.name) }];
+    if (l.sofit) tiles.push({ heb: l.sofit, name: glyphNameSofit(l.name, true) });
     tiles.forEach(t => {
       const div = document.createElement('div');
       div.className = 'rw-letter-tile';
@@ -12748,6 +12792,14 @@ function applyI18n() {
   try { renderQuickStarts(); } catch (e) {}
   try { updateCombosCount(); } catch (e) {}
   try { refreshVowelGroupColors(); } catch (e) {}   // re-localize the vowel-group "Sound" headers
+  // Letter/vowel names resolve at build time, so these three must rebuild on a language switch.
+  // All three read their selection from live state (selectedLetters / selectedVowels /
+  // nikudColorOverrides), so rebuilding preserves what the teacher has chosen.
+  // initLetters APPENDS and does not clear — its other two callers clear first (see
+  // setDageshTav), so this must too or the grid doubles on every switch.
+  try { const _lg = document.getElementById('letterGrid'); if (_lg) { _lg.innerHTML = ''; initLetters(); } } catch (e) {}
+  try { initVowels(); } catch (e) {}          // self-clearing
+  try { initColorPickers(); } catch (e) {}    // self-clearing
   try { updateRwPoolInfo(); } catch (e) {}
   try { updateMatchPoolNote(); } catch (e) {}
   try { initFontSelector(); } catch (e) {}
