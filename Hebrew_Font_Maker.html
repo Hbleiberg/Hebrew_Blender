@@ -2942,6 +2942,7 @@ function tourEnd(completed) {
   if (completed) { try { localStorage.setItem('hebrewFontMaker_tourDone', '1'); } catch (e) {} }
   const opener = _tourOpener; _tourOpener = null;
   if (opener && opener.focus) { try { opener.focus(); } catch (e) {} }
+  if (_autosavePromptDeferred) maybeRestoreAutosave();   // held back so it couldn't cover the tour
 }
 
 function _tourReposition() {
@@ -13519,6 +13520,7 @@ function _autosaveRelTime(iso) {
   const h = Math.round(m / 60); if (h < 24) return h + (h === 1 ? ' hour' : ' hours') + ' ago';
   const d = Math.round(h / 24); return d + (d === 1 ? ' day' : ' days') + ' ago';
 }
+let _autosavePromptDeferred = false;   // set when the restore prompt was held back behind a first-run dialog/tour
 async function maybeRestoreAutosave() {
   let rec = null, data = null, stripped = false;
   try { rec = await autosaveGet(); } catch (e) {}
@@ -13527,6 +13529,13 @@ async function maybeRestoreAutosave() {
     try { const raw = localStorage.getItem('hebrewFontMaker_autosave'); if (raw) { data = ivritSafeParse(raw); stripped = true; } } catch (e) {}
   }
   if (!data || data.format !== 'hebrew-font-maker-project') return;
+  // Don't stack on a first-run dialog or the guided tour — the same deferral maybeShowWelcome()
+  // uses for the mobile warning. Storage cleared unevenly (empty localStorage but a surviving
+  // IndexedDB autosave) otherwise opens the welcome card and this prompt at once.
+  if (document.getElementById('welcomeOverlay').classList.contains('open')
+      || document.getElementById('mobileWarnOverlay').classList.contains('open')
+      || _tourActive) { _autosavePromptDeferred = true; return; }
+  _autosavePromptDeferred = false;
   askModal(I18n.t('fontmaker.modals.continue_title'),
     I18n.t('fontmaker.modals.continue_body', {time: `<b>${_autosaveRelTime((rec && rec.savedAt) || data.savedAt)}</b>`})
     + (stripped ? '<br><span class="warn">' + I18n.t('fontmaker.modals.continue_stripped') + '</span>' : '')
@@ -13678,7 +13687,8 @@ function maybeShowWelcome(){
 function dismissWelcome(openGuide){
   if (document.getElementById('welcomeDontShow').checked) { try { localStorage.setItem('hebrewBlender_welcomeSeen', '1'); } catch(e){} }
   aCloseModal('welcomeOverlay');
-  if (openGuide) tourStart();
+  if (openGuide) { tourStart(); return; }   // tourEnd re-offers any deferred restore prompt
+  if (_autosavePromptDeferred) maybeRestoreAutosave();
 }
 // Apply the current letter's alignment transform to other letters (one undoable batch).
 function openApplyAlign(){
