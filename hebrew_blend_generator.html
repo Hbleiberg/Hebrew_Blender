@@ -8218,9 +8218,15 @@ function initLockGrids() {
     LETTERS.filter(l => base(l) && !SOFIT_CHARS.has(l.heb) && !HAS_SOFIT.has(l.heb) && !VAV_VARIANTS.has(l.heb)),
     LETTERS.filter(l => base(l) && !HAS_SOFIT.has(l.heb) && !VAV_VARIANTS.has(l.heb)),
   ];
+  // `display` carries the ALREADY-localized sofit label; the row builder below must not run it
+  // through glyphName a second time. Double-localizing was harmless on screen (i18nName falls back
+  // to the name it was handed) but it asked for a key built from an output string — "Chaf sf" ->
+  // worksheet.glyphname.chaf_sf in English, and an empty slug in Hebrew, where the localized name
+  // has no ASCII left — so every load logged 5-6 "[i18n] missing key" warnings that would mask a
+  // genuinely missing key in a console audit.
   const sofitEntries = LETTERS
     .filter(l => l.sofit)
-    .map(l => ({ heb: l.sofit, base: l.sofit, name: glyphNameSofit(l.name, true), sofit: null }));
+    .map(l => ({ heb: l.sofit, base: l.sofit, name: l.name, display: glyphNameSofit(l.name, true), sofit: null }));
 
   pools.forEach((pool, i) => {
     const pos = i + 1;
@@ -8232,7 +8238,7 @@ function initLockGrids() {
       const div = document.createElement('div');
       div.className = 'lock-letter-tile' + (lockLetters[i].has(l.heb) ? ' selected' : '');
       div.dataset.heb = l.heb;
-      div.innerHTML = `<span class="heb" lang="he">${l.heb}</span><span class="name">${esc(glyphName(l.name))}</span>`;
+      div.innerHTML = `<span class="heb" lang="he">${l.heb}</span><span class="name">${esc(l.display || glyphName(l.name))}</span>`;
       div.onclick = () => toggleLockLetter(pos, l.heb, div);
       bindTileA11y(div);
       grid.appendChild(div);
