@@ -4307,8 +4307,11 @@ function renderCatTabs() {
   if (project && project.font && project.font.addLadino)       cats.splice(cats.indexOf('punct') + 1, 0, 'ladino');        // Specialized / Yiddish / Ladino sit right after Punctuation
   if (project && project.font && project.font.addYiddish)      cats.splice(cats.indexOf('punct') + 1, 0, 'yiddish');
   if (project && project.font && project.font.addSpecialForms) cats.splice(cats.indexOf('punct') + 1, 0, 'specialforms');
+  // NAMES is the pre-ready / no-I18n fallback only; the fontmaker.tabs.cat_* keys are the source
+  // of truth and are keyed to these same category ids. applyI18n re-runs this on a language switch.
+  const catName = c => esc(window.I18n ? I18n.t('fontmaker.tabs.cat_' + c) : NAMES[c]);
   t.innerHTML = cats.map(c =>
-    `<div class="ctab" data-cat="${c}" role="tab" aria-selected="false" tabindex="-1" onclick="setCatTab('${c}')">${NAMES[c]}</div>`).join('');
+    `<div class="ctab" data-cat="${c}" role="tab" aria-selected="false" tabindex="-1" onclick="setCatTab('${c}')">${catName(c)}</div>`).join('');
   syncCatTabs();
 }
 function applyLayout() {   // Tabbed is the only layout: panels live in #catHost, surfaced via the tab bar.
@@ -13942,6 +13945,9 @@ function applyI18n() {
   try { renderControls(); } catch (e) {}
   try { renderGrids(); } catch (e) {}
   try { updateTabs(); } catch (e) {}     // step-tab labels (accents/nikkud pick) + tick aria strings
+  // Category tab labels are built at init, before I18n.ready — rebuild them here. Read-only:
+  // it re-derives the tab set from project.font and the active tab from catTab, mutating neither.
+  try { renderCatTabs(); } catch (e) {}
   try { updateCurrentGlyphLabel(); } catch (e) {}   // re-localize the "Editing: <glyph> — <name>" indicator
   try { const sv = stage(); if (sv) labelStage(sv, curGlyphLabel()); } catch (e) {}   // refresh the edit-canvas aria-label (renderStage isn't re-run here)
   try { renderNextStepHint(); } catch (e) {}
