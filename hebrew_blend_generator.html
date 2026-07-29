@@ -4000,7 +4000,7 @@ function rebuildTranslitDisplay(scope = 'all') {
   // generateRealWords), so they detach from REAL_WORDS the moment they're cached. Refreshing
   // only the corpus would leave a reuse=true re-render showing the OLD style. Covers the
   // word-list drills (reading / reverse / idpos / vocab / identify) and gematria/fillvowels;
-  // matching, word-search and crossword cache derived structures instead and are untouched.
+  // matching, word-search and crossword cache derived structures and are handled below.
   // Blend-derived items (isReal === false) are skipped — their `translit` already holds a
   // rendered display string, so re-applying would transliterate a transliteration.
   if (typeof rwRenderCache !== 'undefined' && rwRenderCache) {
@@ -4011,6 +4011,45 @@ function rebuildTranslitDisplay(scope = 'all') {
     };
     if (Array.isArray(rwRenderCache.items)) rwRenderCache.items.forEach(refresh);
     if (Array.isArray(rwRenderCache.words)) rwRenderCache.words.forEach(refresh);
+
+    // The remaining three drills cache DERIVED structures, so refreshing word copies alone
+    // never reached them. Each is refreshed in place — never regenerated — because the cache
+    // exists to keep the printed layout matching its QR answer key.
+
+    // Matching: per-version arrays of items whose target strings were baked from `src`.
+    if (Array.isArray(rwRenderCache.versionsItems)) {
+      rwRenderCache.versionsItems.forEach(items => (items || []).forEach(it => {
+        if (!it || !it.src) return;
+        refresh(it.src);
+        it.targetHTML = matchTargetHTML(it.src);
+        it.targetText = matchTargetText(it.src);
+      }));
+    }
+
+    // Word search: the snapshot keeps the word objects themselves, and the word bank reads
+    // translitDisplay straight off them — so a plain refresh reaches it. The grid, placement
+    // and filler letters are untouched.
+    if (rwRenderCache.snap) {
+      (rwRenderCache.snap.placedWords || []).forEach(refresh);
+      (rwRenderCache.snap.chosen || []).forEach(refresh);
+    }
+
+    // Crossword: each word's `clue` is baked at build time, and the two clue lists hold copies
+    // of that string identified by `heb`. Refresh the words, re-derive the clue with the same
+    // rule the builder uses, then push it into the lists. Layout/numbering are untouched.
+    if (rwRenderCache.d) {
+      const d = rwRenderCache.d;
+      const clueByHeb = new Map();
+      [].concat(d.placedWords || [], d.unplaced || []).forEach(w => {
+        if (!w || typeof w !== 'object') return;
+        refresh(w);
+        w.clue = cwClueFor(w);
+        clueByHeb.set(w.heb, w.clue);
+      });
+      [].concat(d.acrossClues || [], d.downClues || []).forEach(e => {
+        if (e && clueByHeb.has(e.heb)) e.clue = clueByHeb.get(e.heb);
+      });
+    }
   }
 }
 
@@ -11015,6 +11054,14 @@ function derange(n) {
 }
 
 // The match-target cell for one word, as an HTML string (values esc()'d).
+// One clue-string rule for the crossword, used both when the puzzle is built and when a
+// transliteration restyle has to re-derive the baked clues (reads cwClueLang at call time).
+function cwClueFor(w) {
+  const tr = w.translitDisplay ?? w.translit ?? '';
+  if (cwClueLang === 'translit') return tr;
+  if (cwClueLang === 'both') return [w.translation, tr].filter(Boolean).join(' / ');
+  return w.translation || '';
+}
 function matchTargetHTML(w) {
   if (matchTarget === 'emoji')    return '<span class="match-target emoji">' + (w._emoji || '') + '</span>';
   if (matchTarget === 'translit') return '<span class="match-target">' + esc(w.translitDisplay ?? w.translit ?? '') + '</span>';
@@ -11076,7 +11123,9 @@ function generateRealWordsMatching(pool, reuse) {
   const versions = Math.max(1, Math.min(40, parseInt(document.getElementById('matchVersions').value) || 1));
   const showKey = document.getElementById('matchAnswerKey').checked;
   const emoji = matchTarget === 'emoji';
-  const toItem = w => ({ heb: w.heb, targetHTML: matchTargetHTML(w), targetText: matchTargetText(w), big: emoji });
+  // `src` retains the source word so a transliteration restyle can re-derive the two baked
+  // target strings without reshuffling the pairing (see rebuildTranslitDisplay).
+  const toItem = w => ({ heb: w.heb, src: w, targetHTML: matchTargetHTML(w), targetText: matchTargetText(w), big: emoji });
   const versionsItems = (reuse === true && rwRenderCache?.drill === 'matching' && rwRenderCache.versionsItems)
     ? rwRenderCache.versionsItems
     : Array.from({ length: versions }, () => rwShuffle(usable).slice(0, N).map(toItem));
@@ -11488,14 +11537,8 @@ function generateCrossword(pool, reuse) {
   const showNikkud = document.getElementById('cwShowNikkud').checked;
   const showBank   = document.getElementById('cwShowWordBank').checked;
   const showKey    = document.getElementById('cwAnswerKey').checked;
-  const clueLang   = cwClueLang;
 
-  const clueFor = (w) => {
-    const tr = w.translitDisplay ?? w.translit ?? '';
-    if (clueLang === 'translit') return tr;
-    if (clueLang === 'both') return [w.translation, tr].filter(Boolean).join(' / ');
-    return w.translation || '';
-  };
+  const clueFor = cwClueFor;   // shared with rebuildTranslitDisplay so a restyle re-clues identically
   const candidatesAll = rwShuffle(pool).map(w => {
     const display = showNikkud ? w.heb : stripNikud(w.heb);
     const cells = splitHebLetters(display);
