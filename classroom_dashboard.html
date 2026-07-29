@@ -1734,6 +1734,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <div class="form-row" style="margin-top:4px;">
       <button class="btn btn-xs" id="currentLocBtn" onclick="useCurrentLocation()" style="width:100%;" data-i18n="dashboard.display.current_location">📍 Current Location</button>
     </div>
+    <!-- A denied location prompt is routine, not exceptional: school-managed devices block
+         geolocation by policy, so a brand-new teacher hits this on first run. It reports inline
+         here (reusing the .schedule-validation/.sched-warn styling) instead of a blocking alert. -->
+    <div id="locNote" class="schedule-validation" role="status" aria-live="polite" style="display:none;"></div>
   </div>
 </div>
 
@@ -3346,9 +3350,27 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     }
   }
 
+  // Inline replacement for the two blocking geolocation alerts. The KEY is remembered, not the
+  // rendered string, so a language switch re-renders a note that is still on screen instead of
+  // leaving it frozen in the previous language (the pattern torah_trainer's setStatus established).
+  let _locNoteKey = null, _locNoteParams = null;
+  function setLocNote(key, params) {
+    _locNoteKey = key || null; _locNoteParams = params || null;
+    const el = document.getElementById('locNote');
+    if (!el) return;
+    el.innerHTML = '';
+    if (!_locNoteKey) { el.style.display = 'none'; return; }
+    const d = document.createElement('div');
+    d.className = 'sched-warn';
+    d.textContent = I18n.t(_locNoteKey, _locNoteParams || undefined);
+    el.appendChild(d);
+    el.style.display = '';
+  }
+
   async function useCurrentLocation() {
+    setLocNote(null);                       // a fresh attempt clears the previous refusal
     if (!navigator.geolocation) {
-      alert(I18n.t('dashboard.weather.geo_unsupported'));
+      setLocNote('dashboard.weather.geo_unsupported');
       return;
     }
     const btn = document.getElementById('currentLocBtn');
@@ -3381,7 +3403,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     }, err => {
       btn.textContent = I18n.t('dashboard.display.current_location');
       btn.disabled = false;
-      alert(I18n.t('dashboard.weather.geo_error', { message: err.message || 'Permission denied' }));
+      setLocNote('dashboard.weather.geo_error', { message: err.message || 'Permission denied' });
     });
   }
 
@@ -3838,6 +3860,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function updateLocation() {
     const v = document.getElementById('locationInput').value.trim();
     if (!v) return;
+    setLocNote(null);                       // typing a city supersedes any geolocation refusal
     settings.location = v;
     delete settings._geoCoords;
     saveSettingsToStorage();
@@ -6879,6 +6902,7 @@ async function onUploadEngFontPick(input){
       try { initFontSelector(); } catch (e) {}           // font-picker section headers build via t()
       try { initEngFontSelector(); } catch (e) {}
       try { initColorPickers(); } catch (e) {}           // vowel rows are named via the glyphname keys; rebuild reads current colours, so it's read-only
+      try { if (_locNoteKey) setLocNote(_locNoteKey, _locNoteParams); } catch (e) {}   // re-render a location note that is still on screen
       try { buildToolbar(document.getElementById('drawerToolbar')); } catch (e) {}      // editor toolbar titles/labels build via t()
       try { buildToolbar(document.getElementById('inplaceToolbarCmds')); } catch (e) {}
       try { updateColTitles(); } catch (e) {}
