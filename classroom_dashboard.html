@@ -2540,6 +2540,27 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     return (settings.vowelColorScheme === 'talam') ? VOWEL_COLOR_DEFS_TALAM : VOWEL_COLOR_DEFS;
   }
 
+  // The dashboard.glyphname.* family (13 keys) was authored and fully translated but never
+  // referenced, so the vowel colour-picker rows in the settings drawer stayed English in a
+  // Hebrew UI — visible label and screen-reader name alike. Mapped off the stable `def.key`
+  // rather than slugified from the English name, because three names ("H. Patach", "H. Kamatz",
+  // "H. Segol") don't slugify to their hataf_* keys, and because `key` is identical in both
+  // colour schemes. Falls back to the English name on any miss, so an unmapped entry degrades to
+  // today's behaviour, never to a raw key. Teacher-facing drawer chrome, so it follows I18n.lang,
+  // not headerLang.
+  const VOWEL_GLYPH_KEY = {
+    a:'kamatz', patah:'patach', hpatah:'hataf_patach', hkamatz:'hataf_kamatz',
+    e:'segol', hsegol:'hataf_segol', tzere:'tzere', i:'chirik', o:'holam',
+    vcholam:'vav_holam', u:'kubutz', shuruk:'shuruk', sh:'shva',
+  };
+  function vowelGlyphName(def){
+    if (!window.I18n) return def.name;
+    const slug = VOWEL_GLYPH_KEY[def.key];
+    if (!slug) return def.name;
+    const k = 'dashboard.glyphname.' + slug, v = I18n.t(k);
+    return v === k ? def.name : v;
+  }
+
   const FS_ENTER = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>';
   const FS_EXIT  = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>';
 
@@ -2931,13 +2952,14 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       const ex = document.createElement('span');
       ex.className = 'color-pick-ex';
       ex.textContent = def.example;
+      const name = vowelGlyphName(def);
       const lbl = document.createElement('span');
       lbl.className = 'color-pick-label';
-      lbl.textContent = def.name;
+      lbl.textContent = name;
       const inp = document.createElement('input');
       inp.type = 'color';
       inp.className = 'color-pick-input';
-      inp.setAttribute('aria-label', def.name);   // a11y: name the picker by its vowel (matches the visible label)
+      inp.setAttribute('aria-label', name);   // a11y: name the picker by its vowel (matches the visible label)
       inp.value = getNikudColor(def.key);
       inp.addEventListener('input', () => {
         if (!settings.nikudColorOverrides) settings.nikudColorOverrides = {};
@@ -6856,6 +6878,7 @@ async function onUploadEngFontPick(input){
       _lastPreviewKey = null; _lastScheduleKey = null; _lastNowNextKey = null;   // bust caches so the schedule preview/countdown/now-next re-render translated
       try { initFontSelector(); } catch (e) {}           // font-picker section headers build via t()
       try { initEngFontSelector(); } catch (e) {}
+      try { initColorPickers(); } catch (e) {}           // vowel rows are named via the glyphname keys; rebuild reads current colours, so it's read-only
       try { buildToolbar(document.getElementById('drawerToolbar')); } catch (e) {}      // editor toolbar titles/labels build via t()
       try { buildToolbar(document.getElementById('inplaceToolbarCmds')); } catch (e) {}
       try { updateColTitles(); } catch (e) {}
