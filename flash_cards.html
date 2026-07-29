@@ -4578,15 +4578,33 @@ function updateStatsBar() {
 const PROFILES_KEY = 'hebrewFlashCards_profiles';
 const MAX_RESULTS_PER_PROFILE = 50;
 
+// The parse is memoized on the exact stored string, because one render of the Teacher Tools
+// panel calls readProfiles() about twice per profile (getActiveProfile + buildItemRow, plus the
+// history/ladder/weakness paths) and a class's saved history is megabytes: re-running the
+// reviver parse per call cost ~2.4 s for 8 students at the 50-drill cap. A different raw string
+// — another tab wrote, or a write failed — misses the cache and re-parses, so this can never
+// serve a stale profile. Every mutating caller writes immediately, so handing back the same
+// object is safe; only writeProfiles may adopt it as the cache.
+let _profRaw = null, _profCache = null;
 function readProfiles() {
   try {
-    const o = ivritSafeParse(localStorage.getItem(PROFILES_KEY) || 'null');
-    if (o && typeof o === 'object' && o.profiles) return o;
+    const raw = localStorage.getItem(PROFILES_KEY) || 'null';
+    if (_profCache && raw === _profRaw) return _profCache;
+    const o = ivritSafeParse(raw);
+    if (o && typeof o === 'object' && o.profiles) { _profRaw = raw; _profCache = o; return o; }
   } catch (e) {}
   return { activeProfile: null, profiles: {} };
 }
 function writeProfiles(o) {
-  try { localStorage.setItem(PROFILES_KEY, JSON.stringify(o)); } catch (e) {}
+  try {
+    const json = JSON.stringify(o);
+    localStorage.setItem(PROFILES_KEY, json);
+    _profRaw = json; _profCache = o;
+  } catch (e) {
+    // Quota (or private-mode) failure: storage and memory now disagree, so drop the cache
+    // rather than let the UI keep showing a state that never reached the disk.
+    _profRaw = null; _profCache = null;
+  }
 }
 function getActiveProfile() {
   const db = readProfiles();
