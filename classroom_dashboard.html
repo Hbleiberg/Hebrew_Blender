@@ -2260,8 +2260,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     </div>
     <div class="color-pick-list" id="colorPickerList" style="display:none;"></div>
     <div class="vowel-scheme-row" id="vowelSchemeRow" style="display:none;">
-      <button class="vowel-scheme-btn active" id="vowelSchemeDefault" onclick="setVowelScheme('default')" data-i18n="dashboard.color.scheme_default">Default</button>
-      <button class="vowel-scheme-btn" id="vowelSchemeTalAm" onclick="setVowelScheme('talam')" data-i18n="dashboard.color.scheme_talam">TaL AM</button>
+      <button class="vowel-scheme-btn active" id="vowelSchemeDefault" aria-pressed="true" onclick="setVowelScheme('default')" data-i18n="dashboard.color.scheme_default">Default</button>
+      <button class="vowel-scheme-btn" id="vowelSchemeTalAm" aria-pressed="false" onclick="setVowelScheme('talam')" data-i18n="dashboard.color.scheme_talam">TaL AM</button>
       <button class="vowel-scheme-btn" id="nikudResetBtn" onclick="resetNikudColors()" data-i18n="dashboard.color.reset">Reset</button>
     </div>
 
@@ -2960,8 +2960,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     const scheme = settings.vowelColorScheme || 'default';
     const d = document.getElementById('vowelSchemeDefault');
     const t = document.getElementById('vowelSchemeTalAm');
-    if (d) d.classList.toggle('active', scheme !== 'talam');
-    if (t) t.classList.toggle('active', scheme === 'talam');
+    // .active alone leaves AT announcing both options identically — mirror it to aria-pressed.
+    if (d) { d.classList.toggle('active', scheme !== 'talam'); d.setAttribute('aria-pressed', String(scheme !== 'talam')); }
+    if (t) { t.classList.toggle('active', scheme === 'talam'); t.setAttribute('aria-pressed', String(scheme === 'talam')); }
   }
   function setVowelScheme(s) {
     settings.vowelColorScheme = s;

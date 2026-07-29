@@ -1543,8 +1543,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         </div>
         <div class="color-pick-list" id="colorPickerList" style="display:none;"></div>
         <div class="form-row vowel-scheme-row" id="colorResetRow" style="display:none;">
-          <button class="vowel-scheme-btn active" id="vowelSchemeDefault" onclick="setVowelScheme('default')" type="button" data-i18n="torah.color.scheme_default">Default</button>
-          <button class="vowel-scheme-btn" id="vowelSchemeTalAm" onclick="setVowelScheme('talam')" type="button" data-i18n="torah.color.scheme_talam">TaL AM</button>
+          <button class="vowel-scheme-btn active" id="vowelSchemeDefault" aria-pressed="true" onclick="setVowelScheme('default')" type="button" data-i18n="torah.color.scheme_default">Default</button>
+          <button class="vowel-scheme-btn" id="vowelSchemeTalAm" aria-pressed="false" onclick="setVowelScheme('talam')" type="button" data-i18n="torah.color.scheme_talam">TaL AM</button>
           <button class="vowel-scheme-btn" onclick="resetNikudColors()" type="button" data-i18n="torah.color.scheme_reset">Reset</button>
         </div>
       </div>
@@ -4376,8 +4376,9 @@ function resetNikudColors() {
 function syncSchemeButtons() {
   const d = document.getElementById('vowelSchemeDefault');
   const t = document.getElementById('vowelSchemeTalAm');
-  if (d) d.classList.toggle('active', settings.vowelColorScheme !== 'talam');
-  if (t) t.classList.toggle('active', settings.vowelColorScheme === 'talam');
+  // .active alone leaves AT announcing both options identically — mirror it to aria-pressed.
+  if (d) { d.classList.toggle('active', settings.vowelColorScheme !== 'talam'); d.setAttribute('aria-pressed', String(settings.vowelColorScheme !== 'talam')); }
+  if (t) { t.classList.toggle('active', settings.vowelColorScheme === 'talam'); t.setAttribute('aria-pressed', String(settings.vowelColorScheme === 'talam')); }
 }
 function setVowelScheme(s) {
   settings.vowelColorScheme = s;

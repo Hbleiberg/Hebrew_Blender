@@ -3476,8 +3476,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                   </div>
 <div id="colorPickerList"></div>
                   <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-top:4px;">
-                    <button id="vowelSchemeDefault" class="color-mode-btn active" onclick="setVowelScheme('default')" data-i18n="worksheet.advanced.scheme.default">Default</button>
-                    <button id="vowelSchemeTalAm"   class="color-mode-btn"        onclick="setVowelScheme('talam')" data-i18n="worksheet.advanced.scheme.talam">TaL AM</button>
+                    <button id="vowelSchemeDefault" aria-pressed="true" class="color-mode-btn active" onclick="setVowelScheme('default')" data-i18n="worksheet.advanced.scheme.default">Default</button>
+                    <button id="vowelSchemeTalAm"   aria-pressed="false" class="color-mode-btn"        onclick="setVowelScheme('talam')" data-i18n="worksheet.advanced.scheme.talam">TaL AM</button>
                     <button class="color-mode-btn" data-noaria onclick="resetNikudColors()" data-i18n="worksheet.advanced.scheme.reset">Reset</button>
                   </div>
                 </div>
@@ -5786,8 +5786,9 @@ function resetNikudColors() {
 function syncSchemeButtons() {
   const d = document.getElementById('vowelSchemeDefault');
   const t = document.getElementById('vowelSchemeTalAm');
-  if (d) d.classList.toggle('active', vowelColorScheme !== 'talam');
-  if (t) t.classList.toggle('active', vowelColorScheme === 'talam');
+  // .active alone leaves AT announcing both options identically — mirror it to aria-pressed.
+  if (d) { d.classList.toggle('active', vowelColorScheme !== 'talam'); d.setAttribute('aria-pressed', String(vowelColorScheme !== 'talam')); }
+  if (t) { t.classList.toggle('active', vowelColorScheme === 'talam'); t.setAttribute('aria-pressed', String(vowelColorScheme === 'talam')); }
 }
 function setVowelScheme(s) {
   vowelColorScheme = s;
