@@ -4056,3 +4056,12 @@ flashcards.ladder.title_blend2b,Two-Letter Blends II,צירופים בני שת�
 flashcards.ladder.desc_blend2b,"Two vowelled letters, all main vowels.","שתי אותיות מנוקדות, כל התנועות העיקריות.",Ladder level description,
 flashcards.ladder.title_blend3,Three-Letter Blends,צירופים בני שלוש אותיות,Ladder level title,
 flashcards.ladder.desc_blend3,Three vowelled letters — full decoding practice.,שלוש אותיות מנוקדות — תרגול פענוח מלא.,Ladder level description,
+dashboard.days.emoji_set_chick,Chicks,אפרוחים,emoji-sequence picker button (egg → chick → hen),aria-label only
+dashboard.days.emoji_set_city,City,עיר,emoji-sequence picker button (sunrise → city → night),aria-label only
+dashboard.days.emoji_set_time,Time,זמן,emoji-sequence picker button (rewind → play → forward),aria-label only
+dashboard.days.emoji_set_arrow,Arrows,חצים,emoji-sequence picker button (up → stop → down),aria-label only
+dashboard.days.emoji_set_plant,Plants,צמחים,emoji-sequence picker button (sprout → potted plant → tree),aria-label only
+dashboard.days.emoji_set_boy,Boy,ילד,emoji-sequence picker button (baby → boy → man),aria-label only
+dashboard.days.emoji_set_girl,Girl,ילדה,emoji-sequence picker button (baby → girl → woman),aria-label only
+flashcards.common.restore_default,Restore default,שחזר ברירת מחדל,size/rate reset button title (mirrors dashboard.common.restore_default),
+flashcards.weaknesses.close_aria,Close,סגור,weakness-view modal close button aria,aria-label only

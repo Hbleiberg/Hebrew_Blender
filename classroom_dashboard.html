@@ -2060,13 +2060,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <div class="form-row">
       <label data-i18n="dashboard.days.emoji_sequence">Emoji sequence</label>
       <div class="emoji-set-btns" id="emojiSetBtns">
-        <button class="emoji-set-btn" data-set="chick">🥚🐣🐔</button>
-        <button class="emoji-set-btn" data-set="city">🌇🏙️🌃</button>
-        <button class="emoji-set-btn" data-set="time">⏪️▶️⏩️</button>
-        <button class="emoji-set-btn" data-set="arrow">🔼⏹️🔽</button>
-        <button class="emoji-set-btn" data-set="plant">🌱🪴🌲</button>
-        <button class="emoji-set-btn" data-set="boy">👶👦🧔‍♂️</button>
-        <button class="emoji-set-btn" data-set="girl">👶👧👩</button>
+        <button class="emoji-set-btn" data-set="chick" aria-label="Chicks" data-i18n-aria-label="dashboard.days.emoji_set_chick">🥚🐣🐔</button>
+        <button class="emoji-set-btn" data-set="city" aria-label="City" data-i18n-aria-label="dashboard.days.emoji_set_city">🌇🏙️🌃</button>
+        <button class="emoji-set-btn" data-set="time" aria-label="Time" data-i18n-aria-label="dashboard.days.emoji_set_time">⏪️▶️⏩️</button>
+        <button class="emoji-set-btn" data-set="arrow" aria-label="Arrows" data-i18n-aria-label="dashboard.days.emoji_set_arrow">🔼⏹️🔽</button>
+        <button class="emoji-set-btn" data-set="plant" aria-label="Plants" data-i18n-aria-label="dashboard.days.emoji_set_plant">🌱🪴🌲</button>
+        <button class="emoji-set-btn" data-set="boy" aria-label="Boy" data-i18n-aria-label="dashboard.days.emoji_set_boy">👶👦🧔‍♂️</button>
+        <button class="emoji-set-btn" data-set="girl" aria-label="Girl" data-i18n-aria-label="dashboard.days.emoji_set_girl">👶👧👩</button>
         <button class="emoji-set-btn" data-set="none" data-i18n="dashboard.days.emoji_none">None</button>
       </div>
     </div>
@@ -2273,6 +2273,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                oninput="document.getElementById('ttsRateVal').textContent = parseFloat(this.value).toFixed(2) + '×'">
         <span id="ttsRateVal" style="font-size:0.72rem;color:var(--text);min-width:36px;text-align:right;">0.75×</span>
         <button class="btn btn-xs btn-secondary" style="padding:2px 6px;font-size:0.65rem;"
+                title="Restore default" data-i18n-title="dashboard.common.restore_default"
+                aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default"
                 onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';settings.ttsRate=0.75;saveSettingsToStorage();">↺</button>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:var(--muted);padding:0 1px;">

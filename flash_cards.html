@@ -1842,7 +1842,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <input type="range" id="ttsRateSlider" aria-labelledby="ttsSpeedLbl" min="0.5" max="1.5" step="0.05" value="0.75" style="flex:1;accent-color:var(--gold);"
                  oninput="document.getElementById('ttsRateVal').textContent = parseFloat(this.value).toFixed(2) + '×'">
           <span id="ttsRateVal" class="bidi-isolate" style="font-size:0.72rem;color:var(--text);min-width:36px;text-align:end;">0.75×</span>
-          <button class="btn sm ghost" style="padding:2px 6px;font-size:0.65rem;" onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';">↺</button>
+          <button class="btn sm ghost" style="padding:2px 6px;font-size:0.65rem;" title="Restore default" data-i18n-title="flashcards.common.restore_default" aria-label="Restore default" data-i18n-aria-label="flashcards.common.restore_default" onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';">↺</button>
         </div>
       </div>
 
@@ -4866,7 +4866,7 @@ function renderProfileHistory(name) {
           <b>${r.pct}%</b> <span class="sub">${esc(I18n.t('flashcards.profile.history_pct_frac', { correct: r.correct, total: r.total }))}</span><br>
           <span class="sub" style="font-size:0.72rem;">${dateStr} · ${describeResultMode(r.settings)}${timeStr}</span>
         </span>
-        <button class="btn sm danger" data-act="del">✕</button>
+        <button class="btn sm danger" data-act="del" aria-label="${esc(I18n.t('flashcards.actions.delete_aria', { name: dateStr }))}">✕</button>
       `;
       li.querySelector('[data-act=del]').addEventListener('click', () => {
         if (!confirm(I18n.t('flashcards.profile.delete_result_confirm'))) return;
@@ -4988,7 +4988,7 @@ function askCardCount(defaultN, maxN) {
     box.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
         <div style="font-weight:700;font-size:1rem;">${esc(I18n.t('flashcards.weaknesses.modal_title'))}</div>
-        <button data-act="cancel" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:inherit;line-height:1;">×</button>
+        <button data-act="cancel" aria-label="${esc(I18n.t('flashcards.weaknesses.cancel'))}" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:inherit;line-height:1;">×</button>
       </div>
       <div style="font-size:0.82rem;line-height:1.5;margin-bottom:12px;opacity:0.9;">${esc(sub)}</div>
       <div id="acQuick" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
@@ -5204,7 +5204,7 @@ function openWeaknessView(name) {
   box.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
       <div style="font-weight:700;font-size:1rem;">${I18n.t('flashcards.weaknesses.view_title', { name: esc(name) })}</div>
-      <button data-act="close" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:inherit;line-height:1;">×</button>
+      <button data-act="close" aria-label="${esc(I18n.t('flashcards.weaknesses.close_aria'))}" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:inherit;line-height:1;">×</button>
     </div>
     <div class="weak-tabs" style="display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:12px;">
       <button class="weak-tab active" data-tab="vowels" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">${esc(I18n.t('flashcards.weaknesses.tab_vowels'))}</button>
