@@ -3497,8 +3497,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                 .ivrit-drop.ivrit-drag{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
               </style>
               <div class="ivrit-mode-toggle">
-                <button type="button" id="ivritModeAuto" class="ivrit-mode-btn active" onclick="setIvritMode('auto')" data-i18n="shared.ivrit.mode_auto">Automatic Input</button>
-                <button type="button" id="ivritModeManual" class="ivrit-mode-btn" onclick="setIvritMode('manual')" data-i18n="shared.ivrit.mode_manual">Manual Input</button>
+                <button type="button" id="ivritModeAuto" class="ivrit-mode-btn active" aria-pressed="true" onclick="setIvritMode('auto')" data-i18n="shared.ivrit.mode_auto">Automatic Input</button>
+                <button type="button" id="ivritModeManual" class="ivrit-mode-btn" aria-pressed="false" onclick="setIvritMode('manual')" data-i18n="shared.ivrit.mode_manual">Manual Input</button>
               </div>
 
               <div id="ivritAuto">
@@ -5335,8 +5335,8 @@ function ivritStatus(msg) { const el = document.getElementById('ivritStatus'); i
 function setIvritMode(mode) {
   const a = document.getElementById('ivritAuto'), mn = document.getElementById('ivritManual');
   const ba = document.getElementById('ivritModeAuto'), bm = document.getElementById('ivritModeManual');
-  if (ba) ba.classList.toggle('active', mode === 'auto');
-  if (bm) bm.classList.toggle('active', mode === 'manual');
+  if (ba) { ba.classList.toggle('active', mode === 'auto'); ba.setAttribute('aria-pressed', mode === 'auto' ? 'true' : 'false'); }
+  if (bm) { bm.classList.toggle('active', mode === 'manual'); bm.setAttribute('aria-pressed', mode === 'manual' ? 'true' : 'false'); }
   if (a)  a.style.display  = mode === 'auto'   ? '' : 'none';
   if (mn) mn.style.display = mode === 'manual' ? '' : 'none';
   try { localStorage.setItem('hebrewBlender_inputMode', mode); } catch (e) {}
