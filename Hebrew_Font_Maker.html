@@ -2505,7 +2505,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.5';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.6';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2812,7 +2812,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -2820,8 +2820,8 @@ function buildAboutBody() {
     const kk = 'fontmaker.changelog.' + v, s = T(kk);
     return (s && s !== kk) ? '<li>' + esc(s) + '</li>' : '';
   }).join('');
-  const cur = T('fontmaker.changelog.v5_5');   // newest release shown on top; older v5_x fall into the history list
-  const v5li = (cur && cur !== 'fontmaker.changelog.v5_5') ? '<li>' + esc(cur) + '</li>' : '';
+  const cur = T('fontmaker.changelog.v5_6');   // newest release shown on top; older v5_x fall into the history list
+  const v5li = (cur && cur !== 'fontmaker.changelog.v5_6') ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
        + '<p>' + esc(T('fontmaker.about.special_thanks')) + '</p>'
        + '<h4>' + esc(T('fontmaker.about.changelog_heading')) + '</h4>'
@@ -12594,20 +12594,35 @@ async function renderMyFontsList() {
   }
   list.forEach(f => {   // rows built via DOM (not interpolated onclick) so names with quotes stay safe
     const row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--border);';
+    row.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--border);';
     const nm = document.createElement('span');
     nm.style.cssText = 'flex:1 1 auto;min-width:0;font-weight:600;font-size:0.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
     nm.textContent = f.name; nm.title = f.name;
     const meta = document.createElement('span');
     meta.style.cssText = 'flex:0 0 auto;font-size:0.72rem;color:var(--muted);';
     meta.textContent = myFontsDate(f.created) + ' · ' + Math.max(1, Math.round((f.size || 0) / 1024)) + ' KB';
+    // Close the payoff loop: building a font is only worth it if you can put it on a worksheet.
+    // The generator's refreshMyFonts() lists this same IndexedDB store at init and applies
+    // hebrewBlender_hebFont if it names one of them — so setting the key IS the handshake and
+    // the generator needs no code. A real <a href> keeps middle-click/new-tab working
+    // (localStorage is shared same-origin, so the font resolves either way).
+    const use = document.createElement('a');
+    use.className = 'tbtn ghost';
+    use.href = 'hebrew_blend_generator.html';
+    use.textContent = I18n.t('fontmaker.modals.myfonts_use_in_generator');
+    use.title = I18n.t('fontmaker.modals.myfonts_use_in_generator');
+    // Its own full-width line: inline, this label is wide enough to crush the font name to an
+    // ellipsis, and the name is the row's most important element. Also matches how the
+    // dictionary presents the same string (a block button, not a row action).
+    use.style.cssText = 'flex:1 0 100%;margin-top:6px;padding:4px 8px;text-decoration:none;text-align:center;box-sizing:border-box;';
+    use.onclick = () => { try { localStorage.setItem('hebrewBlender_hebFont', f.name); } catch (e) {} };
     const dl = document.createElement('button');
     dl.className = 'tbtn ghost'; dl.textContent = '⬇'; dl.title = I18n.t('fontmaker.modals.myfonts_download_title'); dl.style.padding = '4px 8px';
     dl.onclick = () => downloadMyFont(f.name);
     const del = document.createElement('button');
     del.className = 'tbtn ghost'; del.textContent = '🗑'; del.title = I18n.t('fontmaker.modals.myfonts_remove_title'); del.style.padding = '4px 8px';
     del.onclick = () => deleteMyFontUI(f.name);
-    row.append(nm, meta, dl, del);
+    row.append(nm, meta, dl, del, use);
     host.appendChild(row);
   });
 }
