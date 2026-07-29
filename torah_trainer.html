@@ -1143,11 +1143,20 @@ body.fullscreen #fsExitBtn { display: flex; }
     text-decoration-thickness:2px; text-underline-offset:0.4em;
   }
 
-  /* Side-by-side prints WRONG verse pairings: the two columns are independent flows that
-     drift out of sync (measured ~15 verses apart by page 3) and pagination freezes the
-     drift onto paper. Collapse to the existing ≤720px single-column layout — sequential
-     and correct, if not parallel. */
+  /* Side-by-side used to print WRONG verse pairings: the columns are independent block flows
+     on screen, so each breaks at its own point and the rows drift apart on paper (S53 measured
+     ~15 verses out of sync, and collapsed to a single column to make the output truthful).
+     Parallel text is now restored WITHOUT that risk: the column wrappers become display:contents
+     so every cell is a direct grid item, and the builder places each cell on an EXPLICIT grid row
+     shared across columns — a verse's Hebrew, translit and translation are pinned to the same row
+     and therefore cannot drift, whatever the pagination. Verified against real multi-page PDFs.
+     Without a second text there is nothing to align, so that case keeps the single-column collapse. */
   .tt-grid, .tt-grid.has-translit { grid-template-columns:1fr; }
+  .tt-grid.tt-print-parallel[data-print-cols="2"] { grid-template-columns:1fr 1fr; }
+  .tt-grid.tt-print-parallel[data-print-cols="3"] { grid-template-columns:1fr 1fr 1fr; }
+  .tt-grid.tt-print-parallel > .tt-grid-col { display:contents; }
+  /* Row borders come from the cells themselves once the wrappers are gone. */
+  .tt-grid.tt-print-parallel .tt-grid-row { border-bottom:1px solid #ccc; }
 
   /* ── Student handout (transient body classes set by printHandout; the
      teacher's layout is unchanged — side-by-side collapses above). The
@@ -2791,35 +2800,54 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant,
     const hebCount = wordIdxRef.value - firstTwi;
     return { v, firstTwi, hebHtml, hebCount };
   });
-  const cls = withTranslit ? 'tt-grid has-translit' : 'tt-grid';
-  let html = `<div class="${cls}">`;
+  // Print alignment (see the @media print rule): on paper the columns become
+  // `display:contents` so every cell is a direct grid item, and each cell is placed on an
+  // EXPLICIT grid row shared by all columns. That is what keeps a verse's Hebrew, translit and
+  // translation level with each other across a page break — the column-major flows used on
+  // screen drift apart on paper (S53 measured ~15 verses out of sync).
+  // The Hebrew column also emits aliyah dividers, so it has more children than its siblings;
+  // the row map below allocates a row for each divider so the numbering can't skew.
+  let _gr = 2;                      // row 1 is the column headers
+  const rowOf = [], divRow = {};
+  perVerse.forEach(({ v }, i) => {
+    const lbl = `${v.chapter}:${v.verse}`;
+    if (aStartByLabel[lbl] > 1) divRow[lbl] = _gr++;
+    rowOf[i] = _gr++;
+  });
+  const colTranslit = withTranslit ? (withTrans ? 2 : 1) : 0;
+  const colHeb = (withTrans ? 1 : 0) + (withTranslit ? 1 : 0) + 1;
+  // Parallel print only pays off when there IS a second text; otherwise the existing
+  // single-column collapse is kept (an empty reserved column would waste half the page).
+  const parallel = withTrans || withTranslit;
+  const cls = (withTranslit ? 'tt-grid has-translit' : 'tt-grid') + (parallel ? ' tt-print-parallel' : '');
+  let html = `<div class="${cls}" data-print-cols="${colHeb}">`;
   // Translation column (left)
   if (withTrans) {
-    html += `<div class="tt-grid-col tt-col-translation"><h3>English</h3>`;
-    for (const { v } of perVerse) {
-      html += `<div class="tt-grid-row"><span class="tt-vnum">${v.chapter}:${v.verse}</span><span class="tt-cell">${stripHTML(v.translation)}</span></div>`;
-    }
+    html += `<div class="tt-grid-col tt-col-translation"><h3 style="grid-row:1;grid-column:1">English</h3>`;
+    perVerse.forEach(({ v }, i) => {
+      html += `<div class="tt-grid-row" style="grid-row:${rowOf[i]};grid-column:1"><span class="tt-vnum">${v.chapter}:${v.verse}</span><span class="tt-cell">${stripHTML(v.translation)}</span></div>`;
+    });
     html += `</div>`;
   } else {
     html += `<div class="tt-grid-col"></div>`;
   }
   // Translit column (middle) — uses pre-computed Hebrew indices
   if (withTranslit) {
-    html += `<div class="tt-grid-col tt-col-translit"><h3>Transliteration</h3>`;
-    for (const { v, firstTwi, hebCount } of perVerse) {
+    html += `<div class="tt-grid-col tt-col-translit"><h3 style="grid-row:1;grid-column:${colTranslit}">Transliteration</h3>`;
+    perVerse.forEach(({ v, firstTwi, hebCount }, i) => {
       const tr = applyTranslit(v.hebrew);
-      html += `<div class="tt-grid-row"><span class="tt-vnum">${v.chapter}:${v.verse}</span><span class="tt-cell translit">${tokenizeTranslit(tr, firstTwi, hebCount)}</span></div>`;
-    }
+      html += `<div class="tt-grid-row" style="grid-row:${rowOf[i]};grid-column:${colTranslit}"><span class="tt-vnum">${v.chapter}:${v.verse}</span><span class="tt-cell translit">${tokenizeTranslit(tr, firstTwi, hebCount)}</span></div>`;
+    });
     html += `</div>`;
   }
   // Hebrew column (right)
-  html += `<div class="tt-grid-col tt-col-heb"><h3>עִבְרִית</h3>`;
-  for (const { v, hebHtml } of perVerse) {
+  html += `<div class="tt-grid-col tt-col-heb"><h3 style="grid-row:1;grid-column:${colHeb}">עִבְרִית</h3>`;
+  perVerse.forEach(({ v, hebHtml }, i) => {
     const numLabel = `${v.chapter}:${v.verse}`;
     const vkEsc = cssEscape(numLabel);
     const aNum = aStartByLabel[numLabel];
-    if (aNum > 1) html += aliyahDividerHTML(aNum, numLabel);
-    html += `<div class="tt-grid-row" data-vk="${esc(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}>`;
+    if (aNum > 1) html += aliyahDividerHTML(aNum, numLabel, divRow[numLabel]);
+    html += `<div class="tt-grid-row" data-vk="${esc(numLabel)}" style="grid-row:${rowOf[i]};grid-column:${colHeb}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}>`;
     html += `<span class="tt-vnum">${numLabel}<span class="tt-verse-buttons" style="display:flex;flex-direction:column;gap:3px;margin-top:4px;margin-left:0;">`;
     html += `<input type="checkbox" class="tt-bulk-cb" aria-label="${esc(I18n.t('torah.copy.bulk_cb_aria',{verseRef:numLabel}))}"${ttBulkSelected.has(numLabel) ? ' checked' : ''}>`;
     html += `<button class="tt-speak" onclick="speakVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_read_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_read'))}</button>`;
@@ -2829,7 +2857,7 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant,
     html += `</span></span>`;
     html += `<span class="tt-cell heb" lang="he">${hebHtml}</span>`;
     html += `</div>`;
-  }
+  });
   html += `</div>`;
   html += `</div>`;
   return html;
@@ -3098,8 +3126,11 @@ function computeAliyahStarts() {
 }
 // Slim, non-interactive divider row (block; contains no .tt-word so karaoke
 // indexing is untouched). Carries the jump anchor id.
-function aliyahDividerHTML(num, label) {
-  return `<div class="tt-aliyah-divider" id="tt-aliyah-${num}"><span>${esc(I18n.t('torah.reading.aliyah_divider', { n: num, label: label }))}</span></div>`;
+function aliyahDividerHTML(num, label, printRow) {
+  // printRow is supplied by the side-by-side builder so the divider owns a grid row of its own
+  // and spans every column; interlinear/bible-page callers omit it and are unaffected.
+  const st = printRow ? ` style="grid-row:${printRow};grid-column:1 / -1"` : '';
+  return `<div class="tt-aliyah-divider" id="tt-aliyah-${num}"${st}><span>${esc(I18n.t('torah.reading.aliyah_divider', { n: num, label: label }))}</span></div>`;
 }
 // Build the sticky jump bar for the freshly-rendered reading. Chips 1..7 show for
 // a full parsha; otherwise a lone position readout shows only for long readings.
