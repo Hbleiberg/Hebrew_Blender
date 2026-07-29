@@ -4585,13 +4585,40 @@ const MAX_RESULTS_PER_PROFILE = 50;
 // — another tab wrote, or a write failed — misses the cache and re-parses, so this can never
 // serve a stale profile. Every mutating caller writes immediately, so handing back the same
 // object is safe; only writeProfiles may adopt it as the cache.
+// A profiles blob is untrusted input: it arrives from an imported `.ivrit` file or the AllTools
+// bundle, both hand-editable text. A truncated or edited file can carry a `null` result, a
+// `results` that is a string or object instead of an array, or a result whose `cards` is not an
+// array — and each of those throws inside renderProfileHistory / collectMissedCards, which leaves
+// the teacher's whole Results History rendering ZERO rows while the data is still sitting in
+// storage. Sanitising here, at the single read chokepoint, heals an already-stored bad blob and an
+// imported one in one place, so no reader needs its own guard. Deliberately NON-destructive: this
+// never writes, so a teacher's file is never rewritten just because we read it — only entries that
+// cannot be read at all are skipped, never a well-formed result.
+function sanitizeProfiles(db) {
+  const out = { activeProfile: null, profiles: {} };
+  if (!db || typeof db !== 'object') return out;
+  if (typeof db.activeProfile === 'string') out.activeProfile = db.activeProfile;
+  const src = (db.profiles && typeof db.profiles === 'object') ? db.profiles : {};
+  Object.keys(src).forEach(name => {
+    const p = src[name];
+    if (!p || typeof p !== 'object') return;              // a null/scalar profile entry
+    const clean = ivritSafeAssign({}, p);                 // untrusted source — never bare Object.assign
+    clean.results = (Array.isArray(p.results) ? p.results : []).filter(r => r && typeof r === 'object');
+    clean.results.forEach(r => { if (!Array.isArray(r.cards)) r.cards = []; });
+    out.profiles[name] = clean;
+  });
+  return out;
+}
 let _profRaw = null, _profCache = null;
 function readProfiles() {
   try {
     const raw = localStorage.getItem(PROFILES_KEY) || 'null';
     if (_profCache && raw === _profRaw) return _profCache;
     const o = ivritSafeParse(raw);
-    if (o && typeof o === 'object' && o.profiles) { _profRaw = raw; _profCache = o; return o; }
+    if (o && typeof o === 'object' && o.profiles) {
+      const safe = sanitizeProfiles(o);
+      _profRaw = raw; _profCache = safe; return safe;
+    }
   } catch (e) {}
   return { activeProfile: null, profiles: {} };
 }
@@ -5807,7 +5834,10 @@ function flashBackupSave() {
 // Deep-merge an incoming {activeProfile, profiles} blob into the stored one
 function mergeProfilesBlob(incoming, mode) {
   const base = mode === 'replace' ? { activeProfile: null, profiles: {} } : readProfiles();
-  const inc = (incoming && incoming.profiles) ? incoming : { profiles: {} };
+  // Sanitise the INCOMING side too, not just the stored side: the dedupe below reads `r.savedAt`
+  // off every incoming result, so one `null` entry in a hand-edited file would throw here and
+  // abandon the import halfway through.
+  const inc = sanitizeProfiles(incoming);
   Object.keys(inc.profiles || {}).forEach(name => {
     const src = inc.profiles[name];
     if (!base.profiles[name]) {

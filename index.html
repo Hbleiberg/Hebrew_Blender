@@ -559,12 +559,34 @@ function closeIEModal(e) {
 
 // Deep-merge an incoming Flash Cards profiles blob ({activeProfile, profiles}) into storage.
 // replace=true clears existing profiles first. Result lists merge de-duped by savedAt (cap 50).
+// Both sides of this merge are untrusted text (a hand-edited .ivrit / AllTools file, or a store a
+// previous bad import already wrote): a `null` result, a non-array `results`, or a non-array `cards`
+// each throws in Flash Cards' history/weakness renderers, which shows the teacher an EMPTY Results
+// History while the data is still in storage. Coerce the shape on both sides before merging. Kept as
+// its own local copy rather than shared, matching how index.html already carries its own
+// ivritSafeParse and its adapted AllTools engine.
+function sanitizeFcProfiles(db) {
+  const out = { activeProfile: null, profiles: {} };
+  if (!db || typeof db !== 'object') return out;
+  if (typeof db.activeProfile === 'string') out.activeProfile = db.activeProfile;
+  const src = (db.profiles && typeof db.profiles === 'object') ? db.profiles : {};
+  Object.keys(src).forEach(name => {
+    const p = src[name];
+    if (!p || typeof p !== 'object') return;
+    const clean = ivritSafeAssign({}, p);
+    clean.results = (Array.isArray(p.results) ? p.results : []).filter(r => r && typeof r === 'object');
+    clean.results.forEach(r => { if (!Array.isArray(r.cards)) r.cards = []; });
+    out.profiles[name] = clean;
+  });
+  return out;
+}
 function mergeFlashCardProfiles(incoming, replace) {
   const KEY = 'hebrewFlashCards_profiles';
   let base;
   try { base = ivritSafeParse(localStorage.getItem(KEY) || 'null'); } catch (e) { base = null; }
   if (replace || !base || !base.profiles) base = { activeProfile: null, profiles: {} };
-  const inc = (incoming && incoming.profiles) ? incoming : { profiles: {} };
+  else base = sanitizeFcProfiles(base);
+  const inc = sanitizeFcProfiles(incoming);
   Object.keys(inc.profiles || {}).forEach(name => {
     const src = inc.profiles[name];
     if (!base.profiles[name]) { base.profiles[name] = src; return; }
