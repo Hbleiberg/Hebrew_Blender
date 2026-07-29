@@ -13194,12 +13194,12 @@ const TPL_INK  = '#5aa9de';                       // light blue — prints visib
 const TEMPLATE_SPECS = {
   letters: { kind:'letters', title:'Hebrew Letters',      cols:4, rowsPerPage:5,
              items: LETTERS.filter(L => L.cat !== 'punct').map(L => ({ cp:L.cp, name:L.name, cls:null })) },  // 27 → 2 pages (roomy boxes)
-  nikkud:  { kind:'nikkud',  title:'Vowels (Nikkud)',     cols:4, rowsPerPage:4,
-             items: NIKKUD_MARKS.map(m => ({ cp:m.cp, name:m.name, cls:m.cls })) },   // 16 → 1 page
+  nikkud:  { kind:'nikkud',  title:'Vowels (Nikkud)',     cols:4, rowsPerPage:5,
+             items: NIKKUD_MARKS.map(m => ({ cp:m.cp, name:m.name, cls:m.cls })) },   // 17 → 1 page (20 slots)
   trop:    { kind:'trop',    title:'Trop (Cantillation)', cols:5, rowsPerPage:7,
              items: TROP_DEFS.map(t => ({ cp:t[0], name:t[1], cls:t[2] })) },         // 31 → 1 page
-  punct:   { kind:'punct',   title:'Punctuation & More',  cols:5, rowsPerPage:5,
-             items: LETTERS.filter(L => L.cat === 'punct').map(L => ({ cp:L.cp, name:L.name, cls:null })) },
+  punct:   { kind:'punct',   title:'Punctuation & More',  cols:5, rowsPerPage:6,
+             items: LETTERS.filter(L => L.cat === 'punct').map(L => ({ cp:L.cp, name:L.name, cls:null })) },   // 27 → 1 page (30 slots)
   englishletters: { kind:'latin', title:'English Letters', cols:6, rowsPerPage:5,
              items: ENGLISH_LETTERS.map(E => ({ cp:E.cp, name:String.fromCodePoint(parseInt(E.cp,16)), cls:null })) },   // 52 → 2 pages
 };
