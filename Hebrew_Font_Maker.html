@@ -1217,7 +1217,7 @@
   <div class="modal me-modal" role="dialog" aria-modal="true" aria-labelledby="meTitle">
     <h3 id="meTitle" data-i18n="fontmaker.modals.markedit_title">Edit mark shape</h3>
     <div class="mode-toggle" style="margin-bottom:10px;">
-      <button class="mode-btn" id="meModeEditor" onclick="meSetMode('editor')" aria-pressed="true" data-i18n="fontmaker.modals.markedit_mode_editor">Simple editor</button>
+      <button class="mode-btn active" id="meModeEditor" onclick="meSetMode('editor')" aria-pressed="true" data-i18n="fontmaker.modals.markedit_mode_editor">Simple editor</button>
       <button class="mode-btn" id="meModeUpload" onclick="meSetMode('upload')" aria-pressed="false" data-i18n="fontmaker.modals.markedit_mode_upload">Upload image</button>
     </div>
     <div id="meEditorSection">
@@ -8765,7 +8765,7 @@ function renderWideFormControls(pc) {
   return `<div class="ws-side-title">${esc(precompName(pc))}</div>
     <div class="hint" style="font-size:0.66rem;">Auto-composed from your traced ${bases.map(esc).join(' + ')}. The <b>Width</b> slider both adds side space and stretches the outline — saved automatically.</div>
     <hr class="ctl-divider">
-    <div class="inline">Width <input type="range" min="100" max="250" step="1" value="${wPct}" oninput="setPrecompWidth(this.value)" onchange="udBurstCommit();renderControls();renderGrids()"> <span id="pcWidthV" class="readout">${wPct}%</span></div>
+    <div class="inline">${esc(window.I18n ? I18n.t('fontmaker.panels.width') : 'Width')} <input type="range" min="100" max="250" step="1" value="${wPct}" oninput="setPrecompWidth(this.value)" onchange="udBurstCommit();renderControls();renderGrids()" aria-label="${esc(window.I18n ? I18n.t('fontmaker.panels.width') : 'Width')}"> <span id="pcWidthV" class="readout">${wPct}%</span></div>
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
       ${isOver ? `<button class="ctl-btn" onclick="resetPrecompWidth()">Reset width</button>` : `<span class="hint" style="font-size:0.62rem;">Default width — drag the slider to customize.</span>`}
     </div>
@@ -10331,16 +10331,16 @@ function renderTraceLeft(L, l) {
   L.innerHTML = `
     <div class="ws-side-title">${I18n.t('fontmaker.panels.trace_title', {name: esc(gName(l.name))})}</div>
     <div class="side-slider-label">${I18n.t('fontmaker.panels.ink_threshold')} <span id="thV" class="readout">${l.binThreshold}</span></div>
-    <input type="range" class="side-slider" min="1" max="254" value="${l.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()">
+    <input type="range" class="side-slider" min="1" max="254" value="${l.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.ink_threshold'))}">
     <label class="chk"><input type="checkbox" ${l.invert?'checked':''} onchange="liveInvert(this.checked)"> ${I18n.t('fontmaker.panels.invert')}</label>
     ${ (l.source && l.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${itemFlattenOn(l)?'checked':''} onchange="liveFlatten(this.checked)" aria-label="${esc(I18n.t('fontmaker.panels.even_lighting_aria'))}"> ${I18n.t('fontmaker.panels.even_lighting')}</label>` : '' }
     <div class="side-slider-label">${I18n.t('fontmaker.panels.detail')} <span id="epV" class="readout">${detail}</span></div>
-    <input type="range" class="side-slider" min="0" max="100" step="1" value="${detail}" oninput="liveDetail(this.value)" onchange="udBurstCommit()">
+    <input type="range" class="side-slider" min="0" max="100" step="1" value="${detail}" oninput="liveDetail(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.detail'))}">
     <div class="side-slider-label">${I18n.t('fontmaker.panels.corners')} <span id="cnV" class="readout">${corner}</span></div>
-    <input type="range" class="side-slider" min="0" max="90" step="1" value="${corner}" oninput="liveCorners(this.value)" onchange="udBurstCommit()">
+    <input type="range" class="side-slider" min="0" max="90" step="1" value="${corner}" oninput="liveCorners(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.corners'))}">
     ${ (l.source && l.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${l.outlineOnly?'checked':''} onchange="liveOutlineOnly(this.checked)"> ${I18n.t('fontmaker.panels.outline_only')}</label>` : '' }
     ${ (l.source && l.source.dataUrl && l.outlineOnly) ? `<div class="side-slider-label">${I18n.t('fontmaker.panels.line_weight')} <span id="lwV" class="readout">${Math.round(l.lineWeight!=null?l.lineWeight:70)}</span></div>
-    <input type="range" class="side-slider" min="10" max="250" step="1" value="${Math.round(l.lineWeight!=null?l.lineWeight:70)}" oninput="liveLineWeight(this.value)" onchange="udBurstCommit()">
+    <input type="range" class="side-slider" min="10" max="250" step="1" value="${Math.round(l.lineWeight!=null?l.lineWeight:70)}" oninput="liveLineWeight(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.line_weight'))}">
     <div class="ctl-row"><button class="ctl-btn" onclick="applyOutlineToAll()">${I18n.t('fontmaker.panels.apply_outline_all')}</button></div>` : '' }
     <div class="ctl-row">
       <button class="ctl-btn primary" onclick="traceCurrent()">${I18n.t('fontmaker.panels.retrace')}</button>
@@ -10460,7 +10460,7 @@ function renderAnchorLeft(L, l) {
       <div class="hint" style="font-size:0.6rem;text-align:center;">Sets where <b>${tName}</b> sits across every letter. Position tweaks belong to the column (Left / Center / Right) — and stay with it if you switch sides.</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;gap:6px;">
         <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">${I18n.t('fontmaker.panels.default_spread')}</span>
-        <input type="range" id="tropSpread" min="0" max="500" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" onchange="udBurstCommit();renderControls()" style="flex:1;">
+        <input type="range" id="tropSpread" min="0" max="500" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" onchange="udBurstCommit();renderControls()" style="flex:1;" aria-label="${esc(I18n.t('fontmaker.panels.default_spread'))}">
         <span id="tropSpreadV" class="readout">${tOff}</span>
       </div>
       <div class="hint" style="font-size:0.6rem;text-align:center;">Default distance Left/Right marks shift from center, on all letters (per-letter tweaks come after).</div>
@@ -10481,7 +10481,7 @@ function renderAnchorLeft(L, l) {
       </div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;gap:6px;">
         <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">${I18n.t('fontmaker.panels.pair_distance')}</span>
-        <input type="range" id="vowelPairDx" min="0" max="300" step="10" value="${Math.abs(pcfg.dx)}" oninput="setVowelPairDx(this.value)" onchange="udBurstCommit();renderControls()" style="flex:1;">
+        <input type="range" id="vowelPairDx" min="0" max="300" step="10" value="${Math.abs(pcfg.dx)}" oninput="setVowelPairDx(this.value)" onchange="udBurstCommit();renderControls()" style="flex:1;" aria-label="${esc(I18n.t('fontmaker.panels.pair_distance'))}">
         <span id="vowelPairDxV" class="readout">${Math.abs(pcfg.dx)}</span>` : '');
         })(vowelPairCfg(want))}
       </div>
