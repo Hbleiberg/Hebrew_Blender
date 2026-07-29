@@ -4137,7 +4137,8 @@ function pickPrecompForm(target) {
   if (untraced) {
     const nm = (letterMeta(untraced) && letterMeta(untraced).name) || ('U+' + untraced);
     selectItem('letter', untraced);
-    status('Trace ' + nm + ' first — it builds ' + precompName(pc) + '. Jumped there.');
+    status(window.I18n ? I18n.t('fontmaker.status.trace_first_jump', {name: nm, form: precompName(pc)})
+                      : 'Trace ' + nm + ' first — it builds ' + precompName(pc) + '. Jumped there.');
     return;
   }
   curKind = 'letter'; curCp = precompBaseCp(pc); precompTarget = target;
@@ -5119,7 +5120,7 @@ function combinedNavHTML() {
   // Auto-detect lives here, right under the sheet it operates on (raster sheets only). Moved out of
   // the left upload panel so it sits where you're already looking when boxing letters.
   const auto = !svgUploadOn()
-    ? `<button class="ctl-btn cn-autodetect" onclick="openAutoDetect()" title="Find every letter on this sheet automatically and review the proposed boxes">▦ Auto-detect letters</button>`
+    ? `<button class="ctl-btn cn-autodetect" onclick="openAutoDetect()" title="${esc((window.I18n ? I18n.t('fontmaker.panels.autodetect_btn_title') : 'Find every letter on this sheet automatically and review the proposed boxes'))}">▦ Auto-detect letters</button>`
     : '';
   return `<div class="combined-nav">${prev}${counter}${next}${rm}${auto}</div>`;
 }
@@ -9857,7 +9858,7 @@ function renderKerningSection() {
       <span style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
         ${badge}
         <span class="readout">${k.value>0?'+':''}${k.value|0}</span>
-        <button class="ctl-btn" style="padding:2px 8px;" title="Delete" onclick="event.stopPropagation();deleteKernPair(${i})">✕</button>
+        <button class="ctl-btn" style="padding:2px 8px;" title="${esc((window.I18n ? I18n.t('fontmaker.panels.kern_delete_title') : 'Delete'))}" onclick="event.stopPropagation();deleteKernPair(${i})">✕</button>
       </span></div>`;
   });
   box.innerHTML = `
@@ -10483,7 +10484,7 @@ function renderAnchorLeft(L, l) {
       <div class="hint" style="font-size:0.6rem;text-align:center;">Default distance Left/Right marks shift from center, on all letters (per-letter tweaks come after).</div>
       ${(nCustom => nCustom ? `
       <div class="hint" style="font-size:0.6rem;text-align:center;color:var(--gold);">${nCustom} letter${nCustom === 1 ? "'s" : "s'"} hand-tuned side positions kept — the slider only moves columns still at the default.</div>
-      <div class="ctl-row" style="justify-content:center;margin-top:2px;"><button class="ctl-btn" onclick="resetTropSideColumns()" title="Re-seed every letter's Left/Right columns from its center ± spread (undoable)">Reset all side positions</button></div>` : '')(tropCustomSideCount())}
+      <div class="ctl-row" style="justify-content:center;margin-top:2px;"><button class="ctl-btn" onclick="resetTropSideColumns()" title="${esc((window.I18n ? I18n.t('fontmaker.panels.reset_side_positions_title') : "Re-seed every letter's Left/Right columns from its center ± spread (undoable)"))}">Reset all side positions</button></div>` : '')(tropCustomSideCount())}
       <hr class="ctl-divider">
       <div class="ws-side-title">${I18n.t('fontmaker.panels.pair_title')}</div>
       <div class="ctl-row" style="margin-top:6px;justify-content:center;gap:5px;flex-wrap:wrap;">${
@@ -12447,7 +12448,8 @@ async function doExport(fmt) {
       const ures = JSON.parse(pyodide.runPython('hfm_build_ufo(hfm_spec_json)'));
       if (ures.error) { status(''); _setVersion(_prevVersion); askModal(I18n.t('fontmaker.modals.ufo_fail_title'), '<span class="warn">'+ures.error+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); return; }
       downloadBlob(new Blob([b64ToBytes(ures.zip_b64)], {type:'application/zip'}), spec.ufoName + '.ufo.zip');
-      status('Exported ' + spec.ufoName + '.ufo.zip ✓ (UFO source — cubic curves, anchors & features.fea)');
+      status(window.I18n ? I18n.t('fontmaker.status.exported_ufo', {name: spec.ufoName})
+                      : 'Exported ' + spec.ufoName + '.ufo.zip ✓ (UFO source — cubic curves, anchors & features.fea)');
       offerSaveToMyFonts();
       return;
     }
@@ -12490,7 +12492,8 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
   window._lastFontBytes = bytes;   // for preview PDF
   if (fmt === 'ttf') {
     downloadBlob(new Blob([bytes], {type:'font/ttf'}), fam + '.ttf');
-    status('Exported ' + fam + '.ttf' + (gateSkipped ? ' (shaping check skipped)' : ' ✓'));
+    status(window.I18n ? I18n.t(gateSkipped ? 'fontmaker.status.exported_ttf_skipped' : 'fontmaker.status.exported_ttf', {name: fam})
+                    : 'Exported ' + fam + '.ttf' + (gateSkipped ? ' (shaping check skipped)' : ' ✓'));
     offerSaveToMyFonts(true);   // single-file → offer LICENSE.txt reliably from the success screen
     return true;
   }
@@ -12518,7 +12521,8 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
     pyodide.globals.set('hfm_zip_json', JSON.stringify(entries));
     const zb64 = pyodide.runPython('hfm_zip(hfm_zip_json)');
     downloadBlob(new Blob([b64ToBytes(zb64)], {type:'application/zip'}), fam + '.zip');
-    status('Exported ' + fam + '.zip ✓ (TTF + WOFF2 + @font-face CSS + LICENSE)');
+    status(window.I18n ? I18n.t('fontmaker.status.exported_zip', {name: fam})
+                    : 'Exported ' + fam + '.zip ✓ (TTF + WOFF2 + @font-face CSS + LICENSE)');
     offerSaveToMyFonts();
     return true;
   } catch (err) {
@@ -13391,7 +13395,7 @@ async function loadProjectFile(file) {
     const u8 = new Uint8Array(buf);
     let text;
     if (u8[0] === 0x1f && u8[1] === 0x8b) {                     // gzip magic → .hebrewfont
-      if (typeof DecompressionStream === 'undefined') { status('This browser can’t open compressed projects.'); return; }
+      if (typeof DecompressionStream === 'undefined') { status((window.I18n ? I18n.t('fontmaker.status.no_compression') : 'This browser can’t open compressed projects.')); return; }
       text = await gunzipText(buf);
     } else {
       text = new TextDecoder().decode(buf);                     // legacy plain-JSON .json
