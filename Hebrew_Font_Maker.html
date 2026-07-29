@@ -4887,14 +4887,24 @@ function renderAdOverlay() {
   adConfirmHide(); adPickerClose();
   renderAdSummary(); renderAdStage();
 }
+// The auto-detect modal is rebuilt by its own render functions without re-running
+// applyStaticI18n, so each string resolves inline at render time (the S126 guarded pattern).
+// Never returns a raw key: falls back to the English text if I18n isn't ready yet or the key is
+// missing (the `detect_canvas_aria` idiom just below — see the pre-ready-i18n pattern in the ledger).
+function _adT(k, fallback, p) {
+  const key = 'fontmaker.ad.' + k;
+  if (!window.I18n) return fallback;
+  const v = I18n.t(key, p);
+  return v === key ? fallback : v;
+}
 function renderAdSummary() {
   const el = document.getElementById('adSummary'); if (!el) return;
   const boxes = adState.boxes;
   const assigned = boxes.filter(b => b.cp && !b.skip);
   const applyBtn = document.getElementById('adApplyBtn');
   if (!boxes.length) {
-    el.innerHTML = '<span class="ad-warn">No letters found.</span> Try a lower ink threshold or Separation 0, '
-      + 'and check that the photo is dark ink on light paper. You can also close this and box letters by hand.';
+    el.innerHTML = '<span class="ad-warn">' + esc(_adT('no_letters_found',
+      'No letters found. Try a lower ink threshold or Separation 0, and check that the photo is dark ink on light paper. You can also close this and box letters by hand.')) + '</span>';
     if (applyBtn) applyBtn.disabled = true;
     return;
   }
@@ -4902,11 +4912,17 @@ function renderAdSummary() {
   const assignedCps = new Set(assigned.map(b => b.cp));
   const unboxed = _adCoreLetters().filter(L => !assignedCps.has(L.cp)).length;
   const unassigned = boxes.filter(b => !b.cp && !b.skip).length;
-  let h = `<b>${boxes.length}</b> box(es) found · <b>${expected}</b> letters expected — <b>${assigned.length}</b> will be assigned.`;
-  if (adState.matched) h += ` <span class="ad-match">Matched: ${esc(adState.matched.label)} template layout (page ${adState.matched.page + 1} of ${adState.matched.pages})</span>`;
-  if (unassigned) h += ` <span class="ad-warn">${unassigned} box(es) have no letter (dashed red)</span> — select one to assign it.`;
-  if (unboxed) h += ` ${unboxed} letter(s) have no box — box them by hand afterwards.`;
-  h += ' Select a box to reassign, skip, or remove it.';
+  let h = esc(_adT('summary_counts',
+    `${boxes.length} box(es) found · ${expected} letters expected — ${assigned.length} will be assigned.`,
+    { boxes: boxes.length, expected, assigned: assigned.length }));
+  if (adState.matched) h += ` <span class="ad-match">${esc(_adT('matched',
+    `Matched: ${adState.matched.label} template layout (page ${adState.matched.page + 1} of ${adState.matched.pages})`,
+    { label: adState.matched.label, page: adState.matched.page + 1, pages: adState.matched.pages }))}</span>`;
+  if (unassigned) h += ` <span class="ad-warn">${esc(_adT('unassigned',
+    `${unassigned} box(es) have no letter (dashed red) — select one to assign it.`, { count: unassigned }))}</span>`;
+  if (unboxed) h += ` ${esc(_adT('unboxed',
+    `${unboxed} letter(s) have no box — box them by hand afterwards.`, { count: unboxed }))}`;
+  h += ' ' + esc(_adT('select_reassign', 'Select a box to reassign, skip, or remove it.'));
   el.innerHTML = h;
   if (applyBtn) applyBtn.disabled = !assigned.length;
 }
@@ -4929,7 +4945,7 @@ function renderAdStage(focusSel) {
   // Root SVG carries explicit xmlns + width/height attributes AND a CSS aspect-ratio so its intrinsic
   // size is unambiguous in every engine (belt-and-braces for Firefox height:auto sizing); the CSS
   // width:100%;height:auto still drives responsive display and overrides the attributes for layout.
-  let h = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;aspect-ratio:${W} / ${H};display:block;" role="group" aria-label="Detected letter boxes over the sheet">`;
+  let h = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;aspect-ratio:${W} / ${H};display:block;" role="group">`;
   h += `<image href="${adState.url}" x="0" y="0" width="${W}" height="${H}"/>`;
   adState.boxes.forEach(b => {
     const r = b.rect, sel = b.id === adState.selId;
@@ -4990,17 +5006,17 @@ function adPickerOpen(boxId) {
   const traced = new Set(project.letters.filter(l => l.contours || (l.source && l.source.dataUrl)).map(l => l.codepoint));
   const core = _adCoreLetters();
   const opts = core.filter(L => !traced.has(L.cp)).concat(core.filter(L => traced.has(L.cp)));
-  let h = `<div class="ad-pick-title">${esc(window.I18n ? I18n.t('fontmaker.adpick.box_title', {id: b.id}) : 'Box ' + b.id + ' — assign a letter')}</div><div class="ad-pick-grid" role="group" aria-label="${esc(window.I18n ? I18n.t('fontmaker.aria.assign_box', {id: b.id}) : 'Assign box ' + b.id)}">`;
+  let h = `<div class="ad-pick-title">${esc(_adT('pick_title', 'Box ' + b.id + ' — assign a letter', {id: b.id}))}</div><div class="ad-pick-grid" role="group" aria-label="${esc(window.I18n ? I18n.t('fontmaker.aria.assign_box', {id: b.id}) : 'Assign box ' + b.id)}">`;
   opts.forEach(L => {
     const taken = traced.has(L.cp);
     h += `<button type="button" class="${taken ? 'taken' : ''}" onclick="adAssign(${b.id}, '${L.cp}')"`
-      + `${taken ? ` title="${esc(L.name)} already has an image or trace — assigning will replace it"` : ''}>`
+      + `${taken ? ` title="${esc(_adT('pick_taken_title', L.name + ' already has an image or trace — assigning will replace it', {name: L.name}))}"` : ''}>`
       + `<span class="heb" lang="he">${String.fromCodePoint(parseInt(L.cp, 16))}</span> ${esc(L.name)}${taken ? ' •' : ''}</button>`;
   });
-  h += `<button type="button" onclick="adSkipBox(${b.id})">${b.skip ? 'Un-skip' : 'Skip this box'}</button>`;
-  h += `<button type="button" onclick="adUnassign(${b.id})">Unassign</button>`;
-  h += `<button type="button" onclick="adRemoveBox(${b.id})">Remove box</button>`;
-  h += `<button type="button" onclick="adPickerClose(true)">Close</button></div>`;
+  h += `<button type="button" onclick="adSkipBox(${b.id})">${esc(b.skip ? _adT('unskip_box', 'Un-skip') : _adT('skip_box', 'Skip this box'))}</button>`;
+  h += `<button type="button" onclick="adUnassign(${b.id})">${esc(_adT('unassign', 'Unassign'))}</button>`;
+  h += `<button type="button" onclick="adRemoveBox(${b.id})">${esc(_adT('remove_box', 'Remove box'))}</button>`;
+  h += `<button type="button" onclick="adPickerClose(true)">${esc(_adT('close', 'Close'))}</button></div>`;
   el.innerHTML = h; el.hidden = false;
   const first = el.querySelector('button'); if (first) first.focus();
 }
