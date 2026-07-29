@@ -1260,6 +1260,21 @@ const DICT_VOWEL_GROUPS = [
     ]
   },
 ];
+/* The group tables above hold English source data ('AH', 'Aqua') that a localized lookup maps —
+   the same arrangement as the generator, whose helpers these mirror. Keys already exist and are
+   translated (worksheet.vowels.sound.* / worksheet.vowels.color.*); a missing one falls back to
+   the English source rather than showing a raw key. */
+function i18nName(prefix, name) {
+  if (!name) return '';
+  if (!window.I18n) return name;
+  const k = prefix + String(name).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+  const v = I18n.t(k);
+  return v === k ? name : v;
+}
+function vowelColorLabel(group) {
+  const t = i18nName('worksheet.vowels.color.', group.colorName);
+  return t === group.colorName ? group.colorHtml : esc(t);
+}
 const VOWEL_DEFS = DICT_VOWEL_GROUPS.flatMap(g => g.vowels);
 const MAIN_VOWEL_US = new Set(VOWEL_DEFS.filter(v => v.isMain).map(v => v.u));
 const vowelFilters = new Set();
@@ -2163,7 +2178,7 @@ function initVowelFilter() {
     const header = document.createElement('div');
     header.style.cssText = 'font-size:0.68rem;font-weight:700;letter-spacing:0.04em;margin-bottom:0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;';
     const hdrText = document.createElement('span');
-    hdrText.innerHTML = window.I18n ? I18n.t('worksheet.vowels.group_header', {sound: group.sound, color: group.colorHtml}) : (group.sound + ' Sound – ' + group.colorHtml);
+    hdrText.innerHTML = window.I18n ? I18n.t('worksheet.vowels.group_header', {sound: i18nName('worksheet.vowels.sound.', group.sound), color: vowelColorLabel(group)}) : (group.sound + ' Sound – ' + group.colorHtml);
     const arrow = document.createElement('span');
     arrow.className = 'vg-arrow';
     arrow.textContent = '▾';
@@ -2228,7 +2243,7 @@ function refreshDictVowelGroupColors() {
     if (hdr) {
       hdr.style.color = vowelHeaderColor(group, isDark);
       const span = hdr.firstElementChild;
-      if (span) span.innerHTML = window.I18n ? I18n.t('worksheet.vowels.group_header', {sound: group.sound, color: group.colorHtml}) : (group.sound + ' Sound – ' + group.colorHtml);
+      if (span) span.innerHTML = window.I18n ? I18n.t('worksheet.vowels.group_header', {sound: i18nName('worksheet.vowels.sound.', group.sound), color: vowelColorLabel(group)}) : (group.sound + ' Sound – ' + group.colorHtml);
     }
   });
 }
