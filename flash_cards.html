@@ -4754,7 +4754,14 @@ function fcModalize(ov, box, closeFn, titleEl, initialEl) {
   setTimeout(() => { try { (initialEl || box.querySelector(SEL))?.focus(); } catch (e) {} }, 0);
 }
 
-function chooseProfileModal() {
+// Two entrances share this modal and they are asking different questions. The post-drill flow asks
+// "Save results to…", which is right there. The Learner Ladder asks BEFORE any drill has happened,
+// where that title and a "Save" button are simply wrong — a brand-new learner has no results to
+// save; they are being asked who is practicing. Callers may pass their own framing; the save flow's
+// wording stays the default so nothing else changes.
+function chooseProfileModal(opts) {
+  const titleKey = (opts && opts.titleKey) || 'flashcards.profile.save_modal_title';
+  const confirmKey = (opts && opts.confirmKey) || 'flashcards.profile.save';
   return new Promise(resolve => {
     const db = readProfiles();
     const names = Object.keys(db.profiles).sort((a, b) => (db.profiles[a].order || 0) - (db.profiles[b].order || 0));
@@ -4763,7 +4770,7 @@ function chooseProfileModal() {
     ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
     const box = document.createElement('div');
     box.style.cssText = 'background:var(--white,#fff);color:var(--text,#1a2744);max-width:380px;width:100%;border-radius:10px;padding:18px;font-family:inherit;box-shadow:0 10px 40px rgba(0,0,0,0.35);max-height:80vh;overflow:auto;';
-    let html = `<div style="font-weight:700;font-size:1rem;margin-bottom:10px;">${esc(I18n.t('flashcards.profile.save_modal_title'))}</div>`;
+    let html = `<div style="font-weight:700;font-size:1rem;margin-bottom:10px;">${esc(I18n.t(titleKey))}</div>`;
     if (names.length) {
       html += '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">';
       names.forEach(n => {
@@ -4775,7 +4782,7 @@ function chooseProfileModal() {
     html += `<div style="font-size:0.82rem;font-weight:600;margin-bottom:5px;">${esc(I18n.t('flashcards.profile.new_profile_heading'))}</div>`
       + '<div style="display:flex;gap:6px;">'
       + `<input type="text" id="newProfileNameInput" maxlength="40" placeholder="${esc(I18n.t('flashcards.profile.student_name_placeholder'))}" style="flex:1;padding:8px 10px;border:1px solid var(--border,#ccc);border-radius:6px;background:var(--white,#fff);color:inherit;font-family:inherit;font-size:0.88rem;">`
-      + `<button data-act="create" style="padding:8px 12px;border:none;border-radius:6px;background:var(--navy,#1a2744);color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t('flashcards.profile.save'))}</button>`
+      + `<button data-act="create" style="padding:8px 12px;border:none;border-radius:6px;background:var(--navy,#1a2744);color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t(confirmKey))}</button>`
       + '</div>'
       + `<button data-act="cancel" style="width:100%;margin-top:14px;padding:9px;border:1px solid var(--border,#ccc);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t('flashcards.profile.cancel'))}</button>`;
     box.innerHTML = html;
@@ -5574,7 +5581,7 @@ function openLadderMap() {
   const name = getActiveProfile();
   if (!name) {
     // Progress without an identity is meaningless, so a profile is required up front.
-    chooseProfileModal().then(n => {
+    chooseProfileModal({ titleKey: 'flashcards.ladder.who_title', confirmKey: 'flashcards.ladder.who_start' }).then(n => {
       if (!n) return;
       createProfile(n); renderProfiles(); openLadderMap();
     });

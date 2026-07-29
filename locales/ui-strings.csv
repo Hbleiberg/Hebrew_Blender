@@ -4032,6 +4032,8 @@ flashcards.ladder.try_again,Try Again,נסו שוב,Results strip button replayi
 flashcards.ladder.back_to_path,Back to Path,חזרה למסלול,Results strip button reopening the level map,
 flashcards.ladder.finished_path,You finished the path! 🎉,סיימתם את כל המסלול! 🎉,Shown after the final level and as the entry-card resume line,
 flashcards.ladder.close_aria,Close the learning path,סגירת מסלול הלמידה,aria-label on the level-map close button,aria-label only
+flashcards.ladder.who_title,Who's practicing?,מי מתרגל?,Title of the profile picker when the Learner Ladder is the caller (before any drill exists),
+flashcards.ladder.who_start,Start,התחילו,Confirm button on that picker — creates the profile and opens the level map,
 flashcards.ladder.title_names1,Letter Names I,שמות האותיות א׳,Ladder level title,
 flashcards.ladder.desc_names1,Alef through Yud — say the name of each letter.,מאלף עד יוד — אמרו את שם כל אות.,Ladder level description,
 flashcards.ladder.title_names2,Letter Names II,שמות האותיות ב׳,Ladder level title,
