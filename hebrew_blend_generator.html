@@ -3917,6 +3917,8 @@ function vowelSub(sub) {
 function glyphNameSofit(name, abbr) {
   const base = glyphName(name), eng = base + '\u00a0' + (abbr ? 'sf' : 'sofit');
   if (!window.I18n) return eng;
+  if (abbr && I18n.lang === 'en') return eng;   // keep the compact English "sf" — the full key would
+                                                // silently widen these cramped tiles in English too
   const k = 'worksheet.glyphname.sofit_suffix', v = I18n.t(k, { name: base });
   return v === k ? eng : (abbr ? v.replace(/ /g, '\u00a0') : v);
 }
@@ -12800,6 +12802,18 @@ function applyI18n() {
   try { const _lg = document.getElementById('letterGrid'); if (_lg) { _lg.innerHTML = ''; initLetters(); } } catch (e) {}
   try { initVowels(); } catch (e) {}          // self-clearing
   try { initColorPickers(); } catch (e) {}    // self-clearing
+  // The rw + lock grids resolve names at build time too, and they build BEFORE I18n.ready —
+  // without these rebuilds a Hebrew UI keeps their English names (audit finding, 2026-07-29).
+  // initRwLetterGrid appends and applies no selection classes, so clear first and re-apply
+  // from rwLetterFilter; initLockGrids self-clears and re-applies lockLetters itself.
+  try {
+    const _rg = document.getElementById('rwLetterGrid');
+    if (_rg && _rg.children.length) {
+      _rg.innerHTML = ''; initRwLetterGrid();
+      _rg.querySelectorAll('.rw-letter-tile').forEach(t => t.classList.toggle('selected', rwLetterFilter.has(t.dataset.heb)));
+    }
+  } catch (e) {}
+  try { if (document.querySelector('#lockGrid1 .lock-letter-tile')) initLockGrids(); } catch (e) {}
   try { updateRwPoolInfo(); } catch (e) {}
   try { updateMatchPoolNote(); } catch (e) {}
   try { initFontSelector(); } catch (e) {}

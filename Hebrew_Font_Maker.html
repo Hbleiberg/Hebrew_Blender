@@ -4898,6 +4898,17 @@ function _adT(k, fallback, p) {
   const v = I18n.t(key, p);
   return v === key ? fallback : v;
 }
+// Like _adT, but bolds each {param} — the hand-built summary bolded its three counts, and the
+// i18n wiring flattened them (audit finding). esc() runs on the text and on each value; only
+// our own <b> wrappers are injected unescaped.
+function _adTB(k, fallback, params) {
+  const key = 'fontmaker.ad.' + k;
+  let t = fallback;
+  if (window.I18n) { const v = I18n.t(key); if (v !== key) t = v; }
+  let h = esc(t);
+  for (const [n, v] of Object.entries(params || {})) h = h.replace(new RegExp('\\{' + n + '\\}', 'g'), '<b>' + esc(String(v)) + '</b>');
+  return h;
+}
 function renderAdSummary() {
   const el = document.getElementById('adSummary'); if (!el) return;
   const boxes = adState.boxes;
@@ -4913,9 +4924,9 @@ function renderAdSummary() {
   const assignedCps = new Set(assigned.map(b => b.cp));
   const unboxed = _adCoreLetters().filter(L => !assignedCps.has(L.cp)).length;
   const unassigned = boxes.filter(b => !b.cp && !b.skip).length;
-  let h = esc(_adT('summary_counts',
-    `${boxes.length} box(es) found · ${expected} letters expected — ${assigned.length} will be assigned.`,
-    { boxes: boxes.length, expected, assigned: assigned.length }));
+  let h = _adTB('summary_counts',
+    '{boxes} box(es) found · {expected} letters expected — {assigned} will be assigned.',
+    { boxes: boxes.length, expected, assigned: assigned.length });
   if (adState.matched) h += ` <span class="ad-match">${esc(_adT('matched',
     `Matched: ${adState.matched.label} template layout (page ${adState.matched.page + 1} of ${adState.matched.pages})`,
     { label: adState.matched.label, page: adState.matched.page + 1, pages: adState.matched.pages }))}</span>`;
@@ -12636,6 +12647,11 @@ async function renderMyFontsList() {
     // dictionary presents the same string (a block button, not a row action).
     use.style.cssText = 'flex:1 0 100%;margin-top:6px;padding:4px 8px;text-decoration:none;text-align:center;box-sizing:border-box;';
     use.onclick = () => { try { localStorage.setItem('hebrewBlender_hebFont', f.name); } catch (e) {} };
+    // Middle-click opens the new tab natively WITHOUT firing click, so set the key on auxclick
+    // too or that tab opens with the font unselected (audit finding, 2026-07-29). Right-click →
+    // "open in new tab" fires neither event and stays uncovered — accepted; the font is still
+    // one click away in the generator's own picker.
+    use.onauxclick = (ev) => { if (ev.button === 1) { try { localStorage.setItem('hebrewBlender_hebFont', f.name); } catch (e) {} } };
     const dl = document.createElement('button');
     dl.className = 'tbtn ghost'; dl.textContent = '⬇'; dl.title = I18n.t('fontmaker.modals.myfonts_download_title'); dl.style.padding = '4px 8px';
     dl.onclick = () => downloadMyFont(f.name);
@@ -13713,6 +13729,9 @@ function dismissMobileWarn(goBack){
   if (goBack){ if (history.length > 1) history.back(); else location.href = '/'; return; }
   aCloseModal('mobileWarnOverlay');
   maybeShowWelcome();   // on mobile the welcome was deferred behind this warning — show it now
+  // If the welcome was skipped (already seen) the deferred restore prompt has no other
+  // re-offer path — the same partially-cleared-storage class the deferral itself guards.
+  if (_autosavePromptDeferred && !document.getElementById('welcomeOverlay').classList.contains('open')) maybeRestoreAutosave();
 }
 function maybeShowWelcome(){
   try { if (localStorage.getItem('hebrewBlender_welcomeSeen') === '1') return; } catch(e){}
