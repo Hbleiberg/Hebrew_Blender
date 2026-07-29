@@ -5797,7 +5797,10 @@ function setVowelScheme(s) {
   refreshVowelGroupColors();
   syncSchemeButtons();
   if (colorCodingEnabled) renderWorksheet(false);
-  if (typeof saveSettings === 'function') saveSettings();
+  // No standing-preference save here: unlike flash cards (which has a saveSettings() and calls it
+  // unconditionally), the generator has no such function, so the guard that used to sit here could
+  // never fire and quietly implied a persistence this tool has never had. The scheme travels via
+  // getSettings()/applySettings() — presets and .ivrit — which is the documented design.
 }
 
 function rgbToHex(color) {
