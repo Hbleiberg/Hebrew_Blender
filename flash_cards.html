@@ -5222,6 +5222,9 @@ function openWeaknessView(name) {
       const on = t.classList.contains('active');
       t.style.background = on ? navy : 'transparent';
       t.style.color = on ? '#fff' : 'inherit';
+      // These are built and destroyed with the overlay, so initPillAria() never sees them —
+      // expose the selected state here, the one place that already re-runs on every switch.
+      t.setAttribute('aria-pressed', String(on));
     });
   }
   function selectTab(tab) {
