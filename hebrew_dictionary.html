@@ -1023,7 +1023,7 @@ footer a{color:var(--gold-text);text-decoration:none;}
                 <input type="range" id="ttsRateSlider" min="0.5" max="1.5" step="0.05" value="0.75"
                        oninput="onTtsRateChange(this.value)">
                 <span class="fs-val bidi-isolate" id="ttsRateVal">0.75×</span>
-                <button class="fs-reset" onclick="resetTtsRate()" title="Reset to default" data-i18n-title="dictionary.advanced.font_size_reset_title">↺</button>
+                <button class="fs-reset" onclick="resetTtsRate()" title="Reset to default" aria-label="Reset to default" data-i18n-aria-label="dictionary.advanced.font_size_reset_title" data-i18n-title="dictionary.advanced.font_size_reset_title">↺</button>
               </div>
               <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:var(--muted);margin-top:1px;padding:0 2px;">
                 <span data-i18n="dictionary.audio.tts_slower">Slower</span><span data-i18n="dictionary.audio.tts_fast">Fast</span>
@@ -2310,7 +2310,7 @@ function initPosFilters() {
           <span class="lbl">${esc(I18n.t('dictionary.filters.pos_letter_heading', { ordinal: I18n.t('dictionary.ordinal_' + lbl) }))}</span>
           <div class="pos-badges" id="pb${i}"></div>
         </div>
-        <button class="pos-clear" onclick="event.stopPropagation();clearPos(${i})" title="${esc(I18n.t('dictionary.filters.pos_clear_title'))}">✕</button>
+        <button class="pos-clear" onclick="event.stopPropagation();clearPos(${i})" title="${esc(I18n.t('dictionary.filters.pos_clear_title'))}" aria-label="${esc(I18n.t('dictionary.filters.pos_clear_title'))}">✕</button>
         <span class="pos-arrow">▾</span>
       </div>
       <div class="pos-sec-body">
@@ -2333,7 +2333,7 @@ function initPosFilters() {
         <span class="lbl">${esc(I18n.t('dictionary.filters.any_letters_head'))}</span>
         <div class="pos-badges" id="pbAny"></div>
       </div>
-      <button class="pos-clear" onclick="event.stopPropagation();clearAnyLetters()" title="${esc(I18n.t('dictionary.filters.pos_clear_title'))}">✕</button>
+      <button class="pos-clear" onclick="event.stopPropagation();clearAnyLetters()" title="${esc(I18n.t('dictionary.filters.pos_clear_title'))}" aria-label="${esc(I18n.t('dictionary.filters.pos_clear_title'))}">✕</button>
       <span class="pos-arrow">▾</span>
     </div>
     <div class="pos-sec-body">

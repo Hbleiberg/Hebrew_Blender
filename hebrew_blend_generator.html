@@ -2605,14 +2605,14 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <input type="range" id="traceSpacing" min="0" max="100" value="25" step="1"
                    oninput="setTraceSpacing(this.value)" ondblclick="resetTraceSpacing()">
             <span class="fs-val" id="traceSpacingVal">0.50rem</span>
-            <button class="fs-reset" onclick="resetTraceSpacing()" title="Reset to default" data-i18n-title="worksheet.common.reset_default">↺</button>
+            <button class="fs-reset" onclick="resetTraceSpacing()" title="Reset to default" aria-label="Reset to default" data-i18n-aria-label="worksheet.common.reset_default" data-i18n-title="worksheet.common.reset_default">↺</button>
           </div>
           <div class="font-size-row">
             <span class="fs-label" data-i18n="worksheet.common.size">Size</span>
             <input type="range" id="traceSize" min="0" max="100" value="50" step="1"
                    oninput="setHebFontSize(this.value)" ondblclick="resetTraceSize()">
             <span class="fs-val" id="traceSizeVal">2.00rem</span>
-            <button class="fs-reset" onclick="resetTraceSize()" title="Reset to default" data-i18n-title="worksheet.common.reset_default">↺</button>
+            <button class="fs-reset" onclick="resetTraceSize()" title="Reset to default" aria-label="Reset to default" data-i18n-aria-label="worksheet.common.reset_default" data-i18n-title="worksheet.common.reset_default">↺</button>
           </div>
           <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
             <span class="sub-label" style="font-size:0.78rem;min-width:96px;" data-i18n="worksheet.modes.tracing.line_style">Line style</span>
@@ -3535,7 +3535,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
               <input type="range" id="ttsRateSlider" min="0.5" max="1.5" step="0.05" value="0.75" aria-labelledby="ttsSpeedLbl"
                      oninput="document.getElementById('ttsRateVal').textContent = parseFloat(this.value).toFixed(2) + '×'">
               <span class="fs-val" id="ttsRateVal">0.75×</span>
-              <button class="fs-reset" onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';" title="Reset to default" data-i18n-title="worksheet.common.reset_default">↺</button>
+              <button class="fs-reset" onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';" title="Reset to default" aria-label="Reset to default" data-i18n-aria-label="worksheet.common.reset_default" data-i18n-title="worksheet.common.reset_default">↺</button>
             </div>
             <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:var(--muted);margin-top:1px;padding:0 2px;">
               <span data-i18n="worksheet.advanced.tts_slower">Slower</span><span data-i18n="worksheet.advanced.tts_fast">Fast</span>
@@ -3559,7 +3559,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <button class="btn btn-outline" id="regenBtnMob" onclick="regenerate()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;">↺</button>
     <button class="btn btn-secondary" id="printBtnMob" onclick="window.print()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;">🖨</button>
     <button class="btn btn-outline" id="pdfBtnMob" onclick="exportPDF()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;" data-i18n="worksheet.actions.pdf_mob">⬇ PDF</button>
-    <button class="btn btn-outline" id="shareBtnMob" onclick="copyShareLink('shareBtnMob')" title="Copy shareable link" data-i18n-title="worksheet.actions.copy_link_title">📋</button>
+    <button class="btn btn-outline" id="shareBtnMob" onclick="copyShareLink('shareBtnMob')" title="Copy shareable link" aria-label="Copy shareable link" data-i18n-aria-label="worksheet.actions.copy_link_title" data-i18n-title="worksheet.actions.copy_link_title">📋</button>
   </div>
 
   <!-- Guided "Take a tour" coach-mark (non-modal spotlight; see tourStart) -->

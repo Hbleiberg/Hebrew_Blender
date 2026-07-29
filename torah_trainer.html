@@ -1591,13 +1591,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           <label for="optKaraokeRate" data-i18n="torah.audio.speed_chant">Chant</label>
           <input type="range" id="optKaraokeRate" min="0.5" max="1.5" step="0.05" value="1.0">
           <span class="sval" id="optKaraokeRateVal">1.00×</span>
-          <button class="sreset" onclick="resetKaraokeRate()" type="button" title="Restore default" data-i18n-title="torah.display.restore_default">↺</button>
+          <button class="sreset" onclick="resetKaraokeRate()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default">↺</button>
         </div>
         <div class="slider-row">
           <label for="optTTSRate" data-i18n="torah.audio.speed_read">Read</label>
           <input type="range" id="optTTSRate" min="0.5" max="1.5" step="0.05" value="0.75">
           <span class="sval" id="optTTSRateVal">0.75×</span>
-          <button class="sreset" onclick="resetTTSRate()" type="button" title="Restore default" data-i18n-title="torah.display.restore_default">↺</button>
+          <button class="sreset" onclick="resetTTSRate()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default">↺</button>
         </div>
         <div class="form-row" style="margin-top:8px;">
           <label for="optLoopPause">Pause between repeats

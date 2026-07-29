@@ -1756,7 +1756,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <label for="colTitleSizeSlider" data-i18n="dashboard.display.header_size">Header size</label>
       <input type="range" id="colTitleSizeSlider" min="0.5" max="1.8" step="0.05" value="0.78" oninput="setColTitleSize(this.value)">
       <span class="size-val" id="colTitleSizeVal">0.78rem</span>
-      <button class="btn-xs" onclick="setColTitleSize(0.78)" title="Restore default" data-i18n-title="dashboard.common.restore_default">↺</button>
+      <button class="btn-xs" onclick="setColTitleSize(0.78)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
     </div>
     <div class="form-row" style="margin-top:8px;">
       <label data-i18n="dashboard.display.show_text_size_options">Show text size options</label>
@@ -1815,7 +1815,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <label for="engDateSizeSlider" data-i18n="dashboard.datetime.eng_date_size">Eng Date size</label>
           <input type="range" id="engDateSizeSlider" min="0.5" max="3" step="0.05" value="1.35" oninput="setEngDateSize(this.value)">
           <span class="size-val" id="engDateSizeVal">1.35rem</span>
-          <button class="btn-xs" onclick="setEngDateSize(1.35)" title="Restore default" data-i18n-title="dashboard.common.restore_default">↺</button>
+          <button class="btn-xs" onclick="setEngDateSize(1.35)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
         </div>
         <div class="form-row">
           <label data-i18n="dashboard.datetime.hide_eng_date">Hide English date</label>
@@ -1839,7 +1839,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <label for="hebDateSizeSlider" data-i18n="dashboard.datetime.heb_date_size">Heb Date size</label>
           <input type="range" id="hebDateSizeSlider" min="0.5" max="5" step="0.1" value="2.6" oninput="setHebDateSize(this.value)">
           <span class="size-val" id="hebDateSizeVal">2.6rem</span>
-          <button class="btn-xs" onclick="setHebDateSize(2.6)" title="Restore default" data-i18n-title="dashboard.common.restore_default">↺</button>
+          <button class="btn-xs" onclick="setHebDateSize(2.6)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
         </div>
         <div class="form-row">
           <label data-i18n="dashboard.datetime.hide_heb_date">Hide Hebrew date</label>
@@ -1870,7 +1870,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <label for="timeSizeSlider" data-i18n="dashboard.datetime.time_size">Time size</label>
           <input type="range" id="timeSizeSlider" min="0.5" max="6" step="0.1" value="3.4" oninput="setTimeSize(this.value)">
           <span class="size-val" id="timeSizeVal">3.4rem</span>
-          <button class="btn-xs" onclick="setTimeSize(3.4)" title="Restore default" data-i18n-title="dashboard.common.restore_default">↺</button>
+          <button class="btn-xs" onclick="setTimeSize(3.4)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
         </div>
         <div class="form-row">
           <label data-i18n="dashboard.datetime.hide_time">Hide time</label>
@@ -1896,7 +1896,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <label for="tempSizeSlider" data-i18n="dashboard.weather.temp_size">Temp size</label>
       <input type="range" id="tempSizeSlider" min="0.5" max="4" step="0.1" value="2" oninput="setTempSize(this.value)">
       <span class="size-val" id="tempSizeVal">2rem</span>
-      <button class="btn-xs" onclick="setTempSize(2)" title="Restore default" data-i18n-title="dashboard.common.restore_default">↺</button>
+      <button class="btn-xs" onclick="setTempSize(2)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
     </div>
     <div class="form-row">
       <label data-i18n="dashboard.weather.label_language">Label language</label>
@@ -1909,7 +1909,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <label for="weatherLabelSizeSlider" data-i18n="dashboard.weather.label_size">Label size</label>
       <input type="range" id="weatherLabelSizeSlider" min="0.5" max="3" step="0.05" value="1.1" oninput="setWeatherLabelSize(this.value)">
       <span class="size-val" id="weatherLabelSizeVal">1.1rem</span>
-      <button class="btn-xs" onclick="setWeatherLabelSize(1.1)" title="Restore default" data-i18n-title="dashboard.common.restore_default">↺</button>
+      <button class="btn-xs" onclick="setWeatherLabelSize(1.1)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
     </div>
     <div class="form-row">
       <label><span data-i18n="dashboard.weather.simple_desc">Simple weather description</span> <span class="tip-wrap" data-tip="Limits description to: Sun, Clouds, Sun &amp; Clouds, Rain, Snow, or Fog — instead of full WMO detail." data-i18n-tip="dashboard.weather.simple_desc_tip"><i class="tip-icon">?</i></span></label>
@@ -1931,7 +1931,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <label for="weatherHLSizeSlider" data-i18n="dashboard.weather.hl_size">H/L size</label>
       <input type="range" id="weatherHLSizeSlider" min="0.3" max="2" step="0.05" value="0.72" oninput="setWeatherHLSize(this.value)">
       <span class="size-val" id="weatherHLSizeVal">0.72rem</span>
-      <button class="btn-xs" onclick="setWeatherHLSize(0.72)" title="Restore default" data-i18n-title="dashboard.common.restore_default">↺</button>
+      <button class="btn-xs" onclick="setWeatherHLSize(0.72)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
     </div>
     <div class="form-row">
       <label data-i18n="dashboard.weather.hide_desc">Hide weather description</label>
@@ -1941,7 +1941,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <label for="weatherDescSizeSlider" data-i18n="dashboard.weather.desc_size">Description size</label>
       <input type="range" id="weatherDescSizeSlider" min="0.4" max="3" step="0.05" value="1.05" oninput="setWeatherDescSize(this.value)">
       <span class="size-val" id="weatherDescSizeVal">1.05rem</span>
-      <button class="btn-xs" onclick="setWeatherDescSize(1.05)" title="Restore default" data-i18n-title="dashboard.common.restore_default">↺</button>
+      <button class="btn-xs" onclick="setWeatherDescSize(1.05)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
     </div>
     <div class="form-row">
       <label><span data-i18n="dashboard.weather.tap_to_read">Tap to read</span> <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;" data-i18n="dashboard.common.beta_badge">BETA</span></label>
@@ -1985,9 +1985,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <label for="pickerClassSel" data-i18n="dashboard.picker.class_label">Class</label>
       <div style="display:flex;gap:5px;align-items:center;">
         <select id="pickerClassSel" onchange="switchClass(this.value)" style="flex:1;min-width:0;max-width:none;"></select>
-        <button type="button" class="btn-xs" title="New class" data-i18n-title="dashboard.picker.new_class_title" onclick="newClass()">➕</button>
-        <button type="button" class="btn-xs" title="Rename class" data-i18n-title="dashboard.picker.rename_class_title" onclick="renameClass()">✏️</button>
-        <button type="button" class="btn-xs" title="Delete class" data-i18n-title="dashboard.picker.delete_class_title" onclick="deleteClass()">🗑</button>
+        <button type="button" class="btn-xs" title="New class" aria-label="New class" data-i18n-aria-label="dashboard.picker.new_class_title" data-i18n-title="dashboard.picker.new_class_title" onclick="newClass()">➕</button>
+        <button type="button" class="btn-xs" title="Rename class" aria-label="Rename class" data-i18n-aria-label="dashboard.picker.rename_class_title" data-i18n-title="dashboard.picker.rename_class_title" onclick="renameClass()">✏️</button>
+        <button type="button" class="btn-xs" title="Delete class" aria-label="Delete class" data-i18n-aria-label="dashboard.picker.delete_class_title" data-i18n-title="dashboard.picker.delete_class_title" onclick="deleteClass()">🗑</button>
       </div>
       <span id="pickerClassNote" style="font-size:0.72rem;color:var(--gold);display:none;"></span>
     </div>
@@ -2033,7 +2033,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <label for="dowDisplaySizeSlider" data-i18n="dashboard.days.display_size">Display size</label>
       <input type="range" id="dowDisplaySizeSlider" min="0.5" max="3" step="0.05" value="1.35" oninput="setDowDisplaySize(this.value)">
       <span class="size-val" id="dowDisplaySizeVal">1.35rem</span>
-      <button class="btn-xs" onclick="setDowDisplaySize(1.35)" title="Restore default" data-i18n-title="dashboard.common.restore_default">↺</button>
+      <button class="btn-xs" onclick="setDowDisplaySize(1.35)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
     </div>
     <div class="form-row">
       <label data-i18n="dashboard.days.color_days">Color days of the week</label>
@@ -2055,7 +2055,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <label for="dowYTTSizeSlider" data-i18n="dashboard.days.ytt_size">Y/T/T size</label>
       <input type="range" id="dowYTTSizeSlider" min="0.3" max="2" step="0.05" value="0.72" oninput="setDowYTTSize(this.value)">
       <span class="size-val" id="dowYTTSizeVal">0.72rem</span>
-      <button class="btn-xs" onclick="setDowYTTSize(0.72)" title="Restore default" data-i18n-title="dashboard.common.restore_default">↺</button>
+      <button class="btn-xs" onclick="setDowYTTSize(0.72)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
     </div>
     <div class="form-row">
       <label data-i18n="dashboard.days.emoji_sequence">Emoji sequence</label>
@@ -2074,7 +2074,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <label for="dowEmojiSizeSlider" data-i18n="dashboard.days.emoji_size">Emoji size</label>
       <input type="range" id="dowEmojiSizeSlider" min="0.5" max="4" step="0.1" value="1.4" oninput="setDowEmojiSize(this.value)">
       <span class="size-val" id="dowEmojiSizeVal">1.4rem</span>
-      <button class="btn-xs" onclick="setDowEmojiSize(1.4)" title="Restore default" data-i18n-title="dashboard.common.restore_default">↺</button>
+      <button class="btn-xs" onclick="setDowEmojiSize(1.4)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
     </div>
     <div class="form-row">
       <label><span data-i18n="dashboard.days.tap_to_read">Tap to read</span> <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;" data-i18n="dashboard.common.beta_badge">BETA</span></label>
@@ -5427,7 +5427,9 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
       listItemNames: () => Object.keys(presets),
       buildItemRow: (name) => {
         const f = document.createDocumentFragment();
-        const mk = (txt, title, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.textContent = txt; if (title) b.title = title; b.addEventListener('click', fn); return b; };
+        // A glyph label ("↺", "⧉", "×") IS the accessible name unless something outranks it, so
+        // mirror the translated title into aria-label whenever the label carries no words.
+        const mk = (txt, title, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.textContent = txt; if (title) { b.title = title; if (!/\p{L}|\p{N}/u.test(txt)) b.setAttribute('aria-label', title); } b.addEventListener('click', fn); return b; };
         f.appendChild(mk(I18n.t('dashboard.preset.load'), '', 'btn btn-xs', () => loadPreset(name)));
         f.appendChild(mk('↺', I18n.t('dashboard.preset.overwrite_title'), 'btn btn-xs btn-secondary', () => overwritePreset(name)));
         f.appendChild(mk('⧉', I18n.t('dashboard.preset.duplicate_title'), 'btn btn-xs btn-secondary', () => duplicatePreset(name)));
@@ -5736,7 +5738,7 @@ else ivritInit();
         `<input type="time" class="schedule-time-input" value="${esc(entry.until || '')}" onchange="updateScheduleEntry(${i},'until',this.value)">` +
         `<button class="schedule-move-btn" title="${esc(I18n.t('dashboard.schedule.move_up'))}" aria-label="${esc(I18n.t('dashboard.schedule.move_up_aria', { n: i + 1 }))}" onclick="moveScheduleRow(${i},-1)"${i === 0 ? ' disabled' : ''}>▲</button>` +
         `<button class="schedule-move-btn" title="${esc(I18n.t('dashboard.schedule.move_down'))}" aria-label="${esc(I18n.t('dashboard.schedule.move_down_aria', { n: i + 1 }))}" onclick="moveScheduleRow(${i},1)"${i === rows.length - 1 ? ' disabled' : ''}>▼</button>` +
-        `<button class="schedule-del-btn" title="${esc(I18n.t('dashboard.schedule.remove'))}" onclick="removeScheduleRow(${i})">×</button>`;
+        `<button class="schedule-del-btn" title="${esc(I18n.t('dashboard.schedule.remove'))}" aria-label="${esc(I18n.t('dashboard.schedule.remove'))}" onclick="removeScheduleRow(${i})">×</button>`;
       container.appendChild(row);
       // Show which class this period's preset activates (derived, read-only). Skipped for a preset that
       // predates class rosters or references a since-deleted class. textContent keeps hostile names inert.
@@ -5828,7 +5830,9 @@ else ivritInit();
       listItemNames: () => Object.keys(savedSchedules),
       buildItemRow: (name) => {
         const f = document.createDocumentFragment();
-        const mk = (txt, title, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.textContent = txt; if (title) b.title = title; b.addEventListener('click', fn); return b; };
+        // A glyph label ("↺", "⧉", "×") IS the accessible name unless something outranks it, so
+        // mirror the translated title into aria-label whenever the label carries no words.
+        const mk = (txt, title, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.textContent = txt; if (title) { b.title = title; if (!/\p{L}|\p{N}/u.test(txt)) b.setAttribute('aria-label', title); } b.addEventListener('click', fn); return b; };
         f.appendChild(mk(I18n.t('dashboard.schedule.sched_load'), '', 'btn btn-xs', () => loadSavedSchedule(name)));
         f.appendChild(mk('↺', I18n.t('dashboard.schedule.overwrite_title'), 'btn btn-xs btn-secondary', () => overwriteSavedSchedule(name)));
         f.appendChild(mk('⧉', I18n.t('dashboard.schedule.sched_duplicate_title'), 'btn btn-xs btn-secondary', () => duplicateSavedSchedule(name)));
@@ -6233,6 +6237,8 @@ else ivritInit();
       } else {
         node = document.createElement('button'); node.type = 'button'; node.className = 'ed-btn'; node.title = I18n.t(c.titleKey);
         node.innerHTML = c.htmlKey ? esc(I18n.t(c.htmlKey)) : c.html; node.addEventListener('click', c.run);
+        // "🔗" and friends name themselves with the glyph; the translated title is the real name.
+        if (!/\p{L}|\p{N}/u.test(node.textContent || '')) node.setAttribute('aria-label', node.title);
       }
       container.appendChild(node);
     });
