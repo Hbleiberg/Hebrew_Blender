@@ -532,7 +532,8 @@ function useFontEverywhere(name) {
   // Write the chosen font into every tool's own setting so they all adopt it on next load
   // (they register the actual TTF via the FontFace API when they next open).
   try { localStorage.setItem('hebrewBlender_hebFont', name); } catch (e) {}   // Generator + Dictionary (shared key)
-  const setIn = (key, field) => { try { const o = JSON.parse(localStorage.getItem(key) || '{}'); o[field] = name; localStorage.setItem(key, JSON.stringify(o)); } catch (e) {} };
+  // Read-modify-write over three import-written settings blobs — safe parse, per the security rule.
+  const setIn = (key, field) => { try { const o = ivritSafeParse(localStorage.getItem(key) || '{}'); o[field] = name; localStorage.setItem(key, JSON.stringify(o)); } catch (e) {} };
   setIn('hebrewDashboard_settings', 'hebFont');
   setIn('hebrewTorahTrainer_settings', 'hebFont');
   setIn('hebrewFlashCards_settings', 'hebFontId');
@@ -776,8 +777,10 @@ function mountFolderTree(cfg){
 
 // Corruption-robust localStorage JSON read: a single bad/truncated value must not
 // abort the whole Export-All / AllTools backup (the recovery path itself).
+// Every key this reads is one the AllTools/.ivrit IMPORT writes, so the value is
+// untrusted by the security rule — parse it with the safe reviver, not bare JSON.parse.
 function lsJSON(key, fallback) {
-  try { const v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); }
+  try { const v = localStorage.getItem(key); return v == null ? fallback : ivritSafeParse(v); }
   catch (e) { return fallback; }
 }
 /* Merge an imported Trope Tutor progress blob without ever losing local mastery:

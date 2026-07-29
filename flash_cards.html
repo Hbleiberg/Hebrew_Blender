@@ -5328,7 +5328,9 @@ function mergeLadder(a, b) {
   const levels = {};
   ids.forEach(id => {
     const x = A[id], y = B[id];
-    if (!x || !y) { levels[id] = Object.assign({}, x || y); return; }
+    // mergeProfilesBlob is an IMPORT path, so the level object can come from a .ivrit file or an
+    // AllTools bundle — safe-assign, never a bare Object.assign (security rule).
+    if (!x || !y) { levels[id] = ivritSafeAssign({}, x || y); return; }
     const merged = { bestPct: Math.max(x.bestPct || 0, y.bestPct || 0) };
     const stamps = [x.passedAt, y.passedAt].filter(Boolean).sort();
     if (stamps.length) merged.passedAt = stamps[0];
