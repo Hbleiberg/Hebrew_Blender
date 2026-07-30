@@ -1718,7 +1718,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <!-- ADVANCED -->
   <!-- TEACHER TOOLS (Presets · Share Code · Profiles) -->
   <div class="panel collapsed" id="panelTeacherTools">
-    <h3 class="panel-title">Teacher Tools</h3>
+    <h3 class="panel-title" data-i18n="flashcards.teachertools.panel_title">Teacher Tools</h3>
     <div class="panel-body">
 
       <!-- Presets -->
@@ -2967,6 +2967,25 @@ function refreshColorPickerPreviews() {
   });
 }
 
+// The flashcards.glyphname.* family (45 keys — 32 letters + 13 vowels) was authored and fully
+// translated but referenced NOWHERE in this file, so letter and vowel names stayed English in a
+// Hebrew UI: the picker tiles a teacher reads and the colour-picker rows a screen reader announces.
+// Unlike the dashboard's copy of this fix (ba73f0a), every name here slugifies straight onto its key
+// ("Hataf Patach" -> hataf_patach; "Chaf Sofit" -> chaf_sofit), so no per-entry map is needed.
+// A miss returns the English name, so an unmapped entry degrades to today's behaviour, never to a
+// raw key. Call these ONCE per render, from the raw data table — never on a value one of them
+// already returned, which is the double-localization trap fixed in 05a1f29.
+function fcGlyphName(prefix, name) {
+  if (!name) return '';
+  if (!window.I18n) return name;
+  const k = 'flashcards.glyphname.' + prefix
+    + String(name).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+  const v = I18n.t(k);
+  return v === k ? name : v;
+}
+const letterGlyphName = n => fcGlyphName('letter_', n);
+const vowelGlyphName  = n => fcGlyphName('vowel_', n);
+
 function initColorPickers() {
   const host = document.getElementById('colorPickers');
   if (!host) return;
@@ -2977,8 +2996,8 @@ function initColorPickers() {
     row.className = 'color-picker-row';
     row.innerHTML = `
       <span data-preview-key="${def.key}" style="font-family:var(--heb-font);font-size:1.1rem;direction:rtl;min-width:22px;text-align:center;">${def.example}</span>
-      <span class="lbl" style="flex:1;">${def.name}</span>
-      <input type="color" data-key="${def.key}" value="${color}" aria-label="${esc(def.name)}" />
+      <span class="lbl" style="flex:1;">${esc(vowelGlyphName(def.name))}</span>
+      <input type="color" data-key="${def.key}" value="${color}" aria-label="${esc(vowelGlyphName(def.name))}" />
     `;
     const preview = row.querySelector('[data-preview-key]');
     applyPreviewColor(preview, def.key);
@@ -3059,7 +3078,7 @@ function initLetters() {
   grid.innerHTML = display.map(L => `
     <div class="letter-tile ${selectedLetters.has(L.heb) ? 'selected' : ''}" data-heb="${L.heb}">
       <span class="heb-char" lang="he" dir="rtl">${L.heb}</span>
-      <small>${L.name}</small>
+      <small>${esc(letterGlyphName(L.name))}</small>
     </div>
   `).join('');
   grid.querySelectorAll('.letter-tile').forEach(tile => {
@@ -3227,7 +3246,7 @@ function initVowels() {
       const tile = document.createElement('div');
       tile.className = 'vtile' + (selectedVowels.has(v.key) ? ' selected' : '');
       tile.dataset.key = v.key;
-      tile.innerHTML = `<div class="vheb" lang="he" dir="rtl">${v.nikud}</div><div class="vname">${v.label}</div>`;
+      tile.innerHTML = `<div class="vheb" lang="he" dir="rtl">${v.nikud}</div><div class="vname">${esc(vowelGlyphName(v.label))}</div>`;
       tile.addEventListener('click', () => {
         if (selectedVowels.has(v.key)) selectedVowels.delete(v.key);
         else selectedVowels.add(v.key);
@@ -6154,7 +6173,7 @@ function buildVowelLockGrid(pos) {
   VOWEL_GROUPS.forEach(g => g.vowels.forEach(v => {
     const tile = document.createElement('div');
     tile.className = 'vlk-tile' + (lk.vowels.has(v.key) ? ' selected' : '');
-    tile.title = v.label;
+    tile.title = vowelGlyphName(v.label);
     tile.innerHTML = `<div class="vheb" lang="he" dir="rtl">${v.nikud}</div>`;
     tile.addEventListener('click', () => {
       if (lk.vowels.has(v.key)) lk.vowels.delete(v.key);
@@ -7624,6 +7643,8 @@ function applyI18n() {
   initEngFontSelector();
   initCountGrid();
   initVowels();               // re-localize the vowel-group "Sound" headers
+  initLetters();              // letter tiles carry glyphname labels; rebuild re-derives .selected
+  initColorPickers();         // vowel rows too; rebuild re-reads getNikudColor, so colours survive
   renderPresets();
   renderProfiles();
   syncOtherSubUI();
