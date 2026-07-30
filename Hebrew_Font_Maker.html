@@ -3999,33 +3999,33 @@ function renderCustomGlyphsPanel() {
   const dupOpts = LETTERS.filter(L => L.cat !== 'punct')
     .map(L => `<option value="${L.cp}">${esc(gName(L.name))} (${String.fromCodePoint(parseInt(L.cp, 16))})</option>`).join('');
   el.innerHTML = `
-    <div class="hint" style="margin-bottom:8px;">${_cgT('intro', "Define a glyph at any Unicode code point. Brand-new shapes work best in the Private-Use range <b>U+E000–U+F8FF</b>. Trace each glyph like a letter, or duplicate an existing letter and tweak it.")}</div>
+    <div class="hint" style="margin-bottom:8px;">${_cgT('glyphs_hint', "Define a glyph at any Unicode code point. Brand-new shapes work best in the Private-Use range <b>U+E000–U+F8FF</b>. Trace each glyph like a letter, or duplicate an existing letter and tweak it.")}</div>
     <div class="letter-grid" id="customGlyphsGrid"></div>
     <div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">
-      <div style="font-weight:700;font-size:0.82rem;margin-bottom:6px;">${_cgT('add_heading', "+ Add a new glyph")}</div>
+      <div style="font-weight:700;font-size:0.82rem;margin-bottom:6px;">${_cgT('add_new', "+ Add a new glyph")}</div>
       <div class="row2">
-        <label class="fld">${_cgT('codepoint_label', "Code point")} <input type="text" id="cgCp" placeholder="${esc(_cgT('codepoint_placeholder', "E000 or U+05D0"))}"></label>
-        <label class="fld">${_cgT('name_label', "Name")} <input type="text" id="cgName" placeholder="${esc(_cgT('name_placeholder', "My glyph"))}"></label>
+        <label class="fld">${_cgT('codepoint', "Code point")} <input type="text" id="cgCp" placeholder="${esc(_cgT('codepoint_ph', "E000 or U+05D0"))}"></label>
+        <label class="fld">${_cgT('name', "Name")} <input type="text" id="cgName" placeholder="${esc(_cgT('name_ph', "My glyph"))}"></label>
       </div>
       <div class="mode-toggle" style="margin-top:6px;">
-        <button class="mode-btn active" id="cgTypeBase" onclick="cgSetType('base')" aria-pressed="true">${_cgT('type_base', "Main glyph")}</button>
+        <button class="mode-btn active" id="cgTypeBase" onclick="cgSetType('base')" aria-pressed="true">${_cgT('type_main', "Main glyph")}</button>
         <button class="mode-btn" id="cgTypeMark" onclick="cgSetType('mark')" aria-pressed="false">${_cgT('type_mark', "Nikkud mark")}</button>
       </div>
       <div id="cgMarkClsRow" style="display:none;margin-top:6px;">
-        <label class="fld">${_cgT('attaches_label', "Attaches")}
+        <label class="fld">${_cgT('attaches', "Attaches")}
           <select id="cgCls"><option value="below">${_cgT('attach_below', "Below the letter")}</option><option value="above">${_cgT('attach_above', "Above the letter")}</option><option value="center">${_cgT('attach_center', "Center (dagesh-style)")}</option></select>
         </label>
         <div class="hint" style="margin-top:4px;">${_cgT('mark_hint', "A mark attaches to a letter and has <b>no width of its own</b>. For a standalone symbol that needs its own spacing, choose <b>Main glyph</b> instead.")}</div>
       </div>
       <div id="cgShapeRow" style="margin-top:6px;">
-        <div class="hint">${_cgT('shape_label', "Shape")}</div>
+        <div class="hint">${_cgT('shape', "Shape")}</div>
         <div class="mode-toggle">
           <button class="mode-btn active" id="cgShapeTrace" onclick="cgSetShape('trace')" aria-pressed="true">${_cgT('shape_trace', "Trace new image")}</button>
           <button class="mode-btn" id="cgShapeDup" onclick="cgSetShape('dup')" aria-pressed="false">${_cgT('shape_dup', "Duplicate a letter")}</button>
         </div>
         <select id="cgDup" style="display:none;margin-top:6px;">${dupOpts}</select>
       </div>
-      <button class="ctl-btn" style="margin-top:8px;" onclick="addCustomGlyph()">${_cgT('add_button', "Add glyph")}</button>
+      <button class="ctl-btn" style="margin-top:8px;" onclick="addCustomGlyph()">${_cgT('add_glyph', "Add glyph")}</button>
     </div>`;
   cgType = 'base'; cgShape = 'trace';
   renderCustomGlyphsGrid();
@@ -4895,11 +4895,13 @@ function renderAdOverlay() {
 // applyStaticI18n, so each string resolves inline at render time (the S126 guarded pattern).
 // Never returns a raw key: falls back to the English text if I18n isn't ready yet or the key is
 // missing (the `detect_canvas_aria` idiom just below — see the pre-ready-i18n pattern in the ledger).
-// The custom-glyph panel is likewise rebuilt by its own render function (renderCustomGlyphs) with
-// no applyStaticI18n pass, and it is a template literal — which is why check-i18n's Check A never
-// saw any of this. Same guard as _adT: an English fallback, never a raw key.
+// The custom-glyph panel is likewise rebuilt by its own render function (renderCustomGlyphsPanel)
+// with no applyStaticI18n pass, and it is a template literal — which is why check-i18n's Check A
+// never saw any of this. Same guard as _adT: an English fallback, never a raw key.
+// Keys come from the EXISTING fontmaker.panels.custom_* family, which was already authored and
+// translated and simply never referenced — see the ~150-key finding in the ledger.
 function _cgT(k, fallback) {
-  const key = 'fontmaker.cg.' + k;
+  const key = 'fontmaker.panels.custom_' + k;
   if (!window.I18n) return fallback;
   const v = I18n.t(key);
   return v === key ? fallback : v;
