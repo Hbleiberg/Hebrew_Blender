@@ -2462,7 +2462,7 @@
   "fontmaker.panels.version_title": "ערכו אותה בחופשיות — גם עולה בכל ייצוא.",
   "fontmaker.panels.vowel_every_letter": "{name} — כל אות",
   "fontmaker.panels.waterfall_summary": "מפל — דוגמה בכמה גדלים",
-  "fontmaker.panels.wide_auto_hint": "מורכב אוטומטית מ-{bases} העקובות שלכם. מחוון הרוחב גם מוסיף מרווח צד וגם מותח את המתאר — נשמר אוטומטית.",
+  "fontmaker.panels.wide_auto_hint": "מורכב אוטומטית מ-{bases} העקובות שלכם. מחוון <b>הרוחב</b> גם מוסיף מרווח צד וגם מותח את המתאר — נשמר אוטומטית.",
   "fontmaker.panels.wide_need_trace": "עקבו קודם אחר {names} — צורה זו מורכבת אוטומטית מ-{bases}.",
   "fontmaker.panels.wide_nikkud_hint": "תנועות על צורה רחבה זו עוקבות אחר המיקום של {name}, נמתחות כדי להתאים — כך שהן נשארות עקביות עם האות הרגילה. הציגו אחת למטה; כדי להזיז אותה, ערכו את הניקוד על {name}.",
   "fontmaker.panels.wide_vowels_follow": "התנועות של צורה רחבה זו עוקבות אחר אות הבסיס שלה — קבעו את גודלה עם מחוון הרוחב משמאל, וערכו את מיקומי התנועות על אות הבסיס.",

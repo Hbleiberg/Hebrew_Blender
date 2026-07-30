@@ -2462,7 +2462,7 @@
   "fontmaker.panels.version_title": "Edit it freely — also ticks up on each export.",
   "fontmaker.panels.vowel_every_letter": "{name} — every letter",
   "fontmaker.panels.waterfall_summary": "Waterfall — sample at several sizes",
-  "fontmaker.panels.wide_auto_hint": "Auto-composed from your traced {bases}. The Width slider both adds side space and stretches the outline — saved automatically.",
+  "fontmaker.panels.wide_auto_hint": "Auto-composed from your traced {bases}. The <b>Width</b> slider both adds side space and stretches the outline — saved automatically.",
   "fontmaker.panels.wide_need_trace": "Trace {names} first — this form is auto-composed from {bases}.",
   "fontmaker.panels.wide_nikkud_hint": "Vowels on this wide form follow {name}'s placement, stretched to fit — so they stay consistent with the plain letter. Preview one below; to move it, edit the nikkud on {name}.",
   "fontmaker.panels.wide_vowels_follow": "This wide form's vowels follow its base letter — size it with the Width slider on the left, and edit the vowel positions on the base letter.",

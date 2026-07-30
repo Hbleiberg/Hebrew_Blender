@@ -8815,25 +8815,25 @@ function renderWideFormControls(pc) {
       .map(cp => (letterMeta(cp) && letterMeta(cp).name) || ('U+' + cp));
     return `<div class="ws-side-title">${esc(precompName(pc))}</div>
       <div class="hint">${esc(window.I18n ? I18n.t('fontmaker.hint.trace_first_composed', {needs: need.join(' and '), bases: bases.join(' + ')}) : 'Trace ' + need.join(' and ') + ' first — this form is auto-composed from ' + bases.join(' + ') + '.')}</div>
-      <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">← Back</button>`;
+      <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">${_pT('back', '← Back')}</button>`;
   }
   return `<div class="ws-side-title">${esc(precompName(pc))}</div>
-    <div class="hint" style="font-size:0.66rem;">Auto-composed from your traced ${bases.map(esc).join(' + ')}. The <b>Width</b> slider both adds side space and stretches the outline — saved automatically.</div>
+    <div class="hint" style="font-size:0.66rem;">${_pT('wide_auto_hint', 'Auto-composed from your traced ' + bases.map(esc).join(' + ') + '. The <b>Width</b> slider both adds side space and stretches the outline — saved automatically.', { bases: bases.map(esc).join(' + ') })}</div>
     <hr class="ctl-divider">
     <div class="inline">${esc(window.I18n ? I18n.t('fontmaker.panels.width') : 'Width')} <input type="range" min="100" max="250" step="1" value="${wPct}" oninput="setPrecompWidth(this.value)" onchange="udBurstCommit();renderControls();renderGrids()" aria-label="${esc(window.I18n ? I18n.t('fontmaker.panels.width') : 'Width')}"> <span id="pcWidthV" class="readout">${wPct}%</span></div>
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
-      ${isOver ? `<button class="ctl-btn" onclick="resetPrecompWidth()">Reset width</button>` : `<span class="hint" style="font-size:0.62rem;">Default width — drag the slider to customize.</span>`}
+      ${isOver ? `<button class="ctl-btn" onclick="resetPrecompWidth()">${_pT('reset_width', 'Reset width')}</button>` : `<span class="hint" style="font-size:0.62rem;">${_pT('default_width_hint', 'Default width — drag the slider to customize.')}</span>`}
     </div>
     <hr class="ctl-divider">
-    <div class="ws-side-title">Nikkud</div>
-    <div class="hint" style="font-size:0.62rem;">Vowels on this wide form follow <b>${esc(donorName)}</b>'s placement, stretched to fit — so they stay consistent with the plain letter. Preview one below; to move it, edit the nikkud on <b>${esc(donorName)}</b>.</div>
-    <div class="hint" style="font-size:0.6rem;margin-top:4px;">Preview vowel</div>
+    <div class="ws-side-title">${_pT('nikkud_side', 'Nikkud')}</div>
+    <div class="hint" style="font-size:0.62rem;">${_pT('wide_nikkud_hint', "Vowels on this wide form follow <b>" + esc(donorName) + "</b>'s placement, stretched to fit — so they stay consistent with the plain letter. Preview one below; to move it, edit the nikkud on <b>" + esc(donorName) + "</b>.", { name: '<b>' + esc(donorName) + '</b>' })}</div>
+    <div class="hint" style="font-size:0.6rem;margin-top:4px;">${_pT('preview_vowel', 'Preview vowel')}</div>
     <div class="mark-grid2">${BELOW_VOWELS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeBelowVowel, 'setBelowVowel')).join('')}</div>
     <div class="ctl-row" style="margin-top:8px;">
-      <button class="ctl-btn primary" style="width:100%;" onclick="gotoBaseNikkud('${donorCp}')">Edit nikkud on ${esc(donorName)} →</button>
+      <button class="ctl-btn primary" style="width:100%;" onclick="gotoBaseNikkud('${donorCp}')">${_pT('edit_nikkud_on', 'Edit nikkud on ' + esc(donorName) + ' →', { name: esc(donorName) })}</button>
     </div>
     <hr class="ctl-divider">
-    <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">← Back</button>`;
+    <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">${_pT('back', '← Back')}</button>`;
 }
 function precompHandlesSVG() {
   const pc = getPrecomp(precompTarget); if (!pc) return '';
