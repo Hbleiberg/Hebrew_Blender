@@ -1463,6 +1463,10 @@ function saveThemeAsWordList() {
   if (!bulkMode) { _themeBridgeBulk = true; const cb = document.getElementById('bulkModeCb'); if (cb) cb.checked = true; toggleBulkMode(true); }
   selectAllMatching();      // selects every word in the current (theme-filtered) results
   updateExportState();      // enables the save path now that a selection exists
+  // Prefill the list name from the active theme(s) — typing it was the only typing
+  // left in the theme → list → drill flow. Editable; the dup guard still applies.
+  _wlPrefillName = [...document.querySelectorAll('.tcb:checked')]
+    .map(cb => I18n.t('dictionary.themes.' + cb.value)).join(' + ');
   wlOpenSaveModal();        // reads the bulk selection, prompts for a list name
 }
 
@@ -1687,6 +1691,7 @@ function wlOpenSaveModal() {
   // Create new
   body.appendChild(wlEl('div', { style: 'font-size:0.72rem;font-weight:600;color:var(--text);margin-bottom:4px;' }, I18n.t('dictionary.wordlist.create_new')));
   const nameIn = wlEl('input', { type: 'text', maxLength: 80, placeholder: I18n.t('dictionary.wordlist.name_placeholder'), style: 'width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;font-size:0.85rem;margin-bottom:6px;' });
+  if (_wlPrefillName) { nameIn.value = _wlPrefillName.slice(0, 80); _wlPrefillName = ''; }   // one-shot; only the theme bridge sets it
   body.appendChild(nameIn);
   const createBtn = wlEl('button', { cls: 'wm-root-btn', type: 'button' }, I18n.t('dictionary.wordlist.save_as_new'));
   body.appendChild(createBtn);
@@ -4588,6 +4593,7 @@ function renderDictEmptyState(isEmoji) {
 
 let _modalOpener = null, _modalKeyHandler = null;
 let _themeBridgeBulk = false;   // the theme→Word-List bridge enabled bulk mode as plumbing; undo it when its modal closes
+let _wlPrefillName = '';        // one-shot save-modal name prefill, set only by the theme bridge
 function _wmFocusables() {
   const ov = document.getElementById('wordModal');
   return [...ov.querySelectorAll('button,a[href],input,select,textarea,[tabindex]')].filter(el => !el.disabled && el.offsetParent !== null);
