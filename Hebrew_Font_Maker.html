@@ -3331,13 +3331,13 @@ function metricHandlesSVG() {
   const dot = (key,axis,cx,cy,col,label,title) =>
     `<circle class="metric-h" data-metric="${key}" data-axis="${axis}" cx="${(+cx).toFixed(1)}" cy="${(+cy).toFixed(1)}" r="7" fill="${col}" stroke="#fff" stroke-width="3" paint-order="stroke" style="cursor:${axis==='y'?'ns-resize':'ew-resize'};filter:drop-shadow(0 0 1px rgba(0,0,0,0.55));"><title>${title}</title></circle>`
     + (label ? `<text x="${(+cx).toFixed(1)}" y="${(+cy-12).toFixed(1)}" text-anchor="middle" fill="${col}" font-size="9" font-weight="700" font-family="'Source Sans 3',sans-serif" pointer-events="none">${label}</text>` : '');
-  let h = dot('letterTop','y', 488, fy(m.letterTop), C.top, '', 'Top (cap height) — drag to set')
-        + dot('baseline','y', 488, fy(m.baseline), C.base, '', 'Baseline — drag to set');
-  if (meta && meta.desc) h += dot('descender','y', 488, fy(m.descender), C.desc, '', 'Descender — drag to set');
-  if (meta && meta.asc)  h += dot('lamedAscender','y', 488, fy(m.lamedAscender), C.top, '', 'Lamed ascender — drag to set');
-  h += dot('advance','x', fx(adv), vy1+12, C.margin, 'width', 'Letter width (advance) — drag');   // sits on the "letter width" line
-  h += dot('lsb','x', fx(letterLSB(L)), mid, C.margin, 'left', 'Left margin — drag to slide the whole letter');   // slides the glyph (ink) horizontally
-  h += dot('rsb','x', fx(adv - letterRSB(L)), mid, C.margin, 'right', 'Right margin — drag');        // inner edge of the right zone (same advance as the zone)
+  let h = dot('letterTop','y', 488, fy(m.letterTop), C.top, '', _pT('metric_top_drag', 'Top (cap height) — drag to set'))
+        + dot('baseline','y', 488, fy(m.baseline), C.base, '', _pT('metric_baseline_drag', 'Baseline — drag to set'));
+  if (meta && meta.desc) h += dot('descender','y', 488, fy(m.descender), C.desc, '', _pT('metric_descender_drag', 'Descender — drag to set'));
+  if (meta && meta.asc)  h += dot('lamedAscender','y', 488, fy(m.lamedAscender), C.top, '', _pT('metric_lamed_drag', 'Lamed ascender — drag to set'));
+  h += dot('advance','x', fx(adv), vy1+12, C.margin, 'width', _pT('metric_width_drag', 'Letter width (advance) — drag'));   // sits on the "letter width" line
+  h += dot('lsb','x', fx(letterLSB(L)), mid, C.margin, 'left', _pT('metric_lsb_drag', 'Left margin — drag to slide the whole letter'));   // slides the glyph (ink) horizontally
+  h += dot('rsb','x', fx(adv - letterRSB(L)), mid, C.margin, 'right', _pT('metric_rsb_drag', 'Right margin — drag'));        // inner edge of the right zone (same advance as the zone)
   return h;
 }
 function attachMetricDrag() {
@@ -4104,8 +4104,8 @@ function renderFormPanel(panelId, targets, intro) {
   const missing = new Set();
   targets.forEach(t => { const pc = getPrecomp(t); if (pc) (pc.bases || [pc.base]).forEach(cp => { if (!isTraced(cp)) missing.add(cp); }); });
   const summary = missing.size
-    ? `<div class="form-need">Trace these base letters to fill in this tab: <span class="form-need-chars">${[...missing].map(chOf).join(' ')}</span></div>`
-    : `<div class="form-ready">✓ All base letters traced — ready.</div>`;
+    ? `<div class="form-need">${_pT('form_need_trace', 'Trace these base letters to fill in this tab:')} <span class="form-need-chars">${[...missing].map(chOf).join(' ')}</span></div>`
+    : `<div class="form-ready">${_pT('form_ready', '✓ All base letters traced — ready.')}</div>`;
   el.innerHTML = `<div class="hint" style="margin-bottom:8px;">${intro}</div>${summary}<div class="letter-grid" id="${panelId}Grid"></div>`;
   const grid = document.getElementById(panelId + 'Grid'); if (!grid) return;
   let any = false;
@@ -4115,17 +4115,18 @@ function renderFormPanel(panelId, targets, intro) {
     const bases = pc.bases || [pc.base];
     const need = bases.filter(cp => !isTraced(cp));
     const traced = need.length === 0;
+    const needChars = esc(need.map(chOf).join(' '));
     const overridden = isCustomCp(t);   // a custom glyph at this code point wins at export — say so instead of pretending this form will ship
     const tile = document.createElement('div');
     tile.className = 'ltile' + (precompTarget === t ? ' sel' : '') + (traced ? '' : ' locked');
     const pv = traced ? formTilePreviewSVG(pc) : '';   // live composed outline (reflects the Width slider); font char until composable
     tile.innerHTML = `<span class="lt-dot ${traced ? 'traced' : ''}"></span>
       ${pv || `<span class="lt-heb" lang="he" style="font-family:${esc(project.template.font)};direction:rtl;">${precompComposed(pc)}</span>`}
-      <span class="lt-name">${esc(precompName(pc))}</span>${overridden ? `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.custom_glyph_overrides', {t}) : 'You added a custom glyph at U+' + t + '; the exported font uses your custom outline, not this composed form.')}">custom glyph overrides</span>` : traced ? '' : `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.trace_needs', {names: need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', ')}) : 'Trace ' + need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">needs ${esc(need.map(chOf).join(' '))}</span>`}`;
+      <span class="lt-name">${esc(precompName(pc))}</span>${overridden ? `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.custom_glyph_overrides', {t}) : 'You added a custom glyph at U+' + t + '; the exported font uses your custom outline, not this composed form.')}">${_pT('form_overrides', 'custom glyph overrides')}</span>` : traced ? '' : `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.trace_needs', {names: need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', ')}) : 'Trace ' + need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">${_pT('form_needs', 'needs ' + needChars, {chars: needChars})}</span>`}`;
     tile.onclick = () => pickPrecompForm(t);
     grid.appendChild(tile);
   });
-  if (!any) grid.innerHTML = `<div class="hint" style="grid-column:1/-1;direction:ltr;text-align:left;">Enable this tab to add its forms.</div>`;
+  if (!any) grid.innerHTML = `<div class="hint" style="grid-column:1/-1;direction:ltr;text-align:left;">${_pT('form_enable_tab', 'Enable this tab to add its forms.')}</div>`;
   a11yTiles(grid);
 }
 function renderSpecialFormsPanel() { renderFormPanel('specialFormsPanelBody', SPECIAL_TARGETS, 'Wide letterforms — <b>auto-composed from your traced letters</b>. Pick one, then use the <b>Width</b> slider (it both adds side space and stretches). Insert them by their Unicode code point.'); }
@@ -5148,10 +5149,10 @@ function combinedNavHTML() {
   if (curKind !== 'letter') return '';
   const n = project.combinedSheets.length; if (n < 1) return '';
   const i = project.combinedIndex, sh = project.combinedSheets[i] || {};
-  const name = esc(sh.name || ('Sheet ' + (i + 1)));
-  const counter = `<div class="combined-counter"><div class="cn-name" title="${name}">${name}</div><div class="cn-count">${i + 1} of ${n}</div></div>`;
-  const prev = n > 1 ? `<button class="ctl-btn" ${i <= 0 ? 'disabled' : ''} onclick="combinedNav(-1)">‹ Previous</button>` : '';
-  const next = n > 1 ? `<button class="ctl-btn" ${i >= n - 1 ? 'disabled' : ''} onclick="combinedNav(1)">Next ›</button>` : '';
+  const name = esc(sh.name || _pT('combined_sheet_default', 'Sheet ' + (i + 1), { n: i + 1 }));
+  const counter = `<div class="combined-counter"><div class="cn-name" title="${name}">${name}</div><div class="cn-count">${_pT('combined_count', (i + 1) + ' of ' + n, { i: i + 1, n })}</div></div>`;
+  const prev = n > 1 ? `<button class="ctl-btn" ${i <= 0 ? 'disabled' : ''} onclick="combinedNav(-1)">${_pT('combined_prev', '‹ Previous')}</button>` : '';
+  const next = n > 1 ? `<button class="ctl-btn" ${i >= n - 1 ? 'disabled' : ''} onclick="combinedNav(1)">${_pT('combined_next', 'Next ›')}</button>` : '';
   const rm = `<button class="ctl-btn ghost cn-remove" title="${esc(window.I18n ? I18n.t('fontmaker.panels.combined_remove_title') : 'Remove this sheet from the set')}" aria-label="${esc(window.I18n ? I18n.t('fontmaker.panels.combined_remove_title') : 'Remove this sheet from the set')}" onclick="removeCombinedSheet()">✕</button>`;
   // Auto-detect lives here, right under the sheet it operates on (raster sheets only). Moved out of
   // the left upload panel so it sits where you're already looking when boxing letters.
@@ -9887,7 +9888,7 @@ function renderKerningSection() {
     const reason = kernPairReason(k); if (!reason) nReady++;
     const active = sameSet(kernSideCps(e.left), k.left||[]) && sameSet(kernSideCps(e.right), k.right||[]);
     const badge = reason
-      ? `<span style="font-size:0.62rem;padding:1px 5px;border-radius:4px;white-space:nowrap;background:${reason==='untraced glyph'?'rgba(190,90,90,0.18)':'rgba(150,150,150,0.18)'};color:${reason==='untraced glyph'?'#c0392b':'var(--muted)'};" title="${reason==='untraced glyph'?'A glyph in this pair has no traced outline — it will be skipped on export.':'Pairs at 0 do nothing — drag the gap to apply.'}">${reason==='untraced glyph'?'⚠ untraced':'set a gap'}</span>`
+      ? `<span style="font-size:0.62rem;padding:1px 5px;border-radius:4px;white-space:nowrap;background:${reason==='untraced glyph'?'rgba(190,90,90,0.18)':'rgba(150,150,150,0.18)'};color:${reason==='untraced glyph'?'#c0392b':'var(--muted)'};" title="${esc(reason==='untraced glyph'?_pT('kern_untraced_title', 'A glyph in this pair has no traced outline — it will be skipped on export.'):_pT('kern_setgap_title', 'Pairs at 0 do nothing — drag the gap to apply.'))}">${reason==='untraced glyph'?_pT('kern_untraced_badge', '⚠ untraced'):_pT('kern_setgap_badge', 'set a gap')}</span>`
       : '';
     rows += `<div class="readline" style="cursor:pointer;gap:8px;align-items:center;${active?'background:rgba(201,146,42,0.14);border-radius:5px;':''}" onclick="loadKernPair(${i})" title="${esc(window.I18n ? I18n.t('fontmaker.panels.kern_click_edit') : 'Click to edit')}">
       <span style="font-family:var(--heb-font);font-size:1.05rem;">${esc(kernSideLabel(k.left||[]))}<span style="color:var(--muted);font-size:0.7rem;font-family:inherit;"> · </span>${esc(kernSideLabel(k.right||[]))}</span>
@@ -9909,7 +9910,7 @@ function renderKerningSection() {
       <button class="ctl-btn" onclick="suggestKernPairs()">${I18n.t('fontmaker.panels.kern_suggest')}</button>
     </div>
     <div class="inline" style="margin-top:6px;">${I18n.t('fontmaker.panels.kern_autotightness')} <input type="range" min="-40" max="160" step="5" value="${kernTargetGap()}" oninput="setKernTarget(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.kern_autotightness'))}"> <span id="kernTgtV" class="readout">${kernTargetGap()}</span></div>
-    <div class="hint" style="margin-top:4px;">Negative = tighter, positive = looser (font units). “Suggest pairs” seeds an even starting gap toward <b>Auto-tightness</b> (lower = tighter), measured <b>optically</b> so overhanging letters tuck in; Preview PDF shows it shaped in full.</div>
+    <div class="hint" style="margin-top:4px;">${_pT('kern_autotightness_hint', 'Negative = tighter, positive = looser (font units). “Suggest pairs” seeds an even starting gap toward <b>Auto-tightness</b> (lower = tighter), measured <b>optically</b> so overhanging letters tuck in; Preview PDF shows it shaped in full.')}</div>
     ${pairs.length ? `<div class="hint" style="margin-top:8px;">${nReady} of ${pairs.length} pair${pairs.length>1?'s':''} will be exported.${nReady<pairs.length?' Pairs marked “⚠ untraced” or “set a gap” are skipped.':''}</div><div style="margin-top:4px;">${rows}</div>` : '<div class="hint" style="margin-top:8px;">'+esc(I18n.t('fontmaker.panels.kern_no_pairs'))+'</div>'}
     ${kernClassManagerHTML()}`;
   renderKernPreview();

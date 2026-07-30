@@ -2197,7 +2197,7 @@
   "fontmaker.panels.invert": "היפוך (דיו בהיר על כהה)",
   "fontmaker.panels.kern_add": "הוסף זוג",
   "fontmaker.panels.kern_autotightness": "הידוק אוטומטי",
-  "fontmaker.panels.kern_autotightness_hint": "שלילי = צפוף יותר, חיובי = רופף יותר (יחידות גופן). \"הצע זוגות\" מזריע מרווח התחלתי אחיד לכיוון ההידוק-אוטומטי (נמוך יותר = צפוף יותר), נמדד אופטית כך שאותיות בולטות נתחבות פנימה; תצוגה מקדימה PDF מציגה אותו מעוצב במלואו.",
+  "fontmaker.panels.kern_autotightness_hint": "שלילי = צפוף יותר, חיובי = רופף יותר (יחידות גופן). \"הצע זוגות\" מזריע מרווח התחלתי אחיד לכיוון <b>ההידוק-אוטומטי</b> (נמוך יותר = צפוף יותר), נמדד <b>אופטית</b> כך שאותיות בולטות נתחבות פנימה; תצוגה מקדימה PDF מציגה אותו מעוצב במלואו.",
   "fontmaker.panels.kern_builtin": "מובנה",
   "fontmaker.panels.kern_class_delete_title": "מחק מחלקה",
   "fontmaker.panels.kern_class_edit": "ערוך",

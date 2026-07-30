@@ -2197,7 +2197,7 @@
   "fontmaker.panels.invert": "Invert (light ink on dark)",
   "fontmaker.panels.kern_add": "Add pair",
   "fontmaker.panels.kern_autotightness": "Auto-tightness",
-  "fontmaker.panels.kern_autotightness_hint": "Negative = tighter, positive = looser (font units). “Suggest pairs” seeds an even starting gap toward Auto-tightness (lower = tighter), measured optically so overhanging letters tuck in; Preview PDF shows it shaped in full.",
+  "fontmaker.panels.kern_autotightness_hint": "Negative = tighter, positive = looser (font units). “Suggest pairs” seeds an even starting gap toward <b>Auto-tightness</b> (lower = tighter), measured <b>optically</b> so overhanging letters tuck in; Preview PDF shows it shaped in full.",
   "fontmaker.panels.kern_builtin": "built-in",
   "fontmaker.panels.kern_class_delete_title": "Delete class",
   "fontmaker.panels.kern_class_edit": "Edit",

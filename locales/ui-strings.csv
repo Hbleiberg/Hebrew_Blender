@@ -2077,7 +2077,7 @@ fontmaker.panels.input_single,One letter per image,אות אחת לכל תמונ
 fontmaker.panels.invert,Invert (light ink on dark),היפוך (דיו בהיר על כהה),checkbox label,
 fontmaker.panels.kern_add,Add pair,הוסף זוג,button,
 fontmaker.panels.kern_autotightness,Auto-tightness,הידוק אוטומטי,slider label,
-fontmaker.panels.kern_autotightness_hint,"Negative = tighter, positive = looser (font units). “Suggest pairs” seeds an even starting gap toward Auto-tightness (lower = tighter), measured optically so overhanging letters tuck in; Preview PDF shows it shaped in full.","שלילי = צפוף יותר, חיובי = רופף יותר (יחידות גופן). ""הצע זוגות"" מזריע מרווח התחלתי אחיד לכיוון ההידוק-אוטומטי (נמוך יותר = צפוף יותר), נמדד אופטית כך שאותיות בולטות נתחבות פנימה; תצוגה מקדימה PDF מציגה אותו מעוצב במלואו.",panel hint,
+fontmaker.panels.kern_autotightness_hint,"Negative = tighter, positive = looser (font units). “Suggest pairs” seeds an even starting gap toward <b>Auto-tightness</b> (lower = tighter), measured <b>optically</b> so overhanging letters tuck in; Preview PDF shows it shaped in full.","שלילי = צפוף יותר, חיובי = רופף יותר (יחידות גופן). ""הצע זוגות"" מזריע מרווח התחלתי אחיד לכיוון <b>ההידוק-אוטומטי</b> (נמוך יותר = צפוף יותר), נמדד <b>אופטית</b> כך שאותיות בולטות נתחבות פנימה; תצוגה מקדימה PDF מציגה אותו מעוצב במלואו.",panel hint,
 fontmaker.panels.kern_builtin,built-in,מובנה,class list tag,
 fontmaker.panels.kern_class_delete_title,Delete class,מחק מחלקה,button title,
 fontmaker.panels.kern_class_edit,Edit,ערוך,button,
