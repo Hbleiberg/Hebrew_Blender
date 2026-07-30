@@ -10334,16 +10334,16 @@ function renderAlignUnder(U, l) {
   const isSvg = !!(l.source && l.source.kind === 'svg');
   if (project.inputMode === 'font') {
     hint = `<div class="hint">${ l.contours
-      ? 'Outline loaded from your font file — no tracing needed. Set the <b>Width &amp; margins</b> below, then go to <b>Nikkud</b> to place the vowels.'
-      : 'No glyph for this letter was found in the uploaded font. Try another font, or pick a different input mode under <b>Add Letters</b> on the left.' }</div>`;
+      ? _pT('align_font_hint_loaded', 'Outline loaded from your font file — no tracing needed. Set the <b>Width &amp; margins</b> below, then go to <b>Nikkud</b> to place the vowels.')
+      : _pT('align_font_hint_missing', 'No glyph for this letter was found in the uploaded font. Try another font, or pick a different input mode under <b>Add Letters</b> on the left.') }</div>`;
   } else if (isSvg) {
     hint = `<div class="hint">${ l.contours
-      ? 'Imported from SVG — no tracing needed. Set the <b>Width &amp; margins</b> below, then go to <b>Nikkud</b> to place the vowels.'
-      : 'Upload an SVG for this glyph under <b>Add Letters</b> on the left.' }</div>`;
+      ? _pT('align_svg_hint_loaded', 'Imported from SVG — no tracing needed. Set the <b>Width &amp; margins</b> below, then go to <b>Nikkud</b> to place the vowels.')
+      : _pT('align_svg_hint_missing', 'Upload an SVG for this glyph under <b>Add Letters</b> on the left.') }</div>`;
   }
   const nextBtn = isVectorGlyph(l)
-    ? (l.contours && !isPunctItem() ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">Next: Nikkud →</button>` : '')
-    : (curImageUrl() ? `<button class="ctl-btn primary" onclick="setWorkMode('trace')">Next: Trace →</button>` : '');
+    ? (l.contours && !isPunctItem() ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">${_pT('next_nikkud', 'Next: Nikkud →')}</button>` : '')
+    : (curImageUrl() ? `<button class="ctl-btn primary" onclick="setWorkMode('trace')">${_pT('next_trace', 'Next: Trace →')}</button>` : '');
   const applyBtn = (curKind === 'letter' && !isVectorGlyph(l) && curImageUrl())
     ? `<button class="ctl-btn" onclick="openApplyAlign()" title="${esc(window.I18n ? I18n.t('fontmaker.tip.apply_align_other') : "Copy this letter's position & scale onto other letters")}">Apply alignment to other letters…</button>` : '';
   U.innerHTML = `
@@ -10411,7 +10411,7 @@ function renderTraceUnder(U, l) {
     ? `<div class="hint">This letter came from a font file, so it's already vectorized — no tracing needed. Go to <b>Nikkud</b>.</div>`
     : (l.source && l.source.kind === 'svg')
     ? `<div class="hint">Imported from SVG — already vectorized. Fine-tune points if you like, then go to <b>Nikkud</b>.</div>` : '';
-  const nextBtn = (l.contours && !isPunctItem()) ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">Next: Nikkud →</button>` : '';
+  const nextBtn = (l.contours && !isPunctItem()) ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">${_pT('next_nikkud', 'Next: Nikkud →')}</button>` : '';
   U.innerHTML = `
     <div class="ws-under-row" style="align-items:center;">
       <div class="ws-under-grow">${hint}</div>
@@ -10550,8 +10550,8 @@ function renderAnchorLeft(L, l) {
       <label>Y <input type="number" id="ancY" value="${a.y}" oninput="setAnchorCoord('y',this.value)" onchange="udBurstCommit()"></label>
     </div>
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
-      <button class="ctl-btn" onclick="centerAnchorH()" title="Center horizontally — halfway between the left and right margins">Center ↔</button>
-      <button class="ctl-btn" onclick="centerAnchorV()" title="Center vertically — halfway between the top and base lines">Center ↕</button>
+      <button class="ctl-btn" onclick="centerAnchorH()" title="${esc(_pT('center_h_title', 'Center horizontally — halfway between the left and right margins'))}">${_pT('center_h', 'Center ↔')}</button>
+      <button class="ctl-btn" onclick="centerAnchorV()" title="${esc(_pT('center_v_title', 'Center vertically — halfway between the top and base lines'))}">${_pT('center_v', 'Center ↕')}</button>
     </div>
     <div class="hint" style="font-size:0.6rem;text-align:center;margin-top:5px;">Moves ${xyWhat} on <b>${esc(l.name)}</b> only.</div>`;
   let coRow = '';
@@ -10605,11 +10605,11 @@ function renderAnchorLeft(L, l) {
     if (isCustomCp(cp)) { const it = (project.letters || []).find(x => x.codepoint === cp); return esc(((it && it.name) ? it.name[0] : '') || '?'); }
     return `<span lang="he" style="font-family:${esc(project.template.font)};direction:rtl;">${String.fromCodePoint(parseInt(cp,16))}</span>`;
   };
-  const _prevLbl = _single ? '◀ Prev' : `◀ Prev (${_navChar(_cyc[(_ci - 1 + _clen) % _clen])})`;
-  const _nextLbl = _single ? 'Next ▶' : `Next (${_navChar(_cyc[(_ci + 1) % _clen])}) ▶`;
+  const _prevLbl = _single ? _pT('prev', '◀ Prev') : _pT('prev_char', '◀ Prev (' + _navChar(_cyc[(_ci - 1 + _clen) % _clen]) + ')', { char: _navChar(_cyc[(_ci - 1 + _clen) % _clen]) });
+  const _nextLbl = _single ? _pT('next', 'Next ▶') : _pT('next_char', 'Next (' + _navChar(_cyc[(_ci + 1) % _clen]) + ') ▶', { char: _navChar(_cyc[(_ci + 1) % _clen]) });
   const navRow = `<div class="ctl-row" style="margin-bottom:6px;">
-      <button class="ctl-btn" onclick="stepLetter(-1)" title="Previous letter ( [ ) — stays on this step">${_prevLbl}</button>
-      <button class="ctl-btn" onclick="stepLetter(1)" title="Next letter ( ] ) — stays on this step">${_nextLbl}</button>
+      <button class="ctl-btn" onclick="stepLetter(-1)" title="${esc(_pT('prev_title', 'Previous letter ( [ ) — stays on this step'))}">${_prevLbl}</button>
+      <button class="ctl-btn" onclick="stepLetter(1)" title="${esc(_pT('next_title', 'Next letter ( ] ) — stays on this step'))}">${_nextLbl}</button>
     </div>`;
   L.innerHTML = `
     ${navRow}
@@ -13502,11 +13502,11 @@ function toggleLoadMenu(ev) {
   if (document.getElementById('loadMenu')) { closeLoadMenu(); return; }
   const recents = getRecentProjects();
   const menu = document.createElement('div'); menu.id = 'loadMenu'; menu.className = 'load-menu';
-  let h = `<button class="load-menu-item" onclick="closeLoadMenu();document.getElementById('projFile').click()">📂 Load from computer…</button>
-    <div class="load-menu-sep"></div><div class="load-menu-head">Recent</div>`;
+  let h = `<button class="load-menu-item" onclick="closeLoadMenu();document.getElementById('projFile').click()">${_pT('load_from_computer', '📂 Load from computer…')}</button>
+    <div class="load-menu-sep"></div><div class="load-menu-head">${_pT('load_recent', 'Recent')}</div>`;
   h += recents.length
     ? recents.map((r,i) => `<button class="load-menu-item" onclick="closeLoadMenu();loadRecentProject(${i})"><span>${esc(r.name)}</span><span class="load-menu-date">${recentDate(r.savedAt)}</span></button>`).join('')
-    : `<div class="load-menu-empty">No recent projects yet — save one first.</div>`;
+    : `<div class="load-menu-empty">${_pT('load_no_recent', 'No recent projects yet — save one first.')}</div>`;
   menu.innerHTML = h;
   document.body.appendChild(menu);
   const rect = ev.currentTarget.getBoundingClientRect();
