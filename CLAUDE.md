@@ -125,7 +125,7 @@ interpolation uses `{placeholder}` tokens. Any precached-file edit still bumps `
 ### 3. Key naming
 `page.feature.element` — lowercase, dot-separated (e.g. `dashboard.picker.close_aria`,
 `fontmaker.modals.save_project_title`). Cross-tool chrome lives under `shared.*` (`shared.nav.*`,
-`shared.footer.*`, `shared.darkmode.*`, `shared.fonts.*`, `shared.ivrit.*`, `shared.folders.*`). Glyph names
+`shared.footer.*`, `shared.darkmode.*`, `shared.fonts.*`, `shared.ivrit.*`, `shared.folders.*`, `shared.lang.*`). Glyph names
 under `*.glyphname.*`.
 
 ### 4. Scope boundary — what translates vs. what stays content

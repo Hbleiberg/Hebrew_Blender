@@ -3008,6 +3008,7 @@
   "shared.ivrit.toast_restored_named": "השחזור הצליח מ-{source}.",
   "shared.ivrit.toast_restored_plain": "השחזור הצליח.",
   "shared.ivrit.tool_mismatch_confirm": "זה נראה כקובץ שמירה של \"{tool}\", אבל זה דף {tool2}.\n\nייבוא כאן עשוי לא לעשות דבר מועיל. לייבא בכל זאת?",
+  "shared.lang.switcher_aria": "שפה",
   "shared.nav.header": "כלים עבריים נוספים",
   "shared.nav.link_dashboard": "תצוגת כיתה בעברית ←",
   "shared.nav.link_dictionary": "חיפוש מילים בעברית ←",

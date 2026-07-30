@@ -2825,6 +2825,7 @@ shared.fonts.section_generic,{section} Fonts,גופני {section},"Font-picker s
 shared.fonts.section_my_fonts,My Fonts,הגופנים שלי,Font-picker section header (custom fonts group),shared (carriers: all font-selector tools)
 shared.fonts.upload_label,⬆ Upload your own font?,⬆ העלו גופן משלכם?,My Fonts uploader label (below font grid),leading-emoji; shared (carriers: 7 font-selector tools)
 shared.fonts.upload_title,"Add a .ttf, .otf, or .woff/.woff2 font to My Fonts","הוסיפו גופן ‎.ttf‏, ‎.otf‏ או ‎.woff/.woff2 אל הגופנים שלי",My Fonts uploader label title,shared
+shared.lang.switcher_aria,Language,שפה,aria-label on the EN/עברית language switcher — its only accessible name (no visible label),aria-label only; shared
 shared.footer.about_header,About,אודות,Footer section header,shared
 shared.footer.created_by,Created by Harrison Bleiberg,נוצר על ידי Harrison Bleiberg,Footer credit,mixed UI+content — do not translate 'Harrison Bleiberg'; shared
 shared.footer.github,GitHub,GitHub,Footer link,do-not-translate; shared

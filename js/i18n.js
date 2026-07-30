@@ -149,9 +149,13 @@
       .then(function (data) { dicts[l] = data || {}; return dicts[l]; });
   }
 
+  // Refreshes both the selected value AND the control's accessible name. Doing the name here rather
+  // than leaning on each page's applyI18n keeps the shared switcher correct on its own — 12 separate
+  // call sites is exactly how a never-re-rendered string gets frozen in the previous language.
   function updateSwitcherState() {
     var sels = document.querySelectorAll('.i18n-switch select');
-    for (var i = 0; i < sels.length; i++) sels[i].value = lang;
+    var aria = switcherAria();
+    for (var i = 0; i < sels.length; i++) { sels[i].value = lang; sels[i].setAttribute('aria-label', aria); }
   }
 
   // ---- Live language switch (no reload) ------------------------------------------------------
@@ -220,6 +224,18 @@
     { code: 'he', label: 'עברית', flag: '🇮🇱', aria: 'Hebrew' }
   ];
 
+  // The switcher has NO visible label — just a flag and a language code — so this aria-label is the
+  // only name a screen-reader or voice-control user has for the control. It follows the UI language:
+  // once the UI is Hebrew the document already carries lang="he", so a Hebrew name is read with a
+  // Hebrew voice (which is why localizing beats a bilingual literal here). Read through this guard,
+  // never t() directly: pre-ready t() returns the KEY, and writing that into aria-label would give
+  // the control the accessible name "shared.lang.switcher_aria".
+  var SWITCHER_ARIA_KEY = 'shared.lang.switcher_aria';
+  function switcherAria() {
+    var v = t(SWITCHER_ARIA_KEY);
+    return v === SWITCHER_ARIA_KEY ? 'Language' : v;
+  }
+
   // A native <select> dropdown: fully keyboard/touch/screen-reader accessible for free, and it scales
   // cleanly as languages are added (vs. an ever-growing row of buttons). Live-switches on `change`.
   function createSwitcher() {
@@ -228,7 +244,8 @@
     wrap.className = 'i18n-switch';
     var sel = document.createElement('select');
     sel.className = 'i18n-select';
-    sel.setAttribute('aria-label', 'Language');
+    sel.setAttribute('aria-label', switcherAria());          // pre-ready this is the English literal
+    sel.setAttribute('data-i18n-aria-label', SWITCHER_ARIA_KEY);   // so applyStaticI18n refreshes it as well
     SWITCHER_LANGS.forEach(function (o) {
       var opt = document.createElement('option');
       opt.value = o.code;
@@ -260,6 +277,11 @@
       dict = {};
       return dict;
     });
+
+  // Mount can win the race against the dict fetch (mountSwitchers runs at DOMContentLoaded), which
+  // would leave the English fallback in place on a Hebrew first load. Re-apply once the dict lands.
+  // Separate statement, NOT a reassignment of `ready` — I18n.ready must stay the same promise.
+  ready.then(function () { updateSwitcherState(); });
 
   var I18n = {
     lang: lang,

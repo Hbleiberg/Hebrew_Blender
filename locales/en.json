@@ -3008,6 +3008,7 @@
   "shared.ivrit.toast_restored_named": "Restored successfully from {source}.",
   "shared.ivrit.toast_restored_plain": "Restored successfully.",
   "shared.ivrit.tool_mismatch_confirm": "This looks like a \"{tool}\" save file, but this is the {tool2} page.\n\nImporting it here may not do anything useful. Import anyway?",
+  "shared.lang.switcher_aria": "Language",
   "shared.nav.header": "Related Hebrew Tools",
   "shared.nav.link_dashboard": "Hebrew classroom display →",
   "shared.nav.link_dictionary": "Hebrew word lookup →",
