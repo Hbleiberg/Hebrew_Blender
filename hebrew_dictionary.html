@@ -1460,7 +1460,7 @@ function selectAllMatching() {
 // before the "Save as Word List" button appeared (S151 Pass H). Reuses that exact flow.
 function saveThemeAsWordList() {
   if (!filtered || !filtered.length) return;
-  if (!bulkMode) { const cb = document.getElementById('bulkModeCb'); if (cb) cb.checked = true; toggleBulkMode(true); }
+  if (!bulkMode) { _themeBridgeBulk = true; const cb = document.getElementById('bulkModeCb'); if (cb) cb.checked = true; toggleBulkMode(true); }
   selectAllMatching();      // selects every word in the current (theme-filtered) results
   updateExportState();      // enables the save path now that a selection exists
   wlOpenSaveModal();        // reads the bulk selection, prompts for a list name
@@ -4587,6 +4587,7 @@ function renderDictEmptyState(isEmoji) {
 /* ===== Section 3: word / emoji detail modal ===== */
 
 let _modalOpener = null, _modalKeyHandler = null;
+let _themeBridgeBulk = false;   // the theme→Word-List bridge enabled bulk mode as plumbing; undo it when its modal closes
 function _wmFocusables() {
   const ov = document.getElementById('wordModal');
   return [...ov.querySelectorAll('button,a[href],input,select,textarea,[tabindex]')].filter(el => !el.disabled && el.offsetParent !== null);
@@ -4621,6 +4622,13 @@ function closeWordModal() {
   if (_modalKeyHandler) { ov.removeEventListener('keydown', _modalKeyHandler, true); _modalKeyHandler = null; }
   if (_modalOpener && _modalOpener.focus) { try { _modalOpener.focus(); } catch (e) {} }
   _modalOpener = null;
+  // The one-click theme bridge turned Bulk Copy Mode on only so the save modal had a selection;
+  // a teacher who never knowingly entered bulk mode must not be left with every card checked.
+  if (_themeBridgeBulk) {
+    _themeBridgeBulk = false;
+    const cb = document.getElementById('bulkModeCb'); if (cb) cb.checked = false;
+    toggleBulkMode(false);
+  }
 }
 function _wmCopyFlash(btn, text, label) {
   const done = () => { btn.textContent = I18n.t('dictionary.copy.copied_flash'); btn.classList.add('copied'); announce(I18n.t('dictionary.copy.copied_toast')); setTimeout(() => { btn.textContent = label; btn.classList.remove('copied'); }, 1400); };
