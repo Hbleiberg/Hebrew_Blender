@@ -10213,6 +10213,10 @@ function importCustomWordlist() {
 }
 
 function clearCustomWordlist() {
+  // The imported/pasted list lives only in memory — a mis-click here means re-importing.
+  // Confirm only when there is something to lose; an empty clear stays one-click.
+  const ta = document.getElementById('cwImportTextarea');
+  if ((customWordlistData.length || ta.value.trim()) && !confirm(I18n.t('worksheet.realwords.clear_confirm'))) return;
   customWordlistData = [];
   document.getElementById('cwImportTextarea').value = '';
   document.getElementById('cwImportCount').textContent = '';

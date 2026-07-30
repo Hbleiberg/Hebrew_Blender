@@ -3897,6 +3897,7 @@
   "worksheet.quickstart.numbers": "Numbers 0–20",
   "worksheet.realwords.bingo.title": "Bingo Options",
   "worksheet.realwords.clear_btn": "✕ Clear",
+  "worksheet.realwords.clear_confirm": "Clear the imported word list?",
   "worksheet.realwords.cw.clue.english": "English",
   "worksheet.realwords.cw.clue_lang": "Clue Language",
   "worksheet.realwords.display.title": "Drill Options",
