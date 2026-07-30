@@ -3320,7 +3320,7 @@ function metricsPanel() {
       <label class="ctl-btn metric-toggle" id="metAdj" style="display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none;"><input type="checkbox" ${metricAdjust?'checked':''} onchange="toggleMetricAdjust()" style="accent-color:var(--gold);width:14px;height:14px;cursor:pointer;flex-shrink:0;margin:0;">${I18n.t('fontmaker.panels.metric_adjust')}</label>
       <button class="ctl-btn" type="button" onclick="fitLetterMargins()" ${(curKind === 'letter' && l && l.contours && l.contours.length) ? '' : 'disabled'} title="${esc(I18n.t('fontmaker.panels.metric_fit_title'))}">${I18n.t('fontmaker.panels.metric_fit')}</button>
       <button class="ctl-btn" type="button" onclick="resetMetrics()">${I18n.t('fontmaker.panels.metric_reset')}</button>
-      <div class="hint" style="font-size:0.64rem;line-height:1.3;">Check <b>Adjust margins manually?</b> to show draggable dots: drag the <b>left</b> dot to slide the whole letter, the <b>right</b> dot to set the right margin, and <b>width</b> to set the advance. <b>Fit margins</b> gives a redrawn letter the font's default side margins. (The reference image stays draggable either way.)</div>
+      <div class="hint" style="font-size:0.64rem;line-height:1.3;">${_pT('metric_hint', "Check <b>Adjust margins manually?</b> to show draggable dots: drag the <b>left</b> dot to slide the whole letter, the <b>right</b> dot to set the right margin, and <b>width</b> to set the advance. <b>Fit margins</b> gives a redrawn letter the font's default side margins. (The reference image stays draggable either way.)")}</div>
     </div>
   </div>`;
 }
@@ -9911,7 +9911,7 @@ function renderKerningSection() {
     </div>
     <div class="inline" style="margin-top:6px;">${I18n.t('fontmaker.panels.kern_autotightness')} <input type="range" min="-40" max="160" step="5" value="${kernTargetGap()}" oninput="setKernTarget(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.kern_autotightness'))}"> <span id="kernTgtV" class="readout">${kernTargetGap()}</span></div>
     <div class="hint" style="margin-top:4px;">${_pT('kern_autotightness_hint', 'Negative = tighter, positive = looser (font units). “Suggest pairs” seeds an even starting gap toward <b>Auto-tightness</b> (lower = tighter), measured <b>optically</b> so overhanging letters tuck in; Preview PDF shows it shaped in full.')}</div>
-    ${pairs.length ? `<div class="hint" style="margin-top:8px;">${nReady} of ${pairs.length} pair${pairs.length>1?'s':''} will be exported.${nReady<pairs.length?' Pairs marked “⚠ untraced” or “set a gap” are skipped.':''}</div><div style="margin-top:4px;">${rows}</div>` : '<div class="hint" style="margin-top:8px;">'+esc(I18n.t('fontmaker.panels.kern_no_pairs'))+'</div>'}
+    ${pairs.length ? `<div class="hint" style="margin-top:8px;">${_pT(pairs.length === 1 ? 'kern_export_summary.one' : 'kern_export_summary.other', nReady + ' of ' + pairs.length + ' pair' + (pairs.length > 1 ? 's' : '') + ' will be exported.', { ready: nReady, total: pairs.length })}${nReady<pairs.length?' '+_pT('kern_export_skip', 'Pairs marked “⚠ untraced” or “set a gap” are skipped.'):''}</div><div style="margin-top:4px;">${rows}</div>` : '<div class="hint" style="margin-top:8px;">'+esc(I18n.t('fontmaker.panels.kern_no_pairs'))+'</div>'}
     ${kernClassManagerHTML()}`;
   renderKernPreview();
   renderSpacingPreview();   // keep the big multi-line sample in sync with every kerning add/update/delete

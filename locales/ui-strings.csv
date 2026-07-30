@@ -2088,7 +2088,8 @@ fontmaker.panels.kern_custom_glyphs,Custom glyphs,גליפים מותאמים,ke
 fontmaker.panels.kern_delete_title,Delete,מחק,row button title,
 fontmaker.panels.kern_descenders,Descenders,יורדות,kern class option,
 fontmaker.panels.kern_export_skip,Pairs marked “⚠ untraced” or “set a gap” are skipped.,"זוגות המסומנים ""⚠ ללא מעקב"" או ""קבעו מרווח"" מדולגים.",panel note,
-fontmaker.panels.kern_export_summary,{ready} of {total} pairs will be exported.,{ready} מתוך {total} זוגות ייוצאו.,panel note,
+fontmaker.panels.kern_export_summary.one,{ready} of 1 pair will be exported.,{ready} מתוך זוג אחד ייוצא.,panel note (total=1),plural
+fontmaker.panels.kern_export_summary.other,{ready} of {total} pairs will be exported.,{ready} מתוך {total} זוגות ייוצאו.,panel note,plural
 fontmaker.panels.kern_finals,Finals (ך ם ן ף ץ),סופיות (ך ם ן ף ץ),kern class option,mixed UI+content — do not translate {…}
 fontmaker.panels.kern_first,First (right),ראשונה (ימין),kern side label,
 fontmaker.panels.kern_gap,Gap,מרווח,slider label,
@@ -2170,7 +2171,7 @@ fontmaker.panels.metric_baseline,Baseline,קו בסיס,metric field label,
 fontmaker.panels.metric_baseline_drag,Baseline — drag to set,קו בסיס — גררו כדי לקבוע,drag handle title,
 fontmaker.panels.metric_descender,Descender,יורדת,metric field label,
 fontmaker.panels.metric_descender_drag,Descender — drag to set,יורדת — גררו כדי לקבוע,drag handle title,
-fontmaker.panels.metric_hint,"Check Adjust margins manually? to show draggable dots: drag the left dot to slide the whole letter, the right dot to set the right margin, and width to set the advance. (The reference image stays draggable either way.)","סמנו התאמת מרווחים ידנית? כדי להציג נקודות הניתנות לגרירה: גררו את הנקודה השמאלית כדי להחליק את כל האות, את הנקודה הימנית כדי לקבוע את המרווח הימני, ואת הרוחב כדי לקבוע את הקידום. (תמונת הייחוס נשארת ניתנת לגרירה כך או כך.)",panel hint,
+fontmaker.panels.metric_hint,"Check <b>Adjust margins manually?</b> to show draggable dots: drag the <b>left</b> dot to slide the whole letter, the <b>right</b> dot to set the right margin, and <b>width</b> to set the advance. <b>Fit margins</b> gives a redrawn letter the font's default side margins. (The reference image stays draggable either way.)","סמנו <b>התאמת מרווחים ידנית?</b> כדי להציג נקודות הניתנות לגרירה: גררו את הנקודה <b>השמאלית</b> כדי להחליק את כל האות, את הנקודה <b>הימנית</b> כדי לקבוע את המרווח הימני, ואת <b>הרוחב</b> כדי לקבוע את הקידום. <b>התאמת שוליים</b> מעניקה לאות ששורטטה מחדש את שולי הצד המוגדרים של הגופן. (תמונת הייחוס נשארת ניתנת לגרירה כך או כך.)",panel hint,
 fontmaker.panels.metric_lamed_asc,Lamed asc.,עולה למד,metric field label,
 fontmaker.panels.metric_lamed_drag,Lamed ascender — drag to set,עולה הלמד — גררו כדי לקבוע,drag handle title,
 fontmaker.panels.metric_left_margin,Left margin,מרווח שמאלי,metric field label,
