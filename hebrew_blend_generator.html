@@ -3368,6 +3368,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <!-- Generate (desktop) -->
     <div class="desktop-buttons">
       <button class="btn btn-primary" id="generateBtn" onclick="generate()" data-i18n="worksheet.actions.generate">⬡ Generate Worksheet</button>
+      <div class="gen-note" role="status" aria-live="polite" style="display:none;font-size:0.7rem;color:var(--gold);margin-top:4px;"></div>
       <button class="btn btn-outline" id="regenBtn" onclick="regenerate()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;" data-i18n="worksheet.actions.regenerate">↺ Regenerate</button>
       <button class="btn btn-secondary" id="printBtn" onclick="window.print()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;" data-i18n="worksheet.actions.print">🖨 Print</button>
       <button class="btn btn-outline" id="pdfBtn" onclick="exportPDF()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;margin-top:8px;" data-i18n="worksheet.actions.export_pdf">⬇ Export PDF</button>
@@ -3549,6 +3550,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <!-- Frozen "Generate" footer (desktop) — always-reachable primary action; sticks to the sidebar bottom -->
     <div class="gen-fab" id="genFab">
       <button class="btn btn-primary" onclick="generate()" title="Generate the worksheet" data-i18n="worksheet.actions.generate_mob" data-i18n-title="worksheet.actions.generate">⬡ Generate</button>
+      <div class="gen-note" role="status" aria-live="polite" style="display:none;font-size:0.7rem;color:var(--gold);margin-top:4px;"></div>
     </div>
 
   </aside>
@@ -3556,6 +3558,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <!-- Mobile FAB -->
   <div class="mobile-fab">
     <button class="btn btn-primary" onclick="generate()" data-i18n="worksheet.actions.generate_mob">⬡ Generate</button>
+    <div class="gen-note" role="status" aria-live="polite" style="display:none;font-size:0.7rem;color:var(--gold);margin-top:4px;"></div>
     <button class="btn btn-outline" id="regenBtnMob" onclick="regenerate()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;">↺</button>
     <button class="btn btn-secondary" id="printBtnMob" onclick="window.print()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;">🖨</button>
     <button class="btn btn-outline" id="pdfBtnMob" onclick="exportPDF()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;" data-i18n="worksheet.actions.pdf_mob">⬇ PDF</button>
@@ -4351,6 +4354,9 @@ function updateVavAsLetterVisibility() {
 
 function updateCombosCount() {
   _syncTileAria();
+  // Selecting a vowel fixes the blocked state, so retire the note immediately rather than
+  // making the teacher press Generate again to discover it now works.
+  if (_genNoteKey && getActiveVowelKeys(1).length > 0) _setGenerateNote(null);
   const el = document.getElementById('combosCount');
   if (!el) return;
   const type = document.querySelector('.blend-type-btn.active[data-type]')?.dataset.type || 'two';
@@ -4937,6 +4943,25 @@ function applySettings(s) {
   // Final, single visibility pass — replaces the previous order-dependent
   // chain of toggle handlers and inline style.display mutations.
   updateModeVisibility();
+}
+
+// Inline "can't generate yet" validation, replacing a blocking alert(). Three copies of Generate
+// exist (sidebar, frozen desktop footer, mobile FAB) and the user may have pressed any of them, so
+// the note is rendered next to EACH — a note beside the off-screen sidebar button would still be a
+// dead click for someone who pressed the footer. Stores the KEY, not the rendered string, so
+// applyI18n can re-render a note that is still on screen. Mirrors _setPresetNameNote below.
+let _genNoteKey = null;
+function _setGenerateNote(key) {
+  _genNoteKey = key || null;
+  const msg = _genNoteKey && window.I18n ? I18n.t(_genNoteKey) : '';
+  document.querySelectorAll('.gen-note').forEach(n => {
+    n.textContent = msg;
+    n.style.display = msg ? '' : 'none';
+  });
+  // Every Generate button reflects the blocked state; aria-disabled (not `disabled`) keeps them
+  // focusable so a screen-reader user can still reach the control and hear why.
+  document.querySelectorAll('[onclick="generate()"]').forEach(b =>
+    b.setAttribute('aria-disabled', msg ? 'true' : 'false'));
 }
 
 // Inline preset-name validation (replaces a blocking alert()): show a note in the
@@ -8720,6 +8745,7 @@ function autoCols(count) {
 }
 
 function generate(animate = false) {
+  _setGenerateNote(null);   // a fresh attempt clears the previous "can't generate yet" note
   classSetSheets = null;  // reset; only the standard multi-version path sets it
   if (document.getElementById('nameTheLetterToggle')?.checked) {
     generateNameTheLetter();
@@ -8743,7 +8769,7 @@ function generate(animate = false) {
   let vowelKeys = getActiveVowelKeys(1);
   if (vowelKeys.length === 0) {
     if (rwOn) { blends = []; generateRealWords(); return; }
-    alert(I18n.t('worksheet.validation.select_vowel'));
+    _setGenerateNote('worksheet.validation.select_vowel');
     return;
   }
 
@@ -12807,6 +12833,7 @@ function applyI18n() {
   // Dynamic pieces that cache translated text at render time:
   try { renderPresets(); } catch (e) {}
   try { renderQuickStarts(); } catch (e) {}
+  try { if (_genNoteKey) _setGenerateNote(_genNoteKey); } catch (e) {}   // re-render a Generate note still on screen
   try { updateCombosCount(); } catch (e) {}
   try { refreshVowelGroupColors(); } catch (e) {}   // re-localize the vowel-group "Sound" headers
   // Letter/vowel names resolve at build time, so these three must rebuild on a language switch.
