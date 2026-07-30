@@ -2441,11 +2441,13 @@ function onFilter() {
     document.getElementById('resultsGrid').innerHTML = '';
     renderEmojiResults();
     const n = emojiFiltered.length;
-    const countText = n === 0 ? I18n.t('dictionary.results.no_emojis_found')
+    // Same pre-data guard as the words branch: while the emoji corpus is in flight,
+    // an empty result means "still loading", not "no emojis found".
+    const countText = n === 0 ? I18n.t(EMOJI_DATA ? 'dictionary.results.no_emojis_found' : 'dictionary.toolbar.loading')
       : I18n.t(n === 1 ? 'dictionary.results.count_emojis.one' : 'dictionary.results.count_emojis.other', { count: n.toLocaleString() });
     document.getElementById('resultCount').textContent = countText;
     document.getElementById('sidebarWordCount').textContent = countText;
-    if (n === 0) renderDictEmptyState(true);
+    if (n === 0 && EMOJI_DATA) renderDictEmptyState(true);
     dictAfterFilter();
     return;
   }
@@ -2542,12 +2544,14 @@ function onFilter() {
   loadMore();
 
   const n = filtered.length;
-  const countText = n === 0 ? I18n.t('dictionary.results.no_words_found')
+  // onFilter can run before the corpus fetch lands; a pre-data render must say "Loading…",
+  // not "No words found" — on slow school networks the wrong text lasts the whole fetch.
+  const countText = n === 0 ? I18n.t(_wordsReady ? 'dictionary.results.no_words_found' : 'dictionary.toolbar.loading')
     : I18n.t(n === 1 ? 'dictionary.results.count_words.one' : 'dictionary.results.count_words.other', { count: n.toLocaleString() });
   document.getElementById('resultCount').textContent = countText;
   document.getElementById('sidebarWordCount').textContent = countText;
   updateLenAll();
-  if (n === 0) renderDictEmptyState(false);
+  if (n === 0 && _wordsReady) renderDictEmptyState(false);
   dictAfterFilter();
 }
 
