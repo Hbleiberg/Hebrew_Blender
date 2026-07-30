@@ -1224,6 +1224,23 @@ fontmaker.about.footer_desktop_note,Desktop browser recommended.,מומלץ לה
 fontmaker.about.special_thanks,"Special Thanks. Thank you to my colleagues at the Davis Academy for supporting the development of this program; to JEDLAB for being a supportive community of Jewish educators who are always willing to collaborate and share resources; to Logan Mendelsohn for his technical help, encouragement, and friendship; and to Baruch Sienna for his extensive beta testing, suggestions, and encouragement. 💛 And a very special thank you to my wife, Emily, for letting me endlessly rant about kerning, Bézier curves, and software licenses.","תודות מיוחדות. תודה לעמיתיי ב-Davis Academy על התמיכה בפיתוח התוכנית הזו; ל-JEDLAB על היותה קהילה תומכת של מחנכים יהודים שתמיד מוכנים לשתף פעולה ולחלוק משאבים; ל-Logan Mendelsohn על העזרה הטכנית, העידוד והחברות; ול-Baruch Sienna על בדיקות הבטא הנרחבות, ההצעות והעידוד. 💛 ותודה מיוחדת במיוחד לאשתי, Emily, על שנתנה לי לקטר בלי סוף על קרנינג, עקומות בזייה ורישיונות תוכנה.",about tab body,help prose
 fontmaker.about.app_title,Hebrew Font Maker,יוצר הגופנים העברי,header h1 app title,
 fontmaker.about.tagline,"Make your own free Hebrew font — turn your handwriting into a real, installable font with nikkud, right in your browser.","צרו גופן עברי חינמי משלכם — הפכו את כתב היד שלכם לגופן אמיתי בר-התקנה עם ניקוד, ישירות בדפדפן.",header subtitle,
+fontmaker.cg.intro,"Define a glyph at any Unicode code point. Brand-new shapes work best in the Private-Use range <b>U+E000–U+F8FF</b>. Trace each glyph like a letter, or duplicate an existing letter and tweak it.","אפשר להגדיר תו בכל נקודת קוד יוניקוד. צורות חדשות לגמרי עובדות הכי טוב בטווח השימוש הפרטי <b>U+E000–U+F8FF</b>. אפשר לשרטט כל תו כמו אות, או לשכפל אות קיימת ולשנות אותה.",custom-glyph panel intro,html
+fontmaker.cg.add_heading,+ Add a new glyph,+ הוספת תו חדש,custom-glyph section heading,
+fontmaker.cg.codepoint_label,Code point,נקודת קוד,custom-glyph field label,
+fontmaker.cg.codepoint_placeholder,E000 or U+05D0,E000 או U+05D0,custom-glyph code-point placeholder,
+fontmaker.cg.name_label,Name,שם,custom-glyph field label,
+fontmaker.cg.name_placeholder,My glyph,התו שלי,custom-glyph name placeholder,
+fontmaker.cg.type_base,Main glyph,תו ראשי,custom-glyph type toggle,
+fontmaker.cg.type_mark,Nikkud mark,סימן ניקוד,custom-glyph type toggle,
+fontmaker.cg.attaches_label,Attaches,מתחבר,custom-glyph mark-class label,
+fontmaker.cg.attach_below,Below the letter,מתחת לאות,custom-glyph mark-class option,
+fontmaker.cg.attach_above,Above the letter,מעל האות,custom-glyph mark-class option,
+fontmaker.cg.attach_center,Center (dagesh-style),במרכז (בסגנון דגש),custom-glyph mark-class option,
+fontmaker.cg.mark_hint,"A mark attaches to a letter and has <b>no width of its own</b>. For a standalone symbol that needs its own spacing, choose <b>Main glyph</b> instead.","סימן מתחבר לאות ו<b>אין לו רוחב עצמאי</b>. עבור סמל עצמאי שזקוק לריווח משלו, יש לבחור <b>תו ראשי</b> במקום.",custom-glyph mark explanation,html
+fontmaker.cg.shape_label,Shape,צורה,custom-glyph shape hint,
+fontmaker.cg.shape_trace,Trace new image,שרטוט תמונה חדשה,custom-glyph shape toggle,
+fontmaker.cg.shape_dup,Duplicate a letter,שכפול אות,custom-glyph shape toggle,
+fontmaker.cg.add_button,Add glyph,הוספת תו,custom-glyph submit button,
 fontmaker.ad.close,Close,סגור,picker button,
 fontmaker.ad.matched,Matched: {label} template layout (page {page} of {pages}),זוהתה: פריסת תבנית {label} (עמוד {page} מתוך {pages}),auto-detect summary fragment,
 fontmaker.ad.no_letters_found,"No letters found. Try a lower ink threshold or Separation 0, and check that the photo is dark ink on light paper. You can also close this and box letters by hand.","לא נמצאו אותיות. נסו סף דיו נמוך יותר או הפרדה 0, וודאו שהתמונה היא דיו כהה על נייר בהיר. אפשר גם לסגור זאת ולתחום אותיות ידנית.",auto-detect summary,
