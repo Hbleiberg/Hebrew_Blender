@@ -1406,7 +1406,7 @@
     <span id="tourStep"></span>
     <span class="tour-btns">
       <button class="tbtn ghost" id="tourBack" onclick="tourPrev()" data-i18n="shared.tour.back">Back</button>
-      <button class="tbtn" id="tourNext" onclick="tourNext()">Next</button>
+      <button class="tbtn" id="tourNext" onclick="tourNext()" data-i18n="shared.tour.next">Next</button>
     </span>
   </div>
 </div>
@@ -3700,27 +3700,29 @@ function renderMarkPanel(cat) {
   const f = project.font[cat];
   const el = document.getElementById(cat + 'PanelBody'); if (!el) return;
   const label = cat === 'nikkud' ? 'Nikkud' : 'Trop';
+  // Short category name for the {label} param; reuses the already-translated QA-tab pair.
+  const labelL = window.I18n ? (I18n.t('fontmaker.qa.tab_' + cat) === 'fontmaker.qa.tab_' + cat ? label : I18n.t('fontmaker.qa.tab_' + cat)) : label;
   const marks = cat === 'nikkud' ? NIKKUD_MARKS : TROP_MARKS;
-  let h = `<label class="chk"><input type="checkbox" ${f.enabled?'checked':''} onchange="setMarkEnabled('${cat}', this.checked)"> Make my font ${label}-compatible</label>`;
+  let h = `<label class="chk"><input type="checkbox" ${f.enabled?'checked':''} onchange="setMarkEnabled('${cat}', this.checked)"> ${_pT('mark_compatible', "Make my font " + label + "-compatible", { label: labelL })}</label>`;
   if (f.enabled) {
     const customWithMarks = (f.mode === 'custom' && marks.length);
     const um = f.uploadMode || 'perSymbol';
     // "Mark shapes" + "Upload mode" groups sit side by side (compact) to save vertical space
-    let opts = `<div class="mark-opt"><div class="hint">Mark shapes</div>
+    let opts = `<div class="mark-opt"><div class="hint">${_pT('mark_shapes', "Mark shapes")}</div>
       <div class="mode-toggle">
-        <button class="mode-btn ${f.mode==='default'?'active':''}" aria-pressed="${f.mode==='default'}" onclick="setMarkMode('${cat}','default')">Default</button>
-        <button class="mode-btn ${f.mode==='custom'?'active':''}" aria-pressed="${f.mode==='custom'}" onclick="setMarkMode('${cat}','custom')">Custom</button>
+        <button class="mode-btn ${f.mode==='default'?'active':''}" aria-pressed="${f.mode==='default'}" onclick="setMarkMode('${cat}','default')">${_pT('mark_mode_default', "Default")}</button>
+        <button class="mode-btn ${f.mode==='custom'?'active':''}" aria-pressed="${f.mode==='custom'}" onclick="setMarkMode('${cat}','custom')">${_pT('mark_mode_custom', "Custom")}</button>
       </div></div>`;
     if (customWithMarks) {
-      opts += `<div class="mark-opt"><div class="hint">Upload mode</div>
+      opts += `<div class="mark-opt"><div class="hint">${_pT('mark_upload_mode', "Upload mode")}</div>
         <div class="mode-toggle">
-          <button class="mode-btn ${um==='perSymbol'?'active':''}" aria-pressed="${um==='perSymbol'}" onclick="setMarkUploadMode('${cat}','perSymbol')">Per Symbol</button>
-          <button class="mode-btn ${um==='combined'?'active':''}" aria-pressed="${um==='combined'}" onclick="setMarkUploadMode('${cat}','combined')">Combined</button>
+          <button class="mode-btn ${um==='perSymbol'?'active':''}" aria-pressed="${um==='perSymbol'}" onclick="setMarkUploadMode('${cat}','perSymbol')">${_pT('mark_per_symbol', "Per Symbol")}</button>
+          <button class="mode-btn ${um==='combined'?'active':''}" aria-pressed="${um==='combined'}" onclick="setMarkUploadMode('${cat}','combined')">${_pT('mark_combined', "Combined")}</button>
         </div></div>`;
     }
     let controls = `<div class="mark-opts">${opts}</div>`;
     if (cat === 'trop') controls += `<div class="hint" style="margin-top:9px;color:var(--muted);">Trop attaches to the typed letter (and stacks above/below a vowel). In <b>Place&nbsp;Trop</b> each mark can sit <b>Left, Center, or Right</b> of the letter — sensible defaults are set (Segol, Zarqa, Pashta &amp; Telisha&nbsp;Qetana go left; Geresh&nbsp;Muqdam, Deḥi, Yetiv &amp; Telisha&nbsp;Gedola go right) and you can change any of them. Left / Right marks land at the leading / trailing edge of their own letter — exact at a word's edge, approximate mid-word (true word-position placement isn't done).</div>`;
-    if (cat === 'nikkud') controls += `<label class="chk" style="margin-top:10px;"><input type="checkbox" ${f.shevaNa?'checked':''} onchange="setShevaNa(this.checked)"> Add a bold <b>Sheva&nbsp;Na</b> (so na &amp; nach stand apart)</label><div class="hint">Exports a heavier sheva alongside the normal one. To make a sheva bold in Word, select the letter and turn on <b>Stylistic&nbsp;Set&nbsp;1</b>; or insert the character <b>U+E0B0</b> in its place. Readers can then see which sheva is mobile (na) vs. silent (nach).</div>`;
+    if (cat === 'nikkud') controls += `<label class="chk" style="margin-top:10px;"><input type="checkbox" ${f.shevaNa?'checked':''} onchange="setShevaNa(this.checked)"> ${_pT('mark_shevana', "Add a bold <b>Sheva&nbsp;Na</b> (so na &amp; nach stand apart)")}</label><div class="hint">Exports a heavier sheva alongside the normal one. To make a sheva bold in Word, select the letter and turn on <b>Stylistic&nbsp;Set&nbsp;1</b>; or insert the character <b>U+E0B0</b> in its place. Readers can then see which sheva is mobile (na) vs. silent (nach).</div>`;
     let grid = '';
     if (f.mode === 'custom') {
       if (marks.length) {
@@ -3808,7 +3810,7 @@ function renderPunctPanel() {
   const on = includePunct();
   const row = document.getElementById('punctTplRow'); if (row) row.style.display = on ? '' : 'none';   // keep the practice-template row in sync
   const el = document.getElementById('punctPanelBody'); if (!el) return;
-  el.innerHTML = `<label class="chk"><input type="checkbox" ${on?'checked':''} onchange="setIncludePunct(this.checked)"> Include digits &amp; punctuation in my font</label>
+  el.innerHTML = `<label class="chk"><input type="checkbox" ${on?'checked':''} onchange="setIncludePunct(this.checked)"> ${_pT('punct_include', "Include digits &amp; punctuation in my font")}</label>
     <div class="hint" style="margin:6px 0 9px;">${ on
       ? 'Included in the exported font &amp; the Punctuation practice template. Trace each one like a letter — digits start blank; punctuation comes pre-shaped.'
       : 'Currently <strong>off</strong>: these glyphs are skipped on export and have no practice page. Turn it on to include them.' }</div>
@@ -4900,6 +4902,15 @@ function renderAdOverlay() {
 // never saw any of this. Same guard as _adT: an English fallback, never a raw key.
 // Keys come from the EXISTING fontmaker.panels.custom_* family, which was already authored and
 // translated and simply never referenced — see the ~150-key finding in the ledger.
+// Same guard for the fontmaker.panels.* family, which the mark and punctuation panels build inside
+// template literals. 157 of those 445 keys are authored, translated and unreferenced (ledger S172);
+// this wires the slice those panels actually show.
+function _pT(k, fallback, p) {
+  const key = 'fontmaker.panels.' + k;
+  if (!window.I18n) return fallback;
+  const v = I18n.t(key, p);
+  return v === key ? fallback : v;
+}
 function _cgT(k, fallback) {
   const key = 'fontmaker.panels.custom_' + k;
   if (!window.I18n) return fallback;

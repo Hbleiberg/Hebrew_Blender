@@ -2263,7 +2263,7 @@
   "fontmaker.panels.mark_pick_then_box": "Then pick a symbol below and drag a box around it on the canvas.",
   "fontmaker.panels.mark_shapes": "Mark shapes",
   "fontmaker.panels.mark_sheet_loaded": "Sheet loaded ✓ — pick a symbol below, then drag a box around it on the canvas.",
-  "fontmaker.panels.mark_shevana": "Add a bold Sheva Na (so na & nach stand apart)",
+  "fontmaker.panels.mark_shevana": "Add a bold <b>Sheva&nbsp;Na</b> (so na &amp; nach stand apart)",
   "fontmaker.panels.mark_shevana_hint": "Exports a heavier sheva alongside the normal one. To make a sheva bold in Word, select the letter and turn on Stylistic Set 1; or insert the character U+E0B0 in its place. Readers can then see which sheva is mobile (na) vs. silent (nach).",
   "fontmaker.panels.mark_trop_hint": "Trop attaches to the typed letter (and stacks above/below a vowel). In Place Trop each mark can sit Left, Center, or Right of the letter — sensible defaults are set (Segol, Zarqa, Pashta & Telisha Qetana go left; Geresh Muqdam, Deḥi, Yetiv & Telisha Gedola go right) and you can change any of them. Left / Right marks land at the leading / trailing edge of their own letter — exact at a word's edge, approximate mid-word (true word-position placement isn't done).",
   "fontmaker.panels.mark_upload_mode": "Upload mode",
