@@ -483,6 +483,7 @@
   "dictionary.advanced.color_mode_letter": "Letter",
   "dictionary.advanced.color_mode_underline": "Underline",
   "dictionary.advanced.color_reset": "↺ Reset to defaults",
+  "dictionary.advanced.color_reset_confirm": "Are you sure? This resets your custom vowel colors to the defaults.",
   "dictionary.advanced.font_head": "Hebrew Font",
   "dictionary.advanced.font_size": "Size",
   "dictionary.advanced.font_size_reset_title": "Reset to default",

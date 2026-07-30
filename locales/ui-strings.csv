@@ -476,6 +476,7 @@ dictionary.advanced.color_mode_highlight,Highlight,הדגשה,color mode button,
 dictionary.advanced.color_mode_letter,Letter,אות,color mode button,
 dictionary.advanced.color_mode_underline,Underline,קו תחתון,color mode button,
 dictionary.advanced.color_reset,↺ Reset to defaults,↺ איפוס לברירת מחדל,color reset button,leading-emoji
+dictionary.advanced.color_reset_confirm,Are you sure? This resets your custom vowel colors to the defaults.,בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים לברירת המחדל.,confirm dialog,
 dictionary.advanced.font_head,Hebrew Font,גופן עברי,advanced section title,
 dictionary.advanced.font_size,Size,גודל,font size row label,
 dictionary.advanced.font_size_reset_title,Reset to default,איפוס לברירת מחדל,font size reset button title,aria-label only

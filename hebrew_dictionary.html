@@ -3339,6 +3339,7 @@ function updateColorPickerValues() {
 }
 
 function resetNikudColors() {
+  if (!confirm(I18n.t('dictionary.advanced.color_reset_confirm'))) return;
   nikudColorOverrides = {};
   updateColorPickerValues();
 }

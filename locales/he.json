@@ -483,6 +483,7 @@
   "dictionary.advanced.color_mode_letter": "אות",
   "dictionary.advanced.color_mode_underline": "קו תחתון",
   "dictionary.advanced.color_reset": "↺ איפוס לברירת מחדל",
+  "dictionary.advanced.color_reset_confirm": "בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים לברירת המחדל.",
   "dictionary.advanced.font_head": "גופן עברי",
   "dictionary.advanced.font_size": "גודל",
   "dictionary.advanced.font_size_reset_title": "איפוס לברירת מחדל",
