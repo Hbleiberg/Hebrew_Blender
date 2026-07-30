@@ -4469,6 +4469,12 @@ function computeActiveChips() {
     if (posN !== posAll.length) chips.push({ key: 'pos', label: I18n.t('dictionary.chips.pos', { count: posN, total: posAll.length }), panel: '#panelPos' });
     const bib = document.getElementById('eraBib').checked, mod = document.getElementById('eraMod').checked;
     if (!bib || !mod) chips.push({ key: 'era', label: (!bib && !mod) ? I18n.t('dictionary.chips.era_none') : (bib ? I18n.t('dictionary.chips.era_biblical_only') : I18n.t('dictionary.chips.era_modern_only')), panel: '#panelPos' });
+    // One chip per selected theme (sidebar order), named by its translated theme key —
+    // themes persist via lastState, so without a chip a returning teacher can't see why
+    // the list is filtered. ✕ unchecks that theme; Reset all already covers themes.
+    document.querySelectorAll('.tcb:checked').forEach(cb => {
+      chips.push({ key: 'theme_' + cb.value, label: I18n.t('dictionary.themes.' + cb.value), panel: '#panelThemes' });
+    });
     if (vowelFilters.size !== VOWEL_DEFS.length) chips.push({ key: 'vowels', label: I18n.t('dictionary.chips.vowels', { count: vowelFilters.size, total: VOWEL_DEFS.length }), panel: '#panelVowel' });
     if (hideNoVowels) chips.push({ key: 'noVowel', label: I18n.t('dictionary.chips.hiding_vowelless'), panel: '#panelVowel' });
     const ord = ['1st', '2nd', '3rd', '4th', '5th', '6th'];
@@ -4524,6 +4530,7 @@ function resetChipGroup(key) {
   if (key === 'vowels') { setAllVowels(true); return; }
   if (key === 'noVowel') { const cb = document.getElementById('hideNoVowelsCb'); if (cb) cb.checked = false; hideNoVowels = false; onFilter(); return; }
   if (key.indexOf('pos') === 0 && key.length === 4) { clearPos(parseInt(key.slice(3))); return; }
+  if (key.indexOf('theme_') === 0) { const cb = document.querySelector('.tcb[value="' + key.slice(6) + '"]'); if (cb) { cb.checked = false; onFilter(); } return; }
   if (key === 'any') { clearAnyLetters(); return; }
   if (key === 'gem') { const gt = document.getElementById('gematriaFilterType'); if (gt) { gt.value = 'none'; onGematriaFilterChange(true); } return; }
   if (key === 'egender') { setEmojiGender('all'); return; }
