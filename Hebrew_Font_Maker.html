@@ -10493,7 +10493,7 @@ function renderAnchorLeft(L, l) {
       <div class="hint" style="font-size:0.6rem;text-align:center;">${esc(I18n.t('fontmaker.panels.center_hint'))}</div>`;
   } else if (isTrop) {
     const ha = tropHalign(activeTropCp), tName = TROP_NAMES[activeTropCp] || 'this mark';
-    const halignBtns = [['left','◀ Left'],['center','Center'],['right','Right ▶']].map(([h,lbl]) =>
+    const halignBtns = [['left', _pT('halign_left', '◀ Left')], ['center', _pT('halign_center', 'Center')], ['right', _pT('halign_right', 'Right ▶')]].map(([h,lbl]) =>
       `<button class="ctl-btn ${ha===h?'primary':''}" onclick="setTropHalign('${h}')">${lbl}</button>`).join('');
     const tOff = project.font.tropSideOffset != null ? project.font.tropSideOffset : TROP_POS_SHIFT;
     const tNdy = markNudgeDy(activeTropCp);
@@ -10512,7 +10512,7 @@ function renderAnchorLeft(L, l) {
       <div class="ctl-row" style="margin-top:6px;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;">
         <span style="font-size:0.72rem;color:var(--muted);">${I18n.t('fontmaker.panels.horizontal')}</span>${halignBtns}
       </div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">Sets where <b>${tName}</b> sits across every letter. Position tweaks belong to the column (Left / Center / Right) — and stay with it if you switch sides.</div>
+      <div class="hint" style="font-size:0.6rem;text-align:center;">${_pT('halign_hint', 'Sets where <b>' + esc(tName) + '</b> sits across every letter. Position tweaks belong to the column (Left / Center / Right) — and stay with it if you switch sides.', { name: '<b>' + esc(tName) + '</b>' })}</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;gap:6px;">
         <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">${I18n.t('fontmaker.panels.default_spread')}</span>
         <input type="range" id="tropSpread" min="0" max="500" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" onchange="udBurstCommit();renderControls()" style="flex:1;" aria-label="${esc(I18n.t('fontmaker.panels.default_spread'))}">
@@ -10542,7 +10542,7 @@ function renderAnchorLeft(L, l) {
       </div>
       <div class="hint" style="font-size:0.6rem;text-align:center;">${I18n.t('fontmaker.panels.pair_hint')}</div>`;
   }
-  const xyWhat = cls === 'below' ? 'all under-vowels' : cls === 'above' ? 'the above mark' : cls === 'center' ? 'the dagesh' : "this mark's column";
+  const xyWhat = cls === 'below' ? _pT('xy_what_below', 'all under-vowels') : cls === 'above' ? _pT('xy_what_above', 'the above mark') : cls === 'center' ? _pT('xy_what_center', 'the dagesh') : _pT('xy_what_trop', "this mark's column");
   const xy = `<hr class="ctl-divider">
     <div class="ws-side-title">${ANCHOR_LABEL[cls]} position — ${esc(l.name)} only</div>
     <div class="anc-xy">
@@ -10553,7 +10553,7 @@ function renderAnchorLeft(L, l) {
       <button class="ctl-btn" onclick="centerAnchorH()" title="${esc(_pT('center_h_title', 'Center horizontally — halfway between the left and right margins'))}">${_pT('center_h', 'Center ↔')}</button>
       <button class="ctl-btn" onclick="centerAnchorV()" title="${esc(_pT('center_v_title', 'Center vertically — halfway between the top and base lines'))}">${_pT('center_v', 'Center ↕')}</button>
     </div>
-    <div class="hint" style="font-size:0.6rem;text-align:center;margin-top:5px;">Moves ${xyWhat} on <b>${esc(l.name)}</b> only.</div>`;
+    <div class="hint" style="font-size:0.6rem;text-align:center;margin-top:5px;">${_pT('moves_xy_hint', 'Moves ' + xyWhat + ' on <b>' + esc(l.name) + '</b> only.', { what: xyWhat, name: '<b>' + esc(l.name) + '</b>' })}</div>`;
   let coRow = '';
   if (l.anchors) {   // "Check stacking" — preview a 2nd (nikkud) mark on this letter + warn on overlap (Babylonian all-above / two-vowel letters; on trop classes: trop-vs-vowel clashes like holam under a Left-above mark)
     const acp = activeVowelCp();
@@ -10653,7 +10653,7 @@ function renderAnchorUnder(U, l) {
     <div class="ws-under-row" style="align-items:center;">
       <div style="flex:1;min-width:0;">${applyBtn}</div>
     </div>
-    <div class="hint" style="margin-top:8px;">${I18n.t('fontmaker.panels.drag_handle_hint', {class: ANCHOR_LABEL[cls].toLowerCase()})}${cls==='below'?' '+I18n.t('fontmaker.panels.all_under_share'):isTrop?' '+I18n.t('fontmaker.panels.all_trop_share', {want}):''}</div>`;
+    <div class="hint" style="margin-top:8px;">${I18n.t('fontmaker.panels.drag_handle_hint', {class: anchorLabelT(cls).toLowerCase()})}${cls==='below'?' '+I18n.t('fontmaker.panels.all_under_share'):isTrop?' '+I18n.t('fontmaker.panels.all_trop_share', {want}):''}</div>`;
 }
 /* Mark-size sliders live directly below the canvas (center column) rather than in the under-strip. */
 function renderAnchorStageBelow(SB, l) {
