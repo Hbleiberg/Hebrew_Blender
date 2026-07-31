@@ -1017,13 +1017,13 @@ footer a{color:var(--gold-text);text-decoration:none;}
               <span data-i18n="dictionary.audio.show_button">Show pronunciation button</span> <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span>
             </label>
             <div style="margin-top:8px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--cream);">
-              <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.04em;color:var(--text);margin-bottom:6px;" data-i18n="dictionary.audio.tts_speed_label">
+              <div id="ttsSpeedLabel" style="font-size:0.72rem;font-weight:700;letter-spacing:0.04em;color:var(--text);margin-bottom:6px;" data-i18n="dictionary.audio.tts_speed_label">
                 Hebrew TTS Reading Speed
               </div>
               <div class="font-size-row">
                 <span class="fs-label" data-i18n="dictionary.audio.tts_slow">Slow</span>
                 <input type="range" id="ttsRateSlider" min="0.5" max="1.5" step="0.05" value="0.75"
-                       oninput="onTtsRateChange(this.value)">
+                       aria-labelledby="ttsSpeedLabel" oninput="onTtsRateChange(this.value)">
                 <span class="fs-val bidi-isolate" id="ttsRateVal">0.75×</span>
                 <button class="fs-reset" onclick="resetTtsRate()" title="Reset to default" aria-label="Reset to default" data-i18n-aria-label="dictionary.advanced.font_size_reset_title" data-i18n-title="dictionary.advanced.font_size_reset_title">↺</button>
               </div>
@@ -3315,6 +3315,7 @@ function initColorPickers() {
     const pick = document.createElement('input');
     pick.type = 'color';
     pick.id = `colorPick_${def.key}`;
+    pick.setAttribute('aria-label', glyphVowelName(def.name));   // a11y: name the picker by its vowel (re-localized — initColorPickers re-runs in applyI18n)
     pick.value = getNikudColor(def.key);
     pick.style.cssText = 'width:30px;height:22px;border:none;cursor:pointer;padding:0;background:none;border-radius:3px;';
     pick.addEventListener('input', e => {
