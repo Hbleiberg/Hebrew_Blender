@@ -3606,7 +3606,7 @@ function renderLetterGrid() {
     grid.appendChild(tile);
   });
   a11yTiles(grid);
-  document.getElementById('letterProgress').textContent = `(${done}/27)`;
+  document.getElementById('letterProgress').textContent = _pT('letter_progress', `(${done}/27)`, {done});
   updateTracedReadout();
   renderNextStepHint();
   if (document.getElementById('nikkudGrid')) renderNikkudGrid();   // keep mark tile states in sync
@@ -3688,7 +3688,7 @@ function renderEnglishGrid() {
     grid.appendChild(tile);
   });
   a11yTiles(grid);
-  const prog = document.getElementById('englishProgress'); if (prog) prog.textContent = total ? `(${done}/${total})` : '';
+  const prog = document.getElementById('englishProgress'); if (prog) prog.textContent = total ? _pT('eng_progress', `(${done}/${total})`, {done, total}) : '';
 }
 /* ── Nikkud / Trop sidebar panels (shared, parametrised by category) ── */
 function markStatusOf(m) {
@@ -3812,8 +3812,8 @@ function renderPunctPanel() {
   const el = document.getElementById('punctPanelBody'); if (!el) return;
   el.innerHTML = `<label class="chk"><input type="checkbox" ${on?'checked':''} onchange="setIncludePunct(this.checked)"> ${_pT('punct_include', "Include digits &amp; punctuation in my font")}</label>
     <div class="hint" style="margin:6px 0 9px;">${ on
-      ? 'Included in the exported font &amp; the Punctuation practice template. Trace each one like a letter — digits start blank; punctuation comes pre-shaped.'
-      : 'Currently <strong>off</strong>: these glyphs are skipped on export and have no practice page. Turn it on to include them.' }</div>
+      ? _pT('punct_on_hint', 'Included in the exported font &amp; the Punctuation practice template. Trace each one like a letter — digits start blank; punctuation comes pre-shaped.')
+      : _pT('punct_off_hint', 'Currently <strong>off</strong>: these glyphs are skipped on export and have no practice page. Turn it on to include them.') }</div>
     <div class="letter-grid" id="punctGrid"></div>`;
   renderPunctGrid();
 }
@@ -4037,7 +4037,7 @@ function renderCustomGlyphsGrid() {
   grid.innerHTML = '';
   const bases = customBaseLetters(), marks = customMarkCps();
   if (!bases.length && !marks.length) {
-    grid.innerHTML = `<div class="hint" style="grid-column:1/-1;direction:ltr;text-align:left;">No custom glyphs yet — add one below</div>`;
+    grid.innerHTML = `<div class="hint" dir="auto" style="grid-column:1/-1;text-align:start;">${_cgT('empty', 'No custom glyphs yet — add one below')}</div>`;
     return;
   }
   const delBtn = (cp, type) => `<button title="${esc(window.I18n ? I18n.t('fontmaker.panels.custom_del_title') : 'Delete glyph')}" aria-label="${esc(window.I18n ? I18n.t('fontmaker.panels.custom_del_title') : 'Delete glyph')}" onclick="event.stopPropagation();deleteCustomGlyph('${cp}','${type}')" style="position:absolute;top:1px;right:1px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:0.78rem;line-height:1;padding:2px;">✕</button>`;
@@ -5157,7 +5157,7 @@ function combinedNavHTML() {
   // Auto-detect lives here, right under the sheet it operates on (raster sheets only). Moved out of
   // the left upload panel so it sits where you're already looking when boxing letters.
   const auto = !svgUploadOn()
-    ? `<button class="ctl-btn cn-autodetect" onclick="openAutoDetect()" title="${esc((window.I18n ? I18n.t('fontmaker.panels.autodetect_btn_title') : 'Find every letter on this sheet automatically and review the proposed boxes'))}">▦ Auto-detect letters</button>`
+    ? `<button class="ctl-btn cn-autodetect" onclick="openAutoDetect()" title="${esc((window.I18n ? I18n.t('fontmaker.panels.autodetect_btn_title') : 'Find every letter on this sheet automatically and review the proposed boxes'))}">${_pT('autodetect_btn', '▦ Auto-detect letters')}</button>`
     : '';
   return `<div class="combined-nav">${prev}${counter}${next}${rm}${auto}</div>`;
 }
@@ -8274,7 +8274,7 @@ function finalizeWithOutline(l, outerRaw, ras) {
 }
 function updateTraceInfo(l) {
   const ti = document.getElementById('traceInfo');
-  if (ti) ti.textContent = l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : 'no ink detected';
+  if (ti) ti.textContent = l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${l.advance}`, {count: l.contours.length, adv: l.advance}) : 'no ink detected';
 }
 function traceCurrent() {   // warn-first wraps udDo (never nests an async confirm inside it)
   if (curItem().handEdited) { askModal(I18n.t('fontmaker.modals.retrace_title'), I18n.t('fontmaker.modals.retrace_body'), [{ label:I18n.t('fontmaker.modals.retrace'), onClick: _traceCurrentNow }, { label:I18n.t('fontmaker.modals.cancel'), cls:'ghost' }]); return; }
@@ -9646,7 +9646,7 @@ function renderSpacingPanel() {
     <div class="hint" style="margin-top:-4px;">${I18n.t('fontmaker.panels.word_spacing_hint')}</div>
     <div class="inline">${I18n.t('fontmaker.panels.line_spacing')} <input type="range" min="0" max="500" step="10" value="${sp.lineSpacing}" oninput="setLineSpacing(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.line_spacing'))}"> <span id="lnV" class="readout">${sp.lineSpacing}</span></div>
     <label class="fld">${I18n.t('fontmaker.panels.sample_text')} <input type="text" id="spacingSample" dir="rtl" value="${esc(sp.sample)}" oninput="setSpacingSample(this.value)" onchange="udBurstCommit()"></label>
-    ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;">${customBaseLetters().map(l => `<button class="ctl-btn" style="padding:2px 8px;font-size:0.68rem;" onclick="insertSampleGlyph('${l.codepoint}')" title="${esc(window.I18n ? I18n.t('fontmaker.tip.add_glyph_sample', {name: l.name || ('U+' + l.codepoint)}) : "Add " + (l.name || ('U+' + l.codepoint)) + " to the sample text (it can't be typed on a keyboard)")}">+ ${esc(l.name || ('U+' + l.codepoint))}</button>`).join('')}</div>` : ''}
+    ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;">${customBaseLetters().map(l => `<button class="ctl-btn" style="padding:2px 8px;font-size:0.68rem;" onclick="insertSampleGlyph('${l.codepoint}')" title="${esc(window.I18n ? I18n.t('fontmaker.tip.add_glyph_sample', {name: l.name || ('U+' + l.codepoint)}) : "Add " + (l.name || ('U+' + l.codepoint)) + " to the sample text (it can't be typed on a keyboard)")}">${esc(_pT('add_glyph_sample', '+ ' + (l.name || ('U+' + l.codepoint)), {name: l.name || ('U+' + l.codepoint)}))}</button>`).join('')}</div>` : ''}
     ${project.font.nikkud.enabled ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;align-items:center;"><span class="hint" style="font-size:0.66rem;">${I18n.t('fontmaker.panels.test_combos_label')}</span>${SAMPLE_TEST_COMBOS.map(c => { const s = sampleComboStr(c); return `<button class="ctl-btn" style="padding:2px 8px;font-size:0.8rem;" onclick="insertSampleCombo('${c}')" title="${esc(I18n.t('fontmaker.panels.test_combos_tip', { combo: s }))}">+ <span lang="he" style="font-family:var(--heb-font);direction:rtl;">${s}</span></button>`; }).join('')}</div>` : ''}
     <div class="hint">${I18n.t('fontmaker.panels.spacing_hint')}</div>
     <svg id="spacingPreviewSvg" style="width:100%;height:auto;max-height:170px;margin-top:4px;"></svg>
@@ -10345,7 +10345,7 @@ function renderAlignUnder(U, l) {
     ? (l.contours && !isPunctItem() ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">${_pT('next_nikkud', 'Next: Nikkud →')}</button>` : '')
     : (curImageUrl() ? `<button class="ctl-btn primary" onclick="setWorkMode('trace')">${_pT('next_trace', 'Next: Trace →')}</button>` : '');
   const applyBtn = (curKind === 'letter' && !isVectorGlyph(l) && curImageUrl())
-    ? `<button class="ctl-btn" onclick="openApplyAlign()" title="${esc(window.I18n ? I18n.t('fontmaker.tip.apply_align_other') : "Copy this letter's position & scale onto other letters")}">Apply alignment to other letters…</button>` : '';
+    ? `<button class="ctl-btn" onclick="openApplyAlign()" title="${esc(window.I18n ? I18n.t('fontmaker.tip.apply_align_other') : "Copy this letter's position & scale onto other letters")}">${_pT('apply_alignment', 'Apply alignment to other letters…')}</button>` : '';
   U.innerHTML = `
     <div class="ws-under-row" style="align-items:center;">
       <div class="ws-under-grow">${hint}</div>
@@ -10372,12 +10372,12 @@ function renderTraceLeft(L, l) {
   if (l.source && l.source.kind === 'svg') {   // imported vector — no raster trace controls, but allow point editing
     L.innerHTML = `
       <div class="ws-side-title">${I18n.t('fontmaker.panels.outline_title', {name: esc(gName(l.name))})}</div>
-      <div class="hint">Imported from SVG — no tracing needed. Fine-tune the shape with <b>Edit points</b>, or re-upload under <b>Add Letters</b> to replace it.</div>
+      <div class="hint">${_pT('svg_outline_hint', 'Imported from SVG — no tracing needed. Fine-tune the shape with <b>Edit points</b>, or re-upload under <b>Add Letters</b> to replace it.')}</div>
       <div class="ctl-row">
         ${ l.contours ? '' : `<button class="ctl-btn primary" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title'))}">${I18n.t('fontmaker.panels.draw_pen')}</button>` }
         <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
         <button class="ctl-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${I18n.t('fontmaker.panels.copy_outline')}</button>
-        <span id="traceInfo" class="readout">${ l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : '' }</span>
+        <span id="traceInfo" class="readout">${ l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${l.advance}`, {count: l.contours.length, adv: l.advance}) : '' }</span>
       </div>` + metricsPanel();
     return;
   }
@@ -10402,15 +10402,15 @@ function renderTraceLeft(L, l) {
       <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
       ${ l.contours ? '' : `<button class="ctl-btn" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title2'))}">${I18n.t('fontmaker.panels.draw_pen')}</button>` }
       <button class="ctl-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${I18n.t('fontmaker.panels.copy_outline')}</button>
-      <span id="traceInfo" class="readout">${ l.contours ? `${l.contours.length} contour(s) · adv ${l.advance}` : '' }</span>
+      <span id="traceInfo" class="readout">${ l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${l.advance}`, {count: l.contours.length, adv: l.advance}) : '' }</span>
     </div>
-    <div class="hint">Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically. Turn on <b>Outline only</b> for hollow “bubble” letters — <b>line weight</b> sets the ring thickness.</div>` + metricsPanel();
+    <div class="hint">${_pT('trace_hint', 'Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically. Turn on <b>Outline only</b> for hollow “bubble” letters — <b>line weight</b> sets the ring thickness.')}</div>` + metricsPanel();
 }
 function renderTraceUnder(U, l) {
   const hint = (project.inputMode === 'font')
-    ? `<div class="hint">This letter came from a font file, so it's already vectorized — no tracing needed. Go to <b>Nikkud</b>.</div>`
+    ? `<div class="hint">${_pT('trace_under_font', "This letter came from a font file, so it's already vectorized — no tracing needed. Go to <b>Nikkud</b>.")}</div>`
     : (l.source && l.source.kind === 'svg')
-    ? `<div class="hint">Imported from SVG — already vectorized. Fine-tune points if you like, then go to <b>Nikkud</b>.</div>` : '';
+    ? `<div class="hint">${_pT('trace_under_svg', 'Imported from SVG — already vectorized. Fine-tune points if you like, then go to <b>Nikkud</b>.')}</div>` : '';
   const nextBtn = (l.contours && !isPunctItem()) ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">${_pT('next_nikkud', 'Next: Nikkud →')}</button>` : '';
   U.innerHTML = `
     <div class="ws-under-row" style="align-items:center;">
@@ -10521,7 +10521,7 @@ function renderAnchorLeft(L, l) {
       <div class="hint" style="font-size:0.6rem;text-align:center;">Default distance Left/Right marks shift from center, on all letters (per-letter tweaks come after).</div>
       ${(nCustom => nCustom ? `
       <div class="hint" style="font-size:0.6rem;text-align:center;color:var(--gold);">${nCustom} letter${nCustom === 1 ? "'s" : "s'"} hand-tuned side positions kept — the slider only moves columns still at the default.</div>
-      <div class="ctl-row" style="justify-content:center;margin-top:2px;"><button class="ctl-btn" onclick="resetTropSideColumns()" title="${esc((window.I18n ? I18n.t('fontmaker.panels.reset_side_positions_title') : "Re-seed every letter's Left/Right columns from its center ± spread (undoable)"))}">Reset all side positions</button></div>` : '')(tropCustomSideCount())}
+      <div class="ctl-row" style="justify-content:center;margin-top:2px;"><button class="ctl-btn" onclick="resetTropSideColumns()" title="${esc((window.I18n ? I18n.t('fontmaker.panels.reset_side_positions_title') : "Re-seed every letter's Left/Right columns from its center ± spread (undoable)"))}">${_pT('reset_side_positions', 'Reset all side positions')}</button></div>` : '')(tropCustomSideCount())}
       <hr class="ctl-divider">
       <div class="ws-side-title">${I18n.t('fontmaker.panels.pair_title')}</div>
       <div class="ctl-row" style="margin-top:6px;justify-content:center;gap:5px;flex-wrap:wrap;">${
