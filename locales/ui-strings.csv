@@ -4086,3 +4086,8 @@ dashboard.days.emoji_set_boy,Boy,ילד,emoji-sequence picker button (baby → b
 dashboard.days.emoji_set_girl,Girl,ילדה,emoji-sequence picker button (baby → girl → woman),aria-label only
 flashcards.common.restore_default,Restore default,שחזר ברירת מחדל,size/rate reset button title (mirrors dashboard.common.restore_default),
 flashcards.weaknesses.close_aria,Close,סגור,weakness-view modal close button aria,aria-label only
+flashcards.cert.button,🎓 Print Certificate,🎓 הדפסת תעודה,certificate button (final-level results strip + level-map footer),leading-emoji
+flashcards.cert.title,Certificate of Completion,תעודת סיום,completion certificate document title,
+flashcards.cert.suite,IvritSuite · Flash Cards,IvritSuite · כרטיסיות,completion certificate small suite line above the title,brand stays Latin
+flashcards.cert.body,has completed all {total} levels of the Hebrew Learning Path,על השלמת כל {total} השלבים במסלול הלמידה בעברית,completion certificate body line under the student name,has {total}
+flashcards.cert.generated_announce,Certificate ready for {name}.,התעודה של {name} מוכנה.,screen-reader announcement,mixed UI+content — do not translate {name}

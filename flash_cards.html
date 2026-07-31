@@ -1227,9 +1227,35 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
   .fcr-sign-lbl, .fcr-foot-lbl { font-size:8pt; color:#3d4a63; }
   .fcr-privacy { font-size:7.5pt; color:#5a6070; margin-block-start:7pt;
     border-block-start:0.5pt solid #c8bfa8; padding-block-start:4pt; }
+
+  /* Learning Path completion certificate: landscape Letter via the injected #fcCertPage @page
+     style (see _certEnter — @page can't be scoped by a body class); the app steps aside exactly
+     like the report. Ink-only double-rule frame — B/W-safe by construction. */
+  body.fc-cert-print .wrap, body.fc-cert-print .screen,
+  body.fc-cert-print .app-header, body.fc-cert-print footer { display:none !important; }
+  body.fc-cert-print #fcCertSheet { display:block !important; }
+  body.fc-cert-print { min-height:0 !important; }
+  #fcCertSheet { font-size:11pt; line-height:1.4; color:#1a2a47; }
+  /* 7.2in inside the 7.5in printable height (landscape Letter at 0.5in margins) — the slack
+     keeps sub-pixel rounding from spilling a second page. */
+  .fcc-frame { border:2pt solid #1a2a47; padding:5pt; height:7.2in; box-sizing:border-box; }
+  .fcc-inner { border:0.75pt solid #1a2a47; height:100%; box-sizing:border-box;
+    padding:24pt 40pt; display:flex; flex-direction:column; align-items:center; text-align:center; }
+  /* Two auto margins (suite top + signature top) split the free space, so the text block sits
+     centered between the frame top and the signature row. */
+  .fcc-suite { font-size:9pt; letter-spacing:0.18em; text-transform:uppercase; color:#3d4a63;
+    margin:auto 0 14pt; }
+  .fcc-title { font-family:var(--serif); font-size:26pt; font-weight:700; margin:0 0 18pt; }
+  .fcc-name { font-family:var(--heb-font); font-size:32pt; font-weight:700; margin:0 0 12pt; }
+  .fcc-body { font-size:13pt; margin:0 0 8pt; }
+  .fcc-date { font-size:11pt; color:#3d4a63; margin:0; }
+  .fcc-sign { display:flex; gap:48pt; margin-block-start:auto; inline-size:100%; max-inline-size:7in; }
+  .fcc-sign > div { flex:1; }
+  .fcc-sign-line { border-block-end:0.75pt solid #1a2a47; height:16pt; }
+  .fcc-sign-lbl { font-size:8pt; color:#3d4a63; margin-block-start:2pt; text-align:start; }
 }
 /* The sheet hosts never show on screen — they exist only to be printed. */
-#fcSheet, #fcReportSheet { display:none; }
+#fcSheet, #fcReportSheet, #fcCertSheet { display:none; }
 .tbtn {
   background: var(--gold); color: #1a1a1a; border: none; border-radius: 6px;
   padding: 7px 13px; cursor: pointer; font-size: 0.82rem; font-weight: 700;
@@ -2100,6 +2126,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 <div id="fcSheet" aria-hidden="true"></div>
 <!-- Student progress report: built on demand by _reportEnter(), print-only, cleared on afterprint. -->
 <div id="fcReportSheet" aria-hidden="true"></div>
+<!-- Learning Path completion certificate: built on demand by _certEnter(), print-only, cleared on afterprint. -->
+<div id="fcCertSheet" aria-hidden="true"></div>
 <!-- Print options drop-down. The duplex switch is an option of the Print button, not a Flash Cards
      setting, so it only appears once printing is chosen. It lives here, at the top level, for two
      reasons: the menu is position:fixed off a STICKY footer button, and the row must be static
@@ -5577,6 +5605,12 @@ function renderLadderStrip(pct) {
       if (!_ladderEnter(levelId)) showScreen('screenSetup');
     }));
   }
+  // The finisher's primary action is the artifact. `profile` is captured at render time —
+  // _ladderActive is nulled once navigation exits the ladder. The derived-completeness check
+  // keeps the button honest if a profile merge left an earlier level unpassed.
+  if (passed && isLast && ladderNextIndex(readLadderLevels(profile)) === -1) {
+    row.appendChild(_ladderActionBtn('flashcards.cert.button', 'primary', () => openCertificate(profile)));
+  }
   row.appendChild(_ladderActionBtn('flashcards.ladder.back_to_path', 'ghost', () => {
     showScreen('screenSetup');   // the chokepoint in showScreen exits the ladder for us
     openLadderMap();
@@ -5677,6 +5711,15 @@ function openLadderMap() {
   });
   // Path fully complete: no "next" row exists, so land on the last level instead of the ×.
   if (!focusEl && nextIdx < 0) focusEl = list.lastElementChild;
+
+  // Complete path: the certificate is the map's payoff row. close() BEFORE printing — this
+  // overlay is inline-styled (no .overlay class), so the print CSS cannot hide it.
+  if (nextIdx < 0) {
+    const foot = document.createElement('div');
+    foot.style.cssText = 'flex:0 0 auto;display:flex;justify-content:center;margin-block-start:12px;';
+    foot.appendChild(_ladderActionBtn('flashcards.cert.button', 'primary', () => { close(); openCertificate(name); }));
+    box.appendChild(foot);
+  }
 
   box.querySelector('[data-act=close]').addEventListener('click', close);
   ov.addEventListener('click', e => { if (e.target === ov) close(); });
@@ -5848,6 +5891,62 @@ function openProgressReport(name) {
   window.print();
 }
 window.addEventListener('afterprint', _reportExit);
+
+/* ═══ Learning Path completion certificate (print-only, landscape) ═══
+   Parallel to the report's enter/exit pair: its own host, body class, guard flag and afterprint
+   listener, so the three print teardowns (report, card sheet, certificate) can never fire on
+   each other's sheet. Landscape comes from an injected @page <style> — an @page rule can't be
+   scoped by a body class (the generator's _applyPageSizeStyle precedent) — and _certExit
+   removes it, so the report and the card sheet keep printing portrait after any certificate
+   cycle. */
+let _certActive = false;
+function _certEnter(name) {
+  const host = document.getElementById('fcCertSheet');
+  const levels = readLadderLevels(name);
+  if (!host || ladderNextIndex(levels) !== -1) return;
+  const fmtDate = iso => new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  // passedAt is first-earn per level (and mergeLadder keeps the earliest across merges), so the
+  // MAX stamp is exactly the day the final level was first passed. Today only if a stamp is
+  // missing (e.g. an imported record that predates the field).
+  const stamps = FC_LADDER.map(lv => levels[lv.id] && levels[lv.id].passedAt).filter(Boolean).sort();
+  const doneIso = stamps.length === FC_LADDER.length ? stamps[stamps.length - 1] : new Date().toISOString();
+  host.innerHTML = `<div class="fcc-frame"><div class="fcc-inner">
+    <p class="fcc-suite">${esc(I18n.t('flashcards.cert.suite'))}</p>
+    <h1 class="fcc-title">${esc(I18n.t('flashcards.cert.title'))}</h1>
+    <p class="fcc-name" dir="auto">${esc(name)}</p>
+    <p class="fcc-body">${esc(I18n.t('flashcards.cert.body', { total: FC_LADDER.length }))}</p>
+    <p class="fcc-date"><span class="bidi-isolate">${esc(fmtDate(doneIso))}</span></p>
+    <div class="fcc-sign">
+      <div><div class="fcc-sign-line"></div><div class="fcc-sign-lbl">${esc(I18n.t('flashcards.report.signature_label'))}</div></div>
+      <div><div class="fcc-sign-line"></div><div class="fcc-sign-lbl">${esc(I18n.t('flashcards.report.label_date'))}</div></div>
+    </div>
+  </div></div>`;
+  host.dir = document.documentElement.dir || 'ltr';
+  const st = document.createElement('style');
+  st.id = 'fcCertPage';
+  st.textContent = '@page { size: letter landscape; margin: 0.5in; }'; // i18n-ignore — CSS, not UI copy
+  document.head.appendChild(st);
+  document.body.classList.add('fc-cert-print');
+  _certActive = true;
+}
+function _certExit() {
+  if (!_certActive) return;
+  _certActive = false;
+  document.body.classList.remove('fc-cert-print');
+  const st = document.getElementById('fcCertPage');
+  if (st) st.remove();
+  const host = document.getElementById('fcCertSheet');
+  if (host) { host.innerHTML = ''; host.removeAttribute('dir'); }
+}
+function openCertificate(name) {
+  // Defense-in-depth: both entry points are already conditional, but never print an unearned
+  // certificate (a profile merge can leave an earlier level unpassed behind a passed finale).
+  if (ladderNextIndex(readLadderLevels(name)) !== -1) return;
+  _certEnter(name);
+  announce(I18n.t('flashcards.cert.generated_announce', { name: name }));
+  window.print();
+}
+window.addEventListener('afterprint', _certExit);
 
 /* ── Unified .ivrit backup scope (Presets / Profiles / Both) ── */
 let backupScope = 'both';
