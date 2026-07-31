@@ -926,6 +926,8 @@
   "flashcards.cert.body": "has completed all {total} levels of the Hebrew Learning Path",
   "flashcards.cert.button": "🎓 Print Certificate",
   "flashcards.cert.generated_announce": "Certificate ready for {name}.",
+  "flashcards.cert.lead_in": "This is to certify that",
+  "flashcards.cert.seal_levels": "Levels",
   "flashcards.cert.suite": "IvritSuite · Flash Cards",
   "flashcards.cert.title": "Certificate of Completion",
   "flashcards.common.restore_default": "Restore default",

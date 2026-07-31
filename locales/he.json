@@ -926,6 +926,8 @@
   "flashcards.cert.body": "על השלמת כל {total} השלבים במסלול הלמידה בעברית",
   "flashcards.cert.button": "🎓 הדפסת תעודה",
   "flashcards.cert.generated_announce": "התעודה של {name} מוכנה.",
+  "flashcards.cert.lead_in": "תעודה זו מוענקת ל־",
+  "flashcards.cert.seal_levels": "שלבים",
   "flashcards.cert.suite": "IvritSuite · כרטיסיות",
   "flashcards.cert.title": "תעודת סיום",
   "flashcards.common.restore_default": "שחזר ברירת מחדל",

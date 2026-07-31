@@ -1230,7 +1230,10 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
 
   /* Learning Path completion certificate: landscape Letter via the injected #fcCertPage @page
      style (see _certEnter — @page can't be scoped by a body class); the app steps aside exactly
-     like the report. Ink-only double-rule frame — B/W-safe by construction. */
+     like the report. Navy+gold two-tone frame, gold brand hexagram and seal — all borders,
+     strokes and text, NO background fills, so nothing is lost when print dialogs drop
+     background graphics; B/W printers render the golds as legible grays. Small gold TEXT uses
+     the readable dark gold #7f5a13 (house rule: bright gold ink is faint on a B/W laser). */
   body.fc-cert-print .wrap, body.fc-cert-print .screen,
   body.fc-cert-print .app-header, body.fc-cert-print footer { display:none !important; }
   body.fc-cert-print #fcCertSheet { display:block !important; }
@@ -1238,21 +1241,40 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
   #fcCertSheet { font-size:11pt; line-height:1.4; color:#1a2a47; }
   /* 7.2in inside the 7.5in printable height (landscape Letter at 0.5in margins) — the slack
      keeps sub-pixel rounding from spilling a second page. */
-  .fcc-frame { border:2pt solid #1a2a47; padding:5pt; height:7.2in; box-sizing:border-box; }
-  .fcc-inner { border:0.75pt solid #1a2a47; height:100%; box-sizing:border-box;
-    padding:24pt 40pt; display:flex; flex-direction:column; align-items:center; text-align:center; }
-  /* Two auto margins (suite top + signature top) split the free space, so the text block sits
-     centered between the frame top and the signature row. */
+  .fcc-frame { position:relative; border:2pt solid #1a2a47; padding:5pt; height:7.2in; box-sizing:border-box; }
+  .fcc-inner { border:1pt solid #c9922a; height:100%; box-sizing:border-box;
+    padding:20pt 40pt; display:flex; flex-direction:column; align-items:center; text-align:center; }
+  /* Hollow gold diamonds pinned just inside the inner rule's corners (logical insets → RTL no-op;
+     border-only, so they print with background graphics off). */
+  .fcc-corner { position:absolute; width:6pt; height:6pt; border:1.5pt solid #c9922a; transform:rotate(45deg); }
+  .fcc-c-tl { inset-block-start:14pt; inset-inline-start:14pt; }
+  .fcc-c-tr { inset-block-start:14pt; inset-inline-end:14pt; }
+  .fcc-c-bl { inset-block-end:14pt; inset-inline-start:14pt; }
+  .fcc-c-br { inset-block-end:14pt; inset-inline-end:14pt; }
+  /* Two auto margins (star top + signature top) split the free space, so the ceremony block
+     sits centered between the frame top and the signature row. */
+  .fcc-star { width:0.85in; height:0.85in; margin-block-start:auto; margin-block-end:8pt; }
   .fcc-suite { font-size:9pt; letter-spacing:0.18em; text-transform:uppercase; color:#3d4a63;
-    margin:auto 0 14pt; }
-  .fcc-title { font-family:var(--serif); font-size:26pt; font-weight:700; margin:0 0 18pt; }
-  .fcc-name { font-family:var(--heb-font); font-size:32pt; font-weight:700; margin:0 0 12pt; }
+    margin:0 0 14pt; }
+  .fcc-title { font-family:var(--serif); font-size:26pt; font-weight:700; margin:0 0 14pt; }
+  .fcc-lead { font-family:var(--serif); font-style:italic; font-size:12pt; color:#3d4a63; margin:0 0 10pt; }
+  .fcc-name { font-family:var(--heb-font); font-size:32pt; font-weight:700; margin:0 0 6pt; }
+  .fcc-name-rule { inline-size:2.2in; border-block-end:1.5pt solid #c9922a; margin-block-end:12pt; }
   .fcc-body { font-size:13pt; margin:0 0 8pt; }
   .fcc-date { font-size:11pt; color:#3d4a63; margin:0; }
-  .fcc-sign { display:flex; gap:48pt; margin-block-start:auto; inline-size:100%; max-inline-size:7in; }
+  .fcc-orn { color:#7f5a13; font-size:10pt; }
+  .fcc-sign { display:flex; align-items:center; gap:24pt; margin-block-start:auto; inline-size:100%; max-inline-size:7in; }
   .fcc-sign > div { flex:1; }
   .fcc-sign-line { border-block-end:0.75pt solid #1a2a47; height:16pt; }
   .fcc-sign-lbl { font-size:8pt; color:#3d4a63; margin-block-start:2pt; text-align:start; }
+  /* .fcc-sign > .fcc-seal out-specifies the flex:1 side rule — the seal keeps its fixed size. */
+  .fcc-sign > .fcc-seal { flex:0 0 auto; width:0.95in; height:0.95in; border:2.5pt solid #c9922a;
+    border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .fcc-seal-inner { width:0.78in; height:0.78in; border:0.75pt solid #c9922a; border-radius:50%;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .fcc-seal-n { font-family:var(--serif); font-size:17pt; font-weight:700; line-height:1; color:#1a2a47; }
+  .fcc-seal-w { font-size:6.5pt; letter-spacing:0.14em; text-transform:uppercase; color:#7f5a13;
+    margin-block-start:1pt; }
 }
 /* The sheet hosts never show on screen — they exist only to be printed. */
 #fcSheet, #fcReportSheet, #fcCertSheet { display:none; }
@@ -5910,14 +5932,27 @@ function _certEnter(name) {
   // missing (e.g. an imported record that predates the field).
   const stamps = FC_LADDER.map(lv => levels[lv.id] && levels[lv.id].passedAt).filter(Boolean).sort();
   const doneIso = stamps.length === FC_LADDER.length ? stamps[stamps.length - 1] : new Date().toISOString();
-  host.innerHTML = `<div class="fcc-frame"><div class="fcc-inner">
+  host.innerHTML = `<div class="fcc-frame">
+    <span class="fcc-corner fcc-c-tl" aria-hidden="true"></span><span class="fcc-corner fcc-c-tr" aria-hidden="true"></span>
+    <span class="fcc-corner fcc-c-bl" aria-hidden="true"></span><span class="fcc-corner fcc-c-br" aria-hidden="true"></span>
+    <div class="fcc-inner">
+    <svg class="fcc-star" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+      <path d="M50 9 L85.5 70.5 L14.5 70.5 Z" fill="none" stroke="#c9922a" stroke-width="8"/>
+      <path d="M50 91 L14.5 29.5 L85.5 29.5 Z" fill="none" stroke="#c9922a" stroke-width="8"/>
+    </svg>
     <p class="fcc-suite">${esc(I18n.t('flashcards.cert.suite'))}</p>
     <h1 class="fcc-title">${esc(I18n.t('flashcards.cert.title'))}</h1>
+    <p class="fcc-lead">${esc(I18n.t('flashcards.cert.lead_in'))}</p>
     <p class="fcc-name" dir="auto">${esc(name)}</p>
+    <div class="fcc-name-rule"></div>
     <p class="fcc-body">${esc(I18n.t('flashcards.cert.body', { total: FC_LADDER.length }))}</p>
-    <p class="fcc-date"><span class="bidi-isolate">${esc(fmtDate(doneIso))}</span></p>
+    <p class="fcc-date"><span class="fcc-orn" aria-hidden="true">✦</span> <span class="bidi-isolate">${esc(fmtDate(doneIso))}</span> <span class="fcc-orn" aria-hidden="true">✦</span></p>
     <div class="fcc-sign">
       <div><div class="fcc-sign-line"></div><div class="fcc-sign-lbl">${esc(I18n.t('flashcards.report.signature_label'))}</div></div>
+      <div class="fcc-seal"><div class="fcc-seal-inner">
+        <span class="fcc-seal-n bidi-isolate">${FC_LADDER.length}</span>
+        <span class="fcc-seal-w">${esc(I18n.t('flashcards.cert.seal_levels'))}</span>
+      </div></div>
       <div><div class="fcc-sign-line"></div><div class="fcc-sign-lbl">${esc(I18n.t('flashcards.report.label_date'))}</div></div>
     </div>
   </div></div>`;

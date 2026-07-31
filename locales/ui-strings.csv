@@ -4091,3 +4091,5 @@ flashcards.cert.title,Certificate of Completion,תעודת סיום,completion c
 flashcards.cert.suite,IvritSuite · Flash Cards,IvritSuite · כרטיסיות,completion certificate small suite line above the title,brand stays Latin
 flashcards.cert.body,has completed all {total} levels of the Hebrew Learning Path,על השלמת כל {total} השלבים במסלול הלמידה בעברית,completion certificate body line under the student name,has {total}
 flashcards.cert.generated_announce,Certificate ready for {name}.,התעודה של {name} מוכנה.,screen-reader announcement,mixed UI+content — do not translate {name}
+flashcards.cert.lead_in,This is to certify that,תעודה זו מוענקת ל־,completion certificate lead-in line above the student name,
+flashcards.cert.seal_levels,Levels,שלבים,completion certificate seal text under the big level-count numeral,
