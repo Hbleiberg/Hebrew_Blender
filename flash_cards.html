@@ -7644,6 +7644,21 @@ document.addEventListener('DOMContentLoaded', () => {
     I18n.ready.then(applyI18n);
     I18n.onChange(applyI18n);
   }
+
+  // Deep link: ?path (any value) opens the Learning Path level map on load — the link a teacher
+  // drops in a class newsletter. Presence-based; the value is reserved for future per-level
+  // targeting. Never stripped from the URL (parents bookmark it; a refresh re-opening the path
+  // is the desired entry point). openLadderMap builds its modal from I18n.t() synchronously, so
+  // it must wait for I18n.ready — and registering AFTER the applyI18n registration above means
+  // the map opens post-translation (same-promise .then callbacks run in registration order).
+  // Coexists with ?wl: that handler already configured the setup view underneath; closing the
+  // map lands on it — both intents honored, no precedence logic.
+  try {
+    if (new URLSearchParams(location.search).get('path') !== null) {
+      if (window.I18n) I18n.ready.then(() => openLadderMap());
+      else openLadderMap();
+    }
+  } catch (e) {}
 });
 
 // True when the UI is rendering right-to-left (Hebrew). Used to flip Arrow-key nav to visual dir.
