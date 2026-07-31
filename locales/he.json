@@ -3234,6 +3234,8 @@
   "torah.reading.aliyah_inline": "✦ עלייה {n}",
   "torah.reading.chant_all": "🎵 שירת הכול",
   "torah.reading.chant_all_stop": "⏹ עצירת השירה",
+  "torah.reading.col_english": "אנגלית",
+  "torah.reading.col_translit": "תעתיק",
   "torah.reading.empty_body": "בחרו פרשה מהתפריט שלמעלה — הקריאה תופיע כאן עם תעתיק אופציונלי, תרגום, תנועות צבועות ושמע בטעמים.",
   "torah.reading.empty_title": "בחרו פרשה כדי להתחיל",
   "torah.reading.jump_chip_aria": "קפיצה לעלייה {n} ({label})",

@@ -3234,6 +3234,8 @@
   "torah.reading.aliyah_inline": "✦ Aliyah {n}",
   "torah.reading.chant_all": "🎵 Chant all",
   "torah.reading.chant_all_stop": "⏹ Stop chant",
+  "torah.reading.col_english": "English",
+  "torah.reading.col_translit": "Transliteration",
   "torah.reading.empty_body": "Choose a parsha from the dropdown above — the reading appears here with optional transliteration, translation, color-coded vowels, and chanted audio.",
   "torah.reading.empty_title": "Pick a parsha to start",
   "torah.reading.jump_chip_aria": "Jump to aliyah {n} ({label})",

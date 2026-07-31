@@ -3099,6 +3099,8 @@ torah.reading.verse_loop_stop_aria,Stop looping verse {verseRef},עצירת הל
 torah.reading.verse_read,🔊 Read,🔊 הקראה,per-verse button,leading-emoji
 torah.reading.verse_read_aria,Read verse {verseRef} aloud (TTS),הקראת פסוק {verseRef} בקול (הקראה קולית),per-verse button aria,aria-label only; mixed UI+content — do not translate {verseRef}
 torah.reading.row_hebrew,Hebrew,עברית,Interlinear/side-by-side row label (Hebrew line),
+torah.reading.col_english,English,אנגלית,Side-by-side translation column header,
+torah.reading.col_translit,Transliteration,תעתיק,Side-by-side transliteration column header,
 torah.reading.row_translit,Translit,תעתיק,Interlinear/side-by-side row label (translit line),
 torah.reading.row_english,English,אנגלית,Interlinear/side-by-side row label (translation line),
 torah.reading.aliyah_inline,✦ Aliyah {n},✦ עלייה {n},Inline aliyah marker in the flowing reading,leading-glyph; {n} numeric

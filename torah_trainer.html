@@ -2823,7 +2823,7 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant,
   let html = `<div class="${cls}" data-print-cols="${colHeb}">`;
   // Translation column (left)
   if (withTrans) {
-    html += `<div class="tt-grid-col tt-col-translation"><h3 style="grid-row:1;grid-column:1">English</h3>`;
+    html += `<div class="tt-grid-col tt-col-translation"><h3 style="grid-row:1;grid-column:1">${esc(I18n.t('torah.reading.col_english'))}</h3>`;
     perVerse.forEach(({ v }, i) => {
       html += `<div class="tt-grid-row" style="grid-row:${rowOf[i]};grid-column:1"><span class="tt-vnum">${v.chapter}:${v.verse}</span><span class="tt-cell">${stripHTML(v.translation)}</span></div>`;
     });
@@ -2833,7 +2833,7 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant,
   }
   // Translit column (middle) — uses pre-computed Hebrew indices
   if (withTranslit) {
-    html += `<div class="tt-grid-col tt-col-translit"><h3 style="grid-row:1;grid-column:${colTranslit}">Transliteration</h3>`;
+    html += `<div class="tt-grid-col tt-col-translit"><h3 style="grid-row:1;grid-column:${colTranslit}">${esc(I18n.t('torah.reading.col_translit'))}</h3>`;
     perVerse.forEach(({ v, firstTwi, hebCount }, i) => {
       const tr = applyTranslit(v.hebrew);
       html += `<div class="tt-grid-row" style="grid-row:${rowOf[i]};grid-column:${colTranslit}"><span class="tt-vnum">${v.chapter}:${v.verse}</span><span class="tt-cell translit">${tokenizeTranslit(tr, firstTwi, hebCount)}</span></div>`;
