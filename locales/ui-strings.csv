@@ -1059,6 +1059,8 @@ flashcards.report.generated,Generated {date},הופק בתאריך {date},progre
 flashcards.report.generated_announce,Progress report ready for {name}.,דוח ההתקדמות של {name} מוכן.,screen-reader announcement,mixed UI+content — do not translate {name}
 flashcards.report.history_capped,"History keeps only the most recent {max} drills, so these totals cover that window.","ההיסטוריה שומרת רק את {max} התרגולים האחרונים, ולכן הסיכומים מתייחסים לטווח זה.",progress-report note under the summary when the profile hit the cap,
 flashcards.report.label_date,Date,תאריך,progress-report date label (drills-table column + signature line),
+flashcards.report.ladder_complete,Learning Path: Complete — all {total} levels passed.,מסלול הלמידה: הושלם — כל {total} השלבים עברו בהצלחה.,progress-report Learning Path line when every level is passed,has {total}
+flashcards.report.ladder_line,Learning Path: Level {n} of {total} — {title},מסלול הלמידה: שלב {n} מתוך {total} — {title},progress-report Learning Path standing line under the summary,has {n} {total} {title}
 flashcards.report.need_results,Save at least one drill result for this student before printing a report.,יש לשמור לפחות תוצאת תרגול אחת לתלמיד זה לפני הדפסת דוח.,alert,
 flashcards.report.period,Covering {from} – {to},לתקופה {from} – {to},progress-report header meta (date range),
 flashcards.report.period_one,Covering {date},לתאריך {date},progress-report header meta (single saved drill),

@@ -1188,7 +1188,10 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
   /* body carries min-height:100vh for the app shell; in print that pins the body to a full page
      box and pushes a blank second sheet out of a report that otherwise fits on one. */
   body.fc-report-print { min-height:0 !important; }
-  #fcReportSheet { font-size:10pt; line-height:1.45; color:#1a2a47; }
+  /* 1.4 (was 1.45): pays for the Learning Path line. The one-page Letter budget had ~4px of
+     slack and the line costs ~23px; 0.05 less leading across the sheet buys it back invisibly
+     without shrinking any element or the handwriting space. */
+  #fcReportSheet { font-size:10pt; line-height:1.4; color:#1a2a47; }
   .fcr-head { border-block-end:2pt solid #1a2a47; padding-block-end:6pt; margin-block-end:10pt; }
   .fcr-title { font-family:var(--serif); font-size:13pt; margin:0 0 3pt; }
   .fcr-name { font-size:16pt; font-weight:700; margin:0 0 3pt; }
@@ -1201,7 +1204,10 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
   .fcr-stat b { display:block; font-size:15pt; line-height:1.15; }
   .fcr-stat span { font-size:8pt; color:#3d4a63; }
   .fcr-note { font-size:8pt; color:#3d4a63; margin:4pt 0 0; font-style:italic; }
-  .fcr-row { display:flex; align-items:center; gap:8pt; padding:1.5pt 0;
+  /* Learning Path standing — information, not a footnote: upright ink, a step above the notes. */
+  .fcr-ladder { font-size:9pt; color:#1a2a47; font-style:normal; }
+  /* 1pt (was 1.5pt): the other half of the Learning Path line's budget — see #fcReportSheet. */
+  .fcr-row { display:flex; align-items:center; gap:8pt; padding:1pt 0;
     border-block-end:0.5pt solid #c8bfa8; break-inside:avoid; page-break-inside:avoid; }
   .fcr-glyph { font-family:var(--heb-font); font-size:15pt; line-height:1.2;
     min-width:30pt; text-align:center; }
@@ -5746,6 +5752,17 @@ function _reportEnter(name) {
     ${stat(overall + '%', I18n.t('flashcards.report.summary_accuracy'))}
     ${stat(best + '%', I18n.t('flashcards.report.summary_best'))}
   </div>`;
+  // ── Learning Path standing — substance first, the cap caveat after. Omitted entirely for a
+  //    profile that has never opened the path: "Level 0 of 12" on a parent-facing handout reads
+  //    as a deficit on a path the student may never have been assigned (Strengths' omit rule). ──
+  const ladLevels = readLadderLevels(name);
+  if (Object.keys(ladLevels).length) {
+    const ladIdx = ladderNextIndex(ladLevels);
+    html += `<p class="fcr-note fcr-ladder bidi-isolate">${esc(ladIdx >= 0
+      ? I18n.t('flashcards.report.ladder_line',
+               { n: ladIdx + 1, total: FC_LADDER.length, title: ladderTitle(FC_LADDER[ladIdx]) })
+      : I18n.t('flashcards.report.ladder_complete', { total: FC_LADDER.length }))}</p>`;
+  }
   // Without this note "overall" would silently mean "the most recent 50" once the cap is hit.
   if (results.length >= MAX_RESULTS_PER_PROFILE) {
     html += `<p class="fcr-note">${esc(I18n.t('flashcards.report.history_capped', { max: MAX_RESULTS_PER_PROFILE }))}</p>`;

@@ -1136,6 +1136,8 @@
   "flashcards.report.generated_announce": "דוח ההתקדמות של {name} מוכן.",
   "flashcards.report.history_capped": "ההיסטוריה שומרת רק את {max} התרגולים האחרונים, ולכן הסיכומים מתייחסים לטווח זה.",
   "flashcards.report.label_date": "תאריך",
+  "flashcards.report.ladder_complete": "מסלול הלמידה: הושלם — כל {total} השלבים עברו בהצלחה.",
+  "flashcards.report.ladder_line": "מסלול הלמידה: שלב {n} מתוך {total} — {title}",
   "flashcards.report.need_results": "יש לשמור לפחות תוצאת תרגול אחת לתלמיד זה לפני הדפסת דוח.",
   "flashcards.report.period": "לתקופה {from} – {to}",
   "flashcards.report.period_one": "לתאריך {date}",
