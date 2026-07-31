@@ -7096,7 +7096,12 @@ async function onUploadEngFontPick(input){
     function wire(wrap) {
       const icon = wrap.querySelector('.tip-icon'); if (!icon) return;
       icon.tabIndex = 0; icon.setAttribute('role', 'button');
-      icon.setAttribute('aria-label', wrap.dataset.tip || 'More info');
+      // Generic translated name (suite-canonical, like the other four bindTip carriers) — the tip
+      // PROSE reaches AT via aria-describedby; a prose aria-label captured here goes stale on
+      // language switch because this IIFE runs once, before I18n rewrites data-tip.
+      icon.setAttribute('data-i18n-aria-label', 'shared.tip.aria_more_info');
+      const _tipAria = window.I18n ? I18n.t('shared.tip.aria_more_info') : 'shared.tip.aria_more_info';
+      icon.setAttribute('aria-label', _tipAria === 'shared.tip.aria_more_info' ? 'More information' : _tipAria);
       icon.setAttribute('aria-expanded', 'false');
       icon.setAttribute('aria-describedby', 'tipFloat');
       wrap.addEventListener('mouseenter', () => show(wrap));
