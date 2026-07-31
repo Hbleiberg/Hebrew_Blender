@@ -3335,9 +3335,9 @@ function metricHandlesSVG() {
         + dot('baseline','y', 488, fy(m.baseline), C.base, '', _pT('metric_baseline_drag', 'Baseline — drag to set'));
   if (meta && meta.desc) h += dot('descender','y', 488, fy(m.descender), C.desc, '', _pT('metric_descender_drag', 'Descender — drag to set'));
   if (meta && meta.asc)  h += dot('lamedAscender','y', 488, fy(m.lamedAscender), C.top, '', _pT('metric_lamed_drag', 'Lamed ascender — drag to set'));
-  h += dot('advance','x', fx(adv), vy1+12, C.margin, 'width', _pT('metric_width_drag', 'Letter width (advance) — drag'));   // sits on the "letter width" line
-  h += dot('lsb','x', fx(letterLSB(L)), mid, C.margin, 'left', _pT('metric_lsb_drag', 'Left margin — drag to slide the whole letter'));   // slides the glyph (ink) horizontally
-  h += dot('rsb','x', fx(adv - letterRSB(L)), mid, C.margin, 'right', _pT('metric_rsb_drag', 'Right margin — drag'));        // inner edge of the right zone (same advance as the zone)
+  h += dot('advance','x', fx(adv), vy1+12, C.margin, _pT('metric_label_width', 'width'), _pT('metric_width_drag', 'Letter width (advance) — drag'));   // sits on the "letter width" line
+  h += dot('lsb','x', fx(letterLSB(L)), mid, C.margin, _pT('metric_label_left', 'left'), _pT('metric_lsb_drag', 'Left margin — drag to slide the whole letter'));   // slides the glyph (ink) horizontally
+  h += dot('rsb','x', fx(adv - letterRSB(L)), mid, C.margin, _pT('metric_label_right', 'right'), _pT('metric_rsb_drag', 'Right margin — drag'));        // inner edge of the right zone (same advance as the zone)
   return h;
 }
 function attachMetricDrag() {
