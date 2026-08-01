@@ -5995,9 +5995,20 @@ function setBackupScope(scope) {
 // Save a .ivrit file containing whatever the scope toggle selects. Reuses the
 // shared envelope/format and helpers without modifying the shared engine block.
 function flashBackupSave() {
+  // This scope-aware path builds its own payload instead of calling the shared engine's
+  // ivritSaveFile(), so it has to carry everything IVRIT_CFG.gather() carries — folder trees
+  // included, or a restore returns the presets and profiles with the teacher's whole folder
+  // organisation flattened to root. Keep the two in sync, per scope.
   const data = {};
-  if (backupScope === 'presets' || backupScope === 'both') { data.presets = readPresets(); data.liveState = getSettings(); }
-  if (backupScope === 'profiles' || backupScope === 'both') { data.flashCardProfiles = readProfiles(); }
+  if (backupScope === 'presets' || backupScope === 'both') {
+    data.presets = readPresets();
+    data.presetFolders = ftRead('hebrewFlashCards_presetsFolders');
+    data.liveState = getSettings();
+  }
+  if (backupScope === 'profiles' || backupScope === 'both') {
+    data.flashCardProfiles = readProfiles();
+    data.profileFolders = ftRead('hebrewFlashCards_profilesFolders');
+  }
   const suffix = backupScope === 'profiles' ? '_Profiles' : backupScope === 'both' ? '_All' : '';
   const payload = { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: IVRIT_CFG.tool, savedAt: new Date().toISOString(), data };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
