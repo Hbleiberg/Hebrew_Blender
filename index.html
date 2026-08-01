@@ -580,6 +580,28 @@ function sanitizeFcProfiles(db) {
   });
   return out;
 }
+// Only `results` is merged below, so an imported backup's Learning Path ladder needs its own pass —
+// the same one flash_cards.html's mergeProfilesBlob does via its mergeLadder (bestPct = the better
+// score, passedAt = the FIRST time the level was earned). Without it, importing a backup for a
+// student who already exists here silently drops their level progress, and with it the completion
+// certificate. Keep the two in sync.
+function mergeFcLadder(a, b) {
+  const A = (a && a.levels) || {}, B = (b && b.levels) || {};
+  const ids = Object.keys(A).concat(Object.keys(B).filter(k => !(k in A)));
+  if (!ids.length) return undefined;
+  const levels = {};
+  ids.forEach(id => {
+    const x = A[id], y = B[id];
+    // Import path: a level object can arrive from a .ivrit file or an AllTools bundle —
+    // safe-assign, never a bare Object.assign (security rule).
+    if (!x || !y) { levels[id] = ivritSafeAssign({}, x || y); return; }
+    const merged = { bestPct: Math.max(x.bestPct || 0, y.bestPct || 0) };
+    const stamps = [x.passedAt, y.passedAt].filter(Boolean).sort();
+    if (stamps.length) merged.passedAt = stamps[0];
+    levels[id] = merged;
+  });
+  return { levels };
+}
 function mergeFlashCardProfiles(incoming, replace) {
   const KEY = 'hebrewFlashCards_profiles';
   let base;
@@ -594,6 +616,8 @@ function mergeFlashCardProfiles(incoming, replace) {
     (src.results || []).forEach(r => { if (!seen.has(r.savedAt)) base.profiles[name].results.push(r); });
     base.profiles[name].results = (base.profiles[name].results || [])
       .sort((a, b) => new Date(a.savedAt) - new Date(b.savedAt)).slice(-50);
+    const ladder = mergeFcLadder(base.profiles[name].ladder, src.ladder);
+    if (ladder) base.profiles[name].ladder = ladder;
   });
   if (inc.activeProfile && base.profiles[inc.activeProfile]) base.activeProfile = inc.activeProfile;
   if (!base.activeProfile) base.activeProfile = Object.keys(base.profiles)[0] || null;
