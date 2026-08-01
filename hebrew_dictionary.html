@@ -1569,7 +1569,19 @@ function wlReadStore() {
   let s;
   try { s = ivritSafeParse(localStorage.getItem(WORDLISTS_KEY) || '{}'); } catch (e) { s = null; }
   if (!s || typeof s !== 'object' || !s.lists || typeof s.lists !== 'object') return { v: 1, lists: {} };
-  return { v: 1, lists: s.lists };
+  // Each list's shape is untrusted too: this store arrives from hand-editable .ivrit / AllTools
+  // files, and index.html's wlMergeIntoStorage copies every list value through verbatim. A null
+  // list or a non-array `words` used to throw inside the render — the manager simply never opened
+  // while the data sat in storage, which reads as data loss. Normalize on read only; the stored
+  // blob is never rewritten just because it was read. Same guard the two sibling consumers already
+  // apply (flash_cards.html / hebrew_blend_generator.html: `Array.isArray(l.words) ? l.words : []`).
+  const lists = {};
+  Object.keys(s.lists).forEach(id => {
+    const l = s.lists[id];
+    if (!l || typeof l !== 'object') return;
+    lists[id] = Object.assign({}, l, { words: Array.isArray(l.words) ? l.words.filter(w => w && w.word) : [] });
+  });
+  return { v: 1, lists };
 }
 function wlWriteStore(store) {
   try { localStorage.setItem(WORDLISTS_KEY, JSON.stringify(store)); return true; }
