@@ -3970,6 +3970,16 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     return out;
   }
 
+  // A schedule arrives from an imported settings blob or a saved-schedule entry — both hand-editable
+  // text — so its shape is untrusted. Anything that is not an array of row objects used to throw
+  // inside renderScheduleRows/renderScheduleValidation ("filter is not a function", or "reading
+  // 'preset'" on a null row), which blanks the Schedule Builder and the saved-schedule list while
+  // every schedule is still in storage. Rows themselves are left untouched — the parse they came
+  // through already dropped the prototype-polluting keys.
+  function normalizeSchedule(raw) {
+    return Array.isArray(raw) ? raw.filter(e => e && typeof e === 'object' && !Array.isArray(e)) : [];
+  }
+
   function synthesizePanelLayoutFromVideoLayout(vl) {
     const out = JSON.parse(JSON.stringify(DEFAULT_PANEL_LAYOUT));
     if (vl === 'sidebar') {
@@ -4710,6 +4720,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       }
     } catch (e) {}
     settings.panelLayout = normalizePanelLayout(settings.panelLayout);
+    settings.currentSchedule = normalizeSchedule(settings.currentSchedule);
     migrateRostersInSettings();   // one-time: fold a legacy single roster into a named class (idempotent)
   }
 
@@ -5892,7 +5903,7 @@ else ivritInit();
 
   function loadSavedSchedule(name) {
     if (!savedSchedules[name]) return;
-    settings.currentSchedule = JSON.parse(JSON.stringify(savedSchedules[name]));
+    settings.currentSchedule = normalizeSchedule(JSON.parse(JSON.stringify(savedSchedules[name])));
     _lastScheduleKey = null;
     renderScheduleRows();
     saveSettingsToStorage();
