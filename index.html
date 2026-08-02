@@ -509,7 +509,9 @@ async function renderMyFontsManager() {
     const meta = document.createElement('span');
     meta.style.cssText = 'flex:0 0 auto;font-size:0.72rem;opacity:0.65;';
     meta.textContent = _ivFmt(f.created) + ' · ' + Math.max(1, Math.round((f.size || 0) / 1024)) + ' KB';
-    const mk = (txt, title, fn) => { const b = document.createElement('button'); b.className = 'ie-action-btn secondary'; b.textContent = txt; if (title) b.title = title; b.style.cssText = 'padding:4px 8px;font-size:0.78rem;'; b.onclick = fn; return b; };
+    // aria-label alongside title: the ⬇/🗑 rows are named from their content otherwise, so a
+    // screen reader announces "⬇"/"🗑" once per saved font — the destructive Remove included.
+    const mk = (txt, title, fn) => { const b = document.createElement('button'); b.className = 'ie-action-btn secondary'; b.textContent = txt; if (title) { b.title = title; b.setAttribute('aria-label', title); } b.style.cssText = 'padding:4px 8px;font-size:0.78rem;'; b.onclick = fn; return b; };
     row.append(nm, meta,
       mk(I18n.t('home.alltools.myfonts.use_button'), '', () => useFontEverywhere(f.name)),
       mk('⬇', I18n.t('home.alltools.myfonts.download_title'), () => downloadMyFontFile(f.name)),
