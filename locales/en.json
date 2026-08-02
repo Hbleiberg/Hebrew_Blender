@@ -3365,6 +3365,8 @@
   "torah.trans.style_modern": "Modern Israeli [DEFAULT]",
   "torah.trans.style_sbl": "SBL Academic",
   "torah.trans.style_simple": "Simple stressed",
+  "torah.trans.unavailable_chip": "No transliteration",
+  "torah.trans.unavailable_tip": "Transliteration is switched on, but its library could not be loaded — often no connection, or a school network blocking it. The column is left out rather than printed empty.",
   "torah.trans.version_opt": "{title} — {license}",
   "torah.trope_legend.tutor_link": "Learn the trope names →",
   "trope.a11y.skip_to_tutor": "Skip to the tutor",

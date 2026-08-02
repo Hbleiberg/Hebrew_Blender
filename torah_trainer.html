@@ -356,6 +356,16 @@ body.dark .tt-ref-hdr { color:var(--gold-light); }
   padding:3px 9px; margin-inline-start:8px; vertical-align:middle; cursor:pointer;
 }
 body.dark .tt-shem-chip { color:var(--gold-light); background:rgba(255,255,255,0.06); }
+/* Neutral sibling of the שם chip, for "a column you switched on cannot be produced".
+   Muted rather than gold: it reports a limitation, it does not flag holiness.
+   Screen-only — print-hidden with the rest of the chrome. */
+.tt-notice-chip {
+  display:inline-block; font-size:0.68rem; font-weight:700; line-height:1;
+  color:var(--muted); background:var(--warm-gray);
+  border:1px solid var(--border); border-radius:999px;
+  padding:3px 9px; margin-inline-start:8px; vertical-align:middle; cursor:pointer;
+}
+body.dark .tt-notice-chip { color:var(--muted); background:rgba(255,255,255,0.06); }
 /* Handout-bar שם-dependent rows: .tt-ctrl's inline-flex would beat the hidden
    attribute (same trap as .tt-trope-legend[hidden]) — make hidden win. */
 #ttHandoutShemNote[hidden], #ttHandoutGenizaRow[hidden] { display:none; }
@@ -1106,7 +1116,7 @@ body.fullscreen #fsExitBtn { display: flex; }
      .tt-controls also covers #ttCustomPicker; the fixed-position drawer/backdrop/toast/tour
      otherwise re-stamp on EVERY printed page (position:fixed repeats per page in print). */
   header, .tt-controls, #ttStatus, .tt-readall, .tt-chantall, footer, .tt-empty,
-  .settings-modal, .settings-backdrop, #tipFloat, .tt-hint-toast, .tour-spot, .tour-card, #fsExitBtn, .tt-shem-chip { display:none !important; }
+  .settings-modal, .settings-backdrop, #tipFloat, .tt-hint-toast, .tour-spot, .tour-card, #fsExitBtn, .tt-shem-chip, .tt-notice-chip { display:none !important; }
 
   /* Never split a verse (or a side-by-side row) across a page break; best-effort —
      a verse taller than the page still breaks (browser overrides). */
@@ -2781,7 +2791,17 @@ function renderText() {
   }
   const root = document.getElementById('ttReading');
   const layout = settings.layout || 'sidebyside';
-  const includeTranslit = settings.showTranslit;
+  // Transliteration comes from a lazily-loaded ESM. Offline, during a CDN outage, or on
+  // a school network that blocks esm.sh, applyTranslit() returns '' for every verse and
+  // the layouts still emit the column: side-by-side reserves a labelled but entirely
+  // empty band (31.4% of the printed sheet), and interlinear stamps a "Translit" label
+  // over an empty row on EVERY verse. Treat "switched on but producing nothing" as off,
+  // and say so on screen so the column does not just silently vanish.
+  // .every() short-circuits on the first verse that DOES transliterate, so when the
+  // library is present this costs exactly one extra call.
+  const _translitDead = settings.showTranslit &&
+    currentVerses.every(v => !applyTranslit(v.hebrew));
+  const includeTranslit = settings.showTranslit && !_translitDead;
   const includeTrans    = settings.showTranslation;
   // Chanting streams PocketTorah audio keyed by parsha/aliyah. It's available
   // whenever the current reading maps to a parsha with audio — including
@@ -2793,6 +2813,8 @@ function renderText() {
   let html = `<div class="tt-ref-hdr">
     <span>${esc(currentRangeLabel)}${_readingHasShem
       ? ` <span class="tt-shem-chip" lang="he" data-i18n-tip="torah.shem.chip_tip" data-tip="${esc(I18n.t('torah.shem.chip_tip'))}">${esc(I18n.t('torah.shem.chip_label'))}</span>`
+      : ''}${_translitDead
+      ? ` <span class="tt-notice-chip" data-i18n-tip="torah.trans.unavailable_tip" data-tip="${esc(I18n.t('torah.trans.unavailable_tip'))}">${esc(I18n.t('torah.trans.unavailable_chip'))}</span>`
       : ''}</span>
     <span style="display:flex;gap:6px;">
       <button class="tt-readall" id="ttReadAllBtn" onclick="toggleReadAll()" type="button">${ttsState.readAllActive ? esc(I18n.t('torah.reading.stop')) : esc(I18n.t('torah.reading.read_all'))}</button>
@@ -2814,8 +2836,9 @@ function renderText() {
   root.innerHTML = html;
   // The tooltip IIFE only auto-binds at DOMContentLoaded — the freshly-built
   // chip needs an explicit bind each render for tap/keyboard accessibility.
-  const _shemChipEl = root.querySelector('.tt-shem-chip');
-  if (_shemChipEl && window.bindTip) bindTip(_shemChipEl);
+  root.querySelectorAll('.tt-shem-chip, .tt-notice-chip').forEach(el => {
+    if (window.bindTip) bindTip(el);
+  });
   syncBulkClasses();   // innerHTML rebuild dropped any bulk-selection tint
   if (currentTimings && currentAudio) updateKaraokeWordRefs();
   // Re-apply the loop marker/button state to the freshly-built DOM (survives a

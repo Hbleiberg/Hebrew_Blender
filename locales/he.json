@@ -3365,6 +3365,8 @@
   "torah.trans.style_modern": "עברית מודרנית [ברירת מחדל]",
   "torah.trans.style_sbl": "SBL אקדמי",
   "torah.trans.style_simple": "פשוט עם הטעמה",
+  "torah.trans.unavailable_chip": "אין תעתיק",
+  "torah.trans.unavailable_tip": "התעתיק מופעל, אך לא ניתן היה לטעון את הספרייה — לרוב אין חיבור, או שרשת בית הספר חוסמת אותה. העמודה מושמטת במקום להידפס ריקה.",
   "torah.trans.version_opt": "{title} — {license}",
   "torah.trope_legend.tutor_link": "למדו את שמות הטעמים →",
   "trope.a11y.skip_to_tutor": "דלגו למאמן",

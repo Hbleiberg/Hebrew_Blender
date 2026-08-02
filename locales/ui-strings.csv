@@ -3206,6 +3206,8 @@ torah.trans.style_label,Style,סגנון,settings label,
 torah.trans.style_modern,Modern Israeli [DEFAULT],עברית מודרנית [ברירת מחדל],select option,
 torah.trans.style_sbl,SBL Academic,SBL אקדמי,select option,
 torah.trans.style_simple,Simple stressed,פשוט עם הטעמה,select option,
+torah.trans.unavailable_chip,No transliteration,אין תעתיק,chip in the reading header when the transliteration library cannot load,
+torah.trans.unavailable_tip,"Transliteration is switched on, but its library could not be loaded — often no connection, or a school network blocking it. The column is left out rather than printed empty.","התעתיק מופעל, אך לא ניתן היה לטעון את הספרייה — לרוב אין חיבור, או שרשת בית הספר חוסמת אותה. העמודה מושמטת במקום להידפס ריקה.",accessible tooltip on the no-transliteration chip,
 torah.trans.version_opt,{title} — {license},{title} — {license},version select option,do-not-translate {title}
 torah.trope_legend.tutor_link,Learn the trope names →,למדו את שמות הטעמים →,trope legend link,
 torah.a11y.skip_to_reading,Skip to the reading,דילוג לקריאה,Skip-link to the reading (a11y),aria/skip-link
