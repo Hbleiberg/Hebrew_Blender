@@ -2148,9 +2148,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <button class="btn btn-xs btn-secondary" id="starterLayoutsBtn" onclick="openFirstRun()" style="width:100%;margin-bottom:8px;" data-i18n="dashboard.preset.quickstart_button">✨ Quick-start layouts…</button>
     <p style="font-size:0.72rem;color:var(--muted);margin:0 0 10px;line-height:1.4;" data-i18n="dashboard.preset.quickstart_desc">Apply a ready-made setup — including a general-classroom layout — then tweak it and Save it as your own preset.</p>
     <div class="form-row">
-      <input type="text" id="presetName" placeholder="Preset name" data-i18n-placeholder="dashboard.preset.name_placeholder" aria-label="Preset name" data-i18n-aria-label="dashboard.preset.name_placeholder" style="max-width:200px;">
-      <button class="btn btn-xs" onclick="savePreset()" data-i18n="dashboard.preset.save">Save</button>
+      <input type="text" id="presetName" placeholder="Preset name" data-i18n-placeholder="dashboard.preset.name_placeholder" aria-label="Preset name" data-i18n-aria-label="dashboard.preset.name_placeholder" style="max-width:200px;" oninput="onPresetNameInput()">
+      <button class="btn btn-xs" id="savePresetBtn" onclick="savePreset()" data-i18n="dashboard.preset.save">Save</button>
     </div>
+    <div id="presetNameNote" role="status" aria-live="polite" style="display:none;font-size:0.72rem;color:var(--gold);margin:-4px 0 8px;"></div>
     <div class="preset-list" id="presetList"></div>
     <hr>
     <style>
@@ -5217,9 +5218,27 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   }
   function savePresetsStorage() { localStorage.setItem('hebrewDashboard_presets', JSON.stringify(presets)); }
 
+  // Inline preset-name validation (replaces a blocking alert()) — the same helper the
+  // generator and flash cards already carry. Stores the KEY so applyI18n can re-render a
+  // note still on screen; aria-disabled (not `disabled`) keeps Save focusable so a
+  // screen-reader user can reach it and hear why it won't run.
+  let _presetNoteKey = null;
+  function _setPresetNameNote(key) {
+    _presetNoteKey = key || null;
+    const note = document.getElementById('presetNameNote');
+    const btn = document.getElementById('savePresetBtn');
+    const msg = _presetNoteKey && window.I18n ? I18n.t(_presetNoteKey) : '';
+    if (note) { note.textContent = msg; note.style.display = msg ? '' : 'none'; }
+    if (btn) btn.setAttribute('aria-disabled', msg ? 'true' : 'false');
+  }
+  function onPresetNameInput() {
+    if (_presetNoteKey && document.getElementById('presetName').value.trim()) _setPresetNameNote(null);
+  }
+
   function savePreset() {
     const name = document.getElementById('presetName').value.trim();
-    if (!name) { alert(I18n.t('dashboard.preset.save_empty')); return; }
+    if (!name) { _setPresetNameNote('dashboard.preset.save_empty'); return; }
+    _setPresetNameNote(null);
     presets[name] = getSettings({ forPreset: true });   // rosters are shared — snapshot only activeRosterId
     savePresetsStorage();
     document.getElementById('presetName').value = '';
@@ -6914,6 +6933,7 @@ async function onUploadEngFontPick(input){
       try { initEngFontSelector(); } catch (e) {}
       try { initColorPickers(); } catch (e) {}           // vowel rows are named via the glyphname keys; rebuild reads current colours, so it's read-only
       try { if (_locNoteKey) setLocNote(_locNoteKey, _locNoteParams); } catch (e) {}   // re-render a location note that is still on screen
+      try { if (_presetNoteKey) _setPresetNameNote(_presetNoteKey); } catch (e) {}     // ditto for a preset-name note
       try { buildToolbar(document.getElementById('drawerToolbar')); } catch (e) {}      // editor toolbar titles/labels build via t()
       try { buildToolbar(document.getElementById('inplaceToolbarCmds')); } catch (e) {}
       try { updateColTitles(); } catch (e) {}

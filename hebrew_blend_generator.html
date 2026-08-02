@@ -4311,6 +4311,11 @@ function toggleLetter(heb, el) {
     selectedLetters.add(heb);
     el.classList.add('selected');
   }
+  // Same reasoning as the vowel clear in updateCombosCount: a letter change invalidates the
+  // letter-blocked verdict, so retire that note now rather than making the teacher press
+  // Generate again to find out it works. Generate re-evaluates and re-shows it if still blocked.
+  if (_genNoteKey === 'worksheet.validation.select_letter' ||
+      _genNoteKey === 'worksheet.validation.select_more_letters') _setGenerateNote(null);
   updateCombosCount();
 }
 
@@ -6953,7 +6958,7 @@ function generateNameTheLetter() {
   const count = parseInt(document.getElementById('blendCount').value) || 20;
   const VAV_VARIANTS = new Set(['וֹ','וּ']);
   const pool = [...selectedLetters].filter(h => !VAV_VARIANTS.has(h));
-  if (pool.length === 0) { alert(I18n.t('worksheet.validation.select_letter')); return; }
+  if (pool.length === 0) { _setGenerateNote('worksheet.validation.select_letter'); return; }
 
   const excludeRepeats = document.getElementById('excludeRepeats').checked;
   blends = [];
@@ -8812,7 +8817,7 @@ function generate(animate = false) {
 
   if (firstPool.length === 0 || secondPool.length === 0) {
     if (rwOn) { blends = []; generateRealWords(); return; }
-    alert(I18n.t('worksheet.validation.select_more_letters'));
+    _setGenerateNote('worksheet.validation.select_more_letters');
     return;
   }
 

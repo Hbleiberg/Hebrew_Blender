@@ -1992,6 +1992,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
   <!-- START -->
   <div class="start-cta">
+    <div id="startNote" class="sub" role="status" aria-live="polite" style="display:none;white-space:pre-line;color:var(--gold);font-size:0.78rem;margin-bottom:6px;"></div>
     <button class="btn gold" id="startBtn" data-i18n="flashcards.start.button">Start Practicing! ✨</button>
     <button class="btn" id="printSheetBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="sheetMenu" onclick="toggleSheetMenu()" data-i18n="flashcards.sheet.button">🖨️ Print card sheet</button>
   </div>
@@ -4180,6 +4181,19 @@ function writePresets(obj) {
 }
 // Inline preset-name validation (replaces the silent empty-name focus): show a note
 // in the panel + reflect the invalid state on the Save button via aria-disabled.
+// Inline Start validation (replaces a blocking alert() that dumped the whole list).
+// Stores KEYS, not rendered strings, so applyI18n can re-render a note still on screen —
+// mirrors the generator's _setGenerateNote. aria-disabled (not `disabled`) keeps Start
+// focusable so a screen-reader user can reach it and hear why it won't run.
+let _startNoteKeys = [];
+function _setStartNote(keys) {
+  _startNoteKeys = Array.isArray(keys) ? keys.slice() : [];
+  const note = document.getElementById('startNote');
+  const btn = document.getElementById('startBtn');
+  const msg = _startNoteKeys.length && window.I18n ? _startNoteKeys.map(k => I18n.t(k)).join('\n') : '';
+  if (note) { note.textContent = msg; note.style.display = msg ? '' : 'none'; }
+  if (btn) btn.setAttribute('aria-disabled', msg ? 'true' : 'false');
+}
 function _setPresetNameNote(msg) {
   const note = document.getElementById('presetNameNote');
   const btn = document.getElementById('savePresetBtn');
@@ -5525,7 +5539,7 @@ function _ladderEnter(levelId) {
   _ladderActive = { levelId, profile, snapshot, recorded: false, wordsPool: wordsInlinePool };
   applySettings(Object.assign({}, snapshot, _ladderOverrides(lv)));
   startPractice();
-  // startPractice() alerts and returns on a validation failure or an empty deck. If it never
+  // startPractice() shows an inline note and returns on a validation failure or an empty deck. If it never
   // reached the card screen we'd be stranded mid-ladder with the teacher's settings still
   // overwritten, so unwind rather than leave the app in that state.
   if (!document.getElementById('screenCard').classList.contains('active')) { _ladderExit(); return false; }
@@ -6803,20 +6817,21 @@ function startTimer() {
 
 function startPractice() {
   // Validate
+  _setStartNote([]);   // a fresh attempt retires the previous "can't start yet" note
   const issues = [];
   if (!otherModeActive) {
-    if (selectedLetters.size === 0) issues.push(I18n.t('flashcards.start.err_select_letter'));
-    if (selectedVowels.size === 0) issues.push(I18n.t('flashcards.start.err_select_vowel'));
+    if (selectedLetters.size === 0) issues.push('flashcards.start.err_select_letter');
+    if (selectedVowels.size === 0) issues.push('flashcards.start.err_select_vowel');
     if (anyLetterLock && mode >= 2) {
       const hasEnabledEmpty = Object.entries(letterLocks).some(([pos, lk]) => +pos <= mode && lk.enabled && lk.letters.size === 0);
-      if (hasEnabledEmpty) issues.push(I18n.t('flashcards.start.err_locked_empty'));
+      if (hasEnabledEmpty) issues.push('flashcards.start.err_locked_empty');
     }
   }
   if (otherModeActive && otherSubMode === 'numbers' && numberMin > numberMax) {
-    issues.push(I18n.t('flashcards.start.err_range'));
+    issues.push('flashcards.start.err_range');
   }
   if (otherModeActive && otherSubMode === 'colors' && selectedColors.size === 0) {
-    issues.push(I18n.t('flashcards.start.err_select_color'));
+    issues.push('flashcards.start.err_select_color');
   }
   if (otherModeActive && otherSubMode === 'emoji') {
     if (!EMOJI_DATA && _emojiFetchP) {
@@ -6830,20 +6845,20 @@ function startPractice() {
       }
       return;
     }
-    if (!EMOJI_DATA) issues.push(I18n.t('flashcards.start.err_emoji_loading'));   // genuine load failure
-    else if (selectedEmojiSubs.size === 0) issues.push(I18n.t('flashcards.start.err_select_emoji'));
+    if (!EMOJI_DATA) issues.push('flashcards.start.err_emoji_loading');   // genuine load failure
+    else if (selectedEmojiSubs.size === 0) issues.push('flashcards.start.err_select_emoji');
   }
   if (otherModeActive && otherSubMode === 'words') {
     WORDS_POOL = resolveWordsPool();
-    if (wordsSource === 'alldict' && !ALL_WORDS_DATA) issues.push(I18n.t('flashcards.start.err_dict_loading'));
+    if (wordsSource === 'alldict' && !ALL_WORDS_DATA) issues.push('flashcards.start.err_dict_loading');
     else if (wordsSource === 'mylists' && selectedWordListIds.size === 0 && !(wordsInlinePool && wordsInlinePool.length))
-      issues.push(I18n.t('flashcards.start.err_select_wordlist'));
-    else if (!WORDS_POOL || WORDS_POOL.length === 0) issues.push(I18n.t('flashcards.start.err_no_words'));
+      issues.push('flashcards.start.err_select_wordlist');
+    else if (!WORDS_POOL || WORDS_POOL.length === 0) issues.push('flashcards.start.err_no_words');
   }
-  if (issues.length) { alert(issues.join('\n')); return; }
+  if (issues.length) { _setStartNote(issues); return; }
 
   const deck = generateDeck(cardCount);
-  if (deck.length === 0) { alert(I18n.t('flashcards.start.err_no_cards')); return; }
+  if (deck.length === 0) { _setStartNote(['flashcards.start.err_no_cards']); return; }
   currentCards = deck;
   savedCards = deck.slice();
   currentIndex = 0;
@@ -7826,6 +7841,7 @@ function applyI18n() {
   renderProfiles();
   syncOtherSubUI();
   updateWordsCount();
+  if (_startNoteKeys.length) _setStartNote(_startNoteKeys);   // re-render a Start note still on screen
   { const _tsl = document.getElementById('timerShowLabel');
     if (_tsl) { const _tk = timerMode === 'limit' ? 'flashcards.timer.show_countdown' : 'flashcards.timer.show_timer';
                 _tsl.setAttribute('data-i18n', _tk); _tsl.textContent = I18n.t(_tk); } }
