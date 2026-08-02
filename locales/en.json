@@ -3305,6 +3305,7 @@
   "torah.shem.chip_tip": "This reading contains God's name. A printed page traditionally requires geniza (respectful storage), not disposal.",
   "torah.status.aliyah_audio_unavailable": "Audio for aliyah {n} is not available in PocketTorah.",
   "torah.status.audio_basename_missing": "Audio basename missing in manifest.",
+  "torah.status.audio_load_failed": "Couldn't load the chanting audio. Check your connection — some school networks block it.",
   "torah.status.cant_determine_parsha": "Could not determine the current parsha (Sefaria API unreachable).",
   "torah.status.chant_unavailable": "Chanting isn't available for this reading.",
   "torah.status.data_load_failed": "Failed to load static data files (data/parshiyot.json, data/pockettorah/*.json). The page may not work correctly.",

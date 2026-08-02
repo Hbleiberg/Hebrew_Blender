@@ -3935,6 +3935,23 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
   };
   currentAudio.onpause = () => updatePlayPauseIcon();
   currentAudio.onloadedmetadata = () => updatePlayPauseIcon();
+  // The MP3 streams from a CDN. Offline, or on a school network that blocks it, the element
+  // just errors: playback never starts, and until now nothing said so — the Chant-all button
+  // sat there reading "Stop chant" over total silence, and #ttStatus stayed empty, because the
+  // only diagnostics went to setKaraokeStatus inside a collapsed panel in a closed drawer.
+  // Report it where the teacher is looking, and stop the controls claiming something is
+  // playing. Also drop the chant queue: every aliyah comes from the same unreachable host,
+  // so chaining to the next one would just repeat the silence.
+  currentAudio.onerror = () => {
+    const msg = I18n.t('torah.status.audio_load_failed');
+    setKaraokeStatus(msg);
+    setStatus(msg, true, 'torah.status.audio_load_failed');
+    showHintToast(msg);
+    if (chantAllState.active) stopChantAll();
+    clearLoop();
+    clearKaraokeHighlight();
+    updatePlayPauseIcon();
+  };
   currentAudio.ontimeupdate = onAudioTimeUpdate;
   // Keep the chant-all chain alive: loadKaraoke runs after playNextChant has
   // wired its handler, so it must also hop to the next aliyah when chaining.

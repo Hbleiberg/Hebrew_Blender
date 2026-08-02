@@ -3146,6 +3146,7 @@ torah.settings.reset_all,↺ Reset all Torah Trainer settings,↺ איפוס כ�
 torah.settings.title,⚙️ Torah Trainer Settings,⚙️ הגדרות מאמן התורה,settings drawer header,leading-emoji
 torah.status.aliyah_audio_unavailable,Audio for aliyah {n} is not available in PocketTorah.,השמע לעלייה {n} אינו זמין ב-PocketTorah.,karaoke status,do-not-translate {n}
 torah.status.audio_basename_missing,Audio basename missing in manifest.,שם קובץ השמע חסר במניפסט.,karaoke status,
+torah.status.audio_load_failed,Couldn't load the chanting audio. Check your connection — some school networks block it.,לא ניתן היה לטעון את שמע הקריאה. בדקו את החיבור — רשתות בית ספר חוסמות אותו לעיתים.,karaoke status + toast when the MP3 fails to load,
 torah.status.cant_determine_parsha,Could not determine the current parsha (Sefaria API unreachable).,לא ניתן לקבוע את הפרשה הנוכחית (ה-API של Sefaria לא נגיש).,status,
 torah.status.chant_unavailable,Chanting isn't available for this reading.,שירה אינה זמינה לקריאה זו.,status,
 torah.status.data_load_failed,"Failed to load static data files (data/parshiyot.json, data/pockettorah/*.json). The page may not work correctly.","טעינת קובצי הנתונים הסטטיים נכשלה (data/parshiyot.json, data/pockettorah/*.json). ייתכן שהעמוד לא יעבוד כראוי.",status,

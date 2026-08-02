@@ -3305,6 +3305,7 @@
   "torah.shem.chip_tip": "הקריאה כוללת שם קדוש. דף מודפס טעון גניזה — נהוג שלא להשליכו לאשפה.",
   "torah.status.aliyah_audio_unavailable": "השמע לעלייה {n} אינו זמין ב-PocketTorah.",
   "torah.status.audio_basename_missing": "שם קובץ השמע חסר במניפסט.",
+  "torah.status.audio_load_failed": "לא ניתן היה לטעון את שמע הקריאה. בדקו את החיבור — רשתות בית ספר חוסמות אותו לעיתים.",
   "torah.status.cant_determine_parsha": "לא ניתן לקבוע את הפרשה הנוכחית (ה-API של Sefaria לא נגיש).",
   "torah.status.chant_unavailable": "שירה אינה זמינה לקריאה זו.",
   "torah.status.data_load_failed": "טעינת קובצי הנתונים הסטטיים נכשלה (data/parshiyot.json, data/pockettorah/*.json). ייתכן שהעמוד לא יעבוד כראוי.",
