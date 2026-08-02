@@ -1112,6 +1112,19 @@ body.fullscreen #fsExitBtn { display: flex; }
      a verse taller than the page still breaks (browser overrides). */
   .tt-verse, .tt-grid-row { break-inside:avoid; page-break-inside:avoid; }
 
+  /* Trailing dead space paginates exactly like content: the boxes BELOW the last
+     line still occupy flow, so a reading that happens to end near a page boundary
+     pushes nothing but empty box onto a fresh sheet — a wholly blank final page.
+     Measured under print emulation at the true printable width (Letter 740px,
+     A4 718px): 44px in Page view on Letter, 28px interlinear and side-by-side,
+     6px less on A4 (the mobile block's narrower .tt-page padding reaches print).
+     The contributors are .tt-page's bottom padding, .tt-reading's, and the last
+     block's own margin/padding. None of it does any work on paper — the print
+     dialog's page margin is what holds the text off the sheet edge. */
+  .tt-page, .tt-reading { padding-bottom:0; }
+  .tt-bible-blk:last-child { margin-bottom:0; }
+  .tt-verse:last-child, .tt-grid-row:last-child { padding-bottom:0; }
+
   /* Dark-mode print reset (generator S30 pattern): light paper, dark ink. The token
      re-statement is non-!important and sits after the dark rules, so it wins by source
      order. Post-S60 the nikkud color layer is a stylesheet !important rule reading body
