@@ -1121,6 +1121,19 @@ body.fullscreen #fsExitBtn { display: flex; }
   html.dark-early body, body.dark {
     --navy:#1a2744; --gold:#c9922a; --gold-light:#f0d080; --cream:#fdf8ef;
     --warm-gray:#e8e0d0; --text:#1a2744; --muted:#6b6050; --border:#c8bfa8; --white:#ffffff;
+    /* Two tokens the list used to miss, so a print from dark mode failed contrast.
+       --gold-text: dark sets it to var(--gold), so Page-view verse numbers (.tt-bnum)
+       printed at 2.75:1 instead of this 6.22:1 — a TEXT color, so it reached paper on the
+       default path whatever the background-graphics setting. --navy-deep: restated because
+       body.dark .tt-trope-legend{background:var(--navy-deep)} is (0,2,0) and out-specifies
+       the print block's .tt-trope-legend{background:#fff} (0,1,0) whatever the source order,
+       so with backgrounds ON the legend printed as a near-black bar with 1.30:1 labels.
+       --navy-deep takes the light PAPER value (not its light-theme #0d1220, which would stay
+       a dark bar) because in dark mode it is a surface token, like --white/--cream above.
+       Safe: every other consumer is a background on print-hidden chrome, and the two that
+       use it as a color are the karaoke word (forced to color:inherit above) and a
+       settings-drawer button (print-hidden). */
+    --gold-text:#7f5a13; --navy-deep:#ffffff;
   }
   body { background:#fff; }
   /* The reference header's dark-mode override is light gold (~1.4:1 on white); the token
