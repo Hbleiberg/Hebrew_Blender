@@ -1014,11 +1014,20 @@ body.fullscreen footer { display: none; }
 body.fullscreen .tt-page {
   max-width: none; padding: 30px 48px;
 }
+/* Sizes stay the teacher's: every reading element in all three layouts already reads
+   --tt-heb-size / --tt-translit-size / --tt-english-size, which applyFontSizes() sets from
+   the drawer sliders. A literal font-size here out-specifies those vars and pins the
+   projection — which is exactly what it used to do: Hebrew set to 2.6rem rendered 23%
+   SMALLER in fullscreen (41.6px → 32px), the slider went dead with its readout still
+   reporting the new value, and the drawer that owns it is display:none'd here, so there was
+   no way to correct it without leaving fullscreen. (The dashboard's block, which this one
+   was copied from, hardcodes sizes safely — its elements have no per-element slider.) Only
+   the line-heights below are a fullscreen presentation choice. */
 body.fullscreen .tt-heb,
-body.fullscreen .tt-cell.heb { font-size: 2rem; line-height: 1.8; }
+body.fullscreen .tt-cell.heb { line-height: 1.8; }
 body.fullscreen .tt-translit,
 body.fullscreen .tt-cell.translit,
-body.fullscreen .tt-translation { font-size: 1.15rem; line-height: 1.55; }
+body.fullscreen .tt-translation { line-height: 1.55; }
 body.fullscreen .tt-ref-hdr { font-size: 1.4rem; padding-bottom: 12px; margin-bottom: 22px; }
 body.fullscreen .tt-status { font-size: 1rem; }
 #fsExitBtn {
