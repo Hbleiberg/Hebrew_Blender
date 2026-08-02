@@ -515,11 +515,13 @@ dictionary.chips.search,"Search: ""{query}""","חיפוש: ""{query}""",active f
 dictionary.chips.vowels,Vowels: {count}/{total},תנועות: {count}/{total},active filter chip,
 dictionary.copy.allinfo_tip,"Copies: Hebrew word — transliteration — translation — part of speech — era. Gematria value is appended if ""Show Gematria Value"" is enabled.","מעתיק: מילה בעברית — תעתיק — תרגום — חלק דיבר — תקופה. ערך הגימטרייה מצורף אם ""הצגת ערך גימטרייה"" מופעלת.",all-info tooltip,
 dictionary.copy.allinfo_worksheet_tip,Select this option when using Bulk Copy to generate a manual input list for the Worksheet Generator.,בחרו באפשרות זו כשמשתמשים בהעתקה מרובה כדי ליצור רשימת קלט ידני עבור מחולל דפי העבודה.,all-info gold tooltip,
+dictionary.copy.bulk_cb_aria,Select {word},בחירת {word},per-card bulk-select checkbox aria-label,aria-label only; do-not-translate {word}
 dictionary.copy.bulk_clear,Clear,ניקוי,bulk clear button,
 dictionary.copy.bulk_count,{count} selected,{count} נבחרו,bulk selection count,
 dictionary.copy.bulk_hint,"While Bulk Copy is on, clicking a card selects it (instead of opening its details).","כשהעתקה מרובה פעילה, לחיצה על כרטיס בוחרת אותו (במקום לפתוח את פרטיו).",bulk copy hint,
 dictionary.copy.bulk_mode,Bulk Copy Mode,מצב העתקה מרובה,bulk copy checkbox,
 dictionary.copy.bulk_mode_title,Select multiple words from the results. Each selected word is added to a text box below — one per line — in whatever Copy Mode is active.,בחרו כמה מילים מהתוצאות. כל מילה שנבחרה מתווספת לתיבת טקסט למטה — אחת בכל שורה — לפי מצב ההעתקה הפעיל.,bulk copy checkbox title,aria-label only
+dictionary.copy.bulk_textarea_aria,Bulk-copied words,מילים שהועתקו במצב מרובה,readonly output textarea in the bulk-copy panel,aria-label only
 dictionary.copy.copied_flash,✓ Copied!,✓ הועתק!,copy button flash (word modal / share link),leading-emoji
 dictionary.copy.copied_toast,Copied to clipboard,הועתק ללוח,copy announce,toast
 dictionary.copy.copy_all,Copy All,העתקת הכול,bulk copy-all button,

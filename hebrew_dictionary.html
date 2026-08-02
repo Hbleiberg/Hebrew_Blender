@@ -972,7 +972,7 @@ footer a{color:var(--gold-text);text-decoration:none;}
                 <button class="pos-all-btn" style="flex:1;font-size:0.65rem;" onclick="selectAllOnPage()" data-i18n="dictionary.copy.select_page">Select page</button>
                 <button class="pos-all-btn" style="flex:1;font-size:0.65rem;" onclick="selectAllMatching()" data-i18n="dictionary.copy.select_all_matching">Select all matching</button>
               </div>
-              <textarea id="bulkTextarea" readonly rows="6" style="width:100%;font-size:0.75rem;font-family:var(--heb-font);direction:ltr;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;"></textarea>
+              <textarea id="bulkTextarea" readonly rows="6" aria-label="Bulk-copied words" data-i18n-aria-label="dictionary.copy.bulk_textarea_aria" style="width:100%;font-size:0.75rem;font-family:var(--heb-font);direction:ltr;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;"></textarea>
               <button class="pos-all-btn" style="width:100%;margin-top:5px;" onclick="copyBulkText()" data-i18n="dictionary.copy.copy_all">Copy All</button>
             </div>
             <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
@@ -1429,11 +1429,24 @@ function onCopyModeChange(mode) {
   }
 }
 
+// The cards carry role="button" for "view details", so while bulk-selecting their state was
+// visible only as a CSS class — a screen reader heard the same "view details" label whether a
+// word was selected or not. aria-pressed makes the toggle state real, and is only meaningful in
+// bulk mode: outside it the card is a plain button, not a toggle, so the attribute comes off.
+function setCardBulkState(card, selected) {
+  if (!card) return;
+  card.classList.toggle('bulk-selected', !!selected);
+  if (bulkMode) card.setAttribute('aria-pressed', selected ? 'true' : 'false');
+  else card.removeAttribute('aria-pressed');
+}
+
 function toggleBulkMode(on) {
   bulkMode = on;
   document.body.classList.toggle('bulk-mode', on);
   document.getElementById('bulkPanel').style.display = on ? 'block' : 'none';
   if (!on) { bulkSelected.clear(); updateBulkTextarea(); }
+  document.querySelectorAll('.word-card,.emoji-card').forEach(c =>
+    setCardBulkState(c, on && c.classList.contains('bulk-selected')));
   updateExportState();
   rerender();
 }
@@ -1443,8 +1456,7 @@ function clearBulkSelection() {
   updateBulkTextarea();
   document.querySelectorAll('.wc-bulk-cb').forEach(cb => {
     cb.checked = false;
-    const card = cb.closest('.word-card,.emoji-card');
-    if (card) card.classList.remove('bulk-selected');
+    setCardBulkState(cb.closest('.word-card,.emoji-card'), false);
   });
 }
 
@@ -1467,8 +1479,7 @@ function selectAllMatching() {
   updateBulkTextarea();
   document.querySelectorAll('.wc-bulk-cb').forEach(cb => {
     cb.checked = true;
-    const card = cb.closest('.word-card,.emoji-card');
-    if (card) card.classList.add('bulk-selected');
+    setCardBulkState(cb.closest('.word-card,.emoji-card'), true);
   });
 }
 
@@ -2687,15 +2698,16 @@ function buildWordCard(w) {
   const bulkCb = document.createElement('input');
   bulkCb.type = 'checkbox';
   bulkCb.className = 'wc-bulk-cb';
+  bulkCb.setAttribute('aria-label', I18n.t('dictionary.copy.bulk_cb_aria', { word: w.word }));
   bulkCb.checked = bulkSelected.has(w.word);
   bulkCb.addEventListener('change', e => {
     e.stopPropagation();
     if (e.target.checked) { bulkSelected.set(w.word, {w, text: wordBulkText(w)}); } else { bulkSelected.delete(w.word); }
-    card.classList.toggle('bulk-selected', e.target.checked);
+    setCardBulkState(card, e.target.checked);
     updateBulkTextarea();
   });
   card.appendChild(bulkCb);
-  if (bulkSelected.has(w.word)) card.classList.add('bulk-selected');
+  setCardBulkState(card, bulkSelected.has(w.word));
   // Section 3: click opens the detail modal (bulk mode keeps select-on-click).
   card.setAttribute('role', 'button');
   card.tabIndex = 0;
@@ -4004,16 +4016,17 @@ function renderEmojiResults() {
     const bulkCb = document.createElement('input');
     bulkCb.type = 'checkbox';
     bulkCb.className = 'wc-bulk-cb';
+    bulkCb.setAttribute('aria-label', I18n.t('dictionary.copy.bulk_cb_aria', { word: e.hebrew_masculine || e.hebrew_feminine || e.emoji || key }));
     bulkCb.checked = bulkSelected.has(key);
     bulkCb.addEventListener('change', ev => {
       ev.stopPropagation();
       if (ev.target.checked) bulkSelected.set(key, { e, text: emojiBulkText(e) });
       else bulkSelected.delete(key);
-      card.classList.toggle('bulk-selected', ev.target.checked);
+      setCardBulkState(card, ev.target.checked);
       updateBulkTextarea();
     });
     card.appendChild(bulkCb);
-    if (bulkSelected.has(key)) card.classList.add('bulk-selected');
+    setCardBulkState(card, bulkSelected.has(key));
     // Section 3: click opens the emoji detail modal (bulk mode keeps select-on-click).
     card.setAttribute('role', 'button');
     card.tabIndex = 0;
