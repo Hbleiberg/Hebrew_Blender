@@ -2980,6 +2980,7 @@ torah.handout.print_button,🖨️ Print handout,🖨️ הדפסת הדף,hando
 torah.handout.cancel,Cancel,ביטול,handout bar close button,
 torah.handout.shem_note,"This reading contains שם ה׳ — printed pages traditionally go to geniza, not the trash.",הקריאה כוללת שם ה׳ — דפים מודפסים נהוג להביא לגניזה ולא להשליכם לאשפה.,notice in handout bar when a divine name is detected,שם ה׳ pinned Hebrew in both languages
 torah.handout.geniza_check,Add a לגניזה marker to the printed page,הוספת סימון לגניזה בתחתית הדף המודפס,handout option toggle (shown only when a divine name is detected),לגניזה pinned Hebrew in both languages
+torah.share.button,🔗 Copy link,🔗 העתקת קישור,top-bar button that copies a link to the current reading,leading-emoji
 torah.copy.button,📋 Copy,📋 העתקה,top-bar button next to Student handout,leading-emoji
 torah.copy.button_title,Copy verses to the clipboard — one verse or a selection,העתקת פסוקים ללוח — פסוק אחד או בחירה,button title,
 torah.copy.title,Copy verses,העתקת פסוקים,copy options bar title,

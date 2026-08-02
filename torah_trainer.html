@@ -308,6 +308,9 @@ body.dark .tt-controls { background:var(--navy-deep); }
   display:inline-flex; align-items:center; gap:6px;
   font-size:0.82rem; color:var(--text);
 }
+/* [hidden] must beat .tt-ctrl's inline-flex — the same trap as #ttCopyBulkPanel and
+   .tt-jumpnav above; without this the share button stays visible when it cannot act. */
+#ttShareWrap[hidden] { display:none; }
 .tt-ctrl label { font-weight:600; color:var(--text); white-space:nowrap; }
 .tt-ctrl select, .tt-ctrl input[type="number"] {
   border:1px solid var(--border); background:var(--white); color:var(--text);
@@ -1305,6 +1308,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   </span>
   <span class="tt-ctrl">
     <button id="ttHandoutBtn" class="btn btn-xs btn-secondary" onclick="toggleHandoutBar()" type="button" aria-expanded="false" aria-controls="ttHandoutBar" data-i18n="torah.handout.button" data-i18n-title="torah.handout.button_title" title="Print a clean Hebrew-only handout for students">🎓 Student handout</button>
+  </span>
+  <span class="tt-ctrl" id="ttShareWrap" hidden>
+    <button id="ttShareBtn" class="btn btn-xs btn-secondary" onclick="copyPracticeLink(this)" type="button" data-i18n="torah.share.button">🔗 Copy link</button>
   </span>
   <span class="tt-ctrl">
     <button id="ttCopyBtn" class="btn btn-xs btn-secondary" onclick="toggleCopyBar()" type="button" aria-expanded="false" aria-controls="ttCopyBar" data-i18n="torah.copy.button" data-i18n-title="torah.copy.button_title" title="Copy verses to the clipboard — one verse or a selection">📋 Copy</button>
@@ -3007,6 +3013,7 @@ async function fetchAndRender() {
       }
     }
     currentVerses = verses;
+    syncShareBtn();   // the practice link names the first rendered verse, so re-sync per render
     _readingHasShem = detectShem(verses);   // before renderText so the chip renders in the same pass
     updateHandoutShemUI();
     // New reading → stale bulk selection would silently mis-copy (every parsha
@@ -5427,11 +5434,15 @@ async function init() {
       const dm = findParshaByName(_dlParsha);
       if (dm) {
         settings.parshahKey = dm.en;
-        settings.scope = 'parsha-full';          // full parsha so the target verse is in range
+        // Default to the full parsha so the target verse is in range. ?scope= is optional and
+        // emitted only by our own "Copy link" button, so links predating it are unaffected;
+        // the regex is REQUIRED because the value is assigned straight into a <select>.
+        const _dlScope = _dl.get('scope');
+        settings.scope = /^parsha-(aliyah-[1-7]|haftarah)$/.test(_dlScope || '') ? _dlScope : 'parsha-full';
         settings.holidayKey = null; settings.customRef = null; settings.customLabel = null;
         saveSettings();
         syncParshaSelect();
-        document.getElementById('scopeSelect').value = 'parsha-full';
+        document.getElementById('scopeSelect').value = settings.scope;
         const _dlV = _dl.get('v');
         if (_dlV && /^\d+:\d+$/.test(_dlV)) deepVerse = _dlV;   // regex REQUIRED: value flows into a querySelector
       }
@@ -5765,6 +5776,42 @@ function maybeShowClickHint() {
   const action = (settings.clickAction === 'read') ? I18n.t('torah.status.hint_action_read') : I18n.t('torah.status.hint_action_chant');
   showHintToast(I18n.t('torah.status.hint_click_word', { action: action }));
 }
+/* ───── Practice link ─────
+   The page has always CONSUMED ?parsha=&v= (the Trope Tutor's "See it in the parsha →"
+   handshake); this is the missing emitter, so a tutor can hand a student the reading they just
+   set up instead of talking them through rebuilding it. `scope` is new on the inbound side and
+   optional, so every link already in the wild keeps behaving exactly as before. Nothing is
+   persisted and the address bar is left alone — this link is for sending, not for this tab. */
+function practiceLinkURL() {
+  // Only a parsha reading has a URL form: holiday and custom-range scopes have no ?parsha=.
+  if (!settings.parshahKey || settings.holidayKey || settings.scope === 'custom') return null;
+  const u = new URL(location.href);
+  u.search = '';
+  u.searchParams.set('parsha', settings.parshahKey);
+  if (settings.scope && settings.scope !== 'parsha-full') u.searchParams.set('scope', settings.scope);
+  const first = Array.isArray(currentVerses) ? currentVerses[0] : null;
+  if (first) u.searchParams.set('v', first.chapter + ':' + first.verse);
+  return u.toString();
+}
+// Hidden rather than disabled when there is nothing to share: a dead-looking live button is the
+// paper-cut this pass kept finding, and a control that cannot act should not be offered.
+function syncShareBtn() {
+  const wrap = document.getElementById('ttShareWrap');
+  if (wrap) wrap.hidden = !practiceLinkURL();
+}
+function copyPracticeLink(btn) {
+  const url = practiceLinkURL();
+  if (!url) return;
+  const done = () => showHintToast(I18n.t('shared.toast.copied'));
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(done).catch(done);
+  else {
+    const ta = document.createElement('textarea');
+    ta.value = url; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta); done();
+  }
+}
+
 function showHintToast(msg) {
   let el = document.getElementById('ttHintToast');
   if (!el) {
