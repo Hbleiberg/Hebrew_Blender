@@ -1218,6 +1218,14 @@ body.fullscreen #fsExitBtn { display: flex; }
   .tt-grid.tt-print-parallel > .tt-grid-col { display:contents; }
   /* Row borders come from the cells themselves once the wrappers are gone. */
   .tt-grid.tt-print-parallel .tt-grid-row { border-bottom:1px solid #ccc; }
+  /* ...which makes the screen's align-items:start actively wrong here. On screen the
+     grid items are the 3 column WRAPPERS, so start is harmless; in print every CELL is
+     a direct grid item and start shrinks each to its own content height. The border
+     then draws at three different heights and the row separator prints as disjoint
+     stubs: measured on a 14-verse reading, the cell bottoms within one row spread by
+     up to 158px (avg 123px) across three columns, and 54px across two. stretch pulls
+     every cell in a row to the row's full height, so the separator is one line. */
+  .tt-grid.tt-print-parallel { align-items:stretch; }
 
   /* Print has a WIDTH, so the screen mobile block applies to paper: A4 at Chrome's
      default margins is 716.9-718.1px, under its 720px breakpoint (Letter is 740px and
