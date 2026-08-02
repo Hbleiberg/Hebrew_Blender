@@ -1170,6 +1170,19 @@ body.fullscreen #fsExitBtn { display: flex; }
   body.trope-on .tt-word.trope-revia    { text-decoration-color:var(--trope-revia-line); }
   body.trope-on .tt-word.trope-geresh   { text-decoration-color:var(--trope-geresh-line); }
   body.trope-on .tt-word.trope-rare     { text-decoration-color:var(--trope-rare-line); }
+  /* That 4px band needs somewhere to live. At the screen leading of 1.7 it lands in the
+     interline gap with NOTHING to spare: measured from print renderings (band rows taken
+     with trope on, glyph rows with it off, same wrapping), the band ends on the very row
+     before the te'amim of the line below begin — 0px of separation on Letter and A4
+     alike, so a solid clause rule butts straight into the marks a student is reading.
+     1.95 opens it to 6-7px. Page view already prints at 1.9 for the same reason.
+     Scoped to body.trope-on because it is the band, not the text, that needs the room:
+     the extra leading costs a sheet in 2 of 16 long interlinear configurations, and no
+     print without clause colouring should pay that. Deliberately NOT fixed by shrinking
+     text-underline-offset, which would be free: at 0.4em+2px the nikkud highlight
+     fallback below already owns that space, and the two-tier decoration hierarchy
+     (2px nikkud above, 4px clause below) has to survive both layers being on at once. */
+  body.trope-on .tt-heb, body.trope-on .tt-cell.heb { line-height:1.95; }
 
   /* Nikkud color-coding on paper (post-S60 var/class model): Letter mode prints as text
      color and Underline mode as a text-decoration underline (both survive). Highlight mode
