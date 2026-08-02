@@ -1170,6 +1170,20 @@ body.fullscreen #fsExitBtn { display: flex; }
   /* Row borders come from the cells themselves once the wrappers are gone. */
   .tt-grid.tt-print-parallel .tt-grid-row { border-bottom:1px solid #ccc; }
 
+  /* Print has a WIDTH, so the screen mobile block applies to paper: A4 at Chrome's
+     default margins is 716.9-718.1px, under its 720px breakpoint (Letter is 740px and
+     escapes; Letter at 1/2in margins is 720px and does NOT). Its `.tt-cell.heb, .tt-heb
+     { font-size:1.35rem }` is a literal at the same specificity as the var-driven base
+     rules but later in source order, so it beat BOTH applyFontSizes' documentElement var
+     and the handout size overrides below — every A4 sheet printed at 1.35rem whatever the
+     teacher chose. Restate the var chain here: this block's end-of-stylesheet position is
+     exactly what makes an equal-specificity print rule win (the S30 convention above).
+     Deliberately narrower than scoping that whole block to `screen` — measured, that also
+     hands A4 the 24px desktop .tt-page padding, cutting its text column to 670px vs
+     Letter's 692px, where today's narrower mobile padding keeps the two papers level
+     (694 vs 692). .tt-bible-heb is not in the mobile rule, so Page view was never hit. */
+  .tt-cell.heb, .tt-heb { font-size:var(--tt-heb-size, 1.5rem); }
+
   /* ── Student handout (transient body classes set by printHandout; the
      teacher's layout is unchanged — side-by-side collapses above). The
      body-level --tt-heb-size beats applyFontSizes' documentElement inline
