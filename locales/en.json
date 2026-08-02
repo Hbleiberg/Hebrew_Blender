@@ -477,6 +477,7 @@
   "dashboard.weather.wmo_snow_grains": "Snow Grains",
   "dashboard.weather.wmo_snow_showers": "Snow Showers",
   "dashboard.weather.wmo_thunderstorm": "Thunderstorm",
+  "dictionary.a11y.skip_results": "Skip past results",
   "dictionary.advanced.color_enable": "Enable color coding",
   "dictionary.advanced.color_head": "Color Code Nikkud",
   "dictionary.advanced.color_mode_highlight": "Highlight",

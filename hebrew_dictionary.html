@@ -583,6 +583,19 @@ body.dark .tour-card{background:var(--cream);}
 /* Keyboard-operable font upload (suite-wide S54): `hidden` (display:none) removed the file
    input from the tab order, making the uploader mouse-only. The input is now visually hidden
    but FOCUSABLE — Enter/Space opens the picker — and the wrapping label shows the ring. */
+/* Bypass for the results grid: 100 cards x ~3 stops each stands between the toolbar and
+   "Show more"/the footer. Visually hidden until keyboard focus, then it takes normal flow —
+   this one sits mid-page, so it cannot rely on a positioned ancestor the way the header
+   skip links elsewhere in the suite do. */
+.skip-results { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; }
+.skip-results:focus {
+  position:static; width:auto; height:auto; overflow:visible; clip:auto; clip-path:none;
+  display:inline-block; margin:0 0 8px; padding:8px 14px;
+  background:var(--navy); color:#fff; border-radius:6px;
+  font-size:0.8rem; font-weight:600; text-decoration:none;
+  outline:2px solid var(--gold); outline-offset:2px;
+}
+#resultsEnd:focus { outline:none; }
 .vh-file { position:absolute; width:1px; height:1px; opacity:0; }
 label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offset:2px; }
 
@@ -1100,8 +1113,10 @@ footer a{color:var(--gold-text);text-decoration:none;}
         <div id="loadingText" role="status" data-i18n="dictionary.loading.dictionary">Loading dictionary…</div>
         <div class="load-bar" id="loadBar"><div class="load-bar-fill" id="loadBarFill"></div></div>
       </div>
+      <a class="skip-results" href="#resultsEnd" data-i18n="dictionary.a11y.skip_results">Skip past results</a>
       <div class="results-grid" id="resultsGrid" style="display:none;"></div>
       <div id="shoreshResults"></div>
+      <div id="resultsEnd" tabindex="-1"></div>
       <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
         <button class="load-more-btn" onclick="loadMore()" data-i18n="dictionary.results.load_more">Show more</button>
       </div>
