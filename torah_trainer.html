@@ -2141,7 +2141,14 @@ function overlappingAliyot(parshaEn, r) {
    HEBREW DISPLAY PIPELINE
    (lifted from classroom_dashboard.html:1614-1904, with cantillation strip added)
    ══════════════════════════════════════════════════════ */
-const NIKKUD_RE   = /[ְ-ׇ]/g;       // nikkud only (vowels + dagesh + meteg)
+// Points only (vowels + dagesh + meteg) — written with \u escapes because the class has gaps.
+// U+05B0–U+05C7 as a plain range also swallows four PUNCTUATION codepoints: maqaf U+05BE,
+// paseq U+05C0, sof pasuk U+05C3 and nun hafukha U+05C6. Stripping those welded maqaf-joined
+// words into one ("וַֽיְהִי־אֽוֹר" → "ויהיאור"), dropped every verse-ending ׃ — on screen, in the
+// clipboard and on the printed student handout — and, because tokenizeHebrew splits on the maqaf
+// and data-twi indexes the audio timings array directly, shifted the karaoke highlight onto the
+// wrong word for the rest of the reading. TEAMIM_RE below already keeps all four.
+const NIKKUD_RE   = /[\u05B0-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7]/g;
 const TEAMIM_RE   = /[֑-֯]/g;       // cantillation marks only
 const ALL_MARKS_RE = /[֑-ׇ]/g;
 const NIKUD_DEFAULTS_LIGHT = {
@@ -2589,11 +2596,12 @@ function tokenizeHebrew(text, wordIdxStartRef) {
   const tokens = finalText.split(/(\s+|־)/);
   // Trope families are read from the ORIGINAL text: the display copy may have had
   // its te'amim stripped, and trope coloring must keep working with cantillation
-  // hidden (clause structure without mark clutter). stripTeamim never removes a
-  // separator, so the raw and display splits align index-for-index — but
-  // stripNikkud's range (U+05B0–U+05C7) swallows maqaf (U+05BE) and paseq (U+05C0),
-  // so with nikkud hidden tokens can merge. A vanished separator always shrinks the
-  // array, making the length check an exact alignment guard; on mismatch,
+  // hidden (clause structure without mark clutter). Neither stripTeamim nor stripNikkud
+  // removes a separator — stripNikkud's class deliberately excludes maqaf (U+05BE) and
+  // paseq (U+05C0); it used to swallow both, which merged tokens whenever nikkud was
+  // hidden and shifted every data-twi index after the first maqaf. So the raw and display
+  // splits now align index-for-index in every toggle combination. The length check stays
+  // as a guard: a vanished separator always shrinks the array, and on mismatch
   // tropeRealignFamilies recovers each display word's family by letter-matching
   // (bailing to uncolored on any desync — no color, never wrong color).
   const tropeOn = !!settings.colorCodeTrope;
