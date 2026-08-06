@@ -275,6 +275,7 @@ dashboard.preset.quickstart_desc,Apply a ready-made setup — including a genera
 dashboard.preset.save,Save,שמור,preset save button,
 dashboard.preset.save_empty,Please enter a preset name.,אנא הזינו שם תבנית.,alert,
 dashboard.schedule.add_period,+ Add period,+ הוסף שיעור,weekly editor toolbar button,leading-emoji
+dashboard.schedule.chip_color_aria,Change color for {name},שינוי צבע עבור {name},weekly palette swatch input,aria-label only; mixed UI+content — do not translate {…}
 dashboard.schedule.countdown_next_generic,Next class in {time},השיעור הבא בעוד {time},countdown line,
 dashboard.schedule.countdown_next_named,Next: {preset} in {time},הבא: {preset} בעוד {time},countdown line,mixed UI+content — do not translate {…}
 dashboard.schedule.delete_confirm,"Delete schedule ""{name}""?","למחוק את מערכת השעות ""{name}""?",confirm dialog,mixed UI+content — do not translate {…}
@@ -284,6 +285,7 @@ dashboard.schedule.editor_done,Done,סיום,weekly editor footer button,
 dashboard.schedule.editor_sub,"Pick a class below, then click or drag across the grid to paint its periods. Changes save automatically.","בחרו כיתה למטה, ואז לחצו או גררו על הרשת כדי לצבוע את השיעורים שלה. השינויים נשמרים אוטומטית.",weekly editor subtitle,
 dashboard.schedule.editor_title,Set up Schedule Sync,הגדרת סנכרון מערכת שעות,weekly editor dialog title,
 dashboard.schedule.enable,Enable Schedule Sync,הפעל סנכרון מערכת שעות,settings label,
+dashboard.schedule.eraser_chip,Eraser,מחק,weekly palette eraser chip label,
 dashboard.schedule.free,Free,חופשי,weekly grid free-period label,
 dashboard.schedule.grid_aria,Weekly schedule grid,רשת מערכת שעות שבועית,weekly editor grid container,aria-label only
 dashboard.schedule.next_at,at {time},בשעה {time},next block value,

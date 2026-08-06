@@ -1348,6 +1348,22 @@
     border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-lg); padding: 22px 24px; display: none; }
   .swm-modal.open { display: block; }
   body.dark .swm-modal { background: var(--navy-deep); }
+  .swm-palette { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 2px; }
+  .swm-chip { display: inline-flex; align-items: center; gap: 7px; padding: 4px 9px;
+    border: 1.5px solid var(--border); border-radius: 8px; background: var(--white); color: var(--text); }
+  body.dark .swm-chip { background: var(--navy); }
+  .swm-chip:hover { border-color: var(--gold); }
+  .swm-chip.armed { border-color: var(--gold); background: rgba(201,146,42,0.12); }
+  .swm-chip.armed .swm-chip-name { font-weight: 700; }
+  .swm-chip-arm { background: none; border: none; padding: 0; font: inherit; color: inherit;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+  .swm-chip-name { font-size: 0.8rem; line-height: 1.2; }
+  .swm-chip-class { font-size: 0.68rem; color: var(--muted); font-style: italic; }
+  .swm-swatch { position: relative; width: 18px; height: 18px; border-radius: 5px;
+    border: 1px solid rgba(0,0,0,0.25); flex-shrink: 0; cursor: pointer; }
+  .swm-swatch-input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; padding: 0; border: 0; }
+  .swm-swatch-eraser { display: inline-flex; align-items: center; justify-content: center;
+    background: transparent; border: 1px dashed var(--muted); font-size: 0.72rem; color: var(--muted); }
   .swm-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 10px 0 8px; }
   .swm-weekend { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; cursor: pointer; color: var(--text); }
   .swm-weekend input { accent-color: var(--gold); width: 14px; height: 14px; cursor: pointer; }
@@ -6011,7 +6027,9 @@ else ivritInit();
     _lastScheduleKey = null; _lastPreviewKey = null; _lastNowNextKey = null;
     saveSettingsToStorage();
     if (!(opts && opts.skipGrid)) renderWeekGrid();
-    renderWeekPalette();
+    // skipPalette: a swatch color-drag streams `input` events — rebuilding the palette would
+    // destroy the <input type="color"> the native picker is attached to and snap it shut.
+    if (!(opts && opts.skipPalette)) renderWeekPalette();
     renderWeekValidation();
     renderWeekSummary();
     renderScheduleUI();
@@ -6051,7 +6069,84 @@ else ivritInit();
   }
 
   function renderWeekGrid() {}
-  function renderWeekPalette() {}
+
+  // ── Palette bar: one chip per preset (swatch + name + derived class) + the Eraser ──
+  // A chip is a wrapper holding TWO interactive elements — the swatch's <input type="color"> and
+  // the arming <button> — because interactive content may not nest inside a button. Arming state
+  // lives in _armedChip: a preset name, the SWM_ERASER symbol, or null.
+  const SWM_ERASER = Symbol('swm-eraser');
+  let _armedChip = null;
+  function syncArmedChips() {
+    document.querySelectorAll('#swmPalette .swm-chip').forEach(c => {
+      const armed = c._swmValue === _armedChip;
+      c.classList.toggle('armed', armed);
+      const b = c.querySelector('.swm-chip-arm');
+      if (b) b.setAttribute('aria-pressed', armed ? 'true' : 'false');
+    });
+  }
+  function renderWeekPalette() {
+    const wrap = document.getElementById('swmPalette');
+    if (!wrap) return;
+    assignPresetColors();
+    const names = Object.keys(presets);
+    // Keep something usable armed: fall back to the first preset when the armed one is gone.
+    if (_armedChip !== SWM_ERASER && (!_armedChip || !presets[_armedChip])) _armedChip = names[0] || null;
+    wrap.textContent = '';
+    const mkChip = (value, buildSwatch, label, subLabel) => {
+      const chip = document.createElement('span');
+      chip.className = 'swm-chip';
+      chip._swmValue = value;
+      chip.appendChild(buildSwatch());
+      const arm = document.createElement('button');
+      arm.type = 'button';
+      arm.className = 'swm-chip-arm';
+      const nm = document.createElement('span');
+      nm.className = 'swm-chip-name';
+      nm.textContent = label;
+      arm.appendChild(nm);
+      if (subLabel) {
+        const sub = document.createElement('span');
+        sub.className = 'swm-chip-class';
+        sub.textContent = '👥 ' + subLabel;
+        arm.appendChild(sub);
+      }
+      arm.addEventListener('click', () => { _armedChip = value; syncArmedChips(); });
+      chip.appendChild(arm);
+      wrap.appendChild(chip);
+      return chip;
+    };
+    names.forEach(name => {
+      mkChip(name, () => {
+        const sw = document.createElement('span');
+        sw.className = 'swm-swatch';
+        sw.style.background = presetColor(name);
+        const inp = document.createElement('input');
+        inp.type = 'color';
+        inp.className = 'swm-swatch-input';
+        inp.value = presetColor(name);
+        inp.setAttribute('aria-label', I18n.t('dashboard.schedule.chip_color_aria', { name: name }));
+        inp.addEventListener('input', () => {              // live drag: recolor everything except the palette itself
+          if (!/^#[0-9a-fA-F]{6}$/.test(inp.value)) return;
+          if (!settings.presetColors) settings.presetColors = {};
+          settings.presetColors[name] = inp.value;
+          sw.style.background = inp.value;
+          weekChanged({ skipPalette: true });
+        });
+        inp.addEventListener('change', () => weekChanged());   // final pick: full refresh incl. swatches
+        sw.appendChild(inp);
+        return sw;
+      }, name, presetClassName(name));
+    });
+    mkChip(SWM_ERASER, () => {
+      const sw = document.createElement('span');
+      sw.className = 'swm-swatch swm-swatch-eraser';
+      sw.textContent = '⌫';
+      sw.setAttribute('aria-hidden', 'true');
+      return sw;
+    }, I18n.t('dashboard.schedule.eraser_chip'), '');
+    syncArmedChips();
+  }
+
   function renderWeekValidation() {}
   function renderWeekImportOffer() {}
   function addWeekPeriod() {}
