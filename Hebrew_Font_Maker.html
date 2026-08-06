@@ -428,7 +428,7 @@
   body.layout-tabbed.cat-settings .ws-grid { display: none; }
   body.layout-tabbed.cat-settings #catHost .cat-panel.cat-active .panel-body { max-height: none; }
   .stage-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 8px; max-width: 720px; margin: 0 auto; overflow: auto; max-height: 74vh; }
-  #stage { width: 100%; height: auto; display: block; touch-action: none; background: var(--white); border-radius: 6px; }
+  #stage { width: 100%; height: auto; display: block; touch-action: none; user-select: none; -webkit-user-select: none; background: var(--white); border-radius: 6px; }
   /* Placement step: below the canvas, size sliders (stacked) on the left, a Confirm/Reset panel on the right. */
   .stage-below { max-width: 720px; margin: 8px auto 0; display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; justify-content: center; }
   .stage-below:empty { display: none; }
@@ -676,7 +676,7 @@
   .wiz-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .wiz-tile { position: relative; display: flex; flex-direction: column; }
   .wiz-tile input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
-  .wiz-tile label, .wiz-tile-disabled { display: flex; flex-direction: column; gap: 4px; flex: 1; border: 1.5px solid var(--border); border-radius: 8px; padding: 11px 12px; background: var(--white); text-align: start; font-size: 0.8rem; line-height: 1.35; }
+  .wiz-tile label { display: flex; flex-direction: column; gap: 4px; flex: 1; border: 1.5px solid var(--border); border-radius: 8px; padding: 11px 12px; background: var(--white); text-align: start; font-size: 0.8rem; line-height: 1.35; }
   .wiz-tile label { cursor: pointer; transition: border-color 0.15s, background 0.15s; }
   .wiz-tile label:hover { border-color: var(--gold); }
   .wiz-tile input:checked + label { border-color: var(--gold); background: rgba(201,146,42,0.09); }
@@ -685,8 +685,6 @@
   .wiz-tile-link { background: none; border: none; padding: 0; margin: 6px 12px 0; align-self: start; font: inherit; font-size: 0.71rem; color: var(--gold); font-weight: 700; cursor: pointer; text-decoration: underline; }
   .wiz-tile-link:hover { filter: brightness(1.1); }
   .wiz-tile-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 3px; }
-  .wiz-tile-disabled { opacity: 0.55; cursor: not-allowed; }
-  .wiz-soon { align-self: flex-start; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; background: var(--warm-gray); color: var(--muted); border-radius: 4px; padding: 2px 6px; margin-bottom: 2px; }
   .wiz-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
   .wiz-foot .mbtns { margin-top: 0; margin-inline-start: auto; }
   .wiz-note { font-size: 0.74rem; color: var(--muted); }
@@ -1491,10 +1489,9 @@
           <input type="radio" id="wizSrcFont" name="wizSource" value="font">
           <label for="wizSrcFont"><strong data-i18n="fontmaker.wizard.src_font_title">Existing font file</strong><span class="wiz-tile-desc" data-i18n="fontmaker.wizard.src_font_desc">Import letters ready-made from a font file — skip tracing.</span></label>
         </div>
-        <div class="wiz-tile wiz-tile-disabled" role="radio" aria-checked="false" aria-disabled="true">
-          <span class="wiz-soon" data-i18n="fontmaker.wizard.src_drawing_soon">Coming soon</span>
-          <strong data-i18n="fontmaker.wizard.src_drawing_title">Drawing mode</strong>
-          <span class="wiz-tile-desc" data-i18n="fontmaker.wizard.src_drawing_desc">Draw letters right in the browser — in development.</span>
+        <div class="wiz-tile">
+          <input type="radio" id="wizSrcDraw" name="wizSource" value="draw">
+          <label for="wizSrcDraw"><strong data-i18n="fontmaker.wizard.src_drawing_title">Drawing mode</strong><span class="wiz-tile-desc" data-i18n="fontmaker.wizard.src_drawing_desc">Draw letters right in the browser with a pen, mouse, or touch.</span></label>
         </div>
       </div>
       <label class="chk" style="margin-top:12px;"><input type="checkbox" id="wizTour"> <span data-i18n="fontmaker.wizard.tour_after">Show me around after setup</span></label>
@@ -2108,7 +2105,7 @@ let guideDrag  = null;      // active user-guide drag: { id, dragAxis:'x'|'y', g
    pairing (stack | slide)). ════════ */
 let undoStack = [], redoStack = [];
 const UNDO_MAX = 100;
-const ITEM_SKIP = { source: 1, savedAnchors: 1 };       // excluded from snapshots; preserved live on restore
+const ITEM_SKIP = { source: 1, savedAnchors: 1, draw: 1 };   // excluded from snapshots; preserved live on restore (draw: stroke sets are big — withDraw opts in)
 function itemScope() { return { t:'item', kind: curKind, cp: curCp }; }
 function udItem(s) {                                     // resolve by (kind,cp) WITHOUT creating (never customMark())
   if (s.kind === 'letter') return project.letters.find(x => x.codepoint === s.cp);
@@ -2118,7 +2115,7 @@ function udSnap(s) {
   if (s.t === 'item') { const it = udItem(s); if (!it) return null;
     // scope.withSource opts source INTO the snapshot (batch ops like auto-detect Apply, where undo
     // must restore the image assignment; crop PNGs are small — full sheets never go through this)
-    const o = {}; for (const k in it) if (!ITEM_SKIP[k] || (s.withSource && k === 'source')) o[k] = JSON.parse(JSON.stringify(it[k])); return o; }
+    const o = {}; for (const k in it) if (!ITEM_SKIP[k] || (s.withSource && k === 'source') || (s.withDraw && k === 'draw')) o[k] = JSON.parse(JSON.stringify(it[k])); return o; }
   if (s.t === 'spacing') return JSON.parse(JSON.stringify(project.font.spacing));
   if (s.t === 'kerning') return JSON.parse(JSON.stringify(project.font.kerning || []));
   if (s.t === 'kernClasses') return JSON.parse(JSON.stringify(project.font.kernClasses || []));
@@ -2139,10 +2136,11 @@ function udSnap(s) {
 }
 function udRestore(s, snap) {
   if (s.t === 'item') { const it = udItem(s); if (!it || !snap) return;
-    const keepSrc = it.source, keepSaved = it.savedAnchors;
-    for (const k in it) if (!ITEM_SKIP[k] || (s.withSource && k === 'source')) delete it[k];
+    const keepSrc = it.source, keepSaved = it.savedAnchors, keepDraw = it.draw;
+    for (const k in it) if (!ITEM_SKIP[k] || (s.withSource && k === 'source') || (s.withDraw && k === 'draw')) delete it[k];
     Object.assign(it, JSON.parse(JSON.stringify(snap)));
     if (!s.withSource) it.source = keepSrc;
+    if (!s.withDraw && keepDraw !== undefined) it.draw = keepDraw;
     if (keepSaved !== undefined) it.savedAnchors = keepSaved; }
   else if (s.t === 'spacing') Object.assign(project.font.spacing, JSON.parse(JSON.stringify(snap || {})));
   else if (s.t === 'kerning') project.font.kerning = JSON.parse(JSON.stringify(snap || []));
@@ -2232,7 +2230,8 @@ function blankLetter(L) {
     flattenLighting: true,      // "Even out lighting" — divide out the blurred paper background before thresholding
     thresholdUserSet: false,    // user moved the Ink-threshold slider → Otsu must never overwrite it
     outlineOnly: false, lineWeight: 70,   // "Outline only" (hollow bubble) trace + ring thickness in font units
-    handEdited: false           // node editor touched this outline → warn before a destructive re-trace
+    handEdited: false,          // node editor touched this outline → warn before a destructive re-trace
+    draw: null                  // Draw-mode strokes { v:1, strokes:[{w,pr,pts:[[x,y,p],…]}] } — font units, int coords; kept alongside the committed raster so drawn letters stay re-editable
   };
   const def = PUNCT_DEFAULTS[L.cp];                          // punctuation gets a geometric default outline; digits stay blank
   if (def) { const o = def(); it.contours = o.contours; it.advance = o.advance; }
@@ -2835,7 +2834,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.7</strong> — <strong>A guided start for every new font.</strong> Starting a font now opens a three-step setup: name your font and yourself and pick a license, choose Regular or Bold plus nikkud, trope and extra alphabets, then say how your letters will arrive — one picture per letter, one sheet with all of them (with the printable template a click away), or an existing font file. Your work still comes first: if you left a project mid-trace, the "Continue where you left off" prompt appears before anything else. The toolbar's <span class="ui">New</span> button now opens the same setup and no longer wipes your current project until you actually create the new one — closing it changes nothing. And a "Show me around after setup" checkbox starts the tour the moment you land in the editor. <span style="color:var(--muted);">(August 2026)</span></li>
+      <li><strong>v5.7</strong> — <strong>A guided start — and now draw your letters right on screen.</strong> Starting a font opens a three-step setup: name your font and pick a license, choose Regular or Bold plus nikkud, trope and extra alphabets, then say how your letters will arrive — and the toolbar's <span class="ui">New</span> no longer wipes your current project until you actually create the new one (if you left a project mid-trace, the "Continue where you left off" prompt still appears before anything else). The biggest arrival is a brand-new <span class="ui">Draw</span> mode: pick <span class="ui">Draw letters on screen</span> and sketch each letter directly over the gray reference with a pen, finger, or mouse — pressure-sensitive stylus strokes, smoothing, a whole-stroke eraser, and a <span class="ui">Save letter &amp; next</span> button that runs the tracer and moves on, so a student can flow through all 27 letters with a stylus and one button. Drawings stay editable forever, drawn and photographed letters mix freely in one font, and everything downstream — points editing, nikkud, Bold, export — works unchanged. A "Show me around after setup" checkbox starts the tour the moment you land in your fresh editor. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.6</strong> — <strong>Your font, one click from a worksheet.</strong> Saving a font to <span class="ui">My IvritSuite Fonts</span> used to be the end of the road: the window told you to "pick them in any IvritSuite tool's font selector", but nothing took you there. Each saved font now has a <span class="ui">Use in Worksheet Generator</span> link that opens the generator with that font already chosen, so you can see your letters on a real worksheet straight away. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.5</strong> — <strong>Your dagesh customizations, really in the exported font.</strong> A deep export audit found three quiet bugs in one chain: the OpenType rules that compose dotted letters (בּ, וֹ, וּ and friends) were accidentally inheriting a filter meant only for שׁ/שׂ, so in modern apps they never fired; a shin's own custom dagesh had no composed שּׁ/שּׂ form at all; and the pre-download shaping check couldn't load its engine, so it silently skipped instead of catching any of this. All three are fixed: exports now build the real שּׁ/שּׂ characters (U+FB2C/U+FB2D) from your dotted shin plus your own dagesh, every dagesh combination composes even with a vowel between the letter and the dot in the typed text, a new שּׁ chip joins the <span class="ui">Spacing</span> test combos, and the shaping check now genuinely runs — verifying שּׁ, בּ and בָּ before your font downloads. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.4</strong> — <strong>Two ḥolams, two homes.</strong> The dot of a vowel vav (וֹ, as in שָׁלוֹם) and the small dot of a consonantal vav (וֺ, as in מִצְוֺת written ḥaser) are different characters — and now each has its own editor. The new <span class="ui">Holam Haser</span> tile on the vav's <span class="ui">Above</span> step places and reshapes the mitzvot-style dot, while the וֹ tile keeps styling the combined vowel form, with a note in each explaining which typed keys reach which. A new וֺ chip joins the <span class="ui">Spacing</span> test combos so you can see both side by side, and every export now verifies that a typed vav + ḥolam really composes into your וֹ form. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -2983,7 +2982,8 @@ const TOUR_STEPS = [
       return (drop && drop.offsetParent !== null) ? drop : document.getElementById('tabAlign');
     },
     titleKey: 'fontmaker.tour.step_2_title',
-    bodyKey: 'fontmaker.tour.step_2_body' },
+    bodyKey: 'fontmaker.tour.step_2_body',
+    bodyKeyDraw: 'fontmaker.tour.step_2_body_draw' },   // draw projects: the upload copy is wrong — step 1 is the drawing canvas
   { target: () => document.getElementById('tabTrace'),
     titleKey: 'fontmaker.tour.step_3_title',
     bodyKey: 'fontmaker.tour.step_3_body' },
@@ -3036,7 +3036,7 @@ function _tourShow(idx, dir) {
   const step = TOUR_STEPS[idx], el = step.target();
   try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {}
   document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey);
-  document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKey);
+  document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKeyDraw && project && project.inputMode === 'draw' ? step.bodyKeyDraw : step.bodyKey);
   document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: idx + 1, total: TOUR_STEPS.length });
   document.getElementById('tourBack').disabled = (idx === 0);
   document.getElementById('tourNext').textContent = I18n.t((idx === TOUR_STEPS.length - 1) ? 'shared.tour.done' : 'shared.tour.next');
@@ -3667,8 +3667,12 @@ function setInputMode(mode) {
   project.inputMode = mode; syncMetaToForm();
   localStorage.setItem('hebrewFontMaker_inputMode', mode);
   // letters reference the shared sheet in combined mode; leave already-imported SVG vectors untouched
+  // (contours/dataUrl/draw all survive this stamp — switching modes is lossless)
   project.letters.forEach(l => { if (!(l.source && l.source.kind === 'svg')) l.source.kind = mode; });
-  renderControls(); renderStage();
+  // Re-route through the mode normalizer so switching to/from 'draw' on a letter lands on the right
+  // step-1 surface immediately (_setWorkMode promotes align⇄draw and re-renders stage+controls).
+  if (curKind === 'letter' && (workMode === 'align' || workMode === 'draw')) _setWorkMode('align');
+  else { renderControls(); renderStage(); }
 }
 
 /* ════════ Letter grid ════════ */
@@ -3711,6 +3715,17 @@ function labelStage(el, glyph) {
   if (window.I18n) { const v = I18n.t(K, { glyph: glyph }); if (v !== K) s = v; }
   el.setAttribute('aria-label', s);
 }
+// Mode-aware variant for the main stage: Draw mode announces itself as a drawing canvas.
+// Called from renderStage AND applyI18n (so a live language switch can't clobber the draw name).
+function labelStageForMode(el) {
+  if (!el) return;
+  if (workMode === 'draw') {
+    const K = 'fontmaker.draw.canvas_aria', glyph = curGlyphLabel();
+    let s = 'Drawing canvas — ' + glyph;
+    if (window.I18n) { const v = I18n.t(K, { glyph }); if (v !== K) s = v; }
+    el.setAttribute('aria-label', s);
+  } else labelStage(el, curGlyphLabel());
+}
 function renderLetterGrid() {
   const grid = document.getElementById('letterGrid'); grid.innerHTML = '';
   let done = 0;
@@ -3743,7 +3758,9 @@ function renderNextStepHint() {
   const nikOn = project.font.nikkud.enabled;
   const link = (label, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'hint-link'; b.textContent = label; b.onclick = fn; return b; };
   if (s.traced === 0) {
-    host.textContent = I18n.t('fontmaker.panels.nexthint_start');
+    host.textContent = project.inputMode === 'draw'
+      ? _drawT('nexthint_start', 'Pick a letter and draw it right on the canvas.')
+      : I18n.t('fontmaker.panels.nexthint_start');   // upload-flavored copy is wrong for a draw project
   } else if (lists.blanks.length) {
     const b0 = lists.blanks[0];
     const parts = I18n.t('fontmaker.panels.nexthint_next', { name: '\x00', count: lists.blanks.length }).split('\x00');
@@ -4295,6 +4312,12 @@ function addCustomGlyph() {
         it.anchors  = src.anchors  ? JSON.parse(JSON.stringify(src.anchors))  : null;
         it.handEdited = !!src.handEdited;                    // keep shape provenance: node-edit warning + outline-only trace params
         it.outlineOnly = !!src.outlineOnly; it.lineWeight = src.lineWeight;
+        if (src.draw && src.draw.strokes.length && src.source.dataUrl) {   // drawn source → the duplicate stays re-drawable
+          it.draw = JSON.parse(JSON.stringify(src.draw));
+          it.source.kind = src.source.kind; it.source.dataUrl = src.source.dataUrl;
+          it.transform = src.transform.slice();
+          it.flattenLighting = false; it.binThreshold = 128; it.thresholdUserSet = true;
+        }
       }
     }
     project.letters.push(it);
@@ -4350,6 +4373,8 @@ function convertMarkToMain(cp) {
 // (node editing), everything else (untraced letters, marks, editor glyphs) on Align. _setWorkMode
 // and renderStage self-correct any illegal 'nodes' request, so this is always safe to pass through.
 function _defaultStepForCur() {
+  if (curKind === 'letter' && project.inputMode === 'draw' && curLetter()
+      && curLetter().source.kind !== 'svg' && !(curLetter().contours || []).length) return 'draw';
   return (curKind === 'letter' && curLetter() && (curLetter().contours || []).length) ? 'nodes' : 'align';
 }
 function setWorkMode(mode) {
@@ -4362,22 +4387,33 @@ function _setWorkMode(mode) {
   if (curKind !== 'letter') {                 // marks have no Nikkud step; editor has no Trace step
     if (mode === 'anchors') mode = 'align';
     if (mode === 'nodes') mode = 'align';     // node editor is letters-only
+    if (mode === 'draw') mode = 'align';      // draw is letters-only — marks never get a draw field
     if (curItem().designMode === 'editor') mode = 'align';
   } else if (mode === 'anchors' && !precompTarget && (isPunctItem() || !(project.font.nikkud.enabled || project.font.trop.enabled))) {
     mode = 'align';                            // punctuation is anchor-free; letters-only font has no marks step (but a precomposed/wide form being placed stays in anchors)
+  }
+  if (curKind === 'letter') {   // Draw ⇄ Align normalization
+    const cl = curLetter();
+    if (mode === 'draw' && (project.inputMode !== 'draw' || !cl || cl.source.kind === 'svg')) mode = 'align';
+    // In a draw project, Align is unreachable for drawable letters (the canvas IS step 1). A letter
+    // carrying a raster but no strokes (photo letter in a mixed project) keeps Align so its image
+    // stays repositionable; SVG-imported letters keep Align too.
+    else if (mode === 'align' && project.inputMode === 'draw' && cl && cl.source.kind !== 'svg'
+             && !(cl.source.dataUrl && !(cl.draw && cl.draw.strokes.length))) mode = 'draw';
   }
   workMode = mode;
   nodeModel = null; nodeSel.clear(); nodeDrag = null;   // node-editor state is per-entry — rebuilt by renderStage when mode==='nodes'
   _marqueeMode = false; _penMode = false; penDraft = null; _penCursor = null;   // (_penEntry survives — set by drawWithPen just before entering, consumed by renderStage)
   _hiddenContours.clear(); _filletBase = null;          // per-entry too (disclosure open-states persist)
   cropDrag = null;                                       // drop any in-progress crop draft when the step changes
+  drawGesture = null;                                    // abandon any in-flight draw stroke (its udCapture is never pushed)
   if (mode !== 'anchors') precompTarget = null;   // leaving the placement step ends any precomposed-form edit
   if (mode === 'anchors') {   // keep anchorCat on an enabled category
     if (anchorCat === 'trop' && !project.font.trop.enabled) anchorCat = 'nikkud';
     if (anchorCat === 'nikkud' && !project.font.nikkud.enabled && project.font.trop.enabled) anchorCat = 'trop';
   }
   const onAnch = mode === 'anchors';
-  document.getElementById('tabAlign').classList.toggle('active', mode === 'align');
+  document.getElementById('tabAlign').classList.toggle('active', mode === 'align' || mode === 'draw');   // draw replaces align as step 1 in draw projects
   document.getElementById('tabTrace').classList.toggle('active', mode === 'trace' || mode === 'nodes');   // node editing is a sub-state of Trace
   document.getElementById('tabAnchors').classList.toggle('active', onAnch && anchorCat === 'nikkud');
   document.getElementById('tabTrop').classList.toggle('active', onAnch && anchorCat === 'trop');
@@ -4575,6 +4611,7 @@ async function uploadForCurrent(file) {
   const url = await readFileAsDataUrl(file);
   const l = curLetter();
   l.source.kind = 'single'; l.source.dataUrl = url; l.source.cropRect = null;
+  l.draw = null;                                     // a photo replaces any drawing — stale strokes must not resurface in draw mode
   const im = await loadImg(url);
   l.flattenLighting = true;                          // fresh raster upload → lighting flattening on
   l.thresholdUserSet = false;                        // any hand-tuned threshold belonged to the old image
@@ -4703,6 +4740,7 @@ function reselectArea() {
     if (i >= 0) project.combinedIndex = i;
   }
   l.source.dataUrl = null; l.contours = null; l.anchors = null;
+  l.draw = null;   // re-cropping from a sheet abandons any drawing too
   renderGrids(); renderStage(); renderControls();
 }
 /* ── Keyboard crop marquee (accessibility): the pointer path (startCrop → pointermove → pointerup)
@@ -5971,7 +6009,8 @@ function updateTabs() {
   const eng = !isMark && isEng(curCp);   // English letters: the placement step is for accents, not nikkud
   const combined = isMark && project.font[curKind].uploadMode === 'combined';
   const editor = isMark && !combined && curItem().designMode === 'editor';
-  document.getElementById('tabAlign').textContent = editor ? I18n.t('fontmaker.tabs.step_design') : I18n.t('fontmaker.tabs.step_align');
+  document.getElementById('tabAlign').textContent = editor ? I18n.t('fontmaker.tabs.step_design')
+    : (project.inputMode === 'draw' && !isMark ? I18n.t('fontmaker.tabs.step_draw') : I18n.t('fontmaker.tabs.step_align'));
   document.getElementById('tabTrace').style.display = editor ? 'none' : '';
   const ta = document.getElementById('tabAnchors');
   if (eng) {
@@ -6265,7 +6304,7 @@ function contoursToPath(contours, curves) {
 async function renderStage() {
   const sv = stage(); if (!project) return;
   sv.setAttribute('viewBox', `${STAGE_VB.x} ${STAGE_VB.y} ${STAGE_VB.w} ${STAGE_VB.h}`);   // default window; the wide-form tail widens it so a stretched form isn't clipped
-  labelStage(sv, curGlyphLabel());   // accessible name for SR users (the canvas itself carries no visible label)
+  labelStageForMode(sv);   // accessible name for SR users (the canvas itself carries no visible label; draw mode overrides)
   const l = curLetter();
   updateTabs();
   if (curKind !== 'letter') { renderMarkStage(l); return; }   // marks have their own workspace
@@ -6295,6 +6334,10 @@ async function renderStage() {
     } else {
       h += `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="14">No image yet — upload below.</text>`;
     }
+  } else if (workMode === 'draw') {
+    h += drawStrokesSVG(l);   // committed strokes over the reference ghost (the tracing paper)
+    if (!(l.draw && l.draw.strokes.length))
+      h += `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="13">${esc(_drawT('empty_hint', 'Draw the letter here — trace the gray reference.'))}</text>`;
   } else if (workMode === 'trace') {
     if (url) h += `<image href="${url}" x="0" y="0" transform="matrix(${l.transform.join(' ')})" opacity="${project.view.imgOpacityTrace}"/>`;
     if (l.contours) { const C = stageColors(); h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${C.inkFill}" fill-rule="nonzero" stroke="${C.inkStroke}" stroke-width="0.6"/>`; }
@@ -6382,6 +6425,10 @@ function renderLegend() {
   const el = document.getElementById('stageLegend');
   if (isCropSelect(curLetter())) {
     el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;">${combinedNavHTML()}<span>Click and drag a box around the letter on the sheet, then release to bring it into the editor. <span style="opacity:0.75;">Keyboard: arrows move the box, +/− resize, Enter to crop.</span></span></div>`;
+    return;
+  }
+  if (workMode === 'draw') {
+    el.innerHTML = `<span>${esc(_drawT('legend', 'Draw with a pen, finger, or mouse · Erase removes a whole stroke · Save runs the tracer'))}</span>`;
     return;
   }
   if (workMode === 'anchors') {
@@ -6598,6 +6645,7 @@ function onStagePointerMove(e) {
     it.pos = Math.round((guideDrag.dragAxis==='y' ? fyp : fxp) + guideDrag.grab);
     renderStage(); return;
   }
+  if (workMode === 'draw') { drawPointerMove(e); return; }   // after guide/metric drags — those work in draw mode too
   if (!tDrag || workMode !== 'align') return;
   const l = curLetter(); const p = clientToStage(e); const m0 = tDrag.m0;
   if (tDrag.type === 'move') {
@@ -6625,7 +6673,7 @@ function onStagePointerMove(e) {
   l.contours = null; l.curves = null; l.anchors = null;
   renderStage();
 }
-function onStagePointerUp() {
+function onStagePointerUp(e) {   // also serves pointercancel — a cancelled draw stroke commits its captured points (undo is the safety net)
   if (nodeDrag) {
     if (nodeDrag.type === 'nodes' || nodeDrag.type === 'handle') { _snapHit = null; udPush(nodeDrag.ud); nodeDrag = null; renderStage(); renderControls(); return; }
     if (nodeDrag.type === 'bboxmove' || nodeDrag.type === 'bboxscale') {
@@ -6647,6 +6695,7 @@ function onStagePointerUp() {
   }
   if (metricDrag) { udPush(metricDrag.ud); metricDrag = null; renderControls(); return; }
   if (guideDrag) { udPush(guideDrag.ud); guideDrag = null; renderControls(); return; }
+  if (workMode === 'draw') { drawPointerUp(e); return; }
   if (eDrag) { udPush(eDrag.ud); eDrag = null; renderGrids(); renderControls(); return; }
   if (cropDrag && cropDrag.start) {                     // pointer session only (keyboard drafts have no `start`)
     const box = cropDrag.box; cropDrag = null;
@@ -6654,6 +6703,311 @@ function onStagePointerUp() {
     return;
   }
   if (tDrag) { udPush(tDrag.ud); tDrag = null; renderLetterGrid(); }
+}
+
+/* ════════ Draw mode — draw letters on the stage with pen / touch / mouse ════════
+   Strokes are captured in font units and, on Save, rendered to an offscreen black-on-white canvas
+   framed like an aligned upload, then fed through the EXISTING trace pipeline (rawLoopsFontUnits)
+   — no new vectorization. l.draw is the persisted source of truth; drawGesture is the only
+   transient. Accessibility trade-off (deliberate): the canvas itself is pointer-only — every glyph
+   remains fully buildable by keyboard via the pen tool (P) in Edit points, and the draw toolbar is
+   standard focusable controls. NOTE: this is distinct from the nodes-mode Bézier pen tool
+   (_penMode / penDraft / _penCursor / drawWithPen) — never reuse those symbols. */
+function _drawT(k, fallback, p) {   // fontmaker.draw.* with an English fallback (renderStage can run pre-I18n.ready)
+  const key = 'fontmaker.draw.' + k;
+  if (!window.I18n) return fallback;
+  const v = I18n.t(key, p);
+  return v === key ? fallback : v;
+}
+let drawGesture = null;      // active stroke/erase: { tool, pointerId, pointerType, pts, sm, el, kill, ud }
+let _drawPenSeen = false;    // a pen has been seen this session → palm rejection arms
+let _drawPenUntil = 0;       // ignore touch until this timestamp (rolling +500ms on pen activity)
+let _drawTool = 'draw';      // 'draw' | 'erase' — session-only (always starts on Draw)
+let _drawBrush = 90, _drawPressure = true, _drawSmoothing = 'med', _drawPenOnly = false;   // mirrors of uiPrefs (avoid per-stroke localStorage reads)
+function drawLoadPrefs() {
+  const p = wsReadPrefs();
+  _drawBrush = Number.isFinite(+p.drawBrush) ? Math.min(300, Math.max(40, +p.drawBrush)) : 90;
+  _drawPressure = p.drawPressure !== false;   // missing = ON
+  _drawSmoothing = ['off','low','med','high'].includes(p.drawSmoothing) ? p.drawSmoothing : 'med';
+  _drawPenOnly = p.drawPenOnly === true;
+}
+function drawSavePrefs() {
+  try { const p = wsReadPrefs();
+    p.drawBrush = _drawBrush; p.drawPressure = _drawPressure; p.drawSmoothing = _drawSmoothing; p.drawPenOnly = _drawPenOnly;
+    localStorage.setItem(WS_PREFS_KEY, JSON.stringify(p));
+  } catch (e) { /* private mode / quota — non-fatal */ }
+}
+function drawSetTool(t) { _drawTool = t === 'erase' ? 'erase' : 'draw'; renderControls(); }
+function drawSetBrush(v) { _drawBrush = Math.min(300, Math.max(40, +v || 90)); const r = document.getElementById('drawBrushVal'); if (r) r.textContent = _drawBrush; }
+function drawSetPressure(on) { _drawPressure = !!on; drawSavePrefs(); }
+function drawSetSmoothing(v) { _drawSmoothing = ['off','low','med','high'].includes(v) ? v : 'med'; drawSavePrefs(); }
+function drawSetPenOnly(on) { _drawPenOnly = !!on; drawSavePrefs(); }
+/* Only pens contribute real pressure — touch commonly reports a constant 1.0 and mice a constant
+   0.5; the width map's fixed point f(0.5)=1 makes a recorded 0.5 exactly nominal width, so no
+   per-device special-casing is needed anywhere downstream. */
+function pressureOf(e) { return e.pointerType === 'pen' ? (e.pressure || 0.5) : 0.5; }
+const DRAW_SMOOTH_A = { off: 1, low: 0.55, med: 0.35, high: 0.2 };   // EMA factor per smoothing level
+function drawRadiusAt(s, p) { return (s.w / 2) * (s.pr ? (0.35 + 1.3 * Math.min(1, Math.max(0.05, p))) : 1); }
+function drawHasPressure(s) { return !!s.pr && s.pts.some(q => q[2] !== 0.5); }
+function _capArc(c, r, aFrom, steps) {   // half-circle cap, sweeping clockwise from aFrom
+  const out = [];
+  for (let k = 1; k < steps; k++) { const a = aFrom - Math.PI * k / steps; out.push([c[0] + Math.cos(a) * r, c[1] + Math.sin(a) * r]); }
+  return out;
+}
+/* Variable-width outline polygon of one stroke (font units). A plain closed polygon serves both
+   the y-down canvas and the y-up stage SVG; self-intersections at sharp turns fill solid under
+   nonzero winding. 1-point strokes are handled by the callers (circle). */
+function drawStrokePoly(s) {
+  const pts = s.pts, n = pts.length;
+  const dirs = [];
+  for (let i = 0; i < n; i++) {
+    const a = pts[Math.max(0, i - 1)], b = pts[Math.min(n - 1, i + 1)];
+    const dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy);
+    if (!(len > 1e-6)) { dirs.push(dirs.length ? dirs[dirs.length - 1] : [1, 0]); continue; }   // hairpin — reuse, never NaN
+    dirs.push([dx / len, dy / len]);
+  }
+  const left = [], right = [];
+  for (let i = 0; i < n; i++) {
+    const r = drawRadiusAt(s, pts[i][2]), d = dirs[i];
+    const nx = -d[1] * r, ny = d[0] * r;
+    left.push([pts[i][0] + nx, pts[i][1] + ny]);
+    right.push([pts[i][0] - nx, pts[i][1] - ny]);
+  }
+  const rEnd = drawRadiusAt(s, pts[n - 1][2]), rStart = drawRadiusAt(s, pts[0][2]);
+  const aEndL = Math.atan2(dirs[n - 1][0], -dirs[n - 1][1]);    // angle of the left normal at the end
+  const aStartR = Math.atan2(-dirs[0][0], dirs[0][1]);          // angle of the right normal at the start
+  return left
+    .concat(_capArc(pts[n - 1], rEnd, aEndL, 16))
+    .concat(right.slice().reverse())
+    .concat(_capArc(pts[0], rStart, aStartR, 16))
+    .filter(q => Number.isFinite(q[0]) && Number.isFinite(q[1]));   // one bad vertex would drop the whole canvas subpath
+}
+/* Committed strokes as stage-px SVG. data-di = index into l.draw.strokes at render time (the erase
+   gesture's kill-set addresses elements by it and only mutates the array once, at pointerup). */
+function drawStrokesSVG(l) {
+  if (!(l.draw && l.draw.strokes.length)) return '';
+  const c = stageColors().ink;
+  return l.draw.strokes.map((s, i) => {
+    if (s.pts.length === 1) {
+      const q = s.pts[0];
+      return `<circle data-di="${i}" cx="${fx(q[0]).toFixed(1)}" cy="${fy(q[1]).toFixed(1)}" r="${Math.max(0.5, drawRadiusAt(s, q[2]) * SC).toFixed(2)}" fill="${c}"/>`;
+    }
+    if (drawHasPressure(s)) {
+      const poly = drawStrokePoly(s);
+      if (poly.length < 3) return '';
+      return `<path data-di="${i}" d="M ${poly.map(q => fx(q[0]).toFixed(1) + ' ' + fy(q[1]).toFixed(1)).join(' L ')} Z" fill="${c}"/>`;
+    }
+    return `<polyline data-di="${i}" points="${s.pts.map(q => fx(q[0]).toFixed(1) + ',' + fy(q[1]).toFixed(1)).join(' ')}" fill="none" stroke="${c}" stroke-width="${(s.w * SC).toFixed(2)}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  }).join('');
+}
+function _drawAbandon() {   // drop the in-flight gesture without pushing its undo capture
+  if (!drawGesture) return;
+  if (drawGesture.el) { try { drawGesture.el.remove(); } catch (e) {} }
+  drawGesture = null;
+  renderStage();   // restores any erase-hidden elements
+}
+function drawPointerDown(e) {
+  if (curKind !== 'letter') return;
+  const cl = curLetter(); if (!cl || cl.source.kind === 'svg') return;
+  if (e.pointerType === 'pen') { _drawPenSeen = true; _drawPenUntil = performance.now() + 500; }
+  if (drawGesture) {
+    // Pen preempts palm: the physically normal order is palm-rests-then-nib-lands — the palm's
+    // gesture is dropped (never pushed) and the pen proceeds.
+    if (e.pointerType === 'pen' && drawGesture.pointerType === 'touch') _drawAbandon();
+    else return;   // second pointer mid-gesture (palm) — ignored
+  }
+  if (e.pointerType === 'touch' && (_drawPenOnly || (_drawPenSeen && performance.now() < _drawPenUntil))) return;   // palm rejection; mouse always draws
+  cl.draw = cl.draw || { v: 1, strokes: [] };
+  const [x, y] = clientToFont(e);
+  const label = (_drawTool === 'erase' ? 'erase strokes — ' : 'draw stroke — ') + cl.name;
+  const ud = udCapture([{ t: 'item', kind: 'letter', cp: curCp, withDraw: true }], label);
+  if (_drawTool === 'erase') {
+    drawGesture = { tool: 'erase', pointerId: e.pointerId, pointerType: e.pointerType, kill: new Set(), ud };
+    drawEraseAt(cl, x, y);
+  } else {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    el.setAttribute('class', 'draw-live');
+    el.setAttribute('points', fx(x).toFixed(1) + ',' + fy(y).toFixed(1));
+    el.setAttribute('fill', 'none');
+    el.setAttribute('stroke', stageColors().ink);
+    el.setAttribute('stroke-width', (_drawBrush * SC).toFixed(2));
+    el.setAttribute('stroke-linecap', 'round'); el.setAttribute('stroke-linejoin', 'round');
+    el.setAttribute('opacity', '0.9');
+    stage().appendChild(el);
+    drawGesture = { tool: 'draw', pointerId: e.pointerId, pointerType: e.pointerType,
+                    pts: [[Math.round(x), Math.round(y), pressureOf(e)]], sm: [x, y, pressureOf(e)], el, ud };
+  }
+  try { stage().setPointerCapture(e.pointerId); } catch (err) {}   // synthetic test events have no active pointer — must not throw
+  e.preventDefault();
+}
+function drawPointerMove(e) {
+  if (e.pointerType === 'pen') { _drawPenSeen = true; _drawPenUntil = performance.now() + 500; }   // hover arms palm rejection
+  if (!drawGesture || e.pointerId !== drawGesture.pointerId) return;
+  const evs = (e.getCoalescedEvents && e.getCoalescedEvents()) || [];
+  const batch = evs.length ? evs : [e];   // coalesced events are a bonus, never a requirement
+  const sv = stage(); const ctm = sv.getScreenCTM(); if (!ctm) return;
+  const inv = ctm.inverse();                           // ONE layout read per batch, not per sample
+  const tol = 3 / (((ctm && ctm.a) || 1) * SC);        // ≈3 screen px min-distance decimation, in font units
+  const a = DRAW_SMOOTH_A[_drawSmoothing] || 0.35;
+  const g = drawGesture, cl = curLetter();
+  for (const ev of batch) {
+    const pt = sv.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+    const p = pt.matrixTransform(inv);
+    const x = ifx(p.x), y = ify(p.y), pr = pressureOf(ev);
+    if (g.tool === 'erase') { drawEraseAt(cl, x, y); continue; }
+    g.sm[0] += a * (x - g.sm[0]); g.sm[1] += a * (y - g.sm[1]); g.sm[2] += a * (pr - g.sm[2]);   // EMA smoothing
+    const last = g.pts[g.pts.length - 1];
+    if (Math.hypot(g.sm[0] - last[0], g.sm[1] - last[1]) < tol) continue;
+    if (g.pts.length >= 2048) continue;                // hard cap — matches sanitizeDraw
+    g.pts.push([Math.round(g.sm[0]), Math.round(g.sm[1]), g.sm[2]]);
+    if (!g.el.isConnected) stage().appendChild(g.el);  // a stray async re-render wiped the SVG mid-stroke
+    g.el.setAttribute('points', g.el.getAttribute('points') + ' ' + fx(g.sm[0]).toFixed(1) + ',' + fy(g.sm[1]).toFixed(1));
+  }
+  e.preventDefault();
+}
+function drawPointerUp(e) {
+  if (!drawGesture) return;   // idempotent — pointercancel routes here too
+  if (e && e.pointerId != null && e.pointerId !== drawGesture.pointerId) return;   // a rejected touch's up must not end a pen stroke
+  const g = drawGesture; drawGesture = null;
+  if (g.pointerType === 'pen') _drawPenUntil = performance.now() + 500;
+  const cl = curLetter();
+  if (g.tool === 'erase') {
+    if (cl && cl.draw && g.kill.size) {
+      cl.draw.strokes = cl.draw.strokes.filter((_, i) => !g.kill.has(i));   // single mutation at gesture end — indices stay valid throughout
+      udPush(g.ud);
+    }
+  } else if (cl && cl.draw) {
+    cl.draw.strokes.push({ w: _drawBrush, pr: _drawPressure ? 1 : 0, pts: g.pts });
+    udPush(g.ud);   // udPush marks dirty → the strokes autosave
+  }
+  renderStage(); renderControls();   // live polyline → committed shape; stroke-count readout
+}
+function drawEraseAt(cl, x, y) {   // whole-stroke removal: hit-test the pointer sample against each remaining stroke
+  const g = drawGesture; if (!g || !cl || !cl.draw) return;
+  const R = _drawBrush / 2;
+  cl.draw.strokes.forEach((s, i) => {
+    if (g.kill.has(i)) return;
+    const r = s.w / 2 + R;
+    const pts = s.pts;
+    let hit = false;
+    if (pts.length === 1) hit = Math.hypot(pts[0][0] - x, pts[0][1] - y) <= r;
+    else for (let k = 0; k < pts.length - 1 && !hit; k++) hit = _segDist(x, y, pts[k], pts[k + 1]) <= r;
+    if (hit) {
+      g.kill.add(i);
+      const el = stage().querySelector(`[data-di="${i}"]`); if (el) el.style.display = 'none';
+    }
+  });
+}
+function _segDist(px, py, a, b) {   // point-to-segment distance (font units)
+  const dx = b[0] - a[0], dy = b[1] - a[1];
+  const L2 = dx * dx + dy * dy;
+  const t = L2 ? Math.max(0, Math.min(1, ((px - a[0]) * dx + (py - a[1]) * dy) / L2)) : 0;
+  return Math.hypot(px - (a[0] + t * dx), py - (a[1] + t * dy));
+}
+function drawClearCurrent() {   // strokes only — the committed outline/raster stays until the next Save
+  const cl = curLetter();
+  if (!cl || !(cl.draw && cl.draw.strokes.length)) return;
+  udDo([{ t: 'item', kind: 'letter', cp: curCp, withDraw: true }], 'clear drawing — ' + cl.name, () => {
+    cl.draw = { v: 1, strokes: [] };
+  });
+  renderStage(); renderControls();
+}
+/* Commit frame: union of the em box and the padded ink bounds, clamped to the window the tracer
+   can rasterize (stage px [0,600]×[0,560] → font x∈[−546,1328], y∈[−359,1390]), at 1 font unit per
+   canvas px (the tracer's own field is 0.448 raster px/FU, so u=1 already oversamples ≥2×). The
+   frame is structurally an aligned upload: diagonal scale + translate, so traceSig self-invalidates. */
+function drawFrame(d) {
+  const em = effMetrics();
+  let ix0 = Infinity, ix1 = -Infinity, iy0 = Infinity, iy1 = -Infinity, maxW = 0;
+  d.strokes.forEach(s => { maxW = Math.max(maxW, s.w);
+    s.pts.forEach(q => { ix0 = Math.min(ix0, q[0]); ix1 = Math.max(ix1, q[0]);
+                         iy0 = Math.min(iy0, q[1]); iy1 = Math.max(iy1, q[1]); }); });
+  const pad = maxW * 0.85 + 4;   // covers the max pressure factor (1.65 × w/2) + AA margin — pads INK only, not the em box
+  const x0 = Math.floor(Math.max(-546, Math.min(0,                Number.isFinite(ix0) ? ix0 - pad : 0)));
+  const x1 = Math.ceil (Math.min(1328, Math.max(1000,             Number.isFinite(ix1) ? ix1 + pad : 1000)));
+  const y0 = Math.floor(Math.max(-359, Math.min(em.descender,     Number.isFinite(iy0) ? iy0 - pad : em.descender)));
+  const y1 = Math.ceil (Math.min(1390, Math.max(em.lamedAscender, Number.isFinite(iy1) ? iy1 + pad : em.lamedAscender)));
+  return { x0, x1, y0, y1 };
+}
+function drawRenderCanvas(d, fr) {
+  const W = Math.max(1, fr.x1 - fr.x0), H = Math.max(1, fr.y1 - fr.y0);
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);   // opaque paper — never rely on alpha handling
+  ctx.setTransform(1, 0, 0, -1, -fr.x0, fr.y1);       // font units → canvas px (y-flip)
+  ctx.fillStyle = ctx.strokeStyle = '#000';
+  ctx.lineCap = ctx.lineJoin = 'round';
+  d.strokes.forEach(s => {
+    if (s.pts.length === 1) {   // tap/dot — a lone moveTo paints nothing, so draw a circle
+      const q = s.pts[0];
+      ctx.beginPath(); ctx.arc(q[0], q[1], drawRadiusAt(s, q[2]), 0, Math.PI * 2); ctx.fill();
+    } else if (drawHasPressure(s)) {
+      const poly = drawStrokePoly(s);
+      if (poly.length > 2) { ctx.beginPath(); ctx.moveTo(poly[0][0], poly[0][1]);
+        for (let i = 1; i < poly.length; i++) ctx.lineTo(poly[i][0], poly[i][1]);
+        ctx.closePath(); ctx.fill(); }
+    } else {
+      ctx.lineWidth = s.w;
+      ctx.beginPath(); ctx.moveTo(s.pts[0][0], s.pts[0][1]);
+      for (let i = 1; i < s.pts.length; i++) ctx.lineTo(s.pts[i][0], s.pts[i][1]);
+      ctx.stroke();
+    }
+  });
+  return cv;
+}
+function drawCommit(advance) {   // warn-first wraps udDo — same shape as traceCurrent
+  const cl = curLetter();
+  if (!cl || !(cl.draw && cl.draw.strokes.length)) { status(I18n.t('fontmaker.draw.nothing_toast')); return; }
+  if (cl.handEdited) {
+    askModal(I18n.t('fontmaker.draw.retrace_title'), I18n.t('fontmaker.draw.retrace_body'),
+      [{ label: I18n.t('fontmaker.modals.retrace'), onClick: () => _drawCommitNow(advance) },
+       { label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' }]);
+    return;
+  }
+  _drawCommitNow(advance);
+}
+async function _drawCommitNow(advance) {
+  const l = curLetter(); if (!l || !(l.draw && l.draw.strokes.length)) return;
+  const cp = curCp;
+  const fr = drawFrame(l.draw);
+  const url = drawRenderCanvas(l.draw, fr).toDataURL('image/png');
+  await loadImg(url);   // rasterizeCurrent reads curImageUrl() from imgCache — must be cached before the sync trace
+  // The decode is genuinely async: if the selection moved meanwhile, itemScope-style globals would
+  // point at the wrong letter — abort untouched (the strokes are still there; Save again).
+  if (curKind !== 'letter' || curLetter() !== l) return;
+  let n = null;
+  udDo([{ t: 'item', kind: 'letter', cp, withSource: true, withDraw: true }], 'draw letter — ' + l.name, () => {
+    l.source.kind = 'draw'; l.source.dataUrl = url; l.source.cropRect = null; l.source.sheetId = null;
+    l.transform = [SC, 0, 0, SC, fx(fr.x0), fy(fr.y1)];   // canvas px land 1:1 in font units
+    l.captureBox = null;
+    l.flattenLighting = false;   // synthetic ink — nothing to flatten (exactly false: itemFlattenOn tests !== false)
+    l.binThreshold = 128; l.thresholdUserSet = true; l.invert = false;   // pure black-on-white: 128 reproduces stroke width verbatim; block Otsu
+    l.contours = null; l.curves = null;   // anchors survive — same contract as a photo re-trace
+    n = _traceCore(l);
+  });
+  status(n ? I18n.t('fontmaker.draw.saved_toast', { name: curGlyphLabel() }) : I18n.t('fontmaker.status.no_ink'));
+  renderLetterGrid(); renderStage(); renderControls();
+  if (advance && n) drawAdvance();
+}
+function drawAdvance() {   // next Hebrew letter without contours (digits/punct excluded — reachable by grid click)
+  const i = LETTER_ORDER.indexOf(curCp);
+  for (let k = 1; k <= LETTER_ORDER.length; k++) {
+    const cp = LETTER_ORDER[(i + k) % LETTER_ORDER.length];
+    const meta = letterMeta(cp); if (meta && meta.cat === 'punct') continue;
+    const t = project.letters.find(x => x.codepoint === cp);
+    if (t && !t.contours) { selectItem('letter', cp); return; }
+  }
+  status(I18n.t('fontmaker.draw.all_done_toast'));
+}
+async function drawEnsureRaster(l) {   // stripped-autosave restore — the raster is deterministic from strokes
+  if (!(l.draw && l.draw.strokes.length)) return;
+  const u = l.source.dataUrl;
+  if (u && u !== '[omitted]' && imgCache[u]) return;
+  const fr = drawFrame(l.draw);
+  const url = drawRenderCanvas(l.draw, fr).toDataURL('image/png');
+  l.source.dataUrl = url;
+  l.transform = [SC, 0, 0, SC, fx(fr.x0), fy(fr.y1)];
+  try { await loadImg(url); } catch (e) {}
 }
 
 /* ════════ Vectorization: rasterize → binarize → marching squares → RDP → winding ════════ */
@@ -7375,6 +7729,7 @@ function attachNodeEditor(l) {
   }));
 }
 function onStageBgPointerDown(e) {                    // pen / marquee / Alt-insert (markers & handles stopPropagation, so this only fires for empty/image/glyph)
+  if (workMode === 'draw') { drawPointerDown(e); return; }   // guide/metric handles stopPropagation before this
   if (workMode !== 'nodes' || curKind !== 'letter' || !nodeModel) return;
   if (_penMode) { penPointerDown(e); return; }        // pen owns every stage click while active
   const sv = stage();
@@ -8400,15 +8755,22 @@ function traceCurrent() {   // warn-first wraps udDo (never nests an async confi
   if (curItem().handEdited) { askModal(I18n.t('fontmaker.modals.retrace_title'), I18n.t('fontmaker.modals.retrace_body'), [{ label:I18n.t('fontmaker.modals.retrace'), onClick: _traceCurrentNow }, { label:I18n.t('fontmaker.modals.cancel'), cls:'ghost' }]); return; }
   _traceCurrentNow();
 }
+/* Shared trace core (re-trace + Draw-mode commit): rasterize → vectorize → finalize.
+   Returns null when there was no ink at all, else the finalized contour count (0 = none usable).
+   Callers own the udDo wrapper — never nest one here. */
+function _traceCore(l) {
+  const raw = rawLoopsFontUnits(l);
+  if (!raw || !raw.length) { _rawTrace = null; l.contours = null; l.curves = null; return null; }
+  _rawTrace = { sig: traceSig(l), loops: raw };
+  return finalizeWithOutline(l, raw);
+}
 function _traceCurrentNow() {
   udDo([itemScope()], 're-trace — ' + curLetter().name, () => {
     const l = curLetter();
-    const raw = rawLoopsFontUnits(l);
-    if (!raw || !raw.length) { _rawTrace = null; l.contours = null; l.curves = null; status(I18n.t('fontmaker.status.no_ink')); renderStage(); renderControls(); renderLetterGrid(); return; }
-    _rawTrace = { sig: traceSig(l), loops: raw };
-    const n = finalizeWithOutline(l, raw);
+    const n = _traceCore(l);
     renderLetterGrid(); renderStage(); renderControls();
-    status(n ? `${l.name}: traced ${n} contour(s).` : 'No usable contours — adjust threshold.');
+    status(n == null ? I18n.t('fontmaker.status.no_ink')
+         : n ? `${l.name}: traced ${n} contour(s).` : 'No usable contours — adjust threshold.');
   });
 }
 function clearTrace() {
@@ -8417,7 +8779,14 @@ function clearTrace() {
 }
 function _clearTraceNow() {
   const it = curItem();
-  udDo([itemScope()], 'clear trace — ' + it.name, () => { it.contours = null; it.curves = null; _rawTrace = null; renderGrids(); renderStage(); renderControls(); });
+  // A drawn letter's raster goes too: leaving it would let the enter-Trace auto-trace silently
+  // resurrect the outline the user just cleared. Re-committing from the strokes is the route back.
+  const dropRaster = it.source && it.source.kind === 'draw';
+  udDo([Object.assign(itemScope(), dropRaster ? { withSource: true } : {})], 'clear trace — ' + it.name, () => {
+    it.contours = null; it.curves = null; _rawTrace = null;
+    if (dropRaster) it.source.dataUrl = null;
+    renderGrids(); renderStage(); renderControls();
+  });
 }
 /* ε change — instant: re-simplify the cached loops (or recompute if the cache is stale). */
 function liveDetail(v) {   // slider 0–100 reads as "detail"; ε is the inverse (100 = closest trace)
@@ -10315,6 +10684,7 @@ function renderControls() {
   const l = curLetter();
   if (curKind !== 'letter') { renderMarkControls(L, l); return; }   // mark editor → left column (beside the stage)
   if (workMode === 'align') { renderAlignLeft(L, l); renderAlignRight(R, l); renderAlignUnder(U, l); }
+  else if (workMode === 'draw') { renderDrawLeft(L, l); renderDrawRight(R, l); renderDrawUnder(U, l); }
   else if (workMode === 'trace') { renderTraceLeft(L, l); renderTraceRight(R, l); renderTraceUnder(U, l); }
   else if (workMode === 'nodes') { renderNodeLeft(L, l); renderTraceRight(R, l); renderTraceUnder(U, l); }
   else { renderAnchorLeft(L, l); renderAnchorRight(R, l); renderAnchorUnder(U, l); renderAnchorStageBelow(SB, l); }
@@ -10508,7 +10878,7 @@ function renderTraceLeft(L, l) {
     <div class="side-slider-label">${I18n.t('fontmaker.panels.ink_threshold')} <span id="thV" class="readout">${l.binThreshold}</span></div>
     <input type="range" class="side-slider" min="1" max="254" value="${l.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.ink_threshold'))}">
     <label class="chk"><input type="checkbox" ${l.invert?'checked':''} onchange="liveInvert(this.checked)"> ${I18n.t('fontmaker.panels.invert')}</label>
-    ${ (l.source && l.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${itemFlattenOn(l)?'checked':''} onchange="liveFlatten(this.checked)" aria-label="${esc(I18n.t('fontmaker.panels.even_lighting_aria'))}"> ${I18n.t('fontmaker.panels.even_lighting')}</label>` : '' }
+    ${ (l.source && l.source.dataUrl && l.source.kind !== 'draw') ? `<label class="chk"><input type="checkbox" ${itemFlattenOn(l)?'checked':''} onchange="liveFlatten(this.checked)" aria-label="${esc(I18n.t('fontmaker.panels.even_lighting_aria'))}"> ${I18n.t('fontmaker.panels.even_lighting')}</label>` : '' }
     <div class="side-slider-label">${I18n.t('fontmaker.panels.detail')} <span id="epV" class="readout">${detail}</span></div>
     <input type="range" class="side-slider" min="0" max="100" step="1" value="${detail}" oninput="liveDetail(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.detail'))}">
     <div class="side-slider-label">${I18n.t('fontmaker.panels.corners')} <span id="cnV" class="readout">${corner}</span></div>
@@ -10537,6 +10907,57 @@ function renderTraceUnder(U, l) {
       <div class="ws-under-grow">${hint}</div>
       <div class="under-spacer"></div>
       <div>${nextBtn}</div>
+    </div>`;
+}
+
+/* ── DRAW (draw letters on screen with pen / touch / mouse) ── */
+function renderDrawLeft(L, l) {
+  const nStrokes = (l.draw && l.draw.strokes.length) || 0;
+  // The input-mode switcher renders ONLY here in a draw project (Align is unreachable for drawable
+  // letters) — omitting it would make draw mode a one-way trap. Clear-outline stays on the Trace tab.
+  L.innerHTML = `<div class="ws-side-title">${I18n.t('fontmaker.panels.add_letters')}</div>` + inputModeBlock() + `
+    <hr class="ctl-divider">
+    <div class="ws-side-title">${_drawT('panel_title', 'Draw — {name}', { name: esc(gName(l.name)) })}</div>
+    <div class="mode-toggle">
+      <button class="mode-btn ${_drawTool==='draw'?'active':''}" aria-pressed="${_drawTool==='draw'}" id="drawToolDraw" onclick="drawSetTool('draw')">${_drawT('tool_draw', 'Draw')}</button>
+      <button class="mode-btn ${_drawTool==='erase'?'active':''}" aria-pressed="${_drawTool==='erase'}" id="drawToolErase" onclick="drawSetTool('erase')">${_drawT('tool_erase', 'Erase')}</button>
+    </div>
+    <div class="side-slider-label">${_drawT('brush', 'Brush size')} <span id="drawBrushVal" class="readout">${_drawBrush}</span></div>
+    <input type="range" class="side-slider" min="40" max="300" step="5" value="${_drawBrush}" oninput="drawSetBrush(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('brush', 'Brush size'))}">
+    <label class="chk"><input type="checkbox" ${_drawPressure?'checked':''} onchange="drawSetPressure(this.checked)"> ${_drawT('pressure', 'Pen pressure varies thickness')}</label>
+    <label class="chk"><input type="checkbox" ${_drawPenOnly?'checked':''} onchange="drawSetPenOnly(this.checked)"> ${_drawT('pen_only', 'Pen only (ignore finger touches)')}</label>
+    <div class="side-slider-label" style="margin-top:6px;">${_drawT('smoothing', 'Smoothing')}</div>
+    <select id="drawSmoothingSel" onchange="drawSetSmoothing(this.value)" aria-label="${esc(_drawT('smoothing', 'Smoothing'))}">
+      <option value="off" ${_drawSmoothing==='off'?'selected':''}>${_drawT('smoothing_off', 'Off')}</option>
+      <option value="low" ${_drawSmoothing==='low'?'selected':''}>${_drawT('smoothing_low', 'Low')}</option>
+      <option value="med" ${_drawSmoothing==='med'?'selected':''}>${_drawT('smoothing_med', 'Medium')}</option>
+      <option value="high" ${_drawSmoothing==='high'?'selected':''}>${_drawT('smoothing_high', 'High')}</option>
+    </select>
+    <div class="ctl-row" style="margin-top:8px;">
+      <button class="ctl-btn" onclick="drawClearCurrent()" ${nStrokes?'':'disabled'}>${_drawT('clear', 'Clear letter')}</button>
+      <button class="ctl-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${I18n.t('fontmaker.panels.copy_outline')}</button>
+      <span class="readout">${nStrokes ? _drawT(nStrokes === 1 ? 'stroke_count.one' : 'stroke_count.other', nStrokes + (nStrokes === 1 ? ' stroke' : ' strokes'), { count: nStrokes }) : ''}</span>
+    </div>
+    <div class="hint">${_drawT('hint', 'Draw over the gray reference with a pen, finger, or mouse. Each stroke can be undone with Ctrl+Z. Save runs the tracer — fine-tune Detail and Corners in step 2.')}</div>` + metricsPanel();
+  wireInputModeBlock();
+}
+function renderDrawRight(R, l) {
+  const tplPct = Math.round(project.template.opacity*100);
+  R.innerHTML = referencePanelR() + `
+    <div class="vslider-pair">
+      ${vSlider('tplOpacity','tplOpacityVal',I18n.t('fontmaker.panels.slider_ref_opacity'), tplPct, 'setTemplateOpacity')}
+    </div>`;
+  wireReferencePanel();
+}
+function renderDrawUnder(U, l) {
+  U.innerHTML = `
+    <div class="ws-under-row" style="align-items:center;">
+      <div class="ws-under-grow"></div>
+      <div class="under-spacer"></div>
+      <div class="ctl-row">
+        <button class="ctl-btn" onclick="drawCommit(false)">${_drawT('save_stay', 'Save & stay')}</button>
+        <button class="ctl-btn primary" onclick="drawCommit(true)">${_drawT('save_next', 'Save letter & next →')}</button>
+      </div>
     </div>`;
 }
 
@@ -10812,6 +11233,7 @@ function inputModeBlock() {
       <button class="mode-btn ${project.inputMode==='single'?'active':''}" aria-pressed="${project.inputMode==='single'}" id="modeSingle" onclick="setInputMode('single')">${I18n.t('fontmaker.panels.input_single')}</button>
       <button class="mode-btn ${project.inputMode==='combined'?'active':''}" aria-pressed="${project.inputMode==='combined'}" id="modeCombined" onclick="setInputMode('combined')">${I18n.t('fontmaker.panels.input_combined')}</button>
       ${ svg ? '' : `<button class="mode-btn ${project.inputMode==='font'?'active':''}" aria-pressed="${project.inputMode==='font'}" id="modeFont" onclick="setInputMode('font')">${I18n.t('fontmaker.panels.input_font')}</button>` }
+      <button class="mode-btn ${project.inputMode==='draw'?'active':''}" aria-pressed="${project.inputMode==='draw'}" id="modeDraw" onclick="setInputMode('draw')">${I18n.t('fontmaker.panels.input_draw')}</button>
     </div>
     <div id="combinedUploadRow" style="display:${project.inputMode==='combined'?'':'none'};">
       <div class="drop" id="combinedDrop">${ svg
@@ -10905,7 +11327,7 @@ document.addEventListener('keydown', e => {
     if (k === 'y' || e.shiftKey) meDoRedo(); else meDoUndo();
     return;
   }
-  if (tDrag || eDrag || metricDrag || guideDrag || nodeDrag || _burst || _udNudge) return;   // don't undo mid-interaction
+  if (tDrag || eDrag || metricDrag || guideDrag || nodeDrag || drawGesture || _burst || _udNudge) return;   // don't undo mid-interaction
   if (workMode === 'nodes' && _penMode && penDraft && penDraft.nodes.length) {   // mid-draft: undo = remove the last placed pen point (draft never touches the undo stack)
     e.preventDefault();
     if (!(k === 'y' || e.shiftKey)) { penDraft.nodes.pop(); if (!penDraft.nodes.length) penDraft = null; renderStage(); }
@@ -13550,6 +13972,10 @@ function stripImagesForAutosave(p) {
   const c = JSON.parse(JSON.stringify(p));
   if (Array.isArray(c.combinedSheets)) c.combinedSheets.forEach(s => { if (s.dataUrl) s.dataUrl = '[omitted]'; });
   c.letters.forEach(l => { if (l.source.dataUrl) l.source.dataUrl = '[omitted]'; });
+  // Draw strokes are re-editable source data, but 27 letters' worth can outweigh the images this
+  // strip exists to shed. Committed letters keep their contours in the JSON, so drop their strokes
+  // here; only in-progress (uncommitted) drawings ride along in the stripped fallback.
+  c.letters.forEach(l => { if (l.draw && l.contours) l.draw = null; });
   ['nikkud','trop','customMarks'].forEach(cat => {
     const cm = c.font[cat] && c.font[cat].custom;
     if (cm) Object.values(cm).forEach(m => { if (m.source && m.source.dataUrl) m.source.dataUrl = '[omitted]'; });
@@ -13591,6 +14017,9 @@ async function applyProjectData(data) {           // shared by file-load and "Lo
   (project.combinedSheets || []).forEach(s => { if (s.dataUrl && /^data:image\/svg/i.test(s.dataUrl)) cacheSvgSheet(s.dataUrl); });
   ['nikkud','trop','customMarks'].forEach(cat => { const u = project.font[cat].combinedImage && project.font[cat].combinedImage.dataUrl; if (u && /^data:image\/svg/i.test(u)) cacheSvgSheet(u); });
   await restoreCustomTemplateFonts();   // re-register uploaded tracing fonts before the R-panel select repopulates
+  // Drawn letters restored from the image-stripped fallback lost their raster — rebuild it from
+  // the strokes (deterministic) so revisit-Trace and re-commit keep working.
+  for (const dl of project.letters) { try { await drawEnsureRaster(dl); } catch (e) {} }
   curKind = 'letter'; curCp = LETTER_ORDER[0];
   syncMetaToForm(); renderGrids(); _setWorkMode(_defaultStepForCur());   // reopen an already-traced first letter directly on Edit points
   markClean();          // a freshly loaded project is a known-good state — clear the dirty flag
@@ -13757,6 +14186,27 @@ async function maybeRestoreAutosave() {
     [ { label: I18n.t('fontmaker.modals.continue'), onClick: async () => { if (await applyProjectData(data)) status(I18n.t('fontmaker.status.reopened_recent')); } },
       { label: I18n.t('fontmaker.modals.start_fresh'), cls: 'ghost', onClick: () => { autosaveDiscard(); wizardOpen('gate'); } } ]);
 }
+/* Draw-mode strokes arrive from disk like everything else — via ivritSafeParse, but shape/size are
+   still untrusted. Hard caps + finite-only + clamps; anything malformed degrades to null (no strokes). */
+function sanitizeDraw(d) {
+  if (!d || typeof d !== 'object' || !Array.isArray(d.strokes)) return null;
+  const strokes = [];
+  for (const s of d.strokes.slice(0, 256)) {
+    if (!s || !Array.isArray(s.pts)) continue;
+    const w = Number.isFinite(+s.w) ? Math.min(400, Math.max(10, +s.w)) : 80;
+    const pts = [];
+    for (const q of s.pts.slice(0, 2048)) {
+      if (!Array.isArray(q)) continue;
+      const x = +q[0], y = +q[1]; let p = +q[2];
+      if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+      if (!Number.isFinite(p)) p = 0.5;
+      pts.push([Math.max(-2000, Math.min(3000, Math.round(x))), Math.max(-2000, Math.min(3000, Math.round(y))),
+                Math.min(1, Math.max(0, p))]);
+    }
+    if (pts.length) strokes.push({ w, pr: s.pr ? 1 : 0, pts });
+  }
+  return { v: 1, strokes };
+}
 function migrateProject(data) {
   // ensure all 27 letters exist & fields present (forward-compatible)
   const byCp = {}; (data.letters||[]).forEach(l => byCp[l.codepoint] = l);
@@ -13783,6 +14233,7 @@ function migrateProject(data) {
     if (ex.markShapes == null) ex.markShapes = {};   // per-letter custom mark shapes ("Apply to current letter"); empty = use global/default
     if (ex.lsb === undefined) ex.lsb = null;   // per-letter left side bearing (Letter Metrics)
     if (ex.rsb === undefined) ex.rsb = null;   // per-letter right margin (independent of Width)
+    ex.draw = sanitizeDraw(ex.draw);           // Draw-mode strokes (untrusted — capped + clamped; absent → null)
     return ex;
   });
   // custom MAIN glyphs (Custom glyphs tab) live in project.letters flagged .custom — preserve any beyond the standard 27
@@ -13805,6 +14256,7 @@ function migrateProject(data) {
       if (l.thresholdUserSet == null) l.thresholdUserSet = (l.binThreshold !== 128);
       if (l.lsb === undefined) l.lsb = null;
       if (l.rsb === undefined) l.rsb = null;
+      l.draw = sanitizeDraw(l.draw);   // same hardening as the standard-27 loop
       data.letters.push(l);
     });
   }
@@ -13916,8 +14368,8 @@ function wizardOpen(mode){
   ['wizTrop','wizEnglish','wizYiddish','wizLadino','wizTour'].forEach(id => { document.getElementById(id).checked = false; });
   let im = null;
   try { im = localStorage.getItem('hebrewFontMaker_inputMode'); } catch(e){}
-  if (im !== 'single' && im !== 'combined' && im !== 'font') im = 'single';
-  document.getElementById({ single: 'wizSrcSingle', combined: 'wizSrcCombined', font: 'wizSrcFont' }[im]).checked = true;
+  if (im !== 'single' && im !== 'combined' && im !== 'font' && im !== 'draw') im = 'single';
+  document.getElementById({ single: 'wizSrcSingle', combined: 'wizSrcCombined', font: 'wizSrcFont', draw: 'wizSrcDraw' }[im]).checked = true;
   document.getElementById('wizOpenProject').hidden = (mode !== 'gate');
   document.getElementById('wizCancelBtn').hidden = (mode !== 'new');
   aOpenModal('wizardOverlay', mode === 'new' ? wizardCancel : () => {});   // gate mode: Escape is inert
@@ -13991,6 +14443,7 @@ function wizardCreate(){
   if (yid) setAddYiddish(true);
   if (lad) setAddLadino(true);
   setInputMode(src);      // persists the pref + renderControls/renderStage (which re-runs updateTabs)
+  if (src === 'draw') setWorkMode('draw');   // land directly on the drawing canvas (belt-and-braces — setInputMode's normalizer usually gets there)
   setCatTab('letter');    // catTab survives newProject() — make the letter grid the visible panel
   _launchDecided = true; _autosavePromptDeferred = false;
   _wizardMode = null;
@@ -14002,7 +14455,7 @@ function wizardCreate(){
   // input — the async chain could lose the user-gesture context). Targets are rebuilt by
   // renderControls, so resolve them after the setters' re-renders settle.
   setTimeout(() => { try {
-    const el = document.getElementById(src === 'font' ? 'fontDrop' : src === 'combined' ? 'combinedDrop' : 'letterDrop')
+    const el = document.getElementById(src === 'font' ? 'fontDrop' : src === 'combined' ? 'combinedDrop' : src === 'draw' ? 'stage' : 'letterDrop')
             || document.getElementById('letterGrid');
     if (!el) return;
     el.scrollIntoView({ block: 'center' });
@@ -14101,10 +14554,19 @@ function copyOutlineDo(){
   if (!src || !src.contours) { status(I18n.t('fontmaker.status.pick_traced_outline')); return; }
   const alsoWidth = !!(document.getElementById('copyOutlineWidth') && document.getElementById('copyOutlineWidth').checked);
   const clone = v => v ? JSON.parse(JSON.stringify(v)) : null;
-  udDo([itemScope()], 'copy outline from ' + src.name, () => {
+  // A drawn source carries its strokes + raster along (kaf → kaf-sofit is the canonical draw-mode
+  // move) — otherwise the copy's "1 · Draw" tab reads todo over an empty canvas and Save refuses.
+  const carryDraw = !!(src.draw && src.draw.strokes.length && src.source.dataUrl);
+  udDo([Object.assign(itemScope(), carryDraw ? { withSource: true, withDraw: true } : {})], 'copy outline from ' + src.name, () => {
     t.contours = clone(src.contours);
     t.curves   = clone(src.curves);
     t.handEdited = false;                          // a fresh copy → node-edit/re-trace warnings reset
+    if (carryDraw) {
+      t.draw = clone(src.draw);
+      t.source.kind = src.source.kind; t.source.dataUrl = src.source.dataUrl; t.source.cropRect = null; t.source.sheetId = null;
+      t.transform = src.transform.slice();
+      t.flattenLighting = false; t.binThreshold = 128; t.thresholdUserSet = true; t.invert = false;   // same synthetic-raster settings as a draw commit
+    }
     if (alsoWidth) { t.advance = src.advance; t.lsb = src.lsb; t.rsb = src.rsb; }   // otherwise keep the target's own metrics
     if (!t.anchors) seedAnchors(t);                // keep existing placement if any; else seed from the new shape
     renderGrids(); renderStage(); renderControls();
@@ -14161,7 +14623,7 @@ function init() {
   newProject();
   // restore input-mode pref
   const im = localStorage.getItem('hebrewFontMaker_inputMode');
-  if (im === 'combined' || im === 'font') setInputMode(im);
+  if (im === 'combined' || im === 'font' || im === 'draw') setInputMode(im);
   // global file inputs
   document.getElementById('projFile').addEventListener('change', e => { if (e.target.files[0]) loadProjectFile(e.target.files[0]); e.target.value=''; });
   // The combined-sheet, source-font and reference-font inputs (+ their drop zones) are now created
@@ -14170,6 +14632,7 @@ function init() {
   applyLayout();   // Tabbed-only layout: move the panels into the tab host
   loadColWidths();        // restore saved side-column widths (clamped to this viewport)
   attachColResizers();    // wire the two splitter drag handles (once; they survive renderControls)
+  drawLoadPrefs();        // Draw-mode brush/pressure/smoothing/pen-only mirrors from hebrewFontMaker_uiPrefs
   window.addEventListener('beforeunload', e => { if (_projectDirty) { e.preventDefault(); e.returnValue = ''; } });   // warn before losing unsaved work
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushAutosave(); });   // tab hidden → flush the debounced autosave now
   window.addEventListener('pagehide', flushAutosave);   // closing/navigating away → last-chance flush
@@ -14211,7 +14674,9 @@ function applyI18n() {
   // it re-derives the tab set from project.font and the active tab from catTab, mutating neither.
   try { renderCatTabs(); } catch (e) {}
   try { updateCurrentGlyphLabel(); } catch (e) {}   // re-localize the "Editing: <glyph> — <name>" indicator
-  try { const sv = stage(); if (sv) labelStage(sv, curGlyphLabel()); } catch (e) {}   // refresh the edit-canvas aria-label (renderStage isn't re-run here)
+  try { const sv = stage(); if (sv) labelStageForMode(sv); } catch (e) {}   // refresh the edit-canvas aria-label (mode-aware — draw mode must keep its name)
+  try { renderLegend(); } catch (e) {}     // the legend line is JS-built (draw mode included)
+  try { renderStage(); } catch (e) {}      // async fire-and-forget — retranslates in-SVG text (draw empty-hint, captions)
   try { renderNextStepHint(); } catch (e) {}
   try { if (typeof _pyoPhase !== 'undefined') _setPyoPhase(_pyoPhase); } catch (e) {}
   // Re-render an open Help modal (tab labels + active body) so a live switch retranslates it.
