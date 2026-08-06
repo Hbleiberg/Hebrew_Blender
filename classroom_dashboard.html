@@ -5847,8 +5847,11 @@ else ivritInit();
 
   // Single source of truth for the active/next schedule period — shared by the
   // countdown line, the on-dashboard Now/Next block, the settings preview, and checkSchedule.
+  // A weekly grid (settings.scheduleWeek) takes over wholesale; the legacy single-day body below
+  // stays untouched for users who never migrated.
   function computeScheduleState(now) {
     now = now || new Date();
+    if (settings.scheduleWeek) return computeWeekState(settings.scheduleWeek, now);
     const nowMins = now.getHours() * 60 + now.getMinutes();
     const sorted = [...(settings.currentSchedule || [])]
       .filter(e => e.preset && e.until)
@@ -5871,6 +5874,111 @@ else ivritInit();
     }
     const h = Math.floor(diffMins / 60), m = diffMins % 60;
     return { status, sorted, currentIdx, currentEntry, targetEntry, diffMins, isTomorrow, timeStr: h > 0 ? `${h}h ${m}m` : `${m}m` };
+  }
+
+  // Countdown formatter shared by the weekly engine's two clocks. Multi-day spans (Friday → Monday)
+  // read 'Xd Yh'; same-day spans keep the legacy 'Hh Mm'/'Mm' convention. (Unit letters untranslated —
+  // same pre-existing debt as the legacy timeStr. Wall-clock-naive across DST: a multi-day countdown
+  // spanning a shift is off by 1h until the next tick recomputes — cosmetic.)
+  function formatDiffMins(m) {
+    if (m >= 24 * 60) {
+      const d = Math.floor(m / (24 * 60)), h = Math.floor((m % (24 * 60)) / 60);
+      return `${d}d ${h}h`;
+    }
+    const h = Math.floor(m / 60);
+    return h > 0 ? `${h}h ${m % 60}m` : `${m % 60}m`;
+  }
+
+  // Weekly engine. Returns a superset of the legacy shape (status/sorted/currentIdx/currentEntry/
+  // targetEntry/diffMins/isTomorrow/timeStr) so checkSchedule and the render surfaces keep their
+  // contracts, plus:
+  //   engine:'week'            — discriminator for weekly render branches
+  //   status                   — 'empty'|'active'|'gap'|'before'|'after'|'noschool'
+  //   sorted                   — TODAY's column of timed periods [{periodIdx, preset|null, start, until}]
+  //   targetEntry              — the next ASSIGNED cell (never a free period), with .start and .dayIdx
+  //   daysAhead                — calendar days to targetEntry (0 = today … 7 = same day next week)
+  //   nowLeftMins/nowLeftStr   — 'active' only: time until the current period ENDS
+  // Two clocks deliberately: legacy blocks were contiguous so one timeStr served both surfaces; with
+  // passing gaps, "Next class in {time}" targets the next period's START (diffMins/timeStr) while
+  // "{time} left" targets the current period's END (nowLeftMins/nowLeftStr).
+  function computeWeekState(week, now) {
+    const dayIdx = now.getDay();
+    const nowMins = now.getHours() * 60 + now.getMinutes();
+    const visible = weekVisibleDays(week);
+    // Periods with a blank/invalid time sit out of the sweep (the editor's validation flags them).
+    const timed = week.periods
+      .map((p, i) => ({ periodIdx: i, start: p.start, until: p.end }))
+      .filter(p => HHMM_RE.test(p.start) && HHMM_RE.test(p.until));
+    const colFor = d => week.cells[WEEK_KEYS[d]] || [];
+    const entryFor = (d, t) => ({ periodIdx: t.periodIdx, preset: colFor(d)[t.periodIdx] || null, start: t.start, until: t.until, dayIdx: d });
+    const isSchoolDay = d => visible.includes(d) && timed.some(t => colFor(d)[t.periodIdx]);
+    const base = { engine: 'week', dayIdx, sorted: [], currentIdx: -1, currentEntry: null,
+                   targetEntry: null, daysAhead: 0, isTomorrow: false, diffMins: 0, timeStr: '',
+                   nowLeftMins: 0, nowLeftStr: '' };
+    if (!timed.length || !visible.some(isSchoolDay)) return { ...base, status: 'empty' };
+    base.sorted = visible.includes(dayIdx) ? timed.map(t => entryFor(dayIdx, t)) : [];
+
+    // First assigned cell on `day` from timed-position `fromK` on; null when the day is hidden or dry.
+    const firstAssignedFrom = (day, fromK) => {
+      if (!visible.includes(day)) return null;
+      for (let k = fromK; k < timed.length; k++) {
+        const e = entryFor(day, timed[k]);
+        if (e.preset) return e;
+      }
+      return null;
+    };
+    // Next assigned cell anywhere: the rest of today, then each following day; d=7 legally wraps to
+    // this same weekday next week (the week's only assignment targets itself). Never null once the
+    // empty-check above passed.
+    const findTarget = fromKToday => {
+      const today = firstAssignedFrom(dayIdx, fromKToday);
+      if (today) return { entry: today, daysAhead: 0 };
+      for (let d = 1; d <= 7; d++) {
+        const e = firstAssignedFrom((dayIdx + d) % 7, 0);
+        if (e) return { entry: e, daysAhead: d };
+      }
+      return null;
+    };
+
+    let status, currentIdx = -1, currentEntry = null, target;
+    if (!isSchoolDay(dayIdx)) {
+      status = 'noschool';
+      target = findTarget(0);
+    } else {
+      // Position now among today's timed periods: inside one → active (first match wins on an
+      // overlapping — validation-flagged — pair); before the next start → before/gap; else after.
+      let activeK = -1, nextK = timed.length;
+      for (let k = 0; k < timed.length; k++) {
+        const s = timeToMins(timed[k].start), e = timeToMins(timed[k].until);
+        if (s <= nowMins && nowMins < e) { activeK = k; break; }
+        if (s > nowMins) { nextK = k; break; }
+      }
+      if (activeK >= 0) {
+        status = 'active';
+        currentIdx = activeK;
+        currentEntry = base.sorted[activeK];
+        base.nowLeftMins = timeToMins(timed[activeK].until) - nowMins;
+        base.nowLeftStr = formatDiffMins(base.nowLeftMins);
+        target = findTarget(activeK + 1);
+      } else if (nextK === 0) {
+        status = 'before';
+        target = findTarget(0);
+      } else if (nextK < timed.length) {
+        status = 'gap';
+        target = findTarget(nextK);
+      } else {
+        status = 'after';
+        target = findTarget(timed.length);
+      }
+    }
+    if (target) {
+      base.targetEntry = target.entry;
+      base.daysAhead = target.daysAhead;
+      base.isTomorrow = target.daysAhead === 1;
+      base.diffMins = target.daysAhead * 24 * 60 + timeToMins(target.entry.start) - nowMins;
+      base.timeStr = formatDiffMins(base.diffMins);
+    }
+    return { ...base, status, currentIdx, currentEntry };
   }
 
   // Derive the class a period's preset activates (via the preset's stored activeRosterId). Returns ''
@@ -6126,13 +6234,21 @@ else ivritInit();
   }
 
   function checkSchedule() {
-    if (!settings.scheduleEnabled || !settings.currentSchedule?.length) return;
+    if (!settings.scheduleEnabled) return;
+    if (!settings.scheduleWeek && !settings.currentSchedule?.length) return;
     const st = computeScheduleState();
-    // Apply only the currently-active block's preset. When every period is past (status 'allpast'),
-    // apply nothing — the last period's board persists overnight rather than jumping to tomorrow's first.
+    // Apply only the currently-active block's preset. Outside a period (legacy 'allpast'; weekly
+    // gap/before/after/no-school) — and on a weekly FREE cell (preset null, caught by the
+    // presets[...] lookup below) — apply nothing: the last applied board persists rather than
+    // jumping ahead.
     if (st.status !== 'active' || !st.currentEntry) return;
     const active = st.currentEntry;
-    const key = active.preset + '|' + active.until;
+    // Weekly key carries the date + period index so identical cells on different days (and
+    // back-to-back periods sharing a preset) still re-apply on their own boundary. Legacy key
+    // byte-identical.
+    const key = st.engine === 'week'
+      ? new Date().toDateString() + '|' + active.periodIdx + '|' + active.preset
+      : active.preset + '|' + active.until;
     if (key !== _lastScheduleKey && presets[active.preset]) {
       _lastScheduleKey = key;
       if (_activeEditable) exitInPlaceEdit(true);   // commit any in-place edit before a scheduled preset switch
