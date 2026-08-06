@@ -1373,6 +1373,27 @@
   /* Sticky time column survives the horizontal grid scroll; logical inset → correct side in RTL */
   .swm-timecell { position: sticky; inset-inline-start: 0; z-index: 1; background: var(--white); }
   body.dark .swm-timecell { background: var(--navy-deep); }
+  .swm-headcell { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--muted); display: flex; align-items: center; justify-content: center; gap: 4px;
+    padding: 3px 2px; min-height: 26px; overflow: hidden; }
+  .swm-corner { justify-content: flex-start; gap: 26px; padding-inline-start: 8px; }
+  .swm-daymenu-btn { background: none; border: none; color: var(--muted); cursor: pointer;
+    font-size: 0.9rem; padding: 0 3px; border-radius: 4px; line-height: 1; flex-shrink: 0; }
+  .swm-daymenu-btn:hover { color: var(--gold); background: var(--warm-gray); }
+  .swm-times { display: flex; gap: 3px; align-items: center; padding-inline-end: 5px; }
+  .swm-time { width: 76px; }
+  .swm-cell { border: 1px solid var(--border); border-radius: 6px; background: var(--cream); color: var(--text);
+    font-family: inherit; font-size: 0.75rem; font-weight: 700; min-height: 34px; padding: 2px 4px;
+    cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  body.dark .swm-cell { background: var(--navy-deep); }
+  .swm-cell:hover { border-color: var(--gold); }
+  .swm-cell-free { background: transparent; border-style: dashed; }
+  body.dark .swm-cell-free { background: transparent; }
+  /* A cell naming a deleted preset: kept (recoverable), shown hatched + muted, flagged by validation */
+  .swm-cell-missing { background: repeating-linear-gradient(45deg, var(--warm-gray), var(--warm-gray) 6px, transparent 6px, transparent 12px);
+    color: var(--muted); border-style: dashed; font-weight: 400; }
+  .swm-rowdel { align-self: center; }
+  .swm-grid-empty { grid-column: 1 / -1; font-size: 0.78rem; color: var(--muted); font-style: italic; padding: 10px 4px; }
   .swm-saverow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 6px; }
   .swm-saverow input { flex: 1; min-width: 150px; max-width: none; }
   .swm-footer { display: flex; justify-content: flex-end; margin-top: 14px; }
@@ -6068,7 +6089,165 @@ else ivritInit();
     weekChanged();
   }
 
-  function renderWeekGrid() {}
+  // ── The week grid: header row of day names, one row per period (start/end inputs + a paintable
+  //    button cell per visible day + a remove control). Cells carry data-day/data-period; the
+  //    painting/keyboard listeners are DELEGATED on #swmGrid (wired once), so this builder stays
+  //    pure DOM construction. Roving tabindex: exactly one cell keeps tabindex="0".
+  let _swmFocus = { day: 1, period: 0 };
+  function renderWeekGrid() {
+    const grid = document.getElementById('swmGrid');
+    if (!grid) return;
+    const week = settings.scheduleWeek;
+    const weekendChk = document.getElementById('swmWeekend');
+    if (weekendChk) weekendChk.checked = !!(week && week.weekend);
+    grid.textContent = '';
+    if (!week || !week.periods.length) {
+      const hint = document.createElement('div');
+      hint.className = 'swm-grid-empty';
+      hint.textContent = I18n.t('dashboard.schedule.grid_empty_hint');
+      grid.appendChild(hint);
+      return;
+    }
+    const days = weekVisibleDays(week);
+    grid.style.setProperty('--swm-days', days.length);
+    if (!days.includes(_swmFocus.day)) _swmFocus.day = days[0];
+    if (_swmFocus.period >= week.periods.length) _swmFocus.period = Math.max(0, week.periods.length - 1);
+    // Header row: sticky Start/End corner · day names with a per-day ⋯ menu · empty remove-column corner
+    const corner = document.createElement('div');
+    corner.className = 'swm-headcell swm-timecell swm-corner';
+    ['start_label', 'end_label'].forEach(k => {
+      const s = document.createElement('span');
+      s.textContent = I18n.t('dashboard.schedule.' + k);
+      corner.appendChild(s);
+    });
+    grid.appendChild(corner);
+    days.forEach(d => {
+      const h = document.createElement('div');
+      h.className = 'swm-headcell';
+      const nm = document.createElement('span');
+      nm.textContent = dayName(d);
+      h.appendChild(nm);
+      const mb = document.createElement('button');
+      mb.type = 'button';
+      mb.className = 'swm-daymenu-btn';
+      mb.textContent = '⋯';
+      mb.setAttribute('aria-label', I18n.t('dashboard.schedule.day_menu_aria', { day: dayName(d) }));
+      mb.setAttribute('aria-haspopup', 'menu');
+      mb.addEventListener('click', () => openWeekDayMenu(d, mb));
+      h.appendChild(mb);
+      grid.appendChild(h);
+    });
+    grid.appendChild(document.createElement('div'));   // header corner over the remove column
+    // Period rows
+    week.periods.forEach((per, p) => {
+      const tc = document.createElement('div');
+      tc.className = 'swm-timecell swm-times';
+      tc.dataset.period = p;
+      [['start', per.start, 'period_start_aria'], ['end', per.end, 'period_end_aria']].forEach(([field, val, ariaKey]) => {
+        const inp = document.createElement('input');
+        inp.type = 'time';
+        inp.className = 'schedule-time-input swm-time';
+        inp.value = val;
+        inp.dataset.field = field;
+        inp.setAttribute('aria-label', I18n.t('dashboard.schedule.' + ariaKey, { n: p + 1 }));
+        inp.addEventListener('change', () => setWeekPeriodTime(p, field, inp.value));
+        tc.appendChild(inp);
+      });
+      grid.appendChild(tc);
+      days.forEach(d => {
+        const cell = document.createElement('button');
+        cell.type = 'button';
+        cell.className = 'swm-cell';
+        cell.dataset.day = d;
+        cell.dataset.period = p;
+        cell.tabIndex = (d === _swmFocus.day && p === _swmFocus.period) ? 0 : -1;
+        applyCellVisual(cell, d, p);
+        grid.appendChild(cell);
+      });
+      const rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'schedule-del-btn swm-rowdel';
+      rm.textContent = '×';
+      rm.title = I18n.t('dashboard.schedule.remove');
+      rm.setAttribute('aria-label', I18n.t('dashboard.schedule.remove_period_aria', { n: p + 1 }));
+      rm.addEventListener('click', () => removeWeekPeriod(p));
+      grid.appendChild(rm);
+    });
+  }
+
+  // Shared by the builder and the drag-painter's in-place updates: assignment → color/label/aria.
+  function applyCellVisual(cell, d, p) {
+    const week = settings.scheduleWeek;
+    const name = week.cells[WEEK_KEYS[d]][p];
+    const per = week.periods[p] || { start: '', end: '' };
+    const missing = !!name && !presets[name];
+    cell.classList.toggle('swm-cell-free', !name);
+    cell.classList.toggle('swm-cell-missing', missing);
+    if (name && !missing) {
+      const col = presetColor(name);
+      cell.style.background = col;
+      cell.style.color = contrastText(col);
+    } else {
+      cell.style.background = '';
+      cell.style.color = '';
+    }
+    cell.textContent = name || '';
+    cell.setAttribute('aria-label', I18n.t('dashboard.schedule.cell_aria', {
+      day: dayName(d), start: per.start || '—', end: per.end || '—',
+      assignment: name || I18n.t('dashboard.schedule.free')
+    }));
+  }
+
+  function setWeekPeriodTime(p, field, value) {
+    const week = settings.scheduleWeek;
+    if (!week || !week.periods[p]) return;
+    week.periods[p][field] = HHMM_RE.test(value) ? value : '';
+    const order = sortWeekPeriods(week);
+    weekChanged();
+    if (order) {   // auto-sort moved the row — put focus back on the same period's input
+      const np = order.indexOf(p);
+      const inp = document.querySelector('#swmGrid .swm-times[data-period="' + np + '"] input[data-field="' + field + '"]');
+      if (inp) inp.focus();
+    }
+  }
+
+  function addWeekPeriod() {
+    const week = ensureWeek();
+    // Smart prefill: repeat the last period's LENGTH and the last passing GAP (printed bell
+    // schedules run 2-minute gaps); the first-ever period lands 08:00–08:45; blank when the
+    // arithmetic would pass midnight.
+    let start = '08:00', end = '08:45';
+    const timed = week.periods.filter(x => HHMM_RE.test(x.start) && HHMM_RE.test(x.end));
+    if (timed.length) {
+      const last = timed[timed.length - 1];
+      let len = timeToMins(last.end) - timeToMins(last.start);
+      if (!(len > 0 && len < 12 * 60)) len = 45;
+      let gap = 0;
+      if (timed.length > 1) {
+        gap = timeToMins(last.start) - timeToMins(timed[timed.length - 2].end);
+        if (!(gap >= 0 && gap <= 120)) gap = 0;
+      }
+      const s = timeToMins(last.end) + gap, e = s + len;
+      const fmt = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+      if (e < 24 * 60) { start = fmt(s); end = fmt(e); } else { start = ''; end = ''; }
+    }
+    week.periods.push({ start, end });
+    WEEK_KEYS.forEach(d => week.cells[d].push(null));
+    sortWeekPeriods(week);
+    weekChanged();
+  }
+
+  function removeWeekPeriod(p) {
+    const week = settings.scheduleWeek;
+    if (!week || !week.periods[p]) return;
+    const hasAssignments = WEEK_KEYS.some(d => week.cells[d][p]);
+    if (hasAssignments && !confirm(I18n.t('dashboard.schedule.remove_period_confirm', { n: p + 1 }))) return;
+    week.periods.splice(p, 1);
+    WEEK_KEYS.forEach(d => week.cells[d].splice(p, 1));
+    weekChanged();
+  }
+
+  function openWeekDayMenu() {}
 
   // ── Palette bar: one chip per preset (swatch + name + derived class) + the Eraser ──
   // A chip is a wrapper holding TWO interactive elements — the swatch's <input type="color"> and
@@ -6147,9 +6326,40 @@ else ivritInit();
     syncArmedChips();
   }
 
-  function renderWeekValidation() {}
+  // Validation strip — reuses the .schedule-validation / .sched-warn / .sched-hint vocabulary
+  // (shared with #locNote — never restyle those classes here). No Sort button: sorting is automatic.
+  function renderWeekValidation() {
+    const el = document.getElementById('swmValidation');
+    if (!el) return;
+    const week = settings.scheduleWeek;
+    el.textContent = '';
+    const msgs = [];
+    if (week) {
+      week.periods.forEach((p, i) => {
+        const s = HHMM_RE.test(p.start), e = HHMM_RE.test(p.end);
+        if (!s || !e) msgs.push(I18n.t('dashboard.schedule.warn_missing_time', { n: i + 1 }));
+        else if (timeToMins(p.end) <= timeToMins(p.start)) msgs.push(I18n.t('dashboard.schedule.warn_end_before_start', { n: i + 1 }));
+      });
+      const timed = week.periods.map((p, i) => ({ start: p.start, end: p.end, n: i + 1 }))
+        .filter(p => HHMM_RE.test(p.start) && HHMM_RE.test(p.end));
+      for (let i = 1; i < timed.length; i++) {           // already sorted by start
+        if (timed[i].start === timed[i - 1].start) msgs.push(I18n.t('dashboard.schedule.warn_duplicate_time', { time: timed[i].start }));
+        else if (timeToMins(timed[i].start) < timeToMins(timed[i - 1].end)) msgs.push(I18n.t('dashboard.schedule.warn_overlap', { a: timed[i - 1].n, b: timed[i].n }));
+      }
+      const unknown = new Set();
+      WEEK_KEYS.forEach(d => week.cells[d].forEach(nm => { if (nm && !presets[nm]) unknown.add(nm); }));
+      unknown.forEach(nm => msgs.push(I18n.t('dashboard.schedule.warn_unknown_preset', { name: nm })));
+      if (week.periods.length && !WEEK_KEYS.some(d => week.cells[d].some(Boolean)))
+        msgs.push(I18n.t('dashboard.schedule.warn_no_assignments'));
+    }
+    const hints = [];
+    if (Object.keys(presets).length <= 1) hints.push(I18n.t('dashboard.schedule.need_presets_hint'));
+    hints.forEach(h => { const d = document.createElement('div'); d.className = 'sched-hint'; d.textContent = h; el.appendChild(d); });
+    msgs.forEach(m => { const d = document.createElement('div'); d.className = 'sched-warn'; d.textContent = m; el.appendChild(d); });
+    el.style.display = (hints.length || msgs.length) ? '' : 'none';
+  }
+
   function renderWeekImportOffer() {}
-  function addWeekPeriod() {}
   function saveWeekScheduleAs() {}
   function onWeekSaveNameInput() {}
 

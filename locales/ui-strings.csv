@@ -275,9 +275,11 @@ dashboard.preset.quickstart_desc,Apply a ready-made setup — including a genera
 dashboard.preset.save,Save,שמור,preset save button,
 dashboard.preset.save_empty,Please enter a preset name.,אנא הזינו שם תבנית.,alert,
 dashboard.schedule.add_period,+ Add period,+ הוסף שיעור,weekly editor toolbar button,leading-emoji
+dashboard.schedule.cell_aria,"{day}, {start}–{end}: {assignment}","{day}, {start}–{end}: {assignment}",weekly grid cell accessible name,aria-label only — do not translate {…}
 dashboard.schedule.chip_color_aria,Change color for {name},שינוי צבע עבור {name},weekly palette swatch input,aria-label only; mixed UI+content — do not translate {…}
 dashboard.schedule.countdown_next_generic,Next class in {time},השיעור הבא בעוד {time},countdown line,
 dashboard.schedule.countdown_next_named,Next: {preset} in {time},הבא: {preset} בעוד {time},countdown line,mixed UI+content — do not translate {…}
+dashboard.schedule.day_menu_aria,Options for {day},אפשרויות עבור {day},weekly grid day-header menu button,aria-label only — do not translate {…}
 dashboard.schedule.delete_confirm,"Delete schedule ""{name}""?","למחוק את מערכת השעות ""{name}""?",confirm dialog,mixed UI+content — do not translate {…}
 dashboard.schedule.editor_button,Set up Schedule Sync…,הגדרת סנכרון מערכת שעות…,settings button that opens the weekly editor,
 dashboard.schedule.editor_close_aria,Close schedule editor,סגור את עורך מערכת השעות,weekly editor close button,aria-label only
@@ -285,9 +287,11 @@ dashboard.schedule.editor_done,Done,סיום,weekly editor footer button,
 dashboard.schedule.editor_sub,"Pick a class below, then click or drag across the grid to paint its periods. Changes save automatically.","בחרו כיתה למטה, ואז לחצו או גררו על הרשת כדי לצבוע את השיעורים שלה. השינויים נשמרים אוטומטית.",weekly editor subtitle,
 dashboard.schedule.editor_title,Set up Schedule Sync,הגדרת סנכרון מערכת שעות,weekly editor dialog title,
 dashboard.schedule.enable,Enable Schedule Sync,הפעל סנכרון מערכת שעות,settings label,
+dashboard.schedule.end_label,End,סיום,weekly grid time-column header,
 dashboard.schedule.eraser_chip,Eraser,מחק,weekly palette eraser chip label,
 dashboard.schedule.free,Free,חופשי,weekly grid free-period label,
 dashboard.schedule.grid_aria,Weekly schedule grid,רשת מערכת שעות שבועית,weekly editor grid container,aria-label only
+dashboard.schedule.grid_empty_hint,No periods yet — click “+ Add period” to build your bell schedule.,אין עדיין שיעורים — לחצו על ״+ הוסף שיעור״ כדי לבנות את מערכת השעות.,weekly grid empty state,
 dashboard.schedule.next_at,at {time},בשעה {time},next block value,
 dashboard.schedule.next_label,Next,הבא,now/next block label,
 dashboard.schedule.no_school_today,No school today,אין לימודים היום,weekly now-block / preview label for an empty or hidden day,
@@ -297,9 +301,13 @@ dashboard.schedule.overwrite_confirm,"Overwrite schedule ""{name}"" with the cur
 dashboard.schedule.overwrite_title,Overwrite with current schedule,דרוס במערכת השעות הנוכחית,saved schedule row button title,
 dashboard.schedule.palette_aria,Class palette,לוח כיתות,weekly editor palette toolbar,aria-label only
 dashboard.schedule.passing_label,Passing,מעבר,weekly now-block label during the gap between periods,
+dashboard.schedule.period_end_aria,Period {n} end time,שעת סיום של שיעור {n},weekly grid time input,aria-label only
+dashboard.schedule.period_start_aria,Period {n} start time,שעת התחלה של שיעור {n},weekly grid time input,aria-label only
 dashboard.schedule.preview_hint,Add periods (a preset + an end time) to preview your day.,הוסיפו שיעורים (תבנית + שעת סיום) כדי לצפות ביום שלכם.,settings preview empty state,
 dashboard.schedule.preview_hint_week,No classes assigned yet — open Set up Schedule Sync to paint your week.,עדיין לא שובצו שיעורים — פתחו את הגדרת סנכרון מערכת השעות כדי לצבוע את השבוע.,weekly preview empty state,
-dashboard.schedule.remove,Remove,הסר,schedule row button title,
+dashboard.schedule.remove,Remove,הסר,weekly grid remove-period button title,
+dashboard.schedule.remove_period_aria,Remove period {n},הסר שיעור {n},weekly grid remove-period button,aria-label only
+dashboard.schedule.remove_period_confirm,Remove period {n}? Its class assignments will be cleared.,להסיר את שיעור {n}? שיבוצי הכיתות שלו יימחקו.,confirm dialog,
 dashboard.schedule.save_as,Save Schedule As…,שמור מערכת שעות בשם…,settings button,
 dashboard.schedule.save_empty,Add at least one schedule entry first.,הוסיפו תחילה לפחות רשומה אחת למערכת השעות.,inline save note when the week has no periods,
 dashboard.schedule.save_name_placeholder,Schedule name,שם מערכת שעות,weekly editor save-as input placeholder,
@@ -310,6 +318,7 @@ dashboard.schedule.show_countdown,Show countdown to next class,הצג ספירה
 dashboard.schedule.show_nownext,Show Now / Next on dashboard,הצג עכשיו / הבא בלוח המחוונים,settings label,
 dashboard.schedule.show_preset_name,Show preset name,הצג שם תבנית,settings label,
 dashboard.schedule.show_weekend,Show weekend,הצג סוף שבוע,weekly editor toolbar toggle adding Sun/Sat columns,
+dashboard.schedule.start_label,Start,התחלה,weekly grid time-column header,
 dashboard.schedule.sub_options,Schedule Sync Options,אפשרויות סנכרון מערכת שעות,settings sub-section header,
 dashboard.schedule.sub_saved,Saved Schedules,מערכות שעות שמורות,weekly editor sub-section header,
 dashboard.schedule.suffix_on_day,(on {day}),(ב{day}),countdown/now-next suffix,{day} is the localized weekday name — do not translate {…}
@@ -321,6 +330,10 @@ dashboard.schedule.summary_periods.one,{count} period,שיעור אחד,weekly s
 dashboard.schedule.summary_periods.other,{count} periods,{count} שיעורים,weekly summary period count,plural
 dashboard.schedule.time_left,{time} left,נותרו {time},now block value,
 dashboard.schedule.warn_duplicate_time,⚠ Two periods start at the same time ({time}).,⚠ שני שיעורים מתחילים באותה שעה ({time}).,validation warning,leading-emoji
+dashboard.schedule.warn_end_before_start,⚠ Period {n} ends before it starts.,⚠ שיעור {n} מסתיים לפני שהוא מתחיל.,validation warning,leading-emoji
+dashboard.schedule.warn_missing_time,⚠ Period {n} is missing a start or end time.,⚠ לשיעור {n} חסרה שעת התחלה או סיום.,validation warning,leading-emoji
+dashboard.schedule.warn_no_assignments,Nothing is assigned yet — pick a class and paint the grid.,עדיין לא שובץ דבר — בחרו כיתה וצבעו את הרשת.,validation nudge when periods exist but every cell is free,
+dashboard.schedule.warn_overlap,⚠ Periods {a} and {b} overlap.,⚠ שיעורים {a} ו-{b} חופפים.,validation warning,leading-emoji
 dashboard.schedule.warn_unknown_preset,⚠ Preset “{name}” doesn't exist — create it in Presets.,"⚠ התבנית ""{name}"" אינה קיימת — צרו אותה בתבניות.",validation warning,leading-emoji; mixed UI+content — do not translate {…}
 dashboard.schedule.need_presets_hint,Each block switches to a saved preset — create a couple in Presets first.,כל מקטע עובר לתבנית שמורה — צרו כמה בתבניות תחילה.,schedule builder hint shown when only the Default preset exists,
 dashboard.settings.close_aria,Close settings,סגור הגדרות,settings drawer close aria,aria-label only
