@@ -6034,6 +6034,7 @@ function flashBackupSave() {
   if (backupScope === 'profiles' || backupScope === 'both') {
     data.flashCardProfiles = readProfiles();
     data.profileFolders = ftRead('hebrewFlashCards_profilesFolders');
+    data.flashCardPbStreak = localStorage.getItem(PB_STREAK_KEY) || '0';
   }
   const suffix = backupScope === 'profiles' ? '_Profiles' : backupScope === 'both' ? '_All' : '';
   const payload = { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: IVRIT_CFG.tool, savedAt: new Date().toISOString(), data };
@@ -6122,6 +6123,10 @@ const IVRIT_CFG = {
       // so a FlashCards .ivrit carried the profile FOLDERS with none of the profiles inside.
       flashCardProfiles: readProfiles(),
       profileFolders: ftRead('hebrewFlashCards_profilesFolders'),
+      // The personal-best streak is the student's own record, so it travels with the
+      // profiles. index.html's AllTools bundle has always carried it; the tool's own
+      // .ivrit did not, so a save/restore round-trip on this page silently reset it to 0.
+      flashCardPbStreak: localStorage.getItem(PB_STREAK_KEY) || '0',
       liveState: getSettings()
     };
   },
@@ -6141,6 +6146,15 @@ const IVRIT_CFG = {
       if (data.flashCardProfiles && data.flashCardProfiles.profiles) mergeProfilesBlob(data.flashCardProfiles, mode);
       if (inProfF) ftImportTree('hebrewFlashCards_profilesFolders', inProfF, mode === 'replace');
       renderProfiles();
+    }
+    // Personal best restores as the MAX of stored vs incoming (never a downgrade) —
+    // the same rule index.html's AllTools import uses, so both paths agree.
+    if (data.flashCardPbStreak !== undefined) {
+      const existing = mode === 'replace' ? 0 : (parseInt(localStorage.getItem(PB_STREAK_KEY) || '0', 10) || 0);
+      const incoming = parseInt(data.flashCardPbStreak, 10) || 0;
+      localStorage.setItem(PB_STREAK_KEY, String(Math.max(existing, incoming)));
+      loadPbStreak();
+      updateStatsBar();
     }
   }
 };
