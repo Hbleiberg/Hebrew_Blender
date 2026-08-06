@@ -277,6 +277,10 @@ dashboard.preset.save_empty,Please enter a preset name.,אנא הזינו שם �
 dashboard.schedule.add_period,+ Add period,+ הוסף שיעור,weekly editor toolbar button,leading-emoji
 dashboard.schedule.cell_aria,"{day}, {start}–{end}: {assignment}","{day}, {start}–{end}: {assignment}",weekly grid cell accessible name,aria-label only — do not translate {…}
 dashboard.schedule.chip_color_aria,Change color for {name},שינוי צבע עבור {name},weekly palette swatch input,aria-label only; mixed UI+content — do not translate {…}
+dashboard.schedule.clear_day,Clear {day},נקה את {day},weekly day menu action,do not translate {…}
+dashboard.schedule.clear_day_confirm,Clear all of {day}'s assignments?,לנקות את כל השיבוצים של {day}?,confirm dialog,do not translate {…}
+dashboard.schedule.copy_day_all,Copy to all weekdays,העתק לכל ימי החול,weekly day menu action copying the column to Mon–Fri,
+dashboard.schedule.copy_to_day,Copy to {day},העתק אל {day},weekly day menu action,do not translate {…}
 dashboard.schedule.countdown_next_generic,Next class in {time},השיעור הבא בעוד {time},countdown line,
 dashboard.schedule.countdown_next_named,Next: {preset} in {time},הבא: {preset} בעוד {time},countdown line,mixed UI+content — do not translate {…}
 dashboard.schedule.day_menu_aria,Options for {day},אפשרויות עבור {day},weekly grid day-header menu button,aria-label only — do not translate {…}

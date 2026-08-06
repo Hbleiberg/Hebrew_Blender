@@ -6247,7 +6247,159 @@ else ivritInit();
     weekChanged();
   }
 
-  function openWeekDayMenu() {}
+  /* ── Painting: click applies the armed chip; mouse drag paints a run (ONE save per gesture);
+        touch stays tap-only so a finger can still pan the grid horizontally. All writes go through
+        the idempotent paintCell, so the synthetic click after a drag's pointerup is a no-op. ── */
+  let _swmDrag = null;
+  // Idempotent data write + in-place cell repaint; returns whether anything changed.
+  function paintCell(d, p, value) {
+    const week = settings.scheduleWeek;
+    if (!week || !week.periods[p]) return false;
+    const col = week.cells[WEEK_KEYS[d]];
+    if (col[p] === value) return false;
+    col[p] = value;
+    const cell = document.querySelector('#swmGrid .swm-cell[data-day="' + d + '"][data-period="' + p + '"]');
+    if (cell) applyCellVisual(cell, d, p);
+    return true;
+  }
+  function applyArmedToCell(cell) {
+    if (_armedChip === null) return;
+    const value = _armedChip === SWM_ERASER ? null : _armedChip;
+    if (paintCell(+cell.dataset.day, +cell.dataset.period, value))
+      weekChanged({ skipGrid: true, skipPalette: true });
+  }
+  function _swmEndDrag() {
+    const d = _swmDrag;
+    _swmDrag = null;
+    if (d && d.painted) weekChanged({ skipGrid: true, skipPalette: true });   // one save + one refresh per gesture
+  }
+  // Roving tabindex: exactly one cell is tabbable; arrows move it (mirrored under RTL).
+  function setWeekFocus(d, p, focus) {
+    const prev = document.querySelector('#swmGrid .swm-cell[tabindex="0"]');
+    if (prev) prev.tabIndex = -1;
+    _swmFocus = { day: d, period: p };
+    const cell = document.querySelector('#swmGrid .swm-cell[data-day="' + d + '"][data-period="' + p + '"]');
+    if (cell) { cell.tabIndex = 0; if (focus) cell.focus(); }
+  }
+  let _swmGridWired = false;
+  function wireWeekGrid() {
+    if (_swmGridWired) return;
+    _swmGridWired = true;
+    const grid = document.getElementById('swmGrid');
+    if (!grid) return;
+    grid.addEventListener('click', e => {
+      const cell = e.target.closest('.swm-cell');
+      if (!cell) return;
+      setWeekFocus(+cell.dataset.day, +cell.dataset.period, false);
+      applyArmedToCell(cell);
+    });
+    grid.addEventListener('pointerdown', e => {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      const cell = e.target.closest('.swm-cell');
+      if (!cell || _armedChip === null) return;
+      _swmDrag = { value: _armedChip === SWM_ERASER ? null : _armedChip, painted: false };
+      if (paintCell(+cell.dataset.day, +cell.dataset.period, _swmDrag.value)) _swmDrag.painted = true;
+      document.addEventListener('pointerup', _swmEndDrag, { once: true });
+    });
+    grid.addEventListener('pointerover', e => {
+      if (!_swmDrag) return;
+      const cell = e.target.closest('.swm-cell');
+      if (cell && paintCell(+cell.dataset.day, +cell.dataset.period, _swmDrag.value)) _swmDrag.painted = true;
+    });
+    grid.addEventListener('keydown', e => {
+      const cell = e.target.closest('.swm-cell');
+      if (!cell) return;
+      const week = settings.scheduleWeek;
+      if (!week) return;
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        e.preventDefault();
+        if (paintCell(+cell.dataset.day, +cell.dataset.period, null))
+          weekChanged({ skipGrid: true, skipPalette: true });
+        return;
+      }
+      const days = weekVisibleDays(week);
+      let di = days.indexOf(+cell.dataset.day), p = +cell.dataset.period;
+      const horiz = document.documentElement.dir === 'rtl' ? -1 : 1;   // arrows follow the mirrored visual order
+      if (e.key === 'ArrowRight') di += horiz;
+      else if (e.key === 'ArrowLeft') di -= horiz;
+      else if (e.key === 'ArrowDown') p += 1;
+      else if (e.key === 'ArrowUp') p -= 1;
+      else return;                                                     // Enter/Space stay native button clicks
+      e.preventDefault();
+      di = Math.max(0, Math.min(days.length - 1, di));
+      p = Math.max(0, Math.min(week.periods.length - 1, p));
+      setWeekFocus(days[di], p, true);
+    });
+  }
+
+  /* ── Per-day ⋯ menu — the folder-tree move-menu pattern: body-appended fixed .ft-move-menu
+        (z 9999 floats over the modal), viewport-clamped, closed by outside click / resize /
+        scroll / Escape (the editor's capture handler closes the menu before the modal). ── */
+  let _swmMenuEl = null;
+  function _swmMenuDocClick(e) { if (_swmMenuEl && !_swmMenuEl.contains(e.target)) closeWeekDayMenu(); }
+  function closeWeekDayMenu() {
+    if (!_swmMenuEl) return;
+    _swmMenuEl.remove();
+    _swmMenuEl = null;
+    document.removeEventListener('click', _swmMenuDocClick, true);
+    window.removeEventListener('resize', closeWeekDayMenu);
+    window.removeEventListener('scroll', closeWeekDayMenu, true);
+  }
+  function openWeekDayMenu(d, btn) {
+    closeWeekDayMenu();
+    const week = settings.scheduleWeek;
+    if (!week) return;
+    const menu = document.createElement('div');
+    menu.className = 'ft-move-menu';
+    menu.setAttribute('role', 'menu');
+    const mk = (label, fn) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('role', 'menuitem');
+      b.textContent = label;
+      b.addEventListener('click', () => { closeWeekDayMenu(); fn(); });
+      menu.appendChild(b);
+    };
+    weekVisibleDays(week).filter(t => t !== d).forEach(t =>
+      mk(I18n.t('dashboard.schedule.copy_to_day', { day: dayName(t) }), () => copyWeekDay(d, t)));
+    mk(I18n.t('dashboard.schedule.copy_day_all'), () => copyWeekDayToWeekdays(d));
+    mk(I18n.t('dashboard.schedule.clear_day', { day: dayName(d) }), () => clearWeekDay(d));
+    document.body.appendChild(menu);
+    const rc = btn.getBoundingClientRect();
+    let left = Math.max(6, rc.right - menu.offsetWidth), top = rc.bottom + 4;
+    if (top + menu.offsetHeight > window.innerHeight - 6) top = Math.max(6, rc.top - menu.offsetHeight - 4);
+    if (left + menu.offsetWidth > window.innerWidth - 6) left = window.innerWidth - menu.offsetWidth - 6;
+    menu.style.left = left + 'px';
+    menu.style.top = top + 'px';
+    _swmMenuEl = menu;
+    setTimeout(() => {
+      document.addEventListener('click', _swmMenuDocClick, true);
+      window.addEventListener('resize', closeWeekDayMenu);
+      window.addEventListener('scroll', closeWeekDayMenu, true);
+    }, 0);
+  }
+  function copyWeekDay(from, to) {
+    const week = settings.scheduleWeek;
+    if (!week) return;
+    week.cells[WEEK_KEYS[to]] = week.cells[WEEK_KEYS[from]].slice();
+    weekChanged();
+  }
+  function copyWeekDayToWeekdays(from) {
+    const week = settings.scheduleWeek;
+    if (!week) return;
+    [1, 2, 3, 4, 5].filter(t => t !== from).forEach(t => {
+      week.cells[WEEK_KEYS[t]] = week.cells[WEEK_KEYS[from]].slice();
+    });
+    weekChanged();
+  }
+  function clearWeekDay(d) {
+    const week = settings.scheduleWeek;
+    if (!week) return;
+    if (week.cells[WEEK_KEYS[d]].some(Boolean) &&
+        !confirm(I18n.t('dashboard.schedule.clear_day_confirm', { day: dayName(d) }))) return;
+    week.cells[WEEK_KEYS[d]] = week.cells[WEEK_KEYS[d]].map(() => null);
+    weekChanged();
+  }
 
   // ── Palette bar: one chip per preset (swatch + name + derived class) + the Eraser ──
   // A chip is a wrapper holding TWO interactive elements — the swatch's <input type="color"> and
@@ -6405,7 +6557,12 @@ else ivritInit();
   // stacked underneath; Tab wraps via the shared _trapTabWithin; focus returns to the opener.
   let _swmOpener = null;
   function weekEditorKey(e) {
-    if (e.key === 'Escape') { e.stopPropagation(); closeWeekEditor(); return; }
+    if (e.key === 'Escape') {
+      e.stopPropagation();
+      if (_swmMenuEl) { closeWeekDayMenu(); return; }   // an open day menu absorbs the first Escape
+      closeWeekEditor();
+      return;
+    }
     _trapTabWithin(document.getElementById('swmModal'), e);
   }
   function openWeekEditor() {
@@ -6414,11 +6571,13 @@ else ivritInit();
     _swmOpener = document.activeElement;
     document.getElementById('swmBackdrop').classList.add('open');
     document.getElementById('swmModal').classList.add('open');
+    wireWeekGrid();
     renderWeekEditor();
     document.addEventListener('keydown', weekEditorKey, true);
     const c = document.querySelector('#swmModal .fr-close'); if (c) c.focus();
   }
   function closeWeekEditor() {
+    closeWeekDayMenu();
     document.getElementById('swmBackdrop').classList.remove('open');
     document.getElementById('swmModal').classList.remove('open');
     document.removeEventListener('keydown', weekEditorKey, true);
