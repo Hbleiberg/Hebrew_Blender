@@ -274,25 +274,14 @@ dashboard.preset.quickstart_button,✨ Quick-start layouts…,✨ פריסות �
 dashboard.preset.quickstart_desc,Apply a ready-made setup — including a general-classroom layout — then tweak it and Save it as your own preset.,החילו הגדרה מוכנה — כולל פריסת כיתה כללית — ואז התאימו ושמרו אותה כתבנית משלכם.,presets panel prose,
 dashboard.preset.save,Save,שמור,preset save button,
 dashboard.preset.save_empty,Please enter a preset name.,אנא הזינו שם תבנית.,alert,
-dashboard.schedule.add,+ Add,+ הוסף,settings button,leading-emoji
 dashboard.schedule.countdown_next_generic,Next class in {time},השיעור הבא בעוד {time},countdown line,
 dashboard.schedule.countdown_next_named,Next: {preset} in {time},הבא: {preset} בעוד {time},countdown line,mixed UI+content — do not translate {…}
 dashboard.schedule.delete_confirm,"Delete schedule ""{name}""?","למחוק את מערכת השעות ""{name}""?",confirm dialog,mixed UI+content — do not translate {…}
-dashboard.schedule.drag_reorder,Drag to reorder,גרור לסידור מחדש,drag handle title,
+dashboard.schedule.editor_button,Set up Schedule Sync…,הגדרת סנכרון מערכת שעות…,settings button that opens the weekly editor,
 dashboard.schedule.enable,Enable Schedule Sync,הפעל סנכרון מערכת שעות,settings label,
-dashboard.schedule.explain,"Each row shows a chosen preset until a set time — as the day moves on, the dashboard reconfigures itself to the next preset automatically, and the countdown shows how long is left in the current block.","כל שורה מציגה תבנית נבחרת עד לשעה מוגדרת — ככל שהיום מתקדם, לוח המחוונים מגדיר את עצמו מחדש לתבנית הבאה אוטומטית, והספירה לאחור מציגה כמה זמן נותר בבלוק הנוכחי.",settings prose,
-dashboard.schedule.explain_eg,e.g. Morning until 8:45 → Ivrit until 9:30 → Recess until 9:45,למשל בוקר עד 8:45 ← עברית עד 9:30 ← הפסקה עד 9:45,settings prose example,mixed UI+content — do not translate {…}
 dashboard.schedule.free,Free,חופשי,weekly grid free-period label,
-dashboard.schedule.hdr_preset,Preset,תבנית,schedule table column header,
-dashboard.schedule.hdr_until,Until,עד,schedule table column header,
-dashboard.schedule.move_down,Move down,הזז למטה,schedule row button title,
-dashboard.schedule.move_down_aria,Move row {n} down,הזז שורה {n} למטה,schedule row button aria,aria-label only
-dashboard.schedule.move_up,Move up,הזז למעלה,schedule row button title,
-dashboard.schedule.move_up_aria,Move row {n} up,הזז שורה {n} למעלה,schedule row button aria,aria-label only
-dashboard.schedule.name_prompt,Schedule name:,שם מערכת שעות:,prompt,
 dashboard.schedule.next_at,at {time},בשעה {time},next block value,
 dashboard.schedule.next_label,Next,הבא,now/next block label,
-dashboard.schedule.no_entries,No entries yet — click + Add.,אין עדיין רשומות — לחצו על + הוסף.,empty state,
 dashboard.schedule.no_school_today,No school today,אין לימודים היום,weekly now-block / preview label for an empty or hidden day,
 dashboard.schedule.now_label,Now,עכשיו,now/next block label,
 dashboard.schedule.nownext_tip,Shows the current period and the upcoming one (with preset names) in the center of the dashboard.,מציג את השיעור הנוכחי ואת הבא (עם שמות התבניות) במרכז לוח המחוונים.,settings tooltip,
@@ -310,17 +299,16 @@ dashboard.schedule.sched_load,Load,טען,saved schedule row button,
 dashboard.schedule.show_countdown,Show countdown to next class,הצג ספירה לאחור לשיעור הבא,settings label,
 dashboard.schedule.show_nownext,Show Now / Next on dashboard,הצג עכשיו / הבא בלוח המחוונים,settings label,
 dashboard.schedule.show_preset_name,Show preset name,הצג שם תבנית,settings label,
-dashboard.schedule.sort_by_time,Sort by time,מיין לפי שעה,validation button,
-dashboard.schedule.sub_input,Schedule Input,הזנת מערכת שעות,settings sub-section header,
-dashboard.schedule.sub_load,Load Schedule,טעינת מערכת שעות,settings sub-section header,
 dashboard.schedule.sub_options,Schedule Sync Options,אפשרויות סנכרון מערכת שעות,settings sub-section header,
 dashboard.schedule.suffix_on_day,(on {day}),(ב{day}),countdown/now-next suffix,{day} is the localized weekday name — do not translate {…}
 dashboard.schedule.suffix_tomorrow,(tomorrow),(מחר),countdown/now-next suffix,
+dashboard.schedule.summary_days_monfri,Mon–Fri,ב׳–ו׳,weekly summary visible-days range,
+dashboard.schedule.summary_days_sunsat,Sun–Sat,א׳–ש׳,weekly summary visible-days range with weekend shown,
+dashboard.schedule.summary_line,{periods} · {days},{periods} · {days},weekly summary line composed of the two translated parts,do not translate {…}
+dashboard.schedule.summary_periods.one,{count} period,שיעור אחד,weekly summary period count,plural
+dashboard.schedule.summary_periods.other,{count} periods,{count} שיעורים,weekly summary period count,plural
 dashboard.schedule.time_left,{time} left,נותרו {time},now block value,
-dashboard.schedule.until_label,until,עד,schedule row inline label,
-dashboard.schedule.warn_duplicate_time,⚠ Two rows end at the same time ({time}).,⚠ שתי שורות מסתיימות באותה שעה ({time}).,validation warning,leading-emoji
-dashboard.schedule.warn_missing_until,⚠ A row is missing an “until” time.,"⚠ לשורה חסרה שעת ""עד"".",validation warning,leading-emoji
-dashboard.schedule.warn_out_of_order,⚠ Rows are out of time order. ,⚠ השורות אינן בסדר כרונולוגי. ,validation warning,leading-emoji
+dashboard.schedule.warn_duplicate_time,⚠ Two periods start at the same time ({time}).,⚠ שני שיעורים מתחילים באותה שעה ({time}).,validation warning,leading-emoji
 dashboard.schedule.warn_unknown_preset,⚠ Preset “{name}” doesn't exist — create it in Presets.,"⚠ התבנית ""{name}"" אינה קיימת — צרו אותה בתבניות.",validation warning,leading-emoji; mixed UI+content — do not translate {…}
 dashboard.schedule.need_presets_hint,Each block switches to a saved preset — create a couple in Presets first.,כל מקטע עובר לתבנית שמורה — צרו כמה בתבניות תחילה.,schedule builder hint shown when only the Default preset exists,
 dashboard.settings.close_aria,Close settings,סגור הגדרות,settings drawer close aria,aria-label only
@@ -414,7 +402,7 @@ dashboard.tour.step5_body,"Everything is customizable here — location, panels,
 dashboard.tour.step5_title,Settings,הגדרות,tour step title,
 dashboard.tour.step6_body,One-tap starter setups — including a general-classroom layout — and save your own presets.,הגדרות התחלה בהקשה אחת — כולל פריסת כיתה כללית — ושמירת תבניות משלכם.,tour step body,
 dashboard.tour.step6_title,Quick-start layouts,פריסות התחלה מהירה,tour step title,
-dashboard.tour.step7_body,"Load your daily schedule and the dashboard switches presets by itself, period by period.","טענו את מערכת השעות היומית ולוח המחוונים יחליף תבניות בעצמו, שיעור אחר שיעור.",tour step body,
+dashboard.tour.step7_body,"Paint your weekly schedule and the dashboard switches presets by itself, period by period.","צבעו את מערכת השעות השבועית ולוח המחוונים יחליף תבניות בעצמו, שיעור אחר שיעור.",tour step body,
 dashboard.tour.step7_title,Schedule Sync,סנכרון מערכת שעות,tour step title,
 dashboard.tour.step_layout_body,"Tap Move panels to rearrange the dashboard — put any panel in either side column, or in the row below. Changes save automatically.","הקישו על הזזת פאנלים כדי לסדר מחדש את הלוח — אפשר למקם כל פאנל בכל עמודה צדדית, או בשורה שמתחת. השינויים נשמרים אוטומטית.",tour step body,
 dashboard.tour.step_layout_title,Rearrange the panels,סידור הפאנלים מחדש,tour step title,

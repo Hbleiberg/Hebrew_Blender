@@ -1075,19 +1075,6 @@
   .preset-name { flex: 1; font-weight: 600; }
 
   /* ───── Schedule Sync ───── */
-  .schedule-row {
-    display: flex; align-items: center; gap: 5px;
-    margin-bottom: 6px;
-  }
-  .schedule-preset-sel {
-    flex: 1; min-width: 0;
-    font-size: 0.78rem; font-family: inherit;
-    padding: 3px 5px;
-    border: 1px solid var(--border); border-radius: 4px;
-    background: var(--white); color: var(--text);
-    cursor: pointer;
-  }
-  body.dark .schedule-preset-sel { background: var(--navy-deep); color: var(--text); border-color: var(--border); }
   .schedule-time-input {
     width: 82px; flex-shrink: 0;
     font-size: 0.78rem; font-family: inherit;
@@ -1102,19 +1089,6 @@
     color: var(--muted); padding: 0 2px;
   }
   .schedule-del-btn:hover { color: #cc3333; }
-  .schedule-move-btn {
-    flex-shrink: 0; background: none; border: none;
-    font-size: 0.6rem; line-height: 1; cursor: pointer;
-    color: var(--muted); padding: 0 1px;
-  }
-  .schedule-move-btn:hover:not(:disabled) { color: var(--gold); }
-  .schedule-move-btn:disabled { opacity: 0.25; cursor: default; }
-  .schedule-until-lbl { font-size: 0.72rem; color: var(--muted); flex-shrink: 0; }
-  /* Derived class name for a period's preset (read-only; omitted when a preset predates class rosters) */
-  .schedule-class-lbl { font-size: 0.68rem; color: var(--muted); font-style: italic;
-    margin: -3px 0 7px 22px; direction: ltr; unicode-bidi: plaintext; }
-  .schedule-row.drag-over { border: 1px solid var(--gold); background: rgba(201,146,42,0.08); border-radius: 4px; }
-  .schedule-row.dragging  { opacity: 0.4; }
   .saved-schedule-list { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
   .drag-handle {
     cursor: grab; color: var(--muted); font-size: 0.85rem;
@@ -1137,8 +1111,6 @@
   body.dark .now-next .nn-val { color: var(--gold-light); }
   .now-next .nn-in { font-size: 0.72rem; color: var(--muted); }
   .now-next .nn-morrow { font-weight: 400; }
-  .sched-explain { font-size: 0.75rem; color: var(--muted); line-height: 1.5; margin: 0 0 12px; }
-  .sched-explain .sched-eg { display: block; margin-top: 4px; color: var(--text); }
   .sched-preview { font-size: 0.72rem; color: var(--muted); margin-top: 8px; padding: 7px 9px; background: var(--cream); border: 1px solid var(--border); border-radius: 6px; line-height: 1.9; }
   body.dark .sched-preview { background: var(--navy-deep); }
   .sched-preview .sched-seg { white-space: nowrap; }
@@ -1154,9 +1126,13 @@
   .schedule-validation .sched-warn { font-size: 0.72rem; color: #b4521f; line-height: 1.4; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   body.dark .schedule-validation .sched-warn { color: #e0a060; }
   .schedule-validation .sched-hint { font-size: 0.72rem; color: var(--muted); line-height: 1.4; }
-  .sched-hdr-row { display: flex; align-items: center; gap: 5px; margin-bottom: 2px; }
-  .sched-hdr { flex: 1; min-width: 0; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
-  .sched-hdr-until { flex: none; width: 82px; }
+  /* Weekly panel summary: mini colored week strip + "8 periods · Mon–Fri" line */
+  .wk-summary { margin-top: 10px; }
+  .wk-strip { display: flex; gap: 3px; }
+  .wk-strip-col { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+  .wk-strip-cell { display: block; height: 7px; border-radius: 2px; }
+  .wk-strip-free { background: transparent; border: 1px dashed var(--border); height: 5px; }
+  .wk-summary-line { font-size: 0.72rem; color: var(--muted); margin-top: 5px; }
   body.fullscreen #scheduleCountdown { font-size: 1.4rem; margin-top: 10px; }
   body.fullscreen .now-next { gap: 44px; margin-top: 16px; }
   body.fullscreen .now-next .nn-val { font-size: 2.1rem; }
@@ -2197,31 +2173,15 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 <div class="panel collapsed" id="schedulePanel">
   <div class="panel-title" data-i18n="dashboard.settings.panel_schedule">Schedule Sync</div>
   <div class="panel-body">
-    <p class="sched-explain">Each row shows a chosen preset <b>until</b> a set time — as the day moves on, the dashboard reconfigures itself to the next preset automatically, and the countdown shows how long is left in the current block.<span class="sched-eg">e.g. <b>Morning</b> until 8:45 → <b>Ivrit</b> until 9:30 → <b>Recess</b> until 9:45</span></p>
     <div class="form-row" style="margin-bottom:12px;">
       <label data-i18n="dashboard.schedule.enable">Enable Schedule Sync</label>
       <label class="toggle"><input type="checkbox" id="scheduleEnabled" onchange="toggleScheduleSync(this.checked)"><span class="slider"></span></label>
     </div>
     <div id="scheduleSyncBody" style="display:none;">
-      <div class="sub-section">
-        <div class="sub-section-hdr" data-i18n="dashboard.schedule.sub_input">Schedule Input</div>
-        <div class="sub-section-body">
-          <div id="scheduleRows"></div>
-          <div id="scheduleValidation" class="schedule-validation" style="display:none;"></div>
-          <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-            <button class="btn-xs" onclick="addScheduleRow()" data-i18n="dashboard.schedule.add">+ Add</button>
-            <button class="btn-xs btn-secondary" onclick="saveScheduleAs()" data-i18n="dashboard.schedule.save_as">Save Schedule As…</button>
-          </div>
-          <div id="schedulePreview" class="sched-preview"></div>
-        </div>
-      </div>
-      <div class="sub-section">
-        <div class="sub-section-hdr" data-i18n="dashboard.schedule.sub_load">Load Schedule</div>
-        <div class="sub-section-body">
-          <div class="saved-schedule-list" id="savedScheduleList"></div>
-        </div>
-      </div>
-      <div class="sub-section">
+      <button class="btn" id="swmOpenBtn" onclick="openWeekEditor()" data-i18n="dashboard.schedule.editor_button">Set up Schedule Sync…</button>
+      <div id="weekSummary" class="wk-summary" style="display:none;"></div>
+      <div id="schedulePreview" class="sched-preview"></div>
+      <div class="sub-section" style="margin-top:12px;">
         <div class="sub-section-hdr" data-i18n="dashboard.schedule.sub_options">Schedule Sync Options</div>
         <div class="sub-section-body">
           <div class="form-row">
@@ -3988,7 +3948,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
   // A schedule arrives from an imported settings blob or a saved-schedule entry — both hand-editable
   // text — so its shape is untrusted. Anything that is not an array of row objects used to throw
-  // inside renderScheduleRows/renderScheduleValidation ("filter is not a function", or "reading
+  // inside the schedule renderers ("filter is not a function", or "reading
   // 'preset'" on a null row), which blanks the Schedule Builder and the saved-schedule list while
   // every schedule is still in storage. Rows themselves are left untouched — the parse they came
   // through already dropped the prototype-polluting keys.
@@ -4224,7 +4184,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   }
 
   // Focus the equivalent move button on a panel's FRESH strip (the rebuild destroyed the node the
-  // user activated), falling back to any enabled button — the moveScheduleRow re-query pattern.
+  // user activated), falling back to any enabled button — re-query after re-render, then focus.
   function _focusPanelMoveBtn(id, act) {
     const strip = document.getElementById(MOVABLE_PANELS[id])?.querySelector(':scope > .pmv-row');
     const btn = strip && (strip.querySelector('.pmv-btn[data-act="' + act + '"]:not(:disabled)') ||
@@ -4460,7 +4420,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     $('countdownShowPresetName').checked = settings.countdownShowPresetName !== false;
     const cpnRow = $('countdownPresetNameRow');
     if (cpnRow) cpnRow.style.display = settings.scheduleShowCountdown ? '' : 'none';
-    if (schedEnabled) { renderScheduleRows(); renderSavedSchedules(); }
+    if (schedEnabled) renderWeekSummary();
   }
 
   function wireFormListeners() {
@@ -5552,38 +5512,6 @@ function mountFolderTree(cfg){
 }
 /* ═══ end folder-tree component ═══ */
 
-function makeSortable(listEl, getKeys, reorderFn, itemSel) {
-    itemSel = itemSel || '.preset-item';
-    let dragSrc = null;
-    listEl.querySelectorAll(itemSel).forEach(item => {
-      item.addEventListener('dragstart', e => {
-        dragSrc = item;
-        item.classList.add('dragging');
-        e.dataTransfer.effectAllowed = 'move';
-      });
-      item.addEventListener('dragend', () => {
-        item.classList.remove('dragging');
-        listEl.querySelectorAll(itemSel).forEach(i => i.classList.remove('drag-over'));
-      });
-      item.addEventListener('dragover', e => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        listEl.querySelectorAll(itemSel).forEach(i => i.classList.remove('drag-over'));
-        if (item !== dragSrc) item.classList.add('drag-over');
-      });
-      item.addEventListener('drop', e => {
-        e.preventDefault();
-        if (!dragSrc || dragSrc === item) return;
-        const keys = getKeys();
-        const fromIdx = [...listEl.querySelectorAll(itemSel)].indexOf(dragSrc);
-        const toIdx   = [...listEl.querySelectorAll(itemSel)].indexOf(item);
-        const reordered = [...keys];
-        reordered.splice(toIdx, 0, reordered.splice(fromIdx, 1)[0]);
-        reorderFn(reordered);
-      });
-    });
-  }
-
   function renderPresets() {
     mountFolderTree({
       treeKey: 'hebrewDashboard_presetsFolders',
@@ -5842,14 +5770,6 @@ else ivritInit();
     return h * 60 + m;
   }
 
-  function getPresetOptions(selectedName) {
-    const names = Object.keys(presets);
-    if (selectedName && !names.includes(selectedName)) names.unshift(selectedName);   // keep an unknown/typo'd value visible instead of silently switching
-    return names.map(name =>
-      `<option value="${esc(name)}"${name === selectedName ? ' selected' : ''}>${esc(name)}</option>`
-    ).join('');
-  }
-
   // Single source of truth for the active/next schedule period — shared by the
   // countdown line, the on-dashboard Now/Next block, the settings preview, and checkSchedule.
   // A weekly grid (settings.scheduleWeek) takes over wholesale; the legacy single-day body below
@@ -6048,120 +5968,46 @@ else ivritInit();
   function renderWeekGrid() {}
   function renderWeekPalette() {}
   function renderWeekValidation() {}
-  function renderWeekSummary() {}
 
-  function renderScheduleRows() {
-    renderScheduleValidation();
-    renderSchedulePreview();
-    const container = document.getElementById('scheduleRows');
-    if (!container) return;
-    const rows = settings.currentSchedule || [];
-    if (!rows.length) {
-      container.innerHTML = '<div style="font-size:0.75rem;color:var(--muted);font-style:italic;padding:4px 0;">' + esc(I18n.t('dashboard.schedule.no_entries')) + '</div>';
-      return;
-    }
-    container.innerHTML = '';
-    const hdr = document.createElement('div');
-    hdr.className = 'sched-hdr-row';
-    hdr.innerHTML =
-      `<span class="drag-handle" style="visibility:hidden">⠿</span>` +
-      `<span class="sched-hdr">${esc(I18n.t('dashboard.schedule.hdr_preset'))}</span>` +
-      `<span class="schedule-until-lbl" style="visibility:hidden">${esc(I18n.t('dashboard.schedule.until_label'))}</span>` +
-      `<span class="sched-hdr sched-hdr-until">${esc(I18n.t('dashboard.schedule.hdr_until'))}</span>` +
-      `<span style="width:16px;flex-shrink:0;"></span>`;
-    container.appendChild(hdr);
-    rows.forEach((entry, i) => {
-      const row = document.createElement('div');
-      row.className = 'schedule-row';
-      row.draggable = true;
-      row.innerHTML =
-        `<span class="drag-handle" title="${esc(I18n.t('dashboard.schedule.drag_reorder'))}">⠿</span>` +
-        `<select class="schedule-preset-sel" onchange="updateScheduleEntry(${i},'preset',this.value)">${getPresetOptions(entry.preset)}</select>` +
-        `<span class="schedule-until-lbl">${esc(I18n.t('dashboard.schedule.until_label'))}</span>` +
-        `<input type="time" class="schedule-time-input" value="${esc(entry.until || '')}" onchange="updateScheduleEntry(${i},'until',this.value)">` +
-        `<button class="schedule-move-btn" title="${esc(I18n.t('dashboard.schedule.move_up'))}" aria-label="${esc(I18n.t('dashboard.schedule.move_up_aria', { n: i + 1 }))}" onclick="moveScheduleRow(${i},-1)"${i === 0 ? ' disabled' : ''}>▲</button>` +
-        `<button class="schedule-move-btn" title="${esc(I18n.t('dashboard.schedule.move_down'))}" aria-label="${esc(I18n.t('dashboard.schedule.move_down_aria', { n: i + 1 }))}" onclick="moveScheduleRow(${i},1)"${i === rows.length - 1 ? ' disabled' : ''}>▼</button>` +
-        `<button class="schedule-del-btn" title="${esc(I18n.t('dashboard.schedule.remove'))}" aria-label="${esc(I18n.t('dashboard.schedule.remove'))}" onclick="removeScheduleRow(${i})">×</button>`;
-      container.appendChild(row);
-      // Show which class this period's preset activates (derived, read-only). Skipped for a preset that
-      // predates class rosters or references a since-deleted class. textContent keeps hostile names inert.
-      const cn = presetClassName(entry.preset);
-      if (cn) {
-        const sub = document.createElement('div');
-        sub.className = 'schedule-class-lbl';
-        sub.textContent = '👥 ' + cn;
-        container.appendChild(sub);
-      }
+  // Panel summary for weekly mode: a mini colored week strip (one column per visible day, one
+  // dot-row per period) + an "8 periods · Mon–Fri" line. Hidden entirely in legacy mode (the
+  // legacy preview line below it still renders there).
+  function renderWeekSummary() {
+    const el = document.getElementById('weekSummary');
+    if (!el) return;
+    const week = settings.scheduleWeek;
+    if (!week) { el.style.display = 'none'; el.textContent = ''; return; }
+    assignPresetColors();   // in-memory only here; persisted on the next natural save
+    el.style.display = '';
+    el.textContent = '';
+    const strip = document.createElement('div');
+    strip.className = 'wk-strip';
+    weekVisibleDays(week).forEach(d => {
+      const col = document.createElement('div');
+      col.className = 'wk-strip-col';
+      col.title = dayName(d);
+      week.periods.forEach((p, i) => {
+        const name = week.cells[WEEK_KEYS[d]][i];
+        const cell = document.createElement('span');
+        cell.className = 'wk-strip-cell' + (name ? '' : ' wk-strip-free');
+        if (name) cell.style.background = presetColor(name);
+        col.appendChild(cell);
+      });
+      strip.appendChild(col);
     });
-    makeSortable(container, () => [...settings.currentSchedule], reordered => {
-      settings.currentSchedule = reordered;
-      _lastScheduleKey = null;
-      saveSettingsToStorage();
-      renderScheduleRows();
-    }, '.schedule-row');
+    el.appendChild(strip);
+    const line = document.createElement('div');
+    line.className = 'wk-summary-line';
+    const n = week.periods.length;
+    line.textContent = I18n.t('dashboard.schedule.summary_line', {
+      periods: I18n.t('dashboard.schedule.summary_periods.' + (n === 1 ? 'one' : 'other'), { count: n }),
+      days: I18n.t(week.weekend ? 'dashboard.schedule.summary_days_sunsat' : 'dashboard.schedule.summary_days_monfri')
+    });
+    el.appendChild(line);
   }
 
-  // Keyboard/touch alternative to drag-reorder (Pass C): swap with the neighbor, then
-  // put focus back on the moved row's button so repeated Enter presses keep walking it.
-  function moveScheduleRow(i, delta) {
-    const rows = settings.currentSchedule || [];
-    const j = i + delta;
-    if (j < 0 || j >= rows.length) return;
-    [rows[i], rows[j]] = [rows[j], rows[i]];
-    _lastScheduleKey = null;
-    saveSettingsToStorage();
-    renderScheduleRows();
-    const moved = document.querySelectorAll('#scheduleRows .schedule-row')[j];
-    const btn = moved && moved.querySelector(delta < 0 ? '.schedule-move-btn:not(:disabled)' : '.schedule-move-btn + .schedule-move-btn:not(:disabled)');
-    if (btn) btn.focus();
-    else if (moved) { const any = moved.querySelector('.schedule-move-btn:not(:disabled)'); if (any) any.focus(); }
-  }
-
-  function addScheduleRow() {
-    if (!settings.currentSchedule) settings.currentSchedule = [];
-    const firstPreset = Object.keys(presets)[0] || '';
-    // Prefill the new row's "until" from the rows above: repeat the previous gap (the teacher's
-    // period length) when two timed rows exist, else +45 min. Stays empty when there's nothing
-    // to go on or the increment would pass midnight — same as before.
-    let until = '';
-    const timed = settings.currentSchedule.filter(e => e.until);
-    if (timed.length) {
-      const last = timeToMins(timed[timed.length - 1].until);
-      const prev = timed.length > 1 ? timeToMins(timed[timed.length - 2].until) : NaN;
-      const gap = (last > prev && last - prev < 12 * 60) ? last - prev : 45;
-      const next = last + gap;
-      if (next < 24 * 60) until = String(Math.floor(next / 60)).padStart(2, '0') + ':' + String(next % 60).padStart(2, '0');
-    }
-    settings.currentSchedule.push({ preset: firstPreset, until });
-    renderScheduleRows();
-    saveSettingsToStorage();
-  }
-
-  function removeScheduleRow(i) {
-    settings.currentSchedule.splice(i, 1);
-    _lastScheduleKey = null;
-    renderScheduleRows();
-    saveSettingsToStorage();
-  }
-
-  function updateScheduleEntry(i, field, value) {
-    if (!settings.currentSchedule[i]) return;
-    settings.currentSchedule[i][field] = value;
-    _lastScheduleKey = null;
-    renderScheduleValidation();
-    renderScheduleUI();
-    saveSettingsToStorage();
-  }
-
-  function saveScheduleAs() {
-    const rows = settings.currentSchedule || [];
-    if (!rows.length) { alert(I18n.t('dashboard.schedule.save_empty')); return; }
-    const name = prompt(I18n.t('dashboard.schedule.name_prompt'));
-    if (!name || !name.trim()) return;
-    savedSchedules[name.trim()] = JSON.parse(JSON.stringify(rows));
-    saveSchedulesStorage();
-    renderSavedSchedules();
-  }
+  // Opens the weekly editor modal (implemented with the modal shell later in this feature build).
+  function openWeekEditor() {}
 
   function renderSavedSchedules() {
     const list = document.getElementById('savedScheduleList');
@@ -6189,7 +6035,7 @@ else ivritInit();
     if (!savedSchedules[name]) return;
     settings.currentSchedule = normalizeSchedule(JSON.parse(JSON.stringify(savedSchedules[name])));
     _lastScheduleKey = null;
-    renderScheduleRows();
+    renderScheduleUI();
     saveSettingsToStorage();
   }
 
@@ -6218,7 +6064,7 @@ else ivritInit();
     settings.scheduleEnabled = enabled;
     const body = document.getElementById('scheduleSyncBody');
     if (body) body.style.display = enabled ? '' : 'none';
-    if (enabled) { renderScheduleRows(); renderSavedSchedules(); }
+    if (enabled) renderWeekSummary();
     _lastScheduleKey = null;
     renderScheduleUI();
     saveSettingsToStorage();
@@ -6409,50 +6255,6 @@ else ivritInit();
       return `<span class="${cls}"${style}>${esc(e.start)}–${esc(e.until)} · <b>${label}</b></span>`;
     });
     el.innerHTML = segs.join('<span class="sched-arrow">→</span>');
-  }
-
-  function renderScheduleValidation() {
-    const el = document.getElementById('scheduleValidation');
-    if (!el) return;
-    const rows = (settings.currentSchedule || []).filter(e => e.preset || e.until);
-    const msgs = [];
-    const unknown = [...new Set(rows.filter(e => e.preset && !presets[e.preset]).map(e => e.preset))];
-    unknown.forEach(name => msgs.push(I18n.t('dashboard.schedule.warn_unknown_preset', { name: esc(name) })));
-    if (rows.some(e => e.preset && !e.until)) msgs.push(I18n.t('dashboard.schedule.warn_missing_until'));
-    const times = rows.map(e => e.until).filter(Boolean);
-    [...new Set(times.filter((t, i) => times.indexOf(t) !== i))]
-      .forEach(t => msgs.push(I18n.t('dashboard.schedule.warn_duplicate_time', { time: esc(t) })));
-    const withTime = rows.filter(e => e.until);
-    let outOfOrder = false;
-    for (let i = 1; i < withTime.length; i++)
-      if (timeToMins(withTime[i].until) < timeToMins(withTime[i - 1].until)) { outOfOrder = true; break; }
-    el.innerHTML = '';
-    // New-teacher nudge: schedule blocks only switch between saved presets, so with just
-    // the seeded "Default" preset there's nothing useful to assign — point them at Presets.
-    const needPresets = Object.keys(presets).length <= 1 && rows.length > 0;
-    if (needPresets) {
-      const h = document.createElement('div'); h.className = 'sched-hint';
-      h.textContent = I18n.t('dashboard.schedule.need_presets_hint');
-      el.appendChild(h);
-    }
-    msgs.forEach(m => { const d = document.createElement('div'); d.className = 'sched-warn'; d.innerHTML = m; el.appendChild(d); });
-    if (outOfOrder) {
-      const d = document.createElement('div'); d.className = 'sched-warn';
-      d.appendChild(document.createTextNode(I18n.t('dashboard.schedule.warn_out_of_order')));
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'btn-xs'; b.textContent = I18n.t('dashboard.schedule.sort_by_time');
-      b.addEventListener('click', sortScheduleByTime);
-      d.appendChild(b); el.appendChild(d);
-    }
-    el.style.display = (needPresets || msgs.length || outOfOrder) ? '' : 'none';
-  }
-
-  function sortScheduleByTime() {
-    settings.currentSchedule = [...(settings.currentSchedule || [])]
-      .sort((a, b) => timeToMins(a.until) - timeToMins(b.until));
-    _lastScheduleKey = null;
-    renderScheduleRows();
-    renderScheduleUI();
-    saveSettingsToStorage();
   }
 
   /* ────────── EDITOR ────────── */
@@ -7292,7 +7094,8 @@ async function onUploadEngFontPick(input){
       try { updateOmerDisplay(); } catch (e) {}
       try { renderStudentPicker(); } catch (e) {}
       try { updatePickerRosterCount(); } catch (e) {}   // roster count is built via t() at init (pre-ready), so it needs a re-render here
-      try { renderScheduleRows(); } catch (e) {}
+      try { renderWeekSummary(); } catch (e) {}
+      try { if (weekEditorOpen()) renderWeekEditor(); } catch (e) {}   // re-label the open weekly editor in place
       try { renderSavedSchedules(); } catch (e) {}
       try { renderPresets(); } catch (e) {}
       try { renderScheduleUI(); } catch (e) {}
