@@ -2366,6 +2366,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     girl:  { yest:'👶',  today:'👧',  tom:'👩' },
   };
 
+  // Weekly Schedule Sync — one shared bell schedule (period start/end times) painted across weekday columns.
+  const WEEK_KEYS = ['sun','mon','tue','wed','thu','fri','sat'];   // index-aligned with Date.getDay() and DAYS
+  const DOW_I18N  = ['dow_sunday','dow_monday','dow_tuesday','dow_wednesday','dow_thursday','dow_friday','dow_saturday'];
+  const HHMM_RE   = /^([01]\d|2[0-3]):[0-5]\d$/;
+  // Okabe–Ito colorblind-safe palette (orange, sky, green, yellow, blue, vermillion, purple, black)
+  const PRESET_PALETTE = ['#e69f00','#56b4e9','#009e73','#f0e442','#0072b2','#d55e00','#cc79a7','#000000'];
+
   const HEB_MONTHS_HE = ['תִּשְרֵי','חֶשְוָן','כִּסְלֵו','טֵבֵת','שְבָט','אֲדָר','אֲדָר א׳','אֲדָר ב׳','נִיסָן','אִיָּר','סִיוָן','תַּמּוּז','אָב','אֱלוּל'];
   const HEB_MONTHS_TRANSLIT = ['Tishrei','Cheshvan','Kislev','Tevet','Shevat','Adar','Adar I','Adar II','Nisan','Iyar','Sivan','Tammuz','Av','Elul'];
 
@@ -2633,6 +2640,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     scheduleShowPeriods: true,
     countdownShowPresetName: true,
     currentSchedule: [],
+    presetColors: {},                 // preset name → '#rrggbb' class color for the weekly grid. (settings.scheduleWeek is deliberately absent here — its presence is what selects the weekly engine.)
     showTextSizeOptions: false,
     engDateSize: 1.35,
     hebDateSize: 2.6,
@@ -2680,9 +2688,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   /* ────────── FIRST-RUN SETUP + STARTER LAYOUTS ────────── */
   // Pristine copy of the shipped defaults, captured before any load mutates `settings`.
   const PRISTINE_DEFAULTS = JSON.parse(JSON.stringify(settings));
-  // Classes/rosters are shared data, not display config — a starter-layout reset must never touch them.
-  // Dropping these keys from the baseline means applyStarter()'s merge leaves rosters/active class alone.
-  ['rosters', 'activeRosterId', 'pickerSessions'].forEach(k => delete PRISTINE_DEFAULTS[k]);
+  // Classes/rosters and per-preset class colors are shared data, not display config — a starter-layout
+  // reset must never touch them. Dropping these keys from the baseline means applyStarter()'s merge
+  // leaves rosters/active class/colors alone. (scheduleWeek is absent from the literal, so it's
+  // naturally absent here too.)
+  ['rosters', 'activeRosterId', 'pickerSessions', 'presetColors'].forEach(k => delete PRISTINE_DEFAULTS[k]);
   // Starter layouts (shared by the first-run card and the Presets panel). Each is a settings-diff
   // applied on tap over the pristine defaults — never injected into the user's preset store.
   const STARTERS = [
@@ -3981,6 +3991,55 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     return Array.isArray(raw) ? raw.filter(e => e && typeof e === 'object' && !Array.isArray(e)) : [];
   }
 
+  // The weekly-grid shape is untrusted for the same reason (settings blob / .ivrit / saved entry).
+  // Returns a normalized week or null (caller deletes the key — absence selects the legacy engine).
+  // An invalid time becomes '' rather than dropping its period: a dropped period would shift every
+  // day's cells against the remaining periods and silently reassign classes; '' sorts last
+  // (timeToMins('') → Infinity) and is surfaced by the editor's validation instead.
+  function normalizeScheduleWeek(raw) {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+    const week = { v: 1, periods: [], weekend: raw.weekend === true, cells: {} };
+    if (Array.isArray(raw.periods)) {
+      week.periods = raw.periods
+        .filter(p => p && typeof p === 'object' && !Array.isArray(p))
+        .map(p => ({
+          start: (typeof p.start === 'string' && HHMM_RE.test(p.start)) ? p.start : '',
+          end:   (typeof p.end   === 'string' && HHMM_RE.test(p.end))   ? p.end   : ''
+        }));
+    }
+    const cells = (raw.cells && typeof raw.cells === 'object' && !Array.isArray(raw.cells)) ? raw.cells : {};
+    WEEK_KEYS.forEach(d => {
+      const col = Array.isArray(cells[d]) ? cells[d] : [];
+      // Unknown preset names are kept — they render as "missing" cells and recover if the preset returns.
+      week.cells[d] = Array.from({ length: week.periods.length },
+        (_, i) => (typeof col[i] === 'string' && col[i]) ? col[i] : null);
+    });
+    sortWeekPeriods(week);
+    return week;
+  }
+
+  // Keep only what an <input type="color"> can produce; anything else is dropped and re-auto-assigned.
+  function normalizePresetColors(raw) {
+    const out = {};
+    if (raw && typeof raw === 'object' && !Array.isArray(raw))
+      for (const k in raw)
+        if (Object.prototype.hasOwnProperty.call(raw, k) &&
+            typeof raw[k] === 'string' && /^#[0-9a-fA-F]{6}$/.test(raw[k])) out[k] = raw[k];
+    return out;
+  }
+
+  // Stable-sort periods by start time and apply the SAME permutation to every day's cells array so
+  // assignments never shift against their period. Returns null when nothing moved, else the
+  // permutation (new index i held old index order[i] — the editor maps focus through it).
+  function sortWeekPeriods(week) {
+    const order = week.periods.map((_, i) => i)
+      .sort((a, b) => (timeToMins(week.periods[a].start) - timeToMins(week.periods[b].start)) || (a - b));
+    if (order.every((o, i) => o === i)) return null;
+    week.periods = order.map(i => week.periods[i]);
+    WEEK_KEYS.forEach(d => { week.cells[d] = order.map(i => week.cells[d][i]); });
+    return order;
+  }
+
   function synthesizePanelLayoutFromVideoLayout(vl) {
     const out = JSON.parse(JSON.stringify(DEFAULT_PANEL_LAYOUT));
     if (vl === 'sidebar') {
@@ -4628,15 +4687,20 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       forcedActiveId = resolveLegacyRosterToClass(s.roster, opts.presetName);
     }
     // Preserve schedule configuration — it must never be overwritten by loading a display preset
+    // (Schedule Sync applies presets, so a preset carrying schedule state would clobber the very
+    // schedule driving it; presetColors is shared class data on the same footing as rosters).
     const savedSchedule = {
       scheduleEnabled:        settings.scheduleEnabled,
       scheduleShowCountdown:  settings.scheduleShowCountdown,
       scheduleShowPeriods:    settings.scheduleShowPeriods,
       countdownShowPresetName: settings.countdownShowPresetName,
       currentSchedule:        settings.currentSchedule,
+      scheduleWeek:           settings.scheduleWeek,
+      presetColors:           settings.presetColors,
     };
     ivritSafeAssign(settings, s);   // presets carry no `rosters` key, so settings.rosters survives the merge
     Object.assign(settings, savedSchedule);
+    if (!settings.scheduleWeek) delete settings.scheduleWeek;   // the restore materializes an undefined-valued key when no week exists; presence checks stay truthiness-based
     // Panel layout: an old snapshot's ONLY layout opinion is the video's sidebar/below position
     // (it predates panelLayout). Honor just that — reposition the video within the CURRENT layout
     // — rather than resetting the user's other panels to default (Schedule Sync auto-applies
@@ -4697,7 +4761,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     delete out.pickerSessions;   // ephemeral per-class pick/absent state never travels in presets, share codes, or .ivrit exports
     // Rosters are SHARED across presets (a preset stores only which class is active). Keep them in
     // .ivrit / AllTools backups (opts omitted) but strip them from preset snapshots (opts.forPreset).
-    if (opts && opts.forPreset) delete out.rosters;
+    // Same for the weekly schedule + class colors: a preset must not embed the schedule that switches
+    // presets (self-reference) nor the shared color map.
+    if (opts && opts.forPreset) { delete out.rosters; delete out.scheduleWeek; delete out.presetColors; }
     return out;
   }
 
@@ -4722,6 +4788,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     } catch (e) {}
     settings.panelLayout = normalizePanelLayout(settings.panelLayout);
     settings.currentSchedule = normalizeSchedule(settings.currentSchedule);
+    settings.scheduleWeek = normalizeScheduleWeek(settings.scheduleWeek);
+    if (!settings.scheduleWeek) delete settings.scheduleWeek;   // presence selects the weekly engine — never leave a falsy husk
+    settings.presetColors = normalizePresetColors(settings.presetColors);
     migrateRostersInSettings();   // one-time: fold a legacy single roster into a named class (idempotent)
   }
 
@@ -5257,6 +5326,15 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function deletePreset(name) {
     if (!confirm(I18n.t('dashboard.preset.delete_confirm', { name: name }))) return;
     delete presets[name];
+    // Weekly-grid housekeeping: drop the class color; cells keep the name (rendered as "missing",
+    // recoverable if the preset is re-created).
+    if (settings.presetColors && settings.presetColors[name] !== undefined) {
+      delete settings.presetColors[name];
+      saveSettingsToStorage();
+    }
+    _lastPreviewKey = null;
+    renderWeekSummary();
+    renderSchedulePreview();
     savePresetsStorage();
     renderPresets();
   }
@@ -5264,6 +5342,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     if (!presets[name]) return;
     const nn = ftDuplicateName(name, x => presets[x] !== undefined);
     presets[nn] = JSON.parse(JSON.stringify(presets[name]));
+    if (settings.presetColors && settings.presetColors[name]) {   // the copy keeps the class color; recolor via the palette swatch
+      settings.presetColors[nn] = settings.presetColors[name];
+      saveSettingsToStorage();
+    }
     savePresetsStorage();
     ftInsertAfter('hebrewDashboard_presetsFolders', name, nn);
     renderPresets();
@@ -5577,7 +5659,21 @@ function makeSortable(listEl, getKeys, reorderFn, itemSel) {
       if (sf) ftImportTree('hebrewDashboard_schedulesFolders', sf, mode === 'replace');
       if ((sch || sf) && typeof renderSavedSchedules === 'function') renderSavedSchedules();
       const ls = data.liveState || data.dashboardSettings;
-      if (ls && Object.keys(ls).length) { applySettings(ls); saveSettingsToStorage(); }
+      if (ls && Object.keys(ls).length) {
+        applySettings(ls);
+        // applySettings preserves the live schedule keys (a display preset must never clobber them),
+        // so restore the weekly grid + class colors from the file explicitly — validated, never raw.
+        const wk = normalizeScheduleWeek(ls.scheduleWeek);
+        if (wk) settings.scheduleWeek = wk;
+        else if (mode === 'replace') delete settings.scheduleWeek;
+        const pc = normalizePresetColors(ls.presetColors);
+        settings.presetColors = mode === 'replace' ? pc : Object.assign({}, settings.presetColors || {}, pc);
+        _lastScheduleKey = null; _lastPreviewKey = null; _lastNowNextKey = null;
+        renderWeekSummary();
+        renderScheduleUI();
+        if (weekEditorOpen()) renderWeekEditor();
+        saveSettingsToStorage();
+      }
     }
   };
 
@@ -5785,6 +5881,62 @@ else ivritInit();
     const c = settings.rosters && settings.rosters[snap.activeRosterId];
     return c ? c.name : '';
   }
+
+  /* ── Weekly grid: per-preset class colors ── */
+  // Deterministic auto-assignment: walk presets in insertion order, give each unassigned preset the
+  // first palette color not yet in use; when all are taken, cycle from the top. Returns whether
+  // anything was assigned (callers persist only then).
+  function assignPresetColors() {
+    if (!settings.presetColors) settings.presetColors = {};
+    const used = new Set(Object.values(settings.presetColors));
+    let changed = false, spill = 0;
+    Object.keys(presets).forEach(name => {
+      if (settings.presetColors[name]) return;
+      let c = PRESET_PALETTE.find(x => !used.has(x));
+      if (!c) c = PRESET_PALETTE[spill++ % PRESET_PALETTE.length];
+      settings.presetColors[name] = c;
+      used.add(c);
+      changed = true;
+    });
+    return changed;
+  }
+  // Only trust a valid 6-digit hex (what the swatch picker produces) — the map can arrive from an
+  // imported blob and the value lands inside style="" strings (same guard as getNikudColor).
+  function presetColor(name) {
+    const c = settings.presetColors && settings.presetColors[name];
+    return (typeof c === 'string' && /^#[0-9a-fA-F]{6}$/.test(c)) ? c : '#9e9e9e';
+  }
+  // WCAG relative luminance → readable label color on a colored cell. 0.179 is the crossover where
+  // contrast against black overtakes contrast against white.
+  function contrastText(hex) {
+    const ch = i => { const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+                      return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+    const L = 0.2126 * ch(1) + 0.7152 * ch(3) + 0.0722 * ch(5);
+    return L > 0.179 ? '#000' : '#fff';
+  }
+  function dayName(i) { return I18n.t('dashboard.days.' + DOW_I18N[i]); }
+  function weekVisibleDays(week) { return week.weekend ? [0, 1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5]; }
+
+  // EVERY scheduleWeek/presetColors mutation funnels through here: live-save, reset the three
+  // render caches (the _lastScheduleKey discipline), and refresh every consuming surface.
+  function weekChanged(opts) {
+    _lastScheduleKey = null; _lastPreviewKey = null; _lastNowNextKey = null;
+    saveSettingsToStorage();
+    if (!(opts && opts.skipGrid)) renderWeekGrid();
+    renderWeekPalette();
+    renderWeekValidation();
+    renderWeekSummary();
+    renderScheduleUI();
+  }
+
+  // ── Weekly editor render surface (bodies filled in by the editor build steps) ──
+  function weekEditorOpen() { const m = document.getElementById('swmModal'); return !!(m && m.classList.contains('open')); }
+  function renderWeekEditor() {}
+  function renderWeekGrid() {}
+  function renderWeekPalette() {}
+  function renderWeekValidation() {}
+  function renderWeekSummary() {}
+
   function renderScheduleRows() {
     renderScheduleValidation();
     renderSchedulePreview();
