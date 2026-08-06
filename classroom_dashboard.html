@@ -1337,6 +1337,30 @@
   .fr-skip:hover, .fr-tour:hover { text-decoration: underline; }
   @media (max-width: 560px) { .fr-starters { grid-template-columns: 1fr; } }
 
+  /* ── Weekly Schedule Sync editor (modal stacked over the settings drawer) ──
+     z 560/561: above the drawer (100) it opens from, below the first-run card (600) and the
+     body-appended .ft-move-menu / #tipFloat (9999), which must float over it. Display-toggle
+     only — no transition, so nothing to neutralize for reduced motion. */
+  .swm-backdrop { position: fixed; inset: 0; background: rgba(13,18,32,0.6); z-index: 560; display: none; }
+  .swm-backdrop.open { display: block; }
+  .swm-modal { position: fixed; z-index: 561; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: min(920px, 94vw); max-height: 90vh; overflow: auto; background: var(--white); color: var(--text);
+    border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-lg); padding: 22px 24px; display: none; }
+  .swm-modal.open { display: block; }
+  body.dark .swm-modal { background: var(--navy-deep); }
+  .swm-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 10px 0 8px; }
+  .swm-weekend { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; cursor: pointer; color: var(--text); }
+  .swm-weekend input { accent-color: var(--gold); width: 14px; height: 14px; cursor: pointer; }
+  .swm-gridwrap { overflow-x: auto; }
+  .swm-grid { display: grid; grid-template-columns: auto repeat(var(--swm-days, 5), minmax(88px, 1fr)) auto; gap: 3px; min-width: 540px; align-items: stretch; }
+  .swm-grid, .swm-palette { user-select: none; }
+  /* Sticky time column survives the horizontal grid scroll; logical inset → correct side in RTL */
+  .swm-timecell { position: sticky; inset-inline-start: 0; z-index: 1; background: var(--white); }
+  body.dark .swm-timecell { background: var(--navy-deep); }
+  .swm-saverow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 6px; }
+  .swm-saverow input { flex: 1; min-width: 150px; max-width: none; }
+  .swm-footer { display: flex; justify-content: flex-end; margin-top: 14px; }
+
   /* ── In-place dashboard text editing ── */
   #dashTextWrap { position: relative; }
   .dash-edit-pencil { position: absolute; top: 4px; right: 4px; z-index: 5; width: 34px; height: 34px;
@@ -1665,6 +1689,37 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <a href="#" class="fr-skip" onclick="frSkip();return false;" data-i18n="dashboard.setup.skip">Skip for now</a>
     <a href="#" class="fr-tour" id="frTourLink" style="display:none;" onclick="frDismiss();tourStart();return false;" data-i18n="dashboard.tour.firstrun_link">Take a tour →</a>
   </div>
+</div>
+<!-- ───── Weekly Schedule Sync editor ───── -->
+<div class="swm-backdrop" id="swmBackdrop" onclick="closeWeekEditor()"></div>
+<div class="swm-modal" id="swmModal" role="dialog" aria-modal="true" aria-labelledby="swmTitle">
+  <button class="fr-close" onclick="closeWeekEditor()" aria-label="Close" data-i18n-aria-label="dashboard.schedule.editor_close_aria">✕</button>
+  <h2 class="fr-h" id="swmTitle" data-i18n="dashboard.schedule.editor_title">Set up Schedule Sync</h2>
+  <p class="fr-sub" data-i18n="dashboard.schedule.editor_sub">Pick a class below, then click or drag across the grid to paint its periods. Changes save automatically.</p>
+  <div id="swmImportCard" class="swm-import" style="display:none;"></div>
+  <div id="swmEditorBody">
+    <div id="swmPalette" class="swm-palette" role="toolbar" aria-label="Class palette" data-i18n-aria-label="dashboard.schedule.palette_aria"></div>
+    <div class="swm-toolbar">
+      <label class="swm-weekend"><input type="checkbox" id="swmWeekend" onchange="setWeekWeekend(this.checked)"><span data-i18n="dashboard.schedule.show_weekend">Show weekend</span></label>
+      <button class="btn-xs" id="swmAddPeriod" onclick="addWeekPeriod()" data-i18n="dashboard.schedule.add_period">+ Add period</button>
+    </div>
+    <div class="swm-gridwrap">
+      <div id="swmGrid" class="swm-grid" role="group" aria-label="Weekly schedule grid" data-i18n-aria-label="dashboard.schedule.grid_aria"></div>
+    </div>
+    <div id="swmValidation" class="schedule-validation" style="display:none;"></div>
+  </div>
+  <div class="sub-section" style="margin-top:14px;">
+    <div class="sub-section-hdr" data-i18n="dashboard.schedule.sub_saved">Saved Schedules</div>
+    <div class="sub-section-body">
+      <div class="swm-saverow">
+        <input type="text" id="swmSaveName" placeholder="Schedule name" data-i18n-placeholder="dashboard.schedule.save_name_placeholder" aria-label="Schedule name" data-i18n-aria-label="dashboard.schedule.save_name_placeholder" oninput="onWeekSaveNameInput()">
+        <button class="btn btn-xs" id="swmSaveBtn" onclick="saveWeekScheduleAs()" data-i18n="dashboard.schedule.save_as">Save Schedule As…</button>
+      </div>
+      <div id="swmSaveNote" class="schedule-validation" role="status" aria-live="polite" style="display:none;"></div>
+      <div class="saved-schedule-list" id="savedScheduleList"></div>
+    </div>
+  </div>
+  <div class="swm-footer"><button class="btn" onclick="closeWeekEditor()" data-i18n="dashboard.schedule.editor_done">Done</button></div>
 </div>
 <!-- ───── Guided tour coach-mark (non-modal spotlight) ───── -->
 <div class="tour-spot" id="tourSpot" hidden></div>
@@ -5962,12 +6017,46 @@ else ivritInit();
     renderScheduleUI();
   }
 
-  // ── Weekly editor render surface (bodies filled in by the editor build steps) ──
+  // ── Weekly editor ──
   function weekEditorOpen() { const m = document.getElementById('swmModal'); return !!(m && m.classList.contains('open')); }
-  function renderWeekEditor() {}
+
+  // Mode select: an existing week → the grid editor; legacy rows with no week → the one-time
+  // import offer (grid hidden until the teacher chooses); neither → the blank-state editor.
+  function renderWeekEditor() {
+    if (!weekEditorOpen()) return;
+    const offerMode = !settings.scheduleWeek &&
+      (settings.currentSchedule || []).some(e => e && e.preset && e.until);
+    document.getElementById('swmImportCard').style.display = offerMode ? '' : 'none';
+    document.getElementById('swmEditorBody').style.display = offerMode ? 'none' : '';
+    if (offerMode) {
+      renderWeekImportOffer();
+    } else {
+      renderWeekPalette();
+      renderWeekGrid();
+      renderWeekValidation();
+    }
+    renderSavedSchedules();
+  }
+
+  // scheduleWeek is created ONLY by explicit editor actions (import / start blank / a first grid
+  // edit) — never by merely opening the modal, so closing without choosing leaves legacy mode intact.
+  function ensureWeek() {
+    if (!settings.scheduleWeek) settings.scheduleWeek = normalizeScheduleWeek({ v: 1, periods: [], weekend: false, cells: {} });
+    return settings.scheduleWeek;
+  }
+
+  function setWeekWeekend(on) {
+    ensureWeek().weekend = !!on;
+    weekChanged();
+  }
+
   function renderWeekGrid() {}
   function renderWeekPalette() {}
   function renderWeekValidation() {}
+  function renderWeekImportOffer() {}
+  function addWeekPeriod() {}
+  function saveWeekScheduleAs() {}
+  function onWeekSaveNameInput() {}
 
   // Panel summary for weekly mode: a mini colored week strip (one column per visible day, one
   // dot-row per period) + an "8 periods · Mon–Fri" line. Hidden entirely in legacy mode (the
@@ -6006,8 +6095,33 @@ else ivritInit();
     el.appendChild(line);
   }
 
-  // Opens the weekly editor modal (implemented with the modal shell later in this feature build).
-  function openWeekEditor() {}
+  // Dialog mechanics — the #pickOverlay pattern: a document-level CAPTURE keydown whose Escape
+  // stops propagation, so the bubble-phase Escape handler never closes the settings drawer
+  // stacked underneath; Tab wraps via the shared _trapTabWithin; focus returns to the opener.
+  let _swmOpener = null;
+  function weekEditorKey(e) {
+    if (e.key === 'Escape') { e.stopPropagation(); closeWeekEditor(); return; }
+    _trapTabWithin(document.getElementById('swmModal'), e);
+  }
+  function openWeekEditor() {
+    if (_activeEditable) exitInPlaceEdit(true);   // one edit surface at a time (mirrors openSettings)
+    if (assignPresetColors()) saveSettingsToStorage();
+    _swmOpener = document.activeElement;
+    document.getElementById('swmBackdrop').classList.add('open');
+    document.getElementById('swmModal').classList.add('open');
+    renderWeekEditor();
+    document.addEventListener('keydown', weekEditorKey, true);
+    const c = document.querySelector('#swmModal .fr-close'); if (c) c.focus();
+  }
+  function closeWeekEditor() {
+    document.getElementById('swmBackdrop').classList.remove('open');
+    document.getElementById('swmModal').classList.remove('open');
+    document.removeEventListener('keydown', weekEditorKey, true);
+    renderWeekSummary();       // the panel behind catches up (Done and ✕ are the same — live-save)
+    renderSchedulePreview();
+    const o = _swmOpener; _swmOpener = null;
+    if (o && o.focus) { try { o.focus(); } catch (e) {} }
+  }
 
   function renderSavedSchedules() {
     const list = document.getElementById('savedScheduleList');
