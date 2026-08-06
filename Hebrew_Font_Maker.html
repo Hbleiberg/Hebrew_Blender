@@ -9873,7 +9873,7 @@ function renderKerningSection() {
       <input type="text" dir="rtl" maxlength="2" ${s.cls ? 'disabled' : ''} value="${esc(kernSideDisplay(s))}"
         oninput="setKernGlyph('${which}', this.value)" placeholder="–" aria-label="${esc(sideLabel)}"
         style="width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:5px;padding:5px;font-size:1.2rem;text-align:center;background:var(--white);color:var(--text);font-family:var(--heb-font);">
-      <select onchange="setKernClass('${which}', this.value)" style="width:100%;box-sizing:border-box;margin-top:4px;border:1px solid var(--border);border-radius:5px;padding:4px;font-size:0.72rem;background:var(--white);color:var(--text);">
+      <select onchange="setKernClass('${which}', this.value)" aria-label="${esc(sideLabel)}" style="width:100%;box-sizing:border-box;margin-top:4px;border:1px solid var(--border);border-radius:5px;padding:4px;font-size:0.72rem;background:var(--white);color:var(--text);">
         <option value=""       ${s.cls===''       ? 'selected' : ''}>${I18n.t('fontmaker.panels.kern_single_glyph')}</option>
         <option value="finals" ${s.cls==='finals' ? 'selected' : ''}>${I18n.t('fontmaker.panels.kern_finals')}</option>
         <option value="desc"   ${s.cls==='desc'   ? 'selected' : ''}>${I18n.t('fontmaker.panels.kern_descenders')}</option>
