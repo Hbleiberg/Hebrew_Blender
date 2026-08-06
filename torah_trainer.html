@@ -4707,13 +4707,16 @@ function applyDisplayClasses() {
 
 function wireSettingsForm() {
   // Cantillation + nikkud
+  // verseCopyText() strips te'amim/nikkud to match the display toggles, so the bulk-copy
+  // preview goes stale the moment either one flips — and "Copy All" would put marks on the
+  // clipboard that the screen no longer shows. Re-run it alongside the re-render.
   document.getElementById('optShowCantillation').addEventListener('change', e => {
     settings.showCantillation = e.target.checked;
-    saveSettings(); renderText();
+    saveSettings(); renderText(); updateCopyTextarea();
   });
   document.getElementById('optShowNikkud').addEventListener('change', e => {
     settings.showNikkud = e.target.checked;
-    saveSettings(); renderText();
+    saveSettings(); renderText(); updateCopyTextarea();
   });
   document.querySelectorAll('input[name="optClickAction"]').forEach(r => {
     r.addEventListener('change', e => {
