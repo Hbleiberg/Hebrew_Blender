@@ -889,6 +889,7 @@ function exportAllSettings() {
     hebFont:             localStorage.getItem('hebrewBlender_hebFont') || '',
     hebFontSize:         localStorage.getItem('hebrewBlender_hebFontSize') || '',
     livePreview:         localStorage.getItem('hebrewBlender_livePreview') || '',
+    fmLastAuthor:        localStorage.getItem('hebrewFontMaker_lastAuthor') || '',
     wordLists:           lsJSON('ivritSuite_wordLists', { v: 1, lists: {} }),
     userFonts:           _fontsBackupCache || [],
   };
@@ -976,6 +977,7 @@ async function importAllSettings() {
     if (parsed.hebFont)     localStorage.setItem('hebrewBlender_hebFont',     parsed.hebFont);
     if (parsed.hebFontSize) localStorage.setItem('hebrewBlender_hebFontSize', parsed.hebFontSize);
     if (parsed.livePreview) localStorage.setItem('hebrewBlender_livePreview', parsed.livePreview);
+    if (parsed.fmLastAuthor) localStorage.setItem('hebrewFontMaker_lastAuthor', parsed.fmLastAuthor);
     if (parsed.wordLists) {
       wlMergeIntoStorage(parsed.wordLists, false);
     }
@@ -1020,7 +1022,6 @@ function eraseAllSettings() {
     'hebrewFlashCards_tourSeen',
     // one-time UI flags: export-exempt, but "erase means fresh start" clears them all
     'hebrewBlender_tourSeen',
-    'hebrewBlender_welcomeSeen',
     'hebrewDashboard_tourSeen',
     'hebrewDashboard_setupSeen',
     'hebrewTorahTrainer_tourSeen',
@@ -1029,6 +1030,7 @@ function eraseAllSettings() {
     'hebrewFontMaker_tourDone',
     'hebrewFontMaker_mobileWarnDismissed',
     'hebrewFontMaker_inputMode',
+    'hebrewFontMaker_lastAuthor',
     'hebrewTorahTrainer_settings',
     'hebrewTropeTutor_settings',
     'hebrewTropeTutor_progress',
@@ -1080,6 +1082,7 @@ const IVRIT_CFG = {
       hebFont:             localStorage.getItem('hebrewBlender_hebFont') || '',
       hebFontSize:         localStorage.getItem('hebrewBlender_hebFontSize') || '',
       livePreview:         localStorage.getItem('hebrewBlender_livePreview') || '',
+      fmLastAuthor:        localStorage.getItem('hebrewFontMaker_lastAuthor') || '',
       wordLists:           lsJSON('ivritSuite_wordLists', { v: 1, lists: {} }),
       userFonts:           _fontsBackupCache || []
     };
@@ -1124,6 +1127,7 @@ const IVRIT_CFG = {
     if (data.hebFont)     { localStorage.setItem('hebrewBlender_hebFont',     data.hebFont);     touched = true; }
     if (data.hebFontSize) { localStorage.setItem('hebrewBlender_hebFontSize', data.hebFontSize); touched = true; }
     if (data.livePreview) { localStorage.setItem('hebrewBlender_livePreview', data.livePreview); touched = true; }
+    if (data.fmLastAuthor) { localStorage.setItem('hebrewFontMaker_lastAuthor', data.fmLastAuthor); touched = true; }
     if (data.userFonts && Array.isArray(data.userFonts) && window.indexedDB) {
       data.userFonts.forEach(uf => { try { saveUserFont(uf.name, _ivB64ToBytes(uf.b64), uf.family); } catch (e) {} });
       refreshFontsBackupCache(); touched = true;

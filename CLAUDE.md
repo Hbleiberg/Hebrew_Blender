@@ -226,6 +226,7 @@ UI language does NOT add a printed/projected content language.)
 | `inputMode` | `hebrewBlender_inputMode` | Backup UI preference: `'auto'` (.ivrit file) or `'manual'` (text block) — see ".ivrit Save Files" below |
 | `hebFont` / `hebFontSize` | `hebrewBlender_hebFont` / `_hebFontSize` | Shared Generator+Dictionary display prefs (selected Hebrew font + size); scalar strings, empty = never-set (skipped on import) |
 | `livePreview` | `hebrewBlender_livePreview` | Generator live-preview toggle (`'1'`/`'0'`); scalar string, empty = never-set (skipped on import) |
+| `fmLastAuthor` | `hebrewFontMaker_lastAuthor` | Font Maker onboarding wizard's remembered author name; scalar string, empty = never-set (skipped on import) |
 
 ### Rule: any new tool with persistent data must be added here
 
@@ -763,9 +764,13 @@ One-time nudges / setup cards / starter layouts, each gated by a `hebrew<Tool>_<
 they show **once** and never again; never a modal wall, never an auto-launching tour.
 - **Implemented on:** `classroom_dashboard.html` (`STARTERS` starter-layout card, `hebrewDashboard_setupSeen`),
   `hebrew_blend_generator.html` (`QUICK_START_RECIPES` quick-start drawer/chips), and `Hebrew_Font_Maker.html`
-  (welcome modal via `hebrewBlender_welcomeSeen` + `hebrewFontMaker_mobileWarnDismissed`).
+  (mobile warning via `hebrewFontMaker_mobileWarnDismissed`; the old welcome card + `hebrewBlender_welcomeSeen`
+  were replaced by the new-font onboarding wizard — see the Font Maker section).
 - **Rule:** gate every first-run affordance behind its own `*_seen`/`*_dismissed` flag (which is
-  export-exempt but erase-cleared — see the localStorage flag guidance above).
+  export-exempt but erase-cleared — see the localStorage flag guidance above). **Deliberate exception:**
+  the Font Maker's onboarding wizard is a *launcher*, not a nudge — it opens on every fresh start with
+  no restorable autosave ("autosave wins": the Continue/Start-fresh prompt always runs first, and
+  Continue never shows it), so it is intentionally not gated by a seen-flag.
 
 ### 7. Keyboard / touch parity
 Documented keyboard shortcuts get visible `<kbd>` hint rows (surfaced on keyboard-capable devices);
@@ -809,13 +814,27 @@ The changelog is the list of `<li><strong>vX.Y</strong> —…` entries inside `
 suffix). For multi-feature work, batch **one** combined bump + entry at the end — not one per feature.
 
 ### Backup exemption + localStorage keys
-The Font Maker is deliberately **NOT** in the index.html AllTools export/import/erase — its project
-data doesn't fit the presets model. Its keys are local-only: `hebrewFontMaker_uiPrefs` (workspace UI
+The Font Maker's **project data** is deliberately **NOT** in the index.html AllTools export/import/erase —
+it doesn't fit the presets model. Its keys are local-only: `hebrewFontMaker_uiPrefs` (workspace UI
 prefs JSON blob — read/modify/write via `wsReadPrefs()`; put new persistent UI prefs **here**, not in
 new bare keys), `hebrewFontMaker_tourDone`, `hebrewFontMaker_inputMode`, `hebrewFontMaker_recentProjects`,
 `hebrewFontMaker_mobileWarnDismissed`, `hebrewFontMaker_autosave` (image-stripped fallback). Primary
 autosave is **IndexedDB** db `hebrewFontMaker`, store `autosave` (gzip blob, id `'current'`). Shared
-site-wide keys it also reads: `hebrewBlender_darkMode`, `hebrewBlender_welcomeSeen`.
+site-wide key it also reads: `hebrewBlender_darkMode`. **One AllTools exception:**
+`hebrewFontMaker_lastAuthor` (the onboarding wizard's remembered author name — a scalar identity pref
+like `hebFont`, not project data) IS registered in all five AllTools sites as `fmLastAuthor`.
+
+### New-font onboarding wizard (`#wizardOverlay`)
+Replaces the old welcome card. Boot runs one launch decision from the `I18n.ready`-gated
+`maybeRestoreAutosave()`: restorable snapshot → the Continue/Start-fresh prompt (Continue never shows
+the wizard); Start fresh or no snapshot → `wizardOpen('gate')` (Esc/backdrop inert — no-op `closeFn` +
+no backdrop `onclick`; the header's "Open a project ▾" is the exit; loading any project closes it via
+`applyProjectData`). Toolbar **New** = `wizardOpen('new')` (cancellable; Esc/backdrop/Cancel leave the
+current project untouched — nothing is discarded until "Create font"). `_launchDecided` makes the boot
+decision one-shot; the mobile-warn deferral baton (`_autosavePromptDeferred`) now resumes
+`maybeRestoreAutosave` directly. `aCloseModal` re-arms the wizard's focus trap after a stacked modal
+(help/`askModal`) closes over it; `udShortcutBlocked()` includes `wizardOverlay`. The wizard's finish
+handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMode`) — keep it that way.
 
 ### UI primitives — never hand-roll these
 - **Modals**: `.overlay`/`.modal` markup opened via `aOpenModal(id, closeFn)` / closed via
@@ -1695,6 +1714,9 @@ HTML). Verify changes end-to-end by driving the real page headless. Proven recip
   ```
 - Dismiss auto-open modals before testing:
   `document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open'))`.
+  (On the Font Maker, a clean profile now auto-opens the `#wizardOverlay` onboarding gate after
+  `I18n.ready` resolves — the same sweep clears it, but wait for it to appear first if your test
+  needs the post-boot state.)
 - Font Maker fixtures: a traced letter's contours are `[{points: [[x,y], …]}]` — renderers like
   `glyphPathAt` read `.points`, and wrong shapes throw deep inside `renderSpacingPreview`. To test
   export paths offline, stub `window.loadPyodide` with a fake returning

@@ -656,6 +656,47 @@
   .tour-card .tbtn.ghost { color: var(--text); border-color: var(--border); }
   .tour-card .tbtn:disabled { opacity: 0.4; cursor: default; }
 
+  /* ── New-font onboarding wizard ── */
+  .wiz-modal { max-width: 560px; max-height: 92vh; overflow-y: auto; }
+  .wiz-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .wiz-head h3 { margin: 0; }
+  .wiz-steps { display: flex; align-items: center; gap: 6px; margin: 12px 0 14px; }
+  .wiz-dot { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; background: var(--warm-gray); color: var(--muted); border: 1px solid var(--border); }
+  .wiz-dot.active { background: var(--gold); color: #fff; border-color: var(--gold); }
+  .wiz-dot.done { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .wiz-dot-sep { flex: 0 0 14px; height: 1px; background: var(--border); }
+  .wiz-step-title { font-family: 'Libre Baskerville', serif; font-size: 0.92rem; margin: 0 0 12px; }
+  .wiz-field-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin: 14px 0 6px; }
+  .wiz-step .chk { margin: 6px 0; }
+  .wiz-seg { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; position: relative; }
+  .wiz-seg input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
+  .wiz-seg label { padding: 6px 16px; font-size: 0.8rem; cursor: pointer; background: var(--white); }
+  .wiz-seg input:checked + label { background: var(--navy); color: #fff; }
+  .wiz-seg input:focus-visible + label { outline: 2px solid var(--gold); outline-offset: -2px; }
+  .wiz-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .wiz-tile { position: relative; display: flex; flex-direction: column; }
+  .wiz-tile input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
+  .wiz-tile label, .wiz-tile-disabled { display: flex; flex-direction: column; gap: 4px; flex: 1; border: 1.5px solid var(--border); border-radius: 8px; padding: 11px 12px; background: var(--white); text-align: start; font-size: 0.8rem; line-height: 1.35; }
+  .wiz-tile label { cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+  .wiz-tile label:hover { border-color: var(--gold); }
+  .wiz-tile input:checked + label { border-color: var(--gold); background: rgba(201,146,42,0.09); }
+  .wiz-tile input:focus-visible + label { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .wiz-tile-desc { font-size: 0.71rem; color: var(--muted); line-height: 1.4; }
+  .wiz-tile-link { background: none; border: none; padding: 0; margin: 6px 12px 0; align-self: start; font: inherit; font-size: 0.71rem; color: var(--gold); font-weight: 700; cursor: pointer; text-decoration: underline; }
+  .wiz-tile-link:hover { filter: brightness(1.1); }
+  .wiz-tile-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 3px; }
+  .wiz-tile-disabled { opacity: 0.55; cursor: not-allowed; }
+  .wiz-soon { align-self: flex-start; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; background: var(--warm-gray); color: var(--muted); border-radius: 4px; padding: 2px 6px; margin-bottom: 2px; }
+  .wiz-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .wiz-foot .mbtns { margin-top: 0; margin-inline-start: auto; }
+  .wiz-note { font-size: 0.74rem; color: var(--muted); }
+  .wiz-note[hidden] { display: none; }
+  .wiz-foot-note { font-size: 0.72rem; color: var(--muted); line-height: 1.4; margin: 14px 0 0; border-top: 1px dashed var(--border); padding-top: 8px; }
+  .tbtn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+  @keyframes wizFlash { 0%, 100% { box-shadow: 0 0 0 0 rgba(201,146,42,0); } 50% { box-shadow: 0 0 0 4px rgba(201,146,42,0.55); } }
+  .wiz-flash { animation: wizFlash 0.85s ease-in-out 3; border-radius: 6px; }
+  @media (max-width: 640px) { .wiz-tiles { grid-template-columns: 1fr; } }
+
   /* ── Font-engine background-load badge (next to Export) ── */
   .engine-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 0.72rem; color: var(--muted); font-weight: 600; white-space: nowrap; }
   .engine-badge[hidden] { display: none; }
@@ -1382,16 +1423,90 @@
   </div>
 </div>
 
-<div class="overlay" id="welcomeOverlay" onclick="if(event.target===this)dismissWelcome(false)">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle" style="max-width:460px;text-align:center;">
-    <h3 id="welcomeTitle" data-i18n="fontmaker.modals.welcome_title">✍️ Welcome to the Hebrew Font Maker</h3>
-    <p data-i18n="fontmaker.modals.welcome_body">Turn your own handwriting into a real, installable Hebrew font — trace each letter, place the nikkud &amp; trop, then export TTF/WOFF2 (or save it straight into your other IvritSuite tools). New here? The guide walks through every step.</p>
-    <label class="chk" style="justify-content:center;margin:14px 0 0;">
-      <input type="checkbox" id="welcomeDontShow"> <span data-i18n="fontmaker.modals.welcome_dontshow">Don't show this again</span>
-    </label>
-    <div class="mbtns" style="justify-content:center;">
-      <button class="tbtn" onclick="dismissWelcome(true)" data-i18n="fontmaker.modals.welcome_take_tour">Take a tour →</button>
-      <button class="tbtn ghost" onclick="dismissWelcome(false)" data-i18n="fontmaker.modals.welcome_start_tracing">Start tracing</button>
+<!-- New-font onboarding wizard: gate mode on fresh boot (Esc/backdrop inert — no backdrop close in
+     gate; see wizardBackdrop), cancellable mode from toolbar New. Replaces the old welcome card. -->
+<div class="overlay" id="wizardOverlay" onclick="if(event.target===this)wizardBackdrop()">
+  <div class="modal wiz-modal" role="dialog" aria-modal="true" aria-labelledby="wizTitle">
+    <div class="wiz-head">
+      <h3 id="wizTitle" data-i18n="fontmaker.wizard.title">✍️ Create a new font</h3>
+      <button class="tbtn ghost" id="wizOpenProject" onclick="toggleLoadMenu(event)" data-i18n="fontmaker.wizard.open_project">Open a project ▾</button>
+      <button class="tbtn ghost" id="wizCancelBtn" onclick="wizardCancel()" data-i18n="fontmaker.wizard.cancel" hidden>Cancel</button>
+    </div>
+    <div class="wiz-steps" aria-hidden="true">
+      <span class="wiz-dot" data-step="1">1</span><span class="wiz-dot-sep"></span><span class="wiz-dot" data-step="2">2</span><span class="wiz-dot-sep"></span><span class="wiz-dot" data-step="3">3</span>
+    </div>
+
+    <section id="wizStep1" class="wiz-step" aria-labelledby="wizStep1Title">
+      <h4 id="wizStep1Title" class="wiz-step-title" data-i18n="fontmaker.wizard.step1_title">Step 1 of 3 — Name your font</h4>
+      <label class="fld"><span data-i18n="fontmaker.wizard.name_label">Font name</span>
+        <input type="text" id="wizName" oninput="wizardValidateStep1()" placeholder="My Hebrew Hand" data-i18n-placeholder="fontmaker.wizard.name_ph">
+      </label>
+      <label class="fld"><span data-i18n="fontmaker.panels.author">Author</span>
+        <input type="text" id="wizAuthor" oninput="wizardValidateStep1()" placeholder="Your name" data-i18n-placeholder="fontmaker.panels.author_ph">
+      </label>
+      <label class="fld"><span><span data-i18n="fontmaker.panels.license">License</span> <a class="fld-help" onclick="openHelp('licenses')" title="About these licenses" data-i18n-title="fontmaker.panels.license_help_title">?</a></span>
+        <select id="wizLicense">
+          <option value="cc0" data-i18n="fontmaker.panels.license_cc0">Public Domain (CC0) — most open</option>
+          <option value="ofl" selected data-i18n="fontmaker.panels.license_ofl">SIL Open Font License 1.1 (recommended)</option>
+          <option value="mit" data-i18n="fontmaker.panels.license_mit">MIT License</option>
+          <option value="arr" data-i18n="fontmaker.panels.license_arr">All Rights Reserved — most strict</option>
+        </select>
+      </label>
+      <p class="wiz-foot-note" data-i18n="fontmaker.wizard.later_footnote">You can change any of this later — it all lives in Font Details and Advanced Settings.</p>
+    </section>
+
+    <section id="wizStep2" class="wiz-step" aria-labelledby="wizStep2Title" hidden>
+      <h4 id="wizStep2Title" class="wiz-step-title" data-i18n="fontmaker.wizard.step2_title">Step 2 of 3 — Choose attributes</h4>
+      <div class="wiz-field-label" data-i18n="fontmaker.panels.style">Style</div>
+      <div class="wiz-seg" role="radiogroup" aria-label="Style" data-i18n-aria-label="fontmaker.panels.style">
+        <input type="radio" id="wizStyleRegular" name="wizStyle" value="regular" checked>
+        <label for="wizStyleRegular" data-i18n="fontmaker.panels.style_regular">Regular</label>
+        <input type="radio" id="wizStyleBold" name="wizStyle" value="bold">
+        <label for="wizStyleBold" data-i18n="fontmaker.panels.style_bold">Bold</label>
+      </div>
+      <p class="hint" style="margin-top:6px;" data-i18n="fontmaker.panels.style_title">Pick Bold to export this project as the Bold style of the same family — install the Regular and Bold files together and the B button switches between them.</p>
+      <div class="wiz-field-label" data-i18n="fontmaker.wizard.marks_label">Marks</div>
+      <label class="chk"><input type="checkbox" id="wizNikkud" checked> <span data-i18n="fontmaker.wizard.nikkud_toggle">Nikkud (vowel points)</span></label>
+      <label class="chk"><input type="checkbox" id="wizTrop"> <span data-i18n="fontmaker.wizard.trope_toggle">Trope (cantillation marks)</span></label>
+      <div class="wiz-field-label" data-i18n="fontmaker.wizard.alphabets_label">Extra alphabets</div>
+      <label class="chk"><input type="checkbox" id="wizEnglish"> <span data-i18n="fontmaker.panels.adv_add_english">Add English letters</span></label>
+      <label class="chk"><input type="checkbox" id="wizYiddish"> <span data-i18n="fontmaker.panels.adv_add_yiddish">Add Yiddish glyphs</span></label>
+      <label class="chk"><input type="checkbox" id="wizLadino"> <span data-i18n="fontmaker.panels.adv_add_ladino">Add Ladino glyphs</span></label>
+      <p class="wiz-foot-note" data-i18n="fontmaker.wizard.later_footnote">You can change any of this later — it all lives in Font Details and Advanced Settings.</p>
+    </section>
+
+    <section id="wizStep3" class="wiz-step" aria-labelledby="wizStep3Title" hidden>
+      <h4 id="wizStep3Title" class="wiz-step-title" data-i18n="fontmaker.wizard.step3_title">Step 3 of 3 — Choose your source</h4>
+      <div class="wiz-tiles" role="radiogroup" aria-label="How will you add your letters?" data-i18n-aria-label="fontmaker.wizard.source_group_aria">
+        <div class="wiz-tile">
+          <input type="radio" id="wizSrcSingle" name="wizSource" value="single" checked>
+          <label for="wizSrcSingle"><strong data-i18n="fontmaker.wizard.src_single_title">Individual pictures</strong><span class="wiz-tile-desc" data-i18n="fontmaker.wizard.src_single_desc">One photo or scan per letter.</span></label>
+        </div>
+        <div class="wiz-tile">
+          <input type="radio" id="wizSrcCombined" name="wizSource" value="combined">
+          <label for="wizSrcCombined"><strong data-i18n="fontmaker.wizard.src_combined_title">One picture with all letters</strong><span class="wiz-tile-desc" data-i18n="fontmaker.wizard.src_combined_desc">Write every letter on one sheet and upload a single photo.</span></label>
+          <button type="button" class="wiz-tile-link" onclick="downloadTemplate('letters','pdf')" data-i18n="fontmaker.wizard.src_combined_pdf">Print a template sheet (PDF)</button>
+        </div>
+        <div class="wiz-tile">
+          <input type="radio" id="wizSrcFont" name="wizSource" value="font">
+          <label for="wizSrcFont"><strong data-i18n="fontmaker.wizard.src_font_title">Existing font file</strong><span class="wiz-tile-desc" data-i18n="fontmaker.wizard.src_font_desc">Import letters ready-made from a font file — skip tracing.</span></label>
+        </div>
+        <div class="wiz-tile wiz-tile-disabled" role="radio" aria-checked="false" aria-disabled="true">
+          <span class="wiz-soon" data-i18n="fontmaker.wizard.src_drawing_soon">Coming soon</span>
+          <strong data-i18n="fontmaker.wizard.src_drawing_title">Drawing mode</strong>
+          <span class="wiz-tile-desc" data-i18n="fontmaker.wizard.src_drawing_desc">Draw letters right in the browser — in development.</span>
+        </div>
+      </div>
+      <label class="chk" style="margin-top:12px;"><input type="checkbox" id="wizTour"> <span data-i18n="fontmaker.wizard.tour_after">Show me around after setup</span></label>
+    </section>
+
+    <div class="wiz-foot">
+      <span id="wizNextNote" class="wiz-note" aria-live="polite" hidden data-i18n="fontmaker.wizard.next_need_name_author">Enter a font name and author to continue.</span>
+      <div class="mbtns">
+        <button class="tbtn ghost" id="wizBack" onclick="wizardBack()" data-i18n="fontmaker.wizard.back" hidden>Back</button>
+        <button class="tbtn" id="wizNext" onclick="wizardNext()" data-i18n="fontmaker.wizard.next">Next</button>
+        <button class="tbtn" id="wizCreate" onclick="wizardCreate()" data-i18n="fontmaker.wizard.create" hidden>Create font</button>
+      </div>
     </div>
   </div>
 </div>
@@ -2157,9 +2272,8 @@ function newProject() {
   syncMetaToForm(); renderGrids(); setWorkMode('align'); status(I18n.t('fontmaker.status.new_project'));
   _projectDirty = false; clearTimeout(_autosaveTimer);   // fresh project: not dirty (boot keeps any snapshot so the prompt can still offer prior work)
 }
-function newProjectFresh() {   // toolbar "New" → user explicitly starts over: also drop the continuity snapshot
-  autosaveDiscard();
-  newProject();
+function newProjectFresh() {   // toolbar "New" → the onboarding wizard, cancellable: nothing is
+  wizardOpen('new');           // discarded until "Create font" runs (Esc/backdrop/Cancel = untouched)
 }
 /* ── Item indirection: the Align/Trace workspace operates on a generic "item" =
    a letter OR a nikkud/trop mark. curLetter() stays as an alias so existing
@@ -2471,6 +2585,10 @@ function aCloseModal(id) {
   const ret = (_activeModal && _activeModal.id === id) ? _activeModal.opener : null;
   if (_activeModal && _activeModal.id === id) _activeModal = null;
   if (ret && ret.focus) { try { ret.focus(); } catch (e) {} }
+  // _activeModal is a single slot: a modal stacked over the onboarding wizard (help via the
+  // license "?", the template-PDF failure askModal) steals it, and closing that modal would
+  // leave the still-open wizard with no Escape/Tab trap — hand it back.
+  if (id !== 'wizardOverlay' && document.getElementById('wizardOverlay')?.classList.contains('open')) wizardRearmTrap();
 }
 document.addEventListener('keydown', e => {
   // Active modal takes priority: trap Tab + Escape-to-close.
@@ -2505,7 +2623,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.6';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.7';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2717,6 +2835,8 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.7</strong> — <strong>A guided start for every new font.</strong> Starting a font now opens a three-step setup: name your font and yourself and pick a license, choose Regular or Bold plus nikkud, trope and extra alphabets, then say how your letters will arrive — one picture per letter, one sheet with all of them (with the printable template a click away), or an existing font file. Your work still comes first: if you left a project mid-trace, the "Continue where you left off" prompt appears before anything else. The toolbar's <span class="ui">New</span> button now opens the same setup and no longer wipes your current project until you actually create the new one — closing it changes nothing. And a "Show me around after setup" checkbox starts the tour the moment you land in the editor. <span style="color:var(--muted);">(August 2026)</span></li>
+      <li><strong>v5.6</strong> — <strong>Your font, one click from a worksheet.</strong> Saving a font to <span class="ui">My IvritSuite Fonts</span> used to be the end of the road: the window told you to "pick them in any IvritSuite tool's font selector", but nothing took you there. Each saved font now has a <span class="ui">Use in Worksheet Generator</span> link that opens the generator with that font already chosen, so you can see your letters on a real worksheet straight away. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.5</strong> — <strong>Your dagesh customizations, really in the exported font.</strong> A deep export audit found three quiet bugs in one chain: the OpenType rules that compose dotted letters (בּ, וֹ, וּ and friends) were accidentally inheriting a filter meant only for שׁ/שׂ, so in modern apps they never fired; a shin's own custom dagesh had no composed שּׁ/שּׂ form at all; and the pre-download shaping check couldn't load its engine, so it silently skipped instead of catching any of this. All three are fixed: exports now build the real שּׁ/שּׂ characters (U+FB2C/U+FB2D) from your dotted shin plus your own dagesh, every dagesh combination composes even with a vowel between the letter and the dot in the typed text, a new שּׁ chip joins the <span class="ui">Spacing</span> test combos, and the shaping check now genuinely runs — verifying שּׁ, בּ and בָּ before your font downloads. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.4</strong> — <strong>Two ḥolams, two homes.</strong> The dot of a vowel vav (וֹ, as in שָׁלוֹם) and the small dot of a consonantal vav (וֺ, as in מִצְוֺת written ḥaser) are different characters — and now each has its own editor. The new <span class="ui">Holam Haser</span> tile on the vav's <span class="ui">Above</span> step places and reshapes the mitzvot-style dot, while the וֹ tile keeps styling the combined vowel form, with a note in each explaining which typed keys reach which. A new וֺ chip joins the <span class="ui">Spacing</span> test combos so you can see both side by side, and every export now verifies that a typed vav + ḥolam really composes into your וֹ form. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.3</strong> — <strong>Dotted shin &amp; sin, done right everywhere.</strong> <span class="ui">Check stacking</span> now shows and measures שׁ/שׂ exactly as the exported font composes them: the dot appears at its true Special-forms position and size, the vowel you're placing is measured at the form's holam slot (shown in blue), and stale or impossible pairings no longer draw or warn — so no more false "overlaps" alarms nudging you to shrink dots that were fine. The <span class="ui">QA sheet</span> follows suit: dot columns on ש measure at the form's anchors, and the <span class="ui">Two marks</span> tab no longer offers pairings that can't exist. The dotted forms are easier to find, too: שׁ, שׂ, וֹ, וּ, בּ and friends now sit as tiles right in the vowel picker, replacing the redundant generic tile, one click from their editor. New chips under the <span class="ui">Spacing</span> sample insert hard-to-type test combos — שֹׁ, שֹׂ, וֹ, וּ — and a typed וֹ previews with its own Holam&nbsp;(vav) size and position. Also fixed: a failed shaping-check download no longer silently stays off for the whole session — it retries on your next export. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -2812,7 +2932,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -2820,8 +2940,8 @@ function buildAboutBody() {
     const kk = 'fontmaker.changelog.' + v, s = T(kk);
     return (s && s !== kk) ? '<li>' + esc(s) + '</li>' : '';
   }).join('');
-  const cur = T('fontmaker.changelog.v5_6');   // newest release shown on top; older v5_x fall into the history list
-  const v5li = (cur && cur !== 'fontmaker.changelog.v5_6') ? '<li>' + esc(cur) + '</li>' : '';
+  const cur = T('fontmaker.changelog.v5_7');   // newest release shown on top; older v5_x fall into the history list
+  const v5li = (cur && cur !== 'fontmaker.changelog.v5_7') ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
        + '<p>' + esc(T('fontmaker.about.special_thanks')) + '</p>'
        + '<h4>' + esc(T('fontmaker.about.changelog_heading')) + '</h4>'
@@ -10770,6 +10890,7 @@ function udShortcutBlocked() {
   if (document.getElementById('helpOverlay')?.classList.contains('open')) return true;
   if (document.getElementById('qaOverlay')?.classList.contains('open')) return true;
   if (document.getElementById('adOverlay')?.classList.contains('open')) return true;
+  if (document.getElementById('wizardOverlay')?.classList.contains('open')) return true;   // esp. cancellable mode — Ctrl+Z must not mutate the project behind it
   return false;
 }
 /* Ctrl/Cmd+Z = undo · Ctrl/Cmd+Shift+Z or Ctrl+Y = redo */
@@ -13474,6 +13595,10 @@ async function applyProjectData(data) {           // shared by file-load and "Lo
   syncMetaToForm(); renderGrids(); _setWorkMode(_defaultStepForCur());   // reopen an already-traced first letter directly on Edit points
   markClean();          // a freshly loaded project is a known-good state — clear the dirty flag
   autosaveNow();        // …and make the continuity snapshot reflect what was just loaded
+  _launchDecided = true;   // a loaded project settles the boot launch decision
+  // Loading a project always dismisses the onboarding wizard (gate mode's "Open a project ▾",
+  // or a load raced during boot) — without applying any wizard fields.
+  if (document.getElementById('wizardOverlay')?.classList.contains('open')) { _wizardMode = null; aCloseModal('wizardOverlay'); }
   return true;
 }
 /* ── Recent projects: a local-only localStorage cache powering the "Load Project ▾" menu.
@@ -13602,28 +13727,35 @@ function _autosaveRelTime(iso) {
   const h = Math.round(m / 60); if (h < 24) return h + (h === 1 ? ' hour' : ' hours') + ' ago';
   const d = Math.round(h / 24); return d + (d === 1 ? ' day' : ' days') + ' ago';
 }
-let _autosavePromptDeferred = false;   // set when the restore prompt was held back behind a first-run dialog/tour
+let _autosavePromptDeferred = false;   // set when the boot launch decision was held back behind a first-run dialog/tour
+let _launchDecided = false;   // one-shot: the boot launch flow ran (or a project load / wizard Create preempted it)
+/* Boot launch decision ("autosave wins"): a restorable snapshot → the Continue / Start-fresh
+   prompt (Continue never shows the wizard); Start fresh or no snapshot → the new-font wizard in
+   gate mode. Dismissing the prompt with Escape deliberately stays inert (today's behavior): the
+   editor keeps the boot project and the wizard is reachable via toolbar New. */
 async function maybeRestoreAutosave() {
+  if (_launchDecided) return;
+  // Don't stack on a first-run dialog, the wizard, or the guided tour. The guard runs BEFORE the
+  // snapshot lookup because the no-snapshot branch now opens the gate wizard — it must be
+  // deferrable behind the mobile warning too.
+  if (document.getElementById('mobileWarnOverlay').classList.contains('open')
+      || document.getElementById('wizardOverlay').classList.contains('open')
+      || _tourActive) { _autosavePromptDeferred = true; return; }
+  _autosavePromptDeferred = false;
   let rec = null, data = null, stripped = false;
   try { rec = await autosaveGet(); } catch (e) {}
   if (rec && rec.gz) { try { data = ivritSafeParse(await gunzipText(rec.gz)); } catch (e) { data = null; } }
   if (!data) {   // IndexedDB miss → try the stripped localStorage fallback
     try { const raw = localStorage.getItem('hebrewFontMaker_autosave'); if (raw) { data = ivritSafeParse(raw); stripped = true; } } catch (e) {}
   }
-  if (!data || data.format !== 'hebrew-font-maker-project') return;
-  // Don't stack on a first-run dialog or the guided tour — the same deferral maybeShowWelcome()
-  // uses for the mobile warning. Storage cleared unevenly (empty localStorage but a surviving
-  // IndexedDB autosave) otherwise opens the welcome card and this prompt at once.
-  if (document.getElementById('welcomeOverlay').classList.contains('open')
-      || document.getElementById('mobileWarnOverlay').classList.contains('open')
-      || _tourActive) { _autosavePromptDeferred = true; return; }
-  _autosavePromptDeferred = false;
+  _launchDecided = true;
+  if (!data || data.format !== 'hebrew-font-maker-project') { wizardOpen('gate'); return; }
   askModal(I18n.t('fontmaker.modals.continue_title'),
     I18n.t('fontmaker.modals.continue_body', {time: `<b>${_autosaveRelTime((rec && rec.savedAt) || data.savedAt)}</b>`})
     + (stripped ? '<br><span class="warn">' + I18n.t('fontmaker.modals.continue_stripped') + '</span>' : '')
     + '<br><span style="color:var(--muted);font-size:0.82rem;">' + I18n.t('fontmaker.modals.continue_untouched') + '</span>',
     [ { label: I18n.t('fontmaker.modals.continue'), onClick: async () => { if (await applyProjectData(data)) status(I18n.t('fontmaker.status.reopened_recent')); } },
-      { label: I18n.t('fontmaker.modals.start_fresh'), cls: 'ghost', onClick: () => autosaveDiscard() } ]);
+      { label: I18n.t('fontmaker.modals.start_fresh'), cls: 'ghost', onClick: () => { autosaveDiscard(); wizardOpen('gate'); } } ]);
 }
 function migrateProject(data) {
   // ensure all 27 letters exist & fields present (forward-compatible)
@@ -13759,21 +13891,124 @@ function dismissMobileWarn(goBack){
   }
   if (goBack){ if (history.length > 1) history.back(); else location.href = '/'; return; }
   aCloseModal('mobileWarnOverlay');
-  maybeShowWelcome();   // on mobile the welcome was deferred behind this warning — show it now
-  // If the welcome was skipped (already seen) the deferred restore prompt has no other
-  // re-offer path — the same partially-cleared-storage class the deferral itself guards.
-  if (_autosavePromptDeferred && !document.getElementById('welcomeOverlay').classList.contains('open')) maybeRestoreAutosave();
-}
-function maybeShowWelcome(){
-  try { if (localStorage.getItem('hebrewBlender_welcomeSeen') === '1') return; } catch(e){}
-  if (document.getElementById('mobileWarnOverlay').classList.contains('open')) return;   // don't stack — deferred until the mobile warning is dismissed
-  aOpenModal('welcomeOverlay', () => dismissWelcome(false));
-}
-function dismissWelcome(openGuide){
-  if (document.getElementById('welcomeDontShow').checked) { try { localStorage.setItem('hebrewBlender_welcomeSeen', '1'); } catch(e){} }
-  aCloseModal('welcomeOverlay');
-  if (openGuide) { tourStart(); return; }   // tourEnd re-offers any deferred restore prompt
+  // The boot launch decision (restore prompt or the new-font wizard) was deferred behind this
+  // warning — resume it now.
   if (_autosavePromptDeferred) maybeRestoreAutosave();
+}
+
+/* ── New-font onboarding wizard ──
+   Gate mode ('gate'): opened by the boot launch flow (maybeRestoreAutosave) on a fresh start —
+   Esc and backdrop are inert (name/author/license are required before work begins), and the
+   header's "Open a project ▾" is the escape hatch. Cancellable mode ('new'): opened by toolbar
+   New — Esc / backdrop / Cancel return to the current project completely untouched; the old
+   project is only discarded when "Create font" runs. Wizard fields are wizard-local until then. */
+let _wizardMode = null, _wizardStep = 1, _wizardOpener = null;
+function wizardOpen(mode){
+  _wizardMode = mode; _wizardOpener = document.activeElement;
+  // Prefill from a fresh project's defaults + the remembered author + the saved input-mode pref.
+  document.getElementById('wizName').value = '';
+  let author = '';
+  try { author = localStorage.getItem('hebrewFontMaker_lastAuthor') || ''; } catch(e){}
+  document.getElementById('wizAuthor').value = author;
+  document.getElementById('wizLicense').value = 'ofl';
+  document.getElementById('wizStyleRegular').checked = true;
+  document.getElementById('wizNikkud').checked = true;
+  ['wizTrop','wizEnglish','wizYiddish','wizLadino','wizTour'].forEach(id => { document.getElementById(id).checked = false; });
+  let im = null;
+  try { im = localStorage.getItem('hebrewFontMaker_inputMode'); } catch(e){}
+  if (im !== 'single' && im !== 'combined' && im !== 'font') im = 'single';
+  document.getElementById({ single: 'wizSrcSingle', combined: 'wizSrcCombined', font: 'wizSrcFont' }[im]).checked = true;
+  document.getElementById('wizOpenProject').hidden = (mode !== 'gate');
+  document.getElementById('wizCancelBtn').hidden = (mode !== 'new');
+  aOpenModal('wizardOverlay', mode === 'new' ? wizardCancel : () => {});   // gate mode: Escape is inert
+  wizardShowStep(1);
+}
+function wizardShowStep(n){
+  _wizardStep = n;
+  for (let i = 1; i <= 3; i++) document.getElementById('wizStep' + i).hidden = (i !== n);
+  document.querySelectorAll('#wizardOverlay .wiz-dot').forEach(d => {
+    const s = +d.dataset.step;
+    d.classList.toggle('active', s === n); d.classList.toggle('done', s < n);
+  });
+  document.getElementById('wizBack').hidden = (n === 1);
+  document.getElementById('wizNext').hidden = (n === 3);
+  document.getElementById('wizCreate').hidden = (n !== 3);
+  wizardValidateStep1();
+  // Focus the step's first control (the checked radio for the tile/segment steps) after
+  // aOpenModal's own setTimeout(0) focus pass — the openShortcuts precedent.
+  setTimeout(() => { try {
+    const sec = document.getElementById('wizStep' + n);
+    (sec.querySelector('input:checked') || sec.querySelector('input, select')).focus();
+  } catch (e) {} }, 30);
+}
+function wizardValidateStep1(){
+  const ok = document.getElementById('wizName').value.trim() !== ''
+          && document.getElementById('wizAuthor').value.trim() !== '';
+  const blocked = (_wizardStep === 1 && !ok);
+  document.getElementById('wizNext').setAttribute('aria-disabled', blocked ? 'true' : 'false');
+  document.getElementById('wizNextNote').hidden = !blocked;
+  return ok;
+}
+function wizardNext(){
+  if (_wizardStep === 1 && !wizardValidateStep1()) { try { document.getElementById('wizName').focus(); } catch (e) {} return; }
+  if (_wizardStep < 3) wizardShowStep(_wizardStep + 1);
+}
+function wizardBack(){ if (_wizardStep > 1) wizardShowStep(_wizardStep - 1); }
+function wizardBackdrop(){ if (_wizardMode === 'new') wizardCancel(); }   // gate mode: backdrop is inert
+function wizardCancel(){
+  aCloseModal('wizardOverlay');
+  _wizardMode = null;
+  if (_autosavePromptDeferred) maybeRestoreAutosave();   // resume a boot decision this wizard preempted
+}
+// Re-arm the wizard's focus trap after a stacked modal (help / askModal) closes over it —
+// _activeModal is a single slot, so the stacked modal's close would otherwise leave the
+// still-open wizard with no Escape/Tab handling. Called from aCloseModal.
+function wizardRearmTrap(){
+  _activeModal = { id: 'wizardOverlay', close: _wizardMode === 'new' ? wizardCancel : () => {}, opener: _wizardOpener };
+}
+function wizardCreate(){
+  if (!wizardValidateStep1()) { wizardShowStep(1); return; }
+  const name = document.getElementById('wizName').value.trim();
+  const author = document.getElementById('wizAuthor').value.trim();
+  const license = document.getElementById('wizLicense').value;
+  const style = document.getElementById('wizStyleBold').checked ? 'bold' : 'regular';
+  const nikkudOn = document.getElementById('wizNikkud').checked;
+  const tropOn = document.getElementById('wizTrop').checked;
+  const eng = document.getElementById('wizEnglish').checked;
+  const yid = document.getElementById('wizYiddish').checked;
+  const lad = document.getElementById('wizLadino').checked;
+  const srcSel = document.querySelector('#wizStep3 input[name="wizSource"]:checked');
+  const src = srcSel ? srcSel.value : 'single';
+  const tour = document.getElementById('wizTour').checked;
+  if (_wizardMode === 'new') { autosaveDiscard(); newProject(); }   // gate mode already sits on boot's blank project
+  project.font.familyName = name; project.font.reservedFontName = name;
+  project.font.author = author; project.font.license = license; project.font.style = style;
+  try { localStorage.setItem('hebrewFontMaker_lastAuthor', author); } catch (e) {}
+  syncMetaToForm();
+  setMarkEnabled('nikkud', nikkudOn);
+  setMarkEnabled('trop', tropOn);
+  if (eng) setAddEnglishLetters(true);
+  if (yid) setAddYiddish(true);
+  if (lad) setAddLadino(true);
+  setInputMode(src);      // persists the pref + renderControls/renderStage (which re-runs updateTabs)
+  setCatTab('letter');    // catTab survives newProject() — make the letter grid the visible panel
+  _launchDecided = true; _autosavePromptDeferred = false;
+  _wizardMode = null;
+  aCloseModal('wizardOverlay');
+  status(I18n.t('fontmaker.wizard.created_toast', { name }));   // textContent sink — esc() would double-escape
+  markDirty();   // the named-but-empty project becomes tomorrow's "Continue where you left off" snapshot
+  if (tour) { tourStart(); return; }   // the tour's first step already spotlights the letter grid
+  // Guide the first action: briefly flash the source-appropriate target (never .click() a file
+  // input — the async chain could lose the user-gesture context). Targets are rebuilt by
+  // renderControls, so resolve them after the setters' re-renders settle.
+  setTimeout(() => { try {
+    const el = document.getElementById(src === 'font' ? 'fontDrop' : src === 'combined' ? 'combinedDrop' : 'letterDrop')
+            || document.getElementById('letterGrid');
+    if (!el) return;
+    el.scrollIntoView({ block: 'center' });
+    el.classList.add('wiz-flash');
+    setTimeout(() => el.classList.remove('wiz-flash'), 2700);
+  } catch (e) {} }, 80);
 }
 // Apply the current letter's alignment transform to other letters (one undoable batch).
 function openApplyAlign(){
@@ -13880,7 +14115,6 @@ function copyOutlineDo(){
 function init() {
   initDark();
   maybeShowMobileWarn();   // small-screen "best on desktop" splash (once, unless dismissed)
-  maybeShowWelcome();      // first-launch welcome (bails if the mobile warning is showing; re-fires when that's dismissed)
   // stage drag move/up live once on the persistent <svg> (handles transform drag)
   const sv = stage();
   sv.addEventListener('pointerdown', onStageBgPointerDown);   // node-mode marquee / Alt-insert (early-returns in other modes)
