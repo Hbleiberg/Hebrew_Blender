@@ -4591,7 +4591,7 @@ function getSettings() {
     // differing ids across devices / list re-creation). Imported words are not persisted
     // in presets (only embedded inline in ?s= share links — see serializeSettings).
     rwSource,
-    selectedWordListNames: [...selectedWordListIds].map(id => wlGetListName(id)).filter(Boolean),
+    selectedWordListNames: wlNamesForIds(selectedWordListIds),
     rwBingoGrid:       document.getElementById('rwBingoGrid').value,
     rwBingoCards:      document.getElementById('rwBingoCards').value,
     rwBingoPerPage:    document.getElementById('rwBingoPerPage').value,
@@ -10133,6 +10133,18 @@ function wlNameIndex() {          // { name: id } — last occurrence wins on co
 function wlGetListName(id) {
   const l = wlReadStoreLocal().lists[id];
   return l ? String(l.name || 'Untitled list') : null;
+}
+// Same lookup for a whole SET of ids, against ONE store read. getSettings() resolves every
+// selected list id to its name, and saveSettings() calls getSettings() on every control
+// change — going through wlGetListName per id re-parses the entire ivritSuite_wordLists blob
+// once per selected list, so the cost grows with the teacher's saved vocabulary.
+function wlNamesForIds(ids) {
+  const arr = [...ids];
+  if (!arr.length) return [];   // nothing selected → don't read the store at all (as before)
+  const lists = wlReadStoreLocal().lists;
+  const out = [];
+  for (const id of arr) { const l = lists[id]; if (l) out.push(String(l.name || 'Untitled list')); }
+  return out;
 }
 
 // Convert a stored/imported word entry into the Real Words corpus shape the drills expect.
