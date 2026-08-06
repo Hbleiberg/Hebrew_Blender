@@ -210,8 +210,8 @@ UI language does NOT add a printed/projected content language.)
 |---|---|---|
 | `generatorPresets` | `hebrewBlender_presets` | Hebrew Blend Generator saved presets |
 | `dashboardPresets` | `hebrewDashboard_presets` | Classroom Dashboard saved presets |
-| `dashboardSchedules` | `hebrewDashboard_schedules` | Classroom Dashboard saved schedules |
-| `dashboardSettings` | `hebrewDashboard_settings` | All Classroom Dashboard settings (zoom, video URL, header size, Jewish-calendar widget toggles `showHolidayCountdown`/`showShabbatTimes` (Shabbat times reuse the weather `location`), Timer toggles `showTimer`/`showTimerFullscreen`, Omer toggles `showOmerCounter`/`showOmerEnglish`/`showOmerProgress`, etc.) |
+| `dashboardSchedules` | `hebrewDashboard_schedules` | Classroom Dashboard saved schedules (legacy single-day `[{preset,until}]` arrays AND v2 weekly entries `{v:2, week:{…}}` — both shapes coexist in the same map) |
+| `dashboardSettings` | `hebrewDashboard_settings` | All Classroom Dashboard settings (zoom, video URL, header size, Jewish-calendar widget toggles `showHolidayCountdown`/`showShabbatTimes` (Shabbat times reuse the weather `location`), Timer toggles `showTimer`/`showTimerFullscreen`, Omer toggles `showOmerCounter`/`showOmerEnglish`/`showOmerProgress`, the weekly Schedule Sync grid `scheduleWeek` (present only once a user builds/imports one — its presence selects the weekly engine) + the class-color map `presetColors`, etc.) |
 | `flashCardPresets` | `hebrewFlashCards_presets` | Flash Cards saved presets |
 | `flashCardSettings` | `hebrewFlashCards_settings` | All Flash Cards live settings (mode, selected letters/vowels, color-coding, fonts, timer, number/color/emoji sub-modes, word-list selections, etc.); flat settings blob merged field-by-field via `ivritSafeAssign` |
 | `flashCardPbStreak` | `hebrewFlashCards_pbStreak` | Flash Cards personal-best streak (scalar string; imported as the **max** of existing vs incoming) |
@@ -432,8 +432,10 @@ mountFolderTree({ treeKey, container, listItemNames(), buildItemRow(name)→acti
 
 ### Rule for any new preset-bearing list
 1. Render it with `mountFolderTree(cfg)` (don't hand-roll rows; reuse the existing action functions
-   in `buildItemRow`). The old `makeSortable` is superseded for foldered lists (kept only for the
-   dashboard's live schedule-builder rows).
+   in `buildItemRow`). The old `makeSortable` is superseded for foldered lists. (The dashboard no
+   longer carries `makeSortable` at all — its last consumer, the schedule row builder, was replaced
+   by the weekly Schedule Sync grid editor on 2026-08-06; the generator/flash-cards copies remain
+   for their own non-foldered rows.)
 2. Register its folder key in **`index.html`** all three functions (`exportAllSettings` +
    `importAllSettings` via `ftImportTree(key, incoming, false)` + `eraseAllSettings`) AND the AllTools
    `IVRIT_CFG.gather/apply`.
