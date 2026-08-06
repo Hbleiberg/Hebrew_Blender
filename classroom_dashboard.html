@@ -1145,6 +1145,11 @@
   .sched-preview .sched-seg-active { background: rgba(201,146,42,0.18); color: var(--text); border-radius: 4px; padding: 1px 5px; font-weight: 600; }
   .sched-preview .sched-arrow { color: var(--gold); margin: 0 5px; }
   .sched-preview-hint { font-style: italic; }
+  /* Weekly-mode preview chips carry their preset color inline, so the active marker moves to an
+     outline (an inline background would bury the legacy .sched-seg-active tint). */
+  .sched-preview .wk-seg { border-radius: 4px; padding: 1px 5px; }
+  .sched-preview .wk-seg.sched-seg-active { outline: 2px solid var(--gold); outline-offset: 1px; }
+  .sched-preview .wk-seg-free { color: var(--muted); font-style: italic; }
   .schedule-validation { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
   .schedule-validation .sched-warn { font-size: 0.72rem; color: #b4521f; line-height: 1.4; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   body.dark .schedule-validation .sched-warn { color: #e0a060; }
@@ -6261,6 +6266,7 @@ else ivritInit();
 
   function renderScheduleUI() {
     const st = settings.scheduleEnabled ? computeScheduleState() : { status:'off' };
+    if (st.engine === 'week') { renderWeekScheduleUI(st); renderSchedulePreview(st); return; }
     const live = st.status === 'active' || st.status === 'allpast';
     // (i) countdown line
     const cd = document.getElementById('scheduleCountdown');
@@ -6302,10 +6308,60 @@ else ivritInit();
     renderSchedulePreview(st);
   }
 
+  // Weekly-mode countdown + Now/Next. Same two DOM nodes as the legacy renderer above; every
+  // non-empty state keeps the countdown to the next assigned period running (legacy only had
+  // active/allpast), and the Now column narrates gaps, free periods, and no-school days.
+  function renderWeekScheduleUI(st) {
+    const live = st.status !== 'off' && st.status !== 'empty';
+    const suffix = !st.targetEntry || st.daysAhead === 0 ? ''
+      : st.daysAhead === 1 ? ' ' + I18n.t('dashboard.schedule.suffix_tomorrow')
+      : ' ' + I18n.t('dashboard.schedule.suffix_on_day', { day: dayName(st.targetEntry.dayIdx) });
+    // (i) countdown line — targets the next assigned period's START (see computeWeekState)
+    const cd = document.getElementById('scheduleCountdown');
+    if (cd) {
+      if (settings.scheduleShowCountdown && live && st.targetEntry) {
+        cd.textContent = settings.countdownShowPresetName !== false
+          ? I18n.t('dashboard.schedule.countdown_next_named', { preset: st.targetEntry.preset + suffix, time: st.timeStr })
+          : I18n.t('dashboard.schedule.countdown_next_generic', { time: st.timeStr + suffix });
+        cd.style.display = 'block';
+      } else cd.style.display = 'none';
+    }
+    // (ii) on-dashboard Now / Next block (same memo discipline as the legacy branch)
+    const nn = document.getElementById('nowNextBlock');
+    if (nn) {
+      if (settings.scheduleShowPeriods !== false && live) {
+        const key = ['w', st.status, st.dayIdx, st.currentIdx, st.currentEntry ? st.currentEntry.preset : '',
+                     st.nowLeftStr, st.targetEntry ? st.targetEntry.preset : '',
+                     st.targetEntry ? st.targetEntry.start : '', st.daysAhead, st.timeStr].join('\x1f');
+        if (key !== _lastNowNextKey) {
+          _lastNowNextKey = key;
+          const nowItem = (val, sub) =>
+            `<span class="nn-item"><span class="nn-lbl">${esc(I18n.t('dashboard.schedule.now_label'))}</span><span class="nn-val">${esc(val)}</span><span class="nn-in">${sub}</span></span>`;
+          let nowCol = '';
+          if (st.status === 'active') {
+            const nowName = st.currentEntry && st.currentEntry.preset ? st.currentEntry.preset : I18n.t('dashboard.schedule.free');
+            nowCol = nowItem(nowName, esc(I18n.t('dashboard.schedule.time_left', { time: st.nowLeftStr })));
+          } else if (st.status === 'gap') {
+            nowCol = nowItem(I18n.t('dashboard.schedule.passing_label'), '');
+          } else if (st.status === 'noschool') {
+            nowCol = nowItem(I18n.t('dashboard.schedule.no_school_today'), '');
+          }   // before/after: the Now column is omitted — only Next renders
+          const morrow = suffix ? ' <span class="nn-morrow">' + esc(suffix.trim()) + '</span>' : '';
+          const nextCol = st.targetEntry
+            ? `<span class="nn-item"><span class="nn-lbl">${esc(I18n.t('dashboard.schedule.next_label'))}</span><span class="nn-val">${esc(st.targetEntry.preset)}</span><span class="nn-in">${I18n.t('dashboard.schedule.next_at', { time: esc(st.targetEntry.start) })}${morrow}</span></span>`
+            : '';
+          nn.innerHTML = nowCol + nextCol;
+        }
+        nn.style.display = '';
+      } else { nn.style.display = 'none'; _lastNowNextKey = null; }
+    }
+  }
+
   function renderSchedulePreview(st) {
     const el = document.getElementById('schedulePreview');
     if (!el) return;
     st = st || (settings.scheduleEnabled ? computeScheduleState() : { status:'off' });
+    if (st.engine === 'week') { renderWeekPreview(el, st); return; }
     const sorted = st.sorted || [];
     const empty = !settings.scheduleEnabled || st.status === 'off' || !sorted.length;
     // The preview's content depends only on the schedule entries and which period is active —
@@ -6326,6 +6382,31 @@ else ivritInit();
       prev = e.until;
       const active = (i === st.currentIdx);
       return `<span class="sched-seg${active ? ' sched-seg-active' : ''}">${esc(start)}–${esc(e.until)} · <b>${esc(e.preset)}</b></span>`;
+    });
+    el.innerHTML = segs.join('<span class="sched-arrow">→</span>');
+  }
+
+  // Weekly preview: TODAY's column, chips colored like the grid cells. A no-school day says so
+  // instead of borrowing another day's periods.
+  function renderWeekPreview(el, st) {
+    const sorted = st.sorted || [];
+    const dry = st.status === 'noschool' || !sorted.length;
+    const key = ['w', st.status, st.dayIdx, st.currentIdx,
+      sorted.map(e => e.start + e.until + (e.preset || '') + presetColor(e.preset)).join('\x1e')].join('\x1f');
+    if (key === _lastPreviewKey) return;
+    _lastPreviewKey = key;
+    if (st.status === 'empty' || dry) {
+      el.innerHTML = '<span class="sched-preview-hint">' +
+        esc(I18n.t(st.status === 'empty' ? 'dashboard.schedule.preview_hint_week' : 'dashboard.schedule.no_school_today')) +
+        '</span>';
+      return;
+    }
+    const segs = sorted.map((e, i) => {
+      const col = e.preset ? presetColor(e.preset) : '';
+      const style = e.preset ? ` style="background:${col};color:${contrastText(col)};"` : '';
+      const label = e.preset ? esc(e.preset) : esc(I18n.t('dashboard.schedule.free'));
+      const cls = 'sched-seg wk-seg' + (i === st.currentIdx ? ' sched-seg-active' : '') + (e.preset ? '' : ' wk-seg-free');
+      return `<span class="${cls}"${style}>${esc(e.start)}–${esc(e.until)} · <b>${label}</b></span>`;
     });
     el.innerHTML = segs.join('<span class="sched-arrow">→</span>');
   }
