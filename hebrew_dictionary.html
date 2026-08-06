@@ -789,9 +789,9 @@ footer a{color:var(--gold-text);text-decoration:none;}
       <div class="panel-title" onclick="this.closest('.panel').classList.toggle('collapsed')" data-i18n="dictionary.filters.length_panel_title">Word Length</div>
       <div class="panel-body">
         <div id="modeSwitcher" style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:10px;">
-          <button class="emoji-gender-btn active" data-dict-mode="words" onclick="setDictMode('words')" data-i18n="dictionary.filters.mode_words">Words</button>
-          <button class="emoji-gender-btn" data-dict-mode="emojis" onclick="setDictMode('emojis')" data-i18n="dictionary.filters.mode_emojis">Emojis</button>
-          <button class="emoji-gender-btn" data-dict-mode="shoresh" onclick="setDictMode('shoresh')" data-i18n="dictionary.filters.mode_shoresh">Shoresh</button>
+          <button class="emoji-gender-btn active" aria-pressed="true" data-dict-mode="words" onclick="setDictMode('words')" data-i18n="dictionary.filters.mode_words">Words</button>
+          <button class="emoji-gender-btn" aria-pressed="false" data-dict-mode="emojis" onclick="setDictMode('emojis')" data-i18n="dictionary.filters.mode_emojis">Emojis</button>
+          <button class="emoji-gender-btn" aria-pressed="false" data-dict-mode="shoresh" onclick="setDictMode('shoresh')" data-i18n="dictionary.filters.mode_shoresh">Shoresh</button>
         </div>
         <div class="word-length-controls">
           <label class="cb-label" style="margin-bottom:6px;font-weight:600;"><input type="checkbox" id="lenAllCb" checked onchange="toggleAllLengths(this)"> <span data-i18n="dictionary.filters.all_words">All Words</span></label>
@@ -809,9 +809,9 @@ footer a{color:var(--gold-text);text-decoration:none;}
         <div class="emoji-cat-controls">
           <hr>
           <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:10px;">
-            <button class="emoji-gender-btn active" data-gender="all" onclick="setEmojiGender('all')" data-i18n="dictionary.filters.emoji_gender_all">All</button>
-            <button class="emoji-gender-btn" data-gender="masc" onclick="setEmojiGender('masc')" data-i18n="dictionary.filters.emoji_gender_masc">♂ Masc</button>
-            <button class="emoji-gender-btn" data-gender="fem" onclick="setEmojiGender('fem')" data-i18n="dictionary.filters.emoji_gender_fem">♀ Fem</button>
+            <button class="emoji-gender-btn active" aria-pressed="true" data-gender="all" onclick="setEmojiGender('all')" data-i18n="dictionary.filters.emoji_gender_all">All</button>
+            <button class="emoji-gender-btn" aria-pressed="false" data-gender="masc" onclick="setEmojiGender('masc')" data-i18n="dictionary.filters.emoji_gender_masc">♂ Masc</button>
+            <button class="emoji-gender-btn" aria-pressed="false" data-gender="fem" onclick="setEmojiGender('fem')" data-i18n="dictionary.filters.emoji_gender_fem">♀ Fem</button>
           </div>
           <div style="display:flex;gap:5px;margin-bottom:8px;">
             <button class="pos-all-btn" onclick="setAllEmojiCats(true)" data-i18n="dictionary.filters.emoji_all">All</button>
@@ -940,9 +940,9 @@ footer a{color:var(--gold-text);text-decoration:none;}
             </label>
             <div id="colorCodingOptions" style="display:none;flex-direction:column;gap:8px;">
               <div style="display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;">
-                <button id="colorModeLetter"    class="color-mode-btn active" onclick="setColorMode('letter')" data-i18n="dictionary.advanced.color_mode_letter">Letter</button>
-                <button id="colorModeHighlight" class="color-mode-btn"        onclick="setColorMode('highlight')" data-i18n="dictionary.advanced.color_mode_highlight">Highlight</button>
-                <button id="colorModeUnderline" class="color-mode-btn"        onclick="setColorMode('underline')" data-i18n="dictionary.advanced.color_mode_underline">Underline</button>
+                <button id="colorModeLetter"    class="color-mode-btn active" aria-pressed="true"  onclick="setColorMode('letter')" data-i18n="dictionary.advanced.color_mode_letter">Letter</button>
+                <button id="colorModeHighlight" class="color-mode-btn"        aria-pressed="false" onclick="setColorMode('highlight')" data-i18n="dictionary.advanced.color_mode_highlight">Highlight</button>
+                <button id="colorModeUnderline" class="color-mode-btn"        aria-pressed="false" onclick="setColorMode('underline')" data-i18n="dictionary.advanced.color_mode_underline">Underline</button>
               </div>
               <div id="colorPickerList"></div>
               <button class="pos-all-btn" onclick="resetNikudColors()" style="font-size:0.68rem;width:100%;" data-i18n="dictionary.advanced.color_reset">↺ Reset to defaults</button>
@@ -2857,13 +2857,20 @@ function shoreshMatchCost(wc, rc) {
 // Boolean membership is just "some legal embedding exists" — one matcher, no duplicated logic.
 function consonantsContainRoot(wc, rc) { return shoreshMatchCost(wc, rc) !== Infinity; }
 
+// Segmented controls tint the live choice with .active; assistive tech needs it exposed too,
+// or every option in the group announces identically. One helper so the two never drift apart.
+function setSegActive(el, on) {
+  el.classList.toggle('active', on);
+  el.setAttribute('aria-pressed', on ? 'true' : 'false');
+}
+
 function setDictMode(mode) {
   wlHideActiveBanner();  // switching modes leaves any active "Load as filter" view
   if (mode === 'shoresh') {
     if (emojiMode) toggleEmojiMode(false);
     shoreshMode = true;
     document.body.classList.add('shoresh-mode');
-    document.querySelectorAll('[data-dict-mode]').forEach(b => b.classList.toggle('active', b.dataset.dictMode === 'shoresh'));
+    document.querySelectorAll('[data-dict-mode]').forEach(b => setSegActive(b, b.dataset.dictMode === 'shoresh'));
     document.getElementById('loadingMsg').style.display = 'none';
     enterShoresh();
   } else {
@@ -3328,9 +3335,9 @@ function refreshColorExPreviews() {
 
 function setColorMode(mode) {
   colorCodingMode = mode;
-  document.getElementById('colorModeLetter').classList.toggle('active',    mode === 'letter');
-  document.getElementById('colorModeHighlight').classList.toggle('active', mode === 'highlight');
-  document.getElementById('colorModeUnderline').classList.toggle('active', mode === 'underline');
+  setSegActive(document.getElementById('colorModeLetter'),    mode === 'letter');
+  setSegActive(document.getElementById('colorModeHighlight'), mode === 'highlight');
+  setSegActive(document.getElementById('colorModeUnderline'), mode === 'underline');
   refreshColorExPreviews();
   if (colorCodingEnabled) rerender();
 }
@@ -3734,7 +3741,7 @@ function toggleEmojiMode(on) {
   document.body.classList.toggle('emoji-mode', on);
   document.querySelectorAll('.emoji-sort-only').forEach(o => o.style.display = on ? '' : 'none');
   document.querySelectorAll('[data-dict-mode]').forEach(b =>
-    b.classList.toggle('active', b.dataset.dictMode === (on ? 'emojis' : 'words')));
+    setSegActive(b, b.dataset.dictMode === (on ? 'emojis' : 'words')));
   // When entering emoji mode, force a sort that makes sense
   const sortSel = document.getElementById('sortSel');
   if (on) {
@@ -3776,8 +3783,10 @@ function fetchEmojiData() {
 
 function setEmojiGender(g) {
   emojiGender = g;
-  document.querySelectorAll('.emoji-gender-btn').forEach(b =>
-    b.classList.toggle('active', b.dataset.gender === g));
+  // [data-gender] is REQUIRED here: the Words/Emojis/Shoresh mode switcher reuses
+  // .emoji-gender-btn, so an unscoped sweep cleared the mode switcher's own highlight.
+  document.querySelectorAll('.emoji-gender-btn[data-gender]').forEach(b =>
+    setSegActive(b, b.dataset.gender === g));
   saveEmojiSettings();
   // Refresh any bulk-selected emoji entries — their visible forms changed.
   if (bulkSelected.size) {
@@ -4112,8 +4121,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (saved) {
       if (saved.gender && ['all','masc','fem'].includes(saved.gender)) {
         emojiGender = saved.gender;
-        document.querySelectorAll('.emoji-gender-btn').forEach(b =>
-          b.classList.toggle('active', b.dataset.gender === emojiGender));
+        document.querySelectorAll('.emoji-gender-btn[data-gender]').forEach(b =>
+          setSegActive(b, b.dataset.gender === emojiGender));
       }
       if (saved.mode) toggleEmojiMode(true);
     }
@@ -4307,7 +4316,7 @@ function applyDictState(s) {
     document.body.classList.toggle('shoresh-mode', shoreshMode);
     document.body.classList.toggle('emoji-mode', emojiMode);
     document.querySelectorAll('.emoji-sort-only').forEach(o => o.style.display = emojiMode ? '' : 'none');
-    document.querySelectorAll('[data-dict-mode]').forEach(b => b.classList.toggle('active', b.dataset.dictMode === mode));
+    document.querySelectorAll('[data-dict-mode]').forEach(b => setSegActive(b, b.dataset.dictMode === mode));
 
     // 2. dageshTav — rebuild tiles first so 'תּ' tiles exist before restoring letter Sets
     if (typeof s.dageshTav === 'boolean' && s.dageshTav !== dageshTavEnabled) {
@@ -4394,7 +4403,7 @@ function applyDictState(s) {
 
     // 11. emoji gender + categories
     emojiGender = (s.emoji && s.emoji.gender) || 'all';
-    document.querySelectorAll('.emoji-gender-btn[data-gender]').forEach(b => b.classList.toggle('active', b.dataset.gender === emojiGender));
+    document.querySelectorAll('.emoji-gender-btn[data-gender]').forEach(b => setSegActive(b, b.dataset.gender === emojiGender));
     if (EMOJI_DATA) { _dictApplyEmojiSubs(s.emoji); renderEmojiCatTree(); }
 
     // 12. query
