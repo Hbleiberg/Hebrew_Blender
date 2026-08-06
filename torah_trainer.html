@@ -3072,7 +3072,11 @@ async function fetchAndRender() {
   setStatus(I18n.t('torah.status.loading_label', { label: r.label }), false);
   let netDone = false;   // true once every Sefaria fetch has resolved → a later throw is a render/code bug, not an outage
   try {
-    let verses = await fetchSefariaText(r.ref, settings.showTranslation, settings.translationVersion);
+    // The English is fetched only when something asks for it. The copy bar's "Include
+    // translation" is a second asker: without this, a teacher with that ticked and the DISPLAY
+    // toggle off got verses carrying translation:'' and a Hebrew-only clipboard, silently.
+    const wantEnglish = settings.showTranslation || settings.copyIncludeTrans;
+    let verses = await fetchSefariaText(r.ref, wantEnglish, settings.translationVersion);
     if (seq !== _fetchSeq) return;   // a newer selection superseded this fetch
     const book = r.parshahEntry ? r.parshahEntry.book : (settings.customRef || '').split(/[ .]/)[0];
     // Requested a translation but Sefaria returned no English for this version +
@@ -4922,7 +4926,14 @@ function wireSettingsForm() {
     settings.copyIncludeRef = e.target.checked; saveSettings(); updateCopyTextarea();
   });
   document.getElementById('ttCopyIncTrans').addEventListener('change', e => {
-    settings.copyIncludeTrans = e.target.checked; saveSettings(); updateCopyTextarea();
+    settings.copyIncludeTrans = e.target.checked; saveSettings();
+    // Mirrors the translit toggle above: if the reading in hand was fetched without English
+    // (display Translation off), the verses carry translation:'' and the copy would come back
+    // Hebrew-only. Re-fetch once so the option actually does what it says; the display is
+    // unaffected because renderText still gates the English row on settings.showTranslation.
+    if (e.target.checked && currentVerses && currentVerses.length && !currentVerses.some(v => v.translation)) {
+      fetchAndRender().then(updateCopyTextarea);
+    } else updateCopyTextarea();
   });
   document.getElementById('ttCopyIncTranslit').addEventListener('change', e => {
     settings.copyIncludeTranslit = e.target.checked;
