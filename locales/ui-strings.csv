@@ -296,6 +296,16 @@ dashboard.schedule.eraser_chip,Eraser,מחק,weekly palette eraser chip label,
 dashboard.schedule.free,Free,חופשי,weekly grid free-period label,
 dashboard.schedule.grid_aria,Weekly schedule grid,רשת מערכת שעות שבועית,weekly editor grid container,aria-label only
 dashboard.schedule.grid_empty_hint,No periods yet — click “+ Add period” to build your bell schedule.,אין עדיין שיעורים — לחצו על ״+ הוסף שיעור״ כדי לבנות את מערכת השעות.,weekly grid empty state,
+dashboard.schedule.import_blank_btn,Start blank,התחלה ריקה,legacy-import offer button,
+dashboard.schedule.import_body,Your existing schedule listed only end times. Tell us when your first period starts and we'll build the weekly grid from it — every weekday gets the same column to start.,מערכת השעות הקיימת שלכם כללה רק שעות סיום. ציינו מתי מתחיל השיעור הראשון ואנחנו נבנה ממנה את הרשת השבועית — כל ימי החול יקבלו תחילה את אותה עמודה.,legacy-import offer body,
+dashboard.schedule.import_confirm_btn,Import,ייבוא,legacy-import offer button,
+dashboard.schedule.import_first_start,First period starts at,השיעור הראשון מתחיל בשעה,legacy-import time input label,
+dashboard.schedule.import_review_hint,Imported — review each period's start time (the old format had no passing gaps).,יובא — בדקו את שעת ההתחלה של כל שיעור (בפורמט הישן לא היו הפסקות מעבר).,hint after a legacy import,
+dashboard.schedule.import_title,Import your single-day schedule?,לייבא את מערכת השעות היומית שלכם?,legacy-import offer title,
+dashboard.schedule.load_day_extra_rows.one,1 entry didn't fit the current periods.,רשומה אחת לא התאימה לשיעורים הקיימים.,toast after loading a legacy schedule into a day,plural
+dashboard.schedule.load_day_extra_rows.other,{n} entries didn't fit the current periods.,{n} רשומות לא התאימו לשיעורים הקיימים.,toast after loading a legacy schedule into a day,plural
+dashboard.schedule.load_day_title,Load into which day?,לטעון לאיזה יום?,legacy-schedule day-picker menu title,
+dashboard.schedule.load_week_confirm,"Load schedule ""{name}""? It will replace your current weekly grid.","לטעון את מערכת השעות ""{name}""? היא תחליף את הרשת השבועית הנוכחית.",confirm dialog,mixed UI+content — do not translate {…}
 dashboard.schedule.next_at,at {time},בשעה {time},next block value,
 dashboard.schedule.next_label,Next,הבא,now/next block label,
 dashboard.schedule.no_school_today,No school today,אין לימודים היום,weekly now-block / preview label for an empty or hidden day,
@@ -314,6 +324,7 @@ dashboard.schedule.remove_period_aria,Remove period {n},הסר שיעור {n},we
 dashboard.schedule.remove_period_confirm,Remove period {n}? Its class assignments will be cleared.,להסיר את שיעור {n}? שיבוצי הכיתות שלו יימחקו.,confirm dialog,
 dashboard.schedule.save_as,Save Schedule As…,שמור מערכת שעות בשם…,settings button,
 dashboard.schedule.save_empty,Add at least one schedule entry first.,הוסיפו תחילה לפחות רשומה אחת למערכת השעות.,inline save note when the week has no periods,
+dashboard.schedule.save_name_empty,Enter a name first.,הזינו שם תחילה.,inline save note for a blank name,
 dashboard.schedule.save_name_placeholder,Schedule name,שם מערכת שעות,weekly editor save-as input placeholder,
 dashboard.schedule.sched_delete_title,Delete,מחק,saved schedule row button title,
 dashboard.schedule.sched_duplicate_title,Duplicate,שכפול,saved schedule row button title,

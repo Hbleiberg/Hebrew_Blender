@@ -1394,6 +1394,13 @@
     color: var(--muted); border-style: dashed; font-weight: 400; }
   .swm-rowdel { align-self: center; }
   .swm-grid-empty { grid-column: 1 / -1; font-size: 0.78rem; color: var(--muted); font-style: italic; padding: 10px 4px; }
+  .swm-import { border: 1.5px solid var(--gold); border-radius: 10px; padding: 14px 16px; margin: 6px 0 10px; background: rgba(201,146,42,0.07); }
+  .swm-import-title { font-family: 'Libre Baskerville', serif; font-size: 1rem; margin: 0 0 6px; color: var(--text); }
+  .swm-import-body { font-size: 0.82rem; color: var(--muted); line-height: 1.5; margin: 0 0 10px; }
+  .swm-import-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .swm-import-row label { font-size: 0.82rem; font-weight: 600; color: var(--text); }
+  .swm-import-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .swm-menu-title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 4px 8px 2px; }
   .swm-saverow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 6px; }
   .swm-saverow input { flex: 1; min-width: 150px; max-width: none; }
   .swm-footer { display: flex; justify-content: flex-end; margin-top: 14px; }
@@ -6345,10 +6352,9 @@ else ivritInit();
     window.removeEventListener('resize', closeWeekDayMenu);
     window.removeEventListener('scroll', closeWeekDayMenu, true);
   }
-  function openWeekDayMenu(d, btn) {
+  // Generic anchored floating menu (shared by the day menu and the legacy-schedule day picker).
+  function _swmOpenMenu(anchor, build) {
     closeWeekDayMenu();
-    const week = settings.scheduleWeek;
-    if (!week) return;
     const menu = document.createElement('div');
     menu.className = 'ft-move-menu';
     menu.setAttribute('role', 'menu');
@@ -6360,12 +6366,9 @@ else ivritInit();
       b.addEventListener('click', () => { closeWeekDayMenu(); fn(); });
       menu.appendChild(b);
     };
-    weekVisibleDays(week).filter(t => t !== d).forEach(t =>
-      mk(I18n.t('dashboard.schedule.copy_to_day', { day: dayName(t) }), () => copyWeekDay(d, t)));
-    mk(I18n.t('dashboard.schedule.copy_day_all'), () => copyWeekDayToWeekdays(d));
-    mk(I18n.t('dashboard.schedule.clear_day', { day: dayName(d) }), () => clearWeekDay(d));
+    build(mk, menu);
     document.body.appendChild(menu);
-    const rc = btn.getBoundingClientRect();
+    const rc = anchor.getBoundingClientRect();
     let left = Math.max(6, rc.right - menu.offsetWidth), top = rc.bottom + 4;
     if (top + menu.offsetHeight > window.innerHeight - 6) top = Math.max(6, rc.top - menu.offsetHeight - 4);
     if (left + menu.offsetWidth > window.innerWidth - 6) left = window.innerWidth - menu.offsetWidth - 6;
@@ -6377,6 +6380,16 @@ else ivritInit();
       window.addEventListener('resize', closeWeekDayMenu);
       window.addEventListener('scroll', closeWeekDayMenu, true);
     }, 0);
+  }
+  function openWeekDayMenu(d, btn) {
+    const week = settings.scheduleWeek;
+    if (!week) return;
+    _swmOpenMenu(btn, mk => {
+      weekVisibleDays(week).filter(t => t !== d).forEach(t =>
+        mk(I18n.t('dashboard.schedule.copy_to_day', { day: dayName(t) }), () => copyWeekDay(d, t)));
+      mk(I18n.t('dashboard.schedule.copy_day_all'), () => copyWeekDayToWeekdays(d));
+      mk(I18n.t('dashboard.schedule.clear_day', { day: dayName(d) }), () => clearWeekDay(d));
+    });
   }
   function copyWeekDay(from, to) {
     const week = settings.scheduleWeek;
@@ -6505,15 +6518,153 @@ else ivritInit();
         msgs.push(I18n.t('dashboard.schedule.warn_no_assignments'));
     }
     const hints = [];
+    if (_swmImportedHint) hints.push(I18n.t('dashboard.schedule.import_review_hint'));
     if (Object.keys(presets).length <= 1) hints.push(I18n.t('dashboard.schedule.need_presets_hint'));
     hints.forEach(h => { const d = document.createElement('div'); d.className = 'sched-hint'; d.textContent = h; el.appendChild(d); });
     msgs.forEach(m => { const d = document.createElement('div'); d.className = 'sched-warn'; d.textContent = m; el.appendChild(d); });
     el.style.display = (hints.length || msgs.length) ? '' : 'none';
   }
 
-  function renderWeekImportOffer() {}
-  function saveWeekScheduleAs() {}
-  function onWeekSaveNameInput() {}
+  /* ── Legacy import offer: the old model stored only END times, so the teacher supplies the one
+        missing datum (the first period's start) and each row's start becomes the previous row's
+        end. The synthesized bell schedule is gap-free by construction — hence the review hint
+        (real schedules have passing gaps). Declining creates nothing; the offer just returns. ── */
+  let _swmImportedHint = false;
+  function renderWeekImportOffer() {
+    const card = document.getElementById('swmImportCard');
+    if (!card) return;
+    card.textContent = '';
+    const h = document.createElement('h3');
+    h.className = 'swm-import-title';
+    h.textContent = I18n.t('dashboard.schedule.import_title');
+    const p = document.createElement('p');
+    p.className = 'swm-import-body';
+    p.textContent = I18n.t('dashboard.schedule.import_body');
+    const row = document.createElement('div');
+    row.className = 'swm-import-row';
+    const lbl = document.createElement('label');
+    lbl.setAttribute('for', 'swmImportStart');
+    lbl.textContent = I18n.t('dashboard.schedule.import_first_start');
+    const inp = document.createElement('input');
+    inp.type = 'time';
+    inp.id = 'swmImportStart';
+    inp.className = 'schedule-time-input';
+    // Prefill: estimate the first period's length from the second row's (until₂ − until₁), else 45.
+    const rows = legacyRowsSorted();
+    let est = 45;
+    if (rows.length > 1) {
+      const g = timeToMins(rows[1].until) - timeToMins(rows[0].until);
+      if (g > 0 && g <= 120) est = g;
+    }
+    const first = Math.max(0, timeToMins(rows[0].until) - est);
+    inp.value = String(Math.floor(first / 60)).padStart(2, '0') + ':' + String(first % 60).padStart(2, '0');
+    row.appendChild(lbl);
+    row.appendChild(inp);
+    const btns = document.createElement('div');
+    btns.className = 'swm-import-btns';
+    const go = document.createElement('button');
+    go.type = 'button';
+    go.className = 'btn';
+    go.textContent = I18n.t('dashboard.schedule.import_confirm_btn');
+    go.addEventListener('click', () => importLegacyScheduleToWeek(inp.value));
+    const blank = document.createElement('button');
+    blank.type = 'button';
+    blank.className = 'btn btn-secondary';
+    blank.textContent = I18n.t('dashboard.schedule.import_blank_btn');
+    blank.addEventListener('click', () => { ensureWeek(); weekChanged(); renderWeekEditor(); });
+    btns.appendChild(go);
+    btns.appendChild(blank);
+    card.appendChild(h);
+    card.appendChild(p);
+    card.appendChild(row);
+    card.appendChild(btns);
+  }
+  function legacyRowsSorted() {
+    return (settings.currentSchedule || []).filter(e => e && e.preset && e.until)
+      .sort((a, b) => timeToMins(a.until) - timeToMins(b.until));
+  }
+  function importLegacyScheduleToWeek(firstStart) {
+    const rows = legacyRowsSorted();
+    if (!rows.length) return;
+    const start0 = HHMM_RE.test(firstStart) ? firstStart : '';   // a blank start still imports; validation flags it
+    const periods = rows.map((r, i) => ({ start: i === 0 ? start0 : rows[i - 1].until, end: r.until }));
+    const cells = {};
+    WEEK_KEYS.forEach((k, i) => {
+      cells[k] = (i >= 1 && i <= 5) ? rows.map(r => r.preset) : rows.map(() => null);
+    });
+    const wk = normalizeScheduleWeek({ v: 1, periods: periods, weekend: false, cells: cells });
+    if (!wk) return;
+    settings.scheduleWeek = wk;   // currentSchedule stays untouched — the weekly engine simply ignores it
+    _swmImportedHint = true;
+    weekChanged();
+    renderWeekEditor();
+  }
+
+  /* ── Saved schedules: v2 entries {v:2, week} carry the whole grid; legacy arrays remain and
+        load into a chosen day's column in weekly mode. Save-As validates inline — no prompt(),
+        no alert(). ── */
+  let _swmSaveNoteKey = null;
+  function _setWeekSaveNote(key) {
+    _swmSaveNoteKey = key || null;
+    const note = document.getElementById('swmSaveNote');
+    const btn = document.getElementById('swmSaveBtn');
+    const msg = _swmSaveNoteKey && window.I18n ? I18n.t(_swmSaveNoteKey) : '';
+    if (note) {
+      note.textContent = '';
+      if (msg) {
+        const d = document.createElement('div');
+        d.className = 'sched-warn';
+        d.textContent = msg;
+        note.appendChild(d);
+      }
+      note.style.display = msg ? '' : 'none';
+    }
+    if (btn) btn.setAttribute('aria-disabled', msg ? 'true' : 'false');
+  }
+  function onWeekSaveNameInput() {
+    if (_swmSaveNoteKey && document.getElementById('swmSaveName').value.trim()) _setWeekSaveNote(null);
+  }
+  function saveWeekScheduleAs() {
+    const week = settings.scheduleWeek;
+    if (!week || !week.periods.length) { _setWeekSaveNote('dashboard.schedule.save_empty'); return; }
+    const name = (document.getElementById('swmSaveName').value || '').trim();
+    if (!name) { _setWeekSaveNote('dashboard.schedule.save_name_empty'); return; }
+    _setWeekSaveNote(null);
+    savedSchedules[name] = { v: 2, week: JSON.parse(JSON.stringify(week)) };   // same-name save overwrites, like savePreset
+    saveSchedulesStorage();
+    document.getElementById('swmSaveName').value = '';
+    renderSavedSchedules();
+  }
+  function openLegacyDayPicker(name) {
+    const week = settings.scheduleWeek;
+    if (!week) return;
+    const modal = document.getElementById('swmModal');
+    const anchor = (document.activeElement && modal && modal.contains(document.activeElement))
+      ? document.activeElement : document.getElementById('swmSaveBtn');
+    _swmOpenMenu(anchor, (mk, menu) => {
+      const hdr = document.createElement('div');
+      hdr.className = 'swm-menu-title';
+      hdr.textContent = I18n.t('dashboard.schedule.load_day_title');
+      menu.appendChild(hdr);
+      weekVisibleDays(week).forEach(d => mk(dayName(d), () => loadLegacyIntoDay(name, d)));
+    });
+  }
+  function loadLegacyIntoDay(name, d) {
+    const week = settings.scheduleWeek;
+    const entry = savedSchedules[name];
+    if (!week || !Array.isArray(entry)) return;
+    // Order-mapped: the legacy times belong to a different bell schedule, so only the preset
+    // sequence lands — row i fills period i of the chosen day.
+    const rows = normalizeSchedule(JSON.parse(JSON.stringify(entry)))
+      .filter(e => e.preset)
+      .sort((a, b) => timeToMins(a.until) - timeToMins(b.until));
+    const col = week.cells[WEEK_KEYS[d]];
+    rows.slice(0, week.periods.length).forEach((r, i) => { col[i] = r.preset; });
+    weekChanged();
+    const extra = rows.length - week.periods.length;
+    if (extra > 0)
+      showAppToast(I18n.t('dashboard.schedule.load_day_extra_rows.' + (extra === 1 ? 'one' : 'other'), { n: extra }));
+  }
 
   // Panel summary for weekly mode: a mini colored week strip (one column per visible day, one
   // dot-row per period) + an "8 periods · Mon–Fri" line. Hidden entirely in legacy mode (the
@@ -6578,6 +6729,7 @@ else ivritInit();
   }
   function closeWeekEditor() {
     closeWeekDayMenu();
+    _swmImportedHint = false;   // the review nudge lives for one editing session
     document.getElementById('swmBackdrop').classList.remove('open');
     document.getElementById('swmModal').classList.remove('open');
     document.removeEventListener('keydown', weekEditorKey, true);
@@ -6610,8 +6762,22 @@ else ivritInit();
   }
 
   function loadSavedSchedule(name) {
-    if (!savedSchedules[name]) return;
-    settings.currentSchedule = normalizeSchedule(JSON.parse(JSON.stringify(savedSchedules[name])));
+    const entry = savedSchedules[name];
+    if (!entry) return;
+    // v2 entry = a whole weekly grid; loading replaces the current grid, so confirm first.
+    // This branch must run BEFORE normalizeSchedule, which is array-only and would flatten it.
+    if (!Array.isArray(entry) && entry.v === 2) {
+      if (!confirm(I18n.t('dashboard.schedule.load_week_confirm', { name: name }))) return;
+      const wk = normalizeScheduleWeek(entry.week);
+      if (!wk) return;
+      settings.scheduleWeek = wk;
+      weekChanged();
+      return;
+    }
+    // Legacy array entry: in weekly mode its times belong to another bell schedule, so it can only
+    // land as one day's preset column; in pure-legacy mode keep the original behavior untouched.
+    if (settings.scheduleWeek) { openLegacyDayPicker(name); return; }
+    settings.currentSchedule = normalizeSchedule(JSON.parse(JSON.stringify(entry)));
     _lastScheduleKey = null;
     renderScheduleUI();
     saveSettingsToStorage();
@@ -6619,7 +6785,9 @@ else ivritInit();
 
   function overwriteSavedSchedule(name) {
     if (!confirm(I18n.t('dashboard.schedule.overwrite_confirm', { name: name }))) return;
-    savedSchedules[name] = JSON.parse(JSON.stringify(settings.currentSchedule || []));
+    savedSchedules[name] = settings.scheduleWeek
+      ? { v: 2, week: JSON.parse(JSON.stringify(settings.scheduleWeek)) }
+      : JSON.parse(JSON.stringify(settings.currentSchedule || []));
     saveSchedulesStorage();
   }
 
@@ -7663,6 +7831,7 @@ async function onUploadEngFontPick(input){
       try { initColorPickers(); } catch (e) {}           // vowel rows are named via the glyphname keys; rebuild reads current colours, so it's read-only
       try { if (_locNoteKey) setLocNote(_locNoteKey, _locNoteParams); } catch (e) {}   // re-render a location note that is still on screen
       try { if (_presetNoteKey) _setPresetNameNote(_presetNoteKey); } catch (e) {}     // ditto for a preset-name note
+      try { if (_swmSaveNoteKey) _setWeekSaveNote(_swmSaveNoteKey); } catch (e) {}     // ditto for the weekly save-as note
       try { buildToolbar(document.getElementById('drawerToolbar')); } catch (e) {}      // editor toolbar titles/labels build via t()
       try { buildToolbar(document.getElementById('inplaceToolbarCmds')); } catch (e) {}
       try { updateColTitles(); } catch (e) {}
