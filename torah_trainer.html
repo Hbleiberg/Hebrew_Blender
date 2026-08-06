@@ -608,6 +608,13 @@ body.dark .tt-hint-toast { background:#0a0f1c; }
 }
 .tt-grid-col.tt-col-heb { direction:rtl; }
 .tt-grid-col.tt-col-heb h3 { direction:ltr; text-align:right; }
+/* Latin-script columns must be pinned LTR or they inherit the Hebrew UI's rtl base direction
+   and every sentence-final period jumps to the wrong end (".the earth"), on screen and on paper.
+   Pinned on the rows, not the column, so the h3 headers stay in the UI's own direction — they
+   are translated chrome (אנגלית / תעתיק), not Latin content. Interlinear and Page view already
+   pin their own equivalents (.tt-translit/.tt-translation, and dir="ltr" on the bible blocks). */
+.tt-grid-col.tt-col-translation .tt-grid-row,
+.tt-grid-col.tt-col-translit .tt-grid-row { direction:ltr; }
 .tt-grid-row {
   padding:6px 0; border-bottom:1px solid var(--border);
   display:flex; gap:6px;
