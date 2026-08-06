@@ -3787,23 +3787,24 @@ function stopChantAll() {
   const btn = document.getElementById('ttChantAllBtn');
   if (btn) { btn.textContent = I18n.t('torah.reading.chant_all'); btn.classList.remove('active'); }
 }
+// Both readouts are written at init — BEFORE I18n.ready — so applyI18n re-runs this to heal
+// the raw key strings and to follow later language switches. That makes it a NAMED handler
+// rather than a fresh closure per call: speechSynthesis survives every re-render, so a new
+// closure each time would stack another voiceschanged listener on every language switch.
+function syncTTSVoiceStatus() {
+  const el = document.getElementById('optTTSStatus');
+  if (!el) return;
+  if (!window.speechSynthesis) { el.textContent = I18n.t('torah.audio.tts_unsupported'); return; }
+  const has = speechSynthesis.getVoices().some(v => /^he/i.test(v.lang));
+  el.textContent = has ? '' : I18n.t('torah.audio.tts_no_voice');
+}
 function checkTTSVoiceAvailability() {
-  if (!window.speechSynthesis) {
-    document.getElementById('optTTSStatus').textContent = I18n.t('torah.audio.tts_unsupported');
-    return;
-  }
-  function check() {
-    const voices = speechSynthesis.getVoices();
-    const has = voices.some(v => /^he/i.test(v.lang));
-    const el = document.getElementById('optTTSStatus');
-    if (!el) return;
-    el.textContent = has ? '' : 'No Hebrew voice detected on this device — TTS may fall back to a generic voice.';
-  }
-  check();
+  syncTTSVoiceStatus();
+  if (!window.speechSynthesis) return;
   if (window.speechSynthesis.addEventListener) {
-    speechSynthesis.addEventListener('voiceschanged', check);
+    speechSynthesis.addEventListener('voiceschanged', syncTTSVoiceStatus);
   } else {
-    speechSynthesis.onvoiceschanged = check;
+    speechSynthesis.onvoiceschanged = syncTTSVoiceStatus;
   }
 }
 function resetTTSRate() {
@@ -5610,6 +5611,7 @@ function applyI18n() {
   try { refreshScopeLabels(); } catch (e) {}        // scope dropdown per-parsha labels
   try { const og = document.querySelector('#parshaSelect optgroup'); if (og) og.label = I18n.t('torah.controls.holiday_group_label'); } catch (e) {}
   try { updateTransFooter(); } catch (e) {}         // translation credit line
+  try { syncTTSVoiceStatus(); } catch (e) {}        // TTS voice readout — written pre-ready, never re-rendered
   try { updateCopyTextarea(); } catch (e) {}        // re-localize the "{count} selected" line
   // The empty-reading card and the status line are written BEFORE I18n.ready whenever a data
   // fetch fails fast (blocked/offline network), and the reading re-render below only covers a
