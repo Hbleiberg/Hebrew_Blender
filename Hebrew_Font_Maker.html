@@ -2647,7 +2647,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.8';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.9';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2859,6 +2859,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.9</strong> — <strong>A finer pen for the fine details.</strong> <span class="ui">Draw</span> mode's brush and eraser now go down to a hairline — the size sliders start at 10 instead of 40 (and 20), and move a unit at a time, so tagin, thin calligraphy strokes, and small serifs are drawable without fighting the slider. Along the way, two things that quietly broke at small sizes were fixed: the <span class="ui">Chisel</span> pen's thin edge used to thin out to nothing below the old minimum — a small chisel stroke could save as a blank letter — and <span class="ui">Dotted</span> strokes had a minimum dot size that made their dots wider than the brush itself. Both now hold a floor that stays crisp when your letter is traced. The <span class="ui">[</span> and <span class="ui">]</span> keys also resize in smaller jumps once the brush is small. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.8</strong> — <strong>A full pencil case for Draw mode.</strong> The on-screen drawing step now has four tools instead of two. The eraser learned to erase for real: <span class="ui">Partial</span> mode rubs out just the ink under your eraser — splitting a stroke into pieces when you cut through it — while <span class="ui">Whole stroke</span> keeps the old one-touch removal, and the eraser finally has its own size. A new <span class="ui">Line</span> tool lays down perfectly straight strokes (hold Shift to snap to 0° / 45° / 90°), and a new <span class="ui">Chisel</span> pen style turns any stroke into broad-nib calligraphy — thick horizontals, thin verticals, with an adjustable nib angle — the way a sofer's pen writes. The <span class="ui">Move</span> tool drags a stroke (or a lasso-selected group) anywhere, with arrow-key nudging and Delete. A cursor ring previews your exact brush or eraser footprint, one-key shortcuts switch tools (D / E / L / V, X to swap, [ and ] to resize), and an <span class="ui">Undo</span> button sits right in the panel for tablet drawing. The pen itself grew a full brush kit: a visual pen-style picker with five live-preview tiles — <span class="ui">Round</span>, <span class="ui">Chisel</span>, <span class="ui">Brush</span> (strokes that taper at both ends), <span class="ui">Dotted</span> (a dotted tracing line), and <span class="ui">Hollow</span> (outlined letters) — each with its own dial (nib angle with one-tap 0° / 45° / 90° presets, taper length, dot spacing, outline thickness). Mouse and finger strokes can vary thickness with drawing speed the way a pen does with pressure, a tilting stylus can set the chisel's nib angle just by how you hold it, and a new <span class="ui">Stamp</span> tool places tagin crowns, dots, or serif feet — sized to your brush and drawn in your pen style — as ordinary strokes you can move, erase, or undo. And under every size slider, an <span class="ui">Actual size</span> preview window shows your exact pen stroke, eraser circle, or stamp at true canvas scale — live, as you drag. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.7</strong> — <strong>A guided start — and now draw your letters right on screen.</strong> Starting a font opens a three-step setup: name your font and pick a license, choose Regular or Bold plus nikkud, trope and extra alphabets, then say how your letters will arrive — and the toolbar's <span class="ui">New</span> no longer wipes your current project until you actually create the new one (if you left a project mid-trace, the "Continue where you left off" prompt still appears before anything else). The biggest arrival is a brand-new <span class="ui">Draw</span> mode: pick <span class="ui">Draw letters on screen</span> and sketch each letter directly over the gray reference with a pen, finger, or mouse — pressure-sensitive stylus strokes, smoothing, a whole-stroke eraser, and a <span class="ui">Save letter &amp; next</span> button that runs the tracer and moves on, so a student can flow through all 27 letters with a stylus and one button. Drawings stay editable forever, drawn and photographed letters mix freely in one font, and everything downstream — points editing, nikkud, Bold, export — works unchanged. A "Show me around after setup" checkbox starts the tour the moment you land in your fresh editor. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.6</strong> — <strong>Your font, one click from a worksheet.</strong> Saving a font to <span class="ui">My IvritSuite Fonts</span> used to be the end of the road: the window told you to "pick them in any IvritSuite tool's font selector", but nothing took you there. Each saved font now has a <span class="ui">Use in Worksheet Generator</span> link that opens the generator with that font already chosen, so you can see your letters on a real worksheet straight away. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -2957,7 +2958,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -2965,8 +2966,8 @@ function buildAboutBody() {
     const kk = 'fontmaker.changelog.' + v, s = T(kk);
     return (s && s !== kk) ? '<li>' + esc(s) + '</li>' : '';
   }).join('');
-  const cur = T('fontmaker.changelog.v5_8');   // newest release shown on top; older v5_x fall into the history list
-  const v5li = (cur && cur !== 'fontmaker.changelog.v5_8') ? '<li>' + esc(cur) + '</li>' : '';
+  const cur = T('fontmaker.changelog.v5_9');   // newest release shown on top; older v5_x fall into the history list
+  const v5li = (cur && cur !== 'fontmaker.changelog.v5_9') ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
        + '<p>' + esc(T('fontmaker.about.special_thanks')) + '</p>'
        + '<h4>' + esc(T('fontmaker.about.changelog_heading')) + '</h4>'
@@ -6782,9 +6783,16 @@ let _drawPenUntil = 0;       // ignore touch until this timestamp (rolling +500m
 let _drawTool = 'draw';      // 'draw' | 'erase' | 'line' | 'move' — session-only (always starts on Draw)
 let _drawSel = new Set();    // move tool: selected stroke indices — transient (indices go stale when the array changes; cleared in _setWorkMode / afterUndo / drawSetTool)
 const DRAW_STROKE_MAX = 512; // runtime cap == sanitizeDraw's reload cap — a split/draw must never create strokes a reload would drop
-const NIB_MIN = 0.18;        // chisel thin-edge floor (≥7 font units at min brush 40 — always traceable)
+/* Measured tracer floors (probe: commit a stroke through _drawCommitNow, count the contours it
+   keeps). A 400-FU horizontal bar VANISHES at w=6, survives thin at w=8, and reproduces its width
+   exactly from w=10 up — so 10 is both the smallest honest brush and sanitizeDraw's reload floor
+   (they must agree, or a reload would silently fatten a hairline). */
+const DRAW_W_MIN = 10;       // smallest stroke width that traces back at full fidelity == sanitizeDraw's floor
+const NIB_MIN = 0.18;        // chisel thin-edge factor (the sofer look: thin edge = 18% of the full width)
+const NIB_EDGE_MIN = 4;      // …but never thinner than 8 FU across: at brush 20 the 3.6-FU edge traced to NOTHING
+const NIB_TAP_MIN = 12;      // chisel TAP half-length — nib marks trace raggedly below ~24 FU long (see _drawTapFloor)
 const ERASE_STEP = 12;       // partial-erase resample pitch (font units) — makes sparse strokes (2-pt lines) splittable
-const DOT_RMIN = 18;         // dotted-style dot-radius floor — ≈1018 FU² per dot, far above the tracer's 80 FU² contour floor
+const DOT_RMIN = 9;          // dotted-style dot-radius floor — measured: r=5 vanishes, r=7 survives, 9 keeps margin
 const DOT_MAX = 1024;        // dots per stroke ceiling (pitch stretches rather than exceed it)
 const TAPER_STEP = 24;       // brush-style resample pitch (font units) — a 2-pt Line stroke tapers via interpolated samples
 const RING_RMIN = 2;         // inner-ring / taper radius floor (font units) — offsets never collapse or cross zero
@@ -6795,11 +6803,11 @@ let _drawSpeed = false, _drawTilt = false;   // dynamics: mouse/finger speed →
 let _drawStamp = 'crown';                    // stamp tool's active shape (uiPrefs mirror)
 function drawLoadPrefs() {
   const p = wsReadPrefs();
-  _drawBrush = Number.isFinite(+p.drawBrush) ? Math.min(300, Math.max(40, +p.drawBrush)) : 90;
+  _drawBrush = Number.isFinite(+p.drawBrush) ? Math.min(300, Math.max(DRAW_W_MIN, +p.drawBrush)) : 90;
   _drawPressure = p.drawPressure !== false;   // missing = ON
   _drawSmoothing = ['off','low','med','high'].includes(p.drawSmoothing) ? p.drawSmoothing : 'med';
   _drawPenOnly = p.drawPenOnly === true;
-  _drawEraser = Number.isFinite(+p.drawEraser) ? Math.min(300, Math.max(20, +p.drawEraser)) : 120;
+  _drawEraser = Number.isFinite(+p.drawEraser) ? Math.min(300, Math.max(DRAW_W_MIN, +p.drawEraser)) : 120;
   _drawEraseMode = p.drawEraseMode === 'whole' ? 'whole' : 'partial';
   _drawStyle = ['round','chisel','brush','dotted','hollow'].includes(p.drawStyle) ? p.drawStyle : 'round';
   _drawNibAngle = Number.isFinite(+p.drawNibAngle) ? Math.min(170, Math.max(0, Math.round(+p.drawNibAngle))) : 90;
@@ -6825,7 +6833,7 @@ function drawSetTool(t) {
   _drawTool = next;
   renderStage(); renderControls();   // stage chrome (selection boxes, legend, cursor ring radius) is tool-dependent
 }
-function drawSetEraser(v) { _drawEraser = Math.min(300, Math.max(20, +v || 120)); const r = document.getElementById('drawEraserVal'); if (r) r.textContent = _drawEraser; drawPreviewRefresh(); }
+function drawSetEraser(v) { _drawEraser = Math.min(300, Math.max(DRAW_W_MIN, +v || 120)); const r = document.getElementById('drawEraserVal'); if (r) r.textContent = _drawEraser; drawPreviewRefresh(); }
 function drawSetEraseMode(m) { _drawEraseMode = m === 'whole' ? 'whole' : 'partial'; drawSavePrefs(); renderControls(); }
 function drawSetStyle(s) { _drawStyle = ['round','chisel','brush','dotted','hollow'].includes(s) ? s : 'round'; drawSavePrefs(); renderControls(); }
 function drawSetNibAngle(v) { _drawNibAngle = Math.min(170, Math.max(0, Math.round(+v) || 0)); const r = document.getElementById('drawNibAngleVal'); if (r) r.textContent = _drawNibAngle + '°'; drawTilesRefresh(); }
@@ -6837,8 +6845,8 @@ function drawSetTilt(on) { _drawTilt = !!on; drawSavePrefs(); }
 function drawSetStamp(s) { _drawStamp = STAMP_DEFS[s] ? s : 'crown'; drawSavePrefs(); renderControls(); }
 /* ── Stamp tool ── predefined mini shapes placed at a tap, stored as ORDINARY round strokes so
    erase / move / undo / export need nothing special. Defs are normalized at brush 100 with the
-   anchor [0,0] = the tap point; min def w is 26 so even at min brush 40 (k=0.4) the placed width
-   10.4 stays above sanitizeDraw's floor of 10. */
+   anchor [0,0] = the tap point. Part widths are floored at DRAW_W_MIN, so at a hairline brush a
+   stamp still places ink the tracer keeps (and a reload can't fatten it — same floor both sides). */
 const STAMP_DEFS = {
   crown: { noHollow: 1, strokes: [   // tagin crown — three stems with dot tips, slight outward splay (tap the letter's top).
     // noHollow: the parts overlap, so per-part rings merge unpredictably in the tracer — under the
@@ -6853,7 +6861,7 @@ const STAMP_DEFS = {
 /* One styled stamp part at the tap-relative origin (unclamped, un-offset) — shared by placement
    AND the stamp-tile previews, so what a tile shows is exactly what a tap places. */
 function _stampPartStroke(dsDef, k, st, na, noHollow) {
-  const sw = Math.round(dsDef.w * k);
+  const sw = Math.max(DRAW_W_MIN, Math.round(dsDef.w * k));
   const o = { w: sw, pr: 0, pts: dsDef.pts.map(([px, py]) => [px * k, py * k, 0.5]) };
   if (st === 'c') { o.st = 'c'; o.na = na; }
   else if (st === 'b' && dsDef.pts.length > 1) { o.st = 'b'; o.tl = Math.max(20, Math.round(_drawTaper * k)); }   // taps have no taper
@@ -6865,7 +6873,7 @@ function _stampPartStroke(dsDef, k, st, na, noHollow) {
     // sw ≥ 22; small ROUND holes (taps) need inner radius ≥ 9 or RDP collapses the circle.
     if (dsDef.pts.length > 1 ? sw >= 22 : rI >= 9) { o.st = 'h'; o.rim = rim; }
   }
-  return o;
+  return _drawTapFloor(o);   // 1-pt parts (crown tips, the Dot stamp) obey the same tap floor as a hand tap
 }
 function drawPlaceStamp(cl, x, y, e) {   // atomic: the whole stamp fits under the cap or nothing is placed; ONE undo entry
   const def = STAMP_DEFS[_drawStamp] || STAMP_DEFS.crown;
@@ -6886,7 +6894,7 @@ function drawPlaceStamp(cl, x, y, e) {   // atomic: the whole stamp fits under t
   udPush(ud);
   renderStage(); renderControls();
 }
-function drawSetBrush(v) { _drawBrush = Math.min(300, Math.max(40, +v || 90)); const r = document.getElementById('drawBrushVal'); if (r) r.textContent = _drawBrush; drawTilesRefresh(); }
+function drawSetBrush(v) { _drawBrush = Math.min(300, Math.max(DRAW_W_MIN, +v || 90)); const r = document.getElementById('drawBrushVal'); if (r) r.textContent = _drawBrush; drawTilesRefresh(); }
 function drawSetPressure(on) { _drawPressure = !!on; drawSavePrefs(); }
 function drawSetSmoothing(v) { _drawSmoothing = ['off','low','med','high'].includes(v) ? v : 'med'; drawSavePrefs(); }
 function drawSetPenOnly(on) { _drawPenOnly = !!on; drawSavePrefs(); }
@@ -6954,7 +6962,11 @@ function drawStrokePoly(s) {
   // chisel width factor = |u × nib-edge| = |sin(θstroke − θnib)| — full width sweeping across the
   // edge, NIB_MIN sliding along it (na=90: thick horizontals / thin verticals — the sofer look)
   const nf = d => nib ? Math.max(NIB_MIN, Math.abs(d[0] * sinNA - d[1] * cosNA)) : 1;
-  return _drawOffsetPoly(s.pts, (i, d) => drawRadiusAt(s, s.pts[i][2]) * nf(d), !nib);   // chisel = butt ends
+  // The chisel's thin edge is a RATIO of the width, so at a small brush it thins to nothing the
+  // tracer can keep (measured: brush 20 → 3.6 FU → 0 contours). Floor it in absolute font units;
+  // above brush ~44 the ratio already wins, so the sofer look at normal sizes is untouched.
+  const rAt = (i, d) => { const r = drawRadiusAt(s, s.pts[i][2]) * nf(d); return nib ? Math.max(NIB_EDGE_MIN, r) : r; };
+  return _drawOffsetPoly(s.pts, rAt, !nib);   // chisel = butt ends
 }
 function _drawResample(pts, step) {   // arc-length resample for geometry (lerp x, y, p; keeps vertices; ≤2048)
   if (pts.length < 2) return pts;
@@ -6974,8 +6986,9 @@ function _drawResample(pts, step) {   // arc-length resample for geometry (lerp 
 function drawNibDotPoly(s, q) {   // 1-pt chisel tap — the nib's rectangular footprint (shared by SVG + canvas renderers)
   const naR = ((s.na != null ? s.na : 90) * Math.PI) / 180;
   const R = drawRadiusAt(s, q[2]);
-  const ex = Math.cos(naR) * R,           ey = Math.sin(naR) * R;             // half-extent along the nib edge
-  const px = -Math.sin(naR) * R * NIB_MIN, py = Math.cos(naR) * R * NIB_MIN;  // half-thickness across it
+  const ex = Math.cos(naR) * R,     ey = Math.sin(naR) * R;                   // half-extent along the nib edge
+  const th = Math.max(NIB_EDGE_MIN, R * NIB_MIN);                             // half-thickness across it (same floor as a drawn chisel stroke)
+  const px = -Math.sin(naR) * th,   py = Math.cos(naR) * th;
   return [[q[0] + ex + px, q[1] + ey + py], [q[0] + ex - px, q[1] + ey - py],
           [q[0] - ex - px, q[1] - ey - py], [q[0] - ex + px, q[1] - ey + py]];
 }
@@ -7118,6 +7131,20 @@ function _drawApplyStyle(sk, g) {   // stamp the frozen style + its one param on
   else if (g.st === 'b') sk.tl = g.tl;
   else if (g.st === 'd') sk.ds = g.ds;
   else if (g.st === 'h') { sk.rim = g.rim; sk.pr = 0; }   // hollow is constant-width by contract
+}
+/* A tap is a tiny ISLAND of ink, and the tracer discards those long before it discards a thin bar —
+   the >80 FU² speck filter and the raster grid both work against a lone dot. Measured: a round tap
+   vanishes at radius 5, and a chisel nib mark is ragged-unreliable until it is ~24 FU long (w16
+   traced, w18 did NOT, w20 did — repeatable 3/3, a raster-alignment artifact, and a 45° nib failed
+   all the way to w20). So a tap carries its own width floor and what the user placed is what the
+   tracer keeps. Scaling w by the shortfall RATIO keeps any frozen pressure factor intact and can
+   only ever grow a tap — dragged strokes, which trace fine at DRAW_W_MIN, are never touched. */
+function _drawTapFloor(sk) {
+  if (sk.pts.length !== 1) return sk;
+  const need = sk.st === 'c' ? NIB_TAP_MIN : DOT_RMIN;
+  const r = drawRadiusAt(sk, sk.pts[0][2]);
+  if (r > 0 && r < need) sk.w = Math.ceil(sk.w * need / r);
+  return sk;
 }
 /* styled live preview — rebuild the in-flight stroke's shape each move batch (O(n), n ≤ 2048) */
 function _drawLivePathD(g) {
@@ -7381,13 +7408,13 @@ function drawPointerUp(e) {
       const tap = Math.hypot(g.cur[0] - g.x0, g.cur[1] - g.y0) < 2;   // zero-length rule → a dot, never a degenerate 2-pt stroke
       const sk = { w: _drawBrush, pr: 0, pts: tap ? [[g.x0, g.y0, 0.5]] : [[g.x0, g.y0, 0.5], [g.cur[0], g.cur[1], 0.5]] };
       _drawApplyStyle(sk, g);
-      cl.draw.strokes.push(sk);
+      cl.draw.strokes.push(_drawTapFloor(sk));
       udPush(g.ud);
     }
   } else if (cl && cl.draw) {
     const sk = { w: _drawBrush, pr: (_drawPressure || (_drawSpeed && g.pointerType !== 'pen')) ? 1 : 0, pts: g.pts };
     _drawApplyStyle(sk, g);   // (hollow overrides pr to 0)
-    cl.draw.strokes.push(sk);
+    cl.draw.strokes.push(_drawTapFloor(sk));
     udPush(g.ud);   // udPush marks dirty → the strokes autosave
   }
   renderStage(); renderControls();   // live polyline → committed shape; stroke-count readout
@@ -11619,7 +11646,7 @@ function renderDrawLeft(L, l) {
     `<button class="mode-btn ${_drawTool===t?'active':''}" aria-pressed="${_drawTool===t}" id="${id}" onclick="drawSetTool('${t}')" title="${esc(label)} (${kbd})">${label}</button>`;
   const brushRow = `
     <div class="side-slider-label">${_drawT('brush', 'Brush size')} <span id="drawBrushVal" class="readout">${_drawBrush}</span></div>
-    <input type="range" class="side-slider" min="40" max="300" step="5" value="${_drawBrush}" oninput="drawSetBrush(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('brush', 'Brush size'))}" title="[ / ]">`;
+    <input type="range" class="side-slider" min="${DRAW_W_MIN}" max="300" step="1" value="${_drawBrush}" oninput="drawSetBrush(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('brush', 'Brush size'))}" title="[ / ]">`;
   const pvBox = `
     <div class="draw-preview" id="drawPvBox"><span class="draw-preview-tag">${_drawT('preview', 'Actual size')}</span><svg id="drawPvSvg" aria-hidden="true"></svg></div>`;
   const styleBtn = (sty, key, fallback) =>
@@ -11682,7 +11709,7 @@ function renderDrawLeft(L, l) {
   } else if (_drawTool === 'erase') {
     ctxHtml = `
     <div class="side-slider-label">${_drawT('erase_size', 'Eraser size')} <span id="drawEraserVal" class="readout">${_drawEraser}</span></div>
-    <input type="range" class="side-slider" min="20" max="300" step="5" value="${_drawEraser}" oninput="drawSetEraser(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('erase_size', 'Eraser size'))}" title="[ / ]">` + pvBox + `
+    <input type="range" class="side-slider" min="${DRAW_W_MIN}" max="300" step="1" value="${_drawEraser}" oninput="drawSetEraser(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('erase_size', 'Eraser size'))}" title="[ / ]">` + pvBox + `
     <div class="side-slider-label" style="margin-top:6px;">${_drawT('erase_mode', 'Eraser mode')}</div>
     <div class="mode-toggle">
       <button class="mode-btn ${_drawEraseMode==='partial'?'active':''}" aria-pressed="${_drawEraseMode==='partial'}" id="drawEraseModePartial" onclick="drawSetEraseMode('partial')">${_drawT('erase_partial', 'Partial')}</button>
@@ -12180,7 +12207,8 @@ document.addEventListener('keydown', e => {
   }
   if (k === '[' || k === ']') {
     e.preventDefault();
-    const d = k === '[' ? -10 : 10;
+    const cur = _drawTool === 'erase' ? _drawEraser : _drawBrush;
+    const d = (k === '[' ? -1 : 1) * (cur <= 40 ? 5 : 10);   // finer steps down in the hairline range, where 10 is most of the width
     if (_drawTool === 'erase') drawSetEraser(_drawEraser + d); else drawSetBrush(_drawBrush + d);
     drawSavePrefs(); renderControls();   // sync the slider + readout (focus is on the stage, not the panel)
     return;
@@ -14999,7 +15027,7 @@ function sanitizeDraw(d) {
   const strokes = [];
   for (const s of d.strokes.slice(0, DRAW_STROKE_MAX)) {
     if (!s || !Array.isArray(s.pts)) continue;
-    const w = Number.isFinite(+s.w) ? Math.min(400, Math.max(10, +s.w)) : 80;
+    const w = Number.isFinite(+s.w) ? Math.min(400, Math.max(DRAW_W_MIN, +s.w)) : 80;
     const pts = [];
     for (const q of s.pts.slice(0, 2048)) {
       if (!Array.isArray(q)) continue;
