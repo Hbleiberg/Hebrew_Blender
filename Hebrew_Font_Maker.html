@@ -6785,6 +6785,7 @@ const RING_RMIN = 2;         // inner-ring / taper radius floor (font units) —
 let _drawBrush = 90, _drawPressure = true, _drawSmoothing = 'med', _drawPenOnly = false;   // mirrors of uiPrefs (avoid per-stroke localStorage reads)
 let _drawEraser = 120, _drawEraseMode = 'partial', _drawStyle = 'round', _drawNibAngle = 90;   // more uiPrefs mirrors: eraser size/mode + pen style
 let _drawTaper = 120, _drawDotSpacing = 2, _drawRim = 22;   // per-style params (frozen onto strokes at commit, like w)
+let _drawSpeed = false, _drawTilt = false;   // dynamics: mouse/finger speed → pseudo-pressure; stylus tilt → chisel angle
 function drawLoadPrefs() {
   const p = wsReadPrefs();
   _drawBrush = Number.isFinite(+p.drawBrush) ? Math.min(300, Math.max(40, +p.drawBrush)) : 90;
@@ -6798,12 +6799,15 @@ function drawLoadPrefs() {
   _drawTaper = Number.isFinite(+p.drawTaper) ? Math.min(400, Math.max(20, Math.round(+p.drawTaper))) : 120;
   _drawDotSpacing = Number.isFinite(+p.drawDotSpacing) ? Math.min(4, Math.max(1.25, +p.drawDotSpacing)) : 2;
   _drawRim = Number.isFinite(+p.drawRim) ? Math.min(80, Math.max(8, Math.round(+p.drawRim))) : 22;
+  _drawSpeed = p.drawSpeed === true;
+  _drawTilt = p.drawTilt === true;
 }
 function drawSavePrefs() {
   try { const p = wsReadPrefs();
     p.drawBrush = _drawBrush; p.drawPressure = _drawPressure; p.drawSmoothing = _drawSmoothing; p.drawPenOnly = _drawPenOnly;
     p.drawEraser = _drawEraser; p.drawEraseMode = _drawEraseMode; p.drawStyle = _drawStyle; p.drawNibAngle = _drawNibAngle;
     p.drawTaper = _drawTaper; p.drawDotSpacing = _drawDotSpacing; p.drawRim = _drawRim;
+    p.drawSpeed = _drawSpeed; p.drawTilt = _drawTilt;
     localStorage.setItem(WS_PREFS_KEY, JSON.stringify(p));
   } catch (e) { /* private mode / quota — non-fatal */ }
 }
@@ -6820,6 +6824,8 @@ function drawSetNibAngle(v) { _drawNibAngle = Math.min(170, Math.max(0, Math.rou
 function drawSetTaper(v) { _drawTaper = Math.min(400, Math.max(20, Math.round(+v) || 120)); const r = document.getElementById('drawTaperVal'); if (r) r.textContent = _drawTaper; }
 function drawSetDotSpacing(v) { _drawDotSpacing = Math.min(4, Math.max(1.25, +v || 2)); const r = document.getElementById('drawDotSpacingVal'); if (r) r.textContent = _drawDotSpacing + '×'; }
 function drawSetRim(v) { _drawRim = Math.min(80, Math.max(8, Math.round(+v) || 22)); const r = document.getElementById('drawRimVal'); if (r) r.textContent = _drawRim; }
+function drawSetSpeed(on) { _drawSpeed = !!on; drawSavePrefs(); }
+function drawSetTilt(on) { _drawTilt = !!on; drawSavePrefs(); }
 function drawSetBrush(v) { _drawBrush = Math.min(300, Math.max(40, +v || 90)); const r = document.getElementById('drawBrushVal'); if (r) r.textContent = _drawBrush; }
 function drawSetPressure(on) { _drawPressure = !!on; drawSavePrefs(); }
 function drawSetSmoothing(v) { _drawSmoothing = ['off','low','med','high'].includes(v) ? v : 'med'; drawSavePrefs(); }
@@ -6828,6 +6834,18 @@ function drawSetPenOnly(on) { _drawPenOnly = !!on; drawSavePrefs(); }
    0.5; the width map's fixed point f(0.5)=1 makes a recorded 0.5 exactly nominal width, so no
    per-device special-casing is needed anywhere downstream. */
 function pressureOf(e) { return e.pointerType === 'pen' ? (e.pressure || 0.5) : 0.5; }
+/* Speed → pseudo-pressure for mouse/finger (v in font units per ms): rest ≈ 0.9 (fat), fast → 0.3.
+   Smooth, monotone, self-clamped to (0.3, 0.9] — values are STORED per point, so replay stays
+   deterministic. Pens never use this: real pressure wins. */
+function drawSpeedP(v) { return 0.3 + 0.6 / (1 + v / 1.5); }
+/* Chisel angle for a new stroke — stylus-tilt azimuth (opt-in) else the slider pref. The lean
+   direction is taken as the nib edge: lean right → 0 (thick verticals), lean toward you → 90
+   (thick horizontals, the sofer default). Frozen per stroke at pen-down. */
+function _drawNaFor(e, st) {
+  if (st === 'c' && _drawTilt && e.pointerType === 'pen' && (e.tiltX || e.tiltY))
+    return ((Math.round(Math.atan2(-e.tiltY, e.tiltX) * 180 / Math.PI) % 180) + 180) % 180;   // −tiltY: screen y-down → font y-up
+  return _drawNibAngle;
+}
 const DRAW_SMOOTH_A = { off: 1, low: 0.55, med: 0.35, high: 0.2 };   // EMA factor per smoothing level
 function drawRadiusAt(s, p) { return (s.w / 2) * (s.pr ? (0.35 + 1.3 * Math.min(1, Math.max(0.05, p))) : 1); }
 function drawHasPressure(s) { return !!s.pr && s.pts.some(q => q[2] !== 0.5); }
@@ -7043,7 +7061,8 @@ function _drawApplyStyle(sk, g) {   // stamp the frozen style + its one param on
 }
 /* styled live preview — rebuild the in-flight stroke's shape each move batch (O(n), n ≤ 2048) */
 function _drawLivePathD(g) {
-  const s = { w: _drawBrush, pr: _drawPressure ? 1 : 0, st: g.st, na: g.na, tl: g.tl, ds: g.ds, rim: g.rim, pts: g.pts };
+  const s = { w: _drawBrush, pr: (_drawPressure || (_drawSpeed && g.pointerType !== 'pen')) ? 1 : 0,
+              st: g.st, na: g.na, tl: g.tl, ds: g.ds, rim: g.rim, pts: g.pts };
   const gm = drawStyleGeom(s);
   return gm ? _drawGeomPathD(gm) : '';
 }
@@ -7134,7 +7153,7 @@ function drawPointerDown(e) {
     stage().appendChild(el);
     drawGesture = { tool: 'line', pointerId: e.pointerId, pointerType: e.pointerType,
                     x0: Math.round(x), y0: Math.round(y), cur: [Math.round(x), Math.round(y)],
-                    st, na: _drawNibAngle, tl: _drawTaper, ds: _drawDotSpacing, rim: _drawRim, el, ud };
+                    st, na: _drawNaFor(e, st), tl: _drawTaper, ds: _drawDotSpacing, rim: _drawRim, el, ud };
   } else {
     const st = STYLE_ST[_drawStyle] || null;   // style + params freeze at gesture start (like w)
     const el = document.createElementNS('http://www.w3.org/2000/svg', st ? 'path' : 'polyline');
@@ -7151,9 +7170,11 @@ function drawPointerDown(e) {
     }
     el.setAttribute('opacity', '0.9');
     stage().appendChild(el);
+    const speedSynth = e.pointerType !== 'pen' && _drawSpeed;   // pens keep real pressure — never synthesized
+    const p0 = speedSynth ? 0.65 : pressureOf(e);               // mid-fat seed; the EMA smooths from here
     drawGesture = { tool: 'draw', pointerId: e.pointerId, pointerType: e.pointerType,
-                    pts: [[Math.round(x), Math.round(y), pressureOf(e)]], sm: [x, y, pressureOf(e)],
-                    st, na: _drawNibAngle, tl: _drawTaper, ds: _drawDotSpacing, rim: _drawRim, el, ud };
+                    pts: [[Math.round(x), Math.round(y), p0]], sm: [x, y, p0], lv: [x, y, e.timeStamp],
+                    st, na: _drawNaFor(e, st), tl: _drawTaper, ds: _drawDotSpacing, rim: _drawRim, el, ud };
     if (st) el.setAttribute('d', _drawLivePathD(drawGesture));   // seed the tap footprint
   }
   try { stage().setPointerCapture(e.pointerId); } catch (err) {}   // synthetic test events have no active pointer — must not throw
@@ -7220,7 +7241,7 @@ function drawPointerMove(e) {
   for (const ev of batch) {
     const pt = sv.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
     const p = pt.matrixTransform(inv);
-    const x = ifx(p.x), y = ify(p.y), pr = pressureOf(ev);
+    const x = ifx(p.x), y = ify(p.y);
     if (g.tool === 'erase') {
       if (g.mode !== 'partial') { drawEraseAt(cl, x, y); continue; }
       // partial: accumulate the erase path — no EMA (an eraser must track the finger exactly)
@@ -7234,6 +7255,11 @@ function drawPointerMove(e) {
       const mp = g.maskEl.querySelector('path');
       mp.setAttribute('d', mp.getAttribute('d') + ' L ' + fx(x).toFixed(1) + ' ' + fy(y).toFixed(1));
       continue;
+    }
+    let pr = pressureOf(ev);
+    if (ev.pointerType !== 'pen' && _drawSpeed && g.lv) {   // mouse/finger speed → pseudo-pressure (stored per point — deterministic)
+      pr = drawSpeedP(Math.hypot(x - g.lv[0], y - g.lv[1]) / Math.max(1, ev.timeStamp - g.lv[2]));
+      g.lv = [x, y, ev.timeStamp];   // per coalesced event — they carry individual timeStamps
     }
     g.sm[0] += a * (x - g.sm[0]); g.sm[1] += a * (y - g.sm[1]); g.sm[2] += a * (pr - g.sm[2]);   // EMA smoothing
     const last = g.pts[g.pts.length - 1];
@@ -7294,7 +7320,7 @@ function drawPointerUp(e) {
       udPush(g.ud);
     }
   } else if (cl && cl.draw) {
-    const sk = { w: _drawBrush, pr: _drawPressure ? 1 : 0, pts: g.pts };
+    const sk = { w: _drawBrush, pr: (_drawPressure || (_drawSpeed && g.pointerType !== 'pen')) ? 1 : 0, pts: g.pts };
     _drawApplyStyle(sk, g);   // (hollow overrides pr to 0)
     cl.draw.strokes.push(sk);
     udPush(g.ud);   // udPush marks dirty → the strokes autosave
@@ -11472,7 +11498,8 @@ function renderDrawLeft(L, l) {
     <input type="range" class="side-slider" min="0" max="170" step="10" value="${_drawNibAngle}" oninput="drawSetNibAngle(this.value)" onchange="drawSavePrefs();renderControls()" aria-label="${esc(_drawT('nib_angle', 'Nib angle'))}">
     <div class="ctl-row draw-chips" style="margin-top:4px;">
       ${[0, 45, 90].map(a => `<button class="ctl-btn" aria-pressed="${_drawNibAngle===a}" onclick="drawSetNibAngle(${a});drawSavePrefs();renderControls()">${a}°</button>`).join('')}
-    </div>` : _drawStyle === 'brush' ? `
+    </div>
+    <label class="chk" style="margin-top:4px;"><input type="checkbox" ${_drawTilt?'checked':''} onchange="drawSetTilt(this.checked)"> ${_drawT('tilt', 'Stylus tilt sets the nib angle')}</label>` : _drawStyle === 'brush' ? `
     <div class="side-slider-label" style="margin-top:6px;">${_drawT('taper', 'Taper length')} <span id="drawTaperVal" class="readout">${_drawTaper}</span></div>
     <input type="range" class="side-slider" min="20" max="400" step="10" value="${_drawTaper}" oninput="drawSetTaper(this.value)" onchange="drawSavePrefs();renderControls()" aria-label="${esc(_drawT('taper', 'Taper length'))}">` : _drawStyle === 'dotted' ? `
     <div class="side-slider-label" style="margin-top:6px;">${_drawT('dot_spacing', 'Dot spacing')} <span id="drawDotSpacingVal" class="readout">${_drawDotSpacing}×</span></div>
@@ -11484,7 +11511,8 @@ function renderDrawLeft(L, l) {
   let ctxHtml = '';
   if (_drawTool === 'draw') {
     ctxHtml = brushRow + styleRow + `
-    <label class="chk"><input type="checkbox" ${_drawPressure?'checked':''} onchange="drawSetPressure(this.checked)"> ${_drawT('pressure', 'Pen pressure varies thickness')}</label>` + penOnlyChk + `
+    <label class="chk"><input type="checkbox" ${_drawPressure?'checked':''} onchange="drawSetPressure(this.checked)"> ${_drawT('pressure', 'Pen pressure varies thickness')}</label>
+    <label class="chk"><input type="checkbox" ${_drawSpeed?'checked':''} onchange="drawSetSpeed(this.checked)"> ${_drawT('speed', 'Speed varies thickness (mouse & finger)')}</label>` + penOnlyChk + `
     <div class="side-slider-label" style="margin-top:6px;">${_drawT('smoothing', 'Smoothing')}</div>
     <select id="drawSmoothingSel" onchange="drawSetSmoothing(this.value)" aria-label="${esc(_drawT('smoothing', 'Smoothing'))}">
       <option value="off" ${_drawSmoothing==='off'?'selected':''}>${_drawT('smoothing_off', 'Off')}</option>
