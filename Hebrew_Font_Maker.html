@@ -3174,8 +3174,9 @@ function shortcutGroups() {
       ['Esc', t('sc_pen_discard')],
     ], 'pen'],
     [g('draw'), [
-      ['D  /  E  /  L  /  V', t('sc_draw_tools')],
+      ['D  /  E  /  L  /  V  /  S', t('sc_draw_tools')],
       ['X', t('sc_draw_swap')],
+      ['B', t('sc_draw_style')],
       ['[  /  ]', t('sc_draw_size')],
       ['Shift + Drag', t('sc_draw_snap')],
       ['Delete  or  Backspace', t('sc_draw_delete')],
@@ -6472,12 +6473,13 @@ function renderLegend() {
   }
   if (workMode === 'draw') {
     const key = _drawTool === 'erase' ? 'legend_erase' : _drawTool === 'line' ? 'legend_line'
-              : _drawTool === 'move' ? 'legend_move' : 'legend';
+              : _drawTool === 'move' ? 'legend_move' : _drawTool === 'stamp' ? 'legend_stamp' : 'legend';
     const fall = {
-      legend: 'Draw with a pen, finger, or mouse · D / E / L / V switch tools · Save runs the tracer',
+      legend: 'Draw with a pen, finger, or mouse · D / E / L / V / S switch tools · Save runs the tracer',
       legend_erase: 'Partial rubs out ink under the eraser · Whole stroke removes an entire stroke in one touch',
       legend_line: 'Press and drag to place a straight stroke · hold Shift to snap to 0° / 45° / 90°',
       legend_move: 'Drag a stroke to move it · drag empty space to select several · Delete removes them',
+      legend_stamp: 'Tap to place the stamp · size follows Brush size · placed parts are normal strokes',
     }[key];
     el.innerHTML = `<span>${esc(_drawT(key, fall))}</span>`;
     return;
@@ -6786,6 +6788,7 @@ let _drawBrush = 90, _drawPressure = true, _drawSmoothing = 'med', _drawPenOnly 
 let _drawEraser = 120, _drawEraseMode = 'partial', _drawStyle = 'round', _drawNibAngle = 90;   // more uiPrefs mirrors: eraser size/mode + pen style
 let _drawTaper = 120, _drawDotSpacing = 2, _drawRim = 22;   // per-style params (frozen onto strokes at commit, like w)
 let _drawSpeed = false, _drawTilt = false;   // dynamics: mouse/finger speed → pseudo-pressure; stylus tilt → chisel angle
+let _drawStamp = 'crown';                    // stamp tool's active shape (uiPrefs mirror)
 function drawLoadPrefs() {
   const p = wsReadPrefs();
   _drawBrush = Number.isFinite(+p.drawBrush) ? Math.min(300, Math.max(40, +p.drawBrush)) : 90;
@@ -6801,18 +6804,19 @@ function drawLoadPrefs() {
   _drawRim = Number.isFinite(+p.drawRim) ? Math.min(80, Math.max(8, Math.round(+p.drawRim))) : 22;
   _drawSpeed = p.drawSpeed === true;
   _drawTilt = p.drawTilt === true;
+  _drawStamp = STAMP_DEFS[p.drawStamp] ? p.drawStamp : 'crown';
 }
 function drawSavePrefs() {
   try { const p = wsReadPrefs();
     p.drawBrush = _drawBrush; p.drawPressure = _drawPressure; p.drawSmoothing = _drawSmoothing; p.drawPenOnly = _drawPenOnly;
     p.drawEraser = _drawEraser; p.drawEraseMode = _drawEraseMode; p.drawStyle = _drawStyle; p.drawNibAngle = _drawNibAngle;
     p.drawTaper = _drawTaper; p.drawDotSpacing = _drawDotSpacing; p.drawRim = _drawRim;
-    p.drawSpeed = _drawSpeed; p.drawTilt = _drawTilt;
+    p.drawSpeed = _drawSpeed; p.drawTilt = _drawTilt; p.drawStamp = _drawStamp;
     localStorage.setItem(WS_PREFS_KEY, JSON.stringify(p));
   } catch (e) { /* private mode / quota — non-fatal */ }
 }
 function drawSetTool(t) {
-  const next = ['draw','erase','line','move'].includes(t) ? t : 'draw';
+  const next = ['draw','erase','line','move','stamp'].includes(t) ? t : 'draw';
   if (next !== 'move') _drawSel.clear();   // selection is a move-tool concept
   _drawTool = next;
   renderStage(); renderControls();   // stage chrome (selection boxes, legend, cursor ring radius) is tool-dependent
@@ -6826,6 +6830,36 @@ function drawSetDotSpacing(v) { _drawDotSpacing = Math.min(4, Math.max(1.25, +v 
 function drawSetRim(v) { _drawRim = Math.min(80, Math.max(8, Math.round(+v) || 22)); const r = document.getElementById('drawRimVal'); if (r) r.textContent = _drawRim; }
 function drawSetSpeed(on) { _drawSpeed = !!on; drawSavePrefs(); }
 function drawSetTilt(on) { _drawTilt = !!on; drawSavePrefs(); }
+function drawSetStamp(s) { _drawStamp = STAMP_DEFS[s] ? s : 'crown'; drawSavePrefs(); renderControls(); }
+/* ── Stamp tool ── predefined mini shapes placed at a tap, stored as ORDINARY round strokes so
+   erase / move / undo / export need nothing special. Defs are normalized at brush 100 with the
+   anchor [0,0] = the tap point; min def w is 26 so even at min brush 40 (k=0.4) the placed width
+   10.4 stays above sanitizeDraw's floor of 10. */
+const STAMP_DEFS = {
+  crown: { strokes: [   // tagin crown — three stems with dot tips, slight outward splay (tap the letter's top)
+    { w: 26, pts: [[-55, 0], [-63, 88]] }, { w: 34, pts: [[-66, 105]] },
+    { w: 26, pts: [[0, 0], [0, 100]] },    { w: 34, pts: [[0, 120]] },
+    { w: 26, pts: [[55, 0], [63, 88]] },   { w: 34, pts: [[66, 105]] },
+  ] },
+  dot:   { strokes: [{ w: 60, pts: [[0, 0]] }] },
+  serif: { strokes: [{ w: 30, pts: [[-80, 0], [80, 0]] }] },
+};
+function drawPlaceStamp(cl, x, y) {   // atomic: the whole stamp fits under the cap or nothing is placed; ONE undo entry
+  const def = STAMP_DEFS[_drawStamp] || STAMP_DEFS.crown;
+  if (cl.draw.strokes.length + def.strokes.length > DRAW_STROKE_MAX) {
+    status(_drawT('limit_toast', 'Stroke limit reached — erase or join strokes before adding more.'));
+    return;
+  }
+  const k = _drawBrush / 100;
+  const cc = v => Math.max(-2000, Math.min(3000, Math.round(v)));
+  const ud = udCapture([{ t: 'item', kind: 'letter', cp: curCp, withDraw: true }], 'place stamp — ' + cl.name);
+  def.strokes.forEach(ds => {
+    cl.draw.strokes.push({ w: Math.round(ds.w * k), pr: 0,
+      pts: ds.pts.map(([px, py]) => [cc(x + px * k), cc(y + py * k), 0.5]) });
+  });
+  udPush(ud);
+  renderStage(); renderControls();
+}
 function drawSetBrush(v) { _drawBrush = Math.min(300, Math.max(40, +v || 90)); const r = document.getElementById('drawBrushVal'); if (r) r.textContent = _drawBrush; }
 function drawSetPressure(on) { _drawPressure = !!on; drawSavePrefs(); }
 function drawSetSmoothing(v) { _drawSmoothing = ['off','low','med','high'].includes(v) ? v : 'med'; drawSavePrefs(); }
@@ -7079,6 +7113,11 @@ function drawPointerDown(e) {
   if (e.pointerType === 'touch' && (_drawPenOnly || (_drawPenSeen && performance.now() < _drawPenUntil))) return;   // palm rejection; mouse always draws
   cl.draw = cl.draw || { v: 1, strokes: [] };
   const [x, y] = clientToFont(e);
+  if (_drawTool === 'stamp') {   // placement is instantaneous — no gesture, own atomic cap check + undo entry
+    drawPlaceStamp(cl, x, y);
+    e.preventDefault();
+    return;
+  }
   if ((_drawTool === 'draw' || _drawTool === 'line') && cl.draw.strokes.length >= DRAW_STROKE_MAX) {
     status(_drawT('limit_toast', 'Stroke limit reached — erase or join strokes before adding more.'));
     return;   // refuse to start — a stroke beyond the cap would be dropped by sanitizeDraw on reload
@@ -11474,6 +11513,14 @@ function brushTileSVG(style) {
   else inner = `<path d="${pathD(gm.fill)}"${gm.eo ? ' fill-rule="evenodd"' : ''} fill="currentColor"/>`;
   return `<svg viewBox="0 0 76 44" aria-hidden="true">${inner}</svg>`;
 }
+function stampTileSVG(id) {   // stamp defs drawn as stroked polylines/circles into the same tile viewBox
+  const def = STAMP_DEFS[id];
+  const k = 0.16, tx = x => (38 + x * k).toFixed(1), ty = y => (36 - y * k).toFixed(1);
+  const inner = def.strokes.map(s => s.pts.length === 1
+    ? `<circle cx="${tx(s.pts[0][0])}" cy="${ty(s.pts[0][1])}" r="${(s.w * k / 2).toFixed(1)}" fill="currentColor"/>`
+    : `<polyline points="${s.pts.map(q => tx(q[0]) + ',' + ty(q[1])).join(' ')}" fill="none" stroke="currentColor" stroke-width="${(s.w * k).toFixed(1)}" stroke-linecap="round"/>`).join('');
+  return `<svg viewBox="0 0 76 44" aria-hidden="true">${inner}</svg>`;
+}
 function renderDrawLeft(L, l) {
   const nStrokes = (l.draw && l.draw.strokes.length) || 0;
   // The input-mode switcher renders ONLY here in a draw project (Align is unreachable for drawable
@@ -11522,6 +11569,17 @@ function renderDrawLeft(L, l) {
     </select>`;
   } else if (_drawTool === 'line') {
     ctxHtml = brushRow + styleRow + penOnlyChk;
+  } else if (_drawTool === 'stamp') {
+    const stampBtn = (id, key, fallback) =>
+      `<button class="brush-tile ${_drawStamp===id?'active':''}" aria-pressed="${_drawStamp===id}" id="drawStamp${id[0].toUpperCase()+id.slice(1)}" onclick="drawSetStamp('${id}')">${stampTileSVG(id)}<span class="brush-tile-label">${_drawT(key, fallback)}</span></button>`;
+    ctxHtml = brushRow + `
+    <div class="side-slider-label" style="margin-top:6px;">${_drawT('stamp_pick', 'Stamp shape')}</div>
+    <div class="brush-grid">
+      ${stampBtn('crown', 'stamp_crown', 'Tagin crown')}
+      ${stampBtn('dot', 'stamp_dot', 'Dot')}
+      ${stampBtn('serif', 'stamp_serif', 'Serif foot')}
+    </div>
+    <div class="hint" style="margin-top:4px;">${_drawT('stamp_hint', 'Tap the canvas to place the stamp — it scales with Brush size. Each placed part is a normal stroke: erase, move, or undo it like any other.')}</div>` + penOnlyChk;
   } else if (_drawTool === 'move') {
     ctxHtml = `
     <div class="hint" style="margin-top:4px;">${_drawT('move_hint', 'Drag a stroke to move it. Drag empty space to select several. Delete removes the selection; Esc clears it.')}</div>
@@ -11547,6 +11605,7 @@ function renderDrawLeft(L, l) {
       ${toolBtn('erase', 'drawToolErase', _drawT('tool_erase', 'Erase'), 'E')}
       ${toolBtn('line', 'drawToolLine', _drawT('tool_line', 'Line'), 'L')}
       ${toolBtn('move', 'drawToolMove', _drawT('tool_move', 'Move'), 'V')}
+      ${toolBtn('stamp', 'drawToolStamp', _drawT('tool_stamp', 'Stamp'), 'S')}
     </div>` + ctxHtml + `
     <div class="ctl-row" style="margin-top:8px;">
       <button class="ctl-btn" id="drawUndoBtn" onclick="undo()" title="${esc(I18n.t('fontmaker.toolbar.undo_title'))}" ${undoStack.length?'':'disabled'}>↶ ${I18n.t('fontmaker.toolbar.undo_aria')}</button>
@@ -12017,8 +12076,14 @@ document.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   const k = e.key;
   if (!e.shiftKey) {
-    const tool = { d: 'draw', e: 'erase', l: 'line', v: 'move', x: (_drawTool === 'erase' ? 'draw' : 'erase') }[k.toLowerCase()];
+    const tool = { d: 'draw', e: 'erase', l: 'line', v: 'move', s: 'stamp', x: (_drawTool === 'erase' ? 'draw' : 'erase') }[k.toLowerCase()];
     if (tool) { e.preventDefault(); drawSetTool(tool); return; }
+    if (k.toLowerCase() === 'b' && (_drawTool === 'draw' || _drawTool === 'line')) {   // cycle the pen style
+      e.preventDefault();
+      const order = ['round', 'chisel', 'brush', 'dotted', 'hollow'];
+      drawSetStyle(order[(order.indexOf(_drawStyle) + 1) % order.length]);   // saves + re-renders
+      return;
+    }
   }
   if (k === '[' || k === ']') {
     e.preventDefault();
