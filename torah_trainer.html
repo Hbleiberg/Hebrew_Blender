@@ -4580,10 +4580,12 @@ function wireTranslit() {
   });
   window.addEventListener('translitlibloaded', () => {
     status.textContent = I18n.t('torah.trans.lib_loaded');
+    status.dataset.i18nKey = 'torah.trans.lib_loaded';   // lets applyI18n heal a pre-ready raw key + follow language switches
     if (settings.showTranslit) renderText();
   });
   window.addEventListener('translitlibfailed', () => {
     status.textContent = I18n.t('torah.trans.lib_failed');
+    status.dataset.i18nKey = 'torah.trans.lib_failed';
   });
 }
 function maybeEnsureTranslit() {
@@ -5637,6 +5639,8 @@ function applyI18n() {
     // Interpolated messages record no key and are left alone, so nothing is clobbered.
     const st = document.getElementById('ttStatus');
     if (st && st.dataset.i18nKey) st.textContent = I18n.t(st.dataset.i18nKey);
+    const ts = document.getElementById('optTranslitStatus');
+    if (ts && ts.dataset.i18nKey) ts.textContent = I18n.t(ts.dataset.i18nKey);
   } catch (e) {}
   // Re-render the reading so row labels / aliyah markers / verse buttons translate — but NEVER
   // while audio is playing or looping (a renderText() rebuild would desync the karaoke data-twi
