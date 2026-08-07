@@ -6878,7 +6878,7 @@ function drawPointerDown(e) {
     status(_drawT('limit_toast', 'Stroke limit reached — erase or join strokes before adding more.'));
     return;   // refuse to start — a stroke beyond the cap would be dropped by sanitizeDraw on reload
   }
-  const label = (_drawTool === 'erase' ? 'erase strokes — ' : 'draw stroke — ') + cl.name;
+  const label = (_drawTool === 'erase' ? 'erase strokes — ' : _drawTool === 'line' ? 'draw line — ' : 'draw stroke — ') + cl.name;
   const ud = udCapture([{ t: 'item', kind: 'letter', cp: curCp, withDraw: true }], label);
   if (_drawTool === 'erase') {
     if (_drawEraseMode === 'partial') {
@@ -6910,6 +6910,24 @@ function drawPointerDown(e) {
       drawGesture = { tool: 'erase', mode: 'whole', pointerId: e.pointerId, pointerType: e.pointerType, kill: new Set(), ud };
       drawEraseAt(cl, x, y);
     }
+  } else if (_drawTool === 'line') {
+    const chisel = _drawStyle === 'chisel';
+    const el = document.createElementNS('http://www.w3.org/2000/svg', chisel ? 'path' : 'line');
+    el.setAttribute('class', 'draw-live');
+    if (chisel) {
+      el.setAttribute('fill', stageColors().ink);
+    } else {
+      el.setAttribute('x1', fx(x).toFixed(1)); el.setAttribute('y1', fy(y).toFixed(1));
+      el.setAttribute('x2', fx(x).toFixed(1)); el.setAttribute('y2', fy(y).toFixed(1));
+      el.setAttribute('stroke', stageColors().ink);
+      el.setAttribute('stroke-width', (_drawBrush * SC).toFixed(2));
+      el.setAttribute('stroke-linecap', 'round');
+    }
+    el.setAttribute('opacity', '0.9');
+    stage().appendChild(el);
+    drawGesture = { tool: 'line', pointerId: e.pointerId, pointerType: e.pointerType,
+                    x0: Math.round(x), y0: Math.round(y), cur: [Math.round(x), Math.round(y)],
+                    chisel, na: _drawNibAngle, el, ud };
   } else {
     const chisel = _drawStyle === 'chisel';   // style/angle freeze at gesture start (like w)
     const el = document.createElementNS('http://www.w3.org/2000/svg', chisel ? 'path' : 'polyline');
@@ -6943,6 +6961,30 @@ function drawPointerMove(e) {
   const tol = 3 / (((ctm && ctm.a) || 1) * SC);        // ≈3 screen px min-distance decimation, in font units
   const a = DRAW_SMOOTH_A[_drawSmoothing] || 0.35;
   const g = drawGesture, cl = curLetter();
+  if (g.tool === 'line') {   // rubber line — only the batch's last position matters
+    const ev = batch[batch.length - 1];
+    const pt = sv.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+    const p = pt.matrixTransform(inv);
+    let x1 = ifx(p.x), y1 = ify(p.y);
+    if (ev.shiftKey) {   // snap to the nearest 45° — length preserved so 0/45/90 are all reachable
+      const dx = x1 - g.x0, dy = y1 - g.y0, len = Math.hypot(dx, dy);
+      if (len > 1e-6) {
+        const ang = Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) * (Math.PI / 4);
+        x1 = g.x0 + Math.cos(ang) * len; y1 = g.y0 + Math.sin(ang) * len;
+      }
+    }
+    g.cur = [Math.round(x1), Math.round(y1)];
+    if (!g.el.isConnected) stage().appendChild(g.el);
+    if (g.chisel) {
+      const s = { w: _drawBrush, pr: 0, nib: 1, na: g.na, pts: [[g.x0, g.y0, 0.5], [g.cur[0], g.cur[1], 0.5]] };
+      const poly = Math.hypot(g.cur[0] - g.x0, g.cur[1] - g.y0) < 2 ? drawNibDotPoly(s, [g.x0, g.y0, 0.5]) : drawStrokePoly(s);
+      g.el.setAttribute('d', poly.length > 2 ? 'M ' + poly.map(q => fx(q[0]).toFixed(1) + ' ' + fy(q[1]).toFixed(1)).join(' L ') + ' Z' : '');
+    } else {
+      g.el.setAttribute('x2', fx(g.cur[0]).toFixed(1));
+      g.el.setAttribute('y2', fy(g.cur[1]).toFixed(1));
+    }
+    e.preventDefault(); return;
+  }
   for (const ev of batch) {
     const pt = sv.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
     const p = pt.matrixTransform(inv);
@@ -6984,6 +7026,14 @@ function drawPointerUp(e) {
       if (cl && cl.draw && cl.draw.strokes.length && g.pts.length) drawEraseSplit(cl, g);   // pushes g.ud only when ink changed
     } else if (cl && cl.draw && g.kill.size) {
       cl.draw.strokes = cl.draw.strokes.filter((_, i) => !g.kill.has(i));   // single mutation at gesture end — indices stay valid throughout
+      udPush(g.ud);
+    }
+  } else if (g.tool === 'line') {
+    if (cl && cl.draw) {
+      const tap = Math.hypot(g.cur[0] - g.x0, g.cur[1] - g.y0) < 2;   // zero-length rule → a dot, never a degenerate 2-pt stroke
+      const st = { w: _drawBrush, pr: 0, pts: tap ? [[g.x0, g.y0, 0.5]] : [[g.x0, g.y0, 0.5], [g.cur[0], g.cur[1], 0.5]] };
+      if (g.chisel) { st.nib = 1; st.na = g.na; }
+      cl.draw.strokes.push(st);
       udPush(g.ud);
     }
   } else if (cl && cl.draw) {
@@ -11115,6 +11165,8 @@ function renderDrawLeft(L, l) {
       <option value="med" ${_drawSmoothing==='med'?'selected':''}>${_drawT('smoothing_med', 'Medium')}</option>
       <option value="high" ${_drawSmoothing==='high'?'selected':''}>${_drawT('smoothing_high', 'High')}</option>
     </select>`;
+  } else if (_drawTool === 'line') {
+    ctxHtml = brushRow + styleRow + penOnlyChk;
   } else if (_drawTool === 'erase') {
     ctxHtml = `
     <div class="side-slider-label">${_drawT('erase_size', 'Eraser size')} <span id="drawEraserVal" class="readout">${_drawEraser}</span></div>
@@ -11131,6 +11183,7 @@ function renderDrawLeft(L, l) {
     <div class="mode-toggle draw-tools">
       ${toolBtn('draw', 'drawToolDraw', _drawT('tool_draw', 'Draw'), 'D')}
       ${toolBtn('erase', 'drawToolErase', _drawT('tool_erase', 'Erase'), 'E')}
+      ${toolBtn('line', 'drawToolLine', _drawT('tool_line', 'Line'), 'L')}
     </div>` + ctxHtml + `
     <div class="ctl-row" style="margin-top:8px;">
       <button class="ctl-btn" onclick="drawClearCurrent()" ${nStrokes?'':'disabled'}>${_drawT('clear', 'Clear letter')}</button>
