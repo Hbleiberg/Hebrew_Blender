@@ -3080,6 +3080,8 @@
   "shared.fonts.err_bad_font": "That file doesn’t look like a usable font (TTF, OTF, or WOFF).",
   "shared.fonts.err_no_store": "Your browser can’t store custom fonts.",
   "shared.fonts.err_unreadable": "Couldn’t read that font file.",
+  "shared.fonts.myfonts_download_name_aria": "Download {name}",
+  "shared.fonts.myfonts_remove_name_aria": "Remove {name} from My Fonts",
   "shared.fonts.section_cursive": "Cursive / Script",
   "shared.fonts.section_generic": "{section} Fonts",
   "shared.fonts.section_my_fonts": "My Fonts",

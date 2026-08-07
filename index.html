@@ -511,11 +511,11 @@ async function renderMyFontsManager() {
     meta.textContent = _ivFmt(f.created) + ' · ' + Math.max(1, Math.round((f.size || 0) / 1024)) + ' KB';
     // aria-label alongside title: the ⬇/🗑 rows are named from their content otherwise, so a
     // screen reader announces "⬇"/"🗑" once per saved font — the destructive Remove included.
-    const mk = (txt, title, fn) => { const b = document.createElement('button'); b.className = 'ie-action-btn secondary'; b.textContent = txt; if (title) { b.title = title; b.setAttribute('aria-label', title); } b.style.cssText = 'padding:4px 8px;font-size:0.78rem;'; b.onclick = fn; return b; };
+    const mk = (txt, title, fn, aria) => { const b = document.createElement('button'); b.className = 'ie-action-btn secondary'; b.textContent = txt; if (title) { b.title = title; b.setAttribute('aria-label', aria || title); } b.style.cssText = 'padding:4px 8px;font-size:0.78rem;'; b.onclick = fn; return b; };
     row.append(nm, meta,
       mk(I18n.t('home.alltools.myfonts.use_button'), '', () => useFontEverywhere(f.name)),
-      mk('⬇', I18n.t('home.alltools.myfonts.download_title'), () => downloadMyFontFile(f.name)),
-      mk('🗑', I18n.t('home.alltools.myfonts.remove_title'), () => deleteMyFontFile(f.name)));
+      mk('⬇', I18n.t('home.alltools.myfonts.download_title'), () => downloadMyFontFile(f.name), I18n.t('shared.fonts.myfonts_download_name_aria', { name: f.name })),
+      mk('🗑', I18n.t('home.alltools.myfonts.remove_title'), () => deleteMyFontFile(f.name), I18n.t('shared.fonts.myfonts_remove_name_aria', { name: f.name })));
     host.appendChild(row);
   });
 }

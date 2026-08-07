@@ -13222,15 +13222,15 @@ async function renderMyFontsList() {
     // one click away in the generator's own picker.
     use.onauxclick = (ev) => { if (ev.button === 1) { try { localStorage.setItem('hebrewBlender_hebFont', f.name); } catch (e) {} } };
     // Name-from-content beats title, so without an explicit aria-label a screen reader
-    // announces these as "⬇" and "🗑" — the destructive one included. Mirror the
-    // already-translated title into aria-label (the ddc9180 precedent).
+    // announces these as "⬇" and "🗑" — the destructive one included. The aria-label also
+    // carries the row's font name: ten saved fonts must not announce ten identical actions.
     const dl = document.createElement('button');
     dl.className = 'tbtn ghost'; dl.textContent = '⬇'; dl.title = I18n.t('fontmaker.modals.myfonts_download_title'); dl.style.padding = '4px 8px';
-    dl.setAttribute('aria-label', dl.title);
+    dl.setAttribute('aria-label', I18n.t('shared.fonts.myfonts_download_name_aria', { name: f.name }));
     dl.onclick = () => downloadMyFont(f.name);
     const del = document.createElement('button');
     del.className = 'tbtn ghost'; del.textContent = '🗑'; del.title = I18n.t('fontmaker.modals.myfonts_remove_title'); del.style.padding = '4px 8px';
-    del.setAttribute('aria-label', del.title);
+    del.setAttribute('aria-label', I18n.t('shared.fonts.myfonts_remove_name_aria', { name: f.name }));
     del.onclick = () => deleteMyFontUI(f.name);
     row.append(nm, meta, dl, del, use);
     host.appendChild(row);

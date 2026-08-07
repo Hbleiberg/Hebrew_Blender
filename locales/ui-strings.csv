@@ -2866,6 +2866,8 @@ shared.fonts.default_marker,[DEFAULT],[ברירת מחדל],Font-picker marker a
 shared.fonts.err_bad_font,"That file doesn’t look like a usable font (TTF, OTF, or WOFF).","הקובץ הזה אינו נראה כגופן שימושי (TTF, OTF או WOFF).",Font upload error alert,shared
 shared.fonts.err_no_store,Your browser can’t store custom fonts.,הדפדפן שלכם אינו יכול לאחסן גופנים מותאמים.,Font upload error alert,shared
 shared.fonts.err_unreadable,Couldn’t read that font file.,לא ניתן היה לקרוא את קובץ הגופן.,Font upload error alert,shared
+shared.fonts.myfonts_download_name_aria,Download {name},הורדת {name},My Fonts row ⬇ button aria-label (names the row's font),do not translate {…}; shared (carriers: Font Maker + index)
+shared.fonts.myfonts_remove_name_aria,Remove {name} from My Fonts,הסרת {name} מהפונטים שלי,My Fonts row 🗑 button aria-label (names the row's font),do not translate {…}; shared (carriers: Font Maker + index)
 shared.fonts.section_cursive,Cursive / Script,כתב יד / סקריפט,Font-picker section header,shared (carriers: all font-selector tools)
 shared.fonts.section_generic,{section} Fonts,גופני {section},"Font-picker section header (e.g. Block Fonts, Print Fonts, Torah Fonts)",mixed UI+content — {section} is a category name; shared
 shared.fonts.section_my_fonts,My Fonts,הגופנים שלי,Font-picker section header (custom fonts group),shared (carriers: all font-selector tools)

@@ -3080,6 +3080,8 @@
   "shared.fonts.err_bad_font": "הקובץ הזה אינו נראה כגופן שימושי (TTF, OTF או WOFF).",
   "shared.fonts.err_no_store": "הדפדפן שלכם אינו יכול לאחסן גופנים מותאמים.",
   "shared.fonts.err_unreadable": "לא ניתן היה לקרוא את קובץ הגופן.",
+  "shared.fonts.myfonts_download_name_aria": "הורדת {name}",
+  "shared.fonts.myfonts_remove_name_aria": "הסרת {name} מהפונטים שלי",
   "shared.fonts.section_cursive": "כתב יד / סקריפט",
   "shared.fonts.section_generic": "גופני {section}",
   "shared.fonts.section_my_fonts": "הגופנים שלי",
