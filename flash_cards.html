@@ -1982,9 +1982,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <!-- What to include in the .ivrit backup -->
       <div class="sub" style="margin:12px 0 4px;font-weight:600;" data-i18n="flashcards.advanced.backup_include_label">Include in backup:</div>
       <div class="ivrit-mode-toggle" style="margin-bottom:0;">
-        <button type="button" id="backupScopePresets" class="ivrit-mode-btn" onclick="setBackupScope('presets')" data-i18n="flashcards.advanced.backup_scope_presets">Presets</button>
-        <button type="button" id="backupScopeProfiles" class="ivrit-mode-btn" onclick="setBackupScope('profiles')" data-i18n="flashcards.advanced.backup_scope_profiles">Profiles</button>
-        <button type="button" id="backupScopeBoth" class="ivrit-mode-btn active" onclick="setBackupScope('both')" data-i18n="flashcards.advanced.backup_scope_both">Both</button>
+        <button type="button" id="backupScopePresets" class="ivrit-mode-btn" aria-pressed="false" onclick="setBackupScope('presets')" data-i18n="flashcards.advanced.backup_scope_presets">Presets</button>
+        <button type="button" id="backupScopeProfiles" class="ivrit-mode-btn" aria-pressed="false" onclick="setBackupScope('profiles')" data-i18n="flashcards.advanced.backup_scope_profiles">Profiles</button>
+        <button type="button" id="backupScopeBoth" class="ivrit-mode-btn active" aria-pressed="true" onclick="setBackupScope('both')" data-i18n="flashcards.advanced.backup_scope_both">Both</button>
       </div>
       </div>
     </div>
@@ -6015,7 +6015,7 @@ function setBackupScope(scope) {
   backupScope = scope;
   ['presets', 'profiles', 'both'].forEach(s => {
     const btn = document.getElementById('backupScope' + s.charAt(0).toUpperCase() + s.slice(1));
-    if (btn) btn.classList.toggle('active', s === scope);
+    if (btn) { btn.classList.toggle('active', s === scope); btn.setAttribute('aria-pressed', s === scope ? 'true' : 'false'); }
   });
 }
 // Save a .ivrit file containing whatever the scope toggle selects. Reuses the

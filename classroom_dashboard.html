@@ -2144,14 +2144,14 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <div class="form-row">
       <label data-i18n="dashboard.days.emoji_sequence">Emoji sequence</label>
       <div class="emoji-set-btns" id="emojiSetBtns">
-        <button class="emoji-set-btn" data-set="chick" aria-label="Chicks" data-i18n-aria-label="dashboard.days.emoji_set_chick">🥚🐣🐔</button>
-        <button class="emoji-set-btn" data-set="city" aria-label="City" data-i18n-aria-label="dashboard.days.emoji_set_city">🌇🏙️🌃</button>
-        <button class="emoji-set-btn" data-set="time" aria-label="Time" data-i18n-aria-label="dashboard.days.emoji_set_time">⏪️▶️⏩️</button>
-        <button class="emoji-set-btn" data-set="arrow" aria-label="Arrows" data-i18n-aria-label="dashboard.days.emoji_set_arrow">🔼⏹️🔽</button>
-        <button class="emoji-set-btn" data-set="plant" aria-label="Plants" data-i18n-aria-label="dashboard.days.emoji_set_plant">🌱🪴🌲</button>
-        <button class="emoji-set-btn" data-set="boy" aria-label="Boy" data-i18n-aria-label="dashboard.days.emoji_set_boy">👶👦🧔‍♂️</button>
-        <button class="emoji-set-btn" data-set="girl" aria-label="Girl" data-i18n-aria-label="dashboard.days.emoji_set_girl">👶👧👩</button>
-        <button class="emoji-set-btn" data-set="none" data-i18n="dashboard.days.emoji_none">None</button>
+        <button class="emoji-set-btn" aria-pressed="false" data-set="chick" aria-label="Chicks" data-i18n-aria-label="dashboard.days.emoji_set_chick">🥚🐣🐔</button>
+        <button class="emoji-set-btn" aria-pressed="false" data-set="city" aria-label="City" data-i18n-aria-label="dashboard.days.emoji_set_city">🌇🏙️🌃</button>
+        <button class="emoji-set-btn" aria-pressed="false" data-set="time" aria-label="Time" data-i18n-aria-label="dashboard.days.emoji_set_time">⏪️▶️⏩️</button>
+        <button class="emoji-set-btn" aria-pressed="false" data-set="arrow" aria-label="Arrows" data-i18n-aria-label="dashboard.days.emoji_set_arrow">🔼⏹️🔽</button>
+        <button class="emoji-set-btn" aria-pressed="false" data-set="plant" aria-label="Plants" data-i18n-aria-label="dashboard.days.emoji_set_plant">🌱🪴🌲</button>
+        <button class="emoji-set-btn" aria-pressed="false" data-set="boy" aria-label="Boy" data-i18n-aria-label="dashboard.days.emoji_set_boy">👶👦🧔‍♂️</button>
+        <button class="emoji-set-btn" aria-pressed="false" data-set="girl" aria-label="Girl" data-i18n-aria-label="dashboard.days.emoji_set_girl">👶👧👩</button>
+        <button class="emoji-set-btn" aria-pressed="false" data-set="none" data-i18n="dashboard.days.emoji_none">None</button>
       </div>
     </div>
     <div class="size-row text-size-opt" style="display:none;">
@@ -4468,6 +4468,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     const activeSet = settings.dowEmojiSet || 'chick';
     document.querySelectorAll('.emoji-set-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.set === activeSet);
+      btn.setAttribute('aria-pressed', btn.dataset.set === activeSet ? 'true' : 'false');
     });
     document.querySelector(`input[name="headerLang"][value="${settings.headerLang || 'he'}"]`).checked = true;
     setColTitleSize(settings.colTitleSize ?? 0.78);
@@ -4647,7 +4648,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     document.querySelectorAll('.emoji-set-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         settings.dowEmojiSet = btn.dataset.set;
-        document.querySelectorAll('.emoji-set-btn').forEach(b => b.classList.toggle('active', b === btn));
+        document.querySelectorAll('.emoji-set-btn').forEach(b => { b.classList.toggle('active', b === btn); b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'); });
         renderDaysList(); saveSettingsToStorage();
       });
     });
